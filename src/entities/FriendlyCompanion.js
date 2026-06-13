@@ -111,6 +111,10 @@ export default class FriendlyCompanion extends Player {
     };
   }
 
+  getBuiltInActorVisualId() {
+    return 'companion';
+  }
+
   canRev() {
     return false;
   }

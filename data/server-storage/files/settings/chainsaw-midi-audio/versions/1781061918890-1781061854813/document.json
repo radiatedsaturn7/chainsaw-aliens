@@ -1,0 +1,12 @@
+{
+  "value": {
+    "masterVolume": 0.4,
+    "masterPan": 0,
+    "reverbEnabled": false,
+    "reverbLevel": 0.20252403846153846,
+    "latencyMs": 40,
+    "useSoundfont": true,
+    "soundfontCdn": "vendored",
+    "drumKitId": "standard"
+  }
+}

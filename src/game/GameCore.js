@@ -212,6 +212,8 @@ export default class Game {
     this.activeMusicTrackId = null;
     this.actorMusicOverrideTrackId = null;
     this.cutsceneMusicTrackId = null;
+    this.cutsceneMidiLayers = new Map();
+    this.cutsceneMidiLayerToken = 0;
     this.musicPreloadToken = 0;
     this.projectBrowserMusicPreviewToken = 0;
     this.actorPreloadPromises = new Map();
@@ -442,6 +444,11 @@ export default class Game {
     this.levelEditorPlaytestSnapshot = null;
     this.runtimeActorDefinitions = new Map();
     this.missingRuntimeActorWarnings = new Set();
+    this.preparedCutsceneAudio = {
+      music: new Map(),
+      sfx: new Map(),
+      preparedAt: 0
+    };
     this.elevatorPlatforms = [];
     this.elevatorGraph = null;
     this.isMobile = false;
@@ -6064,10 +6071,65 @@ export default class Game {
     if (resolvedTrackId && resolvedTrackId !== this.cutsceneMusicTrackId && resolvedTrackId !== this.activeMusicTrackId) return;
     if (!this.cutsceneMusicTrackId && resolvedTrackId && resolvedTrackId !== this.activeMusicTrackId) return;
     this.cutsceneMusicTrackId = null;
+    this.stopAllCutsceneMidiLayers({ fadeMs });
     const previousFadeDuration = this.musicFadeDuration;
     this.musicFadeDuration = Math.max(0, Number(fadeMs || 0)) / 1000;
     this.setActiveMusicTrack(null);
     this.musicFadeDuration = previousFadeDuration;
+  }
+
+  playCutsceneMidiLayer(layerKey, trackId, { fadeMs = 120, volume = 1, offsetMs = 0, loop = false } = {}) {
+    const key = String(layerKey || trackId || '').trim();
+    const resolvedTrackId = String(trackId || '').trim();
+    if (!key || !resolvedTrackId) return;
+    const preparedEntry = this.preparedCutsceneAudio?.music?.get(resolvedTrackId) || null;
+    const libraryEntry = preparedEntry || this.getLibrarySong(resolvedTrackId);
+    if (!libraryEntry) return;
+    this.stopCutsceneMidiLayer(key, { fadeMs: 0 });
+    const token = ++this.cutsceneMidiLayerToken;
+    const targetVolume = Math.max(0, Math.min(1, Number(volume ?? 1)));
+    this.cutsceneMidiLayers.set(key, { key, trackId: resolvedTrackId, player: null, token });
+    const createLayerPlayer = () => {
+      const entry = this.cutsceneMidiLayers.get(key);
+      if (!entry || entry.token !== token) return;
+      const player = new MidiSongPlayer(this.audio);
+      player.setSong(libraryEntry.song, resolvedTrackId, { loop, offsetMs });
+      player.layerKey = key;
+      player.setFade(targetVolume, Math.max(0, Number(fadeMs || 0)) / 1000);
+      entry.player = player;
+    };
+    if (preparedEntry) {
+      createLayerPlayer();
+      return;
+    }
+    Promise.resolve(this.audio?.preloadSongResources?.(libraryEntry.song))
+      .catch(() => null)
+      .then(createLayerPlayer);
+  }
+
+  setCutsceneMidiLayerVolume(layerKey, volume) {
+    const entry = this.cutsceneMidiLayers.get(String(layerKey || '').trim());
+    const targetVolume = Math.max(0, Math.min(1, Number(volume ?? 1)));
+    entry?.player?.setFade(targetVolume, 0.03);
+  }
+
+  stopCutsceneMidiLayer(layerKey, { fadeMs = 120 } = {}) {
+    const key = String(layerKey || '').trim();
+    if (!key) return;
+    const entry = this.cutsceneMidiLayers.get(key);
+    if (!entry) return;
+    entry.token = ++this.cutsceneMidiLayerToken;
+    if (entry.player) {
+      entry.player.setFade(0, Math.max(0, Number(fadeMs || 0)) / 1000);
+      this.musicPlayers.push(entry.player);
+    }
+    this.cutsceneMidiLayers.delete(key);
+  }
+
+  stopAllCutsceneMidiLayers({ fadeMs = 120 } = {}) {
+    Array.from(this.cutsceneMidiLayers.keys()).forEach((key) => {
+      this.stopCutsceneMidiLayer(key, { fadeMs });
+    });
   }
 
   getSfxDocument(fxId) {
@@ -6080,13 +6142,54 @@ export default class Game {
     return data;
   }
 
+  async prepareCutsceneAudioResources(document = {}) {
+    const startedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    const assets = Array.isArray(document?.assets) ? document.assets : [];
+    const clips = Array.isArray(document?.clips) ? document.clips : [];
+    const assetById = new Map(assets.map((asset) => [asset?.id, asset]));
+    const musicIds = new Set();
+    const sfxIds = new Set();
+    clips.forEach((clip) => {
+      if (!clip || (clip.type !== 'music' && clip.type !== 'sfx')) return;
+      const asset = assetById.get(clip.assetId) || null;
+      const ref = String(asset?.ref || clip.assetId || '').trim();
+      if (!ref) return;
+      if (clip.type === 'music') musicIds.add(ref);
+      if (clip.type === 'sfx') sfxIds.add(ref);
+    });
+    const preparedMusic = new Map();
+    const preparedSfx = new Map();
+    const loads = [];
+    musicIds.forEach((trackId) => {
+      const libraryEntry = this.getLibrarySong(trackId);
+      if (libraryEntry?.song) {
+        preparedMusic.set(trackId, libraryEntry);
+        loads.push(Promise.resolve(this.audio?.preloadSongResources?.(libraryEntry.song)).catch(() => null));
+      }
+    });
+    sfxIds.forEach((fxId) => {
+      const sfx = this.getSfxDocument(fxId);
+      if (sfx) {
+        preparedSfx.set(fxId, sfx);
+        loads.push(Promise.resolve(this.audio?.preloadSfxDocument?.(sfx)).catch(() => null));
+      }
+    });
+    if (loads.length) await Promise.all(loads);
+    this.preparedCutsceneAudio = {
+      music: preparedMusic,
+      sfx: preparedSfx,
+      preparedAt: Date.now(),
+      preloadMs: Math.round((typeof performance !== 'undefined' ? performance.now() : Date.now()) - startedAt)
+    };
+  }
+
   playSfxById(fxId, options = {}) {
     const resolvedFxId = String(fxId || '').trim();
-    const document = this.getSfxDocument(resolvedFxId);
+    const document = this.preparedCutsceneAudio?.sfx?.get(resolvedFxId) || this.getSfxDocument(resolvedFxId);
     if (!document) return;
     const key = options.key ? `${resolvedFxId}:${options.key}` : '';
     this.audio.playSfxDocument(document, {
-      id: options.loop ? (key || resolvedFxId) : '',
+      id: key || (options.loop ? resolvedFxId : ''),
       volume: Math.max(0, Number(options.volume ?? 1)),
       pitchCents: Number(options.pitchCents || 0),
       pan: Number(options.pan || 0),
@@ -6094,15 +6197,27 @@ export default class Game {
     }).catch(() => {});
   }
 
-  stopSfxById(fxId = '') {
+  stopSfxById(fxId = '', options = {}) {
     const resolvedFxId = String(fxId || '').trim();
     if (!resolvedFxId) {
       this.audio.stopSfx('');
       return;
     }
+    if (options.key) {
+      this.audio.stopSfx(`${resolvedFxId}:${options.key}`);
+      return;
+    }
     Array.from(this.audio.activeSfxSources?.keys?.() || [])
       .filter((key) => key === resolvedFxId || key.startsWith(`${resolvedFxId}:`))
       .forEach((key) => this.audio.stopSfx(key));
+  }
+
+  setSfxVolumeById(fxId = '', { key = '', volume = 1 } = {}) {
+    const resolvedFxId = String(fxId || '').trim();
+    if (!resolvedFxId) return;
+    const resolvedKey = key ? `${resolvedFxId}:${key}` : resolvedFxId;
+    const handle = this.audio.activeSfxSources?.get?.(resolvedKey);
+    handle?.setVolume?.(Math.max(0, Number(volume ?? 1)));
   }
 
   stopProjectBrowserMusicPreview() {
@@ -6141,6 +6256,13 @@ export default class Game {
   }
 
   updateActiveMusicPlayers(dt) {
+    this.cutsceneMidiLayers.forEach((entry, key) => {
+      if (!entry.player) return;
+      entry.player.update(dt);
+      if (entry.player.finished || (entry.player.volume <= 0 && entry.player.targetVolume === 0)) {
+        this.cutsceneMidiLayers.delete(key);
+      }
+    });
     this.musicPlayers.forEach((player) => player.update(dt));
     this.musicPlayers = this.musicPlayers.filter((player) => !(player.volume <= 0 && player.targetVolume === 0));
   }
@@ -6647,10 +6769,15 @@ export default class Game {
         }
         onDone();
       };
-      this.cutscenePlayer.play(payload.data, {
-        skippable: params.skippable !== false,
-        onDone: finishCutscene
-      });
+      Promise.resolve(this.prepareCutsceneAudioResources(payload.data))
+        .catch(() => null)
+        .then(() => {
+          if (cutsceneFinished) return;
+          this.cutscenePlayer.play(payload.data, {
+            skippable: params.skippable !== false,
+            onDone: finishCutscene
+          });
+        });
       return;
     }
     if (action.type === 'lock-all-doors' || action.type === 'unlock-all-doors') {

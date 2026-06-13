@@ -35,6 +35,7 @@ import TouchInput from '../../src/input/touch.js';
 import MidiSongPlayer from '../../src/game/MidiSongPlayer.js';
 
 const midiComposerSource = readFileSync(new URL('../../src/ui/MidiComposerCore.js', import.meta.url), 'utf8');
+const midiSongPlayerSource = readFileSync(new URL('../../src/game/MidiSongPlayer.js', import.meta.url), 'utf8');
 const textInputOverlaySource = readFileSync(new URL('../../src/ui/shared/textInputOverlay.js', import.meta.url), 'utf8');
 const audioSource = readFileSync(new URL('../../src/game/Audio.js', import.meta.url), 'utf8');
 
@@ -144,7 +145,7 @@ test('MIDI song player lookahead does not drift ahead over many frames', () => {
   for (let frame = 0; frame < 60; frame += 1) {
     audio.ctx.currentTime = frame / 60;
     player.update(1 / 60);
-    const maxAheadTicks = 0.17 * player.getTicksPerSecond();
+    const maxAheadTicks = 0.43 * player.getTicksPerSecond();
     assert.ok(
       player.scheduledUntilTick - player.playheadTick <= maxAheadTicks,
       `scheduled cursor drifted too far ahead on frame ${frame}`
@@ -152,7 +153,7 @@ test('MIDI song player lookahead does not drift ahead over many frames', () => {
   }
 
   assert.ok(played.length > 4);
-  assert.ok(played.every((note) => note.when < 1.25));
+  assert.ok(played.every((note) => note.when < 1.6));
 });
 
 test('MIDI song player starts at cutscene offset and uses tempo-based durations', () => {
@@ -214,9 +215,9 @@ test('MIDI song player drops stale backlog notes after a long frame', () => {
   }, 'dense-song', { loop: false });
   player.setFade(1, 0);
 
-  player.update(1.2);
+  player.update(2);
 
-  assert.ok(played.length < 4);
+  assert.ok(played.length < 8);
   assert.ok(player.droppedEvents > 0);
   assert.ok(played.every((note) => note.pitch >= 60));
 });
@@ -579,6 +580,13 @@ test('shared text input overlays shield panel pointer events from canvas handler
   assert.equal(textInputOverlaySource.includes("'touchstart'"), true);
   assert.equal(textInputOverlaySource.includes("'mousedown'"), true);
   assert.equal(textInputOverlaySource.includes('event.stopPropagation();'), true);
+  assert.equal(textInputOverlaySource.includes('}, true);'), true);
+  assert.equal(textInputOverlaySource.includes('bindOverlayActionButton'), true);
+  assert.equal(textInputOverlaySource.includes('event.preventDefault();'), true);
+  assert.equal(textInputOverlaySource.includes("button.addEventListener('pointerup', activate);"), true);
+  assert.equal(textInputOverlaySource.includes('if (handled) return;'), true);
+  assert.equal(textInputOverlaySource.includes('bindOverlayInputFocus'), true);
+  assert.equal(textInputOverlaySource.includes("input.focus({ preventScroll: true });"), true);
   assert.equal(textInputOverlaySource.includes('shieldOverlayPanelEvents(panel);'), true);
   assert.equal(textInputOverlaySource.includes('getOverlayRoot().appendChild(overlay);'), true);
 });
@@ -969,6 +977,18 @@ test('MIDI playback clock clamps stale-frame catch up', () => {
   composer.advancePlayhead(10);
 
   assert.equal(composer.playheadTick, 8 * MIDI_PLAYBACK_MAX_CATCHUP_SECONDS);
+});
+
+test('MIDI schedulers use mobile-safe lookahead and audio-clock anchors', () => {
+  assert.equal(midiComposerSource.includes('const MIDI_SCHEDULE_LOOKAHEAD_SECONDS = 0.42'), true);
+  assert.equal(midiComposerSource.includes('const MIDI_MIN_SCHEDULE_LATENCY_SECONDS = 0.08'), true);
+  assert.equal(midiComposerSource.includes('playbackAudioAnchorSeconds'), true);
+  assert.equal(midiComposerSource.includes('currentTick - range.start >= staleTicks'), true);
+  assert.equal(midiComposerSource.includes('MIDI_MAX_PLAYBACK_EVENTS_PER_FRAME = 256'), true);
+  assert.equal(midiSongPlayerSource.includes('MIDI_RUNTIME_SCHEDULE_LOOKAHEAD_SECONDS = 0.42'), true);
+  assert.equal(midiSongPlayerSource.includes('MIDI_RUNTIME_MIN_SCHEDULE_LATENCY_SECONDS = 0.08'), true);
+  assert.equal(midiSongPlayerSource.includes('resetAudioAnchor'), true);
+  assert.equal(midiSongPlayerSource.includes('MIDI_RUNTIME_MAX_EVENTS_PER_UPDATE = 256'), true);
 });
 
 test('MIDI viewport pan and zoom capacity do not expand authored song length', () => {

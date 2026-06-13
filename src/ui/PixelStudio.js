@@ -22,6 +22,30 @@ import {
 } from './pixel-editor/layers.js';
 import { createToolRegistry, TOOL_IDS } from './pixel-editor/tools.js';
 import { createFrame, cloneFrame, exportSpriteSheet } from './pixel-editor/animation.js';
+import {
+  addMaskToBoneBinding,
+  bakeBoneFrames,
+  bakeBoneTimelineFrames,
+  cloneBoneRig,
+  compositeBonePreview,
+  createBone,
+  createDefaultBoneRig,
+  createLayerBinding,
+  createSelectionBinding,
+  getBoneAssignedMask,
+  getBoneInfluenceSets,
+  getBoneJointUsageCount,
+  getPosedBoneGeometry,
+  getPoseKeyAtTime,
+  moveBoneJoint,
+  removeMaskFromBoneBinding,
+  removeOrphanBoneJoints,
+  removePoseKeyAtTime,
+  normalizeBoneRig,
+  samplePoseTimeline,
+  solveTwoBoneIkPose,
+  setPoseKeyAtTime
+} from './pixel-editor/bones.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
 import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
@@ -281,6 +305,46 @@ export function buildPixelPortraitSelectionActions() {
   ];
 }
 
+export function buildPixelPortraitBoneActions() {
+  return [
+    { id: 'bones', label: 'Bones' },
+    { id: 'bind', label: 'Bind' },
+    { id: 'pose', label: 'Pose' },
+    { id: 'time', label: 'Tools' }
+  ];
+}
+
+export function buildPixelPortraitBoneActionGroups() {
+  return {
+    bones: {
+      title: 'Bones',
+      actionIds: ['bone-add', 'bone-link', 'bone-delete', 'bone-prev', 'bone-next']
+    },
+    bind: {
+      title: 'Bind',
+      actionIds: ['bind-mode', 'bind-prev', 'bind-next', 'bind-rect', 'bind-oval', 'bind-lasso', 'bind-magic', 'bind-add', 'bind-remove', 'bind-layer', 'bind-clear']
+    },
+    pose: {
+      title: 'Pose',
+      actionIds: ['pose-set', 'pose-delete', 'pose-prev', 'pose-next', 'pose-back', 'pose-forward', 'pose-length']
+    },
+    time: {
+      title: 'Controls',
+      actionIds: ['time-rewind', 'time-back', 'time-play', 'time-forward', 'time-bake']
+    }
+  };
+}
+
+export function getPixelBoneTimelineDurationMs(poseTimeline = [], editor = {}) {
+  const timeline = Array.isArray(poseTimeline) ? poseTimeline : [];
+  const last = timeline[timeline.length - 1];
+  return Math.max(
+    Number(editor.segmentMs || 500),
+    Number(editor.durationMs || 0),
+    Number(last?.timeMs || 0)
+  );
+}
+
 export function buildPixelPortraitPaletteRailEntries(recentIndices = [], paletteSize = 0) {
   const max = Math.max(0, Math.floor(Number(paletteSize) || 0));
   const unique = [];
@@ -435,10 +499,19 @@ export function buildPixelMobileEditorLayout(width, height, {
         w: layout.workSurface.w,
         h: 64
       };
-    const workSurface = paletteStrip
+    const zoomStrip = paletteStrip
+      ? {
+        x: paletteStrip.x,
+        y: Math.max(layout.workSurface.y, paletteStrip.y - layout.gap - 38),
+        w: paletteStrip.w,
+        h: 38
+      }
+      : null;
+    const workSurfaceLimit = zoomStrip || paletteStrip;
+    const workSurface = workSurfaceLimit
       ? {
         ...layout.workSurface,
-        h: Math.max(1, paletteStrip.y - layout.gap - layout.workSurface.y)
+        h: Math.max(1, workSurfaceLimit.y - layout.gap - layout.workSurface.y)
       }
       : layout.workSurface;
     return {
@@ -453,11 +526,63 @@ export function buildPixelMobileEditorLayout(width, height, {
       mainEditor: workSurface,
       orientation: 'portrait',
       paletteStrip,
+      zoomStrip,
       toolbarStrip: layout.actionRail
     };
   }
 
   return null;
+}
+
+export function getPixelClipboardPasteOrigin(source, canvasWidth, canvasHeight, viewportBounds = null) {
+  const srcW = Math.max(1, Math.floor(Number(source?.width || 1)));
+  const srcH = Math.max(1, Math.floor(Number(source?.height || 1)));
+  const maxX = Math.max(0, Math.floor(Number(canvasWidth || 0)) - srcW);
+  const maxY = Math.max(0, Math.floor(Number(canvasHeight || 0)) - srcH);
+  const originX = Number(source?.originX ?? source?.origin?.x);
+  const originY = Number(source?.originY ?? source?.origin?.y);
+  if (Number.isFinite(originX) && Number.isFinite(originY)) {
+    return {
+      x: clamp(Math.round(originX), 0, maxX),
+      y: clamp(Math.round(originY), 0, maxY)
+    };
+  }
+  const centerCol = Number.isFinite(viewportBounds?.centerCol)
+    ? viewportBounds.centerCol
+    : Number(canvasWidth || 0) / 2;
+  const centerRow = Number.isFinite(viewportBounds?.centerRow)
+    ? viewportBounds.centerRow
+    : Number(canvasHeight || 0) / 2;
+  return {
+    x: clamp(Math.round(centerCol - srcW / 2), 0, maxX),
+    y: clamp(Math.round(centerRow - srcH / 2), 0, maxY)
+  };
+}
+
+export function applyPixelClipboardPixelsToLayer({ source, layerPixels, canvasWidth, canvasHeight, origin }) {
+  const srcW = Math.max(0, Math.floor(Number(source?.width || 0)));
+  const srcH = Math.max(0, Math.floor(Number(source?.height || 0)));
+  const width = Math.max(0, Math.floor(Number(canvasWidth || 0)));
+  const height = Math.max(0, Math.floor(Number(canvasHeight || 0)));
+  const pixels = source?.pixels;
+  if (!srcW || !srcH || !pixels || !layerPixels || !width || !height) return null;
+  const startX = clamp(Math.round(Number(origin?.x || 0)), 0, Math.max(0, width - srcW));
+  const startY = clamp(Math.round(Number(origin?.y || 0)), 0, Math.max(0, height - srcH));
+  const mask = new Uint8Array(width * height);
+  for (let y = 0; y < srcH; y += 1) {
+    const dstY = startY + y;
+    if (dstY < 0 || dstY >= height) continue;
+    for (let x = 0; x < srcW; x += 1) {
+      const dstX = startX + x;
+      if (dstX < 0 || dstX >= width) continue;
+      const value = pixels[y * srcW + x];
+      if (!value) continue;
+      const index = dstY * width + dstX;
+      mask[index] = 1;
+      layerPixels[index] = value;
+    }
+  }
+  return { mask, bounds: { x: startX, y: startY, w: srcW, h: srcH } };
 }
 
 export default class PixelStudio {
@@ -616,6 +741,20 @@ export default class PixelStudio {
       loop: true,
       onion: { enabled: false, prev: 1, next: 1, opacity: 0.35 }
     };
+    this.boneRig = createDefaultBoneRig();
+    this.boneEditor = {
+      mode: 'bones',
+      submenu: null,
+      selectedBoneId: null,
+      linkMode: true,
+      chainAnchor: null,
+      drag: null,
+      preview: true,
+      timeMs: 0,
+      durationMs: 500,
+      playing: false,
+      segmentMs: 500
+    };
     this.history = this.runtime.history;
     this.pendingHistory = null;
     this.strokeState = null;
@@ -666,7 +805,8 @@ export default class PixelStudio {
       toolbar: 0,
       menu: 0,
       file: 0,
-      toolOptions: 0
+      toolOptions: 0,
+      bones: 0
     };
     this.toolsPanelMeta = null;
     this.toolsListMeta = null;
@@ -712,7 +852,7 @@ export default class PixelStudio {
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
     this.sidebars = { left: true };
-    this.leftPanelTabs = ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'animation'];
+    this.leftPanelTabs = ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'animation', 'bones'];
     this.leftPanelTabIndex = 0;
     this.leftPanelTab = this.leftPanelTabs[this.leftPanelTabIndex];
     this.uiButtons = [];
@@ -1069,6 +1209,13 @@ export default class PixelStudio {
     this.canvasState.width = pixelData.editor.width;
     this.canvasState.height = pixelData.editor.height;
     this.animation.frames = pixelData.editor.frames;
+    if (!this.boneEditor) this.boneEditor = { mode: 'bones', submenu: null, selectedBoneId: null, linkMode: true, chainAnchor: null, drag: null, preview: true, timeMs: 0, durationMs: 500, playing: false, segmentMs: 500 };
+    if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'submenu')) this.boneEditor.submenu = null;
+    if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'linkMode')) this.boneEditor.linkMode = true;
+    if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'chainAnchor')) this.boneEditor.chainAnchor = null;
+    this.boneRig = normalizeBoneRig(pixelData.editor.bones || createDefaultBoneRig());
+    this.boneEditor.selectedBoneId = this.boneRig.bones[0]?.id || null;
+    this.boneEditor.durationMs = Math.max(this.boneEditor.segmentMs || 500, Number((this.boneRig.poseTimeline || []).at(-1)?.timeMs || 0));
     this.animation.currentFrameIndex = 0;
     this.canvasState.activeLayerIndex = pixelData.editor.activeLayerIndex || 0;
     this.artSizeDraft.width = this.canvasState.width;
@@ -1087,7 +1234,8 @@ export default class PixelStudio {
       width: this.canvasState.width,
       height: this.canvasState.height,
       frames: this.animation.frames,
-      activeLayerIndex: this.canvasState.activeLayerIndex
+      activeLayerIndex: this.canvasState.activeLayerIndex,
+      bones: cloneBoneRig(this.boneRig)
     };
     pixelData.size = this.canvasState.width;
     pixelData.frames = this.animation.frames.map((frame) => {
@@ -1139,7 +1287,9 @@ export default class PixelStudio {
       editor: {
         width,
         height,
-        activeLayerIndex: this.canvasState.activeLayerIndex
+        activeLayerIndex: this.canvasState.activeLayerIndex,
+        frames: this.animation.frames,
+        bones: cloneBoneRig(this.boneRig)
       }
     };
   }
@@ -1193,6 +1343,13 @@ export default class PixelStudio {
     this.canvasState.width = width;
     this.canvasState.height = height;
     this.animation.frames = loadedFrames;
+    if (!this.boneEditor) this.boneEditor = { mode: 'bones', submenu: null, selectedBoneId: null, linkMode: true, chainAnchor: null, drag: null, preview: true, timeMs: 0, durationMs: 500, playing: false, segmentMs: 500 };
+    if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'submenu')) this.boneEditor.submenu = null;
+    if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'linkMode')) this.boneEditor.linkMode = true;
+    if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'chainAnchor')) this.boneEditor.chainAnchor = null;
+    this.boneRig = normalizeBoneRig(data?.editor?.bones || data?.bones || createDefaultBoneRig());
+    this.boneEditor.selectedBoneId = this.boneRig.bones[0]?.id || null;
+    this.boneEditor.durationMs = Math.max(this.boneEditor.segmentMs || 500, Number((this.boneRig.poseTimeline || []).at(-1)?.timeMs || 0));
     this.animation.currentFrameIndex = 0;
     this.canvasState.activeLayerIndex = clamp(Number(data?.editor?.activeLayerIndex) || 0, 0, this.animation.frames[0].layers.length - 1);
     this.artSizeDraft.width = width;
@@ -1486,8 +1643,15 @@ export default class PixelStudio {
     this.game.exitEditorToMainMenu('pixel');
   }
 
-  saveDecalSessionAndReturn() {
+  async saveDecalSessionAndReturn() {
     if (!this.decalEditSession) return;
+    if (this.decalEditSession.type === 'actor-state') {
+      const saved = await this.saveArtDocument();
+      if (!saved) return;
+      this.decalEditSession = null;
+      this.game.exitPixelStudio();
+      return;
+    }
     this.commitDecalEditIfNeeded();
     this.game.exitPixelStudio();
   }
@@ -1790,6 +1954,24 @@ export default class PixelStudio {
     return changed;
   }
 
+  commitActorStateArtRef({ clearSession = false } = {}) {
+    const session = this.decalEditSession;
+    if (session?.type !== 'actor-state') return null;
+    const artRef = this.currentDocumentRef?.folder === 'art'
+      ? String(this.currentDocumentRef.name || '').trim()
+      : '';
+    const firstFrame = this.animation.frames[0] || null;
+    const fps = Math.max(1, Math.round(1000 / Math.max(1, Number(firstFrame?.durationMs || DEFAULT_FRAME_DURATION_MS))));
+    session.onCommit?.({
+      imageDataUrl: '',
+      frames: [],
+      fps,
+      artRef
+    });
+    if (clearSession) this.decalEditSession = null;
+    return { artRef, fps };
+  }
+
   commitDecalEditIfNeeded() {
     if (!this.decalEditSession) return;
     if (this.decalEditSession.type === 'single' && this.decalEditSession.decalId) {
@@ -1802,26 +1984,7 @@ export default class PixelStudio {
       return;
     }
     if (this.decalEditSession.type === 'actor-state') {
-      if (this.currentDocumentRef?.folder === 'art' && this.currentDocumentRef?.name) {
-        const artPayload = this.serializeCurrentAnimationAsArtDocument();
-        saveProjectFile('art', this.currentDocumentRef.name, artPayload);
-      }
-      const frames = this.animation.frames.map((frame) => {
-        const previousIndex = this.animation.currentFrameIndex;
-        this.animation.currentFrameIndex = this.animation.frames.indexOf(frame);
-        this.setFrameLayers(frame.layers);
-        const imageDataUrl = this.exportCurrentFrameDataUrl();
-        this.animation.currentFrameIndex = previousIndex;
-        this.setFrameLayers(this.animation.frames[this.animation.currentFrameIndex].layers);
-        return { imageDataUrl, durationMs: Number(frame.durationMs || DEFAULT_FRAME_DURATION_MS) };
-      });
-      this.decalEditSession.onCommit?.({
-        imageDataUrl: '',
-        frames: [],
-        fps: Math.max(1, Math.round(1000 / Math.max(1, Number(frames[0]?.durationMs || DEFAULT_FRAME_DURATION_MS)))),
-        artRef: this.currentDocumentRef?.folder === 'art' ? this.currentDocumentRef.name : ''
-      });
-      this.decalEditSession = null;
+      this.commitActorStateArtRef({ clearSession: true });
       return;
     }
     if (this.decalEditSession.type === 'seams' && Array.isArray(this.decalEditSession.entries)) {
@@ -1878,6 +2041,12 @@ export default class PixelStudio {
     this.pendingSavePromise = (async () => {
       const result = await this.runtime.saveAsOrCurrent(options);
       if (!result) return result;
+      if (this.decalEditSession?.type === 'actor-state') {
+        if (result.name && this.currentDocumentRef?.folder !== 'art') {
+          this.currentDocumentRef = { folder: 'art', name: result.name };
+        }
+        this.commitActorStateArtRef({ clearSession: false });
+      }
       if (this.decalEditSession?.type !== 'actor-state' && !this.forceArtDocumentSave) {
         this.persistTileArtAutosave(true);
       }
@@ -2497,12 +2666,21 @@ export default class PixelStudio {
   }
 
   updateAnimation(dt) {
+    if (this.boneEditor?.playing) {
+      const dtMs = dt > 5 ? dt : dt * 1000;
+      const duration = this.getBoneTimelineDurationMs();
+      this.boneEditor.timeMs += dtMs;
+      if (this.boneEditor.timeMs > duration) {
+        this.boneEditor.timeMs = duration;
+        this.boneEditor.playing = false;
+      }
+    }
     if (!this.animation.playing) return;
     const frame = this.currentFrame;
     const dtMs = dt > 5 ? dt : dt * 1000;
-    frame.elapsed = (frame.elapsed || 0) + dtMs;
-    if (frame.elapsed >= frame.durationMs) {
-      frame.elapsed = 0;
+    this.animation.previewElapsed = (this.animation.previewElapsed || 0) + dtMs;
+    if (this.animation.previewElapsed >= frame.durationMs) {
+      this.animation.previewElapsed = 0;
       const nextIndex = this.animation.currentFrameIndex + 1;
       if (nextIndex >= this.animation.frames.length) {
         if (this.animation.loop) {
@@ -2558,7 +2736,7 @@ export default class PixelStudio {
     this.gamepadCursor.active = true;
 
     this.controllerMenu.setMenus(this.buildControllerMenus(), {
-      siblingOrder: ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames']
+      siblingOrder: ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames', 'bones']
     });
     this.controllerMenu.ensureInitialFocus();
     if (this.controllerMenu.handleActions(inputState.actions, inputState.axes, dt, this)) {
@@ -2590,11 +2768,13 @@ export default class PixelStudio {
       onSelect();
       this.setInputMode('canvas');
     }, options);
-    const toolItems = (category) => this.tools
+    const toolItems = (category) => {
+      return this.tools
       .filter((tool) => (tool.category || 'tools') === category)
       .filter((tool) => !(category === 'select' && tool.id === TOOL_IDS.MOVE))
       .slice(0, 20)
       .map((tool) => surfaceAction(tool.id, tool.name || tool.id, () => this.setActiveTool(tool.id)));
+    };
     const fileItems = this.getFilePanelItems()
       .filter((item) => item?.id && !item.divider && !item.separator)
       .map((item) => action(item.id, item.label, item.onClick || item.action || (() => {})));
@@ -2610,6 +2790,7 @@ export default class PixelStudio {
           rootItem('canvas', 'Canvas'),
           rootItem('layers', 'Layers'),
           rootItem('animation', 'Frames', 'frames'),
+          rootItem('bones', 'Bones'),
           action('undo', 'Undo', () => this.runtime.undo()),
           action('redo', 'Redo', () => this.runtime.redo())
         ]
@@ -2631,6 +2812,16 @@ export default class PixelStudio {
             this.animation.currentFrameIndex = index;
             this.setFrameLayers(this.currentFrame.layers);
           }))
+      },
+      bones: {
+        id: 'bones',
+        title: 'Bones',
+        items: [
+          action('bone-add', 'Add Bone', () => this.startBoneAddMode()),
+          action('bone-bind-layer', 'Bind Layer', () => this.bindActiveLayerToSelectedBone()),
+          action('bone-bind-selection', 'Bind Selection', () => this.bindSelectionToSelectedBone()),
+          action('bone-bake', 'Bake Copy', () => this.bakeBoneAnimationToCopiedFrames())
+        ]
       },
       canvas: {
         id: 'canvas',
@@ -3036,7 +3227,11 @@ export default class PixelStudio {
     if (tab === 'animation') {
       this.modeTab = 'animate';
     }
-    if (this.isMobileLayout() && ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'animation'].includes(tab)) {
+    if (tab === 'bones') {
+      this.modeTab = 'bones';
+      this.setInputMode('canvas');
+    }
+    if (this.isMobileLayout() && ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'animation', 'bones'].includes(tab)) {
       this.mobileDrawer = 'panel';
     }
   }
@@ -3359,6 +3554,21 @@ export default class PixelStudio {
       };
       return true;
     }
+    if (payload.touchCount && this.leftPanelTab === 'bones' && this.boneListMeta?.scrollBounds
+      && this.isPointInBounds(payload, this.boneListMeta.scrollBounds)
+      && this.boneListMeta.maxScroll > 0) {
+      const hit = this.uiButtons.find((button) => this.isPointInBounds(payload, button.bounds));
+      this.menuScrollDrag = {
+        startY: payload.y,
+        startScroll: this.focusScroll.bones || 0,
+        moved: false,
+        hitAction: hit?.onClick || null,
+        lineHeight: Math.max(1, this.boneListMeta.lineHeight || 20),
+        scrollGroup: 'bones',
+        maxScroll: Math.max(0, this.boneListMeta.maxScroll || 0)
+      };
+      return true;
+    }
     if (this.isMobileLayout() && this.paletteBarScrollBounds
       && this.isPointInBounds(payload, this.paletteBarScrollBounds)
       && (this.paletteBarScrollBounds.maxScroll || 0) > 0) {
@@ -3469,6 +3679,10 @@ export default class PixelStudio {
         ? this.getGridCellFromScreenUnbounded(payload.x, payload.y)
         : this.getGridCellFromScreen(payload.x, payload.y);
       if (point) {
+        if (this.handleBonePointerDown(point)) {
+          this.cancelLongPress();
+          return;
+        }
         this.handleToolPointerDown(point, { altKey: this.altDown, fromTouch: payload.touchCount });
       }
       if (payload.touchCount) {
@@ -3561,7 +3775,7 @@ export default class PixelStudio {
       if (this.menuScrollDrag.moved) {
         const total = (this.focusGroups.file || []).length;
         const maxVisible = this.focusGroupMeta.file?.maxVisible || 1;
-        const maxScroll = ['toolOptions', 'tools', 'layers', 'frames', 'paletteMobile', 'paletteModal', 'tilePicker'].includes(this.menuScrollDrag.scrollGroup)
+        const maxScroll = ['toolOptions', 'tools', 'layers', 'frames', 'bones', 'paletteMobile', 'paletteModal', 'tilePicker'].includes(this.menuScrollDrag.scrollGroup)
           ? (this.menuScrollDrag.maxScroll || 0)
           : Math.max(0, total - maxVisible);
         const delta = this.menuScrollDrag.scrollGroup === 'paletteMobile' ? dx : dy;
@@ -3574,6 +3788,8 @@ export default class PixelStudio {
           this.focusScroll.layers = clamp(next, 0, maxScroll);
         } else if (this.menuScrollDrag.scrollGroup === 'frames') {
           this.focusScroll.frames = clamp(next, 0, maxScroll);
+        } else if (this.menuScrollDrag.scrollGroup === 'bones') {
+          this.focusScroll.bones = clamp(next, 0, maxScroll);
         } else if (this.menuScrollDrag.scrollGroup === 'paletteMobile') {
           this.focusScroll.palette = clamp(next, 0, maxScroll);
         } else if (this.menuScrollDrag.scrollGroup === 'paletteModal') {
@@ -3619,6 +3835,7 @@ export default class PixelStudio {
       ? this.getGridCellFromScreenUnbounded(payload.x, payload.y)
       : this.getGridCellFromScreen(payload.x, payload.y, { clampToCanvas: dragActive });
     if (point) {
+      if (this.handleBonePointerMove(point)) return;
       this.handleToolPointerMove(point);
     }
   }
@@ -3672,6 +3889,7 @@ export default class PixelStudio {
       return;
     }
     this.cancelLongPress();
+    if (this.handleBonePointerUp()) return;
     this.handleToolPointerUp();
   }
 
@@ -3717,6 +3935,17 @@ export default class PixelStudio {
         (this.focusScroll.frames || 0) + delta,
         0,
         this.frameListMeta.maxScroll
+      );
+      return;
+    }
+    if (this.leftPanelTab === 'bones' && this.boneListMeta?.scrollBounds
+      && this.isPointInBounds(payload, this.boneListMeta.scrollBounds)
+      && this.boneListMeta.maxScroll > 0) {
+      const delta = payload.deltaY > 0 ? 1 : -1;
+      this.focusScroll.bones = clamp(
+        (this.focusScroll.bones || 0) + delta,
+        0,
+        this.boneListMeta.maxScroll
       );
       return;
     }
@@ -3972,18 +4201,28 @@ export default class PixelStudio {
     if (action === 'dpadDown') this.nudgeSelection(0, 1);
   }
 
-  startHistory(label) {
+  startHistory(label, options = {}) {
     this.pendingHistory = {
       label,
       frameIndex: this.animation.currentFrameIndex,
-      layersBefore: this.canvasState.layers.map((layer) => new Uint32Array(layer.pixels))
+      frameIndexBefore: this.animation.currentFrameIndex,
+      layersBefore: this.canvasState.layers.map((layer) => new Uint32Array(layer.pixels)),
+      boneRigBefore: cloneBoneRig(this.boneRig)
     };
+    if (options.includeFrames) {
+      this.pendingHistory.framesBefore = this.animation.frames.map((frame) => cloneFrame(frame));
+    }
   }
 
   commitHistory() {
     if (!this.pendingHistory) return;
     const layersAfter = this.canvasState.layers.map((layer) => new Uint32Array(layer.pixels));
+    this.pendingHistory.frameIndexAfter = this.animation.currentFrameIndex;
     this.pendingHistory.layersAfter = layersAfter;
+    if (this.pendingHistory.framesBefore) {
+      this.pendingHistory.framesAfter = this.animation.frames.map((frame) => cloneFrame(frame));
+    }
+    this.pendingHistory.boneRigAfter = cloneBoneRig(this.boneRig);
     this.runtime.commitHistory(this.pendingHistory);
     this.pendingHistory = null;
     this.syncTileData();
@@ -3992,12 +4231,31 @@ export default class PixelStudio {
 
   applyHistoryEntry(entry, direction) {
     if (!entry) return;
-    this.animation.currentFrameIndex = entry.frameIndex;
+    const frameSnapshots = direction === 'undo' ? entry.framesBefore : entry.framesAfter;
+    if (Array.isArray(frameSnapshots) && frameSnapshots.length) {
+      this.animation.frames = frameSnapshots.map((frame) => cloneFrame(frame));
+      const targetFrameIndex = direction === 'undo'
+        ? (entry.frameIndexBefore ?? entry.frameIndex ?? 0)
+        : (entry.frameIndexAfter ?? entry.frameIndex ?? 0);
+      this.animation.currentFrameIndex = clamp(targetFrameIndex, 0, this.animation.frames.length - 1);
+    } else {
+      this.animation.currentFrameIndex = clamp(entry.frameIndex || 0, 0, this.animation.frames.length - 1);
+      const frame = this.animation.frames[this.animation.currentFrameIndex];
+      const layerSnapshots = direction === 'undo' ? entry.layersBefore : entry.layersAfter;
+      if (Array.isArray(layerSnapshots) && layerSnapshots.length === frame.layers.length) {
+        frame.layers.forEach((layer, index) => {
+          layer.pixels.set(layerSnapshots[index]);
+        });
+      }
+    }
     const frame = this.animation.frames[this.animation.currentFrameIndex];
-    const layerSnapshots = direction === 'undo' ? entry.layersBefore : entry.layersAfter;
-    frame.layers.forEach((layer, index) => {
-      layer.pixels.set(layerSnapshots[index]);
-    });
+    const boneSnapshot = direction === 'undo' ? entry.boneRigBefore : entry.boneRigAfter;
+    if (boneSnapshot) {
+      this.boneRig = cloneBoneRig(boneSnapshot);
+      if (!this.boneRig.bones.some((bone) => bone.id === this.boneEditor.selectedBoneId)) {
+        this.boneEditor.selectedBoneId = this.boneRig.bones[0]?.id || null;
+      }
+    }
     this.setFrameLayers(frame.layers);
     this.syncTileData();
   }
@@ -4586,7 +4844,9 @@ export default class PixelStudio {
     const height = this.canvasState.height;
     const contiguous = options.contiguous !== false;
     const threshold = clamp(Number(this.toolOptions.magicThreshold) || 0, 0, 255);
-    let composite = compositeLayers(this.canvasState.layers, width, height);
+    let composite = this.shouldShowBonePreview()
+      ? compositeBonePreview(this.canvasState.layers, width, height, this.boneRig, this.getCurrentBonePreviewPose())
+      : compositeLayers(this.canvasState.layers, width, height);
     if (this.activeToolId === TOOL_IDS.HUE_SHIFT && !this.isHueShiftNeutral()) {
       composite = this.buildHueShiftPreview(composite);
     }
@@ -5637,7 +5897,7 @@ export default class PixelStudio {
         pixels[y * width + x] = this.activeLayer.pixels[srcIndex];
       }
     }
-    this.clipboard = { width, height, pixels };
+    this.clipboard = { width, height, pixels, originX: bounds.x, originY: bounds.y, internal: true };
     this.writeClipboardToSystem(this.clipboard).catch(() => {});
   }
 
@@ -5689,19 +5949,26 @@ export default class PixelStudio {
       this.addLayer();
     }
     this.startHistory('paste');
-    const mask = new Uint8Array(maxW * maxH);
-    for (let y = 0; y < srcH; y += 1) {
-      for (let x = 0; x < srcW; x += 1) {
-        if (x >= maxW || y >= maxH) continue;
-        const value = source.pixels[y * srcW + x];
-        if (!value) continue;
-        mask[y * maxW + x] = 1;
-        this.activeLayer.pixels[y * maxW + x] = value;
-      }
-    }
+    const origin = getPixelClipboardPasteOrigin(source, maxW, maxH, this.getPasteViewportCenterCell());
+    const pasted = applyPixelClipboardPixelsToLayer({
+      source,
+      layerPixels: this.activeLayer.pixels,
+      canvasWidth: maxW,
+      canvasHeight: maxH,
+      origin
+    });
     this.commitHistory();
-    this.setSelectionMask(mask);
+    if (pasted?.mask) this.setSelectionMask(pasted.mask);
     this.setActiveTool(TOOL_IDS.MOVE);
+  }
+
+  getPasteViewportCenterCell() {
+    const bounds = this.canvasViewportBounds || this.canvasBounds;
+    if (bounds?.w > 0 && bounds?.h > 0) {
+      const point = this.getGridCellFromScreen(bounds.x + bounds.w / 2, bounds.y + bounds.h / 2);
+      if (point) return { centerCol: point.col, centerRow: point.row };
+    }
+    return { centerCol: this.canvasState.width / 2, centerRow: this.canvasState.height / 2 };
   }
 
   openPasteImportModal(source, options = {}) {
@@ -5737,6 +6004,9 @@ export default class PixelStudio {
       type: 'pixelstudio-clipboard',
       width: clipboard.width,
       height: clipboard.height,
+      originX: Number.isFinite(clipboard.originX) ? clipboard.originX : null,
+      originY: Number.isFinite(clipboard.originY) ? clipboard.originY : null,
+      internal: true,
       pixels: Array.from(clipboard.pixels)
     })], { type: 'text/plain' });
     await navigator.clipboard.write([
@@ -5800,12 +6070,12 @@ export default class PixelStudio {
             }
           }
         }
-        if (imageClipboard) {
-          this.clipboard = imageClipboard;
-          return;
-        }
         if (parsedTextClipboard) {
           this.clipboard = parsedTextClipboard;
+          return;
+        }
+        if (imageClipboard) {
+          this.clipboard = imageClipboard;
           return;
         }
         if (plainTextClipboard) {
@@ -5937,6 +6207,9 @@ export default class PixelStudio {
         return {
           width: parsed.width,
           height: parsed.height,
+          originX: Number.isFinite(parsed.originX) ? parsed.originX : null,
+          originY: Number.isFinite(parsed.originY) ? parsed.originY : null,
+          internal: Boolean(parsed.internal),
           pixels: Uint32Array.from(parsed.pixels)
         };
       }
@@ -6016,6 +6289,18 @@ export default class PixelStudio {
     this.selection.bounds = this.getMaskBounds(mask);
     this.selection.active = Boolean(this.selection.bounds);
     this.selection.mode = null;
+    this.selection.start = null;
+    this.selection.end = null;
+    this.selection.lassoPoints = [];
+    this.selectionContextMenu = null;
+  }
+
+  setSelectionMask(mask) {
+    this.selection.mask = mask || null;
+    this.selection.bounds = this.getMaskBounds(mask);
+    this.selection.active = Boolean(this.selection.bounds);
+    this.selection.mode = null;
+    this.selection.baseMask = null;
     this.selection.start = null;
     this.selection.end = null;
     this.selection.lassoPoints = [];
@@ -6772,6 +7057,7 @@ export default class PixelStudio {
   }
 
   addLayer() {
+    this.stopAnimationPreview();
     const layer = createLayer(this.canvasState.width, this.canvasState.height, `Layer ${this.canvasState.layers.length + 1}`);
     this.canvasState.layers.push(layer);
     this.canvasState.activeLayerIndex = this.canvasState.layers.length - 1;
@@ -6780,6 +7066,7 @@ export default class PixelStudio {
   }
 
   deleteLayer(index) {
+    this.stopAnimationPreview();
     if (this.canvasState.layers.length <= 1) return;
     this.canvasState.layers.splice(index, 1);
     this.canvasState.activeLayerIndex = clamp(this.canvasState.activeLayerIndex, 0, this.canvasState.layers.length - 1);
@@ -6788,6 +7075,7 @@ export default class PixelStudio {
   }
 
   duplicateLayer(index) {
+    this.stopAnimationPreview();
     const layer = cloneLayer(this.canvasState.layers[index]);
     layer.name = `${layer.name} Copy`;
     this.canvasState.layers.splice(index + 1, 0, layer);
@@ -6797,6 +7085,7 @@ export default class PixelStudio {
   }
 
   mergeLayerDown(index) {
+    this.stopAnimationPreview();
     this.canvasState.layers = mergeDown(this.canvasState.layers, index);
     this.canvasState.activeLayerIndex = clamp(index - 1, 0, this.canvasState.layers.length - 1);
     this.currentFrame.layers = this.canvasState.layers;
@@ -6804,6 +7093,7 @@ export default class PixelStudio {
   }
 
   mergeLayerUp(index) {
+    this.stopAnimationPreview();
     this.canvasState.layers = mergeUp(this.canvasState.layers, index);
     this.canvasState.activeLayerIndex = clamp(index, 0, this.canvasState.layers.length - 1);
     this.currentFrame.layers = this.canvasState.layers;
@@ -6811,6 +7101,7 @@ export default class PixelStudio {
   }
 
   flattenAllLayers() {
+    this.stopAnimationPreview();
     this.canvasState.layers = flattenLayers(this.canvasState.layers, this.canvasState.width, this.canvasState.height);
     this.canvasState.activeLayerIndex = 0;
     this.currentFrame.layers = this.canvasState.layers;
@@ -6818,6 +7109,7 @@ export default class PixelStudio {
   }
 
   reorderLayer(from, to) {
+    this.stopAnimationPreview();
     this.canvasState.layers = reorderLayer(this.canvasState.layers, from, to);
     this.canvasState.activeLayerIndex = to;
     this.currentFrame.layers = this.canvasState.layers;
@@ -6848,26 +7140,35 @@ export default class PixelStudio {
   }
 
   addFrame() {
+    this.stopAnimationPreview();
+    this.startHistory('add frame', { includeFrames: true });
     const newFrame = createFrame(this.canvasState.layers, this.currentFrame?.durationMs || DEFAULT_FRAME_DURATION_MS);
     this.animation.frames.push(newFrame);
     this.animation.currentFrameIndex = this.animation.frames.length - 1;
     this.setFrameLayers(newFrame.layers);
+    this.commitHistory();
     this.syncTileData();
   }
 
   duplicateFrame(index) {
+    this.stopAnimationPreview();
+    this.startHistory('duplicate frame', { includeFrames: true });
     const clone = cloneFrame(this.animation.frames[index]);
     this.animation.frames.splice(index + 1, 0, clone);
     this.animation.currentFrameIndex = index + 1;
     this.setFrameLayers(clone.layers);
+    this.commitHistory();
     this.syncTileData();
   }
 
   deleteFrame(index) {
+    this.stopAnimationPreview();
     if (this.animation.frames.length <= 1) return;
+    this.startHistory('delete frame', { includeFrames: true });
     this.animation.frames.splice(index, 1);
     this.animation.currentFrameIndex = clamp(this.animation.currentFrameIndex, 0, this.animation.frames.length - 1);
     this.setFrameLayers(this.animation.frames[this.animation.currentFrameIndex].layers);
+    this.commitHistory();
     this.syncTileData();
   }
 
@@ -6875,11 +7176,26 @@ export default class PixelStudio {
     const from = this.animation.currentFrameIndex;
     const to = clamp(from + delta, 0, this.animation.frames.length - 1);
     if (to === from) return;
-    const frame = this.animation.frames.splice(from, 1)[0];
-    this.animation.frames.splice(to, 0, frame);
-    this.animation.currentFrameIndex = to;
+    this.reorderFrame(from, to);
+  }
+
+  reorderFrame(from, to) {
+    this.stopAnimationPreview();
+    const safeFrom = clamp(Math.round(Number(from) || 0), 0, this.animation.frames.length - 1);
+    const safeTo = clamp(Math.round(Number(to) || 0), 0, this.animation.frames.length - 1);
+    if (safeFrom === safeTo) return;
+    this.startHistory('reorder frame', { includeFrames: true });
+    const frame = this.animation.frames.splice(safeFrom, 1)[0];
+    this.animation.frames.splice(safeTo, 0, frame);
+    this.animation.currentFrameIndex = safeTo;
     this.setFrameLayers(this.currentFrame.layers);
+    this.commitHistory();
     this.syncTileData();
+  }
+
+  stopAnimationPreview() {
+    this.animation.playing = false;
+    this.animation.previewElapsed = 0;
   }
 
   async setCurrentFrameDelayFps() {
@@ -6897,7 +7213,7 @@ export default class PixelStudio {
     if (raw == null) return;
     const fps = clamp(Math.round(Number(raw.trim()) || 32), 1, 120);
     frame.durationMs = Math.max(1, Math.round(1000 / fps));
-    frame.elapsed = 0;
+    this.animation.previewElapsed = 0;
     this.syncTileData();
   }
 
@@ -7794,7 +8110,8 @@ export default class PixelStudio {
       tools: 'Tools',
       canvas: 'Settings',
       layers: 'Layers',
-      animation: 'Anim'
+      animation: 'Anim',
+      bones: 'Bones'
     };
     const { tabColumn, content } = buildSharedLeftMenuLayout({
       x,
@@ -7868,6 +8185,9 @@ export default class PixelStudio {
     if (this.leftPanelTab === 'animation') {
       this.drawFramesPanel(ctx, x, y, w, h, { isMobile, controls: false });
       return;
+    }
+    if (this.leftPanelTab === 'bones') {
+      this.drawBoneEditorPanel(ctx, x, y, w, h, { isMobile, portrait });
     }
   }
 
@@ -7992,6 +8312,247 @@ export default class PixelStudio {
     ctx.fillText('Timeline appears below canvas.', x + 12, y + h - 18);
   }
 
+  drawBoneEditorPanel(ctx, x, y, w, h, options = {}) {
+    const isMobile = options.isMobile;
+    const portrait = Boolean(options.portrait);
+    const rowH = isMobile ? 44 : 28;
+    const gap = 8;
+    let yPos = y + 8;
+    ctx.fillStyle = '#fff';
+    ctx.font = `${isMobile ? 14 : 13}px ${UI_SUITE.font.family}`;
+    ctx.fillText('Bone Editor', x + 10, yPos + 14);
+    yPos += 24;
+    const selectedBone = this.getSelectedBone();
+    if (!portrait) {
+      const modes = [
+        { id: 'bones', label: 'Bones' },
+        { id: 'bind', label: 'Bind' },
+        { id: 'pose', label: 'Pose' },
+        { id: 'time', label: 'Time' }
+      ];
+      const modeW = Math.max(56, Math.floor((w - 20 - gap * (modes.length - 1)) / modes.length));
+      modes.forEach((mode, index) => {
+        const bounds = { x: x + 10 + index * (modeW + gap), y: yPos, w: modeW, h: rowH };
+        this.drawButton(ctx, bounds, mode.label, this.boneEditor.mode === mode.id, { fontSize: 11 });
+        const action = () => { this.boneEditor.mode = mode.id; };
+        this.uiButtons.push({ bounds, onClick: action });
+        this.registerFocusable('bones', bounds, action);
+      });
+      yPos += rowH + gap;
+      const actions = this.getBoneEditorActions();
+      const actionCols = isMobile ? 2 : 1;
+      const actionW = Math.floor((w - 20 - gap * (actionCols - 1)) / actionCols);
+      actions.forEach((entry, index) => {
+        const col = index % actionCols;
+        const row = Math.floor(index / actionCols);
+        const bounds = { x: x + 10 + col * (actionW + gap), y: yPos + row * (rowH + gap), w: actionW, h: rowH };
+        this.drawButton(ctx, bounds, entry.label, Boolean(entry.active), { fontSize: 11, disabled: Boolean(entry.disabled) });
+        if (!entry.disabled) {
+          this.uiButtons.push({ bounds, onClick: entry.action });
+          this.registerFocusable('bones', bounds, entry.action);
+        }
+      });
+      yPos += Math.ceil(actions.length / actionCols) * (rowH + gap) + 4;
+    }
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.font = `${isMobile ? 11 : 10}px ${UI_SUITE.font.family}`;
+    const status = selectedBone
+      ? (this.boneEditor.mode === 'pose'
+          ? `${selectedBone.name}: drag tip rotate, body move`
+          : `${selectedBone.name}: ${this.boneEditor.mode} ${Math.round(this.boneEditor.timeMs || 0)}ms`)
+      : 'Add a bone, bind pixels, set poses, then bake.';
+    ctx.fillText(status.slice(0, 42), x + 10, yPos + 14);
+    yPos += 24;
+    if (this.boneEditor.mode === 'pose' || this.boneEditor.mode === 'time') {
+      this.drawBoneTimelineStrip(ctx, x + 10, yPos, Math.max(1, w - 20), isMobile ? 44 : 34);
+      yPos += (isMobile ? 52 : 42);
+    }
+    const listTop = yPos;
+    const listH = Math.max(40, h - (listTop - y) - 8);
+    const visible = Math.max(1, Math.floor(listH / rowH));
+    const maxScroll = Math.max(0, this.boneRig.bones.length - visible);
+    this.focusScroll.bones = clamp(this.focusScroll.bones || 0, 0, maxScroll);
+    this.boneListMeta = { scrollBounds: { x: x + 8, y: listTop, w: w - 16, h: listH }, lineHeight: rowH, maxScroll };
+    this.boneRig.bones.slice(this.focusScroll.bones, this.focusScroll.bones + visible).forEach((bone, visibleIndex) => {
+      const bounds = { x: x + 10, y: listTop + visibleIndex * rowH, w: w - 20, h: rowH - 6 };
+      const action = () => { this.boneEditor.selectedBoneId = bone.id; };
+      this.drawButton(ctx, bounds, bone.name, bone.id === this.boneEditor.selectedBoneId, { fontSize: 11 });
+      this.uiButtons.push({ bounds, onClick: action });
+      this.registerFocusable('bones', bounds, action);
+    });
+    if (maxScroll > 0) {
+      drawSharedPortraitScrollHints(ctx, this.boneListMeta.scrollBounds, {
+        scroll: this.focusScroll.bones,
+        scrollMax: maxScroll
+      });
+    }
+  }
+
+  drawBoneTimelineStrip(ctx, x, y, w, h) {
+    const duration = this.getBoneTimelineDurationMs();
+    const railY = y + Math.floor(h * 0.5);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x, railY);
+    ctx.lineTo(x + w, railY);
+    ctx.stroke();
+    const currentT = clamp((this.boneEditor.timeMs || 0) / Math.max(1, duration), 0, 1);
+    const cursorX = x + currentT * w;
+    ctx.strokeStyle = '#ffe16a';
+    ctx.beginPath();
+    ctx.moveTo(cursorX, y + 4);
+    ctx.lineTo(cursorX, y + h - 4);
+    ctx.stroke();
+    (this.boneRig.poseTimeline || []).forEach((key) => {
+      const t = clamp(key.timeMs / Math.max(1, duration), 0, 1);
+      const kx = x + t * w;
+      ctx.fillStyle = Math.abs((this.boneEditor.timeMs || 0) - key.timeMs) <= 1 ? '#ff9f6a' : '#8df0ff';
+      ctx.fillRect(kx - 4, railY - 7, 8, 14);
+    });
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = '10px Courier New';
+    ctx.fillText(`${Math.round(this.boneEditor.timeMs || 0)} / ${Math.round(duration)}ms`, x, y + h - 2);
+    ctx.restore();
+    const bounds = { x, y, w, h };
+    this.uiButtons.push({
+      bounds,
+      onClick: ({ x: pointerX }) => {
+        const ratio = clamp((pointerX - x) / Math.max(1, w), 0, 1);
+        this.boneEditor.timeMs = Math.round(ratio * duration);
+        this.boneEditor.playing = false;
+      }
+    });
+  }
+
+  getBoneEditorActions() {
+    return this.getBoneContextActions(this.boneEditor.mode, { full: true });
+  }
+
+  getBoneContextActions(mode = this.boneEditor.mode, options = {}) {
+    const selected = this.getSelectedBone();
+    const hasSelection = Boolean(this.selection.active && this.selection.mask);
+    const hasBindings = Boolean(this.boneRig.bindings.length);
+    const full = Boolean(options.full);
+    const actionsByMode = {
+      bones: [
+        { id: 'bone-add', label: 'Add', action: () => this.startBoneAddMode() },
+        { id: 'bone-link', label: this.boneEditor.linkMode ? 'Link On' : 'Link Off', active: this.boneEditor.linkMode, action: () => this.toggleBoneLinkMode() },
+        { id: 'bone-delete', label: 'Delete', disabled: !selected, action: () => this.deleteSelectedBone() },
+        { id: 'bone-prev', label: 'Prev', disabled: !this.boneRig.bones.length, action: () => this.selectAdjacentBone(-1) },
+        { id: 'bone-next', label: 'Next', disabled: !this.boneRig.bones.length, action: () => this.selectAdjacentBone(1) }
+      ],
+      bind: [
+        { id: 'bind-mode', label: `Mode: ${this.selection.combineMode || 'replace'}`, action: () => this.cycleSelectionCombineMode() },
+        { id: 'bind-prev', label: 'Prev', disabled: !this.boneRig.bones.length, action: () => this.selectAdjacentBone(-1) },
+        { id: 'bind-next', label: 'Next', disabled: !this.boneRig.bones.length, action: () => this.selectAdjacentBone(1) },
+        { id: 'bind-rect', label: 'Rect', active: this.activeToolId === TOOL_IDS.SELECT_RECT, action: () => this.setActiveTool(TOOL_IDS.SELECT_RECT) },
+        ...(full ? [
+          { id: 'bind-oval', label: 'Oval', active: this.activeToolId === TOOL_IDS.SELECT_ELLIPSE, action: () => this.setActiveTool(TOOL_IDS.SELECT_ELLIPSE) },
+          { id: 'bind-lasso', label: 'Lasso', active: this.activeToolId === TOOL_IDS.SELECT_LASSO, action: () => this.setActiveTool(TOOL_IDS.SELECT_LASSO) },
+          { id: 'bind-magic', label: 'Magic', active: this.activeToolId === TOOL_IDS.SELECT_MAGIC_COLOR, action: () => this.setActiveTool(TOOL_IDS.SELECT_MAGIC_COLOR) }
+        ] : []),
+        { id: 'bind-add', label: 'Assign', disabled: !selected || !hasSelection, action: () => this.addSelectionToSelectedBone() },
+        { id: 'bind-remove', label: 'Remove', disabled: !selected || !hasSelection, action: () => this.removeSelectionFromSelectedBone() },
+        ...(full ? [
+          { id: 'bind-layer', label: 'Layer', disabled: !selected, action: () => this.bindActiveLayerToSelectedBone() },
+          { id: 'bind-clear', label: 'Clear', disabled: !selected, action: () => this.clearSelectedBoneBindings() }
+        ] : [
+          { id: 'bind-layer', label: 'Layer', disabled: !selected, action: () => this.bindActiveLayerToSelectedBone() }
+        ])
+      ],
+      pose: [
+        { id: 'pose-set', label: 'Set Key', disabled: !selected, action: () => this.setBoneTimelineKey() },
+        { id: 'pose-delete', label: 'Del Key', disabled: !this.getCurrentBoneTimelineKey(), action: () => this.deleteBoneTimelineKey() },
+        { id: 'pose-prev', label: 'Prev', disabled: !this.boneRig.poseTimeline.length, action: () => this.moveBoneTimelineKey(-1) },
+        { id: 'pose-next', label: 'Next', disabled: !this.boneRig.poseTimeline.length, action: () => this.moveBoneTimelineKey(1) },
+        { id: 'pose-back', label: '-Time', action: () => this.nudgeBoneTime(-this.boneEditor.segmentMs) },
+        { id: 'pose-forward', label: '+Time', action: () => this.nudgeBoneTime(this.boneEditor.segmentMs) },
+        { id: 'pose-length', label: 'Length', action: () => this.promptBoneTimelineLength() }
+      ],
+      time: [
+        { id: 'time-rewind', label: 'Rewind', action: () => { this.boneEditor.timeMs = 0; this.boneEditor.playing = false; } },
+        { id: 'time-back', label: 'Back', action: () => this.nudgeBoneTime(-this.boneEditor.segmentMs) },
+        { id: 'time-play', label: this.boneEditor.playing ? 'Pause' : 'Play', active: this.boneEditor.playing, action: () => this.toggleBoneTimelinePlayback() },
+        { id: 'time-forward', label: 'Step', action: () => this.nudgeBoneTime(this.boneEditor.segmentMs) },
+        { id: 'time-bake', label: 'Bake', disabled: !hasBindings, action: () => this.bakeBoneAnimationToCopiedFrames() }
+      ]
+    };
+    return actionsByMode[mode] || actionsByMode.bones;
+  }
+
+  drawBoneContextRail(ctx, x, y, w, h, options = {}) {
+    const rootActions = buildPixelPortraitBoneActions();
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(x, y, w, h);
+
+    const activeSubmenu = buildPixelPortraitBoneActionGroups()[this.boneEditor.submenu];
+    if (activeSubmenu) {
+      this.drawBoneContextSubmenuSheet(ctx, x, y, w, activeSubmenu);
+    }
+
+    this.drawPortraitActionGrid(ctx, x + 10, y + 10, Math.max(1, w - 20), rootActions.map((entry) => ({
+      id: entry.id,
+      label: entry.label,
+      active: this.boneEditor.submenu === entry.id || (!this.boneEditor.submenu && this.boneEditor.mode === entry.id),
+      action: () => {
+        this.leftPanelTab = 'bones';
+        this.boneEditor.mode = entry.id;
+        this.boneEditor.submenu = entry.id === 'pose'
+          ? 'pose'
+          : (this.boneEditor.submenu === entry.id ? null : entry.id);
+      }
+    })), {
+      minColumnWidth: 70,
+      maxColumns: 4,
+      rowHeight: Math.max(40, h - 14),
+      buttonHeight: Math.max(34, h - 18),
+      group: 'bone-actions'
+    });
+  }
+
+  drawBoneContextSubmenuSheet(ctx, railX, railY, railW, subpanel) {
+    const sheetMargin = 8;
+    const isPoseSheet = this.boneEditor.submenu === 'pose';
+    const sheetH = Math.min(isPoseSheet ? 300 : 230, Math.max(isPoseSheet ? 230 : 150, railY - sheetMargin * 2));
+    const sheet = {
+      x: railX,
+      y: Math.max(sheetMargin, railY - sheetH - sheetMargin),
+      w: railW,
+      h: sheetH
+    };
+    const actionsById = new Map(this.getBoneContextActions(this.boneEditor.submenu, { full: true }).map((entry) => [entry.id, entry]));
+    const actions = subpanel.actionIds.map((id) => actionsById.get(id)).filter(Boolean);
+    drawSharedPortraitSheet(ctx, sheet, {
+      fill: UI_SUITE.colors.panel,
+      border: UI_SUITE.colors.border
+    });
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px Courier New';
+    ctx.fillText(subpanel.title, sheet.x + 14, sheet.y + 24);
+    const closeBounds = { x: sheet.x + sheet.w - 82, y: sheet.y + 8, w: 70, h: 30 };
+    this.drawButton(ctx, closeBounds, 'Close', false, { fontSize: 12 });
+    this.uiButtons.push({ bounds: closeBounds, onClick: () => { this.boneEditor.submenu = null; } });
+    this.registerFocusable('bone-actions', closeBounds, () => { this.boneEditor.submenu = null; });
+
+    let actionY = sheet.y + 48;
+    if (isPoseSheet) {
+      this.drawBoneTimelineStrip(ctx, sheet.x + 14, actionY, Math.max(1, sheet.w - 28), 58);
+      actionY += 68;
+    }
+
+    this.drawPortraitActionGrid(ctx, sheet.x + 12, actionY, Math.max(1, sheet.w - 24), actions, {
+      minColumnWidth: 88,
+      maxColumns: 3,
+      rowHeight: 52,
+      buttonHeight: 44,
+      group: 'bone-actions'
+    });
+  }
+
   getFilePanelItems() {
     return buildUnifiedFileDrawerItems({
       labels: {
@@ -8027,6 +8588,653 @@ export default class PixelStudio {
       ]
     });
   }
+
+  getSelectedBone() {
+    return this.boneRig.bones.find((bone) => bone.id === this.boneEditor.selectedBoneId) || null;
+  }
+
+  ensureSelectedBoneVisible() {
+    const selectedIndex = this.boneRig.bones.findIndex((bone) => bone.id === this.boneEditor.selectedBoneId);
+    if (selectedIndex < 0) return;
+    const visibleRows = this.boneListMeta
+      ? Math.max(1, Math.floor((this.boneListMeta.scrollBounds?.h || 1) / Math.max(1, this.boneListMeta.lineHeight || 1)))
+      : 1;
+    if (selectedIndex < (this.focusScroll.bones || 0)) {
+      this.focusScroll.bones = selectedIndex;
+    } else if (selectedIndex >= (this.focusScroll.bones || 0) + visibleRows) {
+      this.focusScroll.bones = Math.max(0, selectedIndex - visibleRows + 1);
+    }
+  }
+
+  shouldShowBonePreview() {
+    const mode = this.boneEditor?.mode;
+    return this.leftPanelTab === 'bones'
+      && this.boneEditor.preview
+      && this.boneRig?.bones?.length
+      && this.boneRig?.bindings?.length
+      && (mode === 'pose' || mode === 'time' || this.boneEditor?.playing);
+  }
+
+  getDisplayedBonesForBoneEditor() {
+    if (this.leftPanelTab !== 'bones') return this.boneRig?.bones || [];
+    const mode = this.boneEditor?.mode;
+    if ((mode === 'pose' || mode === 'time') || this.boneEditor?.playing) {
+      return getPosedBoneGeometry(this.boneRig, this.getCurrentBonePreviewPose());
+    }
+    return this.boneRig?.bones || [];
+  }
+
+  startBoneAddMode() {
+    this.boneEditor.mode = 'bones';
+    this.boneEditor.linkMode = true;
+    this.boneEditor.chainAnchor = this.getBoneChainAnchorFromSelection();
+    this.boneEditor.drag = null;
+    this.setInputMode('canvas');
+    this.statusMessage = this.boneEditor.chainAnchor
+      ? 'Tap to add a linked bone, or drag to create one'
+      : 'Tap once to set a start point, then tap again to add linked bones';
+  }
+
+  toggleBoneLinkMode() {
+    this.boneEditor.mode = 'bones';
+    this.boneEditor.linkMode = !this.boneEditor.linkMode;
+    this.boneEditor.chainAnchor = this.boneEditor.linkMode ? this.getBoneChainAnchorFromSelection() : null;
+    this.statusMessage = this.boneEditor.linkMode ? 'Linked bone creation on' : 'Linked bone creation off';
+  }
+
+  cycleSelectionCombineMode() {
+    const modes = ['replace', 'add', 'subtract'];
+    const current = modes.indexOf(this.selection.combineMode || 'replace');
+    this.selection.combineMode = modes[(current + 1 + modes.length) % modes.length];
+  }
+
+  getBoneChainAnchorFromSelection(handle = 'end') {
+    const bone = this.getSelectedBone();
+    if (!bone) return null;
+    const point = handle === 'start' ? bone.start : bone.end;
+    const jointId = handle === 'start' ? bone.startJointId : bone.endJointId;
+    return { boneId: bone.id, jointId, handle, x: point.x, y: point.y };
+  }
+
+  setBoneChainAnchor(bone, handle = 'end') {
+    if (!bone) {
+      this.boneEditor.chainAnchor = null;
+      return;
+    }
+    const point = handle === 'start' ? bone.start : bone.end;
+    const jointId = handle === 'start' ? bone.startJointId : bone.endJointId;
+    this.boneEditor.chainAnchor = { boneId: bone.id, jointId, handle, x: point.x, y: point.y };
+  }
+
+  createLinkedBoneFromAnchor(end) {
+    const anchor = this.boneEditor.chainAnchor;
+    if (!anchor) return false;
+    const start = { x: anchor.x, y: anchor.y };
+    if (Math.hypot(end.x - start.x, end.y - start.y) < 0.5) return false;
+    this.startHistory('add linked bone');
+    const result = createBone(this.boneRig, start, end, { parentId: anchor.boneId || null, startJointId: anchor.jointId || null });
+    this.boneRig = result.rig;
+    this.boneEditor.selectedBoneId = result.bone.id;
+    this.setBoneChainAnchor(result.bone, 'end');
+    this.ensureSelectedBoneVisible();
+    this.commitHistory();
+    return true;
+  }
+
+  bindActiveLayerToSelectedBone() {
+    const bone = this.getSelectedBone();
+    if (!bone || !this.activeLayer) return;
+    this.startHistory('bind layer to bone');
+    this.boneRig = createLayerBinding(
+      this.boneRig,
+      this.canvasState.activeLayerIndex,
+      [bone.id],
+      this.canvasState.width,
+      this.canvasState.height,
+      this.activeLayer.pixels
+    );
+    this.commitHistory();
+  }
+
+  bindSelectionToSelectedBone() {
+    const bone = this.getSelectedBone();
+    if (!bone || !this.selection.active || !this.selection.mask) return;
+    this.startHistory('bind selection to bone');
+    this.boneRig = createSelectionBinding(
+      this.boneRig,
+      this.canvasState.activeLayerIndex,
+      [bone.id],
+      this.selection.mask,
+      this.canvasState.width,
+      this.canvasState.height
+    );
+    this.commitHistory();
+  }
+
+  addSelectionToSelectedBone() {
+    const bone = this.getSelectedBone();
+    if (!bone || !this.selection.active || !this.selection.mask) return;
+    this.startHistory('add pixels to bone');
+    this.boneRig = addMaskToBoneBinding(
+      this.boneRig,
+      this.canvasState.activeLayerIndex,
+      bone.id,
+      this.selection.mask,
+      this.canvasState.width,
+      this.canvasState.height
+    );
+    this.commitHistory();
+  }
+
+  removeSelectionFromSelectedBone() {
+    const bone = this.getSelectedBone();
+    if (!bone || !this.selection.active || !this.selection.mask) return;
+    this.startHistory('remove pixels from bone');
+    this.boneRig = removeMaskFromBoneBinding(
+      this.boneRig,
+      this.canvasState.activeLayerIndex,
+      bone.id,
+      this.selection.mask
+    );
+    this.commitHistory();
+  }
+
+  clearSelectedBoneBindings() {
+    const bone = this.getSelectedBone();
+    if (!bone) return;
+    this.startHistory('clear bone bindings');
+    this.boneRig = {
+      ...cloneBoneRig(this.boneRig),
+      bindings: this.boneRig.bindings.filter((binding) => !binding.boneIds.includes(bone.id))
+    };
+    this.commitHistory();
+  }
+
+  resetSelectedBonePose() {
+    const bone = this.getSelectedBone();
+    if (!bone) return;
+    this.startHistory('reset bone pose');
+    const next = cloneBoneRig(this.boneRig);
+    const pose = next.poseTimeline.find((entry) => entry.timeMs === Math.round(this.boneEditor.timeMs || 0));
+    if (pose) delete pose.bones[bone.id];
+    this.boneRig = next;
+    this.commitHistory();
+  }
+
+  selectAdjacentBone(delta) {
+    if (!this.boneRig.bones.length) return;
+    const current = Math.max(0, this.boneRig.bones.findIndex((bone) => bone.id === this.boneEditor.selectedBoneId));
+    const next = (current + delta + this.boneRig.bones.length) % this.boneRig.bones.length;
+    this.boneEditor.selectedBoneId = this.boneRig.bones[next].id;
+    this.setBoneChainAnchor(this.boneRig.bones[next], 'end');
+  }
+
+  getBoneTimelineDurationMs() {
+    return getPixelBoneTimelineDurationMs(this.boneRig?.poseTimeline || [], this.boneEditor);
+  }
+
+  async promptBoneTimelineLength() {
+    const current = Math.round(this.getBoneTimelineDurationMs());
+    const raw = await openTextInputOverlay({
+      title: 'Pose Timeline Length',
+      label: 'Length, e.g. 1500ms or 1.5s:',
+      initialValue: `${current}ms`,
+      inputType: 'text'
+    });
+    if (raw == null) return;
+    const value = this.parseTimelineDurationMs(raw, current);
+    if (!Number.isFinite(value) || value <= 0) return;
+    this.boneEditor.durationMs = Math.max(this.boneEditor.segmentMs || 500, Math.round(value));
+    this.boneEditor.timeMs = clamp(this.boneEditor.timeMs || 0, 0, this.getBoneTimelineDurationMs());
+    this.boneEditor.playing = false;
+  }
+
+  parseTimelineDurationMs(raw, fallbackMs = 500) {
+    const text = String(raw || '').trim().toLowerCase();
+    if (!text) return fallbackMs;
+    const match = text.match(/^(\d+(?:\.\d+)?)\s*(ms|s|sec|secs|second|seconds)?$/);
+    if (!match) return fallbackMs;
+    const value = Number(match[1]);
+    if (!Number.isFinite(value) || value <= 0) return fallbackMs;
+    const unit = match[2] || 'ms';
+    return unit === 'ms' ? value : value * 1000;
+  }
+
+  getCurrentBoneTimelineKey() {
+    return getPoseKeyAtTime(this.boneRig, this.boneEditor.timeMs || 0);
+  }
+
+  getCurrentBonePreviewPose() {
+    return samplePoseTimeline(this.boneRig, this.boneEditor.timeMs || 0);
+  }
+
+  setBonePosePatchAtCurrentTime(boneId, posePatch = {}) {
+    const timeMs = this.boneEditor.timeMs || 0;
+    const pose = samplePoseTimeline(this.boneRig, timeMs);
+    const previous = pose.bones[boneId] || { angle: 0, dx: 0, dy: 0 };
+    pose.bones[boneId] = {
+      angle: Number.isFinite(posePatch.angle) ? posePatch.angle : previous.angle,
+      dx: Number.isFinite(posePatch.dx) ? posePatch.dx : previous.dx,
+      dy: Number.isFinite(posePatch.dy) ? posePatch.dy : previous.dy
+    };
+    this.boneRig = setPoseKeyAtTime(this.boneRig, timeMs, pose.bones);
+  }
+
+  setBonePosePatchesAtCurrentTime(patches = {}) {
+    const timeMs = this.boneEditor.timeMs || 0;
+    const pose = samplePoseTimeline(this.boneRig, timeMs);
+    Object.entries(patches).forEach(([boneId, posePatch]) => {
+      const previous = pose.bones[boneId] || { angle: 0, dx: 0, dy: 0 };
+      pose.bones[boneId] = {
+        angle: Number.isFinite(posePatch?.angle) ? posePatch.angle : previous.angle,
+        dx: Number.isFinite(posePatch?.dx) ? posePatch.dx : previous.dx,
+        dy: Number.isFinite(posePatch?.dy) ? posePatch.dy : previous.dy
+      };
+    });
+    this.boneRig = setPoseKeyAtTime(this.boneRig, timeMs, pose.bones);
+  }
+
+  setBoneTimelineKey() {
+    const selected = this.getSelectedBone();
+    if (!selected) return;
+    this.startHistory('set bone key');
+    const pose = samplePoseTimeline(this.boneRig, this.boneEditor.timeMs || 0);
+    if (!pose.bones[selected.id]) pose.bones[selected.id] = { angle: 0, dx: 0, dy: 0 };
+    this.boneRig = setPoseKeyAtTime(this.boneRig, this.boneEditor.timeMs || 0, pose.bones);
+    this.commitHistory();
+  }
+
+  deleteBoneTimelineKey() {
+    if (!this.getCurrentBoneTimelineKey()) return;
+    this.startHistory('delete bone key');
+    this.boneRig = removePoseKeyAtTime(this.boneRig, this.boneEditor.timeMs || 0);
+    this.commitHistory();
+  }
+
+  moveBoneTimelineKey(delta) {
+    const timeline = this.boneRig.poseTimeline || [];
+    if (!timeline.length) return;
+    const currentTime = Number(this.boneEditor.timeMs || 0);
+    const sorted = timeline.slice().sort((a, b) => a.timeMs - b.timeMs);
+    let index = sorted.findIndex((key) => key.timeMs >= currentTime);
+    if (index < 0) index = sorted.length - 1;
+    if (delta < 0 && sorted[index]?.timeMs >= currentTime && index > 0) index -= 1;
+    if (delta > 0 && sorted[index]?.timeMs <= currentTime && index < sorted.length - 1) index += 1;
+    this.boneEditor.timeMs = sorted[clamp(index, 0, sorted.length - 1)].timeMs;
+    this.boneEditor.playing = false;
+  }
+
+  nudgeBoneTime(deltaMs) {
+    this.boneEditor.playing = false;
+    this.boneEditor.timeMs = clamp(
+      Math.round(Number(this.boneEditor.timeMs || 0) + Number(deltaMs || 0)),
+      0,
+      Math.max(this.getBoneTimelineDurationMs(), this.boneEditor.segmentMs || 500)
+    );
+  }
+
+  toggleBoneTimelinePlayback() {
+    if (this.boneEditor.playing) {
+      this.boneEditor.playing = false;
+      return;
+    }
+    if ((this.boneEditor.timeMs || 0) >= this.getBoneTimelineDurationMs()) this.boneEditor.timeMs = 0;
+    this.boneEditor.playing = true;
+    this.animation.playing = false;
+  }
+
+  async renameSelectedBone() {
+    const bone = this.getSelectedBone();
+    if (!bone) return;
+    const raw = await openTextInputOverlay({
+      title: 'Rename Bone',
+      label: 'Bone name:',
+      initialValue: bone.name || 'Bone',
+      inputType: 'text'
+    });
+    const name = raw?.trim();
+    if (!name) return;
+    this.startHistory('rename bone');
+    const next = cloneBoneRig(this.boneRig);
+    const target = next.bones.find((entry) => entry.id === bone.id);
+    if (target) target.name = name;
+    this.boneRig = next;
+    this.commitHistory();
+  }
+
+  deleteSelectedBone() {
+    const bone = this.getSelectedBone();
+    if (!bone) return;
+    this.startHistory('delete bone');
+    const next = cloneBoneRig(this.boneRig);
+    next.bones = next.bones.filter((entry) => entry.id !== bone.id);
+    next.bindings = next.bindings.filter((binding) => !binding.boneIds.includes(bone.id));
+    next.poses.forEach((pose) => { delete pose.bones[bone.id]; });
+    this.boneRig = removeOrphanBoneJoints(next);
+    this.boneEditor.selectedBoneId = next.bones[0]?.id || null;
+    this.boneEditor.chainAnchor = this.boneEditor.selectedBoneId ? this.getBoneChainAnchorFromSelection('end') : null;
+    this.commitHistory();
+  }
+
+  bakeBoneAnimationToCopiedFrames() {
+    if (!this.boneRig.bindings.length) return;
+    this.stopAnimationPreview();
+    this.startHistory('bake bone animation', { includeFrames: true });
+    const sourceFrame = cloneFrame(this.currentFrame);
+    const generated = this.boneRig.poseTimeline?.length
+      ? bakeBoneTimelineFrames(sourceFrame, this.canvasState.width, this.canvasState.height, this.boneRig, {
+          frameDurationMs: sourceFrame.durationMs || DEFAULT_FRAME_DURATION_MS,
+          durationMs: this.getBoneTimelineDurationMs()
+        })
+      : bakeBoneFrames([sourceFrame], this.canvasState.width, this.canvasState.height, this.boneRig);
+    const baked = generated
+      .map((frame, index) => ({
+        ...frame,
+        layers: frame.layers.map((layer) => ({ ...layer, name: `${layer.name || 'Layer'} Bone ${index + 1}` }))
+      }));
+    const insertAt = clamp(this.animation.currentFrameIndex + 1, 0, this.animation.frames.length);
+    this.animation.frames.splice(insertAt, 0, ...baked);
+    this.animation.currentFrameIndex = insertAt;
+    this.setFrameLayers(this.currentFrame.layers);
+    this.commitHistory();
+    this.statusMessage = 'Baked bone animation after current frame';
+  }
+
+  hitTestBone(point) {
+    const hitRadius = Math.max(1.5, 18 / Math.max(1, this.canvasBounds?.cellSize || 1));
+    const bones = this.getDisplayedBonesForBoneEditor();
+    for (let index = bones.length - 1; index >= 0; index -= 1) {
+      const bone = bones[index];
+      const startDist = Math.hypot(point.col + 0.5 - bone.start.x, point.row + 0.5 - bone.start.y);
+      const endDist = Math.hypot(point.col + 0.5 - bone.end.x, point.row + 0.5 - bone.end.y);
+      if (endDist <= hitRadius) return { bone, handle: 'end', jointId: bone.endJointId };
+      if (startDist <= hitRadius) return { bone, handle: 'start', jointId: bone.startJointId };
+      const bodyDist = this.distanceToBoneSegment(point.col + 0.5, point.row + 0.5, bone);
+      if (bodyDist <= hitRadius * 0.55) return { bone, handle: 'body' };
+    }
+    return null;
+  }
+
+  distanceToBoneSegment(px, py, bone) {
+    const ax = bone.start.x;
+    const ay = bone.start.y;
+    const bx = bone.end.x;
+    const by = bone.end.y;
+    const dx = bx - ax;
+    const dy = by - ay;
+    const lengthSq = dx * dx + dy * dy;
+    if (lengthSq <= 0.0001) return Math.hypot(px - ax, py - ay);
+    const t = clamp(((px - ax) * dx + (py - ay) * dy) / lengthSq, 0, 1);
+    return Math.hypot(px - (ax + dx * t), py - (ay + dy * t));
+  }
+
+  handleBonePointerDown(point) {
+    if (this.leftPanelTab !== 'bones') return false;
+    const px = point.col + 0.5;
+    const py = point.row + 0.5;
+    const hit = this.hitTestBone(point);
+    if (hit) {
+      this.boneEditor.selectedBoneId = hit.bone.id;
+      const restBone = this.boneRig.bones.find((entry) => entry.id === hit.bone.id) || hit.bone;
+      this.setBoneChainAnchor(restBone, hit.handle === 'start' ? 'start' : 'end');
+      if (this.boneEditor.mode === 'bind' || this.boneEditor.mode === 'time') {
+        return true;
+      }
+      const pose = samplePoseTimeline(this.boneRig, this.boneEditor.timeMs || 0);
+      const originalPose = pose.bones[hit.bone.id] || { angle: 0, dx: 0, dy: 0 };
+      if (this.boneEditor.mode === 'pose' && !this.boneRig.bindings.length) {
+        this.statusMessage = 'Bind pixels to a bone before posing artwork';
+      }
+      this.boneEditor.drag = {
+        type: this.boneEditor.mode === 'pose' ? 'pose' : 'edit',
+        boneId: hit.bone.id,
+        handle: hit.handle,
+        jointId: hit.jointId || null,
+        start: { x: px, y: py },
+        originalStart: { ...hit.bone.start },
+        originalEnd: { ...hit.bone.end },
+        originalPose: { ...originalPose },
+        moved: false
+      };
+      this.startHistory(this.boneEditor.drag.type === 'pose' ? 'pose bone' : 'edit bone');
+      return true;
+    }
+    if (this.boneEditor.mode === 'bones' && this.boneEditor.linkMode) {
+      const anchor = this.boneEditor.chainAnchor;
+      this.boneEditor.drag = {
+        type: 'link-create',
+        start: anchor ? { x: anchor.x, y: anchor.y } : { x: px, y: py },
+        current: { x: px, y: py },
+        parentId: anchor?.boneId || null,
+        startJointId: anchor?.jointId || null,
+        awaitingAnchor: !anchor,
+        moved: false
+      };
+      return true;
+    }
+    if (this.boneEditor.mode === 'bones') {
+      this.boneEditor.drag = { type: 'create', start: { x: px, y: py }, current: { x: px, y: py } };
+      return true;
+    }
+    return false;
+  }
+
+  handleBonePointerMove(point) {
+    const drag = this.boneEditor.drag;
+    if (!drag || this.leftPanelTab !== 'bones') return false;
+    const px = point.col + 0.5;
+    const py = point.row + 0.5;
+    if (drag.type === 'create' || drag.type === 'link-create') {
+      drag.current = { x: px, y: py };
+      drag.moved = Math.hypot(px - drag.start.x, py - drag.start.y) >= 0.5;
+      return true;
+    }
+    const bone = this.boneRig.bones.find((entry) => entry.id === drag.boneId);
+    if (!bone) return false;
+    drag.moved = true;
+    if (drag.type === 'pose') {
+      if (drag.handle === 'body' || drag.handle === 'start') {
+        const sharedStart = getBoneJointUsageCount(this.boneRig, bone.startJointId) > 1;
+        const sharedEnd = getBoneJointUsageCount(this.boneRig, bone.endJointId) > 1;
+        if (sharedStart || sharedEnd) {
+          drag.moved = false;
+          this.statusMessage = 'Rotate or move the shared joint to keep linked bones attached';
+          return true;
+        }
+        const dx = (drag.originalPose?.dx || 0) + (px - drag.start.x);
+        const dy = (drag.originalPose?.dy || 0) + (py - drag.start.y);
+        this.setBonePosePatchAtCurrentTime(bone.id, { dx, dy });
+        return true;
+      }
+      const parent = bone.parentId ? this.boneRig.bones.find((entry) => entry.id === bone.parentId) : null;
+      if (parent && parent.endJointId === bone.startJointId) {
+        const patches = solveTwoBoneIkPose(this.boneRig, parent.id, bone.id, { x: px, y: py });
+        if (patches) {
+          this.setBonePosePatchesAtCurrentTime(patches);
+          return true;
+        }
+      }
+      const displayedStart = drag.originalStart || bone.start;
+      const angle = Math.atan2(py - displayedStart.y, px - displayedStart.x) - bone.angle;
+      this.setBonePosePatchAtCurrentTime(bone.id, {
+        angle,
+        dx: drag.originalPose?.dx || 0,
+        dy: drag.originalPose?.dy || 0
+      });
+      return true;
+    }
+    const endpointJointId = drag.jointId || (drag.handle === 'start' ? bone.startJointId : bone.endJointId);
+    if ((drag.handle === 'start' || drag.handle === 'end') && endpointJointId) {
+      this.boneRig = moveBoneJoint(this.boneRig, endpointJointId, { x: px, y: py });
+      return true;
+    }
+    if (drag.handle === 'body') {
+      const sharedStart = getBoneJointUsageCount(this.boneRig, bone.startJointId) > 1;
+      const sharedEnd = getBoneJointUsageCount(this.boneRig, bone.endJointId) > 1;
+      if (sharedStart || sharedEnd) {
+        this.statusMessage = 'Move the shared joint, not the linked bone body';
+        return true;
+      }
+      const dx = px - drag.start.x;
+      const dy = py - drag.start.y;
+      this.boneRig = moveBoneJoint(this.boneRig, bone.startJointId, { x: drag.originalStart.x + dx, y: drag.originalStart.y + dy });
+      this.boneRig = moveBoneJoint(this.boneRig, bone.endJointId, { x: drag.originalEnd.x + dx, y: drag.originalEnd.y + dy });
+      return true;
+    }
+    return false;
+  }
+
+  handleBonePointerUp() {
+    const drag = this.boneEditor.drag;
+    if (!drag) return false;
+    if (drag.type === 'link-create') {
+      const start = drag.start;
+      const end = drag.current || drag.start;
+      if (drag.moved && Math.hypot(end.x - start.x, end.y - start.y) >= 1) {
+        this.startHistory('add linked bone');
+        const result = createBone(this.boneRig, start, end, { parentId: drag.parentId || null, startJointId: drag.startJointId || null });
+        this.boneRig = result.rig;
+        this.boneEditor.selectedBoneId = result.bone.id;
+        this.setBoneChainAnchor(result.bone, 'end');
+        this.ensureSelectedBoneVisible();
+        this.commitHistory();
+      } else if (drag.awaitingAnchor) {
+        this.boneEditor.chainAnchor = { boneId: null, handle: 'end', x: start.x, y: start.y };
+        this.statusMessage = 'Tap another point to create the first bone';
+      } else {
+        this.createLinkedBoneFromAnchor(end);
+      }
+    } else if (drag.type === 'create') {
+      const start = drag.start;
+      const end = drag.current || drag.start;
+      if (Math.hypot(end.x - start.x, end.y - start.y) >= 1) {
+        this.startHistory('add bone');
+        const result = createBone(this.boneRig, start, end);
+        this.boneRig = result.rig;
+        this.boneEditor.selectedBoneId = result.bone.id;
+        this.setBoneChainAnchor(result.bone, 'end');
+        this.ensureSelectedBoneVisible();
+        this.commitHistory();
+      }
+    } else if (drag.type === 'edit' || drag.type === 'pose') {
+      if (drag.moved) this.commitHistory();
+      else this.pendingHistory = null;
+      const bone = this.boneRig.bones.find((entry) => entry.id === drag.boneId);
+      if (bone) this.setBoneChainAnchor(bone, drag.handle === 'start' ? 'start' : 'end');
+    }
+    this.boneEditor.drag = null;
+    return true;
+  }
+
+  drawSelectedBoneBindingOverlay(ctx, offsetX, offsetY, zoom) {
+    const bone = this.getSelectedBone();
+    if (!bone) return;
+    const mask = getBoneAssignedMask(
+      this.boneRig,
+      bone.id,
+      this.canvasState.width,
+      this.canvasState.height,
+      this.canvasState.activeLayerIndex
+    );
+    ctx.save();
+    ctx.fillStyle = 'rgba(255, 225, 106, 0.34)';
+    for (let index = 0; index < mask.length; index += 1) {
+      if (!mask[index]) continue;
+      const col = index % this.canvasState.width;
+      const row = Math.floor(index / this.canvasState.width);
+      ctx.fillRect(offsetX + col * zoom, offsetY + row * zoom, Math.max(1, zoom), Math.max(1, zoom));
+    }
+    ctx.restore();
+  }
+
+  drawBoneOverlay(ctx, offsetX, offsetY, zoom) {
+    ctx.save();
+    const displayedBones = this.getDisplayedBonesForBoneEditor();
+    const influence = getBoneInfluenceSets(this.boneRig, this.boneEditor.selectedBoneId);
+    displayedBones.forEach((bone) => {
+      const selected = bone.id === this.boneEditor.selectedBoneId;
+      const downstream = influence.downstream.has(bone.id);
+      const upstream = influence.upstream.has(bone.id);
+      const sx = offsetX + bone.start.x * zoom;
+      const sy = offsetY + bone.start.y * zoom;
+      const ex = offsetX + bone.end.x * zoom;
+      const ey = offsetY + bone.end.y * zoom;
+      ctx.strokeStyle = selected
+        ? '#ffe16a'
+        : downstream
+          ? '#82f59a'
+          : upstream
+            ? 'rgba(141,240,255,0.45)'
+            : 'rgba(141,240,255,0.9)';
+      ctx.lineWidth = selected ? 3.5 : (downstream ? 3 : 2);
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(ex, ey);
+      ctx.stroke();
+      const angle = Math.atan2(ey - sy, ex - sx);
+      const arrowX = sx + (ex - sx) * 0.64;
+      const arrowY = sy + (ey - sy) * 0.64;
+      const arrowSize = Math.max(4, Math.min(9, zoom * 0.28));
+      ctx.fillStyle = selected ? '#ffe16a' : downstream ? '#82f59a' : 'rgba(141,240,255,0.8)';
+      ctx.beginPath();
+      ctx.moveTo(arrowX + Math.cos(angle) * arrowSize, arrowY + Math.sin(angle) * arrowSize);
+      ctx.lineTo(arrowX + Math.cos(angle + 2.45) * arrowSize, arrowY + Math.sin(angle + 2.45) * arrowSize);
+      ctx.lineTo(arrowX + Math.cos(angle - 2.45) * arrowSize, arrowY + Math.sin(angle - 2.45) * arrowSize);
+      ctx.closePath();
+      ctx.fill();
+    });
+    const selectedBone = displayedBones.find((bone) => bone.id === this.boneEditor.selectedBoneId) || null;
+    const drawnJoints = new Map();
+    displayedBones.forEach((bone) => {
+      [
+        { id: bone.startJointId, x: bone.start.x, y: bone.start.y },
+        { id: bone.endJointId, x: bone.end.x, y: bone.end.y }
+      ].forEach((joint) => {
+        if (!joint.id || drawnJoints.has(joint.id)) return;
+        drawnJoints.set(joint.id, joint);
+      });
+    });
+    drawnJoints.forEach((joint) => {
+      const sx = offsetX + joint.x * zoom;
+      const sy = offsetY + joint.y * zoom;
+      const selected = selectedBone && (selectedBone.startJointId === joint.id || selectedBone.endJointId === joint.id);
+      const downstream = displayedBones.some((bone) => influence.downstream.has(bone.id) && (bone.startJointId === joint.id || bone.endJointId === joint.id));
+      const upstream = displayedBones.some((bone) => influence.upstream.has(bone.id) && (bone.startJointId === joint.id || bone.endJointId === joint.id));
+      const active = this.boneEditor.chainAnchor?.jointId === joint.id && this.boneEditor.mode !== 'pose';
+      ctx.fillStyle = active ? '#ffffff' : selected ? '#ffe16a' : downstream ? '#82f59a' : upstream ? 'rgba(141,240,255,0.55)' : '#8df0ff';
+      ctx.beginPath();
+      ctx.arc(sx, sy, active ? Math.max(6, zoom * 0.32) : Math.max(5, zoom * 0.24), 0, Math.PI * 2);
+      ctx.fill();
+    });
+    const anchor = this.boneEditor.mode === 'bones' && this.boneEditor.linkMode ? this.boneEditor.chainAnchor : null;
+    if (anchor) {
+      const ax = offsetX + anchor.x * zoom;
+      const ay = offsetY + anchor.y * zoom;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(ax, ay, Math.max(7, zoom * 0.36), 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = '#ffe16a';
+      ctx.beginPath();
+      ctx.moveTo(ax - Math.max(9, zoom * 0.45), ay);
+      ctx.lineTo(ax + Math.max(9, zoom * 0.45), ay);
+      ctx.moveTo(ax, ay - Math.max(9, zoom * 0.45));
+      ctx.lineTo(ax, ay + Math.max(9, zoom * 0.45));
+      ctx.stroke();
+    }
+    const drag = this.boneEditor.drag;
+    if ((drag?.type === 'create' || drag?.type === 'link-create') && drag.start && drag.current) {
+      ctx.strokeStyle = 'rgba(255,225,106,0.85)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(offsetX + drag.start.x * zoom, offsetY + drag.start.y * zoom);
+      ctx.lineTo(offsetX + drag.current.x * zoom, offsetY + drag.current.y * zoom);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
 
   async choosePixelExportFormat() {
     const choice = await openChoiceOverlay({
@@ -8299,7 +9507,8 @@ export default class PixelStudio {
       { id: 'color', label: 'Color', action: () => { this.paletteGridOpen = true; } },
       { id: 'canvas', label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
       { id: 'layers', label: 'Layers', action: () => { this.setLeftPanelTab('layers'); this.mobileDrawer = 'panel'; } },
-      { id: 'animation', label: 'Anim', action: () => { this.setLeftPanelTab('animation'); this.mobileDrawer = 'panel'; } }
+      { id: 'animation', label: 'Anim', action: () => { this.setLeftPanelTab('animation'); this.mobileDrawer = 'panel'; } },
+      { id: 'bones', label: 'Bones', action: () => { this.setLeftPanelTab('bones'); this.mobileDrawer = 'panel'; } }
     ];
     const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const buttonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
@@ -8344,7 +9553,7 @@ export default class PixelStudio {
       isMobile: true,
       menuSheetOpen: sheetOpen
     });
-    const { menuSheet, rootRail, subRail, actionRail, workSurface, paletteStrip, padding } = layout;
+    const { menuSheet, rootRail, subRail, actionRail, workSurface, paletteStrip, zoomStrip, padding } = layout;
 
     const railLayout = getSharedPortraitActionRailLayout(actionRail);
     const actionArea = railLayout.actionArea;
@@ -8363,7 +9572,7 @@ export default class PixelStudio {
     ctx.strokeRect(workSurface.x, workSurface.y, workSurface.w, workSurface.h);
     this.drawCanvasArea(ctx, workSurface.x, workSurface.y, workSurface.w, workSurface.h);
 
-    if (!sheetOpen && this.selection.active) {
+    if (!sheetOpen && this.selection.active && this.leftPanelTab !== 'bones') {
       const ribbonH = 46;
       const ribbonBounds = {
         x: workSurface.x + 8,
@@ -8387,7 +9596,13 @@ export default class PixelStudio {
       });
     }
 
-    if (paletteStrip) {
+    if (zoomStrip) {
+      this.drawPixelPortraitZoomSlider(ctx, zoomStrip);
+    }
+
+    if (paletteStrip && this.leftPanelTab === 'bones') {
+      this.drawBoneContextRail(ctx, paletteStrip.x, paletteStrip.y, paletteStrip.w, paletteStrip.h, { isMobile: true });
+    } else if (paletteStrip) {
       this.drawPaletteBar(ctx, paletteStrip.x, paletteStrip.y, paletteStrip.w, paletteStrip.h, { isMobile: true });
     }
 
@@ -8411,8 +9626,33 @@ export default class PixelStudio {
     }
   }
 
+  drawPixelPortraitZoomSlider(ctx, bounds) {
+    const rail = {
+      x: bounds.x + 18,
+      y: bounds.y + Math.floor((bounds.h - 10) / 2),
+      w: Math.max(1, bounds.w - 36),
+      h: 10
+    };
+    const hit = {
+      x: rail.x,
+      y: bounds.y,
+      w: rail.w,
+      h: bounds.h
+    };
+    this.mobileZoomSliderBounds = hit;
+    const zoomT = this.view.zoomIndex / Math.max(1, this.view.zoomLevels.length - 1);
+    ctx.save();
+    drawSharedMobileZoomSlider(ctx, rail, zoomT);
+    ctx.restore();
+    this.uiButtons.push({
+      bounds: hit,
+      onClick: ({ x: pointerX }) => this.updateZoomFromSliderX(pointerX)
+    });
+  }
+
   drawMobilePortraitRootTabs(ctx, bounds) {
-    const tabs = buildPixelPortraitMenuModel().rootTabs.map((tab) => ({
+    const rootTabs = buildPixelPortraitMenuModel().rootTabs;
+    const tabs = [...rootTabs, { id: 'bones', panel: 'bones', label: 'Bones' }].map((tab) => ({
       ...tab,
       action: () => {
         this.setLeftPanelTab(tab.panel);
@@ -9650,8 +10890,9 @@ export default class PixelStudio {
         fontSize,
         focused: this.controllerMenu.isFocusedItem(category, tool.id)
       });
-      this.uiButtons.push({ bounds, onClick: () => { this.setActiveTool(tool.id); } });
-      this.registerFocusable('tools', bounds, () => this.setActiveTool(tool.id));
+      const action = tool.action || (() => { this.setActiveTool(tool.id); });
+      this.uiButtons.push({ bounds, onClick: action });
+      this.registerFocusable('tools', bounds, action);
       if (!portraitGrid) offsetY += lineHeight;
     });
     if (portraitGrid) {
@@ -10456,13 +11697,42 @@ export default class PixelStudio {
       const index = this.canvasState.layers.length - 1 - reversedIndex;
       const active = index === this.canvasState.activeLayerIndex;
       const bounds = { x: x + 8, y: offsetY - (isMobile ? 20 : 14), w: w - 16, h: buttonHeight, index };
-      this.drawButton(ctx, bounds, `${layer.visible ? '👁' : '⛔'} ${layer.name}`, active, {
+      this.drawButton(ctx, bounds, '', active, {
         fontSize: isMobile ? 12 : 11,
         focused: this.controllerMenu.isFocusedItem('layers', `layer-${index}`)
       });
+      const previewSize = isMobile ? 32 : 14;
+      const previewBounds = {
+        x: bounds.x + 8,
+        y: bounds.y + Math.floor((bounds.h - previewSize) / 2),
+        w: previewSize,
+        h: previewSize
+      };
+      this.drawPixelPreviewPixels(ctx, layer.pixels, this.canvasState.width, this.canvasState.height, previewBounds);
+      ctx.fillStyle = '#fff';
+      ctx.font = `${isMobile ? 12 : 11}px Courier New`;
+      const labelX = previewBounds.x + previewBounds.w + 8;
+      const rightReserve = portrait ? 82 : 8;
+      const labelW = Math.max(20, bounds.x + bounds.w - rightReserve - labelX);
+      this.drawFittedText(ctx, `${layer.visible ? 'Vis' : 'Hid'} ${layer.name}`, labelX, bounds.y + bounds.h / 2 + 4, labelW, isMobile ? 12 : 11);
       this.layerBounds.push(bounds);
       this.uiButtons.push({ bounds, onClick: () => { this.canvasState.activeLayerIndex = index; } });
       this.registerFocusable('layers', bounds, () => { this.canvasState.activeLayerIndex = index; });
+      if (portrait) {
+        const buttonW = 34;
+        const upBounds = { x: bounds.x + bounds.w - buttonW * 2 - 8, y: bounds.y + 5, w: buttonW, h: bounds.h - 10 };
+        const downBounds = { x: bounds.x + bounds.w - buttonW - 4, y: bounds.y + 5, w: buttonW, h: bounds.h - 10 };
+        this.drawButton(ctx, upBounds, 'Up', false, { fontSize: 10, disabled: index >= this.canvasState.layers.length - 1 });
+        this.drawButton(ctx, downBounds, 'Dn', false, { fontSize: 10, disabled: index <= 0 });
+        if (index < this.canvasState.layers.length - 1) {
+          this.uiButtons.push({ bounds: upBounds, onClick: () => this.reorderLayer(index, index + 1) });
+          this.registerFocusable('layers', upBounds, () => this.reorderLayer(index, index + 1));
+        }
+        if (index > 0) {
+          this.uiButtons.push({ bounds: downBounds, onClick: () => this.reorderLayer(index, index - 1) });
+          this.registerFocusable('layers', downBounds, () => this.reorderLayer(index, index - 1));
+        }
+      }
       offsetY += lineHeight;
     });
     if (portrait && maxLayerScroll > 0 && this.layerListMeta?.scrollBounds) {
@@ -10471,6 +11741,37 @@ export default class PixelStudio {
         scrollMax: maxLayerScroll
       });
     }
+  }
+
+  drawPixelPreviewPixels(ctx, pixels, width, height, bounds) {
+    if (!pixels || !width || !height || !bounds || bounds.w <= 0 || bounds.h <= 0) return;
+    this.offscreen.width = width;
+    this.offscreen.height = height;
+    const imageData = this.offscreenCtx.createImageData(width, height);
+    const bytes = new Uint32Array(imageData.data.buffer);
+    bytes.set(pixels);
+    this.offscreenCtx.putImageData(imageData, 0, 0);
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.drawImage(this.offscreen, bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.restore();
+  }
+
+  drawFittedText(ctx, text, x, y, maxWidth, fontSize = 12) {
+    const source = String(text || '');
+    if (maxWidth <= 0) return;
+    ctx.save();
+    ctx.font = `${fontSize}px Courier New`;
+    let label = source;
+    while (label.length > 1 && ctx.measureText(label).width > maxWidth) {
+      label = `${label.slice(0, Math.max(1, label.length - 2))}…`;
+    }
+    ctx.fillText(label, x, y);
+    ctx.restore();
   }
 
   drawCanvasArea(ctx, x, y, w, h) {
@@ -10488,7 +11789,9 @@ export default class PixelStudio {
 
     this.offscreen.width = width;
     this.offscreen.height = height;
-    let composite = compositeLayers(this.canvasState.layers, width, height);
+    let composite = this.shouldShowBonePreview()
+      ? compositeBonePreview(this.canvasState.layers, width, height, this.boneRig, this.getCurrentBonePreviewPose())
+      : compositeLayers(this.canvasState.layers, width, height);
     if (this.activeToolId === TOOL_IDS.HUE_SHIFT && !this.isHueShiftNeutral()) {
       composite = this.buildHueShiftPreview(composite);
     }
@@ -10703,6 +12006,11 @@ export default class PixelStudio {
       ctx.moveTo(offsetX + (this.gradientPreview.start.col + 0.5) * zoom, offsetY + (this.gradientPreview.start.row + 0.5) * zoom);
       ctx.lineTo(offsetX + (this.gradientPreview.end.col + 0.5) * zoom, offsetY + (this.gradientPreview.end.row + 0.5) * zoom);
       ctx.stroke();
+    }
+
+    if (this.leftPanelTab === 'bones') {
+      this.drawSelectedBoneBindingOverlay(ctx, offsetX, offsetY, zoom);
+      this.drawBoneOverlay(ctx, offsetX, offsetY, zoom);
     }
 
     if (this.toolOptions.symmetry.horizontal) {
@@ -11140,13 +12448,43 @@ export default class PixelStudio {
       const active = index === this.animation.currentFrameIndex;
       const fps = Math.max(1, Math.round(1000 / Math.max(1, frame.durationMs || DEFAULT_FRAME_DURATION_MS)));
       const bounds = { x: x + 8, y: offsetY + visibleIndex * lineHeight - (isMobile ? 20 : 14), w: w - 16, h: buttonHeight, index };
-      this.drawButton(ctx, bounds, `F${index + 1}  ${fps}fps`, active, {
+      this.drawButton(ctx, bounds, '', active, {
         fontSize: 12,
         focused: this.controllerMenu.isFocusedItem('frames', `frame-${index}`)
       });
+      const previewSize = isMobile ? 32 : 14;
+      const previewBounds = {
+        x: bounds.x + 8,
+        y: bounds.y + Math.floor((bounds.h - previewSize) / 2),
+        w: previewSize,
+        h: previewSize
+      };
+      const composite = compositeLayers(frame.layers, this.canvasState.width, this.canvasState.height);
+      this.drawPixelPreviewPixels(ctx, composite, this.canvasState.width, this.canvasState.height, previewBounds);
+      ctx.fillStyle = '#fff';
+      ctx.font = `${isMobile ? 12 : 11}px Courier New`;
+      const labelX = previewBounds.x + previewBounds.w + 8;
+      const rightReserve = portrait ? 82 : 8;
+      const labelW = Math.max(20, bounds.x + bounds.w - rightReserve - labelX);
+      this.drawFittedText(ctx, `F${index + 1} ${fps}fps`, labelX, bounds.y + bounds.h / 2 + 4, labelW, isMobile ? 12 : 11);
       this.frameBounds.push(bounds);
       this.uiButtons.push({ bounds, onClick: () => { this.animation.currentFrameIndex = index; this.setFrameLayers(this.currentFrame.layers); } });
       this.registerFocusable('frames', bounds, () => { this.animation.currentFrameIndex = index; this.setFrameLayers(this.currentFrame.layers); });
+      if (portrait) {
+        const buttonW = 34;
+        const upBounds = { x: bounds.x + bounds.w - buttonW * 2 - 8, y: bounds.y + 5, w: buttonW, h: bounds.h - 10 };
+        const downBounds = { x: bounds.x + bounds.w - buttonW - 4, y: bounds.y + 5, w: buttonW, h: bounds.h - 10 };
+        this.drawButton(ctx, upBounds, 'Up', false, { fontSize: 10, disabled: index <= 0 });
+        this.drawButton(ctx, downBounds, 'Dn', false, { fontSize: 10, disabled: index >= this.animation.frames.length - 1 });
+        if (index > 0) {
+          this.uiButtons.push({ bounds: upBounds, onClick: () => this.reorderFrame(index, index - 1) });
+          this.registerFocusable('frames', upBounds, () => this.reorderFrame(index, index - 1));
+        }
+        if (index < this.animation.frames.length - 1) {
+          this.uiButtons.push({ bounds: downBounds, onClick: () => this.reorderFrame(index, index + 1) });
+          this.registerFocusable('frames', downBounds, () => this.reorderFrame(index, index + 1));
+        }
+      }
     });
     if (portrait && maxFrameScroll > 0 && this.frameListMeta?.scrollBounds) {
       drawSharedPortraitScrollHints(ctx, this.frameListMeta.scrollBounds, {

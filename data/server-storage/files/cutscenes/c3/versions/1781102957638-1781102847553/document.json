@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 2,
+  "name": "c3",
+  "width": 256,
+  "height": 144,
+  "durationMs": 6000,
+  "fps": 30,
+  "snapEnabled": true,
+  "snapSize": 8,
+  "sceneFadeInMs": 0,
+  "sceneFadeOutMs": 0,
+  "masterVolume": 1,
+  "assets": [],
+  "layers": [
+    {
+      "id": "background",
+      "name": "Background",
+      "type": "visual",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "sprites",
+      "name": "Sprites",
+      "type": "visual",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "text",
+      "name": "Text",
+      "type": "text",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "effects",
+      "name": "Effects",
+      "type": "effect",
+      "visible": true,
+      "locked": false
+    },
+    {
+      "id": "audio",
+      "name": "Audio",
+      "type": "audio",
+      "visible": true,
+      "locked": false
+    }
+  ],
+  "tracks": [
+    {
+      "id": "track-1",
+      "name": "Track 1"
+    }
+  ],
+  "clips": []
+}

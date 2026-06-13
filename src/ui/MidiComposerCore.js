@@ -65,11 +65,14 @@ const QUANTIZE_OPTIONS = [
 ];
 
 const MIDI_COMPOSER_AUTOSAVE_DOC = 'MIDI Composer Autosave';
+const MIDI_AUTOSAVE_SUFFIX = ' Autosave';
+const MIDI_RESCUE_PREFIX = 'Intro Rescue';
 export const MIDI_MAX_ZOOM_OUT_BARS = 12;
-export const MIDI_PLAYBACK_MAX_CATCHUP_SECONDS = 0.05;
-const MIDI_MAX_AUDIBLE_CATCHUP_SECONDS = 0.12;
-const MIDI_SCHEDULE_LOOKAHEAD_SECONDS = 0.16;
-const MIDI_MAX_PLAYBACK_EVENTS_PER_FRAME = 128;
+export const MIDI_PLAYBACK_MAX_CATCHUP_SECONDS = 0.35;
+const MIDI_STALE_BACKLOG_SECONDS = 1.25;
+const MIDI_SCHEDULE_LOOKAHEAD_SECONDS = 0.42;
+const MIDI_MIN_SCHEDULE_LATENCY_SECONDS = 0.08;
+const MIDI_MAX_PLAYBACK_EVENTS_PER_FRAME = 256;
 
 const NOTE_LENGTH_OPTIONS = [
   { id: '1', label: '1', icon: 'w', divisor: 1 },
@@ -1241,6 +1244,8 @@ export default class MidiComposer {
     this.playbackLastClockSeconds = null;
     this.playbackStartTick = 0;
     this.scheduledUntilTick = 0;
+    this.playbackAudioAnchorSeconds = null;
+    this.playbackAudioAnchorTick = 0;
     this.playbackEventCache = null;
     this.droppedPlaybackEvents = 0;
     this.runtime = createEditorRuntime({
@@ -1258,7 +1263,11 @@ export default class MidiComposer {
         isEmptyDocument: (_ctx, data) => {
           if (!data || typeof data !== 'object') return true;
           const tracks = Array.isArray(data.tracks) ? data.tracks : [];
-          return !tracks.some((track) => Array.isArray(track?.notes) && track.notes.length > 0);
+          return !tracks.some((track) => {
+            if (Array.isArray(track?.notes) && track.notes.length > 0) return true;
+            const patterns = Array.isArray(track?.patterns) ? track.patterns : [];
+            return patterns.some((pattern) => Array.isArray(pattern?.notes) && pattern.notes.length > 0);
+          });
         },
         applyLoadedData: (ctx, data, meta) => {
           ctx.applyImportedSong(data);
@@ -1569,6 +1578,11 @@ export default class MidiComposer {
     this.playbackStartTick = anchorTick;
     this.lastPlaybackTick = anchorTick;
     this.scheduledUntilTick = anchorTick;
+    const audioNow = this.game?.audio?.ctx?.currentTime;
+    this.playbackAudioAnchorSeconds = Number.isFinite(audioNow)
+      ? audioNow + Math.max(this.game?.audio?.midiLatency || 0, MIDI_MIN_SCHEDULE_LATENCY_SECONDS)
+      : null;
+    this.playbackAudioAnchorTick = anchorTick;
   }
 
   registerInputHandlers() {
@@ -1672,7 +1686,12 @@ export default class MidiComposer {
       const snapshot = JSON.stringify(this.song);
       if (snapshot !== this.lastPersistedSnapshot) {
         this.lastPersistedSnapshot = snapshot;
-        saveProjectFile('music', MIDI_COMPOSER_AUTOSAVE_DOC, JSON.parse(snapshot));
+        const data = JSON.parse(snapshot);
+        saveProjectFile('music', MIDI_COMPOSER_AUTOSAVE_DOC, data);
+        const documentAutosaveName = this.getDocumentAutosaveName();
+        if (documentAutosaveName) {
+          saveProjectFile('music', documentAutosaveName, JSON.parse(snapshot));
+        }
       }
     } catch (error) {
       console.warn('persist failed', error);
@@ -1687,6 +1706,12 @@ export default class MidiComposer {
         }
       }
     }
+  }
+
+  getDocumentAutosaveName() {
+    const name = String(this.currentDocumentRef?.name || this.song?.name || '').trim();
+    if (!name || name === MIDI_COMPOSER_AUTOSAVE_DOC || name.endsWith(MIDI_AUTOSAVE_SUFFIX)) return '';
+    return `${name}${MIDI_AUTOSAVE_SUFFIX}`;
   }
 
   persist({ commitHistory = false } = {}) {
@@ -1875,7 +1900,60 @@ export default class MidiComposer {
 
 
   async saveSongToLibrary(options = {}) {
+    if (this._persistTimer) {
+      if (this._persistTimer.type === 'idle' && window.cancelIdleCallback) {
+        window.cancelIdleCallback(this._persistTimer.id);
+      } else {
+        clearTimeout(this._persistTimer.id);
+      }
+      this._persistTimer = null;
+    }
+    this.saveCurrentPersistentViewport();
+    if (this._dirty) {
+      this.flushPersist();
+    }
     return this.runtime.saveAsOrCurrent(options);
+  }
+
+  buildRescueSongName(prefix = MIDI_RESCUE_PREFIX) {
+    const source = String(this.currentDocumentRef?.name || this.song?.name || prefix || 'MIDI Rescue')
+      .replace(new RegExp(`${MIDI_AUTOSAVE_SUFFIX}$`), '')
+      .trim() || prefix;
+    const stamp = new Date()
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .replace(/\..+$/, '')
+      .replace('T', '-');
+    return `${source} Rescue ${stamp}`;
+  }
+
+  async rescueSaveSong() {
+    this.saveCurrentPersistentViewport();
+    this.normalizeSongDrums();
+    const name = this.buildRescueSongName();
+    const data = JSON.parse(JSON.stringify({ ...this.song, name }));
+    this.game?.showSaveStatusModal?.('Rescue saving...');
+    this.game?.showSystemToast?.('Rescue saving...');
+    this.statusMessage = 'Rescue saving...';
+    try {
+      const saved = saveProjectFile('music', name, data);
+      const persisted = await saved?.syncPromise;
+      if (persisted && persisted.persisted === false) {
+        throw new Error(persisted.reason || 'Server did not persist rescue file');
+      }
+      this.game?.showSaveStatusModal?.('Rescue saved');
+      setTimeout(() => this.game?.hideSaveStatusModal?.(), 1400);
+      this.game?.showSystemToast?.(`Rescue saved: ${name}`);
+      this.statusMessage = `Rescue saved: ${name}`;
+      return { id: name, name };
+    } catch (error) {
+      const message = `Rescue failed: ${error?.message || error || 'Unknown error'}`;
+      this.game?.showSaveStatusModal?.('Rescue failed');
+      setTimeout(() => this.game?.hideSaveStatusModal?.(), 1800);
+      this.game?.showSystemToast?.(message);
+      this.statusMessage = message;
+      throw error;
+    }
   }
 
   async saveAndPaint() {
@@ -4765,6 +4843,7 @@ export default class MidiComposer {
           action('new', 'New', () => this.handleFileMenu('new')),
           action('save', 'Save', () => this.handleFileMenu('save')),
           action('save-as', 'Save As', () => this.handleFileMenu('save-as')),
+          action('rescue-save', 'Rescue Save', () => this.handleFileMenu('rescue-save')),
           action('open', 'Open', () => this.handleFileMenu('open')),
           action('import', 'Import MIDI', () => this.handleFileMenu('import')),
           action('export', 'Export MIDI', () => this.handleFileMenu('export')),
@@ -4810,6 +4889,11 @@ export default class MidiComposer {
       const lookaheadTicks = MIDI_SCHEDULE_LOOKAHEAD_SECONDS * ticksPerSecond;
       if (this.scheduledUntilTick >= loopTicks || this.scheduledUntilTick < loopStart) {
         this.scheduledUntilTick = loopStart;
+        this.playbackAudioAnchorTick = this.playheadTick;
+        const audioNow = this.game?.audio?.ctx?.currentTime;
+        this.playbackAudioAnchorSeconds = Number.isFinite(audioNow)
+          ? audioNow + Math.max(this.game?.audio?.midiLatency || 0, MIDI_MIN_SCHEDULE_LATENCY_SECONDS)
+          : null;
       }
       const targetScheduleTick = Math.min(loopTicks, this.playheadTick + lookaheadTicks);
       if (targetScheduleTick > this.scheduledUntilTick) {
@@ -4849,7 +4933,11 @@ export default class MidiComposer {
     const ticksPerSecond = (tempo / 60) * this.ticksPerBeat;
     const cache = this.getPlaybackEventCache();
     crossed.forEach((range) => {
-      const audibleStart = Math.max(range.start, currentTick - MIDI_MAX_AUDIBLE_CATCHUP_SECONDS * Math.max(0.0001, ticksPerSecond));
+      const staleTicks = MIDI_STALE_BACKLOG_SECONDS * Math.max(0.0001, ticksPerSecond);
+      const catchupTicks = MIDI_PLAYBACK_MAX_CATCHUP_SECONDS * Math.max(0.0001, ticksPerSecond);
+      const audibleStart = currentTick - range.start >= staleTicks
+        ? Math.max(range.start, currentTick - catchupTicks)
+        : range.start;
       if (audibleStart > range.start) {
         droppedCount += this.countPlaybackEventsInRange(cache.events, range.start, audibleStart);
       }
@@ -4861,9 +4949,16 @@ export default class MidiComposer {
           droppedCount += 1;
           continue;
         }
+        const secondsFromAnchor = Math.max(0, (event.tick - this.playbackAudioAnchorTick) / Math.max(0.0001, ticksPerSecond));
         const secondsFromPlayhead = Math.max(0, (event.tick - currentTick) / Math.max(0.0001, ticksPerSecond));
-        const when = this.game?.audio?.ctx?.currentTime != null
-          ? this.game.audio.ctx.currentTime + (this.game.audio.midiLatency || 0) + secondsFromPlayhead
+        const minWhen = this.game?.audio?.ctx?.currentTime != null
+          ? this.game.audio.ctx.currentTime + Math.max(this.game.audio.midiLatency || 0, MIDI_MIN_SCHEDULE_LATENCY_SECONDS)
+          : null;
+        const anchoredWhen = this.playbackAudioAnchorSeconds != null
+          ? this.playbackAudioAnchorSeconds + secondsFromAnchor
+          : null;
+        const when = minWhen != null
+          ? Math.max(minWhen, anchoredWhen ?? (minWhen + secondsFromPlayhead))
           : null;
         this.playNote(event.track, event.note, event.tick, { when });
         noteCount += 1;
@@ -10028,11 +10123,15 @@ export default class MidiComposer {
       return;
     }
     if (action === 'save') {
-      this.saveSongToLibrary();
+      await this.saveSongToLibrary();
       return;
     }
     if (action === 'save-as') {
-      this.saveSongToLibrary({ forceSaveAs: true });
+      await this.saveSongToLibrary({ forceSaveAs: true });
+      return;
+    }
+    if (action === 'rescue-save') {
+      await this.rescueSaveSong();
       return;
     }
     if (action === 'save-paint') {
@@ -17090,6 +17189,7 @@ export default class MidiComposer {
         import: () => this.handleFileMenuAction('import')
       },
       editorSpecific: [
+        { id: 'rescue-save', label: 'Rescue Save' },
         { id: 'export-midi', label: 'Export MIDI' },
         { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
         { id: 'export-wav', label: 'Export WAV' },

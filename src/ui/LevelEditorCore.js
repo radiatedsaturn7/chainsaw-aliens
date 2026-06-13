@@ -10,6 +10,7 @@ import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { createPixelEditorAdapter } from '../editor/adapters/pixelEditorAdapter.js';
 import { createMidiEditorAdapter } from '../editor/adapters/midiEditorAdapter.js';
 import { ensurePixelPreviewFrame, normalizeMidiTracks } from '../editor/adapters/editorDataContracts.js';
+import { isBuiltInActorName } from '../content/builtinActorOverrides.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
@@ -149,6 +150,7 @@ function getCustomActorEnemyTypes() {
   const types = actorFiles.map(({ name }) => {
     const payload = loadProjectFile('actors', name);
     const actor = payload?.data || {};
+    if (isBuiltInActorName(name) || actor?.advanced?.builtInActor || actor?.advanced?.reserved) return null;
     if (!actor?.isRoot) return null;
     const id = actor?.id || String(name).replace(/\.json$/i, '');
     return {

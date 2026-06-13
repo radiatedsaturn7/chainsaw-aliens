@@ -9,6 +9,7 @@ const shouldLoadArtAsAnimationDocument = PixelStudio.prototype.shouldLoadArtAsAn
 const loadAnimationArtDocument = PixelStudio.prototype.loadAnimationArtDocument;
 const buildActorStateArtDocName = PixelStudio.prototype.buildActorStateArtDocName;
 const saveArtDocument = PixelStudio.prototype.saveArtDocument;
+const commitActorStateArtRef = PixelStudio.prototype.commitActorStateArtRef;
 
 test('serializeCurrentAnimationAsArtDocument exports composited frames for actor-state saves', () => {
   const editor = {
@@ -117,13 +118,17 @@ test('tile documents still load through the tile-art path during tile editing', 
 
 test('saveArtDocument does not rewrite tile autosave during actor-state saves', async () => {
   let persisted = false;
+  let committed = null;
   const editor = {
-    decalEditSession: { type: 'actor-state' },
+    currentDocumentRef: { folder: 'art', name: 'boss-idle-art' },
+    animation: { frames: [{ durationMs: 125 }] },
+    decalEditSession: { type: 'actor-state', onCommit: (animation) => { committed = animation; } },
     runtime: {
       async saveAsOrCurrent() {
         return { name: 'boss-idle-art' };
       }
     },
+    commitActorStateArtRef,
     persistTileArtAutosave() {
       persisted = true;
     }
@@ -131,4 +136,23 @@ test('saveArtDocument does not rewrite tile autosave during actor-state saves', 
   const result = await saveArtDocument.call(editor);
   assert.equal(result?.name, 'boss-idle-art');
   assert.equal(persisted, false);
+  assert.equal(committed?.artRef, 'boss-idle-art');
+  assert.equal(committed?.fps, 8);
+  assert.equal(editor.decalEditSession?.type, 'actor-state');
+});
+
+test('commitActorStateArtRef can clear actor-state edit sessions after saving and returning', () => {
+  let committed = null;
+  const editor = {
+    currentDocumentRef: { folder: 'art', name: 'player-idle-art' },
+    animation: { frames: [{ durationMs: 250 }] },
+    decalEditSession: { type: 'actor-state', onCommit: (animation) => { committed = animation; } }
+  };
+
+  const result = commitActorStateArtRef.call(editor, { clearSession: true });
+
+  assert.equal(result.artRef, 'player-idle-art');
+  assert.equal(result.fps, 4);
+  assert.equal(committed.artRef, 'player-idle-art');
+  assert.equal(editor.decalEditSession, null);
 });

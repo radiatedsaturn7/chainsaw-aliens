@@ -17,7 +17,7 @@ import {
   normalizeSharedControlBounds
 } from './uiSuite.js';
 import { drawSharedMobileZoomSlider } from './shared/mobileZoomSlider.js';
-import { openChoiceOverlay, openProgressOverlay, openTextInputOverlay } from './shared/textInputOverlay.js';
+import { openChoiceOverlay, openConfirmOverlay, openProgressOverlay, openTextInputOverlay } from './shared/textInputOverlay.js';
 import { openColorPickerOverlay } from './shared/colorPickerOverlay.js';
 import {
   CUTSCENE_WEATHER_EFFECTS,
@@ -47,6 +47,7 @@ const CUTSCENE_KEYFRAME_HIT_SIZE = 24;
 const CUTSCENE_SELECTION_HIT_PAD = 12;
 const CUTSCENE_EXPORT_WIDTH = 1920;
 const CUTSCENE_EXPORT_HEIGHT = 1080;
+const CUTSCENE_EXPORT_SEGMENT_MS = 3000;
 const CUTSCENE_TIMELINE_MIN_ZOOM = 0.5;
 const CUTSCENE_TIMELINE_MAX_ZOOM = 12;
 const CUTSCENE_TIMELINE_MIN_LANE_H = 30;
@@ -90,26 +91,31 @@ export function getCutsceneMovieExportLayout(doc = createDefaultCutscene(), targ
   const sourceHeight = Math.max(1, Math.floor(safeNumber(doc?.height, DEFAULT_HEIGHT)));
   const outputWidth = Math.max(1, Math.floor(safeNumber(targetWidth, CUTSCENE_EXPORT_WIDTH)));
   const outputHeight = Math.max(1, Math.floor(safeNumber(targetHeight, CUTSCENE_EXPORT_HEIGHT)));
-  const scale = Math.max(0.001, Math.max(outputWidth / sourceWidth, outputHeight / sourceHeight));
-  const drawWidth = sourceWidth * scale;
-  const drawHeight = sourceHeight * scale;
+  const projection = getCutsceneRenderProjection(
+    { width: sourceWidth, height: sourceHeight },
+    { x: 0, y: 0, w: outputWidth, h: outputHeight },
+    { fit: 'contain' }
+  );
   return {
     sourceWidth,
     sourceHeight,
     outputWidth,
     outputHeight,
-    fit: 'cover',
-    scale,
-    drawX: (outputWidth - drawWidth) / 2,
-    drawY: (outputHeight - drawHeight) / 2,
-    drawWidth,
-    drawHeight
+    fit: 'contain',
+    scale: projection.scale,
+    drawX: projection.stageRect.x,
+    drawY: projection.stageRect.y,
+    drawWidth: projection.stageRect.w,
+    drawHeight: projection.stageRect.h,
+    frameWidth: sourceWidth,
+    frameHeight: sourceHeight,
+    stageBounds: { x: 0, y: 0, w: sourceWidth, h: sourceHeight }
   };
 }
 const isVisualClip = (clip) => clip?.type === 'art' || clip?.type === 'actor' || clip?.type === 'image' || clip?.type === 'text' || clip?.type === 'color-board';
 const isAudioClip = (clip) => clip?.type === 'music' || clip?.type === 'sfx';
 const isEffectClip = (clip) => clip?.type === 'effect';
-const isKeyframeClip = (clip) => isVisualClip(clip) || isEffectClip(clip);
+const isKeyframeClip = (clip) => isVisualClip(clip) || isEffectClip(clip) || isAudioClip(clip);
 const makeId = (prefix) => `${prefix}-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
 const getFrameStepMs = (doc) => 1000 / clamp(Math.floor(safeNumber(doc?.fps, DEFAULT_FPS)), 1, 120);
 const getScaleX = (source = {}) => Math.max(0.05, safeNumber(source.scaleX, 1));
@@ -144,10 +150,25 @@ const debugCutscenePlayback = (event, details = {}) => {
     // Debug telemetry must never affect editor playback.
   }
 };
+export function parseCutsceneDurationInput(value, fallbackMs = DEFAULT_DURATION_MS) {
+  const raw = String(value ?? '').trim().toLowerCase();
+  if (!raw) return Math.max(500, Math.round(safeNumber(fallbackMs, DEFAULT_DURATION_MS)));
+  const match = raw.match(/^(-?\d+(?:\.\d+)?)\s*(ms|msec|millisecond|milliseconds|s|sec|secs|second|seconds)?$/);
+  if (!match) return Math.max(500, Math.round(safeNumber(fallbackMs, DEFAULT_DURATION_MS)));
+  const numeric = Number(match[1]);
+  if (!Number.isFinite(numeric)) return Math.max(500, Math.round(safeNumber(fallbackMs, DEFAULT_DURATION_MS)));
+  const unit = match[2] || '';
+  const asMs = unit.startsWith('m')
+    ? numeric
+    : unit.startsWith('s') || Math.abs(numeric) < 1000
+      ? numeric * 1000
+      : numeric;
+  return Math.max(500, Math.round(asMs));
+}
+
 const getFullPreviewDurationMs = (doc) => Math.max(
-  DEFAULT_DURATION_MS,
-  safeNumber(doc?.durationMs, DEFAULT_DURATION_MS),
-  ...(Array.isArray(doc?.clips) ? doc.clips.map((clip) => getClipEndMs(clip)) : [0])
+  1,
+  safeNumber(doc?.durationMs, DEFAULT_DURATION_MS)
 );
 
 function getCutsceneTimelineClipColor(clip = {}) {
@@ -432,6 +453,12 @@ function normalizeKeyframes(keyframes, doc, type, clipDurationMs = DEFAULT_DURAT
         wind: clamp(safeNumber(keyframe.wind, 0), -4, 4)
       };
     }
+    if (isAudioClip({ type })) {
+      return {
+        ...base,
+        volume: clamp(safeNumber(keyframe.volume, 1), 0, 1)
+      };
+    }
     return {
       ...base,
       ...normalizeTransformLike(keyframe, doc, type)
@@ -490,6 +517,33 @@ export function sampleCutsceneClip(clip, timeMs) {
     w: lerp(left.w, right.w, t),
     h: lerp(left.h, right.h, t)
   };
+}
+
+export function sampleCutsceneAudioVolume(clip, timeMs) {
+  if (!isAudioClip(clip)) return clamp(safeNumber(clip?.volume, 1), 0, 1);
+  if (!clip || timeMs < clip.startMs || timeMs > clip.startMs + clip.durationMs) return 0;
+  const localTime = clamp(timeMs - clip.startMs, 0, Math.max(1, clip.durationMs));
+  const baseVolume = clamp(safeNumber(clip.volume, 1), 0, 1);
+  const keyframes = Array.isArray(clip.keyframes)
+    ? clip.keyframes.filter((entry) => entry?.manual === true).sort((a, b) => safeNumber(a.timeMs) - safeNumber(b.timeMs))
+    : [];
+  if (!keyframes.length || localTime < safeNumber(keyframes[0].timeMs)) return baseVolume;
+  let left = keyframes[0];
+  let right = left;
+  for (let index = 0; index < keyframes.length - 1; index += 1) {
+    if (localTime >= safeNumber(keyframes[index].timeMs) && localTime <= safeNumber(keyframes[index + 1].timeMs)) {
+      left = keyframes[index];
+      right = keyframes[index + 1];
+      break;
+    }
+  }
+  if (localTime >= safeNumber(keyframes[keyframes.length - 1].timeMs)) {
+    left = keyframes[keyframes.length - 1];
+    right = left;
+  }
+  const span = Math.max(1, safeNumber(right.timeMs) - safeNumber(left.timeMs));
+  const t = left === right ? 0 : applyEasing(clamp((localTime - safeNumber(left.timeMs)) / span, 0, 1), clip.easing);
+  return clamp(lerp(safeNumber(left.volume, baseVolume), safeNumber(right.volume, left.volume ?? baseVolume), t), 0, 1);
 }
 
 export function sampleCutsceneEffectClip(clip, timeMs) {
@@ -643,6 +697,10 @@ export function timelineMsToX(ms, timelineLayout) {
 }
 
 export function getCutsceneStageProjection(doc = createDefaultCutscene(), bounds = {}) {
+  return getCutsceneRenderProjection(doc, bounds, { fit: 'contain' });
+}
+
+export function getCutsceneRenderProjection(doc = createDefaultCutscene(), bounds = {}, options = {}) {
   const safeDoc = normalizeCutsceneDocument(doc);
   const safeBounds = {
     x: safeNumber(bounds.x),
@@ -650,12 +708,15 @@ export function getCutsceneStageProjection(doc = createDefaultCutscene(), bounds
     w: Math.max(1, safeNumber(bounds.w, 1)),
     h: Math.max(1, safeNumber(bounds.h, 1))
   };
-  const scale = Math.max(0.001, Math.min(safeBounds.w / safeDoc.width, safeBounds.h / safeDoc.height));
+  const fit = options?.fit === 'cover' ? 'cover' : 'contain';
+  const scaleMethod = fit === 'cover' ? Math.max : Math.min;
+  const scale = Math.max(0.001, scaleMethod(safeBounds.w / safeDoc.width, safeBounds.h / safeDoc.height));
   const w = safeDoc.width * scale;
   const h = safeDoc.height * scale;
   return {
     doc: safeDoc,
     bounds: safeBounds,
+    fit,
     scale,
     stageRect: {
       x: safeBounds.x + (safeBounds.w - w) / 2,
@@ -748,6 +809,7 @@ export class CutscenePlayer {
     this.ignorePauseMarkers = false;
     this.firedAudio = new Set();
     this.loopingAudio = new Map();
+    this.audioClipById = new Map();
     this.waitingPauseClipId = null;
     this.imageCache = new Map();
     this.artCache = new Map();
@@ -763,6 +825,7 @@ export class CutscenePlayer {
     this.ignorePauseMarkers = Boolean(ignorePauseMarkers);
     this.firedAudio.clear();
     this.stopLoopingAudio();
+    this.audioClipById = new Map((this.doc.clips || []).map((clip) => [clip.id, clip]));
     this.weatherStates.clear();
     this.waitingPauseClipId = null;
     this.active = true;
@@ -774,6 +837,7 @@ export class CutscenePlayer {
     const done = this.onDone;
     this.active = false;
     this.doc = null;
+    this.audioClipById.clear();
     this.startTimeMs = 0;
     this.onDone = null;
     this.firedAudio.clear();
@@ -796,6 +860,7 @@ export class CutscenePlayer {
       this.timeMs = pauseClip.startMs;
     }
     this.fireDueAudio();
+    this.updateActiveAudioVolumes();
     if (pauseClip) {
       this.timeMs = pauseClip.startMs;
       this.waitingPauseClipId = pauseClip.id;
@@ -836,13 +901,15 @@ export class CutscenePlayer {
       this.firedAudio.add(clip.id);
       const asset = (this.doc.assets || []).find((entry) => entry.id === clip.assetId) || null;
       const ref = asset?.ref || clip.assetId;
-      const volume = clamp(safeNumber(clip.volume, 1) * masterVolume, 0, 1);
+      const volume = clamp(sampleCutsceneAudioVolume(clip, this.startTimeMs > clip.startMs ? this.startTimeMs : this.timeMs) * masterVolume, 0, 1);
       if (clip.type === 'music') {
         const offsetMs = Math.max(
           0,
           (this.startTimeMs > clip.startMs ? this.startTimeMs : this.timeMs) - safeNumber(clip.startMs)
         );
-        if (typeof this.game.playCutsceneMidi === 'function') {
+        if (typeof this.game.playCutsceneMidiLayer === 'function') {
+          this.game.playCutsceneMidiLayer(clip.id, ref, { fadeMs: clip.fadeMs, volume, offsetMs, loop: clip.loop === true });
+        } else if (typeof this.game.playCutsceneMidi === 'function') {
           this.game.playCutsceneMidi(ref, { fadeMs: clip.fadeMs, volume, offsetMs });
         } else {
           this.game.playActorMidi?.(ref, { fadeMs: clip.fadeMs, volume, offsetMs });
@@ -850,24 +917,42 @@ export class CutscenePlayer {
       } else {
         this.game.playSfxById?.(ref, { volume, loop: clip.loop, key: clip.id });
       }
-      if (clip.loop || clip.type === 'music') {
-        this.loopingAudio.set(clip.id, { type: clip.type, ref });
+      if (clip.type === 'music' || clip.type === 'sfx') {
+        this.loopingAudio.set(clip.id, { type: clip.type, ref, clipId: clip.id, volume });
+      }
+    });
+  }
+
+  updateActiveAudioVolumes() {
+    const masterVolume = clamp(safeNumber(this.doc?.masterVolume, 1), 0, 1);
+    this.loopingAudio.forEach((entry, clipId) => {
+      const clip = this.audioClipById.get(clipId);
+      if (!clip || this.timeMs < clip.startMs || this.timeMs > getClipEndMs(clip)) return;
+      const volume = clamp(sampleCutsceneAudioVolume(clip, this.timeMs) * masterVolume, 0, 1);
+      if (Math.abs(volume - safeNumber(entry.volume, -1)) < 0.002) return;
+      entry.volume = volume;
+      if (entry.type === 'music') {
+        this.game.setCutsceneMidiLayerVolume?.(clip.id, volume);
+      } else {
+        this.game.setSfxVolumeById?.(entry.ref, { key: clip.id, volume });
       }
     });
   }
 
   stopExpiredLoopingAudio() {
     this.loopingAudio.forEach((entry, clipId) => {
-      const clip = (this.doc?.clips || []).find((item) => item.id === clipId);
+      const clip = this.audioClipById.get(clipId);
       if (!clip || this.timeMs < getClipEndMs(clip)) return;
       if (entry.type === 'music') {
-        if (typeof this.game.stopCutsceneMidi === 'function') {
+        if (typeof this.game.stopCutsceneMidiLayer === 'function') {
+          this.game.stopCutsceneMidiLayer(clip.id, { fadeMs: clip.fadeMs });
+        } else if (typeof this.game.stopCutsceneMidi === 'function') {
           this.game.stopCutsceneMidi(entry.ref, { fadeMs: clip.fadeMs });
         } else {
           this.game.stopActorMidi?.(entry.ref, { fadeMs: clip.fadeMs });
         }
       }
-      if (entry.type === 'sfx') this.game.stopSfxById?.(entry.ref);
+      if (entry.type === 'sfx') this.game.stopSfxById?.(entry.ref, { key: clip.id });
       this.loopingAudio.delete(clipId);
     });
   }
@@ -875,20 +960,22 @@ export class CutscenePlayer {
   stopLoopingAudio() {
     this.loopingAudio.forEach((entry) => {
       if (entry.type === 'music') {
-        if (typeof this.game.stopCutsceneMidi === 'function') {
+        if (typeof this.game.stopCutsceneMidiLayer === 'function') {
+          this.game.stopCutsceneMidiLayer(entry.clipId, { fadeMs: 120 });
+        } else if (typeof this.game.stopCutsceneMidi === 'function') {
           this.game.stopCutsceneMidi(entry.ref, { fadeMs: 120 });
         } else {
           this.game.stopActorMidi?.(entry.ref, { fadeMs: 120 });
         }
       }
-      if (entry.type === 'sfx') this.game.stopSfxById?.(entry.ref);
+      if (entry.type === 'sfx') this.game.stopSfxById?.(entry.ref, { key: entry.clipId });
     });
     this.loopingAudio.clear();
   }
 
   draw(ctx, width, height) {
     if (!this.active || !this.doc) return;
-    drawCutsceneDocument(ctx, this.doc, this.timeMs, { x: 0, y: 0, w: width, h: height }, this, { fit: 'cover', drawBorder: false });
+    drawCutsceneDocument(ctx, this.doc, this.timeMs, { x: 0, y: 0, w: width, h: height }, this, { fit: 'contain', drawBorder: false });
   }
 
   getImageForAsset(asset) {
@@ -913,20 +1000,12 @@ export class CutscenePlayer {
 
 export function drawCutsceneDocument(ctx, doc, timeMs, bounds, runtime = null, options = {}) {
   if (!ctx || !bounds) return;
-  const safeDoc = normalizeCutsceneDocument(doc);
-  const safeBounds = {
-    x: safeNumber(bounds.x),
-    y: safeNumber(bounds.y),
-    w: Math.max(1, safeNumber(bounds.w, 1)),
-    h: Math.max(1, safeNumber(bounds.h, 1))
-  };
   const fit = options?.fit === 'cover' ? 'cover' : 'contain';
-  const scaleMethod = fit === 'cover' ? Math.max : Math.min;
-  const scale = Math.max(0.001, scaleMethod(safeBounds.w / safeDoc.width, safeBounds.h / safeDoc.height));
-  const stageW = safeDoc.width * scale;
-  const stageH = safeDoc.height * scale;
-  const stageX = safeBounds.x + (safeBounds.w - stageW) / 2;
-  const stageY = safeBounds.y + (safeBounds.h - stageH) / 2;
+  const projection = getCutsceneRenderProjection(doc, bounds, { fit });
+  const safeDoc = projection.doc;
+  const safeBounds = projection.bounds;
+  const { x: stageX, y: stageY, w: stageW, h: stageH } = projection.stageRect;
+  const scale = projection.scale;
   ctx.save();
   ctx.imageSmoothingEnabled = false;
   ctx.fillStyle = '#06090d';
@@ -1159,7 +1238,7 @@ function drawBitmapTextWithBorder(ctx, text, x, y, unit, clip) {
 
 function drawPixelTextClip(ctx, clip, sample, stage, w, h) {
   const textScale = Math.max(0.05, Math.min(getEffectiveScaleX(sample), getEffectiveScaleY(sample)));
-  const unit = Math.max(1, Math.floor((clip.fontSize * stage.scale * textScale) / 8));
+  const unit = Math.max(1, Math.floor((clip.fontSize * textScale) / 8)) * stage.scale;
   const lineH = unit * 9;
   const maxWidth = Math.max(unit * 6, w - unit * 2);
   const localTime = Math.max(0, safeNumber(sample.timeMs, 0));
@@ -1236,9 +1315,9 @@ function getCutsceneWeatherState(runtime, clip, weatherType, stage) {
 function getCutsceneWeatherRenderScale(stage, weatherType) {
   const stageScale = Math.max(0.05, safeNumber(stage?.scale, 1));
   if (weatherType === 'weather-snow' || weatherType === 'weather-blizzard') {
-    return Math.min(stageScale, 1.5);
+    return Math.max(0.75, stageScale);
   }
-  return Math.min(stageScale, 2);
+  return Math.max(0.75, stageScale);
 }
 
 function advanceCutsceneWeatherState(state, clip, localMs, stage, weatherType, effectSample = null) {
@@ -2336,7 +2415,6 @@ export default class CutsceneEditor {
       return [
         { id: 'board-color', label: 'Color' },
         { id: 'opacity', label: `Opacity ${Math.round(safeNumber(selected.opacity, 1) * 100)}%` },
-        { id: 'clip-duration', label: 'Length' },
         { id: 'set-key', label: 'Set Key' },
         { id: 'actions', label: 'More' }
       ];
@@ -2386,16 +2464,15 @@ export default class CutsceneEditor {
         { id: 'key-mode', label: this.getSelectedKeyframeLabel(clip) },
         { id: 'ease', label: this.getEasingLabel(clip.easing) }
       ] : [
-        { id: 'clip-duration', label: 'Clip Length', disabled: clip.type === 'pause' },
         { id: 'delete', label: 'Delete' }
       ];
     }
     if (isAudioClip(clip)) {
+      const editable = this.getSelectedKeyframe(clip) || clip;
       return [
         { id: 'loop', label: clip.loop ? 'Loop On' : 'Loop Off' },
-        { id: 'volume', label: `Volume ${Math.round((clip.volume ?? 1) * 100)}` },
+        { id: 'volume', label: `Volume ${Math.round(safeNumber(editable.volume, clip.volume ?? 1) * 100)}` },
         { id: 'fade', label: `Fade ${clip.fadeMs ?? 250}` },
-        { id: 'clip-duration', label: 'Clip Length' },
         { id: 'delete', label: 'Delete' }
       ];
     }
@@ -2406,7 +2483,6 @@ export default class CutsceneEditor {
         { id: 'effect-intensity', label: `Power ${safeNumber(editable.intensity, clip.intensity ?? 1)}` },
         { id: 'opacity', label: `Opacity ${Math.round(safeNumber(editable.opacity, 1) * 100)}%` },
         { id: 'effect-wind', label: `Wind ${safeNumber(editable.wind, clip.wind ?? 0)}` },
-        { id: 'clip-duration', label: 'Clip Length' },
         { id: 'delete', label: 'Delete' }
       ];
     }
@@ -2421,8 +2497,7 @@ export default class CutsceneEditor {
         { id: 'reveal-speed', label: `Reveal ${clip.revealSpeed}` },
         { id: 'opacity', label: `Opacity ${Math.round(safeNumber((this.getEditableTransform(clip) || clip).opacity, 1) * 100)}%` },
         { id: 'fade-in', label: `Fade In ${clip.fadeInMs || 0}` },
-        { id: 'fade-out', label: `Fade Out ${clip.fadeOutMs || 0}` },
-        { id: 'clip-duration', label: 'Clip Length' }
+        { id: 'fade-out', label: `Fade Out ${clip.fadeOutMs || 0}` }
       ];
     }
     if (clip.type === 'actor') {
@@ -2435,8 +2510,7 @@ export default class CutsceneEditor {
         { id: 'anim-loop', label: clip.loopAnimation ? 'Loop Anim' : 'Once Anim' },
         { id: 'scale', label: 'Scale' },
         { id: 'rotate', label: 'Rotate' },
-        { id: 'opacity', label: `Opacity ${Math.round(safeNumber((this.getEditableTransform(clip) || clip).opacity, 1) * 100)}%` },
-        { id: 'clip-duration', label: 'Clip Length' }
+        { id: 'opacity', label: `Opacity ${Math.round(safeNumber((this.getEditableTransform(clip) || clip).opacity, 1) * 100)}%` }
       ];
     }
     return [
@@ -2450,7 +2524,6 @@ export default class CutsceneEditor {
       { id: 'fx', label: 'FX' },
       { id: 'fade-in', label: `Fade In ${clip.fadeInMs || 0}` },
       { id: 'fade-out', label: `Fade Out ${clip.fadeOutMs || 0}` },
-      { id: 'clip-duration', label: 'Clip Length' },
       { id: 'delete', label: 'Delete' }
     ];
   }
@@ -3293,7 +3366,7 @@ export default class CutsceneEditor {
       if (id === 'sfx') await this.addAudioClip('sfx');
       if (id === 'effect') await this.addEffectClip();
       if (id === 'pause') this.addPauseClip();
-      if (id === 'play') this.togglePlayback();
+      if (id === 'play') await this.togglePlayback();
       if (id === 'step-frame') this.stepFrame();
       if (id === 'actions') await this.openSelectedClipActions();
       if (id === 'clip-options') {
@@ -3467,19 +3540,26 @@ export default class CutsceneEditor {
     return 'Linear';
   }
 
-  togglePlayback() {
+  async preparePreviewAudioResources(doc = this.document) {
+    if (!doc || typeof this.game?.prepareCutsceneAudioResources !== 'function') return;
+    this.statusText = 'Preparing audio...';
+    await this.game.prepareCutsceneAudioResources(doc);
+  }
+
+  async togglePlayback() {
     if (this.isPlaying) {
       this.pausePlayback();
       return;
     }
-    this.playScene();
+    await this.playScene();
   }
 
-  playScene() {
+  async playScene() {
     if (!this.document) this.document = createDefaultCutscene();
     const previewDurationMs = getFullPreviewDurationMs(this.document);
     this.document.durationMs = Math.max(this.document.durationMs || DEFAULT_DURATION_MS, previewDurationMs);
     const startMs = clamp(this.playheadMs, 0, previewDurationMs);
+    await this.preparePreviewAudioResources(this.document);
     this.playheadMs = startMs;
     this.previewPlaybackTargetMs = previewDurationMs;
     const now = getNowMs();
@@ -3507,7 +3587,7 @@ export default class CutsceneEditor {
   }
 
   playPlayback() {
-    this.playScene();
+    return this.playScene();
   }
 
   pausePlayback() {
@@ -3597,6 +3677,13 @@ export default class CutsceneEditor {
       downloadBtn.className = 'shared-text-input-btn primary';
       downloadBtn.textContent = 'Download';
       buttonRow.appendChild(downloadBtn);
+      const openLink = document.createElement('a');
+      openLink.className = 'shared-text-input-btn';
+      openLink.href = url;
+      openLink.target = '_blank';
+      openLink.rel = 'noopener';
+      openLink.textContent = 'Open Video';
+      buttonRow.appendChild(openLink);
       let settled = false;
       let urlRevoked = false;
       const revokeDownloadUrl = () => {
@@ -3635,6 +3722,10 @@ export default class CutsceneEditor {
         cleanup(false);
       });
       downloadBtn.addEventListener('click', triggerDownload);
+      openLink.addEventListener('click', (event) => {
+        event.stopPropagation();
+        window.setTimeout(() => cleanup(true), 500);
+      });
       overlay.addEventListener('click', (event) => {
         if (event.target === overlay) {
           revokeDownloadUrl();
@@ -3666,7 +3757,7 @@ export default class CutsceneEditor {
 
   renderMovieExportFrame(exportCtx, doc, timeMs, layout, runtime) {
     exportCtx.imageSmoothingEnabled = false;
-    drawCutsceneDocument(exportCtx, doc, timeMs, { x: 0, y: 0, w: layout.outputWidth, h: layout.outputHeight }, runtime, { fit: 'cover', drawBorder: false });
+    drawCutsceneDocument(exportCtx, doc, timeMs, layout.stageBounds || { x: 0, y: 0, w: layout.outputWidth, h: layout.outputHeight }, runtime, { fit: layout.fit || 'contain', drawBorder: false });
   }
 
   advanceMovieExportAudio(player, dtSeconds) {
@@ -3691,7 +3782,365 @@ export default class CutsceneEditor {
     return response.blob();
   }
 
+  async transcodeFrameMovieToMp4({ frames, audioBlob = null, fps = DEFAULT_FPS }) {
+    const form = new FormData();
+    form.append('fps', String(fps));
+    frames.forEach((frame, index) => {
+      form.append('frame', frame, `frame-${String(index).padStart(6, '0')}.png`);
+    });
+    if (audioBlob?.size) {
+      form.append('audio', audioBlob, 'audio.webm');
+    }
+    const response = await fetch('/__export/mp4-frames', {
+      method: 'POST',
+      body: form
+    });
+    if (!response.ok) {
+      let message = `MP4 frame encoder failed (${response.status})`;
+      try {
+        const payload = await response.json();
+        if (payload?.error) message = payload.error;
+      } catch (_error) {}
+      throw new Error(message);
+    }
+    return response.blob();
+  }
+
+  getMovieExportContentKey(safeDoc, { durationMs, fps, frameCount, layout, segmentMs, segmentCount }) {
+    const source = JSON.stringify({
+      version: 5,
+      doc: safeDoc,
+      durationMs,
+      fps,
+      frameCount,
+      segmentMs,
+      segmentCount,
+      frameWidth: layout.frameWidth,
+      frameHeight: layout.frameHeight,
+      outputWidth: layout.outputWidth,
+      outputHeight: layout.outputHeight
+    });
+    let hash = 2166136261;
+    for (let index = 0; index < source.length; index += 1) {
+      hash ^= source.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return `cutscene-mp4-v5-${safeDoc.name || 'cutscene'}-${durationMs}-${fps}-${frameCount}-${segmentMs}-${(hash >>> 0).toString(16)}`;
+  }
+
+  async createMovieExportSession(metadata) {
+    const response = await fetch('/__export/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(metadata)
+    });
+    if (!response.ok) {
+      let message = `Could not create export session (${response.status})`;
+      try {
+        const payload = await response.json();
+        if (payload?.error) message = payload.error;
+      } catch (_error) {}
+      throw new Error(message);
+    }
+    const payload = await response.json();
+    if (!payload?.session?.id) throw new Error('Export session response was invalid.');
+    return payload.session;
+  }
+
+  async uploadMovieExportFrame(sessionId, index, blob) {
+    const response = await fetch(`/__export/session/${encodeURIComponent(sessionId)}/frame/${index}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': blob.type || 'image/png' },
+      body: blob
+    });
+    if (!response.ok) {
+      let message = `Could not upload frame ${index + 1} (${response.status})`;
+      try {
+        const payload = await response.json();
+        if (payload?.error) message = payload.error;
+      } catch (_error) {}
+      throw new Error(message);
+    }
+    return response.json();
+  }
+
+  async uploadMovieExportSegmentFrame(sessionId, segmentIndex, frameIndex, blob) {
+    const response = await fetch(`/__export/session/${encodeURIComponent(sessionId)}/segment/${segmentIndex}/frame/${frameIndex}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': blob.type || 'image/png' },
+      body: blob
+    });
+    if (!response.ok) {
+      let message = `Could not upload segment ${segmentIndex + 1} frame ${frameIndex + 1} (${response.status})`;
+      try {
+        const payload = await response.json();
+        if (payload?.error) message = payload.error;
+      } catch (_error) {}
+      throw new Error(message);
+    }
+    return response.json();
+  }
+
+  async uploadMovieExportAudio(sessionId, blob) {
+    if (!blob?.size) return null;
+    const response = await fetch(`/__export/session/${encodeURIComponent(sessionId)}/audio`, {
+      method: 'PUT',
+      headers: { 'Content-Type': blob.type || 'audio/webm' },
+      body: blob
+    });
+    if (!response.ok) {
+      let message = `Could not upload movie audio (${response.status})`;
+      try {
+        const payload = await response.json();
+        if (payload?.error) message = payload.error;
+      } catch (_error) {}
+      throw new Error(message);
+    }
+    return response.json();
+  }
+
+  async encodeMovieExportSession(sessionId) {
+    const response = await fetch(`/__export/session/${encodeURIComponent(sessionId)}/encode`, {
+      method: 'POST'
+    });
+    if (!response.ok) {
+      let message = `MP4 encoder failed (${response.status})`;
+      try {
+        const payload = await response.json();
+        if (payload?.error) message = payload.error;
+      } catch (_error) {}
+      throw new Error(message);
+    }
+    return response.json();
+  }
+
+  async encodeMovieExportSegment(sessionId, segmentIndex) {
+    const response = await fetch(`/__export/session/${encodeURIComponent(sessionId)}/segment/${segmentIndex}/encode`, {
+      method: 'POST'
+    });
+    if (!response.ok) {
+      let message = `MP4 segment encoder failed (${response.status})`;
+      try {
+        const payload = await response.json();
+        if (payload?.error) message = payload.error;
+      } catch (_error) {}
+      throw new Error(message);
+    }
+    return response.json();
+  }
+
+  async finalizeMovieExportSession(sessionId) {
+    const response = await fetch(`/__export/session/${encodeURIComponent(sessionId)}/finalize`, {
+      method: 'POST'
+    });
+    if (!response.ok) {
+      let message = `MP4 finalization failed (${response.status})`;
+      try {
+        const payload = await response.json();
+        if (payload?.error) message = payload.error;
+      } catch (_error) {}
+      throw new Error(message);
+    }
+    return response.json();
+  }
+
+  async downloadMovieExportResult(sessionId) {
+    const response = await fetch(`/__export/session/${encodeURIComponent(sessionId)}/result`);
+    if (!response.ok) {
+      let message = `Could not download MP4 (${response.status})`;
+      try {
+        const payload = await response.json();
+        if (payload?.error) message = payload.error;
+      } catch (_error) {}
+      throw new Error(message);
+    }
+    return response.blob();
+  }
+
+  canvasToPngBlob(canvas) {
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error('Could not encode movie frame.'));
+      }, 'image/png');
+    });
+  }
+
+  async recordCutsceneAudioBlob(safeDoc, durationMs) {
+    if (typeof MediaRecorder === 'undefined' || typeof MediaStream === 'undefined') return null;
+    await this.game?.audio?.ensure?.();
+    const capture = this.game?.audio?.beginMasterCapture?.({ monitor: false }) || null;
+    if (!capture?.stream) return null;
+    const chunks = [];
+    let player = null;
+    try {
+      const mimeType = ['audio/webm;codecs=opus', 'audio/webm', 'video/webm;codecs=opus', 'video/webm']
+        .find((type) => {
+          try { return MediaRecorder.isTypeSupported?.(type); } catch (_error) { return false; }
+        }) || '';
+      const recorder = new MediaRecorder(capture.stream, mimeType ? { mimeType, audioBitsPerSecond: 192000 } : { audioBitsPerSecond: 192000 });
+      const stopped = new Promise((resolve, reject) => {
+        recorder.addEventListener('dataavailable', (event) => {
+          if (event.data?.size) chunks.push(event.data);
+        });
+        recorder.addEventListener('stop', resolve, { once: true });
+        recorder.addEventListener('error', (event) => reject(event.error || new Error('Movie audio recording failed')), { once: true });
+      });
+      player = new CutscenePlayer(this.game || {});
+      player.play(safeDoc, { skippable: false, ignorePauseMarkers: true, startMs: 0 });
+      recorder.start(250);
+      this.advanceMovieExportAudio(player, 0);
+      const start = getNowMs();
+      let previousElapsed = 0;
+      await new Promise((resolve) => {
+        const step = () => {
+          const elapsed = Math.min(durationMs, getNowMs() - start);
+          this.advanceMovieExportAudio(player, (elapsed - previousElapsed) / 1000);
+          previousElapsed = elapsed;
+          if (elapsed >= durationMs) {
+            resolve();
+            return;
+          }
+          window.setTimeout(step, 16);
+        };
+        step();
+      });
+      if (recorder.state !== 'inactive') recorder.stop();
+      await stopped;
+      player.stop();
+      player = null;
+      return chunks.length ? new Blob(chunks, { type: mimeType || 'audio/webm' }) : null;
+    } finally {
+      player?.stop?.();
+      this.game?.audio?.endMasterCapture?.(capture);
+    }
+  }
+
+  async exportMovieMp4Deterministic(progress) {
+    if (!this.document) this.document = createDefaultCutscene();
+    const safeDoc = normalizeCutsceneDocument(this.document, this.document.name);
+    const durationMs = getFullPreviewDurationMs(safeDoc);
+    const fps = clamp(Math.round(safeNumber(safeDoc.fps, DEFAULT_FPS)), 12, 30);
+    const layout = getCutsceneMovieExportLayout(safeDoc);
+    const frameCount = Math.max(1, Math.ceil((durationMs / 1000) * fps));
+    const segmentMs = CUTSCENE_EXPORT_SEGMENT_MS;
+    const segmentCount = Math.max(1, Math.ceil(durationMs / segmentMs));
+    const contentKey = this.getMovieExportContentKey(safeDoc, { durationMs, fps, frameCount, layout, segmentMs, segmentCount });
+    progress.update(5, 'Creating export session...');
+    const session = await this.createMovieExportSession({
+      name: safeDoc.name || 'cutscene',
+      contentKey,
+      durationMs,
+      fps,
+      frameCount,
+      segmentMs,
+      segmentCount,
+      sourceWidth: layout.frameWidth,
+      sourceHeight: layout.frameHeight,
+      outputWidth: layout.outputWidth,
+      outputHeight: layout.outputHeight
+    });
+    if (session.outputReady) {
+      progress.update(95, 'Using cached MP4...');
+      return this.downloadMovieExportResult(session.id);
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = layout.frameWidth;
+    canvas.height = layout.frameHeight;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) throw new Error('Could not create movie canvas.');
+    ctx.imageSmoothingEnabled = false;
+
+    progress.update(8, 'Preparing audio...');
+    await this.preparePreviewAudioResources(safeDoc);
+    progress.update(12, 'Recording audio and rendering segments...');
+    const audioPromise = session.audioReady
+      ? Promise.resolve(null)
+      : this.recordCutsceneAudioBlob(safeDoc, durationMs).catch(() => null);
+    const runtime = this.buildMovieExportRuntime();
+    const encodedSegments = new Set(Array.isArray(session.segments) ? session.segments : []);
+    let completedFrames = 0;
+    for (let segmentIndex = 0; segmentIndex < segmentCount; segmentIndex += 1) {
+      const segmentStartMs = segmentIndex * segmentMs;
+      const segmentEndMs = Math.min(durationMs, (segmentIndex + 1) * segmentMs);
+      const startFrame = Math.floor((segmentStartMs / 1000) * fps);
+      const endFrame = Math.min(frameCount, Math.max(startFrame + 1, Math.ceil((segmentEndMs / 1000) * fps)));
+      const segmentFrameCount = Math.max(1, endFrame - startFrame);
+      if (encodedSegments.has(segmentIndex)) {
+        completedFrames += segmentFrameCount;
+        progress.update(16 + Math.floor((completedFrames / Math.max(1, frameCount)) * 58), `Skipping saved segment ${segmentIndex + 1} / ${segmentCount}`);
+        await new Promise((resolve) => window.setTimeout(resolve, 0));
+        continue;
+      }
+      progress.update(16 + Math.floor((completedFrames / Math.max(1, frameCount)) * 58), `Rendering segment ${segmentIndex + 1} / ${segmentCount}`);
+      for (let localFrame = 0; localFrame < segmentFrameCount; localFrame += 1) {
+        const globalFrame = startFrame + localFrame;
+        const elapsed = Math.min(durationMs, (globalFrame / fps) * 1000);
+        this.renderMovieExportFrame(ctx, safeDoc, elapsed, layout, runtime);
+        const blob = await this.canvasToPngBlob(canvas);
+        await this.uploadMovieExportSegmentFrame(session.id, segmentIndex, localFrame, blob);
+        completedFrames += 1;
+        if (localFrame % 5 === 0) {
+          progress.update(16 + Math.floor((completedFrames / Math.max(1, frameCount)) * 58), `Segment ${segmentIndex + 1} / ${segmentCount}: frame ${localFrame + 1} / ${segmentFrameCount}`);
+          await new Promise((resolve) => window.setTimeout(resolve, 0));
+        }
+      }
+      progress.update(74, `Encoding segment ${segmentIndex + 1} / ${segmentCount}`);
+      await this.encodeMovieExportSegment(session.id, segmentIndex);
+      if (segmentIndex % 2 === 0) {
+        await new Promise((resolve) => window.setTimeout(resolve, 0));
+      }
+    }
+    progress.update(76, 'Segments checkpointed.');
+    const audioBlob = await audioPromise;
+    if (audioBlob?.size && !session.audioReady) {
+      progress.update(82, 'Uploading audio...');
+      await this.uploadMovieExportAudio(session.id, audioBlob);
+    }
+    progress.update(88, 'Finalizing MP4...');
+    await this.finalizeMovieExportSession(session.id);
+    progress.update(96, 'Downloading MP4...');
+    return this.downloadMovieExportResult(session.id);
+  }
+
   async exportMovieMp4() {
+    if (this.movieExportInProgress) {
+      this.statusText = 'Movie export already running';
+      return;
+    }
+    if (typeof document === 'undefined' || typeof window === 'undefined') {
+      this.statusText = 'MP4 export is unavailable in this environment.';
+      return;
+    }
+    this.movieExportInProgress = true;
+    let progress = this.openMovieExportProgressOverlay();
+    try {
+      const mp4Blob = await this.exportMovieMp4Deterministic(progress);
+      progress.update(100, 'MP4 ready.');
+      await new Promise((resolve) => window.setTimeout(resolve, 120));
+      progress.close();
+      progress = null;
+      const safeDoc = normalizeCutsceneDocument(this.document, this.document?.name);
+      const filename = getCutsceneMp4ExportFilename(safeDoc.name);
+      const downloaded = await this.openMovieDownloadReadyOverlay(mp4Blob, filename);
+      this.statusText = downloaded ? 'MP4 exported.' : 'MP4 export canceled.';
+    } catch (error) {
+      progress?.close();
+      progress = null;
+      const message = String(error?.message || error || '');
+      if (/FFmpeg is not usable|Not enough free disk|INSUFFICIENT_STORAGE/i.test(message)) {
+        this.statusText = `MP4 export failed: ${message}`;
+        return;
+      }
+      this.movieExportInProgress = false;
+      await this.exportMovieMp4MediaRecorder(error);
+      return;
+    } finally {
+      this.movieExportInProgress = false;
+    }
+  }
+
+  async exportMovieMp4MediaRecorder(previousError = null) {
     if (this.movieExportInProgress) {
       this.statusText = 'Movie export already running';
       return;
@@ -3735,8 +4184,9 @@ export default class CutsceneEditor {
     let capture = null;
     let videoStream = null;
     try {
-      progress.update(8, 'Preparing movie...');
+      progress.update(8, previousError ? 'Frame export failed; using fallback...' : 'Preparing movie...');
       await this.game?.audio?.ensure?.();
+      await this.preparePreviewAudioResources(safeDoc);
       capture = this.game?.audio?.beginMasterCapture?.({ monitor: false }) || null;
       videoStream = canvas.captureStream(fps);
       const tracks = [...videoStream.getVideoTracks()];
@@ -4384,6 +4834,28 @@ export default class CutsceneEditor {
       this.statusText = `Set ${which} FX keyframe`;
       return;
     }
+    if (isAudioClip(clip)) {
+      const currentVolume = sampleCutsceneAudioVolume(clip, clamp(this.playheadMs, clip.startMs, getClipEndMs(clip)));
+      if (localTime <= 0) {
+        if (!Array.isArray(clip.keyframes)) clip.keyframes = [];
+        clip.volume = currentVolume;
+        clip.keyframes = clip.keyframes.filter((keyframe) => Math.round(safeNumber(keyframe.timeMs)) !== 0);
+        this.selectedKeyframe = null;
+        this.playheadMs = clamp(clip.startMs, 0, this.document.durationMs);
+        this.statusText = 'Set hidden audio start';
+        return;
+      }
+      const next = { timeMs: localTime, manual: true, volume: currentVolume };
+      if (!Array.isArray(clip.keyframes)) clip.keyframes = [];
+      const index = clip.keyframes.findIndex((keyframe) => keyframe.timeMs === localTime);
+      if (index >= 0) clip.keyframes[index] = next;
+      else clip.keyframes.push(next);
+      clip.keyframes.sort((a, b) => a.timeMs - b.timeMs);
+      this.selectKeyframe(clip, localTime);
+      this.playheadMs = clamp(clip.startMs + localTime, 0, this.document.durationMs);
+      this.statusText = `Set ${which} audio keyframe`;
+      return;
+    }
     const current = sampleCutsceneClip(clip, this.playheadMs) || clip.keyframes[0] || {};
     const applyTransform = (target) => {
       target.x = safeNumber(current.x, this.document.width / 2);
@@ -4962,15 +5434,17 @@ export default class CutsceneEditor {
   async editSelectedVolume() {
     const clip = this.getSelectedClip();
     if (!isAudioClip(clip)) return;
+    const keyframe = this.getSelectedKeyframe(clip);
+    const target = keyframe || clip;
     const value = await this.requestText({
-      title: 'Audio Volume',
+      title: keyframe ? 'Audio Key Volume' : 'Audio Volume',
       label: '0-100',
-      initialValue: String(Math.round((clip.volume ?? 1) * 100)),
+      initialValue: String(Math.round(safeNumber(target.volume, clip.volume ?? 1) * 100)),
       inputType: 'number'
     });
     if (value == null) return;
-    this.captureHistory('Change volume');
-    clip.volume = clamp(safeNumber(value, 100) / 100, 0, 1);
+    this.captureHistory(keyframe ? 'Change key volume' : 'Change volume');
+    target.volume = clamp(safeNumber(value, 100) / 100, 0, 1);
   }
 
   async editSelectedFade() {
@@ -5006,22 +5480,34 @@ export default class CutsceneEditor {
   async editSceneDuration() {
     const value = await this.requestText({
       title: 'Scene Length',
-      label: 'Milliseconds',
-      initialValue: String(this.document.durationMs || DEFAULT_DURATION_MS),
-      inputType: 'number'
+      label: 'Seconds or ms',
+      initialValue: `${Math.round(safeNumber(this.document.durationMs, DEFAULT_DURATION_MS))}ms`,
+      placeholder: '95s or 95000ms',
+      inputType: 'text'
     });
     if (value == null) return;
+    const nextDuration = parseCutsceneDurationInput(value, this.document.durationMs || DEFAULT_DURATION_MS);
+    const maxClipEnd = Math.max(0, ...(this.document.clips || []).map((entry) => getClipEndMs(entry)));
+    if (maxClipEnd > nextDuration) {
+      const confirmed = typeof document === 'undefined'
+        ? true
+        : await openConfirmOverlay({
+            title: 'Shorten Scene?',
+            message: 'Scene ends before some clips. Keep hidden tail data?',
+            confirmText: 'Keep Hidden',
+            cancelText: 'Cancel'
+          });
+      if (!confirmed) return;
+    }
     this.captureHistory('Scene length');
-    const nextDuration = Math.max(500, Math.round(safeNumber(value, this.document.durationMs || DEFAULT_DURATION_MS)));
     this.document.durationMs = nextDuration;
     this.document.sceneFadeInMs = clamp(Math.round(safeNumber(this.document.sceneFadeInMs, 0)), 0, nextDuration);
     this.document.sceneFadeOutMs = clamp(Math.round(safeNumber(this.document.sceneFadeOutMs, 0)), 0, nextDuration);
     this.playheadMs = clamp(this.playheadMs, 0, nextDuration);
     if (this.isPlaying && this.playheadMs >= nextDuration) this.pausePlayback();
-    const maxClipEnd = Math.max(0, ...(this.document.clips || []).map((entry) => getClipEndMs(entry)));
     this.statusText = maxClipEnd > nextDuration
-      ? `Scene ${nextDuration}ms; later clips preserved`
-      : `Scene ${nextDuration}ms`;
+      ? `Scene ${nextDuration}ms (${(nextDuration / 1000).toFixed(2)}s); later clips preserved`
+      : `Scene ${nextDuration}ms (${(nextDuration / 1000).toFixed(2)}s)`;
   }
 
   async editSceneFade(which) {

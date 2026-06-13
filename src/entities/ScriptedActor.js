@@ -113,7 +113,7 @@ function resolveArtAnimationFrames(artRef = '', animation = {}) {
   return resolved;
 }
 
-function resolveAnimationFrames(animation = {}) {
+export function resolveAnimationFrames(animation = {}) {
   if (!animation) return [];
   const artRef = typeof animation.artRef === 'string' ? animation.artRef : '';
   if (artRef) {
@@ -133,7 +133,7 @@ function resolveAnimationFrames(animation = {}) {
   return [];
 }
 
-function getSharedFrameImageEntry(imageDataUrl) {
+export function getSharedFrameImageEntry(imageDataUrl) {
   if (!imageDataUrl || typeof Image === 'undefined') return null;
   let entry = actorFrameImageCache.get(imageDataUrl);
   if (entry) return entry;

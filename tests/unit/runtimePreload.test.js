@@ -49,6 +49,48 @@ test('game music startup preloads before creating a MIDI player and guards stale
   assert.ok(body.indexOf('preloadSongResources') < body.indexOf('new MidiSongPlayer(this.audio)'));
 });
 
+test('cutscene audio resources preload before cutscene playback starts', () => {
+  const gameSource = readFileSync(new URL('../../src/game/GameCore.js', import.meta.url), 'utf8');
+  const audioSource = readFileSync(new URL('../../src/game/Audio.js', import.meta.url), 'utf8');
+  const editorSource = readFileSync(new URL('../../src/ui/CutsceneEditor.js', import.meta.url), 'utf8');
+  const helperStart = gameSource.indexOf('\n  async prepareCutsceneAudioResources');
+  const helperEnd = gameSource.indexOf('\n  playSfxById', helperStart);
+  const helperBody = gameSource.slice(helperStart, helperEnd);
+  const triggerStart = gameSource.indexOf("if (action.type === 'play-cutscene')");
+  const triggerEnd = gameSource.indexOf("if (action.type === 'lock-all-doors'", triggerStart);
+  const triggerBody = gameSource.slice(triggerStart, triggerEnd);
+
+  assert.equal(helperBody.includes('preloadSongResources'), true);
+  assert.equal(helperBody.includes('preloadSfxDocument'), true);
+  assert.equal(helperBody.includes('preparedCutsceneAudio'), true);
+  assert.equal(helperBody.includes('preparedMusic.set'), true);
+  assert.equal(helperBody.includes('preparedSfx.set'), true);
+  assert.equal(audioSource.includes('async preloadSfxDocument'), true);
+  assert.equal(triggerBody.includes('prepareCutsceneAudioResources(payload.data)'), true);
+  assert.ok(triggerBody.indexOf('prepareCutsceneAudioResources(payload.data)') < triggerBody.indexOf('this.cutscenePlayer.play(payload.data'));
+  assert.equal(editorSource.includes('async preparePreviewAudioResources'), true);
+  assert.equal(editorSource.includes('await this.preparePreviewAudioResources(this.document)'), true);
+});
+
+test('cutscene music playback reuses prepared MIDI entries and export starts audio while checkpointing segments', () => {
+  const gameSource = readFileSync(new URL('../../src/game/GameCore.js', import.meta.url), 'utf8');
+  const editorSource = readFileSync(new URL('../../src/ui/CutsceneEditor.js', import.meta.url), 'utf8');
+  const playStart = gameSource.indexOf('\n  playCutsceneMidiLayer');
+  const playEnd = gameSource.indexOf('\n  stopCutsceneMidiLayer', playStart);
+  const playBody = gameSource.slice(playStart, playEnd);
+  const exportStart = editorSource.indexOf('\n  async exportMovieMp4Deterministic');
+  const exportEnd = editorSource.indexOf('\n  async exportMovieMp4()', exportStart);
+  const exportBody = editorSource.slice(exportStart, exportEnd);
+
+  assert.equal(playBody.includes('this.preparedCutsceneAudio?.music?.get(resolvedTrackId)'), true);
+  assert.ok(playBody.indexOf('preparedEntry') < playBody.indexOf('preloadSongResources'));
+  assert.equal(exportBody.includes("'Recording audio and rendering segments...'"), true);
+  assert.ok(exportBody.indexOf('await this.preparePreviewAudioResources(safeDoc)') < exportBody.indexOf('const audioPromise = session.audioReady'));
+  assert.ok(exportBody.indexOf('const audioPromise = session.audioReady') < exportBody.indexOf('for (let segmentIndex = 0; segmentIndex < segmentCount; segmentIndex += 1)'));
+  assert.ok(exportBody.indexOf('await this.encodeMovieExportSegment(session.id, segmentIndex)') < exportBody.indexOf('const audioBlob = await audioPromise'));
+  assert.ok(exportBody.indexOf('await this.uploadMovieExportAudio(session.id, audioBlob)') < exportBody.indexOf('await this.finalizeMovieExportSession(session.id)'));
+});
+
 test('actor asset preload accepts full state animation definitions without runtime draw', async () => {
   const result = await preloadActorDefinitionAssets({
     id: 'preload-test',

@@ -56,22 +56,34 @@ export function createDocumentLifecycle(adapter) {
     context.game?.showSaveStatusModal?.('Saving...');
     context.game?.showSystemToast?.('Saving...');
     context.statusMessage = 'Saving...';
-    const saved = saveProjectFile(adapter.folder, name, data);
-    if (adapter.waitForSync !== false) {
-      await saved?.syncPromise;
+    try {
+      const saved = saveProjectFile(adapter.folder, name, data);
+      if (adapter.waitForSync !== false) {
+        const persisted = await saved?.syncPromise;
+        if (persisted && persisted.persisted === false) {
+          throw new Error(persisted.reason || 'Server did not persist file');
+        }
+      }
+      const elapsed = Date.now() - savingStartedAt;
+      if (elapsed < MIN_SAVING_TOAST_MS) {
+        await new Promise((resolve) => setTimeout(resolve, MIN_SAVING_TOAST_MS - elapsed));
+      }
+      context.currentDocumentRef = { folder: adapter.folder, name };
+      adapter.afterSave?.(context, { name, data });
+      markSavedSnapshot(context);
+      context.game?.showSaveStatusModal?.('Saved');
+      setTimeout(() => context.game?.hideSaveStatusModal?.(), 1400);
+      context.game?.showSystemToast?.('Saved');
+      context.statusMessage = 'Saved';
+      return { id: name, name };
+    } catch (error) {
+      const message = `Save failed: ${error?.message || error || 'Unknown error'}`;
+      context.game?.showSaveStatusModal?.(message);
+      setTimeout(() => context.game?.hideSaveStatusModal?.(), 1800);
+      context.game?.showSystemToast?.(message);
+      context.statusMessage = message;
+      throw error;
     }
-    const elapsed = Date.now() - savingStartedAt;
-    if (elapsed < MIN_SAVING_TOAST_MS) {
-      await new Promise((resolve) => setTimeout(resolve, MIN_SAVING_TOAST_MS - elapsed));
-    }
-    context.currentDocumentRef = { folder: adapter.folder, name };
-    adapter.afterSave?.(context, { name, data });
-    markSavedSnapshot(context);
-    context.game?.showSaveStatusModal?.('Saved');
-    setTimeout(() => context.game?.hideSaveStatusModal?.(), 1400);
-    context.game?.showSystemToast?.('Saved');
-    context.statusMessage = 'Saved';
-    return { id: name, name };
   };
 
   const open = async (context) => {

@@ -1,0 +1,455 @@
+{
+  "schemaVersion": 2,
+  "id": "player",
+  "name": "Player",
+  "attackTarget": "none",
+  "taxonomies": [
+    "Player"
+  ],
+  "aggressiveTo": [],
+  "gravity": true,
+  "bodyDamageEnabled": false,
+  "contactDamage": 0,
+  "invulnerable": true,
+  "destructible": false,
+  "isRoot": false,
+  "tags": [
+    "built-in",
+    "player"
+  ],
+  "health": 5,
+  "healthTint": {
+    "enabled": false,
+    "color": "#ff3333",
+    "maxIntensity": 0.1,
+    "keepAfterDeath": false
+  },
+  "facingMode": "face-player",
+  "size": {
+    "width": 22,
+    "height": 34
+  },
+  "collisionZones": [],
+  "loot": [],
+  "linkedParts": [],
+  "states": [
+    {
+      "id": "idle",
+      "name": "Idle",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 32,
+        "updatedAt": 1781156662754,
+        "artRef": "player-idle-art"
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": []
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "walk",
+      "name": "Walk",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 8,
+        "updatedAt": 0,
+        "artRef": ""
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": []
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "run",
+      "name": "Run",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 8,
+        "updatedAt": 0,
+        "artRef": ""
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": []
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "jump",
+      "name": "Jump",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 8,
+        "updatedAt": 0,
+        "artRef": ""
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": []
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "fall",
+      "name": "Fall",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 8,
+        "updatedAt": 0,
+        "artRef": ""
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": []
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "duck",
+      "name": "Duck",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 8,
+        "updatedAt": 0,
+        "artRef": ""
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": []
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "crouch",
+      "name": "Crouch",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 8,
+        "updatedAt": 0,
+        "artRef": ""
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": []
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "dash",
+      "name": "Dash",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 8,
+        "updatedAt": 0,
+        "artRef": ""
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": []
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "attack",
+      "name": "Attack",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 8,
+        "updatedAt": 0,
+        "artRef": ""
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": []
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "hurt",
+      "name": "Hurt",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 8,
+        "updatedAt": 0,
+        "artRef": ""
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": []
+        }
+      ],
+      "collisionZones": null
+    },
+    {
+      "id": "dead",
+      "name": "Dead",
+      "animation": {
+        "imageDataUrl": "",
+        "frames": [],
+        "fps": 8,
+        "updatedAt": 0,
+        "artRef": ""
+      },
+      "movement": {
+        "type": "none",
+        "params": {}
+      },
+      "overrides": {
+        "bodyDamageEnabled": null,
+        "contactDamage": null,
+        "invulnerable": null
+      },
+      "disableHealthTint": false,
+      "transitions": [
+        {
+          "id": "transition-1",
+          "name": "Transition 1",
+          "conditionMode": "all",
+          "conditions": [
+            {
+              "id": "always",
+              "type": "always",
+              "params": {}
+            }
+          ],
+          "actions": []
+        }
+      ],
+      "collisionZones": null
+    }
+  ],
+  "initialStateId": "idle",
+  "deathStateId": "dead",
+  "destroyAfterDeath": false,
+  "collidableAfterDeath": false,
+  "respawnOnRoomEntry": false,
+  "advanced": {
+    "assetRefs": {},
+    "notes": "Visual override for hardcoded gameplay actor. Movement, combat, and AI remain hardcoded.",
+    "builtInActor": "player",
+    "reserved": true
+  }
+}

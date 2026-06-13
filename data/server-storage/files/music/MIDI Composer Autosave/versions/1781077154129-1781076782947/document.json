@@ -1,0 +1,2161 @@
+{
+  "schemaVersion": 2,
+  "tempo": 139,
+  "loopBars": 12612,
+  "loopStartTick": 0,
+  "loopEndTick": 2048,
+  "loopEnabled": true,
+  "timeSignature": {
+    "beats": 4,
+    "unit": 4
+  },
+  "highContrast": false,
+  "reverseStrings": false,
+  "keyboardStartOctave": 6,
+  "guitarTuning": [
+    40,
+    45,
+    50,
+    55,
+    59,
+    64
+  ],
+  "bassTuning": [
+    28,
+    33,
+    38,
+    43
+  ],
+  "staccatoEnabled": false,
+  "key": 0,
+  "scale": "major",
+  "chordMode": false,
+  "tracks": [
+    {
+      "id": "track-piano",
+      "name": "ContraBass",
+      "channel": 0,
+      "program": 43,
+      "instrumentFamily": "Strings",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.267931394609575,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#4fb7ff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        {
+          "id": "pedal_528s1f3",
+          "type": "compressor",
+          "name": "Neck Snapper",
+          "color": "blue",
+          "enabled": true,
+          "knobs": {
+            "threshold": 0.55,
+            "ratio": 0.65,
+            "makeup": 0.45
+          }
+        },
+        {
+          "id": "pedal_4u0lrxr",
+          "type": "eq",
+          "name": "Rust Dial",
+          "color": "orange",
+          "enabled": true,
+          "knobs": {
+            "low": 0.55,
+            "mid": 0.45,
+            "high": 0.65,
+            "presence": 0.6
+          }
+        },
+        {
+          "id": "pedal_q5x25x9",
+          "type": "echo",
+          "name": "Grave Echo",
+          "color": "orange",
+          "enabled": true,
+          "knobs": {
+            "time": 0.45,
+            "feedback": 0.35,
+            "mix": 0.65
+          }
+        },
+        {
+          "id": "pedal_wr15xq4",
+          "type": "reverb",
+          "name": "Coffin Air",
+          "color": "blue",
+          "enabled": true,
+          "knobs": {
+            "room": 0.45,
+            "decay": 0.44,
+            "mix": 0.34
+          }
+        }
+      ],
+      "patterns": [
+        {
+          "id": "pattern-piano",
+          "bars": 12612,
+          "notes": [
+            {
+              "id": "note-344851",
+              "startTick": 80,
+              "durationTicks": 56,
+              "pitch": 41,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-348695",
+              "startTick": 144,
+              "durationTicks": 56,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-236743",
+              "startTick": 208,
+              "durationTicks": 56,
+              "pitch": 41,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-41354",
+              "startTick": 272,
+              "durationTicks": 56,
+              "pitch": 39,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-713234",
+              "startTick": 336,
+              "durationTicks": 56,
+              "pitch": 41,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-983093",
+              "startTick": 400,
+              "durationTicks": 56,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-642710",
+              "startTick": 464,
+              "durationTicks": 56,
+              "pitch": 41,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-564460",
+              "startTick": 528,
+              "durationTicks": 56,
+              "pitch": 39,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-237308",
+              "startTick": 592,
+              "durationTicks": 56,
+              "pitch": 41,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-26151",
+              "startTick": 664,
+              "durationTicks": 56,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-179045",
+              "startTick": 728,
+              "durationTicks": 56,
+              "pitch": 41,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-884695",
+              "startTick": 792,
+              "durationTicks": 56,
+              "pitch": 39,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-813045",
+              "startTick": 864,
+              "durationTicks": 56,
+              "pitch": 41,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-554471",
+              "startTick": 928,
+              "durationTicks": 56,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-403116",
+              "startTick": 992,
+              "durationTicks": 56,
+              "pitch": 41,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-561155",
+              "startTick": 1056,
+              "durationTicks": 56,
+              "pitch": 39,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-563750",
+              "startTick": 1120,
+              "durationTicks": 56,
+              "pitch": 41,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-794153",
+              "startTick": 1184,
+              "durationTicks": 56,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-319173",
+              "startTick": 1248,
+              "durationTicks": 56,
+              "pitch": 41,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-414091",
+              "startTick": 1312,
+              "durationTicks": 56,
+              "pitch": 39,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-356806",
+              "startTick": 1376,
+              "durationTicks": 56,
+              "pitch": 41,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-693930",
+              "startTick": 1448,
+              "durationTicks": 56,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-587713",
+              "startTick": 1512,
+              "durationTicks": 56,
+              "pitch": 41,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-119537",
+              "startTick": 1576,
+              "durationTicks": 56,
+              "pitch": 39,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-556421",
+              "startTick": 1648,
+              "durationTicks": 56,
+              "pitch": 41,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-252171",
+              "startTick": 1712,
+              "durationTicks": 56,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-180531",
+              "startTick": 1776,
+              "durationTicks": 56,
+              "pitch": 41,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-88931",
+              "startTick": 1840,
+              "durationTicks": 56,
+              "pitch": 39,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-473890",
+              "startTick": 1904,
+              "durationTicks": 56,
+              "pitch": 41,
+              "velocity": 0.9
+            }
+          ],
+          "partRanges": [
+            {
+              "startTick": 80,
+              "endTick": 1960
+            }
+          ],
+          "partBoundaries": [],
+          "partRangeStart": null,
+          "partRangeEnd": null
+        }
+      ]
+    },
+    {
+      "id": "track-bass",
+      "name": "Bass",
+      "channel": 2,
+      "program": 30,
+      "instrumentFamily": "Guitar",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#55d68a",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        {
+          "id": "pedal_1lxltsj",
+          "type": "overdrive",
+          "name": "Ghost Drive",
+          "color": "red",
+          "enabled": true,
+          "knobs": {
+            "drive": 1,
+            "bite": 1,
+            "tone": 1
+          }
+        },
+        {
+          "id": "pedal_w4q4qkt",
+          "type": "chorus",
+          "name": "Ghost Choir",
+          "color": "purple",
+          "enabled": false,
+          "knobs": {
+            "depth": 1,
+            "spread": 1,
+            "mix": 0.507037607828776
+          }
+        },
+        {
+          "id": "pedal_80torz0",
+          "type": "echo",
+          "name": "Grave Echo",
+          "color": "orange",
+          "enabled": false,
+          "knobs": {
+            "time": 0.5254903157552083,
+            "feedback": 0.72178103129069,
+            "mix": 0.65
+          }
+        },
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-bass",
+          "bars": 12612,
+          "notes": [
+            {
+              "id": "note-14876",
+              "startTick": 0,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-995576",
+              "startTick": 8,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-697678",
+              "startTick": 64,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-542780",
+              "startTick": 72,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-17717",
+              "startTick": 128,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-458516",
+              "startTick": 136,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-183344",
+              "startTick": 192,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-364679",
+              "startTick": 200,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-525486",
+              "startTick": 256,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-913277",
+              "startTick": 264,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-954130",
+              "startTick": 320,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-459825",
+              "startTick": 328,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-861243",
+              "startTick": 384,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-617421",
+              "startTick": 392,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-913771",
+              "startTick": 448,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-28547",
+              "startTick": 456,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-442617",
+              "startTick": 512,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-182954",
+              "startTick": 520,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-773836",
+              "startTick": 576,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-661189",
+              "startTick": 584,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-456183",
+              "startTick": 640,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-772620",
+              "startTick": 648,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-154694",
+              "startTick": 704,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-191210",
+              "startTick": 712,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-258828",
+              "startTick": 768,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-503791",
+              "startTick": 776,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-103293",
+              "startTick": 832,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-798607",
+              "startTick": 840,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-946478",
+              "startTick": 896,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-105552",
+              "startTick": 904,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-934759",
+              "startTick": 960,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-482301",
+              "startTick": 968,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-532091",
+              "startTick": 1024,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-80663",
+              "startTick": 1032,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-249519",
+              "startTick": 1088,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-146341",
+              "startTick": 1096,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-21272",
+              "startTick": 1152,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-395770",
+              "startTick": 1160,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-979166",
+              "startTick": 1216,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-817087",
+              "startTick": 1224,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-796626",
+              "startTick": 1280,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-340538",
+              "startTick": 1288,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-795659",
+              "startTick": 1344,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-958812",
+              "startTick": 1352,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-933024",
+              "startTick": 1408,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-147126",
+              "startTick": 1416,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-189404",
+              "startTick": 1472,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-35544",
+              "startTick": 1480,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-771102",
+              "startTick": 1536,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-528134",
+              "startTick": 1544,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-341511",
+              "startTick": 1600,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-243570",
+              "startTick": 1608,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-284719",
+              "startTick": 1664,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-67039",
+              "startTick": 1672,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-887053",
+              "startTick": 1728,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-549669",
+              "startTick": 1736,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-136110",
+              "startTick": 1792,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-965314",
+              "startTick": 1800,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-230465",
+              "startTick": 1856,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-775629",
+              "startTick": 1864,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-758124",
+              "startTick": 1920,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-769539",
+              "startTick": 1928,
+              "durationTicks": 8,
+              "pitch": 26,
+              "velocity": 0.9
+            }
+          ],
+          "partRanges": [
+            {
+              "startTick": 0,
+              "endTick": 96
+            },
+            {
+              "startTick": 96,
+              "endTick": 256
+            },
+            {
+              "startTick": 256,
+              "endTick": 384
+            },
+            {
+              "startTick": 384,
+              "endTick": 896
+            },
+            {
+              "startTick": 896,
+              "endTick": 1408
+            },
+            {
+              "startTick": 1408,
+              "endTick": 1960
+            }
+          ],
+          "partBoundaries": [],
+          "partRangeStart": null,
+          "partRangeEnd": null
+        }
+      ]
+    },
+    {
+      "id": "track-drums",
+      "name": "Drums",
+      "instrument": "drums",
+      "channel": 9,
+      "program": 0,
+      "instrumentFamily": "Drums",
+      "bankMSB": 127,
+      "bankLSB": 0,
+      "volume": 0.9,
+      "pan": 0,
+      "mute": true,
+      "solo": false,
+      "color": "#b48dff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-drums",
+          "bars": 12612,
+          "notes": [
+            {
+              "id": "note-310034",
+              "startTick": 96,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-311993",
+              "startTick": 112,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-298315",
+              "startTick": 128,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-727634",
+              "startTick": 144,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-550070",
+              "startTick": 160,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-986339",
+              "startTick": 176,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-224057",
+              "startTick": 192,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-407372",
+              "startTick": 208,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-480383",
+              "startTick": 224,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-732555",
+              "startTick": 240,
+              "durationTicks": 4,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-4586",
+              "startTick": 256,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-686955",
+              "startTick": 272,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-286179",
+              "startTick": 288,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-109014",
+              "startTick": 304,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-534071",
+              "startTick": 320,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-781980",
+              "startTick": 336,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-760733",
+              "startTick": 352,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-228029",
+              "startTick": 368,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-441789",
+              "startTick": 256,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-109333",
+              "startTick": 272,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-579357",
+              "startTick": 288,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-114700",
+              "startTick": 304,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-368196",
+              "startTick": 320,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-346666",
+              "startTick": 336,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-903610",
+              "startTick": 352,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-226485",
+              "startTick": 368,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-744875",
+              "startTick": 376,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-224013",
+              "startTick": 376,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-982711",
+              "startTick": 384,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-968382",
+              "startTick": 400,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-546380",
+              "startTick": 416,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-110412",
+              "startTick": 432,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-380660",
+              "startTick": 448,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-314357",
+              "startTick": 464,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-320477",
+              "startTick": 480,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-760907",
+              "startTick": 496,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-853898",
+              "startTick": 384,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-267232",
+              "startTick": 400,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-672751",
+              "startTick": 416,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-368305",
+              "startTick": 432,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-380220",
+              "startTick": 448,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-852416",
+              "startTick": 464,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-216500",
+              "startTick": 480,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-148238",
+              "startTick": 496,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-16919",
+              "startTick": 504,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-485871",
+              "startTick": 504,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-307868",
+              "startTick": 512,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-947810",
+              "startTick": 528,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-830488",
+              "startTick": 544,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-666184",
+              "startTick": 560,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-803596",
+              "startTick": 576,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-797369",
+              "startTick": 592,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-224755",
+              "startTick": 608,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-259529",
+              "startTick": 624,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-714489",
+              "startTick": 512,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-917559",
+              "startTick": 528,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-723384",
+              "startTick": 544,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-765401",
+              "startTick": 560,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-292080",
+              "startTick": 576,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-412277",
+              "startTick": 592,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-688475",
+              "startTick": 608,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-1208",
+              "startTick": 624,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-158064",
+              "startTick": 632,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-637576",
+              "startTick": 632,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-268071",
+              "startTick": 640,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-9853",
+              "startTick": 656,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-450012",
+              "startTick": 672,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-61112",
+              "startTick": 688,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-333982",
+              "startTick": 704,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-340054",
+              "startTick": 720,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-360576",
+              "startTick": 736,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-651237",
+              "startTick": 752,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-234904",
+              "startTick": 640,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-521210",
+              "startTick": 656,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-925307",
+              "startTick": 672,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-120111",
+              "startTick": 688,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-425909",
+              "startTick": 704,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-574506",
+              "startTick": 720,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-341168",
+              "startTick": 736,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-192542",
+              "startTick": 752,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-706626",
+              "startTick": 760,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-785875",
+              "startTick": 760,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-605423",
+              "startTick": 768,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-242854",
+              "startTick": 784,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-619195",
+              "startTick": 800,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-572529",
+              "startTick": 816,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-469630",
+              "startTick": 832,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-290364",
+              "startTick": 848,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-182294",
+              "startTick": 864,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-96189",
+              "startTick": 880,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-866415",
+              "startTick": 768,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-731810",
+              "startTick": 784,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-614266",
+              "startTick": 800,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-642336",
+              "startTick": 816,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-86373",
+              "startTick": 832,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-186732",
+              "startTick": 848,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-344799",
+              "startTick": 864,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-850642",
+              "startTick": 880,
+              "durationTicks": 8,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-597347",
+              "startTick": 888,
+              "durationTicks": 8,
+              "pitch": 42,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-38346",
+              "startTick": 888,
+              "durationTicks": 8,
+              "pitch": 36,
+              "velocity": 0.9
+            }
+          ],
+          "partRanges": [
+            {
+              "startTick": 96,
+              "endTick": 256
+            },
+            {
+              "startTick": 256,
+              "endTick": 384
+            },
+            {
+              "startTick": 384,
+              "endTick": 896
+            }
+          ],
+          "partBoundaries": [],
+          "partRangeStart": null,
+          "partRangeEnd": null
+        }
+      ]
+    },
+    {
+      "id": "track-note-885994",
+      "name": "Tubular Bells",
+      "channel": 1,
+      "program": 1,
+      "instrumentFamily": "Piano",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#b48dff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-note-570725",
+          "bars": 12612,
+          "notes": [
+            {
+              "id": "note-861669",
+              "startTick": 592,
+              "durationTicks": 32,
+              "pitch": 98,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-614560",
+              "startTick": 624,
+              "durationTicks": 16,
+              "pitch": 97,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-539626",
+              "startTick": 656,
+              "durationTicks": 32,
+              "pitch": 92,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-865973",
+              "startTick": 728,
+              "durationTicks": 32,
+              "pitch": 86,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-648472",
+              "startTick": 736,
+              "durationTicks": 24,
+              "pitch": 88,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-246656",
+              "startTick": 744,
+              "durationTicks": 32,
+              "pitch": 87,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-452803",
+              "startTick": 688,
+              "durationTicks": 32,
+              "pitch": 90,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-89650",
+              "startTick": 752,
+              "durationTicks": 32,
+              "pitch": 89,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-582499",
+              "startTick": 760,
+              "durationTicks": 32,
+              "pitch": 88,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-639250",
+              "startTick": 1148,
+              "durationTicks": 12,
+              "pitch": 86,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-906683",
+              "startTick": 1160,
+              "durationTicks": 12,
+              "pitch": 87,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-867323",
+              "startTick": 1168,
+              "durationTicks": 12,
+              "pitch": 86,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-note-981041",
+      "name": "Woodblock",
+      "channel": 3,
+      "program": 115,
+      "instrumentFamily": "Percussive",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#ff6a6a",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-note-77042",
+          "bars": 12612,
+          "notes": [
+            {
+              "id": "note-619277",
+              "startTick": 800,
+              "durationTicks": 8,
+              "pitch": 89,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-998512",
+              "startTick": 816,
+              "durationTicks": 8,
+              "pitch": 89,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-607398",
+              "startTick": 824,
+              "durationTicks": 8,
+              "pitch": 89,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-56903",
+              "startTick": 832,
+              "durationTicks": 8,
+              "pitch": 89,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-365303",
+              "startTick": 1056,
+              "durationTicks": 8,
+              "pitch": 89,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-470999",
+              "startTick": 1072,
+              "durationTicks": 8,
+              "pitch": 89,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-103712",
+              "startTick": 1064,
+              "durationTicks": 8,
+              "pitch": 89,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-695759",
+              "startTick": 1088,
+              "durationTicks": 8,
+              "pitch": 89,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-845719",
+              "startTick": 1112,
+              "durationTicks": 8,
+              "pitch": 89,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-905383",
+              "startTick": 1144,
+              "durationTicks": 8,
+              "pitch": 89,
+              "velocity": 0.9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "track-note-260018",
+      "name": "Breath Noise",
+      "channel": 4,
+      "program": 121,
+      "instrumentFamily": "Sound Effects",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#43d5d0",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-note-167740",
+          "bars": 12612,
+          "notes": []
+        }
+      ]
+    },
+    {
+      "id": "track-note-515048",
+      "name": "Cello",
+      "channel": 5,
+      "program": 42,
+      "instrumentFamily": "Strings",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.560500053510274,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#4fb7ff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-note-421443",
+          "bars": 12612,
+          "notes": [
+            {
+              "id": "note-386025",
+              "startTick": 852,
+              "durationTicks": 4,
+              "pitch": 53,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-566411",
+              "startTick": 848,
+              "durationTicks": 4,
+              "pitch": 50,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-961003",
+              "startTick": 856,
+              "durationTicks": 4,
+              "pitch": 52,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-802455",
+              "startTick": 864,
+              "durationTicks": 8,
+              "pitch": 54,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-452730",
+              "startTick": 860,
+              "durationTicks": 4,
+              "pitch": 55,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-418247",
+              "startTick": 872,
+              "durationTicks": 24,
+              "pitch": 39,
+              "velocity": 0.9
+            }
+          ],
+          "partRanges": [
+            {
+              "startTick": 848,
+              "endTick": 960
+            }
+          ],
+          "partBoundaries": [],
+          "partRangeStart": null,
+          "partRangeEnd": null
+        }
+      ]
+    }
+  ],
+  "progression": [
+    {
+      "root": 0,
+      "quality": "min",
+      "startBar": 1,
+      "lengthBars": 1
+    },
+    {
+      "root": 5,
+      "quality": "min",
+      "startBar": 2,
+      "lengthBars": 1
+    },
+    {
+      "root": 7,
+      "quality": "maj",
+      "startBar": 3,
+      "lengthBars": 1
+    },
+    {
+      "root": 3,
+      "quality": "maj",
+      "startBar": 4,
+      "lengthBars": 1
+    }
+  ],
+  "name": "Intro",
+  "editorState": {
+    "midiComposer": {
+      "trackViewports": {
+        "track-piano": {
+          "trackId": "track-piano",
+          "trackName": "ContraBass",
+          "updatedAt": 1781066383831,
+          "grid": {
+            "gridOffset": {
+              "x": -5284.684787131013,
+              "y": 0
+            },
+            "timelineStartTick": 1910.2753429119584,
+            "gridZoomX": 3831.897972143496,
+            "gridZoomY": 0.9230769230769231,
+            "cursorTick": 1044,
+            "cursorPitch": 39,
+            "selectedPatternIndex": 0
+          },
+          "song": {
+            "songTimelineOffsetX": -4679.459282050167,
+            "songTrackScroll": 0,
+            "timelineStartTick": 1910.2753429119584,
+            "gridZoomX": 3831.897972143496,
+            "selectedTrackIndex": 0
+          }
+        },
+        "track-drums": {
+          "trackId": "track-drums",
+          "trackName": "Drums",
+          "updatedAt": 1780803461701,
+          "grid": {
+            "gridOffset": {
+              "x": -117.2493894988328,
+              "y": 0
+            },
+            "timelineStartTick": 117.2493894988328,
+            "gridZoomX": 1135.9963465376784,
+            "gridZoomY": 1,
+            "cursorTick": 800,
+            "cursorPitch": 36,
+            "selectedPatternIndex": 0
+          },
+          "song": {
+            "songTimelineOffsetX": -310.0651692059028,
+            "songTrackScroll": 26.83671531411292,
+            "timelineStartTick": 117.2493894988328,
+            "gridZoomX": 1135.9963465376784,
+            "selectedTrackIndex": 3
+          }
+        },
+        "track-guitar": {
+          "trackId": "track-guitar",
+          "trackName": "Guitar",
+          "updatedAt": 1780972172808,
+          "grid": {
+            "gridOffset": {
+              "x": -57.460375625632906,
+              "y": -987.7135115639466
+            },
+            "timelineStartTick": 57.460375625632906,
+            "gridZoomX": 1051,
+            "gridZoomY": 0.9230769230769231,
+            "cursorTick": 624,
+            "cursorPitch": 98,
+            "selectedPatternIndex": 0
+          },
+          "song": {
+            "songTimelineOffsetX": 0,
+            "songTrackScroll": 0,
+            "timelineStartTick": 57.460375625632906,
+            "gridZoomX": 1051,
+            "selectedTrackIndex": 1
+          }
+        },
+        "track-bass": {
+          "trackId": "track-bass",
+          "trackName": "Bass",
+          "updatedAt": 1781076327645,
+          "grid": {
+            "gridOffset": {
+              "x": -908.9329193672613,
+              "y": -2677.5115963510725
+            },
+            "timelineStartTick": 908.9329193672613,
+            "gridZoomX": 1051,
+            "gridZoomY": 0.9230769230769231,
+            "cursorTick": 1044,
+            "cursorPitch": 39,
+            "selectedPatternIndex": 0
+          },
+          "song": {
+            "songTimelineOffsetX": -4783.9773799808345,
+            "songTrackScroll": 0,
+            "timelineStartTick": 908.9329193672613,
+            "gridZoomX": 1051,
+            "selectedTrackIndex": 1
+          }
+        },
+        "track-note-885994": {
+          "trackId": "track-note-885994",
+          "trackName": "Tubular Bells",
+          "updatedAt": 1781076782097,
+          "grid": {
+            "gridOffset": {
+              "x": -2132.290826417959,
+              "y": -498.22248745426197
+            },
+            "timelineStartTick": 1163.2847073225141,
+            "gridZoomX": 2845.2538001697285,
+            "gridZoomY": 0.9230769230769231,
+            "cursorTick": 1188,
+            "cursorPitch": 90,
+            "selectedPatternIndex": 0
+          },
+          "song": {
+            "songTimelineOffsetX": -2016.1012063480098,
+            "songTrackScroll": 458,
+            "timelineStartTick": 1163.2847073225141,
+            "gridZoomX": 2845.2538001697285,
+            "selectedTrackIndex": 3
+          }
+        },
+        "track-note-981041": {
+          "trackId": "track-note-981041",
+          "trackName": "Woodblock",
+          "updatedAt": 1781076744785,
+          "grid": {
+            "gridOffset": {
+              "x": -1472.794255672865,
+              "y": -483.7083543281466
+            },
+            "timelineStartTick": 1077.5845524787624,
+            "gridZoomX": 2121.5404522235576,
+            "gridZoomY": 0.9230769230769231,
+            "cursorTick": 1144,
+            "cursorPitch": 89,
+            "selectedPatternIndex": 0
+          },
+          "song": {
+            "songTimelineOffsetX": -2016.1012063480098,
+            "songTrackScroll": 458,
+            "timelineStartTick": 1077.5845524787624,
+            "gridZoomX": 2121.5404522235576,
+            "selectedTrackIndex": 4
+          }
+        },
+        "track-note-260018": {
+          "trackId": "track-note-260018",
+          "trackName": "Breath Noise",
+          "updatedAt": 1781076732544,
+          "grid": {
+            "gridOffset": {
+              "x": -3624.7186553831434,
+              "y": -750.5214778084403
+            },
+            "timelineStartTick": 1140.7124330082418,
+            "gridZoomX": 4932.404897836539,
+            "gridZoomY": 0.9230769230769231,
+            "cursorTick": 992,
+            "cursorPitch": 73,
+            "selectedPatternIndex": 0
+          },
+          "song": {
+            "songTimelineOffsetX": -2016.1012063480098,
+            "songTrackScroll": 458,
+            "timelineStartTick": 1140.7124330082418,
+            "gridZoomX": 4932.404897836539,
+            "selectedTrackIndex": 5
+          }
+        },
+        "track-note-515048": {
+          "trackId": "track-note-515048",
+          "trackName": "Cello",
+          "updatedAt": 1781076400458,
+          "grid": {
+            "gridOffset": {
+              "x": -2326.420853588339,
+              "y": -1995.44509998642
+            },
+            "timelineStartTick": 942.3992623138544,
+            "gridZoomX": 3831.897972143496,
+            "gridZoomY": 0.9230769230769231,
+            "cursorTick": 1044,
+            "cursorPitch": 39,
+            "selectedPatternIndex": 0
+          },
+          "song": {
+            "songTimelineOffsetX": -2016.1012063480098,
+            "songTrackScroll": 458,
+            "timelineStartTick": 942.3992623138544,
+            "gridZoomX": 3831.897972143496,
+            "selectedTrackIndex": 6
+          }
+        }
+      },
+      "lastTrackId": "track-note-885994",
+      "lastTab": "grid"
+    }
+  }
+}

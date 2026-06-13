@@ -5,6 +5,7 @@ import ActorEditor, { buildActorPortraitMenuModel } from '../../src/ui/ActorEdit
 import { buildLevelMobileLandscapeRootTabs, buildLevelPortraitMenuModel, shouldShowLevelEditorTopPlaytestButton } from '../../src/ui/LevelEditorCore.js';
 import { buildMidiPortraitMenuModel } from '../../src/ui/MidiComposerCore.js';
 import {
+  applyPixelClipboardPixelsToLayer,
   buildPixelPortraitCanvasActionGroups,
   buildPixelMobileEditorLayout,
   buildPixelPortraitCanvasActions,
@@ -23,10 +24,13 @@ import {
   getPixelPortraitActionGridMetrics,
   getPixelPortraitToolGridMetrics,
   getPixelPortraitToolLabel,
+  getPixelClipboardPasteOrigin,
   quantizePixelPaletteRgb
 } from '../../src/ui/PixelStudio.js';
 import PixelStudio from '../../src/ui/PixelStudio.js';
+import { TOOL_IDS } from '../../src/ui/pixel-editor/tools.js';
 import { buildSfxPortraitMenuModel } from '../../src/ui/SfxEditor.js';
+import { mergeBuiltInActorOverride } from '../../src/content/builtinActorOverrides.js';
 import {
   assertSharedPortraitRailActionCount,
   getSharedPortraitRailActionButtons,
@@ -37,6 +41,12 @@ import {
 import { readFileSync } from 'node:fs';
 
 const pixelStudioSource = readFileSync(new URL('../../src/ui/PixelStudio.js', import.meta.url), 'utf8');
+const actorEditorSource = readFileSync(new URL('../../src/ui/ActorEditor.js', import.meta.url), 'utf8');
+const projectBrowserSource = readFileSync(new URL('../../src/ui/ProjectBrowserModal.js', import.meta.url), 'utf8');
+const levelEditorSource = readFileSync(new URL('../../src/ui/LevelEditorCore.js', import.meta.url), 'utf8');
+const playerSource = readFileSync(new URL('../../src/entities/Player.js', import.meta.url), 'utf8');
+const companionSource = readFileSync(new URL('../../src/entities/FriendlyCompanion.js', import.meta.url), 'utf8');
+const stylesSource = readFileSync(new URL('../../styles.css', import.meta.url), 'utf8');
 
 test('Pixel portrait root menu exposes every major panel and file utility', () => {
   const model = buildPixelPortraitMenuModel();
@@ -53,6 +63,42 @@ test('Pixel portrait root menu exposes every major panel and file utility', () =
   assert.equal(model.canvasUtilityIds.includes('controls'), false);
   assert.deepEqual(model.bottomRailActions, ['menu', 'undo', 'redo', 'brush']);
   assertSharedPortraitRailActionCount(model.bottomRailActions.map((id) => ({ id })), { editor: 'pixel' });
+});
+
+test('built-in player and companion actors are reserved visual overrides', () => {
+  const player = mergeBuiltInActorOverride('Player', {
+    states: [
+      {
+        id: 'run',
+        name: 'Run Custom',
+        animation: { frames: [{ imageDataUrl: 'data:image/png;base64,stub', durationMs: 80 }] }
+      },
+      {
+        id: 'wall-slide',
+        name: 'Wall Slide',
+        animation: { fps: 8, frames: [] }
+      }
+    ]
+  });
+
+  assert.equal(player.id, 'player');
+  assert.equal(player.name, 'Player');
+  assert.equal(player.invulnerable, true);
+  assert.equal(player.advanced.builtInActor, 'player');
+  assert.equal(player.advanced.reserved, true);
+  assert.ok(player.states.some((state) => state.id === 'idle'));
+  assert.equal(player.states.find((state) => state.id === 'run').name, 'Run Custom');
+  assert.ok(player.states.some((state) => state.id === 'wall-slide'));
+});
+
+test('built-in actor overrides appear in actor browser but not level enemy tools', () => {
+  assert.equal(projectBrowserSource.includes('listBuiltInActorBrowserEntries'), true);
+  assert.equal(actorEditorSource.includes('mergeBuiltInActorOverride'), true);
+  assert.equal(actorEditorSource.includes('invalidateBuiltInActorVisualCache'), true);
+  assert.equal(levelEditorSource.includes('isBuiltInActorName(name)'), true);
+  assert.equal(levelEditorSource.includes('actor?.advanced?.builtInActor'), true);
+  assert.equal(playerSource.includes('drawBuiltInActorOverride(ctx, this, this.getBuiltInActorVisualId())'), true);
+  assert.equal(companionSource.includes("return 'companion';"), true);
 });
 
 test('Pixel portrait menu root has enough height for a two-row full-feature tab strip', () => {
@@ -347,14 +393,131 @@ test('Pixel portrait reserves a compact swatch strip only when the sheet is clos
 
     assert.equal(closed.orientation, 'portrait');
     assert.ok(closed.paletteStrip);
+    assert.ok(closed.zoomStrip);
+    assert.ok(closed.zoomStrip.y >= closed.workSurface.y + closed.workSurface.h);
+    assert.ok(closed.zoomStrip.y + closed.zoomStrip.h <= closed.paletteStrip.y);
     assert.ok(closed.paletteStrip.y >= closed.workSurface.y + closed.workSurface.h);
     assert.ok(closed.paletteStrip.y + closed.paletteStrip.h <= closed.actionRail.y);
     assert.ok(closed.paletteStrip.x >= 0);
     assert.ok(closed.paletteStrip.x + closed.paletteStrip.w <= width);
     assert.equal(intersects(closed.workSurface, closed.paletteStrip), false);
+    assert.equal(intersects(closed.workSurface, closed.zoomStrip), false);
+    assert.equal(intersects(closed.zoomStrip, closed.paletteStrip), false);
     assert.equal(open.paletteStrip, null);
+    assert.equal(open.zoomStrip, null);
     assert.ok(open.workSurface.h > closed.workSurface.h);
   }
+});
+
+test('Pixel clipboard paste preserves internal origin and centers external content', () => {
+  const internal = getPixelClipboardPasteOrigin(
+    { width: 3, height: 2, originX: 5, originY: 6 },
+    16,
+    16,
+    { centerCol: 10, centerRow: 10 }
+  );
+  assert.deepEqual(internal, { x: 5, y: 6 });
+
+  const external = getPixelClipboardPasteOrigin(
+    { width: 4, height: 2 },
+    16,
+    16,
+    { centerCol: 8, centerRow: 8 }
+  );
+  assert.deepEqual(external, { x: 6, y: 7 });
+
+  const pixels = new Uint32Array([0xff0000ff, 0, 0x00ff00ff, 0xffffffff]);
+  const layer = new Uint32Array(6 * 5);
+  const pasted = applyPixelClipboardPixelsToLayer({
+    source: { width: 2, height: 2, pixels },
+    layerPixels: layer,
+    canvasWidth: 6,
+    canvasHeight: 5,
+    origin: { x: 3, y: 2 }
+  });
+
+  assert.equal(layer[2 * 6 + 3], 0xff0000ff);
+  assert.equal(layer[3 * 6 + 3], 0x00ff00ff);
+  assert.equal(layer[3 * 6 + 4], 0xffffffff);
+  assert.equal(pasted.mask[2 * 6 + 3], 1);
+  assert.equal(pasted.mask[2 * 6 + 4], 0);
+  assert.deepEqual(pasted.bounds, { x: 3, y: 2, w: 2, h: 2 });
+});
+
+test('Pixel paste selects only pasted pixels and switches to transform move mode', () => {
+  const studio = Object.create(PixelStudio.prototype);
+  studio.canvasState = {
+    width: 6,
+    height: 5,
+    activeLayerIndex: 0,
+    layers: [{ name: 'Layer 1', pixels: new Uint32Array(30) }]
+  };
+  studio.selection = {};
+  studio.startHistory = () => {};
+  studio.commitHistory = () => {};
+  studio.getPasteViewportCenterCell = () => ({ centerCol: 3, centerRow: 2 });
+  studio.setActiveTool = (toolId) => { studio.activeToolId = toolId; };
+
+  studio.applyClipboardPaste({
+    width: 2,
+    height: 2,
+    originX: 4,
+    originY: 1,
+    pixels: new Uint32Array([0xff0000ff, 0, 0, 0x00ff00ff])
+  }, { pasteToNewLayer: false });
+
+  assert.equal(studio.activeToolId, TOOL_IDS.MOVE);
+  assert.equal(studio.selection.active, true);
+  assert.deepEqual(studio.selection.bounds, { x: 4, y: 1, w: 2, h: 2 });
+  assert.equal(studio.selection.mask[1 * 6 + 4], 1);
+  assert.equal(studio.selection.mask[1 * 6 + 5], 0);
+  assert.equal(studio.selection.mask[2 * 6 + 5], 1);
+});
+
+test('Pixel animation playback advances preview without mutating frame layer data', () => {
+  const studio = Object.create(PixelStudio.prototype);
+  const frameA = {
+    durationMs: 10,
+    layers: [
+      { name: 'A', visible: true, locked: false, opacity: 1, pixels: new Uint32Array([1, 0, 0, 0]) },
+      { name: 'B', visible: false, locked: false, opacity: 0.5, pixels: new Uint32Array([0, 2, 0, 0]) }
+    ]
+  };
+  const frameB = {
+    durationMs: 10,
+    layers: [
+      { name: 'C', visible: true, locked: false, opacity: 1, pixels: new Uint32Array([0, 0, 3, 0]) }
+    ]
+  };
+  studio.animation = { playing: true, loop: false, currentFrameIndex: 0, frames: [frameA, frameB] };
+  studio.canvasState = { layers: frameA.layers };
+  studio.setFrameLayers = (layers) => { studio.canvasState.layers = layers; };
+  const before = studio.animation.frames.map((frame) => ({
+    durationMs: frame.durationMs,
+    layers: frame.layers.map((layer) => ({
+      name: layer.name,
+      visible: layer.visible,
+      locked: layer.locked,
+      opacity: layer.opacity,
+      pixels: Array.from(layer.pixels)
+    }))
+  }));
+
+  studio.updateAnimation(20);
+
+  const after = studio.animation.frames.map((frame) => ({
+    durationMs: frame.durationMs,
+    layers: frame.layers.map((layer) => ({
+      name: layer.name,
+      visible: layer.visible,
+      locked: layer.locked,
+      opacity: layer.opacity,
+      pixels: Array.from(layer.pixels)
+    }))
+  }));
+  assert.deepEqual(after, before);
+  assert.equal(studio.animation.currentFrameIndex, 1);
+  assert.equal(Object.prototype.hasOwnProperty.call(frameA, 'elapsed'), false);
 });
 
 test('Level portrait menu exposes compact roots and keeps playtest on bottom rail only', () => {
@@ -517,4 +680,38 @@ test('Actor editor bottom play action launches the full actor scene playtest', (
     ['register', 'scene-runner', 'Scene Runner'],
     ['start-scene', 'scene-runner', 'Scene Runner']
   ]);
+});
+
+test('Actor portrait thumbstick and state selection support mobile scrolling workflow', () => {
+  assert.equal(actorEditorSource.includes('getActorEditorThumbstickScrollTarget()'), true);
+  assert.equal(actorEditorSource.includes("'.actor-editor-collision-scroll'"), true);
+  assert.equal(actorEditorSource.includes("'.actor-editor-state-graph-card'"), true);
+  assert.equal(actorEditorSource.includes("'.actor-editor-state-list'"), true);
+  assert.ok(actorEditorSource.indexOf("'.actor-editor-state-list'") < actorEditorSource.indexOf("'.actor-editor-center'"));
+  assert.equal(actorEditorSource.includes("scrollTarget.scrollTop -= dy * 0.8"), true);
+  assert.equal(actorEditorSource.includes('selectActorState(stateId, { closePortraitMenu = false } = {})'), true);
+  assert.equal(actorEditorSource.includes('this.actorPortraitMenuOpen = false;'), true);
+  assert.equal(actorEditorSource.includes('this.controllerMenu.closeToSurface();'), true);
+  assert.equal(actorEditorSource.includes("btn.onclick = () => this.selectActorState(state.id, { closePortraitMenu: true });"), true);
+  assert.equal(actorEditorSource.includes("row.style.touchAction = 'pan-y';"), true);
+  assert.equal(actorEditorSource.includes('row.dataset.ignoreClick'), true);
+  assert.equal(stylesSource.includes('.actor-editor-state-list'), true);
+  assert.equal(stylesSource.includes('-webkit-overflow-scrolling: touch;'), true);
+  assert.equal(stylesSource.includes('overscroll-behavior: contain;'), true);
+  assert.equal(stylesSource.includes('touch-action: pan-y;'), true);
+});
+
+test('Actor portrait removes variant preview rail and keeps graph/collision controls reachable', () => {
+  assert.equal(actorEditorSource.includes('Variant preview'), false);
+  assert.equal(actorEditorSource.includes('this.stateGraphOpen = true;'), true);
+  assert.equal(actorEditorSource.includes('this.actorPortraitMenuOpen = false;'), true);
+  assert.equal(actorEditorSource.includes("card.classList.add('actor-editor-state-graph-card')"), true);
+  assert.equal(actorEditorSource.includes("card.classList.add('actor-editor-collision-card')"), true);
+  assert.equal(actorEditorSource.includes("viewportWrap.className = 'actor-editor-collision-scroll'"), true);
+  assert.equal(actorEditorSource.includes('actor-editor-collision-actions'), true);
+  assert.equal(actorEditorSource.includes("maxHeight: 'calc(100dvh - 24px)'"), true);
+  assert.equal(actorEditorSource.includes("if (this.activeMenuSection === 'actor') return null;"), true);
+  assert.equal(actorEditorSource.includes('const rightRailContent = this.renderRightRail();'), true);
+  assert.equal(actorEditorSource.includes('if (rightRailContent) topMenus.appendChild(rightRail);'), true);
+  assert.equal(actorEditorSource.includes("this.actorPortraitMenuOpen = !(isPortraitMobile && id === 'actor');"), true);
 });

@@ -10,14 +10,17 @@ import {
   createDefaultCutscene,
   drawCutsceneDocument,
   getCutsceneMovieExportLayout,
+  getCutsceneRenderProjection,
   getCutsceneTimelineLayout,
   getCutsceneMp4ExportFilename,
   getCutsceneSceneFadeAlpha,
   getVisualClipScreenBounds,
   normalizeCutsceneDocument,
+  parseCutsceneDurationInput,
   resolveActorStateEvent,
   resolveCutsceneActorVisualDimensions,
   sampleCutsceneEffectClip,
+  sampleCutsceneAudioVolume,
   sampleCutsceneClip,
   screenToCutscenePoint,
   selectCutsceneMovieRecordingMimeType,
@@ -1456,7 +1459,7 @@ test('cutscene editor timeline handle resizes selected clip duration', () => {
 test('cutscene editor play starts from current playhead and step advances one frame', async () => {
   const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
   editor.document = normalizeCutsceneDocument({
-    durationMs: 1000,
+    durationMs: 6000,
     fps: 20,
     clips: [{ id: 'actor-1', type: 'actor', startMs: 0, durationMs: 2400 }]
   });
@@ -1516,7 +1519,7 @@ test('cutscene editor play respects arbitrary timeline cursor', async () => {
   assert.equal(Math.round(editor.playheadMs), 2482);
 });
 
-test('cutscene editor preview ignores pause markers and keeps playing', () => {
+test('cutscene editor preview ignores pause markers and keeps playing', async () => {
   const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
   editor.document = normalizeCutsceneDocument({
     durationMs: 3000,
@@ -1526,7 +1529,7 @@ test('cutscene editor preview ignores pause markers and keeps playing', () => {
     ]
   });
 
-  editor.playScene();
+  await editor.playScene();
   editor.update({}, 0.2);
 
   assert.equal(editor.isPlaying, true);
@@ -1677,7 +1680,7 @@ test('cutscene editor preview fires scheduled music and sfx audio', async () => 
     stopSfxById(ref) { events.push(['stop-sfx', ref]); }
   });
   editor.document = normalizeCutsceneDocument({
-    durationMs: 100,
+    durationMs: 6000,
     assets: [
       { id: 'music-asset', type: 'music', ref: 'Theme' },
       { id: 'sfx-asset', type: 'sfx', ref: 'Boom' }
@@ -1688,7 +1691,7 @@ test('cutscene editor preview fires scheduled music and sfx audio', async () => 
     ]
   });
 
-  editor.playScene();
+  await editor.playScene();
   editor.update({}, 0.01);
   editor.update({}, 0.3);
   editor.update({}, 0.2);
@@ -1903,7 +1906,7 @@ test('cutscene editor separates scene length from selected clip length', async (
   assert.equal(editor.playheadMs, 1800);
   assert.equal(editor.getSelectedClip().durationMs, 2000);
   assert.equal(editor.getSelectedClip().keyframes.at(-1).timeMs, 1500);
-  assert.equal(editor.statusText, 'Scene 1800ms; later clips preserved');
+  assert.equal(editor.statusText, 'Scene 1800ms (1.80s); later clips preserved');
 
   await editor.editSelectedDuration();
 
@@ -1946,6 +1949,21 @@ test('cutscene editor edits scene transition durations', async () => {
   assert.equal(editor.statusText, 'Scene Fade Out: 900ms');
 });
 
+test('cutscene scene duration parser accepts seconds and milliseconds', () => {
+  assert.equal(parseCutsceneDurationInput('95'), 95000);
+  assert.equal(parseCutsceneDurationInput('95s'), 95000);
+  assert.equal(parseCutsceneDurationInput('95000ms'), 95000);
+  assert.equal(parseCutsceneDurationInput('1800'), 1800);
+  assert.equal(parseCutsceneDurationInput('10.1'), 10100);
+});
+
+test('cutscene preview and export use scene duration as soft end boundary', () => {
+  const previewDurationStart = cutsceneEditorSource.indexOf('const getFullPreviewDurationMs = (doc) => Math.max(');
+  const previewDurationBody = cutsceneEditorSource.slice(previewDurationStart, cutsceneEditorSource.indexOf('function getCutsceneTimelineClipColor', previewDurationStart));
+  assert.equal(previewDurationBody.includes('getClipEndMs'), false);
+  assert.equal(previewDurationBody.includes('safeNumber(doc?.durationMs'), true);
+});
+
 test('cutscene editor exposes compatible MP4 export and helpers', () => {
   const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
   editor.activeMenuTab = 'file';
@@ -1966,24 +1984,54 @@ test('cutscene editor exposes compatible MP4 export and helpers', () => {
     sourceHeight: 144,
     outputWidth: 1920,
     outputHeight: 1080,
-    fit: 'cover',
+    fit: 'contain',
     scale: 7.5,
     drawX: 0,
     drawY: 0,
     drawWidth: 1920,
-    drawHeight: 1080
+    drawHeight: 1080,
+    frameWidth: 256,
+    frameHeight: 144,
+    stageBounds: { x: 0, y: 0, w: 256, h: 144 }
+  });
+  assert.deepEqual(getCutsceneRenderProjection({ width: 256, height: 144 }, { x: 0, y: 0, w: 1920, h: 1080 }).stageRect, {
+    x: 0,
+    y: 0,
+    w: 1920,
+    h: 1080
   });
 });
 
 test('cutscene MP4 export uses ffmpeg h264 aac server transcode and real download button', () => {
   assert.equal(cutsceneEditorSource.includes("fetch('/__export/mp4'"), true);
+  assert.equal(cutsceneEditorSource.includes("fetch('/__export/mp4-frames'"), true);
+  assert.equal(cutsceneEditorSource.includes("fetch('/__export/session'"), true);
+  assert.equal(cutsceneEditorSource.includes('createMovieExportSession'), true);
+  assert.equal(cutsceneEditorSource.includes('uploadMovieExportSegmentFrame'), true);
+  assert.equal(cutsceneEditorSource.includes('uploadMovieExportAudio'), true);
+  assert.equal(cutsceneEditorSource.includes('encodeMovieExportSegment'), true);
+  assert.equal(cutsceneEditorSource.includes('finalizeMovieExportSession'), true);
+  assert.equal(cutsceneEditorSource.includes('downloadMovieExportResult'), true);
+  assert.equal(cutsceneEditorSource.includes('CUTSCENE_EXPORT_SEGMENT_MS = 3000'), true);
+  assert.equal(cutsceneEditorSource.includes('Skipping saved segment'), true);
+  assert.equal(cutsceneEditorSource.includes('Segments checkpointed.'), true);
+  assert.equal(cutsceneEditorSource.includes('exportMovieMp4Deterministic'), true);
+  assert.equal(cutsceneEditorSource.includes('transcodeFrameMovieToMp4'), true);
+  assert.equal(cutsceneEditorSource.includes("form.append('frame'"), true);
+  assert.equal(cutsceneEditorSource.includes('canvasToPngBlob'), true);
   assert.equal(cutsceneEditorSource.includes('new MediaRecorder'), true);
   assert.equal(cutsceneEditorSource.includes('renderMovieExportFrame'), true);
   assert.equal(cutsceneEditorSource.includes('exportCtx.imageSmoothingEnabled = false'), true);
-  assert.equal(cutsceneEditorSource.includes("{ fit: 'cover', drawBorder: false }"), true);
+  assert.equal(cutsceneEditorSource.includes('canvas.width = layout.frameWidth'), true);
+  assert.equal(cutsceneEditorSource.includes('canvas.height = layout.frameHeight'), true);
+  assert.equal(cutsceneEditorSource.includes('const frameCount = Math.max(1, Math.ceil((durationMs / 1000) * fps));'), true);
+  assert.equal(cutsceneEditorSource.includes('version: 5'), true);
+  assert.equal(cutsceneEditorSource.includes('cutscene-mp4-v5'), true);
+  assert.equal(cutsceneEditorSource.includes("{ fit: layout.fit || 'contain', drawBorder: false }"), true);
   assert.equal(cutsceneEditorSource.includes('videoBitsPerSecond: Math.max(8000000'), true);
   assert.equal(cutsceneEditorSource.includes('beginMasterCapture'), true);
   assert.equal(cutsceneEditorSource.includes('beginMasterCapture?.({ monitor: false })'), true);
+  assert.equal(cutsceneEditorSource.includes('preparePreviewAudioResources(safeDoc)'), true);
   assert.equal(cutsceneEditorSource.includes('endMasterCapture'), true);
   assert.equal(cutsceneEditorSource.includes('advanceMovieExportAudio(player'), true);
   assert.equal(cutsceneEditorSource.includes('player?.update?.(dt)'), true);
@@ -1995,12 +2043,31 @@ test('cutscene MP4 export uses ffmpeg h264 aac server transcode and real downloa
   assert.equal(audioSource.includes('createMediaStreamDestination'), true);
   assert.equal(cutsceneEditorSource.includes("downloadBtn = document.createElement('button')"), true);
   assert.equal(cutsceneEditorSource.includes("downloadBtn = document.createElement('a')"), false);
+  assert.equal(cutsceneEditorSource.includes("openLink.textContent = 'Open Video';"), true);
   const serverSource = readFileSync(new URL('../../tools/dev_server.py', import.meta.url), 'utf8');
   assert.equal(serverSource.includes('/__export/mp4'), true);
+  assert.equal(serverSource.includes('/__export/mp4-frames'), true);
+  assert.equal(serverSource.includes('/__export/session'), true);
+  assert.equal(serverSource.includes('EXPORT_SESSION_ROOT'), true);
+  assert.equal(serverSource.includes('def _stream_request_body_to_file'), true);
+  assert.equal(serverSource.includes('_handle_export_session_segment_frame_upload'), true);
+  assert.equal(serverSource.includes('_handle_encode_export_session_segment'), true);
+  assert.equal(serverSource.includes('_handle_finalize_export_session'), true);
+  assert.equal(serverSource.includes('MIN_EXPORT_FREE_BYTES'), true);
+  assert.equal(serverSource.includes('_get_ffmpeg_status'), true);
+  assert.equal(serverSource.includes('sourceWidth'), true);
+  assert.equal(serverSource.includes('force_original_aspect_ratio=decrease:flags=neighbor'), true);
+  assert.equal(serverSource.includes('pad='), true);
+  assert.equal(serverSource.includes('setsar=1'), true);
+  assert.equal(serverSource.includes('frame-%06d.png'), true);
+  assert.equal(serverSource.includes('def _read_multipart_form'), true);
   assert.equal(serverSource.includes('libx264'), true);
   assert.equal(serverSource.includes('yuv420p'), true);
   assert.equal(serverSource.includes('aac'), true);
   assert.equal(serverSource.includes('+faststart'), true);
+  assert.equal(serverSource.includes('MAX_MP4_UPLOAD_BYTES'), true);
+  assert.equal(serverSource.includes('shutil.copyfileobj(handle, self.wfile'), true);
+  assert.equal(serverSource.includes('output_path.read_bytes()'), false);
 });
 
 test('cutscene editor adds full-stage color boards and edits color and opacity', async () => {
@@ -2506,11 +2573,14 @@ test('level triggers and gameplay runtime support play-cutscene', () => {
   assert.equal(gameCoreSource.includes('onDone: finishCutscene'), true);
   assert.equal(gameCoreSource.includes('playCutsceneMidi(trackId'), true);
   assert.equal(gameCoreSource.includes('stopCutsceneMidi(trackId'), true);
+  assert.equal(gameCoreSource.includes('playCutsceneMidiLayer(layerKey, trackId'), true);
+  assert.equal(gameCoreSource.includes('setCutsceneMidiLayerVolume(layerKey, volume)'), true);
+  assert.equal(gameCoreSource.includes('stopCutsceneMidiLayer(layerKey'), true);
   assert.equal(gameCoreSource.includes('this.setActiveMusicTrack(resolvedTrackId, { volume, loop: false, restart: true, offsetMs });'), true);
   assert.equal(gameCoreSource.includes('if (this.cutsceneMusicTrackId || this.cutscenePlayer?.active) return;'), true);
   assert.equal(gameCoreSource.includes('if (this.cutsceneMusicTrackId || this.cutscenePlayer?.active) {'), true);
-  assert.equal(cutsceneEditorSource.includes('this.game.playCutsceneMidi(ref'), true);
-  assert.equal(cutsceneEditorSource.includes('this.game.stopCutsceneMidi(entry.ref'), true);
+  assert.equal(cutsceneEditorSource.includes('this.game.playCutsceneMidiLayer(clip.id, ref'), true);
+  assert.equal(cutsceneEditorSource.includes('this.game.stopCutsceneMidiLayer(clip.id'), true);
   assert.equal(gameCoreSource.includes('pending: [], pendingIds: new Set()'), true);
   assert.equal(gameCoreSource.includes('this.triggerState.startupPending.delete(id);'), true);
   assert.equal(gameCoreSource.includes('state.firedStartup = true;'), true);
@@ -2638,6 +2708,115 @@ test('cutscene effect keyframes interpolate opacity intensity and wind', () => {
   assert.equal(sample.wind, -1);
 });
 
+test('cutscene audio keyframes normalize and interpolate volume', () => {
+  const doc = normalizeCutsceneDocument({
+    durationMs: 3000,
+    clips: [{
+      id: 'music',
+      type: 'music',
+      startMs: 500,
+      durationMs: 2000,
+      volume: 1,
+      keyframes: [
+        { timeMs: 500, manual: true, volume: 1 },
+        { timeMs: 1500, manual: true, volume: 0 }
+      ]
+    }]
+  });
+  const clip = doc.clips[0];
+
+  assert.equal(clip.keyframes.length, 2);
+  assert.equal(sampleCutsceneAudioVolume(clip, 1000), 1);
+  assert.equal(sampleCutsceneAudioVolume(clip, 2000), 0);
+  assert.ok(sampleCutsceneAudioVolume(clip, 1500) > 0.45);
+  assert.ok(sampleCutsceneAudioVolume(clip, 1500) < 0.55);
+});
+
+test('cutscene editor exposes audio key actions and edits selected key volume', async () => {
+  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  editor.document = normalizeCutsceneDocument({
+    durationMs: 3000,
+    clips: [{ id: 'music', type: 'music', startMs: 0, durationMs: 2000, volume: 1 }]
+  });
+  editor.selectedClipId = 'music';
+  editor.playheadMs = 1000;
+  editor.keyframeMode = 'playhead';
+  editor.setSelectedKeyframe('playhead');
+  const clip = editor.getSelectedClip();
+  assert.equal(clip.keyframes.length, 1);
+  assert.equal(clip.keyframes[0].volume, 1);
+
+  editor.requestText = async () => '25';
+  await editor.editSelectedVolume();
+  assert.equal(clip.volume, 1);
+  assert.equal(clip.keyframes[0].volume, 0.25);
+
+  const keyItems = editor.getClipOptionItems(clip, 'keys');
+  const settingItems = editor.getClipOptionItems(clip, 'settings');
+  assert.equal(keyItems.some((item) => item.id === 'set-key'), true);
+  assert.equal(settingItems.some((item) => item.id === 'clip-duration'), false);
+});
+
+test('cutscene player layers overlapping MIDI clips without replacing earlier music', () => {
+  const events = [];
+  const player = new CutscenePlayer({
+    playCutsceneMidiLayer(key, ref, options) { events.push(['play-layer', key, ref, options.volume, options.loop]); },
+    setCutsceneMidiLayerVolume(key, volume) { events.push(['volume-layer', key, Math.round(volume * 100) / 100]); },
+    stopCutsceneMidiLayer(key) { events.push(['stop-layer', key]); }
+  });
+  player.play({
+    durationMs: 2000,
+    masterVolume: 1,
+    assets: [
+      { id: 'music-a', type: 'music', ref: 'Intro' },
+      { id: 'music-b', type: 'music', ref: 'Hit' }
+    ],
+    clips: [
+      { id: 'bed', type: 'music', assetId: 'music-a', startMs: 0, durationMs: 1800, volume: 0.8 },
+      { id: 'sting', type: 'music', assetId: 'music-b', startMs: 500, durationMs: 500, volume: 0.5 }
+    ]
+  });
+  player.update(0.5);
+  player.update(0.6);
+  player.update(1);
+
+  assert.deepEqual(events.filter((event) => event[0] === 'play-layer').map((event) => event.slice(1, 3)), [['bed', 'Intro'], ['sting', 'Hit']]);
+  assert.equal(events.some((event) => event[0] === 'stop-layer' && event[1] === 'sting'), true);
+  assert.equal(events.some((event) => event[0] === 'stop-layer' && event[1] === 'bed'), true);
+});
+
+test('cutscene player updates looped SFX volume from keyframes', () => {
+  const events = [];
+  const player = new CutscenePlayer({
+    playSfxById(ref, options) { events.push(['sfx', ref, options.volume, options.key]); },
+    setSfxVolumeById(ref, options) { events.push(['sfx-volume', ref, Math.round(options.volume * 100) / 100, options.key]); },
+    stopSfxById(ref, options) { events.push(['sfx-stop', ref, options?.key]); }
+  });
+  player.play({
+    durationMs: 1200,
+    assets: [{ id: 'sfx-a', type: 'sfx', ref: 'Wind' }],
+    clips: [{
+      id: 'wind',
+      type: 'sfx',
+      assetId: 'sfx-a',
+      startMs: 0,
+      durationMs: 1000,
+      loop: true,
+      volume: 1,
+      keyframes: [
+        { timeMs: 0, manual: true, volume: 1 },
+        { timeMs: 1000, manual: true, volume: 0 }
+      ]
+    }]
+  });
+  player.update(0.5);
+  player.update(0.6);
+
+  assert.deepEqual(events[0], ['sfx', 'Wind', 1, 'wind']);
+  assert.equal(events.some((event) => event[0] === 'sfx-volume' && event[1] === 'Wind' && event[3] === 'wind'), true);
+  assert.equal(events.some((event) => event[0] === 'sfx-stop' && event[1] === 'Wind' && event[2] === 'wind'), true);
+});
+
 test('cutscene effect opacity fades rendered weather particles', () => {
   const alphaValues = [];
   const ctx = createMockContext();
@@ -2691,5 +2870,5 @@ test('cutscene weather changes do not reuse stale rain particles in fullscreen e
   assert.ok(snowState);
   assert.equal(snowState.particles.some((particle) => particle.style.weatherType === 'weather-rain'), false);
   assert.equal(snowState.particles.some((particle) => particle.style.weatherType === 'weather-snow'), true);
-  assert.equal(snowState.particles.some((particle) => particle.style.weatherType === 'weather-snow' && particle.style.vy > 200), false);
+  assert.equal(snowState.particles.some((particle) => particle.style.weatherType === 'weather-snow' && particle.style.vy > 200), true);
 });

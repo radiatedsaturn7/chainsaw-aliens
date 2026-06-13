@@ -1,8 +1,10 @@
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { ensureProjectFileIndex, listProjectFiles, loadProjectFile, saveProjectFile } from './projectFiles.js';
 import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, DEFAULT_TAXONOMIES, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
+import { getBuiltInActorIdFromName, isBuiltInActorName, mergeBuiltInActorOverride } from '../content/builtinActorOverrides.js';
 import { getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
 import { invalidateActorDefinitionCache } from '../entities/ScriptedActor.js';
+import { invalidateBuiltInActorVisualCache } from '../entities/BuiltInActorVisuals.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, renderDomControllerMenu } from './shared/input/controllerMenuStack.js';
 
@@ -507,7 +509,10 @@ export default class ActorEditor {
         this.resetActorArtHuePreview();
         this.undoStack = [];
         this.redoStack = [];
-        this.setActor(ensureActorDefinition(payload?.data || createDefaultActor(name)), { recordHistory: false });
+        const actor = isBuiltInActorName(name)
+          ? mergeBuiltInActorOverride(name, payload?.data || null)
+          : ensureActorDefinition(payload?.data || createDefaultActor(name));
+        this.setActor(actor, { recordHistory: false });
         this.fileMenuOpen = false;
         this.actorPortraitMenuOpen = false;
         this.activeMenuSection = 'actor';
@@ -518,8 +523,11 @@ export default class ActorEditor {
   async saveActor(forceSaveAs = false) {
     const MIN_SAVING_TOAST_MS = 350;
     const fallback = this.currentDocumentRef?.name || `${this.actor.name || 'actor'}.json`;
+    const builtInActorId = this.actor?.advanced?.builtInActor || getBuiltInActorIdFromName(fallback);
+    const isBuiltInActor = Boolean(builtInActorId);
+    const builtInActorSaveName = builtInActorId === 'companion' ? 'Companion' : 'Player';
     const shouldForceSaveAs = forceSaveAs
-      || !this.currentDocumentRef?.name
+      || (!isBuiltInActor && !this.currentDocumentRef?.name)
       || /^actor(\.json)?$/i.test(String(fallback || '').trim());
     let name = fallback;
     if (shouldForceSaveAs) {
@@ -534,7 +542,9 @@ export default class ActorEditor {
       name = String(picked.name || '').trim();
     }
     if (!name) return;
-    let payload = ensureActorDefinition(this.actor);
+    let payload = isBuiltInActor
+      ? mergeBuiltInActorOverride(builtInActorSaveName, this.actor)
+      : ensureActorDefinition(this.actor);
     if (!this.isActorHueShiftNeutral()) {
       payload = await this.buildActorHueShiftedCopy(payload, this.actorArtHueShiftDegrees, this.actorArtHueShiftSaturation);
       this.resetActorArtHuePreview();
@@ -546,14 +556,19 @@ export default class ActorEditor {
     this.game.showSystemToast?.('Saving...');
     let saved = null;
     try {
-      saved = saveProjectFile(ACTOR_FOLDER, name, payload);
+      saved = saveProjectFile(ACTOR_FOLDER, isBuiltInActor ? builtInActorSaveName : name, payload);
       if (saved?.syncPromise) {
-        await saved.syncPromise;
+        const persisted = await saved.syncPromise;
+        if (persisted && persisted.persisted === false) {
+          throw new Error(persisted.reason || 'Server did not persist actor');
+        }
       }
     } catch (error) {
       console.error('Actor save failed', error);
-      this.showInlineSaveStatus?.('Save failed');
-      this.game.showSaveStatusModal?.('Save failed');
+      const message = `Save failed: ${error?.message || error || 'Unknown error'}`;
+      this.showInlineSaveStatus?.(message);
+      this.game.showSaveStatusModal?.(message);
+      this.game.showSystemToast?.(message);
       setTimeout(() => {
         this.game.hideSaveStatusModal?.();
         this.showInlineSaveStatus?.('');
@@ -564,11 +579,13 @@ export default class ActorEditor {
     if (elapsed < MIN_SAVING_TOAST_MS) {
       await new Promise((resolve) => setTimeout(resolve, MIN_SAVING_TOAST_MS - elapsed));
     }
-    const persistedName = String(saved?.name || name);
+    const persistedName = String(saved?.name || (isBuiltInActor ? builtInActorSaveName : name));
     const persistedPayload = loadProjectFile(ACTOR_FOLDER, persistedName);
     if (!persistedPayload?.data) {
-      this.showInlineSaveStatus?.('Save failed');
-      this.game.showSaveStatusModal?.('Save failed');
+      const message = `Save failed: Could not reload saved actor`;
+      this.showInlineSaveStatus?.(message);
+      this.game.showSaveStatusModal?.(message);
+      this.game.showSystemToast?.(message);
       setTimeout(() => {
         this.game.hideSaveStatusModal?.();
         this.showInlineSaveStatus?.('');
@@ -576,8 +593,11 @@ export default class ActorEditor {
       return;
     }
     this.currentDocumentRef = { folder: ACTOR_FOLDER, name: persistedName };
-    this.actor = ensureActorDefinition(persistedPayload.data);
+    this.actor = isBuiltInActorName(persistedName)
+      ? mergeBuiltInActorOverride(persistedName, persistedPayload.data)
+      : ensureActorDefinition(persistedPayload.data);
     invalidateActorDefinitionCache(this.actor.id);
+    invalidateBuiltInActorVisualCache(this.actor.advanced?.builtInActor || null);
     this.game.registerRuntimeActorDefinition?.(this.actor);
     this.render();
     this.showInlineSaveStatus?.('Saved');
@@ -694,9 +714,16 @@ export default class ActorEditor {
   openCollisionZoneEditor(actor, { state = null } = {}) {
     const modal = el('div', 'actor-editor-overlay actor-editor-dialog-overlay');
     const card = el('div', 'actor-editor-card actor-editor-modal-card');
-    Object.assign(card.style, { width: 'min(960px, 96vw)', height: 'min(92dvh, 760px)' });
+    card.classList.add('actor-editor-collision-card');
+    Object.assign(card.style, {
+      width: 'min(960px, 96vw)',
+      height: 'min(92dvh, 760px)',
+      maxHeight: 'calc(100dvh - 24px)',
+      overflow: 'hidden'
+    });
     const viewportWrap = el('div');
-    Object.assign(viewportWrap.style, { flex: '1', minHeight: '0', display: 'flex', flexDirection: 'column' });
+    viewportWrap.className = 'actor-editor-collision-scroll';
+    Object.assign(viewportWrap.style, { flex: '1 1 auto', minHeight: '0', display: 'flex', flexDirection: 'column', overflowY: 'auto', overflowX: 'hidden' });
     card.appendChild(viewportWrap);
     const controls = el('div', 'actor-editor-inline-actions');
     const zoneType = el('select');
@@ -756,10 +783,19 @@ export default class ActorEditor {
       position: 'absolute', left: '27px', top: '27px'
     });
     thumbstick.appendChild(stickKnob);
-    const actionRow = el('div', 'actor-editor-inline-actions');
-    actionRow.style.flexWrap = 'nowrap';
+    const actionRow = el('div', 'actor-editor-inline-actions actor-editor-collision-actions');
+    Object.assign(actionRow.style, {
+      flexWrap: 'nowrap',
+      flex: '0 0 auto',
+      justifyContent: 'flex-end',
+      paddingTop: '8px',
+      borderTop: `1px solid ${UI_SUITE.colors.border}`,
+      background: UI_SUITE.colors.panel
+    });
     const ok = el('button', 'actor-editor-btn', 'OK');
     const cancel = el('button', 'actor-editor-btn', 'Cancel');
+    ok.style.minWidth = '96px';
+    cancel.style.minWidth = '96px';
     controls.appendChild(el('span', 'actor-editor-note', 'Brush'));
     controls.appendChild(brushSize);
     controls.appendChild(zoneType);
@@ -772,12 +808,9 @@ export default class ActorEditor {
     bottomTools.append(thumbCol, controlsCol);
     actionRow.append(cancel, ok);
     zoomRow.append(zoomOutBtn, zoomInBtn);
-    const rightRow = el('div', 'actor-editor-inline-actions');
-    rightRow.style.marginLeft = 'auto';
-    rightRow.style.flexWrap = 'nowrap';
-    rightRow.appendChild(actionRow);
-    toolbarRow2.append(zoomRow, rightRow);
+    toolbarRow2.append(zoomRow);
     card.appendChild(bottomTools);
+    card.appendChild(actionRow);
     modal.appendChild(card);
     document.body.appendChild(modal);
     const editingState = state ? clone(state) : null;
@@ -1131,6 +1164,39 @@ export default class ActorEditor {
     this.setActor(copy, options);
   }
 
+  selectActorState(stateId, { closePortraitMenu = false } = {}) {
+    this.selectedStateId = stateId;
+    this.activeMenuSection = 'states';
+    if (closePortraitMenu) {
+      this.actorPortraitMenuOpen = false;
+      this.fileMenuOpen = false;
+      this.controllerMenu.closeToSurface();
+    }
+    this.render();
+  }
+
+  getActorEditorThumbstickScrollTarget() {
+    if (!this.overlay) return null;
+    const root = typeof document !== 'undefined' ? document : this.overlay;
+    const selectors = [
+      '.actor-editor-collision-scroll',
+      '.actor-editor-state-graph-card',
+      '.actor-editor-state-list',
+      '.actor-editor-portrait-top .actor-editor-file-subrail-list',
+      '.actor-editor-portrait-top .actor-editor-file-subrail',
+      '.actor-editor-portrait-top .actor-editor-right-rail .actor-editor-menu-rail',
+      '.actor-editor-center'
+    ];
+    for (const selector of selectors) {
+      const node = root.querySelector(selector);
+      if (!node || node.offsetParent === null) continue;
+      const canScrollY = node.scrollHeight > node.clientHeight + 1;
+      const canScrollX = node.scrollWidth > node.clientWidth + 1;
+      if (canScrollY || canScrollX || selector === '.actor-editor-center') return node;
+    }
+    return null;
+  }
+
   captureScrollState() {
     if (!this.overlay) return null;
     const center = this.overlay.querySelector('.actor-editor-center');
@@ -1181,13 +1247,16 @@ export default class ActorEditor {
       : isMobileViewport
       ? getSharedMobileRailWidth(viewportW, viewportH)
       : SHARED_EDITOR_LEFT_MENU.width();
+    const rightRailContent = this.renderRightRail();
+    if (rightRailContent) rightRail.appendChild(rightRailContent);
     if (portraitLayout) {
       const topMenus = el('div', 'actor-editor-portrait-top actor-editor-portrait-sheet');
       const middleRail = el('div', 'actor-editor-portrait-middle');
-      topMenus.append(rightRail, left);
+      if (rightRailContent) topMenus.appendChild(rightRail);
+      topMenus.appendChild(left);
       middleRail.appendChild(this.renderPortraitMiddleRail());
       body.append(center, middleRail);
-      const sheetOpen = this.actorPortraitMenuOpen || this.fileMenuOpen || this.controllerMenu.active;
+      const sheetOpen = this.fileMenuOpen || Boolean(rightRailContent && (this.actorPortraitMenuOpen || this.controllerMenu.active));
       if (sheetOpen) body.appendChild(topMenus);
       topMenus.style.display = 'flex';
       topMenus.style.flexDirection = 'column';
@@ -1250,7 +1319,6 @@ export default class ActorEditor {
 
     left.appendChild(this.renderSidebarMenu());
     center.appendChild(this.renderMainPanel(actor, state));
-    rightRail.appendChild(this.renderRightRail());
     if (this.game?.input?.isGamepadConnected?.()) {
       shell.appendChild(this.renderGamepadHintBar());
     }
@@ -1360,10 +1428,10 @@ export default class ActorEditor {
       const scale = dist > max ? max / dist : 1;
       knob.style.left = `${16 + dx * scale}px`;
       knob.style.top = `${16 + dy * scale}px`;
-      const center = this.overlay?.querySelector('.actor-editor-center');
-      if (center) {
-        center.scrollLeft -= dx * 0.8;
-        center.scrollTop -= dy * 0.8;
+      const scrollTarget = this.getActorEditorThumbstickScrollTarget();
+      if (scrollTarget) {
+        scrollTarget.scrollLeft -= dx * 0.8;
+        scrollTarget.scrollTop -= dy * 0.8;
       }
       drag.x = event.clientX;
       drag.y = event.clientY;
@@ -1546,7 +1614,7 @@ export default class ActorEditor {
           action('add-state', 'Add State', () => this.addState()),
           action('duplicate-state', 'Duplicate State', () => this.duplicateState(this.selectedState)),
           action('delete-state', 'Delete State', () => this.deleteState(this.selectedState)),
-          ...this.actor.states.map((state) => action(state.id, state.name || state.id, () => { this.selectedStateId = state.id; this.activeMenuSection = 'states'; this.render(); }))
+          ...this.actor.states.map((state) => action(state.id, state.name || state.id, () => this.selectActorState(state.id, { closePortraitMenu: true })))
         ]
       },
       'linked-parts': {
@@ -1560,7 +1628,12 @@ export default class ActorEditor {
         id: 'tools',
         title: 'Tools',
         items: [
-          action('state-graph', 'State Graph', () => { this.stateGraphOpen = true; this.fileMenuOpen = false; this.render(); }),
+          action('state-graph', 'State Graph', () => {
+            this.stateGraphOpen = true;
+            this.fileMenuOpen = false;
+            this.actorPortraitMenuOpen = false;
+            this.render();
+          }),
           action('playtest', 'Play Scene', () => this.playActorScene()),
           action('collision', 'Collision / Hitbox Zones', () => this.openCollisionZoneEditor(this.actor)),
           action('undo', 'Undo', () => this.undo()),
@@ -1627,7 +1700,7 @@ export default class ActorEditor {
       btn.onclick = onClick || (() => {
         this.activeMenuSection = id;
         this.fileMenuOpen = false;
-        this.actorPortraitMenuOpen = true;
+        this.actorPortraitMenuOpen = !(isPortraitMobile && id === 'actor');
         this.render();
       });
       return btn;
@@ -1775,8 +1848,8 @@ export default class ActorEditor {
       return this.renderControllerSubmenuRail(activeMenuId);
     }
     if (this.activeMenuSection === 'states') return this.renderStateRailSection();
-    if (this.activeMenuSection === 'actor') return this.renderActorRailSection();
     if (this.activeMenuSection === 'tools') return this.renderToolsRailSection();
+    if (this.activeMenuSection === 'actor') return null;
     const rail = el('div', 'actor-editor-menu-rail');
     Object.assign(rail.style, {
       background: UI_SUITE.colors.panel,
@@ -1836,7 +1909,12 @@ export default class ActorEditor {
       overflowY: 'auto'
     });
     [
-      ['State Graph', () => { this.stateGraphOpen = true; this.fileMenuOpen = false; this.render(); }],
+      ['State Graph', () => {
+        this.stateGraphOpen = true;
+        this.fileMenuOpen = false;
+        this.actorPortraitMenuOpen = false;
+        this.render();
+      }],
       ['Play Scene', () => this.playActorScene()],
       ['Collision / Hitbox Zones', () => this.openCollisionZoneEditor(this.actor)]
     ].forEach(([label, handler]) => {
@@ -1861,47 +1939,6 @@ export default class ActorEditor {
       height: '100%',
       overflowY: 'auto'
     });
-    const viewportW = Number(window.innerWidth || 0);
-    const viewportH = Number(window.innerHeight || 0);
-    const isPortraitMobile = Math.min(viewportW, viewportH) <= 900 && viewportH > viewportW;
-    const firstState = this.actor.states?.find((state) => state.id === this.actor.initialStateId) || this.actor.states?.[0];
-    const firstFrame = this.getAnimationPreviewFrames(firstState?.animation || {})[0] || null;
-    if (!firstFrame?.imageDataUrl) {
-      rail.appendChild(el('div', 'actor-editor-note', 'Variant preview appears here once the first state has art.'));
-      return rail;
-    }
-    if (isPortraitMobile) {
-      const row = el('div', 'actor-editor-inline-actions');
-      row.style.alignItems = 'center';
-      row.appendChild(el('div', 'actor-editor-note', 'Variant preview'));
-      const compactPreview = el('img');
-      compactPreview.src = firstFrame.imageDataUrl;
-      compactPreview.alt = 'First state preview';
-      Object.assign(compactPreview.style, {
-        width: '56px',
-        height: '56px',
-        objectFit: 'contain',
-        imageRendering: 'pixelated',
-        border: `1px solid ${UI_SUITE.colors.border}`,
-        background: UI_SUITE.colors.panelAlt
-      });
-      const filter = this.getActorHuePreviewFilter();
-      if (filter) compactPreview.style.filter = filter;
-      row.appendChild(compactPreview);
-      rail.appendChild(row);
-      return rail;
-    }
-    rail.appendChild(el('div', 'actor-editor-note', 'Variant preview (first state)'));
-    const preview = el('img');
-    preview.src = firstFrame.imageDataUrl;
-    preview.alt = 'First state preview';
-    preview.style.width = '100%';
-    preview.style.imageRendering = 'pixelated';
-    preview.style.border = `1px solid ${UI_SUITE.colors.border}`;
-    preview.style.background = UI_SUITE.colors.panelAlt;
-    const filter = this.getActorHuePreviewFilter();
-    if (filter) preview.style.filter = filter;
-    rail.appendChild(preview);
     return rail;
   }
 
@@ -1958,10 +1995,7 @@ export default class ActorEditor {
       const label = badges.length ? `${state.name || state.id} (${badges.join(', ')})` : (state.name || state.id);
       const btn = el('button', `actor-editor-btn small${this.selectedStateId === state.id ? ' active' : ''}`, label);
       this.styleRailButton(btn, this.selectedStateId === state.id);
-      btn.onclick = () => {
-        this.selectedStateId = state.id;
-        this.render();
-      };
+      btn.onclick = () => this.selectActorState(state.id, { closePortraitMenu: true });
       wrap.appendChild(btn);
     });
     return wrap;
@@ -2336,7 +2370,31 @@ export default class ActorEditor {
     const list = el('div', 'actor-editor-state-list');
     actor.states.forEach((state, index) => {
       const row = el('div', `actor-editor-state-row${this.selectedStateId === state.id ? ' active' : ''}`);
-      row.onclick = () => { this.selectedStateId = state.id; this.render(); };
+      row.style.touchAction = 'pan-y';
+      let rowPointer = null;
+      row.onpointerdown = (event) => {
+        if (event.target?.closest?.('button,input,select,textarea')) return;
+        rowPointer = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
+      };
+      row.onpointermove = (event) => {
+        if (!rowPointer || rowPointer.id !== event.pointerId) return;
+        if (Math.hypot(event.clientX - rowPointer.x, event.clientY - rowPointer.y) > 8) rowPointer.moved = true;
+      };
+      row.onpointercancel = () => { rowPointer = null; };
+      row.onpointerup = (event) => {
+        if (rowPointer && rowPointer.id === event.pointerId && rowPointer.moved) {
+          row.dataset.ignoreClick = 'true';
+        }
+        rowPointer = null;
+      };
+      row.onclick = (event) => {
+        if (event.target?.closest?.('button,input,select,textarea')) return;
+        if (row.dataset.ignoreClick === 'true') {
+          delete row.dataset.ignoreClick;
+          return;
+        }
+        this.selectActorState(state.id, { closePortraitMenu: true });
+      };
       const preview = this.buildStatePreviewButton(state);
       const meta = el('div', 'actor-editor-state-meta');
       const badges = [
@@ -3361,6 +3419,7 @@ export default class ActorEditor {
   renderStateGraphModal() {
     const scrim = el('div', 'actor-editor-overlay-scrim');
     const card = el('div', 'actor-editor-card');
+    card.classList.add('actor-editor-state-graph-card');
     Object.assign(card.style, {
       width: 'min(980px, 92vw)',
       maxHeight: '85vh',

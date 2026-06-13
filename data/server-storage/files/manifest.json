@@ -1,10 +1,18 @@
 {
   "folders": {
-    "actors": {
-      "Head.json": "actors/Head.json/document.json",
-      "Husk1.json": "actors/Husk1.json/document.json",
-      "Husk2.json": "actors/Husk2.json/document.json",
-      "New Actor.json": "actors/New Actor.json/document.json"
+    "levels": {
+      "Game": "levels/Game/document.json",
+      "Leevel0": "levels/Leevel0/document.json",
+      "Level Editor Autosave": "levels/Level Editor Autosave/document.json",
+      "level0": "levels/level0/document.json",
+      "level01": "levels/level01/document.json",
+      "level1": "levels/level1/document.json",
+      "m": "levels/m/document.json",
+      "m2": "levels/m2/document.json",
+      "new-level-1771217621465": "levels/new-level-1771217621465/document.json",
+      "new-level-1773282688371": "levels/new-level-1773282688371/document.json",
+      "new-level-1773427091431": "levels/new-level-1773427091431/document.json",
+      "new-level": "levels/new-level/document.json"
     },
     "art": {
       "Head2": "art/Head2/document.json",
@@ -52,21 +60,8 @@
       "robot": "art/robot/document.json",
       "zombie-attack": "art/zombie-attack/document.json",
       "zombie-idle": "art/zombie-idle/document.json",
-      "zombie-walk": "art/zombie-walk/document.json"
-    },
-    "levels": {
-      "Game": "levels/Game/document.json",
-      "Leevel0": "levels/Leevel0/document.json",
-      "Level Editor Autosave": "levels/Level Editor Autosave/document.json",
-      "level0": "levels/level0/document.json",
-      "level01": "levels/level01/document.json",
-      "level1": "levels/level1/document.json",
-      "m": "levels/m/document.json",
-      "m2": "levels/m2/document.json",
-      "new-level-1771217621465": "levels/new-level-1771217621465/document.json",
-      "new-level-1773282688371": "levels/new-level-1773282688371/document.json",
-      "new-level-1773427091431": "levels/new-level-1773427091431/document.json",
-      "new-level": "levels/new-level/document.json"
+      "zombie-walk": "art/zombie-walk/document.json",
+      "player-idle-art": "art/player-idle-art/document.json"
     },
     "music": {
       "1": "music/1/document.json",
@@ -82,12 +77,17 @@
       "Boss2": "music/Boss2/document.json",
       "intro3": "music/intro3/document.json",
       "r2": "music/r2/document.json",
-      "Intro": "music/Intro/document.json"
+      "Intro": "music/Intro/document.json",
+      "KeyboardTyping": "music/KeyboardTyping/document.json",
+      "KeyboardTyping Autosave": "music/KeyboardTyping Autosave/document.json",
+      "Intro Autosave": "music/Intro Autosave/document.json"
     },
-    "settings": {
-      "chainsaw-gm-soundfont-url": "settings/chainsaw-gm-soundfont-url/document.json",
-      "chainsaw-midi-audio": "settings/chainsaw-midi-audio/document.json",
-      "chainsaw-midi-recent": "settings/chainsaw-midi-recent/document.json"
+    "actors": {
+      "Head.json": "actors/Head.json/document.json",
+      "Husk1.json": "actors/Husk1.json/document.json",
+      "Husk2.json": "actors/Husk2.json/document.json",
+      "New Actor.json": "actors/New Actor.json/document.json",
+      "Player": "actors/Player/document.json"
     },
     "sfx": {
       "Alarm": "sfx/Alarm/document.json"
@@ -96,6 +96,11 @@
       "c1": "cutscenes/c1/document.json",
       "c2": "cutscenes/c2/document.json",
       "c3": "cutscenes/c3/document.json"
+    },
+    "settings": {
+      "chainsaw-gm-soundfont-url": "settings/chainsaw-gm-soundfont-url/document.json",
+      "chainsaw-midi-audio": "settings/chainsaw-midi-audio/document.json",
+      "chainsaw-midi-recent": "settings/chainsaw-midi-recent/document.json"
     }
   }
 }

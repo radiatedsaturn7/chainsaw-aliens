@@ -301,6 +301,24 @@ body.mobile .hint {
   font-size: 12px;
 }
 
+.project-browser-version-confirm {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  padding: 8px;
+  border: 1px solid rgba(255, 211, 105, 0.7);
+  border-radius: 6px;
+  background: rgba(80, 54, 12, 0.62);
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+.project-browser-version-confirm span {
+  flex: 1 1 180px;
+  font-size: 12px;
+}
+
 .project-browser-meta {
   display: flex;
   flex-direction: column;
@@ -684,6 +702,15 @@ textarea.shared-text-input-field {
     padding: 8px;
     gap: 8px;
     flex-wrap: wrap;
+  }
+  .actor-editor-state-list {
+    max-height: min(52dvh, 460px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    padding-right: 4px;
   }
   .actor-editor-portrait-top {
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);

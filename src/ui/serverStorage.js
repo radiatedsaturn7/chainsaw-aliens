@@ -6,6 +6,7 @@ let syncQueue = Promise.resolve();
 const volatileFiles = new Map();
 let serverIndex = DEFAULT_FOLDERS.reduce((acc, folder) => { acc[folder] = {}; return acc; }, {});
 let storageApiAvailable = true;
+const STORAGE_UNREACHABLE_MESSAGE = 'Storage server unreachable. Reload the app from the active dev server and try again.';
 
 function hasOwn(object, key) {
   return Object.prototype.hasOwnProperty.call(object || {}, key);
@@ -60,6 +61,15 @@ function isStorageApiUnavailable(error) {
     || message.toLowerCase().includes('failed to fetch');
 }
 
+function getStorageUnavailableReason(error) {
+  const message = String(error?.message || error || '');
+  if (message.toLowerCase().includes('failed to fetch')) return STORAGE_UNREACHABLE_MESSAGE;
+  if (message.toLowerCase().includes('failed to parse url')) return 'Storage server URL is unavailable from this page.';
+  if (error?.status === 404 || message.includes('HTTP 404')) return 'Storage API not found on this server. Reload from the active dev server.';
+  if (error?.status === 405 || message.includes('HTTP 405')) return 'Storage API does not accept saves on this server.';
+  return message || 'Storage API unavailable';
+}
+
 function enqueueServerMutation(task) {
   const queued = syncQueue
     .catch(() => undefined)
@@ -67,6 +77,19 @@ function enqueueServerMutation(task) {
   queued.catch(() => undefined);
   syncQueue = queued;
   return queued;
+}
+
+async function probeStorageApi() {
+  try {
+    const payload = await requestJson('/__storage/index');
+    serverIndex = normalizeIndex(payload.index);
+    storageApiAvailable = true;
+    return true;
+  } catch (error) {
+    if (!isStorageApiUnavailable(error)) throw error;
+    storageApiAvailable = false;
+    return false;
+  }
 }
 
 async function fetchServerIndex() {
@@ -234,7 +257,10 @@ export async function saveServerFile(folder, name, data, options = {}) {
   const savedAt = Number(options.savedAt || Date.now());
   const version = Number(options.version || 1);
   if (!storageApiAvailable) {
-    return { version, folder, name, savedAt, data, persisted: false, reason: 'Storage API unavailable' };
+    const recovered = await probeStorageApi();
+    if (!recovered) {
+      return { version, folder, name, savedAt, data, persisted: false, reason: STORAGE_UNREACHABLE_MESSAGE };
+    }
   }
   try {
     const payload = await requestJson('/__storage/file', {
@@ -256,7 +282,7 @@ export async function saveServerFile(folder, name, data, options = {}) {
   } catch (error) {
     if (!isStorageApiUnavailable(error)) throw error;
     storageApiAvailable = false;
-    return { version, folder, name, savedAt, data, persisted: false, reason: error?.message || 'Storage API unavailable' };
+    return { version, folder, name, savedAt, data, persisted: false, reason: getStorageUnavailableReason(error) };
   }
 }
 

@@ -1,4 +1,5 @@
 import { MOVEMENT_MODEL } from '../game/MovementModel.js';
+import { drawBuiltInActorOverride } from './BuiltInActorVisuals.js';
 
 export default class Player {
   constructor(x, y) {
@@ -547,7 +548,12 @@ export default class Player {
     };
   }
 
+  getBuiltInActorVisualId() {
+    return 'player';
+  }
+
   draw(ctx) {
+    if (drawBuiltInActorOverride(ctx, this, this.getBuiltInActorVisualId())) return;
     ctx.save();
     const hurtShake = this.hurtTimer > 0 ? 1 : 0;
     const shakeX = hurtShake ? Math.sin(this.animTime * 50) * 2 : 0;

@@ -8,9 +8,11 @@ import {
 } from '../audio/gm.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
-const MIDI_MAX_AUDIBLE_CATCHUP_SECONDS = 0.12;
-const MIDI_SCHEDULE_LOOKAHEAD_SECONDS = 0.16;
-const MIDI_MAX_EVENTS_PER_UPDATE = 96;
+export const MIDI_RUNTIME_MAX_CATCHUP_SECONDS = 0.35;
+export const MIDI_RUNTIME_STALE_BACKLOG_SECONDS = 1.25;
+export const MIDI_RUNTIME_SCHEDULE_LOOKAHEAD_SECONDS = 0.42;
+export const MIDI_RUNTIME_MIN_SCHEDULE_LATENCY_SECONDS = 0.08;
+export const MIDI_RUNTIME_MAX_EVENTS_PER_UPDATE = 256;
 
 export default class MidiSongPlayer {
   constructor(audio) {
@@ -28,6 +30,8 @@ export default class MidiSongPlayer {
     this.events = [];
     this.droppedEvents = 0;
     this.scheduledUntilTick = 0;
+    this.audioAnchorTime = null;
+    this.audioAnchorTick = 0;
   }
 
   setSong(song, trackId, { loop = true, startTick = null, offsetMs = 0 } = {}) {
@@ -47,6 +51,15 @@ export default class MidiSongPlayer {
     this.playheadTick = clamp(Number.isFinite(startTick) ? startTick : offsetTick, 0, this.getLoopTicks());
     this.scheduledUntilTick = this.playheadTick;
     this.droppedEvents = 0;
+    this.resetAudioAnchor(this.playheadTick);
+  }
+
+  resetAudioAnchor(tick = this.playheadTick) {
+    const now = this.audio?.ctx?.currentTime;
+    this.audioAnchorTime = Number.isFinite(now)
+      ? now + Math.max(this.audio?.midiLatency || 0, MIDI_RUNTIME_MIN_SCHEDULE_LATENCY_SECONDS)
+      : null;
+    this.audioAnchorTick = tick;
   }
 
   setFade(target, duration) {
@@ -133,7 +146,8 @@ export default class MidiSongPlayer {
     const loopTicks = this.getLoopTicks();
     const loopStart = this.getLoopStartTick();
     const prevTick = this.playheadTick;
-    const nextTick = prevTick + ticksPerSecond * dt;
+    const elapsedSeconds = clamp(Math.max(0, Number(dt) || 0), 0, MIDI_RUNTIME_STALE_BACKLOG_SECONDS);
+    const nextTick = prevTick + ticksPerSecond * elapsedSeconds;
 
     if (nextTick >= loopTicks) {
       this.triggerPlayback(this.scheduledUntilTick, loopTicks, loopTicks, ticksPerSecond, loopTicks);
@@ -147,7 +161,8 @@ export default class MidiSongPlayer {
       }
       this.playheadTick = loopStart + (nextTick - loopTicks);
       this.scheduledUntilTick = loopStart;
-      const lookaheadTicks = MIDI_SCHEDULE_LOOKAHEAD_SECONDS * ticksPerSecond;
+      this.resetAudioAnchor(this.playheadTick);
+      const lookaheadTicks = MIDI_RUNTIME_SCHEDULE_LOOKAHEAD_SECONDS * ticksPerSecond;
       const targetScheduleTick = Math.min(loopTicks, this.playheadTick + lookaheadTicks);
       if (targetScheduleTick > this.scheduledUntilTick) {
         this.triggerPlayback(this.scheduledUntilTick, targetScheduleTick, loopTicks, ticksPerSecond, this.playheadTick);
@@ -156,7 +171,7 @@ export default class MidiSongPlayer {
     }
 
     this.playheadTick = nextTick;
-    const lookaheadTicks = MIDI_SCHEDULE_LOOKAHEAD_SECONDS * ticksPerSecond;
+    const lookaheadTicks = MIDI_RUNTIME_SCHEDULE_LOOKAHEAD_SECONDS * ticksPerSecond;
     const targetScheduleTick = Math.min(loopTicks, this.playheadTick + lookaheadTicks);
     if (targetScheduleTick > this.scheduledUntilTick) {
       this.triggerPlayback(this.scheduledUntilTick, targetScheduleTick, loopTicks, ticksPerSecond, this.playheadTick);
@@ -165,8 +180,11 @@ export default class MidiSongPlayer {
 
   triggerPlayback(startTick, endTick, loopTicks, ticksPerSecond = this.getTicksPerSecond(), currentTick = startTick) {
     if (!this.song || !this.events.length || endTick <= startTick) return;
-    const catchupTicks = MIDI_MAX_AUDIBLE_CATCHUP_SECONDS * ticksPerSecond;
-    const audibleStart = Math.max(startTick, currentTick - catchupTicks);
+    const staleTicks = MIDI_RUNTIME_STALE_BACKLOG_SECONDS * ticksPerSecond;
+    const catchupTicks = MIDI_RUNTIME_MAX_CATCHUP_SECONDS * ticksPerSecond;
+    const audibleStart = currentTick - startTick >= staleTicks
+      ? Math.max(startTick, currentTick - catchupTicks)
+      : startTick;
     if (audibleStart > startTick) {
       this.droppedEvents += this.countEventsInRange(startTick, audibleStart);
     }
@@ -174,13 +192,20 @@ export default class MidiSongPlayer {
     for (let index = this.findEventIndexAtOrAfter(audibleStart); index < this.events.length; index += 1) {
       const event = this.events[index];
       if (event.tick >= endTick) break;
-      if (played >= MIDI_MAX_EVENTS_PER_UPDATE) {
+      if (played >= MIDI_RUNTIME_MAX_EVENTS_PER_UPDATE) {
         this.droppedEvents += 1;
         continue;
       }
+      const secondsFromAnchor = Math.max(0, (event.tick - this.audioAnchorTick) / Math.max(0.0001, ticksPerSecond));
       const secondsFromPlayhead = Math.max(0, (event.tick - currentTick) / Math.max(0.0001, ticksPerSecond));
-      const when = this.audio?.ctx?.currentTime != null
-        ? this.audio.ctx.currentTime + (this.audio.midiLatency || 0) + secondsFromPlayhead
+      const minWhen = this.audio?.ctx?.currentTime != null
+        ? this.audio.ctx.currentTime + Math.max(this.audio?.midiLatency || 0, MIDI_RUNTIME_MIN_SCHEDULE_LATENCY_SECONDS)
+        : null;
+      const anchoredWhen = this.audioAnchorTime != null
+        ? this.audioAnchorTime + secondsFromAnchor
+        : null;
+      const when = minWhen != null
+        ? Math.max(minWhen, anchoredWhen ?? (minWhen + secondsFromPlayhead))
         : null;
       this.playNote(event.track, event.note, { when, ticksPerSecond });
       played += 1;
@@ -242,7 +267,7 @@ export default class MidiSongPlayer {
       pedals: track?.midiPedals || [],
       trackId: track.id ?? null,
       when,
-      maxScheduleLatenessSeconds: MIDI_MAX_AUDIBLE_CATCHUP_SECONDS
+      maxScheduleLatenessSeconds: MIDI_RUNTIME_MAX_CATCHUP_SECONDS
     });
   }
 }

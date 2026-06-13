@@ -50,7 +50,35 @@ function shieldOverlayPanelEvents(panel) {
     panel.addEventListener(type, (event) => {
       event.stopPropagation();
     });
+    panel.addEventListener(type, (event) => {
+      event.stopPropagation();
+    }, true);
   });
+}
+
+function bindOverlayActionButton(button, handler) {
+  let handled = false;
+  const activate = (event) => {
+    if (handled) return;
+    handled = true;
+    event.preventDefault();
+    event.stopPropagation();
+    handler();
+  };
+  button.addEventListener('click', activate);
+  button.addEventListener('touchend', activate);
+  button.addEventListener('pointerup', activate);
+}
+
+function bindOverlayInputFocus(input) {
+  const refocus = () => {
+    window.setTimeout(() => {
+      input.focus({ preventScroll: true });
+    }, 0);
+  };
+  input.addEventListener('pointerdown', refocus);
+  input.addEventListener('touchstart', refocus);
+  input.addEventListener('click', refocus);
 }
 
 function createOverlayPanel({
@@ -175,14 +203,14 @@ export function openChoiceOverlay(options = {}) {
 
     choices.forEach((choice) => {
       const button = appendActionButton(list, choice.label || choice.value || 'Option', choice.primary ? 'primary' : '');
-      button.addEventListener('click', () => cleanup(choice.value ?? choice.id ?? choice.label));
+      bindOverlayActionButton(button, () => cleanup(choice.value ?? choice.id ?? choice.label));
     });
 
     const row = document.createElement('div');
     row.className = 'shared-text-input-actions';
     panel.appendChild(row);
     const cancelBtn = appendActionButton(row, cancelText);
-    cancelBtn.addEventListener('click', () => cleanup(null));
+    bindOverlayActionButton(cancelBtn, () => cleanup(null));
 
     overlay.addEventListener('click', (event) => {
       if (event.target === overlay) cleanup(null);
@@ -225,8 +253,8 @@ export function openConfirmOverlay(options = {}) {
       resolve(value);
     };
 
-    cancelBtn.addEventListener('click', () => cleanup(false));
-    okBtn.addEventListener('click', () => cleanup(true));
+    bindOverlayActionButton(cancelBtn, () => cleanup(false));
+    bindOverlayActionButton(okBtn, () => cleanup(true));
     overlay.addEventListener('click', (event) => {
       if (event.target === overlay) cleanup(false);
     });
@@ -312,8 +340,9 @@ export function openTextInputOverlay(options = {}) {
       resolve(value);
     };
 
-    cancelBtn.addEventListener('click', () => cleanup(null));
-    okBtn.addEventListener('click', () => cleanup(input.value));
+    bindOverlayInputFocus(input);
+    bindOverlayActionButton(cancelBtn, () => cleanup(null));
+    bindOverlayActionButton(okBtn, () => cleanup(input.value));
 
     overlay.addEventListener('click', (event) => {
       if (event.target === overlay) cleanup(null);
@@ -402,8 +431,9 @@ export function openMultiNumberInputOverlay(options = {}) {
       cleanup(values);
     };
 
-    cancelBtn.addEventListener('click', () => cleanup(null));
-    okBtn.addEventListener('click', collect);
+    inputMap.forEach((input) => bindOverlayInputFocus(input));
+    bindOverlayActionButton(cancelBtn, () => cleanup(null));
+    bindOverlayActionButton(okBtn, collect);
 
     overlay.addEventListener('click', (event) => {
       if (event.target === overlay) cleanup(null);

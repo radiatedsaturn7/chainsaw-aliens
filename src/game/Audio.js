@@ -350,6 +350,20 @@ export default class AudioSystem {
     return buffer;
   }
 
+  async preloadSfxDocument(sfx) {
+    const frames = Array.isArray(sfx?.frames) ? sfx.frames : [];
+    const layers = [];
+    frames.forEach((frame) => {
+      const frameLayers = Array.isArray(frame?.layers) && frame.layers.length
+        ? frame.layers
+        : (frame?.wavDataUrl ? [{ ...frame, id: `${frame.id || 'legacy'}:layer` }] : []);
+      frameLayers.forEach((layer) => {
+        if (layer?.wavDataUrl && !layer.muted) layers.push(layer);
+      });
+    });
+    await Promise.all(layers.map((layer) => this.decodeSfxLayer(layer).catch(() => null)));
+  }
+
   pickSfxFrame(sfx, forcedFrameIndex = null) {
     const frames = Array.isArray(sfx?.frames) ? sfx.frames : [];
     const playable = frames
@@ -433,7 +447,17 @@ export default class AudioSystem {
     }
     const handle = {
       id,
+      master,
+      baseVolume: clamp(Number(settings.baseVolume ?? 1) * volumeRand, 0, 3),
       sources,
+      setVolume: (nextVolume) => {
+        const level = clamp(handle.baseVolume * Number(nextVolume ?? 1), 0, 3);
+        if (master.gain?.setTargetAtTime) {
+          master.gain.setTargetAtTime(level, this.ctx.currentTime, 0.015);
+        } else {
+          master.gain.value = level;
+        }
+      },
       stop: () => {
         sources.forEach((source) => {
           try { source.stop(); } catch (_error) {}

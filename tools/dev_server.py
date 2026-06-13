@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import hashlib
 import json
 import os
 import shutil
@@ -21,7 +22,12 @@ NO_CACHE_HEADERS = {
 }
 
 EXPORT_ROOT = Path("data/server-storage/files")
+EXPORT_SESSION_ROOT = Path("data/server-storage/export-sessions")
 TERMUX_LIB_DIR = Path("/data/data/com.termux/files/usr/lib")
+MAX_MP4_UPLOAD_BYTES = 1024 * 1024 * 1024
+MAX_EXPORT_CHUNK_BYTES = 256 * 1024 * 1024
+EXPORT_SESSION_TTL_SECONDS = 24 * 60 * 60
+MIN_EXPORT_FREE_BYTES = 512 * 1024 * 1024
 
 
 def build_ffmpeg_env() -> dict[str, str]:
@@ -67,6 +73,144 @@ class DevHandler(SimpleHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
+
+    def _read_json_body(self, max_bytes: int = 1024 * 1024) -> dict:
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        if length <= 0:
+            return {}
+        if length > max_bytes:
+            raise ValueError("Request body is too large")
+        raw = self.rfile.read(length)
+        payload = json.loads(raw.decode("utf-8") or "{}")
+        if not isinstance(payload, dict):
+            raise ValueError("Expected a JSON object")
+        return payload
+
+    def _sanitize_export_session_id(self, session_id: str) -> str:
+        safe = "".join(ch for ch in str(session_id or "") if ch.isalnum() or ch in "-_")
+        if not safe:
+            raise ValueError("Missing export session id")
+        return safe[:96]
+
+    def _session_dir(self, session_id: str) -> Path:
+        return EXPORT_SESSION_ROOT / self._sanitize_export_session_id(session_id)
+
+    def _session_manifest_path(self, session_id: str) -> Path:
+        return self._session_dir(session_id) / "manifest.json"
+
+    def _read_session_manifest(self, session_id: str) -> dict | None:
+        path = self._session_manifest_path(session_id)
+        if not path.exists():
+            return None
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            return payload if isinstance(payload, dict) else None
+        except Exception:
+            return None
+
+    def _write_session_manifest(self, session_id: str, manifest: dict) -> None:
+        session_dir = self._session_dir(session_id)
+        session_dir.mkdir(parents=True, exist_ok=True)
+        manifest["updatedAt"] = int(time.time() * 1000)
+        (session_dir / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    def _frame_path(self, session_id: str, index: int) -> Path:
+        return self._session_dir(session_id) / "frames" / f"frame-{index:06d}.png"
+
+    def _segment_dir(self, session_id: str, segment_index: int) -> Path:
+        return self._session_dir(session_id) / "segments" / f"segment-{segment_index:05d}"
+
+    def _segment_frame_path(self, session_id: str, segment_index: int, frame_index: int) -> Path:
+        return self._segment_dir(session_id, segment_index) / "frames" / f"frame-{frame_index:06d}.png"
+
+    def _segment_path(self, session_id: str, segment_index: int) -> Path:
+        return self._session_dir(session_id) / "segments" / f"segment-{segment_index:05d}.mp4"
+
+    def _stream_request_body_to_file(self, path: Path, max_bytes: int = MAX_EXPORT_CHUNK_BYTES) -> int:
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        if length <= 0:
+            raise ValueError("Missing upload body")
+        if length > max_bytes:
+            raise ValueError("Upload chunk is too large")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = path.with_suffix(path.suffix + ".part")
+        remaining = length
+        written = 0
+        with tmp_path.open("wb") as handle:
+            while remaining > 0:
+                chunk = self.rfile.read(min(1024 * 1024, remaining))
+                if not chunk:
+                    break
+                handle.write(chunk)
+                written += len(chunk)
+                remaining -= len(chunk)
+        if remaining > 0:
+            try:
+                tmp_path.unlink()
+            except FileNotFoundError:
+                pass
+            raise ValueError("Upload ended early")
+        tmp_path.replace(path)
+        return written
+
+    def _cleanup_old_export_sessions(self) -> None:
+        if not EXPORT_SESSION_ROOT.exists():
+            return
+        cutoff = time.time() - EXPORT_SESSION_TTL_SECONDS
+        for child in EXPORT_SESSION_ROOT.iterdir():
+            try:
+                if child.is_dir() and child.stat().st_mtime < cutoff:
+                    shutil.rmtree(child)
+            except Exception:
+                pass
+
+    def _run_ffmpeg(self, command: list[str]) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            command,
+            check=False,
+            text=True,
+            capture_output=True,
+            env=build_ffmpeg_env(),
+        )
+
+    def _get_ffmpeg_status(self) -> dict:
+        try:
+            result = self._run_ffmpeg(["ffmpeg", "-hide_banner", "-version"])
+            output = (result.stdout or result.stderr or "").strip()
+            return {
+                "ok": result.returncode == 0,
+                "returncode": result.returncode,
+                "message": output.splitlines()[0] if output else "",
+            }
+        except FileNotFoundError:
+            return {"ok": False, "returncode": None, "message": "FFmpeg is not installed on this server"}
+        except Exception as exc:
+            return {"ok": False, "returncode": None, "message": str(exc)}
+
+    def _get_export_disk_status(self) -> dict:
+        disk = shutil.disk_usage(Path.cwd())
+        return {
+            "total": disk.total,
+            "used": disk.used,
+            "free": disk.free,
+            "ok": disk.free >= MIN_EXPORT_FREE_BYTES,
+            "minFree": MIN_EXPORT_FREE_BYTES,
+        }
+
+    def _sync_segment_manifest(self, session_id: str, manifest: dict) -> dict:
+        session_dir = self._session_dir(session_id)
+        segment_count = max(1, int(manifest.get("segmentCount") or 1))
+        encoded = []
+        for index in range(segment_count):
+            if self._segment_path(session_id, index).exists():
+                encoded.append(index)
+            segment_dir = self._segment_dir(session_id, index)
+            if segment_dir.exists() and index in encoded:
+                shutil.rmtree(segment_dir, ignore_errors=True)
+        manifest["segments"] = encoded
+        manifest["audioReady"] = bool((session_dir / "audio.webm").exists())
+        manifest["outputReady"] = bool((session_dir / "output.mp4").exists())
+        return manifest
 
     def _empty_index(self) -> dict:
         return {"levels": {}, "art": {}, "music": {}, "actors": {}, "sfx": {}, "cutscenes": {}}
@@ -137,7 +281,7 @@ class DevHandler(SimpleHTTPRequestHandler):
         size = document_path.stat().st_size if document_path.exists() else 0
         if assets_path.exists():
             size += self._directory_size(assets_path)
-        return {
+        result = {
             "id": metadata.get("id") if isinstance(metadata.get("id"), str) else version_dir.name,
             "folder": folder,
             "name": name,
@@ -145,6 +289,64 @@ class DevHandler(SimpleHTTPRequestHandler):
             "reason": metadata.get("reason") if isinstance(metadata.get("reason"), str) else "",
             "size": size,
         }
+        summary = self._summarize_project_document(folder, document_path)
+        if summary:
+            result["summary"] = summary
+        return result
+
+    def _summarize_project_document(self, folder: str, document_path: Path) -> dict | None:
+        if folder != "music" or not document_path.exists():
+            return None
+        try:
+            document = json.loads(document_path.read_text(encoding="utf-8"))
+        except Exception:
+            return None
+        if not isinstance(document, dict):
+            return None
+        tracks = document.get("tracks")
+        if not isinstance(tracks, list):
+            return None
+        time_signature = document.get("timeSignature") if isinstance(document.get("timeSignature"), dict) else {}
+        ticks_per_beat = document.get("ticksPerBeat")
+        if not isinstance(ticks_per_beat, (int, float)) or ticks_per_beat <= 0:
+            ticks_per_beat = 64
+        beats_per_bar = time_signature.get("beats") if isinstance(time_signature.get("beats"), (int, float)) else 4
+        ticks_per_bar = max(1, int(ticks_per_beat * beats_per_bar))
+        note_count = 0
+        max_tick = 0
+        last_by_track: dict[str, dict] = {}
+        for track in tracks:
+            if not isinstance(track, dict):
+                continue
+            track_name = track.get("name") if isinstance(track.get("name"), str) else track.get("id") or "Track"
+            track_last = None
+            patterns = track.get("patterns") if isinstance(track.get("patterns"), list) else []
+            for pattern in patterns:
+                notes = pattern.get("notes") if isinstance(pattern, dict) and isinstance(pattern.get("notes"), list) else []
+                for note in notes:
+                    if not isinstance(note, dict):
+                        continue
+                    start = note.get("startTick") if isinstance(note.get("startTick"), (int, float)) else 0
+                    duration = note.get("durationTicks") if isinstance(note.get("durationTicks"), (int, float)) else 0
+                    pitch = note.get("pitch") if isinstance(note.get("pitch"), (int, float)) else None
+                    note_count += 1
+                    max_tick = max(max_tick, int(start + duration))
+                    if track_last is None or start >= track_last["startTick"]:
+                        track_last = {"track": track_name, "startTick": int(start), "pitch": pitch}
+            if track_last:
+                last_by_track[str(track_name)] = track_last
+        summary = {
+            "title": document.get("name") if isinstance(document.get("name"), str) else "",
+            "tempo": document.get("tempo") if isinstance(document.get("tempo"), (int, float)) else None,
+            "tracks": len(tracks),
+            "notes": note_count,
+            "maxMeasure": round((max_tick / ticks_per_bar) + 1, 2),
+        }
+        for label in ("ContraBass", "Cello"):
+            if label in last_by_track:
+                summary[f"last{label}Pitch"] = last_by_track[label].get("pitch")
+                summary[f"last{label}Measure"] = round((last_by_track[label].get("startTick", 0) / ticks_per_bar) + 1, 2)
+        return summary
 
     def _list_exported_versions(self, folder: str, name: str) -> list[dict]:
         versions_dir = self._safe_doc_dir(folder, name) / "versions"
@@ -410,24 +612,64 @@ class DevHandler(SimpleHTTPRequestHandler):
                     "rssKb": self._read_self_rss_kb(),
                     "disk": {"total": disk.total, "used": disk.used, "free": disk.free},
                     "storageBytes": self._directory_size(EXPORT_ROOT),
+                    "exportSessionBytes": self._directory_size(EXPORT_SESSION_ROOT),
+                    "ffmpeg": self._get_ffmpeg_status(),
                 },
             )
             return
+        if parsed.path.startswith("/__export/session/") and parsed.path.endswith("/result"):
+            parts = [unquote(part) for part in parsed.path.strip("/").split("/")]
+            if len(parts) == 4:
+                self._handle_export_session_result(parts[2])
+                return
         super().do_GET()
 
     def do_POST(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
+        if parsed.path == "/__export/session":
+            self._handle_create_export_session()
+            return
+        if parsed.path.startswith("/__export/session/") and "/segment/" in parsed.path and parsed.path.endswith("/encode"):
+            parts = [unquote(part) for part in parsed.path.strip("/").split("/")]
+            if len(parts) == 6 and parts[:2] == ["__export", "session"] and parts[3] == "segment" and parts[5] == "encode":
+                self._handle_encode_export_session_segment(parts[2], int(parts[4]))
+                return
+        if parsed.path.startswith("/__export/session/") and parsed.path.endswith("/finalize"):
+            parts = [unquote(part) for part in parsed.path.strip("/").split("/")]
+            if len(parts) == 4:
+                self._handle_finalize_export_session(parts[2])
+                return
+        if parsed.path.startswith("/__export/session/") and parsed.path.endswith("/encode"):
+            parts = [unquote(part) for part in parsed.path.strip("/").split("/")]
+            if len(parts) == 4:
+                self._handle_encode_export_session(parts[2])
+                return
+        if parsed.path == "/__export/mp4-frames":
+            self._handle_frame_mp4_export()
+            return
         if parsed.path == "/__export/mp4":
             length = int(self.headers.get("Content-Length", "0") or "0")
             if length <= 0:
                 self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Missing movie data"})
                 return
-            raw = self.rfile.read(length)
+            if length > MAX_MP4_UPLOAD_BYTES:
+                self._write_json(HTTPStatus.REQUEST_ENTITY_TOO_LARGE, {"ok": False, "error": "Movie data is too large"})
+                return
             try:
                 with tempfile.TemporaryDirectory(prefix="chainsaw-mp4-") as tmp:
                     input_path = Path(tmp) / "input.webm"
                     output_path = Path(tmp) / "output.mp4"
-                    input_path.write_bytes(raw)
+                    remaining = length
+                    with input_path.open("wb") as handle:
+                        while remaining > 0:
+                            chunk = self.rfile.read(min(1024 * 1024, remaining))
+                            if not chunk:
+                                break
+                            handle.write(chunk)
+                            remaining -= len(chunk)
+                    if remaining > 0:
+                        self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Movie upload ended early"})
+                        return
                     result = subprocess.run(
                         [
                             "ffmpeg",
@@ -462,12 +704,12 @@ class DevHandler(SimpleHTTPRequestHandler):
                             {"ok": False, "error": f"FFmpeg MP4 encode failed: {result.stderr or result.stdout}"},
                         )
                         return
-                    data = output_path.read_bytes()
                     self.send_response(HTTPStatus.OK)
                     self.send_header("Content-Type", "video/mp4")
-                    self.send_header("Content-Length", str(len(data)))
+                    self.send_header("Content-Length", str(output_path.stat().st_size))
                     self.end_headers()
-                    self.wfile.write(data)
+                    with output_path.open("rb") as handle:
+                        shutil.copyfileobj(handle, self.wfile, length=1024 * 1024)
             except FileNotFoundError:
                 self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "FFmpeg is not installed on this server"})
             except Exception as exc:  # pragma: no cover - defensive
@@ -584,7 +826,6 @@ class DevHandler(SimpleHTTPRequestHandler):
                     "-m",
                     "chore: update server project files",
                 ])
-                # no-op commit is acceptable.
                 if commit_result.returncode != 0 and "nothing to commit" not in (commit_result.stdout + commit_result.stderr).lower():
                     self._write_json(
                         HTTPStatus.BAD_REQUEST,
@@ -606,8 +847,498 @@ class DevHandler(SimpleHTTPRequestHandler):
 
         self.send_error(HTTPStatus.NOT_FOUND, "Not Found")
 
+    def do_PUT(self) -> None:  # noqa: N802
+        parsed = urlparse(self.path)
+        parts = [unquote(part) for part in parsed.path.strip("/").split("/")]
+        if len(parts) == 7 and parts[:2] == ["__export", "session"] and parts[3] == "segment" and parts[5] == "frame":
+            try:
+                self._handle_export_session_segment_frame_upload(parts[2], int(parts[4]), int(parts[6]))
+            except ValueError as exc:
+                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": str(exc)})
+            return
+        if len(parts) == 5 and parts[:2] == ["__export", "session"] and parts[3] == "frame":
+            try:
+                self._handle_export_session_frame_upload(parts[2], int(parts[4]))
+            except ValueError as exc:
+                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": str(exc)})
+            return
+        if len(parts) == 4 and parts[:2] == ["__export", "session"] and parts[3] == "audio":
+            self._handle_export_session_audio_upload(parts[2])
+            return
+        self.send_error(HTTPStatus.NOT_FOUND, "Not Found")
+
+    def _handle_create_export_session(self) -> None:
+        try:
+            self._cleanup_old_export_sessions()
+            payload = self._read_json_body()
+            content_key = str(payload.get("contentKey") or json.dumps(payload, sort_keys=True))
+            session_id = payload.get("sessionId") or ("mp4-" + hashlib.sha256(content_key.encode("utf-8")).hexdigest()[:24])
+            session_id = self._sanitize_export_session_id(session_id)
+            frame_count = max(1, min(20000, int(payload.get("frameCount") or 1)))
+            fps = max(1, min(60, int(payload.get("fps") or 30)))
+            source_width = max(1, min(4096, int(payload.get("sourceWidth") or payload.get("frameWidth") or payload.get("outputWidth") or 1920)))
+            source_height = max(1, min(4096, int(payload.get("sourceHeight") or payload.get("frameHeight") or payload.get("outputHeight") or 1080)))
+            output_width = max(1, min(4096, int(payload.get("outputWidth") or 1920)))
+            output_height = max(1, min(4096, int(payload.get("outputHeight") or 1080)))
+            segment_ms = max(250, min(10000, int(payload.get("segmentMs") or 1500)))
+            segment_count = max(1, min(20000, int(payload.get("segmentCount") or 1)))
+            ffmpeg = self._get_ffmpeg_status()
+            if not ffmpeg.get("ok"):
+                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": f"FFmpeg is not usable: {ffmpeg.get('message') or 'unknown error'}", "ffmpeg": ffmpeg})
+                return
+            disk = self._get_export_disk_status()
+            if not disk.get("ok"):
+                self._write_json(HTTPStatus.INSUFFICIENT_STORAGE, {"ok": False, "error": f"Not enough free disk for MP4 export. Free {disk['free']} bytes; need at least {disk['minFree']} bytes.", "disk": disk})
+                return
+            session_dir = self._session_dir(session_id)
+            session_dir.mkdir(parents=True, exist_ok=True)
+            previous = self._read_session_manifest(session_id)
+            if previous and previous.get("contentKey") != content_key:
+                shutil.rmtree(session_dir, ignore_errors=True)
+                session_dir.mkdir(parents=True, exist_ok=True)
+                previous = None
+            manifest = previous or {
+                "id": session_id,
+                "contentKey": content_key,
+                "name": str(payload.get("name") or "cutscene"),
+                "durationMs": int(payload.get("durationMs") or 0),
+                "fps": fps,
+                "sourceWidth": source_width,
+                "sourceHeight": source_height,
+                "outputWidth": output_width,
+                "outputHeight": output_height,
+                "frameCount": frame_count,
+                "segmentMs": segment_ms,
+                "segmentCount": segment_count,
+                "segments": [],
+                "audioReady": False,
+                "createdAt": int(time.time() * 1000),
+            }
+            manifest.update({
+                "fps": fps,
+                "sourceWidth": source_width,
+                "sourceHeight": source_height,
+                "outputWidth": output_width,
+                "outputHeight": output_height,
+                "frameCount": frame_count,
+                "segmentMs": segment_ms,
+                "segmentCount": segment_count,
+            })
+            manifest.setdefault("frames", [])
+            manifest = self._sync_segment_manifest(session_id, manifest)
+            manifest["disk"] = disk
+            manifest["ffmpeg"] = ffmpeg
+            self._write_session_manifest(session_id, manifest)
+            self._write_json(HTTPStatus.OK, {"ok": True, "session": manifest})
+        except Exception as exc:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": str(exc)})
+
+    def _handle_export_session_segment_frame_upload(self, session_id: str, segment_index: int, frame_index: int) -> None:
+        manifest = self._read_session_manifest(session_id)
+        if not manifest:
+            self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "Export session not found"})
+            return
+        segment_count = int(manifest.get("segmentCount") or 0)
+        if segment_index < 0 or segment_index >= segment_count:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Segment index out of range"})
+            return
+        if frame_index < 0 or frame_index > 1000:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Segment frame index out of range"})
+            return
+        try:
+            written = self._stream_request_body_to_file(self._segment_frame_path(session_id, segment_index, frame_index), MAX_EXPORT_CHUNK_BYTES)
+            self._write_json(HTTPStatus.OK, {"ok": True, "segment": segment_index, "frame": frame_index, "bytes": written})
+        except Exception as exc:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": str(exc)})
+
+    def _handle_encode_export_session_segment(self, session_id: str, segment_index: int) -> None:
+        manifest = self._read_session_manifest(session_id)
+        if not manifest:
+            self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "Export session not found"})
+            return
+        segment_count = int(manifest.get("segmentCount") or 0)
+        if segment_index < 0 or segment_index >= segment_count:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Segment index out of range"})
+            return
+        output_path = self._segment_path(session_id, segment_index)
+        if output_path.exists() and output_path.stat().st_size > 0:
+            shutil.rmtree(self._segment_dir(session_id, segment_index), ignore_errors=True)
+            manifest = self._sync_segment_manifest(session_id, manifest)
+            self._write_session_manifest(session_id, manifest)
+            self._write_json(HTTPStatus.OK, {"ok": True, "segment": segment_index, "cached": True, "bytes": output_path.stat().st_size})
+            return
+        segment_dir = self._segment_dir(session_id, segment_index)
+        frames_dir = segment_dir / "frames"
+        frame_files = sorted(frames_dir.glob("frame-*.png")) if frames_dir.exists() else []
+        if not frame_files:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "No segment frames uploaded"})
+            return
+        missing = []
+        for index in range(len(frame_files)):
+            if not (frames_dir / f"frame-{index:06d}.png").exists():
+                missing.append(index)
+        if missing:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": f"Missing {len(missing)} segment frames", "missing": missing[:20]})
+            return
+        disk = self._get_export_disk_status()
+        if not disk.get("ok"):
+            self._write_json(HTTPStatus.INSUFFICIENT_STORAGE, {"ok": False, "error": f"Not enough free disk to encode segment. Free {disk['free']} bytes.", "disk": disk})
+            return
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_output = output_path.with_name(output_path.stem + ".part.mp4")
+        command = [
+            "ffmpeg",
+            "-y",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-framerate",
+            str(max(1, min(60, int(manifest.get("fps") or 30)))),
+            "-i",
+            str(frames_dir / "frame-%06d.png"),
+            "-vf",
+            (
+                f"scale={max(1, min(4096, int(manifest.get('outputWidth') or 1920)))}:"
+                f"{max(1, min(4096, int(manifest.get('outputHeight') or 1080)))}:"
+                "force_original_aspect_ratio=decrease:flags=neighbor,"
+                f"pad={max(1, min(4096, int(manifest.get('outputWidth') or 1920)))}:"
+                f"{max(1, min(4096, int(manifest.get('outputHeight') or 1080)))}:"
+                "(ow-iw)/2:(oh-ih)/2:black,setsar=1"
+            ),
+            "-c:v",
+            "libx264",
+            "-pix_fmt",
+            "yuv420p",
+            "-preset",
+            "veryfast",
+            "-threads",
+            "1",
+            "-an",
+            "-movflags",
+            "+faststart",
+            str(tmp_output),
+        ]
+        try:
+            result = self._run_ffmpeg(command)
+            if result.returncode != 0 or not tmp_output.exists():
+                self._write_json(
+                    HTTPStatus.BAD_REQUEST,
+                    {"ok": False, "error": f"FFmpeg segment encode failed: {result.stderr or result.stdout}"},
+                )
+                return
+            tmp_output.replace(output_path)
+            shutil.rmtree(segment_dir, ignore_errors=True)
+            manifest = self._sync_segment_manifest(session_id, manifest)
+            manifest["outputReady"] = False
+            self._write_session_manifest(session_id, manifest)
+            self._write_json(HTTPStatus.OK, {"ok": True, "segment": segment_index, "bytes": output_path.stat().st_size, "encoded": len(manifest.get("segments", [])), "segmentCount": segment_count})
+        except FileNotFoundError:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "FFmpeg is not installed on this server"})
+        except Exception as exc:
+            self._write_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"ok": False, "error": str(exc)})
+
+    def _handle_finalize_export_session(self, session_id: str) -> None:
+        manifest = self._read_session_manifest(session_id)
+        if not manifest:
+            self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "Export session not found"})
+            return
+        session_dir = self._session_dir(session_id)
+        output_path = session_dir / "output.mp4"
+        if output_path.exists() and output_path.stat().st_size > 0:
+            manifest["outputReady"] = True
+            manifest["outputBytes"] = output_path.stat().st_size
+            self._write_session_manifest(session_id, manifest)
+            self._write_json(HTTPStatus.OK, {"ok": True, "resultUrl": f"/__export/session/{session_id}/result", "bytes": manifest["outputBytes"]})
+            return
+        segment_count = int(manifest.get("segmentCount") or 0)
+        missing = [index for index in range(segment_count) if not self._segment_path(session_id, index).exists()]
+        if missing:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": f"Missing {len(missing)} encoded segments", "missing": missing[:20]})
+            return
+        concat_path = session_dir / "segments.txt"
+        with concat_path.open("w", encoding="utf-8") as handle:
+            for index in range(segment_count):
+                segment_path = self._segment_path(session_id, index).resolve()
+                handle.write(f"file '{str(segment_path).replace(chr(39), chr(39) + chr(92) + chr(39) + chr(39))}'\n")
+        audio_path = session_dir / "audio.webm"
+        tmp_output = output_path.with_name(output_path.stem + ".part.mp4")
+        command = [
+            "ffmpeg",
+            "-y",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-f",
+            "concat",
+            "-safe",
+            "0",
+            "-i",
+            str(concat_path),
+        ]
+        has_audio = audio_path.exists() and audio_path.stat().st_size > 0
+        if has_audio:
+            command.extend(["-i", str(audio_path), "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest"])
+        else:
+            command.extend(["-c", "copy"])
+        command.extend(["-movflags", "+faststart", str(tmp_output)])
+        try:
+            result = self._run_ffmpeg(command)
+            if result.returncode != 0 or not tmp_output.exists():
+                self._write_json(
+                    HTTPStatus.BAD_REQUEST,
+                    {"ok": False, "error": f"FFmpeg finalize failed: {result.stderr or result.stdout}"},
+                )
+                return
+            tmp_output.replace(output_path)
+            manifest = self._sync_segment_manifest(session_id, manifest)
+            manifest["outputReady"] = True
+            manifest["outputBytes"] = output_path.stat().st_size
+            self._write_session_manifest(session_id, manifest)
+            self._write_json(HTTPStatus.OK, {"ok": True, "resultUrl": f"/__export/session/{session_id}/result", "bytes": manifest["outputBytes"]})
+        except FileNotFoundError:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "FFmpeg is not installed on this server"})
+        except Exception as exc:
+            self._write_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"ok": False, "error": str(exc)})
+
+    def _handle_export_session_frame_upload(self, session_id: str, index: int) -> None:
+        manifest = self._read_session_manifest(session_id)
+        if not manifest:
+            self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "Export session not found"})
+            return
+        frame_count = int(manifest.get("frameCount") or 0)
+        if index < 0 or index >= frame_count:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Frame index out of range"})
+            return
+        try:
+            written = self._stream_request_body_to_file(self._frame_path(session_id, index), MAX_EXPORT_CHUNK_BYTES)
+            frames = set(int(value) for value in manifest.get("frames", []) if isinstance(value, int))
+            frames.add(index)
+            manifest["frames"] = sorted(frames)
+            manifest["outputReady"] = False
+            self._write_session_manifest(session_id, manifest)
+            self._write_json(HTTPStatus.OK, {"ok": True, "index": index, "bytes": written, "uploaded": len(frames), "frameCount": frame_count})
+        except Exception as exc:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": str(exc)})
+
+    def _handle_export_session_audio_upload(self, session_id: str) -> None:
+        manifest = self._read_session_manifest(session_id)
+        if not manifest:
+            self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "Export session not found"})
+            return
+        try:
+            audio_path = self._session_dir(session_id) / "audio.webm"
+            written = self._stream_request_body_to_file(audio_path, MAX_EXPORT_CHUNK_BYTES)
+            manifest["audioReady"] = written > 0
+            manifest["outputReady"] = False
+            self._write_session_manifest(session_id, manifest)
+            self._write_json(HTTPStatus.OK, {"ok": True, "bytes": written})
+        except Exception as exc:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": str(exc)})
+
+    def _handle_encode_export_session(self, session_id: str) -> None:
+        manifest = self._read_session_manifest(session_id)
+        if not manifest:
+            self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "Export session not found"})
+            return
+        session_dir = self._session_dir(session_id)
+        output_path = session_dir / "output.mp4"
+        frame_count = int(manifest.get("frameCount") or 0)
+        missing = [index for index in range(frame_count) if not self._frame_path(session_id, index).exists()]
+        if missing:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": f"Missing {len(missing)} frames", "missing": missing[:20]})
+            return
+        if output_path.exists():
+            manifest["outputReady"] = True
+            self._write_session_manifest(session_id, manifest)
+            self._write_json(HTTPStatus.OK, {"ok": True, "resultUrl": f"/__export/session/{session_id}/result"})
+            return
+        frames_dir = session_dir / "frames"
+        audio_path = session_dir / "audio.webm"
+        command = [
+            "ffmpeg",
+            "-y",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-framerate",
+            str(max(1, min(60, int(manifest.get("fps") or 30)))),
+            "-i",
+            str(frames_dir / "frame-%06d.png"),
+        ]
+        if audio_path.exists() and audio_path.stat().st_size > 0:
+            command.extend(["-i", str(audio_path)])
+        command.extend([
+            "-c:v",
+            "libx264",
+            "-pix_fmt",
+            "yuv420p",
+            "-preset",
+            "veryfast",
+            "-threads",
+            "2",
+        ])
+        if audio_path.exists() and audio_path.stat().st_size > 0:
+            command.extend(["-c:a", "aac", "-b:a", "192k", "-shortest"])
+        command.extend(["-movflags", "+faststart", str(output_path)])
+        try:
+            result = subprocess.run(
+                command,
+                check=False,
+                text=True,
+                capture_output=True,
+                env=build_ffmpeg_env(),
+            )
+            if result.returncode != 0 or not output_path.exists():
+                self._write_json(
+                    HTTPStatus.BAD_REQUEST,
+                    {"ok": False, "error": f"FFmpeg session MP4 encode failed: {result.stderr or result.stdout}"},
+                )
+                return
+            manifest["outputReady"] = True
+            manifest["outputBytes"] = output_path.stat().st_size
+            self._write_session_manifest(session_id, manifest)
+            self._write_json(HTTPStatus.OK, {"ok": True, "resultUrl": f"/__export/session/{session_id}/result", "bytes": manifest["outputBytes"]})
+        except FileNotFoundError:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "FFmpeg is not installed on this server"})
+        except Exception as exc:
+            self._write_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"ok": False, "error": str(exc)})
+
+    def _handle_export_session_result(self, session_id: str) -> None:
+        output_path = self._session_dir(session_id) / "output.mp4"
+        if not output_path.exists():
+            self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "Export result not found"})
+            return
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", "video/mp4")
+        self.send_header("Content-Length", str(output_path.stat().st_size))
+        self.end_headers()
+        with output_path.open("rb") as handle:
+            shutil.copyfileobj(handle, self.wfile, length=1024 * 1024)
+
+    def _handle_frame_mp4_export(self) -> None:
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        if length <= 0:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Missing movie data"})
+            return
+        if length > MAX_MP4_UPLOAD_BYTES:
+            self._write_json(HTTPStatus.REQUEST_ENTITY_TOO_LARGE, {"ok": False, "error": "Movie data is too large"})
+            return
+        content_type = self.headers.get("Content-Type", "")
+        if "multipart/form-data" not in content_type:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Expected multipart movie data"})
+            return
+        try:
+            with tempfile.TemporaryDirectory(prefix="chainsaw-frames-") as tmp:
+                tmp_path = Path(tmp)
+                form = self._read_multipart_form(content_type, length)
+                fps = max(1, min(60, int(float((form.get("fps") or [b"30"])[0].decode("utf-8", "ignore") or 30))))
+                frame_fields = form.get("frame") or []
+                if not frame_fields:
+                    self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "No movie frames uploaded"})
+                    return
+                frames_dir = tmp_path / "frames"
+                frames_dir.mkdir()
+                for index, frame_bytes in enumerate(frame_fields):
+                    frame_path = frames_dir / f"frame-{index:06d}.png"
+                    with frame_path.open("wb") as handle:
+                        handle.write(frame_bytes)
+                audio_path = None
+                if form.get("audio"):
+                    audio_path = tmp_path / "audio.webm"
+                    with audio_path.open("wb") as handle:
+                        handle.write(form["audio"][0])
+                output_path = tmp_path / "output.mp4"
+                command = [
+                    "ffmpeg",
+                    "-y",
+                    "-hide_banner",
+                    "-loglevel",
+                    "error",
+                    "-framerate",
+                    str(fps),
+                    "-i",
+                    str(frames_dir / "frame-%06d.png"),
+                ]
+                if audio_path and audio_path.stat().st_size > 0:
+                    command.extend(["-i", str(audio_path)])
+                command.extend([
+                    "-c:v",
+                    "libx264",
+                    "-pix_fmt",
+                    "yuv420p",
+                    "-preset",
+                    "veryfast",
+                ])
+                if audio_path and audio_path.stat().st_size > 0:
+                    command.extend(["-c:a", "aac", "-b:a", "192k", "-shortest"])
+                command.extend(["-movflags", "+faststart", str(output_path)])
+                result = subprocess.run(
+                    command,
+                    check=False,
+                    text=True,
+                    capture_output=True,
+                    env=build_ffmpeg_env(),
+                )
+                if result.returncode != 0 or not output_path.exists():
+                    self._write_json(
+                        HTTPStatus.BAD_REQUEST,
+                        {"ok": False, "error": f"FFmpeg frame MP4 encode failed: {result.stderr or result.stdout}"},
+                    )
+                    return
+                self.send_response(HTTPStatus.OK)
+                self.send_header("Content-Type", "video/mp4")
+                self.send_header("Content-Length", str(output_path.stat().st_size))
+                self.end_headers()
+                with output_path.open("rb") as handle:
+                    shutil.copyfileobj(handle, self.wfile, length=1024 * 1024)
+        except FileNotFoundError:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "FFmpeg is not installed on this server"})
+        except Exception as exc:  # pragma: no cover - defensive
+            self._write_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"ok": False, "error": str(exc)})
+
+    def _read_multipart_form(self, content_type: str, length: int) -> dict[str, list[bytes]]:
+        marker = "boundary="
+        if marker not in content_type:
+            raise ValueError("Missing multipart boundary")
+        boundary = content_type.split(marker, 1)[1].split(";", 1)[0].strip().strip('"')
+        if not boundary:
+            raise ValueError("Missing multipart boundary")
+        body = self.rfile.read(length)
+        delimiter = ("--" + boundary).encode("utf-8")
+        result: dict[str, list[bytes]] = {}
+        for raw_part in body.split(delimiter):
+            part = raw_part.strip(b"\r\n")
+            if not part or part == b"--":
+                continue
+            if part.endswith(b"--"):
+                part = part[:-2].rstrip(b"\r\n")
+            if b"\r\n\r\n" not in part:
+                continue
+            header_blob, data = part.split(b"\r\n\r\n", 1)
+            name = ""
+            for header_line in header_blob.decode("utf-8", "ignore").split("\r\n"):
+                lower = header_line.lower()
+                if not lower.startswith("content-disposition:"):
+                    continue
+                for token in header_line.split(";"):
+                    token = token.strip()
+                    if token.startswith("name="):
+                        name = token.split("=", 1)[1].strip().strip('"')
+                        break
+            if name:
+                result.setdefault(name, []).append(data)
+        return result
+
     def do_DELETE(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
+        parts = [unquote(part) for part in parsed.path.strip("/").split("/")]
+        if len(parts) == 3 and parts[:2] == ["__export", "session"]:
+            try:
+                shutil.rmtree(self._session_dir(parts[2]), ignore_errors=True)
+                self._write_json(HTTPStatus.OK, {"ok": True})
+            except Exception as exc:
+                self._write_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"ok": False, "error": str(exc)})
+            return
         if parsed.path == "/__storage/file":
             query = parse_qs(parsed.query)
             folder = (query.get("folder") or [""])[0]

@@ -12,6 +12,7 @@ import {
   restoreProjectFileVersion,
   sanitizeProjectFileName
 } from './projectFiles.js';
+import { listBuiltInActorBrowserEntries } from '../content/builtinActorOverrides.js';
 import { hydrateServerStorage } from './serverStorage.js';
 import { fileTypeBadge } from './uiSuite.js';
 
@@ -84,7 +85,14 @@ function readAvailableFolders(fixedFolder) {
 
 function listEntries(folder) {
   if (!PROJECT_FOLDERS.includes(folder)) return [];
-  return listProjectFiles(folder).filter((entry) => isAllowedFile(folder, entry.name));
+  const entries = listProjectFiles(folder).filter((entry) => isAllowedFile(folder, entry.name));
+  if (folder !== 'actors') return entries;
+  const builtIns = listBuiltInActorBrowserEntries();
+  const seen = new Set(builtIns.map((entry) => entry.name.toLowerCase()));
+  return [
+    ...builtIns,
+    ...entries.filter((entry) => !seen.has(String(entry.name || '').toLowerCase()))
+  ];
 }
 
 function parseHexColorToRgba(hex) {
@@ -234,6 +242,7 @@ export function openProjectBrowser({
     let versionEntries = [];
     let versionLoading = false;
     let versionError = '';
+    let restoreConfirmTarget = null;
     const artPreviewCache = new Map();
     const actorPreviewCache = new Map();
     const previewTimers = new Set();
@@ -371,6 +380,7 @@ export function openProjectBrowser({
       renameTarget = null;
       versionEntries = [];
       versionError = '';
+      restoreConfirmTarget = null;
       versionLoading = true;
       refresh();
       try {
@@ -390,11 +400,11 @@ export function openProjectBrowser({
       try {
         const restored = await restoreProjectFileVersion(folder, name, versionId);
         if (restored?.data === undefined) throw new Error('Version restore failed');
-        versionsTarget = null;
-        versionEntries = [];
-        refresh();
+        restoreConfirmTarget = null;
+        versionEntries = await listProjectFileVersions(folder, name);
       } catch (error) {
         versionError = String(error?.message || error || 'Could not restore version');
+      } finally {
         versionLoading = false;
         refresh();
       }
@@ -407,6 +417,7 @@ export function openProjectBrowser({
       try {
         await deleteProjectFileVersion(folder, name, versionId);
         versionEntries = await listProjectFileVersions(folder, name);
+        if (restoreConfirmTarget === versionId) restoreConfirmTarget = null;
       } catch (error) {
         versionError = String(error?.message || error || 'Could not delete version');
       } finally {
@@ -553,6 +564,7 @@ export function openProjectBrowser({
             renameTarget = entry.name;
             pendingDelete = null;
             versionsTarget = null;
+            restoreConfirmTarget = null;
             refresh();
           });
           renameBtn.disabled = Boolean(entry.deleted);
@@ -570,6 +582,7 @@ export function openProjectBrowser({
 
           actions.appendChild(makeButton('Versions', 'project-browser-btn', () => {
             if (!PROJECT_FOLDERS.includes(folder)) return;
+            restoreConfirmTarget = null;
             void openVersions(folder, entry.name);
           }));
           actions.appendChild(makeButton('Delete', 'project-browser-btn danger', () => {
@@ -577,6 +590,7 @@ export function openProjectBrowser({
             pendingDelete = entry.name;
             renameTarget = null;
             versionsTarget = null;
+            restoreConfirmTarget = null;
             refresh();
           }));
         }
@@ -625,15 +639,40 @@ export function openProjectBrowser({
               const versionItem = document.createElement('div');
               versionItem.className = 'project-browser-version-row';
               const label = document.createElement('span');
-              label.textContent = `${formatDate(version.savedAt)} · ${formatSize(version.size)}${version.reason ? ` · ${version.reason}` : ''}`;
+              const summary = version.summary && typeof version.summary === 'object'
+                ? [
+                    Number.isFinite(version.summary.notes) ? `${version.summary.notes} notes` : '',
+                    Number.isFinite(version.summary.maxMeasure) ? `m${version.summary.maxMeasure}` : '',
+                    Number.isFinite(version.summary.lastContraBassPitch) ? `Contra ${version.summary.lastContraBassPitch}@m${version.summary.lastContraBassMeasure}` : '',
+                    Number.isFinite(version.summary.lastCelloPitch) ? `Cello ${version.summary.lastCelloPitch}@m${version.summary.lastCelloMeasure}` : ''
+                  ].filter(Boolean).join(' · ')
+                : '';
+              label.textContent = `${formatDate(version.savedAt)} · ${formatSize(version.size)}${version.reason ? ` · ${version.reason}` : ''}${summary ? ` · ${summary}` : ''}`;
               versionItem.appendChild(label);
               versionItem.appendChild(makeButton('Restore', 'project-browser-btn primary', () => {
-                void restoreVersion(folder, entry.name, version.id);
+                restoreConfirmTarget = version.id;
+                versionError = '';
+                refresh();
               }));
               versionItem.appendChild(makeButton('Delete', 'project-browser-btn danger', () => {
                 void deleteVersion(folder, entry.name, version.id);
               }));
               list.appendChild(versionItem);
+              if (restoreConfirmTarget === version.id) {
+                const confirmItem = document.createElement('div');
+                confirmItem.className = 'project-browser-version-confirm';
+                const confirmText = document.createElement('span');
+                confirmText.textContent = 'Restore this version? Current file will be backed up first.';
+                confirmItem.appendChild(confirmText);
+                confirmItem.appendChild(makeButton('Confirm Restore', 'project-browser-btn primary', () => {
+                  void restoreVersion(folder, entry.name, version.id);
+                }));
+                confirmItem.appendChild(makeButton('Cancel', 'project-browser-btn', () => {
+                  restoreConfirmTarget = null;
+                  refresh();
+                }));
+                list.appendChild(confirmItem);
+              }
             });
             versionsRow.appendChild(list);
           }
@@ -641,6 +680,7 @@ export function openProjectBrowser({
             versionsTarget = null;
             versionEntries = [];
             versionError = '';
+            restoreConfirmTarget = null;
             refresh();
           }));
           row.appendChild(versionsRow);
