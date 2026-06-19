@@ -7,9 +7,9 @@ export function createEditorRuntime({ context, document, history } = {}) {
 
   const documentLifecycle = createDocumentLifecycle({
     folder: document.folder,
-    waitForSync: document.waitForSync,
     strings: document.strings,
     confirm: document.confirm,
+    beforeSave: document.beforeSave,
     serialize: (ctx) => document.serialize(ctx),
     deserialize: document.deserialize,
     applyLoadedData: (ctx, data, meta) => {

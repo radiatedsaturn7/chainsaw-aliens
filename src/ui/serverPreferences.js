@@ -49,6 +49,7 @@ export function saveServerPreference(key, value) {
       name,
       savedAt: Date.now(),
       version: 1,
+      createVersion: false,
       data: { value }
     })
   }).then(() => ({ ok: true })).catch((error) => ({ ok: false, reason: String(error) }));

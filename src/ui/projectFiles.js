@@ -20,6 +20,7 @@ import {
   upsertCachedProjectFile,
   clearCachedProjectFilesForTests,
   deleteServerFileVersion,
+  hydrateProjectFile,
   listServerFileVersions,
   loadServerFileVersion,
   restoreServerFileVersion
@@ -127,7 +128,18 @@ export function loadProjectFile(folder, name) {
   }
 }
 
-export function saveProjectFile(folder, name, dataObj) {
+export async function hydrateProjectFilePayload(folder, name) {
+  assertFolder(folder);
+  const clean = sanitizeProjectFileName(name);
+  if (!clean) return null;
+  const payload = await hydrateProjectFile(folder, clean);
+  if (!payload) return null;
+  const raw = JSON.stringify(payload);
+  cacheParsedPayload(`${folder}:${clean}`, raw, payload);
+  return payload;
+}
+
+export function saveProjectFile(folder, name, dataObj, options = {}) {
   assertFolder(folder);
   const clean = sanitizeProjectFileName(name);
   if (!clean) return null;
@@ -145,8 +157,23 @@ export function saveProjectFile(folder, name, dataObj) {
   const index = ensureProjectFileIndex();
   index[folder][clean] = { updatedAt: savedAt, size: raw.length };
   saveIndex(index);
-  const syncPromise = queueServerFileSave(folder, clean, dataObj, { savedAt, version: 1 });
+  const syncPromise = queueServerFileSave(folder, clean, dataObj, {
+    savedAt,
+    version: 1,
+    createVersion: options.createVersion !== false
+  });
   return { ...payload, syncPromise };
+}
+
+export async function saveProjectFileAndConfirm(folder, name, dataObj, options = {}) {
+  const saved = saveProjectFile(folder, name, dataObj, options);
+  if (!saved) throw new Error('Invalid file name');
+  const persisted = await saved.syncPromise;
+  if (!persisted) throw new Error('Server did not confirm file save');
+  if (persisted.persisted === false) {
+    throw new Error(persisted.reason || 'Server did not persist file');
+  }
+  return { ...saved, ...persisted, data: dataObj };
 }
 
 export function deleteProjectFile(folder, name) {

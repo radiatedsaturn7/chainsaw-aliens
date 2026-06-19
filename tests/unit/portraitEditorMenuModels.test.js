@@ -65,6 +65,17 @@ test('Pixel portrait root menu exposes every major panel and file utility', () =
   assertSharedPortraitRailActionCount(model.bottomRailActions.map((id) => ({ id })), { editor: 'pixel' });
 });
 
+test('Pixel portrait root tabs do not register pose timeline controls', () => {
+  const rootTabsIndex = pixelStudioSource.indexOf('  drawMobilePortraitRootTabs(ctx, bounds)');
+  const toolbarIndex = pixelStudioSource.indexOf('  drawMobileToolbar(ctx, x, y, w, h)', rootTabsIndex);
+  assert.ok(rootTabsIndex >= 0);
+  assert.ok(toolbarIndex > rootTabsIndex);
+  const rootTabsBody = pixelStudioSource.slice(rootTabsIndex, toolbarIndex);
+
+  assert.equal(rootTabsBody.includes('bone-timeline-zoom-slider'), false);
+  assert.equal(rootTabsBody.includes('layout.sliderBounds'), false);
+});
+
 test('built-in player and companion actors are reserved visual overrides', () => {
   const player = mergeBuiltInActorOverride('Player', {
     states: [

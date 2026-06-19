@@ -28,6 +28,7 @@ MAX_MP4_UPLOAD_BYTES = 1024 * 1024 * 1024
 MAX_EXPORT_CHUNK_BYTES = 256 * 1024 * 1024
 EXPORT_SESSION_TTL_SECONDS = 24 * 60 * 60
 MIN_EXPORT_FREE_BYTES = 512 * 1024 * 1024
+SLOW_STORAGE_LOG_SECONDS = 0.25
 
 
 def build_ffmpeg_env() -> dict[str, str]:
@@ -73,6 +74,12 @@ class DevHandler(SimpleHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
+
+    def _log_slow_storage(self, label: str, started_at: float, detail: str = "") -> None:
+        elapsed = time.perf_counter() - started_at
+        if elapsed >= SLOW_STORAGE_LOG_SECONDS:
+            suffix = f" {detail}" if detail else ""
+            print(f"[storage-perf] {label} {elapsed:.3f}s{suffix}", flush=True)
 
     def _read_json_body(self, max_bytes: int = 1024 * 1024) -> dict:
         length = int(self.headers.get("Content-Length", "0") or "0")
@@ -419,13 +426,11 @@ class DevHandler(SimpleHTTPRequestHandler):
                 if not isinstance(saved_at, (int, float)) and document_path.exists():
                     saved_at = int(document_path.stat().st_mtime * 1000)
                 elif not isinstance(saved_at, (int, float)):
-                    versions = self._list_exported_versions(folder, name)
-                    saved_at = versions[0]["savedAt"] if versions else int(doc_dir.stat().st_mtime * 1000)
+                    saved_at = int(doc_dir.stat().st_mtime * 1000)
                 index[folder][name] = {
                     "updatedAt": saved_at,
                     "size": document_path.stat().st_size if document_path.exists() else 0,
                     "deleted": not document_path.exists(),
-                    "versionCount": len(self._list_exported_versions(folder, name)),
                 }
         return index
 
@@ -441,17 +446,43 @@ class DevHandler(SimpleHTTPRequestHandler):
         EXPORT_ROOT.mkdir(parents=True, exist_ok=True)
         (EXPORT_ROOT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    def _write_exported_payload(self, folder: str, name: str, data: object, saved_at: int | None = None, version: int = 1) -> dict:
+    def _update_manifest_entry(self, folder: str, name: str, deleted: bool = False) -> None:
+        manifest_path = EXPORT_ROOT / "manifest.json"
+        manifest: dict = {"folders": {}}
+        if manifest_path.exists():
+            try:
+                loaded = json.loads(manifest_path.read_text(encoding="utf-8"))
+                if isinstance(loaded, dict):
+                    manifest = loaded
+            except Exception:
+                self._write_manifest()
+                return
+        folders = manifest.setdefault("folders", {})
+        if not isinstance(folders, dict):
+            self._write_manifest()
+            return
+        entries = folders.setdefault(folder, {})
+        if not isinstance(entries, dict):
+            folders[folder] = entries = {}
+        if deleted:
+            entries.pop(name, None)
+        else:
+            entries[name] = f"{folder}/{quote(name, safe='-_.() ')}/document.json"
+        EXPORT_ROOT.mkdir(parents=True, exist_ok=True)
+        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    def _write_exported_payload(self, folder: str, name: str, data: object, saved_at: int | None = None, version: int = 1, create_version: bool = True) -> dict:
         saved = int(saved_at or 0) or int(time.time() * 1000)
         doc_dir = self._safe_doc_dir(folder, name)
         doc_dir.mkdir(parents=True, exist_ok=True)
-        self._snapshot_exported_payload(folder, name, "before-save")
+        if create_version:
+            self._snapshot_exported_payload(folder, name, "before-save")
         self._extract_data_urls(data, doc_dir)
         with (doc_dir / "document.json").open("w", encoding="utf-8") as handle:
             json.dump(data, handle, ensure_ascii=False, indent=2)
         with (doc_dir / "metadata.json").open("w", encoding="utf-8") as handle:
             json.dump({"name": name, "folder": folder, "savedAt": saved, "version": version}, handle, ensure_ascii=False, indent=2)
-        self._write_manifest()
+        self._update_manifest_entry(folder, name)
         return {"version": version, "folder": folder, "name": name, "savedAt": saved, "dataOmitted": True}
 
     def _snapshot_exported_payload(self, folder: str, name: str, reason: str = "before-save") -> dict | None:
@@ -577,22 +608,30 @@ class DevHandler(SimpleHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
         if parsed.path == "/__storage/index":
+            started_at = time.perf_counter()
             query = parse_qs(parsed.query)
             folder = (query.get("folder") or [None])[0]
-            self._write_json(HTTPStatus.OK, {"ok": True, "index": self._list_exported_files(folder)})
+            index = self._list_exported_files(folder)
+            self._write_json(HTTPStatus.OK, {"ok": True, "index": index})
+            self._log_slow_storage("GET /__storage/index", started_at, f"folder={folder or '*'}")
             return
         if parsed.path == "/__storage/file":
+            started_at = time.perf_counter()
             query = parse_qs(parsed.query)
             folder = (query.get("folder") or [""])[0]
             name = (query.get("name") or [""])[0]
             if not self._stream_exported_payload(folder, name):
                 self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "File not found"})
+            self._log_slow_storage("GET /__storage/file", started_at, f"folder={folder} name={name}")
             return
         if parsed.path == "/__storage/versions":
+            started_at = time.perf_counter()
             query = parse_qs(parsed.query)
             folder = (query.get("folder") or [""])[0]
             name = (query.get("name") or [""])[0]
-            self._write_json(HTTPStatus.OK, {"ok": True, "versions": self._list_exported_versions(folder, name)})
+            versions = self._list_exported_versions(folder, name)
+            self._write_json(HTTPStatus.OK, {"ok": True, "versions": versions})
+            self._log_slow_storage("GET /__storage/versions", started_at, f"folder={folder} name={name} count={len(versions)}")
             return
         if parsed.path == "/__storage/version":
             query = parse_qs(parsed.query)
@@ -728,6 +767,7 @@ class DevHandler(SimpleHTTPRequestHandler):
             return
 
         if parsed.path == "/__storage/file":
+            started_at = time.perf_counter()
             length = int(self.headers.get("Content-Length", "0") or "0")
             raw = self.rfile.read(length)
             try:
@@ -740,8 +780,17 @@ class DevHandler(SimpleHTTPRequestHandler):
             if not isinstance(folder, str) or not isinstance(name, str) or not name:
                 self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Missing folder or name"})
                 return
-            saved = self._write_exported_payload(folder, name, payload.get("data"), payload.get("savedAt"), int(payload.get("version") or 1))
+            create_version = payload.get("createVersion") is not False
+            saved = self._write_exported_payload(
+                folder,
+                name,
+                payload.get("data"),
+                payload.get("savedAt"),
+                int(payload.get("version") or 1),
+                create_version,
+            )
             self._write_json(HTTPStatus.OK, {"ok": True, "file": saved})
+            self._log_slow_storage("POST /__storage/file", started_at, f"folder={folder} name={name} createVersion={create_version} bytes={length}")
             return
 
         if parsed.path == "/__storage/rename":

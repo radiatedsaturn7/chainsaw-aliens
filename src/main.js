@@ -208,7 +208,15 @@ function bindInputListeners() {
   listenerDisposer.add(addDOMListener(canvas, 'wheel', (event) => {
     event.preventDefault();
     const { x, y } = getCanvasPosition(event);
-    game.handleWheel?.({ x, y, deltaY: event.deltaY });
+    game.handleWheel?.({
+      x,
+      y,
+      deltaX: event.deltaX,
+      deltaY: event.deltaY,
+      ctrlKey: event.ctrlKey,
+      metaKey: event.metaKey,
+      shiftKey: event.shiftKey
+    });
   }, { passive: false }));
 
   listenerDisposer.add(addDOMListener(canvas, 'touchstart', (event) => {

@@ -1,5 +1,5 @@
 import { openProjectBrowser } from './ProjectBrowserModal.js';
-import { loadProjectFile, saveProjectFile, sanitizeProjectFileName } from './projectFiles.js';
+import { loadProjectFile, saveProjectFileAndConfirm, sanitizeProjectFileName } from './projectFiles.js';
 import { openConfirmOverlay } from './shared/textInputOverlay.js';
 import {
   drawSharedBottomRail,
@@ -849,15 +849,16 @@ export default class SfxEditor {
     }
     this.sfx.name = name;
     this.showMessage('Saving...');
-    const saved = saveProjectFile('sfx', name, this.serialize());
-    this.game?.sfxDocumentCache?.delete?.(name);
-    this.currentDocumentRef = { folder: 'sfx', name };
-    this.savedSnapshot = JSON.stringify(this.serialize());
     try {
-      await saved?.syncPromise;
+      const data = this.serialize();
+      await saveProjectFileAndConfirm('sfx', name, data);
+      this.game?.sfxDocumentCache?.delete?.(name);
+      this.currentDocumentRef = { folder: 'sfx', name };
+      this.savedSnapshot = JSON.stringify(data);
       this.showMessage('Saved');
-    } catch (_error) {
-      this.showMessage('Saved locally; server sync pending');
+    } catch (error) {
+      this.showMessage(`Save failed: ${error?.message || error || 'Unknown error'}`);
+      throw error;
     }
   }
 

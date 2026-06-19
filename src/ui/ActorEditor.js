@@ -1,5 +1,5 @@
 import { openProjectBrowser } from './ProjectBrowserModal.js';
-import { ensureProjectFileIndex, listProjectFiles, loadProjectFile, saveProjectFile } from './projectFiles.js';
+import { ensureProjectFileIndex, listProjectFiles, loadProjectFile, saveProjectFile, saveProjectFileAndConfirm } from './projectFiles.js';
 import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, DEFAULT_TAXONOMIES, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
 import { getBuiltInActorIdFromName, isBuiltInActorName, mergeBuiltInActorOverride } from '../content/builtinActorOverrides.js';
 import { getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
@@ -556,13 +556,7 @@ export default class ActorEditor {
     this.game.showSystemToast?.('Saving...');
     let saved = null;
     try {
-      saved = saveProjectFile(ACTOR_FOLDER, isBuiltInActor ? builtInActorSaveName : name, payload);
-      if (saved?.syncPromise) {
-        const persisted = await saved.syncPromise;
-        if (persisted && persisted.persisted === false) {
-          throw new Error(persisted.reason || 'Server did not persist actor');
-        }
-      }
+      saved = await saveProjectFileAndConfirm(ACTOR_FOLDER, isBuiltInActor ? builtInActorSaveName : name, payload);
     } catch (error) {
       console.error('Actor save failed', error);
       const message = `Save failed: ${error?.message || error || 'Unknown error'}`;

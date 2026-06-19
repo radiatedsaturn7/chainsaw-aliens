@@ -1199,7 +1199,7 @@ export default class Editor {
     if (!this.autosaveDirty) return;
     try {
       const data = this.serializeLevelDocument();
-      saveProjectFile('levels', LEVEL_EDITOR_AUTOSAVE_DOC, data);
+      saveProjectFile('levels', LEVEL_EDITOR_AUTOSAVE_DOC, data, { createVersion: false });
       this.autosaveDirty = false;
     } catch (error) {
       console.warn('Unable to save editor autosave:', error);

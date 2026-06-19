@@ -1,6 +1,6 @@
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { ensureActorDefinition } from '../content/actorEditorData.js';
-import { discardCachedProjectFile, listProjectFiles, loadProjectFile, saveProjectFile, sanitizeProjectFileName } from './projectFiles.js';
+import { discardCachedProjectFile, listProjectFiles, loadProjectFile, saveProjectFileAndConfirm, sanitizeProjectFileName } from './projectFiles.js';
 import { hydrateServerStorage } from './serverStorage.js';
 import {
   UI_SUITE,
@@ -3636,25 +3636,38 @@ export default class CutsceneEditor {
     if (!root) {
       root = document.createElement('div');
       root.id = 'global-overlay-root';
+      Object.assign(root.style, {
+        position: 'fixed',
+        inset: '0',
+        zIndex: '2147483647',
+        pointerEvents: 'none'
+      });
       document.body.appendChild(root);
     }
+    root.style.pointerEvents = 'none';
     body.style.overflow = 'hidden';
     body.style.touchAction = 'none';
     return new Promise((resolve) => {
       const overlay = document.createElement('div');
       overlay.className = 'shared-text-input-overlay';
       overlay.tabIndex = -1;
-      const panel = document.createElement('div');
-      panel.className = 'shared-text-input-panel multi-field';
+      overlay.style.pointerEvents = 'auto';
+      const shieldEvent = (event) => {
+        event.stopPropagation();
+      };
       [
         'pointerdown',
         'pointerup',
+        'pointermove',
         'click',
         'touchstart',
         'touchend',
+        'touchmove',
         'mousedown',
         'mouseup'
-      ].forEach((type) => panel.addEventListener(type, (event) => event.stopPropagation()));
+      ].forEach((type) => overlay.addEventListener(type, shieldEvent));
+      const panel = document.createElement('div');
+      panel.className = 'shared-text-input-panel multi-field';
       overlay.appendChild(panel);
       const title = document.createElement('h3');
       title.className = 'shared-text-input-title';
@@ -3717,11 +3730,24 @@ export default class CutsceneEditor {
         }, 60000);
         window.setTimeout(() => cleanup(true), 500);
       };
-      cancelBtn.addEventListener('click', () => {
+      const bindOverlayActionButton = (button, handler) => {
+        let handled = false;
+        const activate = (event) => {
+          if (handled) return;
+          handled = true;
+          event.preventDefault();
+          event.stopPropagation();
+          handler();
+        };
+        button.addEventListener('click', activate);
+        button.addEventListener('touchend', activate);
+        button.addEventListener('pointerup', activate);
+      };
+      bindOverlayActionButton(cancelBtn, () => {
         revokeDownloadUrl();
         cleanup(false);
       });
-      downloadBtn.addEventListener('click', triggerDownload);
+      bindOverlayActionButton(downloadBtn, triggerDownload);
       openLink.addEventListener('click', (event) => {
         event.stopPropagation();
         window.setTimeout(() => cleanup(true), 500);
@@ -4401,12 +4427,8 @@ export default class CutsceneEditor {
     if (!name) return;
     this.document.name = name;
     this.statusText = `Saving ${name}...`;
-    const saved = saveProjectFile('cutscenes', name, this.document);
     try {
-      const persisted = await saved?.syncPromise;
-      if (persisted?.persisted === false) {
-        throw new Error(persisted.reason || 'Server storage unavailable');
-      }
+      await saveProjectFileAndConfirm('cutscenes', name, this.document);
       this.currentDocumentRef = { folder: 'cutscenes', name };
       this.statusText = `Saved ${name}`;
     } catch (error) {

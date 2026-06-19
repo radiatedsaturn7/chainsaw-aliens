@@ -1,6 +1,7 @@
 const PROJECT_FILE_PREFIX = 'server-project-file:';
 const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes'];
 const STATIC_STORAGE_ROOT = '/data/server-storage/files';
+const STORAGE_REQUEST_TIMEOUT_MS = 12000;
 
 let syncQueue = Promise.resolve();
 const volatileFiles = new Map();
@@ -40,15 +41,35 @@ function updateCachedPayload(payload) {
 }
 
 async function requestJson(url, options = {}) {
-  const response = await fetch(url, options);
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok || !payload?.ok) {
-    const error = new Error(payload?.error || payload?.reason || `HTTP ${response.status}`);
-    error.status = response.status;
-    error.url = url;
-    throw error;
+  const { timeoutMs = STORAGE_REQUEST_TIMEOUT_MS, ...fetchOptions } = options;
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  let timeoutId = null;
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => {
+      controller?.abort?.();
+      const error = new Error(`Storage request timed out after ${timeoutMs}ms`);
+      error.name = 'TimeoutError';
+      error.status = 408;
+      error.url = url;
+      reject(error);
+    }, Math.max(1, Number(timeoutMs) || STORAGE_REQUEST_TIMEOUT_MS));
+  });
+  try {
+    const response = await Promise.race([
+      fetch(url, controller ? { ...fetchOptions, signal: controller.signal } : fetchOptions),
+      timeoutPromise
+    ]);
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || !payload?.ok) {
+      const error = new Error(payload?.error || payload?.reason || `HTTP ${response.status}`);
+      error.status = response.status;
+      error.url = url;
+      throw error;
+    }
+    return payload;
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
   }
-  return payload;
 }
 
 function isStorageApiUnavailable(error) {
@@ -58,12 +79,19 @@ function isStorageApiUnavailable(error) {
     || message.includes('HTTP 404')
     || message.includes('HTTP 405')
     || message.toLowerCase().includes('failed to parse url')
-    || message.toLowerCase().includes('failed to fetch');
+    || message.toLowerCase().includes('failed to fetch')
+    || message.toLowerCase().includes('timed out')
+    || error?.name === 'AbortError'
+    || error?.name === 'TimeoutError'
+    || error?.status === 408;
 }
 
 function getStorageUnavailableReason(error) {
   const message = String(error?.message || error || '');
   if (message.toLowerCase().includes('failed to fetch')) return STORAGE_UNREACHABLE_MESSAGE;
+  if (message.toLowerCase().includes('timed out') || error?.name === 'TimeoutError' || error?.status === 408) {
+    return 'Storage server timed out. Your local save is cached; try again after the server responds.';
+  }
   if (message.toLowerCase().includes('failed to parse url')) return 'Storage server URL is unavailable from this page.';
   if (error?.status === 404 || message.includes('HTTP 404')) return 'Storage API not found on this server. Reload from the active dev server.';
   if (error?.status === 405 || message.includes('HTTP 405')) return 'Storage API does not accept saves on this server.';
@@ -92,11 +120,15 @@ async function probeStorageApi() {
   }
 }
 
-async function fetchServerIndex() {
+async function fetchServerIndex(folder = null) {
   if (storageApiAvailable) {
     try {
-      const payload = await requestJson('/__storage/index');
-      serverIndex = normalizeIndex(payload.index);
+      const suffix = folder ? `?folder=${encodeURIComponent(folder)}` : '';
+      const payload = await requestJson(`/__storage/index${suffix}`);
+      const nextIndex = normalizeIndex(payload.index);
+      serverIndex = folder
+        ? normalizeIndex({ ...serverIndex, [folder]: nextIndex[folder] || {} })
+        : nextIndex;
       return serverIndex;
     } catch (error) {
       if (!isStorageApiUnavailable(error)) throw error;
@@ -112,9 +144,12 @@ async function fetchServerFile(folder, name) {
   return payload.file;
 }
 
-async function hydrateServerFiles() {
-  const index = await fetchServerIndex();
-  const count = Object.values(index).reduce((sum, files) => sum + Object.keys(files || {}).length, 0);
+async function hydrateServerFiles(options = {}) {
+  const folder = DEFAULT_FOLDERS.includes(options?.folder) ? options.folder : null;
+  const index = await fetchServerIndex(folder);
+  const count = folder
+    ? Object.keys(index?.[folder] || {}).length
+    : Object.values(index).reduce((sum, files) => sum + Object.keys(files || {}).length, 0);
   return {
     ok: true,
     storageApiAvailable,
@@ -226,6 +261,34 @@ export function readCachedProjectFile(folder, name) {
   return payload ? volatileFiles.get(key) || null : null;
 }
 
+export async function hydrateProjectFile(folder, name) {
+  if (!folder || !name) return null;
+  const key = fileKey(folder, name);
+  if (volatileFiles.has(key)) {
+    try {
+      return JSON.parse(volatileFiles.get(key));
+    } catch (error) {
+      return null;
+    }
+  }
+  if (storageApiAvailable) {
+    try {
+      return await fetchServerFile(folder, name);
+    } catch (error) {
+      if (!isStorageApiUnavailable(error)) throw error;
+      storageApiAvailable = false;
+    }
+  }
+  await hydrateStaticStorageFiles();
+  const cached = volatileFiles.get(key);
+  if (!cached) return null;
+  try {
+    return JSON.parse(cached);
+  } catch (error) {
+    return null;
+  }
+}
+
 export function listCachedProjectFiles(folder) {
   if (folder === '*') {
     return Array.from(volatileFiles.entries())
@@ -256,6 +319,7 @@ export function listServerIndexedFiles(folder = null) {
 export async function saveServerFile(folder, name, data, options = {}) {
   const savedAt = Number(options.savedAt || Date.now());
   const version = Number(options.version || 1);
+  const createVersion = options.createVersion !== false;
   if (!storageApiAvailable) {
     const recovered = await probeStorageApi();
     if (!recovered) {
@@ -266,7 +330,8 @@ export async function saveServerFile(folder, name, data, options = {}) {
     const payload = await requestJson('/__storage/file', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ folder, name, savedAt, version, data })
+      body: JSON.stringify({ folder, name, savedAt, version, createVersion, data }),
+      timeoutMs: options.timeoutMs
     });
     const responseFile = payload.file && typeof payload.file === 'object' ? payload.file : {};
     const savedFile = {
@@ -418,12 +483,12 @@ export function queueServerFileRename(folder, oldName, newName) {
   return enqueueServerMutation(() => renameServerFile(folder, oldName, newName));
 }
 
-export async function hydrateServerStorage() {
-  return hydrateServerFiles();
+export async function hydrateServerStorage(options = {}) {
+  return hydrateServerFiles(options);
 }
 
-export async function bootstrapServerStorage() {
-  return hydrateServerFiles();
+export async function bootstrapServerStorage(options = {}) {
+  return hydrateServerFiles(options);
 }
 
 export async function flushServerStorage() {

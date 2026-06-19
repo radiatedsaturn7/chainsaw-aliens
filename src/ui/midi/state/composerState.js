@@ -8,7 +8,7 @@ export function initializeComposerState(composer, options = {}) {
     instrumentFamilyTabs
   } = options;
 
-  composer.ticksPerBeat = 8;
+  composer.ticksPerBeat = 24;
   composer.beatsPerBar = 4;
   composer.quantizeOptions = quantizeOptions;
   composer.quantizeIndex = quantizeIndex;

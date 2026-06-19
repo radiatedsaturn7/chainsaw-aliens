@@ -3,8 +3,15 @@ function getOverlayRoot() {
   if (!root) {
     root = document.createElement('div');
     root.id = 'global-overlay-root';
+    Object.assign(root.style, {
+      position: 'fixed',
+      inset: '0',
+      zIndex: '2147483647',
+      pointerEvents: 'none'
+    });
     document.body.appendChild(root);
   }
+  root.style.pointerEvents = 'none';
   return root;
 }
 
@@ -50,9 +57,6 @@ function shieldOverlayPanelEvents(panel) {
     panel.addEventListener(type, (event) => {
       event.stopPropagation();
     });
-    panel.addEventListener(type, (event) => {
-      event.stopPropagation();
-    }, true);
   });
 }
 
@@ -91,6 +95,7 @@ function createOverlayPanel({
   const overlay = document.createElement('div');
   overlay.className = 'shared-text-input-overlay';
   overlay.tabIndex = -1;
+  overlay.style.pointerEvents = 'auto';
 
   const panel = document.createElement('div');
   panel.className = `shared-text-input-panel${className ? ` ${className}` : ''}`;

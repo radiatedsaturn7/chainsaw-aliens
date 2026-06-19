@@ -5,6 +5,7 @@ import {
   ensureProjectFileIndex,
   deleteProjectFileVersion,
   projectFileExists,
+  hydrateProjectFilePayload,
   listProjectFiles,
   listProjectFileVersions,
   loadProjectFile,
@@ -64,6 +65,7 @@ function getOverlayRoot() {
     });
     document.body.appendChild(root);
   }
+  root.style.pointerEvents = 'none';
   return root;
 }
 
@@ -231,7 +233,8 @@ export function openProjectBrowser({
       folder: fixedFolder || defaultFolder,
       searchOpen: false,
       query: '',
-      loading: !availableFolders.some((folder) => listEntries(folder).length > 0),
+      loading: false,
+      syncing: true,
       loadError: ''
     };
     if (!fixedFolder && mode === 'open') state.view = 'home';
@@ -243,9 +246,12 @@ export function openProjectBrowser({
     let versionLoading = false;
     let versionError = '';
     let restoreConfirmTarget = null;
+    let openingFileName = null;
+    let openError = '';
     const artPreviewCache = new Map();
     const actorPreviewCache = new Map();
     const previewTimers = new Set();
+    const previewPending = new Set();
 
     const overlay = document.createElement('div');
     overlay.className = 'project-browser-overlay';
@@ -336,6 +342,7 @@ export function openProjectBrowser({
     function cleanup(result) {
       previewTimers.forEach((timer) => clearInterval(timer));
       previewTimers.clear();
+      previewPending.clear();
       overlay.remove();
       body.style.overflow = previousOverflow;
       body.style.touchAction = previousTouchAction;
@@ -366,9 +373,26 @@ export function openProjectBrowser({
       breadcrumb.appendChild(current);
     }
 
-    function openFile(folder, name) {
+    async function openFile(folder, name) {
       if (!PROJECT_FOLDERS.includes(folder)) return;
-      const payload = loadProjectFile(folder, name);
+      openingFileName = name;
+      openError = '';
+      refresh();
+      let payload = loadProjectFile(folder, name);
+      if (!payload?.data) {
+        try {
+          payload = await hydrateProjectFilePayload(folder, name);
+        } catch (error) {
+          openError = String(error?.message || error || 'Could not load file');
+        }
+        if (!payload?.data) payload = loadProjectFile(folder, name);
+      }
+      openingFileName = null;
+      if (!payload?.data) {
+        openError = openError || `Could not load ${name}`;
+        refresh();
+        return;
+      }
       onOpen?.({ folder, name, payload });
       onPick?.({ action: 'open', folder, name, payload });
       cleanup({ action: 'open', folder, name, payload });
@@ -449,15 +473,10 @@ export function openProjectBrowser({
       const entries = listEntries(folder).filter((entry) => !query || entry.name.toLowerCase().includes(query));
       info.textContent = state.loading
         ? `Loading ${FOLDER_LABELS[folder] || folder} from server...`
-        : `${entries.length} file${entries.length === 1 ? '' : 's'} in ${FOLDER_LABELS[folder] || folder}`;
+        : openError
+          ? openError
+          : `${entries.length} file${entries.length === 1 ? '' : 's'} in ${FOLDER_LABELS[folder] || folder}${state.syncing ? ' · syncing...' : ''}`;
       fileList.innerHTML = '';
-      if (state.loading) {
-        const row = document.createElement('div');
-        row.className = 'project-browser-empty';
-        row.textContent = 'Loading files from server...';
-        fileList.appendChild(row);
-        return;
-      }
       if (state.loadError && !entries.length) {
         const row = document.createElement('div');
         row.className = 'project-browser-empty';
@@ -473,43 +492,13 @@ export function openProjectBrowser({
         if (folder === 'art' || folder === 'actors') {
           const preview = document.createElement('div');
           preview.className = 'project-browser-art-preview';
-          let previewUrls = [];
-          if (folder === 'art') {
-            const cached = artPreviewCache.get(entry.name);
-            if (Array.isArray(cached) && cached.length) previewUrls = cached;
-            if (!previewUrls.length) {
-              const payload = loadProjectFile(folder, entry.name);
-              previewUrls = createArtAnimationPreviewUrls(payload?.data);
-              if (previewUrls.length) artPreviewCache.set(entry.name, previewUrls);
-            }
-          } else {
-            const cached = actorPreviewCache.get(entry.name);
-            if (cached) previewUrls = [cached];
-            if (!previewUrls.length) {
-              const payload = loadProjectFile(folder, entry.name);
-              const actorPreview = createActorPreviewDataUrl(payload?.data);
-              if (actorPreview) {
-                actorPreviewCache.set(entry.name, actorPreview);
-                previewUrls = [actorPreview];
-              }
-            }
-          }
+          const cachedPreview = folder === 'art' ? artPreviewCache.get(entry.name) : actorPreviewCache.get(entry.name);
+          const previewUrls = Array.isArray(cachedPreview) ? cachedPreview : (cachedPreview ? [cachedPreview] : []);
           if (previewUrls.length) {
-            const img = document.createElement('img');
-            img.className = 'project-browser-art-preview-image';
-            img.src = previewUrls[0];
-            img.alt = `${entry.name} preview`;
-            preview.appendChild(img);
-            if (previewUrls.length > 1) {
-              let frameIndex = 0;
-              const timer = setInterval(() => {
-                frameIndex = (frameIndex + 1) % previewUrls.length;
-                img.src = previewUrls[frameIndex];
-              }, 180);
-              previewTimers.add(timer);
-            }
+            renderPreviewUrls(preview, previewUrls, entry.name);
           } else {
-            preview.textContent = '∅';
+            preview.textContent = '...';
+            schedulePreview(folder, entry.name, preview);
           }
           row.appendChild(preview);
         }
@@ -540,8 +529,11 @@ export function openProjectBrowser({
             cleanup({ action: 'saveAs', folder, name: entry.name, overwrite: true });
           }));
         } else {
-          const openBtn = makeButton('Open', 'project-browser-btn primary', () => openFile(folder, entry.name));
-          openBtn.disabled = !PROJECT_FOLDERS.includes(folder) || entry.deleted;
+          const isOpening = openingFileName === entry.name;
+          const openBtn = makeButton(isOpening ? 'Opening...' : 'Open', 'project-browser-btn primary', () => {
+            void openFile(folder, entry.name);
+          });
+          openBtn.disabled = isOpening || !PROJECT_FOLDERS.includes(folder) || entry.deleted;
           actions.appendChild(openBtn);
           if (folder === 'music' && !entry.deleted) {
             const toggleBtn = makeButton(activePreviewTrackId === entry.name ? 'Pause' : 'Play', 'project-browser-btn', () => {
@@ -705,6 +697,60 @@ export function openProjectBrowser({
       });
     }
 
+    function renderPreviewUrls(preview, previewUrls, name) {
+      preview.innerHTML = '';
+      if (!previewUrls.length) {
+        preview.textContent = '∅';
+        return;
+      }
+      const img = document.createElement('img');
+      img.className = 'project-browser-art-preview-image';
+      img.src = previewUrls[0];
+      img.alt = `${name} preview`;
+      preview.appendChild(img);
+      if (previewUrls.length > 1) {
+        let frameIndex = 0;
+        const timer = setInterval(() => {
+          if (!preview.isConnected) {
+            clearInterval(timer);
+            previewTimers.delete(timer);
+            return;
+          }
+          frameIndex = (frameIndex + 1) % previewUrls.length;
+          img.src = previewUrls[frameIndex];
+        }, 180);
+        previewTimers.add(timer);
+      }
+    }
+
+    function schedulePreview(folder, name, preview) {
+      const key = `${folder}:${name}`;
+      if (previewPending.has(key)) return;
+      previewPending.add(key);
+      const timer = setTimeout(async () => {
+        previewTimers.delete(timer);
+        try {
+          if (!preview.isConnected) return;
+          const payload = await hydrateProjectFilePayload(folder, name);
+          if (!preview.isConnected) return;
+          if (folder === 'art') {
+            const urls = createArtAnimationPreviewUrls(payload?.data);
+            if (urls.length) artPreviewCache.set(name, urls);
+            renderPreviewUrls(preview, urls, name);
+          } else {
+            const url = createActorPreviewDataUrl(payload?.data);
+            if (url) actorPreviewCache.set(name, url);
+            renderPreviewUrls(preview, url ? [url] : [], name);
+          }
+        } catch (error) {
+          if (preview.isConnected) preview.textContent = '∅';
+        } finally {
+          previewPending.delete(key);
+        }
+      }, 0);
+      previewTimers.add(timer);
+    }
+
     function refresh() {
       const folderLabel = FOLDER_LABELS[state.folder] || state.folder;
       titleEl.textContent = mode === 'saveAs' ? `Save ${folderLabel} as...` : title;
@@ -769,12 +815,15 @@ export function openProjectBrowser({
 
     getOverlayRoot().appendChild(overlay);
     refresh();
-    void hydrateServerStorage().then((result) => {
+    const hydrationOptions = fixedFolder ? { folder: fixedFolder } : {};
+    void hydrateServerStorage(hydrationOptions).then((result) => {
       state.loading = false;
+      state.syncing = false;
       state.loadError = result?.ok ? '' : (result?.reason || 'unknown error');
       refresh();
     }).catch((error) => {
       state.loading = false;
+      state.syncing = false;
       state.loadError = String(error || 'unknown error');
       refresh();
     });

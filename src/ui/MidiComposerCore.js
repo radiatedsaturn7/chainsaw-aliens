@@ -15,7 +15,7 @@ import { buildMidiBytes, buildMultiTrackMidiBytes, parseMidi } from '../midi/mid
 import { buildZipFromStems, loadZipSongFromBytes } from '../songs/songLoader.js';
 import { getGmSustainProfile } from '../game/Audio.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
-import { loadProjectFile, saveProjectFile } from './projectFiles.js';
+import { loadProjectFile, saveProjectFile, saveProjectFileAndConfirm } from './projectFiles.js';
 import { loadServerPreference, saveServerPreference } from './serverPreferences.js';
 import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportIconButton, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
 import { createEditorShellLayout, resolveEditorShellTheme } from '../../ui/EditorShell.js';
@@ -94,7 +94,7 @@ const NOTE_VALUE_ICONS = {
   '1/2': '𝅗𝅥',
   '1/3': '𝅘𝅥3',
   '1/4': '𝅘𝅥',
-  '1/6': '𝅘𝅥𝅮3',
+  '1/6': '𝅘𝅥𝅮6',
   '1/8': '𝅘𝅥𝅮',
   '1/16': '𝅘𝅥𝅯',
   '1/32': '𝅘𝅥𝅰'
@@ -176,7 +176,9 @@ const GAMEPAD_BUTTONS = [
   { id: 'Back', action: 'cancel' }
 ];
 
-const GM_SCHEMA_VERSION = 2;
+const GM_SCHEMA_VERSION = 3;
+const LEGACY_MIDI_TICKS_PER_BEAT = 8;
+const MIDI_TICKS_PER_BEAT = 24;
 const DEFAULT_BANK_MSB = 0;
 const DEFAULT_BANK_LSB = 0;
 const DRUM_BANK_MSB = GM_DRUM_BANK_MSB;
@@ -481,11 +483,7 @@ export function getMidiResizeMinimumTicks({
   const safeTicksPerBar = Math.max(1, Math.round(Number(ticksPerBar) || 16));
   const index = clamp(Math.floor(Number(noteLengthIndex) || 0), 0, NOTE_LENGTH_OPTIONS.length - 1);
   const selectedDivisor = NOTE_LENGTH_OPTIONS[index]?.divisor || 32;
-  const doubledDivisor = selectedDivisor * 2;
-  const exactOption = NOTE_LENGTH_OPTIONS.find((option) => option.divisor === doubledDivisor);
-  const fallbackOption = NOTE_LENGTH_OPTIONS.find((option, optionIndex) => optionIndex > index && option.divisor > selectedDivisor);
-  const divisor = exactOption?.divisor || fallbackOption?.divisor || selectedDivisor;
-  return Math.max(1, Math.round(safeTicksPerBar / divisor));
+  return Math.max(1, Math.round(safeTicksPerBar / selectedDivisor));
 }
 
 export function shouldMidiDeleteSelectedNoteOnTap() {
@@ -676,8 +674,10 @@ export function getMidiPlacementSnapTicks({
   noteLengthDivisor = 4,
   drumTrack = false
 } = {}) {
+  void quantizeDivisor;
+  void drumTrack;
   if (!quantizeEnabled) return 1;
-  const divisor = noteLengthDivisor || quantizeDivisor;
+  const divisor = noteLengthDivisor || 16;
   return Math.max(1, Math.round((Number(ticksPerBar) || 16) / (Number(divisor) || 16)));
 }
 
@@ -956,7 +956,7 @@ const createDefaultSong = () => ({
   ]
 });
 
-const createDemoSong = () => ({
+const createDemoSong = () => scaleMidiSongTiming({
   schemaVersion: GM_SCHEMA_VERSION,
   tempo: 116,
   loopBars: 8,
@@ -1132,7 +1132,39 @@ const createDemoSong = () => ({
     { root: 7, quality: 'maj', startBar: 5, lengthBars: 2 },
     { root: 3, quality: 'maj', startBar: 7, lengthBars: 2 }
   ]
-});
+}, MIDI_TICKS_PER_BEAT / LEGACY_MIDI_TICKS_PER_BEAT);
+
+function scaleMidiSongTiming(song, scale = 1) {
+  const safeScale = Number.isFinite(scale) && scale > 0 ? scale : 1;
+  if (safeScale === 1 || !song || typeof song !== 'object') return song;
+  const scaleTick = (value, { nullable = false } = {}) => {
+    if (nullable && value === null) return null;
+    if (!Number.isFinite(Number(value))) return value;
+    return Math.max(0, Math.round(Number(value) * safeScale));
+  };
+  return {
+    ...song,
+    loopStartTick: scaleTick(song.loopStartTick, { nullable: true }),
+    loopEndTick: scaleTick(song.loopEndTick, { nullable: true }),
+    tracks: Array.isArray(song.tracks)
+      ? song.tracks.map((track) => ({
+        ...track,
+        patterns: Array.isArray(track.patterns)
+          ? track.patterns.map((pattern) => ({
+            ...pattern,
+            notes: Array.isArray(pattern.notes)
+              ? pattern.notes.map((note) => ({
+                ...note,
+                startTick: scaleTick(note.startTick),
+                durationTicks: Math.max(1, scaleTick(note.durationTicks))
+              }))
+              : []
+          }))
+          : []
+      }))
+      : []
+  };
+}
 
 export default class MidiComposer {
   constructor(game) {
@@ -1259,7 +1291,7 @@ export default class MidiComposer {
           closePrompt: 'Save changes before closing?'
         },
         confirm: (ctx, message) => ctx.confirmDiscardChangesModal(message),
-        serialize: (ctx) => JSON.parse(JSON.stringify(ctx.song)),
+        serialize: (ctx) => ctx.song,
         isEmptyDocument: (_ctx, data) => {
           if (!data || typeof data !== 'object') return true;
           const tracks = Array.isArray(data.tracks) ? data.tracks : [];
@@ -1268,6 +1300,11 @@ export default class MidiComposer {
             const patterns = Array.isArray(track?.patterns) ? track.patterns : [];
             return patterns.some((pattern) => Array.isArray(pattern?.notes) && pattern.notes.length > 0);
           });
+        },
+        beforeSave: (ctx, meta) => {
+          const previousName = ctx.song.name;
+          ctx.song.name = meta.name;
+          return () => { ctx.song.name = previousName; };
         },
         applyLoadedData: (ctx, data, meta) => {
           ctx.applyImportedSong(data);
@@ -1282,7 +1319,9 @@ export default class MidiComposer {
         onAfterSave: (ctx, meta) => {
           ctx.song.name = meta.name;
           ctx.selection.clear();
-          ctx.persist({ commitHistory: true });
+          ctx.lastPersistedSnapshot = JSON.stringify(ctx.song);
+          ctx._dirty = false;
+          ctx.commitHistorySnapshot();
         }
       },
       history: {
@@ -1668,6 +1707,11 @@ export default class MidiComposer {
       }
       this._persistTimer = null;
     }
+    if (this.isPlaying) {
+      const id = window.setTimeout(() => this.flushPersist(), 1200);
+      this._persistTimer = { type: 'timeout', id };
+      return;
+    }
     if (window.requestIdleCallback) {
       const id = window.requestIdleCallback(() => this.flushPersist(), { timeout: 800 });
       this._persistTimer = { type: 'idle', id };
@@ -1677,8 +1721,12 @@ export default class MidiComposer {
     }
   }
 
-  flushPersist() {
+  flushPersist({ force = false } = {}) {
     if (!this._dirty) return;
+    if (this.isPlaying && !force) {
+      this.schedulePersist();
+      return;
+    }
     const perfEnabled = this.debug?.perf;
     const start = perfEnabled ? performance.now() : 0;
     try {
@@ -1686,11 +1734,11 @@ export default class MidiComposer {
       const snapshot = JSON.stringify(this.song);
       if (snapshot !== this.lastPersistedSnapshot) {
         this.lastPersistedSnapshot = snapshot;
-        const data = JSON.parse(snapshot);
-        saveProjectFile('music', MIDI_COMPOSER_AUTOSAVE_DOC, data);
+        const data = this.song;
+        saveProjectFile('music', MIDI_COMPOSER_AUTOSAVE_DOC, data, { createVersion: false });
         const documentAutosaveName = this.getDocumentAutosaveName();
-        if (documentAutosaveName) {
-          saveProjectFile('music', documentAutosaveName, JSON.parse(snapshot));
+        if (documentAutosaveName && documentAutosaveName !== MIDI_COMPOSER_AUTOSAVE_DOC) {
+          saveProjectFile('music', documentAutosaveName, data, { createVersion: false });
         }
       }
     } catch (error) {
@@ -1710,13 +1758,18 @@ export default class MidiComposer {
 
   getDocumentAutosaveName() {
     const name = String(this.currentDocumentRef?.name || this.song?.name || '').trim();
-    if (!name || name === MIDI_COMPOSER_AUTOSAVE_DOC || name.endsWith(MIDI_AUTOSAVE_SUFFIX)) return '';
-    return `${name}${MIDI_AUTOSAVE_SUFFIX}`;
+    const baseName = name.replace(/(?: Autosave\d*)+$/g, '').trim();
+    if (!baseName || baseName === MIDI_COMPOSER_AUTOSAVE_DOC) return '';
+    return `${baseName}${MIDI_AUTOSAVE_SUFFIX}`;
   }
 
   persist({ commitHistory = false } = {}) {
     if (commitHistory) {
-      this.commitHistorySnapshot();
+      if (this.isPlaying) {
+        this.scheduleHistoryCommit();
+      } else {
+        this.commitHistorySnapshot();
+      }
     }
     this.saveCurrentPersistentViewport();
     this.markDirty();
@@ -1909,10 +1962,9 @@ export default class MidiComposer {
       this._persistTimer = null;
     }
     this.saveCurrentPersistentViewport();
-    if (this._dirty) {
-      this.flushPersist();
-    }
-    return this.runtime.saveAsOrCurrent(options);
+    const saved = await this.runtime.saveAsOrCurrent(options);
+    if (saved) this._dirty = false;
+    return saved;
   }
 
   buildRescueSongName(prefix = MIDI_RESCUE_PREFIX) {
@@ -2191,10 +2243,12 @@ export default class MidiComposer {
     if (schemaVersion >= GM_SCHEMA_VERSION) {
       return song;
     }
+    const timingScale = schemaVersion < 3 ? MIDI_TICKS_PER_BEAT / LEGACY_MIDI_TICKS_PER_BEAT : 1;
+    const scaledSong = scaleMidiSongTiming(song, timingScale);
     const migrated = {
-      ...song,
+      ...scaledSong,
       schemaVersion: GM_SCHEMA_VERSION,
-      tracks: song.tracks.map((track, index) => this.normalizeTrack(track, index, song.loopBars))
+      tracks: scaledSong.tracks.map((track, index) => this.normalizeTrack(track, index, scaledSong.loopBars))
     };
     return migrated;
   }
@@ -2933,10 +2987,9 @@ export default class MidiComposer {
   getPlacementDurationTicks(track = this.getActiveTrack()) {
     if (!track) return this.getNoteLengthTicks();
     const staccatoFactor = this.staccatoEnabled ? 0.5 : 1;
-    if (Number.isFinite(this.defaultNoteDurationTicks) && this.defaultNoteDurationTicks > 0) {
-      return Math.max(1, Math.round(this.defaultNoteDurationTicks * staccatoFactor));
-    }
-    const baseDuration = this.getNoteLengthTicks();
+    const baseDuration = Number.isFinite(this.defaultNoteDurationTicks) && this.defaultNoteDurationTicks > 0
+      ? this.defaultNoteDurationTicks
+      : this.getNoteLengthTicks();
     return Math.max(1, Math.round(baseDuration * staccatoFactor));
   }
 
@@ -4689,7 +4742,7 @@ export default class MidiComposer {
       }
 
       if (this.gamepadResizeMode.active) {
-        const resizeStep = Math.max(1, this.getQuantizeTicks());
+        const resizeStep = Math.max(1, this.getResizeMinimumTicksForLayout());
         if (this.gamepadResizeCooldown <= 0) {
           const grow = axes.leftX > 0.55 || axes.leftY < -0.55 || axes.leftY > 0.55;
           const shrink = axes.rightX > 0.55 || axes.rightY < -0.55 || axes.rightY > 0.55;
@@ -4885,11 +4938,15 @@ export default class MidiComposer {
       const loopLength = Math.max(1, loopTicks - loopStart);
       const relative = nextTick - loopStart;
       const wrappedTick = loopStart + ((relative % loopLength) + loopLength) % loopLength;
-      this.playheadTick = wrappedTick;
       const lookaheadTicks = MIDI_SCHEDULE_LOOKAHEAD_SECONDS * ticksPerSecond;
-      if (this.scheduledUntilTick >= loopTicks || this.scheduledUntilTick < loopStart) {
+      const crossedLoopEnd = nextTick >= loopTicks;
+      if (crossedLoopEnd && this.scheduledUntilTick < loopTicks) {
+        this.triggerPlayback(Math.max(this.scheduledUntilTick, loopStart), loopTicks, loopTicks, false, Math.min(nextTick, loopTicks));
+      }
+      this.playheadTick = wrappedTick;
+      if (crossedLoopEnd || this.scheduledUntilTick < loopStart) {
         this.scheduledUntilTick = loopStart;
-        this.playbackAudioAnchorTick = this.playheadTick;
+        this.playbackAudioAnchorTick = loopStart;
         const audioNow = this.game?.audio?.ctx?.currentTime;
         this.playbackAudioAnchorSeconds = Number.isFinite(audioNow)
           ? audioNow + Math.max(this.game?.audio?.midiLatency || 0, MIDI_MIN_SCHEDULE_LATENCY_SECONDS)
@@ -5225,7 +5282,6 @@ export default class MidiComposer {
           this.cancelPedalEditor();
         } else if (pedalInspectorHit.control === 'pedal-stomp-toggle' && sourcePedal) {
           this.pedalUiState.draftPedal = { ...sourcePedal, enabled: !sourcePedal.enabled };
-          this.game?.audio?.clearMidiPedalBuses?.();
         } else if (pedalInspectorHit.control === 'pedal-knob') {
           const current = Number(sourcePedal?.knobs?.[pedalInspectorHit.knobKey]);
           this.dragState = {
@@ -5282,11 +5338,9 @@ export default class MidiComposer {
       } else if (pedalInspectorHit.control === 'pedal-stomp-toggle' && sourcePedal) {
         if (this.pedalUiState.editorOpen) {
           this.pedalUiState.draftPedal = { ...sourcePedal, enabled: !sourcePedal.enabled };
-          this.game?.audio?.clearMidiPedalBuses?.();
         } else {
           pedals[slot] = { ...sourcePedal, enabled: !sourcePedal.enabled };
           track.midiPedals = pedals;
-          this.game?.audio?.clearMidiPedalBuses?.();
           this.persist({ commitHistory: true });
         }
       } else if (pedalInspectorHit.control === 'pedal-knob') {
@@ -7768,13 +7822,19 @@ export default class MidiComposer {
     const pattern = this.getActivePattern();
     const track = this.getActiveTrack();
     if (!pattern || !this.dragState?.originalNotes || !track || isDrumTrack(track)) return;
-    const snappedTick = this.snapTick(tick);
     const gridTicks = this.getGridTicks();
     const minDurationTicks = this.getResizeMinimumTicksForLayout();
     const resizeTargetId = this.dragState.resizeNoteId;
     const targetOriginal = this.dragState.originalNotes.find((entry) => entry.id === resizeTargetId)
       || this.dragState.originalNotes[0];
     if (!targetOriginal) return;
+    const targetStart = clamp(Math.floor(Number(targetOriginal.startTick) || 0), 0, Math.max(0, gridTicks - 1));
+    const targetEnd = clamp(targetStart + Math.max(1, Math.floor(Number(targetOriginal.durationTicks) || 1)), targetStart + 1, gridTicks);
+    const rawTick = clamp(Math.floor(Number(tick) || 0), 0, gridTicks);
+    const resizeStep = Math.max(1, minDurationTicks);
+    const snappedTick = this.dragState.edge === 'start'
+      ? clamp(targetEnd - Math.round((targetEnd - rawTick) / resizeStep) * resizeStep, 0, Math.max(0, targetEnd - resizeStep))
+      : clamp(targetStart + Math.round((rawTick - targetStart) / resizeStep) * resizeStep, Math.min(gridTicks, targetStart + resizeStep), gridTicks);
     pattern.notes = pattern.notes.map((note) => {
       if (!this.selection.has(note.id)) return note;
       const original = this.dragState.originalNotes.find((entry) => entry.id === note.id) || note;
@@ -7809,7 +7869,8 @@ export default class MidiComposer {
       if (!this.selection.has(note.id)) return note;
       const maxDuration = Math.max(1, gridTicks - note.startTick);
       const minDuration = Math.min(minDurationTicks, maxDuration);
-      const duration = clamp(note.durationTicks + deltaTicks, minDuration, maxDuration);
+      const resizeStep = Math.max(1, minDurationTicks);
+      const duration = clamp(Math.round((note.durationTicks + deltaTicks) / resizeStep) * resizeStep, minDuration, maxDuration);
       return { ...note, durationTicks: duration };
     });
     const maxEndTick = Math.max(...this.getSelectedNotes().map((note) => note.startTick + this.getEffectiveDurationTicks(note, track)));
@@ -8158,6 +8219,7 @@ export default class MidiComposer {
     if (this.isPlaying) {
       this.isPlaying = false;
       this.resyncPlaybackClock(this.playheadTick);
+      this.flushPersist({ force: true });
       return;
     }
     this.resyncPlaybackClock(this.playheadTick);
@@ -8169,6 +8231,7 @@ export default class MidiComposer {
     this.game?.audio?.clearMidiPedalBuses?.();
     this.returnToStart();
     this.resyncPlaybackClock(this.playheadTick);
+    this.flushPersist({ force: true });
   }
 
   returnToStart() {
@@ -10115,10 +10178,28 @@ export default class MidiComposer {
       this.gridZoomInitialized = false;
       this.playheadTick = 0;
       this.lastPlaybackTick = 0;
-      this.currentDocumentRef = { folder: 'music', name: newName };
-      saveProjectFile('music', newName, JSON.parse(JSON.stringify(this.song)));
-      this.persist({ commitHistory: true });
-      this.markSavedSnapshot();
+      this.game?.showSaveStatusModal?.('Saving...');
+      this.game?.showSystemToast?.('Saving...');
+      this.statusMessage = 'Saving...';
+      try {
+        await saveProjectFileAndConfirm('music', newName, JSON.parse(JSON.stringify(this.song)));
+        this.currentDocumentRef = { folder: 'music', name: newName };
+        this.lastPersistedSnapshot = JSON.stringify(this.song);
+        this._dirty = false;
+        this.commitHistorySnapshot();
+        this.markSavedSnapshot();
+        this.game?.showSaveStatusModal?.('Saved');
+        setTimeout(() => this.game?.hideSaveStatusModal?.(), 1400);
+        this.game?.showSystemToast?.('Saved');
+        this.statusMessage = 'Saved';
+      } catch (error) {
+        const message = `Save failed: ${error?.message || error || 'Unknown error'}`;
+        this.game?.showSaveStatusModal?.(message);
+        setTimeout(() => this.game?.hideSaveStatusModal?.(), 1800);
+        this.game?.showSystemToast?.(message);
+        this.statusMessage = message;
+        throw error;
+      }
       this.resyncPlaybackClock(this.playheadTick);
       return;
     }
@@ -10384,7 +10465,6 @@ export default class MidiComposer {
     this.pedalUiState.pickerOpen = false;
     this.pedalUiState.editorOpen = true;
     this.pedalUiState.draftPedal = JSON.parse(JSON.stringify(pedal));
-    this.game?.audio?.clearMidiPedalBuses?.();
     this.persist({ commitHistory: true });
   }
 
@@ -10397,7 +10477,6 @@ export default class MidiComposer {
         ...this.pedalUiState.draftPedal,
         knobs: { ...this.pedalUiState.draftPedal.knobs, [knobKey]: value }
       };
-      this.game?.audio?.clearMidiPedalBuses?.();
       return;
     }
     const pedals = normalizeMidiPedals(track.midiPedals);
@@ -10405,7 +10484,6 @@ export default class MidiComposer {
     if (!pedal) return;
     pedals[slot] = { ...pedal, knobs: { ...pedal.knobs, [knobKey]: value } };
     track.midiPedals = pedals;
-    this.game?.audio?.clearMidiPedalBuses?.();
     this.persist({ commitHistory: true });
   }
 
@@ -10429,7 +10507,6 @@ export default class MidiComposer {
     track.midiPedals = pedals;
     this.pedalUiState.editorOpen = false;
     this.pedalUiState.draftPedal = null;
-    this.game?.audio?.clearMidiPedalBuses?.();
     this.persist({ commitHistory: true });
   }
 
@@ -10448,7 +10525,6 @@ export default class MidiComposer {
     this.pedalUiState.editorOpen = false;
     this.pedalUiState.draftPedal = null;
     this.pedalUiState.selectedSlot = null;
-    this.game?.audio?.clearMidiPedalBuses?.();
     this.persist({ commitHistory: true });
   }
 
@@ -10552,8 +10628,15 @@ export default class MidiComposer {
     if (!root) {
       root = document.createElement('div');
       root.id = 'global-overlay-root';
+      Object.assign(root.style, {
+        position: 'fixed',
+        inset: '0',
+        zIndex: '2147483647',
+        pointerEvents: 'none'
+      });
       document.body.appendChild(root);
     }
+    root.style.pointerEvents = 'none';
     body.style.overflow = 'hidden';
     body.style.touchAction = 'none';
 
@@ -10561,23 +10644,28 @@ export default class MidiComposer {
       const overlay = document.createElement('div');
       overlay.className = 'shared-text-input-overlay';
       overlay.tabIndex = -1;
+      overlay.style.pointerEvents = 'auto';
+
+      const shieldEvent = (event) => {
+        event.stopPropagation();
+      };
+      [
+        'pointerdown',
+        'pointerup',
+        'pointermove',
+        'click',
+        'touchstart',
+        'touchend',
+        'touchmove',
+        'mousedown',
+        'mouseup'
+      ].forEach((type) => {
+        overlay.addEventListener(type, shieldEvent);
+      });
 
       const panel = document.createElement('div');
       panel.className = 'shared-text-input-panel';
       panel.classList.add('multi-field');
-      [
-        'pointerdown',
-        'pointerup',
-        'click',
-        'touchstart',
-        'touchend',
-        'mousedown',
-        'mouseup'
-      ].forEach((type) => {
-        panel.addEventListener(type, (event) => {
-          event.stopPropagation();
-        });
-      });
       overlay.appendChild(panel);
 
       const title = document.createElement('h3');
@@ -10630,10 +10718,20 @@ export default class MidiComposer {
         }, 60000);
       };
 
-      cancelBtn.addEventListener('click', () => {
-        revokeDownloadUrl();
-        cleanup(false);
-      });
+      const bindOverlayActionButton = (button, handler) => {
+        let handled = false;
+        const activate = (event) => {
+          if (handled) return;
+          handled = true;
+          event.preventDefault();
+          event.stopPropagation();
+          handler();
+        };
+        button.addEventListener('click', activate);
+        button.addEventListener('touchend', activate);
+        button.addEventListener('pointerup', activate);
+      };
+
       let downloadStarted = false;
       const triggerDownload = () => {
         if (downloadStarted) return;
@@ -10652,7 +10750,11 @@ export default class MidiComposer {
         window.setTimeout(() => cleanup(true), 500);
       };
 
-      downloadBtn.addEventListener('click', triggerDownload);
+      bindOverlayActionButton(cancelBtn, () => {
+        revokeDownloadUrl();
+        cleanup(false);
+      });
+      bindOverlayActionButton(downloadBtn, triggerDownload);
       overlay.addEventListener('click', (event) => {
         if (event.target === overlay) {
           revokeDownloadUrl();
@@ -11910,12 +12012,6 @@ export default class MidiComposer {
   }
 
   getResizeMinimumTicksForLayout() {
-    const isPortrait = isMobilePortraitLayout({
-      isMobile: this.isMobileLayout(),
-      viewportWidth: this.viewportWidth,
-      viewportHeight: this.viewportHeight
-    });
-    if (!isPortrait) return 1;
     return getMidiResizeMinimumTicks({
       ticksPerBar: this.getTicksPerBar(),
       noteLengthIndex: this.noteLengthIndex
@@ -13702,6 +13798,11 @@ export default class MidiComposer {
       return `${icon} ${option.label}`;
     }
     return icon;
+  }
+
+  getCompactNoteLengthDisplay(option) {
+    if (!option) return '';
+    return NOTE_VALUE_ICONS[option.label] || option.icon || option.label;
   }
 
   drawHeader(ctx, x, y, w, h, track) {
@@ -16911,7 +17012,7 @@ export default class MidiComposer {
     const gap = 6;
     const padding = 8;
     ctx.font = '12px Courier New';
-    const maxLabelW = Math.max(...options.map((option) => ctx.measureText(this.getNoteLengthDisplay(option, true)).width));
+    const maxLabelW = Math.max(...options.map((option) => ctx.measureText(this.getCompactNoteLengthDisplay(option)).width));
     const cellW = Math.max(60, Math.round(maxLabelW + 28));
     const cellH = 30;
     const menuW = columns * cellW + gap * (columns - 1) + padding * 2;
@@ -16934,7 +17035,7 @@ export default class MidiComposer {
       const cellY = menuY + padding + row * (cellH + gap);
       const bounds = { x: cellX, y: cellY, w: cellW, h: cellH, index };
       const isActive = index === this.noteLengthIndex;
-      this.drawSmallButton(ctx, bounds, this.getNoteLengthDisplay(option, true), isActive);
+      this.drawSmallButton(ctx, bounds, this.getCompactNoteLengthDisplay(option), isActive);
       this.bounds.noteLengthMenu.push(bounds);
     });
   }

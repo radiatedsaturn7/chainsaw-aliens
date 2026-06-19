@@ -499,12 +499,13 @@ test('MIDI resize helper expands notes from either edge', () => {
   assert.deepEqual(right, { ...note, startTick: 8, durationTicks: 12 });
 });
 
-test('MIDI portrait resize minimum follows one smaller note value', () => {
-  assert.equal(getMidiResizeMinimumTicks({ ticksPerBar: 16, noteLengthIndex: 3 }), 2);
-  assert.equal(getMidiResizeMinimumTicks({ ticksPerBar: 16, noteLengthIndex: 5 }), 1);
-  assert.equal(getMidiResizeMinimumTicks({ ticksPerBar: 32, noteLengthIndex: 5 }), 2);
-  assert.equal(getMidiResizeMinimumTicks({ ticksPerBar: 32, noteLengthIndex: 6 }), 1);
-  assert.equal(getMidiResizeMinimumTicks({ ticksPerBar: 32, noteLengthIndex: 7 }), 1);
+test('MIDI resize minimum follows the selected note length resolution', () => {
+  assert.equal(getMidiResizeMinimumTicks({ ticksPerBar: 16, noteLengthIndex: 3 }), 4);
+  assert.equal(getMidiResizeMinimumTicks({ ticksPerBar: 16, noteLengthIndex: 5 }), 2);
+  assert.equal(getMidiResizeMinimumTicks({ ticksPerBar: 32, noteLengthIndex: 4 }), 5);
+  assert.equal(getMidiResizeMinimumTicks({ ticksPerBar: 32, noteLengthIndex: 5 }), 4);
+  assert.equal(getMidiResizeMinimumTicks({ ticksPerBar: 96, noteLengthIndex: 2 }), 32);
+  assert.equal(getMidiResizeMinimumTicks({ ticksPerBar: 96, noteLengthIndex: 6 }), 6);
 });
 
 test('MIDI resize helper clamps shrink to portrait minimum duration', () => {
@@ -537,9 +538,9 @@ test('MIDI portrait resize paths pass selected note minimum duration', () => {
   assert.equal(resizeBody.includes('minDurationTicks'), true);
   assert.equal(controllerResizeBody.includes('const minDurationTicks = this.getResizeMinimumTicksForLayout();'), true);
   assert.equal(controllerResizeBody.includes('const minDuration = Math.min(minDurationTicks, maxDuration);'), true);
-  assert.equal(minBody.includes('isMobilePortraitLayout'), true);
   assert.equal(minBody.includes('getMidiResizeMinimumTicks'), true);
-  assert.equal(minBody.includes('if (!isPortrait) return 1;'), true);
+  assert.equal(minBody.includes('getQuantizeTicks'), false);
+  assert.equal(minBody.includes('isMobilePortraitLayout'), false);
 });
 
 test('MIDI touch notes do not long-press into selection mode', () => {
@@ -563,14 +564,18 @@ test('MIDI WAV ready overlay uses a real button for touch downloads', () => {
   const overlayBody = midiMethodBody('openDownloadReadyOverlay', 'openWavExportProgressOverlay');
 
   assert.equal(overlayBody.includes("document.createElement('button')"), true);
-  assert.equal(overlayBody.includes('downloadBtn.addEventListener'), true);
+  assert.equal(overlayBody.includes('bindOverlayActionButton(downloadBtn, triggerDownload);'), true);
   assert.equal(overlayBody.includes('downloadStarted'), true);
   assert.equal(overlayBody.includes("downloadBtn = document.createElement('a')"), false);
   assert.equal(overlayBody.includes("document.getElementById('global-overlay-root')"), true);
   assert.equal(overlayBody.includes('root.appendChild(overlay)'), true);
+  assert.equal(overlayBody.includes("pointerEvents: 'none'"), true);
+  assert.equal(overlayBody.includes("overlay.style.pointerEvents = 'auto';"), true);
   assert.equal(overlayBody.includes("'pointerdown'"), true);
   assert.equal(overlayBody.includes("'touchstart'"), true);
+  assert.equal(overlayBody.includes("'touchmove'"), true);
   assert.equal(overlayBody.includes('event.stopPropagation();'), true);
+  assert.equal(overlayBody.includes('event.preventDefault();'), true);
   assert.equal(overlayBody.includes('urlRevoked'), true);
 });
 
@@ -580,7 +585,7 @@ test('shared text input overlays shield panel pointer events from canvas handler
   assert.equal(textInputOverlaySource.includes("'touchstart'"), true);
   assert.equal(textInputOverlaySource.includes("'mousedown'"), true);
   assert.equal(textInputOverlaySource.includes('event.stopPropagation();'), true);
-  assert.equal(textInputOverlaySource.includes('}, true);'), true);
+  assert.equal(textInputOverlaySource.includes('}, true);'), false);
   assert.equal(textInputOverlaySource.includes('bindOverlayActionButton'), true);
   assert.equal(textInputOverlaySource.includes('event.preventDefault();'), true);
   assert.equal(textInputOverlaySource.includes("button.addEventListener('pointerup', activate);"), true);
@@ -614,20 +619,36 @@ test('MIDI audio protects timeline voices and bounds pedal buses', () => {
   assert.equal(audioSource.includes('this.midiPedalBusMaxAgeSeconds'), true);
   assert.equal(audioSource.includes('preview = false'), true);
   assert.equal(audioSource.includes("voiceGroup = preview ? 'preview' : 'timeline'"), true);
+  assert.equal(audioSource.includes('MIDI_TIMELINE_MAX_SCHEDULE_LATENESS_SECONDS = 1.5'), true);
+  assert.equal(audioSource.includes("voiceGroup === 'timeline'"), true);
+  assert.equal(audioSource.includes('maxScheduleLatenessSeconds: scheduleLatenessSeconds'), true);
 });
 
-test('MIDI pedal changes clear cached DSP buses', () => {
+test('MIDI pedal edits avoid clearing cached DSP buses during playback edits', () => {
   const insertBody = midiMethodBody('insertPedalIntoSlot', 'updateSelectedPedalKnob');
   const updateBody = midiMethodBody('updateSelectedPedalKnob', 'openPedalEditorForSlot');
   const commitBody = midiMethodBody('commitPedalEditor', 'cancelPedalEditor');
   const deleteBody = midiMethodBody('deletePedalFromEditor', 'buildExportTrackNotes');
   const stopBody = midiMethodBody('stopPlayback', 'returnToStart');
 
-  assert.equal(insertBody.includes('clearMidiPedalBuses'), true);
-  assert.equal(updateBody.includes('clearMidiPedalBuses'), true);
-  assert.equal(commitBody.includes('clearMidiPedalBuses'), true);
-  assert.equal(deleteBody.includes('clearMidiPedalBuses'), true);
+  assert.equal(insertBody.includes('clearMidiPedalBuses'), false);
+  assert.equal(updateBody.includes('clearMidiPedalBuses'), false);
+  assert.equal(commitBody.includes('clearMidiPedalBuses'), false);
+  assert.equal(deleteBody.includes('clearMidiPedalBuses'), false);
   assert.equal(stopBody.includes('clearMidiPedalBuses'), true);
+});
+
+test('MIDI playback defers heavy autosave and history work while playing', () => {
+  const persistBody = midiMethodBody('persist', 'resetHistory');
+  const flushBody = midiMethodBody('flushPersist', 'getDocumentAutosaveName');
+  const scheduleBody = midiMethodBody('schedulePersist', 'flushPersist');
+  const toggleBody = midiMethodBody('togglePlayback', 'stopPlayback');
+
+  assert.equal(persistBody.includes('if (this.isPlaying)'), true);
+  assert.equal(persistBody.includes('this.scheduleHistoryCommit();'), true);
+  assert.equal(flushBody.includes('if (this.isPlaying && !force)'), true);
+  assert.equal(scheduleBody.includes('if (this.isPlaying)'), true);
+  assert.equal(toggleBody.includes('this.flushPersist({ force: true });'), true);
 });
 
 test('MIDI non-loop playback ignores loop end marker', () => {
@@ -644,6 +665,39 @@ test('MIDI non-loop playback ignores loop end marker', () => {
   assert.equal(returnBody.includes('this.song.loopEnabled ? this.getLoopStartTick() : 0'), true);
   assert.equal(toggleBody.includes('this.returnToStart();'), false);
   assert.equal(toggleBody.includes('this.resyncPlaybackClock(this.playheadTick);'), true);
+});
+
+test('MIDI loop playback schedules the loop tail before wrapping', () => {
+  const advanceBody = midiMethodBody('advancePlayhead', 'triggerPlayback');
+
+  assert.equal(advanceBody.includes('const crossedLoopEnd = nextTick >= loopTicks;'), true);
+  assert.equal(advanceBody.includes('this.triggerPlayback(Math.max(this.scheduledUntilTick, loopStart), loopTicks, loopTicks, false, Math.min(nextTick, loopTicks));'), true);
+  assert.equal(advanceBody.includes('if (crossedLoopEnd || this.scheduledUntilTick < loopStart)'), true);
+  assert.equal(advanceBody.includes('this.playbackAudioAnchorTick = loopStart;'), true);
+});
+
+test('MIDI loop playback does not reschedule loop start before the wrap point', () => {
+  const composer = Object.create(MidiComposer.prototype);
+  composer.song = { tempo: 120, loopEnabled: true, loopEndTick: 16, tracks: [], loopBars: 4 };
+  composer.ticksPerBeat = 4;
+  composer.playheadTick = 14;
+  composer.playbackLastClockSeconds = 0;
+  composer.scheduledUntilTick = 16;
+  composer.playbackAudioAnchorTick = 0;
+  composer.playbackAudioAnchorSeconds = 0;
+  composer.game = { audio: { ctx: { currentTime: 0.1 }, midiLatency: 0 } };
+  composer.getPlaybackClockSeconds = () => 0.016;
+  composer.getLoopTicks = () => 16;
+  composer.getLoopStartTick = () => 0;
+  composer.triggerPlayback = () => {
+    throw new Error('loop start was rescheduled before wrap');
+  };
+
+  composer.advancePlayhead(0.016);
+
+  assert.equal(composer.scheduledUntilTick, 16);
+  assert.ok(composer.playheadTick > 14);
+  assert.ok(composer.playheadTick < 16);
 });
 
 test('MIDI grid zoom plus minus buttons are disabled', () => {
@@ -1025,7 +1079,7 @@ test('MIDI drum notes use editable note length instead of fixed quarter hits', (
   assert.equal(midiComposerSource.includes('isDrums ? this.getDrumHitDurationTicks()'), false);
 });
 
-test('MIDI placement snaps to selected note value for every track type', () => {
+test('MIDI placement snaps to selected note length for every track type', () => {
   assert.equal(getMidiPlacementSnapTicks({
     quantizeEnabled: true,
     ticksPerBar: 16,
@@ -1041,6 +1095,27 @@ test('MIDI placement snaps to selected note value for every track type', () => {
     drumTrack: false
   }), 2);
   assert.equal(getMidiPlacementSnapTicks({
+    quantizeEnabled: true,
+    ticksPerBar: 16,
+    quantizeDivisor: 16,
+    noteLengthDivisor: 4,
+    drumTrack: false
+  }), 4);
+  assert.equal(getMidiPlacementSnapTicks({
+    quantizeEnabled: true,
+    ticksPerBar: 96,
+    quantizeDivisor: 16,
+    noteLengthDivisor: 3,
+    drumTrack: false
+  }), 32);
+  assert.equal(getMidiPlacementSnapTicks({
+    quantizeEnabled: true,
+    ticksPerBar: 96,
+    quantizeDivisor: 16,
+    noteLengthDivisor: 16,
+    drumTrack: false
+  }), 6);
+  assert.equal(getMidiPlacementSnapTicks({
     quantizeEnabled: false,
     ticksPerBar: 16,
     quantizeDivisor: 4,
@@ -1055,11 +1130,56 @@ test('MIDI placement snaps to selected note value for every track type', () => {
   const moveBody = midiMethodBody('moveSelectionTo', 'resizeSelectionTo');
 
   assert.equal(midiComposerSource.includes('const divisor = drumTrack ? noteLengthDivisor : quantizeDivisor;'), false);
+  assert.equal(midiComposerSource.includes('const divisor = noteLengthDivisor || quantizeDivisor;'), false);
+  assert.equal(midiComposerSource.includes('void noteLengthDivisor;'), false);
   assert.equal(pointerDownBody.includes('if (isDrumTrack(this.getActiveTrack())) {\n        this.noteLengthMenu.open = false;'), false);
   assert.equal(drawPatternBody.includes('this.getPlacementSnapTicks(track)'), true);
   assert.equal(toggleBody.includes('this.snapTickForTrack(tick, track)'), true);
   assert.equal(paintBody.includes('this.snapTickForTrack(tick, track)'), true);
   assert.equal(moveBody.includes('this.snapTickForTrack(tick, track)'), true);
+});
+
+test('MIDI placement duration remembers resized note length until selector changes', () => {
+  const durationBody = midiMethodBody('getPlacementDurationTicks', 'setNoteLengthIndex');
+  const selectorBody = midiMethodBody('setNoteLengthIndex', 'cycleTimeSignature');
+  const resizeBody = midiMethodBody('resizeSelectionTo', 'resizeSelectedNotesBy');
+
+  assert.equal(durationBody.includes('this.getQuantizeTicks()'), false);
+  assert.equal(durationBody.includes('this.defaultNoteDurationTicks'), true);
+  assert.equal(durationBody.includes('? this.defaultNoteDurationTicks'), true);
+  assert.equal(durationBody.includes('this.getNoteLengthTicks()'), true);
+  assert.equal(selectorBody.includes('this.defaultNoteDurationTicks = this.getNoteLengthTicks();'), true);
+  assert.equal(resizeBody.includes('this.defaultNoteDurationTicks = Math.max(1, first.durationTicks);'), true);
+});
+
+test('MIDI resize snaps note length relative to the resized note start', () => {
+  const resizeBody = midiMethodBody('resizeSelectionTo', 'resizeSelectedNotesBy');
+  const controllerBody = midiMethodBody('resizeSelectedNotesBy', 'openSelectionMenu');
+  const gamepadBody = midiMethodBody('handleGamepadInput', 'draw');
+
+  assert.equal(resizeBody.includes("this.dragState.edge === 'start'"), true);
+  assert.equal(resizeBody.includes('targetStart + Math.round((rawTick - targetStart) / resizeStep) * resizeStep'), true);
+  assert.equal(controllerBody.includes('Math.round((note.durationTicks + deltaTicks) / resizeStep) * resizeStep'), true);
+  assert.equal(gamepadBody.includes('const resizeStep = Math.max(1, this.getResizeMinimumTicksForLayout());'), true);
+});
+
+test('MIDI note length selector keeps all lengths while menu uses compact labels', () => {
+  const noteOptionsStart = midiComposerSource.indexOf('const NOTE_LENGTH_OPTIONS = [');
+  const noteOptionsEnd = midiComposerSource.indexOf('];', noteOptionsStart);
+  const noteOptionsBody = midiComposerSource.slice(noteOptionsStart, noteOptionsEnd);
+  const quantizeStart = midiComposerSource.indexOf('const QUANTIZE_OPTIONS = [');
+  const quantizeEnd = midiComposerSource.indexOf('];', quantizeStart);
+  const quantizeBody = midiComposerSource.slice(quantizeStart, quantizeEnd);
+  const menuBody = midiMethodBody('drawNoteLengthMenu', 'drawToolsMenu');
+
+  ['1', '1/2', '1/3', '1/4', '1/6', '1/8', '1/16', '1/32'].forEach((id) => {
+    assert.equal(noteOptionsBody.includes(`id: '${id}'`), true);
+  });
+  assert.equal(quantizeBody.includes("id: '1/8'"), true);
+  assert.equal(quantizeBody.includes("id: '1/16'"), true);
+  assert.equal(menuBody.includes('this.getCompactNoteLengthDisplay(option)'), true);
+  assert.equal(menuBody.includes('this.getNoteLengthDisplay(option, true)'), false);
+  assert.equal(midiComposerSource.includes("'1/6': '𝅘𝅥𝅮6'"), true);
 });
 
 test('MIDI song sections append orphan notes to the previous section', () => {

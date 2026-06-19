@@ -2043,6 +2043,10 @@ test('cutscene MP4 export uses ffmpeg h264 aac server transcode and real downloa
   assert.equal(audioSource.includes('createMediaStreamDestination'), true);
   assert.equal(cutsceneEditorSource.includes("downloadBtn = document.createElement('button')"), true);
   assert.equal(cutsceneEditorSource.includes("downloadBtn = document.createElement('a')"), false);
+  assert.equal(cutsceneEditorSource.includes("pointerEvents: 'none'"), true);
+  assert.equal(cutsceneEditorSource.includes("overlay.style.pointerEvents = 'auto';"), true);
+  assert.equal(cutsceneEditorSource.includes('bindOverlayActionButton(downloadBtn, triggerDownload);'), true);
+  assert.equal(cutsceneEditorSource.includes('event.preventDefault();'), true);
   assert.equal(cutsceneEditorSource.includes("openLink.textContent = 'Open Video';"), true);
   const serverSource = readFileSync(new URL('../../tools/dev_server.py', import.meta.url), 'utf8');
   assert.equal(serverSource.includes('/__export/mp4'), true);

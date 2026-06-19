@@ -8,6 +8,21 @@ const clonePoint = (point = {}) => ({
 });
 
 const POINT_EPSILON = 0.001;
+const BONE_JOINT_MODES = ['rotate', 'fixed', 'stretch', 'spring', 'slide', 'hinge'];
+
+const normalizeJointMode = (bone = {}) => {
+  if (bone.jointMode === 'none') return 'slide';
+  if (bone.jointMode === 'fixed' && bone.jointModeVersion !== 2) return bone.stretch ? 'stretch' : 'rotate';
+  if (BONE_JOINT_MODES.includes(bone.jointMode)) return bone.jointMode;
+  return bone.stretch ? 'stretch' : 'rotate';
+};
+
+const normalizeJointSettings = (settings = {}) => ({
+  stiffness: Number.isFinite(settings.stiffness) ? Math.max(0, Math.min(1, settings.stiffness)) : 0.5,
+  minAngle: Number.isFinite(settings.minAngle) ? settings.minAngle : -Math.PI,
+  maxAngle: Number.isFinite(settings.maxAngle) ? settings.maxAngle : Math.PI,
+  ikEnabled: settings.ikEnabled !== false
+});
 
 export const createDefaultBoneRig = () => ({
   version: 1,
@@ -88,6 +103,7 @@ export const normalizeBoneRig = (rig = {}) => {
     const end = clonePoint(endJoint);
     const dx = end.x - start.x;
     const dy = end.y - start.y;
+    const jointMode = normalizeJointMode(bone);
     const normalized = {
       id,
       name: String(bone.name || `Bone ${index + 1}`),
@@ -98,7 +114,11 @@ export const normalizeBoneRig = (rig = {}) => {
       end,
       length: Number.isFinite(bone.length) ? Math.max(1, bone.length) : Math.max(1, Math.hypot(dx, dy)),
       angle: Number.isFinite(bone.angle) ? bone.angle : Math.atan2(dy, dx),
-      locked: Boolean(bone.locked)
+      locked: Boolean(bone.locked),
+      stretch: jointMode === 'stretch',
+      jointMode,
+      jointModeVersion: 2,
+      jointSettings: normalizeJointSettings(bone.jointSettings)
     };
     normalizedBones.push(normalized);
     boneById.set(id, normalized);
@@ -165,6 +185,29 @@ const getPrimaryBoneId = (weights = {}, fallbackBoneIds = []) => {
 
 const singleBoneWeights = (boneId) => (boneId ? { [String(boneId)]: 1 } : {});
 
+const resolveJointOwnerBoneId = (rig, ownerId) => {
+  const id = String(ownerId || '');
+  if (!id) return null;
+  if (rig.bones.some((bone) => bone.id === id)) return id;
+  if (!rig.joints.some((joint) => joint.id === id)) return null;
+  const child = rig.bones.find((bone) => bone.startJointId === id);
+  if (child) return child.id;
+  const parent = rig.bones.find((bone) => bone.endJointId === id);
+  if (parent) return parent.id;
+  const startOnly = rig.bones.find((bone) => bone.startJointId === id);
+  return startOnly?.id || null;
+};
+
+const resolveWeightsForSkinning = (rig, weights = {}) => {
+  const resolved = {};
+  Object.entries(normalizeWeights(weights)).forEach(([ownerId, weight]) => {
+    const boneId = resolveJointOwnerBoneId(rig, ownerId);
+    if (!boneId) return;
+    resolved[boneId] = (resolved[boneId] || 0) + weight;
+  });
+  return normalizeWeights(resolved);
+};
+
 const normalizeExclusiveBindings = (bindings = []) => {
   const candidates = [];
   const latestByKey = new Map();
@@ -225,10 +268,41 @@ const normalizePoseBones = (bones = {}) => Object.fromEntries(
     {
       angle: Number.isFinite(pose?.angle) ? pose.angle : 0,
       dx: Number.isFinite(pose?.dx) ? pose.dx : 0,
-      dy: Number.isFinite(pose?.dy) ? pose.dy : 0
+      dy: Number.isFinite(pose?.dy) ? pose.dy : 0,
+      scale: Number.isFinite(pose?.scale) ? Math.max(0.05, pose.scale) : 1
     }
   ])
 );
+
+const mergePoseBoneMaps = (base = {}, patch = {}) => {
+  const bones = { ...base };
+  Object.entries(patch || {}).forEach(([id, pose]) => {
+    const previous = bones[id] || { angle: 0, dx: 0, dy: 0, scale: 1 };
+    bones[id] = {
+      angle: Number.isFinite(pose?.angle) ? pose.angle : previous.angle,
+      dx: Number.isFinite(pose?.dx) ? pose.dx : previous.dx,
+      dy: Number.isFinite(pose?.dy) ? pose.dy : previous.dy,
+      scale: Number.isFinite(pose?.scale) ? Math.max(0.05, pose.scale) : previous.scale
+    };
+  });
+  return bones;
+};
+
+const shortestAngleDelta = (from, to) => {
+  let delta = (to - from) % (Math.PI * 2);
+  if (delta > Math.PI) delta -= Math.PI * 2;
+  if (delta < -Math.PI) delta += Math.PI * 2;
+  return delta;
+};
+
+const lerpAngle = (from, to, t) => from + shortestAngleDelta(from, to) * Math.max(0, Math.min(1, t));
+
+const springEase = (t, stiffness = 0.5) => {
+  const clamped = Math.max(0, Math.min(1, t));
+  const smooth = clamped * clamped * (3 - 2 * clamped);
+  const amplitude = 0.06 + Math.max(0, Math.min(1, stiffness)) * 0.24;
+  return smooth + Math.sin(Math.PI * clamped) * Math.sin(Math.PI * 4 * clamped) * amplitude;
+};
 
 export const createBone = (rig, start, end, options = {}) => {
   const next = cloneBoneRig(rig);
@@ -258,6 +332,7 @@ export const createBone = (rig, start, end, options = {}) => {
   const resolvedEnd = clonePoint(resolvedEndJoint);
   const dx = resolvedEnd.x - resolvedStart.x;
   const dy = resolvedEnd.y - resolvedStart.y;
+  const jointMode = normalizeJointMode({ ...options, jointModeVersion: 2 });
   const bone = {
     id,
     name: options.name || `Bone ${next.bones.length + 1}`,
@@ -268,7 +343,11 @@ export const createBone = (rig, start, end, options = {}) => {
     end: resolvedEnd,
     length: Math.max(1, Math.hypot(dx, dy)),
     angle: Math.atan2(dy, dx),
-    locked: false
+    locked: false,
+    stretch: jointMode === 'stretch',
+    jointMode,
+    jointModeVersion: 2,
+    jointSettings: normalizeJointSettings(options.jointSettings)
   };
   next.bones.push(bone);
   return { rig: next, bone };
@@ -301,23 +380,94 @@ export const getBoneJointUsageCount = (rig, jointId) => {
   ), 0);
 };
 
-const getChildBones = (rig, boneId) => rig.bones.filter((bone) => bone.parentId === boneId);
+export const buildBoneGraph = (rig = createDefaultBoneRig()) => {
+  const safeRig = normalizeBoneRig(rig);
+  const incomingByJoint = new Map();
+  const outgoingByJoint = new Map();
+  const parentById = new Map();
+  const childrenByParent = new Map();
+  const byId = new Map(safeRig.bones.map((bone) => [bone.id, bone]));
+  safeRig.bones.forEach((bone) => {
+    if (!incomingByJoint.has(bone.endJointId)) incomingByJoint.set(bone.endJointId, []);
+    incomingByJoint.get(bone.endJointId).push(bone);
+    if (!outgoingByJoint.has(bone.startJointId)) outgoingByJoint.set(bone.startJointId, []);
+    outgoingByJoint.get(bone.startJointId).push(bone);
+  });
+  safeRig.bones.forEach((bone) => {
+    const explicit = bone.parentId ? byId.get(bone.parentId) : null;
+    const incoming = incomingByJoint.get(bone.startJointId) || [];
+    const parent = explicit && explicit.endJointId === bone.startJointId
+      ? explicit
+      : incoming.find((entry) => entry.id !== bone.id) || null;
+    parentById.set(bone.id, parent?.id || null);
+    if (parent) {
+      if (!childrenByParent.has(parent.id)) childrenByParent.set(parent.id, []);
+      childrenByParent.get(parent.id).push(bone);
+    }
+  });
+  return {
+    rig: safeRig,
+    byId,
+    incomingByJoint,
+    outgoingByJoint,
+    parentById,
+    childrenByParent,
+    roots: safeRig.bones.filter((bone) => !parentById.get(bone.id))
+  };
+};
+
+const clonePoseBone = (pose = {}) => ({
+  angle: Number.isFinite(pose?.angle) ? pose.angle : 0,
+  dx: Number.isFinite(pose?.dx) ? pose.dx : 0,
+  dy: Number.isFinite(pose?.dy) ? pose.dy : 0,
+  scale: Number.isFinite(pose?.scale) ? Math.max(0.05, pose.scale) : 1
+});
+
+export const constrainSharedJointPose = (rig, pose = {}) => {
+  const graph = buildBoneGraph(rig);
+  const bones = {};
+  Object.entries(pose?.bones || {}).forEach(([boneId, bonePose]) => {
+    bones[String(boneId)] = clonePoseBone(bonePose);
+  });
+  graph.outgoingByJoint.forEach((outgoing, jointId) => {
+    if (outgoing.length < 2) return;
+    if ((graph.incomingByJoint.get(jointId) || []).length) return;
+    const keyed = outgoing.find((bone) => bones[bone.id]);
+    if (!keyed) return;
+    const canonical = bones[keyed.id];
+    outgoing.forEach((bone) => {
+      const previous = bones[bone.id] || { angle: 0, dx: 0, dy: 0, scale: 1 };
+      bones[bone.id] = {
+        ...previous,
+        dx: canonical.dx || 0,
+        dy: canonical.dy || 0
+      };
+    });
+  });
+  return { ...pose, bones };
+};
+
+const getChildBones = (rig, boneId) => {
+  const graph = buildBoneGraph(rig);
+  return graph.childrenByParent.get(String(boneId || '')) || [];
+};
 
 export const getBoneInfluenceSets = (rig, selectedBoneId) => {
-  const safeRig = normalizeBoneRig(rig);
+  const graph = buildBoneGraph(rig);
+  const safeRig = graph.rig;
   const selected = safeRig.bones.find((bone) => bone.id === String(selectedBoneId));
   const upstream = new Set();
   const downstream = new Set();
   if (!selected) return { selected: null, upstream, downstream };
-  let parentId = selected.parentId;
+  let parentId = graph.parentById.get(selected.id);
   while (parentId) {
     const parent = safeRig.bones.find((bone) => bone.id === parentId);
     if (!parent || upstream.has(parent.id)) break;
     upstream.add(parent.id);
-    parentId = parent.parentId;
+    parentId = graph.parentById.get(parent.id);
   }
   const visitChildren = (boneId) => {
-    getChildBones(safeRig, boneId).forEach((child) => {
+    (graph.childrenByParent.get(boneId) || []).forEach((child) => {
       if (downstream.has(child.id)) return;
       downstream.add(child.id);
       visitChildren(child.id);
@@ -338,6 +488,25 @@ export const moveBoneJoint = (rig, jointId, point) => {
   return next;
 };
 
+export const reverseBoneDirection = (rig, boneId) => {
+  const next = cloneBoneRig(rig);
+  const bone = next.bones.find((entry) => entry.id === String(boneId || ''));
+  if (!bone) return next;
+  const oldStartJointId = bone.startJointId;
+  const oldEndJointId = bone.endJointId;
+  bone.startJointId = oldEndJointId;
+  bone.endJointId = oldStartJointId;
+  const start = bone.start;
+  bone.start = clonePoint(bone.end);
+  bone.end = clonePoint(start);
+  refreshBoneGeometry(bone, new Map(next.joints.map((joint) => [joint.id, joint])));
+  const graph = buildBoneGraph(next);
+  next.bones.forEach((entry) => {
+    entry.parentId = graph.parentById.get(entry.id) || null;
+  });
+  return next;
+};
+
 export const solveTwoBoneIkPose = (rig, parentBoneId, childBoneId, target, options = {}) => {
   const safeRig = normalizeBoneRig(rig);
   const parent = safeRig.bones.find((bone) => bone.id === String(parentBoneId));
@@ -354,30 +523,42 @@ export const solveTwoBoneIkPose = (rig, parentBoneId, childBoneId, target, optio
   const minReach = Math.max(0.0001, Math.abs(parentLength - childLength) + 0.0001);
   const distance = Math.max(minReach, Math.min(maxReach, rawDistance || maxReach));
   const targetAngle = rawDistance > 0.0001 ? Math.atan2(dy, dx) : parent.angle;
-  const bendSign = options.bendSign === -1 ? -1 : 1;
   const parentCos = Math.max(-1, Math.min(1, (
     parentLength * parentLength + distance * distance - childLength * childLength
   ) / Math.max(0.0001, 2 * parentLength * distance)));
-  const parentOffset = Math.acos(parentCos) * bendSign;
-  const parentGlobalAngle = targetAngle + parentOffset;
-  const elbow = {
-    x: root.x + Math.cos(parentGlobalAngle) * parentLength,
-    y: root.y + Math.sin(parentGlobalAngle) * parentLength
+  const buildSolution = (bendSign) => {
+    const parentOffset = Math.acos(parentCos) * bendSign;
+    const parentGlobalAngle = targetAngle + parentOffset;
+    const elbow = {
+      x: root.x + Math.cos(parentGlobalAngle) * parentLength,
+      y: root.y + Math.sin(parentGlobalAngle) * parentLength
+    };
+    const childGlobalAngle = Math.atan2(safeTarget.y - elbow.y, safeTarget.x - elbow.x);
+    const parentDeltaAngle = parentGlobalAngle - parent.angle;
+    return {
+      [parent.id]: {
+        angle: parentDeltaAngle,
+        dx: 0,
+        dy: 0,
+        scale: 1
+      },
+      [child.id]: {
+        angle: childGlobalAngle - child.angle - parentDeltaAngle,
+        dx: 0,
+        dy: 0,
+        scale: 1
+      }
+    };
   };
-  const childGlobalAngle = Math.atan2(safeTarget.y - elbow.y, safeTarget.x - elbow.x);
-  const parentDeltaAngle = parentGlobalAngle - parent.angle;
-  return {
-    [parent.id]: {
-      angle: parentDeltaAngle,
-      dx: 0,
-      dy: 0
-    },
-    [child.id]: {
-      angle: childGlobalAngle - child.angle - parentDeltaAngle,
-      dx: 0,
-      dy: 0
-    }
-  };
+  if (options.bendSign === -1 || options.bendSign === 1) return buildSolution(options.bendSign);
+  const currentPose = options.currentPose?.bones || {};
+  const score = (solution) => (
+    Math.abs(shortestAngleDelta(currentPose[parent.id]?.angle || 0, solution[parent.id].angle))
+    + Math.abs(shortestAngleDelta(currentPose[child.id]?.angle || 0, solution[child.id].angle))
+  );
+  const positive = buildSolution(1);
+  const negative = buildSolution(-1);
+  return score(negative) < score(positive) ? negative : positive;
 };
 
 export const removeOrphanBoneJoints = (rig) => {
@@ -404,11 +585,12 @@ export const setBonePoseForFrame = (rig, frameIndex, boneId, posePatch = {}) => 
     next.poses.push(pose);
     next.poses.sort((a, b) => a.frameIndex - b.frameIndex);
   }
-  const previous = pose.bones[boneId] || { angle: 0, dx: 0, dy: 0 };
+  const previous = pose.bones[boneId] || { angle: 0, dx: 0, dy: 0, scale: 1 };
   pose.bones[boneId] = {
     angle: Number.isFinite(posePatch.angle) ? posePatch.angle : previous.angle,
     dx: Number.isFinite(posePatch.dx) ? posePatch.dx : previous.dx,
-    dy: Number.isFinite(posePatch.dy) ? posePatch.dy : previous.dy
+    dy: Number.isFinite(posePatch.dy) ? posePatch.dy : previous.dy,
+    scale: Number.isFinite(posePatch.scale) ? Math.max(0.05, posePatch.scale) : previous.scale
   };
   return next;
 };
@@ -422,12 +604,14 @@ export const setBonePoseAtTime = (rig, timeMs, boneId, posePatch = {}) => {
     next.poseTimeline.push(key);
     next.poseTimeline.sort((a, b) => a.timeMs - b.timeMs);
   }
-  const previous = key.bones[boneId] || { angle: 0, dx: 0, dy: 0 };
+  const previous = key.bones[boneId] || { angle: 0, dx: 0, dy: 0, scale: 1 };
   key.bones[boneId] = {
     angle: Number.isFinite(posePatch.angle) ? posePatch.angle : previous.angle,
     dx: Number.isFinite(posePatch.dx) ? posePatch.dx : previous.dx,
-    dy: Number.isFinite(posePatch.dy) ? posePatch.dy : previous.dy
+    dy: Number.isFinite(posePatch.dy) ? posePatch.dy : previous.dy,
+    scale: Number.isFinite(posePatch.scale) ? Math.max(0.05, posePatch.scale) : previous.scale
   };
+  key.bones = constrainSharedJointPose(next, { bones: key.bones }).bones;
   return next;
 };
 
@@ -439,7 +623,7 @@ export const setPoseKeyAtTime = (rig, timeMs, bones = {}) => {
     key = { id: `pose-${Date.now().toString(36)}-${next.poseTimeline.length + 1}`, timeMs: safeTime, interpolation: 'linear', bones: {} };
     next.poseTimeline.push(key);
   }
-  key.bones = normalizePoseBones(bones);
+  key.bones = constrainSharedJointPose(next, { bones: normalizePoseBones(bones) }).bones;
   next.poseTimeline = normalizePoseTimeline(next.poseTimeline);
   return next;
 };
@@ -520,35 +704,66 @@ export const samplePoseTimeline = (rig, timeMs) => {
   const timeline = safeRig.poseTimeline;
   const safeTime = Math.max(0, Number(timeMs) || 0);
   if (!timeline.length) return { timeMs: safeTime, bones: {} };
-  if (safeTime <= timeline[0].timeMs) return { timeMs: safeTime, bones: { ...timeline[0].bones } };
+  const effectivePoseAt = (keyIndex) => {
+    let bones = {};
+    for (let index = 0; index <= keyIndex; index += 1) {
+      bones = mergePoseBoneMaps(bones, timeline[index].bones);
+    }
+    return constrainSharedJointPose(safeRig, { timeMs: timeline[keyIndex].timeMs, bones }).bones;
+  };
+  if (safeTime < timeline[0].timeMs) {
+    return constrainSharedJointPose(safeRig, {
+      timeMs: safeTime,
+      bones: timeline[0].timeMs <= 0 ? effectivePoseAt(0) : {}
+    });
+  }
   const last = timeline[timeline.length - 1];
-  if (safeTime >= last.timeMs) return { timeMs: safeTime, bones: { ...last.bones } };
-  let previous = timeline[0];
-  let next = last;
+  if (safeTime >= last.timeMs) return constrainSharedJointPose(safeRig, { timeMs: safeTime, bones: effectivePoseAt(timeline.length - 1) });
+  let previousIndex = 0;
+  let nextIndex = timeline.length - 1;
   for (let index = 1; index < timeline.length; index += 1) {
     if (timeline[index].timeMs >= safeTime) {
-      next = timeline[index];
-      previous = timeline[index - 1];
+      nextIndex = index;
+      previousIndex = index - 1;
       break;
     }
   }
-  if (previous.interpolation === 'hold') return { timeMs: safeTime, bones: { ...previous.bones } };
+  const previous = timeline[previousIndex];
+  const next = timeline[nextIndex];
+  const previousBones = effectivePoseAt(previousIndex);
+  const nextBones = effectivePoseAt(nextIndex);
+  if (previous.interpolation === 'hold') {
+    return constrainSharedJointPose(safeRig, { timeMs: safeTime, bones: previousBones });
+  }
   const t = (safeTime - previous.timeMs) / Math.max(1, next.timeMs - previous.timeMs);
-  const ids = new Set([...Object.keys(previous.bones), ...Object.keys(next.bones)]);
+  const ids = new Set([...Object.keys(previousBones), ...Object.keys(nextBones)]);
   const bones = {};
   ids.forEach((id) => {
-    const a = previous.bones[id] || { angle: 0, dx: 0, dy: 0 };
-    const b = next.bones[id] || a;
+    const a = previousBones[id] || { angle: 0, dx: 0, dy: 0, scale: 1 };
+    const b = nextBones[id] || a;
+    const bone = safeRig.bones.find((entry) => entry.id === id);
+    const scaleT = bone?.jointMode === 'spring' ? springEase(t, bone.jointSettings?.stiffness) : t;
     bones[id] = {
-      angle: lerpValue(a.angle, b.angle, t),
+      angle: lerpAngle(a.angle, b.angle, t),
       dx: lerpValue(a.dx, b.dx, t),
-      dy: lerpValue(a.dy, b.dy, t)
+      dy: lerpValue(a.dy, b.dy, t),
+      scale: lerpValue(a.scale ?? 1, b.scale ?? 1, scaleT)
     };
   });
-  return { timeMs: safeTime, bones };
+  return constrainSharedJointPose(safeRig, { timeMs: safeTime, bones });
 };
 
 const lerpValue = (a, b, t) => a + (b - a) * Math.max(0, Math.min(1, t));
+
+const isRestPose = (pose = {}, epsilon = 0.0001) => {
+  const bones = pose?.bones || {};
+  return Object.values(bones).every((bonePose) => (
+    Math.abs(Number(bonePose?.angle) || 0) <= epsilon
+    && Math.abs(Number(bonePose?.dx) || 0) <= epsilon
+    && Math.abs(Number(bonePose?.dy) || 0) <= epsilon
+    && Math.abs((Number.isFinite(bonePose?.scale) ? bonePose.scale : 1) - 1) <= epsilon
+  ));
+};
 
 export const createLayerBinding = (rig, layerIndex, boneIds, width, height, layerPixels = null) => {
   const ownerId = boneIds.map(String).find(Boolean);
@@ -612,33 +827,68 @@ export const getBoneAssignedMask = (rig, boneId, width, height, layerIndex = nul
 };
 
 const buildPoseGeometryMap = (rig, frameIndexOrPose) => {
-  const pose = typeof frameIndexOrPose === 'object' && frameIndexOrPose
+  const rawPose = typeof frameIndexOrPose === 'object' && frameIndexOrPose
     ? frameIndexOrPose
     : getPoseForFrame(rig, frameIndexOrPose);
-  const byId = new Map(rig.bones.map((bone) => [bone.id, bone]));
-  const childrenByParent = new Map();
-  rig.bones.forEach((bone) => {
-    if (!bone.parentId) return;
-    if (!childrenByParent.has(bone.parentId)) childrenByParent.set(bone.parentId, []);
-    childrenByParent.get(bone.parentId).push(bone);
-  });
+  const graph = buildBoneGraph(rig);
+  const safeRig = graph.rig;
+  const pose = constrainSharedJointPose(safeRig, rawPose);
   const result = new Map();
+  const computing = new Set();
   const compute = (bone) => {
     if (result.has(bone.id)) return result.get(bone.id);
-    const bonePose = pose.bones?.[bone.id] || { angle: 0, dx: 0, dy: 0 };
-    const parent = bone.parentId ? byId.get(bone.parentId) : null;
+    if (computing.has(bone.id)) {
+      const fallback = {
+        bone,
+        pose: pose.bones?.[bone.id] || { angle: 0, dx: 0, dy: 0, scale: 1 },
+        start: bone.start,
+        end: bone.end,
+        angle: bone.angle,
+        deltaAngle: 0,
+        scale: 1,
+        children: graph.childrenByParent.get(bone.id) || []
+      };
+      result.set(bone.id, fallback);
+      computing.delete(bone.id);
+      return fallback;
+    }
+    computing.add(bone.id);
+    const rawBonePose = pose.bones?.[bone.id] || { angle: 0, dx: 0, dy: 0, scale: 1 };
+    const mode = bone.jointMode || 'rotate';
+    const settings = bone.jointSettings || normalizeJointSettings();
+    const poseAngle = mode === 'fixed'
+      ? 0
+      : (mode === 'hinge'
+          ? Math.max(settings.minAngle, Math.min(settings.maxAngle, rawBonePose.angle || 0))
+          : (rawBonePose.angle || 0));
+    const parentId = graph.parentById.get(bone.id);
+    const parent = parentId ? graph.byId.get(parentId) : null;
     const parentGeometry = parent ? compute(parent) : null;
     const inheritsParent = parentGeometry && parent?.endJointId === bone.startJointId;
-    const inheritedAngle = inheritsParent ? parentGeometry.deltaAngle : 0;
-    const startBase = inheritsParent ? parentGeometry.end : bone.start;
-    const start = {
-      x: startBase.x + (bonePose.dx || 0),
-      y: startBase.y + (bonePose.dy || 0)
+    const allowFixedTranslation = mode !== 'fixed' || !inheritsParent;
+    const bonePose = {
+      angle: poseAngle,
+      dx: allowFixedTranslation ? (rawBonePose.dx || 0) : 0,
+      dy: allowFixedTranslation ? (rawBonePose.dy || 0) : 0,
+      scale: rawBonePose.scale
     };
+    const inheritedAngle = inheritsParent ? parentGeometry.deltaAngle : 0;
+    const incomingAtStart = graph.incomingByJoint.get(bone.startJointId) || [];
+    const outgoingAtStart = graph.outgoingByJoint.get(bone.startJointId) || [];
+    const locksSharedBranch = inheritsParent && (incomingAtStart.length + outgoingAtStart.length > 2 || outgoingAtStart.length > 1);
+    const startBase = inheritsParent ? parentGeometry.end : bone.start;
+    const start = locksSharedBranch
+      ? { ...parentGeometry.end }
+      : {
+          x: startBase.x + (bonePose.dx || 0),
+          y: startBase.y + (bonePose.dy || 0)
+        };
     const globalAngle = bone.angle + inheritedAngle + (bonePose.angle || 0);
+    const canScale = mode === 'stretch' || mode === 'spring';
+    const scale = canScale && Number.isFinite(bonePose.scale) ? Math.max(0.05, bonePose.scale) : 1;
     const end = {
-      x: start.x + Math.cos(globalAngle) * bone.length,
-      y: start.y + Math.sin(globalAngle) * bone.length
+      x: start.x + Math.cos(globalAngle) * bone.length * scale,
+      y: start.y + Math.sin(globalAngle) * bone.length * scale
     };
     const geometry = {
       bone,
@@ -647,28 +897,41 @@ const buildPoseGeometryMap = (rig, frameIndexOrPose) => {
       end,
       angle: globalAngle,
       deltaAngle: globalAngle - bone.angle,
-      children: childrenByParent.get(bone.id) || []
+      scale,
+      skinScale: mode === 'spring' ? 1 : scale,
+      children: graph.childrenByParent.get(bone.id) || []
     };
     result.set(bone.id, geometry);
+    computing.delete(bone.id);
     return geometry;
   };
-  rig.bones.forEach((bone) => compute(bone));
+  safeRig.bones.forEach((bone) => compute(bone));
   return Object.fromEntries([...result.entries()]);
 };
 
-const transformPointByBone = (x, y, entry) => {
+const transformPointByBone = (x, y, entry, options = {}) => {
   if (!entry) return { x, y };
   const { bone } = entry;
   const sx = entry.start.x;
   const sy = entry.start.y;
-  const angle = entry.deltaAngle || 0;
-  const cos = Math.cos(angle);
-  const sin = Math.sin(angle);
   const localX = x - bone.start.x;
   const localY = y - bone.start.y;
+  const restUx = Math.cos(bone.angle);
+  const restUy = Math.sin(bone.angle);
+  const restPx = -restUy;
+  const restPy = restUx;
+  const scale = entry.bone?.jointMode === 'spring' && options.allowSpringScale
+    ? (entry.scale || 1)
+    : (entry.skinScale ?? entry.scale ?? 1);
+  const along = (localX * restUx + localY * restUy) * scale;
+  const perp = localX * restPx + localY * restPy;
+  const posedUx = Math.cos(entry.angle);
+  const posedUy = Math.sin(entry.angle);
+  const posedPx = -posedUy;
+  const posedPy = posedUx;
   return {
-    x: sx + localX * cos - localY * sin,
-    y: sy + localX * sin + localY * cos
+    x: sx + along * posedUx + perp * posedPx,
+    y: sy + along * posedUy + perp * posedPy
   };
 };
 
@@ -689,6 +952,87 @@ export const getPosedBoneGeometry = (rig, frameIndexOrPose) => {
       angle: Math.atan2(dy, dx)
     };
   });
+};
+
+const mergePosePatches = (basePose = {}, patches = {}) => {
+  const bones = { ...(basePose.bones || {}) };
+  Object.entries(patches || {}).forEach(([boneId, patch]) => {
+    const previous = bones[boneId] || { angle: 0, dx: 0, dy: 0, scale: 1 };
+    bones[boneId] = {
+      angle: Number.isFinite(patch?.angle) ? patch.angle : previous.angle,
+      dx: Number.isFinite(patch?.dx) ? patch.dx : previous.dx,
+      dy: Number.isFinite(patch?.dy) ? patch.dy : previous.dy,
+      scale: Number.isFinite(patch?.scale) ? Math.max(0.05, patch.scale) : previous.scale
+    };
+  });
+  return { ...basePose, bones };
+};
+
+const getPosedJointPositionGroups = (posedBones) => {
+  const groups = new Map();
+  posedBones.forEach((bone) => {
+    if (bone.startJointId) {
+      if (!groups.has(bone.startJointId)) groups.set(bone.startJointId, []);
+      groups.get(bone.startJointId).push(bone.start);
+    }
+    if (bone.endJointId) {
+      if (!groups.has(bone.endJointId)) groups.set(bone.endJointId, []);
+      groups.get(bone.endJointId).push(bone.end);
+    }
+  });
+  return groups;
+};
+
+const pointDistance = (a, b) => Math.hypot((a?.x || 0) - (b?.x || 0), (a?.y || 0) - (b?.y || 0));
+
+export const validateTwoBoneIkPose = (rig, parentBoneId, childBoneId, basePose = {}, patches = {}, options = {}) => {
+  const safeRig = normalizeBoneRig(rig);
+  const parentId = String(parentBoneId || '');
+  const childId = String(childBoneId || '');
+  const allowedIds = new Set([parentId, childId]);
+  const patchIds = Object.keys(patches || {});
+  if (!parentId || !childId || patchIds.some((id) => !allowedIds.has(id))) {
+    return { ok: false, reason: 'unexpected-patch' };
+  }
+  const parent = safeRig.bones.find((bone) => bone.id === parentId);
+  const child = safeRig.bones.find((bone) => bone.id === childId);
+  if (!parent || !child || parent.endJointId !== child.startJointId) {
+    return { ok: false, reason: 'not-two-bone-chain' };
+  }
+  if (safeRig.bones.some((bone) => bone.id !== childId && bone.startJointId === parent.endJointId)) {
+    return { ok: false, reason: 'outside-chain-moved' };
+  }
+
+  const epsilon = Number.isFinite(options.epsilon) ? options.epsilon : 0.01;
+  const before = getPosedBoneGeometry(safeRig, basePose);
+  const after = getPosedBoneGeometry(safeRig, mergePosePatches(basePose, patches));
+  const beforeById = new Map(before.map((bone) => [bone.id, bone]));
+  const afterById = new Map(after.map((bone) => [bone.id, bone]));
+  const parentBefore = beforeById.get(parentId);
+  const parentAfter = afterById.get(parentId);
+  if (!parentBefore || !parentAfter || pointDistance(parentBefore.start, parentAfter.start) > epsilon) {
+    return { ok: false, reason: 'root-moved' };
+  }
+
+  for (const bone of safeRig.bones) {
+    if (allowedIds.has(bone.id)) continue;
+    const beforeBone = beforeById.get(bone.id);
+    const afterBone = afterById.get(bone.id);
+    if (!beforeBone || !afterBone) continue;
+    if (pointDistance(beforeBone.start, afterBone.start) > epsilon || pointDistance(beforeBone.end, afterBone.end) > epsilon) {
+      return { ok: false, reason: 'outside-chain-moved' };
+    }
+  }
+
+  const afterJointGroups = getPosedJointPositionGroups(after);
+  for (const points of afterJointGroups.values()) {
+    if (points.length < 2) continue;
+    const [first] = points;
+    if (points.some((point) => pointDistance(point, first) > epsilon)) {
+      return { ok: false, reason: 'shared-joint-split' };
+    }
+  }
+  return { ok: true, reason: 'ok' };
 };
 
 const distanceToPoint = (x, y, point) => Math.hypot(x - point.x, y - point.y);
@@ -722,12 +1066,12 @@ const softenWeightsForConnectedJoints = (rig, x, y, weights) => {
   const radius = Math.max(2.5, Math.min(12, bone.length * 0.8));
   let next = normalized;
   const parent = bone.parentId ? rig.bones.find((entry) => entry.id === bone.parentId) : null;
-  if (parent && parent.endJointId === bone.startJointId) {
+  if (parent && parent.endJointId === bone.startJointId && parent.jointMode !== 'spring') {
     const t = 1 - Math.min(1, distanceToPoint(x, y, bone.start) / radius);
     next = withAddedWeight(next, parent.id, t * 0.65);
   }
   const children = getChildBones(rig, bone.id).filter((child) => child.startJointId === bone.endJointId);
-  if (children.length) {
+  if (children.length && bone.jointMode !== 'spring') {
     const t = 1 - Math.min(1, distanceToPoint(x, y, bone.end) / radius);
     const amount = (t * 0.65) / children.length;
     children.forEach((child) => {
@@ -737,13 +1081,15 @@ const softenWeightsForConnectedJoints = (rig, x, y, weights) => {
   return next;
 };
 
-const transformWeightedPoint = (x, y, weights, transformMap) => {
+const transformWeightedPoint = (x, y, weights, transformMap, vertex = null) => {
   const entries = Object.entries(normalizeWeights(weights));
   if (!entries.length) return { x, y };
   let outX = 0;
   let outY = 0;
   entries.forEach(([boneId, weight]) => {
-    const point = transformPointByBone(x, y, transformMap[boneId]);
+    const point = transformPointByBone(x, y, transformMap[boneId], {
+      allowSpringScale: vertex?.explicitBoneId === boneId
+    });
     outX += point.x * weight;
     outY += point.y * weight;
   });
@@ -795,9 +1141,15 @@ const buildLayerSkinMesh = (rig, layer, width, height, layerBindings) => {
   const explicitByIndex = new Map();
   const candidateBoneIds = new Set();
   layerBindings.forEach((binding) => {
-    binding.boneIds.forEach((id) => candidateBoneIds.add(id));
+    binding.boneIds.forEach((id) => {
+      const boneId = resolveJointOwnerBoneId(rig, id);
+      if (boneId) candidateBoneIds.add(boneId);
+    });
     binding.pixels.forEach((pixel) => {
-      Object.keys(pixel.weights || {}).forEach((id) => candidateBoneIds.add(id));
+      Object.keys(pixel.weights || {}).forEach((id) => {
+        const boneId = resolveJointOwnerBoneId(rig, id);
+        if (boneId) candidateBoneIds.add(boneId);
+      });
       explicitByIndex.set(pixel.index, normalizeWeights(pixel.weights));
     });
   });
@@ -808,18 +1160,108 @@ const buildLayerSkinMesh = (rig, layer, width, height, layerBindings) => {
     const x = index % width;
     const y = Math.floor(index / width);
     const explicitWeights = explicitByIndex.get(index);
-    const baseWeights = explicitWeights && Object.keys(explicitWeights).length
-      ? explicitWeights
+    const resolvedExplicitWeights = explicitWeights && Object.keys(explicitWeights).length
+      ? resolveWeightsForSkinning(rig, explicitWeights)
+      : null;
+    const baseWeights = resolvedExplicitWeights
+      ? resolvedExplicitWeights
       : getAutomaticBoneWeightsForPixel(rig, x + 0.5, y + 0.5, candidateBoneIds);
     const weights = softenWeightsForConnectedJoints(rig, x + 0.5, y + 0.5, baseWeights);
-    vertices.set(index, { index, x, y, value, weights });
+    vertices.set(index, {
+      index,
+      x,
+      y,
+      value,
+      weights,
+      explicit: Boolean(resolvedExplicitWeights),
+      explicitBoneId: resolvedExplicitWeights ? getSingleWeightBoneId(resolvedExplicitWeights) : null
+    });
   }
   return vertices;
+};
+
+const getSingleWeightBoneId = (weights = {}) => {
+  const entries = Object.entries(normalizeWeights(weights));
+  return entries.length === 1 && entries[0][1] > 0 ? entries[0][0] : null;
+};
+
+const renderSlideModeVertices = (targetLayer, width, height, vertices, transformMap) => {
+  const slideVertices = [];
+  vertices.forEach((vertex) => {
+    const boneId = getSingleWeightBoneId(vertex.weights);
+    const entry = boneId ? transformMap[boneId] : null;
+    if (!vertex.explicit || entry?.bone?.jointMode !== 'slide') return;
+    slideVertices.push({ vertex, entry });
+  });
+  slideVertices.forEach(({ vertex }) => {
+    vertices.delete(vertex.index);
+    targetLayer.pixels[vertex.index] = 0;
+  });
+  slideVertices.forEach(({ vertex, entry }) => {
+    const dx = Math.round((entry.start?.x || 0) - (entry.bone?.start?.x || 0));
+    const dy = Math.round((entry.start?.y || 0) - (entry.bone?.start?.y || 0));
+    const x = vertex.x + dx;
+    const y = vertex.y + dy;
+    if (x < 0 || y < 0 || x >= width || y >= height) return;
+    targetLayer.pixels[y * width + x] = vertex.value;
+  });
+};
+
+const renderExactIntegerTranslation = (layers, width, height, rig, bindingsByLayer, transformMap) => {
+  const output = layers.map(cloneLayer);
+  const epsilon = 0.0001;
+  const layerTranslations = new Map();
+  for (const [layerIndex, layerBindings] of bindingsByLayer.entries()) {
+    const sourceLayer = layers[layerIndex];
+    if (!sourceLayer) continue;
+    const vertices = buildLayerSkinMesh(rig, sourceLayer, width, height, layerBindings);
+    if (!vertices.size) {
+      layerTranslations.set(layerIndex, { vertices, dx: 0, dy: 0 });
+      continue;
+    }
+    let layerDx = null;
+    let layerDy = null;
+    for (const vertex of vertices.values()) {
+      const center = transformWeightedPoint(vertex.x + 0.5, vertex.y + 0.5, vertex.weights, transformMap, vertex);
+      const dx = center.x - (vertex.x + 0.5);
+      const dy = center.y - (vertex.y + 0.5);
+      const roundedDx = Math.round(dx);
+      const roundedDy = Math.round(dy);
+      if (Math.abs(dx - roundedDx) > epsilon || Math.abs(dy - roundedDy) > epsilon) return null;
+      if (layerDx == null) {
+        layerDx = roundedDx;
+        layerDy = roundedDy;
+      } else if (layerDx !== roundedDx || layerDy !== roundedDy) {
+        return null;
+      }
+    }
+    layerTranslations.set(layerIndex, { vertices, dx: layerDx || 0, dy: layerDy || 0 });
+  }
+  let translated = false;
+  for (const [layerIndex, translation] of layerTranslations.entries()) {
+    const targetLayer = output[layerIndex];
+    if (!targetLayer) continue;
+    translation.vertices.forEach((vertex) => {
+      targetLayer.pixels[vertex.index] = 0;
+    });
+    translation.vertices.forEach((vertex) => {
+      const x = vertex.x + translation.dx;
+      const y = vertex.y + translation.dy;
+      if (x < 0 || y < 0 || x >= width || y >= height) return;
+      targetLayer.pixels[y * width + x] = vertex.value;
+      if (translation.dx !== 0 || translation.dy !== 0) translated = true;
+    });
+  }
+  return translated ? output : null;
 };
 
 export const deformLayersWithBones = (layers, width, height, rig, frameIndex) => {
   const safeRig = normalizeBoneRig(rig);
   if (!safeRig.bones.length || !safeRig.bindings.length) return layers.map(cloneLayer);
+  const pose = typeof frameIndex === 'object' && frameIndex
+    ? frameIndex
+    : getPoseForFrame(safeRig, frameIndex);
+  if (isRestPose(pose)) return layers.map(cloneLayer);
   const transformMap = buildPoseGeometryMap(safeRig, frameIndex);
   const output = layers.map(cloneLayer);
   const bindingsByLayer = new Map();
@@ -827,18 +1269,21 @@ export const deformLayersWithBones = (layers, width, height, rig, frameIndex) =>
     if (!bindingsByLayer.has(binding.layerIndex)) bindingsByLayer.set(binding.layerIndex, []);
     bindingsByLayer.get(binding.layerIndex).push(binding);
   });
+  const exactTranslation = renderExactIntegerTranslation(layers, width, height, safeRig, bindingsByLayer, transformMap);
+  if (exactTranslation) return exactTranslation;
   bindingsByLayer.forEach((layerBindings, layerIndex) => {
     const sourceLayer = layers[layerIndex];
     const targetLayer = output[layerIndex];
     if (!sourceLayer || !targetLayer) return;
     const vertices = buildLayerSkinMesh(safeRig, sourceLayer, width, height, layerBindings);
+    renderSlideModeVertices(targetLayer, width, height, vertices, transformMap);
     vertices.forEach((vertex) => {
       targetLayer.pixels[vertex.index] = 0;
     });
     vertices.forEach((vertex) => {
-      rasterizeTransformedPixelQuad(targetLayer.pixels, width, height, vertex.x, vertex.y, vertex.weights, transformMap, vertex.value);
+      rasterizeTransformedPixelQuad(targetLayer.pixels, width, height, vertex, transformMap);
       if (Object.keys(normalizeWeights(vertex.weights)).length > 1) {
-        rasterizePixelStretchBridge(targetLayer.pixels, width, height, vertex.x, vertex.y, vertex.weights, transformMap, vertex.value);
+        rasterizePixelStretchBridge(targetLayer.pixels, width, height, vertex, transformMap);
       }
     });
     vertices.forEach((vertex) => {
@@ -986,8 +1431,8 @@ const drawInterpolatedPixelLine = (pixels, width, height, x0, y0, x1, y1, value0
 };
 
 const rasterizePixelMeshSpan = (pixels, width, height, from, to, transformMap) => {
-  const a = transformWeightedPoint(from.x + 0.5, from.y + 0.5, from.weights, transformMap);
-  const b = transformWeightedPoint(to.x + 0.5, to.y + 0.5, to.weights, transformMap);
+  const a = transformWeightedPoint(from.x + 0.5, from.y + 0.5, from.weights, transformMap, from);
+  const b = transformWeightedPoint(to.x + 0.5, to.y + 0.5, to.weights, transformMap, to);
   drawInterpolatedPixelLine(
     pixels,
     width,
@@ -1001,8 +1446,9 @@ const rasterizePixelMeshSpan = (pixels, width, height, from, to, transformMap) =
   );
 };
 
-const rasterizePixelStretchBridge = (pixels, width, height, x, y, weights, transformMap, value) => {
-  const center = transformWeightedPoint(x + 0.5, y + 0.5, weights, transformMap);
+const rasterizePixelStretchBridge = (pixels, width, height, vertex, transformMap) => {
+  const { x, y, weights, value } = vertex;
+  const center = transformWeightedPoint(x + 0.5, y + 0.5, weights, transformMap, vertex);
   const startX = x;
   const startY = y;
   const endX = Math.round(center.x - 0.5);
@@ -1013,12 +1459,24 @@ const rasterizePixelStretchBridge = (pixels, width, height, x, y, weights, trans
   drawPixelLine(pixels, width, height, startX, startY, endX, endY, value, radius);
 };
 
-const rasterizeTransformedPixelQuad = (pixels, width, height, x, y, weights, transformMap, value) => {
+const rasterizeTransformedPixelQuad = (pixels, width, height, vertex, transformMap) => {
+  const { x, y, weights, value } = vertex;
+  const singleBoneId = getSingleWeightBoneId(weights);
+  const singleEntry = singleBoneId ? transformMap[singleBoneId] : null;
+  if (singleEntry && Math.abs((singleEntry.scale || 1) - 1) <= 0.0001 && Math.abs(singleEntry.deltaAngle || 0) <= 0.0001) {
+    const center = transformWeightedPoint(x + 0.5, y + 0.5, weights, transformMap, vertex);
+    const targetX = Math.round(center.x - 0.5);
+    const targetY = Math.round(center.y - 0.5);
+    if (Math.abs(center.x - 0.5 - targetX) <= 0.0001 && Math.abs(center.y - 0.5 - targetY) <= 0.0001) {
+      writePixel(pixels, width, height, targetX, targetY, value);
+      return;
+    }
+  }
   const corners = [
-    transformWeightedPoint(x, y, weights, transformMap),
-    transformWeightedPoint(x + 1, y, weights, transformMap),
-    transformWeightedPoint(x + 1, y + 1, weights, transformMap),
-    transformWeightedPoint(x, y + 1, weights, transformMap)
+    transformWeightedPoint(x, y, weights, transformMap, vertex),
+    transformWeightedPoint(x + 1, y, weights, transformMap, vertex),
+    transformWeightedPoint(x + 1, y + 1, weights, transformMap, vertex),
+    transformWeightedPoint(x, y + 1, weights, transformMap, vertex)
   ];
   const minX = Math.max(0, Math.floor(Math.min(...corners.map((point) => point.x)) - 0.5));
   const maxX = Math.min(width - 1, Math.ceil(Math.max(...corners.map((point) => point.x)) - 0.5));
@@ -1036,7 +1494,7 @@ const rasterizeTransformedPixelQuad = (pixels, width, height, x, y, weights, tra
       wrote = true;
     }
   }
-  const center = transformWeightedPoint(x + 0.5, y + 0.5, weights, transformMap);
+  const center = transformWeightedPoint(x + 0.5, y + 0.5, weights, transformMap, vertex);
   stampPixel(pixels, width, height, Math.round(center.x - 0.5), Math.round(center.y - 0.5), value);
 };
 

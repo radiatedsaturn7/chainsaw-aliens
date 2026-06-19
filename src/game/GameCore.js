@@ -2238,10 +2238,14 @@ export default class Game {
           this.enterEditor();
           this.editor.currentDocumentRef = { folder: 'levels', name: name || 'Level' };
         } else if (folder === 'art') {
-          this.world.pixelArt = this.pixelStudio.normalizeLoadedArtDocument(payload.data);
-          this.pixelStudio.currentDocumentRef = { folder: 'art', name: name || 'Art' };
           this.enterPixelStudio();
-          this.pixelStudio.loadTileData({ skipRestore: true });
+          if (this.pixelStudio.shouldLoadArtAsAnimationDocument(payload.data)) {
+            this.pixelStudio.loadAnimationArtDocument(payload.data);
+          } else {
+            this.world.pixelArt = this.pixelStudio.normalizeLoadedArtDocument(payload.data);
+            this.pixelStudio.loadTileData({ skipRestore: true });
+          }
+          this.pixelStudio.currentDocumentRef = { folder: 'art', name: name || 'Art' };
         } else if (folder === 'music') {
           this.enterMidiComposer();
           this.midiComposer.applyImportedSong(payload.data);

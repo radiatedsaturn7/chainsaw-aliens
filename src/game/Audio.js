@@ -21,6 +21,7 @@ const SOUNDFONT_CDN_URLS = {
 };
 const WEB_AUDIOFONT_BASE_URL = 'vendor/webaudiofont/';
 const WEB_AUDIOFONT_KIT = 'Chaos_sf2_file';
+const MIDI_TIMELINE_MAX_SCHEDULE_LATENESS_SECONDS = 1.5;
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const decodeDataUrlBytes = (dataUrl) => {
@@ -1898,7 +1899,10 @@ export default class AudioSystem {
       this.ctx.currentTime,
       Number.isFinite(when) ? when : this.ctx.currentTime + this.midiLatency
     );
-    const isTooLate = () => this.ctx.currentTime > resolvedWhen + Math.max(0, Number(maxScheduleLatenessSeconds) || 0);
+    const scheduleLatenessSeconds = voiceGroup === 'timeline'
+      ? Math.max(MIDI_TIMELINE_MAX_SCHEDULE_LATENESS_SECONDS, Number(maxScheduleLatenessSeconds) || 0)
+      : Math.max(0, Number(maxScheduleLatenessSeconds) || 0);
+    const isTooLate = () => this.ctx.currentTime > resolvedWhen + scheduleLatenessSeconds;
     const enabledPedals = Array.isArray(pedals) ? pedals.filter((pedal) => pedal && pedal.enabled !== false) : [];
     if (enabledPedals.length) {
       if (!this.gmEnabled) {
@@ -1929,7 +1933,7 @@ export default class AudioSystem {
         pedals: enabledPedals,
         trackId,
         voiceGroup,
-        maxScheduleLatenessSeconds
+        maxScheduleLatenessSeconds: scheduleLatenessSeconds
       });
       return;
     }
@@ -2009,7 +2013,7 @@ export default class AudioSystem {
       pedals: [],
       trackId,
       voiceGroup,
-      maxScheduleLatenessSeconds,
+      maxScheduleLatenessSeconds: scheduleLatenessSeconds,
       onMissing: () => {
         if (!isTooLate()) fallback();
       }

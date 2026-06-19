@@ -1,5 +1,5 @@
 import { openProjectBrowser } from '../ProjectBrowserModal.js';
-import { saveProjectFile } from '../projectFiles.js';
+import { saveProjectFileAndConfirm } from '../projectFiles.js';
 
 export function createDocumentLifecycle(adapter) {
   const MIN_SAVING_TOAST_MS = 350;
@@ -51,25 +51,21 @@ export function createDocumentLifecycle(adapter) {
       name = result.name;
     }
 
-    const data = adapter.serialize(context);
     const savingStartedAt = Date.now();
     context.game?.showSaveStatusModal?.('Saving...');
     context.game?.showSystemToast?.('Saving...');
     context.statusMessage = 'Saving...';
+    let rollbackBeforeSave = null;
     try {
-      const saved = saveProjectFile(adapter.folder, name, data);
-      if (adapter.waitForSync !== false) {
-        const persisted = await saved?.syncPromise;
-        if (persisted && persisted.persisted === false) {
-          throw new Error(persisted.reason || 'Server did not persist file');
-        }
-      }
+      rollbackBeforeSave = adapter.beforeSave?.(context, { name }) || null;
+      const data = adapter.serialize(context);
+      const saved = await saveProjectFileAndConfirm(adapter.folder, name, data);
       const elapsed = Date.now() - savingStartedAt;
       if (elapsed < MIN_SAVING_TOAST_MS) {
         await new Promise((resolve) => setTimeout(resolve, MIN_SAVING_TOAST_MS - elapsed));
       }
       context.currentDocumentRef = { folder: adapter.folder, name };
-      adapter.afterSave?.(context, { name, data });
+      adapter.afterSave?.(context, { name, data, saved });
       markSavedSnapshot(context);
       context.game?.showSaveStatusModal?.('Saved');
       setTimeout(() => context.game?.hideSaveStatusModal?.(), 1400);
@@ -77,6 +73,9 @@ export function createDocumentLifecycle(adapter) {
       context.statusMessage = 'Saved';
       return { id: name, name };
     } catch (error) {
+      if (typeof rollbackBeforeSave === 'function') {
+        try { rollbackBeforeSave(); } catch (rollbackError) { /* ignore rollback failures */ }
+      }
       const message = `Save failed: ${error?.message || error || 'Unknown error'}`;
       context.game?.showSaveStatusModal?.(message);
       setTimeout(() => context.game?.hideSaveStatusModal?.(), 1800);

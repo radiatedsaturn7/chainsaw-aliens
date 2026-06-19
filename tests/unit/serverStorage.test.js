@@ -1,10 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  hydrateProjectFile,
+  hydrateServerStorage,
   clearCachedProjectFilesForTests,
   deleteServerFileVersion,
   listServerFileVersions,
+  listServerIndexedFiles,
   readCachedProjectFile,
+  queueServerFileSave,
   renameServerFile,
   restoreServerFileVersion,
   saveServerFile,
@@ -42,6 +46,42 @@ test('saveServerFile merges metadata-only persisted responses with local data', 
     const cached = JSON.parse(readCachedProjectFile('cutscenes', 'large'));
     assert.deepEqual(cached.data, document);
     assert.equal(cached.savedAt, 1234);
+  } finally {
+    globalThis.fetch = originalFetch;
+    clearCachedProjectFilesForTests();
+  }
+});
+
+test('saveServerFile sends versioning policy to storage API', async () => {
+  clearCachedProjectFilesForTests();
+  const originalFetch = globalThis.fetch;
+  const bodies = [];
+  globalThis.fetch = async (url, options = {}) => {
+    assert.equal(url, '/__storage/file');
+    const body = JSON.parse(options.body || '{}');
+    bodies.push(body);
+    return {
+      ok: true,
+      async json() {
+        return {
+          ok: true,
+          file: {
+            version: body.version,
+            folder: body.folder,
+            name: body.name,
+            savedAt: body.savedAt,
+            dataOmitted: true
+          }
+        };
+      }
+    };
+  };
+  try {
+    await saveServerFile('music', 'manual-song', { tracks: [] }, { savedAt: 1234, version: 1 });
+    await saveServerFile('music', 'autosave-song', { tracks: [] }, { savedAt: 1235, version: 1, createVersion: false });
+
+    assert.equal(bodies[0].createVersion, true);
+    assert.equal(bodies[1].createVersion, false);
   } finally {
     globalThis.fetch = originalFetch;
     clearCachedProjectFilesForTests();
@@ -96,6 +136,62 @@ test('saveServerFile reports unreachable storage clearly and can recover after r
     assert.deepEqual(saved.data, document);
     assert.equal(calls.some((call) => call.url === '/__storage/index'), true);
     assert.equal(calls.some((call) => call.url === '/__storage/file'), true);
+  } finally {
+    globalThis.fetch = originalFetch;
+    clearCachedProjectFilesForTests();
+  }
+});
+
+test('queued server saves time out instead of hanging and recover on the next save', async () => {
+  clearCachedProjectFilesForTests();
+  const originalFetch = globalThis.fetch;
+  const document = { tracks: [{ notes: [{ pitch: 60, startTick: 0, durationTicks: 4 }] }] };
+  let online = false;
+  const calls = [];
+  globalThis.fetch = async (url, options = {}) => {
+    calls.push({ url, options });
+    if (!online) {
+      return new Promise(() => {});
+    }
+    if (url === '/__storage/index') {
+      return {
+        ok: true,
+        async json() {
+          return { ok: true, index: { music: {} } };
+        }
+      };
+    }
+    if (url === '/__storage/file') {
+      const body = JSON.parse(options.body || '{}');
+      return {
+        ok: true,
+        async json() {
+          return {
+            ok: true,
+            file: {
+              version: body.version,
+              folder: body.folder,
+              name: body.name,
+              savedAt: body.savedAt,
+              dataOmitted: true
+            }
+          };
+        }
+      };
+    }
+    throw new Error(`Unexpected fetch ${url}`);
+  };
+  try {
+    const failed = await queueServerFileSave('music', 'slow-song', document, { savedAt: 3333, version: 1, timeoutMs: 5 });
+    assert.equal(failed.persisted, false);
+    assert.equal(failed.reason.includes('timed out'), true);
+
+    online = true;
+    const saved = await queueServerFileSave('music', 'fast-song', document, { savedAt: 4444, version: 1, timeoutMs: 50 });
+    assert.equal(saved.persisted, true);
+    assert.deepEqual(saved.data, document);
+    assert.equal(calls.some((call) => call.url === '/__storage/index'), true);
+    assert.equal(calls.filter((call) => call.url === '/__storage/file').length, 2);
   } finally {
     globalThis.fetch = originalFetch;
     clearCachedProjectFilesForTests();
@@ -245,6 +341,72 @@ test('renameServerFile preserves cached data when server returns metadata only',
     const cached = JSON.parse(readCachedProjectFile('art', 'new'));
     assert.deepEqual(cached.data, document);
     assert.equal(cached.savedAt, 2000);
+  } finally {
+    globalThis.fetch = originalFetch;
+    clearCachedProjectFilesForTests();
+  }
+});
+
+test('hydrateServerStorage can refresh one folder without loading all folders', async () => {
+  clearCachedProjectFilesForTests();
+  const originalFetch = globalThis.fetch;
+  const calls = [];
+  globalThis.fetch = async (url) => {
+    calls.push(url);
+    assert.equal(url, '/__storage/index?folder=art');
+    return {
+      ok: true,
+      async json() {
+        return {
+          ok: true,
+          index: {
+            art: {
+              player: { updatedAt: 1234, size: 55 }
+            },
+            music: {
+              ignored: { updatedAt: 1, size: 1 }
+            }
+          }
+        };
+      }
+    };
+  };
+  try {
+    const result = await hydrateServerStorage({ folder: 'art' });
+    assert.equal(result.ok, true);
+    assert.equal(result.stats.indexedServer, 1);
+    assert.deepEqual(Object.keys(listServerIndexedFiles('art')), ['player']);
+    assert.deepEqual(Object.keys(listServerIndexedFiles('music')), []);
+    assert.deepEqual(calls, ['/__storage/index?folder=art']);
+  } finally {
+    globalThis.fetch = originalFetch;
+    clearCachedProjectFilesForTests();
+  }
+});
+
+test('hydrateProjectFile fetches one selected file and caches it', async () => {
+  clearCachedProjectFilesForTests();
+  const originalFetch = globalThis.fetch;
+  const document = { frames: [['#ffffff']] };
+  const calls = [];
+  globalThis.fetch = async (url) => {
+    calls.push(url);
+    assert.equal(url, '/__storage/file?folder=art&name=player');
+    return {
+      ok: true,
+      async json() {
+        return {
+          ok: true,
+          file: { version: 1, folder: 'art', name: 'player', savedAt: 2222, data: document }
+        };
+      }
+    };
+  };
+  try {
+    const payload = await hydrateProjectFile('art', 'player');
+    assert.deepEqual(payload.data, document);
+    assert.deepEqual(JSON.parse(readCachedProjectFile('art', 'player')).data, document);
+    assert.deepEqual(calls, ['/__storage/file?folder=art&name=player']);
   } finally {
     globalThis.fetch = originalFetch;
     clearCachedProjectFilesForTests();
