@@ -1,6 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { sortProjectBrowserEntries } from '../../src/ui/ProjectBrowserModal.js';
+import {
+  listProjectFiles,
+  resetProjectFilesForTests
+} from '../../src/ui/projectFiles.js';
+import {
+  hydrateServerStorage,
+  upsertCachedProjectFile
+} from '../../src/ui/serverStorage.js';
 
 const source = readFileSync(new URL('../../src/ui/ProjectBrowserModal.js', import.meta.url), 'utf8');
 const gameCoreSource = readFileSync(new URL('../../src/game/GameCore.js', import.meta.url), 'utf8');
@@ -64,4 +73,87 @@ test('project browser overlay remains interactive under shared non-interactive r
   assert.equal(source.includes("root.style.pointerEvents = 'none';"), true);
   assert.equal(source.includes("overlay.style.pointerEvents = 'auto';"), true);
   assert.equal(source.includes("isOpening ? 'Opening...' : 'Open'"), true);
+});
+
+test('project browser sorts files by recently modified and name', () => {
+  const entries = [
+    { name: 'zeta', updatedAt: 200 },
+    { name: 'Alpha', updatedAt: 100 },
+    { name: 'beta', updatedAt: 300 },
+    { name: 'aardvark', updatedAt: 300 }
+  ];
+
+  assert.deepEqual(
+    sortProjectBrowserEntries(entries, 'modified').map((entry) => entry.name),
+    ['aardvark', 'beta', 'zeta', 'Alpha']
+  );
+  assert.deepEqual(
+    sortProjectBrowserEntries(entries, 'name').map((entry) => entry.name),
+    ['aardvark', 'Alpha', 'beta', 'zeta']
+  );
+});
+
+test('project file listing preserves server modified date over cached payload time', async () => {
+  resetProjectFilesForTests();
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async (url) => {
+    assert.equal(url, '/__storage/index?folder=art');
+    return {
+      ok: true,
+      async json() {
+        return {
+          ok: true,
+          index: {
+            art: {
+              Player: { updatedAt: 1000, size: 25 }
+            }
+          }
+        };
+      }
+    };
+  };
+  try {
+    await hydrateServerStorage({ folder: 'art' });
+    upsertCachedProjectFile('art', 'Player', JSON.stringify({
+      version: 1,
+      folder: 'art',
+      name: 'Player',
+      savedAt: 999999,
+      data: { frames: [] }
+    }));
+
+    const entry = listProjectFiles('art').find((item) => item.name === 'Player');
+    assert.equal(entry.updatedAt, 1000);
+    assert.equal(entry.size > 25, true);
+  } finally {
+    globalThis.fetch = originalFetch;
+    resetProjectFilesForTests();
+  }
+});
+
+test('project file listing uses cached savedAt only for cache-only files', () => {
+  resetProjectFilesForTests();
+  try {
+    upsertCachedProjectFile('music', 'Local Song', JSON.stringify({
+      version: 1,
+      folder: 'music',
+      name: 'Local Song',
+      savedAt: 4321,
+      data: { tracks: [] }
+    }));
+
+    const entry = listProjectFiles('music').find((item) => item.name === 'Local Song');
+    assert.equal(entry.updatedAt, 4321);
+  } finally {
+    resetProjectFilesForTests();
+  }
+});
+
+test('project browser folder view exposes shared sort controls', () => {
+  assert.equal(source.includes("sortBy: 'modified'"), true);
+  assert.equal(source.includes("sortProjectBrowserEntries("), true);
+  assert.equal(source.includes("makeButton('Modified', 'project-browser-btn project-browser-sort-btn'"), true);
+  assert.equal(source.includes("makeButton('Name', 'project-browser-btn project-browser-sort-btn'"), true);
+  assert.equal(source.includes("state.sortBy = 'modified';"), true);
+  assert.equal(source.includes("state.sortBy = 'name';"), true);
 });

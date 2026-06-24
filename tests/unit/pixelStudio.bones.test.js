@@ -11,7 +11,9 @@ import {
   constrainSharedJointPose,
   createBone,
   createDefaultBoneRig,
+  deformLayersWithBones,
   deformLayersWithBonePose,
+  getBoneAffectedPixelCounts,
   getBoneAssignedMask,
   getBoneInfluenceSets,
   getBoneJointUsageCount,
@@ -20,6 +22,7 @@ import {
   createSelectionBinding,
   moveBoneJoint,
   normalizeBoneRig,
+  normalizeBoneSkeleton,
   removeOrphanBoneJoints,
   removeMaskFromBoneBinding,
   reverseBoneDirection,
@@ -98,6 +101,107 @@ test('bone rig normalization collapses legacy multi-weight pixels to one explici
 
   assert.deepEqual(rig.bindings[0].boneIds, ['leg']);
   assert.deepEqual(rig.bindings[0].pixels[0].weights, { leg: 1 });
+});
+
+test('bone skeleton normalization does not de-dupe binding pixels', () => {
+  const sourceBinding = {
+    type: 'selection',
+    layerIndex: 0,
+    boneIds: ['arm', 'leg'],
+    pixels: [
+      { index: 4, weights: { arm: 1 } },
+      { index: 4, weights: { leg: 1 } }
+    ]
+  };
+  const source = {
+    bones: [
+      { id: 'arm', start: { x: 0, y: 0 }, end: { x: 3, y: 0 } },
+      { id: 'leg', start: { x: 0, y: 1 }, end: { x: 3, y: 1 } }
+    ],
+    bindings: [sourceBinding]
+  };
+
+  const skeleton = normalizeBoneSkeleton(source);
+  const full = normalizeBoneRig(source);
+
+  assert.equal(skeleton.bindings[0], sourceBinding);
+  assert.equal(skeleton.bindings[0].pixels.length, 2);
+  assert.equal(full.bindings.length, 1);
+  assert.deepEqual(full.bindings[0].boneIds, ['leg']);
+  assert.equal(full.bindings[0].pixels.length, 1);
+});
+
+test('non-exclusive bone rig normalization preserves assignment ownership for pose caches', () => {
+  const source = {
+    bones: [
+      { id: 'arm', start: { x: 0, y: 0 }, end: { x: 3, y: 0 } },
+      { id: 'leg', start: { x: 0, y: 1 }, end: { x: 3, y: 1 } }
+    ],
+    bindings: [{
+      type: 'selection',
+      layerIndex: 0,
+      boneIds: ['arm', 'leg'],
+      pixels: [
+        { index: 4, weights: { arm: 1 } },
+        { index: 4, weights: { leg: 1 } }
+      ]
+    }]
+  };
+
+  const poseRig = normalizeBoneRig(source, { exclusive: false });
+  const assignmentRig = normalizeBoneRig(source);
+
+  assert.equal(poseRig.bindings.length, 1);
+  assert.deepEqual(poseRig.bindings[0].boneIds, ['arm', 'leg']);
+  assert.equal(poseRig.bindings[0].pixels.length, 2);
+  assert.equal(assignmentRig.bindings.length, 1);
+  assert.deepEqual(assignmentRig.bindings[0].boneIds, ['leg']);
+  assert.equal(assignmentRig.bindings[0].pixels.length, 1);
+});
+
+test('posed bone geometry does not read binding pixels', () => {
+  const binding = {
+    type: 'selection',
+    layerIndex: 0,
+    boneIds: ['arm']
+  };
+  Object.defineProperty(binding, 'pixels', {
+    get() {
+      throw new Error('pose geometry should not normalize binding pixels');
+    }
+  });
+  const rig = {
+    bones: [{ id: 'arm', start: { x: 0, y: 0 }, end: { x: 4, y: 0 } }],
+    bindings: [binding],
+    poseTimeline: [{ timeMs: 0, bones: { arm: { angle: Math.PI / 2 } } }]
+  };
+
+  const posed = getPosedBoneGeometry(rig, { bones: { arm: { angle: Math.PI / 2 } } });
+
+  assert.equal(posed.length, 1);
+  assert.ok(Math.abs(posed[0].angle - Math.PI / 2) < 0.0001);
+});
+
+test('pose timeline sampling does not read binding pixels', () => {
+  const binding = {
+    type: 'selection',
+    layerIndex: 0,
+    boneIds: ['arm']
+  };
+  Object.defineProperty(binding, 'pixels', {
+    get() {
+      throw new Error('pose timeline should not normalize binding pixels');
+    }
+  });
+  const rig = {
+    bones: [{ id: 'arm', start: { x: 0, y: 0 }, end: { x: 4, y: 0 } }],
+    bindings: [binding],
+    poseTimeline: [{ timeMs: 100, bones: { arm: { angle: Math.PI / 2 } } }]
+  };
+
+  const sampled = samplePoseTimeline(rig, 100);
+
+  assert.equal(sampled.bones.arm.angle, Math.PI / 2);
 });
 
 test('bone layer and selection bindings deform pixels into normal baked frames', () => {
@@ -201,6 +305,58 @@ test('node-owned bindings deform through their connected bone transform', () => 
   assert.equal(deformed.pixels[1 * 8 + 5], 0xff00ffff);
 });
 
+test('shared joint owned pixels resolve to the incoming parent edge', () => {
+  let rig = createDefaultBoneRig();
+  const torso = createBone(rig, { x: 2, y: 1 }, { x: 4, y: 1 }, { id: 'torso' });
+  rig = torso.rig;
+  rig = createBone(rig, torso.bone.end, { x: 6, y: 1 }, {
+    id: 'head',
+    parentId: 'torso',
+    startJointId: torso.bone.endJointId
+  }).rig;
+  const layer = createLayer(8, 4, 'Shared Joint');
+  const index = 1 * 8 + 4;
+  layer.pixels[index] = 0xff00ffff;
+  const mask = new Uint8Array(8 * 4);
+  mask[index] = 1;
+  rig = createSelectionBinding(rig, 0, [torso.bone.endJointId], mask, 8, 4);
+  rig = {
+    ...rig,
+    bindings: rig.bindings.map((binding) => ({ ...binding, skinningMode: 'rigid-layer' }))
+  };
+
+  const [headMoved] = deformLayersWithBonePose([layer], 8, 4, rig, {
+    bones: { head: { angle: 0, dx: 2, dy: 0, scale: 1 } }
+  });
+  assert.equal(headMoved.pixels[index], 0xff00ffff);
+  assert.equal(headMoved.pixels[index + 2], 0);
+
+  const [torsoMoved] = deformLayersWithBonePose([layer], 8, 4, rig, {
+    bones: { torso: { angle: 0, dx: 2, dy: 0, scale: 1 } }
+  });
+  assert.equal(torsoMoved.pixels[index], 0);
+  assert.equal(torsoMoved.pixels[index + 2], 0xff00ffff);
+});
+
+test('root joint owned pixels resolve to the outgoing root edge', () => {
+  let rig = createDefaultBoneRig();
+  const root = createBone(rig, { x: 1, y: 1 }, { x: 3, y: 1 }, { id: 'root' });
+  rig = root.rig;
+  const layer = createLayer(8, 4, 'Root Joint');
+  const index = 1 * 8 + 1;
+  layer.pixels[index] = 0xff00ffff;
+  const mask = new Uint8Array(8 * 4);
+  mask[index] = 1;
+  rig = createSelectionBinding(rig, 0, [root.bone.startJointId], mask, 8, 4);
+
+  const [deformed] = deformLayersWithBonePose([layer], 8, 4, rig, {
+    bones: { root: { angle: 0, dx: 2, dy: 0, scale: 1 } }
+  });
+
+  assert.equal(deformed.pixels[index], 0);
+  assert.equal(deformed.pixels[index + 2], 0xff00ffff);
+});
+
 test('layer binding to a new bone replaces previous layer pixel ownership', () => {
   let rig = createDefaultBoneRig();
   rig = createBone(rig, { x: 0, y: 0 }, { x: 2, y: 0 }, { id: 'arm' }).rig;
@@ -231,6 +387,24 @@ test('bone pose timeline interpolates and bakes timed frames', () => {
 
   assert.ok(sampled.bones.arm.angle > 1.5 && sampled.bones.arm.angle < 1.7);
   assert.equal(baked.length, 5);
+  assert.ok(baked.every((frame) => frame.durationMs === 250));
+});
+
+test('bone pose timeline bake can use an explicit frame count', () => {
+  let rig = createBone(createDefaultBoneRig(), { x: 1, y: 1 }, { x: 4, y: 1 }, { id: 'arm' }).rig;
+  const layer = createLayer(8, 8, 'Arm');
+  layer.pixels[1 * 8 + 4] = 0xff0000ff;
+  rig = createLayerBinding(rig, 0, ['arm'], 8, 8, layer.pixels);
+  rig = setBonePoseAtTime(rig, 0, 'arm', { angle: 0 });
+  rig = setBonePoseAtTime(rig, 1000, 'arm', { angle: Math.PI });
+
+  const baked = bakeBoneTimelineFrames(createFrame([layer], 250), 8, 8, rig, {
+    frameDurationMs: 250,
+    durationMs: 1000,
+    frameCount: 3
+  });
+
+  assert.equal(baked.length, 3);
   assert.ok(baked.every((frame) => frame.durationMs === 250));
 });
 
@@ -364,6 +538,793 @@ test('rest bone preview matches raw layer composite exactly', () => {
   assert.deepEqual(Array.from(preview), Array.from(raw));
 });
 
+test('large bound layer bone preview stays responsive', () => {
+  const width = 128;
+  const height = 128;
+  let rig = createDefaultBoneRig();
+  rig = createBone(rig, { x: 32, y: 64 }, { x: 96, y: 64 }, { id: 'root' }).rig;
+  const layer = createLayer(width, height, 'Large Sprite');
+  layer.pixels.fill(0x66ccffff);
+  const mask = new Uint8Array(width * height);
+  for (let index = 0; index < 4096; index += 1) mask[index] = 1;
+  rig = addMaskToBoneBinding(rig, 0, 'root', mask, width, height);
+
+  const startedAt = performance.now();
+  const preview = compositeBonePreview([layer], width, height, rig, {
+    bones: { root: { angle: 0.1, dx: 0, dy: 0, scale: 1 } }
+  });
+  const elapsedMs = performance.now() - startedAt;
+
+  assert.equal(preview.length, width * height);
+  assert.ok(preview.some((pixel) => pixel === 0x66ccffff));
+  assert.ok(elapsedMs < 2000, `large bone preview took ${Math.round(elapsedMs)}ms`);
+});
+
+test('large bound layer preview rotation keeps rigged pixels visible', () => {
+  const width = 128;
+  const height = 128;
+  const riggedColor = 0x66ccffff;
+  let rig = createDefaultBoneRig();
+  rig = createBone(rig, { x: 64, y: 64 }, { x: 96, y: 64 }, { id: 'hand' }).rig;
+  const layer = createLayer(width, height, 'Large Character');
+  layer.pixels.fill(0xff0000ff);
+  const mask = new Uint8Array(width * height);
+  for (let y = 32; y < 96; y += 1) {
+    for (let x = 32; x < 96; x += 1) {
+      const index = y * width + x;
+      mask[index] = 1;
+      layer.pixels[index] = riggedColor;
+    }
+  }
+  rig = addMaskToBoneBinding(rig, 0, 'hand', mask, width, height);
+
+  const sourceRiggedPixels = layer.pixels.reduce((count, pixel) => count + (pixel === riggedColor ? 1 : 0), 0);
+  const [previewLayer] = deformLayersWithBones([layer], width, height, rig, {
+    bones: { hand: { angle: 0.35, dx: 0, dy: 0, scale: 1 } }
+  }, { preview: true });
+  const previewRiggedPixels = previewLayer.pixels.reduce((count, pixel) => count + (pixel === riggedColor ? 1 : 0), 0);
+
+  assert.ok(previewRiggedPixels >= sourceRiggedPixels);
+});
+
+test('bone only history skips layer pixel snapshots while preserving bone undo data', () => {
+  const layer = createLayer(4, 4, 'History');
+  layer.pixels[5] = 0xff00ffff;
+  let committed = null;
+  const fakeEditor = {
+    animation: { currentFrameIndex: 0, frames: [createFrame([layer], 120)] },
+    canvasState: { layers: [layer] },
+    boneRig: createBone(createDefaultBoneRig(), { x: 0, y: 0 }, { x: 3, y: 0 }, { id: 'root' }).rig,
+    runtime: {
+      commitHistory(entry) {
+        committed = entry;
+      }
+    },
+    syncTileData() {},
+    invalidateBoneDerivedCaches: PixelStudio.prototype.invalidateBoneDerivedCaches
+  };
+  fakeEditor.boneDerivedCache = { revision: 1, overlay: {}, preview: {} };
+
+  PixelStudio.prototype.startHistory.call(fakeEditor, 'add pixels to bone', { includeLayers: false });
+  fakeEditor.boneRig = createBone(fakeEditor.boneRig, { x: 3, y: 0 }, { x: 6, y: 0 }, { id: 'child' }).rig;
+  PixelStudio.prototype.commitHistory.call(fakeEditor);
+
+  assert.equal(committed.label, 'add pixels to bone');
+  assert.equal(committed.layersBefore, undefined);
+  assert.equal(committed.layersAfter, undefined);
+  assert.equal(committed.boneRigBefore.bones.length, 1);
+  assert.equal(committed.boneRigAfter.bones.length, 2);
+});
+
+test('setFrameLayers invalidates caches without undefined history locals', () => {
+  const oldLayer = createLayer(2, 2, 'Old');
+  const nextLayer = createLayer(2, 2, 'Next');
+  const fakeEditor = Object.create(PixelStudio.prototype);
+  fakeEditor.animation = { currentFrameIndex: 0, frames: [createFrame([oldLayer], 120)] };
+  fakeEditor.canvasState = { layers: [oldLayer] };
+  fakeEditor.boneDerivedCache = {
+    revision: 1,
+    layerRevision: 1,
+    boneRevision: 1,
+    overlay: {},
+    overlayRaster: {},
+    graphOverlayRaster: {},
+    composite: {},
+    preview: {},
+    raster: {},
+    geometry: {},
+    mesh: {}
+  };
+
+  PixelStudio.prototype.setFrameLayers.call(fakeEditor, [nextLayer]);
+
+  assert.equal(fakeEditor.canvasState.layers[0], nextLayer);
+  assert.equal(fakeEditor.animation.frames[0].layers[0], nextLayer);
+  assert.equal(fakeEditor.boneDerivedCache.layerRevision, 2);
+  assert.equal(fakeEditor.boneDerivedCache.boneRevision, 2);
+  assert.equal(fakeEditor.boneDerivedCache.composite, null);
+  assert.equal(fakeEditor.boneDerivedCache.graphOverlayRaster, null);
+});
+
+test('selected bone binding overlay caches assigned indexes and invalidates by revision', () => {
+  let rig = createBone(createDefaultBoneRig(), { x: 0, y: 0 }, { x: 3, y: 0 }, { id: 'root' }).rig;
+  const mask = new Uint8Array(16);
+  mask[5] = 1;
+  mask[6] = 1;
+  rig = addMaskToBoneBinding(rig, 0, 'root', mask, 4, 4);
+  const fakeEditor = {
+    boneRig: rig,
+    boneDerivedCache: { revision: 1, overlay: null, preview: null },
+    canvasState: { width: 4, height: 4, activeLayerIndex: 0 },
+    getSelectedBoneOwnerId() {
+      return 'root';
+    }
+  };
+
+  const first = PixelStudio.prototype.getSelectedBoneBindingOverlayIndexes.call(fakeEditor);
+  const second = PixelStudio.prototype.getSelectedBoneBindingOverlayIndexes.call(fakeEditor);
+  fakeEditor.boneDerivedCache.revision += 1;
+  const third = PixelStudio.prototype.getSelectedBoneBindingOverlayIndexes.call(fakeEditor);
+
+  assert.deepEqual(first.sort((a, b) => a - b), [5, 6]);
+  assert.equal(second, first);
+  assert.notEqual(third, first);
+  assert.deepEqual(third.sort((a, b) => a - b), [5, 6]);
+});
+
+test('selected bone binding overlay raster reuses assigned pixels while panning', () => {
+  let rig = createBone(createDefaultBoneRig(), { x: 0, y: 0 }, { x: 3, y: 0 }, { id: 'root' }).rig;
+  const mask = new Uint8Array(16);
+  mask[5] = 1;
+  mask[6] = 1;
+  rig = addMaskToBoneBinding(rig, 0, 'root', mask, 4, 4);
+  let overlayFillCount = 0;
+  let drawImageCount = 0;
+  let canvasFillCount = 0;
+  const fakeEditor = {
+    boneRig: rig,
+    boneDerivedCache: { revision: 1, overlay: null, overlayRaster: null, preview: null },
+    boneOverlayCanvas: { width: 0, height: 0 },
+    boneOverlayCtx: {
+      imageSmoothingEnabled: true,
+      clearRect() {},
+      fillRect() {
+        overlayFillCount += 1;
+      }
+    },
+    canvasState: { width: 4, height: 4, activeLayerIndex: 0 },
+    getSelectedBoneOwnerId() {
+      return 'root';
+    },
+    shouldHideBoneOverlaysDuringPlayback() {
+      return false;
+    },
+    getSelectedBoneBindingOverlayIndexes: PixelStudio.prototype.getSelectedBoneBindingOverlayIndexes,
+    getCachedSelectedBoneBindingOverlayRaster: PixelStudio.prototype.getCachedSelectedBoneBindingOverlayRaster
+  };
+  const ctx = {
+    save() {},
+    restore() {},
+    drawImage() {
+      drawImageCount += 1;
+    },
+    fillRect() {
+      canvasFillCount += 1;
+    }
+  };
+
+  PixelStudio.prototype.drawSelectedBoneBindingOverlay.call(fakeEditor, ctx, 0, 0, 8);
+  PixelStudio.prototype.drawSelectedBoneBindingOverlay.call(fakeEditor, ctx, 40, 20, 8);
+
+  assert.equal(overlayFillCount, 2);
+  assert.equal(drawImageCount, 2);
+  assert.equal(canvasFillCount, 0);
+});
+
+test('selected bone binding overlay raster invalidates by revision', () => {
+  let rig = createBone(createDefaultBoneRig(), { x: 0, y: 0 }, { x: 3, y: 0 }, { id: 'root' }).rig;
+  const mask = new Uint8Array(16);
+  mask[5] = 1;
+  mask[6] = 1;
+  rig = addMaskToBoneBinding(rig, 0, 'root', mask, 4, 4);
+  let overlayFillCount = 0;
+  const fakeEditor = {
+    boneRig: rig,
+    boneDerivedCache: { revision: 1, overlay: null, overlayRaster: null, preview: null },
+    boneOverlayCanvas: { width: 0, height: 0 },
+    boneOverlayCtx: {
+      imageSmoothingEnabled: true,
+      clearRect() {},
+      fillRect() {
+        overlayFillCount += 1;
+      }
+    },
+    canvasState: { width: 4, height: 4, activeLayerIndex: 0 },
+    getSelectedBoneOwnerId() {
+      return 'root';
+    },
+    shouldHideBoneOverlaysDuringPlayback() {
+      return false;
+    },
+    getSelectedBoneBindingOverlayIndexes: PixelStudio.prototype.getSelectedBoneBindingOverlayIndexes,
+    getCachedSelectedBoneBindingOverlayRaster: PixelStudio.prototype.getCachedSelectedBoneBindingOverlayRaster
+  };
+  const ctx = { save() {}, restore() {}, drawImage() {} };
+
+  PixelStudio.prototype.drawSelectedBoneBindingOverlay.call(fakeEditor, ctx, 0, 0, 8);
+  fakeEditor.boneDerivedCache.revision += 1;
+  PixelStudio.prototype.drawSelectedBoneBindingOverlay.call(fakeEditor, ctx, 0, 0, 8);
+
+  assert.equal(overlayFillCount, 4);
+});
+
+test('bone graph overlay raster reuses vector drawing while panning', () => {
+  const rig = createBone(createDefaultBoneRig(), { x: -2, y: 1 }, { x: 3, y: 1 }, { id: 'root' }).rig;
+  let vectorDraws = 0;
+  let drawImages = 0;
+  const fakeEditor = {
+    boneRig: rig,
+    boneDerivedCache: { revision: 1, layerRevision: 1, boneRevision: 1, graphOverlayRaster: null },
+    boneEditor: {
+      mode: 'bones',
+      selectedJointId: rig.bones[0].startJointId,
+      selectedBoneId: 'root',
+      selectedEdgeBoneId: null,
+      linkMode: false,
+      chainAnchor: null,
+      drag: null
+    },
+    boneGraphOverlayCanvas: { width: 0, height: 0 },
+    boneGraphOverlayCtx: {
+      imageSmoothingEnabled: true,
+      clearRect() {}
+    },
+    shouldHideBoneOverlaysDuringPlayback() {
+      return false;
+    },
+    getDisplayedBonesForBoneEditor() {
+      return rig.bones;
+    },
+    getBoneGraphOverlaySignature: PixelStudio.prototype.getBoneGraphOverlaySignature,
+    getBoneGraphOverlayBounds: PixelStudio.prototype.getBoneGraphOverlayBounds,
+    getCachedBoneGraphOverlayRaster: PixelStudio.prototype.getCachedBoneGraphOverlayRaster,
+    drawBoneOverlay: PixelStudio.prototype.drawBoneOverlay,
+    drawBoneOverlayVector() {
+      vectorDraws += 1;
+    }
+  };
+  const ctx = {
+    save() {},
+    restore() {},
+    drawImage() {
+      drawImages += 1;
+    }
+  };
+
+  PixelStudio.prototype.drawBoneOverlay.call(fakeEditor, ctx, 0, 0, 8);
+  PixelStudio.prototype.drawBoneOverlay.call(fakeEditor, ctx, 40, 20, 8);
+
+  assert.equal(vectorDraws, 1);
+  assert.equal(drawImages, 2);
+  assert.ok(fakeEditor.boneDerivedCache.graphOverlayRaster.bounds.x < 0);
+});
+
+test('bone graph overlay raster invalidates on zoom selection and bone revision', () => {
+  const rig = createBone(createDefaultBoneRig(), { x: 0, y: 0 }, { x: 3, y: 0 }, { id: 'root' }).rig;
+  let vectorDraws = 0;
+  const fakeEditor = {
+    boneRig: rig,
+    boneDerivedCache: { revision: 1, layerRevision: 1, boneRevision: 1, graphOverlayRaster: null },
+    boneEditor: {
+      mode: 'bones',
+      selectedJointId: rig.bones[0].startJointId,
+      selectedBoneId: 'root',
+      selectedEdgeBoneId: null,
+      linkMode: false,
+      chainAnchor: null,
+      drag: null
+    },
+    boneGraphOverlayCanvas: { width: 0, height: 0 },
+    boneGraphOverlayCtx: {
+      imageSmoothingEnabled: true,
+      clearRect() {}
+    },
+    shouldHideBoneOverlaysDuringPlayback() {
+      return false;
+    },
+    getDisplayedBonesForBoneEditor() {
+      return rig.bones;
+    },
+    getBoneGraphOverlaySignature: PixelStudio.prototype.getBoneGraphOverlaySignature,
+    getBoneGraphOverlayBounds: PixelStudio.prototype.getBoneGraphOverlayBounds,
+    getCachedBoneGraphOverlayRaster: PixelStudio.prototype.getCachedBoneGraphOverlayRaster,
+    drawBoneOverlay: PixelStudio.prototype.drawBoneOverlay,
+    drawBoneOverlayVector() {
+      vectorDraws += 1;
+    }
+  };
+  const ctx = { save() {}, restore() {}, drawImage() {} };
+
+  PixelStudio.prototype.drawBoneOverlay.call(fakeEditor, ctx, 0, 0, 8);
+  fakeEditor.boneEditor.selectedEdgeBoneId = 'root';
+  PixelStudio.prototype.drawBoneOverlay.call(fakeEditor, ctx, 0, 0, 8);
+  PixelStudio.prototype.drawBoneOverlay.call(fakeEditor, ctx, 0, 0, 12);
+  fakeEditor.boneDerivedCache.boneRevision += 1;
+  PixelStudio.prototype.drawBoneOverlay.call(fakeEditor, ctx, 0, 0, 12);
+
+  assert.equal(vectorDraws, 4);
+});
+
+test('bone only cache invalidation preserves layer raster cache', () => {
+  const pixels = new Uint32Array([0xff0000ff, 0x00ff00ff, 0x0000ffff, 0xffffffff]);
+  let imageDataUploads = 0;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    linePreview: null,
+    curvePreview: null,
+    shapePreview: null,
+    polygonPreview: null,
+    gradientPreview: null,
+    boneDerivedCache: { revision: 1, layerRevision: 1, boneRevision: 1, overlay: null, composite: null, preview: null, raster: null, geometry: null },
+    bonePreviewCanvas: { width: 0, height: 0 },
+    bonePreviewCtx: {
+      createImageData(width, height) {
+        return { data: new Uint8ClampedArray(width * height * 4) };
+      },
+      putImageData() {
+        imageDataUploads += 1;
+      }
+    },
+    shouldShowBonePreview() {
+      return false;
+    },
+    shouldCacheStaticCanvasRaster: PixelStudio.prototype.shouldCacheStaticCanvasRaster,
+    invalidateBoneDerivedCaches: PixelStudio.prototype.invalidateBoneDerivedCaches
+  };
+
+  const first = PixelStudio.prototype.getCachedBoneCanvasRaster.call(fakeEditor, 2, 2, pixels);
+  PixelStudio.prototype.invalidateBoneDerivedCaches.call(fakeEditor, { layers: false, bones: true });
+  const second = PixelStudio.prototype.getCachedBoneCanvasRaster.call(fakeEditor, 2, 2, pixels);
+
+  assert.equal(second, first);
+  assert.equal(imageDataUploads, 1);
+});
+
+test('bone preview composite cache reuses pan zoom draws and invalidates on revision', () => {
+  let rig = createBone(createDefaultBoneRig(), { x: 0, y: 0 }, { x: 3, y: 0 }, { id: 'root' }).rig;
+  const layer = createLayer(8, 4, 'Preview Cache');
+  layer.pixels[1 * 8 + 2] = 0xff0000ff;
+  const mask = new Uint8Array(8 * 4);
+  mask[1 * 8 + 2] = 1;
+  rig = addMaskToBoneBinding(rig, 0, 'root', mask, 8, 4);
+  let poseReads = 0;
+  const fakeEditor = {
+    animation: { currentFrameIndex: 0 },
+    canvasState: { width: 8, height: 4, layers: [layer] },
+    boneRig: rig,
+    boneDerivedCache: { revision: 1, overlay: null, preview: null },
+    shouldShowBonePreview() {
+      return true;
+    },
+    getCurrentBonePreviewPose() {
+      poseReads += 1;
+      return { bones: { root: { angle: 0.2, dx: 0, dy: 0, scale: 1 } } };
+    },
+    getBonePoseCacheSignature: PixelStudio.prototype.getBonePoseCacheSignature,
+    getLayerPixelRefs: PixelStudio.prototype.getLayerPixelRefs,
+    layerPixelRefsMatch: PixelStudio.prototype.layerPixelRefsMatch
+  };
+
+  const first = PixelStudio.prototype.getCachedBonePreviewComposite.call(fakeEditor, 8, 4);
+  const second = PixelStudio.prototype.getCachedBonePreviewComposite.call(fakeEditor, 8, 4);
+  fakeEditor.boneDerivedCache.revision += 1;
+  const third = PixelStudio.prototype.getCachedBonePreviewComposite.call(fakeEditor, 8, 4);
+
+  assert.equal(second, first);
+  assert.notEqual(third, first);
+  assert.equal(third.length, 32);
+  assert.equal(poseReads, 2);
+});
+
+test('pose rest preview uses static layer composite without building skinned preview', () => {
+  let rig = createBone(createDefaultBoneRig(), { x: 0, y: 0 }, { x: 3, y: 0 }, { id: 'root' }).rig;
+  const layer = createLayer(8, 4, 'Rest Pose');
+  layer.pixels[1 * 8 + 2] = 0xff0000ff;
+  const mask = new Uint8Array(8 * 4);
+  mask[1 * 8 + 2] = 1;
+  rig = addMaskToBoneBinding(rig, 0, 'root', mask, 8, 4);
+  const fakeEditor = {
+    animation: { currentFrameIndex: 0 },
+    canvasState: { width: 8, height: 4, layers: [layer] },
+    boneRig: rig,
+    boneEditor: { mode: 'pose', timeMs: 0 },
+    boneDerivedCache: { revision: 1, layerRevision: 1, boneRevision: 1, overlay: null, composite: null, preview: null },
+    leftPanelTab: 'bones',
+    shouldShowBonePreview() {
+      return true;
+    },
+    getCurrentBonePreviewPose() {
+      return { bones: { root: { angle: 0, dx: 0, dy: 0, scale: 1 } }, nodes: {} };
+    },
+    isBonePoseVisuallyRest: PixelStudio.prototype.isBonePoseVisuallyRest,
+    getCachedLayerComposite: PixelStudio.prototype.getCachedLayerComposite,
+    getBonePoseCacheSignature: PixelStudio.prototype.getBonePoseCacheSignature,
+    getLayerPixelRefs: PixelStudio.prototype.getLayerPixelRefs,
+    layerPixelRefsMatch: PixelStudio.prototype.layerPixelRefsMatch
+  };
+
+  const preview = PixelStudio.prototype.getCachedBonePreviewComposite.call(fakeEditor, 8, 4);
+
+  assert.equal(preview, fakeEditor.boneDerivedCache.composite.pixels);
+  assert.equal(fakeEditor.boneDerivedCache.preview, null);
+  assert.equal(preview[1 * 8 + 2], 0xff0000ff);
+});
+
+test('bone editor static composite cache reuses layer composite while panning', () => {
+  const layer = createLayer(4, 4, 'Static');
+  layer.pixels[5] = 0xff0000ff;
+  const fakeEditor = {
+    animation: { currentFrameIndex: 0 },
+    canvasState: { width: 4, height: 4, layers: [layer] },
+    boneDerivedCache: { revision: 1, overlay: null, composite: null, preview: null },
+    shouldShowBonePreview() {
+      return false;
+    },
+    getLayerPixelRefs: PixelStudio.prototype.getLayerPixelRefs,
+    layerPixelRefsMatch: PixelStudio.prototype.layerPixelRefsMatch
+  };
+
+  const first = PixelStudio.prototype.getCachedBonePreviewComposite.call(fakeEditor, 4, 4);
+  const second = PixelStudio.prototype.getCachedBonePreviewComposite.call(fakeEditor, 4, 4);
+  fakeEditor.boneDerivedCache.revision += 1;
+  const third = PixelStudio.prototype.getCachedBonePreviewComposite.call(fakeEditor, 4, 4);
+
+  assert.equal(second, first);
+  assert.notEqual(third, first);
+  assert.equal(third.length, 16);
+});
+
+test('static composite cache observes in-place layer pixel edits', () => {
+  const layer = createLayer(2, 2, 'Dirty');
+  layer.pixels[0] = 0xff0000ff;
+  const fakeEditor = {
+    animation: { currentFrameIndex: 0 },
+    canvasState: { width: 2, height: 2, layers: [layer] },
+    layerContentRevision: 1,
+    boneDerivedCache: { revision: 1, layerRevision: 1, boneRevision: 1, overlay: null, composite: null, preview: null },
+    shouldShowBonePreview() {
+      return false;
+    },
+    getLayerPixelRefs: PixelStudio.prototype.getLayerPixelRefs,
+    layerPixelRefsMatch: PixelStudio.prototype.layerPixelRefsMatch
+  };
+
+  const first = PixelStudio.prototype.getCachedBonePreviewComposite.call(fakeEditor, 2, 2);
+  layer.pixels[0] = 0xffffffff;
+  fakeEditor.layerContentRevision += 1;
+  const second = PixelStudio.prototype.getCachedBonePreviewComposite.call(fakeEditor, 2, 2);
+
+  assert.notEqual(second, first);
+  assert.equal(second[0], 0xffffffff);
+});
+
+test('bone preview raster cache avoids repeated image data uploads while panning', () => {
+  const pixels = new Uint32Array([0xff0000ff, 0x00ff00ff, 0x0000ffff, 0xffffffff]);
+  let imageDataUploads = 0;
+  const fakeEditor = {
+    boneDerivedCache: { revision: 1, overlay: null, preview: null, raster: null, geometry: null },
+    bonePreviewCanvas: { width: 0, height: 0 },
+    bonePreviewCtx: {
+      createImageData(width, height) {
+        return { data: new Uint8ClampedArray(width * height * 4) };
+      },
+      putImageData() {
+        imageDataUploads += 1;
+      }
+    },
+    shouldShowBonePreview() {
+      return true;
+    },
+    shouldCacheStaticCanvasRaster: PixelStudio.prototype.shouldCacheStaticCanvasRaster
+  };
+
+  const first = PixelStudio.prototype.getCachedBoneCanvasRaster.call(fakeEditor, 2, 2, pixels);
+  const second = PixelStudio.prototype.getCachedBoneCanvasRaster.call(fakeEditor, 2, 2, pixels);
+  fakeEditor.boneDerivedCache.revision += 1;
+  const third = PixelStudio.prototype.getCachedBoneCanvasRaster.call(fakeEditor, 2, 2, pixels);
+
+  assert.equal(second, first);
+  assert.equal(third, first);
+  assert.equal(imageDataUploads, 2);
+});
+
+test('bone canvas draw uses cached raster without offscreen upload while panning', () => {
+  const pixels = new Uint32Array(100 * 100);
+  let previewReads = 0;
+  let rasterReads = 0;
+  let offscreenWrites = 0;
+  let uploads = 0;
+  let gridStrokes = 0;
+  let imageDraws = 0;
+  const offscreen = {};
+  Object.defineProperty(offscreen, 'width', {
+    get() { return 100; },
+    set() { offscreenWrites += 1; }
+  });
+  Object.defineProperty(offscreen, 'height', {
+    get() { return 100; },
+    set() { offscreenWrites += 1; }
+  });
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    canvasState: { width: 100, height: 100 },
+    view: { zoomLevels: [8], zoomIndex: 0, panX: 0, panY: 0, showGrid: true },
+    toolOptions: { wrapDraw: false, brushSize: 1, symmetry: { horizontal: false, vertical: false } },
+    tiledPreview: { enabled: false },
+    animation: { onion: { enabled: false } },
+    activeToolId: TOOL_IDS.PENCIL,
+    selection: { active: false, floating: null, start: null, end: null, lassoPoints: [] },
+    gamepadCursor: { active: false },
+    cursor: { x: -999, y: -999 },
+    offscreen,
+    offscreenCtx: {
+      createImageData(width, height) {
+        return { data: new Uint8ClampedArray(width * height * 4) };
+      },
+      putImageData() {
+        uploads += 1;
+      }
+    },
+    isHueShiftNeutral() {
+      return true;
+    },
+    getCachedBonePreviewComposite() {
+      previewReads += 1;
+      return pixels;
+    },
+    getCachedBoneCanvasRaster() {
+      rasterReads += 1;
+      return { cached: true };
+    },
+    shouldDrawCanvasGrid: PixelStudio.prototype.shouldDrawCanvasGrid,
+    drawPixelBackground() {},
+    drawOnionSkin() {},
+    drawSelectionMarchingAnts() {},
+    getGridCellFromScreen() {
+      return null;
+    },
+    drawSelectedBoneBindingOverlay() {},
+    drawBoneOverlay() {}
+  };
+  const ctx = {
+    save() {},
+    restore() {},
+    beginPath() {},
+    rect() {},
+    clip() {},
+    drawImage() {
+      imageDraws += 1;
+    },
+    strokeRect() {},
+    moveTo() {},
+    lineTo() {},
+    stroke() {
+      gridStrokes += 1;
+    }
+  };
+
+  PixelStudio.prototype.drawCanvasArea.call(fakeEditor, ctx, 0, 0, 320, 240);
+  fakeEditor.view.panX = 24;
+  fakeEditor.view.panY = -16;
+  PixelStudio.prototype.drawCanvasArea.call(fakeEditor, ctx, 0, 0, 320, 240);
+
+  assert.equal(previewReads, 2);
+  assert.equal(rasterReads, 2);
+  assert.equal(imageDraws, 2);
+  assert.equal(offscreenWrites, 0);
+  assert.equal(uploads, 0);
+  assert.equal(gridStrokes, 0);
+});
+
+test('bone canvas grid is skipped for larger rig canvases while normal draw keeps it', () => {
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    view: { showGrid: true },
+    tiledPreview: { enabled: false }
+  };
+
+  assert.equal(PixelStudio.prototype.shouldDrawCanvasGrid.call(fakeEditor, 100, 100, 8, false), false);
+  assert.equal(PixelStudio.prototype.shouldDrawCanvasGrid.call(fakeEditor, 32, 32, 8, false), true);
+  assert.equal(PixelStudio.prototype.shouldDrawCanvasGrid.call(fakeEditor, 32, 32, 4, false), false);
+  fakeEditor.leftPanelTab = 'draw';
+  assert.equal(PixelStudio.prototype.shouldDrawCanvasGrid.call(fakeEditor, 100, 100, 4, false), true);
+});
+
+test('bone editor static raster cache avoids repeated image data uploads while panning', () => {
+  const pixels = new Uint32Array([0xff0000ff, 0x00ff00ff, 0x0000ffff, 0xffffffff]);
+  let imageDataUploads = 0;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    linePreview: null,
+    curvePreview: null,
+    shapePreview: null,
+    polygonPreview: null,
+    gradientPreview: null,
+    boneDerivedCache: { revision: 1, overlay: null, composite: null, preview: null, raster: null, geometry: null },
+    bonePreviewCanvas: { width: 0, height: 0 },
+    bonePreviewCtx: {
+      createImageData(width, height) {
+        return { data: new Uint8ClampedArray(width * height * 4) };
+      },
+      putImageData() {
+        imageDataUploads += 1;
+      }
+    },
+    shouldShowBonePreview() {
+      return false;
+    },
+    shouldCacheStaticCanvasRaster: PixelStudio.prototype.shouldCacheStaticCanvasRaster
+  };
+
+  const first = PixelStudio.prototype.getCachedBoneCanvasRaster.call(fakeEditor, 2, 2, pixels);
+  const second = PixelStudio.prototype.getCachedBoneCanvasRaster.call(fakeEditor, 2, 2, pixels);
+  const hueShift = PixelStudio.prototype.getCachedBoneCanvasRaster.call(fakeEditor, 2, 2, pixels, { hueShift: true });
+
+  assert.equal(second, first);
+  assert.equal(hueShift, null);
+  assert.equal(imageDataUploads, 1);
+});
+
+test('active strokes bypass static raster cache for live drawing', () => {
+  const pixels = new Uint32Array([0xff0000ff, 0xffffffff]);
+  const fakeEditor = {
+    leftPanelTab: 'draw',
+    strokeState: { mode: 'paint' },
+    linePreview: null,
+    curvePreview: null,
+    shapePreview: null,
+    polygonPreview: null,
+    gradientPreview: null,
+    boneDerivedCache: { revision: 1, layerRevision: 1, boneRevision: 1, raster: null },
+    bonePreviewCanvas: { width: 0, height: 0 },
+    bonePreviewCtx: {
+      createImageData(width, height) {
+        return { data: new Uint8ClampedArray(width * height * 4) };
+      },
+      putImageData() {}
+    },
+    shouldShowBonePreview() {
+      return false;
+    },
+    shouldCacheStaticCanvasRaster: PixelStudio.prototype.shouldCacheStaticCanvasRaster
+  };
+
+  const raster = PixelStudio.prototype.getCachedBoneCanvasRaster.call(fakeEditor, 2, 1, pixels);
+
+  assert.equal(raster, null);
+});
+
+test('active pose preview cache passes only the dragged bone ids', () => {
+  let rig = createBone(createDefaultBoneRig(), { x: 0, y: 0 }, { x: 3, y: 0 }, { id: 'arm' }).rig;
+  rig = createBone(rig, { x: 4, y: 0 }, { x: 7, y: 0 }, { id: 'leg' }).rig;
+  const layer = createLayer(4, 2, 'Preview');
+  layer.pixels[1] = 0xff0000ff;
+  const mask = new Uint8Array(8);
+  mask[1] = 1;
+  rig = addMaskToBoneBinding(rig, 0, 'arm', mask, 4, 2);
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    boneEditor: {
+      mode: 'pose',
+      drag: { type: 'pose', boneId: 'arm', rootMoveBoneIds: [] },
+      timeMs: 0
+    },
+    animation: { currentFrameIndex: 0 },
+    canvasState: { width: 4, height: 2, layers: [layer] },
+    boneRig: rig,
+    layerContentRevision: 1,
+    boneDerivedCache: { revision: 1, layerRevision: 1, boneRevision: 1, overlay: null, composite: null, preview: null, mesh: new Map() },
+    shouldShowBonePreview() {
+      return true;
+    },
+    getCurrentBonePreviewPose() {
+      return { bones: { arm: { angle: 0.2, dx: 0, dy: 0, scale: 1 }, leg: { angle: 0.4, dx: 0, dy: 0, scale: 1 } } };
+    },
+    getActivePosePreviewBoneIds: PixelStudio.prototype.getActivePosePreviewBoneIds,
+    getBonePoseCacheSignature: PixelStudio.prototype.getBonePoseCacheSignature,
+    getCachedBoneRigContext: PixelStudio.prototype.getCachedBoneRigContext,
+    getLayerPixelRefs: PixelStudio.prototype.getLayerPixelRefs,
+    layerPixelRefsMatch: PixelStudio.prototype.layerPixelRefsMatch
+  };
+
+  PixelStudio.prototype.getCachedBonePreviewComposite.call(fakeEditor, 4, 2);
+
+  const preview = fakeEditor.boneDerivedCache.preview;
+  assert.equal(preview.activeBoneSignature, 'arm');
+});
+
+test('pose drag uses transient preview pose until pointer up commits one key', () => {
+  let rig = createBone(createDefaultBoneRig(), { x: 0, y: 0 }, { x: 4, y: 0 }, { id: 'arm' }).rig;
+  const originalRig = rig;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    boneEditor: {
+      mode: 'pose',
+      timeMs: 120,
+      drag: { type: 'pose', boneId: 'arm', handle: 'end', moved: true }
+    },
+    boneRig: rig,
+    boneDerivedCache: { revision: 1, layerRevision: 1, boneRevision: 1, rigContext: null },
+    setBoneChainAnchor() {},
+    commitHistory() {
+      this.committed = true;
+      this.pendingHistory = null;
+    },
+    getCachedBoneRigContext: PixelStudio.prototype.getCachedBoneRigContext,
+    constrainBonePoseForCurrentRig: PixelStudio.prototype.constrainBonePoseForCurrentRig,
+    setBonePreviewPosePatchesAtCurrentTime: PixelStudio.prototype.setBonePreviewPosePatchesAtCurrentTime,
+    setBonePreviewPosePatchAtCurrentTime: PixelStudio.prototype.setBonePreviewPosePatchAtCurrentTime,
+    getCurrentBonePreviewPose: PixelStudio.prototype.getCurrentBonePreviewPose
+  };
+
+  PixelStudio.prototype.setBonePreviewPosePatchAtCurrentTime.call(fakeEditor, 'arm', {
+    angle: 0.5,
+    dx: 0,
+    dy: 0,
+    scale: 1
+  });
+
+  assert.equal(fakeEditor.boneRig, originalRig);
+  assert.equal(fakeEditor.boneRig.poseTimeline.length, 0);
+  assert.equal(fakeEditor.getCurrentBonePreviewPose().bones.arm.angle, 0.5);
+
+  PixelStudio.prototype.handleBonePointerUp.call(fakeEditor);
+
+  assert.notEqual(fakeEditor.boneRig, originalRig);
+  assert.equal(fakeEditor.boneRig.poseTimeline.length, 1);
+  assert.equal(fakeEditor.boneRig.poseTimeline[0].timeMs, 120);
+  assert.equal(fakeEditor.boneRig.poseTimeline[0].bones.arm.angle, 0.5);
+  assert.equal(fakeEditor.boneEditor.previewPose, null);
+  assert.equal(fakeEditor.committed, true);
+});
+
+test('bone rig context cache reuses normalized rig and invalidates by revision', () => {
+  let rig = createBone(createDefaultBoneRig(), { x: 0, y: 0 }, { x: 4, y: 0 }, { id: 'root' }).rig;
+  const layer = createLayer(4, 2, 'Bound');
+  layer.pixels[1] = 0xff0000ff;
+  const mask = new Uint8Array(8);
+  mask[1] = 1;
+  rig = addMaskToBoneBinding(rig, 0, 'root', mask, 4, 2);
+  const fakeEditor = {
+    boneRig: rig,
+    boneDerivedCache: { revision: 1, layerRevision: 1, boneRevision: 1, rigContext: null }
+  };
+
+  const first = PixelStudio.prototype.getCachedBoneRigContext.call(fakeEditor);
+  const second = PixelStudio.prototype.getCachedBoneRigContext.call(fakeEditor);
+  fakeEditor.boneDerivedCache.boneRevision += 1;
+  const third = PixelStudio.prototype.getCachedBoneRigContext.call(fakeEditor);
+
+  assert.equal(second, first);
+  assert.equal(second.normalizedRig, first.normalizedRig);
+  assert.notEqual(third, first);
+  assert.notEqual(third.normalizedRig, first.normalizedRig);
+});
+
+test('bone affected pixel counts expose unassigned bones', () => {
+  let rig = createBone(createDefaultBoneRig(), { x: 0, y: 0 }, { x: 3, y: 0 }, { id: 'assigned' }).rig;
+  rig = createBone(rig, { x: 4, y: 0 }, { x: 7, y: 0 }, { id: 'empty' }).rig;
+  const mask = new Uint8Array(8);
+  mask[1] = 1;
+  mask[2] = 1;
+  rig = addMaskToBoneBinding(rig, 0, rig.bones[0].endJointId, mask, 4, 2);
+
+  const counts = getBoneAffectedPixelCounts(rig, 0);
+
+  assert.equal(counts.assigned, 2);
+  assert.equal(counts.empty, 0);
+});
+
 test('integer bone translation offsets pixels exactly without mesh widening', () => {
   let rig = createBone(createDefaultBoneRig(), { x: 1, y: 1 }, { x: 5, y: 1 }, { id: 'root' }).rig;
   const layer = createLayer(8, 5, 'Translate');
@@ -479,6 +1440,37 @@ test('bone mesh spans interpolate colors between differently weighted neighborin
   assert.equal(deformed.pixels[2 * 10 + 2], 0x000000ff);
   assert.equal(deformed.pixels[2 * 10 + 4], 0x808080ff);
   assert.equal(deformed.pixels[2 * 10 + 6], 0xffffffff);
+});
+
+test('interpolated bone mesh pixels do not overwrite real transformed pixels', () => {
+  const width = 8;
+  const height = 4;
+  const black = 0x000000ff;
+  const white = 0xffffffff;
+  const red = 0xff0000ff;
+  let rig = createDefaultBoneRig();
+  rig = createBone(rig, { x: 0, y: 0 }, { x: 1, y: 0 }, { id: 'mover' }).rig;
+  rig = createBone(rig, { x: 0, y: 2 }, { x: 1, y: 2 }, { id: 'anchor' }).rig;
+  rig = createBone(rig, { x: 6, y: 3 }, { x: 7, y: 3 }, { id: 'real' }).rig;
+  const layer = createLayer(width, height, 'Priority');
+  layer.pixels[1 * width + 1] = black;
+  layer.pixels[1 * width + 2] = white;
+  layer.pixels[1 * width + 3] = red;
+  [
+    ['mover', 1],
+    ['anchor', 2],
+    ['real', 3]
+  ].forEach(([boneId, x]) => {
+    const mask = new Uint8Array(width * height);
+    mask[1 * width + x] = 1;
+    rig = addMaskToBoneBinding(rig, 0, boneId, mask, width, height);
+  });
+
+  const [deformed] = deformLayersWithBonePose([layer], width, height, rig, {
+    bones: { mover: { angle: 0, dx: 2, dy: 0, scale: 1 } }
+  });
+
+  assert.equal(deformed.pixels[1 * width + 3], red);
 });
 
 test('unassigned opaque pixels on bound layers receive automatic nearest-bone weights', () => {
@@ -677,6 +1669,670 @@ test('rotating torso endpoint carries downstream branched limbs', () => {
   assert.ok(Math.abs(pose.bones.torso.angle - (Math.atan2(3, 2) - Math.PI / 2)) < 0.001);
   assert.ok(Math.hypot(leftArm.start.x - posedTorso.end.x, leftArm.start.y - posedTorso.end.y) < 0.001);
   assert.ok(Math.hypot(rightArm.start.x - posedTorso.end.x, rightArm.start.y - posedTorso.end.y) < 0.001);
+});
+
+test('pose node drag stores an incoming edge smart target at shared joints', () => {
+  let rig = createDefaultBoneRig();
+  const hand = createBone(rig, { x: 2, y: 2 }, { x: 5, y: 2 }, { id: 'lhand' });
+  rig = hand.rig;
+  rig = createBone(rig, hand.bone.end, { x: 8, y: 2 }, {
+    id: 'chainsaw',
+    parentId: 'lhand',
+    startJointId: hand.bone.endJointId
+  }).rig;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    canvasBounds: { cellSize: 12 },
+    boneRig: rig,
+    boneEditor: { mode: 'pose', timeMs: 0, selectedBoneId: null, selectedJointId: null, selectedEdgeBoneId: null, drag: null },
+    getDisplayedBonesForBoneEditor() {
+      return this.boneRig.bones;
+    },
+    getBonePointerCoords: PixelStudio.prototype.getBonePointerCoords,
+    getBoneHitRadius: PixelStudio.prototype.getBoneHitRadius,
+    hitTestBone: PixelStudio.prototype.hitTestBone,
+    hitTestBoneNode: PixelStudio.prototype.hitTestBoneNode,
+    hitTestBoneJoint: PixelStudio.prototype.hitTestBoneJoint,
+    distanceToBoneSegment: PixelStudio.prototype.distanceToBoneSegment,
+    setBoneJointSelection: PixelStudio.prototype.setBoneJointSelection,
+    setBoneChainAnchor: PixelStudio.prototype.setBoneChainAnchor,
+    resolvePoseNodeDragTarget: PixelStudio.prototype.resolvePoseNodeDragTarget,
+    getBoneEdgeMode: PixelStudio.prototype.getBoneEdgeMode,
+    isPoseEditableBoneEdge: PixelStudio.prototype.isPoseEditableBoneEdge,
+    startHistory() {}
+  };
+
+  assert.equal(PixelStudio.prototype.handleBonePointerDown.call(fakeEditor, { x: 5, y: 2, col: 5, row: 2 }), true);
+
+  assert.equal(fakeEditor.boneEditor.drag.boneId, 'lhand');
+  assert.equal(fakeEditor.boneEditor.drag.handle, 'end');
+  assert.equal(fakeEditor.boneEditor.drag.poseTarget.action, 'edge');
+  assert.equal(fakeEditor.boneEditor.selectedEdgeBoneId, 'lhand');
+});
+
+test('selected edge overrides smart pose node target at shared joints', () => {
+  let rig = createDefaultBoneRig();
+  const hand = createBone(rig, { x: 2, y: 2 }, { x: 5, y: 2 }, { id: 'lhand' });
+  rig = hand.rig;
+  rig = createBone(rig, hand.bone.end, { x: 8, y: 2 }, {
+    id: 'chainsaw',
+    parentId: 'lhand',
+    startJointId: hand.bone.endJointId
+  }).rig;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    canvasBounds: { cellSize: 12 },
+    boneRig: rig,
+    boneEditor: { mode: 'pose', timeMs: 0, selectedBoneId: null, selectedJointId: null, selectedEdgeBoneId: 'chainsaw', drag: null },
+    getDisplayedBonesForBoneEditor() {
+      return this.boneRig.bones;
+    },
+    getBonePointerCoords: PixelStudio.prototype.getBonePointerCoords,
+    getBoneHitRadius: PixelStudio.prototype.getBoneHitRadius,
+    hitTestBone: PixelStudio.prototype.hitTestBone,
+    hitTestBoneNode: PixelStudio.prototype.hitTestBoneNode,
+    hitTestBoneJoint: PixelStudio.prototype.hitTestBoneJoint,
+    distanceToBoneSegment: PixelStudio.prototype.distanceToBoneSegment,
+    setBoneJointSelection: PixelStudio.prototype.setBoneJointSelection,
+    setBoneChainAnchor: PixelStudio.prototype.setBoneChainAnchor,
+    resolvePoseNodeDragTarget: PixelStudio.prototype.resolvePoseNodeDragTarget,
+    getBoneEdgeMode: PixelStudio.prototype.getBoneEdgeMode,
+    isPoseEditableBoneEdge: PixelStudio.prototype.isPoseEditableBoneEdge,
+    startHistory() {},
+    setBonePosePatchAtCurrentTime(boneId, patch) {
+      this.patch = { boneId, patch };
+    }
+  };
+
+  assert.equal(PixelStudio.prototype.handleBonePointerDown.call(fakeEditor, { x: 5, y: 2, col: 5, row: 2 }), true);
+  assert.equal(fakeEditor.boneEditor.drag.boneId, 'chainsaw');
+  assert.equal(fakeEditor.boneEditor.drag.handle, 'start');
+  assert.equal(PixelStudio.prototype.handleBonePointerMove.call(fakeEditor, { x: 5, y: 4, col: 5, row: 4 }), true);
+
+  assert.equal(fakeEditor.patch.boneId, 'chainsaw');
+  assert.ok(Math.abs(fakeEditor.patch.patch.angle - Math.PI / 2) < 0.001);
+});
+
+test('pose terminal node drag solves nearest two-bone IK chain', () => {
+  let rig = createDefaultBoneRig();
+  const shoulder = createBone(rig, { x: 2, y: 2 }, { x: 5, y: 2 }, { id: 'lhand', name: 'LHand' });
+  rig = shoulder.rig;
+  const saw = createBone(rig, shoulder.bone.end, { x: 8, y: 2 }, {
+    id: 'chainsaw',
+    name: 'Chainsaw',
+    parentId: 'lhand',
+    startJointId: shoulder.bone.endJointId
+  });
+  rig = saw.rig;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    canvasBounds: { cellSize: 12 },
+    boneRig: rig,
+    boneEditor: { mode: 'pose', timeMs: 0, selectedBoneId: null, selectedJointId: null, selectedEdgeBoneId: null, drag: null },
+    getDisplayedBonesForBoneEditor() {
+      return this.boneRig.bones;
+    },
+    getDisplayedJointsForBoneEditor: PixelStudio.prototype.getDisplayedJointsForBoneEditor,
+    getBonePointerCoords: PixelStudio.prototype.getBonePointerCoords,
+    getBoneHitRadius: PixelStudio.prototype.getBoneHitRadius,
+    hitTestBone: PixelStudio.prototype.hitTestBone,
+    hitTestBoneNode: PixelStudio.prototype.hitTestBoneNode,
+    hitTestBoneJoint: PixelStudio.prototype.hitTestBoneJoint,
+    distanceToBoneSegment: PixelStudio.prototype.distanceToBoneSegment,
+    getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
+    setBoneJointSelection: PixelStudio.prototype.setBoneJointSelection,
+    setBoneChainAnchor: PixelStudio.prototype.setBoneChainAnchor,
+    resolvePoseIkDragTarget: PixelStudio.prototype.resolvePoseIkDragTarget,
+    resolvePoseNodeDragTarget: PixelStudio.prototype.resolvePoseNodeDragTarget,
+    getBoneEdgeMode: PixelStudio.prototype.getBoneEdgeMode,
+    isPoseEditableBoneEdge: PixelStudio.prototype.isPoseEditableBoneEdge,
+    isPoseIkEnabledForBone: PixelStudio.prototype.isPoseIkEnabledForBone,
+    setBonePreviewPosePatchesAtCurrentTime(patches) {
+      this.patches = patches;
+    },
+    startHistory() {}
+  };
+
+  assert.equal(PixelStudio.prototype.handleBonePointerDown.call(fakeEditor, { x: 8, y: 2, col: 8, row: 2 }), true);
+  assert.equal(fakeEditor.boneEditor.drag.poseTarget.action, 'ik-chain');
+  assert.deepEqual(fakeEditor.boneEditor.drag.ikTarget.ikBoneIds, ['lhand', 'chainsaw']);
+
+  assert.equal(PixelStudio.prototype.handleBonePointerMove.call(fakeEditor, { x: 6, y: 5, col: 6, row: 5 }), true);
+  assert.ok(fakeEditor.patches.lhand);
+  assert.ok(fakeEditor.patches.chainsaw);
+  assert.notEqual(Math.round(fakeEditor.patches.lhand.angle * 1000), 0);
+  assert.equal(fakeEditor.statusMessage, 'Solving LHand + Chainsaw');
+});
+
+test('pose target action cycles editable connected edges at selected joints', () => {
+  let rig = createDefaultBoneRig();
+  const hand = createBone(rig, { x: 2, y: 2 }, { x: 5, y: 2 }, { id: 'lhand', name: 'LHand' });
+  rig = hand.rig;
+  const saw = createBone(rig, hand.bone.end, { x: 8, y: 2 }, {
+    id: 'chainsaw',
+    name: 'Chainsaw',
+    parentId: 'lhand',
+    startJointId: hand.bone.endJointId
+  });
+  rig = saw.rig;
+  const fakeEditor = {
+    boneRig: rig,
+    boneEditor: {
+      mode: 'pose',
+      selectedBoneId: 'lhand',
+      selectedJointId: hand.bone.endJointId,
+      selectedEdgeBoneId: null,
+      chainAnchor: { jointId: hand.bone.endJointId }
+    },
+    getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
+    resolvePoseNodeDragTarget: PixelStudio.prototype.resolvePoseNodeDragTarget,
+    getPoseTargetForSelectedJoint: PixelStudio.prototype.getPoseTargetForSelectedJoint,
+    getPoseTargetEdgeBone: PixelStudio.prototype.getPoseTargetEdgeBone,
+    getPoseTargetLabel: PixelStudio.prototype.getPoseTargetLabel,
+    cyclePoseTargetEdge: PixelStudio.prototype.cyclePoseTargetEdge,
+    getBoneEdgeMode: PixelStudio.prototype.getBoneEdgeMode,
+    isPoseEditableBoneEdge: PixelStudio.prototype.isPoseEditableBoneEdge
+  };
+
+  assert.equal(PixelStudio.prototype.getPoseTargetLabel.call(fakeEditor), 'Drag node: rotates LHand');
+  PixelStudio.prototype.cyclePoseTargetEdge.call(fakeEditor);
+  assert.equal(fakeEditor.boneEditor.selectedEdgeBoneId, 'chainsaw');
+  assert.equal(fakeEditor.boneEditor.selectedBoneId, 'chainsaw');
+  assert.equal(fakeEditor.statusMessage, 'Pose target: Chainsaw');
+  assert.equal(PixelStudio.prototype.getPoseTargetLabel.call(fakeEditor), 'Drag node: rotates Chainsaw');
+});
+
+test('pose fan rotation patches incoming hand when downstream chainsaw is used as handle', () => {
+  let rig = createDefaultBoneRig();
+  const hand = createBone(rig, { x: 2, y: 2 }, { x: 5, y: 2 }, { id: 'lhand', name: 'LHand' });
+  rig = hand.rig;
+  const saw = createBone(rig, hand.bone.end, { x: 8, y: 2 }, {
+    id: 'chainsaw',
+    name: 'Chainsaw',
+    parentId: 'lhand',
+    startJointId: hand.bone.endJointId
+  });
+  rig = saw.rig;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    boneRig: rig,
+    boneEditor: {
+      mode: 'pose',
+      timeMs: 0,
+      drag: {
+        type: 'pose',
+        boneId: 'chainsaw',
+        handle: 'start',
+        jointId: hand.bone.endJointId,
+        start: { x: 5, y: 2 },
+        originalStart: { x: 5, y: 2 },
+        originalEnd: { x: 8, y: 2 },
+        originalPose: { angle: 0, dx: 0, dy: 0, scale: 1 },
+        fanRotation: {
+          jointId: hand.bone.endJointId,
+          incoming: { id: 'lhand' },
+          outgoing: { id: 'chainsaw' },
+          boneIds: ['lhand', 'chainsaw']
+        },
+        fanPivot: { x: 2, y: 2 },
+        originalFanPoseByBone: {
+          lhand: { angle: 0, dx: 0, dy: 0, scale: 1 },
+          chainsaw: { angle: 0, dx: 0, dy: 0, scale: 1 }
+        },
+        poseTarget: { action: 'edge', boneId: 'chainsaw', handle: 'start', jointId: hand.bone.endJointId },
+        moved: false
+      }
+    },
+    getBoneEdgeMode: PixelStudio.prototype.getBoneEdgeMode,
+    buildPoseRotationPatches: PixelStudio.prototype.buildPoseRotationPatches,
+    setBonePreviewPosePatchesAtCurrentTime(patches) {
+      this.patches = patches;
+    }
+  };
+
+  const handled = PixelStudio.prototype.handleBonePointerMove.call(fakeEditor, { x: 5, y: 5, col: 5, row: 5 });
+
+  assert.equal(handled, true);
+  assert.ok(fakeEditor.patches.lhand);
+  assert.ok(fakeEditor.patches.chainsaw);
+  assert.ok(Math.abs(fakeEditor.patches.lhand.angle - Math.PI / 4) < 0.0001);
+  assert.equal(fakeEditor.patches.chainsaw.angle, 0);
+  assert.equal(fakeEditor.statusMessage, 'Rotating LHand + Chainsaw');
+});
+
+test('pose rotate widget patches selected node without rotating connected edges', () => {
+  let rig = createDefaultBoneRig();
+  const hand = createBone(rig, { x: 2, y: 2 }, { x: 5, y: 2 }, { id: 'lhand', name: 'LHand' });
+  rig = hand.rig;
+  rig = createBone(rig, hand.bone.end, { x: 8, y: 2 }, {
+    id: 'chainsaw',
+    name: 'Chainsaw',
+    parentId: 'lhand',
+    startJointId: hand.bone.endJointId
+  }).rig;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    boneRig: rig,
+    boneEditor: {
+      mode: 'pose',
+      timeMs: 0,
+      drag: {
+        type: 'pose',
+        boneId: 'chainsaw',
+        handle: 'rotate-widget',
+        jointId: hand.bone.endJointId,
+        start: { x: 7, y: 0 },
+        originalStart: { x: 5, y: 2 },
+        originalEnd: { x: 8, y: 2 },
+        originalPose: { angle: 0, dx: 0, dy: 0, scale: 1 },
+        widgetRotation: {
+          jointId: hand.bone.endJointId,
+          boneId: 'chainsaw',
+          direction: 'outgoing',
+          boneIds: ['chainsaw'],
+          localNode: true,
+          baseAngle: 0
+        },
+        widgetPivot: { x: 5, y: 2 },
+        widgetStartAngle: 0,
+        originalNodePoseByJoint: {
+          [hand.bone.endJointId]: { angle: 0 }
+        },
+        originalWidgetPoseByBone: {
+          chainsaw: { angle: 0, dx: 0, dy: 0, scale: 1 }
+        },
+        fanRotation: {
+          jointId: hand.bone.endJointId,
+          incoming: { id: 'lhand' },
+          outgoing: { id: 'chainsaw' },
+          boneIds: ['lhand', 'chainsaw']
+        },
+        poseTarget: { action: 'edge', boneId: 'chainsaw', handle: 'rotate-widget', jointId: hand.bone.endJointId },
+        moved: false
+      }
+    },
+    getBoneEdgeMode: PixelStudio.prototype.getBoneEdgeMode,
+    buildPoseNodeRotationPatches: PixelStudio.prototype.buildPoseNodeRotationPatches,
+    buildPoseRotationPatches: PixelStudio.prototype.buildPoseRotationPatches,
+    setNodePreviewPosePatchesAtCurrentTime(patches) {
+      this.nodePatches = patches;
+    },
+    setBonePreviewPosePatchesAtCurrentTime(patches) {
+      this.patches = patches;
+    }
+  };
+
+  const handled = PixelStudio.prototype.handleBonePointerMove.call(fakeEditor, { x: 5, y: 5, col: 5, row: 5 });
+
+  assert.equal(handled, true);
+  assert.equal(fakeEditor.patches, undefined);
+  assert.deepEqual(Object.keys(fakeEditor.nodePatches), [hand.bone.endJointId]);
+  assert.ok(Math.abs(fakeEditor.nodePatches[hand.bone.endJointId].angle - Math.PI / 2) < 0.0001);
+  assert.equal(fakeEditor.statusMessage, 'Rotating Node');
+});
+
+test('pose selected node exposes a circular rotate widget hit target', () => {
+  let rig = createDefaultBoneRig();
+  const hand = createBone(rig, { x: 2, y: 2 }, { x: 5, y: 2 }, { id: 'lhand', name: 'LHand' });
+  rig = hand.rig;
+  rig = createBone(rig, hand.bone.end, { x: 8, y: 2 }, {
+    id: 'chainsaw',
+    name: 'Chainsaw',
+    parentId: 'lhand',
+    startJointId: hand.bone.endJointId
+  }).rig;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    canvasBounds: { cellSize: 20 },
+    boneRig: rig,
+    boneEditor: {
+      mode: 'pose',
+      selectedJointId: hand.bone.endJointId,
+      selectedBoneId: 'chainsaw',
+      selectedEdgeBoneId: 'chainsaw',
+      chainAnchor: { jointId: hand.bone.endJointId }
+    },
+    getDisplayedBonesForBoneEditor() {
+      return this.boneRig.bones;
+    },
+    getDisplayedJointPoint: PixelStudio.prototype.getDisplayedJointPoint,
+    getBonePointerCoords: PixelStudio.prototype.getBonePointerCoords,
+    getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
+    resolvePoseNodeDragTarget: PixelStudio.prototype.resolvePoseNodeDragTarget,
+    getPoseTargetForSelectedJoint: PixelStudio.prototype.getPoseTargetForSelectedJoint,
+    getCurrentBonePreviewPose() {
+      return samplePoseTimeline(this.boneRig, this.boneEditor.timeMs || 0);
+    },
+    getPoseWidgetRotationTarget: PixelStudio.prototype.getPoseWidgetRotationTarget,
+    getDisplayedPoseWidgetRotationTarget: PixelStudio.prototype.getDisplayedPoseWidgetRotationTarget,
+    getPoseRotateWidgetGeometry: PixelStudio.prototype.getPoseRotateWidgetGeometry,
+    getPoseRotateWidgetHit: PixelStudio.prototype.getPoseRotateWidgetHit,
+    getBoneEdgeMode: PixelStudio.prototype.getBoneEdgeMode,
+    isPoseEditableBoneEdge: PixelStudio.prototype.isPoseEditableBoneEdge
+  };
+
+  const target = PixelStudio.prototype.getDisplayedPoseWidgetRotationTarget.call(fakeEditor, hand.bone.endJointId, rig.bones);
+  const geometry = PixelStudio.prototype.getPoseRotateWidgetGeometry.call(fakeEditor, { x: 5, y: 2 }, 20, target);
+  const hit = PixelStudio.prototype.getPoseRotateWidgetHit.call(fakeEditor, {
+    x: geometry.knob.x,
+    y: geometry.knob.y,
+    col: Math.floor(geometry.knob.x),
+    row: Math.floor(geometry.knob.y)
+  });
+
+  assert.ok(hit);
+  assert.equal(hit.handle, 'rotate-widget');
+  assert.equal(hit.jointId, hand.bone.endJointId);
+  assert.equal(hit.bone.id, 'chainsaw');
+  assert.ok(Math.hypot(geometry.knob.x - 5, geometry.knob.y - 2) > PixelStudio.prototype.getBoneHitRadius.call(fakeEditor));
+});
+
+test('pose rotate widget faces incoming edge away from the selected node', () => {
+  let rig = createDefaultBoneRig();
+  const hand = createBone(rig, { x: 2, y: 2 }, { x: 5, y: 2 }, { id: 'lhand', name: 'LHand' });
+  rig = hand.rig;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    canvasBounds: { cellSize: 20 },
+    boneRig: rig,
+    boneEditor: {
+      mode: 'pose',
+      timeMs: 0,
+      selectedJointId: hand.bone.endJointId,
+      selectedBoneId: 'lhand',
+      selectedEdgeBoneId: 'lhand',
+      chainAnchor: { jointId: hand.bone.endJointId }
+    },
+    getCachedBoneRigContext: PixelStudio.prototype.getCachedBoneRigContext,
+    getCurrentBonePreviewPose() {
+      return samplePoseTimeline(this.boneRig, this.boneEditor.timeMs || 0);
+    },
+    getPoseWidgetRotationTarget: PixelStudio.prototype.getPoseWidgetRotationTarget,
+    getDisplayedPoseWidgetRotationTarget: PixelStudio.prototype.getDisplayedPoseWidgetRotationTarget,
+    getPoseRotateWidgetGeometry: PixelStudio.prototype.getPoseRotateWidgetGeometry,
+    isPoseEditableBoneEdge: PixelStudio.prototype.isPoseEditableBoneEdge
+  };
+
+  const target = PixelStudio.prototype.getDisplayedPoseWidgetRotationTarget.call(fakeEditor, hand.bone.endJointId, rig.bones);
+  const geometry = PixelStudio.prototype.getPoseRotateWidgetGeometry.call(fakeEditor, { x: 5, y: 2 }, 20, target);
+
+  assert.equal(target.direction, 'incoming');
+  assert.ok(Math.abs(target.baseAngle - Math.PI) < 0.0001);
+  assert.ok(geometry.knob.x < 5);
+  assert.ok(Math.abs(geometry.knob.y - 2) < 0.0001);
+});
+
+test('pose rotate widget pointer down starts rotation before normal node movement', () => {
+  let rig = createDefaultBoneRig();
+  const hand = createBone(rig, { x: 2, y: 2 }, { x: 5, y: 2 }, { id: 'lhand', name: 'LHand' });
+  rig = hand.rig;
+  rig = createBone(rig, hand.bone.end, { x: 8, y: 2 }, {
+    id: 'chainsaw',
+    name: 'Chainsaw',
+    parentId: 'lhand',
+    startJointId: hand.bone.endJointId
+  }).rig;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    canvasBounds: { cellSize: 20 },
+    boneRig: rig,
+    boneEditor: {
+      mode: 'pose',
+      timeMs: 0,
+      selectedJointId: hand.bone.endJointId,
+      selectedBoneId: 'chainsaw',
+      selectedEdgeBoneId: 'chainsaw',
+      chainAnchor: { jointId: hand.bone.endJointId },
+      drag: null
+    },
+    getDisplayedBonesForBoneEditor() {
+      return this.boneRig.bones;
+    },
+    getDisplayedJointPoint: PixelStudio.prototype.getDisplayedJointPoint,
+    getBonePointerCoords: PixelStudio.prototype.getBonePointerCoords,
+    getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
+    getCurrentBonePreviewPose() {
+      return samplePoseTimeline(this.boneRig, this.boneEditor.timeMs || 0);
+    },
+    getPoseWidgetRotationTarget: PixelStudio.prototype.getPoseWidgetRotationTarget,
+    getDisplayedPoseWidgetRotationTarget: PixelStudio.prototype.getDisplayedPoseWidgetRotationTarget,
+    getPoseRotateWidgetGeometry: PixelStudio.prototype.getPoseRotateWidgetGeometry,
+    getPoseRotateWidgetHit: PixelStudio.prototype.getPoseRotateWidgetHit,
+    resolvePoseNodeDragTarget: PixelStudio.prototype.resolvePoseNodeDragTarget,
+    getPoseTargetForSelectedJoint: PixelStudio.prototype.getPoseTargetForSelectedJoint,
+    getPoseFanRotationTarget: PixelStudio.prototype.getPoseFanRotationTarget,
+    getBoneEdgeMode: PixelStudio.prototype.getBoneEdgeMode,
+    isPoseEditableBoneEdge: PixelStudio.prototype.isPoseEditableBoneEdge,
+    setBoneJointSelection: PixelStudio.prototype.setBoneJointSelection,
+    getSelectedBoneAffectedPixelCount() {
+      return 1;
+    },
+    hitTestBone() {
+      throw new Error('rotate widget should win before normal bone hits');
+    },
+    startHistory(label, options) {
+      this.history = { label, options };
+    }
+  };
+  const target = PixelStudio.prototype.getDisplayedPoseWidgetRotationTarget.call(fakeEditor, hand.bone.endJointId, rig.bones);
+  const geometry = PixelStudio.prototype.getPoseRotateWidgetGeometry.call(fakeEditor, { x: 5, y: 2 }, 20, target);
+
+  const handled = PixelStudio.prototype.handleBonePointerDown.call(fakeEditor, {
+    x: geometry.knob.x,
+    y: geometry.knob.y,
+    col: Math.floor(geometry.knob.x),
+    row: Math.floor(geometry.knob.y)
+  });
+
+  assert.equal(handled, true);
+  assert.equal(fakeEditor.boneEditor.drag.handle, 'rotate-widget');
+  assert.equal(fakeEditor.boneEditor.drag.boneId, 'chainsaw');
+  assert.equal(fakeEditor.boneEditor.drag.widgetRotation.boneId, 'chainsaw');
+  assert.equal(fakeEditor.boneEditor.drag.widgetRotation.direction, 'outgoing');
+  assert.equal(fakeEditor.boneEditor.drag.widgetRotation.localNode, true);
+  assert.equal(fakeEditor.history.label, 'pose bone');
+});
+
+test('pose rotate widget overlay bounds include external knob and halo', () => {
+  let rig = createDefaultBoneRig();
+  const hand = createBone(rig, { x: 1, y: 2 }, { x: 3.8, y: 2 }, { id: 'lhand', name: 'LHand' });
+  rig = hand.rig;
+  rig = createBone(rig, hand.bone.end, { x: 6, y: 2 }, {
+    id: 'chainsaw',
+    name: 'Chainsaw',
+    parentId: 'lhand',
+    startJointId: hand.bone.endJointId
+  }).rig;
+  const fakeEditor = {
+    boneRig: rig,
+    boneEditor: {
+      mode: 'pose',
+      selectedJointId: hand.bone.endJointId,
+      selectedBoneId: 'chainsaw',
+      selectedEdgeBoneId: 'chainsaw',
+      chainAnchor: { jointId: hand.bone.endJointId }
+    },
+    getDisplayedJointPoint: PixelStudio.prototype.getDisplayedJointPoint,
+    getCurrentBonePreviewPose() {
+      return samplePoseTimeline(this.boneRig, this.boneEditor.timeMs || 0);
+    },
+    getPoseWidgetRotationTarget: PixelStudio.prototype.getPoseWidgetRotationTarget,
+    getDisplayedPoseWidgetRotationTarget: PixelStudio.prototype.getDisplayedPoseWidgetRotationTarget,
+    getPoseRotateWidgetGeometry: PixelStudio.prototype.getPoseRotateWidgetGeometry,
+    getBoneGraphOverlayBounds: PixelStudio.prototype.getBoneGraphOverlayBounds
+  };
+  const displayedBones = rig.bones;
+  const selectedPoint = PixelStudio.prototype.getDisplayedJointPoint.call(fakeEditor, hand.bone.endJointId, displayedBones);
+  const target = PixelStudio.prototype.getDisplayedPoseWidgetRotationTarget.call(fakeEditor, hand.bone.endJointId, displayedBones);
+  const geometry = PixelStudio.prototype.getPoseRotateWidgetGeometry.call(fakeEditor, selectedPoint, 20, target);
+
+  const bounds = PixelStudio.prototype.getBoneGraphOverlayBounds.call(fakeEditor, displayedBones, 20);
+
+  assert.ok(bounds.x <= geometry.knob.x - geometry.knobRadius);
+  assert.ok(bounds.y <= geometry.knob.y - geometry.knobRadius);
+  assert.ok(bounds.x + bounds.w >= geometry.knob.x + geometry.knobRadius);
+  assert.ok(bounds.y + bounds.h >= geometry.knob.y + geometry.knobRadius);
+  assert.ok(bounds.x + bounds.w > 6);
+});
+
+test('node-local pose rotates terminal node pixels without disconnecting its vector', () => {
+  let rig = createDefaultBoneRig();
+  const hand = createBone(rig, { x: 2, y: 2 }, { x: 5, y: 2 }, { id: 'lhand', name: 'LHand' });
+  rig = hand.rig;
+  const saw = createBone(rig, hand.bone.end, { x: 8, y: 2 }, {
+    id: 'chainsaw',
+    name: 'Chainsaw',
+    parentId: 'lhand',
+    startJointId: hand.bone.endJointId
+  });
+  rig = saw.rig;
+  const width = 12;
+  const height = 6;
+  const layer = createLayer(width, height, 'Layer');
+  layer.pixels[1 * width + 8] = 0xff00ffff;
+  const mask = new Uint8Array(width * height);
+  mask[1 * width + 8] = 1;
+  rig = createSelectionBinding(rig, 0, [saw.bone.endJointId], mask, width, height);
+  const pose = {
+    timeMs: 0,
+    bones: {},
+    nodes: {
+      [saw.bone.endJointId]: { angle: Math.PI / 2 }
+    }
+  };
+
+  const posedBones = getPosedBoneGeometry(rig, pose);
+  const posedSaw = posedBones.find((bone) => bone.id === 'chainsaw');
+  const output = deformLayersWithBonePose([layer], width, height, rig, pose);
+
+  assert.deepEqual(posedSaw.start, { x: 5, y: 2 });
+  assert.deepEqual(posedSaw.end, { x: 8, y: 2 });
+  assert.equal(output[0].pixels[1 * width + 8], 0);
+  assert.equal(output[0].pixels[2 * width + 8], 0xff00ffff);
+});
+
+test('pose rotate widget can start dragging outside canvas bounds in portrait', () => {
+  let rig = createDefaultBoneRig();
+  const hand = createBone(rig, { x: 1, y: 2 }, { x: 3.8, y: 2 }, { id: 'lhand', name: 'LHand' });
+  rig = hand.rig;
+  rig = createBone(rig, hand.bone.end, { x: 6, y: 2 }, {
+    id: 'chainsaw',
+    name: 'Chainsaw',
+    parentId: 'lhand',
+    startJointId: hand.bone.endJointId
+  }).rig;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    canvasBounds: { x: 0, y: 0, w: 80, h: 80, cellSize: 20, mainX: 0, mainY: 0 },
+    canvasState: { width: 4, height: 4 },
+    cursor: {},
+    boneRig: rig,
+    boneEditor: {
+      mode: 'pose',
+      timeMs: 0,
+      selectedJointId: hand.bone.endJointId,
+      selectedBoneId: 'chainsaw',
+      selectedEdgeBoneId: 'chainsaw',
+      chainAnchor: { jointId: hand.bone.endJointId },
+      drag: null
+    },
+    transportPopover: null,
+    uiSliderDrag: null,
+    mobileDrawerBounds: null,
+    boneUiRegions: [],
+    uiButtons: [],
+    menuOpen: false,
+    controlsOverlayOpen: false,
+    paletteGridOpen: false,
+    selectionContextMenu: null,
+    brushPickerOpen: false,
+    transformModal: null,
+    pasteImportModal: null,
+    panJoystick: { center: { x: -100, y: -100 }, radius: 1 },
+    activeToolId: TOOL_IDS.PENCIL,
+    isPointInBounds: PixelStudio.prototype.isPointInBounds,
+    hitTestUiButton: PixelStudio.prototype.hitTestUiButton,
+    isBoneEditorUiHit: PixelStudio.prototype.isBoneEditorUiHit,
+    isBoneEditorPointerUiHit: PixelStudio.prototype.isBoneEditorPointerUiHit,
+    handlePriorityUiDragHit: PixelStudio.prototype.handlePriorityUiDragHit,
+    shouldBoneCanvasOwnPointerDown: PixelStudio.prototype.shouldBoneCanvasOwnPointerDown,
+    getDisplayedBonesForBoneEditor() {
+      return this.boneRig.bones;
+    },
+    getDisplayedJointPoint: PixelStudio.prototype.getDisplayedJointPoint,
+    getBonePointerCoords: PixelStudio.prototype.getBonePointerCoords,
+    getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
+    getCurrentBonePreviewPose() {
+      return samplePoseTimeline(this.boneRig, this.boneEditor.timeMs || 0);
+    },
+    getPoseWidgetRotationTarget: PixelStudio.prototype.getPoseWidgetRotationTarget,
+    getDisplayedPoseWidgetRotationTarget: PixelStudio.prototype.getDisplayedPoseWidgetRotationTarget,
+    getPoseRotateWidgetGeometry: PixelStudio.prototype.getPoseRotateWidgetGeometry,
+    getPoseRotateWidgetHit: PixelStudio.prototype.getPoseRotateWidgetHit,
+    getPoseRotateWidgetScreenHit: PixelStudio.prototype.getPoseRotateWidgetScreenHit,
+    getPoseTargetForSelectedJoint: PixelStudio.prototype.getPoseTargetForSelectedJoint,
+    getPoseFanRotationTarget: PixelStudio.prototype.getPoseFanRotationTarget,
+    resolvePoseNodeDragTarget: PixelStudio.prototype.resolvePoseNodeDragTarget,
+    getBoneEdgeMode: PixelStudio.prototype.getBoneEdgeMode,
+    isPoseEditableBoneEdge: PixelStudio.prototype.isPoseEditableBoneEdge,
+    setBoneJointSelection: PixelStudio.prototype.setBoneJointSelection,
+    handleBonePointerDown: PixelStudio.prototype.handleBonePointerDown,
+    setInputMode(mode) {
+      this.inputMode = mode;
+    },
+    enforceBoneEditorToolMode() {},
+    getSelectedBoneAffectedPixelCount() {
+      return 1;
+    },
+    startHistory(label) {
+      this.historyLabel = label;
+    },
+    startMenuScrollDrag() {
+      throw new Error('outside-canvas widget should not start menu scrolling');
+    },
+    handleButtonClick() {
+      throw new Error('outside-canvas widget should not route to buttons');
+    },
+    hitTestBone() {
+      throw new Error('outside-canvas widget should not fall through to normal bone hits');
+    },
+    cancelLongPress() {
+      this.cancelledLongPress = true;
+    },
+    isMobileLayout() {
+      return true;
+    },
+    isPointInCircle() {
+      return false;
+    },
+    shouldUseUnboundedWrapPointer() {
+      return false;
+    },
+    clearSelection() {
+      throw new Error('outside-canvas widget should not clear selection');
+    }
+  };
+  const selectedPoint = PixelStudio.prototype.getDisplayedJointPoint.call(fakeEditor, hand.bone.endJointId, rig.bones);
+  const target = PixelStudio.prototype.getDisplayedPoseWidgetRotationTarget.call(fakeEditor, hand.bone.endJointId, rig.bones);
+  const geometry = PixelStudio.prototype.getPoseRotateWidgetGeometry.call(fakeEditor, selectedPoint, fakeEditor.canvasBounds.cellSize, target);
+  const payload = {
+    x: geometry.knob.x * fakeEditor.canvasBounds.cellSize,
+    y: geometry.knob.y * fakeEditor.canvasBounds.cellSize,
+    button: 0,
+    touchCount: 1
+  };
+  assert.equal(PixelStudio.prototype.isPointInBounds.call(fakeEditor, payload, fakeEditor.canvasBounds), false);
+
+  PixelStudio.prototype.handlePointerDown.call(fakeEditor, payload);
+
+  assert.equal(fakeEditor.inputMode, 'canvas');
+  assert.equal(fakeEditor.boneEditor.drag.handle, 'rotate-widget');
+  assert.equal(fakeEditor.boneEditor.drag.boneId, 'chainsaw');
+  assert.equal(fakeEditor.boneEditor.drag.widgetRotation.boneId, 'chainsaw');
+  assert.equal(fakeEditor.boneEditor.drag.widgetRotation.direction, 'outgoing');
+  assert.equal(fakeEditor.boneEditor.drag.widgetRotation.localNode, true);
+  assert.equal(fakeEditor.historyLabel, 'pose bone');
+  assert.equal(fakeEditor.cancelledLongPress, true);
 });
 
 test('reversing torso edge re-roots shared torso fan without detaching limbs', () => {
@@ -1119,7 +2775,7 @@ test('pose body dragging a linked bone is blocked so shared joints stay attached
   assert.equal(fakeEditor.statusMessage, 'Rotate or move the shared joint to keep linked bones attached');
 });
 
-test('pose endpoint IK is blocked before keying when it would move sibling bones', () => {
+test('pose terminal endpoint drag rotates selected child without moving sibling bones', () => {
   let rig = createDefaultBoneRig();
   const upper = createBone(rig, { x: 0, y: 0 }, { x: 4, y: 0 }, { id: 'upper' });
   rig = upper.rig;
@@ -1153,18 +2809,23 @@ test('pose endpoint IK is blocked before keying when it would move sibling bones
       return { bones: {} };
     },
     setBonePosePatchesAtCurrentTime() {
-      throw new Error('invalid IK should not write pose patches');
+      throw new Error('terminal endpoint drag should not use IK patches');
+    },
+    setBonePosePatchAtCurrentTime(boneId, patch) {
+      this.patch = { boneId, patch };
     }
   };
 
   const handled = PixelStudio.prototype.handleBonePointerMove.call(fakeEditor, { col: 3, row: 3 });
 
   assert.equal(handled, true);
-  assert.equal(fakeEditor.boneEditor.drag.moved, false);
-  assert.equal(fakeEditor.statusMessage, 'Move the child joint only; this would detach connected bones');
+  assert.equal(fakeEditor.patch.boneId, 'lower-a');
+  assert.ok(Math.abs(fakeEditor.patch.patch.angle - Math.atan2(3.5, -0.5)) < 0.0001);
+  assert.equal(fakeEditor.patch.patch.dx, 0);
+  assert.equal(fakeEditor.patch.patch.dy, 0);
 });
 
-test('pose endpoint drag uses direct rotation when selected bone IK is disabled', () => {
+test('pose terminal endpoint drag uses direct rotation regardless of saved IK setting', () => {
   const buildRig = (ikEnabled) => {
     let rig = createDefaultBoneRig();
     const upper = createBone(rig, { x: 0, y: 0 }, { x: 4, y: 0 }, { id: 'upper' });
@@ -1205,8 +2866,9 @@ test('pose endpoint drag uses direct rotation when selected bone IK is disabled'
 
   const enabledEditor = makeEditor(buildRig(true));
   assert.equal(PixelStudio.prototype.handleBonePointerMove.call(enabledEditor, { col: 4, row: 4 }), true);
-  assert.deepEqual(Object.keys(enabledEditor.patches).sort(), ['lower', 'upper']);
-  assert.equal(enabledEditor.patch, undefined);
+  assert.equal(enabledEditor.patches, undefined);
+  assert.equal(enabledEditor.patch.boneId, 'lower');
+  assert.ok(Math.abs(enabledEditor.patch.patch.angle - Math.atan2(4.5, 0.5)) < 0.0001);
 
   const disabledEditor = makeEditor(buildRig(false));
   assert.equal(PixelStudio.prototype.handleBonePointerMove.call(disabledEditor, { col: 4, row: 4 }), true);
@@ -1343,13 +3005,18 @@ test('tools mode consumes canvas input without selecting bones or pixels', () =>
   assert.equal(fakeEditor.statusMessage, 'Choose a bone tool command first');
 });
 
-test('bone only modes clear pixel selections when entered', () => {
+test('bone only modes clear pixel selections while rig mode preserves assignable selections', () => {
   const fakeEditor = {
     boneEditor: { mode: 'bind', drag: { type: 'pose' }, pendingBindNodeTap: {}, linkMode: true, chainAnchor: {} },
     selection: {
       active: true,
       mask: new Uint8Array([1]),
       bounds: { x: 0, y: 0, w: 1, h: 1 },
+      mode: 'rect',
+      baseMask: new Uint8Array([1]),
+      start: { col: 0, row: 0 },
+      end: { col: 0, row: 0 },
+      lassoPoints: [{ col: 0, row: 0 }],
       floating: new Uint32Array([1]),
       floatingMode: 'paste',
       floatingBounds: { x: 0, y: 0, w: 1, h: 1 },
@@ -1374,11 +3041,30 @@ test('bone only modes clear pixel selections when entered', () => {
   fakeEditor.selection.active = true;
   fakeEditor.selection.mask = new Uint8Array([1]);
   fakeEditor.selection.bounds = { x: 0, y: 0, w: 1, h: 1 };
+  fakeEditor.selection.mode = 'rect';
+  fakeEditor.selection.baseMask = new Uint8Array([1]);
+  fakeEditor.selection.start = { col: 0, row: 0 };
+  fakeEditor.selection.end = { col: 0, row: 0 };
+  fakeEditor.selection.lassoPoints = [{ col: 0, row: 0 }];
+  fakeEditor.selection.floating = new Uint32Array([1]);
+  fakeEditor.selection.floatingMode = 'paste';
+  fakeEditor.selection.floatingBounds = { x: 0, y: 0, w: 1, h: 1 };
+  fakeEditor.selection.offset = { x: 2, y: 3 };
   fakeEditor.ensureBindSelectionTool = () => {};
   PixelStudio.prototype.setBoneEditorMode.call(fakeEditor, 'bind');
 
-  assert.equal(fakeEditor.selection.active, false);
-  assert.equal(fakeEditor.selection.mask, null);
+  assert.equal(fakeEditor.selection.active, true);
+  assert.ok(fakeEditor.selection.mask);
+  assert.deepEqual(fakeEditor.selection.bounds, { x: 0, y: 0, w: 1, h: 1 });
+  assert.equal(fakeEditor.selection.mode, null);
+  assert.equal(fakeEditor.selection.baseMask, null);
+  assert.equal(fakeEditor.selection.start, null);
+  assert.equal(fakeEditor.selection.end, null);
+  assert.deepEqual(fakeEditor.selection.lassoPoints, []);
+  assert.equal(fakeEditor.selection.floating, null);
+  assert.equal(fakeEditor.selection.floatingMode, null);
+  assert.equal(fakeEditor.selection.floatingBounds, null);
+  assert.deepEqual(fakeEditor.selection.offset, { x: 0, y: 0 });
 });
 
 test('bone mode hopping converts stale paint tools to rig selection tools', () => {
@@ -1478,6 +3164,7 @@ test('rig pointer down normalizes stale paint tool before starting assignment se
     canvasBounds: { x: 10, y: 10, w: 80, h: 80, cellSize: 10 },
     toolOptions: { wrapDraw: false },
     cursor: {},
+    gamepadCursor: { active: false },
     panJoystick: { center: { x: -100, y: -100 }, radius: 1 },
     view: { panX: 0, panY: 0 },
     viewportController: {
@@ -1602,6 +3289,7 @@ test('selected edge property cycles rotate fixed stretch spring slide and hinge'
       selectedEdgeBoneId: null
     },
     ensureBoneNodeSelection: PixelStudio.prototype.ensureBoneNodeSelection,
+    getSelectedJoint: PixelStudio.prototype.getSelectedJoint,
     getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
     getSelectedEdgeBone: PixelStudio.prototype.getSelectedEdgeBone,
     getAffectedEdgeBones: PixelStudio.prototype.getAffectedEdgeBones,
@@ -1698,6 +3386,207 @@ test('selected edge mode applies to only the clicked edge', () => {
 
   assert.equal(fakeEditor.boneRig.bones.find((bone) => bone.id === 'left').jointMode, 'rotate');
   assert.equal(fakeEditor.boneRig.bones.find((bone) => bone.id === 'right').jointMode, 'fixed');
+});
+
+test('selected edge reverse applies only to the clicked edge', () => {
+  let rig = createDefaultBoneRig();
+  const left = createBone(rig, { x: 2, y: 2 }, { x: 2, y: 5 }, { id: 'left' });
+  rig = left.rig;
+  rig = createBone(rig, { x: 2, y: 2 }, { x: 5, y: 2 }, {
+    id: 'right',
+    startJointId: left.bone.startJointId
+  }).rig;
+  const rightBefore = rig.bones.find((bone) => bone.id === 'right');
+  const fakeEditor = {
+    boneRig: rig,
+    boneEditor: {
+      selectedJointId: left.bone.startJointId,
+      selectedBoneId: 'left',
+      selectedEdgeBoneId: 'right',
+      chainAnchor: null
+    },
+    ensureBoneNodeSelection: PixelStudio.prototype.ensureBoneNodeSelection,
+    getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
+    getSelectedBone: PixelStudio.prototype.getSelectedBone,
+    getSelectedEdgeBone: PixelStudio.prototype.getSelectedEdgeBone,
+    setBoneChainAnchor: PixelStudio.prototype.setBoneChainAnchor,
+    startHistory() {},
+    commitHistory() {}
+  };
+
+  PixelStudio.prototype.reverseSelectedBoneDirection.call(fakeEditor);
+
+  const leftAfter = fakeEditor.boneRig.bones.find((bone) => bone.id === 'left');
+  const rightAfter = fakeEditor.boneRig.bones.find((bone) => bone.id === 'right');
+  assert.equal(leftAfter.startJointId, left.bone.startJointId);
+  assert.equal(leftAfter.endJointId, left.bone.endJointId);
+  assert.equal(rightAfter.startJointId, rightBefore.endJointId);
+  assert.equal(rightAfter.endJointId, rightBefore.startJointId);
+  assert.equal(fakeEditor.boneEditor.selectedEdgeBoneId, 'right');
+});
+
+test('selected edge delete removes only the edge and preserves endpoint nodes', () => {
+  let rig = createDefaultBoneRig();
+  const left = createBone(rig, { x: 2, y: 2 }, { x: 2, y: 5 }, { id: 'left' });
+  rig = left.rig;
+  const right = createBone(rig, { x: 2, y: 2 }, { x: 5, y: 2 }, {
+    id: 'right',
+    startJointId: left.bone.startJointId
+  });
+  rig = right.rig;
+  const mask = new Uint8Array(16);
+  mask[5] = 1;
+  rig = createSelectionBinding(rig, 0, ['right'], mask, 4, 4);
+  rig = createSelectionBinding(rig, 0, [left.bone.startJointId], mask, 4, 4);
+  rig = setPoseKeyAtTime(rig, 0, { left: { angle: 0.2 }, right: { angle: 0.5 } });
+  const preservedJointIds = new Set([right.bone.startJointId, right.bone.endJointId]);
+  const fakeEditor = {
+    boneRig: rig,
+    boneEditor: {
+      selectedJointId: left.bone.startJointId,
+      selectedBoneId: 'left',
+      selectedEdgeBoneId: 'right',
+      chainAnchor: null
+    },
+    ensureBoneNodeSelection: PixelStudio.prototype.ensureBoneNodeSelection,
+    getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
+    getSelectedBone: PixelStudio.prototype.getSelectedBone,
+    getSelectedEdgeBone: PixelStudio.prototype.getSelectedEdgeBone,
+    getSelectedBoneOwnerId: PixelStudio.prototype.getSelectedBoneOwnerId,
+    getBoneChainAnchorFromSelection() {
+      return null;
+    },
+    startHistory() {},
+    commitHistory() {}
+  };
+
+  PixelStudio.prototype.deleteSelectedBone.call(fakeEditor);
+
+  assert.equal(fakeEditor.boneRig.bones.some((bone) => bone.id === 'right'), false);
+  assert.equal(fakeEditor.boneRig.bones.some((bone) => bone.id === 'left'), true);
+  preservedJointIds.forEach((jointId) => {
+    assert.equal(fakeEditor.boneRig.joints.some((joint) => joint.id === jointId), true);
+  });
+  assert.equal(fakeEditor.boneRig.bindings.some((binding) => binding.boneIds.includes('right')), false);
+  assert.equal(fakeEditor.boneRig.bindings.some((binding) => binding.boneIds.includes(left.bone.startJointId)), true);
+  assert.equal(fakeEditor.boneRig.poseTimeline[0].bones.right, undefined);
+  assert.ok(fakeEditor.boneRig.poseTimeline[0].bones.left);
+});
+
+test('selected edge actions use edge-specific labels', () => {
+  let rig = createDefaultBoneRig();
+  const left = createBone(rig, { x: 2, y: 2 }, { x: 2, y: 5 }, { id: 'left' });
+  rig = left.rig;
+  rig = createBone(rig, { x: 2, y: 2 }, { x: 5, y: 2 }, {
+    id: 'right',
+    startJointId: left.bone.startJointId
+  }).rig;
+  const fakeEditor = {
+    boneRig: rig,
+    boneEditor: {
+      mode: 'bones',
+      linkMode: false,
+      selectedJointId: left.bone.startJointId,
+      selectedBoneId: 'left',
+      selectedEdgeBoneId: 'right'
+    },
+    selection: { active: false, mask: null },
+    ensureBoneNodeSelection: PixelStudio.prototype.ensureBoneNodeSelection,
+    getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
+    getSelectedBone: PixelStudio.prototype.getSelectedBone,
+    getSelectedEdgeBone: PixelStudio.prototype.getSelectedEdgeBone,
+    getAffectedEdgeBones: PixelStudio.prototype.getAffectedEdgeBones,
+    getCurrentBoneTimelineKey() {
+      return null;
+    }
+  };
+
+  const actions = PixelStudio.prototype.getBoneContextActions.call(fakeEditor, 'bones');
+
+  assert.equal(actions.find((entry) => entry.id === 'bone-reverse').label, 'Reverse Edge');
+  assert.equal(actions.find((entry) => entry.id === 'bone-delete').label, 'Delete Edge');
+});
+
+test('pressing bones mode again preserves selected edge', () => {
+  let rig = createDefaultBoneRig();
+  const left = createBone(rig, { x: 2, y: 2 }, { x: 2, y: 5 }, { id: 'left' });
+  rig = left.rig;
+  rig = createBone(rig, { x: 2, y: 2 }, { x: 5, y: 2 }, {
+    id: 'right',
+    startJointId: left.bone.startJointId
+  }).rig;
+  const fakeEditor = {
+    boneRig: rig,
+    boneEditor: {
+      mode: 'bones',
+      selectedJointId: left.bone.startJointId,
+      selectedBoneId: 'left',
+      selectedEdgeBoneId: 'right',
+      drag: { type: 'edit' },
+      pendingBindNodeTap: { type: 'node-select' }
+    },
+    selection: { active: false, mask: null },
+    clearBoneEditorBlockingSelectionState: PixelStudio.prototype.clearBoneEditorBlockingSelectionState,
+    enforceBoneEditorToolMode: PixelStudio.prototype.enforceBoneEditorToolMode,
+    resetBoneEditorTransientState: PixelStudio.prototype.resetBoneEditorTransientState,
+    setBoneEditorMode: PixelStudio.prototype.setBoneEditorMode,
+    ensureBoneNodeSelection: PixelStudio.prototype.ensureBoneNodeSelection,
+    getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
+    getSelectedBone: PixelStudio.prototype.getSelectedBone,
+    getSelectedEdgeBone: PixelStudio.prototype.getSelectedEdgeBone,
+    cancelLongPress() {},
+    setInputMode() {}
+  };
+
+  PixelStudio.prototype.setBoneEditorMode.call(fakeEditor, 'bones');
+
+  assert.equal(fakeEditor.boneEditor.mode, 'bones');
+  assert.equal(fakeEditor.boneEditor.selectedEdgeBoneId, 'right');
+  assert.equal(fakeEditor.boneEditor.drag, null);
+  assert.equal(fakeEditor.boneEditor.pendingBindNodeTap, null);
+});
+
+test('leaving bones mode clears selected edge', () => {
+  let rig = createDefaultBoneRig();
+  const left = createBone(rig, { x: 2, y: 2 }, { x: 2, y: 5 }, { id: 'left' });
+  rig = left.rig;
+  rig = createBone(rig, { x: 2, y: 2 }, { x: 5, y: 2 }, {
+    id: 'right',
+    startJointId: left.bone.startJointId
+  }).rig;
+  const fakeEditor = {
+    boneRig: rig,
+    boneEditor: {
+      mode: 'bones',
+      selectedJointId: left.bone.startJointId,
+      selectedBoneId: 'left',
+      selectedEdgeBoneId: 'right',
+      chainAnchor: null
+    },
+    activeToolId: TOOL_IDS.PENCIL,
+    selection: { active: false, mask: null },
+    clearBoneEditorBlockingSelectionState: PixelStudio.prototype.clearBoneEditorBlockingSelectionState,
+    enforceBoneEditorToolMode: PixelStudio.prototype.enforceBoneEditorToolMode,
+    resetBoneEditorTransientState: PixelStudio.prototype.resetBoneEditorTransientState,
+    setBoneEditorMode: PixelStudio.prototype.setBoneEditorMode,
+    isBindSelectionTool: PixelStudio.prototype.isBindSelectionTool,
+    ensureBindSelectionTool: PixelStudio.prototype.ensureBindSelectionTool,
+    ensureBoneNodeSelection: PixelStudio.prototype.ensureBoneNodeSelection,
+    getSelectedJoint: PixelStudio.prototype.getSelectedJoint,
+    getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
+    getSelectedBone: PixelStudio.prototype.getSelectedBone,
+    getSelectedEdgeBone: PixelStudio.prototype.getSelectedEdgeBone,
+    getBoneChainAnchorFromSelection: PixelStudio.prototype.getBoneChainAnchorFromSelection,
+    setActiveTool(toolId) {
+      this.activeToolId = toolId;
+    }
+  };
+
+  PixelStudio.prototype.setBoneEditorMode.call(fakeEditor, 'bind');
+
+  assert.equal(fakeEditor.boneEditor.mode, 'bind');
+  assert.equal(fakeEditor.boneEditor.selectedEdgeBoneId, null);
+  assert.equal(fakeEditor.activeToolId, TOOL_IDS.SELECT_RECT);
 });
 
 test('selected bone IK toggle flips the joint setting and label', () => {
@@ -2037,7 +3926,7 @@ test('symmetric car strut rig keeps fixed root mounts connected while springs ex
   assert.deepEqual(byId['right-wheel'].start, byId['right-strut'].end);
 });
 
-test('hinge edge mode preserves the rest bend direction for L shapes', () => {
+test('hinge edge endpoint drag directly rotates the selected L shape edge', () => {
   const solveByDrag = (childEndY, targetY) => {
     let rig = createDefaultBoneRig();
     const upper = createBone(rig, { x: 0, y: 0 }, { x: 4, y: 0 }, { id: 'upper' });
@@ -2067,15 +3956,23 @@ test('hinge edge mode preserves the rest bend direction for L shapes', () => {
         return { bones: {} };
       },
       setBonePosePatchesAtCurrentTime(patches) {
-        this.patches = patches;
+        throw new Error(`terminal hinge endpoint drag should not use IK patches: ${Object.keys(patches).join(',')}`);
+      },
+      setBonePosePatchAtCurrentTime(boneId, patch) {
+        this.patch = { boneId, patch };
       }
     };
     assert.equal(PixelStudio.prototype.handleBonePointerMove.call(fakeEditor, { col: 4, row: targetY }), true);
-    return fakeEditor.patches;
+    return fakeEditor.patch;
   };
 
-  assert.ok(solveByDrag(4, -4).lower.angle < -3);
-  assert.ok(solveByDrag(-4, 4).lower.angle > 2.5);
+  const downRest = solveByDrag(4, -4);
+  assert.equal(downRest.boneId, 'lower');
+  assert.ok(downRest.patch.angle < -2.9);
+
+  const upRest = solveByDrag(-4, 4);
+  assert.equal(upRest.boneId, 'lower');
+  assert.ok(upRest.patch.angle > 3);
 });
 
 test('pose reset writes selected bone rest pose at current time', () => {
@@ -2344,6 +4241,845 @@ test('bind mode drag from a node keeps the node selected instead of painting pix
   assert.equal(fakeEditor.boneEditor.pendingBindNodeTap, null);
 });
 
+test('rig mode canvas drag away from nodes creates an assignable pixel selection', () => {
+  const rig = createBone(createDefaultBoneRig(), { x: 1, y: 1 }, { x: 4, y: 1 }, { id: 'chest' }).rig;
+  const selectedOwnerId = rig.bones[0].endJointId;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    activeToolId: TOOL_IDS.SELECT_RECT,
+    tools: [
+      {
+        id: TOOL_IDS.SELECT_RECT,
+        onPointerDown: (point) => PixelStudio.prototype.startSelection.call(fakeEditor, point, 'rect'),
+        onPointerMove: (point) => PixelStudio.prototype.updateSelection.call(fakeEditor, point),
+        onPointerUp: () => PixelStudio.prototype.commitSelection.call(fakeEditor)
+      }
+    ],
+    boneRig: {
+      ...rig,
+      bindings: []
+    },
+    boneEditor: {
+      mode: 'bind',
+      selectedJointId: selectedOwnerId,
+      selectedBoneId: 'chest',
+      selectedEdgeBoneId: null,
+      chainAnchor: { boneId: 'chest', jointId: selectedOwnerId, handle: 'end', x: 4, y: 1 },
+      drag: null,
+      pendingBindNodeTap: null,
+      playing: false
+    },
+    canvasBounds: { x: 0, y: 0, w: 160, h: 160, cellSize: 10, mainX: 0, mainY: 0 },
+    canvasState: { width: 16, height: 16, activeLayerIndex: 0 },
+    tempToolOverrides: new Map(),
+    cloneColorPickArmed: false,
+    selection: {
+      active: false,
+      mask: null,
+      bounds: null,
+      mode: null,
+      start: null,
+      end: null,
+      combineMode: 'replace',
+      baseMask: null,
+      lassoPoints: [],
+      floating: null,
+      floatingMode: null,
+      floatingBounds: null,
+      offset: { x: 0, y: 0 }
+    },
+    toolOptions: { wrapDraw: false },
+    cursor: {},
+    gamepadCursor: { active: false },
+    panJoystick: { center: { x: -100, y: -100 }, radius: 1 },
+    view: { panX: 0, panY: 0 },
+    viewportController: {
+      beginPan() {
+        throw new Error('rig selection should not pan');
+      }
+    },
+    startMenuScrollDrag() {
+      return false;
+    },
+    handleButtonClick() {
+      return false;
+    },
+    isMobileLayout() {
+      return false;
+    },
+    isPointInCircle() {
+      return false;
+    },
+    isPointInBounds: PixelStudio.prototype.isPointInBounds,
+    isBindSelectionTool: PixelStudio.prototype.isBindSelectionTool,
+    ensureBindSelectionTool: PixelStudio.prototype.ensureBindSelectionTool,
+    clearBoneEditorBlockingSelectionState: PixelStudio.prototype.clearBoneEditorBlockingSelectionState,
+    enforceBoneEditorToolMode: PixelStudio.prototype.enforceBoneEditorToolMode,
+    shouldUseUnboundedWrapPointer: PixelStudio.prototype.shouldUseUnboundedWrapPointer,
+    getEffectiveToolId: PixelStudio.prototype.getEffectiveToolId,
+    getBonePointerCoords: PixelStudio.prototype.getBonePointerCoords,
+    getBoneHitRadius: PixelStudio.prototype.getBoneHitRadius,
+    hitTestBoneNode: PixelStudio.prototype.hitTestBoneNode,
+    getDisplayedBonesForBoneEditor() {
+      return this.boneRig.bones;
+    },
+    setActiveTool(toolId) {
+      this.activeToolId = toolId;
+    },
+    setInputMode(mode) {
+      this.inputMode = mode;
+    },
+    cancelLongPress() {},
+    getGridCellFromScreen(x, y) {
+      return { col: Math.floor(x / 10), row: Math.floor(y / 10) };
+    },
+    getBoneCanvasPointFromScreen(_x, _y, point) {
+      return point;
+    },
+    getBoundsFromPoints: PixelStudio.prototype.getBoundsFromPoints,
+    getMaskBounds: PixelStudio.prototype.getMaskBounds,
+    prepareSelectionCombineBase: PixelStudio.prototype.prepareSelectionCombineBase,
+    applySelectionMask: PixelStudio.prototype.applySelectionMask,
+    startSelection: PixelStudio.prototype.startSelection,
+    updateSelection: PixelStudio.prototype.updateSelection,
+    commitSelection: PixelStudio.prototype.commitSelection,
+    handleToolPointerDown: PixelStudio.prototype.handleToolPointerDown,
+    handleToolPointerMove: PixelStudio.prototype.handleToolPointerMove,
+    handleToolPointerUp: PixelStudio.prototype.handleToolPointerUp,
+    handleBonePointerDown: PixelStudio.prototype.handleBonePointerDown,
+    handleBonePointerMove: PixelStudio.prototype.handleBonePointerMove,
+    handleBonePointerUp: PixelStudio.prototype.handleBonePointerUp,
+    ensureBoneNodeSelection: PixelStudio.prototype.ensureBoneNodeSelection,
+    getSelectedBone: PixelStudio.prototype.getSelectedBone,
+    getSelectedJoint: PixelStudio.prototype.getSelectedJoint,
+    getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
+    getBoneChainAnchorFromSelection: PixelStudio.prototype.getBoneChainAnchorFromSelection,
+    setBoneChainAnchor: PixelStudio.prototype.setBoneChainAnchor,
+    startHistory() {},
+    commitHistory() {},
+    finishBoneBindingAction() {},
+    clearSelection: PixelStudio.prototype.clearSelection,
+    getSelectedBoneOwnerId: PixelStudio.prototype.getSelectedBoneOwnerId,
+    addSelectionToSelectedBone: PixelStudio.prototype.addSelectionToSelectedBone
+  };
+
+  PixelStudio.prototype.handlePointerDown.call(fakeEditor, { x: 80, y: 80, button: 0 });
+  PixelStudio.prototype.handlePointerMove.call(fakeEditor, { x: 100, y: 100, buttons: 1 });
+  PixelStudio.prototype.handlePointerUp.call(fakeEditor, { x: 100, y: 100, button: 0 });
+
+  assert.equal(fakeEditor.inputMode, 'canvas');
+  assert.equal(fakeEditor.boneEditor.selectedJointId, selectedOwnerId);
+  assert.equal(fakeEditor.boneEditor.selectedBoneId, 'chest');
+  assert.deepEqual(fakeEditor.selection.bounds, { x: 8, y: 8, w: 3, h: 3 });
+  assert.equal(fakeEditor.selection.active, true);
+
+  PixelStudio.prototype.addSelectionToSelectedBone.call(fakeEditor);
+  const binding = fakeEditor.boneRig.bindings.find((entry) => entry.boneIds.includes(selectedOwnerId));
+  assert.ok(binding);
+  assert.equal(binding.pixels.length, 9);
+});
+
+test('rig mode enables assign when a selected node has an active pixel selection', () => {
+  const rig = createBone(createDefaultBoneRig(), { x: 1, y: 1 }, { x: 4, y: 1 }, { id: 'chest' }).rig;
+  const selectedOwnerId = rig.bones[0].endJointId;
+  const mask = new Uint8Array(16);
+  mask[5] = 1;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    activeToolId: TOOL_IDS.SELECT_RECT,
+    boneRig: rig,
+    boneEditor: {
+      mode: 'bind',
+      selectedJointId: selectedOwnerId,
+      selectedBoneId: 'chest',
+      selectedEdgeBoneId: null
+    },
+    selection: {
+      active: true,
+      mask,
+      bounds: { x: 1, y: 1, w: 1, h: 1 },
+      combineMode: 'replace'
+    },
+    ensureBoneNodeSelection: PixelStudio.prototype.ensureBoneNodeSelection,
+    getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
+    getSelectedBone: PixelStudio.prototype.getSelectedBone,
+    getSelectedEdgeBone: PixelStudio.prototype.getSelectedEdgeBone,
+    getAffectedEdgeBones: PixelStudio.prototype.getAffectedEdgeBones,
+    getCurrentBoneTimelineKey() {
+      return null;
+    },
+    getBoneContextActions: PixelStudio.prototype.getBoneContextActions
+  };
+
+  const assign = PixelStudio.prototype.getBoneContextActions.call(fakeEditor, 'bind', { full: true })
+    .find((entry) => entry.id === 'bind-add');
+
+  assert.ok(assign);
+  assert.equal(assign.disabled, false);
+});
+
+test('pressing rig mode again preserves selection and keeps assign enabled', () => {
+  const rig = createBone(createDefaultBoneRig(), { x: 1, y: 1 }, { x: 4, y: 1 }, { id: 'chest' }).rig;
+  const selectedOwnerId = rig.bones[0].endJointId;
+  const mask = new Uint8Array(16);
+  mask[5] = 1;
+  let clearCalls = 0;
+  const fakeEditor = {
+    activeToolId: TOOL_IDS.PENCIL,
+    boneRig: rig,
+    boneEditor: {
+      mode: 'bind',
+      selectedJointId: selectedOwnerId,
+      selectedBoneId: 'chest',
+      selectedEdgeBoneId: null,
+      drag: { type: 'pose' },
+      pendingBindNodeTap: { type: 'node-select' },
+      linkMode: true,
+      chainAnchor: null,
+      playing: true
+    },
+    selection: {
+      active: true,
+      mask,
+      bounds: { x: 1, y: 1, w: 1, h: 1 },
+      mode: 'rect',
+      baseMask: new Uint8Array(16),
+      start: { col: 1, row: 1 },
+      end: { col: 1, row: 1 },
+      lassoPoints: [{ col: 1, row: 1 }],
+      combineMode: 'replace',
+      floating: null,
+      floatingMode: null,
+      floatingBounds: null,
+      offset: { x: 0, y: 0 }
+    },
+    isBindSelectionTool: PixelStudio.prototype.isBindSelectionTool,
+    ensureBindSelectionTool: PixelStudio.prototype.ensureBindSelectionTool,
+    enforceBoneEditorToolMode: PixelStudio.prototype.enforceBoneEditorToolMode,
+    resetBoneEditorTransientState: PixelStudio.prototype.resetBoneEditorTransientState,
+    setBoneEditorMode: PixelStudio.prototype.setBoneEditorMode,
+    ensureBoneNodeSelection: PixelStudio.prototype.ensureBoneNodeSelection,
+    getSelectedJoint: PixelStudio.prototype.getSelectedJoint,
+    getSelectedBone: PixelStudio.prototype.getSelectedBone,
+    getSelectedEdgeBone: PixelStudio.prototype.getSelectedEdgeBone,
+    getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
+    getBoneChainAnchorFromSelection: PixelStudio.prototype.getBoneChainAnchorFromSelection,
+    getAffectedEdgeBones: PixelStudio.prototype.getAffectedEdgeBones,
+    getCurrentBoneTimelineKey() {
+      return null;
+    },
+    getBoneContextActions: PixelStudio.prototype.getBoneContextActions,
+    setActiveTool(toolId) {
+      this.activeToolId = toolId;
+    },
+    clearSelection() {
+      clearCalls += 1;
+      this.selection.active = false;
+      this.selection.mask = null;
+      this.selection.bounds = null;
+    }
+  };
+
+  PixelStudio.prototype.setBoneEditorMode.call(fakeEditor, 'bind');
+
+  assert.equal(clearCalls, 0);
+  assert.equal(fakeEditor.activeToolId, TOOL_IDS.SELECT_RECT);
+  assert.equal(fakeEditor.boneEditor.drag, null);
+  assert.equal(fakeEditor.boneEditor.pendingBindNodeTap, null);
+  assert.equal(fakeEditor.boneEditor.playing, false);
+  assert.equal(fakeEditor.selection.active, true);
+  assert.equal(fakeEditor.selection.mask, mask);
+  assert.deepEqual(fakeEditor.selection.bounds, { x: 1, y: 1, w: 1, h: 1 });
+  assert.equal(fakeEditor.selection.mode, null);
+  assert.equal(fakeEditor.selection.baseMask, null);
+  assert.equal(fakeEditor.selection.start, null);
+  assert.equal(fakeEditor.selection.end, null);
+  assert.deepEqual(fakeEditor.selection.lassoPoints, []);
+
+  const assign = PixelStudio.prototype.getBoneContextActions.call(fakeEditor, 'bind', { full: true })
+    .find((entry) => entry.id === 'bind-add');
+  assert.ok(assign);
+  assert.equal(assign.disabled, false);
+});
+
+test('rig selection masks only include opaque active layer pixels', () => {
+  const layer = createLayer(4, 2, 'Art');
+  layer.pixels[1] = 0xff0000ff;
+  layer.pixels[3] = 0xffffffff;
+  layer.pixels[6] = 0xff00ffff;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    canvasState: { width: 4, height: 2, activeLayerIndex: 0, layers: [layer] },
+    boneEditor: { mode: 'bind' },
+    selection: { combineMode: 'replace', baseMask: null },
+    getMaskBounds: PixelStudio.prototype.getMaskBounds,
+    filterMaskToActiveLayerOpaque: PixelStudio.prototype.filterMaskToActiveLayerOpaque
+  };
+  const mask = new Uint8Array(8);
+  mask.fill(1);
+
+  PixelStudio.prototype.applySelectionMask.call(fakeEditor, mask);
+
+  assert.deepEqual([...fakeEditor.selection.mask], [0, 1, 0, 1, 0, 0, 1, 0]);
+  assert.deepEqual(fakeEditor.selection.bounds, { x: 1, y: 0, w: 3, h: 2 });
+
+  fakeEditor.selection.combineMode = 'add';
+  fakeEditor.selection.baseMask = new Uint8Array([1, 0, 0, 0, 0, 0, 0, 1]);
+  const addMask = new Uint8Array(8);
+  addMask[6] = 1;
+
+  PixelStudio.prototype.applySelectionMask.call(fakeEditor, addMask);
+
+  assert.deepEqual([...fakeEditor.selection.mask], [0, 0, 0, 0, 0, 0, 1, 0]);
+});
+
+test('rig unassigned action selects opaque active layer pixels without explicit bindings', () => {
+  const layer = createLayer(4, 2, 'Art');
+  layer.pixels[0] = 0xff0000ff;
+  layer.pixels[1] = 0xff00ff00;
+  layer.pixels[2] = 0xffffffff;
+  let rig = createBone(createDefaultBoneRig(), { x: 0, y: 0 }, { x: 3, y: 0 }, { id: 'root' }).rig;
+  const assignedMask = new Uint8Array(8);
+  assignedMask[1] = 1;
+  rig = createSelectionBinding(rig, 0, [rig.bones[0].endJointId], assignedMask, 4, 2);
+  const fakeEditor = {
+    canvasState: { width: 4, height: 2, activeLayerIndex: 0, layers: [layer] },
+    boneRig: rig,
+    boneEditor: { mode: 'bind' },
+    selection: {},
+    activeToolId: TOOL_IDS.PENCIL,
+    statusMessage: '',
+    getMaskBounds: PixelStudio.prototype.getMaskBounds,
+    setSelectionMask: PixelStudio.prototype.setSelectionMask,
+    getActiveLayerAssignedRigMask: PixelStudio.prototype.getActiveLayerAssignedRigMask,
+    ensureBindSelectionTool: PixelStudio.prototype.ensureBindSelectionTool,
+    isBindSelectionTool: PixelStudio.prototype.isBindSelectionTool,
+    setActiveTool(toolId) {
+      this.activeToolId = toolId;
+    }
+  };
+
+  PixelStudio.prototype.selectUnassignedRigPixels.call(fakeEditor);
+
+  assert.deepEqual([...fakeEditor.selection.mask], [1, 0, 1, 0, 0, 0, 0, 0]);
+  assert.equal(fakeEditor.selection.active, true);
+  assert.equal(fakeEditor.activeToolId, TOOL_IDS.SELECT_RECT);
+});
+
+test('converting rig assignments replaces active frame layers ordered by rig depth', () => {
+  const layer = createLayer(4, 2, 'Art');
+  layer.pixels[0] = 0xff0000ff;
+  layer.pixels[1] = 0xff00ff00;
+  layer.pixels[2] = 0xffffffff;
+  let rig = createDefaultBoneRig();
+  const root = createBone(rig, { x: 0, y: 0 }, { x: 1, y: 0 }, { id: 'root' });
+  rig = root.rig;
+  const child = createBone(rig, root.bone.end, { x: 2, y: 0 }, {
+    id: 'child',
+    parentId: 'root',
+    startJointId: root.bone.endJointId
+  });
+  rig = child.rig;
+  rig.joints.find((joint) => joint.id === root.bone.startJointId).name = 'Body';
+  rig.joints.find((joint) => joint.id === child.bone.endJointId).name = 'Hand';
+  const bodyMask = new Uint8Array(8);
+  bodyMask[0] = 1;
+  const handMask = new Uint8Array(8);
+  handMask[2] = 1;
+  rig = createSelectionBinding(rig, 0, [root.bone.startJointId], bodyMask, 4, 2);
+  rig = createSelectionBinding(rig, 0, [child.bone.endJointId], handMask, 4, 2);
+  const fakeEditor = {
+    canvasState: { width: 4, height: 2, activeLayerIndex: 0, layers: [layer] },
+    currentFrame: { layers: [layer] },
+    boneRig: rig,
+    boneEditor: { reverseRigLayerOrder: false },
+    startHistory() {},
+    commitHistory() {},
+    setFrameLayers(layers) {
+      this.canvasState.layers = layers;
+      this.currentFrame.layers = layers;
+    },
+    getRigOwnerDepths: PixelStudio.prototype.getRigOwnerDepths,
+    getRigOwnerLayerName: PixelStudio.prototype.getRigOwnerLayerName
+  };
+
+  PixelStudio.prototype.convertRigAssignmentsToLayers.call(fakeEditor);
+
+  assert.deepEqual(fakeEditor.currentFrame.layers.map((entry) => entry.name), ['Body', 'Hand']);
+  assert.equal(fakeEditor.currentFrame.layers[0].pixels[0], 0xff0000ff);
+  assert.equal(fakeEditor.currentFrame.layers[0].pixels[2], 0);
+  assert.equal(fakeEditor.currentFrame.layers[1].pixels[0], 0);
+  assert.equal(fakeEditor.currentFrame.layers[1].pixels[2], 0xffffffff);
+  assert.deepEqual(fakeEditor.boneRig.bindings.map((binding) => ({
+    layerIndex: binding.layerIndex,
+    boneIds: binding.boneIds,
+    skinningMode: binding.skinningMode
+  })), [
+    { layerIndex: 0, boneIds: [root.bone.startJointId], skinningMode: 'rigid-layer' },
+    { layerIndex: 1, boneIds: [child.bone.endJointId], skinningMode: 'rigid-layer' }
+  ]);
+
+  const posedLayers = deformLayersWithBonePose(fakeEditor.currentFrame.layers, 4, 2, fakeEditor.boneRig, {
+    bones: { child: { angle: 0, dx: 1, dy: 0, scale: 1 } }
+  });
+  assert.equal(posedLayers[0].pixels[0], 0xff0000ff);
+  assert.equal(posedLayers[1].pixels[3], 0xffffffff);
+
+  fakeEditor.canvasState.layers = [layer];
+  fakeEditor.currentFrame.layers = [layer];
+  fakeEditor.boneRig = rig;
+  fakeEditor.boneEditor.reverseRigLayerOrder = true;
+
+  PixelStudio.prototype.convertRigAssignmentsToLayers.call(fakeEditor);
+
+  assert.deepEqual(fakeEditor.currentFrame.layers.map((entry) => entry.name), ['Hand', 'Body']);
+  assert.deepEqual(fakeEditor.boneRig.bindings.map((binding) => ({
+    layerIndex: binding.layerIndex,
+    boneIds: binding.boneIds,
+    skinningMode: binding.skinningMode
+  })), [
+    { layerIndex: 0, boneIds: [child.bone.endJointId], skinningMode: 'rigid-layer' },
+    { layerIndex: 1, boneIds: [root.bone.startJointId], skinningMode: 'rigid-layer' }
+  ]);
+});
+
+test('rigid layer bindings do not auto weight or interpolate unassigned pixels', () => {
+  let rig = createDefaultBoneRig();
+  const root = createBone(rig, { x: 1, y: 1 }, { x: 3, y: 1 }, { id: 'head' });
+  rig = root.rig;
+  const layer = createLayer(8, 4, 'Head Layer');
+  const headIndex = 1 * 8 + 3;
+  const chestIndex = 1 * 8 + 2;
+  layer.pixels[headIndex] = 0xffffffff;
+  layer.pixels[chestIndex] = 0xff0000ff;
+  const mask = new Uint8Array(8 * 4);
+  mask[headIndex] = 1;
+  rig = createSelectionBinding(rig, 0, [root.bone.endJointId], mask, 8, 4);
+  rig = {
+    ...rig,
+    bindings: rig.bindings.map((binding) => ({ ...binding, skinningMode: 'rigid-layer' }))
+  };
+
+  const [deformed] = deformLayersWithBonePose([layer], 8, 4, rig, {
+    bones: { head: { angle: 0, dx: 2, dy: 0, scale: 1 } }
+  });
+
+  assert.equal(deformed.pixels[chestIndex], 0xff0000ff);
+  assert.equal(deformed.pixels[headIndex], 0);
+  assert.equal(deformed.pixels[1 * 8 + 5], 0xffffffff);
+});
+
+test('rigid layer pose preview skips layers outside the active bone set', () => {
+  let rig = createDefaultBoneRig();
+  rig = createBone(rig, { x: 0, y: 0 }, { x: 2, y: 0 }, { id: 'head' }).rig;
+  rig = createBone(rig, { x: 0, y: 1 }, { x: 2, y: 1 }, { id: 'chest' }).rig;
+  const headLayer = createLayer(8, 4, 'Head');
+  const chestLayer = createLayer(8, 4, 'Chest');
+  headLayer.pixels[1] = 0xffffffff;
+  chestLayer.pixels[8 + 1] = 0xff0000ff;
+  const headMask = new Uint8Array(8 * 4);
+  const chestMask = new Uint8Array(8 * 4);
+  headMask[1] = 1;
+  chestMask[8 + 1] = 1;
+  rig = createSelectionBinding(rig, 0, ['head'], headMask, 8, 4);
+  rig = createSelectionBinding(rig, 1, ['chest'], chestMask, 8, 4);
+  rig = {
+    ...rig,
+    bindings: rig.bindings.map((binding) => ({ ...binding, skinningMode: 'rigid-layer' }))
+  };
+
+  const [headPreview, chestPreview] = deformLayersWithBones([headLayer, chestLayer], 8, 4, rig, {
+    bones: {
+      head: { angle: 0, dx: 2, dy: 0, scale: 1 },
+      chest: { angle: 0, dx: 2, dy: 0, scale: 1 }
+    }
+  }, {
+    preview: true,
+    activeBoneIds: new Set(['head'])
+  });
+
+  assert.equal(headPreview.pixels[1], 0);
+  assert.equal(headPreview.pixels[3], 0xffffffff);
+  assert.equal(chestPreview.pixels[8 + 1], 0xff0000ff);
+  assert.equal(chestPreview.pixels[8 + 3], 0);
+});
+
+test('active pose preview does not clone layers outside the active bone set', () => {
+  let rig = createDefaultBoneRig();
+  rig = createBone(rig, { x: 0, y: 0 }, { x: 3, y: 0 }, { id: 'arm' }).rig;
+  rig = createBone(rig, { x: 0, y: 3 }, { x: 3, y: 3 }, { id: 'leg' }).rig;
+  const armLayer = createLayer(8, 4, 'Arm');
+  const legLayer = createLayer(8, 4, 'Leg');
+  armLayer.pixels[1] = 0xff0000ff;
+  legLayer.pixels[25] = 0x00ff00ff;
+  const armMask = new Uint8Array(32);
+  const legMask = new Uint8Array(32);
+  armMask[1] = 1;
+  legMask[25] = 1;
+  rig = addMaskToBoneBinding(rig, 0, 'arm', armMask, 8, 4);
+  rig = addMaskToBoneBinding(rig, 1, 'leg', legMask, 8, 4);
+
+  const result = deformLayersWithBones([armLayer, legLayer], 8, 4, rig, {
+    bones: { arm: { angle: 0.4, dx: 0, dy: 0, scale: 1 } }
+  }, {
+    preview: true,
+    activeBoneIds: new Set(['arm']),
+    meshCache: new Map()
+  });
+
+  assert.notEqual(result[0], armLayer);
+  assert.equal(result[1], legLayer);
+});
+
+test('bone action grid registers button groups for bone ui hit testing', () => {
+  const fakeEditor = {
+    uiButtons: [],
+    drawButton() {},
+    registerFocusable() {},
+    drawPortraitActionGrid: PixelStudio.prototype.drawPortraitActionGrid
+  };
+
+  PixelStudio.prototype.drawPortraitActionGrid.call(fakeEditor, {}, 10, 20, 120, [
+    { id: 'bind-add', label: 'Assign', action() {} }
+  ], { group: 'bone-actions' });
+
+  assert.equal(fakeEditor.uiButtons.length, 1);
+  assert.equal(fakeEditor.uiButtons[0].group, 'bone-actions');
+});
+
+test('bone editor ui tap over canvas does not clear rig selection or route to canvas', () => {
+  const mask = new Uint8Array(16);
+  mask[5] = 1;
+  let buttonClicks = 0;
+  let clearCalls = 0;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    canvasBounds: { x: 0, y: 0, w: 160, h: 160 },
+    cursor: {},
+    selection: {
+      active: true,
+      mask,
+      bounds: { x: 1, y: 1, w: 1, h: 1 }
+    },
+    boneEditor: { mode: 'bind' },
+    uiButtons: [
+      {
+        bounds: { x: 20, y: 20, w: 60, h: 36 },
+        group: 'bone-actions',
+        onClick: () => {
+          buttonClicks += 1;
+        }
+      }
+    ],
+    boneUiRegions: [],
+    transportPopover: null,
+    uiSliderDrag: null,
+    menuOpen: false,
+    controlsOverlayOpen: false,
+    paletteGridOpen: false,
+    selectionContextMenu: null,
+    brushPickerOpen: false,
+    transformModal: null,
+    pasteImportModal: null,
+    mobileDrawerBounds: null,
+    mobileZoomSliderBounds: null,
+    activeToolId: TOOL_IDS.SELECT_RECT,
+    panJoystick: { center: { x: -100, y: -100 }, radius: 1 },
+    view: { panX: 0, panY: 0 },
+    isPointInBounds: PixelStudio.prototype.isPointInBounds,
+    hitTestUiButton: PixelStudio.prototype.hitTestUiButton,
+    isBoneEditorUiHit: PixelStudio.prototype.isBoneEditorUiHit,
+    isBoneEditorPointerUiHit: PixelStudio.prototype.isBoneEditorPointerUiHit,
+    shouldBoneCanvasOwnPointerDown: PixelStudio.prototype.shouldBoneCanvasOwnPointerDown,
+    handlePriorityUiDragHit: PixelStudio.prototype.handlePriorityUiDragHit,
+    startMenuScrollDrag() {
+      throw new Error('bone ui tap should not start menu scroll');
+    },
+    handleButtonClick(x, y) {
+      const hit = this.hitTestUiButton({ x, y });
+      if (!hit) return false;
+      hit.onClick?.();
+      return true;
+    },
+    setInputMode() {
+      throw new Error('bone ui tap should not route to canvas');
+    },
+    handleBonePointerDown() {
+      throw new Error('bone ui tap should not hit bones');
+    },
+    handleToolPointerDown() {
+      throw new Error('bone ui tap should not select pixels');
+    },
+    clearSelection() {
+      clearCalls += 1;
+    }
+  };
+
+  PixelStudio.prototype.handlePointerDown.call(fakeEditor, { x: 30, y: 30, button: 0 });
+
+  assert.equal(buttonClicks, 1);
+  assert.equal(clearCalls, 0);
+  assert.equal(fakeEditor.selection.active, true);
+  assert.equal(fakeEditor.pointerDownOnUi, true);
+});
+
+test('bone list touch drag scrolls before bone ui hit consumes the tap', () => {
+  let rowClicks = 0;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    canvasBounds: { x: 0, y: 0, w: 220, h: 260 },
+    cursor: {},
+    selection: { active: false },
+    boneEditor: { mode: 'time', submenu: 'nodes', drag: null },
+    uiButtons: [{
+      bounds: { x: 24, y: 44, w: 120, h: 38 },
+      group: 'bone-actions',
+      onClick: () => {
+        rowClicks += 1;
+      }
+    }],
+    boneUiRegions: [{ x: 20, y: 40, w: 180, h: 132 }],
+    boneListMeta: {
+      scrollBounds: { x: 20, y: 40, w: 180, h: 132 },
+      lineHeight: 44,
+      maxScroll: 5
+    },
+    focusScroll: { bones: 0 },
+    focusGroups: { file: [] },
+    focusGroupMeta: { file: { maxVisible: 1 } },
+    transportPopover: null,
+    uiSliderDrag: null,
+    menuOpen: false,
+    controlsOverlayOpen: false,
+    paletteGridOpen: false,
+    selectionContextMenu: null,
+    brushPickerOpen: false,
+    transformModal: null,
+    pasteImportModal: null,
+    mobileDrawerBounds: null,
+    mobileZoomSliderBounds: null,
+    panJoystick: { center: { x: -100, y: -100 }, radius: 1, active: false },
+    view: { panX: 0, panY: 0 },
+    isPointInBounds: PixelStudio.prototype.isPointInBounds,
+    hitTestUiButton: PixelStudio.prototype.hitTestUiButton,
+    isBoneEditorUiHit: PixelStudio.prototype.isBoneEditorUiHit,
+    isBoneEditorPointerUiHit: PixelStudio.prototype.isBoneEditorPointerUiHit,
+    shouldBoneCanvasOwnPointerDown: PixelStudio.prototype.shouldBoneCanvasOwnPointerDown,
+    handlePriorityUiDragHit: PixelStudio.prototype.handlePriorityUiDragHit,
+    startMenuScrollDrag: PixelStudio.prototype.startMenuScrollDrag,
+    handlePointerMove: PixelStudio.prototype.handlePointerMove,
+    handlePointerUp: PixelStudio.prototype.handlePointerUp,
+    handleButtonClick() {
+      throw new Error('scrollable bone list touch should start scroll drag before button click');
+    },
+    setInputMode() {
+      throw new Error('bone list drag should not route to canvas');
+    },
+    handleBonePointerDown() {
+      throw new Error('bone list drag should not hit bones');
+    },
+    handleToolPointerDown() {
+      throw new Error('bone list drag should not select pixels');
+    },
+    cancelLongPress() {}
+  };
+
+  PixelStudio.prototype.handlePointerDown.call(fakeEditor, { x: 30, y: 50, button: 0, touchCount: 1, id: 1 });
+
+  assert.equal(fakeEditor.menuScrollDrag?.scrollGroup, 'bones');
+  assert.equal(fakeEditor.pointerDownOnUi, undefined);
+  assert.equal(rowClicks, 0);
+
+  PixelStudio.prototype.handlePointerMove.call(fakeEditor, { x: 30, y: 6, id: 1 });
+
+  assert.equal(fakeEditor.menuScrollDrag.moved, true);
+  assert.equal(fakeEditor.focusScroll.bones, 1);
+
+  PixelStudio.prototype.handlePointerUp.call(fakeEditor, { x: 30, y: 6, id: 1 });
+
+  assert.equal(fakeEditor.menuScrollDrag, null);
+  assert.equal(rowClicks, 0);
+});
+
+test('bone list touch tap still invokes row action when not dragged', () => {
+  let rowClicks = 0;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    canvasBounds: { x: 0, y: 0, w: 220, h: 260 },
+    cursor: {},
+    selection: { active: false },
+    boneEditor: { mode: 'time', submenu: 'nodes', drag: null },
+    uiButtons: [{
+      bounds: { x: 24, y: 44, w: 120, h: 38 },
+      group: 'bone-actions',
+      onClick: () => {
+        rowClicks += 1;
+      }
+    }],
+    boneUiRegions: [{ x: 20, y: 40, w: 180, h: 132 }],
+    boneListMeta: {
+      scrollBounds: { x: 20, y: 40, w: 180, h: 132 },
+      lineHeight: 44,
+      maxScroll: 5
+    },
+    focusScroll: { bones: 0 },
+    focusGroups: { file: [] },
+    focusGroupMeta: { file: { maxVisible: 1 } },
+    transportPopover: null,
+    uiSliderDrag: null,
+    menuOpen: false,
+    controlsOverlayOpen: false,
+    paletteGridOpen: false,
+    selectionContextMenu: null,
+    brushPickerOpen: false,
+    transformModal: null,
+    pasteImportModal: null,
+    mobileDrawerBounds: null,
+    mobileZoomSliderBounds: null,
+    panJoystick: { center: { x: -100, y: -100 }, radius: 1, active: false },
+    view: { panX: 0, panY: 0 },
+    isPointInBounds: PixelStudio.prototype.isPointInBounds,
+    hitTestUiButton: PixelStudio.prototype.hitTestUiButton,
+    isBoneEditorUiHit: PixelStudio.prototype.isBoneEditorUiHit,
+    isBoneEditorPointerUiHit: PixelStudio.prototype.isBoneEditorPointerUiHit,
+    shouldBoneCanvasOwnPointerDown: PixelStudio.prototype.shouldBoneCanvasOwnPointerDown,
+    handlePriorityUiDragHit: PixelStudio.prototype.handlePriorityUiDragHit,
+    startMenuScrollDrag: PixelStudio.prototype.startMenuScrollDrag,
+    handlePointerUp: PixelStudio.prototype.handlePointerUp,
+    handleButtonClick() {
+      throw new Error('bone list tap should be deferred through menu scroll drag');
+    },
+    setInputMode() {
+      throw new Error('bone list tap should not route to canvas');
+    },
+    handleBonePointerDown() {
+      throw new Error('bone list tap should not hit bones');
+    },
+    handleToolPointerDown() {
+      throw new Error('bone list tap should not select pixels');
+    },
+    cancelLongPress() {}
+  };
+
+  PixelStudio.prototype.handlePointerDown.call(fakeEditor, { x: 30, y: 50, button: 0, touchCount: 1, id: 1 });
+  PixelStudio.prototype.handlePointerUp.call(fakeEditor, { x: 30, y: 50, id: 1 });
+
+  assert.equal(rowClicks, 1);
+  assert.equal(fakeEditor.menuScrollDrag, null);
+  assert.equal(fakeEditor.focusScroll.bones, 0);
+});
+
+test('portrait rig drawer tap over canvas preserves selection and never routes through', () => {
+  const mask = new Uint8Array(16);
+  mask[5] = 1;
+  let clearCalls = 0;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    mobileDrawer: 'panel',
+    mobileDrawerBounds: { x: 20, y: 20, w: 120, h: 120 },
+    canvasBounds: { x: 0, y: 0, w: 160, h: 160 },
+    cursor: {},
+    selection: {
+      active: true,
+      mask,
+      bounds: { x: 1, y: 1, w: 1, h: 1 }
+    },
+    boneEditor: { mode: 'bind' },
+    uiButtons: [],
+    boneUiRegions: [],
+    transportPopover: null,
+    uiSliderDrag: null,
+    activeToolId: TOOL_IDS.SELECT_RECT,
+    panJoystick: { center: { x: -100, y: -100 }, radius: 1 },
+    view: { panX: 0, panY: 0 },
+    isPointInBounds: PixelStudio.prototype.isPointInBounds,
+    hitTestUiButton: PixelStudio.prototype.hitTestUiButton,
+    isBoneEditorUiHit: PixelStudio.prototype.isBoneEditorUiHit,
+    isBoneEditorPointerUiHit: PixelStudio.prototype.isBoneEditorPointerUiHit,
+    shouldBoneCanvasOwnPointerDown: PixelStudio.prototype.shouldBoneCanvasOwnPointerDown,
+    handlePriorityUiDragHit: PixelStudio.prototype.handlePriorityUiDragHit,
+    handleButtonClick() {
+      return false;
+    },
+    startMenuScrollDrag() {
+      throw new Error('portrait rig drawer tap should not start scroll behind ui');
+    },
+    setInputMode() {
+      throw new Error('portrait rig drawer tap should not route to canvas');
+    },
+    handleBonePointerDown() {
+      throw new Error('portrait rig drawer tap should not hit bones');
+    },
+    handleToolPointerDown() {
+      throw new Error('portrait rig drawer tap should not select pixels');
+    },
+    clearSelection() {
+      clearCalls += 1;
+    }
+  };
+
+  PixelStudio.prototype.handlePointerDown.call(fakeEditor, { x: 40, y: 40, button: 0, touchCount: 1 });
+
+  assert.equal(clearCalls, 0);
+  assert.equal(fakeEditor.selection.active, true);
+  assert.equal(fakeEditor.pointerDownOnUi, true);
+});
+
+test('portrait rig rail region over canvas preserves selection without a button hit', () => {
+  const mask = new Uint8Array(16);
+  mask[5] = 1;
+  let clearCalls = 0;
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    mobileDrawerBounds: null,
+    canvasBounds: { x: 0, y: 0, w: 180, h: 180 },
+    cursor: {},
+    selection: {
+      active: true,
+      mask,
+      bounds: { x: 1, y: 1, w: 1, h: 1 }
+    },
+    boneEditor: { mode: 'bind' },
+    uiButtons: [],
+    boneUiRegions: [{ x: 30, y: 30, w: 120, h: 48 }],
+    transportPopover: null,
+    uiSliderDrag: null,
+    activeToolId: TOOL_IDS.SELECT_RECT,
+    panJoystick: { center: { x: -100, y: -100 }, radius: 1 },
+    view: { panX: 0, panY: 0 },
+    isPointInBounds: PixelStudio.prototype.isPointInBounds,
+    hitTestUiButton: PixelStudio.prototype.hitTestUiButton,
+    isBoneEditorUiHit: PixelStudio.prototype.isBoneEditorUiHit,
+    isBoneEditorPointerUiHit: PixelStudio.prototype.isBoneEditorPointerUiHit,
+    shouldBoneCanvasOwnPointerDown: PixelStudio.prototype.shouldBoneCanvasOwnPointerDown,
+    handlePriorityUiDragHit: PixelStudio.prototype.handlePriorityUiDragHit,
+    handleButtonClick() {
+      return false;
+    },
+    startMenuScrollDrag() {
+      throw new Error('portrait rig rail tap should not start scroll behind ui');
+    },
+    setInputMode() {
+      throw new Error('portrait rig rail tap should not route to canvas');
+    },
+    handleBonePointerDown() {
+      throw new Error('portrait rig rail tap should not hit bones');
+    },
+    handleToolPointerDown() {
+      throw new Error('portrait rig rail tap should not select pixels');
+    },
+    clearSelection() {
+      clearCalls += 1;
+    }
+  };
+
+  PixelStudio.prototype.handlePointerDown.call(fakeEditor, { x: 40, y: 40, button: 0, touchCount: 1 });
+
+  assert.equal(clearCalls, 0);
+  assert.equal(fakeEditor.selection.active, true);
+  assert.equal(fakeEditor.pointerDownOnUi, true);
+});
+
 const createCarDemoStyleRig = () => normalizeBoneRig({
     joints: [
       { id: 'root', x: 5.0642, y: 3.6121 },
@@ -2492,9 +5228,9 @@ test('car demo style rig canvas taps bypass stale bone list scroll hitboxes in r
     assert.equal(fakeEditor.boneEditor.selectedJointId, joint.id);
     assert.equal(fakeEditor.boneEditor.selectedEdgeBoneId, null);
     assert.equal(fakeEditor.menuScrollDrag, undefined);
-    assert.equal(fakeEditor.selection.active, false);
-    assert.equal(fakeEditor.selection.start, null);
-    assert.equal(fakeEditor.selection.end, null);
+    assert.equal(fakeEditor.selection.active, true);
+    assert.deepEqual(fakeEditor.selection.start, { col: 0, row: 0 });
+    assert.deepEqual(fakeEditor.selection.end, { col: 2, row: 2 });
     assert.equal(PixelStudio.prototype.handleBonePointerUp.call(fakeEditor), true);
   });
 });
@@ -3095,10 +5831,17 @@ test('rig entry clears stale floating selection before node taps', () => {
   PixelStudio.prototype.setBoneEditorMode.call(fakeEditor, 'bind');
 
   assert.equal(fakeEditor.activeToolId, TOOL_IDS.SELECT_RECT);
-  assert.equal(fakeEditor.selection.active, false);
-  assert.equal(fakeEditor.selection.mask, null);
+  assert.equal(fakeEditor.selection.active, true);
+  assert.ok(fakeEditor.selection.mask);
+  assert.deepEqual(fakeEditor.selection.bounds, { x: 0, y: 0, w: 1, h: 1 });
+  assert.equal(fakeEditor.selection.mode, null);
+  assert.equal(fakeEditor.selection.start, null);
+  assert.equal(fakeEditor.selection.end, null);
+  assert.deepEqual(fakeEditor.selection.lassoPoints, []);
   assert.equal(fakeEditor.selection.floating, null);
   assert.equal(fakeEditor.selection.floatingMode, null);
+  assert.equal(fakeEditor.selection.floatingBounds, null);
+  assert.deepEqual(fakeEditor.selection.offset, { x: 0, y: 0 });
   assert.equal(fakeEditor.selectionContextMenu, null);
   assert.equal(fakeEditor.moveTransformDrag, null);
 
@@ -3211,6 +5954,9 @@ test('mobile portrait drawer closes and still routes bone canvas taps', () => {
     enforceBoneEditorToolMode() {
       calls.push('enforce');
     },
+    ensureBindSelectionTool() {
+      calls.push('ensure-bind-tool');
+    },
     shouldUseUnboundedWrapPointer: PixelStudio.prototype.shouldUseUnboundedWrapPointer,
     getGridCellFromScreen() {
       return { col: 4, row: 5 };
@@ -3239,24 +5985,30 @@ test('mobile portrait drawer closes and still routes bone canvas taps', () => {
   assert.equal(fakeEditor.mobileDrawerBounds, null);
   assert.equal(fakeEditor.pixelPortraitSubpanel, null);
   assert.equal(fakeEditor.inputMode, 'canvas');
-  assert.deepEqual(calls, ['enforce', ['bone', { col: 4, row: 5 }], 'cancel-long-press']);
+  assert.deepEqual(calls, ['ensure-bind-tool', ['bone', { col: 4, row: 5 }], 'cancel-long-press']);
 });
 
-test('bone overlay source uses yellow only for selected nodes, not edges', () => {
+test('bone overlay source uses yellow for selected nodes and only the selected edge', () => {
   const overlayStart = pixelStudioSource.indexOf('drawBoneOverlay(ctx');
   const overlayEnd = pixelStudioSource.indexOf('async choosePixelExportFormat()');
   const overlaySource = pixelStudioSource.slice(overlayStart, overlayEnd);
 
   assert.equal(overlaySource.includes('const selectedYellow = \'#ffe16a\''), true);
-  assert.equal(overlaySource.includes('ctx.strokeStyle = selectedYellow'), false);
+  assert.equal(overlaySource.includes('const selectedEdgeBoneId = this.boneEditor.selectedEdgeBoneId || null'), true);
+  assert.equal(overlaySource.includes("const poseTargetEdgeId = this.boneEditor.mode === 'pose' ? getPoseTargetEdge.call(this)?.id || null : null"), true);
+  assert.equal(overlaySource.includes('const highlightedEdgeBoneId = selectedEdgeBoneId || poseTargetEdgeId'), true);
+  assert.equal(overlaySource.includes('const selectedEdge = highlightedEdgeBoneId === bone.id'), true);
+  assert.equal(overlaySource.includes('ctx.strokeStyle = selectedEdge ? selectedYellow'), true);
+  assert.equal(overlaySource.includes('const arrowSize = Math.max(5, Math.min(12, zoom * 0.36))'), true);
+  assert.equal(overlaySource.includes('? { selectedJointId: null, downstream: new Set() }'), true);
   assert.equal(overlaySource.includes("'#82f59a'"), true);
   assert.equal(overlaySource.includes("'#6ad7ff'"), true);
-  assert.equal(overlaySource.includes('getActiveBoneOverlayIds(displayedBones)'), true);
+  assert.equal(overlaySource.includes('selectedEdgeBoneId ? new Set() : this.getActiveBoneOverlayIds(displayedBones, adjacency)'), true);
   assert.equal(pixelStudioSource.includes("ctx.fillStyle = 'rgba(130, 245, 154, 0.32)'"), true);
 });
 
-test('bone editor suppresses generic pixel selection overlays', () => {
-  assert.equal(pixelStudioSource.includes("const showGenericSelectionOverlays = this.leftPanelTab !== 'bones'"), true);
+test('bone editor shows generic pixel selection overlays only in rig mode', () => {
+  assert.equal(pixelStudioSource.includes("const showGenericSelectionOverlays = this.leftPanelTab !== 'bones' || this.boneEditor?.mode === 'bind'"), true);
   assert.equal(pixelStudioSource.includes('if (showGenericSelectionOverlays && this.selection.active && this.selection.bounds)'), true);
   assert.equal(pixelStudioSource.includes('if (showGenericSelectionOverlays && this.selection.floating)'), true);
   assert.equal(pixelStudioSource.includes("if (this.leftPanelTab === 'bones') {\n      this.drawSelectedBoneBindingOverlay"), true);
@@ -3320,20 +6072,22 @@ test('baking bone animation switches to the animation frames panel', () => {
 test('portrait bone editor uses one root action row with focused submenus', () => {
   assert.deepEqual(
     buildPixelPortraitBoneActions().map((entry) => entry.label),
-    ['Bones', 'Rig', 'Pose', 'Tools']
+    ['Build', 'Rig', 'Pose', 'Tools']
   );
 
   const groups = buildPixelPortraitBoneActionGroups();
+  assert.equal(groups.bones.title, 'Build');
   assert.deepEqual(groups.bones.actionIds, ['bone-add', 'bone-link', 'bone-reverse', 'bone-stretch', 'bone-ik', 'bone-delete']);
+  assert.equal(groups.nodes.title, 'Nodes');
   assert.equal(groups.bind.actionIds.includes('bind-mode'), true);
   assert.equal(groups.bind.actionIds.includes('bind-prev'), false);
   assert.equal(groups.bind.actionIds.includes('bind-next'), false);
   assert.equal(groups.bind.actionIds.includes('bind-add'), true);
   assert.equal(groups.bind.actionIds.includes('selection-clipboard'), false);
   assert.equal(groups.bind.actionIds.includes('selection-transform-tools'), false);
-  assert.deepEqual(groups.pose.actionIds, ['pose-set', 'pose-reset', 'pose-delete', 'pose-back', 'pose-forward', 'pose-length']);
+  assert.deepEqual(groups.pose.actionIds, ['pose-target', 'pose-set', 'pose-reset', 'pose-delete', 'pose-back', 'pose-forward', 'pose-length']);
   assert.equal(groups.pose.actionIds.includes('pose-time'), false);
-  assert.deepEqual(groups.time.actionIds, ['time-bake']);
+  assert.deepEqual(groups.time.actionIds, ['time-bake', 'time-hide-bones', 'time-frame-count', 'time-convert-layers', 'time-reverse-layers', 'time-list-bones']);
   assert.equal(groups.time.actionIds.includes('time-rewind'), false);
   assert.equal(groups.time.actionIds.includes('time-play'), false);
   assert.equal(groups.time.actionIds.includes('time-forward'), false);
@@ -3341,6 +6095,197 @@ test('portrait bone editor uses one root action row with focused submenus', () =
   assert.equal(pixelStudioSource.includes("transportMode: 'bones'"), true);
   assert.equal(pixelStudioSource.includes("this.transportPopover?.mode === 'bones'"), true);
   assert.equal(pixelStudioSource.includes("this.boneEditor.submenu === entry.id ? null : entry.id"), true);
+});
+
+test('bone editor keeps node list behind tools list bones action', () => {
+  const labels = [];
+  const rig = normalizeBoneRig({
+    joints: [
+      { id: 'root', x: 0, y: 0, name: 'Head' },
+      { id: 'tip', x: 4, y: 0 }
+    ],
+    bones: [{ id: 'root-bone', name: 'Root Bone', start: { x: 0, y: 0 }, end: { x: 4, y: 0 }, startJointId: 'root', endJointId: 'tip' }]
+  });
+  const fakeEditor = {
+    boneRig: rig,
+    boneEditor: {
+      mode: 'time',
+      submenu: 'time',
+      selectedJointId: 'root',
+      selectedBoneId: 'root-bone',
+      selectedEdgeBoneId: null,
+      linkMode: true,
+      timeMs: 0
+    },
+    selection: { active: false, mask: null },
+    activeToolId: TOOL_IDS.PENCIL,
+    focusScroll: { bones: 0 },
+    boneUiRegions: [],
+    uiButtons: [],
+    registerFocusable() {},
+    drawButton(ctx, bounds, label) {
+      labels.push(label);
+    },
+    ensureBoneNodeSelection: PixelStudio.prototype.ensureBoneNodeSelection,
+    getSelectedBone: PixelStudio.prototype.getSelectedBone,
+    getSelectedEdgeBone: PixelStudio.prototype.getSelectedEdgeBone,
+    getAffectedEdgeBones: PixelStudio.prototype.getAffectedEdgeBones,
+    getAffectedEdgeSummary() {
+      return 'Root Bone';
+    },
+    getCurrentBoneTimelineKey() {
+      return null;
+    },
+    getBoneBakeFrameCount() {
+      return 1;
+    },
+    toggleReverseRigLayerOrder() {},
+    convertRigAssignmentsToLayers() {},
+    getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
+    drawBoneNodeList: PixelStudio.prototype.drawBoneNodeList,
+    drawBoneTimelineStrip() {},
+    getBoneEditorActions: PixelStudio.prototype.getBoneEditorActions,
+    getBoneContextActions: PixelStudio.prototype.getBoneContextActions
+  };
+
+  PixelStudio.prototype.drawBoneEditorPanel.call(fakeEditor, createMockContext(), 0, 0, 220, 260, { isMobile: false });
+
+  assert.equal(labels.includes('Tools'), true);
+  assert.equal(labels.includes('List Bones'), true);
+  assert.equal(labels.includes('Node 1'), false);
+  assert.equal(labels.includes('Head'), false);
+  assert.equal(fakeEditor.boneListMeta, null);
+
+  labels.length = 0;
+  const nodesAction = PixelStudio.prototype.getBoneContextActions.call(fakeEditor, 'time', { full: true })
+    .find((entry) => entry.id === 'time-list-bones');
+  assert.ok(nodesAction);
+  nodesAction.action();
+  assert.equal(fakeEditor.boneEditor.submenu, 'nodes');
+
+  PixelStudio.prototype.drawBoneEditorPanel.call(fakeEditor, createMockContext(), 0, 0, 220, 260, { isMobile: false });
+
+  assert.equal(labels.includes('Head'), true);
+  assert.ok(fakeEditor.boneListMeta);
+});
+
+test('bone node list selection updates selected node without selecting an edge', () => {
+  const rig = normalizeBoneRig({
+    joints: [
+      { id: 'root', x: 0, y: 0 },
+      { id: 'tip', x: 4, y: 0 }
+    ],
+    bones: [{ id: 'root-bone', name: 'Root Bone', start: { x: 0, y: 0 }, end: { x: 4, y: 0 }, startJointId: 'root', endJointId: 'tip' }]
+  });
+  const fakeEditor = {
+    boneRig: rig,
+    boneEditor: {
+      selectedJointId: 'root',
+      selectedBoneId: 'root-bone',
+      selectedEdgeBoneId: 'root-bone',
+      chainAnchor: null
+    },
+    focusScroll: { bones: 1 },
+    boneUiRegions: [],
+    uiButtons: [],
+    renameCalls: [],
+    registerFocusable() {},
+    drawButton() {},
+    getBoneForSelectedJoint: PixelStudio.prototype.getBoneForSelectedJoint,
+    renameSelectedBoneNode(jointId) {
+      this.renameCalls.push(jointId);
+    }
+  };
+
+  PixelStudio.prototype.drawBoneNodeList.call(fakeEditor, createMockContext(), 0, 0, 160, 80, { isMobile: false, group: 'bone-actions' });
+  assert.equal(fakeEditor.uiButtons.length, 4);
+  assert.equal(fakeEditor.uiButtons[2].group, 'bone-actions');
+
+  fakeEditor.uiButtons[2].onClick();
+
+  assert.equal(fakeEditor.boneEditor.selectedJointId, 'tip');
+  assert.equal(fakeEditor.boneEditor.selectedBoneId, 'root-bone');
+  assert.equal(fakeEditor.boneEditor.selectedEdgeBoneId, null);
+  assert.deepEqual(fakeEditor.boneEditor.chainAnchor, { boneId: 'root-bone', jointId: 'tip', handle: 'end', x: 4, y: 0 });
+
+  fakeEditor.uiButtons[3].onClick();
+  assert.deepEqual(fakeEditor.renameCalls, ['tip']);
+});
+
+test('bone tools expose hide during playback and bake frame count controls', () => {
+  const fakeEditor = {
+    boneRig: { bindings: [{}] },
+    boneEditor: {
+      mode: 'time',
+      hideBonesDuringPlayback: false,
+      bakeFrameCount: 7
+    },
+    selection: { active: false },
+    getSelectedBone() {
+      return null;
+    },
+    getSelectedEdgeBone() {
+      return null;
+    },
+    getAffectedEdgeBones: PixelStudio.prototype.getAffectedEdgeBones,
+    getCurrentBoneTimelineKey() {
+      return null;
+    },
+    getBoneBakeFrameCount: PixelStudio.prototype.getBoneBakeFrameCount,
+    toggleHideBonesDuringPlayback: PixelStudio.prototype.toggleHideBonesDuringPlayback,
+    promptBoneBakeFrameCount() {},
+    bakeBoneAnimationToCopiedFrames() {}
+  };
+
+  const actions = PixelStudio.prototype.getBoneContextActions.call(fakeEditor, 'time', { full: true });
+  assert.deepEqual(actions.map((entry) => entry.id), ['time-bake', 'time-hide-bones', 'time-frame-count', 'time-convert-layers', 'time-reverse-layers', 'time-list-bones']);
+  assert.equal(actions.find((entry) => entry.id === 'time-frame-count').label, 'Frames: 7');
+  assert.equal(actions.find((entry) => entry.id === 'time-convert-layers').label, 'Rig to Layers');
+  assert.equal(actions.find((entry) => entry.id === 'time-reverse-layers').label, 'Root Top: Off');
+  assert.equal(actions.find((entry) => entry.id === 'time-list-bones').label, 'List Bones');
+  actions.find((entry) => entry.id === 'time-hide-bones').action();
+  assert.equal(fakeEditor.boneEditor.hideBonesDuringPlayback, true);
+});
+
+test('rigging entry switches to build mode without opening the portrait drawer', () => {
+  const fakeEditor = {
+    leftPanelTab: 'draw',
+    mobileDrawer: 'panel',
+    mobileDrawerBounds: { x: 1, y: 2, w: 3, h: 4 },
+    pixelPortraitSubpanel: 'tools',
+    boneListMeta: { scrollBounds: { x: 0, y: 0, w: 10, h: 10 } },
+    boneEditor: { mode: 'pose', submenu: 'pose' },
+    setLeftPanelTab(tab) {
+      this.leftPanelTab = tab;
+    },
+    setBoneEditorMode: PixelStudio.prototype.setBoneEditorMode,
+    resetBoneEditorTransientState() {},
+    getBoneChainAnchorFromSelection() {
+      return null;
+    }
+  };
+
+  PixelStudio.prototype.enterRiggingBuildMode.call(fakeEditor);
+
+  assert.equal(fakeEditor.leftPanelTab, 'bones');
+  assert.equal(fakeEditor.boneEditor.mode, 'bones');
+  assert.equal(fakeEditor.boneEditor.submenu, null);
+  assert.equal(fakeEditor.mobileDrawer, null);
+  assert.equal(fakeEditor.mobileDrawerBounds, null);
+  assert.equal(fakeEditor.pixelPortraitSubpanel, null);
+  assert.equal(fakeEditor.boneListMeta, null);
+});
+
+test('bone overlays can be hidden only during playback', () => {
+  const fakeEditor = {
+    leftPanelTab: 'bones',
+    boneEditor: { hideBonesDuringPlayback: true, playing: true },
+    shouldHideBoneOverlaysDuringPlayback: PixelStudio.prototype.shouldHideBoneOverlaysDuringPlayback
+  };
+
+  assert.equal(PixelStudio.prototype.shouldHideBoneOverlaysDuringPlayback.call(fakeEditor), true);
+  fakeEditor.boneEditor.playing = false;
+  assert.equal(PixelStudio.prototype.shouldHideBoneOverlaysDuringPlayback.call(fakeEditor), false);
 });
 
 test('bone transport actions scrub and play the pose timeline', () => {
@@ -3383,7 +6328,7 @@ test('PixelStudio exposes bone editor as a non-runtime frame baking workflow', (
   assert.equal(pixelStudioSource.includes('drawBoneEditorPanel(ctx'), true);
   assert.equal(pixelStudioSource.includes('handleBonePointerDown(point)'), true);
   assert.equal(pixelStudioSource.includes('compositeBonePreview(this.canvasState.layers'), true);
-  assert.equal(pixelStudioSource.includes('let composite = this.shouldShowBonePreview()'), true);
+  assert.equal(pixelStudioSource.includes('getCachedBonePreviewComposite(width, height'), true);
   assert.equal(pixelStudioSource.includes('getDisplayedBonesForBoneEditor()'), true);
   assert.equal(pixelStudioSource.includes("&& (mode === 'pose' || mode === 'time')"), true);
   assert.equal(pixelStudioSource.includes('setBonePosePatchAtCurrentTime(boneId'), true);

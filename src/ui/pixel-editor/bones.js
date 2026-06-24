@@ -9,6 +9,8 @@ const clonePoint = (point = {}) => ({
 
 const POINT_EPSILON = 0.001;
 const BONE_JOINT_MODES = ['rotate', 'fixed', 'stretch', 'spring', 'slide', 'hinge'];
+const LARGE_MESH_VERTEX_LIMIT = 12000;
+const BONE_SKINNING_MODES = ['mesh', 'rigid-layer'];
 
 const normalizeJointMode = (bone = {}) => {
   if (bone.jointMode === 'none') return 'slide';
@@ -24,6 +26,10 @@ const normalizeJointSettings = (settings = {}) => ({
   ikEnabled: settings.ikEnabled !== false
 });
 
+const normalizeSkinningMode = (mode) => (
+  BONE_SKINNING_MODES.includes(mode) ? mode : 'mesh'
+);
+
 export const createDefaultBoneRig = () => ({
   version: 1,
   joints: [],
@@ -35,10 +41,9 @@ export const createDefaultBoneRig = () => ({
 
 export const cloneBoneRig = (rig = createDefaultBoneRig()) => normalizeBoneRig(rig);
 
-export const normalizeBoneRig = (rig = {}) => {
+export const normalizeBoneSkeleton = (rig = {}) => {
   const bones = Array.isArray(rig.bones) ? rig.bones : [];
   const sourceJoints = Array.isArray(rig.joints) ? rig.joints : [];
-  const bindings = Array.isArray(rig.bindings) ? rig.bindings : [];
   const poses = Array.isArray(rig.poses) ? rig.poses : [];
   const poseTimeline = Array.isArray(rig.poseTimeline) ? rig.poseTimeline : [];
   const joints = [];
@@ -54,6 +59,9 @@ export const normalizeBoneRig = (rig = {}) => {
       id = `joint-${nextJointIndex}`;
     }
     const joint = { id, ...clonePoint(point) };
+    if (typeof point?.name === 'string' && point.name.trim()) {
+      joint.name = point.name.trim();
+    }
     joints.push(joint);
     jointById.set(id, joint);
     if (preferredId) jointAliasById.set(String(preferredId), id);
@@ -123,6 +131,29 @@ export const normalizeBoneRig = (rig = {}) => {
     normalizedBones.push(normalized);
     boneById.set(id, normalized);
   });
+  return {
+    version: 1,
+    joints,
+    bones: normalizedBones,
+    bindings: Array.isArray(rig.bindings) ? rig.bindings : [],
+    poses: poses.map((pose) => ({
+      frameIndex: Math.max(0, Math.round(Number(pose.frameIndex) || 0)),
+      bones: normalizePoseBones(pose.bones),
+      nodes: normalizePoseNodes(pose.nodes)
+    })),
+    poseTimeline: normalizePoseTimeline(poseTimeline.length
+      ? poseTimeline
+      : poses.map((pose) => ({
+          timeMs: Math.max(0, Math.round(Number(pose.frameIndex) || 0) * 120),
+          bones: pose.bones,
+          nodes: pose.nodes
+        })))
+  };
+};
+
+export const normalizeBoneRig = (rig = {}, options = {}) => {
+  const skeleton = normalizeBoneSkeleton(rig);
+  const bindings = Array.isArray(rig.bindings) ? rig.bindings : [];
   const normalizedBindings = bindings.map((binding, index) => ({
     id: String(binding.id || `binding-${index + 1}`),
     type: binding.type === 'selection' ? 'selection' : 'layer',
@@ -134,23 +165,14 @@ export const normalizeBoneRig = (rig = {}) => {
           weights: normalizeWeights(pixel.weights)
         }))
       : [],
+    skinningMode: normalizeSkinningMode(binding.skinningMode),
     name: String(binding.name || `Binding ${index + 1}`)
   }));
   return {
-    version: 1,
-    joints,
-    bones: normalizedBones,
-    bindings: normalizeExclusiveBindings(normalizedBindings),
-    poses: poses.map((pose) => ({
-      frameIndex: Math.max(0, Math.round(Number(pose.frameIndex) || 0)),
-      bones: normalizePoseBones(pose.bones)
-    })),
-    poseTimeline: normalizePoseTimeline(poseTimeline.length
-      ? poseTimeline
-      : poses.map((pose) => ({
-          timeMs: Math.max(0, Math.round(Number(pose.frameIndex) || 0) * 120),
-          bones: pose.bones
-        })))
+    ...skeleton,
+    bindings: options.exclusive === false
+      ? normalizedBindings.filter((binding) => binding.pixels.length)
+      : normalizeExclusiveBindings(normalizedBindings),
   };
 };
 
@@ -160,7 +182,8 @@ export const normalizePoseTimeline = (timeline = []) => {
       id: String(key.id || `pose-${index + 1}`),
       timeMs: Math.max(0, Math.round(Number(key.timeMs) || 0)),
       interpolation: key.interpolation === 'hold' ? 'hold' : 'linear',
-      bones: normalizePoseBones(key.bones)
+      bones: normalizePoseBones(key.bones),
+      nodes: normalizePoseNodes(key.nodes)
     }))
     .sort((a, b) => a.timeMs - b.timeMs);
   return normalized.filter((key, index) => index === 0 || key.timeMs !== normalized[index - 1].timeMs);
@@ -190,12 +213,12 @@ const resolveJointOwnerBoneId = (rig, ownerId) => {
   if (!id) return null;
   if (rig.bones.some((bone) => bone.id === id)) return id;
   if (!rig.joints.some((joint) => joint.id === id)) return null;
-  const child = rig.bones.find((bone) => bone.startJointId === id);
-  if (child) return child.id;
   const parent = rig.bones.find((bone) => bone.endJointId === id);
+  const child = rig.bones.find((bone) => bone.startJointId === id);
+  const parentMode = parent?.jointMode || (parent?.stretch ? 'stretch' : 'rotate');
+  if (parent && child && (parentMode === 'spring' || parentMode === 'stretch')) return child.id;
   if (parent) return parent.id;
-  const startOnly = rig.bones.find((bone) => bone.startJointId === id);
-  return startOnly?.id || null;
+  return child?.id || null;
 };
 
 const resolveWeightsForSkinning = (rig, weights = {}) => {
@@ -207,6 +230,42 @@ const resolveWeightsForSkinning = (rig, weights = {}) => {
   });
   return normalizeWeights(resolved);
 };
+
+const createJointOwnerResolver = (rig) => {
+  const cache = new Map();
+  return (ownerId) => {
+    const id = String(ownerId || '');
+    if (!id) return null;
+    if (!cache.has(id)) cache.set(id, resolveJointOwnerBoneId(rig, id));
+    return cache.get(id);
+  };
+};
+
+const resolveWeightsForSkinningWithResolver = (resolveOwnerBoneId, weights = {}) => {
+  const resolved = {};
+  Object.entries(normalizeWeights(weights)).forEach(([ownerId, weight]) => {
+    const boneId = resolveOwnerBoneId(ownerId);
+    if (!boneId) return;
+    resolved[boneId] = (resolved[boneId] || 0) + weight;
+  });
+  return normalizeWeights(resolved);
+};
+
+const bindingTouchesBoneIds = (binding, resolveOwnerBoneId, boneIds) => {
+  if (!(boneIds instanceof Set) || !boneIds.size) return true;
+  const touchesOwner = (ownerId) => {
+    const boneId = resolveOwnerBoneId(ownerId);
+    return boneId && boneIds.has(boneId);
+  };
+  if ((binding.boneIds || []).some(touchesOwner)) return true;
+  return (binding.pixels || []).some((pixel) => (
+    Object.keys(pixel.weights || {}).some(touchesOwner)
+  ));
+};
+
+const layerBindingsTouchBoneIds = (layerBindings, resolveOwnerBoneId, boneIds) => (
+  (layerBindings || []).some((binding) => bindingTouchesBoneIds(binding, resolveOwnerBoneId, boneIds))
+);
 
 const normalizeExclusiveBindings = (bindings = []) => {
   const candidates = [];
@@ -239,6 +298,7 @@ const normalizeExclusiveBindings = (bindings = []) => {
         type: candidate.binding.type,
         layerIndex: candidate.binding.layerIndex,
         boneIds: [candidate.ownerId],
+        skinningMode: candidate.binding.skinningMode || 'mesh',
         pixels: [],
         name: candidate.binding.name,
         order: candidate.order
@@ -256,6 +316,7 @@ const normalizeExclusiveBindings = (bindings = []) => {
       type: binding.type,
       layerIndex: binding.layerIndex,
       boneIds: binding.boneIds,
+      skinningMode: binding.skinningMode || 'mesh',
       pixels: binding.pixels.sort((a, b) => a.index - b.index),
       name: binding.name
     }))
@@ -274,6 +335,15 @@ const normalizePoseBones = (bones = {}) => Object.fromEntries(
   ])
 );
 
+const normalizePoseNodes = (nodes = {}) => Object.fromEntries(
+  Object.entries(nodes || {}).map(([id, pose]) => [
+    String(id),
+    {
+      angle: Number.isFinite(pose?.angle) ? pose.angle : 0
+    }
+  ])
+);
+
 const mergePoseBoneMaps = (base = {}, patch = {}) => {
   const bones = { ...base };
   Object.entries(patch || {}).forEach(([id, pose]) => {
@@ -286,6 +356,17 @@ const mergePoseBoneMaps = (base = {}, patch = {}) => {
     };
   });
   return bones;
+};
+
+const mergePoseNodeMaps = (base = {}, patch = {}) => {
+  const nodes = { ...base };
+  Object.entries(patch || {}).forEach(([id, pose]) => {
+    const previous = nodes[id] || { angle: 0 };
+    nodes[id] = {
+      angle: Number.isFinite(pose?.angle) ? pose.angle : previous.angle
+    };
+  });
+  return nodes;
 };
 
 const shortestAngleDelta = (from, to) => {
@@ -372,7 +453,7 @@ export const syncBoneRigFromJoints = (rig) => {
 };
 
 export const getBoneJointUsageCount = (rig, jointId) => {
-  const safeRig = normalizeBoneRig(rig);
+  const safeRig = normalizeBoneSkeleton(rig);
   return safeRig.bones.reduce((count, bone) => (
     count
     + (bone.startJointId === jointId ? 1 : 0)
@@ -381,7 +462,7 @@ export const getBoneJointUsageCount = (rig, jointId) => {
 };
 
 export const buildBoneGraph = (rig = createDefaultBoneRig()) => {
-  const safeRig = normalizeBoneRig(rig);
+  const safeRig = normalizeBoneSkeleton(rig);
   const incomingByJoint = new Map();
   const outgoingByJoint = new Map();
   const parentById = new Map();
@@ -423,8 +504,8 @@ const clonePoseBone = (pose = {}) => ({
   scale: Number.isFinite(pose?.scale) ? Math.max(0.05, pose.scale) : 1
 });
 
-export const constrainSharedJointPose = (rig, pose = {}) => {
-  const graph = buildBoneGraph(rig);
+export const constrainSharedJointPose = (rig, pose = {}, options = {}) => {
+  const graph = options.graph || buildBoneGraph(rig);
   const bones = {};
   Object.entries(pose?.bones || {}).forEach(([boneId, bonePose]) => {
     bones[String(boneId)] = clonePoseBone(bonePose);
@@ -444,7 +525,7 @@ export const constrainSharedJointPose = (rig, pose = {}) => {
       };
     });
   });
-  return { ...pose, bones };
+  return { ...pose, bones, nodes: normalizePoseNodes(pose?.nodes) };
 };
 
 const getChildBones = (rig, boneId) => {
@@ -573,7 +654,7 @@ export const removeOrphanBoneJoints = (rig) => {
 };
 
 export const getPoseForFrame = (rig, frameIndex) => {
-  const safeRig = normalizeBoneRig(rig);
+  const safeRig = normalizeBoneSkeleton(rig);
   return safeRig.poses.find((pose) => pose.frameIndex === frameIndex) || { frameIndex, bones: {} };
 };
 
@@ -615,7 +696,7 @@ export const setBonePoseAtTime = (rig, timeMs, boneId, posePatch = {}) => {
   return next;
 };
 
-export const setPoseKeyAtTime = (rig, timeMs, bones = {}) => {
+export const setPoseKeyAtTime = (rig, timeMs, bones = {}, nodes = {}) => {
   const next = cloneBoneRig(rig);
   const safeTime = Math.max(0, Math.round(Number(timeMs) || 0));
   let key = next.poseTimeline.find((entry) => entry.timeMs === safeTime);
@@ -624,6 +705,7 @@ export const setPoseKeyAtTime = (rig, timeMs, bones = {}) => {
     next.poseTimeline.push(key);
   }
   key.bones = constrainSharedJointPose(next, { bones: normalizePoseBones(bones) }).bones;
+  key.nodes = normalizePoseNodes(nodes);
   next.poseTimeline = normalizePoseTimeline(next.poseTimeline);
   return next;
 };
@@ -682,7 +764,6 @@ const assignPixelsToSingleBone = (rig, layerIndex, boneId, pixelIndexes, type, n
     existing.set(index, { index, weights: singleBoneWeights(ownerId) });
   });
   binding.pixels = [...existing.values()].sort((a, b) => a.index - b.index);
-  next.bindings = normalizeExclusiveBindings(next.bindings);
   return next;
 };
 
@@ -694,31 +775,39 @@ export const removePoseKeyAtTime = (rig, timeMs) => {
 };
 
 export const getPoseKeyAtTime = (rig, timeMs) => {
-  const safeRig = normalizeBoneRig(rig);
+  const safeRig = normalizeBoneSkeleton(rig);
   const safeTime = Math.max(0, Math.round(Number(timeMs) || 0));
   return safeRig.poseTimeline.find((entry) => entry.timeMs === safeTime) || null;
 };
 
 export const samplePoseTimeline = (rig, timeMs) => {
-  const safeRig = normalizeBoneRig(rig);
+  const safeRig = normalizeBoneSkeleton(rig);
   const timeline = safeRig.poseTimeline;
   const safeTime = Math.max(0, Number(timeMs) || 0);
   if (!timeline.length) return { timeMs: safeTime, bones: {} };
   const effectivePoseAt = (keyIndex) => {
     let bones = {};
+    let nodes = {};
     for (let index = 0; index <= keyIndex; index += 1) {
       bones = mergePoseBoneMaps(bones, timeline[index].bones);
+      nodes = mergePoseNodeMaps(nodes, timeline[index].nodes);
     }
-    return constrainSharedJointPose(safeRig, { timeMs: timeline[keyIndex].timeMs, bones }).bones;
+    const constrained = constrainSharedJointPose(safeRig, { timeMs: timeline[keyIndex].timeMs, bones, nodes });
+    return { bones: constrained.bones, nodes: constrained.nodes };
   };
   if (safeTime < timeline[0].timeMs) {
+    const firstPose = timeline[0].timeMs <= 0 ? effectivePoseAt(0) : { bones: {}, nodes: {} };
     return constrainSharedJointPose(safeRig, {
       timeMs: safeTime,
-      bones: timeline[0].timeMs <= 0 ? effectivePoseAt(0) : {}
+      bones: firstPose.bones,
+      nodes: firstPose.nodes
     });
   }
   const last = timeline[timeline.length - 1];
-  if (safeTime >= last.timeMs) return constrainSharedJointPose(safeRig, { timeMs: safeTime, bones: effectivePoseAt(timeline.length - 1) });
+  if (safeTime >= last.timeMs) {
+    const lastPose = effectivePoseAt(timeline.length - 1);
+    return constrainSharedJointPose(safeRig, { timeMs: safeTime, bones: lastPose.bones, nodes: lastPose.nodes });
+  }
   let previousIndex = 0;
   let nextIndex = timeline.length - 1;
   for (let index = 1; index < timeline.length; index += 1) {
@@ -730,12 +819,14 @@ export const samplePoseTimeline = (rig, timeMs) => {
   }
   const previous = timeline[previousIndex];
   const next = timeline[nextIndex];
-  const previousBones = effectivePoseAt(previousIndex);
-  const nextBones = effectivePoseAt(nextIndex);
+  const previousPose = effectivePoseAt(previousIndex);
+  const nextPose = effectivePoseAt(nextIndex);
   if (previous.interpolation === 'hold') {
-    return constrainSharedJointPose(safeRig, { timeMs: safeTime, bones: previousBones });
+    return constrainSharedJointPose(safeRig, { timeMs: safeTime, bones: previousPose.bones, nodes: previousPose.nodes });
   }
   const t = (safeTime - previous.timeMs) / Math.max(1, next.timeMs - previous.timeMs);
+  const previousBones = previousPose.bones;
+  const nextBones = nextPose.bones;
   const ids = new Set([...Object.keys(previousBones), ...Object.keys(nextBones)]);
   const bones = {};
   ids.forEach((id) => {
@@ -750,18 +841,28 @@ export const samplePoseTimeline = (rig, timeMs) => {
       scale: lerpValue(a.scale ?? 1, b.scale ?? 1, scaleT)
     };
   });
-  return constrainSharedJointPose(safeRig, { timeMs: safeTime, bones });
+  const nodeIds = new Set([...Object.keys(previousPose.nodes || {}), ...Object.keys(nextPose.nodes || {})]);
+  const nodes = {};
+  nodeIds.forEach((id) => {
+    const a = previousPose.nodes?.[id] || { angle: 0 };
+    const b = nextPose.nodes?.[id] || a;
+    nodes[id] = { angle: lerpAngle(a.angle, b.angle, t) };
+  });
+  return constrainSharedJointPose(safeRig, { timeMs: safeTime, bones, nodes });
 };
 
 const lerpValue = (a, b, t) => a + (b - a) * Math.max(0, Math.min(1, t));
 
 const isRestPose = (pose = {}, epsilon = 0.0001) => {
   const bones = pose?.bones || {};
+  const nodes = pose?.nodes || {};
   return Object.values(bones).every((bonePose) => (
     Math.abs(Number(bonePose?.angle) || 0) <= epsilon
     && Math.abs(Number(bonePose?.dx) || 0) <= epsilon
     && Math.abs(Number(bonePose?.dy) || 0) <= epsilon
     && Math.abs((Number.isFinite(bonePose?.scale) ? bonePose.scale : 1) - 1) <= epsilon
+  )) && Object.values(nodes).every((nodePose) => (
+    Math.abs(Number(nodePose?.angle) || 0) <= epsilon
   ));
 };
 
@@ -826,13 +927,13 @@ export const getBoneAssignedMask = (rig, boneId, width, height, layerIndex = nul
   return mask;
 };
 
-const buildPoseGeometryMap = (rig, frameIndexOrPose) => {
+const buildPoseGeometryMap = (rig, frameIndexOrPose, options = {}) => {
   const rawPose = typeof frameIndexOrPose === 'object' && frameIndexOrPose
     ? frameIndexOrPose
     : getPoseForFrame(rig, frameIndexOrPose);
-  const graph = buildBoneGraph(rig);
+  const graph = options.graph || buildBoneGraph(rig);
   const safeRig = graph.rig;
-  const pose = constrainSharedJointPose(safeRig, rawPose);
+  const pose = constrainSharedJointPose(safeRig, rawPose, { graph });
   const result = new Map();
   const computing = new Set();
   const compute = (bone) => {
@@ -906,7 +1007,51 @@ const buildPoseGeometryMap = (rig, frameIndexOrPose) => {
     return geometry;
   };
   safeRig.bones.forEach((bone) => compute(bone));
-  return Object.fromEntries([...result.entries()]);
+  const transformMap = Object.fromEntries([...result.entries()]);
+  const jointPoints = {};
+  safeRig.joints.forEach((joint) => {
+    const attached = safeRig.bones.find((bone) => bone.startJointId === joint.id || bone.endJointId === joint.id);
+    const entry = attached ? transformMap[attached.id] : null;
+    if (!attached || !entry) {
+      jointPoints[joint.id] = clonePoint(joint);
+    } else {
+      jointPoints[joint.id] = attached.startJointId === joint.id
+        ? clonePoint(entry.start)
+        : clonePoint(entry.end);
+    }
+  });
+  Object.defineProperty(transformMap, '__nodePoses', {
+    value: normalizePoseNodes(pose.nodes),
+    enumerable: false
+  });
+  Object.defineProperty(transformMap, '__jointPoints', {
+    value: jointPoints,
+    enumerable: false
+  });
+  return transformMap;
+};
+
+const isJointOwnerId = (rig, ownerId) => {
+  const id = String(ownerId || '');
+  return Boolean(id && rig.joints.some((joint) => joint.id === id));
+};
+
+const applyNodeLocalTransform = (point, vertex, transformMap) => {
+  const ownerId = vertex?.explicitOwnerId || null;
+  if (!ownerId) return point;
+  const nodePose = transformMap.__nodePoses?.[ownerId] || null;
+  const angle = Number(nodePose?.angle) || 0;
+  if (Math.abs(angle) <= 0.0001) return point;
+  const pivot = transformMap.__jointPoints?.[ownerId] || null;
+  if (!pivot) return point;
+  const dx = point.x - pivot.x;
+  const dy = point.y - pivot.y;
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
+  return {
+    x: pivot.x + dx * cos - dy * sin,
+    y: pivot.y + dx * sin + dy * cos
+  };
 };
 
 const transformPointByBone = (x, y, entry, options = {}) => {
@@ -936,7 +1081,7 @@ const transformPointByBone = (x, y, entry, options = {}) => {
 };
 
 export const getPosedBoneGeometry = (rig, frameIndexOrPose) => {
-  const safeRig = normalizeBoneRig(rig);
+  const safeRig = normalizeBoneSkeleton(rig);
   const transformMap = buildPoseGeometryMap(safeRig, frameIndexOrPose);
   return safeRig.bones.map((bone) => {
     const entry = transformMap[bone.id];
@@ -1046,6 +1191,26 @@ const distanceToSegment = (x, y, a, b) => {
   return Math.hypot(x - (a.x + dx * t), y - (a.y + dy * t));
 };
 
+const isFinitePoint = (x, y) => Number.isFinite(x) && Number.isFinite(y);
+
+const getLineSafetyLimit = (width, height) => Math.max(8, (Math.max(width, height) * 4) + 8);
+const getMeshSpanSafetyLimit = (width, height) => Math.max(8, Math.min(96, Math.ceil(Math.max(width, height) * 0.375)));
+
+const isSafeRasterLine = (width, height, x0, y0, x1, y1) => {
+  if (!isFinitePoint(x0, y0) || !isFinitePoint(x1, y1)) return false;
+  const limit = getLineSafetyLimit(width, height);
+  const min = -limit;
+  const maxX = width + limit;
+  const maxY = height + limit;
+  return x0 >= min && x0 <= maxX && x1 >= min && x1 <= maxX
+    && y0 >= min && y0 <= maxY && y1 >= min && y1 <= maxY;
+};
+
+const isSafeMeshSpan = (width, height, x0, y0, x1, y1) => {
+  if (!isSafeRasterLine(width, height, x0, y0, x1, y1)) return false;
+  return Math.max(Math.abs(Math.round(x1) - Math.round(x0)), Math.abs(Math.round(y1) - Math.round(y0))) <= getMeshSpanSafetyLimit(width, height);
+};
+
 const withAddedWeight = (weights, boneId, amount) => {
   if (!boneId || amount <= 0) return weights;
   const next = { ...weights };
@@ -1056,21 +1221,31 @@ const withAddedWeight = (weights, boneId, amount) => {
   return normalizeWeights(next);
 };
 
-const softenWeightsForConnectedJoints = (rig, x, y, weights) => {
+const buildWeightSofteningContext = (rig) => {
+  const graph = buildBoneGraph(rig);
+  const boneById = new Map(graph.rig.bones.map((bone) => [bone.id, bone]));
+  return {
+    rig: graph.rig,
+    boneById,
+    childrenByParent: graph.childrenByParent
+  };
+};
+
+const softenWeightsForConnectedJointsFromContext = (context, x, y, weights) => {
   const normalized = normalizeWeights(weights);
   const entries = Object.entries(normalized);
   if (entries.length !== 1) return normalized;
   const [boneId] = entries[0];
-  const bone = rig.bones.find((entry) => entry.id === boneId);
+  const bone = context.boneById.get(boneId);
   if (!bone) return normalized;
   const radius = Math.max(2.5, Math.min(12, bone.length * 0.8));
   let next = normalized;
-  const parent = bone.parentId ? rig.bones.find((entry) => entry.id === bone.parentId) : null;
+  const parent = bone.parentId ? context.boneById.get(bone.parentId) : null;
   if (parent && parent.endJointId === bone.startJointId && parent.jointMode !== 'spring') {
     const t = 1 - Math.min(1, distanceToPoint(x, y, bone.start) / radius);
     next = withAddedWeight(next, parent.id, t * 0.65);
   }
-  const children = getChildBones(rig, bone.id).filter((child) => child.startJointId === bone.endJointId);
+  const children = (context.childrenByParent.get(bone.id) || []).filter((child) => child.startJointId === bone.endJointId);
   if (children.length && bone.jointMode !== 'spring') {
     const t = 1 - Math.min(1, distanceToPoint(x, y, bone.end) / radius);
     const amount = (t * 0.65) / children.length;
@@ -1081,8 +1256,12 @@ const softenWeightsForConnectedJoints = (rig, x, y, weights) => {
   return next;
 };
 
+const softenWeightsForConnectedJoints = (rig, x, y, weights) => (
+  softenWeightsForConnectedJointsFromContext(buildWeightSofteningContext(rig), x, y, weights)
+);
+
 const transformWeightedPoint = (x, y, weights, transformMap, vertex = null) => {
-  const entries = Object.entries(normalizeWeights(weights));
+  const entries = vertex?.weightEntries || Object.entries(normalizeWeights(weights));
   if (!entries.length) return { x, y };
   let outX = 0;
   let outY = 0;
@@ -1093,7 +1272,7 @@ const transformWeightedPoint = (x, y, weights, transformMap, vertex = null) => {
     outX += point.x * weight;
     outY += point.y * weight;
   });
-  return { x: outX, y: outY };
+  return applyNodeLocalTransform({ x: outX, y: outY }, vertex, transformMap);
 };
 
 const getConnectedAutomaticWeights = (rig, x, y, nearestEntries) => {
@@ -1121,62 +1300,172 @@ const getConnectedAutomaticWeights = (rig, x, y, nearestEntries) => {
   });
 };
 
-export const getAutomaticBoneWeightsForPixel = (rig, x, y, candidateBoneIds = null) => {
+const buildAutomaticWeightContext = (rig, candidateBoneIds = null) => {
   const safeRig = normalizeBoneRig(rig);
   const allowed = candidateBoneIds?.size
     ? new Set([...candidateBoneIds].map(String))
     : null;
-  const candidates = safeRig.bones
-    .filter((bone) => !allowed || allowed.has(bone.id))
-    .map((bone) => ({
-      bone,
-      distance: distanceToSegment(x, y, bone.start, bone.end)
-    }))
-    .sort((a, b) => a.distance - b.distance);
+  return {
+    rig: safeRig,
+    bones: safeRig.bones.filter((bone) => !allowed || allowed.has(bone.id))
+  };
+};
+
+const getAutomaticBoneWeightsForPixelFromContext = (context, x, y) => {
+  const candidates = context.bones.map((bone) => ({
+    bone,
+    distance: distanceToSegment(x, y, bone.start, bone.end)
+  })).sort((a, b) => a.distance - b.distance);
   if (!candidates.length) return {};
-  return getConnectedAutomaticWeights(safeRig, x, y, candidates) || { [candidates[0].bone.id]: 1 };
+  return getConnectedAutomaticWeights(context.rig, x, y, candidates) || { [candidates[0].bone.id]: 1 };
+};
+
+export const getAutomaticBoneWeightsForPixel = (rig, x, y, candidateBoneIds = null) => {
+  return getAutomaticBoneWeightsForPixelFromContext(buildAutomaticWeightContext(rig, candidateBoneIds), x, y);
+};
+
+const countOpaquePixels = (pixels, width, height, stopAfter = Infinity) => {
+  let count = 0;
+  for (let index = 0; index < width * height; index += 1) {
+    if (!pixels[index]) continue;
+    count += 1;
+    if (count > stopAfter) return count;
+  }
+  return count;
+};
+
+const buildLargeLayerMeshScope = (layer, width, height, explicitByIndex) => {
+  const scoped = new Set(explicitByIndex.keys());
+  explicitByIndex.forEach((_weights, index) => {
+    const col = index % width;
+    const row = Math.floor(index / width);
+    for (let yy = -1; yy <= 1; yy += 1) {
+      for (let xx = -1; xx <= 1; xx += 1) {
+        const x = col + xx;
+        const y = row + yy;
+        if (x < 0 || y < 0 || x >= width || y >= height) continue;
+        const neighborIndex = y * width + x;
+        if (layer.pixels[neighborIndex]) scoped.add(neighborIndex);
+      }
+    }
+  });
+  return scoped;
 };
 
 const buildLayerSkinMesh = (rig, layer, width, height, layerBindings) => {
   const explicitByIndex = new Map();
   const candidateBoneIds = new Set();
+  const resolveOwnerBoneId = createJointOwnerResolver(rig);
   layerBindings.forEach((binding) => {
     binding.boneIds.forEach((id) => {
-      const boneId = resolveJointOwnerBoneId(rig, id);
+      const boneId = resolveOwnerBoneId(id);
       if (boneId) candidateBoneIds.add(boneId);
     });
     binding.pixels.forEach((pixel) => {
       Object.keys(pixel.weights || {}).forEach((id) => {
-        const boneId = resolveJointOwnerBoneId(rig, id);
+        const boneId = resolveOwnerBoneId(id);
         if (boneId) candidateBoneIds.add(boneId);
       });
       explicitByIndex.set(pixel.index, normalizeWeights(pixel.weights));
     });
   });
+  const opaqueCount = countOpaquePixels(layer.pixels, width, height, LARGE_MESH_VERTEX_LIMIT);
+  const scopedIndexes = opaqueCount > LARGE_MESH_VERTEX_LIMIT
+    ? buildLargeLayerMeshScope(layer, width, height, explicitByIndex)
+    : null;
+  const autoContext = buildAutomaticWeightContext(rig, candidateBoneIds);
+  const softeningContext = buildWeightSofteningContext(rig);
   const vertices = new Map();
+  vertices.largeSourceMesh = Boolean(scopedIndexes);
   for (let index = 0; index < width * height; index += 1) {
+    if (scopedIndexes && !scopedIndexes.has(index)) continue;
     const value = layer.pixels[index];
     if (!value) continue;
     const x = index % width;
     const y = Math.floor(index / width);
     const explicitWeights = explicitByIndex.get(index);
+    const explicitOwnerId = explicitWeights ? getSingleWeightBoneId(explicitWeights) : null;
     const resolvedExplicitWeights = explicitWeights && Object.keys(explicitWeights).length
-      ? resolveWeightsForSkinning(rig, explicitWeights)
+      ? resolveWeightsForSkinningWithResolver(resolveOwnerBoneId, explicitWeights)
       : null;
     const baseWeights = resolvedExplicitWeights
       ? resolvedExplicitWeights
-      : getAutomaticBoneWeightsForPixel(rig, x + 0.5, y + 0.5, candidateBoneIds);
-    const weights = softenWeightsForConnectedJoints(rig, x + 0.5, y + 0.5, baseWeights);
+      : getAutomaticBoneWeightsForPixelFromContext(autoContext, x + 0.5, y + 0.5);
+    const weights = softenWeightsForConnectedJointsFromContext(softeningContext, x + 0.5, y + 0.5, baseWeights);
     vertices.set(index, {
       index,
       x,
       y,
       value,
       weights,
+      weightEntries: Object.entries(weights),
       explicit: Boolean(resolvedExplicitWeights),
-      explicitBoneId: resolvedExplicitWeights ? getSingleWeightBoneId(resolvedExplicitWeights) : null
+      explicitBoneId: resolvedExplicitWeights ? getSingleWeightBoneId(resolvedExplicitWeights) : null,
+      explicitOwnerId: isJointOwnerId(rig, explicitOwnerId) ? explicitOwnerId : null
     });
   }
+  return vertices;
+};
+
+const buildLargeLayerPreviewMesh = (rig, layer, width, height, layerBindings) => {
+  const resolveOwnerBoneId = createJointOwnerResolver(rig);
+  const softeningContext = buildWeightSofteningContext(rig);
+  const vertices = new Map();
+  vertices.largeSourceMesh = true;
+  layerBindings.forEach((binding) => {
+    binding.pixels.forEach((pixel) => {
+      const index = Math.max(0, Math.round(Number(pixel.index) || 0));
+      if (index < 0 || index >= width * height || vertices.has(index)) return;
+      const value = layer.pixels[index];
+      if (!value) return;
+      const x = index % width;
+      const y = Math.floor(index / width);
+      const explicitOwnerId = getSingleWeightBoneId(pixel.weights);
+      const resolvedExplicitWeights = resolveWeightsForSkinningWithResolver(resolveOwnerBoneId, pixel.weights);
+      if (!Object.keys(resolvedExplicitWeights).length) return;
+      const weights = softenWeightsForConnectedJointsFromContext(softeningContext, x + 0.5, y + 0.5, resolvedExplicitWeights);
+      vertices.set(index, {
+        index,
+        x,
+        y,
+        value,
+        weights,
+        weightEntries: Object.entries(weights),
+        explicit: true,
+        explicitBoneId: getSingleWeightBoneId(resolvedExplicitWeights),
+        explicitOwnerId: isJointOwnerId(rig, explicitOwnerId) ? explicitOwnerId : null
+      });
+    });
+  });
+  return vertices;
+};
+
+const buildRigidLayerSkinMesh = (rig, layer, width, height, layerBindings) => {
+  const resolveOwnerBoneId = createJointOwnerResolver(rig);
+  const vertices = new Map();
+  layerBindings.forEach((binding) => {
+    binding.pixels.forEach((pixel) => {
+      const index = Math.max(0, Math.round(Number(pixel.index) || 0));
+      if (index < 0 || index >= width * height || vertices.has(index)) return;
+      const value = layer.pixels[index];
+      if (!value) return;
+      const resolvedWeights = resolveWeightsForSkinningWithResolver(resolveOwnerBoneId, pixel.weights);
+      if (!Object.keys(resolvedWeights).length) return;
+      const explicitOwnerId = getSingleWeightBoneId(pixel.weights);
+      vertices.set(index, {
+        index,
+        x: index % width,
+        y: Math.floor(index / width),
+        value,
+        weights: resolvedWeights,
+        weightEntries: Object.entries(resolvedWeights),
+        explicit: true,
+        explicitBoneId: getSingleWeightBoneId(resolvedWeights),
+        explicitOwnerId: isJointOwnerId(rig, explicitOwnerId) ? explicitOwnerId : null
+      });
+    });
+  });
+  vertices.rigidLayer = true;
   return vertices;
 };
 
@@ -1207,14 +1496,82 @@ const renderSlideModeVertices = (targetLayer, width, height, vertices, transform
   });
 };
 
-const renderExactIntegerTranslation = (layers, width, height, rig, bindingsByLayer, transformMap) => {
+const renderLargeMeshPreviewVertices = (targetLayer, width, height, vertices, transformMap, renderIndexes = null) => {
+  const realPixelMask = new Uint8Array(width * height);
+  const activeVertices = [];
+  const activeIndexes = new Set();
+  const transformedCenters = new Map();
+  const getTransformedCenter = (vertex) => {
+    if (!vertex) return null;
+    const cached = transformedCenters.get(vertex.index);
+    if (cached) return cached;
+    const center = transformWeightedPoint(vertex.x + 0.5, vertex.y + 0.5, vertex.weights, transformMap, vertex);
+    transformedCenters.set(vertex.index, center);
+    return center;
+  };
+  const sourceVertices = renderIndexes
+    ? [...renderIndexes].map((index) => vertices.get(index)).filter(Boolean)
+    : [...vertices.values()];
+  sourceVertices.forEach((vertex) => {
+    const center = getTransformedCenter(vertex);
+    const moved = Math.abs(center.x - (vertex.x + 0.5)) > 0.001
+      || Math.abs(center.y - (vertex.y + 0.5)) > 0.001;
+    if (moved) {
+      activeVertices.push(vertex);
+      activeIndexes.add(vertex.index);
+      targetLayer.pixels[vertex.index] = 0;
+    } else if (!renderIndexes && targetLayer.pixels[vertex.index]) {
+      realPixelMask[vertex.index] = 1;
+    }
+  });
+  activeVertices.forEach((vertex) => {
+    rasterizeTransformedPixelPreviewPointAt(targetLayer.pixels, width, height, vertex, getTransformedCenter(vertex), realPixelMask);
+  });
+  const renderedSpans = new Set();
+  const renderNeighborSpan = (from, to) => {
+    if (!from || !to) return;
+    const minIndex = Math.min(from.index, to.index);
+    const maxIndex = Math.max(from.index, to.index);
+    const key = `${minIndex}:${maxIndex}`;
+    if (renderedSpans.has(key)) return;
+    renderedSpans.add(key);
+    rasterizePixelMeshSpanAt(targetLayer.pixels, width, height, from, to, getTransformedCenter(from), getTransformedCenter(to), realPixelMask);
+  };
+  activeVertices.forEach((vertex) => {
+    const right = vertices.get(vertex.index + 1);
+    if (right && right.y === vertex.y) renderNeighborSpan(vertex, right);
+    const left = vertices.get(vertex.index - 1);
+    if (left && left.y === vertex.y) renderNeighborSpan(left, vertex);
+    renderNeighborSpan(vertex, vertices.get(vertex.index + width));
+    renderNeighborSpan(vertices.get(vertex.index - width), vertex);
+  });
+};
+
+const renderRigidLayerVertices = (targetLayer, width, height, vertices, transformMap) => {
+  vertices.forEach((vertex) => {
+    targetLayer.pixels[vertex.index] = 0;
+  });
+  vertices.forEach((vertex) => {
+    const center = transformWeightedPoint(vertex.x + 0.5, vertex.y + 0.5, vertex.weights, transformMap, vertex);
+    const x = Math.round(center.x - 0.5);
+    const y = Math.round(center.y - 0.5);
+    if (x < 0 || y < 0 || x >= width || y >= height) return;
+    targetLayer.pixels[y * width + x] = vertex.value;
+  });
+};
+
+const renderExactIntegerTranslation = (layers, width, height, rig, bindingsByLayer, transformMap, meshesByLayer = new Map()) => {
   const output = layers.map(cloneLayer);
   const epsilon = 0.0001;
   const layerTranslations = new Map();
   for (const [layerIndex, layerBindings] of bindingsByLayer.entries()) {
     const sourceLayer = layers[layerIndex];
     if (!sourceLayer) continue;
-    const vertices = buildLayerSkinMesh(rig, sourceLayer, width, height, layerBindings);
+    let vertices = meshesByLayer.get(layerIndex);
+    if (!vertices) {
+      vertices = buildLayerSkinMesh(rig, sourceLayer, width, height, layerBindings);
+      meshesByLayer.set(layerIndex, vertices);
+    }
     if (!vertices.size) {
       layerTranslations.set(layerIndex, { vertices, dx: 0, dy: 0 });
       continue;
@@ -1255,47 +1612,203 @@ const renderExactIntegerTranslation = (layers, width, height, rig, bindingsByLay
   return translated ? output : null;
 };
 
-export const deformLayersWithBones = (layers, width, height, rig, frameIndex) => {
+const getCachedLayerMesh = (meshCache, key, sourceLayer, width, height, buildMesh) => {
+  if (!meshCache) return buildMesh();
+  const cached = meshCache.get(key);
+  if (cached
+    && cached.layer === sourceLayer
+    && cached.pixels === sourceLayer.pixels
+    && cached.width === width
+    && cached.height === height) {
+    return cached.vertices;
+  }
+  const vertices = buildMesh();
+  meshCache.set(key, {
+    layer: sourceLayer,
+    pixels: sourceLayer.pixels,
+    width,
+    height,
+    vertices
+  });
+  return vertices;
+};
+
+const isLargePreviewSourceLayer = (meshCache, key, sourceLayer, width, height) => {
+  if (!meshCache) return countOpaquePixels(sourceLayer.pixels, width, height, LARGE_MESH_VERTEX_LIMIT) > LARGE_MESH_VERTEX_LIMIT;
+  const cacheKey = `opaque:${key}`;
+  const cached = meshCache.get(cacheKey);
+  if (cached
+    && cached.layer === sourceLayer
+    && cached.pixels === sourceLayer.pixels
+    && cached.width === width
+    && cached.height === height) {
+    return cached.large;
+  }
+  const large = countOpaquePixels(sourceLayer.pixels, width, height, LARGE_MESH_VERTEX_LIMIT) > LARGE_MESH_VERTEX_LIMIT;
+  meshCache.set(cacheKey, {
+    layer: sourceLayer,
+    pixels: sourceLayer.pixels,
+    width,
+    height,
+    large
+  });
+  return large;
+};
+
+const ensureVertexBoneIndex = (vertices) => {
+  if (vertices.byBoneId instanceof Map) return vertices.byBoneId;
+  const byBoneId = new Map();
+  vertices.forEach((vertex) => {
+    Object.keys(normalizeWeights(vertex.weights)).forEach((boneId) => {
+      if (!byBoneId.has(boneId)) byBoneId.set(boneId, new Set());
+      byBoneId.get(boneId).add(vertex.index);
+    });
+  });
+  vertices.byBoneId = byBoneId;
+  return byBoneId;
+};
+
+const getPreviewRenderIndexesForBones = (vertices, activeBoneIds, width) => {
+  if (!(activeBoneIds instanceof Set) || !activeBoneIds.size) return null;
+  const byBoneId = ensureVertexBoneIndex(vertices);
+  const renderIndexes = new Set();
+  activeBoneIds.forEach((boneId) => {
+    (byBoneId.get(String(boneId)) || []).forEach((index) => {
+      renderIndexes.add(index);
+      const row = Math.floor(index / width);
+      const right = vertices.get(index + 1);
+      const left = vertices.get(index - 1);
+      if (right && right.y === row) renderIndexes.add(right.index);
+      if (left && left.y === row) renderIndexes.add(left.index);
+      if (vertices.has(index + width)) renderIndexes.add(index + width);
+      if (vertices.has(index - width)) renderIndexes.add(index - width);
+    });
+  });
+  return renderIndexes;
+};
+
+const getInheritedPoseBoneIds = (rig, boneIds = [], options = {}) => {
+  const graph = options.graph || buildBoneGraph(rig);
+  const ids = new Set([...boneIds].map(String).filter(Boolean));
+  const visit = (boneId) => {
+    (graph.childrenByParent.get(boneId) || []).forEach((child) => {
+      if (ids.has(child.id)) return;
+      ids.add(child.id);
+      visit(child.id);
+    });
+  };
+  [...ids].forEach(visit);
+  return ids;
+};
+
+export const getBoneAffectedPixelCounts = (rig, layerIndex = null) => {
   const safeRig = normalizeBoneRig(rig);
+  const resolveOwnerBoneId = createJointOwnerResolver(safeRig);
+  const counts = Object.fromEntries(safeRig.bones.map((bone) => [bone.id, 0]));
+  safeRig.bindings.forEach((binding) => {
+    if (layerIndex != null && binding.layerIndex !== layerIndex) return;
+    binding.pixels.forEach((pixel) => {
+      const boneIds = new Set();
+      Object.keys(pixel.weights || {}).forEach((ownerId) => {
+        const boneId = resolveOwnerBoneId(ownerId);
+        if (boneId) boneIds.add(boneId);
+      });
+      boneIds.forEach((boneId) => {
+        counts[boneId] = (counts[boneId] || 0) + 1;
+      });
+    });
+  });
+  return counts;
+};
+
+export const deformLayersWithBones = (layers, width, height, rig, frameIndex, options = {}) => {
+  const safeRig = options.normalizedRig || normalizeBoneRig(rig);
   if (!safeRig.bones.length || !safeRig.bindings.length) return layers.map(cloneLayer);
   const pose = typeof frameIndex === 'object' && frameIndex
     ? frameIndex
     : getPoseForFrame(safeRig, frameIndex);
   if (isRestPose(pose)) return layers.map(cloneLayer);
-  const transformMap = buildPoseGeometryMap(safeRig, frameIndex);
-  const output = layers.map(cloneLayer);
+  const graph = options.graph || null;
+  const transformMap = buildPoseGeometryMap(safeRig, frameIndex, { graph });
   const bindingsByLayer = new Map();
   safeRig.bindings.forEach((binding) => {
     if (!bindingsByLayer.has(binding.layerIndex)) bindingsByLayer.set(binding.layerIndex, []);
     bindingsByLayer.get(binding.layerIndex).push(binding);
   });
-  const exactTranslation = renderExactIntegerTranslation(layers, width, height, safeRig, bindingsByLayer, transformMap);
-  if (exactTranslation) return exactTranslation;
+  const meshesByLayer = new Map();
+  const meshCache = options.meshCache instanceof Map ? options.meshCache : null;
+  const activePreviewBoneIds = options.preview && options.activeBoneIds instanceof Set
+    ? getInheritedPoseBoneIds(safeRig, options.activeBoneIds, { graph })
+    : null;
+  const resolveOwnerBoneId = createJointOwnerResolver(safeRig);
+  const previewAffectedLayerIndexes = options.preview && activePreviewBoneIds
+    ? new Set([...bindingsByLayer.entries()]
+      .filter(([, layerBindings]) => layerBindingsTouchBoneIds(layerBindings, resolveOwnerBoneId, activePreviewBoneIds))
+      .map(([layerIndex]) => layerIndex))
+    : null;
+  const output = options.preview && previewAffectedLayerIndexes
+    ? layers.map((layer, layerIndex) => (previewAffectedLayerIndexes.has(layerIndex) ? cloneLayer(layer) : layer))
+    : layers.map(cloneLayer);
+  const hasRigidLayerBindings = [...bindingsByLayer.values()]
+    .some((layerBindings) => layerBindings.some((binding) => binding.skinningMode === 'rigid-layer'));
+  const hasSlideBones = safeRig.bones.some((bone) => (bone.jointMode || (bone.stretch ? 'stretch' : 'rotate')) === 'slide');
+  if (!options.preview && !hasRigidLayerBindings) {
+    const exactTranslation = renderExactIntegerTranslation(layers, width, height, safeRig, bindingsByLayer, transformMap, meshesByLayer);
+    if (exactTranslation) return exactTranslation;
+  }
   bindingsByLayer.forEach((layerBindings, layerIndex) => {
     const sourceLayer = layers[layerIndex];
     const targetLayer = output[layerIndex];
     if (!sourceLayer || !targetLayer) return;
-    const vertices = buildLayerSkinMesh(safeRig, sourceLayer, width, height, layerBindings);
-    renderSlideModeVertices(targetLayer, width, height, vertices, transformMap);
+    if (options.preview && previewAffectedLayerIndexes && !previewAffectedLayerIndexes.has(layerIndex)) return;
+    const rigidLayer = layerBindings.every((binding) => binding.skinningMode === 'rigid-layer');
+    const largeSourceLayer = options.preview && isLargePreviewSourceLayer(meshCache, `layer:${layerIndex}`, sourceLayer, width, height);
+    const vertices = rigidLayer
+      ? getCachedLayerMesh(meshCache, `rigid:${layerIndex}`, sourceLayer, width, height, () => (
+        buildRigidLayerSkinMesh(safeRig, sourceLayer, width, height, layerBindings)
+      ))
+      : largeSourceLayer
+      ? getCachedLayerMesh(meshCache, `large-preview:${layerIndex}`, sourceLayer, width, height, () => (
+        buildLargeLayerPreviewMesh(safeRig, sourceLayer, width, height, layerBindings)
+      ))
+      : getCachedLayerMesh(meshCache, `mesh:${layerIndex}`, sourceLayer, width, height, () => (
+        meshesByLayer.get(layerIndex) || buildLayerSkinMesh(safeRig, sourceLayer, width, height, layerBindings)
+      ));
+    if (hasSlideBones) renderSlideModeVertices(targetLayer, width, height, vertices, transformMap);
+    if (rigidLayer) {
+      renderRigidLayerVertices(targetLayer, width, height, vertices, transformMap);
+      return;
+    }
+    const largeMesh = vertices.size > LARGE_MESH_VERTEX_LIMIT;
+    if (options.preview && (largeMesh || vertices.largeSourceMesh)) {
+      const renderIndexes = activePreviewBoneIds
+        ? getPreviewRenderIndexesForBones(vertices, activePreviewBoneIds, width)
+        : null;
+      renderLargeMeshPreviewVertices(targetLayer, width, height, vertices, transformMap, renderIndexes);
+      return;
+    }
     vertices.forEach((vertex) => {
       targetLayer.pixels[vertex.index] = 0;
     });
+    const realPixelMask = new Uint8Array(width * height);
     vertices.forEach((vertex) => {
-      rasterizeTransformedPixelQuad(targetLayer.pixels, width, height, vertex, transformMap);
-      if (Object.keys(normalizeWeights(vertex.weights)).length > 1) {
-        rasterizePixelStretchBridge(targetLayer.pixels, width, height, vertex, transformMap);
+      rasterizeTransformedPixelQuad(targetLayer.pixels, width, height, vertex, transformMap, realPixelMask);
+      if ((!largeMesh || vertex.explicit) && Object.keys(normalizeWeights(vertex.weights)).length > 1) {
+        rasterizePixelStretchBridge(targetLayer.pixels, width, height, vertex, transformMap, realPixelMask);
       }
     });
-    vertices.forEach((vertex) => {
-      const right = vertices.get(vertex.index + 1);
-      if (right && right.y === vertex.y) {
-        rasterizePixelMeshSpan(targetLayer.pixels, width, height, vertex, right, transformMap);
-      }
-      const down = vertices.get(vertex.index + width);
-      if (down) {
-        rasterizePixelMeshSpan(targetLayer.pixels, width, height, vertex, down, transformMap);
-      }
-    });
+    if (!largeMesh) {
+      vertices.forEach((vertex) => {
+        const right = vertices.get(vertex.index + 1);
+        if (right && right.y === vertex.y) {
+          rasterizePixelMeshSpan(targetLayer.pixels, width, height, vertex, right, transformMap, realPixelMask);
+        }
+        const down = vertices.get(vertex.index + width);
+        if (down) {
+          rasterizePixelMeshSpan(targetLayer.pixels, width, height, vertex, down, transformMap, realPixelMask);
+        }
+      });
+    }
     fillSmallHoles(targetLayer.pixels, width, height);
   });
   return output;
@@ -1313,13 +1826,19 @@ export const bakeBoneFrames = (frames, width, height, rig) => frames.map((frame,
 export const bakeBoneTimelineFrames = (sourceFrame, width, height, rig, options = {}) => {
   const safeRig = normalizeBoneRig(rig);
   const frameDurationMs = Math.max(1, Math.round(Number(options.frameDurationMs) || Number(sourceFrame?.durationMs) || 120));
+  const requestedFrameCount = Math.max(0, Math.round(Number(options.frameCount) || 0));
   const lastKey = safeRig.poseTimeline[safeRig.poseTimeline.length - 1] || null;
   const durationMs = Math.max(
     frameDurationMs,
     Math.round(Number(options.durationMs) || lastKey?.timeMs || frameDurationMs)
   );
+  const frameCount = requestedFrameCount || (Math.floor(durationMs / frameDurationMs) + 1);
+  const denominator = Math.max(1, frameCount - 1);
   const frames = [];
-  for (let timeMs = 0; timeMs <= durationMs; timeMs += frameDurationMs) {
+  for (let index = 0; index < frameCount; index += 1) {
+    const timeMs = requestedFrameCount
+      ? (frameCount <= 1 ? 0 : Math.round((durationMs * index) / denominator))
+      : index * frameDurationMs;
     const pose = samplePoseTimeline(safeRig, timeMs);
     frames.push({
       durationMs: frameDurationMs,
@@ -1329,8 +1848,14 @@ export const bakeBoneTimelineFrames = (sourceFrame, width, height, rig, options 
   return frames;
 };
 
-export const compositeBonePreview = (layers, width, height, rig, frameIndex) => (
-  compositeLayers(deformLayersWithBones(layers, width, height, rig, frameIndex), width, height)
+export const compositeBonePreview = (layers, width, height, rig, frameIndex, options = {}) => (
+  compositeLayers(deformLayersWithBones(layers, width, height, rig, frameIndex, {
+    preview: true,
+    meshCache: options.meshCache,
+    activeBoneIds: options.activeBoneIds,
+    normalizedRig: options.normalizedRig,
+    graph: options.graph
+  }), width, height)
 );
 
 const getPixelChannels = (value) => ({
@@ -1364,15 +1889,32 @@ const writePixel = (pixels, width, height, x, y, value) => {
   pixels[y * width + x] = value >>> 0;
 };
 
-const stampPixel = (pixels, width, height, x, y, value) => {
+const writePixelMasked = (pixels, width, height, x, y, value, realPixelMask = null, markReal = false) => {
   if (x < 0 || y < 0 || x >= width || y >= height) return;
   const index = y * width + x;
-  pixels[index] = value;
-  if (x + 1 < width && !pixels[index + 1]) pixels[index + 1] = value;
-  if (y + 1 < height && !pixels[index + width]) pixels[index + width] = value;
+  if (!markReal && realPixelMask?.[index]) return;
+  pixels[index] = value >>> 0;
+  if (markReal && realPixelMask) realPixelMask[index] = 1;
 };
 
-const drawPixelLine = (pixels, width, height, x0, y0, x1, y1, value, radius = 0) => {
+const stampPixel = (pixels, width, height, x, y, value, realPixelMask = null, markReal = false) => {
+  if (x < 0 || y < 0 || x >= width || y >= height) return;
+  const index = y * width + x;
+  if (!markReal && realPixelMask?.[index]) return;
+  pixels[index] = value;
+  if (markReal && realPixelMask) realPixelMask[index] = 1;
+  if (x + 1 < width && !pixels[index + 1] && (markReal || !realPixelMask?.[index + 1])) {
+    pixels[index + 1] = value;
+    if (markReal && realPixelMask) realPixelMask[index + 1] = 1;
+  }
+  if (y + 1 < height && !pixels[index + width] && (markReal || !realPixelMask?.[index + width])) {
+    pixels[index + width] = value;
+    if (markReal && realPixelMask) realPixelMask[index + width] = 1;
+  }
+};
+
+const drawPixelLine = (pixels, width, height, x0, y0, x1, y1, value, radius = 0, realPixelMask = null) => {
+  if (!isSafeRasterLine(width, height, x0, y0, x1, y1)) return;
   let ax = Math.round(x0);
   let ay = Math.round(y0);
   const bx = Math.round(x1);
@@ -1382,14 +1924,17 @@ const drawPixelLine = (pixels, width, height, x0, y0, x1, y1, value, radius = 0)
   const dy = -Math.abs(by - ay);
   const sy = ay < by ? 1 : -1;
   let err = dx + dy;
+  const maxSteps = getLineSafetyLimit(width, height);
+  let steps = 0;
   while (true) {
     for (let yy = -radius; yy <= radius; yy += 1) {
       for (let xx = -radius; xx <= radius; xx += 1) {
         if (xx * xx + yy * yy > radius * radius) continue;
-        stampPixel(pixels, width, height, ax + xx, ay + yy, value);
+        stampPixel(pixels, width, height, ax + xx, ay + yy, value, realPixelMask);
       }
     }
     if (ax === bx && ay === by) break;
+    if (steps >= maxSteps) break;
     const e2 = err * 2;
     if (e2 >= dy) {
       err += dy;
@@ -1399,10 +1944,12 @@ const drawPixelLine = (pixels, width, height, x0, y0, x1, y1, value, radius = 0)
       err += dx;
       ay += sy;
     }
+    steps += 1;
   }
 };
 
-const drawInterpolatedPixelLine = (pixels, width, height, x0, y0, x1, y1, value0, value1) => {
+const drawInterpolatedPixelLine = (pixels, width, height, x0, y0, x1, y1, value0, value1, maxStepOverride = null, realPixelMask = null) => {
+  if (!isSafeRasterLine(width, height, x0, y0, x1, y1)) return;
   let ax = Math.round(x0);
   let ay = Math.round(y0);
   const bx = Math.round(x1);
@@ -1413,10 +1960,12 @@ const drawInterpolatedPixelLine = (pixels, width, height, x0, y0, x1, y1, value0
   const sy = ay < by ? 1 : -1;
   let err = dx + dy;
   const steps = Math.max(Math.abs(bx - ax), Math.abs(by - ay), 1);
+  const maxSteps = Math.max(1, Math.round(maxStepOverride || getLineSafetyLimit(width, height)));
   let step = 0;
   while (true) {
-    writePixel(pixels, width, height, ax, ay, interpolatePixelColor(value0, value1, step / steps));
+    writePixelMasked(pixels, width, height, ax, ay, interpolatePixelColor(value0, value1, step / steps), realPixelMask);
     if (ax === bx && ay === by) break;
+    if (step >= maxSteps) break;
     const e2 = err * 2;
     if (e2 >= dy) {
       err += dy;
@@ -1430,9 +1979,17 @@ const drawInterpolatedPixelLine = (pixels, width, height, x0, y0, x1, y1, value0
   }
 };
 
-const rasterizePixelMeshSpan = (pixels, width, height, from, to, transformMap) => {
+const rasterizePixelMeshSpan = (pixels, width, height, from, to, transformMap, realPixelMask = null) => {
   const a = transformWeightedPoint(from.x + 0.5, from.y + 0.5, from.weights, transformMap, from);
   const b = transformWeightedPoint(to.x + 0.5, to.y + 0.5, to.weights, transformMap, to);
+  rasterizePixelMeshSpanAt(pixels, width, height, from, to, a, b, realPixelMask);
+};
+
+const rasterizePixelMeshSpanAt = (pixels, width, height, from, to, a, b, realPixelMask = null) => {
+  if (!a || !b) return;
+  if (!isSafeMeshSpan(width, height, a.x - 0.5, a.y - 0.5, b.x - 0.5, b.y - 0.5)) return;
+  const spanLength = Math.max(Math.abs(Math.round(b.x - a.x)), Math.abs(Math.round(b.y - a.y)));
+  if (spanLength <= 1 && from.value === to.value) return;
   drawInterpolatedPixelLine(
     pixels,
     width,
@@ -1442,24 +1999,38 @@ const rasterizePixelMeshSpan = (pixels, width, height, from, to, transformMap) =
     b.x - 0.5,
     b.y - 0.5,
     from.value,
-    to.value
+    to.value,
+    getMeshSpanSafetyLimit(width, height),
+    realPixelMask
   );
 };
 
-const rasterizePixelStretchBridge = (pixels, width, height, vertex, transformMap) => {
+const rasterizePixelStretchBridge = (pixels, width, height, vertex, transformMap, realPixelMask = null) => {
   const { x, y, weights, value } = vertex;
   const center = transformWeightedPoint(x + 0.5, y + 0.5, weights, transformMap, vertex);
   const startX = x;
   const startY = y;
   const endX = Math.round(center.x - 0.5);
   const endY = Math.round(center.y - 0.5);
+  if (!isSafeRasterLine(width, height, startX, startY, endX, endY)) return;
   const distance = Math.hypot(endX - startX, endY - startY);
   if (distance < 1.25) return;
   const radius = distance > 8 ? 1 : 0;
-  drawPixelLine(pixels, width, height, startX, startY, endX, endY, value, radius);
+  drawPixelLine(pixels, width, height, startX, startY, endX, endY, value, radius, realPixelMask);
 };
 
-const rasterizeTransformedPixelQuad = (pixels, width, height, vertex, transformMap) => {
+const rasterizeTransformedPixelPreviewPoint = (pixels, width, height, vertex, transformMap, realPixelMask = null) => {
+  const { x, y, weights, value } = vertex;
+  const center = transformWeightedPoint(x + 0.5, y + 0.5, weights, transformMap, vertex);
+  rasterizeTransformedPixelPreviewPointAt(pixels, width, height, vertex, center, realPixelMask);
+};
+
+const rasterizeTransformedPixelPreviewPointAt = (pixels, width, height, vertex, center, realPixelMask = null) => {
+  const { value } = vertex;
+  stampPixel(pixels, width, height, Math.round(center.x - 0.5), Math.round(center.y - 0.5), value, realPixelMask, true);
+};
+
+const rasterizeTransformedPixelQuad = (pixels, width, height, vertex, transformMap, realPixelMask = null) => {
   const { x, y, weights, value } = vertex;
   const singleBoneId = getSingleWeightBoneId(weights);
   const singleEntry = singleBoneId ? transformMap[singleBoneId] : null;
@@ -1468,7 +2039,7 @@ const rasterizeTransformedPixelQuad = (pixels, width, height, vertex, transformM
     const targetX = Math.round(center.x - 0.5);
     const targetY = Math.round(center.y - 0.5);
     if (Math.abs(center.x - 0.5 - targetX) <= 0.0001 && Math.abs(center.y - 0.5 - targetY) <= 0.0001) {
-      writePixel(pixels, width, height, targetX, targetY, value);
+      writePixelMasked(pixels, width, height, targetX, targetY, value, realPixelMask, true);
       return;
     }
   }
@@ -1490,12 +2061,14 @@ const rasterizeTransformedPixelQuad = (pixels, width, height, vertex, transformM
         && !pointInTriangle(point, corners[0], corners[2], corners[3])) {
         continue;
       }
-      pixels[row * width + col] = value;
+      const index = row * width + col;
+      pixels[index] = value;
+      if (realPixelMask) realPixelMask[index] = 1;
       wrote = true;
     }
   }
   const center = transformWeightedPoint(x + 0.5, y + 0.5, weights, transformMap, vertex);
-  stampPixel(pixels, width, height, Math.round(center.x - 0.5), Math.round(center.y - 0.5), value);
+  stampPixel(pixels, width, height, Math.round(center.x - 0.5), Math.round(center.y - 0.5), value, realPixelMask, true);
 };
 
 const pointInTriangle = (p, a, b, c) => {

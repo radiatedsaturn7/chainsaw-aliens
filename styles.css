@@ -177,6 +177,11 @@ body.mobile .hint {
   justify-content: space-between;
 }
 
+.project-browser-topbar-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .project-browser-title {
   margin: 0;
   font-size: 18px;
@@ -333,7 +338,8 @@ body.mobile .hint {
 }
 
 .project-browser-btn.primary,
-.project-browser-icon-btn.is-active {
+.project-browser-icon-btn.is-active,
+.project-browser-sort-btn.is-active {
   background: var(--ui-accent);
   color: var(--ui-bg);
 }

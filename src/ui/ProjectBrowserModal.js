@@ -19,6 +19,10 @@ import { fileTypeBadge } from './uiSuite.js';
 
 const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors', sfx: 'SFX', cutscenes: 'Cutscenes' };
 const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes'];
+const PROJECT_BROWSER_SORTS = {
+  modified: { label: 'Modified', direction: 'desc' },
+  name: { label: 'Name', direction: 'asc' }
+};
 let activePreviewTrackId = null;
 
 function formatDate(ts) {
@@ -95,6 +99,16 @@ function listEntries(folder) {
     ...builtIns,
     ...entries.filter((entry) => !seen.has(String(entry.name || '').toLowerCase()))
   ];
+}
+
+export function sortProjectBrowserEntries(entries = [], sortBy = 'modified') {
+  const mode = PROJECT_BROWSER_SORTS[sortBy] ? sortBy : 'modified';
+  return [...entries].sort((a, b) => {
+    const nameCompare = String(a?.name || '').localeCompare(String(b?.name || ''), undefined, { sensitivity: 'base' });
+    const updatedCompare = (Number(b?.updatedAt || 0) - Number(a?.updatedAt || 0));
+    if (mode === 'name') return nameCompare || updatedCompare;
+    return updatedCompare || nameCompare;
+  });
 }
 
 function parseHexColorToRgba(hex) {
@@ -235,7 +249,8 @@ export function openProjectBrowser({
       query: '',
       loading: false,
       syncing: true,
-      loadError: ''
+      loadError: '',
+      sortBy: 'modified'
     };
     if (!fixedFolder && mode === 'open') state.view = 'home';
 
@@ -281,6 +296,22 @@ export function openProjectBrowser({
       if (state.searchOpen) searchInput.focus();
     });
     topBarActions.appendChild(searchToggle);
+
+    const sortModifiedBtn = makeButton('Modified', 'project-browser-btn project-browser-sort-btn', () => {
+      state.sortBy = 'modified';
+      refresh();
+    });
+    sortModifiedBtn.title = 'Sort by recently modified';
+    sortModifiedBtn.setAttribute('aria-label', 'Sort by recently modified');
+    topBarActions.appendChild(sortModifiedBtn);
+
+    const sortNameBtn = makeButton('Name', 'project-browser-btn project-browser-sort-btn', () => {
+      state.sortBy = 'name';
+      refresh();
+    });
+    sortNameBtn.title = 'Sort by name';
+    sortNameBtn.setAttribute('aria-label', 'Sort by name');
+    topBarActions.appendChild(sortNameBtn);
 
     const close = makeIconButton('✕', 'Close', 'project-browser-close', () => cleanup(null));
     topBarActions.appendChild(close);
@@ -470,7 +501,10 @@ export function openProjectBrowser({
     function renderFolder() {
       const folder = state.folder;
       const query = state.query.trim().toLowerCase();
-      const entries = listEntries(folder).filter((entry) => !query || entry.name.toLowerCase().includes(query));
+      const entries = sortProjectBrowserEntries(
+        listEntries(folder).filter((entry) => !query || entry.name.toLowerCase().includes(query)),
+        state.sortBy
+      );
       info.textContent = state.loading
         ? `Loading ${FOLDER_LABELS[folder] || folder} from server...`
         : openError
@@ -755,6 +789,10 @@ export function openProjectBrowser({
       const folderLabel = FOLDER_LABELS[state.folder] || state.folder;
       titleEl.textContent = mode === 'saveAs' ? `Save ${folderLabel} as...` : title;
       renderBreadcrumb();
+      sortModifiedBtn.classList.toggle('is-active', state.sortBy === 'modified' && state.view === 'folder');
+      sortNameBtn.classList.toggle('is-active', state.sortBy === 'name' && state.view === 'folder');
+      sortModifiedBtn.disabled = state.view !== 'folder';
+      sortNameBtn.disabled = state.view !== 'folder';
       searchWrap.classList.toggle('is-open', state.searchOpen && state.view === 'folder');
       searchToggle.classList.toggle('is-active', state.searchOpen && state.view === 'folder');
       if (!(state.searchOpen && state.view === 'folder')) searchInput.value = '';

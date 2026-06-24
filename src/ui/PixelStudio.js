@@ -34,7 +34,7 @@ import {
   createDefaultBoneRig,
   createLayerBinding,
   createSelectionBinding,
-  getBoneAssignedMask,
+  getBoneAffectedPixelCounts,
   getBoneInfluenceSets,
   getBoneJointUsageCount,
   getPosedBoneGeometry,
@@ -44,11 +44,11 @@ import {
   removeOrphanBoneJoints,
   removePoseKeyAtTime,
   normalizeBoneRig,
+  normalizeBoneSkeleton,
   reverseBoneDirection,
   samplePoseTimeline,
   solveTwoBoneIkPose,
-  setPoseKeyAtTime,
-  validateTwoBoneIkPose
+  setPoseKeyAtTime
 } from './pixel-editor/bones.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
@@ -311,7 +311,7 @@ export function buildPixelPortraitSelectionActions() {
 
 export function buildPixelPortraitBoneActions() {
   return [
-    { id: 'bones', label: 'Bones' },
+    { id: 'bones', label: 'Build' },
     { id: 'bind', label: 'Rig' },
     { id: 'pose', label: 'Pose' },
     { id: 'time', label: 'Tools' }
@@ -321,20 +321,24 @@ export function buildPixelPortraitBoneActions() {
 export function buildPixelPortraitBoneActionGroups() {
   return {
     bones: {
-      title: 'Bones',
+      title: 'Build',
       actionIds: ['bone-add', 'bone-link', 'bone-reverse', 'bone-stretch', 'bone-ik', 'bone-delete']
     },
     bind: {
       title: 'Rig',
-      actionIds: ['bind-mode', 'bind-rect', 'bind-oval', 'bind-lasso', 'bind-magic', 'bind-add', 'bind-remove', 'bind-layer', 'bind-clear']
+      actionIds: ['bind-mode', 'bind-rect', 'bind-oval', 'bind-lasso', 'bind-magic', 'bind-unassigned', 'bind-add', 'bind-remove', 'bind-layer', 'bind-clear']
     },
     pose: {
       title: 'Pose',
-      actionIds: ['pose-set', 'pose-reset', 'pose-delete', 'pose-back', 'pose-forward', 'pose-length']
+      actionIds: ['pose-target', 'pose-set', 'pose-reset', 'pose-delete', 'pose-back', 'pose-forward', 'pose-length']
     },
     time: {
       title: 'Controls',
-      actionIds: ['time-bake']
+      actionIds: ['time-bake', 'time-hide-bones', 'time-frame-count', 'time-convert-layers', 'time-reverse-layers', 'time-list-bones']
+    },
+    nodes: {
+      title: 'Nodes',
+      actionIds: []
     }
   };
 }
@@ -746,6 +750,21 @@ export default class PixelStudio {
       onion: { enabled: false, prev: 1, next: 1, opacity: 0.35 }
     };
     this.boneRig = createDefaultBoneRig();
+    this.layerContentRevision = 1;
+    this.boneDerivedCache = {
+      revision: 1,
+      layerRevision: 1,
+      boneRevision: 1,
+      overlay: null,
+      overlayRaster: null,
+      graphOverlayRaster: null,
+      affectedPixelCounts: null,
+      composite: null,
+      preview: null,
+      raster: null,
+      geometry: null,
+      mesh: null
+    };
     this.boneEditor = {
       mode: 'bones',
       submenu: null,
@@ -759,6 +778,9 @@ export default class PixelStudio {
       preview: true,
       timeMs: 0,
       durationMs: 500,
+      bakeFrameCount: 0,
+      reverseRigLayerOrder: false,
+      hideBonesDuringPlayback: false,
       playing: false,
       segmentMs: 500,
       timelineZoom: 1,
@@ -883,6 +905,15 @@ export default class PixelStudio {
     this.offscreen = document.createElement('canvas');
     this.offscreenCtx = this.offscreen.getContext('2d');
     this.offscreenCtx.imageSmoothingEnabled = false;
+    this.bonePreviewCanvas = document.createElement('canvas');
+    this.bonePreviewCtx = this.bonePreviewCanvas.getContext('2d');
+    this.bonePreviewCtx.imageSmoothingEnabled = false;
+    this.boneOverlayCanvas = document.createElement('canvas');
+    this.boneOverlayCtx = this.boneOverlayCanvas.getContext('2d');
+    this.boneOverlayCtx.imageSmoothingEnabled = false;
+    this.boneGraphOverlayCanvas = document.createElement('canvas');
+    this.boneGraphOverlayCtx = this.boneGraphOverlayCanvas.getContext('2d');
+    this.boneGraphOverlayCtx.imageSmoothingEnabled = false;
     this.floatingCanvas = document.createElement('canvas');
     this.floatingCtx = this.floatingCanvas.getContext('2d');
     this.floatingCtx.imageSmoothingEnabled = false;
@@ -1010,6 +1041,92 @@ export default class PixelStudio {
   setFrameLayers(layers) {
     this.canvasState.layers = layers;
     this.currentFrame.layers = layers;
+    this.layerContentRevision = (this.layerContentRevision || 1) + 1;
+    this.invalidateBoneDerivedCaches({ layers: true, bones: true });
+  }
+
+  markLayerPixelsDirty() {
+    this.layerContentRevision = (this.layerContentRevision || 1) + 1;
+  }
+
+  invalidateBoneDerivedCaches(options = {}) {
+    const invalidateLayers = options.layers !== false;
+    const invalidateBones = options.bones !== false;
+    if (!this.boneDerivedCache) {
+      this.boneDerivedCache = { revision: 1, layerRevision: 1, boneRevision: 1, overlay: null, overlayRaster: null, graphOverlayRaster: null, overlayAdjacency: null, affectedPixelCounts: null, composite: null, preview: null, raster: null, geometry: null, mesh: null, rigContext: null, skeletonContext: null };
+      return;
+    }
+    this.boneDerivedCache.revision += 1;
+    if (!Object.prototype.hasOwnProperty.call(this.boneDerivedCache, 'layerRevision')) this.boneDerivedCache.layerRevision = this.boneDerivedCache.revision;
+    if (!Object.prototype.hasOwnProperty.call(this.boneDerivedCache, 'boneRevision')) this.boneDerivedCache.boneRevision = this.boneDerivedCache.revision;
+    if (invalidateLayers) {
+      this.boneDerivedCache.layerRevision += 1;
+      this.boneDerivedCache.composite = null;
+      this.boneDerivedCache.raster = null;
+      this.boneDerivedCache.preview = null;
+      this.boneDerivedCache.mesh = null;
+    }
+    if (invalidateBones) {
+      this.boneDerivedCache.boneRevision += 1;
+      this.boneDerivedCache.overlay = null;
+      this.boneDerivedCache.overlayRaster = null;
+      this.boneDerivedCache.graphOverlayRaster = null;
+      this.boneDerivedCache.overlayAdjacency = null;
+      this.boneDerivedCache.affectedPixelCounts = null;
+      this.boneDerivedCache.preview = null;
+      this.boneDerivedCache.geometry = null;
+      this.boneDerivedCache.mesh = null;
+      this.boneDerivedCache.rigContext = null;
+      this.boneDerivedCache.skeletonContext = null;
+    }
+  }
+
+  getCachedBoneRigContext() {
+    const cache = this.boneDerivedCache || { revision: 1, layerRevision: 1, boneRevision: 1, rigContext: null };
+    this.boneDerivedCache = cache;
+    const boneRevision = cache.boneRevision ?? cache.revision ?? 1;
+    const existing = cache.rigContext;
+    if (existing
+      && existing.sourceRig === this.boneRig
+      && existing.boneRevision === boneRevision) {
+      return existing;
+    }
+    const normalizedRig = normalizeBoneRig(this.boneRig, { exclusive: false });
+    const graph = buildBoneGraph(normalizedRig);
+    cache.rigContext = {
+      sourceRig: this.boneRig,
+      boneRevision,
+      normalizedRig,
+      graph
+    };
+    return cache.rigContext;
+  }
+
+  getCachedBoneSkeletonContext() {
+    const cache = this.boneDerivedCache || { revision: 1, layerRevision: 1, boneRevision: 1, skeletonContext: null };
+    this.boneDerivedCache = cache;
+    const boneRevision = cache.boneRevision ?? cache.revision ?? 1;
+    const existing = cache.skeletonContext;
+    if (existing
+      && existing.sourceRig === this.boneRig
+      && existing.boneRevision === boneRevision) {
+      return existing;
+    }
+    const normalizedRig = normalizeBoneSkeleton(this.boneRig);
+    const graph = buildBoneGraph(normalizedRig);
+    const jointUsageCounts = new Map();
+    normalizedRig.bones.forEach((bone) => {
+      jointUsageCounts.set(bone.startJointId, (jointUsageCounts.get(bone.startJointId) || 0) + 1);
+      jointUsageCounts.set(bone.endJointId, (jointUsageCounts.get(bone.endJointId) || 0) + 1);
+    });
+    cache.skeletonContext = {
+      sourceRig: this.boneRig,
+      boneRevision,
+      normalizedRig,
+      graph,
+      jointUsageCounts
+    };
+    return cache.skeletonContext;
   }
 
   restoreStoredTileArtIfNeeded() {
@@ -1221,7 +1338,7 @@ export default class PixelStudio {
     this.canvasState.width = pixelData.editor.width;
     this.canvasState.height = pixelData.editor.height;
     this.animation.frames = pixelData.editor.frames;
-    if (!this.boneEditor) this.boneEditor = { mode: 'bones', submenu: null, selectedJointId: null, selectedBoneId: null, selectedEdgeBoneId: null, linkMode: true, chainAnchor: null, drag: null, pendingBindNodeTap: null, preview: true, timeMs: 0, durationMs: 500, playing: false, segmentMs: 500, timelineZoom: 1, timelineScrollMs: 0 };
+    if (!this.boneEditor) this.boneEditor = { mode: 'bones', submenu: null, selectedJointId: null, selectedBoneId: null, selectedEdgeBoneId: null, linkMode: true, chainAnchor: null, drag: null, pendingBindNodeTap: null, preview: true, timeMs: 0, durationMs: 500, bakeFrameCount: 0, reverseRigLayerOrder: false, hideBonesDuringPlayback: false, playing: false, segmentMs: 500, timelineZoom: 1, timelineScrollMs: 0 };
     if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'submenu')) this.boneEditor.submenu = null;
     if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'selectedJointId')) this.boneEditor.selectedJointId = null;
     if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'selectedEdgeBoneId')) this.boneEditor.selectedEdgeBoneId = null;
@@ -1229,6 +1346,9 @@ export default class PixelStudio {
     if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'chainAnchor')) this.boneEditor.chainAnchor = null;
     if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'timelineZoom')) this.boneEditor.timelineZoom = 1;
     if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'timelineScrollMs')) this.boneEditor.timelineScrollMs = 0;
+    if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'bakeFrameCount')) this.boneEditor.bakeFrameCount = 0;
+    if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'reverseRigLayerOrder')) this.boneEditor.reverseRigLayerOrder = false;
+    if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'hideBonesDuringPlayback')) this.boneEditor.hideBonesDuringPlayback = false;
     this.resetLoadedBoneEditorState?.();
     this.boneRig = normalizeBoneRig(pixelData.editor.bones || createDefaultBoneRig());
     if (typeof this.ensureBoneNodeSelection === 'function') {
@@ -1365,7 +1485,7 @@ export default class PixelStudio {
     this.canvasState.width = width;
     this.canvasState.height = height;
     this.animation.frames = loadedFrames;
-    if (!this.boneEditor) this.boneEditor = { mode: 'bones', submenu: null, selectedJointId: null, selectedBoneId: null, selectedEdgeBoneId: null, linkMode: true, chainAnchor: null, drag: null, pendingBindNodeTap: null, preview: true, timeMs: 0, durationMs: 500, playing: false, segmentMs: 500, timelineZoom: 1, timelineScrollMs: 0 };
+    if (!this.boneEditor) this.boneEditor = { mode: 'bones', submenu: null, selectedJointId: null, selectedBoneId: null, selectedEdgeBoneId: null, linkMode: true, chainAnchor: null, drag: null, pendingBindNodeTap: null, preview: true, timeMs: 0, durationMs: 500, bakeFrameCount: 0, reverseRigLayerOrder: false, hideBonesDuringPlayback: false, playing: false, segmentMs: 500, timelineZoom: 1, timelineScrollMs: 0 };
     if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'submenu')) this.boneEditor.submenu = null;
     if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'selectedJointId')) this.boneEditor.selectedJointId = null;
     if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'selectedEdgeBoneId')) this.boneEditor.selectedEdgeBoneId = null;
@@ -1373,6 +1493,9 @@ export default class PixelStudio {
     if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'chainAnchor')) this.boneEditor.chainAnchor = null;
     if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'timelineZoom')) this.boneEditor.timelineZoom = 1;
     if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'timelineScrollMs')) this.boneEditor.timelineScrollMs = 0;
+    if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'bakeFrameCount')) this.boneEditor.bakeFrameCount = 0;
+    if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'reverseRigLayerOrder')) this.boneEditor.reverseRigLayerOrder = false;
+    if (!Object.prototype.hasOwnProperty.call(this.boneEditor, 'hideBonesDuringPlayback')) this.boneEditor.hideBonesDuringPlayback = false;
     this.resetLoadedBoneEditorState?.();
     this.boneRig = normalizeBoneRig(data?.editor?.bones || data?.bones || createDefaultBoneRig());
     if (typeof this.ensureBoneNodeSelection === 'function') {
@@ -2849,7 +2972,7 @@ export default class PixelStudio {
           rootItem('canvas', 'Canvas'),
           rootItem('layers', 'Layers'),
           rootItem('animation', 'Frames', 'frames'),
-          rootItem('bones', 'Bones'),
+          rootItem('bones', 'Rigging'),
           action('undo', 'Undo', () => this.runtime.undo()),
           action('redo', 'Redo', () => this.runtime.redo())
         ]
@@ -2874,7 +2997,7 @@ export default class PixelStudio {
       },
       bones: {
         id: 'bones',
-        title: 'Bones',
+        title: 'Rigging',
         items: [
           action('bone-add', 'Add Bone', () => this.startBoneAddMode()),
           action('bone-bind-layer', 'Bind Layer', () => this.bindActiveLayerToSelectedBone()),
@@ -3692,6 +3815,13 @@ export default class PixelStudio {
     return (this.boneUiRegions || []).some((bounds) => this.isPointInBounds(point, bounds));
   }
 
+  isBoneEditorPointerUiHit(point) {
+    if (this.leftPanelTab !== 'bones') return false;
+    if (this.isBoneEditorUiHit(point)) return true;
+    if (this.mobileDrawerBounds && this.isPointInBounds(point, this.mobileDrawerBounds)) return true;
+    return false;
+  }
+
   handlePriorityUiDragHit(payload) {
     const hitTest = typeof this.hitTestUiButton === 'function'
       ? this.hitTestUiButton
@@ -3712,10 +3842,18 @@ export default class PixelStudio {
   }
 
   shouldBoneCanvasOwnPointerDown(payload) {
-    if (this.leftPanelTab !== 'bones' || !this.canvasBounds || !this.isPointInBounds(payload, this.canvasBounds)) {
+    if (this.leftPanelTab !== 'bones') return false;
+    const widgetHit = typeof this.getPoseRotateWidgetScreenHit === 'function'
+      ? this.getPoseRotateWidgetScreenHit(payload)
+      : null;
+    if (widgetHit) return true;
+    if (!this.canvasBounds || !this.isPointInBounds(payload, this.canvasBounds)) {
       return false;
     }
-    return !this.isBoneEditorUiHit(payload);
+    const boneUiHit = typeof this.isBoneEditorPointerUiHit === 'function'
+      ? this.isBoneEditorPointerUiHit(payload)
+      : this.isBoneEditorUiHit(payload);
+    return !boneUiHit;
   }
 
   handlePointerDown(payload) {
@@ -3747,6 +3885,37 @@ export default class PixelStudio {
       : PixelStudio.prototype.handlePriorityUiDragHit;
     if (handlePriorityUiDrag.call(this, payload)) {
       return;
+    }
+    if (this.leftPanelTab === 'bones'
+      && this.boneEditor?.submenu === 'nodes'
+      && this.boneListMeta?.scrollBounds
+      && this.isPointInBounds(payload, this.boneListMeta.scrollBounds)
+      && this.startMenuScrollDrag(payload)) {
+      return;
+    }
+    if (this.leftPanelTab === 'bones' && this.boneEditor?.mode === 'pose') {
+      const widgetHit = typeof this.getPoseRotateWidgetScreenHit === 'function'
+        ? this.getPoseRotateWidgetScreenHit(payload)
+        : null;
+      if (widgetHit?.point) {
+        this.pointerDownOnUi = false;
+        this.setInputMode('canvas');
+        this.enforceBoneEditorToolMode(this.boneEditor?.mode || 'pose');
+        if (this.handleBonePointerDown(widgetHit.point)) {
+          this.cancelLongPress();
+          return;
+        }
+      }
+    }
+    if (this.leftPanelTab === 'bones') {
+      const boneUiHit = typeof this.isBoneEditorPointerUiHit === 'function'
+        ? this.isBoneEditorPointerUiHit(payload)
+        : false;
+      if (boneUiHit) {
+        this.pointerDownOnUi = true;
+        this.handleButtonClick(payload.x, payload.y, payload);
+        return;
+      }
     }
     if (!boneCanvasOwnsTap && this.startMenuScrollDrag(payload)) {
       return;
@@ -3796,8 +3965,8 @@ export default class PixelStudio {
         this.pointerDownOnUi = true;
         return;
       }
-      const boneUiHit = typeof this.isBoneEditorUiHit === 'function'
-        ? this.isBoneEditorUiHit(payload)
+      const boneUiHit = typeof this.isBoneEditorPointerUiHit === 'function'
+        ? this.isBoneEditorPointerUiHit(payload)
         : false;
       if (this.leftPanelTab === 'bones' && boneUiHit) {
         this.pointerDownOnUi = true;
@@ -3810,7 +3979,12 @@ export default class PixelStudio {
         this.panStart = this.viewportController.beginPan(payload, { x: this.view.panX, y: this.view.panY });
         return;
       }
-      if (this.leftPanelTab === 'bones') {
+      if (this.leftPanelTab === 'bones' && this.boneEditor?.mode === 'bind') {
+        this.boneEditor.playing = false;
+        this.boneEditor.drag = null;
+        this.boneEditor.pendingBindNodeTap = null;
+        this.ensureBindSelectionTool();
+      } else if (this.leftPanelTab === 'bones') {
         this.enforceBoneEditorToolMode(this.boneEditor?.mode || 'bones');
       }
       const point = this.shouldUseUnboundedWrapPointer()
@@ -4406,29 +4580,36 @@ export default class PixelStudio {
   }
 
   startHistory(label, options = {}) {
+    const includeLayers = options.includeLayers !== false;
     this.pendingHistory = {
       label,
       frameIndex: this.animation.currentFrameIndex,
       frameIndexBefore: this.animation.currentFrameIndex,
-      layersBefore: this.canvasState.layers.map((layer) => new Uint32Array(layer.pixels)),
       boneRigBefore: cloneBoneRig(this.boneRig)
     };
+    if (includeLayers) {
+      this.pendingHistory.layersBefore = this.canvasState.layers.map((layer) => new Uint32Array(layer.pixels));
+    }
     if (options.includeFrames) {
       this.pendingHistory.framesBefore = this.animation.frames.map((frame) => cloneFrame(frame));
     }
+    this.invalidateBoneDerivedCaches({ layers: includeLayers, bones: true });
   }
 
   commitHistory() {
     if (!this.pendingHistory) return;
-    const layersAfter = this.canvasState.layers.map((layer) => new Uint32Array(layer.pixels));
+    const includeLayers = Array.isArray(this.pendingHistory.layersBefore);
     this.pendingHistory.frameIndexAfter = this.animation.currentFrameIndex;
-    this.pendingHistory.layersAfter = layersAfter;
+    if (includeLayers) {
+      this.pendingHistory.layersAfter = this.canvasState.layers.map((layer) => new Uint32Array(layer.pixels));
+    }
     if (this.pendingHistory.framesBefore) {
       this.pendingHistory.framesAfter = this.animation.frames.map((frame) => cloneFrame(frame));
     }
     this.pendingHistory.boneRigAfter = cloneBoneRig(this.boneRig);
     this.runtime.commitHistory(this.pendingHistory);
     this.pendingHistory = null;
+    this.invalidateBoneDerivedCaches({ layers: includeLayers, bones: true });
     this.syncTileData();
   }
 
@@ -4459,6 +4640,7 @@ export default class PixelStudio {
       this.ensureBoneNodeSelection();
     }
     this.setFrameLayers(frame.layers);
+    this.invalidateBoneDerivedCaches();
     this.syncTileData();
   }
 
@@ -4515,6 +4697,7 @@ export default class PixelStudio {
     const { width, height } = this.canvasState;
     const points = this.createBrushStamp(point);
     const symmetryPoints = applySymmetryPoints(points, width, height, this.toolOptions.symmetry);
+    let changed = false;
     symmetryPoints.forEach((pt) => {
       const row = this.wrapCoord(pt.row, height);
       const col = this.wrapCoord(pt.col, width);
@@ -4545,10 +4728,17 @@ export default class PixelStudio {
         blendSource = this.strokeState.basePixels[index];
       }
       if (this.toolOptions.symmetry?.mirrorOnly && target === colorValue) return;
-      this.activeLayer.pixels[index] = alphaToApply >= 1
+      const nextValue = alphaToApply >= 1
         ? colorValue
         : this.blendPixel(blendSource, colorValue, alphaToApply);
+      if (this.activeLayer.pixels[index] === nextValue) return;
+      this.activeLayer.pixels[index] = nextValue;
+      changed = true;
     });
+    if (changed) {
+      if (typeof this.markLayerPixelsDirty === 'function') this.markLayerPixelsDirty();
+      else this.layerContentRevision = (this.layerContentRevision || 1) + 1;
+    }
   }
 
   doesBrushShapeIncludeOffset(shape, dx, dy, radius) {
@@ -5046,9 +5236,7 @@ export default class PixelStudio {
     const height = this.canvasState.height;
     const contiguous = options.contiguous !== false;
     const threshold = clamp(Number(this.toolOptions.magicThreshold) || 0, 0, 255);
-    let composite = this.shouldShowBonePreview()
-      ? compositeBonePreview(this.canvasState.layers, width, height, this.boneRig, this.getCurrentBonePreviewPose())
-      : compositeLayers(this.canvasState.layers, width, height);
+    let composite = this.getCachedBonePreviewComposite(width, height);
     if (this.activeToolId === TOOL_IDS.HUE_SHIFT && !this.isHueShiftNeutral()) {
       composite = this.buildHueShiftPreview(composite);
     }
@@ -5261,15 +5449,25 @@ export default class PixelStudio {
     const height = this.canvasState.height;
     const size = width * height;
     const combineMode = this.selection.combineMode || 'replace';
-    let nextMask = mask;
+    const filterRigMask = typeof this.filterMaskToActiveLayerOpaque === 'function'
+      ? this.filterMaskToActiveLayerOpaque
+      : PixelStudio.prototype.filterMaskToActiveLayerOpaque;
+    let filteredMask = mask;
+    if (this.leftPanelTab === 'bones' && this.boneEditor?.mode === 'bind') {
+      filteredMask = filterRigMask.call(this, mask);
+    }
+    let nextMask = filteredMask;
     if (combineMode !== 'replace') {
       nextMask = this.selection.baseMask
         ? new Uint8Array(this.selection.baseMask)
         : new Uint8Array(size);
-      mask.forEach((value, index) => {
+      filteredMask.forEach((value, index) => {
         if (!value) return;
         nextMask[index] = combineMode === 'subtract' ? 0 : 1;
       });
+    }
+    if (this.leftPanelTab === 'bones' && this.boneEditor?.mode === 'bind') {
+      nextMask = filterRigMask.call(this, nextMask);
     }
     this.selection.mask = nextMask;
     this.selection.bounds = this.getMaskBounds(nextMask);
@@ -5279,6 +5477,17 @@ export default class PixelStudio {
       this.selection.mask = null;
       this.selection.bounds = null;
     }
+  }
+
+  filterMaskToActiveLayerOpaque(mask) {
+    if (!mask) return mask;
+    const layerPixels = this.canvasState?.layers?.[this.canvasState?.activeLayerIndex || 0]?.pixels;
+    if (!layerPixels) return mask;
+    const nextMask = new Uint8Array(mask.length);
+    for (let index = 0; index < mask.length; index += 1) {
+      if (mask[index] && layerPixels[index]) nextMask[index] = 1;
+    }
+    return nextMask;
   }
 
   cycleSelectionCombineMode(delta = 1) {
@@ -6487,6 +6696,15 @@ export default class PixelStudio {
     const size = this.canvasState.width * this.canvasState.height;
     const mask = new Uint8Array(size);
     mask.fill(1);
+    if (this.leftPanelTab === 'bones' && this.boneEditor?.mode === 'bind') {
+      this.applySelectionMask(mask);
+      this.selection.mode = null;
+      this.selection.start = null;
+      this.selection.end = null;
+      this.selection.lassoPoints = [];
+      this.selectionContextMenu = null;
+      return;
+    }
     this.selection.mask = mask;
     this.selection.bounds = this.getMaskBounds(mask);
     this.selection.active = Boolean(this.selection.bounds);
@@ -6692,9 +6910,13 @@ export default class PixelStudio {
     const destIndex = point.row * width + point.col;
     if (this.selection.active && this.selection.mask && !this.selection.mask[destIndex]) return;
     const sourcePixels = this.cloneSourcePixels || this.activeLayer.pixels;
-    this.activeLayer.pixels[destIndex] = alpha >= 1
+    const nextValue = alpha >= 1
       ? sourcePixels[sourceIndex]
       : this.blendPixel(this.activeLayer.pixels[destIndex], sourcePixels[sourceIndex], alpha);
+    if (this.activeLayer.pixels[destIndex] === nextValue) return;
+    this.activeLayer.pixels[destIndex] = nextValue;
+    if (typeof this.markLayerPixelsDirty === 'function') this.markLayerPixelsDirty();
+    else this.layerContentRevision = (this.layerContentRevision || 1) + 1;
   }
 
   applyCloneStroke(point, alpha = 1) {
@@ -8314,7 +8536,7 @@ export default class PixelStudio {
       canvas: 'Settings',
       layers: 'Layers',
       animation: 'Anim',
-      bones: 'Bones'
+      bones: 'Rigging'
     };
     const { tabColumn, content } = buildSharedLeftMenuLayout({
       x,
@@ -8524,15 +8746,15 @@ export default class PixelStudio {
     let yPos = y + 8;
     ctx.fillStyle = '#fff';
     ctx.font = `${isMobile ? 14 : 13}px ${UI_SUITE.font.family}`;
-    ctx.fillText('Bone Editor', x + 10, yPos + 14);
+    ctx.fillText('Rigging', x + 10, yPos + 14);
     yPos += 24;
     const selectedBone = this.getSelectedBone();
     if (!portrait) {
       const modes = [
-        { id: 'bones', label: 'Bones' },
-        { id: 'bind', label: 'Bind' },
+        { id: 'bones', label: 'Build' },
+        { id: 'bind', label: 'Rig' },
         { id: 'pose', label: 'Pose' },
-        { id: 'time', label: 'Time' }
+        { id: 'time', label: 'Tools' }
       ];
       const modeW = Math.max(56, Math.floor((w - 20 - gap * (modes.length - 1)) / modes.length));
       modes.forEach((mode, index) => {
@@ -8573,15 +8795,28 @@ export default class PixelStudio {
       this.drawBoneTimelineStrip(ctx, x + 10, yPos, Math.max(1, w - 20), timelineH);
       yPos += timelineH + 8;
     }
-    const listTop = yPos;
-    const listH = Math.max(40, h - (listTop - y) - 8);
+    if (!portrait && this.boneEditor.submenu === 'nodes') {
+      this.drawBoneNodeList(ctx, x + 8, yPos, Math.max(1, w - 16), Math.max(40, h - (yPos - y) - 8), { isMobile });
+    } else if (!portrait) {
+      this.boneListMeta = null;
+    }
+  }
+
+  drawBoneNodeList(ctx, x, y, w, h, options = {}) {
+    const isMobile = Boolean(options.isMobile);
+    const rowH = isMobile ? 44 : 28;
+    const listH = Math.max(40, h);
     const visible = Math.max(1, Math.floor(listH / rowH));
     const nodes = this.boneRig.joints;
     const maxScroll = Math.max(0, nodes.length - visible);
     this.focusScroll.bones = clamp(this.focusScroll.bones || 0, 0, maxScroll);
-    this.boneListMeta = { scrollBounds: { x: x + 8, y: listTop, w: w - 16, h: listH }, lineHeight: rowH, maxScroll };
+    this.boneListMeta = { scrollBounds: { x, y, w, h: listH }, lineHeight: rowH, maxScroll };
+    this.boneUiRegions.push(this.boneListMeta.scrollBounds);
     nodes.slice(this.focusScroll.bones, this.focusScroll.bones + visible).forEach((joint, visibleIndex) => {
-      const bounds = { x: x + 10, y: listTop + visibleIndex * rowH, w: w - 20, h: rowH - 6 };
+      const renameW = Math.min(isMobile ? 84 : 72, Math.max(56, Math.floor(w * 0.34)));
+      const rowY = y + visibleIndex * rowH;
+      const selectBounds = { x: x + 2, y: rowY, w: Math.max(1, w - renameW - 8), h: rowH - 6 };
+      const renameBounds = { x: selectBounds.x + selectBounds.w + 4, y: rowY, w: renameW, h: rowH - 6 };
       const nodeNumber = this.boneRig.joints.findIndex((entry) => entry.id === joint.id) + 1;
       const action = () => {
         const bone = this.getBoneForSelectedJoint(joint.id);
@@ -8590,9 +8825,17 @@ export default class PixelStudio {
         this.boneEditor.selectedEdgeBoneId = null;
         this.boneEditor.chainAnchor = { boneId: bone?.id || null, jointId: joint.id, handle: 'end', x: joint.x, y: joint.y };
       };
-      this.drawButton(ctx, bounds, `Node ${nodeNumber}`, joint.id === this.boneEditor.selectedJointId, { fontSize: 11 });
-      this.uiButtons.push({ bounds, onClick: action, group: 'bone-ui' });
-      this.registerFocusable('bones', bounds, action);
+      const label = joint.name || `Node ${nodeNumber}`;
+      this.drawButton(ctx, selectBounds, label, joint.id === this.boneEditor.selectedJointId, { fontSize: 11 });
+      this.uiButtons.push({ bounds: selectBounds, onClick: action, group: options.group || 'bone-ui' });
+      this.registerFocusable('bones', selectBounds, action);
+      const renameAction = () => {
+        action();
+        this.renameSelectedBoneNode(joint.id);
+      };
+      this.drawButton(ctx, renameBounds, 'Rename', false, { fontSize: 10 });
+      this.uiButtons.push({ bounds: renameBounds, onClick: renameAction, group: options.group || 'bone-ui' });
+      this.registerFocusable('bones', renameBounds, renameAction);
     });
     if (maxScroll > 0) {
       drawSharedPortraitScrollHints(ctx, this.boneListMeta.scrollBounds, {
@@ -8918,7 +9161,7 @@ export default class PixelStudio {
     if (mode === 'bind') {
       this.boneEditor.playing = false;
       this.ensureBindSelectionTool();
-      clearBlockingSelection.call(this, { clearActive: true });
+      clearBlockingSelection.call(this, { clearActive: false });
     } else if (['bones', 'pose', 'time'].includes(mode)) {
       if (this.strokeState) this.strokeState = null;
       clearBlockingSelection.call(this, { clearActive: true });
@@ -8934,18 +9177,21 @@ export default class PixelStudio {
       ? this.enforceBoneEditorToolMode
       : PixelStudio.prototype.enforceBoneEditorToolMode;
     enforceBoneToolMode.call(this, mode);
-    this.boneEditor.selectedEdgeBoneId = null;
+    if (!options.preserveEdgeSelection) {
+      this.boneEditor.selectedEdgeBoneId = null;
+    }
     if (options.normalizeSelection !== false && typeof this.ensureBoneNodeSelection === 'function') {
       this.ensureBoneNodeSelection();
     }
   }
 
   setBoneEditorMode(mode) {
+    const previousMode = this.boneEditor.mode || 'bones';
     this.boneEditor.mode = mode;
     const resetBoneState = typeof this.resetBoneEditorTransientState === 'function'
       ? this.resetBoneEditorTransientState
       : PixelStudio.prototype.resetBoneEditorTransientState;
-    resetBoneState.call(this, { mode });
+    resetBoneState.call(this, { mode, preserveEdgeSelection: previousMode === 'bones' && mode === 'bones' });
     if (mode !== 'bones') {
       this.boneEditor.linkMode = false;
       this.boneEditor.chainAnchor = this.getBoneChainAnchorFromSelection();
@@ -8973,6 +9219,16 @@ export default class PixelStudio {
     this.setBoneEditorMode(returnMode);
   }
 
+  enterRiggingBuildMode() {
+    this.setLeftPanelTab('bones');
+    this.setBoneEditorMode('bones');
+    this.boneEditor.submenu = null;
+    this.mobileDrawer = null;
+    this.mobileDrawerBounds = null;
+    this.pixelPortraitSubpanel = null;
+    this.boneListMeta = null;
+  }
+
   getBoneEditorActions() {
     return this.getBoneContextActions(this.boneEditor.mode, { full: true });
   }
@@ -8983,6 +9239,7 @@ export default class PixelStudio {
     const hasSelection = Boolean(this.selection.active && this.selection.mask);
     const hasBindings = Boolean(this.boneRig.bindings.length);
     const full = Boolean(options.full);
+    const activeLayerPixels = this.canvasState?.layers?.[this.canvasState?.activeLayerIndex || 0]?.pixels || null;
     const edgeModeLabels = {
       rotate: 'Rotate',
       fixed: 'Fixed',
@@ -8996,14 +9253,24 @@ export default class PixelStudio {
     const selectedEdgeLabel = edgeModeLabels[selectedEdgeMode] || 'Rotate';
     const edgeLabel = affectedModes.size > 1 ? 'Mixed' : selectedEdgeLabel;
     const affectedEdgeSuffix = affectedEdges.length > 1 ? ` (${affectedEdges.length})` : '';
+    const selectedEdge = this.getSelectedEdgeBone();
+    const selectedOrEdge = selectedEdge || selected;
+    const bakeFrameCount = typeof this.getBoneBakeFrameCount === 'function'
+      ? this.getBoneBakeFrameCount()
+      : Math.max(1, Math.round(Number(this.boneEditor?.bakeFrameCount) || 1));
+    const getPoseTargetEdge = typeof this.getPoseTargetEdgeBone === 'function'
+      ? this.getPoseTargetEdgeBone
+      : PixelStudio.prototype.getPoseTargetEdgeBone;
+    const poseTargetEdge = mode === 'pose' ? getPoseTargetEdge.call(this) : null;
+    const poseTargetLabel = poseTargetEdge ? `Target: ${poseTargetEdge.name || poseTargetEdge.id}` : 'Target';
     const actionsByMode = {
       bones: [
         { id: 'bone-add', label: 'Add', action: () => this.startBoneAddMode() },
         { id: 'bone-link', label: this.boneEditor.linkMode ? 'Link On' : 'Link Off', active: this.boneEditor.linkMode, action: () => this.toggleBoneLinkMode() },
-        { id: 'bone-reverse', label: 'Reverse', disabled: !selected, action: () => this.reverseSelectedBoneDirection() },
+        { id: 'bone-reverse', label: selectedEdge ? 'Reverse Edge' : 'Reverse', disabled: !selectedOrEdge, action: () => this.reverseSelectedBoneDirection() },
         { id: 'bone-stretch', label: `${edgeLabel}${affectedEdgeSuffix}`, active: affectedModes.size > 1 || selectedEdgeMode !== 'rotate', disabled: !affectedEdges.length, action: () => this.cycleSelectedBoneEdgeMode() },
         { id: 'bone-ik', label: affectedEdges.some((bone) => bone.jointSettings?.ikEnabled === false) ? 'IK Off' : 'IK On', active: affectedEdges.length > 0 && affectedEdges.every((bone) => bone.jointSettings?.ikEnabled !== false), disabled: !affectedEdges.length, action: () => this.toggleSelectedBoneIk() },
-        { id: 'bone-delete', label: 'Delete', disabled: !selected, action: () => this.deleteSelectedBone() }
+        { id: 'bone-delete', label: selectedEdge ? 'Delete Edge' : 'Delete', disabled: !selectedOrEdge, action: () => this.deleteSelectedBone() }
       ],
       bind: [
         { id: 'bind-mode', label: `Mode: ${this.selection.combineMode || 'replace'}`, action: () => this.cycleSelectionCombineMode() },
@@ -9013,6 +9280,7 @@ export default class PixelStudio {
           { id: 'bind-lasso', label: 'Lasso', active: this.activeToolId === TOOL_IDS.SELECT_LASSO, action: () => this.setBindSelectionTool(TOOL_IDS.SELECT_LASSO) },
           { id: 'bind-magic', label: 'Magic', active: this.activeToolId === TOOL_IDS.SELECT_MAGIC_COLOR, action: () => this.setBindSelectionTool(TOOL_IDS.SELECT_MAGIC_COLOR) }
         ] : []),
+        { id: 'bind-unassigned', label: 'Unassigned', disabled: !activeLayerPixels, action: () => this.selectUnassignedRigPixels() },
         { id: 'bind-add', label: 'Assign', disabled: !selected || !hasSelection, action: () => this.addSelectionToSelectedBone() },
         { id: 'bind-remove', label: 'Remove', disabled: !selected || !hasSelection, action: () => this.removeSelectionFromSelectedBone() },
         ...(full ? [
@@ -9023,6 +9291,7 @@ export default class PixelStudio {
         ])
       ],
       pose: [
+        { id: 'pose-target', label: poseTargetLabel, disabled: !selected, action: () => this.cyclePoseTargetEdge() },
         { id: 'pose-set', label: 'Set Key', disabled: !selected, action: () => this.setBoneTimelineKey() },
         { id: 'pose-reset', label: 'Reset', disabled: !selected, action: () => this.resetSelectedBonePose() },
         { id: 'pose-delete', label: 'Del Key', disabled: !this.getCurrentBoneTimelineKey(), action: () => this.deleteBoneTimelineKey() },
@@ -9031,7 +9300,12 @@ export default class PixelStudio {
         { id: 'pose-length', label: 'Length', action: () => this.promptBoneTimelineLength() }
       ],
       time: [
-        { id: 'time-bake', label: 'Bake', disabled: !hasBindings, action: () => this.bakeBoneAnimationToCopiedFrames() }
+        { id: 'time-bake', label: 'Bake', disabled: !hasBindings, action: () => this.bakeBoneAnimationToCopiedFrames() },
+        { id: 'time-hide-bones', label: this.boneEditor.hideBonesDuringPlayback ? 'Hide Bones: On' : 'Hide Bones: Off', active: Boolean(this.boneEditor.hideBonesDuringPlayback), action: () => this.toggleHideBonesDuringPlayback() },
+        { id: 'time-frame-count', label: `Frames: ${bakeFrameCount}`, action: () => this.promptBoneBakeFrameCount() },
+        { id: 'time-convert-layers', label: 'Rig to Layers', disabled: !hasBindings || !activeLayerPixels, action: () => this.convertRigAssignmentsToLayers() },
+        { id: 'time-reverse-layers', label: this.boneEditor.reverseRigLayerOrder ? 'Root Top: On' : 'Root Top: Off', active: Boolean(this.boneEditor.reverseRigLayerOrder), action: () => this.toggleReverseRigLayerOrder() },
+        { id: 'time-list-bones', label: 'List Bones', active: this.boneEditor.submenu === 'nodes', action: () => { this.boneEditor.submenu = this.boneEditor.submenu === 'nodes' ? 'time' : 'nodes'; } }
       ]
     };
     return actionsByMode[mode] || actionsByMode.bones;
@@ -9076,7 +9350,8 @@ export default class PixelStudio {
   drawBoneContextSubmenuSheet(ctx, railX, railY, railW, subpanel) {
     const sheetMargin = 8;
     const isPoseSheet = this.boneEditor.submenu === 'pose';
-    const sheetH = Math.min(isPoseSheet ? 300 : 230, Math.max(isPoseSheet ? 230 : 150, railY - sheetMargin * 2));
+    const isNodesSheet = this.boneEditor.submenu === 'nodes';
+    const sheetH = Math.min(isPoseSheet || isNodesSheet ? 300 : 230, Math.max(isPoseSheet || isNodesSheet ? 230 : 150, railY - sheetMargin * 2));
     const sheet = {
       x: railX,
       y: Math.max(sheetMargin, railY - sheetH - sheetMargin),
@@ -9099,7 +9374,18 @@ export default class PixelStudio {
     this.registerFocusable('bone-actions', closeBounds, () => { this.boneEditor.submenu = null; });
 
     let actionY = sheet.y + 48;
+    if (isNodesSheet) {
+      this.drawBoneNodeList(ctx, sheet.x + 12, actionY, Math.max(1, sheet.w - 24), Math.max(40, sheet.y + sheet.h - actionY - 10), { isMobile: true, group: 'bone-actions' });
+      return;
+    }
     if (isPoseSheet) {
+      ctx.fillStyle = '#b9c7d8';
+      ctx.font = '12px Courier New';
+      const getPoseTargetLabel = typeof this.getPoseTargetLabel === 'function'
+        ? this.getPoseTargetLabel
+        : PixelStudio.prototype.getPoseTargetLabel;
+      ctx.fillText(getPoseTargetLabel.call(this), sheet.x + 14, actionY + 12);
+      actionY += 20;
       this.drawBoneTimelineStrip(ctx, sheet.x + 14, actionY, Math.max(1, sheet.w - 28), 58);
       actionY += 68;
     }
@@ -9194,8 +9480,11 @@ export default class PixelStudio {
     const selectedEdge = this.getSelectedEdgeBone();
     if (selectedEdge) return [selectedEdge];
     const jointId = this.boneEditor?.selectedJointId;
+    const graph = jointId && typeof this.getCachedBoneSkeletonContext === 'function'
+      ? this.getCachedBoneSkeletonContext().graph
+      : null;
     const outgoing = jointId
-      ? this.boneRig.bones.filter((bone) => bone.startJointId === jointId)
+      ? (graph?.outgoingByJoint?.get(jointId) || this.boneRig.bones.filter((bone) => bone.startJointId === jointId))
       : [];
     if (outgoing.length) return outgoing;
     const selected = this.getSelectedBone();
@@ -9220,6 +9509,35 @@ export default class PixelStudio {
     const modes = new Set(affected.map((bone) => bone.jointMode || (bone.stretch ? 'stretch' : 'rotate')));
     const label = modes.size === 1 ? this.getBoneEdgeModeDisplay([...modes][0]).label : 'Mixed';
     return affected.length === 1 ? `1 edge: ${label}` : `${affected.length} outgoing edges: ${label}`;
+  }
+
+  getBoneAffectedPixelCountsForActiveLayer() {
+    const cache = this.boneDerivedCache || { revision: 1, boneRevision: 1, affectedPixelCounts: null };
+    this.boneDerivedCache = cache;
+    const boneRevision = cache.boneRevision ?? cache.revision;
+    const layerIndex = this.canvasState?.activeLayerIndex ?? 0;
+    const counts = cache.affectedPixelCounts;
+    if (counts
+      && counts.rig === this.boneRig
+      && counts.boneRevision === boneRevision
+      && counts.layerIndex === layerIndex) {
+      return counts.values;
+    }
+    const values = getBoneAffectedPixelCounts(this.boneRig, layerIndex);
+    cache.affectedPixelCounts = {
+      rig: this.boneRig,
+      boneRevision,
+      layerIndex,
+      values
+    };
+    return values;
+  }
+
+  getSelectedBoneAffectedPixelCount() {
+    const selected = this.getSelectedBone();
+    if (!selected) return 0;
+    const counts = this.getBoneAffectedPixelCountsForActiveLayer();
+    return counts[selected.id] || 0;
   }
 
   getSelectedBoneOwnerId() {
@@ -9251,11 +9569,35 @@ export default class PixelStudio {
       && (this.boneEditor?.playing || mode === 'pose' || mode === 'time'));
   }
 
+  shouldHideBoneOverlaysDuringPlayback() {
+    return Boolean(this.leftPanelTab === 'bones'
+      && this.boneEditor?.hideBonesDuringPlayback
+      && this.boneEditor?.playing);
+  }
+
   getDisplayedBonesForBoneEditor() {
     if (this.leftPanelTab !== 'bones') return this.boneRig?.bones || [];
     const mode = this.boneEditor?.mode;
     if (mode === 'pose' || mode === 'time') {
-      return getPosedBoneGeometry(this.boneRig, this.getCurrentBonePreviewPose());
+      const cache = this.boneDerivedCache || { revision: 1, layerRevision: 1, boneRevision: 1, overlay: null, preview: null, raster: null, geometry: null };
+      this.boneDerivedCache = cache;
+      const boneRevision = cache.boneRevision ?? cache.revision;
+      const poseSignature = this.getBonePoseCacheSignature();
+      const geometry = cache.geometry;
+      if (geometry
+        && geometry.rig === this.boneRig
+        && geometry.boneRevision === boneRevision
+        && geometry.poseSignature === poseSignature) {
+        return geometry.displayedBones;
+      }
+      const displayedBones = getPosedBoneGeometry(this.boneRig, this.getCurrentBonePreviewPose());
+      cache.geometry = {
+        rig: this.boneRig,
+        boneRevision,
+        poseSignature,
+        displayedBones
+      };
+      return displayedBones;
     }
     return this.boneRig?.bones || [];
   }
@@ -9351,7 +9693,7 @@ export default class PixelStudio {
     if (!anchor) return false;
     const start = { x: anchor.x, y: anchor.y };
     if (Math.hypot(end.x - start.x, end.y - start.y) < 0.5) return false;
-    this.startHistory('add linked bone');
+    this.startHistory('add linked bone', { includeLayers: false });
     const result = createBone(this.boneRig, start, end, { parentId: anchor.boneId || null, startJointId: anchor.jointId || null });
     this.boneRig = result.rig;
     this.setBoneChainAnchor(result.bone, 'end');
@@ -9363,7 +9705,7 @@ export default class PixelStudio {
   bindActiveLayerToSelectedBone() {
     const ownerId = this.getSelectedBoneOwnerId();
     if (!ownerId || !this.activeLayer) return;
-    this.startHistory('bind layer to bone');
+    this.startHistory('bind layer to bone', { includeLayers: false });
     this.boneRig = createLayerBinding(
       this.boneRig,
       this.canvasState.activeLayerIndex,
@@ -9379,12 +9721,17 @@ export default class PixelStudio {
   bindSelectionToSelectedBone() {
     const ownerId = this.getSelectedBoneOwnerId();
     if (!ownerId || !this.selection.active || !this.selection.mask) return;
-    this.startHistory('bind selection to bone');
+    const filterRigMask = typeof this.filterMaskToActiveLayerOpaque === 'function'
+      ? this.filterMaskToActiveLayerOpaque
+      : PixelStudio.prototype.filterMaskToActiveLayerOpaque;
+    const mask = filterRigMask.call(this, this.selection.mask);
+    if (!this.getMaskBounds(mask)) return;
+    this.startHistory('bind selection to bone', { includeLayers: false });
     this.boneRig = createSelectionBinding(
       this.boneRig,
       this.canvasState.activeLayerIndex,
       [ownerId],
-      this.selection.mask,
+      mask,
       this.canvasState.width,
       this.canvasState.height
     );
@@ -9395,12 +9742,17 @@ export default class PixelStudio {
   addSelectionToSelectedBone() {
     const ownerId = this.getSelectedBoneOwnerId();
     if (!ownerId || !this.selection.active || !this.selection.mask) return;
-    this.startHistory('add pixels to bone');
+    const filterRigMask = typeof this.filterMaskToActiveLayerOpaque === 'function'
+      ? this.filterMaskToActiveLayerOpaque
+      : PixelStudio.prototype.filterMaskToActiveLayerOpaque;
+    const mask = filterRigMask.call(this, this.selection.mask);
+    if (!this.getMaskBounds(mask)) return;
+    this.startHistory('add pixels to bone', { includeLayers: false });
     this.boneRig = addMaskToBoneBinding(
       this.boneRig,
       this.canvasState.activeLayerIndex,
       ownerId,
-      this.selection.mask,
+      mask,
       this.canvasState.width,
       this.canvasState.height
     );
@@ -9411,21 +9763,171 @@ export default class PixelStudio {
   removeSelectionFromSelectedBone() {
     const ownerId = this.getSelectedBoneOwnerId();
     if (!ownerId || !this.selection.active || !this.selection.mask) return;
-    this.startHistory('remove pixels from bone');
+    const filterRigMask = typeof this.filterMaskToActiveLayerOpaque === 'function'
+      ? this.filterMaskToActiveLayerOpaque
+      : PixelStudio.prototype.filterMaskToActiveLayerOpaque;
+    const mask = filterRigMask.call(this, this.selection.mask);
+    if (!this.getMaskBounds(mask)) return;
+    this.startHistory('remove pixels from bone', { includeLayers: false });
     this.boneRig = removeMaskFromBoneBinding(
       this.boneRig,
       this.canvasState.activeLayerIndex,
       ownerId,
-      this.selection.mask
+      mask
     );
     this.commitHistory();
     this.finishBoneBindingAction();
   }
 
+  getActiveLayerAssignedRigMask() {
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const layerIndex = this.canvasState.activeLayerIndex;
+    const mask = new Uint8Array(width * height);
+    (this.boneRig?.bindings || []).forEach((binding) => {
+      if (binding.layerIndex !== layerIndex) return;
+      (binding.pixels || []).forEach((pixel) => {
+        if (pixel.index >= 0 && pixel.index < mask.length) mask[pixel.index] = 1;
+      });
+    });
+    return mask;
+  }
+
+  selectUnassignedRigPixels() {
+    const layerPixels = this.canvasState?.layers?.[this.canvasState?.activeLayerIndex || 0]?.pixels;
+    if (!layerPixels) return;
+    const assigned = this.getActiveLayerAssignedRigMask();
+    const mask = new Uint8Array(layerPixels.length);
+    for (let index = 0; index < layerPixels.length; index += 1) {
+      if (layerPixels[index] && !assigned[index]) mask[index] = 1;
+    }
+    this.setSelectionMask(mask);
+    if (!this.selection.active) {
+      this.statusMessage = 'No unassigned visible pixels on this layer';
+      return;
+    }
+    this.boneEditor.mode = 'bind';
+    this.ensureBindSelectionTool();
+    this.statusMessage = 'Selected unassigned visible pixels';
+  }
+
+  getRigOwnerDepths() {
+    const graph = buildBoneGraph(this.boneRig);
+    const jointDepths = new Map();
+    const incomingCounts = new Map();
+    graph.rig.joints.forEach((joint) => incomingCounts.set(joint.id, 0));
+    graph.rig.bones.forEach((bone) => {
+      incomingCounts.set(bone.endJointId, (incomingCounts.get(bone.endJointId) || 0) + 1);
+    });
+    const queue = graph.rig.joints
+      .filter((joint) => !incomingCounts.get(joint.id))
+      .map((joint) => {
+        jointDepths.set(joint.id, 0);
+        return joint.id;
+      });
+    if (!queue.length && graph.rig.joints[0]) {
+      jointDepths.set(graph.rig.joints[0].id, 0);
+      queue.push(graph.rig.joints[0].id);
+    }
+    for (let index = 0; index < queue.length; index += 1) {
+      const jointId = queue[index];
+      const depth = jointDepths.get(jointId) || 0;
+      (graph.outgoingByJoint.get(jointId) || []).forEach((bone) => {
+        const nextDepth = depth + 1;
+        if (!jointDepths.has(bone.endJointId) || nextDepth < jointDepths.get(bone.endJointId)) {
+          jointDepths.set(bone.endJointId, nextDepth);
+          queue.push(bone.endJointId);
+        }
+      });
+    }
+    const ownerDepths = new Map();
+    graph.rig.joints.forEach((joint) => ownerDepths.set(joint.id, jointDepths.get(joint.id) || 0));
+    graph.rig.bones.forEach((bone) => {
+      ownerDepths.set(bone.id, jointDepths.get(bone.endJointId) ?? ((jointDepths.get(bone.startJointId) || 0) + 1));
+    });
+    return ownerDepths;
+  }
+
+  getRigOwnerLayerName(ownerId) {
+    const jointIndex = this.boneRig.joints.findIndex((joint) => joint.id === ownerId);
+    if (jointIndex >= 0) {
+      const joint = this.boneRig.joints[jointIndex];
+      return joint.name || `Node ${jointIndex + 1}`;
+    }
+    const boneIndex = this.boneRig.bones.findIndex((bone) => bone.id === ownerId);
+    if (boneIndex >= 0) {
+      const bone = this.boneRig.bones[boneIndex];
+      return bone.name || `Bone ${boneIndex + 1}`;
+    }
+    return `Rig ${ownerId}`;
+  }
+
+  toggleReverseRigLayerOrder() {
+    this.boneEditor.reverseRigLayerOrder = !this.boneEditor.reverseRigLayerOrder;
+  }
+
+  convertRigAssignmentsToLayers() {
+    const layerPixels = this.canvasState?.layers?.[this.canvasState?.activeLayerIndex || 0]?.pixels;
+    if (!layerPixels) return;
+    const layerIndex = this.canvasState.activeLayerIndex;
+    const ownerPixels = new Map();
+    (this.boneRig?.bindings || []).forEach((binding) => {
+      if (binding.layerIndex !== layerIndex) return;
+      (binding.pixels || []).forEach((pixel) => {
+        if (!layerPixels[pixel.index]) return;
+        const weights = pixel.weights || {};
+        const ownerIds = Object.keys(weights).filter((ownerId) => weights[ownerId] > 0);
+        if (!ownerIds.length) ownerIds.push(...(binding.boneIds || []));
+        ownerIds.forEach((ownerId) => {
+          if (!ownerPixels.has(ownerId)) ownerPixels.set(ownerId, new Set());
+          ownerPixels.get(ownerId).add(pixel.index);
+        });
+      });
+    });
+    if (!ownerPixels.size) {
+      this.statusMessage = 'No visible rig assignments on this layer';
+      return;
+    }
+    const ownerDepths = this.getRigOwnerDepths();
+    const owners = [...ownerPixels.keys()].sort((a, b) => {
+      const depthDelta = (ownerDepths.get(a) || 0) - (ownerDepths.get(b) || 0);
+      if (depthDelta) return this.boneEditor.reverseRigLayerOrder ? -depthDelta : depthDelta;
+      return this.getRigOwnerLayerName(a).localeCompare(this.getRigOwnerLayerName(b));
+    });
+    const nextLayers = owners.map((ownerId) => {
+      const layer = createLayer(this.canvasState.width, this.canvasState.height, this.getRigOwnerLayerName(ownerId));
+      ownerPixels.get(ownerId).forEach((index) => {
+        layer.pixels[index] = layerPixels[index];
+      });
+      return layer;
+    });
+    const nextBindings = owners.map((ownerId, nextLayerIndex) => ({
+      id: `binding-${Date.now().toString(36)}-${nextLayerIndex + 1}`,
+      type: 'selection',
+      layerIndex: nextLayerIndex,
+      boneIds: [ownerId],
+      skinningMode: 'rigid-layer',
+      pixels: [...ownerPixels.get(ownerId)]
+        .sort((a, b) => a - b)
+        .map((index) => ({ index, weights: { [ownerId]: 1 } })),
+      name: this.getRigOwnerLayerName(ownerId)
+    }));
+    this.startHistory('convert rig to layers');
+    this.boneRig = {
+      ...cloneBoneRig(this.boneRig),
+      bindings: nextBindings
+    };
+    this.currentFrame.layers = nextLayers;
+    this.canvasState.activeLayerIndex = clamp(this.canvasState.activeLayerIndex, 0, nextLayers.length - 1);
+    this.setFrameLayers(nextLayers);
+    this.commitHistory();
+    this.statusMessage = `Converted rig assignments to ${nextLayers.length} layers`;
+  }
+
   clearSelectedBoneBindings() {
     const ownerId = this.getSelectedBoneOwnerId();
     if (!ownerId) return;
-    this.startHistory('clear bone bindings');
+    this.startHistory('clear bone bindings', { includeLayers: false });
     this.boneRig = {
       ...cloneBoneRig(this.boneRig),
       bindings: this.boneRig.bindings.filter((binding) => !binding.boneIds.includes(ownerId))
@@ -9435,19 +9937,22 @@ export default class PixelStudio {
   }
 
   reverseSelectedBoneDirection() {
-    const bone = this.getSelectedBone();
+    const bone = this.getSelectedEdgeBone() || this.getSelectedBone();
     if (!bone) return;
-    this.startHistory('reverse bone direction');
+    this.startHistory('reverse bone direction', { includeLayers: false });
     this.boneRig = reverseBoneDirection(this.boneRig, bone.id);
     const reversed = this.boneRig.bones.find((entry) => entry.id === bone.id);
-    if (reversed) this.setBoneChainAnchor(reversed, 'start');
+    if (reversed) {
+      this.setBoneChainAnchor(reversed, 'start');
+      this.boneEditor.selectedEdgeBoneId = reversed.id;
+    }
     this.commitHistory();
   }
 
   cycleSelectedBoneEdgeMode() {
     const affectedEdges = this.getAffectedEdgeBones();
     if (!affectedEdges.length) return;
-    this.startHistory('set bone edge mode');
+    this.startHistory('set bone edge mode', { includeLayers: false });
     const next = cloneBoneRig(this.boneRig);
     const targetIds = new Set(affectedEdges.map((bone) => bone.id));
     const modes = ['rotate', 'fixed', 'stretch', 'spring', 'slide', 'hinge'];
@@ -9468,7 +9973,7 @@ export default class PixelStudio {
   toggleSelectedBoneIk() {
     const affectedEdges = this.getAffectedEdgeBones();
     if (!affectedEdges.length) return;
-    this.startHistory('toggle bone ik');
+    this.startHistory('toggle bone ik', { includeLayers: false });
     const next = cloneBoneRig(this.boneRig);
     const targetIds = new Set(affectedEdges.map((bone) => bone.id));
     const enable = affectedEdges.some((bone) => bone.jointSettings?.ikEnabled === false);
@@ -9497,8 +10002,11 @@ export default class PixelStudio {
   resetSelectedBonePose() {
     const bone = this.getSelectedBone();
     if (!bone) return;
-    this.startHistory('reset bone pose');
+    this.startHistory('reset bone pose', { includeLayers: false });
     this.setBonePosePatchAtCurrentTime(bone.id, { angle: 0, dx: 0, dy: 0, scale: 1 });
+    if (this.boneEditor?.selectedJointId) {
+      this.setNodePosePatchesAtCurrentTime({ [this.boneEditor.selectedJointId]: { angle: 0 } });
+    }
     this.commitHistory();
   }
 
@@ -9516,6 +10024,31 @@ export default class PixelStudio {
 
   getBoneTimelineDurationMs() {
     return getPixelBoneTimelineDurationMs(this.boneRig?.poseTimeline || [], this.boneEditor);
+  }
+
+  getBoneBakeFrameCount() {
+    const explicit = Math.round(Number(this.boneEditor?.bakeFrameCount) || 0);
+    if (explicit > 0) return explicit;
+    const frameDurationMs = Math.max(1, Number(this.currentFrame?.durationMs || DEFAULT_FRAME_DURATION_MS));
+    return Math.max(1, Math.floor(this.getBoneTimelineDurationMs() / frameDurationMs) + 1);
+  }
+
+  toggleHideBonesDuringPlayback() {
+    this.boneEditor.hideBonesDuringPlayback = !this.boneEditor.hideBonesDuringPlayback;
+  }
+
+  async promptBoneBakeFrameCount() {
+    const current = this.getBoneBakeFrameCount();
+    const raw = await openTextInputOverlay({
+      title: 'Bake Frame Count',
+      label: 'Frames to render when baked:',
+      initialValue: String(current),
+      inputType: 'number'
+    });
+    if (raw == null) return;
+    const value = Math.round(Number(raw));
+    if (!Number.isFinite(value) || value <= 0) return;
+    this.boneEditor.bakeFrameCount = clamp(value, 1, 4096);
   }
 
   async promptBoneTimelineLength() {
@@ -9550,11 +10083,24 @@ export default class PixelStudio {
   }
 
   getCurrentBonePreviewPose() {
+    if (this.boneEditor?.previewPose && this.boneEditor.previewPoseTimeMs === (this.boneEditor.timeMs || 0)) {
+      return this.boneEditor.previewPose;
+    }
     return samplePoseTimeline(this.boneRig, this.boneEditor.timeMs || 0);
   }
 
   constrainBonePoseForCurrentRig(pose = {}) {
-    return constrainSharedJointPose(this.boneRig, pose).bones;
+    const rigContext = typeof this.getCachedBoneSkeletonContext === 'function'
+      ? this.getCachedBoneSkeletonContext()
+      : { normalizedRig: normalizeBoneSkeleton(this.boneRig), graph: buildBoneGraph(this.boneRig) };
+    return constrainSharedJointPose(rigContext.normalizedRig, pose, { graph: rigContext.graph }).bones;
+  }
+
+  constrainPoseForCurrentRig(pose = {}) {
+    const rigContext = typeof this.getCachedBoneSkeletonContext === 'function'
+      ? this.getCachedBoneSkeletonContext()
+      : { normalizedRig: normalizeBoneSkeleton(this.boneRig), graph: buildBoneGraph(this.boneRig) };
+    return constrainSharedJointPose(rigContext.normalizedRig, pose, { graph: rigContext.graph });
   }
 
   setBonePosePatchAtCurrentTime(boneId, posePatch = {}) {
@@ -9567,10 +10113,12 @@ export default class PixelStudio {
       dy: Number.isFinite(posePatch.dy) ? posePatch.dy : previous.dy,
       scale: Number.isFinite(posePatch.scale) ? Math.max(0.05, posePatch.scale) : previous.scale
     };
-    pose.bones = this.constrainBonePoseForCurrentRig
-      ? this.constrainBonePoseForCurrentRig(pose)
-      : constrainSharedJointPose(this.boneRig, pose).bones;
-    this.boneRig = setPoseKeyAtTime(this.boneRig, timeMs, pose.bones);
+    const constrained = this.constrainPoseForCurrentRig
+      ? this.constrainPoseForCurrentRig(pose)
+      : constrainSharedJointPose(this.boneRig, pose);
+    pose.bones = constrained.bones;
+    pose.nodes = constrained.nodes;
+    this.boneRig = setPoseKeyAtTime(this.boneRig, timeMs, pose.bones, pose.nodes);
   }
 
   setBonePosePatchesAtCurrentTime(patches = {}) {
@@ -9585,25 +10133,138 @@ export default class PixelStudio {
         scale: Number.isFinite(posePatch?.scale) ? Math.max(0.05, posePatch.scale) : previous.scale
       };
     });
-    pose.bones = this.constrainBonePoseForCurrentRig
-      ? this.constrainBonePoseForCurrentRig(pose)
-      : constrainSharedJointPose(this.boneRig, pose).bones;
-    this.boneRig = setPoseKeyAtTime(this.boneRig, timeMs, pose.bones);
+    const constrained = this.constrainPoseForCurrentRig
+      ? this.constrainPoseForCurrentRig(pose)
+      : constrainSharedJointPose(this.boneRig, pose);
+    pose.bones = constrained.bones;
+    pose.nodes = constrained.nodes;
+    this.boneRig = setPoseKeyAtTime(this.boneRig, timeMs, pose.bones, pose.nodes);
+  }
+
+  setNodePosePatchesAtCurrentTime(patches = {}) {
+    const timeMs = this.boneEditor.timeMs || 0;
+    const pose = samplePoseTimeline(this.boneRig, timeMs);
+    pose.nodes = { ...(pose.nodes || {}) };
+    Object.entries(patches).forEach(([jointId, posePatch]) => {
+      const previous = pose.nodes[jointId] || { angle: 0 };
+      pose.nodes[jointId] = {
+        angle: Number.isFinite(posePatch?.angle) ? posePatch.angle : previous.angle
+      };
+    });
+    const constrained = this.constrainPoseForCurrentRig
+      ? this.constrainPoseForCurrentRig(pose)
+      : constrainSharedJointPose(this.boneRig, pose);
+    this.boneRig = setPoseKeyAtTime(this.boneRig, timeMs, constrained.bones, constrained.nodes);
+  }
+
+  setBonePreviewPosePatchesAtCurrentTime(patches = {}, options = {}) {
+    if (!(this instanceof PixelStudio)) {
+      const hasOwnPatches = Object.prototype.hasOwnProperty.call(this, 'setBonePosePatchesAtCurrentTime');
+      const hasOwnPatch = Object.prototype.hasOwnProperty.call(this, 'setBonePosePatchAtCurrentTime');
+      const entries = Object.entries(patches);
+      if (entries.length === 1 && hasOwnPatch) {
+        const [boneId, patch] = entries[0];
+        this.setBonePosePatchAtCurrentTime(boneId, patch);
+        return;
+      }
+      if (hasOwnPatches) {
+        this.setBonePosePatchesAtCurrentTime(patches);
+        return;
+      }
+    }
+    const timeMs = this.boneEditor.timeMs || 0;
+    if (this.boneEditor?.drag?.type === 'pose') {
+      this.boneEditor.drag.previewPatchBoneIds = Object.keys(patches || {});
+    }
+    const sourcePose = options.basePose || this.boneEditor?.drag?.basePose || samplePoseTimeline(this.boneRig, timeMs);
+    const pose = {
+      ...sourcePose,
+      bones: { ...(sourcePose.bones || {}) },
+      nodes: { ...(sourcePose.nodes || {}) }
+    };
+    Object.entries(patches).forEach(([boneId, posePatch]) => {
+      const previous = pose.bones[boneId] || { angle: 0, dx: 0, dy: 0, scale: 1 };
+      pose.bones[boneId] = {
+        angle: Number.isFinite(posePatch?.angle) ? posePatch.angle : previous.angle,
+        dx: Number.isFinite(posePatch?.dx) ? posePatch.dx : previous.dx,
+        dy: Number.isFinite(posePatch?.dy) ? posePatch.dy : previous.dy,
+        scale: Number.isFinite(posePatch?.scale) ? Math.max(0.05, posePatch.scale) : previous.scale
+      };
+    });
+    const constrained = this.constrainPoseForCurrentRig
+      ? this.constrainPoseForCurrentRig(pose)
+      : constrainSharedJointPose(this.boneRig, pose);
+    pose.bones = constrained.bones;
+    pose.nodes = constrained.nodes;
+    const previousSignature = this.boneEditor.previewPose
+      ? JSON.stringify({ bones: this.boneEditor.previewPose.bones || {}, nodes: this.boneEditor.previewPose.nodes || {} })
+      : '';
+    const nextSignature = JSON.stringify({ bones: pose.bones || {}, nodes: pose.nodes || {} });
+    if (previousSignature === nextSignature && this.boneEditor.previewPoseTimeMs === timeMs) return;
+    this.boneEditor.previewPose = pose;
+    this.boneEditor.previewPoseTimeMs = timeMs;
+    this.boneEditor.previewPoseSignature = nextSignature;
+  }
+
+  setBonePreviewPosePatchAtCurrentTime(boneId, posePatch = {}) {
+    const setPreviewPatches = typeof this.setBonePreviewPosePatchesAtCurrentTime === 'function'
+      ? this.setBonePreviewPosePatchesAtCurrentTime
+      : PixelStudio.prototype.setBonePreviewPosePatchesAtCurrentTime;
+    setPreviewPatches.call(this, { [boneId]: posePatch });
+  }
+
+  setNodePreviewPosePatchesAtCurrentTime(patches = {}, options = {}) {
+    if (!(this instanceof PixelStudio) && Object.prototype.hasOwnProperty.call(this, 'setNodePosePatchesAtCurrentTime')) {
+      this.setNodePosePatchesAtCurrentTime(patches);
+      return;
+    }
+    const timeMs = this.boneEditor.timeMs || 0;
+    if (this.boneEditor?.drag?.type === 'pose') {
+      this.boneEditor.drag.previewPatchJointIds = Object.keys(patches || {});
+    }
+    const sourcePose = options.basePose || this.boneEditor?.drag?.basePose || samplePoseTimeline(this.boneRig, timeMs);
+    const pose = {
+      ...sourcePose,
+      bones: { ...(sourcePose.bones || {}) },
+      nodes: { ...(sourcePose.nodes || {}) }
+    };
+    Object.entries(patches).forEach(([jointId, posePatch]) => {
+      const previous = pose.nodes[jointId] || { angle: 0 };
+      pose.nodes[jointId] = {
+        angle: Number.isFinite(posePatch?.angle) ? posePatch.angle : previous.angle
+      };
+    });
+    const constrained = this.constrainPoseForCurrentRig
+      ? this.constrainPoseForCurrentRig(pose)
+      : constrainSharedJointPose(this.boneRig, pose);
+    pose.bones = constrained.bones;
+    pose.nodes = constrained.nodes;
+    const previousSignature = this.boneEditor.previewPose
+      ? JSON.stringify({ bones: this.boneEditor.previewPose.bones || {}, nodes: this.boneEditor.previewPose.nodes || {} })
+      : '';
+    const nextSignature = JSON.stringify({ bones: pose.bones || {}, nodes: pose.nodes || {} });
+    if (previousSignature === nextSignature && this.boneEditor.previewPoseTimeMs === timeMs) return;
+    this.boneEditor.previewPose = pose;
+    this.boneEditor.previewPoseTimeMs = timeMs;
+    this.boneEditor.previewPoseSignature = nextSignature;
   }
 
   setBoneTimelineKey() {
     const selected = this.getSelectedBone();
     if (!selected) return;
-    this.startHistory('set bone key');
+    this.startHistory('set bone key', { includeLayers: false });
     const pose = samplePoseTimeline(this.boneRig, this.boneEditor.timeMs || 0);
     if (!pose.bones[selected.id]) pose.bones[selected.id] = { angle: 0, dx: 0, dy: 0, scale: 1 };
-    this.boneRig = setPoseKeyAtTime(this.boneRig, this.boneEditor.timeMs || 0, this.constrainBonePoseForCurrentRig(pose));
+    const constrained = this.constrainPoseForCurrentRig
+      ? this.constrainPoseForCurrentRig(pose)
+      : constrainSharedJointPose(this.boneRig, pose);
+    this.boneRig = setPoseKeyAtTime(this.boneRig, this.boneEditor.timeMs || 0, constrained.bones, constrained.nodes);
     this.commitHistory();
   }
 
   deleteBoneTimelineKey() {
     if (!this.getCurrentBoneTimelineKey()) return;
-    this.startHistory('delete bone key');
+    this.startHistory('delete bone key', { includeLayers: false });
     this.boneRig = removePoseKeyAtTime(this.boneRig, this.boneEditor.timeMs || 0);
     this.commitHistory();
   }
@@ -9651,7 +10312,7 @@ export default class PixelStudio {
     });
     const name = raw?.trim();
     if (!name) return;
-    this.startHistory('rename bone');
+    this.startHistory('rename bone', { includeLayers: false });
     const next = cloneBoneRig(this.boneRig);
     const target = next.bones.find((entry) => entry.id === bone.id);
     if (target) target.name = name;
@@ -9659,16 +10320,86 @@ export default class PixelStudio {
     this.commitHistory();
   }
 
+  async renameSelectedBoneNode(jointId = this.boneEditor?.selectedJointId) {
+    const joint = this.boneRig.joints.find((entry) => entry.id === jointId);
+    if (!joint) return;
+    const nodeIndex = this.boneRig.joints.findIndex((entry) => entry.id === joint.id) + 1;
+    const raw = await openTextInputOverlay({
+      title: 'Rename Node',
+      label: 'Node name:',
+      initialValue: joint.name || `Node ${nodeIndex}`,
+      inputType: 'text'
+    });
+    const name = raw?.trim();
+    if (!name) return;
+    this.startHistory('rename bone node', { includeLayers: false });
+    const next = cloneBoneRig(this.boneRig);
+    const target = next.joints.find((entry) => entry.id === joint.id);
+    if (target) target.name = name;
+    this.boneRig = next;
+    this.boneEditor.selectedJointId = joint.id;
+    const bone = this.getBoneForSelectedJoint(joint.id);
+    this.boneEditor.selectedBoneId = bone?.id || null;
+    this.boneEditor.selectedEdgeBoneId = null;
+    this.commitHistory();
+  }
+
   deleteSelectedBone() {
+    const selectedEdge = this.getSelectedEdgeBone();
+    if (selectedEdge) {
+      this.startHistory('delete bone edge', { includeLayers: false });
+      const next = cloneBoneRig(this.boneRig);
+      next.bones = next.bones.filter((entry) => entry.id !== selectedEdge.id);
+      next.bindings = next.bindings.filter((binding) => !binding.boneIds.includes(selectedEdge.id));
+      next.poses.forEach((pose) => { delete pose.bones[selectedEdge.id]; });
+      (next.poseTimeline || []).forEach((pose) => { delete pose.bones[selectedEdge.id]; });
+      const graph = buildBoneGraph(next);
+      next.bones.forEach((entry) => {
+        entry.parentId = graph.parentById.get(entry.id) || null;
+      });
+      const validJointIds = new Set(next.joints.map((joint) => joint.id));
+      next.poses.forEach((pose) => {
+        Object.keys(pose.nodes || {}).forEach((jointId) => {
+          if (!validJointIds.has(jointId)) delete pose.nodes[jointId];
+        });
+      });
+      (next.poseTimeline || []).forEach((pose) => {
+        Object.keys(pose.nodes || {}).forEach((jointId) => {
+          if (!validJointIds.has(jointId)) delete pose.nodes[jointId];
+        });
+      });
+      this.boneRig = next;
+      this.boneEditor.selectedEdgeBoneId = null;
+      this.boneEditor.selectedBoneId = null;
+      this.boneEditor.selectedJointId = selectedEdge.startJointId || this.boneRig.joints[0]?.id || null;
+      this.ensureBoneNodeSelection();
+      const selectedJoint = this.boneRig.joints.find((joint) => joint.id === this.boneEditor.selectedJointId) || null;
+      this.boneEditor.chainAnchor = selectedJoint
+        ? { boneId: null, jointId: selectedJoint.id, handle: 'end', x: selectedJoint.x, y: selectedJoint.y }
+        : null;
+      this.commitHistory();
+      return;
+    }
     const bone = this.getSelectedBone();
     const ownerId = this.getSelectedBoneOwnerId();
     if (!bone) return;
-    this.startHistory('delete bone');
+    this.startHistory('delete bone', { includeLayers: false });
     const next = cloneBoneRig(this.boneRig);
     next.bones = next.bones.filter((entry) => entry.id !== bone.id);
     next.bindings = next.bindings.filter((binding) => !binding.boneIds.includes(bone.id) && (!ownerId || !binding.boneIds.includes(ownerId)));
     next.poses.forEach((pose) => { delete pose.bones[bone.id]; });
     this.boneRig = removeOrphanBoneJoints(next);
+    const validJointIds = new Set(this.boneRig.joints.map((joint) => joint.id));
+    this.boneRig.poses.forEach((pose) => {
+      Object.keys(pose.nodes || {}).forEach((jointId) => {
+        if (!validJointIds.has(jointId)) delete pose.nodes[jointId];
+      });
+    });
+    (this.boneRig.poseTimeline || []).forEach((pose) => {
+      Object.keys(pose.nodes || {}).forEach((jointId) => {
+        if (!validJointIds.has(jointId)) delete pose.nodes[jointId];
+      });
+    });
     this.boneEditor.selectedJointId = this.boneRig.bones[0]?.startJointId || this.boneRig.joints[0]?.id || null;
     this.ensureBoneNodeSelection();
     this.boneEditor.chainAnchor = this.getBoneChainAnchorFromSelection('end');
@@ -9683,7 +10414,8 @@ export default class PixelStudio {
     const generated = this.boneRig.poseTimeline?.length
       ? bakeBoneTimelineFrames(sourceFrame, this.canvasState.width, this.canvasState.height, this.boneRig, {
           frameDurationMs: sourceFrame.durationMs || DEFAULT_FRAME_DURATION_MS,
-          durationMs: this.getBoneTimelineDurationMs()
+          durationMs: this.getBoneTimelineDurationMs(),
+          frameCount: this.getBoneBakeFrameCount()
         })
       : bakeBoneFrames([sourceFrame], this.canvasState.width, this.canvasState.height, this.boneRig);
     const baked = generated
@@ -9704,11 +10436,435 @@ export default class PixelStudio {
 
   getRootPoseMoveBoneIds(jointId) {
     if (!jointId) return [];
-    const graph = buildBoneGraph(this.boneRig);
+    const graph = typeof this.getCachedBoneSkeletonContext === 'function'
+      ? this.getCachedBoneSkeletonContext().graph
+      : buildBoneGraph(this.boneRig);
     const hasIncoming = (graph.incomingByJoint.get(jointId) || []).length > 0;
     if (hasIncoming) return [];
     return (graph.outgoingByJoint.get(jointId) || [])
       .map((bone) => bone.id);
+  }
+
+  getBoneEdgeMode(bone = {}) {
+    return bone.jointMode || (bone.stretch ? 'stretch' : 'rotate');
+  }
+
+  isPoseEditableBoneEdge(bone = {}) {
+    const getMode = typeof this.getBoneEdgeMode === 'function'
+      ? this.getBoneEdgeMode
+      : PixelStudio.prototype.getBoneEdgeMode;
+    return getMode.call(this, bone) !== 'fixed' && !bone.locked;
+  }
+
+  isPoseIkEnabledForBone(bone = {}) {
+    return bone?.jointSettings?.ikEnabled !== false;
+  }
+
+  resolvePoseIkDragTarget(jointId, graph = null) {
+    if (!jointId) return null;
+    const resolvedGraph = graph || (typeof this.getCachedBoneSkeletonContext === 'function'
+      ? this.getCachedBoneSkeletonContext().graph
+      : buildBoneGraph(this.boneRig));
+    const incoming = resolvedGraph.incomingByJoint.get(jointId) || [];
+    const outgoing = resolvedGraph.outgoingByJoint.get(jointId) || [];
+    if (incoming.length !== 1 || outgoing.length) return null;
+    const child = incoming[0];
+    const parentId = resolvedGraph.parentById.get(child.id);
+    const parent = parentId ? resolvedGraph.byId.get(parentId) : null;
+    if (!parent || parent.endJointId !== child.startJointId) return null;
+    const isEditableEdge = typeof this.isPoseEditableBoneEdge === 'function'
+      ? this.isPoseEditableBoneEdge
+      : PixelStudio.prototype.isPoseEditableBoneEdge;
+    const isIkEnabled = typeof this.isPoseIkEnabledForBone === 'function'
+      ? this.isPoseIkEnabledForBone
+      : PixelStudio.prototype.isPoseIkEnabledForBone;
+    if (!isEditableEdge.call(this, parent) || !isEditableEdge.call(this, child)) return null;
+    if (!isIkEnabled.call(this, parent) || !isIkEnabled.call(this, child)) return null;
+    return {
+      action: 'ik-chain',
+      bone: child,
+      handle: 'end',
+      jointId,
+      parentBoneId: parent.id,
+      childBoneId: child.id,
+      ikBoneIds: [parent.id, child.id]
+    };
+  }
+
+  resolvePoseNodeDragTarget(hit = {}) {
+    if (!hit.jointId) {
+      return {
+        action: 'edge',
+        bone: hit.bone,
+        handle: hit.handle || 'body',
+        jointId: null
+      };
+    }
+    const graph = typeof this.getCachedBoneSkeletonContext === 'function'
+      ? this.getCachedBoneSkeletonContext().graph
+      : buildBoneGraph(this.boneRig);
+    const jointId = hit.jointId;
+    const incoming = graph.incomingByJoint.get(jointId) || [];
+    const outgoing = graph.outgoingByJoint.get(jointId) || [];
+    const selectedEdgeId = this.boneEditor?.selectedEdgeBoneId || null;
+    const selectedIncoming = incoming.find((bone) => bone.id === selectedEdgeId);
+    const selectedOutgoing = outgoing.find((bone) => bone.id === selectedEdgeId);
+    const isEditableEdge = typeof this.isPoseEditableBoneEdge === 'function'
+      ? this.isPoseEditableBoneEdge
+      : PixelStudio.prototype.isPoseEditableBoneEdge;
+    const ikTarget = this.resolvePoseIkDragTarget
+      ? this.resolvePoseIkDragTarget(jointId, graph)
+      : PixelStudio.prototype.resolvePoseIkDragTarget.call(this, jointId, graph);
+    if (ikTarget && (!selectedEdgeId || selectedEdgeId === ikTarget.childBoneId)) return ikTarget;
+    if (selectedIncoming && isEditableEdge.call(this, selectedIncoming)) {
+      return { action: 'edge', bone: selectedIncoming, handle: 'end', jointId };
+    }
+    if (selectedOutgoing && isEditableEdge.call(this, selectedOutgoing)) {
+      return { action: 'edge', bone: selectedOutgoing, handle: 'start', jointId };
+    }
+    const editableIncoming = incoming.find((bone) => isEditableEdge.call(this, bone));
+    if (editableIncoming) return { action: 'edge', bone: editableIncoming, handle: 'end', jointId };
+    const editableOutgoing = outgoing.find((bone) => isEditableEdge.call(this, bone));
+    if (!incoming.length && outgoing.length) {
+      return {
+        action: 'root-move',
+        bone: editableOutgoing || outgoing[0],
+        handle: 'start',
+        jointId,
+        rootMoveBoneIds: outgoing.map((bone) => bone.id)
+      };
+    }
+    if (editableOutgoing) return { action: 'edge', bone: editableOutgoing, handle: 'start', jointId };
+    const fallback = incoming[0] || outgoing[0] || hit.bone;
+    return {
+      action: 'blocked',
+      bone: fallback,
+      handle: fallback?.endJointId === jointId ? 'end' : 'start',
+      jointId
+    };
+  }
+
+  getPoseTargetForSelectedJoint() {
+    const jointId = this.boneEditor?.selectedJointId || this.boneEditor?.chainAnchor?.jointId || null;
+    if (!jointId) return null;
+    const joint = this.boneRig.joints.find((entry) => entry.id === jointId) || null;
+    const bone = this.getBoneForSelectedJoint(jointId) || this.boneRig.bones[0] || null;
+    if (!joint || !bone) return null;
+    const handle = bone.startJointId === jointId ? 'start' : 'end';
+    return this.resolvePoseNodeDragTarget({
+      bone,
+      handle,
+      jointId,
+      joint
+    });
+  }
+
+  getPoseTargetEdgeBone() {
+    const getPoseTarget = typeof this.getPoseTargetForSelectedJoint === 'function'
+      ? this.getPoseTargetForSelectedJoint
+      : PixelStudio.prototype.getPoseTargetForSelectedJoint;
+    const target = getPoseTarget.call(this);
+    return target?.action === 'edge' ? target.bone : null;
+  }
+
+  getPoseTargetLabel() {
+    if (this.boneEditor?.mode !== 'pose') return '';
+    const getPoseTarget = typeof this.getPoseTargetForSelectedJoint === 'function'
+      ? this.getPoseTargetForSelectedJoint
+      : PixelStudio.prototype.getPoseTargetForSelectedJoint;
+    const target = getPoseTarget.call(this);
+    if (!target) return 'Tap node';
+    if (target.action === 'ik-chain') return 'Drag node: solves chain';
+    if (target.action === 'root-move') return 'Drag node: moves group';
+    if (target.action === 'blocked') return 'Fixed edge';
+    const widgetTarget = this.getPoseWidgetRotationTarget?.(target.jointId || this.boneEditor?.selectedJointId, target.bone);
+    if (widgetTarget?.bone) {
+      const name = widgetTarget.bone.name || widgetTarget.bone.id;
+      return widgetTarget.direction === 'outgoing' ? `Rotate children: ${name}` : `Rotate edge: ${name}`;
+    }
+    const name = target.bone?.name || target.bone?.id || 'edge';
+    return `Drag node: rotates ${name}`;
+  }
+
+  getPoseWidgetRotationTarget(jointId = this.boneEditor?.selectedJointId, targetBone = null) {
+    if (!jointId) return null;
+    const graph = typeof this.getCachedBoneSkeletonContext === 'function'
+      ? this.getCachedBoneSkeletonContext().graph
+      : buildBoneGraph(this.boneRig);
+    const isEditableEdge = typeof this.isPoseEditableBoneEdge === 'function'
+      ? this.isPoseEditableBoneEdge
+      : PixelStudio.prototype.isPoseEditableBoneEdge;
+    const outgoing = (graph.outgoingByJoint.get(jointId) || [])
+      .filter((bone) => isEditableEdge.call(this, bone));
+    const incoming = (graph.incomingByJoint.get(jointId) || [])
+      .filter((bone) => isEditableEdge.call(this, bone));
+    const targetBoneId = targetBone?.id || targetBone?.boneId || targetBone?.bone?.id || null;
+    const selectedEdgeId = this.boneEditor?.selectedEdgeBoneId || targetBoneId || null;
+    const selectedOutgoing = outgoing.find((bone) => bone.id === selectedEdgeId);
+    const selectedIncoming = incoming.find((bone) => bone.id === selectedEdgeId);
+    if (selectedOutgoing || outgoing[0]) {
+      const bone = selectedOutgoing || outgoing[0];
+      return {
+        jointId,
+        bone,
+        direction: 'outgoing',
+        boneIds: [bone.id],
+        localNode: true,
+        baseAngle: bone.angle,
+        vectorAngle: bone.angle
+      };
+    }
+    if (selectedIncoming || incoming[0]) {
+      const bone = selectedIncoming || incoming[0];
+      return {
+        jointId,
+        bone,
+        direction: 'incoming',
+        boneIds: [bone.id],
+        localNode: true,
+        baseAngle: bone.angle + Math.PI,
+        vectorAngle: bone.angle + Math.PI
+      };
+    }
+    return null;
+  }
+
+  getDisplayedPoseWidgetRotationTarget(jointId = this.boneEditor?.selectedJointId, displayedBones = this.getDisplayedBonesForBoneEditor()) {
+    const getWidgetTarget = typeof this.getPoseWidgetRotationTarget === 'function'
+      ? this.getPoseWidgetRotationTarget
+      : PixelStudio.prototype.getPoseWidgetRotationTarget;
+    const target = getWidgetTarget.call(this, jointId);
+    if (!target) return null;
+    const displayedBone = target.bone
+      ? displayedBones.find((bone) => bone.id === target.bone.id) || target.bone
+      : null;
+    const nodeAngle = this.getCurrentBonePreviewPose?.().nodes?.[jointId]?.angle || 0;
+    const vectorAngle = displayedBone
+      ? (target.direction === 'incoming' ? displayedBone.angle + Math.PI : displayedBone.angle)
+      : (target.vectorAngle ?? target.baseAngle ?? target.bone?.angle ?? 0);
+    return {
+      ...target,
+      bone: displayedBone,
+      vectorAngle,
+      baseAngle: vectorAngle + nodeAngle
+    };
+  }
+
+  getPoseFanRotationTarget(jointId = this.boneEditor?.selectedJointId, targetBone = null) {
+    if (!jointId) return null;
+    const graph = typeof this.getCachedBoneSkeletonContext === 'function'
+      ? this.getCachedBoneSkeletonContext().graph
+      : buildBoneGraph(this.boneRig);
+    const incoming = (graph.incomingByJoint.get(jointId) || [])
+      .filter((bone) => this.isPoseEditableBoneEdge ? this.isPoseEditableBoneEdge(bone) : PixelStudio.prototype.isPoseEditableBoneEdge.call(this, bone));
+    const outgoing = (graph.outgoingByJoint.get(jointId) || [])
+      .filter((bone) => this.isPoseEditableBoneEdge ? this.isPoseEditableBoneEdge(bone) : PixelStudio.prototype.isPoseEditableBoneEdge.call(this, bone));
+    if (!incoming.length || !outgoing.length) return null;
+    const selectedEdgeId = this.boneEditor?.selectedEdgeBoneId || targetBone?.id || null;
+    const selectedOutgoing = outgoing.find((bone) => bone.id === selectedEdgeId) || outgoing[0];
+    const selectedIncoming = incoming.find((bone) => bone.id === selectedEdgeId) || incoming[0];
+    return {
+      jointId,
+      incoming: selectedIncoming,
+      outgoing: selectedOutgoing,
+      boneIds: [selectedIncoming.id, selectedOutgoing.id]
+    };
+  }
+
+  getPoseRotateWidgetGeometry(joint, cellSize = this.canvasBounds?.cellSize || 1, target = null) {
+    if (!joint) return null;
+    const safeCellSize = Math.max(1, Number(cellSize) || 1);
+    const nodeHitRadius = Math.max(2.25, 28 / safeCellSize);
+    const radius = nodeHitRadius + Math.max(0.9, 22 / safeCellSize);
+    const knobRadius = Math.max(0.95, 24 / safeCellSize);
+    const visualKnobRadius = Math.max(0.42, 9 / safeCellSize);
+    const handleAngle = Number.isFinite(target?.baseAngle)
+      ? target.baseAngle
+      : Number.isFinite(target?.bone?.angle)
+        ? target.bone.angle
+        : -Math.PI / 4;
+    return {
+      center: { x: joint.x, y: joint.y },
+      radius,
+      knobRadius,
+      visualKnobRadius,
+      handleAngle,
+      knob: {
+        x: joint.x + Math.cos(handleAngle) * radius,
+        y: joint.y + Math.sin(handleAngle) * radius
+      }
+    };
+  }
+
+  getPoseRotateWidgetHit(point) {
+    if (this.leftPanelTab !== 'bones' || this.boneEditor?.mode !== 'pose') return null;
+    const jointId = this.boneEditor?.selectedJointId || this.boneEditor?.chainAnchor?.jointId || null;
+    if (!jointId) return null;
+    const displayedBones = this.getDisplayedBonesForBoneEditor();
+    const joint = this.getDisplayedJointPoint(jointId, displayedBones);
+    if (!joint) return null;
+    const getDisplayedWidgetTarget = typeof this.getDisplayedPoseWidgetRotationTarget === 'function'
+      ? this.getDisplayedPoseWidgetRotationTarget
+      : PixelStudio.prototype.getDisplayedPoseWidgetRotationTarget;
+    const widgetTarget = getDisplayedWidgetTarget.call(this, jointId, displayedBones);
+    const { x: px, y: py } = this.getBonePointerCoords
+      ? this.getBonePointerCoords(point)
+      : {
+        x: Number.isFinite(point?.x) ? point.x : point.col + 0.5,
+        y: Number.isFinite(point?.y) ? point.y : point.row + 0.5
+      };
+    const cellSize = Math.max(1, this.canvasBounds?.cellSize || 1);
+    const geometry = this.getPoseRotateWidgetGeometry
+      ? this.getPoseRotateWidgetGeometry(joint, cellSize, widgetTarget)
+      : PixelStudio.prototype.getPoseRotateWidgetGeometry.call(this, joint, cellSize, widgetTarget);
+    if (!geometry) return null;
+    const distance = Math.hypot(px - geometry.knob.x, py - geometry.knob.y);
+    if (distance > geometry.knobRadius) return null;
+    const getPoseTarget = typeof this.getPoseTargetForSelectedJoint === 'function'
+      ? this.getPoseTargetForSelectedJoint
+      : PixelStudio.prototype.getPoseTargetForSelectedJoint;
+    const fallbackTarget = getPoseTarget.call(this);
+    const target = widgetTarget ? {
+      action: 'edge',
+      bone: widgetTarget.bone,
+      handle: widgetTarget.direction === 'incoming' ? 'end' : 'start',
+      jointId,
+      widgetRotation: widgetTarget
+    } : fallbackTarget;
+    const bone = target?.bone || this.getBoneForSelectedJoint(jointId);
+    if (!bone) return null;
+    return {
+      bone,
+      handle: 'rotate-widget',
+      jointId,
+      joint,
+      widget: geometry,
+      poseTarget: target,
+      distance
+    };
+  }
+
+  getPoseRotateWidgetScreenHit(point) {
+    if (!this.canvasBounds) return null;
+    const { mainX, mainY, x: startX, y: startY, cellSize } = this.canvasBounds;
+    const originX = Number.isFinite(mainX) ? mainX : startX;
+    const originY = Number.isFinite(mainY) ? mainY : startY;
+    const gridPoint = {
+      x: (point.x - originX) / Math.max(1, cellSize),
+      y: (point.y - originY) / Math.max(1, cellSize),
+      col: Math.floor((point.x - originX) / Math.max(1, cellSize)),
+      row: Math.floor((point.y - originY) / Math.max(1, cellSize))
+    };
+    const hit = this.getPoseRotateWidgetHit(gridPoint);
+    return hit ? { ...hit, point: gridPoint } : null;
+  }
+
+  buildPoseRotationPatches(drag, bone, px, py) {
+    const originalPose = drag.originalPose || { angle: 0, dx: 0, dy: 0, scale: 1 };
+    if (drag.handle === 'rotate-widget') {
+      const getWidgetTarget = typeof this.getPoseWidgetRotationTarget === 'function'
+        ? this.getPoseWidgetRotationTarget
+        : PixelStudio.prototype.getPoseWidgetRotationTarget;
+      const target = drag.widgetRotation || getWidgetTarget.call(this, drag.jointId, bone);
+      const targetBoneId = target?.boneId || target?.bone?.id || bone?.id || null;
+      const targetBone = this.boneRig.bones.find((entry) => entry.id === targetBoneId) || bone;
+      const original = drag.originalWidgetPoseByBone?.[targetBone.id] || originalPose;
+      const pivot = drag.widgetPivot || (target?.direction === 'incoming' ? targetBone.end : targetBone.start);
+      const direction = target?.direction || (targetBone.startJointId === drag.jointId ? 'outgoing' : 'incoming');
+      const desiredAngle = direction === 'incoming'
+        ? Math.atan2(pivot.y - py, pivot.x - px)
+        : Math.atan2(py - pivot.y, px - pivot.x);
+      const angle = desiredAngle - targetBone.angle;
+      const patch = {
+        angle,
+        dx: original.dx || 0,
+        dy: original.dy || 0,
+        scale: original.scale || 1
+      };
+      if (direction === 'incoming') {
+        patch.dx = pivot.x - Math.cos(desiredAngle) * targetBone.length - targetBone.start.x;
+        patch.dy = pivot.y - Math.sin(desiredAngle) * targetBone.length - targetBone.start.y;
+      }
+      return { [targetBone.id]: patch };
+    }
+    const fan = drag.fanRotation || this.getPoseFanRotationTarget?.(drag.jointId, bone);
+    if (fan?.incoming) {
+      const incoming = this.boneRig.bones.find((entry) => entry.id === fan.incoming.id) || fan.incoming;
+      const pivot = drag.fanPivot || incoming.start;
+      const angle = Math.atan2(py - pivot.y, px - pivot.x) - incoming.angle;
+      const originalIncoming = drag.originalFanPoseByBone?.[incoming.id] || { angle: 0, dx: 0, dy: 0, scale: 1 };
+      const patches = {
+        [incoming.id]: {
+          angle,
+          dx: originalIncoming.dx || 0,
+          dy: originalIncoming.dy || 0,
+          scale: originalIncoming.scale || 1
+        }
+      };
+      if (fan.outgoing?.id && fan.outgoing.id !== incoming.id) {
+        const originalOutgoing = drag.originalFanPoseByBone?.[fan.outgoing.id] || { angle: 0, dx: 0, dy: 0, scale: 1 };
+        patches[fan.outgoing.id] = { ...originalOutgoing };
+      }
+      return patches;
+    }
+    const displayedStart = drag.originalStart || bone.start;
+    const angle = Math.atan2(py - displayedStart.y, px - displayedStart.x) - bone.angle;
+    return {
+      [bone.id]: {
+        angle,
+        dx: originalPose.dx || 0,
+        dy: originalPose.dy || 0,
+        scale: originalPose.scale || 1
+      }
+    };
+  }
+
+  buildPoseNodeRotationPatches(drag, px, py) {
+    const target = drag.widgetRotation || null;
+    const jointId = target?.jointId || drag.jointId || null;
+    if (!jointId) return {};
+    const pivot = drag.widgetPivot || this.boneRig.joints.find((joint) => joint.id === jointId) || null;
+    if (!pivot) return {};
+    const baseAngle = Number.isFinite(target?.baseAngle) ? target.baseAngle : 0;
+    const desiredAngle = Math.atan2(py - pivot.y, px - pivot.x);
+    const original = drag.originalNodePoseByJoint?.[jointId] || { angle: 0 };
+    const startAngle = Number.isFinite(drag.widgetStartAngle) ? drag.widgetStartAngle : baseAngle;
+    const delta = Math.atan2(Math.sin(desiredAngle - startAngle), Math.cos(desiredAngle - startAngle));
+    return {
+      [jointId]: {
+        angle: original.angle + delta
+      }
+    };
+  }
+
+  cyclePoseTargetEdge() {
+    const jointId = this.boneEditor?.selectedJointId || this.boneEditor?.chainAnchor?.jointId || null;
+    if (!jointId) return;
+    const graph = typeof this.getCachedBoneSkeletonContext === 'function'
+      ? this.getCachedBoneSkeletonContext().graph
+      : buildBoneGraph(this.boneRig);
+    const incoming = graph.incomingByJoint.get(jointId) || [];
+    const outgoing = graph.outgoingByJoint.get(jointId) || [];
+    const isEditableEdge = typeof this.isPoseEditableBoneEdge === 'function'
+      ? this.isPoseEditableBoneEdge
+      : PixelStudio.prototype.isPoseEditableBoneEdge;
+    const connected = [...incoming, ...outgoing]
+      .filter((bone, index, all) => all.findIndex((entry) => entry.id === bone.id) === index)
+      .filter((bone) => isEditableEdge.call(this, bone));
+    if (!connected.length) {
+      this.boneEditor.selectedEdgeBoneId = null;
+      this.statusMessage = 'No editable edge at selected node';
+      return;
+    }
+    const getPoseTargetEdge = typeof this.getPoseTargetEdgeBone === 'function'
+      ? this.getPoseTargetEdgeBone
+      : PixelStudio.prototype.getPoseTargetEdgeBone;
+    const currentId = this.boneEditor.selectedEdgeBoneId || getPoseTargetEdge.call(this)?.id || connected[0].id;
+    const currentIndex = Math.max(0, connected.findIndex((bone) => bone.id === currentId));
+    const next = connected[(currentIndex + 1) % connected.length];
+    this.boneEditor.selectedEdgeBoneId = next.id;
+    this.boneEditor.selectedBoneId = next.id;
+    this.statusMessage = `Pose target: ${next.name || next.id}`;
   }
 
   getBonePointerCoords(point) {
@@ -9740,7 +10896,10 @@ export default class PixelStudio {
     const bones = this.getDisplayedBonesForBoneEditor();
     const { x: px, y: py } = this.getBonePointerCoords
       ? this.getBonePointerCoords(point)
-      : { x: point.col + 0.5, y: point.row + 0.5 };
+      : {
+        x: Number.isFinite(point?.x) ? point.x : point.col + 0.5,
+        y: Number.isFinite(point?.y) ? point.y : point.row + 0.5
+      };
     const hitBoneJoint = typeof this.hitTestBoneJoint === 'function'
       ? this.hitTestBoneJoint
       : PixelStudio.prototype.hitTestBoneJoint;
@@ -9797,7 +10956,10 @@ export default class PixelStudio {
     const joints = getDisplayedJoints.call(this, displayedBones);
     const { x: px, y: py } = this.getBonePointerCoords
       ? this.getBonePointerCoords(point)
-      : { x: point.col + 0.5, y: point.row + 0.5 };
+      : {
+        x: Number.isFinite(point?.x) ? point.x : point.col + 0.5,
+        y: Number.isFinite(point?.y) ? point.y : point.row + 0.5
+      };
     let nearestJoint = null;
     joints.forEach((joint) => {
       const distance = Math.hypot(px - joint.x, py - joint.y);
@@ -9845,7 +11007,10 @@ export default class PixelStudio {
     if (this.leftPanelTab !== 'bones') return false;
     const { x: px, y: py } = this.getBonePointerCoords
       ? this.getBonePointerCoords(point)
-      : { x: point.col + 0.5, y: point.row + 0.5 };
+      : {
+        x: Number.isFinite(point?.x) ? point.x : point.col + 0.5,
+        y: Number.isFinite(point?.y) ? point.y : point.row + 0.5
+      };
     if (this.boneEditor.mode === 'time') {
       this.statusMessage = 'Choose a bone tool command first';
       return true;
@@ -9867,28 +11032,86 @@ export default class PixelStudio {
       };
       return true;
     }
-    const hit = this.hitTestBone(point);
+    const widgetHit = this.boneEditor.mode === 'pose' && typeof this.getPoseRotateWidgetHit === 'function'
+      ? this.getPoseRotateWidgetHit(point)
+      : null;
+    const hit = widgetHit || this.hitTestBone(point);
     if (hit) {
-      this.boneEditor.selectedBoneId = hit.bone.id;
-      const restBone = this.boneRig.bones.find((entry) => entry.id === hit.bone.id) || hit.bone;
+      const resolvePoseTarget = typeof this.resolvePoseNodeDragTarget === 'function'
+        ? this.resolvePoseNodeDragTarget
+        : PixelStudio.prototype.resolvePoseNodeDragTarget;
+      const poseTarget = widgetHit?.poseTarget || (this.boneEditor.mode === 'pose'
+        ? resolvePoseTarget.call(this, hit)
+        : null);
+      const targetBone = poseTarget?.bone || hit.bone;
+      this.boneEditor.selectedBoneId = targetBone.id;
+      const restBone = this.boneRig.bones.find((entry) => entry.id === targetBone.id) || targetBone;
       if (hit.jointId) {
         const setJointSelection = typeof this.setBoneJointSelection === 'function'
           ? this.setBoneJointSelection
           : PixelStudio.prototype.setBoneJointSelection;
         setJointSelection.call(this, hit.jointId, hit.joint || null);
+        if (this.boneEditor.mode === 'pose' && (poseTarget?.action === 'edge' || poseTarget?.action === 'ik-chain')) {
+          this.boneEditor.selectedEdgeBoneId = targetBone.id;
+        }
       } else {
         this.setBoneChainAnchor(restBone, hit.handle === 'start' ? 'start' : 'end');
         if (hit.handle === 'body') this.boneEditor.selectedEdgeBoneId = hit.bone.id;
+      }
+      const affectedPixels = typeof this.getSelectedBoneAffectedPixelCount === 'function'
+        ? this.getSelectedBoneAffectedPixelCount()
+        : 1;
+      if (!affectedPixels && ['bones', 'pose', 'bind'].includes(this.boneEditor.mode)) {
+        this.statusMessage = 'Selected bone has 0 assigned pixels on this layer';
       }
       if (this.boneEditor.mode === 'bind' || this.boneEditor.mode === 'time') {
         return true;
       }
       const pose = samplePoseTimeline(this.boneRig, this.boneEditor.timeMs || 0);
-      const originalPose = pose.bones[hit.bone.id] || { angle: 0, dx: 0, dy: 0 };
-      const rootMoveBoneIds = this.boneEditor.mode === 'pose' && hit.handle === 'start'
-        ? this.getRootPoseMoveBoneIds(hit.jointId)
+      const originalPose = pose.bones[targetBone.id] || { angle: 0, dx: 0, dy: 0 };
+      const fanRotation = this.boneEditor.mode === 'pose'
+        ? this.getPoseFanRotationTarget?.(hit.jointId || poseTarget?.jointId, targetBone)
+        : null;
+      const getWidgetTarget = typeof this.getPoseWidgetRotationTarget === 'function'
+        ? this.getPoseWidgetRotationTarget
+        : PixelStudio.prototype.getPoseWidgetRotationTarget;
+      const widgetRotation = widgetHit && this.boneEditor.mode === 'pose'
+        ? (widgetHit.poseTarget?.widgetRotation || getWidgetTarget.call(this, hit.jointId || poseTarget?.jointId, targetBone))
+        : null;
+      const widgetBoneIds = widgetRotation?.boneIds || [];
+      const originalWidgetPoseByBone = Object.fromEntries(widgetBoneIds.map((boneId) => [
+        boneId,
+        { angle: 0, dx: 0, dy: 0, scale: 1, ...(pose.bones[boneId] || {}) }
+      ]));
+      const widgetPivot = widgetRotation?.jointId
+        ? (widgetHit?.joint || this.boneRig.joints.find((joint) => joint.id === widgetRotation.jointId) || null)
+        : null;
+      const widgetStartAngle = widgetPivot ? Math.atan2(py - widgetPivot.y, px - widgetPivot.x) : null;
+      const originalNodePoseByJoint = widgetRotation?.jointId
+        ? {
+            [widgetRotation.jointId]: {
+              angle: 0,
+              ...(pose.nodes?.[widgetRotation.jointId] || {})
+            }
+          }
+        : {};
+      const fanBoneIds = fanRotation?.boneIds || [];
+      const originalFanPoseByBone = Object.fromEntries(fanBoneIds.map((boneId) => [
+        boneId,
+        { angle: 0, dx: 0, dy: 0, scale: 1, ...(pose.bones[boneId] || {}) }
+      ]));
+      const fanPivot = fanRotation?.incoming?.start ? { ...fanRotation.incoming.start } : null;
+      const rootMoveBoneIds = this.boneEditor.mode === 'pose'
+        ? (poseTarget?.rootMoveBoneIds || [])
         : [];
       const originalRootPoseByBone = Object.fromEntries(rootMoveBoneIds.map((boneId) => [
+        boneId,
+        { angle: 0, dx: 0, dy: 0, scale: 1, ...(pose.bones[boneId] || {}) }
+      ]));
+      const ikBoneIds = this.boneEditor.mode === 'pose'
+        ? (poseTarget?.ikBoneIds || [])
+        : [];
+      const originalIkPoseByBone = Object.fromEntries(ikBoneIds.map((boneId) => [
         boneId,
         { angle: 0, dx: 0, dy: 0, scale: 1, ...(pose.bones[boneId] || {}) }
       ]));
@@ -9897,18 +11120,64 @@ export default class PixelStudio {
       }
       this.boneEditor.drag = {
         type: this.boneEditor.mode === 'pose' ? 'pose' : 'edit',
-        boneId: hit.bone.id,
-        handle: hit.handle,
+        boneId: targetBone.id,
+        handle: widgetHit ? 'rotate-widget' : (poseTarget?.handle || hit.handle),
         jointId: hit.jointId || null,
         start: { x: px, y: py },
-        originalStart: { ...hit.bone.start },
-        originalEnd: { ...hit.bone.end },
+        originalStart: { ...targetBone.start },
+        originalEnd: { ...targetBone.end },
         originalPose: { ...originalPose },
+        basePose: {
+          ...pose,
+          bones: { ...(pose.bones || {}) },
+          nodes: { ...(pose.nodes || {}) }
+        },
+        fanRotation: fanRotation ? {
+          jointId: fanRotation.jointId,
+          incoming: { id: fanRotation.incoming.id },
+          outgoing: fanRotation.outgoing ? { id: fanRotation.outgoing.id } : null,
+          boneIds: fanRotation.boneIds
+        } : null,
+        widgetRotation: widgetRotation ? {
+          jointId: widgetRotation.jointId,
+          boneId: widgetRotation.bone?.id || widgetRotation.boneId,
+          direction: widgetRotation.direction,
+          boneIds: widgetRotation.boneIds,
+          localNode: Boolean(widgetRotation.localNode),
+          baseAngle: Number.isFinite(widgetRotation.baseAngle) ? widgetRotation.baseAngle : widgetRotation.bone?.angle
+        } : null,
+        widgetPivot: widgetPivot ? { x: widgetPivot.x, y: widgetPivot.y } : null,
+        widgetStartAngle,
+        originalWidgetPoseByBone,
+        originalNodePoseByJoint,
+        fanPivot,
+        originalFanPoseByBone,
         rootMoveBoneIds,
         originalRootPoseByBone,
+        ikTarget: poseTarget?.action === 'ik-chain' ? {
+          parentBoneId: poseTarget.parentBoneId,
+          childBoneId: poseTarget.childBoneId,
+          jointId: poseTarget.jointId,
+          ikBoneIds
+        } : null,
+        originalIkPoseByBone,
+        poseTarget: poseTarget ? {
+          action: poseTarget.action,
+          boneId: targetBone.id,
+          handle: widgetHit ? 'rotate-widget' : poseTarget.handle,
+          jointId: poseTarget.jointId || null,
+          parentBoneId: poseTarget.parentBoneId || null,
+          childBoneId: poseTarget.childBoneId || null,
+          ikBoneIds
+        } : null,
         moved: false
       };
-      this.startHistory(this.boneEditor.drag.type === 'pose' ? 'pose bone' : 'edit bone');
+      if (this.boneEditor.drag.type === 'pose') {
+        this.boneEditor.previewPose = null;
+        this.boneEditor.previewPoseTimeMs = null;
+        this.boneEditor.previewPoseSignature = null;
+      }
+      this.startHistory(this.boneEditor.drag.type === 'pose' ? 'pose bone' : 'edit bone', { includeLayers: false });
       return true;
     }
     if (this.boneEditor.mode === 'bones' && this.boneEditor.linkMode) {
@@ -9958,7 +11227,10 @@ export default class PixelStudio {
     if (!drag || this.leftPanelTab !== 'bones') return false;
     const { x: px, y: py } = this.getBonePointerCoords
       ? this.getBonePointerCoords(point)
-      : { x: point.col + 0.5, y: point.row + 0.5 };
+      : {
+        x: Number.isFinite(point?.x) ? point.x : point.col + 0.5,
+        y: Number.isFinite(point?.y) ? point.y : point.row + 0.5
+      };
     if (drag.type === 'create' || drag.type === 'link-create') {
       drag.current = { x: px, y: py };
       drag.moved = Math.hypot(px - drag.start.x, py - drag.start.y) >= 0.5;
@@ -9968,8 +11240,42 @@ export default class PixelStudio {
     if (!bone) return false;
     drag.moved = true;
     if (drag.type === 'pose') {
-      const edgeMode = bone.jointMode || (bone.stretch ? 'stretch' : 'rotate');
-      if (drag.handle === 'body' || drag.handle === 'start') {
+      const edgeMode = this.getBoneEdgeMode ? this.getBoneEdgeMode(bone) : (bone.jointMode || (bone.stretch ? 'stretch' : 'rotate'));
+      if (drag.poseTarget?.action === 'ik-chain' && drag.ikTarget?.parentBoneId && drag.ikTarget?.childBoneId) {
+        const patches = solveTwoBoneIkPose(this.boneRig, drag.ikTarget.parentBoneId, drag.ikTarget.childBoneId, { x: px, y: py }, {
+          currentPose: drag.basePose || this.getCurrentBonePreviewPose?.() || { bones: {} }
+        });
+        if (!patches) {
+          drag.moved = false;
+          this.statusMessage = 'Could not solve this bone chain';
+          return true;
+        }
+        Object.entries(drag.originalIkPoseByBone || {}).forEach(([boneId, original]) => {
+          if (!patches[boneId]) return;
+          patches[boneId] = {
+            ...original,
+            ...patches[boneId],
+            dx: Number.isFinite(patches[boneId].dx) ? patches[boneId].dx : (original.dx || 0),
+            dy: Number.isFinite(patches[boneId].dy) ? patches[boneId].dy : (original.dy || 0),
+            scale: Number.isFinite(patches[boneId].scale) ? patches[boneId].scale : (original.scale || 1)
+          };
+        });
+        const setPreviewPatches = typeof this.setBonePreviewPosePatchesAtCurrentTime === 'function'
+          ? this.setBonePreviewPosePatchesAtCurrentTime
+          : PixelStudio.prototype.setBonePreviewPosePatchesAtCurrentTime;
+        setPreviewPatches.call(this, patches, { basePose: drag.basePose });
+        const names = Object.keys(patches)
+          .map((boneId) => this.boneRig.bones.find((entry) => entry.id === boneId)?.name || boneId)
+          .join(' + ');
+        this.statusMessage = `Solving ${names}`;
+        return true;
+      }
+      if (drag.handle === 'rotate-widget' || drag.handle === 'body' || drag.handle === 'start') {
+        if (drag.poseTarget?.action === 'blocked') {
+          drag.moved = false;
+          this.statusMessage = 'Fixed edges only follow parent or root movement';
+          return true;
+        }
         if (drag.handle === 'start' && drag.rootMoveBoneIds?.length) {
           const dx = px - drag.start.x;
           const dy = py - drag.start.y;
@@ -9982,7 +11288,11 @@ export default class PixelStudio {
               dy: (original.dy || 0) + dy
             };
           });
-          this.setBonePosePatchesAtCurrentTime(patches);
+          const setPreviewPatches = typeof this.setBonePreviewPosePatchesAtCurrentTime === 'function'
+            ? this.setBonePreviewPosePatchesAtCurrentTime
+            : PixelStudio.prototype.setBonePreviewPosePatchesAtCurrentTime;
+          setPreviewPatches.call(this, patches);
+          this.statusMessage = 'Moving root bone group';
           return true;
         }
         if (edgeMode === 'fixed') {
@@ -9990,16 +11300,72 @@ export default class PixelStudio {
           this.statusMessage = 'Fixed edges only follow parent or root movement';
           return true;
         }
-        const sharedStart = getBoneJointUsageCount(this.boneRig, bone.startJointId) > 1;
-        const sharedEnd = getBoneJointUsageCount(this.boneRig, bone.endJointId) > 1;
+        if (drag.handle === 'rotate-widget' && drag.widgetRotation?.localNode) {
+          const buildNodePatches = typeof this.buildPoseNodeRotationPatches === 'function'
+            ? this.buildPoseNodeRotationPatches
+            : PixelStudio.prototype.buildPoseNodeRotationPatches;
+          const patches = buildNodePatches.call(this, drag, px, py);
+          const setPreviewNodePatches = typeof this.setNodePreviewPosePatchesAtCurrentTime === 'function'
+            ? this.setNodePreviewPosePatchesAtCurrentTime
+            : PixelStudio.prototype.setNodePreviewPosePatchesAtCurrentTime;
+          setPreviewNodePatches.call(this, patches);
+          const names = Object.keys(patches)
+            .map((jointId) => this.boneRig.joints.find((entry) => entry.id === jointId)?.name || 'Node')
+            .join(' + ');
+          this.statusMessage = `Rotating ${names}`;
+          return true;
+        }
+        if (drag.handle === 'rotate-widget' || (drag.handle === 'start' && drag.fanRotation?.incoming)) {
+          const buildPatches = typeof this.buildPoseRotationPatches === 'function'
+            ? this.buildPoseRotationPatches
+            : PixelStudio.prototype.buildPoseRotationPatches;
+          const patches = buildPatches.call(this, drag, bone, px, py);
+          const setPreviewPatches = typeof this.setBonePreviewPosePatchesAtCurrentTime === 'function'
+            ? this.setBonePreviewPosePatchesAtCurrentTime
+            : PixelStudio.prototype.setBonePreviewPosePatchesAtCurrentTime;
+          setPreviewPatches.call(this, patches);
+          const names = Object.keys(patches)
+            .map((boneId) => this.boneRig.bones.find((entry) => entry.id === boneId)?.name || boneId)
+            .join(' + ');
+          this.statusMessage = `Rotating ${names}`;
+          return true;
+        }
+        if (drag.handle === 'start' && drag.poseTarget?.action === 'edge') {
+          const displayedStart = drag.originalStart || bone.start;
+          const angle = Math.atan2(py - displayedStart.y, px - displayedStart.x) - bone.angle;
+          const setPreviewPatch = typeof this.setBonePreviewPosePatchAtCurrentTime === 'function'
+            ? this.setBonePreviewPosePatchAtCurrentTime
+            : PixelStudio.prototype.setBonePreviewPosePatchAtCurrentTime;
+          setPreviewPatch.call(this, bone.id, {
+            angle,
+            dx: drag.originalPose?.dx || 0,
+            dy: drag.originalPose?.dy || 0,
+            scale: drag.originalPose?.scale || 1
+          });
+          this.statusMessage = `Rotating ${bone.name || bone.id}`;
+          return true;
+        }
+        const skeletonContext = typeof this.getCachedBoneSkeletonContext === 'function'
+          ? this.getCachedBoneSkeletonContext()
+          : null;
+        const jointUsageCounts = skeletonContext?.jointUsageCounts || null;
+        const sharedStart = jointUsageCounts
+          ? (jointUsageCounts.get(bone.startJointId) || 0) > 1
+          : getBoneJointUsageCount(this.boneRig, bone.startJointId) > 1;
+        const sharedEnd = jointUsageCounts
+          ? (jointUsageCounts.get(bone.endJointId) || 0) > 1
+          : getBoneJointUsageCount(this.boneRig, bone.endJointId) > 1;
         if (drag.handle === 'start' && sharedStart) {
-          const graph = buildBoneGraph(this.boneRig);
+          const graph = skeletonContext?.graph || buildBoneGraph(this.boneRig);
           const fixedIncoming = (graph.incomingByJoint.get(bone.startJointId) || [])
             .some((entry) => (entry.jointMode || (entry.stretch ? 'stretch' : 'rotate')) === 'fixed');
           if (fixedIncoming && edgeMode !== 'fixed') {
             const displayedStart = drag.originalStart || bone.start;
             const angle = Math.atan2(py - displayedStart.y, px - displayedStart.x) - bone.angle;
-            this.setBonePosePatchAtCurrentTime(bone.id, {
+            const setPreviewPatch = typeof this.setBonePreviewPosePatchAtCurrentTime === 'function'
+              ? this.setBonePreviewPosePatchAtCurrentTime
+              : PixelStudio.prototype.setBonePreviewPosePatchAtCurrentTime;
+            setPreviewPatch.call(this, bone.id, {
               angle,
               dx: drag.originalPose?.dx || 0,
               dy: drag.originalPose?.dy || 0,
@@ -10015,7 +11381,10 @@ export default class PixelStudio {
         }
         const dx = (drag.originalPose?.dx || 0) + (px - drag.start.x);
         const dy = (drag.originalPose?.dy || 0) + (py - drag.start.y);
-        this.setBonePosePatchAtCurrentTime(bone.id, { dx, dy });
+        const setPreviewPatch = typeof this.setBonePreviewPosePatchAtCurrentTime === 'function'
+          ? this.setBonePreviewPosePatchAtCurrentTime
+          : PixelStudio.prototype.setBonePreviewPosePatchAtCurrentTime;
+        setPreviewPatch.call(this, bone.id, { dx, dy });
         return true;
       }
       if (edgeMode === 'fixed') {
@@ -10039,7 +11408,10 @@ export default class PixelStudio {
         const angle = edgeMode === 'spring'
           ? (drag.originalPose?.angle || 0)
           : Math.atan2(vy, vx) - bone.angle;
-        this.setBonePosePatchAtCurrentTime(bone.id, {
+        const setPreviewPatch = typeof this.setBonePreviewPosePatchAtCurrentTime === 'function'
+          ? this.setBonePreviewPosePatchAtCurrentTime
+          : PixelStudio.prototype.setBonePreviewPosePatchAtCurrentTime;
+        setPreviewPatch.call(this, bone.id, {
           angle,
           dx: drag.originalPose?.dx || 0,
           dy: drag.originalPose?.dy || 0,
@@ -10047,39 +11419,17 @@ export default class PixelStudio {
         });
         return true;
       }
-      const graph = buildBoneGraph(this.boneRig);
-      const parentId = graph.parentById.get(bone.id);
-      const parent = parentId ? this.boneRig.bones.find((entry) => entry.id === parentId) : null;
-      const terminalEnd = !(graph.outgoingByJoint.get(bone.endJointId) || []).some((entry) => entry.id !== bone.id);
-      const ikEnabled = bone.jointSettings?.ikEnabled !== false;
-      if (ikEnabled && parent && parent.endJointId === bone.startJointId && terminalEnd) {
-        const parentVector = { x: parent.end.x - parent.start.x, y: parent.end.y - parent.start.y };
-        const childVector = { x: bone.end.x - bone.start.x, y: bone.end.y - bone.start.y };
-        const restCross = parentVector.x * childVector.y - parentVector.y * childVector.x;
-        const patches = solveTwoBoneIkPose(this.boneRig, parent.id, bone.id, { x: px, y: py }, {
-          currentPose: this.getCurrentBonePreviewPose(),
-          bendSign: edgeMode === 'hinge' && Math.abs(restCross) > 0.0001
-            ? (restCross > 0 ? 1 : -1)
-            : undefined
-        });
-        if (patches) {
-          const validation = validateTwoBoneIkPose(this.boneRig, parent.id, bone.id, this.getCurrentBonePreviewPose(), patches);
-          if (!validation.ok) {
-            drag.moved = false;
-            this.statusMessage = 'Move the child joint only; this would detach connected bones';
-            return true;
-          }
-          this.setBonePosePatchesAtCurrentTime(patches);
-          return true;
-        }
-      }
       const displayedStart = drag.originalStart || bone.start;
       const angle = Math.atan2(py - displayedStart.y, px - displayedStart.x) - bone.angle;
-      this.setBonePosePatchAtCurrentTime(bone.id, {
+      const setPreviewPatch = typeof this.setBonePreviewPosePatchAtCurrentTime === 'function'
+        ? this.setBonePreviewPosePatchAtCurrentTime
+        : PixelStudio.prototype.setBonePreviewPosePatchAtCurrentTime;
+      setPreviewPatch.call(this, bone.id, {
         angle,
         dx: drag.originalPose?.dx || 0,
         dy: drag.originalPose?.dy || 0
       });
+      this.statusMessage = `Rotating ${bone.name || bone.id}`;
       return true;
     }
     const endpointJointId = drag.jointId || (drag.handle === 'start' ? bone.startJointId : bone.endJointId);
@@ -10088,8 +11438,16 @@ export default class PixelStudio {
       return true;
     }
     if (drag.handle === 'body') {
-      const sharedStart = getBoneJointUsageCount(this.boneRig, bone.startJointId) > 1;
-      const sharedEnd = getBoneJointUsageCount(this.boneRig, bone.endJointId) > 1;
+      const skeletonContext = typeof this.getCachedBoneSkeletonContext === 'function'
+        ? this.getCachedBoneSkeletonContext()
+        : null;
+      const jointUsageCounts = skeletonContext?.jointUsageCounts || null;
+      const sharedStart = jointUsageCounts
+        ? (jointUsageCounts.get(bone.startJointId) || 0) > 1
+        : getBoneJointUsageCount(this.boneRig, bone.startJointId) > 1;
+      const sharedEnd = jointUsageCounts
+        ? (jointUsageCounts.get(bone.endJointId) || 0) > 1
+        : getBoneJointUsageCount(this.boneRig, bone.endJointId) > 1;
       if (sharedStart || sharedEnd) {
         this.statusMessage = 'Move the shared joint, not the linked bone body';
         return true;
@@ -10124,7 +11482,7 @@ export default class PixelStudio {
       const start = drag.start;
       const end = drag.current || drag.start;
       if (drag.moved && Math.hypot(end.x - start.x, end.y - start.y) >= 1) {
-        this.startHistory('add linked bone');
+        this.startHistory('add linked bone', { includeLayers: false });
         const result = createBone(this.boneRig, start, end, { parentId: drag.parentId || null, startJointId: drag.startJointId || null });
         this.boneRig = result.rig;
         this.boneEditor.selectedBoneId = result.bone.id;
@@ -10141,7 +11499,7 @@ export default class PixelStudio {
       const start = drag.start;
       const end = drag.current || drag.start;
       if (Math.hypot(end.x - start.x, end.y - start.y) >= 1) {
-        this.startHistory('add bone');
+        this.startHistory('add bone', { includeLayers: false });
         const result = createBone(this.boneRig, start, end);
         this.boneRig = result.rig;
         this.boneEditor.selectedBoneId = result.bone.id;
@@ -10150,10 +11508,26 @@ export default class PixelStudio {
         this.commitHistory();
       }
     } else if (drag.type === 'edit' || drag.type === 'pose') {
+      if (drag.type === 'pose' && drag.moved && this.boneEditor.previewPose) {
+        this.boneRig = setPoseKeyAtTime(
+          this.boneRig,
+          this.boneEditor.timeMs || 0,
+          this.boneEditor.previewPose.bones,
+          this.boneEditor.previewPose.nodes
+        );
+      }
+      this.boneEditor.previewPose = null;
+      this.boneEditor.previewPoseTimeMs = null;
+      this.boneEditor.previewPoseSignature = null;
       if (drag.moved) this.commitHistory();
       else this.pendingHistory = null;
       const bone = this.boneRig.bones.find((entry) => entry.id === drag.boneId);
-      if (bone) {
+      if (drag.widgetRotation?.jointId) {
+        const displayedBones = this.getDisplayedBonesForBoneEditor();
+        const displayedJoint = this.getDisplayedJointPoint(drag.widgetRotation.jointId, displayedBones);
+        this.setBoneJointSelection(drag.widgetRotation.jointId, displayedJoint);
+        if (bone) this.boneEditor.selectedBoneId = bone.id;
+      } else if (bone) {
         this.setBoneChainAnchor(bone, drag.handle === 'start' ? 'start' : 'end');
         if (drag.handle === 'body') this.boneEditor.selectedEdgeBoneId = bone.id;
       }
@@ -10162,31 +11536,73 @@ export default class PixelStudio {
     return true;
   }
 
-  getActiveBoneOverlayIds(displayedBones = this.getDisplayedBonesForBoneEditor()) {
+  getDisplayedBoneAdjacency(displayedBones = this.getDisplayedBonesForBoneEditor()) {
+    const cache = this.boneDerivedCache || { revision: 1, boneRevision: 1, overlayAdjacency: null };
+    this.boneDerivedCache = cache;
+    const boneRevision = cache.boneRevision ?? cache.revision;
+    const existing = cache.overlayAdjacency;
+    if (existing
+      && existing.displayedBones === displayedBones
+      && existing.boneRevision === boneRevision) {
+      return existing;
+    }
+    const outgoingByJoint = new Map();
+    const incomingByJoint = new Map();
+    const jointPointById = new Map();
+    displayedBones.forEach((bone) => {
+      if (bone.startJointId) {
+        if (!outgoingByJoint.has(bone.startJointId)) outgoingByJoint.set(bone.startJointId, []);
+        outgoingByJoint.get(bone.startJointId).push(bone);
+        if (!jointPointById.has(bone.startJointId)) jointPointById.set(bone.startJointId, bone.start);
+      }
+      if (bone.endJointId) {
+        if (!incomingByJoint.has(bone.endJointId)) incomingByJoint.set(bone.endJointId, []);
+        incomingByJoint.get(bone.endJointId).push(bone);
+        if (!jointPointById.has(bone.endJointId)) jointPointById.set(bone.endJointId, bone.end);
+      }
+    });
+    cache.overlayAdjacency = {
+      displayedBones,
+      boneRevision,
+      outgoingByJoint,
+      incomingByJoint,
+      jointPointById
+    };
+    return cache.overlayAdjacency;
+  }
+
+  getActiveBoneOverlayIds(displayedBones = this.getDisplayedBonesForBoneEditor(), adjacency = null) {
     const activeIds = new Set();
     const selectedJointId = this.boneEditor.selectedJointId || this.boneEditor.chainAnchor?.jointId || null;
     if (!selectedJointId) return activeIds;
+    const getAdjacency = typeof this.getDisplayedBoneAdjacency === 'function'
+      ? this.getDisplayedBoneAdjacency
+      : PixelStudio.prototype.getDisplayedBoneAdjacency;
+    const graph = adjacency || getAdjacency.call(this, displayedBones);
     const visitJoint = (jointId) => {
-      displayedBones.forEach((bone) => {
-        if (bone.startJointId !== jointId || activeIds.has(bone.id)) return;
+      (graph.outgoingByJoint.get(jointId) || []).forEach((bone) => {
+        if (activeIds.has(bone.id)) return;
         activeIds.add(bone.id);
         visitJoint(bone.endJointId);
       });
     };
-    displayedBones.forEach((bone) => {
-      if (bone.endJointId === selectedJointId || bone.startJointId === selectedJointId) activeIds.add(bone.id);
-    });
+    (graph.incomingByJoint.get(selectedJointId) || []).forEach((bone) => activeIds.add(bone.id));
+    (graph.outgoingByJoint.get(selectedJointId) || []).forEach((bone) => activeIds.add(bone.id));
     visitJoint(selectedJointId);
     return activeIds;
   }
 
-  getBoneOverlayNodeIds(displayedBones = this.getDisplayedBonesForBoneEditor()) {
+  getBoneOverlayNodeIds(displayedBones = this.getDisplayedBonesForBoneEditor(), adjacency = null) {
     const selectedJointId = this.boneEditor.selectedJointId || this.boneEditor.chainAnchor?.jointId || null;
     const downstream = new Set();
     if (!selectedJointId) return { selectedJointId: null, downstream };
+    const getAdjacency = typeof this.getDisplayedBoneAdjacency === 'function'
+      ? this.getDisplayedBoneAdjacency
+      : PixelStudio.prototype.getDisplayedBoneAdjacency;
+    const graph = adjacency || getAdjacency.call(this, displayedBones);
     const visitJoint = (jointId) => {
-      displayedBones.forEach((bone) => {
-        if (bone.startJointId !== jointId || downstream.has(bone.endJointId)) return;
+      (graph.outgoingByJoint.get(jointId) || []).forEach((bone) => {
+        if (downstream.has(bone.endJointId)) return;
         downstream.add(bone.endJointId);
         visitJoint(bone.endJointId);
       });
@@ -10196,7 +11612,8 @@ export default class PixelStudio {
     return { selectedJointId, downstream };
   }
 
-  getDisplayedJointPoint(jointId, displayedBones = this.getDisplayedBonesForBoneEditor()) {
+  getDisplayedJointPoint(jointId, displayedBones = this.getDisplayedBonesForBoneEditor(), adjacency = null) {
+    if (adjacency?.jointPointById?.has(jointId)) return adjacency.jointPointById.get(jointId);
     for (const bone of displayedBones) {
       if (bone.startJointId === jointId) return bone.start;
       if (bone.endJointId === jointId) return bone.end;
@@ -10204,34 +11621,273 @@ export default class PixelStudio {
     return this.boneRig.joints.find((joint) => joint.id === jointId) || null;
   }
 
-  drawSelectedBoneBindingOverlay(ctx, offsetX, offsetY, zoom) {
+  getSelectedBoneBindingOverlayIndexes() {
     const ownerId = this.getSelectedBoneOwnerId();
-    if (!ownerId) return;
-    const mask = getBoneAssignedMask(
-      this.boneRig,
+    if (!ownerId) return [];
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const layerIndex = this.canvasState.activeLayerIndex;
+    const cache = this.boneDerivedCache || { revision: 1, layerRevision: 1, boneRevision: 1, overlay: null, preview: null };
+    this.boneDerivedCache = cache;
+    const boneRevision = cache.boneRevision ?? cache.revision;
+    const overlay = cache.overlay;
+    if (overlay
+      && overlay.rig === this.boneRig
+      && overlay.ownerId === ownerId
+      && overlay.layerIndex === layerIndex
+      && overlay.width === width
+      && overlay.height === height
+      && overlay.boneRevision === boneRevision) {
+      return overlay.indexes;
+    }
+    const limit = width * height;
+    const seen = new Set();
+    this.boneRig.bindings.forEach((binding) => {
+      if (binding.layerIndex !== layerIndex || !binding.boneIds.includes(ownerId)) return;
+      binding.pixels.forEach((pixel) => {
+        const index = Math.round(Number(pixel.index) || 0);
+        if (index >= 0 && index < limit && pixel.weights?.[ownerId] > 0) seen.add(index);
+      });
+    });
+    const indexes = [...seen];
+    cache.overlay = {
+      rig: this.boneRig,
       ownerId,
-      this.canvasState.width,
-      this.canvasState.height,
-      this.canvasState.activeLayerIndex
-    );
+      layerIndex,
+      width,
+      height,
+      boneRevision,
+      indexes
+    };
+    return indexes;
+  }
+
+  getCachedSelectedBoneBindingOverlayRaster(indexes) {
+    if (!indexes.length) return null;
+    const ownerId = this.getSelectedBoneOwnerId();
+    if (!ownerId) return null;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const layerIndex = this.canvasState.activeLayerIndex;
+    const cache = this.boneDerivedCache || { revision: 1, layerRevision: 1, boneRevision: 1, overlay: null, overlayRaster: null, preview: null };
+    this.boneDerivedCache = cache;
+    const boneRevision = cache.boneRevision ?? cache.revision;
+    const raster = cache.overlayRaster;
+    if (raster
+      && raster.rig === this.boneRig
+      && raster.ownerId === ownerId
+      && raster.layerIndex === layerIndex
+      && raster.width === width
+      && raster.height === height
+      && raster.boneRevision === boneRevision
+      && raster.indexes === indexes) {
+      return raster.canvas;
+    }
+    if (!this.boneOverlayCanvas || !this.boneOverlayCtx) {
+      if (typeof document === 'undefined') return null;
+      this.boneOverlayCanvas = document.createElement('canvas');
+      this.boneOverlayCtx = this.boneOverlayCanvas.getContext('2d');
+      if (!this.boneOverlayCtx) return null;
+      this.boneOverlayCtx.imageSmoothingEnabled = false;
+    }
+    this.boneOverlayCanvas.width = width;
+    this.boneOverlayCanvas.height = height;
+    this.boneOverlayCtx.imageSmoothingEnabled = false;
+    this.boneOverlayCtx.clearRect?.(0, 0, width, height);
+    this.boneOverlayCtx.fillStyle = 'rgba(130, 245, 154, 0.32)';
+    indexes.forEach((index) => {
+      const col = index % width;
+      const row = Math.floor(index / width);
+      this.boneOverlayCtx.fillRect(col, row, 1, 1);
+    });
+    cache.overlayRaster = {
+      rig: this.boneRig,
+      ownerId,
+      layerIndex,
+      width,
+      height,
+      boneRevision,
+      indexes,
+      canvas: this.boneOverlayCanvas
+    };
+    return this.boneOverlayCanvas;
+  }
+
+  drawSelectedBoneBindingOverlay(ctx, offsetX, offsetY, zoom) {
+    if (this.shouldHideBoneOverlaysDuringPlayback()) return;
+    const indexes = this.getSelectedBoneBindingOverlayIndexes();
+    if (!indexes.length) return;
+    const width = this.canvasState.width;
+    const height = this.canvasState.height;
+    const raster = this.getCachedSelectedBoneBindingOverlayRaster(indexes);
+    if (raster) {
+      ctx.save();
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(raster, offsetX, offsetY, width * zoom, height * zoom);
+      ctx.restore();
+      return;
+    }
     ctx.save();
     ctx.fillStyle = 'rgba(130, 245, 154, 0.32)';
-    for (let index = 0; index < mask.length; index += 1) {
-      if (!mask[index]) continue;
-      const col = index % this.canvasState.width;
-      const row = Math.floor(index / this.canvasState.width);
+    indexes.forEach((index) => {
+      const col = index % width;
+      const row = Math.floor(index / width);
       ctx.fillRect(offsetX + col * zoom, offsetY + row * zoom, Math.max(1, zoom), Math.max(1, zoom));
-    }
+    });
     ctx.restore();
   }
 
-  drawBoneOverlay(ctx, offsetX, offsetY, zoom) {
-    ctx.save();
+  getBoneGraphOverlaySignature(zoom) {
+    const anchor = this.boneEditor?.chainAnchor || null;
+    return JSON.stringify({
+      mode: this.boneEditor?.mode || 'bones',
+      selectedJointId: this.boneEditor?.selectedJointId || null,
+      selectedBoneId: this.boneEditor?.selectedBoneId || null,
+      selectedEdgeBoneId: this.boneEditor?.selectedEdgeBoneId || null,
+      linkMode: Boolean(this.boneEditor?.linkMode),
+      anchor: anchor ? {
+        boneId: anchor.boneId || null,
+        jointId: anchor.jointId || null,
+        handle: anchor.handle || null,
+        x: Number(anchor.x) || 0,
+        y: Number(anchor.y) || 0
+      } : null,
+      pose: ['pose', 'time'].includes(this.boneEditor?.mode) ? this.getBonePoseCacheSignature() : null,
+      zoom
+    });
+  }
+
+  getBoneGraphOverlayBounds(displayedBones, zoom) {
+    const points = [];
+    displayedBones.forEach((bone) => {
+      if (bone?.start) points.push(bone.start);
+      if (bone?.end) points.push(bone.end);
+    });
+    const anchor = this.boneEditor?.mode === 'bones' && this.boneEditor?.linkMode ? this.boneEditor.chainAnchor : null;
+    if (anchor) points.push(anchor);
+    if (!points.length) return null;
+    let padding = Math.max(3, 28 / Math.max(1, zoom));
+    if (this.boneEditor?.mode === 'pose') {
+      const selectedJointId = this.boneEditor?.selectedJointId || this.boneEditor?.chainAnchor?.jointId || null;
+      const selectedPoint = selectedJointId ? this.getDisplayedJointPoint(selectedJointId, displayedBones) : null;
+      if (selectedPoint) {
+        const widgetTarget = this.getDisplayedPoseWidgetRotationTarget
+          ? this.getDisplayedPoseWidgetRotationTarget(selectedJointId, displayedBones)
+          : PixelStudio.prototype.getDisplayedPoseWidgetRotationTarget.call(this, selectedJointId, displayedBones);
+        const geometry = this.getPoseRotateWidgetGeometry
+          ? this.getPoseRotateWidgetGeometry(selectedPoint, zoom, widgetTarget)
+          : PixelStudio.prototype.getPoseRotateWidgetGeometry.call(this, selectedPoint, zoom, widgetTarget);
+        if (geometry) {
+          points.push(geometry.knob);
+          padding = Math.max(padding, geometry.radius + geometry.knobRadius + 0.75);
+        }
+      }
+    }
+    let minX = points[0].x;
+    let minY = points[0].y;
+    let maxX = points[0].x;
+    let maxY = points[0].y;
+    points.forEach((point) => {
+      minX = Math.min(minX, Number(point.x) || 0);
+      minY = Math.min(minY, Number(point.y) || 0);
+      maxX = Math.max(maxX, Number(point.x) || 0);
+      maxY = Math.max(maxY, Number(point.y) || 0);
+    });
+    minX -= padding;
+    minY -= padding;
+    maxX += padding;
+    maxY += padding;
+    return {
+      x: minX,
+      y: minY,
+      w: Math.max(1, maxX - minX),
+      h: Math.max(1, maxY - minY)
+    };
+  }
+
+  getCachedBoneGraphOverlayRaster(zoom) {
+    if (this.shouldHideBoneOverlaysDuringPlayback()) return null;
+    if (this.boneEditor?.drag) return null;
     const displayedBones = this.getDisplayedBonesForBoneEditor();
+    if (!displayedBones.length && !(this.boneEditor?.mode === 'bones' && this.boneEditor?.linkMode && this.boneEditor?.chainAnchor)) return null;
+    if (!this.boneGraphOverlayCanvas || !this.boneGraphOverlayCtx) {
+      if (typeof document === 'undefined') return null;
+      this.boneGraphOverlayCanvas = document.createElement('canvas');
+      this.boneGraphOverlayCtx = this.boneGraphOverlayCanvas.getContext('2d');
+      if (!this.boneGraphOverlayCtx) return null;
+      this.boneGraphOverlayCtx.imageSmoothingEnabled = false;
+    }
+    const cache = this.boneDerivedCache || { revision: 1, layerRevision: 1, boneRevision: 1, graphOverlayRaster: null };
+    this.boneDerivedCache = cache;
+    const boneRevision = cache.boneRevision ?? cache.revision;
+    const signature = this.getBoneGraphOverlaySignature(zoom);
+    const bounds = this.getBoneGraphOverlayBounds(displayedBones, zoom);
+    if (!bounds) return null;
+    const pixelWidth = Math.max(1, Math.ceil(bounds.w * zoom));
+    const pixelHeight = Math.max(1, Math.ceil(bounds.h * zoom));
+    const raster = cache.graphOverlayRaster;
+    if (raster
+      && raster.rig === this.boneRig
+      && raster.boneRevision === boneRevision
+      && raster.signature === signature
+      && raster.width === pixelWidth
+      && raster.height === pixelHeight) {
+      return raster;
+    }
+    this.boneGraphOverlayCanvas.width = pixelWidth;
+    this.boneGraphOverlayCanvas.height = pixelHeight;
+    this.boneGraphOverlayCtx.imageSmoothingEnabled = false;
+    this.boneGraphOverlayCtx.clearRect(0, 0, pixelWidth, pixelHeight);
+    this.drawBoneOverlayVector(this.boneGraphOverlayCtx, -bounds.x * zoom, -bounds.y * zoom, zoom, displayedBones);
+    cache.graphOverlayRaster = {
+      rig: this.boneRig,
+      boneRevision,
+      signature,
+      width: pixelWidth,
+      height: pixelHeight,
+      bounds,
+      canvas: this.boneGraphOverlayCanvas
+    };
+    return cache.graphOverlayRaster;
+  }
+
+  drawBoneOverlay(ctx, offsetX, offsetY, zoom) {
+    const raster = this.getCachedBoneGraphOverlayRaster(zoom);
+    if (raster) {
+      ctx.save();
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(raster.canvas, offsetX + raster.bounds.x * zoom, offsetY + raster.bounds.y * zoom);
+      ctx.restore();
+      return;
+    }
+    this.drawBoneOverlayVector(ctx, offsetX, offsetY, zoom);
+  }
+
+  drawBoneOverlayVector(ctx, offsetX, offsetY, zoom, cachedDisplayedBones = null) {
+    if (this.shouldHideBoneOverlaysDuringPlayback()) return;
+    ctx.save();
+    const displayedBones = cachedDisplayedBones || this.getDisplayedBonesForBoneEditor();
+    const adjacency = this.getDisplayedBoneAdjacency
+      ? this.getDisplayedBoneAdjacency(displayedBones)
+      : null;
     const influence = getBoneInfluenceSets(this.boneRig, this.boneEditor.selectedBoneId);
-    const activeBoneIds = this.getActiveBoneOverlayIds(displayedBones);
+    const selectedEdgeBoneId = this.boneEditor.selectedEdgeBoneId || null;
+    const getPoseTargetEdge = typeof this.getPoseTargetEdgeBone === 'function'
+      ? this.getPoseTargetEdgeBone
+      : PixelStudio.prototype.getPoseTargetEdgeBone;
+    const poseTargetEdgeId = this.boneEditor.mode === 'pose' ? getPoseTargetEdge.call(this)?.id || null : null;
+    const highlightedEdgeBoneId = selectedEdgeBoneId || poseTargetEdgeId;
+    const activeBoneIds = selectedEdgeBoneId ? new Set() : this.getActiveBoneOverlayIds(displayedBones, adjacency);
     const affectedEdgeIds = new Set(this.getAffectedEdgeBones().map((bone) => bone.id));
-    const overlayNodes = this.getBoneOverlayNodeIds(displayedBones);
+    const overlayNodes = highlightedEdgeBoneId
+      ? { selectedJointId: null, downstream: new Set() }
+      : this.getBoneOverlayNodeIds(displayedBones, adjacency);
+    const upstreamJointIds = new Set();
+    displayedBones.forEach((bone) => {
+      if (!influence.upstream.has(bone.id)) return;
+      if (bone.startJointId) upstreamJointIds.add(bone.startJointId);
+      if (bone.endJointId) upstreamJointIds.add(bone.endJointId);
+    });
     const activeGreen = '#82f59a';
     const selectedYellow = '#ffe16a';
     const downstreamBlue = '#6ad7ff';
@@ -10245,8 +11901,9 @@ export default class PixelStudio {
       const sy = offsetY + bone.start.y * zoom;
       const ex = offsetX + bone.end.x * zoom;
       const ey = offsetY + bone.end.y * zoom;
-      ctx.strokeStyle = affectedEdge ? activeGreen : (active ? activeGreen : (upstream ? dimCyan : idleCyan));
-      ctx.lineWidth = affectedEdge ? 4 : (active ? 3.5 : 2);
+      const selectedEdge = highlightedEdgeBoneId === bone.id;
+      ctx.strokeStyle = selectedEdge ? selectedYellow : affectedEdge ? activeGreen : (active ? activeGreen : (upstream ? dimCyan : idleCyan));
+      ctx.lineWidth = selectedEdge ? 4 : affectedEdge ? 4 : (active ? 3.5 : 2);
       ctx.beginPath();
       ctx.moveTo(sx, sy);
       ctx.lineTo(ex, ey);
@@ -10254,8 +11911,8 @@ export default class PixelStudio {
       const angle = Math.atan2(ey - sy, ex - sx);
       const arrowX = sx + (ex - sx) * 0.64;
       const arrowY = sy + (ey - sy) * 0.64;
-      const arrowSize = Math.max(4, Math.min(9, zoom * 0.28));
-      ctx.fillStyle = active ? activeGreen : 'rgba(141,240,255,0.8)';
+      const arrowSize = Math.max(5, Math.min(12, zoom * 0.36));
+      ctx.fillStyle = selectedEdge ? selectedYellow : active ? activeGreen : 'rgba(141,240,255,0.8)';
       ctx.beginPath();
       ctx.moveTo(arrowX + Math.cos(angle) * arrowSize, arrowY + Math.sin(angle) * arrowSize);
       ctx.lineTo(arrowX + Math.cos(angle + 2.45) * arrowSize, arrowY + Math.sin(angle + 2.45) * arrowSize);
@@ -10289,18 +11946,55 @@ export default class PixelStudio {
       });
     });
     drawnJoints.forEach((joint) => {
-      const point = this.getDisplayedJointPoint(joint.id, displayedBones) || joint;
+      const point = this.getDisplayedJointPoint(joint.id, displayedBones, adjacency) || joint;
       const sx = offsetX + point.x * zoom;
       const sy = offsetY + point.y * zoom;
       const selectedJoint = overlayNodes.selectedJointId === joint.id;
       const downstreamJoint = overlayNodes.downstream.has(joint.id);
-      const upstream = displayedBones.some((bone) => influence.upstream.has(bone.id) && (bone.startJointId === joint.id || bone.endJointId === joint.id));
+      const upstream = upstreamJointIds.has(joint.id);
       const active = this.boneEditor.chainAnchor?.jointId === joint.id && this.boneEditor.mode !== 'pose';
       ctx.fillStyle = selectedJoint ? selectedYellow : downstreamJoint ? downstreamBlue : active ? '#ffffff' : upstream ? 'rgba(141,240,255,0.55)' : '#8df0ff';
       ctx.beginPath();
       ctx.arc(sx, sy, (active || selectedJoint) ? Math.max(6, zoom * 0.32) : Math.max(5, zoom * 0.24), 0, Math.PI * 2);
       ctx.fill();
     });
+    if (this.boneEditor.mode === 'pose') {
+      const selectedJointId = this.boneEditor.selectedJointId || this.boneEditor.chainAnchor?.jointId || null;
+      const selectedPoint = selectedJointId ? this.getDisplayedJointPoint(selectedJointId, displayedBones) : null;
+      if (selectedPoint) {
+        const widgetTarget = this.getDisplayedPoseWidgetRotationTarget
+          ? this.getDisplayedPoseWidgetRotationTarget(selectedJointId, displayedBones)
+          : PixelStudio.prototype.getDisplayedPoseWidgetRotationTarget.call(this, selectedJointId, displayedBones);
+        const geometry = this.getPoseRotateWidgetGeometry
+          ? this.getPoseRotateWidgetGeometry(selectedPoint, zoom, widgetTarget)
+          : PixelStudio.prototype.getPoseRotateWidgetGeometry.call(this, selectedPoint, zoom, widgetTarget);
+        const sx = offsetX + geometry.center.x * zoom;
+        const sy = offsetY + geometry.center.y * zoom;
+        const radius = geometry.radius * zoom;
+        const hx = offsetX + geometry.knob.x * zoom;
+        const hy = offsetY + geometry.knob.y * zoom;
+        const knobRadius = Math.max(7, geometry.visualKnobRadius * zoom);
+        ctx.strokeStyle = selectedYellow;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(sx, sy, radius, geometry.handleAngle - Math.PI * 0.75, geometry.handleAngle + Math.PI * 0.75);
+        ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,225,106,0.25)';
+        ctx.lineWidth = Math.max(12, geometry.knobRadius * zoom * 2);
+        ctx.beginPath();
+        ctx.arc(hx, hy, Math.max(1, knobRadius * 0.7), 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = selectedYellow;
+        ctx.beginPath();
+        ctx.arc(hx, hy, knobRadius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#101820';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(hx, hy, Math.max(3, knobRadius * 0.45), 0, Math.PI * 1.4);
+        ctx.stroke();
+      }
+    }
     const anchor = this.boneEditor.mode === 'bones' && this.boneEditor.linkMode ? this.boneEditor.chainAnchor : null;
     if (anchor) {
       const ax = offsetX + anchor.x * zoom;
@@ -10603,7 +12297,7 @@ export default class PixelStudio {
       { id: 'canvas', label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
       { id: 'layers', label: 'Layers', action: () => { this.setLeftPanelTab('layers'); this.mobileDrawer = 'panel'; } },
       { id: 'animation', label: 'Anim', action: () => { this.setLeftPanelTab('animation'); this.mobileDrawer = 'panel'; } },
-      { id: 'bones', label: 'Bones', action: () => { this.setLeftPanelTab('bones'); this.mobileDrawer = 'panel'; } }
+      { id: 'bones', label: 'Rigging', action: () => this.enterRiggingBuildMode() }
     ];
     const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const buttonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
@@ -10748,9 +12442,13 @@ export default class PixelStudio {
 
   drawMobilePortraitRootTabs(ctx, bounds) {
     const rootTabs = buildPixelPortraitMenuModel().rootTabs;
-    const tabs = [...rootTabs, { id: 'bones', panel: 'bones', label: 'Bones' }].map((tab) => ({
+    const tabs = [...rootTabs, { id: 'bones', panel: 'bones', label: 'Rigging' }].map((tab) => ({
       ...tab,
       action: () => {
+        if (tab.panel === 'bones') {
+          this.enterRiggingBuildMode();
+          return;
+        }
         this.setLeftPanelTab(tab.panel);
         this.mobileDrawer = 'panel';
       }
@@ -12756,8 +14454,9 @@ export default class PixelStudio {
       };
       this.drawButton(ctx, bounds, entry.label, Boolean(entry.active), { fontSize: 12, disabled: Boolean(entry.disabled) });
       if (!entry.disabled && typeof entry.action === 'function') {
-        this.uiButtons.push({ bounds, onClick: entry.action });
-        this.registerFocusable(options.group || 'menu', bounds, entry.action);
+        const group = options.group || 'menu';
+        this.uiButtons.push({ bounds, onClick: entry.action, group });
+        this.registerFocusable(group, bounds, entry.action);
       }
     });
     return y + metrics.totalHeight;
@@ -12922,6 +14621,214 @@ export default class PixelStudio {
     ctx.restore();
   }
 
+  getLayerPixelRefs() {
+    return this.canvasState.layers.map((layer) => layer.pixels);
+  }
+
+  layerPixelRefsMatch(refs = []) {
+    return refs.length === this.canvasState.layers.length
+      && refs.every((pixels, index) => pixels === this.canvasState.layers[index]?.pixels);
+  }
+
+  getBonePoseCacheSignature(pose = null) {
+    if (pose && this.boneEditor?.previewPose === pose && this.boneEditor?.previewPoseSignature) {
+      return this.boneEditor.previewPoseSignature;
+    }
+    if (pose) return JSON.stringify({ bones: pose?.bones || {}, nodes: pose?.nodes || {} });
+    return `time:${Math.round(Number(this.boneEditor?.timeMs) || 0)}`;
+  }
+
+  isBonePoseVisuallyRest(pose = {}, epsilon = 0.0001) {
+    const bones = pose?.bones || {};
+    const nodes = pose?.nodes || {};
+    return Object.values(bones).every((bonePose) => (
+      Math.abs(Number(bonePose?.angle) || 0) <= epsilon
+      && Math.abs(Number(bonePose?.dx) || 0) <= epsilon
+      && Math.abs(Number(bonePose?.dy) || 0) <= epsilon
+      && Math.abs((Number.isFinite(bonePose?.scale) ? bonePose.scale : 1) - 1) <= epsilon
+    )) && Object.values(nodes).every((nodePose) => (
+      Math.abs(Number(nodePose?.angle) || 0) <= epsilon
+    ));
+  }
+
+  getCachedLayerComposite(width, height) {
+    const cache = this.boneDerivedCache || { revision: 1, layerRevision: 1, boneRevision: 1, overlay: null, overlayRaster: null, graphOverlayRaster: null, composite: null, preview: null, raster: null, geometry: null, mesh: null };
+    this.boneDerivedCache = cache;
+    const layerRevision = cache.layerRevision ?? cache.revision;
+    const contentRevision = this.layerContentRevision || 1;
+    const composite = cache.composite;
+    if (composite
+      && composite.layers === this.canvasState.layers
+      && composite.width === width
+      && composite.height === height
+      && composite.frameIndex === this.animation.currentFrameIndex
+      && composite.layerRevision === layerRevision
+      && composite.contentRevision === contentRevision
+      && this.layerPixelRefsMatch(composite.layerPixelRefs)) {
+      return composite.pixels;
+    }
+    const pixels = compositeLayers(this.canvasState.layers, width, height);
+    cache.composite = {
+      layers: this.canvasState.layers,
+      layerPixelRefs: this.getLayerPixelRefs(),
+      width,
+      height,
+      frameIndex: this.animation.currentFrameIndex,
+      layerRevision,
+      contentRevision,
+      pixels
+    };
+    return pixels;
+  }
+
+  getActivePosePreviewBoneIds(pose = null) {
+    if (this.leftPanelTab !== 'bones' || this.boneEditor?.mode !== 'pose') return null;
+    const drag = this.boneEditor?.drag;
+    if (drag?.type !== 'pose') return null;
+    const ids = new Set();
+    if (drag.boneId) ids.add(drag.boneId);
+    (drag.ikTarget?.ikBoneIds || []).forEach((boneId) => ids.add(boneId));
+    (drag.poseTarget?.ikBoneIds || []).forEach((boneId) => ids.add(boneId));
+    (drag.widgetRotation?.boneIds || []).forEach((boneId) => ids.add(boneId));
+    (drag.fanRotation?.boneIds || []).forEach((boneId) => ids.add(boneId));
+    (drag.previewPatchBoneIds || []).forEach((boneId) => ids.add(boneId));
+    (drag.rootMoveBoneIds || []).forEach((boneId) => ids.add(boneId));
+    return ids.size ? ids : null;
+  }
+
+  shouldCacheStaticCanvasRaster(options = {}) {
+    return Boolean(this.bonePreviewCanvas
+      && this.bonePreviewCtx
+      && !options.selectionCutout
+      && !options.hueShift
+      && !this.strokeState
+      && !this.linePreview
+      && !this.curvePreview
+      && !this.shapePreview
+      && !this.polygonPreview
+      && !this.gradientPreview);
+  }
+
+  getCachedBonePreviewComposite(width, height, pose = null) {
+    if (!this.shouldShowBonePreview()) {
+      const getLayerComposite = typeof this.getCachedLayerComposite === 'function'
+        ? this.getCachedLayerComposite
+        : PixelStudio.prototype.getCachedLayerComposite;
+      return getLayerComposite.call(this, width, height);
+    }
+    const cache = this.boneDerivedCache || { revision: 1, layerRevision: 1, boneRevision: 1, overlay: null, overlayRaster: null, graphOverlayRaster: null, composite: null, preview: null, raster: null, geometry: null, mesh: null };
+    this.boneDerivedCache = cache;
+    const layerRevision = cache.layerRevision ?? cache.revision;
+    const contentRevision = this.layerContentRevision || 1;
+    const boneRevision = cache.boneRevision ?? cache.revision;
+    const dragPoseActive = this.leftPanelTab === 'bones'
+      && this.boneEditor?.mode === 'pose'
+      && this.boneEditor?.drag?.type === 'pose';
+    let resolvedPose = pose || null;
+    let activeBoneIds = null;
+    if (dragPoseActive) {
+      resolvedPose = resolvedPose || this.getCurrentBonePreviewPose();
+      activeBoneIds = typeof this.getActivePosePreviewBoneIds === 'function'
+        ? this.getActivePosePreviewBoneIds(resolvedPose)
+        : null;
+    }
+    const poseSignature = this.getBonePoseCacheSignature(resolvedPose);
+    const activeBoneSignature = activeBoneIds ? [...activeBoneIds].sort().join(',') : '';
+    const preview = cache.preview;
+    if (preview
+      && preview.rig === this.boneRig
+      && preview.layers === this.canvasState.layers
+      && preview.width === width
+      && preview.height === height
+      && preview.frameIndex === this.animation.currentFrameIndex
+      && preview.layerRevision === layerRevision
+      && preview.contentRevision === contentRevision
+      && preview.boneRevision === boneRevision
+      && preview.activeBoneSignature === activeBoneSignature
+      && preview.poseSignature === poseSignature
+      && this.layerPixelRefsMatch(preview.layerPixelRefs)) {
+      return preview.pixels;
+    }
+    resolvedPose = resolvedPose || this.getCurrentBonePreviewPose();
+    const isRest = typeof this.isBonePoseVisuallyRest === 'function'
+      ? this.isBonePoseVisuallyRest(resolvedPose)
+      : false;
+    if (isRest) {
+      const getLayerComposite = typeof this.getCachedLayerComposite === 'function'
+        ? this.getCachedLayerComposite
+        : PixelStudio.prototype.getCachedLayerComposite;
+      return getLayerComposite.call(this, width, height);
+    }
+    if (!cache.mesh) cache.mesh = new Map();
+    const rigContext = typeof this.getCachedBoneRigContext === 'function'
+      ? this.getCachedBoneRigContext()
+      : { normalizedRig: normalizeBoneRig(this.boneRig, { exclusive: false }), graph: buildBoneGraph(this.boneRig) };
+    const pixels = compositeBonePreview(this.canvasState.layers, width, height, this.boneRig, resolvedPose, {
+      meshCache: cache.mesh,
+      activeBoneIds,
+      normalizedRig: rigContext.normalizedRig,
+      graph: rigContext.graph
+    });
+    cache.preview = {
+      rig: this.boneRig,
+      layers: this.canvasState.layers,
+      layerPixelRefs: this.getLayerPixelRefs(),
+      width,
+      height,
+      frameIndex: this.animation.currentFrameIndex,
+      layerRevision,
+      contentRevision,
+      boneRevision,
+      activeBoneSignature,
+      poseSignature,
+      pixels
+    };
+    return pixels;
+  }
+
+  getCachedBoneCanvasRaster(width, height, pixels, options = {}) {
+    const canCache = this.shouldShowBonePreview()
+      ? this.shouldCacheStaticCanvasRaster(options)
+      : (this.leftPanelTab === 'bones' && this.shouldCacheStaticCanvasRaster(options));
+    if (!canCache) return null;
+    const cache = this.boneDerivedCache || { revision: 1, layerRevision: 1, boneRevision: 1, overlay: null, overlayRaster: null, graphOverlayRaster: null, composite: null, preview: null, raster: null, geometry: null, mesh: null };
+    this.boneDerivedCache = cache;
+    const layerRevision = cache.layerRevision ?? cache.revision;
+    const contentRevision = this.layerContentRevision || 1;
+    const raster = cache.raster;
+    if (raster
+      && raster.pixels === pixels
+      && raster.width === width
+      && raster.height === height
+      && raster.layerRevision === layerRevision
+      && raster.contentRevision === contentRevision) {
+      return raster.canvas;
+    }
+    this.bonePreviewCanvas.width = width;
+    this.bonePreviewCanvas.height = height;
+    const imageData = this.bonePreviewCtx.createImageData(width, height);
+    new Uint32Array(imageData.data.buffer).set(pixels);
+    this.bonePreviewCtx.putImageData(imageData, 0, 0);
+    cache.raster = {
+      pixels,
+      width,
+      height,
+      layerRevision,
+      contentRevision,
+      canvas: this.bonePreviewCanvas
+    };
+    return this.bonePreviewCanvas;
+  }
+
+  shouldDrawCanvasGrid(width, height, zoom, wrapActive = false) {
+    if (this.view.showGrid === false) return false;
+    if (this.leftPanelTab !== 'bones') return true;
+    if (wrapActive || this.tiledPreview?.enabled) return false;
+    if (zoom < 6) return false;
+    const lineCount = Math.max(0, Math.round(width || 0)) + Math.max(0, Math.round(height || 0)) + 2;
+    return lineCount <= 192;
+  }
+
   drawCanvasArea(ctx, x, y, w, h) {
     const { width, height } = this.canvasState;
     this.canvasViewportBounds = { x, y, w, h };
@@ -12935,24 +14842,31 @@ export default class PixelStudio {
       ? { x: offsetX - gridW, y: offsetY - gridH, w: gridW * 3, h: gridH * 3, cellSize: zoom, mainX: offsetX, mainY: offsetY }
       : { x: offsetX, y: offsetY, w: gridW, h: gridH, cellSize: zoom, mainX: offsetX, mainY: offsetY };
 
-    this.offscreen.width = width;
-    this.offscreen.height = height;
-    let composite = this.shouldShowBonePreview()
-      ? compositeBonePreview(this.canvasState.layers, width, height, this.boneRig, this.getCurrentBonePreviewPose())
-      : compositeLayers(this.canvasState.layers, width, height);
-    if (this.activeToolId === TOOL_IDS.HUE_SHIFT && !this.isHueShiftNeutral()) {
+    let composite = this.getCachedBonePreviewComposite(width, height);
+    const hueShiftPreview = this.activeToolId === TOOL_IDS.HUE_SHIFT && !this.isHueShiftNeutral();
+    if (hueShiftPreview) {
       composite = this.buildHueShiftPreview(composite);
     }
-    const imageData = this.offscreenCtx.createImageData(width, height);
-    const bytes = new Uint32Array(imageData.data.buffer);
-    bytes.set(composite);
-    const showGenericSelectionOverlays = this.leftPanelTab !== 'bones';
-    if (showGenericSelectionOverlays && this.selection.floating && !this.selection.floatingMode && this.selection.mask) {
-      for (let i = 0; i < bytes.length; i += 1) {
-        if (this.selection.mask[i]) bytes[i] = 0;
+    const showGenericSelectionOverlays = this.leftPanelTab !== 'bones' || this.boneEditor?.mode === 'bind';
+    const selectionCutout = Boolean(showGenericSelectionOverlays && this.selection.floating && !this.selection.floatingMode && this.selection.mask);
+    let imageSource = this.getCachedBoneCanvasRaster(width, height, composite, {
+      selectionCutout,
+      hueShift: hueShiftPreview
+    });
+    if (!imageSource) {
+      if (this.offscreen.width !== width) this.offscreen.width = width;
+      if (this.offscreen.height !== height) this.offscreen.height = height;
+      const imageData = this.offscreenCtx.createImageData(width, height);
+      const bytes = new Uint32Array(imageData.data.buffer);
+      bytes.set(composite);
+      if (selectionCutout) {
+        for (let i = 0; i < bytes.length; i += 1) {
+          if (this.selection.mask[i]) bytes[i] = 0;
+        }
       }
+      this.offscreenCtx.putImageData(imageData, 0, 0);
+      imageSource = this.offscreen;
     }
-    this.offscreenCtx.putImageData(imageData, 0, 0);
 
     ctx.save();
     ctx.beginPath();
@@ -12964,7 +14878,7 @@ export default class PixelStudio {
     };
     const drawTileImage = (tileX, tileY, alpha = 1) => {
       ctx.globalAlpha = alpha;
-      ctx.drawImage(this.offscreen, tileX, tileY, gridW, gridH);
+      ctx.drawImage(imageSource, tileX, tileY, gridW, gridH);
       ctx.globalAlpha = 1;
     };
 
@@ -13009,7 +14923,10 @@ export default class PixelStudio {
         ctx.stroke();
       }
     };
-    if (this.view.showGrid !== false) {
+    const drawGrid = this.shouldDrawCanvasGrid
+      ? this.shouldDrawCanvasGrid(width, height, zoom, wrapActive)
+      : this.view.showGrid !== false;
+    if (drawGrid) {
       if (this.tiledPreview.enabled || wrapActive) {
         for (let row = -1; row <= 1; row += 1) {
           for (let col = -1; col <= 1; col += 1) {

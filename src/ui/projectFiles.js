@@ -32,6 +32,20 @@ const LARGE_PARSED_PAYLOAD_LIMIT = 8 * 1024 * 1024;
 
 const emptyIndex = () => ({ levels: {}, art: {}, music: {}, actors: {}, sfx: {}, cutscenes: {} });
 
+function getCachedPayloadMeta(raw) {
+  const fallback = { updatedAt: Date.now(), size: typeof raw === 'string' ? raw.length : 0 };
+  if (typeof raw !== 'string') return fallback;
+  try {
+    const payload = JSON.parse(raw);
+    return {
+      updatedAt: Number(payload?.savedAt || fallback.updatedAt),
+      size: raw.length
+    };
+  } catch (error) {
+    return fallback;
+  }
+}
+
 export function ensureProjectFileIndex() {
   let index = emptyIndex();
   const serverIndex = listServerIndexedFiles();
@@ -40,14 +54,11 @@ export function ensureProjectFileIndex() {
   });
   listCachedProjectFiles('*').forEach(({ folder, name, raw }) => {
     if (!FOLDERS.includes(folder) || !name || typeof raw !== 'string') return;
-    let updatedAt = Date.now();
-    try {
-      const payload = JSON.parse(raw);
-      updatedAt = Number(payload?.savedAt || updatedAt);
-    } catch (error) {
-      // ignore malformed volatile payload metadata
-    }
-    index[folder][name] = { updatedAt, size: raw.length };
+    const cachedMeta = getCachedPayloadMeta(raw);
+    const serverMeta = index[folder][name];
+    index[folder][name] = serverMeta
+      ? { ...serverMeta, size: Math.max(Number(serverMeta.size || 0), cachedMeta.size) }
+      : cachedMeta;
   });
   return index;
 }
@@ -92,11 +103,11 @@ export function listProjectFiles(folder) {
     }));
   listCachedProjectFiles(folder).forEach(({ name, raw }) => {
     const existing = listed.find((entry) => entry.name === name);
+    const cachedMeta = getCachedPayloadMeta(raw);
     if (existing) {
-      existing.updatedAt = Math.max(existing.updatedAt || 0, Date.now());
-      existing.size = Math.max(existing.size || 0, typeof raw === 'string' ? raw.length : 0);
+      existing.size = Math.max(existing.size || 0, cachedMeta.size);
     } else {
-      listed.push({ name, updatedAt: Date.now(), size: typeof raw === 'string' ? raw.length : 0 });
+      listed.push({ name, updatedAt: cachedMeta.updatedAt, size: cachedMeta.size });
     }
   });
   listed.sort((a, b) => b.updatedAt - a.updatedAt || a.name.localeCompare(b.name));

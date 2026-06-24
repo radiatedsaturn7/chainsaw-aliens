@@ -232,16 +232,21 @@ export function setServerStorageEnabled(enabled) {
 export function upsertCachedProjectFile(folder, name, raw) {
   if (!folder || !name || typeof raw !== 'string') return;
   volatileFiles.set(fileKey(folder, name), raw);
+  if (!serverIndex[folder]) serverIndex[folder] = {};
+  const existing = serverIndex[folder][name];
   try {
     const payload = JSON.parse(raw);
-    if (!serverIndex[folder]) serverIndex[folder] = {};
     serverIndex[folder][name] = {
-      updatedAt: Number(payload?.savedAt || Date.now()),
+      ...existing,
+      updatedAt: Number(existing?.updatedAt || payload?.savedAt || Date.now()),
       size: raw.length
     };
   } catch (error) {
-    if (!serverIndex[folder]) serverIndex[folder] = {};
-    serverIndex[folder][name] = { updatedAt: Date.now(), size: raw.length };
+    serverIndex[folder][name] = {
+      ...existing,
+      updatedAt: Number(existing?.updatedAt || Date.now()),
+      size: raw.length
+    };
   }
 }
 
