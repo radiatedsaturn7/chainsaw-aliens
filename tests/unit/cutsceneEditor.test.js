@@ -7,6 +7,7 @@ import {
   CutscenePlayer,
   clampCutscenePointForClip,
   computeCutsceneFitDimensions,
+  collectCutsceneMidiRenderEvents,
   createDefaultCutscene,
   drawCutsceneDocument,
   getCutsceneMovieExportLayout,
@@ -65,6 +66,9 @@ function createRecordingContext() {
     globalAlpha: 1,
     fillRect(x, y, w, h) {
       calls.push({ type: 'fillRect', fillStyle: state.fillStyle, globalAlpha: state.globalAlpha, x, y, w, h });
+    },
+    fillText(text, x, y, maxWidth) {
+      calls.push({ type: 'fillText', fillStyle: state.fillStyle, globalAlpha: state.globalAlpha, text: String(text || ''), x, y, maxWidth });
     }
   };
   return new Proxy(state, {
@@ -1771,6 +1775,62 @@ test('cutscene editor only reports saved after server persistence succeeds', asy
   }
 });
 
+test('cutscene editor shows saving while server confirmation is pending', async () => {
+  resetProjectFilesForTests();
+  const originalFetch = globalThis.fetch;
+  let resolveFetch;
+  const fetchStarted = new Promise((resolve) => {
+    globalThis.fetch = async (_url, options = {}) => {
+      resolve();
+      return new Promise((fetchResolve) => {
+        resolveFetch = () => fetchResolve({
+          ok: true,
+          async json() {
+            const body = JSON.parse(options.body || '{}');
+            return {
+              ok: true,
+              file: {
+                version: body.version,
+                folder: body.folder,
+                name: body.name,
+                savedAt: body.savedAt,
+                data: body.data
+              }
+            };
+          }
+        });
+      });
+    };
+  });
+  try {
+    const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+    editor.currentDocumentRef = { folder: 'cutscenes', name: 'c1' };
+    editor.document.name = 'c1';
+
+    const savePromise = editor.saveDocument();
+    await fetchStarted;
+
+    assert.equal(editor.statusText, 'Saving c1...');
+    resolveFetch();
+    await savePromise;
+    assert.equal(editor.statusText, 'Saved c1');
+  } finally {
+    globalThis.fetch = originalFetch;
+    resetProjectFilesForTests();
+  }
+});
+
+test('cutscene editor draws status text in portrait action rail', () => {
+  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const ctx = createRecordingContext();
+  editor.statusText = 'Saving c1...';
+  editor.bounds = { buttons: [] };
+
+  editor.drawActionRail(ctx, { x: 0, y: 0, w: 390, h: 120 }, true);
+
+  assert.equal(ctx.calls.some((call) => call.type === 'fillText' && call.text === 'Saving c1...'), true);
+});
+
 test('cutscene editor first save prompts for a name and lists the saved cutscene', async () => {
   resetProjectFilesForTests();
   const originalFetch = globalThis.fetch;
@@ -2003,7 +2063,7 @@ test('cutscene editor exposes compatible MP4 export and helpers', () => {
 });
 
 test('cutscene MP4 export uses ffmpeg h264 aac server transcode and real download button', () => {
-  assert.equal(cutsceneEditorSource.includes("fetch('/__export/mp4'"), true);
+  assert.equal(cutsceneEditorSource.includes("const url = params.toString() ? `/__export/mp4?${params.toString()}` : '/__export/mp4';"), true);
   assert.equal(cutsceneEditorSource.includes("fetch('/__export/mp4-frames'"), true);
   assert.equal(cutsceneEditorSource.includes("fetch('/__export/session'"), true);
   assert.equal(cutsceneEditorSource.includes('createMovieExportSession'), true);
@@ -2012,25 +2072,45 @@ test('cutscene MP4 export uses ffmpeg h264 aac server transcode and real downloa
   assert.equal(cutsceneEditorSource.includes('encodeMovieExportSegment'), true);
   assert.equal(cutsceneEditorSource.includes('finalizeMovieExportSession'), true);
   assert.equal(cutsceneEditorSource.includes('downloadMovieExportResult'), true);
-  assert.equal(cutsceneEditorSource.includes('CUTSCENE_EXPORT_SEGMENT_MS = 3000'), true);
+  assert.equal(cutsceneEditorSource.includes('CUTSCENE_EXPORT_SEGMENT_MS = 10000'), true);
   assert.equal(cutsceneEditorSource.includes('Skipping saved segment'), true);
   assert.equal(cutsceneEditorSource.includes('Segments checkpointed.'), true);
   assert.equal(cutsceneEditorSource.includes('exportMovieMp4Deterministic'), true);
+  assert.equal(cutsceneEditorSource.includes('exportMovieMp4MediaRecorder(null, { rethrow: true })'), false);
+  assert.equal(cutsceneEditorSource.includes('exportMovieMp4MediaRecorder(error, { rethrow: false })'), true);
+  assert.ok(cutsceneEditorSource.indexOf('const mp4Blob = await this.exportMovieMp4Deterministic(progress);') < cutsceneEditorSource.indexOf('exportMovieMp4MediaRecorder(error, { rethrow: false })'));
+  assert.equal(cutsceneEditorSource.includes('transcodeMovieRecordingToMp4'), true);
+  assert.equal(cutsceneEditorSource.includes("fetch('/__export/mp4-recording'"), true);
   assert.equal(cutsceneEditorSource.includes('transcodeFrameMovieToMp4'), true);
   assert.equal(cutsceneEditorSource.includes("form.append('frame'"), true);
   assert.equal(cutsceneEditorSource.includes('canvasToPngBlob'), true);
   assert.equal(cutsceneEditorSource.includes('new MediaRecorder'), true);
   assert.equal(cutsceneEditorSource.includes('renderMovieExportFrame'), true);
   assert.equal(cutsceneEditorSource.includes('exportCtx.imageSmoothingEnabled = false'), true);
-  assert.equal(cutsceneEditorSource.includes('canvas.width = layout.frameWidth'), true);
-  assert.equal(cutsceneEditorSource.includes('canvas.height = layout.frameHeight'), true);
+  assert.equal(cutsceneEditorSource.includes('frameCanvas.width = layout.frameWidth'), true);
+  assert.equal(cutsceneEditorSource.includes('frameCanvas.height = layout.frameHeight'), true);
+  assert.equal(cutsceneEditorSource.includes('recordingCanvas.captureStream(0)'), true);
+  assert.equal(cutsceneEditorSource.includes('new MediaStream(videoStream.getVideoTracks())'), true);
+  assert.equal(cutsceneEditorSource.includes('tracks.push(...capture.stream.getAudioTracks())'), false);
+  assert.equal(cutsceneEditorSource.includes('recordingCtx.drawImage(frameCanvas'), true);
+  assert.equal(cutsceneEditorSource.includes("params.set('outputWidth'"), true);
+  assert.equal(cutsceneEditorSource.includes("params.set('outputHeight'"), true);
+  assert.equal(cutsceneEditorSource.includes('transcodeMovieBlobToMp4(sourceBlob, layout)'), false);
+  assert.equal(cutsceneEditorSource.includes('transcodeMovieRecordingToMp4({ videoBlob: sourceBlob, audioBlob })'), true);
+  assert.equal(cutsceneEditorSource.includes('drawBorder: false, pixelSnap: true'), true);
+  assert.equal(cutsceneEditorSource.includes('stage?.pixelSnap === true ? Math.max(1, Math.round(rawUnit)) : rawUnit'), true);
+  assert.equal(cutsceneEditorSource.includes("globalThis.navigator.wakeLock.request('screen')"), true);
+  assert.equal(cutsceneEditorSource.includes("document.addEventListener('visibilitychange', handleVisibilityChange);"), true);
+  assert.equal(cutsceneEditorSource.includes('MP4 export interrupted because the page was hidden'), true);
   assert.equal(cutsceneEditorSource.includes('const frameCount = Math.max(1, Math.ceil((durationMs / 1000) * fps));'), true);
-  assert.equal(cutsceneEditorSource.includes('version: 5'), true);
-  assert.equal(cutsceneEditorSource.includes('cutscene-mp4-v5'), true);
-  assert.equal(cutsceneEditorSource.includes("{ fit: layout.fit || 'contain', drawBorder: false }"), true);
-  assert.equal(cutsceneEditorSource.includes('videoBitsPerSecond: Math.max(8000000'), true);
+  assert.equal(cutsceneEditorSource.includes('version: 7'), true);
+  assert.equal(cutsceneEditorSource.includes('cutscene-mp4-v7'), true);
+  assert.equal(cutsceneEditorSource.includes("{ fit: layout.fit || 'contain', drawBorder: false, pixelSnap: true }"), true);
+  assert.equal(cutsceneEditorSource.includes('videoBitsPerSecond: Math.max(12000000'), true);
   assert.equal(cutsceneEditorSource.includes('beginMasterCapture'), true);
   assert.equal(cutsceneEditorSource.includes('beginMasterCapture?.({ monitor: false })'), true);
+  assert.equal(cutsceneEditorSource.includes('renderCutsceneMidiAudioBlob(safeDoc, durationMs'), true);
+  assert.equal(cutsceneEditorSource.includes('OfflineAudioContext'), true);
   assert.equal(cutsceneEditorSource.includes('preparePreviewAudioResources(safeDoc)'), true);
   assert.equal(cutsceneEditorSource.includes('endMasterCapture'), true);
   assert.equal(cutsceneEditorSource.includes('advanceMovieExportAudio(player'), true);
@@ -2044,12 +2124,20 @@ test('cutscene MP4 export uses ffmpeg h264 aac server transcode and real downloa
   assert.equal(cutsceneEditorSource.includes("downloadBtn = document.createElement('button')"), true);
   assert.equal(cutsceneEditorSource.includes("downloadBtn = document.createElement('a')"), false);
   assert.equal(cutsceneEditorSource.includes("pointerEvents: 'none'"), true);
+  assert.equal(cutsceneEditorSource.includes("root.style.pointerEvents = 'auto';"), true);
   assert.equal(cutsceneEditorSource.includes("overlay.style.pointerEvents = 'auto';"), true);
   assert.equal(cutsceneEditorSource.includes('bindOverlayActionButton(downloadBtn, triggerDownload);'), true);
+  assert.equal(cutsceneEditorSource.includes("this.statusText = 'MP4 ready. Choose Download.';"), true);
+  assert.equal(cutsceneEditorSource.includes('MP4 export produced no downloadable video.'), true);
+  assert.equal(cutsceneEditorSource.includes('Could not show the MP4 download button.'), true);
   assert.equal(cutsceneEditorSource.includes('event.preventDefault();'), true);
   assert.equal(cutsceneEditorSource.includes("openLink.textContent = 'Open Video';"), true);
   const serverSource = readFileSync(new URL('../../tools/dev_server.py', import.meta.url), 'utf8');
   assert.equal(serverSource.includes('/__export/mp4'), true);
+  assert.equal(serverSource.includes('/__export/mp4-recording'), true);
+  assert.equal(serverSource.includes('"-fps_mode"'), true);
+  assert.equal(serverSource.includes('"cfr"'), true);
+  assert.equal(serverSource.includes('f"fps={fps},setsar=1"'), true);
   assert.equal(serverSource.includes('/__export/mp4-frames'), true);
   assert.equal(serverSource.includes('/__export/session'), true);
   assert.equal(serverSource.includes('EXPORT_SESSION_ROOT'), true);
@@ -2060,13 +2148,24 @@ test('cutscene MP4 export uses ffmpeg h264 aac server transcode and real downloa
   assert.equal(serverSource.includes('MIN_EXPORT_FREE_BYTES'), true);
   assert.equal(serverSource.includes('_get_ffmpeg_status'), true);
   assert.equal(serverSource.includes('sourceWidth'), true);
+  assert.equal(serverSource.includes('outputWidth'), true);
+  assert.equal(serverSource.includes('outputHeight'), true);
   assert.equal(serverSource.includes('force_original_aspect_ratio=decrease:flags=neighbor'), true);
   assert.equal(serverSource.includes('pad='), true);
   assert.equal(serverSource.includes('setsar=1'), true);
+  assert.equal(serverSource.includes('"-map",'), true);
+  assert.equal(serverSource.includes('"0:v:0"'), true);
+  assert.equal(serverSource.includes('"1:a:0"'), true);
+  assert.equal(serverSource.includes('"-fflags",'), true);
+  assert.equal(serverSource.includes('"+genpts"'), true);
+  assert.equal(serverSource.includes('"-avoid_negative_ts",'), true);
+  assert.equal(serverSource.includes('"make_zero"'), true);
   assert.equal(serverSource.includes('frame-%06d.png'), true);
   assert.equal(serverSource.includes('def _read_multipart_form'), true);
   assert.equal(serverSource.includes('libx264'), true);
   assert.equal(serverSource.includes('yuv420p'), true);
+  assert.equal(serverSource.includes('"-crf",'), true);
+  assert.equal(serverSource.includes('"animation",'), true);
   assert.equal(serverSource.includes('aac'), true);
   assert.equal(serverSource.includes('+faststart'), true);
   assert.equal(serverSource.includes('MAX_MP4_UPLOAD_BYTES'), true);
@@ -2734,6 +2833,83 @@ test('cutscene audio keyframes normalize and interpolate volume', () => {
   assert.equal(sampleCutsceneAudioVolume(clip, 2000), 0);
   assert.ok(sampleCutsceneAudioVolume(clip, 1500) > 0.45);
   assert.ok(sampleCutsceneAudioVolume(clip, 1500) < 0.55);
+});
+
+test('cutscene MP4 MIDI render events use clip timing and song ticks', () => {
+  const doc = normalizeCutsceneDocument({
+    durationMs: 3000,
+    masterVolume: 0.5,
+    assets: [{ id: 'music-a', type: 'music', ref: 'Theme' }],
+    clips: [{
+      id: 'music',
+      type: 'music',
+      assetId: 'music-a',
+      startMs: 500,
+      durationMs: 2000,
+      volume: 0.8,
+      keyframes: [
+        { timeMs: 0, manual: true, volume: 1 },
+        { timeMs: 2000, manual: true, volume: 0.5 }
+      ]
+    }]
+  });
+  const song = {
+    tempo: 120,
+    tracks: [{
+      id: 'lead',
+      volume: 0.75,
+      pan: -0.25,
+      program: 4,
+      channel: 2,
+      patterns: [{ notes: [{ startTick: 8, durationTicks: 8, pitch: 64, velocity: 0.9 }] }]
+    }]
+  };
+
+  const events = collectCutsceneMidiRenderEvents(doc, (ref) => (ref === 'Theme' ? { song } : null));
+
+  assert.equal(events.length, 1);
+  assert.equal(events[0].startSec, 1);
+  assert.equal(events[0].durationSec, 0.5);
+  assert.equal(events[0].pitch, 64);
+  assert.equal(events[0].program, 4);
+  assert.equal(events[0].channel, 2);
+  assert.equal(events[0].pan, -0.25);
+  assert.ok(events[0].volume > 0.2);
+  assert.ok(events[0].volume < 0.31);
+});
+
+test('cutscene MP4 MIDI render events honor solo tracks and drum mapping', () => {
+  const doc = normalizeCutsceneDocument({
+    durationMs: 2000,
+    assets: [{ id: 'music-a', type: 'music', ref: 'Beat' }],
+    clips: [{ id: 'music', type: 'music', assetId: 'music-a', startMs: 0, durationMs: 2000, volume: 1 }]
+  });
+  const song = {
+    tempo: 120,
+    tracks: [
+      {
+        id: 'muted-by-solo',
+        volume: 1,
+        patterns: [{ notes: [{ startTick: 0, durationTicks: 4, pitch: 60, velocity: 1 }] }]
+      },
+      {
+        id: 'drums',
+        solo: true,
+        instrument: 'drums',
+        program: 0,
+        channel: 9,
+        patterns: [{ notes: [{ startTick: 0, durationTicks: 4, pitch: 36, velocity: 1 }] }]
+      }
+    ]
+  };
+
+  const events = collectCutsceneMidiRenderEvents(doc, () => ({ song }));
+
+  assert.equal(events.length, 1);
+  assert.equal(events[0].trackId, 'drums');
+  assert.equal(events[0].isDrum, true);
+  assert.equal(events[0].channel, 9);
+  assert.equal(events[0].pitch, 36);
 });
 
 test('cutscene editor exposes audio key actions and edits selected key volume', async () => {

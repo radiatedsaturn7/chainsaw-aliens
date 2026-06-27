@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import gzip
 import hashlib
 import json
 import os
@@ -29,6 +30,11 @@ MAX_EXPORT_CHUNK_BYTES = 256 * 1024 * 1024
 EXPORT_SESSION_TTL_SECONDS = 24 * 60 * 60
 MIN_EXPORT_FREE_BYTES = 512 * 1024 * 1024
 SLOW_STORAGE_LOG_SECONDS = 0.25
+COMPACT_STORAGE_MARKER = "__chainsawStorage"
+COMPACT_STORAGE_VERSION = "compact-v1"
+COMPACT_STORAGE_ENCODING = "json-gzip-base64"
+COMPACT_STORAGE_MIN_BYTES = 1024 * 1024
+ASSET_REF_MARKER = "__chainsawAssetRef"
 
 
 def build_ffmpeg_env() -> dict[str, str]:
@@ -133,6 +139,25 @@ class DevHandler(SimpleHTTPRequestHandler):
     def _segment_path(self, session_id: str, segment_index: int) -> Path:
         return self._session_dir(session_id) / "segments" / f"segment-{segment_index:05d}.mp4"
 
+    def _audio_path_from_manifest(self, session_id: str, manifest: dict | None = None) -> Path | None:
+        session_dir = self._session_dir(session_id)
+        audio_file = str((manifest or {}).get("audioFile") or "").strip()
+        if audio_file:
+            path = session_dir / Path(audio_file).name
+            if path.exists() and path.stat().st_size > 0:
+                return path
+        for name in ("audio.wav", "audio.webm"):
+            path = session_dir / name
+            if path.exists() and path.stat().st_size > 0:
+                return path
+        return None
+
+    def _audio_upload_path(self, session_id: str) -> tuple[Path, str]:
+        content_type = (self.headers.get("Content-Type", "") or "").split(";", 1)[0].strip().lower()
+        if content_type in ("audio/wav", "audio/wave", "audio/x-wav"):
+            return self._session_dir(session_id) / "audio.wav", "audio/wav"
+        return self._session_dir(session_id) / "audio.webm", content_type or "audio/webm"
+
     def _stream_request_body_to_file(self, path: Path, max_bytes: int = MAX_EXPORT_CHUNK_BYTES) -> int:
         length = int(self.headers.get("Content-Length", "0") or "0")
         if length <= 0:
@@ -215,7 +240,7 @@ class DevHandler(SimpleHTTPRequestHandler):
             if segment_dir.exists() and index in encoded:
                 shutil.rmtree(segment_dir, ignore_errors=True)
         manifest["segments"] = encoded
-        manifest["audioReady"] = bool((session_dir / "audio.webm").exists())
+        manifest["audioReady"] = self._audio_path_from_manifest(session_id, manifest) is not None
         manifest["outputReady"] = bool((session_dir / "output.mp4").exists())
         return manifest
 
@@ -258,15 +283,20 @@ class DevHandler(SimpleHTTPRequestHandler):
         if metadata is None:
             return False
         document_path = self._safe_doc_dir(folder, name) / "document.json"
+        doc_dir = document_path.parent
+        try:
+            data = self._read_stored_document(document_path, doc_dir)
+        except Exception:
+            return False
         file_json = json.dumps(metadata, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        data_json = json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.end_headers()
         self.wfile.write(b'{"ok":true,"file":')
         self.wfile.write(file_json[:-1])
         self.wfile.write(b',"data":')
-        with document_path.open("rb") as handle:
-            shutil.copyfileobj(handle, self.wfile, length=1024 * 256)
+        self.wfile.write(data_json)
         self.wfile.write(b"}}")
         return True
 
@@ -373,6 +403,10 @@ class DevHandler(SimpleHTTPRequestHandler):
         if not document_path.exists():
             return False
         metadata = self._read_version_metadata(version_dir, folder, name)
+        try:
+            data = self._read_stored_document(document_path, version_dir)
+        except Exception:
+            return False
         file_json = json.dumps({
             "version": 1,
             "folder": folder,
@@ -380,14 +414,14 @@ class DevHandler(SimpleHTTPRequestHandler):
             "savedAt": metadata.get("savedAt") or int(document_path.stat().st_mtime * 1000),
             "versionId": metadata.get("id") or version_id,
         }, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        data_json = json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.end_headers()
         self.wfile.write(b'{"ok":true,"file":')
         self.wfile.write(file_json[:-1])
         self.wfile.write(b',"data":')
-        with document_path.open("rb") as handle:
-            shutil.copyfileobj(handle, self.wfile, length=1024 * 256)
+        self.wfile.write(data_json)
         self.wfile.write(b"}}")
         return True
 
@@ -429,7 +463,8 @@ class DevHandler(SimpleHTTPRequestHandler):
                     saved_at = int(doc_dir.stat().st_mtime * 1000)
                 index[folder][name] = {
                     "updatedAt": saved_at,
-                    "size": document_path.stat().st_size if document_path.exists() else 0,
+                    "size": (document_path.stat().st_size if document_path.exists() else 0)
+                        + self._directory_size(doc_dir / "assets"),
                     "deleted": not document_path.exists(),
                 }
         return index
@@ -477,9 +512,12 @@ class DevHandler(SimpleHTTPRequestHandler):
         doc_dir.mkdir(parents=True, exist_ok=True)
         if create_version:
             self._snapshot_exported_payload(folder, name, "before-save")
-        self._extract_data_urls(data, doc_dir)
+        assets_path = doc_dir / "assets"
+        if assets_path.exists():
+            shutil.rmtree(assets_path)
+        stored_data = self._encode_stored_document(data, doc_dir)
         with (doc_dir / "document.json").open("w", encoding="utf-8") as handle:
-            json.dump(data, handle, ensure_ascii=False, indent=2)
+            json.dump(stored_data, handle, ensure_ascii=False, indent=2)
         with (doc_dir / "metadata.json").open("w", encoding="utf-8") as handle:
             json.dump({"name": name, "folder": folder, "savedAt": saved, "version": version}, handle, ensure_ascii=False, indent=2)
         self._update_manifest_entry(folder, name)
@@ -579,31 +617,78 @@ class DevHandler(SimpleHTTPRequestHandler):
                     pass
         return total
 
-    def _extract_data_urls(self, value: object, doc_dir: Path, counter: list[int] | None = None) -> None:
+    def _is_compact_document(self, value: object) -> bool:
+        return isinstance(value, dict) and value.get(COMPACT_STORAGE_MARKER) == COMPACT_STORAGE_VERSION
+
+    def _encode_stored_document(self, value: object, doc_dir: Path) -> object:
+        externalized = self._externalize_data_urls(value, doc_dir)
+        raw = json.dumps(externalized, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        if len(raw) < COMPACT_STORAGE_MIN_BYTES:
+            return externalized
+        compressed = gzip.compress(raw, compresslevel=9)
+        return {
+            COMPACT_STORAGE_MARKER: COMPACT_STORAGE_VERSION,
+            "encoding": COMPACT_STORAGE_ENCODING,
+            "data": base64.b64encode(compressed).decode("ascii"),
+        }
+
+    def _decode_stored_document(self, value: object) -> object:
+        if not self._is_compact_document(value):
+            return value
+        if value.get("encoding") != COMPACT_STORAGE_ENCODING or not isinstance(value.get("data"), str):
+            raise ValueError("Unsupported compact document encoding")
+        compressed = base64.b64decode(value["data"])
+        return json.loads(gzip.decompress(compressed).decode("utf-8"))
+
+    def _read_stored_document(self, document_path: Path, doc_dir: Path) -> object:
+        data = json.loads(document_path.read_text(encoding="utf-8"))
+        decoded = self._decode_stored_document(data)
+        return self._hydrate_asset_refs(decoded, doc_dir)
+
+    def _externalize_data_urls(self, value: object, doc_dir: Path, counter: list[int] | None = None) -> object:
         if counter is None:
             counter = [0]
         if isinstance(value, dict):
-            for inner in value.values():
-                self._extract_data_urls(inner, doc_dir, counter)
-            return
+            return {key: self._externalize_data_urls(inner, doc_dir, counter) for key, inner in value.items()}
         if isinstance(value, list):
-            for inner in value:
-                self._extract_data_urls(inner, doc_dir, counter)
-            return
+            return [self._externalize_data_urls(inner, doc_dir, counter) for inner in value]
         if not isinstance(value, str):
-            return
+            return value
         if value.startswith("data:image/png;base64,") or value.startswith("data:audio/wav;base64,"):
+            mime = "image/png" if value.startswith("data:image/png;base64,") else "audio/wav"
             b64 = value.split(",", 1)[1]
             try:
                 data = base64.b64decode(b64)
             except Exception:
-                return
+                return value
             path = doc_dir / "assets"
             path.mkdir(parents=True, exist_ok=True)
             counter[0] += 1
-            suffix = "png" if value.startswith("data:image/png;base64,") else "wav"
+            suffix = "png" if mime == "image/png" else "wav"
             prefix = "image" if suffix == "png" else "audio"
-            (path / f"{prefix}-{counter[0]}.{suffix}").write_bytes(data)
+            filename = f"{prefix}-{counter[0]}.{suffix}"
+            (path / filename).write_bytes(data)
+            return {
+                ASSET_REF_MARKER: f"assets/{filename}",
+                "mime": mime,
+            }
+        return value
+
+    def _hydrate_asset_refs(self, value: object, doc_dir: Path) -> object:
+        if isinstance(value, dict):
+            ref = value.get(ASSET_REF_MARKER)
+            mime = value.get("mime")
+            if isinstance(ref, str) and isinstance(mime, str):
+                asset_path = doc_dir / ref
+                try:
+                    data = asset_path.read_bytes()
+                    return f"data:{mime};base64,{base64.b64encode(data).decode('ascii')}"
+                except Exception:
+                    return ""
+            return {key: self._hydrate_asset_refs(inner, doc_dir) for key, inner in value.items()}
+        if isinstance(value, list):
+            return [self._hydrate_asset_refs(inner, doc_dir) for inner in value]
+        return value
 
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
@@ -686,7 +771,17 @@ class DevHandler(SimpleHTTPRequestHandler):
         if parsed.path == "/__export/mp4-frames":
             self._handle_frame_mp4_export()
             return
+        if parsed.path == "/__export/mp4-recording":
+            self._handle_recording_mp4_export()
+            return
         if parsed.path == "/__export/mp4":
+            query = parse_qs(parsed.query)
+            try:
+                output_width = max(1, min(4096, int((query.get("outputWidth") or [0])[0] or 0)))
+                output_height = max(1, min(4096, int((query.get("outputHeight") or [0])[0] or 0)))
+            except (TypeError, ValueError):
+                output_width = 0
+                output_height = 0
             length = int(self.headers.get("Content-Length", "0") or "0")
             if length <= 0:
                 self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Missing movie data"})
@@ -709,29 +804,46 @@ class DevHandler(SimpleHTTPRequestHandler):
                     if remaining > 0:
                         self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Movie upload ended early"})
                         return
+                    command = [
+                        "ffmpeg",
+                        "-y",
+                        "-hide_banner",
+                        "-loglevel",
+                        "error",
+                        "-i",
+                        str(input_path),
+                    ]
+                    if output_width and output_height:
+                        command.extend([
+                            "-vf",
+                            (
+                                f"scale={output_width}:{output_height}:"
+                                "force_original_aspect_ratio=decrease:flags=neighbor,"
+                                f"pad={output_width}:{output_height}:"
+                                "(ow-iw)/2:(oh-ih)/2:black,setsar=1"
+                            ),
+                        ])
+                    command.extend([
+                        "-c:v",
+                        "libx264",
+                        "-pix_fmt",
+                        "yuv420p",
+                        "-preset",
+                        "veryfast",
+                        "-crf",
+                        "16",
+                        "-tune",
+                        "animation",
+                        "-movflags",
+                        "+faststart",
+                        "-c:a",
+                        "aac",
+                        "-b:a",
+                        "192k",
+                        str(output_path),
+                    ])
                     result = subprocess.run(
-                        [
-                            "ffmpeg",
-                            "-y",
-                            "-hide_banner",
-                            "-loglevel",
-                            "error",
-                            "-i",
-                            str(input_path),
-                            "-c:v",
-                            "libx264",
-                            "-pix_fmt",
-                            "yuv420p",
-                            "-preset",
-                            "veryfast",
-                            "-movflags",
-                            "+faststart",
-                            "-c:a",
-                            "aac",
-                            "-b:a",
-                            "192k",
-                            str(output_path),
-                        ],
+                        command,
                         check=False,
                         text=True,
                         capture_output=True,
@@ -781,14 +893,19 @@ class DevHandler(SimpleHTTPRequestHandler):
                 self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Missing folder or name"})
                 return
             create_version = payload.get("createVersion") is not False
-            saved = self._write_exported_payload(
-                folder,
-                name,
-                payload.get("data"),
-                payload.get("savedAt"),
-                int(payload.get("version") or 1),
-                create_version,
-            )
+            try:
+                saved = self._write_exported_payload(
+                    folder,
+                    name,
+                    payload.get("data"),
+                    payload.get("savedAt"),
+                    int(payload.get("version") or 1),
+                    create_version,
+                )
+            except Exception as exc:  # pragma: no cover - defensive
+                self._write_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"ok": False, "error": str(exc)})
+                self._log_slow_storage("POST /__storage/file failed", started_at, f"folder={folder} name={name} createVersion={create_version} bytes={length}")
+                return
             self._write_json(HTTPStatus.OK, {"ok": True, "file": saved})
             self._log_slow_storage("POST /__storage/file", started_at, f"folder={folder} name={name} createVersion={create_version} bytes={length}")
             return
@@ -1061,7 +1178,7 @@ class DevHandler(SimpleHTTPRequestHandler):
             "-preset",
             "veryfast",
             "-threads",
-            "1",
+            "2",
             "-an",
             "-movflags",
             "+faststart",
@@ -1109,7 +1226,8 @@ class DevHandler(SimpleHTTPRequestHandler):
             for index in range(segment_count):
                 segment_path = self._segment_path(session_id, index).resolve()
                 handle.write(f"file '{str(segment_path).replace(chr(39), chr(39) + chr(92) + chr(39) + chr(39))}'\n")
-        audio_path = session_dir / "audio.webm"
+        audio_path = self._audio_path_from_manifest(session_id, manifest)
+        fps = max(1, min(60, int(manifest.get("fps") or 30)))
         tmp_output = output_path.with_name(output_path.stem + ".part.mp4")
         command = [
             "ffmpeg",
@@ -1117,6 +1235,8 @@ class DevHandler(SimpleHTTPRequestHandler):
             "-hide_banner",
             "-loglevel",
             "error",
+            "-fflags",
+            "+genpts",
             "-f",
             "concat",
             "-safe",
@@ -1124,11 +1244,35 @@ class DevHandler(SimpleHTTPRequestHandler):
             "-i",
             str(concat_path),
         ]
-        has_audio = audio_path.exists() and audio_path.stat().st_size > 0
+        has_audio = audio_path is not None
         if has_audio:
-            command.extend(["-i", str(audio_path), "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest"])
+            command.extend(["-i", str(audio_path)])
+        command.extend([
+            "-map",
+            "0:v:0",
+        ])
+        if has_audio:
+            command.extend(["-map", "1:a:0"])
+        command.extend([
+            "-vf",
+            f"fps={fps},setsar=1",
+            "-r",
+            str(fps),
+            "-fps_mode",
+            "cfr",
+            "-c:v",
+            "libx264",
+            "-pix_fmt",
+            "yuv420p",
+            "-preset",
+            "veryfast",
+            "-threads",
+            "2",
+        ])
+        if has_audio:
+            command.extend(["-c:a", "aac", "-b:a", "192k", "-shortest"])
         else:
-            command.extend(["-c", "copy"])
+            command.extend(["-an"])
         command.extend(["-movflags", "+faststart", str(tmp_output)])
         try:
             result = self._run_ffmpeg(command)
@@ -1175,12 +1319,18 @@ class DevHandler(SimpleHTTPRequestHandler):
             self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "Export session not found"})
             return
         try:
-            audio_path = self._session_dir(session_id) / "audio.webm"
+            audio_path, audio_type = self._audio_upload_path(session_id)
+            for stale_name in ("audio.webm", "audio.wav"):
+                stale_path = self._session_dir(session_id) / stale_name
+                if stale_path != audio_path and stale_path.exists():
+                    stale_path.unlink()
             written = self._stream_request_body_to_file(audio_path, MAX_EXPORT_CHUNK_BYTES)
             manifest["audioReady"] = written > 0
+            manifest["audioFile"] = audio_path.name if written > 0 else None
+            manifest["audioType"] = audio_type if written > 0 else None
             manifest["outputReady"] = False
             self._write_session_manifest(session_id, manifest)
-            self._write_json(HTTPStatus.OK, {"ok": True, "bytes": written})
+            self._write_json(HTTPStatus.OK, {"ok": True, "bytes": written, "audioFile": manifest["audioFile"], "audioType": manifest["audioType"]})
         except Exception as exc:
             self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": str(exc)})
 
@@ -1202,7 +1352,7 @@ class DevHandler(SimpleHTTPRequestHandler):
             self._write_json(HTTPStatus.OK, {"ok": True, "resultUrl": f"/__export/session/{session_id}/result"})
             return
         frames_dir = session_dir / "frames"
-        audio_path = session_dir / "audio.webm"
+        audio_path = self._audio_path_from_manifest(session_id, manifest)
         command = [
             "ffmpeg",
             "-y",
@@ -1214,7 +1364,7 @@ class DevHandler(SimpleHTTPRequestHandler):
             "-i",
             str(frames_dir / "frame-%06d.png"),
         ]
-        if audio_path.exists() and audio_path.stat().st_size > 0:
+        if audio_path is not None:
             command.extend(["-i", str(audio_path)])
         command.extend([
             "-c:v",
@@ -1226,7 +1376,7 @@ class DevHandler(SimpleHTTPRequestHandler):
             "-threads",
             "2",
         ])
-        if audio_path.exists() and audio_path.stat().st_size > 0:
+        if audio_path is not None:
             command.extend(["-c:a", "aac", "-b:a", "192k", "-shortest"])
         command.extend(["-movflags", "+faststart", str(output_path)])
         try:
@@ -1332,6 +1482,92 @@ class DevHandler(SimpleHTTPRequestHandler):
                     self._write_json(
                         HTTPStatus.BAD_REQUEST,
                         {"ok": False, "error": f"FFmpeg frame MP4 encode failed: {result.stderr or result.stdout}"},
+                    )
+                    return
+                self.send_response(HTTPStatus.OK)
+                self.send_header("Content-Type", "video/mp4")
+                self.send_header("Content-Length", str(output_path.stat().st_size))
+                self.end_headers()
+                with output_path.open("rb") as handle:
+                    shutil.copyfileobj(handle, self.wfile, length=1024 * 1024)
+        except FileNotFoundError:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "FFmpeg is not installed on this server"})
+        except Exception as exc:  # pragma: no cover - defensive
+            self._write_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"ok": False, "error": str(exc)})
+
+    def _handle_recording_mp4_export(self) -> None:
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        if length <= 0:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Missing movie data"})
+            return
+        if length > MAX_MP4_UPLOAD_BYTES:
+            self._write_json(HTTPStatus.REQUEST_ENTITY_TOO_LARGE, {"ok": False, "error": "Movie data is too large"})
+            return
+        content_type = self.headers.get("Content-Type", "")
+        if "multipart/form-data" not in content_type:
+            self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "Expected multipart movie data"})
+            return
+        try:
+            with tempfile.TemporaryDirectory(prefix="chainsaw-recording-") as tmp:
+                tmp_path = Path(tmp)
+                form = self._read_multipart_form(content_type, length)
+                video_parts = form.get("video") or []
+                if not video_parts:
+                    self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": "No movie video uploaded"})
+                    return
+                video_path = tmp_path / "video.webm"
+                video_path.write_bytes(video_parts[0])
+                audio_path = None
+                if form.get("audio"):
+                    audio_path = tmp_path / "audio.webm"
+                    audio_path.write_bytes(form["audio"][0])
+                output_path = tmp_path / "output.mp4"
+                command = [
+                    "ffmpeg",
+                    "-y",
+                    "-hide_banner",
+                    "-loglevel",
+                    "error",
+                    "-fflags",
+                    "+genpts",
+                    "-i",
+                    str(video_path),
+                ]
+                has_audio = audio_path is not None and audio_path.stat().st_size > 0
+                if has_audio:
+                    command.extend(["-fflags", "+genpts", "-i", str(audio_path)])
+                command.extend([
+                    "-map",
+                    "0:v:0",
+                ])
+                if has_audio:
+                    command.extend(["-map", "1:a:0"])
+                command.extend([
+                    "-vf",
+                    "setsar=1",
+                    "-c:v",
+                    "libx264",
+                    "-pix_fmt",
+                    "yuv420p",
+                    "-preset",
+                    "veryfast",
+                    "-crf",
+                    "16",
+                    "-tune",
+                    "animation",
+                    "-avoid_negative_ts",
+                    "make_zero",
+                ])
+                if has_audio:
+                    command.extend(["-c:a", "aac", "-b:a", "192k", "-shortest"])
+                else:
+                    command.extend(["-an"])
+                command.extend(["-movflags", "+faststart", str(output_path)])
+                result = self._run_ffmpeg(command)
+                if result.returncode != 0 or not output_path.exists():
+                    self._write_json(
+                        HTTPStatus.BAD_REQUEST,
+                        {"ok": False, "error": f"FFmpeg recording MP4 encode failed: {result.stderr or result.stdout}"},
                     )
                     return
                 self.send_response(HTTPStatus.OK)

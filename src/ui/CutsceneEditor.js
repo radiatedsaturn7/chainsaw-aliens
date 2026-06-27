@@ -27,6 +27,16 @@ import {
   resetWeatherRuntimeState,
   updateWeatherSystem
 } from '../shared/weatherEffects.js';
+import {
+  GM_DRUM_BANK_LSB,
+  GM_DRUM_BANK_MSB,
+  GM_DRUM_CHANNEL,
+  GM_DRUM_ROWS,
+  clampDrumPitch,
+  isDrumChannel,
+  mapPitchToDrumRow
+} from '../audio/gm.js';
+import { getGmSustainProfile } from '../game/Audio.js';
 
 const DEFAULT_CUTSCENE_NAME = 'New Cutscene';
 const CUTSCENE_SCHEMA_VERSION = 2;
@@ -47,7 +57,8 @@ const CUTSCENE_KEYFRAME_HIT_SIZE = 24;
 const CUTSCENE_SELECTION_HIT_PAD = 12;
 const CUTSCENE_EXPORT_WIDTH = 1920;
 const CUTSCENE_EXPORT_HEIGHT = 1080;
-const CUTSCENE_EXPORT_SEGMENT_MS = 3000;
+const CUTSCENE_EXPORT_SEGMENT_MS = 10000;
+const CUTSCENE_MP4_AUDIO_TAIL_SECONDS = 3;
 const CUTSCENE_TIMELINE_MIN_ZOOM = 0.5;
 const CUTSCENE_TIMELINE_MAX_ZOOM = 12;
 const CUTSCENE_TIMELINE_MIN_LANE_H = 30;
@@ -269,6 +280,116 @@ export function normalizeCutsceneDocument(source = {}, fallbackName = DEFAULT_CU
   normalized.tracks = normalizeCutsceneTracks(doc.tracks, normalized.clips);
   reconcileCutsceneClipTracks(normalized);
   return normalized;
+}
+
+function getCutsceneAudioAssetRef(doc, clip) {
+  const asset = (doc?.assets || []).find((entry) => entry?.id === clip?.assetId) || null;
+  return String(asset?.ref || clip?.assetId || '').trim();
+}
+
+function isCutsceneMidiTrackMuted(song, track) {
+  const tracks = Array.isArray(song?.tracks) ? song.tracks : [];
+  const soloTracks = tracks.filter((entry) => entry?.solo);
+  return soloTracks.length > 0 ? !track?.solo : Boolean(track?.mute);
+}
+
+function getCutsceneMidiLoopTicks(song, ticksPerBeat) {
+  if (Number.isFinite(song?.loopEndTick)) return Math.max(1, Number(song.loopEndTick));
+  const beatsPerBar = 4;
+  const loopBars = Number.isFinite(song?.loopBars) ? song.loopBars : 8;
+  return Math.max(1, loopBars * beatsPerBar * ticksPerBeat);
+}
+
+function getCutsceneMidiLoopStartTick(song, loopTicks) {
+  if (!Number.isFinite(song?.loopStartTick)) return 0;
+  return clamp(Number(song.loopStartTick), 0, loopTicks);
+}
+
+function collectSongMidiRenderEvents(song, clip, clipRef, masterVolume = 1) {
+  const tracks = Array.isArray(song?.tracks) ? song.tracks : [];
+  const tempo = Number.isFinite(song?.tempo) ? song.tempo : 120;
+  const ticksPerBeat = Number.isFinite(song?.ticksPerBeat) ? song.ticksPerBeat : 8;
+  const ticksPerSecond = (tempo / 60) * ticksPerBeat;
+  const loopTicks = getCutsceneMidiLoopTicks(song, ticksPerBeat);
+  const loopStartTick = getCutsceneMidiLoopStartTick(song, loopTicks);
+  const clipStartSec = safeNumber(clip?.startMs, 0) / 1000;
+  const clipDurationSec = Math.max(0, safeNumber(clip?.durationMs, 0) / 1000);
+  const clipEndSec = clipStartSec + clipDurationSec;
+  const offsetTick = Math.max(0, safeNumber(clip?.offsetMs, 0) / 1000) * ticksPerSecond;
+  const loopEnabled = clip?.loop === true;
+  const events = [];
+
+  tracks.forEach((track) => {
+    if (!track || isCutsceneMidiTrackMuted(song, track)) return;
+    const pattern = track.patterns?.[0];
+    if (!Array.isArray(pattern?.notes) || !pattern.notes.length) return;
+    const isDrums = track.instrument === 'drums' || track.isPercussion === true || isDrumChannel(track.channel);
+    const channel = isDrums ? GM_DRUM_CHANNEL : clamp(track.channel ?? 0, 0, 15);
+    const bankMSB = isDrums ? (track.bankMSB ?? GM_DRUM_BANK_MSB) : (track.bankMSB ?? 0);
+    const bankLSB = isDrums ? (track.bankLSB ?? GM_DRUM_BANK_LSB) : (track.bankLSB ?? 0);
+    const program = clamp(track.program ?? 0, 0, 127);
+    const trackVolume = clamp(track.volume ?? 0.8, 0, 1);
+    const pan = clamp(track.pan ?? 0, -1, 1);
+    const notes = pattern.notes
+      .filter((note) => Number.isFinite(note?.startTick))
+      .sort((a, b) => a.startTick - b.startTick || (a.pitch ?? 0) - (b.pitch ?? 0));
+    let repeat = 0;
+    while (repeat < 512) {
+      const repeatTickOffset = repeat * Math.max(1, loopTicks - loopStartTick);
+      let emittedInRepeat = false;
+      notes.forEach((note) => {
+        const rawStartTick = Math.max(0, Number(note.startTick || 0));
+        const sourceTick = repeat === 0 ? rawStartTick : loopStartTick + (rawStartTick - loopStartTick) + repeatTickOffset;
+        if (repeat > 0 && rawStartTick < loopStartTick) return;
+        const relativeTick = sourceTick - offsetTick;
+        if (relativeTick < 0) return;
+        const startSec = clipStartSec + relativeTick / ticksPerSecond;
+        if (startSec >= clipEndSec) return;
+        const durationSec = Math.max(0.03, Math.max(1, Number(note.durationTicks || ticksPerBeat)) / ticksPerSecond);
+        const absoluteMs = startSec * 1000;
+        const clipVolume = sampleCutsceneAudioVolume(clip, absoluteMs);
+        const pitch = isDrums ? mapPitchToDrumRow(clampDrumPitch(note.pitch), GM_DRUM_ROWS) : clamp(Math.round(note.pitch ?? 60), 0, 127);
+        events.push({
+          startSec,
+          durationSec: Math.min(durationSec, Math.max(0.03, clipEndSec - startSec)),
+          pitch,
+          volume: clamp((note.velocity ?? 0.8) * trackVolume * clipVolume * masterVolume, 0, 1),
+          pan,
+          program,
+          channel,
+          bankMSB,
+          bankLSB,
+          isDrum: isDrums,
+          clipId: clip?.id || '',
+          trackId: track.id ?? null,
+          ref: clipRef
+        });
+        emittedInRepeat = true;
+      });
+      if (!loopEnabled) break;
+      const nextRepeatStartSec = clipStartSec + ((repeat + 1) * Math.max(1, loopTicks - loopStartTick) - offsetTick) / ticksPerSecond;
+      if (nextRepeatStartSec >= clipEndSec && !emittedInRepeat) break;
+      repeat += 1;
+    }
+  });
+
+  return events;
+}
+
+export function collectCutsceneMidiRenderEvents(doc = createDefaultCutscene(), resolveSong = () => null) {
+  const safeDoc = normalizeCutsceneDocument(doc, doc?.name);
+  const masterVolume = clamp(safeNumber(safeDoc.masterVolume, 1), 0, 1);
+  const events = [];
+  (safeDoc.clips || []).forEach((clip) => {
+    if (clip?.type !== 'music') return;
+    const ref = getCutsceneAudioAssetRef(safeDoc, clip);
+    if (!ref) return;
+    const entry = resolveSong(ref);
+    const song = entry?.song || entry || null;
+    if (!song) return;
+    events.push(...collectSongMidiRenderEvents(song, clip, ref, masterVolume));
+  });
+  return events.sort((a, b) => a.startSec - b.startSec || a.pitch - b.pitch);
 }
 
 function normalizeCutsceneTracks(sourceTracks = [], clips = []) {
@@ -1035,7 +1156,7 @@ export function drawCutsceneDocument(ctx, doc, timeMs, bounds, runtime = null, o
     }
     const sample = sampleCutsceneClip(clip, timeMs);
     if (!sample || clip.type === 'music' || clip.type === 'sfx' || clip.type === 'pause') return;
-    drawCutsceneClip(ctx, safeDoc, clip, sample, { x: stageX, y: stageY, scale }, runtime);
+    drawCutsceneClip(ctx, safeDoc, clip, sample, { x: stageX, y: stageY, scale, pixelSnap: options?.pixelSnap === true }, runtime);
   });
   const sceneFadeAlpha = getCutsceneSceneFadeAlpha(safeDoc, timeMs);
   if (sceneFadeAlpha > 0) {
@@ -1053,8 +1174,9 @@ export function drawCutsceneDocument(ctx, doc, timeMs, bounds, runtime = null, o
 }
 
 function drawCutsceneClip(ctx, doc, clip, sample, stage, runtime) {
-  const x = stage.x + sample.x * stage.scale;
-  const y = stage.y + sample.y * stage.scale;
+  const shouldPixelSnap = stage?.pixelSnap === true && clip?.type === 'text' && Math.abs(safeNumber(sample.rotation, 0)) < 0.0001;
+  const x = shouldPixelSnap ? Math.round(stage.x + sample.x * stage.scale) : stage.x + sample.x * stage.scale;
+  const y = shouldPixelSnap ? Math.round(stage.y + sample.y * stage.scale) : stage.y + sample.y * stage.scale;
   const w = Math.max(1, sample.w * getEffectiveScaleX(sample) * stage.scale);
   const h = Math.max(1, sample.h * getEffectiveScaleY(sample) * stage.scale);
   if (![x, y, w, h].every(Number.isFinite)) return;
@@ -1238,7 +1360,8 @@ function drawBitmapTextWithBorder(ctx, text, x, y, unit, clip) {
 
 function drawPixelTextClip(ctx, clip, sample, stage, w, h) {
   const textScale = Math.max(0.05, Math.min(getEffectiveScaleX(sample), getEffectiveScaleY(sample)));
-  const unit = Math.max(1, Math.floor((clip.fontSize * textScale) / 8)) * stage.scale;
+  const rawUnit = Math.max(1, Math.floor((clip.fontSize * textScale) / 8)) * stage.scale;
+  const unit = stage?.pixelSnap === true ? Math.max(1, Math.round(rawUnit)) : rawUnit;
   const lineH = unit * 9;
   const maxWidth = Math.max(unit * 6, w - unit * 2);
   const localTime = Math.max(0, safeNumber(sample.timeMs, 0));
@@ -1257,7 +1380,7 @@ function drawPixelTextClip(ctx, clip, sample, stage, w, h) {
       : clip.textAlign === 'right'
         ? w / 2 - unit - textW
         : -textW / 2;
-    drawBitmapTextWithBorder(ctx, line, x, y, unit, clip);
+    drawBitmapTextWithBorder(ctx, line, stage?.pixelSnap === true ? Math.round(x) : x, stage?.pixelSnap === true ? Math.round(y) : y, unit, clip);
     y += lineH;
   });
   const cursorVisible = clip.showCursor !== false && clip.animation === 'typewriter' && revealCount < fullText.length
@@ -1271,18 +1394,20 @@ function drawPixelTextClip(ctx, clip, sample, stage, w, h) {
         ? w / 2 - unit
         : -textW / 2 + textW;
     const cursorY = -totalH / 2 + (lines.length - 1) * lineH;
+    const snappedCursorX = stage?.pixelSnap === true ? Math.round(cursorX) : cursorX;
+    const snappedCursorY = stage?.pixelSnap === true ? Math.round(cursorY) : cursorY;
     const borderSize = clip.textBorderEnabled === false ? 0 : clamp(Math.round(safeNumber(clip.textBorderSize, 1)), 0, 4);
     if (borderSize > 0) {
       ctx.fillStyle = clip.textBorderColor || '#000000';
       for (let offsetY = -borderSize; offsetY <= borderSize; offsetY += 1) {
         for (let offsetX = -borderSize; offsetX <= borderSize; offsetX += 1) {
           if (!offsetX && !offsetY) continue;
-          ctx.fillRect(cursorX + unit + offsetX * unit, cursorY + offsetY * unit, unit * 4, unit * 7);
+          ctx.fillRect(snappedCursorX + unit + offsetX * unit, snappedCursorY + offsetY * unit, unit * 4, unit * 7);
         }
       }
     }
     ctx.fillStyle = clip.color || '#fff';
-    ctx.fillRect(cursorX + unit, cursorY, unit * 4, unit * 7);
+    ctx.fillRect(snappedCursorX + unit, snappedCursorY, unit * 4, unit * 7);
   }
 }
 
@@ -2273,6 +2398,30 @@ export default class CutsceneEditor {
       drawSharedPortraitActionRail(ctx, bounds, this.panJoystick, actions, {
         drawButton: (buttonBounds, action) => this.drawActionButton(ctx, buttonBounds, action)
       });
+      if (this.statusText) {
+        const statusPad = 8;
+        const statusH = 24;
+        const statusW = Math.min(bounds.w - 16, Math.max(140, this.statusText.length * 7 + statusPad * 2));
+        const statusX = bounds.x + Math.floor((bounds.w - statusW) / 2);
+        const statusY = bounds.y + 8;
+        ctx.fillStyle = 'rgba(7,16,21,0.92)';
+        ctx.strokeStyle = 'rgba(255,225,106,0.75)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect?.(statusX, statusY, statusW, statusH, 8);
+        if (typeof ctx.roundRect === 'function') {
+          ctx.fill();
+          ctx.stroke();
+        } else {
+          ctx.fillRect(statusX, statusY, statusW, statusH);
+          ctx.strokeRect(statusX, statusY, statusW, statusH);
+        }
+        ctx.fillStyle = UI_SUITE.colors.text;
+        ctx.font = `11px ${UI_SUITE.font.family}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(this.statusText, statusX + statusW / 2, statusY + statusH / 2, statusW - statusPad * 2);
+      }
     } else {
       drawSharedPanel(ctx, bounds, { fill: '#0d1720', border: UI_SUITE.colors.border });
       const gap = 10;
@@ -3627,6 +3776,7 @@ export default class CutsceneEditor {
 
   openMovieDownloadReadyOverlay(blob, filename) {
     if (typeof document === 'undefined') return Promise.resolve(false);
+    if (!blob?.size) return Promise.reject(new Error('MP4 export produced no downloadable video.'));
     const previousActive = document.activeElement;
     const body = document.body;
     const previousOverflow = body.style.overflow;
@@ -3644,10 +3794,11 @@ export default class CutsceneEditor {
       });
       document.body.appendChild(root);
     }
-    root.style.pointerEvents = 'none';
+    root.style.display = 'block';
+    root.style.pointerEvents = 'auto';
     body.style.overflow = 'hidden';
     body.style.touchAction = 'none';
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const overlay = document.createElement('div');
       overlay.className = 'shared-text-input-overlay';
       overlay.tabIndex = -1;
@@ -3708,6 +3859,7 @@ export default class CutsceneEditor {
         if (settled) return;
         settled = true;
         overlay.remove();
+        root.style.pointerEvents = 'none';
         body.style.overflow = previousOverflow;
         body.style.touchAction = previousTouchAction;
         previousActive?.focus?.();
@@ -3767,6 +3919,10 @@ export default class CutsceneEditor {
       });
       root.appendChild(overlay);
       window.setTimeout(() => downloadBtn.focus({ preventScroll: true }), 0);
+      if (!downloadBtn.isConnected) {
+        cleanup(false);
+        reject(new Error('Could not show the MP4 download button.'));
+      }
     });
   }
 
@@ -3783,7 +3939,7 @@ export default class CutsceneEditor {
 
   renderMovieExportFrame(exportCtx, doc, timeMs, layout, runtime) {
     exportCtx.imageSmoothingEnabled = false;
-    drawCutsceneDocument(exportCtx, doc, timeMs, layout.stageBounds || { x: 0, y: 0, w: layout.outputWidth, h: layout.outputHeight }, runtime, { fit: layout.fit || 'contain', drawBorder: false });
+    drawCutsceneDocument(exportCtx, doc, timeMs, layout.stageBounds || { x: 0, y: 0, w: layout.outputWidth, h: layout.outputHeight }, runtime, { fit: layout.fit || 'contain', drawBorder: false, pixelSnap: true });
   }
 
   advanceMovieExportAudio(player, dtSeconds) {
@@ -3791,14 +3947,42 @@ export default class CutsceneEditor {
     player?.update?.(dt);
   }
 
-  async transcodeMovieBlobToMp4(blob) {
-    const response = await fetch('/__export/mp4', {
+  async transcodeMovieBlobToMp4(blob, layout = null) {
+    const params = new URLSearchParams();
+    if (layout?.outputWidth && layout?.outputHeight) {
+      params.set('outputWidth', String(Math.max(1, Math.floor(layout.outputWidth))));
+      params.set('outputHeight', String(Math.max(1, Math.floor(layout.outputHeight))));
+    }
+    const url = params.toString() ? `/__export/mp4?${params.toString()}` : '/__export/mp4';
+    const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': blob.type || 'application/octet-stream' },
       body: blob
     });
     if (!response.ok) {
       let message = `MP4 encoder failed (${response.status})`;
+      try {
+        const payload = await response.json();
+        if (payload?.error) message = payload.error;
+      } catch (_error) {}
+      throw new Error(message);
+    }
+    return response.blob();
+  }
+
+  async transcodeMovieRecordingToMp4({ videoBlob, audioBlob = null }) {
+    if (!videoBlob?.size) throw new Error('Movie recorder produced no video data.');
+    const form = new FormData();
+    form.append('video', videoBlob, 'video.webm');
+    if (audioBlob?.size) {
+      form.append('audio', audioBlob, audioBlob.type === 'audio/wav' ? 'audio.wav' : 'audio.webm');
+    }
+    const response = await fetch('/__export/mp4-recording', {
+      method: 'POST',
+      body: form
+    });
+    if (!response.ok) {
+      let message = `MP4 recorder encoder failed (${response.status})`;
       try {
         const payload = await response.json();
         if (payload?.error) message = payload.error;
@@ -3815,7 +3999,7 @@ export default class CutsceneEditor {
       form.append('frame', frame, `frame-${String(index).padStart(6, '0')}.png`);
     });
     if (audioBlob?.size) {
-      form.append('audio', audioBlob, 'audio.webm');
+      form.append('audio', audioBlob, audioBlob.type === 'audio/wav' ? 'audio.wav' : 'audio.webm');
     }
     const response = await fetch('/__export/mp4-frames', {
       method: 'POST',
@@ -3834,7 +4018,7 @@ export default class CutsceneEditor {
 
   getMovieExportContentKey(safeDoc, { durationMs, fps, frameCount, layout, segmentMs, segmentCount }) {
     const source = JSON.stringify({
-      version: 5,
+      version: 7,
       doc: safeDoc,
       durationMs,
       fps,
@@ -3851,7 +4035,7 @@ export default class CutsceneEditor {
       hash ^= source.charCodeAt(index);
       hash = Math.imul(hash, 16777619);
     }
-    return `cutscene-mp4-v5-${safeDoc.name || 'cutscene'}-${durationMs}-${fps}-${frameCount}-${segmentMs}-${(hash >>> 0).toString(16)}`;
+    return `cutscene-mp4-v7-${safeDoc.name || 'cutscene'}-${durationMs}-${fps}-${frameCount}-${segmentMs}-${(hash >>> 0).toString(16)}`;
   }
 
   async createMovieExportSession(metadata) {
@@ -3992,6 +4176,248 @@ export default class CutsceneEditor {
     });
   }
 
+  cloneAudioBufferToContext(ctx, sourceBuffer) {
+    if (!ctx || !sourceBuffer) return null;
+    const targetLength = Math.max(1, Math.round(sourceBuffer.duration * ctx.sampleRate));
+    const buffer = ctx.createBuffer(sourceBuffer.numberOfChannels || 1, targetLength, ctx.sampleRate);
+    const ratio = sourceBuffer.sampleRate / ctx.sampleRate;
+    for (let channel = 0; channel < buffer.numberOfChannels; channel += 1) {
+      const sourceData = sourceBuffer.getChannelData(Math.min(channel, sourceBuffer.numberOfChannels - 1));
+      const destData = buffer.getChannelData(channel);
+      for (let i = 0; i < destData.length; i += 1) {
+        const sourceIndex = i * ratio;
+        const leftIndex = Math.min(sourceData.length - 1, Math.floor(sourceIndex));
+        const rightIndex = Math.min(sourceData.length - 1, leftIndex + 1);
+        const mix = sourceIndex - leftIndex;
+        const left = sourceData[leftIndex] || 0;
+        const right = sourceData[rightIndex] || 0;
+        destData[i] = left + (right - left) * mix;
+      }
+    }
+    return buffer;
+  }
+
+  createOfflineNoiseBuffer(ctx, duration = 0.4, type = 'snare') {
+    const length = Math.max(1, Math.floor(ctx.sampleRate * Math.max(0.03, duration)));
+    const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < length; i += 1) {
+      const t = i / ctx.sampleRate;
+      const fade = Math.max(0, 1 - t / Math.max(0.03, duration));
+      const noise = (Math.random() * 2 - 1) * fade;
+      if (type === 'kick') {
+        const freq = 120 * fade + 42;
+        data[i] = Math.sin(2 * Math.PI * freq * t) * fade;
+      } else if (type === 'hat') {
+        data[i] = noise * 0.35;
+      } else {
+        data[i] = noise * 0.65;
+      }
+    }
+    return buffer;
+  }
+
+  getOfflineDrumType(pitch) {
+    if (pitch === 36 || pitch === 35) return 'kick';
+    if (pitch === 42 || pitch === 44 || pitch === 46) return 'hat';
+    return 'snare';
+  }
+
+  scheduleOfflineMidiEvent(ctx, destination, event) {
+    const when = Math.max(0, event.startSec);
+    const duration = Math.max(0.03, event.durationSec);
+    const sample = event.soundfontSample?.buffer
+      ? event.soundfontSample
+      : this.game?.audio?.midiSamples?.lead || null;
+    let source;
+    let sampled = false;
+    if (event.soundfontSample?.buffer || sample?.buffer) {
+      source = ctx.createBufferSource();
+      source.buffer = this.cloneAudioBufferToContext(ctx, (event.soundfontSample || sample).buffer);
+      source.playbackRate.value = event.isDrum || event.soundfontSample?.isDrums || sample?.isDrums
+        ? 1
+        : 2 ** ((event.pitch - (event.soundfontSample?.baseNote ?? sample.baseNote ?? 60)) / 12);
+      sampled = true;
+    } else if (event.isDrum) {
+      source = ctx.createBufferSource();
+      source.buffer = this.createOfflineNoiseBuffer(ctx, Math.min(1.2, duration + 0.2), this.getOfflineDrumType(event.pitch));
+    } else {
+      source = ctx.createOscillator();
+      source.type = 'triangle';
+      source.frequency.value = 440 * (2 ** ((event.pitch - 69) / 12));
+    }
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = sampled ? 9000 : (event.isDrum ? 9000 : 2400);
+    const gain = ctx.createGain();
+    const panNode = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+    source.connect(filter);
+    filter.connect(gain);
+    if (panNode) {
+      panNode.pan.value = clamp(event.pan ?? 0, -1, 1);
+      gain.connect(panNode);
+      panNode.connect(destination);
+    } else {
+      gain.connect(destination);
+    }
+
+    const profile = getGmSustainProfile({ program: event.program, channel: event.channel, isDrums: event.isDrum });
+    const release = Math.max(0.01, profile.release ?? (event.isDrum ? 0.06 : 0.2));
+    const attack = Math.max(0.001, profile.attack ?? (event.isDrum ? 0.004 : 0.012));
+    const decay = Math.max(0.001, profile.decay ?? 0.12);
+    const effectiveDuration = profile.mode === 'oneshot'
+      ? Math.min(duration, profile.maxDuration ?? duration)
+      : Math.min(duration, profile.maxDuration ?? duration);
+    const attackAt = when + Math.min(attack, Math.max(0.001, effectiveDuration * 0.45));
+    const decayAt = Math.min(when + effectiveDuration, attackAt + decay);
+    const sustainUntil = when + Math.max(attack, effectiveDuration);
+    const peak = Math.max(0.0001, clamp(event.volume ?? 0.7, 0, 1) * (sampled ? 0.95 : 0.32));
+    const sustainLevel = Math.max(0.0001, peak * clamp(profile.sustain ?? 0.7, 0.0001, 1));
+    const tailLevel = Math.max(0.0001, peak * clamp(profile.tail ?? profile.sustain ?? 0.4, 0.0001, 1));
+
+    if (source.buffer && !event.isDrum && profile.loopSample !== false) {
+      const rate = Math.max(0.0001, source.playbackRate?.value || 1);
+      const audibleBufferDuration = source.buffer.duration / rate;
+      if (audibleBufferDuration < effectiveDuration + release + 0.04 && source.buffer.duration >= 0.18) {
+        source.loop = true;
+        source.loopStart = clamp(source.buffer.duration * 0.45, 0.04, Math.max(0.05, source.buffer.duration - 0.08));
+        source.loopEnd = clamp(source.buffer.duration * 0.88, source.loopStart + 0.04, source.buffer.duration);
+      }
+    }
+
+    gain.gain.setValueAtTime(0.0001, when);
+    gain.gain.exponentialRampToValueAtTime(peak, attackAt);
+    if (profile.mode === 'oneshot') {
+      gain.gain.exponentialRampToValueAtTime(0.0001, sustainUntil + release);
+    } else if (profile.mode === 'decay') {
+      gain.gain.exponentialRampToValueAtTime(sustainLevel, decayAt);
+      if (sustainUntil > decayAt + 0.01) {
+        gain.gain.exponentialRampToValueAtTime(tailLevel, sustainUntil);
+      }
+      gain.gain.exponentialRampToValueAtTime(0.0001, sustainUntil + release);
+    } else {
+      gain.gain.exponentialRampToValueAtTime(sustainLevel, decayAt);
+      gain.gain.setValueAtTime(sustainLevel, sustainUntil);
+      gain.gain.exponentialRampToValueAtTime(0.0001, sustainUntil + release);
+    }
+    source.start(when);
+    source.stop(sustainUntil + release + 0.08);
+  }
+
+  prepareWavChannelData(audioBuffer) {
+    const channels = Math.min(2, audioBuffer.numberOfChannels || 1);
+    const length = audioBuffer.length;
+    const safetyFadeSamples = Math.min(Math.floor(audioBuffer.sampleRate * 0.006), Math.floor(length / 2));
+    const data = Array.from({ length: channels }, (_, channel) => new Float32Array(audioBuffer.getChannelData(channel)));
+    data.forEach((channelData) => {
+      let sum = 0;
+      for (let i = 0; i < length; i += 1) sum += channelData[i] || 0;
+      const dc = sum / Math.max(1, length);
+      for (let i = 0; i < length; i += 1) {
+        let sample = (channelData[i] || 0) - dc;
+        if (i < safetyFadeSamples) sample *= i / safetyFadeSamples;
+        if (i >= length - safetyFadeSamples) sample *= (length - i - 1) / safetyFadeSamples;
+        channelData[i] = sample;
+      }
+    });
+    let peak = 0;
+    data.forEach((channelData) => {
+      for (let i = 0; i < length; i += 1) peak = Math.max(peak, Math.abs(channelData[i] || 0));
+    });
+    if (peak > 0.98) {
+      const scale = 0.98 / peak;
+      data.forEach((channelData) => {
+        for (let i = 0; i < length; i += 1) channelData[i] *= scale;
+      });
+    }
+    return data;
+  }
+
+  encodeOfflineWav(audioBuffer) {
+    const channels = Math.min(2, audioBuffer.numberOfChannels || 1);
+    const sampleRate = audioBuffer.sampleRate;
+    const length = audioBuffer.length;
+    const bytesPerSample = 2;
+    const blockAlign = channels * bytesPerSample;
+    const dataSize = length * blockAlign;
+    const buffer = new ArrayBuffer(44 + dataSize);
+    const view = new DataView(buffer);
+    const writeString = (offset, value) => {
+      for (let i = 0; i < value.length; i += 1) view.setUint8(offset + i, value.charCodeAt(i));
+    };
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + dataSize, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, channels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * blockAlign, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, 16, true);
+    writeString(36, 'data');
+    view.setUint32(40, dataSize, true);
+    const channelData = this.prepareWavChannelData(audioBuffer);
+    let offset = 44;
+    for (let i = 0; i < length; i += 1) {
+      for (let channel = 0; channel < channels; channel += 1) {
+        const sample = clamp(channelData[channel][i] || 0, -1, 1);
+        view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7fff, true);
+        offset += 2;
+      }
+    }
+    return new Blob([buffer], { type: 'audio/wav' });
+  }
+
+  async renderCutsceneMidiAudioBlob(safeDoc, durationMs, progress = null) {
+    const OfflineCtor = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    if (!OfflineCtor) return null;
+    const resolveSong = (trackId) => (
+      this.game?.preparedCutsceneAudio?.music?.get(trackId)
+      || this.game?.getLibrarySong?.(trackId)
+      || (() => {
+        const payload = loadProjectFile('music', trackId);
+        return payload?.data ? { id: trackId, name: trackId, song: payload.data } : null;
+      })()
+    );
+    const events = collectCutsceneMidiRenderEvents(safeDoc, resolveSong);
+    if (!events.length) return null;
+    this.game?.audio?.ensureMidiSampler?.();
+    progress?.update?.(13, 'Loading MIDI instruments...');
+    const samplePromises = new Map();
+    await Promise.all(events.map(async (event) => {
+      const key = [event.pitch, event.program, event.channel, event.bankMSB, event.bankLSB].join(':');
+      if (!samplePromises.has(key)) {
+        samplePromises.set(key, this.game?.audio?.getSoundfontBufferForNote?.({
+          pitch: event.pitch,
+          program: event.program,
+          channel: event.channel,
+          bankMSB: event.bankMSB,
+          bankLSB: event.bankLSB
+        }).catch(() => null));
+      }
+      event.soundfontSample = await samplePromises.get(key);
+    }));
+    const sampleRate = Math.max(22050, Math.min(96000, Math.round(this.game?.audio?.ctx?.sampleRate || 44100)));
+    const duration = Math.max(0.1, durationMs / 1000) + CUTSCENE_MP4_AUDIO_TAIL_SECONDS;
+    const ctx = new OfflineCtor(2, Math.ceil(duration * sampleRate), sampleRate);
+    const master = ctx.createGain();
+    master.gain.value = clamp(this.game?.audio?.volume ?? 0.4, 0, 1) * 0.78;
+    const limiter = ctx.createDynamicsCompressor();
+    limiter.threshold.value = -12;
+    limiter.knee.value = 8;
+    limiter.ratio.value = 6;
+    limiter.attack.value = 0.002;
+    limiter.release.value = 0.12;
+    master.connect(limiter);
+    limiter.connect(ctx.destination);
+    events.forEach((event) => this.scheduleOfflineMidiEvent(ctx, master, event));
+    progress?.update?.(14, 'Rendering MIDI audio...');
+    const rendered = await ctx.startRendering();
+    return this.encodeOfflineWav(rendered);
+  }
+
   async recordCutsceneAudioBlob(safeDoc, durationMs) {
     if (typeof MediaRecorder === 'undefined' || typeof MediaStream === 'undefined') return null;
     await this.game?.audio?.ensure?.();
@@ -4079,10 +4505,12 @@ export default class CutsceneEditor {
 
     progress.update(8, 'Preparing audio...');
     await this.preparePreviewAudioResources(safeDoc);
-    progress.update(12, 'Recording audio and rendering segments...');
+    progress.update(12, 'Rendering MIDI audio and movie segments...');
     const audioPromise = session.audioReady
       ? Promise.resolve(null)
-      : this.recordCutsceneAudioBlob(safeDoc, durationMs).catch(() => null);
+      : this.renderCutsceneMidiAudioBlob(safeDoc, durationMs, progress)
+        .catch(() => null)
+        .then((blob) => blob || this.recordCutsceneAudioBlob(safeDoc, durationMs).catch(() => null));
     const runtime = this.buildMovieExportRuntime();
     const encodedSegments = new Set(Array.isArray(session.segments) ? session.segments : []);
     let completedFrames = 0;
@@ -4120,13 +4548,30 @@ export default class CutsceneEditor {
     progress.update(76, 'Segments checkpointed.');
     const audioBlob = await audioPromise;
     if (audioBlob?.size && !session.audioReady) {
-      progress.update(82, 'Uploading audio...');
+      progress.update(82, audioBlob.type === 'audio/wav' ? 'Uploading rendered MIDI audio...' : 'Uploading captured audio...');
       await this.uploadMovieExportAudio(session.id, audioBlob);
     }
     progress.update(88, 'Finalizing MP4...');
     await this.finalizeMovieExportSession(session.id);
     progress.update(96, 'Downloading MP4...');
     return this.downloadMovieExportResult(session.id);
+  }
+
+  getMovieRecorderUnavailableMessage() {
+    if (typeof document === 'undefined' || typeof window === 'undefined') {
+      return 'MP4 export is unavailable in this environment.';
+    }
+    if (typeof MediaRecorder === 'undefined') {
+      return 'Movie export is not supported by this browser.';
+    }
+    const canvas = document.createElement('canvas');
+    if (!canvas.captureStream) {
+      return 'Movie export is not supported by this browser.';
+    }
+    if (!selectCutsceneMovieRecordingMimeType(MediaRecorder)) {
+      return 'Movie export is not supported by this browser.';
+    }
+    return '';
   }
 
   async exportMovieMp4() {
@@ -4148,6 +4593,7 @@ export default class CutsceneEditor {
       progress = null;
       const safeDoc = normalizeCutsceneDocument(this.document, this.document?.name);
       const filename = getCutsceneMp4ExportFilename(safeDoc.name);
+      this.statusText = 'MP4 ready. Choose Download.';
       const downloaded = await this.openMovieDownloadReadyOverlay(mp4Blob, filename);
       this.statusText = downloaded ? 'MP4 exported.' : 'MP4 export canceled.';
     } catch (error) {
@@ -4159,34 +4605,48 @@ export default class CutsceneEditor {
         return;
       }
       this.movieExportInProgress = false;
-      await this.exportMovieMp4MediaRecorder(error);
-      return;
+      if (!this.getMovieRecorderUnavailableMessage()) {
+        await this.exportMovieMp4MediaRecorder(error, { rethrow: false });
+        return;
+      }
+      this.statusText = `MP4 export failed: ${message}`;
     } finally {
       this.movieExportInProgress = false;
     }
   }
 
-  async exportMovieMp4MediaRecorder(previousError = null) {
+  async exportMovieMp4MediaRecorder(previousError = null, options = {}) {
+    const rethrow = options?.rethrow === true;
     if (this.movieExportInProgress) {
-      this.statusText = 'Movie export already running';
+      const message = 'Movie export already running';
+      this.statusText = message;
+      if (rethrow) throw new Error(message);
       return;
     }
     if (typeof document === 'undefined' || typeof window === 'undefined') {
-      this.statusText = 'MP4 export is unavailable in this environment.';
+      const message = 'MP4 export is unavailable in this environment.';
+      this.statusText = message;
+      if (rethrow) throw new Error(message);
       return;
     }
     if (typeof MediaRecorder === 'undefined') {
-      this.statusText = 'Movie export is not supported by this browser.';
+      const message = 'Movie export is not supported by this browser.';
+      this.statusText = message;
+      if (rethrow) throw new Error(message);
       return;
     }
-    const canvas = document.createElement('canvas');
-    if (!canvas.captureStream) {
-      this.statusText = 'Movie export is not supported by this browser.';
+    const recordingCanvas = document.createElement('canvas');
+    if (!recordingCanvas.captureStream) {
+      const message = 'Movie export is not supported by this browser.';
+      this.statusText = message;
+      if (rethrow) throw new Error(message);
       return;
     }
     const recordingMime = selectCutsceneMovieRecordingMimeType(MediaRecorder);
     if (!recordingMime) {
-      this.statusText = 'Movie export is not supported by this browser.';
+      const message = 'Movie export is not supported by this browser.';
+      this.statusText = message;
+      if (rethrow) throw new Error(message);
       return;
     }
     if (!this.document) this.document = createDefaultCutscene();
@@ -4194,35 +4654,58 @@ export default class CutsceneEditor {
     const durationMs = getFullPreviewDurationMs(safeDoc);
     const fps = clamp(Math.round(safeNumber(safeDoc.fps, DEFAULT_FPS)), 12, 60);
     const layout = getCutsceneMovieExportLayout(safeDoc);
-    canvas.width = layout.outputWidth;
-    canvas.height = layout.outputHeight;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      this.statusText = 'Could not create movie canvas.';
+    const recordingScale = Math.max(1, Math.floor(Math.min(
+      5,
+      1280 / Math.max(1, layout.frameWidth),
+      720 / Math.max(1, layout.frameHeight)
+    )));
+    const frameCanvas = document.createElement('canvas');
+    frameCanvas.width = layout.frameWidth;
+    frameCanvas.height = layout.frameHeight;
+    recordingCanvas.width = layout.frameWidth * recordingScale;
+    recordingCanvas.height = layout.frameHeight * recordingScale;
+    const ctx = frameCanvas.getContext('2d');
+    const recordingCtx = recordingCanvas.getContext('2d');
+    if (!ctx || !recordingCtx) {
+      const message = 'Could not create movie canvas.';
+      this.statusText = message;
+      if (rethrow) throw new Error(message);
       return;
     }
     ctx.imageSmoothingEnabled = false;
+    recordingCtx.imageSmoothingEnabled = false;
 
     this.movieExportInProgress = true;
     let progress = this.openMovieExportProgressOverlay();
     let recorder = null;
-    let player = null;
-    let capture = null;
+    let audioPromise = null;
     let videoStream = null;
+    let wakeLock = null;
+    let rejectRecording = null;
+    const hiddenExportMessage = 'MP4 export interrupted because the page was hidden. Keep the screen awake while exporting.';
+    let pageHiddenDuringExport = false;
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        pageHiddenDuringExport = true;
+        try {
+          if (recorder?.state && recorder.state !== 'inactive') recorder.stop();
+        } catch (_error) {}
+        rejectRecording?.(new Error(hiddenExportMessage));
+      }
+    };
     try {
       progress.update(8, previousError ? 'Frame export failed; using fallback...' : 'Preparing movie...');
       await this.game?.audio?.ensure?.();
       await this.preparePreviewAudioResources(safeDoc);
-      capture = this.game?.audio?.beginMasterCapture?.({ monitor: false }) || null;
-      videoStream = canvas.captureStream(fps);
-      const tracks = [...videoStream.getVideoTracks()];
-      if (capture?.stream) tracks.push(...capture.stream.getAudioTracks());
-      const stream = new MediaStream(tracks);
+      if (globalThis.navigator?.wakeLock?.request) {
+        wakeLock = await globalThis.navigator.wakeLock.request('screen').catch(() => null);
+      }
+      videoStream = recordingCanvas.captureStream(0);
+      const stream = new MediaStream(videoStream.getVideoTracks());
       const chunks = [];
       recorder = new MediaRecorder(stream, {
         mimeType: recordingMime,
-        videoBitsPerSecond: Math.max(8000000, canvas.width * canvas.height * fps * 0.18),
-        audioBitsPerSecond: 192000
+        videoBitsPerSecond: Math.max(12000000, recordingCanvas.width * recordingCanvas.height * fps * 0.35)
       });
       const stopped = new Promise((resolve, reject) => {
         recorder.addEventListener('dataavailable', (event) => {
@@ -4232,22 +4715,31 @@ export default class CutsceneEditor {
         recorder.addEventListener('error', (event) => reject(event.error || new Error('Movie recording failed')), { once: true });
       });
       const runtime = this.buildMovieExportRuntime();
-      player = new CutscenePlayer(this.game || {});
-      player.play(safeDoc, { skippable: false, ignorePauseMarkers: true, startMs: 0 });
       recorder.start(250);
-      this.advanceMovieExportAudio(player, 0);
+      audioPromise = this.renderCutsceneMidiAudioBlob(safeDoc, durationMs, progress)
+        .catch(() => null)
+        .then((blob) => blob || this.recordCutsceneAudioBlob(safeDoc, durationMs).catch(() => null));
       const start = getNowMs();
-      let previousElapsed = 0;
+      let lastProgressAt = 0;
       const videoTrack = videoStream.getVideoTracks()[0];
       progress.update(15, 'Recording...');
-      await new Promise((resolve) => {
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+      await new Promise((resolve, reject) => {
+        rejectRecording = reject;
         const render = () => {
+          if (pageHiddenDuringExport || document.hidden) {
+            reject(new Error(hiddenExportMessage));
+            return;
+          }
           const elapsed = Math.min(durationMs, getNowMs() - start);
-          this.advanceMovieExportAudio(player, (elapsed - previousElapsed) / 1000);
-          previousElapsed = elapsed;
           this.renderMovieExportFrame(ctx, safeDoc, elapsed, layout, runtime);
+          recordingCtx.clearRect(0, 0, recordingCanvas.width, recordingCanvas.height);
+          recordingCtx.drawImage(frameCanvas, 0, 0, recordingCanvas.width, recordingCanvas.height);
           videoTrack?.requestFrame?.();
-          progress.update(15 + Math.floor((elapsed / Math.max(1, durationMs)) * 65), `Recording ${Math.round(elapsed)}ms / ${Math.round(durationMs)}ms`);
+          if (elapsed - lastProgressAt >= 250 || elapsed >= durationMs) {
+            lastProgressAt = elapsed;
+            progress.update(15 + Math.floor((elapsed / Math.max(1, durationMs)) * 65), `Recording ${Math.round(elapsed)}ms / ${Math.round(durationMs)}ms`);
+          }
           if (elapsed >= durationMs) {
             resolve();
             return;
@@ -4256,36 +4748,42 @@ export default class CutsceneEditor {
         };
         render();
       });
+      rejectRecording = null;
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (recorder.state !== 'inactive') recorder.stop();
       await stopped;
-      player.stop();
-      player = null;
-      this.game?.audio?.endMasterCapture?.(capture);
-      capture = null;
       videoStream.getTracks().forEach((track) => track.stop?.());
       videoStream = null;
       if (!chunks.length) throw new Error('Movie recorder produced no video data.');
-      progress.update(88, 'Encoding MP4...');
       const sourceBlob = new Blob(chunks, { type: recordingMime });
-      const mp4Blob = await this.transcodeMovieBlobToMp4(sourceBlob);
+      progress.update(82, 'Finishing audio...');
+      const audioBlob = await audioPromise;
+      progress.update(88, 'Encoding MP4...');
+      const mp4Blob = await this.transcodeMovieRecordingToMp4({ videoBlob: sourceBlob, audioBlob });
       progress.update(100, 'MP4 ready.');
       await new Promise((resolve) => window.setTimeout(resolve, 120));
       progress.close();
       progress = null;
       const filename = getCutsceneMp4ExportFilename(safeDoc.name);
+      this.statusText = 'MP4 ready. Choose Download.';
       const downloaded = await this.openMovieDownloadReadyOverlay(mp4Blob, filename);
       this.statusText = downloaded ? 'MP4 exported.' : 'MP4 export canceled.';
     } catch (error) {
       progress?.close();
       this.statusText = `MP4 export failed: ${error?.message || error}`;
+      if (rethrow) throw error;
     } finally {
+      rejectRecording = null;
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       this.movieExportInProgress = false;
       try {
         if (recorder?.state && recorder.state !== 'inactive') recorder.stop();
       } catch (_error) {}
-      player?.stop?.();
-      this.game?.audio?.endMasterCapture?.(capture);
       videoStream?.getTracks?.().forEach((track) => track.stop?.());
+      try {
+        const releaseWakeLock = wakeLock?.release?.();
+        releaseWakeLock?.catch?.(() => {});
+      } catch (_error) {}
     }
   }
 
