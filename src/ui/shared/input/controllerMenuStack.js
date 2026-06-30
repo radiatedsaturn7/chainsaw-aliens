@@ -299,7 +299,12 @@ export class ControllerMenuStack {
       this.move(1);
       consumed = true;
     }
-    if (hasAction(EDITOR_INPUT_ACTIONS.PANEL_PREV) || hasAction(EDITOR_INPUT_ACTIONS.PANEL_NEXT)) {
+    if (hasAction(EDITOR_INPUT_ACTIONS.PANEL_PREV)) {
+      this.moveSibling(-1);
+      consumed = true;
+    }
+    if (hasAction(EDITOR_INPUT_ACTIONS.PANEL_NEXT)) {
+      this.moveSibling(1);
       consumed = true;
     }
     this.stickRepeat = Math.max(0, this.stickRepeat - dt);
