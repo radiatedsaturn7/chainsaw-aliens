@@ -16,7 +16,7 @@ import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHel
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
 import { getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
-import { buildDesktopEditorShellPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -7561,11 +7561,13 @@ export default class Editor {
           h: 28
         }, this.panelMenuFocused ? 'Level Chrome' : 'Level Canvas');
       }
-      drawCanvasControllerMenu(ctx, this.controllerMenu, {
-        width,
-        height,
-        contextLabel: this.panelMenuFocused ? 'Level Chrome' : 'Level Canvas'
-      });
+      if (this.shouldDrawControllerOverlay(width, height)) {
+        drawCanvasControllerMenu(ctx, this.controllerMenu, {
+          width,
+          height,
+          contextLabel: this.panelMenuFocused ? 'Level Chrome' : 'Level Canvas'
+        });
+      }
     }
     this.previousDrawCamera = { x: this.camera.x, y: this.camera.y, zoom: this.zoom };
   }
@@ -7584,6 +7586,88 @@ export default class Editor {
     ctx.textAlign = 'right';
     ctx.fillText(SHARED_EDITOR_GAMEPAD_HINTS.slice(0, 6).join('  |  '), bounds.x + bounds.w - 10, bounds.y + bounds.h / 2);
     ctx.restore();
+  }
+
+  getActiveGamepadMenuId() {
+    const activeId = this.controllerMenu.getActiveMenuId();
+    if (!activeId || ['root', 'system', 'help', 'exit-confirm'].includes(activeId)) return null;
+    return activeId;
+  }
+
+  isGamepadLandscapeMenuMode(width = this.getViewportSize().width, height = this.getViewportSize().height) {
+    return Boolean(this.game?.input?.isGamepadConnected?.() && Math.min(width, height) <= 900 && width > height);
+  }
+
+  shouldDrawGamepadSubmenuOnLeft(width, height) {
+    return Boolean(this.isGamepadLandscapeMenuMode(width, height) && this.controllerMenu.active && this.getActiveGamepadMenuId());
+  }
+
+  shouldDrawControllerOverlay(width, height) {
+    if (!this.isGamepadLandscapeMenuMode(width, height)) return true;
+    const activeId = this.controllerMenu.getActiveMenuId();
+    return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));
+  }
+
+  drawGamepadSlideOutPanel(ctx, bounds) {
+    const menuId = this.getActiveGamepadMenuId();
+    const plan = buildGamepadSlideOutMenuPlan('level', {
+      rootOpen: !menuId,
+      activeRootId: menuId || this.getActivePanelTab(),
+      focusedItemId: this.controllerMenu.getFocusedItem(menuId)?.id,
+      labelOverrides: {
+        toolbox: 'Toolbox',
+        pixels: 'Tile Art',
+        npcs: 'Actors',
+        prefabs: 'Structures',
+        'level-settings': 'Settings'
+      }
+    });
+    const menu = this.controllerMenu.menus?.[menuId];
+    const items = this.controllerMenu.getItems(menu);
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(menu?.title || plan.submenu?.title || 'Menu', bounds.x + 12, bounds.y + 18, bounds.w - 24);
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.font = `10px ${UI_SUITE.font.family}`;
+    ctx.fillText('A Select  B Back', bounds.x + 12, bounds.y + 36, bounds.w - 24);
+    ctx.restore();
+    const rowH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
+    const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+    const listBounds = {
+      x: bounds.x + 8,
+      y: bounds.y + 52,
+      w: Math.max(1, bounds.w - 16),
+      h: Math.max(1, bounds.h - 60)
+    };
+    const visibleRows = Math.max(1, Math.floor((listBounds.h + gap) / (rowH + gap)));
+    const start = this.controllerMenu.syncScrollToItem(
+      menuId,
+      this.controllerMenu.getFocusedItem(menuId)?.id,
+      items,
+      visibleRows,
+      this.controllerMenu.scroll?.[menuId] || 0
+    );
+    items.slice(start, start + visibleRows).forEach((item, index) => {
+      if (item.divider || item.separator) return;
+      const y = listBounds.y + index * (rowH + gap);
+      const buttonBounds = {
+        x: listBounds.x,
+        y,
+        w: listBounds.w,
+        h: rowH
+      };
+      const active = this.controllerMenu.isFocusedItem(menuId, item.id, index);
+      const color = drawSharedMenuButtonChrome(ctx, buttonBounds, { active, focused: active });
+      drawSharedMenuButtonLabel(ctx, buttonBounds, item.label, { color, fontSize: 12, maxWidth: buttonBounds.w - 10 });
+      this.addUIButton(buttonBounds, () => item.onSelect?.(this), item.label);
+    });
+    drawSharedPortraitScrollHints(ctx, listBounds, {
+      scroll: start,
+      scrollMax: Math.max(0, items.length - visibleRows)
+    });
   }
 
   drawEditorMarkers(ctx) {
@@ -8385,6 +8469,7 @@ export default class Editor {
         ? { x: drawerX, y: drawerY, w: drawerWidth, h: drawerH }
         : { x: panelX, y: panelY, w: panelW, h: panelH };
       ctx.globalAlpha = 1;
+      const gamepadSubmenuOnLeft = !portraitLayout && this.shouldDrawGamepadSubmenuOnLeft(width, height);
       if (!portraitLayout) {
         drawSharedPanel(ctx, { x: panelX, y: panelY, w: panelW, h: panelH });
       }
@@ -8431,6 +8516,8 @@ export default class Editor {
             );
           }
         });
+      } else if (gamepadSubmenuOnLeft) {
+        this.drawGamepadSlideOutPanel(ctx, { x: panelX, y: panelY, w: panelW, h: panelH });
       } else if (!portraitLayout) {
         const tabButtonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
         const tabGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
