@@ -622,7 +622,7 @@ export default class PixelStudio {
     this.game = game;
     this.sharedMenu = new SharedEditorMenu();
     this.controllerMenu = new ControllerMenuStack({
-      siblingOrder: ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames']
+      siblingOrder: ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames', 'bones']
     });
     this.tileLibrary = TILE_LIBRARY;
     this.decalEditSession = null;

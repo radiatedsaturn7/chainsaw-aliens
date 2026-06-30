@@ -866,6 +866,7 @@ test('MIDI gamepad mode replaces the left landscape rail with submenu slide-out'
   assert.equal(midiEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
   assert.equal(midiEditorSource.includes('isGamepadLandscapeMenuMode(width'), true);
   assert.equal(midiEditorSource.includes('shouldDrawGamepadSubmenuOnLeft(width, height)'), true);
+  assert.equal(midiEditorSource.includes("siblingOrder: ['file', 'grid', 'song', 'tracks', 'record', 'pedals', 'settings']"), true);
   assert.equal(midiEditorSource.includes('this.drawGamepadSlideOutPanel(ctx, { x: sidebarX, y: sidebarY, w: sidebarW, h: sidebarH });'), true);
   assert.equal(midiEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
 });
@@ -914,6 +915,7 @@ test('Pixel gamepad mode replaces the left landscape rail with submenu slide-out
   assert.equal(pixelStudioSource.includes('buildGamepadSlideOutMenuPlan'), true);
   assert.equal(pixelStudioSource.includes('isGamepadLandscapeMenuMode(width'), true);
   assert.equal(pixelStudioSource.includes('shouldDrawGamepadSubmenuOnLeft(width, height)'), true);
+  assert.equal(pixelStudioSource.includes("siblingOrder: ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames', 'bones']"), true);
   assert.equal(pixelStudioSource.includes('this.drawGamepadSlideOutPanel(ctx, rail);'), true);
   assert.equal(pixelStudioSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
 });
