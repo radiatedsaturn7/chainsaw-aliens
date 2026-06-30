@@ -160,7 +160,9 @@ export function buildDesktopTopMenuPlan(editorId, {
   const overflowEntries = entries.slice(visibleEntries.length);
   const availableW = Math.max(1, menuBounds.w - menuBounds.padding * 2 - Math.max(0, visibleEntries.length - 1) * menuBounds.gap);
   const rawItemW = visibleEntries.length ? Math.floor(availableW / visibleEntries.length) : menuBounds.itemMinWidth;
-  const itemW = Math.max(menuBounds.itemMinWidth, Math.min(menuBounds.itemMaxWidth, rawItemW));
+  const itemW = rawItemW < menuBounds.itemMinWidth
+    ? Math.max(1, rawItemW)
+    : Math.min(menuBounds.itemMaxWidth, Math.max(menuBounds.itemMinWidth, rawItemW));
   const buttons = visibleEntries.map((entry, index) => ({
     ...entry,
     bounds: {

@@ -83,6 +83,7 @@ test('desktop top menu plan creates bounded root buttons and active dropdown', (
   assert.equal(plan.buttons[0].id, 'file');
   assert.equal(plan.buttons[0].label, 'Menu');
   assert.ok(plan.buttons.every((button) => button.bounds.y === 4));
+  assert.ok(plan.buttons.every((button) => button.bounds.x + button.bounds.w <= plan.bounds.x + plan.bounds.w - plan.bounds.padding));
   assert.equal(plan.buttons.find((button) => button.id === 'pixels')?.active, true);
   assert.equal(plan.dropdown.rootId, 'pixels');
   assert.equal(plan.dropdown.specId, 'tile-art');
