@@ -861,6 +861,24 @@ test('MIDI desktop keeps transport in the left column instead of a bottom rail',
   assert.equal(midiEditorSource.includes('drawDesktopTransportPanel(ctx, bounds)'), true);
 });
 
+test('MIDI file menu uses one shared drawer item source across surfaces', () => {
+  const fileItemsIndex = midiEditorSource.indexOf('  getFileMenuItems()');
+  const fileItemsBody = midiEditorSource.slice(fileItemsIndex, midiEditorSource.indexOf('  drawFilePanel(ctx, x, y, w, h)', fileItemsIndex));
+  const controllerIndex = midiEditorSource.indexOf("      file: {\n        id: 'file',");
+  const controllerBody = midiEditorSource.slice(controllerIndex, midiEditorSource.indexOf('      system:', controllerIndex));
+  const filePanelIndex = midiEditorSource.indexOf('  drawFilePanel(ctx, x, y, w, h)');
+  const filePanelBody = midiEditorSource.slice(filePanelIndex, midiEditorSource.indexOf('  drawGenreMenu(ctx, width, height)', filePanelIndex));
+
+  assert.equal(midiEditorSource.includes('buildUnifiedFileDrawerItems'), true);
+  assert.equal(fileItemsBody.includes('return buildUnifiedFileDrawerItems({'), true);
+  assert.equal(fileItemsBody.includes("{ id: 'nav-grid', label: 'Grid' }"), true);
+  assert.equal(fileItemsBody.includes("{ id: 'rescue-save', label: 'Rescue Save' }"), true);
+  assert.equal(fileItemsBody.includes("{ id: 'exit-main', label: 'Exit to Main Menu' }"), true);
+  assert.equal(controllerBody.includes('items: this.getFileMenuItems().map((item) => ('), true);
+  assert.equal(controllerBody.includes("action(item.id, item.label, () => this.handleFileMenu(item.id))"), true);
+  assert.equal(filePanelBody.includes('const allFileItems = this.getFileMenuItems();'), true);
+});
+
 test('Pixel gamepad mode replaces the left landscape rail with submenu slide-out', () => {
   assert.equal(pixelStudioSource.includes('buildGamepadSlideOutMenuPlan'), true);
   assert.equal(pixelStudioSource.includes('isGamepadLandscapeMenuMode(width'), true);
