@@ -35,7 +35,7 @@ import {
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
 import { getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
-import { buildDesktopEditorShellPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
 
 const DEFAULT_SAMPLE_RATE = 44100;
 const DEFAULT_DURATION = 0.45;
@@ -319,6 +319,7 @@ export default class SfxEditor {
     this.gamepadMoveCooldown = 0;
     this.timelineViewportBounds = null;
     this.isMobileLandscape = false;
+    this.isGamepadMenuMode = false;
     this.mobilePortraitMenuSheetBounds = null;
     this.panJoystick = {
       active: false,
@@ -1751,8 +1752,10 @@ export default class SfxEditor {
     const isMobileViewport = Math.min(width, height) <= 900;
     const isMobileLandscape = isMobileViewport && width > height;
     const isMobilePortrait = isMobileViewport && height > width;
+    const gamepadConnected = Boolean(this.game?.input?.isGamepadConnected?.());
     this.isMobileLandscape = isMobileLandscape;
     this.isMobilePortrait = isMobilePortrait;
+    this.isGamepadMenuMode = gamepadConnected && isMobileLandscape;
     this.mobilePortraitMenuSheetBounds = null;
     if (isMobilePortraitLayout({ isMobile: isMobileViewport, viewportWidth: width, viewportHeight: height })) {
       const layout = getSharedMobilePortraitEditorLayout(width, height, {
@@ -1785,15 +1788,17 @@ export default class SfxEditor {
           }
         });
       }
-      if (this.game?.input?.isGamepadConnected?.()) {
+      if (gamepadConnected) {
         this.drawGamepadHintBar(ctx, { x: layout.mainEditor.x + 8, y: layout.mainEditor.y + 8, w: Math.max(220, layout.mainEditor.w - 16), h: 28 }, 'SFX Timeline');
       }
       this.drawMobilePanJoystick(ctx, width, height);
-      drawCanvasControllerMenu(ctx, this.controllerMenu, {
-        width,
-        height,
-        contextLabel: 'SFX Timeline'
-      });
+      if (this.shouldDrawControllerOverlay()) {
+        drawCanvasControllerMenu(ctx, this.controllerMenu, {
+          width,
+          height,
+          contextLabel: 'SFX Timeline'
+        });
+      }
       ctx.restore();
       return;
     }
@@ -1842,19 +1847,29 @@ export default class SfxEditor {
     const right = landscapeLayout?.rightRail ?? { x: width - rightW, y: 0, w: rightW, h: height };
     const bottom = landscapeLayout?.bottomRail ?? { x: railW, y: height - bottomH, w: Math.max(1, width - railW - rightW), h: bottomH };
     const left = landscapeLayout?.leftRail ?? { x: 0, y: 0, w: railW, h: height };
-    this.drawLeftRail(ctx, left.x, left.y, left.w, left.h);
+    if (this.shouldDrawGamepadSubmenuOnLeft()) {
+      this.drawGamepadSlideOutPanel(ctx, left);
+    } else {
+      this.drawLeftRail(ctx, left.x, left.y, left.w, left.h);
+    }
     this.drawWaveform(ctx, canvas);
-    this.drawRightPanel(ctx, right);
+    if (this.isGamepadMenuMode) {
+      this.drawGamepadRightOptionsPanel(ctx, right);
+    } else {
+      this.drawRightPanel(ctx, right);
+    }
     if (bottom.h > 0) this.drawBottomRail(ctx, bottom);
     this.drawMobilePanJoystick(ctx, width, height);
-    if (this.game?.input?.isGamepadConnected?.()) {
+    if (gamepadConnected) {
       this.drawGamepadHintBar(ctx, { x: canvas.x + 12, y: height - bottomH - 36, w: Math.max(240, canvas.w - 24), h: 28 }, 'SFX Timeline');
     }
-    drawCanvasControllerMenu(ctx, this.controllerMenu, {
-      width,
-      height,
-      contextLabel: 'SFX Timeline'
-    });
+    if (this.shouldDrawControllerOverlay()) {
+      drawCanvasControllerMenu(ctx, this.controllerMenu, {
+        width,
+        height,
+        contextLabel: 'SFX Timeline'
+      });
+    }
     if (this.messageTimer > 0) {
       drawSharedStatusToast(ctx, {
         x: canvas.x + 12,
@@ -1930,6 +1945,93 @@ export default class SfxEditor {
         action
       );
     });
+  }
+
+  getActiveGamepadMenuId() {
+    const activeId = this.controllerMenu.getActiveMenuId();
+    if (!activeId || ['root', 'system', 'help', 'exit-confirm'].includes(activeId)) return null;
+    return activeId;
+  }
+
+  shouldDrawGamepadSubmenuOnLeft() {
+    return Boolean(this.isGamepadMenuMode && this.controllerMenu.active && this.getActiveGamepadMenuId());
+  }
+
+  shouldDrawControllerOverlay() {
+    if (!this.isGamepadMenuMode) return true;
+    const activeId = this.controllerMenu.getActiveMenuId();
+    return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));
+  }
+
+  drawGamepadSlideOutPanel(ctx, bounds) {
+    const menuId = this.getActiveGamepadMenuId();
+    const plan = buildGamepadSlideOutMenuPlan('sfx', {
+      rootOpen: !menuId,
+      activeRootId: menuId || this.leftTab,
+      focusedItemId: this.controllerMenu.getFocusedItem(menuId)?.id
+    });
+    const menu = this.controllerMenu.menus?.[menuId];
+    const items = this.controllerMenu.getItems(menu);
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = '12px Courier New';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(menu?.title || plan.submenu?.title || 'Menu', bounds.x + 12, bounds.y + 18, bounds.w - 24);
+    ctx.fillStyle = 'rgba(255,255,255,0.68)';
+    ctx.font = '10px Courier New';
+    ctx.fillText('A Select  B Back', bounds.x + 12, bounds.y + 36, bounds.w - 24);
+    ctx.restore();
+    const rowH = this.getPanelRowHeight();
+    const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+    const listBounds = {
+      x: bounds.x + 8,
+      y: bounds.y + 52,
+      w: Math.max(1, bounds.w - 16),
+      h: Math.max(1, bounds.h - 60)
+    };
+    const visibleRows = Math.max(1, Math.floor((listBounds.h + gap) / (rowH + gap)));
+    const start = this.controllerMenu.syncScrollToItem(
+      menuId,
+      this.controllerMenu.getFocusedItem(menuId)?.id,
+      items,
+      visibleRows,
+      this.controllerMenu.scroll?.[menuId] || 0
+    );
+    items.slice(start, start + visibleRows).forEach((item, index) => {
+      if (item.divider || item.separator) return;
+      const y = listBounds.y + index * (rowH + gap);
+      this.drawButton(
+        ctx,
+        { x: listBounds.x, y, w: listBounds.w, h: rowH },
+        item.label,
+        this.isControllerMenuItemActive(menuId, item.id),
+        () => item.onSelect?.(this),
+        this.controllerMenu.isFocusedItem(menuId, item.id)
+      );
+    });
+    drawSharedPortraitScrollHints(ctx, listBounds, {
+      scroll: start,
+      scrollMax: Math.max(0, items.length - visibleRows)
+    });
+  }
+
+  drawGamepadRightOptionsPanel(ctx, bounds) {
+    drawSharedPanel(ctx, bounds);
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = '12px Courier New';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Options', bounds.x + 12, bounds.y + 18, bounds.w - 24);
+    ctx.restore();
+    const y = bounds.y + 38;
+    if (this.leftTab === 'file') this.drawFilePanel(ctx, bounds, y);
+    if (this.leftTab === 'timeline') this.drawTimelineMenuPanel(ctx, bounds, y);
+    if (this.leftTab === 'layers') this.drawLayersMenuPanel(ctx, bounds, y);
+    if (this.leftTab === 'tools') this.drawToolsPanel(ctx, bounds, y);
+    if (this.leftTab === 'settings') this.drawSettingsPanel(ctx, bounds, y);
+    if (this.leftTab === 'envelopes') this.drawEnvelopesPanel(ctx, bounds, y);
+    if (this.leftTab === 'generate') this.drawGeneratePanel(ctx, bounds, y);
   }
 
   drawMobilePanJoystick(ctx, width, height) {
