@@ -9480,8 +9480,9 @@ export default class Editor {
       if (shellLayout.dropdown) {
         const dropdownRootId = shellLayout.dropdown.rootId;
         const { items: dropdownItems } = this.getPanelConfig(dropdownRootId);
-        const dropdownRows = dropdownItems.filter((item) => !item.separator && !item.divider).slice(0, 10);
         const rowHeight = Math.max(28, Math.min(34, shellLayout.dropdown.rowHeight));
+        const visibleRows = Math.max(1, Math.floor(shellLayout.dropdown.bounds.h / Math.max(1, rowHeight)));
+        const dropdownRows = dropdownItems.filter((item) => !item.separator && !item.divider).slice(0, visibleRows);
         const dropdownBounds = {
           ...shellLayout.dropdown.bounds,
           h: Math.max(rowHeight, dropdownRows.length * rowHeight)
