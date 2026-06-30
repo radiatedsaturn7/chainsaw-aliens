@@ -690,6 +690,8 @@ test('Level desktop dropdown uses the selected top root menu', () => {
 
   assert.equal(dropdownBlock.includes('const dropdownRootId = shellLayout.dropdown.rootId;'), true);
   assert.equal(dropdownBlock.includes('const { items: dropdownItems } = this.getPanelConfig(dropdownRootId);'), true);
+  assert.equal(dropdownBlock.includes('const visibleRows = Math.max(1, Math.floor(shellLayout.dropdown.bounds.h / Math.max(1, rowHeight)));'), true);
+  assert.equal(dropdownBlock.includes('.slice(0, visibleRows)'), true);
   assert.equal(dropdownBlock.includes('getActiveState(item, dropdownRootId)'), true);
   assert.equal(dropdownBlock.includes('this.controllerMenu.isFocusedItem(dropdownRootId, item.id, index)'), true);
 });
