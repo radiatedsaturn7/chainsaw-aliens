@@ -909,6 +909,21 @@ test('Actor gamepad mode replaces the left landscape rail with submenu slide-out
   assert.equal(actorEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
 });
 
+test('Actor landscape touch uses shared left root rail and right submenu rail layout', () => {
+  const renderIndex = actorEditorSource.indexOf('  render()');
+  const renderBody = actorEditorSource.slice(renderIndex, actorEditorSource.indexOf('  getActiveActorDesktopRoot()', renderIndex));
+
+  assert.equal(actorEditorSource.includes('getSharedMobileLandscapeEditorLayout'), true);
+  assert.equal(renderBody.includes('const landscapeLayout = isMobileLandscape && !shouldDrawGamepadSlideOut'), true);
+  assert.equal(renderBody.includes('leftRailWidth: getSharedMobileRailWidth(viewportW, viewportH)'), true);
+  assert.equal(renderBody.includes('rightRailWidth: getSharedMobileRailWidth(viewportW, viewportH)'), true);
+  assert.equal(renderBody.includes('body.append(left, center, rightRail);'), true);
+  assert.equal(renderBody.includes('left.appendChild(this.renderSidebarMenu());'), true);
+  assert.equal(renderBody.includes('if (landscapeLayout) left.style.height = `${landscapeLayout.leftRail.h}px`;'), true);
+  assert.equal(renderBody.includes('const rightRailWidth = landscapeLayout ? landscapeLayout.rightRail.w : railWidth;'), true);
+  assert.equal(renderBody.includes('if (landscapeLayout) rightRail.style.height = `${landscapeLayout.rightRail.h}px`;'), true);
+});
+
 test('Cutscene gamepad mode replaces the left landscape rail with submenu slide-out', () => {
   assert.equal(cutsceneEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
   assert.equal(cutsceneEditorSource.includes('ControllerMenuStack'), true);
