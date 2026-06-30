@@ -2,7 +2,7 @@ import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { ensureProjectFileIndex, listProjectFiles, loadProjectFile, saveProjectFile, saveProjectFileAndConfirm } from './projectFiles.js';
 import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, DEFAULT_TAXONOMIES, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
 import { getBuiltInActorIdFromName, isBuiltInActorName, mergeBuiltInActorOverride } from '../content/builtinActorOverrides.js';
-import { getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
+import { buildSharedEditorFileMenu, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
 import { invalidateActorDefinitionCache } from '../entities/ScriptedActor.js';
 import { invalidateBuiltInActorVisualCache } from '../entities/BuiltInActorVisuals.js';
 import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
@@ -1584,6 +1584,43 @@ export default class ActorEditor {
     return labels[this.getActiveActorDesktopRoot()] || 'Settings';
   }
 
+  closeFileMenu() {
+    this.fileMenuOpen = false;
+    if (this.actorPortraitMenuOpen) this.actorPortraitMenuOpen = false;
+    if (this.actorDesktopRoot === 'file') this.actorDesktopRoot = 'settings';
+    this.render();
+  }
+
+  getActorFileMenuItems() {
+    return buildSharedEditorFileMenu({
+      supported: {
+        export: false,
+        import: false,
+        undo: false,
+        redo: false
+      },
+      actions: {
+        new: () => this.newActor(),
+        open: () => this.openActor(),
+        save: () => this.saveActor(false),
+        'save-as': () => this.saveActor(true)
+      },
+      footer: {
+        onClose: () => this.closeFileMenu(),
+        onExit: () => this.exitToMenu()
+      }
+    })
+      .filter((item) => !item.disabled)
+      .map((item) => ({
+        id: item.id,
+        label: item.label,
+        tooltip: item.tooltip,
+        divider: Boolean(item.divider),
+        separator: Boolean(item.separator),
+        onClick: item.onClick || item.action || null
+      }));
+  }
+
   renderDesktopOptionsPanel() {
     const rootId = this.getActiveActorDesktopRoot();
     const rail = el('div', 'actor-editor-menu-rail actor-editor-desktop-options');
@@ -1606,6 +1643,14 @@ export default class ActorEditor {
     this.getActorDesktopActions(rootId).forEach((action) => {
       if (action.kind === 'state-list') {
         rail.appendChild(this.renderDesktopStateList());
+        return;
+      }
+      if (action.divider || action.separator) {
+        const divider = el('div', 'actor-editor-menu-divider');
+        divider.style.minHeight = '1px';
+        divider.style.background = UI_SUITE.colors.border;
+        divider.style.margin = '3px 0';
+        rail.appendChild(divider);
         return;
       }
       const btn = el('button', `actor-editor-btn${action.active ? ' active' : ''}`, action.label);
@@ -1631,13 +1676,7 @@ export default class ActorEditor {
       this.render();
     };
     const actions = {
-      file: [
-        { label: 'New', onClick: () => this.newActor() },
-        { label: 'Open', onClick: () => this.openActor() },
-        { label: 'Save', onClick: () => this.saveActor(false) },
-        { label: 'Save As', onClick: () => this.saveActor(true) },
-        { label: 'Exit to Main Menu', onClick: () => this.exitToMenu() }
-      ],
+      file: this.getActorFileMenuItems(),
       settings: [
         { label: 'Actor Settings', active: this.activeMenuSection === 'actor', onClick: openActorSettings },
         { label: 'Taxonomies', onClick: openActorSettings },
@@ -1683,6 +1722,7 @@ export default class ActorEditor {
 
   getActorDesktopDropdownActions(rootId) {
     return this.getActorDesktopActions(rootId).flatMap((action) => {
+      if (action.divider || action.separator) return [];
       if (action.kind !== 'state-list') return [action];
       return this.actor.states.map((entry) => ({
         label: entry.name || entry.id,
@@ -2028,13 +2068,11 @@ export default class ActorEditor {
       file: {
         id: 'file',
         title: 'File',
-        items: [
-          action('new', 'New', () => this.newActor()),
-          action('open', 'Open', () => this.openActor()),
-          action('save', 'Save', () => this.saveActor(false)),
-          action('save-as', 'Save As', () => this.saveActor(true)),
-          action('exit-main', 'Exit to Main Menu', () => this.exitToMenu())
-        ]
+        items: this.getActorFileMenuItems().map((item) => (
+          item.divider || item.separator
+            ? { ...item }
+            : action(item.id, item.label, item.onClick)
+        ))
       },
       system: buildControllerSystemMenu({
         fileMenuId: 'file',
@@ -2200,21 +2238,19 @@ export default class ActorEditor {
     list.style.display = 'flex';
     list.style.flexDirection = 'column';
     list.style.gap = `${SHARED_EDITOR_LEFT_MENU.buttonGap}px`;
-    [
-      ['new', 'New', () => this.newActor()],
-      ['open', 'Open', () => this.openActor()],
-      ['save', 'Save', () => this.saveActor(false)],
-      ['save-as', 'Save As', () => this.saveActor(true)]
-    ].forEach(([id, label, handler]) => {
-      const btn = el('button', 'actor-editor-btn', label);
-      this.styleRailButton(btn, false, this.controllerMenu.isFocusedItem('file', id));
-      btn.onclick = handler;
+    const fileItems = this.getActorFileMenuItems();
+    fileItems.forEach((item) => {
+      if (item.divider || item.separator || item.id === 'exit-main') return;
+      const btn = el('button', 'actor-editor-btn', item.label);
+      this.styleRailButton(btn, false, this.controllerMenu.isFocusedItem('file', item.id));
+      btn.onclick = item.onClick;
       list.appendChild(btn);
     });
     subRail.appendChild(list);
-    const exitBtn = el('button', 'actor-editor-btn actor-editor-file-exit-btn', 'Exit to Main Menu');
+    const exitItem = fileItems.find((item) => item.id === 'exit-main');
+    const exitBtn = el('button', 'actor-editor-btn actor-editor-file-exit-btn', exitItem?.label || 'Exit to Main Menu');
     this.styleRailButton(exitBtn, false, this.controllerMenu.isFocusedItem('file', 'exit-main'));
-    exitBtn.onclick = () => this.exitToMenu();
+    exitBtn.onclick = exitItem?.onClick || (() => this.exitToMenu());
     subRail.appendChild(exitBtn);
     return subRail;
   }
