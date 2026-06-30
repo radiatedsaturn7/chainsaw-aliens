@@ -981,6 +981,20 @@ test('Actor gamepad mode replaces the left landscape rail with submenu slide-out
   assert.equal(actorEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
 });
 
+test('Actor gamepad root menus match the desktop/spec section set', () => {
+  const controllerIndex = actorEditorSource.indexOf('  buildControllerMenus()');
+  const controllerBody = actorEditorSource.slice(controllerIndex, actorEditorSource.indexOf('  renderSidebarMenu()', controllerIndex));
+
+  assert.equal(actorEditorSource.includes("siblingOrder: ['file', 'settings', 'states', 'linked-parts', 'visuals', 'collision', 'behavior', 'preview']"), true);
+  assert.equal(controllerBody.includes("rootItem('settings', 'Settings', 'settings', 'actor')"), true);
+  assert.equal(controllerBody.includes("rootItem('visuals', 'Visuals', 'visuals', 'states')"), true);
+  assert.equal(controllerBody.includes("rootItem('collision', 'Collision', 'collision', 'states')"), true);
+  assert.equal(controllerBody.includes("rootItem('behavior', 'Behavior', 'behavior', 'states')"), true);
+  assert.equal(controllerBody.includes("rootItem('preview', 'Preview', 'preview', 'tools')"), true);
+  assert.equal(controllerBody.includes("preview: desktopMenu('preview', 'Preview')"), true);
+  assert.equal(controllerBody.includes("toolsMenuId: 'preview'"), true);
+});
+
 test('Actor landscape touch uses shared left root rail and right submenu rail layout', () => {
   const renderIndex = actorEditorSource.indexOf('  render()');
   const renderBody = actorEditorSource.slice(renderIndex, actorEditorSource.indexOf('  getActiveActorDesktopRoot()', renderIndex));

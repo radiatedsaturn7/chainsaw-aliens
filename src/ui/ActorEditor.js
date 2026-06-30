@@ -149,7 +149,7 @@ export default class ActorEditor {
     this.redoStack = [];
     this.inputActionNormalizer = new EditorInputActionNormalizer();
     this.controllerMenu = new ControllerMenuStack({
-      siblingOrder: ['file', 'states', 'linked-parts', 'tools', 'settings']
+      siblingOrder: ['file', 'settings', 'states', 'linked-parts', 'visuals', 'collision', 'behavior', 'preview']
     });
     this.gamepadFocusIndex = 0;
     this.gamepadFocusRepeat = 0;
@@ -1910,7 +1910,7 @@ export default class ActorEditor {
     });
     if (!normalized.connected || !this.overlay) return;
     this.controllerMenu.setMenus(this.buildControllerMenus(), {
-      siblingOrder: ['file', 'states', 'linked-parts', 'tools', 'settings']
+      siblingOrder: ['file', 'settings', 'states', 'linked-parts', 'visuals', 'collision', 'behavior', 'preview']
     });
     this.controllerMenu.ensureInitialFocus();
     if (!this.overlay.querySelector('.actor-editor-gamepad-hint')) {
@@ -2014,6 +2014,11 @@ export default class ActorEditor {
 
   buildControllerMenus() {
     const action = (id, label, onSelect, options = {}) => ({ id, label, onSelect, ...options });
+    const actionId = (rootId, item, index) => item.id || String(item.label || `${rootId}-${index}`)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      || `${rootId}-${index}`;
     const rootItem = (id, label, submenu = id, section = id) => ({
       id,
       label,
@@ -2025,60 +2030,40 @@ export default class ActorEditor {
         this.render();
       }
     });
+    const desktopMenu = (rootId, title) => ({
+      id: rootId,
+      title,
+      items: this.getActorDesktopDropdownActions(rootId).map((item, index) => action(
+        actionId(rootId, item, index),
+        item.label,
+        item.onClick,
+        { disabled: Boolean(item.disabled) }
+      ))
+    });
     return {
       root: {
         id: 'root',
         title: 'Actor Editor',
         items: [
           rootItem('file', 'File'),
+          rootItem('settings', 'Settings', 'settings', 'actor'),
           rootItem('states', 'States'),
           rootItem('linked-parts', 'Linked Parts'),
-          rootItem('tools', 'Tools'),
-          rootItem('settings', 'Settings', 'settings', 'actor'),
+          rootItem('visuals', 'Visuals', 'visuals', 'states'),
+          rootItem('collision', 'Collision', 'collision', 'states'),
+          rootItem('behavior', 'Behavior', 'behavior', 'states'),
+          rootItem('preview', 'Preview', 'preview', 'tools'),
           action('undo', 'Undo', () => this.undo()),
           action('redo', 'Redo', () => this.redo())
         ]
       },
-      states: {
-        id: 'states',
-        title: 'States',
-        items: [
-          action('add-state', 'Add State', () => this.addState()),
-          action('duplicate-state', 'Duplicate State', () => this.duplicateState(this.selectedState)),
-          action('delete-state', 'Delete State', () => this.deleteState(this.selectedState)),
-          ...this.actor.states.map((state) => action(state.id, state.name || state.id, () => this.selectActorState(state.id, { closePortraitMenu: true })))
-        ]
-      },
-      'linked-parts': {
-        id: 'linked-parts',
-        title: 'Linked Parts',
-        items: [
-          action('open-linked-parts', 'Open Linked Parts', () => { this.activeMenuSection = 'linked-parts'; this.render(); })
-        ]
-      },
-      tools: {
-        id: 'tools',
-        title: 'Tools',
-        items: [
-          action('state-graph', 'State Graph', () => {
-            this.stateGraphOpen = true;
-            this.fileMenuOpen = false;
-            this.actorPortraitMenuOpen = false;
-            this.render();
-          }),
-          action('playtest', 'Play Scene', () => this.playActorScene()),
-          action('collision', 'Collision / Hitbox Zones', () => this.openCollisionZoneEditor(this.actor)),
-          action('undo', 'Undo', () => this.undo()),
-          action('redo', 'Redo', () => this.redo())
-        ]
-      },
-      settings: {
-        id: 'settings',
-        title: 'Settings',
-        items: [
-          action('open-settings', 'Open Settings', () => { this.activeMenuSection = 'actor'; this.fileMenuOpen = false; this.render(); })
-        ]
-      },
+      settings: desktopMenu('settings', 'Settings'),
+      states: desktopMenu('states', 'States'),
+      'linked-parts': desktopMenu('linked-parts', 'Linked Parts'),
+      visuals: desktopMenu('visuals', 'Visuals'),
+      collision: desktopMenu('collision', 'Collision'),
+      behavior: desktopMenu('behavior', 'Behavior'),
+      preview: desktopMenu('preview', 'Preview'),
       file: {
         id: 'file',
         title: 'File',
@@ -2090,7 +2075,7 @@ export default class ActorEditor {
       },
       system: buildControllerSystemMenu({
         fileMenuId: 'file',
-        toolsMenuId: 'tools',
+        toolsMenuId: 'preview',
         onExit: () => this.exitToMenu()
       }),
       'exit-confirm': buildControllerExitConfirmMenu({
