@@ -813,6 +813,16 @@ test('MIDI landscape touch reserves right drawer for utility submenus', () => {
   assert.equal(midiEditorSource.includes("return ['file', 'settings', 'virtual-instruments'].includes(tabId);"), true);
 });
 
+test('MIDI desktop keeps transport in the left column instead of a bottom rail', () => {
+  const desktopIndex = midiEditorSource.indexOf('  drawDesktopLayout(ctx, width, height, track, pattern)');
+  const desktopBlock = midiEditorSource.slice(desktopIndex, midiEditorSource.indexOf('  getDesktopControllerMenuId', desktopIndex));
+
+  assert.equal(desktopBlock.includes('bottomBarHeight'), false);
+  assert.equal(desktopBlock.includes('this.drawTransportBar(ctx, shellLayout.bottomBar'), false);
+  assert.equal(desktopBlock.includes("this.drawDesktopLeftOptions(ctx, shellLayout.leftOptions, { includeDesktopTransport: this.activeTab !== 'instruments' });"), true);
+  assert.equal(midiEditorSource.includes('drawDesktopTransportPanel(ctx, bounds)'), true);
+});
+
 test('Pixel gamepad mode replaces the left landscape rail with submenu slide-out', () => {
   assert.equal(pixelStudioSource.includes('buildGamepadSlideOutMenuPlan'), true);
   assert.equal(pixelStudioSource.includes('isGamepadLandscapeMenuMode(width'), true);

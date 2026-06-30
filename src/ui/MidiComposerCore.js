@@ -12343,12 +12343,10 @@ export default class MidiComposer {
   }
 
   drawDesktopLayout(ctx, width, height, track, pattern) {
-    const transportH = this.activeTab === 'instruments' ? 0 : 132;
     const shellLayout = buildDesktopEditorShellPlan('midi', {
       viewportWidth: width,
       viewportHeight: height,
       activeRootId: this.activeTab,
-      bottomBarHeight: transportH,
       leftPanelWidth: Math.min(360, Math.max(292, width * 0.24)),
       leftRibbonHeight: 58,
       labelOverrides: {
@@ -12359,10 +12357,7 @@ export default class MidiComposer {
 
     this.drawDesktopTopMenu(ctx, shellLayout.topMenu);
     this.drawDesktopRibbon(ctx, shellLayout.leftRibbon, track);
-    this.drawDesktopLeftOptions(ctx, shellLayout.leftOptions);
-    if (shellLayout.bottomBar?.h > 0) {
-      this.drawTransportBar(ctx, shellLayout.bottomBar.x, shellLayout.bottomBar.y, shellLayout.bottomBar.w, shellLayout.bottomBar.h);
-    }
+    this.drawDesktopLeftOptions(ctx, shellLayout.leftOptions, { includeDesktopTransport: this.activeTab !== 'instruments' });
 
     const { x: contentX, y: contentY, w: contentW, h: contentH } = shellLayout.workSurface;
     if (this.activeTab === 'grid') {
@@ -12437,15 +12432,92 @@ export default class MidiComposer {
     this.drawButton(ctx, this.bounds.redoButton, 'Redo', false, false, this.controllerMenu.isFocusedItem('root', 'redo'));
   }
 
-  drawDesktopLeftOptions(ctx, bounds) {
-    drawSharedPanel(ctx, bounds);
+  drawDesktopLeftOptions(ctx, bounds, options = {}) {
+    const includeDesktopTransport = options.includeDesktopTransport === true;
+    const transportH = includeDesktopTransport ? Math.min(172, Math.max(144, Math.floor(bounds.h * 0.28))) : 0;
+    const gap = includeDesktopTransport ? SHARED_EDITOR_LEFT_MENU.desktopContentGap : 0;
+    const panelBounds = includeDesktopTransport
+      ? { x: bounds.x, y: bounds.y, w: bounds.w, h: Math.max(120, bounds.h - transportH - gap) }
+      : bounds;
+    drawSharedPanel(ctx, panelBounds);
     if (this.activeTab === 'file') {
-      this.drawFilePanel(ctx, bounds.x, bounds.y, bounds.w, bounds.h);
+      this.drawFilePanel(ctx, panelBounds.x, panelBounds.y, panelBounds.w, panelBounds.h);
+      if (includeDesktopTransport) {
+        this.drawDesktopTransportPanel(ctx, { x: bounds.x, y: panelBounds.y + panelBounds.h + gap, w: bounds.w, h: transportH });
+      }
       return;
     }
     const menuId = this.getDesktopControllerMenuId();
     if (this.controllerMenu.menus?.[menuId]) {
-      this.drawControllerSubmenuPanel(ctx, bounds.x, bounds.y, bounds.w, bounds.h, menuId);
+      this.drawControllerSubmenuPanel(ctx, panelBounds.x, panelBounds.y, panelBounds.w, panelBounds.h, menuId);
+    }
+    if (includeDesktopTransport) {
+      this.drawDesktopTransportPanel(ctx, { x: bounds.x, y: panelBounds.y + panelBounds.h + gap, w: bounds.w, h: transportH });
+    }
+  }
+
+  drawDesktopTransportPanel(ctx, bounds) {
+    drawSharedPanel(ctx, bounds, { fill: this.editorShellTheme.surfaceAlt, border: UI_SUITE.colors.border });
+    const pad = 10;
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = '12px Courier New';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Transport', bounds.x + pad, bounds.y + 17, bounds.w - pad * 2);
+    ctx.restore();
+    const buttonSpecs = [
+      { id: 'returnStart', label: '⏮' },
+      { id: 'prevBar', label: '⏪' },
+      { id: 'record', label: '●', active: this.recordModeActive, emphasis: true, role: 'record' },
+      { id: 'play', label: this.isPlaying ? '❚❚' : '▶', active: this.isPlaying, emphasis: true },
+      { id: 'nextBar', label: '⏩' },
+      { id: 'goEnd', label: '⏭' }
+    ];
+    const buttonGap = 6;
+    const buttonH = 34;
+    const columns = 3;
+    const buttonW = Math.max(34, Math.floor((bounds.w - pad * 2 - buttonGap * (columns - 1)) / columns));
+    buttonSpecs.forEach((button, index) => {
+      const col = index % columns;
+      const row = Math.floor(index / columns);
+      const buttonBounds = {
+        x: bounds.x + pad + col * (buttonW + buttonGap),
+        y: bounds.y + 34 + row * (buttonH + buttonGap),
+        w: buttonW,
+        h: buttonH
+      };
+      this.bounds[button.id] = buttonBounds;
+      drawSharedTransportIconButton(ctx, buttonBounds, {
+        icon: button.label,
+        active: Boolean(button.active),
+        emphasis: Boolean(button.emphasis),
+        role: button.role || 'default'
+      });
+    });
+    const controlsY = bounds.y + 34 + 2 * (buttonH + buttonGap) + 6;
+    const controlW = Math.max(72, Math.floor((bounds.w - pad * 2 - buttonGap) / 2));
+    this.bounds.transportLoopToggle = { x: bounds.x + pad, y: controlsY, w: controlW, h: 26 };
+    this.bounds.loopToggle = this.bounds.transportLoopToggle;
+    this.drawToggle(ctx, this.bounds.transportLoopToggle, `Loop ${this.song.loopEnabled ? 'On' : 'Off'}`, this.song.loopEnabled);
+    this.bounds.metronome = { x: bounds.x + pad + controlW + buttonGap, y: controlsY, w: controlW, h: 26 };
+    this.drawToggle(ctx, this.bounds.metronome, `Metro ${this.metronomeEnabled ? 'On' : 'Off'}`, this.metronomeEnabled);
+    const zoomRailLimits = this.getGridZoomLimitsX();
+    this.gridZoomX = clamp(this.gridZoomX, zoomRailLimits.minZoom, zoomRailLimits.maxZoom);
+    const zoomRatio = clamp((this.gridZoomX - zoomRailLimits.minZoom) / Math.max(0.0001, zoomRailLimits.maxZoom - zoomRailLimits.minZoom), 0, 1);
+    this.bounds.railZoom = { x: bounds.x + pad, y: controlsY + 38, w: bounds.w - pad * 2, h: 12 };
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
+    ctx.fillStyle = '#ffe16a';
+    ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w * zoomRatio, this.bounds.railZoom.h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
+    ctx.fillStyle = '#fff';
+    ctx.font = '11px Courier New';
+    ctx.fillText(`Grid Zoom ${this.gridZoomX.toFixed(2)}x`, this.bounds.railZoom.x, this.bounds.railZoom.y - 4);
+    if (this.singleNoteRecordMode.active) {
+      ctx.fillStyle = '#ff9c42';
+      ctx.font = '11px Courier New';
+      ctx.fillText('Single Note Mode', bounds.x + pad, bounds.y + bounds.h - 8, bounds.w - pad * 2);
     }
   }
 
