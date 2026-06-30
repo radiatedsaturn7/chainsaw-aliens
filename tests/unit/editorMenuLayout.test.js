@@ -6,6 +6,7 @@ import {
   buildDesktopTopMenuPlan,
   buildEditorMenuLayoutPlan,
   buildGamepadSlideOutMenuPlan,
+  getEditorPointerInteractionPolicy,
   getEditorMenuPlacement,
   getMenuScrollPolicy,
   resolveEditorLayoutMode
@@ -123,4 +124,42 @@ test('gamepad slide-out plan keeps root open until a submenu is selected', () =>
   assert.equal(submenu.focusedItemId, 'play');
   assert.deepEqual(submenu.submenu.items.map((item) => item.id), ['play', 'stop', 'scrub', 'start', 'end']);
   assert.equal(submenu.scroll.submenu.thresholdPx, 8);
+});
+
+test('pointer interaction policy separates desktop mouse from touch gestures', () => {
+  const desktopPixel = getEditorPointerInteractionPolicy('pixel', {
+    mode: EDITOR_LAYOUT_MODES.DESKTOP,
+    pointerType: 'mouse'
+  });
+
+  assert.equal(desktopPixel.workSurface, 'canvas');
+  assert.equal(desktopPixel.workSurfaceGestures.wheelZoom, true);
+  assert.equal(desktopPixel.workSurfaceGestures.rightDragPan, true);
+  assert.equal(desktopPixel.rightClick.opensContextMenu, true);
+  assert.equal(desktopPixel.rightClick.suppressBrowserMenu, true);
+  assert.equal(desktopPixel.thumbstick.allowed, false);
+
+  const landscapeSfx = getEditorPointerInteractionPolicy('sfx', {
+    mode: EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH,
+    pointerType: 'touch'
+  });
+  assert.equal(landscapeSfx.workSurface, 'timeline');
+  assert.equal(landscapeSfx.workSurfaceGestures.pinchZoom, true);
+  assert.equal(landscapeSfx.menuScroll.suppressClickAfterDrag, true);
+  assert.equal(landscapeSfx.thumbstick.showForMenus, false);
+  assert.equal(landscapeSfx.thumbstick.avoidMenuOverlap, true);
+});
+
+test('gamepad pointer policy enables work surface pan without changing menu controls', () => {
+  const gamepadLevel = getEditorPointerInteractionPolicy('level', {
+    mode: EDITOR_LAYOUT_MODES.GAMEPAD,
+    pointerType: 'gamepad',
+    gamepadConnected: true
+  });
+
+  assert.equal(gamepadLevel.workSurfaceGestures.dragPan, true);
+  assert.equal(gamepadLevel.thumbstick.allowed, true);
+  assert.equal(gamepadLevel.thumbstick.showForWorkSurface, true);
+  assert.equal(gamepadLevel.thumbstick.showForMenus, false);
+  assert.equal(gamepadLevel.rightClick.opensContextMenu, false);
 });
