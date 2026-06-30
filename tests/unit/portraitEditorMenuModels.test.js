@@ -932,11 +932,18 @@ test('Actor landscape touch uses shared left root rail and right submenu rail la
 });
 
 test('Cutscene gamepad mode replaces the left landscape rail with submenu slide-out', () => {
+  const drawIndex = cutsceneEditorSource.indexOf('  draw(ctx, width, height)');
+  const drawBody = cutsceneEditorSource.slice(drawIndex, cutsceneEditorSource.indexOf('  computeLayout(width, height)', drawIndex));
+  const landscapeIndex = cutsceneEditorSource.indexOf('const landscape = getSharedMobileLandscapeEditorLayout(width, height');
+  const landscapeBody = cutsceneEditorSource.slice(landscapeIndex, cutsceneEditorSource.indexOf('    const work = landscape.workSurface;', landscapeIndex));
+
   assert.equal(cutsceneEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
   assert.equal(cutsceneEditorSource.includes('ControllerMenuStack'), true);
   assert.equal(cutsceneEditorSource.includes('isGamepadLandscapeMenuMode(width'), true);
   assert.equal(cutsceneEditorSource.includes('shouldDrawGamepadSubmenuOnLeft(safeW, safeH)'), true);
-  assert.equal(cutsceneEditorSource.includes('this.drawGamepadSlideOutPanel(ctx, layout.menuBounds);'), true);
+  assert.equal(drawBody.includes('if (layout.isLandscapeTouch && !drawGamepadLeft) this.drawLandscapeRootRail(ctx, layout.leftMenuBounds);'), true);
+  assert.equal(drawBody.includes('this.drawGamepadSlideOutPanel(ctx, layout.leftMenuBounds);'), true);
+  assert.equal(landscapeBody.includes('reserveRightRail: !this.shouldDrawGamepadSubmenuOnLeft(width, height)'), true);
   assert.equal(cutsceneEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
 });
 
