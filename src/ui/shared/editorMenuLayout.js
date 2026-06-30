@@ -176,6 +176,7 @@ export function buildDesktopTopMenuPlan(editorId, {
   const dropdown = activeRootId
     ? buildDesktopDropdownPlan(editorId, activeRootId, {
       anchor: buttons.find((button) => button.id === activeRootId || button.specId === activeRootId)?.bounds,
+      containerBounds: menuBounds,
       labelOverrides
     })
     : null;
@@ -272,6 +273,7 @@ export function buildDesktopEditorShellPlan(editorId, {
 
 export function buildDesktopDropdownPlan(editorId, rootId, {
   anchor = null,
+  containerBounds = null,
   labelOverrides = {},
   rowHeight = 34,
   minWidth = 220,
@@ -287,10 +289,15 @@ export function buildDesktopDropdownPlan(editorId, rootId, {
     label: spec?.actions?.[actionId]?.label || labelOverrides[actionId] || actionId
   }));
   const visibleRows = Math.min(maxVisibleRows, Math.max(1, items.length || 1));
+  const width = Math.max(minWidth, anchor?.w || 0);
+  const minX = containerBounds?.x ?? 0;
+  const maxX = containerBounds
+    ? Math.max(minX, containerBounds.x + containerBounds.w - width - (containerBounds.padding || 0))
+    : Infinity;
   const bounds = {
-    x: anchor?.x || 0,
+    x: Math.max(minX, Math.min(anchor?.x || 0, maxX)),
     y: (anchor?.y || 0) + (anchor?.h || 0),
-    w: Math.max(minWidth, anchor?.w || 0),
+    w: width,
     h: visibleRows * rowHeight
   };
   return {
