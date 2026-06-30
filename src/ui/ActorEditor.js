@@ -5,7 +5,7 @@ import { getBuiltInActorIdFromName, isBuiltInActorName, mergeBuiltInActorOverrid
 import { getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
 import { invalidateActorDefinitionCache } from '../entities/ScriptedActor.js';
 import { invalidateBuiltInActorVisualCache } from '../entities/BuiltInActorVisuals.js';
-import { buildDesktopEditorShellPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, renderDomControllerMenu } from './shared/input/controllerMenuStack.js';
 
@@ -1241,6 +1241,9 @@ export default class ActorEditor {
     const isMobilePortrait = isMobileViewport && viewportH > viewportW;
     const isGamepadConnected = Boolean(this.game?.input?.isGamepadConnected?.());
     const isDesktopLayout = !isMobileViewport && !isGamepadConnected;
+    const gamepadSlideOutMenuId = this.getActiveGamepadMenuId();
+    const isGamepadLandscapeMenuMode = this.isGamepadLandscapeMenuMode(viewportW, viewportH);
+    const shouldDrawGamepadSlideOut = Boolean(isGamepadLandscapeMenuMode && this.controllerMenu.active && gamepadSlideOutMenuId);
     this.hideMobileSectionHeaders = isMobileLandscape;
     const desktopShell = isDesktopLayout
       ? buildDesktopEditorShellPlan('actor', {
@@ -1300,6 +1303,8 @@ export default class ActorEditor {
     } else if (isDesktopLayout) {
       shell.insertBefore(this.renderDesktopTopMenu(desktopShell), body);
       body.append(left, center);
+    } else if (shouldDrawGamepadSlideOut) {
+      body.append(left, center);
     } else {
       body.append(left, center, rightRail);
     }
@@ -1347,6 +1352,8 @@ export default class ActorEditor {
 
     if (isDesktopLayout) {
       left.appendChild(this.renderDesktopLeftPanel(activeRailContent));
+    } else if (shouldDrawGamepadSlideOut) {
+      left.appendChild(this.renderGamepadSlideOutRail(gamepadSlideOutMenuId));
     } else {
       left.appendChild(this.renderSidebarMenu());
     }
@@ -1354,8 +1361,10 @@ export default class ActorEditor {
     if (isGamepadConnected) {
       shell.appendChild(this.renderGamepadHintBar());
     }
-    const controllerMenu = renderDomControllerMenu(this.controllerMenu, { contextLabel: 'Actor Editor' });
-    if (controllerMenu) shell.appendChild(controllerMenu);
+    if (this.shouldRenderControllerOverlay(viewportW, viewportH)) {
+      const controllerMenu = renderDomControllerMenu(this.controllerMenu, { contextLabel: 'Actor Editor' });
+      if (controllerMenu) shell.appendChild(controllerMenu);
+    }
     if (this.stateGraphOpen) {
       this.overlay.appendChild(this.renderStateGraphModal());
     }
@@ -1379,6 +1388,74 @@ export default class ActorEditor {
     this.actorPortraitMenuOpen = false;
     this.controllerMenu.closeToSurface();
     this.render();
+  }
+
+  getActiveGamepadMenuId() {
+    const activeId = this.controllerMenu.getActiveMenuId();
+    if (!activeId || ['root', 'system', 'help', 'exit-confirm'].includes(activeId)) return null;
+    return activeId;
+  }
+
+  isGamepadLandscapeMenuMode(width = Number(window.innerWidth || 0), height = Number(window.innerHeight || 0)) {
+    const isMobileViewport = Math.min(width, height) <= 900;
+    return Boolean(this.game?.input?.isGamepadConnected?.() && isMobileViewport && width > height);
+  }
+
+  shouldRenderControllerOverlay(width, height) {
+    if (!this.isGamepadLandscapeMenuMode(width, height)) return true;
+    const activeId = this.controllerMenu.getActiveMenuId();
+    return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));
+  }
+
+  renderGamepadSlideOutRail(menuId) {
+    const plan = buildGamepadSlideOutMenuPlan('actor', {
+      rootOpen: !menuId,
+      activeRootId: menuId || this.getActiveActorDesktopRoot(),
+      focusedItemId: this.controllerMenu.getFocusedItem(menuId)?.id
+    });
+    const menu = this.controllerMenu.menus?.[menuId];
+    const rail = el('div', 'actor-editor-menu-rail actor-editor-gamepad-slideout');
+    Object.assign(rail.style, {
+      background: UI_SUITE.colors.panel,
+      border: `1px solid ${UI_SUITE.colors.border}`,
+      padding: `${SHARED_EDITOR_LEFT_MENU.panelPadding}px`,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: `${SHARED_EDITOR_LEFT_MENU.buttonGap}px`,
+      minHeight: '0',
+      height: '100%',
+      overflow: 'hidden'
+    });
+    const header = el('div', 'actor-editor-gamepad-slideout-header');
+    Object.assign(header.style, {
+      flex: '0 0 auto',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '3px',
+      padding: '2px 2px 6px'
+    });
+    const title = el('div', 'actor-editor-gamepad-slideout-title', menu?.title || plan.submenu?.title || 'Menu');
+    Object.assign(title.style, {
+      color: UI_SUITE.colors.accent,
+      fontWeight: '700',
+      fontSize: '12px'
+    });
+    const hint = el('div', 'actor-editor-gamepad-slideout-hint', 'A Select  B Back');
+    Object.assign(hint.style, {
+      color: UI_SUITE.colors.muted,
+      fontSize: '10px'
+    });
+    header.append(
+      title,
+      hint
+    );
+    rail.appendChild(header);
+    const submenu = this.renderControllerSubmenuRail(menuId);
+    submenu.style.border = '0';
+    submenu.style.padding = '0';
+    submenu.style.flex = '1 1 auto';
+    rail.appendChild(submenu);
+    return rail;
   }
 
   renderDesktopTopMenu(shellLayout) {
