@@ -547,15 +547,11 @@ export default class SfxEditor {
       file: {
         id: 'file',
         title: 'File',
-        items: [
-          action('new', 'New', () => this.newDocument()),
-          action('save', 'Save', () => this.save()),
-          action('save-as', 'Save As', () => this.save({ forceSaveAs: true })),
-          action('open', 'Open', () => this.openFileModal()),
-          action('import', 'Import', () => this.fileInput.click()),
-          action('export', 'Export', () => this.exportSelectedWav()),
-          action('exit-main', 'Exit to Main Menu', () => this.exit())
-        ]
+        items: this.getSfxFileMenuItems().map((item) => (
+          item.divider || item.separator
+            ? { ...item }
+            : action(item.id, item.label, item.onClick || item.action)
+        ))
       },
       system: buildControllerSystemMenu({
         fileMenuId: 'file',
@@ -2491,15 +2487,17 @@ export default class SfxEditor {
     return false;
   }
 
-  drawFilePanel(ctx, bounds, y) {
-    const rows = buildSharedEditorFileMenu({
+  getSfxFileMenuItems() {
+    return buildSharedEditorFileMenu({
       actions: {
         new: () => this.newDocument(),
         save: () => this.save(),
         'save-as': () => this.save({ forceSaveAs: true }),
         open: () => this.openFileModal(),
         import: () => this.fileInput.click(),
-        export: () => this.exportSelectedWav()
+        export: () => this.exportSelectedWav(),
+        undo: () => this.undo(),
+        redo: () => this.redo()
       },
       footer: {
         onClose: () => {
@@ -2508,6 +2506,10 @@ export default class SfxEditor {
         onExit: () => this.exit()
       }
     });
+  }
+
+  drawFilePanel(ctx, bounds, y) {
+    const rows = this.getSfxFileMenuItems();
     const { listItems, exitItem } = (this.isMobileLandscape || this.isMobilePortrait)
       ? splitFileDrawerStickyExitItems(rows)
       : { listItems: rows, exitItem: null };

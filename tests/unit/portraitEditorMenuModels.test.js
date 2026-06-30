@@ -816,14 +816,22 @@ test('SFX desktop keeps transport in the left column instead of a bottom rail', 
 });
 
 test('SFX file menu uses the shared editor file menu model', () => {
+  const fileItemsIndex = sfxEditorSource.indexOf('  getSfxFileMenuItems()');
+  const fileItemsBody = sfxEditorSource.slice(fileItemsIndex, sfxEditorSource.indexOf('  drawFilePanel(ctx, bounds, y)', fileItemsIndex));
   const filePanelIndex = sfxEditorSource.indexOf('  drawFilePanel(ctx, bounds, y)');
   const filePanelBody = sfxEditorSource.slice(filePanelIndex, sfxEditorSource.indexOf('  drawTimelineMenuPanel', filePanelIndex));
+  const controllerIndex = sfxEditorSource.indexOf("      file: {\n        id: 'file',");
+  const controllerBody = sfxEditorSource.slice(controllerIndex, sfxEditorSource.indexOf('      system:', controllerIndex));
 
   assert.equal(sfxEditorSource.includes('buildSharedEditorFileMenu'), true);
-  assert.equal(filePanelBody.includes('const rows = buildSharedEditorFileMenu({'), true);
-  assert.equal(filePanelBody.includes('onClose: () => {'), true);
-  assert.equal(filePanelBody.includes("this.leftTab = 'timeline';"), true);
-  assert.equal(filePanelBody.includes('onExit: () => this.exit()'), true);
+  assert.equal(fileItemsBody.includes('return buildSharedEditorFileMenu({'), true);
+  assert.equal(fileItemsBody.includes('undo: () => this.undo()'), true);
+  assert.equal(fileItemsBody.includes('redo: () => this.redo()'), true);
+  assert.equal(fileItemsBody.includes('onClose: () => {'), true);
+  assert.equal(fileItemsBody.includes("this.leftTab = 'timeline';"), true);
+  assert.equal(fileItemsBody.includes('onExit: () => this.exit()'), true);
+  assert.equal(controllerBody.includes('items: this.getSfxFileMenuItems().map((item) => ('), true);
+  assert.equal(filePanelBody.includes('const rows = this.getSfxFileMenuItems();'), true);
   assert.equal(filePanelBody.includes('if (divider)'), true);
   assert.equal(filePanelBody.includes('action || onClick'), true);
 });
