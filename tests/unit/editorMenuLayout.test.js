@@ -89,6 +89,7 @@ test('desktop top menu plan creates bounded root buttons and active dropdown', (
   assert.equal(plan.dropdown.specId, 'tile-art');
   assert.equal(plan.dropdown.title, 'Tile Art');
   assert.ok(plan.dropdown.bounds.y >= 42);
+  assert.ok(plan.dropdown.bounds.x + plan.dropdown.bounds.w <= plan.bounds.x + plan.bounds.w - plan.bounds.padding);
 });
 
 test('desktop dropdown plan resolves section actions through runtime aliases', () => {
@@ -101,6 +102,18 @@ test('desktop dropdown plan resolves section actions through runtime aliases', (
   assert.equal(dropdown.title, 'Tracks / Mixer');
   assert.deepEqual(dropdown.items.map((item) => item.id), ['track-list', 'instrument', 'volume', 'pan', 'mute', 'solo']);
   assert.deepEqual(dropdown.bounds, { x: 120, y: 40, w: 220, h: 204 });
+});
+
+test('desktop dropdown plan clamps to container bounds when supplied', () => {
+  const dropdown = buildDesktopDropdownPlan('level', 'playtest', {
+    anchor: { x: 700, y: 4, w: 52, h: 38 },
+    containerBounds: { x: 10, y: 4, w: 760, h: 38, padding: 8 }
+  });
+
+  assert.equal(dropdown.rootId, 'playtest');
+  assert.equal(dropdown.bounds.w, 220);
+  assert.equal(dropdown.bounds.x + dropdown.bounds.w <= 10 + 760 - 8, true);
+  assert.equal(dropdown.bounds.y, 42);
 });
 
 test('shared file menu specs include the actions used by editor surfaces', () => {
