@@ -924,6 +924,14 @@ test('Pixel desktop keeps layer and frame actions in the side rail, not the stat
   assert.equal(statusBody.includes("['layers', 'animation'].includes(this.leftPanelTab)"), false);
 });
 
+test('Pixel desktop dropdown caps rendered rows to drawer bounds', () => {
+  const dropdownIndex = pixelStudioSource.indexOf('  drawDesktopShellDropdown(ctx, shell)');
+  const dropdownBody = pixelStudioSource.slice(dropdownIndex, pixelStudioSource.indexOf('  getActiveGamepadMenuId()', dropdownIndex));
+
+  assert.equal(dropdownBody.includes('const visibleRows = Math.max(1, Math.floor(shell.dropdown.bounds.h / Math.max(1, rowHeight)));'), true);
+  assert.equal(dropdownBody.includes('const items = this.controllerMenu.getItems(menu).slice(0, visibleRows);'), true);
+});
+
 test('Actor portrait menu matches compact shared rail contract', () => {
   const model = buildActorPortraitMenuModel();
 
@@ -1025,6 +1033,14 @@ test('Cutscene desktop dropdown uses the selected top root menu', () => {
 
   assert.equal(dropdownBody.includes('this.getMenuItems(shell.dropdown.rootId)'), true);
   assert.equal(dropdownBody.includes('this.getMenuItems().filter'), false);
+});
+
+test('Cutscene desktop dropdown caps rendered rows to drawer bounds', () => {
+  const dropdownIndex = cutsceneEditorSource.indexOf('  drawDesktopDropdown(ctx, shell)');
+  const dropdownBody = cutsceneEditorSource.slice(dropdownIndex, cutsceneEditorSource.indexOf('  getTransportActions()', dropdownIndex));
+
+  assert.equal(dropdownBody.includes('const visibleRows = Math.max(1, Math.floor(shell.dropdown.bounds.h / Math.max(1, rowH)));'), true);
+  assert.equal(dropdownBody.includes('.slice(0, visibleRows)'), true);
 });
 
 test('Cutscene file menu uses the shared editor file menu model', () => {

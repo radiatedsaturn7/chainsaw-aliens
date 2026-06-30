@@ -8807,9 +8807,10 @@ export default class PixelStudio {
     const panelId = this.getDesktopPanelIdForRoot(shell.dropdown.rootId);
     const menuId = this.getDesktopControllerMenuIdForPanel(panelId);
     const menu = this.controllerMenu.menus?.[menuId];
-    const items = this.controllerMenu.getItems(menu).slice(0, 10);
-    if (!items.length) return;
     const rowHeight = Math.max(28, Math.min(34, shell.dropdown.rowHeight));
+    const visibleRows = Math.max(1, Math.floor(shell.dropdown.bounds.h / Math.max(1, rowHeight)));
+    const items = this.controllerMenu.getItems(menu).slice(0, visibleRows);
+    if (!items.length) return;
     const bounds = {
       ...shell.dropdown.bounds,
       h: Math.max(rowHeight, items.length * rowHeight)
