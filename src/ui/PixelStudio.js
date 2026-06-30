@@ -13300,19 +13300,6 @@ export default class PixelStudio {
     ctx.font = '12px Courier New';
     ctx.fillText(statusText, x + 8, y + 14);
 
-    if (['layers', 'animation'].includes(this.leftPanelTab)) {
-      const actions = this.getBottomRailActions();
-      const buttonW = 62;
-      const gap = 6;
-      let bx = x + w - (actions.length * (buttonW + gap));
-      actions.forEach((entry) => {
-        const bounds = { x: bx, y: y + 1, w: buttonW, h: h - 2 };
-        this.drawButton(ctx, bounds, entry.label, false, { fontSize: 11 });
-        this.uiButtons.push({ bounds, onClick: entry.action, group: options.group || 'menu' });
-        this.registerFocusable('menu', bounds, entry.action);
-        bx += buttonW + gap;
-      });
-    }
   }
 
   drawSelectionContextMenu(ctx, width, height) {
@@ -16732,10 +16719,10 @@ export default class PixelStudio {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     if (this.leftPanelTab === 'animation') {
-      this.drawFramesPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false, controls: false });
+      this.drawFramesPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false });
       return;
     }
-    this.drawLayersPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false, controls: false });
+    this.drawLayersPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false });
   }
 
   drawFramesPanel(ctx, x, y, w, h, options = {}) {
