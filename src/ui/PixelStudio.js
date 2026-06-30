@@ -52,7 +52,7 @@ import {
 } from './pixel-editor/bones.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -61,6 +61,7 @@ import { listProjectFiles, loadProjectFile, saveProjectFile, sanitizeProjectFile
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { openChoiceOverlay, openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
+import { buildDesktopEditorShellPlan } from './shared/editorMenuLayout.js';
 import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
 import { ensurePixelArtStore, ensurePixelPreviewFrame, ensurePixelTileData } from '../editor/adapters/editorDataContracts.js';
 import { resolveActorArtFrameDurationMs } from '../entities/ScriptedActor.js';
@@ -8501,8 +8502,19 @@ export default class PixelStudio {
     const bottomHeight = menuFullScreen
       ? padding * 2
       : statusHeight + paletteHeight + timelineHeight + toolbarHeight + mobileZoomReserve + padding;
-    const leftFrame = !isMobile && this.sidebars.left && !menuFullScreen
-      ? buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height })
+    const desktopShell = !isMobile && this.sidebars.left && !menuFullScreen
+      ? buildDesktopEditorShellPlan('pixel', {
+        viewportWidth: width,
+        viewportHeight: height,
+        activeRootId: this.getDesktopRootIdForPanel(),
+        bottomBarHeight: bottomHeight,
+        leftPanelWidth: Math.min(360, Math.max(292, width * 0.24)),
+        leftRibbonHeight: 58,
+        labelOverrides: {
+          frames: 'Frames',
+          rigging: 'Rigging'
+        }
+      })
       : null;
     const mobileLayout = isMobile
       ? buildPixelMobileEditorLayout(width, height, {
@@ -8513,7 +8525,7 @@ export default class PixelStudio {
     const mobileLandscapeLayout = mobileLayout?.orientation === 'landscape' ? mobileLayout : null;
     const leftWidth = isMobile
       ? (mobileLandscapeLayout?.leftRail.w ?? getSharedMobileRailWidth(width, height))
-      : (leftFrame ? leftFrame.panelW : (this.sidebars.left ? SHARED_EDITOR_LEFT_MENU.width() : 0));
+      : (desktopShell ? desktopShell.leftColumn.w : (this.sidebars.left ? SHARED_EDITOR_LEFT_MENU.width() : 0));
     const rightWidth = (!isMobile && ['layers', 'animation'].includes(this.leftPanelTab)) ? 220 : 0;
     const mobileDrawerReserveW = isMobile && this.mobileDrawer && this.mobileDrawer !== 'timeline'
       ? getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 })
@@ -8559,16 +8571,18 @@ export default class PixelStudio {
       return;
     }
 
-    const canvasX = mobileLandscapeLayout?.workSurface.x ?? (leftFrame ? leftFrame.contentX : (padding + leftWidth));
-    const canvasY = mobileLandscapeLayout?.workSurface.y ?? (topBarHeight + padding);
-    const canvasW = mobileLandscapeLayout?.workSurface.w ?? (leftFrame ? (leftFrame.contentW - rightWidth - (rightWidth > 0 ? 8 : 0)) : (width - leftWidth - rightWidth - padding * 2));
-    const canvasH = mobileLandscapeLayout?.workSurface.h ?? (height - canvasY - bottomHeight);
+    const canvasX = mobileLandscapeLayout?.workSurface.x ?? (desktopShell ? desktopShell.workSurface.x : (padding + leftWidth));
+    const canvasY = mobileLandscapeLayout?.workSurface.y ?? (desktopShell ? desktopShell.workSurface.y : (topBarHeight + padding));
+    const canvasW = mobileLandscapeLayout?.workSurface.w ?? (desktopShell ? (desktopShell.workSurface.w - rightWidth - (rightWidth > 0 ? 8 : 0)) : (width - leftWidth - rightWidth - padding * 2));
+    const canvasH = mobileLandscapeLayout?.workSurface.h ?? (desktopShell ? desktopShell.workSurface.h : (height - canvasY - bottomHeight));
 
     if (isMobile) {
       const rail = mobileLandscapeLayout?.leftRail ?? { x: 0, y: 0, w: leftWidth, h: height };
       this.drawMobileRail(ctx, rail.x, rail.y, rail.w, rail.h);
+    } else if (desktopShell) {
+      this.drawDesktopShellChrome(ctx, desktopShell);
     } else if (this.sidebars.left) {
-      this.drawLeftPanel(ctx, leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH, { isMobile: false });
+      this.drawLeftPanel(ctx, padding, padding, leftWidth, height - padding * 2, { isMobile: false });
     }
 
     if (!menuFullScreen && !isMobile && rightWidth > 0) {
@@ -8587,10 +8601,10 @@ export default class PixelStudio {
         const activeLayer = this.canvasState.layers[this.canvasState.activeLayerIndex];
         ctx.fillStyle = '#4fc3ff';
         ctx.font = 'bold 14px Courier New';
-        ctx.fillText(`Frame ${this.animation.currentFrameIndex + 1}`, padding + 10, padding + 16);
+        ctx.fillText(`Frame ${this.animation.currentFrameIndex + 1}`, canvasX + 10, canvasY + 16);
         ctx.fillStyle = 'rgba(255,255,255,0.9)';
         ctx.font = '12px Courier New';
-        ctx.fillText(`Layer ${this.canvasState.activeLayerIndex + 1}: ${activeLayer?.name || 'Layer'}`, padding + 10, padding + 32);
+        ctx.fillText(`Layer ${this.canvasState.activeLayerIndex + 1}: ${activeLayer?.name || 'Layer'}`, canvasX + 10, canvasY + 32);
       }
     } else {
       this.canvasBounds = null;
@@ -8610,12 +8624,15 @@ export default class PixelStudio {
     }
     const statusY = paletteY + (paletteHeight > 0 ? paletteHeight + 6 : 0);
     if (!menuFullScreen && !isMobile) {
-      this.drawStatusBar(ctx, padding, statusY, width - padding * 2, statusHeight, { isMobile });
+      this.drawStatusBar(ctx, desktopShell ? desktopShell.workSurface.x : padding, statusY, desktopShell ? desktopShell.workSurface.w : width - padding * 2, statusHeight, { isMobile });
     }
 
     if (!menuFullScreen && !isMobile && this.modeTab === 'animate') {
       const timelineY = statusY + statusHeight + 6;
       this.drawTimeline(ctx, canvasX, timelineY, canvasW, timelineHeight);
+    }
+    if (!isMobile && desktopShell) {
+      this.drawDesktopShellDropdown(ctx, desktopShell);
     }
 
     if (isMobile) {
@@ -8683,6 +8700,111 @@ export default class PixelStudio {
     if (options.focused) {
       drawSharedFocusRing(ctx, controlBounds);
     }
+  }
+
+  getDesktopRootIdForPanel(tab = this.leftPanelTab) {
+    if (tab === 'animation') return 'frames';
+    if (tab === 'bones') return 'rigging';
+    return tab;
+  }
+
+  getDesktopPanelIdForRoot(rootId = this.getDesktopRootIdForPanel()) {
+    if (rootId === 'frames') return 'animation';
+    if (rootId === 'rigging') return 'bones';
+    return rootId;
+  }
+
+  getDesktopControllerMenuIdForPanel(tab = this.leftPanelTab) {
+    if (tab === 'animation') return 'frames';
+    if (tab === 'bones') return 'bones';
+    return tab;
+  }
+
+  drawDesktopShellChrome(ctx, shell) {
+    drawSharedPanel(ctx, shell.topMenu.bounds, { fill: UI_SUITE.colors.panel });
+    shell.topMenu.buttons.forEach((button) => {
+      const panelId = this.getDesktopPanelIdForRoot(button.id);
+      const bounds = { ...button.bounds };
+      this.drawButton(ctx, bounds, button.label, this.leftPanelTab === panelId, {
+        fontSize: 12,
+        focused: this.controllerMenu.isFocusedItem('root', panelId)
+      });
+      const onClick = () => this.setLeftPanelTab(panelId);
+      this.uiButtons.push({ bounds, onClick });
+      this.registerFocusable('menu', bounds, onClick);
+    });
+
+    drawSharedPanel(ctx, shell.leftRibbon, { fill: UI_SUITE.colors.panelAlt });
+    const labelMaxW = Math.max(80, shell.leftRibbon.w - 164);
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = '12px Courier New';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Pixel', shell.leftRibbon.x + 12, shell.leftRibbon.y + 18, labelMaxW);
+    ctx.fillStyle = 'rgba(255,255,255,0.72)';
+    ctx.font = '11px Courier New';
+    ctx.fillText(this.leftPanelTab.toUpperCase(), shell.leftRibbon.x + 12, shell.leftRibbon.y + 38, labelMaxW);
+    ctx.restore();
+    const undoBounds = {
+      x: shell.leftRibbon.x + shell.leftRibbon.w - 146,
+      y: shell.leftRibbon.y + 10,
+      w: 66,
+      h: shell.leftRibbon.h - 20
+    };
+    const redoBounds = {
+      x: shell.leftRibbon.x + shell.leftRibbon.w - 74,
+      y: shell.leftRibbon.y + 10,
+      w: 66,
+      h: shell.leftRibbon.h - 20
+    };
+    this.drawButton(ctx, undoBounds, 'Undo', false, {
+      fontSize: 11,
+      focused: this.controllerMenu.isFocusedItem('root', 'undo')
+    });
+    this.drawButton(ctx, redoBounds, 'Redo', false, {
+      fontSize: 11,
+      focused: this.controllerMenu.isFocusedItem('root', 'redo')
+    });
+    this.uiButtons.push({ bounds: undoBounds, onClick: () => this.runtime.undo() });
+    this.uiButtons.push({ bounds: redoBounds, onClick: () => this.runtime.redo() });
+    this.registerFocusable('menu', undoBounds, () => this.runtime.undo());
+    this.registerFocusable('menu', redoBounds, () => this.runtime.redo());
+
+    drawSharedPanel(ctx, shell.leftOptions);
+    this.drawLeftPanelContent(ctx, shell.leftOptions.x, shell.leftOptions.y, shell.leftOptions.w, shell.leftOptions.h, { isMobile: false });
+  }
+
+  drawDesktopShellDropdown(ctx, shell) {
+    if (!shell?.dropdown) return;
+    const panelId = this.getDesktopPanelIdForRoot(shell.dropdown.rootId);
+    const menuId = this.getDesktopControllerMenuIdForPanel(panelId);
+    const menu = this.controllerMenu.menus?.[menuId];
+    const items = this.controllerMenu.getItems(menu).slice(0, 10);
+    if (!items.length) return;
+    const rowHeight = Math.max(28, Math.min(34, shell.dropdown.rowHeight));
+    const bounds = {
+      ...shell.dropdown.bounds,
+      h: Math.max(rowHeight, items.length * rowHeight)
+    };
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel });
+    items.forEach((item, index) => {
+      const buttonBounds = {
+        x: bounds.x + 8,
+        y: bounds.y + index * rowHeight + 2,
+        w: bounds.w - 16,
+        h: rowHeight - 4
+      };
+      const active = this.isControllerSubmenuItemActive(menuId, item.id);
+      this.drawButton(ctx, buttonBounds, item.label, active, {
+        fontSize: 11,
+        focused: this.controllerMenu.isFocusedItem(menuId, item.id)
+      });
+      if (typeof item.onSelect === 'function') {
+        const onClick = () => item.onSelect(this);
+        this.uiButtons.push({ bounds: buttonBounds, onClick });
+        this.registerFocusable(menuId, buttonBounds, onClick);
+      }
+    });
   }
 
   drawTransformModal(ctx, width, height) {
