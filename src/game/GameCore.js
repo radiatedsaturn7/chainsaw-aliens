@@ -770,6 +770,11 @@ export default class Game {
       this.title.setScreen('main');
       return;
     }
+    if (action === 'robtersession') {
+      this.robterSession.enter();
+      this.transitionTo('robtersession');
+      return;
+    }
     const displayMode = getDisplayModeForAction(action);
     if (displayMode) {
       this.setDisplayMode(displayMode);
@@ -777,6 +782,50 @@ export default class Game {
     }
     this.setInputMode(action);
     this.title.setControlsSelectionByMode(this.inputMode);
+  }
+
+  handleTitleMenuAction(action) {
+    if (!action) return false;
+    if (this.title.screen === 'controls') {
+      this.handleTitleControlsAction(action);
+      return true;
+    }
+    if (this.title.folderOrders?.[this.title.screen]) {
+      if (action === 'back') {
+        this.title.setScreen('main');
+      } else if (action === 'level-editor') {
+        this.enterEditor();
+      } else if (action === 'pixel-editor') {
+        this.enterPixelStudio();
+      } else if (action === 'actor-editor') {
+        this.enterActorEditor();
+      } else if (action === 'midi-editor') {
+        this.enterMidiComposer();
+      } else if (action === 'sfx-editor') {
+        this.enterSfxEditor();
+      } else if (action === 'cutscene-editor') {
+        this.enterCutsceneEditor();
+      }
+      return true;
+    }
+    if (action === 'debug-restart' && this.title.screen === 'main') {
+      this.requestDebugRestartPull();
+      return true;
+    }
+    if (action === 'options') {
+      this.title.setControlsSelectionByMode(this.inputMode);
+      this.title.setScreen('controls');
+      return true;
+    }
+    if (['graphics', 'audio', 'game'].includes(action)) {
+      this.title.setScreen(action);
+      return true;
+    }
+    if (action === 'recent-level') {
+      this.playMostRecentLevel();
+      return true;
+    }
+    return false;
   }
 
   async init() {
@@ -2936,47 +2985,7 @@ export default class Game {
       }
       if (this.input.wasPressed('interact') || this.input.wasPressed('attack') || this.input.wasPressed('jump')) {
         const action = this.title.getSelectedAction();
-        if (this.title.screen === 'controls') {
-          this.handleTitleControlsAction(action);
-        } else if (this.title.screen === 'tools') {
-          if (action === 'back') {
-            this.title.setScreen('main');
-          } else if (action === 'project-browser') {
-            this.openProjectBrowserFromTitle();
-          } else if (action === 'level-editor') {
-            this.enterEditor();
-          } else if (action === 'pixel-editor') {
-            this.enterPixelStudio();
-          } else if (action === 'actor-editor') {
-            this.enterActorEditor();
-          } else if (action === 'midi-editor') {
-            this.enterMidiComposer();
-          } else if (action === 'sfx-editor') {
-            this.enterSfxEditor();
-          } else if (action === 'cutscene-editor') {
-            this.enterCutsceneEditor();
-          } else if (action === 'reset-all') {
-            this.resetAllContent();
-          }
-        } else if (this.title.screen === 'storage') {
-          if (action === 'back') {
-            this.title.setScreen('main');
-          } else {
-            this.handleServerStorageAction(action);
-          }
-        } else if (action === 'options') {
-          this.title.setControlsSelectionByMode(this.inputMode);
-          this.title.setScreen('controls');
-        } else if (action === 'tools') {
-          this.title.setScreen('tools');
-        } else if (action === 'storage') {
-          this.title.setScreen('storage');
-        } else if (action === 'robtersession') {
-          this.robterSession.enter();
-          this.transitionTo('robtersession');
-        } else if (action === 'recent-level') {
-          this.playMostRecentLevel();
-        }
+        this.handleTitleMenuAction(action);
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
@@ -7970,12 +7979,6 @@ export default class Game {
           serverStorageEnabled: isServerStorageEnabled(),
           displayMode: this.displayMode
         });
-        ctx.save();
-        ctx.fillStyle = '#fff';
-        ctx.font = '16px Courier New';
-        ctx.textAlign = 'center';
-        ctx.fillText('Loading...', width / 2, height - 180);
-        ctx.restore();
       });
       return;
     }
@@ -10132,72 +10135,7 @@ export default class Game {
       }
       const action = this.title.getActionAt(x, y);
       if (!action) return;
-      if (this.title.screen === 'controls') {
-        this.handleTitleControlsAction(action);
-        this.audio.ui();
-        return;
-      }
-      if (this.title.screen === 'tools') {
-        if (action === 'back') {
-          this.title.setScreen('main');
-        } else if (action === 'project-browser') {
-          this.openProjectBrowserFromTitle();
-        } else if (action === 'level-editor') {
-          this.enterEditor();
-        } else if (action === 'pixel-editor') {
-          this.enterPixelStudio();
-        } else if (action === 'actor-editor') {
-          this.enterActorEditor();
-        } else if (action === 'midi-editor') {
-          this.enterMidiComposer();
-        } else if (action === 'sfx-editor') {
-          this.enterSfxEditor();
-        } else if (action === 'cutscene-editor') {
-          this.enterCutsceneEditor();
-        } else if (action === 'reset-all') {
-          this.resetAllContent();
-        }
-        this.audio.ui();
-        return;
-      }
-      if (this.title.screen === 'storage') {
-        if (action === 'back') {
-          this.title.setScreen('main');
-        } else {
-          this.handleServerStorageAction(action);
-        }
-        this.audio.ui();
-        return;
-      }
-      if (action === 'debug-restart' && this.title.screen === 'main') {
-        this.requestDebugRestartPull();
-        this.audio.ui();
-        return;
-      }
-      if (action === 'options') {
-        this.title.setControlsSelectionByMode(this.inputMode);
-        this.title.setScreen('controls');
-        this.audio.ui();
-        return;
-      }
-      if (action === 'tools') {
-        this.title.setScreen('tools');
-        this.audio.ui();
-        return;
-      }
-      if (action === 'storage') {
-        this.title.setScreen('storage');
-        this.audio.ui();
-        return;
-      }
-      if (action === 'robtersession') {
-        this.robterSession.enter();
-        this.transitionTo('robtersession');
-        this.audio.ui();
-        return;
-      }
-      if (action === 'recent-level') {
-        this.playMostRecentLevel();
+      if (this.handleTitleMenuAction(action)) {
         this.audio.ui();
       }
     }
@@ -10401,88 +10339,7 @@ export default class Game {
         this.mobileControls.handlePointerDown(payload, this.state);
         return;
       }
-      if (this.title.screen === 'controls') {
-        this.handleTitleControlsAction(action);
-        this.audio.ui();
-        this.recordFeedback('menu navigate', 'audio');
-        this.recordFeedback('menu navigate', 'visual');
-        return;
-      }
-      if (this.title.screen === 'tools') {
-        if (action === 'back') {
-          this.title.setScreen('main');
-        } else if (action === 'project-browser') {
-          this.openProjectBrowserFromTitle();
-        } else if (action === 'level-editor') {
-          this.enterEditor();
-        } else if (action === 'pixel-editor') {
-          this.enterPixelStudio();
-        } else if (action === 'actor-editor') {
-          this.enterActorEditor();
-        } else if (action === 'midi-editor') {
-          this.enterMidiComposer();
-        } else if (action === 'sfx-editor') {
-          this.enterSfxEditor();
-        } else if (action === 'cutscene-editor') {
-          this.enterCutsceneEditor();
-        } else if (action === 'reset-all') {
-          this.resetAllContent();
-        }
-        this.audio.ui();
-        this.recordFeedback('menu navigate', 'audio');
-        this.recordFeedback('menu navigate', 'visual');
-        return;
-      }
-      if (this.title.screen === 'storage') {
-        if (action === 'back') {
-          this.title.setScreen('main');
-        } else {
-          this.handleServerStorageAction(action);
-        }
-        this.audio.ui();
-        this.recordFeedback('menu navigate', 'audio');
-        this.recordFeedback('menu navigate', 'visual');
-        return;
-      }
-      if (action === 'debug-restart' && this.title.screen === 'main') {
-        this.requestDebugRestartPull();
-        this.audio.ui();
-        this.recordFeedback('menu navigate', 'audio');
-        this.recordFeedback('menu navigate', 'visual');
-        return;
-      }
-      if (action === 'options') {
-        this.title.setControlsSelectionByMode(this.inputMode);
-        this.title.setScreen('controls');
-        this.audio.ui();
-        this.recordFeedback('menu navigate', 'audio');
-        this.recordFeedback('menu navigate', 'visual');
-        return;
-      }
-      if (action === 'tools') {
-        this.title.setScreen('tools');
-        this.audio.ui();
-        this.recordFeedback('menu navigate', 'audio');
-        this.recordFeedback('menu navigate', 'visual');
-        return;
-      }
-      if (action === 'storage') {
-        this.title.setScreen('storage');
-        this.audio.ui();
-        this.recordFeedback('menu navigate', 'audio');
-        this.recordFeedback('menu navigate', 'visual');
-        return;
-      }
-      if (action === 'robtersession') {
-        this.robterSession.enter();
-        this.transitionTo('robtersession');
-        this.audio.ui();
-        this.recordFeedback('menu navigate', 'audio');
-        this.recordFeedback('menu navigate', 'visual');
-        return;
-      }
-      if (action === 'recent-level') {
-        this.playMostRecentLevel();
+      if (this.handleTitleMenuAction(action)) {
         this.audio.ui();
         this.recordFeedback('menu navigate', 'audio');
         this.recordFeedback('menu navigate', 'visual');
