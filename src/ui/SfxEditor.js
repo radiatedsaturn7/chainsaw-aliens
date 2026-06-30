@@ -18,6 +18,7 @@ import {
   drawSharedTransportIconButton,
   drawSharedPortraitSheet,
   drawSharedPortraitTabStrip,
+  buildSharedEditorFileMenu,
   getSharedMobilePortraitEditorLayout,
   getSharedMobileLandscapeEditorLayout,
   getSharedMobileRailWidth,
@@ -2487,15 +2488,22 @@ export default class SfxEditor {
   }
 
   drawFilePanel(ctx, bounds, y) {
-    const rows = [
-      { id: 'new', label: 'New', action: () => this.newDocument() },
-      { id: 'save', label: 'Save', action: () => this.save() },
-      { id: 'save-as', label: 'Save As', action: () => this.save({ forceSaveAs: true }) },
-      { id: 'open', label: 'Open', action: () => this.openFileModal() },
-      { id: 'import', label: 'Import', action: () => this.fileInput.click() },
-      { id: 'export', label: 'Export', action: () => this.exportSelectedWav() },
-      { id: 'exit-main', label: 'Exit to Main Menu', action: () => this.exit() }
-    ];
+    const rows = buildSharedEditorFileMenu({
+      actions: {
+        new: () => this.newDocument(),
+        save: () => this.save(),
+        'save-as': () => this.save({ forceSaveAs: true }),
+        open: () => this.openFileModal(),
+        import: () => this.fileInput.click(),
+        export: () => this.exportSelectedWav()
+      },
+      footer: {
+        onClose: () => {
+          this.leftTab = 'timeline';
+        },
+        onExit: () => this.exit()
+      }
+    });
     const { listItems, exitItem } = (this.isMobileLandscape || this.isMobilePortrait)
       ? splitFileDrawerStickyExitItems(rows)
       : { listItems: rows, exitItem: null };
@@ -2506,8 +2514,12 @@ export default class SfxEditor {
     const start = this.controllerMenu.isMenuActive('file')
       ? this.controllerMenu.syncScrollToItem('file', this.controllerMenu.getFocusedItem('file')?.id, listItems, visibleRows, 0)
       : 0;
-    listItems.slice(start, start + visibleRows).forEach(({ id, label, action }) => {
-      this.drawButton(ctx, { x: bounds.x + 12, y, w: bounds.w - 24, h: rowH }, label, false, action, this.controllerMenu.isFocusedItem('file', id));
+    listItems.slice(start, start + visibleRows).forEach(({ id, label, action, onClick, divider }) => {
+      if (divider) {
+        y += Math.max(12, Math.floor(rowH * 0.45));
+        return;
+      }
+      this.drawButton(ctx, { x: bounds.x + 12, y, w: bounds.w - 24, h: rowH }, label, false, action || onClick, this.controllerMenu.isFocusedItem('file', id));
       y += rowH + gap;
     });
     if (exitItem) {
