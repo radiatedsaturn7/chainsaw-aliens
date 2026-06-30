@@ -4,6 +4,7 @@ import { discardCachedProjectFile, listProjectFiles, loadProjectFile, saveProjec
 import { hydrateServerStorage } from './serverStorage.js';
 import {
   UI_SUITE,
+  buildSharedEditorFileMenu,
   drawSharedContextRibbon,
   drawSharedMenuButtonChrome,
   drawSharedMenuButtonLabel,
@@ -1973,12 +1974,16 @@ export default class CutsceneEditor {
         this.menuScroll = 0;
       }
     });
-    const actionItem = (item) => ({
-      id: item.id,
-      label: item.label,
-      disabled: item.disabled,
-      onSelect: () => this.handleButton(item.id)
-    });
+    const actionItem = (item) => (
+      item.divider || item.separator
+        ? { ...item }
+        : {
+          id: item.id,
+          label: item.label,
+          disabled: item.disabled,
+          onSelect: () => this.handleButton(item.id)
+        }
+    );
     const menuForTab = (id) => ({
       id,
       title: CUTSCENE_DESKTOP_MENU_LABELS[id] || id,
@@ -2684,7 +2689,7 @@ export default class CutsceneEditor {
     ctx.fillText(title, panelBounds.x + pad, panelBounds.y + 20, panelBounds.w - pad * 2);
     const content = { x: panelBounds.x + pad, y: panelBounds.y + 36, w: panelBounds.w - pad * 2, h: panelBounds.h - 46 };
     this.bounds.desktopMenuButtons = [];
-    const items = this.getMenuItems();
+    const items = this.getMenuItems().filter((item) => !item.divider && !item.separator);
     const visibleRows = Math.max(1, Math.floor((content.h + gap) / (rowH + gap)));
     const maxScroll = Math.max(0, items.length - visibleRows);
     this.bounds.menuScrollMax = maxScroll;
@@ -3107,7 +3112,7 @@ export default class CutsceneEditor {
     ctx.textBaseline = 'middle';
     ctx.fillText(CUTSCENE_DESKTOP_MENU_LABELS[this.activeMenuTab] || 'Menu', bounds.x + pad, bounds.y + 20, bounds.w - pad * 2);
     ctx.restore();
-    const items = this.getMenuItems(this.activeMenuTab);
+    const items = this.getMenuItems(this.activeMenuTab).filter((item) => !item.divider && !item.separator);
     const content = { x: bounds.x + pad, y: bounds.y + 38, w: bounds.w - pad * 2, h: bounds.h - 48 };
     this.bounds.menuContent = content;
     const rowH = 42;
@@ -3971,7 +3976,7 @@ export default class CutsceneEditor {
       if (id === 'open') await this.openDocument();
       if (id === 'save') await this.saveDocument();
       if (id === 'save-as') await this.saveDocument({ forceSaveAs: true });
-      if (id === 'export-mp4') await this.exportMovieMp4();
+      if (id === 'export' || id === 'export-mp4') await this.exportMovieMp4();
       if (id === 'text') await this.addTextClip();
       if (id === 'color-board') await this.addColorBoardClip();
       if (id === 'art') await this.addArtClip();
@@ -4061,7 +4066,11 @@ export default class CutsceneEditor {
       if (id === 'cut') this.cutSelectedClip();
       if (id === 'paste') this.pasteClipboardClip();
       if (id === 'delete') this.deleteSelectedClip();
-      if (id === 'back') this.game.exitCutsceneEditor?.();
+      if (id === 'close-menu') {
+        this.menuOpen = false;
+        this.menuScroll = 0;
+      }
+      if (id === 'back' || id === 'exit-main') this.game.exitCutsceneEditor?.();
     };
     this.pendingAction = run()
       .catch((error) => {
@@ -4096,15 +4105,18 @@ export default class CutsceneEditor {
   getMenuItems(tabId = this.activeMenuTab) {
     const selected = this.getSelectedClip();
     if (tabId === 'file') {
-      return [
-        { id: 'new', label: 'New' },
-        { id: 'open', label: 'Open' },
-        { id: 'save', label: 'Save' },
-        { id: 'save-as', label: 'Save As' },
-        { id: 'export-mp4', label: 'Export MP4', disabled: this.movieExportInProgress },
-        { id: 'import', label: 'Import' },
-        { id: 'back', label: 'Main Menu' }
-      ];
+      return buildSharedEditorFileMenu({
+        labels: {
+          export: 'Export MP4'
+        },
+        footer: {
+          onClose: () => {
+            this.menuOpen = false;
+            this.menuScroll = 0;
+          },
+          onExit: () => this.game.exitCutsceneEditor?.()
+        }
+      }).map((item) => (item.id === 'export' ? { ...item, disabled: this.movieExportInProgress } : item));
     }
     if (tabId === 'add') {
       return [
