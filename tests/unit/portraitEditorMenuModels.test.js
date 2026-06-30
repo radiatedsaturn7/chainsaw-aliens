@@ -798,6 +798,19 @@ test('SFX desktop keeps transport in the left column instead of a bottom rail', 
   assert.equal(sfxEditorSource.includes('drawDesktopTransportPanel(ctx, bounds)'), true);
 });
 
+test('SFX file menu uses the shared editor file menu model', () => {
+  const filePanelIndex = sfxEditorSource.indexOf('  drawFilePanel(ctx, bounds, y)');
+  const filePanelBody = sfxEditorSource.slice(filePanelIndex, sfxEditorSource.indexOf('  drawTimelineMenuPanel', filePanelIndex));
+
+  assert.equal(sfxEditorSource.includes('buildSharedEditorFileMenu'), true);
+  assert.equal(filePanelBody.includes('const rows = buildSharedEditorFileMenu({'), true);
+  assert.equal(filePanelBody.includes('onClose: () => {'), true);
+  assert.equal(filePanelBody.includes("this.leftTab = 'timeline';"), true);
+  assert.equal(filePanelBody.includes('onExit: () => this.exit()'), true);
+  assert.equal(filePanelBody.includes('if (divider)'), true);
+  assert.equal(filePanelBody.includes('action || onClick'), true);
+});
+
 test('MIDI gamepad mode replaces the left landscape rail with submenu slide-out', () => {
   assert.equal(midiEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
   assert.equal(midiEditorSource.includes('isGamepadLandscapeMenuMode(width'), true);
