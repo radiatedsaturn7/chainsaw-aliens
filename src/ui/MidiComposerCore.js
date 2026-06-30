@@ -1194,7 +1194,7 @@ export default class MidiComposer {
     this.game = game;
     this.sharedMenu = new SharedEditorMenu();
     this.controllerMenu = new ControllerMenuStack({
-      siblingOrder: ['file', 'grid', 'song', 'tracks', 'record', 'settings']
+      siblingOrder: ['file', 'grid', 'song', 'tracks', 'record', 'pedals', 'settings']
     });
     this.storageKey = 'chainsaw-midi-composer';
     this.song = this.loadSong();
