@@ -22,6 +22,15 @@ const DEFAULT_TOP_MENU = {
   padding: 8
 };
 
+const WORK_SURFACE_TYPES = {
+  pixel: 'canvas',
+  level: 'canvas',
+  actor: 'stage',
+  midi: 'grid',
+  sfx: 'timeline',
+  cutscene: 'stage'
+};
+
 export function resolveEditorLayoutMode({
   viewportWidth = 0,
   viewportHeight = 0,
@@ -88,6 +97,44 @@ export function getMenuScrollPolicy({ pointerType = 'touch', mode = EDITOR_LAYOU
     mode,
     wheelRoutesToHoveredPanel: mode === EDITOR_LAYOUT_MODES.DESKTOP,
     pinchZoomReservedForWorkSurface: true
+  };
+}
+
+export function getEditorPointerInteractionPolicy(editorId, {
+  mode = EDITOR_LAYOUT_MODES.DESKTOP,
+  pointerType = mode === EDITOR_LAYOUT_MODES.DESKTOP ? 'mouse' : 'touch',
+  gamepadConnected = mode === EDITOR_LAYOUT_MODES.GAMEPAD
+} = {}) {
+  const workSurface = WORK_SURFACE_TYPES[editorId] || 'canvas';
+  const desktop = mode === EDITOR_LAYOUT_MODES.DESKTOP;
+  const gamepad = mode === EDITOR_LAYOUT_MODES.GAMEPAD || gamepadConnected;
+  const touch = pointerType === 'touch' || mode === EDITOR_LAYOUT_MODES.PORTRAIT || mode === EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH;
+  const continuousPanEditors = new Set(['pixel', 'level', 'midi', 'sfx', 'cutscene']);
+  const contextMenuEditors = new Set(['pixel', 'level', 'actor', 'cutscene']);
+  return {
+    editorId,
+    mode,
+    pointerType,
+    workSurface,
+    menuScroll: getMenuScrollPolicy({ pointerType, mode }),
+    workSurfaceGestures: {
+      pinchZoom: touch,
+      wheelZoom: desktop && ['canvas', 'stage', 'grid', 'timeline'].includes(workSurface),
+      dragPan: desktop || touch || gamepad,
+      rightDragPan: desktop && ['pixel', 'level', 'midi'].includes(editorId),
+      middleDragPan: desktop
+    },
+    thumbstick: {
+      allowed: gamepad || (touch && continuousPanEditors.has(editorId)),
+      showForMenus: false,
+      showForWorkSurface: gamepad || (touch && continuousPanEditors.has(editorId)),
+      avoidMenuOverlap: true
+    },
+    rightClick: {
+      suppressBrowserMenu: true,
+      opensContextMenu: desktop && contextMenuEditors.has(editorId),
+      fallbackPan: desktop && ['pixel', 'level', 'midi'].includes(editorId)
+    }
   };
 }
 

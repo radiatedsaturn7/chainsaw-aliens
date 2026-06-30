@@ -28,6 +28,7 @@ Shared implementation helpers:
 - `getEditorRootMenuEntries()` returns render-ready root menu ids while preserving spec ids through runtime aliases.
 - `buildDesktopTopMenuPlan()` and `buildDesktopDropdownPlan()` define the app-style desktop top menu and dropdown structure.
 - `buildGamepadSlideOutMenuPlan()` defines root-open versus submenu-open gamepad menu state.
+- `getEditorPointerInteractionPolicy()` defines menu scrolling, work-surface gestures, thumbstick visibility, and right-click behavior per mode.
 
 ## Mode Layouts
 
