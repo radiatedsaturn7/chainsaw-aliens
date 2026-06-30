@@ -26,7 +26,6 @@ const DEFAULT_DESKTOP_SHELL = {
   topMenuHeight: 40,
   leftPanelWidth: 300,
   leftRibbonHeight: 52,
-  bottomBarHeight: 0,
   gap: 8,
   minWorkSurfaceWidth: 320,
   minWorkSurfaceHeight: 220
@@ -198,7 +197,6 @@ export function buildDesktopEditorShellPlan(editorId, {
   topMenuHeight = DEFAULT_DESKTOP_SHELL.topMenuHeight,
   leftPanelWidth = DEFAULT_DESKTOP_SHELL.leftPanelWidth,
   leftRibbonHeight = DEFAULT_DESKTOP_SHELL.leftRibbonHeight,
-  bottomBarHeight = DEFAULT_DESKTOP_SHELL.bottomBarHeight,
   gap = DEFAULT_DESKTOP_SHELL.gap,
   minWorkSurfaceWidth = DEFAULT_DESKTOP_SHELL.minWorkSurfaceWidth,
   minWorkSurfaceHeight = DEFAULT_DESKTOP_SHELL.minWorkSurfaceHeight
@@ -207,11 +205,10 @@ export function buildDesktopEditorShellPlan(editorId, {
   const height = Math.max(1, Number(viewportHeight) || 0);
   const topH = Math.max(0, Number(topMenuHeight) || 0);
   const spacing = Math.max(0, Number(gap) || 0);
-  const bottomH = Math.max(0, Math.min(height - topH, Number(bottomBarHeight) || 0));
   const panelW = Math.max(0, Math.min(Number(leftPanelWidth) || 0, width - spacing - minWorkSurfaceWidth));
   const ribbonH = Math.max(0, Number(leftRibbonHeight) || 0);
   const contentY = topH + spacing;
-  const contentH = Math.max(1, height - contentY - spacing - bottomH);
+  const contentH = Math.max(1, height - contentY - spacing);
   const leftColumn = {
     x: spacing,
     y: contentY,
@@ -238,14 +235,6 @@ export function buildDesktopEditorShellPlan(editorId, {
     w: Math.max(minWorkSurfaceWidth, width - workX - spacing),
     h: Math.max(minWorkSurfaceHeight, contentH)
   };
-  const bottomBar = bottomH > 0
-    ? {
-      x: workSurface.x,
-      y: Math.max(topH, height - bottomH),
-      w: workSurface.w,
-      h: bottomH
-    }
-    : null;
   const topMenu = buildDesktopTopMenuPlan(editorId, {
     bounds: { x: 0, y: 0, w: width, h: topH },
     activeRootId,
@@ -261,7 +250,6 @@ export function buildDesktopEditorShellPlan(editorId, {
     leftRibbon,
     leftOptions,
     workSurface,
-    bottomBar,
     scroll: {
       topMenu: { ...DEFAULT_DRAG_SCROLL, pointerType: 'mouse' },
       dropdown: { ...DEFAULT_DRAG_SCROLL, pointerType: 'mouse' },

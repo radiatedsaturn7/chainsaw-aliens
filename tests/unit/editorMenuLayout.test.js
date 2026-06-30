@@ -135,7 +135,6 @@ test('desktop editor shell plan reserves top menus and left ribbon/options', () 
     viewportWidth: 1280,
     viewportHeight: 720,
     activeRootId: 'generate',
-    bottomBarHeight: 118,
     leftPanelWidth: 312,
     leftRibbonHeight: 56
   });
@@ -145,9 +144,9 @@ test('desktop editor shell plan reserves top menus and left ribbon/options', () 
   assert.equal(plan.topMenu.buttons.find((button) => button.id === 'generate')?.active, true);
   assert.equal(plan.dropdown.rootId, 'generate');
   assert.deepEqual(plan.leftRibbon, { x: 8, y: 48, w: 304, h: 56 });
-  assert.deepEqual(plan.leftOptions, { x: 8, y: 112, w: 304, h: 482 });
-  assert.deepEqual(plan.workSurface, { x: 320, y: 48, w: 952, h: 546 });
-  assert.deepEqual(plan.bottomBar, { x: 320, y: 602, w: 952, h: 118 });
+  assert.deepEqual(plan.leftOptions, { x: 8, y: 112, w: 304, h: 600 });
+  assert.deepEqual(plan.workSurface, { x: 320, y: 48, w: 952, h: 664 });
+  assert.equal(Object.hasOwn(plan, 'bottomBar'), false);
   assert.equal(plan.scroll.leftOptions.suppressClickAfterDrag, true);
 });
 
