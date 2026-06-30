@@ -50,7 +50,7 @@ export const EDITOR_MENU_SPECS = {
     title: 'Pixel Editor',
     root: ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames', 'rigging'],
     sections: {
-      file: section('file', 'File', ['new', 'open', 'save', 'save-as', 'import-image', 'export-image', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'import', 'export', 'copy-image', 'paste-image', 'exit-main']),
       draw: section('draw', 'Draw', ['pencil', 'brush', 'eraser', 'fill', 'line', 'shape', 'clone', 'brush-settings']),
       select: section('select', 'Select', ['select-rect', 'select-ellipse', 'select-lasso', 'select-magic', 'move', 'copy', 'cut', 'paste', 'clear']),
       tools: section('tools', 'Tools', ['undo', 'redo', 'copy', 'paste']),
@@ -65,7 +65,7 @@ export const EDITOR_MENU_SPECS = {
     title: 'Level Editor',
     root: ['file', 'tools', 'tiles', 'tile-art', 'actors', 'triggers', 'powerups', 'structures', 'graphics', 'music', 'settings', 'playtest'],
     sections: {
-      file: section('file', 'File', ['new', 'open', 'save', 'save-as', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'import', 'export', 'undo', 'redo', 'playtest', 'exit-main']),
       tools: section('tools', 'Tools', ['tile-mode', 'actor-mode', 'structure-mode', 'shape-mode', 'erase']),
       tiles: section('tiles', 'Tiles', ['tile-list', 'tile-paint']),
       'tile-art': section('tile-art', 'Tile Art', ['open-tile-art', 'tile-art-picker']),
@@ -99,7 +99,7 @@ export const EDITOR_MENU_SPECS = {
     title: 'MIDI Editor',
     root: ['file', 'grid', 'song', 'tracks', 'record', 'pedals', 'settings'],
     sections: {
-      file: section('file', 'File', ['new', 'open', 'save', 'save-as', 'import-midi', 'export-midi', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'import', 'export', 'nav-grid', 'nav-instruments', 'nav-virtual-instruments', 'nav-pedals', 'nav-settings', 'rescue-save', 'export-midi', 'export-midi-zip', 'export-wav', 'save-paint', 'play-robtersession', 'theme', 'sample', 'exit-main']),
       grid: section('grid', 'Grid', ['place-note', 'erase-note', 'select-all', 'copy', 'paste', 'quantize', 'note-length']),
       song: section('song', 'Song', ['play', 'stop', 'loop', 'tempo', 'arrangement']),
       tracks: section('tracks', 'Tracks / Mixer', ['track-list', 'instrument', 'volume', 'pan', 'mute', 'solo']),
@@ -113,7 +113,7 @@ export const EDITOR_MENU_SPECS = {
     title: 'SFX Editor',
     root: ['file', 'timeline', 'layers', 'envelopes', 'generate', 'tools', 'settings'],
     sections: {
-      file: section('file', 'File', ['new', 'open', 'save', 'save-as', 'import', 'export', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'import', 'export', 'undo', 'redo', 'exit-main']),
       timeline: section('timeline', 'Timeline', ['play', 'stop', 'scrub', 'start', 'end']),
       layers: section('layers', 'Layers', ['layer-list', 'add-layer', 'duplicate-layer', 'delete-layer', 'reorder-layer']),
       envelopes: section('envelopes', 'Envelopes', ['volume', 'pitch', 'pan', 'add-point', 'delete-point']),
@@ -127,7 +127,7 @@ export const EDITOR_MENU_SPECS = {
     title: 'Cutscene Editor',
     root: ['file', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio', 'export', 'settings'],
     sections: {
-      file: section('file', 'File', ['new', 'open', 'save', 'save-as', 'import', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'import', 'export', 'undo', 'redo', 'exit-main']),
       add: section('add', 'Add', ['art', 'actor', 'text', 'color-board', 'music', 'sfx', 'effect', 'pause']),
       timeline: section('timeline', 'Timeline', ['play', 'stop', 'scrub', 'zoom', 'snap']),
       clips: section('clips', 'Clips', ['clip-options', 'asset-binding', 'track-placement']),
