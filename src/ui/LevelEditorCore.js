@@ -9383,8 +9383,8 @@ export default class Editor {
         padding: contentPadding
       };
 
-      const getActiveState = (item) => {
-        if (activeTab === 'file') {
+      const getActiveState = (item, tabId = activeTab) => {
+        if (tabId === 'file') {
           if (item.id.startsWith('mode-')) {
             return this.mode === item.id.replace('mode-', '');
           }
@@ -9393,25 +9393,25 @@ export default class Editor {
           }
           return false;
         }
-        if (activeTab === 'tiles' || activeTab === 'powerups') return this.tileType.id === item.id;
-        if (activeTab === 'npcs') return this.enemyType.id === item.enemy?.id;
-        if (activeTab === 'prefabs') return this.prefabType.id === item.id;
-        if (activeTab === 'toolbox') {
+        if (tabId === 'tiles' || tabId === 'powerups') return this.tileType.id === item.id;
+        if (tabId === 'npcs') return this.enemyType.id === item.enemy?.id;
+        if (tabId === 'prefabs') return this.prefabType.id === item.id;
+        if (tabId === 'toolbox') {
           if (item.id?.startsWith('tile-')) {
             return this.mode === 'tile' && this.tileTool === item.id.replace('tile-', '');
           }
           return this.shapeTool.id === item.id;
         }
-        if (activeTab === 'triggers') return this.selectedTriggerId === item.id;
-        if (activeTab === 'pixels') return false;
-        if (activeTab === 'music') {
+        if (tabId === 'triggers') return this.selectedTriggerId === item.id;
+        if (tabId === 'pixels') return false;
+        if (tabId === 'music') {
           if (item.id === 'music-paint') return this.mode === 'music' && this.musicTool === 'paint';
           if (item.id === 'music-erase') return this.mode === 'music' && this.musicTool === 'erase';
           if (item.id === 'music-trigger') return this.mode === 'music' && this.musicTool === 'trigger';
           if (item.track) return this.musicTrack?.id === item.track.id;
           return false;
         }
-        if (activeTab === 'midi') {
+        if (tabId === 'midi') {
           if (typeof item.trackIndex === 'number') {
             return this.midiTrackIndex === item.trackIndex;
           }
@@ -9514,8 +9514,10 @@ export default class Editor {
         });
       }
 
-      if (shellLayout.dropdown && items.length) {
-        const dropdownRows = items.filter((item) => !item.separator && !item.divider).slice(0, 10);
+      if (shellLayout.dropdown) {
+        const dropdownRootId = shellLayout.dropdown.rootId;
+        const { items: dropdownItems } = this.getPanelConfig(dropdownRootId);
+        const dropdownRows = dropdownItems.filter((item) => !item.separator && !item.divider).slice(0, 10);
         const rowHeight = Math.max(28, Math.min(34, shellLayout.dropdown.rowHeight));
         const dropdownBounds = {
           ...shellLayout.dropdown.bounds,
@@ -9537,11 +9539,11 @@ export default class Editor {
             dropdownBounds.w - 16,
             rowHeight - 4,
             item.label,
-            getActiveState(item),
+            getActiveState(item, dropdownRootId),
             item.onClick,
             item.tooltip,
             preview,
-            this.controllerMenu.isFocusedItem(activeTab, item.id, index)
+            this.controllerMenu.isFocusedItem(dropdownRootId, item.id, index)
           );
         });
       }

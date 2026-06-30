@@ -665,6 +665,16 @@ test('Level editor keeps settings and tile art reachable from desktop rail', () 
   assert.equal(levelEditorSource.includes("{ id: 'pixels', title: 'Tile Art'"), true);
 });
 
+test('Level desktop dropdown uses the selected top root menu', () => {
+  const dropdownIndex = levelEditorSource.indexOf('if (shellLayout.dropdown) {');
+  const dropdownBlock = levelEditorSource.slice(dropdownIndex, levelEditorSource.indexOf('const infoLines = []', dropdownIndex));
+
+  assert.equal(dropdownBlock.includes('const dropdownRootId = shellLayout.dropdown.rootId;'), true);
+  assert.equal(dropdownBlock.includes('const { items: dropdownItems } = this.getPanelConfig(dropdownRootId);'), true);
+  assert.equal(dropdownBlock.includes('getActiveState(item, dropdownRootId)'), true);
+  assert.equal(dropdownBlock.includes('this.controllerMenu.isFocusedItem(dropdownRootId, item.id, index)'), true);
+});
+
 test('Level editor Tile Art opens the supported tile picker only', () => {
   const panelStart = levelEditorSource.indexOf("} else if (tabId === 'pixels') {");
   const panelEnd = levelEditorSource.indexOf("} else if (tabId === 'music') {", panelStart);
