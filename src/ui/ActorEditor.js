@@ -1472,7 +1472,9 @@ export default class ActorEditor {
       background: UI_SUITE.colors.panel,
       borderBottom: `1px solid ${UI_SUITE.colors.border}`,
       overflowX: 'auto',
-      overflowY: 'hidden'
+      overflowY: 'visible',
+      position: 'relative',
+      zIndex: '20'
     });
     const activeRoot = this.getActiveActorDesktopRoot();
     (shellLayout?.topMenu?.buttons || []).forEach((entry) => {
@@ -1487,7 +1489,43 @@ export default class ActorEditor {
       btn.onclick = () => this.setActorDesktopRoot(entry.id);
       top.appendChild(btn);
     });
+    const dropdown = this.renderDesktopDropdown(shellLayout);
+    if (dropdown) top.appendChild(dropdown);
     return top;
+  }
+
+  renderDesktopDropdown(shellLayout) {
+    const dropdownPlan = shellLayout?.dropdown;
+    if (!dropdownPlan) return null;
+    const rootId = dropdownPlan.rootId || this.getActiveActorDesktopRoot();
+    const drawer = el('div', 'actor-editor-desktop-dropdown');
+    Object.assign(drawer.style, {
+      position: 'absolute',
+      left: `${dropdownPlan.bounds.x}px`,
+      top: `${dropdownPlan.bounds.y}px`,
+      width: `${dropdownPlan.bounds.w}px`,
+      maxHeight: `${dropdownPlan.bounds.h}px`,
+      overflowY: 'auto',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '4px',
+      padding: '8px',
+      boxSizing: 'border-box',
+      background: UI_SUITE.colors.panel,
+      border: `1px solid ${UI_SUITE.colors.border}`,
+      boxShadow: '0 12px 28px rgba(0,0,0,0.35)'
+    });
+    const actions = this.getActorDesktopDropdownActions(rootId);
+    actions.forEach((action) => {
+      const btn = el('button', `actor-editor-btn${action.active ? ' active' : ''}`, action.label);
+      this.styleRailButton(btn, Boolean(action.active));
+      btn.disabled = Boolean(action.disabled);
+      if (btn.disabled) btn.style.opacity = '0.5';
+      btn.style.minHeight = `${Math.max(28, dropdownPlan.rowHeight - 6)}px`;
+      btn.onclick = action.onClick;
+      drawer.appendChild(btn);
+    });
+    return drawer;
   }
 
   renderDesktopLeftPanel(optionsPanel) {
@@ -1641,6 +1679,17 @@ export default class ActorEditor {
       ]
     };
     return actions[rootId] || actions.settings;
+  }
+
+  getActorDesktopDropdownActions(rootId) {
+    return this.getActorDesktopActions(rootId).flatMap((action) => {
+      if (action.kind !== 'state-list') return [action];
+      return this.actor.states.map((entry) => ({
+        label: entry.name || entry.id,
+        active: this.selectedStateId === entry.id,
+        onClick: () => this.selectActorState(entry.id, { closePortraitMenu: false })
+      }));
+    });
   }
 
   renderDesktopStateList() {
