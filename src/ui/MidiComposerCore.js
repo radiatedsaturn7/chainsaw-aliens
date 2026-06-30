@@ -18,7 +18,7 @@ import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { loadProjectFile, saveProjectFile, saveProjectFileAndConfirm } from './projectFiles.js';
 import { loadServerPreference, saveServerPreference } from './serverPreferences.js';
 import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportIconButton, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
-import { createEditorShellLayout, resolveEditorShellTheme } from '../../ui/EditorShell.js';
+import { resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
 import KeyboardInput from '../input/keyboard.js';
@@ -34,6 +34,7 @@ import { registerComposerInputHandlers } from './midi/input/composerInputHandler
 import { drawGhostNotes as drawComposerGhostNotes, drawRecordModeSidebar as drawComposerRecordModeSidebar } from './midi/render/composerRender.js';
 import { createViewportController } from './shared/viewportController.js';
 import { getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
+import { buildDesktopEditorShellPlan } from './shared/editorMenuLayout.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
@@ -5572,6 +5573,11 @@ export default class MidiComposer {
       if (action?.type) {
         return;
       }
+      const desktopDropdownHit = this.bounds.desktopDropdownItems?.find((item) => this.pointInBounds(x, y, item));
+      if (desktopDropdownHit) {
+        desktopDropdownHit.action?.();
+        return;
+      }
       const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
       if (tabHit) {
         this.exitRecordMode();
@@ -5921,6 +5927,16 @@ export default class MidiComposer {
     const quickMixHit = this.bounds.instrumentSettingsControls?.find((bounds) => this.pointInBounds(x, y, bounds));
     if (quickMixHit) {
       this.handleTrackControl(quickMixHit, x, y);
+      return;
+    }
+
+    const desktopDropdownHit = this.bounds.desktopDropdownItems?.find((item) => this.pointInBounds(x, y, item));
+    if (desktopDropdownHit) {
+      desktopDropdownHit.action?.();
+      this.closeSelectionMenu();
+      this.pastePreview = null;
+      this.noteLengthMenu.open = false;
+      this.tempoSliderOpen = false;
       return;
     }
 
@@ -12250,21 +12266,27 @@ export default class MidiComposer {
 
   drawDesktopLayout(ctx, width, height, track, pattern) {
     const transportH = this.activeTab === 'instruments' ? 0 : 132;
-    const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
-    const shellLayout = createEditorShellLayout({
+    const shellLayout = buildDesktopEditorShellPlan('midi', {
       viewportWidth: width,
       viewportHeight: height,
-      leftPanelFrame: leftFrame,
-      bottomBarHeight: transportH
+      activeRootId: this.activeTab,
+      bottomBarHeight: transportH,
+      leftPanelWidth: Math.min(360, Math.max(292, width * 0.24)),
+      leftRibbonHeight: 58,
+      labelOverrides: {
+        file: SHARED_EDITOR_LEFT_MENU.fileLabel,
+        instruments: 'Mixer'
+      }
     });
 
-    this.drawHeader(ctx, shellLayout.topBar.x, shellLayout.topBar.y, shellLayout.topBar.w, shellLayout.topBar.h, track);
-    this.drawDesktopLeftPanel(ctx, shellLayout.leftRail.x, shellLayout.leftRail.y, shellLayout.leftRail.w, shellLayout.leftRail.h);
-    if (shellLayout.bottomBar.h > 0) {
+    this.drawDesktopTopMenu(ctx, shellLayout.topMenu);
+    this.drawDesktopRibbon(ctx, shellLayout.leftRibbon, track);
+    this.drawDesktopLeftOptions(ctx, shellLayout.leftOptions);
+    if (shellLayout.bottomBar?.h > 0) {
       this.drawTransportBar(ctx, shellLayout.bottomBar.x, shellLayout.bottomBar.y, shellLayout.bottomBar.w, shellLayout.bottomBar.h);
     }
 
-    const { x: contentX, y: contentY, w: contentW, h: contentH } = shellLayout.mainContent;
+    const { x: contentX, y: contentY, w: contentW, h: contentH } = shellLayout.workSurface;
     if (this.activeTab === 'grid') {
       this.drawGridTab(ctx, contentX, contentY, contentW, contentH, track, pattern);
     } else if (this.activeTab === 'song') {
@@ -12285,8 +12307,95 @@ export default class MidiComposer {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
       this.drawGridTab(ctx, contentX, contentY, contentW, contentH, track, pattern);
-      this.drawFilePanel(ctx, contentX, contentY, contentW, contentH);
     }
+    if (shellLayout.dropdown) this.drawDesktopDropdown(ctx, shellLayout.dropdown);
+  }
+
+  getDesktopControllerMenuId(tabId = this.activeTab) {
+    if (tabId === 'instruments') return 'tracks';
+    if (tabId === 'virtual-instruments') return 'record';
+    return tabId;
+  }
+
+  drawDesktopTopMenu(ctx, plan) {
+    drawSharedPanel(ctx, plan.bounds, { fill: UI_SUITE.colors.panel });
+    this.bounds.tabs = [];
+    this.bounds.fileButton = null;
+    this.bounds.leftSettings = null;
+    this.bounds.settings = null;
+    plan.buttons.forEach((button) => {
+      const bounds = { ...button.bounds, id: button.id };
+      if (button.id === 'file') {
+        this.bounds.fileButton = bounds;
+      } else if (button.id === 'settings') {
+        this.bounds.leftSettings = bounds;
+        this.bounds.settings = { ...bounds };
+      } else {
+        this.bounds.tabs.push(bounds);
+      }
+      this.drawButton(ctx, bounds, button.label, button.active, false, this.controllerMenu.isFocusedItem('root', button.id));
+    });
+  }
+
+  drawDesktopRibbon(ctx, bounds, track) {
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panelAlt });
+    const undoW = 68;
+    const redoW = 68;
+    const gap = 8;
+    this.bounds.undoButton = { x: bounds.x + bounds.w - undoW * 2 - gap - 10, y: bounds.y + 10, w: undoW, h: bounds.h - 20 };
+    this.bounds.redoButton = { x: bounds.x + bounds.w - redoW - 10, y: bounds.y + 10, w: redoW, h: bounds.h - 20 };
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = '12px Courier New';
+    ctx.textBaseline = 'middle';
+    const labelMaxW = Math.max(80, this.bounds.undoButton.x - bounds.x - 24);
+    ctx.fillText(this.song?.name || 'MIDI', bounds.x + 12, bounds.y + 18, labelMaxW);
+    ctx.fillStyle = 'rgba(255,255,255,0.72)';
+    ctx.font = '11px Courier New';
+    const tabLabel = this.getDesktopControllerMenuId() === 'tracks' ? 'Mixer' : this.activeTab;
+    ctx.fillText(`${tabLabel} | ${track?.name || 'Track'}`, bounds.x + 12, bounds.y + 38, labelMaxW);
+    ctx.restore();
+    this.drawButton(ctx, this.bounds.undoButton, 'Undo', false, false, this.controllerMenu.isFocusedItem('root', 'undo'));
+    this.drawButton(ctx, this.bounds.redoButton, 'Redo', false, false, this.controllerMenu.isFocusedItem('root', 'redo'));
+  }
+
+  drawDesktopLeftOptions(ctx, bounds) {
+    drawSharedPanel(ctx, bounds);
+    if (this.activeTab === 'file') {
+      this.drawFilePanel(ctx, bounds.x, bounds.y, bounds.w, bounds.h);
+      return;
+    }
+    const menuId = this.getDesktopControllerMenuId();
+    if (this.controllerMenu.menus?.[menuId]) {
+      this.drawControllerSubmenuPanel(ctx, bounds.x, bounds.y, bounds.w, bounds.h, menuId);
+    }
+  }
+
+  drawDesktopDropdown(ctx, dropdown) {
+    const menuId = dropdown.specId || dropdown.rootId;
+    const menu = this.controllerMenu.menus?.[menuId] || this.controllerMenu.menus?.[dropdown.rootId];
+    const items = this.controllerMenu.getItems(menu);
+    const visibleItems = items.length ? items : dropdown.items;
+    const panelBounds = {
+      ...dropdown.bounds,
+      h: Math.min(dropdown.bounds.h, Math.max(dropdown.rowHeight, visibleItems.length * dropdown.rowHeight))
+    };
+    this.bounds.desktopDropdownItems = [];
+    drawSharedPanel(ctx, panelBounds, { fill: UI_SUITE.colors.panel });
+    const gap = 4;
+    const rowH = Math.max(28, dropdown.rowHeight - gap);
+    visibleItems.forEach((item, index) => {
+      const bounds = {
+        x: panelBounds.x + 8,
+        y: panelBounds.y + index * dropdown.rowHeight + Math.floor(gap / 2),
+        w: panelBounds.w - 16,
+        h: rowH
+      };
+      this.drawButton(ctx, bounds, item.label, this.isControllerSubmenuItemActive(menuId, item.id), false, this.controllerMenu.isFocusedItem(menuId, item.id));
+      if (typeof item.onSelect === 'function') {
+        this.bounds.desktopDropdownItems.push({ ...bounds, id: item.id, action: () => item.onSelect(this) });
+      }
+    });
   }
 
   drawDesktopLeftPanel(ctx, x, y, w, h) {
