@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { deleteProjectFile, listProjectFiles, loadProjectFile, saveProjectFile } from './projectFiles.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPlayStopButton, drawSharedPortraitActionRail, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedPortraitTabStrip, drawSharedThumbstick, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPlayStopButton, drawSharedPortraitActionRail, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedPortraitTabStrip, drawSharedThumbstick, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
 import { clamp, randInt, pickOne } from '../editor/input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from '../editor/playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -16,6 +16,7 @@ import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHel
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
 import { getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
+import { buildDesktopEditorShellPlan } from './shared/editorMenuLayout.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -9160,22 +9161,30 @@ export default class Editor {
       }
     } else {
       this.rootPanelScrollBounds = null;
-      const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
       const activeTab = this.getActivePanelTab();
-      this.editorBounds = { x: leftFrame.contentX, y: 0, w: leftFrame.contentW, h: height };
-      const { tabColumn, content } = buildSharedLeftMenuLayout({
-        x: leftFrame.panelX,
-        y: leftFrame.panelY,
-        width: leftFrame.panelW,
-        height: leftFrame.panelH,
-        isMobile: false
+      const shellLayout = buildDesktopEditorShellPlan('level', {
+        viewportWidth: width,
+        viewportHeight: height,
+        activeRootId: activeTab,
+        leftPanelWidth: Math.min(360, Math.max(292, width * 0.24)),
+        leftRibbonHeight: 58,
+        labelOverrides: {
+          file: SHARED_EDITOR_LEFT_MENU.fileLabel,
+          toolbox: 'Toolbox',
+          tiles: 'Tiles',
+          pixels: 'Tile Art',
+          npcs: 'NPCs',
+          prefabs: 'Structures',
+          'level-settings': 'Settings'
+        }
       });
+      this.editorBounds = { ...shellLayout.workSurface };
 
       ctx.globalAlpha = 1;
       ctx.fillStyle = UI_SUITE.colors.panel;
-      ctx.fillRect(leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH);
+      ctx.fillRect(shellLayout.topMenu.bounds.x, shellLayout.topMenu.bounds.y, shellLayout.topMenu.bounds.w, shellLayout.topMenu.bounds.h);
       ctx.strokeStyle = UI_SUITE.colors.border;
-      ctx.strokeRect(leftFrame.panelX, leftFrame.panelY, leftFrame.panelW, leftFrame.panelH);
+      ctx.strokeRect(shellLayout.topMenu.bounds.x, shellLayout.topMenu.bounds.y, shellLayout.topMenu.bounds.w, shellLayout.topMenu.bounds.h);
 
       const topButtonDefs = [
         { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
@@ -9207,18 +9216,8 @@ export default class Editor {
         },
         active: activeTab === entry.id
       }));
-      const topButtons = buildSharedLeftMenuButtons({
-        x: tabColumn.x,
-        y: tabColumn.y,
-        height: tabColumn.h,
-        additionalButtons: topButtonDefs
-          .filter((entry) => entry.id !== 'file')
-          .map((entry) => ({ id: entry.id, label: entry.label })),
-        isMobile: false,
-        width: tabColumn.w
-      });
       const topButtonDefById = new Map(topButtonDefs.map((entry) => [entry.id, entry]));
-      topButtons.forEach((entry) => {
+      shellLayout.topMenu.buttons.forEach((entry) => {
         const def = topButtonDefById.get(entry.id);
         if (!def) return;
         drawButton(
@@ -9235,10 +9234,34 @@ export default class Editor {
         );
       });
 
-      let contentY = content.y;
-      let contentHeight = Math.max(0, content.y + content.h - contentY);
-      const contentX = content.x;
-      const contentW = content.w;
+      drawSharedPanel(ctx, shellLayout.leftRibbon, { fill: UI_SUITE.colors.panelAlt });
+      const ribbonLabelMaxW = Math.max(80, shellLayout.leftRibbon.w - 164);
+      ctx.fillStyle = UI_SUITE.colors.accent;
+      ctx.font = '12px Courier New';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('Level', shellLayout.leftRibbon.x + 12, shellLayout.leftRibbon.y + 18, ribbonLabelMaxW);
+      ctx.fillStyle = 'rgba(255,255,255,0.72)';
+      ctx.font = '11px Courier New';
+      ctx.fillText(activeTab.toUpperCase(), shellLayout.leftRibbon.x + 12, shellLayout.leftRibbon.y + 38, ribbonLabelMaxW);
+      const undoBounds = {
+        x: shellLayout.leftRibbon.x + shellLayout.leftRibbon.w - 146,
+        y: shellLayout.leftRibbon.y + 10,
+        w: 66,
+        h: shellLayout.leftRibbon.h - 20
+      };
+      const redoBounds = {
+        x: shellLayout.leftRibbon.x + shellLayout.leftRibbon.w - 74,
+        y: shellLayout.leftRibbon.y + 10,
+        w: 66,
+        h: shellLayout.leftRibbon.h - 20
+      };
+      drawButton(undoBounds.x, undoBounds.y, undoBounds.w, undoBounds.h, 'Undo', false, () => this.undo(), 'Undo last change', null, this.controllerMenu.isFocusedItem('root', 'undo'));
+      drawButton(redoBounds.x, redoBounds.y, redoBounds.w, redoBounds.h, 'Redo', false, () => this.redo(), 'Redo last change', null, this.controllerMenu.isFocusedItem('root', 'redo'));
+
+      let contentY = shellLayout.leftOptions.y;
+      let contentHeight = Math.max(0, shellLayout.leftOptions.h);
+      const contentX = shellLayout.leftOptions.x;
+      const contentW = shellLayout.leftOptions.w;
       const contentPadding = 12;
       const buttonGap = 10;
       const isTallButtons = activeTab === 'tiles'
@@ -9405,6 +9428,38 @@ export default class Editor {
             y,
             columnWidth,
             buttonHeight,
+            item.label,
+            getActiveState(item),
+            item.onClick,
+            item.tooltip,
+            preview,
+            this.controllerMenu.isFocusedItem(activeTab, item.id, index)
+          );
+        });
+      }
+
+      if (shellLayout.dropdown && items.length) {
+        const dropdownRows = items.filter((item) => !item.separator && !item.divider).slice(0, 10);
+        const rowHeight = Math.max(28, Math.min(34, shellLayout.dropdown.rowHeight));
+        const dropdownBounds = {
+          ...shellLayout.dropdown.bounds,
+          h: Math.max(rowHeight, dropdownRows.length * rowHeight)
+        };
+        drawSharedPanel(ctx, dropdownBounds, { fill: UI_SUITE.colors.panel });
+        dropdownRows.forEach((item, index) => {
+          const rowY = dropdownBounds.y + index * rowHeight + 2;
+          const preview = item.tile
+            ? { type: 'tile', tile: item.tile }
+            : item.prefab
+              ? { type: 'prefab', prefab: item.prefab }
+              : item.enemy
+                ? { type: 'enemy', enemy: item.enemy }
+                : null;
+          drawButton(
+            dropdownBounds.x + 8,
+            rowY,
+            dropdownBounds.w - 16,
+            rowHeight - 4,
             item.label,
             getActiveState(item),
             item.onClick,
