@@ -140,10 +140,32 @@ export const EDITOR_MENU_SPECS = {
   }
 };
 
+export const EDITOR_MENU_ALIASES = {
+  pixel: {
+    frames: 'animation',
+    rigging: 'bones'
+  },
+  level: {
+    tools: 'toolbox',
+    'tile-art': 'pixels',
+    actors: 'npcs',
+    structures: 'prefabs',
+    settings: 'level-settings'
+  },
+  actor: {},
+  midi: {
+    tracks: 'instruments',
+    record: 'virtual-instruments'
+  },
+  sfx: {},
+  cutscene: {}
+};
+
 Object.values(EDITOR_MENU_SPECS).forEach((spec) => {
   const actionIds = Array.from(new Set(Object.values(spec.sections).flatMap((entry) => entry.actions)));
   spec.actions = actionEntries(actionIds, Object.fromEntries(Object.values(spec.sections).map((entry) => [entry.id, entry.label])));
   spec.placements = { ...EDITOR_MENU_PLACEMENTS };
+  spec.aliases = { ...(EDITOR_MENU_ALIASES[spec.editorId] || {}) };
 });
 
 export const getEditorMenuSpec = (editorId) => EDITOR_MENU_SPECS[editorId] || null;
@@ -155,6 +177,36 @@ export const getEditorMenuSection = (editorId, sectionId) => (
 export const getEditorRootMenuIds = (editorId) => (
   getEditorMenuSpec(editorId)?.root?.slice() || []
 );
+
+export const getEditorMenuRuntimeId = (editorId, specId) => (
+  getEditorMenuSpec(editorId)?.aliases?.[specId] || specId
+);
+
+export const getEditorMenuSpecIdForRuntime = (editorId, runtimeId) => {
+  const aliases = getEditorMenuSpec(editorId)?.aliases || {};
+  const match = Object.entries(aliases).find(([, value]) => value === runtimeId);
+  return match?.[0] || runtimeId;
+};
+
+export function getEditorRootMenuEntries(editorId, {
+  labelOverrides = {},
+  extraEntries = []
+} = {}) {
+  const spec = getEditorMenuSpec(editorId);
+  if (!spec) return [];
+  return [
+    ...spec.root.map((specId) => {
+      const sectionEntry = spec.sections[specId] || {};
+      const id = getEditorMenuRuntimeId(editorId, specId);
+      return {
+        id,
+        specId,
+        label: labelOverrides[id] || labelOverrides[specId] || sectionEntry.label || toTitleLabel(specId)
+      };
+    }),
+    ...extraEntries
+  ];
+}
 
 export function validateEditorMenuSpec(spec) {
   const errors = [];
@@ -172,6 +224,10 @@ export function validateEditorMenuSpec(spec) {
   });
   Object.values(EDITOR_LAYOUT_MODES).forEach((mode) => {
     if (!spec.placements?.[mode]) errors.push(`${spec.editorId} is missing ${mode} placement.`);
+  });
+  Object.entries(spec.aliases || {}).forEach(([specId, runtimeId]) => {
+    if (!spec.sections?.[specId]) errors.push(`${spec.editorId} alias "${specId}" is missing a source section.`);
+    if (!runtimeId) errors.push(`${spec.editorId} alias "${specId}" is missing a runtime id.`);
   });
   return errors;
 }
