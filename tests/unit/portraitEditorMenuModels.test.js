@@ -637,6 +637,14 @@ test('Level mobile landscape rail is backed by shared editor menu aliases', () =
   assert.equal(tabs.some((tab) => tab.id === 'playtest'), false);
 });
 
+test('Level gamepad mode replaces the left landscape rail with submenu slide-out', () => {
+  assert.equal(levelEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
+  assert.equal(levelEditorSource.includes('isGamepadLandscapeMenuMode(width'), true);
+  assert.equal(levelEditorSource.includes('shouldDrawGamepadSubmenuOnLeft(width, height)'), true);
+  assert.equal(levelEditorSource.includes('this.drawGamepadSlideOutPanel(ctx, { x: panelX, y: panelY, w: panelW, h: panelH });'), true);
+  assert.equal(levelEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
+});
+
 test('Level editor keeps settings and tile art reachable from desktop rail', () => {
   assert.equal(levelEditorSource.includes("this.panelTabs = ['file', 'toolbox', 'tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music', 'level-settings']"), true);
   assert.equal(levelEditorSource.includes("const topButtonDefById = new Map(topButtonDefs.map((entry) => [entry.id, entry]));"), true);
