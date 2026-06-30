@@ -78,7 +78,13 @@ test('controller menu supports vertical navigation, descend, and back in visible
   assert.equal(stack.getActiveMenuId(), 'file');
 
   stack.handleActions([action(EDITOR_INPUT_ACTIONS.PANEL_PREV)], {}, 0.016);
+  assert.equal(stack.getActiveMenuId(), 'tools');
+
+  stack.handleActions([action(EDITOR_INPUT_ACTIONS.PANEL_NEXT)], {}, 0.016);
   assert.equal(stack.getActiveMenuId(), 'file');
+
+  stack.handleActions([action(EDITOR_INPUT_ACTIONS.PANEL_NEXT)], {}, 0.016);
+  assert.equal(stack.getActiveMenuId(), 'tools');
 
   stack.handleActions([action(EDITOR_INPUT_ACTIONS.CANCEL)], {}, 0.016);
   assert.equal(stack.getActiveMenuId(), 'root');
