@@ -35,6 +35,7 @@ import {
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
 import { getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
+import { buildDesktopEditorShellPlan } from './shared/editorMenuLayout.js';
 
 const DEFAULT_SAMPLE_RATE = 44100;
 const DEFAULT_DURATION = 0.45;
@@ -1796,6 +1797,37 @@ export default class SfxEditor {
       ctx.restore();
       return;
     }
+    if (!isMobileViewport) {
+      const shell = buildDesktopEditorShellPlan('sfx', {
+        viewportWidth: width,
+        viewportHeight: height,
+        activeRootId: this.leftTab,
+        bottomBarHeight: 118,
+        leftPanelWidth: Math.min(340, Math.max(286, width * 0.25)),
+        leftRibbonHeight: 56
+      });
+      this.drawDesktopTopMenu(ctx, shell.topMenu);
+      this.drawDesktopRibbon(ctx, shell.leftRibbon);
+      this.drawRightPanel(ctx, shell.leftOptions);
+      this.drawWaveform(ctx, shell.workSurface);
+      if (shell.bottomBar) this.drawBottomRail(ctx, shell.bottomBar);
+      if (shell.dropdown) this.drawDesktopDropdown(ctx, shell.dropdown);
+      drawCanvasControllerMenu(ctx, this.controllerMenu, {
+        width,
+        height,
+        contextLabel: 'SFX Timeline'
+      });
+      if (this.messageTimer > 0) {
+        drawSharedStatusToast(ctx, {
+          x: shell.workSurface.x + 12,
+          y: shell.workSurface.y + 12,
+          w: Math.min(320, shell.workSurface.w - 24),
+          h: 30
+        }, this.message);
+      }
+      ctx.restore();
+      return;
+    }
     const landscapeLayout = isMobileLandscape
       ? getSharedMobileLandscapeEditorLayout(width, height, {
         bottomRailHeight: 96,
@@ -1849,6 +1881,55 @@ export default class SfxEditor {
     const hints = SHARED_EDITOR_GAMEPAD_HINTS.slice(0, 5).join('  |  ');
     ctx.fillText(hints, bounds.x + bounds.w - 10, bounds.y + bounds.h / 2);
     ctx.restore();
+  }
+
+  drawDesktopTopMenu(ctx, plan) {
+    drawSharedPanel(ctx, plan.bounds, { fill: UI_SUITE.colors.panel });
+    plan.buttons.forEach((button) => {
+      const action = () => {
+        this.leftTab = button.id;
+        this.controllerMenu.resetFocus();
+      };
+      action.skipHistory = true;
+      this.drawButton(ctx, { ...button.bounds }, button.label, button.active, action);
+    });
+  }
+
+  drawDesktopRibbon(ctx, bounds) {
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panelAlt });
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = '12px Courier New';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('SFX', bounds.x + 12, bounds.y + bounds.h / 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.78)';
+    ctx.textAlign = 'right';
+    const section = this.leftTab[0]?.toUpperCase() + this.leftTab.slice(1);
+    ctx.fillText(section, bounds.x + bounds.w - 12, bounds.y + bounds.h / 2);
+    ctx.restore();
+  }
+
+  drawDesktopDropdown(ctx, dropdown) {
+    const menu = this.controllerMenu.menus?.[dropdown.rootId] || this.controllerMenu.menus?.[dropdown.specId];
+    const controllerItems = this.controllerMenu.getItems(menu);
+    const actionById = new Map(controllerItems.map((item) => [item.id, item]));
+    drawSharedPanel(ctx, dropdown.bounds, { fill: UI_SUITE.colors.panel });
+    const gap = 4;
+    const rowH = Math.max(28, dropdown.rowHeight - gap);
+    dropdown.items.forEach((item, index) => {
+      const y = dropdown.bounds.y + index * dropdown.rowHeight + Math.floor(gap / 2);
+      const controllerItem = actionById.get(item.id);
+      const action = controllerItem?.onSelect
+        ? () => controllerItem.onSelect(this)
+        : null;
+      this.drawButton(
+        ctx,
+        { x: dropdown.bounds.x + 8, y, w: dropdown.bounds.w - 16, h: rowH },
+        item.label,
+        this.isControllerMenuItemActive(dropdown.rootId, item.id),
+        action
+      );
+    });
   }
 
   drawMobilePanJoystick(ctx, width, height) {

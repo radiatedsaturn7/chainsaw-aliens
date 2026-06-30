@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  buildDesktopEditorShellPlan,
   buildDesktopDropdownPlan,
   buildDesktopTopMenuPlan,
   buildEditorMenuLayoutPlan,
@@ -99,6 +100,27 @@ test('desktop dropdown plan resolves section actions through runtime aliases', (
   assert.equal(dropdown.title, 'Tracks / Mixer');
   assert.deepEqual(dropdown.items.map((item) => item.id), ['track-list', 'instrument', 'volume', 'pan', 'mute', 'solo']);
   assert.deepEqual(dropdown.bounds, { x: 120, y: 40, w: 220, h: 204 });
+});
+
+test('desktop editor shell plan reserves top menus and left ribbon/options', () => {
+  const plan = buildDesktopEditorShellPlan('sfx', {
+    viewportWidth: 1280,
+    viewportHeight: 720,
+    activeRootId: 'generate',
+    bottomBarHeight: 118,
+    leftPanelWidth: 312,
+    leftRibbonHeight: 56
+  });
+
+  assert.equal(plan.mode, EDITOR_LAYOUT_MODES.DESKTOP);
+  assert.deepEqual(plan.topMenu.bounds, { x: 0, y: 0, w: 1280, h: 40, itemMinWidth: 72, itemMaxWidth: 132, gap: 4, padding: 8 });
+  assert.equal(plan.topMenu.buttons.find((button) => button.id === 'generate')?.active, true);
+  assert.equal(plan.dropdown.rootId, 'generate');
+  assert.deepEqual(plan.leftRibbon, { x: 8, y: 48, w: 304, h: 56 });
+  assert.deepEqual(plan.leftOptions, { x: 8, y: 112, w: 304, h: 482 });
+  assert.deepEqual(plan.workSurface, { x: 320, y: 48, w: 952, h: 546 });
+  assert.deepEqual(plan.bottomBar, { x: 320, y: 602, w: 952, h: 118 });
+  assert.equal(plan.scroll.leftOptions.suppressClickAfterDrag, true);
 });
 
 test('gamepad slide-out plan keeps root open until a submenu is selected', () => {
