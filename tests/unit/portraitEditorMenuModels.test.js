@@ -43,6 +43,7 @@ import { readFileSync } from 'node:fs';
 
 const pixelStudioSource = readFileSync(new URL('../../src/ui/PixelStudio.js', import.meta.url), 'utf8');
 const actorEditorSource = readFileSync(new URL('../../src/ui/ActorEditor.js', import.meta.url), 'utf8');
+const sfxEditorSource = readFileSync(new URL('../../src/ui/SfxEditor.js', import.meta.url), 'utf8');
 const projectBrowserSource = readFileSync(new URL('../../src/ui/ProjectBrowserModal.js', import.meta.url), 'utf8');
 const levelEditorSource = readFileSync(new URL('../../src/ui/LevelEditorCore.js', import.meta.url), 'utf8');
 const playerSource = readFileSync(new URL('../../src/entities/Player.js', import.meta.url), 'utf8');
@@ -755,6 +756,15 @@ test('audio editor shared roots expose desktop and landscape menu ids', () => {
   assert.equal(midi.find((tab) => tab.id === 'instruments')?.specId, 'tracks');
   assert.equal(midi.find((tab) => tab.id === 'virtual-instruments')?.specId, 'record');
   assert.deepEqual(sfx.map((tab) => tab.id), ['file', 'timeline', 'layers', 'envelopes', 'generate', 'tools', 'settings', 'undo', 'redo']);
+});
+
+test('SFX gamepad mode replaces the left landscape rail with submenu slide-out', () => {
+  assert.equal(sfxEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
+  assert.equal(sfxEditorSource.includes('this.isGamepadMenuMode = gamepadConnected && isMobileLandscape;'), true);
+  assert.equal(sfxEditorSource.includes('shouldDrawGamepadSubmenuOnLeft()'), true);
+  assert.equal(sfxEditorSource.includes('this.drawGamepadSlideOutPanel(ctx, left);'), true);
+  assert.equal(sfxEditorSource.includes('drawGamepadRightOptionsPanel(ctx, bounds)'), true);
+  assert.equal(sfxEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
 });
 
 test('Actor portrait menu matches compact shared rail contract', () => {
