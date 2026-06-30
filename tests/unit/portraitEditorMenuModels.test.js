@@ -866,6 +866,18 @@ test('Cutscene landscape touch uses left root rail and right submenu drawer', ()
   assert.equal(cutsceneEditorSource.includes("target: 'landscape-root'"), true);
 });
 
+test('Cutscene desktop keeps transport in the left column instead of a bottom rail', () => {
+  const drawIndex = cutsceneEditorSource.indexOf('  draw(ctx, width, height)');
+  const drawBlock = cutsceneEditorSource.slice(drawIndex, cutsceneEditorSource.indexOf('  computeLayout(width, height)', drawIndex));
+  const desktopIndex = cutsceneEditorSource.indexOf('if (isDesktop) {');
+  const desktopBlock = cutsceneEditorSource.slice(desktopIndex, cutsceneEditorSource.indexOf('const landscape = getSharedMobileLandscapeEditorLayout', desktopIndex));
+
+  assert.equal(drawBlock.includes('if (!layout.isDesktop) this.drawActionRail(ctx, railBounds, layout.isPortrait);'), true);
+  assert.equal(desktopBlock.includes('bottomBarHeight'), false);
+  assert.equal(desktopBlock.includes('railBounds: null'), true);
+  assert.equal(cutsceneEditorSource.includes('drawDesktopTransportPanel(ctx, bounds)'), true);
+});
+
 test('Actor editor bottom play action launches the full actor scene playtest', () => {
   const calls = [];
   const game = {

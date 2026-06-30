@@ -2056,7 +2056,7 @@ export default class CutsceneEditor {
       this.drawTimeline(ctx, timelineBounds);
       this.drawContextRibbon(ctx, contextBounds);
       this.drawTimelineZoomSlider(ctx, zoomBounds);
-      this.drawActionRail(ctx, railBounds, layout.isPortrait);
+      if (!layout.isDesktop) this.drawActionRail(ctx, railBounds, layout.isPortrait);
       if (drawGamepadLeft) {
         this.drawGamepadSlideOutPanel(ctx, layout.menuBounds);
       } else if (this.clipOptionsOpen && (this.getSelectedClip() || this.getSelectedTrack())) {
@@ -2202,12 +2202,10 @@ export default class CutsceneEditor {
       };
     }
     if (isDesktop) {
-      const railH = 86;
       const shell = buildDesktopEditorShellPlan('cutscene', {
         viewportWidth: width,
         viewportHeight: height,
         activeRootId: this.activeMenuTab || 'add',
-        bottomBarHeight: railH,
         leftPanelWidth: Math.min(360, Math.max(292, width * 0.24)),
         leftRibbonHeight: 58
       });
@@ -2229,7 +2227,7 @@ export default class CutsceneEditor {
         timelineBounds,
         contextBounds,
         zoomBounds: null,
-        railBounds: shell.bottomBar || { x: work.x, y: height - railH, w: work.w, h: railH },
+        railBounds: null,
         menuBounds: shell.leftOptions,
         desktopShell: shell
       };
@@ -2671,17 +2669,20 @@ export default class CutsceneEditor {
 
   drawDesktopMenuPanel(ctx, bounds) {
     if (!bounds) return;
-    this.bounds.desktopMenuPanel = bounds;
-    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    const gap = 8;
+    const transportH = Math.min(118, Math.max(96, Math.floor(bounds.h * 0.24)));
+    const panelBounds = { x: bounds.x, y: bounds.y, w: bounds.w, h: Math.max(120, bounds.h - transportH - gap) };
+    const transportBounds = { x: bounds.x, y: panelBounds.y + panelBounds.h + gap, w: bounds.w, h: transportH };
+    this.bounds.desktopMenuPanel = panelBounds;
+    drawSharedPanel(ctx, panelBounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
     const pad = 10;
     const rowH = 36;
-    const gap = 8;
     const title = CUTSCENE_DESKTOP_MENU_LABELS[this.activeMenuTab] || this.activeMenuTab || 'Add';
     ctx.fillStyle = UI_SUITE.colors.accent;
     ctx.font = `13px ${UI_SUITE.font.family}`;
     ctx.textBaseline = 'middle';
-    ctx.fillText(title, bounds.x + pad, bounds.y + 20, bounds.w - pad * 2);
-    const content = { x: bounds.x + pad, y: bounds.y + 36, w: bounds.w - pad * 2, h: bounds.h - 46 };
+    ctx.fillText(title, panelBounds.x + pad, panelBounds.y + 20, panelBounds.w - pad * 2);
+    const content = { x: panelBounds.x + pad, y: panelBounds.y + 36, w: panelBounds.w - pad * 2, h: panelBounds.h - 46 };
     this.bounds.desktopMenuButtons = [];
     const items = this.getMenuItems();
     const visibleRows = Math.max(1, Math.floor((content.h + gap) / (rowH + gap)));
@@ -2701,6 +2702,36 @@ export default class CutsceneEditor {
       if (!item.disabled) this.bounds.desktopMenuButtons.push(button);
     });
     drawSharedPortraitScrollHints(ctx, content, { scroll: this.menuScroll, scrollMax: maxScroll });
+    this.drawDesktopTransportPanel(ctx, transportBounds);
+  }
+
+  drawDesktopTransportPanel(ctx, bounds) {
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
+    const pad = 10;
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Transport', bounds.x + pad, bounds.y + 17, bounds.w - pad * 2);
+    const actions = this.getTransportActions();
+    const rowY = bounds.y + 34;
+    const rowH = 36;
+    const buttonGap = 6;
+    const buttonW = Math.max(34, Math.floor((bounds.w - pad * 2 - buttonGap * (actions.length - 1)) / actions.length));
+    actions.forEach((action, index) => {
+      this.drawActionButton(ctx, {
+        x: bounds.x + pad + index * (buttonW + buttonGap),
+        y: rowY,
+        w: buttonW,
+        h: rowH
+      }, action);
+    });
+    const labelY = rowY + rowH + 10;
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.font = `11px ${UI_SUITE.font.family}`;
+    ctx.fillText(this.currentDocumentRef?.name || this.document.name, bounds.x + pad, labelY, bounds.w - pad * 2);
+    if (this.statusText) {
+      ctx.fillText(this.statusText, bounds.x + pad, labelY + 16, bounds.w - pad * 2);
+    }
   }
 
   drawDesktopDropdown(ctx, shell) {
