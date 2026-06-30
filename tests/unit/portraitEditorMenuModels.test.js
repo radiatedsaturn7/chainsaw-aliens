@@ -784,6 +784,14 @@ test('MIDI gamepad mode replaces the left landscape rail with submenu slide-out'
   assert.equal(midiEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
 });
 
+test('Pixel gamepad mode replaces the left landscape rail with submenu slide-out', () => {
+  assert.equal(pixelStudioSource.includes('buildGamepadSlideOutMenuPlan'), true);
+  assert.equal(pixelStudioSource.includes('isGamepadLandscapeMenuMode(width'), true);
+  assert.equal(pixelStudioSource.includes('shouldDrawGamepadSubmenuOnLeft(width, height)'), true);
+  assert.equal(pixelStudioSource.includes('this.drawGamepadSlideOutPanel(ctx, rail);'), true);
+  assert.equal(pixelStudioSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
+});
+
 test('Actor portrait menu matches compact shared rail contract', () => {
   const model = buildActorPortraitMenuModel();
 
