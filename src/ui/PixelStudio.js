@@ -3703,6 +3703,22 @@ export default class PixelStudio {
     this.uiFocus.index = 0;
   }
 
+  isDesktopSelectionContextClick(payload = {}) {
+    if (this.isMobileLayout()) return false;
+    if ((payload.button ?? 0) !== 2) return false;
+    if (!this.selection?.active || !this.selection?.bounds) return false;
+    if (!this.canvasBounds || !this.isPointInBounds(payload, this.canvasBounds)) return false;
+    const point = this.getGridCellFromScreen(payload.x, payload.y);
+    if (!point) return false;
+    if (this.selection.mask && this.canvasState) {
+      const index = point.row * this.canvasState.width + point.col;
+      return Boolean(this.selection.mask[index]);
+    }
+    const bounds = this.selection.bounds;
+    return point.col >= bounds.x && point.col < bounds.x + bounds.w
+      && point.row >= bounds.y && point.row < bounds.y + bounds.h;
+  }
+
   handlePanAction(action, dt, inputState) {
     const axes = inputState.axes || { rightX: 0, rightY: 0 };
     const panX = -axes.rightX;
@@ -4168,6 +4184,12 @@ export default class PixelStudio {
     }
     if (this.canvasBounds && this.isPointInBounds(payload, this.canvasBounds)) {
       this.setInputMode('canvas');
+      if (this.isDesktopSelectionContextClick(payload)) {
+        this.cursor.x = payload.x;
+        this.cursor.y = payload.y;
+        this.openSelectionContextMenu();
+        return;
+      }
       if (this.spaceDown || button === 1 || button === 2) {
         this.panStart = this.viewportController.beginPan(payload, { x: this.view.panX, y: this.view.panY });
         return;
