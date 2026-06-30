@@ -1832,10 +1832,12 @@ export default class SfxEditor {
       ctx.restore();
       return;
     }
+    const gamepadSubmenuOnLeft = this.shouldDrawGamepadSubmenuOnLeft();
     const landscapeLayout = isMobileLandscape
       ? getSharedMobileLandscapeEditorLayout(width, height, {
         bottomRailHeight: 96,
-        rightRailWidth: getSharedMobileRailWidth(width, height)
+        rightRailWidth: getSharedMobileRailWidth(width, height),
+        reserveRightRail: !gamepadSubmenuOnLeft
       })
       : null;
     const sharedMobileRailW = getSharedMobileRailWidth(width, height);
@@ -1846,16 +1848,18 @@ export default class SfxEditor {
     const right = landscapeLayout?.rightRail ?? { x: width - rightW, y: 0, w: rightW, h: height };
     const bottom = landscapeLayout?.bottomRail ?? { x: railW, y: height - bottomH, w: Math.max(1, width - railW - rightW), h: bottomH };
     const left = landscapeLayout?.leftRail ?? { x: 0, y: 0, w: railW, h: height };
-    if (this.shouldDrawGamepadSubmenuOnLeft()) {
+    if (gamepadSubmenuOnLeft) {
       this.drawGamepadSlideOutPanel(ctx, left);
     } else {
       this.drawLeftRail(ctx, left.x, left.y, left.w, left.h);
     }
     this.drawWaveform(ctx, canvas);
-    if (this.isGamepadMenuMode) {
-      this.drawGamepadRightOptionsPanel(ctx, right);
-    } else {
-      this.drawRightPanel(ctx, right);
+    if (right.w > 0) {
+      if (this.isGamepadMenuMode) {
+        this.drawGamepadRightOptionsPanel(ctx, right);
+      } else {
+        this.drawRightPanel(ctx, right);
+      }
     }
     if (bottom.h > 0) this.drawBottomRail(ctx, bottom);
     this.drawMobilePanJoystick(ctx, width, height);
