@@ -665,6 +665,25 @@ test('Level editor keeps settings and tile art reachable from desktop rail', () 
   assert.equal(levelEditorSource.includes("{ id: 'pixels', title: 'Tile Art'"), true);
 });
 
+test('Level file menu uses one shared item source across surfaces', () => {
+  const fileItemsIndex = levelEditorSource.indexOf('  getLevelFileMenuItems(');
+  const fileItemsBody = levelEditorSource.slice(fileItemsIndex, levelEditorSource.indexOf('  getPanelConfig(tabId', fileItemsIndex));
+  const panelIndex = levelEditorSource.indexOf("    } else if (tabId === 'file') {");
+  const panelBody = levelEditorSource.slice(panelIndex, levelEditorSource.indexOf("    } else if (tabId === 'level-settings')", panelIndex));
+  const controllerIndex = levelEditorSource.indexOf("      file: {\n        id: 'file',");
+  const controllerBody = levelEditorSource.slice(controllerIndex, levelEditorSource.indexOf('      system:', controllerIndex));
+  const drawerIndex = levelEditorSource.indexOf("        if (activeTab === 'file') {");
+  const drawerBody = levelEditorSource.slice(drawerIndex, levelEditorSource.indexOf("        } else if (activeTab === 'level-settings')", drawerIndex));
+
+  assert.equal(fileItemsBody.includes('return buildSharedEditorFileMenu({'), true);
+  assert.equal(fileItemsBody.includes('includeFooter,'), true);
+  assert.equal(fileItemsBody.includes("id: 'playtest'"), true);
+  assert.equal(fileItemsBody.includes("id: 'exit-main'"), true);
+  assert.equal(panelBody.includes('items = this.getLevelFileMenuItems();'), true);
+  assert.equal(controllerBody.includes('items: this.getLevelFileMenuItems().map((item) => ('), true);
+  assert.equal(drawerBody.includes('this.getLevelFileMenuItems({ includePlaytest: !portraitLayout })'), true);
+});
+
 test('Level desktop dropdown uses the selected top root menu', () => {
   const dropdownIndex = levelEditorSource.indexOf('if (shellLayout.dropdown) {');
   const dropdownBlock = levelEditorSource.slice(dropdownIndex, levelEditorSource.indexOf('const infoLines = []', dropdownIndex));
