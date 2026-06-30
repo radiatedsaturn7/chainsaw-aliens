@@ -12268,6 +12268,29 @@ export default class MidiComposer {
     return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));
   }
 
+  isMidiLandscapeRightDrawerTab(tabId = this.activeTab) {
+    return ['file', 'settings', 'virtual-instruments'].includes(tabId);
+  }
+
+  drawMidiLandscapeRightDrawer(ctx, bounds) {
+    if (!bounds) return;
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    const pad = 8;
+    const content = {
+      x: bounds.x + pad,
+      y: bounds.y + pad,
+      w: Math.max(1, bounds.w - pad * 2),
+      h: Math.max(1, bounds.h - pad * 2)
+    };
+    if (this.activeTab === 'file') {
+      this.drawFilePanel(ctx, content.x, content.y, content.w, content.h);
+    } else if (this.activeTab === 'settings') {
+      this.drawSettingsPanel(ctx, content.x, content.y, content.w, content.h);
+    } else if (this.activeTab === 'virtual-instruments') {
+      this.drawControllerSubmenuPanel(ctx, content.x, content.y, content.w, content.h, 'record', { isMobile: true, layoutMode: 'list' });
+    }
+  }
+
   drawGamepadSlideOutPanel(ctx, bounds) {
     const menuId = this.getActiveGamepadMenuId();
     const plan = buildGamepadSlideOutMenuPlan('midi', {
@@ -12898,11 +12921,13 @@ export default class MidiComposer {
     }
     const isLandscape = width > height;
     const controllerConnected = this.isPhysicalControllerConnected();
+    const showLandscapeRightDrawer = isLandscape && !controllerConnected && this.isMidiLandscapeRightDrawerTab(this.activeTab);
     const showsGridBottomRail = isLandscape && (this.activeTab === 'grid' || this.activeTab === 'song') && !controllerConnected;
     const landscapeLayout = isLandscape
       ? getSharedMobileLandscapeEditorLayout(width, height, {
         bottomRailHeight: showsGridBottomRail ? 72 : 0,
-        reserveRightRail: false
+        rightRailWidth: Math.min(340, Math.max(248, Math.floor(width * 0.28))),
+        reserveRightRail: showLandscapeRightDrawer
       })
       : null;
     const sidebarW = landscapeLayout?.leftRail.w ?? getSharedMobileRailWidth(width, height);
@@ -12921,7 +12946,11 @@ export default class MidiComposer {
       this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track, { menuOnly: isLandscape });
     }
 
-    if (this.activeTab === 'grid') {
+    if (showLandscapeRightDrawer) {
+      this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
+      this.clearGridZoomButtonBounds();
+      this.drawMidiLandscapeRightDrawer(ctx, landscapeLayout.rightRail);
+    } else if (this.activeTab === 'grid') {
       this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
       this.clearGridZoomButtonBounds();
       if (showsGridBottomRail) {

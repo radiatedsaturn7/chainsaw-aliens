@@ -785,6 +785,13 @@ test('MIDI gamepad mode replaces the left landscape rail with submenu slide-out'
   assert.equal(midiEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
 });
 
+test('MIDI landscape touch reserves right drawer for utility submenus', () => {
+  assert.equal(midiEditorSource.includes('showLandscapeRightDrawer'), true);
+  assert.equal(midiEditorSource.includes('reserveRightRail: showLandscapeRightDrawer'), true);
+  assert.equal(midiEditorSource.includes('this.drawMidiLandscapeRightDrawer(ctx, landscapeLayout.rightRail);'), true);
+  assert.equal(midiEditorSource.includes("return ['file', 'settings', 'virtual-instruments'].includes(tabId);"), true);
+});
+
 test('Pixel gamepad mode replaces the left landscape rail with submenu slide-out', () => {
   assert.equal(pixelStudioSource.includes('buildGamepadSlideOutMenuPlan'), true);
   assert.equal(pixelStudioSource.includes('isGamepadLandscapeMenuMode(width'), true);
