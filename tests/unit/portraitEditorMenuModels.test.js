@@ -873,11 +873,16 @@ test('MIDI landscape touch reserves right drawer for utility submenus', () => {
 test('MIDI desktop keeps transport in the left column instead of a bottom rail', () => {
   const desktopIndex = midiEditorSource.indexOf('  drawDesktopLayout(ctx, width, height, track, pattern)');
   const desktopBlock = midiEditorSource.slice(desktopIndex, midiEditorSource.indexOf('  getDesktopControllerMenuId', desktopIndex));
+  const dropdownIndex = midiEditorSource.indexOf('  drawDesktopDropdown(ctx, dropdown)');
+  const dropdownBody = midiEditorSource.slice(dropdownIndex, midiEditorSource.indexOf('  drawDesktopLeftPanel(ctx, x, y, w, h)', dropdownIndex));
 
   assert.equal(desktopBlock.includes('bottomBarHeight'), false);
   assert.equal(desktopBlock.includes('this.drawTransportBar(ctx, shellLayout.bottomBar'), false);
   assert.equal(desktopBlock.includes("this.drawDesktopLeftOptions(ctx, shellLayout.leftOptions, { includeDesktopTransport: this.activeTab !== 'instruments' });"), true);
   assert.equal(midiEditorSource.includes('drawDesktopTransportPanel(ctx, bounds)'), true);
+  assert.equal(dropdownBody.includes('const visibleRows = Math.max(1, Math.floor(dropdown.bounds.h / Math.max(1, dropdown.rowHeight)));'), true);
+  assert.equal(dropdownBody.includes('const renderedItems = visibleItems.slice(0, visibleRows);'), true);
+  assert.equal(dropdownBody.includes('renderedItems.forEach((item, index) => {'), true);
 });
 
 test('MIDI file menu uses one shared drawer item source across surfaces', () => {
