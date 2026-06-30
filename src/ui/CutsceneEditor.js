@@ -2048,12 +2048,12 @@ export default class CutsceneEditor {
       ctx.fillRect(0, 0, safeW, safeH);
       const layout = this.computeLayout(safeW, safeH);
       const { stageBounds, timelineBounds, railBounds, contextBounds, zoomBounds } = layout;
+      const drawGamepadLeft = this.shouldDrawGamepadSubmenuOnLeft(safeW, safeH);
       if (layout.isDesktop) this.drawDesktopShellChrome(ctx, layout.desktopShell);
-      if (layout.isLandscapeTouch) this.drawLandscapeRootRail(ctx, layout.leftMenuBounds);
+      if (layout.isLandscapeTouch && !drawGamepadLeft) this.drawLandscapeRootRail(ctx, layout.leftMenuBounds);
       this.bounds.stage = stageBounds;
       this.bounds.timeline = timelineBounds;
       this.bounds.timelineZoom = null;
-      const drawGamepadLeft = this.shouldDrawGamepadSubmenuOnLeft(safeW, safeH);
       drawCutsceneDocument(ctx, this.document, this.playheadMs, stageBounds, this.previewRuntime);
       this.updateVisualClipBounds(stageBounds);
       this.drawSelectedClipOutline(ctx, stageBounds);
@@ -2063,7 +2063,7 @@ export default class CutsceneEditor {
       this.drawTimelineZoomSlider(ctx, zoomBounds);
       if (!layout.isDesktop) this.drawActionRail(ctx, railBounds, layout.isPortrait);
       if (drawGamepadLeft) {
-        this.drawGamepadSlideOutPanel(ctx, layout.menuBounds);
+        this.drawGamepadSlideOutPanel(ctx, layout.leftMenuBounds);
       } else if (this.clipOptionsOpen && (this.getSelectedClip() || this.getSelectedTrack())) {
         this.drawClipOptionsPanel(ctx, layout.menuBounds, layout.isPortrait);
       }
@@ -2241,7 +2241,7 @@ export default class CutsceneEditor {
     const landscape = getSharedMobileLandscapeEditorLayout(width, height, {
       bottomRailHeight: railH,
       rightRailWidth: Math.min(340, Math.max(248, Math.floor(width * 0.28))),
-      reserveRightRail: true
+      reserveRightRail: !this.shouldDrawGamepadSubmenuOnLeft(width, height)
     });
     const work = landscape.workSurface;
     const contextH = 46;
