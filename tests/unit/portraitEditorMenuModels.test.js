@@ -822,6 +822,13 @@ test('Actor portrait menu matches compact shared rail contract', () => {
   assert.equal(model.rootTabs.some((tab) => tab.id === 'linked-parts'), false);
 });
 
+test('Actor desktop top menu renders an active root dropdown drawer', () => {
+  assert.equal(actorEditorSource.includes('renderDesktopDropdown(shellLayout)'), true);
+  assert.equal(actorEditorSource.includes('const dropdown = this.renderDesktopDropdown(shellLayout);'), true);
+  assert.equal(actorEditorSource.includes("top: `${dropdownPlan.bounds.y}px`"), true);
+  assert.equal(actorEditorSource.includes('getActorDesktopDropdownActions(rootId)'), true);
+});
+
 test('Actor gamepad mode replaces the left landscape rail with submenu slide-out', () => {
   assert.equal(actorEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
   assert.equal(actorEditorSource.includes('isGamepadLandscapeMenuMode(viewportW, viewportH)'), true);
