@@ -2,7 +2,7 @@ import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { ensureProjectFileIndex, listProjectFiles, loadProjectFile, saveProjectFile, saveProjectFileAndConfirm } from './projectFiles.js';
 import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, DEFAULT_TAXONOMIES, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
 import { getBuiltInActorIdFromName, isBuiltInActorName, mergeBuiltInActorOverride } from '../content/builtinActorOverrides.js';
-import { buildSharedEditorFileMenu, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
+import { buildSharedEditorFileMenu, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
 import { invalidateActorDefinitionCache } from '../entities/ScriptedActor.js';
 import { invalidateBuiltInActorVisualCache } from '../entities/BuiltInActorVisuals.js';
 import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
@@ -1262,8 +1262,17 @@ export default class ActorEditor {
         minMainHeight: 240
       })
       : null;
+    const landscapeLayout = isMobileLandscape && !shouldDrawGamepadSlideOut
+      ? getSharedMobileLandscapeEditorLayout(viewportW, viewportH, {
+        leftRailWidth: getSharedMobileRailWidth(viewportW, viewportH),
+        rightRailWidth: getSharedMobileRailWidth(viewportW, viewportH),
+        reserveRightRail: true
+      })
+      : null;
     const railWidth = portraitLayout
       ? portraitLayout.leftRail.w
+      : landscapeLayout
+      ? landscapeLayout.leftRail.w
       : isMobileViewport
       ? getSharedMobileRailWidth(viewportW, viewportH)
       : SHARED_EDITOR_LEFT_MENU.width();
@@ -1329,10 +1338,14 @@ export default class ActorEditor {
       shell.style.gap = `${desktopShell?.gap || 8}px`;
       body.style.padding = `0 ${desktopShell?.gap || 8}px ${desktopShell?.gap || 8}px`;
       body.style.gap = `${desktopShell?.gap || 8}px`;
+    } else if (landscapeLayout) {
+      body.style.gap = `${landscapeLayout.gap}px`;
     }
     const leftWidth = isDesktopLayout ? desktopShell.leftColumn.w : railWidth;
+    const rightRailWidth = landscapeLayout ? landscapeLayout.rightRail.w : railWidth;
     left.style.width = `${leftWidth}px`;
     left.style.flex = `0 0 ${leftWidth}px`;
+    if (landscapeLayout) left.style.height = `${landscapeLayout.leftRail.h}px`;
     left.style.display = 'flex';
     left.style.flexDirection = 'column';
     left.style.gap = `${UI_SUITE.spacing.gap}px`;
@@ -1342,12 +1355,13 @@ export default class ActorEditor {
     center.style.minWidth = '0';
     center.style.overflow = 'auto';
     center.style.overflowX = 'hidden';
-    rightRail.style.width = `${railWidth}px`;
-    rightRail.style.flex = `0 0 ${railWidth}px`;
+    rightRail.style.width = `${rightRailWidth}px`;
+    rightRail.style.flex = `0 0 ${rightRailWidth}px`;
     rightRail.style.display = 'flex';
     rightRail.style.flexDirection = 'column';
     rightRail.style.gap = `${UI_SUITE.spacing.gap}px`;
     rightRail.style.minHeight = '0';
+    if (landscapeLayout) rightRail.style.height = `${landscapeLayout.rightRail.h}px`;
     rightRail.style.overflow = 'hidden';
 
     if (isDesktopLayout) {
