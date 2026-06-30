@@ -15,6 +15,7 @@ import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPA
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
+import { getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -375,24 +376,22 @@ const EDITOR_GAMEPAD_BINDINGS = {
   ...SHARED_EDITOR_GAMEPAD_BINDINGS
 };
 
-const LEVEL_PORTRAIT_ASSET_TABS = ['tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'music', 'graphics'];
+const LEVEL_PORTRAIT_ASSET_TABS = ['tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'music', 'graphics'];
 const LEVEL_PORTRAIT_SETTINGS_TABS = ['level-settings', 'midi'];
 
 export function buildLevelMobileLandscapeRootTabs() {
-  return [
-    { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
-    { id: 'toolbox', label: 'Toolbox' },
-    { id: 'tiles', label: 'Tiles' },
-    { id: 'npcs', label: 'NPCs' },
-    { id: 'triggers', label: 'Triggers' },
-    { id: 'powerups', label: 'Powerups' },
-    { id: 'prefabs', label: 'Structures' },
-    { id: 'graphics', label: 'Graphics' },
-    { id: 'music', label: 'Music' },
-    { id: 'level-settings', label: 'Settings' },
-    { id: 'undo', label: 'Undo' },
-    { id: 'redo', label: 'Redo' }
-  ];
+  return getEditorRootMenuEntries('level', {
+    labelOverrides: {
+      file: SHARED_EDITOR_LEFT_MENU.fileLabel,
+      toolbox: 'Toolbox',
+      graphics: 'Graphics',
+      'level-settings': 'Settings'
+    },
+    extraEntries: [
+      { id: 'undo', label: 'Undo' },
+      { id: 'redo', label: 'Redo' }
+    ]
+  }).filter((entry) => entry.id !== 'playtest');
 }
 
 export function buildLevelPortraitMenuModel() {
@@ -405,6 +404,7 @@ export function buildLevelPortraitMenuModel() {
     ],
     assetTabs: [
       { id: 'tiles', label: 'Tiles' },
+      { id: 'pixels', label: 'Tile Art' },
       { id: 'npcs', label: 'NPCs' },
       { id: 'triggers', label: 'Triggers' },
       { id: 'powerups', label: 'Powerups' },
@@ -433,7 +433,7 @@ export default class Editor {
     this.game = game;
     this.sharedMenu = new SharedEditorMenu();
     this.controllerMenu = new ControllerMenuStack({
-      siblingOrder: ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music', 'level-settings', 'playtest']
+      siblingOrder: ['file', 'toolbox', 'tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music', 'level-settings', 'playtest']
     });
     this.active = false;
     this.mode = 'tile';
@@ -561,7 +561,7 @@ export default class Editor {
       enemies: true,
       prefabs: true
     };
-    this.panelTabs = ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'];
+    this.panelTabs = ['file', 'toolbox', 'tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music', 'level-settings'];
     this.panelTabIndex = 0;
     this.panelScroll = {
       root: 0,
@@ -614,7 +614,7 @@ export default class Editor {
     this.drawer = {
       open: false,
       tabIndex: 0,
-      tabs: ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music'],
+      tabs: ['file', 'toolbox', 'tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music', 'level-settings'],
       swipeStart: null
     };
     this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
@@ -1683,84 +1683,13 @@ export default class Editor {
     } else if (tabId === 'pixels') {
       items = [
         {
-          id: 'pixel-open-selected',
-          label: `Tile Editor: ${this.tileType?.label || 'Tile'}`,
-          tooltip: 'Edit the selected level tile art inside the Level Editor',
-          onClick: () => this.openTileInPixelEditor(this.tileType)
-        },
-        {
-          id: 'pixel-revert-selected',
-          label: `Revert ${this.pixelTarget?.label || this.tileType?.label || 'tile'} to Default`,
-          tooltip: 'Remove custom pixel art and restore built-in tile rendering',
-          onClick: () => this.revertTilePixelArt(this.pixelTarget || this.tileType)
-        },
-        {
-          id: 'pixel-brush',
-          label: 'Pixel Brush',
-          tooltip: 'Paint pixels',
-          onClick: () => {
-            this.mode = 'pixel';
-            this.pixelTool = 'paint';
-          }
-        },
-        {
-          id: 'pixel-erase',
-          label: 'Pixel Erase',
-          tooltip: 'Erase pixels',
-          onClick: () => {
-            this.mode = 'pixel';
-            this.pixelTool = 'erase';
-            this.pixelColorIndex = 0;
-          }
-        },
-        {
-          id: 'pixel-prev-frame',
-          label: 'Prev Frame',
-          tooltip: 'Previous pixel frame',
-          onClick: () => this.cyclePixelFrame(-1)
-        },
-        {
-          id: 'pixel-next-frame',
-          label: 'Next Frame',
-          tooltip: 'Next pixel frame',
-          onClick: () => this.cyclePixelFrame(1)
-        },
-        {
-          id: 'pixel-add-frame',
-          label: 'Add Frame',
-          tooltip: 'Add a new frame',
-          onClick: () => this.addPixelFrame()
-        },
-        {
-          id: 'pixel-remove-frame',
-          label: 'Remove Frame',
-          tooltip: 'Remove current frame',
-          onClick: () => this.removePixelFrame()
-        },
-        {
-          id: 'pixel-fps-up',
-          label: 'FPS +',
-          tooltip: 'Increase animation FPS',
-          onClick: () => this.adjustPixelFps(1)
-        },
-        {
-          id: 'pixel-fps-down',
-          label: 'FPS -',
-          tooltip: 'Decrease animation FPS',
-          onClick: () => this.adjustPixelFps(-1)
+          id: 'tile-art-picker',
+          label: 'Open Tile Art',
+          tooltip: 'Open the supported tile list with Edit and Reset actions',
+          onClick: () => this.openTileArtPicker()
         }
       ];
-      items.push(...DEFAULT_TILE_TYPES.filter((tile) => tile.char).map((tile) => ({
-        id: `pixel-${tile.id}`,
-        label: tile.char ? `${tile.label} [${tile.char}]` : tile.label,
-        tile,
-        tooltip: `Pixel target: ${tile.label}`,
-        onClick: () => {
-          this.pixelTarget = tile;
-          this.setGraphicsStatus(`Tile target: ${tile.label} [${tile.char}]`);
-        }
-      })));
-      columns = 2;
+      columns = 1;
     } else if (tabId === 'music') {
       const tracks = this.musicTrackCache?.tracks?.length ? this.musicTrackCache.tracks : this.getMusicTracks();
       items = [
@@ -2026,7 +1955,7 @@ export default class Editor {
     const dialogOpen = this.randomLevelDialog.open;
     if (!dialogOpen) {
       this.controllerMenu.setMenus(this.buildControllerMenus(), {
-        siblingOrder: ['file', 'toolbox', 'tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music', 'playtest']
+        siblingOrder: ['file', 'toolbox', 'tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music', 'level-settings', 'playtest']
       });
       this.controllerMenu.ensureInitialFocus();
       if (this.controllerMenu.handleActions(semanticActions, axes, dt, this)) {
@@ -2270,6 +2199,7 @@ export default class Editor {
           rootItem('file', 'File'),
           rootItem('toolbox', 'Toolbox'),
           rootItem('tiles', 'Tiles'),
+          rootItem('pixels', 'Tile Art'),
           rootItem('npcs', 'Actors / NPCs'),
           rootItem('triggers', 'Triggers'),
           rootItem('powerups', 'Powerups'),
@@ -2329,7 +2259,8 @@ export default class Editor {
         title: 'Structures',
         items: PREFAB_TYPES.map((prefab) => surfaceAction(prefab.id, prefab.label, () => { this.mode = 'prefab'; this.prefabType = prefab; }))
       },
-      graphics: { id: 'graphics', title: 'Graphics', items: [panelAction('graphics', 'Open Graphics'), action('pixel', 'Open Pixel Art', () => { this.mode = 'pixel'; })] },
+      pixels: { id: 'pixels', title: 'Tile Art', items: [action('tile-art-picker', 'Open Tile Art', () => this.openTileArtPicker())] },
+      graphics: { id: 'graphics', title: 'Graphics', items: [panelAction('graphics', 'Open Graphics'), panelAction('pixels', 'Open Tile Art')] },
       'level-settings': { id: 'level-settings', title: 'Settings', items: this.getPanelConfig('level-settings').items.map((item) => action(item.id, item.label, item.onClick)) },
       music: { id: 'music', title: 'Music', items: [panelAction('music', 'Open Music'), action('midi', 'Open MIDI Composer', () => { this.mode = 'midi'; })] },
       playtest: { id: 'playtest', title: 'Playtest', items: [action('playtest', 'Start Playtest', () => this.game.exitEditor({ playtest: true }))] },
@@ -2737,6 +2668,10 @@ export default class Editor {
     this.pixelTarget = tile;
     this.mode = 'pixel';
     this.setGraphicsStatus(`Editing tile ${tile.label} [${tile.char}]`);
+  }
+
+  openTileArtPicker() {
+    this.game?.enterPixelStudio?.({ returnState: 'editor', resetFocus: false, tilePicker: true });
   }
 
   revertTilePixelArt(tile = this.pixelTarget || this.tileType) {
@@ -8841,81 +8776,14 @@ export default class Editor {
         } else if (activeTab === 'pixels') {
           items = [
             {
-              id: 'pixel-open-selected',
-              label: `OPEN ${this.tileType?.label?.toUpperCase?.() || 'TILE'} IN PIXEL EDITOR`,
+              id: 'tile-art-picker',
+              label: 'OPEN TILE ART',
               active: false,
-              tooltip: 'Open currently selected tile from Tiles tab in the pixel editor',
-              onClick: () => this.openTileInPixelEditor(this.tileType)
-            },
-            {
-              id: 'pixel-revert-selected',
-              label: `REVERT ${this.pixelTarget?.label?.toUpperCase?.() || this.tileType?.label?.toUpperCase?.() || 'TILE'} TO DEFAULT`,
-              active: false,
-              tooltip: 'Remove custom pixel art and restore built-in tile rendering',
-              onClick: () => this.revertTilePixelArt(this.pixelTarget || this.tileType)
-            },
-            {
-              id: 'pixel-brush',
-              label: 'PIXEL BRUSH',
-              active: this.mode === 'pixel' && this.pixelTool === 'paint',
-              tooltip: 'Paint pixels',
-              onClick: () => {
-                this.mode = 'pixel';
-                this.pixelTool = 'paint';
-              }
-            },
-            {
-              id: 'pixel-erase',
-              label: 'PIXEL ERASE',
-              active: this.mode === 'pixel' && this.pixelTool === 'erase',
-              tooltip: 'Erase pixels',
-              onClick: () => {
-                this.mode = 'pixel';
-                this.pixelTool = 'erase';
-                this.pixelColorIndex = 0;
-              }
-            },
-            {
-              id: 'pixel-prev-frame',
-              label: 'PREV FRAME',
-              active: false,
-              tooltip: 'Previous frame',
-              onClick: () => this.cyclePixelFrame(-1)
-            },
-            {
-              id: 'pixel-next-frame',
-              label: 'NEXT FRAME',
-              active: false,
-              tooltip: 'Next frame',
-              onClick: () => this.cyclePixelFrame(1)
-            },
-            {
-              id: 'pixel-add-frame',
-              label: 'ADD FRAME',
-              active: false,
-              tooltip: 'Add frame',
-              onClick: () => this.addPixelFrame()
-            },
-            {
-              id: 'pixel-remove-frame',
-              label: 'REMOVE FRAME',
-              active: false,
-              tooltip: 'Remove frame',
-              onClick: () => this.removePixelFrame()
+              tooltip: 'Open the supported tile list with Edit and Reset actions',
+              onClick: () => this.openTileArtPicker()
             }
           ];
-          items.push(...DEFAULT_TILE_TYPES.filter((tile) => tile.char).map((tile) => ({
-            id: tile.id,
-            label: tile.char ? `${tile.label} [${tile.char}]` : tile.label,
-            active: this.pixelTarget?.id === tile.id,
-            preview: { type: 'tile', tile },
-            tooltip: `Pixel target: ${tile.label}`,
-            onClick: () => {
-              this.pixelTarget = tile;
-              this.setGraphicsStatus(`Tile target: ${tile.label} [${tile.char}]`);
-            }
-          })));
-          columns = portraitLayout ? 2 : 1;
+          columns = 1;
         } else if (activeTab === 'music') {
           const tracks = this.musicTrackCache?.tracks?.length ? this.musicTrackCache.tracks : this.getMusicTracks();
           items = [
@@ -9313,6 +9181,7 @@ export default class Editor {
         { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
         { id: 'toolbox', label: 'TOOLBOX' },
         { id: 'tiles', label: 'TILES' },
+        { id: 'pixels', label: 'TILE ART' },
         { id: 'npcs', label: 'NPCS' },
         { id: 'triggers', label: 'TRIGGERS' },
         { id: 'powerups', label: 'POWERUPS' },
@@ -9348,8 +9217,10 @@ export default class Editor {
         isMobile: false,
         width: tabColumn.w
       });
-      topButtons.forEach((entry, index) => {
-        const def = topButtonDefs[index];
+      const topButtonDefById = new Map(topButtonDefs.map((entry) => [entry.id, entry]));
+      topButtons.forEach((entry) => {
+        const def = topButtonDefById.get(entry.id);
+        if (!def) return;
         drawButton(
           entry.bounds.x,
           entry.bounds.y,
@@ -9433,12 +9304,7 @@ export default class Editor {
           return this.shapeTool.id === item.id;
         }
         if (activeTab === 'triggers') return this.selectedTriggerId === item.id;
-        if (activeTab === 'pixels') {
-          if (item.id === 'pixel-brush') return this.mode === 'pixel' && this.pixelTool === 'paint';
-          if (item.id === 'pixel-erase') return this.mode === 'pixel' && this.pixelTool === 'erase';
-          if (item.tile) return this.pixelTarget?.id === item.tile.id;
-          return false;
-        }
+        if (activeTab === 'pixels') return false;
         if (activeTab === 'music') {
           if (item.id === 'music-paint') return this.mode === 'music' && this.musicTool === 'paint';
           if (item.id === 'music-erase') return this.mode === 'music' && this.musicTool === 'erase';

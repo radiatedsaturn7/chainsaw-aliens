@@ -33,6 +33,7 @@ import { initializeComposerState } from './midi/state/composerState.js';
 import { registerComposerInputHandlers } from './midi/input/composerInputHandlers.js';
 import { drawGhostNotes as drawComposerGhostNotes, drawRecordModeSidebar as drawComposerRecordModeSidebar } from './midi/render/composerRender.js';
 import { createViewportController } from './shared/viewportController.js';
+import { getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
@@ -116,6 +117,27 @@ const TAB_OPTIONS = [
   { id: 'instruments', label: 'Mixer' },
   { id: 'virtual-instruments', label: 'Record' }
 ];
+
+export const buildMidiSharedRootMenuEntries = ({
+  includeFile = true,
+  includeSettings = true,
+  includeUndoRedo = false
+} = {}) => {
+  const entries = getEditorRootMenuEntries('midi', {
+    labelOverrides: {
+      file: SHARED_EDITOR_LEFT_MENU.fileLabel,
+      instruments: 'Mixer'
+    }
+  });
+  const filtered = entries.filter((entry) => (
+    (includeFile || entry.id !== 'file')
+    && (includeSettings || entry.id !== 'settings')
+  ));
+  if (includeUndoRedo) {
+    filtered.push({ id: 'undo', label: 'Undo' }, { id: 'redo', label: 'Redo' });
+  }
+  return filtered;
+};
 
 const TOOL_OPTIONS = [
   { id: 'draw', label: 'Draw' }
@@ -12257,6 +12279,8 @@ export default class MidiComposer {
       this.drawInstrumentPanel(ctx, contentX, contentY, contentW, mixerH, track);
       this.drawMixerPedalTransport(ctx, contentX, contentY + mixerH, contentW, pedalTransportH, track);
       this.drawPedalBoardPanel(ctx, contentX, contentY + mixerH + pedalTransportH, contentW, pedalBoardAreaH, track);
+    } else if (this.activeTab === 'pedals') {
+      this.drawPedalBoardPanel(ctx, contentX, contentY, contentW, contentH, track);
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, contentX, contentY, contentW, contentH);
     } else if (this.activeTab === 'file') {
@@ -12276,7 +12300,7 @@ export default class MidiComposer {
       x: tabColumn.x,
       y: tabColumn.y,
       height: tabColumn.h,
-      additionalButtons: TAB_OPTIONS.map((tab) => ({ id: tab.id, label: tab.label })),
+      additionalButtons: buildMidiSharedRootMenuEntries({ includeFile: false, includeSettings: false }),
       isMobile: false,
       width: tabColumn.w
     });
@@ -12787,7 +12811,7 @@ export default class MidiComposer {
       gap: 5,
       drawButton: (buttonBounds, tab, state) => {
         if (tab.id === 'file') this.bounds.fileButton = buttonBounds;
-        if (TAB_OPTIONS.some((entry) => entry.id === tab.id) || tab.id === 'pedals') this.bounds.tabs.push({ ...buttonBounds, id: tab.id });
+        if (tabs.some((entry) => entry.id === tab.id && entry.id !== 'file' && entry.id !== 'settings')) this.bounds.tabs.push({ ...buttonBounds, id: tab.id });
         if (tab.id === 'settings') this.bounds.settings = buttonBounds;
         this.drawButton(ctx, buttonBounds, tab.label, this.isLeftRailTabActive(tab.id), false, state.focused);
       }
@@ -13027,7 +13051,8 @@ export default class MidiComposer {
     const rowH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
     const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const panelPadding = clamp(Math.round(rowH * 0.25), 8, 12);
-    const menuRows = TAB_OPTIONS.length + 4;
+    const rootEntries = buildMidiSharedRootMenuEntries({ includeUndoRedo: true });
+    const menuRows = rootEntries.length;
     const menuH = options.menuOnly
       ? h
       : Math.min(h * 0.62, menuRows * rowH + (menuRows - 1) * rowGap + panelPadding * 2);
@@ -13047,13 +13072,6 @@ export default class MidiComposer {
     let cursorY = menuY + panelPadding;
     this.bounds.tabs = [];
     const menuButtonW = Math.min(innerW, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
-    const rootEntries = [
-      { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
-      ...TAB_OPTIONS,
-      { id: 'undo', label: 'Undo' },
-      { id: 'redo', label: 'Redo' },
-      { id: 'settings', label: 'Settings' }
-    ];
     const visibleRows = Math.max(1, Math.floor((menuH - panelPadding * 2 + rowGap) / Math.max(1, rowH + rowGap)));
     const rootScroll = options.menuOnly
       ? this.controllerMenu.syncScrollToItem(
@@ -13074,7 +13092,7 @@ export default class MidiComposer {
       const bounds = { x: innerX + (innerW - menuButtonW) * 0.5, y: cursorY, w: menuButtonW, h: rowH, id: entry.id };
       if (options.menuOnly) this.mobileLandscapeRootMenuButtons.push(bounds);
       if (entry.id === 'file') this.bounds.fileButton = bounds;
-      if (TAB_OPTIONS.some((tab) => tab.id === entry.id)) this.bounds.tabs.push(bounds);
+      if (rootEntries.some((tab) => tab.id === entry.id && !['file', 'undo', 'redo', 'settings'].includes(tab.id))) this.bounds.tabs.push(bounds);
       if (entry.id === 'undo') this.bounds.undoButton = bounds;
       if (entry.id === 'redo') this.bounds.redoButton = bounds;
       if (entry.id === 'settings') this.bounds.settings = bounds;

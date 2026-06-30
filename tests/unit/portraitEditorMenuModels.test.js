@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 
 import ActorEditor, { buildActorPortraitMenuModel } from '../../src/ui/ActorEditor.js';
 import { buildLevelMobileLandscapeRootTabs, buildLevelPortraitMenuModel, shouldShowLevelEditorTopPlaytestButton } from '../../src/ui/LevelEditorCore.js';
-import { buildMidiPortraitMenuModel } from '../../src/ui/MidiComposerCore.js';
+import { buildMidiPortraitMenuModel, buildMidiSharedRootMenuEntries } from '../../src/ui/MidiComposerCore.js';
 import {
   applyPixelClipboardPixelsToLayer,
   buildPixelPortraitCanvasActionGroups,
@@ -29,7 +29,7 @@ import {
 } from '../../src/ui/PixelStudio.js';
 import PixelStudio from '../../src/ui/PixelStudio.js';
 import { TOOL_IDS } from '../../src/ui/pixel-editor/tools.js';
-import { buildSfxPortraitMenuModel } from '../../src/ui/SfxEditor.js';
+import { buildSfxPortraitMenuModel, buildSfxSharedRootMenuEntries } from '../../src/ui/SfxEditor.js';
 import { mergeBuiltInActorOverride } from '../../src/content/builtinActorOverrides.js';
 import { BUILT_IN_ACTOR_VISUAL_SCALE, getBuiltInActorOverrideDrawSize } from '../../src/entities/BuiltInActorVisuals.js';
 import {
@@ -626,6 +626,16 @@ test('Level mobile landscape rail exposes every root action for scrolling', () =
   assert.ok(tabs.length > 7);
 });
 
+test('Level mobile landscape rail is backed by shared editor menu aliases', () => {
+  const tabs = buildLevelMobileLandscapeRootTabs();
+
+  assert.equal(tabs.find((tab) => tab.id === 'pixels')?.specId, 'tile-art');
+  assert.equal(tabs.find((tab) => tab.id === 'npcs')?.specId, 'actors');
+  assert.equal(tabs.find((tab) => tab.id === 'prefabs')?.specId, 'structures');
+  assert.equal(tabs.find((tab) => tab.id === 'level-settings')?.specId, 'settings');
+  assert.equal(tabs.some((tab) => tab.id === 'playtest'), false);
+});
+
 test('Level editor keeps settings and tile art reachable from desktop rail', () => {
   assert.equal(levelEditorSource.includes("this.panelTabs = ['file', 'toolbox', 'tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music', 'level-settings']"), true);
   assert.equal(levelEditorSource.includes("const topButtonDefById = new Map(topButtonDefs.map((entry) => [entry.id, entry]));"), true);
@@ -735,6 +745,16 @@ test('audio editor portrait rails keep loop in menus instead of the rail', () =>
   assert.equal(sfxModel.bottomRailActions.some((id) => id.toLowerCase().includes('loop')), false);
   assert.ok(midiModel.menuLoopIds.length > 0);
   assert.ok(sfxModel.menuLoopIds.length > 0);
+});
+
+test('audio editor shared roots expose desktop and landscape menu ids', () => {
+  const midi = buildMidiSharedRootMenuEntries({ includeUndoRedo: true });
+  const sfx = buildSfxSharedRootMenuEntries();
+
+  assert.deepEqual(midi.map((tab) => tab.id), ['file', 'grid', 'song', 'instruments', 'virtual-instruments', 'pedals', 'settings', 'undo', 'redo']);
+  assert.equal(midi.find((tab) => tab.id === 'instruments')?.specId, 'tracks');
+  assert.equal(midi.find((tab) => tab.id === 'virtual-instruments')?.specId, 'record');
+  assert.deepEqual(sfx.map((tab) => tab.id), ['file', 'timeline', 'layers', 'envelopes', 'generate', 'tools', 'settings', 'undo', 'redo']);
 });
 
 test('Actor portrait menu matches compact shared rail contract', () => {

@@ -34,6 +34,7 @@ import {
 } from './uiSuite.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
+import { getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
 
 const DEFAULT_SAMPLE_RATE = 44100;
 const DEFAULT_DURATION = 0.45;
@@ -55,6 +56,14 @@ export function buildSfxPortraitMenuModel() {
     bottomRailActions: ['menu', 'undo', 'redo', 'play'],
     menuLoopIds: ['loop']
   };
+}
+
+export function buildSfxSharedRootMenuEntries({ includeUndoRedo = true } = {}) {
+  return getEditorRootMenuEntries('sfx', {
+    extraEntries: includeUndoRedo
+      ? [{ id: 'undo', label: 'Undo' }, { id: 'redo', label: 'Redo' }]
+      : []
+  });
 }
 
 const ENVELOPE_SPECS = {
@@ -1869,17 +1878,7 @@ export default class SfxEditor {
 
   drawLeftRail(ctx, x, y, w, h) {
     drawSharedPanel(ctx, { x, y, w, h });
-    const tabs = [
-      { id: 'file', label: 'File' },
-      { id: 'generate', label: 'Generate' },
-      { id: 'timeline', label: 'Timeline' },
-      { id: 'layers', label: 'Layers' },
-      { id: 'envelopes', label: 'Envelopes' },
-      { id: 'tools', label: 'Tools' },
-      { id: 'settings', label: 'Settings' },
-      { id: 'undo', label: 'Undo' },
-      { id: 'redo', label: 'Redo' }
-    ];
+    const tabs = this.isMobilePortrait ? buildSfxPortraitMenuModel().rootTabs : buildSfxSharedRootMenuEntries();
     const rowH = Math.min(44, UI_SUITE.spacing.tap);
     const rowGap = 8;
     if (this.isMobilePortrait) {
