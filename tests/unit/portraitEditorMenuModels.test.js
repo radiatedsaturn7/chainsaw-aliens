@@ -872,6 +872,22 @@ test('Actor desktop top menu renders an active root dropdown drawer', () => {
   assert.equal(actorEditorSource.includes('getActorDesktopDropdownActions(rootId)'), true);
 });
 
+test('Actor file menu uses the shared editor file menu model', () => {
+  const fileMenuIndex = actorEditorSource.indexOf('  getActorFileMenuItems()');
+  const fileMenuBody = actorEditorSource.slice(fileMenuIndex, actorEditorSource.indexOf('  renderDesktopOptionsPanel()', fileMenuIndex));
+  const controllerIndex = actorEditorSource.indexOf("      file: {\n        id: 'file',");
+  const controllerBody = actorEditorSource.slice(controllerIndex, actorEditorSource.indexOf('      system:', controllerIndex));
+
+  assert.equal(actorEditorSource.includes('buildSharedEditorFileMenu'), true);
+  assert.equal(fileMenuBody.includes('return buildSharedEditorFileMenu({'), true);
+  assert.equal(fileMenuBody.includes('export: false'), true);
+  assert.equal(fileMenuBody.includes('onClose: () => this.closeFileMenu()'), true);
+  assert.equal(fileMenuBody.includes('onExit: () => this.exitToMenu()'), true);
+  assert.equal(actorEditorSource.includes('file: this.getActorFileMenuItems(),'), true);
+  assert.equal(actorEditorSource.includes('const fileItems = this.getActorFileMenuItems();'), true);
+  assert.equal(controllerBody.includes('items: this.getActorFileMenuItems().map((item) => ('), true);
+});
+
 test('Actor gamepad mode replaces the left landscape rail with submenu slide-out', () => {
   assert.equal(actorEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
   assert.equal(actorEditorSource.includes('isGamepadLandscapeMenuMode(viewportW, viewportH)'), true);
