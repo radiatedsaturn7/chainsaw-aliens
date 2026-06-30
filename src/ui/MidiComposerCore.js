@@ -34,7 +34,7 @@ import { registerComposerInputHandlers } from './midi/input/composerInputHandler
 import { drawGhostNotes as drawComposerGhostNotes, drawRecordModeSidebar as drawComposerRecordModeSidebar } from './midi/render/composerRender.js';
 import { createViewportController } from './shared/viewportController.js';
 import { getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
-import { buildDesktopEditorShellPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
@@ -12213,11 +12213,13 @@ export default class MidiComposer {
         h: 28
       }, this.activeTab === 'grid' ? 'MIDI Grid' : 'MIDI Chrome');
     }
-    drawCanvasControllerMenu(ctx, this.controllerMenu, {
-      width,
-      height,
-      contextLabel: this.activeTab === 'grid' ? 'MIDI Grid' : 'MIDI Chrome'
-    });
+    if (this.shouldDrawControllerOverlay(width, height)) {
+      drawCanvasControllerMenu(ctx, this.controllerMenu, {
+        width,
+        height,
+        contextLabel: this.activeTab === 'grid' ? 'MIDI Grid' : 'MIDI Chrome'
+      });
+    }
 
     ctx.restore();
     if (perfEnabled) {
@@ -12244,6 +12246,59 @@ export default class MidiComposer {
     ctx.textAlign = 'right';
     ctx.fillText(SHARED_EDITOR_GAMEPAD_HINTS.slice(0, 6).join('  |  '), bounds.x + bounds.w - 10, bounds.y + bounds.h / 2);
     ctx.restore();
+  }
+
+  getActiveGamepadMenuId() {
+    const activeId = this.controllerMenu.getActiveMenuId();
+    if (!activeId || ['root', 'system', 'help', 'exit-confirm'].includes(activeId)) return null;
+    return activeId;
+  }
+
+  isGamepadLandscapeMenuMode(width = this.viewportWidth || 0, height = this.viewportHeight || 0) {
+    return Boolean(this.isPhysicalControllerConnected() && Math.min(width, height) <= 900 && width > height);
+  }
+
+  shouldDrawGamepadSubmenuOnLeft(width, height) {
+    return Boolean(this.isGamepadLandscapeMenuMode(width, height) && this.controllerMenu.active && this.getActiveGamepadMenuId());
+  }
+
+  shouldDrawControllerOverlay(width, height) {
+    if (!this.isGamepadLandscapeMenuMode(width, height)) return true;
+    const activeId = this.controllerMenu.getActiveMenuId();
+    return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));
+  }
+
+  drawGamepadSlideOutPanel(ctx, bounds) {
+    const menuId = this.getActiveGamepadMenuId();
+    const plan = buildGamepadSlideOutMenuPlan('midi', {
+      rootOpen: !menuId,
+      activeRootId: menuId || this.getDesktopControllerMenuId(),
+      focusedItemId: this.controllerMenu.getFocusedItem(menuId)?.id,
+      labelOverrides: {
+        tracks: 'Mixer',
+        record: 'Record'
+      }
+    });
+    const menu = this.controllerMenu.menus?.[menuId];
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(menu?.title || plan.submenu?.title || 'Menu', bounds.x + 12, bounds.y + 18, bounds.w - 24);
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.font = `10px ${UI_SUITE.font.family}`;
+    ctx.fillText('A Select  B Back', bounds.x + 12, bounds.y + 36, bounds.w - 24);
+    ctx.restore();
+    this.drawControllerSubmenuPanel(
+      ctx,
+      bounds.x + 8,
+      bounds.y + 52,
+      Math.max(1, bounds.w - 16),
+      Math.max(1, bounds.h - 60),
+      menuId,
+      { isMobile: true, layoutMode: 'list', maxColumns: 1, minColumnWidth: Math.max(1, bounds.w - 16) }
+    );
   }
 
 
@@ -12860,7 +12915,11 @@ export default class MidiComposer {
     const contentH = landscapeLayout?.workSurface.h ?? (height - padding * 2);
     const bottomRail = landscapeLayout?.bottomRail ?? { x: contentX, y: contentY + contentH + 8, w: contentW, h: 0 };
 
-    this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track, { menuOnly: isLandscape });
+    if (this.shouldDrawGamepadSubmenuOnLeft(width, height)) {
+      this.drawGamepadSlideOutPanel(ctx, { x: sidebarX, y: sidebarY, w: sidebarW, h: sidebarH });
+    } else {
+      this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track, { menuOnly: isLandscape });
+    }
 
     if (this.activeTab === 'grid') {
       this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
