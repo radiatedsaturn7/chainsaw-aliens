@@ -790,10 +790,17 @@ test('audio editor shared roots expose desktop and landscape menu ids', () => {
 });
 
 test('SFX gamepad mode replaces the left landscape rail with submenu slide-out', () => {
+  const drawIndex = sfxEditorSource.indexOf('  draw(ctx, width, height)');
+  const drawBody = sfxEditorSource.slice(sfxEditorSource.indexOf('const gamepadSubmenuOnLeft', drawIndex), sfxEditorSource.indexOf('    if (bottom.h > 0)', drawIndex));
+
   assert.equal(sfxEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
   assert.equal(sfxEditorSource.includes('this.isGamepadMenuMode = gamepadConnected && isMobileLandscape;'), true);
   assert.equal(sfxEditorSource.includes('shouldDrawGamepadSubmenuOnLeft()'), true);
   assert.equal(sfxEditorSource.includes('this.drawGamepadSlideOutPanel(ctx, left);'), true);
+  assert.equal(drawBody.includes('const gamepadSubmenuOnLeft = this.shouldDrawGamepadSubmenuOnLeft();'), true);
+  assert.equal(drawBody.includes('reserveRightRail: !gamepadSubmenuOnLeft'), true);
+  assert.equal(drawBody.includes('if (gamepadSubmenuOnLeft) {'), true);
+  assert.equal(drawBody.includes('if (right.w > 0) {'), true);
   assert.equal(sfxEditorSource.includes('drawGamepadRightOptionsPanel(ctx, bounds)'), true);
   assert.equal(sfxEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
 });
