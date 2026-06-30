@@ -919,6 +919,19 @@ test('Cutscene desktop dropdown uses the selected top root menu', () => {
   assert.equal(dropdownBody.includes('this.getMenuItems().filter'), false);
 });
 
+test('Cutscene file menu uses the shared editor file menu model', () => {
+  const fileMenuIndex = cutsceneEditorSource.indexOf("if (tabId === 'file') {");
+  const fileMenuBody = cutsceneEditorSource.slice(fileMenuIndex, cutsceneEditorSource.indexOf("    if (tabId === 'add')", fileMenuIndex));
+
+  assert.equal(cutsceneEditorSource.includes('buildSharedEditorFileMenu'), true);
+  assert.equal(fileMenuBody.includes('return buildSharedEditorFileMenu({'), true);
+  assert.equal(fileMenuBody.includes("export: 'Export MP4'"), true);
+  assert.equal(fileMenuBody.includes("item.id === 'export'"), true);
+  assert.equal(cutsceneEditorSource.includes("if (id === 'export' || id === 'export-mp4') await this.exportMovieMp4();"), true);
+  assert.equal(cutsceneEditorSource.includes("if (id === 'back' || id === 'exit-main') this.game.exitCutsceneEditor?.();"), true);
+  assert.equal(cutsceneEditorSource.includes("this.getMenuItems().filter((item) => !item.divider && !item.separator)"), true);
+});
+
 test('Actor editor bottom play action launches the full actor scene playtest', () => {
   const calls = [];
   const game = {
