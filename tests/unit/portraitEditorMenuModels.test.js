@@ -821,6 +821,16 @@ test('Cutscene gamepad mode replaces the left landscape rail with submenu slide-
   assert.equal(cutsceneEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
 });
 
+test('Cutscene landscape touch uses left root rail and right submenu drawer', () => {
+  assert.equal(cutsceneEditorSource.includes('getSharedMobileLandscapeEditorLayout(width, height'), true);
+  assert.equal(cutsceneEditorSource.includes('isLandscapeTouch: true'), true);
+  assert.equal(cutsceneEditorSource.includes('leftMenuBounds: landscape.leftRail'), true);
+  assert.equal(cutsceneEditorSource.includes('menuBounds: landscape.rightRail'), true);
+  assert.equal(cutsceneEditorSource.includes('this.drawLandscapeRootRail(ctx, layout.leftMenuBounds);'), true);
+  assert.equal(cutsceneEditorSource.includes('this.drawLandscapeSubmenuPanel(ctx, layout.menuBounds);'), true);
+  assert.equal(cutsceneEditorSource.includes("target: 'landscape-root'"), true);
+});
+
 test('Actor editor bottom play action launches the full actor scene playtest', () => {
   const calls = [];
   const game = {
