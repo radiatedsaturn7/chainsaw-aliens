@@ -827,11 +827,16 @@ test('SFX gamepad mode replaces the left landscape rail with submenu slide-out',
 test('SFX desktop keeps transport in the left column instead of a bottom rail', () => {
   const desktopIndex = sfxEditorSource.indexOf('if (!isMobileViewport) {');
   const desktopBlock = sfxEditorSource.slice(desktopIndex, sfxEditorSource.indexOf('const landscapeLayout = isMobileLandscape', desktopIndex));
+  const dropdownIndex = sfxEditorSource.indexOf('  drawDesktopDropdown(ctx, dropdown)');
+  const dropdownBody = sfxEditorSource.slice(dropdownIndex, sfxEditorSource.indexOf('  getActiveGamepadMenuId()', dropdownIndex));
 
   assert.equal(desktopBlock.includes('bottomBarHeight'), false);
   assert.equal(desktopBlock.includes('this.drawBottomRail(ctx, shell.bottomBar)'), false);
   assert.equal(desktopBlock.includes('this.drawRightPanel(ctx, shell.leftOptions, { includeDesktopTransport: true });'), true);
   assert.equal(sfxEditorSource.includes('drawDesktopTransportPanel(ctx, bounds)'), true);
+  assert.equal(dropdownBody.includes('const visibleRows = Math.max(1, Math.floor(dropdown.bounds.h / Math.max(1, dropdown.rowHeight)));'), true);
+  assert.equal(dropdownBody.includes('const renderedItems = visibleItems.slice(0, visibleRows);'), true);
+  assert.equal(dropdownBody.includes('renderedItems.forEach((item, index) => {'), true);
 });
 
 test('SFX file menu uses the shared editor file menu model', () => {
