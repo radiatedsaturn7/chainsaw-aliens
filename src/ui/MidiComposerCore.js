@@ -12516,15 +12516,17 @@ export default class MidiComposer {
     const menu = this.controllerMenu.menus?.[menuId] || this.controllerMenu.menus?.[dropdown.rootId];
     const items = this.controllerMenu.getItems(menu);
     const visibleItems = items.length ? items : dropdown.items;
+    const visibleRows = Math.max(1, Math.floor(dropdown.bounds.h / Math.max(1, dropdown.rowHeight)));
+    const renderedItems = visibleItems.slice(0, visibleRows);
     const panelBounds = {
       ...dropdown.bounds,
-      h: Math.min(dropdown.bounds.h, Math.max(dropdown.rowHeight, visibleItems.length * dropdown.rowHeight))
+      h: Math.min(dropdown.bounds.h, Math.max(dropdown.rowHeight, renderedItems.length * dropdown.rowHeight))
     };
     this.bounds.desktopDropdownItems = [];
     drawSharedPanel(ctx, panelBounds, { fill: UI_SUITE.colors.panel });
     const gap = 4;
     const rowH = Math.max(28, dropdown.rowHeight - gap);
-    visibleItems.forEach((item, index) => {
+    renderedItems.forEach((item, index) => {
       const bounds = {
         x: panelBounds.x + 8,
         y: panelBounds.y + index * dropdown.rowHeight + Math.floor(gap / 2),
