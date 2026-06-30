@@ -4910,21 +4910,11 @@ export default class MidiComposer {
       file: {
         id: 'file',
         title: 'File',
-        items: [
-          action('nav-grid', 'Grid', () => this.handleFileMenu('nav-grid')),
-          action('nav-instruments', 'Mixer', () => this.handleFileMenu('nav-instruments')),
-          action('nav-virtual-instruments', 'Record', () => this.handleFileMenu('nav-virtual-instruments')),
-          action('nav-pedals', 'Pedals', () => this.handleFileMenu('nav-pedals')),
-          action('nav-settings', 'Settings', () => this.handleFileMenu('nav-settings')),
-          action('new', 'New', () => this.handleFileMenu('new')),
-          action('save', 'Save', () => this.handleFileMenu('save')),
-          action('save-as', 'Save As', () => this.handleFileMenu('save-as')),
-          action('rescue-save', 'Rescue Save', () => this.handleFileMenu('rescue-save')),
-          action('open', 'Open', () => this.handleFileMenu('open')),
-          action('import', 'Import MIDI', () => this.handleFileMenu('import')),
-          action('export', 'Export MIDI', () => this.handleFileMenu('export')),
-          action('exit-main', 'Exit to Main Menu', () => this.exitToMainMenu())
-        ]
+        items: this.getFileMenuItems().map((item) => (
+          item.divider || item.separator
+            ? { ...item }
+            : action(item.id, item.label, () => this.handleFileMenu(item.id))
+        ))
       },
       system: buildControllerSystemMenu({
         fileMenuId: 'file',
@@ -17577,6 +17567,12 @@ export default class MidiComposer {
         import: () => this.handleFileMenuAction('import')
       },
       editorSpecific: [
+        { id: 'nav-grid', label: 'Grid' },
+        { id: 'nav-instruments', label: 'Mixer' },
+        { id: 'nav-virtual-instruments', label: 'Record' },
+        { id: 'nav-pedals', label: 'Pedals' },
+        { id: 'nav-settings', label: 'Settings' },
+        { divider: true },
         { id: 'rescue-save', label: 'Rescue Save' },
         { id: 'export-midi', label: 'Export MIDI' },
         { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
