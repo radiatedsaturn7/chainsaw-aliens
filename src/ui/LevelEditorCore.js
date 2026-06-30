@@ -1454,6 +1454,59 @@ export default class Editor {
     this.game.exitEditorToMainMenu('level');
   }
 
+  getLevelFileMenuItems({ includePlaytest = true, includeFooter = false } = {}) {
+    return buildSharedEditorFileMenu({
+      labels: {
+        new: 'New',
+        open: 'Open',
+        export: 'Export',
+        import: 'Import'
+      },
+      tooltips: {
+        new: 'Create a new level',
+        save: 'Save level to browser storage',
+        'save-as': 'Save level with a new name',
+        open: 'Open level from browser storage',
+        export: 'Export world JSON',
+        import: 'Import world JSON',
+        undo: 'Undo last change (Ctrl+Z)',
+        redo: 'Redo last change (Ctrl+Y)'
+      },
+      actions: {
+        new: () => this.newLevelDocument(),
+        save: () => this.saveLevelToStorage(),
+        'save-as': () => this.saveLevelToStorage({ forceSaveAs: true }),
+        open: () => this.loadLevelFromStorage(),
+        export: () => this.saveToFile(),
+        import: () => this.openFileDialog(),
+        undo: () => this.undo(),
+        redo: () => this.redo()
+      },
+      extras: [
+        ...(includePlaytest ? [{
+          id: 'playtest',
+          label: 'Playtest',
+          tooltip: 'Start playtest from spawn',
+          onClick: () => this.game.exitEditor({ playtest: true })
+        }] : []),
+        ...(!includeFooter ? [{
+          id: 'exit-main',
+          label: 'Exit to Main Menu',
+          tooltip: 'Exit editor to title',
+          onClick: () => this.exitToMainMenu()
+        }] : [])
+      ],
+      includeFooter,
+      footer: {
+        onClose: () => this.closeDrawer(),
+        onExit: () => this.exitToMainMenu()
+      }
+    }).map((entry) => ({
+      ...entry,
+      onClick: entry.onClick || entry.action || (() => {})
+    }));
+  }
+
   getPanelConfig(tabId, { includeExtras = false } = {}) {
     const tileToolButtons = [
       { id: 'paint', label: 'Paint', tooltip: 'Paint tiles. (Q)' },
@@ -1473,52 +1526,7 @@ export default class Editor {
         onClick: () => this.game.exitEditor({ playtest: true })
       }];
     } else if (tabId === 'file') {
-      items = buildSharedEditorFileMenu({
-        labels: {
-          new: 'New',
-          open: 'Open',
-          export: 'Export',
-          import: 'Import'
-        },
-        tooltips: {
-          new: 'Create a new level',
-          save: 'Save level to browser storage',
-          'save-as': 'Save level with a new name',
-          open: 'Open level from browser storage',
-          export: 'Export world JSON',
-          import: 'Import world JSON',
-          undo: 'Undo last change (Ctrl+Z)',
-          redo: 'Redo last change (Ctrl+Y)'
-        },
-        actions: {
-          new: () => this.newLevelDocument(),
-          save: () => this.saveLevelToStorage(),
-          'save-as': () => this.saveLevelToStorage({ forceSaveAs: true }),
-          open: () => this.loadLevelFromStorage(),
-          export: () => this.saveToFile(),
-          import: () => this.openFileDialog(),
-          undo: () => this.undo(),
-          redo: () => this.redo()
-        },
-        extras: [
-          {
-            id: 'playtest',
-            label: 'Playtest',
-            tooltip: 'Start playtest from spawn',
-            onClick: () => this.game.exitEditor({ playtest: true })
-          },
-          {
-            id: 'exit-main',
-            label: 'Exit to Main Menu',
-            tooltip: 'Exit editor to title',
-            onClick: () => this.exitToMainMenu()
-          }
-        ],
-        includeFooter: false
-      }).map((entry) => ({
-        ...entry,
-        onClick: entry.onClick || entry.action || (() => {})
-      }));
+      items = this.getLevelFileMenuItems();
       columns = 1;
     } else if (tabId === 'level-settings') {
       items = [
@@ -2268,15 +2276,11 @@ export default class Editor {
       file: {
         id: 'file',
         title: 'File',
-        items: [
-          action('new', 'New', () => this.newLevelDocument()),
-          action('save', 'Save', () => this.saveLevelToStorage()),
-          action('save-as', 'Save As', () => this.saveLevelToStorage({ forceSaveAs: true })),
-          action('open', 'Open', () => this.loadLevelFromStorage()),
-          action('import', 'Import', () => this.openFileDialog()),
-          action('export', 'Export', () => this.saveToFile()),
-          action('exit-main', 'Exit to Main Menu', () => this.exitToMainMenu())
-        ]
+        items: this.getLevelFileMenuItems().map((item) => (
+          item.divider || item.separator
+            ? { ...item }
+            : action(item.id, item.label, item.onClick || item.action)
+        ))
       },
       system: buildControllerSystemMenu({
         fileMenuId: 'file',
@@ -8631,49 +8635,8 @@ export default class Editor {
         const spawnTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'spawn');
 
         if (activeTab === 'file') {
-          items = buildSharedEditorFileMenu({
-            labels: {
-              new: 'New',
-              open: 'Open',
-              export: 'Export',
-              import: 'Import'
-            },
-            tooltips: {
-              new: 'Create a new level',
-              save: 'Save level to browser storage',
-              'save-as': 'Save level with a new name',
-              open: 'Open level from browser storage',
-              export: 'Export world JSON',
-              import: 'Import world JSON',
-              undo: 'Undo last change (Ctrl+Z)',
-              redo: 'Redo last change (Ctrl+Y)'
-            },
-            actions: {
-              new: () => this.newLevelDocument(),
-              save: () => this.saveLevelToStorage(),
-              'save-as': () => this.saveLevelToStorage({ forceSaveAs: true }),
-              open: () => this.loadLevelFromStorage(),
-              export: () => this.saveToFile(),
-              import: () => this.openFileDialog(),
-              undo: () => this.undo(),
-              redo: () => this.redo()
-            },
-            extras: [
-              ...(portraitLayout ? [] : [{
-                id: 'playtest',
-                label: 'Playtest',
-                tooltip: 'Start playtest from spawn',
-                onClick: () => this.game.exitEditor({ playtest: true })
-              }]),
-              {
-                id: 'exit-main',
-                label: 'Exit to Main Menu',
-                tooltip: 'Exit editor to title',
-                onClick: () => this.exitToMainMenu()
-              }
-            ],
-            includeFooter: false
-          }).map((entry) => ({ ...entry, active: false }));
+          items = this.getLevelFileMenuItems({ includePlaytest: !portraitLayout })
+            .map((entry) => ({ ...entry, active: false }));
           columns = 1;
         } else if (activeTab === 'level-settings') {
           items = [
