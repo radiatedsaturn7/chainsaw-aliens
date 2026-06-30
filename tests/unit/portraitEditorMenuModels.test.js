@@ -803,6 +803,14 @@ test('Actor portrait menu matches compact shared rail contract', () => {
   assert.equal(model.rootTabs.some((tab) => tab.id === 'linked-parts'), false);
 });
 
+test('Actor gamepad mode replaces the left landscape rail with submenu slide-out', () => {
+  assert.equal(actorEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
+  assert.equal(actorEditorSource.includes('isGamepadLandscapeMenuMode(viewportW, viewportH)'), true);
+  assert.equal(actorEditorSource.includes('shouldDrawGamepadSlideOut'), true);
+  assert.equal(actorEditorSource.includes('left.appendChild(this.renderGamepadSlideOutRail(gamepadSlideOutMenuId));'), true);
+  assert.equal(actorEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
+});
+
 test('Actor editor bottom play action launches the full actor scene playtest', () => {
   const calls = [];
   const game = {
