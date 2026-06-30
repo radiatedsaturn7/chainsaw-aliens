@@ -20,7 +20,6 @@ import {
   drawSharedPortraitTabStrip,
   buildSharedEditorFileMenu,
   getSharedMobilePortraitEditorLayout,
-  getSharedMobileLandscapeEditorLayout,
   getSharedMobileRailWidth,
   getSharedPortraitActionRailLayout,
   getSharedPortraitMenuMetrics,
@@ -36,7 +35,7 @@ import {
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
 import { getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
-import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeTouchEditorShellPlan } from './shared/editorMenuLayout.js';
 
 const DEFAULT_SAMPLE_RATE = 44100;
 const DEFAULT_DURATION = 0.45;
@@ -1830,7 +1829,9 @@ export default class SfxEditor {
     }
     const gamepadSubmenuOnLeft = this.shouldDrawGamepadSubmenuOnLeft();
     const landscapeLayout = isMobileLandscape
-      ? getSharedMobileLandscapeEditorLayout(width, height, {
+      ? buildLandscapeTouchEditorShellPlan('sfx', {
+        viewportWidth: width,
+        viewportHeight: height,
         bottomRailHeight: 96,
         rightRailWidth: getSharedMobileRailWidth(width, height),
         reserveRightRail: !gamepadSubmenuOnLeft

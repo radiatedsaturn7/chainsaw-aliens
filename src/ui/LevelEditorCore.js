@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { deleteProjectFile, listProjectFiles, loadProjectFile, saveProjectFile } from './projectFiles.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPlayStopButton, drawSharedPortraitActionRail, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedPortraitTabStrip, drawSharedThumbstick, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPlayStopButton, drawSharedPortraitActionRail, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedPortraitTabStrip, drawSharedThumbstick, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
 import { clamp, randInt, pickOne } from '../editor/input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from '../editor/playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -16,7 +16,7 @@ import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHel
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
 import { getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
-import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeTouchEditorShellPlan } from './shared/editorMenuLayout.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -941,7 +941,9 @@ export default class Editor {
         this.zoomSlider.active = false;
         this.zoomSlider.id = null;
       } else {
-        const landscapeLayout = getSharedMobileLandscapeEditorLayout(width, height, {
+        const landscapeLayout = buildLandscapeTouchEditorShellPlan('level', {
+          viewportWidth: width,
+          viewportHeight: height,
           reserveRightRail: this.drawer.open
         });
         const { center, radius: joystickRadius, knobRadius } = landscapeLayout.thumbstick;
@@ -966,7 +968,9 @@ export default class Editor {
           ? { ...portraitLayout.menuSheet }
           : { ...portraitLayout.middleRail };
       } else {
-        const landscapeLayout = getSharedMobileLandscapeEditorLayout(width, height, {
+        const landscapeLayout = buildLandscapeTouchEditorShellPlan('level', {
+          viewportWidth: width,
+          viewportHeight: height,
           reserveRightRail: this.drawer.open
         });
         const drawerWidth = this.drawer.open ? landscapeLayout.rightRail.w : 0;
@@ -8438,7 +8442,9 @@ export default class Editor {
 
     if (this.isMobileLayout()) {
       const portraitLayout = mobilePortraitLayout;
-      const landscapeLayout = portraitLayout ? null : getSharedMobileLandscapeEditorLayout(width, height, {
+      const landscapeLayout = portraitLayout ? null : buildLandscapeTouchEditorShellPlan('level', {
+        viewportWidth: width,
+        viewportHeight: height,
         reserveRightRail: this.drawer.open
       });
       const railWidth = portraitLayout ? portraitLayout.leftRail.w : landscapeLayout.leftRail.w;
