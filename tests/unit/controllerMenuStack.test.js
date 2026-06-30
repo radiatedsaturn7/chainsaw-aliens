@@ -95,6 +95,40 @@ test('controller menu supports vertical navigation, descend, and back in visible
   assert.equal(stack.getActiveMenuId(), 'root');
 });
 
+test('controller menu switches highlighted root section with shoulder buttons', () => {
+  const stack = new ControllerMenuStack({ siblingOrder: ['tools', 'file', 'settings'] });
+  stack.setMenus({
+    root: {
+      id: 'root',
+      title: 'Root',
+      items: [
+        { id: 'tools', label: 'Tools', submenu: 'tools' },
+        { id: 'undo', label: 'Undo', onSelect: () => {} },
+        { id: 'file', label: 'File', submenu: 'file' },
+        { id: 'settings', label: 'Settings', submenu: 'settings' }
+      ]
+    },
+    tools: { id: 'tools', title: 'Tools', items: [] },
+    file: { id: 'file', title: 'File', items: [] },
+    settings: { id: 'settings', title: 'Settings', items: [] }
+  });
+
+  stack.openRoot();
+  assert.equal(stack.getFocusedItem().id, 'tools');
+
+  stack.handleActions([action(EDITOR_INPUT_ACTIONS.PANEL_NEXT)], {}, 0.016);
+  assert.equal(stack.getFocusedItem().id, 'file');
+
+  stack.handleActions([action(EDITOR_INPUT_ACTIONS.PANEL_NEXT)], {}, 0.016);
+  assert.equal(stack.getFocusedItem().id, 'settings');
+
+  stack.handleActions([action(EDITOR_INPUT_ACTIONS.PANEL_NEXT)], {}, 0.016);
+  assert.equal(stack.getFocusedItem().id, 'tools');
+
+  stack.handleActions([action(EDITOR_INPUT_ACTIONS.PANEL_PREV)], {}, 0.016);
+  assert.equal(stack.getFocusedItem().id, 'settings');
+});
+
 test('controller menu syncs scroll to focused item', () => {
   const stack = new ControllerMenuStack();
   stack.setMenus({

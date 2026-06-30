@@ -203,6 +203,20 @@ export class ControllerMenuStack {
   moveSibling(delta) {
     const current = this.getActiveMenuId();
     if (!current || !this.siblingOrder.length) return;
+    if (current === this.rootId) {
+      const rootItems = this.getItems(this.menus[this.rootId]);
+      const currentRootItem = rootItems[this.selected[this.rootId] ?? 0];
+      const currentRootId = currentRootItem?.submenu || currentRootItem?.id;
+      const currentIndex = this.siblingOrder.indexOf(currentRootId);
+      if (currentIndex < 0) return;
+      const nextId = this.siblingOrder[(currentIndex + Math.sign(delta) + this.siblingOrder.length) % this.siblingOrder.length];
+      const nextIndex = rootItems.findIndex((item) => (item.submenu || item.id) === nextId);
+      if (nextIndex >= 0) {
+        this.selected[this.rootId] = nextIndex;
+        this.lastRootId = rootItems[nextIndex]?.id || null;
+      }
+      return;
+    }
     const index = this.siblingOrder.indexOf(current);
     if (index < 0) return;
     const nextId = this.siblingOrder[(index + Math.sign(delta) + this.siblingOrder.length) % this.siblingOrder.length];
