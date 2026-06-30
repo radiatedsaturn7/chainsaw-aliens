@@ -12,7 +12,7 @@ import {
   getMenuScrollPolicy,
   resolveEditorLayoutMode
 } from '../../src/ui/shared/editorMenuLayout.js';
-import { EDITOR_LAYOUT_MODES } from '../../src/ui/shared/editorMenuSpec.js';
+import { EDITOR_LAYOUT_MODES, getEditorMenuSection } from '../../src/ui/shared/editorMenuSpec.js';
 
 test('layout mode resolver distinguishes portrait, landscape, desktop, and gamepad', () => {
   assert.equal(resolveEditorLayoutMode({ isMobile: true, viewportWidth: 390, viewportHeight: 844 }), EDITOR_LAYOUT_MODES.PORTRAIT);
@@ -100,6 +100,20 @@ test('desktop dropdown plan resolves section actions through runtime aliases', (
   assert.equal(dropdown.title, 'Tracks / Mixer');
   assert.deepEqual(dropdown.items.map((item) => item.id), ['track-list', 'instrument', 'volume', 'pan', 'mute', 'solo']);
   assert.deepEqual(dropdown.bounds, { x: 120, y: 40, w: 220, h: 204 });
+});
+
+test('shared file menu specs include the actions used by editor surfaces', () => {
+  assert.deepEqual(getEditorMenuSection('pixel', 'file').actions, ['new', 'save', 'save-as', 'open', 'import', 'export', 'copy-image', 'paste-image', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('level', 'file').actions, ['new', 'save', 'save-as', 'open', 'import', 'export', 'undo', 'redo', 'playtest', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('midi', 'file').actions, ['new', 'save', 'save-as', 'open', 'import', 'export', 'nav-grid', 'nav-instruments', 'nav-virtual-instruments', 'nav-pedals', 'nav-settings', 'rescue-save', 'export-midi', 'export-midi-zip', 'export-wav', 'save-paint', 'play-robtersession', 'theme', 'sample', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('sfx', 'file').actions, ['new', 'save', 'save-as', 'open', 'import', 'export', 'undo', 'redo', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('cutscene', 'file').actions, ['new', 'save', 'save-as', 'open', 'import', 'export', 'undo', 'redo', 'exit-main']);
+
+  const pixelDropdown = buildDesktopDropdownPlan('pixel', 'file');
+  assert.deepEqual(pixelDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'import', 'export', 'copy-image', 'paste-image', 'exit-main']);
+
+  const levelDropdown = buildDesktopDropdownPlan('level', 'file');
+  assert.deepEqual(levelDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'import', 'export', 'undo', 'redo', 'playtest', 'exit-main']);
 });
 
 test('desktop editor shell plan reserves top menus and left ribbon/options', () => {
