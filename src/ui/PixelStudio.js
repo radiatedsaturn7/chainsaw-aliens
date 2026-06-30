@@ -8529,7 +8529,6 @@ export default class PixelStudio {
         viewportWidth: width,
         viewportHeight: height,
         activeRootId: this.getDesktopRootIdForPanel(),
-        bottomBarHeight: bottomHeight,
         leftPanelWidth: Math.min(360, Math.max(292, width * 0.24)),
         leftRibbonHeight: 58,
         labelOverrides: {
