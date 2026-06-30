@@ -788,6 +788,16 @@ test('SFX gamepad mode replaces the left landscape rail with submenu slide-out',
   assert.equal(sfxEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
 });
 
+test('SFX desktop keeps transport in the left column instead of a bottom rail', () => {
+  const desktopIndex = sfxEditorSource.indexOf('if (!isMobileViewport) {');
+  const desktopBlock = sfxEditorSource.slice(desktopIndex, sfxEditorSource.indexOf('const landscapeLayout = isMobileLandscape', desktopIndex));
+
+  assert.equal(desktopBlock.includes('bottomBarHeight'), false);
+  assert.equal(desktopBlock.includes('this.drawBottomRail(ctx, shell.bottomBar)'), false);
+  assert.equal(desktopBlock.includes('this.drawRightPanel(ctx, shell.leftOptions, { includeDesktopTransport: true });'), true);
+  assert.equal(sfxEditorSource.includes('drawDesktopTransportPanel(ctx, bounds)'), true);
+});
+
 test('MIDI gamepad mode replaces the left landscape rail with submenu slide-out', () => {
   assert.equal(midiEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
   assert.equal(midiEditorSource.includes('isGamepadLandscapeMenuMode(width'), true);
