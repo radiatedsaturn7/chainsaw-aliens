@@ -12,6 +12,7 @@ import {
   drawSharedPortraitScrollHints,
   drawSharedPortraitSheet,
   drawSharedTransportPopover,
+  getSharedMobileLandscapeEditorLayout,
   getSharedMobilePortraitEditorLayout,
   isMobilePortraitLayout,
   normalizeSharedControlBounds
@@ -1830,6 +1831,7 @@ export default class CutsceneEditor {
     this.activeMenuTab = 'add';
     this.menuScroll = 0;
     this.menuScrollDrag = null;
+    this.landscapeRootScroll = 0;
     this.controllerMenu = new ControllerMenuStack({
       siblingOrder: CUTSCENE_CONTROLLER_ROOTS
     });
@@ -2042,6 +2044,7 @@ export default class CutsceneEditor {
       const layout = this.computeLayout(safeW, safeH);
       const { stageBounds, timelineBounds, railBounds, contextBounds, zoomBounds } = layout;
       if (layout.isDesktop) this.drawDesktopShellChrome(ctx, layout.desktopShell);
+      if (layout.isLandscapeTouch) this.drawLandscapeRootRail(ctx, layout.leftMenuBounds);
       this.bounds.stage = stageBounds;
       this.bounds.timeline = timelineBounds;
       this.bounds.timelineZoom = null;
@@ -2063,7 +2066,8 @@ export default class CutsceneEditor {
         this.drawDesktopMenuPanel(ctx, layout.menuBounds);
         this.drawDesktopDropdown(ctx, layout.desktopShell);
       } else if (!drawGamepadLeft && this.menuOpen) {
-        this.drawMenu(ctx, layout.menuBounds, layout.isPortrait);
+        if (layout.isLandscapeTouch) this.drawLandscapeSubmenuPanel(ctx, layout.menuBounds);
+        else this.drawMenu(ctx, layout.menuBounds, layout.isPortrait);
       }
       if (this.shouldDrawControllerOverlay(safeW, safeH)) {
         drawCanvasControllerMenu(ctx, this.controllerMenu, {
@@ -2231,26 +2235,32 @@ export default class CutsceneEditor {
       };
     }
     const railH = 86;
+    const landscape = getSharedMobileLandscapeEditorLayout(width, height, {
+      bottomRailHeight: railH,
+      rightRailWidth: Math.min(340, Math.max(248, Math.floor(width * 0.28))),
+      reserveRightRail: true
+    });
+    const work = landscape.workSurface;
     const contextH = 46;
     const timelineH = mode === 'timeline'
-      ? Math.max(160, height - railH - contextH - margin * 5 - 96)
+      ? Math.max(160, work.h - contextH - margin * 3 - 96)
       : mode === 'canvas'
-        ? clamp(Math.round(height * 0.14), 64, 92)
-        : clamp(Math.round(height * 0.24), 104, 148);
-    const railBounds = { x: margin, y: height - railH - margin, w: width - margin * 2, h: railH };
-    const timelineBounds = { x: margin, y: railBounds.y - timelineH - margin, w: width - margin * 2, h: timelineH };
-    const contextBounds = { x: margin, y: timelineBounds.y - contextH - margin, w: width - margin * 2, h: contextH };
-    const stageBounds = { x: margin, y: margin, w: width - margin * 2, h: Math.max(80, contextBounds.y - margin * 2) };
-    const menuW = Math.min(360, Math.max(280, Math.floor(width * 0.38)));
+        ? clamp(Math.round(work.h * 0.14), 64, 92)
+        : clamp(Math.round(work.h * 0.24), 104, 148);
+    const timelineBounds = { x: work.x, y: work.y + work.h - timelineH, w: work.w, h: timelineH };
+    const contextBounds = { x: work.x, y: timelineBounds.y - contextH - margin, w: work.w, h: contextH };
+    const stageBounds = { x: work.x, y: work.y, w: work.w, h: Math.max(80, contextBounds.y - work.y - margin) };
     return {
       isPortrait,
+      isLandscapeTouch: true,
       mode,
       stageBounds,
       timelineBounds,
       contextBounds,
       zoomBounds: null,
-      railBounds,
-      menuBounds: { x: margin, y: Math.max(margin, railBounds.y - 260), w: menuW, h: Math.max(180, railBounds.y - margin * 2) }
+      railBounds: landscape.bottomRail,
+      leftMenuBounds: landscape.leftRail,
+      menuBounds: landscape.rightRail
     };
   }
 
@@ -3025,6 +3035,72 @@ export default class CutsceneEditor {
     drawSharedPortraitScrollHints(ctx, content, { scroll: this.menuScroll, scrollMax: maxScroll });
   }
 
+  drawLandscapeRootRail(ctx, bounds) {
+    if (!bounds) return;
+    this.bounds.landscapeRootPanel = bounds;
+    this.bounds.landscapeRootButtons = [];
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    const pad = 8;
+    const gap = 7;
+    const rowH = 40;
+    const list = { x: bounds.x + pad, y: bounds.y + pad, w: bounds.w - pad * 2, h: bounds.h - pad * 2 };
+    const visibleRows = Math.max(1, Math.floor((list.h + gap) / (rowH + gap)));
+    const maxScroll = Math.max(0, CUTSCENE_CONTROLLER_ROOTS.length - visibleRows);
+    this.bounds.landscapeRootScrollMax = maxScroll;
+    this.bounds.landscapeRootContent = list;
+    this.landscapeRootScroll = clamp(Math.round(this.landscapeRootScroll || 0), 0, maxScroll);
+    CUTSCENE_CONTROLLER_ROOTS.slice(this.landscapeRootScroll, this.landscapeRootScroll + visibleRows).forEach((id, index) => {
+      const button = {
+        x: list.x,
+        y: list.y + index * (rowH + gap),
+        w: list.w,
+        h: rowH,
+        id: `landscape-tab:${id}`
+      };
+      const color = drawSharedMenuButtonChrome(ctx, button, { active: this.activeMenuTab === id });
+      drawSharedMenuButtonLabel(ctx, button, CUTSCENE_DESKTOP_MENU_LABELS[id] || id, { color, fontSize: 11, maxWidth: button.w - 8 });
+      this.bounds.landscapeRootButtons.push(button);
+    });
+    drawSharedPortraitScrollHints(ctx, list, { scroll: this.landscapeRootScroll, scrollMax: maxScroll });
+  }
+
+  drawLandscapeSubmenuPanel(ctx, bounds) {
+    if (!bounds) return;
+    this.bounds.menuPanel = bounds;
+    this.bounds.menuButtons = [];
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    const pad = 10;
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `13px ${UI_SUITE.font.family}`;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(CUTSCENE_DESKTOP_MENU_LABELS[this.activeMenuTab] || 'Menu', bounds.x + pad, bounds.y + 20, bounds.w - pad * 2);
+    ctx.restore();
+    const items = this.getMenuItems(this.activeMenuTab);
+    const content = { x: bounds.x + pad, y: bounds.y + 38, w: bounds.w - pad * 2, h: bounds.h - 48 };
+    this.bounds.menuContent = content;
+    const rowH = 42;
+    const gap = 8;
+    const visibleRows = Math.max(1, Math.floor((content.h + gap) / (rowH + gap)));
+    const maxScroll = Math.max(0, items.length - visibleRows);
+    this.bounds.menuScrollMax = maxScroll;
+    this.bounds.menuScrollCols = 1;
+    this.menuScroll = clamp(Math.round(this.menuScroll || 0), 0, maxScroll);
+    items.slice(this.menuScroll, this.menuScroll + visibleRows).forEach((item, index) => {
+      const button = {
+        x: content.x,
+        y: content.y + index * (rowH + gap),
+        w: content.w,
+        h: rowH,
+        id: item.id
+      };
+      const color = drawSharedMenuButtonChrome(ctx, button, { active: Boolean(item.active), subtle: Boolean(item.disabled) });
+      drawSharedMenuButtonLabel(ctx, button, item.label, { color, fontSize: 12, maxWidth: button.w - 10 });
+      if (!item.disabled) this.bounds.menuButtons.push(button);
+    });
+    drawSharedPortraitScrollHints(ctx, content, { scroll: this.menuScroll, scrollMax: maxScroll });
+  }
+
   drawGamepadSlideOutPanel(ctx, bounds) {
     if (!bounds) return;
     const menuId = this.getActiveGamepadMenuId();
@@ -3108,9 +3184,22 @@ export default class CutsceneEditor {
     if (this.bounds.desktopMenuPanel && this.pointIn(this.bounds.desktopMenuPanel, x, y)) {
       return;
     }
+    if (this.bounds.landscapeRootPanel && this.pointIn(this.bounds.landscapeRootPanel, x, y)) {
+      const rootButton = this.bounds.landscapeRootButtons?.find((entry) => this.pointIn(entry, x, y));
+      this.menuScrollDrag = {
+        target: 'landscape-root',
+        startX: x,
+        startY: y,
+        lastY: y,
+        buttonId: rootButton?.id || null,
+        moved: false
+      };
+      return;
+    }
     if (this.menuOpen && this.bounds.menuPanel && this.pointIn(this.bounds.menuPanel, x, y)) {
       const menuButton = this.bounds.menuButtons?.find((entry) => this.pointIn(entry, x, y));
       this.menuScrollDrag = {
+        target: 'submenu',
         startX: x,
         startY: y,
         lastY: y,
@@ -3320,7 +3409,13 @@ export default class CutsceneEditor {
       const drag = this.menuScrollDrag;
       const movedDistance = Math.hypot(x - safeNumber(drag.startX), y - safeNumber(drag.startY));
       if (movedDistance >= 6) drag.moved = true;
-      if (drag.moved && this.bounds.menuScrollMax > 0) {
+      if (drag.moved && drag.target === 'landscape-root' && this.bounds.landscapeRootScrollMax > 0) {
+        const content = this.bounds.landscapeRootContent || { h: 1 };
+        const visibleRows = Math.max(1, Math.floor((content.h + 7) / (40 + 7)));
+        const rowDelta = (safeNumber(drag.lastY) - y) / Math.max(1, content.h) * visibleRows;
+        this.landscapeRootScroll = clamp((this.landscapeRootScroll || 0) + rowDelta, 0, this.bounds.landscapeRootScrollMax || 0);
+        drag.lastY = y;
+      } else if (drag.moved && this.bounds.menuScrollMax > 0) {
         const content = this.bounds.menuContent || { h: 1 };
         const visibleRows = Math.max(1, Math.floor((content.h + 8) / (42 + 8)));
         const rowDelta = (safeNumber(drag.lastY) - y) / Math.max(1, content.h) * visibleRows;
@@ -3796,6 +3891,14 @@ export default class CutsceneEditor {
         const rootId = id.slice('desktop-root:'.length);
         this.activeMenuTab = CUTSCENE_DESKTOP_MENU_LABELS[rootId] ? rootId : 'add';
         this.menuOpen = false;
+        this.clipOptionsOpen = false;
+        this.menuScroll = 0;
+        return;
+      }
+      if (id?.startsWith?.('landscape-tab:')) {
+        const rootId = id.slice('landscape-tab:'.length);
+        this.activeMenuTab = CUTSCENE_DESKTOP_MENU_LABELS[rootId] ? rootId : 'add';
+        this.menuOpen = true;
         this.clipOptionsOpen = false;
         this.menuScroll = 0;
         return;
