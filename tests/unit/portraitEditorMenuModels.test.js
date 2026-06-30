@@ -647,6 +647,17 @@ test('Level gamepad mode replaces the left landscape rail with submenu slide-out
   assert.equal(levelEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
 });
 
+test('Level desktop right button pans instead of erasing or placing content', () => {
+  const pointerDownIndex = levelEditorSource.indexOf('  handlePointerDown(payload)');
+  const pointerDownBody = levelEditorSource.slice(pointerDownIndex, levelEditorSource.indexOf('  handlePointerMove(payload)', pointerDownIndex));
+  const rightPanIndex = pointerDownBody.indexOf("payload.button === 1 || payload.button === 2 || (payload.button === 0 && this.game.input.isDownCode('Space'))");
+  const dragModeIndex = pointerDownBody.indexOf('const dragMode = this.resolveDragMode(this.mode);');
+
+  assert.ok(rightPanIndex > 0);
+  assert.ok(dragModeIndex > rightPanIndex);
+  assert.equal(pointerDownBody.includes("this.tileTool = 'erase';"), false);
+});
+
 test('Level editor keeps settings and tile art reachable from desktop rail', () => {
   assert.equal(levelEditorSource.includes("this.panelTabs = ['file', 'toolbox', 'tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music', 'level-settings']"), true);
   assert.equal(levelEditorSource.includes("const topButtonDefById = new Map(topButtonDefs.map((entry) => [entry.id, entry]));"), true);

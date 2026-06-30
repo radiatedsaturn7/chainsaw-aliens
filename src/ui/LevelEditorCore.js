@@ -5902,19 +5902,8 @@ export default class Editor {
     this.dragButton = payload.button;
     const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
 
-    if (payload.button === 1 || (payload.button === 0 && this.game.input.isDownCode('Space'))) {
+    if (payload.button === 1 || payload.button === 2 || (payload.button === 0 && this.game.input.isDownCode('Space'))) {
       this.beginStroke('pan', tileX, tileY);
-      return;
-    }
-
-    if (payload.button === 2) {
-      if (this.mode === 'enemy') {
-        this.beginStroke('enemy', tileX, tileY);
-      } else {
-        this.mode = 'tile';
-        this.tileTool = 'erase';
-        this.beginStroke('erase', tileX, tileY);
-      }
       return;
     }
 
