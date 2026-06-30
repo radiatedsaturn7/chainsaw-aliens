@@ -1,13 +1,25 @@
 import {
   EDITOR_LAYOUT_MODES,
   EDITOR_MENU_PLACEMENTS,
-  getEditorMenuSpec
+  getEditorMenuSpec,
+  getEditorRootMenuEntries
 } from './editorMenuSpec.js';
 
 const DEFAULT_DRAG_SCROLL = {
   enabled: true,
   thresholdPx: 8,
   suppressClickAfterDrag: true
+};
+
+const DEFAULT_TOP_MENU = {
+  x: 0,
+  y: 0,
+  w: 0,
+  h: 40,
+  itemMinWidth: 72,
+  itemMaxWidth: 132,
+  gap: 4,
+  padding: 8
 };
 
 export function resolveEditorLayoutMode({
@@ -76,5 +88,117 @@ export function getMenuScrollPolicy({ pointerType = 'touch', mode = EDITOR_LAYOU
     mode,
     wheelRoutesToHoveredPanel: mode === EDITOR_LAYOUT_MODES.DESKTOP,
     pinchZoomReservedForWorkSurface: true
+  };
+}
+
+export function buildDesktopTopMenuPlan(editorId, {
+  bounds = {},
+  activeRootId = null,
+  labelOverrides = {},
+  maxVisibleItems = Infinity
+} = {}) {
+  const menuBounds = { ...DEFAULT_TOP_MENU, ...bounds };
+  const entries = getEditorRootMenuEntries(editorId, { labelOverrides });
+  const visibleEntries = entries.slice(0, Math.max(0, maxVisibleItems));
+  const overflowEntries = entries.slice(visibleEntries.length);
+  const availableW = Math.max(1, menuBounds.w - menuBounds.padding * 2 - Math.max(0, visibleEntries.length - 1) * menuBounds.gap);
+  const rawItemW = visibleEntries.length ? Math.floor(availableW / visibleEntries.length) : menuBounds.itemMinWidth;
+  const itemW = Math.max(menuBounds.itemMinWidth, Math.min(menuBounds.itemMaxWidth, rawItemW));
+  const buttons = visibleEntries.map((entry, index) => ({
+    ...entry,
+    bounds: {
+      x: menuBounds.x + menuBounds.padding + index * (itemW + menuBounds.gap),
+      y: menuBounds.y,
+      w: itemW,
+      h: menuBounds.h
+    },
+    active: entry.id === activeRootId || entry.specId === activeRootId
+  }));
+  const dropdown = activeRootId
+    ? buildDesktopDropdownPlan(editorId, activeRootId, {
+      anchor: buttons.find((button) => button.id === activeRootId || button.specId === activeRootId)?.bounds,
+      labelOverrides
+    })
+    : null;
+  return {
+    editorId,
+    mode: EDITOR_LAYOUT_MODES.DESKTOP,
+    bounds: menuBounds,
+    buttons,
+    overflowEntries,
+    dropdown
+  };
+}
+
+export function buildDesktopDropdownPlan(editorId, rootId, {
+  anchor = null,
+  labelOverrides = {},
+  rowHeight = 34,
+  minWidth = 220,
+  maxVisibleRows = 12
+} = {}) {
+  const spec = getEditorMenuSpec(editorId);
+  const rootEntry = getEditorRootMenuEntries(editorId, { labelOverrides })
+    .find((entry) => entry.id === rootId || entry.specId === rootId);
+  const sectionId = rootEntry?.specId || rootId;
+  const section = spec?.sections?.[sectionId];
+  const items = (section?.actions || []).map((actionId) => ({
+    id: actionId,
+    label: spec?.actions?.[actionId]?.label || labelOverrides[actionId] || actionId
+  }));
+  const visibleRows = Math.min(maxVisibleRows, Math.max(1, items.length || 1));
+  const bounds = {
+    x: anchor?.x || 0,
+    y: (anchor?.y || 0) + (anchor?.h || 0),
+    w: Math.max(minWidth, anchor?.w || 0),
+    h: visibleRows * rowHeight
+  };
+  return {
+    editorId,
+    rootId: rootEntry?.id || rootId,
+    specId: sectionId,
+    title: section?.label || rootEntry?.label || '',
+    bounds,
+    rowHeight,
+    items,
+    scroll: { ...DEFAULT_DRAG_SCROLL }
+  };
+}
+
+export function buildGamepadSlideOutMenuPlan(editorId, {
+  rootOpen = true,
+  activeRootId = null,
+  focusedItemId = null,
+  labelOverrides = {}
+} = {}) {
+  const rootEntries = getEditorRootMenuEntries(editorId, { labelOverrides });
+  const activeRoot = rootEntries.find((entry) => entry.id === activeRootId || entry.specId === activeRootId)
+    || rootEntries[0]
+    || null;
+  const submenu = activeRoot && !rootOpen
+    ? buildDesktopDropdownPlan(editorId, activeRoot.id, { labelOverrides })
+    : null;
+  return {
+    editorId,
+    mode: EDITOR_LAYOUT_MODES.GAMEPAD,
+    rootOpen,
+    rootCollapsed: Boolean(activeRoot && !rootOpen),
+    activeRootId: activeRoot?.id || null,
+    activeSpecId: activeRoot?.specId || null,
+    focusedItemId,
+    rootEntries,
+    submenu,
+    controls: {
+      confirm: 'A',
+      back: 'B',
+      system: 'Start',
+      focusToggle: 'Back',
+      siblingPrev: 'LB',
+      siblingNext: 'RB'
+    },
+    scroll: {
+      root: { ...DEFAULT_DRAG_SCROLL },
+      submenu: { ...DEFAULT_DRAG_SCROLL }
+    }
   };
 }

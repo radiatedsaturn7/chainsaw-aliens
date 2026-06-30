@@ -23,6 +23,12 @@ All editors should expose an `EditorMenuSpec` with this shape:
 
 Mode-specific rendering should consume the same menu spec wherever possible. Editor-specific callbacks can be attached at runtime by each editor.
 
+Shared implementation helpers:
+
+- `getEditorRootMenuEntries()` returns render-ready root menu ids while preserving spec ids through runtime aliases.
+- `buildDesktopTopMenuPlan()` and `buildDesktopDropdownPlan()` define the app-style desktop top menu and dropdown structure.
+- `buildGamepadSlideOutMenuPlan()` defines root-open versus submenu-open gamepad menu state.
+
 ## Mode Layouts
 
 ### Portrait
