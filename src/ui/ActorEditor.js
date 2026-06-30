@@ -5,12 +5,23 @@ import { getBuiltInActorIdFromName, isBuiltInActorName, mergeBuiltInActorOverrid
 import { getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
 import { invalidateActorDefinitionCache } from '../entities/ScriptedActor.js';
 import { invalidateBuiltInActorVisualCache } from '../entities/BuiltInActorVisuals.js';
+import { buildDesktopEditorShellPlan } from './shared/editorMenuLayout.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, renderDomControllerMenu } from './shared/input/controllerMenuStack.js';
 
 const ACTOR_FOLDER = 'actors';
 const clone = (value) => JSON.parse(JSON.stringify(value));
 const DEFAULT_ACTOR_SIZE = { width: 24, height: 24 };
+const ACTOR_DESKTOP_ROOT_TO_SECTION = {
+  file: 'actor',
+  settings: 'actor',
+  states: 'states',
+  'linked-parts': 'linked-parts',
+  visuals: 'states',
+  collision: 'states',
+  behavior: 'states',
+  preview: 'tools'
+};
 
 export function buildActorPortraitMenuModel() {
   return {
@@ -127,6 +138,7 @@ export default class ActorEditor {
     this.artPreviewCache = new Map();
     this.previewTimers = [];
     this.activeMenuSection = 'actor';
+    this.actorDesktopRoot = 'settings';
     this.fileMenuOpen = true;
     this.actorPortraitMenuOpen = false;
     this.stateGraphOpen = false;
@@ -1227,7 +1239,18 @@ export default class ActorEditor {
     const isMobileViewport = Math.min(viewportW, viewportH) <= 900;
     const isMobileLandscape = isMobileViewport && viewportW > viewportH;
     const isMobilePortrait = isMobileViewport && viewportH > viewportW;
+    const isGamepadConnected = Boolean(this.game?.input?.isGamepadConnected?.());
+    const isDesktopLayout = !isMobileViewport && !isGamepadConnected;
     this.hideMobileSectionHeaders = isMobileLandscape;
+    const desktopShell = isDesktopLayout
+      ? buildDesktopEditorShellPlan('actor', {
+        viewportWidth: viewportW,
+        viewportHeight: viewportH,
+        activeRootId: this.getActiveActorDesktopRoot(),
+        leftPanelWidth: Math.min(360, Math.max(292, viewportW * 0.24)),
+        leftRibbonHeight: 58
+      })
+      : null;
     const portraitInset = isMobilePortrait ? 8 : 0;
     const portraitLayout = isMobilePortrait
       ? getSharedMobilePortraitEditorLayout(viewportW - portraitInset * 2, viewportH - portraitInset * 2, {
@@ -1242,7 +1265,9 @@ export default class ActorEditor {
       ? getSharedMobileRailWidth(viewportW, viewportH)
       : SHARED_EDITOR_LEFT_MENU.width();
     const rightRailContent = this.renderRightRail();
-    if (rightRailContent) rightRail.appendChild(rightRailContent);
+    const desktopRailContent = isDesktopLayout ? this.renderDesktopOptionsPanel() : null;
+    const activeRailContent = desktopRailContent || rightRailContent;
+    if (activeRailContent) rightRail.appendChild(activeRailContent);
     if (portraitLayout) {
       const topMenus = el('div', 'actor-editor-portrait-top actor-editor-portrait-sheet');
       const middleRail = el('div', 'actor-editor-portrait-middle');
@@ -1272,6 +1297,9 @@ export default class ActorEditor {
       middleRail.style.minHeight = `${portraitLayout.middleRail.h}px`;
       middleRail.style.overflow = 'hidden';
       center.style.height = `${portraitLayout.mainEditor.h}px`;
+    } else if (isDesktopLayout) {
+      shell.insertBefore(this.renderDesktopTopMenu(desktopShell), body);
+      body.append(left, center);
     } else {
       body.append(left, center, rightRail);
     }
@@ -1291,9 +1319,15 @@ export default class ActorEditor {
     if (portraitLayout) {
       body.style.position = 'relative';
       body.style.gap = `${portraitLayout.gap}px`;
+    } else if (isDesktopLayout) {
+      shell.style.padding = '0';
+      shell.style.gap = `${desktopShell?.gap || 8}px`;
+      body.style.padding = `0 ${desktopShell?.gap || 8}px ${desktopShell?.gap || 8}px`;
+      body.style.gap = `${desktopShell?.gap || 8}px`;
     }
-    left.style.width = `${railWidth}px`;
-    left.style.flex = `0 0 ${railWidth}px`;
+    const leftWidth = isDesktopLayout ? desktopShell.leftColumn.w : railWidth;
+    left.style.width = `${leftWidth}px`;
+    left.style.flex = `0 0 ${leftWidth}px`;
     left.style.display = 'flex';
     left.style.flexDirection = 'column';
     left.style.gap = `${UI_SUITE.spacing.gap}px`;
@@ -1311,9 +1345,13 @@ export default class ActorEditor {
     rightRail.style.minHeight = '0';
     rightRail.style.overflow = 'hidden';
 
-    left.appendChild(this.renderSidebarMenu());
+    if (isDesktopLayout) {
+      left.appendChild(this.renderDesktopLeftPanel(activeRailContent));
+    } else {
+      left.appendChild(this.renderSidebarMenu());
+    }
     center.appendChild(this.renderMainPanel(actor, state));
-    if (this.game?.input?.isGamepadConnected?.()) {
+    if (isGamepadConnected) {
       shell.appendChild(this.renderGamepadHintBar());
     }
     const controllerMenu = renderDomControllerMenu(this.controllerMenu, { contextLabel: 'Actor Editor' });
@@ -1323,6 +1361,226 @@ export default class ActorEditor {
     }
     this.restoreScrollState(scrollState);
     this.restoreFocusedInputState(focusState);
+  }
+
+  getActiveActorDesktopRoot() {
+    if (this.fileMenuOpen) return 'file';
+    if (this.actorDesktopRoot) return this.actorDesktopRoot;
+    if (this.activeMenuSection === 'actor') return 'settings';
+    if (this.activeMenuSection === 'linked-parts') return 'linked-parts';
+    if (this.activeMenuSection === 'tools') return 'preview';
+    return this.activeMenuSection || 'settings';
+  }
+
+  setActorDesktopRoot(rootId) {
+    this.actorDesktopRoot = ACTOR_DESKTOP_ROOT_TO_SECTION[rootId] ? rootId : 'settings';
+    this.activeMenuSection = ACTOR_DESKTOP_ROOT_TO_SECTION[this.actorDesktopRoot] || 'actor';
+    this.fileMenuOpen = this.actorDesktopRoot === 'file';
+    this.actorPortraitMenuOpen = false;
+    this.controllerMenu.closeToSurface();
+    this.render();
+  }
+
+  renderDesktopTopMenu(shellLayout) {
+    const top = el('div', 'actor-editor-desktop-top-menu');
+    const bounds = shellLayout?.topMenu?.bounds || { h: 40 };
+    Object.assign(top.style, {
+      height: `${bounds.h}px`,
+      minHeight: `${bounds.h}px`,
+      display: 'flex',
+      alignItems: 'stretch',
+      gap: '4px',
+      padding: '0 8px',
+      boxSizing: 'border-box',
+      background: UI_SUITE.colors.panel,
+      borderBottom: `1px solid ${UI_SUITE.colors.border}`,
+      overflowX: 'auto',
+      overflowY: 'hidden'
+    });
+    const activeRoot = this.getActiveActorDesktopRoot();
+    (shellLayout?.topMenu?.buttons || []).forEach((entry) => {
+      const btn = el('button', `actor-editor-btn${entry.id === activeRoot || entry.specId === activeRoot ? ' active' : ''}`, entry.label);
+      this.styleRailButton(btn, entry.id === activeRoot || entry.specId === activeRoot);
+      btn.style.width = `${entry.bounds?.w || 96}px`;
+      btn.style.minWidth = `${entry.bounds?.w || 96}px`;
+      btn.style.height = '100%';
+      btn.style.textAlign = 'center';
+      btn.style.borderTop = '0';
+      btn.style.borderBottom = '0';
+      btn.onclick = () => this.setActorDesktopRoot(entry.id);
+      top.appendChild(btn);
+    });
+    return top;
+  }
+
+  renderDesktopLeftPanel(optionsPanel) {
+    const wrap = el('div', 'actor-editor-desktop-left-panel');
+    Object.assign(wrap.style, {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: `${UI_SUITE.spacing.gap}px`,
+      minHeight: '0',
+      height: '100%'
+    });
+    const ribbon = el('div', 'actor-editor-menu-rail actor-editor-desktop-ribbon');
+    Object.assign(ribbon.style, {
+      background: UI_SUITE.colors.panel,
+      border: `1px solid ${UI_SUITE.colors.border}`,
+      padding: `${SHARED_EDITOR_LEFT_MENU.panelPadding}px`,
+      display: 'grid',
+      gridTemplateColumns: '1fr auto auto',
+      alignItems: 'center',
+      gap: '8px',
+      minHeight: '58px',
+      boxSizing: 'border-box'
+    });
+    const title = el('div');
+    title.innerHTML = `<strong>Actor</strong><br><span>${this.getActorDesktopRootLabel()}</span>`;
+    title.style.color = UI_SUITE.colors.text;
+    title.style.fontSize = '12px';
+    title.querySelector('span').style.color = UI_SUITE.colors.muted;
+    [
+      ['Undo', () => this.undo()],
+      ['Redo', () => this.redo()]
+    ].forEach(([label, handler]) => {
+      const btn = el('button', 'actor-editor-btn small', label);
+      btn.style.minWidth = '62px';
+      btn.onclick = handler;
+      this.styleRailButton(btn, false);
+      ribbon.appendChild(btn);
+    });
+    ribbon.insertBefore(title, ribbon.firstChild);
+    wrap.appendChild(ribbon);
+    if (optionsPanel) wrap.appendChild(optionsPanel);
+    return wrap;
+  }
+
+  getActorDesktopRootLabel() {
+    const labels = {
+      file: 'File',
+      settings: 'Settings',
+      states: 'States',
+      'linked-parts': 'Linked Parts',
+      visuals: 'Visuals',
+      collision: 'Collision',
+      behavior: 'Behavior',
+      preview: 'Preview'
+    };
+    return labels[this.getActiveActorDesktopRoot()] || 'Settings';
+  }
+
+  renderDesktopOptionsPanel() {
+    const rootId = this.getActiveActorDesktopRoot();
+    const rail = el('div', 'actor-editor-menu-rail actor-editor-desktop-options');
+    Object.assign(rail.style, {
+      background: UI_SUITE.colors.panel,
+      border: `1px solid ${UI_SUITE.colors.border}`,
+      padding: `${SHARED_EDITOR_LEFT_MENU.panelPadding}px`,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: `${SHARED_EDITOR_LEFT_MENU.buttonGap}px`,
+      minHeight: '0',
+      height: '100%',
+      overflowY: 'auto',
+      boxSizing: 'border-box'
+    });
+    const title = el('div', 'actor-editor-field-label', this.getActorDesktopRootLabel());
+    title.style.padding = '2px 2px 4px';
+    title.style.color = UI_SUITE.colors.accent;
+    rail.appendChild(title);
+    this.getActorDesktopActions(rootId).forEach((action) => {
+      if (action.kind === 'state-list') {
+        rail.appendChild(this.renderDesktopStateList());
+        return;
+      }
+      const btn = el('button', `actor-editor-btn${action.active ? ' active' : ''}`, action.label);
+      this.styleRailButton(btn, Boolean(action.active));
+      btn.disabled = Boolean(action.disabled);
+      if (btn.disabled) btn.style.opacity = '0.5';
+      btn.onclick = action.onClick;
+      rail.appendChild(btn);
+    });
+    return rail;
+  }
+
+  getActorDesktopActions(rootId) {
+    const state = this.selectedState;
+    const openStateEditor = () => {
+      this.fileMenuOpen = false;
+      this.activeMenuSection = 'states';
+      this.render();
+    };
+    const openActorSettings = () => {
+      this.fileMenuOpen = false;
+      this.activeMenuSection = 'actor';
+      this.render();
+    };
+    const actions = {
+      file: [
+        { label: 'New', onClick: () => this.newActor() },
+        { label: 'Open', onClick: () => this.openActor() },
+        { label: 'Save', onClick: () => this.saveActor(false) },
+        { label: 'Save As', onClick: () => this.saveActor(true) },
+        { label: 'Exit to Main Menu', onClick: () => this.exitToMenu() }
+      ],
+      settings: [
+        { label: 'Actor Settings', active: this.activeMenuSection === 'actor', onClick: openActorSettings },
+        { label: 'Taxonomies', onClick: openActorSettings },
+        { label: 'Aggression', onClick: openActorSettings },
+        { label: 'Loot Rules', onClick: openActorSettings }
+      ],
+      states: [
+        { label: 'Add State', onClick: () => this.addState() },
+        { label: 'Duplicate State', disabled: !state, onClick: () => this.duplicateState(state) },
+        { label: 'Delete State', disabled: !state || this.actor.states.length <= 1, onClick: () => this.deleteState(state) },
+        { kind: 'state-list' }
+      ],
+      'linked-parts': [
+        { label: 'Linked Parts', active: this.activeMenuSection === 'linked-parts', onClick: () => { this.activeMenuSection = 'linked-parts'; this.render(); } },
+        { label: 'Root Actor Settings', onClick: openActorSettings }
+      ],
+      visuals: [
+        { label: 'Animation', active: this.activeMenuSection === 'states', onClick: openStateEditor },
+        { label: 'Art Reference', onClick: openStateEditor },
+        { label: 'Frame Timing', onClick: openStateEditor },
+        { label: 'State Graph', onClick: () => { this.stateGraphOpen = true; this.render(); } }
+      ],
+      collision: [
+        { label: 'Collision / Hitbox Zones', onClick: () => this.openCollisionZoneEditor(this.actor) },
+        { label: 'State Hit Response', onClick: openStateEditor },
+        { label: 'Body Damage', onClick: openStateEditor }
+      ],
+      behavior: [
+        { label: 'Conditions', onClick: openStateEditor },
+        { label: 'Actions', onClick: openStateEditor },
+        { label: 'Movement', onClick: openStateEditor },
+        { label: 'Loot', onClick: openActorSettings },
+        { label: 'Audio', onClick: openStateEditor }
+      ],
+      preview: [
+        { label: 'Play Scene', onClick: () => this.playActorScene() },
+        { label: 'State Graph', onClick: () => { this.stateGraphOpen = true; this.render(); } },
+        { label: 'Collision / Hitbox Zones', onClick: () => this.openCollisionZoneEditor(this.actor) }
+      ]
+    };
+    return actions[rootId] || actions.settings;
+  }
+
+  renderDesktopStateList() {
+    const list = el('div', 'actor-editor-state-list actor-editor-rail-state-list');
+    Object.assign(list.style, {
+      minHeight: '120px',
+      maxHeight: '260px',
+      overflowY: 'auto',
+      paddingTop: '4px'
+    });
+    this.actor.states.forEach((entry) => {
+      const btn = el('button', `actor-editor-btn small${this.selectedStateId === entry.id ? ' active' : ''}`, entry.name || entry.id);
+      this.styleRailButton(btn, this.selectedStateId === entry.id);
+      btn.onclick = () => this.selectActorState(entry.id, { closePortraitMenu: false });
+      list.appendChild(btn);
+    });
+    return list;
   }
 
   renderGamepadHintBar() {
