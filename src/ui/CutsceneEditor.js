@@ -2736,7 +2736,7 @@ export default class CutsceneEditor {
 
   drawDesktopDropdown(ctx, shell) {
     if (!shell?.dropdown) return;
-    const items = this.getMenuItems().filter((item) => !item.disabled).slice(0, 10);
+    const items = this.getMenuItems(shell.dropdown.rootId).filter((item) => !item.disabled).slice(0, 10);
     if (!items.length) return;
     const rowH = Math.max(28, Math.min(34, shell.dropdown.rowHeight));
     const bounds = { ...shell.dropdown.bounds, h: Math.max(rowH, items.length * rowH) };
