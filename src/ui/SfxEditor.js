@@ -1926,19 +1926,26 @@ export default class SfxEditor {
   drawDesktopDropdown(ctx, dropdown) {
     const menu = this.controllerMenu.menus?.[dropdown.rootId] || this.controllerMenu.menus?.[dropdown.specId];
     const controllerItems = this.controllerMenu.getItems(menu);
-    const actionById = new Map(controllerItems.map((item) => [item.id, item]));
-    drawSharedPanel(ctx, dropdown.bounds, { fill: UI_SUITE.colors.panel });
+    const visibleItems = controllerItems.length ? controllerItems : dropdown.items;
+    const visibleRows = Math.max(1, Math.floor(dropdown.bounds.h / Math.max(1, dropdown.rowHeight)));
+    const renderedItems = visibleItems.slice(0, visibleRows);
+    const actionById = new Map(renderedItems.map((item) => [item.id, item]));
+    const panelBounds = {
+      ...dropdown.bounds,
+      h: Math.min(dropdown.bounds.h, Math.max(dropdown.rowHeight, renderedItems.length * dropdown.rowHeight))
+    };
+    drawSharedPanel(ctx, panelBounds, { fill: UI_SUITE.colors.panel });
     const gap = 4;
     const rowH = Math.max(28, dropdown.rowHeight - gap);
-    dropdown.items.forEach((item, index) => {
-      const y = dropdown.bounds.y + index * dropdown.rowHeight + Math.floor(gap / 2);
+    renderedItems.forEach((item, index) => {
+      const y = panelBounds.y + index * dropdown.rowHeight + Math.floor(gap / 2);
       const controllerItem = actionById.get(item.id);
       const action = controllerItem?.onSelect
         ? () => controllerItem.onSelect(this)
         : null;
       this.drawButton(
         ctx,
-        { x: dropdown.bounds.x + 8, y, w: dropdown.bounds.w - 16, h: rowH },
+        { x: panelBounds.x + 8, y, w: panelBounds.w - 16, h: rowH },
         item.label,
         this.isControllerMenuItemActive(dropdown.rootId, item.id),
         action
