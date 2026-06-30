@@ -61,7 +61,7 @@ import { listProjectFiles, loadProjectFile, saveProjectFile, sanitizeProjectFile
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { openChoiceOverlay, openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
-import { buildDesktopEditorShellPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
 import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
 import { ensurePixelArtStore, ensurePixelPreviewFrame, ensurePixelTileData } from '../editor/adapters/editorDataContracts.js';
 import { resolveActorArtFrameDurationMs } from '../entities/ScriptedActor.js';
@@ -8578,7 +8578,11 @@ export default class PixelStudio {
 
     if (isMobile) {
       const rail = mobileLandscapeLayout?.leftRail ?? { x: 0, y: 0, w: leftWidth, h: height };
-      this.drawMobileRail(ctx, rail.x, rail.y, rail.w, rail.h);
+      if (this.shouldDrawGamepadSubmenuOnLeft(width, height)) {
+        this.drawGamepadSlideOutPanel(ctx, rail);
+      } else {
+        this.drawMobileRail(ctx, rail.x, rail.y, rail.w, rail.h);
+      }
     } else if (desktopShell) {
       this.drawDesktopShellChrome(ctx, desktopShell);
     } else if (this.sidebars.left) {
@@ -8675,11 +8679,13 @@ export default class PixelStudio {
       this.drawGamepadHints(ctx, width - padding - 20, height - bottomHeight - 90);
     }
 
-    drawCanvasControllerMenu(ctx, this.controllerMenu, {
-      width,
-      height,
-      contextLabel: this.inputMode === 'ui' ? 'Pixel Chrome' : 'Pixel Canvas'
-    });
+    if (this.shouldDrawControllerOverlay(width, height)) {
+      drawCanvasControllerMenu(ctx, this.controllerMenu, {
+        width,
+        height,
+        contextLabel: this.inputMode === 'ui' ? 'Pixel Chrome' : 'Pixel Canvas'
+      });
+    }
 
     this.finalizeFocusGroups();
     this.drawFocusHighlight(ctx);
@@ -8805,6 +8811,58 @@ export default class PixelStudio {
         this.registerFocusable(menuId, buttonBounds, onClick);
       }
     });
+  }
+
+  getActiveGamepadMenuId() {
+    const activeId = this.controllerMenu.getActiveMenuId();
+    if (!activeId || ['root', 'system', 'help', 'exit-confirm'].includes(activeId)) return null;
+    return activeId;
+  }
+
+  isGamepadLandscapeMenuMode(width = this.game?.canvas?.width || 0, height = this.game?.canvas?.height || 0) {
+    return Boolean(this.isMobileLayout() && this.game?.input?.isGamepadConnected?.() && Math.min(width, height) <= 900 && width > height);
+  }
+
+  shouldDrawGamepadSubmenuOnLeft(width, height) {
+    return Boolean(this.isGamepadLandscapeMenuMode(width, height) && this.controllerMenu.active && this.getActiveGamepadMenuId());
+  }
+
+  shouldDrawControllerOverlay(width, height) {
+    if (!this.isGamepadLandscapeMenuMode(width, height)) return true;
+    const activeId = this.controllerMenu.getActiveMenuId();
+    return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));
+  }
+
+  drawGamepadSlideOutPanel(ctx, bounds) {
+    const menuId = this.getActiveGamepadMenuId();
+    const plan = buildGamepadSlideOutMenuPlan('pixel', {
+      rootOpen: !menuId,
+      activeRootId: menuId || this.getDesktopRootIdForPanel(),
+      focusedItemId: this.controllerMenu.getFocusedItem(menuId)?.id,
+      labelOverrides: {
+        frames: 'Frames',
+        rigging: 'Rigging'
+      }
+    });
+    const menu = this.controllerMenu.menus?.[menuId];
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(menu?.title || plan.submenu?.title || 'Menu', bounds.x + 12, bounds.y + 18, bounds.w - 24);
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.font = `10px ${UI_SUITE.font.family}`;
+    ctx.fillText('A Select  B Back', bounds.x + 12, bounds.y + 36, bounds.w - 24);
+    ctx.restore();
+    this.drawControllerSubmenuPanel(
+      ctx,
+      bounds.x + 8,
+      bounds.y + 52,
+      Math.max(1, bounds.w - 16),
+      Math.max(1, bounds.h - 60),
+      menuId
+    );
   }
 
   drawTransformModal(ctx, width, height) {
