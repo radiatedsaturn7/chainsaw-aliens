@@ -51,8 +51,9 @@ Shared implementation helpers:
 ### Desktop
 
 - Desktop should behave like a regular app.
-- Use a top menu bar with dropdown drawers for root menus.
-- Left side should show active tool options, asset lists, tracks, layers, inspectors, or other persistent lists.
+- Use a full-width horizontal top menu bar for all root menus.
+- Root menu drawers drop down from the top menu and preview the active submenu.
+- The left side starts below the top menu. Its ribbon appears at the top of the left column, with active tool options, asset lists, tracks, layers, inspectors, or other persistent lists directly below/south of the ribbon.
 - Use mouse-first behavior: wheel zoom/scroll, middle or right drag pan where applicable, and right-click context menus for selected objects or work surfaces.
 - When there is room, show complete submenus instead of forcing mobile-style drill-down.
 
