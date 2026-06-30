@@ -45,6 +45,7 @@ const pixelStudioSource = readFileSync(new URL('../../src/ui/PixelStudio.js', im
 const actorEditorSource = readFileSync(new URL('../../src/ui/ActorEditor.js', import.meta.url), 'utf8');
 const sfxEditorSource = readFileSync(new URL('../../src/ui/SfxEditor.js', import.meta.url), 'utf8');
 const midiEditorSource = readFileSync(new URL('../../src/ui/MidiComposerCore.js', import.meta.url), 'utf8');
+const cutsceneEditorSource = readFileSync(new URL('../../src/ui/CutsceneEditor.js', import.meta.url), 'utf8');
 const projectBrowserSource = readFileSync(new URL('../../src/ui/ProjectBrowserModal.js', import.meta.url), 'utf8');
 const levelEditorSource = readFileSync(new URL('../../src/ui/LevelEditorCore.js', import.meta.url), 'utf8');
 const playerSource = readFileSync(new URL('../../src/entities/Player.js', import.meta.url), 'utf8');
@@ -809,6 +810,15 @@ test('Actor gamepad mode replaces the left landscape rail with submenu slide-out
   assert.equal(actorEditorSource.includes('shouldDrawGamepadSlideOut'), true);
   assert.equal(actorEditorSource.includes('left.appendChild(this.renderGamepadSlideOutRail(gamepadSlideOutMenuId));'), true);
   assert.equal(actorEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
+});
+
+test('Cutscene gamepad mode replaces the left landscape rail with submenu slide-out', () => {
+  assert.equal(cutsceneEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
+  assert.equal(cutsceneEditorSource.includes('ControllerMenuStack'), true);
+  assert.equal(cutsceneEditorSource.includes('isGamepadLandscapeMenuMode(width'), true);
+  assert.equal(cutsceneEditorSource.includes('shouldDrawGamepadSubmenuOnLeft(safeW, safeH)'), true);
+  assert.equal(cutsceneEditorSource.includes('this.drawGamepadSlideOutPanel(ctx, layout.menuBounds);'), true);
+  assert.equal(cutsceneEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
 });
 
 test('Actor editor bottom play action launches the full actor scene playtest', () => {
