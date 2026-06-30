@@ -901,6 +901,14 @@ test('Cutscene desktop keeps transport in the left column instead of a bottom ra
   assert.equal(cutsceneEditorSource.includes('drawDesktopTransportPanel(ctx, bounds)'), true);
 });
 
+test('Cutscene desktop dropdown uses the selected top root menu', () => {
+  const dropdownIndex = cutsceneEditorSource.indexOf('  drawDesktopDropdown(ctx, shell)');
+  const dropdownBody = cutsceneEditorSource.slice(dropdownIndex, cutsceneEditorSource.indexOf('  getTransportActions()', dropdownIndex));
+
+  assert.equal(dropdownBody.includes('this.getMenuItems(shell.dropdown.rootId)'), true);
+  assert.equal(dropdownBody.includes('this.getMenuItems().filter'), false);
+});
+
 test('Actor editor bottom play action launches the full actor scene playtest', () => {
   const calls = [];
   const game = {
