@@ -192,7 +192,7 @@ export const createToolRegistry = (editor) => ([
     onPointerDown: (point, modifiers) => editor.handleCloneDown(point, modifiers),
     onPointerMove: (point) => editor.continueStroke(point),
     onPointerUp: () => editor.finishStroke(),
-    optionsUI: ['brushSize', 'wrap']
+    optionsUI: ['brushSize', 'wrap', 'cloneAngles', 'cloneTarget']
   },
   {
     id: TOOL_IDS.DITHER,

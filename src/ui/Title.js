@@ -7,43 +7,45 @@ import {
 export default class Title {
   constructor() {
     this.timer = 0;
-    this.screen = 'intro';
+    this.screen = 'main';
     this.transition = null;
-    this.menuOrder = ['recent-level', 'robtersession', 'storage', 'tools', 'options'];
-    this.toolsOrder = [
-      'project-browser',
-      'level-editor',
-      'pixel-editor',
-      'actor-editor',
-      'midi-editor',
-      'sfx-editor',
-      'cutscene-editor',
-      'reset-all',
-      'back'
-    ];
+    this.menuOrder = ['recent-level', 'graphics', 'audio', 'game', 'options'];
+    this.folderOrders = {
+      graphics: [
+        'pixel-editor',
+        'cutscene-editor',
+        'back'
+      ],
+      audio: [
+        'midi-editor',
+        'sfx-editor',
+        'back'
+      ],
+      game: [
+        'level-editor',
+        'actor-editor',
+        'back'
+      ]
+    };
     this.controlsOrder = [
+      'robtersession',
       'mobile',
       'gamepad',
       'keyboard',
       ...DISPLAY_MODE_OPTIONS.map((option) => option.action),
       'back'
     ];
-    this.storageOrder = ['toggle-server-storage', 'sync-server', 'sync-github', 'back'];
     this.menuSelection = 0;
-    this.toolsSelection = 0;
+    this.folderSelections = { graphics: 0, audio: 0, game: 0 };
     this.controlsSelection = 0;
     this.menuBounds = new Map();
-    this.toolsBounds = new Map();
+    this.folderBounds = {
+      graphics: new Map(),
+      audio: new Map(),
+      game: new Map()
+    };
     this.controlsBounds = new Map();
-    this.storageBounds = new Map();
     this.debugRestartBounds = null;
-    this.explosions = [];
-    this.nextExplosion = 1.4;
-    this.aliens = Array.from({ length: 12 }, (_, i) => ({
-      x: 120 + i * 80,
-      y: -Math.random() * 400,
-      speed: 20 + Math.random() * 40
-    }));
   }
 
   clamp(value, min, max) {
@@ -94,9 +96,9 @@ export default class Title {
         gap,
         titleY,
         subtitleY: titleY + 26,
-        titleFont: shortViewport ? '19px Courier New' : '22px Courier New',
-        subtitleFont: shortViewport ? '12px Courier New' : '14px Courier New',
-        labelFont: shortViewport ? '15px Courier New' : dense ? '16px Courier New' : '18px Courier New'
+        titleFont: shortViewport ? '600 18px Arial' : '600 22px Arial',
+        subtitleFont: shortViewport ? '12px Arial' : '14px Arial',
+        labelFont: shortViewport ? '15px Arial' : dense ? '16px Arial' : '18px Arial'
       };
     }
 
@@ -139,45 +141,169 @@ export default class Title {
       gap,
       titleY: compactLandscape ? Math.max(24, Math.min(dense ? 82 : 98, startY - 16)) : 180,
       subtitleY: compactLandscape ? Math.max(40, Math.min(dense ? 100 : 118, startY - 2)) : 206,
-      titleFont: compactLandscape ? '18px Courier New' : '22px Courier New',
-      subtitleFont: compactLandscape ? '12px Courier New' : '14px Courier New',
-      labelFont: compactLandscape && dense ? '14px Courier New' : '18px Courier New'
+      titleFont: compactLandscape ? '600 18px Arial' : '600 22px Arial',
+      subtitleFont: compactLandscape ? '12px Arial' : '14px Arial',
+      labelFont: compactLandscape && dense ? '14px Arial' : '18px Arial'
     };
   }
 
   drawTitleText(ctx, width, text, layout, subtitle = '') {
-    ctx.fillStyle = '#fff';
+    ctx.save();
+    ctx.fillStyle = 'rgba(12,18,28,0.62)';
+    const titleW = Math.min(width - 32, layout.portrait ? 300 : 360);
+    const titleH = subtitle ? 58 : 42;
+    const titleX = width / 2 - titleW / 2;
+    const titleY = layout.titleY - 28;
+    ctx.fillRect(titleX, titleY, titleW, titleH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.16)';
+    ctx.strokeRect(titleX, titleY, titleW, titleH);
+    ctx.fillStyle = '#f8fbff';
     ctx.font = layout.titleFont;
     ctx.textAlign = 'center';
     ctx.fillText(text, width / 2, layout.titleY);
     if (subtitle) {
       ctx.font = layout.subtitleFont;
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.fillStyle = 'rgba(198,220,245,0.86)';
       ctx.fillText(subtitle, width / 2, layout.subtitleY);
     }
+    ctx.restore();
+  }
+
+  drawBackdrop(ctx, width, height) {
+    const gradient = typeof ctx.createLinearGradient === 'function'
+      ? ctx.createLinearGradient(0, 0, 0, height)
+      : null;
+    if (gradient) {
+      gradient.addColorStop(0, '#10141c');
+      gradient.addColorStop(0.5, '#07090e');
+      gradient.addColorStop(1, '#050403');
+      ctx.fillStyle = gradient;
+    } else {
+      ctx.fillStyle = '#07090e';
+    }
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.save();
+    ctx.globalAlpha = 0.32;
+    ctx.strokeStyle = 'rgba(120,150,178,0.22)';
+    ctx.lineWidth = 1;
+    const grid = Math.max(36, Math.floor(Math.min(width, height) / 12));
+    for (let x = (this.timer * 6) % grid; x < width; x += grid) {
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+    }
+    for (let y = 0; y < height; y += grid) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(width, y);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    ctx.fillStyle = 'rgba(255,225,106,0.09)';
+    ctx.fillRect(0, 0, width, 3);
+    ctx.fillStyle = 'rgba(95,184,168,0.09)';
+    ctx.fillRect(0, height - 4, width, 4);
+
+    ctx.save();
+    ctx.globalAlpha = 0.22;
+    ctx.strokeStyle = 'rgba(255,225,106,0.26)';
+    ctx.beginPath();
+    ctx.moveTo(width * 0.12, height * 0.22);
+    ctx.lineTo(width * 0.88, height * 0.22);
+    ctx.moveTo(width * 0.18, height * 0.78);
+    ctx.lineTo(width * 0.82, height * 0.78);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  drawBrand(ctx, width, height) {
+    const portrait = this.isPortraitPhone(width, height);
+    const compactLandscape = !portrait && height <= 430;
+    const y = portrait ? 82 : compactLandscape ? 48 : 118;
+    const title = 'RTG Studio';
+    const markY = y - (portrait ? 52 : compactLandscape ? 42 : 66);
+    const markSize = portrait ? 40 : compactLandscape ? 34 : 52;
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(95,184,168,0.18)';
+    ctx.fillRect(width / 2 - markSize / 2 - 10, markY - markSize / 2, markSize, markSize);
+    ctx.fillStyle = 'rgba(255,225,106,0.82)';
+    ctx.fillRect(width / 2 - markSize / 2, markY - markSize / 2 + 10, markSize, markSize);
+    ctx.fillStyle = '#0b0e14';
+    ctx.font = portrait || compactLandscape ? 'bold 14px Arial' : 'bold 18px Arial';
+    ctx.fillText('RTG', width / 2, markY + 7);
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.font = portrait
+      ? 'bold 34px Arial'
+      : compactLandscape
+        ? 'bold 32px Arial'
+        : 'bold 54px Arial';
+    ctx.fillText(title, width / 2 + 2, y + 3);
+    ctx.fillStyle = '#f8fbff';
+    ctx.fillText(title, width / 2, y);
+    ctx.font = portrait || compactLandscape ? '12px Arial' : '14px Arial';
+    ctx.fillStyle = 'rgba(198,220,245,0.82)';
+    ctx.fillText('Interactive tools, games, and audio labs', width / 2, y + (portrait ? 24 : compactLandscape ? 22 : 30));
+    ctx.fillStyle = '#ffe16a';
+    ctx.fillRect(width / 2 - 42, y + (portrait ? 34 : compactLandscape ? 30 : 42), 84, 2);
+    ctx.restore();
+  }
+
+  drawMenuPanel(ctx, layout, count, title = '') {
+    const pad = layout.portrait ? 12 : 14;
+    const listHeight = count * layout.buttonHeight + Math.max(0, count - 1) * layout.gap;
+    const panelX = layout.buttonX - pad;
+    const panelY = layout.startY - pad - (title ? 22 : 0);
+    const panelW = layout.buttonWidth + pad * 2;
+    const panelH = listHeight + pad * 2 + (title ? 22 : 0);
+    ctx.save();
+    ctx.fillStyle = 'rgba(8,12,20,0.74)';
+    ctx.fillRect(panelX, panelY, panelW, panelH);
+    ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+    ctx.strokeRect(panelX, panelY, panelW, panelH);
+    ctx.fillStyle = 'rgba(255,225,106,0.62)';
+    ctx.fillRect(panelX, panelY, 3, panelH);
+    if (title) {
+      ctx.fillStyle = 'rgba(198,220,245,0.78)';
+      ctx.font = layout.portrait ? '11px Arial' : '12px Arial';
+      ctx.textAlign = 'left';
+      ctx.fillText(title, panelX + pad, panelY + 15);
+    }
+    ctx.restore();
   }
 
   drawMenuButton(ctx, bounds, label, { selected = false, active = false, danger = false } = {}) {
+    ctx.save();
     ctx.fillStyle = selected
-      ? (danger ? 'rgba(255,120,120,0.25)' : 'rgba(255,255,255,0.3)')
-      : (danger ? 'rgba(255,120,120,0.12)' : 'rgba(255,255,255,0.12)');
+      ? (danger ? 'rgba(176,72,72,0.46)' : 'rgba(46,86,132,0.72)')
+      : (danger ? 'rgba(118,42,42,0.35)' : 'rgba(18,28,42,0.82)');
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.strokeStyle = active ? '#ffe16a' : danger ? 'rgba(255,140,140,0.9)' : '#fff';
+    ctx.fillStyle = selected
+      ? (danger ? 'rgba(255,160,150,0.25)' : 'rgba(255,225,106,0.22)')
+      : 'rgba(255,255,255,0.045)';
+    ctx.fillRect(bounds.x, bounds.y, bounds.w, Math.max(1, Math.floor(bounds.h / 2)));
+    ctx.fillStyle = active
+      ? '#ffe16a'
+      : danger
+        ? 'rgba(255,140,140,0.82)'
+        : selected
+          ? '#ffe16a'
+          : 'rgba(111,171,231,0.72)';
+    ctx.fillRect(bounds.x, bounds.y, 4, bounds.h);
+    ctx.strokeStyle = active ? '#ffe16a' : danger ? 'rgba(255,140,140,0.9)' : 'rgba(190,215,245,0.36)';
     ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.fillStyle = '#fff';
-    ctx.textAlign = 'center';
+    ctx.fillStyle = selected ? '#ffffff' : 'rgba(238,245,255,0.9)';
+    ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(label, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2);
+    ctx.fillText(label, bounds.x + 18, bounds.y + bounds.h / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = active ? '#ffe16a' : 'rgba(198,220,245,0.58)';
+    ctx.fillText(selected ? '>' : '', bounds.x + bounds.w - 16, bounds.y + bounds.h / 2);
     ctx.textBaseline = 'alphabetic';
-    if (selected) {
-      ctx.fillStyle = '#fff';
-      ctx.beginPath();
-      ctx.moveTo(bounds.x - 14, bounds.y + bounds.h / 2);
-      ctx.lineTo(bounds.x - 6, bounds.y + bounds.h / 2 - 6);
-      ctx.lineTo(bounds.x - 6, bounds.y + bounds.h / 2 + 6);
-      ctx.closePath();
-      ctx.fill();
-    }
+    ctx.restore();
   }
 
   update(dt) {
@@ -188,120 +314,15 @@ export default class Title {
         this.transition = null;
       }
     }
-    this.aliens.forEach((alien) => {
-      alien.y += alien.speed * dt;
-      if (alien.y > 500) {
-        alien.y = -200;
-      }
-    });
-
-    if (this.screen !== 'intro' || (this.transition && this.transition.to !== 'intro')) {
-      this.nextExplosion -= dt;
-      if (this.nextExplosion <= 0) {
-        this.spawnExplosion();
-        this.nextExplosion = 1.2 + Math.random() * 2.4;
-      }
-      this.explosions.forEach((explosion) => {
-        explosion.age += dt;
-      });
-      this.explosions = this.explosions.filter((explosion) => explosion.age < explosion.duration);
-    }
   }
 
   draw(ctx, width, height, inputMode, inputHints = {}) {
     ctx.save();
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, width, height);
-    ctx.strokeStyle = '#fff';
+    this.drawBackdrop(ctx, width, height);
+    ctx.strokeStyle = 'rgba(255,255,255,0.72)';
     ctx.lineWidth = 2;
 
-    const portrait = this.isPortraitPhone(width, height);
-    // Earth
-    const earthX = width / 2;
-    const earthY = portrait ? height * 0.34 : height / 2 + 120;
-    const earthRadius = portrait ? Math.max(72, Math.min(108, width * 0.23)) : 120;
-    const oceanGradient = ctx.createRadialGradient(
-      earthX - 40,
-      earthY - 60,
-      30,
-      earthX,
-      earthY,
-      earthRadius + 10
-    );
-    oceanGradient.addColorStop(0, '#2d8de6');
-    oceanGradient.addColorStop(0.6, '#0b4fa3');
-    oceanGradient.addColorStop(1, '#032a5c');
-    ctx.fillStyle = oceanGradient;
-    ctx.beginPath();
-    ctx.arc(earthX, earthY, earthRadius, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = '#2fb26a';
-    ctx.beginPath();
-    ctx.moveTo(earthX - 60, earthY - 30);
-    ctx.bezierCurveTo(earthX - 90, earthY - 80, earthX - 30, earthY - 90, earthX - 10, earthY - 60);
-    ctx.bezierCurveTo(earthX + 10, earthY - 40, earthX - 20, earthY - 10, earthX - 55, earthY);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.moveTo(earthX + 20, earthY - 10);
-    ctx.bezierCurveTo(earthX + 60, earthY - 40, earthX + 90, earthY - 10, earthX + 70, earthY + 20);
-    ctx.bezierCurveTo(earthX + 50, earthY + 40, earthX + 10, earthY + 30, earthX + 5, earthY + 5);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    ctx.beginPath();
-    ctx.ellipse(earthX - 30, earthY - 70, 42, 12, -0.2, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.ellipse(earthX + 50, earthY + 10, 48, 14, 0.3, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.strokeStyle = 'rgba(155,205,255,0.7)';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.arc(earthX, earthY, earthRadius + 6, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 2;
-
-    this.aliens.forEach((alien) => {
-      ctx.save();
-      ctx.translate(alien.x, alien.y + 80 + Math.sin(this.timer + alien.x) * 4);
-      ctx.strokeStyle = '#ff6b6b';
-      ctx.fillStyle = 'rgba(0,0,0,0.55)';
-      ctx.beginPath();
-      ctx.ellipse(0, 6, 18, 6, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
-      ctx.beginPath();
-      ctx.ellipse(0, 0, 8, 5, 0, Math.PI, 0, true);
-      ctx.fill();
-      ctx.stroke();
-      ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-      ctx.beginPath();
-      ctx.moveTo(-10, 8);
-      ctx.lineTo(10, 8);
-      ctx.stroke();
-      ctx.restore();
-    });
-
-    if (this.screen !== 'intro' || (this.transition && this.transition.to !== 'intro')) {
-      this.drawExplosions(ctx, earthX, earthY, earthRadius);
-    }
-
-    const compactLandscape = !portrait && height <= 430;
-    ctx.font = portrait
-      ? 'bold 34px Courier New'
-      : compactLandscape
-        ? 'bold 30px Courier New'
-        : 'bold 48px Courier New';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = '#fff';
-    ctx.fillText('Chainsaw Aliens', width / 2, portrait ? 82 : compactLandscape ? 46 : 120);
+    this.drawBrand(ctx, width, height);
 
     if (this.transition) {
       const t = Math.min(1, this.transition.progress);
@@ -319,30 +340,15 @@ export default class Title {
     ctx.globalAlpha = alpha;
     ctx.translate(0, offsetY);
     if (screen === 'intro') {
-      this.drawIntro(ctx, width, height, inputHints);
-    } else if (screen === 'tools') {
-      this.drawTools(ctx, width, height);
+      this.drawMainMenu(ctx, width, height, { showDebugRestart: Boolean(inputHints?.debugRestartEnabled) });
+    } else if (this.folderOrders[screen]) {
+      this.drawFolder(ctx, width, height, screen);
     } else if (screen === 'controls') {
       this.drawControls(ctx, width, height, inputMode, inputHints);
-    } else if (screen === 'storage') {
-      this.drawStorage(ctx, width, height, inputHints);
     } else {
       this.drawMainMenu(ctx, width, height, { showDebugRestart: Boolean(inputHints?.debugRestartEnabled) });
     }
     ctx.restore();
-  }
-
-  drawIntro(ctx, width, height, { isMobile = false, gamepadConnected = false } = {}) {
-    ctx.fillStyle = '#fff';
-    ctx.font = this.isPortraitPhone(width, height) ? '22px Courier New' : '20px Courier New';
-    ctx.textAlign = 'center';
-    const pulse = Math.sin(this.timer * 4) * 6;
-    const message = gamepadConnected
-      ? 'Press START to Begin'
-      : isMobile
-        ? 'Tap to Begin'
-        : 'Press SPACE to Begin';
-    ctx.fillText(message, width / 2, height - 140 + pulse);
   }
 
   drawMainMenu(ctx, width, height, options = {}) {
@@ -353,20 +359,20 @@ export default class Title {
       defaultStartY: 240,
       defaultGap: 48
     });
-    this.drawTitleText(ctx, width, 'Main Menu', layout);
+    this.drawMenuPanel(ctx, layout, this.menuOrder.length, 'Launcher');
 
     this.menuBounds.clear();
     this.menuOrder.forEach((action, index) => {
       const y = layout.startY + index * (layout.buttonHeight + layout.gap);
       const selected = this.menuOrder[this.menuSelection] === action;
       const label = action === 'recent-level'
-        ? 'Recent Level'
-        : action === 'robtersession'
-          ? 'Songs'
-          : action === 'storage'
-            ? 'Server Storage'
-            : action === 'tools'
-              ? 'Tools'
+        ? 'Play'
+        : action === 'graphics'
+          ? 'Graphics'
+          : action === 'audio'
+            ? 'Audio'
+            : action === 'game'
+              ? 'Game'
               : 'Options';
       const bounds = { x: layout.buttonX, y, w: layout.buttonWidth, h: layout.buttonHeight };
       ctx.font = layout.labelFont;
@@ -390,72 +396,47 @@ export default class Title {
   }
 
 
-  drawStorage(ctx, width, height, inputHints = {}) {
+  drawFolder(ctx, width, height, folder) {
+    const order = this.folderOrders[folder] || ['back'];
+    const titles = {
+      graphics: ['Graphics', 'Pixel art & scenes'],
+      audio: ['Audio', 'Music & sound design'],
+      game: ['Game', 'Levels & actors']
+    };
     const layout = this.getScreenLayout(width, height, {
-      screen: 'storage',
-      count: this.storageOrder.length,
-      preferredWidth: 420,
-      defaultStartY: 245,
-      defaultGap: 42
-    });
-    this.drawTitleText(ctx, width, 'Server Storage', layout, 'Persist projects on server + GitHub sync');
-
-    this.storageBounds.clear();
-    this.storageOrder.forEach((action, index) => {
-      const y = layout.startY + index * (layout.buttonHeight + layout.gap);
-      const selected = this.storageOrder[this.controlsSelection] === action;
-      const enabled = Boolean(inputHints?.serverStorageEnabled);
-      const label = action === 'toggle-server-storage'
-        ? `Server Storage: ${enabled ? 'ON' : 'OFF'}`
-        : action === 'sync-server'
-          ? 'Sync Snapshot to Server'
-          : action === 'sync-github'
-            ? 'Sync Snapshot to GitHub'
-            : 'Back';
-      const bounds = { x: layout.buttonX, y, w: layout.buttonWidth, h: layout.buttonHeight };
-      ctx.font = layout.labelFont;
-      this.drawMenuButton(ctx, bounds, label, { selected });
-      this.storageBounds.set(action, bounds);
-    });
-  }
-
-  drawTools(ctx, width, height) {
-    const layout = this.getScreenLayout(width, height, {
-      screen: 'tools',
-      count: this.toolsOrder.length,
+      screen: folder,
+      count: order.length,
       preferredWidth: 360,
       defaultStartY: 245,
       defaultGap: 42
     });
-    this.drawTitleText(ctx, width, 'Tools', layout, 'Editors & Reset');
+    this.drawTitleText(ctx, width, titles[folder]?.[0] || 'Tools', layout, titles[folder]?.[1] || '');
+    this.drawMenuPanel(ctx, layout, order.length, 'Folder');
 
-    this.toolsBounds.clear();
-    this.toolsOrder.forEach((action, index) => {
+    const boundsMap = this.folderBounds[folder] || new Map();
+    boundsMap.clear();
+    order.forEach((action, index) => {
       const y = layout.startY + index * (layout.buttonHeight + layout.gap);
-      const selected = this.toolsOrder[this.toolsSelection] === action;
-      const isReset = action === 'reset-all';
+      const selected = order[this.folderSelections[folder] || 0] === action;
       const label = action === 'level-editor'
         ? 'Level Editor'
-        : action === 'project-browser'
-          ? 'Project Browser'
-          : action === 'pixel-editor'
-            ? 'Pixel Editor'
-            : action === 'actor-editor'
-              ? 'Actor Editor'
-              : action === 'midi-editor'
+        : action === 'pixel-editor'
+          ? 'Pixel Editor'
+          : action === 'actor-editor'
+            ? 'Actor Editor'
+            : action === 'midi-editor'
               ? 'MIDI Editor'
               : action === 'sfx-editor'
-              ? 'SFX Editor'
-              : action === 'cutscene-editor'
-              ? 'Cutscene Editor'
-              : action === 'reset-all'
-                ? 'Reset All'
-                : 'Back';
+                ? 'SFX Editor'
+                : action === 'cutscene-editor'
+                  ? 'Cutscene Editor'
+                  : 'Back';
       const bounds = { x: layout.buttonX, y, w: layout.buttonWidth, h: layout.buttonHeight };
       ctx.font = layout.labelFont;
-      this.drawMenuButton(ctx, bounds, label, { selected, danger: isReset });
-      this.toolsBounds.set(action, bounds);
+      this.drawMenuButton(ctx, bounds, label, { selected });
+      boundsMap.set(action, bounds);
     });
+    this.folderBounds[folder] = boundsMap;
   }
 
   drawControls(ctx, width, height, inputMode, inputHints = {}) {
@@ -467,6 +448,7 @@ export default class Title {
       defaultGap: 46
     });
     this.drawTitleText(ctx, width, 'Options', layout, 'Controls & display');
+    this.drawMenuPanel(ctx, layout, this.controlsOrder.length, 'Preferences');
 
     this.controlsBounds.clear();
     this.controlsOrder.forEach((action, index) => {
@@ -475,15 +457,17 @@ export default class Title {
       const displayMode = inputHints?.displayMode || 'sepia';
       const displayModeForAction = getDisplayModeForAction(action);
       const active = displayModeForAction ? displayMode === displayModeForAction : inputMode === action;
-      const label = action === 'mobile'
-        ? 'Mobile Touch'
-        : action === 'gamepad'
-          ? 'Controller / Gamepad'
-          : action === 'keyboard'
-            ? 'Keyboard'
-            : displayModeForAction
-              ? getDisplayModeLabelForAction(action)
-              : 'Back';
+      const label = action === 'robtersession'
+        ? 'Songs'
+        : action === 'mobile'
+          ? 'Mobile Touch'
+          : action === 'gamepad'
+            ? 'Controller / Gamepad'
+            : action === 'keyboard'
+              ? 'Keyboard'
+              : displayModeForAction
+                ? getDisplayModeLabelForAction(action)
+                : 'Back';
       const bounds = { x: layout.buttonX, y, w: layout.buttonWidth, h: layout.buttonHeight };
       ctx.font = layout.labelFont;
       this.drawMenuButton(ctx, bounds, label, { selected, active });
@@ -491,51 +475,18 @@ export default class Title {
     });
   }
 
-  spawnExplosion() {
-    const angle = Math.random() * Math.PI * 2;
-    const radius = Math.random() * 0.8 + 0.1;
-    this.explosions.push({
-      angle,
-      radius,
-      age: 0,
-      duration: 0.8 + Math.random() * 0.6
-    });
-  }
-
-  drawExplosions(ctx, earthX, earthY, earthRadius) {
-    this.explosions.forEach((explosion) => {
-      const progress = explosion.age / explosion.duration;
-      const pulse = Math.sin(progress * Math.PI);
-      const sparkRadius = earthRadius * explosion.radius;
-      const x = earthX + Math.cos(explosion.angle) * sparkRadius;
-      const y = earthY + Math.sin(explosion.angle) * sparkRadius;
-      const size = 6 + pulse * 10;
-      ctx.save();
-      ctx.globalAlpha = 0.8 * (1 - progress);
-      ctx.fillStyle = '#ffcc6a';
-      ctx.beginPath();
-      ctx.arc(x, y, size, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.strokeStyle = '#ff6b6b';
-      ctx.beginPath();
-      ctx.arc(x, y, size * 1.3, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.restore();
-    });
-  }
-
   moveSelection(direction) {
     if (this.screen === 'intro') {
       return;
     }
-    if (this.screen === 'tools') {
-      const count = this.toolsOrder.length;
+    if (this.folderOrders[this.screen]) {
+      const count = this.folderOrders[this.screen].length;
       if (!count) return;
-      this.toolsSelection = (this.toolsSelection + direction + count) % count;
+      this.folderSelections[this.screen] = ((this.folderSelections[this.screen] || 0) + direction + count) % count;
       return;
     }
-    if (this.screen === 'controls' || this.screen === 'storage') {
-      const count = this.screen === 'controls' ? this.controlsOrder.length : this.storageOrder.length;
+    if (this.screen === 'controls') {
+      const count = this.controlsOrder.length;
       if (!count) return;
       this.controlsSelection = (this.controlsSelection + direction + count) % count;
       return;
@@ -546,14 +497,11 @@ export default class Title {
   }
 
   getSelectedAction() {
-    if (this.screen === 'tools') {
-      return this.toolsOrder[this.toolsSelection] || 'back';
+    if (this.folderOrders[this.screen]) {
+      return this.folderOrders[this.screen][this.folderSelections[this.screen] || 0] || 'back';
     }
     if (this.screen === 'controls') {
       return this.controlsOrder[this.controlsSelection] || 'back';
-    }
-    if (this.screen === 'storage') {
-      return this.storageOrder[this.controlsSelection] || 'back';
     }
     return this.menuOrder[this.menuSelection] || 'recent-level';
   }
@@ -562,8 +510,8 @@ export default class Title {
     if (this.screen === 'intro') {
       return null;
     }
-    if (this.screen === 'tools') {
-      for (const [action, bounds] of this.toolsBounds.entries()) {
+    if (this.folderOrders[this.screen]) {
+      for (const [action, bounds] of (this.folderBounds[this.screen] || new Map()).entries()) {
         if (x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h) {
           return action;
         }
@@ -572,14 +520,6 @@ export default class Title {
     }
     if (this.screen === 'controls') {
       for (const [action, bounds] of this.controlsBounds.entries()) {
-        if (x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h) {
-          return action;
-        }
-      }
-      return null;
-    }
-    if (this.screen === 'storage') {
-      for (const [action, bounds] of this.storageBounds.entries()) {
         if (x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h) {
           return action;
         }
@@ -611,8 +551,7 @@ export default class Title {
     };
     this.screen = target;
     if (target === 'controls') this.setControlsSelectionByMode();
-    if (target === 'tools') this.toolsSelection = 0;
-    if (target === 'storage') this.controlsSelection = 0;
+    if (this.folderOrders[target]) this.folderSelections[target] = 0;
   }
 
   setControlsSelectionByMode(mode) {

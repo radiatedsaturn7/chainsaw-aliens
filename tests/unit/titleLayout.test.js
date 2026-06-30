@@ -90,16 +90,18 @@ test('landscape title main menu fits short mobile browser viewports before fulls
   }
 });
 
-test('portrait tools screen keeps all tool buttons visible and tappable', () => {
-  const title = new Title();
-  title.screen = 'tools';
-  title.draw(createMockContext(), 390, 844, 'mobile', { isMobile: true });
+test('portrait folder screens keep all buttons visible and tappable', () => {
+  for (const folder of ['graphics', 'audio', 'game']) {
+    const title = new Title();
+    title.screen = folder;
+    title.draw(createMockContext(), 390, 844, 'mobile', { isMobile: true });
 
-  title.toolsOrder.forEach((action) => {
-    const bounds = title.toolsBounds.get(action);
-    assertBoundsUsable(bounds, 390, 844);
-    assert.equal(title.getActionAt(bounds.x + bounds.w / 2, bounds.y + bounds.h / 2), action);
-  });
+    title.folderOrders[folder].forEach((action) => {
+      const bounds = title.folderBounds[folder].get(action);
+      assertBoundsUsable(bounds, 390, 844);
+      assert.equal(title.getActionAt(bounds.x + bounds.w / 2, bounds.y + bounds.h / 2), action);
+    });
+  }
 });
 
 test('landscape title bounds remain visible and match pointer hit testing', () => {
@@ -116,35 +118,43 @@ test('landscape title bounds remain visible and match pointer hit testing', () =
   }
 });
 
-test('landscape tools bounds fit short mobile viewports', () => {
+test('landscape folder bounds fit short mobile viewports', () => {
   for (const [width, height] of [[740, 360], [844, 390], [932, 430]]) {
-    const title = new Title();
-    title.screen = 'tools';
-    title.draw(createMockContext(), width, height, 'mobile', { isMobile: true });
+    for (const folder of ['graphics', 'audio', 'game']) {
+      const title = new Title();
+      title.screen = folder;
+      title.draw(createMockContext(), width, height, 'mobile', { isMobile: true });
 
-    title.toolsOrder.forEach((action) => {
-      const bounds = title.toolsBounds.get(action);
-      assertBoundsUsable(bounds, width, height, 24);
-      assert.equal(title.getActionAt(bounds.x + bounds.w / 2, bounds.y + bounds.h / 2), action);
-    });
+      title.folderOrders[folder].forEach((action) => {
+        const bounds = title.folderBounds[folder].get(action);
+        assertBoundsUsable(bounds, width, height, 24);
+        assert.equal(title.getActionAt(bounds.x + bounds.w / 2, bounds.y + bounds.h / 2), action);
+      });
+    }
   }
 });
 
-test('controller selection order is unchanged across title screens', () => {
+test('controller selection order matches studio launcher hierarchy', () => {
   const title = new Title();
-  assert.deepEqual(title.menuOrder, ['recent-level', 'robtersession', 'storage', 'tools', 'options']);
-  assert.deepEqual(title.toolsOrder, [
-    'project-browser',
-    'level-editor',
+  assert.equal(title.screen, 'main');
+  assert.deepEqual(title.menuOrder, ['recent-level', 'graphics', 'audio', 'game', 'options']);
+  assert.deepEqual(title.folderOrders.graphics, [
     'pixel-editor',
-    'actor-editor',
+    'cutscene-editor',
+    'back'
+  ]);
+  assert.deepEqual(title.folderOrders.audio, [
     'midi-editor',
     'sfx-editor',
-    'cutscene-editor',
-    'reset-all',
+    'back'
+  ]);
+  assert.deepEqual(title.folderOrders.game, [
+    'level-editor',
+    'actor-editor',
     'back'
   ]);
   assert.deepEqual(title.controlsOrder, [
+    'robtersession',
     'mobile',
     'gamepad',
     'keyboard',
@@ -153,7 +163,6 @@ test('controller selection order is unchanged across title screens', () => {
     'display-color',
     'back'
   ]);
-  assert.deepEqual(title.storageOrder, ['toggle-server-storage', 'sync-server', 'sync-github', 'back']);
 });
 
 test('portrait options screen fits input and display controls', () => {

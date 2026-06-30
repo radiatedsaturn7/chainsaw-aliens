@@ -1,5 +1,7 @@
 # Editors UI Contract
 
+Product-level editor menu behavior is specified in `../UISpec.md`. This file is the lower-level shell, layout, spacing, typography, and token contract used by the shared editor UI implementation.
+
 This document defines the shared layout and token contract for **Level Editor**, **MIDI Editor**, and **Pixel Editor**.
 
 ## 1) Fixed Layout Dimensions

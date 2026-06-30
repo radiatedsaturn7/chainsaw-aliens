@@ -31,6 +31,7 @@ import PixelStudio from '../../src/ui/PixelStudio.js';
 import { TOOL_IDS } from '../../src/ui/pixel-editor/tools.js';
 import { buildSfxPortraitMenuModel } from '../../src/ui/SfxEditor.js';
 import { mergeBuiltInActorOverride } from '../../src/content/builtinActorOverrides.js';
+import { BUILT_IN_ACTOR_VISUAL_SCALE, getBuiltInActorOverrideDrawSize } from '../../src/entities/BuiltInActorVisuals.js';
 import {
   assertSharedPortraitRailActionCount,
   getSharedPortraitRailActionButtons,
@@ -112,6 +113,16 @@ test('built-in actor overrides appear in actor browser but not level enemy tools
   assert.equal(companionSource.includes("return 'companion';"), true);
 });
 
+test('built-in actor override scale is visual only', () => {
+  const definition = mergeBuiltInActorOverride('Player', null);
+  const entity = { width: 22, height: 34 };
+  const size = getBuiltInActorOverrideDrawSize(definition, { width: 8, height: 8 }, entity);
+
+  assert.equal(BUILT_IN_ACTOR_VISUAL_SCALE, 2.5);
+  assert.deepEqual(size, { width: 55, height: 85 });
+  assert.deepEqual(entity, { width: 22, height: 34 });
+});
+
 test('Pixel portrait menu root has enough height for a two-row full-feature tab strip', () => {
   const tabs = buildPixelPortraitMenuModel().rootTabs;
 
@@ -184,7 +195,7 @@ test('Pixel portrait canvas, layer, and frame menus use drill-down action groups
   assert.deepEqual(frameActions, ['frame-add', 'frames-manage', 'frames-playback']);
   assert.deepEqual(canvasGroups['canvas-view'].actions.map((entry) => entry.id), ['grid', 'wrap', 'sym-h', 'sym-v', 'tile-preview']);
   assert.deepEqual(canvasGroups['canvas-transform'].actions.map((entry) => entry.id), ['resize', 'scale', 'crop', 'offset']);
-  assert.deepEqual(layerGroups['layers-manage'].actions.map((entry) => entry.id), ['layer-duplicate', 'layer-delete', 'layer-rename', 'layer-visibility']);
+  assert.deepEqual(layerGroups['layers-manage'].actions.map((entry) => entry.id), ['layer-duplicate', 'layer-delete', 'layer-rename', 'layer-visibility', 'layer-merge-up', 'layer-merge-down']);
   assert.deepEqual(layerGroups['layers-order'].actions.map((entry) => entry.id), ['layer-up', 'layer-down', 'layer-merge-up', 'layer-merge-down', 'layer-flatten']);
   assert.deepEqual(frameGroups['frames-manage'].actions.map((entry) => entry.id), ['frame-duplicate', 'frame-delete', 'frame-delay', 'frame-loop', 'frame-up', 'frame-down']);
   assert.deepEqual(frameGroups['frames-playback'].actions.map((entry) => entry.id), ['frame-play', 'frame-step', 'frame-rewind']);
@@ -243,6 +254,15 @@ test('Pixel portrait tool options and management panels avoid false scrollbars a
   assert.equal(framesBody.includes('drawPortraitFramePlaybackRail'), true);
   assert.equal(pixelStudioSource.includes('stepAnimationFrame()'), true);
   assert.equal(pixelStudioSource.includes('rewindAnimationFrames()'), true);
+  assert.equal(pixelStudioSource.includes('drawMobileFrameTransportRail'), true);
+  assert.equal(pixelStudioSource.includes("this.leftPanelTab === 'animation'"), true);
+  assert.equal(pixelStudioSource.includes("{ label: '⏮', active: false, action: () => this.rewindAnimationFrames() }"), true);
+  assert.equal(pixelStudioSource.includes("{ label: '◀', active: false, action: () => this.previousAnimationFrame() }"), true);
+  assert.equal(pixelStudioSource.includes("{ label: '∞', active: Boolean(this.animation.loop), action: () => { this.animation.loop = !this.animation.loop; } }"), true);
+  assert.equal(pixelStudioSource.includes("{ label: '▶', active: false, action: () => this.stepAnimationFrame() }"), true);
+  assert.equal(pixelStudioSource.includes("{ label: '⏭', active: false, action: () => this.goToLastAnimationFrame() }"), true);
+  assert.equal(pixelStudioSource.includes("if (this.leftPanelTab === 'animation') {\n      drawTileImage(offsetX, offsetY, 1);\n      ctx.restore();\n      return;\n    }"), true);
+  assert.equal(pixelStudioSource.includes("if (this.leftPanelTab === 'animation') {\n        this.pointerDownOnUi = true;\n        return;\n      }"), true);
   assert.equal(pixelStudioSource.includes("scrollGroup: 'layers'"), true);
   assert.equal(pixelStudioSource.includes("scrollGroup: 'frames'"), true);
 });
@@ -274,6 +294,7 @@ test('Pixel portrait palette rail uses recent swatches and palette button', () =
   const entries = buildPixelPortraitPaletteRailEntries([7, 2, 7, 1, 8, 0], 8);
 
   assert.deepEqual(entries, [
+    { id: 'eraser', type: 'eraser' },
     { id: 'recent-7', type: 'swatch', index: 7 },
     { id: 'recent-2', type: 'swatch', index: 2 },
     { id: 'recent-1', type: 'swatch', index: 1 },
@@ -281,7 +302,27 @@ test('Pixel portrait palette rail uses recent swatches and palette button', () =
     { id: 'palette', type: 'button', label: 'Palette' }
   ]);
   assert.equal(pixelStudioSource.includes('buildPixelPortraitPaletteRailEntries(this.recentPaletteIndices'), true);
+  assert.equal(pixelStudioSource.includes("entry.type === 'eraser'"), true);
+  assert.equal(pixelStudioSource.includes('drawEraserPaletteSwatch'), true);
+  assert.equal(pixelStudioSource.includes('selectEraserColor()'), true);
+  assert.equal(pixelStudioSource.includes('drawMobileCloneActionRail'), true);
+  assert.equal(pixelStudioSource.includes("this.activeToolId === TOOL_IDS.CLONE"), true);
+  assert.equal(pixelStudioSource.includes('armCloneSourcePick()'), true);
+  assert.equal(pixelStudioSource.includes('armCloneTargetPick()'), true);
+  assert.equal(pixelStudioSource.includes("label: this.clonePickSourceArmed ? 'Src...' : 'Source'"), true);
+  assert.equal(pixelStudioSource.includes("label: 'Reset'"), true);
+  assert.equal(pixelStudioSource.includes("label: this.clonePickTargetArmed ? 'Tgt...' : 'Target'"), true);
+  assert.equal(pixelStudioSource.includes("label: alphaMode === 'copy' ? 'Alpha C' : 'Alpha S'"), false);
+  assert.equal(pixelStudioSource.includes('this.uiButtons.push({ bounds, onClick: entry.action });'), true);
   assert.equal(pixelStudioSource.includes("this.drawButton(ctx, moreBounds, 'Palette'"), true);
+});
+
+test('Pixel menu button closes open overlays before opening the file menu', () => {
+  assert.equal(pixelStudioSource.includes('closeOpenUiLayer()'), true);
+  assert.equal(pixelStudioSource.includes('if (this.closeOpenUiLayer()) return;'), true);
+  assert.equal(pixelStudioSource.includes('this.controllerMenu.closeToSurface();'), true);
+  assert.equal(pixelStudioSource.includes("this.mobileDrawer === 'panel'"), true);
+  assert.equal(pixelStudioSource.includes('this.paletteGridOpen = false;'), true);
 });
 
 test('Pixel palette quantization snaps exact RGB values', () => {
@@ -535,7 +576,8 @@ test('Level portrait menu exposes compact roots and keeps playtest on bottom rai
   const model = buildLevelPortraitMenuModel();
 
   assert.deepEqual(model.rootTabs.map((tab) => tab.id), ['file', 'tools', 'assets', 'settings']);
-  assert.deepEqual(model.assetTabs.map((tab) => tab.id), ['tiles', 'npcs', 'triggers', 'powerups', 'prefabs', 'music', 'graphics']);
+  assert.deepEqual(model.assetTabs.map((tab) => tab.id), ['tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'music', 'graphics']);
+  assert.deepEqual(model.assetTabs.find((tab) => tab.id === 'pixels')?.label, 'Tile Art');
   assert.deepEqual(model.assetTabs.find((tab) => tab.id === 'graphics')?.label, 'Decals');
   assert.deepEqual(model.settingsTabs.map((tab) => tab.id), ['level-settings', 'midi']);
   assert.deepEqual(model.bottomRailActions, ['menu', 'undo', 'redo', 'playtest']);
@@ -569,6 +611,7 @@ test('Level mobile landscape rail exposes every root action for scrolling', () =
     'file',
     'toolbox',
     'tiles',
+    'pixels',
     'npcs',
     'triggers',
     'powerups',
@@ -581,6 +624,39 @@ test('Level mobile landscape rail exposes every root action for scrolling', () =
   ]);
   assert.equal(new Set(tabs.map((tab) => tab.id)).size, tabs.length);
   assert.ok(tabs.length > 7);
+});
+
+test('Level editor keeps settings and tile art reachable from desktop rail', () => {
+  assert.equal(levelEditorSource.includes("this.panelTabs = ['file', 'toolbox', 'tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music', 'level-settings']"), true);
+  assert.equal(levelEditorSource.includes("const topButtonDefById = new Map(topButtonDefs.map((entry) => [entry.id, entry]));"), true);
+  assert.equal(levelEditorSource.includes("const def = topButtonDefById.get(entry.id);"), true);
+  assert.equal(levelEditorSource.includes("{ id: 'pixels', title: 'Tile Art'"), true);
+});
+
+test('Level editor Tile Art opens the supported tile picker only', () => {
+  const panelStart = levelEditorSource.indexOf("} else if (tabId === 'pixels') {");
+  const panelEnd = levelEditorSource.indexOf("} else if (tabId === 'music') {", panelStart);
+  const panelBlock = levelEditorSource.slice(panelStart, panelEnd);
+  const drawerStart = levelEditorSource.indexOf("} else if (activeTab === 'pixels') {");
+  const drawerEnd = levelEditorSource.indexOf("} else if (activeTab === 'music') {", drawerStart);
+  const drawerBlock = levelEditorSource.slice(drawerStart, drawerEnd);
+
+  assert.ok(panelBlock.includes("id: 'tile-art-picker'"));
+  assert.ok(panelBlock.includes('this.openTileArtPicker()'));
+  assert.ok(drawerBlock.includes("id: 'tile-art-picker'"));
+  assert.ok(drawerBlock.includes('this.openTileArtPicker()'));
+  for (const removedId of ['pixel-brush', 'pixel-erase', 'pixel-prev-frame', 'pixel-next-frame', 'pixel-add-frame', 'pixel-remove-frame', 'pixel-fps-up', 'pixel-fps-down']) {
+    assert.equal(panelBlock.includes(removedId), false);
+    assert.equal(drawerBlock.includes(removedId), false);
+  }
+  assert.ok(levelEditorSource.includes("this.game?.enterPixelStudio?.({ returnState: 'editor', resetFocus: false, tilePicker: true });"));
+});
+
+test('Pixel tile picker Back respects the PixelStudio return state', () => {
+  assert.ok(pixelStudioSource.includes('exitTilePicker()'));
+  assert.ok(pixelStudioSource.includes("const returnState = this.game?.pixelStudioReturnState;"));
+  assert.ok(pixelStudioSource.includes("this.game.exitPixelStudio({ toTitle: !['editor', 'actor-editor'].includes(returnState) });"));
+  assert.ok(pixelStudioSource.includes('onClick: () => this.exitTilePicker()'));
 });
 
 test('shared portrait action rail keeps canonical controls visible on phone widths', () => {
@@ -697,16 +773,19 @@ test('Actor portrait thumbstick and state selection support mobile scrolling wor
   assert.equal(actorEditorSource.includes('getActorEditorThumbstickScrollTarget()'), true);
   assert.equal(actorEditorSource.includes("'.actor-editor-collision-scroll'"), true);
   assert.equal(actorEditorSource.includes("'.actor-editor-state-graph-card'"), true);
+  assert.equal(actorEditorSource.includes("'.actor-editor-portrait-top .actor-editor-state-list'"), true);
   assert.equal(actorEditorSource.includes("'.actor-editor-state-list'"), true);
-  assert.ok(actorEditorSource.indexOf("'.actor-editor-state-list'") < actorEditorSource.indexOf("'.actor-editor-center'"));
-  assert.equal(actorEditorSource.includes("scrollTarget.scrollTop -= dy * 0.8"), true);
+  assert.ok(actorEditorSource.indexOf("'.actor-editor-portrait-top .actor-editor-state-list'") < actorEditorSource.indexOf("'.actor-editor-center'"));
+  assert.equal(actorEditorSource.includes("scrollTarget.scrollTop += dy * 0.8"), true);
   assert.equal(actorEditorSource.includes('selectActorState(stateId, { closePortraitMenu = false } = {})'), true);
   assert.equal(actorEditorSource.includes('this.actorPortraitMenuOpen = false;'), true);
   assert.equal(actorEditorSource.includes('this.controllerMenu.closeToSurface();'), true);
   assert.equal(actorEditorSource.includes("btn.onclick = () => this.selectActorState(state.id, { closePortraitMenu: true });"), true);
+  assert.equal(actorEditorSource.includes("el('div', 'actor-editor-state-list actor-editor-rail-state-list')"), true);
   assert.equal(actorEditorSource.includes("row.style.touchAction = 'pan-y';"), true);
   assert.equal(actorEditorSource.includes('row.dataset.ignoreClick'), true);
   assert.equal(stylesSource.includes('.actor-editor-state-list'), true);
+  assert.equal(stylesSource.includes('.actor-editor-portrait-top .actor-editor-rail-state-list'), true);
   assert.equal(stylesSource.includes('-webkit-overflow-scrolling: touch;'), true);
   assert.equal(stylesSource.includes('overscroll-behavior: contain;'), true);
   assert.equal(stylesSource.includes('touch-action: pan-y;'), true);
