@@ -52,7 +52,7 @@ import {
 } from './pixel-editor/bones.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -61,7 +61,7 @@ import { listProjectFiles, loadProjectFile, saveProjectFile, sanitizeProjectFile
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { openChoiceOverlay, openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
-import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeTouchEditorShellPlan } from './shared/editorMenuLayout.js';
 import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
 import { ensurePixelArtStore, ensurePixelPreviewFrame, ensurePixelTileData } from '../editor/adapters/editorDataContracts.js';
 import { resolveActorArtFrameDurationMs } from '../entities/ScriptedActor.js';
@@ -492,7 +492,9 @@ export function buildPixelMobileEditorLayout(width, height, {
   menuSheetOpen = false
 } = {}) {
   if (isMobileLandscapeLayout({ isMobile, viewportWidth: width, viewportHeight: height })) {
-    const layout = getSharedMobileLandscapeEditorLayout(width, height, {
+    const layout = buildLandscapeTouchEditorShellPlan('pixel', {
+      viewportWidth: width,
+      viewportHeight: height,
       bottomRailHeight: 0,
       reserveRightRail: drawerOpen
     });

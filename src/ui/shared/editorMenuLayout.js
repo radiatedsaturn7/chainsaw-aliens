@@ -4,6 +4,7 @@ import {
   getEditorMenuSpec,
   getEditorRootMenuEntries
 } from './editorMenuSpec.js';
+import { getSharedMobileLandscapeEditorLayout } from '../uiSuite.js';
 
 const DEFAULT_DRAG_SCROLL = {
   enabled: true,
@@ -255,6 +256,52 @@ export function buildDesktopEditorShellPlan(editorId, {
       dropdown: { ...DEFAULT_DRAG_SCROLL, pointerType: 'mouse' },
       leftRibbon: { ...DEFAULT_DRAG_SCROLL, pointerType: 'mouse' },
       leftOptions: { ...DEFAULT_DRAG_SCROLL, pointerType: 'mouse' }
+    }
+  };
+}
+
+export function buildLandscapeTouchEditorShellPlan(editorId, {
+  viewportWidth = 0,
+  viewportHeight = 0,
+  labelOverrides = {},
+  leftRailWidth = null,
+  rightRailWidth = null,
+  bottomRailHeight = 0,
+  reserveRightRail = true,
+  thumbstick = null,
+  padding = undefined,
+  gap = undefined
+} = {}) {
+  const layout = getSharedMobileLandscapeEditorLayout(viewportWidth, viewportHeight, {
+    leftRailWidth,
+    rightRailWidth,
+    bottomRailHeight,
+    reserveRightRail,
+    thumbstick,
+    ...(padding === undefined ? {} : { padding }),
+    ...(gap === undefined ? {} : { gap })
+  });
+  return {
+    editorId,
+    mode: EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH,
+    placement: getEditorMenuPlacement(EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH),
+    bounds: {
+      x: 0,
+      y: 0,
+      w: Math.max(1, Number(viewportWidth) || 0),
+      h: Math.max(1, Number(viewportHeight) || 0)
+    },
+    labelOverrides,
+    ...layout,
+    scroll: {
+      leftRail: { ...DEFAULT_DRAG_SCROLL, pointerType: 'touch' },
+      rightRail: { ...DEFAULT_DRAG_SCROLL, pointerType: 'touch' },
+      bottomRail: { ...DEFAULT_DRAG_SCROLL, pointerType: 'touch' },
+      workSurface: {
+        ...DEFAULT_DRAG_SCROLL,
+        pointerType: 'touch',
+        pinchZoomReservedForWorkSurface: true
+      }
     }
   };
 }

@@ -1004,7 +1004,7 @@ test('Actor landscape touch uses shared left root rail and right submenu rail la
   const renderIndex = actorEditorSource.indexOf('  render()');
   const renderBody = actorEditorSource.slice(renderIndex, actorEditorSource.indexOf('  getActiveActorDesktopRoot()', renderIndex));
 
-  assert.equal(actorEditorSource.includes('getSharedMobileLandscapeEditorLayout'), true);
+  assert.equal(actorEditorSource.includes('buildLandscapeTouchEditorShellPlan'), true);
   assert.equal(renderBody.includes('const landscapeLayout = isMobileLandscape && !shouldDrawGamepadSlideOut'), true);
   assert.equal(renderBody.includes('leftRailWidth: getSharedMobileRailWidth(viewportW, viewportH)'), true);
   assert.equal(renderBody.includes('rightRailWidth: getSharedMobileRailWidth(viewportW, viewportH)'), true);
@@ -1018,7 +1018,7 @@ test('Actor landscape touch uses shared left root rail and right submenu rail la
 test('Cutscene gamepad mode replaces the left landscape rail with submenu slide-out', () => {
   const drawIndex = cutsceneEditorSource.indexOf('  draw(ctx, width, height)');
   const drawBody = cutsceneEditorSource.slice(drawIndex, cutsceneEditorSource.indexOf('  computeLayout(width, height)', drawIndex));
-  const landscapeIndex = cutsceneEditorSource.indexOf('const landscape = getSharedMobileLandscapeEditorLayout(width, height');
+  const landscapeIndex = cutsceneEditorSource.indexOf("const landscape = buildLandscapeTouchEditorShellPlan('cutscene'");
   const landscapeBody = cutsceneEditorSource.slice(landscapeIndex, cutsceneEditorSource.indexOf('    const work = landscape.workSurface;', landscapeIndex));
 
   assert.equal(cutsceneEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
@@ -1032,7 +1032,7 @@ test('Cutscene gamepad mode replaces the left landscape rail with submenu slide-
 });
 
 test('Cutscene landscape touch uses left root rail and right submenu drawer', () => {
-  assert.equal(cutsceneEditorSource.includes('getSharedMobileLandscapeEditorLayout(width, height'), true);
+  assert.equal(cutsceneEditorSource.includes("buildLandscapeTouchEditorShellPlan('cutscene'"), true);
   assert.equal(cutsceneEditorSource.includes('isLandscapeTouch: true'), true);
   assert.equal(cutsceneEditorSource.includes('leftMenuBounds: landscape.leftRail'), true);
   assert.equal(cutsceneEditorSource.includes('menuBounds: landscape.rightRail'), true);

@@ -2,10 +2,10 @@ import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { ensureProjectFileIndex, listProjectFiles, loadProjectFile, saveProjectFile, saveProjectFileAndConfirm } from './projectFiles.js';
 import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, DEFAULT_TAXONOMIES, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
 import { getBuiltInActorIdFromName, isBuiltInActorName, mergeBuiltInActorOverride } from '../content/builtinActorOverrides.js';
-import { buildSharedEditorFileMenu, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
+import { buildSharedEditorFileMenu, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
 import { invalidateActorDefinitionCache } from '../entities/ScriptedActor.js';
 import { invalidateBuiltInActorVisualCache } from '../entities/BuiltInActorVisuals.js';
-import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeTouchEditorShellPlan } from './shared/editorMenuLayout.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, renderDomControllerMenu } from './shared/input/controllerMenuStack.js';
 
@@ -1263,7 +1263,9 @@ export default class ActorEditor {
       })
       : null;
     const landscapeLayout = isMobileLandscape && !shouldDrawGamepadSlideOut
-      ? getSharedMobileLandscapeEditorLayout(viewportW, viewportH, {
+      ? buildLandscapeTouchEditorShellPlan('actor', {
+        viewportWidth: viewportW,
+        viewportHeight: viewportH,
         leftRailWidth: getSharedMobileRailWidth(viewportW, viewportH),
         rightRailWidth: getSharedMobileRailWidth(viewportW, viewportH),
         reserveRightRail: true

@@ -17,7 +17,7 @@ import { getGmSustainProfile } from '../game/Audio.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { loadProjectFile, saveProjectFile, saveProjectFileAndConfirm } from './projectFiles.js';
 import { loadServerPreference, saveServerPreference } from './serverPreferences.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportIconButton, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportIconButton, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
 import { resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
@@ -34,7 +34,7 @@ import { registerComposerInputHandlers } from './midi/input/composerInputHandler
 import { drawGhostNotes as drawComposerGhostNotes, drawRecordModeSidebar as drawComposerRecordModeSidebar } from './midi/render/composerRender.js';
 import { createViewportController } from './shared/viewportController.js';
 import { getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
-import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeTouchEditorShellPlan } from './shared/editorMenuLayout.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
@@ -12988,7 +12988,9 @@ export default class MidiComposer {
     const showLandscapeRightDrawer = isLandscape && !controllerConnected && this.isMidiLandscapeRightDrawerTab(this.activeTab);
     const showsGridBottomRail = isLandscape && (this.activeTab === 'grid' || this.activeTab === 'song') && !controllerConnected;
     const landscapeLayout = isLandscape
-      ? getSharedMobileLandscapeEditorLayout(width, height, {
+      ? buildLandscapeTouchEditorShellPlan('midi', {
+        viewportWidth: width,
+        viewportHeight: height,
         bottomRailHeight: showsGridBottomRail ? 72 : 0,
         rightRailWidth: Math.min(340, Math.max(248, Math.floor(width * 0.28))),
         reserveRightRail: showLandscapeRightDrawer

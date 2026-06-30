@@ -13,7 +13,6 @@ import {
   drawSharedPortraitScrollHints,
   drawSharedPortraitSheet,
   drawSharedTransportPopover,
-  getSharedMobileLandscapeEditorLayout,
   getSharedMobilePortraitEditorLayout,
   isMobilePortraitLayout,
   normalizeSharedControlBounds
@@ -21,7 +20,7 @@ import {
 import { drawSharedMobileZoomSlider } from './shared/mobileZoomSlider.js';
 import { openChoiceOverlay, openConfirmOverlay, openProgressOverlay, openTextInputOverlay } from './shared/textInputOverlay.js';
 import { openColorPickerOverlay } from './shared/colorPickerOverlay.js';
-import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeTouchEditorShellPlan } from './shared/editorMenuLayout.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
 import {
@@ -2238,7 +2237,9 @@ export default class CutsceneEditor {
       };
     }
     const railH = 86;
-    const landscape = getSharedMobileLandscapeEditorLayout(width, height, {
+    const landscape = buildLandscapeTouchEditorShellPlan('cutscene', {
+      viewportWidth: width,
+      viewportHeight: height,
       bottomRailHeight: railH,
       rightRailWidth: Math.min(340, Math.max(248, Math.floor(width * 0.28))),
       reserveRightRail: !this.shouldDrawGamepadSubmenuOnLeft(width, height)

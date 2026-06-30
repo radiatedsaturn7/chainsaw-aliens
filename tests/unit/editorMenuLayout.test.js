@@ -7,6 +7,7 @@ import {
   buildDesktopTopMenuPlan,
   buildEditorMenuLayoutPlan,
   buildGamepadSlideOutMenuPlan,
+  buildLandscapeTouchEditorShellPlan,
   getEditorPointerInteractionPolicy,
   getEditorMenuPlacement,
   getMenuScrollPolicy,
@@ -148,6 +149,29 @@ test('desktop editor shell plan reserves top menus and left ribbon/options', () 
   assert.deepEqual(plan.workSurface, { x: 320, y: 48, w: 952, h: 664 });
   assert.equal(Object.hasOwn(plan, 'bottomBar'), false);
   assert.equal(plan.scroll.leftOptions.suppressClickAfterDrag, true);
+});
+
+test('landscape touch shell plan standardizes side rails, bottom rail, and gesture scroll', () => {
+  const plan = buildLandscapeTouchEditorShellPlan('pixel', {
+    viewportWidth: 844,
+    viewportHeight: 390,
+    bottomRailHeight: 72,
+    reserveRightRail: true
+  });
+
+  assert.equal(plan.mode, EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH);
+  assert.deepEqual(plan.placement, {
+    root: 'left-rail',
+    submenu: 'right-drawer',
+    settings: 'right-drawer'
+  });
+  assert.equal(plan.leftRail.x, 0);
+  assert.equal(plan.rightRail.x + plan.rightRail.w, 844);
+  assert.equal(plan.workSurface.x > plan.leftRail.x + plan.leftRail.w, true);
+  assert.equal(plan.bottomRail.y >= plan.workSurface.y + plan.workSurface.h, true);
+  assert.equal(plan.scroll.leftRail.pointerType, 'touch');
+  assert.equal(plan.scroll.rightRail.suppressClickAfterDrag, true);
+  assert.equal(plan.scroll.workSurface.pinchZoomReservedForWorkSurface, true);
 });
 
 test('gamepad slide-out plan keeps root open until a submenu is selected', () => {
