@@ -854,6 +854,19 @@ test('Pixel gamepad mode replaces the left landscape rail with submenu slide-out
   assert.equal(pixelStudioSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
 });
 
+test('Pixel desktop keeps layer and frame actions in the side rail, not the status bar', () => {
+  const rightRailIndex = pixelStudioSource.indexOf('  drawRightRail(ctx, x, y, w, h)');
+  const rightRailBody = pixelStudioSource.slice(rightRailIndex, pixelStudioSource.indexOf('  drawFramesPanel(ctx, x, y, w, h, options = {})', rightRailIndex));
+  const statusIndex = pixelStudioSource.indexOf('  drawStatusBar(ctx, x, y, w, h, options = {})');
+  const statusBody = pixelStudioSource.slice(statusIndex, pixelStudioSource.indexOf('  drawSelectionContextMenu(ctx, width, height)', statusIndex));
+
+  assert.equal(rightRailBody.includes('{ isMobile: false, controls: false }'), false);
+  assert.equal(rightRailBody.includes('this.drawFramesPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false });'), true);
+  assert.equal(rightRailBody.includes('this.drawLayersPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false });'), true);
+  assert.equal(statusBody.includes('getBottomRailActions()'), false);
+  assert.equal(statusBody.includes("['layers', 'animation'].includes(this.leftPanelTab)"), false);
+});
+
 test('Actor portrait menu matches compact shared rail contract', () => {
   const model = buildActorPortraitMenuModel();
 
