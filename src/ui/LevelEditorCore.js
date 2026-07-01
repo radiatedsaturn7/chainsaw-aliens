@@ -9221,8 +9221,6 @@ export default class Editor {
         viewportWidth: width,
         viewportHeight: height,
         activeRootId: activeTab,
-        leftPanelWidth: Math.min(360, Math.max(292, width * 0.24)),
-        leftRibbonHeight: 58,
         labelOverrides: {
           file: SHARED_EDITOR_LEFT_MENU.fileLabel,
           toolbox: 'Toolbox',

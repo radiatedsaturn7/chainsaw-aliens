@@ -17,6 +17,8 @@ import {
 } from '../../src/ui/shared/editorMenuLayout.js';
 import { EDITOR_LAYOUT_MODES, getEditorMenuSection } from '../../src/ui/shared/editorMenuSpec.js';
 
+const ALL_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene'];
+
 test('layout mode resolver distinguishes portrait, landscape, desktop, and gamepad', () => {
   assert.equal(resolveEditorLayoutMode({ isMobile: true, viewportWidth: 390, viewportHeight: 844 }), EDITOR_LAYOUT_MODES.PORTRAIT);
   assert.equal(resolveEditorLayoutMode({ isMobile: true, viewportWidth: 844, viewportHeight: 390 }), EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH);
@@ -184,6 +186,41 @@ test('desktop editor shell plan reserves top menus and left ribbon/options', () 
   assert.deepEqual(plan.workSurface, { x: 320, y: 48, w: 952, h: 664 });
   assert.equal(Object.hasOwn(plan, 'bottomBar'), false);
   assert.equal(plan.scroll.leftOptions.suppressClickAfterDrag, true);
+});
+
+test('desktop editor shell defaults are shared across every editor', () => {
+  for (const editorId of ALL_EDITOR_IDS) {
+    const plan = buildDesktopEditorShellPlan(editorId, {
+      viewportWidth: 1440,
+      viewportHeight: 900,
+      activeRootId: 'file'
+    });
+
+    assert.equal(plan.mode, EDITOR_LAYOUT_MODES.DESKTOP);
+    assert.equal(plan.topMenu.bounds.h, 40);
+    assert.equal(plan.leftColumn.w, 338);
+    assert.equal(plan.leftRibbon.h, 58);
+    assert.equal(plan.leftOptions.x, plan.leftRibbon.x);
+    assert.equal(plan.workSurface.x, plan.leftColumn.x + plan.leftColumn.w + 8);
+    assert.ok(plan.topMenu.buttons.length > 0, `${editorId} should expose desktop top menu buttons`);
+    assert.equal(plan.topMenu.buttons[0].id, 'file');
+  }
+});
+
+test('desktop editor shell clamps the shared left panel for narrow and wide desktops', () => {
+  const narrow = buildDesktopEditorShellPlan('pixel', {
+    viewportWidth: 900,
+    viewportHeight: 700
+  });
+  assert.equal(narrow.leftColumn.w, 284);
+  assert.equal(narrow.workSurface.w, 592);
+
+  const wide = buildDesktopEditorShellPlan('pixel', {
+    viewportWidth: 1920,
+    viewportHeight: 1080
+  });
+  assert.equal(wide.leftColumn.w, 352);
+  assert.equal(wide.workSurface.w, 1544);
 });
 
 test('landscape touch shell plan standardizes side rails, bottom rail, and gesture scroll', () => {

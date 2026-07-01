@@ -25,8 +25,10 @@ const DEFAULT_TOP_MENU = {
 
 const DEFAULT_DESKTOP_SHELL = {
   topMenuHeight: 40,
-  leftPanelWidth: 300,
-  leftRibbonHeight: 52,
+  leftPanelMinWidth: 292,
+  leftPanelMaxWidth: 360,
+  leftPanelViewportRatio: 0.24,
+  leftRibbonHeight: 58,
   gap: 8,
   minWorkSurfaceWidth: 320,
   minWorkSurfaceHeight: 220
@@ -228,7 +230,7 @@ export function buildDesktopEditorShellPlan(editorId, {
   activeRootId = null,
   labelOverrides = {},
   topMenuHeight = DEFAULT_DESKTOP_SHELL.topMenuHeight,
-  leftPanelWidth = DEFAULT_DESKTOP_SHELL.leftPanelWidth,
+  leftPanelWidth = null,
   leftRibbonHeight = DEFAULT_DESKTOP_SHELL.leftRibbonHeight,
   gap = DEFAULT_DESKTOP_SHELL.gap,
   minWorkSurfaceWidth = DEFAULT_DESKTOP_SHELL.minWorkSurfaceWidth,
@@ -238,7 +240,14 @@ export function buildDesktopEditorShellPlan(editorId, {
   const height = Math.max(1, Number(viewportHeight) || 0);
   const topH = Math.max(0, Number(topMenuHeight) || 0);
   const spacing = Math.max(0, Number(gap) || 0);
-  const panelW = Math.max(0, Math.min(Number(leftPanelWidth) || 0, width - spacing - minWorkSurfaceWidth));
+  const standardPanelW = Math.round(Math.min(
+    DEFAULT_DESKTOP_SHELL.leftPanelMaxWidth,
+    Math.max(DEFAULT_DESKTOP_SHELL.leftPanelMinWidth, width * DEFAULT_DESKTOP_SHELL.leftPanelViewportRatio)
+  ));
+  const requestedPanelW = leftPanelWidth === null || leftPanelWidth === undefined
+    ? standardPanelW
+    : Number(leftPanelWidth) || 0;
+  const panelW = Math.max(0, Math.min(requestedPanelW, width - spacing - minWorkSurfaceWidth));
   const ribbonH = Math.max(0, Number(leftRibbonHeight) || 0);
   const contentY = topH + spacing;
   const contentH = Math.max(1, height - contentY - spacing);

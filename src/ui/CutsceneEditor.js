@@ -2221,9 +2221,7 @@ export default class CutsceneEditor {
       const shell = buildDesktopEditorShellPlan('cutscene', {
         viewportWidth: width,
         viewportHeight: height,
-        activeRootId: this.activeMenuTab || 'add',
-        leftPanelWidth: Math.min(360, Math.max(292, width * 0.24)),
-        leftRibbonHeight: 58
+        activeRootId: this.activeMenuTab || 'add'
       });
       const work = shell.workSurface;
       const contextH = 46;

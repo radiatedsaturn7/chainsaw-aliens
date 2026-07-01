@@ -1254,9 +1254,7 @@ export default class ActorEditor {
       ? buildDesktopEditorShellPlan('actor', {
         viewportWidth: viewportW,
         viewportHeight: viewportH,
-        activeRootId: this.getActiveActorDesktopRoot(),
-        leftPanelWidth: Math.min(360, Math.max(292, viewportW * 0.24)),
-        leftRibbonHeight: 58
+        activeRootId: this.getActiveActorDesktopRoot()
       })
       : null;
     const portraitInset = isMobilePortrait ? 8 : 0;

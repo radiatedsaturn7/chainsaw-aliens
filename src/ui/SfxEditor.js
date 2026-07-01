@@ -1802,9 +1802,7 @@ export default class SfxEditor {
       const shell = buildDesktopEditorShellPlan('sfx', {
         viewportWidth: width,
         viewportHeight: height,
-        activeRootId: this.leftTab,
-        leftPanelWidth: Math.min(340, Math.max(286, width * 0.25)),
-        leftRibbonHeight: 56
+        activeRootId: this.leftTab
       });
       this.drawDesktopTopMenu(ctx, shell.topMenu);
       this.drawDesktopRibbon(ctx, shell.leftRibbon);

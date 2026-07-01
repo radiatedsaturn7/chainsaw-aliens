@@ -2,11 +2,11 @@
 
 Product-level editor menu behavior is specified in `../UISpec.md`. This file is the lower-level shell, layout, spacing, typography, and token contract used by the shared editor UI implementation.
 
-This document defines the shared layout and token contract for **Level Editor**, **MIDI Editor**, and **Pixel Editor**.
+This document defines the shared layout and token contract for **Pixel Editor**, **Level Editor**, **Actor Editor**, **MIDI Editor**, **SFX Editor**, and **Cutscene Editor**.
 
 ## 1) Fixed Layout Dimensions
 
-- **Left rail width (desktop):** `292px`
+- **Left rail width (desktop):** responsive `292px`-`360px` allocation, derived by the shared shell
 - **Left rail width (mobile/collapsed):** `72px`
 - **Top bar height:** `40px`
 - **Status bar height (reserved token):** `20px`

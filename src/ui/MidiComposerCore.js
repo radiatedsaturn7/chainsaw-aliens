@@ -12347,8 +12347,6 @@ export default class MidiComposer {
       viewportWidth: width,
       viewportHeight: height,
       activeRootId: this.activeTab,
-      leftPanelWidth: Math.min(360, Math.max(292, width * 0.24)),
-      leftRibbonHeight: 58,
       labelOverrides: {
         file: SHARED_EDITOR_LEFT_MENU.fileLabel,
         instruments: 'Mixer'
