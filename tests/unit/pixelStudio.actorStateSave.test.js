@@ -1,8 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
+import ActorEditor from '../../src/ui/ActorEditor.js';
 import PixelStudio from '../../src/ui/PixelStudio.js';
 import { ensureActorDefinition } from '../../src/content/actorEditorData.js';
+import { clearCachedProjectFilesForTests, upsertCachedProjectFile } from '../../src/ui/serverStorage.js';
 
 const serializeCurrentAnimationAsArtDocument = PixelStudio.prototype.serializeCurrentAnimationAsArtDocument;
 const shouldLoadArtAsAnimationDocument = PixelStudio.prototype.shouldLoadArtAsAnimationDocument;
@@ -10,6 +12,70 @@ const loadAnimationArtDocument = PixelStudio.prototype.loadAnimationArtDocument;
 const buildActorStateArtDocName = PixelStudio.prototype.buildActorStateArtDocName;
 const saveArtDocument = PixelStudio.prototype.saveArtDocument;
 const commitActorStateArtRef = PixelStudio.prototype.commitActorStateArtRef;
+
+function cacheArtDocument(name, data, savedAt = 1234) {
+  upsertCachedProjectFile('art', name, JSON.stringify({
+    version: 1,
+    folder: 'art',
+    name,
+    savedAt,
+    data
+  }));
+}
+
+async function withCanvasAndImage(fn) {
+  const previousDocument = globalThis.document;
+  const previousImage = globalThis.Image;
+  globalThis.document = {
+    createElement() {
+      const canvas = {
+        width: 1,
+        height: 1,
+        getContext() {
+          return {
+            createImageData(width, height) {
+              return { data: new Uint8ClampedArray(width * height * 4) };
+            },
+            putImageData() {},
+            drawImage() {},
+            getImageData(x, y, width, height) {
+              void x;
+              void y;
+              return { data: new Uint8ClampedArray(width * height * 4) };
+            }
+          };
+        },
+        toDataURL() {
+          return 'data:image/png;base64,actor-frame';
+        }
+      };
+      return canvas;
+    }
+  };
+  globalThis.Image = class {
+    constructor() {
+      this.width = 1;
+      this.height = 1;
+      this.onload = null;
+      this.onerror = null;
+    }
+
+    set src(value) {
+      this._src = value;
+      if (this.onload) this.onload();
+    }
+
+    get src() {
+      return this._src;
+    }
+  };
+  try {
+    return await fn();
+  } finally {
+    globalThis.document = previousDocument;
+    globalThis.Image = previousImage;
+  }
+}
 
 test('serializeCurrentAnimationAsArtDocument exports composited frames for actor-state saves', () => {
   const editor = {
@@ -55,6 +121,74 @@ test('ensureActorDefinition preserves animation artRef metadata', () => {
   });
 
   assert.equal(actor.states[0].animation.artRef, 'test-bot-idle-art');
+});
+
+test('actor editor art-ref previews preserve baked per-frame durations', () => {
+  clearCachedProjectFilesForTests();
+  cacheArtDocument('preview-varied-timing-art', {
+    kind: 'actor-state-animation',
+    width: 1,
+    height: 1,
+    fps: 32,
+    frames: [['#ff0000'], ['#00ff00'], ['#0000ff']],
+    editor: {
+      frames: [
+        { durationMs: 31 },
+        { durationMs: 114 },
+        { durationMs: 360 }
+      ]
+    }
+  }, 99);
+  const fakeEditor = {
+    artPreviewCache: new Map(),
+    buildArtPreviewFrameUrl(frame, width, height, cacheKey) {
+      return `preview:${width}x${height}:${cacheKey}:${frame[0]}`;
+    }
+  };
+
+  const frames = ActorEditor.prototype.getAnimationPreviewFrames.call(fakeEditor, {
+    artRef: 'preview-varied-timing-art',
+    fps: 32
+  });
+
+  assert.deepEqual(frames.map((frame) => frame.durationMs), [31, 114, 360]);
+  assert.equal(frames.every((frame) => frame.imageDataUrl.includes('31,114,360')), true);
+});
+
+test('opening actor art refs in Pixel Studio preserves baked per-frame durations', async () => {
+  clearCachedProjectFilesForTests();
+  cacheArtDocument('roundtrip-varied-timing-art', {
+    kind: 'actor-state-animation',
+    width: 1,
+    height: 1,
+    fps: 32,
+    frames: [['#ff0000'], ['#00ff00'], ['#0000ff']],
+    editor: {
+      frames: [
+        { durationMs: 31 },
+        { durationMs: 114 },
+        { durationMs: 360 }
+      ]
+    }
+  });
+  const editor = {
+    canvasState: {},
+    animation: {},
+    artSizeDraft: {},
+    buildActorStateArtDocName,
+    setFrameLayers(layers) {
+      this.canvasState.layers = layers;
+    },
+    resetFocus() {}
+  };
+
+  await withCanvasAndImage(() => PixelStudio.prototype.loadActorStateImageForEditing.call(editor, {
+    actorId: 'player',
+    stateId: 'idle',
+    animation: { artRef: 'roundtrip-varied-timing-art', fps: 32 }
+  }));
+
+  assert.deepEqual(editor.animation.frames.map((frame) => frame.durationMs), [31, 114, 360]);
 });
 
 test('buildActorStateArtDocName creates a stable art filename', () => {

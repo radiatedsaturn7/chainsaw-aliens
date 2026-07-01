@@ -1,7 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import ScriptedActor from '../../src/entities/ScriptedActor.js';
+import ScriptedActor, {
+  resolveActorArtFrameDurationMs,
+  resolveActorArtFrameDurations,
+  resolveAnimationFrames
+} from '../../src/entities/ScriptedActor.js';
+import { clearCachedProjectFilesForTests, upsertCachedProjectFile } from '../../src/ui/serverStorage.js';
 
 function makeActor() {
   return new ScriptedActor(0, 0, {
@@ -60,6 +65,44 @@ function makeDeathActor({ destroyAfterDeath = true, collidableAfterDeath = false
   return actor;
 }
 
+function withCanvasDocument(fn) {
+  const previousDocument = globalThis.document;
+  globalThis.document = {
+    createElement() {
+      return {
+        width: 0,
+        height: 0,
+        getContext() {
+          return {
+            createImageData(width, height) {
+              return { data: new Uint8ClampedArray(width * height * 4) };
+            },
+            putImageData() {}
+          };
+        },
+        toDataURL() {
+          return 'data:image/png;base64,actor-frame';
+        }
+      };
+    }
+  };
+  try {
+    return fn();
+  } finally {
+    globalThis.document = previousDocument;
+  }
+}
+
+function cacheArtDocument(name, data, savedAt = 1234) {
+  upsertCachedProjectFile('art', name, JSON.stringify({
+    version: 1,
+    folder: 'art',
+    name,
+    savedAt,
+    data
+  }));
+}
+
 test('scripted actor transition timers use real time while movement dt is slowed', () => {
   const actor = makeActor();
   const player = { x: 100, y: 0 };
@@ -67,6 +110,60 @@ test('scripted actor transition timers use real time while movement dt is slowed
   actor.update(0.125, player, { actorTimerDt: 0.5 });
 
   assert.equal(actor.stateId, 'done');
+});
+
+test('scripted actor art refs preserve baked per-frame durations', () => {
+  clearCachedProjectFilesForTests();
+  cacheArtDocument('actor-varied-timing-art', {
+    kind: 'actor-state-animation',
+    width: 1,
+    height: 1,
+    fps: 32,
+    frames: [['#ff0000'], ['#00ff00'], ['#0000ff']],
+    editor: {
+      frames: [
+        { durationMs: 31 },
+        { durationMs: 114 },
+        { durationMs: 360 }
+      ]
+    }
+  });
+
+  const frames = withCanvasDocument(() => resolveAnimationFrames({ artRef: 'actor-varied-timing-art', fps: 32 }));
+
+  assert.deepEqual(frames.map((frame) => frame.durationMs), [31, 114, 360]);
+});
+
+test('scripted actor duration helpers expose single-frame and list APIs', () => {
+  const artDoc = {
+    data: {
+      fps: 20,
+      editor: {
+        frames: [
+          { durationMs: 40 },
+          { durationMs: 80 }
+        ]
+      }
+    }
+  };
+
+  assert.equal(resolveActorArtFrameDurationMs(artDoc, {}, 1), 80);
+  assert.deepEqual(resolveActorArtFrameDurations(artDoc, {}, 3), [40, 80, 50]);
+});
+
+test('scripted actor art refs fall back to fps when no baked durations exist', () => {
+  clearCachedProjectFilesForTests();
+  cacheArtDocument('actor-fps-timing-art', {
+    kind: 'actor-state-animation',
+    width: 1,
+    height: 1,
+    fps: 10,
+    frames: [['#ff0000'], ['#00ff00']]
+  });
+
+  const frames = withCanvasDocument(() => resolveAnimationFrames({ artRef: 'actor-fps-timing-art' }));
+
+  assert.deepEqual(frames.map((frame) => frame.durationMs), [100, 100]);
 });
 
 test('scripted actor transition timers continue during hit pause', () => {

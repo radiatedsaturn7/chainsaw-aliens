@@ -6,6 +6,7 @@ const actorCache = new Map();
 const actorArtAnimationCache = new Map();
 const actorFrameImageCache = new Map();
 const DEFAULT_ACTOR_SIZE = { width: 24, height: 24 };
+const MIN_ACTOR_FRAME_DURATION_MS = 16;
 
 function readPngDataUrlDimensions(dataUrl) {
   if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/png;base64,') || typeof atob !== 'function') return null;
@@ -75,18 +76,45 @@ export function invalidateActorDefinitionCache(actorId = null) {
   actorCache.clear();
 }
 
+export function resolveActorArtFrameDurationMs(artDoc = null, animation = {}, frameIndex = 0) {
+  const index = Math.max(0, Math.floor(Number(frameIndex) || 0));
+  const editorFrameDuration = Number(artDoc?.data?.editor?.frames?.[index]?.durationMs);
+  if (Number.isFinite(editorFrameDuration) && editorFrameDuration > 0) {
+    return Math.max(MIN_ACTOR_FRAME_DURATION_MS, Math.round(editorFrameDuration));
+  }
+  const animationFrameDuration = Number(animation?.frames?.[index]?.durationMs);
+  if (Number.isFinite(animationFrameDuration) && animationFrameDuration > 0) {
+    return Math.max(MIN_ACTOR_FRAME_DURATION_MS, Math.round(animationFrameDuration));
+  }
+  const fps = Math.max(1, Number(animation?.fps || artDoc?.data?.fps || 8));
+  return Math.max(MIN_ACTOR_FRAME_DURATION_MS, Math.round(1000 / fps));
+}
+
+export function getActorArtDurationSignature(artDoc = null, animation = {}, frameCount = 0) {
+  const durations = resolveActorArtFrameDurations(artDoc, animation, frameCount);
+  return durations.join(',');
+}
+
+export function resolveActorArtFrameDurations(artDoc = null, animation = {}, frameCount = 0) {
+  const count = Math.max(0, Math.floor(Number(frameCount) || 0));
+  const durations = [];
+  for (let index = 0; index < count; index += 1) {
+    durations.push(resolveActorArtFrameDurationMs(artDoc, animation, index));
+  }
+  return durations;
+}
+
 function resolveArtAnimationFrames(artRef = '', animation = {}) {
   if (!artRef || typeof document === 'undefined') return [];
-  const fps = Math.max(1, Number(animation?.fps || 8));
-  const cacheKey = `${artRef}:${fps}`;
-  if (actorArtAnimationCache.has(cacheKey)) return actorArtAnimationCache.get(cacheKey);
   const doc = loadProjectFile('art', artRef);
   const frames = Array.isArray(doc?.data?.frames) ? doc.data.frames : [];
   if (!frames.length) return [];
+  const durationSignature = getActorArtDurationSignature(doc, animation, frames.length);
+  const cacheKey = `${artRef}:${Number(doc?.savedAt || doc?.data?.updatedAt || 0)}:${frames.length}:${durationSignature}`;
+  if (actorArtAnimationCache.has(cacheKey)) return actorArtAnimationCache.get(cacheKey);
   const width = Math.max(1, Number(doc?.data?.width || doc?.data?.size || 16));
   const height = Math.max(1, Number(doc?.data?.height || doc?.data?.size || width || 16));
-  const durationMs = Math.round(1000 / Math.max(1, Number(animation?.fps || doc?.data?.fps || 8)));
-  const resolved = frames.map((frame) => {
+  const resolved = frames.map((frame, index) => {
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -107,7 +135,7 @@ function resolveArtAnimationFrames(artRef = '', animation = {}) {
       imageData.data[base + 3] = 255;
     }
     ctx.putImageData(imageData, 0, 0);
-    return { imageDataUrl: canvas.toDataURL('image/png'), durationMs };
+    return { imageDataUrl: canvas.toDataURL('image/png'), durationMs: resolveActorArtFrameDurationMs(doc, animation, index) };
   }).filter(Boolean);
   actorArtAnimationCache.set(cacheKey, resolved);
   return resolved;
