@@ -353,7 +353,9 @@ export function buildDesktopDropdownPlan(editorId, rootId, {
   labelOverrides = {},
   rowHeight = 34,
   minWidth = 220,
-  maxVisibleRows = 12
+  maxVisibleRows = 12,
+  padding = 8,
+  rowGap = 4
 } = {}) {
   const spec = getEditorMenuSpec(editorId);
   const rootEntry = getEditorRootMenuEntries(editorId, { labelOverrides })
@@ -376,14 +378,34 @@ export function buildDesktopDropdownPlan(editorId, rootId, {
     w: width,
     h: visibleRows * rowHeight
   };
+  const renderedItems = items.slice(0, visibleRows);
+  const panelBounds = {
+    ...bounds,
+    h: Math.max(rowHeight, renderedItems.length * rowHeight)
+  };
+  const itemRowHeight = Math.max(24, rowHeight - rowGap);
+  const itemBounds = renderedItems.map((item, index) => ({
+    id: item.id,
+    x: panelBounds.x + padding,
+    y: panelBounds.y + index * rowHeight + Math.floor(rowGap / 2),
+    w: Math.max(1, panelBounds.w - padding * 2),
+    h: itemRowHeight
+  }));
   return {
     editorId,
     rootId: rootEntry?.id || rootId,
     specId: sectionId,
     title: section?.label || rootEntry?.label || '',
     bounds,
+    panelBounds,
     rowHeight,
+    padding,
+    rowGap,
+    visibleRows,
+    maxScroll: Math.max(0, items.length - visibleRows),
     items,
+    renderedItems,
+    itemBounds,
     scroll: { ...DEFAULT_DRAG_SCROLL }
   };
 }

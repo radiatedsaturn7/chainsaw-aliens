@@ -429,6 +429,11 @@ export default class ActorEditor {
     this.handleGamepadInput(input, dt);
   }
   draw() {}
+
+  isMobileLayout() {
+    return Boolean(this.game?.isMobile);
+  }
+
   resetTransientInteractionState() {
     this.controllerMenu.resetFocus();
   }
@@ -436,7 +441,7 @@ export default class ActorEditor {
   resetToFileMenu() {
     const viewportW = Number(window.innerWidth || 0);
     const viewportH = Number(window.innerHeight || 0);
-    const isPortraitPhone = Math.min(viewportW, viewportH) <= 900 && viewportH > viewportW;
+    const isPortraitPhone = this.isMobileLayout() && viewportH > viewportW;
     this.fileMenuOpen = !isPortraitPhone;
     this.actorPortraitMenuOpen = !isPortraitPhone;
     this.activeMenuSection = 'actor';
@@ -1241,11 +1246,11 @@ export default class ActorEditor {
     const rightRail = el('div', 'actor-editor-right-rail');
     const viewportW = Number(window.innerWidth || 0);
     const viewportH = Number(window.innerHeight || 0);
-    const isMobileViewport = Math.min(viewportW, viewportH) <= 900;
+    const isMobileViewport = this.isMobileLayout();
     const isMobileLandscape = isMobileViewport && viewportW > viewportH;
     const isMobilePortrait = isMobileViewport && viewportH > viewportW;
     const isGamepadConnected = Boolean(this.game?.input?.isGamepadConnected?.());
-    const isDesktopLayout = !isMobileViewport && !isGamepadConnected;
+    const isDesktopLayout = !isMobileViewport;
     const gamepadSlideOutMenuId = this.getActiveGamepadMenuId();
     const isGamepadLandscapeMenuMode = this.isGamepadLandscapeMenuMode(viewportW, viewportH);
     const shouldDrawGamepadSlideOut = Boolean(isGamepadLandscapeMenuMode && this.controllerMenu.active && gamepadSlideOutMenuId);
@@ -1416,12 +1421,11 @@ export default class ActorEditor {
   }
 
   isGamepadLandscapeMenuMode(width = Number(window.innerWidth || 0), height = Number(window.innerHeight || 0)) {
-    const isMobileViewport = Math.min(width, height) <= 900;
     return isGamepadLandscapeEditorMode({
       viewportWidth: width,
       viewportHeight: height,
       gamepadConnected: this.game?.input?.isGamepadConnected?.(),
-      isMobile: isMobileViewport
+      isMobile: this.isMobileLayout()
     });
   }
 
@@ -1511,6 +1515,12 @@ export default class ActorEditor {
       btn.style.borderTop = '0';
       btn.style.borderBottom = '0';
       btn.onclick = () => this.setActorDesktopRoot(entry.id);
+      btn.onmouseenter = () => {
+        if (entry.id !== activeRoot && entry.specId !== activeRoot) this.setActorDesktopRoot(entry.id);
+      };
+      btn.onfocus = () => {
+        if (entry.id !== activeRoot && entry.specId !== activeRoot) this.setActorDesktopRoot(entry.id);
+      };
       top.appendChild(btn);
     });
     const dropdown = this.renderDesktopDropdown(shellLayout);
@@ -2099,7 +2109,7 @@ export default class ActorEditor {
   renderSidebarMenu() {
     const viewportW = Number(window.innerWidth || 0);
     const viewportH = Number(window.innerHeight || 0);
-    const isPortraitMobile = Math.min(viewportW, viewportH) <= 900 && viewportH > viewportW;
+    const isPortraitMobile = this.isMobileLayout() && viewportH > viewportW;
     const portraitModel = buildActorPortraitMenuModel();
     const menu = el('div', 'actor-editor-menu-rail');
     menu.style.display = 'flex';
@@ -2368,7 +2378,7 @@ export default class ActorEditor {
   styleRailButton(btn, active = false, focused = false) {
     const viewportW = Number(window.innerWidth || 0);
     const viewportH = Number(window.innerHeight || 0);
-    const isMobileViewport = Math.min(viewportW, viewportH) <= 900;
+    const isMobileViewport = this.isMobileLayout();
     const buttonHeight = isMobileViewport
       ? UI_SUITE.spacing.tap
       : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop;

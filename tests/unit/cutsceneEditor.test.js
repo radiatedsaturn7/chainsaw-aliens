@@ -96,6 +96,10 @@ function pngDataUrl(width, height) {
   return `data:image/png;base64,${header.toString('base64')}`;
 }
 
+function createMobileCutsceneEditor(game = {}) {
+  return new CutsceneEditor({ isMobile: true, exitCutsceneEditor() {}, ...game });
+}
+
 test('cutscene project folder is registered', () => {
   assert.equal(PROJECT_FOLDERS.includes('cutscenes'), true);
   assert.equal(Object.hasOwn(listServerIndexedFiles(), 'cutscenes'), true);
@@ -416,7 +420,7 @@ test('cutscene timeline viewport zoom maps visible time range', () => {
 });
 
 test('cutscene editor timeline zoom buttons preserve selected clip focus', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     durationMs: 6000,
     clips: [{ id: 'clip-1', type: 'text', startMs: 1500, durationMs: 1000, text: 'Focus' }]
@@ -432,7 +436,7 @@ test('cutscene editor timeline zoom buttons preserve selected clip focus', () =>
 });
 
 test('cutscene editor open focuses first clip content instead of empty timeline origin', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
 
   editor.applyDocument({
     durationMs: 6000,
@@ -739,7 +743,7 @@ test('cutscene player prefers cutscene MIDI ownership APIs in game runtime', () 
 
 
 test('cutscene editor draws safely on tiny and mobile viewports', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = new CutsceneEditor({ isMobile: true, exitCutsceneEditor() {} });
   const ctx = createMockContext();
 
   assert.doesNotThrow(() => editor.draw(ctx, 1, 1));
@@ -748,7 +752,7 @@ test('cutscene editor draws safely on tiny and mobile viewports', () => {
 });
 
 test('cutscene editor starts with canvas and timeline visible instead of menu open', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = new CutsceneEditor({ isMobile: true, exitCutsceneEditor() {} });
   editor.resetToFileMenu();
   const ctx = createMockContext();
   editor.draw(ctx, 390, 844);
@@ -759,7 +763,7 @@ test('cutscene editor starts with canvas and timeline visible instead of menu op
 });
 
 test('cutscene editor workspace view controls switch canvas and timeline modes', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = new CutsceneEditor({ isMobile: true, exitCutsceneEditor() {} });
 
   editor.handleButton('view-timeline');
   await editor.pendingAction;
@@ -779,7 +783,7 @@ test('cutscene editor workspace view controls switch canvas and timeline modes',
 });
 
 test('cutscene editor empty timeline drag pans zoomed time and tracks', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     durationMs: 6000,
     clips: Array.from({ length: 20 }, (_, index) => ({
@@ -822,7 +826,7 @@ test('cutscene timeline layout supports fractional vertical track scroll', () =>
 });
 
 test('cutscene editor thumbstick down pans down through tracks smoothly', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     durationMs: 6000,
     clips: Array.from({ length: 10 }, (_, index) => ({
@@ -846,7 +850,7 @@ test('cutscene editor thumbstick down pans down through tracks smoothly', () => 
 });
 
 test('cutscene editor playhead key mode creates a local keyframe', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{
       id: 'actor',
@@ -874,7 +878,7 @@ test('cutscene editor playhead key mode creates a local keyframe', () => {
 });
 
 test('cutscene editor start key updates hidden base pose and end creates a visible key', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{
       id: 'text',
@@ -926,7 +930,7 @@ test('cutscene visual keyframes normalize to sparse manual keys without implicit
 });
 
 test('cutscene editor selects and deletes sparse explicit keyframes', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{
       id: 'actor',
@@ -959,7 +963,7 @@ test('cutscene editor selects and deletes sparse explicit keyframes', () => {
 });
 
 test('cutscene editor keyframe markers select keys and move the playhead', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{
       id: 'actor',
@@ -983,7 +987,7 @@ test('cutscene editor keyframe markers select keys and move the playhead', () =>
 });
 
 test('cutscene editor tapping visual clips selects without creating keyframes', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{
       id: 'actor',
@@ -1015,7 +1019,7 @@ test('cutscene editor tapping visual clips selects without creating keyframes', 
 });
 
 test('cutscene editor empty stage taps deselect without moving clips', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{
       id: 'text',
@@ -1045,7 +1049,7 @@ test('cutscene editor empty stage taps deselect without moving clips', () => {
 });
 
 test('cutscene editor tapping selected clips keeps selection without opening actions', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{
       id: 'text',
@@ -1071,7 +1075,7 @@ test('cutscene editor tapping selected clips keeps selection without opening act
 });
 
 test('cutscene editor dragging clips with no keyframes moves base pose only', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{
       id: 'text',
@@ -1101,7 +1105,7 @@ test('cutscene editor dragging clips with no keyframes moves base pose only', ()
 });
 
 test('cutscene editor dragging with an active keyframe moves the keyframe only', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     snapEnabled: false,
     clips: [{
@@ -1140,7 +1144,7 @@ test('cutscene editor dragging with an active keyframe moves the keyframe only',
 });
 
 test('cutscene editor draws an outline for selected visual clips', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{
       id: 'text',
@@ -1172,7 +1176,7 @@ test('cutscene editor draws an outline for selected visual clips', () => {
 });
 
 test('cutscene editor selected outline is expanded and draggable', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     snapEnabled: false,
     clips: [{
@@ -1201,7 +1205,7 @@ test('cutscene editor selected outline is expanded and draggable', () => {
 });
 
 test('cutscene editor stage movement snaps and can be disabled', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     snapEnabled: true,
     snapSize: 8,
@@ -1238,7 +1242,7 @@ test('cutscene editor stage movement snaps and can be disabled', () => {
 });
 
 test('cutscene editor keyframe targets are touch-sized and adjacent key actions work', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{
       id: 'actor',
@@ -1275,7 +1279,7 @@ test('cutscene editor keyframe targets are touch-sized and adjacent key actions 
 });
 
 test('cutscene editor track controls reorder object tracks', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [
       { id: 'art-1', type: 'art', durationMs: 1000 },
@@ -1301,7 +1305,7 @@ test('cutscene editor track controls reorder object tracks', () => {
 });
 
 test('cutscene editor timeline vertical drag reorders object tracks', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [
       { id: 'art-1', type: 'art', durationMs: 1000 },
@@ -1323,7 +1327,7 @@ test('cutscene editor timeline vertical drag reorders object tracks', () => {
 });
 
 test('cutscene editor supports multiple clips on one timeline track', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     tracks: [{ id: 'dialogue', name: 'Dialogue' }],
     clips: [
@@ -1343,7 +1347,7 @@ test('cutscene editor supports multiple clips on one timeline track', () => {
 });
 
 test('cutscene editor stacks only overlapping clips on the same timeline track', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     tracks: [{ id: 'dialogue', name: 'Dialogue' }],
     clips: [
@@ -1360,7 +1364,7 @@ test('cutscene editor stacks only overlapping clips on the same timeline track',
 });
 
 test('cutscene editor timeline uses purple text clips and board clip colors', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     tracks: [{ id: 'track-1', name: 'Track 1' }, { id: 'track-2', name: 'Track 2' }],
     clips: [
@@ -1377,7 +1381,7 @@ test('cutscene editor timeline uses purple text clips and board clip colors', ()
 });
 
 test('cutscene editor main drawer exposes file add and stage tabs only', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.menuOpen = true;
   editor.draw(createMockContext(), 390, 844);
 
@@ -1387,7 +1391,7 @@ test('cutscene editor main drawer exposes file add and stage tabs only', () => {
 });
 
 test('cutscene editor track tap selects track and edit panel shows track options', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     tracks: [{ id: 'dialogue', name: 'Dialogue' }],
     clips: [{ id: 'text-1', type: 'text', text: 'A', trackId: 'dialogue', durationMs: 1000 }]
@@ -1409,7 +1413,7 @@ test('cutscene editor track tap selects track and edit panel shows track options
 });
 
 test('cutscene editor draws timeline and stage keyframe markers', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{
       id: 'actor',
@@ -1438,7 +1442,7 @@ test('cutscene editor draws timeline and stage keyframe markers', () => {
 });
 
 test('cutscene editor timeline handle resizes selected clip duration', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     durationMs: 6000,
     clips: [{
@@ -1460,8 +1464,93 @@ test('cutscene editor timeline handle resizes selected clip duration', () => {
   assert.equal(editor.document.clips[0].durationMs > 1000, true);
 });
 
+test('cutscene editor timeline move snaps clip start to playhead', () => {
+  const editor = createMobileCutsceneEditor();
+  editor.document = normalizeCutsceneDocument({
+    durationMs: 6000,
+    clips: [{ id: 'text-1', type: 'text', text: 'STATUS REPORT', startMs: 200, durationMs: 700 }]
+  });
+  editor.selectedClipId = 'text-1';
+  editor.playheadMs = 1000;
+  editor.draw(createMockContext(), 390, 844);
+  const clipBounds = editor.bounds.clips.find((entry) => entry.id === 'text-1');
+  const layout = editor.getTimelineLayout(editor.bounds.timeline);
+  const startX = clipBounds.x + 8;
+  const targetX = startX + timelineMsToX(990, layout) - timelineMsToX(200, layout);
+
+  editor.handlePointerDown({ x: startX, y: clipBounds.y + clipBounds.h / 2 });
+  editor.handlePointerMove({ x: targetX, y: clipBounds.y + clipBounds.h / 2 });
+
+  assert.equal(editor.document.clips[0].startMs, 1000);
+  assert.equal(editor.timelineSnapGuideMs, 1000);
+});
+
+test('cutscene editor timeline move snaps clip end to playhead', () => {
+  const editor = createMobileCutsceneEditor();
+  editor.document = normalizeCutsceneDocument({
+    durationMs: 6000,
+    clips: [{ id: 'text-1', type: 'text', text: 'STATUS REPORT', startMs: 200, durationMs: 700 }]
+  });
+  editor.selectedClipId = 'text-1';
+  editor.playheadMs = 1000;
+  editor.draw(createMockContext(), 390, 844);
+  const clipBounds = editor.bounds.clips.find((entry) => entry.id === 'text-1');
+  const layout = editor.getTimelineLayout(editor.bounds.timeline);
+  const startX = clipBounds.x + 8;
+  const targetX = startX + timelineMsToX(290, layout) - timelineMsToX(200, layout);
+
+  editor.handlePointerDown({ x: startX, y: clipBounds.y + clipBounds.h / 2 });
+  editor.handlePointerMove({ x: targetX, y: clipBounds.y + clipBounds.h / 2 });
+
+  assert.equal(editor.document.clips[0].startMs, 300);
+  assert.equal(editor.document.clips[0].startMs + editor.document.clips[0].durationMs, 1000);
+});
+
+test('cutscene editor timeline duration resize snaps clip end to playhead', () => {
+  const editor = createMobileCutsceneEditor();
+  editor.document = normalizeCutsceneDocument({
+    durationMs: 6000,
+    clips: [{ id: 'text-1', type: 'text', text: 'STATUS REPORT', startMs: 500, durationMs: 300 }]
+  });
+  editor.selectedClipId = 'text-1';
+  editor.playheadMs = 1000;
+  editor.draw(createMockContext(), 390, 844);
+  const handle = editor.bounds.clipHandles[0];
+  const layout = editor.getTimelineLayout(editor.bounds.timeline);
+  const startX = handle.x + handle.w / 2;
+  const targetX = startX + timelineMsToX(990, layout) - timelineMsToX(800, layout);
+
+  editor.handlePointerDown({ x: startX, y: handle.y + handle.h / 2 });
+  editor.handlePointerMove({ x: targetX, y: handle.y + handle.h / 2 });
+
+  assert.equal(editor.document.clips[0].durationMs, 500);
+  assert.equal(editor.document.clips[0].startMs + editor.document.clips[0].durationMs, 1000);
+});
+
+test('cutscene editor timeline snapping respects snap off', () => {
+  const editor = createMobileCutsceneEditor();
+  editor.document = normalizeCutsceneDocument({
+    durationMs: 6000,
+    snapEnabled: false,
+    clips: [{ id: 'text-1', type: 'text', text: 'STATUS REPORT', startMs: 200, durationMs: 700 }]
+  });
+  editor.selectedClipId = 'text-1';
+  editor.playheadMs = 1000;
+  editor.draw(createMockContext(), 390, 844);
+  const clipBounds = editor.bounds.clips.find((entry) => entry.id === 'text-1');
+  const layout = editor.getTimelineLayout(editor.bounds.timeline);
+  const startX = clipBounds.x + 8;
+  const targetX = startX + timelineMsToX(990, layout) - timelineMsToX(200, layout);
+
+  editor.handlePointerDown({ x: startX, y: clipBounds.y + clipBounds.h / 2 });
+  editor.handlePointerMove({ x: targetX, y: clipBounds.y + clipBounds.h / 2 });
+
+  assert.equal(editor.document.clips[0].startMs, 990);
+  assert.equal(editor.timelineSnapGuideMs, null);
+});
+
 test('cutscene editor play starts from current playhead and step advances one frame', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     durationMs: 6000,
     fps: 20,
@@ -1503,7 +1592,7 @@ test('cutscene editor play starts from current playhead and step advances one fr
 });
 
 test('cutscene editor play respects arbitrary timeline cursor', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     durationMs: 6000,
     clips: [{ id: 'art-1', type: 'art', startMs: 0, durationMs: 2400 }]
@@ -1524,7 +1613,7 @@ test('cutscene editor play respects arbitrary timeline cursor', async () => {
 });
 
 test('cutscene editor preview ignores pause markers and keeps playing', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     durationMs: 3000,
     clips: [
@@ -1546,7 +1635,7 @@ test('cutscene editor play button toggles active preview pause', async () => {
   let now = 1000;
   globalThis.performance = { now: () => now };
   try {
-    const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+    const editor = createMobileCutsceneEditor();
     editor.document = normalizeCutsceneDocument({
       durationMs: 6000,
       clips: [{ id: 'actor-1', type: 'actor', startMs: 0, durationMs: 2400 }]
@@ -1581,7 +1670,7 @@ test('cutscene editor play button toggles active preview pause', async () => {
 });
 
 test('cutscene editor visual preview continues if audio preview player becomes inactive', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     durationMs: 6000,
     clips: [{ id: 'actor-1', type: 'actor', startMs: 0, durationMs: 2400 }]
@@ -1602,7 +1691,7 @@ test('cutscene editor visual preview continues if audio preview player becomes i
 });
 
 test('cutscene editor visual preview continues if audio preview player stops early', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     durationMs: 6000,
     clips: [{ id: 'actor-1', type: 'actor', startMs: 0, durationMs: 2400 }]
@@ -1623,7 +1712,7 @@ test('cutscene editor visual preview continues if audio preview player stops ear
 });
 
 test('cutscene editor visual preview continues if audio preview update throws', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     durationMs: 6000,
     clips: [{ id: 'actor-1', type: 'actor', startMs: 0, durationMs: 2400 }]
@@ -1648,7 +1737,7 @@ test('cutscene editor visual preview continues if audio preview update throws', 
 });
 
 test('cutscene editor trims huge undo snapshots by memory budget', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.historyByteLimit = 1200;
   editor.document = {
     ...createDefaultCutscene(),
@@ -1760,7 +1849,7 @@ test('cutscene editor only reports saved after server persistence succeeds', asy
     };
   };
   try {
-    const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+    const editor = createMobileCutsceneEditor();
     editor.currentDocumentRef = { folder: 'cutscenes', name: 'c1' };
     editor.document.name = 'c1';
 
@@ -1803,7 +1892,7 @@ test('cutscene editor shows saving while server confirmation is pending', async 
     };
   });
   try {
-    const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+    const editor = createMobileCutsceneEditor();
     editor.currentDocumentRef = { folder: 'cutscenes', name: 'c1' };
     editor.document.name = 'c1';
 
@@ -1821,7 +1910,7 @@ test('cutscene editor shows saving while server confirmation is pending', async 
 });
 
 test('cutscene editor draws status text in portrait action rail', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   const ctx = createRecordingContext();
   editor.statusText = 'Saving c1...';
   editor.bounds = { buttons: [] };
@@ -1851,7 +1940,7 @@ test('cutscene editor first save prompts for a name and lists the saved cutscene
     }
   });
   try {
-    const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+    const editor = createMobileCutsceneEditor();
     editor.requestText = async ({ confirmText }) => {
       assert.equal(confirmText, 'Save');
       return 'c1';
@@ -1891,7 +1980,7 @@ test('cutscene editor open can load a cutscene immediately after save', async ()
     }
   });
   try {
-    const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+    const editor = createMobileCutsceneEditor();
     editor.requestText = async () => 'c1';
     editor.document = normalizeCutsceneDocument({ name: 'draft', durationMs: 2400, clips: [{ id: 'actor-1', type: 'actor', durationMs: 2400 }] });
 
@@ -1920,7 +2009,7 @@ test('cutscene editor does not report saved when server persistence fails', asyn
     async json() { return { ok: false, error: 'No storage API' }; }
   });
   try {
-    const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+    const editor = createMobileCutsceneEditor();
     editor.currentDocumentRef = { folder: 'cutscenes', name: 'c1' };
     editor.document.name = 'c1';
 
@@ -1936,7 +2025,7 @@ test('cutscene editor does not report saved when server persistence fails', asyn
 });
 
 test('cutscene editor separates scene length from selected clip length', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     durationMs: 3000,
     clips: [{
@@ -1975,7 +2064,7 @@ test('cutscene editor separates scene length from selected clip length', async (
 });
 
 test('cutscene editor menus expose scene length and clip length distinctly', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{ id: 'text', type: 'text' }]
   });
@@ -1997,7 +2086,7 @@ test('cutscene editor menus expose scene length and clip length distinctly', () 
 });
 
 test('cutscene editor edits scene transition durations', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   const inputs = ['700', '900'];
   editor.requestText = async () => inputs.shift();
 
@@ -2025,7 +2114,7 @@ test('cutscene preview and export use scene duration as soft end boundary', () =
 });
 
 test('cutscene editor exposes compatible MP4 export and helpers', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.activeMenuTab = 'file';
   const fileItems = editor.getMenuItems();
   const supported = new Set(['video/webm;codecs=vp8,opus']);
@@ -2034,7 +2123,7 @@ test('cutscene editor exposes compatible MP4 export and helpers', () => {
   };
   const exportLayout = getCutsceneMovieExportLayout({ width: 256, height: 144 });
 
-  assert.equal(fileItems.some((item) => item.id === 'export-mp4' && item.label === 'Export MP4'), true);
+  assert.equal(fileItems.some((item) => item.id === 'export' && item.label === 'Export MP4'), true);
   assert.equal(selectCutsceneMovieRecordingMimeType(fakeRecorder), 'video/webm;codecs=vp8,opus');
   assert.equal(selectCutsceneMovieRecordingMimeType(null), '');
   assert.equal(getCutsceneMp4ExportFilename('Intro Scene!', 123).endsWith('.mp4'), true);
@@ -2174,7 +2263,7 @@ test('cutscene MP4 export uses ffmpeg h264 aac server transcode and real downloa
 });
 
 test('cutscene editor adds full-stage color boards and edits color and opacity', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.playheadMs = 500;
   let pickerTitle = '';
   const pickerValues = ['#445566', '#778899'];
@@ -2239,7 +2328,7 @@ test('cutscene editor adds full-stage color boards and edits color and opacity',
 });
 
 test('cutscene editor exposes text justification and axis scale controls', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{
       id: 'text',
@@ -2272,7 +2361,7 @@ test('cutscene editor exposes text justification and axis scale controls', () =>
 });
 
 test('cutscene editor new text defaults to 8px and uses color picker for text color', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.requestText = async () => 'Meanwhile...';
 
   await editor.addTextClip();
@@ -2307,7 +2396,7 @@ AS BEST I COULD.
 
 THEY WERE MY LAST CONNECTION
 TO THE OLD WORLD.`;
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   const prompts = [];
   const inputs = ['First caption', paragraph];
   editor.requestText = async (options) => {
@@ -2337,7 +2426,7 @@ TO THE OLD WORLD.`;
 });
 
 test('cutscene editor edits text content and text border settings', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{
       id: 'caption',
@@ -2419,7 +2508,7 @@ test('cutscene editor new actor clips start without visible transform keyframes'
       }
     }]
   });
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
 
   await editor.addActorClip();
 
@@ -2428,7 +2517,7 @@ test('cutscene editor new actor clips start without visible transform keyframes'
 });
 
 test('cutscene editor axis scale respects aspect lock', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{
       id: 'image',
@@ -2458,7 +2547,7 @@ test('cutscene editor axis scale respects aspect lock', async () => {
 });
 
 test('cutscene editor reset transform clears active keyframe transform and fx', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{
       id: 'text',
@@ -2507,7 +2596,7 @@ test('cutscene document draw handles normalized visual fx safely', () => {
 });
 
 test('cutscene editor selected clip actions expose actor keyframe and state choices', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{ id: 'actor', type: 'actor', stateId: 'idle' }]
   });
@@ -2523,7 +2612,7 @@ test('cutscene editor selected clip actions expose actor keyframe and state choi
 });
 
 test('cutscene editor selected clip ribbon exposes only options and draws tabbed options panel', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{ id: 'text', type: 'text', text: 'Readout', durationMs: 1000 }]
   });
@@ -2562,7 +2651,7 @@ test('cutscene editor selected clip ribbon exposes only options and draws tabbed
 });
 
 test('cutscene editor open menu outside tap closes without changing selection', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{ id: 'text', type: 'text', text: 'Readout', durationMs: 1000 }]
   });
@@ -2577,7 +2666,7 @@ test('cutscene editor open menu outside tap closes without changing selection', 
 });
 
 test('cutscene editor bottom menu opens root after closing clip options', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{ id: 'text', type: 'text', text: 'Readout', durationMs: 1000 }]
   });
@@ -2595,7 +2684,7 @@ test('cutscene editor bottom menu opens root after closing clip options', async 
 });
 
 test('cutscene editor groups selected clip actions for mobile-friendly menus', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     clips: [{ id: 'actor', type: 'actor', stateId: 'idle' }]
   });
@@ -2610,7 +2699,7 @@ test('cutscene editor groups selected clip actions for mobile-friendly menus', (
 });
 
 test('cutscene editor copies cuts and pastes selected clips without schema changes', () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     durationMs: 2000,
     clips: [{ id: 'text-1', type: 'text', text: 'Hello', startMs: 100, durationMs: 500 }]
@@ -2647,8 +2736,13 @@ test('cutscene editor avoids blocking prompt APIs', () => {
 });
 
 test('cutscene editor exposes Art and Import as separate workflows', () => {
+  const editor = createMobileCutsceneEditor();
+  const addItems = editor.getMenuItems('add');
+  const fileItems = editor.getMenuItems('file');
+
+  assert.equal(addItems.some((item) => item.id === 'art' && item.label === 'Art'), true);
+  assert.equal(fileItems.some((item) => item.id === 'import' && item.label === 'Import'), true);
   assert.equal(cutsceneEditorSource.includes("{ id: 'art', label: 'Art' }"), true);
-  assert.equal(cutsceneEditorSource.includes("{ id: 'import', label: 'Import' }"), true);
   assert.equal(cutsceneEditorSource.includes("listProjectFiles('art')"), true);
   assert.equal(cutsceneEditorSource.includes("input.accept = 'image/*'"), true);
 });
@@ -2761,7 +2855,7 @@ test('cutscene editor exposes pixelated typewriter text controls and main menu e
   assert.equal(cutsceneEditorSource.includes("animation === 'typewriter'"), true);
   assert.equal(cutsceneEditorSource.includes("'font-size'"), true);
   assert.equal(cutsceneEditorSource.includes("'reveal-speed'"), true);
-  assert.equal(cutsceneEditorSource.includes("{ id: 'back', label: 'Main Menu' }"), true);
+  assert.equal(cutsceneEditorSource.includes("if (id === 'back' || id === 'exit-main') this.game.exitCutsceneEditor?.();"), true);
 });
 
 test('cutscene effects use shared weather runtime state instead of seeded particle layout', () => {
@@ -2913,7 +3007,7 @@ test('cutscene MP4 MIDI render events honor solo tracks and drum mapping', () =>
 });
 
 test('cutscene editor exposes audio key actions and edits selected key volume', async () => {
-  const editor = new CutsceneEditor({ exitCutsceneEditor() {} });
+  const editor = createMobileCutsceneEditor();
   editor.document = normalizeCutsceneDocument({
     durationMs: 3000,
     clips: [{ id: 'music', type: 'music', startMs: 0, durationMs: 2000, volume: 1 }]

@@ -1864,6 +1864,10 @@ export default class CutsceneEditor {
     this.openColorPicker = openColorPickerOverlay;
   }
 
+  isMobileLayout() {
+    return Boolean(this.game?.isMobile);
+  }
+
   resetToFileMenu() {
     this.selectedClipId = null;
     this.menuOpen = false;
@@ -2024,7 +2028,8 @@ export default class CutsceneEditor {
     return isGamepadLandscapeEditorMode({
       viewportWidth: width,
       viewportHeight: height,
-      gamepadConnected: this.game?.input?.isGamepadConnected?.()
+      gamepadConnected: this.game?.input?.isGamepadConnected?.(),
+      isMobile: this.isMobileLayout()
     });
   }
 
@@ -2034,7 +2039,8 @@ export default class CutsceneEditor {
       viewportHeight: height,
       gamepadConnected: this.game?.input?.isGamepadConnected?.(),
       menuActive: this.controllerMenu.active,
-      activeMenuId: this.getActiveGamepadMenuId()
+      activeMenuId: this.getActiveGamepadMenuId(),
+      isMobile: this.isMobileLayout()
     });
   }
 
@@ -2182,8 +2188,9 @@ export default class CutsceneEditor {
   }
 
   computeLayout(width, height) {
-    const isPortrait = isMobilePortraitLayout({ isMobile: true, viewportWidth: width, viewportHeight: height });
-    const isDesktop = !isPortrait && Math.min(width, height) > 900;
+    const isMobile = this.isMobileLayout();
+    const isPortrait = isMobilePortraitLayout({ isMobile, viewportWidth: width, viewportHeight: height });
+    const isDesktop = !isMobile;
     const margin = 10;
     const mode = ['canvas', 'timeline'].includes(this.workspaceMode) ? this.workspaceMode : 'split';
     if (isPortrait) {
@@ -2789,18 +2796,13 @@ export default class CutsceneEditor {
 
   drawDesktopDropdown(ctx, shell) {
     if (!shell?.dropdown) return;
-    const rowH = Math.max(28, Math.min(34, shell.dropdown.rowHeight));
-    const visibleRows = Math.max(1, Math.floor(shell.dropdown.bounds.h / Math.max(1, rowH)));
-    const items = this.getMenuItems(shell.dropdown.rootId).filter((item) => !item.disabled).slice(0, visibleRows);
+    const items = this.getMenuItems(shell.dropdown.rootId).filter((item) => !item.disabled).slice(0, shell.dropdown.visibleRows);
     if (!items.length) return;
-    const bounds = { ...shell.dropdown.bounds, h: Math.max(rowH, items.length * rowH) };
+    const bounds = { ...shell.dropdown.panelBounds, h: Math.max(shell.dropdown.rowHeight, items.length * shell.dropdown.rowHeight) };
     drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
     items.forEach((item, index) => {
       const button = {
-        x: bounds.x + 8,
-        y: bounds.y + index * rowH + 2,
-        w: bounds.w - 16,
-        h: rowH - 4,
+        ...shell.dropdown.itemBounds[index],
         id: item.id
       };
       const color = drawSharedMenuButtonChrome(ctx, button, { active: Boolean(item.active) });

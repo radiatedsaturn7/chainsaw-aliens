@@ -141,6 +141,7 @@ function getTouchGesture(touches) {
 let gestureActive = false;
 const activeTouches = new Map();
 let lastTouchInteractionAt = 0;
+let suppressNextCanvasClick = false;
 const GHOST_MOUSE_BLOCK_MS = 800;
 
 function shouldIgnoreMouseFromRecentTouch() {
@@ -183,6 +184,11 @@ function bindInputListeners() {
 
   listenerDisposer.add(addDOMListener(canvas, 'click', (event) => {
     if (shouldIgnoreMouseFromRecentTouch()) return;
+    if (suppressNextCanvasClick) {
+      suppressNextCanvasClick = false;
+      event.preventDefault();
+      return;
+    }
     const { x, y } = getCanvasPosition(event);
     game.handleClick?.(x, y);
   }));
@@ -190,7 +196,10 @@ function bindInputListeners() {
   listenerDisposer.add(addDOMListener(canvas, 'mousedown', (event) => {
     if (shouldIgnoreMouseFromRecentTouch()) return;
     const { x, y } = getCanvasPosition(event);
+    const stateBefore = game.state;
+    const titleScreenBefore = game.title?.screen;
     game.handlePointerDown?.({ x, y, button: event.button, buttons: event.buttons });
+    suppressNextCanvasClick = game.state !== stateBefore || game.title?.screen !== titleScreenBefore;
   }));
 
   listenerDisposer.add(addDOMListener(canvas, 'mousemove', (event) => {

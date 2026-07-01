@@ -9273,6 +9273,11 @@ export default class Editor {
       shellLayout.topMenu.buttons.forEach((entry) => {
         const def = topButtonDefById.get(entry.id);
         if (!def) return;
+        const isDesktopMenuHover = !['undo', 'redo', 'playtest'].includes(def.id)
+          && isHovered(entry.bounds.x, entry.bounds.y, entry.bounds.w, entry.bounds.h);
+        if (isDesktopMenuHover && activeTab !== def.id) {
+          this.setPanelTab(def.id);
+        }
         drawButton(
           entry.bounds.x,
           entry.bounds.y,
@@ -9494,16 +9499,11 @@ export default class Editor {
       if (shellLayout.dropdown) {
         const dropdownRootId = shellLayout.dropdown.rootId;
         const { items: dropdownItems } = this.getPanelConfig(dropdownRootId);
-        const rowHeight = Math.max(28, Math.min(34, shellLayout.dropdown.rowHeight));
-        const visibleRows = Math.max(1, Math.floor(shellLayout.dropdown.bounds.h / Math.max(1, rowHeight)));
-        const dropdownRows = dropdownItems.filter((item) => !item.separator && !item.divider).slice(0, visibleRows);
-        const dropdownBounds = {
-          ...shellLayout.dropdown.bounds,
-          h: Math.max(rowHeight, dropdownRows.length * rowHeight)
-        };
+        const dropdownRows = dropdownItems.filter((item) => !item.separator && !item.divider).slice(0, shellLayout.dropdown.visibleRows);
+        const dropdownBounds = { ...shellLayout.dropdown.panelBounds, h: Math.max(shellLayout.dropdown.rowHeight, dropdownRows.length * shellLayout.dropdown.rowHeight) };
         drawSharedPanel(ctx, dropdownBounds, { fill: UI_SUITE.colors.panel });
         dropdownRows.forEach((item, index) => {
-          const rowY = dropdownBounds.y + index * rowHeight + 2;
+          const buttonBounds = shellLayout.dropdown.itemBounds[index];
           const preview = item.tile
             ? { type: 'tile', tile: item.tile }
             : item.prefab
@@ -9512,10 +9512,10 @@ export default class Editor {
                 ? { type: 'enemy', enemy: item.enemy }
                 : null;
           drawButton(
-            dropdownBounds.x + 8,
-            rowY,
-            dropdownBounds.w - 16,
-            rowHeight - 4,
+            buttonBounds.x,
+            buttonBounds.y,
+            buttonBounds.w,
+            buttonBounds.h,
             item.label,
             getActiveState(item, dropdownRootId),
             item.onClick,

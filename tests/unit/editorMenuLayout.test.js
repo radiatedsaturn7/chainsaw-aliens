@@ -140,6 +140,11 @@ test('desktop dropdown plan resolves section actions through runtime aliases', (
   assert.equal(dropdown.title, 'Tracks / Mixer');
   assert.deepEqual(dropdown.items.map((item) => item.id), ['track-list', 'instrument', 'volume', 'pan', 'mute', 'solo']);
   assert.deepEqual(dropdown.bounds, { x: 120, y: 40, w: 220, h: 204 });
+  assert.deepEqual(dropdown.panelBounds, { x: 120, y: 40, w: 220, h: 204 });
+  assert.equal(dropdown.visibleRows, 6);
+  assert.equal(dropdown.maxScroll, 0);
+  assert.deepEqual(dropdown.itemBounds[0], { id: 'track-list', x: 128, y: 42, w: 204, h: 30 });
+  assert.deepEqual(dropdown.itemBounds[5], { id: 'solo', x: 128, y: 212, w: 204, h: 30 });
 });
 
 test('desktop dropdown plan clamps to container bounds when supplied', () => {
@@ -152,6 +157,20 @@ test('desktop dropdown plan clamps to container bounds when supplied', () => {
   assert.equal(dropdown.bounds.w, 220);
   assert.equal(dropdown.bounds.x + dropdown.bounds.w <= 10 + 760 - 8, true);
   assert.equal(dropdown.bounds.y, 42);
+});
+
+test('desktop dropdown plan exposes shared clipped row geometry for long menus', () => {
+  const dropdown = buildDesktopDropdownPlan('midi', 'file', {
+    anchor: { x: 16, y: 0, w: 84, h: 40 },
+    maxVisibleRows: 4
+  });
+
+  assert.equal(dropdown.visibleRows, 4);
+  assert.equal(dropdown.maxScroll, dropdown.items.length - 4);
+  assert.equal(dropdown.panelBounds.h, 136);
+  assert.deepEqual(dropdown.renderedItems.map((item) => item.id), ['new', 'save', 'save-as', 'open']);
+  assert.deepEqual(dropdown.itemBounds.map((bounds) => bounds.id), ['new', 'save', 'save-as', 'open']);
+  assert.deepEqual(dropdown.itemBounds[3], { id: 'open', x: 24, y: 144, w: 204, h: 30 });
 });
 
 test('shared file menu specs include the actions used by editor surfaces', () => {

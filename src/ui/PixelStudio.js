@@ -8805,22 +8805,12 @@ export default class PixelStudio {
     const panelId = this.getDesktopPanelIdForRoot(shell.dropdown.rootId);
     const menuId = this.getDesktopControllerMenuIdForPanel(panelId);
     const menu = this.controllerMenu.menus?.[menuId];
-    const rowHeight = Math.max(28, Math.min(34, shell.dropdown.rowHeight));
-    const visibleRows = Math.max(1, Math.floor(shell.dropdown.bounds.h / Math.max(1, rowHeight)));
-    const items = this.controllerMenu.getItems(menu).slice(0, visibleRows);
+    const items = this.controllerMenu.getItems(menu).slice(0, shell.dropdown.visibleRows);
     if (!items.length) return;
-    const bounds = {
-      ...shell.dropdown.bounds,
-      h: Math.max(rowHeight, items.length * rowHeight)
-    };
+    const bounds = { ...shell.dropdown.panelBounds, h: Math.max(shell.dropdown.rowHeight, items.length * shell.dropdown.rowHeight) };
     drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel });
     items.forEach((item, index) => {
-      const buttonBounds = {
-        x: bounds.x + 8,
-        y: bounds.y + index * rowHeight + 2,
-        w: bounds.w - 16,
-        h: rowHeight - 4
-      };
+      const buttonBounds = { ...shell.dropdown.itemBounds[index] };
       const active = this.isControllerSubmenuItemActive(menuId, item.id);
       this.drawButton(ctx, buttonBounds, item.label, active, {
         fontSize: 11,

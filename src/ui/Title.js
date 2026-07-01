@@ -46,6 +46,10 @@ export default class Title {
     };
     this.controlsBounds = new Map();
     this.debugRestartBounds = null;
+    this.mainMenuReady = false;
+    this.mainMenuPrimed = false;
+    this.mainMenuReadyTimer = 0;
+    this.mainMenuReadyDelay = 0.2;
   }
 
   clamp(value, min, max) {
@@ -252,6 +256,32 @@ export default class Title {
     ctx.restore();
   }
 
+  drawLoadingSplash(ctx, width, height) {
+    const portrait = this.isPortraitPhone(width, height);
+    const compactLandscape = !portrait && height <= 430;
+    const tileW = Math.min(width - 40, portrait ? 280 : 340);
+    const tileH = compactLandscape ? 104 : 124;
+    const tileX = width / 2 - tileW / 2;
+    const tileY = Math.max(24, height / 2 - tileH / 2);
+    ctx.save();
+    ctx.fillStyle = 'rgba(8,12,20,0.88)';
+    ctx.fillRect(tileX, tileY, tileW, tileH);
+    ctx.strokeStyle = 'rgba(255,225,106,0.5)';
+    ctx.strokeRect(tileX, tileY, tileW, tileH);
+    ctx.fillStyle = 'rgba(255,225,106,0.92)';
+    ctx.fillRect(tileX, tileY, 4, tileH);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#f8fbff';
+    ctx.font = portrait || compactLandscape ? 'bold 30px Arial' : 'bold 38px Arial';
+    ctx.fillText('RTG Studio', width / 2, tileY + tileH / 2 - 12);
+    ctx.fillStyle = 'rgba(198,220,245,0.86)';
+    ctx.font = portrait || compactLandscape ? '14px Arial' : '16px Arial';
+    ctx.fillText('Loading...', width / 2, tileY + tileH / 2 + 26);
+    ctx.textBaseline = 'alphabetic';
+    ctx.restore();
+  }
+
   drawMenuPanel(ctx, layout, count, title = '') {
     const pad = layout.portrait ? 12 : 14;
     const listHeight = count * layout.buttonHeight + Math.max(0, count - 1) * layout.gap;
@@ -308,6 +338,12 @@ export default class Title {
 
   update(dt) {
     this.timer += dt;
+    if (!this.mainMenuReady && this.mainMenuPrimed) {
+      this.mainMenuReadyTimer += dt;
+      if (this.mainMenuReadyTimer >= this.mainMenuReadyDelay) {
+        this.mainMenuReady = true;
+      }
+    }
     if (this.transition) {
       this.transition.progress += dt / this.transition.duration;
       if (this.transition.progress >= 1) {
@@ -359,6 +395,15 @@ export default class Title {
       defaultStartY: 240,
       defaultGap: 48
     });
+    this.mainMenuPrimed = true;
+
+    if (!this.mainMenuReady) {
+      this.menuBounds.clear();
+      this.debugRestartBounds = null;
+      this.drawLoadingSplash(ctx, width, height);
+      return;
+    }
+
     this.drawMenuPanel(ctx, layout, this.menuOrder.length, 'Launcher');
 
     this.menuBounds.clear();
@@ -479,6 +524,9 @@ export default class Title {
     if (this.screen === 'intro') {
       return;
     }
+    if (this.screen === 'main' && !this.mainMenuReady) {
+      return;
+    }
     if (this.folderOrders[this.screen]) {
       const count = this.folderOrders[this.screen].length;
       if (!count) return;
@@ -497,6 +545,9 @@ export default class Title {
   }
 
   getSelectedAction() {
+    if (this.screen === 'main' && !this.mainMenuReady) {
+      return null;
+    }
     if (this.folderOrders[this.screen]) {
       return this.folderOrders[this.screen][this.folderSelections[this.screen] || 0] || 'back';
     }
@@ -508,6 +559,9 @@ export default class Title {
 
   getActionAt(x, y) {
     if (this.screen === 'intro') {
+      return null;
+    }
+    if (this.screen === 'main' && !this.mainMenuReady) {
       return null;
     }
     if (this.folderOrders[this.screen]) {

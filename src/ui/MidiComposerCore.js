@@ -12160,7 +12160,7 @@ export default class MidiComposer {
     this.editorShellTheme = resolveEditorShellTheme();
 
     const isMobile = this.isMobileLayout();
-    if (this.recordModeActive) {
+    if (this.recordModeActive && isMobile) {
       this.drawRecordMode(ctx, width, height, track, pattern);
       ctx.restore();
       if (perfEnabled) {
@@ -12346,7 +12346,7 @@ export default class MidiComposer {
     const shellLayout = buildDesktopEditorShellPlan('midi', {
       viewportWidth: width,
       viewportHeight: height,
-      activeRootId: this.activeTab,
+      activeRootId: this.recordModeActive ? 'virtual-instruments' : this.activeTab,
       labelOverrides: {
         file: SHARED_EDITOR_LEFT_MENU.fileLabel,
         instruments: 'Mixer'
@@ -12383,6 +12383,7 @@ export default class MidiComposer {
   }
 
   getDesktopControllerMenuId(tabId = this.activeTab) {
+    if (this.recordModeActive) return 'record';
     if (tabId === 'instruments') return 'tracks';
     if (tabId === 'virtual-instruments') return 'record';
     return tabId;
@@ -12438,15 +12439,8 @@ export default class MidiComposer {
       ? { x: bounds.x, y: bounds.y, w: bounds.w, h: Math.max(120, bounds.h - transportH - gap) }
       : bounds;
     drawSharedPanel(ctx, panelBounds);
-    if (this.activeTab === 'file') {
-      this.drawFilePanel(ctx, panelBounds.x, panelBounds.y, panelBounds.w, panelBounds.h);
-      if (includeDesktopTransport) {
-        this.drawDesktopTransportPanel(ctx, { x: bounds.x, y: panelBounds.y + panelBounds.h + gap, w: bounds.w, h: transportH });
-      }
-      return;
-    }
     const menuId = this.getDesktopControllerMenuId();
-    if (this.controllerMenu.menus?.[menuId]) {
+    if (menuId !== 'file' && this.controllerMenu.menus?.[menuId]) {
       this.drawControllerSubmenuPanel(ctx, panelBounds.x, panelBounds.y, panelBounds.w, panelBounds.h, menuId);
     }
     if (includeDesktopTransport) {
@@ -12524,23 +12518,15 @@ export default class MidiComposer {
     const menu = this.controllerMenu.menus?.[menuId] || this.controllerMenu.menus?.[dropdown.rootId];
     const items = this.controllerMenu.getItems(menu);
     const visibleItems = items.length ? items : dropdown.items;
-    const visibleRows = Math.max(1, Math.floor(dropdown.bounds.h / Math.max(1, dropdown.rowHeight)));
-    const renderedItems = visibleItems.slice(0, visibleRows);
-    const panelBounds = {
-      ...dropdown.bounds,
-      h: Math.min(dropdown.bounds.h, Math.max(dropdown.rowHeight, renderedItems.length * dropdown.rowHeight))
-    };
+    const desktopHiddenItems = menuId === 'grid' ? new Set(['place-note', 'erase-note']) : null;
+    const renderedItems = visibleItems
+      .filter((item) => !desktopHiddenItems?.has(item.id))
+      .slice(0, dropdown.visibleRows);
+    const panelBounds = { ...dropdown.panelBounds, h: Math.max(dropdown.rowHeight, renderedItems.length * dropdown.rowHeight) };
     this.bounds.desktopDropdownItems = [];
     drawSharedPanel(ctx, panelBounds, { fill: UI_SUITE.colors.panel });
-    const gap = 4;
-    const rowH = Math.max(28, dropdown.rowHeight - gap);
     renderedItems.forEach((item, index) => {
-      const bounds = {
-        x: panelBounds.x + 8,
-        y: panelBounds.y + index * dropdown.rowHeight + Math.floor(gap / 2),
-        w: panelBounds.w - 16,
-        h: rowH
-      };
+      const bounds = { ...dropdown.itemBounds[index] };
       this.drawButton(ctx, bounds, item.label, this.isControllerSubmenuItemActive(menuId, item.id), false, this.controllerMenu.isFocusedItem(menuId, item.id));
       if (typeof item.onSelect === 'function') {
         this.bounds.desktopDropdownItems.push({ ...bounds, id: item.id, action: () => item.onSelect(this) });

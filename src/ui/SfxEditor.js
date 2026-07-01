@@ -356,6 +356,10 @@ export default class SfxEditor {
     });
   }
 
+  isMobileLayout() {
+    return Boolean(this.game?.isMobile);
+  }
+
   get selectedFrame() {
     this.normalizeSelectionState();
     return this.sfx.frames[this.selectedFrameIndex] || this.sfx.frames[0] || null;
@@ -1745,7 +1749,7 @@ export default class SfxEditor {
     ctx.save();
     ctx.fillStyle = UI_SUITE.colors.bg;
     ctx.fillRect(0, 0, width, height);
-    const isMobileViewport = Math.min(width, height) <= 900;
+    const isMobileViewport = this.isMobileLayout();
     const isMobileLandscape = isMobileViewport && width > height;
     const isMobilePortrait = isMobileViewport && height > width;
     const gamepadConnected = Boolean(this.game?.input?.isGamepadConnected?.());
@@ -1809,11 +1813,6 @@ export default class SfxEditor {
       this.drawRightPanel(ctx, shell.leftOptions, { includeDesktopTransport: true });
       this.drawWaveform(ctx, shell.workSurface);
       if (shell.dropdown) this.drawDesktopDropdown(ctx, shell.dropdown);
-      drawCanvasControllerMenu(ctx, this.controllerMenu, {
-        width,
-        height,
-        contextLabel: 'SFX Timeline'
-      });
       if (this.messageTimer > 0) {
         drawSharedStatusToast(ctx, {
           x: shell.workSurface.x + 12,
@@ -1926,25 +1925,18 @@ export default class SfxEditor {
     const menu = this.controllerMenu.menus?.[dropdown.rootId] || this.controllerMenu.menus?.[dropdown.specId];
     const controllerItems = this.controllerMenu.getItems(menu);
     const visibleItems = controllerItems.length ? controllerItems : dropdown.items;
-    const visibleRows = Math.max(1, Math.floor(dropdown.bounds.h / Math.max(1, dropdown.rowHeight)));
-    const renderedItems = visibleItems.slice(0, visibleRows);
+    const renderedItems = visibleItems.slice(0, dropdown.visibleRows);
     const actionById = new Map(renderedItems.map((item) => [item.id, item]));
-    const panelBounds = {
-      ...dropdown.bounds,
-      h: Math.min(dropdown.bounds.h, Math.max(dropdown.rowHeight, renderedItems.length * dropdown.rowHeight))
-    };
+    const panelBounds = { ...dropdown.panelBounds, h: Math.max(dropdown.rowHeight, renderedItems.length * dropdown.rowHeight) };
     drawSharedPanel(ctx, panelBounds, { fill: UI_SUITE.colors.panel });
-    const gap = 4;
-    const rowH = Math.max(28, dropdown.rowHeight - gap);
     renderedItems.forEach((item, index) => {
-      const y = panelBounds.y + index * dropdown.rowHeight + Math.floor(gap / 2);
       const controllerItem = actionById.get(item.id);
       const action = controllerItem?.onSelect
         ? () => controllerItem.onSelect(this)
         : null;
       this.drawButton(
         ctx,
-        { x: panelBounds.x + 8, y, w: panelBounds.w - 16, h: rowH },
+        { ...dropdown.itemBounds[index] },
         item.label,
         this.isControllerMenuItemActive(dropdown.rootId, item.id),
         action

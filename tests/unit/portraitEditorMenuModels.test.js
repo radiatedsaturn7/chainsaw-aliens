@@ -687,11 +687,16 @@ test('Level file menu uses one shared item source across surfaces', () => {
 test('Level desktop dropdown uses the selected top root menu', () => {
   const dropdownIndex = levelEditorSource.indexOf('if (shellLayout.dropdown) {');
   const dropdownBlock = levelEditorSource.slice(dropdownIndex, levelEditorSource.indexOf('const infoLines = []', dropdownIndex));
+  const desktopIndex = levelEditorSource.indexOf('shellLayout.topMenu.buttons.forEach((entry) => {');
+  const desktopTopMenuBlock = levelEditorSource.slice(desktopIndex, levelEditorSource.indexOf('drawSharedPanel(ctx, shellLayout.leftRibbon', desktopIndex));
 
+  assert.equal(desktopTopMenuBlock.includes('const isDesktopMenuHover = ![\'undo\', \'redo\', \'playtest\'].includes(def.id)'), true);
+  assert.equal(desktopTopMenuBlock.includes('if (isDesktopMenuHover && activeTab !== def.id) {'), true);
   assert.equal(dropdownBlock.includes('const dropdownRootId = shellLayout.dropdown.rootId;'), true);
   assert.equal(dropdownBlock.includes('const { items: dropdownItems } = this.getPanelConfig(dropdownRootId);'), true);
-  assert.equal(dropdownBlock.includes('const visibleRows = Math.max(1, Math.floor(shellLayout.dropdown.bounds.h / Math.max(1, rowHeight)));'), true);
-  assert.equal(dropdownBlock.includes('.slice(0, visibleRows)'), true);
+  assert.equal(dropdownBlock.includes('.slice(0, shellLayout.dropdown.visibleRows)'), true);
+  assert.equal(dropdownBlock.includes('const dropdownBounds = { ...shellLayout.dropdown.panelBounds'), true);
+  assert.equal(dropdownBlock.includes('const buttonBounds = shellLayout.dropdown.itemBounds[index];'), true);
   assert.equal(dropdownBlock.includes('getActiveState(item, dropdownRootId)'), true);
   assert.equal(dropdownBlock.includes('this.controllerMenu.isFocusedItem(dropdownRootId, item.id, index)'), true);
 });
@@ -836,8 +841,9 @@ test('SFX desktop keeps transport in the left column instead of a bottom rail', 
   assert.equal(desktopBlock.includes('this.drawBottomRail(ctx, shell.bottomBar)'), false);
   assert.equal(desktopBlock.includes('this.drawRightPanel(ctx, shell.leftOptions, { includeDesktopTransport: true });'), true);
   assert.equal(sfxEditorSource.includes('drawDesktopTransportPanel(ctx, bounds)'), true);
-  assert.equal(dropdownBody.includes('const visibleRows = Math.max(1, Math.floor(dropdown.bounds.h / Math.max(1, dropdown.rowHeight)));'), true);
-  assert.equal(dropdownBody.includes('const renderedItems = visibleItems.slice(0, visibleRows);'), true);
+  assert.equal(dropdownBody.includes('const renderedItems = visibleItems.slice(0, dropdown.visibleRows);'), true);
+  assert.equal(dropdownBody.includes('const panelBounds = { ...dropdown.panelBounds'), true);
+  assert.equal(dropdownBody.includes('{ ...dropdown.itemBounds[index] }'), true);
   assert.equal(dropdownBody.includes('renderedItems.forEach((item, index) => {'), true);
 });
 
@@ -888,8 +894,10 @@ test('MIDI desktop keeps transport in the left column instead of a bottom rail',
   assert.equal(desktopBlock.includes('this.drawTransportBar(ctx, shellLayout.bottomBar'), false);
   assert.equal(desktopBlock.includes("this.drawDesktopLeftOptions(ctx, shellLayout.leftOptions, { includeDesktopTransport: this.activeTab !== 'instruments' });"), true);
   assert.equal(midiEditorSource.includes('drawDesktopTransportPanel(ctx, bounds)'), true);
-  assert.equal(dropdownBody.includes('const visibleRows = Math.max(1, Math.floor(dropdown.bounds.h / Math.max(1, dropdown.rowHeight)));'), true);
-  assert.equal(dropdownBody.includes('const renderedItems = visibleItems.slice(0, visibleRows);'), true);
+  assert.equal(dropdownBody.includes("const desktopHiddenItems = menuId === 'grid' ? new Set(['place-note', 'erase-note']) : null;"), true);
+  assert.equal(dropdownBody.includes('.slice(0, dropdown.visibleRows);'), true);
+  assert.equal(dropdownBody.includes('const panelBounds = { ...dropdown.panelBounds'), true);
+  assert.equal(dropdownBody.includes('const bounds = { ...dropdown.itemBounds[index] };'), true);
   assert.equal(dropdownBody.includes('renderedItems.forEach((item, index) => {'), true);
 });
 
@@ -940,8 +948,9 @@ test('Pixel desktop dropdown caps rendered rows to drawer bounds', () => {
   const dropdownIndex = pixelStudioSource.indexOf('  drawDesktopShellDropdown(ctx, shell)');
   const dropdownBody = pixelStudioSource.slice(dropdownIndex, pixelStudioSource.indexOf('  getActiveGamepadMenuId()', dropdownIndex));
 
-  assert.equal(dropdownBody.includes('const visibleRows = Math.max(1, Math.floor(shell.dropdown.bounds.h / Math.max(1, rowHeight)));'), true);
-  assert.equal(dropdownBody.includes('const items = this.controllerMenu.getItems(menu).slice(0, visibleRows);'), true);
+  assert.equal(dropdownBody.includes('const items = this.controllerMenu.getItems(menu).slice(0, shell.dropdown.visibleRows);'), true);
+  assert.equal(dropdownBody.includes('const bounds = { ...shell.dropdown.panelBounds'), true);
+  assert.equal(dropdownBody.includes('const buttonBounds = { ...shell.dropdown.itemBounds[index] };'), true);
 });
 
 test('Actor portrait menu matches compact shared rail contract', () => {
@@ -1065,8 +1074,9 @@ test('Cutscene desktop dropdown caps rendered rows to drawer bounds', () => {
   const dropdownIndex = cutsceneEditorSource.indexOf('  drawDesktopDropdown(ctx, shell)');
   const dropdownBody = cutsceneEditorSource.slice(dropdownIndex, cutsceneEditorSource.indexOf('  getTransportActions()', dropdownIndex));
 
-  assert.equal(dropdownBody.includes('const visibleRows = Math.max(1, Math.floor(shell.dropdown.bounds.h / Math.max(1, rowH)));'), true);
-  assert.equal(dropdownBody.includes('.slice(0, visibleRows)'), true);
+  assert.equal(dropdownBody.includes('.slice(0, shell.dropdown.visibleRows)'), true);
+  assert.equal(dropdownBody.includes('const bounds = { ...shell.dropdown.panelBounds'), true);
+  assert.equal(dropdownBody.includes('...shell.dropdown.itemBounds[index]'), true);
 });
 
 test('Cutscene file menu uses the shared editor file menu model', () => {
