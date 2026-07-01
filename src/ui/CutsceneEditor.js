@@ -4,6 +4,7 @@ import { discardCachedProjectFile, listProjectFiles, loadProjectFile, saveProjec
 import { hydrateServerStorage } from './serverStorage.js';
 import {
   UI_SUITE,
+  buildSharedEditorFileMenu,
   drawSharedContextRibbon,
   drawSharedMenuButtonChrome,
   drawSharedMenuButtonLabel,
@@ -19,7 +20,9 @@ import {
 import { drawSharedMobileZoomSlider } from './shared/mobileZoomSlider.js';
 import { openChoiceOverlay, openConfirmOverlay, openProgressOverlay, openTextInputOverlay } from './shared/textInputOverlay.js';
 import { openColorPickerOverlay } from './shared/colorPickerOverlay.js';
-import { buildDesktopEditorShellPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeTouchEditorShellPlan, isGamepadLandscapeEditorMode, shouldUseGamepadSlideOutMenu } from './shared/editorMenuLayout.js';
+import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS } from './shared/input/editorInputActions.js';
+import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
 import {
   CUTSCENE_WEATHER_EFFECTS,
   createWeatherRuntimeState,
@@ -61,6 +64,7 @@ const CUTSCENE_DESKTOP_MENU_LABELS = {
   export: 'Export',
   settings: 'Settings'
 };
+const CUTSCENE_CONTROLLER_ROOTS = ['file', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio', 'export', 'settings'];
 const KEYFRAME_EASING = ['linear', 'ease-in', 'ease-out', 'ease-in-out'];
 const KEYFRAME_MODES = ['start', 'playhead', 'end'];
 const CUTSCENE_FX_TYPES = ['none', 'shear', 'wave-x', 'wave-y', 'sine-wobble'];
@@ -74,6 +78,7 @@ const CUTSCENE_MP4_AUDIO_TAIL_SECONDS = 3;
 const CUTSCENE_TIMELINE_MIN_ZOOM = 0.5;
 const CUTSCENE_TIMELINE_MAX_ZOOM = 12;
 const CUTSCENE_TIMELINE_MIN_LANE_H = 30;
+const CUTSCENE_TIMELINE_SNAP_PX = 10;
 const CUTSCENE_HISTORY_ENTRY_LIMIT = 80;
 const CUTSCENE_HISTORY_BYTE_LIMIT = 48 * 1024 * 1024;
 const CUTSCENE_MOVIE_RECORDING_MIME_TYPES = [
@@ -1827,6 +1832,11 @@ export default class CutsceneEditor {
     this.activeMenuTab = 'add';
     this.menuScroll = 0;
     this.menuScrollDrag = null;
+    this.landscapeRootScroll = 0;
+    this.controllerMenu = new ControllerMenuStack({
+      siblingOrder: CUTSCENE_CONTROLLER_ROOTS
+    });
+    this.inputNormalizer = new EditorInputActionNormalizer();
     this.clipOptionsOpen = false;
     this.clipOptionsTab = 'keys';
     this.keyframeMode = 'playhead';
@@ -1834,6 +1844,7 @@ export default class CutsceneEditor {
     this.timelineZoomX = 1;
     this.timelineScrollMs = 0;
     this.timelineScrollTrack = 0;
+    this.timelineSnapGuideMs = null;
     this.panJoystick = { center: { x: 0, y: 0 }, radius: 0, knobRadius: 0, dx: 0, dy: 0, active: false, id: null };
     this.timelineZoomSlider = { active: false, id: null, bounds: null, railBounds: null };
     this.transportHold = null;
@@ -1913,6 +1924,7 @@ export default class CutsceneEditor {
       this.playheadMs = clamp(this.playheadMs, 0, Math.max(1, this.document.durationMs || DEFAULT_DURATION_MS));
       if (input?.wasPressed?.('undo')) this.undo();
       if (input?.wasPressed?.('redo')) this.redo();
+      this.updateControllerInput(input, dt);
       this.updateThumbstickPan(dt);
     } catch (error) {
       debugCutscenePlayback('update-failed', {
@@ -1925,6 +1937,111 @@ export default class CutsceneEditor {
       if (isCutsceneDebugEnabled()) console.warn('[cutscene] update failed', error);
       this.statusText = `Cutscene update error: ${error?.message || error}`;
     }
+  }
+
+  updateControllerInput(input, dt) {
+    const inputSource = input || this.game?.input;
+    const normalized = this.inputNormalizer.updateGamepad(inputSource, dt, {
+      semanticBindings: SHARED_EDITOR_GAMEPAD_BINDINGS
+    });
+    if (!normalized.connected) {
+      if (this.controllerMenu.active) this.controllerMenu.closeToSurface();
+      return false;
+    }
+    this.controllerMenu.setMenus(this.buildControllerMenus(), {
+      siblingOrder: CUTSCENE_CONTROLLER_ROOTS
+    });
+    this.controllerMenu.ensureInitialFocus();
+    if (this.controllerMenu.handleActions(normalized.actions, normalized.axes, dt, this)) {
+      return true;
+    }
+    const hasAction = (type) => normalized.actions.some((entry) => entry.type === type);
+    if (hasAction(EDITOR_INPUT_ACTIONS.UNDO)) this.undo();
+    if (hasAction(EDITOR_INPUT_ACTIONS.REDO)) this.redo();
+    if (hasAction(EDITOR_INPUT_ACTIONS.PANEL_PREV)) this.stepFrame(-1);
+    if (hasAction(EDITOR_INPUT_ACTIONS.PANEL_NEXT)) this.stepFrame(1);
+    return false;
+  }
+
+  buildControllerMenus() {
+    const rootItem = (id) => ({
+      id,
+      label: CUTSCENE_DESKTOP_MENU_LABELS[id] || id,
+      submenu: id,
+      onEnter: () => {
+        this.activeMenuTab = id;
+        this.menuOpen = true;
+        this.clipOptionsOpen = false;
+        this.menuScroll = 0;
+      }
+    });
+    const actionItem = (item) => (
+      item.divider || item.separator
+        ? { ...item }
+        : {
+          id: item.id,
+          label: item.label,
+          disabled: item.disabled,
+          onSelect: () => this.handleButton(item.id)
+        }
+    );
+    const menuForTab = (id) => ({
+      id,
+      title: CUTSCENE_DESKTOP_MENU_LABELS[id] || id,
+      items: this.getMenuItems(id).map(actionItem)
+    });
+    return {
+      root: {
+        id: 'root',
+        title: 'Cutscene Editor',
+        items: [
+          ...CUTSCENE_CONTROLLER_ROOTS.map(rootItem),
+          { id: 'undo', label: 'Undo', onSelect: () => this.undo() },
+          { id: 'redo', label: 'Redo', onSelect: () => this.redo() }
+        ]
+      },
+      ...Object.fromEntries(CUTSCENE_CONTROLLER_ROOTS.map((id) => [id, menuForTab(id)])),
+      system: buildControllerSystemMenu({
+        fileMenuId: 'file',
+        toolsMenuId: 'settings',
+        onExit: () => this.game.exitCutsceneEditor?.()
+      }),
+      'exit-confirm': buildControllerExitConfirmMenu({
+        onExit: () => this.game.exitCutsceneEditor?.(),
+        message: 'Exit Cutscene Editor and return to the main menu.'
+      }),
+      help: buildControllerHelpMenu(['RS pans timeline', 'LT/RT zoom timeline'])
+    };
+  }
+
+  getActiveGamepadMenuId() {
+    const activeId = this.controllerMenu.getActiveMenuId();
+    if (!activeId || ['root', 'system', 'help', 'exit-confirm'].includes(activeId)) return null;
+    return activeId;
+  }
+
+  isGamepadLandscapeMenuMode(width = this.game?.canvas?.width || 0, height = this.game?.canvas?.height || 0) {
+    return isGamepadLandscapeEditorMode({
+      viewportWidth: width,
+      viewportHeight: height,
+      gamepadConnected: this.game?.input?.isGamepadConnected?.()
+    });
+  }
+
+  shouldDrawGamepadSubmenuOnLeft(width, height) {
+    return shouldUseGamepadSlideOutMenu({
+      viewportWidth: width,
+      viewportHeight: height,
+      gamepadConnected: this.game?.input?.isGamepadConnected?.(),
+      menuActive: this.controllerMenu.active,
+      activeMenuId: this.getActiveGamepadMenuId()
+    });
+  }
+
+  shouldDrawControllerOverlay(width, height) {
+    if (!this.isGamepadLandscapeMenuMode(width, height)) return true;
+    const activeId = this.controllerMenu.getActiveMenuId();
+    return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));
   }
 
   stop() {
@@ -1942,7 +2059,9 @@ export default class CutsceneEditor {
       ctx.fillRect(0, 0, safeW, safeH);
       const layout = this.computeLayout(safeW, safeH);
       const { stageBounds, timelineBounds, railBounds, contextBounds, zoomBounds } = layout;
+      const drawGamepadLeft = this.shouldDrawGamepadSubmenuOnLeft(safeW, safeH);
       if (layout.isDesktop) this.drawDesktopShellChrome(ctx, layout.desktopShell);
+      if (layout.isLandscapeTouch && !drawGamepadLeft) this.drawLandscapeRootRail(ctx, layout.leftMenuBounds);
       this.bounds.stage = stageBounds;
       this.bounds.timeline = timelineBounds;
       this.bounds.timelineZoom = null;
@@ -1953,13 +2072,25 @@ export default class CutsceneEditor {
       this.drawTimeline(ctx, timelineBounds);
       this.drawContextRibbon(ctx, contextBounds);
       this.drawTimelineZoomSlider(ctx, zoomBounds);
-      this.drawActionRail(ctx, railBounds, layout.isPortrait);
-      if (this.clipOptionsOpen && (this.getSelectedClip() || this.getSelectedTrack())) this.drawClipOptionsPanel(ctx, layout.menuBounds, layout.isPortrait);
+      if (!layout.isDesktop) this.drawActionRail(ctx, railBounds, layout.isPortrait);
+      if (drawGamepadLeft) {
+        this.drawGamepadSlideOutPanel(ctx, layout.leftMenuBounds);
+      } else if (this.clipOptionsOpen && (this.getSelectedClip() || this.getSelectedTrack())) {
+        this.drawClipOptionsPanel(ctx, layout.menuBounds, layout.isPortrait);
+      }
       if (layout.isDesktop) {
         this.drawDesktopMenuPanel(ctx, layout.menuBounds);
         this.drawDesktopDropdown(ctx, layout.desktopShell);
-      } else if (this.menuOpen) {
-        this.drawMenu(ctx, layout.menuBounds, layout.isPortrait);
+      } else if (!drawGamepadLeft && this.menuOpen) {
+        if (layout.isLandscapeTouch) this.drawLandscapeSubmenuPanel(ctx, layout.menuBounds);
+        else this.drawMenu(ctx, layout.menuBounds, layout.isPortrait);
+      }
+      if (this.shouldDrawControllerOverlay(safeW, safeH)) {
+        drawCanvasControllerMenu(ctx, this.controllerMenu, {
+          width: safeW,
+          height: safeH,
+          contextLabel: 'Cutscene Editor'
+        });
       }
       ctx.restore();
     } catch (error) {
@@ -2087,12 +2218,10 @@ export default class CutsceneEditor {
       };
     }
     if (isDesktop) {
-      const railH = 86;
       const shell = buildDesktopEditorShellPlan('cutscene', {
         viewportWidth: width,
         viewportHeight: height,
         activeRootId: this.activeMenuTab || 'add',
-        bottomBarHeight: railH,
         leftPanelWidth: Math.min(360, Math.max(292, width * 0.24)),
         leftRibbonHeight: 58
       });
@@ -2114,32 +2243,40 @@ export default class CutsceneEditor {
         timelineBounds,
         contextBounds,
         zoomBounds: null,
-        railBounds: shell.bottomBar || { x: work.x, y: height - railH, w: work.w, h: railH },
+        railBounds: null,
         menuBounds: shell.leftOptions,
         desktopShell: shell
       };
     }
     const railH = 86;
+    const landscape = buildLandscapeTouchEditorShellPlan('cutscene', {
+      viewportWidth: width,
+      viewportHeight: height,
+      bottomRailHeight: railH,
+      rightRailWidth: Math.min(340, Math.max(248, Math.floor(width * 0.28))),
+      reserveRightRail: !this.shouldDrawGamepadSubmenuOnLeft(width, height)
+    });
+    const work = landscape.workSurface;
     const contextH = 46;
     const timelineH = mode === 'timeline'
-      ? Math.max(160, height - railH - contextH - margin * 5 - 96)
+      ? Math.max(160, work.h - contextH - margin * 3 - 96)
       : mode === 'canvas'
-        ? clamp(Math.round(height * 0.14), 64, 92)
-        : clamp(Math.round(height * 0.24), 104, 148);
-    const railBounds = { x: margin, y: height - railH - margin, w: width - margin * 2, h: railH };
-    const timelineBounds = { x: margin, y: railBounds.y - timelineH - margin, w: width - margin * 2, h: timelineH };
-    const contextBounds = { x: margin, y: timelineBounds.y - contextH - margin, w: width - margin * 2, h: contextH };
-    const stageBounds = { x: margin, y: margin, w: width - margin * 2, h: Math.max(80, contextBounds.y - margin * 2) };
-    const menuW = Math.min(360, Math.max(280, Math.floor(width * 0.38)));
+        ? clamp(Math.round(work.h * 0.14), 64, 92)
+        : clamp(Math.round(work.h * 0.24), 104, 148);
+    const timelineBounds = { x: work.x, y: work.y + work.h - timelineH, w: work.w, h: timelineH };
+    const contextBounds = { x: work.x, y: timelineBounds.y - contextH - margin, w: work.w, h: contextH };
+    const stageBounds = { x: work.x, y: work.y, w: work.w, h: Math.max(80, contextBounds.y - work.y - margin) };
     return {
       isPortrait,
+      isLandscapeTouch: true,
       mode,
       stageBounds,
       timelineBounds,
       contextBounds,
       zoomBounds: null,
-      railBounds,
-      menuBounds: { x: margin, y: Math.max(margin, railBounds.y - 260), w: menuW, h: Math.max(180, railBounds.y - margin * 2) }
+      railBounds: landscape.bottomRail,
+      leftMenuBounds: landscape.leftRail,
+      menuBounds: landscape.rightRail
     };
   }
 
@@ -2285,6 +2422,41 @@ export default class CutsceneEditor {
     this.clampTimelineViewport(bounds);
   }
 
+  getTimelineSnapThresholdMs(timelineLayout) {
+    const track = timelineLayout?.track;
+    if (!track?.w) return 0;
+    return Math.max(1, (safeNumber(timelineLayout.visibleDuration, this.document?.durationMs || DEFAULT_DURATION_MS) / Math.max(1, track.w)) * CUTSCENE_TIMELINE_SNAP_PX);
+  }
+
+  snapMovedTimelineClipToPlayhead(startMs, clip, timelineLayout) {
+    const durationMs = Math.max(1, safeNumber(clip?.durationMs, 1));
+    const maxStart = Math.max(0, safeNumber(this.document?.durationMs, DEFAULT_DURATION_MS) - durationMs);
+    const clampedStart = clamp(Math.round(startMs), 0, maxStart);
+    if (this.document?.snapEnabled === false) return { startMs: clampedStart, snapped: false };
+    const playheadMs = clamp(safeNumber(this.playheadMs), 0, safeNumber(this.document?.durationMs, DEFAULT_DURATION_MS));
+    const thresholdMs = this.getTimelineSnapThresholdMs(timelineLayout);
+    const candidates = [];
+    if (playheadMs <= maxStart) candidates.push({ startMs: playheadMs, distance: Math.abs(clampedStart - playheadMs) });
+    const endStart = playheadMs - durationMs;
+    if (endStart >= 0 && endStart <= maxStart) candidates.push({ startMs: endStart, distance: Math.abs(clampedStart + durationMs - playheadMs) });
+    const best = candidates
+      .filter((candidate) => candidate.distance <= thresholdMs)
+      .sort((a, b) => a.distance - b.distance)[0];
+    return best ? { startMs: Math.round(best.startMs), snapped: true } : { startMs: clampedStart, snapped: false };
+  }
+
+  snapResizedTimelineClipToPlayhead(durationMs, clip, minDuration, maxDuration, timelineLayout) {
+    const clampedDuration = clamp(Math.round(durationMs), minDuration, maxDuration);
+    if (this.document?.snapEnabled === false) return { durationMs: clampedDuration, snapped: false };
+    const playheadMs = clamp(safeNumber(this.playheadMs), 0, safeNumber(this.document?.durationMs, DEFAULT_DURATION_MS));
+    const snappedDuration = playheadMs - safeNumber(clip?.startMs);
+    if (snappedDuration < minDuration || snappedDuration > maxDuration) return { durationMs: clampedDuration, snapped: false };
+    const thresholdMs = this.getTimelineSnapThresholdMs(timelineLayout);
+    const distance = Math.abs(safeNumber(clip?.startMs) + clampedDuration - playheadMs);
+    if (distance > thresholdMs) return { durationMs: clampedDuration, snapped: false };
+    return { durationMs: Math.round(snappedDuration), snapped: true };
+  }
+
   drawTimeline(ctx, bounds) {
     ctx.save();
     drawSharedPanel(ctx, bounds, { fill: '#101922', border: UI_SUITE.colors.border, title: 'Timeline', titleSize: 13 });
@@ -2322,10 +2494,12 @@ export default class CutsceneEditor {
     }
     if (playX >= layout.track.x && playX <= layout.track.x + layout.track.w) {
       ctx.strokeStyle = '#ffe16a';
+      ctx.lineWidth = this.timelineSnapGuideMs != null ? 3 : 1;
       ctx.beginPath();
       ctx.moveTo(playX, layout.track.y);
       ctx.lineTo(playX, bounds.y + bounds.h - 8);
       ctx.stroke();
+      ctx.lineWidth = 1;
     }
     ctx.save();
     ctx.beginPath();
@@ -2550,19 +2724,22 @@ export default class CutsceneEditor {
 
   drawDesktopMenuPanel(ctx, bounds) {
     if (!bounds) return;
-    this.bounds.desktopMenuPanel = bounds;
-    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    const gap = 8;
+    const transportH = Math.min(118, Math.max(96, Math.floor(bounds.h * 0.24)));
+    const panelBounds = { x: bounds.x, y: bounds.y, w: bounds.w, h: Math.max(120, bounds.h - transportH - gap) };
+    const transportBounds = { x: bounds.x, y: panelBounds.y + panelBounds.h + gap, w: bounds.w, h: transportH };
+    this.bounds.desktopMenuPanel = panelBounds;
+    drawSharedPanel(ctx, panelBounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
     const pad = 10;
     const rowH = 36;
-    const gap = 8;
     const title = CUTSCENE_DESKTOP_MENU_LABELS[this.activeMenuTab] || this.activeMenuTab || 'Add';
     ctx.fillStyle = UI_SUITE.colors.accent;
     ctx.font = `13px ${UI_SUITE.font.family}`;
     ctx.textBaseline = 'middle';
-    ctx.fillText(title, bounds.x + pad, bounds.y + 20, bounds.w - pad * 2);
-    const content = { x: bounds.x + pad, y: bounds.y + 36, w: bounds.w - pad * 2, h: bounds.h - 46 };
+    ctx.fillText(title, panelBounds.x + pad, panelBounds.y + 20, panelBounds.w - pad * 2);
+    const content = { x: panelBounds.x + pad, y: panelBounds.y + 36, w: panelBounds.w - pad * 2, h: panelBounds.h - 46 };
     this.bounds.desktopMenuButtons = [];
-    const items = this.getMenuItems();
+    const items = this.getMenuItems().filter((item) => !item.divider && !item.separator);
     const visibleRows = Math.max(1, Math.floor((content.h + gap) / (rowH + gap)));
     const maxScroll = Math.max(0, items.length - visibleRows);
     this.bounds.menuScrollMax = maxScroll;
@@ -2580,13 +2757,44 @@ export default class CutsceneEditor {
       if (!item.disabled) this.bounds.desktopMenuButtons.push(button);
     });
     drawSharedPortraitScrollHints(ctx, content, { scroll: this.menuScroll, scrollMax: maxScroll });
+    this.drawDesktopTransportPanel(ctx, transportBounds);
+  }
+
+  drawDesktopTransportPanel(ctx, bounds) {
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
+    const pad = 10;
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Transport', bounds.x + pad, bounds.y + 17, bounds.w - pad * 2);
+    const actions = this.getTransportActions();
+    const rowY = bounds.y + 34;
+    const rowH = 36;
+    const buttonGap = 6;
+    const buttonW = Math.max(34, Math.floor((bounds.w - pad * 2 - buttonGap * (actions.length - 1)) / actions.length));
+    actions.forEach((action, index) => {
+      this.drawActionButton(ctx, {
+        x: bounds.x + pad + index * (buttonW + buttonGap),
+        y: rowY,
+        w: buttonW,
+        h: rowH
+      }, action);
+    });
+    const labelY = rowY + rowH + 10;
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.font = `11px ${UI_SUITE.font.family}`;
+    ctx.fillText(this.currentDocumentRef?.name || this.document.name, bounds.x + pad, labelY, bounds.w - pad * 2);
+    if (this.statusText) {
+      ctx.fillText(this.statusText, bounds.x + pad, labelY + 16, bounds.w - pad * 2);
+    }
   }
 
   drawDesktopDropdown(ctx, shell) {
     if (!shell?.dropdown) return;
-    const items = this.getMenuItems().filter((item) => !item.disabled).slice(0, 10);
-    if (!items.length) return;
     const rowH = Math.max(28, Math.min(34, shell.dropdown.rowHeight));
+    const visibleRows = Math.max(1, Math.floor(shell.dropdown.bounds.h / Math.max(1, rowH)));
+    const items = this.getMenuItems(shell.dropdown.rootId).filter((item) => !item.disabled).slice(0, visibleRows);
+    if (!items.length) return;
     const bounds = { ...shell.dropdown.bounds, h: Math.max(rowH, items.length * rowH) };
     drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
     items.forEach((item, index) => {
@@ -2914,6 +3122,133 @@ export default class CutsceneEditor {
     drawSharedPortraitScrollHints(ctx, content, { scroll: this.menuScroll, scrollMax: maxScroll });
   }
 
+  drawLandscapeRootRail(ctx, bounds) {
+    if (!bounds) return;
+    this.bounds.landscapeRootPanel = bounds;
+    this.bounds.landscapeRootButtons = [];
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    const pad = 8;
+    const gap = 7;
+    const rowH = 40;
+    const list = { x: bounds.x + pad, y: bounds.y + pad, w: bounds.w - pad * 2, h: bounds.h - pad * 2 };
+    const visibleRows = Math.max(1, Math.floor((list.h + gap) / (rowH + gap)));
+    const maxScroll = Math.max(0, CUTSCENE_CONTROLLER_ROOTS.length - visibleRows);
+    this.bounds.landscapeRootScrollMax = maxScroll;
+    this.bounds.landscapeRootContent = list;
+    this.landscapeRootScroll = clamp(Math.round(this.landscapeRootScroll || 0), 0, maxScroll);
+    CUTSCENE_CONTROLLER_ROOTS.slice(this.landscapeRootScroll, this.landscapeRootScroll + visibleRows).forEach((id, index) => {
+      const button = {
+        x: list.x,
+        y: list.y + index * (rowH + gap),
+        w: list.w,
+        h: rowH,
+        id: `landscape-tab:${id}`
+      };
+      const color = drawSharedMenuButtonChrome(ctx, button, { active: this.activeMenuTab === id });
+      drawSharedMenuButtonLabel(ctx, button, CUTSCENE_DESKTOP_MENU_LABELS[id] || id, { color, fontSize: 11, maxWidth: button.w - 8 });
+      this.bounds.landscapeRootButtons.push(button);
+    });
+    drawSharedPortraitScrollHints(ctx, list, { scroll: this.landscapeRootScroll, scrollMax: maxScroll });
+  }
+
+  drawLandscapeSubmenuPanel(ctx, bounds) {
+    if (!bounds) return;
+    this.bounds.menuPanel = bounds;
+    this.bounds.menuButtons = [];
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    const pad = 10;
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `13px ${UI_SUITE.font.family}`;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(CUTSCENE_DESKTOP_MENU_LABELS[this.activeMenuTab] || 'Menu', bounds.x + pad, bounds.y + 20, bounds.w - pad * 2);
+    ctx.restore();
+    const items = this.getMenuItems(this.activeMenuTab).filter((item) => !item.divider && !item.separator);
+    const content = { x: bounds.x + pad, y: bounds.y + 38, w: bounds.w - pad * 2, h: bounds.h - 48 };
+    this.bounds.menuContent = content;
+    const rowH = 42;
+    const gap = 8;
+    const visibleRows = Math.max(1, Math.floor((content.h + gap) / (rowH + gap)));
+    const maxScroll = Math.max(0, items.length - visibleRows);
+    this.bounds.menuScrollMax = maxScroll;
+    this.bounds.menuScrollCols = 1;
+    this.menuScroll = clamp(Math.round(this.menuScroll || 0), 0, maxScroll);
+    items.slice(this.menuScroll, this.menuScroll + visibleRows).forEach((item, index) => {
+      const button = {
+        x: content.x,
+        y: content.y + index * (rowH + gap),
+        w: content.w,
+        h: rowH,
+        id: item.id
+      };
+      const color = drawSharedMenuButtonChrome(ctx, button, { active: Boolean(item.active), subtle: Boolean(item.disabled) });
+      drawSharedMenuButtonLabel(ctx, button, item.label, { color, fontSize: 12, maxWidth: button.w - 10 });
+      if (!item.disabled) this.bounds.menuButtons.push(button);
+    });
+    drawSharedPortraitScrollHints(ctx, content, { scroll: this.menuScroll, scrollMax: maxScroll });
+  }
+
+  drawGamepadSlideOutPanel(ctx, bounds) {
+    if (!bounds) return;
+    const menuId = this.getActiveGamepadMenuId();
+    const plan = buildGamepadSlideOutMenuPlan('cutscene', {
+      rootOpen: !menuId,
+      activeRootId: menuId || this.activeMenuTab || 'add',
+      focusedItemId: this.controllerMenu.getFocusedItem(menuId)?.id
+    });
+    const menu = this.controllerMenu.menus?.[menuId];
+    const items = this.controllerMenu.getItems(menu);
+    this.bounds.menuPanel = bounds;
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
+    ctx.textBaseline = 'middle';
+    ctx.fillText(menu?.title || plan.submenu?.title || 'Menu', bounds.x + 12, bounds.y + 18, bounds.w - 24);
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.font = `10px ${UI_SUITE.font.family}`;
+    ctx.fillText('A Select  B Back', bounds.x + 12, bounds.y + 36, bounds.w - 24);
+    const rowH = 40;
+    const gap = 8;
+    const list = {
+      x: bounds.x + 10,
+      y: bounds.y + 52,
+      w: Math.max(1, bounds.w - 20),
+      h: Math.max(1, bounds.h - 62)
+    };
+    const visibleRows = Math.max(1, Math.floor((list.h + gap) / (rowH + gap)));
+    const scroll = this.controllerMenu.syncScrollToItem(
+      menuId,
+      this.controllerMenu.getFocusedItem(menuId)?.id,
+      items,
+      visibleRows,
+      this.controllerMenu.scroll?.[menuId] || 0
+    );
+    items.slice(scroll, scroll + visibleRows).forEach((item, index) => {
+      if (item.divider || item.separator) return;
+      const button = {
+        x: list.x,
+        y: list.y + index * (rowH + gap),
+        w: list.w,
+        h: rowH,
+        id: item.id
+      };
+      const color = drawSharedMenuButtonChrome(ctx, button, {
+        active: this.isControllerMenuItemActive(menuId, item.id),
+        subtle: Boolean(item.disabled)
+      });
+      drawSharedMenuButtonLabel(ctx, button, item.label, { color, fontSize: 12, maxWidth: button.w - 10 });
+      if (!item.disabled) this.bounds.menuButtons.push(button);
+    });
+    drawSharedPortraitScrollHints(ctx, list, { scroll, scrollMax: Math.max(0, items.length - visibleRows) });
+    ctx.restore();
+  }
+
+  isControllerMenuItemActive(menuId, itemId) {
+    if (menuId === this.activeMenuTab) return this.getMenuItems(menuId).some((item) => item.id === itemId && item.active);
+    return false;
+  }
+
   handlePointerDown(payload) {
     if (!payload) return;
     const x = safeNumber(payload.x);
@@ -2936,9 +3271,22 @@ export default class CutsceneEditor {
     if (this.bounds.desktopMenuPanel && this.pointIn(this.bounds.desktopMenuPanel, x, y)) {
       return;
     }
+    if (this.bounds.landscapeRootPanel && this.pointIn(this.bounds.landscapeRootPanel, x, y)) {
+      const rootButton = this.bounds.landscapeRootButtons?.find((entry) => this.pointIn(entry, x, y));
+      this.menuScrollDrag = {
+        target: 'landscape-root',
+        startX: x,
+        startY: y,
+        lastY: y,
+        buttonId: rootButton?.id || null,
+        moved: false
+      };
+      return;
+    }
     if (this.menuOpen && this.bounds.menuPanel && this.pointIn(this.bounds.menuPanel, x, y)) {
       const menuButton = this.bounds.menuButtons?.find((entry) => this.pointIn(entry, x, y));
       this.menuScrollDrag = {
+        target: 'submenu',
         startX: x,
         startY: y,
         lastY: y,
@@ -3148,7 +3496,13 @@ export default class CutsceneEditor {
       const drag = this.menuScrollDrag;
       const movedDistance = Math.hypot(x - safeNumber(drag.startX), y - safeNumber(drag.startY));
       if (movedDistance >= 6) drag.moved = true;
-      if (drag.moved && this.bounds.menuScrollMax > 0) {
+      if (drag.moved && drag.target === 'landscape-root' && this.bounds.landscapeRootScrollMax > 0) {
+        const content = this.bounds.landscapeRootContent || { h: 1 };
+        const visibleRows = Math.max(1, Math.floor((content.h + 7) / (40 + 7)));
+        const rowDelta = (safeNumber(drag.lastY) - y) / Math.max(1, content.h) * visibleRows;
+        this.landscapeRootScroll = clamp((this.landscapeRootScroll || 0) + rowDelta, 0, this.bounds.landscapeRootScrollMax || 0);
+        drag.lastY = y;
+      } else if (drag.moved && this.bounds.menuScrollMax > 0) {
         const content = this.bounds.menuContent || { h: 1 };
         const visibleRows = Math.max(1, Math.floor((content.h + 8) / (42 + 8)));
         const rowDelta = (safeNumber(drag.lastY) - y) / Math.max(1, content.h) * visibleRows;
@@ -3186,6 +3540,7 @@ export default class CutsceneEditor {
       if (!clip || !this.bounds.timeline) return;
       const verticalIntent = Math.abs(y - safeNumber(this.drag.startY)) > Math.abs(x - safeNumber(this.drag.startX)) + 4;
       if (verticalIntent) {
+        this.timelineSnapGuideMs = null;
         const nextIndex = this.getTimelineTrackIndexAtY(y);
         if (nextIndex >= 0 && nextIndex !== this.drag.currentIndex) {
           this.assignSelectedClipToTrackIndex(nextIndex, { capture: false });
@@ -3195,7 +3550,10 @@ export default class CutsceneEditor {
       }
       const timelineLayout = this.getTimelineLayout(this.bounds.timeline);
       const deltaMs = timelineXToMs(x, timelineLayout) - timelineXToMs(this.drag.startX, timelineLayout);
-      clip.startMs = clamp(Math.round(this.drag.originalStart + deltaMs), 0, Math.max(0, this.document.durationMs - clip.durationMs));
+      const snap = this.snapMovedTimelineClipToPlayhead(this.drag.originalStart + deltaMs, clip, timelineLayout);
+      clip.startMs = snap.startMs;
+      this.timelineSnapGuideMs = snap.snapped ? this.playheadMs : null;
+      if (snap.snapped) this.statusText = 'Snapped to playhead';
     } else if (this.drag.type === 'track-reorder') {
       const nextIndex = this.getTimelineTrackIndexAtY(y);
       if (nextIndex >= 0 && nextIndex !== this.drag.currentIndex) {
@@ -3212,7 +3570,11 @@ export default class CutsceneEditor {
       const timelineLayout = this.getTimelineLayout(this.bounds.timeline);
       const deltaMs = timelineXToMs(x, timelineLayout) - timelineXToMs(this.drag.startX, timelineLayout);
       const minDuration = getFrameStepMs(this.document);
-      clip.durationMs = clamp(Math.round(this.drag.originalDuration + deltaMs), minDuration, Math.max(minDuration, this.document.durationMs - clip.startMs));
+      const maxDuration = Math.max(minDuration, this.document.durationMs - clip.startMs);
+      const snap = this.snapResizedTimelineClipToPlayhead(this.drag.originalDuration + deltaMs, clip, minDuration, maxDuration, timelineLayout);
+      clip.durationMs = snap.durationMs;
+      this.timelineSnapGuideMs = snap.snapped ? this.playheadMs : null;
+      if (snap.snapped) this.statusText = 'Snapped to playhead';
       this.normalizeClipKeyframes(clip);
     } else if (this.drag.type === 'timeline-pan') {
       if (!this.bounds.timeline || !this.drag.moved) return;
@@ -3247,6 +3609,7 @@ export default class CutsceneEditor {
       this.panJoystick.dx = 0;
       this.panJoystick.dy = 0;
     }
+    this.timelineSnapGuideMs = null;
     this.drag = null;
   }
 
@@ -3628,6 +3991,14 @@ export default class CutsceneEditor {
         this.menuScroll = 0;
         return;
       }
+      if (id?.startsWith?.('landscape-tab:')) {
+        const rootId = id.slice('landscape-tab:'.length);
+        this.activeMenuTab = CUTSCENE_DESKTOP_MENU_LABELS[rootId] ? rootId : 'add';
+        this.menuOpen = true;
+        this.clipOptionsOpen = false;
+        this.menuScroll = 0;
+        return;
+      }
       if (id?.startsWith?.('tab:')) {
         this.activeMenuTab = id.slice(4);
         this.menuScroll = 0;
@@ -3665,7 +4036,7 @@ export default class CutsceneEditor {
       if (id === 'open') await this.openDocument();
       if (id === 'save') await this.saveDocument();
       if (id === 'save-as') await this.saveDocument({ forceSaveAs: true });
-      if (id === 'export-mp4') await this.exportMovieMp4();
+      if (id === 'export' || id === 'export-mp4') await this.exportMovieMp4();
       if (id === 'text') await this.addTextClip();
       if (id === 'color-board') await this.addColorBoardClip();
       if (id === 'art') await this.addArtClip();
@@ -3755,7 +4126,11 @@ export default class CutsceneEditor {
       if (id === 'cut') this.cutSelectedClip();
       if (id === 'paste') this.pasteClipboardClip();
       if (id === 'delete') this.deleteSelectedClip();
-      if (id === 'back') this.game.exitCutsceneEditor?.();
+      if (id === 'close-menu') {
+        this.menuOpen = false;
+        this.menuScroll = 0;
+      }
+      if (id === 'back' || id === 'exit-main') this.game.exitCutsceneEditor?.();
     };
     this.pendingAction = run()
       .catch((error) => {
@@ -3787,20 +4162,23 @@ export default class CutsceneEditor {
     this.menuScroll = 0;
   }
 
-  getMenuItems() {
+  getMenuItems(tabId = this.activeMenuTab) {
     const selected = this.getSelectedClip();
-    if (this.activeMenuTab === 'file') {
-      return [
-        { id: 'new', label: 'New' },
-        { id: 'open', label: 'Open' },
-        { id: 'save', label: 'Save' },
-        { id: 'save-as', label: 'Save As' },
-        { id: 'export-mp4', label: 'Export MP4', disabled: this.movieExportInProgress },
-        { id: 'import', label: 'Import' },
-        { id: 'back', label: 'Main Menu' }
-      ];
+    if (tabId === 'file') {
+      return buildSharedEditorFileMenu({
+        labels: {
+          export: 'Export MP4'
+        },
+        footer: {
+          onClose: () => {
+            this.menuOpen = false;
+            this.menuScroll = 0;
+          },
+          onExit: () => this.game.exitCutsceneEditor?.()
+        }
+      }).map((item) => (item.id === 'export' ? { ...item, disabled: this.movieExportInProgress } : item));
     }
-    if (this.activeMenuTab === 'add') {
+    if (tabId === 'add') {
       return [
         { id: 'art', label: 'Art' },
         { id: 'actor', label: 'Actor' },
@@ -3812,7 +4190,7 @@ export default class CutsceneEditor {
         { id: 'pause', label: 'Pause' }
       ];
     }
-    if (this.activeMenuTab === 'timeline') {
+    if (tabId === 'timeline') {
       return [
         { id: 'play', label: this.isPlaying ? 'Pause' : 'Play' },
         { id: 'step-frame', label: 'Step Frame' },
@@ -3824,7 +4202,7 @@ export default class CutsceneEditor {
         { id: 'timeline-fit', label: 'Fit Timeline' }
       ];
     }
-    if (this.activeMenuTab === 'clips') {
+    if (tabId === 'clips') {
       return [
         { id: 'clip-options', label: 'Clip Options', disabled: !selected && !this.getSelectedTrack() },
         { id: 'copy', label: 'Copy', disabled: !selected },
@@ -3836,7 +4214,7 @@ export default class CutsceneEditor {
         { id: 'delete', label: 'Delete', disabled: !selected }
       ];
     }
-    if (this.activeMenuTab === 'keyframes') {
+    if (tabId === 'keyframes') {
       return [
         { id: 'set-start', label: 'Set Start Key', disabled: !selected },
         { id: 'set-end', label: 'Set End Key', disabled: !selected },
@@ -3848,7 +4226,7 @@ export default class CutsceneEditor {
         { id: 'ease', label: `Ease ${this.getEasingLabel(selected?.easing)}`, disabled: !selected }
       ];
     }
-    if (this.activeMenuTab === 'audio') {
+    if (tabId === 'audio') {
       return [
         { id: 'music', label: 'Add Music' },
         { id: 'sfx', label: 'Add SFX' },
@@ -3858,14 +4236,14 @@ export default class CutsceneEditor {
         { id: 'master-volume', label: `Master ${Math.round(clamp(safeNumber(this.document.masterVolume, 1), 0, 1) * 100)}` }
       ];
     }
-    if (this.activeMenuTab === 'export') {
+    if (tabId === 'export') {
       return [
         { id: 'export-mp4', label: 'Export MP4', disabled: this.movieExportInProgress },
         { id: 'save', label: 'Save' },
         { id: 'save-as', label: 'Save As' }
       ];
     }
-    if (this.activeMenuTab === 'settings') {
+    if (tabId === 'settings') {
       return [
         { id: 'scene-duration', label: 'Scene Length' },
         { id: 'snap-toggle', label: this.document.snapEnabled === false ? 'Snap Off' : 'Snap On' },

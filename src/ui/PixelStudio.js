@@ -52,7 +52,7 @@ import {
 } from './pixel-editor/bones.js';
 import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
@@ -61,7 +61,7 @@ import { listProjectFiles, loadProjectFile, saveProjectFile, sanitizeProjectFile
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { openChoiceOverlay, openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
-import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeTouchEditorShellPlan, isGamepadLandscapeEditorMode, shouldUseGamepadSlideOutMenu } from './shared/editorMenuLayout.js';
 import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
 import { ensurePixelArtStore, ensurePixelPreviewFrame, ensurePixelTileData } from '../editor/adapters/editorDataContracts.js';
 import { resolveActorArtFrameDurationMs } from '../entities/ScriptedActor.js';
@@ -492,7 +492,9 @@ export function buildPixelMobileEditorLayout(width, height, {
   menuSheetOpen = false
 } = {}) {
   if (isMobileLandscapeLayout({ isMobile, viewportWidth: width, viewportHeight: height })) {
-    const layout = getSharedMobileLandscapeEditorLayout(width, height, {
+    const layout = buildLandscapeTouchEditorShellPlan('pixel', {
+      viewportWidth: width,
+      viewportHeight: height,
       bottomRailHeight: 0,
       reserveRightRail: drawerOpen
     });
@@ -622,7 +624,7 @@ export default class PixelStudio {
     this.game = game;
     this.sharedMenu = new SharedEditorMenu();
     this.controllerMenu = new ControllerMenuStack({
-      siblingOrder: ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames']
+      siblingOrder: ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames', 'bones']
     });
     this.tileLibrary = TILE_LIBRARY;
     this.decalEditSession = null;
@@ -3703,6 +3705,22 @@ export default class PixelStudio {
     this.uiFocus.index = 0;
   }
 
+  isDesktopSelectionContextClick(payload = {}) {
+    if (this.isMobileLayout()) return false;
+    if ((payload.button ?? 0) !== 2) return false;
+    if (!this.selection?.active || !this.selection?.bounds) return false;
+    if (!this.canvasBounds || !this.isPointInBounds(payload, this.canvasBounds)) return false;
+    const point = this.getGridCellFromScreen(payload.x, payload.y);
+    if (!point) return false;
+    if (this.selection.mask && this.canvasState) {
+      const index = point.row * this.canvasState.width + point.col;
+      return Boolean(this.selection.mask[index]);
+    }
+    const bounds = this.selection.bounds;
+    return point.col >= bounds.x && point.col < bounds.x + bounds.w
+      && point.row >= bounds.y && point.row < bounds.y + bounds.h;
+  }
+
   handlePanAction(action, dt, inputState) {
     const axes = inputState.axes || { rightX: 0, rightY: 0 };
     const panX = -axes.rightX;
@@ -4168,6 +4186,12 @@ export default class PixelStudio {
     }
     if (this.canvasBounds && this.isPointInBounds(payload, this.canvasBounds)) {
       this.setInputMode('canvas');
+      if (this.isDesktopSelectionContextClick(payload)) {
+        this.cursor.x = payload.x;
+        this.cursor.y = payload.y;
+        this.openSelectionContextMenu();
+        return;
+      }
       if (this.spaceDown || button === 1 || button === 2) {
         this.panStart = this.viewportController.beginPan(payload, { x: this.view.panX, y: this.view.panY });
         return;
@@ -4886,7 +4910,7 @@ export default class PixelStudio {
     if (!this.activeLayer || this.activeLayer.locked) return;
     this.startHistory(`${mode} stroke`);
     this.cloneSourcePixels = mode === 'clone'
-      ? new Uint32Array(this.cloneSourceSnapshot?.pixels || this.activeLayer.pixels)
+      ? this.cloneSourceSnapshot?.pixels || this.activeLayer.pixels
       : null;
     this.strokeState = {
       mode,
@@ -4952,7 +4976,7 @@ export default class PixelStudio {
       if (alpha <= 0) return;
       const strokeMode = this.strokeState?.mode || 'paint';
       if (strokeMode === 'clone') {
-        this.applyCloneStroke({ row, col }, alpha);
+        if (this.applyCloneStroke({ row, col }, alpha)) changed = true;
         return;
       }
       let colorValue = this.getActiveColorValue();
@@ -7171,25 +7195,24 @@ export default class PixelStudio {
   }
 
   applyClone(point, alpha = 1) {
-    if (!this.cloneOffset) return;
+    if (!this.cloneOffset) return false;
     const sourcePoint = this.getCloneSamplePoint(point);
     const destWidth = this.canvasState.width;
     const sourcePixels = this.cloneSourcePixels || this.cloneSourceSnapshot?.pixels || this.activeLayer.pixels;
     const sourceWidth = Number(this.cloneSourceSnapshot?.width || this.canvasState.width);
     const sourceHeight = Number(this.cloneSourceSnapshot?.height || this.canvasState.height);
-    if (sourcePoint.row < 0 || sourcePoint.col < 0 || sourcePoint.row >= sourceHeight || sourcePoint.col >= sourceWidth) return;
+    if (sourcePoint.row < 0 || sourcePoint.col < 0 || sourcePoint.row >= sourceHeight || sourcePoint.col >= sourceWidth) return false;
     const sourceIndex = sourcePoint.row * sourceWidth + sourcePoint.col;
     const destIndex = point.row * destWidth + point.col;
-    if (this.selection.active && this.selection.mask && !this.selection.mask[destIndex]) return;
+    if (this.selection.active && this.selection.mask && !this.selection.mask[destIndex]) return false;
     const sourceValue = sourcePixels[sourceIndex];
-    if ((this.toolOptions?.cloneAlphaMode || 'skip') === 'skip' && (sourceValue >>> 24) === 0) return;
+    if ((this.toolOptions?.cloneAlphaMode || 'skip') === 'skip' && (sourceValue >>> 24) === 0) return false;
     const nextValue = alpha >= 1
       ? sourceValue
       : this.blendPixel(this.activeLayer.pixels[destIndex], sourceValue, alpha);
-    if (this.activeLayer.pixels[destIndex] === nextValue) return;
+    if (this.activeLayer.pixels[destIndex] === nextValue) return false;
     this.activeLayer.pixels[destIndex] = nextValue;
-    if (typeof this.markLayerPixelsDirty === 'function') this.markLayerPixelsDirty();
-    else this.layerContentRevision = (this.layerContentRevision || 1) + 1;
+    return true;
   }
 
   getCloneSamplePoint(point) {
@@ -7215,8 +7238,8 @@ export default class PixelStudio {
   }
 
   applyCloneStroke(point, alpha = 1) {
-    if (!this.cloneOffset) return;
-    this.applyClone(point, alpha);
+    if (!this.cloneOffset) return false;
+    return this.applyClone(point, alpha);
   }
 
   cyclePalette(delta) {
@@ -8507,7 +8530,6 @@ export default class PixelStudio {
         viewportWidth: width,
         viewportHeight: height,
         activeRootId: this.getDesktopRootIdForPanel(),
-        bottomBarHeight: bottomHeight,
         leftPanelWidth: Math.min(360, Math.max(292, width * 0.24)),
         leftRibbonHeight: 58,
         labelOverrides: {
@@ -8785,9 +8807,10 @@ export default class PixelStudio {
     const panelId = this.getDesktopPanelIdForRoot(shell.dropdown.rootId);
     const menuId = this.getDesktopControllerMenuIdForPanel(panelId);
     const menu = this.controllerMenu.menus?.[menuId];
-    const items = this.controllerMenu.getItems(menu).slice(0, 10);
-    if (!items.length) return;
     const rowHeight = Math.max(28, Math.min(34, shell.dropdown.rowHeight));
+    const visibleRows = Math.max(1, Math.floor(shell.dropdown.bounds.h / Math.max(1, rowHeight)));
+    const items = this.controllerMenu.getItems(menu).slice(0, visibleRows);
+    if (!items.length) return;
     const bounds = {
       ...shell.dropdown.bounds,
       h: Math.max(rowHeight, items.length * rowHeight)
@@ -8820,11 +8843,23 @@ export default class PixelStudio {
   }
 
   isGamepadLandscapeMenuMode(width = this.game?.canvas?.width || 0, height = this.game?.canvas?.height || 0) {
-    return Boolean(this.isMobileLayout() && this.game?.input?.isGamepadConnected?.() && Math.min(width, height) <= 900 && width > height);
+    return isGamepadLandscapeEditorMode({
+      viewportWidth: width,
+      viewportHeight: height,
+      gamepadConnected: this.game?.input?.isGamepadConnected?.(),
+      isMobile: this.isMobileLayout()
+    });
   }
 
   shouldDrawGamepadSubmenuOnLeft(width, height) {
-    return Boolean(this.isGamepadLandscapeMenuMode(width, height) && this.controllerMenu.active && this.getActiveGamepadMenuId());
+    return shouldUseGamepadSlideOutMenu({
+      viewportWidth: width,
+      viewportHeight: height,
+      gamepadConnected: this.game?.input?.isGamepadConnected?.(),
+      isMobile: this.isMobileLayout(),
+      menuActive: this.controllerMenu.active,
+      activeMenuId: this.getActiveGamepadMenuId()
+    });
   }
 
   shouldDrawControllerOverlay(width, height) {
@@ -13278,19 +13313,6 @@ export default class PixelStudio {
     ctx.font = '12px Courier New';
     ctx.fillText(statusText, x + 8, y + 14);
 
-    if (['layers', 'animation'].includes(this.leftPanelTab)) {
-      const actions = this.getBottomRailActions();
-      const buttonW = 62;
-      const gap = 6;
-      let bx = x + w - (actions.length * (buttonW + gap));
-      actions.forEach((entry) => {
-        const bounds = { x: bx, y: y + 1, w: buttonW, h: h - 2 };
-        this.drawButton(ctx, bounds, entry.label, false, { fontSize: 11 });
-        this.uiButtons.push({ bounds, onClick: entry.action, group: options.group || 'menu' });
-        this.registerFocusable('menu', bounds, entry.action);
-        bx += buttonW + gap;
-      });
-    }
   }
 
   drawSelectionContextMenu(ctx, width, height) {
@@ -16710,10 +16732,10 @@ export default class PixelStudio {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     if (this.leftPanelTab === 'animation') {
-      this.drawFramesPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false, controls: false });
+      this.drawFramesPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false });
       return;
     }
-    this.drawLayersPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false, controls: false });
+    this.drawLayersPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false });
   }
 
   drawFramesPanel(ctx, x, y, w, h, options = {}) {

@@ -7,18 +7,54 @@ import {
   buildDesktopTopMenuPlan,
   buildEditorMenuLayoutPlan,
   buildGamepadSlideOutMenuPlan,
+  buildLandscapeTouchEditorShellPlan,
   getEditorPointerInteractionPolicy,
   getEditorMenuPlacement,
   getMenuScrollPolicy,
-  resolveEditorLayoutMode
+  isGamepadLandscapeEditorMode,
+  resolveEditorLayoutMode,
+  shouldUseGamepadSlideOutMenu
 } from '../../src/ui/shared/editorMenuLayout.js';
-import { EDITOR_LAYOUT_MODES } from '../../src/ui/shared/editorMenuSpec.js';
+import { EDITOR_LAYOUT_MODES, getEditorMenuSection } from '../../src/ui/shared/editorMenuSpec.js';
 
 test('layout mode resolver distinguishes portrait, landscape, desktop, and gamepad', () => {
   assert.equal(resolveEditorLayoutMode({ isMobile: true, viewportWidth: 390, viewportHeight: 844 }), EDITOR_LAYOUT_MODES.PORTRAIT);
   assert.equal(resolveEditorLayoutMode({ isMobile: true, viewportWidth: 844, viewportHeight: 390 }), EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH);
   assert.equal(resolveEditorLayoutMode({ isMobile: false, viewportWidth: 1280, viewportHeight: 800 }), EDITOR_LAYOUT_MODES.DESKTOP);
   assert.equal(resolveEditorLayoutMode({ isMobile: true, viewportWidth: 844, viewportHeight: 390, gamepadConnected: true }), EDITOR_LAYOUT_MODES.GAMEPAD);
+});
+
+test('gamepad landscape helpers gate slide-out menus to mobile landscape controller mode', () => {
+  assert.equal(isGamepadLandscapeEditorMode({
+    viewportWidth: 844,
+    viewportHeight: 390,
+    gamepadConnected: true
+  }), true);
+  assert.equal(isGamepadLandscapeEditorMode({
+    viewportWidth: 390,
+    viewportHeight: 844,
+    gamepadConnected: true
+  }), false);
+  assert.equal(isGamepadLandscapeEditorMode({
+    viewportWidth: 1280,
+    viewportHeight: 800,
+    gamepadConnected: true,
+    isMobile: false
+  }), false);
+  assert.equal(shouldUseGamepadSlideOutMenu({
+    viewportWidth: 844,
+    viewportHeight: 390,
+    gamepadConnected: true,
+    menuActive: true,
+    activeMenuId: 'tools'
+  }), true);
+  assert.equal(shouldUseGamepadSlideOutMenu({
+    viewportWidth: 844,
+    viewportHeight: 390,
+    gamepadConnected: true,
+    menuActive: false,
+    activeMenuId: 'tools'
+  }), false);
 });
 
 test('layout placements match the RTG Studio editor UI contract', () => {
@@ -83,11 +119,13 @@ test('desktop top menu plan creates bounded root buttons and active dropdown', (
   assert.equal(plan.buttons[0].id, 'file');
   assert.equal(plan.buttons[0].label, 'Menu');
   assert.ok(plan.buttons.every((button) => button.bounds.y === 4));
+  assert.ok(plan.buttons.every((button) => button.bounds.x + button.bounds.w <= plan.bounds.x + plan.bounds.w - plan.bounds.padding));
   assert.equal(plan.buttons.find((button) => button.id === 'pixels')?.active, true);
   assert.equal(plan.dropdown.rootId, 'pixels');
   assert.equal(plan.dropdown.specId, 'tile-art');
   assert.equal(plan.dropdown.title, 'Tile Art');
   assert.ok(plan.dropdown.bounds.y >= 42);
+  assert.ok(plan.dropdown.bounds.x + plan.dropdown.bounds.w <= plan.bounds.x + plan.bounds.w - plan.bounds.padding);
 });
 
 test('desktop dropdown plan resolves section actions through runtime aliases', () => {
@@ -102,12 +140,37 @@ test('desktop dropdown plan resolves section actions through runtime aliases', (
   assert.deepEqual(dropdown.bounds, { x: 120, y: 40, w: 220, h: 204 });
 });
 
+test('desktop dropdown plan clamps to container bounds when supplied', () => {
+  const dropdown = buildDesktopDropdownPlan('level', 'playtest', {
+    anchor: { x: 700, y: 4, w: 52, h: 38 },
+    containerBounds: { x: 10, y: 4, w: 760, h: 38, padding: 8 }
+  });
+
+  assert.equal(dropdown.rootId, 'playtest');
+  assert.equal(dropdown.bounds.w, 220);
+  assert.equal(dropdown.bounds.x + dropdown.bounds.w <= 10 + 760 - 8, true);
+  assert.equal(dropdown.bounds.y, 42);
+});
+
+test('shared file menu specs include the actions used by editor surfaces', () => {
+  assert.deepEqual(getEditorMenuSection('pixel', 'file').actions, ['new', 'save', 'save-as', 'open', 'import', 'export', 'copy-image', 'paste-image', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('level', 'file').actions, ['new', 'save', 'save-as', 'open', 'import', 'export', 'undo', 'redo', 'playtest', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('midi', 'file').actions, ['new', 'save', 'save-as', 'open', 'import', 'export', 'nav-grid', 'nav-instruments', 'nav-virtual-instruments', 'nav-pedals', 'nav-settings', 'rescue-save', 'export-midi', 'export-midi-zip', 'export-wav', 'save-paint', 'play-robtersession', 'theme', 'sample', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('sfx', 'file').actions, ['new', 'save', 'save-as', 'open', 'import', 'export', 'undo', 'redo', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('cutscene', 'file').actions, ['new', 'save', 'save-as', 'open', 'import', 'export', 'undo', 'redo', 'exit-main']);
+
+  const pixelDropdown = buildDesktopDropdownPlan('pixel', 'file');
+  assert.deepEqual(pixelDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'import', 'export', 'copy-image', 'paste-image', 'exit-main']);
+
+  const levelDropdown = buildDesktopDropdownPlan('level', 'file');
+  assert.deepEqual(levelDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'import', 'export', 'undo', 'redo', 'playtest', 'exit-main']);
+});
+
 test('desktop editor shell plan reserves top menus and left ribbon/options', () => {
   const plan = buildDesktopEditorShellPlan('sfx', {
     viewportWidth: 1280,
     viewportHeight: 720,
     activeRootId: 'generate',
-    bottomBarHeight: 118,
     leftPanelWidth: 312,
     leftRibbonHeight: 56
   });
@@ -117,10 +180,33 @@ test('desktop editor shell plan reserves top menus and left ribbon/options', () 
   assert.equal(plan.topMenu.buttons.find((button) => button.id === 'generate')?.active, true);
   assert.equal(plan.dropdown.rootId, 'generate');
   assert.deepEqual(plan.leftRibbon, { x: 8, y: 48, w: 304, h: 56 });
-  assert.deepEqual(plan.leftOptions, { x: 8, y: 112, w: 304, h: 482 });
-  assert.deepEqual(plan.workSurface, { x: 320, y: 48, w: 952, h: 546 });
-  assert.deepEqual(plan.bottomBar, { x: 320, y: 602, w: 952, h: 118 });
+  assert.deepEqual(plan.leftOptions, { x: 8, y: 112, w: 304, h: 600 });
+  assert.deepEqual(plan.workSurface, { x: 320, y: 48, w: 952, h: 664 });
+  assert.equal(Object.hasOwn(plan, 'bottomBar'), false);
   assert.equal(plan.scroll.leftOptions.suppressClickAfterDrag, true);
+});
+
+test('landscape touch shell plan standardizes side rails, bottom rail, and gesture scroll', () => {
+  const plan = buildLandscapeTouchEditorShellPlan('pixel', {
+    viewportWidth: 844,
+    viewportHeight: 390,
+    bottomRailHeight: 72,
+    reserveRightRail: true
+  });
+
+  assert.equal(plan.mode, EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH);
+  assert.deepEqual(plan.placement, {
+    root: 'left-rail',
+    submenu: 'right-drawer',
+    settings: 'right-drawer'
+  });
+  assert.equal(plan.leftRail.x, 0);
+  assert.equal(plan.rightRail.x + plan.rightRail.w, 844);
+  assert.equal(plan.workSurface.x > plan.leftRail.x + plan.leftRail.w, true);
+  assert.equal(plan.bottomRail.y >= plan.workSurface.y + plan.workSurface.h, true);
+  assert.equal(plan.scroll.leftRail.pointerType, 'touch');
+  assert.equal(plan.scroll.rightRail.suppressClickAfterDrag, true);
+  assert.equal(plan.scroll.workSurface.pinchZoomReservedForWorkSurface, true);
 });
 
 test('gamepad slide-out plan keeps root open until a submenu is selected', () => {

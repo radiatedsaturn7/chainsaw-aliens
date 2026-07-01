@@ -45,6 +45,7 @@ const pixelStudioSource = readFileSync(new URL('../../src/ui/PixelStudio.js', im
 const actorEditorSource = readFileSync(new URL('../../src/ui/ActorEditor.js', import.meta.url), 'utf8');
 const sfxEditorSource = readFileSync(new URL('../../src/ui/SfxEditor.js', import.meta.url), 'utf8');
 const midiEditorSource = readFileSync(new URL('../../src/ui/MidiComposerCore.js', import.meta.url), 'utf8');
+const cutsceneEditorSource = readFileSync(new URL('../../src/ui/CutsceneEditor.js', import.meta.url), 'utf8');
 const projectBrowserSource = readFileSync(new URL('../../src/ui/ProjectBrowserModal.js', import.meta.url), 'utf8');
 const levelEditorSource = readFileSync(new URL('../../src/ui/LevelEditorCore.js', import.meta.url), 'utf8');
 const playerSource = readFileSync(new URL('../../src/entities/Player.js', import.meta.url), 'utf8');
@@ -646,11 +647,53 @@ test('Level gamepad mode replaces the left landscape rail with submenu slide-out
   assert.equal(levelEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
 });
 
+test('Level desktop right button pans instead of erasing or placing content', () => {
+  const pointerDownIndex = levelEditorSource.indexOf('  handlePointerDown(payload)');
+  const pointerDownBody = levelEditorSource.slice(pointerDownIndex, levelEditorSource.indexOf('  handlePointerMove(payload)', pointerDownIndex));
+  const rightPanIndex = pointerDownBody.indexOf("payload.button === 1 || payload.button === 2 || (payload.button === 0 && this.game.input.isDownCode('Space'))");
+  const dragModeIndex = pointerDownBody.indexOf('const dragMode = this.resolveDragMode(this.mode);');
+
+  assert.ok(rightPanIndex > 0);
+  assert.ok(dragModeIndex > rightPanIndex);
+  assert.equal(pointerDownBody.includes("this.tileTool = 'erase';"), false);
+});
+
 test('Level editor keeps settings and tile art reachable from desktop rail', () => {
   assert.equal(levelEditorSource.includes("this.panelTabs = ['file', 'toolbox', 'tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music', 'level-settings']"), true);
   assert.equal(levelEditorSource.includes("const topButtonDefById = new Map(topButtonDefs.map((entry) => [entry.id, entry]));"), true);
   assert.equal(levelEditorSource.includes("const def = topButtonDefById.get(entry.id);"), true);
   assert.equal(levelEditorSource.includes("{ id: 'pixels', title: 'Tile Art'"), true);
+});
+
+test('Level file menu uses one shared item source across surfaces', () => {
+  const fileItemsIndex = levelEditorSource.indexOf('  getLevelFileMenuItems(');
+  const fileItemsBody = levelEditorSource.slice(fileItemsIndex, levelEditorSource.indexOf('  getPanelConfig(tabId', fileItemsIndex));
+  const panelIndex = levelEditorSource.indexOf("    } else if (tabId === 'file') {");
+  const panelBody = levelEditorSource.slice(panelIndex, levelEditorSource.indexOf("    } else if (tabId === 'level-settings')", panelIndex));
+  const controllerIndex = levelEditorSource.indexOf("      file: {\n        id: 'file',");
+  const controllerBody = levelEditorSource.slice(controllerIndex, levelEditorSource.indexOf('      system:', controllerIndex));
+  const drawerIndex = levelEditorSource.indexOf("        if (activeTab === 'file') {");
+  const drawerBody = levelEditorSource.slice(drawerIndex, levelEditorSource.indexOf("        } else if (activeTab === 'level-settings')", drawerIndex));
+
+  assert.equal(fileItemsBody.includes('return buildSharedEditorFileMenu({'), true);
+  assert.equal(fileItemsBody.includes('includeFooter,'), true);
+  assert.equal(fileItemsBody.includes("id: 'playtest'"), true);
+  assert.equal(fileItemsBody.includes("id: 'exit-main'"), true);
+  assert.equal(panelBody.includes('items = this.getLevelFileMenuItems();'), true);
+  assert.equal(controllerBody.includes('items: this.getLevelFileMenuItems().map((item) => ('), true);
+  assert.equal(drawerBody.includes('this.getLevelFileMenuItems({ includePlaytest: !portraitLayout })'), true);
+});
+
+test('Level desktop dropdown uses the selected top root menu', () => {
+  const dropdownIndex = levelEditorSource.indexOf('if (shellLayout.dropdown) {');
+  const dropdownBlock = levelEditorSource.slice(dropdownIndex, levelEditorSource.indexOf('const infoLines = []', dropdownIndex));
+
+  assert.equal(dropdownBlock.includes('const dropdownRootId = shellLayout.dropdown.rootId;'), true);
+  assert.equal(dropdownBlock.includes('const { items: dropdownItems } = this.getPanelConfig(dropdownRootId);'), true);
+  assert.equal(dropdownBlock.includes('const visibleRows = Math.max(1, Math.floor(shellLayout.dropdown.bounds.h / Math.max(1, rowHeight)));'), true);
+  assert.equal(dropdownBlock.includes('.slice(0, visibleRows)'), true);
+  assert.equal(dropdownBlock.includes('getActiveState(item, dropdownRootId)'), true);
+  assert.equal(dropdownBlock.includes('this.controllerMenu.isFocusedItem(dropdownRootId, item.id, index)'), true);
 });
 
 test('Level editor Tile Art opens the supported tile picker only', () => {
@@ -768,28 +811,137 @@ test('audio editor shared roots expose desktop and landscape menu ids', () => {
 });
 
 test('SFX gamepad mode replaces the left landscape rail with submenu slide-out', () => {
+  const drawIndex = sfxEditorSource.indexOf('  draw(ctx, width, height)');
+  const drawBody = sfxEditorSource.slice(sfxEditorSource.indexOf('const gamepadSubmenuOnLeft', drawIndex), sfxEditorSource.indexOf('    if (bottom.h > 0)', drawIndex));
+
   assert.equal(sfxEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
   assert.equal(sfxEditorSource.includes('this.isGamepadMenuMode = gamepadConnected && isMobileLandscape;'), true);
-  assert.equal(sfxEditorSource.includes('shouldDrawGamepadSubmenuOnLeft()'), true);
+  assert.equal(sfxEditorSource.includes('shouldDrawGamepadSubmenuOnLeft(width = 0, height = 0)'), true);
   assert.equal(sfxEditorSource.includes('this.drawGamepadSlideOutPanel(ctx, left);'), true);
+  assert.equal(drawBody.includes('const gamepadSubmenuOnLeft = this.shouldDrawGamepadSubmenuOnLeft(width, height);'), true);
+  assert.equal(drawBody.includes('reserveRightRail: !gamepadSubmenuOnLeft'), true);
+  assert.equal(drawBody.includes('if (gamepadSubmenuOnLeft) {'), true);
+  assert.equal(drawBody.includes('if (right.w > 0) {'), true);
   assert.equal(sfxEditorSource.includes('drawGamepadRightOptionsPanel(ctx, bounds)'), true);
   assert.equal(sfxEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
+});
+
+test('SFX desktop keeps transport in the left column instead of a bottom rail', () => {
+  const desktopIndex = sfxEditorSource.indexOf('if (!isMobileViewport) {');
+  const desktopBlock = sfxEditorSource.slice(desktopIndex, sfxEditorSource.indexOf('const landscapeLayout = isMobileLandscape', desktopIndex));
+  const dropdownIndex = sfxEditorSource.indexOf('  drawDesktopDropdown(ctx, dropdown)');
+  const dropdownBody = sfxEditorSource.slice(dropdownIndex, sfxEditorSource.indexOf('  getActiveGamepadMenuId()', dropdownIndex));
+
+  assert.equal(desktopBlock.includes('bottomBarHeight'), false);
+  assert.equal(desktopBlock.includes('this.drawBottomRail(ctx, shell.bottomBar)'), false);
+  assert.equal(desktopBlock.includes('this.drawRightPanel(ctx, shell.leftOptions, { includeDesktopTransport: true });'), true);
+  assert.equal(sfxEditorSource.includes('drawDesktopTransportPanel(ctx, bounds)'), true);
+  assert.equal(dropdownBody.includes('const visibleRows = Math.max(1, Math.floor(dropdown.bounds.h / Math.max(1, dropdown.rowHeight)));'), true);
+  assert.equal(dropdownBody.includes('const renderedItems = visibleItems.slice(0, visibleRows);'), true);
+  assert.equal(dropdownBody.includes('renderedItems.forEach((item, index) => {'), true);
+});
+
+test('SFX file menu uses the shared editor file menu model', () => {
+  const fileItemsIndex = sfxEditorSource.indexOf('  getSfxFileMenuItems()');
+  const fileItemsBody = sfxEditorSource.slice(fileItemsIndex, sfxEditorSource.indexOf('  drawFilePanel(ctx, bounds, y)', fileItemsIndex));
+  const filePanelIndex = sfxEditorSource.indexOf('  drawFilePanel(ctx, bounds, y)');
+  const filePanelBody = sfxEditorSource.slice(filePanelIndex, sfxEditorSource.indexOf('  drawTimelineMenuPanel', filePanelIndex));
+  const controllerIndex = sfxEditorSource.indexOf("      file: {\n        id: 'file',");
+  const controllerBody = sfxEditorSource.slice(controllerIndex, sfxEditorSource.indexOf('      system:', controllerIndex));
+
+  assert.equal(sfxEditorSource.includes('buildSharedEditorFileMenu'), true);
+  assert.equal(fileItemsBody.includes('return buildSharedEditorFileMenu({'), true);
+  assert.equal(fileItemsBody.includes('undo: () => this.undo()'), true);
+  assert.equal(fileItemsBody.includes('redo: () => this.redo()'), true);
+  assert.equal(fileItemsBody.includes('onClose: () => {'), true);
+  assert.equal(fileItemsBody.includes("this.leftTab = 'timeline';"), true);
+  assert.equal(fileItemsBody.includes('onExit: () => this.exit()'), true);
+  assert.equal(controllerBody.includes('items: this.getSfxFileMenuItems().map((item) => ('), true);
+  assert.equal(filePanelBody.includes('const rows = this.getSfxFileMenuItems();'), true);
+  assert.equal(filePanelBody.includes('if (divider)'), true);
+  assert.equal(filePanelBody.includes('action || onClick'), true);
 });
 
 test('MIDI gamepad mode replaces the left landscape rail with submenu slide-out', () => {
   assert.equal(midiEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
   assert.equal(midiEditorSource.includes('isGamepadLandscapeMenuMode(width'), true);
   assert.equal(midiEditorSource.includes('shouldDrawGamepadSubmenuOnLeft(width, height)'), true);
+  assert.equal(midiEditorSource.includes("siblingOrder: ['file', 'grid', 'song', 'tracks', 'record', 'pedals', 'settings']"), true);
   assert.equal(midiEditorSource.includes('this.drawGamepadSlideOutPanel(ctx, { x: sidebarX, y: sidebarY, w: sidebarW, h: sidebarH });'), true);
   assert.equal(midiEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
+});
+
+test('MIDI landscape touch reserves right drawer for utility submenus', () => {
+  assert.equal(midiEditorSource.includes('showLandscapeRightDrawer'), true);
+  assert.equal(midiEditorSource.includes('reserveRightRail: showLandscapeRightDrawer'), true);
+  assert.equal(midiEditorSource.includes('this.drawMidiLandscapeRightDrawer(ctx, landscapeLayout.rightRail);'), true);
+  assert.equal(midiEditorSource.includes("return ['file', 'settings', 'virtual-instruments'].includes(tabId);"), true);
+});
+
+test('MIDI desktop keeps transport in the left column instead of a bottom rail', () => {
+  const desktopIndex = midiEditorSource.indexOf('  drawDesktopLayout(ctx, width, height, track, pattern)');
+  const desktopBlock = midiEditorSource.slice(desktopIndex, midiEditorSource.indexOf('  getDesktopControllerMenuId', desktopIndex));
+  const dropdownIndex = midiEditorSource.indexOf('  drawDesktopDropdown(ctx, dropdown)');
+  const dropdownBody = midiEditorSource.slice(dropdownIndex, midiEditorSource.indexOf('  drawDesktopLeftPanel(ctx, x, y, w, h)', dropdownIndex));
+
+  assert.equal(desktopBlock.includes('bottomBarHeight'), false);
+  assert.equal(desktopBlock.includes('this.drawTransportBar(ctx, shellLayout.bottomBar'), false);
+  assert.equal(desktopBlock.includes("this.drawDesktopLeftOptions(ctx, shellLayout.leftOptions, { includeDesktopTransport: this.activeTab !== 'instruments' });"), true);
+  assert.equal(midiEditorSource.includes('drawDesktopTransportPanel(ctx, bounds)'), true);
+  assert.equal(dropdownBody.includes('const visibleRows = Math.max(1, Math.floor(dropdown.bounds.h / Math.max(1, dropdown.rowHeight)));'), true);
+  assert.equal(dropdownBody.includes('const renderedItems = visibleItems.slice(0, visibleRows);'), true);
+  assert.equal(dropdownBody.includes('renderedItems.forEach((item, index) => {'), true);
+});
+
+test('MIDI file menu uses one shared drawer item source across surfaces', () => {
+  const fileItemsIndex = midiEditorSource.indexOf('  getFileMenuItems()');
+  const fileItemsBody = midiEditorSource.slice(fileItemsIndex, midiEditorSource.indexOf('  drawFilePanel(ctx, x, y, w, h)', fileItemsIndex));
+  const controllerIndex = midiEditorSource.indexOf("      file: {\n        id: 'file',");
+  const controllerBody = midiEditorSource.slice(controllerIndex, midiEditorSource.indexOf('      system:', controllerIndex));
+  const filePanelIndex = midiEditorSource.indexOf('  drawFilePanel(ctx, x, y, w, h)');
+  const filePanelBody = midiEditorSource.slice(filePanelIndex, midiEditorSource.indexOf('  drawGenreMenu(ctx, width, height)', filePanelIndex));
+
+  assert.equal(midiEditorSource.includes('buildUnifiedFileDrawerItems'), true);
+  assert.equal(fileItemsBody.includes('return buildUnifiedFileDrawerItems({'), true);
+  assert.equal(fileItemsBody.includes("{ id: 'nav-grid', label: 'Grid' }"), true);
+  assert.equal(fileItemsBody.includes("{ id: 'rescue-save', label: 'Rescue Save' }"), true);
+  assert.equal(fileItemsBody.includes("{ id: 'exit-main', label: 'Exit to Main Menu' }"), true);
+  assert.equal(controllerBody.includes('items: this.getFileMenuItems().map((item) => ('), true);
+  assert.equal(controllerBody.includes("action(item.id, item.label, () => this.handleFileMenu(item.id))"), true);
+  assert.equal(filePanelBody.includes('const allFileItems = this.getFileMenuItems();'), true);
 });
 
 test('Pixel gamepad mode replaces the left landscape rail with submenu slide-out', () => {
   assert.equal(pixelStudioSource.includes('buildGamepadSlideOutMenuPlan'), true);
   assert.equal(pixelStudioSource.includes('isGamepadLandscapeMenuMode(width'), true);
   assert.equal(pixelStudioSource.includes('shouldDrawGamepadSubmenuOnLeft(width, height)'), true);
+  assert.equal(pixelStudioSource.includes("siblingOrder: ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames', 'bones']"), true);
   assert.equal(pixelStudioSource.includes('this.drawGamepadSlideOutPanel(ctx, rail);'), true);
   assert.equal(pixelStudioSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
+});
+
+test('Pixel desktop keeps layer and frame actions in the side rail, not the status bar', () => {
+  const desktopIndex = pixelStudioSource.indexOf("      ? buildDesktopEditorShellPlan('pixel', {");
+  const desktopBlock = pixelStudioSource.slice(desktopIndex, pixelStudioSource.indexOf('      })', desktopIndex));
+  const rightRailIndex = pixelStudioSource.indexOf('  drawRightRail(ctx, x, y, w, h)');
+  const rightRailBody = pixelStudioSource.slice(rightRailIndex, pixelStudioSource.indexOf('  drawFramesPanel(ctx, x, y, w, h, options = {})', rightRailIndex));
+  const statusIndex = pixelStudioSource.indexOf('  drawStatusBar(ctx, x, y, w, h, options = {})');
+  const statusBody = pixelStudioSource.slice(statusIndex, pixelStudioSource.indexOf('  drawSelectionContextMenu(ctx, width, height)', statusIndex));
+
+  assert.equal(desktopBlock.includes('bottomBarHeight'), false);
+  assert.equal(rightRailBody.includes('{ isMobile: false, controls: false }'), false);
+  assert.equal(rightRailBody.includes('this.drawFramesPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false });'), true);
+  assert.equal(rightRailBody.includes('this.drawLayersPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false });'), true);
+  assert.equal(statusBody.includes('getBottomRailActions()'), false);
+  assert.equal(statusBody.includes("['layers', 'animation'].includes(this.leftPanelTab)"), false);
+});
+
+test('Pixel desktop dropdown caps rendered rows to drawer bounds', () => {
+  const dropdownIndex = pixelStudioSource.indexOf('  drawDesktopShellDropdown(ctx, shell)');
+  const dropdownBody = pixelStudioSource.slice(dropdownIndex, pixelStudioSource.indexOf('  getActiveGamepadMenuId()', dropdownIndex));
+
+  assert.equal(dropdownBody.includes('const visibleRows = Math.max(1, Math.floor(shell.dropdown.bounds.h / Math.max(1, rowHeight)));'), true);
+  assert.equal(dropdownBody.includes('const items = this.controllerMenu.getItems(menu).slice(0, visibleRows);'), true);
 });
 
 test('Actor portrait menu matches compact shared rail contract', () => {
@@ -801,6 +953,133 @@ test('Actor portrait menu matches compact shared rail contract', () => {
   assertSharedPortraitRailActionCount(model.bottomRailActions.map((id) => ({ id })), { editor: 'actor' });
   assert.equal(model.rootTabs.some((tab) => tab.id === 'undo' || tab.id === 'redo'), false);
   assert.equal(model.rootTabs.some((tab) => tab.id === 'linked-parts'), false);
+});
+
+test('Actor desktop top menu renders an active root dropdown drawer', () => {
+  assert.equal(actorEditorSource.includes('renderDesktopDropdown(shellLayout)'), true);
+  assert.equal(actorEditorSource.includes('const dropdown = this.renderDesktopDropdown(shellLayout);'), true);
+  assert.equal(actorEditorSource.includes("top: `${dropdownPlan.bounds.y}px`"), true);
+  assert.equal(actorEditorSource.includes('getActorDesktopDropdownActions(rootId)'), true);
+});
+
+test('Actor file menu uses the shared editor file menu model', () => {
+  const fileMenuIndex = actorEditorSource.indexOf('  getActorFileMenuItems()');
+  const fileMenuBody = actorEditorSource.slice(fileMenuIndex, actorEditorSource.indexOf('  renderDesktopOptionsPanel()', fileMenuIndex));
+  const controllerIndex = actorEditorSource.indexOf("      file: {\n        id: 'file',");
+  const controllerBody = actorEditorSource.slice(controllerIndex, actorEditorSource.indexOf('      system:', controllerIndex));
+
+  assert.equal(actorEditorSource.includes('buildSharedEditorFileMenu'), true);
+  assert.equal(fileMenuBody.includes('return buildSharedEditorFileMenu({'), true);
+  assert.equal(fileMenuBody.includes('export: false'), true);
+  assert.equal(fileMenuBody.includes('onClose: () => this.closeFileMenu()'), true);
+  assert.equal(fileMenuBody.includes('onExit: () => this.exitToMenu()'), true);
+  assert.equal(actorEditorSource.includes('file: this.getActorFileMenuItems(),'), true);
+  assert.equal(actorEditorSource.includes('const fileItems = this.getActorFileMenuItems();'), true);
+  assert.equal(controllerBody.includes('items: this.getActorFileMenuItems().map((item) => ('), true);
+});
+
+test('Actor gamepad mode replaces the left landscape rail with submenu slide-out', () => {
+  assert.equal(actorEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
+  assert.equal(actorEditorSource.includes('isGamepadLandscapeMenuMode(viewportW, viewportH)'), true);
+  assert.equal(actorEditorSource.includes('shouldDrawGamepadSlideOut'), true);
+  assert.equal(actorEditorSource.includes('left.appendChild(this.renderGamepadSlideOutRail(gamepadSlideOutMenuId));'), true);
+  assert.equal(actorEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
+});
+
+test('Actor gamepad root menus match the desktop/spec section set', () => {
+  const controllerIndex = actorEditorSource.indexOf('  buildControllerMenus()');
+  const controllerBody = actorEditorSource.slice(controllerIndex, actorEditorSource.indexOf('  renderSidebarMenu()', controllerIndex));
+
+  assert.equal(actorEditorSource.includes("siblingOrder: ['file', 'settings', 'states', 'linked-parts', 'visuals', 'collision', 'behavior', 'preview']"), true);
+  assert.equal(controllerBody.includes("rootItem('settings', 'Settings', 'settings', 'actor')"), true);
+  assert.equal(controllerBody.includes("rootItem('visuals', 'Visuals', 'visuals', 'states')"), true);
+  assert.equal(controllerBody.includes("rootItem('collision', 'Collision', 'collision', 'states')"), true);
+  assert.equal(controllerBody.includes("rootItem('behavior', 'Behavior', 'behavior', 'states')"), true);
+  assert.equal(controllerBody.includes("rootItem('preview', 'Preview', 'preview', 'tools')"), true);
+  assert.equal(controllerBody.includes("preview: desktopMenu('preview', 'Preview')"), true);
+  assert.equal(controllerBody.includes("toolsMenuId: 'preview'"), true);
+});
+
+test('Actor landscape touch uses shared left root rail and right submenu rail layout', () => {
+  const renderIndex = actorEditorSource.indexOf('  render()');
+  const renderBody = actorEditorSource.slice(renderIndex, actorEditorSource.indexOf('  getActiveActorDesktopRoot()', renderIndex));
+
+  assert.equal(actorEditorSource.includes('buildLandscapeTouchEditorShellPlan'), true);
+  assert.equal(renderBody.includes('const landscapeLayout = isMobileLandscape && !shouldDrawGamepadSlideOut'), true);
+  assert.equal(renderBody.includes('leftRailWidth: getSharedMobileRailWidth(viewportW, viewportH)'), true);
+  assert.equal(renderBody.includes('rightRailWidth: getSharedMobileRailWidth(viewportW, viewportH)'), true);
+  assert.equal(renderBody.includes('body.append(left, center, rightRail);'), true);
+  assert.equal(renderBody.includes('left.appendChild(this.renderSidebarMenu());'), true);
+  assert.equal(renderBody.includes('if (landscapeLayout) left.style.height = `${landscapeLayout.leftRail.h}px`;'), true);
+  assert.equal(renderBody.includes('const rightRailWidth = landscapeLayout ? landscapeLayout.rightRail.w : railWidth;'), true);
+  assert.equal(renderBody.includes('if (landscapeLayout) rightRail.style.height = `${landscapeLayout.rightRail.h}px`;'), true);
+});
+
+test('Cutscene gamepad mode replaces the left landscape rail with submenu slide-out', () => {
+  const drawIndex = cutsceneEditorSource.indexOf('  draw(ctx, width, height)');
+  const drawBody = cutsceneEditorSource.slice(drawIndex, cutsceneEditorSource.indexOf('  computeLayout(width, height)', drawIndex));
+  const landscapeIndex = cutsceneEditorSource.indexOf("const landscape = buildLandscapeTouchEditorShellPlan('cutscene'");
+  const landscapeBody = cutsceneEditorSource.slice(landscapeIndex, cutsceneEditorSource.indexOf('    const work = landscape.workSurface;', landscapeIndex));
+
+  assert.equal(cutsceneEditorSource.includes('buildGamepadSlideOutMenuPlan'), true);
+  assert.equal(cutsceneEditorSource.includes('ControllerMenuStack'), true);
+  assert.equal(cutsceneEditorSource.includes('isGamepadLandscapeMenuMode(width'), true);
+  assert.equal(cutsceneEditorSource.includes('shouldDrawGamepadSubmenuOnLeft(safeW, safeH)'), true);
+  assert.equal(drawBody.includes('if (layout.isLandscapeTouch && !drawGamepadLeft) this.drawLandscapeRootRail(ctx, layout.leftMenuBounds);'), true);
+  assert.equal(drawBody.includes('this.drawGamepadSlideOutPanel(ctx, layout.leftMenuBounds);'), true);
+  assert.equal(landscapeBody.includes('reserveRightRail: !this.shouldDrawGamepadSubmenuOnLeft(width, height)'), true);
+  assert.equal(cutsceneEditorSource.includes("return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));"), true);
+});
+
+test('Cutscene landscape touch uses left root rail and right submenu drawer', () => {
+  assert.equal(cutsceneEditorSource.includes("buildLandscapeTouchEditorShellPlan('cutscene'"), true);
+  assert.equal(cutsceneEditorSource.includes('isLandscapeTouch: true'), true);
+  assert.equal(cutsceneEditorSource.includes('leftMenuBounds: landscape.leftRail'), true);
+  assert.equal(cutsceneEditorSource.includes('menuBounds: landscape.rightRail'), true);
+  assert.equal(cutsceneEditorSource.includes('this.drawLandscapeRootRail(ctx, layout.leftMenuBounds);'), true);
+  assert.equal(cutsceneEditorSource.includes('this.drawLandscapeSubmenuPanel(ctx, layout.menuBounds);'), true);
+  assert.equal(cutsceneEditorSource.includes("target: 'landscape-root'"), true);
+});
+
+test('Cutscene desktop keeps transport in the left column instead of a bottom rail', () => {
+  const drawIndex = cutsceneEditorSource.indexOf('  draw(ctx, width, height)');
+  const drawBlock = cutsceneEditorSource.slice(drawIndex, cutsceneEditorSource.indexOf('  computeLayout(width, height)', drawIndex));
+  const desktopIndex = cutsceneEditorSource.indexOf('if (isDesktop) {');
+  const desktopBlock = cutsceneEditorSource.slice(desktopIndex, cutsceneEditorSource.indexOf('const landscape = getSharedMobileLandscapeEditorLayout', desktopIndex));
+
+  assert.equal(drawBlock.includes('if (!layout.isDesktop) this.drawActionRail(ctx, railBounds, layout.isPortrait);'), true);
+  assert.equal(desktopBlock.includes('bottomBarHeight'), false);
+  assert.equal(desktopBlock.includes('railBounds: null'), true);
+  assert.equal(cutsceneEditorSource.includes('drawDesktopTransportPanel(ctx, bounds)'), true);
+});
+
+test('Cutscene desktop dropdown uses the selected top root menu', () => {
+  const dropdownIndex = cutsceneEditorSource.indexOf('  drawDesktopDropdown(ctx, shell)');
+  const dropdownBody = cutsceneEditorSource.slice(dropdownIndex, cutsceneEditorSource.indexOf('  getTransportActions()', dropdownIndex));
+
+  assert.equal(dropdownBody.includes('this.getMenuItems(shell.dropdown.rootId)'), true);
+  assert.equal(dropdownBody.includes('this.getMenuItems().filter'), false);
+});
+
+test('Cutscene desktop dropdown caps rendered rows to drawer bounds', () => {
+  const dropdownIndex = cutsceneEditorSource.indexOf('  drawDesktopDropdown(ctx, shell)');
+  const dropdownBody = cutsceneEditorSource.slice(dropdownIndex, cutsceneEditorSource.indexOf('  getTransportActions()', dropdownIndex));
+
+  assert.equal(dropdownBody.includes('const visibleRows = Math.max(1, Math.floor(shell.dropdown.bounds.h / Math.max(1, rowH)));'), true);
+  assert.equal(dropdownBody.includes('.slice(0, visibleRows)'), true);
+});
+
+test('Cutscene file menu uses the shared editor file menu model', () => {
+  const fileMenuIndex = cutsceneEditorSource.indexOf("if (tabId === 'file') {");
+  const fileMenuBody = cutsceneEditorSource.slice(fileMenuIndex, cutsceneEditorSource.indexOf("    if (tabId === 'add')", fileMenuIndex));
+
+  assert.equal(cutsceneEditorSource.includes('buildSharedEditorFileMenu'), true);
+  assert.equal(fileMenuBody.includes('return buildSharedEditorFileMenu({'), true);
+  assert.equal(fileMenuBody.includes("export: 'Export MP4'"), true);
+  assert.equal(fileMenuBody.includes("item.id === 'export'"), true);
+  assert.equal(cutsceneEditorSource.includes("if (id === 'export' || id === 'export-mp4') await this.exportMovieMp4();"), true);
+  assert.equal(cutsceneEditorSource.includes("if (id === 'back' || id === 'exit-main') this.game.exitCutsceneEditor?.();"), true);
+  assert.equal(cutsceneEditorSource.includes("this.getMenuItems().filter((item) => !item.divider && !item.separator)"), true);
 });
 
 test('Actor editor bottom play action launches the full actor scene playtest', () => {

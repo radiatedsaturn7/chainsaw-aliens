@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { deleteProjectFile, listProjectFiles, loadProjectFile, saveProjectFile } from './projectFiles.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPlayStopButton, drawSharedPortraitActionRail, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedPortraitTabStrip, drawSharedThumbstick, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobileLandscapeEditorLayout, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedFileDrawerLayout, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPlayStopButton, drawSharedPortraitActionRail, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedPortraitTabStrip, drawSharedThumbstick, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
 import { clamp, randInt, pickOne } from '../editor/input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from '../editor/playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -16,7 +16,7 @@ import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHel
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
 import { getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
-import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeTouchEditorShellPlan, isGamepadLandscapeEditorMode, shouldUseGamepadSlideOutMenu } from './shared/editorMenuLayout.js';
 
 const ROOM_SIZE_PRESETS = [
   [1, 1], [2, 1], [3, 1], [4, 1],
@@ -941,7 +941,9 @@ export default class Editor {
         this.zoomSlider.active = false;
         this.zoomSlider.id = null;
       } else {
-        const landscapeLayout = getSharedMobileLandscapeEditorLayout(width, height, {
+        const landscapeLayout = buildLandscapeTouchEditorShellPlan('level', {
+          viewportWidth: width,
+          viewportHeight: height,
           reserveRightRail: this.drawer.open
         });
         const { center, radius: joystickRadius, knobRadius } = landscapeLayout.thumbstick;
@@ -966,7 +968,9 @@ export default class Editor {
           ? { ...portraitLayout.menuSheet }
           : { ...portraitLayout.middleRail };
       } else {
-        const landscapeLayout = getSharedMobileLandscapeEditorLayout(width, height, {
+        const landscapeLayout = buildLandscapeTouchEditorShellPlan('level', {
+          viewportWidth: width,
+          viewportHeight: height,
           reserveRightRail: this.drawer.open
         });
         const drawerWidth = this.drawer.open ? landscapeLayout.rightRail.w : 0;
@@ -1454,6 +1458,59 @@ export default class Editor {
     this.game.exitEditorToMainMenu('level');
   }
 
+  getLevelFileMenuItems({ includePlaytest = true, includeFooter = false } = {}) {
+    return buildSharedEditorFileMenu({
+      labels: {
+        new: 'New',
+        open: 'Open',
+        export: 'Export',
+        import: 'Import'
+      },
+      tooltips: {
+        new: 'Create a new level',
+        save: 'Save level to browser storage',
+        'save-as': 'Save level with a new name',
+        open: 'Open level from browser storage',
+        export: 'Export world JSON',
+        import: 'Import world JSON',
+        undo: 'Undo last change (Ctrl+Z)',
+        redo: 'Redo last change (Ctrl+Y)'
+      },
+      actions: {
+        new: () => this.newLevelDocument(),
+        save: () => this.saveLevelToStorage(),
+        'save-as': () => this.saveLevelToStorage({ forceSaveAs: true }),
+        open: () => this.loadLevelFromStorage(),
+        export: () => this.saveToFile(),
+        import: () => this.openFileDialog(),
+        undo: () => this.undo(),
+        redo: () => this.redo()
+      },
+      extras: [
+        ...(includePlaytest ? [{
+          id: 'playtest',
+          label: 'Playtest',
+          tooltip: 'Start playtest from spawn',
+          onClick: () => this.game.exitEditor({ playtest: true })
+        }] : []),
+        ...(!includeFooter ? [{
+          id: 'exit-main',
+          label: 'Exit to Main Menu',
+          tooltip: 'Exit editor to title',
+          onClick: () => this.exitToMainMenu()
+        }] : [])
+      ],
+      includeFooter,
+      footer: {
+        onClose: () => this.closeDrawer(),
+        onExit: () => this.exitToMainMenu()
+      }
+    }).map((entry) => ({
+      ...entry,
+      onClick: entry.onClick || entry.action || (() => {})
+    }));
+  }
+
   getPanelConfig(tabId, { includeExtras = false } = {}) {
     const tileToolButtons = [
       { id: 'paint', label: 'Paint', tooltip: 'Paint tiles. (Q)' },
@@ -1473,52 +1530,7 @@ export default class Editor {
         onClick: () => this.game.exitEditor({ playtest: true })
       }];
     } else if (tabId === 'file') {
-      items = buildSharedEditorFileMenu({
-        labels: {
-          new: 'New',
-          open: 'Open',
-          export: 'Export',
-          import: 'Import'
-        },
-        tooltips: {
-          new: 'Create a new level',
-          save: 'Save level to browser storage',
-          'save-as': 'Save level with a new name',
-          open: 'Open level from browser storage',
-          export: 'Export world JSON',
-          import: 'Import world JSON',
-          undo: 'Undo last change (Ctrl+Z)',
-          redo: 'Redo last change (Ctrl+Y)'
-        },
-        actions: {
-          new: () => this.newLevelDocument(),
-          save: () => this.saveLevelToStorage(),
-          'save-as': () => this.saveLevelToStorage({ forceSaveAs: true }),
-          open: () => this.loadLevelFromStorage(),
-          export: () => this.saveToFile(),
-          import: () => this.openFileDialog(),
-          undo: () => this.undo(),
-          redo: () => this.redo()
-        },
-        extras: [
-          {
-            id: 'playtest',
-            label: 'Playtest',
-            tooltip: 'Start playtest from spawn',
-            onClick: () => this.game.exitEditor({ playtest: true })
-          },
-          {
-            id: 'exit-main',
-            label: 'Exit to Main Menu',
-            tooltip: 'Exit editor to title',
-            onClick: () => this.exitToMainMenu()
-          }
-        ],
-        includeFooter: false
-      }).map((entry) => ({
-        ...entry,
-        onClick: entry.onClick || entry.action || (() => {})
-      }));
+      items = this.getLevelFileMenuItems();
       columns = 1;
     } else if (tabId === 'level-settings') {
       items = [
@@ -2268,15 +2280,11 @@ export default class Editor {
       file: {
         id: 'file',
         title: 'File',
-        items: [
-          action('new', 'New', () => this.newLevelDocument()),
-          action('save', 'Save', () => this.saveLevelToStorage()),
-          action('save-as', 'Save As', () => this.saveLevelToStorage({ forceSaveAs: true })),
-          action('open', 'Open', () => this.loadLevelFromStorage()),
-          action('import', 'Import', () => this.openFileDialog()),
-          action('export', 'Export', () => this.saveToFile()),
-          action('exit-main', 'Exit to Main Menu', () => this.exitToMainMenu())
-        ]
+        items: this.getLevelFileMenuItems().map((item) => (
+          item.divider || item.separator
+            ? { ...item }
+            : action(item.id, item.label, item.onClick || item.action)
+        ))
       },
       system: buildControllerSystemMenu({
         fileMenuId: 'file',
@@ -5902,19 +5910,8 @@ export default class Editor {
     this.dragButton = payload.button;
     const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
 
-    if (payload.button === 1 || (payload.button === 0 && this.game.input.isDownCode('Space'))) {
+    if (payload.button === 1 || payload.button === 2 || (payload.button === 0 && this.game.input.isDownCode('Space'))) {
       this.beginStroke('pan', tileX, tileY);
-      return;
-    }
-
-    if (payload.button === 2) {
-      if (this.mode === 'enemy') {
-        this.beginStroke('enemy', tileX, tileY);
-      } else {
-        this.mode = 'tile';
-        this.tileTool = 'erase';
-        this.beginStroke('erase', tileX, tileY);
-      }
       return;
     }
 
@@ -7595,11 +7592,21 @@ export default class Editor {
   }
 
   isGamepadLandscapeMenuMode(width = this.getViewportSize().width, height = this.getViewportSize().height) {
-    return Boolean(this.game?.input?.isGamepadConnected?.() && Math.min(width, height) <= 900 && width > height);
+    return isGamepadLandscapeEditorMode({
+      viewportWidth: width,
+      viewportHeight: height,
+      gamepadConnected: this.game?.input?.isGamepadConnected?.()
+    });
   }
 
   shouldDrawGamepadSubmenuOnLeft(width, height) {
-    return Boolean(this.isGamepadLandscapeMenuMode(width, height) && this.controllerMenu.active && this.getActiveGamepadMenuId());
+    return shouldUseGamepadSlideOutMenu({
+      viewportWidth: width,
+      viewportHeight: height,
+      gamepadConnected: this.game?.input?.isGamepadConnected?.(),
+      menuActive: this.controllerMenu.active,
+      activeMenuId: this.getActiveGamepadMenuId()
+    });
   }
 
   shouldDrawControllerOverlay(width, height) {
@@ -8445,7 +8452,9 @@ export default class Editor {
 
     if (this.isMobileLayout()) {
       const portraitLayout = mobilePortraitLayout;
-      const landscapeLayout = portraitLayout ? null : getSharedMobileLandscapeEditorLayout(width, height, {
+      const landscapeLayout = portraitLayout ? null : buildLandscapeTouchEditorShellPlan('level', {
+        viewportWidth: width,
+        viewportHeight: height,
         reserveRightRail: this.drawer.open
       });
       const railWidth = portraitLayout ? portraitLayout.leftRail.w : landscapeLayout.leftRail.w;
@@ -8642,49 +8651,8 @@ export default class Editor {
         const spawnTile = DEFAULT_TILE_TYPES.find((tile) => tile.special === 'spawn');
 
         if (activeTab === 'file') {
-          items = buildSharedEditorFileMenu({
-            labels: {
-              new: 'New',
-              open: 'Open',
-              export: 'Export',
-              import: 'Import'
-            },
-            tooltips: {
-              new: 'Create a new level',
-              save: 'Save level to browser storage',
-              'save-as': 'Save level with a new name',
-              open: 'Open level from browser storage',
-              export: 'Export world JSON',
-              import: 'Import world JSON',
-              undo: 'Undo last change (Ctrl+Z)',
-              redo: 'Redo last change (Ctrl+Y)'
-            },
-            actions: {
-              new: () => this.newLevelDocument(),
-              save: () => this.saveLevelToStorage(),
-              'save-as': () => this.saveLevelToStorage({ forceSaveAs: true }),
-              open: () => this.loadLevelFromStorage(),
-              export: () => this.saveToFile(),
-              import: () => this.openFileDialog(),
-              undo: () => this.undo(),
-              redo: () => this.redo()
-            },
-            extras: [
-              ...(portraitLayout ? [] : [{
-                id: 'playtest',
-                label: 'Playtest',
-                tooltip: 'Start playtest from spawn',
-                onClick: () => this.game.exitEditor({ playtest: true })
-              }]),
-              {
-                id: 'exit-main',
-                label: 'Exit to Main Menu',
-                tooltip: 'Exit editor to title',
-                onClick: () => this.exitToMainMenu()
-              }
-            ],
-            includeFooter: false
-          }).map((entry) => ({ ...entry, active: false }));
+          items = this.getLevelFileMenuItems({ includePlaytest: !portraitLayout })
+            .map((entry) => ({ ...entry, active: false }));
           columns = 1;
         } else if (activeTab === 'level-settings') {
           items = [
@@ -9394,8 +9362,8 @@ export default class Editor {
         padding: contentPadding
       };
 
-      const getActiveState = (item) => {
-        if (activeTab === 'file') {
+      const getActiveState = (item, tabId = activeTab) => {
+        if (tabId === 'file') {
           if (item.id.startsWith('mode-')) {
             return this.mode === item.id.replace('mode-', '');
           }
@@ -9404,25 +9372,25 @@ export default class Editor {
           }
           return false;
         }
-        if (activeTab === 'tiles' || activeTab === 'powerups') return this.tileType.id === item.id;
-        if (activeTab === 'npcs') return this.enemyType.id === item.enemy?.id;
-        if (activeTab === 'prefabs') return this.prefabType.id === item.id;
-        if (activeTab === 'toolbox') {
+        if (tabId === 'tiles' || tabId === 'powerups') return this.tileType.id === item.id;
+        if (tabId === 'npcs') return this.enemyType.id === item.enemy?.id;
+        if (tabId === 'prefabs') return this.prefabType.id === item.id;
+        if (tabId === 'toolbox') {
           if (item.id?.startsWith('tile-')) {
             return this.mode === 'tile' && this.tileTool === item.id.replace('tile-', '');
           }
           return this.shapeTool.id === item.id;
         }
-        if (activeTab === 'triggers') return this.selectedTriggerId === item.id;
-        if (activeTab === 'pixels') return false;
-        if (activeTab === 'music') {
+        if (tabId === 'triggers') return this.selectedTriggerId === item.id;
+        if (tabId === 'pixels') return false;
+        if (tabId === 'music') {
           if (item.id === 'music-paint') return this.mode === 'music' && this.musicTool === 'paint';
           if (item.id === 'music-erase') return this.mode === 'music' && this.musicTool === 'erase';
           if (item.id === 'music-trigger') return this.mode === 'music' && this.musicTool === 'trigger';
           if (item.track) return this.musicTrack?.id === item.track.id;
           return false;
         }
-        if (activeTab === 'midi') {
+        if (tabId === 'midi') {
           if (typeof item.trackIndex === 'number') {
             return this.midiTrackIndex === item.trackIndex;
           }
@@ -9525,9 +9493,12 @@ export default class Editor {
         });
       }
 
-      if (shellLayout.dropdown && items.length) {
-        const dropdownRows = items.filter((item) => !item.separator && !item.divider).slice(0, 10);
+      if (shellLayout.dropdown) {
+        const dropdownRootId = shellLayout.dropdown.rootId;
+        const { items: dropdownItems } = this.getPanelConfig(dropdownRootId);
         const rowHeight = Math.max(28, Math.min(34, shellLayout.dropdown.rowHeight));
+        const visibleRows = Math.max(1, Math.floor(shellLayout.dropdown.bounds.h / Math.max(1, rowHeight)));
+        const dropdownRows = dropdownItems.filter((item) => !item.separator && !item.divider).slice(0, visibleRows);
         const dropdownBounds = {
           ...shellLayout.dropdown.bounds,
           h: Math.max(rowHeight, dropdownRows.length * rowHeight)
@@ -9548,11 +9519,11 @@ export default class Editor {
             dropdownBounds.w - 16,
             rowHeight - 4,
             item.label,
-            getActiveState(item),
+            getActiveState(item, dropdownRootId),
             item.onClick,
             item.tooltip,
             preview,
-            this.controllerMenu.isFocusedItem(activeTab, item.id, index)
+            this.controllerMenu.isFocusedItem(dropdownRootId, item.id, index)
           );
         });
       }

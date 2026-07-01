@@ -2,10 +2,10 @@ import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { ensureProjectFileIndex, listProjectFiles, loadProjectFile, saveProjectFile, saveProjectFileAndConfirm } from './projectFiles.js';
 import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, DEFAULT_TAXONOMIES, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
 import { getBuiltInActorIdFromName, isBuiltInActorName, mergeBuiltInActorOverride } from '../content/builtinActorOverrides.js';
-import { getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
-import { invalidateActorDefinitionCache } from '../entities/ScriptedActor.js';
+import { buildSharedEditorFileMenu, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
+import { getActorArtDurationSignature, invalidateActorDefinitionCache, resolveActorArtFrameDurationMs } from '../entities/ScriptedActor.js';
 import { invalidateBuiltInActorVisualCache } from '../entities/BuiltInActorVisuals.js';
-import { buildDesktopEditorShellPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeTouchEditorShellPlan, isGamepadLandscapeEditorMode } from './shared/editorMenuLayout.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, renderDomControllerMenu } from './shared/input/controllerMenuStack.js';
 
@@ -149,7 +149,7 @@ export default class ActorEditor {
     this.redoStack = [];
     this.inputActionNormalizer = new EditorInputActionNormalizer();
     this.controllerMenu = new ControllerMenuStack({
-      siblingOrder: ['file', 'states', 'linked-parts', 'tools', 'settings']
+      siblingOrder: ['file', 'settings', 'states', 'linked-parts', 'visuals', 'collision', 'behavior', 'preview']
     });
     this.gamepadFocusIndex = 0;
     this.gamepadFocusRepeat = 0;
@@ -208,9 +208,10 @@ export default class ActorEditor {
       if (frames.length) {
         const width = Math.max(1, Math.round(Number(artDoc?.data?.width || artDoc?.data?.size || 16)));
         const height = Math.max(1, Math.round(Number(artDoc?.data?.height || artDoc?.data?.size || width || 16)));
+        const durationSignature = getActorArtDurationSignature(artDoc, animation, frames.length);
         return frames.map((frame, index) => ({
-          imageDataUrl: this.buildArtPreviewFrameUrl(frame, width, height, `${artRef}:${savedAt}:${index}:${width}x${height}`),
-          durationMs: Math.round(1000 / Math.max(1, Number(animation?.fps || artDoc?.data?.fps || 8)))
+          imageDataUrl: this.buildArtPreviewFrameUrl(frame, width, height, `${artRef}:${savedAt}:${index}:${width}x${height}:${durationSignature}`),
+          durationMs: resolveActorArtFrameDurationMs(artDoc, animation, index)
         })).filter((frame) => frame.imageDataUrl);
       }
     }
@@ -410,7 +411,10 @@ export default class ActorEditor {
   }
 
   clearPreviewTimers() {
-    this.previewTimers.forEach((timer) => clearInterval(timer));
+    this.previewTimers.forEach((timer) => {
+      clearInterval(timer);
+      clearTimeout(timer);
+    });
     this.previewTimers = [];
   }
 
@@ -1187,15 +1191,16 @@ export default class ActorEditor {
     const selectors = [
       '.actor-editor-collision-scroll',
       '.actor-editor-state-graph-card',
-      '.actor-editor-state-list',
+      '.actor-editor-portrait-top .actor-editor-state-list',
       '.actor-editor-portrait-top .actor-editor-file-subrail-list',
       '.actor-editor-portrait-top .actor-editor-file-subrail',
       '.actor-editor-portrait-top .actor-editor-right-rail .actor-editor-menu-rail',
+      '.actor-editor-state-list',
       '.actor-editor-center'
     ];
     for (const selector of selectors) {
       const node = root.querySelector(selector);
-      if (!node || node.offsetParent === null) continue;
+      if (!node || (node.offsetParent === null && node.getClientRects?.().length === 0)) continue;
       const canScrollY = node.scrollHeight > node.clientHeight + 1;
       const canScrollX = node.scrollWidth > node.clientWidth + 1;
       if (canScrollY || canScrollX || selector === '.actor-editor-center') return node;
@@ -1241,6 +1246,9 @@ export default class ActorEditor {
     const isMobilePortrait = isMobileViewport && viewportH > viewportW;
     const isGamepadConnected = Boolean(this.game?.input?.isGamepadConnected?.());
     const isDesktopLayout = !isMobileViewport && !isGamepadConnected;
+    const gamepadSlideOutMenuId = this.getActiveGamepadMenuId();
+    const isGamepadLandscapeMenuMode = this.isGamepadLandscapeMenuMode(viewportW, viewportH);
+    const shouldDrawGamepadSlideOut = Boolean(isGamepadLandscapeMenuMode && this.controllerMenu.active && gamepadSlideOutMenuId);
     this.hideMobileSectionHeaders = isMobileLandscape;
     const desktopShell = isDesktopLayout
       ? buildDesktopEditorShellPlan('actor', {
@@ -1259,8 +1267,19 @@ export default class ActorEditor {
         minMainHeight: 240
       })
       : null;
+    const landscapeLayout = isMobileLandscape && !shouldDrawGamepadSlideOut
+      ? buildLandscapeTouchEditorShellPlan('actor', {
+        viewportWidth: viewportW,
+        viewportHeight: viewportH,
+        leftRailWidth: getSharedMobileRailWidth(viewportW, viewportH),
+        rightRailWidth: getSharedMobileRailWidth(viewportW, viewportH),
+        reserveRightRail: true
+      })
+      : null;
     const railWidth = portraitLayout
       ? portraitLayout.leftRail.w
+      : landscapeLayout
+      ? landscapeLayout.leftRail.w
       : isMobileViewport
       ? getSharedMobileRailWidth(viewportW, viewportH)
       : SHARED_EDITOR_LEFT_MENU.width();
@@ -1300,6 +1319,8 @@ export default class ActorEditor {
     } else if (isDesktopLayout) {
       shell.insertBefore(this.renderDesktopTopMenu(desktopShell), body);
       body.append(left, center);
+    } else if (shouldDrawGamepadSlideOut) {
+      body.append(left, center);
     } else {
       body.append(left, center, rightRail);
     }
@@ -1324,10 +1345,14 @@ export default class ActorEditor {
       shell.style.gap = `${desktopShell?.gap || 8}px`;
       body.style.padding = `0 ${desktopShell?.gap || 8}px ${desktopShell?.gap || 8}px`;
       body.style.gap = `${desktopShell?.gap || 8}px`;
+    } else if (landscapeLayout) {
+      body.style.gap = `${landscapeLayout.gap}px`;
     }
     const leftWidth = isDesktopLayout ? desktopShell.leftColumn.w : railWidth;
+    const rightRailWidth = landscapeLayout ? landscapeLayout.rightRail.w : railWidth;
     left.style.width = `${leftWidth}px`;
     left.style.flex = `0 0 ${leftWidth}px`;
+    if (landscapeLayout) left.style.height = `${landscapeLayout.leftRail.h}px`;
     left.style.display = 'flex';
     left.style.flexDirection = 'column';
     left.style.gap = `${UI_SUITE.spacing.gap}px`;
@@ -1337,16 +1362,19 @@ export default class ActorEditor {
     center.style.minWidth = '0';
     center.style.overflow = 'auto';
     center.style.overflowX = 'hidden';
-    rightRail.style.width = `${railWidth}px`;
-    rightRail.style.flex = `0 0 ${railWidth}px`;
+    rightRail.style.width = `${rightRailWidth}px`;
+    rightRail.style.flex = `0 0 ${rightRailWidth}px`;
     rightRail.style.display = 'flex';
     rightRail.style.flexDirection = 'column';
     rightRail.style.gap = `${UI_SUITE.spacing.gap}px`;
     rightRail.style.minHeight = '0';
+    if (landscapeLayout) rightRail.style.height = `${landscapeLayout.rightRail.h}px`;
     rightRail.style.overflow = 'hidden';
 
     if (isDesktopLayout) {
       left.appendChild(this.renderDesktopLeftPanel(activeRailContent));
+    } else if (shouldDrawGamepadSlideOut) {
+      left.appendChild(this.renderGamepadSlideOutRail(gamepadSlideOutMenuId));
     } else {
       left.appendChild(this.renderSidebarMenu());
     }
@@ -1354,8 +1382,10 @@ export default class ActorEditor {
     if (isGamepadConnected) {
       shell.appendChild(this.renderGamepadHintBar());
     }
-    const controllerMenu = renderDomControllerMenu(this.controllerMenu, { contextLabel: 'Actor Editor' });
-    if (controllerMenu) shell.appendChild(controllerMenu);
+    if (this.shouldRenderControllerOverlay(viewportW, viewportH)) {
+      const controllerMenu = renderDomControllerMenu(this.controllerMenu, { contextLabel: 'Actor Editor' });
+      if (controllerMenu) shell.appendChild(controllerMenu);
+    }
     if (this.stateGraphOpen) {
       this.overlay.appendChild(this.renderStateGraphModal());
     }
@@ -1381,6 +1411,79 @@ export default class ActorEditor {
     this.render();
   }
 
+  getActiveGamepadMenuId() {
+    const activeId = this.controllerMenu.getActiveMenuId();
+    if (!activeId || ['root', 'system', 'help', 'exit-confirm'].includes(activeId)) return null;
+    return activeId;
+  }
+
+  isGamepadLandscapeMenuMode(width = Number(window.innerWidth || 0), height = Number(window.innerHeight || 0)) {
+    const isMobileViewport = Math.min(width, height) <= 900;
+    return isGamepadLandscapeEditorMode({
+      viewportWidth: width,
+      viewportHeight: height,
+      gamepadConnected: this.game?.input?.isGamepadConnected?.(),
+      isMobile: isMobileViewport
+    });
+  }
+
+  shouldRenderControllerOverlay(width, height) {
+    if (!this.isGamepadLandscapeMenuMode(width, height)) return true;
+    const activeId = this.controllerMenu.getActiveMenuId();
+    return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));
+  }
+
+  renderGamepadSlideOutRail(menuId) {
+    const plan = buildGamepadSlideOutMenuPlan('actor', {
+      rootOpen: !menuId,
+      activeRootId: menuId || this.getActiveActorDesktopRoot(),
+      focusedItemId: this.controllerMenu.getFocusedItem(menuId)?.id
+    });
+    const menu = this.controllerMenu.menus?.[menuId];
+    const rail = el('div', 'actor-editor-menu-rail actor-editor-gamepad-slideout');
+    Object.assign(rail.style, {
+      background: UI_SUITE.colors.panel,
+      border: `1px solid ${UI_SUITE.colors.border}`,
+      padding: `${SHARED_EDITOR_LEFT_MENU.panelPadding}px`,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: `${SHARED_EDITOR_LEFT_MENU.buttonGap}px`,
+      minHeight: '0',
+      height: '100%',
+      overflow: 'hidden'
+    });
+    const header = el('div', 'actor-editor-gamepad-slideout-header');
+    Object.assign(header.style, {
+      flex: '0 0 auto',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '3px',
+      padding: '2px 2px 6px'
+    });
+    const title = el('div', 'actor-editor-gamepad-slideout-title', menu?.title || plan.submenu?.title || 'Menu');
+    Object.assign(title.style, {
+      color: UI_SUITE.colors.accent,
+      fontWeight: '700',
+      fontSize: '12px'
+    });
+    const hint = el('div', 'actor-editor-gamepad-slideout-hint', 'A Select  B Back');
+    Object.assign(hint.style, {
+      color: UI_SUITE.colors.muted,
+      fontSize: '10px'
+    });
+    header.append(
+      title,
+      hint
+    );
+    rail.appendChild(header);
+    const submenu = this.renderControllerSubmenuRail(menuId);
+    submenu.style.border = '0';
+    submenu.style.padding = '0';
+    submenu.style.flex = '1 1 auto';
+    rail.appendChild(submenu);
+    return rail;
+  }
+
   renderDesktopTopMenu(shellLayout) {
     const top = el('div', 'actor-editor-desktop-top-menu');
     const bounds = shellLayout?.topMenu?.bounds || { h: 40 };
@@ -1395,7 +1498,9 @@ export default class ActorEditor {
       background: UI_SUITE.colors.panel,
       borderBottom: `1px solid ${UI_SUITE.colors.border}`,
       overflowX: 'auto',
-      overflowY: 'hidden'
+      overflowY: 'visible',
+      position: 'relative',
+      zIndex: '20'
     });
     const activeRoot = this.getActiveActorDesktopRoot();
     (shellLayout?.topMenu?.buttons || []).forEach((entry) => {
@@ -1410,7 +1515,43 @@ export default class ActorEditor {
       btn.onclick = () => this.setActorDesktopRoot(entry.id);
       top.appendChild(btn);
     });
+    const dropdown = this.renderDesktopDropdown(shellLayout);
+    if (dropdown) top.appendChild(dropdown);
     return top;
+  }
+
+  renderDesktopDropdown(shellLayout) {
+    const dropdownPlan = shellLayout?.dropdown;
+    if (!dropdownPlan) return null;
+    const rootId = dropdownPlan.rootId || this.getActiveActorDesktopRoot();
+    const drawer = el('div', 'actor-editor-desktop-dropdown');
+    Object.assign(drawer.style, {
+      position: 'absolute',
+      left: `${dropdownPlan.bounds.x}px`,
+      top: `${dropdownPlan.bounds.y}px`,
+      width: `${dropdownPlan.bounds.w}px`,
+      maxHeight: `${dropdownPlan.bounds.h}px`,
+      overflowY: 'auto',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '4px',
+      padding: '8px',
+      boxSizing: 'border-box',
+      background: UI_SUITE.colors.panel,
+      border: `1px solid ${UI_SUITE.colors.border}`,
+      boxShadow: '0 12px 28px rgba(0,0,0,0.35)'
+    });
+    const actions = this.getActorDesktopDropdownActions(rootId);
+    actions.forEach((action) => {
+      const btn = el('button', `actor-editor-btn${action.active ? ' active' : ''}`, action.label);
+      this.styleRailButton(btn, Boolean(action.active));
+      btn.disabled = Boolean(action.disabled);
+      if (btn.disabled) btn.style.opacity = '0.5';
+      btn.style.minHeight = `${Math.max(28, dropdownPlan.rowHeight - 6)}px`;
+      btn.onclick = action.onClick;
+      drawer.appendChild(btn);
+    });
+    return drawer;
   }
 
   renderDesktopLeftPanel(optionsPanel) {
@@ -1469,6 +1610,43 @@ export default class ActorEditor {
     return labels[this.getActiveActorDesktopRoot()] || 'Settings';
   }
 
+  closeFileMenu() {
+    this.fileMenuOpen = false;
+    if (this.actorPortraitMenuOpen) this.actorPortraitMenuOpen = false;
+    if (this.actorDesktopRoot === 'file') this.actorDesktopRoot = 'settings';
+    this.render();
+  }
+
+  getActorFileMenuItems() {
+    return buildSharedEditorFileMenu({
+      supported: {
+        export: false,
+        import: false,
+        undo: false,
+        redo: false
+      },
+      actions: {
+        new: () => this.newActor(),
+        open: () => this.openActor(),
+        save: () => this.saveActor(false),
+        'save-as': () => this.saveActor(true)
+      },
+      footer: {
+        onClose: () => this.closeFileMenu(),
+        onExit: () => this.exitToMenu()
+      }
+    })
+      .filter((item) => !item.disabled)
+      .map((item) => ({
+        id: item.id,
+        label: item.label,
+        tooltip: item.tooltip,
+        divider: Boolean(item.divider),
+        separator: Boolean(item.separator),
+        onClick: item.onClick || item.action || null
+      }));
+  }
+
   renderDesktopOptionsPanel() {
     const rootId = this.getActiveActorDesktopRoot();
     const rail = el('div', 'actor-editor-menu-rail actor-editor-desktop-options');
@@ -1491,6 +1669,14 @@ export default class ActorEditor {
     this.getActorDesktopActions(rootId).forEach((action) => {
       if (action.kind === 'state-list') {
         rail.appendChild(this.renderDesktopStateList());
+        return;
+      }
+      if (action.divider || action.separator) {
+        const divider = el('div', 'actor-editor-menu-divider');
+        divider.style.minHeight = '1px';
+        divider.style.background = UI_SUITE.colors.border;
+        divider.style.margin = '3px 0';
+        rail.appendChild(divider);
         return;
       }
       const btn = el('button', `actor-editor-btn${action.active ? ' active' : ''}`, action.label);
@@ -1516,13 +1702,7 @@ export default class ActorEditor {
       this.render();
     };
     const actions = {
-      file: [
-        { label: 'New', onClick: () => this.newActor() },
-        { label: 'Open', onClick: () => this.openActor() },
-        { label: 'Save', onClick: () => this.saveActor(false) },
-        { label: 'Save As', onClick: () => this.saveActor(true) },
-        { label: 'Exit to Main Menu', onClick: () => this.exitToMenu() }
-      ],
+      file: this.getActorFileMenuItems(),
       settings: [
         { label: 'Actor Settings', active: this.activeMenuSection === 'actor', onClick: openActorSettings },
         { label: 'Taxonomies', onClick: openActorSettings },
@@ -1564,6 +1744,18 @@ export default class ActorEditor {
       ]
     };
     return actions[rootId] || actions.settings;
+  }
+
+  getActorDesktopDropdownActions(rootId) {
+    return this.getActorDesktopActions(rootId).flatMap((action) => {
+      if (action.divider || action.separator) return [];
+      if (action.kind !== 'state-list') return [action];
+      return this.actor.states.map((entry) => ({
+        label: entry.name || entry.id,
+        active: this.selectedStateId === entry.id,
+        onClick: () => this.selectActorState(entry.id, { closePortraitMenu: false })
+      }));
+    });
   }
 
   renderDesktopStateList() {
@@ -1682,8 +1874,8 @@ export default class ActorEditor {
       knob.style.top = `${16 + dy * scale}px`;
       const scrollTarget = this.getActorEditorThumbstickScrollTarget();
       if (scrollTarget) {
-        scrollTarget.scrollLeft -= dx * 0.8;
-        scrollTarget.scrollTop -= dy * 0.8;
+        scrollTarget.scrollLeft += dx * 0.8;
+        scrollTarget.scrollTop += dy * 0.8;
       }
       drag.x = event.clientX;
       drag.y = event.clientY;
@@ -1730,7 +1922,7 @@ export default class ActorEditor {
     });
     if (!normalized.connected || !this.overlay) return;
     this.controllerMenu.setMenus(this.buildControllerMenus(), {
-      siblingOrder: ['file', 'states', 'linked-parts', 'tools', 'settings']
+      siblingOrder: ['file', 'settings', 'states', 'linked-parts', 'visuals', 'collision', 'behavior', 'preview']
     });
     this.controllerMenu.ensureInitialFocus();
     if (!this.overlay.querySelector('.actor-editor-gamepad-hint')) {
@@ -1834,6 +2026,11 @@ export default class ActorEditor {
 
   buildControllerMenus() {
     const action = (id, label, onSelect, options = {}) => ({ id, label, onSelect, ...options });
+    const actionId = (rootId, item, index) => item.id || String(item.label || `${rootId}-${index}`)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      || `${rootId}-${index}`;
     const rootItem = (id, label, submenu = id, section = id) => ({
       id,
       label,
@@ -1845,74 +2042,52 @@ export default class ActorEditor {
         this.render();
       }
     });
+    const desktopMenu = (rootId, title) => ({
+      id: rootId,
+      title,
+      items: this.getActorDesktopDropdownActions(rootId).map((item, index) => action(
+        actionId(rootId, item, index),
+        item.label,
+        item.onClick,
+        { disabled: Boolean(item.disabled) }
+      ))
+    });
     return {
       root: {
         id: 'root',
         title: 'Actor Editor',
         items: [
           rootItem('file', 'File'),
+          rootItem('settings', 'Settings', 'settings', 'actor'),
           rootItem('states', 'States'),
           rootItem('linked-parts', 'Linked Parts'),
-          rootItem('tools', 'Tools'),
-          rootItem('settings', 'Settings', 'settings', 'actor'),
+          rootItem('visuals', 'Visuals', 'visuals', 'states'),
+          rootItem('collision', 'Collision', 'collision', 'states'),
+          rootItem('behavior', 'Behavior', 'behavior', 'states'),
+          rootItem('preview', 'Preview', 'preview', 'tools'),
           action('undo', 'Undo', () => this.undo()),
           action('redo', 'Redo', () => this.redo())
         ]
       },
-      states: {
-        id: 'states',
-        title: 'States',
-        items: [
-          action('add-state', 'Add State', () => this.addState()),
-          action('duplicate-state', 'Duplicate State', () => this.duplicateState(this.selectedState)),
-          action('delete-state', 'Delete State', () => this.deleteState(this.selectedState)),
-          ...this.actor.states.map((state) => action(state.id, state.name || state.id, () => this.selectActorState(state.id, { closePortraitMenu: true })))
-        ]
-      },
-      'linked-parts': {
-        id: 'linked-parts',
-        title: 'Linked Parts',
-        items: [
-          action('open-linked-parts', 'Open Linked Parts', () => { this.activeMenuSection = 'linked-parts'; this.render(); })
-        ]
-      },
-      tools: {
-        id: 'tools',
-        title: 'Tools',
-        items: [
-          action('state-graph', 'State Graph', () => {
-            this.stateGraphOpen = true;
-            this.fileMenuOpen = false;
-            this.actorPortraitMenuOpen = false;
-            this.render();
-          }),
-          action('playtest', 'Play Scene', () => this.playActorScene()),
-          action('collision', 'Collision / Hitbox Zones', () => this.openCollisionZoneEditor(this.actor)),
-          action('undo', 'Undo', () => this.undo()),
-          action('redo', 'Redo', () => this.redo())
-        ]
-      },
-      settings: {
-        id: 'settings',
-        title: 'Settings',
-        items: [
-          action('open-settings', 'Open Settings', () => { this.activeMenuSection = 'actor'; this.fileMenuOpen = false; this.render(); })
-        ]
-      },
+      settings: desktopMenu('settings', 'Settings'),
+      states: desktopMenu('states', 'States'),
+      'linked-parts': desktopMenu('linked-parts', 'Linked Parts'),
+      visuals: desktopMenu('visuals', 'Visuals'),
+      collision: desktopMenu('collision', 'Collision'),
+      behavior: desktopMenu('behavior', 'Behavior'),
+      preview: desktopMenu('preview', 'Preview'),
       file: {
         id: 'file',
         title: 'File',
-        items: [
-          action('new', 'New', () => this.newActor()),
-          action('open', 'Open', () => this.openActor()),
-          action('save', 'Save', () => this.saveActor(false)),
-          action('save-as', 'Save As', () => this.saveActor(true)),
-          action('exit-main', 'Exit to Main Menu', () => this.exitToMenu())
-        ]
+        items: this.getActorFileMenuItems().map((item) => (
+          item.divider || item.separator
+            ? { ...item }
+            : action(item.id, item.label, item.onClick)
+        ))
       },
       system: buildControllerSystemMenu({
         fileMenuId: 'file',
-        toolsMenuId: 'tools',
+        toolsMenuId: 'preview',
         onExit: () => this.exitToMenu()
       }),
       'exit-confirm': buildControllerExitConfirmMenu({
@@ -2074,21 +2249,19 @@ export default class ActorEditor {
     list.style.display = 'flex';
     list.style.flexDirection = 'column';
     list.style.gap = `${SHARED_EDITOR_LEFT_MENU.buttonGap}px`;
-    [
-      ['new', 'New', () => this.newActor()],
-      ['open', 'Open', () => this.openActor()],
-      ['save', 'Save', () => this.saveActor(false)],
-      ['save-as', 'Save As', () => this.saveActor(true)]
-    ].forEach(([id, label, handler]) => {
-      const btn = el('button', 'actor-editor-btn', label);
-      this.styleRailButton(btn, false, this.controllerMenu.isFocusedItem('file', id));
-      btn.onclick = handler;
+    const fileItems = this.getActorFileMenuItems();
+    fileItems.forEach((item) => {
+      if (item.divider || item.separator || item.id === 'exit-main') return;
+      const btn = el('button', 'actor-editor-btn', item.label);
+      this.styleRailButton(btn, false, this.controllerMenu.isFocusedItem('file', item.id));
+      btn.onclick = item.onClick;
       list.appendChild(btn);
     });
     subRail.appendChild(list);
-    const exitBtn = el('button', 'actor-editor-btn actor-editor-file-exit-btn', 'Exit to Main Menu');
+    const exitItem = fileItems.find((item) => item.id === 'exit-main');
+    const exitBtn = el('button', 'actor-editor-btn actor-editor-file-exit-btn', exitItem?.label || 'Exit to Main Menu');
     this.styleRailButton(exitBtn, false, this.controllerMenu.isFocusedItem('file', 'exit-main'));
-    exitBtn.onclick = () => this.exitToMenu();
+    exitBtn.onclick = exitItem?.onClick || (() => this.exitToMenu());
     subRail.appendChild(exitBtn);
     return subRail;
   }
@@ -2224,10 +2397,14 @@ export default class ActorEditor {
     wrap.style.display = 'flex';
     wrap.style.flexDirection = 'column';
     wrap.style.gap = '6px';
+    wrap.style.minHeight = '0';
+    wrap.style.height = '100%';
+    wrap.style.overflow = 'hidden';
     const controls = el('div', 'actor-editor-inline-actions');
     controls.style.display = 'flex';
     controls.style.flexDirection = 'column';
     controls.style.gap = '6px';
+    controls.style.flex = '0 0 auto';
     [['Add', () => this.addState()], ['Duplicate', () => this.duplicateState(this.selectedState)], ['Remove', () => this.deleteState(this.selectedState)]].forEach(([label, handler]) => {
       const btn = el('button', 'actor-editor-btn small', label);
       this.styleRailButton(btn, false);
@@ -2239,6 +2416,15 @@ export default class ActorEditor {
       controls.appendChild(btn);
     });
     wrap.appendChild(controls);
+    const stateList = el('div', 'actor-editor-state-list actor-editor-rail-state-list');
+    stateList.style.display = 'flex';
+    stateList.style.flexDirection = 'column';
+    stateList.style.gap = '6px';
+    stateList.style.minHeight = '0';
+    stateList.style.flex = '1 1 auto';
+    stateList.style.overflowY = 'auto';
+    stateList.style.overflowX = 'hidden';
+    stateList.style.touchAction = 'pan-y';
     this.actor.states.forEach((state) => {
       const badges = [
         state.id === this.actor.initialStateId ? 'start' : '',
@@ -2248,8 +2434,9 @@ export default class ActorEditor {
       const btn = el('button', `actor-editor-btn small${this.selectedStateId === state.id ? ' active' : ''}`, label);
       this.styleRailButton(btn, this.selectedStateId === state.id);
       btn.onclick = () => this.selectActorState(state.id, { closePortraitMenu: true });
-      wrap.appendChild(btn);
+      stateList.appendChild(btn);
     });
+    wrap.appendChild(stateList);
     return wrap;
   }
 
@@ -2597,10 +2784,14 @@ export default class ActorEditor {
       preview.appendChild(image);
       if (large && frames.length > 1) {
         let frameIndex = 0;
-        const timer = setInterval(() => {
+        const stepPreview = () => {
           frameIndex = (frameIndex + 1) % frames.length;
           image.src = frames[frameIndex].imageDataUrl;
-        }, Math.max(80, Number(frames[0].durationMs || Math.round(1000 / Math.max(1, Number(state.animation?.fps || 8))))));
+          const delayMs = Math.max(16, Number(frames[frameIndex].durationMs || Math.round(1000 / Math.max(1, Number(state.animation?.fps || 8)))));
+          const nextTimer = setTimeout(stepPreview, delayMs);
+          this.previewTimers.push(nextTimer);
+        };
+        const timer = setTimeout(stepPreview, Math.max(16, Number(frames[0].durationMs || Math.round(1000 / Math.max(1, Number(state.animation?.fps || 8))))));
         this.previewTimers.push(timer);
       }
       const label = el('span', 'actor-editor-preview-label', large ? 'Edit animation in Pixel Editor' : `${frames.length}f`);

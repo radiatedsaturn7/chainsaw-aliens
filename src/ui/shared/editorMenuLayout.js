@@ -4,6 +4,7 @@ import {
   getEditorMenuSpec,
   getEditorRootMenuEntries
 } from './editorMenuSpec.js';
+import { getSharedMobileLandscapeEditorLayout } from '../uiSuite.js';
 
 const DEFAULT_DRAG_SCROLL = {
   enabled: true,
@@ -26,7 +27,6 @@ const DEFAULT_DESKTOP_SHELL = {
   topMenuHeight: 40,
   leftPanelWidth: 300,
   leftRibbonHeight: 52,
-  bottomBarHeight: 0,
   gap: 8,
   minWorkSurfaceWidth: 320,
   minWorkSurfaceHeight: 220
@@ -148,6 +148,38 @@ export function getEditorPointerInteractionPolicy(editorId, {
   };
 }
 
+export function isGamepadLandscapeEditorMode({
+  viewportWidth = 0,
+  viewportHeight = 0,
+  gamepadConnected = false,
+  isMobile = true,
+  mobileMaxMinorAxis = 900
+} = {}) {
+  const width = Number(viewportWidth) || 0;
+  const height = Number(viewportHeight) || 0;
+  return Boolean(
+    gamepadConnected
+    && isMobile
+    && Math.min(width, height) <= mobileMaxMinorAxis
+    && width > height
+  );
+}
+
+export function shouldUseGamepadSlideOutMenu({
+  viewportWidth = 0,
+  viewportHeight = 0,
+  gamepadConnected = false,
+  isMobile = true,
+  menuActive = false,
+  activeMenuId = null
+} = {}) {
+  return Boolean(
+    isGamepadLandscapeEditorMode({ viewportWidth, viewportHeight, gamepadConnected, isMobile })
+    && menuActive
+    && activeMenuId
+  );
+}
+
 export function buildDesktopTopMenuPlan(editorId, {
   bounds = {},
   activeRootId = null,
@@ -160,7 +192,9 @@ export function buildDesktopTopMenuPlan(editorId, {
   const overflowEntries = entries.slice(visibleEntries.length);
   const availableW = Math.max(1, menuBounds.w - menuBounds.padding * 2 - Math.max(0, visibleEntries.length - 1) * menuBounds.gap);
   const rawItemW = visibleEntries.length ? Math.floor(availableW / visibleEntries.length) : menuBounds.itemMinWidth;
-  const itemW = Math.max(menuBounds.itemMinWidth, Math.min(menuBounds.itemMaxWidth, rawItemW));
+  const itemW = rawItemW < menuBounds.itemMinWidth
+    ? Math.max(1, rawItemW)
+    : Math.min(menuBounds.itemMaxWidth, Math.max(menuBounds.itemMinWidth, rawItemW));
   const buttons = visibleEntries.map((entry, index) => ({
     ...entry,
     bounds: {
@@ -174,6 +208,7 @@ export function buildDesktopTopMenuPlan(editorId, {
   const dropdown = activeRootId
     ? buildDesktopDropdownPlan(editorId, activeRootId, {
       anchor: buttons.find((button) => button.id === activeRootId || button.specId === activeRootId)?.bounds,
+      containerBounds: menuBounds,
       labelOverrides
     })
     : null;
@@ -195,7 +230,6 @@ export function buildDesktopEditorShellPlan(editorId, {
   topMenuHeight = DEFAULT_DESKTOP_SHELL.topMenuHeight,
   leftPanelWidth = DEFAULT_DESKTOP_SHELL.leftPanelWidth,
   leftRibbonHeight = DEFAULT_DESKTOP_SHELL.leftRibbonHeight,
-  bottomBarHeight = DEFAULT_DESKTOP_SHELL.bottomBarHeight,
   gap = DEFAULT_DESKTOP_SHELL.gap,
   minWorkSurfaceWidth = DEFAULT_DESKTOP_SHELL.minWorkSurfaceWidth,
   minWorkSurfaceHeight = DEFAULT_DESKTOP_SHELL.minWorkSurfaceHeight
@@ -204,11 +238,10 @@ export function buildDesktopEditorShellPlan(editorId, {
   const height = Math.max(1, Number(viewportHeight) || 0);
   const topH = Math.max(0, Number(topMenuHeight) || 0);
   const spacing = Math.max(0, Number(gap) || 0);
-  const bottomH = Math.max(0, Math.min(height - topH, Number(bottomBarHeight) || 0));
   const panelW = Math.max(0, Math.min(Number(leftPanelWidth) || 0, width - spacing - minWorkSurfaceWidth));
   const ribbonH = Math.max(0, Number(leftRibbonHeight) || 0);
   const contentY = topH + spacing;
-  const contentH = Math.max(1, height - contentY - spacing - bottomH);
+  const contentH = Math.max(1, height - contentY - spacing);
   const leftColumn = {
     x: spacing,
     y: contentY,
@@ -235,14 +268,6 @@ export function buildDesktopEditorShellPlan(editorId, {
     w: Math.max(minWorkSurfaceWidth, width - workX - spacing),
     h: Math.max(minWorkSurfaceHeight, contentH)
   };
-  const bottomBar = bottomH > 0
-    ? {
-      x: workSurface.x,
-      y: Math.max(topH, height - bottomH),
-      w: workSurface.w,
-      h: bottomH
-    }
-    : null;
   const topMenu = buildDesktopTopMenuPlan(editorId, {
     bounds: { x: 0, y: 0, w: width, h: topH },
     activeRootId,
@@ -258,7 +283,6 @@ export function buildDesktopEditorShellPlan(editorId, {
     leftRibbon,
     leftOptions,
     workSurface,
-    bottomBar,
     scroll: {
       topMenu: { ...DEFAULT_DRAG_SCROLL, pointerType: 'mouse' },
       dropdown: { ...DEFAULT_DRAG_SCROLL, pointerType: 'mouse' },
@@ -268,8 +292,55 @@ export function buildDesktopEditorShellPlan(editorId, {
   };
 }
 
+export function buildLandscapeTouchEditorShellPlan(editorId, {
+  viewportWidth = 0,
+  viewportHeight = 0,
+  labelOverrides = {},
+  leftRailWidth = null,
+  rightRailWidth = null,
+  bottomRailHeight = 0,
+  reserveRightRail = true,
+  thumbstick = null,
+  padding = undefined,
+  gap = undefined
+} = {}) {
+  const layout = getSharedMobileLandscapeEditorLayout(viewportWidth, viewportHeight, {
+    leftRailWidth,
+    rightRailWidth,
+    bottomRailHeight,
+    reserveRightRail,
+    thumbstick,
+    ...(padding === undefined ? {} : { padding }),
+    ...(gap === undefined ? {} : { gap })
+  });
+  return {
+    editorId,
+    mode: EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH,
+    placement: getEditorMenuPlacement(EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH),
+    bounds: {
+      x: 0,
+      y: 0,
+      w: Math.max(1, Number(viewportWidth) || 0),
+      h: Math.max(1, Number(viewportHeight) || 0)
+    },
+    labelOverrides,
+    ...layout,
+    scroll: {
+      leftRail: { ...DEFAULT_DRAG_SCROLL, pointerType: 'touch' },
+      rightRail: { ...DEFAULT_DRAG_SCROLL, pointerType: 'touch' },
+      bottomRail: { ...DEFAULT_DRAG_SCROLL, pointerType: 'touch' },
+      workSurface: {
+        ...DEFAULT_DRAG_SCROLL,
+        pointerType: 'touch',
+        pinchZoomReservedForWorkSurface: true
+      }
+    }
+  };
+}
+
 export function buildDesktopDropdownPlan(editorId, rootId, {
   anchor = null,
+  containerBounds = null,
   labelOverrides = {},
   rowHeight = 34,
   minWidth = 220,
@@ -285,10 +356,15 @@ export function buildDesktopDropdownPlan(editorId, rootId, {
     label: spec?.actions?.[actionId]?.label || labelOverrides[actionId] || actionId
   }));
   const visibleRows = Math.min(maxVisibleRows, Math.max(1, items.length || 1));
+  const width = Math.max(minWidth, anchor?.w || 0);
+  const minX = containerBounds?.x ?? 0;
+  const maxX = containerBounds
+    ? Math.max(minX, containerBounds.x + containerBounds.w - width - (containerBounds.padding || 0))
+    : Infinity;
   const bounds = {
-    x: anchor?.x || 0,
+    x: Math.max(minX, Math.min(anchor?.x || 0, maxX)),
     y: (anchor?.y || 0) + (anchor?.h || 0),
-    w: Math.max(minWidth, anchor?.w || 0),
+    w: width,
     h: visibleRows * rowHeight
   };
   return {

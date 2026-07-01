@@ -18,8 +18,8 @@ import {
   drawSharedTransportIconButton,
   drawSharedPortraitSheet,
   drawSharedPortraitTabStrip,
+  buildSharedEditorFileMenu,
   getSharedMobilePortraitEditorLayout,
-  getSharedMobileLandscapeEditorLayout,
   getSharedMobileRailWidth,
   getSharedPortraitActionRailLayout,
   getSharedPortraitMenuMetrics,
@@ -35,7 +35,7 @@ import {
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
 import { getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
-import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan } from './shared/editorMenuLayout.js';
+import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeTouchEditorShellPlan, shouldUseGamepadSlideOutMenu } from './shared/editorMenuLayout.js';
 
 const DEFAULT_SAMPLE_RATE = 44100;
 const DEFAULT_DURATION = 0.45;
@@ -546,15 +546,11 @@ export default class SfxEditor {
       file: {
         id: 'file',
         title: 'File',
-        items: [
-          action('new', 'New', () => this.newDocument()),
-          action('save', 'Save', () => this.save()),
-          action('save-as', 'Save As', () => this.save({ forceSaveAs: true })),
-          action('open', 'Open', () => this.openFileModal()),
-          action('import', 'Import', () => this.fileInput.click()),
-          action('export', 'Export', () => this.exportSelectedWav()),
-          action('exit-main', 'Exit to Main Menu', () => this.exit())
-        ]
+        items: this.getSfxFileMenuItems().map((item) => (
+          item.divider || item.separator
+            ? { ...item }
+            : action(item.id, item.label, item.onClick || item.action)
+        ))
       },
       system: buildControllerSystemMenu({
         fileMenuId: 'file',
@@ -1807,15 +1803,13 @@ export default class SfxEditor {
         viewportWidth: width,
         viewportHeight: height,
         activeRootId: this.leftTab,
-        bottomBarHeight: 118,
         leftPanelWidth: Math.min(340, Math.max(286, width * 0.25)),
         leftRibbonHeight: 56
       });
       this.drawDesktopTopMenu(ctx, shell.topMenu);
       this.drawDesktopRibbon(ctx, shell.leftRibbon);
-      this.drawRightPanel(ctx, shell.leftOptions);
+      this.drawRightPanel(ctx, shell.leftOptions, { includeDesktopTransport: true });
       this.drawWaveform(ctx, shell.workSurface);
-      if (shell.bottomBar) this.drawBottomRail(ctx, shell.bottomBar);
       if (shell.dropdown) this.drawDesktopDropdown(ctx, shell.dropdown);
       drawCanvasControllerMenu(ctx, this.controllerMenu, {
         width,
@@ -1833,10 +1827,14 @@ export default class SfxEditor {
       ctx.restore();
       return;
     }
+    const gamepadSubmenuOnLeft = this.shouldDrawGamepadSubmenuOnLeft(width, height);
     const landscapeLayout = isMobileLandscape
-      ? getSharedMobileLandscapeEditorLayout(width, height, {
+      ? buildLandscapeTouchEditorShellPlan('sfx', {
+        viewportWidth: width,
+        viewportHeight: height,
         bottomRailHeight: 96,
-        rightRailWidth: getSharedMobileRailWidth(width, height)
+        rightRailWidth: getSharedMobileRailWidth(width, height),
+        reserveRightRail: !gamepadSubmenuOnLeft
       })
       : null;
     const sharedMobileRailW = getSharedMobileRailWidth(width, height);
@@ -1847,16 +1845,18 @@ export default class SfxEditor {
     const right = landscapeLayout?.rightRail ?? { x: width - rightW, y: 0, w: rightW, h: height };
     const bottom = landscapeLayout?.bottomRail ?? { x: railW, y: height - bottomH, w: Math.max(1, width - railW - rightW), h: bottomH };
     const left = landscapeLayout?.leftRail ?? { x: 0, y: 0, w: railW, h: height };
-    if (this.shouldDrawGamepadSubmenuOnLeft()) {
+    if (gamepadSubmenuOnLeft) {
       this.drawGamepadSlideOutPanel(ctx, left);
     } else {
       this.drawLeftRail(ctx, left.x, left.y, left.w, left.h);
     }
     this.drawWaveform(ctx, canvas);
-    if (this.isGamepadMenuMode) {
-      this.drawGamepadRightOptionsPanel(ctx, right);
-    } else {
-      this.drawRightPanel(ctx, right);
+    if (right.w > 0) {
+      if (this.isGamepadMenuMode) {
+        this.drawGamepadRightOptionsPanel(ctx, right);
+      } else {
+        this.drawRightPanel(ctx, right);
+      }
     }
     if (bottom.h > 0) this.drawBottomRail(ctx, bottom);
     this.drawMobilePanJoystick(ctx, width, height);
@@ -1927,19 +1927,26 @@ export default class SfxEditor {
   drawDesktopDropdown(ctx, dropdown) {
     const menu = this.controllerMenu.menus?.[dropdown.rootId] || this.controllerMenu.menus?.[dropdown.specId];
     const controllerItems = this.controllerMenu.getItems(menu);
-    const actionById = new Map(controllerItems.map((item) => [item.id, item]));
-    drawSharedPanel(ctx, dropdown.bounds, { fill: UI_SUITE.colors.panel });
+    const visibleItems = controllerItems.length ? controllerItems : dropdown.items;
+    const visibleRows = Math.max(1, Math.floor(dropdown.bounds.h / Math.max(1, dropdown.rowHeight)));
+    const renderedItems = visibleItems.slice(0, visibleRows);
+    const actionById = new Map(renderedItems.map((item) => [item.id, item]));
+    const panelBounds = {
+      ...dropdown.bounds,
+      h: Math.min(dropdown.bounds.h, Math.max(dropdown.rowHeight, renderedItems.length * dropdown.rowHeight))
+    };
+    drawSharedPanel(ctx, panelBounds, { fill: UI_SUITE.colors.panel });
     const gap = 4;
     const rowH = Math.max(28, dropdown.rowHeight - gap);
-    dropdown.items.forEach((item, index) => {
-      const y = dropdown.bounds.y + index * dropdown.rowHeight + Math.floor(gap / 2);
+    renderedItems.forEach((item, index) => {
+      const y = panelBounds.y + index * dropdown.rowHeight + Math.floor(gap / 2);
       const controllerItem = actionById.get(item.id);
       const action = controllerItem?.onSelect
         ? () => controllerItem.onSelect(this)
         : null;
       this.drawButton(
         ctx,
-        { x: dropdown.bounds.x + 8, y, w: dropdown.bounds.w - 16, h: rowH },
+        { x: panelBounds.x + 8, y, w: panelBounds.w - 16, h: rowH },
         item.label,
         this.isControllerMenuItemActive(dropdown.rootId, item.id),
         action
@@ -1953,8 +1960,14 @@ export default class SfxEditor {
     return activeId;
   }
 
-  shouldDrawGamepadSubmenuOnLeft() {
-    return Boolean(this.isGamepadMenuMode && this.controllerMenu.active && this.getActiveGamepadMenuId());
+  shouldDrawGamepadSubmenuOnLeft(width = 0, height = 0) {
+    return shouldUseGamepadSlideOutMenu({
+      viewportWidth: width,
+      viewportHeight: height,
+      gamepadConnected: this.isGamepadMenuMode,
+      menuActive: this.controllerMenu.active,
+      activeMenuId: this.getActiveGamepadMenuId()
+    });
   }
 
   shouldDrawControllerOverlay() {
@@ -2378,21 +2391,70 @@ export default class SfxEditor {
     ctx.restore();
   }
 
-  drawRightPanel(ctx, bounds) {
-    drawSharedPanel(ctx, bounds);
-    let y = bounds.y + SHARED_EDITOR_LEFT_MENU.panelPadding;
+  drawRightPanel(ctx, bounds, options = {}) {
+    const includeDesktopTransport = options.includeDesktopTransport === true;
+    const transportH = includeDesktopTransport ? Math.min(118, Math.max(96, Math.floor(bounds.h * 0.24))) : 0;
+    const gap = includeDesktopTransport ? SHARED_EDITOR_LEFT_MENU.desktopContentGap : 0;
+    const panelBounds = includeDesktopTransport
+      ? { x: bounds.x, y: bounds.y, w: bounds.w, h: Math.max(96, bounds.h - transportH - gap) }
+      : bounds;
+    drawSharedPanel(ctx, panelBounds);
+    let y = panelBounds.y + SHARED_EDITOR_LEFT_MENU.panelPadding;
     if (this.controllerMenu.isMenuActive(this.leftTab)) {
-      this.drawControllerMenuPanel(ctx, this.leftTab, bounds, y);
+      this.drawControllerMenuPanel(ctx, this.leftTab, panelBounds, y);
+      if (includeDesktopTransport) {
+        this.drawDesktopTransportPanel(ctx, { x: bounds.x, y: panelBounds.y + panelBounds.h + gap, w: bounds.w, h: transportH });
+      }
       return;
     }
-    if (this.leftTab === 'file') y = this.drawFilePanel(ctx, bounds, y);
-    if (this.leftTab === 'timeline') y = this.drawTimelineMenuPanel(ctx, bounds, y);
-    if (this.leftTab === 'layers') y = this.drawLayersMenuPanel(ctx, bounds, y);
-    if (this.leftTab === 'tools') y = this.drawToolsPanel(ctx, bounds, y);
-    if (this.leftTab === 'settings') y = this.drawSettingsPanel(ctx, bounds, y);
-    if (this.leftTab === 'envelopes') y = this.drawEnvelopesPanel(ctx, bounds, y);
-    if (this.leftTab === 'generate') y = this.drawGeneratePanel(ctx, bounds, y);
+    if (this.leftTab === 'file') y = this.drawFilePanel(ctx, panelBounds, y);
+    if (this.leftTab === 'timeline') y = this.drawTimelineMenuPanel(ctx, panelBounds, y);
+    if (this.leftTab === 'layers') y = this.drawLayersMenuPanel(ctx, panelBounds, y);
+    if (this.leftTab === 'tools') y = this.drawToolsPanel(ctx, panelBounds, y);
+    if (this.leftTab === 'settings') y = this.drawSettingsPanel(ctx, panelBounds, y);
+    if (this.leftTab === 'envelopes') y = this.drawEnvelopesPanel(ctx, panelBounds, y);
+    if (this.leftTab === 'generate') y = this.drawGeneratePanel(ctx, panelBounds, y);
+    if (includeDesktopTransport) {
+      this.drawDesktopTransportPanel(ctx, { x: bounds.x, y: panelBounds.y + panelBounds.h + gap, w: bounds.w, h: transportH });
+    }
     void y;
+  }
+
+  drawDesktopTransportPanel(ctx, bounds) {
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = '12px Courier New';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Transport', bounds.x + 12, bounds.y + 17, bounds.w - 24);
+    ctx.restore();
+    const buttons = [
+      { label: '⏮', action: () => { this.playheadTime = 0; this.timelineScrollTime = 0; } },
+      { label: '⏪', action: () => { this.playheadTime = Math.max(0, Number(this.playheadTime || 0) - 0.25); } },
+      { label: this.isPlaying ? '❚❚' : '▶', active: this.isPlaying, emphasis: true, action: () => (this.isPlaying ? this.stop() : this.play()) },
+      { label: '⏹', action: () => this.stop() },
+      { label: '⏩', action: () => { this.playheadTime = Math.min(Number(this.selectedFrame?.duration || 0), Number(this.playheadTime || 0) + 0.25); } },
+      { label: '⏭', action: () => { this.playheadTime = Number(this.selectedFrame?.duration || 0); } }
+    ];
+    const pad = 12;
+    const gap = 6;
+    const rowY = bounds.y + 34;
+    const buttonH = 36;
+    const buttonW = Math.max(34, Math.floor((bounds.w - pad * 2 - gap * (buttons.length - 1)) / buttons.length));
+    buttons.forEach((button, index) => {
+      const buttonBounds = { x: bounds.x + pad + index * (buttonW + gap), y: rowY, w: buttonW, h: buttonH };
+      drawSharedTransportIconButton(ctx, buttonBounds, {
+        icon: button.label,
+        active: Boolean(button.active),
+        emphasis: Boolean(button.emphasis)
+      });
+      this.buttons.push({ ...buttonBounds, kind: 'button', action: button.action });
+    });
+    const infoY = rowY + buttonH + 10;
+    ctx.fillStyle = 'rgba(255,255,255,0.72)';
+    ctx.font = '11px Courier New';
+    ctx.fillText(`Frame ${this.selectedFrameIndex + 1}/${this.sfx.frames.length}  Layer ${this.selectedLayerIndex + 1}`, bounds.x + pad, infoY, bounds.w - pad * 2);
+    drawSharedTimeLabel(ctx, { x: bounds.x + pad, y: infoY + 14, w: bounds.w - pad * 2, h: 16 }, `Playhead ${Number(this.playheadTime || 0).toFixed(2)}s`, { fontSize: 11 });
   }
 
   getPanelRowHeight() {
@@ -2439,16 +2501,29 @@ export default class SfxEditor {
     return false;
   }
 
+  getSfxFileMenuItems() {
+    return buildSharedEditorFileMenu({
+      actions: {
+        new: () => this.newDocument(),
+        save: () => this.save(),
+        'save-as': () => this.save({ forceSaveAs: true }),
+        open: () => this.openFileModal(),
+        import: () => this.fileInput.click(),
+        export: () => this.exportSelectedWav(),
+        undo: () => this.undo(),
+        redo: () => this.redo()
+      },
+      footer: {
+        onClose: () => {
+          this.leftTab = 'timeline';
+        },
+        onExit: () => this.exit()
+      }
+    });
+  }
+
   drawFilePanel(ctx, bounds, y) {
-    const rows = [
-      { id: 'new', label: 'New', action: () => this.newDocument() },
-      { id: 'save', label: 'Save', action: () => this.save() },
-      { id: 'save-as', label: 'Save As', action: () => this.save({ forceSaveAs: true }) },
-      { id: 'open', label: 'Open', action: () => this.openFileModal() },
-      { id: 'import', label: 'Import', action: () => this.fileInput.click() },
-      { id: 'export', label: 'Export', action: () => this.exportSelectedWav() },
-      { id: 'exit-main', label: 'Exit to Main Menu', action: () => this.exit() }
-    ];
+    const rows = this.getSfxFileMenuItems();
     const { listItems, exitItem } = (this.isMobileLandscape || this.isMobilePortrait)
       ? splitFileDrawerStickyExitItems(rows)
       : { listItems: rows, exitItem: null };
@@ -2459,8 +2534,12 @@ export default class SfxEditor {
     const start = this.controllerMenu.isMenuActive('file')
       ? this.controllerMenu.syncScrollToItem('file', this.controllerMenu.getFocusedItem('file')?.id, listItems, visibleRows, 0)
       : 0;
-    listItems.slice(start, start + visibleRows).forEach(({ id, label, action }) => {
-      this.drawButton(ctx, { x: bounds.x + 12, y, w: bounds.w - 24, h: rowH }, label, false, action, this.controllerMenu.isFocusedItem('file', id));
+    listItems.slice(start, start + visibleRows).forEach(({ id, label, action, onClick, divider }) => {
+      if (divider) {
+        y += Math.max(12, Math.floor(rowH * 0.45));
+        return;
+      }
+      this.drawButton(ctx, { x: bounds.x + 12, y, w: bounds.w - 24, h: rowH }, label, false, action || onClick, this.controllerMenu.isFocusedItem('file', id));
       y += rowH + gap;
     });
     if (exitItem) {
