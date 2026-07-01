@@ -15271,6 +15271,30 @@ export default class PixelStudio {
     }
     if (this.activeToolId === TOOL_IDS.CLONE) {
       this.cloneColorPickArmed = false;
+      const targetLabel = this.clonePickTargetArmed ? 'Tap canvas to set target' : 'Set Target';
+      const targetW = Math.min(panelWidth, isMobile ? panelWidth : 170);
+      const targetBounds = { x: x + Math.max(0, Math.floor((panelWidth - targetW) / 2)), y: offsetY - (isMobile ? 24 : 12), w: targetW, h: isMobile ? 44 : 18 };
+      this.drawButton(ctx, targetBounds, targetLabel, this.clonePickTargetArmed, { fontSize: isMobile ? 12 : 12 });
+      this.uiButtons.push({
+        bounds: targetBounds,
+        onClick: () => {
+          if (this.clonePickTargetArmed) {
+            this.clonePickTargetArmed = false;
+            this.statusMessage = 'Clone paint mode';
+          } else {
+            this.armCloneTargetPick();
+          }
+        }
+      });
+      this.registerFocusable('menu', targetBounds, () => {
+        if (this.clonePickTargetArmed) {
+          this.clonePickTargetArmed = false;
+          this.statusMessage = 'Clone paint mode';
+        } else {
+          this.armCloneTargetPick();
+        }
+      });
+      offsetY += lineHeight;
       const sourceLabel = this.clonePickSourceArmed ? 'Tap canvas to set source' : 'Set Source';
       const sourceW = Math.min(panelWidth, isMobile ? panelWidth : 170);
       const sourceBounds = { x: x + Math.max(0, Math.floor((panelWidth - sourceW) / 2)), y: offsetY - (isMobile ? 24 : 12), w: sourceW, h: isMobile ? 44 : 18 };
@@ -15310,7 +15334,6 @@ export default class PixelStudio {
       this.registerFocusable('menu', setBounds, () => this.toggleCloneAngleCalibration());
       this.registerFocusable('menu', resetBounds, () => this.resetCloneAlignment());
       offsetY += lineHeight;
-      const targetLabel = this.clonePickTargetArmed ? 'Tap canvas to set target' : 'Target';
       offsetY = this.drawPortraitToolOptionButton(ctx, x, offsetY, targetLabel, () => {
         if (this.clonePickTargetArmed) {
           this.clonePickTargetArmed = false;
@@ -16582,6 +16605,18 @@ export default class PixelStudio {
     const top = y + Math.max(8, Math.floor((h - 44) / 2));
     const actions = [
       {
+        label: this.clonePickTargetArmed ? 'Tgt...' : 'Target',
+        active: Boolean(this.clonePickTargetArmed),
+        action: () => {
+          if (this.clonePickTargetArmed) {
+            this.clonePickTargetArmed = false;
+            this.statusMessage = 'Clone paint mode';
+          } else {
+            this.armCloneTargetPick();
+          }
+        }
+      },
+      {
         label: this.clonePickSourceArmed ? 'Src...' : 'Source',
         active: Boolean(this.clonePickSourceArmed),
         action: () => {
@@ -16605,18 +16640,6 @@ export default class PixelStudio {
         active: false,
         action: () => this.resetCloneAlignment()
       },
-      {
-        label: this.clonePickTargetArmed ? 'Tgt...' : 'Target',
-        active: Boolean(this.clonePickTargetArmed),
-        action: () => {
-          if (this.clonePickTargetArmed) {
-            this.clonePickTargetArmed = false;
-            this.statusMessage = 'Clone paint mode';
-          } else {
-            this.armCloneTargetPick();
-          }
-        }
-      }
     ];
     actions.forEach((entry) => {
       const bounds = { x: itemX, y: top, w: buttonW, h: 44, action: entry.action };
