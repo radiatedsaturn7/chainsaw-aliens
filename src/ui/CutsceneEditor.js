@@ -3492,6 +3492,20 @@ export default class CutsceneEditor {
     if (this.transportHold && Math.hypot(x - this.transportHold.x, y - this.transportHold.y) > 12) {
       this.cancelTransportHold();
     }
+    if (!this.isMobileLayout() && !payload.touchCount && !this.drag && !this.menuScrollDrag) {
+      const rootButton = this.bounds.buttons?.find((entry) => entry.id?.startsWith?.('desktop-root:') && this.pointIn(entry, x, y));
+      if (rootButton) {
+        const rootId = rootButton.id.slice('desktop-root:'.length);
+        const nextTab = CUTSCENE_DESKTOP_MENU_LABELS[rootId] ? rootId : 'add';
+        if (nextTab !== this.activeMenuTab) {
+          this.activeMenuTab = nextTab;
+          this.menuOpen = false;
+          this.clipOptionsOpen = false;
+          this.menuScroll = 0;
+          return;
+        }
+      }
+    }
     if (this.menuScrollDrag) {
       const drag = this.menuScrollDrag;
       const movedDistance = Math.hypot(x - safeNumber(drag.startX), y - safeNumber(drag.startY));

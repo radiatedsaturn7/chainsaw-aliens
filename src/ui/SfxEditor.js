@@ -1600,6 +1600,14 @@ export default class SfxEditor {
       const dy = payload.y - this.transportHold.y;
       if (Math.hypot(dx, dy) > 12) this.cancelTransportHold();
     }
+    if (!this.isMobileLayout() && !payload.touchCount && !this.sliderDrag) {
+      const rootHit = this.findHit(payload.x, payload.y);
+      if (rootHit?.desktopRootId && rootHit.desktopRootId !== this.leftTab) {
+        this.leftTab = rootHit.desktopRootId;
+        this.controllerMenu.resetFocus();
+        return;
+      }
+    }
     if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id || this.panJoystick.id === 'touch')) {
       this.updatePanJoystick(payload.x, payload.y);
       return;
@@ -1903,7 +1911,7 @@ export default class SfxEditor {
         this.controllerMenu.resetFocus();
       };
       action.skipHistory = true;
-      this.drawButton(ctx, { ...button.bounds }, button.label, button.active, action);
+      this.drawButton(ctx, { ...button.bounds, desktopRootId: button.id }, button.label, button.active, action);
     });
   }
 
@@ -2917,6 +2925,6 @@ export default class SfxEditor {
       maxWidth: Math.max(0, controlBounds.w - 12)
     });
     if (focused) drawSharedFocusRing(ctx, controlBounds);
-    if (action) this.buttons.push({ ...controlBounds, kind: 'button', action: () => this.invokeWithHistory(action) });
+    if (action) this.buttons.push({ ...controlBounds, kind: 'button', action: () => this.invokeWithHistory(action), desktopRootId: bounds.desktopRootId });
   }
 }

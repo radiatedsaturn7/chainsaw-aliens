@@ -4321,6 +4321,13 @@ export default class PixelStudio {
     }
     this.cursor.x = payload.x;
     this.cursor.y = payload.y;
+    if (!this.isMobileLayout() && !payload.touchCount) {
+      const hoverRoot = this.uiButtons.find((button) => button.hoverRootId && this.isPointInBounds(payload, button.bounds));
+      if (hoverRoot) {
+        const panelId = this.getDesktopPanelIdForRoot(hoverRoot.hoverRootId);
+        if (panelId && this.leftPanelTab !== panelId) this.setLeftPanelTab(panelId);
+      }
+    }
     if (this.longPressTimer && this.longPressOrigin) {
       const drift = Math.hypot(payload.x - this.longPressOrigin.x, payload.y - this.longPressOrigin.y);
       if (drift > 8) this.cancelLongPress();
@@ -8756,7 +8763,7 @@ export default class PixelStudio {
         focused: this.controllerMenu.isFocusedItem('root', panelId)
       });
       const onClick = () => this.setLeftPanelTab(panelId);
-      this.uiButtons.push({ bounds, onClick });
+      this.uiButtons.push({ bounds, onClick, hoverRootId: button.id });
       this.registerFocusable('menu', bounds, onClick);
     });
 

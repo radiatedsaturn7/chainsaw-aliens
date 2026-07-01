@@ -901,6 +901,14 @@ test('MIDI desktop keeps transport in the left column instead of a bottom rail',
   assert.equal(dropdownBody.includes('renderedItems.forEach((item, index) => {'), true);
 });
 
+test('MIDI desktop top menu switches drawers on hover', () => {
+  assert.equal(midiEditorSource.includes('handleDesktopTopMenuHover(x, y)'), true);
+  assert.equal(midiEditorSource.includes('this.handleDesktopTopMenuHover(payload.x, payload.y);'), true);
+  assert.equal(midiEditorSource.includes("if (!nextTab && this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) nextTab = 'file';"), true);
+  assert.equal(midiEditorSource.includes("if (!nextTab && this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings)) nextTab = 'settings';"), true);
+  assert.equal(midiEditorSource.includes('this.activateLeftRailTab(nextTab);'), true);
+});
+
 test('MIDI file menu uses one shared drawer item source across surfaces', () => {
   const fileItemsIndex = midiEditorSource.indexOf('  getFileMenuItems()');
   const fileItemsBody = midiEditorSource.slice(fileItemsIndex, midiEditorSource.indexOf('  drawFilePanel(ctx, x, y, w, h)', fileItemsIndex));
@@ -953,6 +961,13 @@ test('Pixel desktop dropdown caps rendered rows to drawer bounds', () => {
   assert.equal(dropdownBody.includes('const buttonBounds = { ...shell.dropdown.itemBounds[index] };'), true);
 });
 
+test('Pixel desktop top menu switches drawers on hover', () => {
+  assert.equal(pixelStudioSource.includes('hoverRootId: button.id'), true);
+  assert.equal(pixelStudioSource.includes('const hoverRoot = this.uiButtons.find((button) => button.hoverRootId && this.isPointInBounds(payload, button.bounds));'), true);
+  assert.equal(pixelStudioSource.includes('const panelId = this.getDesktopPanelIdForRoot(hoverRoot.hoverRootId);'), true);
+  assert.equal(pixelStudioSource.includes('if (panelId && this.leftPanelTab !== panelId) this.setLeftPanelTab(panelId);'), true);
+});
+
 test('Actor portrait menu matches compact shared rail contract', () => {
   const model = buildActorPortraitMenuModel();
 
@@ -969,6 +984,8 @@ test('Actor desktop top menu renders an active root dropdown drawer', () => {
   assert.equal(actorEditorSource.includes('const dropdown = this.renderDesktopDropdown(shellLayout);'), true);
   assert.equal(actorEditorSource.includes("top: `${dropdownPlan.bounds.y}px`"), true);
   assert.equal(actorEditorSource.includes('getActorDesktopDropdownActions(rootId)'), true);
+  assert.equal(actorEditorSource.includes('btn.onmouseenter = () => {'), true);
+  assert.equal(actorEditorSource.includes('btn.onfocus = () => {'), true);
 });
 
 test('Actor file menu uses the shared editor file menu model', () => {
@@ -1077,6 +1094,18 @@ test('Cutscene desktop dropdown caps rendered rows to drawer bounds', () => {
   assert.equal(dropdownBody.includes('.slice(0, shell.dropdown.visibleRows)'), true);
   assert.equal(dropdownBody.includes('const bounds = { ...shell.dropdown.panelBounds'), true);
   assert.equal(dropdownBody.includes('...shell.dropdown.itemBounds[index]'), true);
+});
+
+test('Cutscene desktop top menu switches drawers on hover', () => {
+  assert.equal(cutsceneEditorSource.includes("entry.id?.startsWith?.('desktop-root:')"), true);
+  assert.equal(cutsceneEditorSource.includes("const rootId = rootButton.id.slice('desktop-root:'.length);"), true);
+  assert.equal(cutsceneEditorSource.includes('this.activeMenuTab = nextTab;'), true);
+});
+
+test('SFX desktop top menu switches drawers on hover', () => {
+  assert.equal(sfxEditorSource.includes('desktopRootId: button.id'), true);
+  assert.equal(sfxEditorSource.includes('rootHit?.desktopRootId && rootHit.desktopRootId !== this.leftTab'), true);
+  assert.equal(sfxEditorSource.includes('this.leftTab = rootHit.desktopRootId;'), true);
 });
 
 test('Cutscene file menu uses the shared editor file menu model', () => {

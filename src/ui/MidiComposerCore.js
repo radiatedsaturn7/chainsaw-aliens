@@ -6707,6 +6707,9 @@ export default class MidiComposer {
     if (this.transportHold && Math.hypot(payload.x - this.transportHold.x, payload.y - this.transportHold.y) > 12) {
       this.cancelTransportHold();
     }
+    if (!this.isMobileLayout() && !payload.touchCount && !this.dragState) {
+      this.handleDesktopTopMenuHover(payload.x, payload.y);
+    }
     if (this.recordModeActive) {
       if (this.dragState?.mode === 'pedal-picker-scroll') {
         const dy = this.dragState.startY - payload.y;
@@ -7141,6 +7144,24 @@ export default class MidiComposer {
     } else if (this.dragState.mode === 'select') {
       this.updateSelectionBox(payload.x, payload.y);
     }
+  }
+
+  handleDesktopTopMenuHover(x, y) {
+    const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
+    let nextTab = tabHit?.id || null;
+    if (!nextTab && this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) nextTab = 'file';
+    if (!nextTab && this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings)) nextTab = 'settings';
+    if (!nextTab || nextTab === this.activeTab) return false;
+    this.exitRecordMode();
+    if (this.activeTab === 'instruments' || this.instrumentPicker.mode) {
+      this.confirmInstrumentSelection();
+    }
+    this.activateLeftRailTab(nextTab);
+    this.closeSelectionMenu();
+    this.pastePreview = null;
+    this.noteLengthMenu.open = false;
+    this.tempoSliderOpen = false;
+    return true;
   }
 
   handlePointerUp(payload) {
