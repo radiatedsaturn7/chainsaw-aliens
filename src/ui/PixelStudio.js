@@ -50,10 +50,10 @@ import {
   solveTwoBoneIkPose,
   setPoseKeyAtTime
 } from './pixel-editor/bones.js';
-import { GAMEPAD_HINTS } from './pixel-editor/gamepad.js';
 import InputManager, { INPUT_ACTIONS } from './pixel-editor/inputManager.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedContextRibbon, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopContextTransportLayout, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, drawSharedContextRibbon, drawSharedDesktopContextPanel, drawSharedDesktopDropdown, drawSharedDesktopRibbon, drawSharedDesktopTopMenu, drawSharedFocusRing, drawSharedGamepadHintBar, drawSharedGamepadSlideOutHeader, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
 import { TILE_LIBRARY } from './pixel-editor/tools/tileLibrary.js';
+import { buildTileDefinitions, serializeTileProperties } from '../content/tileDefinitions.js';
 import { PIXEL_SIZE_PRESETS, createDitherMask } from './pixel-editor/input/dither.js';
 import { clamp, lerp, bresenhamLine, generateEllipseMask, createPolygonMask, createRectMask, applySymmetryPoints } from './pixel-editor/render/geometry.js';
 import { createViewportController } from './shared/viewportController.js';
@@ -61,14 +61,21 @@ import { listProjectFiles, loadProjectFile, saveProjectFile, sanitizeProjectFile
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { openChoiceOverlay, openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
-import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeTouchEditorShellPlan, isGamepadLandscapeEditorMode, shouldUseGamepadSlideOutMenu } from './shared/editorMenuLayout.js';
+import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, createPendingDesktopDropdownHit, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
+import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopControllerMenuIdForSection, getEditorDesktopRootIdForSection, getEditorDesktopSectionId, getEditorPortraitRootMenuEntries, getEditorRootMenuLabelMap } from './shared/editorMenuSpec.js';
 import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
 import { ensurePixelArtStore, ensurePixelPreviewFrame, ensurePixelTileData } from '../editor/adapters/editorDataContracts.js';
 import { resolveActorArtFrameDurationMs } from '../entities/ScriptedActor.js';
+import { SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
 
 const BRUSH_SIZE_MIN = 1;
 const BRUSH_SIZE_MAX = 64;
+const PIXEL_CONTROLLER_ROOT_ENTRIES = getEditorControllerRootMenuEntries('pixel');
+const PIXEL_CONTROLLER_SIBLING_ORDER = getEditorControllerRootMenuIds('pixel');
+const PIXEL_CONTROLLER_ROOT_LABELS = getEditorRootMenuLabelMap('pixel');
+const PIXEL_LEFT_PANEL_TABS = PIXEL_CONTROLLER_ROOT_ENTRIES.map((entry) => entry.id);
+const PIXEL_MOBILE_DRAWER_TABS = PIXEL_LEFT_PANEL_TABS.filter((id) => !['edit', 'view'].includes(id));
 const DEFAULT_BRUSH_SIZE = 7;
 const DEFAULT_FRAME_DURATION_MS = Math.round(1000 / 32);
 const DEFAULT_BONE_TIMELINE_DURATION_MS = 2000;
@@ -466,15 +473,9 @@ export function getPixelQuantizedSvSampleAt(hue, xRatio, yRatio, levels = 32) {
 
 export function buildPixelPortraitMenuModel() {
   return {
-    rootTabs: [
-      { id: 'file', panel: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
-      { id: 'draw', panel: 'draw', label: 'Draw' },
-      { id: 'select', panel: 'select', label: 'Select' },
-      { id: 'tools', panel: 'tools', label: 'Tools' },
-      { id: 'canvas', panel: 'canvas', label: 'Canvas' },
-      { id: 'layers', panel: 'layers', label: 'Layers' },
-      { id: 'frames', panel: 'animation', label: 'Frames' }
-    ],
+    rootTabs: getEditorPortraitRootMenuEntries('pixel', {
+      labelOverrides: { file: SHARED_EDITOR_LEFT_MENU.fileLabel }
+    }),
     toolTabs: [
       { id: 'draw', label: 'Draw' },
       { id: 'select', label: 'Select' },
@@ -482,7 +483,8 @@ export function buildPixelPortraitMenuModel() {
     ],
     fileHiddenIds: Array.from(PIXEL_PORTRAIT_FILE_HIDE_IDS),
     canvasUtilityIds: ['copy-image', 'paste-image', 'import-image', 'canvas-export'],
-    bottomRailActions: ['menu', 'undo', 'redo', 'brush']
+    bottomRailActions: ['menu', 'undo', 'redo', 'brush'],
+    portraitRootPlacement: 'bottom-rail'
   };
 }
 
@@ -495,14 +497,26 @@ export function buildPixelMobileEditorLayout(width, height, {
     const layout = buildLandscapeTouchEditorShellPlan('pixel', {
       viewportWidth: width,
       viewportHeight: height,
-      bottomRailHeight: 0,
-      reserveRightRail: drawerOpen
+      bottomRailHeight: 78,
+      topRailHeight: 0,
+      reserveRightRail: drawerOpen,
+      reserveThumbstickSpace: false
     });
     return {
       ...layout,
+      surfaces: {
+        ...layout.surfaces,
+        zoom: null
+      },
       orientation: 'landscape',
       paletteStrip: null,
-      toolbarStrip: null
+      zoomStrip: null,
+      toolbarStrip: null,
+      compactLandscapeRootRail: true,
+      drawerOverlaysWorkSurface: false,
+      drawerOpensFromLeftRail: true,
+      rootDrawerSurface: layout.rootDrawerSurface,
+      rootDrawerOverlayOrigin: layout.rootDrawerOverlayOrigin
     };
   }
 
@@ -556,6 +570,7 @@ export function buildPixelMobileEditorLayout(width, height, {
       sheetContent: subRail,
       rootRail,
       subRail,
+      portraitRootPlacement: 'bottom-rail',
       workSurface,
       mainEditor: workSurface,
       orientation: 'portrait',
@@ -624,7 +639,7 @@ export default class PixelStudio {
     this.game = game;
     this.sharedMenu = new SharedEditorMenu();
     this.controllerMenu = new ControllerMenuStack({
-      siblingOrder: ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames', 'bones']
+      siblingOrder: PIXEL_CONTROLLER_SIBLING_ORDER
     });
     this.tileLibrary = TILE_LIBRARY;
     this.decalEditSession = null;
@@ -689,6 +704,11 @@ export default class PixelStudio {
       }
     });
     this.modeTab = 'draw';
+    this.closedDesktopDropdownRootId = null;
+    this.openDesktopDropdownRootId = null;
+    this.desktopDropdown = null;
+    this.desktopDropdownScroll = {};
+    this.gamepadSlideOutMenuMeta = null;
     this.tools = createToolRegistry(this);
     this.activeToolId = TOOL_IDS.PENCIL;
     this.toolOptions = {
@@ -841,7 +861,6 @@ export default class PixelStudio {
     this.cursor = { row: 0, col: 0, x: 0, y: 0 };
     this.gamepadCursor = { x: 0, y: 0, active: false, initialized: false };
     this.gamepadDrawing = false;
-    this.gamepadHintVisible = false;
     this.gamepadSelection = { active: false, mode: null };
     this.selectionContextMenu = null;
     this.quickWheel = { active: false, type: null, center: { x: 0, y: 0 }, selectionIndex: null };
@@ -868,6 +887,7 @@ export default class PixelStudio {
       timeline: 0,
       toolbar: 0,
       menu: 0,
+      landscapeRoot: 0,
       file: 0,
       toolOptions: 0,
       bones: 0
@@ -888,6 +908,7 @@ export default class PixelStudio {
     this.paletteColorPickerBounds = null;
     this.brushPickerBounds = null;
     this.brushPickerSliders = null;
+    this.landscapeRootMenuMeta = null;
     this.canvasViewportBounds = null;
     this.panJoystick = {
       active: false,
@@ -916,10 +937,11 @@ export default class PixelStudio {
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
     this.sidebars = { left: true };
-    this.leftPanelTabs = ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'animation', 'bones'];
+    this.leftPanelTabs = PIXEL_LEFT_PANEL_TABS.slice();
     this.leftPanelTabIndex = 0;
     this.leftPanelTab = this.leftPanelTabs[this.leftPanelTabIndex];
     this.uiButtons = [];
+    this.pendingDesktopDropdownHit = null;
     this.boneUiRegions = [];
     this.boneTimelineMeta = null;
     this.boneTimelineGesture = null;
@@ -1176,11 +1198,13 @@ export default class PixelStudio {
       return;
     }
     const autosave = loadProjectFile('art', 'Tile Art Autosave');
-    const autosaveHasTiles = Object.keys(autosave?.data?.tiles || {}).length > 0;
-    if (autosave?.data && autosaveHasTiles) {
+    const autosaveHasPayload = Object.keys(autosave?.data?.tiles || {}).length > 0
+      || Object.keys(autosave?.data?.tileProperties || {}).length > 0;
+    if (autosave?.data && autosaveHasPayload) {
       const normalized = this.normalizeLoadedArtDocument(autosave.data);
-      if (this.hasLoadedPixelArtData(normalized)) {
+      if (this.hasLoadedPixelArtData(normalized) || Object.keys(normalized.tileProperties || {}).length) {
         this.game.world.pixelArt = normalized;
+        this.game.world.tileDefinitions = buildTileDefinitions(normalized.tileProperties);
         this.hydrateTileArtRefs();
         this.currentDocumentRef = { folder: 'art', name: 'Tile Art Autosave' };
         return;
@@ -1188,11 +1212,13 @@ export default class PixelStudio {
     }
     const levelAutosave = loadProjectFile('levels', 'Level Editor Autosave');
     const levelPixelArt = levelAutosave?.data?.pixelArt;
-    const levelAutosaveHasTiles = Object.keys(levelPixelArt?.tiles || {}).length > 0;
-    if (levelAutosaveHasTiles) {
+    const levelAutosaveHasPayload = Object.keys(levelPixelArt?.tiles || {}).length > 0
+      || Object.keys(levelPixelArt?.tileProperties || {}).length > 0;
+    if (levelAutosaveHasPayload) {
       const normalized = this.normalizeLoadedArtDocument(levelPixelArt);
-      if (this.hasLoadedPixelArtData(normalized)) {
+      if (this.hasLoadedPixelArtData(normalized) || Object.keys(normalized.tileProperties || {}).length) {
         this.game.world.pixelArt = normalized;
+        this.game.world.tileDefinitions = buildTileDefinitions(normalized.tileProperties);
         this.hydrateTileArtRefs();
         this.currentDocumentRef = { folder: 'levels', name: 'Level Editor Autosave' };
         return;
@@ -1225,8 +1251,10 @@ export default class PixelStudio {
     if (!data || typeof data !== 'object') return false;
     if (data.kind === 'actor-state-animation') return false;
     if (data.tiles && typeof data.tiles === 'object') {
-      return Object.values(data.tiles).some((entry) => this.isTileArtEntry(entry, options));
+      return Object.values(data.tiles).some((entry) => this.isTileArtEntry(entry, options))
+        || (data.tileProperties && typeof data.tileProperties === 'object');
     }
+    if (data.tileProperties && typeof data.tileProperties === 'object') return true;
     return this.isTileArtEntry(data, options) && !data.kind;
   }
 
@@ -1557,8 +1585,12 @@ export default class PixelStudio {
   }
 
   normalizeLoadedArtDocument(data) {
+    const tileProperties = data?.tileProperties && typeof data.tileProperties === 'object'
+      ? { ...data.tileProperties }
+      : {};
+    const emptyTileDoc = () => (Object.keys(tileProperties).length ? { tiles: {}, tileProperties } : { tiles: {} });
     if (!this.isTileArtDocument(data, { resolveRef: true })) {
-      return { tiles: {} };
+      return emptyTileDoc();
     }
     if (data?.tiles && typeof data.tiles === 'object') {
       const tileChar = this.activeTile?.char || this.tileLibrary?.[0]?.char || '#';
@@ -1566,14 +1598,14 @@ export default class PixelStudio {
         Object.entries(data.tiles).filter(([, entry]) => this.isTileArtEntry(entry, { resolveRef: true }))
       );
       const firstEntry = Object.values(nextTiles).find((entry) => entry && typeof entry === 'object');
-      if (!firstEntry) return { tiles: {} };
+      if (!firstEntry) return emptyTileDoc();
       if (tileChar && !nextTiles[tileChar]) nextTiles[tileChar] = firstEntry;
       if (!nextTiles['#']) nextTiles['#'] = firstEntry;
-      return { ...data, tiles: nextTiles };
+      return { ...data, tiles: nextTiles, tileProperties };
     }
     const hasFrameArray = Array.isArray(data?.frames) && data.frames.length > 0;
     if (!hasFrameArray) {
-      return { tiles: {} };
+      return emptyTileDoc();
     }
     const tileChar = this.activeTile?.char || this.tileLibrary?.[0]?.char || '#';
     const inferredWidth = Number.isFinite(data?.width) ? Math.max(1, Math.round(data.width)) : null;
@@ -1605,6 +1637,7 @@ export default class PixelStudio {
       editor
     };
     return {
+      tileProperties,
       tiles: {
         [tileChar]: tileEntry,
         '#': tileEntry
@@ -1658,17 +1691,21 @@ export default class PixelStudio {
         editor: tileData.editor
       };
     });
-    if (!Object.keys(refs).length) {
+    const tileProperties = store.tileProperties && typeof store.tileProperties === 'object'
+      ? { ...store.tileProperties }
+      : {};
+    if (!Object.keys(refs).length && !Object.keys(tileProperties).length) {
       if (force) {
         const existingAutosave = loadProjectFile('art', 'Tile Art Autosave');
         const existingTiles = existingAutosave?.data?.tiles || {};
-        if (!Object.keys(existingTiles).length) {
+        const existingProperties = existingAutosave?.data?.tileProperties || {};
+        if (!Object.keys(existingTiles).length && !Object.keys(existingProperties).length) {
           saveProjectFile('art', 'Tile Art Autosave', { tiles: {} }, { createVersion: false });
         }
       }
       return;
     }
-    const saved = saveProjectFile('art', 'Tile Art Autosave', { tiles: refs }, { createVersion: false });
+    const saved = saveProjectFile('art', 'Tile Art Autosave', { tiles: refs, tileProperties }, { createVersion: false });
     if (saved && this.tilePickerMode && !this.forceArtDocumentSave) {
       this.currentDocumentRef = { folder: 'art', name: saved.name };
     }
@@ -1752,11 +1789,11 @@ export default class PixelStudio {
     const left = listOuter.x;
     const startY = listOuter.y;
     const tiles = this.tileLibrary.filter((tile) => tile?.char);
-    ctx.fillStyle = '#fff';
-    ctx.font = `${portrait ? 20 : 24}px Courier New`;
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `${portrait ? 20 : 24}px ${UI_SUITE.font.family}`;
     ctx.fillText('Tile Editor', listOuter.titleX, listOuter.titleY);
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.font = '13px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.font = `13px ${UI_SUITE.font.family}`;
     if (!portrait) {
       ctx.fillText('Pick a tile, then Edit or Reset.', left, 64);
       const backBounds = { x: width - 120, y: 20, w: 92, h: 36 };
@@ -1795,22 +1832,34 @@ export default class PixelStudio {
           }
         }
       } else {
-        ctx.fillStyle = 'rgba(255,255,255,0.8)';
-        ctx.font = 'bold 14px Courier New';
+        ctx.fillStyle = UI_SUITE.colors.muted;
+        ctx.font = `bold 14px ${UI_SUITE.font.family}`;
         ctx.fillText(tile.char, left + 18, y + 21);
       }
-      ctx.fillStyle = '#fff';
-      ctx.font = '14px Courier New';
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `14px ${UI_SUITE.font.family}`;
       const labelX = left + previewSize + 18;
       ctx.fillText(`${tile.label} [${tile.char}]`, labelX, y + (portrait ? 24 : 22));
+      const props = this.getEditableTileProperties(tile);
+      const summary = [
+        props.solid ? 'solid' : props.oneWay ? 'one-way' : 'pass',
+        props.slipperiness ? `slip ${props.slipperiness.toFixed(2)}` : '',
+        props.conveyor ? `conv ${props.conveyor.direction < 0 ? 'left' : 'right'} ${props.conveyor.speed}` : '',
+        props.hazardDamage ? `hazard ${props.hazardDamage}` : '',
+        props.elevatorRole ? `elevator ${props.elevatorRole}` : '',
+        props.destructible ? 'destructible' : ''
+      ].filter(Boolean).join(' | ');
       const buttonH = portrait ? UI_SUITE.spacing.tap : 36;
-      const buttonW = portrait ? Math.max(76, Math.min(96, Math.floor((rowBounds.w - 16) / 2))) : 82;
-      const resetW = portrait ? buttonW : 92;
+      const buttonW = portrait ? Math.max(68, Math.min(88, Math.floor((rowBounds.w - 24) / 3))) : 68;
+      const propsW = portrait ? buttonW : 76;
+      const resetW = portrait ? buttonW : 76;
       const actionY = portrait ? y + rowH - buttonH - 12 : y + 6;
-      const actionX = portrait ? left + 8 : Math.max(left + 160, left + rowBounds.w - 184);
+      const actionX = portrait ? left + 8 : Math.max(left + 160, left + rowBounds.w - 228);
       const editBounds = { x: actionX, y: actionY, w: buttonW, h: buttonH };
-      const resetBounds = { x: actionX + buttonW + 8, y: actionY, w: resetW, h: buttonH };
-      this.drawButton(ctx, editBounds, 'Edit', false, { fontSize: portrait ? 12 : 11 });
+      const propsBounds = { x: actionX + buttonW + 8, y: actionY, w: propsW, h: buttonH };
+      const resetBounds = { x: propsBounds.x + propsW + 8, y: actionY, w: resetW, h: buttonH };
+      this.drawButton(ctx, editBounds, 'Art', false, { fontSize: portrait ? 12 : 11 });
+      this.drawButton(ctx, propsBounds, 'Props', false, { fontSize: portrait ? 12 : 11 });
       this.drawButton(ctx, resetBounds, 'Reset', false, { fontSize: portrait ? 12 : 11 });
       this.uiButtons.push({
         bounds: editBounds,
@@ -1820,15 +1869,21 @@ export default class PixelStudio {
         }
       });
       this.uiButtons.push({
+        bounds: propsBounds,
+        onClick: () => {
+          this.editTileProperties(tile);
+        }
+      });
+      this.uiButtons.push({
         bounds: resetBounds,
         onClick: () => {
           this.setActiveTile(tile);
           this.resetActiveTileArt();
         }
       });
-      ctx.fillStyle = 'rgba(255,255,255,0.45)';
-      ctx.font = '11px Courier New';
-      ctx.fillText(`${index + 1}/${tiles.length}`, labelX, y + (portrait ? 46 : 42));
+      ctx.fillStyle = UI_SUITE.colors.muted;
+      ctx.font = `11px ${UI_SUITE.font.family}`;
+      ctx.fillText(summary || `${index + 1}/${tiles.length}`, labelX, y + (portrait ? 46 : 42));
     });
   }
 
@@ -2668,6 +2723,135 @@ export default class PixelStudio {
     this.loadTileData();
   }
 
+  getTilePropertiesStore() {
+    const pixelArt = ensurePixelArtStore(this.game.world);
+    if (!pixelArt.tileProperties || typeof pixelArt.tileProperties !== 'object') {
+      pixelArt.tileProperties = {};
+    }
+    return pixelArt.tileProperties;
+  }
+
+  getEditableTileProperties(tile = this.activeTile) {
+    const world = this.game?.world;
+    const existing = tile?.char ? world?.getTilePropertiesByChar?.(tile.char) : null;
+    return serializeTileProperties(existing || tile || {});
+  }
+
+  saveTileProperties(tile, properties) {
+    if (!tile?.id) return;
+    const store = this.getTilePropertiesStore();
+    store[tile.id] = serializeTileProperties(properties);
+    this.game.world.tileDefinitions = buildTileDefinitions(store);
+    if (this.game.world.data) {
+      if (!this.game.world.data.pixelArt) this.game.world.data.pixelArt = this.game.world.pixelArt;
+      this.game.world.data.pixelArt.tileProperties = store;
+    }
+    this.game.world.rebuildCaches?.();
+    this.persistTileArtAutosave(true);
+    this.game.editor?.persistAutosave?.();
+  }
+
+  async editTileProperties(tile = this.activeTile) {
+    if (!tile?.char) return;
+    const current = this.getEditableTileProperties(tile);
+    const collision = await openChoiceOverlay({
+      title: `${tile.label} Properties`,
+      message: 'Collision behavior',
+      choices: [
+        { label: 'Empty / Pass-through', value: 'empty', primary: !current.solid && !current.oneWay },
+        { label: 'Solid', value: 'solid', primary: current.solid },
+        { label: 'One-way Platform', value: 'oneWay', primary: current.oneWay }
+      ]
+    });
+    if (collision == null) return;
+    const next = {
+      ...current,
+      solid: collision === 'solid',
+      oneWay: collision === 'oneWay'
+    };
+    const slipperiness = await openTextInputOverlay({
+      title: `${tile.label} Properties`,
+      label: 'Slipperiness 0-1',
+      initialValue: String(next.slipperiness || 0),
+      inputType: 'float',
+      min: 0,
+      max: 1,
+      step: 0.05
+    });
+    if (slipperiness == null) return;
+    next.slipperiness = Number(slipperiness) || 0;
+    const conveyor = await openChoiceOverlay({
+      title: `${tile.label} Properties`,
+      message: 'Conveyor behavior',
+      choices: [
+        { label: 'No Conveyor', value: 'none', primary: !next.conveyor },
+        { label: 'Conveyor Left', value: 'left', primary: next.conveyor?.direction < 0 },
+        { label: 'Conveyor Right', value: 'right', primary: next.conveyor?.direction > 0 }
+      ]
+    });
+    if (conveyor == null) return;
+    if (conveyor === 'none') {
+      next.conveyor = null;
+    } else {
+      const speed = await openTextInputOverlay({
+        title: `${tile.label} Properties`,
+        label: 'Conveyor speed px/sec',
+        initialValue: String(next.conveyor?.speed || 80),
+        inputType: 'float',
+        min: 0,
+        max: 600,
+        step: 5
+      });
+      if (speed == null) return;
+      next.conveyor = { direction: conveyor === 'left' ? -1 : 1, speed: Number(speed) || 80 };
+    }
+    const hazardDamage = await openTextInputOverlay({
+      title: `${tile.label} Properties`,
+      label: 'Hazard damage per tick, 0 for none',
+      initialValue: String(next.hazardDamage || 0),
+      inputType: 'float',
+      min: 0,
+      max: 99,
+      step: 1
+    });
+    if (hazardDamage == null) return;
+    next.hazardDamage = Number(hazardDamage) || 0;
+    const liquid = await openChoiceOverlay({
+      title: `${tile.label} Properties`,
+      message: 'Liquid movement behavior',
+      choices: [
+        { label: 'None', value: 'none', primary: !next.liquid },
+        { label: 'Water', value: 'water', primary: next.liquid === 'water' },
+        { label: 'Lava', value: 'lava', primary: next.liquid === 'lava' },
+        { label: 'Acid', value: 'acid', primary: next.liquid === 'acid' }
+      ]
+    });
+    if (liquid == null) return;
+    next.liquid = liquid === 'none' ? null : liquid;
+    const elevatorRole = await openChoiceOverlay({
+      title: `${tile.label} Properties`,
+      message: 'Elevator role metadata',
+      choices: [
+        { label: 'None', value: 'none', primary: !next.elevatorRole },
+        { label: 'Elevator Platform', value: 'platform', primary: next.elevatorRole === 'platform' },
+        { label: 'Elevator Path', value: 'path', primary: next.elevatorRole === 'path' }
+      ]
+    });
+    if (elevatorRole == null) return;
+    next.elevatorRole = elevatorRole === 'none' ? null : elevatorRole;
+    const destructible = await openChoiceOverlay({
+      title: `${tile.label} Properties`,
+      message: 'Destructible metadata',
+      choices: [
+        { label: 'Not Destructible', value: 'no', primary: !next.destructible },
+        { label: 'Destructible', value: 'yes', primary: next.destructible }
+      ]
+    });
+    if (destructible == null) return;
+    next.destructible = destructible === 'yes';
+    this.saveTileProperties(tile, next);
+  }
+
   resetTransientInteractionState() {
     this.stopGamepadDraw();
     this.cancelLongPress();
@@ -3017,11 +3201,8 @@ export default class PixelStudio {
       animationMode: this.modeTab === 'animate',
       timelineFocused: this.uiFocus.group === 'timeline'
     });
-    if (inputState.connected && !this.gamepadHintVisible) {
-      console.info('[PixelStudio] Gamepad detected.');
-      this.gamepadHintVisible = true;
-    }
     if (!inputState.connected) {
+      if (this.controllerMenu.active) this.controllerMenu.closeToSurface();
       this.gamepadCursor.active = false;
       this.triggerSelectionReady = false;
       return;
@@ -3035,7 +3216,7 @@ export default class PixelStudio {
     this.gamepadCursor.active = true;
 
     this.controllerMenu.setMenus(this.buildControllerMenus(), {
-      siblingOrder: ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames', 'bones']
+      siblingOrder: PIXEL_CONTROLLER_SIBLING_ORDER
     });
     this.controllerMenu.ensureInitialFocus();
     if (this.controllerMenu.handleActions(inputState.actions, inputState.axes, dt, this)) {
@@ -3057,6 +3238,7 @@ export default class PixelStudio {
 
   buildControllerMenus() {
     const action = (id, label, onSelect, options = {}) => ({ id, label, onSelect, ...options });
+    const hasSelection = Boolean(this.selection?.active && this.selection?.mask);
     const rootItem = (id, label, submenu = id) => ({
       id,
       label,
@@ -3076,41 +3258,76 @@ export default class PixelStudio {
     };
     const fileItems = this.getFilePanelItems()
       .filter((item) => item?.id && !item.divider && !item.separator)
-      .map((item) => action(item.id, item.label, item.onClick || item.action || (() => {})));
+      .map((item) => {
+        const handler = item.onClick || item.action || null;
+        return action(item.id, item.label, handler, {
+          disabled: Boolean(item.disabled) || typeof handler !== 'function'
+        });
+      });
+    const layerManagementItems = [
+      action('layer-add', 'Add Layer', () => this.addLayer()),
+      action('layer-duplicate', 'Duplicate Layer', () => this.duplicateLayer(this.canvasState.activeLayerIndex)),
+      action('layer-delete', 'Delete Layer', () => this.deleteLayer(this.canvasState.activeLayerIndex)),
+      action('layer-rename', 'Rename Layer', () => this.renameLayer(this.canvasState.activeLayerIndex)),
+      action('layer-visibility', this.activeLayer?.visible === false ? 'Show Layer' : 'Hide Layer', () => {
+        const layer = this.activeLayer;
+        if (!layer) return;
+        layer.visible = !layer.visible;
+        this.syncTileData();
+      }),
+      action('layer-up', 'Move Layer Up', () => this.moveLayerBy(-1)),
+      action('layer-down', 'Move Layer Down', () => this.moveLayerBy(1)),
+      action('layer-merge-up', 'Merge Up', () => this.mergeLayerUp(this.canvasState.activeLayerIndex)),
+      action('layer-merge-down', 'Merge Down', () => this.mergeLayerDown(this.canvasState.activeLayerIndex)),
+      action('layer-flatten', 'Flatten Layers', () => this.flattenAllLayers())
+    ];
+    const frameManagementItems = [
+      action('frame-add', 'Add Frame', () => this.addFrame()),
+      action('frame-duplicate', 'Duplicate Frame', () => this.duplicateFrame(this.animation.currentFrameIndex)),
+      action('frame-delete', 'Delete Frame', () => this.deleteFrame(this.animation.currentFrameIndex)),
+      action('frame-delay', 'Frame Delay', () => this.setCurrentFrameDelayMs()),
+      action('frame-loop', this.animation.loop ? 'Loop: On' : 'Loop: Off', () => { this.animation.loop = !this.animation.loop; }),
+      action('frame-play', this.animation.playing ? 'Pause Playback' : 'Play Playback', () => { this.animation.playing = !this.animation.playing; }),
+      action('frame-step', 'Step Frame', () => this.stepAnimationFrame()),
+      action('frame-rewind', 'Rewind Frames', () => this.rewindAnimationFrames()),
+      action('frame-up', 'Move Frame Up', () => this.moveFrameBy(-1)),
+      action('frame-down', 'Move Frame Down', () => this.moveFrameBy(1))
+    ];
     return {
       root: {
         id: 'root',
         title: 'Pixel Editor',
-        items: [
-          rootItem('file', 'File'),
-          rootItem('draw', 'Draw'),
-          rootItem('select', 'Select'),
-          rootItem('tools', 'Tools'),
-          rootItem('canvas', 'Canvas'),
-          rootItem('layers', 'Layers'),
-          rootItem('animation', 'Frames', 'frames'),
-          rootItem('bones', 'Rigging'),
-          action('undo', 'Undo', () => this.runtime.undo()),
-          action('redo', 'Redo', () => this.runtime.redo())
-        ]
+        items: PIXEL_CONTROLLER_ROOT_ENTRIES.map((entry) => rootItem(
+          entry.id,
+          entry.label,
+          entry.controllerMenuId
+        ))
       },
       draw: { id: 'draw', title: 'Draw', items: toolItems('draw') },
       select: { id: 'select', title: 'Select', items: toolItems('select') },
       layers: {
         id: 'layers',
         title: 'Layers',
-        items: this.canvasState.layers
+        items: [
+          ...layerManagementItems,
+          { id: 'layer-selection-divider', divider: true },
+          ...this.canvasState.layers
           .map((layer, index) => ({ layer, index }))
           .reverse()
           .map(({ layer, index }) => surfaceAction(`layer-${index}`, `${index + 1}: ${layer.name || 'Layer'}`, () => { this.canvasState.activeLayerIndex = index; }))
+        ]
       },
       frames: {
         id: 'frames',
         title: 'Frames',
-        items: this.animation.frames.map((frame, index) => surfaceAction(`frame-${index}`, `Frame ${index + 1}`, () => {
+        items: [
+          ...frameManagementItems,
+          { id: 'frame-selection-divider', divider: true },
+          ...this.animation.frames.map((frame, index) => surfaceAction(`frame-${index}`, `Frame ${index + 1}`, () => {
             this.animation.currentFrameIndex = index;
             this.setFrameLayers(this.currentFrame.layers);
           }))
+        ]
       },
       bones: {
         id: 'bones',
@@ -3131,20 +3348,39 @@ export default class PixelStudio {
           action('onion', this.animation.onion.enabled ? 'Onion Skin: On' : 'Onion Skin: Off', () => { this.animation.onion.enabled = !this.animation.onion.enabled; })
         ]
       },
+      view: {
+        id: 'view',
+        title: 'View',
+        items: [
+          action('zoom-in', 'Zoom In', () => this.zoomBy(1)),
+          action('zoom-out', 'Zoom Out', () => this.zoomBy(-1)),
+          action('zoom-fit', 'Fit Canvas', () => this.zoomToFitCanvas()),
+          action('grid', this.showGrid ? 'Grid: On' : 'Grid: Off', () => { this.showGrid = !this.showGrid; }),
+          action('tile-preview', this.tiledPreview.enabled ? 'Tile Preview: On' : 'Tile Preview: Off', () => { this.tiledPreview.enabled = !this.tiledPreview.enabled; }),
+          action('onion', this.animation.onion.enabled ? 'Onion Skin: On' : 'Onion Skin: Off', () => { this.animation.onion.enabled = !this.animation.onion.enabled; })
+        ]
+      },
       file: {
         id: 'file',
         title: 'File',
         items: fileItems
       },
-      tools: {
-        id: 'tools',
-        title: 'Tools',
+      edit: {
+        id: 'edit',
+        title: 'Edit',
         items: [
           action('undo', 'Undo', () => this.runtime.undo()),
           action('redo', 'Redo', () => this.runtime.redo()),
           action('copy', 'Copy', () => this.copySelection()),
-          action('paste', 'Paste', () => this.pasteClipboard())
+          action('cut', 'Cut', () => this.cutSelection(), { disabled: !hasSelection }),
+          action('paste', 'Paste', () => this.pasteClipboard()),
+          action('clear', 'Clear Selection', () => this.clearSelection(), { disabled: !hasSelection })
         ]
+      },
+      tools: {
+        id: 'tools',
+        title: 'Tools',
+        items: toolItems('tools')
       },
       system: buildControllerSystemMenu({
         fileMenuId: 'file',
@@ -3538,7 +3774,7 @@ export default class PixelStudio {
       this.setInputMode('canvas');
       resetBoneState.call(this, { mode: this.boneEditor?.mode || 'bones' });
     }
-    if (this.isMobileLayout() && ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'animation', 'bones'].includes(tab)) {
+    if (this.isMobileLayout() && PIXEL_MOBILE_DRAWER_TABS.includes(tab)) {
       this.mobileDrawer = 'panel';
     }
   }
@@ -3837,6 +4073,22 @@ export default class PixelStudio {
 
   startMenuScrollDrag(payload) {
     if (!payload.touchCount) return false;
+    if (this.gamepadSlideOutMenuMeta?.scrollBounds
+      && this.isPointInBounds(payload, this.gamepadSlideOutMenuMeta.scrollBounds)
+      && this.gamepadSlideOutMenuMeta.maxScroll > 0) {
+      const hit = this.uiButtons.find((button) => this.isPointInBounds(payload, button.bounds));
+      this.menuScrollDrag = {
+        startY: payload.y,
+        startScroll: this.controllerMenu.scroll?.[this.gamepadSlideOutMenuMeta.menuId] || 0,
+        moved: false,
+        hitAction: hit?.onClick || null,
+        lineHeight: Math.max(1, this.gamepadSlideOutMenuMeta.lineHeight || 20),
+        scrollGroup: 'gamepadSubmenu',
+        menuId: this.gamepadSlideOutMenuMeta.menuId,
+        maxScroll: Math.max(0, this.gamepadSlideOutMenuMeta.maxScroll || 0)
+      };
+      return true;
+    }
     if (payload.touchCount && this.leftPanelTab === 'file' && this.filePanelScroll
       && this.isPointInBounds(payload, this.filePanelScroll)) {
       const hit = this.uiButtons.find((button) => this.isPointInBounds(payload, button.bounds));
@@ -3846,6 +4098,21 @@ export default class PixelStudio {
         moved: false,
         hitAction: hit?.onClick || null,
         lineHeight: Math.max(1, this.filePanelScroll.lineHeight || 20)
+      };
+      return true;
+    }
+    if (payload.touchCount && this.landscapeRootMenuMeta?.scrollBounds
+      && this.isPointInBounds(payload, this.landscapeRootMenuMeta.scrollBounds)
+      && this.landscapeRootMenuMeta.maxScroll > 0) {
+      const hit = this.uiButtons.find((button) => this.isPointInBounds(payload, button.bounds));
+      this.menuScrollDrag = {
+        startY: payload.y,
+        startScroll: this.focusScroll.landscapeRoot || 0,
+        moved: false,
+        hitAction: hit?.onClick || null,
+        lineHeight: Math.max(1, this.landscapeRootMenuMeta.lineHeight || 20),
+        scrollGroup: 'landscapeRoot',
+        maxScroll: Math.max(0, this.landscapeRootMenuMeta.maxScroll || 0)
       };
       return true;
     }
@@ -4069,12 +4336,41 @@ export default class PixelStudio {
 
   handlePointerDown(payload) {
     const button = payload.button ?? 0;
+    this.pendingDesktopDropdownHit = null;
     const boneCanvasTap = this.leftPanelTab === 'bones'
       && this.canvasBounds
       && this.isPointInBounds(payload, this.canvasBounds);
     const boneCanvasOwnsTap = typeof this.shouldBoneCanvasOwnPointerDown === 'function'
       ? this.shouldBoneCanvasOwnPointerDown(payload)
       : boneCanvasTap;
+    if (!this.isMobileLayout() && shouldCloseDesktopDropdownOnPointerDown({
+      dropdown: this.desktopDropdown,
+      point: payload,
+      rootButtons: this.uiButtons,
+      rootIdKey: 'hoverRootId'
+    })) {
+      const nextDropdown = resolveClosedDesktopDropdownState({
+        dropdown: this.desktopDropdown,
+        openRootId: this.openDesktopDropdownRootId,
+        fallbackRootId: this.getDesktopRootIdForPanel()
+      });
+      this.closedDesktopDropdownRootId = nextDropdown.closedRootId;
+      this.openDesktopDropdownRootId = nextDropdown.openRootId;
+      this.desktopDropdown = nextDropdown.dropdown;
+      this.pointerDownOnUi = true;
+      return;
+    }
+    if (!this.isMobileLayout()) {
+      const desktopDropdownHit = this.uiButtons.find((button) => (
+        button.desktopDropdownItem
+        && this.isPointInBounds(payload, button.bounds)
+      ));
+      if (desktopDropdownHit) {
+        this.pendingDesktopDropdownHit = createPendingDesktopDropdownHit(desktopDropdownHit, payload);
+        this.pointerDownOnUi = true;
+        return;
+      }
+    }
     if (this.transportPopover) {
       const hit = this.transportPopoverButtons.find((entry) => this.isPointInBounds(payload, entry.bounds));
       if (hit) {
@@ -4192,7 +4488,14 @@ export default class PixelStudio {
         this.openSelectionContextMenu();
         return;
       }
-      if (this.spaceDown || button === 1 || button === 2) {
+      const pointerPolicy = !this.isMobileLayout()
+        ? getEditorPointerInteractionPolicy('pixel', { mode: 'desktop', pointerType: 'mouse' })
+        : null;
+      const shouldPanWithButton = Boolean(pointerPolicy) && (
+        (button === 1 && pointerPolicy.workSurfaceGestures.middleDragPan)
+        || (button === 2 && pointerPolicy.workSurfaceGestures.rightDragPan)
+      );
+      if (this.spaceDown || shouldPanWithButton) {
         this.panStart = this.viewportController.beginPan(payload, { x: this.view.panX, y: this.view.panY });
         return;
       }
@@ -4321,11 +4624,26 @@ export default class PixelStudio {
     }
     this.cursor.x = payload.x;
     this.cursor.y = payload.y;
+    this.pendingDesktopDropdownHit = updatePendingDesktopDropdownHit(this.pendingDesktopDropdownHit, payload);
     if (!this.isMobileLayout() && !payload.touchCount) {
-      const hoverRoot = this.uiButtons.find((button) => button.hoverRootId && this.isPointInBounds(payload, button.bounds));
+      const hoverRoot = resolveDesktopDropdownHoverSwitch({
+        buttons: this.uiButtons,
+        point: payload,
+        openRootId: this.openDesktopDropdownRootId,
+        rootIdKey: 'hoverRootId'
+      });
       if (hoverRoot) {
-        const panelId = this.getDesktopPanelIdForRoot(hoverRoot.hoverRootId);
-        if (panelId && this.leftPanelTab !== panelId) this.setLeftPanelTab(panelId);
+        const nextDropdown = resolveOpenDesktopDropdownState({
+          rootId: hoverRoot.rootId,
+          currentOpenRootId: this.openDesktopDropdownRootId,
+          closedRootId: this.closedDesktopDropdownRootId,
+          dropdown: this.desktopDropdown
+        });
+        if (nextDropdown) {
+          this.closedDesktopDropdownRootId = nextDropdown.closedRootId;
+          this.openDesktopDropdownRootId = nextDropdown.openRootId;
+          this.desktopDropdown = nextDropdown.dropdown;
+        }
       }
     }
     if (this.longPressTimer && this.longPressOrigin) {
@@ -4347,12 +4665,14 @@ export default class PixelStudio {
       if (this.menuScrollDrag.moved) {
         const total = (this.focusGroups.file || []).length;
         const maxVisible = this.focusGroupMeta.file?.maxVisible || 1;
-        const maxScroll = ['toolOptions', 'tools', 'layers', 'frames', 'bones', 'paletteMobile', 'paletteModal', 'tilePicker'].includes(this.menuScrollDrag.scrollGroup)
+        const maxScroll = ['landscapeRoot', 'toolOptions', 'tools', 'layers', 'frames', 'bones', 'paletteMobile', 'paletteModal', 'tilePicker'].includes(this.menuScrollDrag.scrollGroup)
           ? (this.menuScrollDrag.maxScroll || 0)
           : Math.max(0, total - maxVisible);
         const delta = this.menuScrollDrag.scrollGroup === 'paletteMobile' ? dx : dy;
         const next = this.menuScrollDrag.startScroll - Math.round(delta / this.menuScrollDrag.lineHeight);
-        if (this.menuScrollDrag.scrollGroup === 'toolOptions') {
+        if (this.menuScrollDrag.scrollGroup === 'landscapeRoot') {
+          this.focusScroll.landscapeRoot = clamp(next, 0, maxScroll);
+        } else if (this.menuScrollDrag.scrollGroup === 'toolOptions') {
           this.focusScroll.toolOptions = clamp(next, 0, maxScroll);
         } else if (this.menuScrollDrag.scrollGroup === 'tools') {
           this.focusScroll.tools = clamp(next, 0, maxScroll);
@@ -4369,6 +4689,11 @@ export default class PixelStudio {
         } else if (this.menuScrollDrag.scrollGroup === 'tilePicker') {
           this.tilePickerScroll = clamp(next, 0, maxScroll);
           this.tilePickerScrollFloat = this.tilePickerScroll;
+        } else if (this.menuScrollDrag.scrollGroup === 'gamepadSubmenu') {
+          const menuId = this.menuScrollDrag.menuId;
+          if (menuId) {
+            this.controllerMenu.scroll[menuId] = clamp(next, 0, maxScroll);
+          }
         } else {
           this.focusScroll.file = clamp(next, 0, maxScroll);
         }
@@ -4462,6 +4787,24 @@ export default class PixelStudio {
       this.panStart = null;
       this.viewportController.endPan();
     }
+    if (this.pendingDesktopDropdownHit) {
+      const hit = this.pendingDesktopDropdownHit;
+      this.pendingDesktopDropdownHit = null;
+      const { shouldActivate } = resolvePendingDesktopDropdownHit(hit, payload);
+      if (shouldActivate) {
+        hit.onClick?.({ x: payload.x, y: payload.y, id: payload.id });
+        const nextDropdown = resolveClosedDesktopDropdownState({
+          dropdown: this.desktopDropdown,
+          openRootId: this.openDesktopDropdownRootId,
+          fallbackRootId: this.leftPanelTab
+        });
+        this.closedDesktopDropdownRootId = nextDropdown.closedRootId;
+        this.openDesktopDropdownRootId = nextDropdown.openRootId;
+        this.desktopDropdown = nextDropdown.dropdown;
+      }
+      this.pointerDownOnUi = false;
+      return;
+    }
     if (this.pointerDownOnUi) {
       this.pointerDownOnUi = false;
       this.cancelLongPress();
@@ -4474,6 +4817,15 @@ export default class PixelStudio {
 
   handleWheel(payload) {
     if (this.handleBoneTimelineWheel?.(payload)) return;
+    const desktopDropdownScroll = applyDesktopDropdownWheelScrollState({
+      dropdown: this.desktopDropdown,
+      payload,
+      scrollState: this.desktopDropdownScroll
+    });
+    if (desktopDropdownScroll) {
+      this.desktopDropdownScroll = desktopDropdownScroll.scrollState;
+      return;
+    }
     if (['draw', 'select', 'tools'].includes(this.leftPanelTab) && this.toolsListMeta?.scrollBounds
       && this.isPointInBounds(payload, this.toolsListMeta.scrollBounds)
       && this.toolsListMeta.maxScroll > 0) {
@@ -8381,6 +8733,7 @@ export default class PixelStudio {
     let hit = null;
     for (let index = this.uiButtons.length - 1; index >= 0; index -= 1) {
       const button = this.uiButtons[index];
+      if (button.desktopDropdownItem) continue;
       if (x >= button.bounds.x
         && x <= button.bounds.x + button.bounds.w
         && y >= button.bounds.y
@@ -8519,42 +8872,65 @@ export default class PixelStudio {
     ctx.fillStyle = UI_SUITE.colors.bg;
     ctx.fillRect(0, 0, width, height);
     ctx.imageSmoothingEnabled = false;
-    const isMobile = this.isMobileLayout();
+    const viewportMode = resolveEditorViewportModeFlags({
+      viewportWidth: width,
+      viewportHeight: height,
+      isMobile: this.isMobileLayout(),
+      gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.())
+    });
+    this.activeModeContract = viewportMode.modeContract;
+    const isMobile = viewportMode.isMobileViewport;
+    if (!isMobile) resetSharedThumbstickState(this.panJoystick);
     const menuFullScreen = false;
     const padding = isMobile ? 12 : 16;
-    const mobileLandscape = isMobileLandscapeLayout({ isMobile, viewportWidth: width, viewportHeight: height });
+    const mobileLandscape = viewportMode.isMobileLandscape;
     const topBarHeight = 0;
     const statusHeight = 20;
     const paletteHeight = isMobile && !mobileLandscape ? 64 : 0;
     const toolbarHeight = isMobile && !mobileLandscape ? 72 : 0;
     const mobileZoomReserve = isMobile && !mobileLandscape ? 44 : 0;
-    const timelineHeight = !isMobile && this.modeTab === 'animate' ? 120 : 0;
+    const desktopUtilityRails = !isMobile && this.leftPanelTab !== 'bones';
+    const frameStripHeight = desktopUtilityRails ? 96 : 0;
     const bottomHeight = menuFullScreen
       ? padding * 2
-      : statusHeight + paletteHeight + timelineHeight + toolbarHeight + mobileZoomReserve + padding;
-    const desktopShell = !isMobile && this.sidebars.left && !menuFullScreen
+      : statusHeight + paletteHeight + frameStripHeight + toolbarHeight + mobileZoomReserve + padding;
+    const openDesktopRootId = resolveDesktopDropdownRootId({
+      openRootId: this.openDesktopDropdownRootId,
+      closedRootId: this.closedDesktopDropdownRootId,
+      isDesktop: viewportMode.isDesktop
+    });
+    const desktopShell = viewportMode.isDesktop && !menuFullScreen
       ? buildDesktopEditorShellPlan('pixel', {
         viewportWidth: width,
         viewportHeight: height,
-        activeRootId: this.getDesktopRootIdForPanel(),
-        labelOverrides: {
-          frames: 'Frames',
-          rigging: 'Rigging'
-        }
+        activeRootId: openDesktopRootId,
+        dropdownScroll: this.desktopDropdownScroll?.[openDesktopRootId] || 0
       })
       : null;
+    this.desktopDropdown = resolveDesktopDropdownState({
+      isDesktop: viewportMode.isDesktop,
+      dropdown: desktopShell?.dropdown,
+      previousDropdown: this.desktopDropdown
+    });
+    const gamepadSubmenuOnLeft = this.shouldDrawGamepadSubmenuOnLeft(width, height);
     const mobileLayout = isMobile
       ? buildPixelMobileEditorLayout(width, height, {
-        drawerOpen: Boolean(this.mobileDrawer && this.mobileDrawer !== 'timeline'),
+        drawerOpen: Boolean(this.mobileDrawer && this.mobileDrawer !== 'timeline' && !gamepadSubmenuOnLeft),
         menuSheetOpen: Boolean(this.mobileDrawer === 'panel' || this.controllerMenu.active)
       })
       : null;
     const mobileLandscapeLayout = mobileLayout?.orientation === 'landscape' ? mobileLayout : null;
+    const mobileRootMenuSurface = mobileLandscapeLayout?.surfaces?.compactCommandRail ?? mobileLandscapeLayout?.surfaces?.rootMenu;
+    const mobileSubmenuSurface = mobileLandscapeLayout?.surfaces?.submenu;
+    const mobileRootDrawerSurface = mobileLandscapeLayout?.surfaces?.rootDrawer;
+    const mobileOverlayDrawerSurface = mobileLandscapeLayout?.surfaces?.overlayDrawer;
+    const mobileWorkSurface = mobileLandscapeLayout?.surfaces?.workSurface;
+    const mobileToolOptionsSurface = mobileLandscapeLayout?.surfaces?.toolOptions;
     const leftWidth = isMobile
-      ? (mobileLandscapeLayout?.leftRail.w ?? getSharedMobileRailWidth(width, height))
+      ? (mobileRootMenuSurface?.w ?? getSharedMobileRailWidth(width, height))
       : (desktopShell ? desktopShell.leftColumn.w : (this.sidebars.left ? SHARED_EDITOR_LEFT_MENU.width() : 0));
-    const rightWidth = (!isMobile && ['layers', 'animation'].includes(this.leftPanelTab)) ? 220 : 0;
-    const mobileDrawerReserveW = isMobile && this.mobileDrawer && this.mobileDrawer !== 'timeline'
+    const rightWidth = desktopUtilityRails ? 240 : 0;
+    const mobileDrawerReserveW = isMobile && !mobileLandscape && this.mobileDrawer && this.mobileDrawer !== 'timeline'
       ? getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 })
       : 0;
 
@@ -8580,13 +8956,21 @@ export default class PixelStudio {
       return;
     }
 
-    if (isMobilePortraitLayout({ isMobile, viewportWidth: width, viewportHeight: height })) {
+    if (viewportMode.isMobilePortrait) {
       this.drawMobilePortraitLayout(ctx, width, height);
       if (this.selectionContextMenu) this.drawSelectionContextMenu(ctx, width, height);
       if (this.quickWheel?.active) this.drawQuickWheel(ctx, width, height);
       if (this.transformModal) this.drawTransformModal(ctx, width, height);
       if (this.pasteImportModal) this.drawPasteImportModal(ctx, width, height);
       if (this.controlsOverlayOpen) this.drawControlsOverlay(ctx, width, height);
+      if (this.getGamepadMenuState(width, height).isLandscapeMenuMode) {
+        this.drawGamepadHintBar(ctx, {
+          x: 10,
+          y: height - 34,
+          w: Math.max(240, width - 20),
+          h: 28
+        }, this.inputMode === 'ui' ? 'Pixel Chrome' : 'Pixel Canvas');
+      }
       drawCanvasControllerMenu(ctx, this.controllerMenu, {
         width,
         height,
@@ -8598,14 +8982,14 @@ export default class PixelStudio {
       return;
     }
 
-    const canvasX = mobileLandscapeLayout?.workSurface.x ?? (desktopShell ? desktopShell.workSurface.x : (padding + leftWidth));
-    const canvasY = mobileLandscapeLayout?.workSurface.y ?? (desktopShell ? desktopShell.workSurface.y : (topBarHeight + padding));
-    const canvasW = mobileLandscapeLayout?.workSurface.w ?? (desktopShell ? (desktopShell.workSurface.w - rightWidth - (rightWidth > 0 ? 8 : 0)) : (width - leftWidth - rightWidth - padding * 2));
-    const canvasH = mobileLandscapeLayout?.workSurface.h ?? (desktopShell ? desktopShell.workSurface.h : (height - canvasY - bottomHeight));
+    const canvasX = mobileWorkSurface?.x ?? (desktopShell ? desktopShell.workSurface.x : (padding + leftWidth));
+    const canvasY = mobileWorkSurface?.y ?? (desktopShell ? desktopShell.workSurface.y : (topBarHeight + padding));
+    const canvasW = mobileWorkSurface?.w ?? (desktopShell ? (desktopShell.workSurface.w - rightWidth - (rightWidth > 0 ? 8 : 0)) : (width - leftWidth - rightWidth - padding * 2));
+    const canvasH = mobileWorkSurface?.h ?? (desktopShell ? desktopShell.workSurface.h : (height - canvasY - bottomHeight));
 
     if (isMobile) {
-      const rail = mobileLandscapeLayout?.leftRail ?? { x: 0, y: 0, w: leftWidth, h: height };
-      if (this.shouldDrawGamepadSubmenuOnLeft(width, height)) {
+      const rail = mobileRootMenuSurface ?? { x: 0, y: 0, w: leftWidth, h: height };
+      if (gamepadSubmenuOnLeft) {
         this.drawGamepadSlideOutPanel(ctx, rail);
       } else {
         this.drawMobileRail(ctx, rail.x, rail.y, rail.w, rail.h);
@@ -8653,25 +9037,47 @@ export default class PixelStudio {
         this.drawPaletteBar(ctx, paletteX, paletteY, paletteW, paletteHeight, { isMobile });
       }
     }
+    if (!menuFullScreen && mobileLandscape && mobileToolOptionsSurface?.h > 0) {
+      this.drawPixelLandscapeBottomControls(ctx, mobileToolOptionsSurface);
+    }
     const statusY = paletteY + (paletteHeight > 0 ? paletteHeight + 6 : 0);
     if (!menuFullScreen && !isMobile) {
       this.drawStatusBar(ctx, desktopShell ? desktopShell.workSurface.x : padding, statusY, desktopShell ? desktopShell.workSurface.w : width - padding * 2, statusHeight, { isMobile });
     }
 
-    if (!menuFullScreen && !isMobile && this.modeTab === 'animate') {
+    if (!menuFullScreen && !isMobile && frameStripHeight > 0) {
       const timelineY = statusY + statusHeight + 6;
-      this.drawTimeline(ctx, canvasX, timelineY, canvasW, timelineHeight);
+      this.drawDesktopFrameStrip(ctx, canvasX, timelineY, canvasW, frameStripHeight);
     }
     if (!isMobile && desktopShell) {
       this.drawDesktopShellDropdown(ctx, desktopShell);
     }
 
     if (isMobile) {
-      this.drawMobilePanZoomControls(ctx, width, height);
+      if (mobileLandscape) {
+        resetSharedThumbstickState(this.panJoystick);
+      } else {
+        this.drawMobilePanZoomControls(ctx, width, height, null);
+      }
       if (this.mobileDrawer && this.mobileDrawer !== 'timeline') {
-        const drawerW = mobileLandscapeLayout?.rightRail.w ?? getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 });
-        const drawerX = mobileLandscapeLayout?.rightRail.x ?? (width - drawerW);
-        this.drawMobileDrawer(ctx, drawerX, 0, drawerW, height, this.mobileDrawer);
+        if (mobileLandscape && this.mobileDrawer === 'panel') {
+          const rootSurface = mobileRootDrawerSurface ?? mobileOverlayDrawerSurface;
+          const rootW = rootSurface?.w ?? getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 });
+          const rootX = rootSurface?.x ?? leftWidth;
+          const rootY = rootSurface?.y ?? 0;
+          const rootH = rootSurface?.h ?? height;
+          this.drawMobileDrawer(ctx, rootX, rootY, rootW, rootH, this.mobileDrawer);
+          if (mobileSubmenuSurface?.w > 0) {
+            this.drawMobileDrawer(ctx, mobileSubmenuSurface.x, mobileSubmenuSurface.y, mobileSubmenuSurface.w, mobileSubmenuSurface.h, 'submenu');
+          }
+        } else {
+          const drawerSurface = mobileSubmenuSurface ?? mobileRootDrawerSurface ?? mobileOverlayDrawerSurface;
+          const drawerW = drawerSurface?.w ?? getSharedMobileDrawerWidth(width, height, leftWidth, { edgePadding: 0 });
+          const drawerX = drawerSurface?.x ?? (width - drawerW);
+          const drawerY = drawerSurface?.y ?? 0;
+          const drawerH = drawerSurface?.h ?? height;
+          this.drawMobileDrawer(ctx, drawerX, drawerY, drawerW, drawerH, this.mobileDrawer);
+        }
       }
       if (this.brushPickerOpen) {
         this.drawBrushPickerModal(ctx, padding, canvasY + Math.max(24, canvasH * 0.08), width - padding * 2, Math.min(canvasH * 0.82, height - toolbarHeight - padding * 2));
@@ -8702,8 +9108,15 @@ export default class PixelStudio {
       this.drawControlsOverlay(ctx, width, height);
     }
 
-    if (this.gamepadHintVisible && !isMobile) {
-      this.drawGamepadHints(ctx, width - padding - 20, height - bottomHeight - 90);
+    const gamepadMenuState = this.getGamepadMenuState(width, height);
+    if (gamepadMenuState.isLandscapeMenuMode) {
+      const hintSurface = mobileWorkSurface ?? { x: canvasX, y: canvasY, w: canvasW, h: canvasH };
+      this.drawGamepadHintBar(ctx, {
+        x: hintSurface.x + 12,
+        y: hintSurface.y + Math.max(8, hintSurface.h - 36),
+        w: Math.max(240, hintSurface.w - 24),
+        h: 28
+      }, this.inputMode === 'ui' ? 'Pixel Chrome' : 'Pixel Canvas');
     }
 
     if (this.shouldDrawControllerOverlay(width, height)) {
@@ -8736,131 +9149,144 @@ export default class PixelStudio {
   }
 
   getDesktopRootIdForPanel(tab = this.leftPanelTab) {
-    if (tab === 'animation') return 'frames';
-    if (tab === 'bones') return 'rigging';
-    return tab;
+    return getEditorDesktopRootIdForSection('pixel', tab) || tab;
   }
 
   getDesktopPanelIdForRoot(rootId = this.getDesktopRootIdForPanel()) {
-    if (rootId === 'frames') return 'animation';
-    if (rootId === 'rigging') return 'bones';
-    return rootId;
+    return getEditorDesktopSectionId('pixel', rootId) || rootId;
   }
 
   getDesktopControllerMenuIdForPanel(tab = this.leftPanelTab) {
-    if (tab === 'animation') return 'frames';
-    if (tab === 'bones') return 'bones';
-    return tab;
+    return getEditorDesktopControllerMenuIdForSection('pixel', tab) || tab;
+  }
+
+  getDesktopPanelLabel(tab = this.leftPanelTab) {
+    const rootId = this.getDesktopRootIdForPanel(tab);
+    return PIXEL_CONTROLLER_ROOT_LABELS[rootId] || PIXEL_CONTROLLER_ROOT_LABELS[tab] || tab;
   }
 
   drawDesktopShellChrome(ctx, shell) {
-    drawSharedPanel(ctx, shell.topMenu.bounds, { fill: UI_SUITE.colors.panel });
-    shell.topMenu.buttons.forEach((button) => {
+    drawSharedDesktopTopMenu(ctx, shell.topMenu, {
+      registerButton: (button) => {
       const panelId = this.getDesktopPanelIdForRoot(button.id);
       const bounds = { ...button.bounds };
-      this.drawButton(ctx, bounds, button.label, this.leftPanelTab === panelId, {
-        fontSize: 12,
-        focused: this.controllerMenu.isFocusedItem('root', panelId)
-      });
-      const onClick = () => this.setLeftPanelTab(panelId);
+      const onClick = () => {
+        const nextDropdown = resolveOpenDesktopDropdownState({
+          rootId: button.id,
+          currentOpenRootId: this.openDesktopDropdownRootId,
+          closedRootId: this.closedDesktopDropdownRootId,
+          dropdown: this.desktopDropdown
+        });
+        if (!nextDropdown) return;
+        this.closedDesktopDropdownRootId = nextDropdown.closedRootId;
+        this.openDesktopDropdownRootId = nextDropdown.openRootId;
+        this.desktopDropdown = nextDropdown.dropdown;
+      };
       this.uiButtons.push({ bounds, onClick, hoverRootId: button.id });
       this.registerFocusable('menu', bounds, onClick);
+      if (panelId !== button.id) this.registerFocusable(panelId, bounds, onClick);
+      }
     });
 
-    drawSharedPanel(ctx, shell.leftRibbon, { fill: UI_SUITE.colors.panelAlt });
-    const labelMaxW = Math.max(80, shell.leftRibbon.w - 164);
-    ctx.save();
-    ctx.fillStyle = UI_SUITE.colors.accent;
-    ctx.font = '12px Courier New';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('Pixel', shell.leftRibbon.x + 12, shell.leftRibbon.y + 18, labelMaxW);
-    ctx.fillStyle = 'rgba(255,255,255,0.72)';
-    ctx.font = '11px Courier New';
-    ctx.fillText(this.leftPanelTab.toUpperCase(), shell.leftRibbon.x + 12, shell.leftRibbon.y + 38, labelMaxW);
-    ctx.restore();
-    const undoBounds = {
-      x: shell.leftRibbon.x + shell.leftRibbon.w - 146,
-      y: shell.leftRibbon.y + 10,
-      w: 66,
-      h: shell.leftRibbon.h - 20
-    };
-    const redoBounds = {
-      x: shell.leftRibbon.x + shell.leftRibbon.w - 74,
-      y: shell.leftRibbon.y + 10,
-      w: 66,
-      h: shell.leftRibbon.h - 20
-    };
-    this.drawButton(ctx, undoBounds, 'Undo', false, {
-      fontSize: 11,
-      focused: this.controllerMenu.isFocusedItem('root', 'undo')
+    drawSharedDesktopRibbon(ctx, shell.leftRibbon, {
+      title: 'Pixel',
+      subtitle: this.getDesktopPanelLabel()
     });
-    this.drawButton(ctx, redoBounds, 'Redo', false, {
-      fontSize: 11,
-      focused: this.controllerMenu.isFocusedItem('root', 'redo')
-    });
-    this.uiButtons.push({ bounds: undoBounds, onClick: () => this.runtime.undo() });
-    this.uiButtons.push({ bounds: redoBounds, onClick: () => this.runtime.redo() });
-    this.registerFocusable('menu', undoBounds, () => this.runtime.undo());
-    this.registerFocusable('menu', redoBounds, () => this.runtime.redo());
 
-    drawSharedPanel(ctx, shell.leftOptions);
-    this.drawLeftPanelContent(ctx, shell.leftOptions.x, shell.leftOptions.y, shell.leftOptions.w, shell.leftOptions.h, { isMobile: false });
+    this.drawDesktopContextPanel(ctx, shell.leftOptions);
+  }
+
+  drawDesktopContextPanel(ctx, bounds) {
+    const { contextBounds } = buildSharedDesktopContextTransportLayout(bounds, {
+      includeTransport: false
+    });
+    if (!contextBounds) return;
+    const pad = SHARED_EDITOR_LEFT_MENU.panelPadding;
+    const activeTool = this.tools.find((entry) => entry.id === this.activeToolId);
+    const layer = this.activeLayer;
+    const frameCount = Math.max(1, this.animation?.frames?.length || 1);
+    const layerCount = Math.max(1, this.canvasState?.layers?.length || 1);
+    const selectionText = this.selection?.active
+      ? `${Math.max(0, Math.round(this.selection.bounds?.w || 0))} x ${Math.max(0, Math.round(this.selection.bounds?.h || 0))}`
+      : 'None';
+    const cloneText = this.activeToolId === TOOL_IDS.CLONE
+      ? (this.cloneOffset ? `Target ${this.cloneOffset.dx}, ${this.cloneOffset.dy}` : 'No target')
+      : null;
+    const lines = [
+      `Document: ${this.currentDocumentRef?.name || 'Untitled'}`,
+      `Active: ${this.getDesktopPanelLabel()}`,
+      `Tool: ${activeTool?.label || this.activeToolId || 'Unknown'}`,
+      `Brush: ${this.toolOptions.brushSize}px`,
+      `Canvas: ${this.canvasState.width} x ${this.canvasState.height}`,
+      `Layer: ${this.canvasState.activeLayerIndex + 1}/${layerCount}${layer?.name ? ` ${layer.name}` : ''}`,
+      `Frame: ${this.animation.currentFrameIndex + 1}/${frameCount}`,
+      `Selection: ${selectionText}`
+    ];
+    if (cloneText) lines.push(`Clone: ${cloneText}`);
+    drawSharedDesktopContextPanel(ctx, contextBounds, {
+      lines,
+      status: this.statusMessage || '',
+      padding: pad
+    });
   }
 
   drawDesktopShellDropdown(ctx, shell) {
     if (!shell?.dropdown) return;
     const panelId = this.getDesktopPanelIdForRoot(shell.dropdown.rootId);
     const menuId = this.getDesktopControllerMenuIdForPanel(panelId);
-    const menu = this.controllerMenu.menus?.[menuId];
-    const items = this.controllerMenu.getItems(menu).slice(0, shell.dropdown.visibleRows);
-    if (!items.length) return;
-    const bounds = { ...shell.dropdown.panelBounds, h: Math.max(shell.dropdown.rowHeight, items.length * shell.dropdown.rowHeight) };
-    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel });
-    items.forEach((item, index) => {
-      const buttonBounds = { ...shell.dropdown.itemBounds[index] };
-      const active = this.isControllerSubmenuItemActive(menuId, item.id);
-      this.drawButton(ctx, buttonBounds, item.label, active, {
-        fontSize: 11,
-        focused: this.controllerMenu.isFocusedItem(menuId, item.id)
-      });
-      if (typeof item.onSelect === 'function') {
-        const onClick = () => item.onSelect(this);
-        this.uiButtons.push({ bounds: buttonBounds, onClick });
-        this.registerFocusable(menuId, buttonBounds, onClick);
+    const controllerMenus = this.buildControllerMenus();
+    const menu = controllerMenus[menuId] || this.controllerMenu.menus?.[menuId];
+    const menuItems = this.controllerMenu.getItems(menu);
+    const dropdownPlan = buildDesktopDropdownRenderPlan({
+      dropdown: this.desktopDropdown?.rootId === shell.dropdown.rootId ? this.desktopDropdown : shell.dropdown,
+      items: menuItems,
+      disableActionlessItems: true
+    });
+    if (!dropdownPlan.renderedItems.length) return;
+    drawSharedDesktopDropdown(ctx, dropdownPlan, {
+      isActive: (item) => this.isControllerSubmenuItemActive(menuId, item.id),
+      isFocused: (item) => this.controllerMenu.isFocusedItem(menuId, item.id),
+      registerButton: ({ item, bounds: buttonBounds }) => {
+        if (typeof item.onSelect === 'function') {
+          const onClick = () => item.onSelect(this);
+          this.uiButtons.push({
+            id: item.id,
+            bounds: { ...buttonBounds, id: item.id },
+            onClick,
+            action: onClick,
+            desktopDropdownItem: true
+          });
+          this.registerFocusable(menuId, buttonBounds, onClick);
+        }
       }
     });
   }
 
   getActiveGamepadMenuId() {
-    const activeId = this.controllerMenu.getActiveMenuId();
-    if (!activeId || ['root', 'system', 'help', 'exit-confirm'].includes(activeId)) return null;
-    return activeId;
-  }
-
-  isGamepadLandscapeMenuMode(width = this.game?.canvas?.width || 0, height = this.game?.canvas?.height || 0) {
-    return isGamepadLandscapeEditorMode({
-      viewportWidth: width,
-      viewportHeight: height,
-      gamepadConnected: this.game?.input?.isGamepadConnected?.(),
-      isMobile: this.isMobileLayout()
-    });
+    return this.getGamepadMenuState().activeSubmenuId;
   }
 
   shouldDrawGamepadSubmenuOnLeft(width, height) {
-    return shouldUseGamepadSlideOutMenu({
+    return this.getGamepadMenuState(width, height).drawSlideOut;
+  }
+
+  shouldDrawControllerOverlay(width, height) {
+    return this.getGamepadMenuState(width, height).drawControllerOverlay;
+  }
+
+  drawGamepadHintBar(ctx, bounds, contextLabel) {
+    drawSharedGamepadHintBar(ctx, bounds, contextLabel, SHARED_EDITOR_GAMEPAD_HINTS);
+  }
+
+  getGamepadMenuState(width = this.game?.canvas?.width || 0, height = this.game?.canvas?.height || 0) {
+    return resolveGamepadMenuState({
       viewportWidth: width,
       viewportHeight: height,
       gamepadConnected: this.game?.input?.isGamepadConnected?.(),
       isMobile: this.isMobileLayout(),
       menuActive: this.controllerMenu.active,
-      activeMenuId: this.getActiveGamepadMenuId()
+      activeMenuId: this.controllerMenu.getActiveMenuId()
     });
-  }
-
-  shouldDrawControllerOverlay(width, height) {
-    if (!this.isGamepadLandscapeMenuMode(width, height)) return true;
-    const activeId = this.controllerMenu.getActiveMenuId();
-    return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));
   }
 
   drawGamepadSlideOutPanel(ctx, bounds) {
@@ -8868,30 +9294,20 @@ export default class PixelStudio {
     const plan = buildGamepadSlideOutMenuPlan('pixel', {
       rootOpen: !menuId,
       activeRootId: menuId || this.getDesktopRootIdForPanel(),
-      focusedItemId: this.controllerMenu.getFocusedItem(menuId)?.id,
-      labelOverrides: {
-        frames: 'Frames',
-        rigging: 'Rigging'
-      }
+      focusedItemId: this.controllerMenu.getFocusedItem(menuId)?.id
     });
     const menu = this.controllerMenu.menus?.[menuId];
     drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
-    ctx.save();
-    ctx.fillStyle = UI_SUITE.colors.accent;
-    ctx.font = `12px ${UI_SUITE.font.family}`;
-    ctx.textBaseline = 'middle';
-    ctx.fillText(menu?.title || plan.submenu?.title || 'Menu', bounds.x + 12, bounds.y + 18, bounds.w - 24);
-    ctx.fillStyle = UI_SUITE.colors.muted;
-    ctx.font = `10px ${UI_SUITE.font.family}`;
-    ctx.fillText('A Select  B Back', bounds.x + 12, bounds.y + 36, bounds.w - 24);
-    ctx.restore();
+    drawSharedGamepadSlideOutHeader(ctx, bounds, menu?.title || plan.submenu?.title || 'Menu', { hint: plan.headerHint });
+    this.gamepadSlideOutMenuMeta = null;
     this.drawControllerSubmenuPanel(
       ctx,
       bounds.x + 8,
       bounds.y + 52,
       Math.max(1, bounds.w - 16),
       Math.max(1, bounds.h - 60),
-      menuId
+      menuId,
+      { isMobile: true, layoutMode: 'list', maxColumns: 1, minColumnWidth: Math.max(1, bounds.w - 16), scrollGroup: 'gamepadSubmenu' }
     );
   }
 
@@ -8910,12 +9326,9 @@ export default class PixelStudio {
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,0.55)';
     ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = '#1b1b1b';
-    ctx.fillRect(modal.x, modal.y, modal.w, modal.h);
-    ctx.strokeStyle = '#ffe16a';
-    ctx.strokeRect(modal.x, modal.y, modal.w, modal.h);
-    ctx.fillStyle = '#fff';
-    ctx.font = '14px Courier New';
+    drawSharedPanel(ctx, modal, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `14px ${UI_SUITE.font.family}`;
     const title = this.transformModal.type[0].toUpperCase() + this.transformModal.type.slice(1);
     const modalTarget = this.transformModal.scope === 'selection' ? 'Selection' : 'Canvas';
     ctx.fillText(`${title} ${modalTarget}`, modal.x + 12, modal.y + 22);
@@ -9067,12 +9480,9 @@ export default class PixelStudio {
     this.pasteImportModal.buttons = [];
     ctx.fillStyle = 'rgba(0,0,0,0.75)';
     ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = 'rgba(12,16,24,0.96)';
-    ctx.fillRect(modal.x, modal.y, modal.w, modal.h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-    ctx.strokeRect(modal.x, modal.y, modal.w, modal.h);
-    ctx.fillStyle = '#fff';
-    ctx.font = '16px Courier New';
+    drawSharedPanel(ctx, modal, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `16px ${UI_SUITE.font.family}`;
     ctx.fillText('Paste Import Options', modal.x + 16, modal.y + 24);
 
     const sourceBase = this.pasteImportModal.crop
@@ -9121,10 +9531,10 @@ export default class PixelStudio {
 
   drawPastePreviewCard(ctx, bounds, label, clipboard, active = false) {
     if (!clipboard?.pixels) return;
-    ctx.fillStyle = active ? 'rgba(255,225,106,0.2)' : 'rgba(0,0,0,0.45)';
-    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.strokeStyle = active ? 'rgba(255,225,106,0.9)' : 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    drawSharedPanel(ctx, bounds, {
+      fill: UI_SUITE.colors.panelAlt,
+      border: active ? UI_SUITE.colors.accent : UI_SUITE.colors.border
+    });
     const titleBounds = { x: bounds.x + 8, y: bounds.y + 8, w: bounds.w - 16, h: 24 };
     this.drawButton(ctx, titleBounds, label, active, { fontSize: 11 });
     this.pasteImportModal.buttons.push({
@@ -9162,8 +9572,8 @@ export default class PixelStudio {
     const drawY = previewArea.y + Math.floor((previewArea.h - drawH) / 2);
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(off, drawX, drawY, drawW, drawH);
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.font = '11px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.font = `11px ${UI_SUITE.font.family}`;
     ctx.fillText(`${pxW}×${pxH}`, bounds.x + 10, bounds.y + bounds.h - 10);
   }
 
@@ -9172,10 +9582,7 @@ export default class PixelStudio {
   }
 
   drawPreviewPanel(ctx, x, y, w, h) {
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = '#ffe16a';
-    ctx.strokeRect(x, y, w, h);
+    drawSharedPanel(ctx, { x, y, w, h }, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
     const composite = compositeLayers(this.canvasState.layers, this.canvasState.width, this.canvasState.height);
     const imageData = this.offscreenCtx.createImageData(this.canvasState.width, this.canvasState.height);
     const bytes = new Uint32Array(imageData.data.buffer);
@@ -9186,8 +9593,8 @@ export default class PixelStudio {
     const previewY = y + (h - size) / 2;
     this.drawPixelBackground(ctx, previewX, previewY, size, size, Math.max(4, Math.floor(size / 16)));
     ctx.drawImage(this.offscreen, previewX, previewY, size, size);
-    ctx.fillStyle = '#fff';
-    ctx.font = '12px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
     ctx.fillText('Preview', x + 4, y + h + 14);
   }
 
@@ -9200,6 +9607,7 @@ export default class PixelStudio {
 
     const labels = {
       file: SHARED_EDITOR_LEFT_MENU.fileLabel,
+      edit: 'Edit',
       draw: 'Draw',
       select: 'Select',
       tools: 'Tools',
@@ -9265,6 +9673,14 @@ export default class PixelStudio {
       this.drawFilePanel(ctx, x, y, w, h, { isMobile });
       return;
     }
+    if (this.leftPanelTab === 'edit') {
+      this.drawControllerSubmenuPanel(ctx, x, y, w, h, 'edit');
+      return;
+    }
+    if (this.leftPanelTab === 'view') {
+      this.drawControllerSubmenuPanel(ctx, x, y, w, h, 'view');
+      return;
+    }
     if (['draw', 'select', 'tools'].includes(this.leftPanelTab)) {
       this.drawToolsMenu(ctx, x, y, w, h, { isMobile, category: this.leftPanelTab, portrait });
       return;
@@ -9286,11 +9702,11 @@ export default class PixelStudio {
     }
   }
 
-  drawControllerSubmenuPanel(ctx, x, y, w, h, menuId) {
+  drawControllerSubmenuPanel(ctx, x, y, w, h, menuId, options = {}) {
     const menu = this.controllerMenu.menus?.[menuId];
     if (!menu) return;
     const items = this.controllerMenu.getItems(menu);
-    const rowHeight = 28;
+    const rowHeight = options.isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : 28;
     const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const visibleRows = Math.max(1, Math.floor(Math.max(0, h - 24) / Math.max(1, rowHeight + rowGap)));
     const scroll = this.controllerMenu.syncScrollToItem(
@@ -9300,7 +9716,7 @@ export default class PixelStudio {
       visibleRows,
       this.controllerMenu.scroll?.[menuId] || 0
     );
-    this.sharedMenu.drawDrawer(ctx, {
+    const result = this.sharedMenu.drawDrawer(ctx, {
       panel: { x, y, w, h },
       title: '',
       items,
@@ -9308,9 +9724,12 @@ export default class PixelStudio {
       rowHeight,
       rowGap,
       buttonHeight: rowHeight,
-      isMobile: false,
+      isMobile: Boolean(options.isMobile),
       showTitle: false,
       footerMode: 'none',
+      layoutMode: options.layoutMode || 'list',
+      minColumnWidth: options.minColumnWidth || (options.isMobile ? 112 : 140),
+      maxColumns: options.maxColumns || (options.isMobile ? 1 : 3),
       drawButton: (bounds, item) => {
         this.drawButton(ctx, bounds, item.label, this.isControllerSubmenuItemActive(menuId, item.id), {
           fontSize: 12,
@@ -9322,6 +9741,20 @@ export default class PixelStudio {
         }
       }
     });
+    if (options.scrollGroup) {
+      this.gamepadSlideOutMenuMeta = {
+        menuId,
+        scrollBounds: result.listBounds,
+        maxScroll: result.scrollMax,
+        lineHeight: rowHeight + rowGap
+      };
+    }
+    if (options.isMobile) {
+      drawSharedPortraitScrollHints(ctx, result.listBounds, {
+        scroll: result.scroll,
+        scrollMax: result.scrollMax
+      });
+    }
   }
 
   isControllerSubmenuItemActive(menuId, itemId) {
@@ -9346,32 +9779,7 @@ export default class PixelStudio {
       this.drawToolsPanel(ctx, x, y, w, h, { isMobile, category });
       return;
     }
-    const gap = 12;
-    const colWidth = Math.max(160, Math.floor((w - gap) / 2));
-    const leftX = x;
-    const rightX = x + colWidth + gap;
-    const columnHeight = h;
-    this.drawToolsPanel(ctx, leftX, y, colWidth, columnHeight, { isMobile, category });
-    this.drawPalettePanel(ctx, rightX, y, colWidth, columnHeight, { isMobile });
-  }
-
-  drawPortraitToolTabs(ctx, x, y, w) {
-    const tabs = buildPixelPortraitMenuModel().toolTabs;
-    const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
-    const buttonH = UI_SUITE.spacing.tap;
-    const buttonW = Math.max(68, Math.floor((w - gap * (tabs.length - 1)) / tabs.length));
-    tabs.forEach((tab, index) => {
-      const bounds = { x: x + index * (buttonW + gap), y, w: buttonW, h: buttonH };
-      this.drawButton(ctx, bounds, tab.label, this.leftPanelTab === tab.id, { fontSize: 12 });
-      this.uiButtons.push({
-        bounds,
-        onClick: () => {
-          this.setLeftPanelTab(tab.id);
-          this.mobileDrawer = 'panel';
-        }
-      });
-      this.registerFocusable('toolbar', bounds, () => this.setLeftPanelTab(tab.id));
-    });
+    this.drawToolsPanel(ctx, x, y, w, h, { isMobile, category });
   }
 
   drawObjectsPanel(ctx, x, y, w, h, options = {}) {
@@ -9397,8 +9805,8 @@ export default class PixelStudio {
 
   drawAnimatePanel(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
-    ctx.fillStyle = '#fff';
-    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = isMobile ? UI_SUITE.editorPanel.titleFont : UI_SUITE.editorPanel.bodyFont;
     ctx.fillText('Animate', x + 12, y + 20);
     const startY = y + 36;
     this.drawAnimationControls(ctx, x + 12, startY, { isMobile });
@@ -10086,7 +10494,11 @@ export default class PixelStudio {
   }
 
   getFilePanelItems() {
-    return buildUnifiedFileDrawerItems({
+    return buildSharedEditorFileMenu({
+      supported: {
+        undo: false,
+        redo: false
+      },
       labels: {
         export: 'Export',
         import: 'Import'
@@ -10101,7 +10513,9 @@ export default class PixelStudio {
         export: () => this.choosePixelExportFormat(),
         import: () => this.imageFileInput.click()
       },
-      editorSpecific: [
+      includeFooter: false,
+      extras: [
+        { divider: true },
         ...(this.decalEditSession
           ? (this.decalEditSession.type === 'actor-state'
               ? [{ id: 'test-actor-session', label: 'Test Actor', onClick: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId, this.game.actorEditor?.actor?.id === this.decalEditSession.actorId ? this.game.actorEditor.actor : null) }]
@@ -10118,7 +10532,7 @@ export default class PixelStudio {
             ? 'Return To Actor'
             : 'Exit to Main Menu', onClick: () => this.exitToMainMenu() }
       ]
-    });
+    }).filter((item) => !item.disabled);
   }
 
   ensureBoneNodeSelection() {
@@ -13385,53 +13799,49 @@ export default class PixelStudio {
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
-    const actions = [
-      { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel, action: () => { this.setLeftPanelTab('file'); this.mobileDrawer = 'panel'; } },
-      { id: 'draw', label: 'Draw', action: () => { this.setLeftPanelTab('draw'); this.mobileDrawer = 'panel'; } },
-      { id: 'select', label: 'Select', action: () => { this.setLeftPanelTab('select'); this.mobileDrawer = 'panel'; } },
-      { id: 'tools', label: 'Tools', action: () => { this.setLeftPanelTab('tools'); this.mobileDrawer = 'panel'; } },
-      { id: 'brush', label: 'Brush', action: () => this.openBrushPicker() },
-      { id: 'color', label: 'Color', action: () => { this.paletteGridOpen = true; } },
-      { id: 'canvas', label: 'Canvas', action: () => { this.setLeftPanelTab('canvas'); this.mobileDrawer = 'panel'; } },
-      { id: 'layers', label: 'Layers', action: () => { this.setLeftPanelTab('layers'); this.mobileDrawer = 'panel'; } },
-      { id: 'animation', label: 'Anim', action: () => { this.setLeftPanelTab('animation'); this.mobileDrawer = 'panel'; } },
-      { id: 'bones', label: 'Rigging', action: () => this.enterRiggingBuildMode() }
-    ];
-    const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
-    const buttonH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
-    const metrics = h < actions.length * (buttonH + gap) + 16
-      ? getSharedPortraitMenuMetrics({ x, y, w, h }, { rowHeight: buttonH, rowGap: gap })
-      : null;
-    const listBounds = metrics?.listBounds || { x: x + 6, y: y + 8, w: w - 12, h: h - 16 };
-    const buttonW = Math.min(listBounds.w, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
-    const visibleRows = metrics?.visibleRows ?? actions.length;
-    const rootScroll = metrics
-      ? this.controllerMenu.syncScrollToItem(
-        'root',
-        this.controllerMenu.getFocusedItem('root')?.id,
-        actions,
-        visibleRows,
-        this.controllerMenu.scroll?.root || 0
-      )
-      : 0;
-    actions.slice(rootScroll, rootScroll + visibleRows).forEach((entry, index) => {
-      const bounds = {
-        x: listBounds.x + (listBounds.w - buttonW) * 0.5,
-        y: listBounds.y + index * (buttonH + gap),
-        w: buttonW,
-        h: buttonH
+    const quickAction = this.leftPanelTab === 'animation'
+      ? {
+        id: 'play',
+        label: this.animation.playing ? 'Pause' : 'Play',
+        action: () => { this.animation.playing = !this.animation.playing; },
+        active: this.animation.playing
+      }
+      : {
+        id: 'brush',
+        label: 'Brush',
+        action: () => this.openBrushPicker(),
+        active: this.brushPickerOpen,
+        render: 'brush-preview'
       };
-      const active = entry.id === this.leftPanelTab && entry.id !== 'fit';
-      this.drawButton(ctx, bounds, entry.label, active, { fontSize: 12 });
+    const actions = buildCompactLandscapeCommandRailActions({
+      menu: { id: 'menu', label: 'Menu', action: () => { this.mobileDrawer = this.mobileDrawer === 'panel' ? null : 'panel'; }, active: this.mobileDrawer === 'panel' },
+      undo: { id: 'undo', label: 'Undo', action: () => this.runtime.undo() },
+      redo: { id: 'redo', label: 'Redo', action: () => this.runtime.redo() },
+      quick: quickAction
+    });
+    buildCompactLandscapeCommandRailButtonLayout({
+      bounds: { x, y, w, h },
+      actions,
+      buttonHeight: SHARED_EDITOR_LEFT_MENU.buttonHeightMobile,
+      buttonGap: SHARED_EDITOR_LEFT_MENU.buttonGap,
+      paddingX: 6,
+      paddingY: 8,
+      maxButtonWidth: SHARED_EDITOR_LEFT_MENU.buttonWidthMobile
+    }).forEach(({ action: entry, bounds }) => {
+      const active = Boolean(entry.active);
+      this.drawButton(ctx, bounds, entry.render === 'brush-preview' ? '' : (entry.displayLabel ?? entry.label), active, { fontSize: 12 });
+      if (entry.render === 'brush-preview') {
+        const chipInset = Math.max(6, Math.floor(Math.min(bounds.w, bounds.h) * 0.16));
+        this.drawBrushPreviewChip(ctx, {
+          x: bounds.x + chipInset,
+          y: bounds.y + chipInset,
+          w: bounds.w - chipInset * 2,
+          h: bounds.h - chipInset * 2
+        });
+      }
       this.uiButtons.push({ bounds, onClick: entry.action });
       this.registerFocusable('toolbar', bounds, entry.action);
     });
-    if (metrics) {
-      drawSharedPortraitScrollHints(ctx, { x, y, w, h }, {
-        scroll: rootScroll,
-        scrollMax: Math.max(0, actions.length - visibleRows)
-      });
-    }
   }
 
   drawMobilePortraitLayout(ctx, width, height) {
@@ -13539,6 +13949,45 @@ export default class PixelStudio {
     });
   }
 
+  drawPixelLandscapeBottomControls(ctx, bounds) {
+    if (!bounds || bounds.w <= 0 || bounds.h <= 0) return;
+    const gap = 8;
+    const zoomW = Math.min(236, Math.max(156, Math.floor(bounds.w * 0.28)));
+    const showZoom = bounds.w >= 420;
+    const toolBounds = {
+      x: bounds.x,
+      y: bounds.y,
+      w: showZoom ? Math.max(1, bounds.w - zoomW - gap) : bounds.w,
+      h: bounds.h
+    };
+    if (['layers', 'animation'].includes(this.leftPanelTab)) {
+      this.drawManagementActionRail(ctx, toolBounds.x, toolBounds.y, toolBounds.w, toolBounds.h, { isMobile: true });
+    } else {
+      this.drawPaletteBar(ctx, toolBounds.x, toolBounds.y, toolBounds.w, toolBounds.h, { isMobile: true });
+    }
+    if (showZoom) {
+      this.drawPixelLandscapeZoomControl(ctx, {
+        x: toolBounds.x + toolBounds.w + gap,
+        y: bounds.y,
+        w: zoomW,
+        h: bounds.h
+      });
+    }
+  }
+
+  drawPixelLandscapeZoomControl(ctx, bounds) {
+    if (!bounds || bounds.w <= 0 || bounds.h <= 0) return;
+    const zoomW = Math.min(260, Math.max(160, Math.floor(bounds.w * 0.42)));
+    const zoomBounds = {
+      x: bounds.x + Math.floor((bounds.w - zoomW) / 2),
+      y: bounds.y + Math.floor((bounds.h - 34) / 2),
+      w: zoomW,
+      h: 34
+    };
+    drawSharedPanel(ctx, zoomBounds, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
+    this.drawPixelPortraitZoomSlider(ctx, zoomBounds);
+  }
+
   drawMobilePortraitRootTabs(ctx, bounds) {
     const rootTabs = buildPixelPortraitMenuModel().rootTabs;
     const tabs = [...rootTabs, { id: 'bones', panel: 'bones', label: 'Rigging' }].map((tab) => ({
@@ -13560,6 +14009,7 @@ export default class PixelStudio {
       maxButtonWidth: 112,
       maxRows: 2,
       balanceLastRow: true,
+      verticalAlign: 'bottom',
       drawButton: (buttonBounds, tab, state) => {
         this.drawButton(ctx, buttonBounds, tab.label, state.active, {
           fontSize: 12,
@@ -13571,6 +14021,58 @@ export default class PixelStudio {
     });
   }
 
+  getPixelPortraitToolbarActions() {
+    const portraitActionById = {
+      menu: { id: 'menu', label: '☰', onClick: () => this.togglePixelPortraitDrawer() },
+      undo: { id: 'undo', label: '↶', onClick: () => this.runtime.undo() },
+      redo: { id: 'redo', label: '↷', onClick: () => this.runtime.redo() },
+      brush: { id: 'brush', label: '', primary: true, onClick: () => this.openBrushPicker('size') }
+    };
+    const actions = buildPixelPortraitMenuModel().bottomRailActions
+      .map((id) => portraitActionById[id])
+      .filter(Boolean);
+    const primaryIndex = actions.findIndex((action) => action.id === 'brush');
+    const contextualPrimaryAction = this.getPixelPortraitPrimaryToolbarAction();
+    if (contextualPrimaryAction && primaryIndex >= 0) actions[primaryIndex] = contextualPrimaryAction;
+    return actions;
+  }
+
+  getPixelPortraitPrimaryToolbarAction() {
+    if (this.leftPanelTab === 'animation') {
+      return {
+        id: 'play',
+        label: this.animation.playing ? '⏸' : '▶',
+        active: this.animation.playing,
+        primary: true,
+        onClick: () => { this.animation.playing = !this.animation.playing; },
+        onHold: true
+      };
+    }
+    if (this.leftPanelTab === 'bones') {
+      return {
+        id: 'bone-play',
+        label: this.boneEditor?.playing ? '⏸' : '▶',
+        active: Boolean(this.boneEditor?.playing),
+        primary: true,
+        onClick: () => this.toggleBoneTimelinePlayback(),
+        onHold: true,
+        transportMode: 'bones'
+      };
+    }
+    if (this.decalEditSession?.type === 'actor-state') {
+      return {
+        id: 'test',
+        label: '▶',
+        primary: true,
+        onClick: () => this.game.startActorEditorPlaytest(
+          this.decalEditSession.actorId,
+          this.game.actorEditor?.actor?.id === this.decalEditSession.actorId ? this.game.actorEditor.actor : null
+        )
+      };
+    }
+    return null;
+  }
+
   drawMobileToolbar(ctx, x, y, w, h) {
     const portrait = isMobilePortraitLayout({
       isMobile: this.isMobileLayout(),
@@ -13578,28 +14080,7 @@ export default class PixelStudio {
       viewportHeight: this.game?.canvas?.height || 0
     });
     if (portrait) {
-      const actions = [
-        { id: 'menu', label: '☰', onClick: () => this.togglePixelPortraitDrawer() },
-        { id: 'undo', label: '↶', onClick: () => this.runtime.undo() },
-        { id: 'redo', label: '↷', onClick: () => this.runtime.redo() }
-      ];
-      if (this.leftPanelTab === 'animation') {
-        actions.push({ id: 'play', label: this.animation.playing ? '⏸' : '▶', active: this.animation.playing, primary: true, onClick: () => { this.animation.playing = !this.animation.playing; }, onHold: true });
-      } else if (this.leftPanelTab === 'bones') {
-        actions.push({
-          id: 'bone-play',
-          label: this.boneEditor?.playing ? '⏸' : '▶',
-          active: Boolean(this.boneEditor?.playing),
-          primary: true,
-          onClick: () => this.toggleBoneTimelinePlayback(),
-          onHold: true,
-          transportMode: 'bones'
-        });
-      } else if (this.decalEditSession?.type === 'actor-state') {
-        actions.push({ id: 'test', label: '▶', primary: true, onClick: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId, this.game.actorEditor?.actor?.id === this.decalEditSession.actorId ? this.game.actorEditor.actor : null) });
-      } else {
-        actions.push({ id: 'brush', label: '', primary: true, onClick: () => this.openBrushPicker('size') });
-      }
+      const actions = this.getPixelPortraitToolbarActions();
       drawSharedPortraitActionRail(ctx, { x, y, w, h }, null, actions, {
         drawPanel: false,
         reserveThumbstick: false,
@@ -13674,10 +14155,7 @@ export default class PixelStudio {
       );
     }
     actions.push(
-      ...(this.decalEditSession?.type === 'actor-state' ? [{ label: 'Test', action: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId, this.game.actorEditor?.actor?.id === this.decalEditSession.actorId ? this.game.actorEditor.actor : null) }] : []),
-      { label: '☰', action: () => { this.mobileDrawer = 'panel'; } },
-      { label: '↶', action: () => this.runtime.undo() },
-      { label: '↷', action: () => this.runtime.redo() }
+      ...(this.decalEditSession?.type === 'actor-state' ? [{ label: 'Test', action: () => this.game.startActorEditorPlaytest(this.decalEditSession.actorId, this.game.actorEditor?.actor?.id === this.decalEditSession.actorId ? this.game.actorEditor.actor : null) }] : [])
     );
     if (this.leftPanelTab === 'animation') {
       actions.unshift({
@@ -13839,14 +14317,11 @@ export default class PixelStudio {
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    ctx.fillStyle = UI_SUITE.colors.panel;
-    ctx.fillRect(modal.x, modal.y, modal.w, modal.h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(modal.x, modal.y, modal.w, modal.h);
+    drawSharedPanel(ctx, modal, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
 
     const titleY = modal.y + 20;
     ctx.fillStyle = UI_SUITE.colors.text;
-    ctx.font = '12px monospace';
+    ctx.font = `12px ${UI_SUITE.font.family}`;
     const focusLabels = {
       shape: 'Shape',
       size: 'Size',
@@ -14013,11 +14488,93 @@ export default class PixelStudio {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
+    if (type === 'submenu') {
+      const panelY = y;
+      const panelH = h;
+      this.drawLeftPanelContent(ctx, x + 8, panelY, w - 16, panelH, { isMobile: true });
+      return;
+    }
+
     if (type === 'panel') {
+      const isLandscape = isMobileLandscapeLayout({
+        isMobile: this.isMobileLayout(),
+        viewportWidth: this.game?.canvas?.width || 0,
+        viewportHeight: this.game?.canvas?.height || 0
+      });
+      if (isLandscape) {
+        this.drawPixelLandscapeMenuDrawer(ctx, x, y, w, h);
+        return;
+      }
       const panelY = y;
       const panelH = h;
       this.drawLeftPanelContent(ctx, x + 8, panelY, w - 16, panelH, { isMobile: true });
     }
+  }
+
+  getPixelLandscapeRootMenuItems() {
+    const labels = {
+      file: 'File',
+      edit: 'Edit',
+      view: 'View',
+      draw: 'Draw',
+      select: 'Select',
+      tools: 'Tools',
+      canvas: 'Canvas',
+      layers: 'Layers',
+      animation: 'Frames',
+      bones: 'Rig'
+    };
+    return this.leftPanelTabs.map((id) => ({ id, label: labels[id] || id }));
+  }
+
+  drawPixelLandscapeMenuDrawer(ctx, x, y, w, h) {
+    const padding = 8;
+    const items = this.getPixelLandscapeRootMenuItems();
+    const rowH = w >= 360 ? 36 : 34;
+    const grid = buildLandscapeRootDrawerGridLayout({
+      bounds: { x, y, w, h },
+      itemCount: items.length,
+      padding,
+      gap: 8,
+      minColumns: 3,
+      maxColumns: 5,
+      wideWidth: 360,
+      rowHeight: rowH,
+      minRowHeight: rowH,
+      maxRowHeight: rowH
+    });
+    const rootBounds = { ...grid.listBounds };
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.panelAlt;
+    ctx.fillRect(rootBounds.x, rootBounds.y, rootBounds.w, rootBounds.h);
+    ctx.strokeStyle = UI_SUITE.colors.border;
+    ctx.strokeRect(rootBounds.x, rootBounds.y, rootBounds.w, rootBounds.h);
+
+    this.focusScroll.landscapeRoot = 0;
+    this.landscapeRootMenuMeta = {
+      scrollBounds: { ...rootBounds },
+      maxScroll: 0,
+      lineHeight: rowH + grid.gap
+    };
+    ctx.beginPath();
+    ctx.rect(rootBounds.x, rootBounds.y, rootBounds.w, rootBounds.h);
+    ctx.clip();
+    grid.items.forEach(({ index, bounds }) => {
+      const entry = items[index];
+      const active = this.leftPanelTab === entry.id;
+      const onClick = () => {
+        this.setLeftPanelTab(entry.id);
+        this.mobileDrawer = 'panel';
+      };
+      this.drawButton(ctx, bounds, entry.label, active, { fontSize: 11 });
+      this.uiButtons.push({ bounds, onClick });
+      this.registerFocusable('menu', bounds, onClick);
+    });
+    drawSharedPortraitScrollHints(ctx, rootBounds, {
+      scroll: 0,
+      scrollMax: 0
+    });
+    ctx.restore();
   }
 
   drawPaletteGridSheet(ctx, x, y, w, h) {
@@ -14776,8 +15333,8 @@ export default class PixelStudio {
     this.toolsPanelMeta = null;
     const selectionGroup = buildPixelPortraitSelectionActionGroups()[this.pixelPortraitSubpanel];
     if (options.portrait && (this.pixelPortraitSubpanel === 'tool-options' || selectionGroup)) {
-      ctx.fillStyle = '#fff';
-      ctx.font = '16px Courier New';
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `16px ${UI_SUITE.font.family}`;
       ctx.fillText(selectionGroup ? selectionGroup.title : 'Tool Options', x + 14, y + 28);
       const optionsY = y + 42;
       const panelX = x + 12;
@@ -14799,8 +15356,8 @@ export default class PixelStudio {
       this.registerFocusable('menu', backBounds, backAction);
       return;
     }
-    ctx.fillStyle = '#fff';
-    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `${isMobile ? 16 : 14}px ${UI_SUITE.font.family}`;
     const title = category === 'draw' ? 'Draw Tools' : category === 'select' ? 'Selection Tools' : 'Extra Tools';
     ctx.fillText(title, x + 12, y + 22);
 
@@ -14864,7 +15421,7 @@ export default class PixelStudio {
       offsetY = toolsTop + gridMetrics.visibleRows * lineHeight;
     }
     if (maxToolScroll > 0) {
-      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.fillStyle = UI_SUITE.colors.muted;
       ctx.font = `${isMobile ? 11 : 10}px ${UI_SUITE.font.family}`;
       const visibleToolRows = portraitGrid ? gridMetrics.visibleRows : maxVisible;
       ctx.fillText(`Tools ${this.focusScroll.tools + 1}/${maxToolScroll + 1}`, x + 12, toolsTop + visibleToolRows * lineHeight + 10);
@@ -14892,7 +15449,7 @@ export default class PixelStudio {
     }
 
     if (!isMobile) {
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.fillStyle = UI_SUITE.colors.muted;
       ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
       ctx.fillText(`Brush Size: ${this.toolOptions.brushSize}`, x + 12, offsetY);
       const brushMinus = { x: x + 160, y: offsetY - buttonHeight + 4, w: 28, h: buttonHeight };
@@ -14915,7 +15472,7 @@ export default class PixelStudio {
       this.registerFocusable('menu', brushPlus, () => { this.setBrushSize(this.toolOptions.brushSize + 1); });
       offsetY += lineHeight;
 
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.fillStyle = UI_SUITE.colors.muted;
       ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
       ctx.fillText(`Tile: ${this.activeTile?.label || 'None'}`, x + 12, offsetY);
       const tileLeft = { x: x + 160, y: offsetY - buttonHeight + 4, w: 30, h: buttonHeight };
@@ -14932,7 +15489,7 @@ export default class PixelStudio {
       this.registerFocusable('menu', tileReset, () => this.resetActiveTileArt());
       offsetY += lineHeight;
 
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.fillStyle = UI_SUITE.colors.muted;
       ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
       ctx.fillText('Canvas Transform', x + 12, offsetY);
       offsetY += lineHeight;
@@ -14984,8 +15541,8 @@ export default class PixelStudio {
       viewportHeight: this.game?.canvas?.height || 0
     });
     if (portrait) {
-      ctx.fillStyle = '#fff';
-      ctx.font = '16px Courier New';
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `16px ${UI_SUITE.font.family}`;
       const groups = buildPixelPortraitCanvasActionGroups();
       const subpanel = groups[this.pixelPortraitSubpanel];
       if (subpanel) {
@@ -15014,8 +15571,8 @@ export default class PixelStudio {
     const fontSize = isMobile ? 14 : 12;
     const lineHeight = isMobile ? 52 : 20;
     const buttonHeight = isMobile ? 44 : 18;
-    ctx.fillStyle = '#fff';
-    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `${isMobile ? 16 : 14}px ${UI_SUITE.font.family}`;
     ctx.fillText('Switches', x + 12, y + 22);
 
     let offsetY = y + 44;
@@ -15042,7 +15599,7 @@ export default class PixelStudio {
     }, { isMobile });
     offsetY += lineHeight;
 
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillStyle = UI_SUITE.colors.muted;
     ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
     ctx.fillText('Tile Preview: 3x3', x + 12, offsetY);
     offsetY += lineHeight;
@@ -15119,7 +15676,7 @@ export default class PixelStudio {
     ];
     const buttonW = Math.max(isMobile ? 44 : 38, Math.floor((w - labelW - gap * labels.length) / labels.length));
 
-    ctx.fillStyle = 'rgba(255,255,255,0.72)';
+    ctx.fillStyle = UI_SUITE.colors.muted;
     ctx.font = `${isMobile ? 12 : 11}px ${UI_SUITE.font.family}`;
     ctx.fillText('BG', x, y + (isMobile ? 4 : 5));
 
@@ -15379,7 +15936,7 @@ export default class PixelStudio {
       this.toolsPanelMeta.maxToolOptionsScroll = maxScroll;
     }
     if (maxScroll > 0) {
-      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.fillStyle = UI_SUITE.colors.muted;
       ctx.font = `${isMobile ? 11 : 10}px ${UI_SUITE.font.family}`;
       ctx.fillText(`Scroll ${this.focusScroll.toolOptions + 1}/${maxScroll + 1}`, x + 2, y + panelHeight + 10);
       drawSharedPortraitScrollHints(ctx, this.toolsPanelMeta?.optionsScrollBounds || { x: x - 4, y: bodyY - 2, w: panelWidth + 8, h: bodyH + 4 }, {
@@ -15391,12 +15948,9 @@ export default class PixelStudio {
   }
 
   drawHueSaturationMobileRail(ctx, x, y, w, h) {
-    ctx.fillStyle = 'rgba(255,255,255,0.05)';
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
-    ctx.fillStyle = '#fff';
-    ctx.font = '12px Courier New';
+    drawSharedPanel(ctx, { x, y, w, h }, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
     ctx.fillText('Hue / Saturation', x + 10, y + 16);
 
     const actionGap = 8;
@@ -15432,8 +15986,8 @@ export default class PixelStudio {
     ctx.moveTo(hueKnobX, hueTrack.y - 3);
     ctx.lineTo(hueKnobX, hueTrack.y + hueTrack.h + 3);
     ctx.stroke();
-    ctx.fillStyle = '#fff';
-    ctx.font = '11px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `11px ${UI_SUITE.font.family}`;
     ctx.fillText(`${Math.round(hueShift)}°`, hueTrack.x + 4, hueTrack.y + hueTrack.h - 6);
 
     const hueColor = `hsl(${((hueShift % 360) + 360) % 360} 100% 50%)`;
@@ -15452,7 +16006,7 @@ export default class PixelStudio {
     ctx.moveTo(satKnobX, satTrack.y - 3);
     ctx.lineTo(satKnobX, satTrack.y + satTrack.h + 3);
     ctx.stroke();
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = UI_SUITE.colors.text;
     ctx.fillText(`${Math.round(satValue)}%`, satTrack.x + 4, satTrack.y + satTrack.h - 6);
 
     const updateHueFromX = (pointerX) => {
@@ -15653,8 +16207,8 @@ export default class PixelStudio {
       this.drawPreviewPanel(ctx, x + 4, y + 4, w - 8, previewH - 16);
       offsetY += previewH;
     }
-    ctx.fillStyle = '#fff';
-    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = isMobile ? UI_SUITE.editorPanel.titleFont : UI_SUITE.editorPanel.bodyFont;
     const layerGroups = buildPixelPortraitLayerActionGroups();
     const layerSubpanel = portrait ? layerGroups[this.pixelPortraitSubpanel] : null;
     const controls = portrait
@@ -15730,8 +16284,8 @@ export default class PixelStudio {
         h: previewSize
       };
       this.drawPixelPreviewPixels(ctx, layer.pixels, this.canvasState.width, this.canvasState.height, previewBounds);
-      ctx.fillStyle = '#fff';
-      ctx.font = `${isMobile ? 12 : 11}px Courier New`;
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = isMobile ? UI_SUITE.editorPanel.bodyFont : `11px ${UI_SUITE.font.family}`;
       const labelX = previewBounds.x + previewBounds.w + 8;
       const rightReserve = portrait ? 82 : 8;
       const labelW = Math.max(20, bounds.x + bounds.w - rightReserve - labelX);
@@ -15786,7 +16340,7 @@ export default class PixelStudio {
     const source = String(text || '');
     if (maxWidth <= 0) return;
     ctx.save();
-    ctx.font = `${fontSize}px Courier New`;
+    ctx.font = `${fontSize}px ${UI_SUITE.font.family}`;
     let label = source;
     while (label.length > 1 && ctx.measureText(label).width > maxWidth) {
       label = `${label.slice(0, Math.max(1, label.length - 2))}…`;
@@ -16431,8 +16985,8 @@ export default class PixelStudio {
       fill: UI_SUITE.colors.panel,
       border: UI_SUITE.colors.border
     });
-    ctx.fillStyle = '#fff';
-    ctx.font = '14px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = UI_SUITE.editorPanel.titleFont;
     ctx.fillText(subpanel.title, sheet.x + 14, sheet.y + 24);
     const closeBounds = { x: sheet.x + sheet.w - 82, y: sheet.y + 8, w: 70, h: 30 };
     this.drawButton(ctx, closeBounds, 'Close', false, { fontSize: 12 });
@@ -16749,11 +17303,77 @@ export default class PixelStudio {
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
-    if (this.leftPanelTab === 'animation') {
-      this.drawFramesPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false });
-      return;
-    }
     this.drawLayersPanel(ctx, x + 4, y + 4, w - 8, h - 8, { isMobile: false });
+  }
+
+  drawDesktopFrameStrip(ctx, x, y, w, h) {
+    ctx.save();
+    drawSharedPanel(ctx, { x, y, w, h }, { fill: UI_SUITE.colors.panel });
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = UI_SUITE.editorPanel.titleFont;
+    ctx.fillText('Frames', x + 12, y + 22);
+    const buttonH = 22;
+    const controls = [
+      { label: '+', action: () => this.addFrame() },
+      { label: '-', action: () => this.deleteFrame(this.animation.currentFrameIndex) },
+      { label: 'Dup', action: () => this.duplicateFrame(this.animation.currentFrameIndex) },
+      { label: this.animation.playing ? 'Pause' : 'Play', action: () => { this.animation.playing = !this.animation.playing; } }
+    ];
+    let controlX = x + 76;
+    controls.forEach((entry) => {
+      const bounds = { x: controlX, y: y + 8, w: entry.label.length > 3 ? 54 : 30, h: buttonH };
+      this.drawButton(ctx, bounds, entry.label, false, { fontSize: 11 });
+      this.uiButtons.push({ bounds, onClick: entry.action });
+      this.registerFocusable('frames', bounds, entry.action);
+      controlX += bounds.w + 6;
+    });
+
+    this.frameBounds = [];
+    const stripY = y + 38;
+    const stripH = Math.max(24, h - 46);
+    const frameW = 88;
+    const gap = 8;
+    const visible = Math.max(1, Math.floor((w - 24) / (frameW + gap)));
+    const maxScroll = Math.max(0, this.animation.frames.length - visible);
+    const start = clamp(this.focusScroll.frames || 0, 0, maxScroll);
+    this.focusScroll.frames = start;
+    this.focusGroupMeta.frames = { maxVisible: visible };
+    this.frameListMeta = {
+      scrollBounds: { x: x + 8, y: stripY - 4, w: Math.max(1, w - 16), h: stripH + 8 },
+      lineHeight: frameW + gap,
+      maxScroll
+    };
+    this.animation.frames.slice(start, start + visible).forEach((frame, visibleIndex) => {
+      const index = start + visibleIndex;
+      const active = index === this.animation.currentFrameIndex;
+      const bounds = { x: x + 8 + visibleIndex * (frameW + gap), y: stripY, w: frameW, h: stripH, index };
+      this.drawButton(ctx, bounds, '', active, {
+        fontSize: 11,
+        focused: this.controllerMenu.isFocusedItem('frames', `frame-${index}`)
+      });
+      const previewSize = Math.max(18, Math.min(30, bounds.h - 10));
+      const previewBounds = { x: bounds.x + 6, y: bounds.y + 5, w: previewSize, h: previewSize };
+      const composite = compositeLayers(frame.layers, this.canvasState.width, this.canvasState.height);
+      this.drawPixelPreviewPixels(ctx, composite, this.canvasState.width, this.canvasState.height, previewBounds);
+      const delayMs = Math.max(1, Math.round(Number(frame.durationMs || DEFAULT_FRAME_DURATION_MS)));
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `11px ${UI_SUITE.font.family}`;
+      this.drawFittedText(ctx, `F${index + 1} ${delayMs}ms`, previewBounds.x + previewBounds.w + 6, bounds.y + Math.floor(bounds.h / 2) + 4, Math.max(20, bounds.w - previewSize - 18), 11);
+      this.frameBounds.push(bounds);
+      const action = () => {
+        this.animation.currentFrameIndex = index;
+        this.setFrameLayers(this.currentFrame.layers);
+      };
+      this.uiButtons.push({ bounds, onClick: action });
+      this.registerFocusable('frames', bounds, action);
+    });
+    if (maxScroll > 0) {
+      drawSharedPortraitScrollHints(ctx, this.frameListMeta.scrollBounds, {
+        scroll: start,
+        scrollMax: maxScroll
+      });
+    }
+    ctx.restore();
   }
 
   drawFramesPanel(ctx, x, y, w, h, options = {}) {
@@ -16768,8 +17388,8 @@ export default class PixelStudio {
     const buttonHeight = isMobile ? 44 : 18;
     const lineHeight = isMobile ? 52 : 20;
     const playbackRailH = portrait && this.animation.playing ? 56 : 0;
-    ctx.fillStyle = '#fff';
-    ctx.font = `${isMobile ? 16 : 14}px Courier New`;
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = isMobile ? UI_SUITE.editorPanel.titleFont : UI_SUITE.editorPanel.bodyFont;
     let offsetY = y + 34;
     const frameGroups = buildPixelPortraitFrameActionGroups();
     const frameSubpanel = portrait ? frameGroups[this.pixelPortraitSubpanel] : null;
@@ -16842,8 +17462,8 @@ export default class PixelStudio {
       };
       const composite = compositeLayers(frame.layers, this.canvasState.width, this.canvasState.height);
       this.drawPixelPreviewPixels(ctx, composite, this.canvasState.width, this.canvasState.height, previewBounds);
-      ctx.fillStyle = '#fff';
-      ctx.font = `${isMobile ? 12 : 11}px Courier New`;
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = isMobile ? UI_SUITE.editorPanel.bodyFont : `11px ${UI_SUITE.font.family}`;
       const labelX = previewBounds.x + previewBounds.w + 8;
       const rightReserve = portrait ? 82 : 8;
       const labelW = Math.max(20, bounds.x + bounds.w - rightReserve - labelX);
@@ -16878,16 +17498,4 @@ export default class PixelStudio {
     }
   }
 
-  drawGamepadHints(ctx, x, y) {
-    const height = GAMEPAD_HINTS.length * 12 + 20;
-    ctx.fillStyle = UI_SUITE.colors.panel;
-    ctx.fillRect(x, y, 220, height);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, 220, height);
-    ctx.fillStyle = '#fff';
-    ctx.font = '11px Courier New';
-    GAMEPAD_HINTS.forEach((hint, index) => {
-      ctx.fillText(hint, x + 10, y + 16 + index * 12);
-    });
-  }
 }

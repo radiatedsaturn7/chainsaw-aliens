@@ -14,6 +14,11 @@ import {
   saveServerFile,
   upsertCachedProjectFile
 } from '../../src/ui/serverStorage.js';
+import {
+  getProjectFileSaveTimeoutMs,
+  resetProjectFilesForTests,
+  saveProjectFileAndConfirm
+} from '../../src/ui/projectFiles.js';
 
 test('saveServerFile merges metadata-only persisted responses with local data', async () => {
   clearCachedProjectFilesForTests();
@@ -88,7 +93,7 @@ test('saveServerFile sends versioning policy to storage API', async () => {
   }
 });
 
-test('saveServerFile reports unreachable storage clearly and can recover after restart', async () => {
+test('saveServerFile reports failed save requests without poisoning later saves', async () => {
   clearCachedProjectFilesForTests();
   const originalFetch = globalThis.fetch;
   const document = { frames: [['#ffffff']] };
@@ -128,13 +133,15 @@ test('saveServerFile reports unreachable storage clearly and can recover after r
   try {
     const failed = await saveServerFile('art', 'player-idle-art', document, { savedAt: 1111, version: 1 });
     assert.equal(failed.persisted, false);
-    assert.equal(failed.reason.includes('Storage server unreachable'), true);
+    assert.equal(failed.reason.includes('could not send request to'), true);
+    assert.equal(failed.reason.toLowerCase().includes('unreachable'), false);
+    assert.equal(failed.reason.toLowerCase().includes('reload'), false);
 
     online = true;
     const saved = await saveServerFile('art', 'player-idle-art', document, { savedAt: 2222, version: 1 });
     assert.equal(saved.persisted, true);
     assert.deepEqual(saved.data, document);
-    assert.equal(calls.some((call) => call.url === '/__storage/index'), true);
+    assert.equal(calls.some((call) => call.url === '/__storage/index'), false);
     assert.equal(calls.some((call) => call.url === '/__storage/file'), true);
   } finally {
     globalThis.fetch = originalFetch;
@@ -190,11 +197,85 @@ test('queued server saves time out instead of hanging and recover on the next sa
     const saved = await queueServerFileSave('music', 'fast-song', document, { savedAt: 4444, version: 1, timeoutMs: 50 });
     assert.equal(saved.persisted, true);
     assert.deepEqual(saved.data, document);
-    assert.equal(calls.some((call) => call.url === '/__storage/index'), true);
+    assert.equal(calls.some((call) => call.url === '/__storage/index'), false);
     assert.equal(calls.filter((call) => call.url === '/__storage/file').length, 2);
   } finally {
     globalThis.fetch = originalFetch;
     clearCachedProjectFilesForTests();
+  }
+});
+
+test('confirmed project saves use larger storage timeouts for large documents', () => {
+  assert.equal(getProjectFileSaveTimeoutMs(64 * 1024), 12000);
+  assert.equal(getProjectFileSaveTimeoutMs(2 * 1024 * 1024), 22000);
+  assert.equal(getProjectFileSaveTimeoutMs(64 * 1024, { timeoutMs: 42 }), 42);
+  assert.equal(getProjectFileSaveTimeoutMs(256 * 1024 * 1024), 300000);
+});
+
+test('confirmed art saves persist free bone joint mode after server confirmation', async () => {
+  resetProjectFilesForTests();
+  const originalFetch = globalThis.fetch;
+  const document = {
+    kind: 'actor-state-animation',
+    width: 8,
+    height: 8,
+    fps: 8,
+    frames: [Array.from({ length: 64 }, () => null)],
+    editor: {
+      width: 8,
+      height: 8,
+      activeLayerIndex: 0,
+      frames: [],
+      bones: {
+        version: 1,
+        joints: [
+          { id: 'joint-1', x: 1, y: 1 },
+          { id: 'joint-2', x: 6, y: 1 }
+        ],
+        bones: [{
+          id: 'bone-1',
+          name: 'Free Bone',
+          startJointId: 'joint-1',
+          endJointId: 'joint-2',
+          start: { x: 1, y: 1 },
+          end: { x: 6, y: 1 },
+          jointMode: 'free',
+          jointModeVersion: 2
+        }],
+        bindings: [],
+        poses: [],
+        poseTimeline: []
+      }
+    }
+  };
+  let posted = null;
+  globalThis.fetch = async (url, options = {}) => {
+    assert.equal(url, '/__storage/file');
+    posted = JSON.parse(options.body || '{}');
+    return {
+      ok: true,
+      async json() {
+        return {
+          ok: true,
+          file: {
+            version: posted.version,
+            folder: posted.folder,
+            name: posted.name,
+            savedAt: posted.savedAt,
+            dataOmitted: true
+          }
+        };
+      }
+    };
+  };
+  try {
+    const saved = await saveProjectFileAndConfirm('art', 'free-bone-save', document);
+    assert.equal(saved.persisted, true);
+    assert.equal(posted.data.editor.bones.bones[0].jointMode, 'free');
+    assert.equal(saved.data.editor.bones.bones[0].jointMode, 'free');
+  } finally {
+    globalThis.fetch = originalFetch;
+    resetProjectFilesForTests();
   }
 });
 
@@ -407,6 +488,89 @@ test('hydrateProjectFile fetches one selected file and caches it', async () => {
     assert.deepEqual(payload.data, document);
     assert.deepEqual(JSON.parse(readCachedProjectFile('art', 'player')).data, document);
     assert.deepEqual(calls, ['/__storage/file?folder=art&name=player']);
+  } finally {
+    globalThis.fetch = originalFetch;
+    clearCachedProjectFilesForTests();
+  }
+});
+
+test('static fallback open tracks source and later save retries live POST directly', async () => {
+  clearCachedProjectFilesForTests();
+  const originalFetch = globalThis.fetch;
+  const document = {
+    frames: [['#ff00ff']],
+    assets: [{
+      id: 'image-1',
+      dataUrl: { __chainsawAssetRef: 'assets/image-1.png', mime: 'image/png' }
+    }]
+  };
+  const calls = [];
+  let postOnline = false;
+  globalThis.fetch = async (url, options = {}) => {
+    calls.push({ url, options });
+    if (String(url).startsWith('/__storage/file') && options.method !== 'POST') {
+      return { ok: false, async json() { return { ok: false, error: 'HTTP 404' }; } };
+    }
+    if (url === '/data/server-storage/files/manifest.json') {
+      return {
+        ok: true,
+        async json() {
+          return { folders: { art: { player: 'art/player/document.json' } } };
+        }
+      };
+    }
+    if (url === '/data/server-storage/files/art/player/document.json') {
+      return { ok: true, async json() { return document; } };
+    }
+    if (url === '/data/server-storage/files/art/player/metadata.json') {
+      return { ok: true, async json() { return { name: 'player', savedAt: 1234, version: 1 }; } };
+    }
+    if (url === 'http://localhost/data/server-storage/files/art/player/assets/image-1.png') {
+      return {
+        ok: true,
+        async arrayBuffer() { return Uint8Array.from([137, 80, 78, 71]).buffer; }
+      };
+    }
+    if (url === '/__storage/file' && options.method === 'POST') {
+      if (!postOnline) {
+        return { ok: false, status: 404, async json() { return { ok: false, error: 'No POST storage here' }; } };
+      }
+      const body = JSON.parse(options.body || '{}');
+      return {
+        ok: true,
+        async json() {
+          return {
+            ok: true,
+            file: {
+              version: body.version,
+              folder: body.folder,
+              name: body.name,
+              savedAt: body.savedAt,
+              dataOmitted: true
+            }
+          };
+        }
+      };
+    }
+    throw new Error(`Unexpected fetch ${url}`);
+  };
+  try {
+    const opened = await hydrateProjectFile('art', 'player');
+    assert.equal(opened.data.assets[0].dataUrl, 'data:image/png;base64,iVBORw==');
+    assert.equal(opened.storageSource, 'static');
+
+    const failed = await saveServerFile('art', 'player', document, { savedAt: 2222, version: 1 });
+    assert.equal(failed.persisted, false);
+    assert.equal(failed.reason.includes('/__storage/file'), true);
+    assert.equal(failed.reason.includes('not accepting project file saves'), true);
+    assert.equal(failed.reason.toLowerCase().includes('unreachable'), false);
+    assert.equal(failed.reason.toLowerCase().includes('reload'), false);
+
+    postOnline = true;
+    const saved = await saveServerFile('art', 'player', document, { savedAt: 3333, version: 1 });
+    assert.equal(saved.persisted, true);
+    assert.deepEqual(saved.data, document);
+    assert.equal(calls.filter((call) => call.url === '/__storage/file' && call.options.method === 'POST').length, 2);
   } finally {
     globalThis.fetch = originalFetch;
     clearCachedProjectFilesForTests();

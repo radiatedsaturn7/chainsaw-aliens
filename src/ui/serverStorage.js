@@ -2,12 +2,16 @@ const PROJECT_FILE_PREFIX = 'server-project-file:';
 const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes'];
 const STATIC_STORAGE_ROOT = '/data/server-storage/files';
 const STORAGE_REQUEST_TIMEOUT_MS = 12000;
+const COMPACT_STORAGE_MARKER = '__chainsawStorage';
+const COMPACT_STORAGE_VERSION = 'compact-v1';
+const COMPACT_STORAGE_ENCODING = 'json-gzip-base64';
+const ASSET_REF_MARKER = '__chainsawAssetRef';
 
 let syncQueue = Promise.resolve();
 const volatileFiles = new Map();
+const volatileFileSources = new Map();
 let serverIndex = DEFAULT_FOLDERS.reduce((acc, folder) => { acc[folder] = {}; return acc; }, {});
 let storageApiAvailable = true;
-const STORAGE_UNREACHABLE_MESSAGE = 'Storage server unreachable. Reload the app from the active dev server and try again.';
 
 function hasOwn(object, key) {
   return Object.prototype.hasOwnProperty.call(object || {}, key);
@@ -22,6 +26,93 @@ function parseFileKey(key) {
   return match ? { folder: match[1], name: match[2] } : null;
 }
 
+function getCurrentStorageOrigin() {
+  return typeof window !== 'undefined' && window?.location?.origin
+    ? window.location.origin
+    : 'this page';
+}
+
+function attachStorageSource(payload, source) {
+  if (!payload || typeof payload !== 'object' || !source) return payload;
+  try {
+    Object.defineProperty(payload, 'storageSource', {
+      value: source,
+      configurable: true,
+      enumerable: false,
+      writable: true
+    });
+  } catch (error) {
+    // Non-enumerable metadata is best-effort only.
+  }
+  return payload;
+}
+
+function resolveStaticStorageUrl(ref, baseUrl = '') {
+  const value = String(ref || '');
+  if (!value) return '';
+  try {
+    return new URL(value, baseUrl).toString();
+  } catch (error) {
+    const origin = typeof window !== 'undefined' && window?.location?.origin
+      ? window.location.origin
+      : 'http://localhost';
+    return new URL(value, new URL(baseUrl || '/', origin)).toString();
+  }
+}
+
+function decodeBase64Bytes(value) {
+  const binary = atob(String(value || ''));
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+  return bytes;
+}
+
+async function decodeStoredProjectDocument(data, baseUrl = '') {
+  let decoded = data;
+  if (decoded && typeof decoded === 'object' && decoded[COMPACT_STORAGE_MARKER] === COMPACT_STORAGE_VERSION) {
+    if (decoded.encoding !== COMPACT_STORAGE_ENCODING || typeof decoded.data !== 'string') {
+      throw new Error('Unsupported compact storage document');
+    }
+    if (typeof DecompressionStream !== 'function') {
+      throw new Error('Compact storage requires DecompressionStream support');
+    }
+    const bytes = decodeBase64Bytes(decoded.data);
+    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    const text = await new Response(stream).text();
+    decoded = JSON.parse(text);
+  }
+  const hydrateAssets = async (value) => {
+    if (Array.isArray(value)) {
+      return Promise.all(value.map((entry) => hydrateAssets(entry)));
+    }
+    if (value && typeof value === 'object') {
+      const ref = value[ASSET_REF_MARKER];
+      const mime = value.mime;
+      if (typeof ref === 'string' && typeof mime === 'string') {
+        const response = await fetch(resolveStaticStorageUrl(ref, baseUrl));
+        if (!response.ok) return '';
+        const buffer = await response.arrayBuffer();
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        const chunkSize = 0x8000;
+        for (let index = 0; index < bytes.length; index += chunkSize) {
+          binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+        }
+        return `data:${mime};base64,${btoa(binary)}`;
+      }
+      const result = {};
+      await Promise.all(Object.entries(value).map(async ([key, entry]) => {
+        result[key] = await hydrateAssets(entry);
+      }));
+      return result;
+    }
+    return value;
+  };
+  return hydrateAssets(decoded);
+}
+
 function normalizeIndex(index = {}) {
   return DEFAULT_FOLDERS.reduce((acc, folder) => {
     acc[folder] = index?.[folder] && typeof index[folder] === 'object' ? { ...index[folder] } : {};
@@ -29,10 +120,12 @@ function normalizeIndex(index = {}) {
   }, {});
 }
 
-function updateCachedPayload(payload) {
+function updateCachedPayload(payload, source = 'server') {
   if (!payload?.folder || !payload?.name) return;
   const raw = JSON.stringify(payload);
-  volatileFiles.set(fileKey(payload.folder, payload.name), raw);
+  const key = fileKey(payload.folder, payload.name);
+  volatileFiles.set(key, raw);
+  volatileFileSources.set(key, source);
   if (!serverIndex[payload.folder]) serverIndex[payload.folder] = {};
   serverIndex[payload.folder][payload.name] = {
     updatedAt: Number(payload.savedAt || Date.now()),
@@ -88,14 +181,39 @@ function isStorageApiUnavailable(error) {
 
 function getStorageUnavailableReason(error) {
   const message = String(error?.message || error || '');
-  if (message.toLowerCase().includes('failed to fetch')) return STORAGE_UNREACHABLE_MESSAGE;
+  if (message.toLowerCase().includes('failed to fetch')) return 'Storage API request failed.';
   if (message.toLowerCase().includes('timed out') || error?.name === 'TimeoutError' || error?.status === 408) {
     return 'Storage server timed out. Your local save is cached; try again after the server responds.';
   }
   if (message.toLowerCase().includes('failed to parse url')) return 'Storage server URL is unavailable from this page.';
-  if (error?.status === 404 || message.includes('HTTP 404')) return 'Storage API not found on this server. Reload from the active dev server.';
+  if (error?.status === 404 || message.includes('HTTP 404')) return 'Storage API endpoint was not found on this server.';
   if (error?.status === 405 || message.includes('HTTP 405')) return 'Storage API does not accept saves on this server.';
   return message || 'Storage API unavailable';
+}
+
+function isHardStorageApiUnavailable(error) {
+  const message = String(error?.message || error || '');
+  return error?.status === 404
+    || error?.status === 405
+    || message.includes('HTTP 404')
+    || message.includes('HTTP 405')
+    || message.toLowerCase().includes('failed to parse url');
+}
+
+function getStorageSaveFailureReason(error) {
+  const message = String(error?.message || error || '');
+  const origin = getCurrentStorageOrigin();
+  const endpoint = `${origin}/__storage/file`;
+  if (isHardStorageApiUnavailable(error)) {
+    return `Save failed: ${endpoint} is not accepting project file saves (${message || `HTTP ${error?.status}`}).`;
+  }
+  if (message.toLowerCase().includes('timed out') || error?.name === 'TimeoutError' || error?.status === 408) {
+    return `Save failed: ${endpoint} timed out. Your local copy is cached; try saving again.`;
+  }
+  if (message.toLowerCase().includes('failed to fetch') || error?.name === 'AbortError') {
+    return `Save failed: could not send request to ${endpoint}. Your local copy is cached; try saving again.`;
+  }
+  return `Save failed: ${endpoint} returned ${message || 'an unknown error'}.`;
 }
 
 function enqueueServerMutation(task) {
@@ -140,8 +258,8 @@ async function fetchServerIndex(folder = null) {
 
 async function fetchServerFile(folder, name) {
   const payload = await requestJson(`/__storage/file?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}`);
-  updateCachedPayload(payload.file);
-  return payload.file;
+  updateCachedPayload(payload.file, 'server');
+  return attachStorageSource(payload.file, 'server');
 }
 
 async function hydrateServerFiles(options = {}) {
@@ -179,10 +297,11 @@ async function hydrateStaticStorageFiles() {
           fetch(metadataUrl).catch(() => null)
         ]);
         if (!documentResponse.ok) return;
-        const data = await documentResponse.json().catch(() => null);
-        if (!data) return;
+        const storedData = await documentResponse.json().catch(() => null);
+        if (!storedData) return;
         const metadata = metadataResponse?.ok ? await metadataResponse.json().catch(() => ({})) : {};
         const savedAt = Number(metadata?.savedAt || Date.now());
+        const data = await decodeStoredProjectDocument(storedData, documentUrl);
         const payload = {
           version: Number(metadata?.version || 1),
           folder,
@@ -190,7 +309,7 @@ async function hydrateStaticStorageFiles() {
           savedAt,
           data
         };
-        updateCachedPayload(payload);
+        updateCachedPayload(payload, 'static');
         nextIndex[folder][payload.name] = {
           updatedAt: savedAt,
           size: JSON.stringify(payload).length
@@ -214,8 +333,8 @@ function fetchServerFileSync(folder, name) {
     if (xhr.status < 200 || xhr.status >= 300) return null;
     const payload = JSON.parse(xhr.responseText || '{}');
     if (!payload?.ok || !payload.file) return null;
-    updateCachedPayload(payload.file);
-    return payload.file;
+    updateCachedPayload(payload.file, 'server-sync');
+    return attachStorageSource(payload.file, 'server-sync');
   } catch (error) {
     return null;
   }
@@ -231,7 +350,9 @@ export function setServerStorageEnabled(enabled) {
 
 export function upsertCachedProjectFile(folder, name, raw) {
   if (!folder || !name || typeof raw !== 'string') return;
-  volatileFiles.set(fileKey(folder, name), raw);
+  const key = fileKey(folder, name);
+  volatileFiles.set(key, raw);
+  volatileFileSources.set(key, 'cache');
   if (!serverIndex[folder]) serverIndex[folder] = {};
   const existing = serverIndex[folder][name];
   try {
@@ -252,7 +373,9 @@ export function upsertCachedProjectFile(folder, name, raw) {
 
 export function deleteCachedProjectFile(folder, name) {
   if (!folder || !name) return;
-  volatileFiles.delete(fileKey(folder, name));
+  const key = fileKey(folder, name);
+  volatileFiles.delete(key);
+  volatileFileSources.delete(key);
   if (serverIndex[folder]) delete serverIndex[folder][name];
 }
 
@@ -271,7 +394,7 @@ export async function hydrateProjectFile(folder, name) {
   const key = fileKey(folder, name);
   if (volatileFiles.has(key)) {
     try {
-      return JSON.parse(volatileFiles.get(key));
+      return attachStorageSource(JSON.parse(volatileFiles.get(key)), volatileFileSources.get(key) || 'cache');
     } catch (error) {
       return null;
     }
@@ -288,7 +411,7 @@ export async function hydrateProjectFile(folder, name) {
   const cached = volatileFiles.get(key);
   if (!cached) return null;
   try {
-    return JSON.parse(cached);
+    return attachStorageSource(JSON.parse(cached), volatileFileSources.get(key) || 'cache');
   } catch (error) {
     return null;
   }
@@ -311,6 +434,7 @@ export function listCachedProjectFiles(folder) {
 
 export function clearCachedProjectFilesForTests() {
   volatileFiles.clear();
+  volatileFileSources.clear();
   serverIndex = DEFAULT_FOLDERS.reduce((acc, folder) => { acc[folder] = {}; return acc; }, {});
   storageApiAvailable = true;
 }
@@ -325,12 +449,6 @@ export async function saveServerFile(folder, name, data, options = {}) {
   const savedAt = Number(options.savedAt || Date.now());
   const version = Number(options.version || 1);
   const createVersion = options.createVersion !== false;
-  if (!storageApiAvailable) {
-    const recovered = await probeStorageApi();
-    if (!recovered) {
-      return { version, folder, name, savedAt, data, persisted: false, reason: STORAGE_UNREACHABLE_MESSAGE };
-    }
-  }
   try {
     const payload = await requestJson('/__storage/file', {
       method: 'POST',
@@ -347,12 +465,12 @@ export async function saveServerFile(folder, name, data, options = {}) {
       ...responseFile,
       data: hasOwn(responseFile, 'data') ? responseFile.data : data
     };
-    updateCachedPayload(savedFile);
+    updateCachedPayload(savedFile, 'server');
     return { ...savedFile, persisted: true };
   } catch (error) {
     if (!isStorageApiUnavailable(error)) throw error;
-    storageApiAvailable = false;
-    return { version, folder, name, savedAt, data, persisted: false, reason: getStorageUnavailableReason(error) };
+    if (isHardStorageApiUnavailable(error)) storageApiAvailable = false;
+    return { version, folder, name, savedAt, data, persisted: false, reason: getStorageSaveFailureReason(error) };
   }
 }
 

@@ -76,24 +76,39 @@ test('main menu shows RTG Studio loading splash until buttons are ready', () => 
   const title = new Title();
   const ctx = createMockContext();
   title.screen = 'main';
-  title.draw(ctx, 390, 844, 'mobile', { isMobile: true });
+  title.draw(ctx, 390, 844, 'mobile', { isMobile: true, mainMenuReady: false });
 
   assert.equal(ctx.text.some((entry) => entry.value === 'RTG Studio'), true);
   assert.equal(ctx.text.some((entry) => entry.value === 'Loading...'), true);
   assert.equal(title.getSelectedAction(), null);
   assert.equal(title.getActionAt(195, 560), null);
 
-  title.update(0.25);
-  title.draw(createMockContext(), 390, 844, 'mobile', { isMobile: true });
+  title.update(5);
+  assert.equal(title.getSelectedAction(), null);
+
+  title.draw(createMockContext(), 390, 844, 'mobile', { isMobile: true, mainMenuReady: true });
   const first = title.menuBounds.get('recent-level');
   assert.equal(title.getActionAt(first.x + first.w / 2, first.y + first.h / 2), 'recent-level');
 });
 
 test('canvas mouse click is suppressed after pointer-down navigation changes screens', () => {
   assert.equal(mainSource.includes('let suppressNextCanvasClick = false;'), true);
+  assert.equal(mainSource.includes('function isGlobalOverlayOpen()'), true);
   assert.equal(mainSource.includes('const stateBefore = game.state;'), true);
   assert.equal(mainSource.includes('const titleScreenBefore = game.title?.screen;'), true);
-  assert.equal(mainSource.includes('suppressNextCanvasClick = game.state !== stateBefore || game.title?.screen !== titleScreenBefore;'), true);
+  assert.equal(mainSource.includes('const overlayOpenBefore = isGlobalOverlayOpen();'), true);
+  assert.equal(mainSource.includes('|| isGlobalOverlayOpen() !== overlayOpenBefore'), true);
+  assert.equal(mainSource.includes('if (isGlobalOverlayOpen()) {'), true);
+});
+
+test('canvas context menu suppression follows the shared editor pointer policy', () => {
+  assert.equal(mainSource.includes('shouldSuppressEditorContextMenu'), true);
+  assert.equal(mainSource.includes('const CANVAS_EDITOR_IDS_BY_STATE = {'), true);
+  assert.equal(mainSource.includes("editor: 'level'"), true);
+  assert.equal(mainSource.includes("'race-editor': 'race'"), true);
+  assert.equal(mainSource.includes("'car-editor': 'car'"), true);
+  assert.equal(mainSource.includes("addDOMListener(canvas, 'contextmenu'"), true);
+  assert.equal(mainSource.includes('event.preventDefault();\n  }));'), false);
 });
 
 test('portrait title main menu fits short mobile browser viewports', () => {
@@ -188,14 +203,26 @@ test('controller selection order matches studio launcher hierarchy', () => {
   ]);
   assert.deepEqual(title.folderOrders.game, [
     'level-editor',
+    'tile-editor',
+    'race-editor',
+    'car-editor',
     'actor-editor',
     'back'
   ]);
-  assert.deepEqual(title.controlsOrder, [
+  assert.deepEqual(title.optionsOrder, [
+    'latest-changes',
     'robtersession',
+    'controls',
+    'display',
+    'back'
+  ]);
+  assert.deepEqual(title.controlsOrder, [
     'mobile',
     'gamepad',
     'keyboard',
+    'back'
+  ]);
+  assert.deepEqual(title.displayOrder, [
     'display-sepia',
     'display-night-vision',
     'display-color',
@@ -203,13 +230,37 @@ test('controller selection order matches studio launcher hierarchy', () => {
   ]);
 });
 
-test('portrait options screen fits input and display controls', () => {
+test('portrait options screen fits submenus', () => {
+  const title = new Title();
+  title.screen = 'options';
+  title.draw(createMockContext(), 390, 844, 'mobile', { isMobile: true, displayMode: 'sepia' });
+
+  title.optionsOrder.forEach((action) => {
+    const bounds = title.optionsBounds.get(action);
+    assertBoundsUsable(bounds, 390, 844);
+    assert.equal(title.getActionAt(bounds.x + bounds.w / 2, bounds.y + bounds.h / 2), action);
+  });
+});
+
+test('portrait controls screen fits input controls', () => {
   const title = new Title();
   title.screen = 'controls';
   title.draw(createMockContext(), 390, 844, 'mobile', { isMobile: true, displayMode: 'sepia' });
 
   title.controlsOrder.forEach((action) => {
     const bounds = title.controlsBounds.get(action);
+    assertBoundsUsable(bounds, 390, 844);
+    assert.equal(title.getActionAt(bounds.x + bounds.w / 2, bounds.y + bounds.h / 2), action);
+  });
+});
+
+test('portrait display screen fits display controls', () => {
+  const title = new Title();
+  title.screen = 'display';
+  title.draw(createMockContext(), 390, 844, 'mobile', { isMobile: true, displayMode: 'sepia' });
+
+  title.displayOrder.forEach((action) => {
+    const bounds = title.displayBounds.get(action);
     assertBoundsUsable(bounds, 390, 844);
     assert.equal(title.getActionAt(bounds.x + bounds.w / 2, bounds.y + bounds.h / 2), action);
   });

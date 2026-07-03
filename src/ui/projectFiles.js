@@ -29,6 +29,10 @@ import {
 const FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes'];
 const parsedPayloadCache = new Map();
 const LARGE_PARSED_PAYLOAD_LIMIT = 8 * 1024 * 1024;
+const DEFAULT_SAVE_CONFIRM_TIMEOUT_MS = 12000;
+const MAX_SAVE_CONFIRM_TIMEOUT_MS = 300000;
+const LARGE_SAVE_TIMEOUT_BYTES = 1024 * 1024;
+const LARGE_SAVE_TIMEOUT_MS_PER_MB = 10000;
 
 const emptyIndex = () => ({ levels: {}, art: {}, music: {}, actors: {}, sfx: {}, cutscenes: {} });
 
@@ -80,6 +84,19 @@ function cacheParsedPayload(cacheKey, raw, payload) {
     });
   }
   parsedPayloadCache.set(cacheKey, { raw, payload });
+}
+
+export function getProjectFileSaveTimeoutMs(rawLength = 0, options = {}) {
+  if (Number.isFinite(options.timeoutMs)) {
+    return Math.max(1, Math.round(options.timeoutMs));
+  }
+  const bytes = Math.max(0, Number(rawLength) || 0);
+  if (bytes <= LARGE_SAVE_TIMEOUT_BYTES) return DEFAULT_SAVE_CONFIRM_TIMEOUT_MS;
+  const extraMb = Math.ceil((bytes - LARGE_SAVE_TIMEOUT_BYTES) / LARGE_SAVE_TIMEOUT_BYTES);
+  return Math.min(
+    MAX_SAVE_CONFIRM_TIMEOUT_MS,
+    DEFAULT_SAVE_CONFIRM_TIMEOUT_MS + extraMb * LARGE_SAVE_TIMEOUT_MS_PER_MB
+  );
 }
 
 export function sanitizeProjectFileName(name) {
@@ -171,7 +188,8 @@ export function saveProjectFile(folder, name, dataObj, options = {}) {
   const syncPromise = queueServerFileSave(folder, clean, dataObj, {
     savedAt,
     version: 1,
-    createVersion: options.createVersion !== false
+    createVersion: options.createVersion !== false,
+    timeoutMs: getProjectFileSaveTimeoutMs(raw.length, options)
   });
   return { ...payload, syncPromise };
 }

@@ -24,16 +24,18 @@ export function buildTransformHandleMeta({ x, y, w, h, rotationDeg = 0, orbOffse
   return { centerX, centerY, handles, rotateOrb, rotationDeg, width, height };
 }
 
-export function hitTestTransformHandles({ point, meta, radius }) {
+export function hitTestTransformHandles({ point, meta, radius, rotateFirst = false }) {
   if (!point || !meta) return null;
   const hitRadius = Math.max(0.0001, Number.isFinite(radius) ? radius : 1);
+  const rotateHit = meta.rotateOrb && Math.hypot(point.x - meta.rotateOrb.x, point.y - meta.rotateOrb.y) <= hitRadius * 1.2
+    ? { type: 'rotate', meta }
+    : null;
+  if (rotateFirst && rotateHit) return rotateHit;
   for (const handle of meta.handles || []) {
     if (Math.hypot(point.x - handle.x, point.y - handle.y) <= hitRadius) {
       return { type: 'scale', handle, meta };
     }
   }
-  if (meta.rotateOrb && Math.hypot(point.x - meta.rotateOrb.x, point.y - meta.rotateOrb.y) <= hitRadius * 1.2) {
-    return { type: 'rotate', meta };
-  }
+  if (rotateHit) return rotateHit;
   return null;
 }

@@ -17,7 +17,7 @@ import { getGmSustainProfile } from '../game/Audio.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { loadProjectFile, saveProjectFile, saveProjectFileAndConfirm } from './projectFiles.js';
 import { loadServerPreference, saveServerPreference } from './serverPreferences.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopLeftPanelFrame, buildSharedEditorFileMenu, buildSharedLeftMenuLayout, buildSharedLeftMenuButtons, buildUnifiedFileDrawerItems, drawSharedFocusRing, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportIconButton, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopContextTransportLayout, buildSharedEditorFileMenu, drawSharedDesktopContextPanel, drawSharedDesktopDropdown, drawSharedDesktopRibbon, drawSharedDesktopTopMenu, drawSharedFocusRing, drawSharedGamepadHintBar, drawSharedGamepadSlideOutHeader, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportIconButton, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
 import { resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
@@ -33,8 +33,8 @@ import { initializeComposerState } from './midi/state/composerState.js';
 import { registerComposerInputHandlers } from './midi/input/composerInputHandlers.js';
 import { drawGhostNotes as drawComposerGhostNotes, drawRecordModeSidebar as drawComposerRecordModeSidebar } from './midi/render/composerRender.js';
 import { createViewportController } from './shared/viewportController.js';
-import { getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
-import { buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeTouchEditorShellPlan, isGamepadLandscapeEditorMode, shouldUseGamepadSlideOutMenu } from './shared/editorMenuLayout.js';
+import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopControllerMenuIdForSection, getEditorPortraitRootMenuEntries, getEditorRootMenuEntries, getEditorRootMenuLabelMap } from './shared/editorMenuSpec.js';
+import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, buildMenuScrollDragState, createDesktopDropdownCommandHit, createPendingDesktopDropdownHit, findScrollableMenuRegion, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveMenuScrollDrag, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
@@ -121,24 +121,33 @@ const TAB_OPTIONS = [
 
 export const buildMidiSharedRootMenuEntries = ({
   includeFile = true,
-  includeSettings = true,
-  includeUndoRedo = false
+  includeSettings = true
 } = {}) => {
-  const entries = getEditorRootMenuEntries('midi', {
-    labelOverrides: {
-      file: SHARED_EDITOR_LEFT_MENU.fileLabel,
-      instruments: 'Mixer'
-    }
-  });
-  const filtered = entries.filter((entry) => (
+  const entries = getEditorRootMenuEntries('midi');
+  return entries.filter((entry) => (
     (includeFile || entry.id !== 'file')
     && (includeSettings || entry.id !== 'settings')
   ));
-  if (includeUndoRedo) {
-    filtered.push({ id: 'undo', label: 'Undo' }, { id: 'redo', label: 'Redo' });
-  }
-  return filtered;
 };
+const MIDI_CONTROLLER_ROOT_ENTRIES = getEditorControllerRootMenuEntries('midi');
+const MIDI_CONTROLLER_SIBLING_ORDER = getEditorControllerRootMenuIds('midi');
+const MIDI_CONTROLLER_ROOT_LABELS = getEditorRootMenuLabelMap('midi');
+const MIDI_CONTROLLER_ROOT_TO_TAB = {
+  edit: 'grid',
+  view: 'grid',
+  instruments: 'instruments',
+  'virtual-instruments': 'virtual-instruments'
+};
+const MIDI_LANDSCAPE_RIGHT_DRAWER_TABS = new Set(
+  MIDI_CONTROLLER_ROOT_ENTRIES
+    .filter((entry) => ['file', 'view', 'record', 'settings'].includes(entry.specId || entry.id))
+    .map((entry) => entry.id)
+);
+const MIDI_WORKSPACE_TAB_IDS = new Set(
+  MIDI_CONTROLLER_ROOT_ENTRIES
+    .filter((entry) => !['file', 'settings'].includes(entry.specId || entry.id))
+    .map((entry) => entry.id)
+);
 
 const TOOL_OPTIONS = [
   { id: 'draw', label: 'Draw' }
@@ -159,17 +168,6 @@ const INSTRUMENT_FAMILY_TABS = [
   { id: 'choir-voice', label: 'Choir/Voice' },
   { id: 'ethnic', label: 'Ethnic' },
   { id: 'misc', label: 'Misc' }
-];
-
-const CONTROLLER_ACTIONS = [
-  { id: 'place', label: 'Place Note' },
-  { id: 'erase', label: 'Erase Note' },
-  { id: 'tool', label: 'Switch Tool' },
-  { id: 'instrument', label: 'Instruments' },
-  { id: 'play', label: 'Play/Pause' },
-  { id: 'stop', label: 'Stop/Return' },
-  { id: 'octaveUp', label: 'Octave Up' },
-  { id: 'octaveDown', label: 'Octave Down' }
 ];
 
 const VIRTUAL_INSTRUMENT_DEFAULT_MAPPING = [
@@ -241,22 +239,17 @@ const MIDI_SONG_MODE_TABS = [
 ];
 
 export function buildMidiPortraitRootTabs() {
-  return [
-    { id: 'file', label: SHARED_EDITOR_LEFT_MENU.fileLabel },
-    { id: 'grid', label: 'Grid' },
-    { id: 'song', label: 'Song' },
-    { id: 'instruments', label: 'Mixer' },
-    { id: 'virtual-instruments', label: 'Record' },
-    { id: 'pedals', label: 'Pedals' },
-    { id: 'settings', label: 'Settings' }
-  ];
+  return getEditorPortraitRootMenuEntries('midi', {
+    labelOverrides: { file: SHARED_EDITOR_LEFT_MENU.fileLabel }
+  });
 }
 
 export function buildMidiPortraitMenuModel() {
   return {
     rootTabs: buildMidiPortraitRootTabs(),
-    bottomRailActions: ['fileButton', 'undoButton', 'redoButton', 'play'],
-    menuLoopIds: ['loop', 'loopToggle']
+    bottomRailActions: ['menu', 'undo', 'redo', 'play'],
+    menuLoopIds: ['loop', 'loopToggle'],
+    portraitRootPlacement: 'bottom-rail'
   };
 }
 
@@ -584,7 +577,19 @@ export function getMidiPortraitFullScreenSheetLayout(width, height, {
   const content = {
     ...stack.workSurface
   };
-  return { sheet, rootRail: stack.viewRail, viewRail: stack.viewRail, zoomStrip: stack.zoomStrip, bottomRail: stack.bottomRail, content, gap: stack.gap };
+  return {
+    sheet,
+    rootRail: stack.viewRail,
+    rootTabs: stack.viewRail,
+    viewRail: stack.viewRail,
+    subRail: content,
+    sheetContent: content,
+    zoomStrip: stack.zoomStrip,
+    bottomRail: stack.bottomRail,
+    content,
+    gap: stack.gap,
+    portraitRootPlacement: 'bottom-rail'
+  };
 }
 
 export function getMidiPortraitControlLayout(width, height, {
@@ -623,7 +628,18 @@ export function getMidiPortraitControlLayout(width, height, {
     w: Math.max(1, safeWidth - safePadding * 2),
     h: Math.max(1, zoomStrip.y - gap - safePadding)
   };
-  return { bottomRail, rootRail: viewRail, viewRail, zoomStrip, workSurface, gap };
+  return {
+    bottomRail,
+    rootRail: viewRail,
+    rootTabs: viewRail,
+    subRail: workSurface,
+    sheetContent: workSurface,
+    viewRail,
+    zoomStrip,
+    workSurface,
+    gap,
+    portraitRootPlacement: 'bottom-rail'
+  };
 }
 
 export function getMidiSongActionSpecs(mode, { portrait = false, selectionLoopActive = false, clonePaintActive = false } = {}) {
@@ -1194,7 +1210,7 @@ export default class MidiComposer {
     this.game = game;
     this.sharedMenu = new SharedEditorMenu();
     this.controllerMenu = new ControllerMenuStack({
-      siblingOrder: ['file', 'grid', 'song', 'tracks', 'record', 'pedals', 'settings']
+      siblingOrder: MIDI_CONTROLLER_SIBLING_ORDER
     });
     this.storageKey = 'chainsaw-midi-composer';
     this.song = this.loadSong();
@@ -1278,6 +1294,14 @@ export default class MidiComposer {
     this.settingsOpen = false;
     this.settingsScroll = 0;
     this.settingsScrollMax = 0;
+    this.openDesktopDropdownRootId = null;
+    this.closedDesktopDropdownRootId = null;
+    this.desktopDropdown = null;
+    this.desktopDropdownScroll = {};
+    this.pendingDesktopDropdownHit = null;
+    this.gamepadSlideOutMenuMeta = null;
+    this.menuScrollRegions = [];
+    this.landscapeRootDrawerOpen = false;
     this.songTrackScroll = 0;
     this.songTrackScrollMax = 0;
     this.instrumentListScroll = 0;
@@ -4600,7 +4624,7 @@ export default class MidiComposer {
         this.activeTab = 'virtual-instruments';
         this.controllerMenu.resetFocus();
         this.controllerMenu.setMenus(this.buildControllerMenus(), {
-          siblingOrder: ['file', 'grid', 'song', 'tracks', 'record', 'pedals', 'settings']
+          siblingOrder: MIDI_CONTROLLER_SIBLING_ORDER
         });
         this.controllerMenu.openRoot();
       }
@@ -4613,13 +4637,14 @@ export default class MidiComposer {
       includeZoomIntent: true
     });
     if (!normalized.connected) {
+      if (this.controllerMenu.active) this.controllerMenu.closeToSurface();
       this.gamepadCursorActive = false;
       return;
     }
     const { actions: semanticActions, axes, pressed, down, triggers } = normalized;
     const hasSemanticAction = (type) => semanticActions.some((entry) => entry.type === type);
     this.controllerMenu.setMenus(this.buildControllerMenus(), {
-      siblingOrder: ['file', 'grid', 'song', 'tracks', 'record', 'pedals', 'settings']
+      siblingOrder: MIDI_CONTROLLER_SIBLING_ORDER
     });
     this.controllerMenu.ensureInitialFocus();
     if (this.controllerMenu.handleActions(semanticActions, axes, dt, this)) {
@@ -4832,40 +4857,42 @@ export default class MidiComposer {
       root: {
         id: 'root',
         title: 'MIDI Composer',
-        items: [
-          rootItem('file', 'File'),
-          rootItem('grid', 'Grid'),
-          rootItem('song', 'Song'),
-          rootItem('instruments', 'Tracks / Mixer', 'tracks', 'instruments'),
-          rootItem('virtual-instruments', 'Record', 'record', 'virtual-instruments'),
-          rootItem('pedals', 'Pedals', 'pedals', 'pedals'),
-          action('undo', 'Undo', () => this.runtime.undo()),
-          action('redo', 'Redo', () => this.runtime.redo()),
-          rootItem('settings', 'Settings')
-        ]
+        items: MIDI_CONTROLLER_ROOT_ENTRIES.map((entry) => rootItem(
+          entry.id,
+          entry.label,
+          entry.controllerMenuId,
+          MIDI_CONTROLLER_ROOT_TO_TAB[entry.id] || entry.id
+        ))
       },
       grid: {
         id: 'grid',
         title: 'Grid',
         items: [
-          surfaceAction('open-grid', 'Open Grid', () => { this.activeTab = 'grid'; }),
-          surfaceAction('place', 'Place Note', () => this.paintNoteAt(this.cursor.tick, this.cursor.pitch, false)),
-          surfaceAction('erase', 'Erase Note', () => this.eraseNoteAt(this.cursor.tick, this.cursor.pitch)),
-          surfaceAction('select-all', 'Select All', () => {
-            const pattern = this.getActivePattern();
-            if (!pattern) return;
-            this.selection = new Set(pattern.notes.map((note) => note.id));
-            this.openSelectionMenu(this.lastPointer.x + 12, this.lastPointer.y + 12);
-          }),
-          surfaceAction('copy', 'Copy', () => this.copySelection()),
-          surfaceAction('paste', 'Paste', () => this.pasteSelection())
+          surfaceAction('quantize', `Quantize: ${this.quantizeOptions[this.quantizeIndex]?.label || 'Grid'}`, () => { this.quantizeIndex = (this.quantizeIndex + 1) % this.quantizeOptions.length; }),
+          surfaceAction('note-length', `Length: ${this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex])}`, () => this.setNoteLengthIndex(this.noteLengthIndex + 1))
+        ]
+      },
+      edit: {
+        id: 'edit',
+        title: 'Edit',
+        items: this.getMidiEditMenuItems().map((item) => action(item.id, item.label, item.onClick, {
+          disabled: Boolean(item.disabled)
+        }))
+      },
+      view: {
+        id: 'view',
+        title: 'View',
+        items: [
+          action('zoom-in', 'Zoom In', () => this.setHorizontalTimelineZoom((this.gridZoomX || this.getDefaultGridZoomX()) * 1.15)),
+          action('zoom-out', 'Zoom Out', () => this.setHorizontalTimelineZoom((this.gridZoomX || this.getDefaultGridZoomX()) / 1.15)),
+          action('preview', this.previewOnEdit ? 'Preview: On' : 'Preview: Off', () => { this.previewOnEdit = !this.previewOnEdit; }),
+          action('contrast', this.highContrast ? 'High Contrast: On' : 'High Contrast: Off', () => { this.highContrast = !this.highContrast; })
         ]
       },
       song: {
         id: 'song',
         title: 'Song',
         items: [
-          surfaceAction('open-song', 'Open Song', () => { this.activeTab = 'song'; }),
           surfaceAction('play', this.isPlaying ? 'Pause' : 'Play', () => this.togglePlayback()),
           surfaceAction('stop', 'Stop', () => this.stopPlayback()),
           action('loop', this.song.loopEnabled ? 'Loop: On' : 'Loop: Off', () => { this.song.loopEnabled = !this.song.loopEnabled; }),
@@ -4876,7 +4903,6 @@ export default class MidiComposer {
         id: 'tracks',
         title: 'Tracks / Mixer',
         items: [
-          surfaceAction('open-tracks', 'Open Mixer', () => { this.activeTab = 'instruments'; }),
           ...this.song.tracks.map((track, index) => surfaceAction(track.id, `${index + 1}: ${track.name}`, () => { this.selectedTrackIndex = index; this.activeTab = 'instruments'; }))
         ]
       },
@@ -4884,7 +4910,6 @@ export default class MidiComposer {
         id: 'record',
         title: 'Record',
         items: [
-          action('open-record', 'Open Record Tab', () => { this.activeTab = 'virtual-instruments'; }),
           action('enter-record', 'Enter Record Mode', () => this.enterRecordMode()),
           action('single-note', 'Single Note Record', () => this.enterSingleNoteRecordMode())
         ]
@@ -4893,15 +4918,13 @@ export default class MidiComposer {
         id: 'pedals',
         title: 'Pedals',
         items: [
-          surfaceAction('open-pedals', 'Open Pedals', () => { this.activeTab = 'pedals'; }),
-          surfaceAction('open-mixer', 'Open Mixer', () => { this.activeTab = 'instruments'; })
+          surfaceAction('select-pedal-chain', 'Pedal Chain', () => { this.activeTab = 'pedals'; })
         ]
       },
       settings: {
         id: 'settings',
         title: 'Settings',
         items: [
-          action('open-settings', 'Open Settings', () => { this.activeTab = 'settings'; }),
           action('quantize', `Quantize: ${this.quantizeOptions[this.quantizeIndex]?.label || 'On'}`, () => { this.quantizeEnabled = !this.quantizeEnabled; }),
           action('preview', this.previewOnEdit ? 'Preview: On' : 'Preview: Off', () => { this.previewOnEdit = !this.previewOnEdit; }),
           action('contrast', this.highContrast ? 'High Contrast: On' : 'High Contrast: Off', () => { this.highContrast = !this.highContrast; })
@@ -5392,11 +5415,28 @@ export default class MidiComposer {
   handlePointerDown(payload) {
     this.lastPointer = { x: payload.x, y: payload.y };
     this.cancelLongPressTimer();
+    this.pendingDesktopDropdownHit = null;
     if (!this.recordModeActive && this.dragState) {
       this.dragState = null;
       this.draggingTrackControl = null;
     }
     const { x, y } = payload;
+    if (!this.isMobileLayout() && shouldCloseDesktopDropdownOnPointerDown({
+      dropdown: this.desktopDropdown,
+      point: payload,
+      rootButtons: this.getDesktopRootButtons(),
+      rootIdKey: 'desktopRootId'
+    })) {
+      this.closeMidiDesktopDropdown();
+      return;
+    }
+    if (!this.isMobileLayout()) {
+      const desktopDropdownHit = this.bounds.desktopDropdownItems?.find((item) => this.pointInBounds(x, y, item));
+      if (desktopDropdownHit) {
+        this.pendingDesktopDropdownHit = createPendingDesktopDropdownHit(desktopDropdownHit, { x, y });
+        return;
+      }
+    }
     if (this.transportPopover) {
       const hit = this.bounds.transportPopoverButtons?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (hit) {
@@ -5407,7 +5447,8 @@ export default class MidiComposer {
       this.closeTransportPopover();
       return;
     }
-    if (this.isMobileLandscapeThumbZoomMode() && payload.touchCount > 0 && this.panJoystick.radius > 0) {
+    const suppressLandscapeMenuThumbstick = this.isMobileLandscapeThumbZoomMode() && this.landscapeRootDrawerOpen;
+    if (!suppressLandscapeMenuThumbstick && this.isMobileLandscapeThumbZoomMode() && payload.touchCount > 0 && this.panJoystick.radius > 0) {
       const dx = payload.x - this.panJoystick.center.x;
       const dy = payload.y - this.panJoystick.center.y;
       if (Math.hypot(dx, dy) <= this.panJoystick.radius * 1.2) {
@@ -5417,20 +5458,65 @@ export default class MidiComposer {
         return;
       }
     }
-    if (!this.recordModeActive
-      && this.mobileLandscapeRootMenuBounds
-      && this.pointInBounds(x, y, this.mobileLandscapeRootMenuBounds)) {
-      const hitButton = this.mobileLandscapeRootMenuButtons?.find((bounds) => this.pointInBounds(x, y, bounds));
-      if ((this.mobileLandscapeRootMenuScrollMax || 0) > 0) {
-        this.dragState = {
-          mode: 'mobile-landscape-root-scroll',
-          startY: y,
-          startScroll: this.controllerMenu.scroll.root || 0,
-          moved: false,
-          pendingRootId: hitButton?.id || null
-        };
+    if (this.gamepadSlideOutMenuMeta?.scrollBounds
+      && this.pointInBounds(x, y, this.gamepadSlideOutMenuMeta.scrollBounds)
+      && (this.gamepadSlideOutMenuMeta.maxScroll || 0) > 0) {
+      const pendingIndex = (this.gamepadSlideOutMenuMeta.itemBounds || [])
+        .findIndex((bounds) => this.pointInBounds(x, y, bounds));
+      const pendingItem = pendingIndex >= 0
+        ? this.gamepadSlideOutMenuMeta.items?.[(this.gamepadSlideOutMenuMeta.scroll || 0) + pendingIndex]
+        : null;
+      const drag = buildMenuScrollDragState({
+        regions: [{
+          menuId: this.gamepadSlideOutMenuMeta.menuId,
+          bounds: this.gamepadSlideOutMenuMeta.scrollBounds,
+          maxScroll: this.gamepadSlideOutMenuMeta.maxScroll || 0,
+          lineHeight: this.gamepadSlideOutMenuMeta.lineHeight || 44
+        }],
+        point: payload,
+        scrollState: this.controllerMenu.scroll,
+        pendingHit: pendingItem && !pendingItem.disabled ? pendingItem : null,
+        thresholdPx: 6,
+        defaultLineHeight: this.gamepadSlideOutMenuMeta.lineHeight || 44
+      });
+      if (drag) {
+        this.dragState = { ...drag, mode: 'gamepad-submenu-scroll' };
         return;
       }
+    }
+    if (!this.recordModeActive
+      && this.bounds.landscapeMenuButton
+      && this.pointInBounds(x, y, this.bounds.landscapeMenuButton)) {
+      this.landscapeRootDrawerOpen = !this.landscapeRootDrawerOpen;
+      this.closeSelectionMenu();
+      this.pastePreview = null;
+      this.noteLengthMenu.open = false;
+      this.tempoSliderOpen = false;
+      return;
+    }
+    if (!this.recordModeActive
+      && findScrollableMenuRegion(this.menuScrollRegions, payload)) {
+      const rootScrollRegion = findScrollableMenuRegion(this.menuScrollRegions, payload);
+      const hitButton = this.mobileLandscapeRootMenuButtons?.find((bounds) => this.pointInBounds(x, y, bounds));
+      const drag = buildMenuScrollDragState({
+        regions: this.menuScrollRegions,
+        point: payload,
+        scrollState: { [rootScrollRegion.menuId]: this.controllerMenu.scroll.root || 0 },
+        pendingHit: hitButton ? { id: hitButton.id } : null,
+        thresholdPx: 6,
+        defaultLineHeight: 24
+      });
+      if (!drag) return;
+      this.dragState = {
+        ...drag,
+        mode: 'mobile-landscape-root-scroll',
+        pendingRootId: hitButton?.id || null
+      };
+      return;
+    }
+    if (!this.recordModeActive && this.landscapeRootDrawerOpen) {
+      this.landscapeRootDrawerOpen = false;
+      return;
     }
 
     if (this.recordModeActive) {
@@ -5563,28 +5649,26 @@ export default class MidiComposer {
       if (action?.type) {
         return;
       }
-      const desktopDropdownHit = this.bounds.desktopDropdownItems?.find((item) => this.pointInBounds(x, y, item));
-      if (desktopDropdownHit) {
-        desktopDropdownHit.action?.();
-        return;
-      }
       const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
       if (tabHit) {
         this.exitRecordMode();
-        this.activateLeftRailTab(tabHit.id);
+        if (this.isMobileLayout()) {
+          this.activateLeftRailTab(tabHit.id);
+        } else {
+          this.openMidiDesktopDropdown(tabHit.desktopRootId || tabHit.id);
+        }
         return;
       }
       if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
-        if (this.activeTab === 'file') {
-          this.closeFileMenu();
-          this.exitRecordMode();
-          return;
-        }
         if (this.activeTab === 'instruments' || this.instrumentPicker.mode) {
           this.confirmInstrumentSelection();
         }
-        this.activeTab = 'file';
         this.exitRecordMode();
+        if (this.isMobileLayout()) {
+          this.activeTab = 'file';
+        } else {
+          this.openMidiDesktopDropdown('file');
+        }
         return;
       }
       if (this.bounds.undoButton && this.pointInBounds(x, y, this.bounds.undoButton)) {
@@ -5597,7 +5681,11 @@ export default class MidiComposer {
       }
       if (this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings)) {
         this.exitRecordMode();
-        this.activateLeftRailTab('settings');
+        if (this.isMobileLayout()) {
+          this.activeTab = 'settings';
+        } else {
+          this.openMidiDesktopDropdown('settings');
+        }
         return;
       }
       return;
@@ -5619,6 +5707,10 @@ export default class MidiComposer {
     }) && isMidiPortraitMainWorkspaceTab(this.activeTab) && !this.mobilePortraitMenuSheetBounds;
     if (!isPortraitMainWorkspace && ((this.bounds.settings && this.pointInBounds(x, y, this.bounds.settings))
       || (this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings)))) {
+      if (!this.isMobileLayout()) {
+        this.openMidiDesktopDropdown('settings');
+        return;
+      }
       this.activeTab = 'settings';
       this.closeSelectionMenu();
       this.pastePreview = null;
@@ -5920,19 +6012,13 @@ export default class MidiComposer {
       return;
     }
 
-    const desktopDropdownHit = this.bounds.desktopDropdownItems?.find((item) => this.pointInBounds(x, y, item));
-    if (desktopDropdownHit) {
-      desktopDropdownHit.action?.();
-      this.closeSelectionMenu();
-      this.pastePreview = null;
-      this.noteLengthMenu.open = false;
-      this.tempoSliderOpen = false;
-      return;
-    }
-
     const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
     if (tabHit) {
-      this.activateLeftRailTab(tabHit.id);
+      if (this.isMobileLayout()) {
+        this.activateLeftRailTab(tabHit.id);
+      } else {
+        this.openMidiDesktopDropdown(tabHit.desktopRootId || tabHit.id);
+      }
       this.closeSelectionMenu();
       this.pastePreview = null;
       this.noteLengthMenu.open = false;
@@ -5959,12 +6045,16 @@ export default class MidiComposer {
     }
 
     if (this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) {
+      if (this.activeTab === 'instruments' || this.instrumentPicker.mode) {
+        this.confirmInstrumentSelection();
+      }
+      if (!this.isMobileLayout()) {
+        this.openMidiDesktopDropdown('file');
+        return;
+      }
       if (this.activeTab === 'file') {
         this.closeFileMenu();
         return;
-      }
-      if (this.activeTab === 'instruments' || this.instrumentPicker.mode) {
-        this.confirmInstrumentSelection();
       }
       this.activeTab = 'file';
       this.toolsMenuOpen = false;
@@ -6704,6 +6794,7 @@ export default class MidiComposer {
 
   handlePointerMove(payload) {
     this.lastPointer = { x: payload.x, y: payload.y };
+    this.pendingDesktopDropdownHit = updatePendingDesktopDropdownHit(this.pendingDesktopDropdownHit, payload);
     if (this.transportHold && Math.hypot(payload.x - this.transportHold.x, payload.y - this.transportHold.y) > 12) {
       this.cancelTransportHold();
     }
@@ -6738,17 +6829,20 @@ export default class MidiComposer {
     }
     if (this.qaOverlayOpen) return;
     if (this.dragState?.mode === 'mobile-landscape-root-scroll') {
-      const delta = this.dragState.startY - payload.y;
-      if (!this.dragState.moved && Math.abs(delta) > 6) {
-        this.dragState.moved = true;
-      }
-      if (this.dragState.moved) {
-        this.controllerMenu.scroll.root = clamp(
-          this.dragState.startScroll + Math.round(delta / 24),
-          0,
-          this.mobileLandscapeRootMenuScrollMax || 0
-        );
-      }
+      this.dragState = {
+        ...resolveMenuScrollDrag(this.dragState, payload),
+        mode: 'mobile-landscape-root-scroll',
+        pendingRootId: this.dragState.pendingRootId
+      };
+      if (this.dragState.moved) this.controllerMenu.scroll.root = this.dragState.nextScroll;
+      return;
+    }
+    if (this.dragState?.mode === 'gamepad-submenu-scroll') {
+      this.dragState = {
+        ...resolveMenuScrollDrag(this.dragState, payload),
+        mode: 'gamepad-submenu-scroll'
+      };
+      if (this.dragState.moved) this.controllerMenu.scroll[this.dragState.menuId] = this.dragState.nextScroll;
       return;
     }
     if (this.dragState?.mode === 'song-track-scroll') {
@@ -7147,25 +7241,22 @@ export default class MidiComposer {
   }
 
   handleDesktopTopMenuHover(x, y) {
-    const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
-    let nextTab = tabHit?.id || null;
-    if (!nextTab && this.bounds.fileButton && this.pointInBounds(x, y, this.bounds.fileButton)) nextTab = 'file';
-    if (!nextTab && this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings)) nextTab = 'settings';
-    if (!nextTab || nextTab === this.activeTab) return false;
-    this.exitRecordMode();
-    if (this.activeTab === 'instruments' || this.instrumentPicker.mode) {
-      this.confirmInstrumentSelection();
-    }
-    this.activateLeftRailTab(nextTab);
-    this.closeSelectionMenu();
-    this.pastePreview = null;
-    this.noteLengthMenu.open = false;
-    this.tempoSliderOpen = false;
+    const rootHit = resolveDesktopDropdownHoverSwitch({
+      buttons: this.getDesktopRootButtons(),
+      point: { x, y },
+      openRootId: this.openDesktopDropdownRootId,
+      rootIdKey: 'desktopRootId'
+    });
+    const nextTab = rootHit?.rootId || null;
+    if (!nextTab) return false;
+    this.openMidiDesktopDropdown(nextTab);
     return true;
   }
 
   handlePointerUp(payload) {
     this.lastPointer = { x: payload.x, y: payload.y };
+    const x = payload.x;
+    const y = payload.y;
     if (this.transportHold) {
       const hold = this.transportHold;
       this.cancelTransportHold();
@@ -7209,6 +7300,13 @@ export default class MidiComposer {
       if (!wasMoved && pendingRootId) {
         this.handleMobileLandscapeRootMenuTap(pendingRootId);
       }
+      return;
+    }
+    if (this.dragState?.mode === 'gamepad-submenu-scroll') {
+      const pendingItem = this.dragState.pendingHit;
+      const wasMoved = this.dragState.moved;
+      this.dragState = null;
+      if (!wasMoved && typeof pendingItem?.onSelect === 'function') pendingItem.onSelect(this);
       return;
     }
     if (this.dragState?.mode === 'touch-pan' || this.dragState?.mode === 'pan') {
@@ -7420,6 +7518,20 @@ export default class MidiComposer {
       if (moved) this.persistViewportState();
       return;
     }
+    const pendingDesktopDropdownHit = this.pendingDesktopDropdownHit;
+    this.pendingDesktopDropdownHit = null;
+    if (pendingDesktopDropdownHit) {
+      const { shouldActivate } = resolvePendingDesktopDropdownHit(pendingDesktopDropdownHit, { x, y });
+      if (shouldActivate) {
+        pendingDesktopDropdownHit.action?.();
+        this.closeMidiDesktopDropdown();
+        this.closeSelectionMenu();
+        this.pastePreview = null;
+        this.noteLengthMenu.open = false;
+        this.tempoSliderOpen = false;
+      }
+      return;
+    }
     if (this.dragState?.mode === 'select') {
       this.finalizeSelectionBox();
     }
@@ -7434,17 +7546,27 @@ export default class MidiComposer {
     this.lastPointer = { x: payload.x, y: payload.y };
     if (this.qaOverlayOpen) return;
     const modifiers = this.getModifiers();
+    const desktopDropdownScroll = applyDesktopDropdownWheelScrollState({
+      dropdown: this.desktopDropdown,
+      payload,
+      scrollState: this.desktopDropdownScroll
+    });
+    if (desktopDropdownScroll) {
+      this.desktopDropdownScroll = desktopDropdownScroll.scrollState;
+      return;
+    }
     if (this.activeTab === 'settings' && this.bounds.settingsPanel) {
       if (!this.pointInBounds(payload.x, payload.y, this.bounds.settingsPanel)) return;
       this.settingsScroll = clamp(this.settingsScroll + payload.deltaY, 0, this.settingsScrollMax);
       return;
     }
-    if (this.mobileLandscapeRootMenuBounds && this.pointInBounds(payload.x, payload.y, this.mobileLandscapeRootMenuBounds)) {
+    const rootScrollRegion = findScrollableMenuRegion(this.menuScrollRegions, payload);
+    if (rootScrollRegion) {
       const step = Math.max(-1, Math.min(1, Math.round(payload.deltaY / 48) || Math.sign(payload.deltaY)));
       this.controllerMenu.scroll.root = clamp(
         (this.controllerMenu.scroll.root || 0) + step,
         0,
-        this.mobileLandscapeRootMenuScrollMax || 0
+        rootScrollRegion.maxScroll || 0
       );
       return;
     }
@@ -7625,7 +7747,14 @@ export default class MidiComposer {
     const hit = this.getNoteHitAt(x, y);
     const cell = this.getGridCell(x, y);
     if (!cell && !hit) return;
-    if ((payload.touchCount && !hit) || modifiers.alt || payload.button === 1 || payload.button === 2) {
+    const pointerPolicy = !this.isMobileLayout()
+      ? getEditorPointerInteractionPolicy('midi', { mode: 'desktop', pointerType: 'mouse' })
+      : null;
+    const shouldPanWithButton = Boolean(pointerPolicy) && (
+      (payload.button === 1 && pointerPolicy.workSurfaceGestures.middleDragPan)
+      || (payload.button === 2 && pointerPolicy.workSurfaceGestures.rightDragPan)
+    );
+    if ((payload.touchCount && !hit) || modifiers.alt || shouldPanWithButton) {
       if (!cell) return;
       const pointerId = payload.id;
       this.dragState = {
@@ -8070,6 +8199,41 @@ export default class MidiComposer {
       isDrum: drumTrack,
       basePitch: drumTrack ? notes[0].pitch : minPitch
     };
+  }
+
+  selectAllActivePatternNotes({ openMenu = false } = {}) {
+    const pattern = this.getActivePattern();
+    if (!pattern) return;
+    this.selection = new Set(pattern.notes.map((note) => note.id));
+    if (openMenu) {
+      this.openSelectionMenu(this.lastPointer.x + 12, this.lastPointer.y + 12);
+    }
+  }
+
+  getMidiEditMenuItems() {
+    const selectedNotes = this.getSelectedNotes();
+    const hasSelection = selectedNotes.length > 0;
+    const pattern = this.getActivePattern();
+    const hasPatternNotes = Boolean(pattern?.notes?.length);
+    const hasClipboard = Boolean(this.clipboard);
+    return [
+      { id: 'undo', label: 'Undo', onClick: () => this.runtime.undo() },
+      { id: 'redo', label: 'Redo', onClick: () => this.runtime.redo() },
+      { id: 'select-all', label: 'Select All', disabled: !hasPatternNotes, onClick: () => this.selectAllActivePatternNotes() },
+      { id: 'copy', label: 'Copy', disabled: !hasSelection, onClick: () => this.copySelection() },
+      {
+        id: 'cut',
+        label: 'Cut',
+        disabled: !hasSelection,
+        onClick: () => {
+          this.copySelection();
+          this.deleteSelectedNotes();
+          this.beginPastePreview();
+        }
+      },
+      { id: 'paste', label: 'Paste', disabled: !hasClipboard, onClick: () => this.pasteSelection() },
+      { id: 'delete', label: 'Delete', disabled: !hasSelection, onClick: () => this.deleteSelectedNotes() }
+    ];
   }
 
   pasteSelection() {
@@ -12153,9 +12317,11 @@ export default class MidiComposer {
     this.songRulerBounds = null;
     this.mobilePortraitMenuSheetBounds = null;
     this.mobilePortraitFilePanelBounds = null;
+    this.menuScrollRegions = [];
     this.mobileLandscapeRootMenuBounds = null;
     this.mobileLandscapeRootMenuButtons = [];
     this.mobileLandscapeRootMenuScrollMax = 0;
+    this.bounds.landscapeMenuButton = null;
   }
 
   draw(ctx, width, height) {
@@ -12180,8 +12346,18 @@ export default class MidiComposer {
     this.bounds.leftSettings = null;
     this.editorShellTheme = resolveEditorShellTheme();
 
-    const isMobile = this.isMobileLayout();
+    const viewportMode = resolveEditorViewportModeFlags({
+      viewportWidth: width,
+      viewportHeight: height,
+      isMobile: this.isMobileLayout(),
+      gamepadConnected: this.isPhysicalControllerConnected()
+    });
+    this.activeModeContract = viewportMode.modeContract;
+    const isMobile = viewportMode.isMobileViewport;
     if (this.recordModeActive && isMobile) {
+      this.desktopDropdown = resolveDesktopDropdownState({ isDesktop: false });
+      this.openDesktopDropdownRootId = null;
+      this.closedDesktopDropdownRootId = null;
       this.drawRecordMode(ctx, width, height, track, pattern);
       ctx.restore();
       if (perfEnabled) {
@@ -12194,7 +12370,10 @@ export default class MidiComposer {
       }
       return;
     }
-    if (isMobile) {
+    if (viewportMode.isMobileViewport) {
+      this.desktopDropdown = resolveDesktopDropdownState({ isDesktop: false });
+      this.openDesktopDropdownRootId = null;
+      this.closedDesktopDropdownRootId = null;
       this.drawMobileLayout(ctx, width, height, track, pattern);
     } else {
       this.drawDesktopLayout(ctx, width, height, track, pattern);
@@ -12215,8 +12394,12 @@ export default class MidiComposer {
       this.drawQaOverlay(ctx, width, height);
     }
 
-    this.drawMobilePanJoystick(ctx, width, height);
-    if (this.game?.input?.isGamepadConnected?.()) {
+    if (viewportMode.isMobileLandscape) {
+      this.drawMobilePanJoystick(ctx, width, height);
+    } else if (!isMobile) {
+      resetSharedThumbstickState(this.panJoystick);
+    }
+    if (isMobile && this.game?.input?.isGamepadConnected?.()) {
       this.drawGamepadHintBar(ctx, {
         x: isMobile ? 10 : 92,
         y: height - 34,
@@ -12244,53 +12427,65 @@ export default class MidiComposer {
   }
 
   drawGamepadHintBar(ctx, bounds, contextLabel) {
-    ctx.save();
-    ctx.fillStyle = 'rgba(0,0,0,0.78)';
-    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.fillStyle = UI_SUITE.colors.accent;
-    ctx.font = '12px Courier New';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(contextLabel, bounds.x + 10, bounds.y + bounds.h / 2);
-    ctx.fillStyle = 'rgba(255,255,255,0.82)';
-    ctx.textAlign = 'right';
-    ctx.fillText(SHARED_EDITOR_GAMEPAD_HINTS.slice(0, 6).join('  |  '), bounds.x + bounds.w - 10, bounds.y + bounds.h / 2);
-    ctx.restore();
+    drawSharedGamepadHintBar(ctx, bounds, contextLabel, SHARED_EDITOR_GAMEPAD_HINTS);
   }
 
   getActiveGamepadMenuId() {
-    const activeId = this.controllerMenu.getActiveMenuId();
-    if (!activeId || ['root', 'system', 'help', 'exit-confirm'].includes(activeId)) return null;
-    return activeId;
-  }
-
-  isGamepadLandscapeMenuMode(width = this.viewportWidth || 0, height = this.viewportHeight || 0) {
-    return isGamepadLandscapeEditorMode({
-      viewportWidth: width,
-      viewportHeight: height,
-      gamepadConnected: this.isPhysicalControllerConnected()
-    });
+    return this.getGamepadMenuState().activeSubmenuId;
   }
 
   shouldDrawGamepadSubmenuOnLeft(width, height) {
-    return shouldUseGamepadSlideOutMenu({
-      viewportWidth: width,
-      viewportHeight: height,
-      gamepadConnected: this.isPhysicalControllerConnected(),
-      menuActive: this.controllerMenu.active,
-      activeMenuId: this.getActiveGamepadMenuId()
-    });
+    return this.getGamepadMenuState(width, height).drawSlideOut;
   }
 
   shouldDrawControllerOverlay(width, height) {
-    if (!this.isGamepadLandscapeMenuMode(width, height)) return true;
-    const activeId = this.controllerMenu.getActiveMenuId();
-    return Boolean(activeId && ['system', 'help', 'exit-confirm'].includes(activeId));
+    return this.getGamepadMenuState(width, height).drawControllerOverlay;
+  }
+
+  getGamepadMenuState(width = this.viewportWidth || 0, height = this.viewportHeight || 0) {
+    return resolveGamepadMenuState({
+      viewportWidth: width,
+      viewportHeight: height,
+      gamepadConnected: this.isPhysicalControllerConnected(),
+      isMobile: this.isMobileLayout(),
+      menuActive: this.controllerMenu.active,
+      activeMenuId: this.controllerMenu.getActiveMenuId()
+    });
   }
 
   isMidiLandscapeRightDrawerTab(tabId = this.activeTab) {
-    return ['file', 'settings', 'virtual-instruments'].includes(tabId);
+    return MIDI_LANDSCAPE_RIGHT_DRAWER_TABS.has(tabId);
+  }
+
+  drawMidiLandscapeRootDrawer(ctx, bounds) {
+    if (!bounds) return;
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    const rootEntries = buildMidiSharedRootMenuEntries();
+    const grid = buildLandscapeRootDrawerGridLayout({
+      bounds,
+      itemCount: rootEntries.length,
+      padding: 8,
+      gap: SHARED_EDITOR_LEFT_MENU.buttonGap,
+      rowHeight: SHARED_EDITOR_LEFT_MENU.buttonHeightMobile
+    });
+    this.controllerMenu.scroll.root = 0;
+    this.mobileLandscapeRootMenuBounds = grid.listBounds;
+    this.mobileLandscapeRootMenuButtons = [];
+    this.mobileLandscapeRootMenuScrollMax = 0;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(grid.listBounds.x, grid.listBounds.y, grid.listBounds.w, grid.listBounds.h);
+    ctx.clip();
+    grid.items.forEach(({ index, bounds }) => {
+      const entry = rootEntries[index];
+      const button = {
+        ...bounds,
+        id: entry.id
+      };
+      this.mobileLandscapeRootMenuButtons.push(button);
+      this.drawButton(ctx, button, entry.label, this.isLeftRailTabActive(entry.id), false, this.controllerMenu.isFocusedItem('root', entry.id));
+    });
+    ctx.restore();
   }
 
   drawMidiLandscapeRightDrawer(ctx, bounds) {
@@ -12305,6 +12500,8 @@ export default class MidiComposer {
     };
     if (this.activeTab === 'file') {
       this.drawFilePanel(ctx, content.x, content.y, content.w, content.h);
+    } else if (this.activeTab === 'view') {
+      this.drawControllerSubmenuPanel(ctx, content.x, content.y, content.w, content.h, 'view', { isMobile: true, layoutMode: 'list' });
     } else if (this.activeTab === 'settings') {
       this.drawSettingsPanel(ctx, content.x, content.y, content.w, content.h);
     } else if (this.activeTab === 'virtual-instruments') {
@@ -12317,23 +12514,12 @@ export default class MidiComposer {
     const plan = buildGamepadSlideOutMenuPlan('midi', {
       rootOpen: !menuId,
       activeRootId: menuId || this.getDesktopControllerMenuId(),
-      focusedItemId: this.controllerMenu.getFocusedItem(menuId)?.id,
-      labelOverrides: {
-        tracks: 'Mixer',
-        record: 'Record'
-      }
+      focusedItemId: this.controllerMenu.getFocusedItem(menuId)?.id
     });
     const menu = this.controllerMenu.menus?.[menuId];
     drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
-    ctx.save();
-    ctx.fillStyle = UI_SUITE.colors.accent;
-    ctx.font = `12px ${UI_SUITE.font.family}`;
-    ctx.textBaseline = 'middle';
-    ctx.fillText(menu?.title || plan.submenu?.title || 'Menu', bounds.x + 12, bounds.y + 18, bounds.w - 24);
-    ctx.fillStyle = UI_SUITE.colors.muted;
-    ctx.font = `10px ${UI_SUITE.font.family}`;
-    ctx.fillText('A Select  B Back', bounds.x + 12, bounds.y + 36, bounds.w - 24);
-    ctx.restore();
+    drawSharedGamepadSlideOutHeader(ctx, bounds, menu?.title || plan.submenu?.title || 'Menu', { hint: plan.headerHint });
+    this.gamepadSlideOutMenuMeta = null;
     this.drawControllerSubmenuPanel(
       ctx,
       bounds.x + 8,
@@ -12341,7 +12527,7 @@ export default class MidiComposer {
       Math.max(1, bounds.w - 16),
       Math.max(1, bounds.h - 60),
       menuId,
-      { isMobile: true, layoutMode: 'list', maxColumns: 1, minColumnWidth: Math.max(1, bounds.w - 16) }
+      { isMobile: true, layoutMode: 'list', maxColumns: 1, minColumnWidth: Math.max(1, bounds.w - 16), scrollGroup: 'gamepadSubmenu' }
     );
   }
 
@@ -12364,14 +12550,21 @@ export default class MidiComposer {
   }
 
   drawDesktopLayout(ctx, width, height, track, pattern) {
+    const openDesktopRootId = resolveDesktopDropdownRootId({
+      openRootId: this.openDesktopDropdownRootId,
+      closedRootId: this.closedDesktopDropdownRootId,
+      isDesktop: true
+    });
     const shellLayout = buildDesktopEditorShellPlan('midi', {
       viewportWidth: width,
       viewportHeight: height,
-      activeRootId: this.recordModeActive ? 'virtual-instruments' : this.activeTab,
-      labelOverrides: {
-        file: SHARED_EDITOR_LEFT_MENU.fileLabel,
-        instruments: 'Mixer'
-      }
+      activeRootId: openDesktopRootId,
+      dropdownScroll: this.desktopDropdownScroll?.[openDesktopRootId] || 0
+    });
+    this.desktopDropdown = resolveDesktopDropdownState({
+      isDesktop: true,
+      dropdown: shellLayout.dropdown,
+      previousDropdown: this.desktopDropdown
     });
 
     this.drawDesktopTopMenu(ctx, shellLayout.topMenu);
@@ -12405,19 +12598,55 @@ export default class MidiComposer {
 
   getDesktopControllerMenuId(tabId = this.activeTab) {
     if (this.recordModeActive) return 'record';
-    if (tabId === 'instruments') return 'tracks';
-    if (tabId === 'virtual-instruments') return 'record';
-    return tabId;
+    return getEditorDesktopControllerMenuIdForSection('midi', tabId) || tabId;
+  }
+
+  getDesktopMenuLabel(menuId = this.getDesktopControllerMenuId()) {
+    return MIDI_CONTROLLER_ROOT_LABELS[menuId] || MIDI_CONTROLLER_ROOT_LABELS[this.activeTab] || menuId;
+  }
+
+  getDesktopRootButtons() {
+    return [
+      this.bounds.fileButton ? { ...this.bounds.fileButton, desktopRootId: 'file' } : null,
+      ...(this.bounds.tabs || []),
+      this.bounds.leftSettings ? { ...this.bounds.leftSettings, desktopRootId: 'settings' } : null
+    ].filter(Boolean);
+  }
+
+  openMidiDesktopDropdown(rootId) {
+    const nextDropdown = resolveOpenDesktopDropdownState({
+      rootId,
+      currentOpenRootId: this.openDesktopDropdownRootId,
+      closedRootId: this.closedDesktopDropdownRootId,
+      dropdown: this.desktopDropdown
+    });
+    if (!nextDropdown) return;
+    this.closedDesktopDropdownRootId = nextDropdown.closedRootId;
+    this.openDesktopDropdownRootId = nextDropdown.openRootId;
+    this.desktopDropdown = nextDropdown.dropdown;
+  }
+
+  closeMidiDesktopDropdown() {
+    const nextDropdown = resolveClosedDesktopDropdownState({
+      dropdown: this.desktopDropdown,
+      openRootId: this.openDesktopDropdownRootId,
+      fallbackRootId: this.getDesktopControllerMenuId()
+    });
+    this.closedDesktopDropdownRootId = nextDropdown.closedRootId;
+    this.openDesktopDropdownRootId = nextDropdown.openRootId;
+    this.desktopDropdown = nextDropdown.dropdown;
   }
 
   drawDesktopTopMenu(ctx, plan) {
-    drawSharedPanel(ctx, plan.bounds, { fill: UI_SUITE.colors.panel });
     this.bounds.tabs = [];
     this.bounds.fileButton = null;
     this.bounds.leftSettings = null;
     this.bounds.settings = null;
-    plan.buttons.forEach((button) => {
+    drawSharedDesktopTopMenu(ctx, plan, {
+      focusedId: this.controllerMenu.getFocusedItem('root')?.id,
+      registerButton: (button) => {
       const bounds = { ...button.bounds, id: button.id };
+      bounds.desktopRootId = button.id;
       if (button.id === 'file') {
         this.bounds.fileButton = bounds;
       } else if (button.id === 'settings') {
@@ -12426,55 +12655,56 @@ export default class MidiComposer {
       } else {
         this.bounds.tabs.push(bounds);
       }
-      this.drawButton(ctx, bounds, button.label, button.active, false, this.controllerMenu.isFocusedItem('root', button.id));
+      }
     });
   }
 
   drawDesktopRibbon(ctx, bounds, track) {
-    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panelAlt });
-    const undoW = 68;
-    const redoW = 68;
-    const gap = 8;
-    this.bounds.undoButton = { x: bounds.x + bounds.w - undoW * 2 - gap - 10, y: bounds.y + 10, w: undoW, h: bounds.h - 20 };
-    this.bounds.redoButton = { x: bounds.x + bounds.w - redoW - 10, y: bounds.y + 10, w: redoW, h: bounds.h - 20 };
-    ctx.save();
-    ctx.fillStyle = UI_SUITE.colors.accent;
-    ctx.font = '12px Courier New';
-    ctx.textBaseline = 'middle';
-    const labelMaxW = Math.max(80, this.bounds.undoButton.x - bounds.x - 24);
-    ctx.fillText(this.song?.name || 'MIDI', bounds.x + 12, bounds.y + 18, labelMaxW);
-    ctx.fillStyle = 'rgba(255,255,255,0.72)';
-    ctx.font = '11px Courier New';
-    const tabLabel = this.getDesktopControllerMenuId() === 'tracks' ? 'Mixer' : this.activeTab;
-    ctx.fillText(`${tabLabel} | ${track?.name || 'Track'}`, bounds.x + 12, bounds.y + 38, labelMaxW);
-    ctx.restore();
-    this.drawButton(ctx, this.bounds.undoButton, 'Undo', false, false, this.controllerMenu.isFocusedItem('root', 'undo'));
-    this.drawButton(ctx, this.bounds.redoButton, 'Redo', false, false, this.controllerMenu.isFocusedItem('root', 'redo'));
+    this.bounds.undoButton = null;
+    this.bounds.redoButton = null;
+    const tabLabel = this.getDesktopMenuLabel();
+    drawSharedDesktopRibbon(ctx, bounds, {
+      title: this.song?.name || 'MIDI',
+      subtitle: `${tabLabel} | ${track?.name || 'Track'}`
+    });
   }
 
   drawDesktopLeftOptions(ctx, bounds, options = {}) {
     const includeDesktopTransport = options.includeDesktopTransport === true;
-    const transportH = includeDesktopTransport ? Math.min(172, Math.max(144, Math.floor(bounds.h * 0.28))) : 0;
-    const gap = includeDesktopTransport ? SHARED_EDITOR_LEFT_MENU.desktopContentGap : 0;
-    const panelBounds = includeDesktopTransport
-      ? { x: bounds.x, y: bounds.y, w: bounds.w, h: Math.max(120, bounds.h - transportH - gap) }
-      : bounds;
-    drawSharedPanel(ctx, panelBounds);
+    const { contextBounds, transportBounds } = buildSharedDesktopContextTransportLayout(bounds, {
+      includeTransport: includeDesktopTransport,
+      transportMinHeight: 144,
+      transportMaxHeight: 172,
+      transportRatio: 0.28,
+      minContextHeight: 120
+    });
     const menuId = this.getDesktopControllerMenuId();
-    if (menuId !== 'file' && this.controllerMenu.menus?.[menuId]) {
-      this.drawControllerSubmenuPanel(ctx, panelBounds.x, panelBounds.y, panelBounds.w, panelBounds.h, menuId);
-    }
-    if (includeDesktopTransport) {
-      this.drawDesktopTransportPanel(ctx, { x: bounds.x, y: panelBounds.y + panelBounds.h + gap, w: bounds.w, h: transportH });
+    const track = this.song?.tracks?.[this.selectedTrackIndex] || null;
+    const pattern = track?.patterns?.[this.selectedPatternIndex] || track?.patterns?.[0] || null;
+    const noteCount = Array.isArray(pattern?.notes) ? pattern.notes.length : 0;
+    const lines = [
+      `Song: ${this.song?.name || 'Untitled'}`,
+      `Active: ${this.getDesktopMenuLabel(menuId)}`,
+      `Track: ${this.selectedTrackIndex + 1}/${Math.max(1, this.song?.tracks?.length || 1)}${track?.name ? ` ${track.name}` : ''}`,
+      `Pattern: ${this.selectedPatternIndex + 1}/${Math.max(1, track?.patterns?.length || 1)}`,
+      `Tempo: ${this.song?.tempo || 120} BPM`,
+      `Notes: ${noteCount}`
+    ];
+    drawSharedDesktopContextPanel(ctx, contextBounds, {
+      lines,
+      status: this.recordModeActive ? 'Recording enabled' : (this.singleNoteRecordMode.active ? 'Single note mode' : '')
+    });
+    if (transportBounds) {
+      this.drawDesktopTransportPanel(ctx, transportBounds);
     }
   }
 
   drawDesktopTransportPanel(ctx, bounds) {
-    drawSharedPanel(ctx, bounds, { fill: this.editorShellTheme.surfaceAlt, border: UI_SUITE.colors.border });
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
     const pad = 10;
     ctx.save();
     ctx.fillStyle = UI_SUITE.colors.accent;
-    ctx.font = '12px Courier New';
+    ctx.font = `12px ${UI_SUITE.font.family}`;
     ctx.textBaseline = 'middle';
     ctx.fillText('Transport', bounds.x + pad, bounds.y + 17, bounds.w - pad * 2);
     ctx.restore();
@@ -12524,95 +12754,38 @@ export default class MidiComposer {
     ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w * zoomRatio, this.bounds.railZoom.h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
-    ctx.fillStyle = '#fff';
-    ctx.font = '11px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `11px ${UI_SUITE.font.family}`;
     ctx.fillText(`Grid Zoom ${this.gridZoomX.toFixed(2)}x`, this.bounds.railZoom.x, this.bounds.railZoom.y - 4);
     if (this.singleNoteRecordMode.active) {
       ctx.fillStyle = '#ff9c42';
-      ctx.font = '11px Courier New';
+      ctx.font = `11px ${UI_SUITE.font.family}`;
       ctx.fillText('Single Note Mode', bounds.x + pad, bounds.y + bounds.h - 8, bounds.w - pad * 2);
     }
   }
 
   drawDesktopDropdown(ctx, dropdown) {
     const menuId = dropdown.specId || dropdown.rootId;
-    const menu = this.controllerMenu.menus?.[menuId] || this.controllerMenu.menus?.[dropdown.rootId];
+    const controllerMenus = this.buildControllerMenus();
+    const menu = controllerMenus[menuId] || controllerMenus[dropdown.rootId] || this.controllerMenu.menus?.[menuId] || this.controllerMenu.menus?.[dropdown.rootId];
     const items = this.controllerMenu.getItems(menu);
-    const visibleItems = items.length ? items : dropdown.items;
-    const desktopHiddenItems = menuId === 'grid' ? new Set(['place-note', 'erase-note']) : null;
-    const renderedItems = visibleItems
-      .filter((item) => !desktopHiddenItems?.has(item.id))
-      .slice(0, dropdown.visibleRows);
-    const panelBounds = { ...dropdown.panelBounds, h: Math.max(dropdown.rowHeight, renderedItems.length * dropdown.rowHeight) };
+    const dropdownPlan = buildDesktopDropdownRenderPlan({
+      dropdown: this.desktopDropdown?.rootId === dropdown.rootId ? this.desktopDropdown : dropdown,
+      items,
+      hiddenIds: menuId === 'grid' ? ['place-note', 'erase-note'] : [],
+      disableActionlessItems: true
+    });
     this.bounds.desktopDropdownItems = [];
-    drawSharedPanel(ctx, panelBounds, { fill: UI_SUITE.colors.panel });
-    renderedItems.forEach((item, index) => {
-      const bounds = { ...dropdown.itemBounds[index] };
-      this.drawButton(ctx, bounds, item.label, this.isControllerSubmenuItemActive(menuId, item.id), false, this.controllerMenu.isFocusedItem(menuId, item.id));
-      if (typeof item.onSelect === 'function') {
-        this.bounds.desktopDropdownItems.push({ ...bounds, id: item.id, action: () => item.onSelect(this) });
+    drawSharedDesktopDropdown(ctx, dropdownPlan, {
+      isActive: (item) => this.isControllerSubmenuItemActive(menuId, item.id),
+      isFocused: (item) => this.controllerMenu.isFocusedItem(menuId, item.id),
+      registerButton: ({ item, bounds }) => {
+        if (typeof item.onSelect === 'function') {
+          const action = () => item.onSelect(this);
+          this.bounds.desktopDropdownItems.push(createDesktopDropdownCommandHit(item, bounds, action));
+        }
       }
     });
-  }
-
-  drawDesktopLeftPanel(ctx, x, y, w, h) {
-    ctx.fillStyle = UI_SUITE.colors.panel;
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
-
-    const { tabColumn, content } = buildSharedLeftMenuLayout({ x, y, width: w, height: h, isMobile: false });
-    const topButtons = buildSharedLeftMenuButtons({
-      x: tabColumn.x,
-      y: tabColumn.y,
-      height: tabColumn.h,
-      additionalButtons: buildMidiSharedRootMenuEntries({ includeFile: false, includeSettings: false }),
-      isMobile: false,
-      width: tabColumn.w
-    });
-
-    this.bounds.fileButton = topButtons[0]?.bounds || null;
-    if (this.bounds.fileButton) {
-      this.drawButton(ctx, this.bounds.fileButton, SHARED_EDITOR_LEFT_MENU.fileLabel, this.activeTab === 'file', false, this.controllerMenu.isFocusedItem('root', 'file'));
-    }
-
-    this.bounds.tabs = [];
-    topButtons.slice(1).forEach((entry) => {
-      const bounds = { ...entry.bounds, id: entry.id };
-      this.bounds.tabs.push(bounds);
-      this.drawButton(ctx, bounds, entry.label, this.isLeftRailTabActive(entry.id), false, this.controllerMenu.isFocusedItem('root', entry.id));
-    });
-    const tabTail = topButtons[topButtons.length - 1]?.bounds || { x: tabColumn.x, y: tabColumn.y, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
-    const showUndoRedo = !this.isMobileLayout();
-    if (showUndoRedo) {
-      this.bounds.undoButton = { x: tabColumn.x, y: tabTail.y + tabTail.h + SHARED_EDITOR_LEFT_MENU.buttonGap, w: tabColumn.w, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
-      this.drawButton(ctx, this.bounds.undoButton, 'Undo', false, false, this.controllerMenu.isFocusedItem('root', 'undo'));
-      this.bounds.redoButton = { x: tabColumn.x, y: this.bounds.undoButton.y + this.bounds.undoButton.h + SHARED_EDITOR_LEFT_MENU.buttonGap, w: tabColumn.w, h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop };
-      this.drawButton(ctx, this.bounds.redoButton, 'Redo', false, false, this.controllerMenu.isFocusedItem('root', 'redo'));
-    } else {
-      this.bounds.undoButton = null;
-      this.bounds.redoButton = null;
-    }
-    const settingsY = showUndoRedo
-      ? this.bounds.redoButton.y + this.bounds.redoButton.h + SHARED_EDITOR_LEFT_MENU.buttonGap
-      : tabTail.y + tabTail.h + SHARED_EDITOR_LEFT_MENU.buttonGap;
-    this.bounds.leftSettings = {
-      x: tabColumn.x,
-      y: settingsY,
-      w: tabColumn.w,
-      h: SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop
-    };
-    this.bounds.settings = { ...this.bounds.leftSettings };
-    this.drawButton(ctx, this.bounds.leftSettings, 'Settings', this.activeTab === 'settings', false, this.controllerMenu.isFocusedItem('root', 'settings'));
-
-    if (this.activeTab === 'file') {
-      this.drawFilePanel(ctx, content.x, content.y, content.w, content.h);
-    } else {
-      const activeMenuId = this.controllerMenu.getActiveMenuId();
-      if (this.controllerMenu.active && activeMenuId && !['root', 'system', 'help', 'file'].includes(activeMenuId)) {
-        this.drawControllerSubmenuPanel(ctx, content.x, content.y, content.w, content.h, activeMenuId);
-      }
-    }
   }
 
   drawControllerSubmenuPanel(ctx, x, y, w, h, menuId, options = {}) {
@@ -12657,6 +12830,17 @@ export default class MidiComposer {
         scrollMax: result.scrollMax
       });
     }
+    if (options.scrollGroup) {
+      this.gamepadSlideOutMenuMeta = {
+        menuId,
+        scrollBounds: result.listBounds,
+        maxScroll: result.scrollMax,
+        scroll: result.scroll,
+        lineHeight: rowHeight + rowGap,
+        itemBounds: result.itemBounds,
+        items
+      };
+    }
   }
 
   isControllerSubmenuItemActive(menuId, itemId) {
@@ -12675,6 +12859,10 @@ export default class MidiComposer {
 
   drawRecordMode(ctx, width, height, track, pattern) {
     const isMobile = this.isMobileLayout();
+    if (!isMobile) {
+      this.drawDesktopLayout(ctx, width, height, track, pattern);
+      return;
+    }
     let contentX;
     let contentY;
     let contentW;
@@ -12778,33 +12966,18 @@ export default class MidiComposer {
       return;
     }
 
-    if (isMobile) {
-      const padding = 10;
-      gap = 10;
-      const sidebarW = getSharedMobileRailWidth(width, height);
-      const sidebarX = 0;
-      const sidebarY = 0;
-      const sidebarH = height;
-      this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track, { menuOnly: true });
-      contentX = sidebarX + sidebarW + gap;
-      contentY = padding;
-      contentW = width - contentX - padding;
-      contentH = height - padding * 2;
-      menuH = Math.max(0, (this.bounds.settings?.y ?? sidebarY) + (this.bounds.settings?.h ?? 0) - sidebarY + SHARED_EDITOR_LEFT_MENU.panelPadding);
-    } else {
-      const leftFrame = buildSharedDesktopLeftPanelFrame({ viewportWidth: width, viewportHeight: height });
-      const sidebarX = leftFrame.panelX;
-      const sidebarY = leftFrame.panelY;
-      const sidebarW = leftFrame.panelW;
-      const sidebarH = leftFrame.panelH;
-      contentX = leftFrame.contentX;
-      contentY = leftFrame.outerPadding;
-      contentW = leftFrame.contentW;
-      contentH = Math.max(0, height - leftFrame.outerPadding * 2);
-      gap = leftFrame.contentGap;
-      this.drawDesktopLeftPanel(ctx, sidebarX, sidebarY, sidebarW, sidebarH);
-      menuH = Math.max(0, (this.bounds.leftSettings?.y ?? sidebarY) + (this.bounds.leftSettings?.h ?? 0) - sidebarY + SHARED_EDITOR_LEFT_MENU.panelPadding);
-    }
+    const padding = 10;
+    gap = 10;
+    const sidebarW = getSharedMobileRailWidth(width, height);
+    const sidebarX = 0;
+    const sidebarY = 0;
+    const sidebarH = height;
+    this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track, { menuOnly: true });
+    contentX = sidebarX + sidebarW + gap;
+    contentY = padding;
+    contentW = width - contentX - padding;
+    contentH = height - padding * 2;
+    menuH = Math.max(0, (this.bounds.settings?.y ?? sidebarY) + (this.bounds.settings?.h ?? 0) - sidebarY + SHARED_EDITOR_LEFT_MENU.panelPadding);
 
     const controlRailW = clamp(Math.round(contentW * 0.2), 132, 204);
     const controlRailGap = 10;
@@ -12999,9 +13172,12 @@ export default class MidiComposer {
       return;
     }
     const isLandscape = width > height;
-    const controllerConnected = this.isPhysicalControllerConnected();
-    const showLandscapeRightDrawer = isLandscape && !controllerConnected && this.isMidiLandscapeRightDrawerTab(this.activeTab);
-    const showsGridBottomRail = isLandscape && (this.activeTab === 'grid' || this.activeTab === 'song') && !controllerConnected;
+    const gamepadMenuState = this.getGamepadMenuState(width, height);
+    const gamepadOwnsLandscapeMenu = gamepadMenuState.isLandscapeMenuMode;
+    const gamepadSubmenuOnLeft = gamepadMenuState.drawSlideOut;
+    if (!isLandscape || gamepadOwnsLandscapeMenu) this.landscapeRootDrawerOpen = false;
+    const showLandscapeRightDrawer = isLandscape && !gamepadOwnsLandscapeMenu && this.isMidiLandscapeRightDrawerTab(this.activeTab);
+    const showsGridBottomRail = isLandscape && (this.activeTab === 'grid' || this.activeTab === 'song') && !gamepadOwnsLandscapeMenu;
     const landscapeLayout = isLandscape
       ? buildLandscapeTouchEditorShellPlan('midi', {
         viewportWidth: width,
@@ -13011,26 +13187,61 @@ export default class MidiComposer {
         reserveRightRail: showLandscapeRightDrawer
       })
       : null;
-    const sidebarW = landscapeLayout?.leftRail.w ?? getSharedMobileRailWidth(width, height);
-    const sidebarX = landscapeLayout?.leftRail.x ?? 0;
-    const sidebarY = landscapeLayout?.leftRail.y ?? 0;
-    const sidebarH = landscapeLayout?.leftRail.h ?? height;
-    const contentX = landscapeLayout?.workSurface.x ?? (sidebarX + sidebarW + gap);
-    const contentY = landscapeLayout?.workSurface.y ?? padding;
-    const contentW = landscapeLayout?.workSurface.w ?? (width - contentX - padding);
-    const contentH = landscapeLayout?.workSurface.h ?? (height - padding * 2);
-    const bottomRail = landscapeLayout?.bottomRail ?? { x: contentX, y: contentY + contentH + 8, w: contentW, h: 0 };
+    const rootMenuSurface = landscapeLayout?.surfaces.compactCommandRail ?? landscapeLayout?.surfaces.rootMenu;
+    const workSurface = landscapeLayout?.surfaces.workSurface;
+    const toolOptionsSurface = landscapeLayout?.surfaces.toolOptions;
+    const submenuDrawerSurface = landscapeLayout?.surfaces.submenu;
+    const overlayDrawerSurface = landscapeLayout?.surfaces.overlayDrawer;
+    const rootDrawerSurface = landscapeLayout?.surfaces.rootDrawer ?? overlayDrawerSurface;
+    const sidebarW = rootMenuSurface?.w ?? getSharedMobileRailWidth(width, height);
+    const sidebarX = rootMenuSurface?.x ?? 0;
+    const sidebarY = rootMenuSurface?.y ?? 0;
+    const sidebarH = rootMenuSurface?.h ?? height;
+    const contentX = workSurface?.x ?? (sidebarX + sidebarW + gap);
+    const contentY = workSurface?.y ?? padding;
+    const contentW = workSurface?.w ?? (width - contentX - padding);
+    const contentH = workSurface?.h ?? (height - padding * 2);
+    const bottomRail = toolOptionsSurface ?? { x: contentX, y: contentY + contentH + 8, w: contentW, h: 0 };
+    const rightDrawerW = isLandscape && !gamepadOwnsLandscapeMenu
+      ? ((submenuDrawerSurface ?? overlayDrawerSurface)?.w ?? getSharedMobileDrawerWidth(width, height, sidebarW, { edgePadding: 0 }))
+      : 0;
+    const rootDrawerW = isLandscape && !gamepadOwnsLandscapeMenu
+      ? (rootDrawerSurface?.w ?? rightDrawerW)
+      : 0;
+    const submenuSurface = rightDrawerW > 0
+      ? {
+        x: (submenuDrawerSurface ?? overlayDrawerSurface)?.x ?? width - rightDrawerW,
+        y: (submenuDrawerSurface ?? overlayDrawerSurface)?.y ?? 0,
+        w: rightDrawerW,
+        h: (submenuDrawerSurface ?? overlayDrawerSurface)?.h ?? height
+      }
+      : null;
+    const rootDrawer = rootDrawerW > 0
+      ? {
+        x: rootDrawerSurface?.x ?? (sidebarX + sidebarW),
+        y: rootDrawerSurface?.y ?? 0,
+        w: rootDrawerW,
+        h: rootDrawerSurface?.h ?? height
+      }
+      : null;
 
-    if (this.shouldDrawGamepadSubmenuOnLeft(width, height)) {
+    if (gamepadSubmenuOnLeft) {
       this.drawGamepadSlideOutPanel(ctx, { x: sidebarX, y: sidebarY, w: sidebarW, h: sidebarH });
     } else {
       this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track, { menuOnly: isLandscape });
     }
 
-    if (showLandscapeRightDrawer) {
+    if (this.landscapeRootDrawerOpen && rootDrawer) {
       this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
       this.clearGridZoomButtonBounds();
-      this.drawMidiLandscapeRightDrawer(ctx, landscapeLayout.rightRail);
+      this.drawMidiLandscapeRootDrawer(ctx, rootDrawer);
+      if (showLandscapeRightDrawer) {
+        this.drawMidiLandscapeRightDrawer(ctx, submenuSurface);
+      }
+    } else if (showLandscapeRightDrawer) {
+      this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
+      this.clearGridZoomButtonBounds();
+      this.drawMidiLandscapeRightDrawer(ctx, submenuSurface);
     } else if (this.activeTab === 'grid') {
       this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
       this.clearGridZoomButtonBounds();
@@ -13085,11 +13296,12 @@ export default class MidiComposer {
       maxButtonWidth: 160,
       maxColumns: 4,
       balanceLastRow: true,
+      verticalAlign: 'bottom',
       padding: 4,
       gap: 5,
       drawButton: (buttonBounds, tab, state) => {
         if (tab.id === 'file') this.bounds.fileButton = buttonBounds;
-        if (tabs.some((entry) => entry.id === tab.id && entry.id !== 'file' && entry.id !== 'settings')) this.bounds.tabs.push({ ...buttonBounds, id: tab.id });
+        if (MIDI_WORKSPACE_TAB_IDS.has(tab.id)) this.bounds.tabs.push({ ...buttonBounds, id: tab.id });
         if (tab.id === 'settings') this.bounds.settings = buttonBounds;
         this.drawButton(ctx, buttonBounds, tab.label, this.isLeftRailTabActive(tab.id), false, state.focused);
       }
@@ -13099,7 +13311,7 @@ export default class MidiComposer {
   drawMidiPortraitGridQuickStrip(ctx, x, y, w, h, track) {
     if (h <= 0) return;
     const bounds = { x, y, w, h };
-    drawSharedPanel(ctx, bounds, { fill: this.editorShellTheme.surfaceAlt, border: UI_SUITE.colors.border });
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
     this.bounds.gridQuickControls = [];
     this.bounds.midiPortraitTrackPicker = null;
     this.bounds.midiPortraitTrackPickerScrollArea = null;
@@ -13119,6 +13331,7 @@ export default class MidiComposer {
       rowHeight: 42,
       gap: 6,
       padding: 6,
+      verticalAlign: 'bottom',
       drawButton: (buttonBounds, item) => {
         this.drawSmallButton(ctx, buttonBounds, item.label, Boolean(item.active));
         this.bounds.gridQuickControls.push({ ...buttonBounds, id: item.id });
@@ -13173,7 +13386,7 @@ export default class MidiComposer {
     this.bounds.midiPortraitTrackPicker = layout.panel;
     this.bounds.midiPortraitTrackPickerScrollArea = layout.list;
     this.bounds.midiPortraitTrackPickerRows = [];
-    drawSharedPanel(ctx, layout.panel, { fill: 'rgba(12,14,18,0.98)', border: UI_SUITE.colors.border });
+    drawSharedPanel(ctx, layout.panel, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
     ctx.save();
     ctx.fillStyle = UI_SUITE.colors.text;
     ctx.font = `13px ${UI_SUITE.font.family}`;
@@ -13213,7 +13426,7 @@ export default class MidiComposer {
     const layout = getMidiPortraitMasterVolumeLayout(anchorBounds);
     this.bounds.midiPortraitMasterVolumePanel = layout.panel;
     this.bounds.midiPortraitMasterVolumeSlider = layout.slider;
-    drawSharedPanel(ctx, layout.panel, { fill: 'rgba(12,14,18,0.98)', border: UI_SUITE.colors.border });
+    drawSharedPanel(ctx, layout.panel, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
     ctx.save();
     ctx.fillStyle = UI_SUITE.colors.text;
     ctx.font = `13px ${UI_SUITE.font.family}`;
@@ -13232,7 +13445,7 @@ export default class MidiComposer {
   drawMidiPortraitRecordSettingsPanel(ctx, panel) {
     this.bounds.recordSettingsPanel = panel;
     this.bounds.recordSettingsControls = [];
-    drawSharedPanel(ctx, panel, { fill: 'rgba(12,14,18,0.98)', border: UI_SUITE.colors.border });
+    drawSharedPanel(ctx, panel, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
     ctx.save();
     ctx.fillStyle = UI_SUITE.colors.text;
     ctx.font = `13px ${UI_SUITE.font.family}`;
@@ -13329,7 +13542,7 @@ export default class MidiComposer {
     const rowH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
     const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const panelPadding = clamp(Math.round(rowH * 0.25), 8, 12);
-    const rootEntries = buildMidiSharedRootMenuEntries({ includeUndoRedo: true });
+    const rootEntries = buildMidiSharedRootMenuEntries();
     const menuRows = rootEntries.length;
     const menuH = options.menuOnly
       ? h
@@ -13347,6 +13560,43 @@ export default class MidiComposer {
 
     const innerX = menuX + panelPadding;
     const innerW = w - panelPadding * 2;
+    if (options.menuOnly) {
+      const actions = buildCompactLandscapeCommandRailActions({
+        menu: {
+          id: 'menu',
+          label: 'Menu',
+          active: this.landscapeRootDrawerOpen,
+          action: () => { this.landscapeRootDrawerOpen = !this.landscapeRootDrawerOpen; }
+        },
+        undo: { id: 'undo', label: 'Undo', action: () => this.runtime.undo() },
+        redo: { id: 'redo', label: 'Redo', action: () => this.runtime.redo() },
+        quick: {
+          id: 'play',
+          label: this.isPlaying ? 'Pause' : 'Play',
+          active: this.isPlaying,
+          action: () => this.togglePlayback()
+        }
+      });
+      this.bounds.tabs = [];
+      this.mobileLandscapeRootMenuBounds = null;
+      this.mobileLandscapeRootMenuButtons = [];
+      this.mobileLandscapeRootMenuScrollMax = 0;
+      buildCompactLandscapeCommandRailButtonLayout({
+        bounds: { x: menuX, y: menuY, w, h: menuH },
+        actions,
+        buttonHeight: rowH,
+        buttonGap: rowGap,
+        paddingX: panelPadding,
+        paddingY: panelPadding
+      }).forEach(({ action: entry, bounds }) => {
+        this.drawButton(ctx, bounds, entry.displayLabel ?? entry.label, Boolean(entry.active), false, this.controllerMenu.isFocusedItem('root', entry.id));
+        if (entry.id === 'menu') this.bounds.landscapeMenuButton = bounds;
+        if (entry.id === 'undo') this.bounds.undoButton = bounds;
+        if (entry.id === 'redo') this.bounds.redoButton = bounds;
+        if (entry.id === 'play') this.bounds.play = bounds;
+      });
+      return;
+    }
     let cursorY = menuY + panelPadding;
     this.bounds.tabs = [];
     const menuButtonW = Math.min(innerW, SHARED_EDITOR_LEFT_MENU.buttonWidthMobile);
@@ -13365,14 +13615,18 @@ export default class MidiComposer {
       this.mobileLandscapeRootMenuBounds = { x: menuX, y: menuY, w, h: menuH };
       this.mobileLandscapeRootMenuButtons = [];
       this.mobileLandscapeRootMenuScrollMax = Math.max(0, rootEntries.length - visibleRows);
+      this.menuScrollRegions.push({
+        menuId: 'root',
+        bounds: this.mobileLandscapeRootMenuBounds,
+        maxScroll: this.mobileLandscapeRootMenuScrollMax,
+        lineHeight: 24
+      });
     }
     rootEntries.slice(rootScroll, rootScroll + visibleRows).forEach((entry) => {
       const bounds = { x: innerX + (innerW - menuButtonW) * 0.5, y: cursorY, w: menuButtonW, h: rowH, id: entry.id };
       if (options.menuOnly) this.mobileLandscapeRootMenuButtons.push(bounds);
       if (entry.id === 'file') this.bounds.fileButton = bounds;
-      if (rootEntries.some((tab) => tab.id === entry.id && !['file', 'undo', 'redo', 'settings'].includes(tab.id))) this.bounds.tabs.push(bounds);
-      if (entry.id === 'undo') this.bounds.undoButton = bounds;
-      if (entry.id === 'redo') this.bounds.redoButton = bounds;
+      if (MIDI_WORKSPACE_TAB_IDS.has(entry.id)) this.bounds.tabs.push(bounds);
       if (entry.id === 'settings') this.bounds.settings = bounds;
       this.drawButton(ctx, bounds, entry.label, this.isLeftRailTabActive(entry.id), false, this.controllerMenu.isFocusedItem('root', entry.id));
       cursorY += rowH + rowGap;
@@ -13574,6 +13828,10 @@ export default class MidiComposer {
       drawSharedThumbstick(ctx, this.panJoystick);
       return;
     }
+    if (this.landscapeRootDrawerOpen) {
+      resetSharedThumbstickState(this.panJoystick);
+      return;
+    }
     const { center, radius: joystickRadius, knobRadius } = getSharedThumbstickLayout(width, height);
     this.panJoystick.center = center;
     this.panJoystick.radius = joystickRadius;
@@ -13606,7 +13864,7 @@ export default class MidiComposer {
       return;
     }
     const bounds = { x, y, w, h };
-    drawSharedPanel(ctx, bounds, { fill: this.editorShellTheme.surfaceAlt, border: UI_SUITE.colors.border });
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
     const zoomRailLimits = this.getGridZoomLimitsX();
     this.gridZoomX = clamp(this.gridZoomX, zoomRailLimits.minZoom, zoomRailLimits.maxZoom);
     const ratio = clamp((this.gridZoomX - zoomRailLimits.minZoom) / Math.max(0.0001, zoomRailLimits.maxZoom - zoomRailLimits.minZoom), 0, 1);
@@ -13674,18 +13932,20 @@ export default class MidiComposer {
         viewportWidth: this.viewportWidth || w,
         viewportHeight: this.viewportHeight || h
       });
-      drawSharedPortraitActionRail(ctx, { x, y, w, h }, this.panJoystick, [
-        { id: 'fileButton', label: MIDI_MENU_ICON, onClick: () => {
+      const portraitActionById = {
+        menu: { id: 'menu', boundsKey: 'fileButton', label: MIDI_MENU_ICON, onClick: () => {
           if (this.activeTab === 'file') this.closeFileMenu();
           else this.activeTab = 'file';
         } },
-        { id: 'undoButton', label: '↶', onClick: () => this.undo() },
-        { id: 'redoButton', label: '↷', onClick: () => this.redo() },
-        { id: 'play', label: this.isPlaying ? '❚❚' : '▶', active: this.isPlaying, primary: true, onClick: () => this.togglePlayback() }
-      ], {
+        undo: { id: 'undo', boundsKey: 'undoButton', label: '↶', onClick: () => this.undo() },
+        redo: { id: 'redo', boundsKey: 'redoButton', label: '↷', onClick: () => this.redo() },
+        play: { id: 'play', label: this.isPlaying ? '❚❚' : '▶', active: this.isPlaying, primary: true, onClick: () => this.togglePlayback() }
+      };
+      const portraitActions = buildMidiPortraitMenuModel().bottomRailActions.map((id) => portraitActionById[id]).filter(Boolean);
+      drawSharedPortraitActionRail(ctx, { x, y, w, h }, this.panJoystick, portraitActions, {
         drawPanel: false,
         drawButton: (bounds, button) => {
-          this.bounds[button.id] = bounds;
+          this.bounds[button.boundsKey || button.id] = bounds;
           this.drawSmallButton(ctx, bounds, button.label, Boolean(button.active));
         },
         reserveThumbstick
@@ -13809,18 +14069,16 @@ export default class MidiComposer {
     const embedded = options.embedded === true;
     const portraitGrid = options.portraitGrid === true;
     const compact = options.compact === true;
+    const desktopOverview = !this.isMobileLayout() && !embedded && !compact && !portraitGrid && h >= 180;
     const panelX = portraitGrid ? x : (embedded ? (x + 18) : (x + 10));
     const panelW = portraitGrid ? Math.max(1, w) : (embedded ? (w - 36) : (w - 20));
     const panelH = portraitGrid ? Math.max(160, h) : Math.max(compact ? 72 : 96, h - (embedded ? 10 : 8));
     const panelY = portraitGrid ? y : (embedded ? (y + 4) : (y + h - panelH - 2));
     if (!embedded) {
-      ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-      ctx.fillRect(panelX, panelY, panelW, panelH);
-      ctx.strokeStyle = UI_SUITE.colors.border;
-      ctx.strokeRect(panelX, panelY, panelW, panelH);
+      drawSharedPanel(ctx, { x: panelX, y: panelY, w: panelW, h: panelH }, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
     }
-    ctx.fillStyle = '#fff';
-    ctx.font = '13px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `13px ${UI_SUITE.font.family}`;
     ctx.fillText('Pedal Board', panelX + 10, panelY + 16);
 
     const pedals = normalizeMidiPedals(track.midiPedals);
@@ -13848,26 +14106,55 @@ export default class MidiComposer {
       ctx.strokeRect(b.x, b.y, b.w, b.h);
       ctx.lineWidth = 1;
       if (!pedal) {
-        ctx.fillStyle = '#fff';
-        ctx.font = '24px Courier New';
+        ctx.fillStyle = UI_SUITE.colors.text;
+        ctx.font = `24px ${UI_SUITE.font.family}`;
         ctx.fillText('+', b.x + b.w / 2 - 7, b.y + b.h * 0.6);
       } else {
         const pedalDef = PEDAL_DEFINITION_BY_TYPE[pedal.type];
-        ctx.fillStyle = pedal.enabled ? '#fff' : 'rgba(255,255,255,0.65)';
+        ctx.fillStyle = pedal.enabled ? UI_SUITE.colors.text : UI_SUITE.colors.muted;
         ctx.font = PEDAL_FONTS[pedal.type] || 'bold 12px Courier New';
         ctx.fillText(pedal.name, b.x + 6, b.y + 18);
-        ctx.font = 'bold 10px Courier New';
+        ctx.font = `bold 10px ${UI_SUITE.font.family}`;
         ctx.fillText(pedalDef?.effectLabel || pedal.type, b.x + 6, b.y + 32);
         ctx.fillStyle = pedal.enabled ? '#73ff8f' : '#555';
         ctx.fillRect(b.x + b.w - 12, b.y + 6, 6, 6);
-        const knobY = b.y + b.h - 16;
-        [0.24, 0.5, 0.76].forEach((pos) => {
-          const kx = b.x + b.w * pos;
-          ctx.fillStyle = 'rgba(16,16,20,0.95)';
-          ctx.beginPath();
-          ctx.arc(kx, knobY, 5, 0, Math.PI * 2);
-          ctx.fill();
-        });
+        if (desktopOverview) {
+          const knobDefs = pedalDef?.knobs?.slice(0, 4) || [];
+          const rowTop = b.y + 48;
+          const rowGap = 26;
+          knobDefs.forEach((knob, knobIndex) => {
+            const raw = Number(pedal.knobs?.[knob.key] ?? knob.defaultValue);
+            const ratio = clamp((raw - knob.min) / Math.max(0.0001, knob.max - knob.min), 0, 1);
+            const rowY = rowTop + knobIndex * rowGap;
+            const label = knob.label || knob.key;
+            const value = (((raw - knob.min) / Math.max(0.0001, knob.max - knob.min)) * 10).toFixed(1);
+            ctx.fillStyle = 'rgba(0,0,0,0.38)';
+            ctx.fillRect(b.x + 8, rowY + 8, Math.max(1, b.w - 16), 6);
+            ctx.fillStyle = '#ffe16a';
+            ctx.fillRect(b.x + 8, rowY + 8, Math.max(1, (b.w - 16) * ratio), 6);
+            ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+            ctx.strokeRect(b.x + 8, rowY + 8, Math.max(1, b.w - 16), 6);
+            ctx.fillStyle = UI_SUITE.colors.text;
+            ctx.font = `10px ${UI_SUITE.font.family}`;
+            ctx.fillText(label, b.x + 8, rowY + 4, Math.max(1, b.w - 58));
+            ctx.fillStyle = '#ffe16a';
+            ctx.textAlign = 'right';
+            ctx.fillText(value, b.x + b.w - 8, rowY + 4);
+            ctx.textAlign = 'left';
+          });
+          ctx.fillStyle = UI_SUITE.colors.muted;
+          ctx.font = `10px ${UI_SUITE.font.family}`;
+          ctx.fillText('Click to edit', b.x + 8, b.y + b.h - 10);
+        } else {
+          const knobY = b.y + b.h - 16;
+          [0.24, 0.5, 0.76].forEach((pos) => {
+            const kx = b.x + b.w * pos;
+            ctx.fillStyle = 'rgba(16,16,20,0.95)';
+            ctx.beginPath();
+            ctx.arc(kx, knobY, 5, 0, Math.PI * 2);
+            ctx.fill();
+          });
+        }
       }
     }
 
@@ -13880,12 +14167,9 @@ export default class MidiComposer {
       const my = Math.round((viewportH - mh) / 2);
       ctx.fillStyle = 'rgba(0,0,0,0.62)';
       ctx.fillRect(0, 0, viewportW, viewportH);
-      ctx.fillStyle = 'rgba(10,10,12,0.97)';
-      ctx.fillRect(mx, my, mw, mh);
-      ctx.strokeStyle = UI_SUITE.colors.border;
-      ctx.strokeRect(mx, my, mw, mh);
-      ctx.fillStyle = '#fff';
-      ctx.font = '14px Courier New';
+      drawSharedPanel(ctx, { x: mx, y: my, w: mw, h: mh }, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `14px ${UI_SUITE.font.family}`;
       ctx.fillText('Choose Pedal', mx + 12, my + 20);
       const list = { x: mx + 10, y: my + 30, w: mw - 20, h: mh - 40, control: 'pedal-picker-scroll-area' };
       this.pedalPickerBounds.push(list);
@@ -13903,10 +14187,11 @@ export default class MidiComposer {
           ctx.fillRect(b.x, b.y, b.w, b.h);
           ctx.strokeStyle = 'rgba(0,0,0,0.6)';
           ctx.strokeRect(b.x, b.y, b.w, b.h);
-          ctx.fillStyle = '#fff';
+          ctx.fillStyle = UI_SUITE.colors.text;
           ctx.font = PEDAL_FONTS[def.type] || 'bold 13px Courier New';
           ctx.fillText(def.name, b.x + 8, b.y + 20);
-          ctx.font = '11px Courier New';
+          ctx.fillStyle = UI_SUITE.colors.muted;
+          ctx.font = `11px ${UI_SUITE.font.family}`;
           ctx.fillText(def.effectLabel || def.type, b.x + 8, b.y + 38);
         }
         rowY += itemH + gapY;
@@ -14131,7 +14416,7 @@ export default class MidiComposer {
   }
 
   drawTabs(ctx, x, y, w, h) {
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
+    ctx.fillStyle = UI_SUITE.colors.panelAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -14154,7 +14439,7 @@ export default class MidiComposer {
   }
 
   drawTransportBar(ctx, x, y, w, h) {
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
+    ctx.fillStyle = UI_SUITE.colors.panelAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
@@ -14223,19 +14508,19 @@ export default class MidiComposer {
     ctx.fillRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w * zoomRatio, this.bounds.railZoom.h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(this.bounds.railZoom.x, this.bounds.railZoom.y, this.bounds.railZoom.w, this.bounds.railZoom.h);
-    ctx.fillStyle = '#fff';
-    ctx.font = '11px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `11px ${UI_SUITE.font.family}`;
     ctx.fillText(`Grid Zoom ${this.gridZoomX.toFixed(2)}x`, this.bounds.railZoom.x, this.bounds.railZoom.y - 4);
 
     if (this.singleNoteRecordMode.active) {
-      ctx.fillStyle = '#ff9c42';
-      ctx.font = isMobile ? '12px Courier New' : '13px Courier New';
+      ctx.fillStyle = UI_SUITE.colors.accent2;
+      ctx.font = `${isMobile ? 12 : 13}px ${UI_SUITE.font.family}`;
       ctx.fillText('Single Note Mode', x + 12, y + h - 6);
     }
 
     const position = this.getPositionLabel();
-    ctx.fillStyle = '#ffe16a';
-    ctx.font = isMobile ? '12px Courier New' : '13px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `${isMobile ? 12 : 13}px ${UI_SUITE.font.family}`;
     ctx.fillText(position, x + 12, y + 18);
   }
 
@@ -15513,12 +15798,9 @@ export default class MidiComposer {
       }
       if (!showList) return;
 
-      ctx.fillStyle = UI_SUITE.colors.panel;
-      ctx.fillRect(x, y, w, listH);
-      ctx.strokeStyle = UI_SUITE.colors.border;
-      ctx.strokeRect(x, y, w, listH);
-      ctx.fillStyle = '#fff';
-      ctx.font = '14px Courier New';
+      drawSharedPanel(ctx, { x, y, w, h: listH }, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `14px ${UI_SUITE.font.family}`;
       ctx.fillText('Instruments', x + padding, y + 20);
 
       const addButtonH = 38;
@@ -15551,15 +15833,15 @@ export default class MidiComposer {
         };
         if (bounds.y + bounds.h >= listStartY - 4 && bounds.y <= listStartY + listHInner + 4) {
           const isActive = index === this.selectedTrackIndex;
-          ctx.fillStyle = isActive ? 'rgba(255,225,106,0.18)' : 'rgba(0,0,0,0.45)';
-          ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-          ctx.strokeStyle = listTrack.color || 'rgba(255,255,255,0.2)';
-          ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-          ctx.fillStyle = '#fff';
-          ctx.font = '13px Courier New';
+          drawSharedPanel(ctx, bounds, {
+            fill: isActive ? 'rgba(255,225,106,0.18)' : UI_SUITE.colors.panel,
+            border: listTrack.color || UI_SUITE.colors.border
+          });
+          ctx.fillStyle = UI_SUITE.colors.text;
+          ctx.font = `13px ${UI_SUITE.font.family}`;
           ctx.fillText(this.truncateLabel(ctx, listTrack.name, bounds.w - 20), bounds.x + 10, bounds.y + 20);
-          ctx.fillStyle = 'rgba(255,255,255,0.7)';
-          ctx.font = '11px Courier New';
+          ctx.fillStyle = UI_SUITE.colors.muted;
+          ctx.font = `11px ${UI_SUITE.font.family}`;
           const label = isDrumChannel(listTrack.channel)
             ? this.getDrumKitLabel(listTrack)
             : this.getProgramLabel(listTrack.program);
@@ -15599,13 +15881,10 @@ export default class MidiComposer {
     this.bounds.instrumentSettingsControls = [];
 
     if (!modalOnly) {
-      ctx.fillStyle = UI_SUITE.colors.panel;
-      ctx.fillRect(leftX, leftY, leftW, panelH);
-      ctx.strokeStyle = UI_SUITE.colors.border;
-      ctx.strokeRect(leftX, leftY, leftW, panelH);
+      drawSharedPanel(ctx, { x: leftX, y: leftY, w: leftW, h: panelH }, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
 
-      ctx.fillStyle = '#fff';
-      ctx.font = '14px Courier New';
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `14px ${UI_SUITE.font.family}`;
       ctx.fillText('Instruments', leftX + 10, leftY + 18);
       const listStartY = leftY + 28;
       const addButtonBottomInset = 4;
@@ -15638,15 +15917,15 @@ export default class MidiComposer {
           return;
         }
         const isActive = index === this.selectedTrackIndex;
-        ctx.fillStyle = isActive ? 'rgba(255,225,106,0.18)' : 'rgba(0,0,0,0.45)';
-        ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-        ctx.strokeStyle = listTrack.color || 'rgba(255,255,255,0.2)';
-        ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-        ctx.fillStyle = '#fff';
-        ctx.font = '13px Courier New';
+        drawSharedPanel(ctx, bounds, {
+          fill: isActive ? 'rgba(255,225,106,0.18)' : UI_SUITE.colors.panel,
+          border: listTrack.color || UI_SUITE.colors.border
+        });
+        ctx.fillStyle = UI_SUITE.colors.text;
+        ctx.font = `13px ${UI_SUITE.font.family}`;
         ctx.fillText(listTrack.name, bounds.x + 10, bounds.y + 18);
-        ctx.fillStyle = 'rgba(255,255,255,0.7)';
-        ctx.font = '11px Courier New';
+        ctx.fillStyle = UI_SUITE.colors.muted;
+        ctx.font = `11px ${UI_SUITE.font.family}`;
         const label = isDrumChannel(listTrack.channel)
           ? this.getDrumKitLabel(listTrack)
           : this.getProgramLabel(listTrack.program);
@@ -15661,7 +15940,7 @@ export default class MidiComposer {
       });
 
       this.bounds.instrumentAdd = { x: leftX + 8, y: leftY + panelH - addButtonH - addButtonBottomInset, w: leftW - 16, h: addButtonH };
-      ctx.fillStyle = UI_SUITE.colors.panel;
+      ctx.fillStyle = UI_SUITE.colors.panelAlt;
       ctx.fillRect(this.bounds.instrumentAdd.x, this.bounds.instrumentAdd.y, this.bounds.instrumentAdd.w, this.bounds.instrumentAdd.h);
       this.drawButton(ctx, this.bounds.instrumentAdd, 'Add Instrument', false, false);
     } else {
@@ -15673,20 +15952,17 @@ export default class MidiComposer {
       return;
     }
 
-    ctx.fillStyle = UI_SUITE.colors.panel;
-    ctx.fillRect(rightX, rightY, rightW, panelH);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(rightX, rightY, rightW, panelH);
+    drawSharedPanel(ctx, { x: rightX, y: rightY, w: rightW, h: panelH }, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
 
     if (this.instrumentPicker.mode) {
       const header = this.instrumentPicker.mode === 'add' ? 'Add Instrument' : 'Change Instrument';
-      ctx.fillStyle = '#fff';
-      ctx.font = '15px Courier New';
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `15px ${UI_SUITE.font.family}`;
       ctx.fillText(header, rightX + 12, rightY + 22);
       const previewOffset = this.instrumentPreview.loading ? 16 : 0;
       if (this.instrumentPreview.loading) {
-        ctx.fillStyle = 'rgba(255,255,255,0.6)';
-        ctx.font = '11px Courier New';
+        ctx.fillStyle = UI_SUITE.colors.muted;
+        ctx.font = `11px ${UI_SUITE.font.family}`;
         ctx.fillText('Downloading preview…', rightX + 12, rightY + 38);
       }
 
@@ -15778,8 +16054,8 @@ export default class MidiComposer {
       ctx.clip();
       tiles.forEach((item) => {
         if (item.type === 'empty') {
-          ctx.fillStyle = 'rgba(255,255,255,0.6)';
-          ctx.font = '12px Courier New';
+          ctx.fillStyle = UI_SUITE.colors.muted;
+          ctx.font = `12px ${UI_SUITE.font.family}`;
           ctx.fillText(item.label, rightX + padding, tileY + 18);
           tileY += 28;
           tileX = rightX + padding;
@@ -15792,8 +16068,8 @@ export default class MidiComposer {
           this.instrumentPicker.bounds.push(bounds);
           const favoriteBounds = { x: bounds.x + bounds.w - 40, y: bounds.y + 6, w: 34, h: 34, program: item.program };
           this.instrumentPicker.favoriteBounds.push(favoriteBounds);
-          ctx.fillStyle = this.favoriteInstruments.includes(item.program) ? '#ffe16a' : 'rgba(255,255,255,0.35)';
-          ctx.font = '18px Courier New';
+          ctx.fillStyle = this.favoriteInstruments.includes(item.program) ? UI_SUITE.colors.accent : UI_SUITE.colors.muted;
+          ctx.font = `18px ${UI_SUITE.font.family}`;
           ctx.fillText('★', favoriteBounds.x + 8, favoriteBounds.y + 22);
         }
         tileX += tileW + tileGap;
@@ -15853,14 +16129,14 @@ export default class MidiComposer {
       return;
     }
 
-    ctx.fillStyle = '#fff';
-    ctx.font = '15px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `15px ${UI_SUITE.font.family}`;
     ctx.fillText('Instrument Settings', rightX + 12, rightY + 22);
     if (!track) return;
 
     const infoY = rightY + 40;
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.font = '12px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
     ctx.fillText(track.name, rightX + 12, infoY + 12);
     const instrumentLabel = isDrumTrack(track)
       ? this.getDrumKitLabel(track)
@@ -15870,8 +16146,8 @@ export default class MidiComposer {
       && this.instrumentPreview.key === this.getCacheKeyForTrack(track);
     const previewOffset = activePreview ? 18 : 0;
     if (activePreview) {
-      ctx.fillStyle = 'rgba(255,255,255,0.6)';
-      ctx.font = '11px Courier New';
+      ctx.fillStyle = UI_SUITE.colors.muted;
+      ctx.font = `11px ${UI_SUITE.font.family}`;
       ctx.fillText('Downloading preview…', rightX + 12, infoY + 44);
     }
 
@@ -15962,8 +16238,8 @@ export default class MidiComposer {
     ctx.fillRect(volumeBar.x, volumeBar.y, volumeBar.w * mix.volume, volumeBar.h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(volumeBar.x, volumeBar.y, volumeBar.w, volumeBar.h);
-    ctx.fillStyle = 'rgba(255,255,255,0.75)';
-    ctx.font = '11px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.font = `11px ${UI_SUITE.font.family}`;
     ctx.fillText('Volume', sliderX, volumeBar.y - 6);
     this.bounds.instrumentSettingsControls.push(volumeBounds);
 
@@ -15987,17 +16263,14 @@ export default class MidiComposer {
     ctx.fillRect(panBar.x, panBar.y, panBar.w * ((mix.pan + 1) / 2), panBar.h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(panBar.x, panBar.y, panBar.w, panBar.h);
-    ctx.fillStyle = 'rgba(255,255,255,0.75)';
-    ctx.font = '11px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.font = `11px ${UI_SUITE.font.family}`;
     ctx.fillText('Pan', sliderX, panBar.y - 6);
     this.bounds.instrumentSettingsControls.push(panBounds);
   }
 
   drawSettingsPanel(ctx, x, y, w, h) {
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
+    drawSharedPanel(ctx, { x, y, w, h }, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
     this.bounds.settingsPanel = { x, y, w, h };
 
     const padding = 14;
@@ -16020,19 +16293,19 @@ export default class MidiComposer {
     ctx.clip();
 
     const drawSectionTitle = (label) => {
-      ctx.fillStyle = '#fff';
-      ctx.font = '16px Courier New';
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `16px ${UI_SUITE.font.family}`;
       ctx.fillText(label, x + padding, cursorY + 16);
       cursorY += 28;
     };
 
     const drawSettingText = (label, description) => {
-      ctx.fillStyle = 'rgba(255,255,255,0.85)';
-      ctx.font = '13px Courier New';
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `13px ${UI_SUITE.font.family}`;
       ctx.fillText(this.truncateLabel(ctx, label, textW), x + padding, cursorY + 22);
       if (description) {
-        ctx.fillStyle = 'rgba(255,255,255,0.55)';
-        ctx.font = '11px Courier New';
+        ctx.fillStyle = UI_SUITE.colors.muted;
+        ctx.font = `11px ${UI_SUITE.font.family}`;
         ctx.fillText(this.truncateLabel(ctx, description, textW), x + padding, cursorY + 40);
       }
     };
@@ -16142,7 +16415,8 @@ export default class MidiComposer {
       ctx.fillRect(barBounds.x, barBounds.y, barBounds.w * ratio, barBounds.h);
       ctx.strokeStyle = UI_SUITE.colors.border;
       ctx.strokeRect(barBounds.x, barBounds.y, barBounds.w, barBounds.h);
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.fillStyle = UI_SUITE.colors.muted;
+      ctx.font = `12px ${UI_SUITE.font.family}`;
       ctx.fillText(valueText, barBounds.x, barBounds.y + 32);
       this.bounds.settingsControls.push(bounds);
       cursorY += rowH + 10;
@@ -16167,8 +16441,8 @@ export default class MidiComposer {
     drawAction('SoundFont CDN', cdnLabel, 'audio-soundfont-cdn', 'Switch CDN source for the FluidR3_GM bank.');
     drawAction('Preload Instrument', 'Load', 'audio-soundfont-preload', 'Preload the active track SoundFont.');
     if (gmStatus) {
-      ctx.fillStyle = gmStatus.error ? '#ff8a8a' : 'rgba(255,255,255,0.55)';
-      ctx.font = '11px Courier New';
+      ctx.fillStyle = gmStatus.error ? '#ff8a8a' : UI_SUITE.colors.muted;
+      ctx.font = `11px ${UI_SUITE.font.family}`;
       const statusText = gmStatus.error
         ? `SoundFont error: ${gmStatus.error}`
         : gmStatus.loading
@@ -16179,8 +16453,8 @@ export default class MidiComposer {
     }
     const midiDebug = this.game?.audio?.getMidiDebugInfo?.();
     if (midiDebug) {
-      ctx.fillStyle = 'rgba(255,255,255,0.55)';
-      ctx.font = '11px Courier New';
+      ctx.fillStyle = UI_SUITE.colors.muted;
+      ctx.font = `11px ${UI_SUITE.font.family}`;
       const debugKit = midiDebug.drumKit?.label || 'Standard Kit';
       ctx.fillText(`Drum Kit: ${debugKit}`, x + padding, cursorY + 16);
       cursorY += 18;
@@ -16252,13 +16526,13 @@ export default class MidiComposer {
     cursorY += sectionGap;
 
     drawSectionTitle('Controller');
-    ctx.fillStyle = 'rgba(255,255,255,0.55)';
-    ctx.font = '11px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.font = `11px ${UI_SUITE.font.family}`;
     ctx.fillText('Shared editor controller profile.', x + padding, cursorY + 8);
     cursorY += 20;
     SHARED_EDITOR_GAMEPAD_HINTS.forEach((line) => {
-      ctx.fillStyle = 'rgba(255,255,255,0.78)';
-      ctx.font = '12px Courier New';
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `12px ${UI_SUITE.font.family}`;
       ctx.fillText(line, x + padding, cursorY + 16);
       cursorY += 20;
     });
@@ -16269,8 +16543,8 @@ export default class MidiComposer {
     cursorY += mixerHeight;
 
     drawSectionTitle('Help');
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.font = '12px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
     const helpLines = [
       'Drag a box to select notes, then use Copy / Cut / Paste.',
       'A: place note',
@@ -16299,17 +16573,14 @@ export default class MidiComposer {
   }
 
   drawHelpPanel(ctx, x, y, w, h) {
-    ctx.fillStyle = this.editorShellTheme.surfaceAlt;
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(x, y, w, h);
+    drawSharedPanel(ctx, { x, y, w, h }, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
     const padding = 16;
     let cursorY = y + padding;
-    ctx.fillStyle = '#fff';
-    ctx.font = '18px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `18px ${UI_SUITE.font.family}`;
     ctx.fillText('Controller Help', x + padding, cursorY + 18);
     cursorY += 32;
-    ctx.font = '13px Courier New';
+    ctx.font = `13px ${UI_SUITE.font.family}`;
     const lines = [
       'Move Cursor: D-pad / Left Stick',
       'A: place note',
@@ -16324,7 +16595,7 @@ export default class MidiComposer {
       'Back: focus grid/song'
     ];
     lines.forEach((line) => {
-      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.fillStyle = UI_SUITE.colors.text;
       ctx.fillText(line, x + padding, cursorY + 18);
       cursorY += 22;
     });
@@ -16338,12 +16609,9 @@ export default class MidiComposer {
     this.trackControlBounds = [];
     let cursorY = y;
     const masterBounds = { x, y: cursorY, w, h: rowH };
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.fillRect(masterBounds.x, masterBounds.y, masterBounds.w, masterBounds.h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-    ctx.strokeRect(masterBounds.x, masterBounds.y, masterBounds.w, masterBounds.h);
-    ctx.fillStyle = '#fff';
-    ctx.font = '13px Courier New';
+    drawSharedPanel(ctx, masterBounds, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `13px ${UI_SUITE.font.family}`;
     ctx.fillText('Master', masterBounds.x + 10, masterBounds.y + 22);
     const masterVolumeBounds = {
       x: masterBounds.x + 120,
@@ -16388,12 +16656,12 @@ export default class MidiComposer {
     this.song.tracks.forEach((track, index) => {
       const mix = this.getTrackBaseMix(track);
       const bounds = { x, y: cursorY, w, h: rowH, index };
-      ctx.fillStyle = index === this.selectedTrackIndex ? 'rgba(255,225,106,0.2)' : 'rgba(0,0,0,0.4)';
-      ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-      ctx.strokeStyle = track.color || 'rgba(255,255,255,0.2)';
-      ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-      ctx.fillStyle = '#fff';
-      ctx.font = '13px Courier New';
+      drawSharedPanel(ctx, bounds, {
+        fill: index === this.selectedTrackIndex ? 'rgba(255,225,106,0.2)' : UI_SUITE.colors.panel,
+        border: track.color || UI_SUITE.colors.border
+      });
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `13px ${UI_SUITE.font.family}`;
       ctx.fillText(track.name, bounds.x + 10, bounds.y + 22);
       const muteBounds = { x: bounds.x + 10, y: bounds.y + 28, w: 44, h: 44, trackIndex: index, control: 'mute' };
       const soloBounds = { x: bounds.x + 60, y: bounds.y + 28, w: 44, h: 44, trackIndex: index, control: 'solo' };
@@ -17307,7 +17575,7 @@ export default class MidiComposer {
     const rows = Math.ceil(options.length / columns);
     const gap = 6;
     const padding = 8;
-    ctx.font = '12px Courier New';
+    ctx.font = `12px ${UI_SUITE.font.family}`;
     const maxLabelW = Math.max(...options.map((option) => ctx.measureText(this.getCompactNoteLengthDisplay(option)).width));
     const cellW = Math.max(60, Math.round(maxLabelW + 28));
     const cellH = 30;
@@ -17318,10 +17586,10 @@ export default class MidiComposer {
 
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = 'rgba(12,14,18,0.95)';
-    ctx.fillRect(menuX, menuY, menuW, menuH);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(menuX, menuY, menuW, menuH);
+    drawSharedPanel(ctx, { x: menuX, y: menuY, w: menuW, h: menuH }, {
+      fill: UI_SUITE.colors.panelAlt,
+      border: UI_SUITE.colors.border
+    });
 
     this.bounds.noteLengthMenu = [];
     options.forEach((option, index) => {
@@ -17349,12 +17617,12 @@ export default class MidiComposer {
 
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
     ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = 'rgba(12,14,18,0.95)';
-    ctx.fillRect(sliderX, sliderY, sliderW, sliderH);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(sliderX, sliderY, sliderW, sliderH);
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.font = '12px Courier New';
+    drawSharedPanel(ctx, { x: sliderX, y: sliderY, w: sliderW, h: sliderH }, {
+      fill: UI_SUITE.colors.panelAlt,
+      border: UI_SUITE.colors.border
+    });
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
     ctx.fillText(`Tempo ${this.song.tempo}BPM`, sliderX + padding, sliderY + 16);
 
     const barBounds = {
@@ -17381,13 +17649,13 @@ export default class MidiComposer {
     const padding = 16;
     ctx.fillStyle = 'rgba(0,0,0,0.65)';
     ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = 'rgba(12,14,18,0.95)';
-    ctx.fillRect(dialogX, dialogY, dialogW, dialogH);
-    ctx.strokeStyle = UI_SUITE.colors.border;
-    ctx.strokeRect(dialogX, dialogY, dialogW, dialogH);
+    drawSharedPanel(ctx, { x: dialogX, y: dialogY, w: dialogW, h: dialogH }, {
+      fill: UI_SUITE.colors.panelAlt,
+      border: UI_SUITE.colors.border
+    });
 
-    ctx.fillStyle = '#fff';
-    ctx.font = '18px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `18px ${UI_SUITE.font.family}`;
     ctx.fillText('Settings', dialogX + padding, dialogY + 28);
     this.bounds.settingsDialog = { x: dialogX, y: dialogY, w: dialogW, h: dialogH };
     this.bounds.settingsClose = { x: dialogX + dialogW - 72, y: dialogY + 14, w: 56, h: 24 };
@@ -17572,25 +17840,25 @@ export default class MidiComposer {
   }
 
   getFileMenuItems() {
-    return buildUnifiedFileDrawerItems({
+    return buildSharedEditorFileMenu({
+      supported: {
+        undo: false,
+        redo: false
+      },
       labels: {
         export: 'Export JSON',
         import: 'Import MIDI/ZIP/JSON'
       },
       actions: {
-        new: () => this.handleFileMenuAction('new'),
-        save: () => this.handleFileMenuAction('save'),
-        'save-as': () => this.handleFileMenuAction('save-as'),
-        open: () => this.handleFileMenuAction('load'),
-        export: () => this.handleFileMenuAction('export-json'),
-        import: () => this.handleFileMenuAction('import')
+        new: () => this.handleFileMenu('new'),
+        save: () => this.handleFileMenu('save'),
+        'save-as': () => this.handleFileMenu('save-as'),
+        open: () => this.handleFileMenu('load'),
+        export: () => this.handleFileMenu('export-json'),
+        import: () => this.handleFileMenu('import')
       },
-      editorSpecific: [
-        { id: 'nav-grid', label: 'Grid' },
-        { id: 'nav-instruments', label: 'Mixer' },
-        { id: 'nav-virtual-instruments', label: 'Record' },
-        { id: 'nav-pedals', label: 'Pedals' },
-        { id: 'nav-settings', label: 'Settings' },
+      includeFooter: false,
+      extras: [
         { divider: true },
         { id: 'rescue-save', label: 'Rescue Save' },
         { id: 'export-midi', label: 'Export MIDI' },
@@ -17602,7 +17870,7 @@ export default class MidiComposer {
         { id: 'sample', label: 'Load Sample Song' },
         { id: 'exit-main', label: 'Exit to Main Menu' }
       ]
-    });
+    }).filter((item) => !item.disabled);
   }
 
   drawFilePanel(ctx, x, y, w, h) {

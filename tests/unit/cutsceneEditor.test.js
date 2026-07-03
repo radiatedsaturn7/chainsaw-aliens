@@ -1380,14 +1380,15 @@ test('cutscene editor timeline uses purple text clips and board clip colors', ()
   assert.equal(ctx.calls.some((call) => call.type === 'fillRect' && call.fillStyle === '#123456'), true);
 });
 
-test('cutscene editor main drawer exposes file add and stage tabs only', () => {
+test('cutscene editor main drawer exposes compact portrait root tabs', () => {
   const editor = createMobileCutsceneEditor();
   editor.menuOpen = true;
   editor.draw(createMockContext(), 390, 844);
 
   const tabIds = editor.bounds.menuButtons.map((button) => button.id).filter((id) => String(id).startsWith('tab:'));
 
-  assert.deepEqual(tabIds, ['tab:file', 'tab:add', 'tab:stage']);
+  assert.deepEqual(tabIds, ['tab:file', 'tab:add', 'tab:timeline', 'tab:clips', 'tab:keyframes', 'tab:stage', 'tab:audio', 'tab:settings']);
+  assert.equal(editor.getMenuItems('file').some((item) => item.id === 'export'), true);
 });
 
 test('cutscene editor track tap selects track and edit panel shows track options', async () => {
@@ -1812,6 +1813,68 @@ test('game core advances active MIDI music players during cutscene editor previe
   assert.equal(branchBody.includes('this.updateActiveMusicPlayers(dt);'), true);
   assert.equal(helperBody.includes('this.musicPlayers.forEach((player) => player.update(dt));'), true);
   assert.equal(helperBody.includes('this.getMusicZoneAt'), false);
+});
+
+test('game core treats cutscene editor as a shared editor transition state', () => {
+  const constructorStart = gameCoreSource.indexOf('  constructor(');
+  const constructorEnd = gameCoreSource.indexOf('\n  handleSharedStateTransitionCleanup', constructorStart);
+  const constructorBody = gameCoreSource.slice(constructorStart, constructorEnd);
+  const isEditorStart = gameCoreSource.indexOf('  isEditorState(state = this.state)');
+  const isEditorEnd = gameCoreSource.indexOf('\n  handleSharedStateTransitionCleanup', isEditorStart);
+  const isEditorBody = gameCoreSource.slice(isEditorStart, isEditorEnd);
+  const cleanupStart = gameCoreSource.indexOf('  handleSharedStateTransitionCleanup');
+  const cleanupEnd = gameCoreSource.indexOf('\n  enterEditor(', cleanupStart);
+  const cleanupBody = gameCoreSource.slice(cleanupStart, cleanupEnd);
+  const updateStart = gameCoreSource.indexOf('  _updateByState(dt)');
+  const updateEnd = gameCoreSource.indexOf('\n  enterEditor(', updateStart);
+  const updateBody = gameCoreSource.slice(updateStart, updateEnd);
+
+  assert.equal(constructorBody.includes("'cutscene-editor': 'cutsceneEditor'"), true);
+  assert.equal(constructorBody.includes('this.editorStateKeys = new Set(Object.keys(this.editorStateTargetKeys));'), true);
+  assert.equal(isEditorBody.includes("state === 'pixel-preview'"), true);
+  assert.equal(cleanupBody.includes('this.isEditorState(from)'), true);
+  assert.equal(cleanupBody.includes('this.isEditorState(to)'), true);
+  assert.equal(cleanupBody.includes('this.editorStateKeys.has(to)'), true);
+  assert.equal(cleanupBody.includes('this.cutsceneEditor?.resetTransientInteractionState?.();'), true);
+  assert.equal(cleanupBody.includes("to === 'cutscene-editor'"), false);
+  assert.equal(updateBody.includes('if (this.isEditorState(this.state)) {'), true);
+});
+
+test('cutscene editor clears transient menu and pointer state on shared cleanup', () => {
+  const editor = new CutsceneEditor({ isMobile: true });
+  editor.drag = { mode: 'clip' };
+  editor.menuScrollDrag = { menuId: 'timeline' };
+  editor.menuOpen = true;
+  editor.menuScroll = 4;
+  editor.landscapeRootScroll = 3;
+  editor.clipOptionsOpen = true;
+  editor.timelineZoomSlider.active = true;
+  editor.timelineZoomSlider.id = 'zoom';
+  editor.panJoystick.active = true;
+  editor.panJoystick.id = 'touch';
+  editor.panJoystick.dx = 0.5;
+  editor.panJoystick.dy = -0.25;
+  editor.transportHold = { x: 1 };
+  editor.transportPopover = { open: true };
+  editor.controllerMenu.openRoot();
+
+  editor.resetTransientInteractionState();
+
+  assert.equal(editor.drag, null);
+  assert.equal(editor.menuScrollDrag, null);
+  assert.equal(editor.menuOpen, false);
+  assert.equal(editor.menuScroll, 0);
+  assert.equal(editor.landscapeRootScroll, 0);
+  assert.equal(editor.clipOptionsOpen, false);
+  assert.equal(editor.timelineZoomSlider.active, false);
+  assert.equal(editor.timelineZoomSlider.id, null);
+  assert.equal(editor.panJoystick.active, false);
+  assert.equal(editor.panJoystick.id, null);
+  assert.equal(editor.panJoystick.dx, 0);
+  assert.equal(editor.panJoystick.dy, 0);
+  assert.equal(editor.transportHold, null);
+  assert.equal(editor.transportPopover, null);
+  assert.equal(editor.controllerMenu.active, false);
 });
 
 test('game core advances active MIDI music players during in-game cutscenes', () => {

@@ -54,6 +54,7 @@ import MidiComposer from '../ui/MidiComposer.js';
 import SfxEditor from '../ui/SfxEditor.js';
 import ActorEditor from '../ui/ActorEditor.js';
 import CutsceneEditor, { CutscenePlayer } from '../ui/CutsceneEditor.js';
+import RaceEditor from '../ui/RaceEditor.js';
 import {
   WEATHER_PRIORITY,
   createWeatherRuntimeState,
@@ -90,6 +91,7 @@ import { DEFAULT_DISPLAY_MODE, getDisplayModeForAction, normalizeDisplayMode } f
 import { createMenuRepeatState, getMenuRepeatDirection, resetMenuRepeatState } from '../ui/shared/menuRepeat.js';
 import { openChoiceOverlay, openConfirmOverlay } from '../ui/shared/textInputOverlay.js';
 import { createDefaultActor, ensureActorDefinition } from '../content/actorEditorData.js';
+import { isLatestChangesOverlayOpen, openLatestChangesOverlay } from '../ui/latestChanges.js';
 
 const BOSS_TYPES = new Set([
   'finalboss',
@@ -228,7 +230,7 @@ export default class Game {
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.snapCameraToPlayer();
     this.title = new Title();
-    this.debugMode = true;
+    this.debugMode = false;
     this.debugRestartInFlight = false;
     ensureProjectFileIndex();
     this.dialog = new Dialog(INTRO_LINES);
@@ -406,6 +408,8 @@ export default class Game {
     this.sfxEditor = new SfxEditor(this);
     this.actorEditor = new ActorEditor(this);
     this.cutsceneEditor = new CutsceneEditor(this);
+    this.raceEditor = new RaceEditor(this, { mode: 'race' });
+    this.carEditor = new RaceEditor(this, { mode: 'car' });
     this.cutscenePlayer = new CutscenePlayer(this);
     this.editorStateTargetKeys = {
       editor: 'editor',
@@ -413,7 +417,9 @@ export default class Game {
       'midi-editor': 'midiComposer',
       'sfx-editor': 'sfxEditor',
       'actor-editor': 'actorEditor',
-      'cutscene-editor': 'cutsceneEditor'
+      'cutscene-editor': 'cutsceneEditor',
+      'race-editor': 'raceEditor',
+      'car-editor': 'carEditor'
     };
     this.editorStateDrawArgs = {
       editor: () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
@@ -421,8 +427,11 @@ export default class Game {
       'midi-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'sfx-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'actor-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
-      'cutscene-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height]
+      'cutscene-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'race-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'car-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height]
     };
+    this.editorStateKeys = new Set(Object.keys(this.editorStateTargetKeys));
     this.robterSession = new RobterSession({ input: this.input, audio: this.audio, isMobile: this.deviceIsMobile });
     this.editorReturnState = 'title';
     this.pixelStudioReturnState = 'title';
@@ -765,9 +774,13 @@ export default class Game {
     }
   }
 
-  handleTitleControlsAction(action) {
+  handleTitleOptionsAction(action) {
     if (action === 'back') {
       this.title.setScreen('main');
+      return;
+    }
+    if (action === 'latest-changes') {
+      openLatestChangesOverlay();
       return;
     }
     if (action === 'robtersession') {
@@ -775,19 +788,51 @@ export default class Game {
       this.transitionTo('robtersession');
       return;
     }
-    const displayMode = getDisplayModeForAction(action);
-    if (displayMode) {
-      this.setDisplayMode(displayMode);
+    if (action === 'controls') {
+      this.title.setControlsSelectionByMode(this.inputMode);
+      this.title.setScreen('controls');
+      return;
+    }
+    if (action === 'display') {
+      this.title.setDisplaySelectionByMode(this.displayMode);
+      this.title.setScreen('display');
+    }
+  }
+
+  handleTitleControlsAction(action) {
+    if (action === 'back') {
+      this.title.setScreen('options');
       return;
     }
     this.setInputMode(action);
     this.title.setControlsSelectionByMode(this.inputMode);
   }
 
+  handleTitleDisplayAction(action) {
+    if (action === 'back') {
+      this.title.setScreen('options');
+      return;
+    }
+    const displayMode = getDisplayModeForAction(action);
+    if (displayMode) {
+      this.setDisplayMode(displayMode);
+      this.title.setDisplaySelectionByMode(displayMode);
+    }
+  }
+
   handleTitleMenuAction(action) {
+    if (isLatestChangesOverlayOpen()) return true;
     if (!action) return false;
+    if (this.title.screen === 'options') {
+      this.handleTitleOptionsAction(action);
+      return true;
+    }
     if (this.title.screen === 'controls') {
       this.handleTitleControlsAction(action);
+      return true;
+    }
+    if (this.title.screen === 'display') {
+      this.handleTitleDisplayAction(action);
       return true;
     }
     if (this.title.folderOrders?.[this.title.screen]) {
@@ -797,8 +842,14 @@ export default class Game {
         this.enterEditor();
       } else if (action === 'pixel-editor') {
         this.enterPixelStudio();
+      } else if (action === 'tile-editor') {
+        this.enterPixelStudio({ returnState: 'title', tilePicker: true });
       } else if (action === 'actor-editor') {
         this.enterActorEditor();
+      } else if (action === 'race-editor') {
+        this.enterRaceEditor();
+      } else if (action === 'car-editor') {
+        this.enterCarEditor();
       } else if (action === 'midi-editor') {
         this.enterMidiComposer();
       } else if (action === 'sfx-editor') {
@@ -813,8 +864,7 @@ export default class Game {
       return true;
     }
     if (action === 'options') {
-      this.title.setControlsSelectionByMode(this.inputMode);
-      this.title.setScreen('controls');
+      this.title.setScreen('options');
       return true;
     }
     if (['graphics', 'audio', 'game'].includes(action)) {
@@ -1427,12 +1477,15 @@ export default class Game {
   }
 
 
+  isEditorState(state = this.state) {
+    return this.editorStateKeys?.has?.(state) || state === 'pixel-preview';
+  }
+
   handleSharedStateTransitionCleanup({ from, to, forceCleanup = false } = {}) {
-    const editorStates = new Set(['editor', 'pixel-editor', 'midi-editor', 'sfx-editor', 'actor-editor', 'pixel-preview']);
     const shouldCleanup = forceCleanup
       || this.playtestActive
-      || editorStates.has(from)
-      || editorStates.has(to);
+      || this.isEditorState(from)
+      || this.isEditorState(to);
     if (!shouldCleanup) return;
 
     this.input.reset();
@@ -1442,6 +1495,9 @@ export default class Game {
     this.midiComposer?.resetTransientInteractionState?.();
     this.sfxEditor?.resetTransientInteractionState?.();
     this.actorEditor?.resetTransientInteractionState?.();
+    this.cutsceneEditor?.resetTransientInteractionState?.();
+    this.raceEditor?.resetTransientInteractionState?.();
+    this.carEditor?.resetTransientInteractionState?.();
 
     this.playtestPauseLock = 0;
     this.spawnPauseTimer = 0;
@@ -1454,7 +1510,7 @@ export default class Game {
           document.body.classList.remove(className);
         }
       });
-      if (to === 'editor' || to === 'pixel-editor' || to === 'midi-editor' || to === 'sfx-editor' || to === 'actor-editor') {
+      if (this.editorStateKeys.has(to)) {
         document.body.classList.add('editor-active');
       }
     }
@@ -1529,6 +1585,23 @@ export default class Game {
       this.restoreMostRecentActorDocument();
     }
     this.playtestActive = false;
+  }
+
+  enterRaceEditor() {
+    this.transitionTo('race-editor');
+    this.setRevAudio(false);
+    this.playtestActive = false;
+  }
+
+  enterCarEditor() {
+    this.transitionTo('car-editor');
+    this.setRevAudio(false);
+    this.playtestActive = false;
+  }
+
+  exitRaceEditor() {
+    this.playtestActive = false;
+    this.transitionTo('title', { forceCleanup: true });
   }
 
   enterPixelStudio({ returnState = this.state, resetFocus = true, tilePicker = false } = {}) {
@@ -2343,7 +2416,12 @@ export default class Game {
       return;
     }
     if (editorId === 'midi') {
+      this.midiComposerReturnState = 'title';
       this.exitMidiComposer();
+      return;
+    }
+    if (editorId === 'race' || editorId === 'car') {
+      this.exitRaceEditor();
       return;
     }
     this.exitEditor({ toTitle: true });
@@ -2700,7 +2778,7 @@ export default class Game {
     this.gamepadConnected = this.input.isGamepadConnected();
     this.updateControlScheme();
     this.syncMobileControlsViewport();
-    if (this.state === 'editor' || this.state === 'pixel-editor' || this.state === 'midi-editor' || this.state === 'sfx-editor' || this.state === 'actor-editor' || this.state === 'cutscene-editor') {
+    if (this.isEditorState(this.state)) {
       this.input.clearVirtual();
     } else {
       const activeWeaponId = this.getActiveWeapon()?.id;
@@ -2726,6 +2804,8 @@ export default class Game {
         this.exitSfxEditor();
       } else if (this.state === 'cutscene-editor') {
         this.exitCutsceneEditor();
+      } else if (this.state === 'race-editor' || this.state === 'car-editor') {
+        this.exitRaceEditor();
       } else if (this.playtestActive && this.state === 'playing') {
         this.returnToEditorFromPlaytest();
       } else {
@@ -2798,6 +2878,18 @@ export default class Game {
       }
       this.cutsceneEditor.update(this.input, dt);
       this.updateActiveMusicPlayers(dt);
+      this.input.flush();
+      return;
+    }
+
+    if (this.state === 'race-editor' || this.state === 'car-editor') {
+      if (this.input.wasPressed('cancel')) {
+        this.exitRaceEditor();
+        this.input.flush();
+        return;
+      }
+      const target = this.state === 'race-editor' ? this.raceEditor : this.carEditor;
+      target.update(this.input, dt);
       this.input.flush();
       return;
     }
@@ -7823,7 +7915,20 @@ export default class Game {
 
   applyObstacleDamage(tileX, tileY, tool, options = {}) {
     const tile = this.world.getTile(tileX, tileY);
-    const obstacle = OBSTACLES[tile];
+    const tileProperties = this.world.getTileProperties?.(tileX, tileY) || null;
+    const obstacle = OBSTACLES[tile] || (tileProperties?.destructible ? {
+      id: `custom-${tile}`,
+      label: tileProperties.label || 'Destructible Tile',
+      material: 'custom',
+      interactions: {
+        chainsaw: { hits: 1, noise: 0.15, verb: 'break' },
+        flame: { hits: 1, noise: 0.3, verb: 'break' },
+        flamethrower: { hits: 1, noise: 0.3, verb: 'break' },
+        ignitir: { hits: 1, noise: 0.35, verb: 'break' },
+        resonance: { hits: 1, noise: 0.25, verb: 'break' },
+        explosive: { hits: 1, noise: 0.4, verb: 'break' }
+      }
+    } : null);
     if (!obstacle) return false;
     let interaction = obstacle.interactions?.[tool];
     if (!interaction && tool === 'flamethrower') {
@@ -7977,7 +8082,8 @@ export default class Game {
           gamepadConnected: this.gamepadConnected,
           debugRestartEnabled: false,
           serverStorageEnabled: isServerStorageEnabled(),
-          displayMode: this.displayMode
+          displayMode: this.displayMode,
+          mainMenuReady: false
         });
       });
       return;
@@ -7992,7 +8098,8 @@ export default class Game {
           gamepadConnected: this.gamepadConnected,
           debugRestartEnabled: this.debugMode,
           serverStorageEnabled: isServerStorageEnabled(),
-          displayMode: this.displayMode
+          displayMode: this.displayMode,
+          mainMenuReady: !this.loading
         });
         this.mobileControls.draw(ctx, this.state);
       });
@@ -10471,6 +10578,8 @@ export default class Game {
     this.stateManager.register('sfx-editor', createDelegatedState(this, 'sfxEditor'));
     this.stateManager.register('actor-editor', createDelegatedState(this, 'actorEditor'));
     this.stateManager.register('cutscene-editor', createDelegatedState(this, 'cutsceneEditor'));
+    this.stateManager.register('race-editor', createDelegatedState(this, 'raceEditor'));
+    this.stateManager.register('car-editor', createDelegatedState(this, 'carEditor'));
     this.stateManager.register('robtersession', new RobterSessionState(this));
   }
 

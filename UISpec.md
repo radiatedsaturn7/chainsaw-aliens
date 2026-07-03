@@ -5,9 +5,9 @@ This is the canonical UI plan for RTG Studio editors. The lower-level shell and 
 ## Priorities
 
 - Preserve portrait mode as the source of truth. It is already close to the desired mobile experience, so changes should be small, targeted, and covered by tests.
-- Standardize menus across Pixel, Level, Actor, MIDI, SFX, and Cutscene editors without forcing every editor into identical workflows.
+- Standardize menus across Pixel, Level, Actor, MIDI, SFX, Cutscene, Race, and Car editors without forcing every editor into identical workflows.
 - Treat landscape touch, desktop, and gamepad as first-class modes rather than accidental variants of portrait.
-- Make all menu rails, drawers, sheets, and tool grids scrollable by tap-drag or pointer drag.
+- Make drawers, sheets, and tool grids scrollable by tap-drag or pointer drag. Fixed command rails stay stable and do not scroll.
 - Prefer shared menu specs, layout helpers, input semantics, and visual tokens over editor-specific one-off UI.
 
 ## Shared Menu Model
@@ -26,6 +26,7 @@ Mode-specific rendering should consume the same menu spec wherever possible. Edi
 Shared implementation helpers:
 
 - `getEditorRootMenuEntries()` returns render-ready root menu ids while preserving spec ids through runtime aliases.
+- `buildEditorMenuLayoutPlan()` exposes each mode's command surface, persistent context surface, navigation surface, desktop mobile-rail visibility, and landscape `compactCommandRail`/`rootDrawer` split.
 - `buildDesktopTopMenuPlan()` and `buildDesktopDropdownPlan()` define the app-style desktop top menu and dropdown structure.
 - `buildGamepadSlideOutMenuPlan()` defines root-open versus submenu-open gamepad menu state.
 - `getEditorPointerInteractionPolicy()` defines menu scrolling, work-surface gestures, thumbstick visibility, and right-click behavior per mode.
@@ -42,20 +43,29 @@ Shared implementation helpers:
 
 ### Landscape Touch
 
-- Root menu appears as a vertical rail on the left.
-- Active submenu appears in a drawer/rail on the right.
+- Root menu access starts from a fixed vertical rail on the left. Dense editors should use the shared 84px compact command rail with `Menu`, `Undo`, `Redo`, and one contextual quick action; this rail is not scrollable. `Menu` opens the full root drawer. The root drawer should originate from the compact left rail by default so it feels like an expanded main menu, show all categories in a grid when they fit, remain gesture-scrollable when they do not, and stay open while category picks switch the active section. The shared plan exposes this as `modeSurfaces.compactCommandRail: left-rail`, `modeSurfaces.rootDrawer: left-overlay-drawer`, default `rootDrawerOverlayOrigin: left`, and `surfaceRoles.persistentNavigationActionLimit: 4`.
+- Active submenu appears in a drawer/rail on the right. Opening the left root drawer must not hide or steal this right submenu rail; landscape touch should support roots on the left and the active submenu/context drawer on the right at the same time. The shared plan exposes this as `modeSurfaces.rootDrawerKeepsSubmenuVisible: true`.
 - The center remains the canvas, stage, waveform, timeline, or grid work surface.
-- Every rail and drawer must scroll by gesture drag.
-- Virtual thumbsticks appear only when continuous pan or play movement is needed. They must not cover active menus.
+- The bottom rail is the persistent tool/options surface for zoom, ribbons, palette/context controls, transport, or quick actions when those controls should stay visible while the right submenu opens and closes. Pixel landscape should keep zoom in this bottom rail beside palette/layer/frame controls instead of reintroducing a separate top zoom strip.
+- Editors may opt into a shared top zoom strip when a bottom rail is already dedicated to persistent tool/palette controls and an over-canvas zoom chip would collide with the work surface.
+- Do not leave editor-specific landscape controls floating over the work surface when they can live in the shared bottom rail. If an editor omits the bottom rail, that should be because its active workflow has no persistent landscape control surface for the current mode.
+- Full drawers, sheets, right rails, bottom rails, and tool grids must scroll by gesture drag when content overflows. The compact four-button left command rail stays fixed.
+- Virtual thumbsticks appear only when continuous pan or play movement is needed. They must not cover active menus, and physical-gamepad slide-out menus suppress touch-only menu thumbsticks while the submenu owns the left rail.
 
 ### Desktop
 
 - Desktop should behave like a regular app.
 - Use a full-width horizontal top menu bar for all root menus.
-- Root menu drawers drop down from the top menu and preview the active submenu.
-- The left side starts below the top menu. Its ribbon appears at the top of the left column, with active tool options, asset lists, tracks, layers, inspectors, or other persistent lists directly below/south of the ribbon.
+- Root menu drawers start closed, drop down only from explicit top-menu interaction, and own the command surface for the selected root while open. Opening a desktop drawer records shared `openedAtMs` timing; shell redraws must preserve that timing for the same root, and dropdown renderers must pass the live dropdown state into `buildDesktopDropdownRenderPlan()` so slide-down progress remains real instead of resetting or becoming static metadata.
+- Clicking away closes the open drawer and it must stay closed on redraw instead of following the active tool, panel, tab, or document context.
+- Desktop command surfaces are `top-dropdown` drawers. Mobile rails, touch thumbsticks, and gamepad hint bars must not be part of the persistent desktop chrome.
+- Every editor File drawer starts with the same desktop baseline order: New, Save, Save As, Open, Export, Import. Unsupported baseline actions should remain visible as disabled rows rather than disappearing and changing the menu shape.
+- Every editor Edit drawer starts with Undo and Redo, then editor-specific edit actions such as copy, cut, paste, delete, state operations, segment operations, or layer operations.
+- The left side starts below the top menu. Its ribbon appears at the top of the left column, with a persistent context/inspector panel directly below/south of the ribbon.
+- Do not duplicate top drawer commands in the desktop left column. The left column should show current document, active section, mode, selected tool, selected asset, selection, transport, or inspector state that is useful to keep visible while the drawer opens and closes.
+- Desktop left context panels should use contextual language such as `Active`, not `Menu`, so they do not read as another command menu.
 - Use mouse-first behavior: wheel zoom/scroll, middle or right drag pan where applicable, and right-click context menus for selected objects or work surfaces.
-- When there is room, show complete submenus instead of forcing mobile-style drill-down.
+- When there is room, top drawers may show complete submenus instead of forcing mobile-style drill-down.
 
 ### Gamepad
 
@@ -70,25 +80,28 @@ Shared implementation helpers:
 
 ### Pixel Editor
 
-- Root: File, Draw, Select, Tools, Canvas, Layers, Frames, Rigging.
+- Root: File, Edit, View, Draw, Select, Tools, Canvas, Layers, Frames, Rigging.
+- Edit: undo, redo, copy, cut, paste, clear.
 - Draw: pencil, brush, eraser, fill, line, shape, clone, and brush settings.
 - Select: rectangular select, ellipse select, lasso, magic tools, move, copy, cut, paste, clear.
 - Canvas: grid, wrap, symmetry, tile preview, resize, scale, crop, offset, import, export.
-- Layers: layer list, add, duplicate, delete, rename, visibility, order, merge up, merge down, flatten.
-- Frames: frame list, add, duplicate, delete, delay, loop, reorder, playback.
-- Rigging: bones, bind layer, bind selection, timeline, bake.
+- Layers: add, duplicate, delete, rename, visibility, order, merge up, merge down, flatten.
+- Frames: add, duplicate, delete, delay, loop, playback, step, rewind, reorder.
+- Rigging: add bones, bind layer, bind selection, bake.
 
 ### Level Editor
 
-- Root: File, Tools, Tiles, Tile Art, Actors/NPCs, Triggers, Powerups, Structures, Graphics/Decals, Music, Settings, Playtest.
+- Root: File, Edit, View, Tools, Tiles, Tile Art, Actors/NPCs, Triggers, Powerups, Structures, Graphics/Decals, Music, Settings, Playtest.
+- Edit: undo, redo, copy, cut, paste, delete.
 - Tools: tile, actor, structure, shape, erase.
 - Assets: scrollable lists for tiles, actors, triggers, powerups, structures, decals, and tile art.
 - Settings: level metadata, MIDI, world settings.
-- Desktop left panel should expose the current asset/tool list without hiding the level canvas.
+- Desktop left panel should expose current mode/tool/asset context without hiding the level canvas; the top drawers own asset and command selection.
 
 ### Actor Editor
 
-- Root: File, Settings, States, Linked Parts, Visuals, Collision, Behavior, Preview.
+- Root: File, Edit, View, Settings, States, Linked Parts, Visuals, Collision, Behavior, Preview.
+- Edit: undo, redo, copy state, paste state, duplicate state, delete state.
 - States: add, duplicate, delete, select state.
 - Visuals: animation, art references, frame timing.
 - Collision: hitbox and hurtbox zones.
@@ -97,30 +110,57 @@ Shared implementation helpers:
 
 ### MIDI Editor
 
-- Root: File, Grid, Song, Tracks/Mixer, Record, Pedals, Settings.
-- Grid: note tools, selection, copy, paste, quantize, note length.
-- Song: play, stop, loop, tempo, arrangement.
-- Tracks/Mixer: track list, instruments, volume, pan, mute, solo.
-- Record: virtual instruments, single-note record, input settings.
-- Pedals: pedal board and mixer shortcuts.
+- Root: File, Edit, View, Grid, Song, Tracks/Mixer, Record, Pedals, Settings.
+- Edit: undo, redo, select all, copy, cut, paste, delete.
+- Grid: direct note placement/erase on the grid, quantize, note length.
+- Song: play, stop, loop, tempo.
+- Tracks/Mixer: dynamic track rows from the runtime mixer.
+- Record: enter record mode and single-note record.
+- Pedals: pedal chain controls.
 
 ### SFX Editor
 
-- Root: File, Timeline, Layers, Envelopes, Generate, Tools, Settings.
-- Timeline: play, stop, scrub, start, end.
-- Layers: layer list, add, duplicate, delete, reorder.
+- Root: File, Edit, View, Timeline, Layers, Envelopes, Generate, Tools, Settings.
+- Edit: undo, redo, copy, cut, paste, delete.
+- Timeline: play, stop, start, end.
+- Layers: add, duplicate, delete.
 - Envelopes: volume, pitch, pan, add point, delete point.
 - Generate: waveform and generator controls.
-- Tools: copy, cut, paste, split, undo, redo.
+- Tools: split, trim, normalize, fade, reverse, bitcrusher, time stretch, loop wizard.
 
 ### Cutscene Editor
 
-- Root: File, Add, Timeline, Clips, Keyframes, Stage, Audio, Export, Settings.
+- Root: File, Edit, View, Add, Timeline, Clips, Keyframes, Stage, Audio, Export, Settings.
+- Edit: undo, redo, copy, cut, paste, delete.
 - Add: art, actor, text, color board, music, SFX, effect, pause.
-- Clips: selected clip options, asset binding, track placement.
-- Keyframes: position, scale, opacity, easing, start/end/playhead mode.
-- Stage: scene length, fade, snap/grid, master volume.
+- Clips: selected clip options, copy, cut, paste, duplicate, move to track, new track, delete.
+- Keyframes: set start, set end, set key, delete key, previous/next key, key mode, easing.
+- Stage: scene duration, fade, snap/grid, master volume.
 - Export: MP4/export actions and progress.
+
+### Race Editor
+
+- Root: File, Edit, View, Road, Surfaces, Scenery, Weather, Race, Drive.
+- Edit: undo, redo, copy segment, paste segment, delete segment.
+- Road: draw road, segment length, curve, elevation, square turn, road width.
+- Surfaces: selected ground tile, paint ground, selected-segment edge tile, asphalt, dirt, gravel, snow, wet asphalt, texture/repeat surface.
+- Scenery: add, move, delete, left/right side placement.
+- Weather: clear, rain, storm, snow.
+- Race: circuit, destination, laps, finish behavior to return, level, or race.
+- Drive: Playtest opens a car picker, then launches the race in the handheld race playtest surface.
+- Desktop left panel should show selected race, type, segment count, weather, and active tool while top drawers own commands.
+
+### Car Editor
+
+- Root: File, Edit, View, Art, Drivetrain, Tuning, Aero, Suspension, Drive.
+- Edit: undo, redo, copy layer, paste layer, delete layer.
+- Art: shell, tires, spoiler, turn-left, turn-center, turn-right frames.
+- Drivetrain: RWD, FWD, AWD, power, weight.
+- Tuning: tire grip, brake balance, final drive, differential accel/decel.
+- Aero: front and rear aero tuning.
+- Suspension: front/rear springs, damping, and anti-roll.
+- Drive: Playtest opens a car picker and starts the same handheld race playtest surface.
+- Desktop left panel should show selected car, drivetrain, power, weight, and active tool while top drawers own commands.
 
 ## Gesture And Pointer Rules
 
@@ -136,11 +176,12 @@ Shared implementation helpers:
 2. Add shared layout helpers for scrollable rails/drawers and desktop dropdowns.
 3. Migrate Level, MIDI, and SFX first because they already use shared rails and controller menus.
 4. Migrate Pixel carefully, preserving existing portrait tests.
-5. Bridge Actor Editor's DOM UI into the shared spec.
-6. Bring Cutscene Editor onto the shared controller/menu stack.
-7. Add desktop top menu/dropdown behavior and right-click context menus.
-8. Add gamepad slide-out behavior and consistent focus rings.
-9. Polish the shared RTG Studio visual style across menus, drawers, and launcher.
+5. Keep Actor Editor's DOM UI covered by the same shared desktop, landscape, portrait, and gamepad contracts as the canvas editors.
+6. Keep Cutscene Editor on the shared controller/menu stack while preserving its timeline-specific surfaces.
+7. Keep new editors such as Race and Car in the shared spec from their first scaffold so they never ship with one-off desktop chrome.
+8. Keep desktop top menu/dropdown behavior, click-away close, hover-switching, and right-click context behavior consistent across all editors.
+9. Keep gamepad slide-out behavior, shared hints, and focus rings consistent across all editors.
+10. Polish the shared RTG Studio visual style across menus, drawers, and launcher.
 
 ## Validation
 

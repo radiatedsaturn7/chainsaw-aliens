@@ -1,6 +1,9 @@
 import Game from './game/Game.js';
 import { addDOMListener, createDisposer } from './input/disposables.js';
+import { isLatestChangesOverlayOpen } from './ui/latestChanges.js';
 import { getBrowserViewportSize, getCanvasViewportLayout, shouldShowMobileFullscreenButton } from './ui/shared/canvasViewportLayout.js';
+import { EDITOR_LAYOUT_MODES } from './ui/shared/editorMenuSpec.js';
+import { shouldSuppressEditorContextMenu } from './ui/shared/editorMenuLayout.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -15,6 +18,17 @@ let fullscreenPending = false;
 const hideFullscreenControlsForTesting = new URLSearchParams(window.location.search).has('hideFullscreenForTesting');
 const DEFAULT_CANVAS_WIDTH = canvas.width;
 const DEFAULT_CANVAS_HEIGHT = canvas.height;
+
+const CANVAS_EDITOR_IDS_BY_STATE = {
+  editor: 'level',
+  'pixel-editor': 'pixel',
+  'midi-editor': 'midi',
+  'sfx-editor': 'sfx',
+  'actor-editor': 'actor',
+  'cutscene-editor': 'cutscene',
+  'race-editor': 'race',
+  'car-editor': 'car'
+};
 
 const listenerDisposer = createDisposer();
 
@@ -148,6 +162,11 @@ function shouldIgnoreMouseFromRecentTouch() {
   return (Date.now() - lastTouchInteractionAt) < GHOST_MOUSE_BLOCK_MS;
 }
 
+function isGlobalOverlayOpen() {
+  const root = document.getElementById('global-overlay-root');
+  return Boolean(root?.children?.length || isLatestChangesOverlayOpen());
+}
+
 function resetTouchSession(reason = 'unknown') {
   if (gestureActive && game.handleGestureEnd) {
     game.handleGestureEnd();
@@ -184,6 +203,10 @@ function bindInputListeners() {
 
   listenerDisposer.add(addDOMListener(canvas, 'click', (event) => {
     if (shouldIgnoreMouseFromRecentTouch()) return;
+    if (isGlobalOverlayOpen()) {
+      event.preventDefault();
+      return;
+    }
     if (suppressNextCanvasClick) {
       suppressNextCanvasClick = false;
       event.preventDefault();
@@ -195,27 +218,39 @@ function bindInputListeners() {
 
   listenerDisposer.add(addDOMListener(canvas, 'mousedown', (event) => {
     if (shouldIgnoreMouseFromRecentTouch()) return;
+    if (isGlobalOverlayOpen()) {
+      event.preventDefault();
+      return;
+    }
     const { x, y } = getCanvasPosition(event);
     const stateBefore = game.state;
     const titleScreenBefore = game.title?.screen;
+    const overlayOpenBefore = isGlobalOverlayOpen();
     game.handlePointerDown?.({ x, y, button: event.button, buttons: event.buttons });
-    suppressNextCanvasClick = game.state !== stateBefore || game.title?.screen !== titleScreenBefore;
+    suppressNextCanvasClick = (
+      game.state !== stateBefore
+      || game.title?.screen !== titleScreenBefore
+      || isGlobalOverlayOpen() !== overlayOpenBefore
+    );
   }));
 
   listenerDisposer.add(addDOMListener(canvas, 'mousemove', (event) => {
     if (shouldIgnoreMouseFromRecentTouch()) return;
+    if (isGlobalOverlayOpen()) return;
     const { x, y } = getCanvasPosition(event);
     game.handlePointerMove?.({ x, y, buttons: event.buttons });
   }));
 
   listenerDisposer.add(addDOMListener(window, 'mouseup', (event) => {
     if (shouldIgnoreMouseFromRecentTouch()) return;
+    if (isGlobalOverlayOpen()) return;
     const { x, y } = getCanvasPosition(event);
     game.handlePointerUp?.({ x, y, button: event.button });
   }));
 
   listenerDisposer.add(addDOMListener(canvas, 'wheel', (event) => {
     event.preventDefault();
+    if (isGlobalOverlayOpen()) return;
     const { x, y } = getCanvasPosition(event);
     game.handleWheel?.({
       x,
@@ -230,6 +265,10 @@ function bindInputListeners() {
 
   listenerDisposer.add(addDOMListener(canvas, 'touchstart', (event) => {
     lastTouchInteractionAt = Date.now();
+    if (isGlobalOverlayOpen()) {
+      event.preventDefault();
+      return;
+    }
     const gesturesAllowed = !(game.state === 'midi-editor' && game.midiComposer?.recordModeActive);
     const shouldStartGesture = () => {
       if (!game.handleGestureStart) return false;
@@ -266,6 +305,10 @@ function bindInputListeners() {
 
   listenerDisposer.add(addDOMListener(canvas, 'touchmove', (event) => {
     lastTouchInteractionAt = Date.now();
+    if (isGlobalOverlayOpen()) {
+      event.preventDefault();
+      return;
+    }
     if (game.state === 'midi-editor' && game.midiComposer?.recordModeActive) {
       gestureActive = false;
     }
@@ -291,6 +334,10 @@ function bindInputListeners() {
 
   listenerDisposer.add(addDOMListener(canvas, 'touchend', (event) => {
     lastTouchInteractionAt = Date.now();
+    if (isGlobalOverlayOpen()) {
+      event.preventDefault();
+      return;
+    }
     if (gestureActive && event.touches.length < 2) {
       endGesture();
     }
@@ -305,6 +352,10 @@ function bindInputListeners() {
 
   listenerDisposer.add(addDOMListener(canvas, 'touchcancel', (event) => {
     lastTouchInteractionAt = Date.now();
+    if (isGlobalOverlayOpen()) {
+      event.preventDefault();
+      return;
+    }
     endGesture();
     Array.from(event.changedTouches).forEach((touch) => {
       const position = activeTouches.get(touch.identifier) || getCanvasPosition(touch);
@@ -316,7 +367,11 @@ function bindInputListeners() {
   }));
 
   listenerDisposer.add(addDOMListener(canvas, 'contextmenu', (event) => {
-    event.preventDefault();
+    const editorId = CANVAS_EDITOR_IDS_BY_STATE[game?.state] || 'level';
+    const mode = isMobile ? EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH : EDITOR_LAYOUT_MODES.DESKTOP;
+    if (shouldSuppressEditorContextMenu({ editorId, mode, pointerType: 'mouse' })) {
+      event.preventDefault();
+    }
   }));
 
   if (enterFullscreenButton) {
