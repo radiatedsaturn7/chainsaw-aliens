@@ -1,8 +1,13 @@
 import {
   EDITOR_LAYOUT_MODES,
   EDITOR_MENU_PLACEMENTS,
+  SHARED_EDITOR_IDS,
+  SUPPORTED_EDITOR_WORK_SURFACES,
   getEditorControllerRootMenuEntries,
+  getEditorEditActionRole,
+  getEditorMenuModeContract,
   getEditorMenuSpec,
+  getEditorWorkSurfaceType,
   getEditorRootMenuEntries
 } from './editorMenuSpec.js';
 import { getSharedMobileLandscapeEditorLayout } from '../uiSuite.js';
@@ -48,78 +53,210 @@ const DEFAULT_DESKTOP_SHELL = {
   minWorkSurfaceHeight: 220
 };
 
-const WORK_SURFACE_TYPES = {
-  pixel: 'canvas',
-  level: 'canvas',
-  actor: 'stage',
-  midi: 'grid',
-  sfx: 'timeline',
-  cutscene: 'stage',
-  race: 'stage',
-  car: 'stage'
-};
+const CONTINUOUS_PAN_EDITOR_IDS = new Set(SHARED_EDITOR_IDS);
+const FALLBACK_PAN_EDITOR_IDS = new Set(SHARED_EDITOR_IDS);
+const DESKTOP_CONTEXT_MENU_EDITOR_IDS = new Set(['pixel', 'level', 'actor', 'cutscene', 'race', 'car']);
 
 export const COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT = 4;
 export const COMPACT_LANDSCAPE_COMMAND_RAIL_WIDTH = 84;
+export const EDITOR_SURFACES = Object.freeze({
+  bottomRail: 'bottom-rail',
+  bottomSheet: 'bottom-sheet',
+  bottomActionRail: 'bottom-action-rail',
+  bottomToolRail: 'bottom-tool-rail',
+  touchThumbstick: 'touch-thumbstick',
+  leftRail: 'left-rail',
+  leftOverlayDrawer: 'left-overlay-drawer',
+  rightDrawer: 'right-drawer',
+  rightOverlayDrawer: 'right-overlay-drawer',
+  landscapeRootDrawer: 'landscape-root-drawer',
+  landscapeRightSubmenu: 'landscape-right-submenu',
+  desktopTopMenu: 'desktop-top-menu',
+  desktopDropdown: 'desktop-dropdown',
+  desktopLeftInspector: 'desktop-left-inspector',
+  topMenu: 'top-menu',
+  topDropdown: 'top-dropdown',
+  leftRibbon: 'left-ribbon',
+  leftContextPanel: 'left-context-panel',
+  workSurface: 'work-surface',
+  workSurfaceOverlay: 'work-surface-overlay',
+  gamepadHintBar: 'gamepad-hint-bar',
+  gamepadSlideOut: 'gamepad-slide-out',
+  leftSlideRail: 'left-slide-rail',
+  leftSlideOutDrawer: 'left-slide-out-drawer'
+});
+export const LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT = {
+  rootSurface: EDITOR_SURFACES.leftRail,
+  compactCommandRailSurface: EDITOR_SURFACES.leftRail,
+  commandSurface: EDITOR_SURFACES.rightDrawer,
+  submenuSurface: EDITOR_SURFACES.rightDrawer,
+  rightSubmenuSurface: EDITOR_SURFACES.rightDrawer,
+  persistentContextSurface: EDITOR_SURFACES.bottomRail,
+  rootDrawerSurface: EDITOR_SURFACES.leftOverlayDrawer,
+  rootDrawerOverlayOrigin: 'left',
+  rootDrawerKeepsSubmenuVisible: true,
+  bottomRailRole: 'tool-options-ribbons-zoom',
+  suppressedDesktopSurfaces: [
+    EDITOR_SURFACES.desktopTopMenu,
+    EDITOR_SURFACES.desktopDropdown,
+    EDITOR_SURFACES.desktopLeftInspector
+  ],
+  compactCommandRail: {
+    width: COMPACT_LANDSCAPE_COMMAND_RAIL_WIDTH,
+    actionLimit: COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT,
+    commandRail: 'compact-landscape',
+    rowActivation: 'tap-release',
+    pointerType: 'touch',
+    gestureScroll: false
+  }
+};
+export const GAMEPAD_SLIDE_OUT_MENU_CONTRACT = {
+  sourceSurface: EDITOR_SURFACES.gamepadSlideOut,
+  rootSurface: EDITOR_SURFACES.leftSlideRail,
+  submenuSurface: EDITOR_SURFACES.leftSlideOutDrawer,
+  rightSubmenuSurface: null,
+  submenuReplacesRootRail: true,
+  rowActivation: 'confirm-button',
+  pointerType: 'controller',
+  gestureScroll: true,
+  controls: {
+    confirm: 'A',
+    back: 'B',
+    system: 'Start',
+    focusToggle: 'Back',
+    siblingPrev: 'LB',
+    siblingNext: 'RB'
+  },
+  suppressedTouchSurfaces: [
+    EDITOR_SURFACES.landscapeRightSubmenu,
+    EDITOR_SURFACES.landscapeRootDrawer,
+    EDITOR_SURFACES.bottomToolRail,
+    EDITOR_SURFACES.touchThumbstick
+  ]
+};
+export const DESKTOP_CONTEXT_PANEL_CONTRACT = {
+  surface: EDITOR_SURFACES.leftContextPanel,
+  role: 'context-inspector',
+  persistent: true,
+  drawerCommandsStayInTopDropdown: true,
+  duplicatesTopDropdownCommands: false,
+  allowedContentRoles: [
+    'document-summary',
+    'selection-summary',
+    'active-tool-summary',
+    'transport',
+    'status',
+    'contextual-quick-actions'
+  ],
+  contextualQuickActionPolicy: {
+    allowed: true,
+    mustBeContextual: true,
+    mustNotDuplicateOpenDropdown: true
+  }
+};
+export const DESKTOP_SHELL_SURFACE_CONTRACT = {
+  commandSurface: EDITOR_SURFACES.topDropdown,
+  commandSurfaces: [EDITOR_SURFACES.topDropdown],
+  persistentSurfaces: [EDITOR_SURFACES.topMenu, EDITOR_SURFACES.leftRibbon, EDITOR_SURFACES.leftContextPanel, EDITOR_SURFACES.workSurface],
+  leftPanelRole: 'context-inspector',
+  duplicatesCommandsInLeftPanel: false,
+  desktopMobileRailsHidden: true,
+  suppressedMobileSurfaces: [
+    EDITOR_SURFACES.bottomActionRail,
+    EDITOR_SURFACES.bottomToolRail,
+    EDITOR_SURFACES.touchThumbstick,
+    EDITOR_SURFACES.landscapeRootDrawer,
+    EDITOR_SURFACES.landscapeRightSubmenu,
+    EDITOR_SURFACES.gamepadHintBar,
+    EDITOR_SURFACES.gamepadSlideOut
+  ]
+};
+export const DESKTOP_DROPDOWN_COMMAND_CONTRACT = {
+  commandSurface: DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface,
+  pointerType: 'mouse',
+  rowActivation: 'release',
+  kind: 'desktop-dropdown-item',
+  desktopDropdownItem: true
+};
+export const DESKTOP_DROPDOWN_STATE_CONTRACT = {
+  commandSurface: DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface,
+  openedAtField: 'openedAtMs',
+  motion: {
+    type: 'slide-down',
+    durationMs: 120,
+    origin: EDITOR_SURFACES.topMenu
+  },
+  startsClosed: true,
+  preservesOpenedAtForSameRoot: true,
+  clickAwayPersistsClosedRoot: true
+};
+export const GAMEPAD_FOCUS_RING_CONTRACT = {
+  visibleOnFocusedRows: true,
+  surfaces: [GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rootSurface, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface],
+  rowActivation: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rowActivation,
+  pointerType: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType,
+  sourceSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.sourceSurface,
+  focusRing: 'shared-focus-ring'
+};
 
 export const SUPPRESSED_MODE_SURFACES = {
   [EDITOR_LAYOUT_MODES.PORTRAIT]: [
-    'desktop-top-menu',
-    'desktop-dropdown',
-    'desktop-left-inspector',
-    'landscape-root-drawer',
-    'landscape-right-submenu',
-    'gamepad-slide-out'
+    EDITOR_SURFACES.desktopTopMenu,
+    EDITOR_SURFACES.desktopDropdown,
+    EDITOR_SURFACES.desktopLeftInspector,
+    EDITOR_SURFACES.landscapeRootDrawer,
+    EDITOR_SURFACES.landscapeRightSubmenu,
+    EDITOR_SURFACES.gamepadSlideOut
   ],
   [EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH]: [
-    'desktop-top-menu',
-    'desktop-dropdown',
-    'desktop-left-inspector',
-    'gamepad-slide-out'
+    EDITOR_SURFACES.desktopTopMenu,
+    EDITOR_SURFACES.desktopDropdown,
+    EDITOR_SURFACES.desktopLeftInspector,
+    EDITOR_SURFACES.gamepadSlideOut
   ],
   [EDITOR_LAYOUT_MODES.DESKTOP]: [
-    'bottom-action-rail',
-    'bottom-tool-rail',
-    'touch-thumbstick',
-    'landscape-root-drawer',
-    'landscape-right-submenu',
-    'gamepad-hint-bar',
-    'gamepad-slide-out'
+    EDITOR_SURFACES.bottomActionRail,
+    EDITOR_SURFACES.bottomToolRail,
+    EDITOR_SURFACES.touchThumbstick,
+    EDITOR_SURFACES.landscapeRootDrawer,
+    EDITOR_SURFACES.landscapeRightSubmenu,
+    EDITOR_SURFACES.gamepadHintBar,
+    EDITOR_SURFACES.gamepadSlideOut
   ],
   [EDITOR_LAYOUT_MODES.GAMEPAD]: [
-    'desktop-top-menu',
-    'desktop-dropdown',
-    'desktop-left-inspector',
-    'landscape-right-submenu',
-    'landscape-root-drawer',
-    'bottom-tool-rail',
-    'touch-thumbstick'
+    EDITOR_SURFACES.desktopTopMenu,
+    EDITOR_SURFACES.desktopDropdown,
+    EDITOR_SURFACES.desktopLeftInspector,
+    EDITOR_SURFACES.landscapeRightSubmenu,
+    EDITOR_SURFACES.landscapeRootDrawer,
+    EDITOR_SURFACES.bottomToolRail,
+    EDITOR_SURFACES.touchThumbstick
   ]
 };
 
 export const REQUIRED_MODE_SURFACES = {
   [EDITOR_LAYOUT_MODES.PORTRAIT]: [
-    'bottom-rail',
-    'bottom-sheet',
-    'bottom-action-rail'
+    EDITOR_SURFACES.bottomRail,
+    EDITOR_SURFACES.bottomSheet,
+    EDITOR_SURFACES.bottomActionRail
   ],
   [EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH]: [
-    'left-rail',
-    'left-overlay-drawer',
-    'right-drawer',
-    'bottom-rail'
+    EDITOR_SURFACES.leftRail,
+    EDITOR_SURFACES.leftOverlayDrawer,
+    EDITOR_SURFACES.rightDrawer,
+    EDITOR_SURFACES.bottomRail
   ],
   [EDITOR_LAYOUT_MODES.DESKTOP]: [
-    'top-menu',
-    'top-dropdown',
-    'left-ribbon',
-    'left-context-panel',
-    'work-surface'
+    EDITOR_SURFACES.topMenu,
+    EDITOR_SURFACES.topDropdown,
+    EDITOR_SURFACES.leftRibbon,
+    EDITOR_SURFACES.leftContextPanel,
+    EDITOR_SURFACES.workSurface
   ],
   [EDITOR_LAYOUT_MODES.GAMEPAD]: [
-    'left-slide-rail',
-    'left-slide-out-drawer',
-    'work-surface-overlay'
+    EDITOR_SURFACES.leftSlideRail,
+    EDITOR_SURFACES.leftSlideOutDrawer,
+    EDITOR_SURFACES.workSurfaceOverlay
   ]
 };
 
@@ -130,12 +267,76 @@ export function getEditorModeSurfaceContract(mode = EDITOR_LAYOUT_MODES.DESKTOP)
   return {
     mode: resolvedMode,
     requiredModeSurfaces: [...(REQUIRED_MODE_SURFACES[resolvedMode] || [])],
-    suppressedModeSurfaces: [...(SUPPRESSED_MODE_SURFACES[resolvedMode] || [])]
+    suppressedModeSurfaces: [...(SUPPRESSED_MODE_SURFACES[resolvedMode] || [])],
+    surfaceVisibility: getEditorModeSurfaceVisibility(resolvedMode)
   };
+}
+
+export function getEditorModeSurfaceVisibility(mode = EDITOR_LAYOUT_MODES.DESKTOP) {
+  const resolvedMode = Object.values(EDITOR_LAYOUT_MODES).includes(mode)
+    ? mode
+    : EDITOR_LAYOUT_MODES.DESKTOP;
+  const visibility = {};
+  (REQUIRED_MODE_SURFACES[resolvedMode] || []).forEach((surface) => {
+    visibility[surface] = 'required';
+  });
+  (SUPPRESSED_MODE_SURFACES[resolvedMode] || []).forEach((surface) => {
+    visibility[surface] = 'suppressed';
+  });
+  return visibility;
+}
+
+export function getEditorSurfaceVisibility(mode = EDITOR_LAYOUT_MODES.DESKTOP, surface = '') {
+  const visibility = getEditorModeSurfaceVisibility(mode);
+  return visibility[String(surface || '')] || 'optional';
+}
+
+export function canRenderEditorSurface(mode = EDITOR_LAYOUT_MODES.DESKTOP, surface = '') {
+  return getEditorSurfaceVisibility(mode, surface) !== 'suppressed';
+}
+
+export function getEditorPlanSurfaceVisibility(plan = null, surface = '') {
+  const key = String(surface || '');
+  if (!key) return 'optional';
+  return plan?.effectiveSurfaceVisibility?.[key]
+    || plan?.surfaceVisibility?.[key]
+    || 'optional';
+}
+
+export function canRenderEditorPlanSurface(plan = null, surface = '') {
+  return getEditorPlanSurfaceVisibility(plan, surface) !== 'suppressed';
+}
+
+export function getLandscapeTouchShellEffectiveSurfaceVisibility({
+  reserveRightRail = true,
+  bottomRailHeight = 0
+} = {}) {
+  const visibility = {
+    ...getEditorModeSurfaceVisibility(EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH)
+  };
+  if (!reserveRightRail) {
+    visibility[EDITOR_SURFACES.rightDrawer] = 'suppressed';
+    visibility[EDITOR_SURFACES.landscapeRightSubmenu] = 'suppressed';
+  }
+  visibility[EDITOR_SURFACES.leftOverlayDrawer] = 'required';
+  visibility[EDITOR_SURFACES.rightOverlayDrawer] = 'optional';
+  if (Number(bottomRailHeight) <= 0) {
+    visibility[EDITOR_SURFACES.bottomRail] = 'optional';
+    visibility[EDITOR_SURFACES.bottomToolRail] = 'optional';
+  } else {
+    visibility[EDITOR_SURFACES.bottomRail] = 'required';
+    visibility[EDITOR_SURFACES.bottomToolRail] = 'required';
+  }
+  return visibility;
 }
 
 export function validateEditorModeSurfaceContracts() {
   const errors = [];
+  const knownSurfaces = new Set(Object.values(EDITOR_SURFACES));
+  const assertKnownSurface = (mode, source, surface) => {
+    if (surface === null || surface === undefined) return;
+    if (!knownSurfaces.has(surface)) errors.push(`${mode} ${source} uses unknown editor surface "${surface}".`);
+  };
   Object.values(EDITOR_LAYOUT_MODES).forEach((mode) => {
     const required = REQUIRED_MODE_SURFACES[mode];
     const suppressed = SUPPRESSED_MODE_SURFACES[mode];
@@ -153,17 +354,29 @@ export function validateEditorModeSurfaceContracts() {
     overlap.forEach((surface) => {
       errors.push(`${mode} cannot both require and suppress "${surface}".`);
     });
+    (required || []).forEach((surface) => assertKnownSurface(mode, 'requiredModeSurfaces', surface));
+    (suppressed || []).forEach((surface) => assertKnownSurface(mode, 'suppressedModeSurfaces', surface));
+    const presentation = MODE_PRESENTATION_CONTRACTS[mode] || {};
+    [
+      'rootSurface',
+      'commandSurface',
+      'submenuSurface',
+      'persistentContextSurface',
+      'persistentNavigationSurface',
+      'rootDrawerSurface',
+      'rightSubmenuSurface'
+    ].forEach((key) => assertKnownSurface(mode, `presentation.${key}`, presentation[key]));
   });
   return errors;
 }
 
 export const MODE_PRESENTATION_CONTRACTS = {
   [EDITOR_LAYOUT_MODES.PORTRAIT]: {
-    rootSurface: 'bottom-rail',
-    commandSurface: 'bottom-sheet',
-    submenuSurface: 'bottom-sheet',
-    persistentContextSurface: 'top-context',
-    persistentNavigationSurface: 'bottom-rail',
+    rootSurface: EDITOR_SURFACES.bottomRail,
+    commandSurface: EDITOR_SURFACES.bottomSheet,
+    submenuSurface: EDITOR_SURFACES.bottomSheet,
+    persistentContextSurface: EDITOR_SURFACES.bottomSheet,
+    persistentNavigationSurface: EDITOR_SURFACES.bottomRail,
     rootDrawerSurface: null,
     rootDrawerOverlayOrigin: null,
     rootDrawerKeepsSubmenuVisible: false,
@@ -171,23 +384,23 @@ export const MODE_PRESENTATION_CONTRACTS = {
     rightSubmenuSurface: null
   },
   [EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH]: {
-    rootSurface: 'left-rail',
-    commandSurface: 'right-drawer',
-    submenuSurface: 'right-drawer',
-    persistentContextSurface: 'bottom-rail',
-    persistentNavigationSurface: 'left-rail',
-    rootDrawerSurface: 'left-overlay-drawer',
-    rootDrawerOverlayOrigin: 'left',
-    rootDrawerKeepsSubmenuVisible: true,
+    rootSurface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootSurface,
+    commandSurface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.commandSurface,
+    submenuSurface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.submenuSurface,
+    persistentContextSurface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.persistentContextSurface,
+    persistentNavigationSurface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRailSurface,
+    rootDrawerSurface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootDrawerSurface,
+    rootDrawerOverlayOrigin: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootDrawerOverlayOrigin,
+    rootDrawerKeepsSubmenuVisible: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootDrawerKeepsSubmenuVisible,
     submenuReplacesRootRail: false,
-    rightSubmenuSurface: 'right-drawer'
+    rightSubmenuSurface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rightSubmenuSurface
   },
   [EDITOR_LAYOUT_MODES.DESKTOP]: {
-    rootSurface: 'top-menu',
-    commandSurface: 'top-dropdown',
-    submenuSurface: 'dropdown',
-    persistentContextSurface: 'left-panel',
-    persistentNavigationSurface: 'top-menu',
+    rootSurface: EDITOR_SURFACES.topMenu,
+    commandSurface: EDITOR_SURFACES.topDropdown,
+    submenuSurface: EDITOR_SURFACES.topDropdown,
+    persistentContextSurface: EDITOR_SURFACES.leftContextPanel,
+    persistentNavigationSurface: EDITOR_SURFACES.topMenu,
     rootDrawerSurface: null,
     rootDrawerOverlayOrigin: null,
     rootDrawerKeepsSubmenuVisible: false,
@@ -195,16 +408,16 @@ export const MODE_PRESENTATION_CONTRACTS = {
     rightSubmenuSurface: null
   },
   [EDITOR_LAYOUT_MODES.GAMEPAD]: {
-    rootSurface: 'left-slide-rail',
-    commandSurface: 'left-slide-out-drawer',
-    submenuSurface: 'left-slide-out-drawer',
-    persistentContextSurface: 'work-surface-overlay',
-    persistentNavigationSurface: 'left-slide-rail',
+    rootSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rootSurface,
+    commandSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface,
+    submenuSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface,
+    persistentContextSurface: EDITOR_SURFACES.workSurfaceOverlay,
+    persistentNavigationSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rootSurface,
     rootDrawerSurface: null,
     rootDrawerOverlayOrigin: null,
     rootDrawerKeepsSubmenuVisible: false,
-    submenuReplacesRootRail: true,
-    rightSubmenuSurface: null
+    submenuReplacesRootRail: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuReplacesRootRail,
+    rightSubmenuSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rightSubmenuSurface
   }
 };
 
@@ -243,15 +456,15 @@ export const MODE_INTERACTION_CONTRACTS = {
     siblingNext: null
   },
   [EDITOR_LAYOUT_MODES.GAMEPAD]: {
-    pointerType: 'controller',
-    rowActivation: 'confirm-button',
-    gestureScroll: true,
+    pointerType: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType,
+    rowActivation: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rowActivation,
+    gestureScroll: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.gestureScroll,
     wheelRoutesToHoveredPanel: false,
     pinchZoomReservedForWorkSurface: true,
-    confirm: 'A',
-    back: 'B',
-    siblingPrev: 'LB',
-    siblingNext: 'RB'
+    confirm: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.controls.confirm,
+    back: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.controls.back,
+    siblingPrev: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.controls.siblingPrev,
+    siblingNext: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.controls.siblingNext
   }
 };
 
@@ -273,6 +486,7 @@ export function getEditorModeContract(mode = EDITOR_LAYOUT_MODES.DESKTOP) {
     mode: surface.mode,
     requiredModeSurfaces: surface.requiredModeSurfaces,
     suppressedModeSurfaces: surface.suppressedModeSurfaces,
+    surfaceVisibility: surface.surfaceVisibility,
     presentation: presentationInteraction.presentation,
     interaction: presentationInteraction.interaction
   };
@@ -327,15 +541,30 @@ export function validateEditorModePresentationInteractionContracts() {
   if (desktop.wheelRoutesToHoveredPanel !== true) errors.push('desktop wheelRoutesToHoveredPanel must be true.');
   const gamepad = MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.GAMEPAD] || {};
   const gamepadPresentation = MODE_PRESENTATION_CONTRACTS[EDITOR_LAYOUT_MODES.GAMEPAD] || {};
-  if (gamepad.pointerType !== 'controller') errors.push('gamepad pointerType must be controller.');
-  if (gamepad.rowActivation !== 'confirm-button') errors.push('gamepad rowActivation must be confirm-button.');
-  if (gamepad.confirm !== 'A' || gamepad.back !== 'B') errors.push('gamepad confirm/back controls must be A/B.');
-  if (gamepadPresentation.submenuReplacesRootRail !== true) errors.push('gamepad submenuReplacesRootRail must be true.');
+  if (gamepad.pointerType !== GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType) errors.push(`gamepad pointerType must be ${GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType}.`);
+  if (gamepad.rowActivation !== GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rowActivation) errors.push(`gamepad rowActivation must be ${GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rowActivation}.`);
+  if (gamepad.confirm !== GAMEPAD_SLIDE_OUT_MENU_CONTRACT.controls.confirm || gamepad.back !== GAMEPAD_SLIDE_OUT_MENU_CONTRACT.controls.back) {
+    errors.push(`gamepad confirm/back controls must be ${GAMEPAD_SLIDE_OUT_MENU_CONTRACT.controls.confirm}/${GAMEPAD_SLIDE_OUT_MENU_CONTRACT.controls.back}.`);
+  }
+  if (gamepadPresentation.submenuReplacesRootRail !== GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuReplacesRootRail) errors.push(`gamepad submenuReplacesRootRail must be ${GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuReplacesRootRail}.`);
   [EDITOR_LAYOUT_MODES.PORTRAIT, EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH].forEach((mode) => {
     const interaction = MODE_INTERACTION_CONTRACTS[mode] || {};
     if (interaction.pointerType !== 'touch') errors.push(`${mode} pointerType must be touch.`);
     if (interaction.rowActivation !== 'tap-release') errors.push(`${mode} rowActivation must be tap-release.`);
     if (interaction.gestureScroll !== true) errors.push(`${mode} gestureScroll must be true.`);
+  });
+  return errors;
+}
+
+export function validateEditorWorkSurfaceTypes() {
+  const errors = [];
+  SHARED_EDITOR_IDS.forEach((editorId) => {
+    const workSurface = getEditorMenuSpec(editorId)?.workSurface;
+    if (!workSurface) {
+      errors.push(`Missing work surface type for shared editor "${editorId}".`);
+    } else if (!SUPPORTED_EDITOR_WORK_SURFACES.includes(workSurface)) {
+      errors.push(`${editorId} work surface type "${workSurface}" is unsupported.`);
+    }
   });
   return errors;
 }
@@ -355,6 +584,7 @@ export function resolveEditorLayoutMode({
 }
 
 export function resolveEditorViewportModeFlags({
+  editorId = null,
   viewportWidth = 0,
   viewportHeight = 0,
   isMobile = false,
@@ -375,6 +605,7 @@ export function resolveEditorViewportModeFlags({
   return {
     mode,
     modeContract: getEditorModeContract(mode),
+    specModeContract: getEditorMenuModeContract(editorId, mode),
     isDesktop,
     isMobileViewport,
     isMobilePortrait: isMobileViewport && height >= width,
@@ -398,6 +629,7 @@ export function buildEditorMenuLayoutPlan(editorId, options = {}) {
   const isDesktop = mode === EDITOR_LAYOUT_MODES.DESKTOP;
   const isGamepad = mode === EDITOR_LAYOUT_MODES.GAMEPAD;
   const modeContract = getEditorModeContract(mode);
+  const specModeContract = getEditorMenuModeContract(editorId, mode);
   const { presentation, interaction } = modeContract;
   const commandSurface = presentation.commandSurface;
   const persistentContextSurface = presentation.persistentContextSurface;
@@ -411,27 +643,30 @@ export function buildEditorMenuLayoutPlan(editorId, options = {}) {
     placement,
     modeSurfaces: {
       rootMenu: placement.root,
-      compactCommandRail: isLandscapeTouch ? 'left-rail' : null,
-      rootDrawer: isLandscapeTouch ? 'left-overlay-drawer' : null,
-      submenu: placement.submenu,
-      settings: placement.settings,
-      primaryActions: isPortrait ? 'bottom-action-rail' : null,
+      compactCommandRail: isLandscapeTouch ? LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRailSurface : null,
+      rootDrawer: isLandscapeTouch ? LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootDrawerSurface : null,
+      submenu: isDesktop ? MODE_PRESENTATION_CONTRACTS[EDITOR_LAYOUT_MODES.DESKTOP].submenuSurface : placement.submenu,
+      settings: isDesktop ? MODE_PRESENTATION_CONTRACTS[EDITOR_LAYOUT_MODES.DESKTOP].submenuSurface : placement.settings,
+      primaryActions: isPortrait ? EDITOR_SURFACES.bottomActionRail : null,
       gestureScroll: isPortrait || isLandscapeTouch || isGamepad,
-      rootDrawerKeepsSubmenuVisible: isLandscapeTouch
+      rootDrawerKeepsSubmenuVisible: isLandscapeTouch ? LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootDrawerKeepsSubmenuVisible : false
     },
     surfaceRoles: {
       commandSurface,
       persistentContextSurface,
       persistentNavigationSurface,
-      duplicatesCommandsInPersistentContext: false,
-      desktopMobileRailsHidden: isDesktop,
-      persistentNavigationActionLimit: isLandscapeTouch ? 4 : null
+      duplicatesCommandsInPersistentContext: DESKTOP_SHELL_SURFACE_CONTRACT.duplicatesCommandsInLeftPanel,
+      desktopMobileRailsHidden: isDesktop ? DESKTOP_SHELL_SURFACE_CONTRACT.desktopMobileRailsHidden : false,
+      persistentNavigationActionLimit: isLandscapeTouch ? LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRail.actionLimit : null,
+      ...(isDesktop ? { persistentContextContract: DESKTOP_CONTEXT_PANEL_CONTRACT } : {})
     },
     presentation,
     interaction,
     suppressedModeSurfaces: modeContract.suppressedModeSurfaces,
     requiredModeSurfaces: modeContract.requiredModeSurfaces,
+    surfaceVisibility: modeContract.surfaceVisibility,
     modeContract,
+    specModeContract,
     scroll: {
       root: { ...DEFAULT_DRAG_SCROLL },
       submenu: { ...DEFAULT_DRAG_SCROLL },
@@ -439,23 +674,19 @@ export function buildEditorMenuLayoutPlan(editorId, options = {}) {
     },
     gamepad: {
       rootCollapsesAfterSelect: mode === EDITOR_LAYOUT_MODES.GAMEPAD,
-      rootSurface: isGamepad ? 'left-slide-rail' : null,
-      submenuSurface: isGamepad ? 'left-slide-out-drawer' : null,
+      rootSurface: isGamepad ? GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rootSurface : null,
+      submenuSurface: isGamepad ? GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface : null,
       submenuReplacesRoot: mode === EDITOR_LAYOUT_MODES.GAMEPAD,
-      confirm: 'A',
-      back: 'B',
-      system: 'Start',
-      focusToggle: 'Back',
-      siblingPrev: 'LB',
-      siblingNext: 'RB'
+      ...GAMEPAD_SLIDE_OUT_MENU_CONTRACT.controls
     },
     desktop: {
       usesTopMenu: isDesktop,
       usesDropdowns: isDesktop,
       showPersistentLeftOptions: isDesktop,
-      commandSurface: isDesktop ? 'top-dropdown' : null,
-      leftPanelRole: isDesktop ? 'context-inspector' : null,
-      duplicatesCommandsInLeftPanel: false
+      commandSurface: isDesktop ? DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface : null,
+      leftPanelRole: isDesktop ? DESKTOP_SHELL_SURFACE_CONTRACT.leftPanelRole : null,
+      duplicatesCommandsInLeftPanel: DESKTOP_SHELL_SURFACE_CONTRACT.duplicatesCommandsInLeftPanel,
+      leftContextPanelContract: isDesktop ? DESKTOP_CONTEXT_PANEL_CONTRACT : null
     },
     touch: {
       usesBottomMenus: isPortrait,
@@ -477,7 +708,8 @@ export function getMenuScrollPolicy({ pointerType = 'touch', mode = EDITOR_LAYOU
 
 export function findScrollableMenuRegion(regions = [], point = {}) {
   return (regions || []).find((entry) => (
-    entry?.maxScroll > 0
+    entry
+    && Number(entry.maxScroll) >= 0
     && pointInBounds(point, entry.bounds)
   )) || null;
 }
@@ -705,8 +937,10 @@ export function resolveOpenDesktopDropdownState({
   if (skipIfAlreadyOpen && nextRootId === currentOpenRootId && !closedRootId) {
     return null;
   }
-  const previousOpenedAtMs = Number(dropdown?.openedAtMs);
-  const preserveOpenedAt = nextRootId === currentOpenRootId
+  const openedAtField = DESKTOP_DROPDOWN_STATE_CONTRACT.openedAtField;
+  const previousOpenedAtMs = Number(dropdown?.[openedAtField]);
+  const preserveOpenedAt = DESKTOP_DROPDOWN_STATE_CONTRACT.preservesOpenedAtForSameRoot
+    && nextRootId === currentOpenRootId
     && Number.isFinite(previousOpenedAtMs)
     && !closedRootId;
   const openedAtMs = preserveOpenedAt
@@ -716,8 +950,8 @@ export function resolveOpenDesktopDropdownState({
     closedRootId: null,
     openRootId: nextRootId,
     dropdown: dropdown
-      ? { ...dropdown, openedAtMs }
-      : { rootId: nextRootId, openedAtMs },
+      ? { ...dropdown, [openedAtField]: openedAtMs }
+      : { rootId: nextRootId, [openedAtField]: openedAtMs },
     openedAtMs
   };
 }
@@ -725,10 +959,10 @@ export function resolveOpenDesktopDropdownState({
 export function resolveDesktopDropdownMotionProgress({
   dropdown = null,
   nowMs = null,
-  durationMs = 120
+  durationMs = DESKTOP_DROPDOWN_STATE_CONTRACT.motion.durationMs
 } = {}) {
-  const duration = Math.max(1, Number(durationMs) || 120);
-  const rawOpenedAtMs = dropdown?.openedAtMs;
+  const duration = Math.max(1, Number(durationMs) || DESKTOP_DROPDOWN_STATE_CONTRACT.motion.durationMs);
+  const rawOpenedAtMs = dropdown?.[DESKTOP_DROPDOWN_STATE_CONTRACT.openedAtField];
   if (rawOpenedAtMs == null) return 1;
   const openedAtMs = Number(rawOpenedAtMs);
   if (!Number.isFinite(openedAtMs) || openedAtMs <= 0) return 1;
@@ -749,6 +983,7 @@ export function createPendingDesktopDropdownHit(hit = null, point = {}) {
 export function createDesktopDropdownCommandHit(item = {}, bounds = {}, action = null, extra = {}) {
   const id = item?.id || bounds?.id || extra?.id || null;
   const normalizedBounds = { ...bounds, ...(id ? { id } : {}) };
+  const metadata = getDesktopDropdownCommandMetadata(item, extra);
   return {
     ...bounds,
     ...extra,
@@ -756,9 +991,76 @@ export function createDesktopDropdownCommandHit(item = {}, bounds = {}, action =
     bounds: normalizedBounds,
     action,
     onClick: action,
-    kind: extra.kind || 'desktop-dropdown-item',
-    desktopDropdownItem: true
+    ...metadata
   };
+}
+
+export function getDesktopDropdownCommandMetadata(item = {}, extra = {}) {
+  return {
+    editActionRole: item?.editActionRole || extra?.editActionRole || null,
+    desktopActionRole: item?.desktopActionRole || extra?.desktopActionRole || item?.editActionRole || extra?.editActionRole || null,
+    editActionRoleGroupIndex: item?.editActionRoleGroupIndex ?? extra?.editActionRoleGroupIndex ?? null,
+    startsEditActionRoleGroup: Boolean(item?.startsEditActionRoleGroup || extra?.startsEditActionRoleGroup),
+    sourceRootId: item?.sourceRootId || extra?.sourceRootId || null,
+    commandSurface: item?.commandSurface || extra?.commandSurface || DESKTOP_DROPDOWN_COMMAND_CONTRACT.commandSurface,
+    pointerType: item?.pointerType || extra?.pointerType || DESKTOP_DROPDOWN_COMMAND_CONTRACT.pointerType,
+    rowActivation: item?.rowActivation || extra?.rowActivation || DESKTOP_DROPDOWN_COMMAND_CONTRACT.rowActivation,
+    kind: extra.kind || DESKTOP_DROPDOWN_COMMAND_CONTRACT.kind,
+    desktopDropdownItem: DESKTOP_DROPDOWN_COMMAND_CONTRACT.desktopDropdownItem
+  };
+}
+
+export function applyDesktopDropdownCommandDataset(element, item = {}, extra = {}) {
+  if (!element?.dataset) return null;
+  const metadata = getDesktopDropdownCommandMetadata(item, extra);
+  element.dataset.desktopDropdownItem = metadata.desktopDropdownItem ? 'true' : 'false';
+  element.dataset.commandSurface = metadata.commandSurface;
+  element.dataset.pointerType = metadata.pointerType;
+  element.dataset.rowActivation = metadata.rowActivation;
+  if (metadata.sourceRootId) element.dataset.sourceRootId = metadata.sourceRootId;
+  if (metadata.editActionRole) element.dataset.editActionRole = metadata.editActionRole;
+  if (metadata.desktopActionRole) element.dataset.desktopActionRole = metadata.desktopActionRole;
+  if (metadata.startsEditActionRoleGroup) element.dataset.startsEditActionRoleGroup = 'true';
+  if (Number.isFinite(Number(metadata.editActionRoleGroupIndex))) {
+    element.dataset.editActionRoleGroupIndex = String(metadata.editActionRoleGroupIndex);
+  }
+  return metadata;
+}
+
+export function createDesktopRootMenuHit(button = {}, action = null, extra = {}) {
+  const sourceRootId = button?.desktopRootId || button?.rootId || button?.id || extra?.desktopRootId || extra?.rootId || null;
+  const idPrefix = extra?.idPrefix || '';
+  const id = extra?.id || (sourceRootId && idPrefix ? `${idPrefix}${sourceRootId}` : sourceRootId);
+  const desktopRootId = sourceRootId || (idPrefix && String(id || '').startsWith(idPrefix)
+    ? String(id).slice(idPrefix.length)
+    : id || null);
+  const bounds = { ...(button?.bounds || button), ...(id ? { id } : {}) };
+  return {
+    ...(button?.bounds || button),
+    ...extra,
+    ...(id ? { id } : {}),
+    bounds,
+    action,
+    onClick: action,
+    desktopRootId,
+    rootId: desktopRootId,
+    kind: extra.kind || 'desktop-root-menu-item',
+    commandSurface: extra.commandSurface || EDITOR_SURFACES.topMenu,
+    pointerType: extra.pointerType || DESKTOP_DROPDOWN_COMMAND_CONTRACT.pointerType,
+    rowActivation: extra.rowActivation || 'press'
+  };
+}
+
+export function applyDesktopRootMenuDataset(element, button = {}, extra = {}) {
+  if (!element?.dataset) return null;
+  const metadata = createDesktopRootMenuHit(button, null, extra);
+  element.dataset.rootId = metadata.rootId || '';
+  element.dataset.desktopRootId = metadata.desktopRootId || '';
+  element.dataset.commandSurface = metadata.commandSurface;
+  element.dataset.pointerType = metadata.pointerType;
+  element.dataset.rowActivation = metadata.rowActivation;
+  element.dataset.kind = metadata.kind;
+  return metadata;
 }
 
 export function updatePendingDesktopDropdownHit(pending = null, point = {}, thresholdPx = 6) {
@@ -811,13 +1113,10 @@ export function getEditorPointerInteractionPolicy(editorId, {
   pointerType = mode === EDITOR_LAYOUT_MODES.DESKTOP ? 'mouse' : 'touch',
   gamepadConnected = mode === EDITOR_LAYOUT_MODES.GAMEPAD
 } = {}) {
-  const workSurface = WORK_SURFACE_TYPES[editorId] || 'canvas';
+  const workSurface = getEditorWorkSurfaceType(editorId);
   const desktop = mode === EDITOR_LAYOUT_MODES.DESKTOP;
   const gamepad = mode === EDITOR_LAYOUT_MODES.GAMEPAD || gamepadConnected;
   const touch = pointerType === 'touch' || mode === EDITOR_LAYOUT_MODES.PORTRAIT || mode === EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH;
-  const continuousPanEditors = new Set(['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'car']);
-  const contextMenuEditors = new Set(['pixel', 'level', 'actor', 'cutscene', 'race', 'car']);
-  const fallbackPanEditors = new Set(['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'car']);
   return {
     editorId,
     mode,
@@ -828,19 +1127,19 @@ export function getEditorPointerInteractionPolicy(editorId, {
       pinchZoom: touch,
       wheelZoom: desktop && ['canvas', 'stage', 'grid', 'timeline'].includes(workSurface),
       dragPan: desktop || touch || gamepad,
-      rightDragPan: desktop && fallbackPanEditors.has(editorId),
+      rightDragPan: desktop && FALLBACK_PAN_EDITOR_IDS.has(editorId),
       middleDragPan: desktop
     },
     thumbstick: {
-      allowed: gamepad || (touch && continuousPanEditors.has(editorId)),
+      allowed: gamepad || (touch && CONTINUOUS_PAN_EDITOR_IDS.has(editorId)),
       showForMenus: false,
-      showForWorkSurface: gamepad || (touch && continuousPanEditors.has(editorId)),
+      showForWorkSurface: gamepad || (touch && CONTINUOUS_PAN_EDITOR_IDS.has(editorId)),
       avoidMenuOverlap: true
     },
     rightClick: {
       suppressBrowserMenu: true,
-      opensContextMenu: desktop && contextMenuEditors.has(editorId),
-      fallbackPan: desktop && fallbackPanEditors.has(editorId)
+      opensContextMenu: desktop && DESKTOP_CONTEXT_MENU_EDITOR_IDS.has(editorId),
+      fallbackPan: desktop && FALLBACK_PAN_EDITOR_IDS.has(editorId)
     }
   };
 }
@@ -1056,16 +1355,18 @@ export function buildDesktopEditorShellPlan(editorId, {
     bounds: { x: 0, y: 0, w: width, h: height },
     topMenu,
     dropdown: topMenu.dropdown,
-    commandSurface: 'top-dropdown',
-    commandSurfaces: ['top-dropdown'],
-    persistentSurfaces: ['top-menu', 'left-ribbon', 'left-context-panel', 'work-surface'],
+    commandSurface: DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface,
+    commandSurfaces: [...DESKTOP_SHELL_SURFACE_CONTRACT.commandSurfaces],
+    persistentSurfaces: [...DESKTOP_SHELL_SURFACE_CONTRACT.persistentSurfaces],
     modeContract,
     requiredModeSurfaces: modeContract.requiredModeSurfaces,
     suppressedModeSurfaces: modeContract.suppressedModeSurfaces,
-    suppressedMobileSurfaces: modeContract.suppressedModeSurfaces,
-    leftPanelRole: 'context-inspector',
-    duplicatesCommandsInLeftPanel: false,
-    desktopMobileRailsHidden: true,
+    surfaceVisibility: modeContract.surfaceVisibility,
+    suppressedMobileSurfaces: [...DESKTOP_SHELL_SURFACE_CONTRACT.suppressedMobileSurfaces],
+    leftPanelRole: DESKTOP_SHELL_SURFACE_CONTRACT.leftPanelRole,
+    duplicatesCommandsInLeftPanel: DESKTOP_SHELL_SURFACE_CONTRACT.duplicatesCommandsInLeftPanel,
+    leftContextPanelContract: DESKTOP_CONTEXT_PANEL_CONTRACT,
+    desktopMobileRailsHidden: DESKTOP_SHELL_SURFACE_CONTRACT.desktopMobileRailsHidden,
     presentation: modeContract.presentation,
     interaction: modeContract.interaction,
     leftColumn,
@@ -1098,7 +1399,7 @@ export function buildLandscapeTouchEditorShellPlan(editorId, {
   gap = undefined
 } = {}) {
   const layout = getSharedMobileLandscapeEditorLayout(viewportWidth, viewportHeight, {
-    leftRailWidth: leftRailWidth ?? COMPACT_LANDSCAPE_COMMAND_RAIL_WIDTH,
+    leftRailWidth: leftRailWidth ?? LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRail.width,
     rightRailWidth,
     bottomRailHeight,
     reserveRightRail,
@@ -1136,7 +1437,7 @@ export function buildLandscapeTouchEditorShellPlan(editorId, {
       mainEditor: resolvedWorkSurface
     }
     : layout;
-  const useLeftRootOverlay = rootDrawerOverlayOrigin === 'left';
+  const resolvedRootDrawerOverlayOrigin = LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootDrawerOverlayOrigin;
   const leftRootDrawerX = layout.leftRail.x + layout.leftRail.w + layout.gap;
   const safeViewportWidth = Math.max(1, Number(viewportWidth) || 1);
   const leftRootDrawerRight = reserveRightRail && layout.rightRail?.w > 0
@@ -1151,19 +1452,15 @@ export function buildLandscapeTouchEditorShellPlan(editorId, {
     ),
     h: layout.overlayDrawer.h
   };
-  const rootDrawer = useLeftRootOverlay
-    ? leftRootDrawer
-    : (reserveRightRail ? layout.rightRail : layout.overlayDrawer);
+  const rootDrawer = leftRootDrawer;
   const modeContract = getEditorModeContract(EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH);
   const presentation = {
     ...modeContract.presentation,
     commandSurface: reserveRightRail ? modeContract.presentation.commandSurface : null,
     submenuSurface: reserveRightRail ? modeContract.presentation.submenuSurface : null,
     persistentContextSurface: bottomRailHeight > 0 ? modeContract.presentation.persistentContextSurface : null,
-    rootDrawerSurface: useLeftRootOverlay
-      ? modeContract.presentation.rootDrawerSurface
-      : (reserveRightRail ? 'right-drawer' : 'right-overlay-drawer'),
-    rootDrawerOverlayOrigin: useLeftRootOverlay ? modeContract.presentation.rootDrawerOverlayOrigin : 'right',
+    rootDrawerSurface: modeContract.presentation.rootDrawerSurface,
+    rootDrawerOverlayOrigin: resolvedRootDrawerOverlayOrigin,
     rootDrawerKeepsSubmenuVisible: reserveRightRail,
     rightSubmenuSurface: reserveRightRail ? modeContract.presentation.rightSubmenuSurface : null
   };
@@ -1171,13 +1468,17 @@ export function buildLandscapeTouchEditorShellPlan(editorId, {
     ...modeContract,
     presentation
   };
+  const effectiveSurfaceVisibility = getLandscapeTouchShellEffectiveSurfaceVisibility({
+    reserveRightRail,
+    bottomRailHeight
+  });
   return {
     editorId,
     mode: EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH,
     placement: getEditorMenuPlacement(EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH),
-    rootMenuSurface: 'left-rail',
-    submenuSurface: reserveRightRail ? 'right-drawer' : null,
-    bottomRailRole: bottomRailHeight > 0 ? 'tool-options-ribbons-zoom' : null,
+    rootMenuSurface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootSurface,
+    submenuSurface: reserveRightRail ? LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.submenuSurface : null,
+    bottomRailRole: bottomRailHeight > 0 ? LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.bottomRailRole : null,
     gestureScroll: true,
     bounds: {
       x: 0,
@@ -1187,17 +1488,18 @@ export function buildLandscapeTouchEditorShellPlan(editorId, {
     },
     labelOverrides,
     ...resolvedLayout,
-    compactCommandRailSurface: 'left-rail',
-    compactCommandRailActionLimit: COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT,
-    rootDrawerSurface: useLeftRootOverlay ? 'left-overlay-drawer' : (reserveRightRail ? 'right-drawer' : 'right-overlay-drawer'),
-    rootDrawerOverlayOrigin: useLeftRootOverlay ? 'left' : 'right',
+    compactCommandRailSurface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRailSurface,
+    compactCommandRailActionLimit: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRail.actionLimit,
+    rootDrawerSurface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootDrawerSurface,
+    rootDrawerOverlayOrigin: resolvedRootDrawerOverlayOrigin,
     modeContract: resolvedModeContract,
     presentation,
     interaction: modeContract.interaction,
     requiredModeSurfaces: modeContract.requiredModeSurfaces,
     suppressedModeSurfaces: modeContract.suppressedModeSurfaces,
-    suppressedDesktopSurfaces: modeContract.suppressedModeSurfaces
-      .filter((surface) => surface.startsWith('desktop-')),
+    surfaceVisibility: modeContract.surfaceVisibility,
+    effectiveSurfaceVisibility,
+    suppressedDesktopSurfaces: [...LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.suppressedDesktopSurfaces],
     leftRootDrawer,
     surfaces: {
       compactCommandRail: layout.leftRail,
@@ -1241,9 +1543,14 @@ export function buildCompactLandscapeCommandRailActions({
   return [menu, undo, redo, quick]
     .filter(Boolean)
     .slice(0, COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT)
-    .map((action) => ({
+    .map((action, index) => ({
       ...action,
-      displayLabel: action.displayLabel ?? displayLabels[action.id] ?? action.label
+      displayLabel: action.displayLabel ?? displayLabels[action.id] ?? action.label,
+      slot: ['menu', 'undo', 'redo', 'quick'][index],
+      surface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRailSurface,
+      commandRail: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRail.commandRail,
+      rowActivation: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRail.rowActivation,
+      gestureScroll: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRail.gestureScroll
     }));
 }
 
@@ -1465,7 +1772,7 @@ export function buildDesktopDropdownRenderPlan({
   useVisibleItemsSlice = false,
   disableActionlessItems = false,
   motionProgress = null,
-  motionDurationMs = 120
+  motionDurationMs = DESKTOP_DROPDOWN_STATE_CONTRACT.motion.durationMs
 } = {}) {
   if (!dropdown) {
     return {
@@ -1476,10 +1783,10 @@ export function buildDesktopDropdownRenderPlan({
       panelBounds: null,
       itemBounds: [],
       motion: {
-        type: 'slide-down',
+        type: DESKTOP_DROPDOWN_STATE_CONTRACT.motion.type,
         progress: 0,
         durationMs: Math.max(0, Math.round(Number(motionDurationMs) || 0)),
-        origin: 'top-menu',
+        origin: DESKTOP_DROPDOWN_STATE_CONTRACT.motion.origin,
         translateY: 0,
         opacity: 0
       }
@@ -1493,6 +1800,9 @@ export function buildDesktopDropdownRenderPlan({
     || typeof item?.action === 'function'
   );
   const seenActionIds = new Set();
+  const dropdownRootId = dropdown.rootId || dropdown.specId || dropdown.menuId || null;
+  let previousEditActionRole = null;
+  let editActionRoleGroupIndex = -1;
   const visibleItems = sourceItems.filter((item) => {
     if (!item) return false;
     if (item.divider || item.separator) return true;
@@ -1501,10 +1811,35 @@ export function buildDesktopDropdownRenderPlan({
     if (item.id) seenActionIds.add(item.id);
     return true;
   }).map((item) => {
-    if (!disableActionlessItems || item.divider || item.separator) return item;
-    return {
+    if (item.divider || item.separator) {
+      previousEditActionRole = null;
+      return item;
+    }
+    const editActionRole = dropdownRootId === 'edit' ? getEditorEditActionRole(item.id) : null;
+    const startsEditActionRoleGroup = Boolean(
+      editActionRole
+      && previousEditActionRole
+      && previousEditActionRole !== editActionRole
+    );
+    if (editActionRole && previousEditActionRole !== editActionRole) editActionRoleGroupIndex += 1;
+    if (editActionRole) previousEditActionRole = editActionRole;
+    const annotatedItem = {
       ...item,
-      disabled: Boolean(item.disabled) || !hasItemAction(item)
+      sourceRootId: item.sourceRootId || dropdownRootId,
+      commandSurface: item.commandSurface || DESKTOP_DROPDOWN_COMMAND_CONTRACT.commandSurface,
+      pointerType: item.pointerType || DESKTOP_DROPDOWN_COMMAND_CONTRACT.pointerType,
+      rowActivation: item.rowActivation || DESKTOP_DROPDOWN_COMMAND_CONTRACT.rowActivation,
+      ...(editActionRole ? {
+        editActionRole,
+        desktopActionRole: editActionRole,
+        editActionRoleGroupIndex,
+        startsEditActionRoleGroup
+      } : {})
+    };
+    if (!disableActionlessItems) return annotatedItem;
+    return {
+      ...annotatedItem,
+      disabled: Boolean(annotatedItem.disabled) || !hasItemAction(annotatedItem)
     };
   });
   const hasVisualSeparators = visibleItems.some((item) => item.divider || item.separator);
@@ -1526,10 +1861,10 @@ export function buildDesktopDropdownRenderPlan({
     : resolveDesktopDropdownMotionProgress({ dropdown, durationMs: motionDurationMs });
   const slideDistance = Math.min(18, Math.max(6, panelBounds.h * 0.18));
   const motion = {
-    type: 'slide-down',
+    type: DESKTOP_DROPDOWN_STATE_CONTRACT.motion.type,
     progress,
     durationMs: Math.max(0, Math.round(Number(motionDurationMs) || 0)),
-    origin: 'top-menu',
+    origin: DESKTOP_DROPDOWN_STATE_CONTRACT.motion.origin,
     translateY: Math.round((progress - 1) * slideDistance * 1000) / 1000,
     opacity: Math.round((0.72 + progress * 0.28) * 1000) / 1000
   };
@@ -1546,16 +1881,14 @@ export function buildDesktopDropdownRenderPlan({
     }),
     id: item.id || `separator-${index}`
   }));
-  const scrollRegion = maxScroll > 0
-    ? {
-      menuId: dropdown.rootId || dropdown.specId || 'desktop-dropdown',
-      bounds: { ...panelBounds },
-      maxScroll,
-      lineHeight: rowHeight,
-      scrollScale: 1 / rowHeight,
-      pointerType: 'mouse'
-    }
-    : null;
+  const scrollRegion = {
+    menuId: dropdown.rootId || dropdown.specId || 'desktop-dropdown',
+    bounds: { ...panelBounds },
+    maxScroll,
+    lineHeight: rowHeight,
+    scrollScale: 1 / rowHeight,
+    pointerType: 'mouse'
+  };
   return {
     menuId: dropdown.specId || dropdown.rootId,
     visibleItems,
@@ -1582,54 +1915,84 @@ export function buildGamepadSlideOutMenuPlan(editorId, {
   focusedItemId = null,
   labelOverrides = {}
 } = {}) {
-  const rootEntries = getEditorControllerRootMenuEntries(editorId, { labelOverrides });
+  const baseRootEntries = getEditorControllerRootMenuEntries(editorId, { labelOverrides });
+  const rootEntries = baseRootEntries.map((entry) => {
+    const focused = Boolean(
+      focusedItemId
+      && (
+        entry.id === focusedItemId
+        || entry.specId === focusedItemId
+        || entry.controllerMenuId === focusedItemId
+      )
+    );
+    return {
+      ...entry,
+      focused,
+      focusRing: focused,
+      rowActivation: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rowActivation,
+      pointerType: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType,
+      sourceSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.sourceSurface,
+      surface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rootSurface
+    };
+  });
   const activeRoot = rootEntries.find((entry) => entry.id === activeRootId || entry.specId === activeRootId)
     || rootEntries[0]
     || null;
   const submenu = activeRoot && !rootOpen
     ? buildDesktopDropdownPlan(editorId, activeRoot.id, { labelOverrides })
     : null;
+  const rawSubmenuItems = submenu?.items || [];
+  const defaultFocusedSubmenuItem = !rootOpen
+    ? rawSubmenuItems.find((item) => !item.disabled && !item.divider && item.id) || rawSubmenuItems.find((item) => item.id) || null
+    : null;
+  const effectiveFocusedSubmenuItemId = rawSubmenuItems.some((item) => item.id === focusedItemId)
+    ? focusedItemId
+    : defaultFocusedSubmenuItem?.id || null;
+  const submenuItems = rawSubmenuItems.map((item) => {
+    const focused = Boolean(effectiveFocusedSubmenuItemId && item.id === effectiveFocusedSubmenuItemId);
+    return {
+      ...item,
+      focused,
+      focusRing: focused,
+      rowActivation: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rowActivation,
+      pointerType: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType,
+      sourceSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.sourceSurface,
+      surface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface
+    };
+  });
   const gamepadSubmenu = submenu
     ? {
       ...submenu,
-      surface: 'left-slide-out-drawer',
-      sourceSurface: 'gamepad-slide-out',
-      replacesRootRail: true,
-      rightSubmenuSurface: null,
-      rowActivation: 'confirm-button',
-      pointerType: 'controller',
-      gestureScroll: true,
+      items: submenuItems,
+      surface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface,
+      sourceSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.sourceSurface,
+      replacesRootRail: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuReplacesRootRail,
+      rightSubmenuSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rightSubmenuSurface,
+      rowActivation: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rowActivation,
+      pointerType: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType,
+      gestureScroll: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.gestureScroll,
       scroll: {
         ...DEFAULT_DRAG_SCROLL,
-        pointerType: 'controller',
+        pointerType: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType,
         mode: EDITOR_LAYOUT_MODES.GAMEPAD
       }
     }
     : null;
-  const focusedRootEntry = rootEntries.find((entry) => (
-    entry.id === focusedItemId
-    || entry.specId === focusedItemId
-    || entry.controllerMenuId === focusedItemId
-  )) || (rootOpen ? activeRoot : null);
-  const submenuItems = gamepadSubmenu?.items || [];
-  const focusedSubmenuItem = submenuItems.find((item) => item.id === focusedItemId) || null;
+  const focusedRootEntry = rootEntries.find((entry) => entry.focused) || (rootOpen ? activeRoot : null);
+  const focusedSubmenuItem = submenuItems.find((item) => item.id === effectiveFocusedSubmenuItemId) || null;
   const modeContract = getEditorModeContract(EDITOR_LAYOUT_MODES.GAMEPAD);
   return {
     editorId,
     mode: EDITOR_LAYOUT_MODES.GAMEPAD,
-    rootMenuSurface: 'left-slide-rail',
-    submenuSurface: 'left-slide-out-drawer',
-    submenuReplacesRootRail: true,
-    rightSubmenuSurface: null,
+    rootMenuSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rootSurface,
+    submenuSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface,
+    submenuReplacesRootRail: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuReplacesRootRail,
+    rightSubmenuSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rightSubmenuSurface,
     modeContract,
     requiredModeSurfaces: modeContract.requiredModeSurfaces,
     suppressedModeSurfaces: modeContract.suppressedModeSurfaces,
-    suppressedTouchSurfaces: modeContract.suppressedModeSurfaces
-      .filter((surface) => (
-        surface.startsWith('landscape-')
-        || surface.startsWith('bottom-')
-        || surface.startsWith('touch-')
-      )),
+    surfaceVisibility: modeContract.surfaceVisibility,
+    suppressedTouchSurfaces: [...GAMEPAD_SLIDE_OUT_MENU_CONTRACT.suppressedTouchSurfaces],
     rootOpen,
     rootCollapsed: Boolean(activeRoot && !rootOpen),
     activeRootId: activeRoot?.id || null,
@@ -1642,22 +2005,17 @@ export function buildGamepadSlideOutMenuPlan(editorId, {
     focus: {
       surface: rootOpen ? 'root' : 'submenu',
       rootItemId: focusedRootEntry?.id || null,
-      submenuItemId: focusedSubmenuItem?.id || (!rootOpen ? focusedItemId : null)
+      submenuItemId: focusedSubmenuItem?.id || (!rootOpen ? effectiveFocusedSubmenuItemId : null),
+      focusRingContract: { ...GAMEPAD_FOCUS_RING_CONTRACT }
     },
+    focusRingContract: { ...GAMEPAD_FOCUS_RING_CONTRACT },
     rootEntries,
     submenu: gamepadSubmenu,
-    controls: {
-      confirm: 'A',
-      back: 'B',
-      system: 'Start',
-      focusToggle: 'Back',
-      siblingPrev: 'LB',
-      siblingNext: 'RB'
-    },
-    headerHint: 'A Select  B Back  LB/RB Tabs',
+    controls: { ...GAMEPAD_SLIDE_OUT_MENU_CONTRACT.controls },
+    headerHint: 'A Select  B Back  LB/RB Tabs  Start System',
     scroll: {
-      root: { ...DEFAULT_DRAG_SCROLL, pointerType: 'controller', mode: EDITOR_LAYOUT_MODES.GAMEPAD },
-      submenu: { ...DEFAULT_DRAG_SCROLL, pointerType: 'controller', mode: EDITOR_LAYOUT_MODES.GAMEPAD }
+      root: { ...DEFAULT_DRAG_SCROLL, pointerType: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType, mode: EDITOR_LAYOUT_MODES.GAMEPAD },
+      submenu: { ...DEFAULT_DRAG_SCROLL, pointerType: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType, mode: EDITOR_LAYOUT_MODES.GAMEPAD }
     }
   };
 }

@@ -1,8 +1,9 @@
-import { RACE_SURFACES, createDefaultRaceProject, getSurfaceById } from '../racing/raceData.js';
+import { RACE_SNOW_CONDITIONS, RACE_SURFACES, RACE_TIRE_COMPOUNDS, createDefaultRaceProject, createTestTrackRace, getSurfaceById } from '../racing/raceData.js';
 import { DEFAULT_TILE_TYPES } from '../content/tileDefinitions.js';
 import { getLandscapeHandheldLayout, getPortraitHandheldLayout } from './shared/canvasViewportLayout.js';
 import {
   UI_SUITE,
+  buildSharedEditorFileMenu,
   drawSharedDesktopContextPanel,
   drawSharedDesktopDropdown,
   drawSharedDesktopRibbon,
@@ -14,6 +15,7 @@ import {
   drawSharedPanel,
   drawSharedPortraitActionRail
 } from './uiSuite.js';
+import { drawSharedMobileZoomSlider } from './shared/mobileZoomSlider.js';
 import {
   applyDesktopDropdownWheelScrollState,
   buildCompactLandscapeCommandRailActions,
@@ -25,7 +27,10 @@ import {
   buildScrolledLandscapeRootDrawerItems,
   buildLandscapeTouchEditorShellPlan,
   buildMenuScrollDragState,
+  canRenderEditorPlanSurface,
+  canRenderEditorSurface,
   createDesktopDropdownCommandHit,
+  createDesktopRootMenuHit,
   createPendingDesktopDropdownHit,
   getEditorPointerInteractionPolicy,
   resolveClosedDesktopDropdownState,
@@ -40,24 +45,72 @@ import {
   shouldCloseDesktopDropdownOnPointerDown,
   updatePendingDesktopDropdownHit
 } from './shared/editorMenuLayout.js';
-import { getEditorMenuSpec, getEditorPortraitRootMenuEntries, getEditorRootMenuEntries } from './shared/editorMenuSpec.js';
+import { getEditorMenuSpec, getEditorPortraitRootMenuEntries, getEditorRootMenuEntries, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
 import { SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { getSharedMobilePortraitEditorLayout } from './uiSuite.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const normalizeAngle = (angle) => Math.atan2(Math.sin(angle), Math.cos(angle));
+const FEET_TO_METERS = 0.3048;
+const MPH_TO_MPS = 0.44704;
+
+const RACE_CONTROLLER_STEERING = {
+  speedReferenceMps: 62,
+  digitalResponseBase: 84,
+  digitalResponseLowSpeedBonus: 36,
+  analogResponseBase: 48,
+  analogResponseLowSpeedBonus: 22,
+  returnRateBase: 20,
+  returnRateHighSpeedBonus: 18,
+  stoppedAuthority: 1,
+  highwayAuthority: 0.64,
+  parkingTireAngleRad: 0.56,
+  highwayTireAngleRad: 0.225,
+  highSpeedYawDampingFloor: 0.4
+};
+
+const RACE_HIGHWAY_MARKERS = {
+  dashLengthM: 10 * FEET_TO_METERS,
+  gapLengthM: 30 * FEET_TO_METERS,
+  dashWidthM: 0.12,
+  edgePostIntervalM: 160 * FEET_TO_METERS
+};
+
+const BUILT_IN_RACE_LOAD_ACTIONS = [
+  { id: 'load-weathertech-raceway', raceId: 'weathertech-raceway' },
+  { id: 'load-nurburgring-nordschleife', raceId: 'nurburgring-nordschleife' },
+  { id: 'load-col-de-turini', raceId: 'col-de-turini' },
+  { id: 'load-ouninpohja', raceId: 'ouninpohja' },
+  { id: 'load-daytona-tri-oval', raceId: 'daytona-tri-oval' }
+];
+
+const BUILT_IN_RACE_LOAD_BY_ACTION = Object.fromEntries(
+  BUILT_IN_RACE_LOAD_ACTIONS.map((entry) => [entry.id, entry])
+);
 
 const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   'exit-main',
   'new',
+  'save',
+  'save-as',
   'test-drive',
+  'zoom-fit',
   'draw-road',
   'move-node',
+  'remove-node',
+  'remove-edge',
   'segment-length',
   'curve',
   'elevation',
+  'paint-elevation',
+  'elevation-up',
+  'elevation-down',
+  'elevation-brush-size',
   'square-turn',
   'road-width',
+  'segment-width',
+  'segment-bumpiness',
+  'snow-condition',
   'ground-tile-next',
   'paint-ground',
   'edge-tile',
@@ -69,22 +122,39 @@ const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   'drivetrain-rwd',
   'drivetrain-fwd',
   'drivetrain-awd',
+  'engine-sound-next',
   'weather-clear',
   'weather-rain',
   'weather-storm',
   'weather-snow',
   'generate-random-race',
-  'race-circuit',
-  'race-destination',
+  ...BUILT_IN_RACE_LOAD_ACTIONS.map((entry) => entry.id),
   'finish-return',
+  'add-sprite',
+  'move-sprite',
+  'delete-sprite',
+  'side-left',
+  'side-right',
   'end-playtest'
 ]);
 
+const CAR_ENGINE_SOUND_PROFILES = [
+  { id: 'wrx-flat-four-manual', label: 'WRX Manual' },
+  { id: 'wrx-flat-four-cvt', label: 'WRX SPT' },
+  { id: 'brz-flat-four-manual', label: 'BRZ Manual' },
+  { id: 'brz-flat-four-auto', label: 'BRZ Auto' },
+  { id: 'civic-turbo-manual', label: 'Civic Manual' },
+  { id: 'civic-turbo-cvt', label: 'Civic CVT' },
+  { id: 'race-inline-four', label: 'Inline Four' },
+  { id: 'race-v8', label: 'V8' }
+];
+
 export function buildRacePortraitMenuModel(editorId = 'race') {
   const resolvedEditorId = editorId === 'car' ? 'car' : 'race';
+  const contextActionId = resolvedEditorId === 'car' ? 'test-drive' : 'race-context';
   return {
     rootTabs: getEditorPortraitRootMenuEntries(resolvedEditorId),
-    bottomRailActions: ['menu', 'undo', 'redo', 'test-drive'],
+    bottomRailActions: getStandardEditorActionRailIds(contextActionId),
     portraitRootPlacement: 'bottom-rail'
   };
 }
@@ -103,17 +173,39 @@ export default class RaceEditor {
     this.raceMapBounds = null;
     this.raceNodeDrag = null;
     this.raceGroundPaintDrag = null;
+    this.raceElevationPaintDrag = null;
+    this.racePortraitMode = 'race';
+    this.raceElevationBrushSize = 0.1;
+    this.raceElevationBrushDirection = 1;
+    this.raceMapZoom = 1;
+    this.raceMapPan = { x: 0, y: 0 };
+    this.raceMapZoomSliderBounds = null;
+    this.raceMapZoomDrag = null;
+    this.raceMapThumbstickDrag = null;
+    this.portraitThumbstick = {
+      center: { x: 0, y: 0 },
+      radius: 0,
+      knobRadius: 0,
+      active: false,
+      id: null,
+      dx: 0,
+      dy: 0
+    };
     this.desktopPreviewDrag = null;
     this.openDesktopDropdownRootId = null;
     this.closedDesktopDropdownRootId = null;
     this.desktopDropdown = resolveDesktopDropdownState({ isDesktop: false });
     this.desktopDropdownScroll = {};
+    this.activeViewportMode = 'desktop';
+    this.activeModeContract = null;
+    this.activeSpecModeContract = null;
     this.activeAction = null;
     this.selectedSegmentIndex = 0;
     this.status = 'Ready';
     this.activeRootId = mode === 'car' ? 'art' : 'race';
     this.mobileRootOpen = false;
     this.gamepadSubmenuOpen = false;
+    this.gamepadFocusedItemId = null;
     this.menuScrollState = {};
     this.menuScrollRegions = [];
     this.menuScrollDrag = null;
@@ -121,6 +213,7 @@ export default class RaceEditor {
     this.pendingDesktopDropdownHit = null;
     this.pendingDesktopCommandHit = null;
     this.playtestPickerOpen = false;
+    this.preRaceTuningOpen = false;
     this.playtestSession = null;
     this.raceInput = {
       steeringTarget: 0,
@@ -129,6 +222,7 @@ export default class RaceEditor {
       brake: false,
       handbrake: false,
       autoShift: true,
+      transmissionMode: 'manual',
       keyboardThrottle: false,
       keyboardBrake: false,
       keyboardSteer: 0,
@@ -147,6 +241,7 @@ export default class RaceEditor {
 
   update(input, dt) {
     this.previewOffset = (this.previewOffset + dt * 60) % 240;
+    this.updateRaceMapThumbstickPan(dt);
     if (!this.game?.input?.isGamepadConnected?.() && this.gamepadSubmenuOpen) {
       this.mobileRootOpen = false;
       this.gamepadSubmenuOpen = false;
@@ -164,6 +259,7 @@ export default class RaceEditor {
       }
       if (this.gamepadSubmenuOpen && !this.mobileRootOpen) {
         this.mobileRootOpen = true;
+        this.gamepadSubmenuOpen = false;
         return;
       }
       if (this.mobileRootOpen || this.gamepadSubmenuOpen) {
@@ -192,6 +288,61 @@ export default class RaceEditor {
     return this.project.cars.find((car) => car.id === this.project.selectedCarId) || this.project.cars[0];
   }
 
+  isSelectedRaceLoopClosed() {
+    const points = this.getRaceEndpointPoints();
+    if (points.length < 2) return false;
+    const first = points[0];
+    const last = points[points.length - 1];
+    const closeDistance = Math.hypot(
+      Number(last.x || 0) - Number(first.x || 0),
+      Number(last.z || 0) - Number(first.z || 0)
+    );
+    const snapRange = Math.max(1.8, Math.min(this.getRaceRoadHalfWidthWorld() * 0.18, this.getRaceCarWorldWidth() * 2.4));
+    return closeDistance <= snapRange;
+  }
+
+  getRaceEndpointPoints() {
+    const nodes = this.getRaceEditableNodes({ create: false });
+    if (nodes.length >= 2) {
+      return nodes.map((node) => ({ x: Number(node.x || 0), z: Number(node.y || 0) }));
+    }
+    return this.getRacePathSamples({ step: 42 }).map((sample) => ({
+      x: Number(sample.x || 0),
+      z: Number(sample.z || 0)
+    }));
+  }
+
+  getSelectedRaceRuntimeType() {
+    const samples = this.getRaceEndpointPoints();
+    if (samples.length >= 2) {
+      return this.isSelectedRaceLoopClosed() ? 'circuit' : 'destination';
+    }
+    return 'destination';
+  }
+
+  getActiveRaceRuntimeType() {
+    return this.playtestSession?.routeRuntimeType || this.getSelectedRaceRuntimeType();
+  }
+
+  resetRacePlaytestInputs() {
+    this.raceInput.throttle = false;
+    this.raceInput.brake = false;
+    this.raceInput.handbrake = false;
+    this.raceInput.binarySteer = 0;
+    this.raceInput.keyboardThrottle = false;
+    this.raceInput.keyboardBrake = false;
+    this.raceInput.keyboardSteer = 0;
+    this.raceInput.analogSteeringActive = false;
+    this.raceInput.activeDpadPointerId = null;
+    this.raceInput.activeThrottlePointerId = null;
+    this.raceInput.activeBrakePointerId = null;
+  }
+
+  exitPlaytestToMainMenu() {
+    if (this.playtestSession) this.endPlaytest();
+    this.exitToMainMenu();
+  }
+
   get selectedSegment() {
     const segments = this.selectedRace?.road?.segments || [];
     if (!segments.length) return null;
@@ -206,6 +357,9 @@ export default class RaceEditor {
       curve: clamp(Number(source.curve) || 0, -1, 1),
       elevation: clamp(Number(source.elevation) || 0, -0.5, 0.5),
       surface: getSurfaceById(source.surface).id,
+      roadWidthM: clamp(Number(source.roadWidthM || source.roadWidth || this.selectedRace?.road?.width || 11), 4, 24),
+      bumpiness: clamp(Number(source.bumpiness) || 0, 0, 1),
+      ...(source.snowCondition ? { snowCondition: source.snowCondition } : {}),
       ...(source.edgeTileId ? { edgeTileId: source.edgeTileId } : {}),
       hazardIds: Array.isArray(source.hazardIds) ? [...source.hazardIds] : [],
       ...(source.codriver ? { codriver: source.codriver } : {}),
@@ -224,6 +378,7 @@ export default class RaceEditor {
     next.elevation = 0;
     delete next.turn;
     race.road.segments.splice(insertAt, 0, next);
+    if (Array.isArray(race.road.nodes)) delete race.road.nodes;
     this.selectedSegmentIndex = insertAt;
   }
 
@@ -239,6 +394,10 @@ export default class RaceEditor {
     } else if (field === 'elevation') {
       const next = Math.round(((Number(segment.elevation) || 0) + 0.08) * 100) / 100;
       segment.elevation = next > 0.48 ? -0.4 : next;
+    } else if (field === 'width') {
+      this.cycleSelectedSegmentRoadWidth();
+    } else if (field === 'bumpiness') {
+      this.cycleSelectedSegmentBumpiness();
     }
   }
 
@@ -256,8 +415,48 @@ export default class RaceEditor {
   cycleRoadWidth() {
     const road = this.selectedRace?.road;
     if (!road) return;
-    const next = Math.round((Number(road.width) || 9) + 1);
-    road.width = next > 14 ? 6 : next;
+    const next = Math.round((Number(road.width) || 11) + 1);
+    road.width = next > 18 ? 8 : next;
+  }
+
+  getSelectedSegmentRoadWidthM(segment = this.selectedSegment) {
+    return clamp(Number(segment?.roadWidthM || segment?.roadWidth || this.selectedRace?.road?.width || 11), 4, 24);
+  }
+
+  cycleSelectedSegmentRoadWidth() {
+    const segment = this.selectedSegment;
+    if (!segment) return;
+    const current = this.getSelectedSegmentRoadWidthM(segment);
+    const next = current >= 24 ? 4 : current + (current < 8 ? 1 : 2);
+    segment.roadWidthM = next;
+    this.status = `Segment width: ${next} m`;
+  }
+
+  cycleSelectedSegmentBumpiness() {
+    const segment = this.selectedSegment;
+    if (!segment) return;
+    const current = clamp(Number(segment.bumpiness) || 0, 0, 1);
+    const next = current >= 0.9 ? 0 : Math.round((current + 0.15) * 100) / 100;
+    segment.bumpiness = next;
+    this.status = `Segment bumpiness: ${Math.round(next * 100)}%`;
+  }
+
+  getSnowConditionById(id) {
+    return RACE_SNOW_CONDITIONS.find((condition) => condition.id === id) || RACE_SNOW_CONDITIONS[1];
+  }
+
+  cycleSelectedSegmentSnowCondition() {
+    const segment = this.selectedSegment;
+    if (!segment) return;
+    const index = segment.snowCondition
+      ? RACE_SNOW_CONDITIONS.findIndex((condition) => condition.id === segment.snowCondition)
+      : -1;
+    const next = index < 0
+      ? this.getSnowConditionById()
+      : RACE_SNOW_CONDITIONS[(index + 1) % RACE_SNOW_CONDITIONS.length];
+    segment.snowCondition = next.id;
+    if (segment.surface !== 'snow') segment.surface = 'snow';
+    this.status = `Snow condition: ${next.label}`;
   }
 
   ensureRaceRoadAuthoringData() {
@@ -345,6 +544,7 @@ export default class RaceEditor {
     const segment = this.selectedSegment;
     if (!segment) return;
     segment.surface = getSurfaceById(surfaceId).id;
+    if (segment.surface === 'snow' && !segment.snowCondition) segment.snowCondition = this.getSnowConditionById().id;
   }
 
   selectAdjacentRaceSegment(delta = 0) {
@@ -363,6 +563,7 @@ export default class RaceEditor {
     if (!segment) return;
     const currentIndex = Math.max(0, RACE_SURFACES.findIndex((surface) => surface.id === segment.surface));
     segment.surface = RACE_SURFACES[(currentIndex + 1) % RACE_SURFACES.length].id;
+    if (segment.surface === 'snow' && !segment.snowCondition) segment.snowCondition = this.getSnowConditionById().id;
     this.status = `Surface: ${getSurfaceById(segment.surface).label}`;
   }
 
@@ -504,6 +705,156 @@ export default class RaceEditor {
     return true;
   }
 
+  paintRaceElevationAtPoint(point = {}, direction = this.raceElevationBrushDirection) {
+    const road = this.ensureRaceRoadAuthoringData();
+    if (!road || !this.raceMapBounds) return false;
+    const bounds = this.raceMapBounds;
+    if (
+      point.x < bounds.x
+      || point.x > bounds.x + bounds.w
+      || point.y < bounds.y
+      || point.y > bounds.y + bounds.h
+    ) return false;
+    const nx = clamp((point.x - bounds.x) / Math.max(1, bounds.w), 0, 1);
+    const ny = clamp((point.y - bounds.y) / Math.max(1, bounds.h), 0, 1);
+    const brushRadius = clamp(Number(this.raceElevationBrushSize) || 0.1, 0.04, 0.22);
+    const terrain = this.getRaceTerrainSampleAtPoint(point.x, point.y, bounds);
+    const tileId = this.getSelectedGroundTileId();
+    const existing = road.groundTiles.find((patch) => (
+      Math.hypot(nx - Number(patch.x || 0), ny - Number(patch.y || 0)) < brushRadius * 0.48
+    ));
+    const currentElevation = existing
+      ? Number(existing.elevation || 0)
+      : Number(terrain.elevation || 0);
+    const nextElevation = Math.round(clamp(
+      currentElevation + Math.sign(Number(direction) || 1) * 0.055,
+      -0.42,
+      0.42
+    ) * 100) / 100;
+    const patch = {
+      x: Math.round(nx * 1000) / 1000,
+      y: Math.round(ny * 1000) / 1000,
+      radius: brushRadius,
+      tileId: existing?.tileId || tileId,
+      source: 'height-brush',
+      tileLabel: existing?.tileLabel || this.getRaceTileDefinition(tileId)?.label || this.getRaceGroundTilePalette(tileId).label,
+      segmentIndex: clamp(Math.round(Number(terrain.segmentIndex) || 0), 0, (this.selectedRace?.road?.segments?.length || 1) - 1),
+      elevation: nextElevation
+    };
+    if (existing) Object.assign(existing, patch);
+    else road.groundTiles.push(patch);
+    this.status = `Elevation brush ${nextElevation.toFixed(2)} (${Math.round(brushRadius * 100)}%)`;
+    return true;
+  }
+
+  cycleRacePortraitMode() {
+    const modes = ['race', 'ground', 'elevation'];
+    const index = Math.max(0, modes.indexOf(this.racePortraitMode));
+    this.setRacePortraitMode(modes[(index + 1) % modes.length]);
+  }
+
+  setRacePortraitMode(mode = 'race') {
+    const resolved = ['race', 'ground', 'elevation'].includes(mode) ? mode : 'race';
+    this.racePortraitMode = resolved;
+    if (resolved === 'ground') {
+      this.activeAction = 'paint-ground';
+      this.activeRootId = 'ground';
+      this.status = `Ground mode: paint ${this.getRaceGroundTilePalette(this.getSelectedGroundTileId()).label}`;
+    } else if (resolved === 'elevation') {
+      this.activeAction = 'paint-elevation';
+      this.activeRootId = 'elevation';
+      this.status = `Elevation mode: brush ${Math.round(this.raceElevationBrushSize * 100)}%`;
+    } else {
+      this.activeAction = 'move-node';
+      this.activeRootId = 'race';
+      this.status = 'Race mode: drag nodes or select edges';
+    }
+  }
+
+  setRaceDrawNodeMode() {
+    this.racePortraitMode = 'race';
+    this.activeAction = 'draw-road';
+    this.activeRootId = 'race';
+    this.status = 'Race mode: tap the map to add a node';
+  }
+
+  getRacePortraitContextAction() {
+    if (this.mode === 'car') {
+      return { id: 'test-drive', label: 'Play', onClick: () => this.handleMenuAction('test-drive') };
+    }
+    if (this.racePortraitMode === 'ground') {
+      return { id: 'ground-tile-next', label: 'Tile', onClick: () => this.handleMenuAction('ground-tile-next') };
+    }
+    if (this.racePortraitMode === 'elevation') {
+      return { id: 'elevation-brush-size', label: 'Brush', onClick: () => this.handleMenuAction('elevation-brush-size') };
+    }
+    return { id: 'draw-road', label: 'Add', onClick: () => this.setRaceDrawNodeMode() };
+  }
+
+  cycleRaceElevationBrushSize() {
+    const sizes = [0.06, 0.1, 0.16, 0.22];
+    const currentIndex = sizes.findIndex((size) => Math.abs(size - Number(this.raceElevationBrushSize || 0)) < 0.01);
+    this.raceElevationBrushSize = sizes[(currentIndex + 1 + sizes.length) % sizes.length];
+    this.racePortraitMode = 'elevation';
+    this.activeAction = 'paint-elevation';
+    this.activeRootId = 'elevation';
+    this.status = `Elevation brush ${Math.round(this.raceElevationBrushSize * 100)}%`;
+  }
+
+  setRaceElevationBrushDirection(direction = 1) {
+    this.raceElevationBrushDirection = Math.sign(Number(direction) || 1);
+    this.racePortraitMode = 'elevation';
+    this.activeAction = 'paint-elevation';
+    this.activeRootId = 'elevation';
+    this.status = this.raceElevationBrushDirection > 0 ? 'Elevation mode: raise terrain' : 'Elevation mode: lower terrain';
+  }
+
+  removeSelectedRaceNode() {
+    const road = this.selectedRace?.road;
+    const nodes = this.getRaceEditableNodes({ create: true });
+    if (!road || nodes.length <= 2) return false;
+    const nodeIndex = clamp(Math.round(Number(this.selectedSegmentIndex) || 0) + 1, 1, nodes.length - 1);
+    nodes.splice(nodeIndex, 1);
+    if (Array.isArray(road.segments) && road.segments.length > 1) {
+      road.segments.splice(clamp(nodeIndex - 1, 0, road.segments.length - 1), 1);
+    }
+    this.selectedSegmentIndex = clamp(nodeIndex - 1, 0, Math.max(0, (road.segments?.length || 1) - 1));
+    this.status = `Removed node ${nodeIndex}`;
+    return true;
+  }
+
+  removeSelectedRaceEdge() {
+    const road = this.selectedRace?.road;
+    if (!road?.segments || road.segments.length <= 1) return false;
+    const removeAt = clamp(Math.round(Number(this.selectedSegmentIndex) || 0), 0, road.segments.length - 1);
+    road.segments.splice(removeAt, 1);
+    if (Array.isArray(road.nodes) && road.nodes.length > 2) {
+      road.nodes.splice(clamp(removeAt + 1, 1, road.nodes.length - 1), 1);
+    }
+    this.selectedSegmentIndex = clamp(removeAt, 0, Math.max(0, road.segments.length - 1));
+    this.status = `Removed edge ${removeAt + 1}`;
+    return true;
+  }
+
+  getRaceStartSnapWorldRange() {
+    return Math.max(28, this.getRaceRoadHalfWidthWorld() * 2.2, this.getRaceCarWorldWidth() * 2.8);
+  }
+
+  maybeSnapRaceNodeToStart(nodeIndex = -1) {
+    const nodes = this.getRaceEditableNodes();
+    if (!Array.isArray(nodes) || nodes.length < 2 || nodeIndex !== nodes.length - 1) return false;
+    const start = nodes[0];
+    const node = nodes[nodeIndex];
+    if (!start || !node) return false;
+    const distance = Math.hypot(Number(node.x || 0) - Number(start.x || 0), Number(node.y || 0) - Number(start.y || 0));
+    if (distance > this.getRaceStartSnapWorldRange()) return false;
+    node.x = Number(start.x || 0);
+    node.y = Number(start.y || 0);
+    node.elevation = Number(start.elevation || 0);
+    this.syncRaceSegmentFromNodePair(nodeIndex - 1);
+    return true;
+  }
+
   syncRaceSegmentFromNodePair(segmentIndex, { screenY = null } = {}) {
     const segment = this.selectedRace?.road?.segments?.[segmentIndex];
     const nodes = this.getRaceEditableNodes();
@@ -516,8 +867,8 @@ export default class RaceEditor {
     const previousDx = Number(previous.x || 0) - Number(beforePrevious.x || 0);
     const previousDy = Number(previous.y || 0) - Number(beforePrevious.y || 0);
     const length = Math.max(35, Math.hypot(dx, dy));
-    const yaw = Math.atan2(dx, -dy);
-    const previousYaw = Math.atan2(previousDx, -previousDy);
+    const yaw = Math.atan2(dx, dy);
+    const previousYaw = Math.atan2(previousDx, previousDy);
     segment.length = Math.round(length);
     segment.curve = Math.round(clamp(normalizeAngle(yaw - previousYaw) / 0.78, -1, 1) * 100) / 100;
     if (screenY !== null && this.raceMapBounds) {
@@ -548,8 +899,8 @@ export default class RaceEditor {
     const dy = Number(worldPoint.y || 0) - Number(previous.y || 0);
     const previousDx = Number(previous.x || 0) - Number(beforePrevious.x || 0);
     const previousDy = Number(previous.y || 0) - Number(beforePrevious.y || 0);
-    const yaw = Math.atan2(dx, -dy);
-    const previousYaw = Math.atan2(previousDx, -previousDy);
+    const yaw = Math.atan2(dx, dy);
+    const previousYaw = Math.atan2(previousDx, previousDy);
     const segment = this.cloneRaceSegment(road.segments[road.segments.length - 1]);
     segment.length = Math.round(Math.max(35, Math.hypot(dx, dy)));
     segment.curve = Math.round(clamp(normalizeAngle(yaw - previousYaw) / 0.78, -1, 1) * 100) / 100;
@@ -562,6 +913,7 @@ export default class RaceEditor {
     });
     road.nodes = nodes;
     this.selectedSegmentIndex = road.segments.length - 1;
+    const snappedToStart = this.maybeSnapRaceNodeToStart(nodes.length - 1);
     const screenPoints = this.getRaceMapPoints(this.raceMapBounds);
     const nodeIndex = screenPoints.length - 1;
     this.raceNodeDrag = {
@@ -576,7 +928,9 @@ export default class RaceEditor {
       curve: segment.curve,
       elevation: segment.elevation
     };
-    this.status = `Added track node ${this.selectedSegmentIndex + 1} (dragging)`;
+    this.status = snappedToStart
+      ? 'Connected destination to Start: route is now a circuit'
+      : `Added track node ${this.selectedSegmentIndex + 1} (dragging)`;
     return true;
   }
 
@@ -670,7 +1024,10 @@ export default class RaceEditor {
     node.x = Math.round(worldPoint.x);
     node.y = Math.round(worldPoint.y);
     this.syncRaceSegmentFromNodePair(this.raceNodeDrag.segmentIndex, { screenY: point.y });
-    this.status = `Node ${this.raceNodeDrag.segmentIndex + 1}: x ${node.x}, y ${node.y}, elevation ${segment.elevation.toFixed(2)}`;
+    const snappedToStart = this.maybeSnapRaceNodeToStart(this.raceNodeDrag.nodeIndex);
+    this.status = snappedToStart
+      ? 'Connected destination to Start: route is now a circuit'
+      : `Node ${this.raceNodeDrag.segmentIndex + 1}: x ${node.x}, y ${node.y}, elevation ${segment.elevation.toFixed(2)}`;
     return true;
   }
 
@@ -679,14 +1036,14 @@ export default class RaceEditor {
     const rawPoints = [{ x: 0, y: 0, elevation: 0, surface: segments[0]?.surface || 'asphalt', segmentIndex: 0 }];
     let x = 0;
     let y = 0;
-    let heading = -Math.PI / 2;
+    let heading = 0;
     segments.forEach((segment, index) => {
       const length = Math.max(35, Number(segment.length) || 100);
       const curve = clamp(Number(segment.curve) || 0, -1, 1);
       const turnBoost = segment.turn === 'square' ? 0.78 : 0;
       heading += curve * 0.55 + Math.sign(curve) * turnBoost;
-      x += Math.cos(heading) * length;
-      y += Math.sin(heading) * length;
+      x += Math.sin(heading) * length;
+      y += Math.cos(heading) * length;
       rawPoints.push({
         x,
         y,
@@ -698,12 +1055,26 @@ export default class RaceEditor {
     return rawPoints;
   }
 
+  areRaceNodesCompatible(nodes = this.selectedRace?.road?.nodes, segments = this.selectedRace?.road?.segments || []) {
+    return Array.isArray(nodes) && nodes.length >= 1 && nodes.length <= segments.length + 1;
+  }
+
+  ensureRaceStartNodeMetadata(nodes = this.selectedRace?.road?.nodes) {
+    if (!Array.isArray(nodes) || !nodes.length) return nodes;
+    nodes[0] = {
+      ...nodes[0],
+      role: 'start',
+      locked: true
+    };
+    return nodes;
+  }
+
   getRaceEditableNodes({ create = true } = {}) {
     const road = this.selectedRace?.road;
     const segments = road?.segments || [];
     if (!road || !segments.length) return [];
-    if (Array.isArray(road.nodes) && road.nodes.length === segments.length + 1) {
-      return road.nodes;
+    if (this.areRaceNodesCompatible(road.nodes, segments)) {
+      return this.ensureRaceStartNodeMetadata(road.nodes);
     }
     if (!create) return [];
     road.nodes = this.getRaceGeneratedRawPoints().map((point) => ({
@@ -711,7 +1082,7 @@ export default class RaceEditor {
       y: Math.round(Number(point.y || 0)),
       elevation: clamp(Number(point.elevation) || 0, -0.42, 0.42)
     }));
-    return road.nodes;
+    return this.ensureRaceStartNodeMetadata(road.nodes);
   }
 
   getRaceRawMapPoints() {
@@ -737,20 +1108,24 @@ export default class RaceEditor {
     const pad = Math.max(24, Math.min(bounds.w, bounds.h) * 0.1);
     const usableW = Math.max(1, bounds.w - pad * 2);
     const usableH = Math.max(1, bounds.h - pad * 2);
-    const scale = Math.min(
+    const fitScale = Math.min(
       usableW / Math.max(1, maxX - minX),
       usableH / Math.max(1, maxY - minY)
     );
-    return { minX, minY, maxX, maxY, pad, usableW, usableH, scale };
+    const zoom = clamp(Number(this.raceMapZoom) || 1, 0.5, 3);
+    const panX = Number(this.raceMapPan?.x || 0);
+    const panY = Number(this.raceMapPan?.y || 0);
+    const scale = fitScale * zoom;
+    return { minX, minY, maxX, maxY, pad, usableW, usableH, scale, fitScale, zoom, panX, panY };
   }
 
   getRaceMapPoints(bounds) {
     const rawPoints = this.getRaceRawMapPoints();
-    const { minX, minY, maxX, maxY, pad, usableW, usableH, scale } = this.getRaceMapTransform(bounds, rawPoints);
+    const { minX, minY, maxX, maxY, pad, usableW, usableH, scale, panX, panY } = this.getRaceMapTransform(bounds, rawPoints);
     return rawPoints.map((point) => ({
       ...point,
-      screenX: bounds.x + pad + (point.x - minX) * scale + (usableW - (maxX - minX) * scale) / 2,
-      screenY: bounds.y + pad + (point.y - minY) * scale + (usableH - (maxY - minY) * scale) / 2
+      screenX: bounds.x + pad + (point.x - minX) * scale + (usableW - (maxX - minX) * scale) / 2 + panX,
+      screenY: bounds.y + pad + (point.y - minY) * scale + (usableH - (maxY - minY) * scale) / 2 + panY
     }));
   }
 
@@ -758,13 +1133,62 @@ export default class RaceEditor {
     if (!bounds) return null;
     const rawPoints = this.getRaceRawMapPoints();
     if (!rawPoints.length) return null;
-    const { minX, minY, maxX, maxY, pad, usableW, usableH, scale } = this.getRaceMapTransform(bounds, rawPoints);
+    const { minX, minY, maxX, maxY, pad, usableW, usableH, scale, panX, panY } = this.getRaceMapTransform(bounds, rawPoints);
     const offsetX = (usableW - (maxX - minX) * scale) / 2;
     const offsetY = (usableH - (maxY - minY) * scale) / 2;
     return {
-      x: minX + (screenX - bounds.x - pad - offsetX) / Math.max(0.0001, scale),
-      y: minY + (screenY - bounds.y - pad - offsetY) / Math.max(0.0001, scale)
+      x: minX + (screenX - bounds.x - pad - offsetX - panX) / Math.max(0.0001, scale),
+      y: minY + (screenY - bounds.y - pad - offsetY - panY) / Math.max(0.0001, scale)
     };
+  }
+
+  getRaceMapZoomRatio() {
+    return clamp(((Number(this.raceMapZoom) || 1) - 0.5) / 2.5, 0, 1);
+  }
+
+  updateRaceMapZoomFromSliderX(pointerX = 0) {
+    const bounds = this.raceMapZoomSliderBounds;
+    if (!bounds || bounds.w <= 0) return false;
+    const ratio = clamp((Number(pointerX || 0) - bounds.x) / Math.max(1, bounds.w), 0, 1);
+    this.raceMapZoom = Math.round((0.5 + ratio * 2.5) * 100) / 100;
+    this.status = `Map zoom ${Math.round(this.raceMapZoom * 100)}%`;
+    return true;
+  }
+
+  panRaceMapBy(dx = 0, dy = 0) {
+    this.raceMapPan = {
+      x: clamp(Number(this.raceMapPan?.x || 0) + Number(dx || 0), -1200, 1200),
+      y: clamp(Number(this.raceMapPan?.y || 0) + Number(dy || 0), -1200, 1200)
+    };
+    return true;
+  }
+
+  updateRaceMapThumbstickDeflection(point = {}) {
+    const radius = Math.max(1, Number(this.portraitThumbstick?.radius || 0));
+    const center = this.portraitThumbstick?.center || { x: 0, y: 0 };
+    this.portraitThumbstick.dx = clamp(Number(point.x || 0) - center.x, -radius, radius);
+    this.portraitThumbstick.dy = clamp(Number(point.y || 0) - center.y, -radius, radius);
+  }
+
+  updateRaceMapThumbstickPan(dt = 0) {
+    if (!this.raceMapThumbstickDrag || !this.portraitThumbstick?.active) return false;
+    const radius = Math.max(1, Number(this.portraitThumbstick.radius || 0));
+    const x = clamp(Number(this.portraitThumbstick.dx || 0) / radius, -1, 1);
+    const y = clamp(Number(this.portraitThumbstick.dy || 0) / radius, -1, 1);
+    const magnitude = Math.hypot(x, y);
+    const deadZone = 0.12;
+    if (magnitude <= deadZone) return false;
+    const normalized = (magnitude - deadZone) / (1 - deadZone);
+    const speed = 420 * normalized;
+    const seconds = Math.max(0, Number(dt || 0));
+    this.panRaceMapBy(x * speed * seconds, y * speed * seconds);
+    return true;
+  }
+
+  resetRaceMapViewport() {
+    this.raceMapZoom = 1;
+    this.raceMapPan = { x: 0, y: 0 };
+    this.status = 'Map view reset';
   }
 
   selectRaceMapSegmentAtPoint(point = {}) {
@@ -858,18 +1282,22 @@ export default class RaceEditor {
     race.type = 'destination';
     race.laps = 1;
     race.weather = surfaces.includes('wet-asphalt') && Math.random() > 0.5 ? 'rain' : 'clear';
-    race.road = { ...race.road, width: 9, segments };
+    race.road = { ...race.road, width: 11, segments };
     delete race.road.nodes;
     race.hazards = hazards;
     race.codriver = { enabled: true, voice: 'default', calls };
     race.competition = { ...race.competition, mode: 'solo' };
     this.project.selectedRaceId = race.id;
     this.selectedSegmentIndex = 0;
-    this.status = `Generated ${segments.length}-segment point-to-point race`;
+    this.status = `Generated ${segments.length}-segment open-finish route`;
   }
 
-  drawButton(ctx, bounds, label, active = false, disabled = false) {
-    const color = drawSharedMenuButtonChrome(ctx, bounds, { active, subtle: disabled });
+  drawButton(ctx, bounds, label, active = false, disabled = false, options = {}) {
+    const color = drawSharedMenuButtonChrome(ctx, bounds, {
+      active,
+      subtle: disabled,
+      focused: Boolean(options.focused)
+    });
     drawSharedMenuButtonLabel(ctx, bounds, label, {
       color: disabled ? UI_SUITE.colors.muted : color,
       fontSize: 12,
@@ -881,13 +1309,9 @@ export default class RaceEditor {
     this.buttons = [];
     this.menuScrollRegions = [];
     this.raceMapBounds = null;
-    const viewportMode = resolveEditorViewportModeFlags({
-      viewportWidth: width,
-      viewportHeight: height,
-      isMobile: Boolean(this.game?.deviceIsMobile || this.game?.isMobile),
-      gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.())
-    });
+    const viewportMode = this.resolveRaceViewportMode(width, height);
     this.activeModeContract = viewportMode.modeContract;
+    this.activeSpecModeContract = viewportMode.specModeContract;
     this.activeViewportMode = viewportMode.mode;
     if (!viewportMode.isDesktop && this.playtestSession) {
       this.drawMobileRacePlaytest(ctx, width, height);
@@ -905,6 +1329,16 @@ export default class RaceEditor {
     }
   }
 
+  resolveRaceViewportMode(width = this.game?.canvas?.width || 0, height = this.game?.canvas?.height || 0) {
+    return resolveEditorViewportModeFlags({
+      editorId: this.editorId,
+      viewportWidth: width,
+      viewportHeight: height,
+      isMobile: Boolean(this.game?.deviceIsMobile || this.game?.isMobile),
+      gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.())
+    });
+  }
+
   get editorId() {
     return this.mode === 'car' ? 'car' : 'race';
   }
@@ -914,6 +1348,33 @@ export default class RaceEditor {
   }
 
   getMenuItems(rootId) {
+    if (rootId === 'file') {
+      return buildSharedEditorFileMenu({
+        supported: {
+          save: true,
+          'save-as': true,
+          open: false,
+          export: false,
+          import: false
+        },
+        actions: {
+          new: () => this.handleMenuAction('new'),
+          save: () => this.handleMenuAction('save'),
+          'save-as': () => this.handleMenuAction('save-as')
+        },
+        footer: {
+          onExit: () => this.exitToMainMenu()
+        }
+      }).map((item) => ({
+        id: item.id,
+        label: item.label,
+        tooltip: item.tooltip,
+        disabled: Boolean(item.disabled),
+        divider: Boolean(item.divider),
+        separator: Boolean(item.separator),
+        onSelect: item.onClick || item.action || null
+      }));
+    }
     const spec = getEditorMenuSpec(this.editorId);
     const section = spec?.sections?.[rootId];
     const actionIds = [...(section?.actions || [])];
@@ -939,10 +1400,12 @@ export default class RaceEditor {
       { id: 'draw-road', label: compact ? 'Add' : 'Add Seg', onClick: () => this.handleMenuAction('draw-road') },
       { id: 'curve', label: 'Curve', onClick: () => this.handleMenuAction('curve') },
       { id: 'elevation', label: compact ? 'Hill' : 'Elevation', onClick: () => this.handleMenuAction('elevation') },
+      { id: 'segment-width', label: compact ? 'Width' : 'Edge Width', onClick: () => this.handleMenuAction('segment-width') },
+      { id: 'segment-bumpiness', label: compact ? 'Bump' : 'Bumpiness', onClick: () => this.handleMenuAction('segment-bumpiness') },
       { id: 'paint-ground', label: compact ? 'Paint' : 'Paint Ground', onClick: () => this.handleMenuAction('paint-ground') },
       { id: 'test-drive', label: 'Play', onClick: () => this.handleMenuAction('test-drive') }
     ];
-    return compact ? actions.slice(0, 3) : actions;
+    return compact ? actions.slice(0, 4) : actions;
   }
 
   getRailAction(id, label, onClick) {
@@ -957,6 +1420,26 @@ export default class RaceEditor {
 
   isActionAvailable(action) {
     return RACE_EDITOR_AVAILABLE_ACTIONS.has(action);
+  }
+
+  loadBuiltInRace(action) {
+    const entry = BUILT_IN_RACE_LOAD_BY_ACTION[action];
+    if (!entry) return false;
+    const template = createTestTrackRace(entry.raceId);
+    const existingIndex = this.project.races.findIndex((race) => race.id === template.id);
+    if (existingIndex >= 0) {
+      this.project.races[existingIndex] = template;
+    } else {
+      this.project.races.push(template);
+    }
+    this.project.selectedRaceId = template.id;
+    this.selectedSegmentIndex = 0;
+    this.playtestSession = null;
+    this.racePortraitMode = 'race';
+    this.activeRootId = 'race';
+    this.resetRaceMapViewport();
+    this.status = `Loaded ${template.name}`;
+    return true;
   }
 
   handleMenuAction(action) {
@@ -975,6 +1458,10 @@ export default class RaceEditor {
       this.status = `New ${this.title} project`;
       return;
     }
+    if (action === 'save' || action === 'save-as') {
+      this.status = `${action === 'save-as' ? 'Save As' : 'Save'} queued for ${this.title}`;
+      return;
+    }
     if (action === 'test-drive') {
       this.openPlaytestPicker();
       return;
@@ -983,10 +1470,22 @@ export default class RaceEditor {
       this.endPlaytest();
       return;
     }
+    if (this.loadBuiltInRace(action)) {
+      this.activeAction = action;
+      this.mobileRootOpen = false;
+      this.gamepadSubmenuOpen = false;
+      return;
+    }
     if (action === 'move-node') {
       this.status = 'Move mode: drag track nodes to reshape the race';
+    } else if (action === 'remove-node') {
+      this.removeSelectedRaceNode();
+    } else if (action === 'remove-edge') {
+      this.removeSelectedRaceEdge();
     } else if (action.startsWith('drivetrain-')) {
       this.selectedCar.tuning.drivetrain = action.replace('drivetrain-', '');
+    } else if (action === 'engine-sound-next') {
+      this.cycleCarEngineSoundProfile();
     } else if (action === 'draw-road') {
       this.appendRaceSegment();
     } else if (action === 'segment-prev') {
@@ -999,15 +1498,33 @@ export default class RaceEditor {
       this.adjustSelectedSegment('curve');
     } else if (action === 'elevation') {
       this.adjustSelectedSegment('elevation');
+    } else if (action === 'paint-elevation') {
+      this.setRacePortraitMode('elevation');
+    } else if (action === 'elevation-up') {
+      this.setRaceElevationBrushDirection(1);
+    } else if (action === 'elevation-down') {
+      this.setRaceElevationBrushDirection(-1);
+    } else if (action === 'elevation-brush-size') {
+      this.cycleRaceElevationBrushSize();
     } else if (action === 'square-turn') {
       this.toggleSelectedSquareTurn();
     } else if (action === 'road-width') {
       this.cycleRoadWidth();
+    } else if (action === 'segment-width') {
+      this.cycleSelectedSegmentRoadWidth();
+    } else if (action === 'segment-bumpiness') {
+      this.cycleSelectedSegmentBumpiness();
+    } else if (action === 'snow-condition') {
+      this.cycleSelectedSegmentSnowCondition();
     } else if (action === 'ground-tile-next') {
       this.cycleSelectedGroundTile();
     } else if (action === 'paint-ground') {
+      this.racePortraitMode = 'ground';
+      this.activeRootId = 'ground';
       this.status = `Paint ground with ${this.getRaceGroundTilePalette(this.getSelectedGroundTileId()).label}`;
     } else if (action === 'edge-tile') {
+      this.racePortraitMode = 'race';
+      this.activeRootId = 'race';
       this.setSelectedSegmentEdgeTile();
     } else if (action.startsWith('surface-')) {
       this.setSelectedSurface(action.replace('surface-', ''));
@@ -1015,15 +1532,21 @@ export default class RaceEditor {
       this.selectedRace.weather = action.replace('weather-', '');
     } else if (action === 'generate-random-race') {
       this.generateRandomRace();
-    } else if (action === 'race-circuit') {
-      this.selectedRace.type = 'circuit';
-    } else if (action === 'race-destination') {
-      this.selectedRace.type = 'destination';
     } else if (action === 'finish-return') {
       this.selectedRace.finishBehavior.type = 'return-to-origin';
+    } else if (action === 'zoom-fit') {
+      this.resetRaceMapViewport();
+    } else if (action === 'add-sprite') {
+      this.status = 'Sprite mode: add scenery sprite';
+    } else if (action === 'move-sprite') {
+      this.status = 'Sprite mode: move scenery sprite';
+    } else if (action === 'delete-sprite') {
+      this.status = 'Sprite mode: delete scenery sprite';
+    } else if (action === 'side-left' || action === 'side-right') {
+      this.status = `Sprite side: ${action === 'side-left' ? 'left' : 'right'}`;
     }
     this.activeAction = action;
-    if (!['generate-random-race', 'ground-tile-next', 'paint-ground', 'edge-tile', 'move-node'].includes(action)) {
+    if (!['generate-random-race', ...BUILT_IN_RACE_LOAD_ACTIONS.map((entry) => entry.id), 'ground-tile-next', 'paint-ground', 'paint-elevation', 'elevation-up', 'elevation-down', 'elevation-brush-size', 'edge-tile', 'segment-width', 'segment-bumpiness', 'snow-condition', 'move-node', 'remove-node', 'remove-edge', 'engine-sound-next'].includes(action)) {
       this.status = `${action.replace(/-/g, ' ')} selected`;
     }
     this.activeRootId = this.findRootForAction(action) || this.activeRootId;
@@ -1034,11 +1557,22 @@ export default class RaceEditor {
     this.desktopDropdown = null;
   }
 
+  cycleCarEngineSoundProfile() {
+    const car = this.selectedCar;
+    car.audio = car.audio || {};
+    const current = car.audio.engineProfile || car.tuning?.engineSoundProfile || CAR_ENGINE_SOUND_PROFILES[0].id;
+    const index = CAR_ENGINE_SOUND_PROFILES.findIndex((profile) => profile.id === current);
+    const next = CAR_ENGINE_SOUND_PROFILES[(index + 1 + CAR_ENGINE_SOUND_PROFILES.length) % CAR_ENGINE_SOUND_PROFILES.length];
+    car.audio.engineProfile = next.id;
+    if (car.audio.engineSoundId) car.audio.engineSoundId = null;
+    this.status = `Engine sound: ${next.label}`;
+  }
+
   toggleRootMenu({ gamepad = false } = {}) {
     if (gamepad) {
       if (!this.mobileRootOpen && !this.gamepadSubmenuOpen) {
         this.mobileRootOpen = true;
-        this.gamepadSubmenuOpen = true;
+        this.gamepadSubmenuOpen = false;
         return;
       }
       if (this.mobileRootOpen) {
@@ -1047,18 +1581,19 @@ export default class RaceEditor {
         return;
       }
       this.mobileRootOpen = true;
-      this.gamepadSubmenuOpen = true;
+      this.gamepadSubmenuOpen = false;
       return;
     }
     this.mobileRootOpen = !this.mobileRootOpen;
   }
 
   getGamepadMenuState(width = 0, height = 0) {
+    const viewportMode = this.resolveRaceViewportMode(width, height);
     return resolveGamepadMenuState({
       viewportWidth: width,
       viewportHeight: height,
       gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.()),
-      isMobile: Boolean(this.game?.deviceIsMobile || this.game?.isMobile),
+      isMobile: viewportMode.isMobileViewport,
       menuActive: Boolean(this.mobileRootOpen || this.gamepadSubmenuOpen),
       activeMenuId: this.gamepadSubmenuOpen && !this.mobileRootOpen ? this.activeRootId : null
     });
@@ -1082,15 +1617,20 @@ export default class RaceEditor {
     this.closedDesktopDropdownRootId = null;
     this.desktopDropdown = null;
     this.playtestPickerOpen = true;
+    this.preRaceTuningOpen = false;
     this.status = 'Choose a car to playtest';
   }
 
   startPlaytest(carId = this.project.selectedCarId) {
     const car = this.project.cars.find((candidate) => candidate.id === carId) || this.selectedCar;
-    const tuning = this.getRaceCarTuning(car);
+    const transmissionType = this.getRaceTransmissionType(car);
+    const tuning = this.getRaceCarTuning(car, { transmissionType });
     const initialGear = 1;
+    const runtimeType = this.getSelectedRaceRuntimeType();
+    const startPose = this.getRaceStartPose(runtimeType);
     this.project.selectedCarId = car.id;
     this.playtestPickerOpen = false;
+    this.preRaceTuningOpen = false;
     this.gamepadSubmenuOpen = false;
     const aiDrivers = this.selectedRace.competition?.aiDrivers?.filter((driver) => driver.enabled) || [];
     const hazards = this.selectedRace.hazards || [];
@@ -1101,19 +1641,29 @@ export default class RaceEditor {
       startedAt: Date.now(),
       elapsedMs: 0,
       distance: 0,
+      projectedDistance: 0,
+      routeStartDistance: 0,
+      startBackDistance: 0,
       speedMps: 0,
       routeLength: this.getRaceRouteLength(),
+      routeRuntimeType: runtimeType,
       running: true,
+      worldX: startPose.x,
+      worldZ: startPose.z,
+      launchLockMs: 420,
       cameraView: this.raceInput.cameraView,
       steeringWheel: 0,
       steeringTarget: 0,
       lateral: 0,
       heading: 0,
-      carYaw: this.getRaceRoadYawAtDistance(0),
-      cameraYaw: this.getRaceRoadYawAtDistance(0),
+      carYaw: startPose.yaw,
+      startYaw: startPose.yaw,
+      cameraYaw: startPose.yaw,
       roadViewOffset: 0,
+      trackViewOffset: 0,
       engineRpm: tuning.idleRpm,
       gear: initialGear,
+      transmissionType,
       rpm: 0,
       lap: 1,
       shiftCooldownMs: 0,
@@ -1121,6 +1671,8 @@ export default class RaceEditor {
       triggeredHazardIds: [],
       damage: this.createRaceDamageState(),
       handbrakeMs: 0,
+      engineSoundId: car.audio?.engineSoundId || tuning.engineSoundId || null,
+      engineSoundProfile: this.getRaceEngineProfileForTransmission(car, tuning),
       aiDrivers,
       hazards,
       codriverCalls,
@@ -1138,6 +1690,7 @@ export default class RaceEditor {
       brake: false,
       handbrake: false,
       autoShift: tuning.shiftMode !== 'manual',
+      transmissionMode: transmissionType,
       keyboardThrottle: false,
       keyboardBrake: false,
       keyboardSteer: 0,
@@ -1158,10 +1711,27 @@ export default class RaceEditor {
     const car = this.project.cars.find((candidate) => candidate.id === this.playtestSession.carId) || this.selectedCar;
     this.status = `Ended playtest for ${car.name}`;
     this.playtestSession = null;
+    this.resetRacePlaytestInputs();
+    this.game?.audio?.setEngineRev?.(false);
+    this.game?.audio?.setTireScreech?.(false);
+    if (car.audio?.engineSoundId) this.game?.stopSfxById?.(car.audio.engineSoundId, { key: 'race-engine' });
+  }
+
+  finishPlaytest() {
+    if (!this.playtestSession) return;
+    const name = this.selectedRace?.name || 'race';
+    const car = this.project.cars.find((candidate) => candidate.id === this.playtestSession.carId) || this.selectedCar;
+    this.playtestSession = null;
+    this.resetRacePlaytestInputs();
+    this.game?.audio?.setEngineRev?.(false);
+    this.game?.audio?.setTireScreech?.(false);
+    if (car.audio?.engineSoundId) this.game?.stopSfxById?.(car.audio.engineSoundId, { key: 'race-engine' });
+    this.status = `Finished ${name}`;
   }
 
   cancelPlaytestPicker() {
     this.playtestPickerOpen = false;
+    this.preRaceTuningOpen = false;
     this.status = 'Ready';
   }
 
@@ -1247,7 +1817,7 @@ export default class RaceEditor {
     return list.length ? Math.max(...list.map((value) => Number(value) || 0)) : 0;
   }
 
-  getRaceSegmentAtDistance(distance = 0, { wrap = this.selectedRace?.type === 'circuit' } = {}) {
+  getRaceSegmentAtDistance(distance = 0, { wrap = this.getActiveRaceRuntimeType() === 'circuit' } = {}) {
     const segments = this.selectedRace?.road?.segments || [];
     if (!segments.length) return { segment: null, index: 0, start: 0, end: 0 };
     const routeLength = this.getRaceRouteLength();
@@ -1377,13 +1947,27 @@ export default class RaceEditor {
     return samples;
   }
 
-  getRaceWorldPoseAtDistance(distance = 0) {
+  getRaceWorldPoseAtDistance(distance = 0, { runtimeType = this.getActiveRaceRuntimeType() } = {}) {
     const samples = this.getRacePathSamples();
     if (!samples.length) return { distance: 0, x: 0, z: 0, yaw: 0, segment: null, index: 0, progress: 0 };
     const routeLength = this.getRaceRouteLength();
-    const target = this.selectedRace?.type === 'circuit'
+    const target = runtimeType === 'circuit'
       ? ((Number(distance) || 0) % routeLength + routeLength) % routeLength
       : clamp(Number(distance) || 0, 0, routeLength);
+    if (target <= 0) {
+      const first = samples[0];
+      const next = samples.find((sample) => Math.hypot(
+        Number(sample.x || 0) - Number(first.x || 0),
+        Number(sample.z || 0) - Number(first.z || 0)
+      ) > 0.5) || samples[1] || first;
+      const dx = Number(next.x || 0) - Number(first.x || 0);
+      const dz = Number(next.z || 0) - Number(first.z || 0);
+      return {
+        ...first,
+        distance: 0,
+        yaw: Math.hypot(dx, dz) > 0.001 ? Math.atan2(dx, dz) : Number(first.yaw || 0)
+      };
+    }
     for (let index = 1; index < samples.length; index += 1) {
       const previous = samples[index - 1];
       const next = samples[index];
@@ -1405,20 +1989,188 @@ export default class RaceEditor {
     return { ...samples[samples.length - 1], distance: target };
   }
 
-  getRaceRoadHalfWidthWorld() {
-    const authoredWidth = clamp(Number(this.selectedRace?.road?.width || 9), 5, 16);
-    return clamp(authoredWidth * 0.52, 3.8, 8.4);
+  getRaceRouteProjectionForWorldPoint(point = {}) {
+    const samples = this.getRacePathSamples({ step: 8 });
+    if (samples.length < 2) {
+      return {
+        distance: 0,
+        x: 0,
+        z: 0,
+        yaw: 0,
+        lateral: 0,
+        distanceToRoute: Infinity,
+        segment: null,
+        index: 0,
+        progress: 0
+      };
+    }
+    const px = Number(point.x || 0);
+    const pz = Number(point.z || 0);
+    let best = null;
+    for (let index = 1; index < samples.length; index += 1) {
+      const previous = samples[index - 1];
+      const next = samples[index];
+      const ax = Number(previous.x || 0);
+      const az = Number(previous.z || 0);
+      const bx = Number(next.x || 0);
+      const bz = Number(next.z || 0);
+      const dx = bx - ax;
+      const dz = bz - az;
+      const lengthSq = Math.max(0.0001, dx * dx + dz * dz);
+      const t = clamp(((px - ax) * dx + (pz - az) * dz) / lengthSq, 0, 1);
+      const x = ax + dx * t;
+      const z = az + dz * t;
+      const offsetX = px - x;
+      const offsetZ = pz - z;
+      const distanceSq = offsetX * offsetX + offsetZ * offsetZ;
+      if (!best || distanceSq < best.distanceSq) {
+        const yaw = Math.atan2(dx, dz);
+        const rightX = Math.cos(yaw);
+        const rightZ = -Math.sin(yaw);
+        const span = Math.max(0.001, Number(next.distance || 0) - Number(previous.distance || 0));
+        best = {
+          distanceSq,
+          distance: Number(previous.distance || 0) + span * t,
+          x,
+          z,
+          yaw,
+          lateral: offsetX * rightX + offsetZ * rightZ,
+          distanceToRoute: Math.sqrt(distanceSq),
+          segment: next.segment || previous.segment || null,
+          index: next.index ?? previous.index ?? 0,
+          progress: t
+        };
+      }
+    }
+    return best || {
+      distance: 0,
+      x: Number(samples[0].x || 0),
+      z: Number(samples[0].z || 0),
+      yaw: Number(samples[0].yaw || 0),
+      lateral: 0,
+      distanceToRoute: 0,
+      segment: samples[0].segment || null,
+      index: 0,
+      progress: 0
+    };
+  }
+
+  getRaceStartPose(runtimeType = this.getSelectedRaceRuntimeType()) {
+    const nodes = this.getRaceEditableNodes({ create: false });
+    if (nodes.length >= 2) {
+      const first = nodes[0];
+      const next = nodes.find((node, index) => index > 0 && Math.hypot(
+        Number(node.x || 0) - Number(first.x || 0),
+        Number(node.y || 0) - Number(first.y || 0)
+      ) > 0.5) || nodes[1];
+      const dx = Number(next.x || 0) - Number(first.x || 0);
+      const dz = Number(next.y || 0) - Number(first.y || 0);
+      return {
+        distance: 0,
+        x: Number(first.x || 0),
+        z: Number(first.y || 0),
+        yaw: Math.hypot(dx, dz) > 0.001 ? Math.atan2(dx, dz) : 0,
+        elevation: clamp(Number(first.elevation) || 0, -0.42, 0.42),
+        segment: this.selectedRace?.road?.segments?.[0] || null,
+        index: 0,
+        progress: 0
+      };
+    }
+    const samples = this.getRacePathSamples({ step: 8 });
+    if (!samples.length) return { distance: 0, x: 0, z: 0, yaw: 0, elevation: 0, segment: null, index: 0, progress: 0 };
+    const first = samples[0];
+    const next = samples.find((sample) => (
+      Number(sample.distance || 0) > 4
+      && Math.hypot(
+        Number(sample.x || 0) - Number(first.x || 0),
+        Number(sample.z || 0) - Number(first.z || 0)
+      ) > 1
+    )) || samples[1] || first;
+    const dx = Number(next.x || 0) - Number(first.x || 0);
+    const dz = Number(next.z || 0) - Number(first.z || 0);
+    const yaw = Math.hypot(dx, dz) > 0.001 ? Math.atan2(dx, dz) : Number(first.yaw || 0);
+    return {
+      ...first,
+      distance: 0,
+      x: Number(first.x || 0),
+      z: Number(first.z || 0),
+      yaw
+    };
+  }
+
+  getRaceRoadWidthMForSegment(segment = null) {
+    return this.getSelectedSegmentRoadWidthM(segment || this.selectedSegment);
+  }
+
+  getRaceRoadHalfWidthWorld(segment = null) {
+    const authoredWidth = clamp(Number(segment?.roadWidthM || segment?.roadWidth || this.selectedRace?.road?.width || 11), 4, 24);
+    const carWidth = this.getRaceCarWorldWidth();
+    return clamp(Math.max(carWidth * 10.6, authoredWidth * 3.08), 19, 74);
+  }
+
+  getRaceLaneMarkerDimensionsWorld() {
+    return {
+      interval: RACE_HIGHWAY_MARKERS.dashLengthM + RACE_HIGHWAY_MARKERS.gapLengthM,
+      dashLength: RACE_HIGHWAY_MARKERS.dashLengthM,
+      gapLength: RACE_HIGHWAY_MARKERS.gapLengthM,
+      dashWidth: RACE_HIGHWAY_MARKERS.dashWidthM,
+      edgePostInterval: RACE_HIGHWAY_MARKERS.edgePostIntervalM
+    };
+  }
+
+  formatRaceRouteLengthKm(length = this.getRaceRouteLength()) {
+    const km = Math.max(0, Number(length) || 0) / 1000;
+    return `${km.toFixed(km >= 10 ? 1 : 2)} km`;
+  }
+
+  formatRaceMapDistanceLabel(length = 0) {
+    const meters = Math.max(0, Number(length) || 0);
+    if (meters < 1000) return `${Math.round(meters)} m`;
+    const km = meters / 1000;
+    return `${km.toFixed(km >= 10 ? 1 : 2)} km`;
+  }
+
+  getRaceMapScaleBar(bounds = this.raceMapBounds) {
+    if (!bounds) return null;
+    const rawPoints = this.getRaceRawMapPoints();
+    if (!rawPoints.length) return null;
+    const { scale } = this.getRaceMapTransform(bounds, rawPoints);
+    const maxPx = Math.max(48, Math.min(160, Number(bounds.w || 0) * 0.32));
+    const minPx = Math.min(maxPx, Math.max(42, Number(bounds.w || 0) * 0.12));
+    const candidates = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000];
+    let distance = candidates[0];
+    for (const candidate of candidates) {
+      const candidatePx = candidate * scale;
+      if (candidatePx <= maxPx) {
+        distance = candidate;
+      }
+    }
+    const scaledWidth = distance * scale;
+    if (scaledWidth < minPx) {
+      distance = candidates.find((candidate) => candidate * scale >= minPx) || candidates[candidates.length - 1];
+    }
+    const width = Math.min(maxPx, Math.max(1, distance * scale));
+    return {
+      distance,
+      label: this.formatRaceMapDistanceLabel(distance),
+      width,
+      scale
+    };
   }
 
   getRaceThirdPersonCarWidth(bounds = {}) {
-    const roadHalfWidth = this.getRaceRoadHalfWidthWorld();
-    const roadScale = clamp(roadHalfWidth / 4.7, 0.86, 1.18);
-    return clamp(Number(bounds.w || 1) * 0.17 * roadScale, 48, Number(bounds.w || 1) * 0.25);
+    const roadHalfWidth = this.getRaceRoadHalfWidthWorld(this.getRaceSegmentAtDistance(Number(this.playtestSession?.distance || 0)).segment);
+    const roadScale = clamp(3.45 / Math.max(1, roadHalfWidth), 0.72, 1.08);
+    return clamp(Number(bounds.w || 1) * 0.092 * roadScale, 32, Number(bounds.w || 1) * 0.15);
+  }
+
+  getRaceCarWorldWidth(car = this.selectedCar) {
+    return clamp(Number(car?.dimensions?.widthM || car?.tuning?.widthM || 1.83), 1.45, 2.4);
   }
 
   getRaceRoadCrossSectionAtDistance(distance = 0) {
     const center = this.getRaceWorldPoseAtDistance(distance);
-    const halfWidth = this.getRaceRoadHalfWidthWorld();
+    const halfWidth = this.getRaceRoadHalfWidthWorld(center.segment);
     const rightX = Math.cos(center.yaw);
     const rightZ = -Math.sin(center.yaw);
     const leftPoint = {
@@ -1464,7 +2216,7 @@ export default class RaceEditor {
       visible: cameraZ > 2,
       screenX: Number(bounds.x || 0) + Number(bounds.w || 1) / 2 + cameraX * (focal / Math.max(28, z)),
       screenY: horizon + roadDepth * (44 / (z + 44)) - dy * Number(bounds.h || 1) * (0.28 + 26 / (z + 34)),
-      halfWidth: clamp((this.getRaceRoadHalfWidthWorld() * roadWidthScale) * (focal / Math.max(42, z)), 4, Number(bounds.w || 1) * 0.58)
+      halfWidth: clamp((this.getRaceRoadHalfWidthWorld(point.segment) * roadWidthScale) * (focal / Math.max(38, z)), 5, Number(bounds.w || 1) * 0.72)
     };
   }
 
@@ -1511,7 +2263,7 @@ export default class RaceEditor {
 
   getRaceGroundPaletteForSegment(segment = {}, worldPoint = null) {
     const patch = this.getRaceGroundPaintAtWorldPoint(worldPoint);
-    const tilePalette = this.getRaceGroundTilePalette(patch?.tileId || segment?.edgeTileId, segment?.surface || 'grass');
+    const tilePalette = this.getRaceGroundTilePalette(patch?.tileId || segment?.edgeTileId || 'grass');
     return {
       shoulderA: tilePalette.groundA,
       shoulderB: tilePalette.groundB,
@@ -1614,35 +2366,197 @@ export default class RaceEditor {
     return multipliers[weather] || 1;
   }
 
-  getRaceCarTuning(car = this.selectedCar) {
-    const tuning = car?.tuning || {};
-    return {
-      drivetrain: tuning.drivetrain || 'awd',
-      transmissionType: tuning.transmissionType || 'manual',
-      shiftMode: tuning.shiftMode || tuning.transmissionType || 'manual',
-      powerHp: Math.max(80, Number(tuning.powerHp) || 271),
-      torqueLbFt: Math.max(80, Number(tuning.torqueLbFt) || 258),
-      weightKg: Math.max(450, Number(tuning.weightKg) || 1495),
-      tireGrip: Math.max(0.2, Number(tuning.tireGrip) || 1),
-      redlineRpm: Math.max(3000, Number(tuning.redlineRpm) || 6100),
-      revLimitRpm: Math.max(3200, Number(tuning.revLimitRpm) || 6300),
-      revLimiterDropRpm: Math.max(80, Number(tuning.revLimiterDropRpm) || 320),
-      idleRpm: Math.max(500, Number(tuning.idleRpm) || 850),
-      torquePeakStartRpm: Math.max(900, Number(tuning.torquePeakStartRpm) || 2000),
-      torquePeakEndRpm: Math.max(1200, Number(tuning.torquePeakEndRpm) || 5200),
-      torqueFalloffRpm: Math.max(2200, Number(tuning.torqueFalloffRpm) || 6500),
-      gearRatios: Array.isArray(tuning.gearRatios) && tuning.gearRatios.length ? tuning.gearRatios.map((ratio) => Math.max(0.1, Number(ratio) || 1)) : [3.45, 1.95, 1.37, 0.97, 0.74, 0.67],
-      reverseRatio: Math.max(0.1, Number(tuning.reverseRatio) || 3.33),
-      finalDrive: Math.max(0.5, Number(tuning.gearFinalDrive) || 4.11),
-      wheelRadiusM: Math.max(0.18, Number(tuning.wheelRadiusM) || 0.337),
-      topSpeedMps: Math.max(20, (Number(tuning.topSpeedMph) || 135) * 0.44704),
-      drivetrainEfficiency: clamp(Number(tuning.drivetrainEfficiency) || 0.84, 0.55, 0.96),
-      shiftTimeMs: Math.max(80, Number(tuning.shiftTimeMs) || 420),
-      autoUpshiftRpm: Math.max(2500, Number(tuning.autoUpshiftRpm) || 5800),
-      autoDownshiftRpm: Math.max(900, Number(tuning.autoDownshiftRpm) || 1700),
-      torqueConverterSlip: clamp(Number(tuning.torqueConverterSlip) || 0, 0, 0.25),
-      launchRpm: Math.max(1200, Number(tuning.launchRpm) || 3000)
+  getRaceTireCompound(id = 'tarmac') {
+    return RACE_TIRE_COMPOUNDS.find((compound) => compound.id === id) || RACE_TIRE_COMPOUNDS[0];
+  }
+
+  getRaceCarSetup(car = this.selectedCar) {
+    car.setup = car.setup || {};
+    car.setup.tireCompoundByWheel = {
+      fl: 'tarmac',
+      fr: 'tarmac',
+      rl: 'tarmac',
+      rr: 'tarmac',
+      ...(car.setup.tireCompoundByWheel || {})
     };
+    car.setup.tirePressurePsi = {
+      fl: 32,
+      fr: 32,
+      rl: 31,
+      rr: 31,
+      ...(car.setup.tirePressurePsi || {})
+    };
+    return car.setup;
+  }
+
+  getRaceTireSetupGripMultiplier(car = this.selectedCar, surfaceId = 'asphalt', weather = this.selectedRace?.weather) {
+    const setup = this.getRaceCarSetup(car);
+    const surface = getSurfaceById(surfaceId).id;
+    const wheelIds = ['fl', 'fr', 'rl', 'rr'];
+    const grip = wheelIds.map((wheelId) => {
+      const compound = this.getRaceTireCompound(setup.tireCompoundByWheel[wheelId]);
+      const pressure = clamp(Number(setup.tirePressurePsi[wheelId] || 32), 18, 46);
+      const pressurePenalty = 1 - Math.min(0.16, Math.abs(pressure - 32) * 0.008);
+      return (compound.surfaceGrip?.[surface] || 0.7) * (compound.weatherGrip?.[weather] || 1) * pressurePenalty;
+    });
+    return clamp(grip.reduce((sum, value) => sum + value, 0) / Math.max(1, grip.length), 0.25, 1.2);
+  }
+
+  getRaceTireWearMultiplier(car = this.selectedCar) {
+    const setup = this.getRaceCarSetup(car);
+    const wheelIds = ['fl', 'fr', 'rl', 'rr'];
+    const wear = wheelIds.map((wheelId) => this.getRaceTireCompound(setup.tireCompoundByWheel[wheelId]).wearRate || 1);
+    return clamp(wear.reduce((sum, value) => sum + value, 0) / Math.max(1, wear.length), 0.7, 1.6);
+  }
+
+  getRaceSegmentSurfaceDetailGrip(segment = null) {
+    if (!segment) return 1;
+    const bumpPenalty = clamp(Number(segment.bumpiness) || 0, 0, 1) * 0.12;
+    const snowMultiplier = segment.surface === 'snow'
+      ? this.getSnowConditionById(segment.snowCondition).grip
+      : 1;
+    return clamp(snowMultiplier - bumpPenalty, 0.32, 1.05);
+  }
+
+  cycleRaceTireCompound(wheelId = 'fl') {
+    const car = this.selectedCar;
+    const setup = this.getRaceCarSetup(car);
+    const current = setup.tireCompoundByWheel[wheelId] || 'tarmac';
+    const index = RACE_TIRE_COMPOUNDS.findIndex((compound) => compound.id === current);
+    const next = RACE_TIRE_COMPOUNDS[(index + 1 + RACE_TIRE_COMPOUNDS.length) % RACE_TIRE_COMPOUNDS.length];
+    setup.tireCompoundByWheel[wheelId] = next.id;
+    this.status = `${wheelId.toUpperCase()} tire: ${next.label}`;
+  }
+
+  adjustRaceTuningValue(path = '', delta = 0) {
+    const car = this.selectedCar;
+    const setup = this.getRaceCarSetup(car);
+    const tuning = car.tuning || {};
+    const clampSet = (target, key, min, max, step = 0.01) => {
+      const next = clamp(Number(target[key] || 0) + Number(delta || 0) * step, min, max);
+      target[key] = Math.round(next * 1000) / 1000;
+      return target[key];
+    };
+    let value = 0;
+    if (path.startsWith('pressure-')) {
+      const wheelId = path.replace('pressure-', '');
+      value = clampSet(setup.tirePressurePsi, wheelId, 18, 46, 1);
+      this.status = `${wheelId.toUpperCase()} pressure: ${value} psi`;
+      return;
+    }
+    const ranges = {
+      brakeBalance: [0.35, 0.75, 0.02],
+      gearFinalDrive: [2.6, 5.2, 0.05],
+      camberFront: [-5, 1, 0.1],
+      camberRear: [-5, 1, 0.1],
+      springFront: [0.1, 1, 0.03],
+      springRear: [0.1, 1, 0.03],
+      rideHeightFront: [0.1, 1, 0.03],
+      rideHeightRear: [0.1, 1, 0.03],
+      dampingFront: [0.1, 1, 0.03],
+      dampingRear: [0.1, 1, 0.03],
+      bumpFront: [0.1, 1, 0.03],
+      bumpRear: [0.1, 1, 0.03],
+      reboundFront: [0.1, 1, 0.03],
+      reboundRear: [0.1, 1, 0.03],
+      antiRollFront: [0.1, 1, 0.03],
+      antiRollRear: [0.1, 1, 0.03],
+      aeroFront: [0, 1, 0.03],
+      aeroRear: [0, 1, 0.03],
+      differentialAccel: [0, 1, 0.03],
+      differentialDecel: [0, 1, 0.03]
+    };
+    const range = ranges[path];
+    if (!range) return;
+    value = clampSet(tuning, path, range[0], range[1], range[2]);
+    this.status = `${path.replace(/([A-Z])/g, ' $1')}: ${value}`;
+  }
+
+  getRaceTransmissionType(car = this.selectedCar) {
+    const available = car?.transmissions || {};
+    const requested = this.playtestSession?.transmissionType
+      || this.raceInput?.transmissionMode
+      || car?.defaultTransmissionType
+      || car?.tuning?.shiftMode
+      || car?.tuning?.transmissionType
+      || 'manual';
+    if (available[requested]) return requested;
+    if (available.manual) return 'manual';
+    if (available.automatic) return 'automatic';
+    return requested === 'automatic' ? 'automatic' : 'manual';
+  }
+
+  getRaceCarTuning(car = this.selectedCar, { transmissionType = null } = {}) {
+    const tuning = car?.tuning || {};
+    const selectedTransmissionType = transmissionType || this.getRaceTransmissionType(car);
+    const transmission = car?.transmissions?.[selectedTransmissionType] || {};
+    const merged = { ...tuning, ...transmission };
+    return {
+      drivetrain: merged.drivetrain || 'awd',
+      transmissionType: selectedTransmissionType,
+      shiftMode: merged.shiftMode || selectedTransmissionType || 'manual',
+      powerHp: Math.max(80, Number(merged.powerHp) || 271),
+      torqueLbFt: Math.max(80, Number(merged.torqueLbFt) || 258),
+      weightKg: Math.max(450, Number(merged.weightKg) || 1495),
+      tireGrip: Math.max(0.2, Number(merged.tireGrip) || 1),
+      redlineRpm: Math.max(3000, Number(merged.redlineRpm) || 6100),
+      revLimitRpm: Math.max(3200, Number(merged.revLimitRpm) || 6300),
+      revLimiterDropRpm: Math.max(80, Number(merged.revLimiterDropRpm) || 320),
+      idleRpm: Math.max(500, Number(merged.idleRpm) || 850),
+      torquePeakStartRpm: Math.max(900, Number(merged.torquePeakStartRpm) || 2000),
+      torquePeakEndRpm: Math.max(1200, Number(merged.torquePeakEndRpm) || 5200),
+      torqueFalloffRpm: Math.max(2200, Number(merged.torqueFalloffRpm) || 6500),
+      gearRatios: Array.isArray(merged.gearRatios) && merged.gearRatios.length ? merged.gearRatios.map((ratio) => Math.max(0.1, Number(ratio) || 1)) : [3.45, 1.95, 1.37, 0.97, 0.74, 0.67],
+      reverseRatio: Math.max(0.1, Number(merged.reverseRatio) || 3.33),
+      finalDrive: Math.max(0.5, Number(merged.gearFinalDrive) || 4.11),
+      wheelRadiusM: Math.max(0.18, Number(merged.wheelRadiusM) || 0.337),
+      topSpeedMps: Math.max(20, (Number(merged.topSpeedMph) || 135) * 0.44704),
+      drivetrainEfficiency: clamp(Number(merged.drivetrainEfficiency) || 0.84, 0.55, 0.96),
+      shiftTimeMs: Math.max(80, Number(merged.shiftTimeMs) || 420),
+      autoUpshiftRpm: Math.max(2500, Number(merged.autoUpshiftRpm) || 5800),
+      autoDownshiftRpm: Math.max(900, Number(merged.autoDownshiftRpm) || 1700),
+      torqueConverterSlip: clamp(Number(merged.torqueConverterSlip) || 0, 0, 0.25),
+      launchRpm: Math.max(1200, Number(merged.launchRpm) || 3000),
+      engineProfile: merged.engineProfile || 'wrx-flat-four-manual'
+    };
+  }
+
+  getRaceEngineProfileForTransmission(car = this.selectedCar, tuning = this.getRaceCarTuning(car)) {
+    const defaultTransmissionType = car?.defaultTransmissionType || 'manual';
+    const stockProfile = car?.transmissions?.[defaultTransmissionType]?.engineProfile || car?.audio?.engineProfile || null;
+    const selectedProfile = tuning?.engineProfile || stockProfile || 'wrx-flat-four-manual';
+    const configuredProfile = car?.audio?.engineProfile || null;
+    return configuredProfile && configuredProfile !== stockProfile ? configuredProfile : selectedProfile;
+  }
+
+  updateRaceEngineAudio({ tuning, throttle = 0, load = 0 } = {}) {
+    const session = this.playtestSession;
+    if (!session || !this.game?.audio?.setEngineRev) return;
+    this.game.audio.setEngineRev(Boolean(session.running), {
+      rpm: session.engineRpm || tuning?.idleRpm || 900,
+      redlineRpm: tuning?.redlineRpm || tuning?.revLimitRpm || 6200,
+      throttle,
+      load,
+      profile: session.engineSoundProfile || 'wrx-flat-four'
+    });
+  }
+
+  updateRaceTireAudio({ slip = 0, surface = 'asphalt', speedMps = 0 } = {}) {
+    const session = this.playtestSession;
+    if (!session || !this.game?.audio?.setTireScreech) return;
+    const amount = clamp(Number(slip) || 0, 0, 1);
+    if (amount <= 0.001 || Math.abs(Number(speedMps) || 0) < 0.45) {
+      this.game.audio.setTireScreech(false);
+      return;
+    }
+    const surfaceId = getSurfaceById(surface).id;
+    const material = ['dirt', 'gravel', 'snow'].includes(surfaceId) ? 'dirt' : 'pavement';
+    this.game.audio.setTireScreech(true, {
+      slip: amount,
+      speedMps,
+      material,
+      dirt: material === 'dirt'
+    });
   }
 
   getRaceGearRatio(tuning, gear) {
@@ -1675,11 +2589,13 @@ export default class RaceEditor {
   updateRaceWearAndDamage(seconds = 0) {
     const session = this.playtestSession;
     if (!session) return;
+    const car = this.project.cars.find((candidate) => candidate.id === session.carId) || this.selectedCar;
+    const tireWearMultiplier = this.getRaceTireWearMultiplier(car);
     const damage = this.getRaceSessionDamage();
     const speed = Number(session.speedMps || 0);
     const steer = Number(this.raceInput.steeringWheel || 0);
     const drift = Math.abs(steer) * clamp(speed / 38, 0, 1) + (this.raceInput.handbrake ? 0.8 : 0);
-    const baseWear = seconds * (0.006 + speed * 0.00055);
+    const baseWear = seconds * (0.006 + speed * 0.00055) * tireWearMultiplier;
     const leftWear = baseWear + seconds * Math.max(0, steer) * drift * 0.28;
     const rightWear = baseWear + seconds * Math.max(0, -steer) * drift * 0.28;
     damage.tires.fl = clamp(damage.tires.fl + leftWear, 0, 100);
@@ -1687,7 +2603,6 @@ export default class RaceEditor {
     damage.tires.fr = clamp(damage.tires.fr + rightWear, 0, 100);
     damage.tires.rr = clamp(damage.tires.rr + rightWear * 1.12, 0, 100);
 
-    const car = this.project.cars.find((candidate) => candidate.id === session.carId) || this.selectedCar;
     const tuning = this.getRaceCarTuning(car);
     if (session.rpm > 0.985 && this.raceInput.throttle && this.raceInput.gear < tuning.gearRatios.length) {
       this.applyRaceDamage('engine', seconds * 2.8);
@@ -1740,12 +2655,16 @@ export default class RaceEditor {
     const seconds = Math.max(0, Number(dt) || 0);
     this.applyRaceAnalogInput();
     const damageEffects = this.getRaceDamageEffects();
-    const segmentInfo = this.getRaceSegmentAtDistance(this.playtestSession.distance);
-    const surfaceGrip = getSurfaceById(segmentInfo.segment?.surface).grip;
+    const segmentInfo = this.getRaceSegmentAtDistance(this.playtestSession.distance, {
+      wrap: (this.playtestSession.routeRuntimeType || this.getSelectedRaceRuntimeType()) === 'circuit'
+    });
+    const surface = getSurfaceById(segmentInfo.segment?.surface);
+    const surfaceGrip = surface.grip * this.getRaceSegmentSurfaceDetailGrip(segmentInfo.segment);
     const engineJitter = damageEffects.engineJitter
       ? 1 - damageEffects.engineJitter * (0.5 + 0.5 * Math.sin(this.playtestSession.elapsedMs / 173))
       : 1;
-    const gripFactor = Math.max(0.35, Math.min(1.4, tuning.tireGrip)) * surfaceGrip * this.getRaceWeatherGripMultiplier() * damageEffects.grip;
+    const tireSetupGrip = this.getRaceTireSetupGripMultiplier(car, surface.id, this.selectedRace?.weather);
+    const gripFactor = Math.max(0.35, Math.min(1.4, tuning.tireGrip)) * surfaceGrip * this.getRaceWeatherGripMultiplier() * tireSetupGrip * damageEffects.grip;
     let gear = clamp(Math.round(Number(this.raceInput.gear ?? 0)), -1, tuning.gearRatios.length);
     if (tuning.shiftMode !== 'manual' && gear === 0 && this.raceInput.throttle) {
       gear = 1;
@@ -1757,20 +2676,21 @@ export default class RaceEditor {
     const binaryActive = Math.abs(binarySteer) > 0.01;
     if (!this.raceInput.analogSteeringActive) {
       if (binaryActive) {
-        const binaryAssist = this.getRaceBinarySteerAssist(this.playtestSession.speedMps);
-        const binaryTarget = binarySteer * binaryAssist.maxSteer;
-        const turnRate = binaryAssist.response;
-        this.raceInput.steeringTarget += (binaryTarget - Number(this.raceInput.steeringTarget || 0)) * Math.min(1, seconds * turnRate);
+        this.raceInput.steeringTarget = binarySteer;
       } else {
         const returnRate = this.getRaceSteeringReturnRate(this.playtestSession.speedMps);
-        this.raceInput.steeringTarget += (0 - Number(this.raceInput.steeringTarget || 0)) * Math.min(1, seconds * returnRate);
+        this.raceInput.steeringTarget += (0 - Number(this.raceInput.steeringTarget || 0)) * Math.min(0.62, seconds * returnRate);
       }
     }
-    this.raceInput.steeringTarget = clamp(this.raceInput.steeringTarget, -maxSteerAtSpeed, maxSteerAtSpeed);
+    this.raceInput.steeringTarget = clamp(this.raceInput.steeringTarget, -1, 1);
     const wheelResponse = this.raceInput.analogSteeringActive
-      ? 8.6
+      ? this.getRaceAnalogSteerResponse(this.playtestSession.speedMps)
       : (binaryActive ? this.getRaceBinarySteerAssist(this.playtestSession.speedMps).response : this.getRaceSteeringReturnRate(this.playtestSession.speedMps) + 1.2);
-    this.raceInput.steeringWheel += (this.raceInput.steeringTarget - this.raceInput.steeringWheel) * Math.min(1, seconds * wheelResponse);
+    const wheelResponseStep = Math.min(
+      binaryActive && !this.raceInput.analogSteeringActive ? 0.47 : 0.94,
+      seconds * wheelResponse
+    );
+    this.raceInput.steeringWheel += (this.raceInput.steeringTarget - this.raceInput.steeringWheel) * wheelResponseStep;
     if (!this.raceInput.analogSteeringActive && !binaryActive && Math.abs(this.raceInput.steeringWheel) < 0.012) {
       this.raceInput.steeringWheel = 0;
       this.raceInput.steeringTarget = 0;
@@ -1781,6 +2701,7 @@ export default class RaceEditor {
     const driveDirection = gear < 0 ? -1 : gear > 0 ? 1 : 0;
     this.playtestSession.previousDistance = this.playtestSession.distance;
     this.playtestSession.elapsedMs += seconds * 1000;
+    this.playtestSession.launchLockMs = Math.max(0, Number(this.playtestSession.launchLockMs || 0) - seconds * 1000);
     this.playtestSession.shiftCooldownMs = Math.max(0, Number(this.playtestSession.shiftCooldownMs || 0) - seconds * 1000);
     const absSpeedBefore = Math.abs(this.playtestSession.speedMps);
     const wheelRpm = gearRatio
@@ -1821,7 +2742,10 @@ export default class RaceEditor {
     const speedTractionGain = clamp(absSpeedBefore / 24, 0, 1) * 0.14;
     const tractionLimit = tuning.weightKg * 9.81 * Math.max(0.12, gripFactor) * (drivetrainTraction + speedTractionGain);
     const driveForce = clamp(driveForceRaw, -tractionLimit, tractionLimit);
-    const brakeForce = (brake * 10400 + handbrake * 7200) * Math.max(0.22, gripFactor);
+    const wheelSpinRatio = driveForceRaw
+      ? clamp(Math.abs(driveForceRaw) / Math.max(1, tractionLimit), 0, 1.8)
+      : 0;
+    const brakeForce = (brake * 292000 + handbrake * 126000) * Math.max(0.58, gripFactor);
     const rollingForce = 180 + absSpeedBefore * 10;
     const dragForce = (0.43 * absSpeedBefore * absSpeedBefore + rollingForce) * damageEffects.panelDrag;
     const resistanceDirection = this.playtestSession.speedMps >= 0 ? -1 : 1;
@@ -1839,51 +2763,95 @@ export default class RaceEditor {
     } else if (this.playtestSession.speedMps < -9) {
       this.playtestSession.speedMps += (-9 - this.playtestSession.speedMps) * Math.min(1, seconds * 3);
     }
-    const routeLength = Math.max(1, Number(this.playtestSession.routeLength || this.getRaceRouteLength()));
-    const nextDistance = this.playtestSession.distance + this.playtestSession.speedMps * seconds;
-    if (this.selectedRace.type === 'circuit') {
-      this.playtestSession.distance = (nextDistance + routeLength) % routeLength;
-      if (this.playtestSession.distance < Number(this.playtestSession.previousDistance || 0)) {
-        this.playtestSession.lap += 1;
-      }
-    } else {
-      this.playtestSession.distance = clamp(nextDistance, 0, routeLength);
-      if (nextDistance >= routeLength) {
-        this.playtestSession.running = false;
-        this.playtestSession.finished = true;
-        this.playtestSession.distance = routeLength;
-        this.status = `Finished ${this.selectedRace.name}`;
-      }
-    }
+    const routeRuntimeType = this.playtestSession.routeRuntimeType || this.getSelectedRaceRuntimeType();
     const absSpeed = Math.abs(this.playtestSession.speedMps);
-    const roadSteer = this.raceInput.steeringWheel + damageEffects.suspensionPull;
-    const lateralDrift = roadSteer * absSpeed * seconds * 0.0028;
-    this.playtestSession.lateral = clamp(Number(this.playtestSession.lateral || 0) + lateralDrift, -0.42, 0.42);
-    const roadYaw = this.getRaceRoadYawAtDistance(this.playtestSession.distance);
+    const launchLockActive = Number(this.playtestSession.launchLockMs || 0) > 0 && absSpeed < 2.2;
+    const roadSteer = this.raceInput.steeringWheel;
+    const lateralDrift = roadSteer * absSpeed * seconds * 0.0014;
+    this.playtestSession.lateral = clamp(
+      Number(this.playtestSession.lateral || 0) * Math.max(0, 1 - seconds * 1.7) + lateralDrift,
+      -0.22,
+      0.22
+    );
+    const roadPose = this.getRaceWorldPoseAtDistance(this.playtestSession.distance);
+    const roadYaw = roadPose.yaw;
     const previousCarYaw = Number.isFinite(this.playtestSession.carYaw)
       ? this.playtestSession.carYaw
       : roadYaw;
     const wheelbaseM = Math.max(2.1, Number(tuning.wheelbaseM || 2.67));
-    const launchAligning = Number(this.playtestSession.elapsedMs || 0) < 380 && absSpeed < 2.2;
+    const launchAligning = launchLockActive || (Number(this.playtestSession.elapsedMs || 0) <= 120 && absSpeed < 0.8);
     const effectiveRoadSteer = launchAligning ? 0 : roadSteer;
-    const steeringAngle = clamp(effectiveRoadSteer, -1, 1) * 0.68;
+    const steeringAuthority = maxSteerAtSpeed;
+    const steeringAngle = clamp(effectiveRoadSteer, -1, 1)
+      * this.getRaceTireSteerAngleForSpeed(absSpeed)
+      * steeringAuthority;
     const steeringSpeedScale = launchAligning ? 0 : clamp(absSpeed / 2.5, 0, 1);
+    const highSpeedYawDamping = RACE_CONTROLLER_STEERING.highSpeedYawDampingFloor
+      + (1 - Math.pow(clamp(absSpeed / 64, 0, 1), 0.9))
+        * (1 - RACE_CONTROLLER_STEERING.highSpeedYawDampingFloor);
     const yawRate = (this.playtestSession.speedMps / wheelbaseM)
       * Math.tan(steeringAngle)
       * clamp(gripFactor, 0.32, 1.35)
-      * steeringSpeedScale;
+      * steeringSpeedScale
+      * highSpeedYawDamping;
     this.playtestSession.carYaw = launchAligning
       ? roadYaw
       : previousCarYaw + yawRate * seconds;
+    this.playtestSession.worldX = Number(this.playtestSession.worldX || 0)
+      + Math.sin(this.playtestSession.carYaw) * this.playtestSession.speedMps * seconds;
+    this.playtestSession.worldZ = Number(this.playtestSession.worldZ || 0)
+      + Math.cos(this.playtestSession.carYaw) * this.playtestSession.speedMps * seconds;
+    const routeLength = Math.max(1, Number(this.playtestSession.routeLength || this.getRaceRouteLength()));
+    const projection = this.getRaceRouteProjectionForWorldPoint({
+      x: this.playtestSession.worldX,
+      z: this.playtestSession.worldZ
+    });
+    const previousDistance = Number(this.playtestSession.previousDistance || this.playtestSession.distance || 0);
+    const progressRoadYaw = this.getRaceWorldPoseAtDistance(previousDistance).yaw;
+    const progressHeading = normalizeAngle(this.playtestSession.carYaw - progressRoadYaw);
+    const routeAdvance = this.playtestSession.speedMps * Math.cos(progressHeading) * seconds;
+    const integratedDistance = previousDistance + routeAdvance;
+    if (routeRuntimeType === 'circuit') {
+      const nextDistance = ((integratedDistance % routeLength) + routeLength) % routeLength;
+      if (routeAdvance > 0 && previousDistance > routeLength * 0.72 && nextDistance < routeLength * 0.28) {
+        this.playtestSession.lap += 1;
+      }
+      this.playtestSession.distance = nextDistance;
+    } else {
+      this.playtestSession.distance = clamp(integratedDistance, 0, routeLength);
+      const finish = this.getRaceWorldPoseAtDistance(routeLength);
+      const finishDx = Number(this.playtestSession.worldX || 0) - Number(finish.x || 0);
+      const finishDz = Number(this.playtestSession.worldZ || 0) - Number(finish.z || 0);
+      const finishRange = Math.max(this.getRaceRoadHalfWidthWorld() * 1.55, this.getRaceCarWorldWidth() * 5);
+      const integratedFinish = integratedDistance >= routeLength;
+      if ((this.playtestSession.distance >= routeLength - Math.max(4, this.getRaceCarWorldWidth() * 2)
+        && Math.hypot(finishDx, finishDz) <= finishRange)
+        || integratedFinish) {
+        this.playtestSession.distance = routeLength;
+        this.finishPlaytest();
+        return;
+      }
+    }
+    this.playtestSession.projectedDistance = routeRuntimeType === 'circuit'
+      ? ((Number(projection.distance || 0) % routeLength) + routeLength) % routeLength
+      : clamp(Number(projection.distance || this.playtestSession.distance || 0), 0, routeLength);
     this.playtestSession.heading = normalizeAngle(this.playtestSession.carYaw - roadYaw);
     this.playtestSession.cameraYaw = this.playtestSession.carYaw;
     const trackViewTarget = clamp(
-      (-this.playtestSession.lateral * 0.42) + (this.playtestSession.heading * 1.18),
-      -0.9,
-      0.9
+      (-this.playtestSession.lateral * 0.24) + (this.playtestSession.heading * 0.66),
+      -0.58,
+      0.58
     );
     this.playtestSession.roadViewOffset += (trackViewTarget - Number(this.playtestSession.roadViewOffset || 0)) * Math.min(1, seconds * 3.2);
     this.playtestSession.rpm = clamp(this.playtestSession.engineRpm / tuning.revLimitRpm, 0, 1.08);
+    this.updateRaceEngineAudio({ tuning, throttle, load: wheelSpinRatio });
+    const lateralSlip = Math.abs(roadSteer) * clamp(absSpeed / 17, 0, 1) * 2.18;
+    const brakeSlip = (brake + handbrake * 1.68) * clamp(absSpeed / 13, 0, 1) * 1.66;
+    this.updateRaceTireAudio({
+      slip: Math.max(Math.max(0, wheelSpinRatio - 0.92) * 0.85, lateralSlip, brakeSlip),
+      surface: segmentInfo.segment?.surface,
+      speedMps: absSpeed
+    });
     if (this.raceInput.autoShift && gear > 0 && this.playtestSession.shiftCooldownMs <= 0 && throttle) {
       if ((this.playtestSession.engineRpm > tuning.autoUpshiftRpm || this.playtestSession.speedMps > this.getRaceRedlineSpeedMps(tuning, gear) * 0.98) && this.raceInput.gear < tuning.gearRatios.length) {
         this.shiftRaceGear(1);
@@ -1948,20 +2916,54 @@ export default class RaceEditor {
 
   getRaceMaxSteerForSpeed(speedMps = 0) {
     const speed = Math.max(0, Number(speedMps) || 0);
-    return clamp(1 - speed / 78, 0.28, 1);
+    const speedFactor = clamp(speed / RACE_CONTROLLER_STEERING.speedReferenceMps, 0, 1);
+    const authority = RACE_CONTROLLER_STEERING.highwayAuthority
+      + (1 - Math.pow(speedFactor, 0.82))
+        * (RACE_CONTROLLER_STEERING.stoppedAuthority - RACE_CONTROLLER_STEERING.highwayAuthority);
+    return clamp(authority, RACE_CONTROLLER_STEERING.highwayAuthority, RACE_CONTROLLER_STEERING.stoppedAuthority);
   }
 
   getRaceBinarySteerAssist(speedMps = 0) {
     const speed = Math.max(0, Number(speedMps) || 0);
+    const speedFactor = clamp(speed / RACE_CONTROLLER_STEERING.speedReferenceMps, 0, 1);
     return {
-      maxSteer: this.getRaceMaxSteerForSpeed(speed),
-      response: 16 - clamp(speed / 45, 0, 1) * 10.5
+      maxSteer: 1,
+      steeringAuthority: this.getRaceMaxSteerForSpeed(speed),
+      response: RACE_CONTROLLER_STEERING.digitalResponseBase
+        + (1 - Math.pow(speedFactor, 0.7)) * RACE_CONTROLLER_STEERING.digitalResponseLowSpeedBonus
     };
+  }
+
+  getRaceAnalogSteerResponse(speedMps = 0) {
+    const speed = Math.max(0, Number(speedMps) || 0);
+    const speedFactor = clamp(speed / RACE_CONTROLLER_STEERING.speedReferenceMps, 0, 1);
+    return RACE_CONTROLLER_STEERING.analogResponseBase
+      + (1 - Math.pow(speedFactor, 0.82)) * RACE_CONTROLLER_STEERING.analogResponseLowSpeedBonus;
+  }
+
+  getRaceTireSteerAngleForSpeed(speedMps = 0) {
+    const speed = Math.max(0, Number(speedMps) || 0);
+    const speedFactor = clamp(speed / 64, 0, 1);
+    return RACE_CONTROLLER_STEERING.highwayTireAngleRad
+      + (1 - Math.pow(speedFactor, 0.72))
+        * (RACE_CONTROLLER_STEERING.parkingTireAngleRad - RACE_CONTROLLER_STEERING.highwayTireAngleRad);
+  }
+
+  getRaceSteeringWheelDisplayDegrees(speedMps = this.playtestSession?.speedMps || 0) {
+    const speed = Math.max(0, Math.abs(Number(speedMps) || 0));
+    const speedFactor = clamp(speed / (100 * MPH_TO_MPS), 0, 1);
+    return 20 + (1 - Math.pow(speedFactor, 0.62)) * (540 - 20);
+  }
+
+  getRaceVisibleSteeringWheelRotationRad(steering = this.raceInput.steeringWheel, speedMps = this.playtestSession?.speedMps || 0) {
+    return clamp(Number(steering) || 0, -1, 1)
+      * (this.getRaceSteeringWheelDisplayDegrees(speedMps) * Math.PI / 180);
   }
 
   getRaceSteeringReturnRate(speedMps = 0) {
     const speed = Math.max(0, Number(speedMps) || 0);
-    return 12 + clamp(speed / 42, 0, 1) * 8;
+    return RACE_CONTROLLER_STEERING.returnRateBase
+      + clamp(speed / 38, 0, 1) * RACE_CONTROLLER_STEERING.returnRateHighSpeedBonus;
   }
 
   applyRaceAnalogInput() {
@@ -1980,9 +2982,8 @@ export default class RaceEditor {
     const rightTrigger = Number(axes.rightTrigger || 0);
     const leftTrigger = Number(axes.leftTrigger || 0);
     if (Math.abs(leftX) > 0.08) {
-      const maxSteer = this.getRaceMaxSteerForSpeed(this.playtestSession?.speedMps || 0);
       const shaped = Math.sign(leftX) * Math.pow(Math.abs(leftX), 1.18);
-      this.raceInput.steeringTarget = clamp(shaped * maxSteer, -maxSteer, maxSteer);
+      this.raceInput.steeringTarget = clamp(shaped, -1, 1);
       this.raceInput.analogSteeringActive = true;
     } else {
       this.raceInput.analogSteeringActive = false;
@@ -2029,6 +3030,27 @@ export default class RaceEditor {
     this.raceInput.paused = !this.raceInput.paused;
   }
 
+  toggleRaceTransmissionMode() {
+    const car = this.playtestSession
+      ? (this.project.cars.find((candidate) => candidate.id === this.playtestSession.carId) || this.selectedCar)
+      : this.selectedCar;
+    const available = car?.transmissions || {};
+    const current = this.getRaceTransmissionType(car);
+    const next = current === 'manual' && available.automatic ? 'automatic' : 'manual';
+    const tuning = this.getRaceCarTuning(car, { transmissionType: next });
+    this.raceInput.transmissionMode = next;
+    this.raceInput.autoShift = tuning.shiftMode !== 'manual';
+    if (this.playtestSession) {
+      this.playtestSession.transmissionType = next;
+      this.playtestSession.engineSoundProfile = this.getRaceEngineProfileForTransmission(car, tuning);
+      if (this.raceInput.autoShift && this.raceInput.gear === 0) {
+        this.raceInput.gear = 1;
+        this.playtestSession.gear = 1;
+      }
+    }
+    this.status = `${car.name} transmission: ${next === 'manual' ? 'Manual' : 'Automatic'}`;
+  }
+
   getNextCoDriverCall() {
     const session = this.playtestSession;
     if (!session) return null;
@@ -2052,6 +3074,14 @@ export default class RaceEditor {
 
   findRootForAction(action) {
     const spec = getEditorMenuSpec(this.editorId);
+    if (this.activeViewportMode === 'portrait') {
+      const portraitRoot = buildRacePortraitMenuModel(this.editorId).rootTabs.find((entry) => (
+        spec?.sections?.[entry.id]?.actions?.includes(action)
+        || spec?.sections?.[entry.panel]?.actions?.includes(action)
+        || spec?.sections?.[entry.specId]?.actions?.includes(action)
+      ));
+      if (portraitRoot) return portraitRoot.id;
+    }
     return (spec?.root || []).find((rootId) => spec.sections?.[rootId]?.actions?.includes(action)) || null;
   }
 
@@ -2079,11 +3109,7 @@ export default class RaceEditor {
     ctx.fillRect(0, 0, width, height);
     drawSharedDesktopTopMenu(ctx, shell.topMenu, {
       registerButton: (button) => {
-        this.buttons.push({
-          id: button.id,
-          bounds: button.bounds,
-          desktopRootId: button.id,
-          onClick: () => {
+        this.buttons.push(createDesktopRootMenuHit(button, () => {
             if (this.openDesktopDropdownRootId === button.id && !this.closedDesktopDropdownRootId) {
               const nextDropdown = resolveClosedDesktopDropdownState({
                 dropdown: this.desktopDropdown,
@@ -2106,8 +3132,7 @@ export default class RaceEditor {
               this.openDesktopDropdownRootId = nextDropdown.openRootId;
               this.desktopDropdown = nextDropdown.dropdown;
             }
-          }
-        });
+          }));
       }
     });
     drawSharedDesktopRibbon(ctx, shell.leftRibbon, {
@@ -2145,6 +3170,9 @@ export default class RaceEditor {
       });
       drawSharedDesktopDropdown(ctx, dropdownPlan, {
         isActive: (item) => item.id === this.activeAction,
+        registerScrollRegion: (region) => {
+          this.menuScrollRegions.push(region);
+        },
         registerButton: ({ item, bounds }) => {
           const action = item.onSelect ? () => item.onSelect() : null;
           this.buttons.push(createDesktopDropdownCommandHit(item, bounds, action));
@@ -2171,7 +3199,7 @@ export default class RaceEditor {
       ]
       : [
         `Race: ${race.name}`,
-        `Type: ${race.type}`,
+        `Route: ${this.getSelectedRaceRuntimeType() === 'circuit' ? 'endpoints joined' : 'open finish'}`,
         `Segments: ${race.road.segments.length}`,
         `Selected: ${this.selectedSegmentIndex + 1}`,
         `Length: ${this.selectedSegment?.length || 0}`,
@@ -2184,6 +3212,7 @@ export default class RaceEditor {
     drawSharedDesktopContextPanel(ctx, bounds, {
       title: this.title,
       lines,
+      contentRoles: ['document-summary', 'selection-summary', 'status'],
       status: this.status
     });
   }
@@ -2194,6 +3223,7 @@ export default class RaceEditor {
       maxBottomRailHeight: 92,
       sheetRatio: 0.58
     });
+    this.raceMapZoomSliderBounds = null;
     ctx.fillStyle = UI_SUITE.colors.background;
     ctx.fillRect(0, 0, width, height);
     drawSharedPanel(ctx, layout.workSurface, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
@@ -2217,16 +3247,19 @@ export default class RaceEditor {
       menu: { id: 'menu', label: 'Menu', onClick: () => { this.mobileRootOpen = !this.mobileRootOpen; } },
       undo: this.getRailAction('undo', 'Undo', () => this.handleMenuAction('undo')),
       redo: this.getRailAction('redo', 'Redo', () => this.handleMenuAction('redo')),
+      'race-context': this.getRacePortraitContextAction(),
       'test-drive': { id: 'test-drive', label: 'Play', onClick: () => this.handleMenuAction('test-drive') }
     };
     const actions = buildRacePortraitMenuModel(this.editorId).bottomRailActions
       .map((id) => portraitActionById[id])
       .filter(Boolean);
-    drawSharedPortraitActionRail(ctx, layout.actionRail, null, actions, {
-      reserveThumbstick: false,
-      drawButton: (bounds, action) => this.registerDrawnButton(ctx, bounds, action)
-    });
-    const portraitRailIds = new Set(['menu', 'undo', 'redo', 'test-drive']);
+    if (canRenderEditorSurface(this.activeViewportMode, 'bottom-action-rail')) {
+      drawSharedPortraitActionRail(ctx, layout.actionRail, this.portraitThumbstick, actions, {
+        reserveThumbstick: canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick'),
+        drawButton: (bounds, action) => this.registerDrawnButton(ctx, bounds, action)
+      });
+    }
+    const portraitRailIds = new Set(['menu', 'undo', 'redo', this.getRacePortraitContextAction().id]);
     const portraitRailButtons = actions
       .map((action) => this.buttons.find((button) => button.id === action.id && portraitRailIds.has(button.id)))
       .filter(Boolean);
@@ -2238,12 +3271,18 @@ export default class RaceEditor {
       ];
     }
     if (this.mode === 'race') {
-      this.drawRaceBuilderOverlay(ctx, {
+      this.drawRacePortraitZoomSlider(ctx, {
+        x: layout.workSurface.x + 36,
+        y: Math.max(layout.workSurface.y + 84, layout.workSurface.y + layout.workSurface.h - 128),
+        w: Math.max(1, layout.workSurface.w - 72),
+        h: 26
+      });
+      this.drawRacePortraitModePanel(ctx, {
         x: layout.workSurface.x + 12,
-        y: layout.workSurface.y + layout.workSurface.h - 76,
+        y: layout.workSurface.y + layout.workSurface.h - 92,
         w: Math.max(1, layout.workSurface.w - 24),
-        h: 64
-      }, { compact: true });
+        h: 84
+      });
     }
     if (this.mobileRootOpen) {
       this.drawPortraitMenuSheet(ctx, layout);
@@ -2251,6 +3290,37 @@ export default class RaceEditor {
     if (this.playtestPickerOpen) {
       this.drawPlaytestPicker(ctx, width, height);
     }
+  }
+
+  drawRacePortraitZoomSlider(ctx, bounds) {
+    if (!bounds || bounds.w <= 0 || bounds.h <= 0) return;
+    const rail = {
+      x: bounds.x + 10,
+      y: bounds.y + Math.floor((bounds.h - 10) / 2),
+      w: Math.max(1, bounds.w - 20),
+      h: 10
+    };
+    this.raceMapZoomSliderBounds = {
+      x: rail.x,
+      y: bounds.y - 8,
+      w: rail.w,
+      h: bounds.h + 16
+    };
+    ctx.save();
+    ctx.fillStyle = 'rgba(5,8,7,0.72)';
+    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.strokeStyle = 'rgba(217,230,210,0.22)';
+    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    drawSharedMobileZoomSlider(ctx, rail, this.getRaceMapZoomRatio(), {
+      knobColor: UI_SUITE.colors.accent,
+      alpha: 0.96
+    });
+    ctx.restore();
+    this.buttons.push({
+      id: 'race-map-zoom',
+      bounds: { ...this.raceMapZoomSliderBounds, id: 'race-map-zoom' },
+      onClick: ({ x }) => this.updateRaceMapZoomFromSliderX(x)
+    });
   }
 
   drawPortraitMenuSheet(ctx, layout) {
@@ -2261,7 +3331,7 @@ export default class RaceEditor {
       label: entry.label,
       active: this.activeRootId === entry.id,
       onClick: () => { this.activeRootId = entry.id; }
-    })), Math.min(4, Math.max(1, roots.length)), { scrollKey: `${this.editorId}:portrait-root` });
+    })), Math.max(1, roots.length), { scrollKey: `${this.editorId}:portrait-root` });
     const items = this.getMenuItems(this.activeRootId);
     this.drawActionRows(ctx, layout.subRail, items.map((item) => ({
       id: item.id,
@@ -2282,6 +3352,13 @@ export default class RaceEditor {
       reserveRightRail: !gamepadMenuState.isLandscapeMenuMode,
       reserveThumbstickSpace: false
     });
+    const canRenderLandscapeBottomRail = canRenderEditorPlanSurface(shell, 'bottom-tool-rail');
+    const canRenderLandscapeRightSubmenu = canRenderEditorPlanSurface(shell, 'right-drawer')
+      && canRenderEditorPlanSurface(shell, 'landscape-right-submenu');
+    const canRenderLandscapeRootDrawer = canRenderEditorPlanSurface(shell, 'left-overlay-drawer');
+    const landscapeToolOptionsSurface = canRenderLandscapeBottomRail ? shell.surfaces.toolOptions : null;
+    const landscapeSubmenuSurface = canRenderLandscapeRightSubmenu ? shell.surfaces.submenu : null;
+    const landscapeRootDrawerSurface = canRenderLandscapeRootDrawer ? shell.surfaces.rootDrawer : null;
     this.activeShellModeContract = shell.modeContract;
     ctx.fillStyle = UI_SUITE.colors.background;
     ctx.fillRect(0, 0, width, height);
@@ -2310,36 +3387,40 @@ export default class RaceEditor {
         h: 56
       }, { compact: true });
     }
-    drawSharedPanel(ctx, shell.surfaces.compactCommandRail, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
-    const railActions = buildCompactLandscapeCommandRailActions({
-      menu: { id: 'menu', label: 'Menu', onClick: () => this.toggleRootMenu({ gamepad }) },
-      undo: this.getRailAction('undo', 'Undo', () => this.handleMenuAction('undo')),
-      redo: this.getRailAction('redo', 'Redo', () => this.handleMenuAction('redo')),
-      quick: this.mode === 'race'
-        ? { id: 'generate-random-race', label: 'Gen', onClick: () => this.handleMenuAction('generate-random-race') }
-        : { id: 'test-drive', label: 'Play', onClick: () => this.handleMenuAction('test-drive') }
-    });
-    buildCompactLandscapeCommandRailButtonLayout({
-      bounds: shell.surfaces.compactCommandRail,
-      actions: railActions
-    }).forEach(({ action, bounds }) => this.registerDrawnButton(ctx, bounds, action));
-    if (shell.surfaces.toolOptions) {
-      this.drawLandscapeToolOptions(ctx, shell.surfaces.toolOptions);
+    const gamepadMenuOpen = gamepadMenuState.isLandscapeMenuMode && (this.mobileRootOpen || this.gamepadSubmenuOpen);
+    if (!gamepadMenuOpen) {
+      drawSharedPanel(ctx, shell.surfaces.compactCommandRail, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+      const railActions = buildCompactLandscapeCommandRailActions({
+        menu: { id: 'menu', label: 'Menu', onClick: () => this.toggleRootMenu({ gamepad }) },
+        undo: this.getRailAction('undo', 'Undo', () => this.handleMenuAction('undo')),
+        redo: this.getRailAction('redo', 'Redo', () => this.handleMenuAction('redo')),
+        quick: this.mode === 'race'
+          ? { id: 'generate-random-race', label: 'Gen', onClick: () => this.handleMenuAction('generate-random-race') }
+          : { id: 'test-drive', label: 'Play', onClick: () => this.handleMenuAction('test-drive') }
+      });
+      buildCompactLandscapeCommandRailButtonLayout({
+        bounds: shell.surfaces.compactCommandRail,
+        actions: railActions
+      }).forEach(({ action, bounds }) => this.registerDrawnButton(ctx, bounds, action));
+    }
+    if (landscapeToolOptionsSurface) {
+      this.drawLandscapeToolOptions(ctx, landscapeToolOptionsSurface);
     }
     if (gamepadMenuState.isLandscapeMenuMode) {
       const menuPlan = buildGamepadSlideOutMenuPlan(this.editorId, {
         rootOpen: this.mobileRootOpen,
-        activeRootId: this.activeRootId
+        activeRootId: this.activeRootId,
+        focusedItemId: this.gamepadFocusedItemId || null
       });
       this.activeGamepadMenuModeContract = menuPlan.modeContract;
       if (this.mobileRootOpen) {
-        this.drawLandscapeRootDrawer(ctx, shell.surfaces.rootDrawer, {
+        this.drawLandscapeRootDrawer(ctx, landscapeRootDrawerSurface || shell.surfaces.rootDrawer, {
           gamepad: true,
           rootEntries: menuPlan.rootEntries,
           headerHint: menuPlan.headerHint
         });
       } else if (this.gamepadSubmenuOpen) {
-        this.drawLandscapeSubmenu(ctx, shell.surfaces.rootDrawer, {
+        this.drawLandscapeSubmenu(ctx, landscapeRootDrawerSurface || shell.surfaces.rootDrawer, {
           gamepad: true,
           title: menuPlan.submenu?.title || 'Menu',
           headerHint: menuPlan.headerHint,
@@ -2348,14 +3429,14 @@ export default class RaceEditor {
         });
       }
     } else if (this.mobileRootOpen) {
-      this.drawLandscapeRootDrawer(ctx, shell.surfaces.rootDrawer);
-      if (shell.surfaces.submenu) {
-        this.drawLandscapeSubmenu(ctx, shell.surfaces.submenu);
+      this.drawLandscapeRootDrawer(ctx, landscapeRootDrawerSurface || shell.surfaces.rootDrawer);
+      if (landscapeSubmenuSurface) {
+        this.drawLandscapeSubmenu(ctx, landscapeSubmenuSurface);
       }
-    } else if (!gamepad && shell.surfaces.submenu) {
-      this.drawLandscapeSubmenu(ctx, shell.surfaces.submenu);
+    } else if (!gamepad && landscapeSubmenuSurface) {
+      this.drawLandscapeSubmenu(ctx, landscapeSubmenuSurface);
     }
-    if (gamepadMenuState.isLandscapeMenuMode) {
+    if (gamepadMenuState.isLandscapeMenuMode && canRenderEditorSurface(this.activeViewportMode, 'gamepad-hint-bar')) {
       this.drawGamepadHintBar(ctx, {
         x: shell.surfaces.workSurface.x + 12,
         y: shell.surfaces.workSurface.y + shell.surfaces.workSurface.h - 36,
@@ -2493,7 +3574,10 @@ export default class RaceEditor {
     const wheelX = bounds.x + bounds.w / 2;
     const wheelY = bounds.y + bounds.h * 0.82;
     const wheelR = Math.max(34, Math.min(bounds.w, bounds.h) * 0.13);
-    const rotation = (this.raceInput.steeringWheel || 0) * Math.PI * 3;
+    const rotation = this.getRaceVisibleSteeringWheelRotationRad(
+      this.raceInput.steeringWheel,
+      this.playtestSession?.speedMps || 0
+    );
     ctx.fillStyle = 'rgba(5,8,7,0.78)';
     ctx.fillRect(bounds.x, bounds.y + bounds.h * 0.78, bounds.w, bounds.h * 0.22);
     ctx.save();
@@ -2520,6 +3604,7 @@ export default class RaceEditor {
     const speedMph = Math.round((this.playtestSession?.speedMps || 0) * 2.23694);
     const progress = (this.playtestSession?.distance || 0) / Math.max(1, this.playtestSession?.routeLength || 1);
     const nextCall = this.getNextCoDriverCall();
+    this.drawRacePlaytestTopControls(ctx, bounds);
     this.drawRaceTrackMinimap(ctx, {
       x: bounds.x + 5,
       y: bounds.y + 31,
@@ -2542,6 +3627,41 @@ export default class RaceEditor {
     this.drawRaceTachPanel(ctx, bounds, { speedMph, progress });
   }
 
+  drawRacePlaytestTopControls(ctx, bounds) {
+    const controls = [
+      {
+        id: 'race-pause-toggle',
+        label: this.raceInput.paused ? 'Resume' : 'Pause',
+        onClick: () => this.toggleRacePause()
+      },
+      {
+        id: 'race-return-editor',
+        label: 'Editor',
+        onClick: () => this.endPlaytest()
+      },
+      {
+        id: 'race-exit-main',
+        label: 'Main Menu',
+        onClick: () => this.exitPlaytestToMainMenu()
+      }
+    ];
+    const gap = 4;
+    const h = 20;
+    const widths = controls.map((control) => {
+      if (control.id === 'race-pause-toggle') return 48;
+      if (control.id === 'race-exit-main') return 76;
+      return 56;
+    });
+    const totalW = widths.reduce((sum, width) => sum + width, 0) + gap * (controls.length - 1);
+    let x = bounds.x + bounds.w - totalW - 5;
+    const y = bounds.y + 5;
+    controls.forEach((control, index) => {
+      const rect = { x, y, w: widths[index], h };
+      this.registerDrawnButton(ctx, rect, control);
+      x += widths[index] + gap;
+    });
+  }
+
   drawRaceTrackMinimap(ctx, bounds) {
     const session = this.playtestSession;
     const segments = this.selectedRace?.road?.segments || [];
@@ -2552,35 +3672,116 @@ export default class RaceEditor {
       w: Math.max(1, bounds.w - 12),
       h: Math.max(1, bounds.h - 12)
     };
-    const points = this.getRaceMapPoints(mapBounds);
+    const samples = this.getRacePathSamples({ step: 28 });
+    if (samples.length < 2) return;
+    const minX = Math.min(...samples.map((point) => Number(point.x || 0)));
+    const maxX = Math.max(...samples.map((point) => Number(point.x || 0)));
+    const minZ = Math.min(...samples.map((point) => Number(point.z || 0)));
+    const maxZ = Math.max(...samples.map((point) => Number(point.z || 0)));
+    const pad = Math.max(4, Math.min(mapBounds.w, mapBounds.h) * 0.08);
+    const usableW = Math.max(1, mapBounds.w - pad * 2);
+    const usableH = Math.max(1, mapBounds.h - pad * 2);
+    const scale = Math.min(
+      usableW / Math.max(1, maxX - minX),
+      usableH / Math.max(1, maxZ - minZ)
+    );
+    const toScreen = (point) => ({
+      x: mapBounds.x + pad + (Number(point.x || 0) - minX) * scale + (usableW - (maxX - minX) * scale) / 2,
+      y: mapBounds.y + pad + (Number(point.z || 0) - minZ) * scale + (usableH - (maxZ - minZ) * scale) / 2
+    });
     ctx.save();
     ctx.fillStyle = 'rgba(5,8,7,0.52)';
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.lineWidth = 2;
     ctx.strokeStyle = 'rgba(217,230,210,0.64)';
     ctx.beginPath();
-    points.forEach((point, index) => {
-      if (index === 0) ctx.moveTo(point.screenX, point.screenY);
-      else ctx.lineTo(point.screenX, point.screenY);
+    samples.forEach((point, index) => {
+      const screen = toScreen(point);
+      if (index === 0) ctx.moveTo(screen.x, screen.y);
+      else ctx.lineTo(screen.x, screen.y);
     });
-    if (this.selectedRace.type === 'circuit') ctx.closePath();
+    const routeRuntimeType = session.routeRuntimeType || this.getSelectedRaceRuntimeType();
+    if (routeRuntimeType === 'circuit') ctx.closePath();
     ctx.stroke();
-    const info = this.getRaceSegmentAtDistance(session.distance);
-    const a = points[info.index] || points[0];
-    const b = points[info.index + 1] || points[points.length - 1] || a;
-    const t = clamp(Number(info.progress) || 0, 0, 1);
-    const playerX = a.screenX + (b.screenX - a.screenX) * t;
-    const playerY = a.screenY + (b.screenY - a.screenY) * t;
-    ctx.fillStyle = UI_SUITE.colors.accent;
-    ctx.beginPath();
-    ctx.arc?.(playerX, playerY, 3.5, 0, Math.PI * 2);
-    ctx.fill();
+    const player = toScreen({
+      x: Number.isFinite(session.worldX) ? session.worldX : this.getRaceWorldPoseAtDistance(session.distance).x,
+      z: Number.isFinite(session.worldZ) ? session.worldZ : this.getRaceWorldPoseAtDistance(session.distance).z
+    });
+    const start = toScreen(samples[0]);
+    const finish = toScreen(samples[samples.length - 1]);
+    ctx.fillStyle = '#f1f4ef';
+    ctx.fillRect(start.x - 2, start.y - 2, 4, 4);
+    if (routeRuntimeType !== 'circuit') {
+      ctx.fillStyle = '#ff4f4f';
+      ctx.fillRect(finish.x - 2, finish.y - 2, 4, 4);
+    }
+    this.drawRaceMinimapCar(ctx, player, Number(session.carYaw || 0), scale);
     ctx.fillStyle = UI_SUITE.colors.text;
     ctx.font = `700 6px ${UI_SUITE.font.family}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillText(this.selectedRace.type === 'circuit' ? `L${session.lap}` : `${Math.round((session.distance / Math.max(1, session.routeLength)) * 100)}%`, bounds.x + 5, bounds.y + 4);
+    ctx.fillText(routeRuntimeType === 'circuit' ? `L${session.lap}` : `${Math.round((session.distance / Math.max(1, session.routeLength)) * 100)}%`, bounds.x + 5, bounds.y + 4);
     ctx.restore();
+  }
+
+  drawRaceMinimapCar(ctx, player, yaw = 0, scale = 1) {
+    const size = clamp(10 + Number(scale || 1) * 0.08, 11, 18);
+    const forward = {
+      x: Math.sin(Number(yaw) || 0),
+      y: Math.cos(Number(yaw) || 0)
+    };
+    const right = {
+      x: Math.cos(Number(yaw) || 0),
+      y: -Math.sin(Number(yaw) || 0)
+    };
+    const nose = { x: player.x + forward.x * size * 1.02, y: player.y + forward.y * size * 1.02 };
+    const frontLeft = { x: player.x + forward.x * size * 0.42 - right.x * size * 0.48, y: player.y + forward.y * size * 0.42 - right.y * size * 0.48 };
+    const frontRight = { x: player.x + forward.x * size * 0.42 + right.x * size * 0.48, y: player.y + forward.y * size * 0.42 + right.y * size * 0.48 };
+    const rearLeft = { x: player.x - forward.x * size * 0.78 - right.x * size * 0.42, y: player.y - forward.y * size * 0.78 - right.y * size * 0.42 };
+    const rearRight = { x: player.x - forward.x * size * 0.78 + right.x * size * 0.42, y: player.y - forward.y * size * 0.78 + right.y * size * 0.42 };
+    ctx.strokeStyle = '#050807';
+    ctx.lineWidth = Math.max(1.2, size * 0.12);
+    ctx.fillStyle = '#58d6ff';
+    ctx.beginPath();
+    ctx.moveTo(nose.x, nose.y);
+    ctx.lineTo(frontRight.x, frontRight.y);
+    ctx.lineTo(rearRight.x, rearRight.y);
+    ctx.lineTo(rearLeft.x, rearLeft.y);
+    ctx.lineTo(frontLeft.x, frontLeft.y);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#050807';
+    [
+      { x: frontLeft.x, y: frontLeft.y },
+      { x: frontRight.x, y: frontRight.y },
+      { x: rearLeft.x, y: rearLeft.y },
+      { x: rearRight.x, y: rearRight.y }
+    ].forEach((wheel) => {
+      ctx.beginPath();
+      ctx.arc?.(wheel.x, wheel.y, Math.max(1.1, size * 0.1), 0, Math.PI * 2);
+      ctx.fill?.();
+    });
+    ctx.fillStyle = '#10222c';
+    ctx.beginPath();
+    ctx.moveTo(player.x + forward.x * size * 0.25, player.y + forward.y * size * 0.25);
+    ctx.lineTo(player.x - forward.x * size * 0.34 + right.x * size * 0.24, player.y - forward.y * size * 0.34 + right.y * size * 0.24);
+    ctx.lineTo(player.x - forward.x * size * 0.34 - right.x * size * 0.24, player.y - forward.y * size * 0.34 - right.y * size * 0.24);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#f2d45c';
+    ctx.beginPath();
+    ctx.arc?.(nose.x, nose.y, Math.max(1.3, size * 0.13), 0, Math.PI * 2);
+    ctx.fill?.();
+    ctx.strokeStyle = '#f1f4ef';
+    ctx.lineWidth = Math.max(1.2, size * 0.11);
+    ctx.beginPath();
+    ctx.moveTo(player.x - forward.x * size * 0.68, player.y - forward.y * size * 0.68);
+    ctx.lineTo(player.x + forward.x * size * 1.36, player.y + forward.y * size * 1.36);
+    ctx.lineTo(player.x + forward.x * size * 1.02 + right.x * size * 0.28, player.y + forward.y * size * 1.02 + right.y * size * 0.28);
+    ctx.moveTo(player.x + forward.x * size * 1.36, player.y + forward.y * size * 1.36);
+    ctx.lineTo(player.x + forward.x * size * 1.02 - right.x * size * 0.28, player.y + forward.y * size * 1.02 - right.y * size * 0.28);
+    ctx.stroke();
   }
 
   formatRaceTime(ms = 0) {
@@ -2611,7 +3812,8 @@ export default class RaceEditor {
     ctx.fillText(this.formatRaceTime(session.elapsedMs), panel.x + panel.w - 5, panel.y + 9);
     ctx.fillStyle = UI_SUITE.colors.muted;
     ctx.font = `6px ${UI_SUITE.font.family}`;
-    const lapText = this.selectedRace.type === 'circuit'
+    const routeRuntimeType = session.routeRuntimeType || this.getSelectedRaceRuntimeType();
+    const lapText = routeRuntimeType === 'circuit'
       ? `Lap ${session.lap}/${this.selectedRace.laps || 1}`
       : `${Math.round(clamp((session.distance || 0) / Math.max(1, session.routeLength || 1), 0, 1) * 100)}%`;
     ctx.fillText(lapText, panel.x + panel.w - 5, panel.y + 20);
@@ -2677,50 +3879,47 @@ export default class RaceEditor {
       ctx.strokeStyle = 'rgba(5,8,7,0.72)';
       ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
     };
-    const drawWheelPart = (x, y, tireValue, suspensionValue) => {
+    const drawWheelPart = (x, y, tireValue, suspensionValue, side = 'left') => {
       drawPart({ x, y, w: wheel.w, h: wheel.h }, tireValue);
-      drawPart({ x: x + wheel.w + 2, y: y + 3, w: 4, h: Math.max(2, wheel.h - 5) }, suspensionValue);
+      const suspensionX = side === 'right' ? x - 6 : x + wheel.w + 2;
+      drawPart({ x: suspensionX, y: y + 3, w: 4, h: Math.max(2, wheel.h - 5) }, suspensionValue);
     };
     ctx.fillStyle = 'rgba(5,8,7,0.6)';
     ctx.fillRect(panel.x, panel.y, panel.w, panel.h);
-    ctx.fillStyle = UI_SUITE.colors.text;
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.font = `700 6px ${UI_SUITE.font.family}`;
-    ctx.fillText('DMG', panel.x + 5, panel.y + 7);
-    drawWheelPart(panel.x + 8, car.y + 4, damage.tires.fl, damage.suspension.fl);
-    drawWheelPart(panel.x + 8, car.y + car.h - 12, damage.tires.rl, damage.suspension.rl);
-    drawWheelPart(panel.x + panel.w - 20, car.y + 4, damage.tires.fr, damage.suspension.fr);
-    drawWheelPart(panel.x + panel.w - 20, car.y + car.h - 12, damage.tires.rr, damage.suspension.rr);
+    drawWheelPart(panel.x + 8, car.y + 4, damage.tires.fl, damage.suspension.fl, 'left');
+    drawWheelPart(panel.x + 8, car.y + car.h - 12, damage.tires.rl, damage.suspension.rl, 'left');
+    drawWheelPart(panel.x + panel.w - 13, car.y + 4, damage.tires.fr, damage.suspension.fr, 'right');
+    drawWheelPart(panel.x + panel.w - 13, car.y + car.h - 12, damage.tires.rr, damage.suspension.rr, 'right');
     drawPart({ x: car.x + 5, y: car.y, w: car.w - 10, h: 5 }, damage.panels.front);
     drawPart({ x: car.x + 5, y: car.y + car.h - 5, w: car.w - 10, h: 5 }, damage.panels.rear);
     drawPart({ x: car.x, y: car.y + 5, w: 5, h: car.h - 10 }, damage.panels.left);
     drawPart({ x: car.x + car.w - 5, y: car.y + 5, w: 5, h: car.h - 10 }, damage.panels.right);
     drawPart({ x: car.x + 9, y: car.y + 7, w: 11, h: 9 }, damage.engine);
     drawPart({ x: car.x + 9, y: car.y + 19, w: 10, h: 8 }, damage.transmission);
-    ctx.fillStyle = UI_SUITE.colors.muted;
-    ctx.font = `6px ${UI_SUITE.font.family}`;
-    ctx.fillText('FL', panel.x + 8, car.y - 4);
-    ctx.fillText('FR', panel.x + panel.w - 20, car.y - 4);
-    ctx.fillText('RL', panel.x + 8, car.y + car.h + 3);
-    ctx.fillText('RR', panel.x + panel.w - 20, car.y + car.h + 3);
-    ctx.textAlign = 'center';
-    ctx.fillText('ENG', car.x + car.w / 2, car.y + 15);
-    ctx.fillText('TRN', car.x + car.w / 2, car.y + 32);
   }
 
   drawRacePauseOverlay(ctx, bounds) {
+    const car = this.playtestSession
+      ? (this.project.cars.find((candidate) => candidate.id === this.playtestSession.carId) || this.selectedCar)
+      : this.selectedCar;
+    const transmissionType = this.getRaceTransmissionType(car);
     const panel = {
       x: bounds.x + Math.max(12, bounds.w * 0.16),
       y: bounds.y + Math.max(24, bounds.h * 0.18),
       w: Math.max(220, bounds.w * 0.68),
-      h: 112
+      h: 158
     };
     drawSharedPanel(ctx, panel, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.accent });
     ctx.fillStyle = UI_SUITE.colors.text;
     ctx.font = `700 18px ${UI_SUITE.font.family}`;
     ctx.fillText('Race Paused', panel.x + 16, panel.y + 30);
-    const resume = { x: panel.x + 16, y: panel.y + 56, w: panel.w - 32, h: 36 };
+    const transmission = { x: panel.x + 16, y: panel.y + 54, w: panel.w - 32, h: 32 };
+    this.registerDrawnButton(ctx, transmission, {
+      id: 'race-transmission-toggle',
+      label: `Transmission: ${transmissionType === 'manual' ? 'Manual' : 'Automatic'}`,
+      onClick: () => this.toggleRaceTransmissionMode()
+    });
+    const resume = { x: panel.x + 16, y: panel.y + 96, w: panel.w - 32, h: 36 };
     this.registerDrawnButton(ctx, resume, {
       id: 'race-resume',
       label: 'Resume',
@@ -2760,8 +3959,7 @@ export default class RaceEditor {
     const relX = ((payload.x - bounds.x) / Math.max(1, bounds.w)) * 2 - 1;
     const relY = ((payload.y - bounds.y) / Math.max(1, bounds.h)) * 2 - 1;
     if (analog) {
-      const maxSteer = this.getRaceMaxSteerForSpeed(this.playtestSession?.speedMps || 0);
-      this.raceInput.steeringTarget = clamp(relX, -1, 1) * maxSteer;
+      this.raceInput.steeringTarget = clamp(relX, -1, 1);
       this.raceInput.analogSteeringActive = true;
       return;
     }
@@ -2802,7 +4000,7 @@ export default class RaceEditor {
   }
 
   isDesktopMode() {
-    return !this.game?.deviceIsMobile && !this.game?.isMobile;
+    return this.activeViewportMode === 'desktop';
   }
 
   isPointInBounds(point = {}, bounds = {}) {
@@ -2843,8 +4041,8 @@ export default class RaceEditor {
   }
 
   drawPlaytestPicker(ctx, width, height) {
-    const panelW = Math.min(width - 28, 460);
-    const panelH = Math.min(height - 28, 300);
+    const panelW = Math.min(width - 28, this.preRaceTuningOpen ? 620 : 460);
+    const panelH = Math.min(height - 28, this.preRaceTuningOpen ? 520 : 342);
     const bounds = {
       x: Math.max(14, (width - panelW) / 2),
       y: Math.max(14, (height - panelH) / 2),
@@ -2858,7 +4056,7 @@ export default class RaceEditor {
     ctx.font = `700 18px ${UI_SUITE.font.family}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText('Choose Race Car', bounds.x + 18, bounds.y + 28);
+    ctx.fillText(this.preRaceTuningOpen ? 'Pre-Race Tuning' : 'Choose Race Car', bounds.x + 18, bounds.y + 28);
     ctx.font = `12px ${UI_SUITE.font.family}`;
     ctx.fillStyle = UI_SUITE.colors.muted;
     const race = this.selectedRace;
@@ -2866,6 +4064,20 @@ export default class RaceEditor {
     const hazardCount = race.hazards?.length || 0;
     const callCount = race.codriver?.enabled ? (race.codriver.calls?.length || 0) : 0;
     ctx.fillText(`${race.name} • ${race.competition?.mode || 'solo'} • AI ${aiCount} • Hazards ${hazardCount} • Calls ${callCount}`, bounds.x + 18, bounds.y + 52);
+
+    if (this.preRaceTuningOpen) {
+      this.drawPreRaceTuningPanel(ctx, {
+        x: bounds.x + 16,
+        y: bounds.y + 72,
+        w: bounds.w - 32,
+        h: bounds.h - 124
+      });
+      const back = { x: bounds.x + 18, y: bounds.y + bounds.h - 44, w: 92, h: 32 };
+      const start = { x: bounds.x + bounds.w - 118, y: bounds.y + bounds.h - 44, w: 100, h: 32 };
+      this.registerDrawnButton(ctx, back, { id: 'pre-race-back', label: 'Back', onClick: () => { this.preRaceTuningOpen = false; } });
+      this.registerDrawnButton(ctx, start, { id: 'pre-race-start', label: 'Start', onClick: () => this.startPlaytest(this.project.selectedCarId) });
+      return;
+    }
 
     const rowY = bounds.y + 76;
     const rowH = 44;
@@ -2882,13 +4094,168 @@ export default class RaceEditor {
       this.buttons.push({
         id: `playtest-car-${car.id}`,
         bounds: { ...buttonBounds, id: `playtest-car-${car.id}` },
-        onClick: () => this.startPlaytest(car.id)
+        onClick: () => {
+          this.project.selectedCarId = car.id;
+          this.status = `Selected ${car.name}`;
+        }
       });
     });
 
-    const cancel = { x: bounds.x + bounds.w - 110, y: bounds.y + bounds.h - 48, w: 92, h: 34 };
-    this.drawButton(ctx, cancel, 'Cancel');
-    this.buttons.push({ id: 'playtest-cancel', bounds: { ...cancel, id: 'playtest-cancel' }, onClick: () => this.cancelPlaytestPicker() });
+    const cancel = { x: bounds.x + 18, y: bounds.y + bounds.h - 48, w: 92, h: 34 };
+    const tuning = { x: bounds.x + bounds.w - 222, y: bounds.y + bounds.h - 48, w: 96, h: 34 };
+    const start = { x: bounds.x + bounds.w - 110, y: bounds.y + bounds.h - 48, w: 92, h: 34 };
+    this.registerDrawnButton(ctx, cancel, { id: 'playtest-cancel', label: 'Cancel', onClick: () => this.cancelPlaytestPicker() });
+    this.registerDrawnButton(ctx, tuning, { id: 'playtest-tuning', label: 'Tuning', onClick: () => { this.preRaceTuningOpen = true; } });
+    this.registerDrawnButton(ctx, start, { id: 'playtest-start', label: 'Start', onClick: () => this.startPlaytest(this.project.selectedCarId) });
+  }
+
+  drawPreRaceTuningPanel(ctx, bounds) {
+    const car = this.selectedCar;
+    const setup = this.getRaceCarSetup(car);
+    const tuning = car.tuning || {};
+    const rowH = 24;
+    const gap = 6;
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `700 12px ${UI_SUITE.font.family}`;
+    ctx.fillText(`${car.name} setup`, bounds.x, bounds.y + 10, bounds.w);
+    const wheelLabels = [
+      ['fl', 'FL'],
+      ['fr', 'FR'],
+      ['rl', 'RL'],
+      ['rr', 'RR']
+    ];
+    const tireY = bounds.y + 26;
+    const tireW = Math.max(62, (bounds.w - gap * 3) / 4);
+    wheelLabels.forEach(([wheelId, label], index) => {
+      const compound = this.getRaceTireCompound(setup.tireCompoundByWheel[wheelId]);
+      this.registerDrawnButton(ctx, {
+        x: bounds.x + index * (tireW + gap),
+        y: tireY,
+        w: tireW,
+        h: 30
+      }, {
+        id: `tire-${wheelId}`,
+        label: `${label} ${compound.label}`,
+        onClick: () => this.cycleRaceTireCompound(wheelId)
+      });
+    });
+    const rows = [
+      ['pressure-fl', 'FL Pressure', setup.tirePressurePsi.fl, 'psi'],
+      ['pressure-fr', 'FR Pressure', setup.tirePressurePsi.fr, 'psi'],
+      ['pressure-rl', 'RL Pressure', setup.tirePressurePsi.rl, 'psi'],
+      ['pressure-rr', 'RR Pressure', setup.tirePressurePsi.rr, 'psi'],
+      ['gearFinalDrive', 'Final Drive', tuning.gearFinalDrive, ''],
+      ['camberFront', 'Camber F', tuning.camberFront || 0, 'deg'],
+      ['camberRear', 'Camber R', tuning.camberRear || 0, 'deg'],
+      ['antiRollFront', 'Sway F', tuning.antiRollFront, ''],
+      ['antiRollRear', 'Sway R', tuning.antiRollRear, ''],
+      ['springFront', 'Spring F', tuning.springFront, ''],
+      ['springRear', 'Spring R', tuning.springRear, ''],
+      ['rideHeightFront', 'Ride F', tuning.rideHeightFront || 0.5, ''],
+      ['rideHeightRear', 'Ride R', tuning.rideHeightRear || 0.5, ''],
+      ['bumpFront', 'Bump F', tuning.bumpFront || tuning.dampingFront, ''],
+      ['reboundFront', 'Rebound F', tuning.reboundFront || tuning.dampingFront, ''],
+      ['aeroFront', 'Aero F', tuning.aeroFront, ''],
+      ['aeroRear', 'Aero R', tuning.aeroRear, ''],
+      ['differentialAccel', 'Diff Accel', tuning.differentialAccel, ''],
+      ['differentialDecel', 'Diff Decel', tuning.differentialDecel, '']
+    ];
+    const startY = tireY + 42;
+    const columns = bounds.w > 430 ? 2 : 1;
+    const colW = (bounds.w - gap * (columns - 1)) / columns;
+    rows.forEach((row, index) => {
+      const col = index % columns;
+      const line = Math.floor(index / columns);
+      const x = bounds.x + col * (colW + gap);
+      const y = startY + line * (rowH + 5);
+      if (y + rowH > bounds.y + bounds.h) return;
+      this.drawTuningSliderRow(ctx, { x, y, w: colW, h: rowH }, row);
+    });
+  }
+
+  drawTuningSliderRow(ctx, bounds, [id, label, value, suffix]) {
+    ctx.fillStyle = 'rgba(217,230,210,0.08)';
+    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.font = `700 9px ${UI_SUITE.font.family}`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, bounds.x + 6, bounds.y + bounds.h / 2, bounds.w * 0.34);
+    const minus = { x: bounds.x + bounds.w - 92, y: bounds.y + 2, w: 24, h: bounds.h - 4 };
+    const plus = { x: bounds.x + bounds.w - 26, y: bounds.y + 2, w: 24, h: bounds.h - 4 };
+    const valueBounds = { x: minus.x + 28, y: bounds.y + 2, w: 38, h: bounds.h - 4 };
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.textAlign = 'center';
+    const numeric = Number(value || 0);
+    ctx.fillText(`${Math.abs(numeric) >= 10 ? numeric.toFixed(0) : numeric.toFixed(2)}${suffix ? ` ${suffix}` : ''}`, valueBounds.x + valueBounds.w / 2, bounds.y + bounds.h / 2, valueBounds.w);
+    this.registerDrawnButton(ctx, minus, { id: `tune-${id}-down`, label: '-', onClick: () => this.adjustRaceTuningValue(id, -1) });
+    this.registerDrawnButton(ctx, plus, { id: `tune-${id}-up`, label: '+', onClick: () => this.adjustRaceTuningValue(id, 1) });
+  }
+
+  drawRacePortraitModePanel(ctx, bounds) {
+    drawSharedPanel(ctx, bounds, { fill: 'rgba(5,8,7,0.82)', border: UI_SUITE.colors.border });
+    const pad = 8;
+    const gap = 6;
+    const modeButtonW = Math.max(62, Math.floor((bounds.w - pad * 2 - gap * 2) / 3));
+    [
+      { id: 'portrait-mode-race', label: 'Race', mode: 'race' },
+      { id: 'portrait-mode-ground', label: 'Ground', mode: 'ground' },
+      { id: 'portrait-mode-elevation', label: 'Elev', mode: 'elevation' }
+    ].forEach((mode, index) => {
+      this.registerDrawnButton(ctx, {
+        x: bounds.x + pad + index * (modeButtonW + gap),
+        y: bounds.y + pad,
+        w: modeButtonW,
+        h: 30
+      }, {
+        id: mode.id,
+        label: mode.label,
+        active: this.racePortraitMode === mode.mode,
+        onClick: () => this.setRacePortraitMode(mode.mode)
+      });
+    });
+
+    const selected = this.selectedSegment || {};
+    const groundPalette = this.getRaceGroundTilePalette(this.getSelectedGroundTileId());
+    const quickActions = this.racePortraitMode === 'ground'
+      ? [
+        { id: 'ground-tile-next', label: 'Tile', onClick: () => this.handleMenuAction('ground-tile-next') },
+        { id: 'paint-ground', label: 'Paint', active: this.activeAction === 'paint-ground', onClick: () => this.handleMenuAction('paint-ground') }
+      ]
+      : this.racePortraitMode === 'elevation'
+        ? [
+          { id: 'elevation-up', label: 'Raise', active: this.raceElevationBrushDirection > 0, onClick: () => this.handleMenuAction('elevation-up') },
+          { id: 'elevation-down', label: 'Lower', active: this.raceElevationBrushDirection < 0, onClick: () => this.handleMenuAction('elevation-down') },
+          { id: 'elevation-brush-size', label: `Brush ${Math.round(this.raceElevationBrushSize * 100)}%`, onClick: () => this.handleMenuAction('elevation-brush-size') }
+        ]
+        : [
+          { id: 'draw-road', label: 'Add Node', active: this.activeAction === 'draw-road', onClick: () => this.setRaceDrawNodeMode() },
+          { id: 'remove-node', label: 'Del Node', onClick: () => this.handleMenuAction('remove-node') },
+          { id: 'remove-edge', label: 'Del Edge', onClick: () => this.handleMenuAction('remove-edge') },
+          { id: 'edge-tile', label: 'Edge Tile', active: this.activeAction === 'edge-tile', onClick: () => this.handleMenuAction('edge-tile') }
+        ];
+    const quickW = Math.max(48, Math.floor((bounds.w - pad * 2 - gap * Math.max(0, quickActions.length - 1)) / Math.max(1, quickActions.length)));
+    quickActions.forEach((action, index) => {
+      this.registerDrawnButton(ctx, {
+        x: bounds.x + pad + index * (quickW + gap),
+        y: bounds.y + pad + 38,
+        w: quickW,
+        h: 30
+      }, action);
+    });
+
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.font = `11px ${UI_SUITE.font.family}`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    const summary = this.racePortraitMode === 'ground'
+      ? `Ground: ${groundPalette.label}`
+      : this.racePortraitMode === 'elevation'
+        ? `Elevation: ${this.raceElevationBrushDirection > 0 ? 'raise' : 'lower'} ${Math.round(this.raceElevationBrushSize * 100)}%`
+        : `Edge ${this.selectedSegmentIndex + 1}: curve ${Number(selected.curve || 0).toFixed(2)} elev ${Number(selected.elevation || 0).toFixed(2)}`;
+    ctx.fillText(summary, bounds.x + pad, bounds.y + bounds.h - 7, Math.max(1, bounds.w - pad * 2));
+    ctx.restore();
   }
 
   drawLandscapeRootDrawer(ctx, bounds, { gamepad = false, rootEntries = null, headerHint = null } = {}) {
@@ -2935,6 +4302,7 @@ export default class RaceEditor {
         active: this.activeRootId === entry.id,
         onClick: () => {
           this.activeRootId = entry.id;
+          if (gamepad) this.gamepadFocusedItemId = entry.id;
           this.mobileRootOpen = !gamepad;
           this.gamepadSubmenuOpen = gamepad;
         }
@@ -2955,8 +4323,12 @@ export default class RaceEditor {
       id: item.id,
       label: item.label,
       active: item.id === this.activeAction,
+      focused: gamepad && item.id === this.gamepadFocusedItemId,
       disabled: Boolean(item.disabled),
-      onClick: item.onSelect
+      onClick: () => {
+        if (gamepad) this.gamepadFocusedItemId = item.id;
+        item.onSelect?.();
+      }
     })), 1, { scrollKey: scrollKey || `${this.editorId}:landscape-sub:${this.activeRootId}` });
   }
 
@@ -2973,7 +4345,7 @@ export default class RaceEditor {
     ctx.font = `11px ${UI_SUITE.font.family}`;
     const summary = this.mode === 'car'
       ? `${String(this.selectedCar.tuning?.drivetrain || '').toUpperCase()}  ${this.selectedCar.tuning?.powerHp || 0}hp  ${this.selectedCar.tuning?.weightKg || 0}kg`
-      : `${this.selectedRace.type}  ${this.selectedRace.weather}  ${this.selectedRace.road?.segments?.length || 0} segments`;
+      : `${this.getSelectedRaceRuntimeType() === 'circuit' ? 'endpoints joined' : 'open finish'}  ${this.selectedRace.weather}  ${this.selectedRace.road?.segments?.length || 0} segments`;
     ctx.fillText(summary, bounds.x + pad, bounds.y + 42, Math.max(1, bounds.w - 132));
     const status = this.playtestSession
       ? `Driving ${Math.round((this.playtestSession.distance / Math.max(1, this.playtestSession.routeLength)) * 100)}%`
@@ -3009,7 +4381,7 @@ export default class RaceEditor {
   }
 
   drawActionRows(ctx, bounds, actions, columns = 1, { scrollKey = null } = {}) {
-    const pad = 8;
+    const pad = bounds.h < 56 ? 4 : 8;
     const gap = 8;
     const safeColumns = Math.max(1, columns);
     const rowH = 38;
@@ -3022,7 +4394,7 @@ export default class RaceEditor {
     const currentScroll = scrollKey
       ? Math.max(0, Math.min(maxScroll, Math.round(Number(this.menuScrollState?.[scrollKey] || 0))))
       : 0;
-    if (scrollKey && maxScroll > 0) {
+    if (scrollKey) {
       this.menuScrollState[scrollKey] = currentScroll;
       this.menuScrollRegions.push({
         menuId: scrollKey,
@@ -3048,7 +4420,9 @@ export default class RaceEditor {
   }
 
   registerDrawnButton(ctx, bounds, action) {
-    this.drawButton(ctx, bounds, action.displayLabel || action.label, Boolean(action.active), Boolean(action.disabled));
+    this.drawButton(ctx, bounds, action.displayLabel || action.label, Boolean(action.active), Boolean(action.disabled), {
+      focused: Boolean(action.focused)
+    });
     this.buttons.push({
       id: action.id,
       bounds: { ...bounds, id: action.id },
@@ -3133,24 +4507,29 @@ export default class RaceEditor {
     ctx.fillText(race.name, bounds.x + 14, bounds.y + 24);
     ctx.font = `12px ${UI_SUITE.font.family}`;
     ctx.fillStyle = UI_SUITE.colors.muted;
+    const routeRuntimeType = this.getSelectedRaceRuntimeType();
+    const routeLengthLabel = this.formatRaceRouteLengthKm();
     const lines = [
-      `Type: ${race.type}`,
-      race.type === 'circuit' ? `Laps: ${race.laps}` : 'Progress: point-to-point',
+      `Route: ${routeRuntimeType === 'circuit' ? 'endpoints joined' : 'open finish'}`,
+      routeRuntimeType === 'circuit' ? `Laps: ${race.laps}` : 'Finish: route end',
       `Weather: ${race.weather}`,
       `Time: ${race.timeOfDay || 'day'}`,
       `Segments: ${race.road.segments.length}`,
+      `Road length: ${routeLengthLabel}`,
       `Selected: ${this.selectedSegmentIndex + 1}`,
       `Length: ${selected?.length || 0}`,
       `Curve: ${Number(selected?.curve || 0).toFixed(2)}`,
       `Elevation: ${Number(selected?.elevation || 0).toFixed(2)}`,
       `Surface: ${selectedSurface.label}`,
-      `Road width: ${race.road.width}`,
+      `Road width: ${this.getRaceRoadWidthMForSegment(selected)} m`,
+      `Bumpiness: ${Math.round((Number(selected?.bumpiness) || 0) * 100)}%`,
+      selected?.surface === 'snow' ? `Snow: ${this.getSnowConditionById(selected.snowCondition).label}` : '',
       `Mode: ${race.competition?.mode || 'solo'}`,
       `AI: ${aiCount}  Hazards: ${hazardCount}`,
       `Co-driver: ${callCount} calls`,
       `Finish: ${race.finishBehavior.type}`,
       '',
-      'Generate creates a point-to-point race',
+      'Generate creates an open-finish route',
       'Add/Curve/Hill edit your route'
     ];
     lines.forEach((line, index) => ctx.fillText(line, bounds.x + 14, bounds.y + 54 + index * 19));
@@ -3177,6 +4556,7 @@ export default class RaceEditor {
       `Drivetrain: ${tuning.drivetrain.toUpperCase()}`,
       `Power: ${tuning.powerHp} hp`,
       `Weight: ${tuning.weightKg} kg`,
+      `Engine sound: ${CAR_ENGINE_SOUND_PROFILES.find((profile) => profile.id === car.audio?.engineProfile)?.label || car.audio?.engineSoundId || 'Default'}`,
       `Tire grip: ${tuning.tireGrip}`,
       `Brake balance: ${tuning.brakeBalance}`,
       `Diff accel/decel: ${tuning.differentialAccel}/${tuning.differentialDecel}`,
@@ -3188,6 +4568,104 @@ export default class RaceEditor {
       'Shell, tires, spoilers, turn frames'
     ];
     lines.forEach((line, index) => ctx.fillText(line, bounds.x + 14, bounds.y + 54 + index * 19));
+  }
+
+  getRaceSegmentLengthLabelLayout(ctx, bounds, points = [], segments = [], roadWidth = 14) {
+    if (points.length < 2 || !segments.length) return [];
+    const scaleBar = this.getRaceMapScaleBar(bounds);
+    const scaleBarBlock = scaleBar
+      ? {
+        x: bounds.x + bounds.w - scaleBar.width - 22,
+        y: bounds.y + bounds.h - 46,
+        w: scaleBar.width + 30,
+        h: 38
+      }
+      : null;
+    const labels = [];
+    for (let index = 1; index < points.length; index += 1) {
+      const segment = segments[index - 1] || {};
+      const from = points[index - 1];
+      const to = points[index];
+      const dx = to.screenX - from.screenX;
+      const dy = to.screenY - from.screenY;
+      const screenLength = Math.hypot(dx, dy);
+      if (screenLength < 44) continue;
+      const midX = (from.screenX + to.screenX) / 2;
+      const midY = (from.screenY + to.screenY) / 2;
+      const side = index % 2 === 0 ? -1 : 1;
+      const normalX = screenLength > 0 ? (-dy / screenLength) * side : 0;
+      const normalY = screenLength > 0 ? (dx / screenLength) * side : -1;
+      const label = this.formatRaceMapDistanceLabel(segment.length || Math.hypot(to.x - from.x, to.y - from.y));
+      const metrics = ctx.measureText(label);
+      const labelW = Math.max(48, metrics.width + 12);
+      const labelH = 18;
+      let labelX = clamp(midX + normalX * (roadWidth / 2 + 28), bounds.x + labelW / 2 + 6, bounds.x + bounds.w - labelW / 2 - 6);
+      let labelY = clamp(midY + normalY * (roadWidth / 2 + 28), bounds.y + labelH / 2 + 8, bounds.y + bounds.h - labelH / 2 - 8);
+      if (scaleBarBlock
+        && labelX + labelW / 2 > scaleBarBlock.x
+        && labelX - labelW / 2 < scaleBarBlock.x + scaleBarBlock.w
+        && labelY + labelH / 2 > scaleBarBlock.y
+        && labelY - labelH / 2 < scaleBarBlock.y + scaleBarBlock.h) {
+        labelY = Math.max(bounds.y + labelH / 2 + 8, scaleBarBlock.y - labelH / 2 - 6);
+      }
+      labels.push({
+        segmentIndex: index - 1,
+        label,
+        side: side > 0 ? 'right' : 'left',
+        x: labelX,
+        y: labelY,
+        w: labelW,
+        h: labelH
+      });
+    }
+    return labels;
+  }
+
+  drawRaceSegmentLengthLabels(ctx, bounds, points = [], segments = [], roadWidth = 14) {
+    ctx.save();
+    ctx.font = `700 11px ${UI_SUITE.font.family}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const labels = this.getRaceSegmentLengthLabelLayout(ctx, bounds, points, segments, roadWidth);
+    labels.forEach(({ label, x: labelX, y: labelY, w: labelW, h: labelH }) => {
+      ctx.fillStyle = 'rgba(5,8,7,0.78)';
+      ctx.fillRect(labelX - labelW / 2, labelY - labelH / 2, labelW, labelH);
+      ctx.strokeStyle = 'rgba(217,230,210,0.24)';
+      ctx.strokeRect(labelX - labelW / 2, labelY - labelH / 2, labelW, labelH);
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.fillText(label, labelX, labelY + 0.5);
+    });
+    ctx.restore();
+  }
+
+  drawRaceMapScaleBar(ctx, bounds) {
+    const scaleBar = this.getRaceMapScaleBar(bounds);
+    if (!scaleBar) return;
+    const pad = 14;
+    const x = bounds.x + bounds.w - scaleBar.width - pad;
+    const y = bounds.y + bounds.h - 28;
+    ctx.save();
+    ctx.fillStyle = 'rgba(5,8,7,0.78)';
+    ctx.fillRect(x - 8, y - 18, scaleBar.width + 16, 32);
+    ctx.strokeStyle = UI_SUITE.colors.text;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + scaleBar.width, y);
+    ctx.stroke();
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x, y - 6);
+    ctx.lineTo(x, y + 6);
+    ctx.moveTo(x + scaleBar.width, y - 6);
+    ctx.lineTo(x + scaleBar.width, y + 6);
+    ctx.stroke();
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `700 11px ${UI_SUITE.font.family}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText(scaleBar.label, x + scaleBar.width / 2, y - 8);
+    ctx.restore();
   }
 
   drawRaceTopDownEditor(ctx, bounds) {
@@ -3242,9 +4720,15 @@ export default class RaceEditor {
       ctx.stroke();
     }
 
-    const roadWidth = Math.max(14, Math.min(bounds.w, bounds.h) * 0.045);
+    const baseRoadWidth = Math.max(12, Math.min(bounds.w, bounds.h) * 0.045);
     for (let index = 1; index < points.length; index += 1) {
       const segment = segments[index - 1] || {};
+      const segmentWidthM = this.getRaceRoadWidthMForSegment(segment);
+      const roadWidth = clamp(
+        baseRoadWidth * (segmentWidthM / Math.max(1, Number(race?.road?.width || 11))),
+        8,
+        Math.max(18, baseRoadWidth * 1.8)
+      );
       const from = points[index - 1];
       const to = points[index];
       const surface = getSurfaceById(segment.surface);
@@ -3295,16 +4779,30 @@ export default class RaceEditor {
         ctx.fillRect(midX - 4, midY - 4, 8, 8);
       }
     }
+    this.drawRaceSegmentLengthLabels(ctx, bounds, points, segments, baseRoadWidth);
+    this.drawRaceMapScaleBar(ctx, bounds);
 
     points.forEach((point, index) => {
       const segmentIndex = clamp(index - 1, 0, Math.max(0, segments.length - 1));
       const active = segmentIndex === selectedIndex && index > 0;
+      const startNode = index === 0;
       const radius = active ? 8 : 5;
-      ctx.fillStyle = active ? UI_SUITE.colors.accent : '#f1f4ef';
-      ctx.beginPath();
-      ctx.arc(point.screenX, point.screenY, radius, 0, Math.PI * 2);
-      ctx.fill();
-      if (index > 0) {
+      if (startNode) {
+        ctx.fillStyle = '#0b0f0d';
+        ctx.fillRect(point.screenX - 10, point.screenY - 10, 20, 20);
+        ctx.strokeStyle = UI_SUITE.colors.accent;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(point.screenX - 10, point.screenY - 10, 20, 20);
+        ctx.fillStyle = UI_SUITE.colors.accent;
+        ctx.font = `700 9px ${UI_SUITE.font.family}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('START', point.screenX, point.screenY - 17);
+      } else {
+        ctx.fillStyle = active ? UI_SUITE.colors.accent : '#f1f4ef';
+        ctx.beginPath();
+        ctx.arc(point.screenX, point.screenY, radius, 0, Math.PI * 2);
+        ctx.fill();
         ctx.fillStyle = UI_SUITE.colors.background;
         ctx.font = `10px ${UI_SUITE.font.family}`;
         ctx.textAlign = 'center';
@@ -3326,12 +4824,12 @@ export default class RaceEditor {
     ctx.fillStyle = UI_SUITE.colors.muted;
     ctx.font = `12px ${UI_SUITE.font.family}`;
     ctx.fillText(
-      `Node ${selectedIndex + 1}/${segments.length}  curve ${Number(selected.curve || 0).toFixed(2)}  elevation ${Number(selected.elevation || 0).toFixed(2)}  road ${surface.label}  ground ${groundPalette.label}  edge ${selected.edgeTileId ? edgePalette.label : 'auto'}`,
+      `Edge ${selectedIndex + 1}/${segments.length}  width ${this.getRaceRoadWidthMForSegment(selected)} m  bump ${Math.round((Number(selected.bumpiness) || 0) * 100)}%  road ${surface.label}${selected.surface === 'snow' ? ` ${this.getSnowConditionById(selected.snowCondition).label}` : ''}`,
       bounds.x + 24,
       bounds.y + 55,
       Math.max(1, Math.min(400, bounds.w - 48))
     );
-    this.drawRaceTilePalette(ctx, bounds);
+    if (this.activeViewportMode !== 'portrait') this.drawRaceTilePalette(ctx, bounds);
     ctx.restore();
   }
 
@@ -3549,7 +5047,7 @@ export default class RaceEditor {
       ctx.fillText(`Segment ${selectedIndex + 1}/${segments.length}  curve ${Number(selected?.curve || 0).toFixed(2)}  elevation ${Number(selected?.elevation || 0).toFixed(2)}  ${surface.label}`, bounds.x + 18, bounds.y + 50);
     }
     if (this.playtestSession && showPlaytestHud) {
-      this.drawPlaytestHud(ctx, bounds);
+      this.drawRacePlaytestHud(ctx, bounds);
     }
   }
 
@@ -3557,48 +5055,60 @@ export default class RaceEditor {
     const race = this.selectedRace;
     const session = this.playtestSession;
     const travel = Number(session?.distance || 0);
-    const camera = this.getRaceWorldPoseAtDistance(travel);
+    const routeCamera = this.getRaceWorldPoseAtDistance(travel);
+    const camera = {
+      ...routeCamera,
+      x: Number.isFinite(session?.worldX) ? session.worldX : routeCamera.x,
+      z: Number.isFinite(session?.worldZ) ? session.worldZ : routeCamera.z,
+      yaw: Number.isFinite(session?.carYaw) ? session.carYaw : routeCamera.yaw
+    };
     const cameraYaw = Number(session?.cameraYaw ?? camera.yaw);
-    const cameraRightX = Math.cos(cameraYaw);
-    const cameraRightZ = -Math.sin(cameraYaw);
-    const lateralOffset = clamp(Number(session?.lateral || 0), -0.48, 0.48) * this.getRaceRoadHalfWidthWorld();
-    camera.x += cameraRightX * lateralOffset;
-    camera.z += cameraRightZ * lateralOffset;
     const currentSegment = this.getRaceSegmentAtDistance(travel).segment || camera.segment || this.selectedSegment;
     const hillPitch = clamp(Number(currentSegment?.elevation || 0), -0.42, 0.42);
     const speedMps = Number(session?.speedMps || 0);
     const absSpeed = Math.abs(speedMps);
     const speedFactor = clamp(absSpeed / 60, 0, 1);
+    const surfaceBumpiness = clamp(
+      Number(currentSegment?.bumpiness) || 0
+        + (currentSegment?.surface === 'snow' ? this.getSnowConditionById(currentSegment.snowCondition).bumpiness : 0),
+      0,
+      1
+    );
     const bumpCue = Math.sin((travel + Number(session?.elapsedMs || 0) * 0.012) * 0.12)
-      * Math.abs(hillPitch)
+      * Math.max(Math.abs(hillPitch), surfaceBumpiness)
       * clamp(absSpeed / 46, 0, 1)
       * 0.045;
     const horizonRatio = clamp(0.31 - speedFactor * 0.06 - hillPitch * 0.18 + bumpCue, 0.14, 0.46);
     camera.horizonRatio = horizonRatio;
-    camera.roadDepthRatio = 0.68 - speedFactor * 0.12;
-    camera.focalScale = 0.96 + speedFactor * 0.12;
-    camera.roadWidthScale = 2.08 - speedFactor * 0.28;
+    camera.roadDepthRatio = 0.76 - speedFactor * 0.1;
+    camera.focalScale = 1.1 + speedFactor * 0.16;
+    const cameraView = session?.cameraView || this.raceInput.cameraView;
+    camera.roadWidthScale = cameraView === 'first-person'
+      ? 11.35 - speedFactor * 0.12
+      : 10.15 - speedFactor * 0.1;
     const horizon = bounds.y + bounds.h * horizonRatio;
     const roadBottom = bounds.y + bounds.h;
     const basePalette = this.getRaceRoadSurfacePalette(currentSegment?.surface || 'asphalt');
-    const visualTravel = travel * (18 + clamp(absSpeed / 2.8, 0, 34));
 
     ctx.fillStyle = '#131923';
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
     ctx.fillStyle = hillPitch > 0.16 ? '#2f3f5b' : hillPitch < -0.14 ? '#1c2a35' : '#233044';
     ctx.fillRect(bounds.x, bounds.y, bounds.w, horizon - bounds.y);
     const baseGroundPalette = this.getRaceGroundPaletteForSegment(currentSegment, camera);
-    ctx.fillStyle = Math.floor(visualTravel / 24) % 2 ? baseGroundPalette.shoulderA : baseGroundPalette.shoulderB;
+    ctx.fillStyle = baseGroundPalette.shoulderB;
     ctx.fillRect(bounds.x, horizon, bounds.w, Math.max(1, roadBottom - horizon));
 
     const routeLength = Math.max(1, Number(session?.routeLength || this.getRaceRouteLength()));
-    const viewDistance = Math.min(Math.max(1280, absSpeed * 44 + 860), race.type === 'circuit' ? routeLength : routeLength - travel + 260);
-    const nearDistance = 24 + speedFactor * 82;
+    const routeRuntimeType = session?.routeRuntimeType || this.getSelectedRaceRuntimeType();
+    const viewDistance = Math.min(Math.max(1280, absSpeed * 44 + 860), routeRuntimeType === 'circuit' ? routeLength : routeLength - travel + 260);
+    const nearDistance = 0.45 + speedFactor * 6;
     const crossSections = [];
     const sampleCount = 64;
     for (let i = 0; i <= sampleCount; i += 1) {
-      const lookAhead = nearDistance + Math.pow(i / sampleCount, 1.28) * Math.max(120, viewDistance);
-      const distance = race.type === 'circuit'
+      const lookAhead = i === 0
+        ? nearDistance
+        : nearDistance + Math.pow(i / sampleCount, 1.28) * Math.max(120, viewDistance);
+      const distance = routeRuntimeType === 'circuit'
         ? travel + lookAhead
         : Math.min(routeLength, travel + lookAhead);
       const section = this.getRaceRoadCrossSectionAtDistance(distance);
@@ -3610,7 +5120,7 @@ export default class RaceEditor {
       if (projected.center.visible || projected.left.visible || projected.right.visible) {
         crossSections.push(projected);
       }
-      if (race.type !== 'circuit' && distance >= routeLength) break;
+      if (routeRuntimeType !== 'circuit' && distance >= routeLength) break;
     }
 
     for (let i = crossSections.length - 2; i >= 0; i -= 1) {
@@ -3618,9 +5128,11 @@ export default class RaceEditor {
       const far = crossSections[i + 1];
       if (!near.center.visible || !far.center.visible) continue;
       const palette = this.getRaceRoadSurfacePalette(near.center.segment?.surface || currentSegment?.surface || 'asphalt');
-      const stripe = Math.floor((-visualTravel / 5.5) + i * 1.35);
+      const markerDimensions = this.getRaceLaneMarkerDimensionsWorld();
+      const stripe = Math.floor((-travel / Math.max(1, markerDimensions.interval)) + i * 1.35);
+      const groundStripe = Math.floor(Number(near.center.distance || 0) / Math.max(1, markerDimensions.interval * 2));
       const groundPalette = this.getRaceGroundPaletteForSegment(near.center.segment || currentSegment, near.center);
-      ctx.fillStyle = stripe % 2 ? groundPalette.shoulderA : groundPalette.shoulderB;
+      ctx.fillStyle = groundStripe % 2 ? groundPalette.shoulderA : groundPalette.shoulderB;
       ctx.beginPath();
       ctx.moveTo(bounds.x, far.left.screenY);
       ctx.lineTo(far.left.screenX, far.left.screenY);
@@ -3644,28 +5156,10 @@ export default class RaceEditor {
       ctx.closePath();
       ctx.fill();
 
-      if (i % 3 === 0) {
-        const markerW = Math.max(1, Math.abs(near.right.screenX - near.left.screenX) * 0.018);
-        ctx.fillStyle = palette.lane;
-        ctx.beginPath();
-        ctx.moveTo(far.center.screenX - markerW / 2, far.center.screenY);
-        ctx.lineTo(far.center.screenX + markerW / 2, far.center.screenY);
-        ctx.lineTo(near.center.screenX + markerW / 2, near.center.screenY);
-        ctx.lineTo(near.center.screenX - markerW / 2, near.center.screenY);
-        ctx.closePath();
-        ctx.fill();
-      }
-      if (i % 5 === 0) {
-        const roadScreenWidth = Math.abs(near.right.screenX - near.left.screenX);
-        const postW = Math.max(2, bounds.w * 0.008 * clamp(roadScreenWidth / Math.max(1, bounds.w * 0.56), 0.4, 1.8));
-        const postH = Math.max(4, bounds.h * 0.028 * clamp(roadScreenWidth / Math.max(1, bounds.w * 0.56), 0.4, 1.8));
-        ctx.fillStyle = 'rgba(242,212,92,0.72)';
-        ctx.fillRect(near.left.screenX - postW * 0.5, near.left.screenY - postH, postW, postH);
-        ctx.fillRect(near.right.screenX - postW * 0.5, near.right.screenY - postH, postW, postH);
-      }
+      this.drawRaceDistanceMarkers(ctx, bounds, { near, far, palette });
     }
 
-    this.drawRaceStartCheckerStripe(ctx, bounds, {
+    this.drawRaceStartFinishCheckerStripes(ctx, bounds, {
       camera,
       cameraYaw,
       travel,
@@ -3674,7 +5168,7 @@ export default class RaceEditor {
 
     if (crossSections.length >= 2) {
       const target = crossSections[Math.min(crossSections.length - 1, 12)].center;
-      const cueDistance = race.type === 'circuit'
+      const cueDistance = routeRuntimeType === 'circuit'
         ? travel + 120 + absSpeed * 2.4
         : Math.min(routeLength, travel + 120 + absSpeed * 2.4);
       this.drawRaceTurnCue(ctx, bounds, this.getRaceSegmentAtDistance(cueDistance));
@@ -3690,20 +5184,48 @@ export default class RaceEditor {
     }
 
     if (this.playtestSession && showPlaytestHud) {
-      this.drawPlaytestHud(ctx, bounds);
+      this.drawRacePlaytestHud(ctx, bounds);
     }
   }
 
-  drawRaceStartCheckerStripe(ctx, bounds, { camera = {}, cameraYaw = 0, travel = 0, routeLength = 1 } = {}) {
+  drawRaceStartFinishCheckerStripes(ctx, bounds, { camera = {}, cameraYaw = 0, travel = 0, routeLength = 1 } = {}) {
     const race = this.selectedRace;
     const currentTravel = Number(travel) || 0;
-    if (!race || currentTravel > 22) return;
-    const startDistance = race.type === 'circuit' && currentTravel > Number(routeLength || 1) - 30
-      ? Number(routeLength || 1)
-      : Math.max(currentTravel + 1.2, 2.5);
-    if (startDistance < currentTravel) return;
-    const nearSection = this.getRaceRoadCrossSectionAtDistance(startDistance);
-    const farSection = this.getRaceRoadCrossSectionAtDistance(startDistance + 9);
+    if (!race) return;
+    const startDistance = 6;
+    if (currentTravel <= startDistance + 12) {
+      this.drawRaceCheckerStripeAtDistance(ctx, bounds, {
+        camera,
+        cameraYaw,
+        distance: startDistance,
+        depth: 9
+      });
+    }
+    const routeRuntimeType = this.playtestSession?.routeRuntimeType || this.getSelectedRaceRuntimeType();
+    if (routeRuntimeType !== 'circuit') {
+      const finishDistance = Number(routeLength || 1);
+      if (finishDistance >= currentTravel) {
+        this.drawRaceCheckerStripeAtDistance(ctx, bounds, {
+          camera,
+          cameraYaw,
+          distance: finishDistance,
+          depth: 10
+        });
+      }
+    }
+  }
+
+  drawRaceCheckerStripeAtDistance(ctx, bounds, { camera = {}, cameraYaw = 0, distance = 0, depth = 9 } = {}) {
+    const startDistance = Number(distance) || 0;
+    const stripeDepth = Math.max(2, Number(depth) || 9);
+    const routeLength = this.getRaceRouteLength();
+    const routeRuntimeType = this.playtestSession?.routeRuntimeType || this.getSelectedRaceRuntimeType();
+    const finishStripe = routeRuntimeType !== 'circuit' && startDistance >= routeLength - 1;
+    const nearDistance = finishStripe ? Math.max(0, startDistance - stripeDepth) : startDistance;
+    const farDistance = finishStripe ? startDistance : startDistance + stripeDepth;
+    if (farDistance < Number(camera.distance || 0) - 2) return;
+    const nearSection = this.getRaceRoadCrossSectionAtDistance(nearDistance);
+    const farSection = this.getRaceRoadCrossSectionAtDistance(farDistance);
     const near = {
       left: this.projectRaceWorldPointToCamera(nearSection.left, camera, cameraYaw, bounds),
       right: this.projectRaceWorldPointToCamera(nearSection.right, camera, cameraYaw, bounds)
@@ -3742,6 +5264,53 @@ export default class RaceEditor {
       ctx.lineTo(nearA.x, nearA.y);
       ctx.closePath();
       ctx.fill();
+    }
+  }
+
+  drawRaceDistanceMarkers(ctx, bounds, { near = null, far = null, palette = null } = {}) {
+    if (!near?.center || !far?.center || !palette) return;
+    const nearDistance = Number(near.center.distance || 0);
+    const farDistance = Number(far.center.distance || 0);
+    if (!Number.isFinite(nearDistance) || !Number.isFinite(farDistance)) return;
+    const minDistance = Math.min(nearDistance, farDistance);
+    const maxDistance = Math.max(nearDistance, farDistance);
+    const markerDimensions = this.getRaceLaneMarkerDimensionsWorld();
+    const markerInterval = markerDimensions.interval;
+    const dashLength = markerDimensions.dashLength;
+    const edgePostInterval = markerDimensions.edgePostInterval;
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const drawDashAt = (worldDistance) => {
+      const t = clamp((worldDistance - farDistance) / Math.max(0.001, nearDistance - farDistance), 0, 1);
+      const centerX = lerp(far.center.screenX, near.center.screenX, t);
+      const centerY = lerp(far.center.screenY, near.center.screenY, t);
+      const leftX = lerp(far.left.screenX, near.left.screenX, t);
+      const rightX = lerp(far.right.screenX, near.right.screenX, t);
+      const roadScreenWidth = Math.max(1, Math.abs(rightX - leftX));
+      const laneWorldWidth = Math.max(0.1, this.getRaceRoadHalfWidthWorld(near.center.segment));
+      const markerW = Math.max(1, roadScreenWidth * (markerDimensions.dashWidth / Math.max(0.1, laneWorldWidth * 2)));
+      const markerH = Math.max(2, Math.abs(near.center.screenY - far.center.screenY) * clamp(dashLength / Math.max(1, maxDistance - minDistance), 0.04, 0.42));
+      ctx.fillStyle = palette.lane;
+      ctx.fillRect(centerX - markerW / 2, centerY - markerH / 2, markerW, markerH);
+    };
+    const drawPostAt = (worldDistance) => {
+      const t = clamp((worldDistance - farDistance) / Math.max(0.001, nearDistance - farDistance), 0, 1);
+      const leftX = lerp(far.left.screenX, near.left.screenX, t);
+      const rightX = lerp(far.right.screenX, near.right.screenX, t);
+      const y = lerp(far.left.screenY, near.left.screenY, t);
+      const roadScreenWidth = Math.max(1, Math.abs(rightX - leftX));
+      const scale = clamp(roadScreenWidth / Math.max(1, Number(bounds.w || 1) * 0.36), 0.35, 2.2);
+      const postW = Math.max(2, Number(bounds.w || 1) * 0.006 * scale);
+      const postH = Math.max(4, Number(bounds.h || 1) * 0.024 * scale);
+      ctx.fillStyle = 'rgba(242,212,92,0.72)';
+      ctx.fillRect(leftX - postW * 0.5, y - postH, postW, postH);
+      ctx.fillRect(rightX - postW * 0.5, y - postH, postW, postH);
+    };
+    for (let distance = Math.ceil(minDistance / markerInterval) * markerInterval; distance <= maxDistance; distance += markerInterval) {
+      const phase = distance % (markerInterval * 2);
+      if (phase < dashLength) drawDashAt(distance);
+    }
+    for (let distance = Math.ceil(minDistance / edgePostInterval) * edgePostInterval; distance <= maxDistance; distance += edgePostInterval) {
+      drawPostAt(distance);
     }
   }
 
@@ -3815,12 +5384,42 @@ export default class RaceEditor {
       if (hit) hit.onClick?.();
       return;
     }
+    if (
+      this.playtestSession
+      && hit?.id
+      && ['race-pause-toggle', 'race-return-editor', 'race-exit-main', 'end-playtest'].includes(hit.id)
+      && !hit.desktopDropdownItem
+    ) {
+      if (this.isDesktopMode()) {
+        this.pendingDesktopCommandHit = createPendingDesktopDropdownHit(hit, payload);
+        return;
+      }
+      hit.onClick?.();
+      return;
+    }
     if (this.playtestSession && !this.isDesktopMode()) {
       this.handleRacePlaytestPointerDown(hit, payload);
       return;
     }
     if (hit?.desktopDropdownItem && (hit.action || hit.onClick)) {
       this.pendingDesktopDropdownHit = createPendingDesktopDropdownHit(hit, payload);
+      return;
+    }
+    if (this.activeViewportMode === 'portrait' && hit?.id === 'race-map-zoom') {
+      this.raceMapZoomDrag = { id: payload.id ?? 'pointer' };
+      this.updateRaceMapZoomFromSliderX(payload.x);
+      return;
+    }
+    if (
+      this.activeViewportMode === 'portrait'
+      && this.portraitThumbstick?.radius > 0
+      && Math.hypot(payload.x - this.portraitThumbstick.center.x, payload.y - this.portraitThumbstick.center.y) <= this.portraitThumbstick.radius
+    ) {
+      const id = payload.id ?? 'pointer';
+      this.raceMapThumbstickDrag = { id };
+      this.portraitThumbstick.active = true;
+      this.portraitThumbstick.id = id;
+      this.updateRaceMapThumbstickDeflection(payload);
       return;
     }
     const scrollDrag = buildMenuScrollDragState({
@@ -3834,7 +5433,7 @@ export default class RaceEditor {
       this.pendingMenuScrollHit = hit || null;
       return;
     }
-    if (this.desktopDropdown && shouldCloseDesktopDropdownOnPointerDown({
+    if (this.isDesktopMode() && this.desktopDropdown && shouldCloseDesktopDropdownOnPointerDown({
       dropdown: this.desktopDropdown,
       point: payload,
       rootButtons: this.buttons.filter((button) => button.desktopRootId)
@@ -3848,12 +5447,20 @@ export default class RaceEditor {
       this.desktopDropdown = nextDropdown.dropdown;
       return;
     }
+    if (this.activeViewportMode === 'portrait' && hit?.onClick && !hit.desktopDropdownItem) {
+      hit.onClick();
+      return;
+    }
     if (hit?.raceTilePalette) {
       hit.onClick?.();
       return;
     }
     if (payload.button !== 1 && payload.button !== 2 && this.activeAction === 'paint-ground' && this.paintRaceGroundAtPoint(payload)) {
       this.raceGroundPaintDrag = { id: payload.id ?? 'pointer' };
+      return;
+    }
+    if (payload.button !== 1 && payload.button !== 2 && this.activeAction === 'paint-elevation' && this.paintRaceElevationAtPoint(payload)) {
+      this.raceElevationPaintDrag = { id: payload.id ?? 'pointer' };
       return;
     }
     if (payload.button !== 1 && payload.button !== 2 && this.activeAction === 'edge-tile' && this.applySelectedEdgeTileAtPoint(payload)) {
@@ -3893,28 +5500,42 @@ export default class RaceEditor {
       }
       return;
     }
+    if (this.raceMapZoomDrag && this.raceMapZoomDrag.id === (payload.id ?? 'pointer')) {
+      this.updateRaceMapZoomFromSliderX(payload.x);
+      return;
+    }
+    if (this.raceMapThumbstickDrag && this.raceMapThumbstickDrag.id === (payload.id ?? 'pointer')) {
+      this.updateRaceMapThumbstickDeflection(payload);
+      return;
+    }
     if (this.raceGroundPaintDrag && this.raceGroundPaintDrag.id === (payload.id ?? 'pointer')) {
       this.paintRaceGroundAtPoint(payload);
       return;
     }
+    if (this.raceElevationPaintDrag && this.raceElevationPaintDrag.id === (payload.id ?? 'pointer')) {
+      this.paintRaceElevationAtPoint(payload);
+      return;
+    }
     if (this.updateRaceNodeDrag(payload)) return;
     if (this.updateDesktopPreviewDrag(payload)) return;
-    const hover = resolveDesktopDropdownHoverSwitch({
-      buttons: this.buttons.filter((button) => button.desktopRootId),
-      point: payload,
-      openRootId: this.openDesktopDropdownRootId
-    });
-    if (hover?.rootId) {
-      const nextDropdown = resolveOpenDesktopDropdownState({
-        rootId: hover.rootId,
-        currentOpenRootId: this.openDesktopDropdownRootId,
-        closedRootId: this.closedDesktopDropdownRootId,
-        dropdown: this.desktopDropdown
+    if (this.isDesktopMode() && !payload.touchCount) {
+      const hover = resolveDesktopDropdownHoverSwitch({
+        buttons: this.buttons.filter((button) => button.desktopRootId),
+        point: payload,
+        openRootId: this.openDesktopDropdownRootId
       });
-      if (nextDropdown) {
-        this.closedDesktopDropdownRootId = nextDropdown.closedRootId;
-        this.openDesktopDropdownRootId = nextDropdown.openRootId;
-        this.desktopDropdown = nextDropdown.dropdown;
+      if (hover?.rootId) {
+        const nextDropdown = resolveOpenDesktopDropdownState({
+          rootId: hover.rootId,
+          currentOpenRootId: this.openDesktopDropdownRootId,
+          closedRootId: this.closedDesktopDropdownRootId,
+          dropdown: this.desktopDropdown
+        });
+        if (nextDropdown) {
+          this.closedDesktopDropdownRootId = nextDropdown.closedRootId;
+          this.openDesktopDropdownRootId = nextDropdown.openRootId;
+          this.desktopDropdown = nextDropdown.dropdown;
+        }
       }
     }
   }
@@ -3960,6 +5581,18 @@ export default class RaceEditor {
       }
       return;
     }
+    if (this.raceMapZoomDrag && this.raceMapZoomDrag.id === (payload.id ?? 'pointer')) {
+      this.raceMapZoomDrag = null;
+      return;
+    }
+    if (this.raceMapThumbstickDrag && this.raceMapThumbstickDrag.id === (payload.id ?? 'pointer')) {
+      this.raceMapThumbstickDrag = null;
+      this.portraitThumbstick.active = false;
+      this.portraitThumbstick.id = null;
+      this.portraitThumbstick.dx = 0;
+      this.portraitThumbstick.dy = 0;
+      return;
+    }
     if (this.desktopPreviewDrag && this.desktopPreviewDrag.id === (payload.id ?? 'pointer')) {
       this.desktopPreviewDrag = null;
       return;
@@ -3970,6 +5603,10 @@ export default class RaceEditor {
     }
     if (this.raceGroundPaintDrag && this.raceGroundPaintDrag.id === (payload.id ?? 'pointer')) {
       this.raceGroundPaintDrag = null;
+      return;
+    }
+    if (this.raceElevationPaintDrag && this.raceElevationPaintDrag.id === (payload.id ?? 'pointer')) {
+      this.raceElevationPaintDrag = null;
       return;
     }
     if (this.menuScrollDrag) {

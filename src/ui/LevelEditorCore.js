@@ -1,6 +1,6 @@
 import Minimap from '../world/Minimap.js';
 import { deleteProjectFile, listProjectFiles, loadProjectFile, saveProjectFile } from './projectFiles.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopContextTransportLayout, buildSharedEditorFileMenu, drawSharedContextRibbon, drawSharedDesktopContextPanel, drawSharedDesktopDropdown, drawSharedDesktopRibbon, drawSharedDesktopTopMenu, drawSharedFocusRing, drawSharedGamepadHintBar, drawSharedGamepadSlideOutHeader, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPlayStopButton, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopContextTransportLayout, buildSharedEditorFileMenu, drawSharedContextRibbon, drawSharedDesktopContextPanel, drawSharedDesktopDropdown, drawSharedDesktopRibbon, drawSharedDesktopTopMenu, drawSharedFocusRing, drawSharedGamepadHintBar, drawSharedGamepadSlideOutHeader, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPlayStopButton, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
 import { clamp, randInt, pickOne } from '../editor/input/random.js';
 import { startPlaytestTransition, stopPlaytestTransition } from '../editor/playtest/transitions.js';
 import { addDOMListener, createDisposer } from '../input/disposables.js';
@@ -15,8 +15,8 @@ import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPA
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
-import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopRootIdForSection, getEditorDesktopSectionId, getEditorPortraitRootMenuEntries, getEditorRootMenuLabelMap } from './shared/editorMenuSpec.js';
-import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, buildMenuScrollDragState, createPendingDesktopDropdownHit, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveDesktopRootMenuHit, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveMenuScrollDrag, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
+import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopRootIdForSection, getEditorDesktopSectionId, getEditorPortraitRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
+import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, buildMenuScrollDragState, canRenderEditorPlanSurface, canRenderEditorSurface, createDesktopDropdownCommandHit, createDesktopRootMenuHit, createPendingDesktopDropdownHit, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveDesktopRootMenuHit, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveMenuScrollDrag, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
 import { DEFAULT_TILE_TYPES } from '../content/tileDefinitions.js';
 
 const ROOM_SIZE_PRESETS = [
@@ -378,7 +378,7 @@ export function buildLevelPortraitMenuModel() {
       { id: 'level-settings', label: 'Level' },
       { id: 'midi', label: 'MIDI' }
     ],
-    bottomRailActions: ['menu', 'undo', 'redo', 'playtest'],
+    bottomRailActions: getStandardEditorActionRailIds('playtest'),
     portraitRootPlacement: 'bottom-rail'
   };
 }
@@ -386,9 +386,20 @@ export function buildLevelPortraitMenuModel() {
 export function shouldShowLevelEditorTopPlaytestButton({
   isMobile = false,
   viewportWidth = 0,
-  viewportHeight = 0
+  viewportHeight = 0,
+  viewportMode = null
 } = {}) {
-  return !isMobilePortraitLayout({ isMobile, viewportWidth, viewportHeight });
+  const resolvedViewportMode = typeof viewportMode === 'string'
+    ? { mode: viewportMode }
+    : viewportMode || resolveEditorViewportModeFlags({
+      editorId: 'level',
+      viewportWidth,
+      viewportHeight,
+      isMobile
+    });
+  const resolvedMode = resolvedViewportMode?.mode || 'desktop';
+  const isPortrait = Boolean(resolvedViewportMode?.isMobilePortrait) || resolvedMode === 'portrait';
+  return !isPortrait;
 }
 
 export default class Editor {
@@ -398,6 +409,7 @@ export default class Editor {
     this.controllerMenu = new ControllerMenuStack({
       siblingOrder: LEVEL_CONTROLLER_ROOTS
     });
+    this.activeViewportMode = 'desktop';
     this.active = false;
     this.mode = 'tile';
     this.previousNonTriggerMode = 'tile';
@@ -515,6 +527,7 @@ export default class Editor {
     this.regionName = 'Unknown';
     this.lastPointer = { x: 0, y: 0 };
     this.uiButtons = [];
+    this.desktopDropdownRegions = [];
     this.closedDesktopDropdownRootId = null;
     this.openDesktopDropdownRootId = null;
     this.desktopDropdown = null;
@@ -888,19 +901,20 @@ export default class Editor {
   ) {
     if (!width || !height) return;
     const controlMargin = 18;
-    if (this.isMobileLayout()) {
-      const portraitLayout = isMobilePortraitLayout({
-        isMobile: true,
-        viewportWidth: width,
-        viewportHeight: height
-      })
+    const viewportMode = this.resolveLevelViewportMode(width, height);
+    this.activeModeContract = viewportMode.modeContract;
+    this.activeSpecModeContract = viewportMode.specModeContract;
+    this.activeViewportMode = viewportMode.mode;
+    if (viewportMode.isMobileViewport) {
+      const portraitLayout = viewportMode.isMobilePortrait
         ? getSharedMobilePortraitEditorLayout(width, height, {
           middleRailHeight: 88,
           minTopHeight: 230,
           minMainHeight: 220
         })
         : null;
-      const gamepadMenuState = !portraitLayout ? this.getGamepadMenuState(width, height) : null;
+      const gamepadMenuState = !portraitLayout ? this.getGamepadMenuState(width, height)
+        : null;
       const gamepadSubmenuOnLeft = Boolean(gamepadMenuState?.drawSlideOut);
       const drawerOpenForLayout = Boolean(this.drawer.open && (portraitLayout || !gamepadSubmenuOnLeft));
       if (portraitLayout) {
@@ -919,10 +933,18 @@ export default class Editor {
           bottomRailHeight: LEVEL_LANDSCAPE_BOTTOM_RAIL_HEIGHT,
           reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft
         });
-        const { center, radius: joystickRadius, knobRadius } = landscapeLayout.thumbstick;
-        this.panJoystick.center = center;
-        this.panJoystick.radius = joystickRadius;
-        this.panJoystick.knobRadius = knobRadius;
+        const canRenderLandscapeThumbstick = canRenderEditorPlanSurface(landscapeLayout, 'touch-thumbstick')
+          && canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick');
+        const canRenderLandscapeBottomRail = canRenderEditorPlanSurface(landscapeLayout, 'bottom-tool-rail')
+          && canRenderEditorSurface(this.activeViewportMode, 'bottom-tool-rail');
+        if (canRenderLandscapeThumbstick) {
+          const { center, radius: joystickRadius, knobRadius } = landscapeLayout.thumbstick;
+          this.panJoystick.center = center;
+          this.panJoystick.radius = joystickRadius;
+          this.panJoystick.knobRadius = knobRadius;
+        } else {
+          resetSharedThumbstickState(this.panJoystick);
+        }
         const sliderHeight = 10;
         const sliderRail = landscapeLayout.surfaces.toolOptions || {
           x: controlMargin,
@@ -930,10 +952,17 @@ export default class Editor {
           w: Math.max(140, width - controlMargin * 2 - 132),
           h: sliderHeight + 28
         };
-        const sliderX = sliderRail.x + 16;
-        const sliderWidth = Math.max(140, sliderRail.w - 32);
-        const sliderY = sliderRail.y + Math.max(0, Math.floor((sliderRail.h - sliderHeight) / 2));
-        this.zoomSlider.bounds = { x: sliderX, y: sliderY - 14, w: sliderWidth, h: sliderHeight + 28 };
+        if (canRenderLandscapeBottomRail) {
+          const sliderX = sliderRail.x + 16;
+          const sliderWidth = Math.max(140, sliderRail.w - 32);
+          const sliderY = sliderRail.y + Math.max(0, Math.floor((sliderRail.h - sliderHeight) / 2));
+          this.zoomSlider.bounds = { x: sliderX, y: sliderY - 14, w: sliderWidth, h: sliderHeight + 28 };
+        } else {
+          this.zoomSlider.bounds = { x: 0, y: 0, w: 0, h: 0 };
+          this.zoomSlider.playZoomBounds = { x: 0, y: 0, w: 0, h: 0 };
+          this.zoomSlider.active = false;
+          this.zoomSlider.id = null;
+        }
       }
 
       if (portraitLayout) {
@@ -948,7 +977,7 @@ export default class Editor {
           bottomRailHeight: LEVEL_LANDSCAPE_BOTTOM_RAIL_HEIGHT,
           reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft
         });
-      const rootMenuSurface = landscapeLayout.surfaces.compactCommandRail ?? landscapeLayout.surfaces.rootMenu;
+        const rootMenuSurface = landscapeLayout.surfaces.compactCommandRail ?? landscapeLayout.surfaces.rootMenu;
         const workSurface = landscapeLayout.surfaces.workSurface;
         const submenuSurface = landscapeLayout.surfaces.submenu;
         const rootDrawerSurface = landscapeLayout.surfaces.rootDrawer ?? landscapeLayout.surfaces.overlayDrawer;
@@ -970,12 +999,13 @@ export default class Editor {
       this.drawerBounds = { x: 0, y: 0, w: 0, h: 0 };
     }
     if (shouldShowLevelEditorTopPlaytestButton({
-      isMobile: this.isMobileLayout(),
+      isMobile: viewportMode.isMobileViewport,
       viewportWidth: width,
-      viewportHeight: height
+      viewportHeight: height,
+      viewportMode
     })) {
-      const playButtonW = this.isMobileLayout() ? 112 : 96;
-      const playButtonH = this.isMobileLayout() ? 40 : 36;
+      const playButtonW = viewportMode.isMobileViewport ? 112 : 96;
+      const playButtonH = viewportMode.isMobileViewport ? 40 : 36;
       this.playButtonBounds = {
         x: Math.round((width - playButtonW) / 2),
         y: this.editorBounds.y + 16,
@@ -1292,7 +1322,8 @@ export default class Editor {
   update(input, dt) {
     this.handleKeyboard(input, dt);
     this.handleGamepad(input, dt);
-    if (!this.isMobileLayout()) {
+    const isTouchViewportMode = this.activeViewportMode !== 'desktop';
+    if (!isTouchViewportMode) {
       if (this.panJoystick.active || this.panJoystick.dx !== 0 || this.panJoystick.dy !== 0) {
         this.panJoystick.active = false;
         this.panJoystick.id = null;
@@ -1303,7 +1334,8 @@ export default class Editor {
         this.zoomSlider.active = false;
         this.zoomSlider.id = null;
       }
-    } else if (Math.abs(this.panJoystick.dx) > 0.01 || Math.abs(this.panJoystick.dy) > 0.01) {
+    } else if (canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick')
+      && (Math.abs(this.panJoystick.dx) > 0.01 || Math.abs(this.panJoystick.dy) > 0.01)) {
       const panSpeed = 320 * dt * (1 / this.zoom);
       this.camera.x += this.panJoystick.dx * panSpeed;
       this.camera.y += this.panJoystick.dy * panSpeed;
@@ -1401,7 +1433,7 @@ export default class Editor {
     const drawerIndex = this.drawer.tabs.indexOf(tabId);
     if (drawerIndex >= 0) {
       this.drawer.tabIndex = drawerIndex;
-      if (this.isMobileLayout()) {
+      if (this.activeViewportMode !== 'desktop') {
         this.drawer.open = true;
       }
     }
@@ -1427,14 +1459,14 @@ export default class Editor {
 
   closeFileMenu() {
     this.setPanelTab('toolbox');
-    if (this.isMobileLayout()) {
+    if (this.activeViewportMode !== 'desktop') {
       this.drawer.open = false;
     }
   }
 
   resetToFileMenu() {
     this.setPanelTab('file');
-    if (this.isMobileLayout()) {
+    if (this.activeViewportMode !== 'desktop') {
       this.drawer.open = false;
     }
     this.controllerMenu.resetFocus();
@@ -1444,7 +1476,7 @@ export default class Editor {
     this.game.exitEditorToMainMenu('level');
   }
 
-  getLevelFileMenuItems({ includePlaytest = true, includeFooter = false } = {}) {
+  getLevelFileMenuItems({ includePlaytest = false, includeFooter = false } = {}) {
     return buildSharedEditorFileMenu({
       labels: {
         new: 'New',
@@ -1458,9 +1490,7 @@ export default class Editor {
         'save-as': 'Save level with a new name',
         open: 'Open level from browser storage',
         export: 'Export world JSON',
-        import: 'Import world JSON',
-        undo: 'Undo last change (Ctrl+Z)',
-        redo: 'Redo last change (Ctrl+Y)'
+        import: 'Import world JSON'
       },
       actions: {
         new: () => this.newLevelDocument(),
@@ -1468,9 +1498,7 @@ export default class Editor {
         'save-as': () => this.saveLevelToStorage({ forceSaveAs: true }),
         open: () => this.loadLevelFromStorage(),
         export: () => this.saveToFile(),
-        import: () => this.openFileDialog(),
-        undo: () => this.undo(),
-        redo: () => this.redo()
+        import: () => this.openFileDialog()
       },
       extras: [
         ...(includePlaytest ? [{
@@ -1683,12 +1711,6 @@ export default class Editor {
           label: 'Reset Zoom',
           tooltip: 'Reset editor zoom to 100%',
           onClick: () => this.setZoom(1)
-        },
-        {
-          id: 'playtest',
-          label: 'Start Playtest',
-          tooltip: 'Start playtest from spawn',
-          onClick: () => this.game.exitEditor({ playtest: true })
         }
       ];
       columns = 2;
@@ -2061,7 +2083,7 @@ export default class Editor {
 
   navigatePanelMenu(input) {
     const activeTab = this.getActivePanelTab();
-    const { items, columns } = this.getPanelConfig(activeTab, { includeExtras: this.isMobileLayout() });
+    const { items, columns } = this.getPanelConfig(activeTab, { includeExtras: this.activeViewportMode !== 'desktop' });
     if (items.length === 0) return false;
     if (!input.wasGamepadPressed('dpadUp')
       && !input.wasGamepadPressed('dpadDown')
@@ -2092,7 +2114,7 @@ export default class Editor {
       }
       this.panelScroll[activeTab] = clamp(scrollY, 0, this.panelScrollMax[activeTab] || 0);
     }
-    if (nextItem.tooltip && !this.isMobileLayout()) {
+    if (nextItem.tooltip && this.activeViewportMode === 'desktop') {
       this.activeTooltip = nextItem.tooltip;
       this.tooltipTimer = 2;
     }
@@ -2101,13 +2123,13 @@ export default class Editor {
 
   activatePanelSelection() {
     const activeTab = this.getActivePanelTab();
-    const { items } = this.getPanelConfig(activeTab, { includeExtras: this.isMobileLayout() });
+    const { items } = this.getPanelConfig(activeTab, { includeExtras: this.activeViewportMode !== 'desktop' });
     if (items.length === 0) return false;
     const index = Math.max(0, Math.min(this.panelMenuIndex[activeTab] ?? 0, items.length - 1));
     const nextItem = items[index];
     if (!nextItem) return false;
     if (typeof nextItem.onClick === 'function') nextItem.onClick();
-    if (nextItem.tooltip && !this.isMobileLayout()) {
+    if (nextItem.tooltip && this.activeViewportMode === 'desktop') {
       this.activeTooltip = nextItem.tooltip;
       this.tooltipTimer = 2;
     }
@@ -5840,7 +5862,9 @@ export default class Editor {
     this.sanitizeView('handlePointerDown');
     this.lastPointer = { x: payload.x, y: payload.y };
     this.pendingDesktopDropdownHit = null;
-    if (!this.isMobileLayout() && shouldCloseDesktopDropdownOnPointerDown({
+    const isDesktopMode = this.activeViewportMode === 'desktop';
+    const isTouchMode = !isDesktopMode;
+    if (isDesktopMode && shouldCloseDesktopDropdownOnPointerDown({
       dropdown: this.desktopDropdown,
       point: payload,
       rootButtons: this.uiButtons,
@@ -5857,13 +5881,19 @@ export default class Editor {
       this.desktopDropdown = nextDropdown.dropdown;
       return;
     }
-    if (!this.isMobileLayout()) {
+    if (isDesktopMode) {
       const desktopDropdownHit = this.uiButtons.find((button) => (
         button.desktopDropdownItem
         && this.isPointInBounds(payload.x, payload.y, button)
       ));
       if (desktopDropdownHit) {
         this.pendingDesktopDropdownHit = createPendingDesktopDropdownHit(desktopDropdownHit, payload);
+        return;
+      }
+      const desktopDropdownRegion = this.desktopDropdownRegions?.find((region) => (
+        region?.bounds && this.isPointInBounds(payload.x, payload.y, region.bounds)
+      ));
+      if (desktopDropdownRegion) {
         return;
       }
     }
@@ -5887,7 +5917,7 @@ export default class Editor {
       this.startPlaytestFromCursor();
       return;
     }
-    if (this.isMobileLayout()) {
+    if (isTouchMode) {
       const drawerScrollHitBounds = this.panelScrollHitBounds || this.panelScrollBounds;
       const rootScrollHitBounds = this.rootPanelScrollBounds;
       const isDrawerScrollHit = this.drawer.open && drawerScrollHitBounds
@@ -5930,12 +5960,9 @@ export default class Editor {
     }
     if (this.handleUIClick(payload.x, payload.y)) return;
 
-    if (this.isMobileLayout()) {
-      const suppressLandscapeMenuThumbstick = isMobileLandscapeLayout({
-        isMobile: true,
-        viewportWidth: this.game?.canvas?.width || 0,
-        viewportHeight: this.game?.canvas?.height || 0
-      }) && this.drawer.open;
+    if (isTouchMode) {
+      const suppressLandscapeMenuThumbstick = this.activeViewportMode === 'landscape-touch' && this.drawer.open
+        || !canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick');
       if (!suppressLandscapeMenuThumbstick && this.isPointInCircle(payload.x, payload.y, this.panJoystick.center, this.panJoystick.radius * 1.2)) {
         this.panJoystick.active = true;
         this.panJoystick.id = payload.id ?? null;
@@ -5962,7 +5989,7 @@ export default class Editor {
     }
 
     const panelScrollHitBounds = this.panelScrollHitBounds || this.panelScrollBounds;
-    if (this.isMobileLayout() && this.drawer.open && panelScrollHitBounds
+    if (isTouchMode && this.drawer.open && panelScrollHitBounds
       && this.isPointInBounds(payload.x, payload.y, this.drawerBounds)
       && this.isPointInBounds(payload.x, payload.y, panelScrollHitBounds)) {
       this.panelScrollDrag = {
@@ -5977,7 +6004,7 @@ export default class Editor {
     }
 
     if (this.triggerPlacementMode === 'load-level-spawn' && this.triggerLoadLevelPlacement) {
-      if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
+      if (isTouchMode && !this.isPointerInEditorArea(payload.x, payload.y)) return;
       const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
       this.triggerLoadLevelPlacement.selectionX = tileX;
       this.triggerLoadLevelPlacement.selectionY = tileY;
@@ -5985,7 +6012,7 @@ export default class Editor {
     }
 
     if (this.triggerEditorOpen && (this.triggerPlacementMode === 'spawn-enemy' || this.triggerPlacementMode === 'spawn-companion') && this.triggerActionDraft) {
-      if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
+      if (isTouchMode && !this.isPointerInEditorArea(payload.x, payload.y)) return;
       const selectedTrigger = this.getSelectedTrigger();
       if (!selectedTrigger) return;
       const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
@@ -5998,7 +6025,7 @@ export default class Editor {
       return;
     }
 
-    if (this.isMobileLayout() && this.drawer.open) {
+    if (isTouchMode && this.drawer.open) {
       if (!this.isPointInBounds(payload.x, payload.y, this.drawerBounds)) {
         this.drawer.open = false;
         this.drawer.rootOpen = false;
@@ -6080,7 +6107,7 @@ export default class Editor {
       }
     }
 
-    if (this.isMobileLayout()
+    if (isTouchMode
       && this.isPointInBounds(payload.x, payload.y, this.drawerBounds)
       && !(panelScrollHitBounds && this.isPointInBounds(payload.x, payload.y, panelScrollHitBounds))) {
       this.drawer.swipeStart = { x: payload.x, y: payload.y };
@@ -6089,7 +6116,7 @@ export default class Editor {
 
     if (this.mode === 'trigger') {
       if (this.triggerEditorOpen) return;
-      if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
+      if (isTouchMode && !this.isPointerInEditorArea(payload.x, payload.y)) return;
       const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
       const existingTrigger = this.getTriggerAtTile(tileX, tileY);
       if (existingTrigger) {
@@ -6111,7 +6138,7 @@ export default class Editor {
     }
 
     if (this.mode === 'music' && this.getActivePanelTab() === 'music') {
-      if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y)) return;
+      if (isTouchMode && !this.isPointerInEditorArea(payload.x, payload.y)) return;
       const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
       if (this.musicTool === 'erase') {
         this.removeMusicZoneAt(tileX, tileY);
@@ -6123,7 +6150,7 @@ export default class Editor {
       return;
     }
 
-    if (this.isMobileLayout()) {
+    if (isTouchMode) {
       if (!this.isPointerInEditorArea(payload.x, payload.y)) return;
       const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
       this.pendingPointer = {
@@ -6179,6 +6206,7 @@ export default class Editor {
     if (!this.active) return;
     this.sanitizeView('handlePointerMove');
     this.lastPointer = { x: payload.x, y: payload.y };
+    const isTouchMode = this.activeViewportMode !== 'desktop';
     this.pendingDesktopDropdownHit = updatePendingDesktopDropdownHit(this.pendingDesktopDropdownHit, payload);
     if (this.decalTransformDrag && this.getActivePanelTab() === 'graphics') {
       const drag = this.decalTransformDrag;
@@ -6277,7 +6305,7 @@ export default class Editor {
       return;
     }
 
-    if (this.isMobileLayout()) {
+    if (isTouchMode) {
       if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id)) {
         this.updatePanJoystick(payload.x, payload.y);
         return;
@@ -6298,7 +6326,7 @@ export default class Editor {
       return;
     }
 
-    if (this.isMobileLayout() && this.panelScrollDrag
+    if (isTouchMode && this.panelScrollDrag
       && (payload.id === undefined || this.panelScrollDrag.id === payload.id)) {
       const activeTab = this.panelScrollDrag.scrollKey || this.panelScrollDrag.menuId || this.getActivePanelTab();
       const maxScroll = this.panelScrollMax[activeTab] || 0;
@@ -6320,7 +6348,7 @@ export default class Editor {
       return;
     }
     if (this.randomLevelDialog.open) return;
-    if (this.isMobileLayout() && this.drawer.swipeStart) {
+    if (isTouchMode && this.drawer.swipeStart) {
       const dx = payload.x - this.drawer.swipeStart.x;
       const dy = payload.y - this.drawer.swipeStart.y;
       if (Math.abs(dx) > 50 && Math.abs(dy) < 30) {
@@ -6336,7 +6364,7 @@ export default class Editor {
       return;
     }
 
-    if (this.isMobileLayout() && this.pendingPointer) {
+    if (isTouchMode && this.pendingPointer) {
       const dx = payload.x - this.pendingPointer.x;
       const dy = payload.y - this.pendingPointer.y;
       if (Math.hypot(dx, dy) > 10) {
@@ -6363,7 +6391,7 @@ export default class Editor {
       }
     }
 
-    if (this.isMobileLayout() && !this.isPointerInEditorArea(payload.x, payload.y) && !this.dragging) return;
+    if (isTouchMode && !this.isPointerInEditorArea(payload.x, payload.y) && !this.dragging) return;
     const { tileX, tileY } = this.screenToTile(payload.x, payload.y);
 
     if (!this.dragging) return;
@@ -6407,6 +6435,7 @@ export default class Editor {
   handlePointerUp(payload = {}) {
     if (!this.active) return;
     this.sanitizeView('handlePointerUp');
+    const isTouchMode = this.activeViewportMode !== 'desktop';
     if (this.pendingDesktopDropdownHit) {
       const hit = this.pendingDesktopDropdownHit;
       this.pendingDesktopDropdownHit = null;
@@ -6523,7 +6552,7 @@ export default class Editor {
       return;
     }
 
-    if (this.isMobileLayout()) {
+    if (isTouchMode) {
       if (this.panJoystick.active && (payload.id === undefined || this.panJoystick.id === payload.id)) {
         this.panJoystick.active = false;
         this.panJoystick.id = null;
@@ -6663,7 +6692,7 @@ export default class Editor {
         return;
       }
     }
-    if (!this.isMobileLayout() && this.panelScrollBounds) {
+    if (this.activeViewportMode === 'desktop' && this.panelScrollBounds) {
       const { x, y, w, h } = this.panelScrollBounds;
       if (payload.x >= x && payload.x <= x + w && payload.y >= y && payload.y <= y + h) {
         const activeTab = this.getActivePanelTab();
@@ -6687,7 +6716,7 @@ export default class Editor {
       if (button.desktopDropdownItem) continue;
       if (x >= button.x && x <= button.x + button.w && y >= button.y && y <= button.y + button.h) {
         button.onClick();
-        if (button.tooltip && !this.isMobileLayout()) {
+        if (button.tooltip && this.activeViewportMode === 'desktop') {
           this.activeTooltip = button.tooltip;
           this.tooltipTimer = 3;
         }
@@ -7012,7 +7041,7 @@ export default class Editor {
   }
 
   triggerHaptic() {
-    if (!this.isMobileLayout()) return;
+    if (this.activeViewportMode === 'desktop') return;
     const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
     if (now - this.lastHapticAt < 60) return;
     this.lastHapticAt = now;
@@ -7022,7 +7051,7 @@ export default class Editor {
   }
 
   startPrecisionZoom() {
-    if (!this.isMobileLayout()) return;
+    if (this.activeViewportMode === 'desktop') return;
     if (this.precisionZoom) return;
     if (this.zoom >= 1.3) return;
     this.precisionZoom = { previous: this.zoom };
@@ -7711,7 +7740,7 @@ export default class Editor {
   }
 
   updateHover() {
-    if (this.isMobileLayout() && !this.isPointerInEditorArea(this.lastPointer.x, this.lastPointer.y)) {
+    if (this.activeViewportMode !== 'desktop' && !this.isPointerInEditorArea(this.lastPointer.x, this.lastPointer.y)) {
       this.hoverTile = null;
       return;
     }
@@ -7722,11 +7751,21 @@ export default class Editor {
   }
 
   isMobileLayout() {
-    return Boolean(this.game.isMobile);
+    return Boolean(this.game?.deviceIsMobile || this.game?.isMobile);
+  }
+
+  resolveLevelViewportMode(width = this.game?.viewport?.width || this.game.canvas?.width || 0, height = this.game?.viewport?.height || this.game.canvas?.height || 0) {
+    return resolveEditorViewportModeFlags({
+      editorId: 'level',
+      viewportWidth: width,
+      viewportHeight: height,
+      isMobile: this.isMobileLayout(),
+      gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.())
+    });
   }
 
   isPointerInEditorArea(x, y) {
-    if (!this.isMobileLayout()) return true;
+    if (this.activeViewportMode === 'desktop') return true;
     return x >= this.editorBounds.x
       && x <= this.editorBounds.x + this.editorBounds.w
       && y >= this.editorBounds.y
@@ -7826,7 +7865,7 @@ export default class Editor {
     ctx.restore();
     if (!this.captureWithoutUiRequested) {
       this.drawHUD(ctx, width, height);
-      if (this.isMobileLayout() && this.game?.input?.isGamepadConnected?.()) {
+      if (this.activeViewportMode !== 'desktop' && this.game?.input?.isGamepadConnected?.() && canRenderEditorSurface(this.activeViewportMode, 'gamepad-hint-bar')) {
         this.drawGamepadHintBar(ctx, {
           x: 92,
           y: height - 34,
@@ -7862,11 +7901,12 @@ export default class Editor {
   }
 
   getGamepadMenuState(width = this.getViewportSize().width, height = this.getViewportSize().height) {
+    const viewportMode = this.resolveLevelViewportMode(width, height);
     return resolveGamepadMenuState({
       viewportWidth: width,
       viewportHeight: height,
-      gamepadConnected: this.game?.input?.isGamepadConnected?.(),
-      isMobile: this.isMobileLayout(),
+      gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.()),
+      isMobile: viewportMode.isMobileViewport,
       menuActive: this.controllerMenu.active,
       activeMenuId: this.controllerMenu.getActiveMenuId()
     });
@@ -7881,6 +7921,12 @@ export default class Editor {
     });
     const menu = this.controllerMenu.menus?.[menuId];
     const items = this.controllerMenu.getItems(menu);
+    const plannedItems = menuId ? (plan.submenu?.items || []) : plan.rootEntries;
+    const plannedFocusById = new Map(plannedItems.map((item) => [item.id, Boolean(item.focused)]));
+    const focusedItemId = this.controllerMenu.getFocusedItem(menuId)?.id
+      || plan.focus?.submenuItemId
+      || plan.focus?.rootItemId
+      || null;
     drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
     drawSharedGamepadSlideOutHeader(ctx, bounds, menu?.title || plan.submenu?.title || 'Menu', { hint: plan.headerHint });
     const rowH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
@@ -7898,7 +7944,7 @@ export default class Editor {
     this.panelScrollMax[menuId] = Math.max(0, items.length - visibleRows);
     const start = this.controllerMenu.syncScrollToItem(
       menuId,
-      this.controllerMenu.getFocusedItem(menuId)?.id,
+      focusedItemId,
       items,
       visibleRows,
       this.panelScroll[menuId] ?? this.controllerMenu.scroll?.[menuId] ?? 0
@@ -7914,7 +7960,8 @@ export default class Editor {
         h: rowH
       };
       const active = this.controllerMenu.isFocusedItem(menuId, item.id, index);
-      const color = drawSharedMenuButtonChrome(ctx, buttonBounds, { active, focused: active });
+      const focused = active || Boolean(plannedFocusById.get(item.id));
+      const color = drawSharedMenuButtonChrome(ctx, buttonBounds, { active, focused });
       drawSharedMenuButtonLabel(ctx, buttonBounds, item.label, { color, fontSize: 12, maxWidth: buttonBounds.w - 10 });
       this.addUIButton(buttonBounds, () => item.onSelect?.(this), item.label);
     });
@@ -8363,6 +8410,7 @@ export default class Editor {
     ctx.font = `13px ${UI_SUITE.font.family}`;
     ctx.textAlign = 'left';
     this.uiButtons = [];
+    this.desktopDropdownRegions = [];
     this.pixelPaletteBounds = [];
     this.pixelGridBounds = null;
     this.pixelFrameBounds = null;
@@ -8598,7 +8646,7 @@ export default class Editor {
       });
       ctx.restore();
       if (!disabled) this.addUIButton(bounds, onClick, tooltip, metadata);
-      if (tooltip && !this.isMobileLayout() && isHovered(x, y, w, h)) {
+      if (tooltip && this.activeViewportMode === 'desktop' && isHovered(x, y, w, h)) {
         hoverTooltip = tooltip;
       }
     };
@@ -8652,13 +8700,10 @@ export default class Editor {
     let sliderWidth = 0;
     const sliderHeight = 10;
     let sliderY = height;
-    const viewportMode = resolveEditorViewportModeFlags({
-      viewportWidth: width,
-      viewportHeight: height,
-      isMobile: this.isMobileLayout(),
-      gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.())
-    });
+    const viewportMode = this.resolveLevelViewportMode(width, height);
     this.activeModeContract = viewportMode.modeContract;
+    this.activeSpecModeContract = viewportMode.specModeContract;
+    this.activeViewportMode = viewportMode.mode;
     const portraitLayout = viewportMode.isMobilePortrait
       ? getSharedMobilePortraitEditorLayout(width, height, {
         middleRailHeight: 88,
@@ -8716,28 +8761,50 @@ export default class Editor {
         bottomRailHeight: LEVEL_LANDSCAPE_BOTTOM_RAIL_HEIGHT,
         reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft
       });
-      const landscapeRootMenuSurface = landscapeLayout?.surfaces.compactCommandRail ?? landscapeLayout?.surfaces.rootMenu;
-      const landscapeSubmenuSurface = landscapeLayout?.surfaces.submenu;
-      const landscapeRootDrawerSurface = landscapeLayout?.surfaces.rootDrawer ?? landscapeLayout?.surfaces.overlayDrawer;
+      const canRenderLandscapeRootRail = !portraitLayout
+        && canRenderEditorPlanSurface(landscapeLayout, 'left-rail');
+      const canRenderLandscapeBottomRail = !portraitLayout
+        && canRenderEditorPlanSurface(landscapeLayout, 'bottom-tool-rail');
+      const canRenderLandscapeRightSubmenu = !portraitLayout
+        && canRenderEditorPlanSurface(landscapeLayout, 'right-drawer')
+        && canRenderEditorPlanSurface(landscapeLayout, 'landscape-right-submenu');
+      const canRenderLandscapeRootDrawer = !portraitLayout
+        && canRenderEditorPlanSurface(landscapeLayout, 'left-overlay-drawer');
+      const landscapeRootMenuSurface = canRenderLandscapeRootRail
+        ? (landscapeLayout?.surfaces.compactCommandRail ?? landscapeLayout?.surfaces.rootMenu)
+        : null;
+      const landscapeSubmenuSurface = canRenderLandscapeRightSubmenu
+        ? landscapeLayout?.surfaces.submenu
+        : null;
+      const landscapeRootDrawerSurface = canRenderLandscapeRootDrawer
+        ? (landscapeLayout?.surfaces.rootDrawer ?? landscapeLayout?.surfaces.overlayDrawer)
+        : null;
       const landscapeActiveDrawerSurface = this.drawer.rootOpen
         ? landscapeRootDrawerSurface
         : (landscapeSubmenuSurface ?? landscapeRootDrawerSurface);
       const landscapeWorkSurface = landscapeLayout?.surfaces.workSurface;
-      const landscapeToolOptionsSurface = landscapeLayout?.surfaces.toolOptions;
+      const landscapeToolOptionsSurface = canRenderLandscapeBottomRail
+        ? landscapeLayout?.surfaces.toolOptions
+        : null;
       if (!portraitLayout && landscapeToolOptionsSurface) {
         sliderX = landscapeToolOptionsSurface.x + 16;
         sliderWidth = Math.max(140, landscapeToolOptionsSurface.w - 32);
         sliderY = landscapeToolOptionsSurface.y + Math.max(0, Math.floor((landscapeToolOptionsSurface.h - sliderHeight) / 2));
         this.zoomSlider.bounds = { x: sliderX, y: sliderY - 14, w: sliderWidth, h: sliderHeight + 28 };
+      } else if (!portraitLayout) {
+        this.zoomSlider.bounds = { x: 0, y: 0, w: 0, h: 0 };
+        this.zoomSlider.playZoomBounds = { x: 0, y: 0, w: 0, h: 0 };
+        this.zoomSlider.active = false;
+        this.zoomSlider.id = null;
       }
-      const railWidth = portraitLayout ? portraitLayout.leftRail.w : landscapeRootMenuSurface.w;
+      const railWidth = portraitLayout ? portraitLayout.leftRail.w : (landscapeRootMenuSurface?.w || 0);
       let drawerWidth = drawerOpenForLayout
         ? (portraitLayout ? portraitLayout.rightRail.w : (landscapeActiveDrawerSurface?.w ?? getSharedMobileDrawerWidth(width, height, railWidth, { edgePadding: 0 })))
         : 0;
-      const panelX = portraitLayout ? portraitLayout.leftRail.x : landscapeRootMenuSurface.x;
-      const panelY = portraitLayout ? portraitLayout.leftRail.y : landscapeRootMenuSurface.y;
+      const panelX = portraitLayout ? portraitLayout.leftRail.x : (landscapeRootMenuSurface?.x || 0);
+      const panelY = portraitLayout ? portraitLayout.leftRail.y : (landscapeRootMenuSurface?.y || 0);
       const panelW = railWidth;
-      const panelH = portraitLayout ? portraitLayout.leftRail.h : landscapeRootMenuSurface.h;
+      const panelH = portraitLayout ? portraitLayout.leftRail.h : (landscapeRootMenuSurface?.h || 0);
       let drawerX = portraitLayout ? portraitLayout.rightRail.x : (landscapeActiveDrawerSurface?.x ?? panelX + panelW);
       let drawerY = portraitLayout ? portraitLayout.rightRail.y : (landscapeActiveDrawerSurface?.y ?? 0);
       let drawerH = portraitLayout ? portraitLayout.rightRail.h : (landscapeActiveDrawerSurface?.h ?? height);
@@ -8848,7 +8915,7 @@ export default class Editor {
         });
       }
 
-      if (portraitLayout) {
+      if (portraitLayout && canRenderEditorSurface(viewportMode.mode, 'bottom-action-rail')) {
         const portraitActionById = {
           menu: { id: 'menu', label: '☰', onClick: () => { this.drawer.open = !this.drawer.open; } },
           undo: { id: 'undo', label: '↶', tooltip: 'Undo', onClick: () => this.undo() },
@@ -9397,11 +9464,7 @@ export default class Editor {
         const listY = contentY + fileHeaderOffset;
         const listH = Math.max(0, contentHeight - fileHeaderOffset);
         if (activeTab === 'file') {
-          const stickyExit = portraitLayout || isMobileLandscapeLayout({
-            isMobile: true,
-            viewportWidth: width,
-            viewportHeight: height
-          });
+          const stickyExit = this.activeViewportMode !== 'desktop';
           const { listItems: fileItems, exitItem } = stickyExit
             ? splitFileDrawerStickyExitItems(items)
             : { listItems: items, exitItem: null };
@@ -9632,7 +9695,8 @@ export default class Editor {
         registerButton: (entry) => {
         const def = topButtonDefById.get(entry.id);
         if (!def) return;
-        this.addUIButton(entry.bounds, def.action, '', { desktopRootId: entry.id });
+        const rootHit = createDesktopRootMenuHit(entry, def.action);
+        this.addUIButton(rootHit, rootHit.onClick, '', rootHit);
         }
       });
 
@@ -9699,11 +9763,85 @@ export default class Editor {
       ];
       drawSharedDesktopContextPanel(ctx, contextPanel, {
         lines: contextLines,
+        contentRoles: ['document-summary', 'active-tool-summary', 'selection-summary', 'contextual-quick-actions', 'status'],
         padding: 12,
         lineGap: 19,
         fill: UI_SUITE.editorPanel.background,
         border: UI_SUITE.editorPanel.border
       });
+      if (contextPanel?.h > 230) {
+        const quickPad = 12;
+        const quickGap = 6;
+        const quickH = 30;
+        const quickTitleY = Math.max(contextPanel.y + 144, contextPanel.y + contextPanel.h - 124);
+        ctx.fillStyle = UI_SUITE.colors.accent;
+        ctx.font = `12px ${UI_SUITE.font.family}`;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Assets', contextPanel.x + quickPad, quickTitleY, contextPanel.w - quickPad * 2);
+        const quickButtons = [
+          {
+            id: 'desktop-assets-tiles',
+            label: 'Tiles',
+            active: activeTab === 'tiles',
+            tooltip: 'Show tile assets',
+            onClick: () => {
+              this.setPanelTab('tiles');
+              this.mode = 'tile';
+              this.tileTool = 'paint';
+            }
+          },
+          {
+            id: 'desktop-assets-actors',
+            label: 'Actors',
+            active: activeTab === 'npcs',
+            tooltip: 'Show actor assets',
+            onClick: () => {
+              this.setPanelTab('npcs');
+              this.mode = 'enemy';
+            }
+          },
+          {
+            id: 'desktop-assets-powerups',
+            label: 'Powerups',
+            active: activeTab === 'powerups',
+            tooltip: 'Show powerup assets',
+            onClick: () => {
+              this.setPanelTab('powerups');
+              this.mode = 'tile';
+            }
+          },
+          {
+            id: 'desktop-assets-structures',
+            label: 'Structures',
+            active: activeTab === 'prefabs',
+            tooltip: 'Show structure assets',
+            onClick: () => {
+              this.setPanelTab('prefabs');
+              this.mode = 'prefab';
+            }
+          }
+        ];
+        const colW = Math.max(56, Math.floor((contextPanel.w - quickPad * 2 - quickGap) / 2));
+        quickButtons.forEach((button, index) => {
+          const col = index % 2;
+          const row = Math.floor(index / 2);
+          drawButton(
+            contextPanel.x + quickPad + col * (colW + quickGap),
+            quickTitleY + 14 + row * (quickH + quickGap),
+            colW,
+            quickH,
+            button.label,
+            button.active,
+            button.onClick,
+            button.tooltip,
+            null,
+            this.controllerMenu.isFocusedItem('root', button.id),
+            false,
+            { id: button.id, desktopContextItem: true }
+          );
+        });
+      }
 
       if (shellLayout.dropdown) {
         const dropdownRootId = shellLayout.dropdown.rootId;
@@ -9719,6 +9857,9 @@ export default class Editor {
         drawSharedDesktopDropdown(ctx, dropdownPlan, {
           isActive: (item) => getActiveState(item, dropdownPanelId),
           isFocused: (item, index) => this.controllerMenu.isFocusedItem(dropdownPanelId, item.id, index),
+          registerScrollRegion: (region) => {
+            this.desktopDropdownRegions.push(region);
+          },
           renderItem: ({ item, index, bounds, active, focused }) => {
             const preview = item.tile
               ? { type: 'tile', tile: item.tile }
@@ -9739,11 +9880,12 @@ export default class Editor {
               preview,
               focused,
               Boolean(item.disabled),
-              {
-                id: item.id,
-                action: item.onClick || item.action || (typeof item.onSelect === 'function' ? () => item.onSelect(this) : null),
-                desktopDropdownItem: true
-              }
+              createDesktopDropdownCommandHit(
+                item,
+                bounds,
+                item.onClick || item.action || (typeof item.onSelect === 'function' ? () => item.onSelect(this) : null),
+                { sourceRootId: dropdownRootId || null }
+              )
             );
           }
         });
@@ -9771,8 +9913,9 @@ export default class Editor {
     if (this.triggerEditorOpen) {
       const selected = this.getSelectedTrigger();
       if (selected) {
-        const panelWidth = this.isMobileLayout() ? Math.min(width - 24, 440) : 420;
-        const panelHeight = this.isMobileLayout() ? Math.min(height - 24, 620) : 560;
+        const touchViewportMode = this.activeViewportMode !== 'desktop';
+        const panelWidth = touchViewportMode ? Math.min(width - 24, 440) : 420;
+        const panelHeight = touchViewportMode ? Math.min(height - 24, 620) : 560;
         const panelX = (width - panelWidth) / 2;
         const panelY = (height - panelHeight) / 2;
         const levelNames = this.getTriggerLevelNames();
@@ -10293,10 +10436,11 @@ export default class Editor {
 
         if (this.mode === 'pixel') {
       const panelWidth = 300;
-      const panelX = this.isMobileLayout()
+      const touchViewportMode = this.activeViewportMode !== 'desktop';
+      const panelX = touchViewportMode
         ? this.editorBounds.x + this.editorBounds.w - panelWidth - 12
         : 12;
-      const panelY = this.isMobileLayout()
+      const panelY = touchViewportMode
         ? this.editorBounds.y + 12
         : infoPanelBottom;
       const panelPadding = 12;
@@ -10456,10 +10600,11 @@ export default class Editor {
     if (this.mode === 'midi') {
       const track = this.getActiveMidiTrack();
       const panelWidth = 360;
-      const panelX = this.isMobileLayout()
+      const touchViewportMode = this.activeViewportMode !== 'desktop';
+      const panelX = touchViewportMode
         ? this.editorBounds.x + 12
         : 12;
-      const panelY = this.isMobileLayout()
+      const panelY = touchViewportMode
         ? this.editorBounds.y + this.editorBounds.h - 300
         : infoPanelBottom;
       const instrumentColumns = 4;
@@ -10649,8 +10794,11 @@ export default class Editor {
       ctx.restore();
     }
 
-    if (this.isMobileLayout() && !portraitLayout) {
-      const suppressLandscapeThumbstick = this.drawer.open;
+    const hasLandscapeZoomRail = this.zoomSlider.bounds
+      && this.zoomSlider.bounds.w > 0
+      && this.zoomSlider.bounds.h > 0;
+    if (this.activeViewportMode !== 'desktop' && !portraitLayout && hasLandscapeZoomRail) {
+      const suppressLandscapeThumbstick = this.drawer.open || !canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick');
       const zoomT = this.zoomToSliderT(this.zoom);
       const sliderCenterY = sliderY + sliderHeight / 2;
       ctx.save();
@@ -10684,6 +10832,8 @@ export default class Editor {
       } else {
         drawSharedThumbstick(ctx, this.panJoystick);
       }
+    } else if (this.activeViewportMode !== 'desktop' && !portraitLayout) {
+      resetSharedThumbstickState(this.panJoystick);
     }
 
     if (this.randomLevelDialog.open) {
@@ -10850,8 +11000,10 @@ export default class Editor {
       ctx.restore();
     }
 
+    const isTouchViewportMode = this.activeViewportMode !== 'desktop';
+
     if (['pixel', 'midi'].includes(this.mode)) {
-      const mapSize = this.isMobileLayout() ? 140 : 180;
+      const mapSize = isTouchViewportMode ? 140 : 180;
       const mapX = this.editorBounds.x + this.editorBounds.w - mapSize - 16;
       const mapY = this.editorBounds.y + 16;
       const viewCenter = {
@@ -10868,14 +11020,15 @@ export default class Editor {
     }
 
     if (!shouldShowLevelEditorTopPlaytestButton({
-      isMobile: this.isMobileLayout(),
+      isMobile: isTouchViewportMode,
       viewportWidth: width,
-      viewportHeight: height
+      viewportHeight: height,
+      viewportMode: this.activeViewportMode
     })) {
       this.playButtonBounds = null;
     } else {
-      const playButtonW = this.isMobileLayout() ? 112 : 96;
-      const playButtonH = this.isMobileLayout() ? 40 : 36;
+      const playButtonW = isTouchViewportMode ? 112 : 96;
+      const playButtonH = isTouchViewportMode ? 40 : 36;
       const playX = Math.round((width - playButtonW) / 2);
       const playY = this.editorBounds.y + 16;
       this.playButtonBounds = { x: playX, y: playY, w: playButtonW, h: playButtonH };
@@ -10885,7 +11038,10 @@ export default class Editor {
       });
     }
 
-    if (this.isMobileLayout() && !this.drawer.open && this.editorBounds) {
+    if (this.activeViewportMode !== 'desktop'
+      && canRenderEditorSurface(this.activeViewportMode, 'bottom-action-rail')
+      && !this.drawer.open
+      && this.editorBounds) {
       const ribbonActions = this.buildContextRibbonActions();
       if (ribbonActions.length) {
         const ribbonH = 46;
@@ -10908,10 +11064,10 @@ export default class Editor {
     const showEnemyInfo = enemyInfo && (this.getActivePanelTab() === 'npcs' || this.mode === 'enemy');
     if (showEnemyInfo) {
       ctx.save();
-      const boxWidth = this.isMobileLayout()
+      const boxWidth = isTouchViewportMode
         ? Math.min(260, this.editorBounds.w - 24)
         : 320;
-      const boxX = this.isMobileLayout() ? this.editorBounds.x + 12 : 12;
+      const boxX = isTouchViewportMode ? this.editorBounds.x + 12 : 12;
       const maxTextWidth = boxWidth - 20;
       ctx.font = `12px ${UI_SUITE.font.family}`;
       ctx.textAlign = 'left';
@@ -10919,8 +11075,8 @@ export default class Editor {
       const title = `${this.enemyType.label}`;
       const lines = wrapText(enemyInfo, maxTextWidth);
       const boxHeight = 18 + lines.length * 16 + 16;
-      const tooltipHeight = this.isMobileLayout() ? 22 : 24;
-      const maxY = this.isMobileLayout()
+      const tooltipHeight = isTouchViewportMode ? 22 : 24;
+      const maxY = isTouchViewportMode
         ? this.editorBounds.y + 12
         : Math.max(12, ctx.canvas.height - boxHeight - tooltipHeight - 12);
       const boxY = maxY;
@@ -10938,13 +11094,13 @@ export default class Editor {
 
     const tooltip = hoverTooltip
       || this.graphicsStatusMessage
-      || (!this.isMobileLayout() && this.tooltipTimer > 0 ? this.activeTooltip : '');
+      || (this.activeViewportMode === 'desktop' && this.tooltipTimer > 0 ? this.activeTooltip : '');
     if (tooltip) {
-      const tooltipHeight = this.isMobileLayout() ? 22 : 24;
-      const baseTooltipY = this.isMobileLayout()
+      const tooltipHeight = isTouchViewportMode ? 22 : 24;
+      const baseTooltipY = isTouchViewportMode
         ? this.editorBounds.y + this.editorBounds.h - tooltipHeight
         : height - tooltipHeight;
-      const sliderSafeY = this.isMobileLayout()
+      const sliderSafeY = isTouchViewportMode
         ? sliderY - tooltipHeight - 12
         : baseTooltipY;
       const tooltipY = Math.max(0, Math.min(baseTooltipY, sliderSafeY));

@@ -5,8 +5,8 @@ import { getBuiltInActorIdFromName, isBuiltInActorName, mergeBuiltInActorOverrid
 import { buildSharedEditorFileMenu, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitRailActionButtons, SHARED_EDITOR_LEFT_MENU, UI_SUITE } from './uiSuite.js';
 import { getActorArtDurationSignature, invalidateActorDefinitionCache, resolveActorArtFrameDurationMs } from '../entities/ScriptedActor.js';
 import { invalidateBuiltInActorVisualCache } from '../entities/BuiltInActorVisuals.js';
-import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveOpenDesktopDropdownState, shouldCloseDesktopDropdownOnDomPointerDown } from './shared/editorMenuLayout.js';
-import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopSectionId, getEditorPortraitRootMenuEntries, getEditorRootMenuLabelMap } from './shared/editorMenuSpec.js';
+import { applyDesktopDropdownCommandDataset, applyDesktopRootMenuDataset, applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, canRenderEditorPlanSurface, canRenderEditorSurface, createPendingDesktopDropdownHit, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnDomPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
+import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopSectionId, getEditorMenuSection, getEditorPortraitRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, renderDomControllerMenu } from './shared/input/controllerMenuStack.js';
 
@@ -21,7 +21,7 @@ const ACTOR_CONTROLLER_ROOT_LABELS = getEditorRootMenuLabelMap('actor');
 export function buildActorPortraitMenuModel() {
   return {
     rootTabs: getEditorPortraitRootMenuEntries('actor'),
-    bottomRailActions: ['menu', 'undo', 'redo', 'playtest'],
+    bottomRailActions: getStandardEditorActionRailIds('playtest'),
     primaryActionLabel: 'Play Scene',
     portraitRootPlacement: 'bottom-rail'
   };
@@ -163,6 +163,7 @@ export default class ActorEditor {
     this.controllerMenu = new ControllerMenuStack({
       siblingOrder: ACTOR_CONTROLLER_ROOTS
     });
+    this.activeViewportMode = 'desktop';
     this.landscapeRootDrawerOpen = false;
     this.gamepadFocusIndex = 0;
     this.gamepadFocusRepeat = 0;
@@ -444,7 +445,25 @@ export default class ActorEditor {
   draw() {}
 
   isMobileLayout() {
-    return Boolean(this.game?.isMobile);
+    return Boolean(this.game?.deviceIsMobile || this.game?.isMobile);
+  }
+
+  getViewportSize(fallbackWidth = 0, fallbackHeight = 0) {
+    return {
+      width: Number(globalThis?.innerWidth || fallbackWidth || 0),
+      height: Number(globalThis?.innerHeight || fallbackHeight || 0)
+    };
+  }
+
+  resolveActorViewportMode(width = null, height = null) {
+    const fallback = this.getViewportSize(0, 0);
+    return resolveEditorViewportModeFlags({
+      editorId: 'actor',
+      viewportWidth: Number(width ?? fallback.width),
+      viewportHeight: Number(height ?? fallback.height),
+      isMobile: this.isMobileLayout(),
+      gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.())
+    });
   }
 
   resetTransientInteractionState() {
@@ -452,9 +471,8 @@ export default class ActorEditor {
   }
 
   resetToFileMenu() {
-    const viewportW = Number(window.innerWidth || 0);
-    const viewportH = Number(window.innerHeight || 0);
-    const isPortraitPhone = this.isMobileLayout() && viewportH > viewportW;
+    const viewportMode = this.resolveActorViewportMode();
+    const isPortraitPhone = viewportMode.isMobilePortrait;
     this.fileMenuOpen = !isPortraitPhone;
     this.actorPortraitMenuOpen = !isPortraitPhone;
     this.activeMenuSection = 'actor';
@@ -788,19 +806,15 @@ export default class ActorEditor {
     Object.assign(canvasWrap.style, { flex: '1', minHeight: '0', overflow: 'hidden', position: 'relative' });
     canvasWrap.appendChild(canvas);
     viewportWrap.appendChild(canvasWrap);
-    const collisionViewportMode = resolveEditorViewportModeFlags({
-      viewportWidth: Number(window.innerWidth || 0),
-      viewportHeight: Number(window.innerHeight || 0),
-      isMobile: this.isMobileLayout(),
-      gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.())
-    });
+    const collisionViewportMode = this.resolveActorViewportMode();
     this.collisionModeContract = collisionViewportMode.modeContract;
     const collisionPointerPolicy = getEditorPointerInteractionPolicy('actor', {
       mode: collisionViewportMode.mode,
       pointerType: collisionViewportMode.isDesktop ? 'mouse' : 'touch',
       gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.())
     });
-    const showCollisionThumbstick = collisionPointerPolicy.thumbstick.allowed;
+    const showCollisionThumbstick = collisionPointerPolicy.thumbstick.allowed
+      && canRenderEditorSurface(collisionViewportMode.mode, 'touch-thumbstick');
     const bottomTools = el('div');
     Object.assign(bottomTools.style, { display: 'grid', gridTemplateColumns: showCollisionThumbstick ? '96px 1fr' : '1fr', gap: '8px', alignItems: 'stretch' });
     const thumbCol = el('div');
@@ -1274,16 +1288,14 @@ export default class ActorEditor {
     const left = el('div', 'actor-editor-left');
     const center = el('div', 'actor-editor-center');
     const rightRail = el('div', 'actor-editor-right-rail');
-    const viewportW = Number(window.innerWidth || 0);
-    const viewportH = Number(window.innerHeight || 0);
+    const viewport = this.getViewportSize(0, 0);
+    const viewportW = viewport.width;
+    const viewportH = viewport.height;
     const isGamepadConnected = Boolean(this.game?.input?.isGamepadConnected?.());
-    const viewportMode = resolveEditorViewportModeFlags({
-      viewportWidth: viewportW,
-      viewportHeight: viewportH,
-      isMobile: this.isMobileLayout(),
-      gamepadConnected: isGamepadConnected
-    });
+    const viewportMode = this.resolveActorViewportMode(viewportW, viewportH);
     this.activeModeContract = viewportMode.modeContract;
+    this.activeSpecModeContract = viewportMode.specModeContract;
+    this.activeViewportMode = viewportMode.mode;
     const {
       isDesktop: isDesktopLayout,
       isMobileViewport,
@@ -1330,11 +1342,30 @@ export default class ActorEditor {
         reserveRightRail: !shouldDrawGamepadSlideOut
       })
       : null;
-    const landscapeRootMenuSurface = landscapeLayout?.surfaces.compactCommandRail ?? landscapeLayout?.surfaces.rootMenu;
-    const landscapeSubmenuSurface = landscapeLayout?.surfaces.submenu;
-    const landscapeOverlayDrawerSurface = landscapeLayout?.surfaces.overlayDrawer;
-    const landscapeRootDrawerSurface = landscapeLayout?.surfaces.rootDrawer ?? landscapeOverlayDrawerSurface;
-    const landscapeToolOptionsSurface = landscapeLayout?.surfaces.toolOptions;
+    const canRenderLandscapeRootRail = landscapeLayout
+      && canRenderEditorPlanSurface(landscapeLayout, 'left-rail');
+    const canRenderLandscapeBottomRail = landscapeLayout
+      && canRenderEditorPlanSurface(landscapeLayout, 'bottom-tool-rail');
+    const canRenderLandscapeRightSubmenu = landscapeLayout
+      && canRenderEditorPlanSurface(landscapeLayout, 'right-drawer')
+      && canRenderEditorPlanSurface(landscapeLayout, 'landscape-right-submenu');
+    const canRenderLandscapeRootDrawer = landscapeLayout
+      && canRenderEditorPlanSurface(landscapeLayout, 'left-overlay-drawer');
+    const landscapeRootMenuSurface = canRenderLandscapeRootRail
+      ? (landscapeLayout?.surfaces.compactCommandRail ?? landscapeLayout?.surfaces.rootMenu)
+      : null;
+    const landscapeSubmenuSurface = canRenderLandscapeRightSubmenu
+      ? landscapeLayout?.surfaces.submenu
+      : null;
+    const landscapeOverlayDrawerSurface = canRenderLandscapeRootDrawer
+      ? landscapeLayout?.surfaces.overlayDrawer
+      : null;
+    const landscapeRootDrawerSurface = canRenderLandscapeRootDrawer
+      ? (landscapeLayout?.surfaces.rootDrawer ?? landscapeOverlayDrawerSurface)
+      : null;
+    const landscapeToolOptionsSurface = canRenderLandscapeBottomRail
+      ? landscapeLayout?.surfaces.toolOptions
+      : null;
     const railWidth = portraitLayout
       ? portraitLayout.leftRail.w
       : landscapeRootMenuSurface
@@ -1342,7 +1373,7 @@ export default class ActorEditor {
       : isMobileViewport
       ? getSharedMobileRailWidth(viewportW, viewportH)
       : SHARED_EDITOR_LEFT_MENU.width();
-    const landscapeRootDrawerContent = landscapeLayout && this.landscapeRootDrawerOpen && !shouldDrawGamepadSlideOut
+    const landscapeRootDrawerContent = landscapeRootDrawerSurface && this.landscapeRootDrawerOpen && !shouldDrawGamepadSlideOut
       ? this.renderLandscapeRootDrawer(landscapeRootDrawerSurface)
       : null;
     const landscapeRootDrawerHost = landscapeRootDrawerContent
@@ -1498,7 +1529,7 @@ export default class ActorEditor {
         this.render();
       }, { capture: true });
     }
-    if (isGamepadConnected && !isDesktopLayout) {
+    if (isGamepadConnected && !isDesktopLayout && canRenderEditorSurface(this.activeViewportMode, 'gamepad-hint-bar')) {
       shell.appendChild(this.renderGamepadHintBar());
     }
     if (this.shouldRenderControllerOverlay(viewportW, viewportH)) {
@@ -1534,7 +1565,7 @@ export default class ActorEditor {
     if (this.actorDesktopRoot) return this.actorDesktopRoot;
     if (this.activeMenuSection === 'actor') return 'settings';
     if (this.activeMenuSection === 'linked-parts') return 'linked-parts';
-    if (this.activeMenuSection === 'tools') return 'preview';
+    if (this.activeMenuSection === 'preview') return 'preview';
     return this.activeMenuSection || 'settings';
   }
 
@@ -1581,12 +1612,16 @@ export default class ActorEditor {
     return this.getGamepadMenuState(width, height).drawControllerOverlay;
   }
 
-  getGamepadMenuState(width = Number(window.innerWidth || 0), height = Number(window.innerHeight || 0)) {
+  getGamepadMenuState(width = null, height = null) {
+    const fallback = this.getViewportSize(0, 0);
+    const viewportWidth = Number(width ?? fallback.width);
+    const viewportHeight = Number(height ?? fallback.height);
+    const viewport = this.resolveActorViewportMode(viewportWidth, viewportHeight);
     return resolveGamepadMenuState({
-      viewportWidth: width,
-      viewportHeight: height,
-      gamepadConnected: this.game?.input?.isGamepadConnected?.(),
-      isMobile: this.isMobileLayout(),
+      viewportWidth,
+      viewportHeight,
+      gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.()),
+      isMobile: viewport.isMobileViewport,
       menuActive: this.controllerMenu.active,
       activeMenuId: this.controllerMenu.getActiveMenuId()
     });
@@ -1598,6 +1633,12 @@ export default class ActorEditor {
       activeRootId: menuId || this.getActiveActorDesktopRoot(),
       focusedItemId: this.controllerMenu.getFocusedItem(menuId)?.id
     });
+    const plannedItems = menuId ? (plan.submenu?.items || []) : plan.rootEntries;
+    const plannedFocusById = new Map(plannedItems.map((item) => [item.id, Boolean(item.focused)]));
+    const focusedItemId = this.controllerMenu.getFocusedItem(menuId)?.id
+      || plan.focus?.submenuItemId
+      || plan.focus?.rootItemId
+      || null;
     const menu = this.controllerMenu.menus?.[menuId];
     const rail = el('div', 'actor-editor-menu-rail actor-editor-gamepad-slideout');
     Object.assign(rail.style, {
@@ -1615,7 +1656,7 @@ export default class ActorEditor {
       hint
     );
     rail.appendChild(header);
-    const submenu = this.renderControllerSubmenuRail(menuId);
+    const submenu = this.renderControllerSubmenuRail(menuId, { plannedFocusById, focusedItemId });
     submenu.style.border = '0';
     submenu.style.padding = '0';
     submenu.style.flex = '1 1 auto';
@@ -1645,7 +1686,7 @@ export default class ActorEditor {
     (shellLayout?.topMenu?.buttons || []).forEach((entry) => {
       const isActive = Boolean(entry.active);
       const btn = el('button', `actor-editor-btn actor-editor-desktop-menu-btn${isActive ? ' active' : ''}`, entry.label);
-      btn.dataset.rootId = entry.id;
+      applyDesktopRootMenuDataset(btn, entry);
       btn.setAttribute('role', 'menuitem');
       btn.setAttribute('aria-haspopup', 'menu');
       btn.setAttribute('aria-expanded', isActive ? 'true' : 'false');
@@ -1728,18 +1769,60 @@ export default class ActorEditor {
       }
       const btn = el(
         'button',
-        `actor-editor-btn actor-editor-desktop-dropdown-btn${action.active ? ' active' : ''}${action.disabled ? ' disabled' : ''}`,
+        `actor-editor-btn actor-editor-desktop-dropdown-btn${action.active ? ' active' : ''}${action.disabled ? ' disabled' : ''}${action.startsEditActionRoleGroup ? ' role-group-start' : ''}`,
         action.label
       );
       btn.dataset.actionId = action.id || '';
       btn.dataset.sourceId = action.sourceId || action.id || '';
-      btn.dataset.desktopDropdownItem = 'true';
+      applyDesktopDropdownCommandDataset(btn, action, {
+        sourceRootId: rootId,
+        commandSurface: this.activeSpecModeContract?.commandSurface,
+        pointerType: this.activeSpecModeContract?.pointerType,
+        rowActivation: this.activeSpecModeContract?.rowActivation
+      });
       btn.setAttribute('role', 'menuitem');
       btn.disabled = Boolean(action.disabled);
       btn.style.minHeight = `${Math.max(28, liveDropdownPlan.rowHeight - 6)}px`;
       if (translateY) btn.style.transform = `translateY(${translateY}px)`;
       if (!action.disabled) {
-        btn.onclick = () => {
+        let pendingDropdownHit = null;
+        const getButtonBounds = () => {
+          const rect = btn.getBoundingClientRect?.();
+          return rect
+            ? { x: rect.left, y: rect.top, w: rect.width, h: rect.height }
+            : { x: 0, y: 0, w: btn.offsetWidth || 1, h: btn.offsetHeight || 1 };
+        };
+        btn.onpointerdown = (event) => {
+          event.stopPropagation?.();
+          btn.setPointerCapture?.(event.pointerId);
+          pendingDropdownHit = createPendingDesktopDropdownHit({
+            id: action.id,
+            bounds: getButtonBounds()
+          }, {
+            x: event.clientX,
+            y: event.clientY
+          });
+        };
+        btn.onpointermove = (event) => {
+          if (!pendingDropdownHit) return;
+          pendingDropdownHit = updatePendingDesktopDropdownHit(pendingDropdownHit, {
+            x: event.clientX,
+            y: event.clientY
+          });
+        };
+        btn.onpointercancel = () => {
+          pendingDropdownHit = null;
+        };
+        btn.onpointerup = (event) => {
+          event.stopPropagation?.();
+          btn.releasePointerCapture?.(event.pointerId);
+          const hit = pendingDropdownHit;
+          pendingDropdownHit = null;
+          const { shouldActivate } = resolvePendingDesktopDropdownHit(hit, {
+            x: event.clientX,
+            y: event.clientY
+          });
+          if (!shouldActivate) return;
           action.onClick?.();
           this.closeActorDesktopDropdown();
         };
@@ -1751,6 +1834,10 @@ export default class ActorEditor {
 
   renderDesktopLeftPanel(optionsPanel) {
     const wrap = el('div', 'actor-editor-desktop-left-panel');
+    wrap.dataset.surface = 'left-context-panel';
+    wrap.dataset.role = 'context-inspector';
+    wrap.dataset.contentRoles = 'document-summary selection-summary status';
+    wrap.dataset.duplicatesTopDropdownCommands = 'false';
     const ribbon = el('div', 'actor-editor-menu-rail actor-editor-desktop-ribbon');
     const title = el('div', 'actor-editor-desktop-ribbon-title');
     const titleStrong = el('strong', '', 'Actor');
@@ -1778,9 +1865,7 @@ export default class ActorEditor {
     return buildSharedEditorFileMenu({
       supported: {
         export: false,
-        import: false,
-        undo: false,
-        redo: false
+        import: false
       },
       actions: {
         new: () => this.newActor(),
@@ -1807,6 +1892,10 @@ export default class ActorEditor {
   renderDesktopOptionsPanel() {
     const rootId = this.getActiveActorDesktopRoot();
     const rail = el('div', 'actor-editor-menu-rail actor-editor-desktop-options');
+    rail.dataset.surface = 'left-context-panel';
+    rail.dataset.role = 'context-inspector';
+    rail.dataset.contentRoles = 'document-summary selection-summary status';
+    rail.dataset.duplicatesTopDropdownCommands = 'false';
     const title = el('div', 'actor-editor-field-label', 'Active');
     rail.appendChild(title);
     const state = this.selectedState;
@@ -1847,9 +1936,18 @@ export default class ActorEditor {
       file: this.getActorFileMenuItems(),
       edit: this.getActorEditMenuItems(),
       view: [
-        { id: 'state-graph', label: 'State Graph', active: Boolean(this.stateGraphOpen), onClick: () => { this.stateGraphOpen = true; this.render(); } },
-        { id: 'hitbox-zones', label: 'Collision / Hitbox Zones', onClick: () => this.openCollisionZoneEditor(this.actor) },
-        { id: 'play-scene', label: 'Play Scene', onClick: () => this.playActorScene() }
+        {
+          id: 'zoom-fit',
+          label: 'Fit View',
+          onClick: () => {
+            const center = this.overlay?.querySelector?.('.actor-editor-center');
+            if (center) {
+              center.scrollLeft = 0;
+              center.scrollTop = 0;
+            }
+            this.status = 'Actor view fit';
+          }
+        }
       ],
       settings: [
         { id: 'actor-settings', label: 'Actor Settings', active: this.activeMenuSection === 'actor', onClick: () => openActorSettings() },
@@ -1891,7 +1989,13 @@ export default class ActorEditor {
         { id: 'hitbox-zones', label: 'Collision / Hitbox Zones', onClick: () => this.openCollisionZoneEditor(this.actor) }
       ]
     };
-    return actions[rootId] || actions.settings;
+    const localActions = actions[rootId] || actions.settings;
+    const section = getEditorMenuSection('actor', rootId);
+    if (!section?.actions?.length) return localActions;
+    const actionById = new Map(localActions.map((action) => [action.id, action]));
+    return section.actions
+      .map((id) => actionById.get(id))
+      .filter(Boolean);
   }
 
   getActorEditMenuItems() {
@@ -1946,8 +2050,7 @@ export default class ActorEditor {
 
   renderPortraitMiddleRail() {
     const rail = el('div', 'actor-editor-menu-rail actor-editor-portrait-quickrail');
-    const viewportW = Number(globalThis?.innerWidth || 390);
-    const viewportH = Number(globalThis?.innerHeight || 844);
+    const { width: viewportW, height: viewportH } = this.getViewportSize(390, 844);
     const portraitLayout = buildActorPortraitEditorLayout(viewportW, viewportH);
     const railBounds = { x: 0, y: 0, w: portraitLayout.middleRail.w, h: portraitLayout.middleRail.h };
     Object.assign(rail.style, {
@@ -2003,8 +2106,7 @@ export default class ActorEditor {
 
   renderLandscapeCommandRail(bounds = null) {
     const rail = el('div', 'actor-editor-menu-rail actor-editor-landscape-command-rail');
-    const fallbackViewportW = globalThis?.innerWidth || 0;
-    const fallbackViewportH = globalThis?.innerHeight || 0;
+    const { width: fallbackViewportW, height: fallbackViewportH } = this.getViewportSize(0, 0);
     const railBounds = bounds || {
       x: 0,
       y: 0,
@@ -2074,8 +2176,7 @@ export default class ActorEditor {
 
   renderLandscapeRootDrawer(bounds = null) {
     const rail = el('div', 'actor-editor-menu-rail actor-editor-landscape-root-drawer');
-    const fallbackViewportW = globalThis?.innerWidth || 0;
-    const fallbackViewportH = globalThis?.innerHeight || 0;
+    const { width: fallbackViewportW, height: fallbackViewportH } = this.getViewportSize(0, 0);
     const drawerW = bounds?.w ?? Math.min(360, Math.max(260, Math.floor((fallbackViewportW || 844) * 0.34)));
     const drawerH = bounds?.h ?? fallbackViewportH ?? 390;
     const grid = buildLandscapeRootDrawerGridLayout({
@@ -2302,7 +2403,7 @@ export default class ActorEditor {
       return;
     }
     if (hasAction(EDITOR_INPUT_ACTIONS.TOOL_OPTIONS)) {
-      this.activeMenuSection = 'tools';
+      this.activeMenuSection = 'preview';
       this.fileMenuOpen = false;
       this.render();
       return;
@@ -2359,7 +2460,7 @@ export default class ActorEditor {
       this.fileMenuOpen = true;
       return;
     }
-    if (menuId === 'states' || menuId === 'linked-parts' || menuId === 'tools') {
+    if (menuId === 'states' || menuId === 'linked-parts' || menuId === 'preview') {
       this.fileMenuOpen = false;
       this.activeMenuSection = menuId;
       return;
@@ -2447,9 +2548,8 @@ export default class ActorEditor {
   }
 
   renderSidebarMenu() {
-    const viewportW = Number(window.innerWidth || 0);
-    const viewportH = Number(window.innerHeight || 0);
-    const isPortraitMobile = this.isMobileLayout() && viewportH > viewportW;
+    const viewportMode = this.resolveActorViewportMode();
+    const isPortraitMobile = viewportMode.isMobilePortrait;
     const portraitModel = buildActorPortraitMenuModel();
     const menu = el('div', 'actor-editor-menu-rail');
     menu.style.display = 'flex';
@@ -2498,10 +2598,10 @@ export default class ActorEditor {
     const rootTabs = isPortraitMobile
       ? portraitModel.rootTabs.filter((tab) => tab.id !== 'file')
       : [
-        { id: 'actor', label: 'Settings' },
+        { id: 'settings', label: 'Settings' },
         { id: 'states', label: 'States' },
         { id: 'linked-parts', label: 'Linked Parts' },
-        { id: 'tools', label: 'Tools' }
+        { id: 'preview', label: 'Preview' }
       ];
     rootTabs.forEach((tab) => menu.appendChild(makeMenuBtn(tab.label, tab.id)));
     return menu;
@@ -2613,7 +2713,7 @@ export default class ActorEditor {
       return this.renderControllerSubmenuRail(activeMenuId);
     }
     if (this.activeMenuSection === 'states') return this.renderStateRailSection();
-    if (this.activeMenuSection === 'tools') return this.renderToolsRailSection();
+    if (this.activeMenuSection === 'preview') return this.renderToolsRailSection();
     if (this.activeMenuSection === 'actor') return null;
     const rail = el('div', 'actor-editor-menu-rail');
     Object.assign(rail.style, {
@@ -2630,7 +2730,7 @@ export default class ActorEditor {
     return rail;
   }
 
-  renderControllerSubmenuRail(menuId) {
+  renderControllerSubmenuRail(menuId, options = {}) {
     const menu = this.controllerMenu.menus?.[menuId];
     const rail = el('div', 'actor-editor-menu-rail');
     Object.assign(rail.style, {
@@ -2644,10 +2744,12 @@ export default class ActorEditor {
       minHeight: '0',
       height: '100%'
     });
+    const plannedFocusById = options.plannedFocusById || new Map();
     this.controllerMenu.getItems(menu).forEach((item) => {
       if (item.divider || item.separator) return;
       const btn = el('button', 'actor-editor-btn', item.label);
-      this.styleRailButton(btn, this.isControllerMenuItemActive(menuId, item.id), this.controllerMenu.isFocusedItem(menuId, item.id));
+      const focused = this.controllerMenu.isFocusedItem(menuId, item.id) || Boolean(plannedFocusById.get(item.id));
+      this.styleRailButton(btn, this.isControllerMenuItemActive(menuId, item.id), focused);
       btn.disabled = Boolean(item.disabled);
       btn.onclick = () => item.onSelect?.(this);
       rail.appendChild(btn);
@@ -2708,9 +2810,7 @@ export default class ActorEditor {
   }
 
   styleRailButton(btn, active = false, focused = false) {
-    const viewportW = Number(window.innerWidth || 0);
-    const viewportH = Number(window.innerHeight || 0);
-    const isMobileViewport = this.isMobileLayout();
+    const isMobileViewport = this.resolveActorViewportMode().isMobileViewport;
     const buttonHeight = isMobileViewport
       ? UI_SUITE.spacing.tap
       : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop;

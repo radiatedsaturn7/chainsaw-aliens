@@ -118,16 +118,16 @@ test('shared editor file menu exposes consistent action aliases', () => {
   });
 
   const byId = Object.fromEntries(items.filter((item) => item.id).map((item) => [item.id, item]));
-  assert.deepEqual(items.slice(0, 8).map((item) => item.id), [
+  assert.deepEqual(items.slice(0, 6).map((item) => item.id), [
     'new',
     'save',
     'save-as',
     'open',
     'export',
-    'import',
-    'undo',
-    'redo'
+    'import'
   ]);
+  assert.equal(items.some((item) => item.id === 'undo'), false);
+  assert.equal(items.some((item) => item.id === 'redo'), false);
   assert.equal(byId.new.action, byId.new.onClick);
   assert.equal(byId.save.action, byId.save.onClick);
   assert.equal(byId['custom-onclick'].action, byId['custom-onclick'].onClick);

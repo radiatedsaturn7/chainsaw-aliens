@@ -17,7 +17,7 @@ import { getGmSustainProfile } from '../game/Audio.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { loadProjectFile, saveProjectFile, saveProjectFileAndConfirm } from './projectFiles.js';
 import { loadServerPreference, saveServerPreference } from './serverPreferences.js';
-import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopContextTransportLayout, buildSharedEditorFileMenu, drawSharedDesktopContextPanel, drawSharedDesktopDropdown, drawSharedDesktopRibbon, drawSharedDesktopTopMenu, drawSharedFocusRing, drawSharedGamepadHintBar, drawSharedGamepadSlideOutHeader, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportIconButton, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, isMobileLandscapeLayout, isMobilePortraitLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
+import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopContextTransportLayout, buildSharedEditorFileMenu, drawSharedDesktopContextPanel, drawSharedDesktopDropdown, drawSharedDesktopRibbon, drawSharedDesktopTopMenu, drawSharedFocusRing, drawSharedGamepadHintBar, drawSharedGamepadSlideOutHeader, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, drawSharedTransportIconButton, drawSharedTransportPopover, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
 import { resolveEditorShellTheme } from '../../ui/EditorShell.js';
 import InputEventBus from '../input/eventBus.js';
 import RobterspielInput from '../input/robterspiel.js';
@@ -33,8 +33,8 @@ import { initializeComposerState } from './midi/state/composerState.js';
 import { registerComposerInputHandlers } from './midi/input/composerInputHandlers.js';
 import { drawGhostNotes as drawComposerGhostNotes, drawRecordModeSidebar as drawComposerRecordModeSidebar } from './midi/render/composerRender.js';
 import { createViewportController } from './shared/viewportController.js';
-import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopControllerMenuIdForSection, getEditorPortraitRootMenuEntries, getEditorRootMenuEntries, getEditorRootMenuLabelMap } from './shared/editorMenuSpec.js';
-import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, buildMenuScrollDragState, createDesktopDropdownCommandHit, createPendingDesktopDropdownHit, findScrollableMenuRegion, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveMenuScrollDrag, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
+import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopControllerMenuIdForSection, getEditorPortraitRootMenuEntries, getEditorRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
+import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, buildMenuScrollDragState, canRenderEditorPlanSurface, canRenderEditorSurface, createDesktopDropdownCommandHit, createDesktopRootMenuHit, createPendingDesktopDropdownHit, findScrollableMenuRegion, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveMenuScrollDrag, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
@@ -247,7 +247,7 @@ export function buildMidiPortraitRootTabs() {
 export function buildMidiPortraitMenuModel() {
   return {
     rootTabs: buildMidiPortraitRootTabs(),
-    bottomRailActions: ['menu', 'undo', 'redo', 'play'],
+    bottomRailActions: getStandardEditorActionRailIds('play'),
     menuLoopIds: ['loop', 'loopToggle'],
     portraitRootPlacement: 'bottom-rail'
   };
@@ -1286,6 +1286,7 @@ export default class MidiComposer {
     this.gamepadCursorActive = false;
     this.gamepadSelection = { active: false };
     this.gamepadResizeMode = { active: false };
+    this.activeViewportMode = 'desktop';
     this.gamepadTransportTap = { left: 0, right: 0 };
     this.inputActionNormalizer = new EditorInputActionNormalizer();
     this.lastPointer = { x: 0, y: 0 };
@@ -2541,7 +2542,7 @@ export default class MidiComposer {
   }
 
   isMobileLayout() {
-    return Boolean(this.game?.isMobile);
+    return Boolean(this.game?.deviceIsMobile || this.game?.isMobile);
   }
 
   getProgramLabel(program) {
@@ -3586,14 +3587,16 @@ export default class MidiComposer {
   snapTick(tick) {
     const quantize = this.getQuantizeTicks();
     const ratio = tick / quantize;
-    const snapped = this.isMobileLayout() ? Math.floor(ratio) : Math.round(ratio);
+    const isTouchViewportMode = this.activeViewportMode !== 'desktop';
+    const snapped = isTouchViewportMode ? Math.floor(ratio) : Math.round(ratio);
     return snapped * quantize;
   }
 
   snapTickForTrack(tick, track = this.getActiveTrack()) {
     const quantize = this.getPlacementSnapTicks(track);
     const ratio = tick / quantize;
-    const snapped = this.isMobileLayout() ? Math.floor(ratio) : Math.round(ratio);
+    const isTouchViewportMode = this.activeViewportMode !== 'desktop';
+    const snapped = isTouchViewportMode ? Math.floor(ratio) : Math.round(ratio);
     return snapped * quantize;
   }
 
@@ -4308,10 +4311,20 @@ export default class MidiComposer {
   }
 
   isMobileLandscapeGridMode() {
-    return this.isMobileLayout()
-      && this.viewportWidth > this.viewportHeight
+    const viewportMode = this.resolveMidiViewportMode();
+    return viewportMode.isMobileLandscape
       && this.activeTab === 'grid'
       && !this.recordModeActive;
+  }
+
+  resolveMidiViewportMode(width = this.viewportWidth || 0, height = this.viewportHeight || 0) {
+    return resolveEditorViewportModeFlags({
+      editorId: 'midi',
+      viewportWidth: width,
+      viewportHeight: height,
+      isMobile: this.isMobileLayout(),
+      gamepadConnected: this.isPhysicalControllerConnected()
+    });
   }
 
   isPhysicalControllerConnected() {
@@ -4319,16 +4332,18 @@ export default class MidiComposer {
   }
 
   isMobileLandscapeThumbZoomMode() {
-    if (!this.isMobileLayout() || this.recordModeActive) return false;
-    const landscape = this.viewportWidth > this.viewportHeight;
-    if (landscape) {
+    const viewportMode = this.resolveMidiViewportMode();
+    if (!viewportMode.isMobileViewport || this.recordModeActive) return false;
+    if (viewportMode.isMobileLandscape) {
       return (this.activeTab === 'grid' || this.activeTab === 'song') && !this.isPhysicalControllerConnected();
     }
     return true;
   }
 
   applyMobilePanJoystick(dt = 0) {
-    if (!this.isMobileLandscapeThumbZoomMode() || !this.panJoystick.active) return;
+    if (!canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick')
+      || !this.isMobileLandscapeThumbZoomMode()
+      || !this.panJoystick.active) return;
     const frameScale = dt > 0 ? dt * 60 : 1;
     const speed = 11;
     if (this.activeTab === 'song' && this.songTimelineBounds) {
@@ -4924,11 +4939,7 @@ export default class MidiComposer {
       settings: {
         id: 'settings',
         title: 'Settings',
-        items: [
-          action('quantize', `Quantize: ${this.quantizeOptions[this.quantizeIndex]?.label || 'On'}`, () => { this.quantizeEnabled = !this.quantizeEnabled; }),
-          action('preview', this.previewOnEdit ? 'Preview: On' : 'Preview: Off', () => { this.previewOnEdit = !this.previewOnEdit; }),
-          action('contrast', this.highContrast ? 'High Contrast: On' : 'High Contrast: Off', () => { this.highContrast = !this.highContrast; })
-        ]
+        items: []
       },
       file: {
         id: 'file',
@@ -5421,7 +5432,8 @@ export default class MidiComposer {
       this.draggingTrackControl = null;
     }
     const { x, y } = payload;
-    if (!this.isMobileLayout() && shouldCloseDesktopDropdownOnPointerDown({
+    const isDesktopMode = this.activeViewportMode === 'desktop';
+    if (isDesktopMode && shouldCloseDesktopDropdownOnPointerDown({
       dropdown: this.desktopDropdown,
       point: payload,
       rootButtons: this.getDesktopRootButtons(),
@@ -5430,10 +5442,14 @@ export default class MidiComposer {
       this.closeMidiDesktopDropdown();
       return;
     }
-    if (!this.isMobileLayout()) {
+    if (isDesktopMode) {
       const desktopDropdownHit = this.bounds.desktopDropdownItems?.find((item) => this.pointInBounds(x, y, item));
       if (desktopDropdownHit) {
         this.pendingDesktopDropdownHit = createPendingDesktopDropdownHit(desktopDropdownHit, { x, y });
+        return;
+      }
+      const desktopDropdownRegion = findScrollableMenuRegion(this.menuScrollRegions, payload);
+      if (desktopDropdownRegion) {
         return;
       }
     }
@@ -5447,7 +5463,8 @@ export default class MidiComposer {
       this.closeTransportPopover();
       return;
     }
-    const suppressLandscapeMenuThumbstick = this.isMobileLandscapeThumbZoomMode() && this.landscapeRootDrawerOpen;
+    const suppressLandscapeMenuThumbstick = (this.isMobileLandscapeThumbZoomMode() && this.landscapeRootDrawerOpen)
+      || !canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick');
     if (!suppressLandscapeMenuThumbstick && this.isMobileLandscapeThumbZoomMode() && payload.touchCount > 0 && this.panJoystick.radius > 0) {
       const dx = payload.x - this.panJoystick.center.x;
       const dy = payload.y - this.panJoystick.center.y;
@@ -5652,10 +5669,10 @@ export default class MidiComposer {
       const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
       if (tabHit) {
         this.exitRecordMode();
-        if (this.isMobileLayout()) {
-          this.activateLeftRailTab(tabHit.id);
-        } else {
+        if (this.activeViewportMode === 'desktop') {
           this.openMidiDesktopDropdown(tabHit.desktopRootId || tabHit.id);
+        } else {
+          this.activateLeftRailTab(tabHit.id);
         }
         return;
       }
@@ -5664,10 +5681,10 @@ export default class MidiComposer {
           this.confirmInstrumentSelection();
         }
         this.exitRecordMode();
-        if (this.isMobileLayout()) {
-          this.activeTab = 'file';
-        } else {
+        if (this.activeViewportMode === 'desktop') {
           this.openMidiDesktopDropdown('file');
+        } else {
+          this.activeTab = 'file';
         }
         return;
       }
@@ -5681,10 +5698,10 @@ export default class MidiComposer {
       }
       if (this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings)) {
         this.exitRecordMode();
-        if (this.isMobileLayout()) {
-          this.activeTab = 'settings';
-        } else {
+        if (this.activeViewportMode === 'desktop') {
           this.openMidiDesktopDropdown('settings');
+        } else {
+          this.activeTab = 'settings';
         }
         return;
       }
@@ -5700,14 +5717,12 @@ export default class MidiComposer {
       return;
     }
 
-    const isPortraitMainWorkspace = isMobilePortraitLayout({
-      isMobile: this.isMobileLayout(),
-      viewportWidth: this.viewportWidth || this.game?.canvas?.width || 0,
-      viewportHeight: this.viewportHeight || this.game?.canvas?.height || 0
-    }) && isMidiPortraitMainWorkspaceTab(this.activeTab) && !this.mobilePortraitMenuSheetBounds;
+    const isPortraitMainWorkspace = this.activeViewportMode === 'portrait'
+      && isMidiPortraitMainWorkspaceTab(this.activeTab)
+      && !this.mobilePortraitMenuSheetBounds;
     if (!isPortraitMainWorkspace && ((this.bounds.settings && this.pointInBounds(x, y, this.bounds.settings))
       || (this.bounds.leftSettings && this.pointInBounds(x, y, this.bounds.leftSettings)))) {
-      if (!this.isMobileLayout()) {
+      if (this.activeViewportMode === 'desktop') {
         this.openMidiDesktopDropdown('settings');
         return;
       }
@@ -6014,10 +6029,10 @@ export default class MidiComposer {
 
     const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
     if (tabHit) {
-      if (this.isMobileLayout()) {
-        this.activateLeftRailTab(tabHit.id);
-      } else {
+      if (this.activeViewportMode === 'desktop') {
         this.openMidiDesktopDropdown(tabHit.desktopRootId || tabHit.id);
+      } else {
+        this.activateLeftRailTab(tabHit.id);
       }
       this.closeSelectionMenu();
       this.pastePreview = null;
@@ -6048,7 +6063,7 @@ export default class MidiComposer {
       if (this.activeTab === 'instruments' || this.instrumentPicker.mode) {
         this.confirmInstrumentSelection();
       }
-      if (!this.isMobileLayout()) {
+      if (this.activeViewportMode === 'desktop') {
         this.openMidiDesktopDropdown('file');
         return;
       }
@@ -6798,7 +6813,7 @@ export default class MidiComposer {
     if (this.transportHold && Math.hypot(payload.x - this.transportHold.x, payload.y - this.transportHold.y) > 12) {
       this.cancelTransportHold();
     }
-    if (!this.isMobileLayout() && !payload.touchCount && !this.dragState) {
+    if (this.activeViewportMode === 'desktop' && !payload.touchCount && !this.dragState) {
       this.handleDesktopTopMenuHover(payload.x, payload.y);
     }
     if (this.recordModeActive) {
@@ -7747,7 +7762,7 @@ export default class MidiComposer {
     const hit = this.getNoteHitAt(x, y);
     const cell = this.getGridCell(x, y);
     if (!cell && !hit) return;
-    const pointerPolicy = !this.isMobileLayout()
+    const pointerPolicy = this.activeViewportMode === 'desktop'
       ? getEditorPointerInteractionPolicy('midi', { mode: 'desktop', pointerType: 'mouse' })
       : null;
     const shouldPanWithButton = Boolean(pointerPolicy) && (
@@ -12216,11 +12231,7 @@ export default class MidiComposer {
   }
 
   getNoteHandleWidth(rect) {
-    const isPortrait = isMobilePortraitLayout({
-      isMobile: this.isMobileLayout(),
-      viewportWidth: this.viewportWidth,
-      viewportHeight: this.viewportHeight
-    });
+    const isPortrait = this.activeViewportMode === 'portrait';
     return getMidiNoteHandleWidth(rect, { portrait: isPortrait });
   }
 
@@ -12346,13 +12357,10 @@ export default class MidiComposer {
     this.bounds.leftSettings = null;
     this.editorShellTheme = resolveEditorShellTheme();
 
-    const viewportMode = resolveEditorViewportModeFlags({
-      viewportWidth: width,
-      viewportHeight: height,
-      isMobile: this.isMobileLayout(),
-      gamepadConnected: this.isPhysicalControllerConnected()
-    });
+    const viewportMode = this.resolveMidiViewportMode(width, height);
     this.activeModeContract = viewportMode.modeContract;
+    this.activeSpecModeContract = viewportMode.specModeContract;
+    this.activeViewportMode = viewportMode.mode;
     const isMobile = viewportMode.isMobileViewport;
     if (this.recordModeActive && isMobile) {
       this.desktopDropdown = resolveDesktopDropdownState({ isDesktop: false });
@@ -12394,12 +12402,12 @@ export default class MidiComposer {
       this.drawQaOverlay(ctx, width, height);
     }
 
-    if (viewportMode.isMobileLandscape) {
+    if (viewportMode.isMobileLandscape && canRenderEditorSurface(viewportMode.mode, 'touch-thumbstick')) {
       this.drawMobilePanJoystick(ctx, width, height);
     } else if (!isMobile) {
       resetSharedThumbstickState(this.panJoystick);
     }
-    if (isMobile && this.game?.input?.isGamepadConnected?.()) {
+    if (isMobile && this.game?.input?.isGamepadConnected?.() && canRenderEditorSurface(viewportMode.mode, 'gamepad-hint-bar')) {
       this.drawGamepadHintBar(ctx, {
         x: isMobile ? 10 : 92,
         y: height - 34,
@@ -12443,11 +12451,12 @@ export default class MidiComposer {
   }
 
   getGamepadMenuState(width = this.viewportWidth || 0, height = this.viewportHeight || 0) {
+    const viewportMode = this.resolveMidiViewportMode(width, height);
     return resolveGamepadMenuState({
       viewportWidth: width,
       viewportHeight: height,
       gamepadConnected: this.isPhysicalControllerConnected(),
-      isMobile: this.isMobileLayout(),
+      isMobile: viewportMode.isMobileViewport,
       menuActive: this.controllerMenu.active,
       activeMenuId: this.controllerMenu.getActiveMenuId()
     });
@@ -12516,6 +12525,12 @@ export default class MidiComposer {
       activeRootId: menuId || this.getDesktopControllerMenuId(),
       focusedItemId: this.controllerMenu.getFocusedItem(menuId)?.id
     });
+    const plannedItems = menuId ? (plan.submenu?.items || []) : plan.rootEntries;
+    const plannedFocusById = new Map(plannedItems.map((item) => [item.id, Boolean(item.focused)]));
+    const focusedItemId = this.controllerMenu.getFocusedItem(menuId)?.id
+      || plan.focus?.submenuItemId
+      || plan.focus?.rootItemId
+      || null;
     const menu = this.controllerMenu.menus?.[menuId];
     drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
     drawSharedGamepadSlideOutHeader(ctx, bounds, menu?.title || plan.submenu?.title || 'Menu', { hint: plan.headerHint });
@@ -12527,7 +12542,15 @@ export default class MidiComposer {
       Math.max(1, bounds.w - 16),
       Math.max(1, bounds.h - 60),
       menuId,
-      { isMobile: true, layoutMode: 'list', maxColumns: 1, minColumnWidth: Math.max(1, bounds.w - 16), scrollGroup: 'gamepadSubmenu' }
+      {
+        isMobile: true,
+        layoutMode: 'list',
+        maxColumns: 1,
+        minColumnWidth: Math.max(1, bounds.w - 16),
+        scrollGroup: 'gamepadSubmenu',
+        focusedItemId,
+        plannedFocusById
+      }
     );
   }
 
@@ -12536,13 +12559,13 @@ export default class MidiComposer {
   drawDangerButton(ctx, bounds, label) {
     if (!bounds) return;
     ctx.save();
-    ctx.fillStyle = 'rgba(145,30,30,0.95)';
+    ctx.fillStyle = UI_SUITE.colors.danger || '#d95c5c';
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.strokeStyle = 'rgba(255,130,130,0.95)';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = UI_SUITE.colors.dangerBorder || UI_SUITE.colors.border;
+    ctx.lineWidth = 1;
     ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.fillStyle = '#fff';
-    ctx.font = '12px Courier New';
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `700 12px ${UI_SUITE.font.family}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(label, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2);
@@ -12645,8 +12668,7 @@ export default class MidiComposer {
     drawSharedDesktopTopMenu(ctx, plan, {
       focusedId: this.controllerMenu.getFocusedItem('root')?.id,
       registerButton: (button) => {
-      const bounds = { ...button.bounds, id: button.id };
-      bounds.desktopRootId = button.id;
+      const bounds = createDesktopRootMenuHit(button, null);
       if (button.id === 'file') {
         this.bounds.fileButton = bounds;
       } else if (button.id === 'settings') {
@@ -12692,11 +12714,82 @@ export default class MidiComposer {
     ];
     drawSharedDesktopContextPanel(ctx, contextBounds, {
       lines,
+      contentRoles: ['document-summary', 'selection-summary', 'contextual-quick-actions', 'transport', 'status'],
       status: this.recordModeActive ? 'Recording enabled' : (this.singleNoteRecordMode.active ? 'Single note mode' : '')
     });
+    this.drawDesktopTrackQuickActions(ctx, contextBounds, track);
     if (transportBounds) {
       this.drawDesktopTransportPanel(ctx, transportBounds);
     }
+  }
+
+  drawDesktopTrackQuickActions(ctx, contextBounds, track) {
+    const pad = 10;
+    const gap = 6;
+    const buttonH = 28;
+    const panelX = contextBounds.x + pad;
+    const panelW = Math.max(0, contextBounds.w - pad * 2);
+    if (panelW < 96 || contextBounds.h < 176) return;
+
+    const panelY = Math.min(
+      contextBounds.y + contextBounds.h - 124,
+      contextBounds.y + 118
+    );
+    const panelH = Math.max(100, contextBounds.y + contextBounds.h - pad - panelY);
+    drawSharedPanel(ctx, { x: panelX, y: panelY, w: panelW, h: panelH }, {
+      fill: UI_SUITE.colors.panelAlt,
+      border: UI_SUITE.colors.border
+    });
+
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Track Tools', panelX + 8, panelY + 16, panelW - 16);
+    ctx.restore();
+
+    const drumGrid = isDrumTrack(track);
+    const instrumentLabel = track
+      ? drumGrid
+        ? this.getDrumKitLabel(track)
+        : this.getProgramLabel(track.program)
+      : 'No Track';
+    const rowY = panelY + 30;
+    const stepW = 30;
+    const labelW = Math.max(48, panelW - stepW * 2 - gap * 2 - 16);
+    this.bounds.instrumentPrev = { x: panelX + 8, y: rowY, w: stepW, h: buttonH };
+    this.drawSmallButton(ctx, this.bounds.instrumentPrev, '<', false);
+    this.bounds.instrumentLabel = { x: this.bounds.instrumentPrev.x + stepW + gap, y: rowY, w: labelW, h: buttonH };
+    this.drawSmallButton(ctx, this.bounds.instrumentLabel, this.truncateLabel(ctx, instrumentLabel, labelW - 14), false);
+    this.bounds.instrumentNext = { x: this.bounds.instrumentLabel.x + labelW + gap, y: rowY, w: stepW, h: buttonH };
+    this.drawSmallButton(ctx, this.bounds.instrumentNext, '>', false);
+
+    const secondY = rowY + buttonH + gap;
+    if (!drumGrid) {
+      const noteLabel = `Note ${this.getNoteLengthDisplay(NOTE_LENGTH_OPTIONS[this.noteLengthIndex])}`;
+      const noteW = Math.max(74, Math.floor((panelW - 16 - gap) * 0.48));
+      this.bounds.noteLength = { x: panelX + 8, y: secondY, w: noteW, h: buttonH };
+      this.drawSmallButton(ctx, this.bounds.noteLength, noteLabel, false);
+
+      const chordLabel = this.chordMode ? 'Chord' : 'Piano';
+      this.bounds.chordMode = { x: this.bounds.noteLength.x + noteW + gap, y: secondY, w: Math.max(64, panelW - 16 - noteW - gap), h: buttonH };
+      this.drawSmallButton(ctx, this.bounds.chordMode, chordLabel, this.chordMode);
+    } else {
+      this.bounds.noteLength = null;
+      this.bounds.chordMode = null;
+      this.bounds.chordEdit = null;
+    }
+
+    const thirdY = secondY + buttonH + gap;
+    const barsLabel = `Bars ${Math.max(1, this.song.loopBars || DEFAULT_GRID_BARS)}`;
+    const barsButtonW = 30;
+    const barsLabelW = Math.max(62, panelW - 16 - barsButtonW * 2 - gap * 2);
+    this.bounds.barsMinus = { x: panelX + 8, y: thirdY, w: barsButtonW, h: buttonH };
+    this.drawSmallButton(ctx, this.bounds.barsMinus, '-', false);
+    this.bounds.barsLabel = { x: this.bounds.barsMinus.x + barsButtonW + gap, y: thirdY, w: barsLabelW, h: buttonH };
+    this.drawSmallButton(ctx, this.bounds.barsLabel, barsLabel, false);
+    this.bounds.barsPlus = { x: this.bounds.barsLabel.x + barsLabelW + gap, y: thirdY, w: barsButtonW, h: buttonH };
+    this.drawSmallButton(ctx, this.bounds.barsPlus, '+', false);
   }
 
   drawDesktopTransportPanel(ctx, bounds) {
@@ -12779,6 +12872,9 @@ export default class MidiComposer {
     drawSharedDesktopDropdown(ctx, dropdownPlan, {
       isActive: (item) => this.isControllerSubmenuItemActive(menuId, item.id),
       isFocused: (item) => this.controllerMenu.isFocusedItem(menuId, item.id),
+      registerScrollRegion: (region) => {
+        this.menuScrollRegions.push(region);
+      },
       registerButton: ({ item, bounds }) => {
         if (typeof item.onSelect === 'function') {
           const action = () => item.onSelect(this);
@@ -12795,9 +12891,11 @@ export default class MidiComposer {
     const rowHeight = options.isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : this.sharedMenu.getButtonHeight(false);
     const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const visibleRows = Math.max(1, Math.floor(Math.max(0, h - 24) / Math.max(1, rowHeight + rowGap)));
+    const focusedItemId = options.focusedItemId || this.controllerMenu.getFocusedItem(menuId)?.id || null;
+    const plannedFocusById = options.plannedFocusById || new Map();
     const scroll = this.controllerMenu.syncScrollToItem(
       menuId,
-      this.controllerMenu.getFocusedItem(menuId)?.id,
+      focusedItemId,
       items,
       visibleRows,
       this.controllerMenu.scroll?.[menuId] || 0
@@ -12820,7 +12918,7 @@ export default class MidiComposer {
           item.label,
           this.isControllerSubmenuItemActive(menuId, item.id),
           false,
-          this.controllerMenu.isFocusedItem(menuId, item.id)
+          this.controllerMenu.isFocusedItem(menuId, item.id) || Boolean(plannedFocusById.get(item.id))
         );
       }
     });
@@ -12858,8 +12956,9 @@ export default class MidiComposer {
   }
 
   drawRecordMode(ctx, width, height, track, pattern) {
-    const isMobile = this.isMobileLayout();
-    if (!isMobile) {
+    const viewportMode = this.resolveMidiViewportMode(width, height);
+    const isMobile = viewportMode.isMobileViewport;
+    if (viewportMode.isDesktop) {
       this.drawDesktopLayout(ctx, width, height, track, pattern);
       return;
     }
@@ -12870,7 +12969,7 @@ export default class MidiComposer {
     let menuH;
     let gap;
 
-    if (isMobile && isMobilePortraitLayout({ isMobile: true, viewportWidth: width, viewportHeight: height })) {
+    if (viewportMode.isMobilePortrait) {
       const layout = getMidiPortraitRecordLayout(width, height);
       const grid = layout.gridBounds;
       if (!this.recordGridZoomedOut && track) {
@@ -12891,7 +12990,9 @@ export default class MidiComposer {
         simplified: true
       });
       this.drawGhostNotes(ctx);
-      this.drawMobileBottomRail(ctx, layout.middleRail.x, layout.middleRail.y, layout.middleRail.w, layout.middleRail.h, track);
+      if (canRenderEditorSurface(this.activeViewportMode, 'bottom-action-rail')) {
+        this.drawMobileBottomRail(ctx, layout.middleRail.x, layout.middleRail.y, layout.middleRail.w, layout.middleRail.h, track);
+      }
       this.recordLayout.layout(width, height, 0, 0, {
         gridBounds: layout.gridBounds,
         instrumentBounds: layout.instrumentBounds,
@@ -13045,7 +13146,7 @@ export default class MidiComposer {
       selector: recordSelector,
       stickIndicators: this.recordStickIndicators,
       nowPlaying: this.nowPlaying,
-      nowPlayingPlacement: this.isMobileLayout() && this.viewportWidth > this.viewportHeight ? 'preview' : 'instrument'
+      nowPlayingPlacement: viewportMode.isMobileLandscape ? 'preview' : 'instrument'
     });
 
   }
@@ -13095,7 +13196,7 @@ export default class MidiComposer {
     const padding = 10;
     const gap = 10;
     this.mobilePortraitMenuSheetBounds = null;
-    if (isMobilePortraitLayout({ isMobile: true, viewportWidth: width, viewportHeight: height })) {
+    if (this.activeViewportMode === 'portrait') {
       const layout = getSharedMobilePortraitEditorLayout(width, height, {
         middleRailHeight: 88,
         minTopHeight: 230,
@@ -13168,10 +13269,12 @@ export default class MidiComposer {
       } else if (this.activeTab === 'grid') {
         this.drawMidiPortraitGridQuickStrip(ctx, controlLayout.viewRail.x, controlLayout.viewRail.y, controlLayout.viewRail.w, controlLayout.viewRail.h, track);
       }
-      this.drawMobileBottomRail(ctx, controlLayout.bottomRail.x, controlLayout.bottomRail.y, controlLayout.bottomRail.w, controlLayout.bottomRail.h, track);
+      if (canRenderEditorSurface(this.activeViewportMode, 'bottom-action-rail')) {
+        this.drawMobileBottomRail(ctx, controlLayout.bottomRail.x, controlLayout.bottomRail.y, controlLayout.bottomRail.w, controlLayout.bottomRail.h, track);
+      }
       return;
     }
-    const isLandscape = width > height;
+    const isLandscape = viewportMode.isMobileLandscape;
     const gamepadMenuState = this.getGamepadMenuState(width, height);
     const gamepadOwnsLandscapeMenu = gamepadMenuState.isLandscapeMenuMode;
     const gamepadSubmenuOnLeft = gamepadMenuState.drawSlideOut;
@@ -13189,10 +13292,14 @@ export default class MidiComposer {
       : null;
     const rootMenuSurface = landscapeLayout?.surfaces.compactCommandRail ?? landscapeLayout?.surfaces.rootMenu;
     const workSurface = landscapeLayout?.surfaces.workSurface;
-    const toolOptionsSurface = landscapeLayout?.surfaces.toolOptions;
-    const submenuDrawerSurface = landscapeLayout?.surfaces.submenu;
-    const overlayDrawerSurface = landscapeLayout?.surfaces.overlayDrawer;
-    const rootDrawerSurface = landscapeLayout?.surfaces.rootDrawer ?? overlayDrawerSurface;
+    const canRenderLandscapeRightSubmenu = canRenderEditorPlanSurface(landscapeLayout, 'right-drawer')
+      && canRenderEditorPlanSurface(landscapeLayout, 'landscape-right-submenu');
+    const canRenderLandscapeBottomRail = canRenderEditorPlanSurface(landscapeLayout, 'bottom-tool-rail');
+    const canRenderLandscapeRootDrawer = canRenderEditorPlanSurface(landscapeLayout, 'left-overlay-drawer');
+    const toolOptionsSurface = canRenderLandscapeBottomRail ? landscapeLayout?.surfaces.toolOptions : null;
+    const submenuDrawerSurface = canRenderLandscapeRightSubmenu ? landscapeLayout?.surfaces.submenu : null;
+    const overlayDrawerSurface = canRenderLandscapeRootDrawer ? landscapeLayout?.surfaces.overlayDrawer : null;
+    const rootDrawerSurface = canRenderLandscapeRootDrawer ? (landscapeLayout?.surfaces.rootDrawer ?? overlayDrawerSurface) : null;
     const sidebarW = rootMenuSurface?.w ?? getSharedMobileRailWidth(width, height);
     const sidebarX = rootMenuSurface?.x ?? 0;
     const sidebarY = rootMenuSurface?.y ?? 0;
@@ -13245,12 +13352,12 @@ export default class MidiComposer {
     } else if (this.activeTab === 'grid') {
       this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
       this.clearGridZoomButtonBounds();
-      if (showsGridBottomRail) {
+      if (showsGridBottomRail && canRenderLandscapeBottomRail) {
         this.drawMobileBottomRail(ctx, bottomRail.x, bottomRail.y, bottomRail.w, bottomRail.h, track);
       }
     } else if (this.activeTab === 'song') {
       this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
-      if (showsGridBottomRail) {
+      if (showsGridBottomRail && canRenderLandscapeBottomRail) {
         this.drawMobileBottomRail(ctx, bottomRail.x, bottomRail.y, bottomRail.w, bottomRail.h, track);
       }
     } else if (this.activeTab === 'instruments') {
@@ -13815,11 +13922,15 @@ export default class MidiComposer {
   }
 
   drawMobilePanJoystick(ctx, width, height) {
+    if (!canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick')) {
+      resetSharedThumbstickState(this.panJoystick);
+      return;
+    }
     if (!this.isMobileLandscapeThumbZoomMode()) {
       resetSharedThumbstickState(this.panJoystick);
       return;
     }
-    if (isMobilePortraitLayout({ isMobile: true, viewportWidth: width, viewportHeight: height })) {
+    if (this.activeViewportMode === 'portrait') {
       const layout = getMidiPortraitControlLayout(width, height);
       const railLayout = getSharedPortraitActionRailLayout(layout.bottomRail);
       this.panJoystick.center = railLayout.thumbstickCenter;
@@ -13918,7 +14029,8 @@ export default class MidiComposer {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
 
-    const portraitRailLayout = isMobilePortraitLayout({ isMobile: true, viewportWidth: this.viewportWidth || w, viewportHeight: this.viewportHeight || h })
+    const isPortrait = this.activeViewportMode === 'portrait';
+    const portraitRailLayout = isPortrait
       ? getSharedPortraitActionRailLayout({ x, y, w, h })
       : null;
     const railX = portraitRailLayout?.actionArea.x ?? x;
@@ -13927,11 +14039,7 @@ export default class MidiComposer {
     const gap = 8;
     const rowH = 48;
     if (h < 112) {
-      const reserveThumbstick = isMobilePortraitLayout({
-        isMobile: true,
-        viewportWidth: this.viewportWidth || w,
-        viewportHeight: this.viewportHeight || h
-      });
+      const reserveThumbstick = isPortrait;
       const portraitActionById = {
         menu: { id: 'menu', boundsKey: 'fileButton', label: MIDI_MENU_ICON, onClick: () => {
           if (this.activeTab === 'file') this.closeFileMenu();
@@ -14069,7 +14177,7 @@ export default class MidiComposer {
     const embedded = options.embedded === true;
     const portraitGrid = options.portraitGrid === true;
     const compact = options.compact === true;
-    const desktopOverview = !this.isMobileLayout() && !embedded && !compact && !portraitGrid && h >= 180;
+    const desktopOverview = this.activeViewportMode === 'desktop' && !embedded && !compact && !portraitGrid && h >= 180;
     const panelX = portraitGrid ? x : (embedded ? (x + 18) : (x + 10));
     const panelW = portraitGrid ? Math.max(1, w) : (embedded ? (w - 36) : (w - 20));
     const panelH = portraitGrid ? Math.max(160, h) : Math.max(compact ? 72 : 96, h - (embedded ? 10 : 8));
@@ -14421,7 +14529,7 @@ export default class MidiComposer {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     const gap = 6;
-    const isMobile = this.isMobileLayout();
+    const isMobile = this.activeViewportMode !== 'desktop';
     const fileW = isMobile ? 72 : 80;
     const tabsW = w - fileW - gap;
     const tabW = (tabsW - gap * (TAB_OPTIONS.length - 1)) / TAB_OPTIONS.length;
@@ -14444,7 +14552,7 @@ export default class MidiComposer {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
     this.bounds.transportBar = { x, y, w, h };
-    const isMobile = this.isMobileLayout();
+    const isMobile = this.activeViewportMode !== 'desktop';
     const gap = 12;
     const topAreaH = Math.max(46, h * 0.5);
     const buttonH = Math.max(34, topAreaH - 20);
@@ -14537,12 +14645,8 @@ export default class MidiComposer {
     const rulerH = DEFAULT_RULER_HEIGHT;
     const rulerY = y + padding;
     const laneAreaY = rulerY + rulerH;
-    const isMobile = this.isMobileLayout();
-    const isPortrait = isMobilePortraitLayout({
-      isMobile,
-      viewportWidth: this.viewportWidth || w,
-      viewportHeight: this.viewportHeight || h
-    });
+    const isMobile = this.activeViewportMode !== 'desktop';
+    const isPortrait = this.activeViewportMode === 'portrait';
     let baseMixRailH = isPortrait ? 206 : (isMobile ? 148 : 120);
     const railGap = 8;
     const externalPortraitRail = isPortrait ? options.portraitRailBounds : null;
@@ -15268,11 +15372,8 @@ export default class MidiComposer {
       this.songSelectionMenu.bounds = [];
       return;
     }
-    const isPortrait = isMobilePortraitLayout({
-      isMobile: this.isMobileLayout(),
-      viewportWidth: this.viewportWidth || 0,
-      viewportHeight: this.viewportHeight || 0
-    });
+    const isTouchViewportMode = this.activeViewportMode !== 'desktop';
+    const isPortrait = this.activeViewportMode === 'portrait';
     const actions = [
       { action: 'song-merge-left', label: isPortrait ? '← Merge' : 'Merge Left' },
       { action: 'song-merge-right', label: isPortrait ? 'Merge →' : 'Merge Right' },
@@ -15286,8 +15387,8 @@ export default class MidiComposer {
       { action: 'song-loop-selection', label: isPortrait ? MIDI_LOOP_ICON : 'Loop this' }
     ];
     const menuScale = 1.25;
-    const buttonW = (this.isMobileLayout() ? 188 : 168) * menuScale;
-    const buttonH = (this.isMobileLayout() ? 50 : 44) * menuScale;
+    const buttonW = (isTouchViewportMode ? 188 : 168) * menuScale;
+    const buttonH = (isTouchViewportMode ? 50 : 44) * menuScale;
     const gap = 10 * menuScale;
     const columns = 2;
     const rows = Math.ceil(actions.length / columns);
@@ -15344,7 +15445,8 @@ export default class MidiComposer {
     const x = this.getSongTimelineX(tick);
     const top = this.songTimelineBounds.y;
     const bottom = this.songTimelineBounds.y + this.songTimelineBounds.h;
-    const grabW = this.isMobileLayout() ? 72 : 56;
+    const isTouchViewportMode = this.activeViewportMode !== 'desktop';
+    const grabW = isTouchViewportMode ? 72 : 56;
     this.songSplitTool.bounds.lineGrab = {
       x: x - grabW / 2,
       y: top,
@@ -15361,9 +15463,9 @@ export default class MidiComposer {
     ctx.stroke();
     ctx.restore();
 
-    const handleW = this.isMobileLayout() ? 34 : 28;
-    const handleH = this.isMobileLayout() ? 18 : 14;
-    const hitPad = this.isMobileLayout() ? 14 : 10;
+    const handleW = isTouchViewportMode ? 34 : 28;
+    const handleH = isTouchViewportMode ? 18 : 14;
+    const hitPad = isTouchViewportMode ? 14 : 10;
     const topHandle = { x: x - handleW / 2, y: top + 2, w: handleW, h: handleH };
     const bottomHandle = { x: x - handleW / 2, y: bottom - handleH - 2, w: handleW, h: handleH };
     this.songSplitTool.bounds.handleTop = {
@@ -15436,7 +15538,8 @@ export default class MidiComposer {
       return;
     }
     const sliderH = Math.min(220, Math.max(140, lane.h + 80));
-    const sliderW = this.isMobileLayout() ? 28 : 22;
+    const isTouchViewportMode = this.activeViewportMode !== 'desktop';
+    const sliderW = isTouchViewportMode ? 28 : 22;
     const sliderX = clamp(lane.x + lane.w + 14, this.songTimelineBounds.x, this.songTimelineBounds.x + this.songTimelineBounds.w - sliderW - 120);
     const sliderY = clamp(lane.y + lane.h / 2 - sliderH / 2, this.songTimelineBounds.y, this.songTimelineBounds.y + this.songTimelineBounds.h - sliderH);
     const slider = { x: sliderX, y: sliderY, w: sliderW, h: sliderH };
@@ -15527,7 +15630,7 @@ export default class MidiComposer {
       const valueRatio = (value - minValue) / (maxValue - minValue || 1);
       const x = originX + tick * cellWidth;
       const y = laneBounds.y + laneBounds.h - valueRatio * laneBounds.h;
-      const markerSize = this.isMobileLayout() ? 18 : 14;
+      const markerSize = this.activeViewportMode !== 'desktop' ? 18 : 14;
       const markerHalf = markerSize / 2;
       ctx.fillStyle = strokeColor;
       ctx.fillRect(x - markerHalf, y - markerHalf, markerSize, markerSize);
@@ -15539,7 +15642,7 @@ export default class MidiComposer {
   }
 
   drawAutomationLane(ctx, bounds, keyframes, minValue, maxValue, label, timeline, indicator = null) {
-    const keyframeSize = this.isMobileLayout() ? 24 : 20;
+    const keyframeSize = this.activeViewportMode !== 'desktop' ? 24 : 20;
     const keyframeHalf = keyframeSize / 2;
     ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
@@ -15613,11 +15716,12 @@ export default class MidiComposer {
   }
 
   drawGridControls(ctx, x, y, w, track) {
-    const rowH = 44;
-    const gap = 8;
+    const isMobile = this.activeViewportMode !== 'desktop';
+    const rowH = isMobile ? 44 : 32;
+    const gap = isMobile ? 8 : 6;
     const buttonSize = rowH;
     let cursorX = x;
-    ctx.font = '13px Courier New';
+    ctx.font = `${isMobile ? 13 : 11}px ${UI_SUITE.font.family}`;
     this.bounds.instrumentSettingsControls = [];
     this.bounds.keyframeToggle = null;
     this.bounds.keyframePrev = null;
@@ -15625,6 +15729,77 @@ export default class MidiComposer {
     this.bounds.keyframeRemove = null;
     this.bounds.keyframeNext = null;
     const drumGrid = isDrumTrack(track);
+    if (!isMobile) {
+      const keyframeLabel = this.keyframePanelOpen ? 'Keyframes' : 'Keyframes';
+      const keyframeW = Math.min(126, Math.max(92, ctx.measureText(keyframeLabel).width + 26));
+      this.bounds.keyframeToggle = { x, y, w: keyframeW, h: rowH };
+      this.drawButton(ctx, this.bounds.keyframeToggle, keyframeLabel, this.keyframePanelOpen, false);
+      let extraHeight = rowH + gap;
+      if (this.keyframePanelOpen && track) {
+        const panelY = y + rowH + gap;
+        const panelPadding = 10;
+        const sliderW = w - panelPadding * 2;
+        const sliderX = x + panelPadding;
+        const sliderH = 14;
+        const sliderGap = 18;
+        const mixAtPlayhead = this.getTrackPlaybackMix(track, this.playheadTick);
+        const mixVolume = clamp(mixAtPlayhead.volume ?? track.volume ?? 0.8, 0, 1);
+        const mixPan = clamp(mixAtPlayhead.pan ?? track.pan ?? 0, -1, 1);
+        const panelHeight = panelPadding + 10 + sliderH + sliderGap + sliderH + 16 + 28 + panelPadding;
+        ctx.fillStyle = UI_SUITE.colors.panel;
+        ctx.fillRect(x, panelY, w, panelHeight);
+        ctx.strokeStyle = UI_SUITE.colors.border;
+        ctx.strokeRect(x, panelY, w, panelHeight);
+
+        const volumeBounds = {
+          x: sliderX,
+          y: panelY + panelPadding + 10,
+          w: sliderW,
+          h: sliderH,
+          trackIndex: this.selectedTrackIndex,
+          control: 'volume'
+        };
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
+        ctx.fillStyle = '#ffe16a';
+        ctx.fillRect(volumeBounds.x, volumeBounds.y, volumeBounds.w * mixVolume, volumeBounds.h);
+        ctx.strokeStyle = UI_SUITE.colors.border;
+        ctx.strokeRect(volumeBounds.x, volumeBounds.y, volumeBounds.w, volumeBounds.h);
+        ctx.fillStyle = UI_SUITE.colors.muted;
+        ctx.font = `11px ${UI_SUITE.font.family}`;
+        ctx.fillText(`Volume ${Math.round(mixVolume * 100)}%`, sliderX, volumeBounds.y - 5);
+        this.bounds.instrumentSettingsControls.push(volumeBounds);
+
+        const panBounds = {
+          x: sliderX,
+          y: volumeBounds.y + sliderH + sliderGap,
+          w: sliderW,
+          h: sliderH,
+          trackIndex: this.selectedTrackIndex,
+          control: 'pan'
+        };
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
+        ctx.fillStyle = '#4fb7ff';
+        ctx.fillRect(panBounds.x, panBounds.y, panBounds.w * ((mixPan + 1) / 2), panBounds.h);
+        ctx.strokeStyle = UI_SUITE.colors.border;
+        ctx.strokeRect(panBounds.x, panBounds.y, panBounds.w, panBounds.h);
+        ctx.fillStyle = UI_SUITE.colors.muted;
+        ctx.font = `11px ${UI_SUITE.font.family}`;
+        ctx.fillText(`Pan ${Math.round(mixPan * 100)}%`, sliderX, panBounds.y - 5);
+        this.bounds.instrumentSettingsControls.push(panBounds);
+
+        const buttonY = panBounds.y + sliderH + 16;
+        const buttonGap = 10;
+        const buttonW = (w - panelPadding * 2 - buttonGap) / 2;
+        this.bounds.keyframeSet = { x: sliderX, y: buttonY, w: buttonW, h: 28 };
+        this.bounds.keyframeRemove = { x: sliderX + buttonW + buttonGap, y: buttonY, w: buttonW, h: 28 };
+        this.drawButton(ctx, this.bounds.keyframeSet, 'Set Keyframe', false, false);
+        this.drawButton(ctx, this.bounds.keyframeRemove, 'Remove Keyframe', false, false);
+        extraHeight += panelHeight + gap;
+      }
+      return extraHeight;
+    }
     const label = track
       ? drumGrid
         ? `[${this.getDrumKitLabel(track)}]`
@@ -15774,7 +15949,7 @@ export default class MidiComposer {
   }
 
   drawInstrumentPanel(ctx, x, y, w, h, track, options = {}) {
-    const isMobile = this.isMobileLayout();
+    const isMobile = this.activeViewportMode !== 'desktop';
     const padding = 12;
     const bottomPadding = this.instrumentPicker.mode ? 4 : padding;
     const modalOnly = options.modalOnly === true;
@@ -16276,11 +16451,7 @@ export default class MidiComposer {
     const padding = 14;
     let cursorY = y + padding - this.settingsScroll;
     const sectionGap = 22;
-    const portraitStacked = isMobilePortraitLayout({
-      isMobile: this.isMobileLayout(),
-      viewportWidth: this.viewportWidth || w,
-      viewportHeight: this.viewportHeight || h
-    });
+    const portraitStacked = this.activeViewportMode === 'portrait';
     const rowH = portraitStacked ? 86 : 56;
     const labelW = portraitStacked ? 0 : Math.min(180, w * 0.38);
     const textW = portraitStacked ? Math.max(1, w - padding * 2) : Math.max(1, labelW - 10);
@@ -16602,7 +16773,7 @@ export default class MidiComposer {
   }
 
   drawTrackMixer(ctx, x, y, w) {
-    const isMobile = this.isMobileLayout();
+    const isMobile = this.activeViewportMode !== 'desktop';
     const rowH = isMobile ? 86 : 78;
     const gap = 10;
     this.trackBounds = [];
@@ -16713,7 +16884,7 @@ export default class MidiComposer {
     this.bounds.endMarker = null;
     this.bounds.loopToggle = null;
 
-    const isMobile = this.isMobileLayout();
+    const isMobile = this.activeViewportMode !== 'desktop';
     const rowGap = 8;
     const rowH = isMobile ? 30 : 28;
     const titleRowY = y + 10;
@@ -16961,7 +17132,7 @@ export default class MidiComposer {
   }
 
   drawTrackList(ctx, x, y, w, h) {
-    const isMobile = this.isMobileLayout();
+    const isMobile = this.activeViewportMode !== 'desktop';
     ctx.fillStyle = this.editorShellTheme.surfaceAlt;
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
@@ -17069,10 +17240,8 @@ export default class MidiComposer {
     const rows = drumGrid
       ? this.getDrumRows().length
       : this.getPitchRange().max - this.getPitchRange().min + 1;
-    const isMobile = this.isMobileLayout();
-    const viewportWidth = this.viewportWidth || (x + w);
-    const viewportHeight = this.viewportHeight || (y + h);
-    const isPortrait = isMobilePortraitLayout({ isMobile, viewportWidth, viewportHeight });
+    const isMobile = this.activeViewportMode !== 'desktop';
+    const isPortrait = this.activeViewportMode === 'portrait';
     const baseVisibleRows = this.getBaseVisibleRows(rows);
     const { minZoom, maxZoom } = this.getGridZoomLimits(rows);
     const zoomXLimits = this.getGridZoomLimitsX();
@@ -17698,11 +17867,7 @@ export default class MidiComposer {
   }
 
   drawInstrumentPickerModal(ctx, width, height, track) {
-    const isPortrait = isMobilePortraitLayout({
-      isMobile: this.isMobileLayout(),
-      viewportWidth: width,
-      viewportHeight: height
-    });
+    const isPortrait = this.activeViewportMode === 'portrait';
     const modalW = isPortrait
       ? clamp(Math.round(width * 0.82), 280, width - 48)
       : clamp(Math.round(width * 0.625), 420, width - 32);
@@ -17841,10 +18006,6 @@ export default class MidiComposer {
 
   getFileMenuItems() {
     return buildSharedEditorFileMenu({
-      supported: {
-        undo: false,
-        redo: false
-      },
       labels: {
         export: 'Export JSON',
         import: 'Import MIDI/ZIP/JSON'
@@ -17874,7 +18035,7 @@ export default class MidiComposer {
   }
 
   drawFilePanel(ctx, x, y, w, h) {
-    const isMobile = this.isMobileLayout();
+    const isMobile = this.activeViewportMode !== 'desktop';
     let panelX = x;
     let panelY = y;
     let panelW = w;
@@ -17898,11 +18059,7 @@ export default class MidiComposer {
 
     this.fileMenuBounds = [];
     const allFileItems = this.getFileMenuItems();
-    const stickyExit = isMobile || isMobileLandscapeLayout({
-      isMobile,
-      viewportWidth: this.viewportWidth ?? panelX + panelW,
-      viewportHeight: this.viewportHeight ?? panelY + panelH
-    });
+    const stickyExit = this.activeViewportMode !== 'desktop';
     const { listItems: fileItems, exitItem } = stickyExit
       ? splitFileDrawerStickyExitItems(allFileItems)
       : { listItems: allFileItems, exitItem: null };
@@ -18014,7 +18171,7 @@ export default class MidiComposer {
     const controlBounds = normalizeSharedControlBounds(bounds);
     Object.assign(bounds, controlBounds);
     const color = drawSharedMenuButtonChrome(ctx, controlBounds, { active, subtle });
-    const isMobile = this.isMobileLayout();
+    const isMobile = this.activeViewportMode !== 'desktop';
     const fontSize = this.getButtonFontSize(controlBounds, isMobile);
     drawSharedMenuButtonLabel(ctx, controlBounds, label, {
       fontSize,
@@ -18035,7 +18192,7 @@ export default class MidiComposer {
     Object.assign(bounds, controlBounds);
     const color = drawSharedMenuButtonChrome(ctx, controlBounds, { active, subtle: true });
     drawSharedMenuButtonLabel(ctx, controlBounds, label, {
-      fontSize: this.isMobileLayout() ? 14 : 12,
+      fontSize: this.activeViewportMode !== 'desktop' ? 14 : 12,
       color,
       align: 'left',
       x: controlBounds.x + 10,

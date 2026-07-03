@@ -115,7 +115,7 @@ export function drawSharedGamepadHintBar(ctx, bounds, contextLabel, hints = [], 
 }
 
 export function drawSharedGamepadSlideOutHeader(ctx, bounds, title, {
-  hint = 'A Select  B Back  LB/RB Tabs',
+  hint = 'A Select  B Back  LB/RB Tabs  Start System',
   titleSize = 12,
   hintSize = 10
 } = {}) {
@@ -499,6 +499,9 @@ export function drawSharedDesktopContextPanel(ctx, bounds, {
   title = 'Active',
   lines = [],
   status = '',
+  role = 'context-inspector',
+  surface = 'left-context-panel',
+  contentRoles = ['document-summary', 'active-tool-summary', 'selection-summary', 'status'],
   padding = SHARED_EDITOR_LEFT_MENU.panelPadding,
   titleSize = 13,
   lineSize = 11,
@@ -508,7 +511,16 @@ export function drawSharedDesktopContextPanel(ctx, bounds, {
   fill = UI_SUITE.colors.panel,
   border = UI_SUITE.colors.border
 } = {}) {
-  if (!ctx || !bounds) return;
+  const safeContentRoles = Array.isArray(contentRoles)
+    ? [...new Set(contentRoles.filter(Boolean).map((entry) => String(entry)))]
+    : [];
+  const panelModel = {
+    surface,
+    role,
+    contentRoles: safeContentRoles,
+    duplicatesTopDropdownCommands: false
+  };
+  if (!ctx || !bounds) return panelModel;
   drawSharedPanel(ctx, bounds, { fill, border });
   const safeLines = Array.isArray(lines) ? lines.filter((line) => line !== null && line !== undefined) : [];
   ctx.save();
@@ -516,20 +528,27 @@ export function drawSharedDesktopContextPanel(ctx, bounds, {
   ctx.font = `${titleSize}px ${UI_SUITE.font.family}`;
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left';
-  ctx.fillText(String(title || 'Context'), bounds.x + padding, bounds.y + titleY, Math.max(1, bounds.w - padding * 2));
+  const textMaxWidth = Math.max(1, bounds.w - padding * 2);
+  ctx.fillText(
+    clipMenuLabel(ctx, String(title || 'Context'), textMaxWidth),
+    bounds.x + padding,
+    bounds.y + titleY,
+    textMaxWidth
+  );
   ctx.fillStyle = UI_SUITE.colors.text;
   ctx.font = `${lineSize}px ${UI_SUITE.font.family}`;
   safeLines.forEach((line, index) => {
     const y = bounds.y + firstLineY + index * lineGap;
     if (y <= bounds.y + bounds.h - 12) {
-      ctx.fillText(String(line), bounds.x + padding, y, Math.max(1, bounds.w - padding * 2));
+      ctx.fillText(clipMenuLabel(ctx, String(line), textMaxWidth), bounds.x + padding, y, textMaxWidth);
     }
   });
   if (status) {
     ctx.fillStyle = UI_SUITE.colors.muted;
-    ctx.fillText(String(status), bounds.x + padding, bounds.y + bounds.h - 18, Math.max(1, bounds.w - padding * 2));
+    ctx.fillText(clipMenuLabel(ctx, String(status), textMaxWidth), bounds.x + padding, bounds.y + bounds.h - 18, textMaxWidth);
   }
   ctx.restore();
+  return panelModel;
 }
 
 export function drawSharedDesktopRibbon(ctx, bounds, {
@@ -602,6 +621,7 @@ export function drawSharedDesktopDropdown(ctx, dropdownPlan, {
   isFocused = null,
   renderItem = null,
   registerButton = null,
+  registerScrollRegion = null,
   fontSize = 11,
   maxLabelPadding = 8,
   shadow = UI_SUITE.colors.shadow
@@ -614,6 +634,15 @@ export function drawSharedDesktopDropdown(ctx, dropdownPlan, {
     ...dropdownPlan.panelBounds,
     y: dropdownPlan.panelBounds.y + translateY
   };
+  if (typeof registerScrollRegion === 'function' && dropdownPlan.scrollRegion) {
+    registerScrollRegion({
+      ...dropdownPlan.scrollRegion,
+      bounds: {
+        ...dropdownPlan.scrollRegion.bounds,
+        y: Number(dropdownPlan.scrollRegion.bounds?.y || 0) + translateY
+      }
+    });
+  }
   ctx.save();
   ctx.globalAlpha = alpha;
   ctx.shadowColor = shadow;
@@ -657,6 +686,16 @@ export function drawSharedDesktopDropdown(ctx, dropdownPlan, {
     const active = typeof isActive === 'function' ? Boolean(isActive(item, index)) : Boolean(item.active);
     const focused = typeof isFocused === 'function' ? Boolean(isFocused(item, index)) : false;
     const rendered = { item, index, bounds };
+    if (item.startsEditActionRoleGroup) {
+      ctx.save();
+      ctx.strokeStyle = UI_SUITE.colors.border;
+      ctx.globalAlpha = 0.62;
+      ctx.beginPath();
+      ctx.moveTo(bounds.x + 6, bounds.y - 2);
+      ctx.lineTo(bounds.x + Math.max(6, bounds.w - 6), bounds.y - 2);
+      ctx.stroke();
+      ctx.restore();
+    }
     if (typeof renderItem === 'function') {
       renderItem({ item, index, bounds, active, focused });
     } else {
@@ -1858,7 +1897,7 @@ export function buildSharedLeftMenuLayout({
     content: { x: contentX, y: contentY, w: contentW, h: contentH }
   };
 }
-const STANDARD_FILE_ORDER = ['new', 'save', 'save-as', 'open', 'export', 'import', 'undo', 'redo'];
+const STANDARD_FILE_ORDER = ['new', 'save', 'save-as', 'open', 'export', 'import'];
 
 
 export function buildUnifiedFileDrawerItems({

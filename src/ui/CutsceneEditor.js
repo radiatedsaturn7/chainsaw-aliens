@@ -29,8 +29,8 @@ import {
 import { drawSharedMobileZoomSlider } from './shared/mobileZoomSlider.js';
 import { openChoiceOverlay, openConfirmOverlay, openProgressOverlay, openTextInputOverlay } from './shared/textInputOverlay.js';
 import { openColorPickerOverlay } from './shared/colorPickerOverlay.js';
-import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, buildMenuScrollDragState, createDesktopDropdownCommandHit, createPendingDesktopDropdownHit, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveDesktopRootMenuHit, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveMenuScrollDrag, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
-import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorPortraitRootMenuEntries, getEditorRootMenuLabelMap } from './shared/editorMenuSpec.js';
+import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, buildMenuScrollDragState, canRenderEditorPlanSurface, canRenderEditorSurface, createDesktopDropdownCommandHit, createDesktopRootMenuHit, createPendingDesktopDropdownHit, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveDesktopRootMenuHit, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveMenuScrollDrag, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
+import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorPortraitRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
 import {
@@ -61,7 +61,7 @@ const DEFAULT_FPS = 30;
 export function buildCutscenePortraitMenuModel() {
   return {
     rootTabs: getEditorPortraitRootMenuEntries('cutscene'),
-    bottomRailActions: ['menu', 'undo', 'redo', 'play'],
+    bottomRailActions: getStandardEditorActionRailIds('play'),
     portraitRootPlacement: 'bottom-rail'
   };
 }
@@ -1872,6 +1872,9 @@ export default class CutsceneEditor {
     this.desktopDropdown = null;
     this.desktopDropdownScroll = {};
     this.pendingDesktopDropdownHit = null;
+    this.activeViewportMode = 'desktop';
+    this.viewportWidth = 0;
+    this.viewportHeight = 0;
     this.menuScroll = 0;
     this.menuScrollDrag = null;
     this.landscapeRootScroll = 0;
@@ -1907,8 +1910,18 @@ export default class CutsceneEditor {
     this.openColorPicker = openColorPickerOverlay;
   }
 
+  resolveCutsceneViewportMode(width = this.viewportWidth || this.game?.canvas?.width || 0, height = this.viewportHeight || this.game?.canvas?.height || 0) {
+    return resolveEditorViewportModeFlags({
+      editorId: 'cutscene',
+      viewportWidth: width,
+      viewportHeight: height,
+      isMobile: this.isMobileLayout(),
+      gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.())
+    });
+  }
+
   isMobileLayout() {
-    return Boolean(this.game?.isMobile);
+    return Boolean(this.game?.deviceIsMobile || this.game?.isMobile);
   }
 
   resetTransientInteractionState() {
@@ -2093,12 +2106,13 @@ export default class CutsceneEditor {
     drawSharedGamepadHintBar(ctx, bounds, contextLabel, SHARED_EDITOR_GAMEPAD_HINTS);
   }
 
-  getGamepadMenuState(width = this.game?.canvas?.width || 0, height = this.game?.canvas?.height || 0) {
+  getGamepadMenuState(width = this.viewportWidth || this.game?.canvas?.width || 0, height = this.viewportHeight || this.game?.canvas?.height || 0) {
+    const viewportMode = this.resolveCutsceneViewportMode(width, height);
     return resolveGamepadMenuState({
       viewportWidth: width,
       viewportHeight: height,
-      gamepadConnected: this.game?.input?.isGamepadConnected?.(),
-      isMobile: this.isMobileLayout(),
+      gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.()),
+      isMobile: viewportMode.isMobileViewport,
       menuActive: this.controllerMenu.active,
       activeMenuId: this.controllerMenu.getActiveMenuId()
     });
@@ -2112,6 +2126,8 @@ export default class CutsceneEditor {
     this.bounds = { buttons: [], clips: [], clipHandles: [], visualClips: [], menuButtons: [], contextButtons: [], clipOptionButtons: [], keyframes: [], stateEvents: [], stageKeyframes: [], trackLabels: [], trackLanes: [], stageSelection: [] };
     const safeW = Math.max(1, Math.floor(Number(width) || 1));
     const safeH = Math.max(1, Math.floor(Number(height) || 1));
+    this.viewportWidth = safeW;
+    this.viewportHeight = safeH;
     try {
       if (!this.document) this.document = createDefaultCutscene();
       ctx.save();
@@ -2122,7 +2138,17 @@ export default class CutsceneEditor {
       const { stageBounds, timelineBounds, railBounds, contextBounds, zoomBounds } = layout;
       const drawGamepadLeft = gamepadMenuState.drawSlideOut;
       if (layout.isDesktop) this.drawDesktopShellChrome(ctx, layout.desktopShell);
-      if (layout.isLandscapeTouch && !drawGamepadLeft) this.drawLandscapeRootRail(ctx, layout.leftMenuBounds);
+      const canRenderLandscapeRootRail = layout.isLandscapeTouch
+        && canRenderEditorPlanSurface(layout.landscapeShell, 'left-rail');
+      const canRenderLandscapeBottomRail = layout.isLandscapeTouch
+        ? canRenderEditorPlanSurface(layout.landscapeShell, 'bottom-tool-rail')
+        : canRenderEditorSurface(this.activeViewportMode, 'bottom-action-rail');
+      const canRenderLandscapeRootDrawer = layout.isLandscapeTouch
+        && canRenderEditorPlanSurface(layout.landscapeShell, 'left-overlay-drawer');
+      const canRenderLandscapeSubmenu = layout.isLandscapeTouch
+        && canRenderEditorPlanSurface(layout.landscapeShell, 'right-drawer')
+        && canRenderEditorPlanSurface(layout.landscapeShell, 'landscape-right-submenu');
+      if (canRenderLandscapeRootRail && !drawGamepadLeft) this.drawLandscapeRootRail(ctx, layout.leftMenuBounds);
       this.bounds.stage = stageBounds;
       this.bounds.timeline = timelineBounds;
       this.bounds.timelineZoom = null;
@@ -2133,7 +2159,9 @@ export default class CutsceneEditor {
       this.drawTimeline(ctx, timelineBounds);
       this.drawContextRibbon(ctx, contextBounds);
       this.drawTimelineZoomSlider(ctx, zoomBounds);
-      if (!layout.isDesktop) this.drawActionRail(ctx, railBounds, layout.isPortrait);
+      if (!layout.isDesktop && (layout.isPortrait || canRenderLandscapeBottomRail)) {
+        this.drawActionRail(ctx, railBounds, layout.isPortrait);
+      }
       if (drawGamepadLeft) {
         this.drawGamepadSlideOutPanel(ctx, layout.leftMenuBounds);
       } else if (this.clipOptionsOpen && (this.getSelectedClip() || this.getSelectedTrack())) {
@@ -2143,16 +2171,16 @@ export default class CutsceneEditor {
         this.drawDesktopLeftOptions(ctx, layout.menuBounds);
         this.drawDesktopDropdown(ctx, layout.desktopShell);
       } else if (!drawGamepadLeft && (this.menuOpen || this.landscapeRootDrawerOpen)) {
-        if (layout.isLandscapeTouch) {
+        if (layout.isLandscapeTouch && (canRenderLandscapeRootDrawer || canRenderLandscapeSubmenu)) {
           if (this.landscapeRootDrawerOpen) {
-            this.drawLandscapeRootDrawer(ctx, layout.rootMenuBounds ?? layout.menuBounds);
-            this.drawLandscapeSubmenuPanel(ctx, layout.menuBounds);
+            if (canRenderLandscapeRootDrawer) this.drawLandscapeRootDrawer(ctx, layout.rootMenuBounds ?? layout.menuBounds);
+            if (canRenderLandscapeSubmenu) this.drawLandscapeSubmenuPanel(ctx, layout.menuBounds);
           }
-          else this.drawLandscapeSubmenuPanel(ctx, layout.menuBounds);
+          else if (canRenderLandscapeSubmenu) this.drawLandscapeSubmenuPanel(ctx, layout.menuBounds);
         }
         else this.drawMenu(ctx, layout.menuBounds, layout.isPortrait);
       }
-      if (gamepadMenuState.isLandscapeMenuMode) {
+      if (gamepadMenuState.isLandscapeMenuMode && canRenderEditorSurface(this.activeViewportMode, 'gamepad-hint-bar')) {
         this.drawGamepadHintBar(ctx, {
           x: stageBounds.x + 12,
           y: stageBounds.y + Math.max(8, stageBounds.h - 36),
@@ -2257,13 +2285,10 @@ export default class CutsceneEditor {
   }
 
   computeLayout(width, height, { gamepadMenuState = null } = {}) {
-    const viewportMode = resolveEditorViewportModeFlags({
-      viewportWidth: width,
-      viewportHeight: height,
-      isMobile: this.isMobileLayout(),
-      gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.())
-    });
+    const viewportMode = this.resolveCutsceneViewportMode(width, height);
     this.activeModeContract = viewportMode.modeContract;
+    this.activeSpecModeContract = viewportMode.specModeContract;
+    this.activeViewportMode = viewportMode.mode;
     const isPortrait = viewportMode.isMobilePortrait;
     const isDesktop = viewportMode.isDesktop;
     const margin = 10;
@@ -2381,6 +2406,7 @@ export default class CutsceneEditor {
       contextBounds,
       zoomBounds: null,
       railBounds: landscape.surfaces.toolOptions,
+      landscapeShell: landscape,
       leftMenuBounds: commandRail,
       rootMenuBounds: {
         x: rootDrawer?.x ?? commandRail.x + commandRail.w,
@@ -2398,7 +2424,9 @@ export default class CutsceneEditor {
   }
 
   updateThumbstickPan(dt) {
-    if (!this.panJoystick?.active || !this.bounds.timeline) return;
+    if (!canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick')
+      || !this.panJoystick?.active
+      || !this.bounds.timeline) return;
     const dx = clamp(safeNumber(this.panJoystick.dx, 0), -1, 1);
     const dy = clamp(safeNumber(this.panJoystick.dy, 0), -1, 1);
     if (Math.abs(dx) < 0.04 && Math.abs(dy) < 0.04) return;
@@ -2840,8 +2868,7 @@ export default class CutsceneEditor {
       focusedId: this.controllerMenu.getFocusedItem('root')?.id,
       idPrefix: 'desktop-root:',
       registerButton: (button) => {
-      const bounds = { ...button.bounds };
-      this.bounds.buttons.push(bounds);
+      this.bounds.buttons.push(createDesktopRootMenuHit(button, null, { idPrefix: 'desktop-root:' }));
       }
     });
     drawSharedDesktopRibbon(ctx, shell.leftRibbon, {
@@ -2872,6 +2899,7 @@ export default class CutsceneEditor {
     drawSharedDesktopContextPanel(ctx, contextBounds, {
       lines,
       status: this.statusText || '',
+      contentRoles: ['document-summary', 'selection-summary', 'transport', 'status'],
       padding: 10
     });
     if (transportBounds) this.drawDesktopTransportPanel(ctx, transportBounds);
@@ -2920,6 +2948,9 @@ export default class CutsceneEditor {
     if (!dropdownPlan.renderedItems.length) return;
     drawSharedDesktopDropdown(ctx, dropdownPlan, {
       isActive: (item) => Boolean(item.active) || this.isControllerMenuItemActive(shell.dropdown.rootId, item.id),
+      registerScrollRegion: (region) => {
+        this.menuScrollRegions.push(region);
+      },
       registerButton: ({ item, bounds }) => {
         const action = item.action || item.onClick || (typeof item.onSelect === 'function' ? () => item.onSelect(this) : null);
         const button = createDesktopDropdownCommandHit(item, bounds, action);
@@ -3407,6 +3438,12 @@ export default class CutsceneEditor {
     });
     const menu = this.controllerMenu.menus?.[menuId];
     const items = this.controllerMenu.getItems(menu);
+    const plannedItems = menuId ? (plan.submenu?.items || []) : plan.rootEntries;
+    const plannedFocusById = new Map(plannedItems.map((item) => [item.id, Boolean(item.focused)]));
+    const focusedItemId = this.controllerMenu.getFocusedItem(menuId)?.id
+      || plan.focus?.submenuItemId
+      || plan.focus?.rootItemId
+      || null;
     this.bounds.menuPanel = bounds;
     drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
     drawSharedGamepadSlideOutHeader(ctx, bounds, menu?.title || plan.submenu?.title || 'Menu', { hint: plan.headerHint });
@@ -3423,7 +3460,7 @@ export default class CutsceneEditor {
     const maxScroll = Math.max(0, items.length - visibleRows);
     const scroll = this.controllerMenu.syncScrollToItem(
       menuId,
-      this.controllerMenu.getFocusedItem(menuId)?.id,
+      focusedItemId,
       items,
       visibleRows,
       this.controllerMenu.scroll?.[menuId] || 0
@@ -3443,7 +3480,7 @@ export default class CutsceneEditor {
       };
       const color = drawSharedMenuButtonChrome(ctx, button, {
         active: this.isControllerMenuItemActive(menuId, item.id),
-        focused: this.controllerMenu.isFocusedItem(menuId, item.id, index),
+        focused: this.controllerMenu.isFocusedItem(menuId, item.id, index) || Boolean(plannedFocusById.get(item.id)),
         subtle: Boolean(item.disabled)
       });
       drawSharedMenuButtonLabel(ctx, button, item.label, { color, fontSize: 12, maxWidth: button.w - 10 });
@@ -3509,7 +3546,8 @@ export default class CutsceneEditor {
     const x = safeNumber(payload.x);
     const y = safeNumber(payload.y);
     this.pendingDesktopDropdownHit = null;
-    if (!this.isMobileLayout() && shouldCloseDesktopDropdownOnPointerDown({
+    const isDesktopMode = this.activeViewportMode === 'desktop';
+    if (isDesktopMode && shouldCloseDesktopDropdownOnPointerDown({
       dropdown: this.desktopDropdown,
       point: { x, y },
       rootButtons: this.bounds.buttons,
@@ -3535,12 +3573,20 @@ export default class CutsceneEditor {
       this.closeTransportPopover();
       return;
     }
-    const desktopDropdownHit = this.bounds.desktopDropdownItems?.find((entry) => this.pointIn(entry, x, y));
+    const desktopDropdownHit = isDesktopMode
+      ? this.bounds.desktopDropdownItems?.find((entry) => this.pointIn(entry, x, y))
+      : null;
     if (desktopDropdownHit) {
       this.pendingDesktopDropdownHit = createPendingDesktopDropdownHit(desktopDropdownHit, { x, y });
       return;
     }
-    if (this.bounds.desktopMenuPanel && this.pointIn(this.bounds.desktopMenuPanel, x, y)) {
+    const desktopDropdownRegion = isDesktopMode
+      ? this.menuScrollRegions?.find((region) => region?.bounds && this.pointIn(region.bounds, x, y))
+      : null;
+    if (desktopDropdownRegion) {
+      return;
+    }
+    if (isDesktopMode && this.bounds.desktopMenuPanel && this.pointIn(this.bounds.desktopMenuPanel, x, y)) {
       return;
     }
     if (this.bounds.landscapeRootPanel && this.pointIn(this.bounds.landscapeRootPanel, x, y)) {
@@ -3639,11 +3685,10 @@ export default class CutsceneEditor {
       this.handleButton(button.id);
       return;
     }
+    const pointerMode = this.activeViewportMode || this.resolveCutsceneViewportMode().mode;
     const pointerPolicy = getEditorPointerInteractionPolicy('cutscene', {
-      mode: this.isMobileLayout()
-        ? (this.shouldDrawGamepadSubmenuOnLeft(this.canvas?.width || 0, this.canvas?.height || 0) ? 'gamepad' : 'landscape-touch')
-        : 'desktop',
-      pointerType: this.isMobileLayout() ? 'touch' : 'mouse',
+      mode: pointerMode,
+      pointerType: pointerMode === 'desktop' ? 'mouse' : 'touch',
       gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.())
     });
     if ((payload.button ?? 0) === 2 && pointerPolicy.rightClick.opensContextMenu) {
@@ -3814,7 +3859,7 @@ export default class CutsceneEditor {
     if (this.transportHold && Math.hypot(x - this.transportHold.x, y - this.transportHold.y) > 12) {
       this.cancelTransportHold();
     }
-    if (!this.isMobileLayout() && !payload.touchCount && !this.drag && !this.menuScrollDrag) {
+    if (this.activeViewportMode === 'desktop' && !payload.touchCount && !this.drag && !this.menuScrollDrag) {
       const rootButton = resolveDesktopDropdownHoverSwitch({
         buttons: this.bounds.buttons,
         point: { x, y },
@@ -4556,10 +4601,6 @@ export default class CutsceneEditor {
     const selected = this.getSelectedClip();
     if (tabId === 'file') {
       return buildSharedEditorFileMenu({
-        supported: {
-          undo: false,
-          redo: false
-        },
         labels: {
           export: 'Export MP4'
         },
@@ -4615,25 +4656,15 @@ export default class CutsceneEditor {
     if (tabId === 'timeline') {
       return [
         { id: 'play', label: this.isPlaying ? 'Pause' : 'Play' },
-        { id: 'step-frame', label: 'Step Frame' },
-        { id: 'view-canvas', label: 'Canvas View', active: this.workspaceMode === 'canvas' },
-        { id: 'view-split', label: 'Split View', active: this.workspaceMode === 'split' },
-        { id: 'view-timeline', label: 'Timeline View', active: this.workspaceMode === 'timeline' },
-        { id: 'timeline-zoom-out', label: 'Zoom Out' },
-        { id: 'timeline-zoom-in', label: 'Zoom In' },
-        { id: 'timeline-fit', label: 'Fit Timeline' }
+        { id: 'step-frame', label: 'Step Frame' }
       ];
     }
     if (tabId === 'clips') {
       return [
         { id: 'clip-options', label: 'Clip Options', disabled: !selected && !this.getSelectedTrack() },
-        { id: 'copy', label: 'Copy', disabled: !selected },
-        { id: 'cut', label: 'Cut', disabled: !selected },
-        { id: 'paste', label: 'Paste', disabled: !this.clipboardClip },
         { id: 'duplicate', label: 'Duplicate', disabled: !selected },
         { id: 'move-to-track', label: 'Move To Track', disabled: !selected || (this.document.tracks || []).length <= 1 },
-        { id: 'new-track', label: 'New Track', disabled: !selected },
-        { id: 'delete', label: 'Delete', disabled: !selected }
+        { id: 'new-track', label: 'New Track', disabled: !selected }
       ];
     }
     if (tabId === 'keyframes') {
@@ -4650,39 +4681,21 @@ export default class CutsceneEditor {
     }
     if (tabId === 'audio') {
       return [
-        { id: 'music', label: 'Add Music' },
-        { id: 'sfx', label: 'Add SFX' },
         { id: 'volume', label: 'Clip Volume', disabled: !selected || !isAudioClip(selected) },
         { id: 'fade', label: 'Clip Fade', disabled: !selected || !isAudioClip(selected) },
         { id: 'loop', label: selected?.loop ? 'Loop On' : 'Loop Off', disabled: !selected || !isAudioClip(selected) },
         { id: 'master-volume', label: `Master ${Math.round(clamp(safeNumber(this.document.masterVolume, 1), 0, 1) * 100)}` }
       ];
     }
-    if (tabId === 'export') {
-      return [
-        { id: 'export-mp4', label: 'Export MP4', disabled: this.movieExportInProgress },
-        { id: 'save', label: 'Save' },
-        { id: 'save-as', label: 'Save As' }
-      ];
-    }
     if (tabId === 'settings') {
-      return [
-        { id: 'scene-duration', label: 'Scene Length' },
-        { id: 'snap-toggle', label: this.document.snapEnabled === false ? 'Snap Off' : 'Snap On' },
-        { id: 'snap-size', label: `Grid ${clamp(Math.round(safeNumber(this.document.snapSize, 8)), 1, 64)}` },
-        { id: 'master-volume', label: `Master ${Math.round(clamp(safeNumber(this.document.masterVolume, 1), 0, 1) * 100)}` },
-        { id: 'view-canvas', label: 'Canvas View', active: this.workspaceMode === 'canvas' },
-        { id: 'view-split', label: 'Split View', active: this.workspaceMode === 'split' },
-        { id: 'view-timeline', label: 'Timeline View', active: this.workspaceMode === 'timeline' }
-      ];
+      return [];
     }
     return [
       { id: 'scene-duration', label: 'Scene Length' },
       { id: 'scene-fade-in', label: `Fade In ${this.document.sceneFadeInMs || 0}ms` },
       { id: 'scene-fade-out', label: `Fade Out ${this.document.sceneFadeOutMs || 0}ms` },
       { id: 'snap-toggle', label: this.document.snapEnabled === false ? 'Snap Off' : 'Snap On' },
-      { id: 'snap-size', label: `Grid ${clamp(Math.round(safeNumber(this.document.snapSize, 8)), 1, 64)}` },
-      { id: 'master-volume', label: `Master ${Math.round(clamp(safeNumber(this.document.masterVolume, 1), 0, 1) * 100)}` }
+      { id: 'snap-size', label: `Grid ${clamp(Math.round(safeNumber(this.document.snapSize, 8)), 1, 64)}` }
     ];
   }
 

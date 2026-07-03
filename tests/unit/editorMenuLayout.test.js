@@ -16,7 +16,10 @@ import {
   buildScrolledLandscapeRootDrawerItems,
   buildLandscapeTouchEditorShellPlan,
   buildMenuScrollDragState,
+  applyDesktopDropdownCommandDataset,
+  applyDesktopRootMenuDataset,
   createDesktopDropdownCommandHit,
+  createDesktopRootMenuHit,
   createPendingDesktopDropdownHit,
   findScrollableMenuRegion,
   getEditorPointerInteractionPolicy,
@@ -33,16 +36,33 @@ import {
   resolveEditorViewportModeFlags,
   getEditorModeContract,
   getEditorModeSurfaceContract,
+  getEditorModeSurfaceVisibility,
+  getLandscapeTouchShellEffectiveSurfaceVisibility,
+  getEditorPlanSurfaceVisibility,
+  getEditorSurfaceVisibility,
   getEditorModePresentationInteractionContract,
   resolveMenuWheelScroll,
   resolveMenuScrollDrag,
   resolveEditorLayoutMode,
+  canRenderEditorSurface,
+  canRenderEditorPlanSurface,
   MODE_INTERACTION_CONTRACTS,
   MODE_PRESENTATION_CONTRACTS,
+  DESKTOP_CONTEXT_PANEL_CONTRACT,
+  DESKTOP_DROPDOWN_COMMAND_CONTRACT,
+  DESKTOP_DROPDOWN_STATE_CONTRACT,
+  DESKTOP_SHELL_SURFACE_CONTRACT,
+  COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT,
+  COMPACT_LANDSCAPE_COMMAND_RAIL_WIDTH,
+  LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT,
+  GAMEPAD_FOCUS_RING_CONTRACT,
+  GAMEPAD_SLIDE_OUT_MENU_CONTRACT,
+  EDITOR_SURFACES,
   REQUIRED_MODE_SURFACES,
   SUPPRESSED_MODE_SURFACES,
   validateEditorModePresentationInteractionContracts,
   validateEditorModeSurfaceContracts,
+  validateEditorWorkSurfaceTypes,
   resolveOpenDesktopDropdownState,
   resolvePendingDesktopDropdownHit,
   shouldCloseDesktopDropdownOnDomPointerDown,
@@ -50,14 +70,25 @@ import {
   shouldUseGamepadSlideOutMenu,
   updatePendingDesktopDropdownHit
 } from '../../src/ui/shared/editorMenuLayout.js';
-import { EDITOR_LAYOUT_MODES, getEditorMenuSection, getEditorRootMenuEntries } from '../../src/ui/shared/editorMenuSpec.js';
+import {
+  DESKTOP_FILE_BASELINE_ACTION_IDS,
+  DESKTOP_FILE_FOOTER_ACTION_ID,
+  EDITOR_LAYOUT_MODES,
+  PORTRAIT_ROOT_MAX_ITEMS,
+  SHARED_EDITOR_IDS,
+  getEditorMenuModeContract,
+  getEditorMenuSection,
+  getEditorRootMenuEntries
+} from '../../src/ui/shared/editorMenuSpec.js';
 import { drawSharedDesktopDropdown } from '../../src/ui/uiSuite.js';
 
-const ALL_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'car'];
+const ALL_EDITOR_IDS = SHARED_EDITOR_IDS;
 const uiSpecSource = readFileSync(new URL('../../UISpec.md', import.meta.url), 'utf8');
 const editorUiContractSource = readFileSync(new URL('../../ui/EDITORS_UI_CONTRACT.md', import.meta.url), 'utf8');
+const editorMenuLayoutSource = readFileSync(new URL('../../src/ui/shared/editorMenuLayout.js', import.meta.url), 'utf8');
 const canvasEditorDesktopDropdownSources = {
   pixel: readFileSync(new URL('../../src/ui/PixelStudio.js', import.meta.url), 'utf8'),
+  tile: readFileSync(new URL('../../src/ui/PixelStudio.js', import.meta.url), 'utf8'),
   level: readFileSync(new URL('../../src/ui/LevelEditorCore.js', import.meta.url), 'utf8'),
   midi: readFileSync(new URL('../../src/ui/MidiComposerCore.js', import.meta.url), 'utf8'),
   sfx: readFileSync(new URL('../../src/ui/SfxEditor.js', import.meta.url), 'utf8'),
@@ -84,23 +115,33 @@ test('UI docs describe the shared desktop command and context surface contract',
   assert.equal(uiSpecSource.includes('buildEditorMenuLayoutPlan()` exposes each mode'), true);
   assert.equal(uiSpecSource.includes('landscape `compactCommandRail`/`rootDrawer` split'), true);
   assert.equal(uiSpecSource.includes('Desktop command surfaces are `top-dropdown` drawers.'), true);
+  assert.equal(uiSpecSource.includes('Desktop shell surfaces come from `DESKTOP_SHELL_SURFACE_CONTRACT`'), true);
   assert.equal(uiSpecSource.includes('Root menu drawers start closed, drop down only from explicit top-menu interaction'), true);
+  assert.equal(uiSpecSource.includes('Desktop dropdown rows use `DESKTOP_DROPDOWN_COMMAND_CONTRACT`'), true);
+  assert.equal(uiSpecSource.includes('Desktop dropdown state and motion use `DESKTOP_DROPDOWN_STATE_CONTRACT`'), true);
   assert.equal(uiSpecSource.includes('Opening a desktop drawer records shared `openedAtMs` timing'), true);
   assert.equal(uiSpecSource.includes('pass the live dropdown state into `buildDesktopDropdownRenderPlan()`'), true);
   assert.equal(uiSpecSource.includes('Clicking away closes the open drawer and it must stay closed on redraw'), true);
-  assert.equal(uiSpecSource.includes('Every editor File drawer starts with the same desktop baseline order: New, Save, Save As, Open, Export, Import.'), true);
-  assert.equal(uiSpecSource.includes('Every editor Edit drawer starts with Undo and Redo, then editor-specific edit actions'), true);
+  assert.equal(uiSpecSource.includes('Every editor File drawer starts with the same desktop baseline order from `DESKTOP_FILE_BASELINE_ACTION_IDS`: New, Save, Save As, Open, Export, Import.'), true);
+  assert.equal(uiSpecSource.includes('File drawers must not contain history, clipboard, or other Edit-role actions; those commands live in Edit.'), true);
+  assert.equal(uiSpecSource.includes('Every editor Edit drawer starts with Undo and Redo.'), true);
+  assert.equal(uiSpecSource.includes('After the history rows, Edit drawer role groups follow clipboard, selection, duplicate, target-specific edits, then destructive actions'), true);
   assert.equal(uiSpecSource.includes('Unsupported baseline actions should remain visible as disabled rows'), true);
   assert.equal(uiSpecSource.includes('Desktop left context panels should use contextual language such as `Active`, not `Menu`'), true);
   assert.equal(editorUiContractSource.includes("commandSurfaces: ['top-dropdown']"), true);
   assert.equal(editorUiContractSource.includes('Desktop dropdown drawers start closed.'), true);
   assert.equal(editorUiContractSource.includes('Shared desktop dropdown state owns `openedAtMs`'), true);
+  assert.equal(editorUiContractSource.includes('Desktop dropdown state and motion use `DESKTOP_DROPDOWN_STATE_CONTRACT`'), true);
+  assert.equal(editorUiContractSource.includes('Desktop dropdown command rows use `DESKTOP_DROPDOWN_COMMAND_CONTRACT`'), true);
   assert.equal(editorUiContractSource.includes('resolveDesktopDropdownState({ previousDropdown })'), true);
   assert.equal(editorUiContractSource.includes('so `slide-down` motion progress is driven by shared state'), true);
   assert.equal(editorUiContractSource.includes('Editors must not pass the active panel, active tool, selected tab, or selected document context as the default open dropdown root.'), true);
   assert.equal(editorUiContractSource.includes('Click-away state must survive the next draw'), true);
-  assert.equal(editorUiContractSource.includes('File dropdown drawers must begin with the shared baseline row order `New`, `Save`, `Save As`, `Open`, `Export`, `Import`.'), true);
+  assert.equal(editorUiContractSource.includes('File dropdown drawers must begin with `DESKTOP_FILE_BASELINE_ACTION_IDS`: `New`, `Save`, `Save As`, `Open`, `Export`, `Import`.'), true);
+  assert.equal(editorUiContractSource.includes('File dropdown drawers must end with `DESKTOP_FILE_FOOTER_ACTION_ID`'), true);
+  assert.equal(editorUiContractSource.includes('File dropdown drawers must not include history, clipboard, or other Edit-role actions'), true);
   assert.equal(editorUiContractSource.includes('Edit dropdown drawers must begin with the shared history row order `Undo`, `Redo`'), true);
+  assert.equal(editorUiContractSource.includes('Edit dropdown role groups must follow `history -> clipboard -> selection -> duplicate -> targetEdit -> destructive`'), true);
   assert.equal(editorUiContractSource.includes('Unsupported baseline actions stay visible as disabled rows with inert hit targets.'), true);
   assert.equal(editorUiContractSource.includes('**Race Editor**, and **Car Editor**'), true);
   assert.equal(editorUiContractSource.includes("persistentSurfaces: ['top-menu', 'left-ribbon', 'left-context-panel', 'work-surface']"), true);
@@ -108,14 +149,54 @@ test('UI docs describe the shared desktop command and context surface contract',
   assert.equal(editorUiContractSource.includes('`gamepad-slide-out` so desktop cannot accidentally render mobile or controller chrome.'), true);
   assert.equal(editorUiContractSource.includes('surfaceRoles.desktopMobileRailsHidden'), true);
   assert.equal(editorUiContractSource.includes('Desktop must set `desktopMobileRailsHidden` to `true`.'), true);
+  assert.equal(editorUiContractSource.includes('Shared desktop plans expose `leftContextPanelContract`'), true);
+  assert.equal(editorUiContractSource.includes('Shared desktop shell plans expose `DESKTOP_SHELL_SURFACE_CONTRACT`'), true);
+  assert.equal(editorUiContractSource.includes('contextual quick actions must be contextual and must not duplicate the open dropdown'), true);
   assert.equal(editorUiContractSource.includes('modeSurfaces.compactCommandRail'), true);
-  assert.equal(editorUiContractSource.includes('surfaceRoles.persistentNavigationActionLimit: 4'), true);
+  assert.equal(editorUiContractSource.includes('Shared landscape shell surfaces come from `LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT`'), true);
+  assert.equal(editorUiContractSource.includes('surfaceRoles.persistentNavigationActionLimit: COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT'), true);
+  assert.equal(uiSpecSource.includes('Gamepad slide-out surfaces, controls, row activation, and suppressed touch surfaces come from `GAMEPAD_SLIDE_OUT_MENU_CONTRACT`'), true);
+  assert.equal(editorUiContractSource.includes('Gamepad mode uses `GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rootSurface`'), true);
+  assert.equal(editorUiContractSource.includes('suppressed touch surfaces from `GAMEPAD_SLIDE_OUT_MENU_CONTRACT`'), true);
+  assert.equal(editorUiContractSource.includes('Shared gamepad slide-out plans expose `focusRingContract`'), true);
+  assert.equal(editorUiContractSource.includes('Focus rings must be visible on every focused actionable row'), true);
   assert.equal(uiSpecSource.includes('Editors may opt the full root drawer to a right overlay or work-surface overlay'), false);
   assert.equal(editorUiContractSource.includes('Editors may opt into `right-overlay-drawer` or a work-surface overlay'), false);
-  assert.equal(uiSpecSource.includes('The root drawer should originate from the compact left rail by default'), true);
-  assert.equal(editorUiContractSource.includes('It originates from the compact left rail as `left-overlay-drawer` by default'), true);
+  assert.equal(uiSpecSource.includes('The root drawer must originate from the compact left rail'), true);
+  assert.equal(editorUiContractSource.includes('It originates from the compact left rail as `left-overlay-drawer`, while `RightRail` remains reserved'), true);
   assert.equal(uiSpecSource.includes("Bridge Actor Editor's DOM UI into the shared spec."), false);
   assert.equal(uiSpecSource.includes("Keep Actor Editor's DOM UI covered by the same shared desktop, landscape, portrait, and gamepad contracts as the canvas editors."), true);
+});
+
+test('shared editor surface ids are centralized and immutable', () => {
+  assert.equal(Object.isFrozen(EDITOR_SURFACES), true);
+  const knownSurfaces = new Set(Object.values(EDITOR_SURFACES));
+  assert.equal(EDITOR_SURFACES.desktopTopMenu, 'desktop-top-menu');
+  assert.equal(EDITOR_SURFACES.topDropdown, 'top-dropdown');
+  assert.equal(EDITOR_SURFACES.leftOverlayDrawer, 'left-overlay-drawer');
+  assert.equal(EDITOR_SURFACES.leftSlideOutDrawer, 'left-slide-out-drawer');
+  assert.equal(DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface, EDITOR_SURFACES.topDropdown);
+  assert.equal(knownSurfaces.has(DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface), true);
+  assert.equal(DESKTOP_CONTEXT_PANEL_CONTRACT.surface, EDITOR_SURFACES.leftContextPanel);
+  assert.equal(LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootDrawerSurface, EDITOR_SURFACES.leftOverlayDrawer);
+  assert.equal(GAMEPAD_SLIDE_OUT_MENU_CONTRACT.sourceSurface, EDITOR_SURFACES.gamepadSlideOut);
+  assert.equal(REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.PORTRAIT].includes(EDITOR_SURFACES.bottomActionRail), true);
+  assert.equal(SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.DESKTOP].includes(EDITOR_SURFACES.touchThumbstick), true);
+  assert.deepEqual(validateEditorModeSurfaceContracts(), []);
+  Object.values(EDITOR_LAYOUT_MODES).forEach((mode) => {
+    const contract = getEditorModeContract(mode);
+    [
+      contract.rootSurface,
+      contract.commandSurface,
+      contract.submenuSurface,
+      contract.persistentContextSurface,
+      contract.persistentNavigationSurface,
+      contract.rootDrawerSurface,
+      contract.rightSubmenuSurface
+    ].filter(Boolean).forEach((surface) => {
+      assert.equal(knownSurfaces.has(surface), true, `${mode}:${surface}`);
+    });
+  });
 });
 
 test('desktop dropdown rows expose command metadata for release activation across editors', () => {
@@ -123,14 +204,16 @@ test('desktop dropdown rows expose command metadata for release activation acros
     assert.equal(
       source.includes('desktopDropdownItem: true')
         || source.includes("btn.dataset.desktopDropdownItem = 'true'")
-        || source.includes('createDesktopDropdownCommandHit('),
+        || source.includes('createDesktopDropdownCommandHit(')
+        || source.includes('applyDesktopDropdownCommandDataset('),
       true,
       `${editorId} should mark desktop dropdown rows`
     );
     assert.equal(
       source.includes('id: item.id')
         || source.includes('btn.dataset.actionId = action.id')
-        || source.includes('createDesktopDropdownCommandHit('),
+        || source.includes('createDesktopDropdownCommandHit(')
+        || source.includes('applyDesktopDropdownCommandDataset('),
       true,
       `${editorId} should preserve dropdown command ids`
     );
@@ -147,12 +230,30 @@ test('desktop dropdown rows expose command metadata for release activation acros
 test('shared desktop dropdown command hit helper normalizes command metadata', () => {
   let fired = 0;
   const action = () => { fired += 1; };
-  const hit = createDesktopDropdownCommandHit({ id: 'new' }, { x: 10, y: 20, w: 90, h: 30 }, action);
+  const hit = createDesktopDropdownCommandHit({
+    id: 'copy',
+    editActionRole: 'clipboard',
+    desktopActionRole: 'clipboard',
+    editActionRoleGroupIndex: 2,
+    startsEditActionRoleGroup: true,
+    sourceRootId: 'edit',
+    commandSurface: DESKTOP_DROPDOWN_COMMAND_CONTRACT.commandSurface,
+    pointerType: DESKTOP_DROPDOWN_COMMAND_CONTRACT.pointerType,
+    rowActivation: DESKTOP_DROPDOWN_COMMAND_CONTRACT.rowActivation
+  }, { x: 10, y: 20, w: 90, h: 30 }, action);
 
-  assert.equal(hit.id, 'new');
-  assert.deepEqual(hit.bounds, { x: 10, y: 20, w: 90, h: 30, id: 'new' });
-  assert.equal(hit.desktopDropdownItem, true);
-  assert.equal(hit.kind, 'desktop-dropdown-item');
+  assert.equal(hit.id, 'copy');
+  assert.deepEqual(hit.bounds, { x: 10, y: 20, w: 90, h: 30, id: 'copy' });
+  assert.equal(hit.desktopDropdownItem, DESKTOP_DROPDOWN_COMMAND_CONTRACT.desktopDropdownItem);
+  assert.equal(hit.kind, DESKTOP_DROPDOWN_COMMAND_CONTRACT.kind);
+  assert.equal(hit.editActionRole, 'clipboard');
+  assert.equal(hit.desktopActionRole, 'clipboard');
+  assert.equal(hit.editActionRoleGroupIndex, 2);
+  assert.equal(hit.startsEditActionRoleGroup, true);
+  assert.equal(hit.sourceRootId, 'edit');
+  assert.equal(hit.commandSurface, DESKTOP_DROPDOWN_COMMAND_CONTRACT.commandSurface);
+  assert.equal(hit.pointerType, DESKTOP_DROPDOWN_COMMAND_CONTRACT.pointerType);
+  assert.equal(hit.rowActivation, DESKTOP_DROPDOWN_COMMAND_CONTRACT.rowActivation);
   assert.equal(hit.action, action);
   assert.equal(hit.onClick, action);
   hit.action();
@@ -160,7 +261,7 @@ test('shared desktop dropdown command hit helper normalizes command metadata', (
 });
 
 test('compatible canvas editors use the shared desktop dropdown command hit helper', () => {
-  ['midi', 'sfx', 'cutscene', 'race', 'car'].forEach((editorId) => {
+  ['pixel', 'level', 'midi', 'sfx', 'cutscene', 'race', 'car'].forEach((editorId) => {
     assert.equal(
       canvasEditorDesktopDropdownSources[editorId].includes('createDesktopDropdownCommandHit('),
       true,
@@ -169,10 +270,111 @@ test('compatible canvas editors use the shared desktop dropdown command hit help
   });
 });
 
+test('canvas desktop dropdown hit paths preserve shared Edit role metadata through the helper', () => {
+  ['pixel', 'level'].forEach((editorId) => {
+    const source = canvasEditorDesktopDropdownSources[editorId];
+    assert.equal(source.includes('createDesktopDropdownCommandHit('), true, `${editorId}:helper`);
+  });
+  assert.equal(canvasEditorDesktopDropdownSources.pixel.includes('sourceRootId: shell.dropdown.rootId || null'), true);
+  assert.equal(canvasEditorDesktopDropdownSources.level.includes('sourceRootId: dropdownRootId || null'), true);
+});
+
 test('Actor desktop DOM dropdown rows expose shared dataset command metadata', () => {
   assert.equal(actorEditorSource.includes('btn.dataset.actionId = action.id'), true);
   assert.equal(actorEditorSource.includes('btn.dataset.sourceId = action.sourceId || action.id'), true);
-  assert.equal(actorEditorSource.includes("btn.dataset.desktopDropdownItem = 'true'"), true);
+  assert.equal(actorEditorSource.includes('applyDesktopDropdownCommandDataset(btn, action, {'), true);
+  assert.equal(actorEditorSource.includes('commandSurface: this.activeSpecModeContract?.commandSurface'), true);
+  assert.equal(actorEditorSource.includes('pointerType: this.activeSpecModeContract?.pointerType'), true);
+  assert.equal(actorEditorSource.includes('rowActivation: this.activeSpecModeContract?.rowActivation'), true);
+  assert.equal(actorEditorSource.includes("action.startsEditActionRoleGroup ? ' role-group-start' : ''"), true);
+});
+
+test('shared desktop dropdown dataset helper normalizes DOM command metadata', () => {
+  const element = { dataset: {} };
+  const metadata = applyDesktopDropdownCommandDataset(element, {
+    id: 'copy-state',
+    editActionRole: 'clipboard',
+    desktopActionRole: 'clipboard',
+    editActionRoleGroupIndex: 1,
+    startsEditActionRoleGroup: true
+  }, {
+    sourceRootId: 'edit'
+  });
+  assert.equal(metadata.commandSurface, DESKTOP_DROPDOWN_COMMAND_CONTRACT.commandSurface);
+  assert.equal(element.dataset.desktopDropdownItem, 'true');
+  assert.equal(element.dataset.commandSurface, DESKTOP_DROPDOWN_COMMAND_CONTRACT.commandSurface);
+  assert.equal(element.dataset.pointerType, DESKTOP_DROPDOWN_COMMAND_CONTRACT.pointerType);
+  assert.equal(element.dataset.rowActivation, DESKTOP_DROPDOWN_COMMAND_CONTRACT.rowActivation);
+  assert.equal(element.dataset.sourceRootId, 'edit');
+  assert.equal(element.dataset.editActionRole, 'clipboard');
+  assert.equal(element.dataset.desktopActionRole, 'clipboard');
+  assert.equal(element.dataset.startsEditActionRoleGroup, 'true');
+  assert.equal(element.dataset.editActionRoleGroupIndex, '1');
+});
+
+test('shared desktop root menu hit helper normalizes top menu root metadata', () => {
+  let fired = 0;
+  const action = () => { fired += 1; };
+  const hit = createDesktopRootMenuHit({
+    id: 'settings',
+    bounds: { x: 4, y: 0, w: 72, h: 40 }
+  }, action, { kind: 'button' });
+
+  assert.equal(hit.id, 'settings');
+  assert.deepEqual(hit.bounds, { x: 4, y: 0, w: 72, h: 40, id: 'settings' });
+  assert.equal(hit.desktopRootId, 'settings');
+  assert.equal(hit.rootId, 'settings');
+  assert.equal(hit.kind, 'button');
+  assert.equal(hit.commandSurface, EDITOR_SURFACES.topMenu);
+  assert.equal(hit.pointerType, DESKTOP_DROPDOWN_COMMAND_CONTRACT.pointerType);
+  assert.equal(hit.rowActivation, 'press');
+  hit.onClick();
+  assert.equal(fired, 1);
+
+  const prefixed = createDesktopRootMenuHit({ id: 'add', bounds: { x: 0, y: 0, w: 80, h: 40 } }, null, {
+    idPrefix: 'desktop-root:'
+  });
+  assert.equal(prefixed.id, 'desktop-root:add');
+  assert.equal(prefixed.bounds.id, 'desktop-root:add');
+  assert.equal(prefixed.desktopRootId, 'add');
+  assert.equal(prefixed.rootId, 'add');
+});
+
+test('shared desktop root menu dataset helper normalizes DOM root metadata', () => {
+  const element = { dataset: {} };
+  const metadata = applyDesktopRootMenuDataset(element, {
+    id: 'collision',
+    bounds: { x: 0, y: 0, w: 96, h: 40 }
+  });
+  assert.equal(metadata.rootId, 'collision');
+  assert.equal(metadata.desktopRootId, 'collision');
+  assert.equal(element.dataset.rootId, 'collision');
+  assert.equal(element.dataset.desktopRootId, 'collision');
+  assert.equal(element.dataset.commandSurface, EDITOR_SURFACES.topMenu);
+  assert.equal(element.dataset.pointerType, DESKTOP_DROPDOWN_COMMAND_CONTRACT.pointerType);
+  assert.equal(element.dataset.rowActivation, 'press');
+  assert.equal(element.dataset.kind, 'desktop-root-menu-item');
+});
+
+test('canvas desktop top menu root hit paths use the shared helper', () => {
+  ['pixel', 'tile', 'level', 'midi', 'sfx', 'cutscene', 'race'].forEach((editorId) => {
+    const source = canvasEditorDesktopDropdownSources[editorId];
+    assert.equal(source.includes('createDesktopRootMenuHit('), true, `${editorId}:root-helper`);
+  });
+  assert.equal(canvasEditorDesktopDropdownSources.pixel.includes('hoverRootId: button.id'), true);
+  assert.equal(canvasEditorDesktopDropdownSources.level.includes('const rootHit = createDesktopRootMenuHit(entry, def.action);'), true);
+  assert.equal(canvasEditorDesktopDropdownSources.midi.includes('const bounds = createDesktopRootMenuHit(button, null);'), true);
+  assert.equal(canvasEditorDesktopDropdownSources.cutscene.includes("createDesktopRootMenuHit(button, null, { idPrefix: 'desktop-root:' })"), true);
+  assert.equal(canvasEditorDesktopDropdownSources.pixel.includes('this.uiButtons.push({ bounds, onClick, hoverRootId: button.id });'), false);
+  assert.equal(canvasEditorDesktopDropdownSources.level.includes("this.addUIButton(entry.bounds, def.action, '', { desktopRootId: entry.id });"), false);
+  assert.equal(canvasEditorDesktopDropdownSources.midi.includes('bounds.desktopRootId = button.id;'), false);
+  assert.equal(canvasEditorDesktopDropdownSources.sfx.includes("this.buttons.push({ ...button.bounds, kind: 'button', action: () => this.invokeWithHistory(action), desktopRootId: button.id });"), false);
+  assert.equal(canvasEditorDesktopDropdownSources.cutscene.includes('const bounds = { ...button.bounds };\n      this.bounds.buttons.push(bounds);'), false);
+});
+
+test('Actor desktop DOM top menu roots expose shared root metadata', () => {
+  assert.equal(actorEditorSource.includes('applyDesktopRootMenuDataset(btn, entry);'), true);
+  assert.equal(actorEditorSource.includes('btn.dataset.rootId = entry.id;'), false);
 });
 
 test('main editor renderer entry points retain the shared viewport mode contract', () => {
@@ -181,6 +383,11 @@ test('main editor renderer entry points retain the shared viewport mode contract
       source.includes('this.activeModeContract = viewportMode.modeContract;'),
       true,
       `${editorId} renderer should retain viewportMode.modeContract before mode-specific branches`
+    );
+    assert.equal(
+      source.includes('this.activeSpecModeContract = viewportMode.specModeContract;'),
+      true,
+      `${editorId} renderer should retain viewportMode.specModeContract before mode-specific branches`
     );
   }
   assert.equal(
@@ -203,6 +410,11 @@ test('main editor renderer entry points retain the shared viewport mode contract
     true,
     'lower-level UI contract should document renderer contract retention'
   );
+  assert.equal(
+    editorUiContractSource.includes('must retain both `viewportMode.modeContract` and `viewportMode.specModeContract`'),
+    true,
+    'lower-level UI contract should document renderer/spec contract retention'
+  );
 });
 
 test('viewport mode flags expose shared desktop, touch, and gamepad layout booleans', () => {
@@ -214,6 +426,7 @@ test('viewport mode flags expose shared desktop, touch, and gamepad layout boole
   }), {
     mode: EDITOR_LAYOUT_MODES.DESKTOP,
     modeContract: getEditorModeContract(EDITOR_LAYOUT_MODES.DESKTOP),
+    specModeContract: getEditorMenuModeContract(null, EDITOR_LAYOUT_MODES.DESKTOP),
     isDesktop: true,
     isMobileViewport: false,
     isMobilePortrait: false,
@@ -229,6 +442,7 @@ test('viewport mode flags expose shared desktop, touch, and gamepad layout boole
   }), {
     mode: EDITOR_LAYOUT_MODES.PORTRAIT,
     modeContract: getEditorModeContract(EDITOR_LAYOUT_MODES.PORTRAIT),
+    specModeContract: getEditorMenuModeContract(null, EDITOR_LAYOUT_MODES.PORTRAIT),
     isDesktop: false,
     isMobileViewport: true,
     isMobilePortrait: true,
@@ -245,6 +459,7 @@ test('viewport mode flags expose shared desktop, touch, and gamepad layout boole
   }), {
     mode: EDITOR_LAYOUT_MODES.GAMEPAD,
     modeContract: getEditorModeContract(EDITOR_LAYOUT_MODES.GAMEPAD),
+    specModeContract: getEditorMenuModeContract(null, EDITOR_LAYOUT_MODES.GAMEPAD),
     isDesktop: false,
     isMobileViewport: true,
     isMobilePortrait: false,
@@ -332,22 +547,22 @@ test('gamepad landscape helpers gate slide-out menus to mobile landscape control
 
 test('layout placements match the RTG Studio editor UI contract', () => {
   assert.deepEqual(getEditorMenuPlacement(EDITOR_LAYOUT_MODES.PORTRAIT), {
-    root: 'bottom-rail',
-    submenu: 'bottom-sheet',
-    settings: 'top-context'
+    root: EDITOR_SURFACES.bottomRail,
+    submenu: EDITOR_SURFACES.bottomSheet,
+    settings: EDITOR_SURFACES.bottomSheet
   });
   assert.deepEqual(getEditorMenuPlacement(EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH), {
-    root: 'left-rail',
-    submenu: 'right-drawer',
-    settings: 'right-drawer'
+    root: EDITOR_SURFACES.leftRail,
+    submenu: EDITOR_SURFACES.rightDrawer,
+    settings: EDITOR_SURFACES.rightDrawer
   });
   assert.deepEqual(getEditorMenuPlacement(EDITOR_LAYOUT_MODES.DESKTOP), {
-    root: 'top-menu',
+    root: EDITOR_SURFACES.topMenu,
     submenu: 'dropdown',
-    settings: 'left-panel'
+    settings: 'dropdown'
   });
   assert.deepEqual(getEditorMenuPlacement(EDITOR_LAYOUT_MODES.GAMEPAD), {
-    root: 'left-slide-rail',
+    root: EDITOR_SURFACES.leftSlideRail,
     submenu: 'slide-out-drawer',
     settings: 'slide-out-drawer'
   });
@@ -357,27 +572,29 @@ test('editor menu layout plan exposes mode-specific behavior flags', () => {
   const desktop = buildEditorMenuLayoutPlan('pixel', { isMobile: false, viewportWidth: 1280, viewportHeight: 800 });
   assert.equal(desktop.mode, EDITOR_LAYOUT_MODES.DESKTOP);
   assert.deepEqual(desktop.modeSurfaces, {
-    rootMenu: 'top-menu',
+    rootMenu: EDITOR_SURFACES.topMenu,
     compactCommandRail: null,
     rootDrawer: null,
-    submenu: 'dropdown',
-    settings: 'left-panel',
+    submenu: EDITOR_SURFACES.topDropdown,
+    settings: EDITOR_SURFACES.topDropdown,
     primaryActions: null,
     gestureScroll: false,
     rootDrawerKeepsSubmenuVisible: false
   });
   assert.equal(desktop.desktop.usesTopMenu, true);
   assert.equal(desktop.desktop.showPersistentLeftOptions, true);
-  assert.equal(desktop.desktop.commandSurface, 'top-dropdown');
-  assert.equal(desktop.desktop.leftPanelRole, 'context-inspector');
-  assert.equal(desktop.desktop.duplicatesCommandsInLeftPanel, false);
+  assert.equal(desktop.desktop.commandSurface, DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface);
+  assert.equal(desktop.desktop.leftPanelRole, DESKTOP_SHELL_SURFACE_CONTRACT.leftPanelRole);
+  assert.equal(desktop.desktop.duplicatesCommandsInLeftPanel, DESKTOP_SHELL_SURFACE_CONTRACT.duplicatesCommandsInLeftPanel);
+  assert.deepEqual(desktop.desktop.leftContextPanelContract, DESKTOP_CONTEXT_PANEL_CONTRACT);
   assert.deepEqual(desktop.surfaceRoles, {
-    commandSurface: 'top-dropdown',
-    persistentContextSurface: 'left-panel',
-    persistentNavigationSurface: 'top-menu',
-    duplicatesCommandsInPersistentContext: false,
-    desktopMobileRailsHidden: true,
-    persistentNavigationActionLimit: null
+    commandSurface: DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface,
+    persistentContextSurface: DESKTOP_CONTEXT_PANEL_CONTRACT.surface,
+    persistentNavigationSurface: EDITOR_SURFACES.topMenu,
+    duplicatesCommandsInPersistentContext: DESKTOP_SHELL_SURFACE_CONTRACT.duplicatesCommandsInLeftPanel,
+    desktopMobileRailsHidden: DESKTOP_SHELL_SURFACE_CONTRACT.desktopMobileRailsHidden,
+    persistentNavigationActionLimit: null,
+    persistentContextContract: DESKTOP_CONTEXT_PANEL_CONTRACT
   });
   assert.equal(desktop.touch.usesBottomMenus, false);
   assert.ok(desktop.rootIds.includes('layers'));
@@ -385,7 +602,7 @@ test('editor menu layout plan exposes mode-specific behavior flags', () => {
   const gamepad = buildEditorMenuLayoutPlan('level', { isMobile: true, viewportWidth: 844, viewportHeight: 390, gamepadConnected: true });
   assert.equal(gamepad.mode, EDITOR_LAYOUT_MODES.GAMEPAD);
   assert.deepEqual(gamepad.modeSurfaces, {
-    rootMenu: 'left-slide-rail',
+    rootMenu: EDITOR_SURFACES.leftSlideRail,
     compactCommandRail: null,
     rootDrawer: null,
     submenu: 'slide-out-drawer',
@@ -396,17 +613,18 @@ test('editor menu layout plan exposes mode-specific behavior flags', () => {
   });
   assert.equal(gamepad.desktop.commandSurface, null);
   assert.equal(gamepad.desktop.leftPanelRole, null);
+  assert.equal(gamepad.desktop.leftContextPanelContract, null);
   assert.equal(gamepad.gamepad.rootCollapsesAfterSelect, true);
-  assert.equal(gamepad.gamepad.rootSurface, 'left-slide-rail');
-  assert.equal(gamepad.gamepad.submenuSurface, 'left-slide-out-drawer');
+  assert.equal(gamepad.gamepad.rootSurface, EDITOR_SURFACES.leftSlideRail);
+  assert.equal(gamepad.gamepad.submenuSurface, EDITOR_SURFACES.leftSlideOutDrawer);
   assert.equal(gamepad.gamepad.submenuReplacesRoot, true);
   assert.equal(gamepad.gamepad.confirm, 'A');
   assert.equal(gamepad.gamepad.back, 'B');
   assert.equal(gamepad.touch.usesSideRails, false);
   assert.deepEqual(gamepad.surfaceRoles, {
-    commandSurface: 'left-slide-out-drawer',
-    persistentContextSurface: 'work-surface-overlay',
-    persistentNavigationSurface: 'left-slide-rail',
+    commandSurface: EDITOR_SURFACES.leftSlideOutDrawer,
+    persistentContextSurface: EDITOR_SURFACES.workSurfaceOverlay,
+    persistentNavigationSurface: EDITOR_SURFACES.leftSlideRail,
     duplicatesCommandsInPersistentContext: false,
     desktopMobileRailsHidden: false,
     persistentNavigationActionLimit: null
@@ -426,13 +644,13 @@ test('landscape menu layout plan separates left root drawers from right submenus
   });
 
   assert.equal(landscape.mode, EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH);
-  assert.equal(landscape.modeSurfaces.rootMenu, 'left-rail');
-  assert.equal(landscape.modeSurfaces.compactCommandRail, 'left-rail');
-  assert.equal(landscape.modeSurfaces.rootDrawer, 'left-overlay-drawer');
-  assert.equal(landscape.modeSurfaces.submenu, 'right-drawer');
-  assert.equal(landscape.modeSurfaces.rootDrawerKeepsSubmenuVisible, true);
-  assert.equal(landscape.surfaceRoles.commandSurface, 'right-drawer');
-  assert.equal(landscape.surfaceRoles.persistentNavigationActionLimit, 4);
+  assert.equal(landscape.modeSurfaces.rootMenu, EDITOR_SURFACES.leftRail);
+  assert.equal(landscape.modeSurfaces.compactCommandRail, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRailSurface);
+  assert.equal(landscape.modeSurfaces.rootDrawer, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootDrawerSurface);
+  assert.equal(landscape.modeSurfaces.submenu, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.submenuSurface);
+  assert.equal(landscape.modeSurfaces.rootDrawerKeepsSubmenuVisible, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootDrawerKeepsSubmenuVisible);
+  assert.equal(landscape.surfaceRoles.commandSurface, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.commandSurface);
+  assert.equal(landscape.surfaceRoles.persistentNavigationActionLimit, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRail.actionLimit);
   assert.equal(uiSpecSource.includes('modeSurfaces.rootDrawerKeepsSubmenuVisible: true'), true);
   assert.equal(editorUiContractSource.includes('modeSurfaces.rootDrawerKeepsSubmenuVisible'), true);
 });
@@ -446,33 +664,33 @@ test('portrait menu layout plan keeps roots and submenus bottom-first across eve
     });
 
     assert.equal(plan.mode, EDITOR_LAYOUT_MODES.PORTRAIT);
-    assert.equal(plan.modeSurfaces.rootMenu, 'bottom-rail');
-    assert.equal(plan.modeSurfaces.submenu, 'bottom-sheet');
-    assert.equal(plan.modeSurfaces.primaryActions, 'bottom-action-rail');
+    assert.equal(plan.modeSurfaces.rootMenu, EDITOR_SURFACES.bottomRail);
+    assert.equal(plan.modeSurfaces.submenu, EDITOR_SURFACES.bottomSheet);
+    assert.equal(plan.modeSurfaces.primaryActions, EDITOR_SURFACES.bottomActionRail);
     assert.equal(plan.modeSurfaces.gestureScroll, true);
     assert.deepEqual(plan.requiredModeSurfaces, REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.PORTRAIT]);
     assert.deepEqual(plan.suppressedModeSurfaces, [
-      'desktop-top-menu',
-      'desktop-dropdown',
-      'desktop-left-inspector',
-      'landscape-root-drawer',
-      'landscape-right-submenu',
-      'gamepad-slide-out'
+      EDITOR_SURFACES.desktopTopMenu,
+      EDITOR_SURFACES.desktopDropdown,
+      EDITOR_SURFACES.desktopLeftInspector,
+      EDITOR_SURFACES.landscapeRootDrawer,
+      EDITOR_SURFACES.landscapeRightSubmenu,
+      EDITOR_SURFACES.gamepadSlideOut
     ]);
     assert.deepEqual(plan.surfaceRoles, {
-      commandSurface: 'bottom-sheet',
-      persistentContextSurface: 'top-context',
-      persistentNavigationSurface: 'bottom-rail',
+      commandSurface: EDITOR_SURFACES.bottomSheet,
+      persistentContextSurface: EDITOR_SURFACES.bottomSheet,
+      persistentNavigationSurface: EDITOR_SURFACES.bottomRail,
       duplicatesCommandsInPersistentContext: false,
       desktopMobileRailsHidden: false,
       persistentNavigationActionLimit: null
     });
     assert.deepEqual(plan.presentation, {
-      rootSurface: 'bottom-rail',
-      commandSurface: 'bottom-sheet',
-      submenuSurface: 'bottom-sheet',
-      persistentContextSurface: 'top-context',
-      persistentNavigationSurface: 'bottom-rail',
+      rootSurface: EDITOR_SURFACES.bottomRail,
+      commandSurface: EDITOR_SURFACES.bottomSheet,
+      submenuSurface: EDITOR_SURFACES.bottomSheet,
+      persistentContextSurface: EDITOR_SURFACES.bottomSheet,
+      persistentNavigationSurface: EDITOR_SURFACES.bottomRail,
       rootDrawerSurface: null,
       rootDrawerOverlayOrigin: null,
       rootDrawerKeepsSubmenuVisible: false,
@@ -493,12 +711,17 @@ test('portrait menu layout plan keeps roots and submenus bottom-first across eve
     assert.deepEqual(plan.presentation, MODE_PRESENTATION_CONTRACTS[EDITOR_LAYOUT_MODES.PORTRAIT]);
     assert.deepEqual(plan.interaction, MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.PORTRAIT]);
     assert.deepEqual(plan.modeContract, getEditorModeContract(plan.mode));
+    assert.deepEqual(plan.specModeContract, getEditorMenuModeContract(editorId, plan.mode));
     assert.equal(plan.touch.usesBottomMenus, true);
     assert.equal(plan.touch.usesSideRails, false);
   }
+  assert.equal(uiSpecSource.includes(`Portrait root rails expose no more than ${PORTRAIT_ROOT_MAX_ITEMS} bottom menu items`), true);
   assert.equal(editorUiContractSource.includes('Shared portrait mode plans expose `suppressedModeSurfaces`'), true);
+  assert.equal(editorUiContractSource.includes('Shared portrait root menus must stay within `PORTRAIT_ROOT_MAX_ITEMS` bottom items'), true);
   assert.equal(editorUiContractSource.includes('Shared generic mode plans expose `suppressedModeSurfaces` in every mode'), true);
   assert.equal(editorUiContractSource.includes('Shared generic mode plans expose `requiredModeSurfaces` in every mode'), true);
+  assert.equal(editorUiContractSource.includes('Desktop context/inspector slot and landscape compact command rail host; portrait navigation remains bottom-first'), true);
+  assert.equal(editorUiContractSource.includes('Shared vertical navigation slot on mobile and shared context/inspector slot on desktop.'), false);
   assert.equal(editorUiContractSource.includes('a surface cannot be both required and suppressed in the same mode.'), true);
   assert.equal(editorUiContractSource.includes('Shared presentation/interaction mode contracts must validate for every mode'), true);
   assert.equal(editorUiContractSource.includes('`getEditorModeContract()` is the combined renderer-facing contract'), true);
@@ -509,10 +732,12 @@ test('portrait menu layout plan keeps roots and submenus bottom-first across eve
 test('landscape, desktop, and gamepad menu layout plans expose distinct mode surfaces', () => {
   assert.deepEqual(validateEditorModeSurfaceContracts(), []);
   assert.deepEqual(validateEditorModePresentationInteractionContracts(), []);
+  assert.deepEqual(validateEditorWorkSurfaceTypes(), []);
   assert.deepEqual(getEditorModeSurfaceContract('unknown-mode'), {
     mode: EDITOR_LAYOUT_MODES.DESKTOP,
     requiredModeSurfaces: REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.DESKTOP],
-    suppressedModeSurfaces: SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.DESKTOP]
+    suppressedModeSurfaces: SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.DESKTOP],
+    surfaceVisibility: getEditorModeSurfaceVisibility(EDITOR_LAYOUT_MODES.DESKTOP)
   });
   assert.deepEqual(getEditorModePresentationInteractionContract('unknown-mode'), {
     mode: EDITOR_LAYOUT_MODES.DESKTOP,
@@ -523,63 +748,64 @@ test('landscape, desktop, and gamepad menu layout plans expose distinct mode sur
     mode: EDITOR_LAYOUT_MODES.DESKTOP,
     requiredModeSurfaces: REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.DESKTOP],
     suppressedModeSurfaces: SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.DESKTOP],
+    surfaceVisibility: getEditorModeSurfaceVisibility(EDITOR_LAYOUT_MODES.DESKTOP),
     presentation: MODE_PRESENTATION_CONTRACTS[EDITOR_LAYOUT_MODES.DESKTOP],
     interaction: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.DESKTOP]
   });
   assert.deepEqual(REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.PORTRAIT], [
-    'bottom-rail',
-    'bottom-sheet',
-    'bottom-action-rail'
+    EDITOR_SURFACES.bottomRail,
+    EDITOR_SURFACES.bottomSheet,
+    EDITOR_SURFACES.bottomActionRail
   ]);
   assert.deepEqual(REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.DESKTOP], [
-    'top-menu',
-    'top-dropdown',
-    'left-ribbon',
-    'left-context-panel',
-    'work-surface'
+    EDITOR_SURFACES.topMenu,
+    EDITOR_SURFACES.topDropdown,
+    EDITOR_SURFACES.leftRibbon,
+    EDITOR_SURFACES.leftContextPanel,
+    EDITOR_SURFACES.workSurface
   ]);
   assert.deepEqual(REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH], [
-    'left-rail',
-    'left-overlay-drawer',
-    'right-drawer',
-    'bottom-rail'
+    EDITOR_SURFACES.leftRail,
+    EDITOR_SURFACES.leftOverlayDrawer,
+    EDITOR_SURFACES.rightDrawer,
+    EDITOR_SURFACES.bottomRail
   ]);
   assert.deepEqual(REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.GAMEPAD], [
-    'left-slide-rail',
-    'left-slide-out-drawer',
-    'work-surface-overlay'
+    EDITOR_SURFACES.leftSlideRail,
+    EDITOR_SURFACES.leftSlideOutDrawer,
+    EDITOR_SURFACES.workSurfaceOverlay
   ]);
   assert.deepEqual(SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.PORTRAIT], [
-    'desktop-top-menu',
-    'desktop-dropdown',
-    'desktop-left-inspector',
-    'landscape-root-drawer',
-    'landscape-right-submenu',
-    'gamepad-slide-out'
+    EDITOR_SURFACES.desktopTopMenu,
+    EDITOR_SURFACES.desktopDropdown,
+    EDITOR_SURFACES.desktopLeftInspector,
+    EDITOR_SURFACES.landscapeRootDrawer,
+    EDITOR_SURFACES.landscapeRightSubmenu,
+    EDITOR_SURFACES.gamepadSlideOut
   ]);
   assert.deepEqual(SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.DESKTOP], [
-    'bottom-action-rail',
-    'bottom-tool-rail',
-    'touch-thumbstick',
-    'landscape-root-drawer',
-    'landscape-right-submenu',
-    'gamepad-hint-bar',
-    'gamepad-slide-out'
+    EDITOR_SURFACES.bottomActionRail,
+    EDITOR_SURFACES.bottomToolRail,
+    EDITOR_SURFACES.touchThumbstick,
+    EDITOR_SURFACES.landscapeRootDrawer,
+    EDITOR_SURFACES.landscapeRightSubmenu,
+    EDITOR_SURFACES.gamepadHintBar,
+    EDITOR_SURFACES.gamepadSlideOut
   ]);
   assert.deepEqual(SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH], [
-    'desktop-top-menu',
-    'desktop-dropdown',
-    'desktop-left-inspector',
-    'gamepad-slide-out'
+    EDITOR_SURFACES.desktopTopMenu,
+    EDITOR_SURFACES.desktopDropdown,
+    EDITOR_SURFACES.desktopLeftInspector,
+    EDITOR_SURFACES.gamepadSlideOut
   ]);
   assert.deepEqual(SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.GAMEPAD], [
-    'desktop-top-menu',
-    'desktop-dropdown',
-    'desktop-left-inspector',
-    'landscape-right-submenu',
-    'landscape-root-drawer',
-    'bottom-tool-rail',
-    'touch-thumbstick'
+    EDITOR_SURFACES.desktopTopMenu,
+    EDITOR_SURFACES.desktopDropdown,
+    EDITOR_SURFACES.desktopLeftInspector,
+    EDITOR_SURFACES.landscapeRightSubmenu,
+    EDITOR_SURFACES.landscapeRootDrawer,
+    EDITOR_SURFACES.bottomToolRail,
+    EDITOR_SURFACES.touchThumbstick
   ]);
 
   for (const editorId of ALL_EDITOR_IDS) {
@@ -601,34 +827,34 @@ test('landscape, desktop, and gamepad menu layout plans expose distinct mode sur
     });
 
     assert.deepEqual(landscape.modeSurfaces, {
-      rootMenu: 'left-rail',
-      compactCommandRail: 'left-rail',
-      rootDrawer: 'left-overlay-drawer',
-      submenu: 'right-drawer',
-      settings: 'right-drawer',
+      rootMenu: EDITOR_SURFACES.leftRail,
+      compactCommandRail: EDITOR_SURFACES.leftRail,
+      rootDrawer: EDITOR_SURFACES.leftOverlayDrawer,
+      submenu: EDITOR_SURFACES.rightDrawer,
+      settings: EDITOR_SURFACES.rightDrawer,
       primaryActions: null,
       gestureScroll: true,
       rootDrawerKeepsSubmenuVisible: true
     });
     assert.deepEqual(landscape.surfaceRoles, {
-      commandSurface: 'right-drawer',
-      persistentContextSurface: 'bottom-rail',
-      persistentNavigationSurface: 'left-rail',
+      commandSurface: EDITOR_SURFACES.rightDrawer,
+      persistentContextSurface: EDITOR_SURFACES.bottomRail,
+      persistentNavigationSurface: EDITOR_SURFACES.leftRail,
       duplicatesCommandsInPersistentContext: false,
       desktopMobileRailsHidden: false,
-      persistentNavigationActionLimit: 4
+      persistentNavigationActionLimit: COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT
     });
     assert.deepEqual(landscape.presentation, {
-      rootSurface: 'left-rail',
-      commandSurface: 'right-drawer',
-      submenuSurface: 'right-drawer',
-      persistentContextSurface: 'bottom-rail',
-      persistentNavigationSurface: 'left-rail',
-      rootDrawerSurface: 'left-overlay-drawer',
+      rootSurface: EDITOR_SURFACES.leftRail,
+      commandSurface: EDITOR_SURFACES.rightDrawer,
+      submenuSurface: EDITOR_SURFACES.rightDrawer,
+      persistentContextSurface: EDITOR_SURFACES.bottomRail,
+      persistentNavigationSurface: EDITOR_SURFACES.leftRail,
+      rootDrawerSurface: EDITOR_SURFACES.leftOverlayDrawer,
       rootDrawerOverlayOrigin: 'left',
       rootDrawerKeepsSubmenuVisible: true,
       submenuReplacesRootRail: false,
-      rightSubmenuSurface: 'right-drawer'
+      rightSubmenuSurface: EDITOR_SURFACES.rightDrawer
     });
     assert.deepEqual(landscape.interaction, {
       pointerType: 'touch',
@@ -646,35 +872,40 @@ test('landscape, desktop, and gamepad menu layout plans expose distinct mode sur
     assert.deepEqual(landscape.requiredModeSurfaces, REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH]);
     assert.deepEqual(landscape.suppressedModeSurfaces, SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH]);
     assert.deepEqual(landscape.modeContract, getEditorModeContract(landscape.mode));
+    assert.deepEqual(landscape.specModeContract, getEditorMenuModeContract('pixel', landscape.mode));
     assert.deepEqual(getEditorModeSurfaceContract(landscape.mode), {
       mode: landscape.mode,
       requiredModeSurfaces: landscape.requiredModeSurfaces,
-      suppressedModeSurfaces: landscape.suppressedModeSurfaces
+      suppressedModeSurfaces: landscape.suppressedModeSurfaces,
+      surfaceVisibility: landscape.surfaceVisibility
     });
+    assert.equal(landscape.surfaceVisibility[EDITOR_SURFACES.leftRail], 'required');
+    assert.equal(landscape.surfaceVisibility[EDITOR_SURFACES.desktopTopMenu], 'suppressed');
     assert.deepEqual(desktop.modeSurfaces, {
-      rootMenu: 'top-menu',
+      rootMenu: EDITOR_SURFACES.topMenu,
       compactCommandRail: null,
       rootDrawer: null,
-      submenu: 'dropdown',
-      settings: 'left-panel',
+      submenu: EDITOR_SURFACES.topDropdown,
+      settings: EDITOR_SURFACES.topDropdown,
       primaryActions: null,
       gestureScroll: false,
       rootDrawerKeepsSubmenuVisible: false
     });
     assert.deepEqual(desktop.surfaceRoles, {
-      commandSurface: 'top-dropdown',
-      persistentContextSurface: 'left-panel',
-      persistentNavigationSurface: 'top-menu',
-      duplicatesCommandsInPersistentContext: false,
-      desktopMobileRailsHidden: true,
-      persistentNavigationActionLimit: null
-    });
+      commandSurface: DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface,
+    persistentContextSurface: DESKTOP_CONTEXT_PANEL_CONTRACT.surface,
+    persistentNavigationSurface: EDITOR_SURFACES.topMenu,
+    duplicatesCommandsInPersistentContext: DESKTOP_SHELL_SURFACE_CONTRACT.duplicatesCommandsInLeftPanel,
+    desktopMobileRailsHidden: DESKTOP_SHELL_SURFACE_CONTRACT.desktopMobileRailsHidden,
+    persistentNavigationActionLimit: null,
+    persistentContextContract: DESKTOP_CONTEXT_PANEL_CONTRACT
+  });
     assert.deepEqual(desktop.presentation, {
-      rootSurface: 'top-menu',
-      commandSurface: 'top-dropdown',
-      submenuSurface: 'dropdown',
-      persistentContextSurface: 'left-panel',
-      persistentNavigationSurface: 'top-menu',
+      rootSurface: EDITOR_SURFACES.topMenu,
+      commandSurface: DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface,
+      submenuSurface: EDITOR_SURFACES.topDropdown,
+      persistentContextSurface: DESKTOP_CONTEXT_PANEL_CONTRACT.surface,
+      persistentNavigationSurface: EDITOR_SURFACES.topMenu,
       rootDrawerSurface: null,
       rootDrawerOverlayOrigin: null,
       rootDrawerKeepsSubmenuVisible: false,
@@ -697,13 +928,21 @@ test('landscape, desktop, and gamepad menu layout plans expose distinct mode sur
     assert.deepEqual(desktop.requiredModeSurfaces, REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.DESKTOP]);
     assert.deepEqual(desktop.suppressedModeSurfaces, SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.DESKTOP]);
     assert.deepEqual(desktop.modeContract, getEditorModeContract(desktop.mode));
+    assert.deepEqual(desktop.specModeContract, getEditorMenuModeContract('pixel', desktop.mode));
     assert.deepEqual(getEditorModeSurfaceContract(desktop.mode), {
       mode: desktop.mode,
       requiredModeSurfaces: desktop.requiredModeSurfaces,
-      suppressedModeSurfaces: desktop.suppressedModeSurfaces
+      suppressedModeSurfaces: desktop.suppressedModeSurfaces,
+      surfaceVisibility: desktop.surfaceVisibility
     });
+    assert.equal(desktop.surfaceVisibility[EDITOR_SURFACES.topMenu], 'required');
+    assert.equal(desktop.surfaceVisibility[EDITOR_SURFACES.topDropdown], 'required');
+    assert.equal(desktop.surfaceVisibility[EDITOR_SURFACES.bottomActionRail], 'suppressed');
+    assert.equal(desktop.surfaceVisibility[EDITOR_SURFACES.bottomToolRail], 'suppressed');
+    assert.equal(desktop.surfaceVisibility[EDITOR_SURFACES.touchThumbstick], 'suppressed');
+    assert.equal(desktop.surfaceVisibility[EDITOR_SURFACES.gamepadHintBar], 'suppressed');
     assert.deepEqual(gamepad.modeSurfaces, {
-      rootMenu: 'left-slide-rail',
+      rootMenu: EDITOR_SURFACES.leftSlideRail,
       compactCommandRail: null,
       rootDrawer: null,
       submenu: 'slide-out-drawer',
@@ -713,19 +952,19 @@ test('landscape, desktop, and gamepad menu layout plans expose distinct mode sur
       rootDrawerKeepsSubmenuVisible: false
     });
     assert.deepEqual(gamepad.surfaceRoles, {
-      commandSurface: 'left-slide-out-drawer',
-      persistentContextSurface: 'work-surface-overlay',
-      persistentNavigationSurface: 'left-slide-rail',
+      commandSurface: EDITOR_SURFACES.leftSlideOutDrawer,
+      persistentContextSurface: EDITOR_SURFACES.workSurfaceOverlay,
+      persistentNavigationSurface: EDITOR_SURFACES.leftSlideRail,
       duplicatesCommandsInPersistentContext: false,
       desktopMobileRailsHidden: false,
       persistentNavigationActionLimit: null
     });
     assert.deepEqual(gamepad.presentation, {
-      rootSurface: 'left-slide-rail',
-      commandSurface: 'left-slide-out-drawer',
-      submenuSurface: 'left-slide-out-drawer',
-      persistentContextSurface: 'work-surface-overlay',
-      persistentNavigationSurface: 'left-slide-rail',
+      rootSurface: EDITOR_SURFACES.leftSlideRail,
+      commandSurface: EDITOR_SURFACES.leftSlideOutDrawer,
+      submenuSurface: EDITOR_SURFACES.leftSlideOutDrawer,
+      persistentContextSurface: EDITOR_SURFACES.workSurfaceOverlay,
+      persistentNavigationSurface: EDITOR_SURFACES.leftSlideRail,
       rootDrawerSurface: null,
       rootDrawerOverlayOrigin: null,
       rootDrawerKeepsSubmenuVisible: false,
@@ -748,15 +987,51 @@ test('landscape, desktop, and gamepad menu layout plans expose distinct mode sur
     assert.deepEqual(gamepad.requiredModeSurfaces, REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.GAMEPAD]);
     assert.deepEqual(gamepad.suppressedModeSurfaces, SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.GAMEPAD]);
     assert.deepEqual(gamepad.modeContract, getEditorModeContract(gamepad.mode));
+    assert.deepEqual(gamepad.specModeContract, getEditorMenuModeContract('pixel', gamepad.mode));
     assert.deepEqual(getEditorModeSurfaceContract(gamepad.mode), {
       mode: gamepad.mode,
       requiredModeSurfaces: gamepad.requiredModeSurfaces,
-      suppressedModeSurfaces: gamepad.suppressedModeSurfaces
+      suppressedModeSurfaces: gamepad.suppressedModeSurfaces,
+      surfaceVisibility: gamepad.surfaceVisibility
     });
-    assert.equal(gamepad.gamepad.rootSurface, 'left-slide-rail');
-    assert.equal(gamepad.gamepad.submenuSurface, 'left-slide-out-drawer');
+    assert.equal(gamepad.surfaceVisibility[EDITOR_SURFACES.leftSlideOutDrawer], 'required');
+    assert.equal(gamepad.surfaceVisibility[EDITOR_SURFACES.landscapeRightSubmenu], 'suppressed');
+    assert.equal(gamepad.gamepad.rootSurface, EDITOR_SURFACES.leftSlideRail);
+    assert.equal(gamepad.gamepad.submenuSurface, EDITOR_SURFACES.leftSlideOutDrawer);
     assert.equal(gamepad.gamepad.submenuReplacesRoot, true);
   }
+});
+
+test('shared surface render helper blocks suppressed chrome by mode', () => {
+  assert.equal(getEditorSurfaceVisibility(EDITOR_LAYOUT_MODES.DESKTOP, EDITOR_SURFACES.bottomActionRail), 'suppressed');
+  assert.equal(getEditorSurfaceVisibility(EDITOR_LAYOUT_MODES.DESKTOP, EDITOR_SURFACES.leftContextPanel), 'required');
+  assert.equal(getEditorSurfaceVisibility(EDITOR_LAYOUT_MODES.DESKTOP, EDITOR_SURFACES.workSurface), 'required');
+  assert.equal(getEditorSurfaceVisibility(EDITOR_LAYOUT_MODES.DESKTOP, 'editor-owned-status'), 'optional');
+  assert.equal(canRenderEditorSurface(EDITOR_LAYOUT_MODES.DESKTOP, EDITOR_SURFACES.bottomActionRail), false);
+  assert.equal(canRenderEditorSurface(EDITOR_LAYOUT_MODES.DESKTOP, EDITOR_SURFACES.bottomToolRail), false);
+  assert.equal(canRenderEditorSurface(EDITOR_LAYOUT_MODES.DESKTOP, EDITOR_SURFACES.touchThumbstick), false);
+  assert.equal(canRenderEditorSurface(EDITOR_LAYOUT_MODES.DESKTOP, EDITOR_SURFACES.topMenu), true);
+  assert.equal(canRenderEditorSurface(EDITOR_LAYOUT_MODES.PORTRAIT, EDITOR_SURFACES.desktopTopMenu), false);
+  assert.equal(canRenderEditorSurface(EDITOR_LAYOUT_MODES.PORTRAIT, EDITOR_SURFACES.bottomSheet), true);
+  assert.equal(canRenderEditorSurface(EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH, EDITOR_SURFACES.bottomRail), true);
+  assert.equal(canRenderEditorSurface(EDITOR_LAYOUT_MODES.GAMEPAD, EDITOR_SURFACES.landscapeRightSubmenu), false);
+  assert.equal(canRenderEditorSurface(EDITOR_LAYOUT_MODES.GAMEPAD, EDITOR_SURFACES.leftSlideOutDrawer), true);
+});
+
+test('shared plan surface render helper prefers effective shell visibility', () => {
+  const landscape = buildLandscapeTouchEditorShellPlan('sfx', {
+    viewportWidth: 844,
+    viewportHeight: 390,
+    bottomRailHeight: 72,
+    reserveRightRail: false
+  });
+
+  assert.equal(getEditorSurfaceVisibility(EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH, EDITOR_SURFACES.rightDrawer), 'required');
+  assert.equal(getEditorPlanSurfaceVisibility(landscape, EDITOR_SURFACES.rightDrawer), 'suppressed');
+  assert.equal(canRenderEditorPlanSurface(landscape, EDITOR_SURFACES.rightDrawer), false);
+  assert.equal(canRenderEditorPlanSurface(landscape, EDITOR_SURFACES.bottomToolRail), true);
+  assert.equal(canRenderEditorPlanSurface(landscape, EDITOR_SURFACES.leftOverlayDrawer), true);
+  assert.equal(canRenderEditorPlanSurface(null, 'unknown-surface'), true);
 });
 
 test('menu scroll policy always reserves pinch zoom for work surfaces', () => {
@@ -777,7 +1052,7 @@ test('shared menu scroll drag helper suppresses taps only after threshold moveme
     { menuId: 'drawer', bounds: { x: 100, y: 0, w: 120, h: 180 }, maxScroll: 0, lineHeight: 40 }
   ];
 
-  assert.equal(findScrollableMenuRegion(regions, { x: 110, y: 20 }), null);
+  assert.equal(findScrollableMenuRegion(regions, { x: 110, y: 20 })?.menuId, 'drawer');
   assert.equal(findScrollableMenuRegion(regions, { x: 20, y: 20 })?.menuId, 'root');
 
   const drag = buildMenuScrollDragState({
@@ -797,6 +1072,17 @@ test('shared menu scroll drag helper suppresses taps only after threshold moveme
   const scroll = resolveMenuScrollDrag(drag, { x: 20, y: -70 });
   assert.equal(scroll.moved, true);
   assert.equal(scroll.nextScroll, 3);
+
+  const staticDrag = buildMenuScrollDragState({
+    regions,
+    point: { x: 110, y: 20 },
+    scrollState: { drawer: 0 },
+    pendingHit: { id: 'static-row' }
+  });
+  assert.equal(staticDrag.menuId, 'drawer');
+  const staticScroll = resolveMenuScrollDrag(staticDrag, { x: 110, y: -48 });
+  assert.equal(staticScroll.moved, true);
+  assert.equal(staticScroll.nextScroll, 0);
 });
 
 test('shared menu scroll drag helper supports continuous pixel scroll panels', () => {
@@ -943,12 +1229,12 @@ test('shared desktop dropdown open state clears stale closed roots', () => {
   assert.equal(resolveDesktopDropdownMotionProgress({
     dropdown: { rootId: 'file', openedAtMs: 1000 },
     nowMs: 1060,
-    durationMs: 120
+    durationMs: DESKTOP_DROPDOWN_STATE_CONTRACT.motion.durationMs
   }), 0.5);
   assert.equal(resolveDesktopDropdownMotionProgress({
     dropdown: { rootId: 'file', openedAtMs: 1000 },
     nowMs: 2000,
-    durationMs: 120
+    durationMs: DESKTOP_DROPDOWN_STATE_CONTRACT.motion.durationMs
   }), 1);
 });
 
@@ -1176,6 +1462,12 @@ test('desktop dropdown render plan maps shared rows to live action items', () =>
 
   assert.deepEqual(plan.renderedItems.map((item) => item.id), ['save', 'save-as', 'open', 'export']);
   assert.equal(typeof plan.actionById.get('save')?.onSelect, 'function');
+  assert.deepEqual(plan.renderedItems.map((item) => [item.id, item.sourceRootId, item.commandSurface, item.pointerType, item.rowActivation]), [
+    ['save', 'file', DESKTOP_DROPDOWN_COMMAND_CONTRACT.commandSurface, DESKTOP_DROPDOWN_COMMAND_CONTRACT.pointerType, DESKTOP_DROPDOWN_COMMAND_CONTRACT.rowActivation],
+    ['save-as', 'file', DESKTOP_DROPDOWN_COMMAND_CONTRACT.commandSurface, DESKTOP_DROPDOWN_COMMAND_CONTRACT.pointerType, DESKTOP_DROPDOWN_COMMAND_CONTRACT.rowActivation],
+    ['open', 'file', DESKTOP_DROPDOWN_COMMAND_CONTRACT.commandSurface, DESKTOP_DROPDOWN_COMMAND_CONTRACT.pointerType, DESKTOP_DROPDOWN_COMMAND_CONTRACT.rowActivation],
+    ['export', 'file', DESKTOP_DROPDOWN_COMMAND_CONTRACT.commandSurface, DESKTOP_DROPDOWN_COMMAND_CONTRACT.pointerType, DESKTOP_DROPDOWN_COMMAND_CONTRACT.rowActivation]
+  ]);
   assert.equal(plan.panelBounds.h, dropdown.rowHeight * 4);
   assert.equal(plan.visibleRows, 4);
   assert.equal(plan.scrollIndex, 1);
@@ -1184,10 +1476,10 @@ test('desktop dropdown render plan maps shared rows to live action items', () =>
   assert.equal(plan.scrollRegion.pointerType, 'mouse');
   assert.deepEqual(plan.itemBounds.map((bounds) => bounds.id), ['save', 'save-as', 'open', 'export']);
   assert.deepEqual(plan.motion, {
-    type: 'slide-down',
+    type: DESKTOP_DROPDOWN_STATE_CONTRACT.motion.type,
     progress: 1,
-    durationMs: 120,
-    origin: 'top-menu',
+    durationMs: DESKTOP_DROPDOWN_STATE_CONTRACT.motion.durationMs,
+    origin: DESKTOP_DROPDOWN_STATE_CONTRACT.motion.origin,
     translateY: 0,
     opacity: 1
   });
@@ -1198,12 +1490,43 @@ test('desktop dropdown render plan maps shared rows to live action items', () =>
     motionProgress: 0.25,
     motionDurationMs: 140
   });
-  assert.equal(openingPlan.motion.type, 'slide-down');
-  assert.equal(openingPlan.motion.origin, 'top-menu');
+  assert.equal(openingPlan.motion.type, DESKTOP_DROPDOWN_STATE_CONTRACT.motion.type);
+  assert.equal(openingPlan.motion.origin, DESKTOP_DROPDOWN_STATE_CONTRACT.motion.origin);
   assert.equal(openingPlan.motion.progress, 0.25);
   assert.equal(openingPlan.motion.durationMs, 140);
   assert.ok(openingPlan.motion.translateY < 0);
   assert.ok(openingPlan.motion.opacity > 0.7 && openingPlan.motion.opacity < 1);
+
+  const editDropdown = buildDesktopDropdownPlan('pixel', 'edit', {
+    anchor: { x: 16, y: 0, w: 84, h: 40 },
+    maxVisibleRows: 6
+  });
+  const editPlan = buildDesktopDropdownRenderPlan({
+    dropdown: editDropdown,
+    items: editDropdown.items.map((item) => ({ ...item, onSelect: () => item.id }))
+  });
+  assert.deepEqual(editPlan.renderedItems.map((item) => [item.id, item.editActionRole]), [
+    ['undo', 'history'],
+    ['redo', 'history'],
+    ['copy', 'clipboard'],
+    ['cut', 'clipboard'],
+    ['paste', 'clipboard'],
+    ['clear', 'destructive']
+  ]);
+  assert.deepEqual(editPlan.renderedItems.map((item) => [
+    item.id,
+    item.editActionRoleGroupIndex,
+    Boolean(item.startsEditActionRoleGroup)
+  ]), [
+    ['undo', 0, false],
+    ['redo', 0, false],
+    ['copy', 1, true],
+    ['cut', 1, false],
+    ['paste', 1, false],
+    ['clear', 2, true]
+  ]);
+  assert.equal(editPlan.actionById.get('copy')?.desktopActionRole, 'clipboard');
+  assert.equal(editPlan.actionById.get('clear')?.sourceRootId, 'edit');
 
   const grid = buildDesktopDropdownPlan('midi', 'grid', {
     anchor: { x: 16, y: 0, w: 84, h: 40 }
@@ -1298,6 +1621,21 @@ test('desktop dropdown render plan maps shared rows to live action items', () =>
   );
 });
 
+test('desktop dropdown render plan registers drag-safe regions even when contents fit', () => {
+  const dropdown = buildDesktopDropdownPlan('midi', 'record', {
+    anchor: { x: 16, y: 0, w: 84, h: 40 },
+    maxVisibleRows: 8
+  });
+  const plan = buildDesktopDropdownRenderPlan({ dropdown });
+
+  assert.equal(plan.maxScroll, 0);
+  assert.equal(plan.scrollRegion.menuId, 'virtual-instruments');
+  assert.deepEqual(plan.scrollRegion.bounds, plan.panelBounds);
+  assert.equal(plan.scrollRegion.maxScroll, 0);
+  assert.equal(plan.scrollRegion.lineHeight, dropdown.rowHeight);
+  assert.equal(plan.scrollRegion.pointerType, 'mouse');
+});
+
 test('shared desktop dropdown renders disabled rows without registering clicks', () => {
   const calls = [];
   const ctx = {
@@ -1321,7 +1659,7 @@ test('shared desktop dropdown renders disabled rows without registering clicks',
       type: 'slide-down',
       progress: 0.5,
       durationMs: 120,
-      origin: 'top-menu',
+      origin: EDITOR_SURFACES.topMenu,
       translateY: -9,
       opacity: 0.86
     },
@@ -1330,31 +1668,44 @@ test('shared desktop dropdown renders disabled rows without registering clicks',
       { id: 'separator-1', x: 8, y: 38, w: 204, h: 20 },
       { id: 'paste', x: 8, y: 62, w: 204, h: 30 }
     ],
+    scrollRegion: {
+      menuId: 'edit',
+      bounds: { x: 0, y: 0, w: 220, h: 68 },
+      maxScroll: 0,
+      lineHeight: 34,
+      pointerType: 'mouse'
+    },
     renderedItems: [
       { id: 'copy', label: 'Copy', disabled: true },
       { divider: true },
       { id: 'paste', label: 'Paste' }
     ]
   };
+  const registeredRegions = [];
 
   const rendered = drawSharedDesktopDropdown(ctx, dropdownPlan, {
-    registerButton: (entry) => calls.push(entry.item.id)
+    registerButton: (entry) => calls.push(entry.item.id),
+    registerScrollRegion: (region) => registeredRegions.push(region)
   });
 
   assert.deepEqual(rendered.map((entry) => entry.item.id || 'divider'), ['copy', 'divider', 'paste']);
   assert.deepEqual(calls, ['paste']);
   assert.equal(rendered[2].bounds.y, 53);
+  assert.equal(registeredRegions.length, 1);
+  assert.equal(registeredRegions[0].menuId, 'edit');
+  assert.deepEqual(registeredRegions[0].bounds, { x: 0, y: -9, w: 220, h: 68 });
+  assert.equal(registeredRegions[0].maxScroll, 0);
 });
 
 test('shared file menu specs include the actions used by editor surfaces', () => {
-  assert.deepEqual(getEditorMenuSection('pixel', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'copy-image', 'paste-image', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('pixel', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('pixel', 'tools').actions, ['eraser', 'eyedropper', 'gradient', 'clone', 'dither', 'color-replace', 'hue-shift']);
-  assert.deepEqual(getEditorMenuSection('level', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'playtest', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('level', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('level', 'edit').actions, ['undo', 'redo', 'copy', 'cut', 'paste', 'delete']);
   assert.deepEqual(getEditorMenuSection('actor', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('actor', 'edit').actions, ['undo', 'redo', 'copy-state', 'paste-state', 'duplicate-state', 'delete-state']);
   assert.deepEqual(getEditorMenuSection('midi', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'rescue-save', 'export-midi', 'export-midi-zip', 'export-wav', 'save-paint', 'play-robtersession', 'theme', 'sample', 'exit-main']);
-  assert.deepEqual(getEditorMenuSection('midi', 'edit').actions, ['undo', 'redo', 'select-all', 'copy', 'cut', 'paste', 'delete']);
+  assert.deepEqual(getEditorMenuSection('midi', 'edit').actions, ['undo', 'redo', 'copy', 'cut', 'paste', 'select-all', 'delete']);
   assert.deepEqual(getEditorMenuSection('sfx', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('sfx', 'edit').actions, ['undo', 'redo', 'copy', 'cut', 'paste', 'delete']);
   assert.deepEqual(getEditorMenuSection('cutscene', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
@@ -1364,14 +1715,18 @@ test('shared file menu specs include the actions used by editor surfaces', () =>
   assert.deepEqual(getEditorMenuSection('car', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('car', 'edit').actions, ['undo', 'redo', 'copy-layer', 'paste-layer', 'delete-layer']);
 
-  const sharedFileBaseline = ['new', 'save', 'save-as', 'open', 'export', 'import'];
   const sharedEditBaseline = ['undo', 'redo'];
   ALL_EDITOR_IDS.forEach((editorId) => {
     const dropdown = buildDesktopDropdownPlan(editorId, 'file');
     assert.deepEqual(
-      dropdown.items.slice(0, sharedFileBaseline.length).map((item) => item.id),
-      sharedFileBaseline,
+      dropdown.items.slice(0, DESKTOP_FILE_BASELINE_ACTION_IDS.length).map((item) => item.id),
+      DESKTOP_FILE_BASELINE_ACTION_IDS,
       `${editorId} desktop File dropdown should start with the shared baseline`
+    );
+    assert.equal(
+      dropdown.items.at(-1)?.id,
+      DESKTOP_FILE_FOOTER_ACTION_ID,
+      `${editorId} desktop File dropdown should keep Exit to Main Menu as the footer`
     );
     const editDropdown = buildDesktopDropdownPlan(editorId, 'edit');
     assert.deepEqual(
@@ -1386,12 +1741,17 @@ test('shared file menu specs include the actions used by editor surfaces', () =>
   });
 
   const pixelDropdown = buildDesktopDropdownPlan('pixel', 'file');
-  assert.deepEqual(pixelDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'copy-image', 'paste-image', 'exit-main']);
+  assert.deepEqual(pixelDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
+  assert.equal(pixelDropdown.items.some((item) => ['copy-image', 'paste-image'].includes(item.id)), false);
+  assert.equal(getEditorMenuSection('pixel', 'canvas').actions.includes('import-image'), true);
+  assert.equal(getEditorMenuSection('pixel', 'edit').actions.includes('copy'), true);
+  assert.equal(getEditorMenuSection('pixel', 'edit').actions.includes('paste'), true);
   const pixelToolsDropdown = buildDesktopDropdownPlan('pixel', 'tools');
   assert.deepEqual(pixelToolsDropdown.items.map((item) => item.id), ['eraser', 'eyedropper', 'gradient', 'clone', 'dither', 'color-replace', 'hue-shift']);
 
   const levelDropdown = buildDesktopDropdownPlan('level', 'file');
-  assert.deepEqual(levelDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'playtest', 'exit-main']);
+  assert.deepEqual(levelDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
+  assert.deepEqual(buildDesktopDropdownPlan('level', 'playtest').items.map((item) => item.id), ['playtest']);
   const levelEditDropdown = buildDesktopDropdownPlan('level', 'edit');
   assert.deepEqual(levelEditDropdown.items.map((item) => item.id), ['undo', 'redo', 'copy', 'cut', 'paste', 'delete']);
 
@@ -1426,24 +1786,27 @@ test('desktop editor shell plan reserves top menus and left ribbon/options', () 
   assert.deepEqual(plan.leftOptions, { x: 8, y: 112, w: 304, h: 600 });
   assert.deepEqual(plan.workSurface, { x: 320, y: 48, w: 952, h: 664 });
   assert.equal(Object.hasOwn(plan, 'bottomBar'), false);
-  assert.equal(plan.commandSurface, 'top-dropdown');
-  assert.deepEqual(plan.commandSurfaces, ['top-dropdown']);
-  assert.deepEqual(plan.persistentSurfaces, ['top-menu', 'left-ribbon', 'left-context-panel', 'work-surface']);
+  assert.equal(plan.commandSurface, DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface);
+  assert.deepEqual(plan.commandSurfaces, DESKTOP_SHELL_SURFACE_CONTRACT.commandSurfaces);
+  assert.deepEqual(plan.persistentSurfaces, DESKTOP_SHELL_SURFACE_CONTRACT.persistentSurfaces);
   assert.deepEqual(plan.requiredModeSurfaces, REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.DESKTOP]);
   assert.deepEqual(plan.suppressedModeSurfaces, SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.DESKTOP]);
+  assert.deepEqual(plan.surfaceVisibility, getEditorModeSurfaceVisibility(EDITOR_LAYOUT_MODES.DESKTOP));
   assert.deepEqual(plan.modeContract, getEditorModeContract(EDITOR_LAYOUT_MODES.DESKTOP));
-  assert.deepEqual(plan.suppressedMobileSurfaces, [
-    'bottom-action-rail',
-    'bottom-tool-rail',
-    'touch-thumbstick',
-    'landscape-root-drawer',
-    'landscape-right-submenu',
-    'gamepad-hint-bar',
-    'gamepad-slide-out'
-  ]);
-  assert.equal(plan.leftPanelRole, 'context-inspector');
-  assert.equal(plan.duplicatesCommandsInLeftPanel, false);
-  assert.equal(plan.desktopMobileRailsHidden, true);
+  assert.deepEqual(plan.suppressedMobileSurfaces, DESKTOP_SHELL_SURFACE_CONTRACT.suppressedMobileSurfaces);
+  assert.equal(plan.leftPanelRole, DESKTOP_SHELL_SURFACE_CONTRACT.leftPanelRole);
+  assert.equal(plan.duplicatesCommandsInLeftPanel, DESKTOP_SHELL_SURFACE_CONTRACT.duplicatesCommandsInLeftPanel);
+  assert.deepEqual(plan.leftContextPanelContract, DESKTOP_CONTEXT_PANEL_CONTRACT);
+  assert.equal(plan.leftContextPanelContract.drawerCommandsStayInTopDropdown, true);
+  assert.equal(plan.leftContextPanelContract.duplicatesTopDropdownCommands, false);
+  assert.deepEqual(plan.leftContextPanelContract.contextualQuickActionPolicy, {
+    allowed: true,
+    mustBeContextual: true,
+    mustNotDuplicateOpenDropdown: true
+  });
+  assert.equal(plan.desktopMobileRailsHidden, DESKTOP_SHELL_SURFACE_CONTRACT.desktopMobileRailsHidden);
+  assert.equal(plan.surfaceVisibility[EDITOR_SURFACES.bottomActionRail], 'suppressed');
+  assert.equal(plan.surfaceVisibility[EDITOR_SURFACES.gamepadHintBar], 'suppressed');
   assert.equal(plan.scroll.leftOptions.suppressClickAfterDrag, true);
 });
 
@@ -1461,24 +1824,20 @@ test('desktop editor shell defaults are shared across every editor', () => {
     assert.equal(plan.leftRibbon.h, 58);
     assert.equal(plan.leftOptions.x, plan.leftRibbon.x);
     assert.equal(plan.workSurface.x, plan.leftColumn.x + plan.leftColumn.w + 8);
-    assert.equal(plan.commandSurface, 'top-dropdown');
-    assert.deepEqual(plan.commandSurfaces, ['top-dropdown']);
-    assert.deepEqual(plan.persistentSurfaces, ['top-menu', 'left-ribbon', 'left-context-panel', 'work-surface']);
+    assert.equal(plan.commandSurface, DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface);
+    assert.deepEqual(plan.commandSurfaces, DESKTOP_SHELL_SURFACE_CONTRACT.commandSurfaces);
+    assert.deepEqual(plan.persistentSurfaces, DESKTOP_SHELL_SURFACE_CONTRACT.persistentSurfaces);
     assert.deepEqual(plan.requiredModeSurfaces, REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.DESKTOP]);
     assert.deepEqual(plan.suppressedModeSurfaces, SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.DESKTOP]);
+    assert.deepEqual(plan.surfaceVisibility, getEditorModeSurfaceVisibility(EDITOR_LAYOUT_MODES.DESKTOP));
     assert.deepEqual(plan.modeContract, getEditorModeContract(EDITOR_LAYOUT_MODES.DESKTOP));
-    assert.deepEqual(plan.suppressedMobileSurfaces, [
-      'bottom-action-rail',
-      'bottom-tool-rail',
-      'touch-thumbstick',
-      'landscape-root-drawer',
-      'landscape-right-submenu',
-      'gamepad-hint-bar',
-      'gamepad-slide-out'
-    ]);
-    assert.equal(plan.leftPanelRole, 'context-inspector');
-    assert.equal(plan.duplicatesCommandsInLeftPanel, false);
-    assert.equal(plan.desktopMobileRailsHidden, true);
+    assert.deepEqual(plan.suppressedMobileSurfaces, DESKTOP_SHELL_SURFACE_CONTRACT.suppressedMobileSurfaces);
+    assert.equal(plan.leftPanelRole, DESKTOP_SHELL_SURFACE_CONTRACT.leftPanelRole);
+    assert.equal(plan.duplicatesCommandsInLeftPanel, DESKTOP_SHELL_SURFACE_CONTRACT.duplicatesCommandsInLeftPanel);
+    assert.deepEqual(plan.leftContextPanelContract, DESKTOP_CONTEXT_PANEL_CONTRACT);
+    assert.equal(plan.desktopMobileRailsHidden, DESKTOP_SHELL_SURFACE_CONTRACT.desktopMobileRailsHidden);
+    assert.equal(plan.surfaceVisibility[EDITOR_SURFACES.topMenu], 'required');
+    assert.equal(plan.surfaceVisibility[EDITOR_SURFACES.bottomToolRail], 'suppressed');
     const genericDesktop = buildEditorMenuLayoutPlan(editorId, {
       isMobile: false,
       viewportWidth: 1440,
@@ -1531,12 +1890,15 @@ test('landscape touch shell plan standardizes side rails, bottom rail, and gestu
 
   assert.equal(plan.mode, EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH);
   assert.deepEqual(plan.placement, {
-    root: 'left-rail',
-    submenu: 'right-drawer',
-    settings: 'right-drawer'
+    root: EDITOR_SURFACES.leftRail,
+    submenu: EDITOR_SURFACES.rightDrawer,
+    settings: EDITOR_SURFACES.rightDrawer
   });
-  assert.equal(plan.rootMenuSurface, 'left-rail');
-  assert.equal(plan.submenuSurface, 'right-drawer');
+  assert.equal(plan.rootMenuSurface, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootSurface);
+  assert.equal(plan.submenuSurface, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.submenuSurface);
+  assert.deepEqual(plan.surfaceVisibility, getEditorModeSurfaceVisibility(EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH));
+  assert.equal(plan.surfaceVisibility[EDITOR_SURFACES.leftRail], 'required');
+  assert.equal(plan.surfaceVisibility[EDITOR_SURFACES.desktopTopMenu], 'suppressed');
   assert.equal(plan.bottomRailRole, 'tool-options-ribbons-zoom');
   assert.equal(plan.gestureScroll, true);
   assert.deepEqual(plan.surfaces.rootMenu, plan.leftRail);
@@ -1546,6 +1908,8 @@ test('landscape touch shell plan standardizes side rails, bottom rail, and gestu
   assert.deepEqual(plan.surfaces.ribbon, plan.bottomRail);
   assert.deepEqual(plan.surfaces.workSurface, plan.workSurface);
   assert.equal(plan.leftRail.x, 0);
+  assert.equal(plan.leftRail.w, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRail.width);
+  assert.equal(plan.compactCommandRailActionLimit, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRail.actionLimit);
   assert.equal(plan.rightRail.x + plan.rightRail.w, 844);
   assert.equal(plan.workSurface.x > plan.leftRail.x + plan.leftRail.w, true);
   assert.equal(plan.bottomRail.y >= plan.workSurface.y + plan.workSurface.h, true);
@@ -1599,6 +1963,13 @@ test('compact landscape command rail keeps four canonical actions', () => {
 
   assert.deepEqual(actions.map((action) => action.id), ['menu', 'undo', 'redo', 'play']);
   assert.deepEqual(actions.map((action) => action.displayLabel), ['☰', '↶', '↷', undefined]);
+  assert.deepEqual(actions.map((action) => action.slot), ['menu', 'undo', 'redo', 'quick']);
+  actions.forEach((action) => {
+    assert.equal(action.surface, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRailSurface);
+    assert.equal(action.commandRail, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRail.commandRail);
+    assert.equal(action.rowActivation, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRail.rowActivation);
+    assert.equal(action.gestureScroll, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRail.gestureScroll);
+  });
   assert.equal(actions[1].disabled, true);
   assert.equal(actions[1].onClick, null);
   assert.equal(actions[3].primary, true);
@@ -1751,17 +2122,23 @@ test('landscape touch shell role contract is shared across every editor', () => 
       reserveRightRail: true
     });
 
-    assert.equal(plan.rootMenuSurface, 'left-rail');
-    assert.equal(plan.submenuSurface, 'right-drawer');
-    assert.equal(plan.compactCommandRailSurface, 'left-rail');
-    assert.equal(plan.compactCommandRailActionLimit, 4);
-    assert.equal(plan.rootDrawerSurface, 'left-overlay-drawer');
-    assert.equal(plan.rootDrawerOverlayOrigin, 'left');
+    assert.equal(plan.rootMenuSurface, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootSurface);
+    assert.equal(plan.submenuSurface, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.submenuSurface);
+    assert.equal(plan.compactCommandRailSurface, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRailSurface);
+    assert.equal(plan.compactCommandRailActionLimit, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRail.actionLimit);
+    assert.equal(plan.rootDrawerSurface, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootDrawerSurface);
+    assert.equal(plan.rootDrawerOverlayOrigin, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootDrawerOverlayOrigin);
     assert.deepEqual(plan.requiredModeSurfaces, REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH]);
     assert.deepEqual(plan.suppressedModeSurfaces, SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH]);
+    assert.deepEqual(plan.surfaceVisibility, getEditorModeSurfaceVisibility(EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH));
+    assert.deepEqual(plan.effectiveSurfaceVisibility, getLandscapeTouchShellEffectiveSurfaceVisibility({
+      reserveRightRail: true,
+      rootDrawerOverlayOrigin: 'left',
+      bottomRailHeight: 64
+    }));
     assert.deepEqual(plan.modeContract, getEditorModeContract(EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH));
-    assert.deepEqual(plan.suppressedDesktopSurfaces, ['desktop-top-menu', 'desktop-dropdown', 'desktop-left-inspector']);
-    assert.equal(plan.bottomRailRole, 'tool-options-ribbons-zoom');
+    assert.deepEqual(plan.suppressedDesktopSurfaces, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.suppressedDesktopSurfaces);
+    assert.equal(plan.bottomRailRole, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.bottomRailRole);
     assert.equal(plan.gestureScroll, true);
     const genericLandscape = buildEditorMenuLayoutPlan(editorId, {
       isMobile: true,
@@ -1799,11 +2176,11 @@ test('landscape touch shell omits the right submenu surface when gamepad slide-o
     reserveRightRail: false
   });
 
-  assert.equal(plan.rootMenuSurface, 'left-rail');
+  assert.equal(plan.rootMenuSurface, EDITOR_SURFACES.leftRail);
   assert.equal(plan.submenuSurface, null);
-  assert.equal(plan.compactCommandRailSurface, 'left-rail');
+  assert.equal(plan.compactCommandRailSurface, EDITOR_SURFACES.leftRail);
   assert.equal(plan.compactCommandRailActionLimit, 4);
-  assert.equal(plan.rootDrawerSurface, 'left-overlay-drawer');
+  assert.equal(plan.rootDrawerSurface, EDITOR_SURFACES.leftOverlayDrawer);
   assert.equal(plan.rootDrawerOverlayOrigin, 'left');
   assert.equal(plan.surfaces.submenu, null);
   assert.ok(plan.surfaces.overlayDrawer);
@@ -1818,6 +2195,15 @@ test('landscape touch shell omits the right submenu surface when gamepad slide-o
   assert.equal(plan.surfaces.rootDrawer.x < plan.bounds.w / 2, true);
   assert.ok(plan.surfaces.rootDrawer.h <= plan.bottomRail.y);
   assert.ok(plan.surfaces.rootDrawer.y + plan.surfaces.rootDrawer.h <= plan.bottomRail.y);
+  assert.equal(plan.surfaceVisibility[EDITOR_SURFACES.rightDrawer], 'required');
+  assert.equal(plan.effectiveSurfaceVisibility[EDITOR_SURFACES.rightDrawer], 'suppressed');
+  assert.equal(plan.effectiveSurfaceVisibility[EDITOR_SURFACES.landscapeRightSubmenu], 'suppressed');
+  assert.equal(plan.effectiveSurfaceVisibility[EDITOR_SURFACES.leftOverlayDrawer], 'required');
+  assert.deepEqual(plan.effectiveSurfaceVisibility, getLandscapeTouchShellEffectiveSurfaceVisibility({
+    reserveRightRail: false,
+    rootDrawerOverlayOrigin: 'left',
+    bottomRailHeight: 72
+  }));
 });
 
 test('landscape touch shell can originate root drawers from the compact left rail', () => {
@@ -1830,9 +2216,9 @@ test('landscape touch shell can originate root drawers from the compact left rai
     rootDrawerOverlayOrigin: 'left'
   });
 
-  assert.equal(plan.rootMenuSurface, 'left-rail');
+  assert.equal(plan.rootMenuSurface, EDITOR_SURFACES.leftRail);
   assert.equal(plan.submenuSurface, null);
-  assert.equal(plan.rootDrawerSurface, 'left-overlay-drawer');
+  assert.equal(plan.rootDrawerSurface, EDITOR_SURFACES.leftOverlayDrawer);
   assert.equal(plan.rootDrawerOverlayOrigin, 'left');
   assert.deepEqual(plan.surfaces.rootMenu, plan.leftRail);
   assert.deepEqual(plan.surfaces.rootDrawer, plan.leftRootDrawer);
@@ -1843,7 +2229,7 @@ test('landscape touch shell can originate root drawers from the compact left rai
   assert.ok(plan.surfaces.rootDrawer.y + plan.surfaces.rootDrawer.h <= plan.bottomRail.y);
 });
 
-test('landscape touch shell can opt root drawers back to the right overlay', () => {
+test('landscape touch shell coerces stale right-origin root drawers back to the left', () => {
   const plan = buildLandscapeTouchEditorShellPlan('pixel', {
     viewportWidth: 844,
     viewportHeight: 390,
@@ -1853,13 +2239,18 @@ test('landscape touch shell can opt root drawers back to the right overlay', () 
     rootDrawerOverlayOrigin: 'right'
   });
 
-  assert.equal(plan.rootMenuSurface, 'left-rail');
+  assert.equal(plan.rootMenuSurface, EDITOR_SURFACES.leftRail);
   assert.equal(plan.submenuSurface, null);
-  assert.equal(plan.rootDrawerSurface, 'right-overlay-drawer');
-  assert.equal(plan.rootDrawerOverlayOrigin, 'right');
+  assert.equal(plan.rootDrawerSurface, EDITOR_SURFACES.leftOverlayDrawer);
+  assert.equal(plan.rootDrawerOverlayOrigin, 'left');
+  assert.equal(plan.presentation.rootDrawerOverlayOrigin, 'left');
+  assert.equal(plan.presentation.rootDrawerSurface, EDITOR_SURFACES.leftOverlayDrawer);
+  assert.equal(plan.effectiveSurfaceVisibility[EDITOR_SURFACES.leftOverlayDrawer], 'required');
+  assert.equal(plan.effectiveSurfaceVisibility[EDITOR_SURFACES.rightOverlayDrawer], 'optional');
+  assert.equal(plan.effectiveSurfaceVisibility[EDITOR_SURFACES.rightDrawer], 'suppressed');
   assert.deepEqual(plan.surfaces.rootMenu, plan.leftRail);
-  assert.deepEqual(plan.surfaces.rootDrawer, plan.surfaces.overlayDrawer);
-  assert.notDeepEqual(plan.surfaces.rootDrawer, plan.leftRootDrawer);
+  assert.deepEqual(plan.surfaces.rootDrawer, plan.leftRootDrawer);
+  assert.notDeepEqual(plan.surfaces.rootDrawer, plan.surfaces.overlayDrawer);
   assert.equal(plan.surfaces.overlayDrawer.x + plan.surfaces.overlayDrawer.w, plan.bounds.w);
   assert.ok(plan.surfaces.rootDrawer.y + plan.surfaces.rootDrawer.h <= plan.bottomRail.y);
 });
@@ -1875,24 +2266,27 @@ test('gamepad slide-out plan keeps root open until a submenu is selected', () =>
   assert.equal(root.submenuSurface, 'left-slide-out-drawer');
   assert.equal(root.submenuReplacesRootRail, true);
   assert.equal(root.rightSubmenuSurface, null);
+  assert.deepEqual(root.controls, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.controls);
   assert.deepEqual(root.presentation, MODE_PRESENTATION_CONTRACTS[EDITOR_LAYOUT_MODES.GAMEPAD]);
   assert.equal(root.interaction.rowActivation, 'confirm-button');
   assert.equal(root.interaction.pointerType, 'controller');
   assert.equal(root.interaction.gestureScroll, true);
   assert.deepEqual(root.requiredModeSurfaces, REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.GAMEPAD]);
   assert.deepEqual(root.suppressedModeSurfaces, SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.GAMEPAD]);
+  assert.deepEqual(root.surfaceVisibility, getEditorModeSurfaceVisibility(EDITOR_LAYOUT_MODES.GAMEPAD));
+  assert.equal(root.surfaceVisibility['left-slide-out-drawer'], 'required');
+  assert.equal(root.surfaceVisibility['landscape-right-submenu'], 'suppressed');
   assert.deepEqual(root.modeContract, getEditorModeContract(EDITOR_LAYOUT_MODES.GAMEPAD));
-  assert.deepEqual(root.suppressedTouchSurfaces, [
-    'landscape-right-submenu',
-    'landscape-root-drawer',
-    'bottom-tool-rail',
-    'touch-thumbstick'
-  ]);
+  assert.deepEqual(root.suppressedTouchSurfaces, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.suppressedTouchSurfaces);
   assert.equal(root.rootCollapsed, false);
   assert.equal(root.submenu, null);
   assert.equal(root.controls.confirm, 'A');
   assert.equal(root.controls.back, 'B');
-  assert.equal(root.headerHint, 'A Select  B Back  LB/RB Tabs');
+  assert.equal(root.controls.system, 'Start');
+  assert.equal(root.controls.focusToggle, 'Back');
+  assert.equal(root.controls.siblingPrev, 'LB');
+  assert.equal(root.controls.siblingNext, 'RB');
+  assert.equal(root.headerHint, 'A Select  B Back  LB/RB Tabs  Start System');
 
   const submenu = buildGamepadSlideOutMenuPlan('sfx', {
     rootOpen: false,
@@ -1933,12 +2327,12 @@ test('gamepad slide-out plan exposes focused root and submenu metadata', () => {
   const submenu = buildGamepadSlideOutMenuPlan('cutscene', {
     rootOpen: false,
     activeRootId: 'timeline',
-    focusedItemId: 'timeline-fit'
+    focusedItemId: 'play'
   });
   assert.equal(submenu.focus.surface, 'submenu');
   assert.equal(submenu.focusedRootEntry, null);
-  assert.equal(submenu.focusedSubmenuItem.id, 'timeline-fit');
-  assert.equal(submenu.focus.submenuItemId, 'timeline-fit');
+  assert.equal(submenu.focusedSubmenuItem.id, 'play');
+  assert.equal(submenu.focus.submenuItemId, 'play');
 });
 
 test('gamepad slide-out role contract is shared across every editor', () => {
@@ -1956,25 +2350,31 @@ test('gamepad slide-out role contract is shared across every editor', () => {
     assert.equal(root.submenuSurface, 'left-slide-out-drawer');
     assert.equal(root.submenuReplacesRootRail, true);
     assert.equal(root.rightSubmenuSurface, null);
+    assert.deepEqual(root.controls, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.controls);
     assert.deepEqual(root.presentation, submenu.presentation);
-    assert.equal(root.presentation.submenuSurface, 'left-slide-out-drawer');
-    assert.equal(root.presentation.submenuReplacesRootRail, true);
-    assert.equal(root.interaction.confirm, 'A');
-    assert.equal(root.interaction.back, 'B');
-    assert.equal(root.interaction.rowActivation, 'confirm-button');
-    assert.equal(root.interaction.pointerType, 'controller');
-    assert.equal(root.scroll.root.pointerType, 'controller');
-    assert.equal(submenu.scroll.submenu.pointerType, 'controller');
+    assert.equal(root.presentation.submenuSurface, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface);
+    assert.equal(root.presentation.submenuReplacesRootRail, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuReplacesRootRail);
+    assert.equal(root.interaction.confirm, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.controls.confirm);
+    assert.equal(root.interaction.back, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.controls.back);
+    assert.equal(root.interaction.rowActivation, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rowActivation);
+    assert.equal(root.interaction.pointerType, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType);
+    assert.deepEqual(root.focusRingContract, GAMEPAD_FOCUS_RING_CONTRACT);
+    assert.deepEqual(root.focus.focusRingContract, GAMEPAD_FOCUS_RING_CONTRACT);
+    assert.deepEqual(submenu.focusRingContract, GAMEPAD_FOCUS_RING_CONTRACT);
+    assert.ok(submenu.focusedSubmenuItem?.id, `${editorId} gamepad submenu should default to a focused row`);
+    assert.equal(submenu.submenu.items.some((item) => item.focused && item.focusRing), true, `${editorId} gamepad submenu should render one focused row`);
+    assert.equal(submenu.focus.submenuItemId, submenu.focusedSubmenuItem.id, `${editorId} gamepad submenu focus id should match the focused row`);
+    assert.equal(root.focusRingContract.visibleOnFocusedRows, true);
+    assert.deepEqual(root.focusRingContract.surfaces, [GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rootSurface, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface]);
+    assert.equal(root.scroll.root.pointerType, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType);
+    assert.equal(submenu.scroll.submenu.pointerType, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType);
     assert.deepEqual(root.requiredModeSurfaces, REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.GAMEPAD]);
     assert.deepEqual(root.suppressedModeSurfaces, SUPPRESSED_MODE_SURFACES[EDITOR_LAYOUT_MODES.GAMEPAD]);
+    assert.deepEqual(root.surfaceVisibility, getEditorModeSurfaceVisibility(EDITOR_LAYOUT_MODES.GAMEPAD));
+    assert.deepEqual(submenu.surfaceVisibility, root.surfaceVisibility);
     assert.deepEqual(root.modeContract, getEditorModeContract(EDITOR_LAYOUT_MODES.GAMEPAD));
     assert.deepEqual(submenu.modeContract, getEditorModeContract(EDITOR_LAYOUT_MODES.GAMEPAD));
-    assert.deepEqual(root.suppressedTouchSurfaces, [
-      'landscape-right-submenu',
-      'landscape-root-drawer',
-      'bottom-tool-rail',
-      'touch-thumbstick'
-    ]);
+    assert.deepEqual(root.suppressedTouchSurfaces, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.suppressedTouchSurfaces);
     const genericGamepad = buildEditorMenuLayoutPlan(editorId, {
       isMobile: true,
       viewportWidth: 844,
@@ -1989,11 +2389,51 @@ test('gamepad slide-out role contract is shared across every editor', () => {
     assert.equal(root.rootCollapsed, false);
     assert.equal(submenu.rootCollapsed, true);
     assert.ok(submenu.submenu.items.length > 0);
-    assert.equal(submenu.submenu.surface, 'left-slide-out-drawer');
-    assert.equal(submenu.submenu.sourceSurface, 'gamepad-slide-out');
-    assert.equal(submenu.submenu.replacesRootRail, true);
-    assert.equal(submenu.submenu.pointerType, 'controller');
+    assert.equal(submenu.submenu.surface, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface);
+    assert.equal(submenu.submenu.sourceSurface, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.sourceSurface);
+    assert.equal(submenu.submenu.replacesRootRail, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuReplacesRootRail);
+    assert.equal(submenu.submenu.pointerType, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType);
+    assert.equal(root.rootEntries.every((entry) => entry.rowActivation === GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rowActivation), true, `${editorId} root activation`);
+    assert.equal(root.rootEntries.every((entry) => entry.pointerType === GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType), true, `${editorId} root pointer`);
+    assert.equal(root.rootEntries.every((entry) => entry.sourceSurface === GAMEPAD_SLIDE_OUT_MENU_CONTRACT.sourceSurface), true, `${editorId} root source`);
+    assert.equal(root.rootEntries.every((entry) => entry.surface === GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rootSurface), true, `${editorId} root surface`);
+    assert.equal(submenu.submenu.items.every((item) => item.rowActivation === GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rowActivation), true, `${editorId} submenu activation`);
+    assert.equal(submenu.submenu.items.every((item) => item.pointerType === GAMEPAD_SLIDE_OUT_MENU_CONTRACT.pointerType), true, `${editorId} submenu pointer`);
+    assert.equal(submenu.submenu.items.every((item) => item.sourceSurface === GAMEPAD_SLIDE_OUT_MENU_CONTRACT.sourceSurface), true, `${editorId} submenu source`);
+    assert.equal(submenu.submenu.items.every((item) => item.surface === GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface), true, `${editorId} submenu surface`);
+    assert.equal(submenu.submenu.items.every((item) => 'focused' in item && 'focusRing' in item), true, `${editorId} submenu focus metadata`);
   }
+});
+
+test('gamepad slide-out plan annotates focused root and submenu rows for visible focus rings', () => {
+  const root = buildGamepadSlideOutMenuPlan('pixel', {
+    rootOpen: true,
+    activeRootId: 'file',
+    focusedItemId: 'draw'
+  });
+  const focusedRoot = root.rootEntries.find((entry) => entry.specId === 'draw');
+  const unfocusedRoot = root.rootEntries.find((entry) => entry.specId === 'file');
+
+  assert.equal(focusedRoot.focused, true);
+  assert.equal(focusedRoot.focusRing, true);
+  assert.equal(root.focus.rootItemId, focusedRoot.id);
+  assert.equal(unfocusedRoot.focused, false);
+  assert.equal(unfocusedRoot.focusRing, false);
+
+  const submenu = buildGamepadSlideOutMenuPlan('pixel', {
+    rootOpen: false,
+    activeRootId: 'draw',
+    focusedItemId: 'brush'
+  });
+  const focusedItem = submenu.submenu.items.find((item) => item.id === 'brush');
+  const unfocusedItem = submenu.submenu.items.find((item) => item.id === 'pencil');
+
+  assert.equal(focusedItem.focused, true);
+  assert.equal(focusedItem.focusRing, true);
+  assert.equal(submenu.focus.submenuItemId, 'brush');
+  assert.equal(unfocusedItem.focused, false);
+  assert.equal(unfocusedItem.focusRing, false);
+  assert.equal(submenu.submenu.items.every((item) => 'focusRing' in item), true);
 });
 
 test('gamepad slide-out plan uses controller root entry submenu ids', () => {
@@ -2029,6 +2469,19 @@ test('gamepad slide-out plan uses controller root entry submenu ids', () => {
     [midiTracks?.id, midiTracks?.controllerMenuId, midi.activeRootId, midi.activeSpecId],
     ['instruments', 'tracks', 'instruments', 'tracks']
   );
+
+  const tile = buildGamepadSlideOutMenuPlan('tile', {
+    rootOpen: false,
+    activeRootId: 'tiles'
+  });
+  assert.equal(tile.submenuReplacesRootRail, true);
+  assert.equal(tile.rightSubmenuSurface, null);
+  assert.equal(tile.submenu.surface, 'left-slide-out-drawer');
+  assert.equal(tile.submenu.sourceSurface, 'gamepad-slide-out');
+  assert.deepEqual(
+    [tile.activeRootId, tile.activeSpecId, tile.submenu.specId],
+    ['tiles', 'tiles', 'tiles']
+  );
 });
 
 test('pointer interaction policy separates desktop mouse from touch gestures', () => {
@@ -2063,7 +2516,13 @@ test('pointer interaction policy separates desktop mouse from touch gestures', (
 });
 
 test('desktop pointer policy treats every editor work surface as an app surface', () => {
-  const editors = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'car'];
+  const editors = ALL_EDITOR_IDS;
+  const contextMenuEditors = new Set(['pixel', 'level', 'actor', 'cutscene', 'race', 'car']);
+  assert.equal(editorMenuLayoutSource.includes('const CONTINUOUS_PAN_EDITOR_IDS = new Set(SHARED_EDITOR_IDS);'), true);
+  assert.equal(editorMenuLayoutSource.includes('const FALLBACK_PAN_EDITOR_IDS = new Set(SHARED_EDITOR_IDS);'), true);
+  assert.equal(editorMenuLayoutSource.includes('const WORK_SURFACE_TYPES = {'), false);
+  assert.equal(editorMenuLayoutSource.includes('getEditorWorkSurfaceType(editorId)'), true);
+  assert.equal(editorMenuLayoutSource.includes("new Set(['pixel', 'tile', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'car'])"), false);
   editors.forEach((editorId) => {
     const policy = getEditorPointerInteractionPolicy(editorId, {
       mode: EDITOR_LAYOUT_MODES.DESKTOP,
@@ -2074,13 +2533,14 @@ test('desktop pointer policy treats every editor work surface as an app surface'
     assert.equal(policy.workSurfaceGestures.middleDragPan, true, `${editorId} middle-drag pan`);
     assert.equal(policy.workSurfaceGestures.rightDragPan, true, `${editorId} right-drag pan`);
     assert.equal(policy.rightClick.suppressBrowserMenu, true, `${editorId} suppress browser menu`);
+    assert.equal(policy.rightClick.opensContextMenu, contextMenuEditors.has(editorId), `${editorId} context menu availability`);
     assert.equal(policy.rightClick.fallbackPan, true, `${editorId} fallback pan`);
     assert.equal(policy.thumbstick.allowed, false, `${editorId} desktop thumbstick hidden`);
   });
 });
 
 test('shared context-menu suppression follows the editor pointer policy', () => {
-  ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'car'].forEach((editorId) => {
+  ALL_EDITOR_IDS.forEach((editorId) => {
     assert.equal(shouldSuppressEditorContextMenu({
       editorId,
       mode: EDITOR_LAYOUT_MODES.DESKTOP,

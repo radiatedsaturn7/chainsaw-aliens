@@ -35,15 +35,14 @@ import {
   drawSharedPortraitScrollHints,
   normalizeSharedControlBounds,
   resetSharedThumbstickState,
-  isMobilePortraitLayout,
   SHARED_EDITOR_LEFT_MENU,
   splitFileDrawerStickyExitItems,
   UI_SUITE
 } from './uiSuite.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
-import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorPortraitRootMenuEntries, getEditorRootMenuEntries, getEditorRootMenuLabelMap } from './shared/editorMenuSpec.js';
-import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, buildMenuScrollDragState, createDesktopDropdownCommandHit, createPendingDesktopDropdownHit, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveDesktopRootMenuHit, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveMenuScrollDrag, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
+import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorPortraitRootMenuEntries, getEditorRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
+import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, buildMenuScrollDragState, canRenderEditorPlanSurface, canRenderEditorSurface, createDesktopDropdownCommandHit, createDesktopRootMenuHit, createPendingDesktopDropdownHit, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveDesktopRootMenuHit, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveMenuScrollDrag, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
 
 const DEFAULT_SAMPLE_RATE = 44100;
 const DEFAULT_DURATION = 0.45;
@@ -54,7 +53,7 @@ const uid = () => `sfx_${Date.now().toString(36)}_${Math.random().toString(36).s
 export function buildSfxPortraitMenuModel() {
   return {
     rootTabs: getEditorPortraitRootMenuEntries('sfx'),
-    bottomRailActions: ['menu', 'undo', 'redo', 'play'],
+    bottomRailActions: getStandardEditorActionRailIds('play'),
     menuLoopIds: ['loop'],
     portraitRootPlacement: 'bottom-rail'
   };
@@ -351,6 +350,7 @@ export default class SfxEditor {
     this.timelineViewportBounds = null;
     this.isMobileLandscape = false;
     this.isGamepadMenuMode = false;
+    this.activeViewportMode = 'desktop';
     this.landscapeRootDrawerOpen = false;
     this.mobilePortraitMenuSheetBounds = null;
     this.activeMenuClipBounds = null;
@@ -398,7 +398,17 @@ export default class SfxEditor {
   }
 
   isMobileLayout() {
-    return Boolean(this.game?.isMobile);
+    return Boolean(this.game?.deviceIsMobile || this.game?.isMobile);
+  }
+
+  resolveSfxViewportMode(width = this.game?.canvas?.width || 0, height = this.game?.canvas?.height || 0) {
+    return resolveEditorViewportModeFlags({
+      editorId: 'sfx',
+      viewportWidth: width,
+      viewportHeight: height,
+      isMobile: this.isMobileLayout(),
+      gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.())
+    });
   }
 
   get selectedFrame() {
@@ -534,10 +544,10 @@ export default class SfxEditor {
         id: 'view',
         title: 'View',
         items: [
-          surfaceAction('play', this.isPlaying ? 'Pause' : 'Play', () => (this.isPlaying ? this.stop() : this.play())),
-          surfaceAction('stop', 'Stop', () => this.stop()),
-          surfaceAction('start', 'Go To Start', () => { this.playheadTime = 0; this.timelineScrollTime = 0; }),
-          surfaceAction('end', 'Go To End', () => { this.playheadTime = Number(this.selectedFrame?.duration || 0); }),
+          surfaceAction('zoom-fit', 'Fit Waveform', () => {
+            this.timelineScrollTime = 0;
+            this.timelineZoom = 1;
+          }),
           action('loop', this.sfx.settings.loop ? 'Loop: On' : 'Loop: Off', () => { this.sfx.settings.loop = !this.sfx.settings.loop; })
         ]
       },
@@ -595,9 +605,7 @@ export default class SfxEditor {
       settings: {
         id: 'settings',
         title: 'Settings',
-        items: [
-          action('loop', this.sfx.settings.loop ? 'Loop: On' : 'Loop: Off', () => { this.sfx.settings.loop = !this.sfx.settings.loop; })
-        ]
+        items: []
       },
       file: {
         id: 'file',
@@ -706,7 +714,11 @@ export default class SfxEditor {
   }
 
   applyMobilePanJoystick(dt = 0) {
-    if (!(this.isMobileLandscape || this.isMobilePortrait) || !this.panJoystick.active) return;
+    if (!canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick')
+      || !(this.isMobileLandscape || this.isMobilePortrait)
+      || !this.panJoystick.active) {
+      return;
+    }
     const frame = this.selectedFrame;
     const viewport = this.getTimelineViewport(Math.max(0.01, Number(frame?.duration || 1)));
     if (viewport.maxScroll <= 0) return;
@@ -1599,7 +1611,8 @@ export default class SfxEditor {
 
   handlePointerDown(payload) {
     this.pendingDesktopDropdownHit = null;
-    if (!this.isMobileLayout() && shouldCloseDesktopDropdownOnPointerDown({
+    const isDesktopMode = this.activeViewportMode === 'desktop';
+    if (isDesktopMode && shouldCloseDesktopDropdownOnPointerDown({
       dropdown: this.desktopDropdown,
       point: payload,
       rootButtons: this.buttons,
@@ -1615,7 +1628,7 @@ export default class SfxEditor {
       this.desktopDropdown = nextDropdown.dropdown;
       return;
     }
-    if (!this.isMobileLayout()) {
+    if (isDesktopMode) {
       const desktopDropdownHit = this.desktopDropdownItems?.find((item) => (
         payload.x >= item.x
         && payload.x <= item.x + item.w
@@ -1624,6 +1637,16 @@ export default class SfxEditor {
       ));
       if (desktopDropdownHit) {
         this.pendingDesktopDropdownHit = createPendingDesktopDropdownHit(desktopDropdownHit, payload);
+        return;
+      }
+      const desktopDropdownRegion = this.menuScrollRegions?.find((region) => (
+        region?.bounds
+        && payload.x >= region.bounds.x
+        && payload.x <= region.bounds.x + region.bounds.w
+        && payload.y >= region.bounds.y
+        && payload.y <= region.bounds.y + region.bounds.h
+      ));
+      if (desktopDropdownRegion) {
         return;
       }
     }
@@ -1641,7 +1664,7 @@ export default class SfxEditor {
       }
     }
     const pointerPolicy = getEditorPointerInteractionPolicy('sfx', {
-      mode: !this.isMobileLayout()
+      mode: isDesktopMode
         ? 'desktop'
         : this.isGamepadMenuMode
           ? 'gamepad'
@@ -1652,7 +1675,8 @@ export default class SfxEditor {
       gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.())
     });
     const suppressLandscapeMenuThumbstick = (this.isMobileLandscape && this.landscapeRootDrawerOpen)
-      || (this.isGamepadMenuMode && this.controllerMenu.active);
+      || (this.isGamepadMenuMode && this.controllerMenu.active)
+      || !canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick');
     if (!suppressLandscapeMenuThumbstick && pointerPolicy.thumbstick.allowed && payload.touchCount > 0 && this.panJoystick.radius > 0) {
       const dx = payload.x - this.panJoystick.center.x;
       const dy = payload.y - this.panJoystick.center.y;
@@ -1708,7 +1732,7 @@ export default class SfxEditor {
       const dy = payload.y - this.transportHold.y;
       if (Math.hypot(dx, dy) > 12) this.cancelTransportHold();
     }
-    if (!this.isMobileLayout() && !payload.touchCount && !this.sliderDrag) {
+    if (this.activeViewportMode === 'desktop' && !payload.touchCount && !this.sliderDrag) {
       const rootHit = resolveDesktopDropdownHoverSwitch({
         buttons: this.buttons,
         point: payload,
@@ -1925,25 +1949,24 @@ export default class SfxEditor {
     ctx.fillStyle = UI_SUITE.colors.bg;
     ctx.fillRect(0, 0, width, height);
     const gamepadConnected = Boolean(this.game?.input?.isGamepadConnected?.());
-    const viewportMode = resolveEditorViewportModeFlags({
-      viewportWidth: width,
-      viewportHeight: height,
-      isMobile: this.isMobileLayout(),
-      gamepadConnected
-    });
+    const viewportMode = this.resolveSfxViewportMode(width, height);
     this.activeModeContract = viewportMode.modeContract;
+    this.activeSpecModeContract = viewportMode.specModeContract;
+    this.activeViewportMode = viewportMode.mode;
     const { isMobileViewport, isMobileLandscape, isMobilePortrait } = viewportMode;
     this.isMobileLandscape = isMobileLandscape;
     this.isMobilePortrait = isMobilePortrait;
     this.isGamepadMenuMode = viewportMode.isGamepadLandscape;
     this.mobilePortraitMenuSheetBounds = null;
-    if (isMobilePortraitLayout({ isMobile: isMobileViewport, viewportWidth: width, viewportHeight: height })) {
+    if (isMobilePortrait) {
       this.desktopDropdown = resolveDesktopDropdownState({ isDesktop: false });
       this.openDesktopDropdownRootId = null;
       this.closedDesktopDropdownRootId = null;
       const layout = buildSfxPortraitEditorLayout(width, height);
       this.drawWaveform(ctx, layout.mainEditor);
-      this.drawBottomRail(ctx, layout.middleRail);
+      if (canRenderEditorSurface(viewportMode.mode, 'bottom-action-rail')) {
+        this.drawBottomRail(ctx, layout.middleRail);
+      }
       const sheetOpen = this.leftTab !== 'timeline' || this.controllerMenu.active;
       if (sheetOpen) {
         this.mobilePortraitMenuSheetBounds = { ...layout.menuSheet };
@@ -1951,7 +1974,7 @@ export default class SfxEditor {
         this.drawLeftRail(ctx, layout.rootTabs.x, layout.rootTabs.y, layout.rootTabs.w, layout.rootTabs.h);
         this.drawRightPanel(ctx, layout.subRail);
       }
-      if (gamepadConnected) {
+      if (gamepadConnected && canRenderEditorSurface(viewportMode.mode, 'gamepad-hint-bar')) {
         this.drawGamepadHintBar(ctx, { x: layout.mainEditor.x + 8, y: layout.mainEditor.y + 8, w: Math.max(220, layout.mainEditor.w - 16), h: 28 }, 'SFX Timeline');
       }
       if (this.shouldDrawControllerOverlay(width, height)) {
@@ -2015,9 +2038,13 @@ export default class SfxEditor {
       : null;
     const sharedMobileRailW = getSharedMobileRailWidth(width, height);
     const railW = (landscapeLayout?.surfaces.compactCommandRail ?? landscapeLayout?.surfaces.rootMenu)?.w ?? (isMobileViewport ? sharedMobileRailW : 76);
-    const landscapeSubmenuSurface = gamepadSubmenuOnLeft ? null : landscapeLayout?.surfaces.submenu;
-    const landscapeOverlayDrawerSurface = gamepadSubmenuOnLeft ? null : landscapeLayout?.surfaces.overlayDrawer;
-    const landscapeRootDrawerSurface = gamepadSubmenuOnLeft ? null : landscapeLayout?.surfaces.rootDrawer;
+    const canRenderLandscapeRightSubmenu = canRenderEditorPlanSurface(landscapeLayout, 'right-drawer')
+      && canRenderEditorPlanSurface(landscapeLayout, 'landscape-right-submenu');
+    const canRenderLandscapeBottomRail = canRenderEditorPlanSurface(landscapeLayout, 'bottom-tool-rail');
+    const canRenderLandscapeRootDrawer = canRenderEditorPlanSurface(landscapeLayout, 'left-overlay-drawer');
+    const landscapeSubmenuSurface = canRenderLandscapeRightSubmenu ? landscapeLayout?.surfaces.submenu : null;
+    const landscapeOverlayDrawerSurface = canRenderLandscapeRootDrawer ? landscapeLayout?.surfaces.overlayDrawer : null;
+    const landscapeRootDrawerSurface = canRenderLandscapeRootDrawer ? landscapeLayout?.surfaces.rootDrawer : null;
     const activeDrawerSurface = landscapeSubmenuSurface ?? landscapeOverlayDrawerSurface;
     const rightW = activeDrawerSurface?.w ?? (gamepadSubmenuOnLeft ? 0 : (isMobileLandscape ? sharedMobileRailW : Math.min(240, Math.max(178, width * 0.28))));
     const bottomH = landscapeLayout?.surfaces.toolOptions?.h ?? (isMobileLandscape ? 112 : 118);
@@ -2037,14 +2064,18 @@ export default class SfxEditor {
     if (!gamepadSubmenuOnLeft && right.w > 0) {
       this.drawRightPanel(ctx, right);
     }
-    if (bottom.h > 0) this.drawBottomRail(ctx, bottom);
-    const suppressLandscapeThumbstick = gamepadSubmenuOnLeft || this.landscapeRootDrawerOpen;
+    if (bottom.h > 0 && canRenderLandscapeBottomRail) {
+      this.drawBottomRail(ctx, bottom);
+    }
+    const suppressLandscapeThumbstick = gamepadSubmenuOnLeft
+      || this.landscapeRootDrawerOpen
+      || !canRenderEditorSurface(viewportMode.mode, 'touch-thumbstick');
     if (suppressLandscapeThumbstick) {
       resetSharedThumbstickState(this.panJoystick);
     } else {
       this.drawMobilePanJoystick(ctx, width, height);
     }
-    if (gamepadConnected) {
+    if (gamepadConnected && canRenderEditorSurface(viewportMode.mode, 'gamepad-hint-bar')) {
       this.drawGamepadHintBar(ctx, { x: canvas.x + 12, y: height - bottomH - 36, w: Math.max(240, canvas.w - 24), h: 28 }, 'SFX Timeline');
     }
     if (gamepadMenuState.drawControllerOverlay) {
@@ -2087,7 +2118,7 @@ export default class SfxEditor {
         this.controllerMenu.resetFocus();
       };
       action.skipHistory = true;
-      this.buttons.push({ ...button.bounds, kind: 'button', action: () => this.invokeWithHistory(action), desktopRootId: button.id });
+      this.buttons.push(createDesktopRootMenuHit(button, () => this.invokeWithHistory(action), { kind: 'button' }));
       }
     });
   }
@@ -2111,6 +2142,9 @@ export default class SfxEditor {
     });
     drawSharedDesktopDropdown(ctx, dropdownPlan, {
       isActive: (item) => this.isControllerMenuItemActive(dropdown.rootId, item.id),
+      registerScrollRegion: (region) => {
+        this.menuScrollRegions.push(region);
+      },
       registerButton: ({ item, bounds }) => {
         const controllerItem = dropdownPlan.actionById.get(item.id);
         const action = controllerItem?.onSelect
@@ -2137,11 +2171,12 @@ export default class SfxEditor {
   }
 
   getGamepadMenuState(width = 0, height = 0) {
+    const viewportMode = this.resolveSfxViewportMode(width, height);
     return resolveGamepadMenuState({
       viewportWidth: width,
       viewportHeight: height,
       gamepadConnected: Boolean(this.game?.input?.isGamepadConnected?.()),
-      isMobile: this.isMobileLayout(),
+      isMobile: viewportMode.isMobileViewport,
       menuActive: this.controllerMenu.active,
       activeMenuId: this.controllerMenu.getActiveMenuId()
     });
@@ -2161,6 +2196,12 @@ export default class SfxEditor {
     const items = controllerItems.length
       ? controllerItems
       : (menuId ? (plan.submenu?.items || []) : plan.rootEntries);
+    const plannedItems = menuId ? (plan.submenu?.items || []) : plan.rootEntries;
+    const plannedFocusById = new Map(plannedItems.map((item) => [item.id, Boolean(item.focused)]));
+    const focusedItemId = this.controllerMenu.getFocusedItem(activeMenuId)?.id
+      || plan.focus?.submenuItemId
+      || plan.focus?.rootItemId
+      || null;
     drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
     drawSharedGamepadSlideOutHeader(ctx, bounds, menu?.title || plan.submenu?.title || 'SFX Editor', { hint: plan.headerHint });
     const rowH = this.getPanelRowHeight();
@@ -2174,7 +2215,7 @@ export default class SfxEditor {
     const visibleRows = Math.max(1, Math.floor((listBounds.h + gap) / (rowH + gap)));
     const start = this.controllerMenu.syncScrollToItem(
       activeMenuId,
-      this.controllerMenu.getFocusedItem(activeMenuId)?.id,
+      focusedItemId,
       items,
       visibleRows,
       this.controllerMenu.scroll?.[activeMenuId] || 0
@@ -2195,7 +2236,7 @@ export default class SfxEditor {
           }
           item.onSelect?.(this);
         },
-        this.controllerMenu.isFocusedItem(activeMenuId, item.id)
+        this.controllerMenu.isFocusedItem(activeMenuId, item.id) || Boolean(plannedFocusById.get(item.id))
       );
     });
     drawSharedPortraitScrollHints(ctx, listBounds, {
@@ -2211,7 +2252,8 @@ export default class SfxEditor {
   }
 
   drawMobilePanJoystick(ctx, width, height) {
-    if (!(this.isMobileLandscape || this.isMobilePortrait)) {
+    if (!canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick')
+      || !(this.isMobileLandscape || this.isMobilePortrait)) {
       resetSharedThumbstickState(this.panJoystick);
       return;
     }
@@ -2620,6 +2662,7 @@ export default class SfxEditor {
     ];
     drawSharedDesktopContextPanel(ctx, contextBounds, {
       lines,
+      contentRoles: ['document-summary', 'selection-summary', 'transport', 'status'],
       status: this.message || ''
     });
     if (transportBounds) this.drawDesktopTransportPanel(ctx, transportBounds);
@@ -2805,10 +2848,6 @@ export default class SfxEditor {
 
   getSfxFileMenuItems() {
     return buildSharedEditorFileMenu({
-      supported: {
-        undo: false,
-        redo: false
-      },
       actions: {
         new: () => this.newDocument(),
         save: () => this.save(),

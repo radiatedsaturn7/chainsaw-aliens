@@ -1,12 +1,255 @@
 export const LATEST_MAJOR_WORK = {
   inProgress: [
     'Finish shared desktop editor chrome across all editors: horizontal top menus, click-away dropdown drawers, and persistent left-side tool/context panels.',
+    'Rework desktop editor menu information architecture: keep dropdowns usable while selecting commands, move common edit commands into one Edit area, and make left panels contextual instead of duplicating top drawers.',
     'Audit every editor menu so File, Edit, View, Tools, and editor-specific drawers contain real commands instead of duplicate navigation rows.',
     'Preserve the working portrait flows while tightening only obvious overlap, start-screen, and bottom-menu problems.',
     'Bring mobile landscape and gamepad onto the same shared layout rules: landscape keeps left root/right submenu, gamepad replaces the left root with a slide-out submenu.',
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   recentMajorChanges: [
+    '2026-07-03 15:14 EDT - Race Editor selected road edges now carry per-segment width, bumpiness, and snow condition data, with Daytona widened as the wide-track template and rally stages narrowed for one-lane-style routes.',
+    '2026-07-03 15:03 EDT - Race playtest now has pre-race car selection with Tuning and Start buttons, per-wheel Tarmac/Rain/Dirt/Snow tire compounds, tire pressure and setup slider rows, and physics grip/wear that reacts to tire choice, road surface, and weather.',
+    '2026-07-03 15:03 EDT - Shared desktop layout contracts now normalize desktop submenu/settings surfaces to top-dropdown and validate required/suppressed/presentation surfaces against the centralized EDITOR_SURFACES registry.',
+    '2026-07-03 14:52 EDT - Race/Car data now includes 2022 Subaru BRZ and 2022 Honda Civic Si test cars, and race playtest transmission choice is now a runtime pause-menu setting instead of separate manual/automatic car entries.',
+    '2026-07-03 14:38 EDT - Shared editor surface ids are now centralized in EDITOR_SURFACES, and the core desktop/landscape/gamepad surface contracts plus mode required/suppressed tables consume that map instead of repeating raw strings.',
+    '2026-07-03 14:34 EDT - Shared menu placement and mode-contract defaults are now deeply frozen, while each editor still receives its own cloned placement/contract maps for runtime use.',
+    '2026-07-03 14:33 EDT - Shared editor menu placements are now deep-cloned per editor, so future portrait/landscape/desktop/gamepad placement tweaks cannot leak across editors or mutate the shared placement defaults.',
+    '2026-07-03 14:30 EDT - Shared menu validation now rejects accidental blank portrait bottom-menu roots unless the section is explicitly registered as a dynamic runtime panel, protecting mobile portrait menus from empty buttons while preserving Level Assets and editor Settings panels.',
+    '2026-07-03 14:27 EDT - Pixel/Tile, Level, Actor, MIDI, SFX, Cutscene, and Race renderer paths no longer check right-overlay root drawers in landscape; concrete renderers now use only the shared left-origin root drawer while right drawers stay submenu-only.',
+    '2026-07-03 14:24 EDT - Race playtest projection now starts road samples near the camera to keep the road from clipping at the bottom, unpainted race terrain defaults to green grass, and binary D-pad steering now moves about half as fast per frame instead of snapping immediately to full lock.',
+    '2026-07-03 14:21 EDT - Shared landscape shell plans now always keep root menu drawers left-origin, coercing stale right-origin requests back to the compact left rail so the right side remains reserved for active submenus.',
+    '2026-07-03 14:19 EDT - The editor UI contract no longer describes LeftRail as generic mobile navigation; it now explicitly separates desktop context/inspector use, landscape compact command rail use, and portrait bottom-first navigation.',
+    '2026-07-03 14:16 EDT - UISpec now matches the shared desktop drawer owners for Pixel, Actor, MIDI, Cutscene, and Race: display toggles stay in View, duplicate/destructive edits stay in Edit, Cutscene export stays in File, and Race uses Race/Ground/Elevation/Sprites/Settings/Drive instead of stale Road/Surfaces/Weather rows.',
+    '2026-07-03 14:13 EDT - UISpec now matches the Tile shared menu contract: Tile Art and Reset Override stay in Edit, while the Tiles drawer owns previous/next tile navigation only.',
+    '2026-07-03 14:12 EDT - Race Editor portrait menus now include a Drive tab with Play/Test Drive, restoring a reachable mobile playtest button without crowding the standard four-button bottom rail.',
+    '2026-07-03 14:10 EDT - Shared menu validation now explicitly requires portrait Settings placement to stay on the bottom sheet, closing the remaining placement-contract gap between root/submenu rows and settings rows.',
+    '2026-07-03 14:08 EDT - Actor desktop DOM dropdown rows now render Edit role-group separators when shared dropdown metadata marks a group start, matching the canvas top-drawer grouping treatment.',
+    '2026-07-03 14:06 EDT - Actor desktop DOM ribbon titles now ellipsize like the shared canvas desktop ribbon, keeping the DOM-based editor aligned with the RTG Studio left-ribbon chrome on narrow desktop panels.',
+    '2026-07-03 14:02 EDT - Shared desktop context panels now clip title, context rows, and status text through the same RTG Studio label helper used by top-menu chrome, preventing long inspector strings from overflowing differently across editors.',
+    '2026-07-03 13:58 EDT - Race Editor top-down map distance overlays now use explicit left/right segment label layout and an adaptive scale bar that picks honest real-world distances instead of relying on clamped pixel widths.',
+    '2026-07-03 13:55 EDT - Desktop top-menu root helper coverage now rejects the old hand-built root hit object patterns for Pixel/Tile, Level, MIDI, SFX, and Cutscene so future editor changes stay on createDesktopRootMenuHit().',
+    '2026-07-03 13:53 EDT - Actor desktop DOM top-menu root buttons now use applyDesktopRootMenuDataset(), exposing the same root id, command surface, pointer type, activation, and kind metadata as shared canvas top-menu root hits.',
+    '2026-07-03 13:51 EDT - Cutscene desktop top-menu root buttons now use createDesktopRootMenuHit() with the existing desktop-root prefix, bringing its canvas root hit path onto the same shared helper as Pixel/Tile, Level, MIDI, SFX, and Race.',
+    '2026-07-03 13:48 EDT - Pixel/Tile, Level, and MIDI desktop top-menu root hit targets now also use createDesktopRootMenuHit(), extending shared top-menu metadata normalization across the canvas editors.',
+    '2026-07-03 13:44 EDT - SFX and Race desktop top-menu root hit targets now use the shared createDesktopRootMenuHit() helper, starting the same normalization for top-menu roots that dropdown rows already use.',
+    '2026-07-03 13:39 EDT - Actor desktop dropdown DOM rows now use the shared applyDesktopDropdownCommandDataset() helper, so DOM and canvas editors share the same command surface, pointer type, release activation, source-root, and Edit role metadata path.',
+    '2026-07-03 13:33 EDT - Pixel and Level desktop dropdown hit targets now use the shared createDesktopDropdownCommandHit() helper, removing local command metadata fallbacks and matching MIDI/SFX/Cutscene/Race/Car canvas dropdown behavior.',
+    '2026-07-03 13:29 EDT - Shared menu validation now enforces mode interaction contracts for pointer type, gesture scrolling, touch command surfaces, row activation, and gamepad persistent surfaces across every editor.',
+    '2026-07-03 13:26 EDT - Shared menu validation now rejects cross-section duplicate command ownership directly, so every editor validates one top/dropdown owner per command instead of relying on a separate audit.',
+    '2026-07-03 13:23 EDT - Shared editor menu specs now enforce one command owner per action across every editor; Level Assets no longer duplicates tile/actor/powerup/structure commands and Actor Preview owns only Play Scene.',
+    '2026-07-03 13:19 EDT - Actor shared menus now route the compact Tools-style controls through Preview, View owns only Fit View, and stale Actor Tools menu references were removed from the shared spec.',
+    '2026-07-03 13:13 EDT - Race Editor top-down map now labels each visible road segment with its length and draws an adaptive corner scale bar, making route scale easier to judge while editing.',
+    '2026-07-03 13:09 EDT - Actor shared menus now use one Settings drawer for actor settings, metadata, aggression, and loot rules; the old duplicate Actor section was removed and portrait now targets the same Settings root.',
+    '2026-07-03 13:05 EDT - Race Editor portrait thumbstick now behaves like a held virtual thumbstick for map panning: dragging sets knob deflection, update frames pan continuously, and release stops movement.',
+    '2026-07-03 13:03 EDT - Race Editor Race menu now exposes direct load rows for WeatherTech Raceway, Nurburgring Nordschleife, Col de Turini, Ouninpohja, and Daytona Tri-Oval, selecting or inserting the built-in template from the Race button.',
+    '2026-07-03 12:57 EDT - Built-in Race Editor test tracks now carry clearer reference-basis metadata, modeled road widths, Daytona backstretch banking, and direct aliases for Nordschleife/Nurburgring/Daytona loading.',
+    '2026-07-03 12:54 EDT - Pixel desktop Canvas no longer duplicates View display toggles; View owns Grid, Tile Preview, and Onion Skin while Canvas focuses on document/canvas operations.',
+    '2026-07-03 12:50 EDT - Cutscene desktop Stage no longer duplicates Master Volume; Stage now owns scene length, fades, and snap/grid while Audio owns volume controls.',
+    '2026-07-03 12:46 EDT - Cutscene desktop Audio no longer duplicates Add Music or Add SFX; Add owns new media insertion while Audio focuses on selected audio clip edits and master volume.',
+    '2026-07-03 12:43 EDT - Cutscene desktop Timeline no longer duplicates View workspace and zoom commands; Timeline now owns playback/step rows while View owns canvas/split/timeline and zoom controls.',
+    '2026-07-03 12:39 EDT - Cutscene desktop Settings no longer duplicates Stage scene/snap/master controls or View workspace switches; Stage and View remain the single owners for those rows.',
+    '2026-07-03 12:35 EDT - Actor desktop States no longer duplicates Duplicate State or Delete State; those state edit actions stay in Edit while States focuses on Add State and the state list.',
+    '2026-07-03 12:32 EDT - Tile desktop Tiles no longer duplicates Edit Tile Art or Reset Override; those target-edit/destructive commands stay in Edit while Tiles focuses on previous/next tile navigation.',
+    '2026-07-03 12:30 EDT - MIDI desktop Settings no longer duplicates Grid Quantize or View Preview/Contrast commands; those controls stay in their owning drawers and tests now keep Settings clear of repeated workflow rows.',
+    '2026-07-03 12:26 EDT - SFX desktop Settings no longer duplicates the View Loop command; Loop remains in View, and coverage now keeps the Settings drawer clear of repeated playback rows.',
+    '2026-07-03 12:22 EDT - Race desktop Drive is now the single shared drawer owner for Test Drive; the Race authoring drawer stays focused on route and terrain-editing commands.',
+    '2026-07-03 12:19 EDT - Race shared menu specs no longer keep stale Road/Surfaces/Scenery/Weather sections after the authoring model moved to Race/Ground/Elevation/Sprites/Settings, and validation now rejects unreachable sections.',
+    '2026-07-03 12:13 EDT - Level desktop Playtest is now consolidated under the Playtest drawer; File stays document-focused and View stays zoom-focused instead of duplicating Start Playtest.',
+    '2026-07-03 12:08 EDT - Shared menu validation now rejects File-scoped document actions in non-File drawers, preventing save/export/exit commands from reappearing in editor-specific desktop dropdowns.',
+    '2026-07-03 12:04 EDT - Cutscene desktop no longer exposes a separate Export top-level drawer; MP4 export stays under File so save/export behavior has one desktop home.',
+    '2026-07-03 11:59 EDT - Cutscene desktop left panel no longer duplicates Add drawer commands; Add stays in the top dropdown while the left panel focuses on document, selection, transport, and status context.',
+    '2026-07-03 11:52 EDT - Race Editor desktop, landscape, and gamepad root menus now use the same authoring model as portrait: Race, Ground, Elevation, Sprites, Settings, and Drive instead of the older Road/Surfaces/Weather split.',
+    '2026-07-03 11:48 EDT - Built-in Race Editor test tracks now include structured reference facts for length, surface, elevation, signature sections, snow transitions, and Daytona banking so the templates stay anchored to real-world notes.',
+    '2026-07-03 11:45 EDT - Shared menu specs now centralize gamepad placement and render surface names, making the slide-out alias explicit while keeping renderer contracts on left-slide-out-drawer.',
+    '2026-07-03 11:40 EDT - Pixel and Level gamepad menu-state helpers now pass a normalized Boolean gamepadConnected value into the shared resolver, matching the other editor shells.',
+    '2026-07-03 11:37 EDT - Level layout bounds now uses its centralized getGamepadMenuState() helper instead of a bad-signature direct resolveGamepadMenuState() call, keeping gamepad slide-out rail reservation consistent during layout.',
+    '2026-07-03 11:34 EDT - Pixel, Level, Actor, MIDI, SFX, and Cutscene now feed the shared viewport resolver from deviceIsMobile or isMobile, matching Race/Car so mobile, landscape, and gamepad mode selection is consistent across editors.',
+    '2026-07-03 11:31 EDT - Pixel and Level runtime layout paths now use the canonical landscape-touch viewport mode instead of the stale landscape alias, tightening shared landscape rail and thumbstick behavior.',
+    '2026-07-03 11:27 EDT - Race and Car gamepad menus now keep root and submenu state mutually exclusive, so Menu opens only the left root rail, selecting a root replaces it with the slide-out submenu, and B returns cleanly to the root rail.',
+    '2026-07-03 11:23 EDT - Race data now ships five built-in real-world-inspired test tracks: WeatherTech Raceway Laguna Seca, Nurburgring Nordschleife, Col de Turini with asphalt-to-snow transition, Ouninpohja gravel, and Daytona Tri-Oval.',
+    '2026-07-03 11:14 EDT - Level top playtest visibility and SFX imports no longer depend on raw mobile portrait/landscape helpers; remaining editor code outside uiSuite now routes mode decisions through shared viewport contracts.',
+    '2026-07-03 11:11 EDT - Pixel and Tile mobile layout planning now falls back through the shared viewport-mode resolver instead of raw portrait/landscape helper checks, keeping standalone layout helpers aligned with the same desktop, portrait, landscape, and gamepad contract as the editor shell.',
+    '2026-07-03 11:07 EDT - MIDI File drawer coverage now locks sticky Exit behavior to activeViewportMode and rejects raw portrait/landscape layout helper drift, protecting desktop File drawers on touch-capable devices.',
+    '2026-07-03 11:01 EDT - Race playtest scale now uses real 10-foot highway dashes with 30-foot gaps, side terrain banding is tied to physical road distance instead of exaggerated visual travel, the visible steering wheel maps from full 540-degree lock at rest down to roughly 20 degrees at 100 mph, and the Race editor panel shows total road length in kilometers.',
+    '2026-07-03 10:56 EDT - Level Editor landscape zoom and thumbstick rail setup now uses the concrete shared shell-plan visibility helper, then draws from the computed rail bounds, so its bottom zoom rail follows the same shell decision path as the other migrated editors.',
+    '2026-07-03 10:54 EDT - The embedded Tile Editor inside Pixel Studio now gates landscape and gamepad rails, root drawers, right submenus, and bottom tool rails through the shared concrete shell-plan visibility helper instead of reading raw shell surfaces or generic mode visibility directly.',
+    '2026-07-03 10:50 EDT - Cutscene, Level, and Actor landscape rendering now use the shared concrete shell-plan visibility helper for left root rails, root drawers, right submenus, and bottom tool rails, extending the SFX/MIDI/Race/Car migration and reducing another set of per-editor landscape/gamepad branches.',
+    '2026-07-03 10:43 EDT - Race Editor and Car Editor landscape rendering now use the shared concrete shell-plan visibility helper for bottom rail, right submenu, and root drawer surfaces, matching the SFX and MIDI migration away from local gamepad/right-rail gates.',
+    '2026-07-03 10:41 EDT - MIDI landscape now uses the shared concrete shell-plan visibility helper for right drawer, root drawer, and bottom rail decisions, matching the SFX plan-surface gate and reducing another local landscape/gamepad branch.',
+    '2026-07-03 10:38 EDT - Shared render gating now has getEditorPlanSurfaceVisibility/canRenderEditorPlanSurface helpers, and SFX landscape uses the concrete shell plan visibility for right drawer, root drawer, and bottom rail decisions instead of rechecking local gamepad booleans.',
+    '2026-07-03 10:33 EDT - Landscape touch shell plans now expose effectiveSurfaceVisibility in addition to the canonical mode surfaceVisibility, so editors can tell when a concrete landscape helper instance intentionally omitted the right submenu rail or moved the root drawer without misreading the generic landscape contract.',
+    '2026-07-03 10:30 EDT - Race Editor default authoring data now starts with exactly one locked Start tile instead of a prebuilt loop, while existing route-editing and playtest paths keep their generated/seeded geometry fallbacks for drag, terrain, and runtime coverage.',
+    '2026-07-03 10:24 EDT - UISpec and shared menu validation now lock in the Race Editor route-authoring contract: portrait uses File/Race/Ground/Elevation/Sprites/Settings, route type is inferred from endpoint connection, and explicit Circuit/Destination menu toggles are rejected from the shared Race menu spec.',
+    '2026-07-03 10:18 EDT - Race Editor portrait now has File, Race, Ground, Elevation, Sprites, and Settings on the bottom menu; the portrait thumbstick pans the map, a zoom slider controls map scale, File exposes New/Save/Save As, and route type is inferred from snapping the final destination node to the locked starting tile.',
+    '2026-07-03 09:57 EDT - Portrait editor action rails now use one shared STANDARD_EDITOR_ACTION_RAIL_PREFIX/getStandardEditorActionRailIds contract, so Pixel, Level, Actor, MIDI, SFX, Cutscene, Race, and Car all keep Menu, Undo, Redo, and one contextual action in the same bottom-rail order instead of copying per-editor arrays.',
+    '2026-07-03 09:53 EDT - Race Editor portrait authoring now uses the standard bottom rail with the shared thumbstick plus Menu, Undo, Redo, and a contextual mode action, while a compact portrait panel exposes Race, Ground, and Elevation modes for node/edge editing, terrain painting, and height brushing.',
+    '2026-07-03 08:58 EDT - Landscape touch shell surfaces now come from LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT, centralizing the fixed left compact command rail, left-origin root drawer, right submenu drawer, bottom tool/options role, suppressed desktop surfaces, and compact-rail action metadata used by shared landscape plans.',
+    '2026-07-03 08:53 EDT - Desktop File drawer consistency now uses explicit DESKTOP_FILE_BASELINE_ACTION_IDS and DESKTOP_FILE_FOOTER_ACTION_ID constants, with shared menu validation and dropdown-plan tests enforcing the same New/Save/Open/Export/Import baseline and final Exit to Main Menu footer across every editor.',
+    '2026-07-03 08:50 EDT - Desktop dropdown open/close state and slide-down timing are now centralized through DESKTOP_DROPDOWN_STATE_CONTRACT, so every editor has one shared source for openedAtMs preservation, start-closed behavior, click-away closed-root persistence, and drawer motion defaults.',
+    '2026-07-03 08:48 EDT - Race playtest steering now uses an explicit controller-style steering profile: D-pad and keyboard steering behave as full left/right stick deflection with a much faster virtual-wheel response, analog sticks keep their own response curve, and high-speed damping stays in the tire-angle/yaw authority layer instead of making the wheel feel sluggish.',
+    '2026-07-03 08:43 EDT - Desktop dropdown command rows are now centralized through DESKTOP_DROPDOWN_COMMAND_CONTRACT, so shared hit records and dropdown render-plan rows carry the same top-dropdown command surface, mouse pointer type, release activation, item kind, and desktop-dropdown membership metadata.',
+    '2026-07-03 08:39 EDT - Desktop shell surfaces are now centralized through DESKTOP_SHELL_SURFACE_CONTRACT, so command surfaces, persistent top/left/work surfaces, suppressed mobile surfaces, left-panel role metadata, and desktopMobileRailsHidden all come from one shared desktop app-shell contract.',
+    '2026-07-03 08:34 EDT - Gamepad slide-out behavior is now centralized through GAMEPAD_SLIDE_OUT_MENU_CONTRACT, so root rail surfaces, submenu surfaces, controls, row activation, source surfaces, and suppressed touch surfaces all come from one shared contract across editor layout plans and controller menu rows.',
+    '2026-07-03 08:27 EDT - Landscape touch compact left-rail behavior is now fully constant-backed: shared plans, UISpec, the editor UI contract, and cross-editor tests use COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT and COMPACT_LANDSCAPE_COMMAND_RAIL_WIDTH for the fixed Menu/Undo/Redo/context action rail instead of repeating raw values.',
+    '2026-07-03 08:22 EDT - Portrait editor root-menu sizing is now centralized through PORTRAIT_ROOT_MAX_ITEMS, with UISpec, the editor UI contract, shared menu validation, and cross-editor portrait tests all enforcing the same eight-item bottom-rail limit so new editors consolidate overflow into submenus instead of expanding mobile roots.',
+    '2026-07-03 08:16 EDT - UISpec and the editor UI contract now explicitly document the desktop File/Edit separation: File stays on document actions, Edit owns history and clipboard actions, and Edit drawer role groups follow the shared history, clipboard, selection, duplicate, targetEdit, and destructive order across every editor.',
+    '2026-07-03 08:13 EDT - Race playtest D-pad and keyboard steering now ramp the virtual wheel much faster toward full-stick lock while leaving high-speed damping in the tire/yaw authority layer, so held digital input behaves like a controller stick pushed fully left or right and released input recenters predictably.',
+    '2026-07-03 08:09 EDT - Shared menu spec validation now rejects stale root label override keys unless they target a real root menu or runtime alias, keeping desktop, landscape, and gamepad menu labels tied to the canonical shared roots.',
+    '2026-07-03 08:06 EDT - Shared menu spec validation now rejects Undo/Redo history commands in desktop File drawers as well as clipboard actions, keeping File document-focused and Edit responsible for history and clipboard workflows across every editor.',
+    '2026-07-03 08:02 EDT - Shared menu spec validation now blocks desktop-only Edit and View roots from portrait bottom menus, keeping portrait roots focused on compact workflow categories while Undo/Redo stay on the bottom action rail.',
+    '2026-07-03 07:58 EDT - Shared editor menu specs now enforce desktop Edit role-group order after Undo/Redo, and MIDI Edit now groups Copy/Cut/Paste before Select All so every desktop Edit drawer follows the same history, clipboard, selection, target, and destructive command flow.',
+    '2026-07-03 07:54 EDT - MIDI, SFX, and Cutscene desktop dropdowns now consume empty shared drawer-region clicks before editor work-surface handling, matching Pixel/Tile and Level so fitted top-menu panels do not fall through to grid, waveform, or timeline controls.',
+    '2026-07-03 07:51 EDT - Actor desktop dropdown rows now use the same pointer-down/pointer-up release activation helpers as the canvas editors, suppressing command activation after drag movement instead of relying on DOM onclick.',
+    '2026-07-03 07:48 EDT - Pixel/Tile and Level desktop dropdowns now register the shared animated drawer region and consume empty drawer clicks as UI, preventing fitted top-menu panels from falling through to canvas/editor controls while keeping row commands on release activation.',
+    '2026-07-03 07:41 EDT - Shared desktop dropdown chrome now exposes its animated scroll/drag region through drawSharedDesktopDropdown, and MIDI, SFX, Cutscene, and Race/Car register those regions through their existing menuScrollRegions models so drawer gesture geometry matches the drawn slide-down panel.',
+    '2026-07-03 07:34 EDT - Shared desktop dropdown render plans now always expose a drag-safe menu region, even when the drawer contents fit without scrolling, so desktop menu taps and drag gestures use the same release/suppression behavior across editors.',
+    '2026-07-03 07:30 EDT - Race playtest steering now treats D-pad and keyboard steering as a full virtual analog-stick target while removing an extra stacked high-speed steering cap, so the visible wheel still moves quickly and the car gets a stronger but speed-limited tire angle at highway speeds.',
+    '2026-07-03 07:26 EDT - Shared editor menu validation now rejects clipboard actions in File drawers, enforcing the desktop IA rule that File stays document-focused and clipboard/history commands live in Edit.',
+    '2026-07-03 07:24 EDT - Pixel desktop File menu metadata now drops stale copy-image and paste-image actions from the canonical shared spec, keeping File to the shared document baseline while Edit remains the single clipboard command area.',
+    '2026-07-03 07:21 EDT - MIDI landscape drawing now uses the resolved viewport mode for landscape branching instead of raw width > height geometry, keeping touch landscape and desktop behavior tied to the shared editor mode contract.',
+    '2026-07-03 07:19 EDT - Pixel, MIDI, and Actor gamepad slide-out renderers now consume the shared plan focused row fallback, matching Level, SFX, and Cutscene so every editor shows controller focus from the same gamepad menu contract.',
+    '2026-07-03 07:15 EDT - Race playtest steering now keeps D-pad and analog input responsive like a fully deflected controller stick while using a separate speed-sensitive front-tire steering angle, giving the car stronger parking/low-speed lock and a still-damped but usable high-speed turn response.',
+    '2026-07-03 07:11 EDT - Level, SFX, and Cutscene gamepad slide-out row renderers now fall back to the shared plan focused row, so the default submenu focus ring from the shared gamepad contract is visible in those editors.',
+    '2026-07-03 07:07 EDT - Shared gamepad slide-out menu plans now default submenu focus to the first enabled row when no focused item is supplied, so every editor shows a visible controller focus ring as soon as a submenu opens.',
+    '2026-07-03 07:02 EDT - Race and Car gamepad slide-out menus now track and forward focused row state into the shared button chrome, bringing their controller menu focus rendering in line with the other editors.',
+    '2026-07-03 06:58 EDT - Level top playtest button visibility now accepts the resolved viewport mode from layout/draw paths, keeping desktop and landscape chrome decisions tied to the shared mode contract instead of recomputing portrait state from raw dimensions.',
+    '2026-07-03 06:55 EDT - Pixel mobile layout planning now accepts the already-resolved viewport mode from the renderer, so portrait, landscape, and gamepad shell decisions follow the shared editor mode contract instead of re-inferring orientation from raw dimensions during live drawing.',
+    '2026-07-03 06:52 EDT - Pixel panel routing now uses activeViewportMode for portrait-only File, Canvas, Layers, and Frames behavior, so touch-capable desktop sessions keep desktop panel controls instead of inheriting portrait subpanels or sticky mobile File exit chrome.',
+    '2026-07-03 06:48 EDT - MIDI portrait layout, touch thumbstick placement, and bottom action rail rendering now use activeViewportMode === portrait instead of raw portrait geometry checks, preventing touch-capable desktop sessions from inheriting portrait rail/thumbstick layout.',
+    '2026-07-03 06:45 EDT - Race playtest D-pad steering now snaps the virtual wheel to full left/right immediately like a fully held analog stick, while the physics layer keeps a higher speed-sensitive steering authority floor so high-speed steering feels responsive without removing damping.',
+    '2026-07-03 06:41 EDT - Level File drawer sticky Exit behavior now uses activeViewportMode === landscape instead of recalculating landscape from raw dimensions, keeping File drawer layout tied to the resolved editor mode.',
+    '2026-07-03 06:39 EDT - Level pointer thumbstick suppression now uses activeViewportMode === landscape instead of recomputing mobile landscape from raw canvas dimensions, keeping Level touch controls tied to the shared mode contract.',
+    '2026-07-03 06:37 EDT - SFX portrait draw routing now uses the resolved isMobilePortrait flag from resolveSfxViewportMode(), removing a duplicate raw portrait-layout check from the main draw path.',
+    '2026-07-03 06:35 EDT - Actor desktop dropdown actions now route through the canonical shared actor menu section ordering, preventing the DOM editor from drifting away from the same File/Edit/View/States spec used by the other editors.',
+    '2026-07-03 06:30 EDT - Pixel mobile drawer and clone-tool instruction paths now use activeViewportMode/isTouchViewportMode instead of raw mobile detection, keeping desktop drawers and desktop clone prompts from drifting on touch-capable hardware.',
+    '2026-07-03 06:27 EDT - MIDI note placement snapping now uses activeViewportMode instead of raw isMobileLayout(), so touch-capable desktop sessions keep desktop round-to-nearest grid behavior while portrait, landscape, and gamepad keep touch-friendly floor snapping.',
+    '2026-07-03 06:22 EDT - Race playtest steering now treats held D-pad as full analog-stick deflection with a faster virtual wheel response, while high-speed damping remains in the tire/yaw authority layer so the wheel feels responsive without turning like an arcade car.',
+    '2026-07-03 06:19 EDT - MIDI settings-click routing and note resize handle sizing now use activeViewportMode, preventing desktop sessions on touch devices from inheriting portrait workspace hit behavior or phone-sized note handles.',
+    '2026-07-03 06:16 EDT - MIDI Settings panel stacking and instrument-picker modal sizing now use activeViewportMode for portrait versus desktop behavior, preventing touch-capable desktops from getting phone-shaped modals.',
+    '2026-07-03 06:13 EDT - MIDI File drawer rendering now uses activeViewportMode for desktop versus touch drawer width, sticky Exit behavior, and row sizing, keeping desktop File as a desktop drawer on touch-capable machines.',
+    '2026-07-03 06:10 EDT - MIDI Song selection menus, split/shift tools, and automation handles now size from activeViewportMode, keeping desktop Song editing overlays on desktop geometry even on touch-capable devices.',
+    '2026-07-03 06:08 EDT - MIDI shared button and toggle primitives now derive desktop versus touch typography from activeViewportMode, preventing touch-capable desktop sessions from inheriting mobile button label sizing.',
+    '2026-07-03 06:05 EDT - Pixel and Tile controller menu state now uses resolvePixelViewportMode() before calling the shared gamepad menu helper, keeping desktop, touch landscape, portrait, and controller slide-out behavior tied to one viewport contract.',
+    '2026-07-03 06:03 EDT - Level Editor minimap, top playtest button, enemy info, and tooltip draw paths now use activeViewportMode for desktop versus touch behavior, matching the shared layout contract instead of raw device mobile state.',
+    '2026-07-03 06:01 EDT - MIDI transport, instrument, and track-list panels now use activeViewportMode for desktop versus touch density, removing more raw mobile-state paths that could make desktop render like a mobile layout.',
+    '2026-07-03 05:57 EDT - Race playtest D-pad/keyboard steering now snaps the virtual steering wheel toward full stick lock much faster, while keeping speed-based tire authority in physics so high-speed steering remains damped.',
+    '2026-07-03 05:53 EDT - MIDI tab bar and top sequencer bar now use activeViewportMode for desktop versus touch sizing, reducing another raw mobile-state path that could make desktop render like mobile.',
+    '2026-07-03 05:50 EDT - MIDI mixer rows now use activeViewportMode for desktop versus touch density, aligning the mixer with the recent grid and song-tab mode-resolution cleanup.',
+    '2026-07-03 05:48 EDT - MIDI Song tab now derives touch versus desktop timeline sizing from activeViewportMode, matching the grid-control cleanup and preventing raw mobile state from changing desktop song-lane density.',
+    '2026-07-03 05:44 EDT - MIDI grid controls now size desktop versus touch rows from activeViewportMode instead of raw isMobileLayout(), keeping touch-capable desktop sessions on desktop control density.',
+    '2026-07-03 05:42 EDT - Pixel mobile toolbar portrait branching now uses the resolved activeViewportMode instead of re-deriving portrait from raw device mobile state, preventing touch-capable desktop sessions from inheriting portrait rail behavior.',
+    '2026-07-03 05:38 EDT - Pixel File no longer duplicates Copy/Paste rows; clipboard commands now stay in the Edit drawer, and the all-editor File builder guard rejects history and common clipboard command drift.',
+    '2026-07-03 05:35 EDT - Shared File menus now stop carrying Undo/Redo in their baseline or per-editor File configs; history commands remain in Edit drawers, and all-editor coverage now rejects File-history drift across Pixel, Level, Actor, MIDI, SFX, Cutscene, Race, and Car.',
+    '2026-07-03 05:27 EDT - Race/Car desktop playtest HUD controls now use the same release-activation path as desktop drawer commands, preventing immediate pointer-down actions from changing screens before mouse release.',
+    '2026-07-03 05:25 EDT - Race playtest steering now treats D-pad/keyboard and full analog stick as full virtual wheel input, while applying speed-sensitive steering authority in the physics layer so the wheel responds quickly without removing high-speed turn damping.',
+    '2026-07-03 05:18 EDT - Race/Car File menu coverage now verifies both editors use the same shared File drawer ordering, keep unsupported scaffold actions disabled, and preserve Exit to Main Menu as the final shared footer row.',
+    '2026-07-03 05:17 EDT - Broad editor UI coverage now requires Pixel/Tile, Level, Actor, MIDI, SFX, Cutscene, and Race/Car to keep viewport mode resolution centralized in one local helper per editor shell, preventing scattered direct resolveEditorViewportModeFlags calls from returning.',
+    '2026-07-03 05:16 EDT - Level Editor now centralizes desktop, portrait, landscape, and gamepad mode resolution in resolveLevelViewportMode(), routing layout bounds, HUD mode, and gamepad slide-out state through the same resolved isMobileViewport contract.',
+    '2026-07-03 05:15 EDT - Pixel and Tile mode resolution now flows through resolvePixelViewportMode() for main draw, Tile Picker, and zoom-to-fit sizing, reducing repeated raw resolver calls while preserving Tile-specific menu contracts.',
+    '2026-07-03 05:14 EDT - Race Editor and Car Editor now centralize desktop, portrait, landscape, and gamepad mode resolution in resolveRaceViewportMode(), and gamepad slide-out state uses the resolved isMobileViewport flag instead of reconstructing mobile state separately.',
+    '2026-07-03 05:13 EDT - SFX Editor now resolves viewport mode through a dedicated resolveSfxViewportMode() helper and feeds gamepad slide-out state from the resolved isMobileViewport flag, aligning SFX with the shared MIDI/Cutscene/Actor mode resolver pattern.',
+    '2026-07-03 05:12 EDT - Pixel bone action drawer cleanup and Level panel navigation/tooltips now use activeViewportMode-aware desktop versus touch gates, preventing touch-capable desktop sessions from inheriting mobile drawer cleanup, mobile panel extras, or suppressing desktop hover tooltip behavior.',
+    '2026-07-03 05:11 EDT - Level Editor drawer opening, File menu reset/close, touch thumbstick panning, haptics, precision zoom, and context ribbon drawing now use activeViewportMode/shared surface gates instead of raw isMobileLayout(), keeping touch-capable desktop sessions on desktop behavior while preserving portrait and landscape touch workflows.',
+    '2026-07-03 05:10 EDT - MIDI pedal-board desktop overview now uses activeViewportMode === desktop instead of raw isMobileLayout(), so touch-capable desktop sessions keep the full inline pedal settings overview while portrait, landscape, embedded, and compact views keep their existing mobile-friendly panels.',
+    '2026-07-03 05:09 EDT - Race D-pad and keyboard steering now treat held left/right as full analog stick deflection: the speed-limited steering target is applied immediately, the visible wheel catches up faster, and release-to-center remains quick so binary controls feel responsive without removing high-speed steering limits.',
+    '2026-07-03 05:05 EDT - MIDI record mode now dispatches desktop versus touch layouts through resolveMidiViewportMode(), keeping touch-capable desktop sessions on the desktop shell and using resolved mobile-landscape mode for the Now Playing preview placement instead of raw isMobileLayout().',
+    '2026-07-03 05:00 EDT - Pixel Editor drawer reset, file-menu close, palette return-to-canvas, eraser return-to-canvas, and desktop selection context-menu checks now use the resolved activeViewportMode touch-vs-desktop helper instead of raw isMobileLayout(), keeping touch-capable desktop sessions on desktop menu behavior.',
+    '2026-07-03 04:56 EDT - Level Editor trigger, Tile Art/pixel, and MIDI overlay panels now size and position from activeViewportMode !== desktop instead of raw isMobileLayout(), so desktop sessions on touch-capable devices keep desktop-style panel placement while portrait/landscape touch modes keep touch-friendly placement.',
+    '2026-07-03 04:51 EDT - Actor collision editing now gates its DOM thumbstick through the shared touch-thumbstick surface contract as well as pointer policy, preventing desktop or controller modes from inheriting mobile collision panning chrome while preserving touch workflows.',
+    '2026-07-03 04:46 EDT - Race D-pad and keyboard steering now behave like full left/right stick deflection with speed-sensitive authority instead of near-zero high-speed input; analog steering keeps the same speed cap, yaw damping retains a safer high-speed floor, and Pixel/Tile zoom-to-fit now uses the shared resolved viewport mode so desktop fit sizing does not reserve mobile rails on touch-capable devices.',
+    '2026-07-03 04:37 EDT - Race playtest pass widened first-person and third-person projected roads, strengthened braking, further damped high-speed steering and camera sweep, made route closure inference road-width aware, changed visible route labels to endpoint geometry, reduced the minimap player marker into a compact directional car glyph, and made pavement/dirt tire-slide SFX trigger earlier with a rougher dirt scrape profile.',
+    '2026-07-03 04:29 EDT - MIDI destructive action buttons now use shared RTG Studio danger chrome and UI_SUITE typography instead of hard-coded red fills and Courier text, keeping pedal/track Delete and Remove actions visually aligned with the editor theme.',
+    '2026-07-03 04:26 EDT - Race Editor and Car Editor gamepad landscape now hide the compact touch rail whenever the controller root or submenu slide-out is open, so controller menus replace the left rail instead of leaving Menu/Undo/Redo/Play or Generate hit targets active underneath.',
+    '2026-07-03 04:24 EDT - Tile Editor gamepad mode now suppresses the touch landscape bottom tool rail and lets the controller slide-out replace the left compact rail while menus are open, matching the shared gamepad contract instead of layering touch landscape chrome underneath.',
+    '2026-07-03 04:21 EDT - Tile Editor portrait now uses the shared bottom action rail inside PixelStudio: Menu opens the Tile controller menu, Undo/Redo use runtime history, and the primary Art action enters active tile art editing instead of drawing a one-off Back button in the mobile middle rail.',
+    '2026-07-03 04:16 EDT - Race playtest now infers circuit versus point-to-point from connected route endpoints through one helper, starts from authored node geometry facing the first real route vector, widens the projected road again, strengthens braking, lowers tire-screech activation for pavement and dirt slides, damps high-speed steering further, and renders the minimap marker as a clearer car-shaped directional glyph with wheel marks.',
+    '2026-07-03 04:14 EDT - Cutscene Editor now gates desktop dropdown item hits and desktop menu panel interception behind activeViewportMode === desktop, preventing stale desktop drawer bounds from stealing touch or gamepad input in portrait, landscape, or controller modes.',
+    '2026-07-03 04:12 EDT - MIDI Editor tab, File, and Settings pointer routing now chooses desktop dropdown drawers from activeViewportMode === desktop instead of raw isMobileLayout(), preserving desktop app-style menus on touch-capable devices while leaving portrait/landscape tabs on the mobile rail flow.',
+    '2026-07-03 04:09 EDT - Pixel and Tile mobile drawer opening plus palette-bar drag scrolling now use activeViewportMode instead of raw isMobileLayout(), keeping desktop panel/tab changes from opening mobile drawers or touch palette scroll paths on touch-capable desktop sessions.',
+    '2026-07-03 04:08 EDT - Level Editor wheel scrolling, hover bounds, gamepad hint bars, landscape bottom zoom rail, and thumbstick cleanup now key off activeViewportMode/shared surface gates instead of raw isMobileLayout(), keeping desktop app chrome from inheriting mobile rail behavior on touch-capable devices.',
+    '2026-07-03 04:04 EDT - Race playtest now keeps route wrapping tied to inferred connected endpoints during runtime, removes suspension-pull steering bias from free-driving tests, widens the projected road again, strengthens braking, damps high-speed binary steering further, keeps the compact Pause/Return/Main HUD instead of the older large overlay panel, and preserves pavement/dirt tire-screech material cues.',
+    '2026-07-03 03:57 EDT - Pixel and Tile pointer handling now keeps mobile drawer interception and thumbstick move updates behind activeViewportMode/shared touch-thumbstick gates, preventing stale mobile drawer or joystick state from affecting desktop pointer behavior on touch-capable devices.',
+    '2026-07-03 03:55 EDT - Level Editor pointer down/move/up now derive touch-only menu, drawer, thumbstick, zoom, long-press, and editor-area guards from activeViewportMode instead of raw isMobileLayout(), keeping desktop pointer behavior desktop even on touch-capable devices while preserving portrait, landscape, and gamepad touch-mode handling.',
+    '2026-07-03 03:53 EDT - Cutscene Editor thumbstick timeline panning now checks the shared active touch-thumbstick surface before applying update-time pan, matching desktop thumbstick cleanup and preventing suppressed mobile controls from continuing to move the timeline.',
+    '2026-07-03 03:51 EDT - MIDI Editor joystick panning now checks the shared active touch-thumbstick surface before applying update-time pan, matching its draw-time thumbstick reset path and preventing stale mobile landscape pan behavior from surviving into desktop or controller modes.',
+    '2026-07-03 03:49 EDT - Pixel and Tile touch pan/zoom helpers now rely on the shared active surface contract before allowing thumbstick panning or mobile zoom chrome, so desktop mode clears stale touch controls even when the device reports mobile/touch capability.',
+    '2026-07-03 03:47 EDT - Level Editor updateLayoutBounds now resolves the shared level viewport mode before assigning editor, drawer, thumbstick, zoom-slider, and playtest-button bounds, reducing raw isMobileLayout drift that could leave desktop or gamepad using stale mobile landscape geometry.',
+    '2026-07-03 03:44 EDT - Race playtest now launch-locks the car and camera to the first route vector for the first frames, clears initial lateral/view drift, widens the rendered road scale again, further lowers high-speed yaw response, and uses the active playtest route type when drawing start/finish checker stripes.',
+    '2026-07-03 03:37 EDT - Pixel, Race, and SFX desktop top-menu hover switching now explicitly requires the resolved desktop viewport mode before opening or switching slide-down drawers, closing another raw isMobileLayout gap in shared desktop menu behavior while leaving mobile portrait, landscape, and gamepad menu flow untouched.',
+    '2026-07-03 03:33 EDT - MIDI, SFX, and Cutscene desktop pointer handling now uses activeViewportMode === desktop for dropdown click-away, dropdown hit detection, hover drawer switching, and SFX pointer-policy selection, reducing raw isMobileLayout drift in the remaining desktop menu paths while preserving mobile portrait/landscape behavior.',
+    '2026-07-03 03:25 EDT - Race playtest now advances route progress from the car heading and speed instead of nearest-route snapping, keeps nearest-route projection as a secondary HUD cue, widens the rendered road again, strengthens braking, damps high-speed steering further, guards Race/Car desktop pointer behavior through activeViewportMode, and keeps the playtest minimap/top escape controls in place for quick Return/Main Menu exits.',
+    '2026-07-03 03:19 EDT - Pixel and Level pointer handlers now use activeViewportMode === desktop for desktop dropdown close/release handling and Pixel desktop canvas pan policy, tying these high-traffic pointer paths to the same shared mode selected by the renderer instead of raw isMobileLayout() checks.',
+    '2026-07-03 03:16 EDT - MIDI Editor now routes landscape grid/thumbstick mode checks, gamepad menu state, draw viewport resolution, and desktop grid pointer pan policy through resolveMidiViewportMode()/activeViewportMode instead of reconstructing desktop versus mobile state from raw isMobileLayout() checks.',
+    '2026-07-03 03:14 EDT - Cutscene Editor now stores the current viewport size and routes gamepad state, layout computation, and pointer interaction policy through resolveCutsceneViewportMode(), keeping desktop mouse behavior and gamepad/touch chrome tied to the same mode used for rendering.',
+    '2026-07-03 03:11 EDT - Actor Editor now centralizes viewport size and shared mode resolution through getViewportSize() and resolveActorViewportMode(), removing scattered direct window width/height checks from reset, render, collision, gamepad, sidebar, and rail-button layout decisions.',
+    '2026-07-03 03:07 EDT - SFX Editor timeline pan updates now also honor canRenderEditorSurface(activeViewportMode, touch-thumbstick), preventing hidden or suppressed mobile thumbstick state from continuing to scroll the timeline after switching into desktop or gamepad modes.',
+    '2026-07-03 03:05 EDT - SFX Editor thumbstick rendering is now guarded inside drawMobilePanJoystick() itself, so stale mobile portrait/landscape flags cannot draw touch thumbstick chrome when the shared mode surface contract suppresses touch-thumbstick.',
+    '2026-07-03 02:59 EDT - Race playtest now starts directly on the first route node facing the inferred first segment, keeps the checker stripe ahead of the car, uses a clearer directional minimap car marker, strengthens braking, widens the default road scale without making lanes absurdly broad, and further damps high-speed steering while keeping full stopped steering lock.',
+    '2026-07-03 02:57 EDT - SFX Editor controller hint bars now use canRenderEditorSurface(viewportMode.mode, gamepad-hint-bar) in both portrait and landscape paths, finishing the SFX mobile/gamepad chrome guard alongside its already-guarded rails and thumbstick surfaces.',
+    '2026-07-03 02:54 EDT - Race Editor and Car Editor now gate portrait action rails, landscape bottom tool options, and controller hint bars through canRenderEditorSurface(), keeping their shared Race/Car shell aligned with the same mode surface contract used by Pixel, Level, Actor, MIDI, SFX, and Cutscene.',
+    '2026-07-03 02:51 EDT - Actor Editor now stores the shared resolved viewport mode and gates its landscape bottom tool rail plus controller hint bar through canRenderEditorSurface(), so controller slide-out mode can suppress touch landscape chrome while desktop remains on the app-style top-menu shell.',
+    '2026-07-03 02:48 EDT - Pixel Editor now stores the shared resolved viewport mode in its main draw path and gates portrait action rail rendering, mobile zoom rail hit targets, touch thumbstick rendering/capture, tile picker thumbstick chrome, and controller hint bars through canRenderEditorSurface(), reducing stale mobile chrome and hidden touch captures in desktop/gamepad modes.',
+    '2026-07-03 02:44 EDT - Level Editor now stores the shared resolved viewport mode and gates its portrait action rail, landscape zoom/tool rail, touch thumbstick rendering/hit testing, and controller hint bar through canRenderEditorSurface(), bringing Level desktop/gamepad chrome closer to the same shared surface contract already used by MIDI, SFX, and Cutscene.',
+    '2026-07-03 02:38 EDT - Race playtest now keeps the car fully free-moving while projecting its world position back onto the route only for HUD progress, co-driver cues, and finish detection; open tracks only finish at the endpoint instead of looping, the minimap car marker is larger and directional, braking is stronger, roads render wider, tire slide audio triggers earlier on pavement and dirt, and high-speed steering is damped further.',
+    '2026-07-03 02:32 EDT - MIDI Editor now stores the shared resolved viewport mode and gates mobile bottom rails, touch thumbstick rendering/capture, and controller hint bars through canRenderEditorSurface(), keeping desktop and gamepad modes aligned with the shared editor surface contract.',
+    '2026-07-03 02:28 EDT - Cutscene Editor now stores the shared resolved viewport mode and gates its non-desktop action rail plus controller hint bar through canRenderEditorSurface(), so gamepad slide-out mode suppresses touch bottom rail chrome instead of drawing the landscape rail underneath.',
+    '2026-07-03 02:25 EDT - SFX Editor now stores the shared resolved viewport mode and gates its portrait bottom action rail, landscape bottom tool rail, and touch thumbstick rendering/hit testing through canRenderEditorSurface(), preventing desktop or controller modes from inheriting mobile chrome through local SFX booleans.',
+    '2026-07-03 02:21 EDT - Race playtest now spawns slightly behind the start line while facing the first real route vector, keeps Pause/Return/Main HUD controls clickable across modes, widens the road projection again, strengthens braking, lowers tire-slide audio thresholds for pavement and dirt, and further reduces high-speed steering sensitivity while preserving full stopped steering lock.',
+    '2026-07-03 02:16 EDT - Shared editor layout now exposes getEditorSurfaceVisibility() and canRenderEditorSurface() so renderers can block suppressed chrome such as desktop bottom rails, touch thumbsticks, landscape drawers, and gamepad slide-outs through one mode contract instead of local booleans.',
+    '2026-07-03 02:14 EDT - Shared desktop mode contracts now use the same left-context-panel surface name as the desktop shell and renderer helpers, with validation rejecting older left-panel context surfaces so every editor targets the same persistent desktop inspector area.',
+    '2026-07-03 02:11 EDT - Shared portrait menu contracts now keep settings with the same bottom-sheet command surface as other submenus, and the UI spec/contract docs reserve top portrait regions for persistent context or status instead of ordinary settings command menus.',
+    '2026-07-03 02:05 EDT - Race playtest tuning now starts the car on the first route pose facing the inferred route direction, keeps the start checker stripe ahead of the player, widens the projected road, strengthens braking, further damps high-speed steering response, and enlarges the minimap car marker with a clearer heading arrow while preserving inferred loop versus point-to-point routing.',
+    '2026-07-03 01:59 EDT - Shared desktop layout plans now expose a leftContextPanelContract across every editor, making the desktop left inspector explicitly contextual while keeping drawer commands in top dropdowns and allowing only contextual quick actions, status, transport, and summaries in the persistent left panel.',
+    '2026-07-03 01:54 EDT - Race playtest tuning pass widened the drivable road scale again, starts farther behind the line based on road width, strengthened braking, further damped high-speed binary/analog steering, enlarged the directional minimap car marker, and added regression coverage for top playtest escape controls and minimap heading rendering.',
+    '2026-07-03 01:51 EDT - Shared desktop dropdown rows now carry commandSurface, pointerType, rowActivation, and sourceRootId metadata for every drawer, with Actor DOM rows and the older Pixel/Level canvas hit paths preserving those shared desktop command semantics.',
+    '2026-07-03 01:48 EDT - Pixel and Level desktop dropdown hit records now preserve the same shared Edit action role and role-group metadata as the newer canvas editors, so role-grouped Edit drawers keep consistent hit/debug metadata across all main canvas editors.',
+    '2026-07-03 01:45 EDT - Shared desktop Edit drawers now mark role group boundaries in the dropdown render plan, canvas dropdowns draw subtle separators at those group starts, and Actor DOM dropdown rows expose matching role-group hooks without adding extra hit-target rows.',
+    '2026-07-03 01:43 EDT - Desktop dropdown render plans now attach shared Edit action role metadata to Edit drawer rows and command hit targets, and Actor DOM dropdown rows expose matching sourceRootId/editActionRole/desktopActionRole datasets so canvas and DOM editors can render grouped Edit menus consistently.',
+    '2026-07-03 01:40 EDT - Shared editor menu specs now assign semantic roles to every desktop Edit action across Pixel, Level, Actor, MIDI, SFX, Cutscene, Race, Car, and Tile, and validation rejects new Edit commands that do not declare a shared role such as history, clipboard, selection, duplicate, destructive, or targetEdit.',
+    '2026-07-03 01:36 EDT - Race playtest now starts farther behind a wider default road while preserving first-route heading, keeps top Pause/Return/Main controls available during playtest, strengthens braking, lowers tire-screech trigger thresholds, widens the projected road, and further damps high-speed steering for binary and analog inputs.',
+    '2026-07-03 01:33 EDT - Gamepad slide-out plans now expose an explicit focusRingContract in addition to row-level focused/focusRing flags, documenting and testing that every editor shows visible focus rings on controller-focused root and submenu rows with A-button confirm activation.',
+    '2026-07-03 01:31 EDT - Shared gamepad slide-out menu plans now annotate every root and submenu row with controller activation, surface, focused, and focusRing metadata, giving all editors a common source for visible focus rings and A-button row behavior.',
+    '2026-07-03 01:28 EDT - Race playtest now starts from the first actual road vector, infers circuit versus point-to-point from connected endpoints, widens the rendered road, strengthens braking, damps high-speed steering while preserving full stopped lock, labels the top Main Menu escape control clearly, and makes the minimap car marker read as a directional car shape; shared editor work-surface metadata now lives in the canonical menu specs instead of a duplicate layout map.',
+    '2026-07-03 01:17 EDT - Shared layout validation now checks every canonical editor has an explicit supported work-surface type, protecting desktop pointer behavior like wheel zoom, drag pan, and context-menu handling from silently falling back to canvas defaults.',
+    '2026-07-03 01:14 EDT - Shared pointer policy now derives continuous pan and right-drag fallback pan from the canonical shared editor id list, and UISpec now names Tile Editor in the top-level standardization scope alongside the other editors.',
+    '2026-07-03 01:12 EDT - Portrait/source model coverage now uses the canonical shared editor id list for landscape shell defaults and desktop shared-shell checks, so Race, Car, and Tile remain covered with the older editors in those cross-editor assertions.',
+    '2026-07-03 01:10 EDT - Shared layout contract tests now consume the canonical shared editor id list and include Tile Editor in the desktop dropdown source coverage, keeping Tile in the same desktop top-menu/dropdown guardrails as the other editors.',
+    '2026-07-03 01:08 EDT - Shared editor menu specs now expose one canonical all-editor id list and validate against it, so Pixel, Level, Actor, MIDI, SFX, Cutscene, Race, Car, and Tile stay inside the same desktop/portrait/landscape/gamepad contract checks instead of depending on per-test editor lists.',
+    '2026-07-03 01:04 EDT - Race playtest tuning pass: launch now starts farther behind the checker stripe while facing the first route direction, loop inference only treats actually connected endpoints as circuits, roads render wider, high-speed steering is more damped, braking is stronger, tire screech triggers earlier on pavement/dirt slides, and the minimap car marker now shows a stronger forward direction.',
+    '2026-07-03 01:01 EDT - Tile Editor gamepad cancel/back behavior now matches the shared controller menu contract: B backs from submenu to root first, then closes the Tile slide-out drawer on the next cancel.',
+    '2026-07-03 00:58 EDT - Tile Editor gamepad mode now uses the shared left slide-out menu plan: Menu opens root categories on the left, choosing a root replaces it with that submenu on the left, and the touch landscape right drawer is suppressed for controller use.',
+    '2026-07-03 00:52 EDT - Race playtest now uses connected endpoint geometry as the source of truth for loop versus point-to-point routing, closes the default Studio Sprint route data, fixes forward launch direction math, uses compact Pause/Return/Main playtest HUD controls in the projected-road renderer, widens the road view, strengthens braking, and further damps high-speed steering.',
+    '2026-07-03 00:45 EDT - Tile Editor mobile landscape now uses the shared compact left rail, left-origin root drawer, right submenu drawer, and bottom context rail instead of the old generic full-screen list/back-button layout.',
+    '2026-07-03 00:42 EDT - Tile Editor render entry now resolves and retains the shared Tile viewport mode contract/spec mode contract before branching into desktop or mobile layout, so desktop, portrait, landscape, and gamepad decisions no longer depend on Tile-only local viewport checks.',
+    '2026-07-03 00:39 EDT - UISpec now names Tile Editor as a first-class shared-shell editor with File/Edit/View/Tiles/Properties roots, and the Race Editor spec now documents inferred closed-loop versus point-to-point routing instead of stale manual circuit/destination menu rows.',
+    '2026-07-03 00:37 EDT - Tile Editor is now part of the shared editor UI contract: its desktop shell uses tile-specific File/Edit/View/Tiles/Properties top menus and dropdown drawers instead of borrowing Pixel Editor drawing/layer roots, while shared layout and pointer-policy coverage now treats Tile as a first-class editor.',
+    '2026-07-03 00:32 EDT - Race playtest now infers circuit versus point-to-point behavior from route closure, starts facing the first route direction, exposes Pause/Return/Main controls during playtest, uses a directional minimap car marker, widens the projected road, increases braking, damps high-speed steering, and plays pavement/dirt tire screech audio on traction loss.',
+    '2026-07-03 00:16 EDT - Shared compact landscape rail actions now carry slot and surface metadata, locking Menu, Undo, Redo, and quick-action buttons to the fixed left rail instead of letting renderers treat them like scrollable menu drawer rows.',
+    '2026-07-03 00:16 EDT - Shared editor menu validation now requires Exit to Main Menu to remain the final File command/footer in every editor, keeping desktop File drawers predictable across Pixel, Level, Actor, MIDI, SFX, Cutscene, Race, and Car.',
+    '2026-07-03 00:11 EDT - Race playtest now has regression coverage that verifies the car spawns behind the starting line, faces the first route direction, and moves forward along that route heading on launch.',
+    '2026-07-03 00:09 EDT - Desktop pointer-policy coverage now distinguishes right-click context-menu editors from audio editors that use right-click as a pan fallback, while keeping browser-menu suppression and desktop thumbstick hiding consistent across all editors.',
+    '2026-07-03 00:06 EDT - Shared menu spec validation now directly enforces gamepad placement: roots stay on the left slide rail, submenus/settings use the left slide-out drawer, and command rows require confirm-button activation.',
+    '2026-07-03 00:04 EDT - Shared menu spec validation now directly enforces landscape touch placement: root menus stay on the left rail, submenus/settings stay on the right drawer, and persistent tool/context space stays on the bottom rail.',
+    '2026-07-03 00:02 EDT - Shared menu spec validation now directly rejects portrait root or submenu placements that drift away from bottom-rail and bottom-sheet, keeping portrait editors bottom-first across future changes.',
+    '2026-07-03 00:00 EDT - Shared menu spec validation now rejects desktop Settings placements that point at the left panel, locking Settings commands to dropdown drawers while preserving left panels for persistent context.',
+    '2026-07-02 23:58 EDT - Desktop settings placement now resolves to the same top dropdown drawer surface as other desktop commands, while the left panel remains a persistent context inspector instead of a settings command menu.',
+    '2026-07-02 23:55 EDT - Race Editor and Car Editor File drawers now use the same shared editor File menu builder as the older editors, preserving the New/Save/Save As/Open/Export/Import baseline and Exit to Main Menu row with unsupported rows disabled.',
+    '2026-07-02 23:53 EDT - Race playtest no longer snaps or auto-aligns the car back to the route while driving: the car now owns a free world position and heading, starts facing the race direction, and destination finishes return directly to the editor.',
+    '2026-07-02 23:48 EDT - Level Editor desktop left inspector now includes compact Assets quick switches for Tiles, Actors, Powerups, and Structures, keeping frequent asset context reachable without replacing the shared top dropdown drawers.',
+    '2026-07-02 23:44 EDT - Tile Editor desktop mode now uses the shared Pixel desktop app shell with horizontal top menus, dropdown drawers, left ribbon/context inspector, and a work-surface tile list instead of the old standalone picker layout.',
+    '2026-07-02 23:40 EDT - Race playtest now uses fixed start and finish checker stripes for point-to-point races, a wider first/third-person road projection, world-path yaw for steering alignment, a sampled-route minimap, and an unlabeled top-down damage diagram with inward-facing suspension markers.',
+    '2026-07-02 23:40 EDT - MIDI desktop grid controls now move track-level instrument, note/chord, and bars controls into the left Track Tools panel, leaving the desktop grid header focused on keyframes while preserving the mobile control strip.',
+    '2026-07-02 23:30 EDT - Cutscene desktop left context panel now exposes Add quick actions, while Clips stays clip-specific and no longer duplicates Edit clipboard/delete commands at runtime.',
+    '2026-07-02 23:27 EDT - Shared menu IA cleanup moved Pixel clipboard actions out of Select, split SFX View from Timeline transport, and removed duplicate Cutscene clipboard rows from Clips so common edit actions live in Edit.',
+    '2026-07-02 23:24 EDT - Pixel desktop Draw, Select, Tools, Layers, Frames, and Rigging dropdowns now stay open after command release, so choosing tools such as Draw -> Oval no longer collapses the drawer while exploring tool palettes.',
+    '2026-07-02 23:22 EDT - Race playtest scale now targets roughly one car per lane, uses short world-sized highway lane markers, and makes synthesized engine RPM/rev-limit audio more audible while preserving Car Editor engine profile overrides.',
+    '2026-07-02 23:18 EDT - Shared editor mode contracts now expose a surfaceVisibility map across generic, desktop, landscape, and gamepad shell plans, making required/suppressed chrome queryable from one contract object.',
+    '2026-07-02 23:14 EDT - Actor desktop DOM dropdown rows now expose the same command-surface, pointer-type, and release-activation metadata as the shared desktop menu contract.',
+    '2026-07-02 23:10 EDT - Editor render entry points now retain both renderer mode contracts and menu spec mode contracts, so desktop/portrait/landscape/gamepad decisions can be audited against the same shared UI rules.',
+    '2026-07-02 23:05 EDT - Shared editor menu specs now carry per-mode contracts that align root/submenu/settings placements with renderer presentation and interaction semantics across desktop, portrait, landscape, and gamepad.',
+    '2026-07-02 23:02 EDT - Shared menu gesture handling now treats fitting drawers and action lists as drag-safe regions, so touch/landscape/gamepad menu drags can suppress accidental taps even when no scrolling is needed.',
+    '2026-07-02 22:56 EDT - Race playtest now uses tighter car-to-lane scale, world-distance road markers that advance toward the car, live RPM-based engine rev audio, and Car Editor engine sound profile data/actions.',
     '2026-07-02 22:40 EDT - Race Editor and Car Editor desktop playtest End Drive now lives in the Drive top drawer as a release-activated command instead of the persistent left context panel, keeping desktop left panels passive/contextual.',
     '2026-07-02 22:33 EDT - Pixel desktop rendering now clears stale mobile thumbstick geometry before drawing desktop chrome, and the portrait/menu model suite now guards stale thumbstick cleanup across Pixel, Level, MIDI, SFX, and Cutscene desktop paths.',
     '2026-07-02 22:26 EDT - Race Editor and Car Editor now resolve the same viewport modeContract at render dispatch as the other editors, while retaining desktop/landscape shell mode contracts and gamepad slide-out mode contracts from the shared helpers.',
@@ -86,7 +329,7 @@ export const LATEST_MAJOR_WORK = {
     '2026-07-02 15:05 EDT - Race Editor and Car Editor desktop draw now resolve dropdown state through the shared desktop dropdown helper instead of hand-building the shell dropdown/null state, matching the lifecycle used by the older shared-shell editors.',
     '2026-07-02 15:03 EDT - Race Editor and Car Editor are now explicitly covered by the source-level desktop shared-shell invariant, proving they use the same top menu, left ribbon, left context panel, work surface, and dropdown painter contract as the established canvas editors.',
     '2026-07-02 15:01 EDT - Car Editor is now explicitly named in the broad desktop dropdown auto-open guard coverage, so the shared desktop app menu contract protects Race and Car independently even though they share the same implementation file.',
-    '2026-07-02 14:59 EDT - Race physics now uses 2022 Subaru WRX-style car data and drivetrain simulation: manual 6MT and automatic SPT cars, AWD, 271 hp, 258 lb-ft, realistic mass, redline/rev limiter, gear ratios, shift delays, rain/snow grip multipliers, day/night race metadata, roughly 5-6 second 0-60, and about 135 mph top speed.',
+    '2026-07-02 14:59 EDT - Race physics now uses 2022 Subaru WRX-style car data and drivetrain simulation: runtime manual 6MT and automatic SPT transmission modes, AWD, 271 hp, 258 lb-ft, realistic mass, redline/rev limiter, gear ratios, shift delays, rain/snow grip multipliers, day/night race metadata, roughly 5-6 second 0-60, and about 135 mph top speed.',
     '2026-07-02 14:51 EDT - Shared desktop File/Edit menu contract coverage now includes Race Editor and Car Editor, locking their common New/Save/Save As/Open/Export/Import baseline and editor-specific Edit drawers into the same shared spec assertions as the older editors.',
     '2026-07-02 14:49 EDT - Race playtest steering now targets an F1 Pole Position-style presentation: steering builds a near-road sweep while the vanishing point stays stable, car sprite strafe is reduced, and the chase sprite reads more like a compact Formula car instead of a broad arcade car.',
     '2026-07-02 14:46 EDT - Broad portrait root menu coverage now treats Race Editor and Car Editor as first-class shared-shell editors, using the shared portrait root menu spec to keep their bottom menu roots within the eight-item contract.',
@@ -415,6 +658,1448 @@ export const LATEST_MAJOR_WORK = {
 };
 
 export const LATEST_CHANGES = [
+  {
+    date: '2026-07-03',
+    time: '15:03 EDT',
+    summary: 'Added pre-race tire selection, setup tuning, and tire-based race physics.',
+    details: [
+      'Race playtest car selection now uses a Select/Tuning/Start flow instead of immediately starting when a car row is pressed.',
+      'Pre-race tuning exposes per-wheel Tarmac, Rain, Dirt, and Snow tire compound selection plus slider-style controls for tire pressure, final drive, camber, sway bars, springs, ride height, bump/rebound, aero, and differential settings.',
+      'Race physics now folds the selected tire compounds, per-wheel pressure, current road surface, weather, and tire wear into grip, braking, steering authority, and tire wear rate.',
+      'Shared desktop layout contracts now emit top-dropdown for desktop submenu/settings surfaces and validate mode surfaces against the centralized EDITOR_SURFACES registry.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:52 EDT',
+    summary: 'Added BRZ/Civic test cars and made transmission mode a runtime setting.',
+    details: [
+      'Default race projects now include the 2022 Subaru WRX, 2022 Subaru BRZ, and 2022 Honda Civic Si as selectable test cars.',
+      'BRZ and Civic tuning data now include real-car-inspired drivetrain, power, torque, mass, rev range, gearing, final drive, tire, and engine-profile defaults.',
+      'Manual versus automatic is now chosen during playtest from the pause menu; the active transmission profile changes shift behavior, gearing, launch RPM, shift delay, engine sound profile, and auto-shift state without needing duplicate car entries.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:38 EDT',
+    title: 'Shared editor surface ids are centralized',
+    summary: 'The core editor shell surface names now live in one immutable EDITOR_SURFACES map.',
+    details: [
+      'Added EDITOR_SURFACES to the shared layout module for desktop, portrait, landscape, gamepad, rail, drawer, and work-surface ids.',
+      'Moved the core shell contracts and required/suppressed mode-surface tables to consume that map instead of repeated raw strings.',
+      'Added coverage that the surface map is frozen and connected to the desktop, landscape, gamepad, required, and suppressed surface contracts.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:34 EDT',
+    title: 'Shared menu defaults are immutable',
+    summary: 'The canonical placement and mode-contract constants are now deeply frozen.',
+    details: [
+      'Wrapped shared placement, gamepad surface, and mode-contract defaults in a small deep-freeze helper.',
+      'Editors still receive independent structured clones, so runtime editor state remains mutable without risking shared default drift.',
+      'Added coverage that both top-level and nested mode entries are frozen.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:33 EDT',
+    title: 'Editor menu placements no longer share mutable defaults',
+    summary: 'Each editor now receives an independent copy of the shared portrait, landscape, desktop, and gamepad placement map.',
+    details: [
+      'Changed shared menu spec initialization to deep-clone EDITOR_MENU_PLACEMENTS per editor, matching the existing mode-contract cloning behavior.',
+      'Added coverage that mutating one editor placement cannot affect another editor or the shared placement defaults.',
+      'This protects the cross-editor layout contract while the individual editor shells continue moving onto shared mode rules.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:30 EDT',
+    title: 'Blank portrait menu roots are now guarded',
+    summary: 'Shared menu validation now rejects accidental empty bottom-menu panels unless they are explicit dynamic runtime panels.',
+    details: [
+      'Added a shared PORTRAIT_DYNAMIC_EMPTY_SECTION_IDS contract for the few intentional runtime-populated panels.',
+      'Validation now catches new portrait roots that resolve to an empty section, preventing blank mobile bottom-menu buttons from returning across editors.',
+      'Current intentional dynamic panels remain Level Assets plus MIDI, SFX, and Cutscene Settings.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:27 EDT',
+    title: 'Landscape renderers dropped right-origin root fallbacks',
+    summary: 'Concrete editor renderers now use only the left-origin root drawer path for landscape root menus.',
+    details: [
+      'Removed stale right-overlay root drawer checks from Pixel/Tile, Level, Actor, MIDI, SFX, Cutscene, and Race renderer paths.',
+      'Kept the right drawer role focused on active submenus, matching the requested landscape left-root/right-submenu model.',
+      'Updated renderer source-contract tests so right-overlay root fallback checks cannot return unnoticed.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:24 EDT',
+    title: 'Race playtest projection and steering tuned',
+    summary: 'Race playtest roads now reach the near viewport, default terrain stays green, and D-pad steering turns in more gradually.',
+    details: [
+      'Reduced the near road sample distance so the projected road polygon reaches the bottom of the playtest viewport instead of clipping early.',
+      'Unpainted roadside terrain now falls back to the grass palette even when the road surface is asphalt.',
+      'Digital steering keeps full-stick intent, but binary D-pad input is capped to roughly half the old per-frame wheel movement so it no longer snaps instantly to full left or right.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:21 EDT',
+    title: 'Landscape root drawers are always left-origin',
+    summary: 'The shared landscape helper now keeps main root menus on the compact left rail and reserves the right side for submenus.',
+    details: [
+      'Removed the shared helper path that allowed root menu drawers to opt back into the right overlay.',
+      'Stale callers that pass rootDrawerOverlayOrigin: right are now coerced back to left-origin plans.',
+      'Updated UISpec, the lower-level UI contract, and layout coverage to match the requested left-root/right-submenu landscape model.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:19 EDT',
+    title: 'LeftRail contract no longer implies mobile root navigation',
+    summary: 'The shared UI contract now separates desktop left inspectors, landscape compact command rails, and portrait bottom-first menus.',
+    details: [
+      'Removed the stale component responsibility that called LeftRail a shared vertical navigation slot on mobile.',
+      'Documented that portrait root navigation remains bottom-first, while landscape uses the compact command rail token and desktop uses the left inspector token.',
+      'Added layout coverage so the old mobile-left-rail wording cannot return unnoticed.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:16 EDT',
+    title: 'Canonical menu spec caught up with shared drawer owners',
+    summary: 'UISpec now matches the shared menu contract for Pixel, Actor, MIDI, Cutscene, and Race.',
+    details: [
+      'Pixel now documents View as owner of zoom/grid/tile preview/onion, Tools as owner of eraser/clone-style tools, Select as selection modes only, and Canvas as canvas document operations.',
+      'Actor States, MIDI Edit, and Cutscene Clips/Stage/Audio now document the same command ownership as the shared desktop drawers.',
+      'Race now documents Race/Ground/Elevation/Sprites/Settings/Drive instead of stale Road/Surfaces/Weather rows, preserving inferred circuit versus destination behavior.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:13 EDT',
+    summary: 'Tile Editor spec now matches shared command ownership.',
+    details: [
+      'Updated UISpec so the Tile drawer owns previous/next navigation only.',
+      'Kept Edit Tile Art and Reset Override documented under Edit, matching the shared Tile menu spec and desktop command ownership rules.',
+      'Added coverage preventing the stale duplicated Tile drawer wording from returning.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:12 EDT',
+    summary: 'Race mobile playtest is reachable from the portrait menu.',
+    details: [
+      'Race Editor portrait root menus now include Drive alongside File, Race, Ground, Elevation, Sprites, and Settings.',
+      'The Drive portrait submenu exposes Play/Test Drive so mobile users can open the car picker and start playtesting from the Race editor.',
+      'Updated UISpec and coverage while keeping the standard bottom rail at Menu, Undo, Redo, and the contextual authoring action.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:10 EDT',
+    summary: 'Portrait Settings placement is now contract-checked.',
+    details: [
+      'Shared editor menu validation now rejects portrait Settings placements outside the bottom sheet.',
+      'The all-editor portrait placement coverage now verifies root menus stay on the bottom rail while submenu and Settings commands stay in the bottom sheet.',
+      'This protects the current portrait direction without changing the working portrait renderers.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:08 EDT',
+    summary: 'Actor desktop dropdowns now show shared Edit group breaks.',
+    details: [
+      'Actor Editor desktop dropdown buttons already receive shared startsEditActionRoleGroup metadata from the dropdown render plan.',
+      'Added DOM CSS for role-group-start rows so Actor Edit drawers show a subtle top separator like the shared canvas dropdown renderer.',
+      'Updated desktop menu coverage to keep the DOM and canvas drawer grouping behavior aligned.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:06 EDT',
+    summary: 'Actor desktop ribbon text now matches shared clipping.',
+    details: [
+      'Actor Editor desktop left-ribbon title and subtitle now use overflow hidden, text-overflow ellipsis, and nowrap styling.',
+      'This aligns the DOM-based Actor desktop chrome with the canvas editors, whose shared desktop ribbons already draw bounded labels.',
+      'Added coverage so Actor desktop ribbon text cannot regress to overflowing inside the persistent left column.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '14:02 EDT',
+    summary: 'Desktop context panels now clip long text consistently.',
+    details: [
+      'The shared RTG Studio desktop context panel now clips long titles, context rows, and status lines with the same label helper used by menu chrome.',
+      'This applies to Pixel, Level, MIDI, SFX, Cutscene, Race, and embedded Tile canvas panels through the shared drawSharedDesktopContextPanel path.',
+      'Added focused coverage so long desktop inspector text ends with an ellipsis instead of overflowing the left panel.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:58 EDT',
+    summary: 'Race map segment labels and scale bar are more accurate.',
+    details: [
+      'Race Editor top-down maps now compute segment length label positions through a dedicated layout helper with explicit left/right side metadata.',
+      'Visible route segments show real distance labels such as 500 m or 1.05 km beside the road, and the labels avoid the corner scale bar when they would collide.',
+      'The map scale bar now chooses a real-world distance that fits the current zoom instead of stretching tiny distances to a misleading minimum width.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:55 EDT',
+    summary: 'Desktop root-hit coverage now rejects old local object patterns.',
+    details: [
+      'Added regression checks that Pixel/Tile, Level, MIDI, SFX, and Cutscene do not rebuild top-menu root hit records with local desktopRootId or hoverRootId object shapes.',
+      'The shared coverage now requires canvas top-menu roots to stay on createDesktopRootMenuHit() while Actor DOM roots stay on applyDesktopRootMenuDataset().',
+      'This locks in the shared desktop top-menu metadata migration so future editor layout work does not drift back to per-editor hit records.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:53 EDT',
+    summary: 'Actor desktop top-menu roots now use shared DOM metadata.',
+    details: [
+      'Added applyDesktopRootMenuDataset() beside the desktop root-hit helper so DOM top-menu roots expose the same root id, command surface, pointer type, activation, and kind metadata.',
+      'Actor desktop top-menu buttons now call applyDesktopRootMenuDataset(btn, entry) instead of hand-writing only data-root-id.',
+      'Updated coverage so Actor DOM top-menu roots and canvas top-menu roots remain auditable through the shared desktop metadata helpers.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:51 EDT',
+    summary: 'Cutscene desktop root hits now use the shared helper.',
+    details: [
+      'Extended createDesktopRootMenuHit() to support prefixed ids while preserving the actual desktopRootId/rootId metadata.',
+      'Cutscene desktop top-menu root buttons now use createDesktopRootMenuHit(button, null, { idPrefix: "desktop-root:" }) instead of plain copied bounds.',
+      'Updated coverage so Pixel/Tile, Level, MIDI, SFX, Cutscene, and Race canvas editors stay on the shared desktop root-hit helper path.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:48 EDT',
+    summary: 'Pixel, Tile, Level, and MIDI desktop root hits now use the shared helper.',
+    details: [
+      'Pixel desktop chrome and the embedded Tile Editor desktop chrome now create top-menu root hit records through createDesktopRootMenuHit(), while preserving hover-root switching metadata.',
+      'MIDI desktop top-menu file/settings/tab bounds now come from the shared root-hit helper instead of mutating desktopRootId onto local bounds.',
+      'Level desktop top-menu buttons now pass shared root-hit metadata through addUIButton(), and coverage now keeps Pixel/Tile, Level, MIDI, SFX, and Race on the shared helper path.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:44 EDT',
+    summary: 'SFX and Race desktop top-menu root hits now use a shared helper.',
+    details: [
+      'Added createDesktopRootMenuHit() so desktop top-menu root buttons get normalized root id, bounds, command surface, pointer type, and activation metadata from one shared path.',
+      'SFX desktop top-menu registration now uses the helper while keeping its existing dropdown-open action and history bypass behavior.',
+      'Race and Car editor desktop top-menu registration now uses the helper while keeping the existing open/close dropdown toggle behavior.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:39 EDT',
+    summary: 'Actor desktop dropdown metadata now uses the shared DOM helper.',
+    details: [
+      'Added applyDesktopDropdownCommandDataset() beside the canvas desktop dropdown hit helper so DOM dropdown rows and canvas hit targets normalize the same command metadata.',
+      'Actor desktop dropdown rows now call the shared helper instead of hand-writing command surface, pointer type, row activation, source-root, and Edit role dataset fields.',
+      'Added coverage for the shared DOM dataset helper and updated Actor desktop dropdown tests to keep the helper path in place.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:33 EDT',
+    summary: 'Pixel and Level desktop dropdown hits now use the shared helper.',
+    details: [
+      'Pixel desktop dropdown button registration now calls createDesktopDropdownCommandHit() instead of hand-copying command surface, pointer type, and row activation fields.',
+      'Level desktop dropdown rows now use the same shared helper, preserving source-root metadata while removing local top-dropdown/mouse/release fallbacks.',
+      'Updated renderer coverage so Pixel, Level, MIDI, SFX, Cutscene, Race, and Car all stay on the shared desktop dropdown hit metadata path.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:29 EDT',
+    summary: 'Shared menu validation now locks mode interaction semantics.',
+    details: [
+      'validateEditorMenuSpec() now rejects pointer-type and gesture-scroll drift from the shared renderer mode contracts.',
+      'Portrait and landscape command surfaces and row activation are validated as bottom-sheet/right-drawer tap-release flows.',
+      'Desktop release activation and gamepad work-surface overlay persistence are now covered by validator regression tests.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:26 EDT',
+    summary: 'Shared menu validation now enforces single command ownership.',
+    details: [
+      'Moved the duplicate shared action ownership check into validateEditorMenuSpec() so the normal spec validation path catches repeated command rows.',
+      'Added validator coverage for cross-section duplicates such as a Level tile command appearing in both Tiles and Assets.',
+      'Adjusted negative validation fixtures so File/Edit/stale-section tests remain focused while still surfacing duplicate-owner mistakes when relevant.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:23 EDT',
+    summary: 'Shared menu specs now reject duplicate command ownership.',
+    details: [
+      'Added a cross-editor regression that fails when the same shared action appears in more than one section for an editor.',
+      'Level Assets remains a compact portrait category, but its shared action list no longer repeats Tile Paint, Tile Art, Actor Mode, Powerups, or Structures rows.',
+      'Actor Preview now owns only Play Scene in the shared dropdown spec; State Graph and Hitbox Zones stay with Visuals and Collision.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:19 EDT',
+    summary: 'Actor menus now use Preview instead of the stale Tools root.',
+    details: [
+      'Actor portrait roots now show File, Settings, States, and Preview so the compact action group matches the shared menu spec.',
+      'Desktop View now owns only Fit View instead of repeating State Graph, Hitbox Zones, and Play Scene rows.',
+      'Removed stale Actor Tools shared-menu references and updated menu-spec and portrait-model coverage.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:13 EDT',
+    summary: 'Race Editor map now shows segment distances and a scale bar.',
+    details: [
+      'Top-down race segments now draw compact distance labels such as 850 m or 1.05 km next to the road line.',
+      'Added an adaptive lower-corner map scale bar that picks readable distances based on current race map zoom and fit scale.',
+      'Added regression coverage for segment labels, distance formatting, and scale-bar labels.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:09 EDT',
+    summary: 'Actor menus now use one Settings drawer.',
+    details: [
+      'Removed the duplicate Actor shared menu section that repeated Actor Settings, Metadata, Aggression, and Loot Rules.',
+      'Kept those rows in the Settings drawer as their single owner across desktop, landscape, portrait, and gamepad menu specs.',
+      'Updated Actor portrait menu IDs and tests so the Settings tab uses the same shared root instead of a separate actor alias.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:05 EDT',
+    summary: 'Race Editor portrait thumbstick now continuously pans the map.',
+    details: [
+      'Changed the Race Editor thumbstick so pointer drag controls knob deflection instead of directly dragging the map once.',
+      'Holding the stick away from center now pans the race map every update frame, more like the Pixel Editor virtual thumbstick.',
+      'Added regression coverage that panning continues while held and stops after release.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '13:03 EDT',
+    summary: 'Race Editor Race menu can load the built-in test tracks directly.',
+    details: [
+      'Added Race menu rows for WeatherTech Raceway Laguna Seca, Nurburgring Nordschleife, Col de Turini, Ouninpohja, and Daytona Tri-Oval.',
+      'Selecting a built-in track now inserts it into older race projects if needed, or refreshes/selects the existing built-in template.',
+      'Added runtime coverage that the Race menu lists the track loaders and that Col de Turini and Daytona load with their expected snow/banking metadata.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '12:57 EDT',
+    summary: 'Tightened built-in real-world race test track metadata.',
+    details: [
+      'Added explicit reference-basis labels and modeled road widths to WeatherTech Raceway Laguna Seca, Nurburgring Nordschleife, Col de Turini, Ouninpohja, and Daytona Tri-Oval.',
+      'Added Daytona backstretch banking metadata alongside the existing turn and tri-oval banking facts.',
+      'Added direct race-template aliases for Nordschleife, Nurburgring, and Daytona so the editor/test helpers resolve those common names.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '12:54 EDT',
+    summary: 'Pixel desktop Canvas no longer duplicates View display toggles.',
+    details: [
+      'Removed Grid and Tile Preview from the shared Pixel Canvas drawer, leaving those display controls in View.',
+      'Removed duplicate Grid and Onion Skin rows from the Pixel runtime Canvas menu.',
+      'Kept portrait canvas quick controls unchanged while desktop/controller drawer ownership is clarified.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '12:50 EDT',
+    summary: 'Cutscene desktop Stage no longer duplicates Master Volume.',
+    details: [
+      'Removed Master Volume from the Cutscene Stage drawer.',
+      'Kept Master Volume in Audio with selected clip volume, fade, and loop controls.',
+      'Updated shared spec and source-model coverage so scene/snap controls and audio controls stay separated.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '12:46 EDT',
+    summary: 'Cutscene desktop Audio no longer duplicates Add media commands.',
+    details: [
+      'Removed Add Music and Add SFX from the Cutscene Audio drawer.',
+      'Kept music and SFX insertion in Add, while Audio keeps selected clip volume, fade, loop, and master volume.',
+      'Updated shared spec and source-model coverage for the Add/Audio split.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '12:43 EDT',
+    summary: 'Cutscene desktop Timeline no longer duplicates View commands.',
+    details: [
+      'Removed workspace mode and timeline zoom rows from the Cutscene Timeline drawer.',
+      'Kept playback and Step Frame in Timeline, with workspace and zoom controls owned by View.',
+      'Updated shared menu spec and source-model tests to keep the split stable.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '12:39 EDT',
+    summary: 'Cutscene desktop Settings no longer duplicates Stage and View commands.',
+    details: [
+      'Removed repeated scene duration, snap, master volume, and workspace view rows from the Cutscene Settings drawer.',
+      'Kept scene and snap controls in Stage, and workspace/zoom controls in View.',
+      'Updated shared spec and source-level coverage so Cutscene Settings stays clear of repeated drawer commands.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '12:35 EDT',
+    summary: 'Actor desktop States no longer duplicates Edit commands.',
+    details: [
+      'Removed Duplicate State and Delete State from the shared Actor States drawer.',
+      'Kept those commands in Edit with Copy/Paste State so state editing has one desktop owner.',
+      'Updated coverage so the DOM Actor controller menus continue filtering drawer rows through the shared menu spec.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '12:32 EDT',
+    summary: 'Tile desktop Tiles no longer duplicates Edit commands.',
+    details: [
+      'Removed Edit Tile Art and Reset Tile Override from the Tile runtime Tiles drawer.',
+      'Kept those commands in Edit, where target-edit and destructive tile actions belong.',
+      'Updated shared menu spec and coverage so Tiles remains focused on previous/next tile navigation.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '12:30 EDT',
+    summary: 'MIDI desktop Settings no longer duplicates Grid and View commands.',
+    details: [
+      'Removed duplicate Quantize, Preview, and Contrast rows from the MIDI shared Settings drawer and runtime desktop controller menu.',
+      'Left Quantize in Grid and Preview/Contrast in View so desktop drawers have one owner for each command.',
+      'Updated coverage so MIDI Settings stays clear of repeated workflow commands.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '12:26 EDT',
+    summary: 'SFX desktop Settings no longer duplicates the View Loop command.',
+    details: [
+      'Removed the redundant Loop row from the SFX shared Settings drawer and runtime desktop controller menu.',
+      'Kept Loop in View, where it controls playback/preview behavior.',
+      'Updated menu coverage so the SFX Settings drawer stays clear of duplicate View commands.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '12:22 EDT',
+    summary: 'Race Test Drive now lives only in the Drive drawer.',
+    details: [
+      'Removed Test Drive from the Race authoring drawer in the shared Race menu spec.',
+      'Kept Test Drive available through the dedicated Drive drawer and existing bottom/context play actions.',
+      'Added shared spec coverage so Race remains focused on route editing while Drive owns playtesting.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '12:19 EDT',
+    summary: 'Race shared menu specs dropped stale unreachable sections.',
+    details: [
+      'Removed old Race Road, Surfaces, Scenery, and Weather sections now that the root model is Race, Ground, Elevation, Sprites, Settings, and Drive.',
+      'Kept real terrain, edge, sprite, weather, and road-width commands reachable through the new authoring roots.',
+      'Added shared validation that rejects sections not reachable from a root menu, portrait panel, or runtime alias.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '12:13 EDT',
+    summary: 'Level desktop Playtest now has one top-menu home.',
+    details: [
+      'Removed Playtest from the shared Level File and View drawer specs so desktop File remains document-focused and View remains zoom-focused.',
+      'Changed Level getLevelFileMenuItems() to exclude Playtest by default while preserving the explicit mobile drawer opt-in path.',
+      'Updated desktop dropdown coverage so Playtest lives in the Level Playtest drawer instead of being duplicated in File and View.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '12:08 EDT',
+    summary: 'Shared menu validation now keeps File actions out of non-File drawers.',
+    details: [
+      'Added a shared validator guard that rejects exact File-scoped actions such as Save, Export, Import, and Exit to Main Menu outside the File section.',
+      'Added regression coverage using a Cutscene Settings drawer drift case so document actions stay in the desktop File dropdown.',
+      'This protects the desktop app-style menu model as more editor-specific drawers are cleaned up.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '12:04 EDT',
+    summary: 'Cutscene export is consolidated into the File drawer on desktop.',
+    details: [
+      'Removed the Cutscene top-level Export root from the shared desktop/controller menu spec.',
+      'Kept MP4 export reachable through the File drawer, where the existing Export MP4 command already lives.',
+      'Updated UISpec and shared menu coverage so Cutscene File owns export behavior and the standalone Export drawer stays absent.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '11:59 EDT',
+    summary: 'Cutscene desktop left panel now stays contextual instead of duplicating Add commands.',
+    details: [
+      'Removed the Cutscene desktop Add shortcut block from the persistent left panel.',
+      'The Add commands remain available through the desktop top Add dropdown, matching the shared desktop drawer model.',
+      'Updated source coverage so the Cutscene left panel is limited to document, selection, transport, and status context.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '11:52 EDT',
+    summary: 'Race Editor root menus now match the shared authoring modes across layouts.',
+    details: [
+      'Changed the Race Editor shared root list from Road/Surfaces/Scenery/Weather to Race/Ground/Elevation/Sprites/Settings.',
+      'Kept desktop File, Edit, and View roots intact so desktop still behaves like an app menu bar while editor-specific drawers match portrait authoring modes.',
+      'Updated UISpec and Race layout coverage so desktop, landscape, and gamepad roots stay aligned with the Race Editor portrait workflow.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '11:48 EDT',
+    summary: 'Race Editor test tracks now carry structured real-world reference facts.',
+    details: [
+      'Added referenceFacts metadata to the built-in WeatherTech Raceway, Nurburgring Nordschleife, Col de Turini, Ouninpohja, and Daytona Tri-Oval templates.',
+      'Captured per-track facts such as source length, surface type or sequence, elevation, signature sections, snow transition, and Daytona banking angles.',
+      'Expanded race data coverage so these reference facts are tested alongside route length, surface, hazards, and circuit versus destination behavior.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '11:45 EDT',
+    summary: 'Gamepad menu surface names are now centralized in the shared menu spec.',
+    details: [
+      'Added GAMEPAD_MENU_PLACEMENT_SURFACES and GAMEPAD_MENU_RENDER_SURFACES so placement aliases and renderer surfaces stop repeating hard-coded strings.',
+      'Validation now checks gamepad root, submenu, settings, and command surfaces through those constants.',
+      'Added coverage that every editor maps the slide-out placement alias to the explicit left-slide-out-drawer render surface.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '11:40 EDT',
+    summary: 'Pixel and Level gamepad menu-state inputs now match the other editors.',
+    details: [
+      'Changed Pixel and Level getGamepadMenuState() to pass Boolean(this.game?.input?.isGamepadConnected?.()) into resolveGamepadMenuState().',
+      'This aligns their shared gamepad slide-out decision inputs with Actor, SFX, Cutscene, Race, and Car.',
+      'Added source coverage so those helpers keep normalized boolean controller state instead of passing the raw optional call result.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '11:37 EDT',
+    summary: 'Level layout now uses the centralized gamepad menu-state helper.',
+    details: [
+      'Replaced a bad-signature direct resolveGamepadMenuState() call in Level layout bounds with this.getGamepadMenuState(width, height).',
+      'This keeps gamepad slide-out rail reservation tied to the same active menu state used by Level draw and controller overlay paths.',
+      "Added regression coverage that rejects the old resolveGamepadMenuState('level', ...) call shape."
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '11:34 EDT',
+    summary: 'All older editor shells now share Race/Car mobile device detection.',
+    details: [
+      'Changed Pixel, Level, Actor, MIDI, SFX, and Cutscene isMobileLayout() helpers to accept game.deviceIsMobile or game.isMobile.',
+      'This keeps the shared viewport resolver from classifying the same mobile device differently between editors.',
+      'Added source coverage that rejects returning to game.isMobile-only detection in those editor shells.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '11:31 EDT',
+    summary: 'Pixel and Level runtime landscape checks now use the shared landscape-touch mode.',
+    details: [
+      'Changed Level thumbstick suppression to check activeViewportMode === landscape-touch instead of the stale landscape alias.',
+      'Changed Pixel mobile drawer landscape routing to use landscape-touch/gamepad only for live viewport state.',
+      'Updated regression coverage so runtime editor code rejects the old activeViewportMode === landscape checks.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '11:27 EDT',
+    summary: 'Race and Car gamepad menus now keep root and submenu state separate.',
+    details: [
+      'Changed the gamepad Menu action so it opens the left root rail without also marking a submenu open.',
+      'Changed B/back from a gamepad submenu to return to the root rail with the submenu flag cleared.',
+      'Updated Race/Car layout coverage so root and slide-out submenu states must remain mutually exclusive.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '11:23 EDT',
+    summary: 'Race Editor now includes five real-world-inspired test tracks.',
+    details: [
+      'Added built-in race templates for WeatherTech Raceway Laguna Seca, Nurburgring Nordschleife, Col de Turini, Ouninpohja, and Daytona Tri-Oval.',
+      'Modeled approximate route length, circuit versus destination behavior, surface transitions, elevation profiles, co-driver calls, and signature hazards such as the Corkscrew, Turini snowline, Ouninpohja jumps, and Daytona banking.',
+      'Expanded race data coverage so the default race project exposes these tracks and their key length/surface/signature features.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '11:14 EDT',
+    summary: 'Editor code no longer uses raw mobile orientation helpers outside uiSuite.',
+    details: [
+      'Changed the Level top playtest visibility helper to resolve mode through resolveEditorViewportModeFlags() instead of calling the raw portrait-layout helper.',
+      'Removed the stale SFX raw portrait-layout helper import.',
+      'Added coverage that Level and SFX editor sources reject raw portrait/landscape helper drift outside the shared uiSuite compatibility helpers.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '11:11 EDT',
+    summary: 'Pixel mobile layout planning now uses the shared viewport resolver.',
+    details: [
+      'Changed buildPixelMobileEditorLayout() so its fallback mode calculation calls resolveEditorViewportModeFlags() instead of raw portrait/landscape helper checks.',
+      'Dropped the raw mobile orientation helper imports from PixelStudio.',
+      'Added coverage that the standalone Pixel/Tile layout helper accepts editorId/gamepad context and rejects raw orientation helper drift.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '11:07 EDT',
+    summary: 'MIDI File drawer viewport-mode coverage now rejects raw mobile helper drift.',
+    details: [
+      'Tightened the MIDI File menu regression test so sticky Exit must come from activeViewportMode instead of a fresh mobile-landscape calculation.',
+      'Added coverage that MidiComposerCore no longer imports or calls raw portrait/landscape layout helpers for this desktop-versus-touch File drawer path.',
+      'This protects touch-capable desktop sessions from inheriting mobile File drawer behavior.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '11:01 EDT',
+    summary: 'Race playtest road scale, ground motion, and steering wheel readout now use real-world references.',
+    details: [
+      'Changed Race playtest lane markers to a 10-foot white dash followed by a 30-foot gap so road speed has a recognizable highway reference.',
+      'Changed side terrain banding to follow physical road distance instead of the exaggerated speed visual multiplier, leaving the highway markers to carry the speed cue.',
+      'Changed the visible steering wheel to show full 540-degree lock at rest but only about 20 degrees at 100 mph, while keeping D-pad input as full virtual-stick deflection for tap modulation.',
+      'Added a Race editor road-length readout in kilometers so route scale is visible while editing.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '06:41 EDT',
+    summary: 'Level File drawer sticky Exit now follows activeViewportMode.',
+    details: [
+      'Changed the Level File drawer sticky-exit decision from a repeated isMobileLandscapeLayout() call to activeViewportMode === landscape.',
+      'Portrait and landscape touch still keep Exit pinned, while desktop stays on the desktop drawer behavior.',
+      'Extended the Level active-mode coverage to reject the old raw landscape helper in that drawer path.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '06:39 EDT',
+    summary: 'Level touch thumbstick suppression now follows activeViewportMode.',
+    details: [
+      'Changed the Level pointer-down thumbstick guard from a fresh isMobileLandscapeLayout() check to activeViewportMode === landscape.',
+      'This keeps the landscape drawer/thumbstick interaction tied to the same resolved mode used by the renderer.',
+      'Updated shared editor coverage to reject the old raw mobile-landscape helper in that pointer path.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '06:37 EDT',
+    summary: 'SFX portrait draw routing now uses the resolved viewport mode directly.',
+    details: [
+      'Changed the SFX main draw portrait branch from a repeated isMobilePortraitLayout() calculation to the resolved isMobilePortrait flag.',
+      'This keeps SFX desktop, portrait, landscape, and gamepad decisions flowing through resolveSfxViewportMode().',
+      'Updated the portrait menu model coverage so the duplicate raw portrait check cannot return in that draw branch.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '06:35 EDT',
+    summary: 'Actor desktop dropdowns now follow the shared actor menu spec ordering.',
+    details: [
+      'Imported getEditorMenuSection() into ActorEditor and filtered local desktop actions through the canonical shared actor section action list.',
+      'This keeps the DOM-based Actor editor aligned with the shared File/Edit/View/States drawer contracts used by the canvas editors.',
+      'Added source coverage so Actor desktop menus cannot silently return to unbounded local action ordering.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '06:30 EDT',
+    summary: 'Pixel drawer and clone-tool prompts now follow the resolved editor viewport mode.',
+    details: [
+      'Changed Pixel mobile drawer landscape branching to use activeViewportMode instead of re-checking raw mobile layout state.',
+      'Changed clone-tool source/target guidance to use isTouchViewportMode() so desktop sessions keep desktop-style instructions.',
+      'Added source coverage around the Pixel drawer and clone prompt paths to prevent raw mobile detection from returning there.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '06:27 EDT',
+    summary: 'MIDI note snapping now follows activeViewportMode for desktop versus touch behavior.',
+    details: [
+      'Changed snapTick() and snapTickForTrack() to use activeViewportMode rather than raw isMobileLayout().',
+      'Desktop MIDI grid placement now keeps round-to-nearest snapping even on touch-capable desktop hardware.',
+      'Added source coverage so those snapping paths cannot drift back to raw mobile checks during the editor standardization work.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '06:22 EDT',
+    summary: 'Race playtest steering now maps held D-pad input to full virtual stick lock faster, leaving speed-sensitive damping in tire/yaw authority instead of making the wheel itself sluggish.',
+    details: [
+      'Increased binary and analog virtual wheel response so tapping/holding the on-screen D-pad feels closer to pushing a controller stick fully left or right.',
+      'Raised the high-speed steering authority floor modestly so the car responds at highway speed while still limiting tire angle through physics.',
+      'Updated race steering tests to keep full-lock D-pad input separate from speed-damped tire authority.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '06:19 EDT',
+    title: 'MIDI interaction viewport mode',
+    details: [
+      'Changed MIDI settings-click routing to use activeViewportMode === portrait for the portrait workspace exception.',
+      'Changed MIDI note resize handle sizing to use activeViewportMode instead of raw device mobile state.',
+      'Extended MIDI pointer/grid coverage to guard both interaction branches.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '06:16 EDT',
+    title: 'MIDI modal orientation viewport mode',
+    details: [
+      'Changed MIDI Settings panel stacked layout detection to use activeViewportMode === portrait.',
+      'Changed the MIDI instrument-picker modal to size from activeViewportMode instead of raw device mobile state.',
+      'Extended MIDI settings/modal coverage to guard both orientation branches.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '06:13 EDT',
+    title: 'MIDI File drawer viewport mode',
+    details: [
+      'Changed MIDI File drawer rendering to use activeViewportMode instead of raw device mobile state.',
+      'This keeps desktop File drawer width, row sizing, and sticky Exit behavior tied to the shared desktop/touch mode contract.',
+      'Extended MIDI File menu coverage to reject the old raw isMobileLayout branch in drawFilePanel.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '06:10 EDT',
+    title: 'MIDI Song overlay viewport mode',
+    details: [
+      'Changed MIDI Song selection menu labels and button sizes to use activeViewportMode for portrait versus desktop/touch behavior.',
+      'Changed MIDI Song split and shift tool hit targets to size from activeViewportMode instead of raw device mobile state.',
+      'Changed MIDI Song automation markers/keyframes to use activeViewportMode and added focused coverage for the Song edit overlay cluster.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '06:08 EDT',
+    title: 'MIDI button typography viewport mode',
+    details: [
+      'Changed MIDI drawButton typography sizing to use activeViewportMode instead of raw device mobile state.',
+      'Changed MIDI drawToggle label sizing to use activeViewportMode so desktop sessions keep desktop-sized labels even on touch hardware.',
+      'Added focused coverage for the MIDI shared button primitives.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '06:05 EDT',
+    title: 'Pixel gamepad viewport mode',
+    details: [
+      'Changed Pixel and Tile gamepad menu state to resolve the current editor viewport mode before calling the shared gamepad menu helper.',
+      'The shared helper now receives viewportMode.isMobileViewport instead of raw device mobile state, preventing desktop-capable sessions from inheriting touch landscape controller behavior.',
+      'Extended Pixel gamepad mode coverage so this resolver path stays tied to resolvePixelViewportMode.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '06:03 EDT',
+    title: 'Level draw path viewport cleanup',
+    details: [
+      'Changed the Level Editor minimap overlay sizing to use activeViewportMode for desktop versus touch layout.',
+      'Changed the top playtest button and enemy-info overlay sizing to use the same resolved viewport mode as updateLayoutBounds.',
+      'Changed Level tooltip rendering to keep hover/tooltips desktop-only through activeViewportMode and added focused coverage for these draw-path gates.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '06:01 EDT',
+    title: 'MIDI desktop density cleanup',
+    details: [
+      'Changed MIDI transport bar sizing to use activeViewportMode instead of raw isMobileLayout.',
+      'Changed MIDI instrument panel sizing to use activeViewportMode so desktop keeps desktop density on touch-capable devices.',
+      'Changed MIDI track-list row sizing to use activeViewportMode and extended the all-editor menu model coverage for these helpers.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:57 EDT',
+    title: 'Race D-pad steering response',
+    details: [
+      'Changed D-pad, keyboard, and touch-D-pad steering to drive the virtual wheel toward full lock much faster, matching the feel of a fully deflected controller stick.',
+      'Kept analog stick input proportional and left speed-based steering authority in the physics layer so high-speed steering remains damped instead of twitchy.',
+      'Tightened race playtest coverage so the first-frame D-pad response must be clearly responsive at launch and highway speed.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:53 EDT',
+    title: 'MIDI tab and top bars',
+    details: [
+      'Changed MIDI tab bar sizing to use activeViewportMode instead of raw isMobileLayout.',
+      'Changed the top sequencer bar row stacking and control sizing to use activeViewportMode.',
+      'Extended MIDI desktop layout coverage so those helpers reject raw mobile sizing branches.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:50 EDT',
+    title: 'MIDI mixer viewport mode',
+    details: [
+      'Changed MIDI mixer row sizing to use activeViewportMode for desktop versus touch density.',
+      'This keeps mixer rows at desktop density on touch-capable desktop sessions.',
+      'Extended MIDI instrument/mixer panel coverage to reject the old raw isMobileLayout branch in the mixer helper.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:48 EDT',
+    title: 'MIDI song tab viewport mode',
+    details: [
+      'Changed MIDI Song tab timeline sizing to use activeViewportMode for desktop versus touch layout.',
+      'Changed portrait detection in the Song tab to activeViewportMode === portrait instead of re-running raw mobile portrait checks.',
+      'Expanded the MIDI desktop layout coverage so both grid controls and song tab mode setup reject raw isMobileLayout branching.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:44 EDT',
+    title: 'MIDI grid control sizing',
+    details: [
+      'Changed MIDI grid controls to derive desktop versus touch sizing from activeViewportMode.',
+      'This removes a raw isMobileLayout branch from the desktop grid controls path so touch-capable desktop sessions keep desktop row density.',
+      'Updated the all-editor menu model coverage to reject the old raw mobile check in that helper.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:42 EDT',
+    title: 'Pixel toolbar viewport mode',
+    details: [
+      'Changed Pixel mobile toolbar portrait branching to use activeViewportMode === portrait.',
+      'Removed raw isMobileLayout/isMobilePortraitLayout checks from that helper so desktop sessions do not inherit portrait bottom-rail behavior.',
+      'Added coverage around the Pixel toolbar helper inside the desktop/mobile chrome suppression tests.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:38 EDT',
+    title: 'Pixel File clipboard cleanup',
+    details: [
+      'Removed duplicate Copy and Paste rows from the Pixel File menu extras.',
+      'Kept Pixel clipboard commands in the Edit drawer alongside Undo, Redo, Cut, and Clear Selection.',
+      'Expanded the all-editor File builder guard so File menus reject history and common clipboard command rows.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:35 EDT',
+    title: 'File and Edit menu separation',
+    details: [
+      'Removed Undo and Redo from the shared File menu baseline so File drawers consistently start with New, Save, Save As, Open, Export, and Import.',
+      'Cleaned stale File-history settings out of Pixel, Level, Actor, MIDI, SFX, and Cutscene file menu builders.',
+      'Added all-editor coverage that rejects Undo/Redo history commands or disabled history placeholders inside File menu builders.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:27 EDT',
+    title: 'Race desktop playtest controls',
+    details: [
+      'Audited desktop dropdown release handling across the canvas editors and found Race/Car playtest HUD buttons still firing on pointer down.',
+      'Changed Race/Car desktop playtest Pause, Return, Main Menu, and End Drive HUD controls to use the shared pending release-hit path.',
+      'Added coverage that desktop playtest HUD controls wait for release and cancel cleanly if the pointer moves off the button.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:25 EDT',
+    title: 'Race steering input tuning',
+    details: [
+      'Changed race playtest steering so D-pad, keyboard, and full analog stick all request full virtual wheel deflection.',
+      'Moved high-speed steering limits into the physics steering authority instead of capping the input target itself.',
+      'Raised binary steering response so held D-pad feels like a fully deflected controller stick, while release-to-center and highway-speed damping remain covered by tests.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:18 EDT',
+    title: 'Race and Car File menu contract',
+    details: [
+      'Strengthened Race/Car coverage so both editors must expose the same shared File drawer item order.',
+      'The test now verifies unsupported scaffold rows stay disabled while New and Exit remain active.',
+      'The shared Exit to Main Menu footer must stay the final File row for Race and Car.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:17 EDT',
+    title: 'Viewport resolver contract coverage',
+    details: [
+      'Added broad editor menu-model coverage requiring each shared-shell editor to expose exactly one local viewport resolver helper.',
+      'The coverage now rejects scattered direct resolveEditorViewportModeFlags calls outside those helpers across Pixel/Tile, Level, Actor, MIDI, SFX, Cutscene, and Race/Car.',
+      'This locks in the recent desktop, portrait, landscape, and gamepad mode cleanup work as a shared editor-shell invariant.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:16 EDT',
+    title: 'Level shared viewport resolver',
+    details: [
+      'Level Editor now uses resolveLevelViewportMode() for updateLayoutBounds() and HUD-mode resolution.',
+      'Level gamepad slide-out state now consumes the helper-provided isMobileViewport flag instead of passing raw isMobileLayout() into resolveGamepadMenuState().',
+      'Updated Level gamepad coverage to require the helper path and reject raw mobile-state handoff inside getGamepadMenuState().'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:15 EDT',
+    title: 'Pixel shared viewport resolver',
+    details: [
+      'Pixel Studio now uses resolvePixelViewportMode() for the main Pixel draw path.',
+      'Tile Picker rendering uses the same helper with editorId tile so Tile-specific menu contracts remain intact.',
+      'Pixel zoom-to-fit now gets mobile, landscape, and desktop sizing flags through the helper instead of calling resolveEditorViewportModeFlags directly.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:14 EDT',
+    title: 'Race and Car shared viewport resolver',
+    details: [
+      'Race Editor and Car Editor now route draw mode selection through resolveRaceViewportMode().',
+      'Race/Car gamepad slide-out state now uses the resolved isMobileViewport flag from the same helper.',
+      'Updated Race/Car gamepad coverage to require the helper path and reject the previous duplicate raw mobile-state handoff.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:13 EDT',
+    title: 'SFX shared viewport resolver',
+    details: [
+      'SFX Editor now centralizes desktop, portrait, landscape, and gamepad mode resolution in resolveSfxViewportMode().',
+      'The SFX gamepad slide-out state now uses the resolved isMobileViewport flag instead of directly reading isMobileLayout().',
+      'Updated editor menu-model coverage to require the helper path and reject raw mobile state handoff for SFX gamepad menu planning.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:12 EDT',
+    title: 'Pixel and Level desktop touch-mode cleanup',
+    details: [
+      'Pixel bone context actions now close mobile drawer state only in resolved touch viewport modes.',
+      'Level gamepad panel navigation now includes mobile extras only outside desktop mode and keeps tooltip timing tied to activeViewportMode === desktop.',
+      'Level UI button and hover tooltip handling now uses the resolved desktop mode instead of raw isMobileLayout().'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:11 EDT',
+    title: 'Level editor touch mode guards',
+    details: [
+      'Level Editor update-time thumbstick cleanup and panning now use activeViewportMode plus the shared touch-thumbstick surface gate.',
+      'Panel tab drawer opening, File menu close/reset, haptics, and precision zoom now treat desktop as desktop even on touch-capable devices.',
+      'The mobile context ribbon now draws only in resolved touch modes with a bottom-action-rail surface, preserving portrait and landscape touch behavior without leaking into desktop.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '05:10 EDT',
+    title: 'MIDI desktop pedal board mode guard',
+    details: [
+      'MIDI Editor pedal-board overview now uses activeViewportMode === desktop before drawing inline pedal settings.',
+      'This keeps touch-capable desktop sessions on the desktop pedal overview while preserving the existing portrait, landscape, embedded, and compact pedal panels.',
+      'Updated broad editor menu coverage to reject the older !isMobileLayout() desktop overview gate.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '03:19 EDT',
+    title: 'Pixel and Level desktop pointer mode guard',
+    details: [
+      'Pixel Editor desktop dropdown close/release handling and desktop canvas pan policy now use activeViewportMode === desktop.',
+      'Level Editor desktop dropdown close/release handling now uses activeViewportMode === desktop.',
+      'Updated broad editor coverage so Pixel and Level pointer paths remain tied to the renderer-selected shared mode instead of raw isMobileLayout() checks.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '03:16 EDT',
+    title: 'MIDI shared viewport mode helper',
+    details: [
+      'MIDI Editor now uses resolveMidiViewportMode() for landscape grid checks, touch thumbstick mode checks, draw viewport mode resolution, and gamepad menu state.',
+      'Desktop grid pan policy now keys off activeViewportMode === desktop, matching the renderer-selected mode before enabling middle/right mouse drag pan.',
+      'Updated broad editor coverage so MIDI gamepad, landscape touch, and desktop grid pointer behavior stay aligned with the shared editor mode contract.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '03:14 EDT',
+    title: 'Cutscene shared viewport mode helper',
+    details: [
+      'Cutscene Editor now stores viewportWidth and viewportHeight during draw and resolves gamepad state through resolveCutsceneViewportMode().',
+      'computeLayout() uses the same helper, and pointer handling now derives mode and mouse/touch policy from the active viewport mode instead of reconstructing desktop/mobile state separately.',
+      'Expanded broad editor coverage so Cutscene gamepad, desktop pointer, and layout decisions stay aligned with the shared editor mode contract.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '03:11 EDT',
+    title: 'Actor shared viewport mode helper',
+    details: [
+      'Actor Editor now routes reset, render, collision-tool, gamepad menu, sidebar, and rail button layout decisions through resolveActorViewportMode().',
+      'Direct window.innerWidth/window.innerHeight reads are centralized in getViewportSize() so Actor follows the same shared desktop, portrait, landscape, and gamepad mode resolver as the canvas editors.',
+      'Expanded broad editor coverage to guard the Actor shared viewport helper and prevent local portrait/mobile checks from returning in the DOM editor shell.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '03:07 EDT',
+    title: 'SFX hidden thumbstick pan guard',
+    details: [
+      'SFX Editor applyMobilePanJoystick() now exits unless the shared active viewport mode allows the touch-thumbstick surface.',
+      'This prevents hidden or stale mobile thumbstick state from continuing to pan the SFX timeline when desktop or controller modes suppress touch chrome.',
+      'Expanded broad editor source coverage so both SFX thumbstick rendering and update paths remain tied to canRenderEditorSurface().'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '03:05 EDT',
+    title: 'SFX thumbstick surface guard',
+    details: [
+      'SFX Editor drawMobilePanJoystick() now checks canRenderEditorSurface(this.activeViewportMode, touch-thumbstick) before drawing or positioning the shared thumbstick.',
+      'This makes the helper safe even if stale mobile portrait or landscape flags survive while desktop or gamepad modes have suppressed touch chrome.',
+      'The change keeps SFX aligned with the shared editor surface contract used by Pixel, Level, MIDI, Cutscene, Race, and Actor.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '02:59 EDT',
+    title: 'Race playtest start, steering, and HUD tuning',
+    details: [
+      'Race playtest now spawns on the first route node facing the first segment so the car starts in the proper race direction.',
+      'The start checker stripe renders ahead of the player, and point-to-point versus circuit behavior still comes from endpoint closure instead of a manual race-type toggle.',
+      'The minimap player marker is larger and more directional, top playtest controls stay available for Pause, Return, and Main Menu, braking is stronger, and high-speed steering is damped further while stopped steering keeps full lock.',
+      'Default road scale is wider than before without pushing the lane/car proportions outside the regression guardrails.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '02:57 EDT',
+    title: 'SFX gamepad hint surface guard',
+    details: [
+      'SFX Editor controller hint bars now use canRenderEditorSurface() in both portrait and landscape render paths.',
+      'This finishes the SFX surface-visibility pass by aligning hint bars with its already-guarded bottom rails and touch thumbstick surfaces.',
+      'Updated broad editor coverage so SFX cannot regress to raw gamepadConnected hint rendering.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '02:54 EDT',
+    title: 'Race and Car shared surface guards',
+    details: [
+      'Race Editor and Car Editor now use canRenderEditorSurface() for portrait action rails, landscape bottom tool options, and controller hint bars.',
+      'The shared Race/Car shell now follows the same mode surface contract as the older canvas and DOM editors.',
+      'Updated Race and broad editor coverage so gamepad and desktop modes cannot regress to unconditional touch chrome.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '02:51 EDT',
+    title: 'Actor Editor shared surface guards',
+    details: [
+      'Actor Editor now records the shared resolved viewport mode during DOM render.',
+      'Landscape bottom tool rail rendering and sizing now use canRenderEditorSurface() so gamepad slide-out mode does not keep touch landscape chrome.',
+      'Actor controller hint bars are now gated through the same shared surface visibility used by the canvas editors.',
+      'Updated the broad editor menu coverage to assert the Actor shared-surface contract.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '02:48 EDT',
+    title: 'Pixel Editor shared surface guards',
+    details: [
+      'Pixel Editor main draw now records the shared resolved viewport mode before branching into desktop, portrait, landscape, or gamepad UI.',
+      'Portrait action rail rendering, mobile zoom rail hit targets, touch thumbstick rendering, and touch thumbstick pointer capture now use canRenderEditorSurface().',
+      'Tile Picker thumbstick chrome and Pixel controller hint bars now follow the same shared surface visibility contract.',
+      'Updated broad editor coverage so Pixel cannot regress to raw mobile/gamepad checks for these surfaces.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '02:44 EDT',
+    title: 'Level Editor shared surface guards',
+    details: [
+      'Level Editor now stores the shared resolved viewport mode for renderer and pointer decisions.',
+      'Portrait action rail, landscape zoom/tool rail, touch thumbstick rendering, thumbstick hit testing, and the controller hint bar are now gated through canRenderEditorSurface().',
+      'Desktop and gamepad modes no longer inherit Level mobile chrome or stale touch hit targets through local mobile checks.',
+      'Updated the broad editor menu model coverage to assert the Level shared-surface guard behavior.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '02:38 EDT',
+    title: 'Race playtest projection and steering pass',
+    details: [
+      'Race playtest now keeps the car world position authoritative and projects it onto the authored route only for HUD progress, co-driver cues, minimap progress, and finish detection.',
+      'Open tracks only finish when the car reaches the endpoint; circuits are inferred only when the start and end are actually connected.',
+      'The minimap player marker is larger and reads as a directional car shape instead of a dot.',
+      'Road scale, brake force, tire slide audio thresholds, and high-speed steering damping were retuned for a wider, less twitchy race feel.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '01:01 EDT',
+    title: 'Tile Editor gamepad back behavior',
+    details: [
+      'Tile Editor gamepad menus now handle cancel/back with the same two-step flow as the shared controller contract.',
+      'Pressing B from a Tile submenu returns to the Tile root categories instead of closing the whole drawer immediately.',
+      'Pressing B again closes the Tile slide-out drawer and clears the local Tile gamepad focus state.',
+      'Added coverage so the lightweight Tile picker cannot regress to generic mobile drawer close behavior in gamepad mode.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '00:58 EDT',
+    title: 'Tile Editor gamepad slide-out menus',
+    details: [
+      'Tile Editor gamepad mode now builds a shared gamepad slide-out plan instead of falling through to the touch landscape right-submenu layout.',
+      'The Tile picker Menu button opens root categories on the left, and choosing a root replaces that rail with the selected submenu on the same left slide-out surface.',
+      'Tile gamepad submenu rows carry shared gamepad slide-out metadata while executing the existing Tile actions for File/Edit/View/Tiles/Properties.',
+      'Added shared layout and PixelStudio coverage so Tile stays aligned with the controller menu contract used by the other editors.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '00:52 EDT',
+    title: 'Race playtest direction and route inference',
+    details: [
+      'Race runtime behavior now infers loop versus point-to-point from connected route endpoints whenever playable geometry exists, instead of honoring stale manual race type flags.',
+      'Closed the default Studio Sprint route data so its endpoints actually connect, while open-ended custom/generated routes finish back to the editor.',
+      'Normalized generated-route and node-drag yaw math so the car starts behind the line facing the first route direction and moves forward consistently.',
+      'Projected-road playtests now use the compact HUD path with Pause, Return, and Main controls; the minimap marker is a directional car shape instead of a dot.',
+      'Widened the screen-space road projection, increased braking force, and further reduced binary steering sensitivity at high speed while preserving full steering lock when stopped.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '00:45 EDT',
+    title: 'Tile Editor landscape shell',
+    details: [
+      'Tile Editor mobile landscape now renders a shared compact command rail with Menu, previous tile, next tile, and properties actions.',
+      'Opening Menu now draws a left-origin root drawer and a right submenu drawer for Tile File/Edit/View/Tiles/Properties actions.',
+      'Selected tile details moved into a shared bottom context rail with tile name, collision/property summary, and Back action.',
+      'Added source coverage so the Tile landscape path stays on shared shell primitives instead of reverting to the standalone list layout.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '00:42 EDT',
+    title: 'Tile Editor shared mode entry',
+    details: [
+      'Tile Editor now resolves viewport mode through the shared editor mode helper with editorId tile before rendering.',
+      'The Tile render path retains both renderer modeContract and menu specModeContract, matching the shared entry-point rule used by the other editors.',
+      'Desktop Tile rendering now clears stale touch thumbstick state through the shared desktop suppression behavior.',
+      'Added coverage so Tile cannot drift back to local portrait/desktop checks while the landscape and gamepad menu work continues.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '00:39 EDT',
+    title: 'Editor UI spec aligned with Tile and Race',
+    details: [
+      'Updated UISpec so Tile Editor is explicitly listed as a shared-shell editor with File, Edit, View, Tiles, and Properties desktop roots.',
+      'Documented Tile Editor command ownership for tile navigation, art editing, property editing, collision toggles, and destructible toggles.',
+      'Updated the Race Editor spec to describe inferred closed-loop versus point-to-point behavior from route endpoints instead of stale manual Circuit/Destination menu rows.',
+      'Added spec coverage so Tile roots and the inferred Race route language stay locked to the shared menu contract.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '00:37 EDT',
+    title: 'Tile Editor shared desktop shell',
+    details: [
+      'Promoted Tile Editor into the shared editor menu spec and UI contract so it participates in the same desktop, portrait, landscape, and gamepad layout rules as the other editors.',
+      'Tile Editor desktop now builds its shell as Tile Editor, with top menu roots for File, Edit, View, Tiles, and Properties instead of reusing Pixel Editor draw/layer/frame roots.',
+      'Added tile-specific dropdown commands for tile navigation, art editing, property editing, reset, collision toggles, and destructible toggles.',
+      'Expanded shared layout, pointer-policy, and portrait/menu coverage so Tile Editor is included in all-editor UI regression checks.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '00:32 EDT',
+    title: 'Race playtest route and traction pass',
+    details: [
+      'Race playtest now infers closed-loop versus point-to-point behavior from whether the route endpoints connect, instead of relying on a manual race type menu.',
+      'Fixed launch orientation so playtests spawn behind the starting line facing the first route direction, with destination routes finishing back to the editor instead of wrapping.',
+      'Added top playtest controls for Pause, Return, and Main, replaced the minimap dot with a directional car marker, widened the road projection, strengthened braking, and reduced high-speed steering sensitivity.',
+      'Added tire screech audio hooks for pavement traction loss and rougher dirt/gravel/snow sliding.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '00:16 EDT',
+    title: 'Landscape compact rail metadata',
+    details: [
+      'Added shared slot and surface metadata to compact landscape command rail actions.',
+      'The Menu, Undo, Redo, and contextual quick-action rail now identifies itself as a fixed left-rail compact-landscape surface with tap-release activation and no gesture scrolling.',
+      'Updated the editor UI contract and layout coverage so renderers keep the compact left rail separate from scrollable root drawers and right submenu drawers.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '00:16 EDT',
+    title: 'Shared File exit footer guard',
+    details: [
+      'Added shared menu-spec validation so Exit to Main Menu must remain the final File command in every editor.',
+      'Updated the desktop UI spec to document Exit as the File drawer footer after the shared New, Save, Save As, Open, Export, Import baseline.',
+      'Extended cross-editor menu coverage so Pixel, Level, Actor, MIDI, SFX, Cutscene, Race, and Car all keep the same predictable File drawer exit placement.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '00:11 EDT',
+    title: 'Race start direction guard',
+    details: [
+      'Added focused Race Editor coverage for non-straight starts so playtest spawn faces the first route direction instead of assuming a straight north-facing start.',
+      'The guard verifies the car starts behind the starting line, matches the route yaw for both car and camera, and moves forward along that route heading when launching.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '00:09 EDT',
+    title: 'Desktop pointer policy coverage',
+    details: [
+      'Tightened shared desktop pointer-policy tests across Pixel, Level, Actor, MIDI, SFX, Cutscene, Race, and Car.',
+      'Explicitly separated editors that open right-click context menus from editors that use right-click as a pan fallback.',
+      'Kept desktop browser-menu suppression, middle/right-drag panning, and hidden desktop thumbsticks covered in one shared policy test.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '00:06 EDT',
+    title: 'Gamepad placement guard',
+    details: [
+      'Added direct shared menu spec validation for gamepad roots to stay on the left slide rail.',
+      'Added direct validation for gamepad submenus and settings to use the left slide-out drawer.',
+      'Added validation that gamepad command rows use the controller confirm-button activation model.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '00:04 EDT',
+    title: 'Landscape placement guard',
+    details: [
+      'Added direct shared menu spec validation for landscape touch root menus to stay on the left rail.',
+      'Added direct validation for landscape submenus and settings to stay on the right drawer.',
+      'Added validation that landscape persistent context/tool space remains on the bottom rail.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '00:02 EDT',
+    title: 'Portrait bottom placement guard',
+    details: [
+      'Added direct shared menu spec validation for portrait root menus to stay on the bottom rail.',
+      'Added direct validation for portrait submenus to stay in bottom sheets.',
+      'Covered the old top-tabs/top-sheet drift case with a focused regression test.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '00:00 EDT',
+    title: 'Settings placement guard',
+    details: [
+      'Added shared menu spec validation that fails if desktop Settings placement is routed to the left panel.',
+      'Covered the old left-panel settings placement with a focused regression test.',
+      'Kept the desktop left panel role as persistent inspector context while enforcing dropdown drawers for settings commands.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '23:58 EDT',
+    title: 'Desktop settings use dropdowns',
+    details: [
+      'Updated the shared desktop menu placement contract so Settings commands resolve to dropdown drawers instead of the left panel.',
+      'Kept the desktop left panel contract as a persistent context inspector for active state summaries.',
+      'Updated UISpec.md and layout tests so future editor work keeps desktop settings in the top-menu drawer model.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '23:55 EDT',
+    title: 'Race/Car shared File drawer',
+    details: [
+      'Moved Race Editor and Car Editor File drawer rows onto the shared editor File menu builder.',
+      'Kept the desktop baseline order New, Save, Save As, Open, Export, Import, with unavailable scaffold rows visible but disabled.',
+      'Locked the Exit to Main Menu row into the same shared File drawer path used by the other editors.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '23:53 EDT',
+    title: 'Race playtest free driving',
+    details: [
+      'Removed the neutral-steering yaw correction that was pulling the car back toward the route direction.',
+      'Race playtest now keeps a free world-space car position for rendering and minimap display instead of snapping the camera back to route progress.',
+      'Playtests still start facing the proper race direction, but destination finishes now exit back to the Race Editor instead of freezing at the finish line.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '23:48 EDT',
+    title: 'Level desktop asset quick switches',
+    details: [
+      'Added a compact Assets block to the Level Editor desktop left inspector for Tiles, Actors, Powerups, and Structures.',
+      'Each quick switch changes the active Level context and mode while preserving the shared top dropdown drawers as the primary command surface.',
+      'Kept the desktop top-menu guard intact so hovering or opening drawers still does not mutate persistent context panels.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '23:44 EDT',
+    title: 'Tile Editor desktop shell cleanup',
+    details: [
+      'Tile Editor desktop mode now uses the same shared Pixel desktop shell instead of a standalone picker screen.',
+      'Added the horizontal top menu bar and shared dropdown drawer path so File/Edit/View-style desktop menus remain available while editing tile art and properties.',
+      'Moved desktop Tile Editor context into a left ribbon/inspector showing selected tile, collision, slipperiness, conveyor, hazard, and destructible state.',
+      'Kept the tile list inside a shared work-surface panel and left the mobile portrait/landscape picker flow intact.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '23:40 EDT',
+    title: 'Race playtest start, finish, steering, minimap, and MIDI desktop controls',
+    details: [
+      'Race playtest now draws a fixed checker stripe in front of the player at launch and a finish checker stripe at the final node for point-to-point races.',
+      'Widened the projected road for first-person and third-person playtest views, reduced high-speed steering lock/response, and aligned physics yaw to the same world path used by the renderer to prevent unexplained straight-road pull.',
+      'Race minimap now draws the sampled world route, including generated and curved paths, with start/player/finish markers instead of relying only on editor node points.',
+      'Cleaned the damage diagram by removing text labels and mirroring right-side suspension indicators inward.',
+      'MIDI desktop moved instrument, note/chord, and bars controls into a compact left-panel Track Tools area so the grid header no longer carries mobile-style controls on desktop.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '23:30 EDT',
+    title: 'Cutscene desktop contextual left panel',
+    details: [
+      'Added a compact Add area to the Cutscene desktop left context panel so Art, Actor, Text, Color Board, Music, SFX, Effect, and Pause are available without opening a top drawer.',
+      'Updated Cutscene runtime Clips menu so clip-specific actions stay there while Copy, Cut, Paste, and Delete remain centralized in Edit.',
+      'Added coverage that the Cutscene desktop left panel owns Add quick actions without merging dropdown command hits into the context panel.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '23:27 EDT',
+    title: 'Desktop menu IA duplicate cleanup',
+    details: [
+      'Pixel shared Select menu now contains selection tools only; Copy, Cut, Paste, and Clear remain centralized under Edit.',
+      'SFX View now contains display/navigation settings while Timeline owns transport commands, removing the duplicated Play/Stop/Start/End rows.',
+      'Cutscene Clips now keeps clip-specific actions and leaves Copy/Cut/Paste/Delete in Edit.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '23:24 EDT',
+    title: 'Pixel desktop tool drawers stay open',
+    details: [
+      'Pixel desktop dropdown rows now carry their source menu id so tool-palette commands can behave differently from File/Edit commands.',
+      'Draw, Select, Tools, Layers, Frames, and Rigging dropdowns remain open after release activation, while File/Edit-style actions still close normally.',
+      'Added menu model coverage for the keep-open rule and source menu metadata.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '23:22 EDT',
+    title: 'Race scale and engine rev tuning',
+    details: [
+      'Narrowed default race road world width so a lane reads close to one car wide instead of the car/road scale feeling detached.',
+      'Reduced third-person race car sprite scale and added regression coverage for the car-to-lane projection ratio.',
+      'Changed highway lane markers to short world-sized dashes and made the synthesized engine rev sound respond more clearly to RPM, throttle, load, and rev limiter pulses.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '23:18 EDT',
+    title: 'Shared mode surface visibility map',
+    details: [
+      'Added a surfaceVisibility map to shared editor mode contracts and specialized desktop, landscape, and gamepad shell helpers.',
+      'Updated regression coverage so desktop, landscape touch, and gamepad plans expose the same required/suppressed surface visibility as the generic planner.',
+      'Documented the surfaceVisibility contract in the editor UI shell contract so future renderers can query one mode object instead of scanning separate arrays.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '23:14 EDT',
+    area: 'Desktop Editor UI',
+    summary: 'Aligned Actor DOM dropdown row metadata with the shared desktop contract.',
+    details: [
+      'Actor desktop dropdown buttons now expose command surface, pointer type, and row activation datasets from activeSpecModeContract.',
+      'This makes the DOM editor rows auditable against the same top-dropdown, mouse, release semantics used by the canvas desktop dropdown hit records.',
+      'The editor UI contract now explicitly requires matching command metadata for canvas and DOM desktop dropdown rows.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '23:10 EDT',
+    area: 'Shared Editor UI',
+    summary: 'Threaded menu spec mode contracts into editor render paths.',
+    details: [
+      'resolveEditorViewportModeFlags now exposes specModeContract alongside modeContract so renderers can keep the shared menu-spec contract visible at mode-dispatch time.',
+      'Pixel, Level, Actor, MIDI, SFX, Cutscene, Race, and Car top-level render paths now retain activeSpecModeContract before branching into desktop, portrait, landscape, or gamepad shells.',
+      'Shared layout coverage now checks viewport flags and buildEditorMenuLayoutPlan expose the menu spec contract in addition to the renderer contract.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '23:05 EDT',
+    area: 'Shared Editor UI',
+    summary: 'Added spec-level mode contracts for every editor menu.',
+    details: [
+      'Each shared editor menu spec now exposes modeContracts for portrait, landscape touch, desktop, and gamepad.',
+      'Menu spec validation now checks each mode contract against the spec placement root and submenu surfaces.',
+      'New coverage compares spec contracts with renderer presentation and interaction contracts so desktop release menus, portrait bottom sheets, landscape right drawers, and gamepad confirm-button slide-outs stay aligned.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '23:02 EDT',
+    area: 'Shared Editor UI',
+    summary: 'Made fitting menu regions participate in tap-drag gesture handling.',
+    details: [
+      'The shared menu drag helper now recognizes registered menu regions with maxScroll 0, so a drag inside a fitting drawer can suppress accidental button activation while keeping scroll clamped.',
+      'Race and Car action rows now register their shared menu gesture region even when the current row list fits without overflow.',
+      'The editor UI contract now documents that menu gesture regions own tap-vs-drag behavior first and scrolling second.'
+    ]
+  },
+  {
+    date: '2026-07-02',
+    time: '22:56 EDT',
+    area: 'Race Playtest',
+    summary: 'Retuned race scale, road markers, and engine rev feedback.',
+    details: [
+      'Default race lanes now project closer to one car width per lane, with the third-person car scaled larger against the road.',
+      'Center lane dashes and yellow edge markers are now drawn from world-distance intervals so they move toward the camera as speed changes instead of sticking to screen rows.',
+      'Race playtest now sends live RPM, throttle, redline, and load to a dedicated engine rev audio model, and Car Editor data/actions now carry an overrideable engine sound profile.'
+    ]
+  },
   {
     date: '2026-07-02',
     time: '22:40 EDT',
@@ -1082,7 +2767,7 @@ export const LATEST_CHANGES = [
     time: '14:59 EDT',
     summary: 'Reworked race playtest toward 2022 WRX drivetrain physics.',
     details: [
-      'Default race projects now include a 2022 Subaru WRX 6MT and a 2022 Subaru WRX SPT automatic, both AWD with 271 hp and 258 lb-ft tuning data.',
+      'Default race projects now include a 2022 Subaru WRX with selectable 6MT and SPT transmission profiles, AWD, 271 hp, and 258 lb-ft tuning data.',
       'Race playtest acceleration now comes from torque, gear ratio, final drive, wheel radius, mass, traction, drag, shift delay, and rev limiter behavior instead of simple per-gear target speeds.',
       'Regression tests now cover manual and automatic shifting, neutral rev limiting, roughly 5-6 second 0-60 behavior, about 135 mph top speed, and rain/snow grip hooks.'
     ]

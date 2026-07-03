@@ -423,6 +423,7 @@ test('MIDI mobile landscape initializes to at least four visible measures', () =
 test('MIDI landscape controller mode avoids duplicate touch controls and keeps side menu scrollable', () => {
   const thumbModeBody = midiMethodBody('isMobileLandscapeThumbZoomMode', 'updatePanJoystick');
   const mobileLayoutBody = midiMethodBody('drawMobileLayout', 'drawMobileBottomRail');
+  const panJoystickBody = midiMethodBody('drawMobilePanJoystick', 'drawLandscapeZoomOverlay');
   const bottomRailBody = midiMethodBody('drawMobileBottomRail', 'drawPatternEditor');
   const pointerBody = `${midiMethodBody('handlePointerDown', 'handlePointerMove')}\n${midiMethodBody('handlePointerMove', 'handlePointerUp')}\n${midiMethodBody('handlePointerUp', 'handleWheel')}`;
   const wheelBody = midiMethodBody('handleWheel', 'shouldHandleGestureStart');
@@ -430,6 +431,12 @@ test('MIDI landscape controller mode avoids duplicate touch controls and keeps s
   assert.equal(thumbModeBody.includes("this.activeTab === 'grid' || this.activeTab === 'song'"), true);
   assert.equal(thumbModeBody.includes('!this.isPhysicalControllerConnected()'), true);
   assert.equal(mobileLayoutBody.includes('const gamepadOwnsLandscapeMenu = gamepadMenuState.isLandscapeMenuMode;'), true);
+  assert.equal(mobileLayoutBody.includes("if (this.activeViewportMode === 'portrait')"), true);
+  assert.equal(mobileLayoutBody.includes('isMobilePortraitLayout({'), false);
+  assert.equal(panJoystickBody.includes("if (this.activeViewportMode === 'portrait')"), true);
+  assert.equal(panJoystickBody.includes('isMobilePortraitLayout({'), false);
+  assert.equal(bottomRailBody.includes("const isPortrait = this.activeViewportMode === 'portrait';"), true);
+  assert.equal(bottomRailBody.includes('isMobilePortraitLayout({'), false);
   assert.equal(mobileLayoutBody.includes("const showsGridBottomRail = isLandscape && (this.activeTab === 'grid' || this.activeTab === 'song') && !gamepadOwnsLandscapeMenu;"), true);
   assert.equal(mobileLayoutBody.includes('bottomRailHeight: showsGridBottomRail ? 72 : 0'), true);
   assert.equal(bottomRailBody.includes('reserveThumbstick'), true);

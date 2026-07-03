@@ -12,7 +12,7 @@ import {
 
 test('latest changes exposes a running ordered summary for the options menu', () => {
   assert.ok(LATEST_CHANGES.length >= 4);
-  assert.match(LATEST_CHANGES[0].date, /^2026-07-0[12]$/);
+  assert.match(LATEST_CHANGES[0].date, /^2026-07-\d{2}$/);
   assert.match(LATEST_CHANGES[0].time, /^\d{2}:\d{2} [A-Z]{3}$/);
   assert.equal(formatLatestChangeTimestamp(LATEST_CHANGES[0]), `${LATEST_CHANGES[0].date} ${LATEST_CHANGES[0].time}`);
   assert.equal(formatLatestChangeTimestamp({ date: '2026-07-01' }), '2026-07-01');
