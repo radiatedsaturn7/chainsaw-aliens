@@ -65,6 +65,7 @@ import {
   validateEditorWorkSurfaceTypes,
   resolveOpenDesktopDropdownState,
   resolvePendingDesktopDropdownHit,
+  shouldCloseDesktopDropdownOnPointerDown,
   shouldCloseDesktopDropdownOnDomPointerDown,
   shouldSuppressEditorContextMenu,
   shouldUseGamepadSlideOutMenu,
@@ -80,7 +81,11 @@ import {
   getEditorMenuSection,
   getEditorRootMenuEntries
 } from '../../src/ui/shared/editorMenuSpec.js';
-import { drawSharedDesktopDropdown } from '../../src/ui/uiSuite.js';
+import {
+  SHARED_DESKTOP_CONTEXT_ALLOWED_CONTENT_ROLES,
+  drawSharedDesktopDropdown,
+  drawSharedPortraitSheet
+} from '../../src/ui/uiSuite.js';
 
 const ALL_EDITOR_IDS = SHARED_EDITOR_IDS;
 const uiSpecSource = readFileSync(new URL('../../UISpec.md', import.meta.url), 'utf8');
@@ -178,6 +183,7 @@ test('shared editor surface ids are centralized and immutable', () => {
   assert.equal(DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface, EDITOR_SURFACES.topDropdown);
   assert.equal(knownSurfaces.has(DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface), true);
   assert.equal(DESKTOP_CONTEXT_PANEL_CONTRACT.surface, EDITOR_SURFACES.leftContextPanel);
+  assert.deepEqual(DESKTOP_CONTEXT_PANEL_CONTRACT.allowedContentRoles, [...SHARED_DESKTOP_CONTEXT_ALLOWED_CONTENT_ROLES]);
   assert.equal(LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootDrawerSurface, EDITOR_SURFACES.leftOverlayDrawer);
   assert.equal(GAMEPAD_SLIDE_OUT_MENU_CONTRACT.sourceSurface, EDITOR_SURFACES.gamepadSlideOut);
   assert.equal(REQUIRED_MODE_SURFACES[EDITOR_LAYOUT_MODES.PORTRAIT].includes(EDITOR_SURFACES.bottomActionRail), true);
@@ -261,7 +267,7 @@ test('shared desktop dropdown command hit helper normalizes command metadata', (
 });
 
 test('compatible canvas editors use the shared desktop dropdown command hit helper', () => {
-  ['pixel', 'level', 'midi', 'sfx', 'cutscene', 'race', 'car'].forEach((editorId) => {
+  Object.keys(canvasEditorDesktopDropdownSources).forEach((editorId) => {
     assert.equal(
       canvasEditorDesktopDropdownSources[editorId].includes('createDesktopDropdownCommandHit('),
       true,
@@ -357,7 +363,7 @@ test('shared desktop root menu dataset helper normalizes DOM root metadata', () 
 });
 
 test('canvas desktop top menu root hit paths use the shared helper', () => {
-  ['pixel', 'tile', 'level', 'midi', 'sfx', 'cutscene', 'race'].forEach((editorId) => {
+  Object.keys(canvasEditorDesktopDropdownSources).forEach((editorId) => {
     const source = canvasEditorDesktopDropdownSources[editorId];
     assert.equal(source.includes('createDesktopRootMenuHit('), true, `${editorId}:root-helper`);
   });
@@ -656,6 +662,14 @@ test('landscape menu layout plan separates left root drawers from right submenus
 });
 
 test('portrait menu layout plan keeps roots and submenus bottom-first across every editor', () => {
+  assert.deepEqual(drawSharedPortraitSheet(null, { x: 0, y: 0, w: 390, h: 280 }), {
+    surface: EDITOR_SURFACES.bottomSheet,
+    role: 'portrait-command-sheet',
+    commandSurface: EDITOR_SURFACES.bottomSheet,
+    pointerType: 'touch',
+    rowActivation: 'tap-release',
+    gestureScroll: true
+  });
   for (const editorId of ALL_EDITOR_IDS) {
     const plan = buildEditorMenuLayoutPlan(editorId, {
       isMobile: true,
@@ -1083,6 +1097,13 @@ test('shared menu scroll drag helper suppresses taps only after threshold moveme
   const staticScroll = resolveMenuScrollDrag(staticDrag, { x: 110, y: -48 });
   assert.equal(staticScroll.moved, true);
   assert.equal(staticScroll.nextScroll, 0);
+
+  const staticCanvasTap = buildMenuScrollDragState({
+    regions,
+    point: { x: 110, y: 20 },
+    scrollState: { drawer: 0 }
+  });
+  assert.equal(staticCanvasTap, null);
 });
 
 test('shared menu scroll drag helper supports continuous pixel scroll panels', () => {
@@ -1279,6 +1300,59 @@ test('shared DOM desktop dropdown close helper ignores clicks inside the top men
   assert.equal(shouldCloseDesktopDropdownOnDomPointerDown({ dropdown: null, event: outsideEvent, menuSelector: '.desktop-top-menu' }), false);
   assert.equal(shouldCloseDesktopDropdownOnDomPointerDown({ dropdown, event: insideEvent, menuSelector: '.desktop-top-menu' }), false);
   assert.equal(shouldCloseDesktopDropdownOnDomPointerDown({ dropdown, event: outsideEvent, menuSelector: '.desktop-top-menu' }), true);
+});
+
+test('desktop dropdown click-away keeps registered interactive regions open', () => {
+  const dropdown = {
+    rootId: 'file',
+    panelBounds: { x: 20, y: 32, w: 120, h: 160 }
+  };
+  const rootButtons = [{ desktopRootId: 'file', bounds: { x: 20, y: 0, w: 60, h: 32 } }];
+  const interactiveRegions = [{ bounds: { x: 142, y: 36, w: 90, h: 48 } }];
+
+  assert.equal(shouldCloseDesktopDropdownOnPointerDown({
+    dropdown,
+    point: { x: 160, y: 52 },
+    rootButtons,
+    interactiveRegions,
+    rootIdKey: 'desktopRootId'
+  }), false);
+  assert.equal(shouldCloseDesktopDropdownOnPointerDown({
+    dropdown,
+    point: { x: 260, y: 52 },
+    rootButtons,
+    interactiveRegions,
+    rootIdKey: 'desktopRootId'
+  }), true);
+});
+
+test('desktop dropdown click-away accepts raw bounds and every canvas editor passes interactive regions', () => {
+  const dropdown = {
+    rootId: 'file',
+    panelBounds: { x: 20, y: 32, w: 120, h: 160 }
+  };
+  const rootButtons = [{ desktopRootId: 'file', bounds: { x: 20, y: 0, w: 60, h: 32 } }];
+
+  assert.equal(shouldCloseDesktopDropdownOnPointerDown({
+    dropdown,
+    point: { x: 160, y: 52 },
+    rootButtons,
+    interactiveRegions: [{ x: 142, y: 36, w: 90, h: 48 }],
+    rootIdKey: 'desktopRootId'
+  }), false);
+
+  Object.entries(canvasEditorDesktopDropdownSources).forEach(([editorId, source]) => {
+    assert.equal(
+      source.includes('shouldCloseDesktopDropdownOnPointerDown({'),
+      true,
+      `${editorId} should use the shared desktop click-away helper`
+    );
+    assert.equal(
+      source.includes('interactiveRegions:'),
+      true,
+      `${editorId} should keep dropdown scroll/row regions interactive for click-away`
+    );
+  });
 });
 
 test('shared desktop root menu hit helper resolves custom ids and prefixed ids', () => {
@@ -2517,9 +2591,9 @@ test('pointer interaction policy separates desktop mouse from touch gestures', (
 
 test('desktop pointer policy treats every editor work surface as an app surface', () => {
   const editors = ALL_EDITOR_IDS;
-  const contextMenuEditors = new Set(['pixel', 'level', 'actor', 'cutscene', 'race', 'car']);
   assert.equal(editorMenuLayoutSource.includes('const CONTINUOUS_PAN_EDITOR_IDS = new Set(SHARED_EDITOR_IDS);'), true);
   assert.equal(editorMenuLayoutSource.includes('const FALLBACK_PAN_EDITOR_IDS = new Set(SHARED_EDITOR_IDS);'), true);
+  assert.equal(editorMenuLayoutSource.includes('const DESKTOP_CONTEXT_MENU_EDITOR_IDS = new Set(SHARED_EDITOR_IDS);'), true);
   assert.equal(editorMenuLayoutSource.includes('const WORK_SURFACE_TYPES = {'), false);
   assert.equal(editorMenuLayoutSource.includes('getEditorWorkSurfaceType(editorId)'), true);
   assert.equal(editorMenuLayoutSource.includes("new Set(['pixel', 'tile', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'car'])"), false);
@@ -2533,7 +2607,7 @@ test('desktop pointer policy treats every editor work surface as an app surface'
     assert.equal(policy.workSurfaceGestures.middleDragPan, true, `${editorId} middle-drag pan`);
     assert.equal(policy.workSurfaceGestures.rightDragPan, true, `${editorId} right-drag pan`);
     assert.equal(policy.rightClick.suppressBrowserMenu, true, `${editorId} suppress browser menu`);
-    assert.equal(policy.rightClick.opensContextMenu, contextMenuEditors.has(editorId), `${editorId} context menu availability`);
+    assert.equal(policy.rightClick.opensContextMenu, true, `${editorId} context menu availability`);
     assert.equal(policy.rightClick.fallbackPan, true, `${editorId} fallback pan`);
     assert.equal(policy.thumbstick.allowed, false, `${editorId} desktop thumbstick hidden`);
   });

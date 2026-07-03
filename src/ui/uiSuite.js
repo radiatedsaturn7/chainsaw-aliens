@@ -265,6 +265,15 @@ export const SHARED_EDITOR_LEFT_MENU = {
   exitLabel: 'Exit to Main Menu'
 };
 
+export const SHARED_DESKTOP_CONTEXT_ALLOWED_CONTENT_ROLES = Object.freeze([
+  'document-summary',
+  'selection-summary',
+  'active-tool-summary',
+  'transport',
+  'status',
+  'contextual-quick-actions'
+]);
+
 export class SharedEditorMenu {
   constructor(options = {}) {
     this.options = {
@@ -473,9 +482,12 @@ export function drawSharedDesktopTopMenu(ctx, plan, {
   maxLabelPadding = 8,
   registerButton = null
 } = {}) {
-  if (!ctx || !plan?.bounds) return [];
-  drawSharedPanel(ctx, plan.bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
   const rendered = [];
+  rendered.surface = 'top-menu';
+  rendered.role = 'desktop-root-menu';
+  rendered.fit = plan?.fit || null;
+  if (!ctx || !plan?.bounds) return rendered;
+  drawSharedPanel(ctx, plan.bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
   (plan.buttons || []).forEach((button) => {
     const id = button.id;
     const bounds = { ...button.bounds, id: idPrefix ? `${idPrefix}${id}` : id };
@@ -511,8 +523,12 @@ export function drawSharedDesktopContextPanel(ctx, bounds, {
   fill = UI_SUITE.colors.panel,
   border = UI_SUITE.colors.border
 } = {}) {
+  const allowedContentRoles = new Set(SHARED_DESKTOP_CONTEXT_ALLOWED_CONTENT_ROLES);
   const safeContentRoles = Array.isArray(contentRoles)
-    ? [...new Set(contentRoles.filter(Boolean).map((entry) => String(entry)))]
+    ? [...new Set(contentRoles
+      .filter(Boolean)
+      .map((entry) => String(entry))
+      .filter((entry) => allowedContentRoles.has(entry)))]
     : [];
   const panelModel = {
     surface,
@@ -570,11 +586,11 @@ export function drawSharedDesktopRibbon(ctx, bounds, {
   ctx.font = `${titleSize}px ${UI_SUITE.font.family}`;
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left';
-  ctx.fillText(String(title || ''), bounds.x + padding, bounds.y + titleY, labelMaxW);
+  ctx.fillText(clipMenuLabel(ctx, String(title || ''), labelMaxW), bounds.x + padding, bounds.y + titleY, labelMaxW);
   if (subtitle) {
     ctx.fillStyle = UI_SUITE.colors.muted;
     ctx.font = `${subtitleSize}px ${UI_SUITE.font.family}`;
-    ctx.fillText(String(subtitle), bounds.x + padding, bounds.y + subtitleY, labelMaxW);
+    ctx.fillText(clipMenuLabel(ctx, String(subtitle), labelMaxW), bounds.x + padding, bounds.y + subtitleY, labelMaxW);
   }
   ctx.restore();
 }
@@ -1159,7 +1175,15 @@ export function drawSharedPortraitSheet(ctx, bounds, {
   border = UI_SUITE.colors.border,
   scrim = true
 } = {}) {
-  if (!ctx || !bounds) return;
+  const model = {
+    surface: 'bottom-sheet',
+    role: 'portrait-command-sheet',
+    commandSurface: 'bottom-sheet',
+    pointerType: 'touch',
+    rowActivation: 'tap-release',
+    gestureScroll: true
+  };
+  if (!ctx || !bounds) return model;
   ctx.save();
   if (scrim) {
     ctx.fillStyle = 'rgba(0,0,0,0.52)';
@@ -1167,6 +1191,7 @@ export function drawSharedPortraitSheet(ctx, bounds, {
   }
   drawSharedPanel(ctx, bounds, { fill, border });
   ctx.restore();
+  return model;
 }
 
 export function drawSharedPortraitTabStrip(ctx, bounds, tabs = [], {

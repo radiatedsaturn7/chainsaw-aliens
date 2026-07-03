@@ -10,7 +10,10 @@ import {
   getEditorWorkSurfaceType,
   getEditorRootMenuEntries
 } from './editorMenuSpec.js';
-import { getSharedMobileLandscapeEditorLayout } from '../uiSuite.js';
+import {
+  SHARED_DESKTOP_CONTEXT_ALLOWED_CONTENT_ROLES,
+  getSharedMobileLandscapeEditorLayout
+} from '../uiSuite.js';
 
 const DEFAULT_DRAG_SCROLL = {
   enabled: true,
@@ -30,6 +33,8 @@ const pointInBounds = (point = {}, bounds = {}) => {
     && y >= Number(bounds.y || 0)
     && y <= Number(bounds.y || 0) + Number(bounds.h || 0);
 };
+
+const getInteractionBounds = (region = {}) => region?.bounds || region;
 
 const DEFAULT_TOP_MENU = {
   x: 0,
@@ -55,7 +60,7 @@ const DEFAULT_DESKTOP_SHELL = {
 
 const CONTINUOUS_PAN_EDITOR_IDS = new Set(SHARED_EDITOR_IDS);
 const FALLBACK_PAN_EDITOR_IDS = new Set(SHARED_EDITOR_IDS);
-const DESKTOP_CONTEXT_MENU_EDITOR_IDS = new Set(['pixel', 'level', 'actor', 'cutscene', 'race', 'car']);
+const DESKTOP_CONTEXT_MENU_EDITOR_IDS = new Set(SHARED_EDITOR_IDS);
 
 export const COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT = 4;
 export const COMPACT_LANDSCAPE_COMMAND_RAIL_WIDTH = 84;
@@ -140,14 +145,7 @@ export const DESKTOP_CONTEXT_PANEL_CONTRACT = {
   persistent: true,
   drawerCommandsStayInTopDropdown: true,
   duplicatesTopDropdownCommands: false,
-  allowedContentRoles: [
-    'document-summary',
-    'selection-summary',
-    'active-tool-summary',
-    'transport',
-    'status',
-    'contextual-quick-actions'
-  ],
+  allowedContentRoles: [...SHARED_DESKTOP_CONTEXT_ALLOWED_CONTENT_ROLES],
   contextualQuickActionPolicy: {
     allowed: true,
     mustBeContextual: true,
@@ -725,6 +723,7 @@ export function buildMenuScrollDragState({
 } = {}) {
   const region = findScrollableMenuRegion(regions, point);
   if (!region) return null;
+  if (Number(region.maxScroll) <= 0 && !pendingHit) return null;
   const menuId = region.menuId || region.id || 'menu';
   const scrollScale = Number.isFinite(region.scrollScale)
     ? Number(region.scrollScale)
@@ -895,6 +894,7 @@ export function shouldCloseDesktopDropdownOnPointerDown({
   dropdown = null,
   point = {},
   rootButtons = [],
+  interactiveRegions = [],
   rootIdKey = 'id',
   idPrefix = '',
   excludeIds = []
@@ -902,6 +902,11 @@ export function shouldCloseDesktopDropdownOnPointerDown({
   if (!dropdown) return false;
   const panel = dropdown.panelBounds || dropdown.bounds;
   if (panel && pointInBounds(point, panel)) return false;
+  const regionHit = (interactiveRegions || []).some((region) => {
+    const bounds = getInteractionBounds(region);
+    return bounds && pointInBounds(point, bounds);
+  });
+  if (regionHit) return false;
   const rootHit = resolveDesktopRootMenuHit({
     buttons: rootButtons,
     point,

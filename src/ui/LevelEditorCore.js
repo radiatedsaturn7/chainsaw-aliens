@@ -5868,6 +5868,7 @@ export default class Editor {
       dropdown: this.desktopDropdown,
       point: payload,
       rootButtons: this.uiButtons,
+      interactiveRegions: this.desktopDropdownRegions,
       rootIdKey: 'desktopRootId',
       excludeIds: ['playtest']
     })) {

@@ -1616,6 +1616,7 @@ export default class SfxEditor {
       dropdown: this.desktopDropdown,
       point: payload,
       rootButtons: this.buttons,
+      interactiveRegions: this.menuScrollRegions,
       rootIdKey: 'desktopRootId'
     })) {
       const nextDropdown = resolveClosedDesktopDropdownState({

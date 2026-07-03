@@ -321,7 +321,7 @@ export const EDITOR_MENU_SPECS = {
       file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo', 'copy-segment', 'paste-segment', 'delete-segment']),
       view: section('view', 'View', ['preview-mode7', 'zoom-fit', 'toggle-scenery', 'toggle-racing-line']),
-      race: section('race', 'Race', ['generate-random-race', 'draw-road', 'move-node', 'remove-node', 'remove-edge', 'edge-tile', 'load-weathertech-raceway', 'load-nurburgring-nordschleife', 'load-col-de-turini', 'load-ouninpohja', 'load-daytona-tri-oval', 'segment-width', 'segment-bumpiness', 'snow-condition']),
+      race: section('race', 'Race', ['generate-random-race', 'draw-road', 'move-node', 'remove-node', 'remove-edge', 'edge-tile', 'load-weathertech-raceway', 'load-nurburgring-nordschleife', 'load-col-de-turini', 'load-ouninpohja', 'load-daytona-tri-oval', 'insert-node', 'snap-node', 'segment-width', 'segment-bumpiness', 'snow-condition']),
       ground: section('ground', 'Ground', ['ground-tile-next', 'paint-ground', 'surface-asphalt', 'surface-dirt', 'surface-gravel', 'surface-snow', 'surface-wet-asphalt']),
       elevation: section('elevation', 'Elevation', ['paint-elevation', 'elevation-up', 'elevation-down', 'elevation-brush-size']),
       sprites: section('sprites', 'Sprites', ['add-sprite', 'move-sprite', 'delete-sprite', 'side-left', 'side-right']),

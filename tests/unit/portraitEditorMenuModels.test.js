@@ -47,7 +47,11 @@ import {
   getSharedPortraitMultiRowTabLayout,
   getSharedTransportPopoverLayout,
   SHARED_PORTRAIT_RAIL_ACTION_COUNT,
+  SHARED_DESKTOP_CONTEXT_ALLOWED_CONTENT_ROLES,
   drawSharedDesktopContextPanel,
+  drawSharedDesktopRibbon,
+  drawSharedDesktopTopMenu,
+  drawSharedPortraitSheet,
   UI_SUITE
 } from '../../src/ui/uiSuite.js';
 import { readFileSync } from 'node:fs';
@@ -173,6 +177,26 @@ test('portrait root menus stay bottom-sized across all editors', () => {
   Object.entries(models).forEach(([editor, model]) => {
     assert.ok(model.rootTabs.length <= PORTRAIT_ROOT_MAX_ITEMS, `${editor} portrait root menu should have no more than ${PORTRAIT_ROOT_MAX_ITEMS} bottom items`);
     assert.equal(model.portraitRootPlacement, 'bottom-rail', `${editor} portrait roots should be bottom-first`);
+  });
+});
+
+test('portrait submenu sheets expose shared bottom command metadata', () => {
+  assert.deepEqual(drawSharedPortraitSheet(null, { x: 0, y: 520, w: 390, h: 260 }), {
+    surface: 'bottom-sheet',
+    role: 'portrait-command-sheet',
+    commandSurface: 'bottom-sheet',
+    pointerType: 'touch',
+    rowActivation: 'tap-release',
+    gestureScroll: true
+  });
+  [
+    pixelStudioSource,
+    levelEditorSource,
+    midiEditorSource,
+    sfxEditorSource,
+    cutsceneEditorSource
+  ].forEach((source) => {
+    assert.equal(source.includes('drawSharedPortraitSheet'), true);
   });
 });
 
@@ -2724,6 +2748,8 @@ test('Pixel gamepad mode replaces the left landscape rail with submenu slide-out
   assert.equal(pixelStudioSource.includes('!(this.isTouchViewportMode() && this.mobileDrawer)'), true);
   assert.equal(pixelStudioSource.includes("this.statusMessage = this.isTouchViewportMode()\n          ? 'Tap Source, then tap canvas'"), true);
   assert.equal(pixelStudioSource.includes("this.statusMessage = this.isTouchViewportMode()\n        ? 'Tap Set Source, then tap canvas'"), true);
+  assert.equal(pixelStudioSource.includes('const hitSize = this.isTouchViewportMode() ? 28 : 20;'), true);
+  assert.equal(pixelStudioSource.includes('const hitSize = this.isMobileLayout?.() ? 28 : 20;'), false);
   const mobileDrawerIndex = pixelStudioSource.indexOf('  drawMobileDrawer(ctx, x, y, w, h, type) {');
   const mobileDrawerBody = pixelStudioSource.slice(mobileDrawerIndex, pixelStudioSource.indexOf('  drawColorPickerPanel(ctx, x, y, w, h)', mobileDrawerIndex));
   assert.ok(mobileDrawerIndex > 0);
@@ -4643,6 +4669,8 @@ test('desktop editor ribbons share the RTG Studio ribbon chrome', () => {
   assert.match(uiSuiteSource, /ctx\.fillStyle = UI_SUITE\.colors\.accent/);
   assert.match(uiSuiteSource, /ctx\.fillStyle = UI_SUITE\.colors\.muted/);
   assert.match(uiSuiteSource, /UI_SUITE\.font\.family/);
+  assert.equal(uiSuiteSource.includes("clipMenuLabel(ctx, String(title || ''), labelMaxW)"), true);
+  assert.equal(uiSuiteSource.includes("clipMenuLabel(ctx, String(subtitle), labelMaxW)"), true);
   [
     pixelStudioSource,
     levelEditorSource,
@@ -4668,8 +4696,45 @@ test('desktop editor ribbons share the RTG Studio ribbon chrome', () => {
   assert.match(stylesSource, /\.actor-editor-desktop-ribbon-title \{[\s\S]*color: var\(--ui-accent\);/);
 });
 
+test('shared desktop ribbon clips long title and subtitle text', () => {
+  const textCalls = [];
+  const ctx = {
+    save() {},
+    restore() {},
+    fillRect() {},
+    strokeRect() {},
+    fillText(value, x, y, maxWidth) {
+      textCalls.push({ value: String(value), x, y, maxWidth });
+    },
+    measureText(value) {
+      return { width: String(value || '').length * 8 };
+    },
+    set fillStyle(value) { this._fillStyle = value; },
+    get fillStyle() { return this._fillStyle; },
+    set strokeStyle(value) { this._strokeStyle = value; },
+    get strokeStyle() { return this._strokeStyle; },
+    set font(value) { this._font = value; },
+    get font() { return this._font; },
+    set textAlign(value) { this._textAlign = value; },
+    get textAlign() { return this._textAlign; },
+    set textBaseline(value) { this._textBaseline = value; },
+    get textBaseline() { return this._textBaseline; }
+  };
+  drawSharedDesktopRibbon(ctx, { x: 0, y: 0, w: 96, h: 58 }, {
+    title: 'Extremely Long Desktop Ribbon Title',
+    subtitle: 'Very Long Desktop Ribbon Subtitle'
+  });
+
+  assert.equal(textCalls.length, 2);
+  assert.equal(textCalls.every((call) => call.maxWidth === 72), true);
+  assert.equal(textCalls.every((call) => call.value.endsWith('…')), true);
+});
+
 test('desktop top menus share the RTG Studio menu chrome', () => {
   assert.match(uiSuiteSource, /export function drawSharedDesktopTopMenu/);
+  assert.equal(uiSuiteSource.includes("rendered.surface = 'top-menu';"), true);
+  assert.equal(uiSuiteSource.includes("rendered.role = 'desktop-root-menu';"), true);
+  assert.equal(uiSuiteSource.includes('rendered.fit = plan?.fit || null;'), true);
   [
     pixelStudioSource,
     levelEditorSource,
@@ -4680,6 +4745,22 @@ test('desktop top menus share the RTG Studio menu chrome', () => {
   ].forEach((source) => {
     assert.match(source, /drawSharedDesktopTopMenu/);
   });
+  const rendered = drawSharedDesktopTopMenu(null, {
+    bounds: { x: 0, y: 0, w: 400, h: 40 },
+    fit: {
+      visibleCount: 3,
+      totalCount: 5,
+      hasHiddenOverflow: true
+    }
+  });
+  assert.equal(Array.isArray(rendered), true);
+  assert.equal(rendered.surface, 'top-menu');
+  assert.equal(rendered.role, 'desktop-root-menu');
+  assert.deepEqual(rendered.fit, {
+    visibleCount: 3,
+    totalCount: 5,
+    hasHiddenOverflow: true
+  });
   assert.equal(actorEditorSource.includes("const top = el('div', 'actor-editor-desktop-top-menu');"), true);
   assert.match(stylesSource, /\.actor-editor-desktop-top-menu \{[\s\S]*background: var\(--ui-panel\);[\s\S]*border-bottom: 1px solid var\(--ui-border\);/);
   assert.match(stylesSource, /\.actor-editor-desktop-menu-btn \{[\s\S]*background: transparent;[\s\S]*color: var\(--ui-text\);/);
@@ -4687,6 +4768,7 @@ test('desktop top menus share the RTG Studio menu chrome', () => {
 
 test('desktop context panels share the RTG Studio context chrome', () => {
   assert.match(uiSuiteSource, /export function drawSharedDesktopContextPanel/);
+  assert.equal(uiSuiteSource.includes('SHARED_DESKTOP_CONTEXT_ALLOWED_CONTENT_ROLES'), true);
   assert.equal(uiSuiteSource.includes("title = 'Active'"), true);
   assert.equal(uiSuiteSource.includes("title = 'Context'"), false);
   assert.equal(uiSuiteSource.includes("role = 'context-inspector'"), true);
@@ -4696,13 +4778,15 @@ test('desktop context panels share the RTG Studio context chrome', () => {
   assert.equal(uiSuiteSource.includes('clipMenuLabel(ctx, String(status), textMaxWidth)'), true);
   assert.equal(uiSuiteSource.includes('duplicatesTopDropdownCommands: false'), true);
   assert.deepEqual(drawSharedDesktopContextPanel(null, { x: 0, y: 0, w: 10, h: 10 }, {
-    contentRoles: ['document-summary', 'status', 'document-summary']
+    contentRoles: ['document-summary', 'top-dropdown', 'status', 'document-summary', 'menu-command']
   }), {
     surface: 'left-context-panel',
     role: 'context-inspector',
     contentRoles: ['document-summary', 'status'],
     duplicatesTopDropdownCommands: false
   });
+  assert.equal(SHARED_DESKTOP_CONTEXT_ALLOWED_CONTENT_ROLES.includes('top-dropdown'), false);
+  assert.equal(SHARED_DESKTOP_CONTEXT_ALLOWED_CONTENT_ROLES.includes('menu-command'), false);
   assert.match(uiSuiteSource, /export function buildSharedDesktopContextTransportLayout/);
   assert.equal(uiSuiteSource.includes('includeTransport = false,'), true);
   [

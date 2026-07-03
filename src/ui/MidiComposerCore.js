@@ -5437,6 +5437,7 @@ export default class MidiComposer {
       dropdown: this.desktopDropdown,
       point: payload,
       rootButtons: this.getDesktopRootButtons(),
+      interactiveRegions: this.menuScrollRegions,
       rootIdKey: 'desktopRootId'
     })) {
       this.closeMidiDesktopDropdown();

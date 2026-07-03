@@ -3551,6 +3551,7 @@ export default class CutsceneEditor {
       dropdown: this.desktopDropdown,
       point: { x, y },
       rootButtons: this.bounds.buttons,
+      interactiveRegions: this.menuScrollRegions,
       idPrefix: 'desktop-root:'
     })) {
       const nextDropdown = resolveClosedDesktopDropdownState({

@@ -97,6 +97,8 @@ const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   'zoom-fit',
   'draw-road',
   'move-node',
+  'insert-node',
+  'snap-node',
   'remove-node',
   'remove-edge',
   'segment-length',
@@ -201,6 +203,7 @@ export default class RaceEditor {
     this.activeSpecModeContract = null;
     this.activeAction = null;
     this.selectedSegmentIndex = 0;
+    this.raceSelectionType = 'edge';
     this.status = 'Ready';
     this.activeRootId = mode === 'car' ? 'art' : 'race';
     this.mobileRootOpen = false;
@@ -222,7 +225,7 @@ export default class RaceEditor {
       brake: false,
       handbrake: false,
       autoShift: true,
-      transmissionMode: 'manual',
+      transmissionMode: 'automatic',
       keyboardThrottle: false,
       keyboardBrake: false,
       keyboardSteer: 0,
@@ -775,6 +778,7 @@ export default class RaceEditor {
     this.racePortraitMode = 'race';
     this.activeAction = 'draw-road';
     this.activeRootId = 'race';
+    this.raceSelectionType = 'node';
     this.status = 'Race mode: tap the map to add a node';
   }
 
@@ -819,6 +823,7 @@ export default class RaceEditor {
       road.segments.splice(clamp(nodeIndex - 1, 0, road.segments.length - 1), 1);
     }
     this.selectedSegmentIndex = clamp(nodeIndex - 1, 0, Math.max(0, (road.segments?.length || 1) - 1));
+    this.raceSelectionType = 'node';
     this.status = `Removed node ${nodeIndex}`;
     return true;
   }
@@ -832,7 +837,56 @@ export default class RaceEditor {
       road.nodes.splice(clamp(removeAt + 1, 1, road.nodes.length - 1), 1);
     }
     this.selectedSegmentIndex = clamp(removeAt, 0, Math.max(0, road.segments.length - 1));
+    this.raceSelectionType = 'edge';
     this.status = `Removed edge ${removeAt + 1}`;
+    return true;
+  }
+
+  insertRaceNodeAfterSelectedEdge() {
+    const road = this.selectedRace?.road;
+    const nodes = this.ensureRaceSegmentNodes();
+    if (!road || !Array.isArray(road.segments) || !road.segments.length || nodes.length < 2) return false;
+    const segmentIndex = clamp(Math.round(Number(this.selectedSegmentIndex) || 0), 0, road.segments.length - 1);
+    const from = nodes[segmentIndex];
+    const to = nodes[segmentIndex + 1];
+    const segment = road.segments[segmentIndex];
+    if (!from || !to || !segment) return false;
+    const midpoint = {
+      x: Math.round((Number(from.x || 0) + Number(to.x || 0)) / 2),
+      y: Math.round((Number(from.y || 0) + Number(to.y || 0)) / 2),
+      elevation: Math.round(((Number(from.elevation || 0) + Number(to.elevation || 0)) / 2) * 100) / 100
+    };
+    const nextSegment = this.cloneRaceSegment(segment);
+    const halfLength = Math.max(35, Math.round((Number(segment.length) || Math.hypot(
+      Number(to.x || 0) - Number(from.x || 0),
+      Number(to.y || 0) - Number(from.y || 0)
+    )) / 2));
+    segment.length = halfLength;
+    nextSegment.length = halfLength;
+    nodes.splice(segmentIndex + 1, 0, midpoint);
+    road.segments.splice(segmentIndex + 1, 0, nextSegment);
+    this.selectedSegmentIndex = segmentIndex + 1;
+    this.raceSelectionType = 'node';
+    this.status = `Inserted node ${segmentIndex + 2}`;
+    return true;
+  }
+
+  snapSelectedRaceNodeToStart() {
+    const nodes = this.ensureRaceSegmentNodes();
+    if (!nodes.length) return false;
+    const nodeIndex = clamp(Math.round(Number(this.selectedSegmentIndex) || 0) + 1, 1, nodes.length - 1);
+    if (nodeIndex !== nodes.length - 1) {
+      this.status = 'Only the finish node can snap to Start';
+      return false;
+    }
+    const start = nodes[0];
+    const node = nodes[nodeIndex];
+    node.x = Number(start.x || 0);
+    node.y = Number(start.y || 0);
+    node.elevation = Number(start.elevation || 0);
+    this.syncRaceSegmentFromNodePair(nodeIndex - 1);
+    this.raceSelectionType = 'node';
+    this.status = 'Connected finish to Start: route is now a circuit';
     return true;
   }
 
@@ -913,6 +967,7 @@ export default class RaceEditor {
     });
     road.nodes = nodes;
     this.selectedSegmentIndex = road.segments.length - 1;
+    this.raceSelectionType = 'node';
     const snappedToStart = this.maybeSnapRaceNodeToStart(nodes.length - 1);
     const screenPoints = this.getRaceMapPoints(this.raceMapBounds);
     const nodeIndex = screenPoints.length - 1;
@@ -997,6 +1052,7 @@ export default class RaceEditor {
     const segment = this.selectedRace.road.segments[segmentIndex];
     const points = this.getRaceMapPoints(this.raceMapBounds);
     this.selectedSegmentIndex = segmentIndex;
+    this.raceSelectionType = 'node';
     this.raceNodeDrag = {
       id: point.id ?? 'pointer',
       nodeIndex: hit.nodeIndex,
@@ -1077,6 +1133,21 @@ export default class RaceEditor {
       return this.ensureRaceStartNodeMetadata(road.nodes);
     }
     if (!create) return [];
+    road.nodes = this.getRaceGeneratedRawPoints().map((point) => ({
+      x: Math.round(Number(point.x || 0)),
+      y: Math.round(Number(point.y || 0)),
+      elevation: clamp(Number(point.elevation) || 0, -0.42, 0.42)
+    }));
+    return this.ensureRaceStartNodeMetadata(road.nodes);
+  }
+
+  ensureRaceSegmentNodes() {
+    const road = this.selectedRace?.road;
+    const segments = road?.segments || [];
+    if (!road || !segments.length) return [];
+    if (Array.isArray(road.nodes) && road.nodes.length >= segments.length + 1) {
+      return this.ensureRaceStartNodeMetadata(road.nodes);
+    }
     road.nodes = this.getRaceGeneratedRawPoints().map((point) => ({
       x: Math.round(Number(point.x || 0)),
       y: Math.round(Number(point.y || 0)),
@@ -1181,7 +1252,7 @@ export default class RaceEditor {
     const normalized = (magnitude - deadZone) / (1 - deadZone);
     const speed = 420 * normalized;
     const seconds = Math.max(0, Number(dt || 0));
-    this.panRaceMapBy(x * speed * seconds, y * speed * seconds);
+    this.panRaceMapBy(-x * speed * seconds, -y * speed * seconds);
     return true;
   }
 
@@ -1195,14 +1266,15 @@ export default class RaceEditor {
     const hit = this.getRaceMapSegmentHitAtPoint(point);
     if (!hit) return false;
     this.selectedSegmentIndex = clamp(hit.index, 0, (this.selectedRace?.road?.segments?.length || 1) - 1);
-    this.status = `Selected track node ${this.selectedSegmentIndex + 1}`;
+    this.raceSelectionType = 'edge';
+    this.status = `Selected edge ${this.selectedSegmentIndex + 1}`;
     return true;
   }
 
   generateRandomRace() {
     const race = this.selectedRace;
     if (!race) return;
-    const turnProfiles = [
+    const baseProfiles = [
       { label: 'Easy right', curve: 0.25, length: 180, severity: 1 },
       { label: 'Medium right', curve: 0.52, length: 145, severity: 2 },
       { label: 'Hard right', curve: 0.78, length: 115, severity: 3 },
@@ -1214,24 +1286,90 @@ export default class RaceEditor {
       { label: 'Crest', curve: 0.12, length: 130, severity: 3, elevation: 0.28 },
       { label: 'Dip', curve: -0.12, length: 125, severity: 2, elevation: -0.2 }
     ];
-    const surfaces = ['asphalt', 'asphalt', 'wet-asphalt', 'dirt', 'gravel', 'snow'];
+    const archetypes = [
+      {
+        id: 'oval',
+        label: 'Oval',
+        width: 22,
+        weather: ['clear'],
+        surfaces: ['asphalt'],
+        countMin: 10,
+        countMax: 12,
+        curveScale: 0.28,
+        elevationScale: 0.04,
+        bumpiness: [0, 0.05],
+        forceClosedNodes: true
+      },
+      {
+        id: 'road-course',
+        label: 'Road Course',
+        width: 12,
+        weather: ['clear', 'rain'],
+        surfaces: ['asphalt', 'asphalt', 'wet-asphalt'],
+        countMin: 14,
+        countMax: 18,
+        curveScale: 0.84,
+        elevationScale: 0.16,
+        bumpiness: [0, 0.12]
+      },
+      {
+        id: 'sprint',
+        label: 'Sprint',
+        width: 11,
+        weather: ['clear', 'rain'],
+        surfaces: ['asphalt', 'wet-asphalt', 'dirt', 'gravel'],
+        countMin: 14,
+        countMax: 20,
+        curveScale: 1,
+        elevationScale: 0.22,
+        bumpiness: [0.04, 0.22]
+      },
+      {
+        id: 'mixed-rally',
+        label: 'Mixed Rally',
+        width: 8,
+        weather: ['clear', 'rain', 'storm'],
+        surfaces: ['gravel', 'dirt', 'wet-asphalt', 'asphalt'],
+        countMin: 18,
+        countMax: 25,
+        curveScale: 1.12,
+        elevationScale: 0.3,
+        bumpiness: [0.16, 0.42]
+      },
+      {
+        id: 'severe-rally',
+        label: 'Severe Rally',
+        width: 6,
+        weather: ['rain', 'storm', 'snow'],
+        surfaces: ['gravel', 'dirt', 'snow', 'wet-asphalt'],
+        countMin: 20,
+        countMax: 28,
+        curveScale: 1.24,
+        elevationScale: 0.38,
+        bumpiness: [0.28, 0.68]
+      }
+    ];
+    const archetype = archetypes[Math.min(archetypes.length - 1, Math.floor(Math.random() * archetypes.length))] || archetypes[2];
     const segments = [];
     const calls = [];
     const hazards = [];
     let distance = 0;
-    const count = 14 + Math.floor(Math.random() * 7);
+    const count = archetype.countMin + Math.floor(Math.random() * (archetype.countMax - archetype.countMin + 1));
     for (let index = 0; index < count; index += 1) {
-      const profile = turnProfiles[Math.floor(Math.random() * turnProfiles.length)];
-      const surface = surfaces[Math.floor(Math.random() * surfaces.length)];
-      const length = Math.max(75, Math.round(profile.length + (Math.random() - 0.5) * 56));
-      const elevation = profile.elevation ?? Math.round((Math.random() - 0.5) * 24) / 100;
+      const profile = baseProfiles[Math.floor(Math.random() * baseProfiles.length)];
+      const surface = archetype.surfaces[Math.floor(Math.random() * archetype.surfaces.length)];
+      const length = Math.max(65, Math.round(profile.length + (Math.random() - 0.5) * (archetype.id.includes('rally') ? 74 : 52)));
+      const elevation = profile.elevation ?? Math.round((Math.random() - 0.5) * archetype.elevationScale * 200) / 100;
+      const bumpiness = archetype.bumpiness[0] + Math.random() * (archetype.bumpiness[1] - archetype.bumpiness[0]);
       const segment = {
         length,
-        curve: Math.round(clamp(profile.curve + (Math.random() - 0.5) * 0.12, -1, 1) * 100) / 100,
+        curve: Math.round(clamp((profile.curve + (Math.random() - 0.5) * 0.12) * archetype.curveScale, -1, 1) * 100) / 100,
         elevation: Math.round(clamp(elevation, -0.42, 0.42) * 100) / 100,
         surface,
+        bumpiness: Math.round(clamp(bumpiness, 0, 1) * 100) / 100,
         hazardIds: []
       };
+      if (surface === 'snow') segment.snowCondition = Math.random() > 0.48 ? 'packed' : 'slush';
       if (profile.turn) segment.turn = profile.turn;
       const callId = `random-call-${index}`;
       calls.push({
@@ -1278,18 +1416,32 @@ export default class RaceEditor {
         severity: Math.max(3, Number(calls[crestIndex]?.severity || 0))
       };
     }
-    race.name = `Random Sprint ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-    race.type = 'destination';
-    race.laps = 1;
-    race.weather = surfaces.includes('wet-asphalt') && Math.random() > 0.5 ? 'rain' : 'clear';
+    race.name = `Random ${archetype.label} ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    race.type = archetype.forceClosedNodes ? 'circuit' : 'destination';
+    race.laps = archetype.forceClosedNodes ? 3 : 1;
+    race.weather = archetype.weather[Math.floor(Math.random() * archetype.weather.length)] || 'clear';
     race.road = { ...race.road, width: 11, segments };
-    delete race.road.nodes;
+    race.road.width = archetype.width;
+    if (archetype.forceClosedNodes) {
+      const lane = archetype.width * 12;
+      race.road.nodes = [
+        { x: -lane, y: 0, elevation: 0, role: 'start', locked: true },
+        { x: -lane, y: 520, elevation: 0.02 },
+        { x: lane, y: 680, elevation: 0.03 },
+        { x: lane * 2.15, y: 520, elevation: 0.01 },
+        { x: lane * 2.15, y: 0, elevation: 0 },
+        { x: lane, y: -170, elevation: 0.01 },
+        { x: -lane, y: 0, elevation: 0, role: 'finish' }
+      ];
+    } else {
+      delete race.road.nodes;
+    }
     race.hazards = hazards;
     race.codriver = { enabled: true, voice: 'default', calls };
     race.competition = { ...race.competition, mode: 'solo' };
     this.project.selectedRaceId = race.id;
     this.selectedSegmentIndex = 0;
-    this.status = `Generated ${segments.length}-segment open-finish route`;
+    this.status = `Generated ${segments.length}-segment ${archetype.forceClosedNodes ? 'closed-loop' : 'open-finish'} route`;
   }
 
   drawButton(ctx, bounds, label, active = false, disabled = false, options = {}) {
@@ -1477,7 +1629,14 @@ export default class RaceEditor {
       return;
     }
     if (action === 'move-node') {
+      this.racePortraitMode = 'race';
+      this.raceSelectionType = 'node';
+      this.activeRootId = 'race';
       this.status = 'Move mode: drag track nodes to reshape the race';
+    } else if (action === 'insert-node') {
+      this.insertRaceNodeAfterSelectedEdge();
+    } else if (action === 'snap-node') {
+      this.snapSelectedRaceNodeToStart();
     } else if (action === 'remove-node') {
       this.removeSelectedRaceNode();
     } else if (action === 'remove-edge') {
@@ -1546,7 +1705,7 @@ export default class RaceEditor {
       this.status = `Sprite side: ${action === 'side-left' ? 'left' : 'right'}`;
     }
     this.activeAction = action;
-    if (!['generate-random-race', ...BUILT_IN_RACE_LOAD_ACTIONS.map((entry) => entry.id), 'ground-tile-next', 'paint-ground', 'paint-elevation', 'elevation-up', 'elevation-down', 'elevation-brush-size', 'edge-tile', 'segment-width', 'segment-bumpiness', 'snow-condition', 'move-node', 'remove-node', 'remove-edge', 'engine-sound-next'].includes(action)) {
+    if (!['generate-random-race', ...BUILT_IN_RACE_LOAD_ACTIONS.map((entry) => entry.id), 'ground-tile-next', 'paint-ground', 'paint-elevation', 'elevation-up', 'elevation-down', 'elevation-brush-size', 'edge-tile', 'segment-width', 'segment-bumpiness', 'snow-condition', 'move-node', 'insert-node', 'snap-node', 'remove-node', 'remove-edge', 'engine-sound-next'].includes(action)) {
       this.status = `${action.replace(/-/g, ' ')} selected`;
     }
     this.activeRootId = this.findRootForAction(action) || this.activeRootId;
@@ -1860,6 +2019,23 @@ export default class RaceEditor {
     return yaw;
   }
 
+  getRaceSegmentElevationProfile(segments = []) {
+    let currentElevation = 0;
+    return segments.map((segment) => {
+      const targetElevation = clamp(Number(segment?.elevation) || 0, -0.42, 0.42);
+      const delta = clamp(targetElevation - currentElevation, -0.2, 0.2);
+      const start = currentElevation;
+      const end = clamp(currentElevation + delta, -0.42, 0.42);
+      currentElevation = end;
+      return { start, end };
+    });
+  }
+
+  smoothRaceElevationProgress(progress = 0) {
+    const t = clamp(Number(progress) || 0, 0, 1);
+    return t * t * (3 - 2 * t);
+  }
+
   getRacePathSamples({ step = 18 } = {}) {
     const segments = this.selectedRace?.road?.segments || [];
     const nodes = this.getRaceEditableNodes({ create: false });
@@ -1919,13 +2095,16 @@ export default class RaceEditor {
     let z = 0;
     let yaw = 0;
     let distance = 0;
+    const elevationProfile = this.getRaceSegmentElevationProfile(segments);
     segments.forEach((segment, index) => {
       const length = Math.max(1, Number(segment.length) || 1);
       const pieces = Math.max(2, Math.ceil(length / Math.max(6, Number(step) || 18)));
       const yawDelta = this.getRaceSegmentYawDelta(segment);
+      const segmentElevation = elevationProfile[index] || { start: 0, end: 0 };
       for (let piece = 1; piece <= pieces; piece += 1) {
         const previousT = (piece - 1) / pieces;
         const t = piece / pieces;
+        const elevationT = this.smoothRaceElevationProgress(t);
         const midYaw = yaw + yawDelta * ((previousT + t) / 2);
         const ds = length / pieces;
         x += Math.sin(midYaw) * ds;
@@ -1936,7 +2115,7 @@ export default class RaceEditor {
           x,
           z,
           yaw: yaw + yawDelta * t,
-          elevation: clamp(Number(segment.elevation) || 0, -0.42, 0.42) * t,
+          elevation: segmentElevation.start + (segmentElevation.end - segmentElevation.start) * elevationT,
           index,
           segment,
           progress: t
@@ -2168,9 +2347,9 @@ export default class RaceEditor {
     return clamp(Number(car?.dimensions?.widthM || car?.tuning?.widthM || 1.83), 1.45, 2.4);
   }
 
-  getRaceRoadCrossSectionAtDistance(distance = 0) {
+  getRaceRoadCrossSectionAtDistance(distance = 0, { visualWidthMultiplier = 1 } = {}) {
     const center = this.getRaceWorldPoseAtDistance(distance);
-    const halfWidth = this.getRaceRoadHalfWidthWorld(center.segment);
+    const halfWidth = this.getRaceRoadHalfWidthWorld(center.segment) * clamp(Number(visualWidthMultiplier) || 1, 0.25, 2.2);
     const rightX = Math.cos(center.yaw);
     const rightZ = -Math.sin(center.yaw);
     const leftPoint = {
@@ -2208,6 +2387,7 @@ export default class RaceEditor {
     const horizon = Number(bounds.y || 0) + Number(bounds.h || 1) * (Number(camera.horizonRatio) || 0.31);
     const focal = Math.max(140, Number(bounds.w || 1) * (Number(camera.focalScale) || 1.04));
     const roadWidthScale = Number(camera.roadWidthScale) || 2.2;
+    const roadMaxWidthRatio = clamp(Number(camera.roadMaxWidthRatio) || 0.72, 0.1, 1.35);
     const z = Math.max(1, cameraZ);
     return {
       ...point,
@@ -2216,8 +2396,62 @@ export default class RaceEditor {
       visible: cameraZ > 2,
       screenX: Number(bounds.x || 0) + Number(bounds.w || 1) / 2 + cameraX * (focal / Math.max(28, z)),
       screenY: horizon + roadDepth * (44 / (z + 44)) - dy * Number(bounds.h || 1) * (0.28 + 26 / (z + 34)),
-      halfWidth: clamp((this.getRaceRoadHalfWidthWorld(point.segment) * roadWidthScale) * (focal / Math.max(38, z)), 5, Number(bounds.w || 1) * 0.72)
+      halfWidth: clamp(
+        (this.getRaceRoadHalfWidthWorld(point.segment) * roadWidthScale) * (focal / Math.max(38, z)),
+        5,
+        Number(bounds.w || 1) * roadMaxWidthRatio
+      )
     };
+  }
+
+  getRaceCameraEyeHeight(cameraView = 'third-person') {
+    return cameraView === 'first-person' ? 0.1 : 0.14;
+  }
+
+  getRaceCameraProjectionProfile(cameraView = 'third-person', speedFactor = 0) {
+    const speed = clamp(Number(speedFactor) || 0, 0, 1);
+    if (cameraView === 'first-person') {
+      return {
+        roadWidthScale: 11.7 - speed * 0.12,
+        roadMaxWidthRatio: 0.92,
+        focalScale: 1.12 + speed * 0.18,
+        roadDepthRatio: 0.78 - speed * 0.1
+      };
+    }
+    return {
+      roadWidthScale: 4.9 - speed * 0.08,
+      roadMaxWidthRatio: 0.52,
+      focalScale: 0.92 + speed * 0.1,
+      roadDepthRatio: 0.66 - speed * 0.08
+    };
+  }
+
+  getRaceCameraRouteSampleDirection(cameraYaw = 0, routeYaw = 0) {
+    return Math.cos(normalizeAngle(Number(cameraYaw || 0) - Number(routeYaw || 0))) < 0 ? -1 : 1;
+  }
+
+  getRaceProjectedRoadQuads(crossSections = []) {
+    const quads = [];
+    for (let index = 0; index < crossSections.length - 1; index += 1) {
+      const near = crossSections[index];
+      const far = crossSections[index + 1];
+      if (!near?.center?.visible || !far?.center?.visible) continue;
+      const nearZ = Number(near.center.cameraZ || 0);
+      const farZ = Number(far.center.cameraZ || 0);
+      if (!Number.isFinite(nearZ) || !Number.isFinite(farZ) || nearZ <= 2 || farZ <= 2) continue;
+      if (Math.abs(farZ - nearZ) < 0.75) continue;
+      const minZ = Math.min(nearZ, farZ);
+      const maxZ = Math.max(nearZ, farZ);
+      quads.push({
+        index,
+        near,
+        far,
+        minZ,
+        maxZ,
+        avgZ: (nearZ + farZ) / 2
+      });
+    }
+    return quads.sort((a, b) => b.avgZ - a.avgZ || b.maxZ - a.maxZ || b.index - a.index);
   }
 
   getRaceRoadSurfacePalette(surfaceId = 'asphalt') {
@@ -2479,10 +2713,10 @@ export default class RaceEditor {
       || car?.defaultTransmissionType
       || car?.tuning?.shiftMode
       || car?.tuning?.transmissionType
-      || 'manual';
+      || 'automatic';
     if (available[requested]) return requested;
-    if (available.manual) return 'manual';
     if (available.automatic) return 'automatic';
+    if (available.manual) return 'manual';
     return requested === 'automatic' ? 'automatic' : 'manual';
   }
 
@@ -2522,7 +2756,7 @@ export default class RaceEditor {
   }
 
   getRaceEngineProfileForTransmission(car = this.selectedCar, tuning = this.getRaceCarTuning(car)) {
-    const defaultTransmissionType = car?.defaultTransmissionType || 'manual';
+    const defaultTransmissionType = car?.defaultTransmissionType || 'automatic';
     const stockProfile = car?.transmissions?.[defaultTransmissionType]?.engineProfile || car?.audio?.engineProfile || null;
     const selectedProfile = tuning?.engineProfile || stockProfile || 'wrx-flat-four-manual';
     const configuredProfile = car?.audio?.engineProfile || null;
@@ -3330,7 +3564,16 @@ export default class RaceEditor {
       id: entry.id,
       label: entry.label,
       active: this.activeRootId === entry.id,
-      onClick: () => { this.activeRootId = entry.id; }
+      onClick: () => {
+        this.activeRootId = entry.id;
+        if (['race', 'ground', 'elevation'].includes(entry.id)) {
+          this.setRacePortraitMode(entry.id);
+          this.activeRootId = null;
+          this.menuScrollRegions = [];
+          this.menuScrollDrag = null;
+          this.pendingMenuScrollHit = null;
+        }
+      }
     })), Math.max(1, roots.length), { scrollKey: `${this.editorId}:portrait-root` });
     const items = this.getMenuItems(this.activeRootId);
     this.drawActionRows(ctx, layout.subRail, items.map((item) => ({
@@ -4196,25 +4439,6 @@ export default class RaceEditor {
     drawSharedPanel(ctx, bounds, { fill: 'rgba(5,8,7,0.82)', border: UI_SUITE.colors.border });
     const pad = 8;
     const gap = 6;
-    const modeButtonW = Math.max(62, Math.floor((bounds.w - pad * 2 - gap * 2) / 3));
-    [
-      { id: 'portrait-mode-race', label: 'Race', mode: 'race' },
-      { id: 'portrait-mode-ground', label: 'Ground', mode: 'ground' },
-      { id: 'portrait-mode-elevation', label: 'Elev', mode: 'elevation' }
-    ].forEach((mode, index) => {
-      this.registerDrawnButton(ctx, {
-        x: bounds.x + pad + index * (modeButtonW + gap),
-        y: bounds.y + pad,
-        w: modeButtonW,
-        h: 30
-      }, {
-        id: mode.id,
-        label: mode.label,
-        active: this.racePortraitMode === mode.mode,
-        onClick: () => this.setRacePortraitMode(mode.mode)
-      });
-    });
-
     const selected = this.selectedSegment || {};
     const groundPalette = this.getRaceGroundTilePalette(this.getSelectedGroundTileId());
     const quickActions = this.racePortraitMode === 'ground'
@@ -4229,16 +4453,26 @@ export default class RaceEditor {
           { id: 'elevation-brush-size', label: `Brush ${Math.round(this.raceElevationBrushSize * 100)}%`, onClick: () => this.handleMenuAction('elevation-brush-size') }
         ]
         : [
-          { id: 'draw-road', label: 'Add Node', active: this.activeAction === 'draw-road', onClick: () => this.setRaceDrawNodeMode() },
-          { id: 'remove-node', label: 'Del Node', onClick: () => this.handleMenuAction('remove-node') },
-          { id: 'remove-edge', label: 'Del Edge', onClick: () => this.handleMenuAction('remove-edge') },
-          { id: 'edge-tile', label: 'Edge Tile', active: this.activeAction === 'edge-tile', onClick: () => this.handleMenuAction('edge-tile') }
+          ...(this.raceSelectionType === 'node'
+            ? [
+              { id: 'move-node', label: 'Move', active: this.activeAction === 'move-node', onClick: () => this.handleMenuAction('move-node') },
+              { id: 'snap-node', label: 'Snap', onClick: () => this.handleMenuAction('snap-node') },
+              { id: 'remove-node', label: 'Delete', onClick: () => this.handleMenuAction('remove-node') },
+              { id: 'draw-road', label: 'Add', active: this.activeAction === 'draw-road', onClick: () => this.setRaceDrawNodeMode() }
+            ]
+            : [
+              { id: 'cycle-surface', label: getSurfaceById(selected.surface).label.slice(0, 6), onClick: () => this.cycleSelectedSurface() },
+              { id: 'segment-width', label: `${this.getRaceRoadWidthMForSegment(selected)}m`, onClick: () => this.handleMenuAction('segment-width') },
+              { id: 'segment-bumpiness', label: `Bump ${Math.round((Number(selected.bumpiness) || 0) * 100)}%`, onClick: () => this.handleMenuAction('segment-bumpiness') },
+              { id: 'insert-node', label: 'Insert', onClick: () => this.handleMenuAction('insert-node') },
+              { id: 'remove-edge', label: 'Delete', onClick: () => this.handleMenuAction('remove-edge') }
+            ])
         ];
     const quickW = Math.max(48, Math.floor((bounds.w - pad * 2 - gap * Math.max(0, quickActions.length - 1)) / Math.max(1, quickActions.length)));
     quickActions.forEach((action, index) => {
       this.registerDrawnButton(ctx, {
         x: bounds.x + pad + index * (quickW + gap),
-        y: bounds.y + pad + 38,
+        y: bounds.y + pad,
         w: quickW,
         h: 30
       }, action);
@@ -4253,7 +4487,9 @@ export default class RaceEditor {
       ? `Ground: ${groundPalette.label}`
       : this.racePortraitMode === 'elevation'
         ? `Elevation: ${this.raceElevationBrushDirection > 0 ? 'raise' : 'lower'} ${Math.round(this.raceElevationBrushSize * 100)}%`
-        : `Edge ${this.selectedSegmentIndex + 1}: curve ${Number(selected.curve || 0).toFixed(2)} elev ${Number(selected.elevation || 0).toFixed(2)}`;
+        : this.raceSelectionType === 'node'
+          ? `Node ${this.selectedSegmentIndex + 1}: drag to move, snap finish to Start`
+          : `Edge ${this.selectedSegmentIndex + 1}: ${getSurfaceById(selected.surface).label}, ${this.getRaceRoadWidthMForSegment(selected)}m, bump ${Math.round((Number(selected.bumpiness) || 0) * 100)}%`;
     ctx.fillText(summary, bounds.x + pad, bounds.y + bounds.h - 7, Math.max(1, bounds.w - pad * 2));
     ctx.restore();
   }
@@ -5074,18 +5310,24 @@ export default class RaceEditor {
       0,
       1
     );
-    const bumpCue = Math.sin((travel + Number(session?.elapsedMs || 0) * 0.012) * 0.12)
-      * Math.max(Math.abs(hillPitch), surfaceBumpiness)
+    const bumpCue = Math.sin(travel * 0.055)
+      * surfaceBumpiness
       * clamp(absSpeed / 46, 0, 1)
-      * 0.045;
+      * 0.012;
     const horizonRatio = clamp(0.31 - speedFactor * 0.06 - hillPitch * 0.18 + bumpCue, 0.14, 0.46);
     camera.horizonRatio = horizonRatio;
-    camera.roadDepthRatio = 0.76 - speedFactor * 0.1;
-    camera.focalScale = 1.1 + speedFactor * 0.16;
     const cameraView = session?.cameraView || this.raceInput.cameraView;
-    camera.roadWidthScale = cameraView === 'first-person'
-      ? 11.35 - speedFactor * 0.12
-      : 10.15 - speedFactor * 0.1;
+    camera.roadElevation = Number(camera.elevation || 0);
+    camera.eyeHeight = this.getRaceCameraEyeHeight(cameraView);
+    camera.elevation = camera.roadElevation + camera.eyeHeight;
+    const projectionProfile = this.getRaceCameraProjectionProfile(cameraView, speedFactor);
+    camera.roadDepthRatio = projectionProfile.roadDepthRatio;
+    camera.focalScale = projectionProfile.focalScale;
+    camera.roadWidthScale = projectionProfile.roadWidthScale;
+    camera.roadMaxWidthRatio = projectionProfile.roadMaxWidthRatio;
+    const routeYawAtTravel = this.getRaceRoadYawAtDistance(travel);
+    const sampleDirection = this.getRaceCameraRouteSampleDirection(cameraYaw, routeYawAtTravel);
+    const visualRoadWidthMultiplier = cameraView === 'first-person' ? 1.18 : 0.58;
     const horizon = bounds.y + bounds.h * horizonRatio;
     const roadBottom = bounds.y + bounds.h;
     const basePalette = this.getRaceRoadSurfacePalette(currentSegment?.surface || 'asphalt');
@@ -5108,10 +5350,13 @@ export default class RaceEditor {
       const lookAhead = i === 0
         ? nearDistance
         : nearDistance + Math.pow(i / sampleCount, 1.28) * Math.max(120, viewDistance);
+      const requestedDistance = travel + lookAhead * sampleDirection;
       const distance = routeRuntimeType === 'circuit'
-        ? travel + lookAhead
-        : Math.min(routeLength, travel + lookAhead);
-      const section = this.getRaceRoadCrossSectionAtDistance(distance);
+        ? ((requestedDistance % routeLength) + routeLength) % routeLength
+        : clamp(requestedDistance, 0, routeLength);
+      const section = this.getRaceRoadCrossSectionAtDistance(distance, {
+        visualWidthMultiplier: visualRoadWidthMultiplier
+      });
       const projected = {
         center: this.projectRaceWorldPointToCamera(section.center, camera, cameraYaw, bounds),
         left: this.projectRaceWorldPointToCamera(section.left, camera, cameraYaw, bounds),
@@ -5120,16 +5365,13 @@ export default class RaceEditor {
       if (projected.center.visible || projected.left.visible || projected.right.visible) {
         crossSections.push(projected);
       }
-      if (routeRuntimeType !== 'circuit' && distance >= routeLength) break;
+      if (routeRuntimeType !== 'circuit' && (distance >= routeLength || distance <= 0)) break;
     }
 
-    for (let i = crossSections.length - 2; i >= 0; i -= 1) {
-      const near = crossSections[i];
-      const far = crossSections[i + 1];
-      if (!near.center.visible || !far.center.visible) continue;
-      const palette = this.getRaceRoadSurfacePalette(near.center.segment?.surface || currentSegment?.surface || 'asphalt');
+    const roadQuads = this.getRaceProjectedRoadQuads(crossSections);
+    for (const quad of roadQuads) {
+      const { near, far } = quad;
       const markerDimensions = this.getRaceLaneMarkerDimensionsWorld();
-      const stripe = Math.floor((-travel / Math.max(1, markerDimensions.interval)) + i * 1.35);
       const groundStripe = Math.floor(Number(near.center.distance || 0) / Math.max(1, markerDimensions.interval * 2));
       const groundPalette = this.getRaceGroundPaletteForSegment(near.center.segment || currentSegment, near.center);
       ctx.fillStyle = groundStripe % 2 ? groundPalette.shoulderA : groundPalette.shoulderB;
@@ -5147,6 +5389,13 @@ export default class RaceEditor {
       ctx.lineTo(near.right.screenX, near.right.screenY);
       ctx.closePath();
       ctx.fill();
+    }
+
+    for (const quad of roadQuads) {
+      const { near, far, index } = quad;
+      const palette = this.getRaceRoadSurfacePalette(near.center.segment?.surface || currentSegment?.surface || 'asphalt');
+      const markerDimensions = this.getRaceLaneMarkerDimensionsWorld();
+      const stripe = Math.floor((-travel / Math.max(1, markerDimensions.interval)) + index * 1.35);
       ctx.fillStyle = stripe % 2 ? palette.roadA : palette.roadB;
       ctx.beginPath();
       ctx.moveTo(far.left.screenX, far.left.screenY);
@@ -5168,9 +5417,10 @@ export default class RaceEditor {
 
     if (crossSections.length >= 2) {
       const target = crossSections[Math.min(crossSections.length - 1, 12)].center;
+      const cueTargetDistance = travel + (120 + absSpeed * 2.4) * sampleDirection;
       const cueDistance = routeRuntimeType === 'circuit'
-        ? travel + 120 + absSpeed * 2.4
-        : Math.min(routeLength, travel + 120 + absSpeed * 2.4);
+        ? ((cueTargetDistance % routeLength) + routeLength) % routeLength
+        : clamp(cueTargetDistance, 0, routeLength);
       this.drawRaceTurnCue(ctx, bounds, this.getRaceSegmentAtDistance(cueDistance));
       if (Math.abs(target.cameraX) > 40) {
         ctx.fillStyle = 'rgba(5,8,7,0.42)';
@@ -5426,6 +5676,7 @@ export default class RaceEditor {
       regions: this.menuScrollRegions,
       point: payload,
       scrollState: this.menuScrollState,
+      pendingHit: hit || null,
       thresholdPx: 8
     });
     if (scrollDrag) {
@@ -5436,7 +5687,8 @@ export default class RaceEditor {
     if (this.isDesktopMode() && this.desktopDropdown && shouldCloseDesktopDropdownOnPointerDown({
       dropdown: this.desktopDropdown,
       point: payload,
-      rootButtons: this.buttons.filter((button) => button.desktopRootId)
+      rootButtons: this.buttons.filter((button) => button.desktopRootId),
+      interactiveRegions: this.menuScrollRegions
     })) {
       const nextDropdown = resolveClosedDesktopDropdownState({
         dropdown: this.desktopDropdown,

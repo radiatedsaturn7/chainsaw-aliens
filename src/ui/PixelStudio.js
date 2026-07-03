@@ -4936,6 +4936,7 @@ export default class PixelStudio {
       dropdown: this.desktopDropdown,
       point: payload,
       rootButtons: this.uiButtons,
+      interactiveRegions: this.desktopDropdownRegions,
       rootIdKey: 'hoverRootId'
     })) {
       const nextDropdown = resolveClosedDesktopDropdownState({
@@ -10729,7 +10730,7 @@ export default class PixelStudio {
       ctx.fillStyle = '#ffe16a';
       ctx.fillRect(cursorX - 3, trackY - 2, 6, 4);
     }
-    const hitSize = this.isMobileLayout?.() ? 28 : 20;
+    const hitSize = this.isTouchViewportMode() ? 28 : 20;
     (this.boneRig.poseTimeline || []).forEach((key) => {
       const timeMs = Number(key.timeMs || 0);
       if (timeMs < layout.scrollMs || timeMs > layout.scrollMs + layout.visibleMs) return;
