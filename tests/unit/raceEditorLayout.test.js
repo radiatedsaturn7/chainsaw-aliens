@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 import RaceEditor from '../../src/ui/RaceEditor.js';
 
 const raceEditorSource = readFileSync(new URL('../../src/ui/RaceEditor.js', import.meta.url), 'utf8');
+const normalizeAngle = (angle) => Math.atan2(Math.sin(angle), Math.cos(angle));
 
 function createMockContext() {
   const calls = [];
@@ -451,6 +452,30 @@ test('Race Editor paints tile-backed ground patches and segment edge tiles', () 
   assert.equal(raceEditorSource.includes('registerRaceTileButton'), true);
 });
 
+test('Race Editor keeps road cross-sections planar over painted ground elevation', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  seedEditableRaceRoute(editor);
+  const centerPose = editor.getRaceWorldPoseAtDistance(80);
+  const rawPoints = editor.getRaceRawMapPoints();
+  const minX = Math.min(...rawPoints.map((point) => point.x));
+  const maxX = Math.max(...rawPoints.map((point) => point.x));
+  const minY = Math.min(...rawPoints.map((point) => point.y));
+  const maxY = Math.max(...rawPoints.map((point) => point.y));
+  editor.selectedRace.road.groundTiles = [{
+    x: (centerPose.x - minX) / Math.max(1, maxX - minX),
+    y: (centerPose.z - minY) / Math.max(1, maxY - minY),
+    radius: 1,
+    tileId: 'snow',
+    elevation: 0.42
+  }];
+
+  const section = editor.getRaceRoadCrossSectionAtDistance(80);
+
+  assert.equal(editor.getRaceGroundElevationAtWorldPoint(section.left, 0), 0.42);
+  assert.equal(section.left.elevation, section.center.elevation);
+  assert.equal(section.right.elevation, section.center.elevation);
+});
+
 test('Race Editor edits selected edge width, bumpiness, and snow condition', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   const segment = editor.selectedSegment;
@@ -519,6 +544,113 @@ test('Race Editor playtest sampling follows dragged nodes and painted terrain ti
 
   assert.equal(palette.label, 'Snow');
   assert.equal(raceEditorSource.includes('getRaceGroundPaintAtWorldPoint'), true);
+});
+
+test('Race Editor smooths sparse node-authored routes with bounded curve vertices', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.road.nodes = [
+    { x: 0, y: 0, elevation: 0, role: 'start', locked: true },
+    { x: 0, y: 260, elevation: 0.02 },
+    { x: 260, y: 260, elevation: 0.04 },
+    { x: 260, y: 520, elevation: 0 }
+  ];
+  editor.selectedRace.road.segments = [
+    { length: 260, curve: 0, elevation: 0.02, surface: 'asphalt', hazardIds: [] },
+    { length: 260, curve: 0, elevation: 0.04, surface: 'asphalt', hazardIds: [] },
+    { length: 260, curve: 0, elevation: 0, surface: 'asphalt', hazardIds: [] }
+  ];
+
+  const samples = editor.getRacePathSamples({ step: 34 });
+  const interiorCurveSamples = samples.filter((sample) => (
+    sample.x > 1
+    && sample.x < 250
+    && sample.z > 170
+    && sample.z < 260
+    && sample.yaw > 0.1
+    && sample.yaw < 1.45
+  ));
+
+  assert.equal(interiorCurveSamples.length >= 3, true);
+  assert.equal(samples.every((sample) => sample.x >= -0.001 && sample.x <= 260.001), true);
+  assert.equal(samples.every((sample) => sample.z >= -0.001 && sample.z <= 520.001), true);
+  assert.equal(editor.getRaceRouteLength() < 780, true);
+  assert.equal(editor.getRaceRouteLength() > 680, true);
+  assert.equal(raceEditorSource.includes('getRaceNodeCornerPlan(nodes = [], nodeIndex = 0'), true);
+  assert.equal(raceEditorSource.includes('appendCurve(corner.entry, corner.control, corner.exit'), true);
+});
+
+test('Race Editor rounds explicit square node corners while preserving their semantic turn type', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const nodes = [
+    { x: 0, y: 0, elevation: 0 },
+    { x: 0, y: 220, elevation: 0 },
+    { x: 220, y: 220, elevation: 0 }
+  ];
+  const smoothSegments = [
+    { length: 220, curve: 0, elevation: 0, surface: 'asphalt' },
+    { length: 220, curve: 0, elevation: 0, surface: 'asphalt' }
+  ];
+  const sharpSegments = [
+    { length: 220, curve: 0, elevation: 0, surface: 'asphalt', turn: 'square' },
+    { length: 220, curve: 0, elevation: 0, surface: 'asphalt' }
+  ];
+
+  const smoothCorner = editor.getRaceNodeCornerPlan(nodes, 1, { step: 18, segments: smoothSegments });
+  const sharpCorner = editor.getRaceNodeCornerPlan(nodes, 1, { step: 18, segments: sharpSegments });
+  const smoothDistance = Math.hypot(smoothCorner.control.x - smoothCorner.entry.x, smoothCorner.control.z - smoothCorner.entry.z);
+  const sharpDistance = Math.hypot(sharpCorner.control.x - sharpCorner.entry.x, sharpCorner.control.z - sharpCorner.entry.z);
+
+  assert.equal(smoothCorner.sharp, false);
+  assert.equal(sharpCorner.sharp, true);
+  assert.equal(sharpDistance > smoothDistance * 0.75, true);
+  assert.equal(sharpCorner.minPieces >= 16, true);
+});
+
+test('Race Editor auto-rounds sparse tight node turns with enough samples to read the apex', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.road.nodes = [
+    { x: 0, y: 0, elevation: 0, role: 'start', locked: true },
+    { x: 0, y: 260, elevation: 0 },
+    { x: 110, y: 350, elevation: 0 }
+  ];
+  editor.selectedRace.road.segments = [
+    { length: 260, curve: 0, elevation: 0, surface: 'asphalt' },
+    { length: 142, curve: 0, elevation: 0, surface: 'asphalt' }
+  ];
+
+  const corner = editor.getRaceNodeCornerPlan(editor.selectedRace.road.nodes, 1, { step: 30, segments: editor.selectedRace.road.segments });
+  const samples = editor.getRacePathSamples({ step: 30 });
+  const cornerSamples = samples.filter((sample) => sample.x > 1 && sample.x < 105 && sample.z > 205 && sample.z < 340);
+
+  assert.equal(corner.autoRound, true);
+  assert.equal(corner.minPieces >= 10, true);
+  assert.equal(cornerSamples.length >= 8, true);
+});
+
+test('Race Editor auto-rounds shallow node turns under ninety degrees', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.road.nodes = [
+    { x: 0, y: 0, elevation: 0, role: 'start', locked: true },
+    { x: 0, y: 260, elevation: 0 },
+    { x: 58, y: 450, elevation: 0.02 }
+  ];
+  editor.selectedRace.road.segments = [
+    { length: 260, curve: 0, elevation: 0, surface: 'asphalt' },
+    { length: 199, curve: 0, elevation: 0.02, surface: 'asphalt' }
+  ];
+
+  const corner = editor.getRaceNodeCornerPlan(editor.selectedRace.road.nodes, 1, { step: 28, segments: editor.selectedRace.road.segments });
+  const samples = editor.getRacePathSamples({ step: 28 });
+  const curvedSamples = samples.filter((sample) => sample.x > 0.5 && sample.x < 55 && sample.z > 215 && sample.z < 430);
+  let maxYawJump = 0;
+  for (let index = 1; index < curvedSamples.length; index += 1) {
+    maxYawJump = Math.max(maxYawJump, Math.abs(normalizeAngle(curvedSamples[index].yaw - curvedSamples[index - 1].yaw)));
+  }
+
+  assert.equal(corner.autoRound, true);
+  assert.equal(corner.bend < Math.PI / 2, true);
+  assert.equal(curvedSamples.length >= 7, true);
+  assert.equal(maxYawJump < 0.22, true);
 });
 
 test('Race Editor exposes Move/Paint/Edge authoring modes and runtime Tile Editor choices', () => {
@@ -1291,23 +1423,23 @@ test('Race desktop playtest HUD controls activate on release only', () => {
 
   editor.startPlaytest('starter-rwd');
   editor.draw(ctx, 1280, 800);
-  const pause = editor.buttons.find((button) => button.id === 'race-pause-toggle');
+  const pause = editor.buttons.find((button) => button.id === 'race-pause-return-editor');
   assert.ok(pause);
   editor.handlePointerDown({
     x: pause.bounds.x + pause.bounds.w / 2,
     y: pause.bounds.y + pause.bounds.h / 2
   });
-  assert.equal(editor.raceInput.paused, false);
+  assert.ok(editor.playtestSession);
   assert.ok(editor.pendingDesktopCommandHit);
   editor.handlePointerUp({
     x: pause.bounds.x + pause.bounds.w / 2,
     y: pause.bounds.y + pause.bounds.h / 2
   });
-  assert.equal(editor.raceInput.paused, true);
+  assert.equal(editor.playtestSession, null);
 
-  editor.raceInput.paused = false;
+  editor.startPlaytest('starter-rwd');
   editor.draw(ctx, 1280, 800);
-  const secondPause = editor.buttons.find((button) => button.id === 'race-pause-toggle');
+  const secondPause = editor.buttons.find((button) => button.id === 'race-pause-return-editor');
   assert.ok(secondPause);
   editor.handlePointerDown({
     x: secondPause.bounds.x + secondPause.bounds.w / 2,
@@ -1321,7 +1453,7 @@ test('Race desktop playtest HUD controls activate on release only', () => {
     x: secondPause.bounds.x + secondPause.bounds.w + 30,
     y: secondPause.bounds.y + secondPause.bounds.h + 30
   });
-  assert.equal(editor.raceInput.paused, false);
+  assert.ok(editor.playtestSession);
 });
 
 test('Race and Car desktop preview drag uses shared pointer policy', () => {
@@ -1531,15 +1663,15 @@ test('Race playtest widens roads and damps high-speed steering', () => {
 
   assert.equal(editor.getRaceRoadHalfWidthWorld() >= 27.5, true);
   assert.equal(editor.getRaceMaxSteerForSpeed(0), 1);
-  assert.equal(editor.getRaceMaxSteerForSpeed(70) >= 0.64, true);
-  assert.equal(editor.getRaceMaxSteerForSpeed(70) <= 0.66, true);
-  assert.equal(editor.getRaceBinarySteerAssist(70).steeringAuthority <= 0.66, true);
+  assert.equal(editor.getRaceMaxSteerForSpeed(70) >= 0.25, true);
+  assert.equal(editor.getRaceMaxSteerForSpeed(70) <= 0.27, true);
+  assert.equal(editor.getRaceBinarySteerAssist(70).steeringAuthority <= 0.27, true);
   assert.equal(editor.getRaceBinarySteerAssist(70).response >= 84, true);
   assert.equal(editor.getRaceBinarySteerAssist(70).response < 96, true);
   assert.equal(editor.getRaceBinarySteerAssist(0).response > editor.getRaceBinarySteerAssist(70).response, true);
   assert.equal(editor.getRaceAnalogSteerResponse(0) > editor.getRaceAnalogSteerResponse(70), true);
   assert.equal(editor.getRaceTireSteerAngleForSpeed(0) > 0.5, true);
-  assert.equal(editor.getRaceTireSteerAngleForSpeed(70) > 0.18, true);
+  assert.equal(editor.getRaceTireSteerAngleForSpeed(70) < 0.07, true);
   assert.equal(editor.getRaceTireSteerAngleForSpeed(70) < editor.getRaceTireSteerAngleForSpeed(20), true);
 });
 
@@ -1549,13 +1681,13 @@ test('Race playtest steering is substantially damped at highway speed but full a
   assert.equal(editor.getRaceMaxSteerForSpeed(0), 1);
   assert.equal(editor.getRaceBinarySteerAssist(0).maxSteer, 1);
   assert.equal(editor.getRaceBinarySteerAssist(45).maxSteer, 1);
-  assert.equal(editor.getRaceMaxSteerForSpeed(27) > 0.7, true);
-  assert.equal(editor.getRaceMaxSteerForSpeed(45) > 0.6, true);
+  assert.equal(editor.getRaceMaxSteerForSpeed(27) > 0.6, true);
+  assert.equal(editor.getRaceMaxSteerForSpeed(45) > 0.34, true);
   assert.equal(editor.getRaceMaxSteerForSpeed(45) < editor.getRaceMaxSteerForSpeed(27), true);
   assert.equal(editor.getRaceBinarySteerAssist(27).response > 54, true);
 });
 
-test('Race playtest sends tire screech audio for sliding on pavement and dirt', () => {
+test('Race playtest sends tire screech audio only for physical tire slip', () => {
   const tireCalls = [];
   const editor = new RaceEditor({
     deviceIsMobile: true,
@@ -1569,16 +1701,17 @@ test('Race playtest sends tire screech audio for sliding on pavement and dirt', 
   });
 
   editor.startPlaytest('starter-rwd');
-  editor.updateRaceTireAudio({ slip: 0.7, surface: 'asphalt', speedMps: 24 });
+  editor.updateRaceTireAudio({ slip: editor.getRaceAudibleTireSlip({ slipAngle: 0.02, speedMps: 24 }), surface: 'asphalt', speedMps: 24 });
+  editor.updateRaceTireAudio({ slip: editor.getRaceAudibleTireSlip({ slipAngle: 0.42, scrub: 0.4, speedMps: 24 }), surface: 'asphalt', speedMps: 24 });
   editor.updateRaceTireAudio({ slip: 0.7, surface: 'dirt', speedMps: 24 });
-  editor.updateRaceTireAudio({ slip: 0.001, surface: 'asphalt', speedMps: 24 });
 
-  assert.equal(tireCalls[0].active, true);
-  assert.equal(tireCalls[0].payload.material, 'pavement');
+  assert.equal(tireCalls[0].active, false);
   assert.equal(tireCalls[1].active, true);
-  assert.equal(tireCalls[1].payload.material, 'dirt');
-  assert.equal(tireCalls[2].active, false);
-  assert.equal(raceEditorSource.includes('amount <= 0.001'), true);
+  assert.equal(tireCalls[1].payload.material, 'pavement');
+  assert.equal(tireCalls[2].active, true);
+  assert.equal(tireCalls[2].payload.material, 'dirt');
+  assert.equal(raceEditorSource.includes('amount <= 0.02'), true);
+  assert.equal(raceEditorSource.includes('getRaceAudibleTireSlip'), true);
 });
 
 test('Race playtest sends engine RPM to the audio rev model', () => {
@@ -1687,7 +1820,58 @@ test('Race playtest infers looped versus point-to-point routes from endpoint con
   assert.equal(nearMiss.getSelectedRaceRuntimeType(), 'destination');
 });
 
-test('Race playtest HUD exposes pause, return, and main menu controls over the playtest screen', () => {
+test('Race playtest checkpoints advance in order from route nodes', () => {
+  const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
+  editor.selectedRace.road.nodes = [
+    { x: 0, y: 0, elevation: 0, role: 'start', locked: true },
+    { x: 0, y: 160, elevation: 0 },
+    { x: 90, y: 260, elevation: 0 },
+    { x: 160, y: 360, elevation: 0, role: 'finish' }
+  ];
+  editor.startPlaytest('starter-rwd');
+
+  const firstCheckpoint = editor.playtestSession.checkpointDistances[editor.playtestSession.checkpointIndex];
+  editor.updateRaceCheckpointProgress({
+    previousDistance: Math.max(0, firstCheckpoint - 5),
+    nextDistance: firstCheckpoint + 5,
+    routeAdvance: 10
+  });
+
+  assert.equal(editor.playtestSession.checkpointIndex > 1, true);
+  assert.equal(editor.playtestSession.passedCheckpoints.length >= 1, true);
+});
+
+test('Race playtest circuit laps require all checkpoints before start wrap', () => {
+  const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
+  editor.selectedRace.type = 'circuit';
+  editor.selectedRace.laps = 2;
+  editor.selectedRace.road.nodes = [
+    { x: 0, y: 0, elevation: 0, role: 'start', locked: true },
+    { x: 0, y: 160, elevation: 0 },
+    { x: 120, y: 160, elevation: 0 },
+    { x: 0, y: 0, elevation: 0, role: 'finish' }
+  ];
+  editor.startPlaytest('starter-rwd');
+  const routeLength = editor.playtestSession.routeLength;
+
+  editor.playtestSession.checkpointIndex = 1;
+  editor.updateRaceCheckpointProgress({
+    previousDistance: routeLength - 8,
+    nextDistance: 5,
+    routeAdvance: 13
+  });
+  assert.equal(editor.playtestSession.checkpointIndex < editor.playtestSession.checkpointCount, true);
+
+  editor.playtestSession.checkpointIndex = editor.playtestSession.checkpointCount - 1;
+  editor.updateRaceCheckpointProgress({
+    previousDistance: routeLength - 8,
+    nextDistance: 5,
+    routeAdvance: 13
+  });
+  assert.equal(editor.playtestSession.checkpointIndex, editor.playtestSession.checkpointCount);
+});
+
+test('Race playtest HUD exposes one top pause return button and pause overlay menu', () => {
   let exited = false;
   const editor = new RaceEditor({
     deviceIsMobile: false,
@@ -1698,18 +1882,26 @@ test('Race playtest HUD exposes pause, return, and main menu controls over the p
   editor.startPlaytest('starter-rwd');
   editor.drawRacePlaytestScreen(ctx, { x: 0, y: 0, w: 390, h: 260 });
 
-  const pause = editor.buttons.find((button) => button.id === 'race-pause-toggle');
+  const pause = editor.buttons.find((button) => button.id === 'race-pause-return-editor');
   const returnButton = editor.buttons.find((button) => button.id === 'race-return-editor');
   const mainMenu = editor.buttons.find((button) => button.id === 'race-exit-main');
   assert.ok(pause);
-  assert.ok(returnButton);
-  assert.ok(mainMenu);
+  assert.equal(Boolean(returnButton), false);
+  assert.equal(Boolean(mainMenu), false);
   assert.equal(pause.bounds.y <= 8, true);
-  assert.equal(mainMenu.bounds.y <= 8, true);
 
   pause.onClick();
-  assert.equal(editor.raceInput.paused, true);
-  mainMenu.onClick();
+  assert.equal(editor.playtestSession, null);
+
+  editor.startPlaytest('starter-rwd');
+  editor.toggleRacePause();
+  editor.drawRacePlaytestScreen(ctx, { x: 0, y: 0, w: 390, h: 260 });
+  const resume = editor.buttons.find((button) => button.id === 'race-resume');
+  const exit = editor.buttons.find((button) => button.id === 'race-exit-main');
+  assert.ok(resume);
+  assert.ok(exit);
+  assert.equal(ctx.calls.some((call) => call.type === 'text' && call.value === 'Return to Game'), true);
+  exit.onClick();
   assert.equal(exited, true);
 });
 
@@ -1773,6 +1965,7 @@ test('Race playtest renders a finish-line checker stripe for destination routes'
   });
 
   assert.equal(ctx.calls.filter((call) => call.type === 'fill').length >= 10, true);
+  assert.equal(raceEditorSource.includes('visualWidthMultiplier: visualRoadWidthMultiplier'), true);
 });
 
 test('Race playtest supports reverse, neutral, and forward gear states', () => {
@@ -1811,12 +2004,14 @@ test('Race d-pad separates steering diagonals from vertical gear shifts', () => 
   assert.equal(editor.raceInput.binarySteer, 0);
 });
 
-test('Race playtest renderer projects a world-space road path through camera yaw', () => {
+test('Race playtest renderer projects a continuous world-space road path through camera yaw', () => {
   assert.equal(raceEditorSource.includes('const steeringCamera ='), false);
   assert.equal(raceEditorSource.includes('this.drawRaceProjectedRoadPath(ctx, bounds, { showPlaytestHud });'), true);
   assert.equal(raceEditorSource.includes('getRacePathSamples({ step = 18 } = {})'), true);
-  assert.equal(raceEditorSource.includes('getRaceWorldPoseAtDistance(distance = 0, { runtimeType = this.getActiveRaceRuntimeType() } = {})'), true);
-  assert.equal(raceEditorSource.includes('getRaceRoadCrossSectionAtDistance(distance = 0, { visualWidthMultiplier = 1 } = {})'), true);
+  assert.equal(raceEditorSource.includes('getRaceWorldPoseAtDistance(distance = 0, {'), true);
+  assert.equal(raceEditorSource.includes('samples: providedSamples = null,'), true);
+  assert.equal(raceEditorSource.includes('getRaceRoadCrossSectionAtDistance(distance = 0, {'), true);
+  assert.equal(raceEditorSource.includes('visualWidthMultiplier = 1,'), true);
   assert.equal(raceEditorSource.includes('projectRaceWorldPointToCamera(point = {}, camera = {}, cameraYaw = 0, bounds = {})'), true);
   assert.equal(raceEditorSource.includes('const rightX = Math.cos(cameraYaw);'), true);
   assert.equal(raceEditorSource.includes('const forwardX = Math.sin(cameraYaw);'), true);
@@ -1826,15 +2021,24 @@ test('Race playtest renderer projects a world-space road path through camera yaw
   assert.equal(raceEditorSource.includes('x: Number.isFinite(session?.worldX) ? session.worldX : routeCamera.x,'), true);
   assert.equal(raceEditorSource.includes('this.playtestSession.cameraYaw = this.playtestSession.carYaw;'), true);
   assert.equal(raceEditorSource.includes('const cameraYaw = Number(session?.cameraYaw ?? camera.yaw);'), true);
-  assert.equal(raceEditorSource.includes('getRaceCameraRouteSampleDirection(cameraYaw = 0, routeYaw = 0)'), true);
+  assert.equal(raceEditorSource.includes('getRaceRenderSampleDistances({'), true);
+  assert.equal(raceEditorSource.includes('const sampleDistances = this.getRaceRenderSampleDistances({'), false);
+  assert.equal(raceEditorSource.includes('getRaceMode7DepthSlices({'), true);
+  assert.equal(raceEditorSource.includes('const mode7Slices = this.getRaceMode7DepthSlices({'), true);
+  assert.equal(raceEditorSource.includes('Math.pow(t, 1.46)'), true);
+  assert.equal(raceEditorSource.includes('point.distance = rawDistance;'), true);
+  assert.equal(raceEditorSource.includes('drawRaceParallaxBackground(ctx, bounds'), true);
+  assert.equal(raceEditorSource.includes('const sampleDirection = this.getRaceCameraRouteSampleDirection'), false);
   assert.equal(raceEditorSource.includes('getRaceProjectedRoadQuads(crossSections = [])'), true);
-  assert.equal(raceEditorSource.includes('const crossSections = [];'), true);
-  assert.equal(raceEditorSource.includes('const roadQuads = this.getRaceProjectedRoadQuads(crossSections);'), true);
+  assert.equal(raceEditorSource.includes('const crossSections = [];'), false);
+  assert.equal(raceEditorSource.includes('const roadQuads = this.getRaceProjectedRoadQuads(crossSections);'), false);
+  assert.equal(raceEditorSource.includes('const mode7Bands = this.getRaceMode7RoadBands(mode7Slices);'), true);
+  assert.equal(raceEditorSource.includes('shoulderLeft: this.projectRaceWorldPointToCamera(section.shoulderLeft'), true);
   assert.equal(raceEditorSource.includes('ctx.moveTo(far.left.screenX, far.left.screenY);'), true);
   assert.equal(raceEditorSource.includes('drawRaceTrackMinimap(ctx'), true);
 });
 
-test('Race playtest depth-sorts projected road quads before drawing road over terrain', () => {
+test('Race playtest depth-sorts continuous road bands before drawing road over terrain', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   const makeSection = (cameraZ, distance, visible = true) => ({
     center: { visible, cameraZ, distance },
@@ -1854,12 +2058,183 @@ test('Race playtest depth-sorts projected road quads before drawing road over te
   assert.equal(quads.every((quad) => quad.minZ > 2), true);
   assert.equal(quads[0].avgZ > quads[1].avgZ, true);
 
-  const firstGroundPass = raceEditorSource.indexOf('const roadQuads = this.getRaceProjectedRoadQuads(crossSections);');
-  const roadPass = raceEditorSource.indexOf('for (const quad of roadQuads) {\n      const { near, far, index } = quad;');
-  const markerCall = raceEditorSource.indexOf('this.drawRaceDistanceMarkers(ctx, bounds, { near, far, palette });');
+  const firstGroundPass = raceEditorSource.indexOf('const mode7Bands = this.getRaceMode7RoadBands(mode7Slices);');
+  const roadPass = raceEditorSource.indexOf('for (const quad of mode7Bands) {\n      const { near, far } = quad;');
+  const markerCall = raceEditorSource.indexOf('this.drawRaceContinuousDistanceMarkers(ctx, bounds, {');
   assert.equal(firstGroundPass >= 0, true);
   assert.equal(roadPass > firstGroundPass, true);
   assert.equal(markerCall > roadPass, true);
+});
+
+test('Race playtest rejects invalid projected road bands before drawing', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const section = (cameraZ, leftX, rightX, y) => ({
+    center: { visible: true, cameraZ, distance: cameraZ },
+    left: { visible: true, cameraZ, screenX: leftX, screenY: y },
+    right: { visible: true, cameraZ, screenX: rightX, screenY: y }
+  });
+
+  const valid = editor.getRaceProjectedRoadQuads([
+    section(8, 80, 180, 210),
+    section(26, 110, 150, 130)
+  ]);
+  const invalid = editor.getRaceProjectedRoadQuads([
+    section(8, 130, 130.5, 210),
+    section(26, 130, 130.5, 130)
+  ]);
+
+  assert.equal(valid.length, 1);
+  assert.equal(invalid.length, 0);
+  assert.equal(raceEditorSource.includes('getRaceProjectedQuadArea(quad = null)'), true);
+  assert.equal(raceEditorSource.includes('Math.sin(travel * 0.055)'), false);
+});
+
+test('Race Mode 7 playtest depth slices keep unrounded continuous distance phase', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.type = 'destination';
+  editor.selectedRace.road.segments = [
+    { length: 900, curve: 0, elevation: 0, surface: 'asphalt', turn: 'smooth', hazardIds: [] }
+  ];
+  const bounds = { x: 0, y: 0, w: 390, h: 240 };
+  const camera = {
+    ...editor.getRaceWorldPoseAtDistance(120),
+    horizonRatio: 0.32,
+    roadElevation: 0,
+    eyeHeight: editor.getRaceCameraEyeHeight('third-person'),
+    elevation: editor.getRaceCameraEyeHeight('third-person'),
+    nearPlane: 0.85,
+    roadDepthRatio: 0.62,
+    focalScale: 1,
+    roadWidthScale: 4.8,
+    roadMaxWidthRatio: 0.52,
+    distance: 120
+  };
+
+  const slices = editor.getRaceMode7DepthSlices({
+    bounds,
+    camera,
+    cameraYaw: camera.yaw,
+    visualTravel: 120.37,
+    routeLength: 900,
+    routeRuntimeType: 'destination',
+    nearDistance: 3.4,
+    viewDistance: 580,
+    visualRoadWidthMultiplier: 0.58,
+    sliceCount: 80
+  });
+
+  assert.equal(slices.length > 50, true);
+  assert.equal(slices.every((slice, index) => index === 0 || slice.center.distance > slices[index - 1].center.distance), true);
+  assert.equal(slices.some((slice) => Math.abs(slice.center.distance - Math.round(slice.center.distance)) > 0.001), true);
+  assert.equal(slices.every((slice) => Number.isFinite(slice.center.routeDistance)), true);
+  assert.equal(editor.getRaceMode7DepthSlices({
+    bounds,
+    camera,
+    cameraYaw: camera.yaw,
+    visualTravel: 120.37,
+    routeLength: 900,
+    routeRuntimeType: 'destination',
+    nearDistance: 3.4,
+    viewDistance: 580,
+    visualRoadWidthMultiplier: 0.58
+  }).length > 120, true);
+  assert.equal(raceEditorSource.includes('return bands.sort((a, b) => b.avgZ - a.avgZ || b.maxZ - a.maxZ || b.index - a.index);'), true);
+});
+
+test('Race Mode 7 markers interpolate smoothly between projected depth slices', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const slices = [
+    {
+      center: { distance: 100, screenX: 200, screenY: 210, segment: { surface: 'asphalt' } },
+      left: { screenX: 120, screenY: 210 },
+      right: { screenX: 280, screenY: 210 }
+    },
+    {
+      center: { distance: 112.192, screenX: 202, screenY: 180, segment: { surface: 'asphalt' } },
+      left: { screenX: 145, screenY: 180 },
+      right: { screenX: 259, screenY: 180 }
+    }
+  ];
+
+  const first = editor.getRaceInterpolatedMarkerSlice(slices, 104);
+  const second = editor.getRaceInterpolatedMarkerSlice(slices, 104.4);
+
+  assert.equal(first.center.screenY > second.center.screenY, true);
+  assert.equal(Math.abs(first.center.screenY - second.center.screenY) < 2, true);
+  assert.equal(raceEditorSource.includes('drawRaceContinuousDistanceMarkers(ctx, bounds'), true);
+});
+
+test('Race Mode 7 markers draw road-aligned lane dash quads', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const ctx = createMockContext();
+  const slices = [
+    {
+      center: { distance: 100, screenX: 200, screenY: 210, segment: { surface: 'asphalt' } },
+      left: { screenX: 120, screenY: 210 },
+      right: { screenX: 280, screenY: 210 }
+    },
+    {
+      center: { distance: 112.192, screenX: 212, screenY: 178, segment: { surface: 'asphalt' } },
+      left: { screenX: 155, screenY: 184 },
+      right: { screenX: 269, screenY: 172 }
+    },
+    {
+      center: { distance: 124.384, screenX: 226, screenY: 152, segment: { surface: 'asphalt' } },
+      left: { screenX: 188, screenY: 158 },
+      right: { screenX: 264, screenY: 146 }
+    }
+  ];
+
+  editor.drawRaceContinuousDistanceMarkers(ctx, { x: 0, y: 0, w: 390, h: 240 }, { slices });
+
+  assert.equal(ctx.calls.some((call) => call.type === 'beginPath'), true);
+  assert.equal(ctx.calls.filter((call) => call.type === 'lineTo').length >= 3, true);
+  assert.equal(raceEditorSource.includes('drawRaceProjectedLaneDash(ctx, startMarker, endMarker, markerW);'), true);
+  assert.equal(raceEditorSource.includes('fillRect(marker.center.screenX - markerW / 2'), false);
+});
+
+test('Race Mode 7 renderer reuses sampled route geometry across depth slices', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  seedEditableRaceRoute(editor);
+  const originalGetRacePathSamples = editor.getRacePathSamples.bind(editor);
+  let sampleCalls = 0;
+  editor.getRacePathSamples = (options) => {
+    sampleCalls += 1;
+    return originalGetRacePathSamples(options);
+  };
+  const bounds = { x: 0, y: 0, w: 390, h: 240 };
+  const camera = {
+    ...editor.getRaceWorldPoseAtDistance(10),
+    horizonRatio: 0.32,
+    roadElevation: 0,
+    eyeHeight: editor.getRaceCameraEyeHeight('third-person'),
+    elevation: editor.getRaceCameraEyeHeight('third-person'),
+    nearPlane: 1.2,
+    roadDepthRatio: 0.62,
+    focalScale: 1,
+    roadWidthScale: 4.8,
+    roadMaxWidthRatio: 0.52,
+    distance: 10
+  };
+  sampleCalls = 0;
+
+  const slices = editor.getRaceMode7DepthSlices({
+    bounds,
+    camera,
+    cameraYaw: camera.yaw,
+    visualTravel: 10,
+    routeLength: editor.getRaceRouteLength(),
+    routeRuntimeType: 'destination',
+    nearDistance: 3,
+    viewDistance: 520,
+    visualRoadWidthMultiplier: 0.58,
+    sliceCount: 120
+  });
+
+  assert.equal(slices.length > 40, true);
+  assert.equal(sampleCalls <= 2, true);
+  assert.equal(raceEditorSource.includes('getRacePathSamplesCached({ step: 10 })'), true);
+  assert.equal(raceEditorSource.includes('getRaceSampleSpanAtDistance(samples, target)'), true);
 });
 
 test('Race playtest camera yaw follows the car instead of auto-following road yaw', () => {
@@ -1892,6 +2267,7 @@ test('Race playtest car position is free-moving instead of snapped to route prog
   editor.startPlaytest(editor.selectedCar.id);
   editor.playtestSession.speedMps = 18;
   editor.playtestSession.carYaw = Math.PI / 2;
+  editor.playtestSession.velocityYaw = Math.PI / 2;
   editor.playtestSession.cameraYaw = Math.PI / 2;
   editor.raceInput.steeringTarget = 0;
   editor.raceInput.steeringWheel = 0;
@@ -1912,6 +2288,7 @@ test('Race playtest route progress advances from car heading instead of nearest-
   editor.startPlaytest(editor.selectedCar.id);
   editor.playtestSession.speedMps = 20;
   editor.playtestSession.carYaw = Math.PI / 2;
+  editor.playtestSession.velocityYaw = Math.PI / 2;
   editor.playtestSession.cameraYaw = Math.PI / 2;
   editor.raceInput.steeringTarget = 0;
   editor.raceInput.steeringWheel = 0;
@@ -1921,8 +2298,40 @@ test('Race playtest route progress advances from car heading instead of nearest-
   assert.equal(editor.playtestSession.worldX > 8, true);
   assert.equal(editor.playtestSession.projectedDistance < 2, true);
   assert.equal(editor.playtestSession.distance < 2, true);
-  assert.equal(raceEditorSource.includes('const routeAdvance = this.playtestSession.speedMps * Math.cos(progressHeading) * seconds;'), true);
+  assert.equal(raceEditorSource.includes('const progressHeading = normalizeAngle(this.playtestSession.velocityYaw - progressRoadYaw);'), true);
   assert.equal(raceEditorSource.includes('this.playtestSession.distance = clamp(integratedDistance, 0, routeLength);'), true);
+});
+
+test('Race playtest high-speed steering preserves momentum and scrubs speed instead of spinning 180 degrees', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    exitRaceEditor() {}
+  });
+  editor.selectedRace.type = 'destination';
+  editor.selectedRace.road.segments = [
+    { length: 1200, curve: 0, elevation: 0, surface: 'asphalt', turn: 'smooth', hazardIds: [] }
+  ];
+  editor.startPlaytest('starter-rwd');
+  editor.playtestSession.launchLockMs = 0;
+  editor.playtestSession.elapsedMs = 1000;
+  editor.playtestSession.speedMps = 90 * 0.44704;
+  editor.playtestSession.carYaw = 0;
+  editor.playtestSession.velocityYaw = 0;
+  editor.playtestSession.cameraYaw = 0;
+  editor.playtestSession.worldX = 0;
+  editor.playtestSession.worldZ = 0;
+  editor.raceInput.binarySteer = 1;
+
+  for (let frame = 0; frame < 120; frame += 1) editor.updatePlaytest(1 / 60);
+
+  assert.equal(Math.abs(editor.playtestSession.carYaw) < Math.PI * 0.65, true);
+  assert.equal(Math.abs(editor.playtestSession.velocityYaw) < Math.abs(editor.playtestSession.carYaw), true);
+  assert.equal(editor.playtestSession.speedMps < 90 * 0.44704 - 2, true);
+  assert.equal(Math.abs(editor.playtestSession.worldX) > 6, true);
+  assert.equal(editor.playtestSession.worldZ > 35, true);
+  assert.equal(editor.playtestSession.tireSlip.scrub > 0, true);
+  assert.equal(editor.playtestSession.tireSlip.slipAngle > 0.05, true);
 });
 
 test('Race route projection supports full 360-degree turns', () => {
@@ -1935,8 +2344,8 @@ test('Race route projection supports full 360-degree turns', () => {
     { length: 90, curve: 1, elevation: 0, surface: 'asphalt', turn: 'square', hazardIds: [] }
   ];
 
-  const endPose = editor.getRaceWorldPoseAtDistance(editor.getRaceRouteLength() - 1);
-  assert.equal(Math.abs(endPose.yaw) > Math.PI * 1.2, true);
+  const routeSamples = editor.getRacePathSamples({ step: 10 });
+  assert.equal(Math.max(...routeSamples.map((sample) => Math.abs(sample.yaw))) > Math.PI * 1.2, true);
 
   const camera = editor.getRaceWorldPoseAtDistance(0);
   const quarterTurn = editor.getRaceWorldPoseAtDistance(110);
@@ -1965,6 +2374,50 @@ test('Race route projection supports full 360-degree turns', () => {
   });
 
   assert.equal(Math.abs(left.screenX - right.screenX) > 20, true);
+});
+
+test('Race playtest route sampler keeps local road samples behind and ahead of travel', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+
+  const destinationSamples = editor.getRaceRenderSampleDistances({
+    visualTravel: 300,
+    routeLength: 900,
+    routeRuntimeType: 'destination',
+    nearDistance: 3,
+    viewDistance: 620
+  });
+
+  assert.equal(destinationSamples.some((distance) => distance < 300), true);
+  assert.equal(destinationSamples.some((distance) => distance > 300), true);
+  assert.equal(destinationSamples.every((distance) => distance >= 0 && distance <= 900), true);
+
+  const circuitSamples = editor.getRaceRenderSampleDistances({
+    visualTravel: 20,
+    routeLength: 900,
+    routeRuntimeType: 'circuit',
+    nearDistance: 3,
+    viewDistance: 620
+  });
+
+  assert.equal(circuitSamples.some((distance) => distance > 780), true);
+  assert.equal(circuitSamples.some((distance) => distance < 80), true);
+});
+
+test('Race road cross sections include projected shoulder terrain outside the road', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const section = editor.getRaceRoadCrossSectionAtDistance(80);
+  const roadHalfWidth = Math.hypot(
+    Number(section.left.x || 0) - Number(section.center.x || 0),
+    Number(section.left.z || 0) - Number(section.center.z || 0)
+  );
+  const shoulderHalfWidth = Math.hypot(
+    Number(section.shoulderLeft.x || 0) - Number(section.center.x || 0),
+    Number(section.shoulderLeft.z || 0) - Number(section.center.z || 0)
+  );
+
+  assert.equal(shoulderHalfWidth > roadHalfWidth + 50, true);
+  assert.equal(Number.isFinite(section.shoulderLeft.elevation), true);
+  assert.equal(Number.isFinite(section.shoulderRight.elevation), true);
 });
 
 test('Race playtest destination routes finish instead of wrapping', () => {
@@ -2040,6 +2493,7 @@ test('Race Editor generates a random point-to-point race that can be playtested'
   assert.equal(editor.selectedRace.codriver.calls.length, editor.selectedRace.road.segments.length);
   assert.equal(editor.selectedRace.road.segments.some((segment) => Math.abs(segment.curve) >= 0.5), true);
   assert.equal(editor.selectedRace.road.segments.some((segment) => Math.abs(segment.elevation) > 0.15), true);
+  assert.equal(editor.selectedRace.road.nodes.length >= editor.selectedRace.road.segments.length + 1, true);
   assert.match(editor.status, /Generated/);
 
   editor.startPlaytest('starter-rwd');
@@ -2063,6 +2517,38 @@ test('Race Editor segment elevation samples continuously instead of resetting pe
   const secondStart = samples.find((sample) => sample.index === 1 && sample.progress < 0.12);
   assert.ok(secondStart);
   assert.equal(secondStart.elevation > 0.16, true);
+});
+
+test('Race Editor smooths crest and bump samples before hard turns', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.road.nodes = [];
+  editor.selectedRace.road.segments = [
+    { length: 90, curve: 0.2, elevation: 0.32, surface: 'asphalt', bumpiness: 0.35 },
+    { length: 85, curve: 1, elevation: 0.08, surface: 'asphalt', turn: 'square', bumpiness: 0.72 },
+    { length: 105, curve: -0.45, elevation: -0.22, surface: 'gravel', bumpiness: 0.5 }
+  ];
+
+  const samples = editor.getRacePathSamples({ step: 18 });
+  let maxElevationJump = 0;
+  let maxYawJump = 0;
+  for (let index = 1; index < samples.length; index += 1) {
+    maxElevationJump = Math.max(maxElevationJump, Math.abs(Number(samples[index].elevation || 0) - Number(samples[index - 1].elevation || 0)));
+    maxYawJump = Math.max(maxYawJump, Math.abs(normalizeAngle(samples[index].yaw - samples[index - 1].yaw)));
+  }
+
+  assert.equal(samples.length >= 42, true);
+  assert.equal(maxElevationJump < 0.045, true);
+  assert.equal(maxYawJump < 0.2, true);
+  assert.equal(raceEditorSource.includes('smoothRacePathSamples(samples = [], { passes = 2 } = {})'), true);
+});
+
+test('Race Editor explicit turn kinds map to readable route angles', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+
+  assert.equal(Math.abs(editor.getRaceSegmentYawDelta({ curve: 1, turn: 'square' }) - Math.PI / 2) < 0.0001, true);
+  assert.equal(Math.abs(editor.getRaceSegmentYawDelta({ curve: -1, turn: 'junction' }) + Math.PI / 2) < 0.0001, true);
+  assert.equal(Math.abs(editor.getRaceSegmentYawDelta({ curve: 0.7, turn: 'angled' }) - Math.PI / 4) < 0.0001, true);
+  assert.equal(Math.abs(editor.getRaceSegmentYawDelta({ curve: 1 }) - 0.78) < 0.0001, true);
 });
 
 test('Race Editor random generator can create inferred closed ovals and severe rally stages', () => {
@@ -2095,6 +2581,62 @@ test('Race Editor random generator can create inferred closed ovals and severe r
   assert.equal(['rain', 'storm', 'snow'].includes(editor.selectedRace.weather), true);
   assert.equal(editor.selectedRace.road.segments.some((segment) => ['snow', 'gravel', 'dirt'].includes(segment.surface)), true);
   assert.equal(editor.selectedRace.road.segments.some((segment) => Number(segment.bumpiness || 0) >= 0.28), true);
+  assert.equal(editor.selectedRace.road.nodes.length >= editor.selectedRace.road.segments.length + 1, true);
+  assert.equal(editor.selectedRace.road.segments.some((segment) => ['square', 'angled', 'junction'].includes(segment.turn)), true);
+  assert.equal(raceEditorSource.includes("segment.turn === 'junction'"), true);
+  assert.equal(raceEditorSource.includes("segment.turn === 'angled'"), true);
+});
+
+test('Race Editor generator checks generated routes for self-intersection', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const crossingNodes = [
+    { x: 0, y: 0 },
+    { x: 100, y: 0 },
+    { x: 0, y: 100 },
+    { x: 100, y: 100 },
+    { x: 20, y: -20 }
+  ];
+  const cleanNodes = [
+    { x: 0, y: 0 },
+    { x: 0, y: 100 },
+    { x: 100, y: 100 },
+    { x: 100, y: 0 }
+  ];
+
+  assert.equal(editor.doRaceRouteSegmentsIntersect({ x: 0, y: 0 }, { x: 100, y: 100 }, { x: 0, y: 100 }, { x: 100, y: 0 }), true);
+  assert.equal(editor.doesRaceRouteSelfIntersect(crossingNodes), true);
+  assert.equal(editor.doesRaceRouteSelfIntersect(cleanNodes), false);
+  assert.equal(raceEditorSource.includes('for (let attempt = 0; attempt < 5 && this.doesRaceRouteSelfIntersect(generatedNodes); attempt += 1)'), true);
+  assert.equal(raceEditorSource.includes('width: 7.6'), true);
+  assert.equal(raceEditorSource.includes('width: 7.4'), true);
+});
+
+test('Race Editor generate keeps authoring menus reachable after rebuilding a route', () => {
+  const portrait = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
+  portrait.draw(createMockContext(), 390, 844);
+  portrait.handleMenuAction('generate-random-race');
+
+  assert.equal(portrait.activeRootId, 'race');
+  assert.equal(portrait.racePortraitMode, 'race');
+  assert.equal(portrait.raceSelectionType, 'edge');
+  assert.equal(portrait.mobileRootOpen, true);
+  assert.equal(portrait.gamepadSubmenuOpen, false);
+
+  const gamepad = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: {
+      isGamepadConnected: () => true,
+      gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 }
+    },
+    exitRaceEditor() {}
+  });
+  gamepad.draw(createMockContext(), 844, 390);
+  gamepad.handleMenuAction('generate-random-race');
+
+  assert.equal(gamepad.activeRootId, 'race');
+  assert.equal(gamepad.mobileRootOpen, false);
+  assert.equal(gamepad.gamepadSubmenuOpen, true);
 });
 
 test('Race Editor Race menu loads built-in test tracks', () => {
@@ -2177,14 +2719,49 @@ test('Race Editor Playtest opens car picker and starts a structured drive sessio
   assert.equal(editor.playtestSession.raceId, 'test-loop');
   assert.equal(editor.playtestSession.aiDrivers.length, 1);
   assert.equal(editor.playtestSession.hazards.length > 0, true);
-  assert.equal(editor.playtestSession.codriverCalls.length > 0, true);
+  assert.equal(editor.playtestSession.codriverCalls.length, 0);
   assert.equal(editor.playtestSession.running, true);
   assert.equal(editor.playtestSession.routeLength > 0, true);
   assert.deepEqual(editor.playtestSession.eventLog, [
     '1 AI racers enabled',
     '3 race hazards loaded',
-    '3 co-driver calls queued'
+    'Co-driver disabled'
   ]);
+});
+
+test('Race Editor restores Race authoring menus after Drive picker and playtest exits', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+
+  editor.draw(createMockContext(), 390, 844);
+  editor.handleMenuAction('test-drive');
+  assert.equal(editor.playtestPickerOpen, true);
+  assert.equal(editor.activeRootId, 'drive');
+
+  editor.cancelPlaytestPicker();
+  assert.equal(editor.playtestPickerOpen, false);
+  assert.equal(editor.activeRootId, 'race');
+  assert.equal(editor.racePortraitMode, 'race');
+  assert.equal(editor.raceSelectionType, 'edge');
+  assert.equal(editor.mobileRootOpen, true);
+  assert.equal(editor.getMenuItems('race').some((item) => item.id === 'generate-random-race'), true);
+
+  editor.startPlaytest('starter-rwd');
+  assert.ok(editor.playtestSession);
+  editor.endPlaytest();
+  assert.equal(editor.playtestSession, null);
+  assert.equal(editor.activeRootId, 'race');
+  assert.equal(editor.mobileRootOpen, true);
+
+  editor.startPlaytest('starter-rwd');
+  editor.finishPlaytest();
+  assert.equal(editor.playtestSession, null);
+  assert.equal(editor.activeRootId, 'race');
+  assert.equal(editor.mobileRootOpen, true);
 });
 
 test('Race Editor pre-race picker selects cars, opens tuning, and adjusts per-wheel tires', () => {
@@ -2248,7 +2825,7 @@ test('Race Editor tire compounds alter grip by surface and weather', () => {
   assert.equal(snowInSnow > dirtInSnow, true);
 });
 
-test('Race Editor playtest advances, exposes route cues, and can end from the HUD', () => {
+test('Race Editor playtest advances, exposes hazards, and can end from the desktop Drive drawer', () => {
   const editor = new RaceEditor({
     deviceIsMobile: false,
     isMobile: false,
@@ -2263,7 +2840,7 @@ test('Race Editor playtest advances, exposes route cues, and can end from the HU
 
   assert.equal(editor.playtestSession.distance > 0, true);
   assert.equal(editor.playtestSession.speedMps > 0, true);
-  assert.equal(editor.getNextCoDriverCall()?.id, 'medium-right');
+  assert.equal(editor.getNextCoDriverCall(), null);
   assert.equal(editor.getUpcomingHazard()?.id, 'zombie-pack-1');
 
   editor.draw(ctx, 1280, 800);
@@ -2383,8 +2960,8 @@ test('Race Editor playtest steering recenters and sweeps the road more than it s
   editor.updatePlaytest(0.5);
 
   assert.equal(editor.raceInput.steeringTarget, 1);
-  assert.equal(editor.getRaceBinarySteerAssist(editor.playtestSession.speedMps).steeringAuthority > 0.65, true);
-  assert.equal(editor.getRaceBinarySteerAssist(editor.playtestSession.speedMps).steeringAuthority < 0.85, true);
+  assert.equal(editor.getRaceBinarySteerAssist(editor.playtestSession.speedMps).steeringAuthority > 0.42, true);
+  assert.equal(editor.getRaceBinarySteerAssist(editor.playtestSession.speedMps).steeringAuthority < 0.72, true);
   assert.equal(Math.abs(editor.playtestSession.lateral) > 0, true);
   assert.equal(Math.abs(editor.playtestSession.lateral) <= 0.42, true);
   assert.equal(Math.abs(editor.playtestSession.roadViewOffset) > 0, true);
@@ -2452,13 +3029,13 @@ test('Race playtest HUD exposes top quit controls and directional minimap car ma
   editor.drawRacePlaytestHud(ctx, { x: 0, y: 0, w: 390, h: 260 });
 
   const ids = editor.buttons.map((button) => button.id);
-  assert.equal(ids.includes('race-pause-toggle'), true);
-  assert.equal(ids.includes('race-return-editor'), true);
-  assert.equal(ids.includes('race-exit-main'), true);
+  assert.equal(ids.includes('race-pause-return-editor'), true);
+  assert.equal(ids.includes('race-return-editor'), false);
+  assert.equal(ids.includes('race-exit-main'), false);
   assert.equal(ctx.calls.filter((call) => call.type === 'lineTo').length >= 4, true);
   assert.equal(raceEditorSource.includes("ctx.fillStyle = '#58d6ff';"), true);
   assert.equal(raceEditorSource.includes('player.x + forward.x * size * 1.36'), true);
-  assert.equal(ctx.calls.some((call) => call.type === 'text' && call.value === 'Main Menu'), true);
+  assert.equal(ctx.calls.some((call) => call.type === 'text' && call.value === 'Main Menu'), false);
 });
 
 test('Race Editor destination HUD shows percent instead of lap text', () => {
@@ -2513,7 +3090,66 @@ test('Race Editor high-speed road projection raises the horizon for longer road 
   assert.ok(editor.getRaceRoadHalfWidthWorld() >= 27.5);
   assert.equal(raceEditorSource.includes('drawRaceStartFinishCheckerStripes'), true);
   assert.equal(raceEditorSource.includes("ctx.fillStyle = index % 2 === 0 ? '#f1f4ef' : '#050807';"), true);
-  assert.equal(raceEditorSource.includes('const nearDistance = 0.45 + speedFactor * 6;'), true);
+  assert.equal(raceEditorSource.includes('getRaceCameraPitchProfile({'), true);
+  assert.equal(raceEditorSource.includes('camera.nearPlane = Math.max(1.2, 1.35 + pitchProfile.nearPlaneBoost * 2.4 + Math.max(0, hillPitch) * 1.8);'), true);
+  assert.equal(raceEditorSource.includes('pitchProfile.nearPlaneBoost * 3.1'), true);
+});
+
+test('Race playtest horizon reacts differently to uphill and downhill travel', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    exitRaceEditor() {}
+  });
+  editor.selectedRace.road.nodes = [];
+  editor.selectedRace.road.segments = [
+    { length: 260, curve: 0, elevation: 0.34, surface: 'asphalt', hazardIds: [] },
+    { length: 260, curve: 0, elevation: -0.32, surface: 'asphalt', hazardIds: [] }
+  ];
+  editor.startPlaytest('starter-rwd');
+
+  const uphill = editor.getRaceCameraPitchProfile({
+    visualTravel: 60,
+    routeRuntimeType: 'destination',
+    speedMps: 24,
+    session: editor.playtestSession
+  });
+  const downhill = editor.getRaceCameraPitchProfile({
+    visualTravel: 310,
+    routeRuntimeType: 'destination',
+    speedMps: 24,
+    session: editor.playtestSession
+  });
+
+  assert.equal(uphill.hillPitch > 0, true);
+  assert.equal(downhill.hillPitch < 0, true);
+  assert.equal(uphill.horizonRatio < downhill.horizonRatio, true);
+});
+
+test('Race playtest projection clips road points before the adaptive near plane', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    exitRaceEditor() {}
+  });
+  const bounds = { x: 0, y: 0, w: 390, h: 240 };
+  const camera = {
+    x: 0,
+    z: 0,
+    elevation: 0.1,
+    horizonRatio: 0.31,
+    roadDepthRatio: 0.7,
+    focalScale: 1.04,
+    roadWidthScale: 2.2,
+    roadMaxWidthRatio: 0.72,
+    nearPlane: 2.8
+  };
+
+  const clipped = editor.projectRaceWorldPointToCamera({ x: 0, z: 2.1, elevation: 0 }, camera, 0, bounds);
+  const visible = editor.projectRaceWorldPointToCamera({ x: 0, z: 3.2, elevation: 0 }, camera, 0, bounds);
+
+  assert.equal(clipped.visible, false);
+  assert.equal(visible.visible, true);
 });
 
 test('Race playtest projection keeps horizon stable across elapsed time at the same road position', () => {
@@ -2578,7 +3214,7 @@ test('Race playtest road fills the near viewport and unpainted ground defaults g
   assert.equal(editor.getRaceGroundPaletteForSegment(asphaltSegment, { x: 9999, z: 9999 }).shoulderB, '#244629');
 });
 
-test('Race playtest camera view changes road scale and samples backward when facing backward', () => {
+test('Race playtest camera view changes road scale while renderer samples route order', () => {
   const editor = new RaceEditor({
     deviceIsMobile: true,
     isMobile: true,
@@ -2591,8 +3227,16 @@ test('Race playtest camera view changes road scale and samples backward when fac
   editor.playtestSession.projectedDistance = 120;
   const routeYaw = editor.getRaceRoadYawAtDistance(editor.playtestSession.distance);
 
-  assert.equal(editor.getRaceCameraRouteSampleDirection(routeYaw, routeYaw), 1);
-  assert.equal(editor.getRaceCameraRouteSampleDirection(routeYaw + Math.PI, routeYaw), -1);
+  const samples = editor.getRaceRenderSampleDistances({
+    visualTravel: editor.playtestSession.distance,
+    routeLength: editor.playtestSession.routeLength,
+    routeRuntimeType: 'circuit',
+    nearDistance: 3,
+    viewDistance: 520
+  });
+  assert.equal(samples.length > 12, true);
+  assert.equal(samples.some((distance) => distance < editor.playtestSession.distance), true);
+  assert.equal(samples.some((distance) => distance > editor.playtestSession.distance), true);
 
   const camera = {
     ...editor.getRaceWorldPoseAtDistance(editor.playtestSession.distance),
@@ -2693,17 +3337,46 @@ test('Race Editor analog steering reduces available steering at speed', () => {
 
   assert.equal(editor.raceInput.throttle, true);
   assert.equal(editor.raceInput.steeringTarget, 1);
-  assert.equal(editor.raceInput.steeringWheel >= 0.93, true);
-  assert.equal(editor.getRaceMaxSteerForSpeed(editor.playtestSession.speedMps) <= 0.66, true);
+  assert.equal(editor.raceInput.steeringWheel > 0.12, true);
+  assert.equal(editor.raceInput.steeringWheel < 0.14, true);
+  assert.equal(editor.getRaceMaxSteerForSpeed(editor.playtestSession.speedMps) <= 0.27, true);
 });
 
-test('Race Editor visible steering wheel rotation shrinks from 540 degrees parked to 20 degrees at 100 mph', () => {
-  const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
+test('Race Editor stores physical tire and steering wheel angles from the same steering rack', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 1, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
 
-  assert.equal(Math.round(editor.getRaceSteeringWheelDisplayDegrees(0)), 540);
-  assert.equal(Math.round(editor.getRaceSteeringWheelDisplayDegrees(100 * 0.44704)), 20);
-  assert.equal(Math.abs(editor.getRaceVisibleSteeringWheelRotationRad(1, 0) - Math.PI * 3) < 0.001, true);
-  assert.equal(Math.abs(editor.getRaceVisibleSteeringWheelRotationRad(1, 100 * 0.44704) - (20 * Math.PI / 180)) < 0.001, true);
+  editor.startPlaytest('starter-rwd');
+  editor.playtestSession.speedMps = 32;
+  editor.update(null, 0.16);
+
+  const expectedTireAngle = editor.getRacePhysicalTireAngleForSteering(
+    editor.raceInput.steeringWheel,
+    Math.abs(editor.playtestSession.speedMps)
+  );
+  const expectedWheelRotation = editor.getRaceSteeringWheelRotationForTireAngle(expectedTireAngle);
+
+  assert.equal(Math.abs(editor.playtestSession.tireSlip.frontTireAngle - expectedTireAngle) < 0.001, true);
+  assert.equal(Math.abs(editor.playtestSession.steeringWheelRotation - expectedWheelRotation) < 0.001, true);
+  assert.equal(raceEditorSource.includes('drawWheel(centerX - carW * 0.38, y - carH * 0.24, frontTireAngle);'), true);
+});
+
+test('Race Editor visible steering wheel rotation follows tire angle and steering ratio', () => {
+  const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
+  const lowSpeedTireAngle = editor.getRacePhysicalTireAngleForSteering(1, 0);
+  const highwayTireAngle = editor.getRacePhysicalTireAngleForSteering(1, 100 * 0.44704);
+  const lowSpeedWheel = editor.getRaceVisibleSteeringWheelRotationRad(1, 0);
+  const highwayWheel = editor.getRaceVisibleSteeringWheelRotationRad(1, 100 * 0.44704);
+
+  assert.equal(Math.abs(lowSpeedWheel - editor.getRaceSteeringWheelRotationForTireAngle(lowSpeedTireAngle)) < 0.001, true);
+  assert.equal(Math.abs(highwayWheel - editor.getRaceSteeringWheelRotationForTireAngle(highwayTireAngle)) < 0.001, true);
+  assert.equal(Math.abs(lowSpeedWheel) > Math.abs(highwayWheel), true);
+  assert.equal(Math.abs(highwayWheel) < 1.2, true);
+  assert.equal(editor.getRaceSteeringRatio(), 14.5);
 });
 
 test('Race Editor binary steering returns the wheel to center after release', () => {
@@ -2718,6 +3391,7 @@ test('Race Editor binary steering returns the wheel to center after release', ()
   editor.raceInput.binarySteer = 1;
   editor.updatePlaytest(0.18);
   assert.equal(editor.raceInput.steeringWheel > 0.05, true);
+  assert.equal(editor.playtestSession.tireSlip.audibleSlip, 0);
 
   editor.raceInput.binarySteer = 0;
   for (let i = 0; i < 24; i += 1) editor.updatePlaytest(0.016);
@@ -2737,9 +3411,11 @@ test('Race Editor binary steering uses full virtual stick input with speed-dampe
   editor.raceInput.binarySteer = 1;
   editor.playtestSession.speedMps = 0;
   editor.updatePlaytest(0.016);
-  assert.equal(editor.raceInput.steeringTarget, 1);
-  assert.equal(editor.raceInput.steeringWheel > 0.42, true);
-  assert.equal(editor.raceInput.steeringWheel < 0.52, true);
+  assert.equal(editor.raceInput.steeringTarget > 0.02, true);
+  assert.equal(editor.raceInput.steeringTarget < 0.05, true);
+  assert.equal(editor.raceInput.steeringWheel > 0.003, true);
+  assert.equal(editor.raceInput.steeringWheel < 0.006, true);
+  assert.equal(editor.playtestSession.tireSlip.audibleSlip, 0);
   for (let i = 0; i < 14; i += 1) editor.updatePlaytest(0.016);
   const restTarget = editor.raceInput.steeringTarget;
   const restWheel = editor.raceInput.steeringWheel;
@@ -2749,13 +3425,15 @@ test('Race Editor binary steering uses full virtual stick input with speed-dampe
   editor.playtestSession.speedMps = 70;
   editor.updatePlaytest(0.016);
 
-  assert.equal(restTarget > 0.75, true);
-  assert.equal(restWheel > 0.75, true);
-  assert.equal(editor.raceInput.steeringTarget, 1);
-  assert.equal(editor.raceInput.steeringWheel > 0.42, true);
-  assert.equal(editor.raceInput.steeringWheel < 0.52, true);
+  assert.equal(restTarget > 0.55, true);
+  assert.equal(restWheel > 0.32, true);
+  assert.equal(editor.raceInput.steeringTarget > 0.04, true);
+  assert.equal(editor.raceInput.steeringTarget < 0.07, true);
+  assert.equal(editor.raceInput.steeringWheel > 0.005, true);
+  assert.equal(editor.raceInput.steeringWheel < 0.009, true);
   assert.equal(editor.raceInput.steeringWheel < 1, true);
-  assert.equal(editor.getRaceBinarySteerAssist(70).steeringAuthority <= 0.66, true);
+  assert.equal(editor.getRaceBinarySteerAssist(70).steeringAuthority <= 0.27, true);
+  assert.equal(raceEditorSource.includes('activeTurnResponseScale: 0.125'), true);
 });
 
 test('Race Editor D-pad steering moves toward full-stick lock without snapping instantly', () => {
@@ -2770,9 +3448,10 @@ test('Race Editor D-pad steering moves toward full-stick lock without snapping i
   editor.raceInput.binarySteer = 1;
   editor.updatePlaytest(1 / 120);
 
-  assert.equal(editor.raceInput.steeringTarget, 1);
-  assert.equal(editor.raceInput.steeringWheel > 0.42, true);
-  assert.equal(editor.raceInput.steeringWheel < 0.52, true);
+  assert.equal(editor.raceInput.steeringTarget > 0.01, true);
+  assert.equal(editor.raceInput.steeringTarget < 0.02, true);
+  assert.equal(editor.raceInput.steeringWheel > 0.001, true);
+  assert.equal(editor.raceInput.steeringWheel < 0.003, true);
   assert.equal(editor.getRaceBinarySteerAssist(70).maxSteer, 1);
   assert.equal(editor.getRaceMaxSteerForSpeed(70) < 0.67, true);
 
@@ -2801,7 +3480,7 @@ test('Race Editor touch d-pad steering is not cleared by input polling', () => {
   editor.updatePlaytest(0.18);
 
   assert.equal(editor.raceInput.binarySteer, 1);
-  assert.equal(editor.raceInput.steeringTarget > 0.65, true);
+  assert.equal(editor.raceInput.steeringTarget > 0.48, true);
 
   editor.raceInput.activeDpadPointerId = null;
   editor.updateRaceKeyboardInput(idleInput);
@@ -2844,6 +3523,52 @@ test('Race Editor supports Forza-style gamepad trigger and face-button fallbacks
   assert.equal(editor.raceInput.binarySteer, -1);
 });
 
+test('Race Editor digital pedals ramp like virtual throttle and brake axes', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  editor.raceInput.activeThrottlePointerId = 'go';
+  editor.raceInput.activeBrakePointerId = 'brake';
+  editor.updatePlaytest(1 / 60);
+
+  assert.equal(editor.raceInput.rawThrottleAxis, 1);
+  assert.equal(editor.raceInput.rawBrakeAxis, 1);
+  assert.equal(editor.raceInput.throttleAxis > 0.08 && editor.raceInput.throttleAxis < 0.1, true);
+  assert.equal(editor.raceInput.brakeAxis > 0.13 && editor.raceInput.brakeAxis < 0.16, true);
+
+  editor.raceInput.activeThrottlePointerId = null;
+  editor.raceInput.activeBrakePointerId = null;
+  editor.updatePlaytest(1 / 60);
+
+  assert.equal(editor.raceInput.throttleAxis < 0.03, true);
+  assert.equal(editor.raceInput.brakeAxis, 0);
+  assert.equal(raceEditorSource.includes('digitalBrakePressRate: 8.5'), true);
+});
+
+test('Race Editor analog triggers preserve proportional pedal pressure', () => {
+  const gameInput = { gamepadAxes: { leftX: 0, leftTrigger: 0.42, rightTrigger: 0.35 } };
+  const editor = new RaceEditor({
+    deviceIsMobile: false,
+    isMobile: false,
+    input: gameInput,
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  editor.update(null, 1 / 30);
+
+  assert.equal(Math.abs(editor.raceInput.rawThrottleAxis - 0.35) < 0.001, true);
+  assert.equal(Math.abs(editor.raceInput.rawBrakeAxis - 0.42) < 0.001, true);
+  assert.equal(editor.raceInput.throttleAxis > 0.3 && editor.raceInput.throttleAxis < 0.36, true);
+  assert.equal(editor.raceInput.brakeAxis > 0.39 && editor.raceInput.brakeAxis < 0.43, true);
+  assert.equal(editor.raceInput.throttle, true);
+  assert.equal(editor.raceInput.brake, true);
+});
+
 test('Race Editor desktop keyboard controls drive the playtest throttle and gear', () => {
   const editor = new RaceEditor({
     deviceIsMobile: false,
@@ -2867,6 +3592,7 @@ test('Race Editor desktop keyboard controls drive the playtest throttle and gear
   };
 
   editor.startPlaytest('starter-rwd');
+  editor.update(input, 1 / 30);
   editor.update(input, 1 / 30);
 
   assert.equal(editor.raceInput.throttle, true);
@@ -2936,6 +3662,311 @@ test('Race Editor simulates 2022 WRX with runtime manual and automatic transmiss
   assert.equal(automaticRun.maxMph >= 132, true);
   assert.equal(automaticRun.maxMph <= 137, true);
   assert.equal(automatic.raceInput.gear > 1, true);
+});
+
+test('Race Editor automatic transmission downshifts while braking or coasting', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  editor.raceInput.gear = 5;
+  editor.playtestSession.gear = 5;
+  editor.playtestSession.shiftCooldownMs = 0;
+  editor.playtestSession.speedMps = 18;
+  editor.playtestSession.engineRpm = 1600;
+  editor.raceInput.activeBrakePointerId = 'brake';
+  editor.updatePlaytest(1 / 30);
+
+  assert.equal(editor.raceInput.gear, 4);
+});
+
+test('Race Editor automatic transmission skips downshift that would over-rev the engine', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  editor.raceInput.gear = 4;
+  editor.playtestSession.gear = 4;
+  editor.playtestSession.shiftCooldownMs = 0;
+  editor.playtestSession.speedMps = 30;
+  editor.playtestSession.engineRpm = 1500;
+  editor.raceInput.activeBrakePointerId = 'brake';
+  editor.updatePlaytest(1 / 30);
+
+  assert.equal(editor.raceInput.gear, 4);
+  assert.equal(editor.canRaceAutomaticDownshift(editor.getRaceCarTuning(editor.selectedCar), 30, 3), false);
+  assert.equal(editor.canRaceAutomaticDownshift(editor.getRaceCarTuning(editor.selectedCar), 30, 4), true);
+});
+
+test('Race Editor automatic brake reverses from a stop and throttle returns to first', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  editor.playtestSession.speedMps = 0.2;
+  editor.raceInput.activeBrakePointerId = 'brake';
+  editor.updatePlaytest(0.2);
+
+  assert.equal(editor.raceInput.gear, -1);
+  assert.equal(editor.playtestSession.speedMps < 0, true);
+
+  editor.playtestSession.speedMps = -0.2;
+  editor.raceInput.activeBrakePointerId = null;
+  editor.raceInput.activeThrottlePointerId = 'throttle';
+  editor.updatePlaytest(0.05);
+
+  assert.equal(editor.raceInput.gear, 1);
+});
+
+test('Race Editor automatic throttle while rolling backward slows reverse before driving forward', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  editor.raceInput.gear = -1;
+  editor.playtestSession.gear = -1;
+  editor.playtestSession.speedMps = -4;
+  editor.raceInput.activeThrottlePointerId = 'throttle';
+  editor.updatePlaytest(0.25);
+
+  assert.equal(editor.raceInput.gear, 1);
+  assert.equal(editor.playtestSession.speedMps > -4, true);
+});
+
+test('Race Editor low-speed steering corrections do not create tire skid', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  editor.playtestSession.launchLockMs = 0;
+  editor.playtestSession.elapsedMs = 1000;
+  editor.playtestSession.speedMps = 1 * 0.44704;
+  editor.raceInput.binarySteer = 1;
+  editor.updatePlaytest(0.18);
+
+  assert.equal(editor.playtestSession.tireSlip.audibleSlip, 0);
+  assert.equal(editor.playtestSession.tireSlip.slipAngle, 0);
+  assert.equal(editor.playtestSession.tireSlip.scrub, 0);
+});
+
+test('Race Editor skid state recovers after controls settle', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  editor.playtestSession.launchLockMs = 0;
+  editor.playtestSession.elapsedMs = 1000;
+  editor.playtestSession.speedMps = 38;
+  editor.playtestSession.carYaw = 0.65;
+  editor.playtestSession.velocityYaw = 0;
+  editor.updatePlaytest(0.1);
+  assert.equal(editor.playtestSession.tireSlip.slipAngle > 0.1, true);
+
+  editor.raceInput.binarySteer = 0;
+  editor.raceInput.steeringTarget = 0;
+  editor.raceInput.steeringWheel = 0;
+  for (let frame = 0; frame < 90; frame += 1) editor.updatePlaytest(1 / 60);
+
+  assert.equal(editor.playtestSession.tireSlip.slipAngle < 0.08, true);
+  assert.equal(editor.playtestSession.tireSlip.audibleSlip < 0.08, true);
+});
+
+test('Race Editor coasts without aggressive off-throttle speed decay', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  editor.playtestSession.launchLockMs = 0;
+  editor.playtestSession.elapsedMs = 1000;
+  editor.playtestSession.speedMps = 2.5;
+  for (let frame = 0; frame < 240; frame += 1) editor.updatePlaytest(1 / 60);
+
+  assert.equal(Math.abs(editor.playtestSession.speedMps) > 1.9, true);
+  assert.equal(Math.abs(editor.playtestSession.speedMps) < 2.5, true);
+});
+
+test('Race Editor tire traction imbalance visibly pulls the car yaw', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  editor.playtestSession.launchLockMs = 0;
+  editor.playtestSession.elapsedMs = 1000;
+  editor.playtestSession.speedMps = 30;
+  editor.playtestSession.carYaw = 0;
+  editor.playtestSession.cameraYaw = 0;
+  editor.applyRaceDamage('tires', 80, { keys: ['fl', 'rl'] });
+  editor.updatePlaytest(0.1);
+
+  assert.equal(editor.playtestSession.tireSlip.left > editor.playtestSession.tireSlip.right, true);
+  assert.equal(editor.playtestSession.tireSlip.pull < 0, true);
+  assert.equal(editor.playtestSession.carYaw < 0, true);
+});
+
+test('Race Editor playtest uses tire-limited braking instead of arcade brake force', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  editor.playtestSession.launchLockMs = 0;
+  editor.playtestSession.elapsedMs = 1000;
+  editor.playtestSession.speedMps = 26.8;
+  editor.raceInput.activeBrakePointerId = 'brake';
+  editor.updatePlaytest(0.1);
+
+  assert.equal(editor.playtestSession.speedMps > 24, true);
+  assert.equal(editor.playtestSession.speedMps < 26.8, true);
+  assert.equal(editor.playtestSession.tireSlip.brakeLock < 0.2, true);
+});
+
+test('Race Editor smoothed full brake has high-speed bite while remaining tire limited', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  editor.playtestSession.launchLockMs = 0;
+  editor.playtestSession.elapsedMs = 1000;
+  editor.playtestSession.speedMps = 44;
+  editor.raceInput.activeBrakePointerId = 'brake';
+  for (let frame = 0; frame < 12; frame += 1) editor.updatePlaytest(1 / 60);
+
+  assert.equal(editor.raceInput.brakeAxis > 0.95, true);
+  assert.equal(editor.playtestSession.speedMps < 42.4, true);
+  assert.equal(editor.playtestSession.speedMps > 40.5, true);
+  assert.equal(editor.playtestSession.tireSlip.brakeLock < 0.2, true);
+});
+
+test('Race Editor aggressive pedals create physical wheelspin or brake-lock slip', () => {
+  const throttleEditor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+  throttleEditor.startPlaytest('starter-rwd');
+  throttleEditor.selectedRace.weather = 'snow';
+  throttleEditor.selectedRace.road.segments[0].surface = 'snow';
+  throttleEditor.playtestSession.launchLockMs = 0;
+  throttleEditor.playtestSession.elapsedMs = 1000;
+  throttleEditor.raceInput.activeThrottlePointerId = 'go';
+  for (let frame = 0; frame < 18; frame += 1) throttleEditor.updatePlaytest(1 / 60);
+
+  assert.equal(throttleEditor.raceInput.throttleAxis > 0.95, true);
+  assert.equal(throttleEditor.playtestSession.tireSlip.wheelSpin > 0, true);
+
+  const brakeEditor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+  brakeEditor.startPlaytest('starter-rwd');
+  brakeEditor.selectedRace.weather = 'snow';
+  brakeEditor.selectedRace.road.segments[0].surface = 'snow';
+  brakeEditor.playtestSession.launchLockMs = 0;
+  brakeEditor.playtestSession.elapsedMs = 1000;
+  brakeEditor.playtestSession.speedMps = 24;
+  brakeEditor.raceInput.activeBrakePointerId = 'brake';
+  for (let frame = 0; frame < 12; frame += 1) brakeEditor.updatePlaytest(1 / 60);
+
+  assert.equal(brakeEditor.raceInput.brakeAxis > 0.95, true);
+  assert.equal(brakeEditor.playtestSession.tireSlip.brakeLock > 0, true);
+  assert.equal(brakeEditor.playtestSession.tireSlip.audibleSlip > 0, true);
+});
+
+test('Race Editor records wheel-level spin and brake lock from physical tire limits', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  editor.playtestSession.launchLockMs = 0;
+  editor.playtestSession.elapsedMs = 1000;
+  editor.playtestSession.speedMps = 18;
+  editor.raceInput.activeBrakePointerId = 'brake';
+  editor.raceInput.handbrake = true;
+  editor.updatePlaytest(0.1);
+
+  assert.equal(editor.playtestSession.tireSlip.brakeLock > 0, true);
+  assert.equal(editor.playtestSession.tireSlip.brakeLockByWheel.rl > 0, true);
+  assert.equal(editor.playtestSession.tireSlip.brakeLockByWheel.rr > 0, true);
+  assert.equal(editor.playtestSession.tireSlip.audibleSlip > 0, true);
+});
+
+test('Race Editor playtest simulates gravity state and rollover threshold', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  editor.playtestSession.speedMps = 34;
+  editor.playtestSession.grounded = true;
+  editor.updateRaceVerticalAndRollState({
+    seconds: 0.1,
+    tuning: editor.getRaceCarTuning(editor.selectedCar),
+    roadPose: { elevation: -1 },
+    previousRoadPose: { elevation: 0 },
+    lateralAcceleration: 0
+  });
+
+  assert.equal(editor.playtestSession.airborne, true);
+
+  editor.updateRaceVerticalAndRollState({
+    seconds: 0.1,
+    tuning: editor.getRaceCarTuning(editor.selectedCar),
+    roadPose: { elevation: -1 },
+    previousRoadPose: { elevation: -1 },
+    lateralAcceleration: 19
+  });
+
+  assert.equal(editor.playtestSession.rolledOver, true);
+  assert.equal(editor.status, 'Rolled over');
 });
 
 test('Race Editor includes BRZ and Civic test cars with runtime transmission toggles', () => {

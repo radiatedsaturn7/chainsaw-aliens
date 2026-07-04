@@ -8,6 +8,22 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   recentMajorChanges: [
+    '2026-07-04 17:14 EDT - Race playtest now routes mobile buttons, keyboard keys, gamepad triggers, and future pedal-style inputs through smoothed throttle/brake axes, preserving analog trigger pressure while giving digital Go/Brake ramp-in and release behavior that feeds tire-limited acceleration, braking, wheelspin, and brake-lock slip.',
+    '2026-07-04 16:32 EDT - Race playtest rendering now reuses cached route samples with binary distance lookup across Mode 7 depth slices, improving Daytona-style dense route performance, and highway lane dashes now project as road-aligned quads instead of screen rectangles that looked like upright markers.',
+    '2026-07-04 15:23 EDT - Race playtest now draws mile markers from one continuous Mode 7 marker pass, blocks automatic downshifts that would over-rev the engine, raises crest camera clipping safety, matches checker stripes to rendered road width, and tracks ordered checkpoints for lap/finish progression.',
+    '2026-07-04 15:08 EDT - Race routes now round every meaningful node bend, including shallow turns under 90 degrees and semantic square/junction turns, while route samples smooth yaw/elevation through crests, bumps, and hard turns for fewer visual edges.',
+    '2026-07-04 14:43 EDT - Race playtest rendering now uses denser Mode 7 depth slices, smoother continuous marker phase, auto-rounds sparse tight node corners with more render vertices, and adjusts camera horizon from uphill/downhill pitch cues.',
+    '2026-07-04 14:12 EDT - Race playtest Mode 7 rendering now uses continuous screen-depth slices with unrounded distance phase, so road markers and surface motion move smoothly like a camera-space renderer instead of stepping through discrete route samples.',
+    '2026-07-04 03:30 EDT - Race node-authored tracks now generate bounded bezier-style corner vertices from sparse map points, keeping lazy five-point routes visually readable without free-spline overshoot while preserving tight explicit square/junction corners.',
+    '2026-07-04 03:27 EDT - Race playtest cleanup now clips all road/parallax drawing to the handheld screen, removes automated co-driver/turn instructions from playtest, fixes the minimap orientation marker, slows road color banding to avoid backward-motion reads, preserves sharper high-speed tire scrub, improves coasting, and changes playtest pause controls to one top return button plus a Start/gamepad pause overlay.',
+    '2026-07-04 00:20 EDT - Race playtest rendering now samples a local route-order window around the car, draws parallax sky/terrain reference layers, projects shoulder terrain beside the road instead of filling to the screen edge, and nudges random route generation away from self-intersecting racing lines with normal two-lane default widths.',
+    '2026-07-03 23:48 EDT - Race playtest stabilization now smooths mobile D-pad steering taps, suppresses crawling-speed skid, lets skids recover when controls settle, fixes automatic Go/Reverse behavior, restores WRX top-speed calibration, and tightens road near-plane projection over elevation changes.',
+    '2026-07-03 23:13 EDT - Race playtest physics now uses tire-limited braking, per-wheel grip/slip inspection, physical brake lock and wheelspin audio triggers, and a first-pass gravity/rollover state so steering, skidding, braking, and damage have a stronger simulator basis.',
+    '2026-07-03 22:45 EDT - Race playtest steering now uses a physical steering-rack model: cockpit wheel rotation, front tire drawing, and yaw physics all share the same front tire angle, while tire screech audio is gated by actual slip angle, scrub, wheelspin, or brake lock instead of steering input alone.',
+    '2026-07-03 18:27 EDT - Race playtest high-speed steering now uses stronger tire-limited yaw damping, a separate velocity heading for momentum, and slip-angle speed scrub so full steering at highway speed carries the car outward and slows it instead of rotating cleanly into the opposite lane.',
+    '2026-07-03 17:28 EDT - Race playtest now slows active steering turn-in by 8x for finer D-pad and analog control, lets automatic transmissions downshift while coasting or braking, supports brake-to-reverse near a stop, adds visible tire-traction pull from uneven tire grip, and adapts near-road clipping over elevation changes.',
+    '2026-07-03 17:09 EDT - Race playtest road rendering now anchors visual route sampling, markers, cues, and start/finish stripes to the projected route distance while keeping car physics free-moving, keeps road cross-sections planar over painted ground elevation, and restores the Race authoring menu after Drive picker/playtest exits.',
+    '2026-07-03 16:55 EDT - Race playtest rendering now removes the remaining distance-sine horizon wobble, rejects invalid projected road bands before drawing, generates node-backed random routes with square/angled/junction turns, and keeps Race Editor menus reachable after Generate.',
     '2026-07-03 16:34 EDT - Added NEXT_WEEK_PROMPT.md as a pause handoff for the RTG Studio editor UI consistency work, including the current desktop/portrait/landscape/gamepad layout goal, latest race-rendering work, and next audit targets.',
     '2026-07-03 16:31 EDT - Race playtest rendering now samples segment-authored elevation as one continuous profile, raises the camera above the road surface, removes elapsed-time horizon wobble, and expands random race generation into clean oval, road-course, sprint, mixed-rally, and severe-rally archetypes.',
     '2026-07-03 16:15 EDT - Shared portrait submenu sheets now expose bottom-sheet command metadata for touch, tap-release, and gesture scrolling, reinforcing the bottom-first portrait contract across Pixel, Level, MIDI, SFX, Cutscene, Race, Car, and Tile flows.',
@@ -672,6 +688,28 @@ export const LATEST_MAJOR_WORK = {
 };
 
 export const LATEST_CHANGES = [
+  {
+    date: '2026-07-03',
+    time: '23:48 EDT',
+    summary: 'Stabilized Race playtest steering, skid recovery, automatic reverse, and road projection.',
+    details: [
+      'Mobile and digital steering now nudges/rates steering demand so quick D-pad taps make small corrections instead of instantly requesting full lock.',
+      'Low-speed lateral skid is suppressed, tire slip recovers faster after controls settle, and tire wear now follows actual modeled slip rather than raw steering input.',
+      'Automatic Go now always drives toward forward motion, even when rolling backward, while Reverse still brakes first and then backs up near a stop.',
+      'Coasting now decays to a stop without dragging down the WRX top-speed calibration, and road projection uses car height with a less aggressive near plane over hills and crests.'
+    ]
+  },
+  {
+    date: '2026-07-03',
+    time: '23:13 EDT',
+    summary: 'Corrected race playtest physics toward a tire-limited simulator model.',
+    details: [
+      'Replaced the arcade-strength brake force with mass/friction-limited braking that can approach lockup under normal digital controls and physically lock under handbrake or overload.',
+      'Race playtest now computes per-wheel grip from tire compound, pressure, tire damage, suspension damage, surface, and weather, then stores wheel-level brake lock, wheelspin, lateral slip, and audible slip state.',
+      'Steering yaw now runs through a tire-force-style model with front and rear slip angles, lateral acceleration, scrub, and speed loss instead of direct steering-to-yaw rotation.',
+      'Added first-pass gravity, airborne, roll, pitch, and rollover state so crests and extreme lateral load can affect the car instead of only changing 2D road progress.'
+    ]
+  },
   {
     date: '2026-07-03',
     time: '15:03 EDT',
