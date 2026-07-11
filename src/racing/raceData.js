@@ -1,9 +1,12 @@
 export const RACE_SURFACES = [
   { id: 'asphalt', label: 'Asphalt', grip: 1, colorA: '#315734', colorB: '#244629' },
-  { id: 'dirt', label: 'Dirt', grip: 0.72, colorA: '#7a5633', colorB: '#5f4128' },
-  { id: 'gravel', label: 'Gravel', grip: 0.62, colorA: '#70706b', colorB: '#52534f' },
+  { id: 'dirt', label: 'Dirt', grip: 0.9, colorA: '#7a5633', colorB: '#5f4128' },
+  { id: 'gravel', label: 'Gravel', grip: 0.88, colorA: '#70706b', colorB: '#52534f' },
+  { id: 'mud', label: 'Mud', grip: 0.58, colorA: '#4f3320', colorB: '#352317' },
+  { id: 'wet-gravel', label: 'Wet Gravel', grip: 0.68, colorA: '#555a58', colorB: '#383f3d' },
   { id: 'snow', label: 'Snow', grip: 0.38, colorA: '#d7e5ec', colorB: '#b8cbd5' },
-  { id: 'wet-asphalt', label: 'Wet Asphalt', grip: 0.58, colorA: '#263946', colorB: '#1b2b36' }
+  { id: 'slush', label: 'Slush', grip: 0.44, colorA: '#9fb3bd', colorB: '#748b96' },
+  { id: 'wet-asphalt', label: 'Wet Asphalt', grip: 0.72, colorA: '#263946', colorB: '#1b2b36' }
 ];
 
 export const DRIVETRAINS = ['rwd', 'fwd', 'awd'];
@@ -23,32 +26,59 @@ export const RACE_TIRE_COMPOUNDS = [
   {
     id: 'tarmac',
     label: 'Tarmac',
-    surfaceGrip: { asphalt: 1.08, 'wet-asphalt': 0.78, dirt: 0.62, gravel: 0.58, snow: 0.32 },
+    surfaceGrip: { asphalt: 1.08, 'wet-asphalt': 0.9, dirt: 0.86, gravel: 0.82, mud: 0.52, 'wet-gravel': 0.64, snow: 0.32, slush: 0.4 },
     weatherGrip: { clear: 1, rain: 0.82, storm: 0.72, snow: 0.36 },
     wearRate: 1
   },
   {
     id: 'rain',
     label: 'Rain',
-    surfaceGrip: { asphalt: 0.94, 'wet-asphalt': 1.03, dirt: 0.68, gravel: 0.64, snow: 0.42 },
+    surfaceGrip: { asphalt: 0.94, 'wet-asphalt': 1.03, dirt: 0.82, gravel: 0.8, mud: 0.68, 'wet-gravel': 0.86, snow: 0.42, slush: 0.58 },
     weatherGrip: { clear: 0.92, rain: 1.03, storm: 0.95, snow: 0.48 },
     wearRate: 1.1
   },
   {
     id: 'dirt',
     label: 'Dirt',
-    surfaceGrip: { asphalt: 0.78, 'wet-asphalt': 0.75, dirt: 1.08, gravel: 1.02, snow: 0.58 },
+    surfaceGrip: { asphalt: 0.78, 'wet-asphalt': 0.75, dirt: 1.08, gravel: 1.02, mud: 0.92, 'wet-gravel': 0.96, snow: 0.58, slush: 0.66 },
     weatherGrip: { clear: 1, rain: 0.92, storm: 0.84, snow: 0.56 },
     wearRate: 1.18
   },
   {
     id: 'snow',
     label: 'Snow',
-    surfaceGrip: { asphalt: 0.58, 'wet-asphalt': 0.62, dirt: 0.74, gravel: 0.76, snow: 1.08 },
+    surfaceGrip: { asphalt: 0.58, 'wet-asphalt': 0.62, dirt: 0.74, gravel: 0.76, mud: 0.62, 'wet-gravel': 0.72, snow: 1.08, slush: 0.95 },
     weatherGrip: { clear: 0.86, rain: 0.78, storm: 0.7, snow: 1.04 },
     wearRate: 1.3
   }
 ];
+
+export const RACE_CAR_DIMENSIONS = {
+  'wrx-2022': {
+    lengthM: 4.67,
+    widthM: 1.83,
+    wheelbaseM: 2.67,
+    trackFrontM: 1.56,
+    trackRearM: 1.56
+  },
+  'brz-2022': {
+    lengthM: 4.27,
+    widthM: 1.78,
+    wheelbaseM: 2.58,
+    trackFrontM: 1.52,
+    trackRearM: 1.55
+  },
+  'civic-type-r-2023': {
+    lengthM: 4.60,
+    widthM: 1.89,
+    wheelbaseM: 2.74,
+    trackFrontM: 1.63,
+    trackRearM: 1.62
+  }
+};
+
+export const RACE_LANE_WIDTH_M = 3.6;
+export const DEFAULT_RACE_LANE_COUNT = 1;
 
 export const DEFAULT_AI_DRIVER = {
   id: 'rookie-ai',
@@ -66,8 +96,11 @@ export const WRX_2022_SHARED_TUNING = {
   torqueLbFt: 258,
   weightKg: 1495,
   frontWeightDistribution: 0.58,
+  engineDisplacementL: 2.4,
+  aspiration: 'Turbocharged',
   tireGrip: 1,
   brakeBalance: 0.56,
+  brakePressure: 1,
   redlineRpm: 6100,
   revLimitRpm: 6300,
   revLimiterDropRpm: 360,
@@ -78,21 +111,41 @@ export const WRX_2022_SHARED_TUNING = {
   wheelRadiusM: 0.337,
   topSpeedMph: 135,
   zeroToSixtySec: 5.8,
+  dragCoefficient: 0.42,
   drivetrainEfficiency: 0.84,
   differentialAccel: 0.45,
   differentialDecel: 0.2,
+  frontDifferentialAccel: 0.35,
+  frontDifferentialDecel: 0.18,
+  rearDifferentialAccel: 0.45,
+  rearDifferentialDecel: 0.2,
+  centerDifferentialBalance: 0.55,
   gearFinalDrive: 4.11,
+  camberFront: -0.8,
+  camberRear: -0.7,
+  toeFront: 0,
+  toeRear: 0.1,
+  casterFront: 5.8,
   aeroFront: 0.25,
   aeroRear: 0.35,
   springFront: 0.5,
   springRear: 0.5,
+  rideHeightFront: 0.5,
+  rideHeightRear: 0.5,
+  suspensionTravelFront: 0.5,
+  suspensionTravelRear: 0.5,
   dampingFront: 0.5,
   dampingRear: 0.5,
+  bumpFront: 0.48,
+  bumpRear: 0.48,
+  reboundFront: 0.52,
+  reboundRear: 0.52,
   antiRollFront: 0.5,
   antiRollRear: 0.5
 };
 
 export const DEFAULT_RACE_CAR_SETUP = {
+  defaultTireCompound: 'tarmac',
   tireCompoundByWheel: {
     fl: 'tarmac',
     fr: 'tarmac',
@@ -104,8 +157,24 @@ export const DEFAULT_RACE_CAR_SETUP = {
     fr: 32,
     rl: 31,
     rr: 31
+  },
+  tireSize: {
+    widthMm: 245,
+    aspectRatio: 40,
+    wheelDiameterIn: 18
   }
 };
+
+export const RACE_CAR_SHELL_FRAME_SLOTS = [
+  'front',
+  'frontRight',
+  'right',
+  'rearRight',
+  'rear',
+  'rearLeft',
+  'left',
+  'frontLeft'
+];
 
 export const DEFAULT_CAR_TUNING = {
   ...WRX_2022_SHARED_TUNING,
@@ -160,28 +229,48 @@ export const BRZ_2022_TUNING = {
   torqueLbFt: 184,
   weightKg: 1277,
   frontWeightDistribution: 0.53,
+  engineDisplacementL: 2.4,
+  aspiration: 'Naturally Aspirated',
   tireGrip: 0.96,
   brakeBalance: 0.57,
+  brakePressure: 1,
   redlineRpm: 7000,
   revLimitRpm: 7400,
   revLimiterDropRpm: 420,
   idleRpm: 760,
   torquePeakStartRpm: 3700,
-  torquePeakEndRpm: 5600,
-  torqueFalloffRpm: 7400,
+  torquePeakEndRpm: 6900,
+  torqueFalloffRpm: 7600,
   wheelRadiusM: 0.326,
   topSpeedMph: 140,
   zeroToSixtySec: 6.1,
+  dragCoefficient: 0.35,
+  accelerationCalibration: 1.24,
   drivetrainEfficiency: 0.86,
   differentialAccel: 0.5,
   differentialDecel: 0.25,
+  rearDifferentialAccel: 0.5,
+  rearDifferentialDecel: 0.25,
   gearFinalDrive: 4.10,
+  camberFront: -0.9,
+  camberRear: -1,
+  toeFront: 0,
+  toeRear: 0.12,
+  casterFront: 6.1,
   aeroFront: 0.22,
   aeroRear: 0.28,
   springFront: 0.54,
   springRear: 0.56,
+  rideHeightFront: 0.48,
+  rideHeightRear: 0.5,
+  suspensionTravelFront: 0.45,
+  suspensionTravelRear: 0.45,
   dampingFront: 0.54,
   dampingRear: 0.55,
+  bumpFront: 0.5,
+  bumpRear: 0.52,
+  reboundFront: 0.56,
+  reboundRear: 0.57,
   antiRollFront: 0.52,
   antiRollRear: 0.58
 };
@@ -209,7 +298,7 @@ export const BRZ_2022_TRANSMISSIONS = {
     shiftTimeMs: 260,
     clutchDelayMs: 0,
     launchRpm: 2500,
-    autoUpshiftRpm: 6600,
+    autoUpshiftRpm: 6100,
     autoDownshiftRpm: 1800,
     torqueConverterSlip: 0.1,
     gearRatios: [3.54, 2.06, 1.4, 1.0, 0.71, 0.58],
@@ -222,70 +311,123 @@ export const BRZ_2022_TRANSMISSIONS = {
   }
 };
 
-export const CIVIC_SI_2022_TUNING = {
+export const CIVIC_TYPE_R_2023_TUNING = {
   drivetrain: 'fwd',
-  powerHp: 200,
-  torqueLbFt: 192,
-  weightKg: 1336,
-  frontWeightDistribution: 0.61,
-  tireGrip: 0.94,
+  powerHp: 315,
+  torqueLbFt: 310,
+  weightKg: 1446,
+  frontWeightDistribution: 0.62,
+  engineDisplacementL: 2.0,
+  aspiration: 'Turbocharged',
+  tireGrip: 1.06,
   brakeBalance: 0.62,
-  redlineRpm: 6500,
-  revLimitRpm: 6800,
-  revLimiterDropRpm: 380,
-  idleRpm: 780,
-  torquePeakStartRpm: 1800,
-  torquePeakEndRpm: 5000,
-  torqueFalloffRpm: 6800,
-  wheelRadiusM: 0.329,
-  topSpeedMph: 137,
-  zeroToSixtySec: 6.8,
-  drivetrainEfficiency: 0.85,
-  differentialAccel: 0.42,
-  differentialDecel: 0.18,
-  gearFinalDrive: 4.35,
-  aeroFront: 0.2,
-  aeroRear: 0.24,
-  springFront: 0.5,
-  springRear: 0.48,
-  dampingFront: 0.5,
-  dampingRear: 0.5,
-  antiRollFront: 0.55,
-  antiRollRear: 0.5
+  brakePressure: 1.05,
+  redlineRpm: 7000,
+  revLimitRpm: 7200,
+  revLimiterDropRpm: 420,
+  idleRpm: 800,
+  torquePeakStartRpm: 2600,
+  torquePeakEndRpm: 6500,
+  torqueFalloffRpm: 7400,
+  wheelRadiusM: 0.333,
+  topSpeedMph: 169,
+  zeroToSixtySec: 5.0,
+  dragCoefficient: 0.36,
+  accelerationCalibration: 0.94,
+  drivetrainEfficiency: 0.87,
+  differentialAccel: 0.58,
+  differentialDecel: 0.28,
+  frontDifferentialAccel: 0.58,
+  frontDifferentialDecel: 0.28,
+  gearFinalDrive: 3.84,
+  camberFront: -1.1,
+  camberRear: -1.0,
+  toeFront: 0,
+  toeRear: 0.1,
+  casterFront: 6.2,
+  aeroFront: 0.34,
+  aeroRear: 0.5,
+  springFront: 0.63,
+  springRear: 0.58,
+  rideHeightFront: 0.42,
+  rideHeightRear: 0.44,
+  suspensionTravelFront: 0.38,
+  suspensionTravelRear: 0.38,
+  dampingFront: 0.62,
+  dampingRear: 0.58,
+  bumpFront: 0.56,
+  bumpRear: 0.54,
+  reboundFront: 0.66,
+  reboundRear: 0.62,
+  antiRollFront: 0.64,
+  antiRollRear: 0.56
 };
 
-export const CIVIC_SI_2022_TRANSMISSIONS = {
+export const CIVIC_TYPE_R_2023_TRANSMISSIONS = {
   manual: {
     type: 'manual',
     label: '6MT',
     shiftMode: 'manual',
-    shiftTimeMs: 380,
-    clutchDelayMs: 80,
-    launchRpm: 3000,
-    autoUpshiftRpm: 6200,
-    autoDownshiftRpm: 1800,
-    gearRatios: [3.64, 2.08, 1.36, 1.02, 0.83, 0.69],
-    reverseRatio: 3.67,
-    gearFinalDrive: 4.35,
-    drivetrainEfficiency: 0.85,
-    engineProfile: 'civic-turbo-manual'
+    shiftTimeMs: 360,
+    clutchDelayMs: 75,
+    launchRpm: 3600,
+    autoUpshiftRpm: 6750,
+    autoDownshiftRpm: 2300,
+    gearRatios: [3.63, 2.12, 1.53, 1.13, 0.91, 0.73],
+    reverseRatio: 3.76,
+    gearFinalDrive: 3.84,
+    drivetrainEfficiency: 0.87,
+    engineProfile: 'civic-type-r-manual'
   },
   automatic: {
     type: 'automatic',
-    label: 'CVT',
+    label: 'Auto Assist',
     shiftMode: 'automatic',
-    shiftTimeMs: 190,
+    shiftTimeMs: 210,
     clutchDelayMs: 0,
-    launchRpm: 2200,
-    autoUpshiftRpm: 6100,
-    autoDownshiftRpm: 1600,
-    torqueConverterSlip: 0.14,
-    gearRatios: [2.65, 1.95, 1.45, 1.08, 0.86, 0.68],
-    reverseRatio: 2.65,
-    gearFinalDrive: 4.81,
-    drivetrainEfficiency: 0.83,
-    zeroToSixtySec: 7.2,
-    engineProfile: 'civic-turbo-cvt'
+    launchRpm: 3200,
+    autoUpshiftRpm: 6600,
+    autoDownshiftRpm: 2200,
+    torqueConverterSlip: 0.04,
+    gearRatios: [3.63, 2.12, 1.53, 1.13, 0.91, 0.73],
+    reverseRatio: 3.76,
+    gearFinalDrive: 3.84,
+    drivetrainEfficiency: 0.87,
+    zeroToSixtySec: 4.6,
+    engineProfile: 'civic-type-r-manual'
+  }
+};
+
+export const RACE_STOCK_PERFORMANCE_TARGETS = {
+  'starter-rwd': {
+    carName: '2022 Subaru WRX',
+    source: 'real-world',
+    zeroToSixtySec: [4.8, 5.6],
+    quarterMileSec: [13.5, 14.3],
+    quarterMileTrapMph: [97, 103],
+    topSpeedMph: [132, 138],
+    lateralG: [0.90, 0.98],
+    braking70To0Ft: [154, 168]
+  },
+  'subaru-brz-2022': {
+    carName: '2022 Subaru BRZ',
+    source: 'real-world',
+    zeroToSixtySec: [5.3, 6.8],
+    quarterMileSec: [13.8, 15.2],
+    quarterMileTrapMph: [96, 102],
+    topSpeedMph: [136, 145],
+    lateralG: [0.88, 1.00],
+    braking70To0Ft: [148, 168]
+  },
+  'honda-civic-type-r-2023': {
+    carName: '2023 Honda Civic Type R',
+    source: 'real-world',
+    zeroToSixtySec: [4.8, 5.4],
+    quarterMileSec: [13.2, 13.9],
+    quarterMileTrapMph: [103, 109],
+    topSpeedMph: [165, 171],
+    lateralG: [0.98, 1.08],
+    braking70To0Ft: [142, 156]
   }
 };
 
@@ -294,6 +436,7 @@ export function createDefaultCar(id = 'starter-rwd') {
     'starter-rwd': {
       id: 'starter-rwd',
       name: '2022 Subaru WRX',
+      dimensions: { ...RACE_CAR_DIMENSIONS['wrx-2022'] },
       tuning: { ...DEFAULT_CAR_TUNING },
       transmissions: WRX_2022_TRANSMISSIONS,
       defaultTransmissionType: 'automatic',
@@ -302,6 +445,7 @@ export function createDefaultCar(id = 'starter-rwd') {
     'wrx-2022-automatic': {
       id: 'starter-rwd',
       name: '2022 Subaru WRX',
+      dimensions: { ...RACE_CAR_DIMENSIONS['wrx-2022'] },
       tuning: { ...DEFAULT_CAR_TUNING },
       transmissions: WRX_2022_TRANSMISSIONS,
       defaultTransmissionType: 'automatic',
@@ -310,18 +454,20 @@ export function createDefaultCar(id = 'starter-rwd') {
     'subaru-brz-2022': {
       id: 'subaru-brz-2022',
       name: '2022 Subaru BRZ',
+      dimensions: { ...RACE_CAR_DIMENSIONS['brz-2022'] },
       tuning: { ...BRZ_2022_TUNING },
       transmissions: BRZ_2022_TRANSMISSIONS,
       defaultTransmissionType: 'automatic',
       engineProfile: 'brz-flat-four-auto'
     },
-    'honda-civic-si-2022': {
-      id: 'honda-civic-si-2022',
-      name: '2022 Honda Civic Si',
-      tuning: { ...CIVIC_SI_2022_TUNING },
-      transmissions: CIVIC_SI_2022_TRANSMISSIONS,
+    'honda-civic-type-r-2023': {
+      id: 'honda-civic-type-r-2023',
+      name: '2023 Honda Civic Type R',
+      dimensions: { ...RACE_CAR_DIMENSIONS['civic-type-r-2023'] },
+      tuning: { ...CIVIC_TYPE_R_2023_TUNING },
+      transmissions: CIVIC_TYPE_R_2023_TRANSMISSIONS,
       defaultTransmissionType: 'automatic',
-      engineProfile: 'civic-turbo-cvt'
+      engineProfile: 'civic-type-r-manual'
     }
   };
   const template = templates[id] || templates['starter-rwd'];
@@ -337,15 +483,29 @@ export function createDefaultCar(id = 'starter-rwd') {
         left: null,
         center: null,
         right: null
-      }
+      },
+      shellFrames: {
+        mode: '8-way',
+        artRef: null,
+        slots: Object.fromEntries(RACE_CAR_SHELL_FRAME_SLOTS.map((slot) => [slot, null])),
+        reverseFrameIndex: null
+      },
+      tireTreads: Object.fromEntries(RACE_TIRE_COMPOUNDS.map((compound) => [
+        compound.id,
+        { artRef: null, frameIndex: 0 }
+      ])),
+      addOns: []
     },
+    dimensions: { ...(template.dimensions || RACE_CAR_DIMENSIONS['wrx-2022']) },
     audio: {
       engineSoundId: null,
       engineProfile: template.engineProfile
     },
     setup: {
+      defaultTireCompound: DEFAULT_RACE_CAR_SETUP.defaultTireCompound,
       tireCompoundByWheel: { ...DEFAULT_RACE_CAR_SETUP.tireCompoundByWheel },
-      tirePressurePsi: { ...DEFAULT_RACE_CAR_SETUP.tirePressurePsi }
+      tirePressurePsi: { ...DEFAULT_RACE_CAR_SETUP.tirePressurePsi },
+      tireSize: { ...DEFAULT_RACE_CAR_SETUP.tireSize }
     },
     defaultTransmissionType: template.defaultTransmissionType,
     transmissions: {
@@ -356,7 +516,17 @@ export function createDefaultCar(id = 'starter-rwd') {
   };
 }
 
+export function createBuiltInRaceCars() {
+  return [
+    createDefaultCar(),
+    createDefaultCar('subaru-brz-2022'),
+    createDefaultCar('honda-civic-type-r-2023')
+  ];
+}
+
 export function createDefaultRace(id = 'test-loop') {
+  const laneCount = DEFAULT_RACE_LANE_COUNT;
+  const laneWidthM = RACE_LANE_WIDTH_M;
   return {
     id,
     name: 'Studio Sprint',
@@ -371,18 +541,27 @@ export function createDefaultRace(id = 'test-loop') {
       targetRace: null
     },
     road: {
-      width: 11,
+      laneCount,
+      laneWidthM,
+      width: laneCount * laneWidthM,
       selectedGroundTileId: 'grass',
       groundTiles: [],
+      tileMap: {
+        cellSizeM: 5,
+        defaultTileId: 'grass',
+        minElevation: -0.42,
+        maxElevation: 0.42,
+        cells: {}
+      },
       nodes: [
         { x: 0, y: 0, elevation: 0, role: 'start', locked: true }
       ],
       segments: [
         { length: 180, curve: 0, elevation: 0, surface: 'asphalt', hazardIds: [] },
         { length: 120, curve: 0.55, elevation: 0.08, surface: 'asphalt', codriver: 'medium-right' },
-        { length: 150, curve: -0.35, elevation: -0.04, surface: 'dirt', hazardIds: ['zombie-pack-1'] },
+        { length: 150, curve: -0.35, elevation: -0.04, surface: 'dirt', hazardIds: [] },
         { length: 110, curve: 0.9, elevation: 0.02, surface: 'gravel', turn: 'square', codriver: 'square-right' },
-        { length: 180, curve: 0, elevation: 0, surface: 'asphalt', hazardIds: ['test-jump'] }
+        { length: 180, curve: 0, elevation: 0, surface: 'asphalt', hazardIds: [] }
       ]
     },
     competition: {
@@ -391,36 +570,7 @@ export function createDefaultRace(id = 'test-loop') {
       playerStartGrid: 1,
       trafficEnabled: false
     },
-    hazards: [
-      {
-        id: 'zombie-pack-1',
-        type: 'zombie-pack',
-        label: 'Zombie Pack',
-        at: 380,
-        lane: 0,
-        density: 5,
-        damage: 8,
-        attackPlayer: true
-      },
-      {
-        id: 'test-jump',
-        type: 'jump',
-        label: 'Crest Jump',
-        at: 650,
-        lane: 0,
-        height: 0.65,
-        landingForgiveness: 0.45
-      },
-      {
-        id: 'wall-1',
-        type: 'damage-wall',
-        label: 'Damage Wall',
-        at: 720,
-        side: 'right',
-        damage: 18,
-        destructible: false
-      }
-    ],
+    hazards: [],
     codriver: {
       enabled: true,
       voice: 'default',
@@ -430,11 +580,7 @@ export function createDefaultRace(id = 'test-loop') {
         { id: 'jump-ahead', at: 620, text: 'Jump ahead, stay center', severity: 3 }
       ]
     },
-    scenery: [
-      { type: 'tree', at: 70, side: 'left' },
-      { type: 'sign', at: 130, side: 'right' },
-      { type: 'tower', at: 260, side: 'left' }
-    ]
+    scenery: []
   };
 }
 
@@ -521,6 +667,13 @@ function createRaceTemplate({
       width: roadWidth,
       selectedGroundTileId,
       groundTiles: [],
+      tileMap: {
+        cellSizeM: 5,
+        defaultTileId: selectedGroundTileId || 'grass',
+        minElevation: -0.42,
+        maxElevation: 0.42,
+        cells: {}
+      },
       nodes,
       segments
     },
@@ -1012,11 +1165,7 @@ export function createDefaultRaceProject() {
   return {
     schemaVersion: 1,
     races: [createDefaultRace(), ...createBuiltInTestRaces()],
-    cars: [
-      createDefaultCar(),
-      createDefaultCar('subaru-brz-2022'),
-      createDefaultCar('honda-civic-si-2022')
-    ],
+    cars: createBuiltInRaceCars(),
     selectedRaceId: 'test-loop',
     selectedCarId: 'starter-rwd'
   };

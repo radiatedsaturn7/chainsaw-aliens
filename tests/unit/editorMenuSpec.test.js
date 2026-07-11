@@ -510,7 +510,7 @@ test('shared editor menu specs preserve required root menu order', () => {
   assert.deepEqual(getEditorRootMenuIds('midi'), ['file', 'edit', 'view', 'grid', 'song', 'tracks', 'record', 'pedals', 'settings']);
   assert.deepEqual(getEditorRootMenuIds('sfx'), ['file', 'edit', 'view', 'timeline', 'layers', 'envelopes', 'generate', 'tools', 'settings']);
   assert.deepEqual(getEditorRootMenuIds('cutscene'), ['file', 'edit', 'view', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio', 'settings']);
-  assert.deepEqual(getEditorRootMenuIds('race'), ['file', 'edit', 'view', 'race', 'ground', 'elevation', 'sprites', 'settings', 'drive']);
+  assert.deepEqual(getEditorRootMenuIds('race'), ['file', 'edit', 'view', 'track', 'ground', 'sprites', 'settings']);
   assert.deepEqual(getEditorRootMenuIds('car'), ['file', 'edit', 'view', 'art', 'drivetrain', 'tuning', 'aero', 'suspension', 'drive']);
 });
 
@@ -523,6 +523,19 @@ test('Tile shared menu spec keeps edit-art and reset commands in Edit only', () 
   assert.equal(uiSpecSource.includes('- Tiles: previous tile, next tile, edit tile art, reset tile override.'), false);
 });
 
+test('Car Editor shared menu omits placeholder rows and keeps editable car fields', () => {
+  assert.deepEqual(getEditorMenuSection('car', 'edit').actions, ['undo', 'redo']);
+  assert.equal(getEditorMenuSection('car', 'edit').actions.includes('copy-layer'), false);
+  assert.equal(getEditorMenuSection('car', 'edit').actions.includes('delete-layer'), false);
+  assert.deepEqual(getEditorMenuSection('car', 'view').actions, ['zoom-fit']);
+  assert.deepEqual(getEditorMenuSection('car', 'art').actions, ['shell-frames', 'shell-frame-prev', 'shell-frame-next', 'reverse-frame', 'tire-treads', 'add-ons']);
+  assert.equal(getEditorMenuSection('car', 'view').actions.includes('preview-turns'), false);
+  assert.equal(getEditorMenuSection('car', 'view').actions.includes('toggle-tires'), false);
+  assert.equal(getEditorMenuSection('car', 'drivetrain').actions.includes('power-curve'), true);
+  assert.equal(getEditorMenuSection('car', 'tuning').actions.includes('tire-grip'), false);
+  assert.equal(getEditorMenuSection('car', 'tuning').actions.includes('final-drive'), true);
+});
+
 test('canonical UI spec root lists include the required desktop View root', () => {
   assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Draw, Select, Tools, Canvas, Layers, Frames, Rigging.'), true);
   assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Tiles, Properties.'), true);
@@ -531,8 +544,8 @@ test('canonical UI spec root lists include the required desktop View root', () =
   assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Grid, Song, Tracks/Mixer, Record, Pedals, Settings.'), true);
   assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Timeline, Layers, Envelopes, Generate, Tools, Settings.'), true);
   assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Add, Timeline, Clips, Keyframes, Stage, Audio, Settings.'), true);
-  assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Race, Ground, Elevation, Sprites, Settings, Drive.'), true);
-  assert.equal(uiSpecSource.includes('- Portrait bottom menu: File, Race, Ground, Elevation, Sprites, Settings, Drive.'), true);
+  assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Track, Ground, Sprites, Settings.'), true);
+  assert.equal(uiSpecSource.includes('- Portrait bottom menu: File, Track, Ground, Sprites, Settings.'), true);
   assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Art, Drivetrain, Tuning, Aero, Suspension, Drive.'), true);
 });
 
@@ -557,9 +570,14 @@ test('canonical UI spec avoids stale placeholder menu rows', () => {
     'Export: MP4/export actions and progress.',
     'Keyframes: position, scale, opacity',
     'Race: circuit, destination',
+    'Root: File, Edit, View, Race, Ground, Elevation, Sprites, Settings, Drive.',
+    'Portrait bottom menu: File, Race, Ground, Elevation, Sprites, Settings, Drive.',
     'Road: draw road, segment length, curve, elevation, square turn, road width.',
     'Surfaces: selected ground tile, paint ground, selected-segment edge tile',
-    'Weather: clear, rain, storm, snow.'
+    'Weather: clear, rain, storm, snow.',
+    '- Race: generate random race, draw road',
+    '- Ground: selected ground tile.',
+    '- Elevation: paint elevation'
   ].forEach((text) => {
     assert.equal(uiSpecSource.includes(text), false, `UISpec should not include stale placeholder row "${text}"`);
   });
@@ -585,7 +603,7 @@ test('shared editor menu specs expose compact portrait bottom roots', () => {
     midi: ['file', 'grid', 'song', 'instruments', 'virtual-instruments', 'pedals', 'settings'],
     sfx: ['file', 'generate', 'timeline', 'layers', 'envelopes', 'tools', 'settings'],
     cutscene: ['file', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio', 'settings'],
-    race: ['file', 'race', 'ground', 'elevation', 'sprites', 'settings', 'drive'],
+    race: ['file', 'track', 'ground', 'sprites', 'settings'],
     car: ['file', 'art', 'drivetrain', 'tuning']
   };
 
@@ -651,16 +669,18 @@ test('menu specs include high-risk actions from the UI plan', () => {
   assert.ok(getEditorMenuSection('midi', 'song').actions.includes('tempo'));
   assert.ok(getEditorMenuSection('sfx', 'envelopes').actions.includes('pitch'));
   assert.equal(getEditorMenuSection('cutscene', 'export'), null);
-  assert.ok(getEditorMenuSection('race', 'race').actions.includes('generate-random-race'));
-  assert.deepEqual(getEditorMenuSection('race', 'race').actions.slice(6, 11), [
+  assert.equal(getEditorMenuSection('race', 'generate'), null);
+  assert.deepEqual(getEditorMenuSection('race', 'file').actions.slice(6, 12), [
+    'generate-random-race',
     'load-weathertech-raceway',
     'load-nurburgring-nordschleife',
     'load-col-de-turini',
     'load-ouninpohja',
     'load-daytona-tri-oval'
   ]);
-  assert.equal(getEditorMenuSection('race', 'race').actions.includes('test-drive'), false);
-  assert.deepEqual(getEditorMenuSection('race', 'drive').actions, ['test-drive']);
+  assert.equal(getEditorMenuSection('race', 'track').actions.includes('generate-random-race'), false);
+  assert.equal(getEditorMenuSection('race', 'track').actions.includes('test-drive'), false);
+  assert.equal(getEditorMenuSection('race', 'drive'), null);
   assert.deepEqual(getEditorMenuSection('race', 'file').actions.slice(0, DESKTOP_FILE_BASELINE_ACTION_IDS.length), DESKTOP_FILE_BASELINE_ACTION_IDS);
   assert.deepEqual(getEditorMenuSection('car', 'file').actions.slice(0, DESKTOP_FILE_BASELINE_ACTION_IDS.length), DESKTOP_FILE_BASELINE_ACTION_IDS);
 
@@ -677,9 +697,10 @@ test('menu specs include high-risk actions from the UI plan', () => {
     '- Stage: scene duration, fade in/out, snap/grid, snap size.',
     '- Audio: selected audio volume, fade, loop, and master volume.',
     '- Export/import actions live under File; there is no separate Export top-level drawer.',
-    '- Race: generate random race, draw road, add/move/remove nodes, remove edges, assign edge tile, and load built-in reference tracks. Circuit versus point-to-point behavior is inferred from whether the route endpoints connect; there must not be explicit Circuit/Destination menu toggles.',
-    '- Ground: selected ground tile, paint ground, asphalt, dirt, gravel, snow, and wet asphalt.',
-    '- Settings: road width, weather clear/rain/storm/snow, and finish behavior.'
+    '- File: standard document actions plus generate random race and load built-in reference tracks.',
+    '- Track: draw road, add/move/remove nodes, remove edges, assign edge tile, asphalt, dirt, gravel, snow, wet asphalt, segment width, bumpiness, and snow condition. Circuit versus point-to-point behavior is inferred from whether the route endpoints connect; there must not be explicit Circuit/Destination menu toggles.',
+    '- Ground: selected ground tile, paint ground, paint elevation, raise/lower, and brush size.',
+    '- Settings: road width, AI racer count, weather clear/rain/storm/snow, and finish behavior.'
   ].forEach((text) => {
     assert.equal(uiSpecSource.includes(text), true, `UISpec should include canonical row "${text}"`);
   });
@@ -796,19 +817,38 @@ test('Race shared authoring roots include tile-backed terrain commands without s
   assert.equal(getEditorMenuSection('race', 'surfaces'), null);
   assert.equal(getEditorMenuSection('race', 'scenery'), null);
   assert.equal(getEditorMenuSection('race', 'weather'), null);
-  assert.deepEqual(getEditorMenuSection('race', 'ground').actions, [
-    'ground-tile-next',
-    'paint-ground',
-    'surface-asphalt',
-    'surface-dirt',
-    'surface-gravel',
-    'surface-snow',
-    'surface-wet-asphalt'
+  assert.equal(getEditorMenuSection('race', 'race'), null);
+  assert.equal(getEditorMenuSection('race', 'generate'), null);
+  assert.equal(getEditorMenuSection('race', 'elevation'), null);
+  assert.deepEqual(getEditorMenuSection('race', 'file').actions.slice(6, 12), [
+    'generate-random-race',
+    'load-weathertech-raceway',
+    'load-nurburgring-nordschleife',
+    'load-col-de-turini',
+    'load-ouninpohja',
+    'load-daytona-tri-oval'
   ]);
-  assert.ok(getEditorMenuSection('race', 'race').actions.includes('edge-tile'));
-  assert.deepEqual(getEditorMenuSection('race', 'sprites').actions, ['add-sprite', 'move-sprite', 'delete-sprite', 'side-left', 'side-right']);
-  assert.deepEqual(getEditorMenuSection('race', 'settings').actions, ['road-width', 'weather-clear', 'weather-rain', 'weather-storm', 'weather-snow', 'finish-return']);
-  assert.equal(uiSpecSource.includes('- Ground: selected ground tile, paint ground, asphalt, dirt, gravel, snow, and wet asphalt.'), true);
+  assert.ok(getEditorMenuSection('race', 'track').actions.includes('edge-tile'));
+  assert.equal(getEditorMenuSection('race', 'track').actions.includes('paint-elevation'), false);
+  assert.deepEqual(getEditorMenuSection('race', 'ground').actions.slice(0, 4), [
+    'ground-tile-next',
+    'ground-tile-grass',
+    'ground-tile-dirt',
+    'ground-tile-gravel'
+  ]);
+  [
+    'elevation-up',
+    'elevation-up-large',
+    'elevation-down-large',
+    'elevation-brush-size',
+    'ground-brush-xxl',
+    'ground-brush-shape-round',
+    'ground-brush-falloff-airbrush',
+    'ground-brush-strength-50'
+  ].forEach((action) => assert.equal(getEditorMenuSection('race', 'ground').actions.includes(action), true, action));
+  assert.deepEqual(getEditorMenuSection('race', 'sprites').actions, ['sprite-select', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']);
+  assert.deepEqual(getEditorMenuSection('race', 'settings').actions, ['ai-count', 'add-sprite', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale']);
+  assert.equal(uiSpecSource.includes('- File: standard document actions plus generate random race and load built-in reference tracks.'), true);
   assert.equal(uiSpecSource.includes('Surfaces: selected ground tile, paint ground, selected-segment edge tile'), false);
 });
 
@@ -841,7 +881,7 @@ test('shared controller root helpers expose runtime menu ids and labels', () => 
   assert.deepEqual(getEditorControllerRootMenuIds('sfx'), ['file', 'edit', 'view', 'timeline', 'layers', 'envelopes', 'generate', 'tools', 'settings']);
   assert.deepEqual(getEditorControllerRootMenuIds('cutscene'), ['file', 'edit', 'view', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio', 'settings']);
   assert.deepEqual(getEditorControllerRootMenuIds('actor'), ['file', 'edit', 'view', 'settings', 'states', 'linked-parts', 'visuals', 'collision', 'behavior', 'preview']);
-  assert.deepEqual(getEditorControllerRootMenuIds('race'), ['file', 'edit', 'view', 'race', 'ground', 'elevation', 'sprites', 'settings', 'drive']);
+  assert.deepEqual(getEditorControllerRootMenuIds('race'), ['file', 'edit', 'view', 'track', 'ground', 'sprites', 'settings']);
   assert.deepEqual(getEditorControllerRootMenuIds('car'), ['file', 'edit', 'view', 'art', 'drivetrain', 'tuning', 'aero', 'suspension', 'drive']);
 
   const pixelLabels = getEditorRootMenuLabelMap('pixel');
@@ -863,7 +903,9 @@ test('shared controller root helpers expose runtime menu ids and labels', () => 
   assert.equal(midiLabels['virtual-instruments'], 'Record');
 
   const raceLabels = getEditorRootMenuLabelMap('race');
-  assert.equal(raceLabels.drive, 'Drive');
+  assert.equal(raceLabels.drive, undefined);
+  assert.equal(raceLabels.track, 'Track');
+  assert.equal(raceLabels.generate, undefined);
   assert.equal(raceLabels.ground, 'Ground');
 
   const carLabels = getEditorRootMenuLabelMap('car');
@@ -907,11 +949,11 @@ test('shared controller root entries carry render id and controller submenu id',
 
   const race = getEditorControllerRootMenuEntries('race');
   assert.deepEqual(
-    race.filter((entry) => entry.specId === 'race' || entry.specId === 'drive')
+    race.filter((entry) => entry.specId === 'track' || entry.specId === 'ground' || entry.specId === 'drive')
       .map((entry) => [entry.id, entry.specId, entry.controllerMenuId, entry.label]),
     [
-      ['race', 'race', 'race', 'Race'],
-      ['drive', 'drive', 'drive', 'Drive']
+      ['track', 'track', 'track', 'Track'],
+      ['ground', 'ground', 'ground', 'Ground']
     ]
   );
 

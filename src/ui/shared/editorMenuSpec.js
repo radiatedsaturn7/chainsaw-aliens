@@ -96,6 +96,11 @@ const actionEntries = (ids, labels = {}) => Object.fromEntries(ids.map((id) => [
     label: labels[id] || toTitleLabel(id)
   }
 ]));
+const EDITOR_ACTION_LABEL_OVERRIDES = {
+  'load-wrx': 'Load WRX',
+  'load-brz': 'Load BRZ',
+  'load-civic': 'Load Civic'
+};
 
 export const REQUIRED_DESKTOP_ROOT_PREFIX = ['file', 'edit', 'view'];
 export const DESKTOP_FILE_BASELINE_ACTION_IDS = ['new', 'save', 'save-as', 'open', 'export', 'import'];
@@ -182,7 +187,7 @@ export const EDITOR_MENU_SPECS = {
       { id: 'settings', panel: 'level-settings', label: 'Settings' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'load-wrx', 'load-brz', 'load-civic', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo', 'copy', 'cut', 'paste', 'delete']),
       view: section('view', 'View', ['zoom-in', 'zoom-out', 'zoom-reset']),
       tools: section('tools', 'Tools', ['toolbox', 'tile-mode', 'shape-mode', 'erase']),
@@ -307,26 +312,55 @@ export const EDITOR_MENU_SPECS = {
     editorId: 'race',
     title: 'Race Editor',
     workSurface: 'stage',
-    root: ['file', 'edit', 'view', 'race', 'ground', 'elevation', 'sprites', 'settings', 'drive'],
+    root: ['file', 'edit', 'view', 'track', 'ground', 'sprites', 'settings'],
     portraitRoot: [
       { id: 'file', label: 'File' },
-      { id: 'race', label: 'Race' },
+      { id: 'track', label: 'Track' },
       { id: 'ground', label: 'Ground' },
-      { id: 'elevation', label: 'Elevation' },
       { id: 'sprites', label: 'Sprites' },
-      { id: 'settings', label: 'Settings' },
-      { id: 'drive', label: 'Drive' }
+      { id: 'settings', label: 'Settings' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'generate-random-race', 'load-weathertech-raceway', 'load-nurburgring-nordschleife', 'load-col-de-turini', 'load-ouninpohja', 'load-daytona-tri-oval', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo', 'copy-segment', 'paste-segment', 'delete-segment']),
       view: section('view', 'View', ['preview-mode7', 'zoom-fit', 'toggle-scenery', 'toggle-racing-line']),
-      race: section('race', 'Race', ['generate-random-race', 'draw-road', 'move-node', 'remove-node', 'remove-edge', 'edge-tile', 'load-weathertech-raceway', 'load-nurburgring-nordschleife', 'load-col-de-turini', 'load-ouninpohja', 'load-daytona-tri-oval', 'insert-node', 'snap-node', 'segment-width', 'segment-bumpiness', 'snow-condition']),
-      ground: section('ground', 'Ground', ['ground-tile-next', 'paint-ground', 'surface-asphalt', 'surface-dirt', 'surface-gravel', 'surface-snow', 'surface-wet-asphalt']),
-      elevation: section('elevation', 'Elevation', ['paint-elevation', 'elevation-up', 'elevation-down', 'elevation-brush-size']),
-      sprites: section('sprites', 'Sprites', ['add-sprite', 'move-sprite', 'delete-sprite', 'side-left', 'side-right']),
-      settings: section('settings', 'Settings', ['road-width', 'weather-clear', 'weather-rain', 'weather-storm', 'weather-snow', 'finish-return']),
-      drive: section('drive', 'Drive', ['test-drive'])
+      track: section('track', 'Track', ['draw-road', 'move-node', 'remove-node', 'remove-edge', 'insert-node', 'snap-node', 'segment-width', 'segment-bumpiness', 'boundary-collidable', 'snow-condition', 'edge-tile', 'surface-asphalt', 'surface-dirt', 'surface-gravel', 'surface-snow', 'surface-wet-asphalt']),
+      ground: section('ground', 'Ground', [
+        'ground-tile-next',
+        'ground-tile-grass',
+        'ground-tile-dirt',
+        'ground-tile-gravel',
+        'ground-tile-snow',
+        'ground-tile-asphalt',
+        'ground-tile-wet-asphalt',
+        'elevation-up',
+        'elevation-down',
+        'elevation-up-tiny',
+        'elevation-up-small',
+        'elevation-up-medium',
+        'elevation-up-large',
+        'elevation-down-tiny',
+        'elevation-down-small',
+        'elevation-down-medium',
+        'elevation-down-large',
+        'elevation-brush-size',
+        'ground-brush-small',
+        'ground-brush-medium',
+        'ground-brush-large',
+        'ground-brush-xl',
+        'ground-brush-xxl',
+        'ground-brush-shape-square',
+        'ground-brush-shape-round',
+        'ground-brush-falloff-hard',
+        'ground-brush-falloff-soft',
+        'ground-brush-falloff-airbrush',
+        'ground-brush-strength-25',
+        'ground-brush-strength-50',
+        'ground-brush-strength-75',
+        'ground-brush-strength-100'
+      ]),
+      sprites: section('sprites', 'Sprites', ['sprite-select', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']),
+      settings: section('settings', 'Settings', ['ai-count', 'add-sprite', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale'])
     }
   },
   car: {
@@ -341,12 +375,12 @@ export const EDITOR_MENU_SPECS = {
       { id: 'tuning', label: 'Tune' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
-      edit: section('edit', 'Edit', ['undo', 'redo', 'copy-layer', 'paste-layer', 'delete-layer']),
-      view: section('view', 'View', ['preview-turns', 'toggle-tires', 'toggle-spoilers', 'zoom-fit']),
-      art: section('art', 'Art', ['edit-shell', 'edit-tires', 'edit-spoiler', 'turn-left', 'turn-center', 'turn-right']),
-      drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-rwd', 'drivetrain-fwd', 'drivetrain-awd', 'engine-sound-next', 'power', 'weight']),
-      tuning: section('tuning', 'Tuning', ['tire-grip', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'load-wrx', 'load-brz', 'load-civic', 'exit-main']),
+      edit: section('edit', 'Edit', ['undo', 'redo']),
+      view: section('view', 'View', ['zoom-fit']),
+      art: section('art', 'Art', ['shell-frames', 'shell-frame-prev', 'shell-frame-next', 'reverse-frame', 'tire-treads', 'add-ons']),
+      drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sound-next', 'power-curve', 'weight-balance']),
+      tuning: section('tuning', 'Tuning', ['default-tires', 'tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel']),
       aero: section('aero', 'Aero', ['aero-front', 'aero-rear']),
       suspension: section('suspension', 'Suspension', ['spring-front', 'spring-rear', 'damping-front', 'damping-rear', 'antiroll-front', 'antiroll-rear']),
       drive: section('drive', 'Drive', ['test-drive'])
@@ -467,6 +501,9 @@ export const EDITOR_DESKTOP_CONTROLLER_MENU_MAP = {
 Object.values(EDITOR_MENU_SPECS).forEach((spec) => {
   const actionIds = Array.from(new Set(Object.values(spec.sections).flatMap((entry) => entry.actions)));
   spec.actions = actionEntries(actionIds, Object.fromEntries(Object.values(spec.sections).map((entry) => [entry.id, entry.label])));
+  Object.entries(EDITOR_ACTION_LABEL_OVERRIDES).forEach(([id, label]) => {
+    if (spec.actions?.[id]) spec.actions[id].label = label;
+  });
   spec.placements = structuredClone(EDITOR_MENU_PLACEMENTS);
   spec.modeContracts = structuredClone(EDITOR_MENU_MODE_CONTRACTS);
   spec.aliases = { ...(EDITOR_MENU_ALIASES[spec.editorId] || {}) };

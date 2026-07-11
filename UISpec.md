@@ -160,26 +160,26 @@ Shared implementation helpers:
 
 ### Race Editor
 
-- Root: File, Edit, View, Race, Ground, Elevation, Sprites, Settings, Drive.
-- Portrait bottom menu: File, Race, Ground, Elevation, Sprites, Settings, Drive.
+- Root: File, Edit, View, Track, Ground, Sprites, Settings.
+- Portrait bottom menu: File, Track, Ground, Sprites, Settings.
 - Edit: undo, redo, copy segment, paste segment, delete segment.
-- Race: generate random race, draw road, add/move/remove nodes, remove edges, assign edge tile, and load built-in reference tracks. Circuit versus point-to-point behavior is inferred from whether the route endpoints connect; there must not be explicit Circuit/Destination menu toggles.
-- Ground: selected ground tile, paint ground, asphalt, dirt, gravel, snow, and wet asphalt.
-- Elevation: paint elevation, raise/lower, brush size.
-- Sprites: add, move, delete, left/right side placement.
-- Settings: road width, weather clear/rain/storm/snow, and finish behavior.
-- Drive: Playtest opens a car picker, then launches the race in the handheld race playtest surface.
+- File: standard document actions plus generate random race and load built-in reference tracks.
+- Track: draw road, add/move/remove nodes, remove edges, assign edge tile, asphalt, dirt, gravel, snow, wet asphalt, segment width, bumpiness, and snow condition. Circuit versus point-to-point behavior is inferred from whether the route endpoints connect; there must not be explicit Circuit/Destination menu toggles.
+- Ground: selected ground tile, paint ground, paint elevation, raise/lower, and brush size.
+- Sprites: add, move, delete, size, and behavior for vertical scenery sprites.
+- Settings: road width, AI racer count, weather clear/rain/storm/snow, and finish behavior.
+- Top Play/Pause: Playtest opens a car picker, then launches the race in the handheld race playtest surface. Runtime diagnostics and AI checks stay in code/tests rather than visible editor menu buttons.
 - Desktop left panel should show selected race, inferred route shape, segment count, weather, and active tool while top drawers own commands.
 
 ### Car Editor
 
 - Root: File, Edit, View, Art, Drivetrain, Tuning, Aero, Suspension, Drive.
-- Edit: undo, redo, copy layer, paste layer, delete layer.
-- Art: shell, tires, spoiler, turn-left, turn-center, turn-right frames.
-- Drivetrain: RWD, FWD, AWD, power, weight.
-- Tuning: tire grip, brake balance, final drive, differential accel/decel.
-- Aero: front and rear aero tuning.
-- Suspension: front/rear springs, damping, and anti-roll.
+- Edit: undo, redo.
+- Art: shell frame assignment, previous/next shell frame, reverse frame, tire treads, add-ons.
+- Drivetrain: nested drivetrain menu, engine sound, power curve, weight/balance.
+- Tuning: default tires, tire pressure, tire size, brake balance, final drive, differential accel/decel.
+- Aero: front and rear aero tuning through slider-style controls.
+- Suspension: front/rear springs, damping, and anti-roll through slider-style controls.
 - Drive: Playtest opens a car picker and starts the same handheld race playtest surface.
 - Desktop left panel should show selected car, drivetrain, power, weight, and active tool while top drawers own commands.
 

@@ -446,6 +446,8 @@ export default class Game {
     this.pixelPreviewTarget = null;
     this.playtestActive = false;
     this.playtestButtonBounds = null;
+    this.playtestFps = 0;
+    this.lastPlaytestFpsMs = 0;
     this.companionDebugButtonBounds = null;
     this.showCompanionPathDebug = false;
     this.playtestPauseLock = 0;
@@ -5903,9 +5905,23 @@ export default class Game {
     root.appendChild(this._saveStatusModalEl);
     this._saveStatusModalEl.textContent = String(message);
     this._saveStatusModalEl.style.display = 'block';
+    if (this._saveStatusModalTimer) {
+      clearTimeout(this._saveStatusModalTimer);
+      this._saveStatusModalTimer = null;
+    }
+    if (/^Saved\b/i.test(String(message))) {
+      this._saveStatusModalTimer = setTimeout(() => {
+        this.hideSaveStatusModal();
+        this._saveStatusModalTimer = null;
+      }, 1400);
+    }
   }
 
   hideSaveStatusModal() {
+    if (this._saveStatusModalTimer) {
+      clearTimeout(this._saveStatusModalTimer);
+      this._saveStatusModalTimer = null;
+    }
     if (this._saveStatusModalEl) this._saveStatusModalEl.style.display = 'none';
   }
 
@@ -8345,6 +8361,13 @@ export default class Game {
         label: 'Stop',
         fontSize: 16
       });
+      ctx.save();
+      ctx.fillStyle = 'rgba(217,230,210,0.86)';
+      ctx.font = '700 12px system-ui, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(this.getPlaytestFpsLabel(), buttonX + buttonWidth + 10, buttonY + buttonHeight / 2);
+      ctx.restore();
     } else {
       this.playtestButtonBounds = null;
     }
@@ -10514,8 +10537,35 @@ export default class Game {
   }
 
   update(dt) {
+    this.updatePlaytestFps(dt);
     this.stateManager.update(dt);
     this.updateProjectBrowserMusicPreview(dt);
+  }
+
+  updatePlaytestFps(dt) {
+    if (!this.playtestActive) {
+      this.playtestFps = 0;
+      this.lastPlaytestFpsMs = 0;
+      return;
+    }
+    const nowMs = typeof performance !== 'undefined' && typeof performance.now === 'function'
+      ? performance.now()
+      : 0;
+    const wallSeconds = this.lastPlaytestFpsMs > 0 && nowMs > this.lastPlaytestFpsMs
+      ? (nowMs - this.lastPlaytestFpsMs) / 1000
+      : 0;
+    if (nowMs > 0) this.lastPlaytestFpsMs = nowMs;
+    const seconds = wallSeconds > 0 ? wallSeconds : Number(dt) || 0;
+    if (seconds <= 0) return;
+    const instant = clamp(1 / seconds, 1, 240);
+    this.playtestFps = this.playtestFps > 0
+      ? this.playtestFps * 0.88 + instant * 0.12
+      : instant;
+  }
+
+  getPlaytestFpsLabel() {
+    const fps = Math.max(1, Math.round(Number(this.playtestFps || 0)));
+    return `${fps} FPS`;
   }
 
   draw() {

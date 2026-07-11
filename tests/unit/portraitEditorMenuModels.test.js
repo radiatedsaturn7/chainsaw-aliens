@@ -236,7 +236,7 @@ test('Race and Car portrait menu models use the shared bottom rail contract', ()
   const raceModel = buildRacePortraitMenuModel();
   const carModel = buildCarPortraitMenuModel();
 
-  assert.deepEqual(raceModel.rootTabs.map((tab) => tab.id), ['file', 'race', 'ground', 'elevation', 'sprites', 'settings', 'drive']);
+  assert.deepEqual(raceModel.rootTabs.map((tab) => tab.id), ['file', 'track', 'ground', 'sprites', 'settings']);
   assert.deepEqual(carModel.rootTabs.map((tab) => tab.id), ['file', 'art', 'drivetrain', 'tuning']);
   assert.deepEqual(raceModel.bottomRailActions, ['menu', 'undo', 'redo', 'race-context']);
   assert.deepEqual(carModel.bottomRailActions, ['menu', 'undo', 'redo', 'test-drive']);

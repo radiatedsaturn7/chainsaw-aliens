@@ -105,6 +105,16 @@ test('level editor playtest starts with debug overlays off', () => {
   assert.equal(exitEditorBody.includes('this.showCompanionPathDebug = false;'), true);
 });
 
+test('level editor playtest top stop button shows FPS beside it', () => {
+  const updateBody = methodBody('update', 'draw');
+  const drawBody = methodBody('_drawByState', 'drawVictory');
+
+  assert.equal(gameCoreSource.includes('this.playtestFps = 0;'), true);
+  assert.equal(updateBody.includes('this.updatePlaytestFps(dt);'), true);
+  assert.equal(gameCoreSource.includes('getPlaytestFpsLabel()'), true);
+  assert.equal(drawBody.includes('ctx.fillText(this.getPlaytestFpsLabel(), buttonX + buttonWidth + 10, buttonY + buttonHeight / 2);'), true);
+});
+
 test('midi explicit main-menu exit forces title instead of previous editor state', () => {
   const exitToMainBody = methodBody('exitEditorToMainMenu', 'showInlineConfirm');
   const midiBranch = exitToMainBody.slice(

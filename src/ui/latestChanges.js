@@ -1,5 +1,6 @@
 export const LATEST_MAJOR_WORK = {
   inProgress: [
+    'Build race simulator validation tools: skidpad, acceleration/braking, quarter-mile, slalom, jump analysis, ghost comparison, and AI consistency laps so physics changes can be tested instead of judged only by feel.',
     'Finish shared desktop editor chrome across all editors: horizontal top menus, click-away dropdown drawers, and persistent left-side tool/context panels.',
     'Rework desktop editor menu information architecture: keep dropdowns usable while selecting commands, move common edit commands into one Edit area, and make left panels contextual instead of duplicating top drawers.',
     'Audit every editor menu so File, Edit, View, Tools, and editor-specific drawers contain real commands instead of duplicate navigation rows.',
@@ -8,6 +9,203 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   recentMajorChanges: [
+    '2026-07-11 08:38 EDT - Race WebGL Track now uses magenta as the default uncovered-background sentinel again, widens the Studio Sprint world terrain bake, raises the visible terrain budget, and adds route-sampled tests proving camera-visible terrain chunks are baked and not budget-dropped.',
+    '2026-07-11 07:42 EDT - Superseded diagnostic-only attempt: baked terrain visibility started scanning every visible cell before applying the budget, but the magenta behavior was corrected at 08:38 to stay default-on.',
+    '2026-07-11 01:06 EDT - Race magenta diagnostics now drive Studio Sprint forward and backward through dense route samples, checking the full rendered canvas for any visible magenta pixel and attaching only failing diagnostic frames.',
+    '2026-07-11 00:56 EDT - Race WebGL Track now keeps baked terrain cell objects stable across frames so cached world vertices and UVs persist, the prewarm bake uses the same terrain sizing as the renderer, Studio Sprint has a shoulder-to-shoulder weave no-damage regression, and the terrain+texture FPS benchmark is back above 45 FPS.',
+    '2026-07-11 00:46 EDT - Car Editor now opens on a real car work surface instead of the race road preview, saves schema-v2 car art with 8-way shell frames, reverse frames, tire tread slots, add-ons, tire size, default tire compounds, and physics-backed engine torque curves.',
+    '2026-07-11 00:20 EDT - Race magenta diagnostics now use a real Playwright frame/pixel test: Studio Sprint frames render with the skybox visible, transparent WebGL/Three world compositing, and a magenta underlay that fails only when terrain or road holes are actually visible.',
+    '2026-07-11 00:02 EDT - Superseded diagnostic step: Race playtest stopped painting the whole viewport magenta, but the empty-clear approach was replaced by the 00:20 frame/pixel coverage test.',
+    '2026-07-10 23:51 EDT - Race playtest now uses magenta as the uncovered viewport sentinel, with Studio Sprint render coverage tests proving center, road-edge, and shoulder-edge driving frames cover it; shoulder-edge 30 MPH no-damage finish regressions now cover both sides.',
+    '2026-07-10 23:30 EDT - Race roadside terrain now keeps a 0.5m road-height terrain join before easing back to the painted heightmap over roughly 4m, and Studio Sprint now has left-edge and right-edge 30 MPH no-damage finish regressions with only one wheel pair on the road.',
+    '2026-07-10 23:08 EDT - Studio Sprint is now normalized as a hazardless road-validation race, hidden shoulders can still define collision while staying visually hidden, and regressions now verify centerline completion at 40 MPH, precise route projection, static baked terrain meshes, and the 45 FPS terrain+texture benchmark.',
+    '2026-07-10 22:22 EDT - Race terrain seam blending now stays narrow when margin/shoulder are off or hidden so terrain joins flush to the road or visible margin instead of reading as a second terrain strip; Studio Sprint now has a centerline 30 MPH no-damage finish regression.',
+    '2026-07-10 22:07 EDT - Race terrain seams now join to the outermost visible road layer: road when margin/shoulder are off or hidden, margin when only margin is visible, and shoulder when shoulder is visible; saving margin settings also invalidates cached road/terrain geometry.',
+    '2026-07-10 21:48 EDT - Race WebGL Track now cuts terrain only under the hard road/margin/shoulder corridor, keeps the road-to-terrain transition on terrain material without green shoulder tint, and speeds the textured terrain mesh builder with typed-array batching so Studio Sprint still clears the 45 FPS terrain+texture benchmark.',
+    '2026-07-10 21:25 EDT - Race margin/shoulder rendering now keeps drivable surface layers at the same geometry height, uses render order instead of vertical lifts for road/margin/shoulder visibility, and makes the road-to-terrain transition sample the actual terrain tile material instead of asphalt shoulder green.',
+    '2026-07-10 20:59 EDT - Race WebGL Track playtest now precomputes a reusable world terrain bake before driving, carries margin and transition seam vertices through stable road sections, renders road/margin/shoulder/terrain-transition strips as contiguous shared-vertex bands, and keeps Studio Sprint covered by seam-gap plus 45 FPS regression tests.',
+    '2026-07-10 20:40 EDT - Race WebGL Track road/terrain rendering now uses one composited track-corridor surface sampler: road, margin, shoulder, and transition strips share baked roadbed vertices, terrain cutouts are center-based so nearby terrain is not over-deleted, and Studio Sprint regressions verify seam sharing plus the 45 FPS terrain+texture benchmark.',
+    '2026-07-10 20:00 EDT - Race WebGL Track now separates heightmap terrain from the baked road surface: generic terrain chunks stay raw, road/shoulder/transition geometry comes from a cached surface bake, and Studio Sprint regression coverage verifies the seam plus 45 FPS terrain+texture benchmark.',
+    '2026-07-10 19:28 EDT - Race WebGL Track road/terrain ownership now cuts square terrain out of the road, shoulder, and roadside blend corridor, fills the seam with road-owned terrain strips that share exact shoulder vertices with the stable road bands, and uses cached corridor distance so the Studio Sprint terrain+texture benchmark still clears 45 FPS.',
+    '2026-07-10 19:00 EDT - Race WebGL Track now builds road, shoulder, margin, marker, and paint geometry from stable route-distance sections instead of camera-adaptive projection bands, and each cross-section resolves one authoritative deck height above terrain before rendering.',
+    '2026-07-10 18:09 EDT - Race WebGL Track terrain selection now gives visible off-road/default ground a fair priority against distant road-corridor chunks and raises the coarse terrain budget again, so far terrain should fill in instead of disappearing around the horizon.',
+    '2026-07-10 15:18 EDT - Race WebGL Track terrain now renders default ground chunks even when painted terrain exists elsewhere, extends coarse terrain coverage farther toward the horizon, and raises the terrain-cell budget so nearby stitched road terrain no longer starves distant visible terrain.',
+    '2026-07-10 15:01 EDT - Race terrain stitching now keeps road-corridor terrain quads instead of deleting them, stamps nearby terrain to the smoothed roadbed so voids do not appear under the road, and adds a chase-camera scale regression that verifies the procedural car still fits on a one-lane road.',
+    '2026-07-10 14:49 EDT - Race rendering now uses a cached smoothed roadbed profile built from route plus terrain support, cuts terrain microquads out of the road/margin/shoulder corridor so coarse terrain cannot wash over the road, and adds Studio Sprint regressions for smooth roadbed support, corridor cutouts, and the 45 FPS terrain+texture benchmark.',
+    '2026-07-10 13:58 EDT - Race road elevation now builds a smoothed deck from center, left-edge, and right-edge terrain support before stitching the corridor, road/profile caches use quarter-meter precision to reduce height stepping, playtest/preview startup now initializes at the road deck height, and third-person fallback car rendering uses road contact elevation instead of chassis height so the car sits on the road.',
+    '2026-07-10 13:23 EDT - Race road placement now uses a corridor-first roadbed model: road height follows a smoothed centerline profile instead of max side terrain, terrain inside the road/margin/shoulder corridor is stamped to the roadbed, and route projection precision was tightened so road edges and terrain stitching line up through curves.',
+    '2026-07-10 11:52 EDT - Race road/terrain elevation now uses a smoothed shared height model: raw tile heights remain available for diagnostics, road decks sample a smoothed terrain profile, grade physics uses the same road profile, and per-wheel contact feeds suspension travel, pitch, roll, and bottom-out damage.',
+    '2026-07-10 11:10 EDT - Race terrain elevation authoring now supports a wider +/-1.0 range, road decks sample the terrain footprint and stay painted above high terrain, and regression coverage now checks a deterministic random terrain route for road/terrain intersections.',
+    '2026-07-10 10:25 EDT - Race WebGL Track Studio Sprint FPS coverage now benchmarks Terrain On and Textures On with deterministic seeded ground art, and the textured terrain diagnostic path uses a lower slice budget so the benchmark must stay above 45 FPS.',
+    '2026-07-10 03:37 EDT - Added a Studio Sprint WebGL Track FPS unit test that times repeated terrain-off frames and fails below 30 FPS; the no-terrain/no-texture Track diagnostic path now caps to 36 third-person / 44 first-person Mode 7 slices after the new test initially caught the renderer at 18.2 FPS.',
+    '2026-07-10 03:18 EDT - Race WebGL Track debug-simple rendering now skips terrain setup when Terrain is Off, skips surface art lookup when Textures is Off, gates Three-only paint mesh work behind the terrain-enabled Three path, and batches native opaque track meshes into one upload pass so Terrain Off / Textures Off isolates the real remaining road renderer cost.',
+    '2026-07-10 01:58 EDT - Race WebGL Track now uses the native WebGL terrain path by default when Terrain is On, with Three.js moved behind an explicit debug toggle; native road/shoulder/margin meshes now resample stitched terrain before projection so the road follows elevation instead of cutting through terrain.',
+    '2026-07-10 01:40 EDT - Race Three.js batching now groups by texture/lift instead of color so per-vertex sun/terrain colors do not explode Studio Sprint into dozens of draw calls; default Terrain On budget was lowered again to prioritize nearby road-corridor terrain.',
+    '2026-07-10 01:26 EDT - Race Three.js terrain now uses a stronger vertical elevation scale, road/shoulder/paint vertices resample stitched terrain before their small visual lift, Three materials are reused, and native WebGL fallback setup is skipped on successful Three frames.',
+    '2026-07-09 23:35 EDT - Race WebGL Track now keeps Three.js road, shoulder, margin, furniture, and paint layers ordered above terrain, extends Studio Sprint/circuit lookahead past one lap, caps Three pixel ratio, and lowers the normal terrain-cell budget so Terrain On is less likely to spend thousands of polygons on non-road ground.',
+    '2026-07-09 22:58 EDT - Race WebGL Track restored the fast Terrain Off path, narrowed Three.js race FOV, and raised margin/boundary layers above the road so terrain-enabled rendering keeps aprons and margins visible.',
+    '2026-07-09 22:36 EDT - Race WebGL Track now renders terrain, shoulders, road, margins, lane paint, checkers, and quarter-mile posts in one Three.js world scene so the road sits directly on top of the heightmap terrain instead of floating above a separately projected ground layer.',
+    '2026-07-09 22:08 EDT - Race WebGL Track terrain now uses a locally vendored Three.js world renderer for heightmap geometry, keeping project-art ground on stable Three BufferGeometry while the native terrain shader remains fallback only.',
+    '2026-07-09 21:31 EDT - Superseded native attempt: Race WebGL Track briefly used a custom world-space terrain shader, but that path was replaced by the Three.js renderer after close textures and geometry remained unstable.',
+    '2026-07-09 21:23 EDT - Race WebGL Track keeps project-art terrain on the 3D heightmap mesh path while stabilizing close textured ground: mesh shaders now use high precision UV interpolation and textured meshes use tile-aligned local UV origins so tiny texture scales do not feed huge absolute UVs into the shader.',
+    '2026-07-09 21:08 EDT - Race WebGL Track terrain textures are back on the real 3D heightmap mesh path; the screen-space stable texture layer is no longer used to replace textured terrain geometry.',
+    '2026-07-09 20:57 EDT - Superseded experiment: Race WebGL Track briefly used a screen-space project-art ground layer, but that approach was backed out because it replaced the real 3D heightmap terrain mesh.',
+    '2026-07-09 20:04 EDT - Race WebGL textured terrain LOD is now camera-stable around Studio Sprint turns, and slow-camera regression coverage verifies a baked subquad keeps identical vertices and UVs while moving through the node-4 bend.',
+    '2026-07-09 19:10 EDT - Race WebGL near-plane clipping now uses one explicit world-space intersection helper, and Studio Sprint bend tests verify terrain UVs stay bounded through raw, normal, and screen-clipped optimization paths without mutating source vertices.',
+    '2026-07-09 18:51 EDT - Race WebGL terrain screen-edge clipping now preserves perspective-correct world coordinates and UVs, with regression tests proving textured terrain UVs stay fixed across camera movement and clipped polygons no longer rescale near the camera.',
+    '2026-07-09 18:38 EDT - Race Tire FX now has a separate grey Gravel Smoke slot for gravel and wet gravel, and Race WebGL terrain has regression coverage that verifies camera projection never mutates baked terrain vertices or breaks world-anchored UVs.',
+    '2026-07-09 17:55 EDT - Race tire FX now treats asphalt smoke as burnout/lockup-only, uses sparse asphalt skid marks for hard cornering, kicks up dirt/gravel dust from normal loose-surface speed, preloads Tire FX art, and prewarms terrain along the route corridor to reduce mid-race hitches.',
+    '2026-07-09 17:42 EDT - Race WebGL textured meshes now keep UVs anchored to clipped world polygons instead of centroid-generated triangles, tire temperature now affects per-wheel grip aggressively, and Settings includes Tire FX art overrides for skid smoke, dust, snow dust, grass dust, and wet spray.',
+    '2026-07-09 17:17 EDT - Race playtest startup no longer has a launch projection hold or stabilization blend; the third-person camera now renders behind the live car pose immediately so nothing should strafe or reframe during the first seconds of Studio Sprint.',
+    '2026-07-09 17:00 EDT - Race reset-to-center now fades fully to black, holds black for 250ms, recenters only while hidden, and preserves vehicle speed so the car keeps moving instead of stopping dead.',
+    '2026-07-09 16:54 EDT - Race launch rendering now keeps the camera behind the turning car during startup while still anchoring launch position to the route centerline, so the simulated joystick no longer causes lateral camera drift or a pinned non-following camera.',
+    '2026-07-09 16:42 EDT - Race launch rendering now keeps the startup camera on the route centerline even when simulated joystick steering offsets the live car, fixing the remaining first-seconds left/right strafe caused by zero-coordinate fallback during launch.',
+    '2026-07-09 16:35 EDT - Race playtest launch projection now keeps the simulated D-pad camera view centered through the startup blend, so steering can still work while the camera no longer strafes left/right during the first seconds of a race.',
+    '2026-07-09 16:15 EDT - Race playtest now blocks held left-thumbstick steering while the car is staged behind the starting line, preventing the camera/road view from strafing at race startup; reset-to-center collision effects now fade fully out before moving the car back to the route center.',
+    '2026-07-09 16:05 EDT - Race look-around is now physical-gamepad-only: simulated/mobile controls cannot drive camera look, right thumbstick controls look only when a real gamepad is connected, and third-person car rendering still hides while looking away.',
+    '2026-07-09 15:54 EDT - Race margin settings now separate margin and shoulder display states (On, Hidden, Off), collision edge selection (road, margin, shoulder), and collision effect (collide or reset-to-center fade) instead of using the temporary hidden-shoulder collision mode.',
+    '2026-07-09 15:40 EDT - Race playtest now blends launch projection over the first 18 meters instead of snapping from a 120ms hold, treats under-near-plane geometry as invisible unless explicitly clipped, and adds a margin collision mode that keeps shoulders visible while ignoring shoulder width for solid edge contact.',
+    '2026-07-09 15:15 EDT - Race playtest now holds the launch camera projection through the first start-line transition frame and near-clips WebGL terrain/road meshes through one shared camera-space path so close textures and geometry stay stable instead of scaling or popping.',
+    '2026-07-09 14:56 EDT - Race procedural car steering visuals now turn the front tires with the same sign convention as the physics, and race scenery plus solid edge collisions now use body and wheel footprint probes instead of center-only contact checks.',
+    '2026-07-09 14:49 EDT - Race third-person road sampling now includes a rear span matching the chase camera distance, so moving the camera back no longer leaves the near-camera road unrendered.',
+    '2026-07-09 14:39 EDT - Race third-person chase camera now sits farther behind the car using a car-dimension-based distance, so the flat procedural car footprint and tires fit in view instead of clipping off the bottom of the screen.',
+    '2026-07-09 14:28 EDT - Race WebGL Track Raw terrain now rejects near-plane-straddling quads that caused close-range texture scaling, and procedural fallback race cars now render as flat road-plane footprints with tires placed from wheelbase/track data.',
+    '2026-07-09 14:14 EDT - Race WebGL Track mesh textures now use perspective-correct UV packing in the shared mesh shader, so close-range painted terrain should stay anchored instead of scaling or swimming as it approaches the camera.',
+    '2026-07-09 13:55 EDT - Race Texture Scale now has a Raw terrain polygon debug switch that disables terrain vertex clipping/rebuilding for WebGL Track terrain only, so triangle pop-in can be isolated while road, marker, and normal terrain rendering keep the standard optimized path.',
+    '2026-07-09 13:27 EDT - Race WebGL Track mile markers now render as short tapered roadside ticks with road-furniture depth priority, so distant markers no longer tower over the track or disappear behind the road.',
+    '2026-07-09 13:12 EDT - Race WebGL Track quarter-mile posts now use small cone-sized elevation units and normal mesh depth so they no longer render as giant towers or hide behind the road.',
+    '2026-07-09 12:59 EDT - Race WebGL Track now renders quarter-mile markers as real upright WebGL roadside posts and start/finish checkers as world-space road meshes, while removing texture-specific terrain LOD boosts that caused close painted ground to zoom around bends.',
+    '2026-07-09 12:44 EDT - Race WebGL Track backed out the overbroad high-detail terrain LOD rule that made close textures zoom worse, and quarter-mile side markers now render as upright post-style overlay ticks after the WebGL track instead of flat apron paint.',
+    '2026-07-09 12:20 EDT - Race WebGL Track now keeps textured road-corridor terrain at stable high-detail LOD through bends and draws lane dashes, quarter-mile margin markers, and checker stripes as a final depth-overlay pass so they remain visible above road/apron geometry.',
+    '2026-07-09 11:59 EDT - Race WebGL Track now renders road surface textures, lane dashes, margin markers, and start/finish checker stripes through the same depth-tested mesh pass as the road so markers stay narrow and stripes stay on the road instead of drifting under textured aprons.',
+    '2026-07-09 11:47 EDT - Race playtest now resets and holds WebGL Track dynamic render scale during launch/pre-start, prewarms terrain from the actual behind-start visual camera distance, and keeps texture preview camera view aligned with the selected playtest view to prevent start zoom/shift snaps.',
+    '2026-07-09 11:28 EDT - Race playtest now preserves the negative pre-start visual projection on Studio Sprint and other circuit races until the car actually reaches the start line, preventing the first-frame camera/projection snap.',
+    '2026-07-09 11:13 EDT - Race playtest launch now holds the initial camera yaw during the launch lock, and start/finish checker stripes plus distance markers prefer the road renderer projection slices so overlays stay aligned with the road at distance.',
+    '2026-07-09 10:51 EDT - Race third-person camera now rides higher while the rendered chase car stays anchored to a compensated road-contact point, so the scene gets more vertical visibility without making the car float off the road.',
+    '2026-07-09 09:15 EDT - Car Editor now shows a layered geometric car preview that swaps in authored shell, tire, spoiler, and turn-frame art as each slot is assigned, and its menu rows now expose only real editable car fields instead of planned/no-op layer buttons.',
+    '2026-07-09 00:32 EDT - Race playtest now keeps third-person road rendering anchored to stable car travel instead of chase-camera route projection, projects quarter-mile/edge markers onto the apron/margin, fixes reverse yaw to use signed physical speed, and adds direct WRX/BRZ/Civic load actions to Car Editor File.',
+    '2026-07-08 23:34 EDT - Race playtest now samples destination road mesh before the start line, keeps checker stripes fixed to true endpoints, prewarms WebGL/art/terrain resources at drive start, and disables the live chase-camera terrain safety clamp to stop mesh-avoidance jumps.',
+    '2026-07-08 23:15 EDT - Race WebGL Track now binds selected margin/boundary textures per mesh group, keeps long-distance markers projected between road edges, and adds regression coverage that Car Editor artwork replaces procedural race car sprites.',
+    '2026-07-08 22:20 EDT - Race playtest now projects lane markers and start/finish checker cells from world-space road sections to reduce long-distance drift, draws WebGL margin strips after the road so close-camera boundaries remain visible, preloads selected/AI car art, and lets Car Editor shell/turn-frame art replace procedural race cars.',
+    '2026-07-08 21:35 EDT - Race playtest now clamps the camera above the highest nearby raw/stitched terrain footprint, carries depth through interpolated mile marker slices, near-clips checker stripes, extends point-to-point start/finish stripes farther, and preloads selected race art refs before driving to reduce first-frame asset hitching.',
+    '2026-07-08 21:18 EDT - Race Texture Scale now defaults Detail to Off, Car Editor mode can save/open stock cars as first-class car project files in the Project Browser, and automatic brake-to-reverse gets a regression check so backing up from rest moves opposite the car heading.',
+    '2026-07-08 21:07 EDT - Race Texture Scale now includes WebGL Track optimization switches for terrain culling, terrain LOD, terrain budget limiting, and distant road thinning so rendering artifacts can be isolated from the settings preview and saved race debug settings.',
+    '2026-07-08 20:44 EDT - Race WebGL Track terrain rendering now stops hard-clipping terrain mesh against the lowered horizon floor, keeps accepted terrain chunks from losing individual subquads, falls back to low-detail chunks at the mesh budget boundary, and splits projection-skip diagnostics into near/offscreen/floor/degenerate counters.',
+    '2026-07-08 18:58 EDT - Race WebGL Track terrain culling now uses full chunk/subquad camera bounds instead of center-point tests, adds painted-terrain top-down coverage helpers/tests, and reports terrain coverage misses separately so optimization-related triangle pop-in is easier to diagnose.',
+    '2026-07-08 15:20 EDT - Race WebGL Track now forces uniform high-detail LOD for the visible road corridor and side terrain near Studio Sprint, adds terrain projection-skip diagnostics to the playtest polygon counter, and tests that left/right road-adjacent chunks no longer mix incompatible subdivision levels.',
+    '2026-07-08 14:43 EDT - Race WebGL Track now samples all tile-map cells covered by a terrain chunk instead of only the center, prioritizes road-corridor terrain before background chunks, keeps road-adjacent terrain LOD compatible, and reports terrain budget/pre-cull drops under the playtest polygon counter to diagnose Studio Sprint triangle popping.',
+    '2026-07-08 14:29 EDT - Race WebGL Track now avoids a separate projected-screen terrain cull before mesh generation, reports skipped degenerate triangles, removes the visible sun disc while keeping sun-based terrain shading, and reorganizes the Race Editor portrait ground row into Mode, Paint, Intensity, and Brush controls.',
+    '2026-07-08 14:11 EDT - Race WebGL Track now renders destination races with a short visual road extension before the start and beyond the finish, and clipped WebGL terrain polygons use stable deduped centroid triangulation so near-plane/horizon triangles are less likely to flicker or disappear.',
+    '2026-07-08 13:53 EDT - Race Texture Scale now defaults to 32px = 1m and 3200% resolution, allows 6400% resolution, removes the stale Camera Angle slider, and clamps extreme WebGL Track render targets to GPU limits while preserving aspect ratio so road overlays stay aligned.',
+    '2026-07-08 13:46 EDT - Race Texture Scale resolution now reaches 3200%, WebGL Track can allocate up to a 16384x9216 offscreen buffer, and terrain-map culling now keeps a wider screen margin with a larger terrain-cell budget to reduce missing terrain triangles.',
+    '2026-07-08 13:37 EDT - Race Texture Scale resolution now reaches 1600%, WebGL Track can allocate a larger offscreen buffer, and terrain-map rendering searches farther/wider with a larger mesh budget so visible painted terrain polygons are less likely to drop out.',
+    '2026-07-08 13:32 EDT - Race Texture Scale resolution now goes up to 800%, and WebGL Track raises its offscreen render buffer cap so settings above 400% can visibly affect the preview/playtest instead of flattening at the old limit.',
+    '2026-07-08 13:29 EDT - Race Texture Scale now allows Near Quality up to 32x, WebGL Track resolution above 100% actually increases the offscreen render scale, and custom skybox art scrolls by yaw turns instead of raw radians so it no longer races or appears reversed.',
+    '2026-07-08 13:17 EDT - Race Texture Scale now separates Texture Scale from Near Quality: Near Quality no longer changes terrain UV/world scale, WebGL Track adds Crisp/Balanced/Smooth filtering with anisotropic sampling when available, and preview diagnostics report filter/quality instead of implying extra source resolution.',
+    '2026-07-08 13:00 EDT - Race Texture Scale now keeps OK/Cancel inside the visible viewport, adds a WebGL Track Near Detail slider, and applies distance-faded close terrain texture density so nearby painted ground can be sharpened without forcing high detail far away.',
+    '2026-07-08 12:48 EDT - Race WebGL Track now bakes terrain chunks per route/tile revision and uses adaptive terrain LOD, keeping high subdivision near the road/camera or rough elevation while dropping far and road-distant terrain to cheaper meshes.',
+    '2026-07-08 12:08 EDT - Race Texture Scale diagnostics now split terrain, textures, lighting, and detail into separate toggles, make lighting visibly affect textured terrain, avoid texture sampling for untextured WebGL meshes, and show terrain subdivision, texture upload, and WebGL timing counters in the live preview.',
+    '2026-07-08 11:31 EDT - Race WebGL Track now caches painted tile-map stats by revision so Studio Sprint no longer scans 22,540 terrain cells every frame, skips sun-shadow tint work for textured ground, and reports visible terrain cells/candidates under the FPS counter.',
+    '2026-07-08 12:09 EDT - Race playtest now shows live WebGL polygon and draw-call counts under FPS, culls terrain before tile-map lookup, and budgets Studio Sprint terrain by nearest visible cells first to reduce huge painted-map render cost.',
+    '2026-07-08 11:52 EDT - Studio Sprint investigation found the saved track has 22,540 painted 5m cells using providenceGround; Race WebGL Track now samples tile art by each terrain quad world center, uses smaller textured terrain cells, and enables mipmaps for power-of-two project ground art.',
+    '2026-07-08 11:35 EDT - Race WebGL Track now adaptively subdivides near-camera textured terrain cells so project-art ground does not intermittently smear across oversized perspective quads while far terrain stays coarse for performance.',
+    '2026-07-08 11:22 EDT - Race WebGL Track now batches terrain, shoulder, boundary, and road mesh quads into grouped WebGL uploads instead of issuing a buffer upload and draw call for each tiny road band.',
+    '2026-07-08 11:08 EDT - Race playtest performance now caps WebGL Track render resolution, dynamically lowers the offscreen buffer scale under load, avoids scanning every painted terrain cell each frame, and uses wall-clock FPS instead of the capped simulation dt.',
+    '2026-07-08 10:49 EDT - Race playtest now uses adaptive Mode 7 road slice counts, coarser non-road WebGL terrain cells, and throttled far shoulder/boundary mesh drawing to improve FPS without removing road smoothing.',
+    '2026-07-08 10:34 EDT - Level Editor and Race Editor playtests now show a smoothed FPS readout next to the top pause/stop control so performance is visible while testing.',
+    '2026-07-08 10:24 EDT - Race skybox rendering now uses the actual projection horizon instead of the lowered terrain-fill top, and custom skybox art no longer overdraws as far below the horizon after the terrain-distance fixes.',
+    '2026-07-08 10:15 EDT - Race WebGL road and shoulder depth bias now operates directly in clip-depth space instead of being diluted across the camera far plane, reducing flat-ground z-fighting where the road appeared to clip into terrain.',
+    '2026-07-08 10:05 EDT - Race WebGL terrain now expands its forward mesh distance from the actual farthest road band instead of a fixed 6-8 cell grid, so distant roads should no longer continue past the terrain and appear to float into the sky.',
+    '2026-07-08 09:58 EDT - Race playtest now projects road cross-sections at the same elevation as the stitched terrain instead of lifting road geometry upward; WebGL depth bias still keeps the road visible, and a flat straight-road regression test now verifies the centerline stays aligned instead of bending sideways.',
+    '2026-07-08 09:22 EDT - Race playtest now clips start/finish checker stripes plus continuous lane and edge markers to the same terrain-top projection boundary as the WebGL ground, and forward road sampling no longer injects a behind-camera near sample unless the camera is side-on or facing backward.',
+    '2026-07-08 09:13 EDT - Race WebGL Track now clips road, shoulder, and margin mesh to the same terrain-top boundary used by the ground/sky transition, and removes projection-time road elevation lifts so flat roads no longer render into the sky band above flat terrain.',
+    '2026-07-08 09:05 EDT - Race playtest now treats the road as the authoritative elevation surface: heightmap terrain no longer modifies route samples or road cross-sections, and WebGL terrain is carved flat under the road then smoothly stitched back to painted terrain through the shoulder.',
+    '2026-07-08 08:58 EDT - Race playtest now keeps road elevation tied to centerline terrain instead of shoulder/edge height samples, caps lane/edge marker drawing to five marker intervals near the car, and skips markers above the horizon or behind the near plane so quarter-mile posts stop showing through hills.',
+    '2026-07-08 08:42 EDT - Race playtest now draws a shorter far-road span, bases third-person camera height on local camera/car terrain instead of upcoming route hills, reduces hill-driven near-plane jumps, and increases road/margin render clearance over coarse terrain to cut sky-road and ground-clipping artifacts.',
+    '2026-07-08 08:27 EDT - Race playtest now clips WebGL road, shoulder, and margin polygons to the horizon line instead of letting straddling quads reach into the sky, lifts/depth-biases track mesh above terrain, and changes solid edge contact to a velocity reflection with yaw damping to reduce wall traps and infinite spins.',
+    '2026-07-08 08:01 EDT - Race playtest top pause icon now exits the drive and returns directly to the Race Editor, while controller/start pause still opens the in-race pause menu.',
+    '2026-07-08 01:32 EDT - Race WebGL Track now culls road, shoulder, and margin mesh quads that project entirely above the horizon so far track no longer appears in the sky, and reduces non-road terrain mesh density while keeping the road bands smooth.',
+    '2026-07-08 01:23 EDT - Race WebGL Track now suppresses the old green ground prefill when the WebGL terrain renderer is active, lets painted terrain remove the default grass fill, applies sun-direction slope lighting to road and shoulder mesh quads as well as terrain, and culls terrain cells in camera space before elevation/projection work to improve playtest performance.',
+    '2026-07-07 23:27 EDT - Race Editor coordinate handedness is now consistent across top-down authoring, minimap, road projection, wheel surface sampling, AI offsets, decals, and steering physics: when traveling south, right steering turns west; WebGL Track also stays in the depth-tested terrain mesh even without project ground art to avoid green fallback rectangles over hills.',
+    '2026-07-07 23:00 EDT - Race playtest minimap now uses the same vertical orientation as the Race Editor top-down map, and the minimap car direction marker follows that same map handedness so an L-shaped route no longer appears upside down while racing.',
+    '2026-07-07 22:45 EDT - Race Editor WebGL Track now renders road margins/boundaries inside the depth-tested mesh pass, removes car/tree shadow overlays, lifts road and shoulder cross-sections above raised painted terrain only when needed, and strengthens sun-direction terrain shading so hill faces read bright or dark without object shadows.',
+    '2026-07-07 22:27 EDT - Race Editor WebGL Track now requests a real depth buffer, sends per-vertex camera depth into the mesh shader, depth-tests terrain/shoulder/road polygons so roads do not simply paint through nearer terrain, and tints terrain mesh cells from Settings > Sun direction so hills have visible light and shadow.',
+    '2026-07-07 22:19 EDT - Race Editor WebGL Track now clips mesh polygons against the camera near plane before projection, pre-culls and depth-sorts visible terrain cells, avoids double-projecting culled terrain, extends custom skyboxes farther below the horizon, and strengthens the horizon haze blend.',
+    '2026-07-07 21:56 EDT - Race Editor now defaults new tracks to the WebGL Track renderer, adds Settings > Sun for direction/brightness, centers the playtest pause icon in the same top position as Level Editor, culls fully offscreen WebGL mesh polygons, and extends the skybox with a light horizon haze to hide green horizon gaps.',
+    '2026-07-07 21:33 EDT - Race Editor WebGL Track now projects a real world-space terrain grid with texture UVs anchored to meters, samples height-map elevation per grid corner, and draws road/shoulder strips as WebGL mesh geometry so the car drives over fixed terrain instead of a separately scrolling screen-space plane.',
+    '2026-07-07 21:21 EDT - Race Editor Texture Scale now has a third WebGL Track renderer mode that draws project-art terrain, shoulders, and road surface into one WebGL buffer from the same projected Mode 7 road bands, reducing ground-versus-road scroll drift.',
+    '2026-07-07 20:29 EDT - Race Editor WebGL ground projection now removes its independent depth tuning and uses the exact road projection exponent, so project-art terrain scrolls at the same speed as the Mode 7 road bands.',
+    '2026-07-07 20:16 EDT - Race Editor WebGL ground now uses the same Mode 7 depth curve and lateral scale as the road renderer so terrain scrolls with the track, Texture Scale Angle no longer moves the horizon, and custom skybox art suppresses fallback mountain/cardinal geometry.',
+    '2026-07-07 19:16 EDT - Race Editor WebGL ground projection now maps bottom screen rows to near ground and upper rows toward the horizon, fixing the backwards underwater-feeling plane movement.',
+    '2026-07-07 19:10 EDT - Race Editor WebGL ground plane now reverses the longitudinal texture coordinate so driving forward pulls terrain toward the camera, and WebGL no longer applies the hidden software Rows setting to its render height.',
+    '2026-07-07 19:06 EDT - Race Editor WebGL ground rendering now flips uploaded project art to match the editor/software orientation, and Texture Scale now hides software-only mip/row controls when WebGL Plane is selected while keeping texture scale, resolution, and camera angle visible.',
+    '2026-07-07 18:50 EDT - Race Editor Texture Scale renderer toggle now handles pointer clicks inside the settings dialog, so pressing Renderer switches between Software and WebGL Plane before saving.',
+    '2026-07-07 18:39 EDT - Race Editor Texture Scale now has a Renderer toggle for Software versus WebGL Plane ground rendering; the WebGL path uses a native WebGL textured horizontal plane with nearest filtering and falls back to the software renderer if WebGL is unavailable.',
+    '2026-07-07 18:16 EDT - Race Editor render tuning now extends projected-ground Render up to 400%, supports Rows below 1x as vertical supersampling, and adds a saved Camera Angle slider that adjusts the playtest projection horizon in the live preview and while driving.',
+    '2026-07-07 18:04 EDT - Race Editor Texture Scale now exposes live projected-ground scanline controls: Render adjusts internal ground-buffer width and Rows adjusts vertical sample reuse, with both controls applied to the preview and saved for playtest so terrain projection quality can be tuned in-game.',
+    '2026-07-07 17:55 EDT - Race Editor projected ground now renders into a full-height ground buffer instead of stretching one sampled scanline across multiple rows, improving vertical resolution so project-art terrain pixels stay parallel to the ground projection instead of smearing toward the camera.',
+    '2026-07-07 17:35 EDT - Race Editor terrain sampling now uses nearest-neighbor reads for projected ground art instead of bilinear blending, preserving crisp software-rendered pixels while keeping mip averaging available only for far-distance shimmer control.',
+    '2026-07-07 17:27 EDT - Race Editor ground art now treats large project artwork as a cleaned 64px-chunk atlas instead of collapsing it into one 64px image, and the top-down editor draws cropped world-space art so changing the texture scale also changes the visible tile-map scale before playtesting.',
+    '2026-07-07 17:18 EDT - Race Editor now automatically builds a 64px terrain-clean sampler for large/noisy project ground art, using block averaging, posterized colors, and cached clean mip levels so 512x512 artwork such as providenceGround can be used lazily without feeding raw high-frequency noise into the Mode 7 floor.',
+    '2026-07-07 17:00 EDT - Race Editor Texture Scale now includes live Mipmap Start and Amount sliders beside the starting-line preview, removes the separate Mipmaps settings row, and defaults ground art to 0.25m/px with earlier stronger mip filtering for a more F-Zero-like stable horizon.',
+    '2026-07-07 16:53 EDT - Race Editor Settings now includes Mipmaps controls for projected ground art, with separate Start and Amount sliders that tune when distance mip levels kick in and how aggressively they smooth far terrain shimmer.',
+    '2026-07-07 16:44 EDT - Race texture scale now reaches 0.0001m/px, and race art textures build real mip levels so distant projected ground resolves to stable lower-detail samples instead of shimmering high-frequency noise.',
+    '2026-07-07 16:33 EDT - Race projected ground art has been retuned back toward crisp pixel-art: output smoothing is off again, mip averaging is limited to far rows, and the scanline path no longer performs a second world projection for every pixel.',
+    '2026-07-07 16:26 EDT - Race projected ground art now renders with a higher-resolution scanline buffer and footprint-aware texture averaging so painted terrain no longer aliases as harsh 5m-looking blocks while driving.',
+    '2026-07-07 16:18 EDT - Race Editor Texture Scale now uses a logarithmic 0.001m/px to 10m/px slider and shows a clipped in-game starting-line preview inside the settings dialog so ground art scale can be tuned without entering Drive.',
+    '2026-07-07 16:11 EDT - Race Editor Texture Scale now edits the ground-art ratio as meters per source pixel so painted terrain can be tested at much finer scales than the original 0.5m per 32px minimum.',
+    '2026-07-07 15:57 EDT - Race Editor Settings now includes a Texture Scale dialog so project ground art can be tuned live, with large artwork scaling by source dimensions instead of being squeezed into one repeated tile.',
+    '2026-07-07 15:48 EDT - Race Editor now lets the skybox extend below the projection horizon and starts painted terrain lower on screen, hiding far-distance stretched ground samples; the scanline renderer also uses coarser far rows and full-detail near rows instead of splitting large project art into 32px chunks.',
+    '2026-07-07 15:41 EDT - Race Editor ground texture scale now uses source art dimensions: every 32x32 pixels maps to 2.5m, so large project artwork such as 1024px terrain spans 80m instead of being squeezed into one 2.5m tile.',
+    '2026-07-07 15:38 EDT - Race Editor painted terrain now uses a Mode 7-style scanline ground-plane renderer: each horizontal screen row maps back onto the flat tilemap and draws a 1-row strip, removing the vertically stretched projected-buffer look near the horizon and near camera while keeping the terrain horizon-filled.',
+    '2026-07-07 15:32 EDT - Race Editor projected ground art now uses a much higher-resolution terrain buffer and a gentler mip footprint so painted project-art ground stays clearer and less muddy while preserving the horizon-filling buffered renderer.',
+    '2026-07-07 15:07 EDT - Race Editor painted project-art terrain now renders through a low-resolution smoothed ground buffer that fills from horizon to screen bottom, reuses per-frame texture samplers, samples the fixed 5m tilemap in screen space, and extends the dominant painted ground art into the distance instead of leaving a green horizon rectangle.',
+    '2026-07-07 14:31 EDT - Race Editor project-art ground painting now projects explicit 5m tile-map cells instead of stretching art across road-relative bands, culls far painted cells, and uses distance-based texture detail so near tiles resemble the source art while far terrain falls back to cheaper mip-style color.',
+    '2026-07-07 13:12 EDT - Race Editor project-art tile cells now render as a cached flat terrain tilemap under the track instead of shoulder textures, and race art loading now caches by art name before storage reads so large painted maps do not repeatedly reload the same artwork every frame.',
+    '2026-07-07 12:55 EDT - Race Editor Tile painting now writes selected project artwork into fixed terrain tile-map cells instead of creating free-positioned decals, so painted art snaps to the grid, matches cell size, remains under the track, and can be painted/erased by swiping with rectangle or oval brush footprints.',
+    '2026-07-07 12:38 EDT - Race Editor tile-box painting now supports swipe/drag strokes, saves rectangle versus oval tile stamp shape from the shared brush picker, spaces repeated stamps during a stroke, and renders tile-box ground art underneath the track in both top-down editing and Mode 7 playtest.',
+    '2026-07-07 12:18 EDT - Race Editor Sprites now has a stable Sprite/Decal/Tile/Paint/Brush/Erase flow: Tile paints large horizontal ground-box artwork using the shared brush controls, decals and tiles erase independently, Settings > Margin can disable shoulders, and race edge collision can target road, margin, shoulder, or stay off by default.',
+    '2026-07-07 11:53 EDT - Project Browser Save As now checks typed filenames against a cached folder name set instead of rebuilding the project index on every keystroke, browser cleanup now restores page touch/scroll interaction even if overlay teardown or focus restore fails, and global Saved status overlays auto-hide defensively.',
+    '2026-07-07 11:34 EDT - Race Editor File Save, Save As, and Open now persist selected tracks as first-class race documents, including route nodes, segments, terrain tile maps, margins, shoulders, surface art, scenery definitions, sprites, and decals.',
+    '2026-07-07 11:12 EDT - Race Editor Settings now has a Margin dialog for enabling/disabling the road-edge margin, setting margin width, picking margin texture art, and widening/narrowing the projected shoulder terrain.',
+    '2026-07-07 10:46 EDT - Race projected texture scale is now 2.5m per full art tile, and road edges now draw a road-counting boundary seam that defaults to a white line, can use the Boundary tile-art slot for F-Zero-style edge art, and can be toggled solid per track segment.',
+    '2026-07-07 10:21 EDT - Race projected terrain textures now use bilinear color sampling, denser projected cells, and a 5m world tile scale so 32x32 ground art reads higher resolution and avoids disco-light shimmer while driving.',
+    '2026-07-07 09:25 EDT - Race terrain tile-art overrides now render as subdivided ground-projected texture cells using world x/z coordinates, instead of clipping one screen-space image over the road and making ground art look billboarded.',
+    '2026-07-07 08:59 EDT - Race Editor Settings now opens modal sliders for AI racer count, weather selection/intensity, and terrain tile-art overrides; Skybox is renamed to a direct picker, Finish Return/Road Width are removed from Settings, skybox yaw scrolls continuously across north, Sprites can pick project-art decals, and race playtest projects selected tile/decal artwork onto the road, shoulders, and ground.',
+    '2026-07-07 08:21 EDT - Race art skyboxes now build a dedicated cached render canvas once per selected artwork, avoiding repeated project-art storage reads and large per-frame source scaling during playtest.',
+    '2026-07-07 00:03 EDT - Race fallback skybox cardinal markers now render only when the camera is facing that direction, so facing north shows N without also showing east or west.',
+    '2026-07-06 22:56 EDT - Race weather now has authoring intensity, visible rain/snow/storm FX, gradual playtest buildup, effective wet/mud/slush/snow surface conversion for rendering and per-wheel handling, and Settings > Skybox now picks Pixel Editor artwork from the project browser for the parallax background.',
+    '2026-07-06 22:11 EDT - Race playtest shoulders now stay level with the road over painted height terrain, and Race Editor Settings now includes a Skybox picker for cardinal parallax backgrounds that scroll north/east/south/west with camera yaw.',
+    '2026-07-06 21:45 EDT - Race Editor portrait now uses a single-row hot menu with no dead lower row, removes the top-down editor description overlay, moves the scale bar to the upper-left, centers the top Play button with level-editor-style play chrome, and changes Add Sprite into a modal settings step with width/height sliders, collision choices, OK, and Cancel.',
+    '2026-07-06 21:28 EDT - Race Editor portrait cleanup fixes Ground brush slider hit priority over map zoom, keeps brush-size changes from switching elevation paint back to ground paint, replaces the brush shape toggle with selectable square/circle previews, stabilizes Track hot menus as popup windows, corrects the portrait thumbstick knob visual, and expands clipped terrain-cell drawing so edge tiles do not pop while panning.',
+    '2026-07-06 20:14 EDT - Race Editor Ground mode now caches normalized 5m terrain maps by revision, invalidates road sampling once per brush stroke, uses palette/elevation/brush-stamp caches, draws zoomed-out terrain with LOD instead of every cell, and replaces the Brush popup with slider controls for size, opacity, and hardness plus a live brush preview.',
+    '2026-07-06 19:12 EDT - Race Editor Ground mode now uses finer 5m terrain cells with automatic migration from old 20m cells, vertical Tile/Raise/Lower/Brush popups, selectable raise/lower amounts, repeatable elevation strokes, and brush size/shape/falloff/opacity controls that blend terrain weights for mixed grass/snow/dirt painting.',
+    '2026-07-06 18:28 EDT - Race Editor Ground mode now uses a map-pinned sparse tile grid instead of circular paint patches: painting fills individual terrain cells, Brush selects 1x1 through 7x7 tile areas, elevation raises/lowers tile heights with a black-to-white heightmap overlay, road rendering stays layered above terrain, and new/default/test races initialize with tile-map terrain data.',
+    '2026-07-06 18:03 EDT - Race Editor sprite authoring now creates reusable sprite definitions from Settings > Add Sprite, opens sprite settings for real width, height, and collision behavior, changes Sprites into Select/Paint/Erase, removes the old debug rectangle around art billboards, keeps close billboards height-anchored, and removes the default starting-line tree/scenery from new races.',
+    '2026-07-06 17:50 EDT - Race Editor Ground mode now paints by default, changes Tile and Brush into bottom hot-menu pickers, removes the confusing Paint row, stores new ground paint in world coordinates so terrain stays locked to the road while zooming/panning, and draws painted terrain patches under the road so shoulders and surrounding terrain are easier to read.',
+    '2026-07-06 17:35 EDT - Race Editor placed scenery sprites now render the actual selected Pixel Editor artwork as vertical race billboards instead of falling back to procedural tree drawings, including flat frame pixel documents and tile-backed art.',
+    '2026-07-06 17:21 EDT - Race Editor now moves Generate Race and built-in test track loads under File, replaces the top-level Generate menu with Ground, caps visible AI racers at 11 from Settings, lets Add Sprite pick Pixel Editor artwork from the project browser for vertical race billboards, and makes painted terrain tiles drive shoulder surface plus smoothed road elevation while the road draws on top.',
+    '2026-07-06 16:44 EDT - Race Editor portrait Track now closes the bottom menu and returns to the map, while selected edges use Surface/Width/Edit drill-down hot menus and selected nodes show only node-focused edit actions without Edge/Node descriptive text.',
+    '2026-07-06 13:52 EDT - Race physics now uses real-world stock performance targets for WRX, BRZ, and the 2023 Honda Civic Type R, replaces the old Civic Si test car, adds per-car drag/acceleration calibration, and tests runtime 0-60 plus quarter-mile ET/trap against target bands.',
+    '2026-07-06 10:18 EDT - Race Editor now removes the Drive root menu, keeps diagnostics and AI checks out of visible menu drawers, and exposes playtesting through a single top Play/Pause control.',
+    '2026-07-06 10:00 EDT - Race Editor menus now rename Race to Track, add a Generate root for Generate Race plus all built-in track loads, remove Ground/Elevation roots while keeping their tools under Track, and filter blank File rows.',
+    '2026-07-06 09:02 EDT - Race third-person rendering now samples Mode 7 road geometry from the camera route projection, clips near-plane road and shoulder polygons before projection, removes visible pause-menu row boxes, and softens left-thumbstick steering without changing D-pad tuning.',
+    '2026-07-06 08:32 EDT - Race playtest now removes the synthetic immediate road patch, pulls near-road visibility from the normal Mode 7 road-band renderer, confirms B shifts up and X shifts down, and restyles pause into a level-style text menu with Settings as the dedicated ABS/traction/transmission/telemetry submenu.',
+    '2026-07-06 08:10 EDT - Race playtest now validates WeatherTech WRX acceleration/braking sanity, raises uphill camera clearance, suppresses far-off-route near-road rectangles, keeps center dashes from dropping at slice edges, swaps racing X/B shifting, corrects reverse steering, adds right-stick look, and replaces the flat race pause overlay with a controller-navigable Car Settings menu.',
+    '2026-07-05 23:22 EDT - Race playtest now switches to fullscreen rendering when a physical gamepad is connected, reads left-thumbstick axes through the shared gamepad input API, guards off-road projection against black near-camera planes, and keeps rear breakaway alive longer before AWD/traction recovery can settle the car.',
+    '2026-07-05 23:00 EDT - Race playtest now recenters released left-thumbstick steering more aggressively, hides the simulated handheld controls while a physical gamepad is connected, unifies near-road projection math to reduce straight-road bending, and adds yaw angular velocity plus stronger handbrake rear breakaway so high-speed drift can spin the car.',
+    '2026-07-05 22:17 EDT - Race playtest camera FOV now uses normal game-camera ranges instead of telephoto zoom, left-thumbstick steering ramps and decays like a virtual steering wheel, handbrake drift has stronger rear lock/breakaway, hill grades apply gravity force, and the closest road patch renders with perspective near the camera.',
+    '2026-07-05 19:16 EDT - Race playtest telemetry is now hidden unless enabled from pause or running a diagnostic, and high-speed steering now uses wheelbase-based bicycle-model yaw with grip-limited front tire angle so cars no longer rotate like they are turning on a dime.',
+    '2026-07-05 17:02 EDT - Race playtest now has slower analog steering response, tighter high-speed steering authority, runtime ABS and Traction Control toggles in the pause menu, traction-control launch limiting, and sustained handbrake rear-slip behavior for controller-driven 180 attempts.',
+    '2026-07-05 15:47 EDT - Race playtest rendering now uses the same physical road width for mesh edges, checker stripes, lane markers, and tire terrain classification; Mode 7 road bands reject non-contiguous route slices to prevent random horizontal streaks, and random race generation falls back to a clean route if repair attempts still self-intersect.',
+    '2026-07-05 15:12 EDT - Race Editor File New now supports 1-6 lane road choices using real 3.6m lanes, defaults new races to a one-lane back-country road, hides dotted center lines on one-lane roads, and scales one-lane playtest rendering to fill first-person and half-fill third-person views with car size matched to the road.',
+    '2026-07-05 13:26 EDT - Race playtest and editor road scale now use real per-car dimensions for WRX, BRZ, Civic, and starter cars; authored road widths are treated as physical meters, narrow one-lane roads can be 1.25-1.5 car widths, center dashes hide below 1.9 car widths, and projection/tests now check car-to-lane proportions.',
+    '2026-07-05 12:28 EDT - Race playtest now prioritizes the controller left thumbstick for analog steering, moves road scale toward real lane/car proportions, strengthens per-wheel friction-circle telemetry for BRZ drift and mixed-surface yaw, keeps Mode 7 road bands visible when facing reverse or 90 degrees across the track, and changes normal race telemetry from timing rows to live G/slip/load/temp/suspension gauges.',
+    '2026-07-05 10:02 EDT - Race Editor Drive now exposes diagnostic test sessions for skidpad, 0-60, 60-0, quarter mile, slalom, jump analysis, AI consistency laps, and ghost comparison; playtests now track live lateral G, tire temperature/load, suspension travel, jump landing data, ghost deltas, and up to 12 AI racers across Easy, Medium, Hard, and Expert difficulty.',
+    '2026-07-05 09:18 EDT - Race playtest now samples each tire against its own road/shoulder/off-road surface, clears controller handbrake on A release, uses friction-circle limits for brake/steer/launch slip, projects the third-person car from the physical world pose, and sanitizes closest Mode 7 road quads to reduce missing bands and ground bleed-through.',
+    '2026-07-05 08:36 EDT - Race playtest now has race-specific gamepad controls, starts both first- and third-person behind the checker stripe, keeps nearest Mode 7 quads visible with near-plane clipping, makes road shoulders visibly distinct, and adds rear tire breakaway so hard high-speed steering can oversteer instead of only scrubbing speed.',
+    '2026-07-04 22:50 EDT - Race physics calibration now checks stock WRX/BRZ/Civic stats, verifies every exposed tuning row changes a physics/performance output, retunes loose-surface tire grip away from ice-like behavior, logs damage sources, gates side-panel damage on actual side contact, and tightens shoulder projection so roads feel less detached from the ground.',
+    '2026-07-04 19:26 EDT - Race tuning now has Forza-style tabs for tires, gearing, alignment, antiroll bars, springs, damping, aero, brakes, differential, and stats; per-gear ratios, brake pressure, drivetrain-specific diffs, suspension travel, alignment, and computed performance stats now feed the race physics, while dirt/gravel grip is retuned away from ice-like braking.',
     '2026-07-04 17:14 EDT - Race playtest now routes mobile buttons, keyboard keys, gamepad triggers, and future pedal-style inputs through smoothed throttle/brake axes, preserving analog trigger pressure while giving digital Go/Brake ramp-in and release behavior that feeds tire-limited acceleration, braking, wheelspin, and brake-lock slip.',
     '2026-07-04 16:32 EDT - Race playtest rendering now reuses cached route samples with binary distance lookup across Mode 7 depth slices, improving Daytona-style dense route performance, and highway lane dashes now project as road-aligned quads instead of screen rectangles that looked like upright markers.',
     '2026-07-04 15:23 EDT - Race playtest now draws mile markers from one continuous Mode 7 marker pass, blocks automatic downshifts that would over-rev the engine, raises crest camera clipping safety, matches checker stripes to rendered road width, and tracks ordered checkpoints for lap/finish progression.',
@@ -688,6 +886,660 @@ export const LATEST_MAJOR_WORK = {
 };
 
 export const LATEST_CHANGES = [
+  {
+    date: '2026-07-11',
+    time: '08:38 EDT',
+    title: 'Race terrain holes are exposed and covered',
+    details: [
+      'Restored magenta as the default WebGL Track uncovered background so missing sky, terrain, or road geometry remains visible while testing.',
+      'Expanded the Studio Sprint world terrain bake with wider route samples and raised the visible terrain budget so camera-visible chunks are not missing or dropped.',
+      'Added route-sampled unit coverage that verifies Studio Sprint forward and reverse frames have baked visible chunks and no sampled terrain budget drops.'
+    ]
+  },
+  {
+    date: '2026-07-11',
+    time: '07:42 EDT',
+    title: 'Superseded race terrain diagnostic pass',
+    details: [
+      'This pass tried making the WebGL Track magenta underlay diagnostic-only, but that behavior was superseded by the 08:38 update so magenta remains the default uncovered-background sentinel.',
+      'Updated baked terrain visibility to scan all visible cells before budget selection, preventing later road-adjacent terrain from being skipped just because earlier cells filled the budget.',
+      'Added focused unit coverage for the visibility-budget scan that keeps later, better terrain cells eligible.'
+    ]
+  },
+  {
+    date: '2026-07-11',
+    time: '01:06 EDT',
+    title: 'Race magenta test now drives both directions',
+    details: [
+      'Expanded the Studio Sprint Playwright magenta diagnostic from five fixed frames into dense forward and backward route sampling.',
+      'The test now fails on any visible magenta pixel anywhere on the rendered canvas, while preserving black-void and skybox diagnostics.',
+      'Diagnostic screenshots are only carried back for failing frames so passing runs do not spend time moving hundreds of canvas images.'
+    ]
+  },
+  {
+    date: '2026-07-11',
+    time: '00:56 EDT',
+    title: 'Race terrain bake is static during playtest frames',
+    details: [
+      'Fixed Race WebGL Track prewarm so it bakes terrain with the same coarse chunk size used by the renderer, preventing playtest frames from falling back to dynamic terrain generation.',
+      'Changed baked terrain visibility to reuse the original baked cell objects, so cached WebGL terrain vertices and UVs persist across frames instead of being attached to throwaway wrappers.',
+      'Added a Studio Sprint shoulder-to-shoulder weave regression at 30 MPH with no damage, and kept the terrain+texture WebGL Track FPS benchmark above 45 FPS.'
+    ]
+  },
+  {
+    date: '2026-07-11',
+    time: '00:20 EDT',
+    title: 'Race magenta coverage is now a real frame test',
+    details: [
+      'Changed the Race Editor magenta diagnostic so the app canvas gets a magenta underlay before the skybox, while WebGL and Three world canvases clear transparent again.',
+      'Added a Playwright Studio Sprint regression that renders deterministic race frames, scans the real canvas pixels for bright magenta, and fails with the worst frame label and screenshot artifact when terrain or road holes are visible.',
+      'Removed the temporary source-level magenta failure from the unit suite so unit tests keep covering geometry/contact behavior and browser tests cover final rendered pixels.'
+    ]
+  },
+  {
+    date: '2026-07-11',
+    time: '00:02 EDT',
+    title: 'Superseded race magenta diagnostic step',
+    details: [
+      'Reverted the race playtest viewport-wide magenta sentinel so the handheld shell and playtest screen no longer hide what the renderer is doing.',
+      'This was immediately refined by the 00:20 update: magenta now sits behind the skybox/world composite instead of being the WebGL or Three clear color.',
+      'The old passing coverage assertion was replaced with a browser pixel diagnostic that fails only when rendered Studio Sprint frames actually expose magenta.'
+    ]
+  },
+  {
+    date: '2026-07-10',
+    time: '23:51 EDT',
+    title: 'Race shoulder-edge tests and magenta sentinel',
+    details: [
+      'Added Studio Sprint 30 MPH finish regressions for both shoulder edges, placing the outer wheel pair one meter inside the configured shoulder edge and asserting no panel, suspension, engine, transmission, rollover, or off-road damage.',
+      'Race playtest fallback clears now use a magenta sentinel color so uncovered rendering gaps are obvious during testing.',
+      'Added render coverage assertions for center, road-edge, and shoulder-edge driving frames so completed race frames must cover the magenta sentinel with sky, terrain, or WebGL output.'
+    ]
+  },
+  {
+    date: '2026-07-10',
+    time: '23:30 EDT',
+    title: 'Race edge-run and terrain cliff validation',
+    details: [
+      'Roadside terrain now stays at road deck height for the first 0.5m outside the visible road, margin, or shoulder edge before blending back into the painted heightmap over roughly 4m.',
+      'The roadside mesh is split into a flat terrain join plus a sloped terrain transition so rendering matches the stitched contact height instead of creating a cliff at the road edge.',
+      'Added Studio Sprint 30 MPH finish regressions for left-edge and right-edge driving where only one wheel pair remains on the road, with no suspension, panel, engine, transmission, or rollover damage.'
+    ]
+  },
+  {
+    date: '2026-07-10',
+    time: '23:08 EDT',
+    title: 'Race collision and Studio Sprint validation',
+    details: [
+      'Studio Sprint now normalizes away legacy hazards on load and ships with no hazards in the built-in race data, so a failed centered finish points at road/collision math instead of hidden obstacles.',
+      'Hidden shoulder width now remains available to the collision system while the visual seam still joins terrain to the visible road or margin edge.',
+      'Added regressions for 40 MPH centerline completion, curve projection precision, hidden shoulder collision, static baked terrain meshes during playtest rendering, and the 45 FPS WebGL Track terrain+texture benchmark.'
+    ]
+  },
+  {
+    date: '2026-07-10',
+    time: '22:22 EDT',
+    title: 'Race terrain seam and Studio Sprint no-damage test',
+    details: [
+      'Race terrain blend width now depends on visible shoulder state, keeping margin-off and hidden-shoulder terrain joins tight to the road instead of drawing a broad extra strip.',
+      'The seam regression now verifies off, margin-only, visible-shoulder, and hidden states join terrain to the correct outer visible edge.',
+      'Added a Studio Sprint centerline simulation that finishes the race at 30 MPH while asserting all wheel contact stays on road and the car takes no panel, engine, transmission, suspension, or rollover damage.'
+    ]
+  },
+  {
+    date: '2026-07-10',
+    time: '19:00 EDT',
+    title: 'Race stable road mesh sections',
+    details: [
+      'Race WebGL Track road, shoulder, boundary, marker, and paint meshes now share stable world-space route-distance sections instead of changing with camera-adaptive Mode 7 depth bands.',
+      'Road cross-sections now compute one final deck height from terrain support at the center, edges, and shoulders before being marked as road-deck geometry, reducing road/terrain intersections.',
+      'Regression coverage now verifies stable road section world vertices across camera movement and aligned section anchors for road, shoulder, and boundary geometry.'
+    ]
+  },
+  {
+    date: '2026-07-10',
+    time: '13:23 EDT',
+    title: 'Race road corridor stamping',
+    details: [
+      'Race road placement now uses a corridor-first roadbed: asphalt, margins, and shoulders share a smoothed centerline deck instead of lifting to the highest side-terrain sample.',
+      'Terrain inside the road, margin, and shoulder corridor is stamped to the roadbed before blending back to the painted heightmap, reducing road/terrain intersections and floating shelves.',
+      'Route projection sampling is tighter through curves, and regression coverage now checks that high painted edge terrain is stamped to the road corridor without forcing ugly road steps.'
+    ]
+  },
+  {
+    date: '2026-07-10',
+    time: '11:52 EDT',
+    title: 'Race road terrain smoothing and suspension contact',
+    details: [
+      'Race terrain now keeps a raw height sampler for diagnostics while normal rendering and physics use smoothed painted terrain heights instead of hard cell steps.',
+      'Road deck elevation now comes from a shared road surface profile so road rendering, terrain stitching, and hill-grade force agree on the same height.',
+      'Race playtest now samples per-wheel contact heights for suspension travel, pitch, roll, and bottom-out damage instead of relying only on centerline gravity.'
+    ]
+  },
+  {
+    date: '2026-07-10',
+    time: '02:57 EDT',
+    title: 'Race WebGL Track resolution performance fix',
+    details: [
+      'Race WebGL Track resolution now uses percentage semantics: 32 means 32% scale, 100 means native scale, and 400 means 4x instead of treating 32 as a literal 32x framebuffer.',
+      'Race texture diagnostics now show the actual WebGL Track render-target size in the FPS/poly readout so oversized buffers are visible immediately.',
+      'The Race Texture resolution slider now displays percent values directly, matching the corrected render-target behavior.'
+    ]
+  },
+  {
+    date: '2026-07-10',
+    time: '02:24 EDT',
+    title: 'Race Three render workload diagnostics',
+    details: [
+      'Race WebGL Track now defaults back to the Three.js heightmap renderer instead of requiring a debug opt-in.',
+      'The race texture diagnostics add Track and Overlays switches, and Track Off now skips mode-7 slice generation, mesh building, terrain baking, decals, sprites, particles, weather, and marker overlays for a true render-disabled FPS baseline.',
+      'Terrain and texture setup now runs only when those systems are enabled, reducing hidden CPU work when testing renderer performance.'
+    ]
+  },
+  {
+    date: '2026-07-10',
+    time: '01:58 EDT',
+    title: 'Race WebGL terrain default restored',
+    details: [
+      'Terrain On now uses the native WebGL Track terrain path by default; Three.js is available only through a dedicated debug toggle.',
+      'Road, shoulder, margin, and paint meshes in the native WebGL path now resample stitched terrain before projection so the road rises and falls with the heightmap.',
+      'This targets the 250 polygon / 5 draw / 20 FPS case where Three canvas rendering was still too expensive despite low geometry counts.'
+    ]
+  },
+  {
+    date: '2026-07-10',
+    time: '01:40 EDT',
+    title: 'Race Three draw-call reduction',
+    details: [
+      'Three.js race meshes now batch by texture and lift instead of color, so sun/terrain tinting no longer splits Studio Sprint into dozens of draw calls.',
+      'Default Terrain On budget is lower again, keeping nearby road-corridor terrain prioritized while cutting background polygons.',
+      'This specifically targets the 2k polygon / 27 draw / 15 FPS failure case reported in Studio Sprint.'
+    ]
+  },
+  {
+    date: '2026-07-10',
+    time: '01:26 EDT',
+    title: 'Race Three terrain and road performance',
+    details: [
+      'Three.js race terrain now uses a stronger elevation scale so painted hills read higher in the new renderer.',
+      'Road, shoulder, margin, and paint vertices now sample the same stitched terrain height before their small visual lift, keeping the road on top of the heightmap.',
+      'Successful Three.js frames now skip native WebGL Track setup, and Three materials are reused instead of recreated every frame.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '23:35 EDT',
+    title: 'Race WebGL Track draw distance and terrain budget',
+    details: [
+      'Terrain Off is expected to show the native WebGL Track road and respond to Resolution; Terrain On is the Three.js heightmap scene when Three can render it.',
+      'Studio Sprint and other circuit races now look farther ahead instead of being capped to roughly one lap of road distance.',
+      'Three.js road, shoulder, margin, furniture, and paint layers now have explicit render ordering above terrain, with a lower normal terrain-cell budget to reduce unnecessary polygons.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '22:58 EDT',
+    title: 'Race WebGL Track performance and FOV',
+    details: [
+      'Terrain Off now stays on the native WebGL Track fast path instead of building a Three.js scene every frame.',
+      'Terrain On still uses the unified Three.js road-on-heightmap scene, but margins and boundaries now render above the road instead of disappearing under it.',
+      'Three.js playtest FOV is narrowed to 48 degrees in third person and 58 degrees in first person so the race view feels less like flying down the track.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '22:36 EDT',
+    title: 'Unified Three race road and terrain',
+    details: [
+      'Race WebGL Track now sends terrain, shoulders, roads, margins, lane paint, start/finish checkers, and quarter-mile posts through one Three.js world scene.',
+      'Race terrain and road height now use the same meter scale as physics, with tiny explicit surface lifts so road geometry sits on top of the heightmap instead of floating in the sky.',
+      'The old native WebGL terrain and mesh batches remain as fallback if the Three renderer cannot build the scene.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '22:08 EDT',
+    title: 'Race Three.js terrain renderer',
+    details: [
+      'WebGL Track terrain now renders through a locally vendored Three.js world renderer.',
+      'Race ground uses Three BufferGeometry, CanvasTexture, and camera projection so nearby project-art terrain stays attached to heightmap polygons.',
+      'The custom native terrain shader remains fallback only; roads, markers, cars, sprites, tire FX, and HUD stay on their existing paths for this pass.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '21:31 EDT',
+    title: 'Race world-space heightmap terrain',
+    details: [
+      'WebGL Track terrain now uses a dedicated world-space heightmap mesh shader instead of CPU-projected screen triangles.',
+      'Terrain vertices, elevation, and UVs are sent as stable world mesh data; camera projection now happens in the terrain shader uniforms.',
+      'Roads, shoulders, margins, markers, checkers, cars, sprites, and tire FX remain on the existing WebGL Track path for this pass.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '21:23 EDT',
+    title: 'Race close terrain texture stability',
+    details: [
+      'WebGL Track still renders project-art terrain as real 3D heightmap mesh geometry.',
+      'Mesh shaders now use high precision texture-coordinate interpolation so close terrain UVs do not quantize on mobile/WebGL hardware.',
+      'Textured mesh UVs are normalized around tile-aligned local origins, keeping textures world-anchored while avoiding huge absolute UV values at tiny texture scales.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '21:08 EDT',
+    title: 'Race WebGL terrain mesh restored',
+    details: [
+      'WebGL Track no longer replaces textured terrain geometry with the screen-space stable texture layer.',
+      'Project-art ground in WebGL Track is back on the real 3D heightmap terrain mesh path so road, shoulders, and terrain share the same projected world.',
+      'Added regression coverage that fails if WebGL Track skips textured terrain mesh polygons again.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '20:04 EDT',
+    title: 'Race terrain LOD camera stability',
+    details: [
+      'Textured WebGL terrain subdivision now comes from road proximity and elevation variance instead of current camera distance.',
+      'Close road-adjacent Studio Sprint terrain keeps compatible detail as the camera moves instead of dropping LOD mid-turn.',
+      'Added a slow-camera Studio Sprint bend regression that verifies one baked terrain subquad keeps identical world vertices and decoded UVs across small camera/yaw changes.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '19:10 EDT',
+    title: 'Race near-plane UV stability',
+    details: [
+      'Near-plane clipping now routes through a single world-space intersection helper for terrain, road, and WebGL mesh projection paths.',
+      'Added a Studio Sprint bend regression that checks textured terrain UVs through raw, normal, and screen-clipped optimization paths.',
+      'The regression also verifies the terrain source quad is not mutated while the camera projects or clips it near a tight turn.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '18:51 EDT',
+    title: 'Race terrain UV clipping stability',
+    details: [
+      'WebGL terrain clipping now interpolates clipped screen-edge vertices with perspective-correct world coordinates instead of linearly warping near-camera polygons.',
+      'Textured terrain UVs stay anchored to the same world-space polygon as the camera moves, including when a polygon is clipped by the visible screen area.',
+      'Added focused Race Editor regression tests for fixed terrain UVs across camera movement and perspective-correct clipped terrain intersections.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '17:42 EDT',
+    title: 'Race UVs, tire temperature, and Tire FX',
+    details: [
+      'Textured WebGL Track meshes now triangulate clipped polygons without generated centroid UVs, keeping texture coordinates fixed to world-space polygons near the camera.',
+      'Per-wheel tire temperature now affects grip, with strong overheating/cold-tire penalties while normal ambient tires remain close to documented stock performance.',
+      'Race Editor Settings now includes Tire FX with per-race project-art overrides for smoke, asphalt skids, dirt dust, grass dust, snow dust, and wet spray.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '17:17 EDT',
+    title: 'Race startup camera stabilization removed',
+    details: [
+      'Race playtest startup no longer creates a launch projection hold or distance-based projection blend.',
+      'The third-person chase camera now renders directly behind the live car pose from the first driving frame.',
+      'Race editor regression tests now assert that no launch projection state is present during startup rendering.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '17:00 EDT',
+    title: 'Race reset fade holds black',
+    details: [
+      'Reset-to-center edge collisions now fade all the way to black before moving the car back to the route center.',
+      'The screen stays fully black for 250ms before fading back in.',
+      'The car keeps its speed during the reset flow instead of stopping immediately when the fade begins.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '16:54 EDT',
+    title: 'Race launch follow camera restored',
+    details: [
+      'Launch rendering now uses route-centered camera position but live car yaw, keeping the camera behind the car as it turns at startup.',
+      'Yaw is no longer blended from the held launch yaw; only pitch/FOV/projection stay stabilized during the startup projection hold.',
+      'Updated regression coverage so simulated joystick launch verifies both no lateral drift and live follow-camera yaw.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '16:42 EDT',
+    title: 'Race launch render camera centered',
+    details: [
+      'Launch rendering now places the camera from the route centerline while the startup projection hold is active, instead of using live car lateral position.',
+      'Fixed zero-coordinate fallback in the launch render camera path so tracks starting at x=0 do not fall back to an offset car position.',
+      'Extended regression coverage to force a live car offset during simulated joystick launch and verify the rendered camera stays centered.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '16:35 EDT',
+    title: 'Race startup D-pad camera hold',
+    details: [
+      'Simulated D-pad steering now keeps the launch camera view centered while the start projection is held or blending out.',
+      'The steering wheel and vehicle physics still respond during the launch, but road-view offset does not sweep left/right until the launch projection finishes.',
+      'Added regression coverage for simulated gamepad steering during the startup projection blend.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '16:15 EDT',
+    title: 'Race launch strafe and reset fade',
+    details: [
+      'Held left-thumbstick input is now detected but ignored for steering while the car is staged behind the starting line at launch speed, keeping camera yaw, lateral offset, and road-view offset centered.',
+      'Normal left-thumbstick steering resumes after launch release so physical gamepad steering still works during active driving.',
+      'Reset-to-center edge collision now fades out first, recenters the car at the blackout midpoint, then fades back in instead of visibly snapping to the road center.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '16:05 EDT',
+    title: 'Race look-around requires gamepad',
+    details: [
+      'Race look-around now ignores simulated/mobile control input and stale look angle unless a physical gamepad is connected.',
+      'Right thumbstick remains the only look-around control path, and it still hides the third-person car while looking away.',
+      'Added regression coverage for connected right-stick look-around and disconnected simulated-axis suppression.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '15:54 EDT',
+    title: 'Race edge collision settings split out',
+    details: [
+      'Race margin settings now store margin and shoulder display separately as On, Hidden, or Off.',
+      'Collision selection is now independent, with edge choices for road, margin, or shoulder and effects for physical collision or reset-to-center fade.',
+      'Hidden margin and shoulder widths stay active for geometry and collision math while their visual strips are suppressed.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '10:51 EDT',
+    title: 'Third-person race camera height',
+    details: [
+      'Raised the third-person race camera eye height while leaving first-person unchanged.',
+      'Third-person car rendering now anchors vertically from a compensated road-contact projection so the car remains in the same chase-view band and stays visually grounded on the road.',
+      'Added regression coverage for the higher third-person camera and the road-contact car anchor.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '09:15 EDT',
+    title: 'Car Editor preview and live fields',
+    details: [
+      'Car Editor now draws a live layered vehicle preview using geometric fallback tires/body plus authored shell, tire, spoiler, and turn-frame project art when assigned.',
+      'Removed placeholder Car Editor menu rows such as layer clipboard/delete, preview toggles, and unused tire/spoiler view controls while preserving the shared File/Edit/View desktop contract.',
+      'Car Editor top-menu power, weight, grip, brake, final drive, differential, aero, spring, damping, and antiroll rows now update selected car data instead of acting as no-op status buttons.'
+    ]
+  },
+  {
+    date: '2026-07-09',
+    time: '00:32 EDT',
+    title: 'Race projection and stock car loading',
+    details: [
+      'Race playtest now uses stable car travel as the render origin in third-person instead of re-projecting the chase camera onto the route, so road decorations should stop shifting relative to the track.',
+      'Quarter-mile/edge markers now render as projected apron/margin strips using the same road cross-section projection as the track.',
+      'Car Editor File now exposes direct Load WRX, Load BRZ, and Load Civic actions backed by editable project-file car documents.',
+      'Reverse steering physics now uses signed reverse speed in the yaw model, and tests cover the tire/steering path.'
+    ]
+  },
+  {
+    date: '2026-07-08',
+    time: '11:59 EDT',
+    title: 'Race texture dialog cleanup',
+    details: [
+      'Fixed the Race Texture Lighting, Terrain, and Textures diagnostic buttons so tapping them actually toggles the draft setting.',
+      'Removed explanatory helper copy from the Texture Scale dialog and kept only the compact 32px scale readout.'
+    ]
+  },
+  {
+    date: '2026-07-08',
+    time: '11:53 EDT',
+    title: 'Race texture render diagnostics',
+    details: [
+      'Added Lighting, Terrain, and Textures toggles to Race Editor Settings > Texture Scale so WebGL Track performance can be isolated without changing race physics.',
+      'WebGL Track now respects those toggles by skipping terrain mesh generation, flattening lighting, or rendering solid green terrain polygons instead of project-art texture sampling.',
+      'The Texture Scale starting-line preview now prints its own FPS, render time, polygon, draw-call, and terrain-cell counters inside the preview window.'
+    ]
+  },
+  {
+    date: '2026-07-08',
+    time: '11:45 EDT',
+    title: 'Race WebGL playtest performance pass',
+    details: [
+      'Changed the Race WebGL Track context to stop preserving the drawing buffer, which avoids an expensive mobile GPU path while still compositing over the skybox.',
+      'Reworked mesh uploads to reuse a growable Float32Array and GPU buffer instead of allocating a new typed array for every WebGL draw group.',
+      'Removed the duplicate race weather draw during playtest and expanded the FPS diagnostics with mesh build, WebGL, overlay, buffer upload, and texture upload counters.'
+    ]
+  },
+  {
+    date: '2026-07-08',
+    time: '11:37 EDT',
+    title: 'Race playtest render timing',
+    details: [
+      'Added smoothed race playtest render-time milliseconds to the FPS diagnostics so slow frames can be separated from simulation cost.',
+      'Disabled CPU sun/shadow tinting during WebGL Track playtest rendering to test whether lighting math is causing the 13-15 FPS Studio Sprint slowdown.',
+      'Confirmed race physics remains in the update path; the draw path still performs projection, terrain, route, and scenery lookup work needed for rendering.'
+    ]
+  },
+  {
+    date: '2026-07-08',
+    time: '11:31 EDT',
+    title: 'Race playtest performance diagnostics',
+    details: [
+      'Cached painted race tile-map stats by revision so large tracks such as Studio Sprint do not rescan every painted terrain cell each frame.',
+      'Skipped per-quad sun-shadow tint work for textured WebGL terrain while keeping plain geometry terrain lighting intact.',
+      'Expanded the race playtest HUD diagnostics to show visible terrain cells versus terrain candidates under the FPS and polygon counters.'
+    ]
+  },
+  {
+    date: '2026-07-07',
+    time: '08:21 EDT',
+    title: 'Race art skybox performance',
+    details: [
+      'Added a dedicated skybox render cache so selected project artwork is resolved once and reused across playtest frames.',
+      'Large skybox art is downsampled into a bounded render canvas before being drawn as the yaw-scrolling background.',
+      'Added a regression test that draws the same art skybox twice and verifies the project art source is loaded only once.'
+    ]
+  },
+  {
+    date: '2026-07-07',
+    time: '00:03 EDT',
+    title: 'Race skybox cardinal visibility',
+    details: [
+      'Changed the fallback skybox compass layer so each N/E/S/W marker only draws inside a narrow forward-facing cone.',
+      'Facing north now shows only N in the default skybox instead of wrapping E and W into the same view.',
+      'Added a regression test that draws the fallback parallax background at north and east headings and checks only the facing marker is visible.'
+    ]
+  },
+  {
+    date: '2026-07-06',
+    time: '22:56 EDT',
+    title: 'Race weather handling and art skyboxes',
+    details: [
+      'Added wet-gravel, mud, and slush race surfaces plus tire-grip entries so weather can convert asphalt, dirt, gravel, and snow into physically distinct wet/snow-covered surfaces.',
+      'Race weather now has an intensity setting and gradual playtest buildup; rain, storm, and snow visibly render precipitation while the same accumulated state changes road palettes and per-wheel grip.',
+      'Changed Race Editor Settings > Skybox from preset cycling to a project art picker, then renders the selected Pixel Editor art as a yaw-scrolling parallax background.'
+    ]
+  },
+  {
+    date: '2026-07-06',
+    time: '22:11 EDT',
+    title: 'Race shoulders and skybox settings',
+    details: [
+      'Changed race road cross-section sampling so left and right shoulders inherit the road-center elevation, keeping painted height terrain from making jagged shoulder edges beside the road.',
+      'Added the Race Editor Settings Skybox action and the first cardinal parallax renderer pass.',
+      'Kept fallback skybox colors available for races without selected project artwork.'
+    ]
+  },
+  {
+    date: '2026-07-06',
+    time: '16:44 EDT',
+    title: 'Race Editor portrait Track hot menu cleanup',
+    details: [
+      'Changed the portrait Track root so tapping Track closes the bottom menu and returns to the top-down race editor instead of opening another drawer.',
+      'Replaced selected-edge hot actions with Surface, Width, and Edit drill-downs; Surface exposes road surface and bumpiness, Width exposes road width choices, and Edit exposes insert/delete.',
+      'Simplified selected-node portrait actions so only the node is highlighted and node editing lives behind Edit, without the old Add/Move buttons or Edge/Node descriptive footer text.'
+    ]
+  },
+  {
+    date: '2026-07-06',
+    time: '13:52 EDT',
+    title: 'Race stock performance calibration',
+    details: [
+      'Replaced the Honda Civic Si test car with a 2023 Honda Civic Type R and updated dimensions, power, torque, gearing, and default runtime transmission data.',
+      'Added real-world stock performance target bands for WRX, BRZ, and Civic Type R so the simulator has explicit 0-60, quarter-mile, top-speed, lateral-g, and braking references.',
+      'Added runtime stock acceleration tests that measure 0-60 mph, quarter-mile elapsed time, and trap speed from the actual Race Editor playtest simulation.'
+    ]
+  },
+  {
+    date: '2026-07-06',
+    time: '10:18 EDT',
+    title: 'Race Editor top Play control',
+    details: [
+      'Removed the Race Editor Drive root menu from desktop, portrait, landscape, and controller menu specs.',
+      'Moved Race playtest entry to one top Play/Pause control instead of drawer or bottom menu buttons.',
+      'Kept race diagnostics and AI validation actions callable from tests without exposing them as editor menu buttons.'
+    ]
+  },
+  {
+    date: '2026-07-06',
+    time: '10:00 EDT',
+    title: 'Race Editor Track and Generate menu cleanup',
+    details: [
+      'Renamed the Race Editor root menu from Race to Track across shared desktop, portrait, landscape, and controller menu specs.',
+      'Added a Generate root menu containing Generate Race and all built-in track load actions.',
+      'Removed Ground and Elevation as root menu buttons while keeping ground paint, surface, and elevation tools reachable from Track.',
+      'Filtered Race Editor File menu rows so divider/separator entries no longer render as blank buttons.'
+    ]
+  },
+  {
+    date: '2026-07-06',
+    time: '09:02 EDT',
+    title: 'Race third-person renderer and thumbstick tuning pass',
+    details: [
+      'Third-person race rendering now derives its Mode 7 sampling anchor from the camera route projection so the nearest road bands follow the camera instead of the car position.',
+      'Road and shoulder polygons now clip against the camera near plane before projection, reducing rotation-dependent camera clipping without drawing synthetic road patches.',
+      'Race pause rows now render as plain text navigation with D-pad hints rather than visible editor-style row boxes.',
+      'Left-thumbstick steering is softened at speed while the D-pad steering path remains unchanged.'
+    ]
+  },
+  {
+    date: '2026-07-06',
+    time: '08:32 EDT',
+    title: 'Race pause menu and near-road renderer cleanup',
+    details: [
+      'Confirmed race playtest gamepad shifting uses B for higher gear and X for lower gear, with coverage kept on the race-specific controller path.',
+      'Removed the synthetic immediate camera road patch and moved near-road visibility back into the normal Mode 7 road-band renderer with closer near-plane sampling.',
+      'Changed the race pause menu to a level-style text menu and moved ABS, traction control, transmission, and telemetry under a dedicated Settings row with Back at the bottom.',
+      'Updated race renderer tests so closest road visibility is verified from real road bands rather than a fallback patch.'
+    ]
+  },
+  {
+    date: '2026-07-06',
+    time: '08:10 EDT',
+    title: 'Race camera, reverse, controls, and pause settings pass',
+    details: [
+      'Added WeatherTech WRX acceleration and braking sanity coverage so stock Subaru performance can be checked against the race physics after tuning changes.',
+      'Raised uphill camera clearance and suppresses the immediate near-road patch when the camera is far off-route, reducing ground clipping and bottom rectangle artifacts while reversing off-road.',
+      'Swapped racing gamepad X/B shifting, corrected reverse steering direction, and added right-thumbstick look with third-person car suppression while looking away.',
+      'Rebuilt the race pause overlay into an in-game style menu with a Car Settings submenu for ABS, traction control, transmission, and telemetry using Up/Down/Left/Right/A/B navigation.'
+    ]
+  },
+  {
+    date: '2026-07-05',
+    time: '23:22 EDT',
+    title: 'Race physical controller fullscreen and traction pass',
+    details: [
+      'Physical gamepad playtest now bypasses the simulated handheld shell entirely and renders the race fullscreen while keeping HUD and pause UI visible.',
+      'Race left-stick steering now reads axes through the shared getGamepadAxes input API so physical controllers keep steering after the simulated controls disappear.',
+      'Off-road race projection now avoids black fallback fills and rejects huge near-camera ground planes that can appear after driving far off the route.',
+      'Rear tire breakaway now persists longer, especially during handbrake or high-yaw events, so AWD and stability recovery cannot snap traction back immediately.'
+    ]
+  },
+  {
+    date: '2026-07-05',
+    time: '23:00 EDT',
+    title: 'Race gamepad steering, projection, and drift pass',
+    details: [
+      'Left thumbstick steering now uses a centered-stick release path with stronger decay and snap-to-zero thresholds so analog steering cannot feel stuck after release.',
+      'Race playtest hides the simulated D-pad and G/R buttons when a physical gamepad is connected, while keeping the handheld shell, screen, HUD, and pause controls visible.',
+      'Road projection now shares one depth-to-screen helper between normal road bands and the immediate near-camera patch, reducing the visual bend on straight roads.',
+      'Drift physics now tracks yaw angular velocity, reduces rear grip harder under handbrake, and lets rear lock build sustained spin unless the player countersteers.'
+    ]
+  },
+  {
+    date: '2026-07-05',
+    time: '22:17 EDT',
+    summary: 'Retuned race camera projection, left-stick steering, drift, hill force, and near-road rendering.',
+    details: [
+      'Race projection now reports third-person FOV around 45-55 degrees and first-person around 63-70 degrees, replacing the previous telephoto-feeling camera.',
+      'Left thumbstick input now writes steering intent, then ramps and decays steering target separately from D-pad nudging.',
+      'Handbrake input now applies stronger rear-wheel lock and rear-grip collapse so high-speed BRZ handbrake pulls produce sustained breakaway.',
+      'Road grade now contributes gravity force to acceleration, so steep uphill ramps can slow a car and roll it backward.',
+      'The closest camera road patch now uses perspective projection and clipped near points instead of collapsing into a flat rectangle.'
+    ]
+  },
+  {
+    date: '2026-07-05',
+    time: '19:16 EDT',
+    summary: 'Hid normal race telemetry by default and corrected high-speed steering physics.',
+    details: [
+      'Race telemetry now stays hidden during normal playtests unless enabled from the pause menu, while explicit diagnostic runs can still show diagnostic timing and telemetry overlays.',
+      'The race pause overlay now includes a Telemetry On/Off row alongside ABS, Traction Control, and Transmission.',
+      'High-speed front tire angle is now limited by wheelbase and available lateral grip before it affects yaw, replacing the too-sharp rotation blend with a bicycle-model yaw rate.',
+      'Focused tests now cover telemetry visibility, pause-menu telemetry toggling, and plausible 60 mph turning radius/lateral-G limits for WRX, BRZ, and Civic dimensions.'
+    ]
+  },
+  {
+    date: '2026-07-05',
+    time: '17:02 EDT',
+    summary: 'Retuned race steering and added runtime ABS/Traction Control controls.',
+    details: [
+      'Analog steering now turns in more slowly and uses a lower highway-speed authority cap, making full-stick controller input less jerky at speed.',
+      'Race playtests now carry ABS and Traction Control state, default both on, and expose both toggles alongside transmission mode in the pause overlay.',
+      'Traction Control now cuts excessive driven-wheel launch force unless disabled, while handbrake input bypasses the aids enough to sustain rear slip for spin-turn attempts.',
+      'The top playtest HUD button now opens the pause overlay instead of immediately ending the drive, matching the handheld pause flow.'
+    ]
+  },
+  {
+    date: '2026-07-05',
+    time: '09:18 EDT',
+    summary: 'Tightened race controller handbrake, per-wheel tire physics, third-person projection, and near-road rendering.',
+    details: [
+      'Real gamepad A now behaves as a held handbrake and clears immediately when released instead of remaining latched after other buttons are idle.',
+      'Race physics now classifies each wheel as road, shoulder, or off-road, then applies wheel-specific surface grip to acceleration, braking, lateral grip, wheelspin, brake lock, yaw pull, tire slip, and terrain resistance.',
+      'High-load braking, steering, and launch now share tire friction through a simple friction-circle cap, so BRZ brake-and-turn and dirt launches can overload the driven/rear tires.',
+      'Third-person playtest drawing now projects the visible car from the physical car world pose while the camera follows behind it, keeping rendered position closer to the physics state.',
+      'Mode 7 road and shoulder quads now go through a sanitized projected-quad draw helper to reduce nearest-band clipping, inverted polygons, and green ground lines bleeding through the road.'
+    ]
+  },
+  {
+    date: '2026-07-05',
+    time: '08:36 EDT',
+    summary: 'Improved race playtest tire breakaway, gamepad bindings, near-road rendering, and HUD details.',
+    details: [
+      'Plugged-in gamepads now use race-specific A handbrake, X shift up, B shift down, Select/Menu camera toggle, Start pause, RT throttle, and LT brake/reverse bindings.',
+      'High-speed hard steering now feeds a rear breakaway model so rear tires can lose grip, create audible slip, and make car yaw outrun velocity yaw instead of only reducing speed.',
+      'Race playtests now spawn behind the start line in both camera views, and projected near-road points stay renderable instead of dropping the closest quad.',
+      'Road shoulders now render as visible surface-aware bands, and the car health diagram uses a smaller engine block plus a longer horizontal transmission block.'
+    ]
+  },
+  {
+    date: '2026-07-04',
+    time: '22:50 EDT',
+    summary: 'Calibrated race physics stats, surfaces, damage contact, and shoulders.',
+    details: [
+      'Displayed tuning stats now stay near documented stock WRX, BRZ, and Civic targets instead of reporting the WRX as a 7-second car while playtest physics are faster.',
+      'Every exposed pre-race tuning row is now covered by a test that proves it changes either performance stats, brake force, gearing, or setup physics modifiers.',
+      'Dirt and gravel grip were raised for mixed-surface routes so tarmac and rain tires remain usable off pavement, while snow remains meaningfully slippery.',
+      'Side hazards now require lateral contact before applying panel damage, damage logs record the source, and road shoulders project closer to the road edge with surface-aware colors.'
+    ]
+  },
   {
     date: '2026-07-03',
     time: '23:48 EDT',

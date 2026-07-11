@@ -6,6 +6,7 @@ import {
   RACE_TIRE_COMPOUNDS,
   RACE_COMPETITION_MODES,
   RACE_TIME_OF_DAY,
+  createBuiltInRaceCars,
   createBuiltInTestRaces,
   createDefaultCar,
   createDefaultRace,
@@ -33,6 +34,11 @@ test('race data scaffold supports default races, cars, and surfaces', () => {
 
   assert.equal(project.races.length, 6);
   assert.equal(project.cars.length, 3);
+  assert.deepEqual(createBuiltInRaceCars().map((entry) => entry.id), [
+    'starter-rwd',
+    'subaru-brz-2022',
+    'honda-civic-type-r-2023'
+  ]);
   assert.deepEqual(project.races.map((entry) => entry.id), [
     'test-loop',
     'weathertech-raceway',
@@ -51,11 +57,11 @@ test('race data scaffold supports default races, cars, and surfaces', () => {
   assert.equal(project.cars[0].tuning.drivetrain, 'awd');
   assert.equal(project.cars[0].tuning.powerHp, 271);
   assert.equal(project.cars[0].tuning.torqueLbFt, 258);
-  assert.equal(project.cars[0].defaultTransmissionType, 'manual');
+  assert.equal(project.cars[0].defaultTransmissionType, 'automatic');
   assert.equal(project.cars[0].transmissions.manual.shiftMode, 'manual');
   assert.equal(project.cars[0].transmissions.automatic.shiftMode, 'automatic');
   assert.equal(project.cars[0].audio.engineSoundId, null);
-  assert.equal(project.cars[0].audio.engineProfile, 'wrx-flat-four-manual');
+  assert.equal(project.cars[0].audio.engineProfile, 'wrx-flat-four-cvt');
   assert.deepEqual(project.cars[0].setup.tireCompoundByWheel, { fl: 'tarmac', fr: 'tarmac', rl: 'tarmac', rr: 'tarmac' });
   assert.equal(RACE_TIRE_COMPOUNDS.some((compound) => compound.id === 'rain'), true);
   assert.equal(RACE_TIRE_COMPOUNDS.some((compound) => compound.id === 'snow'), true);
@@ -64,23 +70,22 @@ test('race data scaffold supports default races, cars, and surfaces', () => {
   assert.equal(project.cars[1].tuning.powerHp, 228);
   assert.equal(project.cars[1].tuning.torqueLbFt, 184);
   assert.equal(project.cars[1].transmissions.automatic.label, '6AT');
-  assert.equal(project.cars[2].name, '2022 Honda Civic Si');
+  assert.equal(project.cars[2].name, '2023 Honda Civic Type R');
   assert.equal(project.cars[2].tuning.drivetrain, 'fwd');
-  assert.equal(project.cars[2].tuning.powerHp, 200);
-  assert.equal(project.cars[2].tuning.torqueLbFt, 192);
-  assert.equal(project.cars[2].transmissions.automatic.label, 'CVT');
+  assert.equal(project.cars[2].tuning.powerHp, 315);
+  assert.equal(project.cars[2].tuning.torqueLbFt, 310);
+  assert.equal(project.cars[2].transmissions.automatic.label, 'Auto Assist');
   assert.equal(getSurfaceById('snow').grip < getSurfaceById('asphalt').grip, true);
 });
 
-test('race data scaffold supports playtest scenarios, hazards, AI, and co-driver calls', () => {
+test('race data scaffold supports playtest scenarios, hazardless Studio Sprint, AI, and co-driver calls', () => {
   const race = createDefaultRace();
 
   assert.equal(RACE_COMPETITION_MODES.includes(race.competition.mode), true);
   assert.equal(Array.isArray(race.competition.aiDrivers), true);
   assert.equal(race.competition.aiDrivers[0].carId, 'starter-rwd');
-  assert.equal(race.hazards.some((hazard) => hazard.type === 'zombie-pack'), true);
-  assert.equal(race.hazards.some((hazard) => hazard.type === 'jump'), true);
-  assert.equal(race.hazards.some((hazard) => hazard.type === 'damage-wall'), true);
+  assert.deepEqual(race.hazards, []);
+  assert.equal(race.road.segments.every((segment) => !Array.isArray(segment.hazardIds) || segment.hazardIds.length === 0), true);
   assert.equal(race.codriver.enabled, true);
   assert.equal(race.codriver.calls.length > 0, true);
   assert.equal(race.road.segments.some((segment) => segment.codriver), true);

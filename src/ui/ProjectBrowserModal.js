@@ -17,8 +17,8 @@ import { listBuiltInActorBrowserEntries } from '../content/builtinActorOverrides
 import { hydrateServerStorage } from './serverStorage.js';
 import { fileTypeBadge } from './uiSuite.js';
 
-const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors', sfx: 'SFX', cutscenes: 'Cutscenes' };
-const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes'];
+const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors', sfx: 'SFX', cutscenes: 'Cutscenes', races: 'Races' };
+const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races'];
 const PROJECT_BROWSER_SORTS = {
   modified: { label: 'Modified', direction: 'desc' },
   name: { label: 'Name', direction: 'asc' }
@@ -263,6 +263,7 @@ export function openProjectBrowser({
     let restoreConfirmTarget = null;
     let openingFileName = null;
     let openError = '';
+    const folderNameCache = new Map();
     const artPreviewCache = new Map();
     const actorPreviewCache = new Map();
     const previewTimers = new Set();
@@ -371,15 +372,39 @@ export function openProjectBrowser({
     body.style.touchAction = 'none';
 
     function cleanup(result) {
-      previewTimers.forEach((timer) => clearInterval(timer));
-      previewTimers.clear();
-      previewPending.clear();
-      overlay.remove();
-      body.style.overflow = previousOverflow;
-      body.style.touchAction = previousTouchAction;
-      previousActive?.focus?.();
+      try {
+        previewTimers.forEach((timer) => clearInterval(timer));
+        previewTimers.clear();
+        previewPending.clear();
+        overlay.remove();
+      } finally {
+        body.style.overflow = previousOverflow;
+        body.style.touchAction = previousTouchAction;
+      }
+      try {
+        previousActive?.focus?.({ preventScroll: true });
+      } catch (error) {
+        try { previousActive?.focus?.(); } catch (focusError) { /* ignore focus restore failures */ }
+      }
       if (!result) onCancel?.();
       resolve(result);
+    }
+
+    function getCachedFolderNameSet(folder) {
+      if (!folderNameCache.has(folder)) {
+        folderNameCache.set(folder, new Set(listEntries(folder).map((entry) => String(entry.name || '').toLowerCase())));
+      }
+      return folderNameCache.get(folder);
+    }
+
+    function cachedProjectFileExists(folder, name) {
+      const clean = sanitizeProjectFileName(name);
+      if (!clean) return false;
+      return getCachedFolderNameSet(folder).has(clean.toLowerCase());
+    }
+
+    function invalidateFolderNameCache(folder = state.folder) {
+      folderNameCache.delete(folder);
     }
 
     function renderBreadcrumb() {
@@ -501,8 +526,10 @@ export function openProjectBrowser({
     function renderFolder() {
       const folder = state.folder;
       const query = state.query.trim().toLowerCase();
+      const allEntries = listEntries(folder);
+      folderNameCache.set(folder, new Set(allEntries.map((entry) => String(entry.name || '').toLowerCase())));
       const entries = sortProjectBrowserEntries(
-        listEntries(folder).filter((entry) => !query || entry.name.toLowerCase().includes(query)),
+        allEntries.filter((entry) => !query || entry.name.toLowerCase().includes(query)),
         state.sortBy
       );
       info.textContent = state.loading
@@ -599,8 +626,9 @@ export function openProjectBrowser({
           const duplicateBtn = makeButton('Duplicate', 'project-browser-btn', () => {
             if (!PROJECT_FOLDERS.includes(folder)) return;
             const candidate = sanitizeProjectFileName(`${entry.name} Copy`);
-            if (!candidate || projectFileExists(folder, candidate)) return;
+            if (!candidate || cachedProjectFileExists(folder, candidate)) return;
             duplicateProjectFile(folder, entry.name, candidate);
+            invalidateFolderNameCache(folder);
             refresh();
           });
           duplicateBtn.disabled = Boolean(entry.deleted);
@@ -631,8 +659,9 @@ export function openProjectBrowser({
           renameRow.appendChild(input);
           renameRow.appendChild(makeButton('Apply', 'project-browser-btn', () => {
             const next = sanitizeProjectFileName(input.value);
-            if (!next || projectFileExists(folder, next)) return;
+            if (!next || cachedProjectFileExists(folder, next)) return;
             renameProjectFile(folder, entry.name, next);
+            invalidateFolderNameCache(folder);
             renameTarget = null;
             refresh();
           }));
@@ -808,8 +837,9 @@ export function openProjectBrowser({
       if (mode === 'saveAs' && state.view === 'folder') {
         actionRow.appendChild(makeButton('Save', 'project-browser-btn primary', () => {
           const name = sanitizeProjectFileName(saveInput.value) || sanitizeProjectFileName(initialName) || 'untitled';
-          onPick?.({ action: 'saveAs', folder: state.folder, name, overwrite: projectFileExists(state.folder, name) });
-          cleanup({ action: 'saveAs', folder: state.folder, name, overwrite: projectFileExists(state.folder, name) });
+          const overwrite = cachedProjectFileExists(state.folder, name);
+          onPick?.({ action: 'saveAs', folder: state.folder, name, overwrite });
+          cleanup({ action: 'saveAs', folder: state.folder, name, overwrite });
         }));
       }
       if (mode !== 'saveAs' && state.view === 'folder') {
@@ -831,7 +861,7 @@ export function openProjectBrowser({
 
     saveInput.addEventListener('input', () => {
       const saveName = sanitizeProjectFileName(saveInput.value);
-      const exists = saveName && projectFileExists(state.folder, saveName);
+      const exists = saveName && cachedProjectFileExists(state.folder, saveName);
       message.textContent = exists ? 'Name already exists. Use Overwrite on that file row, or choose a different name.' : '';
     });
 
@@ -847,7 +877,7 @@ export function openProjectBrowser({
       if (mode === 'saveAs' && event.key === 'Enter') {
         event.preventDefault();
         const name = sanitizeProjectFileName(saveInput.value) || sanitizeProjectFileName(initialName) || 'untitled';
-        cleanup({ action: 'saveAs', folder: state.folder, name, overwrite: projectFileExists(state.folder, name) });
+        cleanup({ action: 'saveAs', folder: state.folder, name, overwrite: cachedProjectFileExists(state.folder, name) });
       }
     });
 
