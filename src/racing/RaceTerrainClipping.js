@@ -80,6 +80,13 @@ export function clipRaceTerrainTriangleOutsideTrackCorridor(triangle = [], {
   if (!projection?.segment || !Number.isFinite(Number(projection.distance)) || !Number.isFinite(Number(projection.lateral))) {
     return [triangle];
   }
+  const visualRange = adapter.getVisualDistanceRange?.({ routeLength, runtimeType }) || {};
+  const minVisualDistance = runtimeType === 'circuit'
+    ? 0
+    : Number.isFinite(Number(visualRange.minVisualDistance)) ? Number(visualRange.minVisualDistance) : 0;
+  const maxVisualDistance = runtimeType === 'circuit'
+    ? routeLength
+    : Number.isFinite(Number(visualRange.maxVisualDistance)) ? Number(visualRange.maxVisualDistance) : routeLength;
   const section = adapter.getSurfaceSectionAtDistance?.(Number(projection.distance || 0), {
     routeLength,
     runtimeType,
@@ -116,7 +123,7 @@ export function clipRaceTerrainTriangleOutsideTrackCorridor(triangle = [], {
       + (Number(b.__trackLongitudinal || 0) - Number(a.__trackLongitudinal || 0)) * t;
     let seamDistance = centerDistance + localDistance;
     if (runtimeType === 'circuit') seamDistance = ((seamDistance % routeEnd) + routeEnd) % routeEnd;
-    else seamDistance = clamp(seamDistance, 0, routeEnd);
+    else seamDistance = clamp(seamDistance, minVisualDistance, maxVisualDistance);
     const seamSection = adapter.getSurfaceSectionAtDistance?.(seamDistance, {
       routeLength: routeEnd,
       runtimeType,
@@ -126,7 +133,7 @@ export function clipRaceTerrainTriangleOutsideTrackCorridor(triangle = [], {
       ? (seamSection?.transitionLeft || seamSection?.terrainLeft || seamSection?.shoulderLeft)
       : (seamSection?.transitionRight || seamSection?.terrainRight || seamSection?.shoulderRight);
     if (seam) {
-      return {
+      const welded = {
         ...seam,
         x: Number(seam.x || 0),
         z: Number(seam.z ?? seam.y ?? 0),
@@ -135,14 +142,22 @@ export function clipRaceTerrainTriangleOutsideTrackCorridor(triangle = [], {
         trackSeam: true,
         terrainClipDistance: seamDistance
       };
+      return adapter.weldSeamPoint?.(welded, {
+        distance: seamDistance,
+        side: boundaryLateral < 0 ? 'left' : 'right'
+      }) || welded;
     }
-    return {
+    const fallback = {
       x: Number(a.x || 0) + (Number(b.x || 0) - Number(a.x || 0)) * t,
       z: Number(a.z ?? a.y ?? 0) + (Number(b.z ?? b.y ?? 0) - Number(a.z ?? a.y ?? 0)) * t,
       elevation: adapter.clampElevation?.(Number(a.elevation || 0) + (Number(b.elevation || 0) - Number(a.elevation || 0)) * t) ?? 0,
       trackSeam: true,
       terrainClipDistance: seamDistance
     };
+    return adapter.weldSeamPoint?.(fallback, {
+      distance: seamDistance,
+      side: boundaryLateral < 0 ? 'left' : 'right'
+    }) || fallback;
   };
   const clipHalfPlane = (polygon = [], keepPoint, boundaryLateral) => {
     if (!polygon.length) return [];
