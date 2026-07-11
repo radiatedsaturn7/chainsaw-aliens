@@ -9,6 +9,12 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   recentMajorChanges: [
+    '2026-07-11 12:24 EDT - Race surface generation has been split out of RaceEditor into focused racing modules for road-deck profiles, corridor baking, terrain clipping, mesh validation, material batching, and vehicle surface contact; Studio Sprint WebGL Track now reuses baked visible terrain and packed vertex buffers so the terrain+texture FPS regression stays above 45 FPS.',
+    '2026-07-11 11:54 EDT - Race playtest now maintains a deterministic 3D-contact vehicle physics state under the existing billboard visuals: four canonical-surface wheel contacts drive suspension compression, contact loss, pitch/roll, body height, and camera/body anchoring while preserving current drivetrain, transmission, brake, tire slip, and control mappings.',
+    '2026-07-11 11:24 EDT - Race authoring now has a canonical surface preview/debug path that reuses the playtest world bake revision, shows road/margin/shoulder/transition bands plus validation counters, and adds a browser regression for a synthetic ridge-crossing road.',
+    '2026-07-11 10:57 EDT - Race material-band semantics are now shared across rendering, wheel physics, and tire FX: margin stays apron/road-deck, shoulder uses adjacent terrain material and friction, and transition starts exactly at the shoulder outer edge.',
+    '2026-07-11 10:48 EDT - Race world terrain bake now splits raw terrain triangles against the canonical transition-outer corridor instead of dropping or keeping whole quads by center/corner heuristics, and retained terrain vertices snap to canonical seam points.',
+    '2026-07-11 10:40 EDT - Race rendering and wheel-surface physics now share a canonical RaceSurfaceModel with a robust centerline deck profile, explicit surface-geometry revision key, raw terrain outside transitions, and regression coverage proving road/shoulder render and wheel-contact elevations agree.',
     '2026-07-11 08:38 EDT - Race WebGL Track now uses magenta as the default uncovered-background sentinel again, widens the Studio Sprint world terrain bake, raises the visible terrain budget, and adds route-sampled tests proving camera-visible terrain chunks are baked and not budget-dropped.',
     '2026-07-11 07:42 EDT - Superseded diagnostic-only attempt: baked terrain visibility started scanning every visible cell before applying the budget, but the magenta behavior was corrected at 08:38 to stay default-on.',
     '2026-07-11 01:06 EDT - Race magenta diagnostics now drive Studio Sprint forward and backward through dense route samples, checking the full rendered canvas for any visible magenta pixel and attaching only failing diagnostic frames.',
@@ -886,6 +892,64 @@ export const LATEST_MAJOR_WORK = {
 };
 
 export const LATEST_CHANGES = [
+  {
+    date: '2026-07-11',
+    time: '11:54 EDT',
+    title: 'Race playtest uses deterministic 3D wheel contact physics',
+    details: [
+      'Added a focused RaceVehiclePhysics module with fixed substeps, body x/y/z velocity, yaw/pitch/roll angular state, sprung mass, and four wheel suspension/contact records.',
+      'Each wheel now transforms its local attachment point into world space, samples the canonical race surface for elevation, normal, region, material, and friction, and feeds spring/damper compression plus tire slip/load data back into the playtest session.',
+      'Spawn and route-center reset rebuild the 3D body state above the canonical surface, while the camera and tire effects anchor to the physical body/contact state.',
+      'The car remains rendered as the existing 2D billboard/procedural sprite; the billboard does not define physics dimensions or collisions.',
+      'Added deterministic tests for uphill/downhill following, pitch, roll, contact loss and landing, road/apron/shoulder friction boundaries, and identical-input replay.'
+    ]
+  },
+  {
+    date: '2026-07-11',
+    time: '11:24 EDT',
+    title: 'Race editor surface preview shares playtest geometry',
+    details: [
+      'Added race editor debug preview controls for canonical surface bands, seams, normals, elevation labels, wheel contacts, validation counters, and an optional 3D preview.',
+      'The top-down race editor now derives road, margin, shoulder, and transition outlines from canonical cross-sections instead of treating editor stroke widths as the authoritative corridor.',
+      'Editor preview bakes now share the same surface geometry revision as playtest world bakes and invalidate when terrain or surface geometry changes.',
+      'Added unit coverage for shared preview/playtest revisions plus a browser regression that renders a synthetic ridge-crossing road from the canonical surface bake.'
+    ]
+  },
+  {
+    date: '2026-07-11',
+    time: '10:57 EDT',
+    title: 'Race material bands use one classifier',
+    details: [
+      'RaceSurfaceModel now exposes the shared lateral classifier for road, margin, shoulder, transition, and terrain with canonical material, friction, normal, and elevation outputs.',
+      'Wheel surface/contact state now preserves margin and shoulder regions instead of flattening apron back to road or reclassifying shoulder independently.',
+      'Shoulder meshes now use local adjacent terrain material/art and the same world-space UV scale convention used by terrain.',
+      'Tire FX now treats apron as paved margin and shoulder/transition/terrain as loose-surface regions from the same canonical classification.',
+      'Added tests covering all margin/shoulder enabled combinations plus apron wheel classification, shoulder terrain material, deck-level shoulder geometry, and transition start boundaries.'
+    ]
+  },
+  {
+    date: '2026-07-11',
+    time: '10:48 EDT',
+    title: 'Race terrain clips to the canonical corridor',
+    details: [
+      'Replaced whole-terrain-quad road-corridor skipping in the world bake with triangle splitting against the canonical transition-outer corridor.',
+      'Terrain triangles that cross the corridor now calculate seam intersections, snap those intersections to RaceSurfaceModel transition vertices, and triangulate only the retained exterior polygons.',
+      'WebGL terrain upload now accepts retained triangle polygons instead of assuming every terrain cell is a four-point quad.',
+      'Added focused coverage for corridor-interior removal, non-degenerate retained triangles, seam vertices, and existing roadside seam behavior.'
+    ]
+  },
+  {
+    date: '2026-07-11',
+    time: '10:40 EDT',
+    title: 'Race surface model is canonical',
+    details: [
+      'Added src/racing/RaceSurfaceModel.js as the shared source for raw terrain samples, road-deck samples, cross-section boundaries, track-region samples, and world-surface projection.',
+      'RaceEditor road corridor, stitched terrain, cross-section, wheel-surface, wheel-contact, decal, and scenery grounding queries now delegate through that model so rendering and physics use the same road/margin/shoulder/transition order.',
+      'Reworked the roadbed builder to use a robust centerline terrain sample instead of the maximum terrain height across the full corridor, so one-sided hills no longer lift the whole road deck.',
+      'Added a surface geometry revision key covering path, route type, road width, margin/shoulder modes and widths, transition width, route length, and terrain revision.',
+      'Added focused unit coverage for canonical region order, cache key invalidation, one-sided hill deck support, and renderer-vs-wheel-contact elevation agreement.'
+    ]
+  },
   {
     date: '2026-07-11',
     time: '08:38 EDT',
