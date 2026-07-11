@@ -1249,6 +1249,33 @@ export default class RaceEditor {
     return RACE_GROUND_RENDERER_IDS.has(source) ? source : RACE_GROUND_RENDERER_DEFAULT;
   }
 
+  getRaceVisualDistanceRange({
+    routeLength = this.getRaceRouteLength(),
+    runtimeType = this.getActiveRaceRuntimeType(),
+    startBackDistance = this.playtestSession?.startBackDistance
+  } = {}) {
+    const routeEnd = Math.max(1, Number(routeLength || this.getRaceRouteLength()) || 1);
+    if (runtimeType === 'circuit') {
+      return {
+        minVisualDistance: 0,
+        maxVisualDistance: routeEnd,
+        startVisualExtension: 0,
+        finishVisualExtension: 0
+      };
+    }
+    const startVisualExtension = Math.max(
+      RACE_DESTINATION_VISUAL_EXTENSION_M,
+      Math.max(0, Number(startBackDistance || 0))
+    );
+    const finishVisualExtension = RACE_DESTINATION_VISUAL_EXTENSION_M;
+    return {
+      minVisualDistance: -startVisualExtension,
+      maxVisualDistance: routeEnd + finishVisualExtension,
+      startVisualExtension,
+      finishVisualExtension
+    };
+  }
+
   setRaceGroundRenderer(renderer = RACE_GROUND_RENDERER_DEFAULT) {
     if (!this.selectedRace) return;
     const next = RACE_GROUND_RENDERER_IDS.has(String(renderer)) ? String(renderer) : RACE_GROUND_RENDERER_DEFAULT;
@@ -2448,6 +2475,8 @@ export default class RaceEditor {
       this.raceSurfaceModel = new RaceSurfaceModel({
         flatJoinWidthM: RACE_ROAD_TERRAIN_FLAT_JOIN_WIDTH_M,
         slopeBlendWidthM: RACE_ROAD_TERRAIN_SLOPE_BLEND_WIDTH_M,
+        maxCutSideSlope: 0.5,
+        maxFillSideSlope: 0.5,
         normalSampleStepM: 1,
         clampElevation: (value) => this.clampRaceElevation(value),
         getActiveRuntimeType: () => this.getActiveRaceRuntimeType(),
@@ -6148,17 +6177,19 @@ export default class RaceEditor {
       if (index % 2 === 0 || index === samples.length - 1) addChunkRange(sample);
       if (index % 8 === 0 || index === samples.length - 1) addChunkRange(sample, { wide: true });
     });
-    addChunkRange(this.getRaceWorldPoseAtDistance(-Math.max(0, Number(this.playtestSession?.startBackDistance || 0)), {
+    const visualRange = this.getRaceVisualDistanceRange({ routeLength: routeEnd, runtimeType });
+    addChunkRange(this.getRaceWorldPoseAtDistance(visualRange.minVisualDistance, {
       runtimeType,
       allowVisualExtension: true
-    }));
-    addChunkRange(this.getRaceWorldPoseAtDistance(routeEnd, {
+    }), { wide: true });
+    addChunkRange(this.getRaceWorldPoseAtDistance(visualRange.maxVisualDistance, {
       runtimeType,
       allowVisualExtension: true
-    }));
+    }), { wide: true });
     const terrainBaseCells = [];
     const terrainRefinementCells = [];
     const terrainChunks = [];
+    const terrainSeamVertexCache = new Map();
     const maxBakeCells = detailEnabled ? 64000 : 52000;
     const pushTerrainCell = (target, triangle, {
       chunk,
@@ -6207,7 +6238,8 @@ export default class RaceEditor {
       const baseTriangles = this.getRaceTerrainTrianglesOutsideTrackCorridor(chunk.fullPoints, {
         runtimeType,
         routeLength: routeEnd,
-        includeTransition: true
+        includeTransition: true,
+        seamVertexCache: terrainSeamVertexCache
       });
       baseTriangles.forEach((triangle, triangleIndex) => pushTerrainCell(terrainBaseCells, triangle, {
         chunk,
@@ -6236,7 +6268,8 @@ export default class RaceEditor {
           const retainedTriangles = this.getRaceTerrainTrianglesOutsideTrackCorridor(points, {
             runtimeType,
             routeLength: routeEnd,
-            includeTransition: true
+            includeTransition: true,
+            seamVertexCache: terrainSeamVertexCache
           });
           retainedTriangles.forEach((triangle, triangleIndex) => {
             pushTerrainCell(refinementGroup, triangle, {
@@ -6377,7 +6410,7 @@ export default class RaceEditor {
     const visibleBase = [];
     const visibleRefinement = [];
     const limit = Math.max(1, Number(maxTerrainTriangles ?? maxTerrainCells) || 1400);
-    const cacheBucket = Math.max(4, terrainSize / 8);
+    const cacheBucket = Math.max(4, terrainSize / 4);
     const cacheKey = [
       Math.round(Number(camera.x || 0) / cacheBucket),
       Math.round(Number(camera.z || 0) / cacheBucket),
@@ -7733,7 +7766,9 @@ export default class RaceEditor {
         transitionLeft: baked.transitionLeft || baked.terrainLeft,
         transitionRight: baked.transitionRight || baked.terrainRight,
         terrainLeft: baked.terrainLeft || baked.transitionLeft,
-        terrainRight: baked.terrainRight || baked.transitionRight
+        terrainRight: baked.terrainRight || baked.transitionRight,
+        metrics: baked.metrics,
+        deck: baked.deck
       };
     }
     const center = this.getRaceWorldPoseAtDistance(distance, {
@@ -17561,13 +17596,14 @@ export default class RaceEditor {
   getRaceTerrainTrianglesOutsideTrackCorridor(points = [], {
     runtimeType = this.getActiveRaceRuntimeType(),
     routeLength = this.getRaceRouteLength(),
-    includeTransition = true
+    includeTransition = true,
+    seamVertexCache = null
   } = {}) {
     return getRaceTerrainTrianglesOutsideTrackCorridorModule(points, {
       runtimeType,
       routeLength,
       includeTransition,
-      adapter: this.getRaceTerrainClippingAdapter()
+      adapter: this.getRaceTerrainClippingAdapter({ seamVertexCache, routeLength, runtimeType })
     });
   }
 
@@ -17582,17 +17618,19 @@ export default class RaceEditor {
   clipRaceTerrainTriangleOutsideTrackCorridor(triangle = [], {
     runtimeType = this.getActiveRaceRuntimeType(),
     routeLength = this.getRaceRouteLength(),
-    includeTransition = true
+    includeTransition = true,
+    seamVertexCache = null
   } = {}) {
     return clipRaceTerrainTriangleOutsideTrackCorridorModule(triangle, {
       runtimeType,
       routeLength,
       includeTransition,
-      adapter: this.getRaceTerrainClippingAdapter()
+      adapter: this.getRaceTerrainClippingAdapter({ seamVertexCache, routeLength, runtimeType })
     });
   }
 
-  getRaceTerrainClippingAdapter() {
+  getRaceTerrainClippingAdapter({ seamVertexCache = null, routeLength = this.getRaceRouteLength(), runtimeType = this.getActiveRaceRuntimeType() } = {}) {
+    const seamCache = seamVertexCache || new Map();
     return {
       getRouteLength: () => this.getRaceRouteLength(),
       projectWorldToTrack: (point) => this.getRaceRouteProjectionForWorldPoint(point),
@@ -17600,7 +17638,20 @@ export default class RaceEditor {
       getCorridorMetrics: (sample, segment) => this.getRaceTrackCorridorMetrics(sample, segment),
       getRightVector: (yaw) => this.getRaceRightVector(yaw),
       getForwardVector: (yaw) => this.getRaceForwardVector(yaw),
-      clampElevation: (value) => this.clampRaceElevation(value)
+      clampElevation: (value) => this.clampRaceElevation(value),
+      getVisualDistanceRange: () => this.getRaceVisualDistanceRange({ routeLength, runtimeType }),
+      weldSeamPoint: (point = {}, { distance = point.terrainClipDistance, side = point.lateralOffset < 0 ? 'left' : 'right' } = {}) => {
+        const key = [
+          side,
+          Math.round(Number(distance || 0) * 1000),
+          Math.round(Number(point.x || 0) * 1000),
+          Math.round(Number(point.z ?? point.y ?? 0) * 1000)
+        ].join(':');
+        const cached = seamCache.get(key);
+        if (cached) return cached;
+        seamCache.set(key, point);
+        return point;
+      }
     };
   }
 
@@ -17712,7 +17763,7 @@ export default class RaceEditor {
     const h = Number(bounds.h || 1);
     const horizon = Number(bounds.y || 0) + h * (Number(camera.horizonRatio) || 0.31);
     return clamp(
-      Math.floor(horizon + h * 0.115),
+      Math.floor(horizon),
       Number(bounds.y || 0),
       Number(bounds.y || 0) + h
     );
@@ -18881,6 +18932,62 @@ export default class RaceEditor {
     }
   }
 
+  getRaceThreeStaticWorldKey(cells = [], {
+    textureWorldM = 2.5,
+    artRef = '',
+    textured = false,
+    useSunShading = false,
+    shoulderMeshes = [],
+    roadMeshes = [],
+    boundaryMeshes = [],
+    roadPaintMeshes = [],
+    trackFurnitureMeshes = []
+  } = {}) {
+    const cellKey = cells.visibleTerrainCacheKey
+      || cells.map((cell) => cell?.key || cell?.chunkKey || '').join('|');
+    const meshSignature = (meshes = []) => `${meshes.length}:${meshes.map((mesh) => [
+      mesh.source || '',
+      mesh.artRef || '',
+      mesh.textured ? 1 : 0,
+      Math.round(Number(mesh.textureWorldM || textureWorldM) * 1000),
+      Array.isArray(mesh.points) ? mesh.points.length : 0
+    ].join(',')).join(';')}`;
+    return [
+      this.playtestSession?.worldBake?.surfaceRevision || this.getRaceSurfaceGeometryRevisionKey(),
+      cellKey,
+      Math.round(Number(textureWorldM || 0) * 10000),
+      artRef,
+      textured ? 1 : 0,
+      useSunShading ? 1 : 0,
+      this.ensureRaceTileMap()?.revision || 0,
+      this.getRaceGroundTextureFilterMode(),
+      meshSignature(shoulderMeshes),
+      meshSignature(roadMeshes),
+      meshSignature(boundaryMeshes),
+      meshSignature(roadPaintMeshes),
+      meshSignature(trackFurnitureMeshes)
+    ].join('::three-static::');
+  }
+
+  alignRaceThreeCameraHorizon(threeCamera = null, camera = {}, cameraYaw = 0, bounds = {}) {
+    if (!threeCamera || !THREE?.Vector3) return;
+    threeCamera.updateMatrixWorld?.(true);
+    const horizonRatio = clamp(Number(camera.horizonRatio) || 0.31, 0, 1);
+    const desiredNdcY = 1 - horizonRatio * 2;
+    const forward = this.getRaceForwardVector(cameraYaw);
+    const probe = new THREE.Vector3(
+      Number(camera.x || 0) + Number(forward.x || 0) * 10000,
+      0,
+      Number(camera.z || 0) + Number(forward.z || 0) * 10000
+    );
+    probe.project(threeCamera);
+    const currentNdcY = Number(probe.y);
+    if (!Number.isFinite(currentNdcY)) return;
+    const delta = clamp(desiredNdcY - currentNdcY, -1.5, 1.5);
+    threeCamera.projectionMatrix.elements[9] += delta;
+    threeCamera.projectionMatrixInverse?.copy?.(threeCamera.projectionMatrix)?.invert?.();
+  }
+
   getRaceThreeTexture(renderer = null, artRef = '') {
     const clean = String(artRef || '').trim();
     if (!renderer || !clean) return null;
@@ -18898,6 +19005,7 @@ export default class RaceEditor {
     texture.generateMipmaps = true;
     texture.needsUpdate = true;
     renderer.textureCache.set(key, texture);
+    renderer.textureUploads = (Number(renderer.textureUploads) || 0) + 1;
     if (renderer.textureCache.size > 24) {
       const first = renderer.textureCache.entries().next().value;
       if (first) {
@@ -19108,44 +19216,76 @@ export default class RaceEditor {
     const height = Math.max(1, Math.round(Number(bounds.h || 1)));
     const renderer = this.getRaceThreeWorldRenderer(width, height);
     if (!renderer?.threeRenderer) return false;
-    const geometry = this.getRaceThreeTerrainGeometry(cells, {
+    const textureUploadStart = Number(renderer.textureUploads || 0);
+    const staticKey = this.getRaceThreeStaticWorldKey(cells, {
       textureWorldM,
-      tileMap,
+      artRef,
+      textured,
       useSunShading,
-      textured
+      shoulderMeshes,
+      roadMeshes,
+      boundaryMeshes,
+      roadPaintMeshes,
+      trackFurnitureMeshes
     });
-    if (!geometry) return false;
-    this.clearRaceThreeScene(renderer);
-    const texture = textured ? this.getRaceThreeTexture(renderer, artRef) : null;
-    const material = this.getRaceThreeMaterial(renderer, {
-      texture,
-      depthWrite: true,
-      polygonOffset: false
-    });
-    if (!material) return false;
-    const terrainMesh = new THREE.Mesh(geometry, material);
-    terrainMesh.renderOrder = 0;
-    renderer.scene.add(terrainMesh);
-    const terrainTriangles = Math.floor((geometry.getAttribute('position')?.count || 0) / 3);
-    const addGroup = (meshes, name, options = {}) => {
-      const beforePolygons = Number(stats?.polygons || 0);
-      const beforeDrawCalls = Number(stats?.drawCalls || 0);
-      const result = this.addRaceThreeMeshGroups(renderer, meshes, {
+    let terrainTriangles = Number(renderer.staticTerrainTriangles || 0);
+    let staticPolygons = Number(renderer.staticPolygons || 0);
+    let staticDrawCalls = Number(renderer.staticDrawCalls || 0);
+    const buildStartMs = this.getNowMs();
+    if (renderer.staticWorldKey !== staticKey) {
+      this.clearRaceThreeScene(renderer);
+      const geometry = this.getRaceThreeTerrainGeometry(cells, {
         textureWorldM,
-        stats,
-        ...options
+        tileMap,
+        useSunShading,
+        textured
       });
-      if (stats && name) {
-        stats[`${name}Polygons`] = Math.max(0, Number(stats.polygons || 0) - beforePolygons);
-        stats[`${name}DrawCalls`] = Math.max(0, Number(stats.drawCalls || 0) - beforeDrawCalls);
-      }
-      return result;
-    };
-    addGroup(shoulderMeshes, 'threeShoulder', { renderOrder: 1 });
-    addGroup(roadMeshes, 'threeRoad', { renderOrder: 2 });
-    addGroup(boundaryMeshes, 'threeBoundary', { renderOrder: 3 });
-    addGroup(trackFurnitureMeshes, 'trackFurniture', { renderOrder: 4 });
-    addGroup(roadPaintMeshes, 'roadPaint', { defaultDepthWrite: false, defaultPolygonOffset: true, renderOrder: 5 });
+      if (!geometry) return false;
+      const texture = textured ? this.getRaceThreeTexture(renderer, artRef) : null;
+      const material = this.getRaceThreeMaterial(renderer, {
+        texture,
+        depthWrite: true,
+        polygonOffset: false
+      });
+      if (!material) return false;
+      const terrainMesh = new THREE.Mesh(geometry, material);
+      terrainMesh.renderOrder = 0;
+      renderer.scene.add(terrainMesh);
+      terrainTriangles = Math.floor((geometry.getAttribute('position')?.count || 0) / 3);
+      const buildStats = { polygons: terrainTriangles, drawCalls: 1 };
+      const addGroup = (meshes, name, options = {}) => {
+        const beforePolygons = Number(buildStats.polygons || 0);
+        const beforeDrawCalls = Number(buildStats.drawCalls || 0);
+        const result = this.addRaceThreeMeshGroups(renderer, meshes, {
+          textureWorldM,
+          stats: buildStats,
+          ...options
+        });
+        if (stats && name) {
+          stats[`${name}Polygons`] = Math.max(0, Number(buildStats.polygons || 0) - beforePolygons);
+          stats[`${name}DrawCalls`] = Math.max(0, Number(buildStats.drawCalls || 0) - beforeDrawCalls);
+        }
+        return result;
+      };
+      addGroup(shoulderMeshes, 'threeShoulder', { renderOrder: 1 });
+      addGroup(roadMeshes, 'threeRoad', { renderOrder: 2 });
+      addGroup(boundaryMeshes, 'threeBoundary', { renderOrder: 3 });
+      addGroup(trackFurnitureMeshes, 'trackFurniture', { renderOrder: 4 });
+      addGroup(roadPaintMeshes, 'roadPaint', { defaultDepthWrite: false, defaultPolygonOffset: true, renderOrder: 5 });
+      staticPolygons = Number(buildStats.polygons || 0);
+      staticDrawCalls = Number(buildStats.drawCalls || 0);
+      renderer.staticWorldKey = staticKey;
+      renderer.staticTerrainTriangles = terrainTriangles;
+      renderer.staticPolygons = staticPolygons;
+      renderer.staticDrawCalls = staticDrawCalls;
+      renderer.staticGeometryRebuilds = (Number(renderer.staticGeometryRebuilds) || 0) + 1;
+      if (stats) stats.staticGeometryRebuilds = (Number(stats.staticGeometryRebuilds) || 0) + 1;
+    } else if (stats) {
+      stats.geometryCacheHits = (Number(stats.geometryCacheHits) || 0) + 1;
+    }
+    if (stats && buildStartMs > 0) {
+      stats.geometryBuildMs = (Number(stats.geometryBuildMs) || 0) + Math.max(0, this.getNowMs() - buildStartMs);
+    }
     const forward = this.getRaceForwardVector(cameraYaw);
     const cameraY = this.getRaceThreeElevationM(camera);
     renderer.camera.position.set(Number(camera.x || 0), cameraY, Number(camera.z || 0));
@@ -19160,19 +19300,23 @@ export default class RaceEditor {
       Number(camera.z || 0) + forward.z * 80
     );
     renderer.camera.updateProjectionMatrix();
+    this.alignRaceThreeCameraHorizon(renderer.camera, camera, cameraYaw, bounds);
     renderer.threeRenderer.clear(true, true, true);
     const renderStartMs = this.getNowMs();
     renderer.threeRenderer.render(renderer.scene, renderer.camera);
+    const compositeStartMs = this.getNowMs();
     const previousSmoothing = ctx.imageSmoothingEnabled;
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(renderer.canvas, Number(bounds.x || 0), Number(bounds.y || 0), Number(bounds.w || 1), Number(bounds.h || 1));
     ctx.imageSmoothingEnabled = previousSmoothing;
     if (stats) {
+      if (compositeStartMs > 0) stats.compositeMs = Math.max(0, this.getNowMs() - compositeStartMs);
       stats.threeTerrainRenderer = 1;
       stats.threeTerrainCells = cells.length;
       stats.threeTerrainPolygons = terrainTriangles;
-      stats.polygons = (Number(stats.polygons) || 0) + terrainTriangles;
-      stats.drawCalls = (Number(stats.drawCalls) || 0) + 1;
+      stats.polygons = (Number(stats.polygons) || 0) + staticPolygons;
+      stats.drawCalls = (Number(stats.drawCalls) || 0) + staticDrawCalls;
+      stats.textureUploads = (Number(stats.textureUploads) || 0) + Math.max(0, Number(renderer.textureUploads || 0) - textureUploadStart);
       if (renderStartMs > 0) stats.threeRenderMs = Math.max(0, this.getNowMs() - renderStartMs);
     }
     return true;

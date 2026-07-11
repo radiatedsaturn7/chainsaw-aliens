@@ -54,6 +54,46 @@ test('Race surface model exposes canonical road margin shoulder transition order
   assert.equal(model.sampleTrack(0, 9.25).region, 'terrain');
 });
 
+test('Race surface model widens transition by cut and fill side slope', () => {
+  const model = new RaceSurfaceModel({
+    flatJoinWidthM: 0.5,
+    slopeBlendWidthM: 2,
+    maxCutSideSlope: 0.5,
+    maxFillSideSlope: 0.25,
+    getRouteLength: () => 100,
+    getRoadHalfWidth: () => 3,
+    getMarginWidth: () => 0,
+    getShoulderWidth: () => 1,
+    getBlendWidth: () => 2.5,
+    sampleTerrain: () => 0,
+    sampleRawTerrain: () => 0,
+    getSurfaceById: (id) => ({ id, grip: 1 }),
+    getEffectiveSurfaceId: (id) => id,
+    sampleRoadbedProfileAtDistance: () => ({
+      x: 0,
+      z: 0,
+      yaw: Math.PI / 2,
+      elevation: 1,
+      leftTerrainElevation: 3,
+      rightTerrainElevation: -1,
+      grade: 0,
+      roadHalfWidth: 3,
+      marginWidth: 0,
+      shoulderWidth: 1,
+      blendWidth: 2.5,
+      segment: { surface: 'asphalt' }
+    })
+  });
+
+  const metrics = model.getCorridorMetrics(model.sampleDeckAtDistance(0));
+
+  assert.equal(metrics.leftTransitionWidth >= 4, true);
+  assert.equal(metrics.rightTransitionWidth >= 8, true);
+  assert.equal(metrics.rightTransitionEnd > metrics.leftTransitionEnd, true);
+  assert.equal(model.sampleTrack(0, -metrics.shoulderEnd - 0.1).region, 'transition');
+  assert.equal(model.sampleTrack(0, metrics.rightTransitionEnd + 0.1).region, 'terrain');
+});
+
 test('Race surface classifier handles every margin and shoulder enabled combination', () => {
   const createModel = ({ marginWidth = 0, shoulderWidth = 0 } = {}) => new RaceSurfaceModel({
     flatJoinWidthM: 0.5,
@@ -4733,19 +4773,45 @@ test('Race playtest holds WebGL render scale during pre-start launch', () => {
 test('Race playtest prewarms terrain from the negative visual start distance', () => {
   const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
   editor.startPlaytest('starter-rwd');
-  const calls = [];
-  const originalGetPose = editor.getRaceWorldPoseAtDistance.bind(editor);
-  editor.getRaceWorldPoseAtDistance = (distance, options) => {
-    calls.push({ distance, options });
-    return originalGetPose(distance, options);
-  };
-
   editor.prewarmRacePlaytestRenderResources();
+  const routeLength = editor.getRaceRouteLength();
+  const range = editor.getRaceVisualDistanceRange({
+    routeLength,
+    runtimeType: editor.playtestSession.routeRuntimeType,
+    startBackDistance: editor.playtestSession.startBackDistance
+  });
 
-  assert.equal(calls.length > 0, true);
-  assert.equal(calls[0].distance, editor.getRaceVisualTravelDistance(editor.playtestSession));
-  assert.equal(calls[0].distance < 0, true);
-  assert.equal(calls[0].options.allowVisualExtension, true);
+  assert.equal(range.minVisualDistance < 0, true);
+  assert.equal(editor.playtestSession.worldBake?.terrainCells?.length > 0, true);
+  assert.equal(editor.playtestSession.worldBake?.runtimeType, editor.playtestSession.routeRuntimeType);
+});
+
+test('Race visual range keeps signed destination extension available to terrain clipping', () => {
+  const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
+  editor.startPlaytest('starter-rwd');
+  const routeLength = editor.getRaceRouteLength();
+  const range = editor.getRaceVisualDistanceRange({
+    routeLength,
+    runtimeType: 'destination',
+    startBackDistance: editor.playtestSession.startBackDistance
+  });
+  const beforeStart = editor.getRaceSurfaceSectionAtDistance(range.minVisualDistance, {
+    routeLength,
+    runtimeType: 'destination',
+    allowVisualExtension: true
+  });
+  const afterFinish = editor.getRaceSurfaceSectionAtDistance(range.maxVisualDistance, {
+    routeLength,
+    runtimeType: 'destination',
+    allowVisualExtension: true
+  });
+
+  assert.equal(range.minVisualDistance < 0, true);
+  assert.equal(range.maxVisualDistance > routeLength, true);
+  assert.equal(beforeStart.center.distance, range.minVisualDistance);
+  assert.equal(afterFinish.center.distance, range.maxVisualDistance);
+  assert.equal(raceEditorSource.includes('getRaceVisualDistanceRange'), true);
+  assert.equal(raceEditorSource.includes('weldSeamPoint'), true);
 });
 
 test('Race playtest keeps road center and width stable through a slow first frame', () => {
@@ -6589,6 +6655,16 @@ test('Race Three camera FOV is narrowed per playtest view', () => {
   assert.equal(editor.getRaceThreeCameraFov('first-person'), 58);
   assert.equal(raceEditorSource.includes('renderer.camera.fov = this.getRaceThreeCameraFov(cameraView);'), true);
   assert.equal(raceEditorSource.includes('cameraView,'), true);
+});
+
+test('Race Three playtest caches static geometry and aligns projection horizon', () => {
+  assert.equal(raceEditorSource.includes('getRaceThreeStaticWorldKey'), true);
+  assert.equal(raceEditorSource.includes('renderer.staticWorldKey !== staticKey'), true);
+  assert.equal(raceEditorSource.includes('stats.geometryCacheHits'), true);
+  assert.equal(raceEditorSource.includes('stats.staticGeometryRebuilds'), true);
+  assert.equal(raceEditorSource.includes('alignRaceThreeCameraHorizon'), true);
+  assert.equal(raceEditorSource.includes('projectionMatrix.elements[9]'), true);
+  assert.equal(raceEditorSource.includes('this.clearRaceThreeScene(renderer);'), true);
 });
 
 test('Race WebGL Track mesh shader uses high precision UV interpolation for close terrain', () => {
@@ -11470,15 +11546,15 @@ test('Race Editor bakes terrain chunks and chooses adaptive terrain detail by di
   }), 4);
 });
 
-test('Race Editor lowers painted terrain below the projection horizon so skybox hides far stretched rows', () => {
+test('Race Editor starts projected terrain at the canonical projection horizon', () => {
   const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
   const bounds = { x: 0, y: 0, w: 390, h: 240 };
   const camera = { horizonRatio: 0.31 };
   const projectionHorizon = bounds.y + bounds.h * camera.horizonRatio;
   const terrainTop = editor.getRaceProjectedTerrainTop(bounds, camera);
 
-  assert.equal(terrainTop > projectionHorizon, true);
-  assert.equal(terrainTop, Math.floor(projectionHorizon + bounds.h * 0.115));
+  assert.equal(terrainTop, Math.floor(projectionHorizon));
+  assert.equal(raceEditorSource.includes('h * 0.115'), false);
   assert.equal(raceEditorSource.includes('createImageData(renderWidth, renderHeight)'), true);
   assert.equal(raceEditorSource.includes('ctx.drawImage(canvas, bounds.x, groundTop, bounds.w, groundHeight)'), true);
   assert.equal(raceEditorSource.includes('rowT > 0.5 ? 1 : 2'), false);
@@ -11492,7 +11568,7 @@ test('Race Editor lowers painted terrain below the projection horizon so skybox 
   assert.equal(raceEditorSource.includes('drawRaceWebGLTrackScene'), true);
   assert.equal(raceEditorSource.includes('drawRaceWebGLWorldMesh'), true);
   assert.equal(raceEditorSource.includes('renderer.meshProgram'), true);
-  assert.equal(raceEditorSource.includes('getRaceStitchedTerrainElevationAtWorldPoint({ x: x0, z: z0 }, 0)'), true);
+  assert.equal(raceEditorSource.includes('getRaceGroundElevationAtWorldPoint({ x: x0, z: z0 }, 0)'), true);
   assert.equal(raceEditorSource.includes('let drewWebGLTrack = false;'), true);
   assert.equal(raceEditorSource.includes('this.drawRaceParallaxBackground(ctx, bounds, {\n      horizon,'), true);
   assert.equal(raceEditorSource.includes('this.drawRaceParallaxBackground(ctx, bounds, {\n      horizon: terrainTop,'), false);
@@ -11551,7 +11627,7 @@ test('Race Editor lowers painted terrain below the projection horizon so skybox 
   assert.equal(raceEditorSource.includes('this.drawRaceWebGLTerrainMeshBatch(ctx, bounds, renderer, terrainCells'), true);
   assert.equal(raceEditorSource.includes('rawTerrainPolygons: rawTerrainPolygonsEnabled'), false);
   assert.equal(raceEditorSource.includes('const terrainSize = Math.max(detailEnabled ? 40 : 120, baseTileSize * (detailEnabled ? 8 : 24));'), true);
-  assert.equal(raceEditorSource.includes('? (detailEnabled ? 2600 : 1400)'), true);
+  assert.equal(raceEditorSource.includes('maxTerrainTriangles'), true);
   assert.equal(raceEditorSource.includes('getRaceTerrainBakeCache(tileMap, terrainSize)'), true);
   assert.equal(raceEditorSource.includes('getRaceBakedTerrainSubdivision(chunk, cameraCellZ'), true);
   assert.equal(raceEditorSource.includes('terrainLod${subdivisions - 1}'), true);

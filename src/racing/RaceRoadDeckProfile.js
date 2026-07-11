@@ -201,6 +201,64 @@ export function sampleRaceRoadbedProfileAtDistance(distance = 0, profile = null,
   if (!profileSamples.length) return null;
   const routeLength = Math.max(1, Number(profile.routeLength || profileSamples.at(-1)?.distance || 1) || 1);
   const requestedDistance = Number(distance) || 0;
+  if (profile.runtimeType !== 'circuit' && profile.allowVisualExtension && requestedDistance < 0 && profileSamples.length >= 2) {
+    const first = profileSamples[0];
+    const next = profileSamples.find((sample) => Number(sample.distance || 0) > 0.001) || profileSamples[1];
+    const span = Math.max(0.001, Number(next.distance || 0) - Number(first.distance || 0));
+    const t = requestedDistance / span;
+    const lerp = (a, b) => Number(a || 0) + (Number(b || 0) - Number(a || 0)) * t;
+    return {
+      ...first,
+      distance: requestedDistance,
+      x: lerp(first.x, next.x),
+      z: lerp(first.z, next.z),
+      yaw: Number(first.yaw || 0),
+      elevation: clampElevation(lerp(first.elevation, next.elevation)),
+      routeElevation: clampElevation(lerp(first.routeElevation, next.routeElevation)),
+      terrainElevation: clampElevation(lerp(first.terrainElevation, next.terrainElevation)),
+      leftTerrainElevation: clampElevation(lerp(first.leftTerrainElevation, next.leftTerrainElevation)),
+      rightTerrainElevation: clampElevation(lerp(first.rightTerrainElevation, next.rightTerrainElevation)),
+      supportElevation: clampElevation(lerp(first.supportElevation, next.supportElevation)),
+      roadHalfWidth: Number(first.roadHalfWidth || 0),
+      marginWidth: Number(first.marginWidth || 0),
+      shoulderWidth: Number(first.shoulderWidth || 0),
+      stampedHalfWidth: Number(first.stampedHalfWidth || 0),
+      blendWidth: Number(first.blendWidth || 0),
+      grade: Number(first.grade || 0),
+      segment: first.segment || next.segment || null,
+      index: first.index ?? 0,
+      progress: 0
+    };
+  }
+  if (profile.runtimeType !== 'circuit' && profile.allowVisualExtension && requestedDistance > routeLength && profileSamples.length >= 2) {
+    const last = profileSamples[profileSamples.length - 1];
+    const previous = [...profileSamples].reverse().find((sample) => Number(sample.distance || 0) < routeLength - 0.001) || profileSamples[profileSamples.length - 2];
+    const span = Math.max(0.001, Number(last.distance || 0) - Number(previous.distance || 0));
+    const t = (requestedDistance - Number(previous.distance || 0)) / span;
+    const lerp = (a, b) => Number(a || 0) + (Number(b || 0) - Number(a || 0)) * t;
+    return {
+      ...last,
+      distance: requestedDistance,
+      x: lerp(previous.x, last.x),
+      z: lerp(previous.z, last.z),
+      yaw: Number(last.yaw || 0),
+      elevation: clampElevation(lerp(previous.elevation, last.elevation)),
+      routeElevation: clampElevation(lerp(previous.routeElevation, last.routeElevation)),
+      terrainElevation: clampElevation(lerp(previous.terrainElevation, last.terrainElevation)),
+      leftTerrainElevation: clampElevation(lerp(previous.leftTerrainElevation, last.leftTerrainElevation)),
+      rightTerrainElevation: clampElevation(lerp(previous.rightTerrainElevation, last.rightTerrainElevation)),
+      supportElevation: clampElevation(lerp(previous.supportElevation, last.supportElevation)),
+      roadHalfWidth: Number(last.roadHalfWidth || 0),
+      marginWidth: Number(last.marginWidth || 0),
+      shoulderWidth: Number(last.shoulderWidth || 0),
+      stampedHalfWidth: Number(last.stampedHalfWidth || 0),
+      blendWidth: Number(last.blendWidth || 0),
+      grade: Number(last.grade || 0),
+      segment: last.segment || previous.segment || null,
+      index: last.index ?? previous.index ?? 0,
+      progress: 1
+    };
+  }
   const target = profile.runtimeType === 'circuit'
     ? (requestedDistance % routeLength + routeLength) % routeLength
     : clamp(requestedDistance, 0, routeLength);

@@ -77,12 +77,16 @@ test(`Race Editor Studio Sprint ${coverageCase.name} frames expose no magenta te
     const buildFrameSpecs = (direction) => {
       const frames = [];
       addFrame(frames, direction, 'start', 0);
-      addFrame(frames, direction, 'progress-18', routeLength * 0.18);
-      addFrame(frames, direction, 'progress-34', routeLength * 0.34);
+      addFrame(frames, direction, 'start-2m', 2);
+      addFrame(frames, direction, 'progress-11', routeLength * 0.11);
+      addFrame(frames, direction, 'progress-14', routeLength * 0.14);
+      addFrame(frames, direction, 'progress-35', routeLength * 0.35);
+      addFrame(frames, direction, 'progress-40', routeLength * 0.40);
       addFrame(frames, direction, 'start-approach', Math.min(8, routeLength * 0.02));
       addFrame(frames, direction, 'node-4-bend', routeLength * 0.38);
       addFrame(frames, direction, 'mid-route', routeLength * 0.52);
       addFrame(frames, direction, 'final-bend', routeLength * 0.76);
+      addFrame(frames, direction, 'finish-2m', Math.max(0, routeLength - 2));
       addFrame(frames, direction, 'finish-approach', Math.max(0, routeLength - 28));
       addFrame(frames, direction, 'finish', routeLength);
       if (direction === 'forward') {
@@ -138,6 +142,7 @@ test(`Race Editor Studio Sprint ${coverageCase.name} frames expose no magenta te
       let magentaPixels = 0;
       let blackVoidPixels = 0;
       let skyColoredPixels = 0;
+      let belowHorizonMagentaPixels = 0;
       let checkedPixels = 0;
       const horizonY = Math.max(bounds.y + 1, Math.min(bounds.y + bounds.h - 1, Math.round(bounds.y + bounds.h * Number(editor.lastRaceRenderCamera?.camera?.horizonRatio || 0.32))));
       const skyBottom = Math.max(1, Math.floor(horizonY * 0.72));
@@ -149,6 +154,7 @@ test(`Race Editor Studio Sprint ${coverageCase.name} frames expose no magenta te
           const b = image.data[offset + 2];
           const a = image.data[offset + 3];
           if (a > 200 && r > 220 && b > 220 && g < 45) magentaPixels += 1;
+          if (y >= horizonY && a > 200 && r > 220 && b > 220 && g < 45) belowHorizonMagentaPixels += 1;
           if (y > horizonY + 3 && a > 220 && r < 6 && g < 6 && b < 6) blackVoidPixels += 1;
           if (y < skyBottom) {
             checkedPixels += 1;
@@ -163,6 +169,7 @@ test(`Race Editor Studio Sprint ${coverageCase.name} frames expose no magenta te
         distance,
         magentaPixels,
         blackVoidPixels,
+        belowHorizonMagentaPixels,
         skyCoverage: checkedPixels ? skyColoredPixels / checkedPixels : 0,
         stats: editor.lastRaceRenderStats || null,
         dataUrl: magentaPixels > 0 || blackVoidPixels > 0 || (checkedPixels && skyColoredPixels / checkedPixels < 0.65)
@@ -179,9 +186,12 @@ test(`Race Editor Studio Sprint ${coverageCase.name} frames expose no magenta te
   const worstBlackVoid = samples.reduce((current, sample) => (
     sample.blackVoidPixels > current.blackVoidPixels ? sample : current
   ), samples[0]);
+  const worstBelowHorizon = samples.reduce((current, sample) => (
+    sample.belowHorizonMagentaPixels > current.belowHorizonMagentaPixels ? sample : current
+  ), samples[0]);
   const missingSky = samples.find((sample) => sample.skyCoverage < 0.65);
-  if (worst?.magentaPixels > 0 || worstBlackVoid?.blackVoidPixels > 0 || missingSky) {
-    const diagnosticFrame = worst?.magentaPixels > 0 ? worst : worstBlackVoid?.blackVoidPixels > 0 ? worstBlackVoid : missingSky;
+  if (worst?.magentaPixels > 0 || worstBlackVoid?.blackVoidPixels > 0 || worstBelowHorizon?.belowHorizonMagentaPixels > 0 || missingSky) {
+    const diagnosticFrame = worst?.magentaPixels > 0 ? worst : worstBlackVoid?.blackVoidPixels > 0 ? worstBlackVoid : worstBelowHorizon?.belowHorizonMagentaPixels > 0 ? worstBelowHorizon : missingSky;
     const dataUrl = diagnosticFrame?.dataUrl || '';
     const base64 = dataUrl.includes(',') ? dataUrl.split(',')[1] : '';
     if (base64) {
@@ -194,6 +204,7 @@ test(`Race Editor Studio Sprint ${coverageCase.name} frames expose no magenta te
 
   expect(missingSky, `Studio Sprint skybox/background missing in frame ${missingSky?.label || 'unknown'}`).toBeFalsy();
   expect(worstBlackVoid.blackVoidPixels, `Studio Sprint frame ${worstBlackVoid.label} exposed ${worstBlackVoid.blackVoidPixels} black void pixels`).toBe(0);
+  expect(worstBelowHorizon.belowHorizonMagentaPixels, `Studio Sprint frame ${worstBelowHorizon.label} exposed ${worstBelowHorizon.belowHorizonMagentaPixels} below-horizon magenta pixels`).toBe(0);
   expect(worst.magentaPixels, `Studio Sprint frame ${worst.label} exposed ${worst.magentaPixels} magenta pixels`).toBe(0);
   for (const sample of samples) {
     expect(sample.stats?.terrainCoverageDropped || 0, `${coverageCase.name} frame ${sample.label} dropped base terrain coverage`).toBe(0);

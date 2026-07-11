@@ -32,6 +32,8 @@ export class RaceSurfaceModel {
     this.adapter = adapter;
     this.flatJoinWidthM = Math.max(0, Number(adapter.flatJoinWidthM) || DEFAULT_FLAT_JOIN_WIDTH_M);
     this.slopeBlendWidthM = Math.max(0.001, Number(adapter.slopeBlendWidthM) || DEFAULT_SLOPE_BLEND_WIDTH_M);
+    this.maxCutSideSlope = Math.max(0.05, Number(adapter.maxCutSideSlope) || 0.5);
+    this.maxFillSideSlope = Math.max(0.05, Number(adapter.maxFillSideSlope) || 0.5);
   }
 
   clampElevation(value = 0) {
@@ -210,7 +212,18 @@ export class RaceSurfaceModel {
     const marginWidth = Math.max(0, Number(sample?.marginWidth ?? this.adapter.getMarginWidth?.(segment) ?? 0) || 0);
     const shoulderWidth = Math.max(0, Number(sample?.shoulderWidth ?? this.adapter.getShoulderWidth?.(segment) ?? 0) || 0);
     const transitionMinWidth = this.flatJoinWidthM + this.slopeBlendWidthM;
-    const transitionWidth = Math.max(transitionMinWidth, Number(sample?.blendWidth || 0), Number(this.adapter.getBlendWidth?.(segment) || 0));
+    const authoredTransitionWidth = Math.max(transitionMinWidth, Number(sample?.blendWidth || 0), Number(this.adapter.getBlendWidth?.(segment) || 0));
+    const deckElevation = Number(sample?.elevation || 0);
+    const leftRaw = Number.isFinite(Number(sample?.leftTerrainElevation)) ? Number(sample.leftTerrainElevation) : deckElevation;
+    const rightRaw = Number.isFinite(Number(sample?.rightTerrainElevation)) ? Number(sample.rightTerrainElevation) : deckElevation;
+    const sideWidthFor = (rawElevation) => {
+      const delta = Number(rawElevation || 0) - deckElevation;
+      const slope = delta > 0 ? this.maxCutSideSlope : this.maxFillSideSlope;
+      return Math.max(authoredTransitionWidth, Math.abs(delta) / Math.max(0.001, slope));
+    };
+    const leftTransitionWidth = sideWidthFor(leftRaw);
+    const rightTransitionWidth = sideWidthFor(rightRaw);
+    const transitionWidth = Math.max(leftTransitionWidth, rightTransitionWidth);
     const flatJoinWidth = Math.min(this.flatJoinWidthM, transitionWidth);
     const slopeBlendWidth = Math.max(0.001, transitionWidth - flatJoinWidth);
     const roadEnd = roadHalfWidth;
@@ -218,6 +231,8 @@ export class RaceSurfaceModel {
     const shoulderEnd = marginEnd + shoulderWidth;
     const flatJoinEnd = shoulderEnd + flatJoinWidth;
     const transitionEnd = flatJoinEnd + slopeBlendWidth;
+    const leftTransitionEnd = shoulderEnd + leftTransitionWidth;
+    const rightTransitionEnd = shoulderEnd + rightTransitionWidth;
     return {
       roadHalfWidth,
       marginWidth,
@@ -230,6 +245,10 @@ export class RaceSurfaceModel {
       slopeBlendWidth,
       transitionWidth,
       transitionEnd,
+      leftTransitionWidth,
+      rightTransitionWidth,
+      leftTransitionEnd,
+      rightTransitionEnd,
       marginHalfWidth: marginEnd,
       hardHalfWidth: shoulderEnd,
       outerHalfWidth: transitionEnd
@@ -242,9 +261,11 @@ export class RaceSurfaceModel {
     if (absLateral <= metrics.roadEnd) return { region: 'road', metrics, blend: 0 };
     if (absLateral <= metrics.marginEnd) return { region: 'margin', metrics, blend: 0 };
     if (absLateral <= metrics.shoulderEnd) return { region: 'shoulder', metrics, blend: 0 };
-    if (absLateral <= metrics.transitionEnd) {
+    const sideTransitionEnd = Number(lateral || 0) < 0 ? metrics.leftTransitionEnd : metrics.rightTransitionEnd;
+    const sideTransitionWidth = Number(lateral || 0) < 0 ? metrics.leftTransitionWidth : metrics.rightTransitionWidth;
+    if (absLateral <= sideTransitionEnd) {
       const transitionStart = metrics.shoulderEnd;
-      const t = smoothstep((absLateral - transitionStart) / Math.max(0.001, metrics.transitionWidth));
+      const t = smoothstep((absLateral - transitionStart) / Math.max(0.001, sideTransitionWidth));
       return { region: 'transition', metrics, blend: t };
     }
     return { region: 'terrain', metrics, blend: 1 };
@@ -295,10 +316,10 @@ export class RaceSurfaceModel {
       marginRight: makePoint(metrics.marginEnd, 'margin-right'),
       shoulderLeft: makePoint(-metrics.shoulderEnd, 'shoulder-left'),
       shoulderRight: makePoint(metrics.shoulderEnd, 'shoulder-right'),
-      transitionLeft: makeSamplePoint(-metrics.transitionEnd, 'transition-left'),
-      transitionRight: makeSamplePoint(metrics.transitionEnd, 'transition-right'),
-      terrainLeft: makeSamplePoint(-metrics.transitionEnd, 'terrain-left'),
-      terrainRight: makeSamplePoint(metrics.transitionEnd, 'terrain-right'),
+      transitionLeft: makeSamplePoint(-metrics.leftTransitionEnd, 'transition-left'),
+      transitionRight: makeSamplePoint(metrics.rightTransitionEnd, 'transition-right'),
+      terrainLeft: makeSamplePoint(-metrics.leftTransitionEnd, 'terrain-left'),
+      terrainRight: makeSamplePoint(metrics.rightTransitionEnd, 'terrain-right'),
       metrics,
       deck
     };
