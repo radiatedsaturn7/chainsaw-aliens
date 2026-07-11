@@ -8,6 +8,11 @@ export function buildRaceRoadbedProfile({
   allowVisualExtension = false,
   step = 2.5,
   elevationScaleM = 12,
+  maxUphillGrade = 0.216,
+  maxDownhillGrade = 0.216,
+  maxGradeChangePerMeter = 0.018,
+  cutAllowance = 0.18,
+  fillAllowance = 0.18,
   adapter = {}
 } = {}) {
   const effectiveStep = clamp(Number(step) || 2.5, 1.25, 5);
@@ -63,7 +68,8 @@ export function buildRaceRoadbedProfile({
       leftTerrainElevation,
       rightTerrainElevation
     } = robustCenterTerrainElevation(pose, roadHalfWidth, routeElevation);
-    const supportElevation = adapter.clampElevation?.(Math.max(routeElevation, terrainElevation)) ?? Math.max(routeElevation, terrainElevation);
+    const targetElevation = adapter.clampElevation?.(terrainElevation + routeElevation) ?? (terrainElevation + routeElevation);
+    const supportElevation = targetElevation;
     return {
       ...pose,
       distance,
@@ -71,6 +77,7 @@ export function buildRaceRoadbedProfile({
       terrainElevation,
       leftTerrainElevation,
       rightTerrainElevation,
+      targetElevation,
       supportElevation,
       roadHalfWidth,
       marginWidth,
@@ -109,38 +116,71 @@ export function buildRaceRoadbedProfile({
       });
       return {
         ...sample,
-        elevation: adapter.clampElevation?.(Math.max(
-          Number(sample.supportElevation || 0),
-          total > 0 ? weighted / total : Number(sample.elevation || 0)
-        )) ?? Number(sample.elevation || 0)
+        elevation: adapter.clampElevation?.(total > 0 ? weighted / total : Number(sample.elevation || 0)) ?? Number(sample.elevation || 0)
       };
     });
   }
-  const maxGradePerSample = 0.045;
+  const maxUp = Math.max(0.001, Number(maxUphillGrade) || 0.216);
+  const maxDown = Math.max(0.001, Number(maxDownhillGrade) || 0.216);
+  const maxCurve = Math.max(0.0001, Number(maxGradeChangePerMeter) || 0.018);
+  const maxRisePerM = maxUp / Math.max(0.001, elevationScaleM);
+  const maxDropPerM = maxDown / Math.max(0.001, elevationScaleM);
   for (let index = 1; index < profileSamples.length; index += 1) {
     const previous = profileSamples[index - 1];
     const sample = profileSamples[index];
-    const maxDrop = maxGradePerSample * Math.max(1, (Number(sample.distance || 0) - Number(previous.distance || 0)) / effectiveStep);
-    sample.elevation = adapter.clampElevation?.(Math.max(Number(sample.elevation || 0), Number(previous.elevation || 0) - maxDrop)) ?? sample.elevation;
+    const dx = Math.max(0.001, Number(sample.distance || 0) - Number(previous.distance || 0));
+    sample.elevation = adapter.clampElevation?.(clamp(
+      Number(sample.elevation || 0),
+      Number(previous.elevation || 0) - maxDropPerM * dx,
+      Number(previous.elevation || 0) + maxRisePerM * dx
+    )) ?? sample.elevation;
   }
   for (let index = profileSamples.length - 2; index >= 0; index -= 1) {
     const next = profileSamples[index + 1];
     const sample = profileSamples[index];
-    const maxDrop = maxGradePerSample * Math.max(1, (Number(next.distance || 0) - Number(sample.distance || 0)) / effectiveStep);
-    sample.elevation = adapter.clampElevation?.(Math.max(
-      Number(sample.supportElevation || 0),
+    const dx = Math.max(0.001, Number(next.distance || 0) - Number(sample.distance || 0));
+    sample.elevation = adapter.clampElevation?.(clamp(
       Number(sample.elevation || 0),
-      Number(next.elevation || 0) - maxDrop
+      Number(next.elevation || 0) - maxRisePerM * dx,
+      Number(next.elevation || 0) + maxDropPerM * dx
     )) ?? sample.elevation;
   }
+  for (let pass = 0; pass < 2; pass += 1) {
+    for (let index = 1; index < profileSamples.length - 1; index += 1) {
+      const previous = profileSamples[index - 1];
+      const sample = profileSamples[index];
+      const next = profileSamples[index + 1];
+      const dxA = Math.max(0.001, Number(sample.distance || 0) - Number(previous.distance || 0));
+      const dxB = Math.max(0.001, Number(next.distance || 0) - Number(sample.distance || 0));
+      const gradeA = (Number(sample.elevation || 0) - Number(previous.elevation || 0)) / dxA;
+      const gradeB = (Number(next.elevation || 0) - Number(sample.elevation || 0)) / dxB;
+      const maxDelta = maxCurve / Math.max(0.001, elevationScaleM) * Math.max(dxA, dxB);
+      if (Math.abs(gradeB - gradeA) > maxDelta) {
+        const adjustedGrade = gradeA + Math.sign(gradeB - gradeA) * maxDelta;
+        const adjustedNext = Number(sample.elevation || 0) + adjustedGrade * dxB;
+        next.elevation = adapter.clampElevation?.(adjustedNext) ?? adjustedNext;
+      }
+    }
+  }
+  const maxCut = Math.max(0, Number(cutAllowance) || 0);
+  const maxFill = Math.max(0, Number(fillAllowance) || 0);
+  profileSamples = profileSamples.map((sample) => {
+    const target = Number(sample.targetElevation ?? sample.supportElevation ?? sample.elevation ?? 0);
+    const minElevation = target - maxCut;
+    const maxElevation = target + maxFill;
+    return {
+      ...sample,
+      elevation: adapter.clampElevation?.(clamp(Number(sample.elevation || 0), minElevation, maxElevation)) ?? Number(sample.elevation || 0)
+    };
+  });
   profileSamples = profileSamples.map((sample, index) => {
     const previous = profileSamples[Math.max(0, index - 2)];
     const next = profileSamples[Math.min(profileSamples.length - 1, index + 2)];
     const span = Math.max(0.001, Number(next.distance || 0) - Number(previous.distance || 0));
     const grade = clamp(
       ((Number(next.elevation || 0) - Number(previous.elevation || 0)) * elevationScaleM) / span,
-      -0.42,
-      0.42
+      -maxDown,
+      maxUp
     );
     return { ...sample, grade };
   });

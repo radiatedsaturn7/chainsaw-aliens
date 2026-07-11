@@ -6156,9 +6156,36 @@ export default class RaceEditor {
       runtimeType,
       allowVisualExtension: true
     }));
-    let terrainCells = [];
+    const terrainBaseCells = [];
+    const terrainRefinementCells = [];
     const terrainChunks = [];
     const maxBakeCells = detailEnabled ? 64000 : 52000;
+    const pushTerrainCell = (target, triangle, {
+      chunk,
+      chunkKey,
+      subX = 0,
+      subZ = 0,
+      triangleIndex = 0,
+      layer = 'base',
+      groupKey = chunkKey,
+      parentGroupKey = ''
+    } = {}) => {
+      if (!Array.isArray(triangle) || triangle.length < 3) return;
+      target.push({
+        points: triangle,
+        tileCell: chunk.tileCell,
+        chunkKey,
+        key: `${chunk.key || chunkKey}:${layer}:${subX},${subZ}:${triangleIndex}`,
+        groupKey,
+        parentGroupKey,
+        terrainLayer: layer,
+        roadAdjacent: chunk.roadAdjacent,
+        nearRoad: chunk.nearRoad,
+        roadDistance: chunk.roadDistance,
+        corridorDistance: chunk.corridorDistance,
+        clippedToTrackCorridor: triangle.some((point) => point?.trackSeam === true)
+      });
+    };
     [...chunkKeys].sort((a, b) => {
       const [ax, az] = a.split(',').map(Number);
       const [bx, bz] = b.split(',').map(Number);
@@ -6172,11 +6199,23 @@ export default class RaceEditor {
       });
       return Number(aProjection?.distance || 0) - Number(bProjection?.distance || 0);
     }).forEach((chunkKey) => {
-      if (terrainCells.length >= maxBakeCells) return;
       const [x, z] = chunkKey.split(',').map(Number);
       const chunk = this.getRaceBakedTerrainChunk(x, z, effectiveTerrainSize, tileMap, terrainBake);
       if (!this.shouldIncludeRaceTerrainChunkForRendering(chunk)) return;
       terrainChunks.push(chunk);
+      const baseGroupKey = `${chunk.key || chunkKey}:base`;
+      const baseTriangles = this.getRaceTerrainTrianglesOutsideTrackCorridor(chunk.fullPoints, {
+        runtimeType,
+        routeLength: routeEnd,
+        includeTransition: true
+      });
+      baseTriangles.forEach((triangle, triangleIndex) => pushTerrainCell(terrainBaseCells, triangle, {
+        chunk,
+        chunkKey,
+        triangleIndex,
+        layer: 'base',
+        groupKey: baseGroupKey
+      }));
       let subdivisions = chunk.roadAdjacent && terrainLodEnabled
         ? Math.max(2, this.getRaceRoadbedTerrainSubdivision(chunk, effectiveTerrainSize))
         : 1;
@@ -6188,9 +6227,11 @@ export default class RaceEditor {
         }));
       }
       subdivisions = clamp(subdivisions, 1, chunk.nearRoad ? 8 : 3);
+      if (subdivisions <= 1 || terrainRefinementCells.length >= maxBakeCells) return;
+      const refinementGroup = [];
+      const refinementGroupKey = `${chunk.key || chunkKey}:refined:${subdivisions}`;
       for (let subZ = 0; subZ < subdivisions; subZ += 1) {
         for (let subX = 0; subX < subdivisions; subX += 1) {
-          if (terrainCells.length >= maxBakeCells) break;
           const points = this.getRaceBakedTerrainQuadPoints(chunk, subX, subZ, subdivisions);
           const retainedTriangles = this.getRaceTerrainTrianglesOutsideTrackCorridor(points, {
             runtimeType,
@@ -6198,22 +6239,27 @@ export default class RaceEditor {
             includeTransition: true
           });
           retainedTriangles.forEach((triangle, triangleIndex) => {
-            if (!Array.isArray(triangle) || triangle.length < 3) return;
-            terrainCells.push({
-              points: triangle,
-              tileCell: chunk.tileCell,
+            pushTerrainCell(refinementGroup, triangle, {
+              chunk,
               chunkKey,
-              key: `${chunk.key || chunkKey}:${subX},${subZ}:${triangleIndex}`,
-              roadAdjacent: chunk.roadAdjacent,
-              nearRoad: chunk.nearRoad,
-              roadDistance: chunk.roadDistance,
-              corridorDistance: chunk.corridorDistance,
-              clippedToTrackCorridor: triangle.some((point) => point?.trackSeam === true)
+              subX,
+              subZ,
+              triangleIndex,
+              layer: 'refinement',
+              groupKey: refinementGroupKey,
+              parentGroupKey: baseGroupKey
             });
           });
         }
       }
+      if (refinementGroup.length > 0 && terrainRefinementCells.length + refinementGroup.length <= maxBakeCells) {
+        refinementGroup.forEach((cell) => {
+          cell.refinementGroupSize = refinementGroup.length;
+          terrainRefinementCells.push(cell);
+        });
+      }
     });
+    const terrainCells = [...terrainBaseCells, ...terrainRefinementCells];
     const bake = {
       key,
       surfaceRevision: this.getRaceSurfaceGeometryRevisionKey({
@@ -6227,6 +6273,8 @@ export default class RaceEditor {
       runtimeType,
       textureWorldM,
       terrainCells,
+      terrainBaseCells,
+      terrainRefinementCells,
       terrainChunks,
       surfaceBake: this.getRaceSurfaceBake({
         routeLength: routeEnd,
@@ -6316,6 +6364,7 @@ export default class RaceEditor {
     bounds = {},
     terrainForwardDistance = 2200,
     maxTerrainCells = 1400,
+    maxTerrainTriangles = null,
     terrainCullingEnabled = true,
     rightVector = null,
     forwardVector = null,
@@ -6325,9 +6374,10 @@ export default class RaceEditor {
     const right = rightVector || this.getRaceRightVector(cameraYaw);
     const forward = forwardVector || this.getRaceForwardVector(cameraYaw);
     const terrainSize = Math.max(1, Number(worldBake.terrainSize) || 40);
-    const visible = [];
-    const limit = Math.max(1, Number(maxTerrainCells) || 1400);
-    const cacheBucket = Math.max(24, terrainSize * 0.5);
+    const visibleBase = [];
+    const visibleRefinement = [];
+    const limit = Math.max(1, Number(maxTerrainTriangles ?? maxTerrainCells) || 1400);
+    const cacheBucket = Math.max(4, terrainSize / 8);
     const cacheKey = [
       Math.round(Number(camera.x || 0) / cacheBucket),
       Math.round(Number(camera.z || 0) / cacheBucket),
@@ -6345,20 +6395,30 @@ export default class RaceEditor {
       if (stats) {
         stats.terrainPreculled = (Number(stats.terrainPreculled) || 0) + Number(cachedVisible.terrainPreculled || 0);
         stats.terrainBudgetDropped = (Number(stats.terrainBudgetDropped) || 0) + Number(cachedVisible.terrainBudgetDropped || 0);
+        stats.terrainCoverageDropped = (Number(stats.terrainCoverageDropped) || 0) + Number(cachedVisible.terrainCoverageDropped || 0);
+        stats.terrainRefinementDropped = (Number(stats.terrainRefinementDropped) || 0) + Number(cachedVisible.terrainRefinementDropped || 0);
+        stats.terrainBaseTriangles = (Number(stats.terrainBaseTriangles) || 0) + Number(cachedVisible.terrainBaseTriangles || 0);
+        stats.terrainRefinementTriangles = (Number(stats.terrainRefinementTriangles) || 0) + Number(cachedVisible.terrainRefinementTriangles || 0);
         stats.terrainVisibleCacheHits = (Number(stats.terrainVisibleCacheHits) || 0) + 1;
       }
       return cachedVisible.cells;
     }
     const startPreculled = Number(stats?.terrainPreculled || 0);
     const startBudgetDropped = Number(stats?.terrainBudgetDropped || 0);
-    for (const cell of worldBake.terrainCells) {
+    const sourceCells = [
+      ...(Array.isArray(worldBake.terrainBaseCells) ? worldBake.terrainBaseCells : []),
+      ...(Array.isArray(worldBake.terrainRefinementCells) ? worldBake.terrainRefinementCells : [])
+    ];
+    const cellsToScan = sourceCells.length ? sourceCells : worldBake.terrainCells;
+    for (const cell of cellsToScan) {
       const cameraBounds = this.getRaceTerrainCameraBounds(cell.points, camera, right, forward);
+      const isBaseTerrain = cell.terrainLayer !== 'refinement';
       if (terrainCullingEnabled && !this.isRaceTerrainCameraBoundsVisible(cameraBounds, {
         terrainSize,
         terrainForwardDistance,
         screenWidth: Number(bounds.w || 1),
-        forwardMargin: terrainSize * 2,
-        lateralMargin: terrainSize
+        forwardMargin: isBaseTerrain ? terrainSize : terrainSize * 2,
+        lateralMargin: isBaseTerrain ? 0 : terrainSize
       })) {
         if (stats) stats.terrainPreculled += 1;
         continue;
@@ -6372,8 +6432,10 @@ export default class RaceEditor {
         cameraCellZ: cell.cameraCellZ,
         chunk: cell
       }, terrainSize);
-      visible.push(cell);
+      if (cell.terrainLayer === 'refinement') visibleRefinement.push(cell);
+      else visibleBase.push(cell);
     }
+    if (stats) stats.terrainCandidatesBeforeBudget = (Number(stats.terrainCandidatesBeforeBudget) || 0) + visibleBase.length + visibleRefinement.length;
     const compareVisibleTerrainCells = (a, b) => {
       const priorityDelta = Number(a.terrainCandidatePriority || 0) - Number(b.terrainCandidatePriority || 0);
       if (Math.abs(priorityDelta) > 0.0001) return priorityDelta;
@@ -6383,26 +6445,70 @@ export default class RaceEditor {
       if (Math.abs(xDelta) > 0.0001) return xDelta;
       return String(a.key || '').localeCompare(String(b.key || ''));
     };
-    if (visible.length > limit) {
-      this.partitionRaceTerrainCellsByPriority(visible, limit, compareVisibleTerrainCells);
-      visible.length = limit;
-    }
-    const selected = visible;
-    if (stats && visible.length > selected.length) {
-      stats.terrainBudgetDropped = (Number(stats.terrainBudgetDropped) || 0) + visible.length - selected.length;
+    visibleBase.sort((a, b) => Number(b.averageCameraZ || 0) - Number(a.averageCameraZ || 0));
+    const selected = [...visibleBase];
+    const selectedBaseGroups = new Set(visibleBase.map((cell) => cell.groupKey || cell.key));
+    const refinementGroups = new Map();
+    visibleRefinement.forEach((cell) => {
+      const key = cell.groupKey || cell.key;
+      if (!refinementGroups.has(key)) refinementGroups.set(key, []);
+      refinementGroups.get(key).push(cell);
+    });
+    let selectedTriangleCount = selected.reduce((sum, cell) => sum + this.getRaceTerrainCellTriangleCount(cell), 0);
+    let refinementDropped = 0;
+    const sortedGroups = [...refinementGroups.values()].sort((a, b) => {
+      const bestA = Math.min(...a.map((cell) => Number(cell.terrainCandidatePriority || 0)));
+      const bestB = Math.min(...b.map((cell) => Number(cell.terrainCandidatePriority || 0)));
+      return bestA - bestB;
+    });
+    sortedGroups.forEach((group) => {
+      const expected = Number(group[0]?.refinementGroupSize || group.length);
+      const groupTriangles = group.reduce((sum, cell) => sum + this.getRaceTerrainCellTriangleCount(cell), 0);
+      if (group.length < expected || selectedTriangleCount + groupTriangles > limit) {
+        refinementDropped += groupTriangles;
+        return;
+      }
+      const parentKey = group[0]?.parentGroupKey;
+      if (parentKey && selectedBaseGroups.has(parentKey)) {
+        for (let index = selected.length - 1; index >= 0; index -= 1) {
+          if ((selected[index].groupKey || selected[index].key) === parentKey) {
+            selectedTriangleCount -= this.getRaceTerrainCellTriangleCount(selected[index]);
+            selected.splice(index, 1);
+          }
+        }
+        selectedBaseGroups.delete(parentKey);
+      }
+      group.forEach((cell) => selected.push(cell));
+      selectedTriangleCount += groupTriangles;
+    });
+    if (stats) {
+      stats.terrainBaseTriangles = (Number(stats.terrainBaseTriangles) || 0) + visibleBase.reduce((sum, cell) => sum + this.getRaceTerrainCellTriangleCount(cell), 0);
+      stats.terrainRefinementTriangles = (Number(stats.terrainRefinementTriangles) || 0) + selected.filter((cell) => cell.terrainLayer === 'refinement').reduce((sum, cell) => sum + this.getRaceTerrainCellTriangleCount(cell), 0);
+      stats.terrainCoverageDropped = (Number(stats.terrainCoverageDropped) || 0);
+      stats.terrainRefinementDropped = (Number(stats.terrainRefinementDropped) || 0) + refinementDropped;
+      stats.terrainBudgetDropped = (Number(stats.terrainBudgetDropped) || 0) + refinementDropped;
     }
     selected.sort((a, b) => Number(b.averageCameraZ || 0) - Number(a.averageCameraZ || 0));
     selected.visibleTerrainCacheKey = cacheKey;
     worldBake.visibleTerrainCache.set(cacheKey, {
       cells: selected,
       terrainPreculled: Math.max(0, Number(stats?.terrainPreculled || 0) - startPreculled),
-      terrainBudgetDropped: Math.max(0, Number(stats?.terrainBudgetDropped || 0) - startBudgetDropped)
+      terrainBudgetDropped: Math.max(0, Number(stats?.terrainBudgetDropped || 0) - startBudgetDropped),
+      terrainCoverageDropped: 0,
+      terrainRefinementDropped: refinementDropped,
+      terrainBaseTriangles: visibleBase.reduce((sum, cell) => sum + this.getRaceTerrainCellTriangleCount(cell), 0),
+      terrainRefinementTriangles: selected.filter((cell) => cell.terrainLayer === 'refinement').reduce((sum, cell) => sum + this.getRaceTerrainCellTriangleCount(cell), 0)
     });
     if (worldBake.visibleTerrainCache.size > 48) {
       const firstKey = worldBake.visibleTerrainCache.keys().next().value;
       worldBake.visibleTerrainCache.delete(firstKey);
     }
     return selected;
+  }
+
+  getRaceTerrainCellTriangleCount(cell = {}) {
+    const points = Array.isArray(cell?.points) ? cell.points : [];
+    return Math.max(0, points.length - 2);
   }
 
   partitionRaceTerrainCellsByPriority(cells = [], limit = 0, compare = null) {
@@ -17516,13 +17622,14 @@ export default class RaceEditor {
     const terrainForwardDistance = clamp(requestedFar + size * 8, 2200, 5200);
     const radiusMax = detailEnabled ? 36 : (terrainForwardDistance > 2800 ? 30 : 16);
     const terrainCellRadius = clamp(Math.ceil(terrainForwardDistance / size) + 3, 10, radiusMax);
-    const maxTerrainCells = terrainBudgetEnabled
+    const maxTerrainTriangles = terrainBudgetEnabled
       ? (detailEnabled ? 7200 : 5600)
       : Number.POSITIVE_INFINITY;
     return {
       terrainForwardDistance,
       terrainCellRadius,
-      maxTerrainCells
+      maxTerrainCells: maxTerrainTriangles,
+      maxTerrainTriangles
     };
   }
 
@@ -18935,7 +19042,7 @@ export default class RaceEditor {
     const terrainMeshes = [];
     cells.forEach((cell) => {
       const points = Array.isArray(cell?.points) ? cell.points : [];
-      if (points.length < 4) return;
+      if (points.length < 3) return;
       const palette = this.getRaceWeightedGroundTilePalette(
         cell.tileCell?.tileWeights,
         cell.tileCell?.tileId || tileMap?.defaultTileId || 'grass'
@@ -19513,8 +19620,13 @@ export default class RaceEditor {
       bufferReallocations: 0,
       uploadedFloats: 0,
       terrainCandidates: 0,
+      terrainCandidatesBeforeBudget: 0,
       terrainCells: 0,
       terrainSubdivisions: 0,
+      terrainBaseTriangles: 0,
+      terrainRefinementTriangles: 0,
+      terrainCoverageDropped: 0,
+      terrainRefinementDropped: 0,
       terrainDetailEnabled: detailEnabled,
       terrainCullingEnabled,
       terrainLodEnabled,
@@ -19578,7 +19690,8 @@ export default class RaceEditor {
       const {
         terrainForwardDistance,
         terrainCellRadius,
-        maxTerrainCells
+        maxTerrainCells,
+        maxTerrainTriangles
       } = this.getRaceTerrainRenderLimits({
         terrainSize,
         roadFarCameraZ,
@@ -19599,6 +19712,7 @@ export default class RaceEditor {
           bounds,
           terrainForwardDistance,
           maxTerrainCells,
+          maxTerrainTriangles,
           terrainCullingEnabled,
           rightVector,
           forwardVector,

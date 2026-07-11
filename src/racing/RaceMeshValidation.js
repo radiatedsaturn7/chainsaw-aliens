@@ -33,7 +33,30 @@ export function validateRaceSurfaceGeometry(worldBake = null, { surfaceModel = n
       counters.terrainTriangles += 1;
       if (getRaceTerrainTriangleArea(triangle) <= 0.000001) counters.degenerateTriangles += 1;
       if (triangle.some((point) => point?.trackSeam === true)) counters.seamVertices += triangle.filter((point) => point?.trackSeam === true).length;
-      triangle.forEach((point) => {
+      const probes = [
+        ...triangle,
+        {
+          x: (Number(triangle[0].x || 0) + Number(triangle[1].x || 0)) * 0.5,
+          z: (Number(triangle[0].z ?? triangle[0].y ?? 0) + Number(triangle[1].z ?? triangle[1].y ?? 0)) * 0.5,
+          elevation: (Number(triangle[0].elevation || 0) + Number(triangle[1].elevation || 0)) * 0.5
+        },
+        {
+          x: (Number(triangle[1].x || 0) + Number(triangle[2].x || 0)) * 0.5,
+          z: (Number(triangle[1].z ?? triangle[1].y ?? 0) + Number(triangle[2].z ?? triangle[2].y ?? 0)) * 0.5,
+          elevation: (Number(triangle[1].elevation || 0) + Number(triangle[2].elevation || 0)) * 0.5
+        },
+        {
+          x: (Number(triangle[2].x || 0) + Number(triangle[0].x || 0)) * 0.5,
+          z: (Number(triangle[2].z ?? triangle[2].y ?? 0) + Number(triangle[0].z ?? triangle[0].y ?? 0)) * 0.5,
+          elevation: (Number(triangle[2].elevation || 0) + Number(triangle[0].elevation || 0)) * 0.5
+        },
+        {
+          x: (Number(triangle[0].x || 0) + Number(triangle[1].x || 0) + Number(triangle[2].x || 0)) / 3,
+          z: (Number(triangle[0].z ?? triangle[0].y ?? 0) + Number(triangle[1].z ?? triangle[1].y ?? 0) + Number(triangle[2].z ?? triangle[2].y ?? 0)) / 3,
+          elevation: (Number(triangle[0].elevation || 0) + Number(triangle[1].elevation || 0) + Number(triangle[2].elevation || 0)) / 3
+        }
+      ];
+      probes.forEach((point) => {
         const sample = surfaceModel?.sampleWorld?.(point, Number(point.elevation || 0), {
           runtimeType: worldBake.runtimeType,
           routeLength: worldBake.routeLength

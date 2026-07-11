@@ -6,18 +6,26 @@ async function waitForGameReady(page) {
   await page.waitForFunction(() => window.__game.state !== 'loading');
 }
 
-test('Race Editor Studio Sprint WebGL Track frames expose no magenta terrain holes', async ({ page }, testInfo) => {
-  await page.setViewportSize({ width: 640, height: 360 });
+const COVERAGE_CASES = [
+  { name: 'direct-640x360-three', width: 640, height: 360, mode: 'direct', threeEnabled: true },
+  { name: 'direct-640x360-webgl', width: 640, height: 360, mode: 'direct', threeEnabled: false },
+  { name: 'portrait-390x844-three', width: 390, height: 844, mode: 'handheld', threeEnabled: true },
+  { name: 'portrait-390x844-webgl', width: 390, height: 844, mode: 'handheld', threeEnabled: false }
+];
+
+COVERAGE_CASES.forEach((coverageCase) => {
+test(`Race Editor Studio Sprint ${coverageCase.name} frames expose no magenta terrain holes`, async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: coverageCase.width, height: coverageCase.height });
   await waitForGameReady(page);
 
-  const samples = await page.evaluate(async () => {
+  const samples = await page.evaluate(async (config) => {
     const game = window.__game;
     game.setViewport?.({
-      width: 640,
-      height: 360,
+      width: config.width,
+      height: config.height,
       scale: 1,
       dpr: 1,
-      isMobile: false
+      isMobile: config.mode === 'handheld'
     });
     game.updateControlScheme?.();
     game.enterRaceEditor();
@@ -31,7 +39,8 @@ test('Race Editor Studio Sprint WebGL Track frames expose no magenta terrain hol
       terrainEnabled: true,
       texturesEnabled: true,
       detailEnabled: false,
-      threeEnabled: true,
+      threeEnabled: config.threeEnabled,
+      terrainBudgetEnabled: true,
       overlaysEnabled: true
     };
     editor.raceInput.cameraView = 'third-person';
@@ -48,7 +57,10 @@ test('Race Editor Studio Sprint WebGL Track frames expose no magenta terrain hol
     const ctx = game.ctx;
     const width = canvas.width;
     const height = canvas.height;
-    const bounds = { x: 0, y: 0, w: width, h: height };
+    const handheldLayout = config.mode === 'handheld'
+      ? editor.getRaceHandheldLayout(width, height)
+      : null;
+    const bounds = handheldLayout?.screen || { x: 0, y: 0, w: width, h: height };
     const routeLength = Math.max(1, editor.playtestSession.routeLength);
     const sampleStepM = Math.max(6, Math.min(14, routeLength / 120));
     const addFrame = (frames, direction, label, distance) => {
@@ -65,6 +77,8 @@ test('Race Editor Studio Sprint WebGL Track frames expose no magenta terrain hol
     const buildFrameSpecs = (direction) => {
       const frames = [];
       addFrame(frames, direction, 'start', 0);
+      addFrame(frames, direction, 'progress-18', routeLength * 0.18);
+      addFrame(frames, direction, 'progress-34', routeLength * 0.34);
       addFrame(frames, direction, 'start-approach', Math.min(8, routeLength * 0.02));
       addFrame(frames, direction, 'node-4-bend', routeLength * 0.38);
       addFrame(frames, direction, 'mid-route', routeLength * 0.52);
@@ -113,7 +127,11 @@ test('Race Editor Studio Sprint WebGL Track frames expose no magenta terrain hol
       editor.playtestSession.cameraView = 'third-person';
 
       ctx.clearRect(0, 0, width, height);
-      editor.drawRaceProjectedRoadPath(ctx, bounds, { showPlaytestHud: false });
+      if (config.mode === 'handheld') {
+        editor.drawRacePlaytestScreen(ctx, bounds);
+      } else {
+        editor.drawRaceProjectedRoadPath(ctx, bounds, { showPlaytestHud: false });
+      }
       await new Promise((resolve) => requestAnimationFrame(resolve));
 
       const image = ctx.getImageData(0, 0, width, height);
@@ -121,10 +139,10 @@ test('Race Editor Studio Sprint WebGL Track frames expose no magenta terrain hol
       let blackVoidPixels = 0;
       let skyColoredPixels = 0;
       let checkedPixels = 0;
-      const horizonY = Math.max(1, Math.min(height - 1, Math.round(height * Number(editor.lastRaceRenderCamera?.camera?.horizonRatio || 0.32))));
+      const horizonY = Math.max(bounds.y + 1, Math.min(bounds.y + bounds.h - 1, Math.round(bounds.y + bounds.h * Number(editor.lastRaceRenderCamera?.camera?.horizonRatio || 0.32))));
       const skyBottom = Math.max(1, Math.floor(horizonY * 0.72));
-      for (let y = 0; y < height; y += 1) {
-        for (let x = 0; x < width; x += 1) {
+      for (let y = Math.max(0, Math.floor(bounds.y)); y < Math.min(height, Math.ceil(bounds.y + bounds.h)); y += 1) {
+        for (let x = Math.max(0, Math.floor(bounds.x)); x < Math.min(width, Math.ceil(bounds.x + bounds.w)); x += 1) {
           const offset = (y * width + x) * 4;
           const r = image.data[offset];
           const g = image.data[offset + 1];
@@ -153,7 +171,7 @@ test('Race Editor Studio Sprint WebGL Track frames expose no magenta terrain hol
       });
     }
     return rendered;
-  });
+  }, coverageCase);
 
   const worst = samples.reduce((current, sample) => (
     sample.magentaPixels > current.magentaPixels ? sample : current
@@ -177,4 +195,15 @@ test('Race Editor Studio Sprint WebGL Track frames expose no magenta terrain hol
   expect(missingSky, `Studio Sprint skybox/background missing in frame ${missingSky?.label || 'unknown'}`).toBeFalsy();
   expect(worstBlackVoid.blackVoidPixels, `Studio Sprint frame ${worstBlackVoid.label} exposed ${worstBlackVoid.blackVoidPixels} black void pixels`).toBe(0);
   expect(worst.magentaPixels, `Studio Sprint frame ${worst.label} exposed ${worst.magentaPixels} magenta pixels`).toBe(0);
+  for (const sample of samples) {
+    expect(sample.stats?.terrainCoverageDropped || 0, `${coverageCase.name} frame ${sample.label} dropped base terrain coverage`).toBe(0);
+    if (coverageCase.threeEnabled) {
+      expect(sample.stats?.threeTerrainRenderer || 0, `${coverageCase.name} frame ${sample.label} did not use Three terrain`).toBe(1);
+      expect(sample.stats?.threeTerrainPolygons || 0, `${coverageCase.name} frame ${sample.label} had no Three terrain polygons`).toBeGreaterThan(0);
+    } else {
+      expect(sample.stats?.threeTerrainRenderer || 0, `${coverageCase.name} frame ${sample.label} unexpectedly used Three terrain`).toBe(0);
+      expect(sample.stats?.terrainWorldMeshPolygons || 0, `${coverageCase.name} frame ${sample.label} had no custom WebGL terrain polygons`).toBeGreaterThan(0);
+    }
+  }
+});
 });
