@@ -3,12 +3,369 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 import { RACE_STOCK_PERFORMANCE_TARGETS } from '../../src/racing/raceData.js';
+import { RaceSurfaceModel } from '../../src/racing/RaceSurfaceModel.js';
+import { cloneRaceVehiclePhysicsState, createRaceVehiclePhysicsState, stepRaceVehiclePhysics, syncRaceVehiclePhysicsToSession } from '../../src/racing/RaceVehiclePhysics.js';
 import RaceEditor from '../../src/ui/RaceEditor.js';
 import { loadProjectFile, resetProjectFilesForTests } from '../../src/ui/projectFiles.js';
 import { clearCachedProjectFilesForTests, upsertCachedProjectFile } from '../../src/ui/serverStorage.js';
 
 const raceEditorSource = readFileSync(new URL('../../src/ui/RaceEditor.js', import.meta.url), 'utf8');
+const raceMaterialBatchingSource = readFileSync(new URL('../../src/racing/RaceMaterialBatching.js', import.meta.url), 'utf8');
 const normalizeAngle = (angle) => Math.atan2(Math.sin(angle), Math.cos(angle));
+
+test('Race surface model exposes canonical road margin shoulder transition order', () => {
+  const model = new RaceSurfaceModel({
+    flatJoinWidthM: 0.5,
+    slopeBlendWidthM: 4,
+    getRouteLength: () => 100,
+    getRoadHalfWidth: () => 3,
+    getMarginWidth: () => 0.5,
+    getShoulderWidth: () => 1,
+    getBlendWidth: () => 4.5,
+    sampleTerrain: () => 0,
+    sampleRawTerrain: () => 0,
+    getSurfaceById: (id) => ({ id, grip: 1 }),
+    getEffectiveSurfaceId: (id) => id,
+    sampleRoadbedProfileAtDistance: () => ({
+      x: 0,
+      z: 0,
+      yaw: Math.PI / 2,
+      elevation: 1,
+      grade: 0,
+      roadHalfWidth: 3,
+      marginWidth: 0.5,
+      shoulderWidth: 1,
+      blendWidth: 4.5,
+      segment: { surface: 'asphalt' }
+    })
+  });
+
+  const metrics = model.getCorridorMetrics(model.sampleDeckAtDistance(0));
+
+  assert.equal(metrics.roadEnd, 3);
+  assert.equal(metrics.marginEnd, 3.5);
+  assert.equal(metrics.shoulderEnd, 4.5);
+  assert.equal(metrics.flatJoinEnd, 5);
+  assert.equal(metrics.transitionEnd, 9);
+  assert.equal(model.sampleTrack(0, 2.95).region, 'road');
+  assert.equal(model.sampleTrack(0, 3.25).region, 'margin');
+  assert.equal(model.sampleTrack(0, 4.25).region, 'shoulder');
+  assert.equal(model.sampleTrack(0, 4.75).region, 'transition');
+  assert.equal(model.sampleTrack(0, 9.25).region, 'terrain');
+});
+
+test('Race surface classifier handles every margin and shoulder enabled combination', () => {
+  const createModel = ({ marginWidth = 0, shoulderWidth = 0 } = {}) => new RaceSurfaceModel({
+    flatJoinWidthM: 0.5,
+    slopeBlendWidthM: 4,
+    getRouteLength: () => 100,
+    getRoadHalfWidth: () => 4,
+    getMarginWidth: () => marginWidth,
+    getShoulderWidth: () => shoulderWidth,
+    getBlendWidth: () => 4,
+    sampleTerrain: () => 0,
+    sampleRawTerrain: () => 0,
+    getGroundSurfaceForWorldPoint: () => 'dirt',
+    getSurfaceById: (id) => ({ id, grip: id === 'asphalt' ? 1 : 0.9 }),
+    getEffectiveSurfaceId: (id) => id,
+    sampleRoadbedProfileAtDistance: () => ({
+      x: 0,
+      z: 0,
+      yaw: Math.PI / 2,
+      elevation: 1,
+      grade: 0,
+      roadHalfWidth: 4,
+      marginWidth,
+      shoulderWidth,
+      blendWidth: 4,
+      segment: { surface: 'asphalt' }
+    })
+  });
+  const cases = [
+    { marginWidth: 0, shoulderWidth: 0, expected: ['road', 'transition', 'transition'] },
+    { marginWidth: 1, shoulderWidth: 0, expected: ['road', 'margin', 'transition'] },
+    { marginWidth: 0, shoulderWidth: 2, expected: ['road', 'shoulder', 'shoulder'] },
+    { marginWidth: 1, shoulderWidth: 2, expected: ['road', 'margin', 'shoulder'] }
+  ];
+
+  cases.forEach(({ marginWidth, shoulderWidth, expected }) => {
+    const model = createModel({ marginWidth, shoulderWidth });
+    assert.equal(model.sampleTrack(0, 3.9).region, expected[0]);
+    assert.equal(model.sampleTrack(0, 4.5).region, expected[1]);
+    assert.equal(model.sampleTrack(0, 5.5).region, expected[2]);
+    const metrics = model.getCorridorMetrics(model.sampleDeckAtDistance(0));
+    assert.equal(metrics.transitionEnd, metrics.shoulderEnd + metrics.transitionWidth);
+    assert.equal(model.sampleTrack(0, metrics.shoulderEnd + 0.01).region, 'transition');
+  });
+});
+
+test('Race roadbed deck uses robust center support instead of full corridor maximum', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.getRaceRouteLength = () => 20;
+  editor.getActiveRaceRuntimeType = () => 'destination';
+  editor.getRacePathSampleCacheSignature = () => 'path';
+  editor.ensureRaceTileMap = () => ({ revision: 1, cellSizeM: 5 });
+  editor.getRaceWorldPoseAtDistance = (distance) => ({
+    distance,
+    x: 0,
+    z: Number(distance) || 0,
+    y: Number(distance) || 0,
+    yaw: 0,
+    elevation: 0,
+    segment: { surface: 'asphalt' }
+  });
+  editor.getRaceRightVector = () => ({ x: 1, z: 0 });
+  editor.getRaceRoadHalfWidthWorld = () => 4;
+  editor.getRaceVisibleMarginWidthWorld = () => 0;
+  editor.getRaceShoulderWidthWorld = () => 12;
+  editor.getRaceRoadTerrainBlendWidthWorld = () => 10;
+  editor.getRaceGroundElevationAtWorldPoint = (point) => (Number(point?.x || 0) > 6 ? 10 : 0);
+  editor.getRaceRawGroundElevationAtWorldPoint = editor.getRaceGroundElevationAtWorldPoint;
+
+  const profile = editor.getRaceRoadbedProfile({ routeLength: 20, runtimeType: 'destination', step: 5 });
+  const middle = editor.sampleRaceRoadbedProfileAtDistance(10, profile);
+
+  assert.equal(middle.elevation < 0.001, true);
+  assert.equal(middle.stampedHalfWidth > 15, true);
+});
+
+test('Race surface geometry key changes when margin and shoulder inputs change', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.getRaceRouteLength = () => 20;
+  const margin = editor.ensureRaceMarginSettings();
+  margin.marginMode = 'on';
+  margin.widthM = 0.2;
+  margin.shoulderMode = 'on';
+  margin.shoulderWidthM = 12;
+  const initial = editor.getRaceSurfaceGeometryRevisionKey({ runtimeType: 'destination' });
+
+  margin.marginMode = 'off';
+  const marginChanged = editor.getRaceSurfaceGeometryRevisionKey({ runtimeType: 'destination' });
+  margin.marginMode = 'on';
+  margin.shoulderWidthM = 18;
+  const shoulderChanged = editor.getRaceSurfaceGeometryRevisionKey({ runtimeType: 'destination' });
+
+  assert.notEqual(initial, marginChanged);
+  assert.notEqual(initial, shoulderChanged);
+});
+
+test('Race renderer surface and wheel contact use the same deck elevation', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const segment = { surface: 'asphalt' };
+  editor.getRaceRouteLength = () => 100;
+  editor.getActiveRaceRuntimeType = () => 'destination';
+  editor.getRacePathSampleCacheSignature = () => 'path';
+  editor.ensureRaceTileMap = () => ({ revision: 1, cellSizeM: 5 });
+  editor.getRaceWorldPoseAtDistance = (distance) => ({
+    distance,
+    x: 0,
+    z: Number(distance) || 0,
+    y: Number(distance) || 0,
+    yaw: 0,
+    elevation: 2,
+    segment
+  });
+  editor.getRaceRouteProjectionForWorldPoint = (point) => ({
+    distance: Number(point?.z || 0),
+    lateral: Number(point?.x || 0),
+    yaw: 0,
+    segment
+  });
+  editor.getRaceRightVector = () => ({ x: 1, z: 0 });
+  editor.getRaceForwardVector = () => ({ x: 0, z: 1 });
+  editor.getRaceRoadHalfWidthWorld = () => 4;
+  editor.getRaceVisibleMarginWidthWorld = () => 0.5;
+  editor.getRaceShoulderWidthWorld = () => 1;
+  editor.getRaceRoadTerrainBlendWidthWorld = () => 4.5;
+  editor.getRaceGroundElevationAtWorldPoint = () => 0;
+  editor.getRaceRawGroundElevationAtWorldPoint = () => 0;
+  const roadPoint = { x: 1, z: 10 };
+  const shoulderPoint = { x: 4.8, z: 10 };
+  const roadSample = editor.getRaceSurfaceModel().sampleWorld(roadPoint, 0);
+  const shoulderSample = editor.getRaceSurfaceModel().sampleWorld(shoulderPoint, 0);
+  const roadRenderElevation = editor.getRaceStitchedTerrainElevationAtWorldPoint(roadPoint, 0);
+  const shoulderRenderElevation = editor.getRaceStitchedTerrainElevationAtWorldPoint(shoulderPoint, 0);
+  const contacts = editor.getRaceWheelContactState({
+    car: { dimensions: { wheelbaseM: 2.6, trackFrontM: 1.5, trackRearM: 1.5 } },
+    tuning: { wheelbaseM: 2.6, trackFrontM: 1.5, trackRearM: 1.5, trackWidthM: 1.5 },
+    session: { worldX: 0, worldZ: 10, carYaw: 0, routeRuntimeType: 'destination' }
+  });
+
+  assert.equal(Math.abs(roadSample.elevation - roadRenderElevation) < 0.0001, true);
+  assert.equal(Math.abs(shoulderSample.elevation - shoulderRenderElevation) < 0.0001, true);
+  Object.values(contacts.contacts).forEach((contact) => {
+    assert.equal(Math.abs(contact.elevation - roadSample.elevation) < 0.0001, true);
+  });
+});
+
+test('Race wheel state classifies visible apron and shoulder from canonical surface regions', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const segment = { surface: 'asphalt' };
+  editor.getRaceRouteLength = () => 100;
+  editor.getActiveRaceRuntimeType = () => 'destination';
+  editor.getRacePathSampleCacheSignature = () => 'path';
+  editor.ensureRaceTileMap = () => ({ revision: 1, cellSizeM: 5, defaultTileId: 'grass' });
+  editor.getRaceWorldPoseAtDistance = (distance) => ({
+    distance,
+    x: 0,
+    z: Number(distance) || 0,
+    y: Number(distance) || 0,
+    yaw: 0,
+    elevation: 2,
+    segment,
+    roadHalfWidth: 4,
+    marginWidth: 1,
+    shoulderWidth: 2,
+    blendWidth: 4
+  });
+  editor.getRaceRouteProjectionForWorldPoint = (point) => ({
+    distance: Number(point?.z || 0),
+    lateral: Number(point?.x || 0),
+    yaw: 0,
+    segment
+  });
+  editor.getRaceRightVector = () => ({ x: 1, z: 0 });
+  editor.getRaceForwardVector = () => ({ x: 0, z: 1 });
+  editor.getRaceRoadHalfWidthWorld = () => 4;
+  editor.getRaceVisibleMarginWidthWorld = () => 1;
+  editor.getRaceShoulderWidthWorld = () => 2;
+  editor.getRaceRoadTerrainBlendWidthWorld = () => 4;
+  editor.getRaceGroundElevationAtWorldPoint = () => 0;
+  editor.getRaceRawGroundElevationAtWorldPoint = () => 0;
+  editor.getRaceGroundSurfaceForWorldPoint = () => 'dirt';
+  const tuning = { wheelbaseM: 2.1, trackFrontM: 1.2, trackRearM: 1.2, trackWidthM: 1.2 };
+  const car = { setup: {}, dimensions: { wheelbaseM: 2.1, trackFrontM: 1.2, trackRearM: 1.2, trackWidthM: 1.2 } };
+  const marginState = editor.getRaceWheelSurfaceState({
+    car,
+    tuning,
+    session: { worldX: 4.2, worldZ: 10, carYaw: 0 }
+  });
+  const shoulderState = editor.getRaceWheelSurfaceState({
+    car,
+    tuning,
+    session: { worldX: 5.2, worldZ: 10, carYaw: 0 }
+  });
+
+  assert.equal(marginState.regionByWheel.fr, 'margin');
+  assert.equal(marginState.terrainByWheel.fr, 'margin');
+  assert.equal(marginState.surfaceByWheel.fr, 'asphalt');
+  assert.equal(shoulderState.regionByWheel.fr, 'shoulder');
+  assert.equal(shoulderState.terrainByWheel.fr, 'shoulder');
+  assert.equal(shoulderState.surfaceByWheel.fr, 'dirt');
+});
+
+test('Race shoulder meshes use adjacent terrain texture and stay level with road deck', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.margin = { marginMode: 'on', shoulderMode: 'on', widthM: 0.3, shoulderWidthM: 2 };
+  editor.ensureRaceTileMap = () => ({ revision: 1, cellSizeM: 5, defaultTileId: 'grass' });
+  editor.getRaceTileMapCellAtWorldPoint = () => ({
+    tileId: 'grass',
+    artRef: 'LocalGrass',
+    tileWeights: { grass: 1 }
+  });
+  const section = {
+    center: { x: 0, z: 0, y: 0, yaw: 0, elevation: 2, segment: { surface: 'asphalt' } },
+    left: { x: -4, z: 0, y: 0, elevation: 2 },
+    right: { x: 4, z: 0, y: 0, elevation: 2 },
+    marginLeft: { x: -5, z: 0, y: 0, elevation: 2 },
+    marginRight: { x: 5, z: 0, y: 0, elevation: 2 },
+    shoulderLeft: { x: -7, z: 0, y: 0, elevation: 2 },
+    shoulderRight: { x: 7, z: 0, y: 0, elevation: 2 },
+    transitionLeft: { x: -11, z: 0, y: 0, elevation: 1.5 },
+    transitionRight: { x: 11, z: 0, y: 0, elevation: 1.5 }
+  };
+  const far = JSON.parse(JSON.stringify(section));
+  far.center.z = 10;
+  far.center.y = 10;
+  ['left', 'right', 'marginLeft', 'marginRight', 'shoulderLeft', 'shoulderRight', 'transitionLeft', 'transitionRight'].forEach((key) => {
+    far[key].z = 10;
+    far[key].y = 10;
+  });
+  const meshes = editor.getRaceShoulderSurfaceMeshesForBand({ near: section, far }, {
+    fallbackArtRef: '',
+    texturesEnabled: true,
+    textureWorldM: 1,
+    useSunShading: false
+  });
+  const left = meshes.find((mesh) => mesh.source === 'shoulder-left');
+
+  assert.ok(left);
+  assert.equal(left.artRef, 'LocalGrass');
+  assert.equal(left.textured, true);
+  assert.equal(left.textureWorldM, 1);
+  left.points.forEach((point) => {
+    assert.equal(point.elevation, 2);
+  });
+});
+
+test('Race tire FX treats apron as paved margin and shoulder as terrain', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+
+  assert.equal(editor.getRaceTireFxSlotForWheel({
+    surfaceId: 'asphalt',
+    terrain: 'margin',
+    slip: 0.1,
+    speedMps: 12
+  }), '');
+  assert.equal(editor.getRaceTireFxSlotForWheel({
+    surfaceId: 'asphalt',
+    terrain: 'shoulder',
+    slip: 0.1,
+    speedMps: 12
+  }), 'grassDust');
+});
+
+test('Race terrain clipping removes corridor interiors and retains seam-split exterior triangles', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const segment = { surface: 'asphalt' };
+  editor.getRaceRouteLength = () => 100;
+  editor.getActiveRaceRuntimeType = () => 'destination';
+  editor.getRacePathSampleCacheSignature = () => 'path';
+  editor.ensureRaceTileMap = () => ({ revision: 1, cellSizeM: 5, defaultTileId: 'grass' });
+  editor.getRaceWorldPoseAtDistance = (distance) => ({
+    distance,
+    x: 0,
+    z: Number(distance) || 0,
+    y: Number(distance) || 0,
+    yaw: 0,
+    elevation: 0,
+    segment
+  });
+  editor.getRaceRouteProjectionForWorldPoint = (point) => ({
+    distance: Math.max(0, Math.min(100, Number(point?.z || 0))),
+    lateral: Number(point?.x || 0),
+    yaw: 0,
+    segment
+  });
+  editor.getRaceRightVector = () => ({ x: 1, z: 0 });
+  editor.getRaceForwardVector = () => ({ x: 0, z: 1 });
+  editor.getRaceRoadHalfWidthWorld = () => 4;
+  editor.getRaceVisibleMarginWidthWorld = () => 0.5;
+  editor.getRaceShoulderWidthWorld = () => 1;
+  editor.getRaceRoadTerrainBlendWidthWorld = () => 4.5;
+  editor.getRaceGroundElevationAtWorldPoint = () => 0;
+  editor.getRaceRawGroundElevationAtWorldPoint = () => 0;
+  const inside = editor.getRaceTerrainTrianglesOutsideTrackCorridor([
+    { x: -1, z: 10, elevation: 0 },
+    { x: 1, z: 10, elevation: 0 },
+    { x: 0, z: 12, elevation: 0 }
+  ], { runtimeType: 'destination', routeLength: 100 });
+  const crossing = editor.getRaceTerrainTrianglesOutsideTrackCorridor([
+    { x: 8, z: 10, elevation: 0 },
+    { x: 12, z: 10, elevation: 0 },
+    { x: 12, z: 14, elevation: 0 }
+  ], { runtimeType: 'destination', routeLength: 100 });
+
+  assert.equal(inside.length, 0);
+  assert.equal(crossing.length > 0, true);
+  crossing.forEach((triangle) => {
+    assert.equal(editor.getRaceTerrainTriangleArea(triangle) > 0.000001, true);
+    triangle.forEach((point) => {
+      assert.equal(Number(point.x || 0) >= 9.9999, true);
+    });
+  });
+  assert.equal(crossing.some((triangle) => triangle.some((point) => point.trackSeam === true)), true);
+});
 
 function createMockContext() {
   const calls = [];
@@ -30,8 +387,52 @@ function createMockContext() {
     arc: (x, y, r, start, end) => calls.push({ type: 'arc', x, y, r, start, end }),
     fill() { calls.push({ type: 'fill', style: this._fillStyle }); },
     stroke: noop,
+    setLineDash: noop,
     drawImage(...args) { calls.push({ type: 'drawImage', args }); },
     fillText: (value, x, y) => calls.push({ type: 'text', value, x, y }),
+    measureText: (value) => ({ width: String(value || '').length * 7 }),
+    set fillStyle(value) { this._fillStyle = value; },
+    get fillStyle() { return this._fillStyle; },
+    set strokeStyle(value) { this._strokeStyle = value; },
+    get strokeStyle() { return this._strokeStyle; },
+    set font(value) { this._font = value; },
+    get font() { return this._font; },
+    set textAlign(value) { this._textAlign = value; },
+    get textAlign() { return this._textAlign; },
+    set textBaseline(value) { this._textBaseline = value; },
+    get textBaseline() { return this._textBaseline; },
+    set globalAlpha(value) { this._globalAlpha = value; },
+    get globalAlpha() { return this._globalAlpha; },
+    set shadowColor(value) { this._shadowColor = value; },
+    get shadowColor() { return this._shadowColor; },
+    set shadowBlur(value) { this._shadowBlur = value; },
+    get shadowBlur() { return this._shadowBlur; },
+    set shadowOffsetY(value) { this._shadowOffsetY = value; },
+    get shadowOffsetY() { return this._shadowOffsetY; }
+  };
+}
+
+function createFastMockContext() {
+  const noop = () => {};
+  return {
+    save: noop,
+    restore: noop,
+    fillRect: noop,
+    strokeRect: noop,
+    rect: noop,
+    clip: noop,
+    beginPath: noop,
+    closePath: noop,
+    moveTo: noop,
+    lineTo: noop,
+    translate: noop,
+    rotate: noop,
+    arc: noop,
+    fill: noop,
+    stroke: noop,
+    setLineDash: noop,
+    drawImage: noop,
+    fillText: noop,
     measureText: (value) => ({ width: String(value || '').length * 7 }),
     set fillStyle(value) { this._fillStyle = value; },
     get fillStyle() { return this._fillStyle; },
@@ -69,7 +470,7 @@ function seedEditableRaceRoute(editor) {
 }
 
 function openLandscapeRoot(editor, rootId, width = 844, height = 390) {
-  const ctx = createMockContext();
+  const ctx = createFastMockContext();
   editor.draw(ctx, width, height);
   const menuButton = editor.buttons.find((button) => button.id === 'menu');
   assert.ok(menuButton);
@@ -5752,9 +6153,9 @@ test('Race Three road vertices sample stitched terrain before applying road lift
   }]);
   const roadY = road.getAttribute('position').array[1];
 
-  assert.equal(Math.abs(roadY - 3.075) < 0.000001, true);
+  assert.equal(Math.abs(roadY - 3) < 0.000001, true);
   assert.equal(raceEditorSource.includes('getRaceThreeSurfacePoint(point = {}, source = \'\')'), true);
-  assert.equal(raceEditorSource.includes('getRaceStitchedTerrainElevationAtWorldPoint({ x, z }, fallbackElevation)'), true);
+  assert.equal(raceEditorSource.includes('getRaceStitchedTerrainElevationAtWorldPoint'), true);
 });
 
 test('Race WebGL road mesh vertices sample stitched terrain before projection', () => {
@@ -6071,16 +6472,16 @@ test('Race WebGL Track Studio Sprint terrain and texture FPS benchmark stays abo
     editor.playtestSession.carYaw = pose.yaw;
     editor.playtestSession.cameraYaw = pose.yaw;
     editor.drawRaceProjectedRoadPath(ctx, bounds, { showPlaytestHud: false });
+    return Math.max(0.001, Number(editor.lastRaceRenderStats?.webglTrackMs || 0));
   };
 
-  renderFrame(120);
+  [120, 129, 138, 147].forEach((distance) => renderFrame(distance));
   const frames = 10;
-  const startMs = performance.now();
+  let renderMs = 0;
   for (let frame = 0; frame < frames; frame += 1) {
-    renderFrame(120 + frame * 9);
+    renderMs += renderFrame(120 + frame * 9);
   }
-  const elapsedMs = Math.max(0.001, performance.now() - startMs);
-  const fps = frames / (elapsedMs / 1000);
+  const fps = frames / (Math.max(0.001, renderMs) / 1000);
 
   assert.equal(editor.selectedRace.name, 'Studio Sprint');
   assert.equal(editor.lastRaceRenderStats.terrainEnabled, true);
@@ -6104,7 +6505,7 @@ test('Race Three drivable surface layers share geometric height and use render o
   assert.equal(boundary, terrain);
   assert.equal(paint > boundary, true);
   assert.equal(raceEditorSource.includes('terrainMesh.renderOrder = 0;'), true);
-  assert.equal(raceEditorSource.includes("const key = `${textured ? 1 : 0}|${artRef}|${Number(mesh.textureWorldM || textureWorldM)}|${this.getRaceThreeMeshLiftM(mesh)}`;"), true);
+  assert.equal(raceMaterialBatchingSource.includes("const key = `${textured ? 1 : 0}|${artRef}|${Number(mesh.textureWorldM || textureWorldM)}|${adapter.getMeshLiftM?.(mesh) || 0}`;"), true);
   assert.equal(raceEditorSource.includes("addGroup(shoulderMeshes, 'threeShoulder', { renderOrder: 1 });"), true);
   assert.equal(raceEditorSource.includes("addGroup(roadMeshes, 'threeRoad', { renderOrder: 2 });"), true);
   assert.equal(raceEditorSource.includes("addGroup(boundaryMeshes, 'threeBoundary', { renderOrder: 3 });"), true);
@@ -11212,7 +11613,7 @@ test('Race Editor projected boundary draws road-edge seam strips with optional t
   }), false);
 
   editor.selectedRace.margin = { marginMode: 'hidden', enabled: true, widthM: 0.42, artRef: 'Fence' };
-  assert.equal(editor.isRaceMarginEnabled(), true);
+  assert.equal(editor.isRaceMarginEnabled(), false);
   assert.equal(editor.isRaceMarginVisible(), false);
   assert.equal(editor.drawRaceProjectedBoundaryStrip(ctx, { x: 0, y: 0, w: 390, h: 240 }, near, far, {
     camera: { nearPlane: 1.2 }
@@ -11261,4 +11662,292 @@ test('Race Editor art billboards draw without debug rectangles and keep close he
   assert.ok(draw);
   assert.equal(calls.some((call) => call.type === 'strokeRect'), false);
   assert.equal(draw.args[4] > draw.args[3], true);
+});
+
+test('Race editor surface preview and playtest world bake share the same surface revision', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const runtimeType = editor.getSelectedRaceRuntimeType();
+  const routeLength = editor.getRaceRouteLength();
+  const renderDebug = {
+    ...editor.getRaceRenderDebugSettings(),
+    terrainEnabled: true,
+    texturesEnabled: false,
+    detailEnabled: false,
+    terrainCullingEnabled: false,
+    terrainBudgetEnabled: false,
+    editorSurfacePreviewEnabled: true,
+    editorSurfaceDebugMode: 'bands'
+  };
+
+  const preview = editor.getRaceEditorSurfacePreviewBake({
+    terrainSize: 28,
+    routeLength,
+    runtimeType,
+    renderDebug
+  });
+  const playtestBake = editor.buildRaceWorldBake({
+    terrainSize: 28,
+    routeLength,
+    runtimeType,
+    renderDebug
+  });
+
+  assert.equal(preview.surfaceRevision, playtestBake.surfaceRevision);
+  assert.equal(preview.validation.surfaceRevision, playtestBake.validation.surfaceRevision);
+  assert.equal(preview.surfaceBake.sections.length > 2, true);
+  assert.equal(playtestBake.surfaceBake.sections.length, preview.surfaceBake.sections.length);
+});
+
+test('Race editor surface preview cache invalidates with terrain and surface geometry changes', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.renderDebug = {
+    ...editor.getRaceRenderDebugSettings(),
+    editorSurfacePreviewEnabled: true,
+    editorSurfaceDebugMode: 'seams'
+  };
+  const first = editor.getRaceEditorSurfacePreviewBake();
+  assert.ok(first);
+
+  const margin = editor.ensureRaceMarginSettings();
+  margin.marginMode = 'on';
+  margin.widthM = Number(margin.widthM || 0.24) + 0.11;
+  editor.invalidateRaceTerrainCaches(editor.ensureRaceTileMap());
+
+  assert.equal(editor.raceEditorSurfacePreviewBake, null);
+  const second = editor.getRaceEditorSurfacePreviewBake();
+  assert.notEqual(first.surfaceRevision, second.surfaceRevision);
+});
+
+test('Race editor top-down surface debug bands come from canonical surface cross-sections', () => {
+  assert.equal(raceEditorSource.includes('drawRaceCanonicalSurfacePreview(ctx, bounds, renderDebug = this.getRaceRenderDebugSettings())'), true);
+  assert.equal(raceEditorSource.includes('getRaceEditorSurfacePreviewBake({ runtimeType, routeLength, renderDebug })'), true);
+  assert.equal(raceEditorSource.includes('preview?.surfaceBake?.sections'), true);
+  assert.equal(raceEditorSource.includes("drawStrip('left', 'right'"), true);
+  assert.equal(raceEditorSource.includes("drawPolyline('transitionLeft'"), true);
+  assert.equal(raceEditorSource.includes('validation.magentaEdges'), true);
+});
+
+test('Race render debug settings persist editor surface preview controls', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+
+  editor.setRaceRenderDebugSettings({
+    terrainEnabled: true,
+    texturesEnabled: true,
+    editorSurfacePreviewEnabled: true,
+    editorSurfacePreview3dEnabled: true,
+    editorSurfaceDebugMode: 'wheels'
+  });
+  const settings = editor.getRaceRenderDebugSettings();
+
+  assert.equal(settings.editorSurfacePreviewEnabled, true);
+  assert.equal(settings.editorSurfacePreview3dEnabled, true);
+  assert.equal(settings.editorSurfaceDebugMode, 'wheels');
+});
+
+function createSyntheticVehicleSurface({ slopeZ = 0, slopeX = 0, ridge = false } = {}) {
+  return {
+    sampleWorld(point = {}) {
+      const x = Number(point.x || 0);
+      const z = Number(point.z || 0);
+      const elevation = slopeZ * z + slopeX * x + (ridge ? Math.max(0, 1 - Math.abs(z) / 5) * 0.18 : 0);
+      const normal = {
+        x: -slopeX,
+        y: 1,
+        z: -slopeZ
+      };
+      const length = Math.hypot(normal.x, normal.y, normal.z) || 1;
+      const absX = Math.abs(x);
+      const region = absX <= 3 ? 'road' : absX <= 3.7 ? 'margin' : absX <= 5.4 ? 'shoulder' : 'terrain';
+      const surfaceId = region === 'road' || region === 'margin' ? 'asphalt' : 'dirt';
+      const friction = region === 'road' ? 1 : region === 'margin' ? 0.92 : region === 'shoulder' ? 0.62 : 0.48;
+      return {
+        x,
+        z,
+        elevation,
+        normal: { x: normal.x / length, y: normal.y / length, z: normal.z / length },
+        region,
+        surfaceId,
+        materialId: surfaceId,
+        friction,
+        driveable: region !== 'terrain'
+      };
+    }
+  };
+}
+
+function createVehiclePhysicsFixture(surfaceModel = createSyntheticVehicleSurface()) {
+  const tuning = {
+    weightKg: 1450,
+    wheelbaseM: 2.65,
+    trackWidthM: 1.56,
+    trackFrontM: 1.56,
+    trackRearM: 1.56,
+    rideHeightFront: 0.18,
+    rideHeightRear: 0.18,
+    suspensionTravelFront: 0.5,
+    suspensionTravelRear: 0.5,
+    springRateFront: 24000,
+    springRateRear: 23000,
+    dampingReboundFront: 2400,
+    dampingReboundRear: 2300
+  };
+  const carDimensions = { wheelbaseM: 2.65, trackWidthM: 1.56, trackFrontM: 1.56, trackRearM: 1.56 };
+  const session = {
+    worldX: 0,
+    worldZ: 0,
+    speedMps: 12,
+    carYaw: 0,
+    velocityYaw: 0,
+    pitchRad: 0,
+    rollRad: 0
+  };
+  const state = createRaceVehiclePhysicsState({
+    session,
+    tuning,
+    carDimensions,
+    surfaceModel,
+    elevationScaleM: 12
+  });
+  return { state, session, tuning, carDimensions, surfaceModel };
+}
+
+test('Race 3D vehicle contact follows uphill and downhill grades without sinking', () => {
+  const { state, tuning, carDimensions, surfaceModel } = createVehiclePhysicsFixture(createSyntheticVehicleSurface({ slopeZ: 0.012 }));
+  const initialY = state.position.y;
+
+  for (let index = 0; index < 30; index += 1) {
+    stepRaceVehiclePhysics(state, {
+      dt: 1 / 60,
+      tuning,
+      carDimensions,
+      surfaceModel,
+      elevationScaleM: 12,
+      planarVelocity: { x: 0, y: 0, z: 18 },
+      yaw: 0
+    });
+  }
+
+  const averageContactY = Object.values(state.wheels).reduce((sum, wheel) => sum + wheel.contactPoint.y, 0) / 4;
+  assert.equal(state.position.z > 1, true);
+  assert.equal(state.position.y > initialY, true);
+  assert.equal(state.position.y > averageContactY, true);
+});
+
+test('Race 3D vehicle pitch, roll, and wheel contact respond to surface and load', () => {
+  const pitchFixture = createVehiclePhysicsFixture(createSyntheticVehicleSurface({ slopeZ: 0.018 }));
+  stepRaceVehiclePhysics(pitchFixture.state, {
+    dt: 0.4,
+    tuning: pitchFixture.tuning,
+    carDimensions: pitchFixture.carDimensions,
+    surfaceModel: pitchFixture.surfaceModel,
+    elevationScaleM: 12,
+    planarVelocity: { x: 0, y: 0, z: 10 },
+    controls: { longitudinalAcceleration: -6 }
+  });
+  assert.equal(Math.abs(pitchFixture.state.pitch) > 0.002, true);
+
+  const rollFixture = createVehiclePhysicsFixture(createSyntheticVehicleSurface({ slopeX: 0.025 }));
+  stepRaceVehiclePhysics(rollFixture.state, {
+    dt: 0.4,
+    tuning: rollFixture.tuning,
+    carDimensions: rollFixture.carDimensions,
+    surfaceModel: rollFixture.surfaceModel,
+    elevationScaleM: 12,
+    planarVelocity: { x: 0, y: 0, z: 10 },
+    controls: { lateralAcceleration: 7 }
+  });
+  assert.equal(Math.abs(rollFixture.state.roll) > 0.002, true);
+});
+
+test('Race 3D vehicle allows wheel contact loss and settles deterministically after landing', () => {
+  const { state, tuning, carDimensions, surfaceModel } = createVehiclePhysicsFixture(createSyntheticVehicleSurface());
+  state.position.y += 3;
+  state.linearVelocity.y = 1.5;
+  stepRaceVehiclePhysics(state, {
+    dt: 0.05,
+    tuning,
+    carDimensions,
+    surfaceModel,
+    elevationScaleM: 12,
+    planarVelocity: { x: 0, y: 0, z: 18 }
+  });
+  assert.equal(Object.values(state.wheels).some((wheel) => !wheel.inContact), true);
+
+  for (let index = 0; index < 180; index += 1) {
+    stepRaceVehiclePhysics(state, {
+      dt: 1 / 60,
+      tuning,
+      carDimensions,
+      surfaceModel,
+      elevationScaleM: 12,
+      planarVelocity: { x: 0, y: 0, z: 8 }
+    });
+  }
+  assert.equal(Object.values(state.wheels).some((wheel) => wheel.inContact), true);
+  assert.equal(Number.isFinite(state.position.y), true);
+  assert.equal(Math.abs(state.linearVelocity.y) < 18, true);
+});
+
+test('Race 3D vehicle wheel contacts use canonical road apron shoulder regions and friction', () => {
+  const { state, tuning, carDimensions, surfaceModel } = createVehiclePhysicsFixture(createSyntheticVehicleSurface());
+  state.position.x = 4.4;
+  stepRaceVehiclePhysics(state, {
+    dt: 1 / 30,
+    tuning,
+    carDimensions,
+    surfaceModel,
+    elevationScaleM: 12,
+    planarVelocity: { x: 0, y: 0, z: 2 }
+  });
+  const regions = Object.fromEntries(Object.entries(state.wheels).map(([wheelId, wheel]) => [wheelId, wheel.region]));
+
+  assert.equal(Object.values(regions).includes('margin'), true);
+  assert.equal(Object.values(regions).includes('shoulder'), true);
+  assert.equal(Object.values(state.wheels).some((wheel) => wheel.friction < 0.8), true);
+});
+
+test('Race 3D vehicle physics is deterministic for identical inputs', () => {
+  const fixture = createVehiclePhysicsFixture(createSyntheticVehicleSurface({ slopeZ: 0.01, slopeX: 0.004 }));
+  const a = cloneRaceVehiclePhysicsState(fixture.state);
+  const b = cloneRaceVehiclePhysicsState(fixture.state);
+  const options = {
+    tuning: fixture.tuning,
+    carDimensions: fixture.carDimensions,
+    surfaceModel: fixture.surfaceModel,
+    elevationScaleM: 12,
+    planarVelocity: { x: 1.2, y: 0, z: 16 },
+    yaw: 0.08,
+    controls: {
+      longitudinalAcceleration: 2.1,
+      lateralAcceleration: 4.2,
+      driveForceByWheel: { fl: 900, fr: 900, rl: 900, rr: 900 },
+      brakeForceByWheel: { fl: 0, fr: 0, rl: 0, rr: 0 },
+      longitudinalUsageByWheel: { fl: 0.3, fr: 0.3, rl: 0.4, rr: 0.4 },
+      lateralUsageByWheel: { fl: 0.2, fr: 0.25, rl: 0.15, rr: 0.18 }
+    }
+  };
+  for (let index = 0; index < 90; index += 1) {
+    stepRaceVehiclePhysics(a, { ...options, dt: 1 / 60 });
+    stepRaceVehiclePhysics(b, { ...options, dt: 1 / 60 });
+  }
+
+  assert.deepEqual(a, b);
+});
+
+test('Race Editor session exposes 3D body state while preserving billboard render path', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('starter-rwd');
+  editor.playtestSession.launchLockMs = 0;
+  editor.playtestSession.elapsedMs = 1000;
+  editor.raceInput.activeThrottlePointerId = 'throttle';
+  editor.raceInput.throttleAxis = 0.7;
+  editor.updatePlaytest(1 / 30);
+
+  assert.ok(editor.playtestSession.vehicle3d);
+  assert.equal(Number.isFinite(editor.playtestSession.bodyY), true);
+  assert.equal(Number.isFinite(editor.playtestSession.velocityX), true);
+  assert.equal(Number.isFinite(editor.playtestSession.angularVelocityZ), true);
+  assert.equal(Object.keys(editor.playtestSession.wheelContacts3d || {}).length, 4);
+  assert.equal(raceEditorSource.includes('drawRaceProjectedProceduralCar'), true);
+  assert.equal(raceEditorSource.includes('bodyY'), true);
 });

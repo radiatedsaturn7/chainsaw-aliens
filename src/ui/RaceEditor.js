@@ -1,4 +1,12 @@
 import { DEFAULT_RACE_LANE_COUNT, RACE_CAR_SHELL_FRAME_SLOTS, RACE_LANE_WIDTH_M, RACE_SNOW_CONDITIONS, RACE_STOCK_PERFORMANCE_TARGETS, RACE_SURFACES, RACE_TIRE_COMPOUNDS, createBuiltInRaceCars, createDefaultRaceProject, createTestTrackRace, getSurfaceById } from '../racing/raceData.js';
+import { buildRaceSurfaceBake, getRaceSurfaceBakeKey as buildRaceSurfaceBakeKey } from '../racing/RaceCorridorGeometry.js';
+import { addRaceThreeMeshGroups as addRaceThreeMeshGroupsBatch, drawRaceWebGLTerrainMeshBatch as drawRaceWebGLTerrainMeshBatchModule, drawRaceWebGLWorldMeshBatch as drawRaceWebGLWorldMeshBatchModule } from '../racing/RaceMaterialBatching.js';
+import { validateRaceSurfaceGeometry as validateRaceSurfaceGeometryModule } from '../racing/RaceMeshValidation.js';
+import { buildRaceRoadbedProfile, sampleRaceRoadbedProfileAtDistance as sampleRaceRoadbedProfileAtDistanceModule } from '../racing/RaceRoadDeckProfile.js';
+import { RaceSurfaceModel } from '../racing/RaceSurfaceModel.js';
+import { getRaceTerrainTriangleArea as getRaceTerrainTriangleAreaModule, getRaceTerrainTrianglesOutsideTrackCorridor as getRaceTerrainTrianglesOutsideTrackCorridorModule, triangulateRaceTerrainPolygon as triangulateRaceTerrainPolygonModule, clipRaceTerrainTriangleOutsideTrackCorridor as clipRaceTerrainTriangleOutsideTrackCorridorModule } from '../racing/RaceTerrainClipping.js';
+import { createRaceVehiclePhysicsState, getRaceVehicleWheelWorldPose, stepRaceVehiclePhysics, syncRaceVehiclePhysicsToSession } from '../racing/RaceVehiclePhysics.js';
+import { getRaceWheelContactState as getRaceWheelContactStateModule, getRaceWheelSurfaceState as getRaceWheelSurfaceStateModule } from '../racing/RaceVehicleSurfaceContact.js';
 import { DEFAULT_TILE_TYPES } from '../content/tileDefinitions.js';
 import { getLandscapeHandheldLayout, getPortraitHandheldLayout } from './shared/canvasViewportLayout.js';
 import {
@@ -1262,7 +1270,10 @@ export default class RaceEditor {
       terrainBudgetEnabled: source.terrainBudgetEnabled !== false,
       farRoadDecimationEnabled: source.farRoadDecimationEnabled !== false,
       threeEnabled: source.threeEnabled !== false,
-      rawTerrainPolygonsEnabled: source.rawTerrainPolygonsEnabled === true
+      rawTerrainPolygonsEnabled: source.rawTerrainPolygonsEnabled === true,
+      editorSurfacePreviewEnabled: source.editorSurfacePreviewEnabled === true,
+      editorSurfacePreview3dEnabled: source.editorSurfacePreview3dEnabled === true,
+      editorSurfaceDebugMode: String(source.editorSurfaceDebugMode || 'bands')
     };
   }
 
@@ -1280,7 +1291,10 @@ export default class RaceEditor {
       terrainBudgetEnabled: settings.terrainBudgetEnabled !== false,
       farRoadDecimationEnabled: settings.farRoadDecimationEnabled !== false,
       threeEnabled: settings.threeEnabled !== false,
-      rawTerrainPolygonsEnabled: settings.rawTerrainPolygonsEnabled === true
+      rawTerrainPolygonsEnabled: settings.rawTerrainPolygonsEnabled === true,
+      editorSurfacePreviewEnabled: settings.editorSurfacePreviewEnabled === true,
+      editorSurfacePreview3dEnabled: settings.editorSurfacePreview3dEnabled === true,
+      editorSurfaceDebugMode: String(settings.editorSurfaceDebugMode || 'bands')
     };
     this.status = 'Race render debug settings updated';
   }
@@ -1620,6 +1634,12 @@ export default class RaceEditor {
     this.playtestSession.heading = 0;
     this.raceInput.steeringTarget = 0;
     this.raceInput.steeringWheel = 0;
+    const car = this.project.cars.find((candidate) => candidate.id === this.playtestSession.carId) || this.selectedCar;
+    this.resetRaceVehiclePhysicsState({
+      session: this.playtestSession,
+      car,
+      tuning: this.getRaceCarTuning(car)
+    });
   }
 
   resetRaceCarToRouteCenter({ projection = null, roadYaw = 0, immediate = false } = {}) {
@@ -1782,7 +1802,10 @@ export default class RaceEditor {
       terrainBudgetEnabled: renderDebug.terrainBudgetEnabled,
       farRoadDecimationEnabled: renderDebug.farRoadDecimationEnabled,
       threeEnabled: renderDebug.threeEnabled,
-      rawTerrainPolygonsEnabled: renderDebug.rawTerrainPolygonsEnabled
+      rawTerrainPolygonsEnabled: renderDebug.rawTerrainPolygonsEnabled,
+      editorSurfacePreviewEnabled: renderDebug.editorSurfacePreviewEnabled,
+      editorSurfacePreview3dEnabled: renderDebug.editorSurfacePreview3dEnabled,
+      editorSurfaceDebugMode: renderDebug.editorSurfaceDebugMode
     };
     this.raceSettingsSliderRegions = [];
   }
@@ -2409,13 +2432,47 @@ export default class RaceEditor {
     this.raceRoadSurfaceProfileCache?.clear?.();
     this.raceRoadCorridorCache?.clear?.();
     this.raceRoadbedProfileCache?.clear?.();
+    this.raceSurfaceModel = null;
     this.raceSurfaceBakeCache = null;
     this.raceWorldBakeCache = null;
     this.raceTerrainBakeCache = null;
+    this.raceEditorSurfacePreviewBake = null;
     (touchedKeys || []).forEach((key) => {
       const [x, y] = String(key).split(',').map((value) => Math.trunc(Number(value) || 0));
       this.raceTileMapDirtyChunks?.add?.(`${Math.floor(x / 8)},${Math.floor(y / 8)}`);
     });
+  }
+
+  getRaceSurfaceModel() {
+    if (!this.raceSurfaceModel) {
+      this.raceSurfaceModel = new RaceSurfaceModel({
+        flatJoinWidthM: RACE_ROAD_TERRAIN_FLAT_JOIN_WIDTH_M,
+        slopeBlendWidthM: RACE_ROAD_TERRAIN_SLOPE_BLEND_WIDTH_M,
+        normalSampleStepM: 1,
+        clampElevation: (value) => this.clampRaceElevation(value),
+        getActiveRuntimeType: () => this.getActiveRaceRuntimeType(),
+        getRouteLength: () => this.getRaceRouteLength(),
+        getRoadbedProfile: (options) => this.getRaceRoadbedProfile(options),
+        sampleRoadbedProfileAtDistance: (distance, profile) => this.sampleRaceRoadbedProfileAtDistance(distance, profile),
+        getWorldPoseAtDistance: (distance, options) => this.getRaceWorldPoseAtDistance(distance, options),
+        getSegmentAtDistance: (distance) => this.getRaceSegmentAtDistance(distance).segment,
+        projectWorldToTrack: (worldPoint) => this.getRaceRouteProjectionForWorldPoint(worldPoint),
+        getRightVector: (yaw) => this.getRaceRightVector(yaw),
+        getForwardVector: (yaw) => this.getRaceForwardVector(yaw),
+        getRoadHalfWidth: (segment) => this.getRaceRoadHalfWidthWorld(segment),
+        getMarginWidth: (segment) => this.getRaceVisibleMarginWidthWorld(segment),
+        getShoulderWidth: (segment) => this.getRaceShoulderWidthWorld(segment),
+        getBlendWidth: (segment) => this.getRaceRoadTerrainBlendWidthWorld(segment),
+        sampleTerrain: (worldPoint, fallbackElevation) => this.getRaceGroundElevationAtWorldPoint(worldPoint, fallbackElevation),
+        sampleRawTerrain: (worldPoint, fallbackElevation) => this.getRaceRawGroundElevationAtWorldPoint(worldPoint, fallbackElevation),
+        getTileCellAtWorldPoint: (worldPoint) => this.getRaceTileMapCellAtWorldPoint(worldPoint),
+        getGroundSurfaceForWorldPoint: (worldPoint, fallbackSurfaceId) => this.getRaceGroundSurfaceForWorldPoint(worldPoint, fallbackSurfaceId),
+        getEffectiveSurfaceId: (surfaceId, weatherState) => this.getRaceEffectiveSurfaceId(surfaceId, weatherState),
+        getSurfaceById: (surfaceId) => getSurfaceById(surfaceId),
+        getWeatherState: () => this.getRaceWeatherState()
+      });
+    }
+    return this.raceSurfaceModel;
   }
 
   getRaceTileMapCellKey(cellX = 0, cellY = 0) {
@@ -2992,128 +3049,37 @@ export default class RaceEditor {
     const cacheKey = sourceSamples
       ? null
       : [
-        this.getRacePathSampleCacheSignature(effectiveStep),
+        this.getRaceSurfaceGeometryRevisionKey({
+          step: effectiveStep,
+          runtimeType,
+          allowVisualExtension,
+          routeLength: effectiveRouteLength
+        }),
         runtimeType,
         allowVisualExtension ? 1 : 0,
         Math.round(effectiveRouteLength * 10)
       ].join(':');
     const cached = cacheKey ? this.raceRoadbedProfileCache?.get?.(cacheKey) : null;
     if (cached) return cached;
-    const sampleSupportAt = (distance) => {
-      const pose = this.getRaceWorldPoseAtDistance(distance, {
-        samples: sourceSamples,
-        routeLength: effectiveRouteLength,
-        runtimeType,
-        allowVisualExtension
-      });
-      const routeElevation = this.clampRaceElevation(pose.elevation);
-      const roadHalfWidth = this.getRaceRoadHalfWidthWorld(pose.segment);
-      const marginWidth = this.getRaceVisibleMarginWidthWorld(pose.segment);
-      const shoulderWidth = this.getRaceShoulderWidthWorld(pose.segment);
-      const supportHalfWidth = Math.max(roadHalfWidth, roadHalfWidth + marginWidth + shoulderWidth);
-      const right = this.getRaceRightVector(Number(pose.yaw || 0));
-      const sampleOffsets = [-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1]
-        .map((scale) => supportHalfWidth * scale);
-      const terrainElevations = sampleOffsets.map((offset) => this.getRaceGroundElevationAtWorldPoint({
-        x: Number(pose.x || 0) + right.x * offset,
-        z: Number(pose.z || 0) + right.z * offset
-      }, routeElevation));
-      const terrainElevation = terrainElevations[2] ?? routeElevation;
-      const leftTerrainElevation = terrainElevations[0] ?? terrainElevation;
-      const rightTerrainElevation = terrainElevations[terrainElevations.length - 1] ?? terrainElevation;
-      const supportElevation = this.clampRaceElevation(Math.max(routeElevation, ...terrainElevations));
-      return {
-        ...pose,
-        distance,
-        routeElevation,
-        terrainElevation,
-        leftTerrainElevation,
-        rightTerrainElevation,
-        supportElevation,
-        roadHalfWidth,
-        marginWidth,
-        shoulderWidth,
-        stampedHalfWidth: roadHalfWidth + marginWidth + shoulderWidth,
-        blendWidth: shoulderWidth > 0
-          ? Math.max(
-            4,
-            this.getRaceRoadTerrainBlendWidthWorld(pose.segment),
-            shoulderWidth * 0.75,
-            roadHalfWidth * 0.65
-          )
-          : this.getRaceRoadTerrainBlendWidthWorld(pose.segment),
-        elevation: supportElevation
-      };
-    };
-    const sampleCount = Math.max(2, Math.ceil(effectiveRouteLength / effectiveStep) + 1);
-    let profileSamples = Array.from({ length: sampleCount }, (_, index) => {
-      const distance = index === sampleCount - 1
-        ? effectiveRouteLength
-        : Math.min(effectiveRouteLength, index * effectiveStep);
-      return sampleSupportAt(distance);
-    });
-    const weights = [
-      { offset: -2, weight: 0.1 },
-      { offset: -1, weight: 0.22 },
-      { offset: 0, weight: 0.36 },
-      { offset: 1, weight: 0.22 },
-      { offset: 2, weight: 0.1 }
-    ];
-    for (let pass = 0; pass < 2; pass += 1) {
-      profileSamples = profileSamples.map((sample, index) => {
-        if (index === 0 || index === profileSamples.length - 1) return sample;
-        let weighted = 0;
-        let total = 0;
-        weights.forEach(({ offset, weight }) => {
-          const source = profileSamples[index + offset];
-          if (!source) return;
-          weighted += Number(source.elevation || 0) * weight;
-          total += weight;
-        });
-        return {
-          ...sample,
-          elevation: this.clampRaceElevation(Math.max(
-            Number(sample.supportElevation || 0),
-            total > 0 ? weighted / total : Number(sample.elevation || 0)
-          ))
-        };
-      });
-    }
-    const maxGradePerSample = 0.045;
-    for (let index = 1; index < profileSamples.length; index += 1) {
-      const previous = profileSamples[index - 1];
-      const sample = profileSamples[index];
-      const maxDrop = maxGradePerSample * Math.max(1, (Number(sample.distance || 0) - Number(previous.distance || 0)) / effectiveStep);
-      sample.elevation = this.clampRaceElevation(Math.max(Number(sample.elevation || 0), Number(previous.elevation || 0) - maxDrop));
-    }
-    for (let index = profileSamples.length - 2; index >= 0; index -= 1) {
-      const next = profileSamples[index + 1];
-      const sample = profileSamples[index];
-      const maxDrop = maxGradePerSample * Math.max(1, (Number(next.distance || 0) - Number(sample.distance || 0)) / effectiveStep);
-      sample.elevation = this.clampRaceElevation(Math.max(
-        Number(sample.supportElevation || 0),
-        Number(sample.elevation || 0),
-        Number(next.elevation || 0) - maxDrop
-      ));
-    }
-    profileSamples = profileSamples.map((sample, index) => {
-      const previous = profileSamples[Math.max(0, index - 2)];
-      const next = profileSamples[Math.min(profileSamples.length - 1, index + 2)];
-      const span = Math.max(0.001, Number(next.distance || 0) - Number(previous.distance || 0));
-      const grade = clamp(
-        ((Number(next.elevation || 0) - Number(previous.elevation || 0)) * RACE_THREE_ELEVATION_M) / span,
-        -0.42,
-        0.42
-      );
-      return { ...sample, grade };
-    });
-    const profile = {
-      samples: profileSamples,
-      routeLength: effectiveRouteLength,
-      step: effectiveStep,
+    const profile = buildRaceRoadbedProfile({
+      samples,
+      routeLength,
       runtimeType,
-      allowVisualExtension
-    };
+      allowVisualExtension,
+      step: effectiveStep,
+      elevationScaleM: RACE_THREE_ELEVATION_M,
+      adapter: {
+        getRouteLength: () => this.getRaceRouteLength(),
+        getWorldPoseAtDistance: (distance, options) => this.getRaceWorldPoseAtDistance(distance, options),
+        getRightVector: (yaw) => this.getRaceRightVector(yaw),
+        getRoadHalfWidth: (segment) => this.getRaceRoadHalfWidthWorld(segment),
+        getMarginWidth: (segment) => this.getRaceVisibleMarginWidthWorld(segment),
+        getShoulderWidth: (segment) => this.getRaceShoulderWidthWorld(segment),
+        getBlendWidth: (segment) => this.getRaceRoadTerrainBlendWidthWorld(segment),
+        sampleTerrain: (point, fallback) => this.getRaceGroundElevationAtWorldPoint(point, fallback),
+        clampElevation: (value) => this.clampRaceElevation(value)
+      }
+    });
     if (cacheKey) {
       if ((this.raceRoadbedProfileCache?.size || 0) > 8) this.raceRoadbedProfileCache.clear();
       this.raceRoadbedProfileCache?.set?.(cacheKey, profile);
@@ -3122,39 +3088,10 @@ export default class RaceEditor {
   }
 
   sampleRaceRoadbedProfileAtDistance(distance = 0, profile = this.getRaceRoadbedProfile()) {
-    const profileSamples = Array.isArray(profile?.samples) ? profile.samples : [];
-    if (!profileSamples.length) return null;
-    const routeLength = Math.max(1, Number(profile.routeLength || profileSamples.at(-1)?.distance || 1) || 1);
-    const requestedDistance = Number(distance) || 0;
-    const target = profile.runtimeType === 'circuit'
-      ? (requestedDistance % routeLength + routeLength) % routeLength
-      : clamp(requestedDistance, 0, routeLength);
-    const { previous, next, t } = this.getRaceSampleSpanAtDistance(profileSamples, target);
-    if (!previous && !next) return profileSamples[0] || null;
-    if (!previous || !next || previous === next) return previous || next;
-    const lerp = (a, b) => Number(a || 0) + (Number(b || 0) - Number(a || 0)) * t;
-    return {
-      ...next,
-      distance: target,
-      x: lerp(previous.x, next.x),
-      z: lerp(previous.z, next.z),
-      yaw: Number(previous.yaw || 0) + normalizeAngle(Number(next.yaw || 0) - Number(previous.yaw || 0)) * t,
-      elevation: this.clampRaceElevation(lerp(previous.elevation, next.elevation)),
-      routeElevation: this.clampRaceElevation(lerp(previous.routeElevation, next.routeElevation)),
-      terrainElevation: this.clampRaceElevation(lerp(previous.terrainElevation, next.terrainElevation)),
-      leftTerrainElevation: this.clampRaceElevation(lerp(previous.leftTerrainElevation, next.leftTerrainElevation)),
-      rightTerrainElevation: this.clampRaceElevation(lerp(previous.rightTerrainElevation, next.rightTerrainElevation)),
-      supportElevation: this.clampRaceElevation(lerp(previous.supportElevation, next.supportElevation)),
-      roadHalfWidth: lerp(previous.roadHalfWidth, next.roadHalfWidth),
-      marginWidth: lerp(previous.marginWidth, next.marginWidth),
-      shoulderWidth: lerp(previous.shoulderWidth, next.shoulderWidth),
-      stampedHalfWidth: lerp(previous.stampedHalfWidth, next.stampedHalfWidth),
-      blendWidth: lerp(previous.blendWidth, next.blendWidth),
-      grade: lerp(previous.grade, next.grade),
-      segment: next.segment || previous.segment || null,
-      index: next.index ?? previous.index ?? 0,
-      progress: t
-    };
+    return sampleRaceRoadbedProfileAtDistanceModule(distance, profile, {
+      clampElevation: (value) => this.clampRaceElevation(value),
+      getSampleSpanAtDistance: (profileSamples, target) => this.getRaceSampleSpanAtDistance(profileSamples, target)
+    });
   }
 
   getRaceRoadCorridorSampleAtDistance(distance = 0, {
@@ -3163,47 +3100,26 @@ export default class RaceEditor {
     runtimeType = this.getActiveRaceRuntimeType(),
     allowVisualExtension = false
   } = {}) {
-    const tileMap = this.ensureRaceTileMap();
     const cacheKey = Array.isArray(samples)
       ? null
       : [
-        Number(tileMap?.revision) || 0,
+        this.getRaceSurfaceGeometryRevisionKey({
+          runtimeType,
+          allowVisualExtension,
+          routeLength
+        }),
         runtimeType,
         allowVisualExtension ? 1 : 0,
         Math.round((Number(distance) || 0) * 4)
-      ].join(':');
+    ].join(':');
     const cached = cacheKey ? this.raceRoadCorridorCache?.get?.(cacheKey) : null;
     if (cached) return cached;
-    const roadbed = this.getRaceRoadbedProfile({
+    const sample = this.getRaceSurfaceModel().sampleDeckAtDistance(distance, {
       samples,
       routeLength,
       runtimeType,
       allowVisualExtension
     });
-    const local = this.sampleRaceRoadbedProfileAtDistance(distance, roadbed)
-      || this.getRaceWorldPoseAtDistance(distance, { samples, routeLength, runtimeType, allowVisualExtension });
-    const roadHalfWidth = Math.max(0, Number(local.roadHalfWidth || this.getRaceRoadHalfWidthWorld(local.segment)));
-    const marginWidth = Math.max(0, Number(local.marginWidth || 0));
-    const shoulderWidth = Math.max(0, Number(local.shoulderWidth || this.getRaceShoulderWidthWorld(local.segment)));
-    const sample = {
-      ...local,
-      elevation: this.clampRaceElevation(local.elevation),
-      routeElevation: local.routeElevation,
-      terrainElevation: local.terrainElevation,
-      leftTerrainElevation: local.leftTerrainElevation,
-      rightTerrainElevation: local.rightTerrainElevation,
-      supportElevation: local.supportElevation,
-      roadHalfWidth,
-      marginWidth,
-      shoulderWidth,
-      stampedHalfWidth: Math.max(roadHalfWidth, Number(local.stampedHalfWidth || roadHalfWidth + marginWidth + shoulderWidth)),
-      blendWidth: Math.max(
-        shoulderWidth > 0 ? 2.5 : 0.35,
-        Number(local.blendWidth || 0),
-        this.getRaceRoadTerrainBlendWidthWorld(local.segment)
-      ),
-      grade: clamp(Number(local.grade || 0), -0.42, 0.42)
-    };
     if (cacheKey) {
       if ((this.raceRoadCorridorCache?.size || 0) > 4096) this.raceRoadCorridorCache.clear();
       this.raceRoadCorridorCache?.set?.(cacheKey, sample);
@@ -3219,9 +3135,8 @@ export default class RaceEditor {
     includeShoulders = true,
     sampleCount = 7
   } = {}) {
-    const tileMap = this.ensureRaceTileMap();
     const cacheKey = [
-      Number(tileMap?.revision) || 0,
+      this.getRaceSurfaceGeometryRevisionKey({ runtimeType, allowVisualExtension, routeLength }),
       runtimeType,
       includeShoulders ? 1 : 0,
       Math.round((Number(distance) || 0) * 4)
@@ -3255,42 +3170,24 @@ export default class RaceEditor {
     allowVisualExtension = false,
     step = 2.5
   } = {}) {
-    const tileMap = this.ensureRaceTileMap();
     const routeEnd = Math.max(1, Number(routeLength || this.getRaceRouteLength()) || 1);
-    return [
-      this.selectedRace?.id || 'race',
-      Number(tileMap?.revision) || 0,
-      this.getRacePathSampleCacheSignature(step),
+    return buildRaceSurfaceBakeKey({
+      raceId: this.selectedRace?.id || 'race',
+      surfaceGeometryRevision: this.getRaceSurfaceGeometryRevisionKey({
+        step,
+        runtimeType,
+        allowVisualExtension,
+        routeLength: routeEnd
+      }),
+      routeLength: routeEnd,
       runtimeType,
-      allowVisualExtension ? 1 : 0,
-      Math.round(routeEnd * 10),
-      Math.round(Number(step || 2.5) * 100)
-    ].join('::');
+      allowVisualExtension,
+      step
+    });
   }
 
   getRaceTrackCorridorMetrics(sample = {}, segment = sample?.segment || null) {
-    const roadHalfWidth = Math.max(0, Number(sample?.roadHalfWidth || this.getRaceRoadHalfWidthWorld(segment)));
-    const marginWidth = Math.max(
-      0,
-      Number.isFinite(Number(sample?.marginWidth))
-        ? Number(sample.marginWidth)
-        : this.getRaceVisibleMarginWidthWorld(segment)
-    );
-    const shoulderWidth = Math.max(0, Number(sample?.shoulderWidth || this.getRaceShoulderWidthWorld(segment)));
-    const hardHalfWidth = Math.max(roadHalfWidth, roadHalfWidth + marginWidth + shoulderWidth);
-    const transitionMinWidth = RACE_ROAD_TERRAIN_FLAT_JOIN_WIDTH_M + RACE_ROAD_TERRAIN_SLOPE_BLEND_WIDTH_M;
-    const transitionWidth = Math.max(transitionMinWidth, Number(sample?.blendWidth || 0), this.getRaceRoadTerrainBlendWidthWorld(segment));
-    return {
-      roadHalfWidth,
-      marginWidth,
-      shoulderWidth,
-      marginHalfWidth: roadHalfWidth + marginWidth,
-      hardHalfWidth,
-      flatJoinWidth: Math.min(RACE_ROAD_TERRAIN_FLAT_JOIN_WIDTH_M, transitionWidth),
-      slopeBlendWidth: Math.max(0.001, transitionWidth - RACE_ROAD_TERRAIN_FLAT_JOIN_WIDTH_M),
-      transitionWidth,
-      outerHalfWidth: hardHalfWidth + transitionWidth
-    };
+    return this.getRaceSurfaceModel().getCorridorMetrics(sample, segment);
   }
 
   getRaceCompositedSurfaceAtWorldPoint(worldPoint = null, fallbackElevation = 0, {
@@ -3298,8 +3195,8 @@ export default class RaceEditor {
     allowVisualExtension = false,
     routeLength = null
   } = {}) {
-    const rawElevation = this.getRaceGroundElevationAtWorldPoint(worldPoint, fallbackElevation);
     if (!worldPoint) {
+      const rawElevation = this.getRaceGroundElevationAtWorldPoint(worldPoint, fallbackElevation);
       return {
         elevation: rawElevation,
         rawElevation,
@@ -3309,117 +3206,18 @@ export default class RaceEditor {
         blend: 1
       };
     }
-    const projection = this.getRaceRouteProjectionForWorldPoint({
-      x: Number(worldPoint.x || 0),
-      z: Number(worldPoint.z ?? worldPoint.y ?? 0)
-    });
-    if (!projection?.segment || !Number.isFinite(Number(projection.lateral))) {
-      return {
-        elevation: rawElevation,
-        rawElevation,
-        roadElevation: this.clampRaceElevation(fallbackElevation),
-        region: 'terrain',
-        projection,
-        blend: 1
-      };
-    }
-    const corridor = this.getRaceRoadCorridorSampleAtDistance(Number(projection.distance || 0), {
+    return this.getRaceSurfaceModel().sampleWorld(worldPoint || { x: 0, z: 0 }, fallbackElevation, {
       runtimeType,
       allowVisualExtension,
-      routeLength
+      routeLength,
+      fallbackElevation
     });
-    const metrics = this.getRaceTrackCorridorMetrics(corridor, corridor.segment || projection.segment);
-    const roadElevation = Number.isFinite(Number(corridor.elevation))
-      ? this.clampRaceElevation(corridor.elevation)
-      : this.clampRaceElevation(fallbackElevation);
-    const absLateral = Math.abs(Number(projection.lateral || 0));
-    let region = 'terrain';
-    let blend = 1;
-    let elevation = rawElevation;
-    if (absLateral <= metrics.roadHalfWidth) {
-      region = 'road';
-      blend = 0;
-      elevation = roadElevation;
-    } else if (absLateral <= metrics.marginHalfWidth) {
-      region = 'margin';
-      blend = 0;
-      elevation = roadElevation;
-    } else if (absLateral <= metrics.hardHalfWidth) {
-      region = 'shoulder';
-      blend = 0;
-      elevation = roadElevation;
-    } else if (absLateral <= metrics.outerHalfWidth) {
-      region = 'transition';
-      const flatJoinWidth = Math.max(0, Number(metrics.flatJoinWidth || 0));
-      const transitionDistance = Math.max(0, absLateral - metrics.hardHalfWidth - flatJoinWidth);
-      const t = clamp(transitionDistance / Math.max(0.001, metrics.transitionWidth - flatJoinWidth), 0, 1);
-      blend = t * t * (3 - 2 * t);
-      elevation = roadElevation * (1 - blend) + rawElevation * blend;
-    }
-    return {
-      elevation: this.clampRaceElevation(elevation),
-      rawElevation,
-      roadElevation,
-      region,
-      projection,
-      metrics,
-      blend
-    };
   }
 
   createRaceSurfaceSectionFromSample(sample = {}, {
     distance = Number(sample.distance || 0)
   } = {}) {
-    const segment = sample.segment || this.getRaceSegmentAtDistance(distance).segment || this.selectedSegment;
-    const metrics = this.getRaceTrackCorridorMetrics(sample, segment);
-    const {
-      roadHalfWidth,
-      marginHalfWidth,
-      hardHalfWidth,
-      outerHalfWidth
-    } = metrics;
-    const yaw = Number(sample.yaw || 0);
-    const right = this.getRaceRightVector(yaw);
-    const elevation = this.clampRaceElevation(sample.elevation);
-    const makePoint = (lateralOffset, edge, pointElevation = elevation, roadDeckElevation = true) => {
-      const x = Number(sample.x || 0) + right.x * Number(lateralOffset || 0);
-      const z = Number(sample.z || 0) + right.z * Number(lateralOffset || 0);
-      return {
-        ...sample,
-        x,
-        z,
-        y: z,
-        yaw,
-        elevation: this.clampRaceElevation(pointElevation),
-        edge,
-        lateralOffset,
-        roadDistance: distance,
-        distance,
-        routeDistance: distance,
-        roadDeckElevation,
-        segment
-      };
-    };
-    const makeTransitionPoint = (lateralOffset, edge) => {
-      const x = Number(sample.x || 0) + right.x * Number(lateralOffset || 0);
-      const z = Number(sample.z || 0) + right.z * Number(lateralOffset || 0);
-      const surface = this.getRaceCompositedSurfaceAtWorldPoint({ x, z }, elevation);
-      return makePoint(lateralOffset, edge, surface.elevation, false);
-    };
-    return {
-      center: makePoint(0, 'center'),
-      left: makePoint(-roadHalfWidth, 'left'),
-      right: makePoint(roadHalfWidth, 'right'),
-      marginLeft: makePoint(-marginHalfWidth, 'margin-left'),
-      marginRight: makePoint(marginHalfWidth, 'margin-right'),
-      shoulderLeft: makePoint(-hardHalfWidth, 'shoulder-left'),
-      shoulderRight: makePoint(hardHalfWidth, 'shoulder-right'),
-      transitionLeft: makeTransitionPoint(-outerHalfWidth, 'transition-left'),
-      transitionRight: makeTransitionPoint(outerHalfWidth, 'transition-right'),
-      terrainLeft: makeTransitionPoint(-outerHalfWidth, 'terrain-left'),
-      terrainRight: makeTransitionPoint(outerHalfWidth, 'terrain-right'),
-      metrics
-    };
+    return this.getRaceSurfaceModel().getCrossSectionAtDistance(distance, { deckSample: sample });
   }
 
   getRaceSurfaceBake({
@@ -3437,24 +3235,19 @@ export default class RaceEditor {
       step: effectiveStep
     });
     if (this.raceSurfaceBakeCache?.key === key) return this.raceSurfaceBakeCache;
-    const profile = this.getRaceRoadbedProfile({
-      routeLength: routeEnd,
-      runtimeType,
-      allowVisualExtension,
-      step: effectiveStep
-    });
-    const samples = Array.isArray(profile.samples) ? profile.samples : [];
-    const sections = samples.map((sample) => this.createRaceSurfaceSectionFromSample(sample, {
-      distance: Number(sample.distance || 0)
-    }));
-    this.raceSurfaceBakeCache = {
-      key,
-      profile,
+    const bake = buildRaceSurfaceBake({
       routeLength: routeEnd,
       runtimeType,
       allowVisualExtension,
       step: effectiveStep,
-      sections
+      adapter: {
+        getRoadbedProfile: (options) => this.getRaceRoadbedProfile(options),
+        createSurfaceSectionFromSample: (sample, options) => this.createRaceSurfaceSectionFromSample(sample, options)
+      }
+    });
+    this.raceSurfaceBakeCache = {
+      key,
+      ...bake
     };
     return this.raceSurfaceBakeCache;
   }
@@ -3464,17 +3257,18 @@ export default class RaceEditor {
     runtimeType = this.getActiveRaceRuntimeType(),
     allowVisualExtension = false
   } = {}) {
-    const bake = this.getRaceSurfaceBake({ routeLength, runtimeType, allowVisualExtension });
-    const profileSample = this.sampleRaceRoadbedProfileAtDistance(distance, bake.profile)
-      || this.getRaceWorldPoseAtDistance(distance, { routeLength, runtimeType, allowVisualExtension });
-    return this.createRaceSurfaceSectionFromSample(profileSample, { distance: Number(distance) || 0 });
+    return this.getRaceSurfaceModel().getCrossSectionAtDistance(distance, {
+      routeLength,
+      runtimeType,
+      allowVisualExtension
+    });
   }
 
   getRaceRoadDeckElevationForProjection(projection = null, fallbackElevation = 0) {
     if (!projection || !Number.isFinite(Number(projection.distance))) return this.clampRaceElevation(fallbackElevation);
-    return this.getRaceRoadDeckElevationAtDistance(Number(projection.distance), {
+    return this.getRaceSurfaceModel().sampleDeckAtDistance(Number(projection.distance), {
       runtimeType: this.getActiveRaceRuntimeType()
-    });
+    }).elevation;
   }
 
   getRaceStitchedTerrainElevationAtWorldPoint(worldPoint = null, fallbackElevation = 0) {
@@ -6362,7 +6156,7 @@ export default class RaceEditor {
       runtimeType,
       allowVisualExtension: true
     }));
-    const terrainCells = [];
+    let terrainCells = [];
     const terrainChunks = [];
     const maxBakeCells = detailEnabled ? 64000 : 52000;
     [...chunkKeys].sort((a, b) => {
@@ -6398,26 +6192,36 @@ export default class RaceEditor {
         for (let subX = 0; subX < subdivisions; subX += 1) {
           if (terrainCells.length >= maxBakeCells) break;
           const points = this.getRaceBakedTerrainQuadPoints(chunk, subX, subZ, subdivisions);
-          if (this.isRaceTerrainQuadInsideRoadCorridor(points, {
-            tolerance: 0.25,
+          const retainedTriangles = this.getRaceTerrainTrianglesOutsideTrackCorridor(points, {
             runtimeType,
-            includeTransition: false
-          })) continue;
-          terrainCells.push({
-            points,
-            tileCell: chunk.tileCell,
-            chunkKey,
-            key: chunk.key || chunkKey,
-            roadAdjacent: chunk.roadAdjacent,
-            nearRoad: chunk.nearRoad,
-            roadDistance: chunk.roadDistance,
-            corridorDistance: chunk.corridorDistance
+            routeLength: routeEnd,
+            includeTransition: true
+          });
+          retainedTriangles.forEach((triangle, triangleIndex) => {
+            if (!Array.isArray(triangle) || triangle.length < 3) return;
+            terrainCells.push({
+              points: triangle,
+              tileCell: chunk.tileCell,
+              chunkKey,
+              key: `${chunk.key || chunkKey}:${subX},${subZ}:${triangleIndex}`,
+              roadAdjacent: chunk.roadAdjacent,
+              nearRoad: chunk.nearRoad,
+              roadDistance: chunk.roadDistance,
+              corridorDistance: chunk.corridorDistance,
+              clippedToTrackCorridor: triangle.some((point) => point?.trackSeam === true)
+            });
           });
         }
       }
     });
     const bake = {
       key,
+      surfaceRevision: this.getRaceSurfaceGeometryRevisionKey({
+        step: 2.5,
+        runtimeType,
+        allowVisualExtension: runtimeType !== 'circuit',
+        routeLength: routeEnd
+      }),
       terrainSize: effectiveTerrainSize,
       routeLength: routeEnd,
       runtimeType,
@@ -6431,8 +6235,79 @@ export default class RaceEditor {
       }),
       builtMs: startMs > 0 ? Math.max(0, this.getNowMs() - startMs) : 0
     };
+    bake.validation = this.validateRaceSurfaceGeometry(bake);
     this.raceWorldBakeCache = bake;
     return bake;
+  }
+
+  buildRaceEditorSurfacePreviewBake({
+    terrainSize = 40,
+    routeLength = this.getRaceRouteLength(),
+    runtimeType = this.getSelectedRaceRuntimeType(),
+    renderDebug = this.getRaceRenderDebugSettings(),
+    textureWorldM = this.getRaceGroundTextureBaseWorldM()
+  } = {}) {
+    const effectiveDebug = {
+      ...renderDebug,
+      terrainEnabled: true,
+      texturesEnabled: renderDebug.texturesEnabled !== false,
+      detailEnabled: renderDebug.detailEnabled === true,
+      terrainCullingEnabled: false,
+      terrainBudgetEnabled: false
+    };
+    const bake = this.buildRaceWorldBake({
+      terrainSize,
+      routeLength,
+      runtimeType,
+      renderDebug: effectiveDebug,
+      textureWorldM
+    });
+    const surfaceRevision = this.getRaceSurfaceGeometryRevisionKey({
+      step: 2.5,
+      runtimeType,
+      allowVisualExtension: runtimeType !== 'circuit',
+      routeLength
+    });
+    return {
+      ...bake,
+      surfaceRevision,
+      validation: this.validateRaceSurfaceGeometry(bake)
+    };
+  }
+
+  getRaceEditorSurfacePreviewBake(options = {}) {
+    const routeLength = Math.max(1, Number(options.routeLength || this.getRaceRouteLength()) || 1);
+    const runtimeType = options.runtimeType || this.getSelectedRaceRuntimeType();
+    const renderDebug = options.renderDebug || this.getRaceRenderDebugSettings();
+    const key = [
+      this.getRaceSurfaceGeometryRevisionKey({
+        step: 2.5,
+        runtimeType,
+        allowVisualExtension: runtimeType !== 'circuit',
+        routeLength
+      }),
+      Math.round(Number(options.terrainSize || 40) * 100),
+      renderDebug.detailEnabled === true ? 1 : 0,
+      renderDebug.terrainLodEnabled !== false ? 1 : 0,
+      renderDebug.rawTerrainPolygonsEnabled === true ? 1 : 0
+    ].join('::preview::');
+    if (this.raceEditorSurfacePreviewBake?.key === key) return this.raceEditorSurfacePreviewBake;
+    this.raceEditorSurfacePreviewBake = {
+      key,
+      ...this.buildRaceEditorSurfacePreviewBake({
+        terrainSize: options.terrainSize || 40,
+        routeLength,
+        runtimeType,
+        renderDebug
+      })
+    };
+    return this.raceEditorSurfacePreviewBake;
+  }
+
+  validateRaceSurfaceGeometry(worldBake = null) {
+    return validateRaceSurfaceGeometryModule(worldBake, {
+      surfaceModel: this.getRaceSurfaceModel()
+    });
   }
 
   getRaceVisibleWorldBakeTerrainCells(worldBake = null, {
@@ -6452,6 +6327,30 @@ export default class RaceEditor {
     const terrainSize = Math.max(1, Number(worldBake.terrainSize) || 40);
     const visible = [];
     const limit = Math.max(1, Number(maxTerrainCells) || 1400);
+    const cacheBucket = Math.max(24, terrainSize * 0.5);
+    const cacheKey = [
+      Math.round(Number(camera.x || 0) / cacheBucket),
+      Math.round(Number(camera.z || 0) / cacheBucket),
+      Math.round(Number(cameraYaw || 0) * 180 / Math.PI / 3),
+      Math.round(Number(terrainForwardDistance || 0) / terrainSize),
+      limit,
+      terrainCullingEnabled ? 1 : 0,
+      Math.round(Number(bounds.w || 1)),
+      Math.round(Number(bounds.h || 1)),
+      worldBake.revision || worldBake.key || worldBake.builtMs || worldBake.terrainCells.length
+    ].join(':');
+    if (!worldBake.visibleTerrainCache) worldBake.visibleTerrainCache = new Map();
+    const cachedVisible = worldBake.visibleTerrainCache.get(cacheKey);
+    if (cachedVisible?.cells?.length) {
+      if (stats) {
+        stats.terrainPreculled = (Number(stats.terrainPreculled) || 0) + Number(cachedVisible.terrainPreculled || 0);
+        stats.terrainBudgetDropped = (Number(stats.terrainBudgetDropped) || 0) + Number(cachedVisible.terrainBudgetDropped || 0);
+        stats.terrainVisibleCacheHits = (Number(stats.terrainVisibleCacheHits) || 0) + 1;
+      }
+      return cachedVisible.cells;
+    }
+    const startPreculled = Number(stats?.terrainPreculled || 0);
+    const startBudgetDropped = Number(stats?.terrainBudgetDropped || 0);
     for (const cell of worldBake.terrainCells) {
       const cameraBounds = this.getRaceTerrainCameraBounds(cell.points, camera, right, forward);
       if (terrainCullingEnabled && !this.isRaceTerrainCameraBoundsVisible(cameraBounds, {
@@ -6468,23 +6367,66 @@ export default class RaceEditor {
       cell.cameraCellX = (Number(cameraBounds.minCameraX) + Number(cameraBounds.maxCameraX)) * 0.5;
       cell.cameraCellZ = (Number(cameraBounds.minCameraZ) + Number(cameraBounds.maxCameraZ)) * 0.5;
       cell.baked = true;
+      cell.terrainCandidatePriority = this.getRaceTerrainCandidatePriority({
+        cameraCellX: cell.cameraCellX,
+        cameraCellZ: cell.cameraCellZ,
+        chunk: cell
+      }, terrainSize);
       visible.push(cell);
     }
-    const selected = visible
-      .sort((a, b) => this.compareRaceTerrainCandidates({
-        cameraCellX: a.cameraCellX,
-        cameraCellZ: a.cameraCellZ,
-        chunk: a
-      }, {
-        cameraCellX: b.cameraCellX,
-        cameraCellZ: b.cameraCellZ,
-        chunk: b
-      }, terrainSize))
-      .slice(0, limit);
+    const compareVisibleTerrainCells = (a, b) => {
+      const priorityDelta = Number(a.terrainCandidatePriority || 0) - Number(b.terrainCandidatePriority || 0);
+      if (Math.abs(priorityDelta) > 0.0001) return priorityDelta;
+      const zDelta = Number(a.cameraCellZ || 0) - Number(b.cameraCellZ || 0);
+      if (Math.abs(zDelta) > 0.0001) return zDelta;
+      const xDelta = Number(a.cameraCellX || 0) - Number(b.cameraCellX || 0);
+      if (Math.abs(xDelta) > 0.0001) return xDelta;
+      return String(a.key || '').localeCompare(String(b.key || ''));
+    };
+    if (visible.length > limit) {
+      this.partitionRaceTerrainCellsByPriority(visible, limit, compareVisibleTerrainCells);
+      visible.length = limit;
+    }
+    const selected = visible;
     if (stats && visible.length > selected.length) {
       stats.terrainBudgetDropped = (Number(stats.terrainBudgetDropped) || 0) + visible.length - selected.length;
     }
-    return selected.sort((a, b) => Number(b.averageCameraZ || 0) - Number(a.averageCameraZ || 0));
+    selected.sort((a, b) => Number(b.averageCameraZ || 0) - Number(a.averageCameraZ || 0));
+    selected.visibleTerrainCacheKey = cacheKey;
+    worldBake.visibleTerrainCache.set(cacheKey, {
+      cells: selected,
+      terrainPreculled: Math.max(0, Number(stats?.terrainPreculled || 0) - startPreculled),
+      terrainBudgetDropped: Math.max(0, Number(stats?.terrainBudgetDropped || 0) - startBudgetDropped)
+    });
+    if (worldBake.visibleTerrainCache.size > 48) {
+      const firstKey = worldBake.visibleTerrainCache.keys().next().value;
+      worldBake.visibleTerrainCache.delete(firstKey);
+    }
+    return selected;
+  }
+
+  partitionRaceTerrainCellsByPriority(cells = [], limit = 0, compare = null) {
+    if (!Array.isArray(cells) || cells.length <= 1 || !Number.isFinite(Number(limit)) || limit <= 0 || cells.length <= limit || typeof compare !== 'function') return cells;
+    let left = 0;
+    let right = cells.length - 1;
+    const target = Math.max(0, Math.min(cells.length - 1, Math.floor(limit) - 1));
+    while (left < right) {
+      const pivotIndex = Math.floor((left + right) / 2);
+      const pivotValue = cells[pivotIndex];
+      [cells[pivotIndex], cells[right]] = [cells[right], cells[pivotIndex]];
+      let storeIndex = left;
+      for (let index = left; index < right; index += 1) {
+        if (compare(cells[index], pivotValue) < 0) {
+          [cells[storeIndex], cells[index]] = [cells[index], cells[storeIndex]];
+          storeIndex += 1;
+        }
+      }
+      [cells[right], cells[storeIndex]] = [cells[storeIndex], cells[right]];
+      if (storeIndex === target) break;
+      if (storeIndex < target) left = storeIndex + 1;
+      else right = storeIndex - 1;
+    }
+    return cells;
   }
 
   prewarmRacePlaytestRenderResources() {
@@ -6711,6 +6653,7 @@ export default class RaceEditor {
     if (diagnosticMode === 'slalom') {
       this.playtestSession.diagnostics.slalomGates = [...(this.selectedRace.diagnosticGates || [120, 220, 320, 420, 520, 620])];
     }
+    this.resetRaceVehiclePhysicsState({ session: this.playtestSession, car, tuning });
     this.pendingDiagnosticMode = null;
     this.raceInput = {
       ...this.raceInput,
@@ -7242,6 +7185,45 @@ export default class RaceEditor {
       segmentSignature,
       groundSignature
     ].join('~');
+  }
+
+  getRaceSurfaceGeometryRevisionKey({
+    step = 18,
+    runtimeType = this.getActiveRaceRuntimeType(),
+    allowVisualExtension = false,
+    routeLength = null
+  } = {}) {
+    const race = this.selectedRace || {};
+    const road = race.road || {};
+    const segments = Array.isArray(road.segments) ? road.segments : [];
+    const tileMap = this.ensureRaceTileMap(road);
+    const margin = this.ensureRaceMarginSettings();
+    const marginMode = RACE_EDGE_DISPLAY_MODE_IDS.has(String(margin.marginMode || '')) ? String(margin.marginMode) : 'on';
+    const shoulderMode = RACE_EDGE_DISPLAY_MODE_IDS.has(String(margin.shoulderMode || '')) ? String(margin.shoulderMode) : 'on';
+    const routeEnd = Math.max(1, Number(routeLength || this.getRaceRouteLength()) || 1);
+    const segmentWidthSignature = segments.map((segment) => [
+      Math.round(Number(segment.roadWidthM || segment.roadWidth || road.width || 0) * 100),
+      Math.round(this.getRaceRoadHalfWidthWorld(segment) * 100),
+      Math.round(this.getRaceBoundaryWidthWorld(segment) * 100),
+      Math.round(this.getRaceRoadTerrainBlendWidthWorld(segment) * 100),
+      segment.surface || ''
+    ].join(':')).join('|');
+    return [
+      this.getRacePathSampleCacheSignature(step),
+      String(runtimeType || ''),
+      allowVisualExtension ? 1 : 0,
+      Math.round(routeEnd * 10),
+      Math.round(Number(road.width || 0) * 100),
+      marginMode,
+      Math.round(Number(margin.widthM || 0) * 1000),
+      shoulderMode,
+      Math.round(Number(margin.shoulderWidthM || 0) * 100),
+      Math.round(this.getRaceVisibleMarginWidthWorld() * 1000),
+      Math.round(this.getRaceShoulderWidthWorld() * 100),
+      Math.round(this.getRaceRoadTerrainBlendWidthWorld() * 100),
+      Number(tileMap?.revision) || 0,
+      segmentWidthSignature
+    ].join('~surf~');
   }
 
   getRacePathSamplesCached({ step = 18 } = {}) {
@@ -8225,6 +8207,68 @@ export default class RaceEditor {
     return meshes;
   }
 
+  getRaceShoulderSurfaceMeshesForBand(quad = null, {
+    currentSegment = null,
+    fallbackArtRef = '',
+    texturesEnabled = true,
+    textureWorldM = 2.5,
+    useSunShading = false,
+    minScreenY = null
+  } = {}) {
+    if (!this.isRaceShoulderVisible()) return [];
+    const { near, far } = quad || {};
+    if (!near?.shoulderLeft || !near?.shoulderRight || !far?.shoulderLeft || !far?.shoulderRight) return [];
+    const segment = near?.center?.segment || currentSegment;
+    const groundPalette = this.getRaceGroundPaletteForSegment(segment, near?.center);
+    const nearLeftInner = this.isRaceMarginVisible() ? (near.marginLeft || near.left) : near.left;
+    const farLeftInner = this.isRaceMarginVisible() ? (far.marginLeft || far.left) : far.left;
+    const nearRightInner = this.isRaceMarginVisible() ? (near.marginRight || near.right) : near.right;
+    const farRightInner = this.isRaceMarginVisible() ? (far.marginRight || far.right) : far.right;
+    if (!nearLeftInner || !farLeftInner || !nearRightInner || !farRightInner) return [];
+    const leftShoulderPoints = [far.shoulderLeft, farLeftInner, nearLeftInner, near.shoulderLeft];
+    const rightShoulderPoints = [farRightInner, far.shoulderRight, near.shoulderRight, nearRightInner];
+    const leftTerrainMaterial = this.getRaceTerrainMaterialForWorldPoints([
+      far.transitionLeft || far.shoulderLeft,
+      near.transitionLeft || near.shoulderLeft
+    ].filter(Boolean), {
+      fallbackArtRef,
+      fallbackColor: groundPalette.shoulderA,
+      useSunShading
+    });
+    const rightTerrainMaterial = this.getRaceTerrainMaterialForWorldPoints([
+      far.transitionRight || far.shoulderRight,
+      near.transitionRight || near.shoulderRight
+    ].filter(Boolean), {
+      fallbackArtRef,
+      fallbackColor: groundPalette.shoulderA,
+      useSunShading
+    });
+    return [
+      {
+        source: 'shoulder-left',
+        points: leftShoulderPoints,
+        color: leftTerrainMaterial.color,
+        artRef: leftTerrainMaterial.artRef,
+        textured: Boolean(texturesEnabled && leftTerrainMaterial.artRef),
+        textureWorldM,
+        depthOffset: -0.045,
+        threeLiftM: RACE_THREE_LIFTS_M.shoulder,
+        minScreenY
+      },
+      {
+        source: 'shoulder-right',
+        points: rightShoulderPoints,
+        color: rightTerrainMaterial.color,
+        artRef: rightTerrainMaterial.artRef,
+        textured: Boolean(texturesEnabled && rightTerrainMaterial.artRef),
+        textureWorldM,
+        depthOffset: -0.045,
+        threeLiftM: RACE_THREE_LIFTS_M.shoulder,
+        minScreenY
+      }
+    ];
+  }
+
   getRaceProjectedQuadArea(quad = null) {
     const points = [quad?.far?.left, quad?.far?.right, quad?.near?.right, quad?.near?.left];
     if (points.some((point) => !point || !Number.isFinite(point.screenX) || !Number.isFinite(point.screenY))) return 0;
@@ -8798,11 +8842,50 @@ export default class RaceEditor {
     ]));
   }
 
+  createRaceVehiclePhysicsStateForSession({
+    session = this.playtestSession,
+    car = this.selectedCar,
+    tuning = this.getRaceCarTuning(car)
+  } = {}) {
+    if (!session) return null;
+    return createRaceVehiclePhysicsState({
+      session,
+      tuning,
+      carDimensions: this.getRaceCarDimensions(car),
+      surfaceModel: this.getRaceSurfaceModel(),
+      elevationScaleM: RACE_THREE_ELEVATION_M
+    });
+  }
+
+  resetRaceVehiclePhysicsState({
+    session = this.playtestSession,
+    car = this.selectedCar,
+    tuning = this.getRaceCarTuning(car)
+  } = {}) {
+    if (!session) return null;
+    session.vehicle3d = this.createRaceVehiclePhysicsStateForSession({ session, car, tuning });
+    syncRaceVehiclePhysicsToSession(session.vehicle3d, session, { preservePlanarPosition: true });
+    return session.vehicle3d;
+  }
+
   getRaceWheelWorldPositions({
     tuning = this.getRaceCarTuning(),
     session = this.playtestSession,
     car = this.selectedCar
   } = {}) {
+    if (session?.vehicle3d?.enabled) {
+      const positions = {};
+      RACE_WHEEL_IDS.forEach((wheelId) => {
+        const pose = getRaceVehicleWheelWorldPose(session.vehicle3d, wheelId);
+        positions[wheelId] = {
+          x: Number(pose.x || 0),
+          y: Number(pose.y || 0),
+          z: Number(pose.z || 0),
+          elevation: Number(pose.y || 0) / RACE_THREE_ELEVATION_M
+        };
+      });
+      return positions;
+    }
     const yaw = Number.isFinite(session?.carYaw) ? Number(session.carYaw) : 0;
     const forward = this.getRaceForwardVector(yaw);
     const right = this.getRaceRightVector(yaw);
@@ -8844,62 +8927,21 @@ export default class RaceEditor {
     damage = this.getRaceSessionDamage()
   } = {}) {
     const positions = this.getRaceWheelWorldPositions({ tuning, session, car });
-    const gripByWheel = {};
-    const surfaceByWheel = {};
-    const terrainByWheel = {};
-    const terrainGripScaleByWheel = {};
-    const surfaceGripByWheel = {};
-    RACE_WHEEL_IDS.forEach((wheelId) => {
-      const position = positions[wheelId];
-      const projection = this.getRaceRouteProjectionForWorldPoint(position);
-      const segment = projection.segment || this.selectedSegment;
-      const roadHalfWidth = this.getRaceRoadHalfWidthWorld(segment);
-      const shoulderLimit = roadHalfWidth + this.getRaceShoulderWidthWorld(segment);
-      const lateral = Math.abs(Number(projection.lateral || 0));
-      let terrain = 'road';
-      let surfaceId = this.getRaceEffectiveSurfaceId(segment?.surface || 'asphalt');
-      let terrainGripScale = 1;
-      if (lateral > roadHalfWidth) {
-        terrain = lateral <= shoulderLimit ? 'shoulder' : 'off-road';
-        surfaceId = this.getRaceGroundSurfaceForWorldPoint(position, segment?.surface || surfaceId);
-        terrainGripScale = terrain === 'shoulder' ? 0.68 : 0.48;
-        if (surfaceId === 'snow') terrainGripScale *= terrain === 'shoulder' ? 0.82 : 0.7;
-        if (surfaceId === 'slush') terrainGripScale *= terrain === 'shoulder' ? 0.78 : 0.66;
-        if (surfaceId === 'mud') terrainGripScale *= terrain === 'shoulder' ? 0.8 : 0.68;
-        if (surfaceId === 'wet-gravel') terrainGripScale *= terrain === 'shoulder' ? 0.86 : 0.74;
-        if (surfaceId === 'wet-asphalt') terrainGripScale *= 0.78;
-      }
-      surfaceId = this.getRaceEffectiveSurfaceId(surfaceId);
-      const surface = getSurfaceById(surfaceId);
-      const detailGrip = terrain === 'road' ? this.getRaceSegmentSurfaceDetailGrip(segment) : 1;
-      surfaceByWheel[wheelId] = surface.id;
-      terrainByWheel[wheelId] = terrain;
-      terrainGripScaleByWheel[wheelId] = terrainGripScale;
-      surfaceGripByWheel[wheelId] = clamp(surface.grip * detailGrip * terrainGripScale, 0.18, 1.12);
-      gripByWheel[wheelId] = this.getRaceWheelGripForSurface({
-        car,
-        wheelId,
-        surfaceId: surface.id,
-        weather: this.getRaceWeatherState().id,
-        damage,
-        terrainGripScale
-      });
-    });
-    const average = (values) => values.reduce((sum, value) => sum + value, 0) / Math.max(1, values.length);
-    return {
+    return getRaceWheelSurfaceStateModule({
+      wheelIds: RACE_WHEEL_IDS,
       positions,
-      gripByWheel,
-      surfaceByWheel,
-      terrainByWheel,
-      terrainGripScaleByWheel,
-      surfaceGripByWheel,
-      averageSurfaceGrip: average(Object.values(surfaceGripByWheel)),
-      averageGrip: average(Object.values(gripByWheel)),
-      leftGrip: (gripByWheel.fl + gripByWheel.rl) * 0.5,
-      rightGrip: (gripByWheel.fr + gripByWheel.rr) * 0.5,
-      frontGrip: (gripByWheel.fl + gripByWheel.fr) * 0.5,
-      rearGrip: (gripByWheel.rl + gripByWheel.rr) * 0.5
-    };
+      car,
+      damage,
+      selectedSegment: this.selectedSegment,
+      weatherState: this.getRaceWeatherState(),
+      surfaceModel: this.getRaceSurfaceModel(),
+      adapter: {
+        getEffectiveSurfaceId: (surfaceId) => this.getRaceEffectiveSurfaceId(surfaceId),
+        getSurfaceById,
+        getSegmentSurfaceDetailGrip: (segment) => this.getRaceSegmentSurfaceDetailGrip(segment),
+        getWheelGripForSurface: (options) => this.getRaceWheelGripForSurface(options)
+      }
+    });
   }
 
   getRaceWheelContactState({
@@ -8909,56 +8951,22 @@ export default class RaceEditor {
     wheelSurfaceState = null
   } = {}) {
     const positions = wheelSurfaceState?.positions || this.getRaceWheelWorldPositions({ tuning, session, car });
-    const contacts = {};
-    const heights = {};
-    RACE_WHEEL_IDS.forEach((wheelId) => {
-      const position = positions[wheelId];
-      const projection = this.getRaceRouteProjectionForWorldPoint(position);
-      const segment = projection.segment || this.selectedSegment;
-      const roadHalfWidth = this.getRaceRoadHalfWidthWorld(segment);
-      const shoulderLimit = roadHalfWidth + this.getRaceShoulderWidthWorld(segment);
-      const lateral = Math.abs(Number(projection.lateral || 0));
-      const routeRuntimeType = session?.routeRuntimeType || this.getActiveRaceRuntimeType();
-      const roadProfile = this.getRaceRoadSurfaceProfileAtDistance(Number(projection.distance || session?.distance || 0), {
-        runtimeType: routeRuntimeType
-      });
-      let surfaceElevation = Number(roadProfile.elevation || 0);
-      let terrain = 'road';
-      if (lateral > roadHalfWidth) {
-        terrain = lateral <= shoulderLimit ? 'shoulder' : 'off-road';
-        surfaceElevation = this.getRaceStitchedTerrainElevationAtWorldPoint(position, roadProfile.elevation);
-      }
-      const heightM = surfaceElevation * RACE_THREE_ELEVATION_M;
-      contacts[wheelId] = {
-        ...position,
-        projection,
-        segment,
-        terrain,
-        elevation: surfaceElevation,
-        heightM
-      };
-      heights[wheelId] = heightM;
-    });
-    const averageHeightM = RACE_WHEEL_IDS.reduce((sum, wheelId) => sum + Number(heights[wheelId] || 0), 0) / RACE_WHEEL_IDS.length;
-    const leftHeightM = ((heights.fl || 0) + (heights.rl || 0)) * 0.5;
-    const rightHeightM = ((heights.fr || 0) + (heights.rr || 0)) * 0.5;
-    const frontHeightM = ((heights.fl || 0) + (heights.fr || 0)) * 0.5;
-    const rearHeightM = ((heights.rl || 0) + (heights.rr || 0)) * 0.5;
     const dimensions = this.getRaceCarDimensions(car);
-    const wheelbaseM = Math.max(2.1, Number(tuning.wheelbaseM) || dimensions.wheelbaseM);
-    const trackWidthM = Math.max(1.2, Number(tuning.trackWidthM) || dimensions.trackWidthM);
-    return {
+    const contactState = getRaceWheelContactStateModule({
+      wheelIds: RACE_WHEEL_IDS,
       positions,
-      contacts,
-      heights,
-      averageHeightM,
-      leftHeightM,
-      rightHeightM,
-      frontHeightM,
-      rearHeightM,
-      terrainPitchRad: clamp(Math.atan2(frontHeightM - rearHeightM, wheelbaseM), -0.42, 0.42),
-      terrainRollRad: clamp(Math.atan2(rightHeightM - leftHeightM, trackWidthM), -0.42, 0.42)
-    };
+      carDimensions: dimensions,
+      tuning,
+      selectedSegment: this.selectedSegment,
+      surfaceModel: this.getRaceSurfaceModel(),
+      elevationScaleM: RACE_THREE_ELEVATION_M,
+      runtimeType: session?.routeRuntimeType || this.getActiveRaceRuntimeType()
+    });
+    Object.values(contactState.contacts || {}).forEach((contact) => {
+      if (!contact.projection) contact.projection = this.getRaceRouteProjectionForWorldPoint(contact);
+      if (!contact.segment) contact.segment = contact.projection?.segment || this.selectedSegment;
+    });
+    return contactState;
   }
 
   getRaceDrivenWheelIds(tuning = this.getRaceCarTuning()) {
@@ -9094,6 +9102,66 @@ export default class RaceEditor {
       session.eventLog = [...(session.eventLog || []).slice(-5), 'Car rolled over'];
       this.status = 'Rolled over';
     }
+  }
+
+  updateRaceVehicle3DContactState({
+    seconds = 0,
+    car = this.selectedCar,
+    tuning = this.getRaceCarTuning(car),
+    acceleration = 0,
+    lateralAcceleration = 0,
+    brakeState = null,
+    driveForce = 0,
+    drivenWheelIds = [],
+    wheelLongitudinalUsage = {},
+    wheelLateralUsage = {},
+    frontLatForce = 0,
+    rearLatForce = 0
+  } = {}) {
+    const session = this.playtestSession;
+    if (!session) return null;
+    if (!session.vehicle3d?.enabled) {
+      this.resetRaceVehiclePhysicsState({ session, car, tuning });
+    }
+    const speedMps = Number(session.speedMps || 0);
+    const velocityYaw = Number(session.velocityYaw ?? session.carYaw ?? 0);
+    const planarVelocity = {
+      x: Math.sin(velocityYaw) * speedMps,
+      y: Number(session.velocityY ?? session.verticalVelocityMps ?? 0),
+      z: Math.cos(velocityYaw) * speedMps
+    };
+    const driven = new Set(drivenWheelIds || []);
+    const driveForceByWheel = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+      wheelId,
+      driven.has(wheelId) ? Number(driveForce || 0) / Math.max(1, driven.size) : 0
+    ]));
+    const lateralForceByWheel = {
+      fl: Number(frontLatForce || 0) * 0.5,
+      fr: Number(frontLatForce || 0) * 0.5,
+      rl: Number(rearLatForce || 0) * 0.5,
+      rr: Number(rearLatForce || 0) * 0.5
+    };
+    stepRaceVehiclePhysics(session.vehicle3d, {
+      dt: seconds,
+      tuning,
+      carDimensions: this.getRaceCarDimensions(car),
+      surfaceModel: this.getRaceSurfaceModel(),
+      elevationScaleM: RACE_THREE_ELEVATION_M,
+      planarVelocity,
+      yaw: session.carYaw,
+      controls: {
+        yawRate: Number(session.yawVelocityRadps || 0),
+        longitudinalAcceleration: acceleration,
+        lateralAcceleration,
+        driveForceByWheel,
+        brakeForceByWheel: brakeState?.appliedByWheel || {},
+        longitudinalUsageByWheel: wheelLongitudinalUsage,
+        lateralUsageByWheel: wheelLateralUsage,
+        lateralForceByWheel
+      }
+    });
+    syncRaceVehiclePhysicsToSession(session.vehicle3d, session, { preservePlanarPosition: true });
+    return session.vehicle3d;
   }
 
   getRaceTireWearMultiplier(car = this.selectedCar) {
@@ -10277,6 +10345,20 @@ export default class RaceEditor {
       + Math.sin(this.playtestSession.velocityYaw) * this.playtestSession.speedMps * seconds;
     this.playtestSession.worldZ = Number(this.playtestSession.worldZ || 0)
       + Math.cos(this.playtestSession.velocityYaw) * this.playtestSession.speedMps * seconds;
+    this.updateRaceVehicle3DContactState({
+      seconds,
+      car,
+      tuning,
+      acceleration,
+      lateralAcceleration,
+      brakeState,
+      driveForce,
+      drivenWheelIds,
+      wheelLongitudinalUsage,
+      wheelLateralUsage,
+      frontLatForce,
+      rearLatForce
+    });
     const routeLength = Math.max(1, Number(this.playtestSession.routeLength || this.getRaceRouteLength()));
     const projection = this.getRaceRouteProjectionForWorldPoint({
       x: this.playtestSession.worldX,
@@ -10484,7 +10566,7 @@ export default class RaceEditor {
     if (surface.includes('wet') || surface === 'mud') return surface.includes('gravel') ? 'gravelDust' : 'wetSpray';
     if (surface === 'gravel') return 'gravelDust';
     if (surface === 'dirt') return 'dirtDust';
-    if (terrain !== 'road') return 'grassDust';
+    if (terrain !== 'road' && terrain !== 'margin') return 'grassDust';
     const speed = Math.abs(Number(speedMps) || 0);
     const burnout = Number(wheelSpin || 0) > 0.72 && speed > 1.2;
     const hardRearLock = Number(handbrake || 0) > 0.2 && speed > 8;
@@ -10515,7 +10597,8 @@ export default class RaceEditor {
       const isRear = wheelId === 'rl' || wheelId === 'rr';
       const surfaceId = wheelSurfaceState.surfaceByWheel?.[wheelId] || 'asphalt';
       const terrain = wheelSurfaceState.terrainByWheel?.[wheelId] || 'road';
-      const looseSurface = terrain !== 'road' || ['dirt', 'gravel', 'mud', 'snow', 'slush'].includes(String(surfaceId || ''));
+      const looseSurface = (terrain !== 'road' && terrain !== 'margin')
+        || ['dirt', 'gravel', 'mud', 'snow', 'slush'].includes(String(surfaceId || ''));
       const handbrakeRearSlip = Number(handbrake || 0) && isRear ? 0.6 : 0;
       const wheelSpinSlip = Number(wheelSpin || 0) > 0.72 && isRear ? Number(wheelSpin || 0) : 0;
       const effectiveSlip = Math.max(slip, brakeLock, handbrakeRearSlip, wheelSpinSlip);
@@ -13812,6 +13895,57 @@ export default class RaceEditor {
           });
         });
         nextY += 42;
+        const previewToggles = [
+          { id: 'texture-debug-editor-preview', label: 'Editor', key: 'editorSurfacePreviewEnabled', defaultEnabled: false },
+          { id: 'texture-debug-editor-3d', label: '3D', key: 'editorSurfacePreview3dEnabled', defaultEnabled: false }
+        ];
+        previewToggles.forEach((entry, index) => {
+          const enabled = draft[entry.key] === true;
+          this.registerDrawnButton(ctx, {
+            x: panel.x + 14 + index * 92,
+            y: nextY,
+            w: 86,
+            h: 30
+          }, {
+            id: entry.id,
+            label: `${entry.label}: ${enabled ? 'On' : 'Off'}`,
+            active: enabled,
+            onClick: () => {
+              draft[entry.key] = !enabled;
+            }
+          });
+        });
+        const debugModes = [
+          { id: 'bands', label: 'Bands' },
+          { id: 'wireframe', label: 'Wire' },
+          { id: 'material', label: 'Mat' },
+          { id: 'raw-composed', label: 'Raw' },
+          { id: 'seams', label: 'Seams' },
+          { id: 'normals', label: 'Norm' },
+          { id: 'labels', label: 'Labels' },
+          { id: 'wheels', label: 'Wheels' }
+        ];
+        const modeW = Math.floor((panel.w - 28 - toggleGap * 3) / 4);
+        debugModes.forEach((entry, index) => {
+          const row = Math.floor(index / 4);
+          const col = index % 4;
+          const active = String(draft.editorSurfaceDebugMode || 'bands') === entry.id;
+          this.registerDrawnButton(ctx, {
+            x: panel.x + 14 + col * (modeW + toggleGap),
+            y: nextY + 36 + row * 30,
+            w: modeW,
+            h: 26
+          }, {
+            id: `texture-debug-editor-mode-${entry.id}`,
+            label: entry.label,
+            active,
+            onClick: () => {
+              draft.editorSurfaceDebugMode = entry.id;
+              draft.editorSurfacePreviewEnabled = true;
+            }
+          });
+        });
+        nextY += 102;
       }
       const footerTop = panel.y + panel.h - 58;
       const previewBottom = Math.max(nextY + 44, footerTop - 10);
@@ -13839,6 +13973,9 @@ export default class RaceEditor {
         farRoadDecimationEnabled: draft.farRoadDecimationEnabled !== false,
         threeEnabled: draft.threeEnabled !== false,
         rawTerrainPolygonsEnabled: draft.rawTerrainPolygonsEnabled === true,
+        editorSurfacePreviewEnabled: draft.editorSurfacePreviewEnabled === true,
+        editorSurfacePreview3dEnabled: draft.editorSurfacePreview3dEnabled === true,
+        editorSurfaceDebugMode: String(draft.editorSurfaceDebugMode || 'bands'),
         nearTextureQuality: Number(draft.nearTextureQuality ?? RACE_GROUND_NEAR_TEXTURE_QUALITY_DEFAULT),
         textureFilterMode: draft.textureFilterMode || RACE_GROUND_TEXTURE_FILTER_DEFAULT
       });
@@ -15460,6 +15597,7 @@ export default class RaceEditor {
     ctx.fillStyle = '#111916';
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
     this.drawRaceTopDownTileMap(ctx, bounds);
+    const renderDebug = this.getRaceRenderDebugSettings();
 
     const baseRoadWidth = Math.max(2, this.getRaceRoadWidthMForSegment(segments[0] || {}) * mapScale);
     for (let index = 1; index < points.length; index += 1) {
@@ -15519,6 +15657,12 @@ export default class RaceEditor {
         ctx.fillRect(midX - 4, midY - 4, 8, 8);
       }
     }
+    if (renderDebug.editorSurfacePreviewEnabled || renderDebug.editorSurfacePreview3dEnabled) {
+      this.drawRaceCanonicalSurfacePreview(ctx, bounds, renderDebug);
+    }
+    if (renderDebug.editorSurfacePreview3dEnabled) {
+      this.drawRaceEditorSurface3dPreview(ctx, bounds, renderDebug);
+    }
     this.drawRaceTopDownDecals(ctx, bounds, { kind: 'decal' });
     this.drawRaceTopDownScenerySprites(ctx, bounds);
     this.drawRaceSegmentLengthLabels(ctx, bounds, points, segments, baseRoadWidth);
@@ -15553,6 +15697,206 @@ export default class RaceEditor {
     });
 
     if (this.activeViewportMode !== 'portrait') this.drawRaceTilePalette(ctx, bounds);
+    ctx.restore();
+  }
+
+  drawRaceEditorSurface3dPreview(ctx, bounds, renderDebug = this.getRaceRenderDebugSettings()) {
+    if (!ctx || !bounds) return false;
+    const routeLength = Math.max(1, Number(this.getRaceRouteLength()) || 1);
+    const runtimeType = this.getSelectedRaceRuntimeType();
+    const travel = clamp(Number(this.selectedSegmentIndex || 0) / Math.max(1, (this.selectedRace?.road?.segments || []).length || 1) * routeLength, 0, routeLength);
+    const pose = this.getRaceWorldPoseAtDistance(travel, {
+      routeLength,
+      runtimeType,
+      allowVisualExtension: runtimeType !== 'circuit'
+    });
+    const cameraYaw = Number(pose.yaw || 0);
+    const forward = this.getRaceForwardVector(cameraYaw);
+    const inset = {
+      x: bounds.x + Math.max(8, bounds.w - Math.min(320, bounds.w * 0.42) - 10),
+      y: bounds.y + 58,
+      w: Math.min(320, bounds.w * 0.42),
+      h: Math.min(190, bounds.h * 0.34)
+    };
+    const camera = {
+      x: Number(pose.x || 0) - forward.x * 26,
+      z: Number(pose.z || 0) - forward.z * 26,
+      elevation: Number(pose.elevation || 0) + 0.42,
+      yaw: cameraYaw,
+      nearPlane: 1.2,
+      farPlane: 1800,
+      horizonRatio: 0.36,
+      focalScale: 1.05,
+      roadWidthScale: 1.6,
+      roadDepthRatio: 0.7,
+      roadMaxWidthRatio: 1
+    };
+    const stableRoadSections = this.getRaceStableRoadSections({
+      bounds: inset,
+      camera,
+      cameraYaw,
+      visualTravel: travel,
+      routeLength,
+      routeRuntimeType: runtimeType,
+      nearDistance: 1.2,
+      viewDistance: Math.min(900, routeLength + 120),
+      backDistance: 30
+    });
+    ctx.save();
+    ctx.fillStyle = RACE_WORLD_EMPTY_BACKGROUND_COLOR;
+    ctx.fillRect(inset.x, inset.y, inset.w, inset.h);
+    ctx.restore();
+    const previousRenderer = this.selectedRace?.groundRenderer;
+    let drew = false;
+    try {
+      if (this.selectedRace) this.selectedRace.groundRenderer = 'webgl-track';
+      drew = this.drawRaceWebGLTrackScene(ctx, inset, [], {
+        camera,
+        cameraView: 'third-person',
+        cameraYaw,
+        currentSegment: pose.segment || this.selectedSegment,
+        weatherState: this.getRaceWeatherState(),
+        slices: stableRoadSections,
+        stableRoadSections,
+        travel,
+        routeLength
+      });
+    } finally {
+      if (this.selectedRace) this.selectedRace.groundRenderer = previousRenderer;
+    }
+    ctx.save();
+    ctx.strokeStyle = drew ? 'rgba(157,220,255,0.9)' : '#ff00ff';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(inset.x, inset.y, inset.w, inset.h);
+    ctx.fillStyle = 'rgba(5,8,7,0.72)';
+    ctx.fillRect(inset.x, inset.y, 104, 18);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `10px ${UI_SUITE.font.family}`;
+    ctx.fillText('Surface 3D', inset.x + 6, inset.y + 12);
+    ctx.restore();
+    return drew;
+  }
+
+  drawRaceCanonicalSurfacePreview(ctx, bounds, renderDebug = this.getRaceRenderDebugSettings()) {
+    const runtimeType = this.getSelectedRaceRuntimeType();
+    const routeLength = Math.max(1, Number(this.getRaceRouteLength()) || 1);
+    const preview = this.getRaceEditorSurfacePreviewBake({ runtimeType, routeLength, renderDebug });
+    const sections = preview?.surfaceBake?.sections || this.getRaceSurfaceBake({
+      routeLength,
+      runtimeType,
+      allowVisualExtension: runtimeType !== 'circuit'
+    }).sections || [];
+    if (!Array.isArray(sections) || sections.length < 2) return;
+    const mode = String(renderDebug.editorSurfaceDebugMode || 'bands');
+    const toScreen = (point = {}) => this.raceMapWorldToScreenPoint({ x: point.x, y: point.z ?? point.y }, bounds);
+    const drawStrip = (leftKey, rightKey, color, alpha = 0.36) => {
+      ctx.save();
+      ctx.fillStyle = color;
+      ctx.globalAlpha = alpha;
+      for (let index = 1; index < sections.length; index += 1) {
+        const previous = sections[index - 1];
+        const next = sections[index];
+        const polygon = [
+          toScreen(next[leftKey]),
+          toScreen(next[rightKey]),
+          toScreen(previous[rightKey]),
+          toScreen(previous[leftKey])
+        ];
+        if (polygon.some((point) => !point)) continue;
+        ctx.beginPath();
+        ctx.moveTo(polygon[0].screenX, polygon[0].screenY);
+        polygon.slice(1).forEach((point) => ctx.lineTo(point.screenX, point.screenY));
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    };
+    if (mode === 'bands' || mode === 'material' || mode === 'raw-composed') {
+      drawStrip('left', 'right', '#2f6bff', mode === 'raw-composed' ? 0.28 : 0.42);
+      drawStrip('marginLeft', 'left', '#d9d3a3', 0.34);
+      drawStrip('right', 'marginRight', '#d9d3a3', 0.34);
+      drawStrip('shoulderLeft', 'marginLeft', '#4fa35c', 0.32);
+      drawStrip('marginRight', 'shoulderRight', '#4fa35c', 0.32);
+      drawStrip('transitionLeft', 'shoulderLeft', '#8ac070', 0.24);
+      drawStrip('shoulderRight', 'transitionRight', '#8ac070', 0.24);
+    }
+    const drawPolyline = (key, color, width = 1.5, dash = []) => {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.setLineDash?.(dash);
+      ctx.beginPath();
+      sections.forEach((section, index) => {
+        const point = toScreen(section[key]);
+        if (!point) return;
+        if (index === 0) ctx.moveTo(point.screenX, point.screenY);
+        else ctx.lineTo(point.screenX, point.screenY);
+      });
+      ctx.stroke();
+      ctx.restore();
+    };
+    ['left', 'right', 'marginLeft', 'marginRight', 'shoulderLeft', 'shoulderRight'].forEach((key) => {
+      drawPolyline(key, 'rgba(255,255,255,0.48)', 1);
+    });
+    drawPolyline('transitionLeft', mode === 'seams' ? '#ff00ff' : 'rgba(255,255,255,0.72)', mode === 'seams' ? 3 : 1.5, mode === 'wireframe' ? [4, 4] : []);
+    drawPolyline('transitionRight', mode === 'seams' ? '#ff00ff' : 'rgba(255,255,255,0.72)', mode === 'seams' ? 3 : 1.5, mode === 'wireframe' ? [4, 4] : []);
+    if (mode === 'wireframe' || mode === '3d') {
+      (preview.terrainCells || []).slice(0, 2400).forEach((cell) => {
+        const points = Array.isArray(cell.points) ? cell.points.map(toScreen).filter(Boolean) : [];
+        if (points.length < 3) return;
+        ctx.strokeStyle = cell.clippedToTrackCorridor ? 'rgba(255,0,255,0.82)' : 'rgba(157,220,255,0.22)';
+        ctx.lineWidth = cell.clippedToTrackCorridor ? 1.6 : 0.7;
+        ctx.beginPath();
+        ctx.moveTo(points[0].screenX, points[0].screenY);
+        points.slice(1).forEach((point) => ctx.lineTo(point.screenX, point.screenY));
+        ctx.closePath();
+        ctx.stroke();
+      });
+    }
+    if (mode === 'normals') {
+      sections.filter((_, index) => index % 5 === 0).forEach((section) => {
+        const center = toScreen(section.center);
+        if (!center) return;
+        const normal = section.center?.normal || { x: 0, y: 1, z: 0 };
+        ctx.strokeStyle = '#9ddcff';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(center.screenX, center.screenY);
+        ctx.lineTo(center.screenX + Number(normal.x || 0) * 18, center.screenY + Number(normal.z || 0) * 18);
+        ctx.stroke();
+      });
+    }
+    if (mode === 'labels') {
+      ctx.fillStyle = '#f1f4ef';
+      ctx.font = `10px ${UI_SUITE.font.family}`;
+      ctx.textAlign = 'left';
+      sections.filter((_, index) => index % 8 === 0).forEach((section) => {
+        const point = toScreen(section.center);
+        if (!point) return;
+        ctx.fillText(`deck ${Number(section.center?.elevation || 0).toFixed(2)}`, point.screenX + 4, point.screenY - 4);
+      });
+    }
+    if (mode === 'wheels' && this.playtestSession) {
+      const contacts = this.getRaceWheelContactState();
+      Object.values(contacts.contacts || {}).forEach((contact) => {
+        const point = toScreen(contact);
+        if (!point) return;
+        ctx.fillStyle = contact.region === 'road' ? '#ffffff' : contact.region === 'margin' ? '#ffe66d' : contact.region === 'shoulder' ? '#62d26f' : '#ff00ff';
+        ctx.beginPath();
+        ctx.arc(point.screenX, point.screenY, 4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+    const validation = preview.validation || {};
+    const bad = Number(validation.magentaEdges || 0) > 0 || Number(validation.nonManifoldEdges || 0) > 0 || Number(validation.degenerateTriangles || 0) > 0;
+    ctx.save();
+    ctx.fillStyle = bad ? 'rgba(255,0,255,0.92)' : 'rgba(5,8,7,0.76)';
+    ctx.fillRect(bounds.x + 8, bounds.y + 8, Math.min(bounds.w - 16, 360), 42);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `10px ${UI_SUITE.font.family}`;
+    ctx.textAlign = 'left';
+    ctx.fillText(`Surface ${String(preview.surfaceRevision || '').slice(0, 28)}`, bounds.x + 14, bounds.y + 22);
+    ctx.fillText(`Tri ${validation.terrainTriangles || 0} Deg ${validation.degenerateTriangles || 0} Open ${validation.openEdges || 0} NM ${validation.nonManifoldEdges || 0} Clip ${validation.rejectedByCorridor || 0}`, bounds.x + 14, bounds.y + 38);
     ctx.restore();
   }
 
@@ -17008,18 +17352,25 @@ export default class RaceEditor {
       count: 0
     };
     if (!Array.isArray(points) || !points.length) return bounds;
-    points.forEach((point) => {
-      const dx = Number(point?.x || 0) - Number(camera?.x || 0);
-      const dz = Number(point?.z || 0) - Number(camera?.z || 0);
-      const cameraX = dx * Number(rightVector.x || 0) + dz * Number(rightVector.z || 0);
-      const cameraZ = dx * Number(forwardVector.x || 0) + dz * Number(forwardVector.z || 0);
-      bounds.minCameraX = Math.min(bounds.minCameraX, cameraX);
-      bounds.maxCameraX = Math.max(bounds.maxCameraX, cameraX);
-      bounds.minCameraZ = Math.min(bounds.minCameraZ, cameraZ);
-      bounds.maxCameraZ = Math.max(bounds.maxCameraZ, cameraZ);
+    const cameraXWorld = Number(camera?.x || 0);
+    const cameraZWorld = Number(camera?.z || 0);
+    const rightX = Number(rightVector.x || 0);
+    const rightZ = Number(rightVector.z || 0);
+    const forwardX = Number(forwardVector.x || 0);
+    const forwardZ = Number(forwardVector.z || 0);
+    for (let pointIndex = 0; pointIndex < points.length; pointIndex += 1) {
+      const point = points[pointIndex];
+      const dx = Number(point?.x || 0) - cameraXWorld;
+      const dz = Number(point?.z || 0) - cameraZWorld;
+      const cameraX = dx * rightX + dz * rightZ;
+      const cameraZ = dx * forwardX + dz * forwardZ;
+      if (cameraX < bounds.minCameraX) bounds.minCameraX = cameraX;
+      if (cameraX > bounds.maxCameraX) bounds.maxCameraX = cameraX;
+      if (cameraZ < bounds.minCameraZ) bounds.minCameraZ = cameraZ;
+      if (cameraZ > bounds.maxCameraZ) bounds.maxCameraZ = cameraZ;
       bounds.averageCameraZ += cameraZ;
       bounds.count += 1;
-    });
+    }
     bounds.averageCameraZ /= Math.max(1, bounds.count);
     return bounds;
   }
@@ -17099,6 +17450,52 @@ export default class RaceEditor {
         + Math.max(0, Number(tolerance) || 0);
       return Math.abs(Number(pointProjection.lateral || 0)) <= pointCutoff;
     });
+  }
+
+  getRaceTerrainTrianglesOutsideTrackCorridor(points = [], {
+    runtimeType = this.getActiveRaceRuntimeType(),
+    routeLength = this.getRaceRouteLength(),
+    includeTransition = true
+  } = {}) {
+    return getRaceTerrainTrianglesOutsideTrackCorridorModule(points, {
+      runtimeType,
+      routeLength,
+      includeTransition,
+      adapter: this.getRaceTerrainClippingAdapter()
+    });
+  }
+
+  getRaceTerrainTriangleArea(points = []) {
+    return getRaceTerrainTriangleAreaModule(points);
+  }
+
+  triangulateRaceTerrainPolygon(polygon = []) {
+    return triangulateRaceTerrainPolygonModule(polygon);
+  }
+
+  clipRaceTerrainTriangleOutsideTrackCorridor(triangle = [], {
+    runtimeType = this.getActiveRaceRuntimeType(),
+    routeLength = this.getRaceRouteLength(),
+    includeTransition = true
+  } = {}) {
+    return clipRaceTerrainTriangleOutsideTrackCorridorModule(triangle, {
+      runtimeType,
+      routeLength,
+      includeTransition,
+      adapter: this.getRaceTerrainClippingAdapter()
+    });
+  }
+
+  getRaceTerrainClippingAdapter() {
+    return {
+      getRouteLength: () => this.getRaceRouteLength(),
+      projectWorldToTrack: (point) => this.getRaceRouteProjectionForWorldPoint(point),
+      getSurfaceSectionAtDistance: (distance, options) => this.getRaceSurfaceSectionAtDistance(distance, options),
+      getCorridorMetrics: (sample, segment) => this.getRaceTrackCorridorMetrics(sample, segment),
+      getRightVector: (yaw) => this.getRaceRightVector(yaw),
+      getForwardVector: (yaw) => this.getRaceForwardVector(yaw),
+      clampElevation: (value) => this.clampRaceElevation(value)
+    };
   }
 
   getRaceRoadbedTerrainSubdivision(chunk = null, terrainSize = 40) {
@@ -18211,10 +18608,11 @@ export default class RaceEditor {
   } = {}) {
     if (!Array.isArray(cells) || !cells.length) return new Float32Array(0);
     const scale = Math.max(0.0001, Number(textureWorldM) || 2.5);
-    const vertices = new Float32Array(cells.length * 54);
-    let offset = 0;
+    const chunks = [];
+    let totalLength = 0;
     const sun = useSunShading ? this.getRaceSunSettings() : null;
     const vertexCacheKey = [
+      cells.visibleTerrainCacheKey || '',
       Math.round(scale * 10000),
       textured ? 1 : 0,
       useSunShading ? 1 : 0,
@@ -18222,6 +18620,9 @@ export default class RaceEditor {
       Math.round(Number(sun?.intensity ?? 0.72) * 100),
       String(tileMap?.defaultTileId || 'grass')
     ].join(':');
+    if (cells.visibleTerrainCombinedVertexCache?.key === vertexCacheKey && cells.visibleTerrainCombinedVertexCache.vertices?.length) {
+      return cells.visibleTerrainCombinedVertexCache.vertices;
+    }
     const tintCache = new Map();
     const getTint = (color) => {
       const clean = String(color || '#ffffff');
@@ -18233,29 +18634,28 @@ export default class RaceEditor {
     };
     cells.forEach((cell) => {
       const points = Array.isArray(cell?.points) ? cell.points : [];
-      if (points.length < 4) return;
+      if (points.length < 3) return;
       const cached = cell.webglTerrainVertexCache;
-      if (cached?.key === vertexCacheKey && cached.vertices instanceof Float32Array) {
-        vertices.set(cached.vertices, offset);
-        offset += cached.vertices.length;
+      if (cached?.key === vertexCacheKey && cached.vertices?.length) {
+        chunks.push(cached.vertices);
+        totalLength += cached.vertices.length;
         return;
       }
-      const cellVertices = new Float32Array(54);
-      const previousOffset = offset;
-      let cellOffset = 0;
+      const cellVertices = [];
       const pushCellVertex = (point = {}, tint = [1, 1, 1, 1], originX = 0, originZ = 0) => {
         const x = Number(point.x || 0);
         const z = Number(point.z || 0);
-        cellVertices[cellOffset] = x;
-        cellVertices[cellOffset + 1] = Number(point.elevation || 0);
-        cellVertices[cellOffset + 2] = z;
-        cellVertices[cellOffset + 3] = (x - originX) / scale;
-        cellVertices[cellOffset + 4] = -(z - originZ) / scale;
-        cellVertices[cellOffset + 5] = tint[0];
-        cellVertices[cellOffset + 6] = tint[1];
-        cellVertices[cellOffset + 7] = tint[2];
-        cellVertices[cellOffset + 8] = tint[3];
-        cellOffset += 9;
+        cellVertices.push(
+          x,
+          Number(point.elevation || 0),
+          z,
+          (x - originX) / scale,
+          -(z - originZ) / scale,
+          tint[0],
+          tint[1],
+          tint[2],
+          tint[3]
+        );
       };
       let minX = Infinity;
       let minZ = Infinity;
@@ -18276,20 +18676,31 @@ export default class RaceEditor {
         ? (useSunShading ? this.getRaceTextureSunTint(points) : '#ffffff')
         : (useSunShading ? this.getRaceTerrainSunTint(points, palette.groundA) : palette.groundA);
       const tint = getTint(color);
-      pushCellVertex(points[0], tint, originX, originZ);
-      pushCellVertex(points[1], tint, originX, originZ);
-      pushCellVertex(points[2], tint, originX, originZ);
-      pushCellVertex(points[0], tint, originX, originZ);
-      pushCellVertex(points[2], tint, originX, originZ);
-      pushCellVertex(points[3], tint, originX, originZ);
-      if (cellOffset > 0) {
-        const finalCellVertices = cellOffset === cellVertices.length ? cellVertices : cellVertices.subarray(0, cellOffset);
-        cell.webglTerrainVertexCache = { key: vertexCacheKey, vertices: finalCellVertices };
-        vertices.set(finalCellVertices, previousOffset);
-        offset = previousOffset + finalCellVertices.length;
+      const triangles = this.triangulateRaceTerrainPolygon(points);
+      triangles.forEach((triangle) => {
+        pushCellVertex(triangle[0], tint, originX, originZ);
+        pushCellVertex(triangle[1], tint, originX, originZ);
+        pushCellVertex(triangle[2], tint, originX, originZ);
+      });
+      if (cellVertices.length > 0) {
+        const typedCellVertices = new Float32Array(cellVertices);
+        cell.webglTerrainVertexCache = { key: vertexCacheKey, vertices: typedCellVertices };
+        chunks.push(typedCellVertices);
+        totalLength += typedCellVertices.length;
       }
     });
-    return offset === vertices.length ? vertices : vertices.subarray(0, offset);
+    if (!chunks.length || totalLength <= 0) return new Float32Array(0);
+    if (chunks.length === 1 && chunks[0] instanceof Float32Array) return chunks[0];
+    const vertices = new Float32Array(totalLength);
+    let offset = 0;
+    chunks.forEach((chunk) => {
+      vertices.set(chunk, offset);
+      offset += chunk.length;
+    });
+    if (cells.visibleTerrainCacheKey) {
+      cells.visibleTerrainCombinedVertexCache = { key: vertexCacheKey, vertices };
+    }
+    return vertices;
   }
 
   drawRaceWebGLTerrainMeshBatch(ctx, bounds, renderer = null, cells = [], {
@@ -18301,74 +18712,22 @@ export default class RaceEditor {
     useSunShading = false,
     stats = null
   } = {}) {
-    const gl = renderer?.gl;
-    if (!gl || !renderer.terrainProgram || !Array.isArray(cells) || !cells.length || !camera) return false;
-    const buildStartMs = this.getNowMs();
-    const vertices = this.getRaceWebGLTerrainMeshVertices(cells, {
+    return drawRaceWebGLTerrainMeshBatchModule({
+      renderer,
+      cells,
+      camera,
+      cameraYaw,
+      bounds,
       textureWorldM,
       textured,
       tileMap,
-      useSunShading
+      useSunShading,
+      stats,
+      adapter: {
+        now: () => this.getNowMs(),
+        getTerrainMeshVertices: (terrainCells, options) => this.getRaceWebGLTerrainMeshVertices(terrainCells, options)
+      }
     });
-    if (stats && buildStartMs > 0) stats.terrainMeshBuildMs = (Number(stats.terrainMeshBuildMs) || 0) + Math.max(0, this.getNowMs() - buildStartMs);
-    if (vertices.length < 54) return false;
-    gl.useProgram(renderer.terrainProgram);
-    gl.bindBuffer(gl.ARRAY_BUFFER, renderer.terrainBuffer);
-    const requiredFloats = vertices.length;
-    if (!renderer.terrainUploadArray || renderer.terrainUploadCapacity < requiredFloats) {
-      let capacity = Math.max(2048, renderer.terrainUploadCapacity || 0);
-      while (capacity < requiredFloats) capacity *= 2;
-      renderer.terrainUploadArray = new Float32Array(capacity);
-      renderer.terrainUploadCapacity = capacity;
-      gl.bufferData(gl.ARRAY_BUFFER, renderer.terrainUploadArray.byteLength, gl.DYNAMIC_DRAW);
-      renderer.terrainBufferCapacity = capacity;
-      if (stats) stats.terrainBufferReallocations = (Number(stats.terrainBufferReallocations) || 0) + 1;
-    } else if (renderer.terrainBufferCapacity !== renderer.terrainUploadCapacity) {
-      gl.bufferData(gl.ARRAY_BUFFER, renderer.terrainUploadArray.byteLength, gl.DYNAMIC_DRAW);
-      renderer.terrainBufferCapacity = renderer.terrainUploadCapacity;
-      if (stats) stats.terrainBufferReallocations = (Number(stats.terrainBufferReallocations) || 0) + 1;
-    }
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertices);
-    const stride = 36;
-    gl.enableVertexAttribArray(renderer.terrainLocations.worldPosition);
-    gl.vertexAttribPointer(renderer.terrainLocations.worldPosition, 3, gl.FLOAT, false, stride, 0);
-    gl.enableVertexAttribArray(renderer.terrainLocations.texCoord);
-    gl.vertexAttribPointer(renderer.terrainLocations.texCoord, 2, gl.FLOAT, false, stride, 12);
-    gl.enableVertexAttribArray(renderer.terrainLocations.tint);
-    gl.vertexAttribPointer(renderer.terrainLocations.tint, 4, gl.FLOAT, false, stride, 20);
-    gl.uniform1i(renderer.terrainLocations.textureSampler, 0);
-    gl.uniform1f(renderer.terrainLocations.useTexture, textured ? 1 : 0);
-    gl.uniform3f(
-      renderer.terrainLocations.cameraPosition,
-      Number(camera.x || 0),
-      Number(camera.elevation || 0),
-      Number(camera.z || 0)
-    );
-    gl.uniform1f(renderer.terrainLocations.cameraYaw, Number(cameraYaw || 0));
-    gl.uniform2f(renderer.terrainLocations.viewport, Number(bounds.w || 1), Number(bounds.h || 1));
-    gl.uniform1f(renderer.terrainLocations.focal, Math.max(140, Number(bounds.w || 1) * (Number(camera.focalScale) || 1.04)));
-    gl.uniform1f(renderer.terrainLocations.roadWidthScale, Number(camera.roadWidthScale) || 2.2);
-    gl.uniform1f(renderer.terrainLocations.horizonRatio, Number(camera.horizonRatio) || 0.31);
-    gl.uniform1f(renderer.terrainLocations.roadDepthRatio, Number(camera.roadDepthRatio) || 0.7);
-    gl.uniform1f(renderer.terrainLocations.nearPlane, Math.max(1.2, Number(camera.nearPlane) || 1.6));
-    gl.uniform1f(renderer.terrainLocations.farPlane, Math.max(10, Number(camera.farPlane) || 2200));
-    if (!renderer.meshBlendEnabled) {
-      gl.enable(gl.BLEND);
-      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-      renderer.meshBlendEnabled = true;
-    }
-    const drawStartMs = this.getNowMs();
-    gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 9);
-    if (stats) {
-      stats.terrainWorldMeshDrawCalls = (Number(stats.terrainWorldMeshDrawCalls) || 0) + 1;
-      stats.terrainWorldMeshPolygons = (Number(stats.terrainWorldMeshPolygons) || 0) + vertices.length / 27;
-      stats.polygons = (Number(stats.polygons) || 0) + vertices.length / 27;
-      stats.bufferUploads = (Number(stats.bufferUploads) || 0) + 1;
-      stats.uploadedFloats = (Number(stats.uploadedFloats) || 0) + requiredFloats;
-      if (textured) stats.terrainMeshTexturePolygons = (Number(stats.terrainMeshTexturePolygons) || 0) + vertices.length / 27;
-      if (drawStartMs > 0) stats.webglUploadDrawMs = (Number(stats.webglUploadDrawMs) || 0) + Math.max(0, this.getNowMs() - drawStartMs);
-    }
-    return true;
   }
 
   getRaceThreeWorldRenderer(width = 1, height = 1) {
@@ -18603,43 +18962,22 @@ export default class RaceEditor {
     defaultPolygonOffset = true,
     renderOrder = 0
   } = {}) {
-    if (!renderer?.scene || !Array.isArray(meshes) || !meshes.length) return { polygons: 0, drawCalls: 0 };
-    const grouped = new Map();
-    meshes.forEach((mesh) => {
-      if (!Array.isArray(mesh?.points) || mesh.points.length < 3) return;
-      const artRef = String(mesh.artRef || '').trim();
-      const textured = Boolean(mesh.textured && artRef);
-      const color = mesh.color || '#ffffff';
-      const key = `${textured ? 1 : 0}|${artRef}|${Number(mesh.textureWorldM || textureWorldM)}|${this.getRaceThreeMeshLiftM(mesh)}`;
-      if (!grouped.has(key)) grouped.set(key, { textured, artRef, color, meshes: [] });
-      grouped.get(key).meshes.push(mesh);
+    return addRaceThreeMeshGroupsBatch({
+      renderer,
+      meshes,
+      textureWorldM,
+      stats,
+      defaultDepthWrite,
+      defaultPolygonOffset,
+      renderOrder,
+      THREE,
+      adapter: {
+        getMeshLiftM: (mesh) => this.getRaceThreeMeshLiftM(mesh),
+        getMeshGeometry: (groupMeshes, options) => this.getRaceThreeMeshGeometry(groupMeshes, options),
+        getTexture: (targetRenderer, artRef) => this.getRaceThreeTexture(targetRenderer, artRef),
+        getMaterial: (targetRenderer, options) => this.getRaceThreeMaterial(targetRenderer, options)
+      }
     });
-    let polygons = 0;
-    let drawCalls = 0;
-    grouped.forEach((group) => {
-      const geometry = this.getRaceThreeMeshGeometry(group.meshes, { textureWorldM });
-      if (!geometry) return;
-      const texture = group.textured ? this.getRaceThreeTexture(renderer, group.artRef) : null;
-      const material = this.getRaceThreeMaterial(renderer, {
-        texture,
-        depthWrite: defaultDepthWrite,
-        polygonOffset: defaultPolygonOffset
-      });
-      if (!material) return;
-      const mesh = new THREE.Mesh(geometry, material);
-      mesh.renderOrder = renderOrder;
-      renderer.scene.add(mesh);
-      const triangleCount = Math.floor((geometry.getAttribute('position')?.count || 0) / 3);
-      polygons += triangleCount;
-      drawCalls += 1;
-    });
-    if (stats) {
-      stats.polygons = (Number(stats.polygons) || 0) + polygons;
-      stats.drawCalls = (Number(stats.drawCalls) || 0) + drawCalls;
-      stats.threeWorldPolygons = (Number(stats.threeWorldPolygons) || 0) + polygons;
-      stats.threeWorldDrawCalls = (Number(stats.threeWorldDrawCalls) || 0) + drawCalls;
-    }
-    return { polygons, drawCalls };
   }
 
   drawRaceThreeWorldScene(ctx, bounds, cells = [], {
@@ -18740,83 +19078,23 @@ export default class RaceEditor {
     stats = null,
     depthTest = true
   } = {}) {
-    if (!renderer?.gl || !Array.isArray(meshes) || !meshes.length) return false;
-    const { gl } = renderer;
-    const grouped = new Map();
-    meshes.forEach((mesh) => {
-      if (!mesh?.points?.length) return;
-      const color = mesh.color || '#ffffff';
-      const artRef = String(mesh.artRef || '').trim();
-      const textured = Boolean(mesh.textured);
-      const depthOffset = Number(mesh.depthOffset || 0);
-      const key = `${textured ? 1 : 0}|${artRef}|${depthOffset}|${color}`;
-      const meshTextureWorldM = Number(mesh.textureWorldM || textureWorldM);
-      let textureOriginX = 0;
-      let textureOriginZ = 0;
-      if (textured) {
-        const scale = Math.max(0.0001, meshTextureWorldM || 2.5);
-        const xs = mesh.points.map((point) => Number(point?.x || 0)).filter(Number.isFinite);
-        const zs = mesh.points.map((point) => Number(point?.z || 0)).filter(Number.isFinite);
-        textureOriginX = Math.floor((xs.length ? Math.min(...xs) : 0) / scale) * scale;
-        textureOriginZ = Math.floor((zs.length ? Math.min(...zs) : 0) / scale) * scale;
+    return drawRaceWebGLWorldMeshBatchModule({
+      renderer,
+      meshes,
+      camera,
+      cameraYaw,
+      bounds,
+      textureWorldM,
+      stats,
+      depthTest,
+      adapter: {
+        now: () => this.getNowMs(),
+        getWorldMeshVertices: (targetBounds, points, options) => this.getRaceWebGLWorldMeshVertices(targetBounds, points, options),
+        getElevationOffsetForSource: (source) => this.getRaceWebGLMeshElevationOffsetForSource(source),
+        bindMeshTexture: (targetRenderer, artRef, targetStats) => this.bindRaceWebGLMeshTexture(targetRenderer, artRef, targetStats),
+        drawMeshVertices: (targetRenderer, vertices, options) => this.drawRaceWebGLMeshVertices(targetRenderer, vertices, options)
       }
-      const buildStartMs = this.getNowMs();
-      const vertices = this.getRaceWebGLWorldMeshVertices(bounds, mesh.points, {
-        camera,
-        cameraYaw,
-        textureWorldM: meshTextureWorldM,
-        textured,
-        projectedPolygon: mesh.projectedPolygon,
-        depthOffset,
-        elevationOffset: Number.isFinite(Number(mesh.elevationOffset))
-          ? Number(mesh.elevationOffset)
-          : this.getRaceWebGLMeshElevationOffsetForSource(mesh.source || ''),
-        minScreenY: mesh.minScreenY,
-        meshSource: mesh.source || '',
-        rawTerrainPolygons: Boolean(mesh.rawTerrainPolygons),
-        textureOriginX,
-        textureOriginZ,
-        stats
-      });
-      if (stats && buildStartMs > 0) stats.meshBuildMs = (Number(stats.meshBuildMs) || 0) + Math.max(0, this.getNowMs() - buildStartMs);
-      if (!vertices.length) return;
-      if (stats) {
-        stats.polygons = (Number(stats.polygons) || 0) + vertices.length / 18;
-        if ((mesh.source || '') === 'terrain' && textured) {
-          stats.terrainMeshTexturePolygons = (Number(stats.terrainMeshTexturePolygons) || 0) + vertices.length / 18;
-        }
-      }
-      if (!grouped.has(key)) {
-        grouped.set(key, { color, textured, artRef, vertices: [] });
-      }
-      grouped.get(key).vertices.push(...vertices);
     });
-    let drew = false;
-    if (!depthTest) {
-      gl.disable(gl.DEPTH_TEST);
-      gl.depthMask(false);
-      if (stats) stats.depthOverlayDrawCalls = (Number(stats.depthOverlayDrawCalls) || 0) + grouped.size;
-    }
-    grouped.forEach((group) => {
-      const drawStartMs = this.getNowMs();
-      if (group.textured) this.bindRaceWebGLMeshTexture(renderer, group.artRef, stats);
-      const didDraw = this.drawRaceWebGLMeshVertices(renderer, group.vertices, {
-        color: group.color,
-        textured: group.textured,
-        stats
-      });
-      if (stats && drawStartMs > 0) stats.webglUploadDrawMs = (Number(stats.webglUploadDrawMs) || 0) + Math.max(0, this.getNowMs() - drawStartMs);
-      if (didDraw && stats) {
-        stats.drawCalls = (Number(stats.drawCalls) || 0) + 1;
-        if (group.textured) stats.texturedDrawCalls = (Number(stats.texturedDrawCalls) || 0) + 1;
-      }
-      drew = didDraw || drew;
-    });
-    if (!depthTest) {
-      gl.depthMask(true);
-      gl.enable(gl.DEPTH_TEST);
-    }
-    return drew;
   }
 
   getRaceWebGLPaintMeshFromProjectedQuad(points = [], bounds = {}, {
@@ -19283,7 +19561,7 @@ export default class RaceEditor {
       : baseWorldM;
     const roadMinScreenY = this.getRaceProjectedTerrainTop(bounds, camera);
     const useSunShading = this.shouldUseRacePlaytestSunShading();
-    const terrainCells = [];
+    let terrainCells = [];
     let terrainBake = null;
     if (terrainEnabled) {
       const baseTileSize = Math.max(1, Number(tileMap?.cellSizeM) || RACE_TILE_MAP_CELL_SIZE_M);
@@ -19326,7 +19604,7 @@ export default class RaceEditor {
           forwardVector,
           stats: renderStats
         });
-        terrainCells.push(...bakedVisibleCells);
+        terrainCells = bakedVisibleCells;
         renderStats.terrainCandidates = (Number(renderStats.terrainCandidates) || 0) + worldBake.terrainCells.length;
         renderStats.terrainSubdivisions = (Number(renderStats.terrainSubdivisions) || 0) + bakedVisibleCells.length;
         renderStats.terrainWorldBakeCells = worldBake.terrainCells.length;
@@ -19468,39 +19746,18 @@ export default class RaceEditor {
         textureWorldM
       }));
     }
-    const shouldersVisible = this.isRaceShoulderVisible();
     const roadMeshes = [];
     const boundaryMeshes = [];
     trackBands.forEach((quad) => {
       const { near, far } = quad;
-      const segment = near?.center?.segment || currentSegment;
-      const groundPalette = this.getRaceGroundPaletteForSegment(segment, near?.center);
-      if (shouldersVisible) {
-        const nearLeftInner = this.isRaceMarginVisible() ? (near.marginLeft || near.left) : near.left;
-        const farLeftInner = this.isRaceMarginVisible() ? (far.marginLeft || far.left) : far.left;
-        const nearRightInner = this.isRaceMarginVisible() ? (near.marginRight || near.right) : near.right;
-        const farRightInner = this.isRaceMarginVisible() ? (far.marginRight || far.right) : far.right;
-        const leftShoulderPoints = [far.shoulderLeft, farLeftInner, nearLeftInner, near.shoulderLeft];
-        const rightShoulderPoints = [farRightInner, far.shoulderRight, near.shoulderRight, nearRightInner];
-        shoulderMeshes.push({
-          source: 'shoulder-left',
-          points: leftShoulderPoints,
-          color: useSunShading ? this.getRaceTerrainSunTint(leftShoulderPoints, groundPalette.shoulderA) : groundPalette.shoulderA,
-          textured: false,
-          depthOffset: -0.045,
-          threeLiftM: RACE_THREE_LIFTS_M.shoulder,
-          minScreenY: roadMinScreenY
-        });
-        shoulderMeshes.push({
-          source: 'shoulder-right',
-          points: rightShoulderPoints,
-          color: useSunShading ? this.getRaceTerrainSunTint(rightShoulderPoints, groundPalette.shoulderA) : groundPalette.shoulderA,
-          textured: false,
-          depthOffset: -0.045,
-          threeLiftM: RACE_THREE_LIFTS_M.shoulder,
-          minScreenY: roadMinScreenY
-        });
-      }
+      shoulderMeshes.push(...this.getRaceShoulderSurfaceMeshesForBand(quad, {
+        currentSegment,
+        fallbackArtRef,
+        texturesEnabled,
+        textureWorldM,
+        useSunShading,
+        minScreenY: roadMinScreenY
+      }));
       boundaryMeshes.push(...this.getRaceWebGLBoundaryStripMeshes(near, far, { minScreenY: roadMinScreenY }));
     });
     trackBands.forEach((quad) => {
@@ -19927,7 +20184,7 @@ export default class RaceEditor {
       const forwardVector = this.getRaceForwardVector(yaw);
       const right = { x: rightVector.x * width / 2, z: rightVector.z * width / 2 };
       const forward = { x: forwardVector.x * height / 2, z: forwardVector.z * height / 2 };
-      const elevation = this.getRaceGroundElevationAtWorldPoint({ x: decal.x, z: decal.z }, 0) + 0.004;
+      const elevation = this.getRaceSurfaceModel().sampleWorld({ x: decal.x, z: decal.z }, 0).elevation + 0.004;
       const corners = [
         { x: decal.x - right.x - forward.x, z: decal.z - right.z - forward.z, elevation },
         { x: decal.x + right.x - forward.x, z: decal.z + right.z - forward.z, elevation },
@@ -19976,8 +20233,8 @@ export default class RaceEditor {
     const chaseDistance = cameraView === 'third-person'
       ? this.getRaceThirdPersonChaseDistance(this.selectedCar)
       : 0;
-    const carWorldX = Number.isFinite(session?.worldX) ? session.worldX : routeCamera.x;
-    const carWorldZ = Number.isFinite(session?.worldZ) ? session.worldZ : routeCamera.z;
+    const carWorldX = Number.isFinite(session?.bodyX) ? session.bodyX : Number.isFinite(session?.worldX) ? session.worldX : routeCamera.x;
+    const carWorldZ = Number.isFinite(session?.bodyZ) ? session.bodyZ : Number.isFinite(session?.worldZ) ? session.worldZ : routeCamera.z;
     const camera = {
       ...routeCamera,
       x: carWorldX - Math.sin(carYaw) * chaseDistance,
@@ -20014,8 +20271,8 @@ export default class RaceEditor {
       { x: carWorldX, z: carWorldZ },
       Number(routeCamera.elevation || 0)
     );
-    camera.roadElevation = cameraView === 'third-person'
-      ? localCarGroundElevation
+    camera.roadElevation = Number.isFinite(session?.bodyY)
+      ? Number(session.bodyY) / RACE_THREE_ELEVATION_M
       : Number.isFinite(session?.heightM)
         ? Number(session.heightM) / RACE_THREE_ELEVATION_M
         : localCarGroundElevation;
@@ -20397,7 +20654,7 @@ export default class RaceEditor {
     const scenery = this.ensureRaceScenery()
       .filter((sprite) => sprite && sprite.state !== 'removed' && sprite.state !== 'flattened')
       .map((sprite) => {
-        const groundElevation = this.getRaceGroundElevationAtWorldPoint({ x: sprite.x, z: sprite.z }, 0);
+        const groundElevation = this.getRaceSurfaceModel().sampleWorld({ x: sprite.x, z: sprite.z }, 0).elevation;
         const projected = this.projectRaceWorldPointToCamera({
           x: Number(sprite.x || 0),
           z: Number(sprite.z || 0),
