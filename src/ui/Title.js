@@ -23,29 +23,46 @@ export default class Title {
       ],
       game: [
         'level-editor',
+        'tile-editor',
+        'race-editor',
+        'car-editor',
         'actor-editor',
         'back'
       ]
     };
-    this.controlsOrder = [
+    this.optionsOrder = [
+      'latest-changes',
       'robtersession',
+      'controls',
+      'display',
+      'back'
+    ];
+    this.controlsOrder = [
       'mobile',
       'gamepad',
       'keyboard',
+      'back'
+    ];
+    this.displayOrder = [
       ...DISPLAY_MODE_OPTIONS.map((option) => option.action),
       'back'
     ];
     this.menuSelection = 0;
     this.folderSelections = { graphics: 0, audio: 0, game: 0 };
+    this.optionsSelection = 0;
     this.controlsSelection = 0;
+    this.displaySelection = 0;
     this.menuBounds = new Map();
     this.folderBounds = {
       graphics: new Map(),
       audio: new Map(),
       game: new Map()
     };
+    this.optionsBounds = new Map();
     this.controlsBounds = new Map();
+    this.displayBounds = new Map();
     this.debugRestartBounds = null;
+    this.mainMenuReady = false;
   }
 
   clamp(value, min, max) {
@@ -252,6 +269,40 @@ export default class Title {
     ctx.restore();
   }
 
+  drawLoadingSplash(ctx, width, height) {
+    const portrait = this.isPortraitPhone(width, height);
+    const compactLandscape = !portrait && height <= 430;
+    const tileW = Math.min(width - 40, portrait ? 280 : 340);
+    const tileH = compactLandscape ? 76 : 92;
+    const tileX = width / 2 - tileW / 2;
+    const tileY = Math.max(24, height / 2 - tileH / 2 - 18);
+    ctx.save();
+    ctx.fillStyle = 'rgba(8,12,20,0.88)';
+    ctx.fillRect(tileX, tileY, tileW, tileH);
+    ctx.strokeStyle = 'rgba(255,225,106,0.5)';
+    ctx.strokeRect(tileX, tileY, tileW, tileH);
+    ctx.fillStyle = 'rgba(255,225,106,0.92)';
+    ctx.fillRect(tileX, tileY, 4, tileH);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#f8fbff';
+    ctx.font = portrait || compactLandscape ? 'bold 30px Arial' : 'bold 38px Arial';
+    ctx.fillText('RTG Studio', width / 2, tileY + tileH / 2);
+    ctx.fillStyle = 'rgba(198,220,245,0.86)';
+    ctx.font = portrait || compactLandscape ? '14px Arial' : '16px Arial';
+    ctx.fillText('Loading...', width / 2, tileY + tileH + 28);
+    ctx.textBaseline = 'alphabetic';
+    ctx.restore();
+  }
+
+  setMainMenuReady(ready) {
+    this.mainMenuReady = Boolean(ready);
+    if (!this.mainMenuReady) {
+      this.menuBounds.clear();
+      this.debugRestartBounds = null;
+    }
+  }
+
   drawMenuPanel(ctx, layout, count, title = '') {
     const pad = layout.portrait ? 12 : 14;
     const listHeight = count * layout.buttonHeight + Math.max(0, count - 1) * layout.gap;
@@ -318,6 +369,9 @@ export default class Title {
 
   draw(ctx, width, height, inputMode, inputHints = {}) {
     ctx.save();
+    if (Object.prototype.hasOwnProperty.call(inputHints || {}, 'mainMenuReady')) {
+      this.setMainMenuReady(inputHints.mainMenuReady);
+    }
     this.drawBackdrop(ctx, width, height);
     ctx.strokeStyle = 'rgba(255,255,255,0.72)';
     ctx.lineWidth = 2;
@@ -343,8 +397,12 @@ export default class Title {
       this.drawMainMenu(ctx, width, height, { showDebugRestart: Boolean(inputHints?.debugRestartEnabled) });
     } else if (this.folderOrders[screen]) {
       this.drawFolder(ctx, width, height, screen);
+    } else if (screen === 'options') {
+      this.drawOptions(ctx, width, height);
     } else if (screen === 'controls') {
       this.drawControls(ctx, width, height, inputMode, inputHints);
+    } else if (screen === 'display') {
+      this.drawDisplay(ctx, width, height, inputHints);
     } else {
       this.drawMainMenu(ctx, width, height, { showDebugRestart: Boolean(inputHints?.debugRestartEnabled) });
     }
@@ -359,6 +417,13 @@ export default class Title {
       defaultStartY: 240,
       defaultGap: 48
     });
+    if (!this.mainMenuReady) {
+      this.menuBounds.clear();
+      this.debugRestartBounds = null;
+      this.drawLoadingSplash(ctx, width, height);
+      return;
+    }
+
     this.drawMenuPanel(ctx, layout, this.menuOrder.length, 'Launcher');
 
     this.menuBounds.clear();
@@ -420,23 +485,60 @@ export default class Title {
       const selected = order[this.folderSelections[folder] || 0] === action;
       const label = action === 'level-editor'
         ? 'Level Editor'
-        : action === 'pixel-editor'
-          ? 'Pixel Editor'
-          : action === 'actor-editor'
-            ? 'Actor Editor'
-            : action === 'midi-editor'
-              ? 'MIDI Editor'
-              : action === 'sfx-editor'
-                ? 'SFX Editor'
-                : action === 'cutscene-editor'
-                  ? 'Cutscene Editor'
-                  : 'Back';
+        : action === 'tile-editor'
+          ? 'Tile Editor'
+          : action === 'race-editor'
+            ? 'Race Editor'
+            : action === 'car-editor'
+              ? 'Car Editor'
+              : action === 'pixel-editor'
+                ? 'Pixel Editor'
+                : action === 'actor-editor'
+                  ? 'Actor Editor'
+                  : action === 'midi-editor'
+                    ? 'MIDI Editor'
+                    : action === 'sfx-editor'
+                      ? 'SFX Editor'
+                      : action === 'cutscene-editor'
+                        ? 'Cutscene Editor'
+                        : 'Back';
       const bounds = { x: layout.buttonX, y, w: layout.buttonWidth, h: layout.buttonHeight };
       ctx.font = layout.labelFont;
       this.drawMenuButton(ctx, bounds, label, { selected });
       boundsMap.set(action, bounds);
     });
     this.folderBounds[folder] = boundsMap;
+  }
+
+  drawOptions(ctx, width, height) {
+    const layout = this.getScreenLayout(width, height, {
+      screen: 'options',
+      count: this.optionsOrder.length,
+      preferredWidth: 360,
+      defaultStartY: 250,
+      defaultGap: 46
+    });
+    this.drawTitleText(ctx, width, 'Options', layout, 'Studio settings');
+    this.drawMenuPanel(ctx, layout, this.optionsOrder.length, 'Options');
+
+    this.optionsBounds.clear();
+    this.optionsOrder.forEach((action, index) => {
+      const y = layout.startY + index * (layout.buttonHeight + layout.gap);
+      const selected = this.optionsOrder[this.optionsSelection] === action;
+      const label = action === 'latest-changes'
+        ? 'Latest Changes'
+        : action === 'robtersession'
+          ? 'Songs'
+          : action === 'controls'
+            ? 'Controls'
+            : action === 'display'
+              ? 'Display'
+              : 'Back';
+      const bounds = { x: layout.buttonX, y, w: layout.buttonWidth, h: layout.buttonHeight };
+      ctx.font = layout.labelFont;
+      this.drawMenuButton(ctx, bounds, label, { selected });
+      this.optionsBounds.set(action, bounds);
+    });
   }
 
   drawControls(ctx, width, height, inputMode, inputHints = {}) {
@@ -447,27 +549,21 @@ export default class Title {
       defaultStartY: 250,
       defaultGap: 46
     });
-    this.drawTitleText(ctx, width, 'Options', layout, 'Controls & display');
-    this.drawMenuPanel(ctx, layout, this.controlsOrder.length, 'Preferences');
+    this.drawTitleText(ctx, width, 'Controls', layout, 'Input mode');
+    this.drawMenuPanel(ctx, layout, this.controlsOrder.length, 'Controls');
 
     this.controlsBounds.clear();
     this.controlsOrder.forEach((action, index) => {
       const y = layout.startY + index * (layout.buttonHeight + layout.gap);
       const selected = this.controlsOrder[this.controlsSelection] === action;
-      const displayMode = inputHints?.displayMode || 'sepia';
-      const displayModeForAction = getDisplayModeForAction(action);
-      const active = displayModeForAction ? displayMode === displayModeForAction : inputMode === action;
-      const label = action === 'robtersession'
-        ? 'Songs'
-        : action === 'mobile'
-          ? 'Mobile Touch'
-          : action === 'gamepad'
-            ? 'Controller / Gamepad'
-            : action === 'keyboard'
-              ? 'Keyboard'
-              : displayModeForAction
-                ? getDisplayModeLabelForAction(action)
-                : 'Back';
+      const active = inputMode === action;
+      const label = action === 'mobile'
+        ? 'Mobile Touch'
+        : action === 'gamepad'
+          ? 'Controller / Gamepad'
+          : action === 'keyboard'
+            ? 'Keyboard'
+            : 'Back';
       const bounds = { x: layout.buttonX, y, w: layout.buttonWidth, h: layout.buttonHeight };
       ctx.font = layout.labelFont;
       this.drawMenuButton(ctx, bounds, label, { selected, active });
@@ -475,8 +571,39 @@ export default class Title {
     });
   }
 
+  drawDisplay(ctx, width, height, inputHints = {}) {
+    const layout = this.getScreenLayout(width, height, {
+      screen: 'display',
+      count: this.displayOrder.length,
+      preferredWidth: 360,
+      defaultStartY: 250,
+      defaultGap: 46
+    });
+    this.drawTitleText(ctx, width, 'Display', layout, 'Visual mode');
+    this.drawMenuPanel(ctx, layout, this.displayOrder.length, 'Display');
+
+    this.displayBounds.clear();
+    this.displayOrder.forEach((action, index) => {
+      const y = layout.startY + index * (layout.buttonHeight + layout.gap);
+      const selected = this.displayOrder[this.displaySelection] === action;
+      const displayMode = inputHints?.displayMode || 'sepia';
+      const displayModeForAction = getDisplayModeForAction(action);
+      const active = displayModeForAction ? displayMode === displayModeForAction : false;
+      const label = displayModeForAction
+        ? getDisplayModeLabelForAction(action)
+        : 'Back';
+      const bounds = { x: layout.buttonX, y, w: layout.buttonWidth, h: layout.buttonHeight };
+      ctx.font = layout.labelFont;
+      this.drawMenuButton(ctx, bounds, label, { selected, active });
+      this.displayBounds.set(action, bounds);
+    });
+  }
+
   moveSelection(direction) {
     if (this.screen === 'intro') {
+      return;
+    }
+    if (this.screen === 'main' && !this.mainMenuReady) {
       return;
     }
     if (this.folderOrders[this.screen]) {
@@ -485,10 +612,22 @@ export default class Title {
       this.folderSelections[this.screen] = ((this.folderSelections[this.screen] || 0) + direction + count) % count;
       return;
     }
+    if (this.screen === 'options') {
+      const count = this.optionsOrder.length;
+      if (!count) return;
+      this.optionsSelection = (this.optionsSelection + direction + count) % count;
+      return;
+    }
     if (this.screen === 'controls') {
       const count = this.controlsOrder.length;
       if (!count) return;
       this.controlsSelection = (this.controlsSelection + direction + count) % count;
+      return;
+    }
+    if (this.screen === 'display') {
+      const count = this.displayOrder.length;
+      if (!count) return;
+      this.displaySelection = (this.displaySelection + direction + count) % count;
       return;
     }
     const count = this.menuOrder.length;
@@ -497,17 +636,29 @@ export default class Title {
   }
 
   getSelectedAction() {
+    if (this.screen === 'main' && !this.mainMenuReady) {
+      return null;
+    }
     if (this.folderOrders[this.screen]) {
       return this.folderOrders[this.screen][this.folderSelections[this.screen] || 0] || 'back';
     }
+    if (this.screen === 'options') {
+      return this.optionsOrder[this.optionsSelection] || 'back';
+    }
     if (this.screen === 'controls') {
       return this.controlsOrder[this.controlsSelection] || 'back';
+    }
+    if (this.screen === 'display') {
+      return this.displayOrder[this.displaySelection] || 'back';
     }
     return this.menuOrder[this.menuSelection] || 'recent-level';
   }
 
   getActionAt(x, y) {
     if (this.screen === 'intro') {
+      return null;
+    }
+    if (this.screen === 'main' && !this.mainMenuReady) {
       return null;
     }
     if (this.folderOrders[this.screen]) {
@@ -518,8 +669,24 @@ export default class Title {
       }
       return null;
     }
+    if (this.screen === 'options') {
+      for (const [action, bounds] of this.optionsBounds.entries()) {
+        if (x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h) {
+          return action;
+        }
+      }
+      return null;
+    }
     if (this.screen === 'controls') {
       for (const [action, bounds] of this.controlsBounds.entries()) {
+        if (x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h) {
+          return action;
+        }
+      }
+      return null;
+    }
+    if (this.screen === 'display') {
+      for (const [action, bounds] of this.displayBounds.entries()) {
         if (x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h) {
           return action;
         }
@@ -550,7 +717,9 @@ export default class Title {
       duration: 0.35
     };
     this.screen = target;
+    if (target === 'options') this.optionsSelection = 0;
     if (target === 'controls') this.setControlsSelectionByMode();
+    if (target === 'display') this.setDisplaySelectionByMode();
     if (this.folderOrders[target]) this.folderSelections[target] = 0;
   }
 
@@ -559,5 +728,12 @@ export default class Title {
     if (index >= 0) {
       this.controlsSelection = index;
     }
+  }
+
+  setDisplaySelectionByMode(mode) {
+    const action = mode ? `display-${mode}` : null;
+    const index = action ? this.displayOrder.indexOf(action) : -1;
+    const fallback = this.displayOrder.findIndex((candidate) => getDisplayModeForAction(candidate));
+    this.displaySelection = index >= 0 ? index : Math.max(0, fallback);
   }
 }

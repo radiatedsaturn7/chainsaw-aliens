@@ -75,6 +75,29 @@ test('project browser overlay remains interactive under shared non-interactive r
   assert.equal(source.includes("isOpening ? 'Opening...' : 'Open'"), true);
 });
 
+test('project browser save-as typing uses cached folder names instead of rebuilding the index', () => {
+  assert.equal(source.includes('const folderNameCache = new Map();'), true);
+  assert.equal(source.includes('function cachedProjectFileExists(folder, name)'), true);
+  const inputStart = source.indexOf("saveInput.addEventListener('input'");
+  const inputEnd = source.indexOf("overlay.addEventListener('click'", inputStart);
+  const inputBody = source.slice(inputStart, inputEnd);
+  assert.equal(inputBody.includes('cachedProjectFileExists(state.folder, saveName)'), true);
+  assert.equal(inputBody.includes('projectFileExists('), false);
+});
+
+test('project browser cleanup restores page interaction even if overlay cleanup or focus fails', () => {
+  assert.equal(source.includes('function cleanup(result) {'), true);
+  assert.equal(source.includes('} finally {\n        body.style.overflow = previousOverflow;\n        body.style.touchAction = previousTouchAction;\n      }'), true);
+  assert.equal(source.includes("previousActive?.focus?.({ preventScroll: true });"), true);
+  assert.equal(source.includes('ignore focus restore failures'), true);
+});
+
+test('global saved status auto-hides even if a caller forgets to clear it', () => {
+  assert.equal(gameCoreSource.includes("if (/^Saved\\b/i.test(String(message)))"), true);
+  assert.equal(gameCoreSource.includes('this._saveStatusModalTimer = setTimeout(() => {'), true);
+  assert.equal(gameCoreSource.includes('clearTimeout(this._saveStatusModalTimer);'), true);
+});
+
 test('project browser sorts files by recently modified and name', () => {
   const entries = [
     { name: 'zeta', updatedAt: 200 },

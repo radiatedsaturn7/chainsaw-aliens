@@ -3,6 +3,7 @@ import { loadProjectFile } from '../ui/projectFiles.js';
 import { getSharedFrameImageEntry, resolveAnimationFrames } from './ScriptedActor.js';
 
 const visualCache = new Map();
+export const BUILT_IN_ACTOR_VISUAL_SCALE = 2.5;
 
 function getActorName(actorId = '') {
   return String(actorId || '').toLowerCase() === 'companion' ? 'Companion' : 'Player';
@@ -48,10 +49,11 @@ function getCurrentFrame(state, timeSeconds = 0) {
   return frames[frames.length - 1];
 }
 
-function getDrawSize(definition, image, entity) {
+export function getBuiltInActorOverrideDrawSize(definition, image, entity) {
   const size = definition?.size || {};
-  const width = Math.max(1, Number(size.width || entity?.width || image?.naturalWidth || image?.width || 1));
-  const height = Math.max(1, Number(size.height || entity?.height || image?.naturalHeight || image?.height || 1));
+  const scale = Math.max(0.1, Number(definition?.advanced?.visualScale || BUILT_IN_ACTOR_VISUAL_SCALE));
+  const width = Math.max(1, Number(size.width || entity?.width || image?.naturalWidth || image?.width || 1)) * scale;
+  const height = Math.max(1, Number(size.height || entity?.height || image?.naturalHeight || image?.height || 1)) * scale;
   return { width, height };
 }
 
@@ -67,7 +69,7 @@ export function drawBuiltInActorOverride(ctx, entity, actorId = 'player') {
   const imageEntry = getSharedFrameImageEntry(frame?.imageDataUrl || '');
   if (!imageEntry?.ready || !imageEntry.image) return false;
   const image = imageEntry.image;
-  const { width, height } = getDrawSize(definition, image, entity);
+  const { width, height } = getBuiltInActorOverrideDrawSize(definition, image, entity);
   const hurtShake = Number(entity.hurtTimer || 0) > 0 ? 1 : 0;
   const shakeX = hurtShake ? Math.sin(Number(entity.animTime || 0) * 50) * 2 : 0;
   const shakeY = hurtShake ? Math.cos(Number(entity.animTime || 0) * 60) * 2 : 0;

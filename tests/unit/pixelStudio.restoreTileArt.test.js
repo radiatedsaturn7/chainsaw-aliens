@@ -15,6 +15,8 @@ const isTileArtDocument = PixelStudio.prototype.isTileArtDocument;
 const isTileArtEntry = PixelStudio.prototype.isTileArtEntry;
 const findLatestTileArtDocument = PixelStudio.prototype.findLatestTileArtDocument;
 const normalizeLoadedArtDocument = PixelStudio.prototype.normalizeLoadedArtDocument;
+const getLegacyTileArtDocName = PixelStudio.prototype.getLegacyTileArtDocName;
+const getTileArtDocName = PixelStudio.prototype.getTileArtDocName;
 
 function createEditor(world = {}) {
   return {
@@ -320,6 +322,73 @@ test('syncTileData updates in-memory tile state without persisting when persist=
   assert.equal(tile.frames[0][0], '#ffff00');
   assert.equal(loadProjectFile('art', 'Tile Art 23'), null);
   assert.equal(loadProjectFile('art', 'Tile Art Autosave'), null);
+});
+
+test('syncTileData persists solid tile art with readable generated document name', () => {
+  const editor = {
+    decalEditSession: null,
+    activeTile: { id: 'solid', char: '#' },
+    tileLibrary: [{ id: 'solid', char: '#' }],
+    game: { world: { pixelArt: { tiles: { '#': { frames: [[]], size: 1, fps: 6 } } } } },
+    canvasState: { width: 1, height: 1, activeLayerIndex: 0 },
+    animation: {
+      frames: [{
+        durationMs: 120,
+        layers: [{
+          name: 'Layer 1',
+          visible: true,
+          locked: false,
+          opacity: 1,
+          pixels: new Uint32Array([0xff00ffff >>> 0])
+        }]
+      }]
+    },
+    boneRig: { joints: [], bones: [], bindings: [], poseTimeline: [] },
+    persistTileArtAutosave() {},
+    getLegacyTileArtDocName,
+    getTileArtDocName
+  };
+
+  syncTileData.call(editor);
+
+  const tile = editor.game.world.pixelArt.tiles['#'];
+  assert.equal(tile.ref, 'Tile Art solid');
+  assert.equal(loadProjectFile('art', 'Tile Art solid')?.data?.frames?.[0]?.[0], '#ffff00');
+  assert.equal(loadProjectFile('art', 'Tile Art 23'), null);
+});
+
+test('persistTileArtAutosave migrates legacy generated solid tile refs', () => {
+  const editor = {
+    game: {
+      world: {
+        pixelArt: {
+          tiles: {
+            '#': {
+              ref: 'Tile Art 23',
+              size: 1,
+              fps: 6,
+              frames: [['#00ff00']],
+              editor: { width: 1, height: 1, frames: [{ durationMs: 120, layers: [] }] }
+            }
+          }
+        }
+      }
+    },
+    tileLibrary: [{ id: 'solid', char: '#' }],
+    lastTileArtAutosaveAt: 0,
+    tilePickerMode: false,
+    forceArtDocumentSave: false,
+    isTileArtEntry,
+    getLegacyTileArtDocName,
+    getTileArtDocName
+  };
+
+  persistTileArtAutosave.call(editor, true);
+
+  const autosave = loadProjectFile('art', 'Tile Art Autosave');
+  assert.equal(editor.game.world.pixelArt.tiles['#'].ref, 'Tile Art solid');
+  assert.equal(autosave?.data?.tiles?.['#']?.ref, 'Tile Art solid');
+  assert.equal(loadProjectFile('art', 'Tile Art solid')?.data?.frames?.[0]?.[0], '#00ff00');
 });
 
 test('hydrateTileArtRef hydrates a single ref-only tile for preview use', () => {

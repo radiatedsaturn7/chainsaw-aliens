@@ -2,7 +2,7 @@ import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedLeftMenuLayout, buildShar
 
 
 export function drawRecordModeSidebar(composer, ctx, x, y, w, h, tabOptions) {
-  const isMobile = typeof composer.isMobileLayout === 'function' && composer.isMobileLayout();
+  const isMobile = (composer.activeViewportMode || 'desktop') !== 'desktop';
   const rowH = isMobile ? SHARED_EDITOR_LEFT_MENU.buttonHeightMobile : SHARED_EDITOR_LEFT_MENU.buttonHeightDesktop;
 
   ctx.fillStyle = UI_SUITE.colors.panel;

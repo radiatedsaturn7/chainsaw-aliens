@@ -294,6 +294,9 @@ export default class Minimap {
   }
 
   isRoomTile(tile) {
+    if (typeof this.world?.isRoomTile === 'function') {
+      return this.world.isRoomTile(tile);
+    }
     const blockers = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', 'N', 'P', 'Q', 'E', 'G', 'J', 'V']);
     return tile && tile !== 'D' && !blockers.has(tile);
   }

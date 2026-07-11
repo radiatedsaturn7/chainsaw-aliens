@@ -1,5 +1,5 @@
 import { EDITOR_INPUT_ACTIONS, DEFAULT_EDITOR_GAMEPAD_DEADZONES, SHARED_EDITOR_GAMEPAD_HINTS } from './editorInputActions.js';
-import { UI_SUITE } from '../../uiSuite.js';
+import { drawSharedControllerMenuOverlay } from '../../uiSuite.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
@@ -285,10 +285,6 @@ export class ControllerMenuStack {
       return true;
     }
     if (!this.active) {
-      if (hasAction(EDITOR_INPUT_ACTIONS.CANCEL)) {
-        this.openRoot();
-        return true;
-      }
       if (hasAction(EDITOR_INPUT_ACTIONS.NAV_UP)
         || hasAction(EDITOR_INPUT_ACTIONS.NAV_DOWN)
         || hasAction(EDITOR_INPUT_ACTIONS.NAV_LEFT)
@@ -396,37 +392,24 @@ export function drawCanvasControllerMenu(ctx, menuStack, { width, height, contex
   const panelH = 72 + visible.length * (rowH + gap) + 42;
   const x = 18;
   const y = Math.max(18, Math.floor((height - panelH) / 2));
-  ctx.save();
-  ctx.fillStyle = 'rgba(0,0,0,0.48)';
-  ctx.fillRect(0, 0, width, height);
-  ctx.fillStyle = UI_SUITE.colors.panel;
-  ctx.fillRect(x, y, panelW, panelH);
-  ctx.strokeStyle = UI_SUITE.colors.border;
-  ctx.strokeRect(x, y, panelW, panelH);
-  ctx.fillStyle = UI_SUITE.colors.accent;
-  ctx.font = `13px ${UI_SUITE.font.family}`;
-  ctx.fillText(contextLabel, x + 16, y + 22);
-  ctx.fillStyle = UI_SUITE.colors.text;
-  ctx.font = `18px ${UI_SUITE.font.family}`;
-  ctx.fillText(menu.title || menu.id, x + 16, y + 48);
-  let rowY = y + 68;
-  visible.forEach((item, visibleIndex) => {
-    const index = nextScroll + visibleIndex;
-    const active = index === selectedIndex;
-    ctx.fillStyle = active ? 'rgba(255,225,106,0.28)' : 'rgba(255,255,255,0.08)';
-    ctx.fillRect(x + 12, rowY, panelW - 24, rowH);
-    ctx.strokeStyle = active ? UI_SUITE.colors.accent : 'rgba(255,255,255,0.18)';
-    ctx.strokeRect(x + 12, rowY, panelW - 24, rowH);
-    ctx.fillStyle = item.disabled ? 'rgba(255,255,255,0.45)' : UI_SUITE.colors.text;
-    ctx.font = `14px ${UI_SUITE.font.family}`;
-    ctx.fillText(`${item.submenu ? '> ' : ''}${item.label}`, x + 26, rowY + 26);
-    rowY += rowH + gap;
+  return drawSharedControllerMenuOverlay(ctx, {
+    x,
+    y,
+    w: panelW,
+    h: panelH,
+    width,
+    height,
+    contextLabel,
+    title: menu.title || menu.id,
+    selectedIndex,
+    rowHeight: rowH,
+    rowGap: gap,
+    rows: visible.map((item, visibleIndex) => ({
+      index: nextScroll + visibleIndex,
+      disabled: Boolean(item.disabled),
+      label: `${item.submenu ? '> ' : ''}${item.label}`
+    }))
   });
-  ctx.fillStyle = 'rgba(255,255,255,0.72)';
-  ctx.font = `11px ${UI_SUITE.font.family}`;
-  ctx.fillText('LS/D-pad Move   A Select   B Back   LB/RB Tabs   Start System', x + 16, y + panelH - 15);
-  ctx.restore();
-  return { x, y, w: panelW, h: panelH };
 }
 
 export function renderDomControllerMenu(menuStack, { contextLabel = 'Editor' } = {}) {

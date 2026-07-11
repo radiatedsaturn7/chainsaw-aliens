@@ -2650,4 +2650,104 @@ export default class AudioSystem {
     }
     this.revActive = active;
   }
+
+  setEngineRev(active, {
+    rpm = 900,
+    redlineRpm = 6200,
+    throttle = 0,
+    load = 0,
+    profile = 'flat-four'
+  } = {}) {
+    if (active) this.ensure();
+    if (active && !this.engineRevActive) {
+      this.engineRevOsc = this.ctx.createOscillator();
+      this.engineRevSubOsc = this.ctx.createOscillator();
+      this.engineRevGain = this.ctx.createGain();
+      this.engineRevFilter = this.ctx.createBiquadFilter();
+      this.engineRevOsc.type = profile.includes('flat') ? 'sawtooth' : 'triangle';
+      this.engineRevSubOsc.type = 'square';
+      this.engineRevFilter.type = 'lowpass';
+      this.engineRevGain.gain.value = 0.0001;
+      this.engineRevOsc.connect(this.engineRevFilter);
+      this.engineRevSubOsc.connect(this.engineRevFilter);
+      this.engineRevFilter.connect(this.engineRevGain);
+      this.engineRevGain.connect(this.master);
+      this.engineRevOsc.start();
+      this.engineRevSubOsc.start();
+    }
+    if (active) {
+      const now = this.ctx.currentTime;
+      const rpmRatio = Math.max(0, Math.min(1.15, Number(rpm || 0) / Math.max(1, Number(redlineRpm || 6200))));
+      const throttleMix = Math.max(0, Math.min(1, Number(throttle || 0)));
+      const loadMix = Math.max(0, Math.min(1, Number(load || 0)));
+      const limiterPulse = rpmRatio > 0.98 ? (Math.sin(now * 92) > 0 ? 0.78 : 1.08) : 1;
+      const baseFreq = (38 + rpmRatio * 190) * limiterPulse;
+      const gain = 0.022 + rpmRatio * 0.058 + throttleMix * 0.052 + loadMix * 0.03;
+      this.engineRevGain.gain.setTargetAtTime(Math.max(0.0001, gain), now, 0.026);
+      this.engineRevOsc.frequency.setTargetAtTime(baseFreq, now, 0.018);
+      this.engineRevSubOsc.frequency.setTargetAtTime(baseFreq * 0.5, now, 0.024);
+      this.engineRevFilter.frequency.setTargetAtTime(360 + rpmRatio * 2400 + throttleMix * 880, now, 0.032);
+    }
+    if (!active && this.engineRevActive && this.engineRevGain) {
+      const now = this.ctx.currentTime;
+      this.engineRevGain.gain.setTargetAtTime(0.0001, now, 0.04);
+      this.engineRevOsc?.stop(now + 0.14);
+      this.engineRevSubOsc?.stop(now + 0.14);
+      this.engineRevOsc = null;
+      this.engineRevSubOsc = null;
+      this.engineRevGain = null;
+      this.engineRevFilter = null;
+    }
+    this.engineRevActive = active;
+  }
+
+  setTireScreech(active, {
+    slip = 0,
+    speedMps = 0,
+    material = 'pavement'
+  } = {}) {
+    if (active) this.ensure();
+    if (active && !this.tireScreechActive) {
+      const sampleRate = this.ctx.sampleRate || 44100;
+      const length = Math.max(1, Math.floor(sampleRate * 0.32));
+      const buffer = this.ctx.createBuffer(1, length, sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let index = 0; index < length; index += 1) {
+        data[index] = Math.random() * 2 - 1;
+      }
+      this.tireScreechSource = this.ctx.createBufferSource();
+      this.tireScreechGain = this.ctx.createGain();
+      this.tireScreechFilter = this.ctx.createBiquadFilter();
+      this.tireScreechSource.buffer = buffer;
+      this.tireScreechSource.loop = true;
+      this.tireScreechFilter.type = 'bandpass';
+      this.tireScreechGain.gain.value = 0.0001;
+      this.tireScreechSource.connect(this.tireScreechFilter);
+      this.tireScreechFilter.connect(this.tireScreechGain);
+      this.tireScreechGain.connect(this.master);
+      this.tireScreechSource.start();
+    }
+    if (active) {
+      const now = this.ctx.currentTime;
+      const slipAmount = Math.max(0, Math.min(1, Number(slip) || 0));
+      const speed = Math.max(0, Number(speedMps) || 0);
+      const isDirt = material === 'dirt';
+      const baseFreq = isDirt ? 420 : 1320;
+      const freq = baseFreq + slipAmount * (isDirt ? 560 : 2400) + Math.min(speed, 72) * (isDirt ? 3 : 9);
+      const q = isDirt ? 0.48 : 4.2;
+      const gain = (isDirt ? 0.024 : 0.026) + slipAmount * (isDirt ? 0.066 : 0.085);
+      this.tireScreechFilter?.frequency.setTargetAtTime(freq, now, 0.024);
+      this.tireScreechFilter?.Q.setTargetAtTime(q, now, 0.04);
+      this.tireScreechGain?.gain.setTargetAtTime(Math.max(0.0001, gain), now, 0.028);
+    }
+    if (!active && this.tireScreechActive && this.tireScreechGain) {
+      const now = this.ctx.currentTime;
+      this.tireScreechGain.gain.setTargetAtTime(0.0001, now, 0.04);
+      this.tireScreechSource?.stop(now + 0.12);
+      this.tireScreechSource = null;
+      this.tireScreechGain = null;
+      this.tireScreechFilter = null;
+    }
+    this.tireScreechActive = active;
+  }
 }

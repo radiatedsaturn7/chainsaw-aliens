@@ -133,11 +133,16 @@ export default class Player {
     const footTileX = Math.floor(this.x / tileSize);
     const footTileY = Math.floor((this.y + this.height / 2 + 1) / tileSize);
     const footTile = world.getTile(footTileX, footTileY);
-    const onIce = this.onGround && footTile === 'I';
+    const footSlipperiness = typeof world.getTileSlipperiness === 'function'
+      ? world.getTileSlipperiness(footTileX, footTileY)
+      : (footTile === 'I' ? 1 : 0);
+    const onIce = this.onGround && footSlipperiness > 0;
     const onOneWay = this.onGround && world.isOneWay(footTileX, footTileY);
     const bodyTileX = Math.floor(this.x / tileSize);
     const bodyTileY = Math.floor(this.y / tileSize);
-    const inWater = footTile === '~' || world.getTile(bodyTileX, bodyTileY) === '~';
+    const footLiquid = typeof world.getTileLiquid === 'function' ? world.getTileLiquid(footTileX, footTileY) : null;
+    const bodyLiquid = typeof world.getTileLiquid === 'function' ? world.getTileLiquid(bodyTileX, bodyTileY) : null;
+    const inWater = footLiquid === 'water' || bodyLiquid === 'water' || footTile === '~' || world.getTile(bodyTileX, bodyTileY) === '~';
     const waterSlow = inWater ? 0.6 : 1;
     const waterJumpScale = inWater ? 0.75 : 1;
     let exitRide = false;
@@ -168,10 +173,11 @@ export default class Player {
       } else {
         const targetVx = moveInput * this.speed * waterSlow;
         if (onIce) {
-          const accel = moveInput !== 0 ? 0.12 : 0.04;
+          const slip = Math.max(0, Math.min(1, footSlipperiness));
+          const accel = moveInput !== 0 ? 0.24 - 0.12 * slip : 0.1 - 0.06 * slip;
           this.vx += (targetVx - this.vx) * accel;
           if (moveInput === 0) {
-            this.vx *= 0.98;
+            this.vx *= 1 - 0.02 * slip;
           }
         } else {
           this.vx = targetVx;
@@ -278,9 +284,10 @@ export default class Player {
       const currentFootX = Math.floor(this.x / tileSize);
       const currentFootY = Math.floor((this.y + this.height / 2 + 1) / tileSize);
       const conveyor = world.getTile(currentFootX, currentFootY);
-      const conveyorDir = conveyor === '>' ? 1 : conveyor === '<' ? -1 : 0;
+      const conveyorProps = typeof world.getTileConveyor === 'function' ? world.getTileConveyor(currentFootX, currentFootY) : null;
+      const conveyorDir = conveyorProps?.direction || (conveyor === '>' ? 1 : conveyor === '<' ? -1 : 0);
       if (conveyorDir !== 0) {
-        const push = conveyorDir * 80 * dt;
+        const push = conveyorDir * (conveyorProps?.speed || 80) * dt;
         const rect = this.rect;
         const testX = this.x + push;
         const signX = Math.sign(push);

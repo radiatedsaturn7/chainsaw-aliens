@@ -38,7 +38,7 @@ test('tile editor solid block stays purple after full browser reopen from editor
     if (!response.ok) return null;
     const payload = await response.json();
     return payload?.file?.data?.tiles?.['#']?.ref || null;
-  })).toBe('Tile Art 23');
+  })).toBe('Tile Art solid');
 
   await context1.close();
 

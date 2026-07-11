@@ -7,9 +7,11 @@ import {
   getSharedMobilePortraitEditorLayout,
   getSharedMobileRailWidth,
   getSharedPortraitActionRailLayout,
+  getSharedPortraitMultiRowTabLayout,
   getSharedPortraitMenuMetrics,
   drawSharedContextRibbon,
   drawSharedPortraitScrollHints,
+  buildSharedEditorFileMenu,
   isMobileLandscapeLayout,
   isMobilePortraitLayout,
   renderSharedFileDrawer,
@@ -79,6 +81,67 @@ test('shared mobile portrait layout exposes stable editor regions', () => {
     assert.ok(layout.workSurface.y + layout.workSurface.h <= layout.actionRail.y);
     assert.ok(layout.actionRail.y + layout.actionRail.h <= height);
   }
+});
+
+test('shared portrait multi-row tabs can align to the bottom of a rail', () => {
+  const bounds = { x: 10, y: 100, w: 220, h: 120 };
+  const tabs = ['file', 'draw', 'layers', 'frames'].map((id) => ({ id, label: id }));
+  const layout = getSharedPortraitMultiRowTabLayout(bounds, tabs, {
+    rowHeight: 36,
+    gap: 6,
+    padding: 8,
+    minButtonWidth: 70,
+    maxRows: 2,
+    verticalAlign: 'bottom'
+  });
+  const bottomY = Math.max(...layout.buttons.map((button) => button.bounds.y + button.bounds.h));
+
+  assert.equal(layout.rows, 2);
+  assert.equal(bottomY, bounds.y + bounds.h - 8);
+});
+
+test('shared editor file menu exposes consistent action aliases', () => {
+  const calls = [];
+  const items = buildSharedEditorFileMenu({
+    actions: {
+      new: () => calls.push('new'),
+      save: () => calls.push('save')
+    },
+    extras: [
+      { id: 'custom-onclick', label: 'Custom OnClick', onClick: () => calls.push('custom-onclick') },
+      { id: 'custom-action', label: 'Custom Action', action: () => calls.push('custom-action') }
+    ],
+    footer: {
+      onClose: () => calls.push('close'),
+      onExit: () => calls.push('exit')
+    }
+  });
+
+  const byId = Object.fromEntries(items.filter((item) => item.id).map((item) => [item.id, item]));
+  assert.deepEqual(items.slice(0, 6).map((item) => item.id), [
+    'new',
+    'save',
+    'save-as',
+    'open',
+    'export',
+    'import'
+  ]);
+  assert.equal(items.some((item) => item.id === 'undo'), false);
+  assert.equal(items.some((item) => item.id === 'redo'), false);
+  assert.equal(byId.new.action, byId.new.onClick);
+  assert.equal(byId.save.action, byId.save.onClick);
+  assert.equal(byId['custom-onclick'].action, byId['custom-onclick'].onClick);
+  assert.equal(byId['custom-action'].action, byId['custom-action'].onClick);
+  assert.equal(byId['close-menu'].action, byId['close-menu'].onClick);
+  assert.equal(byId['exit-main'].action, byId['exit-main'].onClick);
+
+  byId.new.action();
+  byId.save.onClick();
+  byId['custom-onclick'].action();
+  byId['custom-action'].onClick();
+  byId['close-menu'].action();
+  byId['exit-main'].onClick();
+  assert.deepEqual(calls, ['new', 'save', 'custom-onclick', 'custom-action', 'close', 'exit']);
 });
 
 test('shared mobile portrait layout honors custom bottom rail cap', () => {

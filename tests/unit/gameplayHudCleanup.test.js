@@ -99,8 +99,31 @@ test('gameplay draw suppresses objective and no longer draws credits text direct
 test('level editor playtest starts with debug overlays off', () => {
   const exitEditorBody = methodBody('exitEditor', 'returnToEditorFromPlaytest');
 
+  assert.equal(gameCoreSource.includes('this.debugMode = true;'), false);
+  assert.equal(gameCoreSource.includes('this.debugMode = false;'), true);
   assert.equal(exitEditorBody.includes('this.debugMode = false;'), true);
   assert.equal(exitEditorBody.includes('this.showCompanionPathDebug = false;'), true);
+});
+
+test('level editor playtest top stop button shows FPS beside it', () => {
+  const updateBody = methodBody('update', 'draw');
+  const drawBody = methodBody('_drawByState', 'drawVictory');
+
+  assert.equal(gameCoreSource.includes('this.playtestFps = 0;'), true);
+  assert.equal(updateBody.includes('this.updatePlaytestFps(dt);'), true);
+  assert.equal(gameCoreSource.includes('getPlaytestFpsLabel()'), true);
+  assert.equal(drawBody.includes('ctx.fillText(this.getPlaytestFpsLabel(), buttonX + buttonWidth + 10, buttonY + buttonHeight / 2);'), true);
+});
+
+test('midi explicit main-menu exit forces title instead of previous editor state', () => {
+  const exitToMainBody = methodBody('exitEditorToMainMenu', 'showInlineConfirm');
+  const midiBranch = exitToMainBody.slice(
+    exitToMainBody.indexOf("if (editorId === 'midi')"),
+    exitToMainBody.indexOf('    this.exitEditor({ toTitle: true });')
+  );
+
+  assert.equal(midiBranch.includes("this.midiComposerReturnState = 'title';"), true);
+  assert.equal(midiBranch.includes('this.exitMidiComposer();'), true);
 });
 
 test('game start spawn pause does not play the upgrade spawn tune', () => {
@@ -143,7 +166,9 @@ test('level editor adds in-panel portrait guidance for music and triggers', () =
 
 test('level editor groups level management actions under settings and contextualizes decals', () => {
   assert.equal(levelEditorSource.includes("id: 'level-settings'"), true);
-  assert.equal(levelEditorSource.includes("rootItem('level-settings', 'Settings')"), true);
+  assert.equal(levelEditorSource.includes('const panelTab = getLevelPanelTabForRootId(entry.id);'), true);
+  assert.equal(levelEditorSource.includes('return rootItem(entry.id, entry.label, panelTab, panelTab);'), true);
+  assert.equal(levelEditorSource.includes("'level-settings': { id: 'level-settings', title: 'Settings'"), true);
   assert.equal(levelEditorSource.includes("hidden: !selected"), true);
   assert.equal(levelEditorSource.includes("buildContextRibbonActions()"), true);
 });
@@ -183,7 +208,9 @@ test('midi portrait paths use real mixer and portrait record layout', () => {
   assert.equal(midiComposerSource.includes("this.drawButton(ctx, this.bounds.record, this.recorder.isRecording ? 'Stop Rec' : 'Record'"), true);
   assert.equal(midiComposerSource.includes("layoutMode: options.layoutMode || (options.isMobile && items.length > 4 ? 'auto-grid' : 'list')"), true);
   assert.equal(midiComposerSource.includes("portraitGrid: true"), true);
-  assert.equal(midiComposerSource.includes("nav-pedals"), true);
+  assert.equal(midiComposerSource.includes('const rootEntries = buildMidiSharedRootMenuEntries();'), true);
+  assert.equal(midiComposerSource.includes("const MIDI_CONTROLLER_ROOT_ENTRIES = getEditorControllerRootMenuEntries('midi');"), true);
+  assert.equal(midiComposerSource.includes("'virtual-instruments': 'virtual-instruments'"), true);
   assert.equal(midiComposerSource.includes("drawMidiPortraitGridQuickStrip"), true);
   assert.equal(midiComposerSource.includes("showSettingsRail: false"), true);
   assert.equal(midiComposerSource.includes("hideInstrumentConfig: true"), true);

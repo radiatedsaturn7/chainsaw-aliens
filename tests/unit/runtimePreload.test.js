@@ -84,7 +84,7 @@ test('cutscene music playback reuses prepared MIDI entries and export starts aud
 
   assert.equal(playBody.includes('this.preparedCutsceneAudio?.music?.get(resolvedTrackId)'), true);
   assert.ok(playBody.indexOf('preparedEntry') < playBody.indexOf('preloadSongResources'));
-  assert.equal(exportBody.includes("'Recording audio and rendering segments...'"), true);
+  assert.equal(exportBody.includes("'Rendering MIDI audio and movie segments...'"), true);
   assert.ok(exportBody.indexOf('await this.preparePreviewAudioResources(safeDoc)') < exportBody.indexOf('const audioPromise = session.audioReady'));
   assert.ok(exportBody.indexOf('const audioPromise = session.audioReady') < exportBody.indexOf('for (let segmentIndex = 0; segmentIndex < segmentCount; segmentIndex += 1)'));
   assert.ok(exportBody.indexOf('await this.encodeMovieExportSegment(session.id, segmentIndex)') < exportBody.indexOf('const audioBlob = await audioPromise'));

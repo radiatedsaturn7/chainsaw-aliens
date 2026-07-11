@@ -40,8 +40,8 @@ const textInputOverlaySource = readFileSync(new URL('../../src/ui/shared/textInp
 const audioSource = readFileSync(new URL('../../src/game/Audio.js', import.meta.url), 'utf8');
 
 function midiMethodBody(name, nextName) {
-  const start = midiComposerSource.indexOf(`  ${name}(`);
-  const end = midiComposerSource.indexOf(`  ${nextName}(`, start + 1);
+  const start = midiComposerSource.indexOf(`\n  ${name}(`);
+  const end = midiComposerSource.indexOf(`\n  ${nextName}(`, start + 1);
   assert.notEqual(start, -1);
   assert.notEqual(end, -1);
   return midiComposerSource.slice(start, end);
@@ -243,6 +243,8 @@ test('MIDI portrait control layout keeps bottom rail, root menu, and zoom in a f
   assert.equal(layout.bottomRail.y, 746);
   assert.equal(layout.bottomRail.y + layout.bottomRail.h, 834);
   assert.equal(layout.rootRail.h, 144);
+  assert.deepEqual(layout.rootTabs, layout.rootRail);
+  assert.equal(layout.portraitRootPlacement, 'bottom-rail');
   assert.equal(layout.rootRail.y + layout.rootRail.h + layout.gap, layout.bottomRail.y);
   assert.equal(layout.zoomStrip.h, 34);
   assert.equal(layout.zoomStrip.y + layout.zoomStrip.h + layout.gap, layout.rootRail.y);
@@ -421,22 +423,31 @@ test('MIDI mobile landscape initializes to at least four visible measures', () =
 test('MIDI landscape controller mode avoids duplicate touch controls and keeps side menu scrollable', () => {
   const thumbModeBody = midiMethodBody('isMobileLandscapeThumbZoomMode', 'updatePanJoystick');
   const mobileLayoutBody = midiMethodBody('drawMobileLayout', 'drawMobileBottomRail');
+  const panJoystickBody = midiMethodBody('drawMobilePanJoystick', 'drawLandscapeZoomOverlay');
   const bottomRailBody = midiMethodBody('drawMobileBottomRail', 'drawPatternEditor');
   const pointerBody = `${midiMethodBody('handlePointerDown', 'handlePointerMove')}\n${midiMethodBody('handlePointerMove', 'handlePointerUp')}\n${midiMethodBody('handlePointerUp', 'handleWheel')}`;
   const wheelBody = midiMethodBody('handleWheel', 'shouldHandleGestureStart');
 
   assert.equal(thumbModeBody.includes("this.activeTab === 'grid' || this.activeTab === 'song'"), true);
   assert.equal(thumbModeBody.includes('!this.isPhysicalControllerConnected()'), true);
-  assert.equal(mobileLayoutBody.includes('const controllerConnected = this.isPhysicalControllerConnected();'), true);
-  assert.equal(mobileLayoutBody.includes("const showsGridBottomRail = isLandscape && (this.activeTab === 'grid' || this.activeTab === 'song') && !controllerConnected;"), true);
+  assert.equal(mobileLayoutBody.includes('const gamepadOwnsLandscapeMenu = gamepadMenuState.isLandscapeMenuMode;'), true);
+  assert.equal(mobileLayoutBody.includes("if (this.activeViewportMode === 'portrait')"), true);
+  assert.equal(mobileLayoutBody.includes('isMobilePortraitLayout({'), false);
+  assert.equal(panJoystickBody.includes("if (this.activeViewportMode === 'portrait')"), true);
+  assert.equal(panJoystickBody.includes('isMobilePortraitLayout({'), false);
+  assert.equal(bottomRailBody.includes("const isPortrait = this.activeViewportMode === 'portrait';"), true);
+  assert.equal(bottomRailBody.includes('isMobilePortraitLayout({'), false);
+  assert.equal(mobileLayoutBody.includes("const showsGridBottomRail = isLandscape && (this.activeTab === 'grid' || this.activeTab === 'song') && !gamepadOwnsLandscapeMenu;"), true);
   assert.equal(mobileLayoutBody.includes('bottomRailHeight: showsGridBottomRail ? 72 : 0'), true);
   assert.equal(bottomRailBody.includes('reserveThumbstick'), true);
   assert.equal(pointerBody.includes("mode: 'mobile-landscape-root-scroll'"), true);
   assert.equal(pointerBody.includes('pendingRootId'), true);
   assert.equal(midiComposerSource.includes('handleMobileLandscapeRootMenuTap(id)'), true);
-  assert.equal(pointerBody.includes('this.mobileLandscapeRootMenuScrollMax'), true);
+  assert.equal(pointerBody.includes('findScrollableMenuRegion(this.menuScrollRegions, payload)'), true);
+  assert.equal(pointerBody.includes('regions: this.menuScrollRegions'), true);
   assert.equal(pointerBody.includes('this.controllerMenu.scroll.root'), true);
-  assert.equal(wheelBody.includes('this.mobileLandscapeRootMenuBounds'), true);
+  assert.equal(wheelBody.includes('findScrollableMenuRegion(this.menuScrollRegions, payload)'), true);
+  assert.equal(midiComposerSource.includes("this.menuScrollRegions.push({\n        menuId: 'root',"), true);
 });
 
 test('MIDI grid hit testing can derive expected portrait cells from shared metrics', () => {
@@ -959,7 +970,7 @@ test('MIDI song timeline touch panning and thumbstick support horizontal and ver
   assert.equal(pointerDownBody.includes('startScroll: this.songTrackScroll'), true);
   assert.equal(pointerMoveBody.includes("this.dragState.mode = Math.abs(dy) > Math.abs(dx) ? 'song-track-scroll' : 'song-pan';"), true);
   assert.equal(pointerMoveBody.includes("this.dragState.mode === 'song-track-scroll'"), true);
-  assert.equal(drawMobileBody.includes("isLandscape && (this.activeTab === 'grid' || this.activeTab === 'song') && !controllerConnected"), true);
+  assert.equal(drawMobileBody.includes("isLandscape && (this.activeTab === 'grid' || this.activeTab === 'song') && !gamepadOwnsLandscapeMenu"), true);
 });
 
 test('MIDI song ruler double tap loops exactly one measure', () => {
@@ -1354,8 +1365,9 @@ test('MIDI portrait root tabs fit without horizontal scrolling', () => {
   const layout = getSharedPortraitMultiRowTabLayout(
     { x: 8, y: 640, w: 344, h: 104 },
     tabs,
-    { minButtonWidth: 54, maxButtonWidth: 160, rowHeight: 40, maxRows: 2, maxColumns: 4, balanceLastRow: true, padding: 4, gap: 5 }
+    { minButtonWidth: 54, maxButtonWidth: 160, rowHeight: 40, maxRows: 2, maxColumns: 4, balanceLastRow: true, verticalAlign: 'bottom', padding: 4, gap: 5 }
   );
+  const bottomY = Math.max(...layout.buttons.map((button) => button.bounds.y + button.bounds.h));
 
   assert.deepEqual(tabs.map((tab) => tab.id), ['file', 'grid', 'song', 'instruments', 'virtual-instruments', 'pedals', 'settings']);
   assert.equal(layout.buttons.length, tabs.length);
@@ -1367,6 +1379,7 @@ test('MIDI portrait root tabs fit without horizontal scrolling', () => {
   assert.ok(layout.buttons.find((button) => button.id === 'settings').bounds.w >= 108);
   assert.ok(layout.buttons.every((button) => button.bounds.x >= 8));
   assert.ok(layout.buttons.every((button) => button.bounds.x + button.bounds.w <= 352));
+  assert.equal(bottomY, 740);
 });
 
 test('MIDI portrait pedal grid exposes four touchable slots', () => {

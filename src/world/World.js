@@ -1,4 +1,5 @@
 import { normalizeMidiTracks } from '../editor/adapters/editorDataContracts.js';
+import { buildTileDefinitions } from '../content/tileDefinitions.js';
 
 const FALLBACK_WORLD = {
   schemaVersion: 1,
@@ -56,16 +57,10 @@ const FALLBACK_WORLD = {
 
 const DEFAULT_SPAWN = { x: 28, y: 19 };
 const DOOR_TILE = 'D';
-const ROOM_BLOCKERS = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', 'N', 'P', 'Q', 'E', 'G', 'J', 'V']);
-const SOLID_TILES = new Set(['#', 'F', 'R', '^', 'v', 'B', 'W', 'X', 'C', 'U', 'I', '<', '>', 'N', 'P', 'Q', 'E', 'G', 'J', 'V']);
-const ONE_WAY_TILES = new Set(['=', 's']);
-const HAZARD_TILES = new Set(['!', 'A', 'L', '*', 'e']);
 const DEFAULT_DYNAMIC_STATE = () => ({
   lockedDoors: new Set(),
   solidZones: []
 });
-
-const isRoomTile = (tile) => tile && tile !== DOOR_TILE && !ROOM_BLOCKERS.has(tile);
 
 export default class World {
   constructor() {
@@ -88,10 +83,13 @@ export default class World {
     this.enemyTileMap = new Map();
     this.boxes = [];
     this.elevatorPaths = [];
+    this.authoredElevatorPaths = [];
     this.elevatorPathSet = new Set();
     this.elevators = [];
+    this.authoredElevators = [];
     this.elevatorSet = new Set();
     this.pixelArt = { tiles: {} };
+    this.tileDefinitions = buildTileDefinitions();
     this.musicZones = [];
     this.midiTracks = [];
     this.triggers = [];
@@ -139,11 +137,15 @@ export default class World {
     this.objectives = [];
     this.enemies = (data.enemies || []).map((enemy) => ({ ...enemy }));
     this.rebuildEnemyTileMap();
-    this.elevatorPaths = (data.elevatorPaths || []).map((path) => ({ ...path }));
+    this.authoredElevatorPaths = (data.elevatorPaths || []).map((path) => ({ ...path }));
+    this.elevatorPaths = this.authoredElevatorPaths.map((path) => ({ ...path }));
     this.elevatorPathSet = new Set(this.elevatorPaths.map((path) => `${path.x},${path.y}`));
-    this.elevators = (data.elevators || []).map((elevator) => ({ ...elevator }));
+    this.authoredElevators = (data.elevators || []).map((elevator) => ({ ...elevator }));
+    this.elevators = this.authoredElevators.map((elevator) => ({ ...elevator }));
     this.elevatorSet = new Set(this.elevators.map((elevator) => `${elevator.x},${elevator.y}`));
     this.pixelArt = data.pixelArt ? { ...data.pixelArt, tiles: { ...(data.pixelArt.tiles || {}) } } : { tiles: {} };
+    this.pixelArt.tileProperties = { ...(this.pixelArt.tileProperties || {}) };
+    this.tileDefinitions = buildTileDefinitions(this.pixelArt.tileProperties);
     this.musicZones = (data.musicZones || []).map((zone) => ({ ...zone }));
     this.midiTracks = normalizeMidiTracks(data.midiTracks || [], 'piano');
     this.triggers = (data.triggers || []).map((trigger) => ({
@@ -178,6 +180,10 @@ export default class World {
     this.bossGate = null;
     this.objectives = [];
     this.boxes = [];
+    this.elevatorPaths = this.authoredElevatorPaths.map((path) => ({ ...path }));
+    this.elevators = this.authoredElevators.map((platform) => ({ ...platform }));
+    this.elevatorPathSet = new Set(this.elevatorPaths.map((path) => `${path.x},${path.y}`));
+    this.elevatorSet = new Set(this.elevators.map((platform) => `${platform.x},${platform.y}`));
     this.rooms = [];
     this.roomIndexByTile = [];
     let saveIndex = 0;
@@ -242,6 +248,15 @@ export default class World {
         if (tile === 'K') {
           this.boxes.push({ x: worldX, y: worldY });
         }
+        const properties = this.getTilePropertiesByChar(tile);
+        if (properties?.elevatorRole === 'path' && !this.elevatorPathSet.has(`${x},${y}`)) {
+          this.elevatorPathSet.add(`${x},${y}`);
+          this.elevatorPaths.push({ x, y });
+        }
+        if (properties?.elevatorRole === 'platform' && !this.elevatorSet.has(`${x},${y}`)) {
+          this.elevatorSet.add(`${x},${y}`);
+          this.elevators.push({ x, y });
+        }
       }
     }
 
@@ -258,7 +273,7 @@ export default class World {
       for (let x = 0; x < this.width; x += 1) {
         if (roomIndexByTile[y][x] !== -1) continue;
         const tile = this.getTile(x, y);
-        if (!isRoomTile(tile)) continue;
+        if (!this.isRoomTile(tile)) continue;
         const queue = [{ x, y }];
         roomIndexByTile[y][x] = rooms.length;
         let minX = x;
@@ -277,7 +292,7 @@ export default class World {
             if (nx < 0 || ny < 0 || nx >= this.width || ny >= this.height) return;
             if (roomIndexByTile[ny][nx] !== -1) return;
             const neighborTile = this.getTile(nx, ny);
-            if (!isRoomTile(neighborTile)) return;
+            if (!this.isRoomTile(neighborTile)) return;
             roomIndexByTile[ny][nx] = rooms.length;
             queue.push({ x: nx, y: ny });
           });
@@ -314,12 +329,27 @@ export default class World {
     return this.tiles[y][x];
   }
 
+  getTilePropertiesByChar(tile) {
+    return this.tileDefinitions?.byChar?.get(tile) || null;
+  }
+
+  getTileProperties(x, y) {
+    return this.getTilePropertiesByChar(this.getTile(x, y));
+  }
+
+  isRoomTile(tile) {
+    if (!tile || tile === DOOR_TILE) return false;
+    const properties = this.getTilePropertiesByChar(tile);
+    return !properties?.solid && !properties?.oneWay;
+  }
+
   isSolid(x, y, abilities, options = {}) {
     const tile = this.getTile(x, y);
     if (tile === DOOR_TILE && this.isDoorLocked(x, y)) return true;
     if (this.isTileInsideSolidZone(x, y)) return true;
-    if (SOLID_TILES.has(tile)) return true;
-    if (ONE_WAY_TILES.has(tile)) return !options.ignoreOneWay;
+    const properties = this.getTilePropertiesByChar(tile);
+    if (properties?.solid) return true;
+    if (properties?.oneWay) return !options.ignoreOneWay;
     return false;
   }
 
@@ -330,11 +360,23 @@ export default class World {
   }
 
   isHazard(x, y) {
-    return HAZARD_TILES.has(this.getTile(x, y));
+    return (this.getTileProperties(x, y)?.hazardDamage || 0) > 0;
   }
 
   isOneWay(x, y) {
-    return ONE_WAY_TILES.has(this.getTile(x, y));
+    return Boolean(this.getTileProperties(x, y)?.oneWay);
+  }
+
+  getTileSlipperiness(x, y) {
+    return this.getTileProperties(x, y)?.slipperiness || 0;
+  }
+
+  getTileLiquid(x, y) {
+    return this.getTileProperties(x, y)?.liquid || null;
+  }
+
+  getTileConveyor(x, y) {
+    return this.getTileProperties(x, y)?.conveyor || null;
   }
 
 
@@ -422,13 +464,15 @@ export default class World {
       if (this.elevatorPathSet.has(key)) return false;
       this.elevatorPathSet.add(key);
       this.elevatorPaths.push({ x, y });
+      this.authoredElevatorPaths.push({ x, y });
     } else {
       if (!this.elevatorPathSet.has(key)) return false;
       this.elevatorPathSet.delete(key);
       this.elevatorPaths = this.elevatorPaths.filter((path) => !(path.x === x && path.y === y));
+      this.authoredElevatorPaths = this.authoredElevatorPaths.filter((path) => !(path.x === x && path.y === y));
     }
     if (this.data) {
-      this.data.elevatorPaths = this.elevatorPaths;
+      this.data.elevatorPaths = this.authoredElevatorPaths;
     }
     return true;
   }
@@ -440,13 +484,15 @@ export default class World {
       if (this.elevatorSet.has(key)) return false;
       this.elevatorSet.add(key);
       this.elevators.push({ x, y });
+      this.authoredElevators.push({ x, y });
     } else {
       if (!this.elevatorSet.has(key)) return false;
       this.elevatorSet.delete(key);
       this.elevators = this.elevators.filter((platform) => !(platform.x === x && platform.y === y));
+      this.authoredElevators = this.authoredElevators.filter((platform) => !(platform.x === x && platform.y === y));
     }
     if (this.data) {
-      this.data.elevators = this.elevators;
+      this.data.elevators = this.authoredElevators;
     }
     return true;
   }
@@ -537,7 +583,15 @@ export default class World {
         path.x += left;
         path.y += top;
       });
+      this.authoredElevatorPaths.forEach((path) => {
+        path.x += left;
+        path.y += top;
+      });
       this.elevators.forEach((platform) => {
+        platform.x += left;
+        platform.y += top;
+      });
+      this.authoredElevators.forEach((platform) => {
         platform.x += left;
         platform.y += top;
       });
@@ -557,8 +611,8 @@ export default class World {
         this.data.spawn = { x: this.spawn.x, y: this.spawn.y };
       }
       this.data.enemies = this.enemies;
-      this.data.elevatorPaths = this.elevatorPaths;
-      this.data.elevators = this.elevators;
+      this.data.elevatorPaths = this.authoredElevatorPaths;
+      this.data.elevators = this.authoredElevators;
     }
 
     return { offsetX: left, offsetY: top };

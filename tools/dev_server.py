@@ -245,7 +245,7 @@ class DevHandler(SimpleHTTPRequestHandler):
         return manifest
 
     def _empty_index(self) -> dict:
-        return {"levels": {}, "art": {}, "music": {}, "actors": {}, "sfx": {}, "cutscenes": {}}
+        return {"levels": {}, "art": {}, "music": {}, "actors": {}, "sfx": {}, "cutscenes": {}, "races": {}}
 
     def _safe_doc_dir(self, folder: str, name: str) -> Path:
         return EXPORT_ROOT / folder / quote(name, safe="-_.() ")
