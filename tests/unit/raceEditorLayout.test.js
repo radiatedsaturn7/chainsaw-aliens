@@ -617,7 +617,7 @@ test('Race Editor portrait uses shared bottom menu actions', () => {
 
 test('Race Editor starts on race-building controls and exposes Ground in portrait', () => {
   const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
-  const ctx = createMockContext();
+  const ctx = createFastMockContext();
   editor.draw(ctx, 390, 844);
 
   assert.equal(editor.activeRootId, 'track');
@@ -2514,9 +2514,78 @@ test('Race Editor baked terrain visibility scans past early budget entries befor
     stats
   });
 
-  assert.equal(visible.length, 1);
-  assert.equal(visible[0].key, 'road-later');
-  assert.equal(stats.terrainBudgetDropped, 1);
+  assert.equal(visible.length, 2);
+  assert.equal(visible.some((cell) => cell.key === 'background-first'), true);
+  assert.equal(visible.some((cell) => cell.key === 'road-later'), true);
+  assert.equal(stats.terrainCoverageDropped, 0);
+});
+
+test('Race Editor terrain budget drops refinement but never base coverage', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const makeCell = (key, x0, z0, layer = 'base', parentGroupKey = '') => ({
+    key,
+    groupKey: layer === 'base' ? key : `${parentGroupKey}:refined`,
+    parentGroupKey,
+    terrainLayer: layer,
+    refinementGroupSize: layer === 'refinement' ? 2 : 0,
+    points: [
+      { x: x0, z: z0, elevation: 0 },
+      { x: x0 + 20, z: z0, elevation: 0 },
+      { x: x0, z: z0 + 20, elevation: 0 }
+    ],
+    tileCell: { tileId: 'grass', tileWeights: { grass: 1 } },
+    nearRoad: layer === 'refinement',
+    roadAdjacent: layer === 'refinement',
+    roadDistance: layer === 'refinement' ? 0 : 220
+  });
+  const base = [
+    makeCell('base-a', -40, 80),
+    makeCell('base-b', 20, 120)
+  ];
+  const refinement = [
+    makeCell('ref-a', -20, 90, 'refinement', 'base-a'),
+    makeCell('ref-b', -10, 95, 'refinement', 'base-a')
+  ];
+  const stats = { terrainPreculled: 0, terrainBudgetDropped: 0 };
+  const visible = editor.getRaceVisibleWorldBakeTerrainCells({
+    terrainSize: 40,
+    terrainCells: [...base, ...refinement],
+    terrainBaseCells: base,
+    terrainRefinementCells: refinement
+  }, {
+    camera: { x: 0, z: 0 },
+    cameraYaw: 0,
+    bounds: { x: 0, y: 0, w: 390, h: 240 },
+    terrainForwardDistance: 900,
+    maxTerrainTriangles: 2,
+    terrainCullingEnabled: false,
+    stats
+  });
+
+  assert.equal(visible.length, 2);
+  assert.equal(visible.every((cell) => cell.terrainLayer !== 'refinement'), true);
+  assert.equal(stats.terrainBaseTriangles, 2);
+  assert.equal(stats.terrainCoverageDropped, 0);
+  assert.equal(stats.terrainRefinementDropped, 2);
+});
+
+test('Race Three terrain geometry accepts triangle terrain cells', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const geometry = editor.getRaceThreeTerrainGeometry([{
+    points: [
+      { x: 0, z: 0, elevation: 0 },
+      { x: 5, z: 0, elevation: 0 },
+      { x: 0, z: 5, elevation: 0 }
+    ],
+    tileCell: { tileId: 'grass', tileWeights: { grass: 1 } }
+  }], {
+    textureWorldM: 2.5,
+    tileMap: editor.ensureRaceTileMap(),
+    textured: false
+  });
+
+  assert.ok(geometry);
+  assert.equal(Math.floor((geometry.getAttribute('position')?.count || 0) / 3), 1);
 });
 
 test('Race Editor Studio Sprint world bake includes camera-visible terrain chunks through the route', () => {
@@ -2633,8 +2702,8 @@ test('Race Editor Studio Sprint visible terrain budget does not drop sampled rou
       terrainCullingEnabled: true,
       stats
     });
-    if (stats.terrainBudgetDropped > 0) {
-      dropped.push(`${reverse ? 'reverse' : 'forward'}:${Math.round(distance)}:${stats.terrainBudgetDropped}`);
+    if (stats.terrainCoverageDropped > 0) {
+      dropped.push(`${reverse ? 'reverse' : 'forward'}:${Math.round(distance)}:${stats.terrainCoverageDropped}`);
     }
   };
 
@@ -2644,7 +2713,7 @@ test('Race Editor Studio Sprint visible terrain budget does not drop sampled rou
     inspectFrame(clamped, true);
   });
 
-  assert.equal(dropped.length, 0, `Visible terrain budget dropped cells: ${dropped.join(', ')}`);
+  assert.equal(dropped.length, 0, `Visible terrain budget dropped base coverage: ${dropped.join(', ')}`);
 });
 
 test('Race Editor terrain chunks keep raw heightmap elevations under the baked road surface', () => {
@@ -6462,7 +6531,7 @@ test('Race WebGL Track Studio Sprint terrain and texture FPS benchmark stays abo
   editor.startPlaytest('starter-rwd');
   editor.raceInput.cameraView = 'third-person';
   const bounds = { x: 0, y: 0, w: 390, h: 240 };
-  const ctx = createMockContext();
+  const ctx = createFastMockContext();
   const renderFrame = (distance) => {
     const pose = editor.getRaceWorldPoseAtDistance(distance);
     editor.playtestSession.distance = distance;
@@ -11461,8 +11530,8 @@ test('Race Editor lowers painted terrain below the projection horizon so skybox 
   assert.equal(raceEditorSource.includes('const trackBands = stableRoadBands.length ? stableRoadBands : mode7Bands;'), true);
   assert.equal(raceEditorSource.includes('getRaceTerrainCameraBounds(chunk.fullPoints, camera, rightVector, forwardVector)'), true);
   assert.equal(raceEditorSource.includes('isRaceTerrainCameraBoundsVisible(cameraBounds'), true);
-  assert.equal(raceEditorSource.includes('const remainingTerrainCells = maxTerrainCells - terrainCells.length;'), true);
-  assert.equal(raceEditorSource.includes('subdivisions = remainingTerrainCells >= 1 ? 1 : subdivisions;'), true);
+  assert.equal(raceEditorSource.includes('maxTerrainTriangles'), true);
+  assert.equal(raceEditorSource.includes('terrainCoverageDropped'), true);
   assert.equal(raceEditorSource.includes('minScreenY: null'), true);
   assert.equal(raceEditorSource.includes('preserveDrawingBuffer: false'), true);
   assert.equal(raceEditorSource.includes('renderer.meshUploadArray = new Float32Array(capacity);'), true);

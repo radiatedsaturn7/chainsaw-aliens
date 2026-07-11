@@ -42,9 +42,36 @@ export function clipRaceTerrainTriangleOutsideTrackCorridor(triangle = [], {
   runtimeType = 'destination',
   routeLength = 1,
   includeTransition = true,
+  piecewise = true,
+  maxPieceWorldM = 160,
+  maxPieceDepth = 1,
   adapter = {}
 } = {}) {
   if (!Array.isArray(triangle) || triangle.length < 3) return [];
+  if (piecewise) {
+    const split = splitRaceTerrainTriangleForLocalCorridor(triangle, {
+      maxPieceWorldM,
+      maxPieceDepth,
+      runtimeType,
+      routeLength,
+      adapter
+    });
+    if (split.length > 1) {
+      const retained = [];
+      split.forEach((piece) => {
+        clipRaceTerrainTriangleOutsideTrackCorridor(piece, {
+          runtimeType,
+          routeLength,
+          includeTransition,
+          piecewise: false,
+          maxPieceWorldM,
+          maxPieceDepth,
+          adapter
+        }).forEach((polygon) => retained.push(polygon));
+      });
+      return retained;
+    }
+  }
   const center = {
     x: triangle.reduce((sum, point) => sum + Number(point?.x || 0), 0) / triangle.length,
     z: triangle.reduce((sum, point) => sum + Number(point?.z ?? point?.y ?? 0), 0) / triangle.length
@@ -138,6 +165,68 @@ export function clipRaceTerrainTriangleOutsideTrackCorridor(triangle = [], {
       const { __trackLateral, __trackLongitudinal, ...clean } = point;
       return clean;
     }));
+}
+
+function splitRaceTerrainTriangleForLocalCorridor(triangle = [], {
+  maxPieceWorldM = 160,
+  maxPieceDepth = 1,
+  depth = 0,
+  runtimeType = 'destination',
+  routeLength = 1,
+  adapter = {}
+} = {}) {
+  if (depth >= Math.max(0, Number(maxPieceDepth) || 0)) return [triangle];
+  const maxEdge = Math.max(4, Number(maxPieceWorldM) || 10);
+  const distanceValues = triangle.map((point) => {
+    const projection = adapter.projectWorldToTrack?.(point);
+    return Number.isFinite(Number(projection?.distance)) ? Number(projection.distance) : null;
+  }).filter((value) => value !== null);
+  const routeEnd = Math.max(1, Number(routeLength || adapter.getRouteLength?.() || 1) || 1);
+  const distanceSpan = distanceValues.length
+    ? Math.max(...distanceValues) - Math.min(...distanceValues)
+    : 0;
+  const edgeLength = (a = {}, b = {}) => Math.hypot(
+    Number(a.x || 0) - Number(b.x || 0),
+    Number(a.z ?? a.y ?? 0) - Number(b.z ?? b.y ?? 0)
+  );
+  const longestEdge = Math.max(
+    edgeLength(triangle[0], triangle[1]),
+    edgeLength(triangle[1], triangle[2]),
+    edgeLength(triangle[2], triangle[0])
+  );
+  const shouldSplit = longestEdge > maxEdge || (
+    runtimeType !== 'circuit'
+      ? distanceSpan > maxEdge
+      : Math.min(distanceSpan, routeEnd - distanceSpan) > maxEdge
+  );
+  if (!shouldSplit) return [triangle];
+  const midpoint = (a = {}, b = {}) => ({
+    x: (Number(a.x || 0) + Number(b.x || 0)) * 0.5,
+    z: (Number(a.z ?? a.y ?? 0) + Number(b.z ?? b.y ?? 0)) * 0.5,
+    y: (Number(a.z ?? a.y ?? 0) + Number(b.z ?? b.y ?? 0)) * 0.5,
+    elevation: (Number(a.elevation || 0) + Number(b.elevation || 0)) * 0.5,
+    tile: a.tile || b.tile,
+    materialId: a.materialId || b.materialId
+  });
+  const [a, b, c] = triangle;
+  const ab = midpoint(a, b);
+  const bc = midpoint(b, c);
+  const ca = midpoint(c, a);
+  const pieces = [
+    [a, ab, ca],
+    [ab, b, bc],
+    [ca, bc, c],
+    [ab, bc, ca]
+  ];
+  const nextMax = maxEdge;
+  return pieces.flatMap((piece) => splitRaceTerrainTriangleForLocalCorridor(piece, {
+    maxPieceWorldM: nextMax,
+    maxPieceDepth,
+    depth: depth + 1,
+    runtimeType,
+    routeLength,
+    adapter
+  }));
 }
 
 export function getRaceTerrainTrianglesOutsideTrackCorridor(points = [], options = {}) {
