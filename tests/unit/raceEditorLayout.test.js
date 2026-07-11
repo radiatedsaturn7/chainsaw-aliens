@@ -8,6 +8,7 @@ import { cloneRaceVehiclePhysicsState, createRaceVehiclePhysicsState, stepRaceVe
 import RaceEditor from '../../src/ui/RaceEditor.js';
 import { loadProjectFile, resetProjectFilesForTests } from '../../src/ui/projectFiles.js';
 import { clearCachedProjectFilesForTests, upsertCachedProjectFile } from '../../src/ui/serverStorage.js';
+import * as THREE from '../../src/vendorBridge/three.js';
 
 const raceEditorSource = readFileSync(new URL('../../src/ui/RaceEditor.js', import.meta.url), 'utf8');
 const raceMaterialBatchingSource = readFileSync(new URL('../../src/racing/RaceMaterialBatching.js', import.meta.url), 'utf8');
@@ -6663,8 +6664,92 @@ test('Race Three playtest caches static geometry and aligns projection horizon',
   assert.equal(raceEditorSource.includes('stats.geometryCacheHits'), true);
   assert.equal(raceEditorSource.includes('stats.staticGeometryRebuilds'), true);
   assert.equal(raceEditorSource.includes('alignRaceThreeCameraHorizon'), true);
-  assert.equal(raceEditorSource.includes('projectionMatrix.elements[9]'), true);
   assert.equal(raceEditorSource.includes('this.clearRaceThreeScene(renderer);'), true);
+});
+
+function buildAlignedRaceThreeCamera({
+  horizonRatio = 0.31,
+  fov = 48,
+  aspect = 640 / 360,
+  elevation = 14,
+  cameraYaw = Math.PI / 7
+} = {}) {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const camera = {
+    x: 37,
+    z: -82,
+    horizonRatio,
+    eyeHeight: elevation / 12,
+    farPlane: 2600,
+    nearPlane: 1.6
+  };
+  const forward = editor.getRaceForwardVector(cameraYaw);
+  const threeCamera = new THREE.PerspectiveCamera(fov, aspect, 0.4, 2600);
+  threeCamera.position.set(camera.x, elevation, camera.z);
+  threeCamera.up.set(0, 1, 0);
+  threeCamera.lookAt(
+    camera.x + forward.x * 80,
+    elevation - 1.5,
+    camera.z + forward.z * 80
+  );
+  threeCamera.updateProjectionMatrix();
+  threeCamera.updateMatrixWorld(true);
+  const farGround = new THREE.Vector3(
+    camera.x + forward.x * 10000,
+    0,
+    camera.z + forward.z * 10000
+  );
+  return { editor, camera, cameraYaw, threeCamera, farGround };
+}
+
+test('Race Three horizon alignment projects far ground to the configured horizon', () => {
+  const horizonRatios = [0.25, 0.31, 0.40];
+  const fovs = [48, 58];
+  const aspects = [390 / 240, 640 / 360];
+  const elevations = [6, 18];
+
+  for (const horizonRatio of horizonRatios) {
+    for (const fov of fovs) {
+      for (const aspect of aspects) {
+        for (const elevation of elevations) {
+          const { editor, camera, cameraYaw, threeCamera, farGround } = buildAlignedRaceThreeCamera({
+            horizonRatio,
+            fov,
+            aspect,
+            elevation
+          });
+          editor.alignRaceThreeCameraHorizon(threeCamera, camera, cameraYaw, { w: aspect * 360, h: 360 });
+          const projected = farGround.clone().project(threeCamera);
+          const desiredNdcY = 1 - horizonRatio * 2;
+          assert.equal(Math.abs(projected.y - desiredNdcY) < 0.0001, true, `horizon=${horizonRatio} fov=${fov} aspect=${aspect} elevation=${elevation} projected=${projected.y} desired=${desiredNdcY}`);
+        }
+      }
+    }
+  }
+});
+
+test('Race Three horizon alignment is idempotent after projection matrix reset', () => {
+  const setup = {
+    horizonRatio: 0.31,
+    fov: 58,
+    aspect: 640 / 360,
+    elevation: 21,
+    cameraYaw: -Math.PI / 5
+  };
+  const first = buildAlignedRaceThreeCamera(setup);
+  first.editor.alignRaceThreeCameraHorizon(first.threeCamera, first.camera, first.cameraYaw, { w: 640, h: 360 });
+  const firstProjected = first.farGround.clone().project(first.threeCamera).y;
+  const firstOffset = first.threeCamera.projectionMatrix.elements[9];
+
+  first.threeCamera.updateProjectionMatrix();
+  first.threeCamera.updateMatrixWorld(true);
+  first.editor.alignRaceThreeCameraHorizon(first.threeCamera, first.camera, first.cameraYaw, { w: 640, h: 360 });
+  const secondProjected = first.farGround.clone().project(first.threeCamera).y;
+  const secondOffset = first.threeCamera.projectionMatrix.elements[9];
+
+  assert.equal(Math.abs(firstProjected - secondProjected) < 0.0001, true);
+  assert.equal(Math.abs(firstOffset - secondOffset) < 0.0001, true);
+  assert.equal(Math.abs(secondProjected - (1 - setup.horizonRatio * 2)) < 0.0001, true);
 });
 
 test('Race WebGL Track mesh shader uses high precision UV interpolation for close terrain', () => {

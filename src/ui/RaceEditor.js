@@ -18984,7 +18984,7 @@ export default class RaceEditor {
     const currentNdcY = Number(probe.y);
     if (!Number.isFinite(currentNdcY)) return;
     const delta = clamp(desiredNdcY - currentNdcY, -1.5, 1.5);
-    threeCamera.projectionMatrix.elements[9] += delta;
+    threeCamera.projectionMatrix.elements[9] -= delta;
     threeCamera.projectionMatrixInverse?.copy?.(threeCamera.projectionMatrix)?.invert?.();
   }
 
