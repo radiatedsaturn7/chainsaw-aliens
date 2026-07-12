@@ -2498,7 +2498,8 @@ test('Race Editor precomputes Studio Sprint world terrain before playtest frames
   assert.ok(bake);
   assert.equal(secondBake, bake);
   assert.equal(bake.terrainCells.length > 0, true);
-  assert.equal(bake.terrainChunks.length > 0, true);
+  assert.equal(bake.terrainTopology, 'corridor-first');
+  assert.equal(bake.terrainChunks.length, 0);
   assert.equal(visible.length > 0, true);
   assert.equal(chunkCalls, 0);
   assert.equal(raceEditorSource.includes('this.playtestSession?.worldBake'), true);
@@ -2629,7 +2630,265 @@ test('Race Three terrain geometry accepts triangle terrain cells', () => {
   assert.equal(Math.floor((geometry.getAttribute('position')?.count || 0) / 3), 1);
 });
 
-test('Race Editor Studio Sprint world bake includes camera-visible terrain chunks through the route', () => {
+function configureCorridorBakeRace(editor, {
+  marginMode = 'on',
+  shoulderMode = 'on',
+  circuit = false
+} = {}) {
+  editor.selectedRace.groundRenderer = 'webgl-track';
+  editor.selectedRace.renderDebug = {
+    terrainEnabled: true,
+    texturesEnabled: true,
+    detailEnabled: false,
+    threeEnabled: true,
+    terrainTopology: 'corridor-first'
+  };
+  editor.selectedRace.margin = {
+    marginMode,
+    shoulderMode,
+    widthM: 0.8,
+    shoulderWidthM: 3.2,
+    collisionEdge: 'none',
+    collisionEffect: 'collide'
+  };
+  if (circuit) {
+    editor.selectedRace.type = 'circuit';
+    editor.selectedRace.laps = 2;
+    editor.selectedRace.road.width = 7.2;
+    editor.selectedRace.road.nodes = [
+      { x: 0, y: 0, elevation: 0, role: 'start', locked: true },
+      { x: 120, y: 0, elevation: 0.08 },
+      { x: 120, y: 120, elevation: -0.04 },
+      { x: 0, y: 120, elevation: 0.03 },
+      { x: 0, y: 0, elevation: 0, role: 'finish' }
+    ];
+    editor.selectedRace.road.segments = [
+      { length: 120, surface: 'asphalt', elevation: 0.08, roadWidthM: 7.2, shoulderWidthM: 3.2, hazardIds: [] },
+      { length: 120, surface: 'asphalt', elevation: -0.04, roadWidthM: 8.2, shoulderWidthM: 3.2, hazardIds: [] },
+      { length: 120, surface: 'dirt', elevation: 0.03, roadWidthM: 6.4, shoulderWidthM: 3.2, hazardIds: [] },
+      { length: 120, surface: 'asphalt', elevation: 0, roadWidthM: 7.2, shoulderWidthM: 3.2, hazardIds: [] }
+    ];
+  } else {
+    editor.selectedRace.type = 'destination';
+    editor.selectedRace.laps = 1;
+    editor.selectedRace.road.width = 7.2;
+    editor.selectedRace.road.nodes = [
+      { x: 0, y: 0, elevation: 0, role: 'start', locked: true },
+      { x: 0, y: 90, elevation: 0.02 },
+      { x: 55, y: 150, elevation: 0.18 },
+      { x: -20, y: 235, elevation: -0.08, role: 'finish' }
+    ];
+    editor.selectedRace.road.segments = [
+      { length: 90, surface: 'asphalt', elevation: 0.02, roadWidthM: 7.2, shoulderWidthM: 3.2, hazardIds: [] },
+      { length: 82, surface: 'asphalt', elevation: 0.18, roadWidthM: 10.5, shoulderWidthM: 3.2, hazardIds: [] },
+      { length: 114, surface: 'dirt', elevation: -0.08, roadWidthM: 6.4, shoulderWidthM: 3.2, hazardIds: [] }
+    ];
+  }
+  editor.invalidateRaceTerrainCaches();
+}
+
+function assertCorridorBakeIsValid(bake) {
+  assert.equal(bake.terrainTopology, 'corridor-first');
+  assert.equal(bake.terrainCells.length > 0, true);
+  assert.equal(bake.terrainChunks.length, 0);
+  assert.equal(bake.validation.degenerateTriangles, 0);
+  assert.equal(bake.validation.invertedTerrainQuads, 0);
+  assert.equal(bake.validation.terrainRoadIntrusionCount, 0);
+  assert.equal(bake.validation.roadsideBoundaryMismatchCount, 0);
+  assert.equal(bake.validation.roadsideBoundaryMaxErrorM < 0.000001, true);
+  const badPoint = bake.terrainCells.flatMap((cell) => cell.points || []).find((point) => (
+    !Number.isFinite(Number(point.x))
+      || !Number.isFinite(Number(point.z ?? point.y))
+      || !Number.isFinite(Number(point.elevation))
+  ));
+  assert.equal(badPoint, undefined);
+}
+
+test('Race corridor-first terrain bypasses legacy clipping and validates margin shoulder combinations', () => {
+  [
+    { marginMode: 'off', shoulderMode: 'off' },
+    { marginMode: 'on', shoulderMode: 'off' },
+    { marginMode: 'off', shoulderMode: 'on' },
+    { marginMode: 'on', shoulderMode: 'on' }
+  ].forEach((settings) => {
+    const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+    configureCorridorBakeRace(editor, settings);
+    editor.getRaceTerrainTrianglesOutsideTrackCorridor = () => {
+      throw new Error('corridor-first terrain must not call legacy clipping');
+    };
+    const bake = editor.buildRaceWorldBake({
+      terrainSize: 120,
+      routeLength: editor.getRaceRouteLength(),
+      runtimeType: editor.getSelectedRaceRuntimeType(),
+      renderDebug: editor.getRaceRenderDebugSettings()
+    });
+    assertCorridorBakeIsValid(bake);
+    const shoulderPoint = bake.terrainCells.flatMap((cell) => cell.points || []).find((point) => point.terrainRegion === 'shoulder');
+    if (settings.shoulderMode === 'on') {
+      assert.ok(shoulderPoint);
+      assert.equal(shoulderPoint.roadDeckElevation, true);
+    } else {
+      assert.equal(shoulderPoint, undefined);
+    }
+  });
+});
+
+test('Race corridor-first terrain includes destination visual extensions and circuit wrapping', () => {
+  const destination = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  configureCorridorBakeRace(destination);
+  const destinationBake = destination.buildRaceWorldBake({
+    terrainSize: 120,
+    routeLength: destination.getRaceRouteLength(),
+    runtimeType: destination.getSelectedRaceRuntimeType(),
+    renderDebug: destination.getRaceRenderDebugSettings()
+  });
+  const distances = destinationBake.terrainCells.flatMap((cell) => cell.points || []).map((point) => Number(point.roadDistance || point.distance || 0));
+  assert.equal(Math.min(...distances) < 0, true);
+  assert.equal(Math.max(...distances) > destination.getRaceRouteLength(), true);
+  assertCorridorBakeIsValid(destinationBake);
+
+  const circuit = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  configureCorridorBakeRace(circuit, { circuit: true });
+  const circuitBake = circuit.buildRaceWorldBake({
+    terrainSize: 120,
+    routeLength: circuit.getRaceRouteLength(),
+    runtimeType: 'circuit',
+    renderDebug: circuit.getRaceRenderDebugSettings()
+  });
+  assertCorridorBakeIsValid(circuitBake);
+  assert.equal(circuitBake.terrainCells.some((cell) => String(cell.key || '').includes(`:${Number(circuitBake.terrainGenerationStats?.corridorSections || 1) - 1}:`)), true);
+});
+
+test('Race corridor-first shoulder samples adjacent terrain material at deck height', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  configureCorridorBakeRace(editor, { marginMode: 'on', shoulderMode: 'on' });
+  const section = editor.getRaceSurfaceSectionAtDistance(48, {
+    routeLength: editor.getRaceRouteLength(),
+    runtimeType: editor.getSelectedRaceRuntimeType(),
+    allowVisualExtension: true
+  });
+  const tileMap = editor.ensureRaceTileMap();
+  const shoulderCoords = editor.getRaceTileMapCellCoords(section.shoulderLeft, tileMap);
+  editor.setRaceTileMapCell(shoulderCoords.cellX, shoulderCoords.cellY, {
+    tileId: 'snow',
+    source: 'corridor-test',
+    elevation: 0.7
+  }, { invalidate: true });
+  const bake = editor.buildRaceWorldBake({
+    terrainSize: 120,
+    routeLength: editor.getRaceRouteLength(),
+    runtimeType: editor.getSelectedRaceRuntimeType(),
+    renderDebug: editor.getRaceRenderDebugSettings()
+  });
+  const shoulderPoint = bake.terrainCells
+    .flatMap((cell) => cell.points || [])
+    .find((point) => point.terrainRegion === 'shoulder' && (point.tileCell?.tileId === 'snow' || point.tile?.tileId === 'snow'));
+  assert.ok(shoulderPoint);
+  assert.equal(shoulderPoint.roadDeckElevation, true);
+});
+
+test('Race corridor-first visible terrain selection does not mutate baked cells', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  configureCorridorBakeRace(editor, { marginMode: 'on', shoulderMode: 'on' });
+  const bake = editor.buildRaceWorldBake({
+    terrainSize: 120,
+    routeLength: editor.getRaceRouteLength(),
+    runtimeType: editor.getSelectedRaceRuntimeType(),
+    renderDebug: editor.getRaceRenderDebugSettings()
+  });
+  const snapshot = JSON.stringify(bake.terrainCells.map((cell) => ({
+    key: cell.key,
+    points: cell.points
+  })));
+  const bounds = { x: 0, y: 0, w: 390, h: 240 };
+  const cameras = [
+    { x: 0, z: 0, elevation: 0.3 },
+    { x: 18, z: 86, elevation: 0.3 },
+    { x: -12, z: 170, elevation: 0.3 }
+  ];
+  cameras.forEach((camera, index) => {
+    const cells = editor.getRaceVisibleWorldBakeTerrainCells(bake, {
+      camera,
+      cameraYaw: index * 0.4,
+      bounds,
+      terrainForwardDistance: 800,
+      maxTerrainTriangles: 4000,
+      terrainCullingEnabled: true
+    });
+    assert.equal(cells.length > 0, true);
+  });
+  assert.equal(JSON.stringify(bake.terrainCells.map((cell) => ({
+    key: cell.key,
+    points: cell.points
+  }))), snapshot);
+  assert.equal(bake.terrainCells.some((cell) => (
+    Object.hasOwn(cell, 'averageCameraZ')
+      || Object.hasOwn(cell, 'cameraCellX')
+      || Object.hasOwn(cell, 'cameraCellZ')
+      || Object.hasOwn(cell, 'terrainCandidatePriority')
+      || Object.hasOwn(cell, 'baked')
+  )), false);
+});
+
+test('Race corridor-first static track meshes are independent of camera bands', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  configureCorridorBakeRace(editor, { marginMode: 'on', shoulderMode: 'on' });
+  const bake = editor.buildRaceWorldBake({
+    terrainSize: 120,
+    routeLength: editor.getRaceRouteLength(),
+    runtimeType: editor.getSelectedRaceRuntimeType(),
+    renderDebug: editor.getRaceRenderDebugSettings()
+  });
+  const first = editor.getRaceStaticTrackSurfaceMeshes(bake, {
+    textureWorldM: 1,
+    texturesEnabled: true,
+    useSunShading: false,
+    weatherState: null,
+    minScreenY: 10
+  });
+  const snapshot = JSON.stringify(first.roadMeshes.map((mesh) => mesh.points.map((point) => [
+    Number(point.x),
+    Number(point.z ?? point.y),
+    Number(point.elevation)
+  ])));
+  assert.equal(first.roadMeshes.length, bake.surfaceBake.sections.length - 1);
+  editor.raceCamera = { x: 80, z: 220, yaw: 1.4 };
+  const second = editor.getRaceStaticTrackSurfaceMeshes(bake, {
+    textureWorldM: 1,
+    texturesEnabled: true,
+    useSunShading: false,
+    weatherState: null,
+    minScreenY: 10
+  });
+  assert.equal(second, first);
+  assert.equal(JSON.stringify(second.roadMeshes.map((mesh) => mesh.points.map((point) => [
+    Number(point.x),
+    Number(point.z ?? point.y),
+    Number(point.elevation)
+  ]))), snapshot);
+});
+
+test('Race legacy-clipped topology remains explicit comparison path', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  configureCorridorBakeRace(editor, { marginMode: 'on', shoulderMode: 'on' });
+  editor.selectedRace.renderDebug.terrainTopology = 'legacy-clipped';
+  let clipCalls = 0;
+  const original = editor.getRaceTerrainTrianglesOutsideTrackCorridor.bind(editor);
+  editor.getRaceTerrainTrianglesOutsideTrackCorridor = (...args) => {
+    clipCalls += 1;
+    return original(...args);
+  };
+  const bake = editor.buildRaceWorldBake({
+    terrainSize: 120,
+    routeLength: editor.getRaceRouteLength(),
+    runtimeType: editor.getSelectedRaceRuntimeType(),
+    renderDebug: editor.getRaceRenderDebugSettings()
+  });
+  assert.equal(bake.terrainTopology, 'legacy-clipped');
+  assert.equal(clipCalls > 0, true);
+});
+
+test('Race Editor Studio Sprint corridor-first world bake includes camera-visible terrain through the route', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   editor.selectedRace.groundRenderer = 'webgl-track';
   editor.selectedRace.renderDebug = {
@@ -2640,15 +2899,10 @@ test('Race Editor Studio Sprint world bake includes camera-visible terrain chunk
   };
   editor.startPlaytest('starter-rwd');
   const bake = editor.playtestSession.worldBake;
-  const bakedChunkKeys = new Set(bake.terrainChunks.map((chunk) => chunk.key));
   const bounds = { x: 0, y: 0, w: 390, h: 240 };
   const routeLength = editor.getRaceRouteLength();
   const terrainSize = Number(bake.terrainSize || 120);
-  const rightAndForwardFor = (cameraYaw) => ({
-    right: editor.getRaceRightVector(cameraYaw),
-    forward: editor.getRaceForwardVector(cameraYaw)
-  });
-  const missing = [];
+  const missingVisible = [];
   const inspectFrame = (distance, reverse = false) => {
     const pose = editor.getRaceWorldPoseAtDistance(distance, { runtimeType: editor.playtestSession.routeRuntimeType });
     const yaw = Number(pose.yaw || 0) + (reverse ? Math.PI : 0);
@@ -2662,33 +2916,22 @@ test('Race Editor Studio Sprint world bake includes camera-visible terrain chunk
     editor.drawRaceProjectedRoadPath(createMockContext(), bounds, { showPlaytestHud: false });
     const camera = editor.lastRaceRenderCamera.camera;
     const cameraYaw = editor.lastRaceRenderCamera.cameraYaw;
-    const { right, forward } = rightAndForwardFor(cameraYaw);
-    const roadFarCameraZ = 900;
-    const { terrainForwardDistance, terrainCellRadius } = editor.getRaceTerrainRenderLimits({
+    const { terrainForwardDistance, maxTerrainTriangles } = editor.getRaceTerrainRenderLimits({
       terrainSize,
-      roadFarCameraZ,
+      roadFarCameraZ: 900,
       detailEnabled: false,
       terrainBudgetEnabled: false
     });
-    const centerCellX = Math.round(Number(camera.x || 0) / terrainSize);
-    const centerCellZ = Math.round(Number(camera.z || 0) / terrainSize);
-    const tileMap = editor.ensureRaceTileMap();
-    const cache = editor.getRaceTerrainBakeCache(tileMap, terrainSize);
-    for (let z = centerCellZ - terrainCellRadius; z <= centerCellZ + terrainCellRadius; z += 1) {
-      for (let x = centerCellX - terrainCellRadius; x <= centerCellX + terrainCellRadius; x += 1) {
-        const chunk = editor.getRaceBakedTerrainChunk(x, z, terrainSize, tileMap, cache);
-        if (!editor.shouldIncludeRaceTerrainChunkForRendering(chunk)) continue;
-        const cameraBounds = editor.getRaceTerrainCameraBounds(chunk.fullPoints, camera, right, forward);
-        if (!editor.isRaceTerrainCameraBoundsVisible(cameraBounds, {
-          terrainSize,
-          terrainForwardDistance,
-          screenWidth: bounds.w,
-          forwardMargin: terrainSize * 2,
-          lateralMargin: terrainSize
-        })) continue;
-        if (!bakedChunkKeys.has(chunk.key)) missing.push(`${Math.round(distance)}:${reverse ? 'reverse' : 'forward'}:${chunk.key}`);
-      }
-    }
+    const visible = editor.getRaceVisibleWorldBakeTerrainCells(bake, {
+      camera,
+      cameraYaw,
+      bounds,
+      terrainForwardDistance,
+      maxTerrainTriangles,
+      terrainCullingEnabled: true,
+      stats: { terrainPreculled: 0, terrainBudgetDropped: 0 }
+    });
+    if (!visible.length) missingVisible.push(`${Math.round(distance)}:${reverse ? 'reverse' : 'forward'}`);
   };
 
   [0, routeLength * 0.25, routeLength * 0.38, routeLength * 0.52, routeLength * 0.76, routeLength - 12].forEach((distance) => {
@@ -2697,7 +2940,10 @@ test('Race Editor Studio Sprint world bake includes camera-visible terrain chunk
     inspectFrame(clamped, true);
   });
 
-  assert.equal(missing.length, 0, `Missing baked visible terrain chunks: ${missing.slice(0, 12).join(', ')}`);
+  assert.equal(bake.terrainTopology, 'corridor-first');
+  assert.equal(bake.terrainChunks.length, 0);
+  assert.equal(bake.terrainCells.length > 0, true);
+  assert.equal(missingVisible.length, 0, `Missing visible corridor terrain frames: ${missingVisible.slice(0, 12).join(', ')}`);
 });
 
 test('Race Editor Studio Sprint visible terrain budget does not drop sampled route coverage', () => {
