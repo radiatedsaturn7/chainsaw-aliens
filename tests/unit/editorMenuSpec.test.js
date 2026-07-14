@@ -528,7 +528,7 @@ test('Car Editor shared menu omits placeholder rows and keeps editable car field
   assert.equal(getEditorMenuSection('car', 'edit').actions.includes('copy-layer'), false);
   assert.equal(getEditorMenuSection('car', 'edit').actions.includes('delete-layer'), false);
   assert.deepEqual(getEditorMenuSection('car', 'view').actions, ['zoom-fit']);
-  assert.deepEqual(getEditorMenuSection('car', 'art').actions, ['shell-frames', 'shell-frame-prev', 'shell-frame-next', 'reverse-frame', 'tire-treads', 'add-ons']);
+  assert.deepEqual(getEditorMenuSection('car', 'art').actions, ['body-art', 'tire-treads', 'brake-lights', 'add-ons']);
   assert.equal(getEditorMenuSection('car', 'view').actions.includes('preview-turns'), false);
   assert.equal(getEditorMenuSection('car', 'view').actions.includes('toggle-tires'), false);
   assert.equal(getEditorMenuSection('car', 'drivetrain').actions.includes('power-curve'), true);

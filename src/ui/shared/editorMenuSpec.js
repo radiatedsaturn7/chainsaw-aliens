@@ -96,11 +96,7 @@ const actionEntries = (ids, labels = {}) => Object.fromEntries(ids.map((id) => [
     label: labels[id] || toTitleLabel(id)
   }
 ]));
-const EDITOR_ACTION_LABEL_OVERRIDES = {
-  'load-wrx': 'Load WRX',
-  'load-brz': 'Load BRZ',
-  'load-civic': 'Load Civic'
-};
+const EDITOR_ACTION_LABEL_OVERRIDES = {};
 
 export const REQUIRED_DESKTOP_ROOT_PREFIX = ['file', 'edit', 'view'];
 export const DESKTOP_FILE_BASELINE_ACTION_IDS = ['new', 'save', 'save-as', 'open', 'export', 'import'];
@@ -375,10 +371,10 @@ export const EDITOR_MENU_SPECS = {
       { id: 'tuning', label: 'Tune' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'load-wrx', 'load-brz', 'load-civic', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
-      art: section('art', 'Art', ['shell-frames', 'shell-frame-prev', 'shell-frame-next', 'reverse-frame', 'tire-treads', 'add-ons']),
+      art: section('art', 'Art', ['body-art', 'tire-treads', 'brake-lights', 'add-ons']),
       drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sound-next', 'power-curve', 'weight-balance']),
       tuning: section('tuning', 'Tuning', ['default-tires', 'tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel']),
       aero: section('aero', 'Aero', ['aero-front', 'aero-rear']),
