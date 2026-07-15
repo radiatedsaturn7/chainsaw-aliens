@@ -717,13 +717,14 @@ test('mobile landscape editor shells reserve side rails and avoid desktop dropdo
   await waitForGameReady(page);
   await configureViewport(page, { width: 844, height: 390, isMobile: true });
 
-  for (const editorId of ['level', 'pixel', 'midi', 'sfx', 'cutscene', 'race', 'car']) {
+  for (const editorId of ['level', 'pixel', 'tile', 'midi', 'sfx', 'cutscene', 'race', 'car']) {
     await openEditor(page, editorId);
     const result = await page.evaluate((id) => {
       const game = window.__game;
       const editor = {
         level: game.editor,
         pixel: game.pixelStudio,
+        tile: game.pixelStudio,
         midi: game.midiComposer,
         sfx: game.sfxEditor,
         cutscene: game.cutsceneEditor,
