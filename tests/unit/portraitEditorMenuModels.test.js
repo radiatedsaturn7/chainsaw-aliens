@@ -40,7 +40,7 @@ import {
   EDITOR_SURFACES,
   getEditorModeAcceptanceContract
 } from '../../src/ui/shared/editorMenuLayout.js';
-import { EDITOR_LAYOUT_MODES, PORTRAIT_ROOT_MAX_ITEMS, SHARED_EDITOR_IDS, STANDARD_EDITOR_ACTION_RAIL_PREFIX, getEditorDesktopLeftContextRoles, getEditorPortraitRootMenuEntries, getStandardEditorActionRailIds } from '../../src/ui/shared/editorMenuSpec.js';
+import { EDITOR_LAYOUT_MODES, PORTRAIT_ROOT_MAX_ITEMS, SHARED_EDITOR_IDS, STANDARD_EDITOR_ACTION_RAIL_PREFIX, getEditorDesktopLeftContextRoles, getEditorMenuSection, getEditorPortraitRootMenuEntries, getStandardEditorActionRailIds } from '../../src/ui/shared/editorMenuSpec.js';
 import { buildCarPortraitMenuModel, buildRacePortraitMenuModel } from '../../src/ui/RaceEditor.js';
 import { mergeBuiltInActorOverride } from '../../src/content/builtinActorOverrides.js';
 import { BUILT_IN_ACTOR_VISUAL_SCALE, getBuiltInActorOverrideDrawSize } from '../../src/entities/BuiltInActorVisuals.js';
@@ -204,6 +204,72 @@ test('portrait submenu sheets expose shared bottom command metadata', () => {
   });
 });
 
+test('all editor portrait sources use shared bottom-first helpers without empty root menus', () => {
+  const helperMarkersByEditor = {
+    pixel: [
+      'buildPixelPortraitMenuModel().bottomRailActions',
+      'drawSharedPortraitActionRail',
+      'getSharedMobilePortraitEditorLayout'
+    ],
+    tile: [
+      'getTilePortraitToolbarActions()',
+      'drawSharedPortraitActionRail',
+      'getSharedMobilePortraitEditorLayout',
+      "canRenderEditorSurface(this.activeViewportMode, 'bottom-action-rail')"
+    ],
+    level: [
+      'buildLevelPortraitMenuModel().bottomRailActions.map((id) => portraitActionById[id]).filter(Boolean)',
+      'drawSharedPortraitActionRail',
+      'getSharedMobilePortraitEditorLayout'
+    ],
+    actor: [
+      'buildActorPortraitMenuModel().bottomRailActions',
+      'getSharedPortraitRailActionButtons',
+      'getSharedMobilePortraitEditorLayout'
+    ],
+    midi: [
+      'buildMidiPortraitMenuModel().bottomRailActions.map((id) => portraitActionById[id]).filter(Boolean)',
+      'drawSharedPortraitActionRail',
+      'getSharedMobilePortraitEditorLayout'
+    ],
+    sfx: [
+      'buildSfxPortraitMenuModel().bottomRailActions.map((id) => portraitActionById[id]).filter(Boolean)',
+      'drawSharedPortraitActionRail',
+      'getSharedMobilePortraitEditorLayout'
+    ],
+    cutscene: [
+      'buildCutscenePortraitMenuModel().bottomRailActions.map((id) => portraitActionById[id]).filter(Boolean)',
+      'drawSharedPortraitActionRail',
+      'getSharedMobilePortraitEditorLayout'
+    ],
+    race: [
+      'buildRacePortraitMenuModel(this.editorId).bottomRailActions',
+      'drawSharedPortraitActionRail',
+      'getSharedMobilePortraitEditorLayout'
+    ],
+    car: [
+      'buildRacePortraitMenuModel(this.editorId).bottomRailActions',
+      'drawSharedPortraitActionRail',
+      'getSharedMobilePortraitEditorLayout'
+    ]
+  };
+
+  SHARED_EDITOR_IDS.forEach((editorId) => {
+    const roots = getEditorPortraitRootMenuEntries(editorId);
+    assert.ok(roots.length > 0, `${editorId} should expose portrait root entries`);
+    roots.forEach((root) => {
+      const section = getEditorMenuSection(editorId, root.panel || root.id);
+      assert.ok(section?.actions?.length || root.runtimeAlias || root.panel, `${editorId} portrait root ${root.id} should resolve to a populated panel or dynamic workflow`);
+      assert.notEqual(root.id, 'edit', `${editorId} portrait roots should not expose desktop Edit as stale chrome`);
+      assert.notEqual(root.id, 'view', `${editorId} portrait roots should not expose desktop View as stale chrome`);
+    });
+
+    helperMarkersByEditor[editorId].forEach((marker) => {
+      assert.equal(editorSourceById[editorId].includes(marker), true, `${editorId} portrait source should include ${marker}`);
+    });
+  });
+});
+
 test('portrait editor action rails share the standard Menu Undo Redo prefix', () => {
   const models = {
     pixel: buildPixelPortraitMenuModel(),
@@ -213,7 +279,8 @@ test('portrait editor action rails share the standard Menu Undo Redo prefix', ()
     sfx: buildSfxPortraitMenuModel(),
     cutscene: buildCutscenePortraitMenuModel(),
     race: buildRacePortraitMenuModel(),
-    car: buildCarPortraitMenuModel()
+    car: buildCarPortraitMenuModel(),
+    tile: { bottomRailActions: getStandardEditorActionRailIds('edit') }
   };
   const expectedContextActions = {
     pixel: 'brush',
@@ -223,7 +290,8 @@ test('portrait editor action rails share the standard Menu Undo Redo prefix', ()
     sfx: 'play',
     cutscene: 'play',
     race: 'race-context',
-    car: 'test-drive'
+    car: 'test-drive',
+    tile: 'edit'
   };
 
   Object.entries(models).forEach(([editorId, model]) => {

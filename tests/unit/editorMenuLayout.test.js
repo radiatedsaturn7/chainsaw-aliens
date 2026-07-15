@@ -889,6 +889,15 @@ test('portrait menu layout plan keeps roots and submenus bottom-first across eve
     assert.deepEqual(plan.specModeContract, getEditorMenuModeContract(editorId, plan.mode));
     assert.equal(plan.touch.usesBottomMenus, true);
     assert.equal(plan.touch.usesSideRails, false);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.bottomRail), true, `${editorId} portrait should render the bottom root rail`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.bottomSheet), true, `${editorId} portrait should render bottom command sheets`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.bottomActionRail), true, `${editorId} portrait should render the bottom action rail`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.touchThumbstick), true, `${editorId} portrait should keep the virtual thumbstick available`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.desktopTopMenu), false, `${editorId} portrait should suppress desktop top menu`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.desktopDropdown), false, `${editorId} portrait should suppress desktop dropdowns`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.landscapeRootDrawer), false, `${editorId} portrait should suppress landscape root drawers`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.landscapeRightSubmenu), false, `${editorId} portrait should suppress landscape right drill-downs`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.gamepadSlideOut), false, `${editorId} portrait should suppress gamepad slide-out chrome`);
   }
   assert.equal(uiSpecSource.includes(`Portrait root rails expose no more than ${PORTRAIT_ROOT_MAX_ITEMS} bottom menu items`), true);
   assert.equal(editorUiContractSource.includes('Shared portrait mode plans expose `suppressedModeSurfaces`'), true);
