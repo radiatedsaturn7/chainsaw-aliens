@@ -43,6 +43,7 @@ async function openEditor(page, editorId) {
     const openers = {
       level: () => game.enterEditor(),
       pixel: () => game.enterPixelStudio({ returnState: 'title' }),
+      tile: () => game.enterPixelStudio({ returnState: 'title', tilePicker: true }),
       midi: () => game.enterMidiComposer(),
       sfx: () => game.enterSfxEditor(),
       cutscene: () => game.enterCutsceneEditor(),
@@ -55,6 +56,7 @@ async function openEditor(page, editorId) {
   const expectedState = {
     level: 'editor',
     pixel: 'pixel-editor',
+    tile: 'pixel-editor',
     midi: 'midi-editor',
     sfx: 'sfx-editor',
     cutscene: 'cutscene-editor',
@@ -567,16 +569,21 @@ test('comparison editor desktop left panels expose editor-specific context roles
   await waitForGameReady(page);
   await configureViewport(page, { width: 1280, height: 720, isMobile: false });
 
-  for (const editorId of ['pixel', 'level', 'cutscene', 'actor']) {
+  for (const editorId of ['pixel', 'tile', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'car']) {
     const expectedRoles = getEditorDesktopLeftContextRoles(editorId);
     await openEditor(page, editorId);
     const result = await page.evaluate(({ id, roles }) => {
       const game = window.__game;
       const editor = {
         pixel: game.pixelStudio,
+        tile: game.pixelStudio,
         level: game.editor,
+        midi: game.midiComposer,
+        sfx: game.sfxEditor,
         cutscene: game.cutsceneEditor,
-        actor: game.actorEditor
+        actor: game.actorEditor,
+        race: game.raceEditor,
+        car: game.carEditor
       }[id];
       const surface = editor?.editorBounds
         || editor?.canvasBounds

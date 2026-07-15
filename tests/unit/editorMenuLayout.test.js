@@ -299,6 +299,49 @@ test('Race and Car desktop left panels use shared workflow context roles', () =>
   assert.equal(canvasEditorDesktopDropdownSources.race.includes('contentRoles: getEditorDesktopLeftContextRoles(this.editorId)'), true);
 });
 
+test('all desktop editors expose shared left context roles and shared dropdown helpers', () => {
+  const expectedRoles = {
+    pixel: ['active-tool', 'swatches', 'layers', 'frames'],
+    tile: ['active-tool', 'tile-palette', 'tile-properties', 'preview-settings'],
+    level: ['active-tool', 'tile-palette', 'actor-palette', 'selected-placement'],
+    actor: ['actor-properties', 'state-list', 'linked-parts', 'preview-settings'],
+    midi: ['active-tool', 'transport', 'global-music-settings', 'tracks'],
+    sfx: ['active-tool', 'timeline', 'oscillator-settings', 'envelope-settings'],
+    cutscene: ['insert-palette', 'selected-clip', 'timeline', 'scene-settings'],
+    race: ['active-tool', 'tile-palette', 'route-painting', 'track-settings'],
+    car: ['active-tool', 'car-properties', 'paint-swatches', 'test-drive-settings']
+  };
+
+  Object.entries(expectedRoles).forEach(([editorId, roles]) => {
+    const plan = buildDesktopEditorShellPlan(editorId, {
+      viewportWidth: 1280,
+      viewportHeight: 720,
+      activeRootId: 'file',
+      rootEntries: getEditorRootMenuEntries(editorId)
+    });
+    const source = editorDesktopDropdownSources[editorId];
+
+    assert.deepEqual(getEditorDesktopLeftContextRoles(editorId), roles, editorId);
+    assert.equal(plan.topMenu.buttons.length > 0, true, editorId);
+    assert.equal(plan.leftContextPanelContract.duplicatesTopDropdownCommands, false, editorId);
+    assert.equal(plan.dropdown.rootId, 'file', editorId);
+    assert.deepEqual(
+      buildDesktopDropdownPlan(editorId, 'file').items.slice(0, DESKTOP_FILE_BASELINE_ACTION_IDS.length).map((item) => item.id),
+      DESKTOP_FILE_BASELINE_ACTION_IDS,
+      editorId
+    );
+    assert.deepEqual(buildDesktopDropdownPlan(editorId, 'edit').items.slice(0, 2).map((item) => item.id), ['undo', 'redo'], editorId);
+    assert.equal(source.includes('buildDesktopEditorShellPlan('), true, `${editorId}:shell`);
+    assert.equal(source.includes('buildDesktopDropdownRenderPlan('), true, `${editorId}:dropdown`);
+    roles.forEach((role) => assert.equal(role.includes('menu') || role.includes('dropdown'), false, `${editorId}:${role}`));
+  });
+
+  assert.equal(canvasEditorDesktopDropdownSources.pixel.includes("contentRoles: getEditorDesktopLeftContextRoles('pixel')"), true);
+  assert.equal(canvasEditorDesktopDropdownSources.tile.includes("contentRoles: getEditorDesktopLeftContextRoles('tile')"), true);
+  assert.equal(canvasEditorDesktopDropdownSources.midi.includes("contentRoles: getEditorDesktopLeftContextRoles('midi')"), true);
+  assert.equal(canvasEditorDesktopDropdownSources.sfx.includes("contentRoles: getEditorDesktopLeftContextRoles('sfx')"), true);
+});
+
 test('portrait shared rail interactions stay bottom-first with touch activation', () => {
   const acceptance = getEditorModeAcceptanceContract(EDITOR_LAYOUT_MODES.PORTRAIT);
   const plan = buildEditorMenuLayoutPlan('midi', {
