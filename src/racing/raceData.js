@@ -80,6 +80,62 @@ export const RACE_CAR_DIMENSIONS = {
 export const RACE_LANE_WIDTH_M = 3.6;
 export const DEFAULT_RACE_LANE_COUNT = 1;
 
+export const STUDIO_SPRINT_GRAPHIC_SETTINGS = Object.freeze({
+  groundRenderer: 'webgl-track',
+  groundTextureBaseWorldM: 1.002,
+  groundTextureFilterMode: 'balanced',
+  skyboxArtRef: 'providence',
+  surfaceArt: Object.freeze({
+    boundary: 'apron'
+  }),
+  margin: Object.freeze({
+    enabled: true,
+    shoulderEnabled: true,
+    widthM: 0.22,
+    shoulderWidthM: 12,
+    collisionMode: 'shoulder',
+    artRef: 'apron',
+    marginMode: 'on',
+    shoulderMode: 'hidden',
+    collisionEdge: 'shoulder',
+    collisionEffect: 'reset'
+  }),
+  renderDebug: Object.freeze({
+    lightingEnabled: true,
+    terrainEnabled: true,
+    texturesEnabled: true,
+    detailEnabled: false,
+    terrainCullingEnabled: true,
+    terrainLodEnabled: true,
+    terrainBudgetEnabled: true,
+    farRoadDecimationEnabled: true,
+    rawTerrainPolygonsEnabled: false
+  })
+});
+
+export function applyStudioSprintGraphicSettings(race = {}) {
+  if (!race || typeof race !== 'object') return race;
+  race.groundRenderer = race.groundRenderer || STUDIO_SPRINT_GRAPHIC_SETTINGS.groundRenderer;
+  race.groundTextureBaseWorldM = Number.isFinite(Number(race.groundTextureBaseWorldM))
+    ? Number(race.groundTextureBaseWorldM)
+    : STUDIO_SPRINT_GRAPHIC_SETTINGS.groundTextureBaseWorldM;
+  race.groundTextureFilterMode = race.groundTextureFilterMode || STUDIO_SPRINT_GRAPHIC_SETTINGS.groundTextureFilterMode;
+  race.skyboxArtRef = race.skyboxArtRef || STUDIO_SPRINT_GRAPHIC_SETTINGS.skyboxArtRef;
+  race.surfaceArt = {
+    ...STUDIO_SPRINT_GRAPHIC_SETTINGS.surfaceArt,
+    ...(race.surfaceArt && typeof race.surfaceArt === 'object' ? race.surfaceArt : {})
+  };
+  race.margin = {
+    ...STUDIO_SPRINT_GRAPHIC_SETTINGS.margin,
+    ...(race.margin && typeof race.margin === 'object' ? race.margin : {})
+  };
+  race.renderDebug = {
+    ...STUDIO_SPRINT_GRAPHIC_SETTINGS.renderDebug,
+    ...(race.renderDebug && typeof race.renderDebug === 'object' ? race.renderDebug : {})
+  };
+  return race;
+}
+
 export const DEFAULT_AI_DRIVER = {
   id: 'rookie-ai',
   name: 'Rookie AI',
