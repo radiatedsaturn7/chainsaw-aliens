@@ -2309,6 +2309,7 @@ export default class PixelStudio {
     drawSharedDesktopContextPanel(ctx, contextBounds, {
       lines,
       status: this.statusMessage || 'Select a tile row to edit art or properties',
+      contentRoles: getEditorDesktopLeftContextRoles('tile'),
       padding: SHARED_EDITOR_LEFT_MENU.panelPadding
     });
 
