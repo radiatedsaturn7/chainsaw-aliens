@@ -54,7 +54,7 @@ import {
   shouldCloseDesktopDropdownOnPointerDown,
   updatePendingDesktopDropdownHit
 } from './shared/editorMenuLayout.js';
-import { getEditorMenuSpec, getEditorPortraitRootMenuEntries, getEditorRootMenuEntries, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
+import { getEditorDesktopLeftContextRoles, getEditorMenuSpec, getEditorPortraitRootMenuEntries, getEditorRootMenuEntries, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
 import { SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { getSharedMobilePortraitEditorLayout } from './uiSuite.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
@@ -12054,7 +12054,7 @@ export default class RaceEditor {
     drawSharedDesktopContextPanel(ctx, bounds, {
       title: this.title,
       lines,
-      contentRoles: ['document-summary', 'selection-summary', 'status'],
+      contentRoles: getEditorDesktopLeftContextRoles(this.editorId),
       status: this.status
     });
   }
