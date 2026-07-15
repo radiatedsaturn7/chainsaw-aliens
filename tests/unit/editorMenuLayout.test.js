@@ -2405,6 +2405,59 @@ test('landscape touch shell role contract is shared across every editor', () => 
   }
 });
 
+test('landscape touch editors use left command/root surfaces and suppress desktop and gamepad chrome', () => {
+  for (const editorId of ALL_EDITOR_IDS) {
+    const plan = buildLandscapeTouchEditorShellPlan(editorId, {
+      viewportWidth: 844,
+      viewportHeight: 390,
+      bottomRailHeight: 68,
+      reserveRightRail: true,
+      reserveThumbstickSpace: false
+    });
+    const actions = buildCompactLandscapeCommandRailActions({
+      menu: { id: 'menu' },
+      undo: { id: 'undo' },
+      redo: { id: 'redo' },
+      quick: { id: `${editorId}-context` }
+    });
+
+    assert.deepEqual(actions.map((action) => action.slot), ['menu', 'undo', 'redo', 'quick'], `${editorId} command slots`);
+    assert.equal(actions.length, COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT, `${editorId} command action count`);
+    actions.forEach((action) => {
+      assert.equal(action.surface, EDITOR_SURFACES.leftRail, `${editorId} command rail action surface`);
+      assert.equal(action.rowActivation, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRail.rowActivation, `${editorId} command rail activation`);
+      assert.equal(action.gestureScroll, false, `${editorId} command rail scroll`);
+    });
+
+    assert.equal(plan.mode, EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH, `${editorId} mode`);
+    assert.equal(plan.compactCommandRailSurface, EDITOR_SURFACES.leftRail, `${editorId} compact command rail`);
+    assert.equal(plan.rootMenuSurface, EDITOR_SURFACES.leftRail, `${editorId} root menu surface`);
+    assert.equal(plan.rootDrawerSurface, EDITOR_SURFACES.leftOverlayDrawer, `${editorId} root drawer surface`);
+    assert.equal(plan.rootDrawerOverlayOrigin, 'left', `${editorId} root drawer origin`);
+    assert.equal(plan.submenuSurface, EDITOR_SURFACES.rightDrawer, `${editorId} submenu surface`);
+    assert.equal(plan.bottomRailRole, LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.bottomRailRole, `${editorId} bottom rail role`);
+    assert.deepEqual(plan.surfaces.compactCommandRail, plan.leftRail, `${editorId} compact rail bounds`);
+    assert.deepEqual(plan.surfaces.rootMenu, plan.leftRail, `${editorId} root rail bounds`);
+    assert.deepEqual(plan.surfaces.rootDrawer, plan.leftRootDrawer, `${editorId} left root drawer bounds`);
+    assert.deepEqual(plan.surfaces.submenu, plan.rightRail, `${editorId} right submenu bounds`);
+    assert.deepEqual(plan.surfaces.toolOptions, plan.bottomRail, `${editorId} bottom context bounds`);
+    assert.equal(plan.surfaces.rootDrawer.x >= plan.leftRail.x + plan.leftRail.w, true, `${editorId} root drawer starts after left rail`);
+    assert.equal(plan.surfaces.rootDrawer.x + plan.surfaces.rootDrawer.w <= plan.rightRail.x - plan.gap, true, `${editorId} root drawer leaves right drill-down visible`);
+    assert.equal(plan.surfaces.submenu.x >= plan.bounds.w - plan.surfaces.submenu.w, true, `${editorId} submenu is right anchored`);
+    assert.equal(plan.interaction.pointerType, 'touch', `${editorId} pointer type`);
+    assert.equal(plan.interaction.rowActivation, 'tap-release', `${editorId} row activation`);
+
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.leftRail), true, `${editorId} left rail visible`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.leftOverlayDrawer), true, `${editorId} left root drawer visible`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.rightDrawer), true, `${editorId} right submenu visible`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.bottomToolRail), true, `${editorId} bottom rail visible`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.desktopTopMenu), false, `${editorId} desktop top suppressed`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.desktopDropdown), false, `${editorId} desktop dropdown suppressed`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.desktopLeftInspector), false, `${editorId} desktop inspector suppressed`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.gamepadSlideOut), false, `${editorId} gamepad slide-out suppressed`);
+  }
+});
+
 test('landscape touch shell omits the right submenu surface when gamepad slide-out owns submenus', () => {
   const plan = buildLandscapeTouchEditorShellPlan('level', {
     viewportWidth: 844,

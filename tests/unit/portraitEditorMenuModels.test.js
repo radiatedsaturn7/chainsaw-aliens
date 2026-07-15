@@ -34,8 +34,10 @@ import { buildSfxPortraitEditorLayout, buildSfxPortraitMenuModel, buildSfxShared
 import {
   buildGamepadSlideOutMenuPlan,
   buildLandscapeTouchEditorShellPlan,
+  canRenderEditorPlanSurface,
   COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT,
   COMPACT_LANDSCAPE_COMMAND_RAIL_WIDTH,
+  EDITOR_SURFACES,
   getEditorModeAcceptanceContract
 } from '../../src/ui/shared/editorMenuLayout.js';
 import { EDITOR_LAYOUT_MODES, PORTRAIT_ROOT_MAX_ITEMS, SHARED_EDITOR_IDS, STANDARD_EDITOR_ACTION_RAIL_PREFIX, getEditorDesktopLeftContextRoles, getEditorPortraitRootMenuEntries, getStandardEditorActionRailIds } from '../../src/ui/shared/editorMenuSpec.js';
@@ -991,6 +993,49 @@ test('shared landscape touch shells default to a narrow portrait-style command r
     assert.equal(layout.scroll.compactCommandRail.enabled, false);
     assert.equal(layout.scroll.leftRail.enabled, false);
     assert.equal(layout.scroll.rootDrawer.enabled, true);
+  });
+});
+
+test('all editor touch landscape paths use the shared left-root and right-drilldown contract', () => {
+  SHARED_EDITOR_IDS.forEach((editorId) => {
+    const source = editorSourceById[editorId];
+    const layout = buildLandscapeTouchEditorShellPlan(editorId, {
+      viewportWidth: 844,
+      viewportHeight: 390,
+      bottomRailHeight: 72,
+      reserveRightRail: true,
+      reserveThumbstickSpace: false
+    });
+
+    assert.equal(
+      source.includes(`buildLandscapeTouchEditorShellPlan('${editorId}'`)
+        || source.includes('buildLandscapeTouchEditorShellPlan(this.editorId'),
+      true,
+      `${editorId} should build touch landscape from the shared shell helper`
+    );
+    assert.equal(source.includes('buildCompactLandscapeCommandRailActions'), true, `${editorId} should use shared compact landscape rail actions`);
+    assert.equal(source.includes('buildCompactLandscapeCommandRailButtonLayout'), true, `${editorId} should use shared compact landscape rail layout`);
+    assert.equal(source.includes("canRenderEditorPlanSurface(landscapeLayout, 'right-drawer')")
+      || source.includes("canRenderEditorPlanSurface(layout.landscapeShell, 'right-drawer')")
+      || source.includes("canRenderEditorPlanSurface(shell, 'right-drawer')")
+      || source.includes("canRenderEditorPlanSurface(tileLandscapeShell, 'right-drawer')"),
+    true,
+    `${editorId} should gate touch landscape drill-downs through the shared right drawer`);
+    assert.equal(source.includes("canRenderEditorPlanSurface(landscapeLayout, 'left-overlay-drawer')")
+      || source.includes("canRenderEditorPlanSurface(layout.landscapeShell, 'left-overlay-drawer')")
+      || source.includes("canRenderEditorPlanSurface(shell, 'left-overlay-drawer')")
+      || source.includes("canRenderEditorPlanSurface(tileLandscapeShell, 'left-overlay-drawer')"),
+    true,
+    `${editorId} should gate touch landscape root drawers through the shared left drawer`);
+
+    assert.equal(layout.compactCommandRailActionLimit, COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT, `${editorId} action limit`);
+    assert.equal(layout.surfaces.compactCommandRail.w, COMPACT_LANDSCAPE_COMMAND_RAIL_WIDTH, `${editorId} compact rail width`);
+    assert.equal(layout.rootMenuSurface, EDITOR_SURFACES.leftRail, `${editorId} touch root rail`);
+    assert.equal(layout.rootDrawerSurface, EDITOR_SURFACES.leftOverlayDrawer, `${editorId} touch root drawer`);
+    assert.equal(layout.rootDrawerOverlayOrigin, 'left', `${editorId} touch root drawer origin`);
+    assert.equal(layout.submenuSurface, EDITOR_SURFACES.rightDrawer, `${editorId} touch submenu drawer`);
+    assert.equal(canRenderEditorPlanSurface(layout, EDITOR_SURFACES.desktopTopMenu), false, `${editorId} touch landscape should not render desktop top menu`);
+    assert.equal(canRenderEditorPlanSurface(layout, EDITOR_SURFACES.gamepadSlideOut), false, `${editorId} touch landscape should not render gamepad slide-out`);
   });
 });
 
