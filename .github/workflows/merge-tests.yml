@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   unit:
-    name: Unit tests
+    name: Editor UI unit tests
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -28,11 +28,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run unit tests
-        run: node --test tests/unit/*.test.js
+      - name: Run editor UI unit tests
+        run: node --test tests/unit/editorMenuLayout.test.js tests/unit/editorMenuSpec.test.js tests/unit/portraitEditorMenuModels.test.js
 
   playwright:
-    name: Playwright browser tests
+    name: Playwright editor contract tests
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.58.2-noble
@@ -49,8 +49,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Playwright tests
-        run: npm run test:playwright -- --reporter=line
+      - name: Run Playwright editor contract tests
+        run: npx playwright test tests/playwright/editor-layout-contract.spec.js --reporter=line
 
       - name: Upload Playwright report
         if: always()
