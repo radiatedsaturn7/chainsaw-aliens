@@ -224,3 +224,11 @@ After US1-US3 pass, use the same contracts for Race, Car, SFX, Tile, and future 
 - [P] tasks use different files or independent validation surfaces.
 - Do not blanket-stage generated data under data/server-storage/.
 - Preserve portrait unless the task explicitly documents a repair.
+
+## Phase 7: Convergence
+
+- [X] T054 [P] Add focused Race and Car rollout unit coverage for shared desktop context roles, desktop File/Edit dropdowns, landscape touch root/submenu surfaces, gamepad slide-out behavior, and portrait rail preservation in tests/unit/editorMenuLayout.test.js and tests/unit/portraitEditorMenuModels.test.js per FR-006, FR-007, FR-008, FR-009, FR-014, and FR-015 (partial)
+- [X] T055 [P] Repair Race and Car Playwright layout checks to use current shared menu root/action ids and assert desktop left context, landscape right drill-down, and gamepad left slide-out without executing Playwright on Android/Termux in tests/playwright/editor-layout-contract.spec.js per FR-003, FR-006, FR-007, FR-008, and FR-014 (partial)
+- [X] T056 Wire Race and Car desktop left context rendering through getEditorDesktopLeftContextRoles while preserving Race route/track context and Car tuning/test-drive context in src/ui/RaceEditor.js per FR-003 and FR-014 (partial)
+- [X] T057 Verify Race and Car mode decisions continue to route through shared editorMenuLayout helpers for desktop, landscape touch, portrait, and gamepad without editor-specific layout branches that contradict the shared standard in src/ui/RaceEditor.js per Constitution II, FR-005, FR-006, FR-007, and FR-008 (partial)
+- [X] T058 Run focused Race/Car validation with `node --test tests/unit/editorMenuLayout.test.js tests/unit/editorMenuSpec.test.js tests/unit/portraitEditorMenuModels.test.js`, document Playwright as written-but-deferred on Android/Termux, inspect git status, and exclude unrelated data/server-storage churn; `timeout 20s node --test tests/unit/raceEditorLayout.test.js` was attempted but is non-terminating on this Android/Termux environment per Constitution IV and Constitution V (partial)

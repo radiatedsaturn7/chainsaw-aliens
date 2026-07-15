@@ -269,6 +269,36 @@ test('comparison editor desktop left panels expose context roles instead of dupl
   });
 });
 
+test('Race and Car desktop left panels use shared workflow context roles', () => {
+  const expectedRoles = {
+    race: ['active-tool', 'tile-palette', 'route-painting', 'track-settings'],
+    car: ['active-tool', 'car-properties', 'paint-swatches', 'test-drive-settings']
+  };
+
+  Object.entries(expectedRoles).forEach(([editorId, roles]) => {
+    const plan = buildDesktopEditorShellPlan(editorId, {
+      viewportWidth: 1280,
+      viewportHeight: 720,
+      activeRootId: 'file',
+      rootEntries: getEditorRootMenuEntries(editorId)
+    });
+    const fileDropdown = buildDesktopDropdownPlan(editorId, 'file');
+    const editDropdown = buildDesktopDropdownPlan(editorId, 'edit');
+
+    assert.deepEqual(getEditorDesktopLeftContextRoles(editorId), roles, editorId);
+    assert.equal(plan.leftContextPanelContract.surface, EDITOR_SURFACES.leftContextPanel, editorId);
+    assert.equal(plan.leftContextPanelContract.duplicatesTopDropdownCommands, false, editorId);
+    assert.equal(plan.dropdown.rootId, 'file', editorId);
+    assert.deepEqual(fileDropdown.items.slice(0, DESKTOP_FILE_BASELINE_ACTION_IDS.length).map((item) => item.id), DESKTOP_FILE_BASELINE_ACTION_IDS, editorId);
+    assert.deepEqual(editDropdown.items.slice(0, 2).map((item) => item.id), ['undo', 'redo'], editorId);
+    roles.forEach((role) => {
+      assert.equal(role.includes('menu') || role.includes('dropdown'), false, `${editorId}:${role}`);
+    });
+  });
+
+  assert.equal(canvasEditorDesktopDropdownSources.race.includes('contentRoles: getEditorDesktopLeftContextRoles(this.editorId)'), true);
+});
+
 test('portrait shared rail interactions stay bottom-first with touch activation', () => {
   const acceptance = getEditorModeAcceptanceContract(EDITOR_LAYOUT_MODES.PORTRAIT);
   const plan = buildEditorMenuLayoutPlan('midi', {

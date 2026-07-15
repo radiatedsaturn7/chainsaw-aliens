@@ -32,12 +32,13 @@ import PixelStudio from '../../src/ui/PixelStudio.js';
 import { TOOL_IDS } from '../../src/ui/pixel-editor/tools.js';
 import { buildSfxPortraitEditorLayout, buildSfxPortraitMenuModel, buildSfxSharedRootMenuEntries } from '../../src/ui/SfxEditor.js';
 import {
+  buildGamepadSlideOutMenuPlan,
   buildLandscapeTouchEditorShellPlan,
   COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT,
   COMPACT_LANDSCAPE_COMMAND_RAIL_WIDTH,
   getEditorModeAcceptanceContract
 } from '../../src/ui/shared/editorMenuLayout.js';
-import { EDITOR_LAYOUT_MODES, PORTRAIT_ROOT_MAX_ITEMS, SHARED_EDITOR_IDS, STANDARD_EDITOR_ACTION_RAIL_PREFIX, getEditorPortraitRootMenuEntries, getStandardEditorActionRailIds } from '../../src/ui/shared/editorMenuSpec.js';
+import { EDITOR_LAYOUT_MODES, PORTRAIT_ROOT_MAX_ITEMS, SHARED_EDITOR_IDS, STANDARD_EDITOR_ACTION_RAIL_PREFIX, getEditorDesktopLeftContextRoles, getEditorPortraitRootMenuEntries, getStandardEditorActionRailIds } from '../../src/ui/shared/editorMenuSpec.js';
 import { buildCarPortraitMenuModel, buildRacePortraitMenuModel } from '../../src/ui/RaceEditor.js';
 import { mergeBuiltInActorOverride } from '../../src/content/builtinActorOverrides.js';
 import { BUILT_IN_ACTOR_VISUAL_SCALE, getBuiltInActorOverrideDrawSize } from '../../src/entities/BuiltInActorVisuals.js';
@@ -294,6 +295,51 @@ test('Race and Car portrait menu models use the shared bottom rail contract', ()
   assertSharedPortraitRailActionCount(carModel.bottomRailActions.map((id) => ({ id })), { editor: 'car' });
   assert.equal(raceEditorSource.includes('buildRacePortraitMenuModel(this.editorId).bottomRailActions'), true);
   assert.equal(raceEditorSource.includes('buildRacePortraitMenuModel(this.editorId).rootTabs'), true);
+});
+
+test('Race and Car rollout modes preserve portrait and use shared landscape and gamepad surfaces', () => {
+  const expected = {
+    race: {
+      portraitRoots: ['file', 'track', 'ground', 'sprites', 'settings'],
+      contextAction: 'race-context',
+      landscapeRoot: 'track',
+      submenuAction: 'draw-road'
+    },
+    car: {
+      portraitRoots: ['file', 'art', 'drivetrain', 'tuning'],
+      contextAction: 'test-drive',
+      landscapeRoot: 'drivetrain',
+      submenuAction: 'drivetrain-menu'
+    }
+  };
+
+  Object.entries(expected).forEach(([editorId, contract]) => {
+    const portrait = buildRacePortraitMenuModel(editorId);
+    const landscape = buildLandscapeTouchEditorShellPlan(editorId, {
+      viewportWidth: 844,
+      viewportHeight: 390,
+      bottomRailHeight: 68,
+      reserveRightRail: true,
+      reserveThumbstickSpace: false
+    });
+    const gamepad = buildGamepadSlideOutMenuPlan(editorId, {
+      rootOpen: false,
+      activeRootId: contract.landscapeRoot,
+      focusedItemId: contract.submenuAction
+    });
+
+    assert.deepEqual(portrait.rootTabs.map((tab) => tab.id), contract.portraitRoots, editorId);
+    assert.deepEqual(portrait.bottomRailActions, ['menu', 'undo', 'redo', contract.contextAction], editorId);
+    assert.equal(landscape.rootMenuSurface, 'left-rail', editorId);
+    assert.equal(landscape.rootDrawerSurface, 'left-overlay-drawer', editorId);
+    assert.equal(landscape.submenuSurface, 'right-drawer', editorId);
+    assert.equal(landscape.bottomRailRole, 'tool-options-ribbons-zoom', editorId);
+    assert.equal(gamepad.rootMenuSurface, 'left-slide-rail', editorId);
+    assert.equal(gamepad.submenuSurface, 'left-slide-out-drawer', editorId);
+    assert.equal(gamepad.rightSubmenuSurface, null, editorId);
+    assert.equal(gamepad.submenu.items.some((item) => item.id === contract.submenuAction), true, editorId);
+    assert.equal(getEditorModeAcceptanceContract(EDITOR_LAYOUT_MODES.GAMEPAD).thumbstickPolicy, 'suppressed', editorId);
+  });
 });
 
 test('portrait editor root rails are bottom anchored across layout systems', () => {
@@ -4867,7 +4913,9 @@ test('desktop context panels share the RTG Studio context chrome', () => {
   assert.equal(cutsceneEditorSource.includes("contentRoles: getEditorDesktopLeftContextRoles('cutscene')"), true);
   assert.equal(cutsceneEditorSource.includes("contentRoles: ['document-summary', 'selection-summary', 'contextual-quick-actions', 'transport', 'status']"), false);
   assert.equal(raceEditorSource.includes('`Active: ${this.activeAction || \'None\'}`'), true);
-  assert.equal(raceEditorSource.includes("contentRoles: ['document-summary', 'selection-summary', 'status']"), true);
+  assert.equal(raceEditorSource.includes('contentRoles: getEditorDesktopLeftContextRoles(this.editorId)'), true);
+  assert.deepEqual(getEditorDesktopLeftContextRoles('race'), ['active-tool', 'tile-palette', 'route-painting', 'track-settings']);
+  assert.deepEqual(getEditorDesktopLeftContextRoles('car'), ['active-tool', 'car-properties', 'paint-swatches', 'test-drive-settings']);
   assert.equal(raceEditorSource.includes('this.mode === \'car\''), true);
   assert.equal(raceEditorSource.includes('`Race: ${race.name}`'), true);
   assert.equal(raceEditorSource.includes('`${this.selectedCar.name} tuning`'), true);

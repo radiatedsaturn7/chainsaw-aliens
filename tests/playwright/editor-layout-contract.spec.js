@@ -756,8 +756,8 @@ test('mobile landscape editor shells reserve side rails and avoid desktop dropdo
       const menuCycle = await page.evaluate(async (id) => {
         const game = window.__game;
         const editor = id === 'race' ? game.raceEditor : game.carEditor;
-        const targetRootId = id === 'race' ? 'road' : 'art';
-        const targetActionId = id === 'race' ? 'draw-road' : 'edit-shell';
+        const targetRootId = id === 'race' ? 'track' : 'drivetrain';
+        const targetActionId = id === 'race' ? 'draw-road' : 'drivetrain-menu';
         const getBounds = (button) => button?.bounds || button || null;
         const clickButton = async (button) => {
           const bounds = getBounds(button);
@@ -863,8 +863,8 @@ test('mobile gamepad landscape Race and Car replace the left root rail with the 
     const result = await page.evaluate(async (id) => {
       const game = window.__game;
       const editor = id === 'race' ? game.raceEditor : game.carEditor;
-      const targetRootId = id === 'race' ? 'road' : 'art';
-      const targetActionId = id === 'race' ? 'draw-road' : 'edit-shell';
+      const targetRootId = id === 'race' ? 'track' : 'drivetrain';
+      const targetActionId = id === 'race' ? 'draw-road' : 'drivetrain-menu';
       const getBounds = (button) => button?.bounds || button || null;
       const clickButton = async (button) => {
         const bounds = getBounds(button);
