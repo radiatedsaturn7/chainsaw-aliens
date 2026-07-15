@@ -7,8 +7,10 @@ import {
   DESKTOP_FILE_FOOTER_ACTION_ID,
   EDIT_ACTION_ROLE_GROUPS,
   EDIT_ACTION_ROLE_ORDER,
+  EDITOR_DESKTOP_LEFT_CONTEXT_ROLES,
   EDITOR_LAYOUT_MODES,
   EDITOR_MENU_PLACEMENTS,
+  EDITOR_STANDARD_REFERENCE,
   GAMEPAD_MENU_PLACEMENT_SURFACES,
   GAMEPAD_MENU_RENDER_SURFACES,
   EDITOR_MENU_MODE_CONTRACTS,
@@ -26,6 +28,7 @@ import {
   getEditorControllerRootMenuIds,
   getEditorDesktopControllerMenuId,
   getEditorDesktopControllerMenuIdForSection,
+  getEditorDesktopLeftContextRoles,
   getEditorEditActionRole,
   getEditorDesktopRootIdForSection,
   getEditorMenuModeContract,
@@ -38,7 +41,10 @@ import {
   getEditorRootMenuEntries,
   getEditorRootMenuLabelMap,
   getEditorRootMenuIds,
+  getEditorStandardRole,
   getStandardEditorActionRailIds,
+  isEditorReferenceCandidate,
+  validateEditorStandardReferenceMetadata,
   validateEditorMenuSpec,
   validateSharedEditorMenuSpecs
 } from '../../src/ui/shared/editorMenuSpec.js';
@@ -76,6 +82,57 @@ test('shared editor menu specs validate for every editor', () => {
       assert.ok(spec.modeContracts[mode]);
     });
   }
+});
+
+test('editor UI standard metadata identifies MIDI, Pixel, and comparison references', () => {
+  assert.deepEqual(validateEditorStandardReferenceMetadata(), []);
+  assert.equal(EDITOR_STANDARD_REFERENCE.primaryEditorId, 'midi');
+  assert.equal(EDITOR_STANDARD_REFERENCE.secondaryEditorId, 'pixel');
+  assert.deepEqual(EDITOR_STANDARD_REFERENCE.comparisonEditorIds, ['level', 'cutscene', 'actor']);
+  assert.deepEqual(getEditorStandardRole('midi'), 'primary-reference');
+  assert.deepEqual(getEditorStandardRole('pixel'), 'secondary-reference');
+  assert.deepEqual(getEditorStandardRole('level'), 'comparison-reference');
+  assert.equal(isEditorReferenceCandidate('cutscene'), true);
+  assert.equal(isEditorReferenceCandidate('race'), false);
+  assert.equal(getEditorStandardRole('sfx'), 'rollout-target');
+  assert.equal(getEditorStandardRole('missing-editor'), null);
+});
+
+test('desktop left context roles are defined for every editor without command duplication language', () => {
+  assert.equal(Object.isFrozen(EDITOR_DESKTOP_LEFT_CONTEXT_ROLES), true);
+  for (const editorId of SHARED_EDITOR_IDS) {
+    const roles = getEditorDesktopLeftContextRoles(editorId);
+    assert.equal(roles.length >= 2, true, editorId);
+    assert.deepEqual(roles, EDITOR_DESKTOP_LEFT_CONTEXT_ROLES[editorId], editorId);
+    assert.equal(roles.some((role) => role.includes('menu') || role.includes('dropdown')), false, editorId);
+  }
+  assert.deepEqual(getEditorDesktopLeftContextRoles('midi'), ['active-tool', 'transport', 'global-music-settings', 'tracks']);
+  assert.deepEqual(getEditorDesktopLeftContextRoles('pixel'), ['active-tool', 'swatches', 'layers', 'frames']);
+  assert.deepEqual(getEditorDesktopLeftContextRoles('unknown'), []);
+});
+
+test('comparison editors share MIDI command surfaces while keeping editor-specific context roles', () => {
+  const comparisonEditorIds = ['pixel', 'level', 'cutscene', 'actor'];
+  const expectedContextRoles = {
+    pixel: ['active-tool', 'swatches', 'layers', 'frames'],
+    level: ['active-tool', 'tile-palette', 'actor-palette', 'selected-placement'],
+    cutscene: ['insert-palette', 'selected-clip', 'timeline', 'scene-settings'],
+    actor: ['actor-properties', 'state-list', 'linked-parts', 'preview-settings']
+  };
+
+  comparisonEditorIds.forEach((editorId) => {
+    assert.equal(isEditorReferenceCandidate(editorId), true, editorId);
+    assert.ok(['secondary-reference', 'comparison-reference'].includes(getEditorStandardRole(editorId)), editorId);
+    assert.deepEqual(getEditorDesktopLeftContextRoles(editorId), expectedContextRoles[editorId], editorId);
+
+    Object.values(EDITOR_LAYOUT_MODES).forEach((mode) => {
+      assert.deepEqual(
+        getEditorMenuModeContract(editorId, mode),
+        getEditorMenuModeContract('midi', mode),
+        `${editorId}:${mode}`
+      );
+    });
+  });
 });
 
 test('menu spec validation catches unsupported work-surface metadata', () => {
@@ -399,7 +456,8 @@ test('shared portrait specs declare intentional dynamic empty panels', () => {
     level: ['assets'],
     midi: ['settings'],
     sfx: ['settings'],
-    cutscene: ['settings']
+    cutscene: ['settings'],
+    car: ['art']
   });
   for (const [editorId, sectionIds] of Object.entries(PORTRAIT_DYNAMIC_EMPTY_SECTION_IDS)) {
     sectionIds.forEach((sectionId) => {
@@ -528,7 +586,7 @@ test('Car Editor shared menu omits placeholder rows and keeps editable car field
   assert.equal(getEditorMenuSection('car', 'edit').actions.includes('copy-layer'), false);
   assert.equal(getEditorMenuSection('car', 'edit').actions.includes('delete-layer'), false);
   assert.deepEqual(getEditorMenuSection('car', 'view').actions, ['zoom-fit']);
-  assert.deepEqual(getEditorMenuSection('car', 'art').actions, ['body-art', 'tire-treads', 'brake-lights', 'add-ons']);
+  assert.deepEqual(getEditorMenuSection('car', 'art').actions, []);
   assert.equal(getEditorMenuSection('car', 'view').actions.includes('preview-turns'), false);
   assert.equal(getEditorMenuSection('car', 'view').actions.includes('toggle-tires'), false);
   assert.equal(getEditorMenuSection('car', 'drivetrain').actions.includes('power-curve'), true);
@@ -670,14 +728,7 @@ test('menu specs include high-risk actions from the UI plan', () => {
   assert.ok(getEditorMenuSection('sfx', 'envelopes').actions.includes('pitch'));
   assert.equal(getEditorMenuSection('cutscene', 'export'), null);
   assert.equal(getEditorMenuSection('race', 'generate'), null);
-  assert.deepEqual(getEditorMenuSection('race', 'file').actions.slice(6, 12), [
-    'generate-random-race',
-    'load-weathertech-raceway',
-    'load-nurburgring-nordschleife',
-    'load-col-de-turini',
-    'load-ouninpohja',
-    'load-daytona-tri-oval'
-  ]);
+  assert.deepEqual(getEditorMenuSection('race', 'file').actions.slice(6), ['generate-random-race', 'exit-main']);
   assert.equal(getEditorMenuSection('race', 'track').actions.includes('generate-random-race'), false);
   assert.equal(getEditorMenuSection('race', 'track').actions.includes('test-drive'), false);
   assert.equal(getEditorMenuSection('race', 'drive'), null);
@@ -820,14 +871,7 @@ test('Race shared authoring roots include tile-backed terrain commands without s
   assert.equal(getEditorMenuSection('race', 'race'), null);
   assert.equal(getEditorMenuSection('race', 'generate'), null);
   assert.equal(getEditorMenuSection('race', 'elevation'), null);
-  assert.deepEqual(getEditorMenuSection('race', 'file').actions.slice(6, 12), [
-    'generate-random-race',
-    'load-weathertech-raceway',
-    'load-nurburgring-nordschleife',
-    'load-col-de-turini',
-    'load-ouninpohja',
-    'load-daytona-tri-oval'
-  ]);
+  assert.deepEqual(getEditorMenuSection('race', 'file').actions.slice(6), ['generate-random-race', 'exit-main']);
   assert.ok(getEditorMenuSection('race', 'track').actions.includes('edge-tile'));
   assert.equal(getEditorMenuSection('race', 'track').actions.includes('paint-elevation'), false);
   assert.deepEqual(getEditorMenuSection('race', 'ground').actions.slice(0, 4), [
@@ -847,7 +891,7 @@ test('Race shared authoring roots include tile-backed terrain commands without s
     'ground-brush-strength-50'
   ].forEach((action) => assert.equal(getEditorMenuSection('race', 'ground').actions.includes(action), true, action));
   assert.deepEqual(getEditorMenuSection('race', 'sprites').actions, ['sprite-select', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']);
-  assert.deepEqual(getEditorMenuSection('race', 'settings').actions, ['ai-count', 'add-sprite', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale']);
+  assert.deepEqual(getEditorMenuSection('race', 'settings').actions, ['ai-count', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale']);
   assert.equal(uiSpecSource.includes('- File: standard document actions plus generate random race and load built-in reference tracks.'), true);
   assert.equal(uiSpecSource.includes('Surfaces: selected ground tile, paint ground, selected-segment edge tile'), false);
 });

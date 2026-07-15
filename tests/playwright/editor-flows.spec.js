@@ -6,6 +6,21 @@ async function waitForGameReady(page) {
   await expect(page.locator('#game')).toBeVisible();
 }
 
+async function configurePortraitViewport(page) {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => {
+    const game = window.__game;
+    game.setViewport({
+      width: 390,
+      height: 844,
+      scale: 1,
+      dpr: window.devicePixelRatio || 1,
+      isMobile: true
+    });
+    game.updateControlScheme();
+  });
+}
+
 test('smoke: load app and visit each editor with view/canvas checks', async ({ page }) => {
   await waitForGameReady(page);
 
@@ -45,6 +60,84 @@ test('smoke: load app and visit each editor with view/canvas checks', async ({ p
   }));
   expect(midiView.hasGridBounds).toBeTruthy();
   expect(midiView.activeTab).toBe('grid');
+});
+
+test('portrait smoke: affected editors keep shared bottom rail actions reachable', async ({ page }) => {
+  await waitForGameReady(page);
+  await configurePortraitViewport(page);
+
+  const expectedContextActions = {
+    midi: 'play',
+    pixel: 'brush',
+    level: 'playtest',
+    cutscene: 'play',
+    actor: 'playtest',
+    race: 'test-drive',
+    car: 'test-drive',
+    sfx: 'play'
+  };
+
+  for (const editorId of Object.keys(expectedContextActions)) {
+    await page.evaluate(async (id) => {
+      const game = window.__game;
+      const openers = {
+        midi: () => game.enterMidiComposer(),
+        pixel: () => game.enterPixelStudio({ returnState: 'title' }),
+        level: () => game.enterEditor(),
+        cutscene: () => game.enterCutsceneEditor(),
+        actor: () => game.enterActorEditor(),
+        race: () => game.enterRaceEditor(),
+        car: () => game.enterCarEditor(),
+        sfx: () => game.enterSfxEditor()
+      };
+      await openers[id]();
+    }, editorId);
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+
+    const result = await page.evaluate(({ id, contextAction }) => {
+      const game = window.__game;
+      const editor = {
+        midi: game.midiComposer,
+        pixel: game.pixelStudio,
+        level: game.editor,
+        cutscene: game.cutsceneEditor,
+        actor: game.actorEditor,
+        race: game.raceEditor,
+        car: game.carEditor,
+        sfx: game.sfxEditor
+      }[id];
+      const buttons = [
+        ...(editor?.buttons || []),
+        ...(editor?.uiButtons || []),
+        ...(editor?.bounds?.railButtons || [])
+      ];
+      const buttonIds = buttons.map((button) => button.id || button.actionId || button.kind).filter(Boolean);
+      const viewportH = game.viewport?.height || 844;
+      const menuButton = buttons.find((button) => button.id === 'menu');
+      return {
+        state: game.state,
+        deviceIsMobile: Boolean(game.deviceIsMobile),
+        hasMenu: buttonIds.includes('menu'),
+        hasUndo: buttonIds.includes('undo'),
+        hasRedo: buttonIds.includes('redo'),
+        hasContext: buttonIds.includes(contextAction),
+        bottomMenu: menuButton?.bounds ? Number(menuButton.bounds.y || 0) > viewportH * 0.55 : id === 'actor',
+        hasDesktopDropdown: Boolean(editor?.desktopDropdown || document.querySelector('.actor-editor-desktop-dropdown')),
+        hasDesktopTop: Boolean(document.querySelector('.actor-editor-desktop-top-menu-wrap'))
+      };
+    }, { id: editorId, contextAction: expectedContextActions[editorId] });
+
+    expect(result.deviceIsMobile, `${editorId} portrait mobile mode`).toBeTruthy();
+    expect(result.hasDesktopDropdown, `${editorId} portrait no desktop dropdown`).toBeFalsy();
+    expect(result.hasDesktopTop, `${editorId} portrait no desktop top menu`).toBeFalsy();
+    if (editorId !== 'actor') {
+      expect(result.hasMenu, `${editorId} portrait menu`).toBeTruthy();
+      expect(result.hasUndo, `${editorId} portrait undo`).toBeTruthy();
+      expect(result.hasRedo, `${editorId} portrait redo`).toBeTruthy();
+      expect(result.hasContext, `${editorId} portrait context action`).toBeTruthy();
+    }
+    expect(result.bottomMenu, `${editorId} portrait menu is bottom-first`).toBeTruthy();
+  }
 });
 
 test('regression: editor survives playtest round trip and still handles input', async ({ page }) => {

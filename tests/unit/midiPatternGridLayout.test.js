@@ -33,6 +33,17 @@ import MidiComposer, {
 import { getSharedPortraitMultiRowTabLayout } from '../../src/ui/uiSuite.js';
 import TouchInput from '../../src/input/touch.js';
 import MidiSongPlayer from '../../src/game/MidiSongPlayer.js';
+import {
+  EDITOR_LAYOUT_MODES,
+  getEditorDesktopLeftContextRoles,
+  getEditorMenuModeContract,
+  getEditorStandardRole
+} from '../../src/ui/shared/editorMenuSpec.js';
+import {
+  EDITOR_SURFACES,
+  GAMEPAD_SLIDE_OUT_MENU_CONTRACT,
+  getEditorModeAcceptanceContract
+} from '../../src/ui/shared/editorMenuLayout.js';
 
 const midiComposerSource = readFileSync(new URL('../../src/ui/MidiComposerCore.js', import.meta.url), 'utf8');
 const midiSongPlayerSource = readFileSync(new URL('../../src/game/MidiSongPlayer.js', import.meta.url), 'utf8');
@@ -53,6 +64,52 @@ function createMidiComposerRangeHarness() {
   composer.getSongTimelineTicks = () => 512;
   return composer;
 }
+
+test('MIDI is the primary editor reference across all shell modes', () => {
+  assert.equal(getEditorStandardRole('midi'), 'primary-reference');
+  assert.deepEqual(getEditorDesktopLeftContextRoles('midi'), [
+    'active-tool',
+    'transport',
+    'global-music-settings',
+    'tracks'
+  ]);
+
+  const expected = {
+    [EDITOR_LAYOUT_MODES.PORTRAIT]: {
+      rootSurface: 'bottom-rail',
+      commandSurface: 'bottom-sheet',
+      persistentContextSurface: 'bottom-sheet',
+      thumbstickPolicy: 'required'
+    },
+    [EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH]: {
+      rootSurface: 'left-rail',
+      commandSurface: 'right-drawer',
+      persistentContextSurface: 'bottom-rail',
+      thumbstickPolicy: 'required'
+    },
+    [EDITOR_LAYOUT_MODES.DESKTOP]: {
+      rootSurface: 'top-menu',
+      commandSurface: 'top-dropdown',
+      persistentContextSurface: 'left-context-panel',
+      thumbstickPolicy: 'suppressed'
+    },
+    [EDITOR_LAYOUT_MODES.GAMEPAD]: {
+      rootSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rootSurface,
+      commandSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface,
+      persistentContextSurface: EDITOR_SURFACES.workSurfaceOverlay,
+      thumbstickPolicy: 'suppressed'
+    }
+  };
+
+  Object.entries(expected).forEach(([mode, modeExpected]) => {
+    const menuContract = getEditorMenuModeContract('midi', mode);
+    const acceptance = getEditorModeAcceptanceContract(mode);
+    assert.equal(menuContract.rootSurface, modeExpected.rootSurface, mode);
+    assert.equal(menuContract.commandSurface, modeExpected.commandSurface, mode);
+    assert.equal(menuContract.persistentContextSurface, modeExpected.persistentContextSurface, mode);
+    assert.equal(acceptance.thumbstickPolicy, modeExpected.thumbstickPolicy, mode);
+  });
+});
 
 test('MIDI song player can play cutscene tracks once without looping', () => {
   const played = [];

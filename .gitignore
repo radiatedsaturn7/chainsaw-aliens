@@ -2,9 +2,21 @@
 node_modules/
 tools/test-runner/node_modules/
 
+# Build/output artifacts
+dist/
+build/
+coverage/
+*.log
+
 # Playwright artifacts
 playwright-report/
 test-results/
 
 # OS/editor files
 .DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.env*
+.vscode/
+.idea/

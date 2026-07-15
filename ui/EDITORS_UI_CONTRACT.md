@@ -73,6 +73,7 @@ Desktop-specific shell rules:
 - Shared mode surface contracts must validate with no overlap between `requiredModeSurfaces` and `suppressedModeSurfaces`; a surface cannot be both required and suppressed in the same mode.
 - Specialized desktop, landscape, and gamepad shell helpers must expose the same generic `requiredModeSurfaces` and `suppressedModeSurfaces` as `buildEditorMenuLayoutPlan()` for their mode.
 - Desktop context panels should label the selected context as `Active` or another inspector-style label, not `Menu`.
+- Desktop context panel roles must come from `EDITOR_DESKTOP_LEFT_CONTEXT_ROLES` in `src/ui/shared/editorMenuSpec.js`. MIDI is the primary reference, Pixel is the secondary reference, and Level, Cutscene, and Actor are required comparison editors; new editors must declare their context roles before adding bespoke left-panel content.
 - Editor-specific always-visible panels may live on the right or bottom when that better fits the workflow, for example Pixel layers on the right and frames along the bottom.
 
 Landscape touch shell rules:
@@ -93,6 +94,7 @@ Gamepad-specific shell rules:
 
 - Gamepad mode uses `GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rootSurface` for `surfaceRoles.persistentNavigationSurface`, not the static landscape `left-rail`.
 - Gamepad menus expose `gamepad.rootSurface`, `gamepad.submenuSurface`, controls, row activation, source surface, and suppressed touch surfaces from `GAMEPAD_SLIDE_OUT_MENU_CONTRACT`; `gamepad.submenuReplacesRoot` must stay `true`.
+- Generic mode acceptance must come from `EDITOR_MODE_ACCEPTANCE_CONTRACTS`/`getEditorModeAcceptanceContract()`, including root command surface, command/submenu surface, persistent context surface, thumbstick policy, drill direction, pointer type, row activation, scroll policy, and focus policy.
 - `buildGamepadSlideOutMenuPlan()` must expose `presentation` and `interaction` metadata for controller menus. Submenus keep action rows from the shared menu spec but identify as `sourceSurface: 'gamepad-slide-out'`, `surface: 'left-slide-out-drawer'`, `replacesRootRail: true`, `rowActivation: 'confirm-button'`, and controller-owned gesture scroll so editors do not treat gamepad submenus as desktop dropdown drawers.
 - Shared gamepad slide-out plans expose `suppressedTouchSurfaces` for `landscape-right-submenu`, `landscape-root-drawer`, `bottom-tool-rail`, and `touch-thumbstick` so controller menus replace the touch landscape menu stack instead of duplicating it.
 - Selecting a root with `A` replaces the left root rail with that submenu drawer; `B` returns to the root rail or exits the menu stack according to the shared controller menu state.
@@ -159,3 +161,14 @@ Editors should consume only shared color tokens:
 - **Modal (future shared primitive)**
   - Shared overlay + panel container pattern.
   - Not implemented in this foundation task.
+
+## Future Editor Onboarding
+
+Before a new editor ships, add it to the shared menu spec with:
+
+- Stable editor id, root menus, portrait roots, and desktop File/Edit/View roots.
+- Per-mode command surfaces through the shared placement and acceptance helpers.
+- Desktop left context roles in `EDITOR_DESKTOP_LEFT_CONTEXT_ROLES`.
+- Portrait and landscape contextual action ids for the shared Menu/Undo/Redo/action rail.
+- Gamepad focus/back behavior through the shared controller menu stack and slide-out helpers.
+- Any workflow exception documented in the feature contract with a unit or browser validation path.

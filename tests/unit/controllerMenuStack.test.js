@@ -8,8 +8,48 @@ import {
   buildControllerSystemMenu
 } from '../../src/ui/shared/input/controllerMenuStack.js';
 import { EDITOR_INPUT_ACTIONS } from '../../src/ui/shared/input/editorInputActions.js';
+import {
+  GAMEPAD_FOCUS_RING_CONTRACT,
+  GAMEPAD_SLIDE_OUT_MENU_CONTRACT,
+  getEditorModeAcceptanceContract
+} from '../../src/ui/shared/editorMenuLayout.js';
+import { EDITOR_LAYOUT_MODES } from '../../src/ui/shared/editorMenuSpec.js';
 
 const action = (type) => ({ type, source: 'gamepad' });
+
+test('controller menu stack follows gamepad left slide-out acceptance contract', () => {
+  const acceptance = getEditorModeAcceptanceContract(EDITOR_LAYOUT_MODES.GAMEPAD);
+  assert.equal(acceptance.rootCommandSurface, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rootSurface);
+  assert.equal(acceptance.commandSurface, GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface);
+  assert.equal(acceptance.thumbstickPolicy, 'suppressed');
+  assert.equal(acceptance.focusPolicy, GAMEPAD_FOCUS_RING_CONTRACT.focusRing);
+
+  const stack = new ControllerMenuStack({ siblingOrder: ['file', 'tools'] });
+  stack.setMenus({
+    root: {
+      id: 'root',
+      title: 'Root',
+      items: [
+        { id: 'file', label: 'File', submenu: 'file' },
+        { id: 'tools', label: 'Tools', submenu: 'tools' }
+      ]
+    },
+    file: { id: 'file', title: 'File', items: [{ id: 'save', label: 'Save', onSelect: () => {} }] },
+    tools: { id: 'tools', title: 'Tools', items: [{ id: 'draw', label: 'Draw', onSelect: () => {} }] }
+  });
+
+  stack.openRoot();
+  assert.equal(stack.getActiveMenuId(), 'root');
+  assert.equal(stack.getFocusedItem().id, 'file');
+
+  stack.handleActions([action(EDITOR_INPUT_ACTIONS.CONFIRM)], {}, 0.016);
+  assert.equal(stack.getActiveMenuId(), 'file');
+  assert.equal(stack.getFocusedItem().id, 'save');
+
+  stack.handleActions([action(EDITOR_INPUT_ACTIONS.CANCEL)], {}, 0.016);
+  assert.equal(stack.getActiveMenuId(), 'root');
+  assert.equal(stack.active, true);
+});
 
 test('controller menu uses Back/View as hierarchy back to root and exit confirm', () => {
   const stack = new ControllerMenuStack({ siblingOrder: ['tools', 'file'] });
