@@ -32,10 +32,22 @@ jobs:
         run: node --test tests/unit/editorMenuLayout.test.js tests/unit/editorMenuSpec.test.js tests/unit/portraitEditorMenuModels.test.js
 
   playwright:
-    name: Playwright editor contract tests
+    name: Playwright editor contract tests (${{ matrix.shard }})
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.58.2-noble
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: 1/4
+            artifact: 1-of-4
+          - shard: 2/4
+            artifact: 2-of-4
+          - shard: 3/4
+            artifact: 3-of-4
+          - shard: 4/4
+            artifact: 4-of-4
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -50,13 +62,13 @@ jobs:
         run: npm ci
 
       - name: Run Playwright tests
-        run: npm run test:playwright -- --reporter=line
+        run: npm run test:playwright -- --reporter=line --workers=2 --shard=${{ matrix.shard }}
 
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.artifact }}
           path: |
             playwright-report/
             test-results/
