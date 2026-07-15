@@ -978,6 +978,9 @@ test('landscape, desktop, and gamepad menu layout plans expose distinct mode sur
     EDITOR_SURFACES.desktopTopMenu,
     EDITOR_SURFACES.desktopDropdown,
     EDITOR_SURFACES.desktopLeftInspector,
+    EDITOR_SURFACES.rightDrawer,
+    EDITOR_SURFACES.rightOverlayDrawer,
+    EDITOR_SURFACES.leftOverlayDrawer,
     EDITOR_SURFACES.landscapeRightSubmenu,
     EDITOR_SURFACES.landscapeRootDrawer,
     EDITOR_SURFACES.bottomToolRail,
@@ -2692,6 +2695,55 @@ test('gamepad slide-out role contract is shared across every editor', () => {
     assert.equal(submenu.submenu.items.every((item) => item.sourceSurface === GAMEPAD_SLIDE_OUT_MENU_CONTRACT.sourceSurface), true, `${editorId} submenu source`);
     assert.equal(submenu.submenu.items.every((item) => item.surface === GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface), true, `${editorId} submenu surface`);
     assert.equal(submenu.submenu.items.every((item) => 'focused' in item && 'focusRing' in item), true, `${editorId} submenu focus metadata`);
+  }
+});
+
+test('gamepad editors use left slide-out navigation and suppress touch and desktop menu surfaces', () => {
+  for (const editorId of ALL_EDITOR_IDS) {
+    const root = buildGamepadSlideOutMenuPlan(editorId, {
+      rootOpen: true,
+      activeRootId: 'file',
+      focusedItemId: 'file'
+    });
+    const submenu = buildGamepadSlideOutMenuPlan(editorId, {
+      rootOpen: false,
+      activeRootId: 'file'
+    });
+    const layout = buildEditorMenuLayoutPlan(editorId, {
+      isMobile: true,
+      viewportWidth: 844,
+      viewportHeight: 390,
+      gamepadConnected: true
+    });
+
+    assert.equal(layout.mode, EDITOR_LAYOUT_MODES.GAMEPAD, `${editorId} layout mode`);
+    assert.equal(root.rootMenuSurface, EDITOR_SURFACES.leftSlideRail, `${editorId} root rail`);
+    assert.equal(root.submenuSurface, EDITOR_SURFACES.leftSlideOutDrawer, `${editorId} submenu drawer`);
+    assert.equal(submenu.submenu?.surface, EDITOR_SURFACES.leftSlideOutDrawer, `${editorId} submenu surface`);
+    assert.equal(submenu.submenu?.rightSubmenuSurface, null, `${editorId} right submenu suppressed`);
+    assert.equal(root.submenuReplacesRootRail, true, `${editorId} submenu replaces root`);
+    assert.equal(root.rootCollapsed, false, `${editorId} root remains visible before select`);
+    assert.equal(submenu.rootCollapsed, true, `${editorId} root collapses after select`);
+    assert.equal(root.interaction.pointerType, 'controller', `${editorId} pointer`);
+    assert.equal(root.interaction.rowActivation, 'confirm-button', `${editorId} activation`);
+    assert.equal(root.controls.confirm, 'A', `${editorId} confirm`);
+    assert.equal(root.controls.back, 'B', `${editorId} back`);
+    assert.equal(root.controls.siblingPrev, 'LB', `${editorId} previous root`);
+    assert.equal(root.controls.siblingNext, 'RB', `${editorId} next root`);
+    assert.equal(root.focusRingContract.visibleOnFocusedRows, true, `${editorId} visible focus rings`);
+    assert.equal(root.rootEntries.some((entry) => entry.focused && entry.focusRing), true, `${editorId} focused root row`);
+    assert.equal(submenu.submenu.items.some((item) => item.focused && item.focusRing), true, `${editorId} focused submenu row`);
+    assert.equal(root.surfaceVisibility[EDITOR_SURFACES.touchThumbstick], 'suppressed', `${editorId} touch thumbstick suppressed`);
+    assert.equal(root.surfaceVisibility[EDITOR_SURFACES.landscapeRightSubmenu], 'suppressed', `${editorId} landscape right submenu suppressed`);
+    assert.equal(root.surfaceVisibility[EDITOR_SURFACES.desktopTopMenu], 'suppressed', `${editorId} desktop top suppressed`);
+    assert.equal(root.surfaceVisibility[EDITOR_SURFACES.desktopDropdown], 'suppressed', `${editorId} desktop dropdown suppressed`);
+    assert.equal(root.surfaceVisibility[EDITOR_SURFACES.rightDrawer], 'suppressed', `${editorId} right drawer suppressed`);
+    assert.equal(canRenderEditorPlanSurface(root, EDITOR_SURFACES.touchThumbstick), false, `${editorId} no virtual thumbstick`);
+    assert.equal(canRenderEditorPlanSurface(root, EDITOR_SURFACES.rightDrawer), false, `${editorId} no touch right drawer`);
+    assert.equal(canRenderEditorPlanSurface(root, EDITOR_SURFACES.landscapeRightSubmenu), false, `${editorId} no touch drilldown`);
+    assert.equal(canRenderEditorPlanSurface(root, EDITOR_SURFACES.desktopTopMenu), false, `${editorId} no desktop top menu`);
+    assert.equal(canRenderEditorPlanSurface(root, EDITOR_SURFACES.desktopDropdown), false, `${editorId} no desktop dropdown`);
+    assert.equal(canRenderEditorPlanSurface(root, EDITOR_SURFACES.leftSlideOutDrawer), true, `${editorId} slide-out visible`);
   }
 });
 

@@ -1015,12 +1015,13 @@ test('comparison editors keep landscape and gamepad navigation reachable', async
     window.__game.input.isGamepadConnected = () => true;
   });
 
-  for (const editorId of ['pixel', 'level', 'cutscene', 'actor']) {
+  for (const editorId of ['pixel', 'tile', 'level', 'cutscene', 'actor']) {
     await openEditor(page, editorId);
     const gamepad = await page.evaluate((id) => {
       const game = window.__game;
       const editor = {
         pixel: game.pixelStudio,
+        tile: game.pixelStudio,
         level: game.editor,
         cutscene: game.cutsceneEditor,
         actor: game.actorEditor
@@ -1031,8 +1032,11 @@ test('comparison editors keep landscape and gamepad navigation reachable', async
         slideOut: Boolean(gamepadState?.drawSlideOut ?? editor?.shouldDrawGamepadSubmenuOnLeft?.(844, 390)),
         controllerOverlay: Boolean(gamepadState?.drawControllerOverlay ?? document.querySelector('.actor-editor-gamepad-slideout')),
         thumbstickRadius: Number(editor?.panJoystick?.radius || editor?.thumbstick?.radius || 0),
+        hasDesktopTop: Boolean(editor?.desktopTopMenuButtons?.length || editor?.bounds?.desktopTopMenuButtons?.length || document.querySelector('.actor-editor-desktop-top-menu-wrap')),
+        hasDesktopDropdown: Boolean(editor?.desktopDropdown || document.querySelector('.actor-editor-desktop-dropdown')),
         renderedNavigationSurface: gamepadState?.isLandscapeMenuMode ? 'left-slide-rail' : null,
         renderedSubmenuSurface: gamepadState?.drawSlideOut ? 'left-slide-out-drawer' : null,
+        renderedRightSubmenuSurface: gamepadState?.drawSlideOut ? null : 'right-drawer',
         renderedPointerType: 'controller',
         renderedRowActivation: 'confirm-button'
       };
@@ -1042,8 +1046,11 @@ test('comparison editors keep landscape and gamepad navigation reachable', async
     expect(gamepad.slideOut, `${editorId} gamepad slide-out`).toBeTruthy();
     expect(gamepad.controllerOverlay, `${editorId} gamepad overlay`).toBeTruthy();
     expect(gamepad.thumbstickRadius, `${editorId} gamepad virtual thumbstick`).toBe(0);
+    expect(gamepad.hasDesktopTop, `${editorId} gamepad desktop top menu`).toBeFalsy();
+    expect(gamepad.hasDesktopDropdown, `${editorId} gamepad desktop dropdown`).toBeFalsy();
     expect(gamepad.renderedNavigationSurface, `${editorId} gamepad navigation surface`).toBe(GAMEPAD_PRESENTATION.persistentNavigationSurface);
     expect(gamepad.renderedSubmenuSurface, `${editorId} gamepad submenu surface`).toBe(GAMEPAD_PRESENTATION.submenuSurface);
+    expect(gamepad.renderedRightSubmenuSurface, `${editorId} gamepad right submenu surface`).toBe(GAMEPAD_PRESENTATION.rightSubmenuSurface);
     expect(gamepad.renderedPointerType, `${editorId} gamepad pointer type`).toBe(GAMEPAD_INTERACTION.pointerType);
     expect(gamepad.renderedRowActivation, `${editorId} gamepad row activation`).toBe(GAMEPAD_INTERACTION.rowActivation);
   }
@@ -1058,6 +1065,7 @@ test('mobile gamepad landscape older editors render submenus on the left slide-o
 
   const cases = [
     { editorId: 'pixel', targetMenuId: 'draw' },
+    { editorId: 'tile', targetMenuId: 'tiles' },
     { editorId: 'level', targetMenuId: 'toolbox' },
     { editorId: 'midi', targetMenuId: 'grid' },
     { editorId: 'sfx', targetMenuId: 'generate' },
@@ -1070,6 +1078,7 @@ test('mobile gamepad landscape older editors render submenus on the left slide-o
       const game = window.__game;
       const editor = {
         pixel: game.pixelStudio,
+        tile: game.pixelStudio,
         level: game.editor,
         midi: game.midiComposer,
         sfx: game.sfxEditor,
@@ -1084,6 +1093,7 @@ test('mobile gamepad landscape older editors render submenus on the left slide-o
       await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
       const panel = id === 'pixel'
+        || id === 'tile'
         ? editor.gamepadSlideOutMenuMeta?.scrollBounds
         : id === 'level'
           ? editor.panelScrollHitBounds
@@ -1105,6 +1115,7 @@ test('mobile gamepad landscape older editors render submenus on the left slide-o
         panelW: Number(panel?.w ?? panel?.width ?? 0),
         panelY: Number(panel?.y ?? 9999),
         hasPanel: Boolean(panel),
+        hasDesktopTop: Boolean(editor.desktopTopMenuButtons?.length || editor.bounds?.desktopTopMenuButtons?.length),
         desktopDropdown: Boolean(editor.desktopDropdown),
         mobileRootBounds: Boolean(editor.mobileLandscapeRootMenuBounds),
         renderedSubmenuSurface: panel && Number(panel.x ?? 9999) < 360 ? 'left-slide-out-drawer' : null,
@@ -1126,6 +1137,7 @@ test('mobile gamepad landscape older editors render submenus on the left slide-o
     expect(result.renderedRightSubmenuSurface, `${editorId} rendered gamepad right submenu surface`).toBe(GAMEPAD_PRESENTATION.rightSubmenuSurface);
     expect(result.renderedPointerType, `${editorId} rendered gamepad pointer type`).toBe(GAMEPAD_INTERACTION.pointerType);
     expect(result.renderedRowActivation, `${editorId} rendered gamepad row activation`).toBe(GAMEPAD_INTERACTION.rowActivation);
+    expect(result.hasDesktopTop, `${editorId} no desktop top in gamepad landscape`).toBeFalsy();
     expect(result.desktopDropdown, `${editorId} no desktop dropdown in gamepad landscape`).toBeFalsy();
   }
 

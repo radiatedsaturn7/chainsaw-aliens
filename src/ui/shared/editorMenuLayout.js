@@ -140,6 +140,9 @@ export const GAMEPAD_SLIDE_OUT_MENU_CONTRACT = {
     siblingNext: 'RB'
   },
   suppressedTouchSurfaces: [
+    EDITOR_SURFACES.rightDrawer,
+    EDITOR_SURFACES.rightOverlayDrawer,
+    EDITOR_SURFACES.leftOverlayDrawer,
     EDITOR_SURFACES.landscapeRightSubmenu,
     EDITOR_SURFACES.landscapeRootDrawer,
     EDITOR_SURFACES.bottomToolRail,
@@ -232,6 +235,9 @@ export const SUPPRESSED_MODE_SURFACES = {
     EDITOR_SURFACES.desktopTopMenu,
     EDITOR_SURFACES.desktopDropdown,
     EDITOR_SURFACES.desktopLeftInspector,
+    EDITOR_SURFACES.rightDrawer,
+    EDITOR_SURFACES.rightOverlayDrawer,
+    EDITOR_SURFACES.leftOverlayDrawer,
     EDITOR_SURFACES.landscapeRightSubmenu,
     EDITOR_SURFACES.landscapeRootDrawer,
     EDITOR_SURFACES.bottomToolRail,

@@ -79,7 +79,7 @@ Shared implementation helpers:
 - Gamepad uses the landscape spatial model.
 - Root menu appears on the left while choosing a section.
 - After selecting a section, the root rail collapses or slides away and the submenu slides out.
-- Gamepad slide-out surfaces, controls, row activation, and suppressed touch surfaces come from `GAMEPAD_SLIDE_OUT_MENU_CONTRACT` so every editor replaces the touch landscape menu stack the same way.
+- Gamepad slide-out surfaces, controls, row activation, and suppressed touch surfaces come from `GAMEPAD_SLIDE_OUT_MENU_CONTRACT` so every editor replaces the touch landscape menu stack, including generic left/right touch drawers, the same way.
 - `A` selects, `B` backs out of submenu/root, `Start` opens the system menu, and `Back` toggles focus.
 - `LB/RB` switch sibling root sections. D-pad and left stick navigate focus. Right stick pans the work surface. `LT/RT` zoom where applicable.
 - Focus rings must be visible on every actionable item.

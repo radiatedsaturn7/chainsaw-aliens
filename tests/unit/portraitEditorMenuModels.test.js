@@ -1039,6 +1039,53 @@ test('all editor touch landscape paths use the shared left-root and right-drilld
   });
 });
 
+test('all editor gamepad paths use the shared left slide-out contract', () => {
+  SHARED_EDITOR_IDS.forEach((editorId) => {
+    const source = editorSourceById[editorId];
+    const plan = buildGamepadSlideOutMenuPlan(editorId, {
+      rootOpen: false,
+      activeRootId: 'file'
+    });
+
+    assert.equal(
+      source.includes(`buildGamepadSlideOutMenuPlan('${editorId}'`)
+        || source.includes('buildGamepadSlideOutMenuPlan(this.editorId'),
+      true,
+      `${editorId} should build gamepad menus from the shared slide-out helper`
+    );
+    assert.equal(source.includes('resolveGamepadMenuState({'), true, `${editorId} should resolve gamepad mode through the shared helper`);
+    assert.equal(plan.rootMenuSurface, 'left-slide-rail', `${editorId} root surface`);
+    assert.equal(plan.submenuSurface, 'left-slide-out-drawer', `${editorId} submenu surface`);
+    assert.equal(plan.submenuReplacesRootRail, true, `${editorId} submenu replaces root rail`);
+    assert.equal(plan.rightSubmenuSurface, null, `${editorId} should not own a right drill-down in gamepad mode`);
+    assert.equal(plan.controls.confirm, 'A', `${editorId} confirm control`);
+    assert.equal(plan.controls.back, 'B', `${editorId} back control`);
+    assert.equal(plan.focusRingContract.visibleOnFocusedRows, true, `${editorId} focus ring visibility`);
+    assert.equal(plan.submenu.items.some((item) => item.focused && item.focusRing), true, `${editorId} focused submenu row`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.touchThumbstick), false, `${editorId} should suppress virtual thumbstick`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.rightDrawer), false, `${editorId} should suppress touch right drawer`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.desktopTopMenu), false, `${editorId} should suppress desktop top menu`);
+    assert.equal(canRenderEditorPlanSurface(plan, EDITOR_SURFACES.gamepadSlideOut), true, `${editorId} should expose gamepad slide-out source`);
+
+    if (editorId === 'actor') {
+      const slideOutIndex = source.indexOf('  renderGamepadSlideOutRail(menuId)');
+      const slideOutBody = source.slice(slideOutIndex, source.indexOf('  renderDesktopTopMenu(shellLayout)', slideOutIndex));
+      assert.equal(slideOutBody.includes('plan.headerHint'), true, `${editorId} should render the shared gamepad hint`);
+      assert.equal(slideOutBody.includes('plannedFocusById'), true, `${editorId} should render planned focus metadata`);
+      assert.equal(slideOutBody.includes('renderDesktopTopMenu'), false, `${editorId} gamepad slide-out should not render desktop top menu`);
+      return;
+    }
+
+    assert.equal(source.includes('drawSharedGamepadSlideOutHeader'), true, `${editorId} should use the shared gamepad slide-out header`);
+    assert.equal(source.includes('plan.headerHint') || source.includes('headerHint'), true, `${editorId} should pass shared gamepad control hints`);
+  });
+
+  assert.equal(pixelStudioSource.includes("buildGamepadSlideOutMenuPlan('tile'"), true, 'tile picker should build its own gamepad plan');
+  assert.equal(pixelStudioSource.includes('this.tileGamepadFocusedItemId'), true, 'tile picker should track focused gamepad rows');
+  assert.equal(raceEditorSource.includes('buildGamepadSlideOutMenuPlan(this.editorId'), true, 'Race and Car should share the gamepad plan through editorId');
+  assert.equal(raceEditorSource.includes('this.gamepadFocusedItemId'), true, 'Race and Car should track focused gamepad rows');
+});
+
 test('Pixel portrait reserves a compact swatch strip only when the sheet is closed', () => {
   for (const [width, height] of [[360, 740], [390, 844], [414, 896]]) {
     const closed = buildPixelMobileEditorLayout(width, height, {
