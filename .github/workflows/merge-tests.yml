@@ -49,8 +49,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Playwright editor contract tests
-        run: npx playwright test tests/playwright/editor-layout-contract.spec.js --reporter=line
+      - name: Run Playwright CI smoke test
+        run: npx playwright test tests/playwright/ci-smoke.spec.js --reporter=line
 
       - name: Upload Playwright report
         if: always()
