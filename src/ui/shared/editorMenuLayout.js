@@ -15,6 +15,13 @@ import {
   getSharedMobileLandscapeEditorLayout
 } from '../uiSuite.js';
 
+const deepFreeze = (value) => {
+  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
+  Object.freeze(value);
+  Object.values(value).forEach((entry) => deepFreeze(entry));
+  return value;
+};
+
 const DEFAULT_DRAG_SCROLL = {
   enabled: true,
   thresholdPx: 8,
@@ -466,6 +473,61 @@ export const MODE_INTERACTION_CONTRACTS = {
   }
 };
 
+export const EDITOR_MODE_ACCEPTANCE_CONTRACTS = deepFreeze({
+  [EDITOR_LAYOUT_MODES.PORTRAIT]: {
+    rootCommandSurface: EDITOR_SURFACES.bottomRail,
+    commandSurface: EDITOR_SURFACES.bottomSheet,
+    submenuSurface: EDITOR_SURFACES.bottomSheet,
+    persistentContextSurface: EDITOR_SURFACES.bottomSheet,
+    thumbstickPolicy: 'required',
+    menuDrillDirection: 'up',
+    pointerType: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.PORTRAIT].pointerType,
+    rowActivation: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.PORTRAIT].rowActivation,
+    gestureScroll: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.PORTRAIT].gestureScroll,
+    wheelRoutesToHoveredPanel: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.PORTRAIT].wheelRoutesToHoveredPanel,
+    focusPolicy: 'touch-hit-targets'
+  },
+  [EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH]: {
+    rootCommandSurface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootSurface,
+    commandSurface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.commandSurface,
+    submenuSurface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.submenuSurface,
+    persistentContextSurface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.persistentContextSurface,
+    thumbstickPolicy: 'required',
+    menuDrillDirection: 'right',
+    pointerType: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH].pointerType,
+    rowActivation: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH].rowActivation,
+    gestureScroll: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH].gestureScroll,
+    wheelRoutesToHoveredPanel: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH].wheelRoutesToHoveredPanel,
+    focusPolicy: 'touch-hit-targets'
+  },
+  [EDITOR_LAYOUT_MODES.DESKTOP]: {
+    rootCommandSurface: EDITOR_SURFACES.topMenu,
+    commandSurface: DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface,
+    submenuSurface: DESKTOP_SHELL_SURFACE_CONTRACT.commandSurface,
+    persistentContextSurface: EDITOR_SURFACES.leftContextPanel,
+    thumbstickPolicy: 'suppressed',
+    menuDrillDirection: 'down',
+    pointerType: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.DESKTOP].pointerType,
+    rowActivation: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.DESKTOP].rowActivation,
+    gestureScroll: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.DESKTOP].gestureScroll,
+    wheelRoutesToHoveredPanel: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.DESKTOP].wheelRoutesToHoveredPanel,
+    focusPolicy: 'hover-and-keyboard'
+  },
+  [EDITOR_LAYOUT_MODES.GAMEPAD]: {
+    rootCommandSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.rootSurface,
+    commandSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface,
+    submenuSurface: GAMEPAD_SLIDE_OUT_MENU_CONTRACT.submenuSurface,
+    persistentContextSurface: EDITOR_SURFACES.workSurfaceOverlay,
+    thumbstickPolicy: 'suppressed',
+    menuDrillDirection: 'left-slide-replace',
+    pointerType: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.GAMEPAD].pointerType,
+    rowActivation: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.GAMEPAD].rowActivation,
+    gestureScroll: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.GAMEPAD].gestureScroll,
+    wheelRoutesToHoveredPanel: MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.GAMEPAD].wheelRoutesToHoveredPanel,
+    focusPolicy: GAMEPAD_FOCUS_RING_CONTRACT.focusRing
+  }
+});
+
 export function getEditorModePresentationInteractionContract(mode = EDITOR_LAYOUT_MODES.DESKTOP) {
   const resolvedMode = Object.values(EDITOR_LAYOUT_MODES).includes(mode)
     ? mode
@@ -477,17 +539,81 @@ export function getEditorModePresentationInteractionContract(mode = EDITOR_LAYOU
   };
 }
 
+export function getEditorModeAcceptanceContract(mode = EDITOR_LAYOUT_MODES.DESKTOP) {
+  const resolvedMode = Object.values(EDITOR_LAYOUT_MODES).includes(mode)
+    ? mode
+    : EDITOR_LAYOUT_MODES.DESKTOP;
+  return {
+    mode: resolvedMode,
+    ...(EDITOR_MODE_ACCEPTANCE_CONTRACTS[resolvedMode] || EDITOR_MODE_ACCEPTANCE_CONTRACTS[EDITOR_LAYOUT_MODES.DESKTOP])
+  };
+}
+
 export function getEditorModeContract(mode = EDITOR_LAYOUT_MODES.DESKTOP) {
   const surface = getEditorModeSurfaceContract(mode);
   const presentationInteraction = getEditorModePresentationInteractionContract(surface.mode);
+  const acceptance = getEditorModeAcceptanceContract(surface.mode);
   return {
     mode: surface.mode,
     requiredModeSurfaces: surface.requiredModeSurfaces,
     suppressedModeSurfaces: surface.suppressedModeSurfaces,
     surfaceVisibility: surface.surfaceVisibility,
     presentation: presentationInteraction.presentation,
-    interaction: presentationInteraction.interaction
+    interaction: presentationInteraction.interaction,
+    acceptance
   };
+}
+
+export function validateEditorModeAcceptanceContracts() {
+  const errors = [];
+  const requiredKeys = [
+    'rootCommandSurface',
+    'commandSurface',
+    'submenuSurface',
+    'persistentContextSurface',
+    'thumbstickPolicy',
+    'menuDrillDirection',
+    'pointerType',
+    'rowActivation',
+    'gestureScroll',
+    'wheelRoutesToHoveredPanel',
+    'focusPolicy'
+  ];
+  const knownSurfaces = new Set(Object.values(EDITOR_SURFACES));
+  Object.values(EDITOR_LAYOUT_MODES).forEach((mode) => {
+    const acceptance = EDITOR_MODE_ACCEPTANCE_CONTRACTS[mode];
+    const presentation = MODE_PRESENTATION_CONTRACTS[mode] || {};
+    const interaction = MODE_INTERACTION_CONTRACTS[mode] || {};
+    if (!acceptance) {
+      errors.push(`${mode} requires acceptance contract.`);
+      return;
+    }
+    requiredKeys.forEach((key) => {
+      if (!(key in acceptance)) errors.push(`${mode} acceptance missing "${key}".`);
+    });
+    ['rootCommandSurface', 'commandSurface', 'submenuSurface', 'persistentContextSurface'].forEach((key) => {
+      if (!knownSurfaces.has(acceptance[key])) errors.push(`${mode} acceptance ${key} uses unknown editor surface "${acceptance[key]}".`);
+    });
+    if (acceptance.rootCommandSurface !== presentation.rootSurface) errors.push(`${mode} acceptance rootCommandSurface must match presentation rootSurface.`);
+    if (acceptance.commandSurface !== presentation.commandSurface) errors.push(`${mode} acceptance commandSurface must match presentation commandSurface.`);
+    if (acceptance.submenuSurface !== presentation.submenuSurface) errors.push(`${mode} acceptance submenuSurface must match presentation submenuSurface.`);
+    if (acceptance.persistentContextSurface !== presentation.persistentContextSurface) errors.push(`${mode} acceptance persistentContextSurface must match presentation persistentContextSurface.`);
+    if (acceptance.pointerType !== interaction.pointerType) errors.push(`${mode} acceptance pointerType must match interaction pointerType.`);
+    if (acceptance.rowActivation !== interaction.rowActivation) errors.push(`${mode} acceptance rowActivation must match interaction rowActivation.`);
+    if (acceptance.gestureScroll !== interaction.gestureScroll) errors.push(`${mode} acceptance gestureScroll must match interaction gestureScroll.`);
+    if (acceptance.wheelRoutesToHoveredPanel !== interaction.wheelRoutesToHoveredPanel) errors.push(`${mode} acceptance wheelRoutesToHoveredPanel must match interaction wheelRoutesToHoveredPanel.`);
+  });
+  [EDITOR_LAYOUT_MODES.PORTRAIT, EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH].forEach((mode) => {
+    if (EDITOR_MODE_ACCEPTANCE_CONTRACTS[mode]?.thumbstickPolicy !== 'required') {
+      errors.push(`${mode} must require the virtual thumbstick.`);
+    }
+  });
+  [EDITOR_LAYOUT_MODES.DESKTOP, EDITOR_LAYOUT_MODES.GAMEPAD].forEach((mode) => {
+    if (EDITOR_MODE_ACCEPTANCE_CONTRACTS[mode]?.thumbstickPolicy !== 'suppressed') {
+      errors.push(`${mode} must suppress the virtual thumbstick.`);
+    }
+  });
+  return errors;
 }
 
 export function validateEditorModePresentationInteractionContracts() {

@@ -15,7 +15,7 @@ import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPA
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
-import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopRootIdForSection, getEditorDesktopSectionId, getEditorPortraitRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
+import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopLeftContextRoles, getEditorDesktopRootIdForSection, getEditorDesktopSectionId, getEditorPortraitRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
 import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, buildMenuScrollDragState, canRenderEditorPlanSurface, canRenderEditorSurface, createDesktopDropdownCommandHit, createDesktopRootMenuHit, createPendingDesktopDropdownHit, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveDesktopRootMenuHit, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveMenuScrollDrag, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
 import { DEFAULT_TILE_TYPES } from '../content/tileDefinitions.js';
 
@@ -9764,7 +9764,7 @@ export default class Editor {
       ];
       drawSharedDesktopContextPanel(ctx, contextPanel, {
         lines: contextLines,
-        contentRoles: ['document-summary', 'active-tool-summary', 'selection-summary', 'contextual-quick-actions', 'status'],
+        contentRoles: getEditorDesktopLeftContextRoles('level'),
         padding: 12,
         lineGap: 19,
         fill: UI_SUITE.editorPanel.background,

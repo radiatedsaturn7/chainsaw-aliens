@@ -6,7 +6,7 @@ import { buildSharedEditorFileMenu, getSharedMobilePortraitEditorLayout, getShar
 import { getActorArtDurationSignature, invalidateActorDefinitionCache, resolveActorArtFrameDurationMs } from '../entities/ScriptedActor.js';
 import { invalidateBuiltInActorVisualCache } from '../entities/BuiltInActorVisuals.js';
 import { applyDesktopDropdownCommandDataset, applyDesktopRootMenuDataset, applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, canRenderEditorPlanSurface, canRenderEditorSurface, createPendingDesktopDropdownHit, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnDomPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
-import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopSectionId, getEditorMenuSection, getEditorPortraitRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
+import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopLeftContextRoles, getEditorDesktopSectionId, getEditorMenuSection, getEditorPortraitRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, renderDomControllerMenu } from './shared/input/controllerMenuStack.js';
 
@@ -1894,7 +1894,7 @@ export default class ActorEditor {
     const rail = el('div', 'actor-editor-menu-rail actor-editor-desktop-options');
     rail.dataset.surface = 'left-context-panel';
     rail.dataset.role = 'context-inspector';
-    rail.dataset.contentRoles = 'document-summary selection-summary status';
+    rail.dataset.contentRoles = getEditorDesktopLeftContextRoles('actor').join(' ');
     rail.dataset.duplicatesTopDropdownCommands = 'false';
     const title = el('div', 'actor-editor-field-label', 'Active');
     rail.appendChild(title);

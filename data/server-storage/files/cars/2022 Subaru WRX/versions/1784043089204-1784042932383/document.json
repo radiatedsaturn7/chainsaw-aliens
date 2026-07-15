@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 2,
+  "kind": "race-car",
+  "savedAt": 1784042932382,
+  "selectedCarId": "starter-rwd",
+  "car": {
+    "id": "starter-rwd",
+    "name": "2022 Subaru WRX",
+    "class": "road",
+    "art": {
+      "body": null,
+      "artRef": null,
+      "shell": null,
+      "tires": [],
+      "spoilers": [],
+      "turnFrames": {
+        "left": null,
+        "center": null,
+        "right": null
+      },
+      "shellFrames": {
+        "mode": "8-way",
+        "artRef": null,
+        "slots": {
+          "front": null,
+          "frontRight": null,
+          "right": null,
+          "rearRight": null,
+          "rear": null,
+          "rearLeft": null,
+          "left": null,
+          "frontLeft": null
+        },
+        "reverseFrameIndex": 0
+      },
+      "tireTreads": {
+        "tarmac": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "rain": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "dirt": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "offroad": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "snow": {
+          "artRef": null,
+          "frameIndex": 0
+        }
+      },
+      "addOns": [],
+      "bodyScaleX": 1,
+      "bodyScaleY": 1,
+      "tireScaleX": 1,
+      "tireScaleY": 1,
+      "bodyOffsetX": 0,
+      "bodyOffsetY": 0,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0,
+      "brakeLightArtRef": null,
+      "brakeLightScaleX": 1,
+      "brakeLightScaleY": 1,
+      "brakeLightOffsetX": 0,
+      "brakeLightOffsetY": 0,
+      "layerVisibility": {
+        "body": true,
+        "frontWheels": true,
+        "rearWheels": true
+      }
+    },
+    "dimensions": {
+      "lengthM": 4.67,
+      "widthM": 1.83,
+      "wheelbaseM": 2.67,
+      "trackFrontM": 1.56,
+      "trackRearM": 1.56
+    },
+    "audio": {
+      "engineSoundId": null,
+      "engineProfile": "wrx-flat-four-cvt"
+    },
+    "setup": {
+      "defaultTireCompound": "tarmac",
+      "tireCompoundByWheel": {
+        "fl": "tarmac",
+        "fr": "tarmac",
+        "rl": "tarmac",
+        "rr": "tarmac"
+      },
+      "tirePressurePsi": {
+        "fl": 32,
+        "fr": 32,
+        "rl": 31,
+        "rr": 31
+      },
+      "tireSize": {
+        "widthMm": 245,
+        "aspectRatio": 40,
+        "wheelDiameterIn": 18
+      }
+    },
+    "defaultTransmissionType": "automatic",
+    "transmissions": {
+      "manual": {
+        "type": "manual",
+        "label": "6MT",
+        "shiftMode": "manual",
+        "shiftTimeMs": 420,
+        "clutchDelayMs": 90,
+        "launchRpm": 3200,
+        "autoUpshiftRpm": 5900,
+        "autoDownshiftRpm": 1750,
+        "gearRatios": [
+          3.454,
+          1.947,
+          1.366,
+          0.972,
+          0.738,
+          0.666
+        ],
+        "reverseRatio": 3.636,
+        "gearFinalDrive": 4.11,
+        "drivetrainEfficiency": 0.84,
+        "engineProfile": "wrx-flat-four-manual"
+      },
+      "automatic": {
+        "type": "automatic",
+        "label": "SPT",
+        "shiftMode": "automatic",
+        "shiftTimeMs": 220,
+        "clutchDelayMs": 0,
+        "launchRpm": 2600,
+        "autoUpshiftRpm": 6250,
+        "autoDownshiftRpm": 1550,
+        "torqueConverterSlip": 0.12,
+        "gearRatios": [
+          3.49,
+          2.19,
+          1.55,
+          1.18,
+          0.92,
+          0.74,
+          0.58,
+          0.47
+        ],
+        "reverseRatio": 3.32,
+        "gearFinalDrive": 4.44,
+        "drivetrainEfficiency": 0.9,
+        "accelerationCalibration": 1.09,
+        "weightKg": 1603,
+        "zeroToSixtySec": 5.9,
+        "engineProfile": "wrx-flat-four-cvt"
+      }
+    },
+    "tuning": {
+      "drivetrain": "awd",
+      "powerHp": 271,
+      "torqueLbFt": 258,
+      "weightKg": 1495,
+      "frontWeightDistribution": 0.58,
+      "engineDisplacementL": 2.4,
+      "aspiration": "Turbocharged",
+      "tireGrip": 1,
+      "brakeBalance": 0.56,
+      "brakePressure": 1,
+      "redlineRpm": 6100,
+      "revLimitRpm": 6300,
+      "revLimiterDropRpm": 360,
+      "idleRpm": 850,
+      "torquePeakStartRpm": 2000,
+      "torquePeakEndRpm": 5200,
+      "torqueFalloffRpm": 6500,
+      "wheelRadiusM": 0.337,
+      "topSpeedMph": 161,
+      "zeroToSixtySec": 5.8,
+      "dragCoefficient": 0.08,
+      "accelerationCalibration": 1.06,
+      "drivetrainEfficiency": 0.84,
+      "differentialAccel": 0.45,
+      "differentialDecel": 0.2,
+      "frontDifferentialAccel": 0.35,
+      "frontDifferentialDecel": 0.18,
+      "rearDifferentialAccel": 0.45,
+      "rearDifferentialDecel": 0.2,
+      "centerDifferentialBalance": 0.55,
+      "gearFinalDrive": 4.11,
+      "camberFront": -0.8,
+      "camberRear": -0.7,
+      "toeFront": 0,
+      "toeRear": 0.1,
+      "casterFront": 5.8,
+      "aeroFront": 0.25,
+      "aeroRear": 0.35,
+      "springFront": 0.5,
+      "springRear": 0.5,
+      "rideHeightFront": 0.5,
+      "rideHeightRear": 0.5,
+      "suspensionTravelFront": 0.5,
+      "suspensionTravelRear": 0.5,
+      "dampingFront": 0.5,
+      "dampingRear": 0.5,
+      "bumpFront": 0.48,
+      "bumpRear": 0.48,
+      "reboundFront": 0.52,
+      "reboundRear": 0.52,
+      "antiRollFront": 0.5,
+      "antiRollRear": 0.5,
+      "shiftTimeMs": 420,
+      "clutchDelayMs": 90,
+      "launchRpm": 3200,
+      "autoUpshiftRpm": 5900,
+      "autoDownshiftRpm": 1750,
+      "gearRatios": [
+        3.454,
+        1.947,
+        1.366,
+        0.972,
+        0.738,
+        0.666
+      ],
+      "reverseRatio": 3.636,
+      "engineCurve": {
+        "rpmMin": 850,
+        "rpmMax": 6300,
+        "torquePoints": [
+          {
+            "rpm": 850,
+            "torqueLbFt": 108
+          },
+          {
+            "rpm": 2000,
+            "torqueLbFt": 258
+          },
+          {
+            "rpm": 5200,
+            "torqueLbFt": 258
+          },
+          {
+            "rpm": 6100,
+            "torqueLbFt": 233
+          },
+          {
+            "rpm": 6300,
+            "torqueLbFt": 150
+          }
+        ]
+      }
+    }
+  }
+}

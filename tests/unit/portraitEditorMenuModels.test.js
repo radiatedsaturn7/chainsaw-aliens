@@ -34,9 +34,10 @@ import { buildSfxPortraitEditorLayout, buildSfxPortraitMenuModel, buildSfxShared
 import {
   buildLandscapeTouchEditorShellPlan,
   COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT,
-  COMPACT_LANDSCAPE_COMMAND_RAIL_WIDTH
+  COMPACT_LANDSCAPE_COMMAND_RAIL_WIDTH,
+  getEditorModeAcceptanceContract
 } from '../../src/ui/shared/editorMenuLayout.js';
-import { PORTRAIT_ROOT_MAX_ITEMS, SHARED_EDITOR_IDS, STANDARD_EDITOR_ACTION_RAIL_PREFIX, getEditorPortraitRootMenuEntries, getStandardEditorActionRailIds } from '../../src/ui/shared/editorMenuSpec.js';
+import { EDITOR_LAYOUT_MODES, PORTRAIT_ROOT_MAX_ITEMS, SHARED_EDITOR_IDS, STANDARD_EDITOR_ACTION_RAIL_PREFIX, getEditorPortraitRootMenuEntries, getStandardEditorActionRailIds } from '../../src/ui/shared/editorMenuSpec.js';
 import { buildCarPortraitMenuModel, buildRacePortraitMenuModel } from '../../src/ui/RaceEditor.js';
 import { mergeBuiltInActorOverride } from '../../src/content/builtinActorOverrides.js';
 import { BUILT_IN_ACTOR_VISUAL_SCALE, getBuiltInActorOverrideDrawSize } from '../../src/entities/BuiltInActorVisuals.js';
@@ -229,6 +230,55 @@ test('portrait editor action rails share the standard Menu Undo Redo prefix', ()
   });
   Object.values(editorSourceById).forEach((source) => {
     assert.equal(source.includes("bottomRailActions: ['menu', 'undo', 'redo'"), false);
+  });
+});
+
+test('MIDI portrait preserves bottom-first rail and virtual thumbstick policy', () => {
+  const model = buildMidiPortraitMenuModel();
+  const acceptance = getEditorModeAcceptanceContract(EDITOR_LAYOUT_MODES.PORTRAIT);
+
+  assert.equal(model.portraitRootPlacement, 'bottom-rail');
+  assert.deepEqual(model.bottomRailActions, ['menu', 'undo', 'redo', 'play']);
+  assert.deepEqual(model.bottomRailActions.slice(0, STANDARD_EDITOR_ACTION_RAIL_PREFIX.length), STANDARD_EDITOR_ACTION_RAIL_PREFIX);
+  assert.equal(model.rootTabs.length <= PORTRAIT_ROOT_MAX_ITEMS, true);
+  assert.equal(acceptance.rootCommandSurface, 'bottom-rail');
+  assert.equal(acceptance.commandSurface, 'bottom-sheet');
+  assert.equal(acceptance.thumbstickPolicy, 'required');
+});
+
+test('portrait repair targets preserve shared rail behavior across affected editors', () => {
+  const models = {
+    midi: buildMidiPortraitMenuModel(),
+    pixel: buildPixelPortraitMenuModel(),
+    level: buildLevelPortraitMenuModel(),
+    cutscene: buildCutscenePortraitMenuModel(),
+    actor: buildActorPortraitMenuModel(),
+    race: buildRacePortraitMenuModel(),
+    car: buildCarPortraitMenuModel(),
+    sfx: buildSfxPortraitMenuModel()
+  };
+  const expectedContextActions = {
+    midi: 'play',
+    pixel: 'brush',
+    level: 'playtest',
+    cutscene: 'play',
+    actor: 'playtest',
+    race: 'race-context',
+    car: 'test-drive',
+    sfx: 'play'
+  };
+  const acceptance = getEditorModeAcceptanceContract(EDITOR_LAYOUT_MODES.PORTRAIT);
+
+  Object.entries(models).forEach(([editorId, model]) => {
+    assert.equal(model.portraitRootPlacement, 'bottom-rail', editorId);
+    assert.ok(model.rootTabs.length <= PORTRAIT_ROOT_MAX_ITEMS, editorId);
+    assert.deepEqual(
+      model.bottomRailActions,
+      getStandardEditorActionRailIds(expectedContextActions[editorId]),
+      editorId
+    );
+    assert.equal(acceptance.commandSurface, 'bottom-sheet', editorId);
+    assert.equal(acceptance.rowActivation, 'tap-release', editorId);
   });
 });
 
@@ -4806,15 +4856,15 @@ test('desktop context panels share the RTG Studio context chrome', () => {
   assert.equal(cutsceneEditorSource.includes('`Menu: ${CUTSCENE_DESKTOP_MENU_LABELS[this.activeMenuTab] || this.activeMenuTab || \'Add\'}`'), false);
   assert.equal(raceEditorSource.includes('`Menu: ${this.activeAction || \'None\'}`'), false);
   assert.equal(pixelStudioSource.includes('`Active: ${this.getDesktopPanelLabel()}`'), true);
-  assert.equal(pixelStudioSource.includes("contentRoles: ['document-summary', 'active-tool-summary', 'selection-summary', 'status']"), true);
+  assert.equal(pixelStudioSource.includes("contentRoles: getEditorDesktopLeftContextRoles('pixel')"), true);
   assert.equal(levelEditorSource.includes('`Active: ${getLevelDesktopPanelLabel(activeTab)}`'), true);
-  assert.equal(levelEditorSource.includes("contentRoles: ['document-summary', 'active-tool-summary', 'selection-summary', 'contextual-quick-actions', 'status']"), true);
+  assert.equal(levelEditorSource.includes("contentRoles: getEditorDesktopLeftContextRoles('level')"), true);
   assert.equal(midiEditorSource.includes('`Active: ${this.getDesktopMenuLabel(menuId)}`'), true);
   assert.equal(midiEditorSource.includes("contentRoles: ['document-summary', 'selection-summary', 'contextual-quick-actions', 'transport', 'status']"), true);
   assert.equal(sfxEditorSource.includes('`Active: ${activeLabel}`'), true);
   assert.equal(sfxEditorSource.includes("contentRoles: ['document-summary', 'selection-summary', 'transport', 'status']"), true);
   assert.equal(cutsceneEditorSource.includes('`Active: ${getCutsceneMenuLabel(this.activeMenuTab)}`'), true);
-  assert.equal(cutsceneEditorSource.includes("contentRoles: ['document-summary', 'selection-summary', 'transport', 'status']"), true);
+  assert.equal(cutsceneEditorSource.includes("contentRoles: getEditorDesktopLeftContextRoles('cutscene')"), true);
   assert.equal(cutsceneEditorSource.includes("contentRoles: ['document-summary', 'selection-summary', 'contextual-quick-actions', 'transport', 'status']"), false);
   assert.equal(raceEditorSource.includes('`Active: ${this.activeAction || \'None\'}`'), true);
   assert.equal(raceEditorSource.includes("contentRoles: ['document-summary', 'selection-summary', 'status']"), true);

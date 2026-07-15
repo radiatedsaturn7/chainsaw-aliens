@@ -30,7 +30,7 @@ import { drawSharedMobileZoomSlider } from './shared/mobileZoomSlider.js';
 import { openChoiceOverlay, openConfirmOverlay, openProgressOverlay, openTextInputOverlay } from './shared/textInputOverlay.js';
 import { openColorPickerOverlay } from './shared/colorPickerOverlay.js';
 import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, buildMenuScrollDragState, canRenderEditorPlanSurface, canRenderEditorSurface, createDesktopDropdownCommandHit, createDesktopRootMenuHit, createPendingDesktopDropdownHit, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveDesktopRootMenuHit, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveMenuScrollDrag, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
-import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorPortraitRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
+import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopLeftContextRoles, getEditorPortraitRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
 import {
@@ -2899,7 +2899,7 @@ export default class CutsceneEditor {
     drawSharedDesktopContextPanel(ctx, contextBounds, {
       lines,
       status: this.statusText || '',
-      contentRoles: ['document-summary', 'selection-summary', 'transport', 'status'],
+      contentRoles: getEditorDesktopLeftContextRoles('cutscene'),
       padding: 10
     });
     if (transportBounds) this.drawDesktopTransportPanel(ctx, transportBounds);

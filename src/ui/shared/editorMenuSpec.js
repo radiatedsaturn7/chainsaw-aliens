@@ -96,11 +96,7 @@ const actionEntries = (ids, labels = {}) => Object.fromEntries(ids.map((id) => [
     label: labels[id] || toTitleLabel(id)
   }
 ]));
-const EDITOR_ACTION_LABEL_OVERRIDES = {
-  'load-wrx': 'Load WRX',
-  'load-brz': 'Load BRZ',
-  'load-civic': 'Load Civic'
-};
+const EDITOR_ACTION_LABEL_OVERRIDES = {};
 
 export const REQUIRED_DESKTOP_ROOT_PREFIX = ['file', 'edit', 'view'];
 export const DESKTOP_FILE_BASELINE_ACTION_IDS = ['new', 'save', 'save-as', 'open', 'export', 'import'];
@@ -113,11 +109,30 @@ export const PORTRAIT_DYNAMIC_EMPTY_SECTION_IDS = {
   level: ['assets'],
   midi: ['settings'],
   sfx: ['settings'],
-  cutscene: ['settings']
+  cutscene: ['settings'],
+  car: ['art']
 };
 export const STANDARD_EDITOR_ACTION_RAIL_PREFIX = ['menu', 'undo', 'redo'];
 export const SHARED_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'car', 'tile'];
 export const SUPPORTED_EDITOR_WORK_SURFACES = ['canvas', 'stage', 'grid', 'timeline'];
+export const EDITOR_STANDARD_REFERENCE = deepFreeze({
+  primaryEditorId: 'midi',
+  secondaryEditorId: 'pixel',
+  comparisonEditorIds: ['level', 'cutscene', 'actor'],
+  portraitRepairEditorIds: ['level', 'race', 'car'],
+  rolloutOrder: ['midi', 'pixel', 'level', 'cutscene', 'actor', 'race', 'car', 'sfx', 'tile']
+});
+export const EDITOR_DESKTOP_LEFT_CONTEXT_ROLES = deepFreeze({
+  pixel: ['active-tool', 'swatches', 'layers', 'frames'],
+  level: ['active-tool', 'tile-palette', 'actor-palette', 'selected-placement'],
+  actor: ['actor-properties', 'state-list', 'linked-parts', 'preview-settings'],
+  midi: ['active-tool', 'transport', 'global-music-settings', 'tracks'],
+  sfx: ['active-tool', 'timeline', 'oscillator-settings', 'envelope-settings'],
+  cutscene: ['insert-palette', 'selected-clip', 'timeline', 'scene-settings'],
+  race: ['active-tool', 'tile-palette', 'route-painting', 'track-settings'],
+  car: ['active-tool', 'car-properties', 'paint-swatches', 'test-drive-settings'],
+  tile: ['active-tool', 'tile-palette', 'tile-properties', 'preview-settings']
+});
 export const RACE_FORBIDDEN_EXPLICIT_ROUTE_TYPE_ACTION_IDS = ['race-circuit', 'race-destination'];
 export const EDIT_ACTION_ROLE_GROUPS = {
   history: ['undo', 'redo'],
@@ -321,7 +336,7 @@ export const EDITOR_MENU_SPECS = {
       { id: 'settings', label: 'Settings' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'generate-random-race', 'load-weathertech-raceway', 'load-nurburgring-nordschleife', 'load-col-de-turini', 'load-ouninpohja', 'load-daytona-tri-oval', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'generate-random-race', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo', 'copy-segment', 'paste-segment', 'delete-segment']),
       view: section('view', 'View', ['preview-mode7', 'zoom-fit', 'toggle-scenery', 'toggle-racing-line']),
       track: section('track', 'Track', ['draw-road', 'move-node', 'remove-node', 'remove-edge', 'insert-node', 'snap-node', 'segment-width', 'segment-bumpiness', 'boundary-collidable', 'snow-condition', 'edge-tile', 'surface-asphalt', 'surface-dirt', 'surface-gravel', 'surface-snow', 'surface-wet-asphalt']),
@@ -360,7 +375,7 @@ export const EDITOR_MENU_SPECS = {
         'ground-brush-strength-100'
       ]),
       sprites: section('sprites', 'Sprites', ['sprite-select', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']),
-      settings: section('settings', 'Settings', ['ai-count', 'add-sprite', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale'])
+      settings: section('settings', 'Settings', ['ai-count', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale'])
     }
   },
   car: {
@@ -375,10 +390,10 @@ export const EDITOR_MENU_SPECS = {
       { id: 'tuning', label: 'Tune' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'load-wrx', 'load-brz', 'load-civic', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
-      art: section('art', 'Art', ['shell-frames', 'shell-frame-prev', 'shell-frame-next', 'reverse-frame', 'tire-treads', 'add-ons']),
+      art: section('art', 'Art', []),
       drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sound-next', 'power-curve', 'weight-balance']),
       tuning: section('tuning', 'Tuning', ['default-tires', 'tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel']),
       aero: section('aero', 'Aero', ['aero-front', 'aero-rear']),
@@ -524,6 +539,23 @@ export function getStandardEditorActionRailIds(contextActionId = null) {
 
 export const getEditorWorkSurfaceType = (editorId) => (
   getEditorMenuSpec(editorId)?.workSurface || 'canvas'
+);
+
+export const getEditorStandardRole = (editorId) => {
+  if (editorId === EDITOR_STANDARD_REFERENCE.primaryEditorId) return 'primary-reference';
+  if (editorId === EDITOR_STANDARD_REFERENCE.secondaryEditorId) return 'secondary-reference';
+  if (EDITOR_STANDARD_REFERENCE.comparisonEditorIds.includes(editorId)) return 'comparison-reference';
+  if (EDITOR_STANDARD_REFERENCE.portraitRepairEditorIds.includes(editorId)) return 'portrait-repair';
+  if (SHARED_EDITOR_IDS.includes(editorId)) return 'rollout-target';
+  return null;
+};
+
+export const isEditorReferenceCandidate = (editorId) => (
+  ['primary-reference', 'secondary-reference', 'comparison-reference'].includes(getEditorStandardRole(editorId))
+);
+
+export const getEditorDesktopLeftContextRoles = (editorId) => (
+  EDITOR_DESKTOP_LEFT_CONTEXT_ROLES[editorId]?.slice() || []
 );
 
 export const getEditorMenuModeContract = (editorId, mode = EDITOR_LAYOUT_MODES.DESKTOP) => {
@@ -965,4 +997,39 @@ export function validateSharedEditorMenuSpecs() {
     }
   });
   return errors;
+}
+
+export function validateEditorStandardReferenceMetadata() {
+  const errors = [];
+  const allReferenceIds = [
+    EDITOR_STANDARD_REFERENCE.primaryEditorId,
+    EDITOR_STANDARD_REFERENCE.secondaryEditorId,
+    ...EDITOR_STANDARD_REFERENCE.comparisonEditorIds,
+    ...EDITOR_STANDARD_REFERENCE.portraitRepairEditorIds,
+    ...EDITOR_STANDARD_REFERENCE.rolloutOrder
+  ];
+  allReferenceIds.forEach((editorId) => {
+    if (!SHARED_EDITOR_IDS.includes(editorId)) errors.push(`Unknown editor standard target "${editorId}".`);
+  });
+  if (EDITOR_STANDARD_REFERENCE.primaryEditorId !== 'midi') {
+    errors.push('MIDI must remain the primary editor UI standard reference.');
+  }
+  if (EDITOR_STANDARD_REFERENCE.secondaryEditorId !== 'pixel') {
+    errors.push('Pixel must remain the secondary editor UI standard reference.');
+  }
+  ['level', 'cutscene', 'actor'].forEach((editorId) => {
+    if (!EDITOR_STANDARD_REFERENCE.comparisonEditorIds.includes(editorId)) {
+      errors.push(`${editorId} must remain a required comparison reference editor.`);
+    }
+  });
+  SHARED_EDITOR_IDS.forEach((editorId) => {
+    const roles = EDITOR_DESKTOP_LEFT_CONTEXT_ROLES[editorId];
+    if (!Array.isArray(roles) || roles.length < 2) {
+      errors.push(`${editorId} desktop left context roles must describe at least two contextual groups.`);
+    }
+    if (!EDITOR_STANDARD_REFERENCE.rolloutOrder.includes(editorId)) {
+      errors.push(`${editorId} must be present in the editor UI standard rollout order.`);
+    }
+  });
+  return Array.from(new Set(errors));
 }

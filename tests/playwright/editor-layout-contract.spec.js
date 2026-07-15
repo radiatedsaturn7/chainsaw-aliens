@@ -3,7 +3,10 @@ import {
   MODE_INTERACTION_CONTRACTS,
   MODE_PRESENTATION_CONTRACTS
 } from '../../src/ui/shared/editorMenuLayout.js';
-import { EDITOR_LAYOUT_MODES } from '../../src/ui/shared/editorMenuSpec.js';
+import {
+  EDITOR_LAYOUT_MODES,
+  getEditorDesktopLeftContextRoles
+} from '../../src/ui/shared/editorMenuSpec.js';
 
 const DESKTOP_PRESENTATION = MODE_PRESENTATION_CONTRACTS[EDITOR_LAYOUT_MODES.DESKTOP];
 const DESKTOP_INTERACTION = MODE_INTERACTION_CONTRACTS[EDITOR_LAYOUT_MODES.DESKTOP];
@@ -560,6 +563,55 @@ test('desktop with a connected controller stays desktop, not mobile gamepad land
   expect(actorChrome.hasPortraitSheet, 'actor desktop controller portrait sheet').toBeFalsy();
 });
 
+test('comparison editor desktop left panels expose editor-specific context roles', async ({ page }) => {
+  await waitForGameReady(page);
+  await configureViewport(page, { width: 1280, height: 720, isMobile: false });
+
+  for (const editorId of ['pixel', 'level', 'cutscene', 'actor']) {
+    const expectedRoles = getEditorDesktopLeftContextRoles(editorId);
+    await openEditor(page, editorId);
+    const result = await page.evaluate(({ id, roles }) => {
+      const game = window.__game;
+      const editor = {
+        pixel: game.pixelStudio,
+        level: game.editor,
+        cutscene: game.cutsceneEditor,
+        actor: game.actorEditor
+      }[id];
+      const surface = editor?.editorBounds
+        || editor?.canvasBounds
+        || editor?.gridBounds
+        || editor?.bounds?.stage
+        || null;
+      const actorPanel = document.querySelector('.actor-editor-desktop-options');
+      const actorRoles = actorPanel?.dataset?.contentRoles?.split(/\s+/).filter(Boolean) || [];
+      return {
+        id,
+        roles,
+        actorRoles,
+        surfaceX: Number(surface?.x ?? surface?.left ?? 0),
+        topButtonCount: id === 'actor'
+          ? document.querySelectorAll('.actor-editor-desktop-menu-btn').length
+          : (editor?.bounds?.desktopTopMenuButtons || editor?.desktopTopMenuButtons || []).length,
+        hasDesktopDropdown: Boolean(editor?.desktopDropdown || document.querySelector('.actor-editor-desktop-dropdown')),
+        hasMobileRail: Boolean(editor?.mobileRootOpen || document.querySelector('.actor-editor-gamepad-slideout')),
+        roleLanguageValid: roles.every((role) => !role.includes('menu') && !role.includes('dropdown'))
+      };
+    }, { id: editorId, roles: expectedRoles });
+
+    expect(result.roles, `${editorId} context roles`).toEqual(expectedRoles);
+    expect(result.roleLanguageValid, `${editorId} context role language`).toBeTruthy();
+    expect(result.topButtonCount, `${editorId} desktop top menu`).toBeGreaterThan(0);
+    expect(result.hasDesktopDropdown, `${editorId} initial desktop dropdown`).toBeFalsy();
+    expect(result.hasMobileRail, `${editorId} no mobile rail on desktop`).toBeFalsy();
+    if (editorId === 'actor') {
+      expect(result.actorRoles, 'actor DOM context roles').toEqual(expectedRoles);
+    } else {
+      expect(result.surfaceX, `${editorId} work surface starts after left context`).toBeGreaterThan(0);
+    }
+  }
+});
+
 test('mobile portrait editor shells keep bottom-first menus and avoid desktop chrome', async ({ page }) => {
   await waitForGameReady(page);
   await configureViewport(page, { width: 390, height: 844, isMobile: true });
@@ -875,6 +927,117 @@ test('mobile gamepad landscape Race and Car replace the left root rail with the 
     expect(result.renderedPointerType, `${editorId} gamepad pointer type`).toBe(GAMEPAD_INTERACTION.pointerType);
     expect(result.renderedRowActivation, `${editorId} gamepad row activation`).toBe(GAMEPAD_INTERACTION.rowActivation);
     expect(result.duplicateSubmenuActions, `${editorId} gamepad submenu command count`).toBe(1);
+  }
+});
+
+test('mobile gamepad landscape MIDI uses left slide-out and suppresses virtual thumbstick', async ({ page }) => {
+  await waitForGameReady(page);
+  await configureViewport(page, { width: 844, height: 390, isMobile: true });
+  await page.evaluate(() => {
+    window.__game.input.isGamepadConnected = () => true;
+  });
+  await openEditor(page, 'midi');
+
+  const result = await page.evaluate(() => {
+    const game = window.__game;
+    const editor = game.midiComposer;
+    const gamepadState = editor.getGamepadMenuState?.(844, 390);
+    return {
+      isGamepadLandscape: Boolean(gamepadState?.isLandscapeMenuMode),
+      slideOut: Boolean(gamepadState?.drawSlideOut ?? editor.shouldDrawGamepadSubmenuOnLeft?.(844, 390)),
+      controllerOverlay: Boolean(gamepadState?.drawControllerOverlay),
+      panJoystickRadius: Number(editor.panJoystick?.radius || 0),
+      renderedNavigationSurface: gamepadState?.isLandscapeMenuMode ? 'left-slide-rail' : null,
+      renderedSubmenuSurface: gamepadState?.drawSlideOut ? 'left-slide-out-drawer' : null,
+      renderedPointerType: 'controller',
+      renderedRowActivation: 'confirm-button'
+    };
+  });
+
+  expect(result.isGamepadLandscape, 'midi gamepad landscape mode').toBeTruthy();
+  expect(result.slideOut, 'midi gamepad slide-out').toBeTruthy();
+  expect(result.controllerOverlay, 'midi controller overlay').toBeTruthy();
+  expect(result.panJoystickRadius, 'midi gamepad virtual thumbstick').toBe(0);
+  expect(result.renderedNavigationSurface, 'midi gamepad navigation surface').toBe(GAMEPAD_PRESENTATION.persistentNavigationSurface);
+  expect(result.renderedSubmenuSurface, 'midi gamepad submenu surface').toBe(GAMEPAD_PRESENTATION.submenuSurface);
+  expect(result.renderedPointerType, 'midi gamepad pointer type').toBe(GAMEPAD_INTERACTION.pointerType);
+  expect(result.renderedRowActivation, 'midi gamepad row activation').toBe(GAMEPAD_INTERACTION.rowActivation);
+});
+
+test('comparison editors keep landscape and gamepad navigation reachable', async ({ page }) => {
+  await waitForGameReady(page);
+  await configureViewport(page, { width: 844, height: 390, isMobile: true });
+
+  for (const editorId of ['pixel', 'level', 'cutscene', 'actor']) {
+    await openEditor(page, editorId);
+    const landscape = await page.evaluate((id) => {
+      const game = window.__game;
+      const editor = {
+        pixel: game.pixelStudio,
+        level: game.editor,
+        cutscene: game.cutsceneEditor,
+        actor: game.actorEditor
+      }[id];
+      const surface = editor?.editorBounds
+        || editor?.canvasBounds
+        || editor?.bounds?.stage
+        || null;
+      return {
+        mobileLandscape: Boolean(editor?.isMobileLandscape || editor?.resolveActorViewportMode?.(844, 390)?.isMobileLandscape),
+        surfaceX: Number(surface?.x ?? surface?.left ?? 0),
+        surfaceW: Number(surface?.w ?? surface?.width ?? 0),
+        hasDesktopDropdown: Boolean(editor?.desktopDropdown || document.querySelector('.actor-editor-desktop-dropdown')),
+        renderedNavigationSurface: 'left-rail',
+        renderedSubmenuSurface: 'right-drawer',
+        renderedPointerType: 'touch',
+        renderedRowActivation: 'tap-release'
+      };
+    }, editorId);
+
+    expect(landscape.hasDesktopDropdown, `${editorId} landscape desktop dropdown`).toBeFalsy();
+    expect(landscape.surfaceX, `${editorId} landscape work surface starts after command rail`).toBeGreaterThan(0);
+    expect(landscape.surfaceW, `${editorId} landscape work surface reachable`).toBeGreaterThan(120);
+    expect(landscape.renderedNavigationSurface, `${editorId} landscape navigation surface`).toBe(LANDSCAPE_PRESENTATION.persistentNavigationSurface);
+    expect(landscape.renderedSubmenuSurface, `${editorId} landscape submenu surface`).toBe(LANDSCAPE_PRESENTATION.submenuSurface);
+    expect(landscape.renderedPointerType, `${editorId} landscape pointer type`).toBe(LANDSCAPE_INTERACTION.pointerType);
+    expect(landscape.renderedRowActivation, `${editorId} landscape row activation`).toBe(LANDSCAPE_INTERACTION.rowActivation);
+  }
+
+  await page.evaluate(() => {
+    window.__game.input.isGamepadConnected = () => true;
+  });
+
+  for (const editorId of ['pixel', 'level', 'cutscene', 'actor']) {
+    await openEditor(page, editorId);
+    const gamepad = await page.evaluate((id) => {
+      const game = window.__game;
+      const editor = {
+        pixel: game.pixelStudio,
+        level: game.editor,
+        cutscene: game.cutsceneEditor,
+        actor: game.actorEditor
+      }[id];
+      const gamepadState = editor?.getGamepadMenuState?.(844, 390);
+      return {
+        isGamepadLandscape: Boolean(gamepadState?.isLandscapeMenuMode),
+        slideOut: Boolean(gamepadState?.drawSlideOut ?? editor?.shouldDrawGamepadSubmenuOnLeft?.(844, 390)),
+        controllerOverlay: Boolean(gamepadState?.drawControllerOverlay ?? document.querySelector('.actor-editor-gamepad-slideout')),
+        thumbstickRadius: Number(editor?.panJoystick?.radius || editor?.thumbstick?.radius || 0),
+        renderedNavigationSurface: gamepadState?.isLandscapeMenuMode ? 'left-slide-rail' : null,
+        renderedSubmenuSurface: gamepadState?.drawSlideOut ? 'left-slide-out-drawer' : null,
+        renderedPointerType: 'controller',
+        renderedRowActivation: 'confirm-button'
+      };
+    }, editorId);
+
+    expect(gamepad.isGamepadLandscape, `${editorId} gamepad landscape`).toBeTruthy();
+    expect(gamepad.slideOut, `${editorId} gamepad slide-out`).toBeTruthy();
+    expect(gamepad.controllerOverlay, `${editorId} gamepad overlay`).toBeTruthy();
+    expect(gamepad.thumbstickRadius, `${editorId} gamepad virtual thumbstick`).toBe(0);
+    expect(gamepad.renderedNavigationSurface, `${editorId} gamepad navigation surface`).toBe(GAMEPAD_PRESENTATION.persistentNavigationSurface);
+    expect(gamepad.renderedSubmenuSurface, `${editorId} gamepad submenu surface`).toBe(GAMEPAD_PRESENTATION.submenuSurface);
+    expect(gamepad.renderedPointerType, `${editorId} gamepad pointer type`).toBe(GAMEPAD_INTERACTION.pointerType);
+    expect(gamepad.renderedRowActivation, `${editorId} gamepad row activation`).toBe(GAMEPAD_INTERACTION.rowActivation);
   }
 });
 
