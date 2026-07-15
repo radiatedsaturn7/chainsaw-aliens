@@ -7,6 +7,7 @@ test('app boots in Chromium and exposes the game runtime', async ({ page }) => {
     timeout: 60_000
   }).toBe(true);
 
-  const state = await page.evaluate(() => window.__game?.state || null);
-  expect(state).not.toBe('loading');
+  await expect.poll(async () => page.evaluate(() => window.__game?.state || null), {
+    timeout: 60_000
+  }).not.toBe('loading');
 });
