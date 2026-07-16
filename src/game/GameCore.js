@@ -734,7 +734,8 @@ export default class Game {
   }
 
   updateControlScheme() {
-    if (this.gamepadConnected) {
+    const hasGamepad = Boolean(this.gamepadConnected || this.input?.isGamepadConnected?.());
+    if (hasGamepad) {
       this.effectiveInputMode = 'gamepad';
     } else if (this.deviceIsMobile) {
       this.effectiveInputMode = 'mobile';
@@ -743,7 +744,7 @@ export default class Game {
     } else {
       this.effectiveInputMode = 'keyboard';
     }
-    const mobileControlsActive = this.deviceIsMobile && !this.gamepadConnected;
+    const mobileControlsActive = this.deviceIsMobile && !hasGamepad;
     this.isMobile = mobileControlsActive;
     this.mobileControls.setEnabled(mobileControlsActive);
     this.robterSession.setMobile(mobileControlsActive);

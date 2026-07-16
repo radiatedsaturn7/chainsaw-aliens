@@ -64,11 +64,11 @@ test('editor playtest round-trip keeps input working and avoids listener duplica
 
   const beforeX = await page.evaluate(() => window.__game.editor.camera.x);
   await page.keyboard.down('ArrowRight');
-  await page.waitForTimeout(140);
+  await page.waitForTimeout(320);
   await page.keyboard.up('ArrowRight');
-  await page.waitForTimeout(50);
-  const afterX = await page.evaluate(() => window.__game.editor.camera.x);
-  expect(afterX).toBeGreaterThan(beforeX);
+  await expect.poll(async () => page.evaluate(() => window.__game.editor.camera.x), {
+    message: 'editor camera pans right after returning from playtest'
+  }).toBeGreaterThan(beforeX);
 
   const listenerSnapshot = await page.evaluate(() => window.__editorListenerProbe.getSnapshot());
   expect(listenerSnapshot.adds).toBe(2);

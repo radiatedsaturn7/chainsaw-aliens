@@ -549,6 +549,7 @@ export function openProjectBrowser({
       entries.forEach((entry) => {
         const row = document.createElement('div');
         row.className = 'project-browser-row';
+        row.dataset.name = entry.name;
 
         if (folder === 'art' || folder === 'actors') {
           const preview = document.createElement('div');
