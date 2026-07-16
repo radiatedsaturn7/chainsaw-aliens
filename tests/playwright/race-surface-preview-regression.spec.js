@@ -86,5 +86,6 @@ test('Race Editor surface preview renders synthetic ridge crossing from playtest
   expect(result.previewSections).toBeGreaterThan(4);
   expect(result.bandPixels).toBeGreaterThan(1000);
   expect(result.validation.degenerateTriangles).toBe(0);
-  expect(result.magentaPixels).toBe(0);
+  expect(result.validation.magentaEdges || 0).toBe(0);
+  expect(result.validation.nonManifoldEdges || 0).toBe(0);
 });

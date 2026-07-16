@@ -19,6 +19,18 @@ async function configurePortraitViewport(page) {
     });
     game.updateControlScheme();
   });
+  await flushEditorLayout(page);
+}
+
+async function flushEditorLayout(page) {
+  await page.evaluate(() => {
+    const game = window.__game;
+    game.updateControlScheme?.();
+    game.syncMobileControlsViewport?.();
+    game._drawByState?.();
+    game.actorEditor?.render?.();
+  });
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 }
 
 test('smoke: load app and visit each editor with view/canvas checks', async ({ page }) => {
@@ -92,7 +104,7 @@ test('portrait smoke: affected editors keep shared bottom rail actions reachable
       };
       await openers[id]();
     }, editorId);
-    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await flushEditorLayout(page);
 
     const result = await page.evaluate(({ id, contextAction }) => {
       const game = window.__game;
