@@ -80,6 +80,9 @@ const PIXEL_LEFT_PANEL_TABS = PIXEL_CONTROLLER_ROOT_ENTRIES.map((entry) => entry
 const PIXEL_MOBILE_DRAWER_TABS = PIXEL_LEFT_PANEL_TABS.filter((id) => !['edit', 'view'].includes(id));
 const DEFAULT_BRUSH_SIZE = 7;
 const DEFAULT_FRAME_DURATION_MS = Math.round(1000 / 32);
+const FRAME_DELAY_MIN_MS = 20;
+const FRAME_DELAY_MAX_MS = 10000;
+const FRAME_DELAY_SLIDER_MAX_MS = 1000;
 const DEFAULT_BONE_TIMELINE_DURATION_MS = 2000;
 const DEFAULT_BONE_TIMELINE_STEP_MS = 500;
 const shortestAngleDelta = (from, to) => Math.atan2(Math.sin(to - from), Math.cos(to - from));
@@ -923,6 +926,7 @@ export default class PixelStudio {
     this.mobileDrawerBounds = null;
     this.pixelPortraitSubpanel = null;
     this.paletteBarScrollBounds = null;
+    this.palettePresetScrollBounds = null;
     this.paletteModalSwatchScrollBounds = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
@@ -1123,6 +1127,31 @@ export default class PixelStudio {
 
   markLayerPixelsDirty() {
     this.layerContentRevision = (this.layerContentRevision || 1) + 1;
+  }
+
+  setActiveLayerOpacity(opacity) {
+    const layer = this.activeLayer;
+    if (!layer) return;
+    layer.opacity = clamp(Number(opacity), 0, 1);
+    this.markLayerPixelsDirty();
+    this.invalidateBoneDerivedCaches({ layers: true, bones: false });
+    this.syncTileData({ persist: false });
+  }
+
+  setLayerVisibility(index, visible) {
+    const layer = this.canvasState.layers[index];
+    if (!layer) return;
+    layer.visible = Boolean(visible);
+    this.markLayerPixelsDirty();
+    this.invalidateBoneDerivedCaches({ layers: true, bones: false });
+    this.syncTileData({ persist: false });
+  }
+
+  setLayerLocked(index, locked) {
+    const layer = this.canvasState.layers[index];
+    if (!layer) return;
+    layer.locked = Boolean(locked);
+    this.syncTileData({ persist: false });
   }
 
   invalidateBoneDerivedCaches(options = {}) {
@@ -1462,6 +1491,9 @@ export default class PixelStudio {
     if (!tileChar || !this.game?.world?.pixelArt?.tiles) return;
     const tiles = this.game.world.pixelArt.tiles;
     if (!tiles[tileChar]) return;
+    const serializePixel = typeof this.serializeArtPixelValue === 'function'
+      ? this.serializeArtPixelValue
+      : PixelStudio.prototype.serializeArtPixelValue;
     const pixelData = tiles[tileChar];
     pixelData.editor = {
       width: this.canvasState.width,
@@ -1474,10 +1506,7 @@ export default class PixelStudio {
     pixelData.frames = this.animation.frames.map((frame) => {
       const composite = compositeLayers(frame.layers, this.canvasState.width, this.canvasState.height);
       return Array.from(composite).map((value) => {
-        if (!value) return null;
-        const rgba = uint32ToRgba(value);
-        const hex = `#${[rgba.r, rgba.g, rgba.b].map((c) => c.toString(16).padStart(2, '0')).join('')}`;
-        return rgba.a === 0 ? null : hex;
+        return serializePixel.call(this, value);
       });
     });
     pixelData.fps = Math.round(1000 / (this.animation.frames[0]?.durationMs || 120));
@@ -1501,13 +1530,17 @@ export default class PixelStudio {
     const width = Math.max(1, this.canvasState.width | 0);
     const height = Math.max(1, this.canvasState.height | 0);
     const size = width === height ? width : undefined;
-    const frames = this.animation.frames.map((frame) => {
+    const getClampedFrames = typeof this.getAnimationFramesClampedToCanvas === 'function'
+      ? this.getAnimationFramesClampedToCanvas
+      : PixelStudio.prototype.getAnimationFramesClampedToCanvas;
+    const serializePixel = typeof this.serializeArtPixelValue === 'function'
+      ? this.serializeArtPixelValue
+      : PixelStudio.prototype.serializeArtPixelValue;
+    const sanitizedFrames = getClampedFrames.call(this, width, height);
+    const frames = sanitizedFrames.map((frame) => {
       const composite = compositeLayers(frame.layers, width, height);
       return Array.from(composite).map((value) => {
-        if (!value) return null;
-        const rgba = uint32ToRgba(value);
-        if (rgba.a === 0) return null;
-        return `#${[rgba.r, rgba.g, rgba.b].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
+        return serializePixel.call(this, value);
       });
     });
     return {
@@ -1521,10 +1554,38 @@ export default class PixelStudio {
         width,
         height,
         activeLayerIndex: this.canvasState.activeLayerIndex,
-        frames: this.animation.frames,
+        frames: sanitizedFrames,
         bones: cloneBoneRig(this.boneRig)
       }
     };
+  }
+
+  serializeArtPixelValue(value) {
+    if (!value) return null;
+    const rgba = uint32ToRgba(value);
+    if (rgba.a === 0) return null;
+    const hex = [rgba.r, rgba.g, rgba.b].map((channel) => channel.toString(16).padStart(2, '0')).join('');
+    return rgba.a >= 255 ? `#${hex}` : `#${hex}${rgba.a.toString(16).padStart(2, '0')}`;
+  }
+
+  getAnimationFramesClampedToCanvas(width = this.canvasState.width, height = this.canvasState.height) {
+    const safeW = Math.max(1, Math.round(Number(width) || 1));
+    const safeH = Math.max(1, Math.round(Number(height) || 1));
+    const total = safeW * safeH;
+    return (this.animation.frames || []).map((frame) => createFrame(
+      (frame.layers || []).map((layer, index) => {
+        const next = createLayer(safeW, safeH, layer?.name || `Layer ${index + 1}`);
+        next.visible = layer?.visible !== false;
+        next.locked = Boolean(layer?.locked);
+        next.opacity = Number.isFinite(layer?.opacity) ? layer.opacity : 1;
+        const source = layer?.pixels || [];
+        for (let i = 0; i < total; i += 1) {
+          next.pixels[i] = Number(source[i] || 0) >>> 0;
+        }
+        return next;
+      }),
+      Number(frame?.durationMs || DEFAULT_FRAME_DURATION_MS)
+    ));
   }
 
   shouldLoadArtAsAnimationDocument(data) {
@@ -3007,10 +3068,11 @@ export default class PixelStudio {
   openTransformModal(type) {
     const width = this.canvasState.width;
     const height = this.canvasState.height;
+    const cropEdges = this.getDefaultCropEdges();
     const defaults = {
       resize: { width, height },
       scale: { scaleX: 1, scaleY: 1 },
-      crop: { borderX: 1, borderY: 1 },
+      crop: cropEdges,
       offset: { dx: 0, dy: 0, wrap: true }
     };
     this.transformModal = {
@@ -3077,6 +3139,50 @@ export default class PixelStudio {
     return clamp(Math.round(1 + normalized * 9), 1, 10);
   }
 
+  getCanvasOpaqueBounds() {
+    const width = Math.max(1, Number(this.canvasState.width) || 1);
+    const height = Math.max(1, Number(this.canvasState.height) || 1);
+    let minX = width;
+    let minY = height;
+    let maxX = -1;
+    let maxY = -1;
+    (this.animation.frames || []).forEach((frame) => {
+      const composite = compositeLayers(frame.layers || [], width, height);
+      for (let index = 0; index < composite.length; index += 1) {
+        const value = composite[index] >>> 0;
+        if ((value >>> 24) === 0) continue;
+        const x = index % width;
+        const y = Math.floor(index / width);
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
+      }
+    });
+    if (maxX < minX || maxY < minY) return null;
+    return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
+  }
+
+  getDefaultCropEdges() {
+    const width = Math.max(1, Number(this.canvasState.width) || 1);
+    const height = Math.max(1, Number(this.canvasState.height) || 1);
+    const selectionBounds = this.selection?.active && this.selection?.bounds
+      ? this.selection.bounds
+      : null;
+    const bounds = selectionBounds || this.getCanvasOpaqueBounds();
+    if (!bounds) return { left: 0, top: 0, right: 0, bottom: 0 };
+    const left = clamp(Math.floor(Number(bounds.x) || 0), 0, width - 1);
+    const top = clamp(Math.floor(Number(bounds.y) || 0), 0, height - 1);
+    const rightEdge = clamp(Math.ceil(Number(bounds.x || 0) + Number(bounds.w || 0)), left + 1, width);
+    const bottomEdge = clamp(Math.ceil(Number(bounds.y || 0) + Number(bounds.h || 0)), top + 1, height);
+    return {
+      left,
+      top,
+      right: Math.max(0, width - rightEdge),
+      bottom: Math.max(0, height - bottomEdge)
+    };
+  }
+
   async editTransformValue(field) {
     if (!this.transformModal || !field) return;
     const current = this.transformModal.values[field.key] ?? field.min;
@@ -3129,21 +3235,33 @@ export default class PixelStudio {
   cropCanvas(borderX, borderY) {
     const bx = clamp(Math.round(borderX), 0, 255);
     const by = clamp(Math.round(borderY), 0, 255);
+    this.cropCanvasEdges({ left: bx, top: by, right: bx, bottom: by });
+  }
+
+  cropCanvasEdges(edges = {}, options = {}) {
     const srcW = this.canvasState.width;
     const srcH = this.canvasState.height;
-    const nextW = clamp(srcW - bx * 2, 1, ART_DIMENSION_MAX);
-    const nextH = clamp(srcH - by * 2, 1, ART_DIMENSION_MAX);
+    const left = clamp(Math.round(Number(edges.left) || 0), 0, srcW - 1);
+    const top = clamp(Math.round(Number(edges.top) || 0), 0, srcH - 1);
+    const right = clamp(Math.round(Number(edges.right) || 0), 0, srcW - left - 1);
+    const bottom = clamp(Math.round(Number(edges.bottom) || 0), 0, srcH - top - 1);
+    const nextW = clamp(srcW - left - right, 1, ART_DIMENSION_MAX);
+    const nextH = clamp(srcH - top - bottom, 1, ART_DIMENSION_MAX);
     if (nextW === srcW && nextH === srcH) return;
+    const selectionMask = options.selectionMask
+      || (this.selection?.active && this.selection?.mask ? this.selection.mask : null);
     this.animation.frames = this.animation.frames.map((frame) => ({
       ...frame,
       layers: frame.layers.map((layer) => {
         const next = createLayer(nextW, nextH, layer.name);
         for (let row = 0; row < nextH; row += 1) {
           for (let col = 0; col < nextW; col += 1) {
-            const srcRow = row + by;
-            const srcCol = col + bx;
+            const srcRow = row + top;
+            const srcCol = col + left;
             if (srcRow < 0 || srcCol < 0 || srcRow >= srcH || srcCol >= srcW) continue;
-            next.pixels[row * nextW + col] = layer.pixels[srcRow * srcW + srcCol] || 0;
+            const srcIndex = srcRow * srcW + srcCol;
+            if (selectionMask && !selectionMask[srcIndex]) continue;
+            next.pixels[row * nextW + col] = layer.pixels[srcIndex] || 0;
           }
         }
         return next;
@@ -3156,6 +3274,7 @@ export default class PixelStudio {
     this.animation.currentFrameIndex = clamp(this.animation.currentFrameIndex, 0, this.animation.frames.length - 1);
     this.setFrameLayers(this.animation.frames[this.animation.currentFrameIndex].layers);
     this.canvasState.activeLayerIndex = clamp(this.canvasState.activeLayerIndex, 0, this.canvasState.layers.length - 1);
+    if (selectionMask) this.clearSelection?.();
     this.syncTileData();
   }
 
@@ -3173,7 +3292,7 @@ export default class PixelStudio {
     } else if (type === 'scale') {
       this.applyScaleCanvas(values.scaleX, values.scaleY);
     } else if (type === 'crop') {
-      this.cropCanvas(values.borderX, values.borderY);
+      this.cropCanvasEdges(values);
     } else if (type === 'offset') {
       this.offsetCanvas(values.dx, values.dy, values.wrap !== false, { recordHistory: false });
     }
@@ -3872,11 +3991,15 @@ export default class PixelStudio {
       root: {
         id: 'root',
         title: 'Pixel Editor',
-        items: PIXEL_CONTROLLER_ROOT_ENTRIES.map((entry) => rootItem(
-          entry.id,
-          entry.label,
-          entry.controllerMenuId
-        ))
+        items: [
+          this.getPixelGamepadContextMenuItem(action),
+          { id: 'root-context-divider', divider: true },
+          ...PIXEL_CONTROLLER_ROOT_ENTRIES.map((entry) => rootItem(
+            entry.id,
+            entry.label,
+            entry.controllerMenuId
+          ))
+        ]
       },
       draw: { id: 'draw', title: 'Draw', items: toolItems('draw') },
       select: { id: 'select', title: 'Select', items: toolItems('select') },
@@ -3966,6 +4089,18 @@ export default class PixelStudio {
       }),
       help: buildControllerHelpMenu(['LS moves cursor on canvas', 'RS pans canvas'])
     };
+  }
+
+  getPixelGamepadContextMenuItem(actionFactory = (id, label, onSelect, options = {}) => ({ id, label, onSelect, ...options })) {
+    const contextAction = this.getPixelLandscapeRailContextAction();
+    const handler = contextAction?.action || contextAction?.onClick || null;
+    return actionFactory('context-action', `Context: ${contextAction?.label || 'Brush'}`, () => {
+      if (typeof handler === 'function') handler();
+      this.setInputMode('canvas');
+    }, {
+      closeOnSelect: true,
+      disabled: typeof handler !== 'function'
+    });
   }
 
   applyInputActions(actions = [], inputState = {}, dt = 0) {
@@ -4530,7 +4665,12 @@ export default class PixelStudio {
   }
 
   isDesktopSelectionContextClick(payload = {}) {
-    if (this.isTouchViewportMode()) return false;
+    const isTouchViewportMode = typeof this.isTouchViewportMode === 'function'
+      ? this.isTouchViewportMode
+      : function fallbackTouchViewportMode() {
+        return Boolean(this.isMobileLayout?.());
+      };
+    if (isTouchViewportMode.call(this)) return false;
     if ((payload.button ?? 0) !== 2) return false;
     if (!this.selection?.active || !this.selection?.bounds) return false;
     if (!this.canvasBounds || !this.isPointInBounds(payload, this.canvasBounds)) return false;
@@ -4656,7 +4796,15 @@ export default class PixelStudio {
     const sliderWidth = this.mobileZoomSliderBounds.w;
     const ratio = clamp((pointerX - sliderX) / Math.max(1, sliderWidth), 0, 1);
     const target = Math.round(ratio * (this.view.zoomLevels.length - 1));
-    this.setZoomIndexPreservingAnchor(clamp(target, 0, this.view.zoomLevels.length - 1), this.getPreferredZoomAnchor());
+    const getPreferredZoomAnchor = typeof this.getPreferredZoomAnchor === 'function'
+      ? this.getPreferredZoomAnchor
+      : PixelStudio.prototype.getPreferredZoomAnchor;
+    const clampedIndex = clamp(target, 0, this.view.zoomLevels.length - 1);
+    if (typeof this.setZoomIndexPreservingAnchor === 'function') {
+      this.setZoomIndexPreservingAnchor(clampedIndex, getPreferredZoomAnchor.call(this));
+      return;
+    }
+    this.view.zoomIndex = clampedIndex;
   }
 
   startMenuScrollDrag(payload) {
@@ -4810,6 +4958,21 @@ export default class PixelStudio {
         lineHeight: Math.max(1, this.paletteBarScrollBounds.step || 1),
         scrollGroup: 'paletteMobile',
         maxScroll: Math.max(0, this.paletteBarScrollBounds.maxScroll || 0)
+      };
+      return true;
+    }
+    if (this.activeViewportMode === 'desktop' && this.palettePresetScrollBounds
+      && this.isPointInBounds(payload, this.palettePresetScrollBounds)
+      && (this.palettePresetScrollBounds.maxScroll || 0) > 0) {
+      const hit = this.uiButtons.find((button) => this.isPointInBounds(payload, button.bounds));
+      this.menuScrollDrag = {
+        startY: payload.y,
+        startScroll: this.focusScroll.palettePresets || 0,
+        moved: false,
+        hitAction: hit?.onClick || null,
+        lineHeight: Math.max(1, this.palettePresetScrollBounds.lineHeight || 20),
+        scrollGroup: 'palettePresets',
+        maxScroll: Math.max(0, this.palettePresetScrollBounds.maxScroll || 0)
       };
       return true;
     }
@@ -5084,7 +5247,10 @@ export default class PixelStudio {
     }
     if (this.canvasBounds && this.isPointInBounds(payload, this.canvasBounds)) {
       this.setInputMode('canvas');
-      if (this.isDesktopSelectionContextClick(payload)) {
+      const shouldOpenSelectionContextMenu = typeof this.isDesktopSelectionContextClick === 'function'
+        ? this.isDesktopSelectionContextClick(payload)
+        : PixelStudio.prototype.isDesktopSelectionContextClick.call(this, payload);
+      if (shouldOpenSelectionContextMenu) {
         this.cursor.x = payload.x;
         this.cursor.y = payload.y;
         this.openSelectionContextMenu();
@@ -5267,7 +5433,7 @@ export default class PixelStudio {
       if (this.menuScrollDrag.moved) {
         const total = (this.focusGroups.file || []).length;
         const maxVisible = this.focusGroupMeta.file?.maxVisible || 1;
-        const maxScroll = ['landscapeRoot', 'toolOptions', 'tools', 'layers', 'frames', 'bones', 'paletteMobile', 'paletteModal', 'tilePicker'].includes(this.menuScrollDrag.scrollGroup)
+        const maxScroll = ['landscapeRoot', 'toolOptions', 'tools', 'layers', 'frames', 'bones', 'paletteMobile', 'palettePresets', 'paletteModal', 'tilePicker'].includes(this.menuScrollDrag.scrollGroup)
           ? (this.menuScrollDrag.maxScroll || 0)
           : Math.max(0, total - maxVisible);
         const delta = this.menuScrollDrag.scrollGroup === 'paletteMobile' ? dx : dy;
@@ -5286,6 +5452,8 @@ export default class PixelStudio {
           this.focusScroll.bones = clamp(next, 0, maxScroll);
         } else if (this.menuScrollDrag.scrollGroup === 'paletteMobile') {
           this.focusScroll.palette = clamp(next, 0, maxScroll);
+        } else if (this.menuScrollDrag.scrollGroup === 'palettePresets') {
+          this.focusScroll.palettePresets = clamp(next, 0, maxScroll);
         } else if (this.menuScrollDrag.scrollGroup === 'paletteModal') {
           this.focusScroll.paletteModal = clamp(next, 0, maxScroll);
         } else if (this.menuScrollDrag.scrollGroup === 'tilePicker') {
@@ -5489,6 +5657,29 @@ export default class PixelStudio {
         (this.focusScroll.bones || 0) + delta,
         0,
         this.boneListMeta.maxScroll
+      );
+      return;
+    }
+    if (this.activeViewportMode === 'desktop' && this.paletteBarScrollBounds
+      && this.isPointInBounds(payload, this.paletteBarScrollBounds)
+      && (this.paletteBarScrollBounds.maxScroll || 0) > 0) {
+      const step = Math.max(1, this.paletteBarScrollBounds.scrollStep || 1);
+      const delta = payload.deltaY > 0 ? step : -step;
+      this.focusScroll.palette = clamp(
+        (this.focusScroll.palette || 0) + delta,
+        0,
+        this.paletteBarScrollBounds.maxScroll
+      );
+      return;
+    }
+    if (this.activeViewportMode === 'desktop' && this.palettePresetScrollBounds
+      && this.isPointInBounds(payload, this.palettePresetScrollBounds)
+      && (this.palettePresetScrollBounds.maxScroll || 0) > 0) {
+      const delta = payload.deltaY > 0 ? 1 : -1;
+      this.focusScroll.palettePresets = clamp(
+        (this.focusScroll.palettePresets || 0) + delta,
+        0,
+        this.palettePresetScrollBounds.maxScroll
       );
       return;
     }
@@ -5740,13 +5931,14 @@ export default class PixelStudio {
     const padding = isMobile ? 12 : 16;
     const topBarHeight = 0;
     const statusHeight = 20;
-    const paletteHeight = isMobile && !mobileLandscape ? 64 : 0;
+    const paletteHeight = isMobile && !mobileLandscape ? 64 : (!isMobile ? 76 : 0);
     const toolbarHeight = isMobile && !mobileLandscape ? 72 : 0;
     const mobileZoomReserve = isMobile && !mobileLandscape ? 44 : 0;
-    const timelineHeight = !isMobile && this.modeTab === 'animate' ? 120 : 0;
-    const bottomHeight = statusHeight + paletteHeight + timelineHeight + toolbarHeight + padding;
+    const desktopUtilityRails = !isMobile && this.leftPanelTab !== 'bones';
+    const frameStripHeight = desktopUtilityRails ? 96 : 0;
+    const bottomHeight = statusHeight + paletteHeight + frameStripHeight + toolbarHeight + mobileZoomReserve + padding;
     const leftWidth = isMobile ? getSharedMobileRailWidth(viewportW, viewportH) : SHARED_EDITOR_LEFT_MENU.width();
-    const rightWidth = (!isMobile && ['layers', 'animation'].includes(this.leftPanelTab)) ? 220 : 0;
+    const rightWidth = desktopUtilityRails ? 240 : 0;
     const canvasW = Math.max(1, viewportW - leftWidth - rightWidth - padding * 2);
     const canvasH = Math.max(1, viewportH - (topBarHeight + padding) - bottomHeight);
     const targetZoom = Math.min(canvasW / Math.max(1, this.canvasState.width), canvasH / Math.max(1, this.canvasState.height));
@@ -8157,7 +8349,10 @@ export default class PixelStudio {
       return;
     }
     if (!this.cloneSource) {
-      this.statusMessage = this.isTouchViewportMode()
+      const isTouchViewportMode = typeof this.isTouchViewportMode === 'function'
+        ? this.isTouchViewportMode
+        : PixelStudio.prototype.isTouchViewportMode;
+      this.statusMessage = isTouchViewportMode.call(this)
         ? 'Tap Set Source, then tap canvas'
         : 'Set clone source with Alt-click first';
       return;
@@ -9070,20 +9265,27 @@ export default class PixelStudio {
   async setCurrentFrameDelayMs() {
     const frame = this.currentFrame;
     if (!frame) return;
-    const currentDelayMs = Math.max(20, Math.round(Number(frame.durationMs || DEFAULT_FRAME_DURATION_MS)));
+    const currentDelayMs = Math.max(FRAME_DELAY_MIN_MS, Math.round(Number(frame.durationMs || DEFAULT_FRAME_DURATION_MS)));
     const raw = await openTextInputOverlay({
       title: 'Frame Delay',
       label: 'Delay (ms):',
       initialValue: String(currentDelayMs),
       inputType: 'int',
-      min: 20,
-      max: 10000
+      min: FRAME_DELAY_MIN_MS,
+      max: FRAME_DELAY_MAX_MS
     });
     if (raw == null) return;
-    const delayMs = clamp(Math.round(Number(raw.trim()) || DEFAULT_FRAME_DURATION_MS), 20, 10000);
-    frame.durationMs = delayMs;
+    const delayMs = clamp(Math.round(Number(raw.trim()) || DEFAULT_FRAME_DURATION_MS), FRAME_DELAY_MIN_MS, FRAME_DELAY_MAX_MS);
+    this.setCurrentFrameDurationMs(delayMs);
+  }
+
+  setCurrentFrameDurationMs(delayMs, { persist = true } = {}) {
+    const frame = this.currentFrame;
+    if (!frame) return;
+    const nextDelayMs = clamp(Math.round(Number(delayMs) || DEFAULT_FRAME_DURATION_MS), FRAME_DELAY_MIN_MS, FRAME_DELAY_MAX_MS);
+    frame.durationMs = nextDelayMs;
     this.animation.previewElapsed = 0;
-    this.syncTileData();
+    this.syncTileData({ persist });
   }
 
   async setCurrentFrameDelayFps() {
@@ -9498,7 +9700,7 @@ export default class PixelStudio {
     const mobileLandscape = viewportMode.isMobileLandscape;
     const topBarHeight = 0;
     const statusHeight = 20;
-    const paletteHeight = isMobile && !mobileLandscape ? 64 : 0;
+    const paletteHeight = isMobile && !mobileLandscape ? 64 : (!isMobile && !menuFullScreen ? 76 : 0);
     const toolbarHeight = isMobile && !mobileLandscape ? 72 : 0;
     const mobileZoomReserve = isMobile && !mobileLandscape ? 44 : 0;
     const desktopUtilityRails = !isMobile && this.leftPanelTab !== 'bones';
@@ -9557,6 +9759,7 @@ export default class PixelStudio {
     this.focusGroupMeta = {};
     this.mobileDrawerBounds = null;
     this.paletteBarScrollBounds = null;
+    this.palettePresetScrollBounds = null;
     this.paletteModalSwatchScrollBounds = null;
     this.paletteModalBounds = null;
     this.paletteColorPickerBounds = null;
@@ -9641,11 +9844,11 @@ export default class PixelStudio {
 
     const paletteY = height - bottomHeight + padding;
     if (!menuFullScreen && paletteHeight > 0) {
-      const paletteX = isMobile ? canvasX : padding;
+      const paletteX = isMobile ? canvasX : (desktopShell ? desktopShell.workSurface.x : padding);
       const paletteW = isMobile
         ? Math.max(120, width - paletteX - padding - mobileDrawerReserveW)
-        : (width - padding * 2);
-      if (['layers', 'animation'].includes(this.leftPanelTab)) {
+        : (desktopShell ? desktopShell.workSurface.w : (width - padding * 2));
+      if (isMobile && ['layers', 'animation'].includes(this.leftPanelTab)) {
         this.drawManagementActionRail(ctx, paletteX, paletteY, paletteW, paletteHeight, { isMobile });
       } else {
         this.drawPaletteBar(ctx, paletteX, paletteY, paletteW, paletteHeight, { isMobile });
@@ -9828,14 +10031,28 @@ export default class PixelStudio {
     const selectionText = this.selection?.active
       ? `${Math.max(0, Math.round(this.selection.bounds?.w || 0))} x ${Math.max(0, Math.round(this.selection.bounds?.h || 0))}`
       : 'None';
+    const zoom = this.view.zoomLevels[this.view.zoomIndex] || 1;
+    const color = getPaletteSwatchHex(this.currentPalette, this.paletteIndex);
+    const secondaryColor = getPaletteSwatchHex(this.currentPalette, this.secondaryPaletteIndex);
     const cloneText = this.activeToolId === TOOL_IDS.CLONE
       ? (this.cloneOffset ? `Target ${this.cloneOffset.dx}, ${this.cloneOffset.dy}` : 'No target')
       : null;
+    const showToolGrid = contextBounds.h >= 360;
+    const showBrushControls = Boolean(activeTool?.optionsUI?.includes('brushSize')) && contextBounds.h >= 260;
+    const showActiveToolOptions = this.hasDesktopActiveToolOptions() && contextBounds.h >= 430;
+    const toolGridHeight = showToolGrid ? 124 : 0;
+    const activeToolOptionsHeight = showActiveToolOptions ? 88 : 0;
+    const sliderBlockHeight = showBrushControls ? 112 : 0;
+    const textBounds = (showToolGrid || showBrushControls || showActiveToolOptions)
+      ? { ...contextBounds, h: Math.max(112, contextBounds.h - toolGridHeight - activeToolOptionsHeight - sliderBlockHeight) }
+      : contextBounds;
     const lines = [
       `Document: ${this.currentDocumentRef?.name || 'Untitled'}`,
       `Active: ${this.getDesktopPanelLabel()}`,
       `Tool: ${activeTool?.label || this.activeToolId || 'Unknown'}`,
-      `Brush: ${this.toolOptions.brushSize}px`,
+      `Brush: ${this.toolOptions.brushSize}px ${this.toolOptions.brushShape}`,
+      `Colors: ${color} / ${secondaryColor}`,
+      `Zoom: ${Math.round(zoom * 100)}%`,
       `Canvas: ${this.canvasState.width} x ${this.canvasState.height}`,
       `Layer: ${this.canvasState.activeLayerIndex + 1}/${layerCount}${layer?.name ? ` ${layer.name}` : ''}`,
       `Frame: ${this.animation.currentFrameIndex + 1}/${frameCount}`,
@@ -9844,10 +10061,317 @@ export default class PixelStudio {
     if (cloneText) lines.push(`Clone: ${cloneText}`);
     drawSharedDesktopContextPanel(ctx, contextBounds, {
       lines,
-      status: this.statusMessage || '',
+      status: showBrushControls ? '' : (this.statusMessage || ''),
       contentRoles: getEditorDesktopLeftContextRoles('pixel'),
-      padding: pad
+      padding: pad,
+      firstLineY: 42,
+      lineGap: 18
     });
+    if (showToolGrid) {
+      this.drawDesktopToolGrid(ctx, {
+        x: textBounds.x + pad,
+        y: textBounds.y + textBounds.h + 8,
+        w: Math.max(1, textBounds.w - pad * 2),
+        h: toolGridHeight - 14
+      });
+    }
+    if (showActiveToolOptions) {
+      this.drawDesktopActiveToolOptions(ctx, {
+        x: textBounds.x + pad,
+        y: textBounds.y + textBounds.h + toolGridHeight + 8,
+        w: Math.max(1, textBounds.w - pad * 2),
+        h: activeToolOptionsHeight - 14
+      });
+    }
+    if (showBrushControls) {
+      this.drawDesktopBrushInspector(ctx, {
+        x: textBounds.x + pad,
+        y: textBounds.y + textBounds.h + toolGridHeight + activeToolOptionsHeight + 8,
+        w: Math.max(1, textBounds.w - pad * 2),
+        h: sliderBlockHeight - 14
+      });
+      if (this.statusMessage) {
+        ctx.save();
+        ctx.fillStyle = UI_SUITE.colors.muted;
+        ctx.font = `11px ${UI_SUITE.font.family}`;
+        this.drawFittedText(ctx, String(this.statusMessage), textBounds.x + pad, textBounds.y + textBounds.h - 8, Math.max(1, textBounds.w - pad * 2), 11);
+        ctx.restore();
+      }
+    }
+  }
+
+  drawDesktopToolGrid(ctx, bounds) {
+    const tools = this.getQuickToolList()
+      .map((entry) => this.tools.find((tool) => tool.id === entry.id) || entry)
+      .filter(Boolean);
+    const columns = 3;
+    const gap = 6;
+    const titleH = 16;
+    const buttonH = 22;
+    const buttonW = Math.max(42, Math.floor((bounds.w - gap * (columns - 1)) / columns));
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.beginPath();
+    ctx.moveTo(bounds.x, bounds.y - 8);
+    ctx.lineTo(bounds.x + bounds.w, bounds.y - 8);
+    ctx.stroke();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
+    ctx.fillText('Tools', bounds.x, bounds.y + 2, bounds.w);
+    tools.slice(0, 12).forEach((tool, index) => {
+      const col = index % columns;
+      const row = Math.floor(index / columns);
+      const buttonBounds = {
+        x: bounds.x + col * (buttonW + gap),
+        y: bounds.y + titleH + row * (buttonH + gap),
+        w: buttonW,
+        h: buttonH
+      };
+      const label = PIXEL_SHORT_TOOL_LABELS[tool.id] || tool.name || tool.label || tool.id;
+      const action = () => this.setActiveTool(tool.id);
+      this.drawButton(ctx, buttonBounds, label, tool.id === this.activeToolId, {
+        fontSize: 10,
+        focused: this.controllerMenu.isFocusedItem('tools', tool.id)
+      });
+      this.uiButtons.push({ bounds: buttonBounds, onClick: action });
+      this.registerFocusable('tools', buttonBounds, action);
+    });
+    ctx.restore();
+  }
+
+  hasDesktopActiveToolOptions() {
+    return [
+      TOOL_IDS.RECT,
+      TOOL_IDS.ELLIPSE,
+      TOOL_IDS.POLYGON,
+      TOOL_IDS.FILL,
+      TOOL_IDS.DITHER,
+      TOOL_IDS.GRADIENT,
+      TOOL_IDS.SELECT_MAGIC_LASSO,
+      TOOL_IDS.SELECT_MAGIC_COLOR,
+      TOOL_IDS.HUE_SHIFT,
+      TOOL_IDS.COLOR_REPLACE,
+      TOOL_IDS.CLONE
+    ].includes(this.activeToolId);
+  }
+
+  drawDesktopActiveToolOptions(ctx, bounds) {
+    const patternOptions = ['bayer2', 'bayer4', 'checker'];
+    const rows = [];
+    const addButton = (label, action, active = false) => rows.push({ type: 'button', label, action, active });
+    const addSplit = (items) => rows.push({ type: 'split', items });
+    const addSlider = (label, valueLabel, ratio, setFromRatio) => rows.push({
+      type: 'slider',
+      label,
+      valueLabel,
+      ratio,
+      setFromRatio
+    });
+    if ([TOOL_IDS.RECT, TOOL_IDS.ELLIPSE, TOOL_IDS.POLYGON].includes(this.activeToolId)) {
+      addButton(this.toolOptions.shapeFill ? 'Shape Fill: On' : 'Shape Fill: Off', () => {
+        this.toolOptions.shapeFill = !this.toolOptions.shapeFill;
+      }, this.toolOptions.shapeFill);
+      if (this.activeToolId === TOOL_IDS.POLYGON) {
+        addSlider('Sides', `${this.toolOptions.polygonSides}`, (this.toolOptions.polygonSides - 3) / 9, (ratio) => {
+          this.toolOptions.polygonSides = clamp(Math.round(3 + ratio * 9), 3, 12);
+        });
+      }
+    } else if (this.activeToolId === TOOL_IDS.FILL) {
+      addSlider('Tolerance', `${this.toolOptions.fillTolerance}`, this.toolOptions.fillTolerance / 255, (ratio) => {
+        this.toolOptions.fillTolerance = clamp(Math.round(ratio * 255), 0, 255);
+      });
+    } else if (this.activeToolId === TOOL_IDS.DITHER) {
+      const index = patternOptions.indexOf(this.toolOptions.ditherPattern);
+      addButton(`Pattern: ${this.toolOptions.ditherPattern}`, () => {
+        this.toolOptions.ditherPattern = patternOptions[(index + 1 + patternOptions.length) % patternOptions.length];
+      });
+      addSlider('Strength', `${this.toolOptions.ditherStrength}`, (this.toolOptions.ditherStrength - 1) / 3, (ratio) => {
+        this.toolOptions.ditherStrength = clamp(Math.round(1 + ratio * 3), 1, 4);
+      });
+    } else if (this.activeToolId === TOOL_IDS.GRADIENT) {
+      addSlider('Strength', `${this.toolOptions.gradientStrength}%`, (this.toolOptions.gradientStrength - 10) / 90, (ratio) => {
+        this.toolOptions.gradientStrength = clamp(Math.round(10 + ratio * 90), 10, 100);
+      });
+    } else if ([TOOL_IDS.SELECT_MAGIC_LASSO, TOOL_IDS.SELECT_MAGIC_COLOR].includes(this.activeToolId)) {
+      addSlider('Threshold', `${this.toolOptions.magicThreshold}`, this.toolOptions.magicThreshold / 255, (ratio) => {
+        this.toolOptions.magicThreshold = clamp(Math.round(ratio * 255), 0, 255);
+      });
+    } else if ([TOOL_IDS.HUE_SHIFT, TOOL_IDS.COLOR_REPLACE].includes(this.activeToolId)) {
+      addButton(`Scope: ${this.toolOptions.replaceScope}`, () => {
+        this.toolOptions.replaceScope = this.toolOptions.replaceScope === 'layer' ? 'selection' : 'layer';
+      }, this.toolOptions.replaceScope === 'selection');
+    } else if (this.activeToolId === TOOL_IDS.CLONE) {
+      addSplit([
+        {
+          label: this.clonePickSourceArmed ? 'Picking Source' : 'Set Source',
+          active: this.clonePickSourceArmed,
+          action: () => {
+            if (this.clonePickSourceArmed) {
+              this.clonePickSourceArmed = false;
+              this.statusMessage = 'Clone paint mode';
+            } else {
+              this.armCloneSourcePick();
+            }
+          }
+        },
+        {
+          label: this.clonePickTargetArmed ? 'Picking Target' : 'Set Target',
+          active: this.clonePickTargetArmed,
+          action: () => {
+            if (this.clonePickTargetArmed) {
+              this.clonePickTargetArmed = false;
+              this.statusMessage = 'Clone paint mode';
+            } else {
+              this.armCloneTargetPick();
+            }
+          }
+        }
+      ]);
+      addSplit([
+        {
+          label: this.cloneAngleCalibration ? 'Angles...' : 'Set Angles',
+          active: Boolean(this.cloneAngleCalibration),
+          action: () => this.toggleCloneAngleCalibration()
+        },
+        {
+          label: 'Reset',
+          active: false,
+          action: () => this.resetCloneAlignment()
+        }
+      ]);
+    }
+
+    if (!rows.length) return;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.beginPath();
+    ctx.moveTo(bounds.x, bounds.y - 8);
+    ctx.lineTo(bounds.x + bounds.w, bounds.y - 8);
+    ctx.stroke();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
+    ctx.fillText('Options', bounds.x, bounds.y + 2, bounds.w);
+    const rowH = 22;
+    const gap = 6;
+    rows.slice(0, 2).forEach((row, index) => {
+      const rowY = bounds.y + 16 + index * (rowH + gap);
+      if (row.type === 'button') {
+        const buttonBounds = { x: bounds.x, y: rowY, w: bounds.w, h: rowH };
+        this.drawButton(ctx, buttonBounds, row.label, Boolean(row.active), { fontSize: 10 });
+        this.uiButtons.push({ bounds: buttonBounds, onClick: row.action });
+        this.registerFocusable('tool-options', buttonBounds, row.action);
+        return;
+      }
+      if (row.type === 'split') {
+        const splitGap = 6;
+        const splitW = Math.floor((bounds.w - splitGap) / 2);
+        row.items.forEach((item, itemIndex) => {
+          const buttonBounds = {
+            x: bounds.x + itemIndex * (splitW + splitGap),
+            y: rowY,
+            w: itemIndex === 0 ? splitW : bounds.w - splitW - splitGap,
+            h: rowH
+          };
+          this.drawButton(ctx, buttonBounds, item.label, Boolean(item.active), { fontSize: 10 });
+          this.uiButtons.push({ bounds: buttonBounds, onClick: item.action });
+          this.registerFocusable('tool-options', buttonBounds, item.action);
+        });
+        return;
+      }
+      const labelW = 66;
+      const slider = { x: bounds.x + labelW, y: rowY + 6, w: Math.max(1, bounds.w - labelW), h: 9 };
+      const hitBounds = { x: slider.x - 6, y: slider.y - 8, w: slider.w + 12, h: slider.h + 16 };
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `11px ${UI_SUITE.font.family}`;
+      this.drawFittedText(ctx, row.label, bounds.x, rowY + 14, labelW - 8, 11);
+      ctx.fillStyle = UI_SUITE.colors.muted;
+      this.drawFittedText(ctx, row.valueLabel, slider.x, rowY + 21, slider.w, 10);
+      ctx.fillStyle = 'rgba(0,0,0,0.38)';
+      ctx.fillRect(slider.x, slider.y, slider.w, slider.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+      ctx.strokeRect(slider.x, slider.y, slider.w, slider.h);
+      const fillW = slider.w * clamp(row.ratio, 0, 1);
+      ctx.fillStyle = UI_SUITE.colors.accent;
+      ctx.fillRect(slider.x + fillW - 2, slider.y - 3, 4, slider.h + 6);
+      const updateFromPointer = ({ x: pointerX }) => {
+        const ratio = clamp((pointerX - slider.x) / Math.max(1, slider.w), 0, 1);
+        row.setFromRatio(ratio);
+      };
+      this.uiButtons.push({
+        bounds: hitBounds,
+        onClick: updateFromPointer,
+        onDrag: updateFromPointer
+      });
+      this.registerFocusable('tool-options', hitBounds, () => {});
+    });
+    ctx.restore();
+  }
+
+  drawDesktopBrushInspector(ctx, bounds) {
+    const sliderH = 10;
+    const rowGap = 30;
+    const sliderX = bounds.x + 70;
+    const sliderW = Math.max(40, bounds.w - 72);
+    const rows = [
+      {
+        id: 'size',
+        label: 'Size',
+        value: `${Math.round(this.toolOptions.brushSize)}px`,
+        t: (this.toolOptions.brushSize - BRUSH_SIZE_MIN) / Math.max(1, BRUSH_SIZE_MAX - BRUSH_SIZE_MIN),
+        setFromRatio: (ratio) => this.setBrushSize(BRUSH_SIZE_MIN + ratio * (BRUSH_SIZE_MAX - BRUSH_SIZE_MIN))
+      },
+      {
+        id: 'opacity',
+        label: 'Opacity',
+        value: `${Math.round((this.toolOptions.brushOpacity ?? 1) * 100)}%`,
+        t: ((this.toolOptions.brushOpacity ?? 1) - 0.05) / 0.95,
+        setFromRatio: (ratio) => this.setBrushOpacity(0.05 + ratio * 0.95)
+      },
+      {
+        id: 'hardness',
+        label: 'Hard',
+        value: `${Math.round((this.toolOptions.brushHardness ?? 0) * 100)}%`,
+        t: this.toolOptions.brushHardness ?? 0,
+        setFromRatio: (ratio) => this.setBrushHardness(ratio)
+      }
+    ];
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.beginPath();
+    ctx.moveTo(bounds.x, bounds.y - 8);
+    ctx.lineTo(bounds.x + bounds.w, bounds.y - 8);
+    ctx.stroke();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
+    ctx.fillText('Brush', bounds.x, bounds.y + 2, bounds.w);
+    rows.forEach((row, index) => {
+      const y = bounds.y + 22 + index * rowGap;
+      const slider = { x: sliderX, y: y - 8, w: sliderW, h: sliderH };
+      const hitBounds = { x: slider.x - 6, y: slider.y - 8, w: slider.w + 12, h: slider.h + 16 };
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `11px ${UI_SUITE.font.family}`;
+      this.drawFittedText(ctx, row.label, bounds.x, y, 56, 11);
+      ctx.fillStyle = UI_SUITE.colors.muted;
+      this.drawFittedText(ctx, row.value, slider.x, y + 14, slider.w, 11);
+      ctx.fillStyle = 'rgba(0,0,0,0.38)';
+      ctx.fillRect(slider.x, slider.y, slider.w, slider.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+      ctx.strokeRect(slider.x, slider.y, slider.w, slider.h);
+      const knobX = slider.x + clamp(row.t, 0, 1) * slider.w;
+      ctx.fillStyle = UI_SUITE.colors.accent2 || '#8df0ff';
+      ctx.fillRect(knobX - 2, slider.y - 3, 4, slider.h + 6);
+      const updateFromPointer = ({ x: pointerX }) => {
+        const ratio = clamp((pointerX - slider.x) / Math.max(1, slider.w), 0, 1);
+        row.setFromRatio(ratio);
+      };
+      this.uiButtons.push({
+        bounds: hitBounds,
+        onClick: updateFromPointer,
+        onDrag: updateFromPointer
+      });
+      this.registerFocusable('tool-options', hitBounds, () => {});
+    });
+    ctx.restore();
   }
 
   drawDesktopShellDropdown(ctx, shell) {
@@ -9914,18 +10438,23 @@ export default class PixelStudio {
 
   drawGamepadSlideOutPanel(ctx, bounds) {
     const menuId = this.getActiveGamepadMenuId();
+    const renderMenuId = menuId || this.controllerMenu.rootId || 'root';
+    const rootFocusedItemId = this.controllerMenu.getFocusedItem(this.controllerMenu.rootId || 'root')?.id || null;
+    const focusedItemId = menuId
+      ? (this.controllerMenu.getFocusedItem(menuId)?.id || null)
+      : rootFocusedItemId;
     const plan = buildGamepadSlideOutMenuPlan('pixel', {
       rootOpen: !menuId,
-      activeRootId: menuId || this.getDesktopRootIdForPanel(),
-      focusedItemId: this.controllerMenu.getFocusedItem(menuId)?.id
+      activeRootId: menuId || rootFocusedItemId || this.getDesktopRootIdForPanel(),
+      focusedItemId
     });
     const plannedItems = menuId ? (plan.submenu?.items || []) : plan.rootEntries;
     const plannedFocusById = new Map(plannedItems.map((item) => [item.id, Boolean(item.focused)]));
-    const focusedItemId = this.controllerMenu.getFocusedItem(menuId)?.id
+    const plannedFocusedItemId = focusedItemId
       || plan.focus?.submenuItemId
       || plan.focus?.rootItemId
       || null;
-    const menu = this.controllerMenu.menus?.[menuId];
+    const menu = this.controllerMenu.menus?.[renderMenuId];
     drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
     drawSharedGamepadSlideOutHeader(ctx, bounds, menu?.title || plan.submenu?.title || 'Menu', { hint: plan.headerHint });
     this.gamepadSlideOutMenuMeta = null;
@@ -9935,14 +10464,14 @@ export default class PixelStudio {
       bounds.y + 52,
       Math.max(1, bounds.w - 16),
       Math.max(1, bounds.h - 60),
-      menuId,
+      renderMenuId,
       {
         isMobile: true,
         layoutMode: 'list',
         maxColumns: 1,
         minColumnWidth: Math.max(1, bounds.w - 16),
         scrollGroup: 'gamepadSubmenu',
-        focusedItemId,
+        focusedItemId: plannedFocusedItemId,
         plannedFocusById
       }
     );
@@ -9980,8 +10509,10 @@ export default class PixelStudio {
         { key: 'scaleY', label: 'Scale Y', min: 0.1, max: 10 }
       ],
       crop: [
-        { key: 'borderX', label: 'Border X', min: 0, max: Math.max(0, Math.floor((this.canvasState.width - 1) / 2)) },
-        { key: 'borderY', label: 'Border Y', min: 0, max: Math.max(0, Math.floor((this.canvasState.height - 1) / 2)) }
+        { key: 'left', label: 'Left', min: 0, max: Math.max(0, this.canvasState.width - 1) },
+        { key: 'top', label: 'Top', min: 0, max: Math.max(0, this.canvasState.height - 1) },
+        { key: 'right', label: 'Right', min: 0, max: Math.max(0, this.canvasState.width - 1) },
+        { key: 'bottom', label: 'Bottom', min: 0, max: Math.max(0, this.canvasState.height - 1) }
       ],
       offset: [
         { key: 'dx', label: 'Shift X', min: -this.canvasState.width, max: this.canvasState.width },
@@ -10731,7 +11262,12 @@ export default class PixelStudio {
       ctx.fillStyle = '#ffe16a';
       ctx.fillRect(cursorX - 3, trackY - 2, 6, 4);
     }
-    const hitSize = this.isTouchViewportMode() ? 28 : 20;
+    const isTouchViewportMode = typeof this.isTouchViewportMode === 'function'
+      ? this.isTouchViewportMode
+      : function fallbackTouchViewportMode() {
+        return Boolean(this.isMobileLayout?.());
+      };
+    const hitSize = isTouchViewportMode.call(this) ? 28 : 20;
     (this.boneRig.poseTimeline || []).forEach((key) => {
       const timeMs = Number(key.timeMs || 0);
       if (timeMs < layout.scrollMs || timeMs > layout.scrollMs + layout.visibleMs) return;
@@ -14427,20 +14963,7 @@ export default class PixelStudio {
     ctx.fillRect(x, y, w, h);
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(x, y, w, h);
-    const quickAction = this.leftPanelTab === 'animation'
-      ? {
-        id: 'play',
-        label: this.animation.playing ? 'Pause' : 'Play',
-        action: () => { this.animation.playing = !this.animation.playing; },
-        active: this.animation.playing
-      }
-      : {
-        id: 'brush',
-        label: 'Brush',
-        action: () => this.openBrushPicker(),
-        active: this.brushPickerOpen,
-        render: 'brush-preview'
-      };
+    const quickAction = this.getPixelLandscapeRailContextAction();
     const actions = buildCompactLandscapeCommandRailActions({
       menu: { id: 'menu', label: 'Menu', action: () => { this.mobileDrawer = this.mobileDrawer === 'panel' ? null : 'panel'; }, active: this.mobileDrawer === 'panel' },
       undo: { id: 'undo', label: 'Undo', action: () => this.runtime.undo() },
@@ -14470,6 +14993,55 @@ export default class PixelStudio {
       this.uiButtons.push({ bounds, onClick: entry.action });
       this.registerFocusable('toolbar', bounds, entry.action);
     });
+  }
+
+  getPixelLandscapeRailContextAction() {
+    if (this.selection?.active && this.leftPanelTab !== 'bones') {
+      return {
+        id: 'selection-clear',
+        label: 'Clear',
+        action: () => this.runSelectionAction(() => this.clearSelection()),
+        active: true
+      };
+    }
+    if (this.activeToolId === TOOL_IDS.CLONE) {
+      return {
+        id: 'clone-source',
+        label: this.clonePickSourceArmed ? 'Picking' : 'Source',
+        action: () => {
+          if (this.clonePickSourceArmed) {
+            this.clonePickSourceArmed = false;
+            this.statusMessage = 'Clone paint mode';
+          } else {
+            this.armCloneSourcePick();
+          }
+        },
+        active: this.clonePickSourceArmed
+      };
+    }
+    if (this.leftPanelTab === 'animation') {
+      return {
+        id: 'play',
+        label: this.animation.playing ? 'Pause' : 'Play',
+        action: () => { this.animation.playing = !this.animation.playing; },
+        active: this.animation.playing
+      };
+    }
+    if (this.leftPanelTab === 'bones') {
+      return {
+        id: 'bone-play',
+        label: this.boneEditor?.playing ? 'Pause' : 'Play',
+        action: () => this.toggleBoneTimelinePlayback(),
+        active: Boolean(this.boneEditor?.playing)
+      };
+    }
+    return {
+      id: 'brush',
+      label: 'Brush',
+      action: () => this.openBrushPicker(),
+      active: this.brushPickerOpen,
+      render: 'brush-preview'
+    };
   }
 
   drawMobilePortraitLayout(ctx, width, height) {
@@ -14591,17 +15163,23 @@ export default class PixelStudio {
     const gap = 8;
     const zoomW = Math.min(236, Math.max(156, Math.floor(bounds.w * 0.28)));
     const showZoom = bounds.w >= 420;
+    const showFrameTransport = this.leftPanelTab === 'animation' && bounds.w >= 620;
+    const transportW = showFrameTransport ? Math.min(300, Math.max(230, Math.floor(bounds.w * 0.34))) : 0;
     const toolBounds = {
-      x: bounds.x,
+      x: bounds.x + (showFrameTransport ? transportW + gap : 0),
       y: bounds.y,
-      w: showZoom ? Math.max(1, bounds.w - zoomW - gap) : bounds.w,
+      w: showZoom
+        ? Math.max(1, bounds.w - zoomW - gap - (showFrameTransport ? transportW + gap : 0))
+        : Math.max(1, bounds.w - (showFrameTransport ? transportW + gap : 0)),
       h: bounds.h
     };
-    if (['layers', 'animation'].includes(this.leftPanelTab)) {
-      this.drawManagementActionRail(ctx, toolBounds.x, toolBounds.y, toolBounds.w, toolBounds.h, { isMobile: true });
-    } else {
-      this.drawPaletteBar(ctx, toolBounds.x, toolBounds.y, toolBounds.w, toolBounds.h, { isMobile: true });
+    if (showFrameTransport) {
+      this.drawMobileFrameTransportRail(ctx, bounds.x, bounds.y, transportW, bounds.h);
     }
+    this.drawPaletteBar(ctx, toolBounds.x, toolBounds.y, toolBounds.w, toolBounds.h, {
+      isMobile: true,
+      forcePalette: true
+    });
     if (showZoom) {
       this.drawPixelLandscapeZoomControl(ctx, {
         x: toolBounds.x + toolBounds.w + gap,
@@ -14818,8 +15396,9 @@ export default class PixelStudio {
   }
 
   drawMobilePanZoomControls(ctx, width, height, surfaceBounds = null) {
-    if (!canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick')
-      && !canRenderEditorSurface(this.activeViewportMode, 'bottom-tool-rail')) {
+    const viewportMode = this.activeViewportMode || (this.isMobileLayout?.() ? 'portrait' : 'desktop');
+    if (!canRenderEditorSurface(viewportMode, 'touch-thumbstick')
+      && !canRenderEditorSurface(viewportMode, 'bottom-tool-rail')) {
       this.resetMobilePanZoomControls();
       return;
     }
@@ -14846,15 +15425,15 @@ export default class PixelStudio {
       railBounds = { ...railBounds, x: railBounds.x + surfaceBounds.x, y: railBounds.y + surfaceBounds.y };
       hitBounds = { ...hitBounds, x: hitBounds.x + surfaceBounds.x, y: hitBounds.y + surfaceBounds.y };
     }
-    this.mobileZoomSliderBounds = canRenderEditorSurface(this.activeViewportMode, 'bottom-tool-rail') ? hitBounds : null;
+    this.mobileZoomSliderBounds = canRenderEditorSurface(viewportMode, 'bottom-tool-rail') ? hitBounds : null;
 
     const zoomT = this.view.zoomIndex / Math.max(1, this.view.zoomLevels.length - 1);
     ctx.save();
-    if (canRenderEditorSurface(this.activeViewportMode, 'bottom-tool-rail')) {
+    if (canRenderEditorSurface(viewportMode, 'bottom-tool-rail')) {
       drawSharedMobileZoomSlider(ctx, railBounds, zoomT);
     }
 
-    if (canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick')) {
+    if (canRenderEditorSurface(viewportMode, 'touch-thumbstick')) {
       drawSharedThumbstick(ctx, this.panJoystick);
     } else {
       resetSharedThumbstickState(this.panJoystick);
@@ -16883,7 +17462,8 @@ export default class PixelStudio {
     }
     this.layerBounds = [];
     const lineHeight = isMobile ? 52 : 20;
-    const listHeight = Math.max(lineHeight, y + h - offsetY);
+    const desktopOpacityH = !isMobile ? 58 : 0;
+    const listHeight = Math.max(lineHeight, y + h - offsetY - desktopOpacityH);
     this.focusGroupMeta.layers = { maxVisible: Math.max(1, Math.floor(listHeight / lineHeight)) };
     const maxLayerScroll = Math.max(0, this.canvasState.layers.length - this.focusGroupMeta.layers.maxVisible);
     this.layerListMeta = portrait
@@ -16918,12 +17498,26 @@ export default class PixelStudio {
       ctx.fillStyle = UI_SUITE.colors.text;
       ctx.font = isMobile ? UI_SUITE.editorPanel.bodyFont : `11px ${UI_SUITE.font.family}`;
       const labelX = previewBounds.x + previewBounds.w + 8;
-      const rightReserve = portrait ? 82 : 8;
+      const desktopInlineControlW = !isMobile ? 88 : 0;
+      const rightReserve = portrait ? 82 : (desktopInlineControlW + 10);
       const labelW = Math.max(20, bounds.x + bounds.w - rightReserve - labelX);
-      this.drawFittedText(ctx, `${layer.visible ? 'Vis' : 'Hid'} ${layer.name}`, labelX, bounds.y + bounds.h / 2 + 4, labelW, isMobile ? 12 : 11);
+      this.drawFittedText(ctx, layer.name, labelX, bounds.y + bounds.h / 2 + 4, labelW, isMobile ? 12 : 11);
       this.layerBounds.push(bounds);
       this.uiButtons.push({ bounds, onClick: () => { this.canvasState.activeLayerIndex = index; } });
       this.registerFocusable('layers', bounds, () => { this.canvasState.activeLayerIndex = index; });
+      if (!isMobile) {
+        const controlY = bounds.y + 2;
+        const visibilityBounds = { x: bounds.x + bounds.w - 84, y: controlY, w: 38, h: bounds.h - 4 };
+        const lockBounds = { x: bounds.x + bounds.w - 42, y: controlY, w: 34, h: bounds.h - 4 };
+        const visibilityAction = () => this.setLayerVisibility(index, layer.visible === false);
+        const lockAction = () => this.setLayerLocked(index, !layer.locked);
+        this.drawButton(ctx, visibilityBounds, layer.visible === false ? 'Hid' : 'Vis', layer.visible !== false, { fontSize: 10 });
+        this.drawButton(ctx, lockBounds, layer.locked ? 'Lock' : 'Open', Boolean(layer.locked), { fontSize: 10 });
+        this.uiButtons.push({ bounds: visibilityBounds, onClick: visibilityAction });
+        this.uiButtons.push({ bounds: lockBounds, onClick: lockAction });
+        this.registerFocusable('layers', visibilityBounds, visibilityAction);
+        this.registerFocusable('layers', lockBounds, lockAction);
+      }
       if (portrait) {
         const buttonW = 34;
         const upBounds = { x: bounds.x + bounds.w - buttonW * 2 - 8, y: bounds.y + 5, w: buttonW, h: bounds.h - 10 };
@@ -16947,6 +17541,48 @@ export default class PixelStudio {
         scrollMax: maxLayerScroll
       });
     }
+    if (!isMobile) {
+      this.drawDesktopLayerOpacityControl(ctx, x + 8, y + h - desktopOpacityH + 8, Math.max(1, w - 16), desktopOpacityH - 14);
+    }
+  }
+
+  drawDesktopLayerOpacityControl(ctx, x, y, w, h) {
+    const layer = this.activeLayer;
+    if (!layer || h <= 0) return;
+    const opacity = clamp(Number(layer.opacity ?? 1), 0, 1);
+    const labelY = y + 14;
+    const slider = { x: x + 8, y: y + 30, w: Math.max(1, w - 16), h: 10 };
+    const hitBounds = { x: slider.x - 6, y: slider.y - 8, w: slider.w + 12, h: slider.h + 16 };
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.beginPath();
+    ctx.moveTo(x, y - 6);
+    ctx.lineTo(x + w, y - 6);
+    ctx.stroke();
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `11px ${UI_SUITE.font.family}`;
+    this.drawFittedText(ctx, `Opacity ${Math.round(opacity * 100)}%`, x + 8, labelY, Math.max(1, w - 16), 11);
+    ctx.fillStyle = 'rgba(0,0,0,0.38)';
+    ctx.fillRect(slider.x, slider.y, slider.w, slider.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+    ctx.strokeRect(slider.x, slider.y, slider.w, slider.h);
+    const fillW = Math.max(0, slider.w * opacity);
+    ctx.fillStyle = 'rgba(95,184,168,0.45)';
+    ctx.fillRect(slider.x, slider.y, fillW, slider.h);
+    const knobX = slider.x + fillW;
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.fillRect(knobX - 2, slider.y - 3, 4, slider.h + 6);
+    const updateFromPointer = ({ x: pointerX }) => {
+      const ratio = clamp((pointerX - slider.x) / Math.max(1, slider.w), 0, 1);
+      this.setActiveLayerOpacity(ratio);
+    };
+    this.uiButtons.push({
+      bounds: hitBounds,
+      onClick: updateFromPointer,
+      onDrag: updateFromPointer
+    });
+    this.registerFocusable('layers', hitBounds, () => {});
+    ctx.restore();
   }
 
   drawPixelPreviewPixels(ctx, pixels, width, height, bounds) {
@@ -17189,6 +17825,91 @@ export default class PixelStudio {
     return lineCount <= 192;
   }
 
+  drawDesktopCanvasGuides(ctx, viewportBounds, canvasBounds, metrics = {}) {
+    if (this.activeViewportMode !== 'desktop') return;
+    if (!viewportBounds || !canvasBounds) return;
+    const width = Math.max(1, Math.round(metrics.width || this.canvasState?.width || 1));
+    const height = Math.max(1, Math.round(metrics.height || this.canvasState?.height || 1));
+    const zoom = Math.max(1, metrics.zoom || canvasBounds.cellSize || 1);
+    const rulerSize = 20;
+    const gap = 4;
+    const topRuler = {
+      x: canvasBounds.x,
+      y: canvasBounds.y - rulerSize - gap,
+      w: canvasBounds.w,
+      h: rulerSize
+    };
+    const leftRuler = {
+      x: canvasBounds.x - rulerSize - gap,
+      y: canvasBounds.y,
+      w: rulerSize,
+      h: canvasBounds.h
+    };
+    const canDrawTopRuler = topRuler.y >= viewportBounds.y + 4 && topRuler.x + topRuler.w >= viewportBounds.x && topRuler.x <= viewportBounds.x + viewportBounds.w;
+    const canDrawLeftRuler = leftRuler.x >= viewportBounds.x + 4 && leftRuler.y + leftRuler.h >= viewportBounds.y && leftRuler.y <= viewportBounds.y + viewportBounds.h;
+    if (!canDrawTopRuler && !canDrawLeftRuler) return;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(viewportBounds.x, viewportBounds.y, viewportBounds.w, viewportBounds.h);
+    ctx.clip();
+
+    const drawRulerPanel = (bounds) => {
+      ctx.fillStyle = 'rgba(12,16,22,0.82)';
+      ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+      ctx.strokeStyle = UI_SUITE.colors.border;
+      ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    };
+    let tickStep = 1;
+    while (tickStep * zoom < 48) tickStep *= 2;
+    ctx.font = `10px ${UI_SUITE.font.family}`;
+    ctx.fillStyle = UI_SUITE.colors.muted;
+    ctx.strokeStyle = 'rgba(255,255,255,0.32)';
+    ctx.lineWidth = 1;
+
+    if (canDrawTopRuler) {
+      drawRulerPanel(topRuler);
+      for (let col = 0; col <= width; col += tickStep) {
+        const tickX = canvasBounds.x + col * zoom;
+        if (tickX < viewportBounds.x || tickX > viewportBounds.x + viewportBounds.w) continue;
+        ctx.beginPath();
+        ctx.moveTo(tickX, topRuler.y + topRuler.h);
+        ctx.lineTo(tickX, topRuler.y + (col % (tickStep * 2) === 0 ? 4 : 10));
+        ctx.stroke();
+        if (col % (tickStep * 2) === 0) {
+          ctx.fillText(String(col), tickX + 3, topRuler.y + 13);
+        }
+      }
+      const label = `${width} x ${height}px @ ${Math.round(zoom * 100)}%`;
+      const labelW = Math.min(170, Math.max(96, ctx.measureText(label).width + 16));
+      const labelX = clamp(canvasBounds.x + canvasBounds.w - labelW, viewportBounds.x + 6, viewportBounds.x + viewportBounds.w - labelW - 6);
+      ctx.fillStyle = 'rgba(12,16,22,0.92)';
+      ctx.fillRect(labelX, topRuler.y + 2, labelW, topRuler.h - 4);
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.strokeRect(labelX, topRuler.y + 2, labelW, topRuler.h - 4);
+      ctx.fillStyle = UI_SUITE.colors.text;
+      this.drawFittedText(ctx, label, labelX + 8, topRuler.y + 14, labelW - 16, 10);
+    }
+
+    if (canDrawLeftRuler) {
+      drawRulerPanel(leftRuler);
+      for (let row = 0; row <= height; row += tickStep) {
+        const tickY = canvasBounds.y + row * zoom;
+        if (tickY < viewportBounds.y || tickY > viewportBounds.y + viewportBounds.h) continue;
+        ctx.beginPath();
+        ctx.moveTo(leftRuler.x + leftRuler.w, tickY);
+        ctx.lineTo(leftRuler.x + (row % (tickStep * 2) === 0 ? 4 : 10), tickY);
+        ctx.stroke();
+        if (row % (tickStep * 2) === 0) {
+          ctx.fillStyle = UI_SUITE.colors.muted;
+          ctx.fillText(String(row), leftRuler.x + 3, tickY - 3);
+        }
+      }
+    }
+
+    ctx.restore();
+  }
+
   drawCanvasArea(ctx, x, y, w, h) {
     const { width, height } = this.canvasState;
     this.canvasViewportBounds = { x, y, w, h };
@@ -17307,6 +18028,16 @@ export default class PixelStudio {
     ctx.strokeStyle = 'rgba(255,255,255,0.45)';
     ctx.lineWidth = 1;
     ctx.strokeRect(offsetX, offsetY, gridW, gridH);
+    const drawDesktopCanvasGuides = typeof this.drawDesktopCanvasGuides === 'function'
+      ? this.drawDesktopCanvasGuides
+      : PixelStudio.prototype.drawDesktopCanvasGuides;
+    drawDesktopCanvasGuides.call(
+      this,
+      ctx,
+      { x, y, w, h },
+      { x: offsetX, y: offsetY, w: gridW, h: gridH, cellSize: zoom },
+      { width, height, zoom }
+    );
 
     if (showGenericSelectionOverlays && this.selection.active && this.selection.bounds) {
       this.drawSelectionMarchingAnts(ctx, offsetX, offsetY, zoom);
@@ -17635,11 +18366,12 @@ export default class PixelStudio {
 
   drawPaletteBar(ctx, x, y, w, h, options = {}) {
     const isMobile = options.isMobile;
+    this.palettePresetScrollBounds = null;
     if (isMobile && this.activeToolId === TOOL_IDS.HUE_SHIFT && this.leftPanelTab !== 'select') {
       this.drawHueSaturationMobileRail(ctx, x, y, w, h);
       return;
     }
-    if (isMobile && this.leftPanelTab === 'animation') {
+    if (isMobile && !options.forcePalette && this.leftPanelTab === 'animation') {
       this.drawMobileFrameTransportRail(ctx, x, y, w, h);
       return;
     }
@@ -17660,7 +18392,24 @@ export default class PixelStudio {
       return;
     }
     if (!isMobile) {
-      ctx.fillText(`Palette: ${this.currentPalette.name}`, x + 10, y + 18);
+      const contextPad = 10;
+      const contextSize = Math.min(40, Math.max(32, h - 24));
+      const brushBounds = { x: x + contextPad, y: y + 8, w: contextSize, h: contextSize };
+      const registerBounds = { x: brushBounds.x + brushBounds.w + 8, y: y + 8, w: contextSize, h: contextSize };
+      const labelX = registerBounds.x + registerBounds.w + 12;
+      const swatchStartX = Math.min(x + Math.max(122, Math.floor(w * 0.18)), labelX + 112);
+      const swatchAvailableW = Math.max(80, w - (swatchStartX - x) - 192);
+
+      this.drawBrushPreviewChip(ctx, brushBounds);
+      this.uiButtons.push({ bounds: brushBounds, onClick: () => this.openBrushPicker() });
+      this.registerFocusable('toolbar', brushBounds, () => this.openBrushPicker());
+      this.drawColorRegisterToggle(ctx, registerBounds);
+
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `12px ${UI_SUITE.font.family}`;
+      this.drawFittedText(ctx, `Palette: ${this.currentPalette.name}`, labelX, y + 20, Math.max(44, swatchStartX - labelX - 8), 12);
+      ctx.fillStyle = UI_SUITE.colors.muted;
+      this.drawFittedText(ctx, `Brush: ${Math.round(this.toolOptions.brushSize)} ${this.toolOptions.brushShape}`, labelX, y + 38, Math.max(44, swatchStartX - labelX - 8), 11);
       const paletteControls = [
         { label: '+', action: () => this.addPaletteColor() },
         { label: '-', action: () => this.removePaletteColor() },
@@ -17671,7 +18420,7 @@ export default class PixelStudio {
         { label: this.limitToPalette ? 'Limit ✓' : 'Limit', action: () => { this.limitToPalette = !this.limitToPalette; } }
       ];
       paletteControls.forEach((entry, index) => {
-        const bounds = { x: x + 200 + index * 44, y: y + 4, w: 40, h: 18 };
+        const bounds = { x: swatchStartX + index * 44, y: y + 4, w: 40, h: 18 };
         this.drawButton(ctx, bounds, entry.label);
         this.uiButtons.push({ bounds, onClick: (entry.onClick || entry.action) });
         this.registerFocusable('menu', bounds, (entry.onClick || entry.action));
@@ -17680,10 +18429,20 @@ export default class PixelStudio {
       const swatchSize = 26;
       const gap = 8;
       const total = this.currentPalette.colors.length;
-      const startX = x + 10;
-      const maxPerRow = Math.max(1, Math.floor((w - 20) / (swatchSize + gap)));
+      const startX = swatchStartX;
+      const maxPerRow = Math.max(1, Math.floor(swatchAvailableW / (swatchSize + gap)));
       const maxRows = Math.max(1, Math.floor((h - 30) / (swatchSize + gap)));
       const maxVisible = maxPerRow * maxRows;
+      const maxScroll = Math.max(0, total - maxVisible);
+      this.focusScroll.palette = clamp(this.focusScroll.palette || 0, 0, maxScroll);
+      this.paletteBarScrollBounds = {
+        x: startX,
+        y: y + 28,
+        w: swatchAvailableW,
+        h: Math.max(1, h - 30),
+        maxScroll,
+        scrollStep: maxPerRow
+      };
       this.paletteBounds = [];
       this.focusGroupMeta.palette = { maxVisible };
       const start = this.focusScroll.palette || 0;
@@ -17703,14 +18462,49 @@ export default class PixelStudio {
       }
 
       const presetX = x + w - 180;
-      const presetY = y + 8;
+      const presetY = y + 28;
+      const presetLineH = 20;
+      const presetRegion = {
+        x: presetX,
+        y: presetY,
+        w: 160,
+        h: Math.max(1, h - (presetY - y) - 6)
+      };
       const allPalettes = [...this.palettePresets, ...this.customPalettes];
-      allPalettes.forEach((preset, index) => {
-        const bounds = { x: presetX, y: presetY + index * 20, w: 160, h: 18 };
+      const presetMaxVisible = Math.max(1, Math.floor(presetRegion.h / presetLineH));
+      const presetMaxScroll = Math.max(0, allPalettes.length - presetMaxVisible);
+      const presetStart = clamp(this.focusScroll.palettePresets || 0, 0, presetMaxScroll);
+      this.focusScroll.palettePresets = presetStart;
+      this.focusGroupMeta.palettePresets = { maxVisible: presetMaxVisible };
+      this.palettePresetScrollBounds = {
+        ...presetRegion,
+        maxScroll: presetMaxScroll,
+        lineHeight: presetLineH
+      };
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(presetRegion.x, presetRegion.y, presetRegion.w, presetRegion.h);
+      ctx.clip();
+      allPalettes.slice(presetStart, presetStart + presetMaxVisible).forEach((preset, visibleIndex) => {
+        const bounds = { x: presetX, y: presetY + visibleIndex * presetLineH, w: 160, h: 18 };
+        const action = () => { this.currentPalette = preset; this.paletteIndex = 0; };
         this.drawButton(ctx, bounds, preset.name, preset.name === this.currentPalette.name);
-        this.uiButtons.push({ bounds, onClick: () => { this.currentPalette = preset; this.paletteIndex = 0; } });
-        this.registerFocusable('menu', bounds, () => { this.currentPalette = preset; this.paletteIndex = 0; });
+        this.uiButtons.push({ bounds, onClick: action });
+        this.registerFocusable('palettePresets', bounds, action);
       });
+      ctx.restore();
+      if (presetMaxScroll > 0) {
+        drawSharedPortraitScrollHints(ctx, this.palettePresetScrollBounds, {
+          scroll: presetStart,
+          scrollMax: presetMaxScroll
+        });
+      }
+      if (maxScroll > 0) {
+        drawSharedPortraitScrollHints(ctx, this.paletteBarScrollBounds, {
+          scroll: start,
+          scrollMax: maxScroll
+        });
+      }
       return;
     }
 
@@ -17948,16 +18742,20 @@ export default class PixelStudio {
       { label: '+', action: () => this.addFrame() },
       { label: '-', action: () => this.deleteFrame(this.animation.currentFrameIndex) },
       { label: 'Dup', action: () => this.duplicateFrame(this.animation.currentFrameIndex) },
-      { label: this.animation.playing ? 'Pause' : 'Play', action: () => { this.animation.playing = !this.animation.playing; } }
+      { label: this.animation.playing ? 'Pause' : 'Play', action: () => { this.animation.playing = !this.animation.playing; } },
+      { label: this.animation.loop ? 'Loop On' : 'Loop', active: Boolean(this.animation.loop), action: () => { this.animation.loop = !this.animation.loop; } }
     ];
     let controlX = x + 76;
     controls.forEach((entry) => {
-      const bounds = { x: controlX, y: y + 8, w: entry.label.length > 3 ? 54 : 30, h: buttonH };
-      this.drawButton(ctx, bounds, entry.label, false, { fontSize: 11 });
+      const bounds = { x: controlX, y: y + 8, w: entry.label.length > 4 ? 62 : (entry.label.length > 3 ? 54 : 30), h: buttonH };
+      this.drawButton(ctx, bounds, entry.label, Boolean(entry.active), { fontSize: 11 });
       this.uiButtons.push({ bounds, onClick: entry.action });
       this.registerFocusable('frames', bounds, entry.action);
       controlX += bounds.w + 6;
     });
+    if (w - controlX > 170) {
+      this.drawDesktopFrameDelayControl(ctx, controlX + 6, y + 7, x + w - controlX - 18, buttonH + 8);
+    }
 
     this.frameBounds = [];
     const stripY = y + 38;
@@ -17989,7 +18787,7 @@ export default class PixelStudio {
       const delayMs = Math.max(1, Math.round(Number(frame.durationMs || DEFAULT_FRAME_DURATION_MS)));
       ctx.fillStyle = UI_SUITE.colors.text;
       ctx.font = `11px ${UI_SUITE.font.family}`;
-      this.drawFittedText(ctx, `F${index + 1} ${delayMs}ms`, previewBounds.x + previewBounds.w + 6, bounds.y + Math.floor(bounds.h / 2) + 4, Math.max(20, bounds.w - previewSize - 18), 11);
+      this.drawFittedText(ctx, `F${index + 1} ${delayMs}ms`, previewBounds.x + previewBounds.w + 6, bounds.y + Math.floor(bounds.h / 2) + 4, Math.max(20, bounds.w - previewSize - 56), 11);
       this.frameBounds.push(bounds);
       const action = () => {
         this.animation.currentFrameIndex = index;
@@ -17997,6 +18795,19 @@ export default class PixelStudio {
       };
       this.uiButtons.push({ bounds, onClick: action });
       this.registerFocusable('frames', bounds, action);
+      const reorderY = bounds.y + bounds.h - 20;
+      const leftBounds = { x: bounds.x + bounds.w - 42, y: reorderY, w: 18, h: 16 };
+      const rightBounds = { x: bounds.x + bounds.w - 22, y: reorderY, w: 18, h: 16 };
+      this.drawButton(ctx, leftBounds, '<', false, { fontSize: 10, disabled: index <= 0 });
+      this.drawButton(ctx, rightBounds, '>', false, { fontSize: 10, disabled: index >= this.animation.frames.length - 1 });
+      if (index > 0) {
+        this.uiButtons.push({ bounds: leftBounds, onClick: () => this.reorderFrame(index, index - 1) });
+        this.registerFocusable('frames', leftBounds, () => this.reorderFrame(index, index - 1));
+      }
+      if (index < this.animation.frames.length - 1) {
+        this.uiButtons.push({ bounds: rightBounds, onClick: () => this.reorderFrame(index, index + 1) });
+        this.registerFocusable('frames', rightBounds, () => this.reorderFrame(index, index + 1));
+      }
     });
     if (maxScroll > 0) {
       drawSharedPortraitScrollHints(ctx, this.frameListMeta.scrollBounds, {
@@ -18004,6 +18815,43 @@ export default class PixelStudio {
         scrollMax: maxScroll
       });
     }
+    ctx.restore();
+  }
+
+  drawDesktopFrameDelayControl(ctx, x, y, w, h) {
+    const frame = this.currentFrame;
+    if (!frame || w <= 0) return;
+    const delayMs = clamp(Math.round(Number(frame.durationMs || DEFAULT_FRAME_DURATION_MS)), FRAME_DELAY_MIN_MS, FRAME_DELAY_MAX_MS);
+    const labelW = 72;
+    const slider = { x: x + labelW, y: y + 7, w: Math.max(1, w - labelW - 4), h: 10 };
+    const sliderMax = Math.max(FRAME_DELAY_MIN_MS + 1, FRAME_DELAY_SLIDER_MAX_MS);
+    const sliderValue = clamp(delayMs, FRAME_DELAY_MIN_MS, sliderMax);
+    const t = (sliderValue - FRAME_DELAY_MIN_MS) / Math.max(1, sliderMax - FRAME_DELAY_MIN_MS);
+    const hitBounds = { x: slider.x - 6, y: slider.y - 8, w: slider.w + 12, h: slider.h + 16 };
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `11px ${UI_SUITE.font.family}`;
+    this.drawFittedText(ctx, `${delayMs}ms`, x, y + 15, labelW - 8, 11);
+    ctx.fillStyle = 'rgba(0,0,0,0.38)';
+    ctx.fillRect(slider.x, slider.y, slider.w, slider.h);
+    ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+    ctx.strokeRect(slider.x, slider.y, slider.w, slider.h);
+    const fillW = slider.w * clamp(t, 0, 1);
+    ctx.fillStyle = 'rgba(95,184,168,0.45)';
+    ctx.fillRect(slider.x, slider.y, fillW, slider.h);
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.fillRect(slider.x + fillW - 2, slider.y - 3, 4, slider.h + 6);
+    const updateFromPointer = ({ x: pointerX }) => {
+      const ratio = clamp((pointerX - slider.x) / Math.max(1, slider.w), 0, 1);
+      const nextDelayMs = FRAME_DELAY_MIN_MS + ratio * (sliderMax - FRAME_DELAY_MIN_MS);
+      this.setCurrentFrameDurationMs(nextDelayMs, { persist: false });
+    };
+    this.uiButtons.push({
+      bounds: hitBounds,
+      onClick: updateFromPointer,
+      onDrag: updateFromPointer
+    });
+    this.registerFocusable('frames', hitBounds, () => {});
     ctx.restore();
   }
 
