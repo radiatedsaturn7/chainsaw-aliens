@@ -1625,7 +1625,13 @@ export function getSharedMobileLandscapeEditorLayout(viewportWidth, viewportHeig
 
 export function splitFileDrawerStickyExitItems(items = [], exitId = 'exit-main') {
   const source = Array.isArray(items) ? items : [];
-  const exitItem = source.find((item) => item?.id === exitId) || null;
+  const rawExitItem = source.find((item) => item?.id === exitId) || null;
+  const exitItem = rawExitItem
+    ? {
+      ...rawExitItem,
+      label: rawExitItem.label === SHARED_EDITOR_LEFT_MENU.exitLabel ? 'Exit' : rawExitItem.label
+    }
+    : null;
   const listItems = source.filter((item) => item?.id !== exitId);
   while (listItems.length && (listItems[listItems.length - 1]?.divider || listItems[listItems.length - 1]?.separator)) {
     listItems.pop();

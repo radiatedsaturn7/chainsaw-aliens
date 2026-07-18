@@ -16242,11 +16242,11 @@ export default class PixelStudio {
   getPixelLandscapeRootMenuItems() {
     const rootTabs = buildPixelPortraitMenuModel().rootTabs;
     const exitItem = this.getPixelFileActionItem('exit-main');
-    const exitLabel = exitItem?.label === 'Exit to Main Menu' ? 'Exit' : exitItem?.label;
+    const { exitItem: stickyExitItem } = splitFileDrawerStickyExitItems(exitItem ? [exitItem] : []);
     return [
       ...rootTabs,
       { id: 'bones', panel: 'bones', label: 'Rigging' },
-      ...(exitItem ? [{ id: 'exit-main', panel: 'exit-main', label: exitLabel, action: exitItem.onClick || exitItem.action }] : [])
+      ...(stickyExitItem ? [{ id: 'exit-main', panel: 'exit-main', label: stickyExitItem.label, action: stickyExitItem.onClick || stickyExitItem.action }] : [])
     ]
       .map((entry) => ({
         id: entry.panel || entry.id,

@@ -3254,8 +3254,8 @@ test('Pixel landscape touch keeps a fixed four-button rail, left root drawer, an
   assert.equal(pixelStudioSource.includes('buildCompactLandscapeCommandRailButtonLayout({'), true);
   assert.equal(pixelStudioSource.includes('getPixelLandscapeRootMenuItems()'), true);
   assert.equal(pixelStudioSource.includes('const rootTabs = buildPixelPortraitMenuModel().rootTabs;'), true);
-  assert.equal(pixelStudioSource.includes("const exitLabel = exitItem?.label === 'Exit to Main Menu' ? 'Exit' : exitItem?.label;"), true);
-  assert.equal(pixelStudioSource.includes("{ id: 'exit-main', panel: 'exit-main', label: exitLabel, action: exitItem.onClick || exitItem.action }"), true);
+  assert.equal(pixelStudioSource.includes('const { exitItem: stickyExitItem } = splitFileDrawerStickyExitItems(exitItem ? [exitItem] : []);'), true);
+  assert.equal(pixelStudioSource.includes("{ id: 'exit-main', panel: 'exit-main', label: stickyExitItem.label, action: stickyExitItem.onClick || stickyExitItem.action }"), true);
   assert.equal(pixelStudioSource.includes('capRightRailToLeftRailHeight: true'), true);
   assert.equal(pixelStudioSource.includes('placeZoomBelowRightRail: true'), true);
   assert.equal(pixelStudioSource.includes('zoomFallsBackToBottomRail: false'), true);

@@ -261,6 +261,7 @@ test('file drawer sticky exit split keeps main menu exit out of scroll list', ()
   ]);
 
   assert.equal(exitItem.id, 'exit-main');
+  assert.equal(exitItem.label, 'Exit');
   assert.deepEqual(listItems.map((item) => item.id), ['new', 'save']);
 });
 

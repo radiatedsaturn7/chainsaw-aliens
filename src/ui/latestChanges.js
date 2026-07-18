@@ -9,6 +9,7 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   recentMajorChanges: [
+    '2026-07-18 04:37 EDT - Shared mobile File drawer sticky exits now use the compact Exit label that Pixel landscape established, while desktop File dropdowns keep the full Exit to Main Menu footer label.',
     '2026-07-18 04:32 EDT - Doodad Editor portrait File sheet now uses the same shared getDoodadFileMenuItems source as landscape and desktop, keeping Export and Import available consistently.',
     '2026-07-18 04:30 EDT - Doodad Editor menu rows now rely on shared editor spec action labels, with broad coverage requiring every shared editor command declared in the spec to provide a non-empty label.',
     '2026-07-18 04:27 EDT - Doodad Editor buttons now draw with the shared RTG Studio menu button chrome and label helpers instead of hand-rolled fill, stroke, and text styling.',
