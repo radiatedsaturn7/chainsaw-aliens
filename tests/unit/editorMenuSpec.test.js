@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 import {
+  DESKTOP_DYNAMIC_EMPTY_SECTION_IDS,
   DESKTOP_FILE_BASELINE_ACTION_IDS,
   DESKTOP_FILE_FOOTER_ACTION_ID,
   EDIT_ACTION_ROLE_GROUPS,
@@ -71,7 +72,8 @@ test('shared editor menu specs validate for every editor', () => {
     cutscene: 'stage',
     race: 'stage',
     car: 'stage',
-    tile: 'grid'
+    tile: 'grid',
+    doodad: 'stage'
   });
   for (const editorId of SHARED_EDITOR_IDS) {
     const spec = EDITOR_MENU_SPECS[editorId];
@@ -467,6 +469,26 @@ test('shared portrait specs declare intentional dynamic empty panels', () => {
   }
 });
 
+test('shared desktop specs declare intentional dynamic empty roots only', () => {
+  assert.deepEqual(DESKTOP_DYNAMIC_EMPTY_SECTION_IDS, {
+    midi: ['tracks'],
+    car: ['art']
+  });
+  for (const [editorId, sectionIds] of Object.entries(DESKTOP_DYNAMIC_EMPTY_SECTION_IDS)) {
+    sectionIds.forEach((sectionId) => {
+      assert.deepEqual(getEditorMenuSection(editorId, sectionId).actions, [], `${editorId}:${sectionId}`);
+      assert.equal(getEditorRootMenuIds(editorId).includes(sectionId), true, `${editorId}:${sectionId}`);
+    });
+    assert.deepEqual(validateEditorMenuSpec(EDITOR_MENU_SPECS[editorId]), []);
+  }
+
+  const spec = structuredClone(EDITOR_MENU_SPECS.sfx);
+  spec.root.push('settings');
+  assert.deepEqual(validateEditorMenuSpec(spec), [
+    'sfx root menu "settings" resolves to empty section "settings"; remove it from desktop roots or add live actions.'
+  ]);
+});
+
 test('menu spec validation keeps landscape roots left and submenus right', () => {
   const spec = structuredClone(EDITOR_MENU_SPECS.pixel);
   spec.placements[EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH].root = 'right-rail';
@@ -565,11 +587,22 @@ test('shared editor menu specs preserve required root menu order', () => {
   assert.deepEqual(getEditorRootMenuIds('tile'), ['file', 'edit', 'view', 'tiles', 'properties']);
   assert.deepEqual(getEditorRootMenuIds('level'), ['file', 'edit', 'view', 'tools', 'tiles', 'tile-art', 'actors', 'triggers', 'powerups', 'structures', 'graphics', 'music', 'settings', 'playtest']);
   assert.deepEqual(getEditorRootMenuIds('actor'), ['file', 'edit', 'view', 'settings', 'states', 'linked-parts', 'visuals', 'collision', 'behavior', 'preview']);
-  assert.deepEqual(getEditorRootMenuIds('midi'), ['file', 'edit', 'view', 'grid', 'song', 'tracks', 'record', 'pedals', 'settings']);
-  assert.deepEqual(getEditorRootMenuIds('sfx'), ['file', 'edit', 'view', 'timeline', 'layers', 'envelopes', 'generate', 'tools', 'settings']);
-  assert.deepEqual(getEditorRootMenuIds('cutscene'), ['file', 'edit', 'view', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio', 'settings']);
+  assert.deepEqual(getEditorRootMenuIds('midi'), ['file', 'edit', 'view', 'grid', 'song', 'tracks', 'record', 'pedals']);
+  assert.deepEqual(getEditorRootMenuIds('sfx'), ['file', 'edit', 'view', 'timeline', 'layers', 'envelopes', 'generate', 'tools']);
+  assert.deepEqual(getEditorRootMenuIds('cutscene'), ['file', 'edit', 'view', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio']);
   assert.deepEqual(getEditorRootMenuIds('race'), ['file', 'edit', 'view', 'track', 'ground', 'sprites', 'settings']);
   assert.deepEqual(getEditorRootMenuIds('car'), ['file', 'edit', 'view', 'art', 'drivetrain', 'tuning', 'aero', 'suspension', 'drive']);
+  assert.deepEqual(getEditorRootMenuIds('doodad'), ['file', 'edit', 'view', 'artwork', 'size', 'hitbox', 'collision', 'preview']);
+});
+
+test('Doodad shared menu spec exposes desktop document and settings drawers', () => {
+  assert.deepEqual(getEditorMenuSection('doodad', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('doodad', 'edit').actions, ['undo', 'redo']);
+  assert.deepEqual(getEditorMenuSection('doodad', 'artwork').actions, ['pick-art']);
+  assert.ok(getEditorMenuSection('doodad', 'size').actions.includes('ground-offset-up'));
+  assert.ok(getEditorMenuSection('doodad', 'hitbox').actions.includes('hitbox-width-down'));
+  assert.ok(getEditorMenuSection('doodad', 'collision').actions.includes('collision-threshold-2-fly-off'));
+  assert.deepEqual(getEditorDesktopLeftContextRoles('doodad'), ['active-tool', 'artwork-settings', 'size-settings', 'collision-settings']);
 });
 
 test('Tile shared menu spec keeps edit-art and reset commands in Edit only', () => {
@@ -599,9 +632,12 @@ test('canonical UI spec root lists include the required desktop View root', () =
   assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Tiles, Properties.'), true);
   assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Tools, Tiles, Tile Art, Actors/NPCs, Triggers, Powerups, Structures, Graphics/Decals, Music, Settings, Playtest.'), true);
   assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Settings, States, Linked Parts, Visuals, Collision, Behavior, Preview.'), true);
-  assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Grid, Song, Tracks/Mixer, Record, Pedals, Settings.'), true);
-  assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Timeline, Layers, Envelopes, Generate, Tools, Settings.'), true);
-  assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Add, Timeline, Clips, Keyframes, Stage, Audio, Settings.'), true);
+  assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Grid, Song, Tracks/Mixer, Record, Pedals.'), true);
+  assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Timeline, Layers, Envelopes, Generate, Tools.'), true);
+  assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Add, Timeline, Clips, Keyframes, Stage, Audio.'), true);
+  assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Grid, Song, Tracks/Mixer, Record, Pedals, Settings.'), false);
+  assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Timeline, Layers, Envelopes, Generate, Tools, Settings.'), false);
+  assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Add, Timeline, Clips, Keyframes, Stage, Audio, Settings.'), false);
   assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Track, Ground, Sprites, Settings.'), true);
   assert.equal(uiSpecSource.includes('- Portrait bottom menu: File, Track, Ground, Sprites, Settings.'), true);
   assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Art, Drivetrain, Tuning, Aero, Suspension, Drive.'), true);
@@ -662,7 +698,8 @@ test('shared editor menu specs expose compact portrait bottom roots', () => {
     sfx: ['file', 'generate', 'timeline', 'layers', 'envelopes', 'tools', 'settings'],
     cutscene: ['file', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio', 'settings'],
     race: ['file', 'track', 'ground', 'sprites', 'settings'],
-    car: ['file', 'art', 'drivetrain', 'tuning']
+    car: ['file', 'art', 'drivetrain', 'tuning'],
+    doodad: ['file', 'artwork']
   };
 
   Object.entries(expected).forEach(([editorId, ids]) => {
@@ -897,6 +934,9 @@ test('Race shared authoring roots include tile-backed terrain commands without s
 });
 
 test('Pixel desktop root, section, and controller menu aliases come from the shared menu spec', () => {
+  assert.deepEqual(getEditorRootMenuEntries('pixel', { desktopOnly: true }).map((entry) => entry.id), ['file', 'edit', 'view', 'tools', 'canvas', 'layers', 'animation', 'bones']);
+  assert.equal(getEditorRootMenuEntries('pixel').some((entry) => entry.id === 'draw'), true);
+  assert.equal(getEditorRootMenuEntries('pixel').some((entry) => entry.id === 'select'), true);
   assert.equal(getEditorDesktopSectionId('pixel', 'frames'), 'animation');
   assert.equal(getEditorDesktopSectionId('pixel', 'rigging'), 'bones');
   assert.equal(getEditorDesktopSectionId('pixel', 'draw'), 'draw');
@@ -921,9 +961,9 @@ test('MIDI desktop mixer and record controller aliases come from the shared menu
 test('shared controller root helpers expose runtime menu ids and labels', () => {
   assert.deepEqual(getEditorControllerRootMenuIds('pixel'), ['file', 'edit', 'view', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames', 'bones']);
   assert.deepEqual(getEditorControllerRootMenuIds('level'), ['file', 'edit', 'view', 'toolbox', 'tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'graphics', 'music', 'level-settings', 'playtest']);
-  assert.deepEqual(getEditorControllerRootMenuIds('midi'), ['file', 'edit', 'view', 'grid', 'song', 'tracks', 'record', 'pedals', 'settings']);
-  assert.deepEqual(getEditorControllerRootMenuIds('sfx'), ['file', 'edit', 'view', 'timeline', 'layers', 'envelopes', 'generate', 'tools', 'settings']);
-  assert.deepEqual(getEditorControllerRootMenuIds('cutscene'), ['file', 'edit', 'view', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio', 'settings']);
+  assert.deepEqual(getEditorControllerRootMenuIds('midi'), ['file', 'edit', 'view', 'grid', 'song', 'tracks', 'record', 'pedals']);
+  assert.deepEqual(getEditorControllerRootMenuIds('sfx'), ['file', 'edit', 'view', 'timeline', 'layers', 'envelopes', 'generate', 'tools']);
+  assert.deepEqual(getEditorControllerRootMenuIds('cutscene'), ['file', 'edit', 'view', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio']);
   assert.deepEqual(getEditorControllerRootMenuIds('actor'), ['file', 'edit', 'view', 'settings', 'states', 'linked-parts', 'visuals', 'collision', 'behavior', 'preview']);
   assert.deepEqual(getEditorControllerRootMenuIds('race'), ['file', 'edit', 'view', 'track', 'ground', 'sprites', 'settings']);
   assert.deepEqual(getEditorControllerRootMenuIds('car'), ['file', 'edit', 'view', 'art', 'drivetrain', 'tuning', 'aero', 'suspension', 'drive']);

@@ -27,7 +27,7 @@ export function buildRaceSurfaceBake({
   adapter = {}
 } = {}) {
   const routeEnd = Math.max(1, Number(routeLength) || 1);
-  const effectiveStep = clamp(Number(step) || 2.5, 1.25, 5);
+  const effectiveStep = clamp(Number(step) || 2.5, 1.25, 16);
   const profile = adapter.getRoadbedProfile?.({
     routeLength: routeEnd,
     runtimeType,

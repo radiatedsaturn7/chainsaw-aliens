@@ -1,5 +1,6 @@
 const DEFAULT_FLAT_JOIN_WIDTH_M = 0.5;
 const DEFAULT_SLOPE_BLEND_WIDTH_M = 4;
+const DEG_TO_RAD = Math.PI / 180;
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const smoothstep = (value) => {
@@ -34,6 +35,7 @@ export class RaceSurfaceModel {
     this.slopeBlendWidthM = Math.max(0.001, Number(adapter.slopeBlendWidthM) || DEFAULT_SLOPE_BLEND_WIDTH_M);
     this.maxCutSideSlope = Math.max(0.05, Number(adapter.maxCutSideSlope) || 0.5);
     this.maxFillSideSlope = Math.max(0.05, Number(adapter.maxFillSideSlope) || 0.5);
+    this.elevationScaleM = Math.max(0.001, Number(adapter.elevationScaleM) || 1);
   }
 
   clampElevation(value = 0) {
@@ -195,6 +197,7 @@ export class RaceSurfaceModel {
       normal,
       right,
       segment,
+      bankAngleRad: this.getBankAngleRadAtDistance(distance, { ...options, segment }),
       roadHalfWidth,
       marginWidth,
       shoulderWidth,
@@ -205,6 +208,70 @@ export class RaceSurfaceModel {
         Number(this.adapter.getBlendWidth?.(segment) || 0)
       )
     };
+  }
+
+  getBankAngleRad(segment = null) {
+    const rawDegrees = Number(segment?.banking || segment?.bankingDegrees || 0);
+    if (!Number.isFinite(rawDegrees) || Math.abs(rawDegrees) < 0.001) return 0;
+    const curve = Number(segment?.curve || 0);
+    const curveSign = curve < 0 ? 1 : -1;
+    const sign = (rawDegrees < 0 ? -1 : 1) * curveSign;
+    return clamp(Math.abs(rawDegrees), 0, 36) * DEG_TO_RAD * sign;
+  }
+
+  getBankAngleRadAtDistance(distance = 0, options = {}) {
+    const runtimeType = options.runtimeType || this.getRuntimeType();
+    const currentSegment = options.segment || null;
+    const info = typeof this.adapter.getSegmentInfoAtDistance === 'function'
+      ? this.adapter.getSegmentInfoAtDistance(distance, { runtimeType })
+      : null;
+    const segments = Array.isArray(this.adapter.getRoadSegments?.()) ? this.adapter.getRoadSegments() : [];
+    if (!info?.segment || !segments.length) return this.getBankAngleRad(currentSegment);
+    const index = Math.max(0, Number(info.index) || 0);
+    const segment = info.segment || currentSegment;
+    const current = this.getBankAngleRad(segment);
+    const length = Math.max(1, Number(info.end || 0) - Number(info.start || 0) || Number(segment?.length || 1) || 1);
+    const progressM = clamp(Number(distance || 0) - Number(info.start || 0), 0, length);
+    const transitionM = Math.max(0, Number(this.adapter.bankTransitionLengthM) || 180);
+    const blendM = Math.min(length * 0.45, transitionM);
+    if (blendM <= 0.001) return current;
+    const isCircuit = runtimeType === 'circuit';
+    const previousSegment = segments[index - 1] || (isCircuit ? segments[segments.length - 1] : null);
+    const nextSegment = segments[index + 1] || (isCircuit ? segments[0] : null);
+    if (previousSegment && progressM < blendM) {
+      const t = smoothstep((blendM + progressM) / (blendM * 2));
+      return this.getBankAngleRad(previousSegment) * (1 - t) + current * t;
+    }
+    if (nextSegment && length - progressM < blendM) {
+      const t = smoothstep((blendM - (length - progressM)) / (blendM * 2));
+      return current * (1 - t) + this.getBankAngleRad(nextSegment) * t;
+    }
+    return current;
+  }
+
+  getBankedDeckElevation(deck = {}, lateral = 0) {
+    const bankAngleRad = Number.isFinite(Number(deck.bankAngleRad))
+      ? Number(deck.bankAngleRad)
+      : this.getBankAngleRad(deck.segment);
+    if (Math.abs(bankAngleRad) < 0.0001) return this.clampElevation(deck.elevation);
+    const lateralMeters = Number(lateral || 0);
+    const bankRiseInternal = Math.tan(bankAngleRad) * lateralMeters / this.elevationScaleM;
+    return this.clampElevation(Number(deck.elevation || 0) + bankRiseInternal);
+  }
+
+  getBankedDeckNormal(deck = {}) {
+    const bankAngleRad = Number.isFinite(Number(deck.bankAngleRad))
+      ? Number(deck.bankAngleRad)
+      : this.getBankAngleRad(deck.segment);
+    if (Math.abs(bankAngleRad) < 0.0001) return deck.normal || { x: 0, y: 1, z: 0 };
+    const right = deck.right || this.getRightVector(deck.yaw);
+    const tangent = deck.tangent || normalizeVector3({ ...this.getForwardVector(deck.yaw), y: Number(deck.grade || 0) });
+    const lateralVector = normalizeVector3({
+      x: Number(right.x || 0),
+      y: Math.tan(bankAngleRad),
+      z: Number(right.z || 0)
+    });
+    return normalizeVector3(cross(lateralVector, tangent));
   }
 
   getCorridorMetrics(sample = {}, segment = sample?.segment || null) {
@@ -285,7 +352,7 @@ export class RaceSurfaceModel {
       : sampledDeck;
     const metrics = this.getCorridorMetrics(deck, deck.segment);
     const right = deck.right || this.getRightVector(deck.yaw);
-    const makePoint = (lateralOffset, edge, pointElevation = deck.elevation, roadDeckElevation = true) => ({
+    const makePoint = (lateralOffset, edge, pointElevation = this.getBankedDeckElevation(deck, lateralOffset), roadDeckElevation = true) => ({
       ...deck,
       x: Number(deck.x || 0) + Number(right.x || 0) * Number(lateralOffset || 0),
       z: Number(deck.z || 0) + Number(right.z || 0) * Number(lateralOffset || 0),
@@ -340,31 +407,33 @@ export class RaceSurfaceModel {
     let terrainGripScale = 1;
     let surfaceId = raw.surfaceId || this.getGroundSurfaceId({ x, z }, fallbackSurface);
     if (region === 'road') {
-      elevation = deck.elevation;
+      elevation = this.getBankedDeckElevation(deck, lateral);
       terrainGripScale = 1;
       surfaceId = this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState());
     } else if (region === 'margin') {
-      elevation = deck.elevation;
+      elevation = this.getBankedDeckElevation(deck, lateral);
       terrainGripScale = 0.96;
       surfaceId = this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState());
     } else if (region === 'shoulder') {
-      elevation = deck.elevation;
+      elevation = this.getBankedDeckElevation(deck, lateral);
       terrainGripScale = 1;
     } else if (region === 'transition') {
-      elevation = deck.elevation * (1 - blend) + raw.elevation * blend;
+      const deckSideElevation = this.getBankedDeckElevation(deck, lateral);
+      elevation = deckSideElevation * (1 - blend) + raw.elevation * blend;
       terrainGripScale = 1;
     }
     surfaceId = this.getEffectiveSurfaceId(surfaceId, this.getWeatherState());
     const surface = this.getSurfaceById(surfaceId);
+    const deckNormal = this.getBankedDeckNormal(deck);
     const normal = region === 'terrain'
       ? raw.normal
       : region === 'transition'
         ? normalizeVector3({
-          x: deck.normal.x * (1 - blend) + raw.normal.x * blend,
-          y: deck.normal.y * (1 - blend) + raw.normal.y * blend,
-          z: deck.normal.z * (1 - blend) + raw.normal.z * blend
+          x: deckNormal.x * (1 - blend) + raw.normal.x * blend,
+          y: deckNormal.y * (1 - blend) + raw.normal.y * blend,
+          z: deckNormal.z * (1 - blend) + raw.normal.z * blend
         })
-        : deck.normal;
+        : deckNormal;
     const materialId = region === 'road' || region === 'margin' ? surface.id : raw.materialId;
     return {
       x,

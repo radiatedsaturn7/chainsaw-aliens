@@ -931,7 +931,9 @@ export default class Editor {
           viewportWidth: width,
           viewportHeight: height,
           bottomRailHeight: LEVEL_LANDSCAPE_BOTTOM_RAIL_HEIGHT,
-          reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft
+          reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft,
+          capRightRailToLeftRailHeight: true,
+          placeZoomBelowRightRail: true
         });
         const canRenderLandscapeThumbstick = canRenderEditorPlanSurface(landscapeLayout, 'touch-thumbstick')
           && canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick');
@@ -975,7 +977,9 @@ export default class Editor {
           viewportWidth: width,
           viewportHeight: height,
           bottomRailHeight: LEVEL_LANDSCAPE_BOTTOM_RAIL_HEIGHT,
-          reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft
+          reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft,
+          capRightRailToLeftRailHeight: true,
+          placeZoomBelowRightRail: true
         });
         const rootMenuSurface = landscapeLayout.surfaces.compactCommandRail ?? landscapeLayout.surfaces.rootMenu;
         const workSurface = landscapeLayout.surfaces.workSurface;
@@ -8760,7 +8764,9 @@ export default class Editor {
         viewportWidth: width,
         viewportHeight: height,
         bottomRailHeight: LEVEL_LANDSCAPE_BOTTOM_RAIL_HEIGHT,
-        reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft
+        reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft,
+        capRightRailToLeftRailHeight: true,
+        placeZoomBelowRightRail: true
       });
       const canRenderLandscapeRootRail = !portraitLayout
         && canRenderEditorPlanSurface(landscapeLayout, 'left-rail');
@@ -8787,10 +8793,13 @@ export default class Editor {
       const landscapeToolOptionsSurface = canRenderLandscapeBottomRail
         ? landscapeLayout?.surfaces.toolOptions
         : null;
+      const landscapeZoomSurface = !portraitLayout && landscapeLayout?.surfaces.zoom
+        ? landscapeLayout.surfaces.zoom
+        : landscapeToolOptionsSurface;
       if (!portraitLayout && landscapeToolOptionsSurface) {
-        sliderX = landscapeToolOptionsSurface.x + 16;
-        sliderWidth = Math.max(140, landscapeToolOptionsSurface.w - 32);
-        sliderY = landscapeToolOptionsSurface.y + Math.max(0, Math.floor((landscapeToolOptionsSurface.h - sliderHeight) / 2));
+        sliderX = landscapeZoomSurface.x + 16;
+        sliderWidth = Math.max(80, landscapeZoomSurface.w - 32);
+        sliderY = landscapeZoomSurface.y + Math.max(0, Math.floor((landscapeZoomSurface.h - sliderHeight) / 2));
         this.zoomSlider.bounds = { x: sliderX, y: sliderY - 14, w: sliderWidth, h: sliderHeight + 28 };
       } else if (!portraitLayout) {
         this.zoomSlider.bounds = { x: 0, y: 0, w: 0, h: 0 };

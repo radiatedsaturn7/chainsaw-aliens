@@ -54,17 +54,27 @@ body {
   color: var(--ui-text);
   display: grid;
   place-items: center;
+  width: 100vw;
   min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
 }
 
 .frame {
   position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #game {
   background: #07090e;
-  border: 2px solid rgba(190, 215, 245, 0.36);
-  box-shadow: 0 0 24px rgba(0, 0, 0, 0.55);
+  border: 0;
+  box-shadow: none;
+  display: block;
   touch-action: pan-y;
 }
 
@@ -82,7 +92,7 @@ body.mobile-portrait #game {
 
 .hint {
   position: absolute;
-  bottom: -28px;
+  bottom: 10px;
   width: 100%;
   text-align: center;
   font-size: 12px;

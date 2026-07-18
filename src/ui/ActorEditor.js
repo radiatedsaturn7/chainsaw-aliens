@@ -1339,7 +1339,8 @@ export default class ActorEditor {
         viewportHeight: viewportH,
         rightRailWidth: getSharedMobileRailWidth(viewportW, viewportH),
         bottomRailHeight: ACTOR_LANDSCAPE_BOTTOM_RAIL_HEIGHT,
-        reserveRightRail: !shouldDrawGamepadSlideOut
+        reserveRightRail: !shouldDrawGamepadSlideOut,
+        capRightRailToLeftRailHeight: true
       })
       : null;
     const canRenderLandscapeRootRail = landscapeLayout
@@ -1863,15 +1864,13 @@ export default class ActorEditor {
 
   getActorFileMenuItems() {
     return buildSharedEditorFileMenu({
-      supported: {
-        export: false,
-        import: false
-      },
       actions: {
         new: () => this.newActor(),
         open: () => this.openActor(),
         save: () => this.saveActor(false),
-        'save-as': () => this.saveActor(true)
+        'save-as': () => this.saveActor(true),
+        export: () => this.saveActor(true),
+        import: () => this.openActor()
       },
       footer: {
         onClose: () => this.closeFileMenu(),

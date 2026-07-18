@@ -32,15 +32,13 @@ export function getCanvasViewportLayout({
   const dpr = mobile
     ? Math.max(1, Math.min(maxMobileDpr, Number(devicePixelRatio) || 1))
     : 1;
-  const logicalWidth = mobile ? width : defaultCanvasWidth;
-  const logicalHeight = mobile ? height : defaultCanvasHeight;
-  const targetCanvasWidth = mobile ? Math.round(logicalWidth * dpr) : defaultCanvasWidth;
-  const targetCanvasHeight = mobile ? Math.round(logicalHeight * dpr) : defaultCanvasHeight;
-  const styleWidth = mobile ? width : defaultCanvasWidth;
-  const styleHeight = mobile ? height : defaultCanvasHeight;
-  const scale = mobile
-    ? 1
-    : Math.min(width / Math.max(1, targetCanvasWidth), height / Math.max(1, targetCanvasHeight));
+  const logicalWidth = width;
+  const logicalHeight = height;
+  const targetCanvasWidth = mobile ? Math.round(logicalWidth * dpr) : logicalWidth;
+  const targetCanvasHeight = mobile ? Math.round(logicalHeight * dpr) : logicalHeight;
+  const styleWidth = width;
+  const styleHeight = height;
+  const scale = 1;
 
   return {
     viewportWidth: logicalWidth,

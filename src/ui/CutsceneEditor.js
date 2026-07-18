@@ -1872,7 +1872,7 @@ export default class CutsceneEditor {
     this.desktopDropdown = null;
     this.desktopDropdownScroll = {};
     this.pendingDesktopDropdownHit = null;
-    this.activeViewportMode = 'desktop';
+    this.activeViewportMode = game?.isMobile ? 'portrait' : 'desktop';
     this.viewportWidth = 0;
     this.viewportHeight = 0;
     this.menuScroll = 0;
@@ -2079,7 +2079,7 @@ export default class CutsceneEditor {
       ...Object.fromEntries(CUTSCENE_CONTROLLER_ROOT_ENTRIES.map((entry) => [entry.id, menuForTab(entry.id)])),
       system: buildControllerSystemMenu({
         fileMenuId: 'file',
-        toolsMenuId: 'settings',
+        toolsMenuId: 'stage',
         onExit: () => this.game.exitCutsceneEditor?.()
       }),
       'exit-confirm': buildControllerExitConfirmMenu({
@@ -2378,7 +2378,8 @@ export default class CutsceneEditor {
       viewportHeight: height,
       bottomRailHeight: railH,
       rightRailWidth: Math.min(340, Math.max(248, Math.floor(width * 0.28))),
-      reserveRightRail: !gamepadSubmenuOnLeft && (this.landscapeRootDrawerOpen || this.menuOpen || this.clipOptionsOpen)
+      reserveRightRail: !gamepadSubmenuOnLeft && (this.landscapeRootDrawerOpen || this.menuOpen || this.clipOptionsOpen),
+      capRightRailToLeftRailHeight: true
     });
     const work = landscape.surfaces.workSurface;
     const submenuDrawer = landscape.surfaces.submenu;
@@ -2902,7 +2903,99 @@ export default class CutsceneEditor {
       contentRoles: getEditorDesktopLeftContextRoles('cutscene'),
       padding: 10
     });
+    this.drawDesktopStageQuickSettings(ctx, contextBounds);
     if (transportBounds) this.drawDesktopTransportPanel(ctx, transportBounds);
+  }
+
+  drawDesktopStageQuickSettings(ctx, contextBounds) {
+    const pad = 10;
+    const panelX = contextBounds.x + pad;
+    const panelW = Math.max(0, contextBounds.w - pad * 2);
+    if (panelW < 128 || contextBounds.h < 224) return;
+    const panelY = Math.min(
+      contextBounds.y + contextBounds.h - 126,
+      contextBounds.y + 122
+    );
+    const panelH = Math.max(112, contextBounds.y + contextBounds.h - pad - panelY);
+    drawSharedPanel(ctx, { x: panelX, y: panelY, w: panelW, h: panelH }, {
+      fill: UI_SUITE.colors.panelAlt,
+      border: UI_SUITE.colors.border
+    });
+
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Stage Settings', panelX + 8, panelY + 16, panelW - 16);
+
+    const gap = 6;
+    const rowH = 28;
+    const rowY = panelY + 30;
+    const halfW = Math.floor((panelW - 16 - gap) / 2);
+    this.drawActionButton(ctx, {
+      x: panelX + 8,
+      y: rowY,
+      w: halfW,
+      h: rowH
+    }, {
+      id: 'desktop-stage-snap',
+      label: this.document.snapEnabled === false ? 'Snap Off' : 'Snap On',
+      active: this.document.snapEnabled !== false,
+      onClick: () => this.toggleStageSnap()
+    });
+    this.drawActionButton(ctx, {
+      x: panelX + 8 + halfW + gap,
+      y: rowY,
+      w: halfW,
+      h: rowH
+    }, {
+      id: 'desktop-stage-fit',
+      label: 'Fit Time',
+      onClick: () => {
+        this.fitTimeline();
+        this.statusText = 'Timeline fit';
+      }
+    });
+
+    const gridY = rowY + rowH + gap;
+    const stepW = 30;
+    const labelW = Math.max(48, panelW - 16 - stepW * 2 - gap * 2);
+    this.drawActionButton(ctx, {
+      x: panelX + 8,
+      y: gridY,
+      w: stepW,
+      h: rowH
+    }, {
+      id: 'desktop-grid-minus',
+      label: '-',
+      onClick: () => {
+        this.captureHistory('Change grid size');
+        this.document.snapSize = clamp(Math.round(safeNumber(this.document.snapSize, 8)) - 1, 1, 64);
+        this.statusText = `Grid ${this.document.snapSize}px`;
+      }
+    });
+    this.drawActionButton(ctx, {
+      x: panelX + 8 + stepW + gap,
+      y: gridY,
+      w: labelW,
+      h: rowH
+    }, {
+      id: 'desktop-grid-label',
+      label: `Grid ${clamp(Math.round(safeNumber(this.document.snapSize, 8)), 1, 64)}px`
+    });
+    this.drawActionButton(ctx, {
+      x: panelX + 8 + stepW + gap + labelW + gap,
+      y: gridY,
+      w: stepW,
+      h: rowH
+    }, {
+      id: 'desktop-grid-plus',
+      label: '+',
+      onClick: () => {
+        this.captureHistory('Change grid size');
+        this.document.snapSize = clamp(Math.round(safeNumber(this.document.snapSize, 8)) + 1, 1, 64);
+        this.statusText = `Grid ${this.document.snapSize}px`;
+      }
+    });
   }
 
   drawDesktopTransportPanel(ctx, bounds) {
@@ -3588,6 +3681,13 @@ export default class CutsceneEditor {
       return;
     }
     if (isDesktopMode && this.bounds.desktopMenuPanel && this.pointIn(this.bounds.desktopMenuPanel, x, y)) {
+      const desktopPanelHit = this.bounds.buttons?.find((entry) => (
+        entry?.onClick
+        && (String(entry.id || '').startsWith('desktop-stage-') || String(entry.id || '').startsWith('desktop-grid-'))
+        && this.pointIn(entry, x, y)
+        && this.pointIn(this.bounds.desktopMenuPanel, entry.x + entry.w / 2, entry.y + entry.h / 2)
+      ));
+      if (desktopPanelHit) desktopPanelHit.onClick();
       return;
     }
     if (this.bounds.landscapeRootPanel && this.pointIn(this.bounds.landscapeRootPanel, x, y)) {
@@ -4696,7 +4796,8 @@ export default class CutsceneEditor {
       { id: 'scene-fade-in', label: `Fade In ${this.document.sceneFadeInMs || 0}ms` },
       { id: 'scene-fade-out', label: `Fade Out ${this.document.sceneFadeOutMs || 0}ms` },
       { id: 'snap-toggle', label: this.document.snapEnabled === false ? 'Snap Off' : 'Snap On' },
-      { id: 'snap-size', label: `Grid ${clamp(Math.round(safeNumber(this.document.snapSize, 8)), 1, 64)}` }
+      { id: 'snap-size', label: `Grid ${clamp(Math.round(safeNumber(this.document.snapSize, 8)), 1, 64)}` },
+      { id: 'master-volume', label: `Master ${Math.round(clamp(safeNumber(this.document.masterVolume, 1), 0, 1) * 100)}` }
     ];
   }
 

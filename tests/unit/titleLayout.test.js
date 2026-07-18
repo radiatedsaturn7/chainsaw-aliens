@@ -91,6 +91,15 @@ test('main menu shows RTG Studio loading splash until buttons are ready', () => 
   assert.equal(title.getActionAt(first.x + first.w / 2, first.y + first.h / 2), 'recent-level');
 });
 
+test('game folder includes doodad editor', () => {
+  const title = new Title();
+  assert.equal(title.folderOrders.game.includes('doodad-editor'), true);
+  title.screen = 'game';
+  title.draw(createMockContext(), 390, 844, 'mobile', { isMobile: true });
+  assert.equal(title.getSelectedAction(), 'level-editor');
+  assert.equal(title.folderBounds.game.has('doodad-editor'), true);
+});
+
 test('canvas mouse click is suppressed after pointer-down navigation changes screens', () => {
   assert.equal(mainSource.includes('let suppressNextCanvasClick = false;'), true);
   assert.equal(mainSource.includes('function isGlobalOverlayOpen()'), true);
@@ -206,6 +215,7 @@ test('controller selection order matches studio launcher hierarchy', () => {
     'tile-editor',
     'race-editor',
     'car-editor',
+    'doodad-editor',
     'actor-editor',
     'back'
   ]);

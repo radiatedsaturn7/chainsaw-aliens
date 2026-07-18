@@ -4936,11 +4936,6 @@ export default class MidiComposer {
           surfaceAction('select-pedal-chain', 'Pedal Chain', () => { this.activeTab = 'pedals'; })
         ]
       },
-      settings: {
-        id: 'settings',
-        title: 'Settings',
-        items: []
-      },
       file: {
         id: 'file',
         title: 'File',
@@ -6142,6 +6137,14 @@ export default class MidiComposer {
       }
       if (this.bounds.metronome && this.pointInBounds(x, y, this.bounds.metronome)) {
         this.metronomeEnabled = !this.metronomeEnabled;
+        return;
+      }
+      if (this.bounds.tempoDown && this.pointInBounds(x, y, this.bounds.tempoDown)) {
+        this.setTempo((this.song?.tempo || 120) - 1);
+        return;
+      }
+      if (this.bounds.tempoUp && this.pointInBounds(x, y, this.bounds.tempoUp)) {
+        this.setTempo((this.song?.tempo || 120) + 1);
         return;
       }
       if (this.bounds.tempoButton && this.pointInBounds(x, y, this.bounds.tempoButton)) {
@@ -12791,6 +12794,17 @@ export default class MidiComposer {
     this.drawSmallButton(ctx, this.bounds.barsLabel, barsLabel, false);
     this.bounds.barsPlus = { x: this.bounds.barsLabel.x + barsLabelW + gap, y: thirdY, w: barsButtonW, h: buttonH };
     this.drawSmallButton(ctx, this.bounds.barsPlus, '+', false);
+
+    const fourthY = thirdY + buttonH + gap;
+    if (fourthY + buttonH <= panelY + panelH - 8) {
+      const tempoLabel = `Tempo ${this.song?.tempo || 120}`;
+      this.bounds.tempoDown = { x: panelX + 8, y: fourthY, w: barsButtonW, h: buttonH };
+      this.drawSmallButton(ctx, this.bounds.tempoDown, '-', false);
+      this.bounds.tempoButton = { x: this.bounds.tempoDown.x + barsButtonW + gap, y: fourthY, w: barsLabelW, h: buttonH };
+      this.drawSmallButton(ctx, this.bounds.tempoButton, tempoLabel, this.tempoSliderOpen);
+      this.bounds.tempoUp = { x: this.bounds.tempoButton.x + barsLabelW + gap, y: fourthY, w: barsButtonW, h: buttonH };
+      this.drawSmallButton(ctx, this.bounds.tempoUp, '+', false);
+    }
   }
 
   drawDesktopTransportPanel(ctx, bounds) {
@@ -13288,7 +13302,8 @@ export default class MidiComposer {
         viewportHeight: height,
         bottomRailHeight: showsGridBottomRail ? 72 : 0,
         rightRailWidth: Math.min(340, Math.max(248, Math.floor(width * 0.28))),
-        reserveRightRail: showLandscapeRightDrawer
+        reserveRightRail: showLandscapeRightDrawer,
+        capRightRailToLeftRailHeight: true
       })
       : null;
     const rootMenuSurface = landscapeLayout?.surfaces.compactCommandRail ?? landscapeLayout?.surfaces.rootMenu;
@@ -18022,15 +18037,15 @@ export default class MidiComposer {
       includeFooter: false,
       extras: [
         { divider: true },
-        { id: 'rescue-save', label: 'Rescue Save' },
-        { id: 'export-midi', label: 'Export MIDI' },
-        { id: 'export-midi-zip', label: 'Export MIDI ZIP' },
-        { id: 'export-wav', label: 'Export WAV' },
-        { id: 'save-paint', label: 'Save and Paint' },
-        { id: 'play-robtersession', label: 'Play in RobterSession' },
-        { id: 'theme', label: 'Generate Theme' },
-        { id: 'sample', label: 'Load Sample Song' },
-        { id: 'exit-main', label: 'Exit to Main Menu' }
+        { id: 'rescue-save', label: 'Rescue Save', onClick: () => this.handleFileMenu('rescue-save') },
+        { id: 'export-midi', label: 'Export MIDI', onClick: () => this.handleFileMenu('export-midi') },
+        { id: 'export-midi-zip', label: 'Export MIDI ZIP', onClick: () => this.handleFileMenu('export-midi-zip') },
+        { id: 'export-wav', label: 'Export WAV', onClick: () => this.handleFileMenu('export-wav') },
+        { id: 'save-paint', label: 'Save and Paint', onClick: () => this.handleFileMenu('save-paint') },
+        { id: 'play-robtersession', label: 'Play in RobterSession', onClick: () => this.handleFileMenu('play-robtersession') },
+        { id: 'theme', label: 'Generate Theme', onClick: () => this.handleFileMenu('theme') },
+        { id: 'sample', label: 'Load Sample Song', onClick: () => this.handleFileMenu('sample') },
+        { id: 'exit-main', label: 'Exit to Main Menu', onClick: () => this.handleFileMenu('exit-main') }
       ]
     }).filter((item) => !item.disabled);
   }

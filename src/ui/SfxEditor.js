@@ -602,11 +602,6 @@ export default class SfxEditor {
           action('loop-wizard', 'Loop Wizard', () => this.applyTool('loop-wizard'))
         ]
       },
-      settings: {
-        id: 'settings',
-        title: 'Settings',
-        items: []
-      },
       file: {
         id: 'file',
         title: 'File',
@@ -944,7 +939,7 @@ export default class SfxEditor {
       initialFolder: 'sfx',
       fixedFolder: 'sfx',
       mode: 'open',
-      onImport: () => this.fileInput.click()
+      onImport: () => this.openImportPicker()
     });
     if (result?.action === 'open' && result.name) {
       this.loadNamedFile(result.name);
@@ -952,6 +947,14 @@ export default class SfxEditor {
     if (result?.action === 'new') {
       await this.newDocument();
     }
+  }
+
+  openImportPicker() {
+    if (typeof this.fileInput?.click === 'function') {
+      this.fileInput.click();
+      return;
+    }
+    this.showMessage('Import picker unavailable');
   }
 
   loadNamedFile(name) {
@@ -2034,7 +2037,8 @@ export default class SfxEditor {
         viewportHeight: height,
         bottomRailHeight: 96,
         rightRailWidth: getSharedMobileRailWidth(width, height),
-        reserveRightRail: !gamepadSubmenuOnLeft
+        reserveRightRail: !gamepadSubmenuOnLeft,
+        capRightRailToLeftRailHeight: true
       })
       : null;
     const sharedMobileRailW = getSharedMobileRailWidth(width, height);
@@ -2666,7 +2670,57 @@ export default class SfxEditor {
       contentRoles: getEditorDesktopLeftContextRoles('sfx'),
       status: this.message || ''
     });
+    this.drawDesktopGenerateQuickSettings(ctx, contextBounds);
     if (transportBounds) this.drawDesktopTransportPanel(ctx, transportBounds);
+  }
+
+  drawDesktopGenerateQuickSettings(ctx, contextBounds) {
+    const pad = 10;
+    const gap = 6;
+    const panelX = contextBounds.x + pad;
+    const panelW = Math.max(0, contextBounds.w - pad * 2);
+    if (panelW < 120 || contextBounds.h < 218) return;
+    const panelY = Math.min(
+      contextBounds.y + contextBounds.h - 160,
+      contextBounds.y + 118
+    );
+    const panelH = Math.max(146, contextBounds.y + contextBounds.h - pad - panelY);
+    drawSharedPanel(ctx, { x: panelX, y: panelY, w: panelW, h: panelH }, {
+      fill: UI_SUITE.colors.panelAlt,
+      border: UI_SUITE.colors.border
+    });
+
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Generator Settings', panelX + 8, panelY + 16, panelW - 16);
+    ctx.restore();
+
+    const waves = ['noise', 'saw', 'triangle', 'square'];
+    const buttonGap = 5;
+    const rowH = 26;
+    const buttonW = Math.max(42, Math.floor((panelW - 16 - buttonGap * (waves.length - 1)) / waves.length));
+    const rowY = panelY + 30;
+    waves.forEach((wave, index) => {
+      this.drawButton(ctx, {
+        x: panelX + 8 + index * (buttonW + buttonGap),
+        y: rowY,
+        w: buttonW,
+        h: rowH
+      }, wave, this.sfx.toolOptions.generateWave === wave, () => {
+        this.sfx.toolOptions.generateWave = wave;
+      });
+    });
+    let y = rowY + rowH + 8;
+    y = this.drawSlider(ctx, panelX + 8, y, panelW - 16, 'Seconds', this.sfx.toolOptions.generateDuration, 0.03, 5, (value) => {
+      this.sfx.toolOptions.generateDuration = value;
+    });
+    if (y + 38 <= panelY + panelH - 6) {
+      this.drawSlider(ctx, panelX + 8, y, panelW - 16, 'Freq', this.sfx.toolOptions.generateFrequency, 20, 2000, (value) => {
+        this.sfx.toolOptions.generateFrequency = Math.round(value);
+      });
+    }
   }
 
   drawRightPanel(ctx, bounds) {
@@ -2854,7 +2908,7 @@ export default class SfxEditor {
         save: () => this.save(),
         'save-as': () => this.save({ forceSaveAs: true }),
         open: () => this.openFileModal(),
-        import: () => this.fileInput.click(),
+        import: () => this.openImportPicker(),
         export: () => this.exportSelectedWav()
       },
       footer: {
@@ -3325,7 +3379,7 @@ export default class SfxEditor {
       [
         ['Add Frame', () => this.addEmptyFrame()],
         ['Add Layer', () => this.addLayer()],
-        ['Import', () => this.fileInput.click()]
+        ['Import', () => this.openImportPicker()]
       ].forEach(([label, action], index) => {
         this.drawButton(ctx, { x: commandX + index * (commandW + gap), y: transportY + 2, w: commandW, h: 38 }, label, false, action);
       });

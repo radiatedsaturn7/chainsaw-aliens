@@ -58,6 +58,7 @@ export function validateRaceSurfaceGeometry(worldBake = null, { surfaceModel = n
           elevation: (Number(triangle[0].elevation || 0) + Number(triangle[1].elevation || 0)) * 0.5,
           roadDistance: (Number(triangle[0].roadDistance ?? triangle[0].distance ?? 0) + Number(triangle[1].roadDistance ?? triangle[1].distance ?? 0)) * 0.5,
           lateralOffset: (Number(triangle[0].lateralOffset || 0) + Number(triangle[1].lateralOffset || 0)) * 0.5,
+          hardCorridorEnd: (Number(triangle[0].hardCorridorEnd || 0) + Number(triangle[1].hardCorridorEnd || 0)) * 0.5,
           terrainRegion: triangle[0].terrainRegion === triangle[1].terrainRegion ? triangle[0].terrainRegion : 'interior'
         },
         {
@@ -66,6 +67,7 @@ export function validateRaceSurfaceGeometry(worldBake = null, { surfaceModel = n
           elevation: (Number(triangle[1].elevation || 0) + Number(triangle[2].elevation || 0)) * 0.5,
           roadDistance: (Number(triangle[1].roadDistance ?? triangle[1].distance ?? 0) + Number(triangle[2].roadDistance ?? triangle[2].distance ?? 0)) * 0.5,
           lateralOffset: (Number(triangle[1].lateralOffset || 0) + Number(triangle[2].lateralOffset || 0)) * 0.5,
+          hardCorridorEnd: (Number(triangle[1].hardCorridorEnd || 0) + Number(triangle[2].hardCorridorEnd || 0)) * 0.5,
           terrainRegion: triangle[1].terrainRegion === triangle[2].terrainRegion ? triangle[1].terrainRegion : 'interior'
         },
         {
@@ -74,6 +76,7 @@ export function validateRaceSurfaceGeometry(worldBake = null, { surfaceModel = n
           elevation: (Number(triangle[2].elevation || 0) + Number(triangle[0].elevation || 0)) * 0.5,
           roadDistance: (Number(triangle[2].roadDistance ?? triangle[2].distance ?? 0) + Number(triangle[0].roadDistance ?? triangle[0].distance ?? 0)) * 0.5,
           lateralOffset: (Number(triangle[2].lateralOffset || 0) + Number(triangle[0].lateralOffset || 0)) * 0.5,
+          hardCorridorEnd: (Number(triangle[2].hardCorridorEnd || 0) + Number(triangle[0].hardCorridorEnd || 0)) * 0.5,
           terrainRegion: triangle[2].terrainRegion === triangle[0].terrainRegion ? triangle[2].terrainRegion : 'interior'
         },
         {
@@ -82,10 +85,15 @@ export function validateRaceSurfaceGeometry(worldBake = null, { surfaceModel = n
           elevation: (Number(triangle[0].elevation || 0) + Number(triangle[1].elevation || 0) + Number(triangle[2].elevation || 0)) / 3,
           roadDistance: (Number(triangle[0].roadDistance ?? triangle[0].distance ?? 0) + Number(triangle[1].roadDistance ?? triangle[1].distance ?? 0) + Number(triangle[2].roadDistance ?? triangle[2].distance ?? 0)) / 3,
           lateralOffset: (Number(triangle[0].lateralOffset || 0) + Number(triangle[1].lateralOffset || 0) + Number(triangle[2].lateralOffset || 0)) / 3,
+          hardCorridorEnd: (Number(triangle[0].hardCorridorEnd || 0) + Number(triangle[1].hardCorridorEnd || 0) + Number(triangle[2].hardCorridorEnd || 0)) / 3,
           terrainRegion: 'interior'
         }
       ];
       probes.forEach((point) => {
+        const localHardEnd = Number(point?.hardCorridorEnd || 0);
+        const outsideLocalHardCorridor = corridorFirst
+          && localHardEnd > 0
+          && Math.abs(Number(point?.lateralOffset || 0)) >= localHardEnd - 0.001;
         const sample = surfaceModel?.sampleWorld?.(point, Number(point.elevation || 0), {
           runtimeType: worldBake.runtimeType,
           routeLength: worldBake.routeLength
@@ -101,6 +109,7 @@ export function validateRaceSurfaceGeometry(worldBake = null, { surfaceModel = n
         const ownProjection = !corridorFirst || distanceDelta <= 12;
         if ((sample?.region === 'road' || sample?.region === 'margin' || sample?.region === 'shoulder')
           && ownProjection
+          && !outsideLocalHardCorridor
           && Math.abs(Number(sample.elevation || 0) - Number(point.elevation || 0)) > 0.0001) {
           counters.hardCorridorIntersections += 1;
         }
@@ -109,7 +118,7 @@ export function validateRaceSurfaceGeometry(worldBake = null, { surfaceModel = n
           const limit = sample.region === 'margin'
             ? Number(sample.metrics?.marginEnd || 0)
             : Number(sample.metrics?.roadEnd || 0);
-          if (absLateral < limit - 0.001 && point?.terrainRegion !== 'inner') counters.terrainRoadIntrusionCount += 1;
+          if (!outsideLocalHardCorridor && absLateral < limit - 0.001 && point?.terrainRegion !== 'inner') counters.terrainRoadIntrusionCount += 1;
         }
       });
       addEdge(triangle[0], triangle[1]);

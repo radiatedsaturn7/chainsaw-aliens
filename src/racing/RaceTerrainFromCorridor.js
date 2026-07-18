@@ -72,6 +72,35 @@ function normalizeSectionList(sections = [], { runtimeType = 'destination' } = {
   return result;
 }
 
+function getCanonicalSectionList(sections = [], { runtimeType = 'destination' } = {}) {
+  const sorted = (Array.isArray(sections) ? sections : [])
+    .filter((section) => section?.center && section?.metrics)
+    .sort((a, b) => getSectionDistance(a) - getSectionDistance(b));
+  if (runtimeType === 'circuit' && sorted.length > 2) {
+    const first = sorted[0];
+    const last = sorted[sorted.length - 1];
+    if (distance2d(first.center, last.center) < 0.001) return sorted.slice(0, -1);
+  }
+  return sorted;
+}
+
+function getSectionDeckElevationAtLateral(section = {}, lateral = 0) {
+  const centerElevation = Number(section.center?.elevation ?? section.deck?.elevation ?? 0) || 0;
+  const numericLateral = Number(lateral || 0);
+  if (Math.abs(numericLateral) < 0.0001) return centerElevation;
+  const rightLateral = Number(section.right?.lateralOffset);
+  const rightElevation = Number(section.right?.elevation);
+  if (Number.isFinite(rightLateral) && Math.abs(rightLateral) > 0.0001 && Number.isFinite(rightElevation)) {
+    return centerElevation + ((rightElevation - centerElevation) / rightLateral) * numericLateral;
+  }
+  const leftLateral = Number(section.left?.lateralOffset);
+  const leftElevation = Number(section.left?.elevation);
+  if (Number.isFinite(leftLateral) && Math.abs(leftLateral) > 0.0001 && Number.isFinite(leftElevation)) {
+    return centerElevation + ((leftElevation - centerElevation) / leftLateral) * numericLateral;
+  }
+  return centerElevation;
+}
+
 function makeRailPoint(section = {}, side = 'left', lateralAbs = 0, {
   region = 'terrain',
   blend = 1,
@@ -88,6 +117,7 @@ function makeRailPoint(section = {}, side = 'left', lateralAbs = 0, {
   const deck = Number.isFinite(Number(deckElevation)) ? Number(deckElevation) : Number(center.elevation || 0);
   const raw = adapter.sampleRawTerrain?.({ x, z }, deck) || { elevation: deck, tile: null, materialId: 'grass', surfaceId: 'grass' };
   const flatJoinStart = Math.max(0, Number(metrics.shoulderEnd || 0));
+  const hardCorridorEnd = Math.max(Number(metrics.roadEnd || 0), Number(metrics.marginEnd || metrics.roadEnd || 0));
   const sideTransitionEnd = side === 'left'
     ? Number(metrics.leftTransitionEnd || metrics.transitionEnd || flatJoinStart)
     : Number(metrics.rightTransitionEnd || metrics.transitionEnd || flatJoinStart);
@@ -107,6 +137,7 @@ function makeRailPoint(section = {}, side = 'left', lateralAbs = 0, {
     y: z,
     elevation: adapter.clampElevation?.(elevation) ?? elevation,
     lateralOffset: lateral,
+    hardCorridorEnd,
     roadDistance: getSectionDistance(section),
     routeDistance: getSectionDistance(section),
     distance: getSectionDistance(section),
@@ -132,26 +163,21 @@ function getInnerBoundary(section = {}, side = 'left') {
 
 function buildSideRails(section = {}, side = 'left', { guardDistanceM = 720, adapter = {} } = {}) {
   const metrics = section.metrics || {};
-  const deckElevation = Number(section.center?.elevation || section.deck?.elevation || 0);
   const inner = getInnerBoundary(section, side);
   if (!inner) return [];
+  const sideSign = side === 'left' ? -1 : 1;
+  const deckElevationAt = (lateralAbs) => getSectionDeckElevationAtLateral(section, sideSign * Math.max(0, Number(lateralAbs) || 0));
   const sideTransitionEnd = side === 'left'
     ? Number(metrics.leftTransitionEnd || metrics.transitionEnd || metrics.shoulderEnd || 0)
     : Number(metrics.rightTransitionEnd || metrics.transitionEnd || metrics.shoulderEnd || 0);
   const innerAbs = Math.abs(Number(inner.lateralOffset || 0));
+  const hardCorridorEnd = innerAbs;
   const shoulderEnd = Math.max(innerAbs, Number(metrics.shoulderEnd || innerAbs));
   const flatJoinEnd = Math.max(shoulderEnd, Number(metrics.flatJoinEnd || shoulderEnd));
   const transitionEnd = Math.max(flatJoinEnd, sideTransitionEnd);
   const transitionSpan = Math.max(0.001, transitionEnd - flatJoinEnd);
-  const rawOffsets = [];
-  let step = 30;
-  let offset = transitionEnd + step;
   const guardEnd = transitionEnd + Math.max(120, Number(guardDistanceM) || 720);
-  while (offset < guardEnd - 0.001) {
-    rawOffsets.push(offset);
-    step = Math.min(180, step * 1.65);
-    offset += step;
-  }
+  const rawOffsets = [];
   rawOffsets.push(guardEnd);
   const rails = [{
     rail: 'inner',
@@ -161,10 +187,11 @@ function buildSideRails(section = {}, side = 'left', { guardDistanceM = 720, ada
       x: Number(inner.x || 0),
       z: pointZ(inner),
       y: pointZ(inner),
-      elevation: deckElevation,
+      elevation: Number(inner.elevation ?? deckElevationAt(innerAbs)),
       terrainRegion: 'inner',
       roadDeckElevation: true,
-      corridorBoundary: true
+      corridorBoundary: true,
+      hardCorridorEnd
     }
   }];
   if (shoulderEnd > innerAbs + 0.0001) {
@@ -174,7 +201,7 @@ function buildSideRails(section = {}, side = 'left', { guardDistanceM = 720, ada
       point: makeRailPoint(section, side, shoulderEnd, {
         region: 'shoulder',
         blend: 0,
-        deckElevation,
+        deckElevation: deckElevationAt(shoulderEnd),
         adapter
       })
     });
@@ -186,12 +213,12 @@ function buildSideRails(section = {}, side = 'left', { guardDistanceM = 720, ada
       point: makeRailPoint(section, side, flatJoinEnd, {
         region: 'flat-join',
         blend: 0,
-        deckElevation,
+        deckElevation: deckElevationAt(flatJoinEnd),
         adapter
       })
     });
   }
-  [0.25, 0.5, 0.75].forEach((ratio) => {
+  [0.5].forEach((ratio) => {
     const lateralAbs = flatJoinEnd + transitionSpan * ratio;
     if (lateralAbs > flatJoinEnd + 0.0001 && lateralAbs < transitionEnd - 0.0001) {
       rails.push({
@@ -200,7 +227,7 @@ function buildSideRails(section = {}, side = 'left', { guardDistanceM = 720, ada
         point: makeRailPoint(section, side, lateralAbs, {
           region: 'transition',
           blend: ratio,
-          deckElevation,
+          deckElevation: deckElevationAt(lateralAbs),
           adapter
         })
       });
@@ -213,7 +240,7 @@ function buildSideRails(section = {}, side = 'left', { guardDistanceM = 720, ada
       point: makeRailPoint(section, side, transitionEnd, {
         region: 'transition',
         blend: 1,
-        deckElevation,
+        deckElevation: deckElevationAt(transitionEnd),
         adapter
       })
     });
@@ -225,7 +252,7 @@ function buildSideRails(section = {}, side = 'left', { guardDistanceM = 720, ada
       point: makeRailPoint(section, side, lateralAbs, {
         region: 'terrain',
         blend: 1,
-        deckElevation,
+        deckElevation: deckElevationAt(lateralAbs),
         adapter
       })
     });
@@ -245,10 +272,11 @@ function makeTerrainCell(points = [], {
   rail = '',
   tileCell = null,
   roadAdjacent = true,
-  adapter = {}
+  adapter = {},
+  validateIntrusion = true
 } = {}) {
   if (!Array.isArray(points) || points.length < 3 || points.some((point) => !isFinitePoint(point))) return null;
-  if (typeof adapter.sampleWorld === 'function') {
+  if (validateIntrusion && typeof adapter.sampleWorld === 'function') {
     const intrudes = points.some((point) => {
       if (point?.terrainRegion === 'inner') return false;
       const sample = adapter.sampleWorld(point, Number(point.elevation || 0));
@@ -310,7 +338,8 @@ function buildRailCells(rows = [], side = 'left', { runtimeType = 'destination',
         rail: current.rails[railIndex].rail,
         tileCell: b.tileCell || c.tileCell || a.tileCell || d.tileCell,
         roadAdjacent: railIndex <= 6,
-        adapter
+        adapter,
+        validateIntrusion: false
       });
       if (cell) cells.push(cell);
       else rejected += 1;
@@ -328,7 +357,8 @@ function validateRoadsideBoundary(leftRows = [], rightRows = []) {
     if (!inner || !canonical) return;
     const error = Math.hypot(
       Number(inner.x || 0) - Number(canonical.x || 0),
-      pointZ(inner) - pointZ(canonical)
+      pointZ(inner) - pointZ(canonical),
+      Number(inner.elevation || 0) - Number(canonical.elevation || 0)
     );
     if (error > 0.000001) mismatchCount += 1;
     if (error > maxError) maxError = error;
@@ -342,7 +372,8 @@ export function buildRaceTerrainFromCorridor({
   guardDistanceM = 720,
   adapter = {}
 } = {}) {
-  const sections = normalizeSectionList(surfaceBake?.sections || [], { runtimeType });
+  const canonicalSections = getCanonicalSectionList(surfaceBake?.sections || [], { runtimeType });
+  const sections = canonicalSections.length ? canonicalSections : normalizeSectionList(surfaceBake?.sections || [], { runtimeType });
   if (sections.length < 2) {
     return {
       terrainCells: [],
@@ -386,6 +417,7 @@ export function buildRaceTerrainFromCorridor({
     stats: {
       terrainTopology: 'corridor-first',
       corridorSections: sections.length,
+      canonicalSurfaceSections: canonicalSections.length,
       corridorLeftRows: leftRows.length,
       corridorRightRows: rightRows.length,
       terrainBaseTriangles: terrainBaseCells.length * 2,

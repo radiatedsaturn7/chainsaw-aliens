@@ -112,15 +112,19 @@ export const PORTRAIT_DYNAMIC_EMPTY_SECTION_IDS = {
   cutscene: ['settings'],
   car: ['art']
 };
+export const DESKTOP_DYNAMIC_EMPTY_SECTION_IDS = {
+  midi: ['tracks'],
+  car: ['art']
+};
 export const STANDARD_EDITOR_ACTION_RAIL_PREFIX = ['menu', 'undo', 'redo'];
-export const SHARED_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'car', 'tile'];
+export const SHARED_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'car', 'tile', 'doodad'];
 export const SUPPORTED_EDITOR_WORK_SURFACES = ['canvas', 'stage', 'grid', 'timeline'];
 export const EDITOR_STANDARD_REFERENCE = deepFreeze({
   primaryEditorId: 'midi',
   secondaryEditorId: 'pixel',
   comparisonEditorIds: ['level', 'cutscene', 'actor'],
   portraitRepairEditorIds: ['level', 'race', 'car'],
-  rolloutOrder: ['midi', 'pixel', 'level', 'cutscene', 'actor', 'race', 'car', 'sfx', 'tile']
+  rolloutOrder: ['midi', 'pixel', 'level', 'cutscene', 'actor', 'race', 'car', 'sfx', 'tile', 'doodad']
 });
 export const EDITOR_DESKTOP_LEFT_CONTEXT_ROLES = deepFreeze({
   pixel: ['active-tool', 'swatches', 'layers', 'frames'],
@@ -131,7 +135,8 @@ export const EDITOR_DESKTOP_LEFT_CONTEXT_ROLES = deepFreeze({
   cutscene: ['insert-palette', 'selected-clip', 'timeline', 'scene-settings'],
   race: ['active-tool', 'tile-palette', 'route-painting', 'track-settings'],
   car: ['active-tool', 'car-properties', 'paint-swatches', 'test-drive-settings'],
-  tile: ['active-tool', 'tile-palette', 'tile-properties', 'preview-settings']
+  tile: ['active-tool', 'tile-palette', 'tile-properties', 'preview-settings'],
+  doodad: ['active-tool', 'artwork-settings', 'size-settings', 'collision-settings']
 });
 export const RACE_FORBIDDEN_EXPLICIT_ROUTE_TYPE_ACTION_IDS = ['race-circuit', 'race-destination'];
 export const EDIT_ACTION_ROLE_GROUPS = {
@@ -168,6 +173,7 @@ export const EDITOR_MENU_SPECS = {
     title: 'Pixel Editor',
     workSurface: 'canvas',
     root: ['file', 'edit', 'view', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames', 'rigging'],
+    desktopRoot: ['file', 'edit', 'view', 'tools', 'canvas', 'layers', 'frames', 'rigging'],
     portraitRoot: [
       { id: 'file', panel: 'file', label: 'File' },
       { id: 'draw', panel: 'draw', label: 'Draw' },
@@ -183,7 +189,7 @@ export const EDITOR_MENU_SPECS = {
       view: section('view', 'View', ['zoom-in', 'zoom-out', 'zoom-fit', 'grid', 'tile-preview', 'onion']),
       draw: section('draw', 'Draw', ['pencil', 'brush', 'fill', 'line', 'shape', 'brush-settings']),
       select: section('select', 'Select', ['select-rect', 'select-ellipse', 'select-lasso', 'select-magic', 'move']),
-      tools: section('tools', 'Tools', ['eraser', 'eyedropper', 'gradient', 'clone', 'dither', 'color-replace', 'hue-shift']),
+      tools: section('tools', 'Tools', ['eraser', 'eyedropper', 'gradient', 'clone', 'dither', 'color-replace', 'hue-shift', 'saturation-shift', 'brightness-shift', 'contrast-shift']),
       canvas: section('canvas', 'Canvas', ['wrap', 'symmetry', 'resize', 'scale', 'crop', 'offset', 'import-image', 'export-image']),
       layers: section('layers', 'Layers', ['layer-add', 'layer-duplicate', 'layer-delete', 'layer-rename', 'layer-visibility', 'layer-up', 'layer-down', 'layer-merge-up', 'layer-merge-down', 'layer-flatten']),
       frames: section('frames', 'Frames', ['frame-add', 'frame-duplicate', 'frame-delete', 'frame-delay', 'frame-loop', 'frame-play', 'frame-step', 'frame-rewind', 'frame-up', 'frame-down']),
@@ -247,7 +253,7 @@ export const EDITOR_MENU_SPECS = {
     editorId: 'midi',
     title: 'MIDI Editor',
     workSurface: 'grid',
-    root: ['file', 'edit', 'view', 'grid', 'song', 'tracks', 'record', 'pedals', 'settings'],
+    root: ['file', 'edit', 'view', 'grid', 'song', 'tracks', 'record', 'pedals'],
     portraitRoot: [
       { id: 'file', label: 'File' },
       { id: 'grid', label: 'Grid' },
@@ -273,7 +279,7 @@ export const EDITOR_MENU_SPECS = {
     editorId: 'sfx',
     title: 'SFX Editor',
     workSurface: 'timeline',
-    root: ['file', 'edit', 'view', 'timeline', 'layers', 'envelopes', 'generate', 'tools', 'settings'],
+    root: ['file', 'edit', 'view', 'timeline', 'layers', 'envelopes', 'generate', 'tools'],
     portraitRoot: [
       { id: 'file', label: 'File' },
       { id: 'generate', label: 'Generate' },
@@ -299,7 +305,7 @@ export const EDITOR_MENU_SPECS = {
     editorId: 'cutscene',
     title: 'Cutscene Editor',
     workSurface: 'stage',
-    root: ['file', 'edit', 'view', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio', 'settings'],
+    root: ['file', 'edit', 'view', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio'],
     portraitRoot: [
       { id: 'file', label: 'File' },
       { id: 'add', label: 'Add' },
@@ -418,6 +424,26 @@ export const EDITOR_MENU_SPECS = {
       tiles: section('tiles', 'Tiles', ['tile-prev', 'tile-next']),
       properties: section('properties', 'Properties', ['tile-edit-properties', 'tile-toggle-solid', 'tile-toggle-one-way', 'tile-toggle-destructible'])
     }
+  },
+  doodad: {
+    editorId: 'doodad',
+    title: 'Doodad Editor',
+    workSurface: 'stage',
+    root: ['file', 'edit', 'view', 'artwork', 'size', 'hitbox', 'collision', 'preview'],
+    portraitRoot: [
+      { id: 'file', label: 'File' },
+      { id: 'artwork', label: 'Art' }
+    ],
+    sections: {
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
+      edit: section('edit', 'Edit', ['undo', 'redo']),
+      view: section('view', 'View', ['zoom-fit']),
+      artwork: section('artwork', 'Artwork', ['pick-art']),
+      size: section('size', 'Size', ['width-down', 'width-up', 'height-down', 'height-up', 'ground-offset-down', 'ground-offset-up', 'weight-down', 'weight-up']),
+      hitbox: section('hitbox', 'Hitbox', ['hitbox-width-down', 'hitbox-width-up', 'hitbox-height-down', 'hitbox-height-up']),
+      collision: section('collision', 'Collision', ['collision-default-collide', 'collision-default-flatten', 'collision-default-fly-off', 'collision-threshold-1-collide', 'collision-threshold-1-flatten', 'collision-threshold-1-fly-off', 'collision-threshold-2-collide', 'collision-threshold-2-flatten', 'collision-threshold-2-fly-off']),
+      preview: section('preview', 'Preview', ['preview-studio-sprint'])
+    }
   }
 };
 
@@ -442,7 +468,8 @@ export const EDITOR_MENU_ALIASES = {
   cutscene: {},
   race: {},
   car: {},
-  tile: {}
+  tile: {},
+  doodad: {}
 };
 
 export const EDITOR_ROOT_LABEL_OVERRIDES = {
@@ -473,7 +500,8 @@ export const EDITOR_ROOT_LABEL_OVERRIDES = {
   cutscene: {},
   race: {},
   car: {},
-  tile: {}
+  tile: {},
+  doodad: {}
 };
 
 export const EDITOR_DESKTOP_SECTION_MAP = {
@@ -618,7 +646,8 @@ export const getEditorDesktopControllerMenuIdForSection = (editorId, sectionId) 
 
 export function getEditorRootMenuEntries(editorId, {
   labelOverrides = {},
-  extraEntries = []
+  extraEntries = [],
+  desktopOnly = false
 } = {}) {
   const spec = getEditorMenuSpec(editorId);
   if (!spec) return [];
@@ -626,8 +655,11 @@ export function getEditorRootMenuEntries(editorId, {
     ...(spec.rootLabelOverrides || {}),
     ...labelOverrides
   };
+  const rootIds = desktopOnly
+    ? (spec.desktopRoot || spec.root || [])
+    : (spec.root || []);
   return [
-    ...spec.root.map((specId) => {
+    ...rootIds.map((specId) => {
       const sectionEntry = spec.sections[specId] || {};
       const id = getEditorMenuRuntimeId(editorId, specId);
       return {
@@ -715,6 +747,9 @@ export function validateEditorMenuSpec(spec) {
   const sections = spec.sections || {};
   (spec.root || []).forEach((id) => {
     if (!sections[id]) errors.push(`${spec.editorId} root menu "${id}" is missing a section.`);
+    else if ((sections[id].actions || []).length === 0 && !(DESKTOP_DYNAMIC_EMPTY_SECTION_IDS[spec.editorId] || []).includes(id)) {
+      errors.push(`${spec.editorId} root menu "${id}" resolves to empty section "${id}"; remove it from desktop roots or add live actions.`);
+    }
   });
   if ((spec.portraitRoot || []).length > PORTRAIT_ROOT_MAX_ITEMS) {
     errors.push(`${spec.editorId} portraitRoot must expose no more than ${PORTRAIT_ROOT_MAX_ITEMS} bottom menu items.`);

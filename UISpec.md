@@ -48,7 +48,7 @@ Shared implementation helpers:
 - Landscape touch shell surfaces come from `LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT`. Root menu access starts from a fixed vertical rail on the left. Dense editors should use the shared 84px compact command rail with `Menu`, `Undo`, `Redo`, and one contextual quick action; this rail is not scrollable. `Menu` opens the full root drawer. The root drawer must originate from the compact left rail so it feels like an expanded main menu, show all categories in a grid when they fit, remain gesture-scrollable when they do not, and stay open while category picks switch the active section. The shared plan exposes this as `modeSurfaces.compactCommandRail: left-rail`, `modeSurfaces.rootDrawer: left-overlay-drawer`, `rootDrawerOverlayOrigin: left`, and `surfaceRoles.persistentNavigationActionLimit: COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT`.
 - Active submenu appears in a drawer/rail on the right. Opening the left root drawer must not hide or steal this right submenu rail; landscape touch should support roots on the left and the active submenu/context drawer on the right at the same time. The shared plan exposes this as `modeSurfaces.rootDrawerKeepsSubmenuVisible: true`.
 - The center remains the canvas, stage, waveform, timeline, or grid work surface.
-- The bottom rail is the persistent tool/options surface for zoom, ribbons, palette/context controls, transport, or quick actions when those controls should stay visible while the right submenu opens and closes. Pixel landscape should keep zoom in this bottom rail beside palette/layer/frame controls instead of reintroducing a separate top zoom strip.
+- The bottom rail is the persistent tool/options surface for ribbons, palette/context controls, transport, or quick actions when those controls should stay visible while the right submenu opens and closes. Pixel landscape keeps palette/layer/frame controls in this bottom rail and places zoom below the right submenu, not inside the bottom rail or a separate top strip.
 - Editors may opt into a shared top zoom strip when a bottom rail is already dedicated to persistent tool/palette controls and an over-canvas zoom chip would collide with the work surface.
 - Do not leave editor-specific landscape controls floating over the work surface when they can live in the shared bottom rail. If an editor omits the bottom rail, that should be because its active workflow has no persistent landscape control surface for the current mode.
 - Full drawers, sheets, right rails, bottom rails, and tool grids must scroll by gesture drag when content overflows. The compact four-button left command rail stays fixed.
@@ -129,7 +129,7 @@ Shared implementation helpers:
 
 ### MIDI Editor
 
-- Root: File, Edit, View, Grid, Song, Tracks/Mixer, Record, Pedals, Settings.
+- Root: File, Edit, View, Grid, Song, Tracks/Mixer, Record, Pedals.
 - Edit: undo, redo, copy, cut, paste, select all, delete.
 - Grid: direct note placement/erase on the grid, quantize, note length.
 - Song: play, stop, loop, tempo.
@@ -139,7 +139,7 @@ Shared implementation helpers:
 
 ### SFX Editor
 
-- Root: File, Edit, View, Timeline, Layers, Envelopes, Generate, Tools, Settings.
+- Root: File, Edit, View, Timeline, Layers, Envelopes, Generate, Tools.
 - Edit: undo, redo, copy, cut, paste, delete.
 - Timeline: play, stop, start, end.
 - Layers: add, duplicate, delete.
@@ -149,7 +149,7 @@ Shared implementation helpers:
 
 ### Cutscene Editor
 
-- Root: File, Edit, View, Add, Timeline, Clips, Keyframes, Stage, Audio, Settings.
+- Root: File, Edit, View, Add, Timeline, Clips, Keyframes, Stage, Audio.
 - Edit: undo, redo, copy, cut, paste, delete.
 - Add: art, actor, text, color board, music, SFX, effect, pause.
 - View: canvas, split, timeline, timeline zoom out, timeline zoom in, fit timeline.
@@ -184,6 +184,16 @@ Shared implementation helpers:
 - Suspension: front/rear springs, damping, and anti-roll through slider-style controls.
 - Drive: Playtest opens a car picker and starts the same handheld race playtest surface.
 - Desktop left panel should show selected car, drivetrain, power, weight, and active tool while top drawers own commands.
+
+### Doodad Editor
+
+- Root: File, Edit, View, Artwork, Size, Hitbox, Collision, Preview.
+- Edit: undo, redo.
+- Artwork: pick art.
+- Size: width, height, plant/ground offset, and weight adjustments.
+- Hitbox: hitbox width and height adjustments.
+- Collision: default and speed-threshold behavior controls.
+- Desktop left panel should keep active doodad artwork, size, hitbox, and collision settings visible while top drawers own document and command actions.
 
 ## Gesture And Pointer Rules
 

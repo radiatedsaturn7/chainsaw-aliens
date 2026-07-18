@@ -103,7 +103,8 @@ const canvasEditorDesktopDropdownSources = {
   sfx: readFileSync(new URL('../../src/ui/SfxEditor.js', import.meta.url), 'utf8'),
   cutscene: readFileSync(new URL('../../src/ui/CutsceneEditor.js', import.meta.url), 'utf8'),
   race: readFileSync(new URL('../../src/ui/RaceEditor.js', import.meta.url), 'utf8'),
-  car: readFileSync(new URL('../../src/ui/RaceEditor.js', import.meta.url), 'utf8')
+  car: readFileSync(new URL('../../src/ui/RaceEditor.js', import.meta.url), 'utf8'),
+  doodad: readFileSync(new URL('../../src/ui/DoodadEditor.js', import.meta.url), 'utf8')
 };
 const actorEditorSource = readFileSync(new URL('../../src/ui/ActorEditor.js', import.meta.url), 'utf8');
 const editorDesktopDropdownSources = {
@@ -152,7 +153,7 @@ test('UI docs describe the shared desktop command and context surface contract',
   assert.equal(editorUiContractSource.includes('Edit dropdown drawers must begin with the shared history row order `Undo`, `Redo`'), true);
   assert.equal(editorUiContractSource.includes('Edit dropdown role groups must follow `history -> clipboard -> selection -> duplicate -> targetEdit -> destructive`'), true);
   assert.equal(editorUiContractSource.includes('Unsupported baseline actions stay visible as disabled rows with inert hit targets.'), true);
-  assert.equal(editorUiContractSource.includes('**Race Editor**, and **Car Editor**'), true);
+  assert.equal(editorUiContractSource.includes('**Race Editor**, **Car Editor**, and **Doodad Editor**'), true);
   assert.equal(editorUiContractSource.includes("persistentSurfaces: ['top-menu', 'left-ribbon', 'left-context-panel', 'work-surface']"), true);
   assert.equal(editorUiContractSource.includes('suppressedMobileSurfaces'), true);
   assert.equal(editorUiContractSource.includes('`gamepad-slide-out` so desktop cannot accidentally render mobile or controller chrome.'), true);
@@ -309,7 +310,8 @@ test('all desktop editors expose shared left context roles and shared dropdown h
     sfx: ['active-tool', 'timeline', 'oscillator-settings', 'envelope-settings'],
     cutscene: ['insert-palette', 'selected-clip', 'timeline', 'scene-settings'],
     race: ['active-tool', 'tile-palette', 'route-painting', 'track-settings'],
-    car: ['active-tool', 'car-properties', 'paint-swatches', 'test-drive-settings']
+    car: ['active-tool', 'car-properties', 'paint-swatches', 'test-drive-settings'],
+    doodad: ['active-tool', 'artwork-settings', 'size-settings', 'collision-settings']
   };
 
   Object.entries(expectedRoles).forEach(([editorId, roles]) => {
@@ -340,6 +342,7 @@ test('all desktop editors expose shared left context roles and shared dropdown h
   assert.equal(canvasEditorDesktopDropdownSources.tile.includes("contentRoles: getEditorDesktopLeftContextRoles('tile')"), true);
   assert.equal(canvasEditorDesktopDropdownSources.midi.includes("contentRoles: getEditorDesktopLeftContextRoles('midi')"), true);
   assert.equal(canvasEditorDesktopDropdownSources.sfx.includes("contentRoles: getEditorDesktopLeftContextRoles('sfx')"), true);
+  assert.equal(canvasEditorDesktopDropdownSources.doodad.includes('contentRoles: getEditorDesktopLeftContextRoles(DOODAD_EDITOR_ID)'), true);
 });
 
 test('portrait shared rail interactions stay bottom-first with touch activation', () => {
@@ -1612,7 +1615,7 @@ test('desktop shell top menus expose shared fit metadata for every editor', () =
       viewportWidth: 1280,
       viewportHeight: 800
     });
-    const entries = getEditorRootMenuEntries(editorId);
+    const entries = getEditorRootMenuEntries(editorId, { desktopOnly: true });
 
     assert.equal(shell.topMenu.fit.totalCount, entries.length, editorId);
     assert.equal(shell.topMenu.fit.visibleCount, shell.topMenu.buttons.length, editorId);
@@ -1622,6 +1625,19 @@ test('desktop shell top menus expose shared fit metadata for every editor', () =
     assert.ok(shell.topMenu.buttons.every((button) => button.bounds.x + button.bounds.w <= shell.topMenu.bounds.w - shell.topMenu.bounds.padding), editorId);
     assert.equal(shell.topMenu.fit.minimumRecommendedWidth >= shell.topMenu.bounds.padding * 2, true, editorId);
   });
+});
+
+test('Pixel desktop top menu omits Draw and Select while non-desktop roots keep them', () => {
+  const desktop = buildDesktopTopMenuPlan('pixel', {
+    bounds: { x: 0, y: 0, w: 1280, h: 40 }
+  });
+  const desktopIds = desktop.buttons.map((button) => button.id);
+
+  assert.deepEqual(desktopIds, ['file', 'edit', 'view', 'tools', 'canvas', 'layers', 'animation', 'bones']);
+  assert.equal(getEditorRootMenuEntries('pixel').some((entry) => entry.id === 'draw'), true);
+  assert.equal(getEditorRootMenuEntries('pixel').some((entry) => entry.id === 'select'), true);
+  assert.equal(getEditorRootMenuEntries('pixel', { desktopOnly: true }).some((entry) => entry.id === 'draw'), false);
+  assert.equal(getEditorRootMenuEntries('pixel', { desktopOnly: true }).some((entry) => entry.id === 'select'), false);
 });
 
 test('desktop top menu fit metadata reports intentional overflow separately from compression', () => {
@@ -1947,7 +1963,7 @@ test('shared desktop dropdown renders disabled rows without registering clicks',
 
 test('shared file menu specs include the actions used by editor surfaces', () => {
   assert.deepEqual(getEditorMenuSection('pixel', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
-  assert.deepEqual(getEditorMenuSection('pixel', 'tools').actions, ['eraser', 'eyedropper', 'gradient', 'clone', 'dither', 'color-replace', 'hue-shift']);
+  assert.deepEqual(getEditorMenuSection('pixel', 'tools').actions, ['eraser', 'eyedropper', 'gradient', 'clone', 'dither', 'color-replace', 'hue-shift', 'saturation-shift', 'brightness-shift', 'contrast-shift']);
   assert.deepEqual(getEditorMenuSection('level', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'load-wrx', 'load-brz', 'load-civic', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('level', 'edit').actions, ['undo', 'redo', 'copy', 'cut', 'paste', 'delete']);
   assert.deepEqual(getEditorMenuSection('actor', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
@@ -1996,7 +2012,7 @@ test('shared file menu specs include the actions used by editor surfaces', () =>
   assert.equal(getEditorMenuSection('pixel', 'edit').actions.includes('copy'), true);
   assert.equal(getEditorMenuSection('pixel', 'edit').actions.includes('paste'), true);
   const pixelToolsDropdown = buildDesktopDropdownPlan('pixel', 'tools');
-  assert.deepEqual(pixelToolsDropdown.items.map((item) => item.id), ['eraser', 'eyedropper', 'gradient', 'clone', 'dither', 'color-replace', 'hue-shift']);
+  assert.deepEqual(pixelToolsDropdown.items.map((item) => item.id), ['eraser', 'eyedropper', 'gradient', 'clone', 'dither', 'color-replace', 'hue-shift', 'saturation-shift', 'brightness-shift', 'contrast-shift']);
 
   const levelDropdown = buildDesktopDropdownPlan('level', 'file');
   assert.deepEqual(levelDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'load-wrx', 'load-brz', 'load-civic', 'exit-main']);
@@ -2115,6 +2131,24 @@ test('desktop editor shell clamps the shared left panel for narrow and wide desk
   assert.equal(wide.workSurface.w, 1544);
 });
 
+test('desktop editor shell can reserve bottom workspace for editor-owned panels', () => {
+  const standard = buildDesktopEditorShellPlan('pixel', {
+    viewportWidth: 1280,
+    viewportHeight: 720
+  });
+  const reserved = buildDesktopEditorShellPlan('pixel', {
+    viewportWidth: 1280,
+    viewportHeight: 720,
+    bottomReserveHeight: 138
+  });
+
+  assert.equal(reserved.leftColumn.h, standard.leftColumn.h - 138);
+  assert.equal(reserved.leftOptions.y, standard.leftOptions.y);
+  assert.equal(reserved.leftOptions.h, standard.leftOptions.h - 138);
+  assert.equal(reserved.workSurface.h, standard.workSurface.h - 138);
+  assert.equal(reserved.workSurface.w, standard.workSurface.w);
+});
+
 test('desktop editor shell caps dropdown drawers to the visible desktop viewport', () => {
   const plan = buildDesktopEditorShellPlan('midi', {
     viewportWidth: 900,
@@ -2166,12 +2200,12 @@ test('landscape touch shell plan standardizes side rails, bottom rail, and gestu
   assert.equal(plan.scroll.leftRail.enabled, false);
   assert.equal(plan.scroll.rightRail.suppressClickAfterDrag, true);
   assert.equal(plan.scroll.workSurface.pinchZoomReservedForWorkSurface, true);
-  assert.equal(uiSpecSource.includes('The bottom rail is the persistent tool/options surface for zoom, ribbons, palette/context controls, transport, or quick actions'), true);
-  assert.equal(uiSpecSource.includes('Pixel landscape should keep zoom in this bottom rail beside palette/layer/frame controls instead of reintroducing a separate top zoom strip.'), true);
+  assert.equal(uiSpecSource.includes('The bottom rail is the persistent tool/options surface for ribbons, palette/context controls, transport, or quick actions'), true);
+  assert.equal(uiSpecSource.includes('Pixel landscape keeps palette/layer/frame controls in this bottom rail and places zoom below the right submenu, not inside the bottom rail or a separate top strip.'), true);
   assert.equal(uiSpecSource.includes('Dense editors should use the shared 84px compact command rail with `Menu`, `Undo`, `Redo`, and one contextual quick action; this rail is not scrollable.'), true);
   assert.equal(uiSpecSource.includes('The compact four-button left command rail stays fixed.'), true);
   assert.equal(editorUiContractSource.includes('`BottomRail` is the persistent tool/options/zoom/ribbon surface'), true);
-  assert.equal(editorUiContractSource.includes('Pixel landscape intentionally draws zoom from its bottom control rail while leaving the shell `surfaces.zoom` null'), true);
+  assert.equal(editorUiContractSource.includes('Pixel landscape keeps palette/layer/frame controls in the bottom rail, caps the right submenu to the compact left rail height, and uses a right-side `surfaces.zoom` slot directly below that submenu'), true);
   assert.equal(editorUiContractSource.includes('`LeftRail` is the persistent fixed compact command rail and maps to `surfaces.compactCommandRail`'), true);
   assert.equal(editorUiContractSource.includes('It is `84px` wide, shows `Menu`, `Undo`, `Redo`, and one contextual quick action, and does not scroll.'), true);
   assert.equal(editorUiContractSource.includes('`RootDrawer` is the full root menu opened by `Menu` and maps to `surfaces.rootDrawer`'), true);
@@ -2198,6 +2232,26 @@ test('landscape touch shell can reserve an opt-in top zoom rail', () => {
   assert.equal(plan.bottomRailRole, 'tool-options-ribbons-zoom');
   assert.deepEqual(plan.surfaces.toolOptions, plan.bottomRail);
   assert.deepEqual(plan.surfaces.ribbon, plan.bottomRail);
+});
+
+test('landscape touch shell can cap the right submenu and place zoom below it', () => {
+  const plan = buildLandscapeTouchEditorShellPlan('pixel', {
+    viewportWidth: 844,
+    viewportHeight: 390,
+    bottomRailHeight: 78,
+    reserveRightRail: true,
+    capRightRailToLeftRailHeight: true,
+    placeZoomBelowRightRail: true
+  });
+
+  assert.ok(plan.surfaces.submenu);
+  assert.ok(plan.surfaces.zoom);
+  assert.equal(plan.surfaces.submenu.h, plan.surfaces.compactCommandRail.h);
+  assert.equal(plan.surfaces.zoom.x, plan.surfaces.submenu.x);
+  assert.equal(plan.surfaces.zoom.w, plan.surfaces.submenu.w);
+  assert.equal(plan.surfaces.zoom.y >= plan.surfaces.submenu.y + plan.surfaces.submenu.h, true);
+  assert.equal(plan.surfaces.zoom.y + plan.surfaces.zoom.h <= plan.bounds.h - plan.padding, true);
+  assert.notDeepEqual(plan.surfaces.zoom, plan.surfaces.toolOptions);
 });
 
 test('compact landscape command rail keeps four canonical actions', () => {
