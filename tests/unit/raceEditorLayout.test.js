@@ -10318,7 +10318,7 @@ test('Race Editor plants doodad art below terrain by ground offset', () => {
   assert.equal(meshes[0].points.every((point) => point.roadDeckElevation === true), true);
 });
 
-test('Race Editor builds preview doodad hitbox as world geometry centered at the doodad base', () => {
+test('Race Editor builds preview doodad hitbox as world geometry planted on terrain footprint', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   const sprite = {
     id: 'tree-1',
@@ -10339,15 +10339,17 @@ test('Race Editor builds preview doodad hitbox as world geometry centered at the
     x: 12,
     z: 24
   };
-  editor.getRaceSurfaceModel = () => ({ sampleWorld: () => ({ elevation: 0.75 }) });
+  editor.getRaceSurfaceModel = () => ({ sampleWorld: ({ z }) => ({ elevation: z < 24 ? 0.6 : 0.84 }) });
 
   const meshes = editor.getRaceDoodadHitboxWorldMeshes(sprite);
   const allPoints = meshes.flatMap((mesh) => mesh.points);
 
   assert.equal(meshes.length, 12);
   assert.equal(meshes.every((mesh) => mesh.source === 'doodad-hitbox'), true);
-  assert.equal(Math.round((Math.min(...allPoints.map((point) => point.elevation))) * 1000) / 1000, 0.75);
-  assert.equal(Math.round((Math.max(...allPoints.map((point) => point.elevation))) * 1000) / 1000, 1);
+  assert.equal(Math.round((Math.min(...allPoints.map((point) => point.elevation))) * 1000) / 1000, 0.475);
+  assert.equal(Math.round((Math.max(...allPoints.map((point) => point.elevation))) * 1000) / 1000, 0.965);
+  assert.equal(allPoints.some((point) => Math.round(point.terrainElevation * 100) / 100 === 0.6), true);
+  assert.equal(allPoints.some((point) => Math.round(point.terrainElevation * 100) / 100 === 0.84), true);
   assert.equal(Math.round((Math.min(...allPoints.map((point) => point.x))) * 1000) / 1000, 11);
   assert.equal(Math.round((Math.max(...allPoints.map((point) => point.x))) * 1000) / 1000, 13);
   assert.equal(Math.round((Math.min(...allPoints.map((point) => point.z))) * 1000) / 1000, 23);
@@ -10380,6 +10382,45 @@ test('Race Editor builds doodads as WebGL world meshes with explicit art UVs', (
   assert.equal(Math.max(...meshes[0].points.map((point) => point.elevation)), 1);
   assert.equal(Math.min(...meshes[0].points.map((point) => point.elevation)), 0.5);
   assert.equal(meshes[0].points.filter((point) => point.v === 1).some((point) => point.elevation === 0.75), true);
+});
+
+test('Race Editor rebuilds cached Three doodads when terrain surface revision changes', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.scenery = [{
+    id: 'tree-1',
+    presetId: 'doodad',
+    label: 'Tree',
+    artRef: 'Tree Art',
+    x: 12,
+    z: 24,
+    yaw: 0,
+    widthM: 2,
+    heightM: 3
+  }];
+  editor.getRaceSurfaceModel = () => ({ sampleWorld: () => ({ elevation: 0 }) });
+  let revision = 'surface-a';
+  editor.getRaceSurfaceGeometryRevisionKey = () => revision;
+  const material = new THREE.MeshBasicMaterial();
+  material.__raceSharedMaterial = true;
+  let materialCalls = 0;
+  editor.getRaceThreeDoodadMaterial = () => {
+    materialCalls += 1;
+    return material;
+  };
+  const renderer = { scene: new THREE.Scene() };
+  const firstStats = {};
+  const secondStats = {};
+
+  assert.equal(editor.addRaceThreeDoodads(renderer, { stats: firstStats }), true);
+  const firstGroup = renderer.dynamicDoodadGroup;
+  revision = 'surface-b';
+  assert.equal(editor.addRaceThreeDoodads(renderer, { stats: secondStats }), true);
+
+  assert.notEqual(renderer.dynamicDoodadGroup, firstGroup);
+  assert.equal(firstStats.dynamicDoodadRebuilds, 1);
+  assert.equal(secondStats.dynamicDoodadRebuilds, 1);
+  assert.equal(secondStats.dynamicDoodadCacheHits || 0, 0);
+  assert.equal(materialCalls, 2);
 });
 
 test('Race Editor keeps doodad meshes visible while any polygon part remains in front', () => {

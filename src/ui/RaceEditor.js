@@ -21816,7 +21816,13 @@ export default class RaceEditor {
 
   getRaceThreeDoodadSceneKey(sprites = []) {
     if (!Array.isArray(sprites) || !sprites.length) return 'empty';
-    const surfaceRevision = this.playtestSession?.worldBake?.surfaceRevision || this.getRaceSurfaceGeometryRevisionKey();
+    const routeRuntimeType = this.playtestSession?.routeRuntimeType || this.getSelectedRaceRuntimeType();
+    const routeLength = Math.max(1, Number(this.playtestSession?.routeLength || this.getRaceRouteLength()) || 1);
+    const surfaceRevision = this.playtestSession?.worldBake?.surfaceRevision || this.getRaceSurfaceGeometryRevisionKey({
+      runtimeType: routeRuntimeType,
+      allowVisualExtension: routeRuntimeType !== 'circuit',
+      routeLength
+    });
     const doodads = sprites.map((sprite) => {
       const doodad = this.getRaceDoodadForScenery(sprite);
       const artRef = String(doodad?.artRef || sprite?.artRef || '').trim();
@@ -21840,6 +21846,23 @@ export default class RaceEditor {
       ].join(',');
     }).join(';');
     return `${surfaceRevision}::three-doodads::${doodads}`;
+  }
+
+  getRaceDoodadGroundOffsetElevation(sprite = {}, doodad = this.getRaceDoodadForScenery(sprite)) {
+    return clamp(Number(doodad?.groundOffsetM ?? sprite?.groundOffsetM) || 0, -20, 20) / RACE_THREE_ELEVATION_M;
+  }
+
+  sampleRaceDoodadGroundPoint(worldX = 0, worldZ = 0, sprite = {}, doodad = this.getRaceDoodadForScenery(sprite)) {
+    const sample = this.getRaceSurfaceModel().sampleWorld({ x: worldX, z: worldZ }, 0);
+    const terrainElevation = Number(sample?.elevation || 0);
+    return {
+      x: Number(worldX || 0),
+      z: Number(worldZ || 0),
+      elevation: terrainElevation - this.getRaceDoodadGroundOffsetElevation(sprite, doodad),
+      terrainElevation,
+      surfaceSample: sample,
+      roadDeckElevation: true
+    };
   }
 
   getRaceThreeStaticWorldKey(cells = [], {
@@ -22031,15 +22054,15 @@ export default class RaceEditor {
     const leftZ = z - right.z * halfWidth;
     const rightX = x + right.x * halfWidth;
     const rightZ = z + right.z * halfWidth;
-    const sampleElevation = (worldX, worldZ) => this.getRaceSurfaceModel().sampleWorld({ x: worldX, z: worldZ }, 0).elevation;
-    const offsetElevation = groundOffsetM / RACE_THREE_ELEVATION_M;
-    const leftElevation = Number(sampleElevation(leftX, leftZ) || 0) - offsetElevation;
-    const rightElevation = Number(sampleElevation(rightX, rightZ) || 0) - offsetElevation;
+    const leftGround = this.sampleRaceDoodadGroundPoint(leftX, leftZ, sprite, doodad);
+    const rightGround = this.sampleRaceDoodadGroundPoint(rightX, rightZ, sprite, doodad);
+    const leftElevation = leftGround.elevation;
+    const rightElevation = rightGround.elevation;
     const heightElevation = heightM / RACE_THREE_ELEVATION_M;
-    const bottomLeft = { x: leftX, z: leftZ, elevation: leftElevation, roadDeckElevation: true, u: 0, v: 0 };
-    const bottomRight = { x: rightX, z: rightZ, elevation: rightElevation, roadDeckElevation: true, u: 1, v: 0 };
-    const topRight = { x: rightX, z: rightZ, elevation: rightElevation + heightElevation, roadDeckElevation: true, u: 1, v: 1 };
-    const topLeft = { x: leftX, z: leftZ, elevation: leftElevation + heightElevation, roadDeckElevation: true, u: 0, v: 1 };
+    const bottomLeft = { ...leftGround, u: 0, v: 0 };
+    const bottomRight = { ...rightGround, u: 1, v: 0 };
+    const topRight = { ...rightGround, elevation: rightElevation + heightElevation, u: 1, v: 1 };
+    const topLeft = { ...leftGround, elevation: leftElevation + heightElevation, u: 0, v: 1 };
     return {
       sprite,
       doodad,
@@ -22090,16 +22113,15 @@ export default class RaceEditor {
     const heightM = Math.max(0.05, Number(doodad.hitboxHeightM ?? doodad.heightM ?? sprite.heightM ?? 2));
     const centerX = Number(sprite.x || 0);
     const centerZ = Number(sprite.z || 0);
-    const baseElevation = Number(this.getRaceSurfaceModel().sampleWorld({ x: centerX, z: centerZ }, 0).elevation || 0);
-    const topElevation = baseElevation + heightM / RACE_THREE_ELEVATION_M;
     const segments = 12;
-    const pointsAt = (index, elevation) => {
+    const pointsAt = (index, top = false) => {
       const angle = (index / segments) * Math.PI * 2;
+      const worldX = centerX + Math.cos(angle) * radius;
+      const worldZ = centerZ + Math.sin(angle) * radius;
+      const ground = this.sampleRaceDoodadGroundPoint(worldX, worldZ, sprite, doodad);
       return {
-        x: centerX + Math.cos(angle) * radius,
-        z: centerZ + Math.sin(angle) * radius,
-        elevation,
-        roadDeckElevation: true
+        ...ground,
+        elevation: ground.elevation + (top ? heightM / RACE_THREE_ELEVATION_M : 0)
       };
     };
     const meshes = [];
@@ -22112,10 +22134,10 @@ export default class RaceEditor {
         textured: false,
         textureWorldM: 1,
         points: [
-          pointsAt(index, topElevation),
-          pointsAt(next, topElevation),
-          pointsAt(next, baseElevation),
-          pointsAt(index, baseElevation)
+          pointsAt(index, true),
+          pointsAt(next, true),
+          pointsAt(next, false),
+          pointsAt(index, false)
         ],
         depthOffset: -0.02,
         threeLiftM: 0

@@ -9,6 +9,7 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   recentMajorChanges: [
+    '2026-07-21 20:31 EDT - Aligned race doodad planting by sampling doodad art and hitbox footprints from the same RaceSurfaceModel terrain points and forcing cached Three doodads to rebuild when the road or terrain surface revision changes.',
     '2026-07-21 19:42 EDT - Optimized the Race Editor top-down road and terrain placement preview by using the lightweight canonical surface bake instead of the heavy terrain debug bake and capping long-route section drawing for smoother load and panning.',
     '2026-07-21 19:33 EDT - Added a default Race Editor top-down road and terrain surface preview from the same canonical surface bake used by playtest so doodad and tree placement can be judged against the real road corridor.',
     '2026-07-21 19:10 EDT - Fixed race playtest drivetrain RPM coupling so airborne driven wheels unload the engine and let it free-rev in gear while tire drive and brake forces remain disabled off the ground.',
