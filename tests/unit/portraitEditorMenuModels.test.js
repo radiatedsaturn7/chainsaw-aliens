@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import ActorEditor, { buildActorPortraitEditorLayout, buildActorPortraitMenuModel } from '../../src/ui/ActorEditor.js';
 import { buildCutscenePortraitEditorLayout, buildCutscenePortraitMenuModel } from '../../src/ui/CutsceneEditor.js';
 import { buildLevelMobileLandscapeRootTabs, buildLevelPortraitMenuModel, shouldShowLevelEditorTopPlaytestButton } from '../../src/ui/LevelEditorCore.js';
-import { buildMidiPortraitMenuModel, buildMidiSharedRootMenuEntries, getMidiPortraitControlLayout, getMidiPortraitFullScreenSheetLayout } from '../../src/ui/MidiComposerCore.js';
+import MidiComposer, { buildMidiPortraitMenuModel, buildMidiSharedRootMenuEntries, getMidiPortraitControlLayout, getMidiPortraitFullScreenSheetLayout } from '../../src/ui/MidiComposerCore.js';
 import {
   applyPixelClipboardPixelsToLayer,
   buildPixelPortraitCanvasActionGroups,
@@ -42,7 +42,7 @@ import {
   EDITOR_SURFACES,
   getEditorModeAcceptanceContract
 } from '../../src/ui/shared/editorMenuLayout.js';
-import { EDITOR_LAYOUT_MODES, PORTRAIT_ROOT_MAX_ITEMS, SHARED_EDITOR_IDS, STANDARD_EDITOR_ACTION_RAIL_PREFIX, getEditorDesktopLeftContextRoles, getEditorMenuSection, getEditorMenuSpec, getEditorPortraitRootMenuEntries, getStandardEditorActionRailIds } from '../../src/ui/shared/editorMenuSpec.js';
+import { EDITOR_LAYOUT_MODES, PORTRAIT_ROOT_MAX_ITEMS, SHARED_EDITOR_IDS, STANDARD_EDITOR_ACTION_RAIL_PREFIX, getEditorDesktopLeftContextRoles, getEditorMenuSection, getEditorMenuSpec, getEditorPortraitRootMenuEntries, getEditorTouchRootMenuEntries, getStandardEditorActionRailIds } from '../../src/ui/shared/editorMenuSpec.js';
 import { buildCarPortraitMenuModel, buildRacePortraitMenuModel } from '../../src/ui/RaceEditor.js';
 import { mergeBuiltInActorOverride } from '../../src/content/builtinActorOverrides.js';
 import { BUILT_IN_ACTOR_VISUAL_SCALE, getBuiltInActorOverrideDrawSize } from '../../src/entities/BuiltInActorVisuals.js';
@@ -58,6 +58,8 @@ import {
   drawSharedDesktopRibbon,
   drawSharedDesktopTopMenu,
   drawSharedPortraitSheet,
+  SHARED_EDITOR_MENU_BUTTON_CHROME,
+  SHARED_EDITOR_LEFT_MENU,
   UI_SUITE
 } from '../../src/ui/uiSuite.js';
 import { readFileSync } from 'node:fs';
@@ -66,6 +68,8 @@ const pixelStudioSource = readFileSync(new URL('../../src/ui/PixelStudio.js', im
 const actorEditorSource = readFileSync(new URL('../../src/ui/ActorEditor.js', import.meta.url), 'utf8');
 const sfxEditorSource = readFileSync(new URL('../../src/ui/SfxEditor.js', import.meta.url), 'utf8');
 const midiEditorSource = readFileSync(new URL('../../src/ui/MidiComposerCore.js', import.meta.url), 'utf8');
+const recordModeSource = readFileSync(new URL('../../src/ui/recordMode.js', import.meta.url), 'utf8');
+const midiComposerStateSource = readFileSync(new URL('../../src/ui/midi/state/composerState.js', import.meta.url), 'utf8');
 const cutsceneEditorSource = readFileSync(new URL('../../src/ui/CutsceneEditor.js', import.meta.url), 'utf8');
 const raceEditorSource = readFileSync(new URL('../../src/ui/RaceEditor.js', import.meta.url), 'utf8');
 const doodadEditorSource = readFileSync(new URL('../../src/ui/DoodadEditor.js', import.meta.url), 'utf8');
@@ -152,7 +156,7 @@ test('editor mobile mode detection accepts shared deviceIsMobile flag across edi
 test('Pixel portrait root menu exposes every major panel and file utility', () => {
   const model = buildPixelPortraitMenuModel();
 
-  assert.deepEqual(model.rootTabs.map((tab) => tab.id), ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames']);
+  assert.deepEqual(model.rootTabs.map((tab) => tab.id), ['file', 'draw', 'select', 'tools', 'canvas', 'layers', 'frames', 'exit-main']);
   assert.deepEqual(model.toolTabs.map((tab) => tab.id), ['draw', 'select', 'tools']);
   assert.deepEqual(model.fileHiddenIds, []);
   assert.ok(model.canvasUtilityIds.includes('copy-image'));
@@ -241,14 +245,26 @@ test('portrait root menus stay bottom-sized across all editors', () => {
     race: buildRacePortraitMenuModel(),
     car: buildCarPortraitMenuModel(),
     tile: {
-      rootTabs: getEditorPortraitRootMenuEntries('tile'),
+      rootTabs: getEditorTouchRootMenuEntries('tile'),
       portraitRootPlacement: 'bottom-rail'
     }
   };
 
   Object.entries(models).forEach(([editor, model]) => {
-    assert.ok(model.rootTabs.length <= PORTRAIT_ROOT_MAX_ITEMS, `${editor} portrait root menu should have no more than ${PORTRAIT_ROOT_MAX_ITEMS} bottom items`);
+    assert.ok(model.rootTabs.length <= PORTRAIT_ROOT_MAX_ITEMS + 1, `${editor} touch root menu should have no more than ${PORTRAIT_ROOT_MAX_ITEMS} menu items plus Exit`);
+    assert.equal(model.rootTabs.at(-1)?.id, 'exit-main', `${editor} touch root menu should end with Exit`);
+    assert.equal(model.rootTabs.at(-1)?.label, 'Exit', `${editor} touch root menu should use the short Exit label`);
     assert.equal(model.portraitRootPlacement, 'bottom-rail', `${editor} portrait roots should be bottom-first`);
+  });
+});
+
+test('touch root menus mirror portrait roots and append Exit across all shared editors', () => {
+  SHARED_EDITOR_IDS.forEach((editorId) => {
+    const portraitRoots = getEditorPortraitRootMenuEntries(editorId);
+    const touchRoots = getEditorTouchRootMenuEntries(editorId);
+    assert.deepEqual(touchRoots.slice(0, -1).map((entry) => entry.id), portraitRoots.map((entry) => entry.id), `${editorId} touch roots should begin with portrait roots`);
+    assert.equal(touchRoots.at(-1)?.id, 'exit-main', `${editorId} touch roots should append Exit`);
+    assert.equal(touchRoots.at(-1)?.label, 'Exit', `${editorId} touch Exit should use short label`);
   });
 });
 
@@ -283,7 +299,8 @@ test('all editor portrait sources use shared bottom-first helpers without empty 
       'getTilePortraitToolbarActions()',
       'drawSharedPortraitActionRail',
       'getSharedMobilePortraitEditorLayout',
-      "canRenderEditorSurface(this.activeViewportMode, 'bottom-action-rail')"
+      "canRenderEditorSurface(this.activeViewportMode, 'bottom-action-rail')",
+      "return getStandardEditorActionRailIds('context')"
     ],
     level: [
       'buildLevelPortraitMenuModel().bottomRailActions.map((id) => portraitActionById[id]).filter(Boolean)',
@@ -353,19 +370,19 @@ test('portrait editor action rails share the standard Menu Undo Redo prefix', ()
     cutscene: buildCutscenePortraitMenuModel(),
     race: buildRacePortraitMenuModel(),
     car: buildCarPortraitMenuModel(),
-    tile: { bottomRailActions: getStandardEditorActionRailIds('edit') },
+    tile: { bottomRailActions: getStandardEditorActionRailIds('context') },
     doodad: { bottomRailActions: getStandardEditorActionRailIds('context') }
   };
   const expectedContextActions = {
     pixel: 'brush',
     level: 'playtest',
-    actor: 'playtest',
+    actor: 'context',
     midi: 'play',
     sfx: 'play',
     cutscene: 'play',
     race: 'race-context',
     car: 'test-drive',
-    tile: 'edit',
+    tile: 'context',
     doodad: 'context'
   };
 
@@ -377,6 +394,36 @@ test('portrait editor action rails share the standard Menu Undo Redo prefix', ()
   Object.values(editorSourceById).forEach((source) => {
     assert.equal(source.includes("bottomRailActions: ['menu', 'undo', 'redo'"), false);
   });
+});
+
+test('portrait action rails use Pixel-style icon labels across editors', () => {
+  [
+    ['pixel', pixelStudioSource],
+    ['level', levelEditorSource],
+    ['actor', actorEditorSource],
+    ['midi', midiEditorSource],
+    ['sfx', sfxEditorSource],
+    ['cutscene', cutsceneEditorSource],
+    ['race', raceEditorSource],
+    ['tile', pixelStudioSource],
+    ['doodad', doodadEditorSource]
+  ].forEach(([editorId, source]) => {
+    assert.equal(source.includes("'☰'"), true, `${editorId} should use the Pixel hamburger icon`);
+    assert.equal(source.includes("'↶'"), true, `${editorId} should use the Pixel undo icon`);
+    assert.equal(source.includes("'↷'"), true, `${editorId} should use the Pixel redo icon`);
+  });
+  assert.equal(raceEditorSource.includes("menu: { id: 'menu', label: '☰'"), true);
+  assert.equal(raceEditorSource.includes("menu: { id: 'menu', label: '☰', onClick: () => this.toggleRootMenu() }"), true);
+  assert.equal(raceEditorSource.includes("undo: this.getRailAction('undo', '↶'"), true);
+  assert.equal(raceEditorSource.includes("redo: this.getRailAction('redo', '↷'"), true);
+  assert.equal(raceEditorSource.includes("'test-drive': { id: 'test-drive', label: '▶'"), true);
+  assert.equal(doodadEditorSource.includes("menu: { id: 'menu', label: '☰'"), true);
+  assert.equal(doodadEditorSource.includes("undo: { id: 'undo', label: '↶'"), true);
+  assert.equal(doodadEditorSource.includes("redo: { id: 'redo', label: '↷'"), true);
+  assert.equal(pixelStudioSource.includes("menu: { id: 'menu', label: '☰', onClick: toggleTileMenu }"), true);
+  assert.equal(pixelStudioSource.includes("undo: { id: 'undo', label: '↶', onClick: () => this.runtime.undo() }"), true);
+  assert.equal(pixelStudioSource.includes("redo: { id: 'redo', label: '↷', onClick: () => this.runtime.redo() }"), true);
+  assert.equal(pixelStudioSource.includes("context: { id: 'context', label: 'Tile'"), true);
 });
 
 test('MIDI portrait preserves bottom-first rail and virtual thumbstick policy', () => {
@@ -408,7 +455,7 @@ test('portrait repair targets preserve shared rail behavior across affected edit
     pixel: 'brush',
     level: 'playtest',
     cutscene: 'play',
-    actor: 'playtest',
+    actor: 'context',
     race: 'race-context',
     car: 'test-drive',
     sfx: 'play'
@@ -417,7 +464,7 @@ test('portrait repair targets preserve shared rail behavior across affected edit
 
   Object.entries(models).forEach(([editorId, model]) => {
     assert.equal(model.portraitRootPlacement, 'bottom-rail', editorId);
-    assert.ok(model.rootTabs.length <= PORTRAIT_ROOT_MAX_ITEMS, editorId);
+    assert.ok(model.rootTabs.length <= PORTRAIT_ROOT_MAX_ITEMS + 1, editorId);
     assert.deepEqual(
       model.bottomRailActions,
       getStandardEditorActionRailIds(expectedContextActions[editorId]),
@@ -432,26 +479,31 @@ test('Race and Car portrait menu models use the shared bottom rail contract', ()
   const raceModel = buildRacePortraitMenuModel();
   const carModel = buildCarPortraitMenuModel();
 
-  assert.deepEqual(raceModel.rootTabs.map((tab) => tab.id), ['file', 'track', 'ground', 'sprites', 'settings']);
-  assert.deepEqual(carModel.rootTabs.map((tab) => tab.id), ['file', 'art', 'drivetrain', 'tuning']);
+  assert.deepEqual(raceModel.rootTabs.map((tab) => tab.id), ['file', 'track', 'ground', 'sprites', 'settings', 'exit-main']);
+  assert.deepEqual(carModel.rootTabs.map((tab) => tab.id), ['file', 'art', 'drivetrain', 'tuning', 'exit-main']);
   assert.deepEqual(raceModel.bottomRailActions, ['menu', 'undo', 'redo', 'race-context']);
   assert.deepEqual(carModel.bottomRailActions, ['menu', 'undo', 'redo', 'test-drive']);
   assertSharedPortraitRailActionCount(raceModel.bottomRailActions.map((id) => ({ id })), { editor: 'race' });
   assertSharedPortraitRailActionCount(carModel.bottomRailActions.map((id) => ({ id })), { editor: 'car' });
   assert.equal(raceEditorSource.includes('buildRacePortraitMenuModel(this.editorId).bottomRailActions'), true);
   assert.equal(raceEditorSource.includes('buildRacePortraitMenuModel(this.editorId).rootTabs'), true);
+  assert.equal(raceEditorSource.includes("menu: { id: 'menu', label: '☰'"), true);
+  assert.equal(raceEditorSource.includes("menu: { id: 'menu', label: '☰', onClick: () => this.toggleRootMenu() }"), true);
+  assert.equal(raceEditorSource.includes("undo: this.getRailAction('undo', '↶'"), true);
+  assert.equal(raceEditorSource.includes("redo: this.getRailAction('redo', '↷'"), true);
+  assert.equal(raceEditorSource.includes("'test-drive': { id: 'test-drive', label: '▶'"), true);
 });
 
 test('Race and Car rollout modes preserve portrait and use shared landscape and gamepad surfaces', () => {
   const expected = {
     race: {
-      portraitRoots: ['file', 'track', 'ground', 'sprites', 'settings'],
+      portraitRoots: ['file', 'track', 'ground', 'sprites', 'settings', 'exit-main'],
       contextAction: 'race-context',
       landscapeRoot: 'track',
       submenuAction: 'draw-road'
     },
     car: {
-      portraitRoots: ['file', 'art', 'drivetrain', 'tuning'],
+      portraitRoots: ['file', 'art', 'drivetrain', 'tuning', 'exit-main'],
       contextAction: 'test-drive',
       landscapeRoot: 'drivetrain',
       submenuAction: 'drivetrain-menu'
@@ -1199,7 +1251,8 @@ test('all editor touch landscape paths use the shared left-root and right-drilld
     assert.equal(layout.rootDrawerSurface, EDITOR_SURFACES.leftOverlayDrawer, `${editorId} touch root drawer`);
     assert.equal(layout.rootDrawerOverlayOrigin, 'left', `${editorId} touch root drawer origin`);
     assert.equal(layout.submenuSurface, EDITOR_SURFACES.rightDrawer, `${editorId} touch submenu drawer`);
-    assert.equal(layout.surfaces.submenu.h, layout.surfaces.rootMenu.h, `${editorId} touch submenu should cap to the compact left rail height`);
+    assert.equal(layout.surfaces.submenu.h <= layout.surfaces.rootMenu.h, true, `${editorId} touch submenu should cap within the compact left rail height`);
+    assert.equal(layout.surfaces.zoom.y >= layout.surfaces.submenu.y + layout.surfaces.submenu.h, true, `${editorId} touch zoom should sit below the right submenu`);
     assert.equal(canRenderEditorPlanSurface(layout, EDITOR_SURFACES.desktopTopMenu), false, `${editorId} touch landscape should not render desktop top menu`);
     assert.equal(canRenderEditorPlanSurface(layout, EDITOR_SURFACES.gamepadSlideOut), false, `${editorId} touch landscape should not render gamepad slide-out`);
   });
@@ -1434,6 +1487,9 @@ test('Level portrait menu exposes compact roots and keeps playtest on bottom rai
   const levelPortraitSubmenuIndex = levelEditorSource.indexOf('const portraitSubmenuTabs = portraitLayout && [\'assets\', \'settings\'].includes(portraitRootId)', mobileBranchIndex);
   const levelContentHeightIndex = levelEditorSource.indexOf('let contentHeight = Math.max(0, drawerY + drawerH - contentY - reservedBottom - fileFooterReserved);', mobileBranchIndex);
   const levelDrawSubmenuIndex = levelEditorSource.indexOf('if (portraitSubmenuTabs.length) {', levelContentHeightIndex);
+  const levelPortraitRailIndex = levelEditorSource.indexOf("if (portraitLayout && canRenderEditorSurface(viewportMode.mode, 'bottom-action-rail'))", mobileBranchIndex);
+  const levelPortraitSheetIndex = levelEditorSource.indexOf('if (portraitLayout && this.drawer.open) {', mobileBranchIndex);
+  const levelDrawerContentIndex = levelEditorSource.indexOf('if (drawerOpenForLayout) {', mobileBranchIndex);
   const sharedLayout = getSharedMobilePortraitEditorLayout(390, 844, {
     middleRailHeight: 88,
     minTopHeight: 230,
@@ -1449,7 +1505,7 @@ test('Level portrait menu exposes compact roots and keeps playtest on bottom rai
   });
   const bottomY = Math.max(...tabLayout.buttons.map((button) => button.bounds.y + button.bounds.h));
 
-  assert.deepEqual(model.rootTabs.map((tab) => tab.id), ['file', 'tools', 'assets', 'settings']);
+  assert.deepEqual(model.rootTabs.map((tab) => tab.id), ['file', 'tools', 'assets', 'settings', 'exit-main']);
   assert.deepEqual(model.assetTabs.map((tab) => tab.id), ['tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'music', 'graphics']);
   assert.deepEqual(model.assetTabs.find((tab) => tab.id === 'pixels')?.label, 'Tile Art');
   assert.deepEqual(model.assetTabs.find((tab) => tab.id === 'graphics')?.label, 'Decals');
@@ -1466,6 +1522,9 @@ test('Level portrait menu exposes compact roots and keeps playtest on bottom rai
   assert.equal(levelEditorSource.includes('drawSharedPortraitMultiRowTabStrip(ctx, { x: panelX, y: panelY, w: panelW, h: panelH }, tabs, {'), true);
   assert.equal(levelEditorSource.includes("verticalAlign: 'bottom'"), true);
   assert.equal(levelEditorSource.includes('drawSharedPortraitTabStrip(ctx, { x: panelX, y: panelY, w: panelW, h: panelH }, tabs'), false);
+  assert.ok(levelPortraitRailIndex > 0);
+  assert.ok(levelPortraitSheetIndex > levelPortraitRailIndex);
+  assert.ok(levelDrawerContentIndex > levelPortraitSheetIndex);
   assert.ok(levelPortraitSubmenuIndex > 0);
   assert.ok(levelContentHeightIndex > levelPortraitSubmenuIndex);
   assert.ok(levelDrawSubmenuIndex > levelContentHeightIndex);
@@ -1525,26 +1584,18 @@ test('Level mobile landscape root drawer exposes every root action in a grid', (
 
   assert.deepEqual(tabs.map((tab) => tab.id), [
     'file',
-    'edit',
-    'view',
-    'toolbox',
-    'tiles',
-    'pixels',
-    'npcs',
-    'triggers',
-    'powerups',
-    'prefabs',
-    'graphics',
-    'music',
-    'level-settings'
+    'tools',
+    'assets',
+    'settings',
+    'exit-main'
   ]);
   assert.equal(new Set(tabs.map((tab) => tab.id)).size, tabs.length);
-  assert.ok(tabs.length > 7);
+  assert.ok(tabs.length >= 5);
   assert.equal(levelEditorSource.includes('buildCompactLandscapeCommandRailActions({'), true);
   assert.equal(levelEditorSource.includes("id: 'menu',"), true);
   assert.equal(levelEditorSource.includes("id: 'undo', label: 'Undo'"), true);
   assert.equal(levelEditorSource.includes("id: 'redo', label: 'Redo'"), true);
-  assert.equal(levelEditorSource.includes("quickAction = { id: 'playtest', label: 'Play'"), true);
+  assert.equal(levelEditorSource.includes("quickAction = { id: 'playtest', label: '▶'"), true);
   assert.equal(levelEditorSource.includes('const rootItems = buildLevelMobileLandscapeRootTabs();'), true);
   assert.equal(levelEditorSource.includes('this.drawer.rootOpen = nextOpen;'), true);
   const rootDrawerIndex = levelEditorSource.indexOf('const rootItems = buildLevelMobileLandscapeRootTabs();');
@@ -1574,7 +1625,7 @@ test('Level mobile landscape rail is backed by shared editor menu aliases', () =
 
   assert.equal(levelEditorSource.includes('const LEVEL_LANDSCAPE_BOTTOM_RAIL_HEIGHT = 72;'), true);
   assert.equal(levelEditorSource.includes('bottomRailHeight: LEVEL_LANDSCAPE_BOTTOM_RAIL_HEIGHT'), true);
-  assert.equal(levelEditorSource.includes('reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft'), true);
+  assert.equal(levelEditorSource.includes('reserveRightRail: !gamepadSubmenuOnLeft'), true);
   assert.equal(levelEditorSource.includes('capRightRailToLeftRailHeight: true'), true);
   assert.equal(levelEditorSource.includes('placeZoomBelowRightRail: true'), true);
   assert.equal(levelEditorSource.includes("rootDrawerOverlayOrigin: 'left'"), false);
@@ -1598,12 +1649,11 @@ test('Level mobile landscape rail is backed by shared editor menu aliases', () =
   assert.equal(levelEditorSource.includes('getSharedMobileDrawerWidth(width, height, railWidth, { edgePadding: 0 })'), true);
   assert.equal(levelEditorSource.includes("const LEVEL_CONTROLLER_ROOTS = getEditorControllerRootMenuIds('level');"), true);
   assert.equal(levelEditorSource.includes('siblingOrder: LEVEL_CONTROLLER_ROOTS'), true);
-  assert.equal(levelEditorSource.includes('const panelTab = getLevelPanelTabForRootId(entry.id);'), true);
-  assert.equal(levelEditorSource.includes('return rootItem(entry.id, entry.label, panelTab, panelTab);'), true);
-  assert.equal(tabs.find((tab) => tab.id === 'pixels')?.specId, 'tile-art');
-  assert.equal(tabs.find((tab) => tab.id === 'npcs')?.specId, 'actors');
-  assert.equal(tabs.find((tab) => tab.id === 'prefabs')?.specId, 'structures');
-  assert.equal(tabs.find((tab) => tab.id === 'level-settings')?.specId, 'settings');
+  assert.equal(levelEditorSource.includes('const panelTab = entry.panel || getLevelPanelTabForRootId(entry.id);'), true);
+  assert.equal(tabs.find((tab) => tab.id === 'tools')?.panel, 'toolbox');
+  assert.equal(tabs.find((tab) => tab.id === 'assets')?.panel, 'tiles');
+  assert.equal(tabs.find((tab) => tab.id === 'settings')?.panel, 'level-settings');
+  assert.equal(tabs.find((tab) => tab.id === 'exit-main')?.label, 'Exit');
   assert.equal(tabs.some((tab) => tab.id === 'playtest'), false);
 });
 
@@ -1630,7 +1680,7 @@ test('Level gamepad mode replaces the left landscape rail with submenu slide-out
   assert.equal(levelEditorSource.includes('const gamepadMenuState = !portraitLayout ? this.getGamepadMenuState(width, height) : null;'), true);
   assert.equal(levelEditorSource.includes('const gamepadSubmenuOnLeft = Boolean(gamepadMenuState?.drawSlideOut);'), true);
   assert.equal(levelEditorSource.includes('const drawerOpenForLayout = Boolean(this.drawer.open && (portraitLayout || !gamepadSubmenuOnLeft));'), true);
-  assert.equal(levelEditorSource.includes('reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft'), true);
+  assert.equal(levelEditorSource.includes('reserveRightRail: !gamepadSubmenuOnLeft'), true);
   assert.equal(levelEditorSource.includes("rootDrawerOverlayOrigin: 'left'"), false);
   assert.equal(levelEditorSource.includes('this.drawGamepadSlideOutPanel(ctx, { x: panelX, y: panelY, w: panelW, h: panelH });'), true);
   assert.equal(levelEditorSource.includes('this.panelScrollHitBounds = { ...listBounds };'), true);
@@ -1846,7 +1896,7 @@ test('Level mobile draw path keeps portrait layout scoped for the whole branch',
   assert.equal(mobileBranch.includes('const landscapeSubmenuSurface = canRenderLandscapeRightSubmenu'), true);
   assert.equal(mobileBranch.includes('const landscapeWorkSurface = landscapeLayout?.surfaces.workSurface;'), true);
   assert.equal(mobileBranch.includes('const drawerOpenForLayout = Boolean(this.drawer.open && (portraitLayout || !gamepadSubmenuOnLeft));'), true);
-  assert.equal(mobileBranch.includes('reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft'), true);
+  assert.equal(mobileBranch.includes('reserveRightRail: !gamepadSubmenuOnLeft'), true);
   assert.equal(mobileBranch.includes("rootDrawerOverlayOrigin: 'left'"), false);
   assert.equal(mobileBranch.includes('let drawerWidth = drawerOpenForLayout'), true);
   assert.equal(mobileBranch.includes('this.drawerBounds = drawerOpenForLayout'), true);
@@ -1855,7 +1905,7 @@ test('Level mobile draw path keeps portrait layout scoped for the whole branch',
   assert.equal(mobileBranch.includes('landscapeLayout.rightRail'), false);
   assert.equal(mobileBranch.includes('landscapeLayout.mainEditor'), false);
   assert.equal(mobileBranch.includes('this.getLevelFileMenuItems({ includePlaytest: !portraitLayout })'), true);
-  assert.equal(layoutBoundsBody.includes('reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft'), true);
+  assert.equal(layoutBoundsBody.includes('reserveRightRail: !gamepadSubmenuOnLeft'), true);
   assert.equal(layoutBoundsBody.includes("rootDrawerOverlayOrigin: 'left'"), false);
   assert.equal(layoutBoundsBody.includes('const submenuSurface = landscapeLayout.surfaces.submenu;'), true);
   assert.equal(layoutBoundsBody.includes('const activeDrawerSurface = this.drawer.rootOpen'), true);
@@ -2068,8 +2118,8 @@ test('audio editor portrait rails keep loop in menus instead of the rail', () =>
   const midiModel = buildMidiPortraitMenuModel();
   const sfxModel = buildSfxPortraitMenuModel();
 
-  assert.deepEqual(midiModel.rootTabs.map((tab) => tab.id), ['file', 'grid', 'song', 'instruments', 'virtual-instruments', 'pedals', 'settings']);
-  assert.deepEqual(sfxModel.rootTabs.map((tab) => tab.id), ['file', 'generate', 'timeline', 'layers', 'envelopes', 'tools', 'settings']);
+  assert.deepEqual(midiModel.rootTabs.map((tab) => tab.id), ['file', 'grid', 'song', 'instruments', 'virtual-instruments', 'pedals', 'settings', 'exit-main']);
+  assert.deepEqual(sfxModel.rootTabs.map((tab) => tab.id), ['file', 'generate', 'timeline', 'layers', 'envelopes', 'tools', 'settings', 'exit-main']);
   assert.deepEqual(midiModel.bottomRailActions, ['menu', 'undo', 'redo', 'play']);
   assert.deepEqual(sfxModel.bottomRailActions, ['menu', 'undo', 'redo', 'play']);
   assertSharedPortraitRailActionCount(midiModel.bottomRailActions.map((id) => ({ id })), { editor: 'midi' });
@@ -2093,33 +2143,63 @@ test('audio editor portrait rails keep loop in menus instead of the rail', () =>
   assert.ok(sfxModel.menuLoopIds.length > 0);
 });
 
-test('SFX portrait starts on a compact Generate workflow', () => {
+test('portrait editors start closed and open File as the default menu', () => {
+  const pixelToggleIndex = pixelStudioSource.indexOf('  togglePixelPortraitDrawer()');
+  const pixelToggleBody = pixelStudioSource.slice(pixelToggleIndex, pixelStudioSource.indexOf('  setLeftPanelTab(tab)', pixelToggleIndex));
+  const levelActionMapIndex = levelEditorSource.indexOf('        const actionMap = {');
+  const levelMenuBody = levelEditorSource.slice(levelActionMapIndex, levelEditorSource.indexOf('        const actions = buildLevelPortraitMenuModel()', levelActionMapIndex));
   const constructorIndex = sfxEditorSource.indexOf('  constructor(game)');
   const constructorBody = sfxEditorSource.slice(constructorIndex, sfxEditorSource.indexOf('  isMobileLayout()', constructorIndex));
   const newDocumentIndex = sfxEditorSource.indexOf('  async newDocument()');
   const newDocumentBody = sfxEditorSource.slice(newDocumentIndex, sfxEditorSource.indexOf('  async save(', newDocumentIndex));
   const bottomRailIndex = sfxEditorSource.indexOf('  drawBottomRail(ctx, bounds)');
   const bottomRailBody = sfxEditorSource.slice(bottomRailIndex, sfxEditorSource.indexOf('  drawGeneratePanel(ctx, bounds, y)', bottomRailIndex));
-  const generateIndex = sfxEditorSource.indexOf('  drawGeneratePanel(ctx, bounds, y)');
-  const generateBody = sfxEditorSource.slice(generateIndex, sfxEditorSource.indexOf('  drawCustomWaveEditor(ctx, bounds)', generateIndex));
   const drawIndex = sfxEditorSource.indexOf('  draw(ctx, width, height)');
   const portraitDrawBody = sfxEditorSource.slice(
     sfxEditorSource.indexOf('if (isMobilePortrait)', drawIndex),
     sfxEditorSource.indexOf('    if (!isMobileViewport)', drawIndex)
   );
+  const cutsceneConstructorIndex = cutsceneEditorSource.indexOf('  constructor(game)');
+  const cutsceneConstructorBody = cutsceneEditorSource.slice(cutsceneConstructorIndex, cutsceneEditorSource.indexOf('  resolveCutsceneViewportMode(', cutsceneConstructorIndex));
+  const cutsceneToggleIndex = cutsceneEditorSource.indexOf('  toggleBottomMenu()');
+  const cutsceneToggleBody = cutsceneEditorSource.slice(cutsceneToggleIndex, cutsceneEditorSource.indexOf('  getMenuItems(', cutsceneToggleIndex));
+  const raceConstructorIndex = raceEditorSource.indexOf('  constructor(game');
+  const raceConstructorBody = raceEditorSource.slice(raceConstructorIndex, raceEditorSource.indexOf('  get selectedRace()', raceConstructorIndex));
+  const raceToggleIndex = raceEditorSource.indexOf('  toggleRootMenu({ gamepad = false } = {})');
+  const raceToggleBody = raceEditorSource.slice(raceToggleIndex, raceEditorSource.indexOf('  getGamepadMenuState(', raceToggleIndex));
+  const doodadConstructorIndex = doodadEditorSource.indexOf('  constructor(game)');
+  const doodadConstructorBody = doodadEditorSource.slice(doodadConstructorIndex, doodadEditorSource.indexOf('  get isDirty()', doodadConstructorIndex));
+  const doodadToggleIndex = doodadEditorSource.indexOf('  toggleMobileMenu()');
+  const doodadToggleBody = doodadEditorSource.slice(doodadToggleIndex, doodadEditorSource.indexOf('  selectMobileRoot(id)', doodadToggleIndex));
+  const actorConstructorIndex = actorEditorSource.indexOf('  constructor(game)');
+  const actorConstructorBody = actorEditorSource.slice(actorConstructorIndex, actorEditorSource.indexOf('  isMobileLayout()', actorConstructorIndex));
+  const actorResetIndex = actorEditorSource.indexOf('  resetToFileMenu()');
+  const actorResetBody = actorEditorSource.slice(actorResetIndex, actorEditorSource.indexOf('  saveHistorySnapshot()', actorResetIndex));
 
-  assert.equal(constructorBody.includes("this.leftTab = 'generate';"), true);
-  assert.equal(newDocumentBody.includes("this.leftTab = 'generate';"), true);
-  assert.equal(bottomRailBody.includes("this.leftTab = 'generate';"), true);
+  assert.equal(pixelStudioSource.includes('this.mobileDrawer = null;'), true);
+  assert.equal(pixelToggleBody.includes("this.setLeftPanelTab('file');"), true);
+  assert.equal(levelEditorSource.includes('open: false,\n      rootOpen: false,\n      tabIndex: 0,'), true);
+  assert.equal(levelEditorSource.includes("if (opening) this.setPanelTab('file');"), true);
+  assert.equal(constructorBody.includes("this.leftTab = 'timeline';"), true);
+  assert.equal(newDocumentBody.includes("this.leftTab = 'timeline';"), true);
+  assert.equal(bottomRailBody.includes("this.leftTab = 'file';"), true);
   assert.equal(bottomRailBody.includes('this.controllerMenu.resetFocus();'), true);
   assert.equal(bottomRailBody.includes("this.controllerMenu.scroll = { ...(this.controllerMenu.scroll || {}), root: 0 };"), true);
-  assert.equal(generateBody.includes("if (this.isMobilePortrait) {"), true);
-  assert.equal(generateBody.includes("ctx.fillText('Pick a wave, then Generate.'"), true);
-  assert.equal(generateBody.includes('const columns = 2;'), true);
-  assert.equal(generateBody.includes('waves.forEach((wave, index) => {'), true);
-  assert.equal(generateBody.includes("const mobileCustomWave = this.isMobilePortrait && this.sfx.toolOptions.generateWave === 'custom';"), true);
-  assert.equal(generateBody.includes('if (mobileCustomWave) {'), true);
-  assert.equal(generateBody.includes("if (this.sfx.toolOptions.generateWave === 'custom' && !mobileCustomWave) {"), true);
+  assert.equal(midiComposerStateSource.includes("composer.activeTab = 'grid';"), true);
+  assert.equal(midiEditorSource.includes("if (this.activeTab === 'file') {\n        this.closeFileMenu();\n        return;\n      }\n      this.activeTab = 'file';"), true);
+  assert.equal(cutsceneConstructorBody.includes('this.menuOpen = false;'), true);
+  assert.equal(cutsceneConstructorBody.includes("this.activeMenuTab = 'file';"), true);
+  assert.equal(cutsceneToggleBody.includes("this.activeMenuTab = 'file';"), true);
+  assert.equal(raceConstructorBody.includes("this.activeRootId = 'file';"), true);
+  assert.equal(raceConstructorBody.includes('this.mobileRootOpen = false;'), true);
+  assert.equal(raceToggleBody.includes("if (!this.mobileRootOpen) this.activeRootId = 'file';"), true);
+  assert.equal(doodadConstructorBody.includes('this.mobileMenuOpen = false;'), true);
+  assert.equal(doodadConstructorBody.includes("this.mobileRootId = 'file';"), true);
+  assert.equal(doodadToggleBody.includes("if (!this.mobileMenuOpen) this.mobileRootId = 'file';"), true);
+  assert.equal(actorConstructorBody.includes('this.fileMenuOpen = false;'), true);
+  assert.equal(actorConstructorBody.includes('this.actorPortraitMenuOpen = false;'), true);
+  assert.equal(actorResetBody.includes('this.fileMenuOpen = false;'), true);
+  assert.equal(actorResetBody.includes('this.actorPortraitMenuOpen = false;'), true);
   assert.equal(portraitDrawBody.includes('if (isMobilePortrait) {'), true);
   assert.equal(portraitDrawBody.includes('isMobilePortraitLayout({'), false);
   assert.equal(portraitDrawBody.includes('this.drawBottomRail(ctx, layout.middleRail);'), true);
@@ -2252,6 +2332,7 @@ test('SFX gamepad mode replaces the left landscape rail with submenu slide-out',
   assert.equal(drawBody.includes('const gamepadMenuState = this.getGamepadMenuState(width, height);'), true);
   assert.equal(drawBody.includes('const gamepadSubmenuOnLeft = gamepadMenuState.drawSlideOut;'), true);
   assert.equal(drawBody.includes('reserveRightRail: !gamepadSubmenuOnLeft'), true);
+  assert.equal(drawBody.includes('rightRailWidth:'), false);
   assert.equal(drawBody.includes("const canRenderLandscapeRightSubmenu = canRenderEditorPlanSurface(landscapeLayout, 'right-drawer')"), true);
   assert.equal(drawBody.includes("rootDrawerOverlayOrigin: 'left'"), false);
   assert.equal(drawBody.includes('landscapeLayout?.surfaces.rootMenu'), true);
@@ -2313,6 +2394,10 @@ test('SFX mobile landscape uses compact left rail and all-visible root drawer', 
   assert.equal(leftRailBody.includes("id: 'undo', label: 'Undo'"), true);
   assert.equal(leftRailBody.includes("id: 'redo', label: 'Redo'"), true);
   assert.equal(leftRailBody.includes("id: 'play'"), true);
+  assert.equal(leftRailBody.includes('menuAction.skipHistory = true;'), true);
+  assert.equal(leftRailBody.includes('undoAction.skipHistory = true;'), true);
+  assert.equal(leftRailBody.includes('redoAction.skipHistory = true;'), true);
+  assert.equal(leftRailBody.includes('playAction.skipHistory = true;'), true);
   assert.equal(rightPanelBody.includes('if (this.isMobileLandscape && this.landscapeRootDrawerOpen) {'), false);
   assert.equal(rightPanelBody.includes('this.drawLandscapeRootDrawer(ctx, panelBounds);'), false);
   assert.equal(sfxEditorSource.includes("const canRenderLandscapeRightSubmenu = canRenderEditorPlanSurface(landscapeLayout, 'right-drawer')"), true);
@@ -2328,13 +2413,17 @@ test('SFX mobile landscape uses compact left rail and all-visible root drawer', 
   assert.equal(sfxEditorSource.includes('const activeDrawerSurface = landscapeSubmenuSurface ?? landscapeOverlayDrawerSurface;'), true);
   assert.equal(sfxEditorSource.includes('if (!gamepadSubmenuOnLeft && this.landscapeRootDrawerOpen && landscapeRootDrawerSurface) {'), true);
   assert.equal(sfxEditorSource.includes('if (bottom.h > 0 && canRenderLandscapeBottomRail)'), true);
+  assert.equal(sfxEditorSource.includes('if (!gamepadSubmenuOnLeft && landscapeLayout?.surfaces.zoom) {\n      this.drawLandscapeZoomSlider(ctx, landscapeLayout.surfaces.zoom);\n    }'), true);
+  assert.equal(sfxEditorSource.includes('drawLandscapeZoomSlider(ctx, bounds)'), true);
+  assert.equal(sfxEditorSource.includes("id: 'sfx-landscape-zoom'"), true);
   assert.equal(sfxEditorSource.includes("|| !canRenderEditorSurface(viewportMode.mode, 'touch-thumbstick');"), true);
   assert.equal(sfxEditorSource.includes('if (suppressLandscapeThumbstick) {\n      resetSharedThumbstickState(this.panJoystick);'), true);
   assert.equal(sfxEditorSource.includes("|| !canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick');"), true);
   assert.equal(sfxEditorSource.includes('if (!suppressLandscapeMenuThumbstick && pointerPolicy.thumbstick.allowed'), true);
   assert.equal(sfxEditorSource.includes('const right = activeDrawerSurface ??'), true);
   assert.equal(sfxEditorSource.includes('  drawLandscapeRootDrawer(ctx, panelBounds)'), true);
-  assert.equal(sfxEditorSource.includes('const tabs = buildSfxSharedRootMenuEntries();'), true);
+  assert.equal(sfxEditorSource.includes('const tabs = buildSfxPortraitMenuModel().rootTabs;'), true);
+  assert.equal(sfxEditorSource.includes('drawSharedPanel(ctx, panelBounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });'), true);
   assert.equal(sfxEditorSource.includes('buildLandscapeRootDrawerGridLayout({'), true);
   assert.equal(sfxEditorSource.includes('grid.items.forEach(({ index, bounds }) => {'), true);
   assert.equal(sfxEditorSource.includes('const scrolledGrid = buildScrolledLandscapeRootDrawerItems(grid, this.controllerMenu.scroll.root || 0);'), false);
@@ -2345,8 +2434,8 @@ test('SFX mobile landscape uses compact left rail and all-visible root drawer', 
   assert.equal(sfxEditorSource.includes("menuId: 'root',\n      bounds: grid.listBounds,"), false);
   const rootDrawerIndex = sfxEditorSource.indexOf('  drawLandscapeRootDrawer(ctx, panelBounds)');
   const rootSelectBody = sfxEditorSource.slice(rootDrawerIndex, sfxEditorSource.indexOf('  drawDesktopTransportPanel(ctx, bounds)', rootDrawerIndex));
-  assert.equal(rootSelectBody.includes('this.landscapeRootDrawerOpen = true;'), true);
-  assert.equal(rootSelectBody.includes('this.landscapeRootDrawerOpen = false;'), false);
+  assert.equal(rootSelectBody.includes('this.landscapeRootDrawerOpen = false;'), true);
+  assert.equal(rootSelectBody.includes('this.landscapeRootDrawerOpen = true;'), false);
   assert.equal(bottomRailBody.includes("{ label: '☰', action: () => { this.leftTab = this.leftTab === 'timeline' ? 'file' : 'timeline'; } }"), false);
   assert.equal(bottomRailBody.includes("{ label: '⏮'"), true);
   assert.equal(bottomRailBody.includes("{ label: '⏹'"), true);
@@ -2527,7 +2616,9 @@ test('MIDI gamepad mode replaces the left landscape rail with submenu slide-out'
   assert.equal(midiEditorSource.includes('const isLandscape = viewportMode.isMobileLandscape;'), true);
   assert.equal(midiEditorSource.includes('const isLandscape = width > height;'), false);
   assert.equal(midiEditorSource.includes('const showLandscapeRightDrawer = isLandscape && !gamepadOwnsLandscapeMenu && this.isMidiLandscapeRightDrawerTab(this.activeTab);'), true);
-  assert.equal(midiEditorSource.includes("const showsGridBottomRail = isLandscape && (this.activeTab === 'grid' || this.activeTab === 'song') && !gamepadOwnsLandscapeMenu;"), true);
+  assert.equal(midiEditorSource.includes("const showSongLandscapeModeRail = isLandscape && !gamepadOwnsLandscapeMenu && this.activeTab === 'song';"), true);
+  assert.equal(midiEditorSource.includes('const reserveLandscapeRightRail = showLandscapeRightDrawer || showSongLandscapeModeRail;'), true);
+  assert.equal(midiEditorSource.includes("const showsGridBottomRail = isLandscape && this.activeTab === 'grid' && !gamepadOwnsLandscapeMenu;"), true);
   assert.equal(midiEditorSource.includes('if (gamepadSubmenuOnLeft) {\n      this.drawGamepadSlideOutPanel(ctx, { x: sidebarX, y: sidebarY, w: sidebarW, h: sidebarH });'), true);
   assert.equal(midiEditorSource.includes('return this.getGamepadMenuState(width, height).drawSlideOut;'), true);
   assert.equal(midiEditorSource.includes('isMobile: viewportMode.isMobileViewport'), true);
@@ -2549,14 +2640,27 @@ test('MIDI gamepad mode replaces the left landscape rail with submenu slide-out'
 test('MIDI landscape touch uses compact left rail, left root drawer, and right utility drawers', () => {
   const drawerIndex = midiEditorSource.indexOf('  drawMidiLandscapeRootDrawer(ctx, bounds)');
   const drawerBody = midiEditorSource.slice(drawerIndex, midiEditorSource.indexOf('  drawMidiLandscapeRightDrawer(ctx, bounds)', drawerIndex));
+  const mobileLayoutIndex = midiEditorSource.indexOf('  drawMobileLayout(ctx, width, height, track, pattern)');
+  const mobileLayoutBody = midiEditorSource.slice(mobileLayoutIndex, midiEditorSource.indexOf('  drawMobileSidebar(ctx, x, y, w, h, track, options = {})', mobileLayoutIndex));
 
   assert.equal(midiEditorSource.includes('showLandscapeRightDrawer'), true);
-  assert.equal(midiEditorSource.includes('reserveRightRail: showLandscapeRightDrawer'), true);
+  assert.equal(midiEditorSource.includes('const showLandscapeRightDrawer = isLandscape && !gamepadOwnsLandscapeMenu && this.isMidiLandscapeRightDrawerTab(this.activeTab);'), true);
+  assert.equal(midiEditorSource.includes("const showSongLandscapeModeRail = isLandscape && !gamepadOwnsLandscapeMenu && this.activeTab === 'song';"), true);
+  assert.equal(midiEditorSource.includes('const reserveLandscapeRightRail = showLandscapeRightDrawer || showSongLandscapeModeRail;'), true);
+  assert.equal(midiEditorSource.includes('reserveRightRail: reserveLandscapeRightRail'), true);
+  assert.equal(midiEditorSource.includes('rightRailWidth:'), false);
+  assert.equal(midiEditorSource.includes('const reserveLandscapeRightRail = showLandscapeRightDrawer;'), false);
+  assert.equal(midiEditorSource.includes('reserveRightRail: showLandscapeRightDrawer'), false);
   assert.equal(midiEditorSource.includes('capRightRailToLeftRailHeight: true'), true);
+  assert.equal(midiEditorSource.includes("if (isLandscape && this.activeTab !== 'instruments' && this.activeTab !== 'song') {"), true);
+  assert.equal(midiEditorSource.includes("if (!isPortrait && !isMobile) {"), true);
+  assert.equal(midiEditorSource.includes('this.drawLandscapeZoomOverlay(ctx, width, height, landscapeLayout?.surfaces.zoom ?? landscapeBottomZoomSurface);'), true);
   assert.equal(midiEditorSource.includes("rootDrawerOverlayOrigin: 'left'"), false);
   assert.equal(midiEditorSource.includes("const canRenderLandscapeRightSubmenu = canRenderEditorPlanSurface(landscapeLayout, 'right-drawer')"), true);
   assert.equal(midiEditorSource.includes("&& canRenderEditorPlanSurface(landscapeLayout, 'landscape-right-submenu');"), true);
   assert.equal(midiEditorSource.includes("const canRenderLandscapeBottomRail = canRenderEditorPlanSurface(landscapeLayout, 'bottom-tool-rail');"), true);
+  assert.equal(midiEditorSource.includes("const showsGridBottomRail = isLandscape && this.activeTab === 'grid' && !gamepadOwnsLandscapeMenu;"), true);
+  assert.equal(midiEditorSource.includes("const showsGridBottomRail = isLandscape && (this.activeTab === 'grid' || this.activeTab === 'song') && !gamepadOwnsLandscapeMenu;"), false);
   assert.equal(midiEditorSource.includes("const canRenderLandscapeRootDrawer = canRenderEditorPlanSurface(landscapeLayout, 'left-overlay-drawer')"), true);
   assert.equal(midiEditorSource.includes("canRenderEditorPlanSurface(landscapeLayout, 'right-overlay-drawer')"), false);
   assert.equal(midiEditorSource.includes('const submenuDrawerSurface = canRenderLandscapeRightSubmenu ? landscapeLayout?.surfaces.submenu : null;'), true);
@@ -2566,6 +2670,8 @@ test('MIDI landscape touch uses compact left rail, left root drawer, and right u
   assert.equal(midiEditorSource.includes('buildCompactLandscapeCommandRailActions({'), true);
   assert.equal(midiEditorSource.includes('buildCompactLandscapeCommandRailButtonLayout({'), true);
   assert.equal(midiEditorSource.includes('const rootMenuSurface = landscapeLayout?.surfaces.compactCommandRail ?? landscapeLayout?.surfaces.rootMenu;'), true);
+  assert.equal(mobileLayoutBody.indexOf('const viewportMode = this.resolveMidiViewportMode(width, height);') >= 0, true);
+  assert.equal(mobileLayoutBody.indexOf('const viewportMode = this.resolveMidiViewportMode(width, height);') < mobileLayoutBody.indexOf('const isLandscape = viewportMode.isMobileLandscape;'), true);
   assert.equal(midiEditorSource.includes('const workSurface = landscapeLayout?.surfaces.workSurface;'), true);
   assert.equal(midiEditorSource.includes('const rightDrawerW = isLandscape && !gamepadOwnsLandscapeMenu'), true);
   assert.equal(midiEditorSource.includes('const rootDrawerW = isLandscape && !gamepadOwnsLandscapeMenu'), true);
@@ -2577,13 +2683,43 @@ test('MIDI landscape touch uses compact left rail, left root drawer, and right u
   assert.equal(midiEditorSource.includes('x: rootDrawerSurface?.x ?? (sidebarX + sidebarW)'), true);
   assert.equal(midiEditorSource.includes('y: (submenuDrawerSurface ?? overlayDrawerSurface)?.y ?? 0'), true);
   assert.equal(midiEditorSource.includes('const toolOptionsSurface = canRenderLandscapeBottomRail ? landscapeLayout?.surfaces.toolOptions : null;'), true);
+  assert.equal(midiEditorSource.includes('const landscapeBottomZoomSurface = !showLandscapeRightDrawer && showsGridBottomRail && bottomRail.w > 260'), true);
+  assert.equal(midiEditorSource.includes('const bottomRailContent = landscapeBottomZoomSurface'), true);
+  assert.equal(midiEditorSource.includes('this.drawMidiPortraitGridQuickStrip(ctx, bottomRailContent.x, bottomRailContent.y, bottomRailContent.w, bottomRailContent.h, track);'), true);
+  assert.equal(midiEditorSource.includes('this.drawMobileBottomRail(ctx, bottomRailContent.x, bottomRailContent.y, bottomRailContent.w, bottomRailContent.h, track);'), false);
+  assert.equal(midiEditorSource.includes("this.drawMidiSongLandscapeModeRail(ctx, { x: sidebarX, y: sidebarY, w: sidebarW, h: sidebarH });"), false);
+  assert.equal(midiEditorSource.includes('this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track, { menuOnly: isLandscape });'), true);
+  assert.equal(midiEditorSource.includes('this.drawMidiSongLandscapeModeRail(ctx, submenuSurface);'), true);
+  assert.equal(midiEditorSource.includes("this.drawSongTab(ctx, contentX, contentY, contentW, contentH, { suppressModeTabs: true });"), true);
+  assert.equal(midiEditorSource.includes('drawMidiSongLandscapeModeRail(ctx, bounds)'), true);
+  assert.equal(midiEditorSource.includes('if (!bounds) return;'), true);
+  assert.equal(midiEditorSource.includes('this.songLandscapeModeMenuOpen = false;'), true);
+  assert.equal(midiEditorSource.includes('this.songLandscapeModeMenuScroll = 0;'), true);
+  assert.equal(midiEditorSource.includes('this.songLandscapeModeMenuScrollMax = 0;'), true);
+  assert.equal(midiEditorSource.includes("this.bounds.songRailMore = moreBounds;"), true);
+  assert.equal(midiEditorSource.includes("this.drawButton(ctx, moreBounds, 'More', false, false);"), true);
+  assert.equal(midiEditorSource.includes("this.bounds.songRailBack = backBounds;"), true);
+  assert.equal(midiEditorSource.includes('this.bounds.songLandscapeModeMenu = listBounds;'), true);
+  assert.equal(midiEditorSource.includes('this.bounds.songLandscapeModeMenuRows = [];'), true);
+  assert.equal(midiEditorSource.includes('const visibleRows = Math.max(1, Math.floor(Math.max(buttonH, bounds.y + bounds.h - listTop - 8) / (buttonH + gap)));'), true);
+  assert.equal(midiEditorSource.includes('const maxScroll = Math.max(0, MIDI_SONG_MODE_TABS.length - visibleRows);'), true);
+  assert.equal(midiEditorSource.includes('.slice(this.songLandscapeModeMenuScroll, this.songLandscapeModeMenuScroll + visibleRows)'), true);
+  assert.equal(midiEditorSource.includes('this.bounds.songLandscapeModeMenuRows.push(buttonBounds);'), true);
+  assert.equal(midiEditorSource.includes("drawSharedPortraitScrollHints(ctx, listBounds, {\n          scroll: this.songLandscapeModeMenuScroll,\n          scrollMax: maxScroll\n        });"), true);
+  assert.equal(midiEditorSource.includes("mode: 'midi-song-landscape-mode-scroll'"), true);
+  assert.equal(midiEditorSource.includes("menuId: 'midi-song-landscape-mode'"), true);
+  assert.equal(midiEditorSource.includes('this.songLandscapeModeMenuScroll = clamp(this.dragState.nextScroll, 0, this.songLandscapeModeMenuScrollMax || 0);'), true);
+  assert.equal(midiEditorSource.includes('if (!wasMoved && pendingHit?.mode) {'), true);
+  assert.equal(midiEditorSource.includes('const suppressModeTabs = Boolean(options.suppressModeTabs);'), true);
+  assert.equal(midiEditorSource.includes('if (suppressModeTabs && isMobile && !isPortrait) baseMixRailH = 68;'), true);
   assert.equal(midiEditorSource.includes('this.drawMidiLandscapeRootDrawer(ctx, rootDrawer);'), true);
   assert.equal(midiEditorSource.includes('if (showLandscapeRightDrawer) {\n        this.drawMidiLandscapeRightDrawer(ctx, submenuSurface);\n      }'), true);
   assert.equal(midiEditorSource.includes('this.drawMidiLandscapeRightDrawer(ctx, submenuSurface);'), true);
+  assert.equal(midiEditorSource.includes('if (submenuSurface) this.drawMidiLandscapeRightDrawer(ctx, submenuSurface);'), false);
   assert.equal(midiEditorSource.includes('this.drawMidiLandscapeRightDrawer(ctx, landscapeLayout.rightRail);'), false);
   assert.equal(midiEditorSource.includes('drawMidiHorizontalZoomSlider(ctx, x, y, w, h)'), true);
-  assert.equal(midiEditorSource.includes('const MIDI_LANDSCAPE_RIGHT_DRAWER_TABS = new Set('), true);
-  assert.equal(midiEditorSource.includes("    .filter((entry) => ['file', 'view', 'record', 'settings'].includes(entry.specId || entry.id))"), true);
+  assert.equal(midiEditorSource.includes("const MIDI_LANDSCAPE_RIGHT_DRAWER_TABS = new Set(['file', 'settings', 'virtual-instruments']);"), true);
+  assert.equal(midiEditorSource.includes('    .filter((entry) => !entry.touchExit)'), false);
   assert.equal(midiEditorSource.includes('return MIDI_LANDSCAPE_RIGHT_DRAWER_TABS.has(tabId);'), true);
   assert.equal(midiEditorSource.includes("return ['file', 'view', 'settings', 'virtual-instruments'].includes(tabId);"), false);
   assert.equal(midiEditorSource.includes('const MIDI_WORKSPACE_TAB_IDS = new Set('), true);
@@ -2592,7 +2728,7 @@ test('MIDI landscape touch uses compact left rail, left root drawer, and right u
   assert.equal(midiEditorSource.includes('if (MIDI_WORKSPACE_TAB_IDS.has(entry.id)) this.bounds.tabs.push(bounds);'), true);
   assert.equal(midiEditorSource.includes("entry.id !== 'file' && entry.id !== 'settings'"), false);
   assert.equal(midiEditorSource.includes("this.drawControllerSubmenuPanel(ctx, content.x, content.y, content.w, content.h, 'view', { isMobile: true, layoutMode: 'list' });"), true);
-  assert.equal(midiEditorSource.includes('const rootEntries = buildMidiSharedRootMenuEntries();'), true);
+  assert.equal(midiEditorSource.includes('const rootEntries = buildMidiPortraitRootTabs();'), true);
   assert.equal(midiEditorSource.includes("id: 'menu',\n          label: 'Menu'"), true);
   assert.equal(midiEditorSource.includes("id: 'undo', label: 'Undo'"), true);
   assert.equal(midiEditorSource.includes("id: 'redo', label: 'Redo'"), true);
@@ -2606,11 +2742,49 @@ test('MIDI landscape touch uses compact left rail, left root drawer, and right u
   assert.equal(drawerBody.includes('rootEntries.slice(rootScroll, rootScroll + visibleRows).forEach((entry, index) => {'), false);
   const rootTapIndex = midiEditorSource.indexOf('  handleMobileLandscapeRootMenuTap(id)');
   const rootTapBody = midiEditorSource.slice(rootTapIndex, midiEditorSource.indexOf('  closeMidiPortraitTrackPicker()', rootTapIndex));
-  assert.equal(rootTapBody.includes('this.landscapeRootDrawerOpen = false;'), false);
+  assert.equal(rootTapBody.includes('const tabId = MIDI_CONTROLLER_ROOT_TO_TAB[id] || id;'), true);
+  assert.equal(rootTapBody.includes('this.activateLeftRailTab(tabId);'), true);
+  assert.equal(rootTapBody.includes('this.landscapeRootDrawerOpen = false;'), true);
+  assert.equal(midiEditorSource.includes('if (!this.recordModeActive && this.landscapeRootDrawerOpen && this.mobileLandscapeRootMenuBounds'), true);
+  assert.equal(midiEditorSource.includes('if (hitButton?.id) this.handleMobileLandscapeRootMenuTap(hitButton.id);'), true);
   assert.equal(midiEditorSource.includes('buildMenuScrollDragState'), true);
   assert.equal(midiEditorSource.includes('resolveMenuScrollDrag'), true);
   assert.equal(midiEditorSource.includes("menuId: 'root'"), true);
   assert.equal(midiEditorSource.includes('this.controllerMenu.scroll.root = this.dragState.nextScroll;'), true);
+});
+
+test('MIDI landscape root drawer taps activate visible root buttons before close-away', () => {
+  const composer = Object.create(MidiComposer.prototype);
+  let tappedRootId = null;
+  Object.assign(composer, {
+    activeViewportMode: 'landscape-touch',
+    bounds: {},
+    dragState: null,
+    gamepadSlideOutMenuMeta: null,
+    landscapeRootDrawerOpen: true,
+    menuScrollRegions: [],
+    mobileLandscapeRootMenuBounds: { x: 80, y: 0, w: 220, h: 160 },
+    mobileLandscapeRootMenuButtons: [
+      { id: 'settings', x: 92, y: 12, w: 88, h: 38 }
+    ],
+    noteLengthMenu: { open: false },
+    panJoystick: { radius: 0 },
+    pastePreview: null,
+    recordModeActive: false,
+    tempoSliderOpen: false,
+    cancelLongPressTimer() {},
+    closeSelectionMenu() {},
+    handleMobileLandscapeRootMenuTap(id) { tappedRootId = id; },
+    isMobileLandscapeThumbZoomMode() { return false; },
+    pointInBounds(x, y, bounds) {
+      return x >= bounds.x && y >= bounds.y && x <= bounds.x + bounds.w && y <= bounds.y + bounds.h;
+    }
+  });
+
+  MidiComposer.prototype.handlePointerDown.call(composer, { x: 100, y: 20, touchCount: 1 });
+
+  assert.equal(tappedRootId, 'settings');
+  assert.equal(composer.landscapeRootDrawerOpen, true);
 });
 
 test('MIDI desktop keeps transport in the left column instead of a bottom rail', () => {
@@ -2850,9 +3024,57 @@ test('MIDI record mode keeps desktop on the shared desktop shell', () => {
   assert.equal(recordBody.includes('const isMobile = viewportMode.isMobileViewport;'), true);
   assert.equal(recordBody.includes('if (viewportMode.isDesktop) {\n      this.drawDesktopLayout(ctx, width, height, track, pattern);\n      return;\n    }'), true);
   assert.equal(recordBody.includes('if (viewportMode.isMobilePortrait) {'), true);
-  assert.equal(recordBody.includes("nowPlayingPlacement: viewportMode.isMobileLandscape ? 'preview' : 'instrument'"), true);
+  assert.equal(recordBody.includes('nowPlaying: null,'), true);
+  assert.equal(recordBody.includes('showSettingsRail: false'), true);
+  assert.equal(recordBody.includes('this.drawMidiRecordLandscapeTopMenu(ctx, padding, padding, width - padding * 2, topMenuH);'), true);
+  assert.equal(recordBody.includes('this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track, { menuOnly: true });'), false);
+  assert.equal(recordBody.includes('const instrumentH = Math.max(80, Math.floor(height * 0.5));'), true);
+  assert.equal(recordBody.includes('const instrumentY = Math.max(contentY, height - padding - instrumentH);'), true);
+  assert.equal(recordBody.includes('const recordPedalMaxH = Math.max(82, Math.min(112, availableAboveInstrumentH));'), true);
+  assert.equal(recordBody.includes('const recordPedalH = clamp(Math.round(height * 0.18), 82, recordPedalMaxH);'), true);
+  assert.equal(recordBody.includes('const recordPedalY = Math.max(contentY, instrumentY - gap - recordPedalH);'), true);
+  assert.equal(recordBody.includes('y: recordPedalY,'), true);
+  assert.equal(recordBody.indexOf('const instrumentY = Math.max(contentY, height - padding - instrumentH);') < recordBody.indexOf('const recordPedalY = Math.max(contentY, instrumentY - gap - recordPedalH);'), true);
+  assert.equal(recordBody.includes('h: 0'), true);
+  assert.equal(recordBody.includes('if (grid && grid.h > 0) {'), true);
+  assert.equal(recordBody.includes('controlRailBounds\n    });'), false);
+  assert.equal(recordBody.includes('const recordOverlayBounds = {'), true);
+  assert.equal(recordBody.includes('instrumentModalViewportBounds: recordOverlayBounds'), true);
+  assert.equal(recordBody.includes('hideInstrumentModal: true'), true);
+  assert.equal(recordBody.includes('const recordPedalBounds = {'), true);
+  assert.equal(recordBody.includes('this.drawPedalBoardPanel(ctx, recordPedalBounds.x, recordPedalBounds.y, recordPedalBounds.w, recordPedalBounds.h, track, { embedded: true, compact: true, hideTitle: true });'), true);
+  assert.equal(recordBody.includes("if (this.midiPortraitRecordSettingsOpen) {\n      const settingsH = this.recordInstrument === 'guitar' ? 278 : this.recordInstrument === 'bass' ? 230 : 176;"), true);
+  assert.equal(recordBody.includes('this.drawMidiPortraitRecordSettingsPanel(ctx, {'), true);
+  assert.equal(recordBody.includes('this.recordLayout.drawInstrumentModal(ctx);'), true);
+  assert.equal(recordBody.indexOf('this.drawPedalBoardPanel(ctx, recordPedalBounds.x, recordPedalBounds.y, recordPedalBounds.w, recordPedalBounds.h, track, { embedded: true, compact: true, hideTitle: true });') < recordBody.indexOf('this.recordLayout.drawInstrumentModal(ctx);'), true);
+  assert.equal(recordBody.includes('this.drawMidiRecordLandscapeMoreMenu(ctx, padding, padding, width - padding * 2, topMenuH);'), true);
+  assert.equal(recordBody.indexOf('this.drawPedalBoardPanel(ctx, recordPedalBounds.x, recordPedalBounds.y, recordPedalBounds.w, recordPedalBounds.h, track, { embedded: true, compact: true, hideTitle: true });') < recordBody.indexOf('this.drawMidiRecordLandscapeMoreMenu(ctx, padding, padding, width - padding * 2, topMenuH);'), true);
+  assert.equal(recordBody.includes('if (this.landscapeRootDrawerOpen) {\n      this.drawMidiLandscapeRootDrawer(ctx, {'), true);
+  assert.equal(midiEditorSource.includes('drawMidiRecordLandscapeTopMenu(ctx, x, y, w, h)'), true);
+  assert.equal(midiEditorSource.includes('drawMidiRecordLandscapeMoreMenu(ctx, x, y, w, h)'), true);
+  assert.equal(midiEditorSource.includes('this.bounds.recordMoreMenuPanel = panel;'), true);
+  assert.equal(midiEditorSource.includes("const buttons = [\n      { id: 'menu', label: 'Menu', active: this.landscapeRootDrawerOpen },\n      { id: 'undo', label: 'Undo' },\n      { id: 'redo', label: 'Redo' },\n      { id: 'play', label: this.isPlaying ? 'Pause' : 'Play', active: this.isPlaying },\n      { id: 'more', label: 'More', active: this.midiRecordLandscapeMoreOpen }\n    ];"), true);
+  assert.equal(midiEditorSource.includes("this.bounds.recordMore = buttonBounds;"), true);
+  assert.equal(midiEditorSource.includes("{ key: 'recordVirtualInstrument', label: 'Virtual', active: this.recordLayout.instrumentMenuOpen }"), true);
+  assert.equal(midiEditorSource.includes("{ key: 'recordSettings', label: 'Settings', active: this.midiPortraitRecordSettingsOpen }"), true);
+  assert.equal(midiEditorSource.includes("{ key: 'record', label: this.recorder.isRecording ? 'Stop Rec' : 'Record', active: this.recorder.isRecording }"), true);
+  assert.equal(recordBody.includes('{ embedded: true, compact: true, hideTitle: true }'), true);
+  assert.equal(midiEditorSource.includes('const hideTitle = options.hideTitle === true;'), true);
+  assert.equal(midiEditorSource.includes("if (!hideTitle) {\n      ctx.fillStyle = UI_SUITE.colors.text;\n      ctx.font = `13px ${UI_SUITE.font.family}`;\n      ctx.fillText('Pedal Board', panelX + 10, panelY + 16);\n    }"), true);
+  assert.equal(recordModeSource.includes('drawSharedMenuButtonChrome'), true);
+  assert.equal(recordModeSource.includes('drawSharedMenuButtonLabel'), true);
+  const recordModeButtonBody = recordModeSource.slice(recordModeSource.indexOf('  drawButton(ctx, bounds, label, active)'), recordModeSource.indexOf('  truncateLabel(ctx, label, maxWidth)'));
+  assert.equal(recordModeButtonBody.includes('drawSharedMenuButtonChrome(ctx, controlBounds, { active })'), true);
+  assert.equal(recordModeButtonBody.includes("ctx.fillStyle = active ? '#ffe16a' : 'rgba(0,0,0,0.6)';"), false);
+  assert.equal(recordModeSource.includes('instrumentModalViewportBounds = null'), true);
+  assert.equal(recordModeSource.includes('hideInstrumentModal = false'), true);
+  assert.equal(recordModeSource.includes('const modalViewport = this.instrumentModalViewportBounds || instrument;'), true);
+  assert.equal(recordModeSource.includes('ctx.fillRect(modalViewport.x, modalViewport.y, modalViewport.w, modalViewport.h);'), true);
   assert.equal(recordBody.includes('const isMobile = this.isMobileLayout();'), false);
   assert.equal(recordBody.includes('nowPlayingPlacement: this.isMobileLayout()'), false);
+  assert.equal(pointerDownBody.includes("if (this.bounds.recordMore && this.pointInBounds(x, y, this.bounds.recordMore)) {\n        this.midiRecordLandscapeMoreOpen = !this.midiRecordLandscapeMoreOpen;"), true);
+  assert.equal(pointerDownBody.includes('if (this.landscapeRootDrawerOpen && this.mobileLandscapeRootMenuBounds'), true);
+  assert.equal(pointerDownBody.includes('this.exitRecordMode();\n          this.handleMobileLandscapeRootMenuTap(hitButton.id);'), true);
   assert.equal(pointerDownBody.includes("if (this.activeViewportMode === 'desktop') {\n          this.openMidiDesktopDropdown(tabHit.desktopRootId || tabHit.id);\n        } else {\n          this.activateLeftRailTab(tabHit.id);\n        }"), true);
   assert.equal(pointerDownBody.includes("if (this.activeViewportMode === 'desktop') {\n          this.openMidiDesktopDropdown('file');\n        } else {\n          this.activeTab = 'file';\n        }"), true);
   assert.equal(pointerDownBody.includes("if (this.activeViewportMode === 'desktop') {\n          this.openMidiDesktopDropdown('settings');\n        } else {\n          this.activeTab = 'settings';\n        }"), true);
@@ -2941,39 +3163,57 @@ test('MIDI desktop dropdown commands only fire on release', () => {
 
 test('MIDI file menu uses the shared editor file menu model', () => {
   const fileItemsIndex = midiEditorSource.indexOf('  getFileMenuItems()');
-  const fileItemsBody = midiEditorSource.slice(fileItemsIndex, midiEditorSource.indexOf('  drawFilePanel(ctx, x, y, w, h)', fileItemsIndex));
+  const fileItemsIndexWithOptions = midiEditorSource.indexOf('  getFileMenuItems({ portraitFileMenu = false } = {})');
+  const fileItemsBody = midiEditorSource.slice(fileItemsIndexWithOptions, midiEditorSource.indexOf('  drawFilePanel(ctx, x, y, w, h)', fileItemsIndexWithOptions));
   const controllerIndex = midiEditorSource.indexOf("      file: {\n        id: 'file',");
   const controllerBody = midiEditorSource.slice(controllerIndex, midiEditorSource.indexOf('      system:', controllerIndex));
   const filePanelIndex = midiEditorSource.indexOf('  drawFilePanel(ctx, x, y, w, h)');
   const filePanelBody = midiEditorSource.slice(filePanelIndex, midiEditorSource.indexOf('  drawGenreMenu(ctx, width, height)', filePanelIndex));
+  const portraitDrawIndex = midiEditorSource.indexOf('  drawMobileLayout(ctx, width, height, track, pattern)');
+  const portraitDrawBody = midiEditorSource.slice(portraitDrawIndex, midiEditorSource.indexOf('    const isLandscape = viewportMode.isMobileLandscape;', portraitDrawIndex));
+  const handleFileMenuIndex = midiEditorSource.indexOf('  async handleFileMenu(action)');
+  const handleFileMenuBody = midiEditorSource.slice(handleFileMenuIndex, midiEditorSource.indexOf('  generateTheme()', handleFileMenuIndex));
 
   assert.equal(midiEditorSource.includes('buildSharedEditorFileMenu'), true);
   assert.equal(midiEditorSource.includes('buildUnifiedFileDrawerItems'), false);
+  assert.ok(fileItemsIndexWithOptions >= 0);
   assert.equal(fileItemsBody.includes('return buildSharedEditorFileMenu({'), true);
   assert.equal(fileItemsBody.includes('undo: false'), false);
   assert.equal(fileItemsBody.includes('redo: false'), false);
   assert.equal(fileItemsBody.includes('includeFooter: false'), true);
   assert.equal(fileItemsBody.includes('extras: ['), true);
+  assert.equal(fileItemsBody.includes("if (portraitFileMenu && this.fileMenuSubmenu === 'export')"), true);
+  assert.equal(fileItemsBody.includes("{ id: 'export-back', label: 'Back to File'"), true);
+  assert.equal(fileItemsBody.includes("{ id: 'export-json', label: 'Export JSON'"), true);
   assert.equal(fileItemsBody.includes("{ id: 'nav-grid', label: 'Grid' }"), false);
   assert.equal(fileItemsBody.includes("{ id: 'nav-instruments', label: 'Mixer' }"), false);
   assert.equal(fileItemsBody.includes("{ id: 'nav-virtual-instruments', label: 'Record' }"), false);
   assert.equal(fileItemsBody.includes("{ id: 'nav-pedals', label: 'Pedals' }"), false);
   assert.equal(fileItemsBody.includes("{ id: 'nav-settings', label: 'Settings' }"), false);
   assert.equal(fileItemsBody.includes("{ id: 'rescue-save', label: 'Rescue Save', onClick: () => this.handleFileMenu('rescue-save') }"), true);
-  assert.equal(fileItemsBody.includes("{ id: 'exit-main', label: 'Exit to Main Menu', onClick: () => this.handleFileMenu('exit-main') }"), true);
-  assert.equal(fileItemsBody.includes("onClick: () => this.handleFileMenu('export-midi')"), true);
-  assert.equal(fileItemsBody.includes("onClick: () => this.handleFileMenu('export-wav')"), true);
+  assert.equal(fileItemsBody.includes("{ id: 'exit-main', label: 'Exit', onClick: () => this.handleFileMenu('exit-main') }"), true);
+  assert.equal(fileItemsBody.includes("const exportLabel = portraitFileMenu ? 'Export' : 'Export JSON';"), true);
+  assert.equal(fileItemsBody.includes('...(portraitFileMenu ? [] : ['), true);
+  assert.equal(fileItemsBody.includes("{ id: 'export-midi', label: 'Export MIDI', onClick: () => this.handleFileMenu('export-midi') }"), true);
+  assert.equal(fileItemsBody.includes("{ id: 'export-wav', label: 'Export WAV', onClick: () => this.handleFileMenu('export-wav') }"), true);
   assert.equal(fileItemsBody.includes("new: () => this.handleFileMenu('new')"), true);
   assert.equal(fileItemsBody.includes("open: () => this.handleFileMenu('load')"), true);
-  assert.equal(fileItemsBody.includes("export: () => this.handleFileMenu('export-json')"), true);
+  assert.equal(fileItemsBody.includes("export: () => this.handleFileMenu('export')"), true);
   assert.equal(fileItemsBody.includes('filter((item) => !item.disabled)'), true);
   assert.equal(controllerBody.includes('items: this.getFileMenuItems().map((item) => ('), true);
   assert.equal(controllerBody.includes("action(item.id, item.label, () => this.handleFileMenu(item.id))"), true);
   assert.equal(filePanelBody.includes("const isMobile = this.activeViewportMode !== 'desktop';"), true);
   assert.equal(filePanelBody.includes('const isMobile = this.isMobileLayout();'), false);
+  assert.equal(filePanelBody.includes("const portraitFileMenu = this.activeViewportMode === 'portrait';"), true);
+  assert.equal(filePanelBody.includes("const fileMenuId = portraitFileMenu && this.fileMenuSubmenu === 'export' ? 'file-export' : 'file';"), true);
+  assert.equal(filePanelBody.includes('const allFileItems = this.getFileMenuItems({ portraitFileMenu });'), true);
   assert.equal(filePanelBody.includes("const stickyExit = this.activeViewportMode !== 'desktop';"), true);
   assert.equal(filePanelBody.includes('const stickyExit = isMobile || isMobileLandscapeLayout({'), false);
-  assert.equal(filePanelBody.includes('const allFileItems = this.getFileMenuItems();'), true);
+  assert.equal(handleFileMenuBody.includes("if (action === 'export-back') {\n      this.fileMenuSubmenu = null;"), true);
+  assert.equal(handleFileMenuBody.includes("if (action === 'export') {\n      if (this.activeViewportMode === 'portrait') {\n        this.fileMenuSubmenu = 'export';"), true);
+  assert.equal(handleFileMenuBody.includes('this.exportSongJson();\n      return;\n    }\n    if (action === \'export-json\')'), true);
+  assert.equal(portraitDrawBody.includes("if (this.activeTab === 'grid' || this.activeTab === 'song' || (sheetOpen && this.activeTab !== 'file')) {"), true);
+  assert.equal(portraitDrawBody.includes("if (this.activeTab === 'grid' || this.activeTab === 'song' || sheetOpen) {"), false);
   assert.equal(midiEditorSource.includes('isMobileLandscapeLayout'), false);
   assert.equal(midiEditorSource.includes('isMobilePortraitLayout'), false);
 });
@@ -3082,17 +3322,51 @@ test('MIDI destructive action buttons use shared RTG Studio danger chrome', () =
 });
 
 test('MIDI shared button primitives use active viewport mode for typography', () => {
+  const fontIndex = midiEditorSource.indexOf('  getButtonFontSize(bounds, isMobile)');
+  const fontBody = midiEditorSource.slice(fontIndex, midiEditorSource.indexOf('  truncateLabel(ctx, label, maxWidth)', fontIndex));
   const buttonIndex = midiEditorSource.indexOf('  drawButton(ctx, bounds, label, active, subtle, focused = false)');
   const buttonBody = midiEditorSource.slice(buttonIndex, midiEditorSource.indexOf('  drawSmallButton(ctx, bounds, label, active)', buttonIndex));
   const toggleIndex = midiEditorSource.indexOf('  drawToggle(ctx, bounds, label, active)');
   const toggleBody = midiEditorSource.slice(toggleIndex, midiEditorSource.indexOf('\n}', toggleIndex));
 
+  assert.ok(fontIndex > 0);
   assert.ok(buttonIndex > 0);
   assert.ok(toggleIndex > buttonIndex);
+  assert.equal(fontBody.includes("if (this.activeViewportMode === 'portrait') return UI_SUITE.font.size;"), true);
+  assert.equal(fontBody.includes('const maxSize = isMobile ? UI_SUITE.font.size : 16;'), true);
+  assert.equal(fontBody.includes('const maxSize = isMobile ? 18 : 16;'), false);
   assert.equal(buttonBody.includes("const isMobile = this.activeViewportMode !== 'desktop';"), true);
   assert.equal(buttonBody.includes('const isMobile = this.isMobileLayout();'), false);
-  assert.equal(toggleBody.includes("fontSize: this.activeViewportMode !== 'desktop' ? 14 : 12,"), true);
+  assert.equal(toggleBody.includes('fontSize: UI_SUITE.font.size,'), true);
+  assert.equal(toggleBody.includes("fontSize: this.activeViewportMode !== 'desktop' ? 14 : 12,"), false);
   assert.equal(toggleBody.includes('fontSize: this.isMobileLayout() ? 14 : 12,'), false);
+});
+
+test('portrait editor menu buttons use the shared 12px menu font size', () => {
+  const pixelTilePortraitIndex = pixelStudioSource.indexOf('const portraitActions = this.getTilePortraitToolbarActions();');
+  const pixelTilePortraitBody = pixelStudioSource.slice(pixelTilePortraitIndex, pixelStudioSource.indexOf('return {', pixelTilePortraitIndex));
+  const pixelToolbarIndex = pixelStudioSource.indexOf('  drawMobileToolbar(ctx, x, y, w, h)');
+  const pixelToolbarBody = pixelStudioSource.slice(pixelToolbarIndex, pixelStudioSource.indexOf('  drawMobilePanZoomControls(ctx, width, height, surfaceBounds = null)', pixelToolbarIndex));
+  const midiFontIndex = midiEditorSource.indexOf('  getButtonFontSize(bounds, isMobile)');
+  const midiFontBody = midiEditorSource.slice(midiFontIndex, midiEditorSource.indexOf('  truncateLabel(ctx, label, maxWidth)', midiFontIndex));
+
+  assert.ok(pixelTilePortraitIndex > 0);
+  assert.ok(pixelToolbarIndex > 0);
+  assert.ok(midiFontIndex > 0);
+  assert.equal(pixelTilePortraitBody.includes('fontSize: UI_SUITE.font.size,'), true);
+  assert.equal(pixelTilePortraitBody.includes('fontSize: action.primary ? 12 : 14'), false);
+  assert.equal(pixelToolbarBody.includes('{ fontSize: UI_SUITE.font.size }'), true);
+  assert.equal(pixelToolbarBody.includes('{ fontSize: 14 }'), false);
+  assert.equal(midiFontBody.includes("if (this.activeViewportMode === 'portrait') return UI_SUITE.font.size;"), true);
+  assert.equal(midiFontBody.includes('const maxSize = isMobile ? UI_SUITE.font.size : 16;'), true);
+  assert.equal(midiFontBody.includes('const maxSize = isMobile ? 18 : 16;'), false);
+  assert.equal(actorEditorSource.includes('applySharedDomMenuButtonChrome(btn, {'), true, 'Actor should keep shared menu font size through shared DOM chrome');
+  [
+    ['Race', raceEditorSource],
+    ['Doodad', doodadEditorSource]
+  ].forEach(([editor, source]) => {
+    assert.equal(source.includes('fontSize: 12'), true, `${editor} should keep shared menu font size`);
+  });
 });
 
 test('MIDI Song edit overlays use active viewport mode for touch sizing', () => {
@@ -3212,7 +3486,9 @@ test('Pixel landscape touch keeps a fixed four-button rail, left root drawer, an
   });
   const studio = Object.create(PixelStudio.prototype);
   const portraitRootItems = [
-    ...buildPixelPortraitMenuModel().rootTabs,
+    ...getEditorPortraitRootMenuEntries('pixel', {
+      labelOverrides: { file: SHARED_EDITOR_LEFT_MENU.fileLabel }
+    }),
     { id: 'bones', panel: 'bones', label: 'Rigging' },
     { id: 'exit-main', panel: 'exit-main', label: 'Exit' }
   ];
@@ -3499,9 +3775,10 @@ test('landscape touch thumbsticks stay south of the compact left menu rail acros
     assert.equal(plan.thumbstick.center.y > plan.surfaces.compactCommandRail.y + plan.surfaces.compactCommandRail.h, true, editorId);
   });
 
-  assert.equal(pixelStudioSource.includes("const tileLandscapeShell = !desktop && !portrait && !gamepad\n      ? buildLandscapeTouchEditorShellPlan('tile', {\n        viewportWidth: width,\n        viewportHeight: height,\n        bottomRailHeight: 72,\n        reserveRightRail: tileLandscapeMenuOpen,\n        reserveThumbstickSpace: true"), true);
+  assert.equal(pixelStudioSource.includes("const tileLandscapeShell = !desktop && !portrait && !gamepad\n      ? buildLandscapeTouchEditorShellPlan('tile', {\n        viewportWidth: width,\n        viewportHeight: height,\n        bottomRailHeight: 72,\n        reserveRightRail: true,\n        reserveThumbstickSpace: true"), true);
   assert.equal(pixelStudioSource.includes('bottomRailHeight: 78,\n      topRailHeight: 0,\n      reserveRightRail: drawerOpen,\n      reserveThumbstickSpace: true'), true);
   assert.equal(raceEditorSource.includes('bottomRailHeight: 68,\n      reserveRightRail: !gamepadMenuState.isLandscapeMenuMode,\n      reserveThumbstickSpace: true,\n      capRightRailToLeftRailHeight: true'), true);
+  assert.equal(raceEditorSource.includes("if (this.mode === 'race' && !gamepadMenuState.isLandscapeMenuMode && shell.surfaces.zoom) {\n      this.drawRacePortraitZoomSlider(ctx, shell.surfaces.zoom);\n    }"), true);
   assert.equal(doodadEditorSource.includes('bottomRailHeight: 68,\n      reserveRightRail: !gamepadMenuState.isLandscapeMenuMode,\n      reserveThumbstickSpace: true,\n      capRightRailToLeftRailHeight: true'), true);
   assert.equal(pixelStudioSource.includes('work.x + 14 + radius'), false);
   assert.equal(raceEditorSource.includes('work.x + 14 + radius'), false);
@@ -3716,10 +3993,11 @@ test('Pixel popup menu fills are opaque in portrait and landscape', () => {
 
 test('Pixel tile picker screen uses shared RTG Studio text tokens', () => {
   const tilePickerIndex = pixelStudioSource.indexOf('  drawTilePickerScreen(ctx, width, height)');
+  const tilePickerDrawBody = pixelStudioSource.slice(tilePickerIndex, pixelStudioSource.indexOf('  drawTileLandscapeRail(ctx, bounds)', tilePickerIndex));
   const tilePickerBody = pixelStudioSource.slice(tilePickerIndex, pixelStudioSource.indexOf('  async promptForNewArtName()', tilePickerIndex));
-  const tilePickerPortraitBranch = tilePickerBody.slice(
-    tilePickerBody.indexOf('const listOuter = portrait'),
-    tilePickerBody.indexOf(': desktopShell', tilePickerBody.indexOf('const listOuter = portrait'))
+  const tilePickerPortraitBranch = tilePickerDrawBody.slice(
+    tilePickerDrawBody.indexOf('const listOuter = portrait'),
+    tilePickerDrawBody.indexOf(': desktopShell', tilePickerDrawBody.indexOf('const listOuter = portrait'))
   );
   const tileChromeIndex = pixelStudioSource.indexOf('  drawTilePickerDesktopChrome(ctx, shell)');
   const tileChromeBody = pixelStudioSource.slice(tileChromeIndex, pixelStudioSource.indexOf('  async promptForNewArtName()', tileChromeIndex));
@@ -3731,7 +4009,8 @@ test('Pixel tile picker screen uses shared RTG Studio text tokens', () => {
   assert.equal(tilePickerBody.includes('this.activeSpecModeContract = viewportMode.specModeContract;'), true);
   assert.equal(tilePickerBody.includes('const isMobile = viewportMode.isMobileViewport;'), true);
   assert.equal(tilePickerBody.includes('const desktop = viewportMode.isDesktop;'), true);
-  assert.equal(tilePickerBody.includes('const portrait = viewportMode.isPortrait;'), true);
+  assert.equal(tilePickerBody.includes('const portrait = viewportMode.isMobilePortrait;'), true);
+  assert.equal(tilePickerBody.includes('const portrait = viewportMode.isPortrait;'), false);
   assert.equal(tilePickerBody.includes('const gamepad = viewportMode.isGamepad;'), true);
   assert.equal(tilePickerBody.includes('this.activeViewportMode = viewportMode.mode;'), true);
   assert.equal(tilePickerBody.includes('if (desktop) resetSharedThumbstickState(this.panJoystick);'), true);
@@ -3743,11 +4022,18 @@ test('Pixel tile picker screen uses shared RTG Studio text tokens', () => {
   assert.equal(tilePickerBody.includes("&& canRenderEditorPlanSurface(tileLandscapeShell, 'landscape-right-submenu');"), true);
   assert.equal(tilePickerBody.includes('if (tileRootRailSurface) this.drawTileLandscapeRail(ctx, tileRootRailSurface);'), true);
   assert.equal(tilePickerBody.includes('if (tileBottomRailSurface) this.drawTileLandscapeBottomRail(ctx, tileBottomRailSurface);'), true);
+  assert.equal(tilePickerBody.includes('const tileSubmenuSurface = canRenderTileLandscapeRightSubmenu ? tileLandscapeShell.surfaces.submenu : null;'), true);
   assert.equal(tilePickerBody.includes('if (tileRootDrawerSurface) this.drawTileLandscapeRootDrawer(ctx, tileRootDrawerSurface);'), true);
   assert.equal(tilePickerBody.includes('if (tileSubmenuSurface) this.drawTileLandscapeSubmenu(ctx, tileSubmenuSurface);'), true);
+  assert.equal(tilePickerBody.includes('if (tileLandscapeShell.surfaces.zoom) this.drawPixelLandscapeZoomControl(ctx, tileLandscapeShell.surfaces.zoom);'), true);
   assert.equal(tilePickerBody.includes('const portraitActions = this.getTilePortraitToolbarActions();'), true);
   assert.equal(tilePickerBody.includes('drawSharedPortraitActionRail(ctx, layout.middleRail, this.panJoystick, portraitActions, {'), true);
   assert.equal(tilePickerBody.includes("if (canRenderEditorSurface(this.activeViewportMode, 'bottom-action-rail')) {"), true);
+  assert.equal(tilePickerDrawBody.includes('let tilePortraitLayout = null;'), true);
+  assert.equal(tilePickerDrawBody.includes('tilePortraitLayout = layout;'), true);
+  assert.equal(tilePickerDrawBody.includes('this.mobileDrawerBounds = this.mobileDrawer === \'panel\' ? { ...layout.menuSheet } : null;'), true);
+  assert.equal(tilePickerDrawBody.indexOf('this.drawTilePortraitMenuSheet(ctx, tilePortraitLayout);') > tilePickerDrawBody.indexOf('tiles.slice(this.tilePickerScroll'), true);
+  assert.equal(tilePickerBody.includes('this.mobileDrawerBounds = null;'), true);
   assert.equal(tilePickerPortraitBranch.includes("this.drawButton(ctx, backBounds, 'Back'"), false);
   assert.equal(tilePickerBody.includes("const canRenderTileGamepadRootRail = canRenderEditorPlanSurface(tileGamepadShell, 'left-rail');"), true);
   assert.equal(tilePickerBody.includes("const canRenderTileGamepadBottomRail = canRenderEditorPlanSurface(tileGamepadShell, 'bottom-tool-rail');"), true);
@@ -3788,11 +4074,23 @@ test('Pixel tile picker screen uses shared RTG Studio text tokens', () => {
     assert.equal(tileListBody.includes("action('tile-reset'"), false);
   }
   assert.equal(pixelStudioSource.includes('getTilePortraitToolbarActions()'), true);
-  assert.equal(pixelStudioSource.includes("return ['menu', 'undo', 'redo', 'edit']"), true);
+  assert.equal(pixelStudioSource.includes("return ['menu', 'undo', 'redo', 'edit']"), false);
+  assert.equal(pixelStudioSource.includes("return getStandardEditorActionRailIds('context')"), true);
+  assert.equal(pixelStudioSource.includes("edit: { id: 'edit', label: 'Art'"), false);
+  assert.equal(pixelStudioSource.includes('const toggleTileMenu = () => {'), true);
+  assert.equal(pixelStudioSource.includes("this.tileLandscapeRootId = 'file';"), true);
+  assert.equal(pixelStudioSource.includes('const openTileContext = () => {'), true);
+  assert.equal(pixelStudioSource.includes("this.tileLandscapeRootId = 'properties';"), true);
+  assert.equal(pixelStudioSource.includes('drawTilePortraitMenuSheet(ctx, layout)'), true);
+  assert.equal(pixelStudioSource.includes('drawSharedPortraitMultiRowTabStrip(ctx, layout.rootRail'), true);
+  assert.equal(pixelStudioSource.includes('renderSharedFileDrawer(ctx, {'), true);
+  assert.equal(pixelStudioSource.includes("this.tilePickerMode && this.mobileDrawer === 'panel' && this.mobileDrawerBounds"), true);
   assert.equal(pixelStudioSource.includes("'tile-file': {"), true);
   assert.equal(pixelStudioSource.includes("'tile-properties': {"), true);
   assert.equal(pixelStudioSource.includes('drawTileLandscapeRail(ctx, bounds)'), true);
   assert.equal(pixelStudioSource.includes('drawTileLandscapeRootDrawer(ctx, bounds)'), true);
+  assert.equal(pixelStudioSource.includes("const items = getEditorTouchRootMenuEntries('tile');"), true);
+  assert.equal(pixelStudioSource.includes('const items = TILE_CONTROLLER_ROOT_ENTRIES;'), false);
   assert.equal(pixelStudioSource.includes('drawTileLandscapeSubmenu(ctx, bounds)'), true);
   assert.equal(pixelStudioSource.includes('drawTileGamepadRootDrawer(ctx, bounds, plan = null)'), true);
   assert.equal(pixelStudioSource.includes('drawTileGamepadSubmenu(ctx, bounds, plan = null)'), true);
@@ -4413,11 +4711,54 @@ test('editor file menus do not import legacy unified drawer item builders', () =
   });
 });
 
+test('portrait File menus use shared sticky Exit footer geometry', () => {
+  [
+    ['Pixel', pixelStudioSource],
+    ['Level', levelEditorSource],
+    ['MIDI', midiEditorSource]
+  ].forEach(([editor, source]) => {
+    assert.equal(source.includes('splitFileDrawerStickyExitItems'), true, `${editor} should split Exit out of the File item list`);
+    assert.equal(source.includes("footerMode: stickyExit && exitItem ? 'exit-only' : 'none'"), true, `${editor} should use the shared exit-only footer mode`);
+  });
+  assert.equal(pixelStudioSource.includes("drawPanel: !(isMobile && this.activeViewportMode === 'portrait')"), true, 'Pixel portrait File should let the portrait sheet own the border');
+  assert.equal(levelEditorSource.includes('drawPanel: !portraitLayout'), true, 'Level portrait File should let the portrait sheet own the border');
+  assert.equal(midiEditorSource.includes('drawPanel: !portraitFileMenu'), true, 'MIDI portrait File should let the portrait sheet own the border');
+  assert.equal(uiSuiteSource.includes('drawPanel = true,'), true, 'Shared drawer should expose panel drawing as an explicit option');
+  assert.equal(uiSuiteSource.includes('drawPanel,\n      showTitle,'), true, 'Shared drawer should forward drawPanel to the file drawer renderer');
+
+  [
+    ['Cutscene', cutsceneEditorSource, "if (isPortrait && this.activeMenuTab === 'file') {"],
+    ['SFX', sfxEditorSource, "if (this.isMobilePortrait && exitItem) {"],
+    ['Doodad', doodadEditorSource, "if (actions.length && this.mobileRootId === 'file') {"],
+    ['Race/Car', raceEditorSource, "if (this.activeRootId === 'file') {"]
+  ].forEach(([editor, source, branch]) => {
+    assert.equal(source.includes(branch), true, `${editor} should have a portrait File branch`);
+    assert.equal(source.includes('splitFileDrawerStickyExitItems'), true, `${editor} should split Exit out of the File item list`);
+    assert.equal(source.includes('renderSharedFileDrawer(ctx, {'), true, `${editor} should render File with the shared drawer`);
+    assert.equal(source.includes("footerMode: exitItem ? 'exit-only' : 'none'") || source.includes("footerMode: 'exit-only'"), true, `${editor} should use the shared exit-only footer mode`);
+    assert.equal(source.includes('footerBottomPadding: SHARED_EDITOR_LEFT_MENU.panelPadding'), true, `${editor} should use shared footer inset`);
+    assert.equal(source.includes("layoutMode: 'auto-grid'"), true, `${editor} portrait File should use the shared two-column auto grid`);
+    assert.equal(source.includes('maxColumns: 2'), true, `${editor} portrait File should cap at two columns`);
+  });
+
+  assert.equal(actorEditorSource.includes("subRail.style.padding = '0';"), true, 'Actor File rail should not double-inset the shared footer');
+  assert.equal(actorEditorSource.includes("list.style.display = 'grid';"), true, 'Actor File list should use grid layout');
+  assert.equal(actorEditorSource.includes("list.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';"), true, 'Actor File list should use two columns');
+  assert.equal(actorEditorSource.includes('list.style.padding = `${SHARED_EDITOR_LEFT_MENU.panelPadding}px`;'), true, 'Actor File list should use shared inset');
+  assert.equal(actorEditorSource.includes('exitBtn.style.marginLeft = `${SHARED_EDITOR_LEFT_MENU.panelPadding}px`;'), true, 'Actor Exit should use shared left inset');
+  assert.equal(actorEditorSource.includes('exitBtn.style.marginRight = `${SHARED_EDITOR_LEFT_MENU.panelPadding}px`;'), true, 'Actor Exit should use shared right inset');
+  assert.equal(actorEditorSource.includes('exitBtn.style.marginBottom = `${SHARED_EDITOR_LEFT_MENU.panelPadding}px`;'), true, 'Actor Exit should use shared bottom inset');
+  assert.equal(actorEditorSource.includes('exitBtn.style.width = `calc(100% - ${SHARED_EDITOR_LEFT_MENU.panelPadding * 2}px)`;'), true, 'Actor Exit should match shared drawer width');
+  assert.equal(actorEditorSource.includes('exitBtn.style.minHeight = `${SHARED_EDITOR_LEFT_MENU.buttonHeightMobile}px`;'), true, 'Actor Exit should match shared drawer button height');
+  assert.equal(stylesSource.includes('.actor-editor-portrait-bottom-menu .actor-editor-file-subrail'), true, 'Actor portrait File rail should have portrait CSS');
+  assert.equal(stylesSource.includes('overflow-y: hidden;'), true, 'Actor portrait File rail should keep only the list scrollable');
+});
+
 test('editor file menu builders keep history commands out of File drawers', () => {
   const fileMenuBodies = [
     pixelStudioSource.slice(pixelStudioSource.indexOf('  getFilePanelItems()'), pixelStudioSource.indexOf('  ensureBoneNodeSelection()', pixelStudioSource.indexOf('  getFilePanelItems()'))),
     levelEditorSource.slice(levelEditorSource.indexOf('  getLevelFileMenuItems('), levelEditorSource.indexOf('  getLevelEditMenuItems()', levelEditorSource.indexOf('  getLevelFileMenuItems('))),
-    midiEditorSource.slice(midiEditorSource.indexOf('  getFileMenuItems()'), midiEditorSource.indexOf('  drawFilePanel(ctx, x, y, w, h)', midiEditorSource.indexOf('  getFileMenuItems()'))),
+    midiEditorSource.slice(midiEditorSource.indexOf('  getFileMenuItems({ portraitFileMenu = false } = {})'), midiEditorSource.indexOf('  drawFilePanel(ctx, x, y, w, h)', midiEditorSource.indexOf('  getFileMenuItems({ portraitFileMenu = false } = {})'))),
     sfxEditorSource.slice(sfxEditorSource.indexOf('  getSfxFileMenuItems()'), sfxEditorSource.indexOf('  getSfxEditMenuItems()', sfxEditorSource.indexOf('  getSfxFileMenuItems()'))),
     cutsceneEditorSource.slice(cutsceneEditorSource.indexOf("if (tabId === 'file') {"), cutsceneEditorSource.indexOf("    if (tabId === 'edit')", cutsceneEditorSource.indexOf("if (tabId === 'file') {"))),
     actorEditorSource.slice(actorEditorSource.indexOf('  getActorFileMenuItems()'), actorEditorSource.indexOf('  getActorEditMenuItems()', actorEditorSource.indexOf('  getActorFileMenuItems()'))),
@@ -4649,9 +4990,9 @@ test('editors use shared gamepad menu state instead of legacy landscape wrappers
 test('Actor portrait menu matches compact shared rail contract', () => {
   const model = buildActorPortraitMenuModel();
 
-  assert.deepEqual(model.rootTabs.map((tab) => tab.id), ['file', 'settings', 'states', 'preview']);
-  assert.deepEqual(model.bottomRailActions, ['menu', 'undo', 'redo', 'playtest']);
-  assert.equal(model.primaryActionLabel, 'Play Scene');
+  assert.deepEqual(model.rootTabs.map((tab) => tab.id), ['file', 'settings', 'states', 'preview', 'exit-main']);
+  assert.deepEqual(model.bottomRailActions, ['menu', 'undo', 'redo', 'context']);
+  assert.equal(model.primaryActionLabel, 'Actor');
   assertSharedPortraitRailActionCount(model.bottomRailActions.map((id) => ({ id })), { editor: 'actor' });
   assert.equal(model.rootTabs.some((tab) => tab.id === 'undo' || tab.id === 'redo'), false);
   assert.equal(model.rootTabs.some((tab) => tab.id === 'linked-parts'), false);
@@ -4660,7 +5001,117 @@ test('Actor portrait menu matches compact shared rail contract', () => {
   assert.equal(actorEditorSource.includes('subRail: layout.subRail'), true);
   assert.equal(actorEditorSource.includes('const sheetOpen = this.fileMenuOpen || this.actorPortraitMenuOpen || this.controllerMenu.active;'), true);
   assert.equal(actorEditorSource.includes('getSharedPortraitRailActionButtons(railBounds, actions, { reserveThumbstick: true })'), true);
+  assert.equal(actorEditorSource.includes('middleRail.appendChild(this.renderPortraitMiddleRail(portraitLayout.middleRail));'), true);
+  assert.equal(actorEditorSource.includes('renderPortraitMiddleRail(bounds = null)'), true);
+  assert.equal(actorEditorSource.includes("const ACTOR_OPAQUE_POPUP_FILL = '#080c14';"), true);
+  assert.equal(actorEditorSource.includes('menuSheet.style.background = ACTOR_OPAQUE_POPUP_FILL;'), true);
+  assert.equal(actorEditorSource.includes("menu.style.background = isPortraitMobile ? 'transparent' : UI_SUITE.colors.panel;"), true);
+  assert.equal(actorEditorSource.includes("menu.style.border = isPortraitMobile ? '0' : `1px solid ${UI_SUITE.colors.border}`;"), true);
+  assert.equal(actorEditorSource.includes('this.applyPortraitRailChrome(rail);'), true);
+  assert.equal(actorEditorSource.includes("rail.style.background = 'transparent';"), true);
+  assert.equal(actorEditorSource.includes("rail.style.border = '0';"), true);
+  assert.equal(actorEditorSource.includes('applySharedDomMenuButtonChrome(btn, {'), true);
+  assert.equal(actorEditorSource.includes('portrait: isPortraitMobile'), true);
+  assert.equal(actorEditorSource.includes("linear-gradient(to bottom, rgba(255,255,255,0.045), rgba(18,28,42,0.82))"), false);
+  assert.equal(actorEditorSource.includes("linear-gradient(to bottom, rgba(255,225,106,0.22), rgba(46,86,132,0.72))"), false);
+  assert.equal(actorEditorSource.includes("btn.style.background = active ? UI_SUITE.colors.accent : 'rgba(0,0,0,0.6)';"), false);
+  assert.equal(actorEditorSource.includes("menu: { id: 'menu', label: '☰', title: 'Menu', onClick: () => {"), true);
+  assert.equal(actorEditorSource.includes("menu: { id: 'menu', label: '☰', title: 'Menu', onClick: () => {\n        if (this.actorPortraitMenuOpen || this.fileMenuOpen) {\n          this.actorPortraitMenuOpen = false;\n          this.fileMenuOpen = false;\n        } else {\n          this.actorPortraitMenuOpen = false;\n          this.fileMenuOpen = true;"), true);
+  assert.equal(actorEditorSource.includes('if (opening) this.controllerMenu.closeToSurface();'), true);
+  assert.equal(actorEditorSource.includes("context: { id: 'context', label: 'Actor', title: 'Actor Context', onClick: () => {"), true);
   assert.equal(actorEditorSource.includes("btn.style.width = '54px';"), false);
+});
+
+test('Actor portrait Menu and File controls open a clean File-only sheet', () => {
+  const previousDocument = globalThis.document;
+  const makeNode = (tag) => {
+    const node = {
+      tag,
+      className: '',
+      textContent: '',
+      style: {},
+      dataset: {},
+      children: [],
+      attributes: {},
+      appendChild(child) {
+        this.children.push(child);
+        return child;
+      },
+      append(...children) {
+        children.forEach((child) => this.appendChild(child));
+      },
+      setAttribute(name, value) {
+        this.attributes[name] = String(value);
+      },
+      classList: {
+        add() {},
+        remove() {},
+        contains() { return false; }
+      }
+    };
+    return node;
+  };
+  const findButtons = (node, found = []) => {
+    if (node.tag === 'button') found.push(node);
+    node.children.forEach((child) => findButtons(child, found));
+    return found;
+  };
+  globalThis.document = { createElement: makeNode };
+  try {
+    const editor = new ActorEditor({});
+    let renders = 0;
+    editor.getViewportSize = () => ({ width: 390, height: 844 });
+    editor.resolveActorViewportMode = () => ({
+      isMobileViewport: true,
+      isMobilePortrait: true,
+      isDesktop: false
+    });
+    editor.render = () => { renders += 1; };
+
+    const quickRail = editor.renderPortraitMiddleRail({ x: 8, y: 748, w: 374, h: 88 });
+    const quickRailButtons = findButtons(quickRail);
+    assert.deepEqual(quickRailButtons.map((button) => button.textContent), ['☰', '↶', '↷', 'Actor']);
+    quickRailButtons.forEach((button) => {
+      assert.ok(Number.parseFloat(button.style.left) >= 0);
+      assert.ok(Number.parseFloat(button.style.left) + Number.parseFloat(button.style.width) <= 374);
+      assert.ok(Number.parseFloat(button.style.top) >= 0);
+      assert.ok(Number.parseFloat(button.style.top) + Number.parseFloat(button.style.height) <= 88);
+    });
+
+    quickRailButtons[0].onclick();
+    assert.equal(editor.fileMenuOpen, true);
+    assert.equal(editor.actorPortraitMenuOpen, false);
+    assert.equal(renders, 1);
+
+    quickRailButtons[0].onclick();
+    assert.equal(editor.fileMenuOpen, false);
+    assert.equal(editor.actorPortraitMenuOpen, false);
+    assert.equal(renders, 2);
+
+    quickRailButtons[3].onclick();
+    assert.equal(editor.fileMenuOpen, false);
+    assert.equal(editor.actorPortraitMenuOpen, true);
+    assert.equal(editor.activeMenuSection, 'actor');
+
+    const sidebarButtons = findButtons(editor.renderSidebarMenu());
+    const fileButton = sidebarButtons.find((button) => button.textContent === 'File');
+    assert.ok(fileButton);
+    fileButton.onclick();
+    assert.equal(editor.fileMenuOpen, true);
+    assert.equal(editor.actorPortraitMenuOpen, false);
+
+    fileButton.onclick();
+    assert.equal(editor.fileMenuOpen, false);
+    assert.equal(editor.actorPortraitMenuOpen, false);
+
+    const fileRoot = editor.buildControllerMenus().root.items.find((item) => item.id === 'file');
+    assert.ok(fileRoot);
+    fileRoot.onEnter();
+    assert.equal(editor.fileMenuOpen, true);
+    assert.equal(editor.actorPortraitMenuOpen, false);
+  } finally {
+    globalThis.document = previousDocument;
+  }
 });
 
 test('Actor desktop top menu renders app-style dropdown drawers', () => {
@@ -4836,7 +5287,7 @@ test('Actor gamepad mode replaces the left landscape rail with submenu slide-out
   assert.equal(actorEditorSource.includes('  getViewportSize(fallbackWidth = 0, fallbackHeight = 0) {'), true);
   assert.equal(actorEditorSource.includes('  resolveActorViewportMode(width = null, height = null) {'), true);
   assert.equal(actorEditorSource.includes('const viewportMode = this.resolveActorViewportMode(viewportW, viewportH);'), true);
-  assert.equal(actorEditorSource.includes('const viewportMode = this.resolveActorViewportMode();\n    const isPortraitPhone = viewportMode.isMobilePortrait;'), true);
+  assert.equal(actorEditorSource.includes('resetToFileMenu() {\n    this.fileMenuOpen = false;\n    this.actorPortraitMenuOpen = false;'), true);
   assert.equal(actorEditorSource.includes('const viewportMode = this.resolveActorViewportMode();\n    const isPortraitMobile = viewportMode.isMobilePortrait;'), true);
   assert.equal(actorEditorSource.includes('const isMobileViewport = this.resolveActorViewportMode().isMobileViewport;'), true);
   assert.equal(actorEditorSource.includes('const gamepadMenuState = this.getGamepadMenuState(viewportW, viewportH);'), true);
@@ -4912,7 +5363,7 @@ test('Actor landscape touch uses compact left rail, left root drawer, and right 
   assert.equal(renderBody.includes('const landscapeLayout = isMobileLandscape'), true);
   assert.equal(renderBody.includes('const landscapeLayout = isMobileLandscape && !shouldDrawGamepadSlideOut'), false);
   assert.equal(renderBody.includes('leftRailWidth: getSharedMobileRailWidth(viewportW, viewportH)'), false);
-  assert.equal(renderBody.includes('rightRailWidth: getSharedMobileRailWidth(viewportW, viewportH)'), true);
+  assert.equal(renderBody.includes('rightRailWidth:'), false);
   assert.equal(renderBody.includes('bottomRailHeight: ACTOR_LANDSCAPE_BOTTOM_RAIL_HEIGHT'), true);
   assert.equal(renderBody.includes('reserveRightRail: !shouldDrawGamepadSlideOut'), true);
   assert.equal(renderBody.includes('capRightRailToLeftRailHeight: true'), true);
@@ -4965,12 +5416,15 @@ test('Actor landscape touch uses compact left rail, left root drawer, and right 
   assert.equal(commandRailBody.includes("id: 'menu'"), true);
   assert.equal(commandRailBody.includes("id: 'undo', label: 'Undo'"), true);
   assert.equal(commandRailBody.includes("id: 'redo', label: 'Redo'"), true);
-  assert.equal(commandRailBody.includes("id: 'play-scene'"), true);
+  assert.equal(commandRailBody.includes("id: 'context'"), true);
+  assert.equal(commandRailBody.includes("label: 'Actor'"), true);
   assert.equal(drawerBody.includes('buildLandscapeRootDrawerGridLayout({'), true);
-  assert.equal(drawerBody.includes('ACTOR_CONTROLLER_ROOT_ENTRIES.forEach((entry, index) => {'), true);
+  assert.equal(drawerBody.includes('const roots = buildActorPortraitMenuModel().rootTabs;'), true);
+  assert.equal(drawerBody.includes('roots.forEach((entry, index) => {'), true);
+  assert.equal(drawerBody.includes("if (entry.id === 'exit-main')"), true);
   assert.equal(drawerBody.includes('this.landscapeRootDrawerOpen = true;'), true);
   assert.equal(drawerBody.includes('this.landscapeRootDrawerOpen = false;'), false);
-  assert.equal(drawerBody.includes("this.actorPortraitMenuOpen = true;"), true);
+  assert.equal(drawerBody.includes("this.actorPortraitMenuOpen = entry.id !== 'file';"), true);
   assert.equal(drawerBody.includes("display: 'block'"), true);
   assert.equal(drawerBody.includes("position: 'relative'"), true);
   assert.equal(drawerBody.includes("btn.style.position = 'absolute';"), true);
@@ -5012,7 +5466,7 @@ test('Cutscene gamepad mode replaces the left landscape rail with submenu slide-
   assert.equal(cutsceneEditorSource.includes('computeLayout(width, height, { gamepadMenuState = null } = {})'), true);
   assert.equal(landscapeBody.includes('const resolvedGamepadMenuState = gamepadMenuState || this.getGamepadMenuState(width, height);'), true);
   assert.equal(landscapeBody.includes('const gamepadSubmenuOnLeft = resolvedGamepadMenuState.drawSlideOut;'), true);
-  assert.equal(landscapeBody.includes('reserveRightRail: !gamepadSubmenuOnLeft && (this.landscapeRootDrawerOpen || this.menuOpen || this.clipOptionsOpen)'), true);
+  assert.equal(landscapeBody.includes('reserveRightRail: !gamepadSubmenuOnLeft'), true);
   assert.equal(landscapeBody.includes('reserveRightRail: !this.shouldDrawGamepadSubmenuOnLeft(width, height)'), false);
   assert.equal(drawBody.includes('if (gamepadMenuState.drawControllerOverlay) {'), true);
   assert.equal(cutsceneEditorSource.includes('this.bounds.gamepadMenuContent = list;'), true);
@@ -5042,8 +5496,11 @@ test('Cutscene landscape touch uses compact left rail, left root drawer, and rig
   assert.equal(cutsceneEditorSource.includes('railBounds: landscape.surfaces.toolOptions'), true);
   assert.equal(cutsceneEditorSource.includes('landscapeShell: landscape,'), true);
   assert.equal(cutsceneEditorSource.includes('leftMenuBounds: commandRail'), true);
-  assert.equal(cutsceneEditorSource.includes('reserveRightRail: !gamepadSubmenuOnLeft && (this.landscapeRootDrawerOpen || this.menuOpen || this.clipOptionsOpen)'), true);
+  assert.equal(cutsceneEditorSource.includes('reserveRightRail: !gamepadSubmenuOnLeft'), true);
+  assert.equal(cutsceneEditorSource.includes('rightRailWidth:'), false);
   assert.equal(cutsceneEditorSource.includes('capRightRailToLeftRailHeight: true'), true);
+  assert.equal(cutsceneEditorSource.includes('placeZoomBelowRightRail: true'), true);
+  assert.equal(cutsceneEditorSource.includes('zoomBounds: landscape.surfaces.zoom'), true);
   assert.equal(cutsceneEditorSource.includes("rootDrawerOverlayOrigin: 'left'"), false);
   assert.equal(cutsceneEditorSource.includes('const submenuDrawer = landscape.surfaces.submenu;'), true);
   assert.equal(cutsceneEditorSource.includes('const overlayDrawer = landscape.surfaces.overlayDrawer;'), true);
@@ -5077,7 +5534,10 @@ test('Cutscene landscape touch uses compact left rail, left root drawer, and rig
   assert.equal(cutsceneEditorSource.includes('scrolledGrid.items.forEach(({ index, bounds }) => {'), false);
   assert.equal(cutsceneEditorSource.includes('CUTSCENE_CONTROLLER_ROOTS.slice(this.landscapeRootScroll, this.landscapeRootScroll + visibleRows)'), false);
   assert.equal(cutsceneEditorSource.includes('const getCutsceneMenuLabel = (id, fallback = \'Add\') => CUTSCENE_DESKTOP_MENU_LABELS[id] || fallback;'), true);
-  assert.equal(cutsceneEditorSource.includes('const entry = CUTSCENE_CONTROLLER_ROOT_ENTRIES[index];'), true);
+  assert.equal(cutsceneEditorSource.includes('const roots = CUTSCENE_MENU_TABS;'), true);
+  assert.equal(cutsceneEditorSource.includes('itemCount: roots.length'), true);
+  assert.equal(cutsceneEditorSource.includes('const entry = roots[index];'), true);
+  assert.equal(cutsceneEditorSource.includes("if (rootId === 'exit-main')"), true);
   assert.equal(cutsceneEditorSource.includes('drawSharedMenuButtonLabel(ctx, button, entry.label || getCutsceneMenuLabel(id, id), { color, fontSize: 11, maxWidth: button.w - 8 });'), true);
   assert.equal(cutsceneEditorSource.includes("ctx.fillText(getCutsceneMenuLabel(this.activeMenuTab, 'Menu'), bounds.x + pad, bounds.y + 20, bounds.w - pad * 2);"), true);
   assert.equal(cutsceneEditorSource.includes('buildMenuScrollDragState'), true);
@@ -5110,7 +5570,7 @@ test('Cutscene landscape touch uses compact left rail, left root drawer, and rig
 test('Cutscene portrait menu exposes compact bottom-first roots and rail actions', () => {
   const model = buildCutscenePortraitMenuModel();
 
-  assert.deepEqual(model.rootTabs.map((tab) => tab.id), ['file', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio', 'settings']);
+  assert.deepEqual(model.rootTabs.map((tab) => tab.id), ['file', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio', 'settings', 'exit-main']);
   assert.deepEqual(model.bottomRailActions, ['menu', 'undo', 'redo', 'play']);
   assertSharedPortraitRailActionCount(model.bottomRailActions.map((id) => ({ id })), { editor: 'cutscene' });
   assert.equal(model.rootTabs.some((tab) => tab.id === 'edit'), false);
@@ -5121,7 +5581,8 @@ test('Cutscene portrait menu exposes compact bottom-first roots and rail actions
   assert.equal(cutsceneEditorSource.includes('rootTabs: shared.rootTabs'), true);
   assert.equal(cutsceneEditorSource.includes('const rootRail = isPortrait ? (bounds.rootTabs || bounds.rootRail || bounds) : bounds;'), true);
   assert.equal(cutsceneEditorSource.includes('const sheetContent = isPortrait ? (bounds.subRail || bounds.sheetContent || bounds) : bounds;'), true);
-  assert.equal(cutsceneEditorSource.includes('const items = this.getMenuItems().filter((item) => !item.divider && !item.separator);'), true);
+  assert.equal(cutsceneEditorSource.includes('const rawItems = this.getMenuItems();'), true);
+  assert.equal(cutsceneEditorSource.includes('const items = rawItems.filter((item) => !item.divider && !item.separator);'), true);
 });
 
 test('Cutscene desktop keeps transport in the left column instead of a bottom rail', () => {
@@ -5360,8 +5821,8 @@ test('Cutscene file menu uses the shared editor file menu model', () => {
   assert.equal(cutsceneEditorSource.includes("const CUTSCENE_CONTROLLER_ROOTS = getEditorControllerRootMenuIds('cutscene');"), true);
   assert.equal(cutsceneEditorSource.includes('items: CUTSCENE_CONTROLLER_ROOT_ENTRIES.map(rootItem)'), true);
   assert.equal(cutsceneEditorSource.includes('...Object.fromEntries(CUTSCENE_CONTROLLER_ROOT_ENTRIES.map((entry) => [entry.id, menuForTab(entry.id)]))'), true);
-  assert.equal(cutsceneEditorSource.includes('itemCount: CUTSCENE_CONTROLLER_ROOT_ENTRIES.length'), true);
-  assert.equal(cutsceneEditorSource.includes('const entry = CUTSCENE_CONTROLLER_ROOT_ENTRIES[index];'), true);
+  assert.equal(cutsceneEditorSource.includes('itemCount: roots.length'), true);
+  assert.equal(cutsceneEditorSource.includes('const entry = roots[index];'), true);
   assert.equal(cutsceneEditorSource.includes("toolsMenuId: 'stage'"), true);
   assert.equal(cutsceneEditorSource.includes("toolsMenuId: 'settings'"), false);
   assert.equal(editorMenuSpecSource.includes("root: ['file', 'edit', 'view', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio', 'settings']"), false);
@@ -5499,7 +5960,7 @@ test('Actor collision editor thumbstick follows the shared touch surface contrac
   assert.equal(collisionBlock.includes("&& canRenderEditorSurface(collisionViewportMode.mode, 'touch-thumbstick')"), true);
 });
 
-test('Actor editor shared DOM controls use rounded tokenized chrome', () => {
+test('Actor editor portrait DOM controls use consolidated square button chrome', () => {
   assert.equal(stylesSource.includes('--ui-bg: #07090e;'), true);
   assert.equal(stylesSource.includes('--ui-panel: rgba(8, 12, 20, 0.88);'), true);
   assert.equal(stylesSource.includes('--ui-panel-alt: rgba(18, 28, 42, 0.82);'), true);
@@ -5514,9 +5975,32 @@ test('Actor editor shared DOM controls use rounded tokenized chrome', () => {
   assert.equal(stylesSource.includes('--editor-accent: var(--ui-accent);'), true);
   assert.equal(stylesSource.includes('--editor-accent-2: var(--ui-accent-2);'), true);
   assert.equal(stylesSource.includes('--editor-top-bar-height: 40px;'), true);
-  assert.equal(stylesSource.includes('.actor-editor-btn { min-height: 36px; background: linear-gradient(to bottom, rgba(255,255,255,0.045), rgba(18,28,42,0.82)); color: var(--ui-text); border: 1px solid var(--ui-border); border-left: 4px solid rgba(111,171,231,0.72); border-radius: 6px;'), true);
-  assert.equal(stylesSource.includes('.actor-editor-btn.active { background: linear-gradient(to bottom, rgba(255,225,106,0.22), rgba(46,86,132,0.72)); border-left-color: var(--ui-accent); color: #ffffff; }'), true);
+  assert.equal(stylesSource.includes('--editor-portrait-button-radius: 0;'), true);
+  assert.equal(stylesSource.includes('--editor-portrait-button-fill: rgba(18,28,42,0.82);'), true);
+  assert.equal(stylesSource.includes('--editor-portrait-button-highlight: rgba(255,255,255,0.045);'), true);
+  assert.equal(stylesSource.includes('--editor-portrait-button-active-fill: rgba(46,86,132,0.72);'), true);
+  assert.equal(stylesSource.includes('--editor-portrait-button-active-highlight: rgba(255,225,106,0.22);'), true);
+  assert.equal(stylesSource.includes('--editor-portrait-button-accent: rgba(111,171,231,0.72);'), true);
+  assert.equal(stylesSource.includes('--editor-portrait-button-active-accent: var(--ui-accent);'), true);
+  assert.equal(actorEditorSource.includes('applySharedDomMenuButtonChrome(btn, {'), true);
+  assert.equal(actorEditorSource.includes('portrait: isPortraitMobile'), true);
+  assert.equal(stylesSource.includes('.actor-editor-btn { min-height: 36px; background-color: rgba(18,28,42,0.82); background-image: linear-gradient(to bottom, rgba(255,255,255,0.045) 0 50%, transparent 50% 100%); color: var(--ui-text); border: 1px solid var(--ui-border); border-left: 4px solid rgba(111,171,231,0.72); border-radius: 6px;'), true);
+  assert.equal(stylesSource.includes('.actor-editor-portrait-bottom-menu .actor-editor-btn,\n  .actor-editor-portrait-quickrail .actor-editor-btn {\n    border-left: 4px solid var(--editor-portrait-button-accent) !important;\n    border-radius: var(--editor-portrait-button-radius) !important;\n    box-shadow: none;\n  }'), true);
+  assert.equal(stylesSource.includes('.actor-editor-overlay .actor-editor-center .actor-editor-btn {\n    border: 1px solid var(--editor-portrait-button-border);\n    border-left: 4px solid var(--editor-portrait-button-accent);\n    border-radius: var(--editor-portrait-button-radius);'), true);
+  assert.equal(stylesSource.includes('.actor-editor-overlay .actor-editor-center .actor-editor-btn.active,\n  .actor-editor-overlay .actor-editor-center .actor-editor-btn:not(:disabled):hover,\n  .actor-editor-overlay .actor-editor-center .actor-editor-btn:not(:disabled):focus-visible {\n    border-color: rgba(255,225,106,0.42);'), true);
+  assert.equal(stylesSource.includes('border-left-color: var(--editor-portrait-button-active-accent);'), true);
+  assert.equal(stylesSource.includes('.actor-editor-btn.active { background-color: rgba(46,86,132,0.72); background-image: linear-gradient(to bottom, rgba(255,225,106,0.22) 0 50%, transparent 50% 100%); border-left-color: var(--ui-accent); color: #ffffff; }'), true);
+  assert.equal(stylesSource.includes('background: linear-gradient(to bottom, var(--editor-portrait-button-highlight), var(--editor-portrait-button-fill));'), false);
+  assert.equal(stylesSource.includes('background-color: var(--editor-portrait-button-fill);'), true);
+  assert.equal(stylesSource.includes('background-image: linear-gradient(to bottom, var(--editor-portrait-button-highlight) 0 50%, transparent 50% 100%);'), true);
+  assert.equal(stylesSource.includes('background-color: var(--editor-portrait-button-active-fill);'), true);
+  assert.equal(stylesSource.includes('background-image: linear-gradient(to bottom, var(--editor-portrait-button-active-highlight) 0 50%, transparent 50% 100%);'), true);
+  assert.equal(stylesSource.includes('.actor-editor-overlay .actor-editor-center {\n    border: 0;\n    background: transparent;'), true);
   assert.equal(stylesSource.includes('.actor-editor-card { background: var(--ui-panel); border: 1px solid var(--ui-border); padding: 12px; border-radius: 6px; }'), true);
+  assert.equal(stylesSource.includes('.actor-editor-overlay .actor-editor-card {\n    background: #080c14;\n    border: 1px solid var(--editor-portrait-button-border);\n    padding: 8px;\n    border-radius: var(--editor-portrait-button-radius);'), true);
+  assert.equal(stylesSource.includes('.actor-editor-overlay .actor-editor-field.focused {\n    border-radius: var(--editor-portrait-button-radius);\n    border-color: rgba(255,225,106,0.42);'), true);
+  assert.equal(stylesSource.includes('.actor-editor-overlay .actor-editor-toggle {\n    min-height: 44px;\n    border: 1px solid var(--editor-portrait-button-border);\n    border-left: 4px solid var(--editor-portrait-button-accent);\n    border-radius: var(--editor-portrait-button-radius);'), true);
+  assert.equal(stylesSource.includes('.actor-editor-overlay .actor-editor-toggle:hover,\n  .actor-editor-overlay .actor-editor-toggle:focus-within {\n    border-color: rgba(255,225,106,0.42);'), true);
   assert.equal(stylesSource.includes('actor-editor-card input, .actor-editor-card select { min-height: 40px; background: rgba(18,28,42,0.82); color: var(--ui-text); border: 1px solid var(--ui-border); padding: 8px; border-radius: 6px;'), true);
   assert.equal(stylesSource.includes('.actor-editor-state-row, .actor-editor-list-row { display: flex; gap: 10px; align-items: center; background: rgba(18,28,42,0.72); border: 1px solid var(--ui-border); padding: 10px; border-radius: 6px; }'), true);
   assert.equal(stylesSource.includes('.actor-editor-gamepad-hint {\n  min-height: 30px;'), true);
@@ -5525,7 +6009,48 @@ test('Actor editor shared DOM controls use rounded tokenized chrome', () => {
   assert.equal(stylesSource.includes('.actor-editor-gamepad-slideout {\n  background: var(--ui-panel);\n  border: 1px solid var(--ui-border);'), true);
   assert.equal(stylesSource.includes('.actor-editor-gamepad-slideout-title {\n  color: var(--ui-accent);'), true);
   assert.equal(stylesSource.includes('.actor-editor-gamepad-slideout-hint {\n  color: var(--ui-muted);'), true);
-  assert.equal(stylesSource.includes('.actor-editor-portrait-bottom-menu .actor-editor-btn {\n  min-height: 44px;\n  border-radius: 6px;'), true);
+  assert.equal(stylesSource.includes('.actor-editor-portrait-bottom-menu .actor-editor-btn {\n  min-height: 44px;\n  border-radius: 6px;'), false);
+});
+
+test('all portrait editor button wrappers consume one shared square chrome source', () => {
+  assert.equal(SHARED_EDITOR_MENU_BUTTON_CHROME.radius, 0);
+  assert.equal(SHARED_EDITOR_MENU_BUTTON_CHROME.border, UI_SUITE.colors.border);
+  assert.equal(SHARED_EDITOR_MENU_BUTTON_CHROME.fill, 'rgba(18,28,42,0.82)');
+  assert.equal(SHARED_EDITOR_MENU_BUTTON_CHROME.highlight, 'rgba(255,255,255,0.045)');
+  assert.equal(SHARED_EDITOR_MENU_BUTTON_CHROME.activeFill, 'rgba(46,86,132,0.72)');
+  assert.equal(SHARED_EDITOR_MENU_BUTTON_CHROME.activeHighlight, 'rgba(255,225,106,0.22)');
+  assert.equal(SHARED_EDITOR_MENU_BUTTON_CHROME.accent, 'rgba(111,171,231,0.72)');
+  assert.equal(SHARED_EDITOR_MENU_BUTTON_CHROME.activeAccent, UI_SUITE.colors.accent);
+  assert.equal(SHARED_EDITOR_MENU_BUTTON_CHROME.accentWidth, 4);
+  assert.equal(uiSuiteSource.includes('export function drawSharedMenuButtonChrome(ctx, bounds'), true);
+  assert.equal(uiSuiteSource.includes('const chrome = SHARED_EDITOR_MENU_BUTTON_CHROME;'), true);
+  assert.equal(uiSuiteSource.includes('export function applySharedDomMenuButtonChrome(element'), true);
+  assert.equal(uiSuiteSource.includes('element.style.backgroundColor = active ? chrome.activeFill : chrome.fill;'), true);
+  assert.equal(uiSuiteSource.includes('element.style.backgroundImage = active'), true);
+  assert.equal(uiSuiteSource.includes('transparent 50% 100%'), true);
+  assert.equal(uiSuiteSource.includes('element.style.background = active'), false);
+
+  const canvasWrappers = [
+    ['Pixel', pixelStudioSource.slice(pixelStudioSource.indexOf('  drawButton(ctx, bounds, label, active = false, options = {})'), pixelStudioSource.indexOf('  getDesktopRootIdForPanel', pixelStudioSource.indexOf('  drawButton(ctx, bounds, label, active = false, options = {})')))],
+    ['Level', levelEditorSource.slice(levelEditorSource.indexOf('const drawButton = (x, y, w, h, label, active'), levelEditorSource.indexOf('    const drawSlider', levelEditorSource.indexOf('const drawButton = (x, y, w, h, label, active')))],
+    ['MIDI', midiEditorSource.slice(midiEditorSource.indexOf('  drawButton(ctx, bounds, label, active, subtle'), midiEditorSource.indexOf('  drawSmallButton(ctx, bounds, label, active)', midiEditorSource.indexOf('  drawButton(ctx, bounds, label, active, subtle')))],
+    ['SFX', sfxEditorSource.slice(sfxEditorSource.indexOf('  drawButton(ctx, bounds, label, active = false'), sfxEditorSource.indexOf('  shouldRegisterControlBounds(bounds)', sfxEditorSource.indexOf('  drawButton(ctx, bounds, label, active = false')))],
+    ['Cutscene', cutsceneEditorSource.slice(cutsceneEditorSource.indexOf('  drawActionButton(ctx, bounds, action)'), cutsceneEditorSource.indexOf('  drawAudioTrackPanel(ctx, bounds)', cutsceneEditorSource.indexOf('  drawActionButton(ctx, bounds, action)')))],
+    ['Race/Car', raceEditorSource.slice(raceEditorSource.indexOf('  drawButton(ctx, bounds, label, active = false'), raceEditorSource.indexOf('  draw(ctx, width, height)', raceEditorSource.indexOf('  drawButton(ctx, bounds, label, active = false')))],
+    ['Doodad', doodadEditorSource.slice(doodadEditorSource.indexOf('  drawButton(ctx, bounds, label, active = false'), doodadEditorSource.indexOf('  registerButton(ctx, bounds, action)', doodadEditorSource.indexOf('  drawButton(ctx, bounds, label, active = false')))]
+  ];
+  canvasWrappers.forEach(([editor, body]) => {
+    assert.ok(body.length > 0, `${editor} should expose an inspected button wrapper`);
+    assert.equal(body.includes('drawSharedMenuButtonChrome(ctx'), true, `${editor} should draw button chrome through the shared primitive`);
+    assert.equal(body.includes('roundRect'), false, `${editor} portrait buttons should not use rounded local chrome`);
+    assert.equal(body.includes('borderRadius'), false, `${editor} portrait buttons should not use DOM radius values in canvas wrappers`);
+    assert.equal(body.includes('alpha:'), false, `${editor} should not customize shared portrait button opacity`);
+  });
+
+  assert.equal(actorEditorSource.includes('applySharedDomMenuButtonChrome(btn, {'), true);
+  assert.equal(actorEditorSource.includes("btn.style.borderRadius = '0';"), false);
+  assert.equal(actorEditorSource.includes('rgba(111,171,231,0.72)'), false);
+  assert.equal(actorEditorSource.includes('linear-gradient(to bottom, rgba(255,255,255,0.045), rgba(18,28,42,0.82))'), false);
 });
 
 test('shared editor canvas theme matches RTG Studio main menu palette', () => {
@@ -5892,7 +6417,11 @@ test('Actor portrait removes variant preview rail and keeps graph/collision cont
   assert.equal(actorEditorSource.includes(': this.renderRightRail();'), true);
   assert.equal(actorEditorSource.includes('if (rightRailContent) menuSheet.appendChild(rightRail);'), true);
   assert.equal(actorEditorSource.includes("this.actorPortraitMenuOpen = !(isPortraitMobile && id === 'actor');"), true);
-  assert.equal(actorEditorSource.includes("this.actorPortraitMenuOpen = true;\n          this.fileMenuOpen = false;\n          this.activeMenuSection = 'actor';"), true);
+  assert.equal(actorEditorSource.includes("this.actorPortraitMenuOpen = false;\n          this.fileMenuOpen = true;\n          this.activeMenuSection = 'actor';"), true);
+  assert.equal(actorEditorSource.includes("this.fileMenuOpen = opening;\n      this.actorPortraitMenuOpen = false;"), true);
+  assert.equal(actorEditorSource.includes("if (menuId === 'file') {\n      this.fileMenuOpen = true;\n      this.actorPortraitMenuOpen = false;"), true);
+  assert.equal(actorEditorSource.includes("this.fileMenuOpen = id === 'file';\n        this.actorPortraitMenuOpen = id !== 'file';"), true);
+  assert.equal(actorEditorSource.includes("context: { id: 'context', label: 'Actor', title: 'Actor Context', onClick: () => {\n        this.actorPortraitMenuOpen = true;\n        this.fileMenuOpen = false;\n        this.activeMenuSection = 'actor';"), true);
 });
 
 test('Actor desktop collision body damage focuses contact damage settings', () => {

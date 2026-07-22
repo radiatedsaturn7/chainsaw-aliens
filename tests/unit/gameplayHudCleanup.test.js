@@ -154,9 +154,10 @@ test('level editor portrait menu button has no open-menu tooltip text', () => {
 });
 
 test('level editor portrait menu button toggles the drawer and mobile tooltips stay off bottom overlay', () => {
-  assert.equal(levelEditorSource.includes("this.drawer.open = !this.drawer.open"), true);
-  assert.equal(levelEditorSource.includes("button.tooltip && !this.isMobileLayout()"), true);
-  assert.equal(levelEditorSource.includes("!this.isMobileLayout() && this.tooltipTimer > 0 ? this.activeTooltip : ''"), true);
+  assert.equal(levelEditorSource.includes('const opening = !this.drawer.open;'), true);
+  assert.equal(levelEditorSource.includes('this.drawer.open = opening;'), true);
+  assert.equal(levelEditorSource.includes("button.tooltip && this.activeViewportMode === 'desktop'"), true);
+  assert.equal(levelEditorSource.includes("this.activeViewportMode === 'desktop' && this.tooltipTimer > 0 ? this.activeTooltip : ''"), true);
 });
 
 test('level editor adds in-panel portrait guidance for music and triggers', () => {
@@ -208,7 +209,7 @@ test('midi portrait paths use real mixer and portrait record layout', () => {
   assert.equal(midiComposerSource.includes("this.drawButton(ctx, this.bounds.record, this.recorder.isRecording ? 'Stop Rec' : 'Record'"), true);
   assert.equal(midiComposerSource.includes("layoutMode: options.layoutMode || (options.isMobile && items.length > 4 ? 'auto-grid' : 'list')"), true);
   assert.equal(midiComposerSource.includes("portraitGrid: true"), true);
-  assert.equal(midiComposerSource.includes('const rootEntries = buildMidiSharedRootMenuEntries();'), true);
+  assert.equal(midiComposerSource.includes('const rootEntries = buildMidiPortraitRootTabs();'), true);
   assert.equal(midiComposerSource.includes("const MIDI_CONTROLLER_ROOT_ENTRIES = getEditorControllerRootMenuEntries('midi');"), true);
   assert.equal(midiComposerSource.includes("'virtual-instruments': 'virtual-instruments'"), true);
   assert.equal(midiComposerSource.includes("drawMidiPortraitGridQuickStrip"), true);
@@ -249,7 +250,7 @@ test('midi portrait paths use real mixer and portrait record layout', () => {
   assert.equal(midiComposerSource.includes("clearMidiPortraitDrawerBounds()"), true);
   assert.equal(midiComposerSource.includes("this.fileMenuListBounds = null;"), true);
   assert.equal(midiComposerSource.includes("if (!sheetOpen) {\n        this.clearMidiPortraitDrawerBounds();"), true);
-  assert.equal(midiComposerSource.includes("const isPortraitMainWorkspace = isMobilePortraitLayout"), true);
+  assert.equal(midiComposerSource.includes("const isPortraitMainWorkspace = this.activeViewportMode === 'portrait'"), true);
   assert.equal(midiComposerSource.includes("const portraitSheetBlocksInput = this.mobilePortraitMenuSheetBounds"), true);
   assert.equal(midiComposerSource.includes("const footerLift = liftPickerFooter ? 56 : 0;"), true);
   assert.equal(midiComposerSource.includes("drawMobileBottomRail(ctx, x, y, w, h, track) {\n    this.bounds.railInstruments = null"), true);

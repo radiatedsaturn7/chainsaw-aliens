@@ -1,3 +1,10 @@
+import {
+  UI_SUITE,
+  drawSharedMenuButtonChrome,
+  drawSharedMenuButtonLabel,
+  normalizeSharedControlBounds
+} from './uiSuite.js';
+
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 const NOTE_CHOICES = Array.from({ length: 72 }, (_, index) => index + 24);
@@ -167,7 +174,9 @@ export default class RecordModeLayout {
     nowPlaying,
     nowPlayingPlacement = 'instrument',
     showSettingsRail = true,
-    hideInstrumentConfig = false
+    hideInstrumentConfig = false,
+    instrumentModalViewportBounds = null,
+    hideInstrumentModal = false
   }) {
     const { instrument } = this.bounds;
     if (!instrument) return;
@@ -195,28 +204,28 @@ export default class RecordModeLayout {
     }
 
     this.hideInstrumentConfig = hideInstrumentConfig;
+    this.instrumentModalViewportBounds = instrumentModalViewportBounds;
     this.drawStickIndicators(ctx, stickIndicators);
     this.drawNowPlayingModal(ctx, nowPlaying, nowPlayingPlacement);
-    this.drawInstrumentModal(ctx);
+    if (!hideInstrumentModal) {
+      this.drawInstrumentModal(ctx);
+      this.instrumentModalViewportBounds = null;
+    }
 
     ctx.restore();
   }
 
   drawButton(ctx, bounds, label, active) {
-    ctx.fillStyle = active ? '#ffe16a' : 'rgba(0,0,0,0.6)';
-    ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.fillStyle = active ? '#111' : '#fff';
+    const controlBounds = normalizeSharedControlBounds(bounds);
+    Object.assign(bounds, controlBounds);
+    const color = drawSharedMenuButtonChrome(ctx, controlBounds, { active });
     const fontSize = clamp(Math.round(bounds.h * 0.45), 12, 16);
-    ctx.font = `${fontSize}px Courier New`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
     const padding = Math.max(6, Math.round(bounds.h * 0.2));
-    const clippedLabel = this.truncateLabel(ctx, label, Math.max(0, bounds.w - padding * 2));
-    ctx.fillText(clippedLabel, bounds.x + bounds.w / 2, bounds.y + bounds.h / 2);
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
+    drawSharedMenuButtonLabel(ctx, controlBounds, label, {
+      fontSize,
+      color,
+      maxWidth: Math.max(0, controlBounds.w - padding * 2)
+    });
   }
 
   truncateLabel(ctx, label, maxWidth) {
@@ -279,18 +288,15 @@ export default class RecordModeLayout {
 
     const drawConfigButton = (id, label, value, x, buttonY, w, options = {}) => {
       const bounds = { id, x, y: buttonY, w, h: rowH, ...options };
-      ctx.fillStyle = 'rgba(0,0,0,0.6)';
-      ctx.fillRect(x, buttonY, w, rowH);
-      ctx.strokeStyle = this.instrumentDropdown?.id === id ? '#ffe16a' : 'rgba(255,255,255,0.25)';
-      ctx.strokeRect(x, buttonY, w, rowH);
-      ctx.fillStyle = 'rgba(255,255,255,0.72)';
-      ctx.font = '10px Courier New';
+      const color = drawSharedMenuButtonChrome(ctx, bounds, { active: this.instrumentDropdown?.id === id });
+      ctx.fillStyle = color;
+      ctx.font = `10px ${UI_SUITE.font.family}`;
       ctx.textAlign = 'left';
       ctx.fillText(label, x + 8, buttonY + 11);
-      ctx.fillStyle = '#fff';
-      ctx.font = '13px Courier New';
+      ctx.fillStyle = color;
+      ctx.font = `13px ${UI_SUITE.font.family}`;
       ctx.fillText(value, x + 8, buttonY + rowH - 8);
-      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.fillStyle = color;
       ctx.textAlign = 'right';
       ctx.fillText('v', x + w - 8, buttonY + rowH - 11);
       ctx.textAlign = 'left';
@@ -369,9 +375,9 @@ export default class RecordModeLayout {
     const x = clamp(anchor.x, modal.x + 10, modal.x + modal.w - listW - 10);
     const y = clamp(anchor.y + anchor.h + 4, modal.y + 44, modal.y + modal.h - listH - 10);
     ctx.save();
-    ctx.fillStyle = 'rgba(7,8,10,0.98)';
+    ctx.fillStyle = UI_SUITE.colors.panel;
     ctx.fillRect(x, y, listW, listH);
-    ctx.strokeStyle = '#ffe16a';
+    ctx.strokeStyle = UI_SUITE.colors.accent;
     ctx.strokeRect(x, y, listW, listH);
     this.bounds.instrumentDropdownItems = choices.map((choice, index) => {
       const col = index % columns;
@@ -388,14 +394,13 @@ export default class RecordModeLayout {
       const active = source.kind === 'keyboard-octave'
         ? choice === this.instrumentSettings.keyboardStartOctave
         : choice === this.instrumentSettings[`${source.instrument}Tuning`]?.[source.stringIndex];
-      ctx.fillStyle = active ? '#ffe16a' : 'rgba(255,255,255,0.04)';
-      ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-      ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-      ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-      ctx.fillStyle = active ? '#111' : '#fff';
-      ctx.font = '11px Courier New';
-      ctx.textAlign = 'center';
-      ctx.fillText(label, bounds.x + bounds.w / 2, bounds.y + 18);
+      const color = drawSharedMenuButtonChrome(ctx, bounds, { active });
+      drawSharedMenuButtonLabel(ctx, bounds, label, {
+        fontSize: 11,
+        color,
+        maxWidth: Math.max(0, bounds.w - 8),
+        y: bounds.y + bounds.h / 2
+      });
       return bounds;
     });
     ctx.textAlign = 'left';
@@ -407,11 +412,12 @@ export default class RecordModeLayout {
     if (!this.instrumentMenuOpen) return;
     const { instrument } = this.bounds;
     if (!instrument) return;
+    const modalViewport = this.instrumentModalViewportBounds || instrument;
     ctx.save();
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    ctx.fillRect(instrument.x, instrument.y, instrument.w, instrument.h);
+    ctx.fillRect(modalViewport.x, modalViewport.y, modalViewport.w, modalViewport.h);
 
-    const modalW = Math.min(520, instrument.w - 24);
+    const modalW = Math.min(520, modalViewport.w - 24);
     const instruments = this.availableInstruments;
     const gap = 10;
     const minButtonW = 96;
@@ -421,9 +427,9 @@ export default class RecordModeLayout {
     const configRows = this.hideInstrumentConfig ? 0 : this.instrument === 'guitar' ? 4 : this.instrument === 'bass' ? 3 : this.instrument === 'keyboard' ? 2 : 0;
     const configH = configRows ? 22 + configRows * (this.header.rowH + gap) + 8 : 0;
     const modalContentH = titleH + rows * this.header.rowH + Math.max(0, rows - 1) * gap + configH + 24;
-    const modalH = Math.min(instrument.h - 24, Math.max(150, modalContentH));
-    const modalX = instrument.x + (instrument.w - modalW) / 2;
-    const modalY = instrument.y + (instrument.h - modalH) / 2;
+    const modalH = Math.min(modalViewport.h - 24, Math.max(150, modalContentH));
+    const modalX = modalViewport.x + (modalViewport.w - modalW) / 2;
+    const modalY = modalViewport.y + (modalViewport.h - modalH) / 2;
     this.instrumentModalBounds = { x: modalX, y: modalY, w: modalW, h: modalH };
     ctx.fillStyle = 'rgba(12,14,18,0.96)';
     ctx.fillRect(modalX, modalY, modalW, modalH);

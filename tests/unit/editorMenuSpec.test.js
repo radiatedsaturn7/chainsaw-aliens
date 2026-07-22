@@ -305,7 +305,7 @@ test('menu spec validation catches misordered desktop File and Edit baselines', 
   ]);
 });
 
-test('menu spec validation keeps Exit to Main Menu as the final File command', () => {
+test('menu spec validation keeps Exit as the final File command', () => {
   const spec = structuredClone(EDITOR_MENU_SPECS.midi);
   spec.sections.file.actions = [
     'new',
@@ -537,7 +537,7 @@ test('shared editor menu specs keep File, Edit, and View as required desktop roo
       DESKTOP_FILE_BASELINE_ACTION_IDS,
       `${editorId} file menu should use the shared desktop file order`
     );
-    assert.equal(spec.sections.file.actions.at(-1), DESKTOP_FILE_FOOTER_ACTION_ID, `${editorId} file menu should end with Exit to Main Menu`);
+    assert.equal(spec.sections.file.actions.at(-1), DESKTOP_FILE_FOOTER_ACTION_ID, `${editorId} file menu should end with Exit`);
     REQUIRED_EDIT_ACTION_IDS.forEach((actionId) => {
       assert.ok(spec.sections.edit.actions.includes(actionId), `${editorId} edit menu should include ${actionId}`);
     });

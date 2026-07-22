@@ -62,7 +62,7 @@ import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { openChoiceOverlay, openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
 import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, canRenderEditorPlanSurface, canRenderEditorSurface, createDesktopDropdownCommandHit, createDesktopRootMenuHit, createPendingDesktopDropdownHit, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
-import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopControllerMenuIdForSection, getEditorDesktopLeftContextRoles, getEditorDesktopRootIdForSection, getEditorDesktopSectionId, getEditorPortraitRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
+import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopControllerMenuIdForSection, getEditorDesktopLeftContextRoles, getEditorDesktopRootIdForSection, getEditorDesktopSectionId, getEditorPortraitRootMenuEntries, getEditorTouchRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
 import { drawSharedMobileZoomSlider, getSharedMobileZoomSliderLayout } from './shared/mobileZoomSlider.js';
 import { ensurePixelArtStore, ensurePixelPreviewFrame, ensurePixelTileData } from '../editor/adapters/editorDataContracts.js';
 import { resolveActorArtFrameDurationMs } from '../entities/ScriptedActor.js';
@@ -536,7 +536,7 @@ export function getPixelQuantizedSvSampleAt(hue, xRatio, yRatio, levels = 32) {
 
 export function buildPixelPortraitMenuModel() {
   return {
-    rootTabs: getEditorPortraitRootMenuEntries('pixel', {
+    rootTabs: getEditorTouchRootMenuEntries('pixel', {
       labelOverrides: { file: SHARED_EDITOR_LEFT_MENU.fileLabel }
     }),
     toolTabs: [
@@ -1892,7 +1892,7 @@ export default class PixelStudio {
     this.activeViewportMode = viewportMode.mode;
     const isMobile = viewportMode.isMobileViewport;
     const desktop = viewportMode.isDesktop;
-    const portrait = viewportMode.isPortrait;
+    const portrait = viewportMode.isMobilePortrait;
     const gamepad = viewportMode.isGamepad;
     if (desktop) resetSharedThumbstickState(this.panJoystick);
     const tileLandscapeMenuOpen = !desktop && !portrait && !gamepad && this.mobileDrawer === 'panel';
@@ -1901,7 +1901,7 @@ export default class PixelStudio {
         viewportWidth: width,
         viewportHeight: height,
         bottomRailHeight: 72,
-        reserveRightRail: tileLandscapeMenuOpen,
+        reserveRightRail: true,
         reserveThumbstickSpace: true
       })
       : null;
@@ -1949,6 +1949,7 @@ export default class PixelStudio {
     }
     const rowH = portrait ? 112 : 80;
     const previewSize = portrait ? 34 : 24;
+    let tilePortraitLayout = null;
     const listOuter = portrait
       ? (() => {
         const layout = getSharedMobilePortraitEditorLayout(width, height, {
@@ -1958,6 +1959,7 @@ export default class PixelStudio {
           minMainHeight: 220,
           sheetRatio: 0.32
         });
+        tilePortraitLayout = layout;
         const railLayout = getSharedPortraitActionRailLayout(layout.middleRail);
         if (canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick')) {
           this.panJoystick.center = railLayout.thumbstickCenter;
@@ -1977,7 +1979,7 @@ export default class PixelStudio {
             reserveThumbstick: canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick'),
             drawButton: (bounds, action) => {
               this.drawButton(ctx, bounds, action.label, Boolean(action.active), {
-                fontSize: action.primary ? 12 : 14,
+                fontSize: UI_SUITE.font.size,
                 disabled: Boolean(action.disabled)
               });
               if (!action.disabled) {
@@ -1989,6 +1991,7 @@ export default class PixelStudio {
         } else if (canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick')) {
           drawSharedThumbstick(ctx, this.panJoystick);
         }
+        this.mobileDrawerBounds = this.mobileDrawer === 'panel' ? { ...layout.menuSheet } : null;
         return {
           x: layout.mainEditor.x + 10,
           y: layout.mainEditor.y + 56,
@@ -2021,15 +2024,16 @@ export default class PixelStudio {
           const tileRootRailSurface = canRenderTileLandscapeRootRail ? tileLandscapeShell.surfaces.compactCommandRail : null;
           const tileBottomRailSurface = canRenderTileLandscapeBottomRail ? tileLandscapeShell.surfaces.toolOptions : null;
           const tileRootDrawerSurface = canRenderTileLandscapeRootDrawer ? tileLandscapeShell.surfaces.rootDrawer : null;
-          const tileSubmenuSurface = canRenderTileLandscapeRightSubmenu ? tileLandscapeShell.surfaces.rightDrawer : null;
+          const tileSubmenuSurface = canRenderTileLandscapeRightSubmenu ? tileLandscapeShell.surfaces.submenu : null;
           if (tileRootRailSurface) this.drawTileLandscapeRail(ctx, tileRootRailSurface);
           if (tileBottomRailSurface) this.drawTileLandscapeBottomRail(ctx, tileBottomRailSurface);
           const surface = tileLandscapeShell.surfaces.workSurface;
           drawSharedPanel(ctx, surface, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
           if (tileLandscapeMenuOpen) {
             if (tileRootDrawerSurface) this.drawTileLandscapeRootDrawer(ctx, tileRootDrawerSurface);
-            if (tileSubmenuSurface) this.drawTileLandscapeSubmenu(ctx, tileSubmenuSurface);
           }
+          if (tileSubmenuSurface) this.drawTileLandscapeSubmenu(ctx, tileSubmenuSurface);
+          if (tileLandscapeShell.surfaces.zoom) this.drawPixelLandscapeZoomControl(ctx, tileLandscapeShell.surfaces.zoom);
           this.drawPixelLandscapeThumbstick(ctx, tileLandscapeShell);
           return {
             x: surface.x + 10,
@@ -2174,6 +2178,9 @@ export default class PixelStudio {
       ctx.font = `11px ${UI_SUITE.font.family}`;
       ctx.fillText(summary || `${index + 1}/${tiles.length}`, labelX, y + (portrait ? 46 : 42));
     });
+    if (portrait && this.mobileDrawer === 'panel' && tilePortraitLayout) {
+      this.drawTilePortraitMenuSheet(ctx, tilePortraitLayout);
+    }
     if (desktopShell) this.drawDesktopShellDropdown(ctx, desktopShell);
   }
 
@@ -2249,10 +2256,114 @@ export default class PixelStudio {
     this.uiButtons.push({ bounds: backBounds, onClick: () => this.exitTilePicker() });
   }
 
+  drawTilePortraitMenuSheet(ctx, layout) {
+    if (!layout) return;
+    if (!getEditorTouchRootMenuEntries('tile').some((entry) => entry.id === this.tileLandscapeRootId)) {
+      this.tileLandscapeRootId = 'file';
+    }
+    drawSharedPortraitSheet(ctx, layout.menuSheet, {
+      fill: PIXEL_OPAQUE_POPUP_FILL,
+      border: UI_SUITE.colors.border
+    });
+    const roots = getEditorTouchRootMenuEntries('tile');
+    drawSharedPortraitMultiRowTabStrip(ctx, layout.rootRail, roots.map((entry) => ({
+      ...entry,
+      action: () => {
+        if (entry.id === 'exit-main') {
+          this.exitTilePicker();
+          return;
+        }
+        this.tileLandscapeRootId = entry.id;
+        this.mobileDrawer = 'panel';
+      }
+    })), {
+      activeId: this.tileLandscapeRootId || 'file',
+      focusedId: this.controllerMenu.getFocusedItem('root')?.id,
+      minButtonWidth: 64,
+      maxButtonWidth: 112,
+      maxRows: 2,
+      balanceLastRow: true,
+      verticalAlign: 'bottom',
+      drawButton: (buttonBounds, tab, state) => {
+        this.drawButton(ctx, buttonBounds, tab.label, state.active, {
+          fontSize: 12,
+          focused: state.focused
+        });
+        this.uiButtons.push({ bounds: buttonBounds, onClick: tab.action });
+        this.registerFocusable('menu', buttonBounds, tab.action);
+      }
+    });
+
+    const rootId = this.tileLandscapeRootId || 'file';
+    const menuId = getEditorDesktopControllerMenuIdForSection('tile', rootId) || rootId;
+    const rawItems = this.buildTileControllerMenus()[menuId]?.items || [];
+    const items = rawItems.filter((item) => !item.divider && !item.separator);
+    if (rootId === 'file') {
+      const { listItems, exitItem } = splitFileDrawerStickyExitItems(rawItems);
+      const rowH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
+      renderSharedFileDrawer(ctx, {
+        panel: layout.subRail,
+        items: listItems,
+        title: '',
+        rowHeight: rowH,
+        rowGap: SHARED_EDITOR_LEFT_MENU.buttonGap,
+        buttonHeight: rowH,
+        isMobile: true,
+        showTitle: false,
+        drawPanel: false,
+        footerMode: exitItem ? 'exit-only' : 'none',
+        footerItem: exitItem,
+        layoutMode: 'auto-grid',
+        minColumnWidth: 118,
+        maxColumns: 2,
+        layout: {
+          padding: SHARED_EDITOR_LEFT_MENU.panelPadding,
+          headerHeight: 0,
+          footerHeight: rowH,
+          footerBottomPadding: SHARED_EDITOR_LEFT_MENU.panelPadding
+        },
+        drawButton: (buttonBounds, item) => {
+          const action = item.onSelect || item.onClick || item.action;
+          this.drawButton(ctx, buttonBounds, item.label, false, {
+            fontSize: 12,
+            disabled: Boolean(item.disabled)
+          });
+          if (!item.disabled && typeof action === 'function') {
+            this.uiButtons.push({ bounds: buttonBounds, onClick: action });
+            this.registerFocusable(menuId, buttonBounds, action);
+          }
+        }
+      });
+      return;
+    }
+
+    const pad = SHARED_EDITOR_LEFT_MENU.panelPadding;
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = UI_SUITE.editorPanel.titleFont;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    const title = this.buildTileControllerMenus()[menuId]?.title || TILE_CONTROLLER_ROOT_LABELS[rootId] || rootId;
+    ctx.fillText(title, layout.subRail.x + pad, layout.subRail.y + 20, Math.max(1, layout.subRail.w - pad * 2));
+    ctx.restore();
+    this.drawPortraitActionGrid(ctx, layout.subRail.x + pad, layout.subRail.y + 44, Math.max(1, layout.subRail.w - pad * 2), items.map((item) => ({
+      id: item.id,
+      label: item.label,
+      disabled: Boolean(item.disabled),
+      action: item.onSelect || item.onClick || item.action
+    })), {
+      minColumnWidth: 118,
+      maxColumns: 2,
+      rowHeight: SHARED_EDITOR_LEFT_MENU.buttonHeightMobile + SHARED_EDITOR_LEFT_MENU.buttonGap,
+      buttonHeight: SHARED_EDITOR_LEFT_MENU.buttonHeightMobile,
+      group: menuId
+    });
+  }
+
   drawTileLandscapeRootDrawer(ctx, bounds) {
     if (!bounds) return;
     drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
-    const items = TILE_CONTROLLER_ROOT_ENTRIES;
+    const items = getEditorTouchRootMenuEntries('tile');
     const grid = buildLandscapeRootDrawerGridLayout({
       bounds,
       itemCount: items.length,
@@ -2268,6 +2379,10 @@ export default class PixelStudio {
       const item = items[index];
       const active = (this.tileLandscapeRootId || 'tiles') === item.id;
       const onClick = () => {
+        if (item.id === 'exit-main') {
+          this.exitTilePicker();
+          return;
+        }
         this.tileLandscapeRootId = item.id;
         this.mobileDrawer = 'panel';
       };
@@ -2303,6 +2418,10 @@ export default class PixelStudio {
       const item = rootEntries[index];
       const active = (this.tileLandscapeRootId || plan?.activeRootId || 'tiles') === item.id;
       const onClick = () => {
+        if (item.id === 'exit-main') {
+          this.exitTilePicker();
+          return;
+        }
         this.tileLandscapeRootId = item.id;
         this.tileGamepadSubmenuOpen = true;
         this.tileGamepadFocusedItemId = item.id;
@@ -2579,24 +2698,32 @@ export default class PixelStudio {
 
   getTilePortraitToolbarActions() {
     const tile = this.activeTile || this.tileLibrary[this.tileIndex] || null;
-    const openTileMenu = () => {
+    const toggleTileMenu = () => {
+      if (this.mobileDrawer === 'panel') {
+        this.mobileDrawer = null;
+        this.mobileDrawerBounds = null;
+        return;
+      }
+      this.tileLandscapeRootId = 'file';
       this.mobileDrawer = 'panel';
       this.tileGamepadSubmenuOpen = false;
       this.tileGamepadFocusedRootId = null;
       this.tileGamepadFocusedItemId = null;
     };
-    const editActiveTile = () => {
-      if (!tile) return;
-      this.setActiveTile(tile);
-      this.tilePickerMode = false;
+    const openTileContext = () => {
+      this.tileLandscapeRootId = 'properties';
+      this.mobileDrawer = 'panel';
+      this.tileGamepadSubmenuOpen = false;
+      this.tileGamepadFocusedRootId = null;
+      this.tileGamepadFocusedItemId = null;
     };
     const portraitActionById = {
-      menu: { id: 'menu', label: '☰', onClick: openTileMenu },
+      menu: { id: 'menu', label: '☰', onClick: toggleTileMenu },
       undo: { id: 'undo', label: '↶', onClick: () => this.runtime.undo() },
       redo: { id: 'redo', label: '↷', onClick: () => this.runtime.redo() },
-      edit: { id: 'edit', label: 'Art', primary: true, disabled: !tile, onClick: editActiveTile }
+      context: { id: 'context', label: 'Tile', primary: true, disabled: !tile, onClick: openTileContext }
     };
-    return ['menu', 'undo', 'redo', 'edit']
+    return getStandardEditorActionRailIds('context')
       .map((id) => portraitActionById[id])
       .filter(Boolean);
   }
@@ -4535,6 +4662,7 @@ export default class PixelStudio {
       this.pixelPortraitSubpanel = null;
       return;
     }
+    this.setLeftPanelTab('file');
     this.mobileDrawer = 'panel';
   }
 
@@ -4959,6 +5087,10 @@ export default class PixelStudio {
         maxScroll: Math.max(0, this.toolsListMeta.maxScroll || 0)
       };
       return true;
+    }
+    if (payload.touchCount && this.tilePickerMode && this.mobileDrawer === 'panel' && this.mobileDrawerBounds
+      && this.isPointInBounds(payload, this.mobileDrawerBounds)) {
+      return false;
     }
     if (payload.touchCount && this.tilePickerMode && this.tilePickerScrollBounds
       && this.isPointInBounds(payload, this.tilePickerScrollBounds)
@@ -12110,7 +12242,7 @@ export default class PixelStudio {
           ? 'Return To Level Editor'
           : this.game?.pixelStudioReturnState === 'actor-editor'
             ? 'Return To Actor'
-            : 'Exit to Main Menu', onClick: () => this.exitToMainMenu() }
+            : 'Exit', onClick: () => this.exitToMainMenu() }
       ]
     }).filter((item) => !item.disabled);
   }
@@ -15180,6 +15312,7 @@ export default class PixelStudio {
       scroll: this.focusScroll.file || 0,
       isMobile,
       showTitle: false,
+      drawPanel: !(isMobile && this.activeViewportMode === 'portrait'),
       footerMode: stickyExit && exitItem ? 'exit-only' : 'none',
       footerItem: exitItem,
       drawButton: (bounds, item) => {
@@ -15833,7 +15966,7 @@ export default class PixelStudio {
         reserveThumbstick: false,
         drawButton: (bounds, action) => {
           if (action.id === 'brush') {
-            this.drawButton(ctx, bounds, '', Boolean(action.active), { fontSize: 14 });
+            this.drawButton(ctx, bounds, '', Boolean(action.active), { fontSize: UI_SUITE.font.size });
             ctx.save();
             const chipInset = 7;
             this.drawBrushPreviewChip(ctx, {
@@ -15844,7 +15977,7 @@ export default class PixelStudio {
             });
             ctx.restore();
           } else {
-            this.drawButton(ctx, bounds, action.label, Boolean(action.active), { fontSize: 14 });
+            this.drawButton(ctx, bounds, action.label, Boolean(action.active), { fontSize: UI_SUITE.font.size });
           }
           this.uiButtons.push({ bounds, onClick: action.onClick || action.action, onHold: action.onHold, transportMode: action.transportMode });
           this.registerFocusable('toolbar', bounds, action.onClick || action.action);
@@ -16240,18 +16373,24 @@ export default class PixelStudio {
   }
 
   getPixelLandscapeRootMenuItems() {
-    const rootTabs = buildPixelPortraitMenuModel().rootTabs;
+    const rootTabs = getEditorPortraitRootMenuEntries('pixel', {
+      labelOverrides: { file: SHARED_EDITOR_LEFT_MENU.fileLabel }
+    });
     const exitItem = this.getPixelFileActionItem('exit-main');
     const { exitItem: stickyExitItem } = splitFileDrawerStickyExitItems(exitItem ? [exitItem] : []);
     return [
       ...rootTabs,
       { id: 'bones', panel: 'bones', label: 'Rigging' },
-      ...(stickyExitItem ? [{ id: 'exit-main', panel: 'exit-main', label: stickyExitItem.label, action: stickyExitItem.onClick || stickyExitItem.action }] : [])
+      ...(stickyExitItem && !rootTabs.some((entry) => entry.id === 'exit-main' || entry.panel === 'exit-main')
+        ? [{ id: 'exit-main', panel: 'exit-main', label: stickyExitItem.label, action: stickyExitItem.onClick || stickyExitItem.action }]
+        : [])
     ]
       .map((entry) => ({
         id: entry.panel || entry.id,
         label: entry.label,
-        action: entry.action || null
+        action: entry.action || (entry.id === 'exit-main' || entry.panel === 'exit-main'
+          ? () => this.exitToMainMenu()
+          : null)
       }));
   }
 

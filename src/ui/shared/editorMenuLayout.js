@@ -1537,9 +1537,9 @@ export function buildLandscapeTouchEditorShellPlan(editorId, {
   thumbstick = null,
   padding = undefined,
   gap = undefined,
-  capRightRailToLeftRailHeight = false,
-  placeZoomBelowRightRail = false,
-  zoomFallsBackToBottomRail = true,
+  capRightRailToLeftRailHeight = true,
+  placeZoomBelowRightRail = true,
+  zoomFallsBackToBottomRail = false,
   zoomRailMinHeight = 34,
   zoomRailMaxHeight = 48
 } = {}) {
@@ -1603,7 +1603,13 @@ export function buildLandscapeTouchEditorShellPlan(editorId, {
   const cappedSubmenu = baseSubmenu && capRightRailToLeftRailHeight
     ? {
       ...baseSubmenu,
-      h: Math.min(baseSubmenu.h, layout.leftRail?.h || baseSubmenu.h)
+      h: Math.min(
+        baseSubmenu.h,
+        layout.leftRail?.h || baseSubmenu.h,
+        placeZoomBelowRightRail
+          ? Math.max(1, safeViewportHeight - layout.padding - layout.gap - Math.max(0, Number(zoomRailMinHeight) || 0))
+          : baseSubmenu.h
+      )
     }
     : baseSubmenu;
   const zoomBelowRightRail = placeZoomBelowRightRail && cappedSubmenu

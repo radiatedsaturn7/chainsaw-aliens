@@ -12,6 +12,7 @@ import { getRaceWheelContactState as getRaceWheelContactStateModule, getRaceWhee
 import { DEFAULT_TILE_TYPES } from '../content/tileDefinitions.js';
 import { getLandscapeHandheldLayout, getPortraitHandheldLayout } from './shared/canvasViewportLayout.js';
 import {
+  SHARED_EDITOR_LEFT_MENU,
   UI_SUITE,
   buildSharedDesktopContextTransportLayout,
   buildSharedEditorFileMenu,
@@ -26,7 +27,10 @@ import {
   drawSharedPanel,
   drawSharedPortraitActionRail,
   drawSharedThumbstick,
-  resetSharedThumbstickState
+  getSharedMobilePortraitEditorLayout,
+  renderSharedFileDrawer,
+  resetSharedThumbstickState,
+  splitFileDrawerStickyExitItems
 } from './uiSuite.js';
 import { drawSharedMobileZoomSlider } from './shared/mobileZoomSlider.js';
 import { getRaceArtSpriteCanvasShared } from './shared/raceArtSpriteCanvas.js';
@@ -59,9 +63,8 @@ import {
   shouldCloseDesktopDropdownOnPointerDown,
   updatePendingDesktopDropdownHit
 } from './shared/editorMenuLayout.js';
-import { getEditorDesktopLeftContextRoles, getEditorMenuSpec, getEditorPortraitRootMenuEntries, getEditorRootMenuEntries, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
+import { getEditorDesktopLeftContextRoles, getEditorMenuSpec, getEditorTouchRootMenuEntries, getEditorRootMenuEntries, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
 import { SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
-import { getSharedMobilePortraitEditorLayout } from './uiSuite.js';
 import MobileControls from './MobileControls.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { listProjectFiles, loadProjectFile, saveProjectFile, sanitizeProjectFileName } from './projectFiles.js';
@@ -80,6 +83,8 @@ const RACE_THREE_LIFTS_M = {
   paint: 0.035
 };
 const CAR_EDITOR_PREVIEW_RENDER_INTERVAL_MS = 50;
+const RACE_EDITOR_SURFACE_PREVIEW_STEP_M = 10;
+const RACE_EDITOR_SURFACE_PREVIEW_MAX_SECTIONS = 720;
 
 const RACE_CONTROLLER_STEERING = {
   speedReferenceMps: 62,
@@ -556,7 +561,7 @@ export function buildRacePortraitMenuModel(editorId = 'race') {
   const resolvedEditorId = editorId === 'car' ? 'car' : 'race';
   const contextActionId = resolvedEditorId === 'car' ? 'test-drive' : 'race-context';
   return {
-    rootTabs: getEditorPortraitRootMenuEntries(resolvedEditorId),
+    rootTabs: getEditorTouchRootMenuEntries(resolvedEditorId),
     bottomRailActions: getStandardEditorActionRailIds(contextActionId),
     portraitRootPlacement: 'bottom-rail'
   };
@@ -621,6 +626,7 @@ export default class RaceEditor {
     this.selectedSceneryPresetId = 'tree';
     this.selectedSceneryArtRef = '';
     this.selectedDoodadRef = '';
+    this.raceDoodadDocumentCache = new Map();
     this.raceArtSpriteCache = new Map();
     this.raceCarBillboardLayerCache = new Map();
     this.raceCarTireScrollCache = new Map();
@@ -663,7 +669,7 @@ export default class RaceEditor {
     this.selectedCarShellFrameSlot = 'front';
     this.racePortraitHotMenu = null;
     this.status = 'Ready';
-    this.activeRootId = mode === 'car' ? 'art' : 'track';
+    this.activeRootId = 'file';
     this.mobileRootOpen = false;
     this.gamepadSubmenuOpen = false;
     this.gamepadFocusedItemId = null;
@@ -1113,7 +1119,16 @@ export default class RaceEditor {
     const clean = sanitizeProjectFileName(name);
     if (!clean) return null;
     const payload = loadProjectFile('doodads', clean);
-    return normalizeRaceDoodadDocument(payload?.data || payload, clean);
+    const savedAt = Number(payload?.savedAt || payload?.metadata?.updatedAt || 0);
+    const cached = this.raceDoodadDocumentCache.get(clean);
+    if (cached && cached.savedAt === savedAt && cached.payload === payload) return cached.document;
+    const document = normalizeRaceDoodadDocument(payload?.data || payload, clean);
+    this.raceDoodadDocumentCache.set(clean, { savedAt, payload, document });
+    if (this.raceDoodadDocumentCache.size > 64) {
+      const first = this.raceDoodadDocumentCache.keys().next().value;
+      if (first) this.raceDoodadDocumentCache.delete(first);
+    }
+    return document;
   }
 
   getSelectedRaceDoodad() {
@@ -3851,7 +3866,7 @@ export default class RaceEditor {
 
   getRacePortraitContextAction() {
     if (this.mode === 'car') {
-      return { id: 'test-drive', label: 'Play', onClick: () => this.handleMenuAction('test-drive') };
+      return { id: 'test-drive', label: '▶', onClick: () => this.handleMenuAction('test-drive') };
     }
     if (this.racePortraitMode === 'ground') {
       return { id: 'ground-tile-next', label: 'Tile', onClick: () => this.handleMenuAction('ground-tile-next') };
@@ -4767,7 +4782,7 @@ export default class RaceEditor {
       const section = spec?.sections?.file;
       return [...(section?.actions || [])].map((id) => ({
         id,
-        label: id === 'exit-main' ? 'Exit to Main Menu' : (spec.actions?.[id]?.label || this.getRaceActionLabel(id)),
+        label: id === 'exit-main' ? 'Exit' : (spec.actions?.[id]?.label || this.getRaceActionLabel(id)),
         disabled: !this.isActionAvailable(id),
         onSelect: this.isActionAvailable(id) ? () => this.handleMenuAction(id) : null
       }));
@@ -6481,6 +6496,7 @@ export default class RaceEditor {
       this.gamepadSubmenuOpen = false;
       return;
     }
+    if (!this.mobileRootOpen) this.activeRootId = 'file';
     this.mobileRootOpen = !this.mobileRootOpen;
   }
 
@@ -10973,20 +10989,43 @@ export default class RaceEditor {
     this.playtestSession.edgeResetFadeMs = Math.max(0, Number(this.playtestSession.edgeResetFadeMs || 0) - seconds * 1000);
     this.updateRaceEdgeCenterResetFade();
     this.playtestSession.shiftCooldownMs = Math.max(0, Number(this.playtestSession.shiftCooldownMs || 0) - seconds * 1000);
+    const initialNormalLoads = this.getRaceWheelNormalLoads(tuning);
+    const drivenWheelIds = this.getRaceDrivenWheelIds(tuning);
+    const wheelContacts3d = this.playtestSession.vehicle3d?.wheels || this.playtestSession.wheelContacts3d || null;
+    const drivenStaticLoad = drivenWheelIds.reduce((sum, wheelId) => sum + Math.max(1, Number(initialNormalLoads[wheelId] || 0)), 0);
+    const drivenContactLoad = wheelContacts3d
+      ? drivenWheelIds.reduce((sum, wheelId) => {
+        const wheel = wheelContacts3d[wheelId];
+        if (!wheel || wheel.inContact === false) return sum;
+        const normalLoadN = Number(wheel.normalLoadN || 0);
+        return sum + (normalLoadN > 1 ? normalLoadN : Math.max(1, Number(initialNormalLoads[wheelId] || 0)));
+      }, 0)
+      : drivenStaticLoad * tireContactScale;
+    const drivenLoadScale = tireContactScale <= 0.001
+      ? 0
+      : clamp(drivenContactLoad / Math.max(1, drivenStaticLoad), 0, 1);
     const wheelRpm = gearRatio
       ? (absSpeedBefore / Math.max(0.01, tuning.wheelRadiusM)) * gearRatio * tuning.finalDrive * (60 / (Math.PI * 2))
       : 0;
     const limiterPhase = Math.sin(this.playtestSession.elapsedMs / 34) > 0 ? 1 : 0;
     const neutralLimiterTarget = tuning.revLimitRpm - tuning.revLimiterDropRpm * limiterPhase;
     const neutralRevTarget = throttle > RACE_PEDAL_INPUT.activeThreshold ? neutralLimiterTarget : tuning.idleRpm;
-    const loadedRpmTarget = gearRatio
+    const roadCoupledRpmTarget = gearRatio
       ? clamp(
         Math.max(wheelRpm * (1 + tuning.torqueConverterSlip * throttle), throttle > RACE_PEDAL_INPUT.activeThreshold ? Math.min(tuning.launchRpm, tuning.revLimitRpm) : tuning.idleRpm),
         tuning.idleRpm,
         tuning.revLimitRpm
       )
       : neutralRevTarget;
-    const rpmResponse = gearRatio ? (throttle > RACE_PEDAL_INPUT.activeThreshold ? 4.6 : 8.5) : (throttle > RACE_PEDAL_INPUT.activeThreshold ? 7.6 : 3.8);
+    const drivetrainUnload = gearRatio ? 1 - drivenLoadScale : 1;
+    const loadedRpmTarget = gearRatio
+      ? roadCoupledRpmTarget + (neutralRevTarget - roadCoupledRpmTarget) * drivetrainUnload
+      : neutralRevTarget;
+    const loadedRpmResponse = throttle > RACE_PEDAL_INPUT.activeThreshold ? 4.6 : 8.5;
+    const freeRpmResponse = throttle > RACE_PEDAL_INPUT.activeThreshold ? 7.6 : 3.8;
+    const rpmResponse = gearRatio
+      ? loadedRpmResponse + (freeRpmResponse - loadedRpmResponse) * drivetrainUnload
+      : freeRpmResponse;
     this.playtestSession.engineRpm = Number(this.playtestSession.engineRpm || tuning.idleRpm)
       + (loadedRpmTarget - Number(this.playtestSession.engineRpm || tuning.idleRpm)) * Math.min(1, seconds * rpmResponse);
     this.playtestSession.engineRpm = clamp(this.playtestSession.engineRpm, tuning.idleRpm * 0.72, tuning.revLimitRpm + (gearRatio ? 40 : 80));
@@ -11017,8 +11056,6 @@ export default class RaceEditor {
       brake = 0;
       driveForceRaw = 0;
     }
-    const initialNormalLoads = this.getRaceWheelNormalLoads(tuning);
-    const drivenWheelIds = this.getRaceDrivenWheelIds(tuning);
     const drivenTractionLimit = drivenWheelIds.reduce((sum, wheelId) => (
       sum + initialNormalLoads[wheelId] * Math.max(0.1, perWheelGrip[wheelId] || 0)
     ), 0) * Math.max(0.45, clamp(gripFactor, 0.28, 1.35)) * setupModifiers.driveTraction;
@@ -12448,7 +12485,7 @@ export default class RaceEditor {
       },
       {
         id: 'race-exit-main',
-        label: 'Exit to Main Menu',
+        label: 'Exit',
         value: '',
         onClick: () => this.exitPlaytestToMainMenu()
       }
@@ -12804,11 +12841,11 @@ export default class RaceEditor {
       });
     }
     const portraitActionById = {
-      menu: { id: 'menu', label: 'Menu', onClick: () => { this.mobileRootOpen = !this.mobileRootOpen; } },
-      undo: this.getRailAction('undo', 'Undo', () => this.handleMenuAction('undo')),
-      redo: this.getRailAction('redo', 'Redo', () => this.handleMenuAction('redo')),
+      menu: { id: 'menu', label: '☰', onClick: () => this.toggleRootMenu() },
+      undo: this.getRailAction('undo', '↶', () => this.handleMenuAction('undo')),
+      redo: this.getRailAction('redo', '↷', () => this.handleMenuAction('redo')),
       'race-context': this.getRacePortraitContextAction(),
-      'test-drive': { id: 'test-drive', label: 'Play', onClick: () => this.handleMenuAction('test-drive') }
+      'test-drive': { id: 'test-drive', label: '▶', onClick: () => this.handleMenuAction('test-drive') }
     };
     const actions = buildRacePortraitMenuModel(this.editorId).bottomRailActions
       .map((id) => portraitActionById[id])
@@ -12907,6 +12944,10 @@ export default class RaceEditor {
       label: entry.label,
       active: this.activeRootId === entry.id,
       onClick: () => {
+        if (entry.id === 'exit-main') {
+          this.exitToMainMenu();
+          return;
+        }
         if (!this.selectRootMenu(entry.id)) return;
         if (this.mode === 'race' && entry.id === 'track') {
           this.setRacePortraitMode('race');
@@ -12928,13 +12969,53 @@ export default class RaceEditor {
       }
     })), Math.max(1, roots.length), { scrollKey: `${this.editorId}:portrait-root` });
     if (!items.length) return;
-    this.drawActionRows(ctx, layout.subRail, items.map((item) => ({
+    const subActions = items.map((item) => ({
       id: item.id,
       label: item.label,
       active: item.id === this.activeAction,
       disabled: Boolean(item.disabled),
       onClick: item.onSelect
-    })), 2, { scrollKey: `${this.editorId}:portrait-sub:${this.activeRootId}` });
+    }));
+    const scrollKey = `${this.editorId}:portrait-sub:${this.activeRootId}`;
+    if (this.activeRootId === 'file') {
+      const { listItems, exitItem } = splitFileDrawerStickyExitItems(subActions);
+      const rowH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
+      const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+      const result = renderSharedFileDrawer(ctx, {
+        panel: layout.subRail,
+        items: listItems,
+        title: '',
+        scroll: this.menuScrollState?.[scrollKey] || 0,
+        rowHeight: rowH,
+        rowGap: gap,
+        buttonHeight: rowH,
+        isMobile: true,
+        showTitle: false,
+        drawPanel: false,
+        footerMode: exitItem ? 'exit-only' : 'none',
+        footerItem: exitItem,
+        layoutMode: 'auto-grid',
+        minColumnWidth: 118,
+        maxColumns: 2,
+        layout: {
+          padding: SHARED_EDITOR_LEFT_MENU.panelPadding,
+          headerHeight: 0,
+          footerHeight: rowH,
+          footerBottomPadding: SHARED_EDITOR_LEFT_MENU.panelPadding
+        },
+        drawButton: (buttonBounds, action) => this.registerDrawnButton(ctx, buttonBounds, action)
+      });
+      this.menuScrollState[scrollKey] = result.scroll;
+      this.menuScrollRegions.push({
+        menuId: scrollKey,
+        bounds: result.listBounds || { ...layout.subRail },
+        maxScroll: result.scrollMax,
+        lineHeight: rowH + gap,
+        scrollScale: 1 / Math.max(1, rowH + gap)
+      });
+      return;
+    }
+    this.drawActionRows(ctx, layout.subRail, subActions, 2, { scrollKey });
   }
 
   drawLandscape(ctx, width, height) {
@@ -12997,8 +13078,8 @@ export default class RaceEditor {
         undo: this.getRailAction('undo', 'Undo', () => this.handleMenuAction('undo')),
         redo: this.getRailAction('redo', 'Redo', () => this.handleMenuAction('redo')),
         quick: this.mode === 'race'
-          ? { id: 'generate-random-race', label: 'Gen', onClick: () => this.handleMenuAction('generate-random-race') }
-          : { id: 'test-drive', label: 'Play', onClick: () => this.handleMenuAction('test-drive') }
+          ? this.getRacePortraitContextAction()
+          : { id: 'test-drive', label: '▶', onClick: () => this.handleMenuAction('test-drive') }
       });
       buildCompactLandscapeCommandRailButtonLayout({
         bounds: shell.surfaces.compactCommandRail,
@@ -13007,6 +13088,9 @@ export default class RaceEditor {
     }
     if (landscapeToolOptionsSurface) {
       this.drawLandscapeToolOptions(ctx, landscapeToolOptionsSurface);
+    }
+    if (this.mode === 'race' && !gamepadMenuState.isLandscapeMenuMode && shell.surfaces.zoom) {
+      this.drawRacePortraitZoomSlider(ctx, shell.surfaces.zoom);
     }
     if (gamepadMenuState.isLandscapeMenuMode) {
       const menuPlan = buildGamepadSlideOutMenuPlan(this.editorId, {
@@ -16737,7 +16821,7 @@ export default class RaceEditor {
       ctx.fillText('Menu', bounds.x + 10, bounds.y + 20, Math.max(1, bounds.w - 20));
       ctx.restore();
     }
-    const roots = rootEntries || getEditorRootMenuEntries(this.editorId);
+    const roots = rootEntries || buildRacePortraitMenuModel(this.editorId).rootTabs;
     const grid = buildLandscapeRootDrawerGridLayout({
       bounds,
       itemCount: roots.length,
@@ -16767,6 +16851,10 @@ export default class RaceEditor {
         label: entry.label,
         active: this.activeRootId === entry.id,
         onClick: () => {
+          if (entry.id === 'exit-main') {
+            this.exitToMainMenu();
+            return;
+          }
           if (!this.selectRootMenu(entry.id)) return;
           if (gamepad) this.gamepadFocusedItemId = entry.id;
           this.mobileRootOpen = !gamepad;
@@ -18413,6 +18501,7 @@ export default class RaceEditor {
     ctx.fillStyle = '#111916';
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
     this.drawRaceTopDownTileMap(ctx, bounds);
+    this.drawRaceTopDownActualSurfacePreview(ctx, bounds);
     const renderDebug = this.getRaceRenderDebugSettings();
 
     const baseRoadWidth = Math.max(2, this.getRaceRoadWidthMForSegment(segments[0] || {}) * mapScale);
@@ -18603,6 +18692,74 @@ export default class RaceEditor {
     ctx.fillText('Surface 3D', inset.x + 6, inset.y + 12);
     ctx.restore();
     return drew;
+  }
+
+  drawRaceTopDownActualSurfacePreview(ctx, bounds, renderDebug = this.getRaceRenderDebugSettings()) {
+    const runtimeType = this.getSelectedRaceRuntimeType();
+    const routeLength = Math.max(1, Number(this.getRaceRouteLength()) || 1);
+    const preview = this.getRaceSurfaceBake({
+      routeLength,
+      runtimeType,
+      allowVisualExtension: runtimeType !== 'circuit',
+      step: RACE_EDITOR_SURFACE_PREVIEW_STEP_M
+    });
+    const sourceSections = preview?.sections || [];
+    const stride = Math.max(1, Math.ceil(sourceSections.length / RACE_EDITOR_SURFACE_PREVIEW_MAX_SECTIONS));
+    const sections = stride <= 1
+      ? sourceSections
+      : sourceSections.filter((_, index) => index === 0 || index === sourceSections.length - 1 || index % stride === 0);
+    if (!Array.isArray(sections) || sections.length < 2) return false;
+    const toScreen = (point = {}) => this.raceMapWorldToScreenPoint({ x: point.x, y: point.z ?? point.y }, bounds);
+    const drawStrip = (leftKey, rightKey, color, alpha = 0.36) => {
+      ctx.save();
+      ctx.fillStyle = color;
+      ctx.globalAlpha = alpha;
+      for (let index = 1; index < sections.length; index += 1) {
+        const previous = sections[index - 1];
+        const next = sections[index];
+        const polygon = [
+          toScreen(next[leftKey]),
+          toScreen(next[rightKey]),
+          toScreen(previous[rightKey]),
+          toScreen(previous[leftKey])
+        ];
+        if (polygon.some((point) => !point)) continue;
+        ctx.beginPath();
+        ctx.moveTo(polygon[0].screenX, polygon[0].screenY);
+        polygon.slice(1).forEach((point) => ctx.lineTo(point.screenX, point.screenY));
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+    };
+    const drawLine = (key, color, width = 1) => {
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      let moved = false;
+      sections.forEach((section) => {
+        const point = toScreen(section[key]);
+        if (!point) return;
+        if (!moved) {
+          ctx.moveTo(point.screenX, point.screenY);
+          moved = true;
+        } else {
+          ctx.lineTo(point.screenX, point.screenY);
+        }
+      });
+      if (moved) ctx.stroke();
+      ctx.restore();
+    };
+    drawStrip('transitionLeft', 'transitionRight', '#243c2d', 0.26);
+    drawStrip('shoulderLeft', 'shoulderRight', '#365c36', 0.36);
+    drawStrip('marginLeft', 'marginRight', '#6b6545', 0.34);
+    drawStrip('left', 'right', '#59666a', 0.84);
+    drawLine('transitionLeft', 'rgba(180, 228, 156, 0.42)', 1);
+    drawLine('transitionRight', 'rgba(180, 228, 156, 0.42)', 1);
+    drawLine('left', 'rgba(244, 246, 236, 0.58)', 1.2);
+    drawLine('right', 'rgba(244, 246, 236, 0.58)', 1.2);
+    return true;
   }
 
   drawRaceCanonicalSurfacePreview(ctx, bounds, renderDebug = this.getRaceRenderDebugSettings()) {
@@ -21625,6 +21782,10 @@ export default class RaceEditor {
     }
     renderer.dynamicCarGroup = null;
     renderer.dynamicDoodadGroup = null;
+    renderer.dynamicDoodadSceneKey = '';
+    renderer.dynamicDoodadPolygons = 0;
+    renderer.dynamicDoodadDrawCalls = 0;
+    renderer.dynamicDoodadCount = 0;
   }
 
   clearRaceThreeDynamicCar(renderer = null) {
@@ -21647,6 +21808,38 @@ export default class RaceEditor {
       if (entry.material && !entry.material.__raceSharedMaterial) entry.material.dispose?.();
     });
     renderer.dynamicDoodadGroup = null;
+    renderer.dynamicDoodadSceneKey = '';
+    renderer.dynamicDoodadPolygons = 0;
+    renderer.dynamicDoodadDrawCalls = 0;
+    renderer.dynamicDoodadCount = 0;
+  }
+
+  getRaceThreeDoodadSceneKey(sprites = []) {
+    if (!Array.isArray(sprites) || !sprites.length) return 'empty';
+    const surfaceRevision = this.playtestSession?.worldBake?.surfaceRevision || this.getRaceSurfaceGeometryRevisionKey();
+    const doodads = sprites.map((sprite) => {
+      const doodad = this.getRaceDoodadForScenery(sprite);
+      const artRef = String(doodad?.artRef || sprite?.artRef || '').trim();
+      const artCanvas = artRef ? this.getRaceArtSpriteCanvas(artRef) : null;
+      return [
+        sprite?.id || '',
+        sprite?.state || '',
+        sprite?.doodadRef || '',
+        sprite?.previewDoodad ? 'preview' : '',
+        artRef,
+        artCanvas?.__raceArtCacheKey || '',
+        Math.round(Number(sprite?.x || 0) * 1000),
+        Math.round(Number(sprite?.z || 0) * 1000),
+        Math.round(Number(sprite?.yaw || 0) * 10000),
+        Math.round(Number(doodad?.widthM ?? sprite?.widthM ?? 0) * 1000),
+        Math.round(Number(doodad?.heightM ?? sprite?.heightM ?? 0) * 1000),
+        Math.round(Number(doodad?.groundOffsetM ?? sprite?.groundOffsetM ?? 0) * 1000),
+        Math.round(Number(doodad?.hitboxWidthM ?? sprite?.hitboxWidthM ?? 0) * 1000),
+        Math.round(Number(doodad?.hitboxHeightM ?? sprite?.hitboxHeightM ?? 0) * 1000),
+        sprite?.previewHitbox ? 1 : 0
+      ].join(',');
+    }).join(';');
+    return `${surfaceRevision}::three-doodads::${doodads}`;
   }
 
   getRaceThreeStaticWorldKey(cells = [], {
@@ -21710,7 +21903,7 @@ export default class RaceEditor {
     if (!renderer || !clean) return null;
     const canvas = this.getRaceArtSpriteCanvas(clean);
     if (!canvas) return null;
-    const key = `${clean}:${Number(canvas.width || 0)}x${Number(canvas.height || 0)}:${this.getRaceGroundTextureFilterMode()}`;
+    const key = `${canvas.__raceArtCacheKey || clean}:${Number(canvas.width || 0)}x${Number(canvas.height || 0)}:${this.getRaceGroundTextureFilterMode()}`;
     const cached = renderer.textureCache.get(key);
     if (cached) return cached;
     const texture = new THREE.CanvasTexture(canvas);
@@ -21793,16 +21986,16 @@ export default class RaceEditor {
     if (!renderer || !THREE?.MeshBasicMaterial) return null;
     const texture = this.getRaceThreeTexture(renderer, artRef);
     if (!texture) return this.getRaceThreeSolidMaterial(renderer, '#6f9f3d');
+    renderer.doodadMaterialCache = renderer.doodadMaterialCache instanceof Map ? renderer.doodadMaterialCache : new Map();
+    const key = texture.uuid || String(artRef || '');
+    const cached = renderer.doodadMaterialCache.get(key);
+    if (cached) return cached;
     texture.wrapS = THREE.ClampToEdgeWrapping;
     texture.wrapT = THREE.ClampToEdgeWrapping;
     texture.magFilter = THREE.LinearFilter;
     texture.minFilter = THREE.LinearFilter;
     texture.generateMipmaps = false;
     texture.needsUpdate = true;
-    renderer.doodadMaterialCache = renderer.doodadMaterialCache instanceof Map ? renderer.doodadMaterialCache : new Map();
-    const key = texture.uuid || String(artRef || '');
-    const cached = renderer.doodadMaterialCache.get(key);
-    if (cached) return cached;
     const material = new THREE.MeshBasicMaterial({
       map: texture,
       side: THREE.DoubleSide,
@@ -21937,7 +22130,6 @@ export default class RaceEditor {
 
   addRaceThreeDoodads(renderer = null, { stats = null } = {}) {
     if (!renderer?.scene || !THREE?.Group || !THREE?.Mesh || !THREE?.BufferGeometry || !THREE?.Float32BufferAttribute) return false;
-    this.clearRaceThreeDynamicDoodads(renderer);
     const hiddenIds = new Set([
       ...(this.playtestSession?.removedSceneryIds || []),
       ...(this.playtestSession?.flattenedSceneryIds || [])
@@ -21949,7 +22141,22 @@ export default class RaceEditor {
       && !hiddenIds.has(sprite.id)
       && (sprite.presetId === 'doodad' || sprite.doodadRef || sprite.previewDoodad)
     ));
-    if (!sprites.length) return false;
+    if (!sprites.length) {
+      this.clearRaceThreeDynamicDoodads(renderer);
+      return false;
+    }
+    const sceneKey = this.getRaceThreeDoodadSceneKey(sprites);
+    if (renderer.dynamicDoodadGroup && renderer.dynamicDoodadSceneKey === sceneKey) {
+      if (!renderer.dynamicDoodadGroup.parent) renderer.scene.add(renderer.dynamicDoodadGroup);
+      if (stats) {
+        stats.threeDoodads = Number(renderer.dynamicDoodadCount || renderer.dynamicDoodadGroup.children.length || 0);
+        stats.drawCalls = (Number(stats.drawCalls) || 0) + Number(renderer.dynamicDoodadDrawCalls || 0);
+        stats.polygons = (Number(stats.polygons) || 0) + Number(renderer.dynamicDoodadPolygons || 0);
+        stats.dynamicDoodadCacheHits = (Number(stats.dynamicDoodadCacheHits) || 0) + 1;
+      }
+      return true;
+    }
+    this.clearRaceThreeDynamicDoodads(renderer);
     const group = new THREE.Group();
     group.name = 'raceDynamicDoodads';
     sprites.forEach((sprite) => {
@@ -21982,10 +22189,15 @@ export default class RaceEditor {
     if (!group.children.length) return false;
     renderer.scene.add(group);
     renderer.dynamicDoodadGroup = group;
+    renderer.dynamicDoodadSceneKey = sceneKey;
+    renderer.dynamicDoodadCount = group.children.length;
+    renderer.dynamicDoodadDrawCalls = group.children.length;
+    renderer.dynamicDoodadPolygons = group.children.length * 2;
     if (stats) {
       stats.threeDoodads = group.children.length;
       stats.drawCalls = (Number(stats.drawCalls) || 0) + group.children.length;
       stats.polygons = (Number(stats.polygons) || 0) + group.children.length * 2;
+      stats.dynamicDoodadRebuilds = (Number(stats.dynamicDoodadRebuilds) || 0) + 1;
     }
     return true;
   }

@@ -5401,7 +5401,7 @@ test('Race Editor file menu exposes live desktop project actions', () => {
   assert.equal(typeof fileItems.find((item) => item.id === 'export')?.onSelect, 'function');
   assert.equal(typeof fileItems.find((item) => item.id === 'import')?.onSelect, 'function');
   assert.equal(fileItems.at(-1)?.id, 'exit-main');
-  assert.equal(fileItems.at(-1)?.label, 'Exit to Main Menu');
+  assert.equal(fileItems.at(-1)?.label, 'Exit');
   assert.equal(fileItems.find((item) => item.id === 'exit-main')?.disabled, false);
   assert.equal(typeof fileItems.find((item) => item.id === 'exit-main')?.onSelect, 'function');
 });
@@ -10247,6 +10247,52 @@ test('Race Editor adds doodads as real Three world planes', () => {
   assert.equal(stats.threeDoodads, 1);
 });
 
+test('Race Editor reuses unchanged Three doodad groups between frames', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.scenery = [{
+    id: 'tree-1',
+    presetId: 'doodad',
+    label: 'Tree',
+    artRef: 'Tree Art',
+    x: 12,
+    z: 24,
+    yaw: 0.75,
+    widthM: 2,
+    heightM: 3
+  }];
+  editor.getRaceSurfaceModel = () => ({ sampleWorld: () => ({ elevation: 0 }) });
+  const material = new THREE.MeshBasicMaterial();
+  material.__raceSharedMaterial = true;
+  let materialCalls = 0;
+  editor.getRaceThreeDoodadMaterial = () => {
+    materialCalls += 1;
+    return material;
+  };
+  const renderer = {
+    scene: new THREE.Scene()
+  };
+  const firstStats = {};
+  const secondStats = {};
+
+  assert.equal(editor.addRaceThreeDoodads(renderer, { stats: firstStats }), true);
+  const firstGroup = renderer.dynamicDoodadGroup;
+  assert.equal(editor.addRaceThreeDoodads(renderer, { stats: secondStats }), true);
+
+  assert.equal(renderer.dynamicDoodadGroup, firstGroup);
+  assert.equal(renderer.scene.children.filter((child) => child === firstGroup).length, 1);
+  assert.equal(materialCalls, 1);
+  assert.equal(firstStats.dynamicDoodadRebuilds, 1);
+  assert.equal(secondStats.dynamicDoodadCacheHits, 1);
+  assert.equal(secondStats.threeDoodads, 1);
+  assert.equal(secondStats.drawCalls, 1);
+  assert.equal(secondStats.polygons, 2);
+  const doodadMaterialBody = raceEditorSource.slice(
+    raceEditorSource.indexOf('  getRaceThreeDoodadMaterial(renderer = null, artRef = \'\')'),
+    raceEditorSource.indexOf('  getRaceDoodadWorldQuad(sprite = {})')
+  );
+  assert.equal(doodadMaterialBody.indexOf('if (cached) return cached;') < doodadMaterialBody.indexOf('texture.needsUpdate = true;'), true);
+});
+
 test('Race Editor plants doodad art below terrain by ground offset', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   editor.selectedRace.scenery = [{
@@ -12504,6 +12550,95 @@ test('Race Editor airborne car cannot accelerate brake or steer from tire forces
   assert.equal(Math.abs(editor.playtestSession.carYaw) < 0.02, true);
 });
 
+test('Race Editor airborne drive wheels let the engine free rev in gear', () => {
+  const createEditor = ({ airborne = false } = {}) => {
+    const editor = new RaceEditor({
+      deviceIsMobile: true,
+      isMobile: true,
+      input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+      exitRaceEditor() {}
+    });
+    editor.startPlaytest('starter-rwd');
+    const tuning = editor.getRaceCarTuning(editor.selectedCar);
+    editor.playtestSession.launchLockMs = 0;
+    editor.playtestSession.elapsedMs = 1000;
+    editor.playtestSession.speedMps = 24;
+    editor.playtestSession.engineRpm = tuning.idleRpm + 300;
+    editor.playtestSession.heightM = airborne ? 8 : 0;
+    editor.playtestSession.bodyY = airborne ? 8 : 0;
+    editor.playtestSession.verticalVelocityMps = 0;
+    editor.playtestSession.grounded = !airborne;
+    editor.playtestSession.airborne = airborne;
+    if (editor.playtestSession.vehicle3d?.wheels) {
+      const staticLoads = editor.getRaceWheelNormalLoads(tuning);
+      Object.entries(editor.playtestSession.vehicle3d.wheels).forEach(([wheelId, wheel]) => {
+        wheel.inContact = !airborne;
+        wheel.normalLoadN = airborne ? 0 : staticLoads[wheelId];
+      });
+    }
+    editor.raceInput.gear = 2;
+    editor.raceInput.autoShift = false;
+    editor.raceInput.throttleAxis = 1;
+    return editor;
+  };
+  const editor = createEditor({ airborne: true });
+  const groundedEditor = createEditor({ airborne: false });
+  const beforeRpm = editor.playtestSession.engineRpm;
+  const beforeSpeed = editor.playtestSession.speedMps;
+
+  for (let index = 0; index < 8; index += 1) {
+    editor.updatePlaytest(1 / 60);
+    editor.playtestSession.grounded = false;
+    editor.playtestSession.airborne = true;
+    if (editor.playtestSession.vehicle3d?.wheels) {
+      Object.values(editor.playtestSession.vehicle3d.wheels).forEach((wheel) => {
+        wheel.inContact = false;
+        wheel.normalLoadN = 0;
+      });
+    }
+    groundedEditor.updatePlaytest(1 / 60);
+  }
+
+  assert.equal(editor.playtestSession.engineRpm > beforeRpm + 1800, true);
+  assert.equal(editor.playtestSession.engineRpm > groundedEditor.playtestSession.engineRpm + 650, true);
+  assert.equal(editor.playtestSession.speedMps <= beforeSpeed, true);
+});
+
+test('Race Editor contacted drive wheels stay coupled even before normal load is populated', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  const tuning = editor.getRaceCarTuning(editor.selectedCar);
+  editor.playtestSession.launchLockMs = 0;
+  editor.playtestSession.elapsedMs = 1000;
+  editor.playtestSession.speedMps = 24;
+  editor.playtestSession.engineRpm = tuning.idleRpm + 300;
+  editor.playtestSession.heightM = 0;
+  editor.playtestSession.bodyY = 0;
+  editor.playtestSession.verticalVelocityMps = 0;
+  editor.playtestSession.grounded = true;
+  editor.playtestSession.airborne = false;
+  if (editor.playtestSession.vehicle3d?.wheels) {
+    Object.values(editor.playtestSession.vehicle3d.wheels).forEach((wheel) => {
+      wheel.inContact = true;
+      wheel.normalLoadN = 0;
+    });
+  }
+  editor.raceInput.gear = 2;
+  editor.raceInput.autoShift = false;
+  editor.raceInput.throttleAxis = 1;
+  const beforeRpm = editor.playtestSession.engineRpm;
+
+  editor.updatePlaytest(1 / 60);
+
+  assert.equal(editor.playtestSession.engineRpm < beforeRpm + 520, true);
+});
+
 test('Race Editor playtest samples per-wheel contact height for suspension travel and body roll', () => {
   const editor = new RaceEditor({
     deviceIsMobile: true,
@@ -14506,6 +14641,78 @@ test('Race editor top-down surface debug bands come from canonical surface cross
   assert.equal(raceEditorSource.includes("drawStrip('left', 'right'"), true);
   assert.equal(raceEditorSource.includes("drawPolyline('transitionLeft'"), true);
   assert.equal(raceEditorSource.includes('validation.magentaEdges'), true);
+});
+
+test('Race editor top-down map draws actual road surface preview under scenery by default', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.renderDebug = {
+    ...editor.getRaceRenderDebugSettings(),
+    editorSurfacePreviewEnabled: false,
+    editorSurfacePreview3dEnabled: false
+  };
+  const calls = [];
+  editor.drawRaceTopDownTileMap = () => calls.push('tile-map');
+  editor.drawRaceTopDownActualSurfacePreview = () => {
+    calls.push('actual-surface');
+    return true;
+  };
+  editor.drawRaceTopDownScenerySprites = () => calls.push('scenery');
+  editor.drawRaceTopDownDecals = () => calls.push('decals');
+  editor.drawRaceTilePalette = () => calls.push('palette');
+  editor.drawRaceSegmentLengthLabels = () => calls.push('labels');
+  editor.drawRaceMapScaleBar = () => calls.push('scale');
+
+  editor.drawRaceTopDownEditor(createMockContext(), { x: 0, y: 0, w: 720, h: 420 });
+
+  assert.equal(calls.includes('actual-surface'), true);
+  assert.equal(calls.indexOf('tile-map') < calls.indexOf('actual-surface'), true);
+  assert.equal(calls.indexOf('actual-surface') < calls.indexOf('scenery'), true);
+});
+
+test('Race editor actual top-down surface preview uses canonical surface bake geometry', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  let bakeRequests = 0;
+  editor.getRaceEditorSurfacePreviewBake = () => {
+    throw new Error('default placement preview should not build the heavy terrain debug bake');
+  };
+  const originalBake = editor.getRaceSurfaceBake.bind(editor);
+  editor.getRaceSurfaceBake = (options = {}) => {
+    bakeRequests += 1;
+    return originalBake(options);
+  };
+  const ctx = createMockContext();
+
+  const drew = editor.drawRaceTopDownActualSurfacePreview(ctx, { x: 0, y: 0, w: 720, h: 420 });
+
+  assert.equal(drew, true);
+  assert.equal(bakeRequests, 1);
+  assert.equal(ctx.calls.some((call) => call.type === 'fill' && call.style === '#59666a'), true);
+  assert.equal(ctx.calls.some((call) => call.type === 'moveTo'), true);
+});
+
+test('Race editor actual top-down surface preview caps long-route section drawing for pan performance', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const sourceSections = Array.from({ length: 2400 }, (_, index) => {
+    const z = index * 2;
+    return {
+      transitionLeft: { x: -8, z },
+      shoulderLeft: { x: -6, z },
+      marginLeft: { x: -4, z },
+      left: { x: -3, z },
+      right: { x: 3, z },
+      marginRight: { x: 4, z },
+      shoulderRight: { x: 6, z },
+      transitionRight: { x: 8, z }
+    };
+  });
+  editor.getRaceSurfaceBake = () => ({ sections: sourceSections });
+  const ctx = createMockContext();
+
+  assert.equal(editor.drawRaceTopDownActualSurfacePreview(ctx, { x: 0, y: 0, w: 720, h: 420 }), true);
+
+  const fillCalls = ctx.calls.filter((call) => call.type === 'fill').length;
+  assert.equal(fillCalls <= sourceSections.length, true);
+  assert.equal(fillCalls <= 4 * 720, true);
 });
 
 test('Race render debug settings persist editor surface preview controls', () => {

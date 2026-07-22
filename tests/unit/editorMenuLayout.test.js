@@ -1990,7 +1990,7 @@ test('shared file menu specs include the actions used by editor surfaces', () =>
     assert.equal(
       dropdown.items.at(-1)?.id,
       DESKTOP_FILE_FOOTER_ACTION_ID,
-      `${editorId} desktop File dropdown should keep Exit to Main Menu as the footer`
+      `${editorId} desktop File dropdown should keep Exit as the footer`
     );
     const editDropdown = buildDesktopDropdownPlan(editorId, 'edit');
     assert.deepEqual(
@@ -2185,9 +2185,15 @@ test('landscape touch shell plan standardizes side rails, bottom rail, and gestu
   assert.equal(plan.bottomRailRole, 'tool-options-ribbons-zoom');
   assert.equal(plan.gestureScroll, true);
   assert.deepEqual(plan.surfaces.rootMenu, plan.leftRail);
-  assert.deepEqual(plan.surfaces.submenu, plan.rightRail);
+  assert.equal(plan.surfaces.submenu.x, plan.rightRail.x);
+  assert.equal(plan.surfaces.submenu.w, plan.rightRail.w);
+  assert.equal(plan.surfaces.submenu.h <= plan.rightRail.h, true);
   assert.deepEqual(plan.surfaces.toolOptions, plan.bottomRail);
-  assert.deepEqual(plan.surfaces.zoom, plan.bottomRail);
+  assert.ok(plan.surfaces.zoom);
+  assert.equal(plan.surfaces.zoom.x, plan.surfaces.submenu.x);
+  assert.equal(plan.surfaces.zoom.w, plan.surfaces.submenu.w);
+  assert.equal(plan.surfaces.zoom.y >= plan.surfaces.submenu.y + plan.surfaces.submenu.h, true);
+  assert.notDeepEqual(plan.surfaces.zoom, plan.bottomRail);
   assert.deepEqual(plan.surfaces.ribbon, plan.bottomRail);
   assert.deepEqual(plan.surfaces.workSurface, plan.workSurface);
   assert.equal(plan.leftRail.x, 0);
@@ -2204,12 +2210,12 @@ test('landscape touch shell plan standardizes side rails, bottom rail, and gestu
   assert.equal(uiSpecSource.includes('Pixel landscape keeps palette/layer/frame controls in this bottom rail and places zoom below the right submenu, not inside the bottom rail or a separate top strip.'), true);
   assert.equal(uiSpecSource.includes('Dense editors should use the shared 84px compact command rail with `Menu`, `Undo`, `Redo`, and one contextual quick action; this rail is not scrollable.'), true);
   assert.equal(uiSpecSource.includes('The compact four-button left command rail stays fixed.'), true);
-  assert.equal(editorUiContractSource.includes('`BottomRail` is the persistent tool/options/zoom/ribbon surface'), true);
-  assert.equal(editorUiContractSource.includes('Pixel landscape keeps palette/layer/frame controls in the bottom rail, caps the right submenu to the compact left rail height, and uses a right-side `surfaces.zoom` slot directly below that submenu'), true);
+  assert.equal(editorUiContractSource.includes('`BottomRail` is the persistent tool/options/ribbon surface'), true);
+  assert.equal(editorUiContractSource.includes('Standard touch landscape keeps hot tools in the bottom rail, caps the right submenu to the compact left rail height, and uses a right-side `surfaces.zoom` slot directly below that submenu'), true);
   assert.equal(editorUiContractSource.includes('`LeftRail` is the persistent fixed compact command rail and maps to `surfaces.compactCommandRail`'), true);
   assert.equal(editorUiContractSource.includes('It is `84px` wide, shows `Menu`, `Undo`, `Redo`, and one contextual quick action, and does not scroll.'), true);
   assert.equal(editorUiContractSource.includes('`RootDrawer` is the full root menu opened by `Menu` and maps to `surfaces.rootDrawer`'), true);
-  assert.equal(editorUiContractSource.includes('maps to `surfaces.toolOptions`, `surfaces.zoom`, and `surfaces.ribbon`'), true);
+  assert.equal(editorUiContractSource.includes('maps to `surfaces.toolOptions` and `surfaces.ribbon`'), true);
   assert.equal(editorUiContractSource.includes('suppressedDesktopSurfaces'), true);
   assert.equal(editorUiContractSource.includes('`desktop-top-menu`, `desktop-dropdown`, and `desktop-left-inspector`'), true);
 });
@@ -2417,6 +2423,13 @@ test('landscape touch shell keeps compact rails tall enough for four actions', (
 });
 
 test('landscape touch shell role contract is shared across every editor', () => {
+  const pixelReference = buildLandscapeTouchEditorShellPlan('pixel', {
+    viewportWidth: 844,
+    viewportHeight: 390,
+    bottomRailHeight: 78,
+    reserveRightRail: true,
+    reserveThumbstickSpace: false
+  });
   for (const editorId of ALL_EDITOR_IDS) {
     const plan = buildLandscapeTouchEditorShellPlan(editorId, {
       viewportWidth: 844,
@@ -2453,10 +2466,18 @@ test('landscape touch shell role contract is shared across every editor', () => 
     assert.deepEqual(plan.surfaces.compactCommandRail, plan.leftRail);
     assert.deepEqual(plan.surfaces.rootMenu, plan.leftRail);
     assert.deepEqual(plan.surfaces.rootDrawer, plan.leftRootDrawer);
-    assert.deepEqual(plan.surfaces.submenu, plan.rightRail);
+    assert.equal(plan.surfaces.submenu.x, plan.rightRail.x, `${editorId} submenu x aligns to right rail`);
+    assert.equal(plan.surfaces.submenu.w, plan.rightRail.w, `${editorId} submenu width matches right rail`);
+    assert.equal(plan.surfaces.submenu.w, pixelReference.surfaces.submenu.w, `${editorId} right submenu width matches Pixel landscape`);
+    assert.equal(plan.surfaces.submenu.h <= plan.rightRail.h, true, `${editorId} submenu is capped within right rail`);
     assert.ok(plan.surfaces.overlayDrawer);
     assert.deepEqual(plan.surfaces.toolOptions, plan.bottomRail);
-    assert.deepEqual(plan.surfaces.zoom, plan.bottomRail);
+    assert.ok(plan.surfaces.zoom, `${editorId} zoom surface should be present`);
+    assert.equal(plan.surfaces.zoom.x, plan.surfaces.submenu.x, `${editorId} zoom should align with right submenu`);
+    assert.equal(plan.surfaces.zoom.w, plan.surfaces.submenu.w, `${editorId} zoom width should match right submenu`);
+    assert.equal(plan.surfaces.zoom.y >= plan.surfaces.submenu.y + plan.surfaces.submenu.h, true, `${editorId} zoom should sit below right submenu`);
+    assert.equal(plan.surfaces.zoom.y + plan.surfaces.zoom.h <= plan.bounds.h - plan.padding, true, `${editorId} zoom should stay inside the bottom-right shell slot`);
+    assert.notDeepEqual(plan.surfaces.zoom, plan.bottomRail);
     assert.deepEqual(plan.surfaces.ribbon, plan.bottomRail);
     assert.deepEqual(plan.surfaces.workSurface, plan.workSurface);
     assert.equal(plan.surfaces.rootDrawer.x >= plan.leftRail.x + plan.leftRail.w, true);
@@ -2472,6 +2493,13 @@ test('landscape touch shell role contract is shared across every editor', () => 
 });
 
 test('landscape touch editors use left command/root surfaces and suppress desktop and gamepad chrome', () => {
+  const pixelReference = buildLandscapeTouchEditorShellPlan('pixel', {
+    viewportWidth: 844,
+    viewportHeight: 390,
+    bottomRailHeight: 78,
+    reserveRightRail: true,
+    reserveThumbstickSpace: false
+  });
   for (const editorId of ALL_EDITOR_IDS) {
     const plan = buildLandscapeTouchEditorShellPlan(editorId, {
       viewportWidth: 844,
@@ -2505,8 +2533,16 @@ test('landscape touch editors use left command/root surfaces and suppress deskto
     assert.deepEqual(plan.surfaces.compactCommandRail, plan.leftRail, `${editorId} compact rail bounds`);
     assert.deepEqual(plan.surfaces.rootMenu, plan.leftRail, `${editorId} root rail bounds`);
     assert.deepEqual(plan.surfaces.rootDrawer, plan.leftRootDrawer, `${editorId} left root drawer bounds`);
-    assert.deepEqual(plan.surfaces.submenu, plan.rightRail, `${editorId} right submenu bounds`);
+    assert.equal(plan.surfaces.submenu.x, plan.rightRail.x, `${editorId} right submenu x`);
+    assert.equal(plan.surfaces.submenu.w, plan.rightRail.w, `${editorId} right submenu width`);
+    assert.equal(plan.surfaces.submenu.w, pixelReference.surfaces.submenu.w, `${editorId} right submenu width matches Pixel landscape`);
+    assert.equal(plan.surfaces.submenu.h <= plan.rightRail.h, true, `${editorId} right submenu stays inside rail`);
     assert.deepEqual(plan.surfaces.toolOptions, plan.bottomRail, `${editorId} bottom context bounds`);
+    assert.ok(plan.surfaces.zoom, `${editorId} bottom-right zoom surface`);
+    assert.equal(plan.surfaces.zoom.x, plan.surfaces.submenu.x, `${editorId} zoom aligns to the right rail`);
+    assert.equal(plan.surfaces.zoom.w, plan.surfaces.submenu.w, `${editorId} zoom width matches the right rail`);
+    assert.equal(plan.surfaces.zoom.y >= plan.surfaces.submenu.y + plan.surfaces.submenu.h, true, `${editorId} zoom sits below the right submenu`);
+    assert.notDeepEqual(plan.surfaces.zoom, plan.surfaces.toolOptions, `${editorId} zoom should not consume the hot bottom rail`);
     assert.equal(plan.surfaces.rootDrawer.x >= plan.leftRail.x + plan.leftRail.w, true, `${editorId} root drawer starts after left rail`);
     assert.equal(plan.surfaces.rootDrawer.x + plan.surfaces.rootDrawer.w <= plan.rightRail.x - plan.gap, true, `${editorId} root drawer leaves right drill-down visible`);
     assert.equal(plan.surfaces.submenu.x >= plan.bounds.w - plan.surfaces.submenu.w, true, `${editorId} submenu is right anchored`);
@@ -2544,7 +2580,7 @@ test('landscape touch shell omits the right submenu surface when gamepad slide-o
   assert.deepEqual(plan.surfaces.rootMenu, plan.leftRail);
   assert.deepEqual(plan.surfaces.rootDrawer, plan.leftRootDrawer);
   assert.deepEqual(plan.surfaces.toolOptions, plan.bottomRail);
-  assert.deepEqual(plan.surfaces.zoom, plan.bottomRail);
+  assert.equal(plan.surfaces.zoom, null);
   assert.deepEqual(plan.surfaces.ribbon, plan.bottomRail);
   assert.equal(plan.rightRail.w, 0);
   assert.equal(plan.surfaces.rootDrawer.x >= plan.leftRail.x + plan.leftRail.w, true);

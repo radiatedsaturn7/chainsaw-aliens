@@ -15,7 +15,7 @@ import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPA
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
 import { openTextInputOverlay } from './shared/textInputOverlay.js';
 import { buildTransformHandleMeta, hitTestTransformHandles } from './shared/transformHandles.js';
-import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopLeftContextRoles, getEditorDesktopRootIdForSection, getEditorDesktopSectionId, getEditorPortraitRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
+import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopLeftContextRoles, getEditorDesktopRootIdForSection, getEditorDesktopSectionId, getEditorTouchRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
 import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, buildMenuScrollDragState, canRenderEditorPlanSurface, canRenderEditorSurface, createDesktopDropdownCommandHit, createDesktopRootMenuHit, createPendingDesktopDropdownHit, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveDesktopRootMenuHit, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveMenuScrollDrag, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
 import { DEFAULT_TILE_TYPES } from '../content/tileDefinitions.js';
 
@@ -356,12 +356,12 @@ const getLevelDesktopPanelLabel = (tabId) => {
 };
 
 export function buildLevelMobileLandscapeRootTabs() {
-  return LEVEL_CONTROLLER_ROOT_ENTRIES.filter((entry) => entry.id !== 'playtest');
+  return buildLevelPortraitMenuModel().rootTabs;
 }
 
 export function buildLevelPortraitMenuModel() {
   return {
-    rootTabs: getEditorPortraitRootMenuEntries('level', {
+    rootTabs: getEditorTouchRootMenuEntries('level', {
       labelOverrides: { file: SHARED_EDITOR_LEFT_MENU.fileLabel }
     }),
     assetTabs: [
@@ -931,7 +931,7 @@ export default class Editor {
           viewportWidth: width,
           viewportHeight: height,
           bottomRailHeight: LEVEL_LANDSCAPE_BOTTOM_RAIL_HEIGHT,
-          reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft,
+          reserveRightRail: !gamepadSubmenuOnLeft,
           capRightRailToLeftRailHeight: true,
           placeZoomBelowRightRail: true
         });
@@ -977,7 +977,7 @@ export default class Editor {
           viewportWidth: width,
           viewportHeight: height,
           bottomRailHeight: LEVEL_LANDSCAPE_BOTTOM_RAIL_HEIGHT,
-          reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft,
+          reserveRightRail: !gamepadSubmenuOnLeft,
           capRightRailToLeftRailHeight: true,
           placeZoomBelowRightRail: true
         });
@@ -1513,7 +1513,7 @@ export default class Editor {
         }] : []),
         ...(!includeFooter ? [{
           id: 'exit-main',
-          label: 'Exit to Main Menu',
+          label: 'Exit',
           tooltip: 'Exit editor to title',
           onClick: () => this.exitToMainMenu()
         }] : [])
@@ -8621,7 +8621,7 @@ export default class Editor {
       y = bounds.y;
       w = bounds.w;
       h = bounds.h;
-      ctx.fillStyle = drawSharedMenuButtonChrome(ctx, bounds, { active, alpha: 0.9, subtle: Boolean(disabled) });
+      const textColor = drawSharedMenuButtonChrome(ctx, bounds, { active, subtle: Boolean(disabled) });
       if (focused) {
         drawSharedFocusRing(ctx, bounds);
       }
@@ -8643,7 +8643,7 @@ export default class Editor {
       const textAlign = preview ? 'left' : 'center';
       drawSharedMenuButtonLabel(ctx, bounds, label, {
         fontSize,
-        color: disabled ? UI_SUITE.colors.muted : active ? '#0b0b0b' : '#fff',
+        color: disabled ? UI_SUITE.colors.muted : textColor,
         align: textAlign,
         x: textX,
         y: y + h / 2,
@@ -8764,7 +8764,7 @@ export default class Editor {
         viewportWidth: width,
         viewportHeight: height,
         bottomRailHeight: LEVEL_LANDSCAPE_BOTTOM_RAIL_HEIGHT,
-        reserveRightRail: this.drawer.open && !gamepadSubmenuOnLeft,
+        reserveRightRail: !gamepadSubmenuOnLeft,
         capRightRailToLeftRailHeight: true,
         placeZoomBelowRightRail: true
       });
@@ -8844,6 +8844,40 @@ export default class Editor {
           : LEVEL_PORTRAIT_SETTINGS_TABS.includes(activeTab)
             ? 'settings'
             : activeTab;
+      if (portraitLayout && canRenderEditorSurface(viewportMode.mode, 'bottom-action-rail')) {
+        const portraitActionById = {
+          menu: {
+            id: 'menu',
+            label: '☰',
+            onClick: () => {
+              const opening = !this.drawer.open;
+              if (opening) this.setPanelTab('file');
+              this.drawer.open = opening;
+            }
+          },
+          undo: { id: 'undo', label: '↶', tooltip: 'Undo', onClick: () => this.undo() },
+          redo: { id: 'redo', label: '↷', tooltip: 'Redo', onClick: () => this.redo() },
+          playtest: { id: 'playtest', label: '▶', tooltip: 'Start playtest from spawn', primary: true, onClick: () => this.startPlaytestFromCursor() }
+        };
+        const portraitActions = buildLevelPortraitMenuModel().bottomRailActions.map((id) => portraitActionById[id]).filter(Boolean);
+        const railLayout = drawSharedPortraitActionRail(ctx, portraitLayout.middleRail, this.panJoystick, portraitActions, {
+          drawButton: (bounds, action) => drawButton(
+            bounds.x,
+            bounds.y,
+            bounds.w,
+            bounds.h,
+            action.label,
+            false,
+            action.onClick,
+            action.tooltip || ''
+          )
+        });
+        const zoomLabelY = Math.min(portraitLayout.middleRail.y + portraitLayout.middleRail.h - 14, railLayout.actionArea.y + railLayout.actionArea.h + 22);
+        ctx.fillStyle = UI_SUITE.colors.muted;
+        ctx.font = `12px ${UI_SUITE.font.family}`;
+        ctx.fillText(`Zoom ${Math.round(this.zoom * 100)}%`, railLayout.actionArea.x, zoomLabelY);
+      }
+
       if (portraitLayout && this.drawer.open) {
         drawSharedPortraitSheet(ctx, portraitLayout.menuSheet);
         drawSharedPortraitMultiRowTabStrip(ctx, { x: panelX, y: panelY, w: panelW, h: panelH }, tabs, {
@@ -8869,6 +8903,8 @@ export default class Editor {
                   this.undo();
                 } else if (panel === 'redo') {
                   this.redo();
+                } else if (panel === 'exit-main') {
+                  this.exitToMainMenu();
                 } else {
                   this.setPanelTab(panel);
                   this.drawer.open = true;
@@ -8883,7 +8919,7 @@ export default class Editor {
       } else if (gamepadSubmenuOnLeft) {
         this.drawGamepadSlideOutPanel(ctx, { x: panelX, y: panelY, w: panelW, h: panelH });
       } else if (!portraitLayout) {
-        const quickAction = { id: 'playtest', label: 'Play', onClick: () => this.startPlaytestFromCursor() };
+        const quickAction = { id: 'playtest', label: '▶', onClick: () => this.startPlaytestFromCursor() };
         const railActions = buildCompactLandscapeCommandRailActions({
           menu: {
             id: 'menu',
@@ -8923,32 +8959,6 @@ export default class Editor {
             this.controllerMenu.isFocusedItem('root', action.id)
           );
         });
-      }
-
-      if (portraitLayout && canRenderEditorSurface(viewportMode.mode, 'bottom-action-rail')) {
-        const portraitActionById = {
-          menu: { id: 'menu', label: '☰', onClick: () => { this.drawer.open = !this.drawer.open; } },
-          undo: { id: 'undo', label: '↶', tooltip: 'Undo', onClick: () => this.undo() },
-          redo: { id: 'redo', label: '↷', tooltip: 'Redo', onClick: () => this.redo() },
-          playtest: { id: 'playtest', label: '▶', tooltip: 'Start playtest from spawn', primary: true, onClick: () => this.startPlaytestFromCursor() }
-        };
-        const portraitActions = buildLevelPortraitMenuModel().bottomRailActions.map((id) => portraitActionById[id]).filter(Boolean);
-        const railLayout = drawSharedPortraitActionRail(ctx, portraitLayout.middleRail, this.panJoystick, portraitActions, {
-          drawButton: (bounds, action) => drawButton(
-            bounds.x,
-            bounds.y,
-            bounds.w,
-            bounds.h,
-            action.label,
-            false,
-            action.onClick,
-            action.tooltip || ''
-          )
-        });
-        const zoomLabelY = Math.min(portraitLayout.middleRail.y + portraitLayout.middleRail.h - 14, railLayout.actionArea.y + railLayout.actionArea.h + 22);
-        ctx.fillStyle = UI_SUITE.colors.muted;
-        ctx.font = `12px ${UI_SUITE.font.family}`;
-        ctx.fillText(`Zoom ${Math.round(this.zoom * 100)}%`, railLayout.actionArea.x, zoomLabelY);
       }
 
       if (drawerOpenForLayout) {
@@ -8996,6 +9006,10 @@ export default class Editor {
           grid.items.forEach(({ index, bounds }) => {
             const entry = rootItems[index];
             const onPick = () => {
+              if (entry.id === 'exit-main') {
+                this.exitToMainMenu();
+                return;
+              }
               const panelTab = entry.panel || getLevelPanelTabForRootId(entry.id);
               this.setPanelTab(panelTab);
               this.drawer.open = true;
@@ -9498,6 +9512,7 @@ export default class Editor {
             buttonHeight: rowHeight,
             isMobile: true,
             showTitle: false,
+            drawPanel: !portraitLayout,
             footerMode: stickyExit && exitItem ? 'exit-only' : 'none',
             footerItem: exitItem,
             layoutMode: 'auto-grid',

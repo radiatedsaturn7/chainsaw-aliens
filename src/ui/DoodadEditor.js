@@ -8,6 +8,7 @@ import {
 import { loadProjectFile, sanitizeProjectFileName, saveProjectFileAndConfirm } from './projectFiles.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import {
+  SHARED_EDITOR_LEFT_MENU,
   UI_SUITE,
   buildSharedEditorFileMenu,
   drawSharedDesktopContextPanel,
@@ -23,7 +24,9 @@ import {
   drawSharedPanel,
   drawSharedPortraitActionRail,
   getSharedMobilePortraitEditorLayout,
-  resetSharedThumbstickState
+  renderSharedFileDrawer,
+  resetSharedThumbstickState,
+  splitFileDrawerStickyExitItems
 } from './uiSuite.js';
 import {
   applyDesktopDropdownWheelScrollState,
@@ -53,7 +56,7 @@ import {
 import {
   getEditorDesktopLeftContextRoles,
   getEditorMenuSpec,
-  getEditorPortraitRootMenuEntries,
+  getEditorTouchRootMenuEntries,
   getEditorRootMenuEntries
 } from './shared/editorMenuSpec.js';
 import { SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
@@ -80,7 +83,7 @@ export default class DoodadEditor {
     this.saveStatus = '';
     this.activeTab = 'art';
     this.mobileMenuOpen = false;
-    this.mobileRootId = 'artwork';
+    this.mobileRootId = 'file';
     this.landscapeRootDrawerOpen = false;
     this.landscapeRootId = 'artwork';
     this.gamepadSubmenuOpen = false;
@@ -424,6 +427,7 @@ export default class DoodadEditor {
   }
 
   toggleMobileMenu() {
+    if (!this.mobileMenuOpen) this.mobileRootId = 'file';
     this.mobileMenuOpen = !this.mobileMenuOpen;
   }
 
@@ -448,8 +452,7 @@ export default class DoodadEditor {
   drawButton(ctx, bounds, label, active = false, disabled = false) {
     const color = drawSharedMenuButtonChrome(ctx, bounds, {
       active: active && !disabled,
-      subtle: disabled,
-      alpha: disabled ? 0.7 : 1
+      subtle: disabled
     });
     drawSharedMenuButtonLabel(ctx, bounds, label, {
       color: disabled ? UI_SUITE.colors.muted : color,
@@ -730,7 +733,7 @@ export default class DoodadEditor {
   }
 
   drawLandscapeRootDrawer(ctx, bounds, { entries = null, gamepad = false, headerHint = null } = {}) {
-    const roots = entries || getEditorRootMenuEntries(DOODAD_EDITOR_ID);
+    const roots = entries || getEditorTouchRootMenuEntries(DOODAD_EDITOR_ID);
     drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
     if (gamepad) drawSharedGamepadSlideOutHeader(ctx, bounds, 'Doodad', { hint: headerHint || undefined });
     const grid = buildLandscapeRootDrawerGridLayout({
@@ -751,6 +754,10 @@ export default class DoodadEditor {
         active: this.landscapeRootId === entry.id,
         focused: gamepad && Boolean(entry.focused),
         onClick: () => {
+          if (entry.id === 'exit-main') {
+            this.exitToMainMenu();
+            return;
+          }
           this.landscapeRootId = entry.id;
           this.mobileRootId = entry.id === 'file' ? 'file' : 'artwork';
           if (gamepad) {
@@ -854,9 +861,9 @@ export default class DoodadEditor {
     }
 
     const portraitActionById = {
-      menu: { id: 'menu', label: 'Menu', onClick: () => this.toggleMobileMenu(), active: this.mobileMenuOpen },
-      undo: { id: 'undo', label: 'Undo', onClick: () => this.undo() },
-      redo: { id: 'redo', label: 'Redo', onClick: () => this.redo() },
+      menu: { id: 'menu', label: '☰', onClick: () => this.toggleMobileMenu(), active: this.mobileMenuOpen },
+      undo: { id: 'undo', label: '↶', onClick: () => this.undo() },
+      redo: { id: 'redo', label: '↷', onClick: () => this.redo() },
       context: { id: 'context', label: this.getPortraitHotMenuLabel(this.portraitHotMenu), onClick: () => this.cyclePortraitHotMenu() }
     };
     const actions = ['menu', 'undo', 'redo', 'context'].map((id) => portraitActionById[id]);
@@ -879,8 +886,8 @@ export default class DoodadEditor {
   }
 
   drawPortraitMenuSheet(ctx, layout) {
-    const roots = getEditorPortraitRootMenuEntries(DOODAD_EDITOR_ID);
-    if (!roots.some((entry) => entry.id === this.mobileRootId)) this.mobileRootId = 'artwork';
+    const roots = getEditorTouchRootMenuEntries(DOODAD_EDITOR_ID);
+    if (!roots.some((entry) => entry.id === this.mobileRootId)) this.mobileRootId = 'file';
     drawSharedPanel(ctx, layout.menuSheet, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
     this.drawActionRows(ctx, layout.rootRail, roots.map((root) => ({
       id: `root-${root.id}`,
@@ -891,7 +898,34 @@ export default class DoodadEditor {
     const actions = this.mobileRootId === 'file'
       ? this.getDoodadFileMenuItems()
       : [];
-    if (actions.length) this.drawActionRows(ctx, layout.subRail, actions, 2);
+    if (actions.length && this.mobileRootId === 'file') {
+      const { listItems, exitItem } = splitFileDrawerStickyExitItems(actions);
+      renderSharedFileDrawer(ctx, {
+        panel: layout.subRail,
+        items: listItems,
+        title: '',
+        rowHeight: SHARED_EDITOR_LEFT_MENU.buttonHeightMobile,
+        rowGap: SHARED_EDITOR_LEFT_MENU.buttonGap,
+        buttonHeight: SHARED_EDITOR_LEFT_MENU.buttonHeightMobile,
+        isMobile: true,
+        showTitle: false,
+        drawPanel: false,
+        footerMode: exitItem ? 'exit-only' : 'none',
+        footerItem: exitItem,
+        layoutMode: 'auto-grid',
+        minColumnWidth: 118,
+        maxColumns: 2,
+        layout: {
+          padding: SHARED_EDITOR_LEFT_MENU.panelPadding,
+          headerHeight: 0,
+          footerHeight: SHARED_EDITOR_LEFT_MENU.buttonHeightMobile,
+          footerBottomPadding: SHARED_EDITOR_LEFT_MENU.panelPadding
+        },
+        drawButton: (buttonBounds, action) => this.registerButton(ctx, buttonBounds, action)
+      });
+    } else if (actions.length) {
+      this.drawActionRows(ctx, layout.subRail, actions, 2);
+    }
   }
 
   drawActionRows(ctx, bounds, actions, columns = 1, { showFocusRing = false } = {}) {

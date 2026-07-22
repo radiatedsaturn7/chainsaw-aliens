@@ -722,6 +722,20 @@ export function getEditorPortraitRootMenuEntries(editorId, {
   });
 }
 
+export function getEditorTouchRootMenuEntries(editorId, options = {}) {
+  const roots = getEditorPortraitRootMenuEntries(editorId, options);
+  return [
+    ...roots,
+    {
+      id: DESKTOP_FILE_FOOTER_ACTION_ID,
+      specId: DESKTOP_FILE_FOOTER_ACTION_ID,
+      panel: DESKTOP_FILE_FOOTER_ACTION_ID,
+      label: 'Exit',
+      touchExit: true
+    }
+  ];
+}
+
 export function validateEditorMenuSpec(spec) {
   const errors = [];
   if (!spec || typeof spec !== 'object') return ['Spec must be an object.'];

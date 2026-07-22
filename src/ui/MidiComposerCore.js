@@ -33,7 +33,7 @@ import { initializeComposerState } from './midi/state/composerState.js';
 import { registerComposerInputHandlers } from './midi/input/composerInputHandlers.js';
 import { drawGhostNotes as drawComposerGhostNotes, drawRecordModeSidebar as drawComposerRecordModeSidebar } from './midi/render/composerRender.js';
 import { createViewportController } from './shared/viewportController.js';
-import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopControllerMenuIdForSection, getEditorDesktopLeftContextRoles, getEditorPortraitRootMenuEntries, getEditorRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
+import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopControllerMenuIdForSection, getEditorDesktopLeftContextRoles, getEditorTouchRootMenuEntries, getEditorRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
 import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, buildMenuScrollDragState, canRenderEditorPlanSurface, canRenderEditorSurface, createDesktopDropdownCommandHit, createDesktopRootMenuHit, createPendingDesktopDropdownHit, findScrollableMenuRegion, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveMenuScrollDrag, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
 import { createEditorRuntime } from './shared/editor-runtime/EditorRuntime.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
@@ -138,11 +138,7 @@ const MIDI_CONTROLLER_ROOT_TO_TAB = {
   instruments: 'instruments',
   'virtual-instruments': 'virtual-instruments'
 };
-const MIDI_LANDSCAPE_RIGHT_DRAWER_TABS = new Set(
-  MIDI_CONTROLLER_ROOT_ENTRIES
-    .filter((entry) => ['file', 'view', 'record', 'settings'].includes(entry.specId || entry.id))
-    .map((entry) => entry.id)
-);
+const MIDI_LANDSCAPE_RIGHT_DRAWER_TABS = new Set(['file', 'settings', 'virtual-instruments']);
 const MIDI_WORKSPACE_TAB_IDS = new Set(
   MIDI_CONTROLLER_ROOT_ENTRIES
     .filter((entry) => !['file', 'settings'].includes(entry.specId || entry.id))
@@ -239,7 +235,7 @@ const MIDI_SONG_MODE_TABS = [
 ];
 
 export function buildMidiPortraitRootTabs() {
-  return getEditorPortraitRootMenuEntries('midi', {
+  return getEditorTouchRootMenuEntries('midi', {
     labelOverrides: { file: SHARED_EDITOR_LEFT_MENU.fileLabel }
   });
 }
@@ -1391,6 +1387,7 @@ export default class MidiComposer {
     this.debug = { perf: false };
     this.currentDocumentRef = null;
     this.savedSnapshot = null;
+    this.fileMenuSubmenu = null;
     this.fileMenuScroll = 0;
     this.fileMenuScrollMax = 0;
     this.fileMenuListBounds = null;
@@ -1475,11 +1472,15 @@ export default class MidiComposer {
     this.songTimelineOffsetX = 0;
     this.songMixControlMode = 'volume';
     this.songBottomRailMode = 'music-controls';
+    this.songLandscapeModeMenuOpen = false;
+    this.songLandscapeModeMenuScroll = 0;
+    this.songLandscapeModeMenuScrollMax = 0;
     this.midiPortraitTrackPickerOpen = false;
     this.midiPortraitTrackPickerScroll = 0;
     this.midiPortraitTrackPickerScrollMax = 0;
     this.midiPortraitMasterVolumeOpen = false;
     this.midiPortraitRecordSettingsOpen = false;
+    this.midiRecordLandscapeMoreOpen = false;
     this.transportHold = null;
     this.transportPopover = null;
     this.viewportController = createViewportController();
@@ -1532,6 +1533,8 @@ export default class MidiComposer {
       midiPortraitMasterVolumeSlider: null,
       recordVirtualInstrument: null,
       recordSettings: null,
+      recordMore: null,
+      recordMoreMenuPanel: null,
       recordSettingsPanel: null,
       recordSettingsControls: [],
       toolButtons: [],
@@ -1579,6 +1582,12 @@ export default class MidiComposer {
       songMixVolumeTab: null,
       songMixPanTab: null,
       songRailEditTab: null,
+      songRailMusicControls: null,
+      songRailToolsTab: null,
+      songRailMore: null,
+      songRailBack: null,
+      songLandscapeModeMenu: null,
+      songLandscapeModeMenuRows: [],
       songMixRail: null,
       transportPopoverButtons: [],
       pedalInspectorToggle: null
@@ -2869,6 +2878,7 @@ export default class MidiComposer {
     this.draggingTrackControl = null;
     this.toolsMenuOpen = false;
     this.genreMenuOpen = false;
+    this.fileMenuSubmenu = null;
     this.qaOverlayOpen = false;
     this.confirmOverlayOpen = false;
     this.tempoSliderOpen = false;
@@ -2886,6 +2896,7 @@ export default class MidiComposer {
     if (this.recordModeActive) this.exitRecordMode();
     this.activeTab = 'grid';
     this.fileMenuOpen = false;
+    this.fileMenuSubmenu = null;
     this.controllerMenu.resetFocus();
   }
 
@@ -3803,6 +3814,9 @@ export default class MidiComposer {
 
   activateLeftRailTab(tabId) {
     const previousTab = this.activeTab;
+    if (tabId !== 'file') {
+      this.fileMenuSubmenu = null;
+    }
     if (previousTab === 'grid' || previousTab === 'song') {
       this.saveCurrentViewportMemory();
       this.persistViewportState();
@@ -3831,6 +3845,10 @@ export default class MidiComposer {
       this.runtime.redo();
       return;
     }
+    if (id === 'exit-main') {
+      this.exitToMainMenu();
+      return;
+    }
     if (id === 'file') {
       if (this.activeTab === 'file') {
         this.closeFileMenu();
@@ -3842,7 +3860,9 @@ export default class MidiComposer {
       }
       return;
     }
-    this.activateLeftRailTab(id);
+    const tabId = MIDI_CONTROLLER_ROOT_TO_TAB[id] || id;
+    this.activateLeftRailTab(tabId);
+    this.landscapeRootDrawerOpen = false;
     this.closeSelectionMenu();
     this.pastePreview = null;
     this.noteLengthMenu.open = false;
@@ -5508,6 +5528,30 @@ export default class MidiComposer {
       return;
     }
     if (!this.recordModeActive
+      && this.activeTab === 'song'
+      && this.songLandscapeModeMenuOpen
+      && this.bounds.songLandscapeModeMenu
+      && this.pointInBounds(x, y, this.bounds.songLandscapeModeMenu)) {
+      const rowHit = this.bounds.songLandscapeModeMenuRows?.find((bounds) => this.pointInBounds(x, y, bounds));
+      const drag = buildMenuScrollDragState({
+        regions: [{
+          menuId: 'midi-song-landscape-mode',
+          bounds: this.bounds.songLandscapeModeMenu,
+          maxScroll: this.songLandscapeModeMenuScrollMax || 0,
+          lineHeight: SHARED_EDITOR_LEFT_MENU.buttonHeightMobile + SHARED_EDITOR_LEFT_MENU.buttonGap
+        }],
+        point: payload,
+        scrollState: { 'midi-song-landscape-mode': this.songLandscapeModeMenuScroll || 0 },
+        pendingHit: rowHit ? { mode: rowHit.mode } : null,
+        thresholdPx: 6,
+        defaultLineHeight: SHARED_EDITOR_LEFT_MENU.buttonHeightMobile + SHARED_EDITOR_LEFT_MENU.buttonGap
+      });
+      if (drag) {
+        this.dragState = { ...drag, mode: 'midi-song-landscape-mode-scroll' };
+        return;
+      }
+    }
+    if (!this.recordModeActive
       && findScrollableMenuRegion(this.menuScrollRegions, payload)) {
       const rootScrollRegion = findScrollableMenuRegion(this.menuScrollRegions, payload);
       const hitButton = this.mobileLandscapeRootMenuButtons?.find((bounds) => this.pointInBounds(x, y, bounds));
@@ -5527,6 +5571,12 @@ export default class MidiComposer {
       };
       return;
     }
+    if (!this.recordModeActive && this.landscapeRootDrawerOpen && this.mobileLandscapeRootMenuBounds
+      && this.pointInBounds(x, y, this.mobileLandscapeRootMenuBounds)) {
+      const hitButton = this.mobileLandscapeRootMenuButtons?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (hitButton?.id) this.handleMobileLandscapeRootMenuTap(hitButton.id);
+      return;
+    }
     if (!this.recordModeActive && this.landscapeRootDrawerOpen) {
       this.landscapeRootDrawerOpen = false;
       return;
@@ -5535,7 +5585,41 @@ export default class MidiComposer {
     if (this.recordModeActive) {
       const pedalOverlayOpen = this.pedalUiState.pickerOpen || this.pedalUiState.editorOpen;
       if (pedalOverlayOpen && this.handlePedalPointerDown(x, y)) return;
+      if (this.bounds.landscapeMenuButton && this.pointInBounds(x, y, this.bounds.landscapeMenuButton)) {
+        this.landscapeRootDrawerOpen = !this.landscapeRootDrawerOpen;
+        this.midiRecordLandscapeMoreOpen = false;
+        return;
+      }
+      if (this.bounds.undoButton && this.pointInBounds(x, y, this.bounds.undoButton)) {
+        this.runtime.undo();
+        this.midiRecordLandscapeMoreOpen = false;
+        return;
+      }
+      if (this.bounds.redoButton && this.pointInBounds(x, y, this.bounds.redoButton)) {
+        this.runtime.redo();
+        this.midiRecordLandscapeMoreOpen = false;
+        return;
+      }
+      if (this.bounds.recordMore && this.pointInBounds(x, y, this.bounds.recordMore)) {
+        this.midiRecordLandscapeMoreOpen = !this.midiRecordLandscapeMoreOpen;
+        this.landscapeRootDrawerOpen = false;
+        return;
+      }
+      if (this.landscapeRootDrawerOpen && this.mobileLandscapeRootMenuBounds
+        && this.pointInBounds(x, y, this.mobileLandscapeRootMenuBounds)) {
+        const hitButton = this.mobileLandscapeRootMenuButtons?.find((bounds) => this.pointInBounds(x, y, bounds));
+        if (hitButton?.id) {
+          this.exitRecordMode();
+          this.handleMobileLandscapeRootMenuTap(hitButton.id);
+        }
+        return;
+      }
+      if (this.landscapeRootDrawerOpen) {
+        this.landscapeRootDrawerOpen = false;
+        return;
+      }
       if (this.bounds.record && this.pointInBounds(x, y, this.bounds.record)) {
+        this.midiRecordLandscapeMoreOpen = false;
         if (this.recorder.isRecording) {
           this.stopRecording();
         } else {
@@ -5543,8 +5627,26 @@ export default class MidiComposer {
         }
         return;
       }
+      if (this.midiRecordLandscapeMoreOpen) {
+        if (this.bounds.recordVirtualInstrument && this.pointInBounds(x, y, this.bounds.recordVirtualInstrument)) {
+          this.midiPortraitRecordSettingsOpen = false;
+          this.recordLayout.instrumentMenuOpen = !this.recordLayout.instrumentMenuOpen;
+          this.midiRecordLandscapeMoreOpen = false;
+          return;
+        }
+        if (this.bounds.recordSettings && this.pointInBounds(x, y, this.bounds.recordSettings)) {
+          this.recordLayout.instrumentMenuOpen = false;
+          this.midiPortraitRecordSettingsOpen = !this.midiPortraitRecordSettingsOpen;
+          this.midiRecordLandscapeMoreOpen = false;
+          return;
+        }
+        if (this.bounds.recordMoreMenuPanel && this.pointInBounds(x, y, this.bounds.recordMoreMenuPanel)) {
+          return;
+        }
+      }
       if (this.bounds.play && this.pointInBounds(x, y, this.bounds.play)) {
         this.togglePlayback();
+        this.midiRecordLandscapeMoreOpen = false;
         return;
       }
       if (this.bounds.returnStart && this.pointInBounds(x, y, this.bounds.returnStart)) {
@@ -5593,11 +5695,13 @@ export default class MidiComposer {
       if (this.bounds.recordVirtualInstrument && this.pointInBounds(x, y, this.bounds.recordVirtualInstrument)) {
         this.midiPortraitRecordSettingsOpen = false;
         this.recordLayout.instrumentMenuOpen = !this.recordLayout.instrumentMenuOpen;
+        this.midiRecordLandscapeMoreOpen = false;
         return;
       }
       if (this.bounds.recordSettings && this.pointInBounds(x, y, this.bounds.recordSettings)) {
         this.recordLayout.instrumentMenuOpen = false;
         this.midiPortraitRecordSettingsOpen = !this.midiPortraitRecordSettingsOpen;
+        this.midiRecordLandscapeMoreOpen = false;
         return;
       }
       const action = this.recordLayout.handlePointerDown(payload);
@@ -5665,6 +5769,10 @@ export default class MidiComposer {
       const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
       if (tabHit) {
         this.exitRecordMode();
+        if (tabHit.id === 'exit-main') {
+          this.exitToMainMenu();
+          return;
+        }
         if (this.activeViewportMode === 'desktop') {
           this.openMidiDesktopDropdown(tabHit.desktopRootId || tabHit.id);
         } else {
@@ -6025,6 +6133,10 @@ export default class MidiComposer {
 
     const tabHit = this.bounds.tabs?.find((tab) => this.pointInBounds(x, y, tab));
     if (tabHit) {
+      if (tabHit.id === 'exit-main') {
+        this.exitToMainMenu();
+        return;
+      }
       if (this.activeViewportMode === 'desktop') {
         this.openMidiDesktopDropdown(tabHit.desktopRootId || tabHit.id);
       } else {
@@ -6068,6 +6180,8 @@ export default class MidiComposer {
         return;
       }
       this.activeTab = 'file';
+      this.fileMenuSubmenu = null;
+      this.fileMenuScroll = 0;
       this.toolsMenuOpen = false;
       this.genreMenuOpen = false;
       this.closeSelectionMenu();
@@ -6856,6 +6970,16 @@ export default class MidiComposer {
       if (this.dragState.moved) this.controllerMenu.scroll.root = this.dragState.nextScroll;
       return;
     }
+    if (this.dragState?.mode === 'midi-song-landscape-mode-scroll') {
+      this.dragState = {
+        ...resolveMenuScrollDrag(this.dragState, payload),
+        mode: 'midi-song-landscape-mode-scroll'
+      };
+      if (this.dragState.moved) {
+        this.songLandscapeModeMenuScroll = clamp(this.dragState.nextScroll, 0, this.songLandscapeModeMenuScrollMax || 0);
+      }
+      return;
+    }
     if (this.dragState?.mode === 'gamepad-submenu-scroll') {
       this.dragState = {
         ...resolveMenuScrollDrag(this.dragState, payload),
@@ -7321,6 +7445,16 @@ export default class MidiComposer {
       }
       return;
     }
+    if (this.dragState?.mode === 'midi-song-landscape-mode-scroll') {
+      const pendingHit = this.dragState.pendingHit;
+      const wasMoved = this.dragState.moved;
+      this.dragState = null;
+      if (!wasMoved && pendingHit?.mode) {
+        this.setSongBottomRailMode(pendingHit.mode);
+        if (pendingHit.mode === 'volume' || pendingHit.mode === 'pan') this.songMixControlMode = pendingHit.mode;
+      }
+      return;
+    }
     if (this.dragState?.mode === 'gamepad-submenu-scroll') {
       const pendingItem = this.dragState.pendingHit;
       const wasMoved = this.dragState.moved;
@@ -7581,6 +7715,15 @@ export default class MidiComposer {
     }
     const rootScrollRegion = findScrollableMenuRegion(this.menuScrollRegions, payload);
     if (rootScrollRegion) {
+      if (rootScrollRegion.menuId === 'midi-song-landscape-mode') {
+        const step = Math.max(-1, Math.min(1, Math.round(payload.deltaY / 48) || Math.sign(payload.deltaY)));
+        this.songLandscapeModeMenuScroll = clamp(
+          (this.songLandscapeModeMenuScroll || 0) + step,
+          0,
+          rootScrollRegion.maxScroll || 0
+        );
+        return;
+      }
       const step = Math.max(-1, Math.min(1, Math.round(payload.deltaY / 48) || Math.sign(payload.deltaY)));
       this.controllerMenu.scroll.root = clamp(
         (this.controllerMenu.scroll.root || 0) + step,
@@ -9940,26 +10083,39 @@ export default class MidiComposer {
   }
 
   handleSongBottomRailPointerDown(x, y) {
+    if (this.bounds.songRailMore && this.pointInBounds(x, y, this.bounds.songRailMore)) {
+      this.songLandscapeModeMenuOpen = true;
+      return true;
+    }
+    if (this.bounds.songRailBack && this.pointInBounds(x, y, this.bounds.songRailBack)) {
+      this.songLandscapeModeMenuOpen = false;
+      return true;
+    }
     if (this.bounds.songMixVolumeTab && this.pointInBounds(x, y, this.bounds.songMixVolumeTab)) {
       this.setSongBottomRailMode('volume');
       this.songMixControlMode = 'volume';
+      this.songLandscapeModeMenuOpen = false;
       return true;
     }
     if (this.bounds.songRailMusicControls && this.pointInBounds(x, y, this.bounds.songRailMusicControls)) {
       this.setSongBottomRailMode('music-controls');
+      this.songLandscapeModeMenuOpen = false;
       return true;
     }
     if (this.bounds.songRailEditTab && this.pointInBounds(x, y, this.bounds.songRailEditTab)) {
       this.setSongBottomRailMode('edit');
+      this.songLandscapeModeMenuOpen = false;
       return true;
     }
     if (this.bounds.songRailToolsTab && this.pointInBounds(x, y, this.bounds.songRailToolsTab)) {
       this.setSongBottomRailMode('tools');
+      this.songLandscapeModeMenuOpen = false;
       return true;
     }
     if (this.bounds.songMixPanTab && this.pointInBounds(x, y, this.bounds.songMixPanTab)) {
       this.setSongBottomRailMode('pan');
       this.songMixControlMode = 'pan';
+      this.songLandscapeModeMenuOpen = false;
       return true;
     }
     const songToolActionHit = (this.songBottomRailMode === 'tools' || this.songBottomRailMode === 'edit')
@@ -10018,6 +10174,7 @@ export default class MidiComposer {
 
   setSongBottomRailMode(mode) {
     this.songBottomRailMode = mode;
+    this.songLandscapeModeMenuOpen = false;
     this.bounds.songToolsActions = [];
     this.bounds.songTransportRecord = null;
     this.bounds.songTransportStart = null;
@@ -10381,6 +10538,7 @@ export default class MidiComposer {
   closeFileMenu() {
     this.activeTab = 'grid';
     this.fileMenuOpen = false;
+    this.fileMenuSubmenu = null;
   }
 
   async handleFileMenu(action) {
@@ -10453,6 +10611,20 @@ export default class MidiComposer {
     }
     if (action === 'load' || action === 'open') {
       await this.loadSongFromLibrary();
+      return;
+    }
+    if (action === 'export-back') {
+      this.fileMenuSubmenu = null;
+      this.fileMenuScroll = 0;
+      return;
+    }
+    if (action === 'export') {
+      if (this.activeViewportMode === 'portrait') {
+        this.fileMenuSubmenu = 'export';
+        this.fileMenuScroll = 0;
+        return;
+      }
+      this.exportSongJson();
       return;
     }
     if (action === 'export-json') {
@@ -12473,7 +12645,7 @@ export default class MidiComposer {
   drawMidiLandscapeRootDrawer(ctx, bounds) {
     if (!bounds) return;
     drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
-    const rootEntries = buildMidiSharedRootMenuEntries();
+    const rootEntries = buildMidiPortraitRootTabs();
     const grid = buildLandscapeRootDrawerGridLayout({
       bounds,
       itemCount: rootEntries.length,
@@ -12519,6 +12691,8 @@ export default class MidiComposer {
       this.drawSettingsPanel(ctx, content.x, content.y, content.w, content.h);
     } else if (this.activeTab === 'virtual-instruments') {
       this.drawControllerSubmenuPanel(ctx, content.x, content.y, content.w, content.h, 'record', { isMobile: true, layoutMode: 'list' });
+    } else {
+      this.drawControllerSubmenuPanel(ctx, content.x, content.y, content.w, content.h, this.getDesktopControllerMenuId(), { isMobile: true, layoutMode: 'list' });
     }
   }
 
@@ -13040,7 +13214,7 @@ export default class MidiComposer {
       });
       const pedalOverlayOpen = this.pedalUiState.pickerOpen || this.pedalUiState.editorOpen;
       if (!pedalOverlayOpen) {
-        this.drawPedalBoardPanel(ctx, layout.pedalBounds.x, layout.pedalBounds.y, layout.pedalBounds.w, layout.pedalBounds.h, track, { embedded: true, compact: true });
+        this.drawPedalBoardPanel(ctx, layout.pedalBounds.x, layout.pedalBounds.y, layout.pedalBounds.w, layout.pedalBounds.h, track, { embedded: true, compact: true, hideTitle: true });
       }
       const quickY = Math.max(8, layout.instrumentBounds.y - 52);
       const quickGap = 8;
@@ -13077,51 +13251,53 @@ export default class MidiComposer {
         });
       }
       if (pedalOverlayOpen) {
-        this.drawPedalBoardPanel(ctx, layout.pedalBounds.x, layout.pedalBounds.y, layout.pedalBounds.w, layout.pedalBounds.h, track, { embedded: true, compact: true });
+        this.drawPedalBoardPanel(ctx, layout.pedalBounds.x, layout.pedalBounds.y, layout.pedalBounds.w, layout.pedalBounds.h, track, { embedded: true, compact: true, hideTitle: true });
       }
       return;
     }
 
     const padding = 10;
     gap = 10;
-    const sidebarW = getSharedMobileRailWidth(width, height);
-    const sidebarX = 0;
-    const sidebarY = 0;
-    const sidebarH = height;
-    this.drawMobileSidebar(ctx, sidebarX, sidebarY, sidebarW, sidebarH, track, { menuOnly: true });
-    contentX = sidebarX + sidebarW + gap;
-    contentY = padding;
-    contentW = width - contentX - padding;
-    contentH = height - padding * 2;
-    menuH = Math.max(0, (this.bounds.settings?.y ?? sidebarY) + (this.bounds.settings?.h ?? 0) - sidebarY + SHARED_EDITOR_LEFT_MENU.panelPadding);
-
-    const controlRailW = clamp(Math.round(contentW * 0.2), 132, 204);
-    const controlRailGap = 10;
-    const controlRailBounds = {
-      x: contentX + contentW - controlRailW,
-      y: contentY,
-      w: controlRailW,
-      h: menuH
-    };
+    const topMenuH = 48;
+    this.drawMidiRecordLandscapeTopMenu(ctx, padding, padding, width - padding * 2, topMenuH);
+    contentX = padding;
+    contentY = padding + topMenuH + gap;
+    contentW = width - padding * 2;
+    contentH = height - contentY - padding;
+    const instrumentH = Math.max(80, Math.floor(height * 0.5));
+    const instrumentY = Math.max(contentY, height - padding - instrumentH);
+    const availableAboveInstrumentH = Math.max(0, instrumentY - contentY - gap);
+    const recordPedalMaxH = Math.max(82, Math.min(112, availableAboveInstrumentH));
+    const recordPedalH = clamp(Math.round(height * 0.18), 82, recordPedalMaxH);
+    const recordPedalY = Math.max(contentY, instrumentY - gap - recordPedalH);
     const gridBounds = {
       x: contentX,
       y: contentY,
-      w: Math.max(0, contentW - controlRailW - controlRailGap),
-      h: menuH
+      w: contentW,
+      h: 0
     };
-    const instrumentY = contentY + menuH + gap;
-    const instrumentH = Math.max(0, height - instrumentY);
+    const recordOverlayBounds = {
+      x: padding,
+      y: padding + topMenuH + gap,
+      w: width - padding * 2,
+      h: height - padding * 2 - topMenuH - gap
+    };
     const instrumentBounds = {
       x: 0,
       y: instrumentY,
       w: width,
       h: instrumentH
     };
+    const recordPedalBounds = {
+      x: contentX,
+      y: recordPedalY,
+      w: contentW,
+      h: recordPedalH
+    };
 
     const layout = this.recordLayout.layout(contentW, contentH, contentX, contentY, {
       gridBounds,
-      instrumentBounds,
-      controlRailBounds
+      instrumentBounds
     });
     const grid = layout.grid;
     if (!this.recordGridZoomedOut && track) {
@@ -13135,7 +13311,7 @@ export default class MidiComposer {
       this.gridZoomInitialized = true;
       this.recordGridZoomedOut = true;
     }
-    if (grid) {
+    if (grid && grid.h > 0) {
       this.drawPatternEditor(ctx, grid.x, grid.y, grid.w, grid.h, track, pattern, {
         summary: true,
         hideLabels: true,
@@ -13160,10 +13336,109 @@ export default class MidiComposer {
       isRecording: this.recorder.isRecording,
       selector: recordSelector,
       stickIndicators: this.recordStickIndicators,
-      nowPlaying: this.nowPlaying,
-      nowPlayingPlacement: viewportMode.isMobileLandscape ? 'preview' : 'instrument'
+      nowPlaying: null,
+      showSettingsRail: false,
+      instrumentModalViewportBounds: recordOverlayBounds,
+      hideInstrumentModal: true
+    });
+    this.drawPedalBoardPanel(ctx, recordPedalBounds.x, recordPedalBounds.y, recordPedalBounds.w, recordPedalBounds.h, track, { embedded: true, compact: true, hideTitle: true });
+    if (this.landscapeRootDrawerOpen) {
+      this.drawMidiLandscapeRootDrawer(ctx, {
+        x: padding,
+        y: padding + topMenuH + gap,
+        w: Math.min(260, Math.max(180, Math.floor(width * 0.28))),
+        h: Math.max(1, height - padding * 2 - topMenuH - gap)
+      });
+    }
+    if (this.midiPortraitRecordSettingsOpen) {
+      const settingsH = this.recordInstrument === 'guitar' ? 278 : this.recordInstrument === 'bass' ? 230 : 176;
+      const panelW = Math.min(520, Math.max(1, recordOverlayBounds.w));
+      const panelH = Math.min(settingsH, Math.max(132, recordOverlayBounds.h));
+      this.drawMidiPortraitRecordSettingsPanel(ctx, {
+        x: recordOverlayBounds.x + (recordOverlayBounds.w - panelW) / 2,
+        y: recordOverlayBounds.y + (recordOverlayBounds.h - panelH) / 2,
+        w: panelW,
+        h: panelH
+      });
+    } else {
+      this.bounds.recordSettingsPanel = null;
+      this.bounds.recordSettingsControls = [];
+    }
+    this.recordLayout.instrumentModalViewportBounds = recordOverlayBounds;
+    this.recordLayout.drawInstrumentModal(ctx);
+    this.recordLayout.instrumentModalViewportBounds = null;
+    this.drawMidiRecordLandscapeMoreMenu(ctx, padding, padding, width - padding * 2, topMenuH);
+
+  }
+
+  drawMidiRecordLandscapeTopMenu(ctx, x, y, w, h) {
+    const bounds = { x, y, w, h };
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
+    this.bounds.landscapeMenuButton = null;
+    this.bounds.undoButton = null;
+    this.bounds.redoButton = null;
+    this.bounds.play = null;
+    this.bounds.recordMore = null;
+    this.bounds.recordVirtualInstrument = null;
+    this.bounds.recordSettings = null;
+    this.bounds.record = null;
+    this.bounds.recordMoreMenuPanel = null;
+
+    const gap = 8;
+    const pad = 6;
+    const buttonH = Math.max(32, h - pad * 2);
+    const buttonW = Math.max(72, Math.floor((w - pad * 2 - gap * 4) / 5));
+    const buttons = [
+      { id: 'menu', label: 'Menu', active: this.landscapeRootDrawerOpen },
+      { id: 'undo', label: 'Undo' },
+      { id: 'redo', label: 'Redo' },
+      { id: 'play', label: this.isPlaying ? 'Pause' : 'Play', active: this.isPlaying },
+      { id: 'more', label: 'More', active: this.midiRecordLandscapeMoreOpen }
+    ];
+    buttons.forEach((button, index) => {
+      const buttonBounds = {
+        x: x + pad + index * (buttonW + gap),
+        y: y + pad,
+        w: index === buttons.length - 1 ? Math.max(1, x + w - pad - (x + pad + index * (buttonW + gap))) : buttonW,
+        h: buttonH
+      };
+      if (button.id === 'menu') this.bounds.landscapeMenuButton = buttonBounds;
+      if (button.id === 'undo') this.bounds.undoButton = buttonBounds;
+      if (button.id === 'redo') this.bounds.redoButton = buttonBounds;
+      if (button.id === 'play') this.bounds.play = buttonBounds;
+      if (button.id === 'more') this.bounds.recordMore = buttonBounds;
+      this.drawButton(ctx, buttonBounds, button.label, Boolean(button.active), false);
     });
 
+  }
+
+  drawMidiRecordLandscapeMoreMenu(ctx, x, y, w, h) {
+    if (!this.midiRecordLandscapeMoreOpen || !this.bounds.recordMore) return;
+    const more = this.bounds.recordMore;
+    const rowH = 42;
+    const menuGap = 6;
+    const pad = 6;
+    const menuW = Math.min(260, Math.max(160, more.w + 48));
+    const menuX = clamp(more.x + more.w - menuW, x, x + w - menuW);
+    const menuY = more.y + more.h + 6;
+    const menuH = rowH * 3 + menuGap * 2 + pad * 2;
+    const panel = { x: menuX, y: menuY, w: menuW, h: menuH };
+    this.bounds.recordMoreMenuPanel = panel;
+    drawSharedPanel(ctx, panel, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    [
+      { key: 'recordVirtualInstrument', label: 'Virtual', active: this.recordLayout.instrumentMenuOpen },
+      { key: 'recordSettings', label: 'Settings', active: this.midiPortraitRecordSettingsOpen },
+      { key: 'record', label: this.recorder.isRecording ? 'Stop Rec' : 'Record', active: this.recorder.isRecording }
+    ].forEach((entry, index) => {
+      const buttonBounds = {
+        x: panel.x + pad,
+        y: panel.y + pad + index * (rowH + menuGap),
+        w: panel.w - pad * 2,
+        h: rowH
+      };
+      this.bounds[entry.key] = buttonBounds;
+      this.drawButton(ctx, buttonBounds, entry.label, Boolean(entry.active), false);
+    });
   }
 
   drawRecordModeSidebar(ctx, x, y, w, h) {
@@ -13210,6 +13485,7 @@ export default class MidiComposer {
   drawMobileLayout(ctx, width, height, track, pattern) {
     const padding = 10;
     const gap = 10;
+    const viewportMode = this.resolveMidiViewportMode(width, height);
     this.mobilePortraitMenuSheetBounds = null;
     if (this.activeViewportMode === 'portrait') {
       const layout = getSharedMobilePortraitEditorLayout(width, height, {
@@ -13276,7 +13552,7 @@ export default class MidiComposer {
           this.drawControllerSubmenuPanel(ctx, sheetContent.x, sheetContent.y, sheetContent.w, sheetContent.h, 'grid', { isMobile: true, layoutMode: 'auto-grid' });
         }
       }
-      if (this.activeTab === 'grid' || this.activeTab === 'song' || sheetOpen) {
+      if (this.activeTab === 'grid' || this.activeTab === 'song' || (sheetOpen && this.activeTab !== 'file')) {
         this.drawMidiHorizontalZoomSlider(ctx, controlLayout.zoomStrip.x, controlLayout.zoomStrip.y, controlLayout.zoomStrip.w, controlLayout.zoomStrip.h);
       }
       if (sheetOpen) {
@@ -13295,14 +13571,15 @@ export default class MidiComposer {
     const gamepadSubmenuOnLeft = gamepadMenuState.drawSlideOut;
     if (!isLandscape || gamepadOwnsLandscapeMenu) this.landscapeRootDrawerOpen = false;
     const showLandscapeRightDrawer = isLandscape && !gamepadOwnsLandscapeMenu && this.isMidiLandscapeRightDrawerTab(this.activeTab);
-    const showsGridBottomRail = isLandscape && (this.activeTab === 'grid' || this.activeTab === 'song') && !gamepadOwnsLandscapeMenu;
+    const showSongLandscapeModeRail = isLandscape && !gamepadOwnsLandscapeMenu && this.activeTab === 'song';
+    const reserveLandscapeRightRail = showLandscapeRightDrawer || showSongLandscapeModeRail;
+    const showsGridBottomRail = isLandscape && this.activeTab === 'grid' && !gamepadOwnsLandscapeMenu;
     const landscapeLayout = isLandscape
       ? buildLandscapeTouchEditorShellPlan('midi', {
         viewportWidth: width,
         viewportHeight: height,
         bottomRailHeight: showsGridBottomRail ? 72 : 0,
-        rightRailWidth: Math.min(340, Math.max(248, Math.floor(width * 0.28))),
-        reserveRightRail: showLandscapeRightDrawer,
+        reserveRightRail: reserveLandscapeRightRail,
         capRightRailToLeftRailHeight: true
       })
       : null;
@@ -13325,6 +13602,22 @@ export default class MidiComposer {
     const contentW = workSurface?.w ?? (width - contentX - padding);
     const contentH = workSurface?.h ?? (height - padding * 2);
     const bottomRail = toolOptionsSurface ?? { x: contentX, y: contentY + contentH + 8, w: contentW, h: 0 };
+    const landscapeBottomZoomSurface = !showLandscapeRightDrawer && showsGridBottomRail && bottomRail.w > 260
+      ? {
+        x: bottomRail.x + bottomRail.w - Math.min(220, Math.max(150, Math.floor(bottomRail.w * 0.26))),
+        y: bottomRail.y,
+        w: Math.min(220, Math.max(150, Math.floor(bottomRail.w * 0.26))),
+        h: bottomRail.h
+      }
+      : null;
+    const bottomRailContent = landscapeBottomZoomSurface
+      ? {
+        x: bottomRail.x,
+        y: bottomRail.y,
+        w: Math.max(1, landscapeBottomZoomSurface.x - bottomRail.x - gap),
+        h: bottomRail.h
+      }
+      : bottomRail;
     const rightDrawerW = isLandscape && !gamepadOwnsLandscapeMenu
       ? ((submenuDrawerSurface ?? overlayDrawerSurface)?.w ?? getSharedMobileDrawerWidth(width, height, sidebarW, { edgePadding: 0 }))
       : 0;
@@ -13369,13 +13662,11 @@ export default class MidiComposer {
       this.drawPatternEditor(ctx, contentX, contentY, contentW, contentH, track, pattern);
       this.clearGridZoomButtonBounds();
       if (showsGridBottomRail && canRenderLandscapeBottomRail) {
-        this.drawMobileBottomRail(ctx, bottomRail.x, bottomRail.y, bottomRail.w, bottomRail.h, track);
+        this.drawMidiPortraitGridQuickStrip(ctx, bottomRailContent.x, bottomRailContent.y, bottomRailContent.w, bottomRailContent.h, track);
       }
     } else if (this.activeTab === 'song') {
-      this.drawSongTab(ctx, contentX, contentY, contentW, contentH);
-      if (showsGridBottomRail && canRenderLandscapeBottomRail) {
-        this.drawMobileBottomRail(ctx, bottomRail.x, bottomRail.y, bottomRail.w, bottomRail.h, track);
-      }
+      this.drawSongTab(ctx, contentX, contentY, contentW, contentH, { suppressModeTabs: true });
+      this.drawMidiSongLandscapeModeRail(ctx, submenuSurface);
     } else if (this.activeTab === 'instruments') {
       const pedalTransportH = 64;
       const minMixerH = Math.min(380, Math.max(220, contentH - pedalTransportH - 140));
@@ -13403,9 +13694,73 @@ export default class MidiComposer {
       this.drawFilePanel(ctx, contentX, contentY, contentW, contentH);
     }
 
-    if (isLandscape && this.activeTab !== 'instruments' && this.activeTab !== 'grid' && this.activeTab !== 'song') {
-      this.drawLandscapeZoomOverlay(ctx, width, height);
+    if (isLandscape && this.activeTab !== 'instruments' && this.activeTab !== 'song') {
+      this.drawLandscapeZoomOverlay(ctx, width, height, landscapeLayout?.surfaces.zoom ?? landscapeBottomZoomSurface);
     }
+  }
+
+  drawMidiSongLandscapeModeRail(ctx, bounds) {
+    if (!bounds) return;
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
+    this.bounds.songRailMusicControls = null;
+    this.bounds.songRailEditTab = null;
+    this.bounds.songRailToolsTab = null;
+    this.bounds.songMixVolumeTab = null;
+    this.bounds.songMixPanTab = null;
+    this.bounds.songRailMore = null;
+    this.bounds.songRailBack = null;
+    this.bounds.songLandscapeModeMenu = null;
+    this.bounds.songLandscapeModeMenuRows = [];
+
+    const panelX = bounds.x + 8;
+    const panelW = Math.max(1, bounds.w - 16);
+    const buttonH = 44;
+    const gap = 8;
+    const rowY = (index) => bounds.y + 10 + index * (buttonH + gap);
+    const activeEntry = MIDI_SONG_MODE_TABS.find((entry) => entry.mode === this.songBottomRailMode) || MIDI_SONG_MODE_TABS[0];
+
+    if (this.songLandscapeModeMenuOpen) {
+      const backBounds = { x: panelX, y: rowY(0), w: panelW, h: buttonH };
+      this.bounds.songRailBack = backBounds;
+      this.drawButton(ctx, backBounds, 'Back', false, false);
+      const listTop = rowY(1);
+      const visibleRows = Math.max(1, Math.floor(Math.max(buttonH, bounds.y + bounds.h - listTop - 8) / (buttonH + gap)));
+      const maxScroll = Math.max(0, MIDI_SONG_MODE_TABS.length - visibleRows);
+      this.songLandscapeModeMenuScrollMax = maxScroll;
+      this.songLandscapeModeMenuScroll = clamp(this.songLandscapeModeMenuScroll || 0, 0, maxScroll);
+      const listBounds = {
+        x: panelX,
+        y: listTop,
+        w: panelW,
+        h: visibleRows * (buttonH + gap) - gap
+      };
+      this.bounds.songLandscapeModeMenu = listBounds;
+      MIDI_SONG_MODE_TABS
+        .slice(this.songLandscapeModeMenuScroll, this.songLandscapeModeMenuScroll + visibleRows)
+        .forEach((entry, index) => {
+          const buttonBounds = { x: panelX, y: listTop + index * (buttonH + gap), w: panelW, h: buttonH, mode: entry.mode };
+          this.bounds[entry.key] = buttonBounds;
+          this.bounds.songLandscapeModeMenuRows.push(buttonBounds);
+          this.drawButton(ctx, buttonBounds, entry.shortLabel || entry.label, entry.mode === this.songBottomRailMode, false);
+        });
+      if (maxScroll > 0) {
+        drawSharedPortraitScrollHints(ctx, listBounds, {
+          scroll: this.songLandscapeModeMenuScroll,
+          scrollMax: maxScroll
+        });
+      }
+      return;
+    }
+
+    this.songLandscapeModeMenuScroll = 0;
+    this.songLandscapeModeMenuScrollMax = 0;
+    const currentBounds = { x: panelX, y: rowY(0), w: panelW, h: buttonH };
+    this.bounds[activeEntry.key] = currentBounds;
+    this.drawButton(ctx, currentBounds, activeEntry.shortLabel || activeEntry.label, true, false);
+
+    const moreBounds = { x: panelX, y: rowY(1), w: panelW, h: buttonH };
+    this.bounds.songRailMore = moreBounds;
+    this.drawButton(ctx, moreBounds, 'More', false, false);
   }
 
   drawMobilePortraitRootTabs(ctx, bounds) {
@@ -13425,6 +13780,7 @@ export default class MidiComposer {
       drawButton: (buttonBounds, tab, state) => {
         if (tab.id === 'file') this.bounds.fileButton = buttonBounds;
         if (MIDI_WORKSPACE_TAB_IDS.has(tab.id)) this.bounds.tabs.push({ ...buttonBounds, id: tab.id });
+        if (tab.id === 'exit-main') this.bounds.tabs.push({ ...buttonBounds, id: tab.id });
         if (tab.id === 'settings') this.bounds.settings = buttonBounds;
         this.drawButton(ctx, buttonBounds, tab.label, this.isLeftRailTabActive(tab.id), false, state.focused);
       }
@@ -13665,7 +14021,7 @@ export default class MidiComposer {
     const rowH = SHARED_EDITOR_LEFT_MENU.buttonHeightMobile;
     const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const panelPadding = clamp(Math.round(rowH * 0.25), 8, 12);
-    const rootEntries = buildMidiSharedRootMenuEntries();
+    const rootEntries = buildMidiPortraitRootTabs();
     const menuRows = rootEntries.length;
     const menuH = options.menuOnly
       ? h
@@ -13695,7 +14051,7 @@ export default class MidiComposer {
         redo: { id: 'redo', label: 'Redo', action: () => this.runtime.redo() },
         quick: {
           id: 'play',
-          label: this.isPlaying ? 'Pause' : 'Play',
+          label: this.isPlaying ? '❚❚' : '▶',
           active: this.isPlaying,
           action: () => this.togglePlayback()
         }
@@ -13966,21 +14322,38 @@ export default class MidiComposer {
     drawSharedThumbstick(ctx, this.panJoystick);
   }
 
-  drawLandscapeZoomOverlay(ctx, width, height) {
+  drawLandscapeZoomOverlay(ctx, width, height, bounds = null) {
     const zoomXLimits = this.getGridZoomLimitsX();
     this.gridZoomX = clamp(this.gridZoomX, zoomXLimits.minZoom, zoomXLimits.maxZoom);
     const ratio = clamp((this.gridZoomX - zoomXLimits.minZoom) / Math.max(0.0001, zoomXLimits.maxZoom - zoomXLimits.minZoom), 0, 1);
-    const controlBase = Math.min(width, height);
-    const controlMargin = Math.max(16, controlBase * 0.04);
-    const joystickRadius = Math.min(78, controlBase * 0.14);
-    const joystickCenterX = controlMargin + joystickRadius;
-    const { railBounds, hitBounds } = getSharedMobileZoomSliderLayout({
-      width,
-      height,
-      joystickCenterX,
-      joystickRadius,
-      controlMargin
-    });
+    let railBounds;
+    let hitBounds;
+    if (bounds?.w > 0 && bounds?.h > 0) {
+      railBounds = {
+        x: bounds.x + 12,
+        y: bounds.y + Math.max(0, Math.floor((bounds.h - 10) / 2)),
+        w: Math.max(1, bounds.w - 24),
+        h: 10
+      };
+      hitBounds = {
+        x: railBounds.x,
+        y: bounds.y,
+        w: railBounds.w,
+        h: bounds.h
+      };
+    } else {
+      const controlBase = Math.min(width, height);
+      const controlMargin = Math.max(16, controlBase * 0.04);
+      const joystickRadius = Math.min(78, controlBase * 0.14);
+      const joystickCenterX = controlMargin + joystickRadius;
+      ({ railBounds, hitBounds } = getSharedMobileZoomSliderLayout({
+        width,
+        height,
+        joystickCenterX,
+        joystickRadius,
+        controlMargin
+      }));
+    }
     this.bounds.railZoom = hitBounds;
     drawSharedMobileZoomSlider(ctx, railBounds, ratio);
   }
@@ -14193,6 +14566,7 @@ export default class MidiComposer {
     const embedded = options.embedded === true;
     const portraitGrid = options.portraitGrid === true;
     const compact = options.compact === true;
+    const hideTitle = options.hideTitle === true;
     const desktopOverview = this.activeViewportMode === 'desktop' && !embedded && !compact && !portraitGrid && h >= 180;
     const panelX = portraitGrid ? x : (embedded ? (x + 18) : (x + 10));
     const panelW = portraitGrid ? Math.max(1, w) : (embedded ? (w - 36) : (w - 20));
@@ -14201,9 +14575,11 @@ export default class MidiComposer {
     if (!embedded) {
       drawSharedPanel(ctx, { x: panelX, y: panelY, w: panelW, h: panelH }, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
     }
-    ctx.fillStyle = UI_SUITE.colors.text;
-    ctx.font = `13px ${UI_SUITE.font.family}`;
-    ctx.fillText('Pedal Board', panelX + 10, panelY + 16);
+    if (!hideTitle) {
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.font = `13px ${UI_SUITE.font.family}`;
+      ctx.fillText('Pedal Board', panelX + 10, panelY + 16);
+    }
 
     const pedals = normalizeMidiPedals(track.midiPedals);
     if (Number.isInteger(this.pedalUiState.selectedSlot) && !pedals[this.pedalUiState.selectedSlot]) {
@@ -14214,12 +14590,13 @@ export default class MidiComposer {
 
     const gap = 8;
     const portraitLayout = portraitGrid
-      ? getMidiPortraitPedalGridLayout({ x: panelX, y: panelY, w: panelW, h: panelH }, { gap: 6, padding: 6, titleHeight: 18 })
+      ? getMidiPortraitPedalGridLayout({ x: panelX, y: panelY, w: panelW, h: panelH }, { gap: 6, padding: 6, titleHeight: hideTitle ? 0 : 18 })
       : null;
+    const slotTop = panelY + (hideTitle ? 8 : 24);
     const slotW = portraitLayout ? null : Math.floor((panelW - 20 - gap * 3) / 4);
-    const slotH = portraitLayout ? null : Math.max(compact ? 48 : 64, panelH - 32);
+    const slotH = portraitLayout ? null : Math.max(compact ? 48 : 64, panelH - (hideTitle ? 16 : 32));
     for (let i = 0; i < 4; i += 1) {
-      const b = portraitLayout?.slots[i] || { x: panelX + 10 + i * (slotW + gap), y: panelY + 24, w: slotW, h: slotH, slotIndex: i, control: 'pedal-slot' };
+      const b = portraitLayout?.slots[i] || { x: panelX + 10 + i * (slotW + gap), y: slotTop, w: slotW, h: slotH, slotIndex: i, control: 'pedal-slot' };
       this.pedalSlotBounds.push(b);
       const pedal = pedals[i];
       const body = pedal ? (PEDAL_COLORS[pedal.color] || '#666') : 'rgba(90,90,90,0.6)';
@@ -14482,8 +14859,9 @@ export default class MidiComposer {
   }
 
   getButtonFontSize(bounds, isMobile) {
+    if (this.activeViewportMode === 'portrait') return UI_SUITE.font.size;
     const target = Math.round(bounds.h * 0.45);
-    const maxSize = isMobile ? 18 : 16;
+    const maxSize = isMobile ? UI_SUITE.font.size : 16;
     return clamp(target, 12, maxSize);
   }
 
@@ -14663,7 +15041,9 @@ export default class MidiComposer {
     const laneAreaY = rulerY + rulerH;
     const isMobile = this.activeViewportMode !== 'desktop';
     const isPortrait = this.activeViewportMode === 'portrait';
+    const suppressModeTabs = Boolean(options.suppressModeTabs);
     let baseMixRailH = isPortrait ? 206 : (isMobile ? 148 : 120);
+    if (suppressModeTabs && isMobile && !isPortrait) baseMixRailH = 68;
     const railGap = 8;
     const externalPortraitRail = isPortrait ? options.portraitRailBounds : null;
     const portraitSongZoomH = 0;
@@ -15027,7 +15407,7 @@ export default class MidiComposer {
     ctx.strokeStyle = UI_SUITE.colors.border;
     ctx.strokeRect(mixRailBounds.x, mixRailBounds.y, mixRailBounds.w, mixRailBounds.h);
 
-    if (!isPortrait) {
+    if (!isPortrait && !isMobile) {
       const zoomRailLimits = this.getGridZoomLimitsX();
       this.gridZoomX = clamp(this.gridZoomX, zoomRailLimits.minZoom, zoomRailLimits.maxZoom);
       const zoomRatio = clamp((this.gridZoomX - zoomRailLimits.minZoom) / Math.max(0.0001, zoomRailLimits.maxZoom - zoomRailLimits.minZoom), 0, 1);
@@ -15100,7 +15480,7 @@ export default class MidiComposer {
         this.bounds[entry.key] = bounds;
         this.drawButton(ctx, bounds, entry.label, this.songBottomRailMode === entry.mode, false);
       });
-    } else {
+    } else if (!suppressModeTabs) {
       const topTabGap = 8;
       const topTabY = tabY;
       const topTabH = rowH;
@@ -15120,7 +15500,9 @@ export default class MidiComposer {
       });
     }
 
-    const bodyY = portraitRailLayout ? portraitRailLayout.bodyY : tabY + rowH + 10;
+    const bodyY = portraitRailLayout
+      ? portraitRailLayout.bodyY
+      : (suppressModeTabs ? tabY : tabY + rowH + 10);
     if (this.songBottomRailMode === 'music-controls') {
       const rowHControls = rowH;
       const gap = 8;
@@ -18020,10 +18402,21 @@ export default class MidiComposer {
     });
   }
 
-  getFileMenuItems() {
+  getFileMenuItems({ portraitFileMenu = false } = {}) {
+    if (portraitFileMenu && this.fileMenuSubmenu === 'export') {
+      return [
+        { id: 'export-back', label: 'Back to File', onClick: () => this.handleFileMenu('export-back') },
+        { divider: true },
+        { id: 'export-json', label: 'Export JSON', onClick: () => this.handleFileMenu('export-json') },
+        { id: 'export-midi', label: 'Export MIDI', onClick: () => this.handleFileMenu('export-midi') },
+        { id: 'export-midi-zip', label: 'Export MIDI ZIP', onClick: () => this.handleFileMenu('export-midi-zip') },
+        { id: 'export-wav', label: 'Export WAV', onClick: () => this.handleFileMenu('export-wav') }
+      ];
+    }
+    const exportLabel = portraitFileMenu ? 'Export' : 'Export JSON';
     return buildSharedEditorFileMenu({
       labels: {
-        export: 'Export JSON',
+        export: exportLabel,
         import: 'Import MIDI/ZIP/JSON'
       },
       actions: {
@@ -18031,21 +18424,23 @@ export default class MidiComposer {
         save: () => this.handleFileMenu('save'),
         'save-as': () => this.handleFileMenu('save-as'),
         open: () => this.handleFileMenu('load'),
-        export: () => this.handleFileMenu('export-json'),
+        export: () => this.handleFileMenu('export'),
         import: () => this.handleFileMenu('import')
       },
       includeFooter: false,
       extras: [
         { divider: true },
         { id: 'rescue-save', label: 'Rescue Save', onClick: () => this.handleFileMenu('rescue-save') },
-        { id: 'export-midi', label: 'Export MIDI', onClick: () => this.handleFileMenu('export-midi') },
-        { id: 'export-midi-zip', label: 'Export MIDI ZIP', onClick: () => this.handleFileMenu('export-midi-zip') },
-        { id: 'export-wav', label: 'Export WAV', onClick: () => this.handleFileMenu('export-wav') },
+        ...(portraitFileMenu ? [] : [
+          { id: 'export-midi', label: 'Export MIDI', onClick: () => this.handleFileMenu('export-midi') },
+          { id: 'export-midi-zip', label: 'Export MIDI ZIP', onClick: () => this.handleFileMenu('export-midi-zip') },
+          { id: 'export-wav', label: 'Export WAV', onClick: () => this.handleFileMenu('export-wav') }
+        ]),
         { id: 'save-paint', label: 'Save and Paint', onClick: () => this.handleFileMenu('save-paint') },
         { id: 'play-robtersession', label: 'Play in RobterSession', onClick: () => this.handleFileMenu('play-robtersession') },
         { id: 'theme', label: 'Generate Theme', onClick: () => this.handleFileMenu('theme') },
         { id: 'sample', label: 'Load Sample Song', onClick: () => this.handleFileMenu('sample') },
-        { id: 'exit-main', label: 'Exit to Main Menu', onClick: () => this.handleFileMenu('exit-main') }
+        { id: 'exit-main', label: 'Exit', onClick: () => this.handleFileMenu('exit-main') }
       ]
     }).filter((item) => !item.disabled);
   }
@@ -18074,7 +18469,9 @@ export default class MidiComposer {
     }
 
     this.fileMenuBounds = [];
-    const allFileItems = this.getFileMenuItems();
+    const portraitFileMenu = this.activeViewportMode === 'portrait';
+    const fileMenuId = portraitFileMenu && this.fileMenuSubmenu === 'export' ? 'file-export' : 'file';
+    const allFileItems = this.getFileMenuItems({ portraitFileMenu });
     const stickyExit = this.activeViewportMode !== 'desktop';
     const { listItems: fileItems, exitItem } = stickyExit
       ? splitFileDrawerStickyExitItems(allFileItems)
@@ -18083,8 +18480,8 @@ export default class MidiComposer {
     const rowGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
     const visibleRows = Math.max(1, Math.floor(Math.max(0, panelH - 24) / Math.max(1, rowHeight + rowGap)));
     this.fileMenuScroll = this.controllerMenu.syncScrollToItem(
-      'file',
-      this.controllerMenu.getFocusedItem('file')?.id,
+      fileMenuId,
+      this.controllerMenu.getFocusedItem(fileMenuId)?.id,
       fileItems,
       visibleRows,
       this.fileMenuScroll || 0
@@ -18096,10 +18493,11 @@ export default class MidiComposer {
       scroll: this.fileMenuScroll,
       isMobile,
       showTitle: false,
+      drawPanel: !portraitFileMenu,
       footerMode: stickyExit && exitItem ? 'exit-only' : 'none',
       footerItem: exitItem,
       drawButton: (bounds, item) => {
-        this.drawButton(ctx, bounds, item.label, false, false, this.controllerMenu.isFocusedItem('file', item.id));
+        this.drawButton(ctx, bounds, item.label, false, false, this.controllerMenu.isFocusedItem(fileMenuId, item.id));
         this.fileMenuBounds.push({ ...bounds, id: item.id });
       }
     });
@@ -18208,7 +18606,7 @@ export default class MidiComposer {
     Object.assign(bounds, controlBounds);
     const color = drawSharedMenuButtonChrome(ctx, controlBounds, { active, subtle: true });
     drawSharedMenuButtonLabel(ctx, controlBounds, label, {
-      fontSize: this.activeViewportMode !== 'desktop' ? 14 : 12,
+      fontSize: UI_SUITE.font.size,
       color,
       align: 'left',
       x: controlBounds.x + 10,

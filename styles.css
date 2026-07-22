@@ -37,6 +37,16 @@
   --editor-space-6: 32px;
   --editor-radius-sm: 4px;
   --editor-radius-md: var(--ui-radius);
+  --editor-portrait-button-radius: 0;
+  --editor-portrait-button-border: var(--ui-border);
+  --editor-portrait-button-fill: rgba(18,28,42,0.82);
+  --editor-portrait-button-highlight: rgba(255,255,255,0.045);
+  --editor-portrait-button-active-fill: rgba(46,86,132,0.72);
+  --editor-portrait-button-active-highlight: rgba(255,225,106,0.22);
+  --editor-portrait-button-accent: rgba(111,171,231,0.72);
+  --editor-portrait-button-active-accent: var(--ui-accent);
+  --editor-portrait-button-text: rgba(238,245,255,0.9);
+  --editor-portrait-button-active-text: #ffffff;
   --editor-left-rail-width: 292px;
   --editor-left-rail-width-mobile: 72px;
   --editor-top-bar-height: 40px;
@@ -683,7 +693,7 @@ textarea.shared-text-input-field {
   flex: 0 0 auto;
   min-width: 54px;
   min-height: 44px;
-  border-radius: 6px;
+  border-radius: var(--editor-portrait-button-radius);
 }
 .actor-editor-portrait-bottom-menu .actor-editor-left,
 .actor-editor-portrait-bottom-menu .actor-editor-right-rail,
@@ -708,7 +718,7 @@ textarea.shared-text-input-field {
 }
 .actor-editor-portrait-bottom-menu .actor-editor-menu-rail,
 .actor-editor-portrait-bottom-menu .actor-editor-file-subrail {
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 .actor-editor-portrait-bottom-menu .actor-editor-left .actor-editor-menu-rail {
   overflow-x: auto;
@@ -716,7 +726,7 @@ textarea.shared-text-input-field {
 }
 .actor-editor-portrait-bottom-menu .actor-editor-btn {
   min-height: 44px;
-  border-radius: 6px;
+  border-radius: var(--editor-portrait-button-radius);
   white-space: normal;
 }
 .actor-editor-portrait-bottom-menu .actor-editor-rail-state-list {
@@ -735,14 +745,70 @@ textarea.shared-text-input-field {
   .actor-editor-body {
     gap: 8px !important;
   }
-  .actor-editor-center {
-    border: 1px solid var(--ui-border);
-    background: rgba(255,255,255,0.035);
+  .actor-editor-overlay .actor-editor-center {
+    border: 0;
+    background: transparent;
     padding: 8px;
   }
-  .actor-editor-card {
+  .actor-editor-overlay .actor-editor-card {
+    background: #080c14;
+    border: 1px solid var(--editor-portrait-button-border);
     padding: 8px;
-    border-radius: 6px;
+    border-radius: var(--editor-portrait-button-radius);
+  }
+  .actor-editor-portrait-bottom-menu .actor-editor-btn,
+  .actor-editor-portrait-quickrail .actor-editor-btn {
+    border-left: 4px solid var(--editor-portrait-button-accent) !important;
+    border-radius: var(--editor-portrait-button-radius) !important;
+    box-shadow: none;
+  }
+  .actor-editor-portrait-bottom-menu .actor-editor-btn.active,
+  .actor-editor-portrait-quickrail .actor-editor-btn.active {
+    border-color: rgba(255,225,106,0.42) !important;
+    border-left-color: var(--editor-portrait-button-active-accent) !important;
+  }
+  .actor-editor-overlay .actor-editor-center .actor-editor-btn {
+    border: 1px solid var(--editor-portrait-button-border);
+    border-left: 4px solid var(--editor-portrait-button-accent);
+    border-radius: var(--editor-portrait-button-radius);
+    background-color: var(--editor-portrait-button-fill);
+    background-image: linear-gradient(to bottom, var(--editor-portrait-button-highlight) 0 50%, transparent 50% 100%);
+    color: var(--editor-portrait-button-text);
+    box-shadow: none;
+    font-family: var(--ui-font);
+    font-size: 12px;
+    line-height: 1.15;
+  }
+  .actor-editor-overlay .actor-editor-center .actor-editor-btn.active,
+  .actor-editor-overlay .actor-editor-center .actor-editor-btn:not(:disabled):hover,
+  .actor-editor-overlay .actor-editor-center .actor-editor-btn:not(:disabled):focus-visible {
+    border-color: rgba(255,225,106,0.42);
+    border-left-color: var(--editor-portrait-button-active-accent);
+    background-color: var(--editor-portrait-button-active-fill);
+    background-image: linear-gradient(to bottom, var(--editor-portrait-button-active-highlight) 0 50%, transparent 50% 100%);
+    color: var(--editor-portrait-button-active-text);
+  }
+  .actor-editor-overlay .actor-editor-field.focused {
+    border-radius: var(--editor-portrait-button-radius);
+    border-color: rgba(255,225,106,0.42);
+    background: rgba(255,225,106,0.08);
+  }
+  .actor-editor-overlay .actor-editor-toggle {
+    min-height: 44px;
+    border: 1px solid var(--editor-portrait-button-border);
+    border-left: 4px solid var(--editor-portrait-button-accent);
+    border-radius: var(--editor-portrait-button-radius);
+    background: rgba(18,28,42,0.52);
+    padding: 8px 10px;
+    box-sizing: border-box;
+    color: var(--ui-text);
+    font-size: 12px;
+  }
+  .actor-editor-overlay .actor-editor-toggle:hover,
+  .actor-editor-overlay .actor-editor-toggle:focus-within {
+    border-color: rgba(255,225,106,0.42);
+    border-left-color: var(--editor-portrait-button-active-accent);
+    background: rgba(255,225,106,0.08);
   }
   .actor-editor-grid {
     grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
@@ -790,8 +856,8 @@ textarea.shared-text-input-field {
 }
 .actor-editor-field input, .actor-editor-field select, .actor-editor-subsection input, .actor-editor-subsection select, .actor-editor-card input, .actor-editor-card select { min-height: 40px; background: rgba(18,28,42,0.82); color: var(--ui-text); border: 1px solid var(--ui-border); padding: 8px; border-radius: 6px; font-family: var(--ui-font); }
 .actor-editor-field-label { color: var(--ui-muted); font-size: var(--ui-font-size); }
-.actor-editor-btn { min-height: 36px; background: linear-gradient(to bottom, rgba(255,255,255,0.045), rgba(18,28,42,0.82)); color: var(--ui-text); border: 1px solid var(--ui-border); border-left: 4px solid rgba(111,171,231,0.72); border-radius: 6px; padding: 8px 10px; cursor: pointer; font-family: var(--ui-font); font-size: 12px; }
-.actor-editor-btn.active { background: linear-gradient(to bottom, rgba(255,225,106,0.22), rgba(46,86,132,0.72)); border-left-color: var(--ui-accent); color: #ffffff; }
+.actor-editor-btn { min-height: 36px; background-color: rgba(18,28,42,0.82); background-image: linear-gradient(to bottom, rgba(255,255,255,0.045) 0 50%, transparent 50% 100%); color: var(--ui-text); border: 1px solid var(--ui-border); border-left: 4px solid rgba(111,171,231,0.72); border-radius: 6px; padding: 8px 10px; cursor: pointer; font-family: var(--ui-font); font-size: 12px; }
+.actor-editor-btn.active { background-color: rgba(46,86,132,0.72); background-image: linear-gradient(to bottom, rgba(255,225,106,0.22) 0 50%, transparent 50% 100%); border-left-color: var(--ui-accent); color: #ffffff; }
 .actor-editor-btn.small { min-height: 32px; padding: 6px 8px; font-size: 12px; }
 .actor-editor-desktop-top-menu {
   align-items: stretch;
@@ -1115,6 +1181,7 @@ textarea.shared-text-input-field {
   .actor-editor-file-subrail {
     min-height: 0;
     height: 100%;
+    padding: 0 !important;
   }
   .actor-editor-file-subrail-list {
     flex: 1 1 auto;
@@ -1136,13 +1203,13 @@ textarea.shared-text-input-field {
     gap: 8px !important;
   }
   .actor-editor-center {
-    border: 1px solid var(--ui-border);
-    background: rgba(255,255,255,0.035);
+    border: 0;
+    background: transparent;
     padding: 8px;
   }
   .actor-editor-card {
     padding: 8px;
-    border-radius: 6px;
+    border-radius: var(--editor-portrait-button-radius);
   }
   .actor-editor-grid {
     grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
