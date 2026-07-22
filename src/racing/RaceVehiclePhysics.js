@@ -62,10 +62,10 @@ const rotateLocalToWorld = (local = {}, pose = {}) => {
 };
 
 const makeWheelAttachmentPoints = ({ wheelbaseM = 2.7, trackFrontM = 1.55, trackRearM = 1.55, rideHeightM = 0.28 } = {}) => ({
-  fl: { x: -trackFrontM * 0.5, y: -rideHeightM * 0.15, z: wheelbaseM * 0.5 },
-  fr: { x: trackFrontM * 0.5, y: -rideHeightM * 0.15, z: wheelbaseM * 0.5 },
-  rl: { x: -trackRearM * 0.5, y: -rideHeightM * 0.15, z: -wheelbaseM * 0.5 },
-  rr: { x: trackRearM * 0.5, y: -rideHeightM * 0.15, z: -wheelbaseM * 0.5 }
+  fl: { x: trackFrontM * 0.5, y: -rideHeightM * 0.15, z: wheelbaseM * 0.5 },
+  fr: { x: -trackFrontM * 0.5, y: -rideHeightM * 0.15, z: wheelbaseM * 0.5 },
+  rl: { x: trackRearM * 0.5, y: -rideHeightM * 0.15, z: -wheelbaseM * 0.5 },
+  rr: { x: -trackRearM * 0.5, y: -rideHeightM * 0.15, z: -wheelbaseM * 0.5 }
 });
 
 export function getRaceVehicleWheelAttachments(tuning = {}, carDimensions = {}) {
@@ -122,22 +122,28 @@ export function createRaceVehiclePhysicsState({
       z: Number(session.rollRate || 0)
     },
     wheelAttachments: attachments,
-    wheels: Object.fromEntries(WHEEL_IDS.map((wheelId) => [wheelId, {
-      id: wheelId,
-      localAttachment: attachments[wheelId],
-      inContact: true,
-      compressionM: 0,
-      compressionRatio: 0,
-      normalLoadN: 0,
-      slipLongitudinal: 0,
-      slipLateral: 0,
-      surface: wheelSamples[wheelId],
-      contactPoint: {
-        x: worldX,
-        y: Number(wheelSamples[wheelId]?.elevation || 0) * elevationScaleM,
-        z: worldZ
-      }
-    }])),
+    wheels: Object.fromEntries(WHEEL_IDS.map((wheelId) => {
+      const local = attachments[wheelId];
+      const rotated = rotateLocalToWorld(local, { yaw, pitch: 0, roll: 0 });
+      const wheelX = worldX + rotated.x;
+      const wheelZ = worldZ + rotated.z;
+      return [wheelId, {
+        id: wheelId,
+        localAttachment: attachments[wheelId],
+        inContact: true,
+        compressionM: 0,
+        compressionRatio: 0,
+        normalLoadN: 0,
+        slipLongitudinal: 0,
+        slipLateral: 0,
+        surface: wheelSamples[wheelId],
+        contactPoint: {
+          x: wheelX,
+          y: Number(wheelSamples[wheelId]?.elevation || 0) * elevationScaleM,
+          z: wheelZ
+        }
+      }];
+    })),
     lastForces: [],
     deterministicStepCount: 0
   };
@@ -177,8 +183,8 @@ export function stepRaceVehiclePhysics(state = null, {
   const frontTravelM = clamp(Number(tuning.suspensionTravelFront) || 0.5, 0.1, 1.2);
   const rearTravelM = clamp(Number(tuning.suspensionTravelRear) || 0.5, 0.1, 1.2);
   const rideHeightM = clamp(((Number(tuning.rideHeightFront) || 0.18) + (Number(tuning.rideHeightRear) || 0.18)) * 0.5, 0.1, 0.65);
-  const springRateBase = Math.max(12000, Number(tuning.springRateFront || tuning.springRateRear || 0) || mass * 18);
-  const damperBase = Math.max(900, Number(tuning.dampingReboundFront || tuning.dampingReboundRear || 0) || mass * 1.8);
+  const springRateBase = Math.max(12000, Number(tuning.springRateFront || tuning.springRateRear || 0) || mass * 22);
+  const damperBase = Math.max(900, Number(tuning.dampingReboundFront || tuning.dampingReboundRear || 0) || mass * 3.25);
   const sampleSurface = (x, z) => surfaceModel?.sampleWorld?.({ x, z }, 0) || { elevation: 0, normal: { x: 0, y: 1, z: 0 }, region: 'terrain', surfaceId: 'asphalt', friction: 1 };
   const targetVelocity = planarVelocity || state.linearVelocity || { x: 0, y: 0, z: 0 };
   const targetYaw = Number.isFinite(Number(yaw)) ? Number(yaw) : state.yaw;
@@ -248,6 +254,11 @@ export function stepRaceVehiclePhysics(state = null, {
     });
     const suspensionAcceleration = (totalSuspensionForce - mass * 9.81) / mass;
     state.linearVelocity.y = clamp(Number(state.linearVelocity.y || 0) + suspensionAcceleration * fixedStep, -18, 18);
+    if (contactCount > 0) {
+      const contactRatio = clamp(contactCount / WHEEL_IDS.length, 0, 1);
+      const verticalDamping = clamp(1 - fixedStep * (2.4 + contactRatio * 4.2), 0.86, 0.995);
+      state.linearVelocity.y *= verticalDamping;
+    }
     state.position.y += state.linearVelocity.y * fixedStep;
     const averageSurfaceY = WHEEL_IDS.reduce((sum, wheelId) => sum + Number(state.wheels[wheelId]?.contactPoint?.y || 0), 0) / WHEEL_IDS.length;
     const minBodyY = averageSurfaceY + rideHeightM * 0.38;

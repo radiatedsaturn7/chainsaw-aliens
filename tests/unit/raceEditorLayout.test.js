@@ -6,7 +6,8 @@ import { RACE_STOCK_PERFORMANCE_TARGETS } from '../../src/racing/raceData.js';
 import { RaceSurfaceModel } from '../../src/racing/RaceSurfaceModel.js';
 import { cloneRaceVehiclePhysicsState, createRaceVehiclePhysicsState, stepRaceVehiclePhysics, syncRaceVehiclePhysicsToSession } from '../../src/racing/RaceVehiclePhysics.js';
 import RaceEditor from '../../src/ui/RaceEditor.js';
-import { loadProjectFile, resetProjectFilesForTests } from '../../src/ui/projectFiles.js';
+import { getLandscapeHandheldLayout, getPortraitHandheldLayout } from '../../src/ui/shared/canvasViewportLayout.js';
+import { loadProjectFile, resetProjectFilesForTests, saveProjectFile } from '../../src/ui/projectFiles.js';
 import { clearCachedProjectFilesForTests, upsertCachedProjectFile } from '../../src/ui/serverStorage.js';
 import * as THREE from '../../src/vendorBridge/three.js';
 
@@ -1041,6 +1042,44 @@ test('Race Editor portrait uses bottom menu roots and contextual node or edge ho
   assert.equal(elevationCells.length >= beforeElevationCells, true);
   assert.ok(elevationCells.some((cell) => typeof cell.elevation === 'number' && cell.source === 'height-brush'));
   assert.equal(secondElevation > firstElevation, true);
+});
+
+test('Race Editor portrait Ground Doodad mode opens picker from second hot button', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { isGamepadConnected: () => false },
+    exitRaceEditor() {}
+  });
+  let pickerOpened = false;
+  editor.openRaceDoodadPicker = async () => {
+    pickerOpened = true;
+    editor.selectedDoodadRef = 'Road Cone';
+    editor.racePortraitMode = 'ground';
+    editor.activeRootId = 'ground';
+    editor.raceSpritePaintKind = 'doodad';
+    editor.activeAction = 'paint-sprite';
+    editor.racePortraitHotMenu = null;
+    return 'Road Cone';
+  };
+
+  editor.handleMenuAction('race-ground-mode-doodad');
+  assert.equal(editor.racePortraitMode, 'ground');
+  assert.equal(editor.activeRootId, 'ground');
+  assert.equal(editor.getRaceGroundToolMode(), 'doodad');
+  assert.equal(editor.activeAction, 'paint-sprite');
+
+  const actions = editor.getRacePortraitGroundActions();
+  assert.equal(actions[1].id, 'race-ground-paint');
+  assert.equal(actions[1].label, 'Doodad');
+  actions[1].onClick();
+
+  assert.equal(pickerOpened, true);
+  assert.equal(editor.racePortraitMode, 'ground');
+  assert.equal(editor.activeRootId, 'ground');
+  assert.equal(editor.raceSpritePaintKind, 'doodad');
+  assert.equal(editor.activeAction, 'paint-sprite');
+  assert.equal(editor.racePortraitHotMenu, null);
 });
 
 test('Race Editor migrates old coarse terrain cells to finer five meter cells', () => {
@@ -4308,56 +4347,686 @@ test('Car Editor desktop uses shared top menu buttons', () => {
   const rootIds = editor.buttons.filter((button) => button.desktopRootId).map((button) => button.desktopRootId);
   assert.deepEqual(rootIds.slice(0, 3), ['file', 'edit', 'view']);
   assert.equal(rootIds.includes('drivetrain'), true);
+  assert.ok(editor.buttons.some((button) => button.id === 'test-drive' && button.contextPanelCommand));
+  assert.ok(editor.buttons.some((button) => button.id === 'body-art' && button.contextPanelCommand));
+  assert.ok(editor.buttons.some((button) => button.id === 'brake-lights' && button.contextPanelCommand));
   assert.equal(editor.desktopDropdown, null);
 });
 
-test('Car Editor preview draws geometric fallback layers before art is assigned', () => {
+test('Car Editor preview renders through the real Studio Sprint playtest renderer', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} }, { mode: 'car' });
   const ctx = createMockContext();
+  let playtestDraws = 0;
+  editor.drawRacePlaytestScreen = (_ctx, bounds) => {
+    playtestDraws += 1;
+    _ctx.fillStyle = '#123456';
+    _ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+  };
 
   editor.drawCarEditorPreview(ctx, { x: 10, y: 20, w: 260, h: 180 }, editor.selectedCar);
 
-  assert.equal(ctx.calls.some((call) => call.type === 'drawImage'), false);
-  assert.equal(ctx.calls.some((call) => call.type === 'fill' && call.style === editor.getDamageColor(0)), true);
-  assert.equal(ctx.calls.some((call) => call.type === 'text' && String(call.value).includes('Default race body')), true);
-  assert.equal(ctx.calls.some((call) => call.type === 'text' && String(call.value).includes('Default race tires')), true);
+  assert.equal(playtestDraws, 1);
+  assert.equal(editor.carEditorPreviewPlaytest.raceId, 'test-loop');
+  assert.equal(editor.carEditorPreviewPlaytest.carId, editor.selectedCar.id);
+  assert.equal(editor.carEditorPreviewPlaytest.session.carEditorPreview, true);
 });
 
-test('Car Editor preview replaces individual geometric layers with assigned artwork', () => {
+test('Car Editor overridden graphics preview reuses cached playtest frames', () => {
+  const previousDocument = globalThis.document;
+  const makeCanvas = () => ({
+    width: 0,
+    height: 0,
+    getContext: () => ({
+      clearRect() {},
+      drawImage() {},
+      fillRect() {},
+      save() {},
+      restore() {},
+      beginPath() {},
+      closePath() {},
+      moveTo() {},
+      lineTo() {},
+      fill() {},
+      stroke() {},
+      setLineDash() {},
+      fillText() {},
+      measureText: (value) => ({ width: String(value || '').length * 7 }),
+      set fillStyle(value) { this._fillStyle = value; },
+      get fillStyle() { return this._fillStyle; },
+      set strokeStyle(value) { this._strokeStyle = value; },
+      get strokeStyle() { return this._strokeStyle; },
+      set font(value) { this._font = value; },
+      get font() { return this._font; },
+      set textAlign(value) { this._textAlign = value; },
+      get textAlign() { return this._textAlign; },
+      set textBaseline(value) { this._textBaseline = value; },
+      get textBaseline() { return this._textBaseline; }
+    })
+  });
+  globalThis.document = {
+    createElement(tag) {
+      assert.equal(tag, 'canvas');
+      return makeCanvas();
+    }
+  };
+  try {
+    const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} }, { mode: 'car' });
+    editor.selectedCar.art = {
+      ...(editor.selectedCar.art || {}),
+      body: 'perf-body',
+      shell: 'perf-body',
+      shadowArtRef: 'perf-shadow',
+      brakeLightArtRef: 'perf-brake',
+      tireTreads: { tarmac: { artRef: 'perf-tire', frameIndex: 0 } }
+    };
+    const preview = {
+      key: 'perf-preview',
+      raceId: 'test-loop',
+      carId: editor.selectedCar.id,
+      session: { carEditorPreview: true },
+      input: { cameraView: 'third-person', paused: false }
+    };
+    editor.ensureCarEditorPreviewPlaytestSession = () => preview;
+    let nowMs = 0;
+    editor.getNowMs = () => nowMs;
+    let expensivePlaytestDraws = 0;
+    editor.drawRacePlaytestScreen = (previewCtx, bounds) => {
+      expensivePlaytestDraws += 1;
+      previewCtx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+    };
+    const ctx = createMockContext();
+
+    for (let frame = 0; frame < 120; frame += 1) {
+      nowMs = frame * 16;
+      editor.drawCarEditorPreview(ctx, { x: 0, y: 0, w: 320, h: 180 }, editor.selectedCar);
+    }
+
+    assert.ok(expensivePlaytestDraws <= 35, `overridden graphics preview performed ${expensivePlaytestDraws} expensive draws across 120 UI frames`);
+    assert.equal(ctx.calls.filter((call) => call.type === 'drawImage').length, 120);
+  } finally {
+    globalThis.document = previousDocument;
+  }
+});
+
+test('Car Editor overridden tire graphics draw from wheel-sized cached canvases', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} }, { mode: 'car' });
-  editor.selectedCar.art.shell = 'bodySprite';
-  editor.selectedCar.art.tires = 'tireSprite';
-  editor.selectedCar.art.spoiler = 'wingSprite';
-  editor.getRaceArtSpriteCanvas = (artRef) => ({ artRef, width: 32, height: 32 });
   const ctx = createMockContext();
+  const largeBodyCanvas = { width: 768, height: 512 };
+  const largeTireCanvas = { width: 1024, height: 1024 };
+  const scaledTireSources = [];
+  const tireDraws = [];
+  editor.getRaceArtSpriteCanvas = (artRef) => {
+    if (artRef === 'perf-tire') return largeTireCanvas;
+    if (artRef === 'perf-body') return largeBodyCanvas;
+    return null;
+  };
+  editor.getRaceCarBillboardLayerCanvas = (sourceCanvas, width, height, keyPrefix = '') => {
+    if (String(keyPrefix).startsWith('tire:')) {
+      scaledTireSources.push({ sourceCanvas, width, height, keyPrefix });
+    }
+    return {
+      width: Math.max(1, Math.round(Number(width) || 1)),
+      height: Math.max(1, Math.round(Number(height) || 1)),
+      sourceCanvas,
+      keyPrefix
+    };
+  };
+  editor.drawScrolledCarTireArt = (_ctx, tireCanvas) => {
+    tireDraws.push({ width: tireCanvas.width, height: tireCanvas.height, sourceCanvas: tireCanvas.sourceCanvas });
+    return true;
+  };
+  const car = {
+    setup: { defaultTireCompound: 'tarmac' },
+    art: {
+      body: 'perf-body',
+      tireTreads: { tarmac: { artRef: 'perf-tire', frameIndex: 0 } },
+      layerVisibility: { body: true, tires: true, frontWheels: true, rearWheels: true, brakes: true, shadow: false }
+    }
+  };
 
-  editor.drawCarEditorPreview(ctx, { x: 10, y: 20, w: 260, h: 180 }, editor.selectedCar);
+  editor.drawRaceCarBillboardLayers(ctx, {
+    car,
+    centerX: 160,
+    anchorY: 120,
+    baseWidth: 128,
+    baseHeight: 88,
+    artChoice: { artRef: 'perf-body', frameIndex: 0 },
+    drawWheels: true,
+    drawShadowLayer: false
+  });
 
-  const imageRefs = ctx.calls
-    .filter((call) => call.type === 'drawImage')
-    .map((call) => call.args[0]?.artRef);
-  assert.equal(imageRefs.filter((ref) => ref === 'tireSprite').length, 4);
-  assert.equal(imageRefs.includes('bodySprite'), true);
-  assert.equal(imageRefs.includes('wingSprite'), true);
-  assert.equal(ctx.calls.some((call) => call.type === 'fill' && call.style === editor.getDamageColor(0)), false);
+  assert.equal(tireDraws.length, 4);
+  assert.equal(scaledTireSources.length, 4);
+  tireDraws.forEach((draw) => {
+    assert.equal(draw.sourceCanvas, largeTireCanvas);
+    assert.equal(draw.width < largeTireCanvas.width, true);
+    assert.equal(draw.height < largeTireCanvas.height, true);
+  });
 });
 
-test('Car Editor turn-frame preview uses the active turn artwork', () => {
+test('Scrolled tire art reuses cached wheel frames for repeated draws', () => {
+  const previousDocument = globalThis.document;
+  let offscreenDraws = 0;
+  globalThis.document = {
+    createElement: () => ({
+      width: 0,
+      height: 0,
+      getContext: () => ({
+        drawImage() { offscreenDraws += 1; },
+        set imageSmoothingEnabled(value) { this._imageSmoothingEnabled = value; },
+        get imageSmoothingEnabled() { return this._imageSmoothingEnabled; }
+      })
+    })
+  };
+  try {
+    const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} }, { mode: 'car' });
+    const ctx = createMockContext();
+    const tireCanvas = { width: 165, height: 220 };
+    for (let index = 0; index < 4; index += 1) {
+      assert.equal(editor.drawScrolledCarTireArt(ctx, tireCanvas, index * 10, 0, 18, 24, {
+        scroll: 0.37,
+        cacheKey: 'perf-tire'
+      }), true);
+    }
+
+    assert.equal(editor.raceCarTireScrollCache.size, 1);
+    assert.equal(offscreenDraws <= 2, true);
+    assert.equal(ctx.calls.filter((call) => call.type === 'drawImage').length, 4);
+  } finally {
+    globalThis.document = previousDocument;
+  }
+});
+
+test('Car Editor art reset clears only the active visual component', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} }, { mode: 'car' });
+  editor.selectedCar.art = {
+    ...(editor.selectedCar.art || {}),
+    body: 'rtg-001',
+    shell: 'rtg-001',
+    artRef: 'rtg-001',
+    tires: ['tire'],
+    tireTreads: { tarmac: { artRef: 'tire', frameIndex: 0 } },
+    brakeLightArtRef: 'brake',
+    shadowArtRef: 'shadow'
+  };
+  editor.raceCarBillboardLayerCache.set('x', {});
+  editor.raceCarTireScrollCache.set('y', {});
+
+  editor.resetCarArtComponent('tires');
+
+  assert.equal(editor.selectedCar.art.body, 'rtg-001');
+  assert.equal(editor.selectedCar.art.brakeLightArtRef, 'brake');
+  assert.equal(editor.selectedCar.art.shadowArtRef, 'shadow');
+  assert.deepEqual(editor.selectedCar.art.tires, []);
+  assert.deepEqual(editor.selectedCar.art.tireTreads, {});
+  assert.equal(editor.raceCarBillboardLayerCache.size, 0);
+  assert.equal(editor.raceCarTireScrollCache.size, 0);
+});
+
+test('Race playtest preloads all authored car visual art without terrain samplers', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.surfaceArt = { grass: 'ground-texture' };
+  editor.selectedRace.scenery = [{ artRef: 'tree-texture' }];
+  editor.selectedCar.art = {
+    shell: 'shell-art',
+    body: 'body-art',
+    artRef: 'legacy-body-art',
+    tires: 'legacy-tire-art',
+    spoiler: 'spoiler-art',
+    shadowArtRef: 'shadow-art',
+    brakeLightArtRef: 'brake-art',
+    turnFrames: { left: 'left-art', center: 'center-art', right: 'right-art' },
+    tireTreads: {
+      tarmac: { artRef: 'tarmac-tire-art', frameIndex: 0 },
+      dirt: { artRef: 'dirt-tire-art', frameIndex: 0 }
+    },
+    shellFrames: {
+      artRef: 'shell-frame-root-art',
+      slots: {
+        front: { artRef: 'front-shell-art', frameIndex: 0 },
+        rear: { artRef: 'rear-shell-art', frameIndex: 0 }
+      }
+    },
+    addOns: [{ artRef: 'addon-art', frameIndex: 0 }],
+    spoilers: ['spoiler-list-art']
+  };
+  const spriteRefs = [];
+  const samplerRefs = [];
+  editor.getRaceArtSpriteCanvas = (artRef) => {
+    spriteRefs.push(artRef);
+    return { width: 16, height: 16 };
+  };
+  editor.getRaceArtTextureSampler = (artRef) => {
+    samplerRefs.push(artRef);
+    return {};
+  };
+
+  editor.preloadSelectedRaceArtRefs();
+
+  [
+    'body-art',
+    'tarmac-tire-art',
+    'dirt-tire-art',
+    'shadow-art',
+    'brake-art',
+    'addon-art',
+    'front-shell-art',
+    'rear-shell-art',
+    'spoiler-list-art'
+  ].forEach((artRef) => {
+    assert.equal(spriteRefs.includes(artRef), true, `${artRef} should preload as sprite art`);
+  });
+  assert.equal(samplerRefs.includes('ground-texture'), true);
+  assert.equal(samplerRefs.includes('tree-texture'), true);
+  assert.equal(samplerRefs.includes('body-art'), false);
+  assert.equal(samplerRefs.includes('tarmac-tire-art'), false);
+});
+
+test('Race playtest prewarm binds only render textures, not car body or tire sprites', () => {
+  const previousDocument = globalThis.document;
+  globalThis.document = {
+    createElement: () => ({
+      width: 0,
+      height: 0,
+      getContext: () => ({
+        drawImage() {}
+      })
+    })
+  };
+  try {
+    const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+    editor.selectedRace.surfaceArt = { grass: 'ground-texture' };
+    editor.selectedRace.scenery = [{ artRef: 'tree-texture' }];
+    editor.selectedCar.art = {
+      ...(editor.selectedCar.art || {}),
+      body: 'body-art',
+      shell: 'body-art',
+      tireTreads: { tarmac: { artRef: 'tire-art', frameIndex: 0 } },
+      shadowArtRef: 'shadow-art',
+      brakeLightArtRef: 'brake-art',
+      addOns: [{ artRef: 'addon-art', enabled: true }]
+    };
+    const boundRefs = [];
+    editor.getRaceWebGLGroundRenderer = () => ({ gl: {} });
+    editor.bindRaceWebGLMeshTexture = (_renderer, artRef) => {
+      boundRefs.push(artRef);
+      return true;
+    };
+    editor.getNowMs = () => 100;
+    editor.buildRaceWorldBake = () => ({ terrainChunks: [1], terrainCells: [1, 2] });
+
+    editor.prewarmRacePlaytestRenderResources();
+
+    assert.equal(boundRefs.includes('ground-texture'), true);
+    assert.equal(boundRefs.includes('tree-texture'), true);
+    assert.equal(boundRefs.includes('body-art'), false);
+    assert.equal(boundRefs.includes('tire-art'), false);
+    assert.equal(boundRefs.includes('shadow-art'), false);
+    assert.equal(boundRefs.includes('brake-art'), false);
+    assert.equal(boundRefs.includes('addon-art'), false);
+    assert.equal(editor.lastRaceRenderStats.prewarmSpriteRefs > boundRefs.length, true);
+    assert.equal(editor.lastRaceRenderStats.prewarmMeshTextureRefs, boundRefs.length);
+    assert.equal(editor.lastRaceRenderStats.skippedCarMeshTextureRefs >= 5, true);
+  } finally {
+    globalThis.document = previousDocument;
+  }
+});
+
+test('Race Three dynamic car reuses meshes across unchanged frames', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const renderer = {
+    scene: new THREE.Scene(),
+    materialCache: new Map(),
+    solidMaterialCache: new Map()
+  };
+  const session = {
+    worldX: 0,
+    worldZ: 0,
+    worldY: 0,
+    carYaw: 0,
+    wheelContacts: {
+      fl: { elevation: 0 },
+      fr: { elevation: 0 },
+      rl: { elevation: 0 },
+      rr: { elevation: 0 }
+    },
+    suspension: {
+      fl: { compressionM: 0.1 },
+      fr: { compressionM: 0.1 },
+      rl: { compressionM: 0.1 },
+      rr: { compressionM: 0.1 }
+    }
+  };
+  const stats = {};
+
+  assert.equal(editor.addRaceThreeProceduralCar(renderer, {
+    x: 0,
+    z: 0,
+    elevation: 0,
+    yaw: 0,
+    car: editor.selectedCar,
+    session,
+    stats
+  }), true);
+  const firstGroup = renderer.dynamicCarGroup;
+  const firstChildren = [...firstGroup.children];
+
+  assert.equal(editor.addRaceThreeProceduralCar(renderer, {
+    x: 3,
+    z: 8,
+    elevation: 0.2,
+    yaw: 0.35,
+    car: editor.selectedCar,
+    session,
+    braking: true,
+    stats
+  }), true);
+
+  assert.equal(renderer.dynamicCarGroup, firstGroup);
+  assert.deepEqual(renderer.dynamicCarGroup.children, firstChildren);
+  assert.equal(stats.threeDynamicCarCacheHits, 1);
+});
+
+test('Race projected car sprites draw body, tires, and add-ons from scaled layer cache', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const ctx = createMockContext();
+  const sourceCanvases = {
+    'projected-body': { width: 512, height: 512, artRef: 'projected-body' },
+    'projected-tire': { width: 165, height: 220, artRef: 'projected-tire' },
+    'projected-addon': { width: 256, height: 128, artRef: 'projected-addon' }
+  };
+  const scaledKeys = [];
+  editor.getRaceArtSpriteCanvas = (artRef) => sourceCanvases[artRef] || null;
+  editor.getRaceCarProjectedArtRef = () => ({ artRef: 'projected-body', frameIndex: 0 });
+  editor.getRaceCarBillboardLayerCanvas = (sourceCanvas, width, height, keyPrefix = '') => {
+    scaledKeys.push(String(keyPrefix));
+    return {
+      width: Math.max(1, Math.round(Number(width) || 1)),
+      height: Math.max(1, Math.round(Number(height) || 1)),
+      artRef: `scaled:${sourceCanvas.artRef}`,
+      sourceCanvas
+    };
+  };
+  editor.drawScrolledCarTireArt = (_ctx, tireCanvas) => {
+    assert.equal(tireCanvas.artRef, 'scaled:projected-tire');
+    return true;
+  };
+  const car = {
+    dimensions: { widthM: 1.8, lengthM: 4.4 },
+    setup: { defaultTireCompound: 'tarmac' },
+    art: {
+      tireTreads: { tarmac: { artRef: 'projected-tire', frameIndex: 0 } },
+      addOns: [{ artRef: 'projected-addon', frameIndex: 0, enabled: true, scale: 1 }],
+      layerVisibility: { body: true, tires: true, frontWheels: true, rearWheels: true, brakes: true, shadow: true }
+    }
+  };
+
+  editor.drawRaceProjectedCarSprite(ctx, { x: 0, y: 0, w: 320, h: 180 }, {
+    projected: { visible: true, screenX: 160, screenY: 120, cameraZ: 12, renderZ: 12 },
+    yaw: 0,
+    cameraYaw: 0,
+    car
+  });
+
+  assert.equal(scaledKeys.some((key) => key.startsWith('projected-body:projected-body')), true);
+  assert.equal(scaledKeys.some((key) => key.startsWith('projected-tire:projected-tire')), true);
+  assert.equal(scaledKeys.some((key) => key.startsWith('projected-addon:projected-addon')), true);
+  assert.equal(ctx.calls.some((call) => call.type === 'drawImage' && call.args[0]?.artRef === 'projected-body'), false);
+  assert.equal(ctx.calls.some((call) => call.type === 'drawImage' && call.args[0]?.artRef === 'scaled:projected-body'), true);
+});
+
+test('Race authored body art keeps the default procedural ground shadow', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const ctx = createMockContext();
+  const proceduralCalls = [];
+  let billboardOptions = null;
+  editor.project.races = [{ id: 'shadow-test', road: { segments: [{ x: 0, y: 0, elevation: 0 }] } }];
+  editor.project.selectedRaceId = 'shadow-test';
+  editor.project.cars = [{
+    id: 'shadow-car',
+    dimensions: { widthM: 1.8, lengthM: 4.6 },
+    setup: { defaultTireCompound: 'tarmac' },
+    art: {
+      body: 'rtg-001',
+      layerVisibility: { body: true, tires: true, frontWheels: true, rearWheels: true, brakes: true, shadow: true }
+    }
+  }];
+  editor.project.selectedCarId = 'shadow-car';
+  editor.playtestSession = {
+    worldX: 0,
+    worldZ: 0,
+    carYaw: 0,
+    speedMps: 0,
+    tireSlip: {},
+    damage: editor.createRaceDamageState()
+  };
+  editor.lastRaceRenderCamera = {
+    camera: { roadElevation: 0 },
+    cameraYaw: 0,
+    bounds: { x: 0, y: 0, w: 320, h: 180 }
+  };
+  editor.lastRaceRenderStats = { threeProceduralCar: 0 };
+  editor.getRaceVisualTravelDistance = () => 0;
+  editor.getRaceSegmentAtDistance = () => ({ segment: { elevation: 0 } });
+  editor.getRaceStitchedTerrainElevationAtWorldPoint = () => 0;
+  editor.projectRaceWorldPointToCamera = () => ({ visible: true, screenX: 160, screenY: 118 });
+  editor.getRaceCarProjectedArtRef = () => ({ artRef: 'rtg-001', frameIndex: 0 });
+  editor.hasCarTireArtOverride = () => false;
+  editor.drawRaceProjectedProceduralCar = (_ctx, _bounds, options) => {
+    proceduralCalls.push(options);
+    return false;
+  };
+  editor.drawRaceCarBillboardLayers = (_ctx, options) => {
+    billboardOptions = options;
+  };
+
+  editor.drawRaceThirdPersonCar(ctx, { x: 0, y: 0, w: 320, h: 180 });
+
+  assert.equal(proceduralCalls.length, 1);
+  assert.equal(proceduralCalls[0].drawBody, false);
+  assert.equal(proceduralCalls[0].drawWheels, true);
+  assert.equal(proceduralCalls[0].drawShadow, true);
+  assert.equal(billboardOptions?.drawShadowLayer, true);
+});
+
+test('Race custom shadow art replaces procedural shadow and stays on ground anchor', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const ctx = createMockContext();
+  const proceduralCalls = [];
+  let billboardOptions = null;
+  editor.project.races = [{ id: 'shadow-test', road: { segments: [{ x: 0, y: 0, elevation: 0 }] } }];
+  editor.project.selectedRaceId = 'shadow-test';
+  editor.project.cars = [{
+    id: 'shadow-car',
+    dimensions: { widthM: 1.8, lengthM: 4.6 },
+    setup: { defaultTireCompound: 'tarmac' },
+    art: {
+      body: 'rtg-001',
+      shadowArtRef: 'custom-shadow',
+      layerVisibility: { body: true, tires: true, frontWheels: true, rearWheels: true, brakes: true, shadow: true }
+    }
+  }];
+  editor.project.selectedCarId = 'shadow-car';
+  editor.playtestSession = {
+    worldX: 0,
+    worldZ: 0,
+    carYaw: 0,
+    speedMps: 0,
+    tireSlip: {},
+    damage: editor.createRaceDamageState()
+  };
+  editor.lastRaceRenderCamera = {
+    camera: { roadElevation: 0 },
+    cameraYaw: 0,
+    bounds: { x: 0, y: 0, w: 320, h: 180 }
+  };
+  editor.lastRaceRenderStats = { threeProceduralCar: 0 };
+  editor.getRaceVisualTravelDistance = () => 0;
+  editor.getRaceSegmentAtDistance = () => ({ segment: { elevation: 0 } });
+  editor.getRaceStitchedTerrainElevationAtWorldPoint = () => 0;
+  editor.projectRaceWorldPointToCamera = () => ({ visible: true, screenX: 160, screenY: 118 });
+  editor.getRaceCarProjectedArtRef = () => ({ artRef: 'rtg-001', frameIndex: 0 });
+  editor.hasCarTireArtOverride = () => false;
+  editor.drawRaceProjectedProceduralCar = (_ctx, _bounds, options) => {
+    proceduralCalls.push(options);
+    return false;
+  };
+  editor.drawRaceCarBillboardLayers = (_ctx, options) => {
+    billboardOptions = options;
+  };
+
+  editor.drawRaceThirdPersonCar(ctx, { x: 0, y: 0, w: 320, h: 180 });
+
+  assert.equal(proceduralCalls.length, 1);
+  assert.equal(proceduralCalls[0].drawShadow, false);
+  assert.equal(billboardOptions?.drawShadowLayer, true);
+  assert.equal(Number.isFinite(Number(billboardOptions?.shadowAnchorY)), true);
+});
+
+test('Car Editor preview loop reset preserves art UI state', () => {
+  const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
+  editor.carEditorPreviewPlaytest = { key: 'preview', session: {}, input: {} };
+  editor.carEditorPreviewFrameCache = { canvas: {}, w: 10, h: 10, lastRenderMs: 123 };
+  editor.mobileRootOpen = true;
+  editor.activeRootId = 'body';
+  editor.carArtActiveComponent = 'shadow';
+  editor.desktopDropdown = { rootId: 'body' };
+
+  editor.resetCarEditorPreviewPlaytest({ guardArtPicker: true, preserveEditorUi: true });
+
+  assert.equal(editor.carEditorPreviewPlaytest, null);
+  assert.equal(editor.carEditorPreviewFrameCache, null);
+  assert.equal(editor.mobileRootOpen, true);
+  assert.equal(editor.activeRootId, 'body');
+  assert.equal(editor.carArtActiveComponent, 'shadow');
+  assert.deepEqual(editor.desktopDropdown, { rootId: 'body' });
+  assert.equal(editor.carEditorPreviewResetGuardMs, 450);
+});
+
+test('Car Editor portrait menu resets stale roots without drawing an empty submenu sheet', () => {
+  const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} }, { mode: 'car' });
+  const ctx = createMockContext();
+  editor.mobileRootOpen = true;
+  editor.activeRootId = 'body';
+
+  editor.drawPortraitMenuSheet(ctx, {
+    menuSheet: { x: 0, y: 0, w: 320, h: 160 },
+    rootRail: { x: 0, y: 0, w: 100, h: 160 },
+    subRail: { x: 100, y: 0, w: 220, h: 160 }
+  });
+
+  assert.equal(editor.mobileRootOpen, true);
+  assert.equal(editor.activeRootId, 'art');
+  assert.equal(ctx.calls.some((call) => call.type === 'fillRect' && call.w === 320 && call.h === 160), false);
+});
+
+test('Race car billboard layer cache evicts oldest entries instead of clearing all layers', () => {
+  const previousDocument = globalThis.document;
+  globalThis.document = {
+    createElement: () => ({
+      width: 0,
+      height: 0,
+      getContext: () => ({
+        drawImage() {},
+        set imageSmoothingEnabled(value) { this._imageSmoothingEnabled = value; },
+        get imageSmoothingEnabled() { return this._imageSmoothingEnabled; }
+      })
+    })
+  };
+  try {
+    const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+    const source = { width: 512, height: 512 };
+    for (let index = 0; index < 140; index += 1) {
+      editor.getRaceCarBillboardLayerCanvas(source, 20 + index, 20, `layer-${index}`);
+    }
+
+    assert.equal(editor.raceCarBillboardLayerCache.size, 128);
+    assert.equal([...editor.raceCarBillboardLayerCache.keys()].some((key) => key.startsWith('layer-0:')), false);
+    assert.equal([...editor.raceCarBillboardLayerCache.keys()].some((key) => key.startsWith('layer-139:')), true);
+  } finally {
+    globalThis.document = previousDocument;
+  }
+});
+
+test('Car Editor preview loads saved Studio Sprint terrain and graphics data', () => {
+  resetProjectFilesForTests();
+  const savedRace = {
+    schemaVersion: 1,
+    kind: 'race-track',
+    race: {
+      id: 'test-loop',
+      name: 'Studio Sprint',
+      type: 'destination',
+      road: {
+        laneCount: 1,
+        laneWidthM: 3.6,
+        width: 3.6,
+        tileMap: {
+          cellSizeM: 5,
+          defaultTileId: 'snow',
+          revision: 77,
+          cells: {
+            '0,0': { tileId: 'dirt', elevation: 0.31 }
+          }
+        },
+        nodes: [
+          { x: 0, y: 0, elevation: 0, role: 'start', locked: true },
+          { x: 40, y: 0, elevation: 0.2 },
+          { x: 60, y: 35, elevation: -0.1 }
+        ],
+        segments: [
+          { length: 40, curve: 0, elevation: 0.2, surface: 'dirt' },
+          { length: 40, curve: 0.8, elevation: -0.1, surface: 'gravel' }
+        ]
+      },
+      visuals: {
+        renderer: 'webgl-track',
+        groundTextures: { grass: { artRef: 'providenceGround' } }
+      },
+      scenery: []
+    }
+  };
+  saveProjectFile('races', 'Studio Sprint', savedRace, { createVersion: false });
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} }, { mode: 'car' });
+
+  const preview = editor.ensureCarEditorPreviewPlaytestSession();
+
+  assert.equal(preview.raceId, 'test-loop');
+  assert.equal(editor.project.races.find((race) => race.id === 'test-loop').road.tileMap.revision, 77);
+  assert.equal(preview.session.routeRuntimeType, 'destination');
+});
+
+test('Car Editor preview drives its embedded playtest session and restarts at route end', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} }, { mode: 'car' });
+  editor.ensureCarEditorPreviewPlaytestSession();
+  const preview = editor.carEditorPreviewPlaytest;
+  assert.equal(preview.raceId, 'test-loop');
+  preview.session.distance = Math.max(1, Number(preview.session.routeLength || 1)) + 1;
+  editor.updateCarEditorPreviewPlaytest(1 / 60);
+  assert.equal(editor.carEditorPreviewPlaytest, null);
+  assert.ok(editor.carEditorPreviewResetGuardMs > 0);
+  let artPickerOpened = false;
+  editor.openCarArtPickerForComponent = () => {
+    artPickerOpened = true;
+    return Promise.resolve(null);
+  };
+  editor.buttons = [{
+    id: 'car-art-pick-body',
+    bounds: { x: 0, y: 0, w: 100, h: 40 },
+    onClick: () => editor.openCarArtPickerForComponent('body')
+  }];
+  editor.handlePointerDown({ x: 10, y: 10, id: 'pointer' });
+  assert.equal(artPickerOpened, false);
+});
+
+test('Race car projected art uses turn-frame artwork by relative camera yaw', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} }, { mode: 'car' });
   editor.selectedCar.art.shell = 'bodySprite';
   editor.selectedCar.art.turnFrames.left = 'leftSprite';
   editor.selectedCar.art.turnFrames.right = 'rightSprite';
-  editor.getRaceArtSpriteCanvas = (artRef) => ({ artRef, width: 32, height: 32 });
-  const ctx = createMockContext();
 
-  editor.activeAction = 'turn-left';
-  editor.drawCarEditorPreview(ctx, { x: 10, y: 20, w: 260, h: 180 }, editor.selectedCar);
-
-  const imageRefs = ctx.calls
-    .filter((call) => call.type === 'drawImage')
-    .map((call) => call.args[0]?.artRef);
-  assert.equal(imageRefs.includes('leftSprite'), true);
-  assert.equal(imageRefs.includes('rightSprite'), false);
+  assert.equal(editor.getRaceCarProjectedArtRef(editor.selectedCar, -Math.PI / 2, 0).artRef, 'leftSprite');
+  assert.equal(editor.getRaceCarProjectedArtRef(editor.selectedCar, Math.PI / 2, 0).artRef, 'rightSprite');
 });
 
 test('Car Editor top-menu tuning actions update actual car data', () => {
@@ -4537,32 +5206,36 @@ test('Race desktop playtest keeps dropdown commands on release activation', () =
   assert.equal(editor.desktopDropdown, null);
 });
 
-test('Race and Car desktop left context panels keep commands out of the work surface', () => {
+test('Race and Car desktop left context panels expose workflow quick controls', () => {
   const contextIndex = raceEditorSource.indexOf('  drawDesktopContext(ctx, bounds)');
   const contextBody = raceEditorSource.slice(contextIndex, raceEditorSource.indexOf('  drawPortrait(ctx, width, height)', contextIndex));
 
   assert.ok(contextIndex > 0);
-  assert.equal(contextBody.includes('drawSharedDesktopContextPanel(ctx, bounds,'), true);
-  assert.equal(contextBody.includes('this.drawActionRows('), false);
+  assert.equal(contextBody.includes('const { contextBounds, transportBounds: actionBounds } = buildSharedDesktopContextTransportLayout(bounds, {'), true);
+  assert.equal(contextBody.includes('drawSharedDesktopContextPanel(ctx, contextBounds,'), true);
+  assert.equal(contextBody.includes('this.drawDesktopContextActions(ctx, actionBounds);'), true);
+  assert.equal(raceEditorSource.includes('  getDesktopContextActions()'), true);
+  assert.equal(raceEditorSource.includes("action.id !== 'generate-random-race'"), true);
+  assert.equal(raceEditorSource.includes("id: 'draw-road'"), true);
+  assert.equal(raceEditorSource.includes("id: 'body-art'"), true);
   assert.equal(contextBody.includes('getRaceQuickActions()'), false);
   assert.equal(contextBody.includes('race:desktop-quick'), false);
-  assert.equal(contextBody.includes("id: 'end-playtest'"), false);
   assert.equal(contextBody.includes('drawDesktopRaceBuilderPanel'), false);
-  assert.equal(contextBody.includes('contextPanelCommand'), false);
   assert.equal(contextBody.includes('Surface: ${getSurfaceById(this.selectedSegment?.surface).label}'), true);
   assert.equal(contextBody.includes('Final drive: ${car.tuning.gearFinalDrive}'), true);
   assert.equal(raceEditorSource.includes('drawCompact(ctx, width, height)'), false);
   assert.equal(raceEditorSource.includes("this.drawButton(ctx, back, 'Back');"), false);
 });
 
-test('Race desktop keeps builder commands in top drawers instead of the left context panel', () => {
+test('Race desktop keeps generation in top drawers while route tools stay in the left context panel', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   const ctx = createMockContext();
   editor.draw(ctx, 1280, 800);
 
   const generate = editor.buttons.find((button) => button.id === 'generate-random-race' && button.contextPanelCommand);
   assert.equal(generate, undefined);
-  assert.equal(editor.buttons.some((button) => button.contextPanelCommand), false);
+  assert.ok(editor.buttons.some((button) => button.id === 'draw-road' && button.contextPanelCommand));
+  assert.ok(editor.buttons.some((button) => button.id === 'cycle-surface' && button.contextPanelCommand));
 
   const generateRoot = editor.buttons.find((button) => button.desktopRootId === 'file');
   assert.ok(generateRoot);
@@ -4582,6 +5255,27 @@ test('Race desktop keeps builder commands in top drawers instead of the left con
   )), false);
 });
 
+test('Race desktop left route tools activate on release', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const ctx = createMockContext();
+  editor.draw(ctx, 1280, 800);
+
+  const segmentCount = editor.selectedRace.road.segments.length;
+  const drawRoad = editor.buttons.find((button) => button.id === 'draw-road' && button.contextPanelCommand);
+  assert.ok(drawRoad);
+  editor.handlePointerDown({
+    x: drawRoad.bounds.x + drawRoad.bounds.w / 2,
+    y: drawRoad.bounds.y + drawRoad.bounds.h / 2
+  });
+  assert.equal(editor.selectedRace.road.segments.length, segmentCount);
+  editor.handlePointerUp({
+    x: drawRoad.bounds.x + drawRoad.bounds.w / 2,
+    y: drawRoad.bounds.y + drawRoad.bounds.h / 2
+  });
+
+  assert.equal(editor.selectedRace.road.segments.length, segmentCount + 1);
+});
+
 test('Race desktop exposes play through the top editor control instead of a Drive drawer', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   const ctx = createMockContext();
@@ -4594,7 +5288,7 @@ test('Race desktop exposes play through the top editor control instead of a Driv
 
   editor.startPlaytest('starter-rwd');
   editor.draw(ctx, 1280, 800);
-  assert.equal(editor.buttons.some((button) => button.id === 'end-playtest' && !button.desktopDropdownItem), false);
+  assert.ok(editor.buttons.some((button) => button.id === 'end-playtest' && button.contextPanelCommand));
   assert.ok(editor.buttons.some((button) => button.id === 'race-pause-return-editor'));
   assert.equal(editor.getMenuItems('drive').length, 0);
 });
@@ -4685,7 +5379,7 @@ test('Race and Car desktop preview drag uses shared pointer policy', () => {
   assert.equal(raceEditorSource.includes('if (this.isDesktopMode() && this.desktopDropdown && shouldCloseDesktopDropdownOnPointerDown({'), true);
 });
 
-test('Race Editor file menu keeps unavailable scaffold rows disabled', () => {
+test('Race Editor file menu exposes live desktop project actions', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   const carEditor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} }, { mode: 'car' });
   const fileItems = editor.getMenuItems('file');
@@ -4694,29 +5388,25 @@ test('Race Editor file menu keeps unavailable scaffold rows disabled', () => {
   assert.equal(raceEditorSource.includes('buildSharedEditorFileMenu'), true);
   assert.equal(raceEditorSource.includes("footer: {\n          onExit: () => this.exitToMainMenu()\n        }"), true);
   assert.deepEqual(fileItems.slice(0, 6).map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import']);
-  assert.deepEqual(fileItems.slice(6, 12).map((item) => item.id), [
-    'generate-random-race',
-    'load-weathertech-raceway',
-    'load-nurburgring-nordschleife',
-    'load-col-de-turini',
-    'load-ouninpohja',
-    'load-daytona-tri-oval'
-  ]);
+  assert.deepEqual(fileItems.slice(6).map((item) => item.id), ['generate-random-race', 'exit-main']);
+  assert.equal(fileItems.some((item) => String(item.id || '').startsWith('load-')), false);
   assert.deepEqual(carFileItems.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
   assert.equal(carFileItems.some((item) => item.id === 'load-wrx' || item.id === 'load-brz' || item.id === 'load-civic'), false);
   assert.equal(fileItems.find((item) => item.id === 'new')?.disabled, false);
   assert.equal(fileItems.find((item) => item.id === 'save')?.disabled, false);
   assert.equal(fileItems.find((item) => item.id === 'save-as')?.disabled, false);
   assert.equal(fileItems.find((item) => item.id === 'open')?.disabled, false);
-  assert.equal(fileItems.find((item) => item.id === 'export')?.disabled, true);
-  assert.equal(fileItems.find((item) => item.id === 'import')?.disabled, true);
+  assert.equal(fileItems.find((item) => item.id === 'export')?.disabled, false);
+  assert.equal(fileItems.find((item) => item.id === 'import')?.disabled, false);
+  assert.equal(typeof fileItems.find((item) => item.id === 'export')?.onSelect, 'function');
+  assert.equal(typeof fileItems.find((item) => item.id === 'import')?.onSelect, 'function');
   assert.equal(fileItems.at(-1)?.id, 'exit-main');
-  assert.equal(fileItems.at(-1)?.label, 'Exit to Main Menu');
+  assert.equal(fileItems.at(-1)?.label, 'Exit');
   assert.equal(fileItems.find((item) => item.id === 'exit-main')?.disabled, false);
   assert.equal(typeof fileItems.find((item) => item.id === 'exit-main')?.onSelect, 'function');
 });
 
-test('Race Editor touch file menu enables Open and keeps remaining scaffold rows inert', () => {
+test('Race Editor touch file menu enables Open, Export, and Import', () => {
   const editor = new RaceEditor({
     deviceIsMobile: true,
     isMobile: true,
@@ -4729,12 +5419,51 @@ test('Race Editor touch file menu enables Open and keeps remaining scaffold rows
 
   const openButton = editor.buttons.find((button) => button.id === 'open');
   const exportButton = editor.buttons.find((button) => button.id === 'export');
+  const importButton = editor.buttons.find((button) => button.id === 'import');
   assert.ok(openButton);
   assert.equal(openButton.disabled, false);
   assert.equal(typeof openButton.onClick, 'function');
   assert.ok(exportButton);
-  assert.equal(exportButton.disabled, true);
-  assert.equal(exportButton.onClick, null);
+  assert.equal(exportButton.disabled, false);
+  assert.equal(typeof exportButton.onClick, 'function');
+  assert.ok(importButton);
+  assert.equal(importButton.disabled, false);
+  assert.equal(typeof importButton.onClick, 'function');
+});
+
+test('Race Editor desktop edit and view menu actions are live', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const editItems = editor.getMenuItems('edit');
+  const viewItems = editor.getMenuItems('view');
+  const startingSegments = editor.selectedRace.road.segments.length;
+
+  ['undo', 'redo', 'copy-segment', 'paste-segment', 'delete-segment'].forEach((id) => {
+    const item = editItems.find((entry) => entry.id === id);
+    assert.ok(item, `${id} is present`);
+    assert.equal(item.disabled, false, `${id} is enabled`);
+    assert.equal(typeof item.onSelect, 'function', `${id} has a live handler`);
+  });
+  ['preview-mode7', 'zoom-fit', 'toggle-scenery', 'toggle-racing-line'].forEach((id) => {
+    const item = viewItems.find((entry) => entry.id === id);
+    assert.ok(item, `${id} is present`);
+    assert.equal(item.disabled, false, `${id} is enabled`);
+    assert.equal(typeof item.onSelect, 'function', `${id} has a live handler`);
+  });
+
+  editor.handleMenuAction('copy-segment');
+  assert.ok(editor.raceClipboardSegment);
+  editor.handleMenuAction('paste-segment');
+  assert.equal(editor.selectedRace.road.segments.length, startingSegments + 1);
+  editor.handleMenuAction('undo');
+  assert.equal(editor.selectedRace.road.segments.length, startingSegments);
+  editor.handleMenuAction('redo');
+  assert.equal(editor.selectedRace.road.segments.length, startingSegments + 1);
+
+  const sceneryBefore = editor.showRaceScenery;
+  editor.handleMenuAction('toggle-scenery');
+  assert.equal(editor.showRaceScenery, !sceneryBefore);
+  assert.equal(raceEditorSource.includes('if (this.showRaceScenery !== false) this.drawRaceTopDownScenerySprites(ctx, bounds);'), true);
+  assert.equal(raceEditorSource.includes('this.showRaceRacingLine !== false && points.length > 1'), true);
 });
 
 test('Race Editor action rows expose wheel-scrollable overflow regions', () => {
@@ -8026,7 +8755,7 @@ test('Race Editor settings use dialogs for AI, weather, tile art, and decal proj
     const settingsIds = editor.getMenuItems('settings').map((item) => item.id);
     const spriteIds = editor.getMenuItems('sprites').map((item) => item.id);
 
-    assert.deepEqual(settingsIds, ['ai-count', 'add-sprite', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale']);
+    assert.deepEqual(settingsIds, ['ai-count', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale']);
     assert.deepEqual(spriteIds, ['sprite-select', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']);
     assert.equal(editor.getRaceGroundRenderer(), 'webgl-track');
 
@@ -8365,6 +9094,7 @@ test('Car Editor saves, seeds, and loads selected cars through project files', (
   const saved = editor.saveSelectedCarToName('Track BRZ');
   assert.equal(saved.folder, 'cars');
   assert.equal(saved.name, 'Track BRZ');
+  assert.equal(editor.status, 'Saving...');
 
   const payload = loadProjectFile('cars', 'Track BRZ');
   assert.equal(payload.data.kind, 'race-car');
@@ -8850,18 +9580,12 @@ test('Race Editor generate keeps authoring menus reachable after rebuilding a ro
   assert.equal(gamepad.gamepadSubmenuOpen, true);
 });
 
-test('Race Editor File menu loads built-in test tracks', () => {
+test('Race Editor built-in test tracks remain loadable internally without File menu buttons', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
-  const generateMenuIds = editor.getMenuItems('file').map((item) => item.id).slice(6, 12);
+  const fileMenuIds = editor.getMenuItems('file').map((item) => item.id);
 
-  assert.deepEqual(generateMenuIds, [
-    'generate-random-race',
-    'load-weathertech-raceway',
-    'load-nurburgring-nordschleife',
-    'load-col-de-turini',
-    'load-ouninpohja',
-    'load-daytona-tri-oval'
-  ]);
+  assert.deepEqual(fileMenuIds.slice(6), ['generate-random-race', 'exit-main']);
+  assert.equal(fileMenuIds.some((id) => String(id || '').startsWith('load-')), false);
 
   editor.project.races = editor.project.races.slice(0, 1);
   editor.project.selectedRaceId = 'test-loop';
@@ -9151,11 +9875,6 @@ test('Race Editor File menu has no blank rows', () => {
     'export',
     'import',
     'generate-random-race',
-    'load-weathertech-raceway',
-    'load-nurburgring-nordschleife',
-    'load-col-de-turini',
-    'load-ouninpohja',
-    'load-daytona-tri-oval',
     'exit-main'
   ]);
 });
@@ -9251,20 +9970,36 @@ test('Race Editor restores Race authoring menus after Drive picker and playtest 
 });
 
 test('Race Editor pre-race picker selects cars, opens tuning, and adjusts per-wheel tires', () => {
+  resetProjectFilesForTests();
+  clearCachedProjectFilesForTests();
   const editor = new RaceEditor({
     deviceIsMobile: false,
     isMobile: false,
     exitRaceEditor() {}
   });
+  const sourceCar = editor.project.cars.find((car) => car.id === 'subaru-brz-2022') || editor.selectedCar;
+  const savedCar = editor.normalizeLoadedCarDocument({
+    ...JSON.parse(JSON.stringify(sourceCar)),
+    id: 'saved-brz',
+    name: 'Saved BRZ'
+  }, 'Saved BRZ');
+  saveProjectFile('cars', 'Saved BRZ', {
+    schemaVersion: 2,
+    kind: 'race-car',
+    savedAt: Date.now(),
+    selectedCarId: savedCar.id,
+    car: savedCar
+  }, { createVersion: false });
   const ctx = createMockContext();
 
   editor.handleMenuAction('test-drive');
   editor.draw(ctx, 1280, 800);
 
-  const brzButton = editor.buttons.find((button) => button.id === 'playtest-car-subaru-brz-2022');
-  assert.ok(brzButton);
-  brzButton.onClick();
-  assert.equal(editor.project.selectedCarId, 'subaru-brz-2022');
+  const savedButton = editor.buttons.find((button) => button.id === 'playtest-car-Saved BRZ');
+  assert.ok(savedButton);
+  assert.equal(editor.buttons.some((button) => button.id === 'playtest-car-subaru-brz-2022'), false);
+  savedButton.onClick();
+  assert.equal(editor.project.selectedCarId, 'saved-brz');
   assert.equal(editor.buttons.some((button) => button.id === 'playtest-tuning'), true);
   assert.equal(editor.buttons.some((button) => button.id === 'playtest-start'), true);
 
@@ -9301,7 +10036,491 @@ test('Race Editor pre-race picker selects cars, opens tuning, and adjusts per-wh
   assert.equal(editor.buttons.some((button) => button.id === 'tune-gearRatio-1-up'), true);
 
   editor.buttons.find((button) => button.id === 'pre-race-start').onClick();
-  assert.equal(editor.playtestSession.carId, 'subaru-brz-2022');
+  assert.equal(editor.playtestSession.carId, 'saved-brz');
+  resetProjectFilesForTests();
+  clearCachedProjectFilesForTests();
+});
+
+test('Race Editor playtest uses Project Browser car selection in browser runtime', () => {
+  const start = raceEditorSource.indexOf('async openPlaytestCarBrowser()');
+  assert.notEqual(start, -1);
+  const body = raceEditorSource.slice(start, raceEditorSource.indexOf('getSavedRaceCarEntriesForPlaytest()', start));
+  assert.equal(body.includes("fixedFolder: 'cars'"), true);
+  assert.equal(body.includes("title: 'Choose Race Car'"), true);
+  assert.equal(body.includes('this.startPlaytest(car.id)'), true);
+});
+
+test('Race Editor migrates legacy scenery definitions into saved doodads', () => {
+  resetProjectFilesForTests();
+  clearCachedProjectFilesForTests();
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const race = editor.normalizeLoadedRaceDocument({
+    id: 'legacy-race',
+    name: 'Legacy Race',
+    road: { nodes: [], segments: [] },
+    sceneryDefinitions: [{ id: 'tree-def', artRef: 'Tree Art', label: 'Tree', widthM: 2, heightM: 7, behavior: 'indestructible' }],
+    scenery: [{ id: 'tree-1', definitionId: 'tree-def', x: 10, z: 20 }]
+  }, 'Legacy Race');
+
+  assert.equal(race.scenery[0].doodadRef, 'Tree');
+  const stored = loadProjectFile('doodads', 'Tree');
+  assert.equal(stored?.data?.kind, 'race-doodad');
+  assert.equal(stored.data.doodad.artRef, 'Tree Art');
+  resetProjectFilesForTests();
+  clearCachedProjectFilesForTests();
+});
+
+test('Race Editor paints selected saved doodad as a race placement', () => {
+  resetProjectFilesForTests();
+  clearCachedProjectFilesForTests();
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  saveProjectFile('doodads', 'Cone', {
+    schemaVersion: 1,
+    kind: 'race-doodad',
+    doodad: {
+      id: 'cone',
+      name: 'Cone',
+      artRef: 'Cone Art',
+      widthM: 0.4,
+      heightM: 0.7,
+      groundOffsetM: 0.3,
+      weightKg: 2,
+      defaultRule: { behavior: 'fly-off', speedDrainPercent: 4, damage: { panels: 0, suspension: 0, engine: 0 } },
+      rules: []
+    }
+  }, { createVersion: false });
+  editor.selectedDoodadRef = 'Cone';
+  editor.raceSpritePaintKind = 'doodad';
+  editor.getRaceRouteProjectionForWorldPoint = () => ({ yaw: 0.75, distance: 42.5, lateral: -3.25 });
+  const sprite = editor.createRaceScenerySprite({ x: 12, y: 34 });
+
+  assert.equal(sprite.doodadRef, 'Cone');
+  assert.equal(sprite.artRef, 'Cone Art');
+  assert.equal(sprite.widthM, 0.4);
+  assert.equal(sprite.heightM, 0.7);
+  assert.equal(sprite.groundOffsetM, 0.3);
+  assert.equal(sprite.yaw, 0.75);
+  assert.equal(sprite.trackDistance, 42.5);
+  assert.equal(sprite.trackLateral, -3.25);
+
+  editor.handleMenuAction('race-ground-mode-doodad');
+  editor.selectedDoodadRef = 'Cone';
+  editor.raceGroundBrushCells = 31;
+  editor.draw(createMockContext(), 390, 844);
+  assert.equal(editor.raceGroundBrushCells, 1);
+  assert.equal(editor.getRacePortraitGroundActions().find((action) => action.id === 'race-ground-brush').label, 'Brush 1');
+  const before = editor.selectedRace.scenery.length;
+  editor.handlePointerDown({
+    id: 'paint-doodad',
+    x: editor.raceMapBounds.x + editor.raceMapBounds.w * 0.5,
+    y: editor.raceMapBounds.y + editor.raceMapBounds.h * 0.5,
+    button: 0
+  });
+  assert.equal(editor.selectedRace.scenery.length, before + 1);
+  assert.equal(editor.selectedRace.scenery.at(-1).doodadRef, 'Cone');
+  assert.equal(editor.racePortraitMode, 'ground');
+  assert.equal(editor.activeRootId, 'ground');
+  assert.equal(editor.activeAction, 'paint-sprite');
+  assert.equal(editor.raceGroundBrushCells, 1);
+  resetProjectFilesForTests();
+  clearCachedProjectFilesForTests();
+});
+
+test('Race Editor preview doodad draft overrides saved doodad for temporary scenery only', () => {
+  resetProjectFilesForTests();
+  clearCachedProjectFilesForTests();
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  saveProjectFile('doodads', 'Cone', {
+    schemaVersion: 1,
+    kind: 'race-doodad',
+    doodad: {
+      id: 'cone',
+      name: 'Cone',
+      artRef: 'Saved Cone Art',
+      widthM: 0.4,
+      heightM: 0.7,
+      weightKg: 2,
+      defaultRule: { behavior: 'fly-off', speedDrainPercent: 4, damage: { panels: 0, suspension: 0, engine: 0 } },
+      rules: []
+    }
+  }, { createVersion: false });
+
+  const preview = editor.getRaceDoodadForScenery({
+    doodadRef: 'Cone',
+    label: 'Cone',
+    previewDoodad: {
+      id: 'cone-preview',
+      name: 'Cone Draft',
+      artRef: 'Draft Cone Art',
+      widthM: 6.4,
+      heightM: 9.2,
+      groundOffsetM: 1.4,
+      weightKg: 2,
+      defaultRule: { behavior: 'collide', speedDrainPercent: 40, damage: { panels: 1, suspension: 1, engine: 1 } },
+      rules: []
+    }
+  });
+  const saved = editor.getRaceDoodadForScenery({ doodadRef: 'Cone', label: 'Cone' });
+
+  assert.equal(preview.artRef, 'Draft Cone Art');
+  assert.equal(preview.widthM, 6.4);
+  assert.equal(preview.heightM, 9.2);
+  assert.equal(preview.groundOffsetM, 1.4);
+  assert.equal(saved.artRef, 'Saved Cone Art');
+  assert.equal(saved.widthM, 0.4);
+  assert.equal(saved.heightM, 0.7);
+  resetProjectFilesForTests();
+  clearCachedProjectFilesForTests();
+});
+
+test('Race Editor draws doodads rooted at their projected ground point', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.scenery = [{
+    id: 'cone-1',
+    presetId: 'doodad',
+    label: 'Cone',
+    artRef: 'Cone Art',
+    x: 12,
+    z: 24,
+    yaw: Math.PI / 2,
+    widthM: 2,
+    heightM: 3
+  }];
+  editor.getRaceSurfaceModel = () => ({ sampleWorld: () => ({ elevation: 0 }) });
+  const projectedPoints = [];
+  editor.projectRaceWorldPointToCamera = (point) => {
+    projectedPoints.push(point);
+    return {
+    visible: true,
+    screenX: 120 + Number(point.x || 0),
+    screenY: 110 - Number(point.elevation || 0) * 120,
+    cameraZ: 40,
+    renderZ: 40
+  };
+  };
+  editor.getRaceArtSpriteCanvas = () => ({ width: 1, height: 1 });
+  const ctx = createMockContext();
+
+  editor.drawRaceProjectedScenerySprites(ctx, { x: 0, y: 0, w: 200, h: 100 }, {
+    camera: { focalScale: 1, roadWidthScale: 1 },
+    cameraYaw: 0
+  });
+
+  const draw = ctx.calls.find((call) => call.type === 'drawImage');
+  assert.ok(draw);
+  const [, , y, , h] = draw.args;
+  assert.equal(Math.round((Number(y) + Number(h)) * 1000) / 1000, 110);
+  assert.ok(projectedPoints.some((point) => Number(point.elevation) === 0.25));
+  assert.ok(projectedPoints.some((point) => Number(point.x) === 12 && Number(point.z) !== 24));
+});
+
+test('Race Editor adds doodads as real Three world planes', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.scenery = [{
+    id: 'cone-1',
+    presetId: 'doodad',
+    label: 'Cone',
+    artRef: 'Cone Art',
+    x: 12,
+    z: 24,
+    yaw: 0.75,
+    widthM: 2,
+    heightM: 3
+  }];
+  editor.getRaceSurfaceModel = () => ({ sampleWorld: ({ z }) => ({ elevation: z < 24 ? 0.5 : 0.75 }) });
+  editor.getRaceThreeDoodadMaterial = () => new THREE.MeshBasicMaterial();
+  const renderer = {
+    scene: new THREE.Scene()
+  };
+  const stats = {};
+
+  const added = editor.addRaceThreeDoodads(renderer, { stats });
+
+  assert.equal(added, true);
+  assert.equal(renderer.dynamicDoodadGroup.children.length, 1);
+  const mesh = renderer.dynamicDoodadGroup.children[0];
+  assert.equal(mesh.name, 'raceDoodad:cone-1');
+  const positions = Array.from(mesh.geometry.getAttribute('position').array);
+  assert.equal(Math.min(...positions.filter((_, index) => index % 3 === 1)), 6);
+  assert.equal(Math.max(...positions.filter((_, index) => index % 3 === 1)), 12);
+  assert.equal(mesh.geometry.getAttribute('uv').count, 6);
+  assert.equal(stats.threeDoodads, 1);
+});
+
+test('Race Editor reuses unchanged Three doodad groups between frames', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.scenery = [{
+    id: 'tree-1',
+    presetId: 'doodad',
+    label: 'Tree',
+    artRef: 'Tree Art',
+    x: 12,
+    z: 24,
+    yaw: 0.75,
+    widthM: 2,
+    heightM: 3
+  }];
+  editor.getRaceSurfaceModel = () => ({ sampleWorld: () => ({ elevation: 0 }) });
+  const material = new THREE.MeshBasicMaterial();
+  material.__raceSharedMaterial = true;
+  let materialCalls = 0;
+  editor.getRaceThreeDoodadMaterial = () => {
+    materialCalls += 1;
+    return material;
+  };
+  const renderer = {
+    scene: new THREE.Scene()
+  };
+  const firstStats = {};
+  const secondStats = {};
+
+  assert.equal(editor.addRaceThreeDoodads(renderer, { stats: firstStats }), true);
+  const firstGroup = renderer.dynamicDoodadGroup;
+  assert.equal(editor.addRaceThreeDoodads(renderer, { stats: secondStats }), true);
+
+  assert.equal(renderer.dynamicDoodadGroup, firstGroup);
+  assert.equal(renderer.scene.children.filter((child) => child === firstGroup).length, 1);
+  assert.equal(materialCalls, 1);
+  assert.equal(firstStats.dynamicDoodadRebuilds, 1);
+  assert.equal(secondStats.dynamicDoodadCacheHits, 1);
+  assert.equal(secondStats.threeDoodads, 1);
+  assert.equal(secondStats.drawCalls, 1);
+  assert.equal(secondStats.polygons, 2);
+  const doodadMaterialBody = raceEditorSource.slice(
+    raceEditorSource.indexOf('  getRaceThreeDoodadMaterial(renderer = null, artRef = \'\')'),
+    raceEditorSource.indexOf('  getRaceDoodadWorldQuad(sprite = {})')
+  );
+  assert.equal(doodadMaterialBody.indexOf('if (cached) return cached;') < doodadMaterialBody.indexOf('texture.needsUpdate = true;'), true);
+});
+
+test('Race Editor plants doodad art below terrain by ground offset', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.scenery = [{
+    id: 'tree-1',
+    presetId: 'doodad',
+    label: 'Tree',
+    artRef: 'Tree Art',
+    x: 12,
+    z: 24,
+    yaw: Math.PI / 2,
+    widthM: 2,
+    heightM: 3,
+    groundOffsetM: 1.2
+  }];
+  editor.getRaceSurfaceModel = () => ({ sampleWorld: () => ({ elevation: 0.75 }) });
+
+  const quad = editor.getRaceDoodadWorldQuad(editor.selectedRace.scenery[0]);
+  const meshes = editor.getRaceDoodadWorldMeshes();
+
+  assert.equal(quad.groundOffsetM, 1.2);
+  assert.equal(Math.min(...quad.points.map((point) => point.elevation)), 0.65);
+  assert.equal(Math.max(...quad.points.map((point) => point.elevation)), 0.9);
+  assert.equal(meshes[0].points.every((point) => point.roadDeckElevation === true), true);
+});
+
+test('Race Editor builds preview doodad hitbox as world geometry planted on terrain footprint', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const sprite = {
+    id: 'tree-1',
+    presetId: 'doodad',
+    label: 'Tree',
+    artRef: 'Tree Art',
+    previewHitbox: true,
+    previewDoodad: {
+      id: 'tree',
+      name: 'Tree',
+      artRef: 'Tree Art',
+      widthM: 4,
+      heightM: 9,
+      groundOffsetM: 1.5,
+      hitboxWidthM: 2,
+      hitboxHeightM: 3
+    },
+    x: 12,
+    z: 24
+  };
+  editor.getRaceSurfaceModel = () => ({ sampleWorld: ({ z }) => ({ elevation: z < 24 ? 0.6 : 0.84 }) });
+
+  const meshes = editor.getRaceDoodadHitboxWorldMeshes(sprite);
+  const allPoints = meshes.flatMap((mesh) => mesh.points);
+
+  assert.equal(meshes.length, 12);
+  assert.equal(meshes.every((mesh) => mesh.source === 'doodad-hitbox'), true);
+  assert.equal(Math.round((Math.min(...allPoints.map((point) => point.elevation))) * 1000) / 1000, 0.475);
+  assert.equal(Math.round((Math.max(...allPoints.map((point) => point.elevation))) * 1000) / 1000, 0.965);
+  assert.equal(allPoints.some((point) => Math.round(point.terrainElevation * 100) / 100 === 0.6), true);
+  assert.equal(allPoints.some((point) => Math.round(point.terrainElevation * 100) / 100 === 0.84), true);
+  assert.equal(Math.round((Math.min(...allPoints.map((point) => point.x))) * 1000) / 1000, 11);
+  assert.equal(Math.round((Math.max(...allPoints.map((point) => point.x))) * 1000) / 1000, 13);
+  assert.equal(Math.round((Math.min(...allPoints.map((point) => point.z))) * 1000) / 1000, 23);
+  assert.equal(Math.round((Math.max(...allPoints.map((point) => point.z))) * 1000) / 1000, 25);
+});
+
+test('Race Editor builds doodads as WebGL world meshes with explicit art UVs', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.scenery = [{
+    id: 'cone-1',
+    presetId: 'doodad',
+    label: 'Cone',
+    artRef: 'Cone Art',
+    x: 12,
+    z: 24,
+    yaw: Math.PI / 2,
+    widthM: 2,
+    heightM: 3
+  }];
+  editor.getRaceSurfaceModel = () => ({ sampleWorld: ({ z }) => ({ elevation: z < 24 ? 0.5 : 0.75 }) });
+
+  const meshes = editor.getRaceDoodadWorldMeshes();
+
+  assert.equal(meshes.length, 1);
+  assert.equal(meshes[0].source, 'doodad');
+  assert.equal(meshes[0].artRef, 'Cone Art');
+  assert.equal(meshes[0].textured, true);
+  assert.deepEqual(meshes[0].points.map((point) => [point.u, point.v]), [[0, 1], [1, 1], [1, 0], [0, 0]]);
+  assert.equal(meshes[0].points.every((point) => point.roadDeckElevation === true), true);
+  assert.equal(Math.max(...meshes[0].points.map((point) => point.elevation)), 1);
+  assert.equal(Math.min(...meshes[0].points.map((point) => point.elevation)), 0.5);
+  assert.equal(meshes[0].points.filter((point) => point.v === 1).some((point) => point.elevation === 0.75), true);
+});
+
+test('Race Editor rebuilds cached Three doodads when terrain surface revision changes', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.scenery = [{
+    id: 'tree-1',
+    presetId: 'doodad',
+    label: 'Tree',
+    artRef: 'Tree Art',
+    x: 12,
+    z: 24,
+    yaw: 0,
+    widthM: 2,
+    heightM: 3
+  }];
+  editor.getRaceSurfaceModel = () => ({ sampleWorld: () => ({ elevation: 0 }) });
+  let revision = 'surface-a';
+  editor.getRaceSurfaceGeometryRevisionKey = () => revision;
+  const material = new THREE.MeshBasicMaterial();
+  material.__raceSharedMaterial = true;
+  let materialCalls = 0;
+  editor.getRaceThreeDoodadMaterial = () => {
+    materialCalls += 1;
+    return material;
+  };
+  const renderer = { scene: new THREE.Scene() };
+  const firstStats = {};
+  const secondStats = {};
+
+  assert.equal(editor.addRaceThreeDoodads(renderer, { stats: firstStats }), true);
+  const firstGroup = renderer.dynamicDoodadGroup;
+  revision = 'surface-b';
+  assert.equal(editor.addRaceThreeDoodads(renderer, { stats: secondStats }), true);
+
+  assert.notEqual(renderer.dynamicDoodadGroup, firstGroup);
+  assert.equal(firstStats.dynamicDoodadRebuilds, 1);
+  assert.equal(secondStats.dynamicDoodadRebuilds, 1);
+  assert.equal(secondStats.dynamicDoodadCacheHits || 0, 0);
+  assert.equal(materialCalls, 2);
+});
+
+test('Race Editor keeps doodad meshes visible while any polygon part remains in front', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const bounds = { x: 0, y: 0, w: 320, h: 180 };
+  const camera = {
+    x: 0,
+    z: 0,
+    elevation: 0,
+    nearPlane: 1.6,
+    farPlane: 120,
+    focalScale: 1,
+    roadWidthScale: 1
+  };
+  const partlyVisible = [
+    { x: -0.1, z: 0.2, elevation: 0.6, u: 0, v: 1, roadDeckElevation: true },
+    { x: 0.1, z: -0.4, elevation: 0.6, u: 1, v: 1, roadDeckElevation: true },
+    { x: 0.1, z: -0.4, elevation: 0, u: 1, v: 0, roadDeckElevation: true },
+    { x: -0.1, z: 0.2, elevation: 0, u: 0, v: 0, roadDeckElevation: true }
+  ];
+  const pointsBehind = partlyVisible.map((point) => ({ ...point, z: -0.4 }));
+
+  const partlyVisibleVertices = editor.getRaceWebGLWorldMeshVertices(bounds, partlyVisible, {
+    camera,
+    cameraYaw: 0,
+    textured: true,
+    meshSource: 'doodad'
+  });
+  const passedVertices = editor.getRaceWebGLWorldMeshVertices(bounds, pointsBehind, {
+    camera,
+    cameraYaw: 0,
+    textured: true,
+    meshSource: 'doodad'
+  });
+
+  assert.ok(partlyVisibleVertices.length >= 18);
+  assert.equal(passedVertices.length, 0);
+});
+
+test('Race Editor skips 2D doodad overlay when 3D world renderer owns doodads', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.scenery = [{
+    id: 'cone-1',
+    presetId: 'doodad',
+    label: 'Cone',
+    artRef: 'Cone Art',
+    x: 12,
+    z: 24,
+    yaw: 0,
+    widthM: 2,
+    heightM: 3
+  }];
+  editor.getRaceSurfaceModel = () => ({ sampleWorld: () => ({ elevation: 0 }) });
+  editor.projectRaceWorldPointToCamera = () => ({
+    visible: true,
+    screenX: 120,
+    screenY: 110,
+    cameraZ: 40,
+    renderZ: 40
+  });
+  editor.getRaceArtSpriteCanvas = () => ({ width: 1, height: 1 });
+  const ctx = createMockContext();
+
+  editor.drawRaceProjectedScenerySprites(ctx, { x: 0, y: 0, w: 200, h: 100 }, {
+    camera: { focalScale: 1, roadWidthScale: 1 },
+    cameraYaw: 0,
+    skipDoodads: true
+  });
+
+  assert.equal(ctx.calls.some((call) => call.type === 'drawImage'), false);
+});
+
+test('Car Editor playtest uses the currently edited car instead of rehydrating a saved stale copy', () => {
+  resetProjectFilesForTests();
+  clearCachedProjectFilesForTests();
+  const editor = new RaceEditor({
+    deviceIsMobile: false,
+    isMobile: false,
+    exitRaceEditor() {}
+  }, { mode: 'car' });
+  const car = editor.selectedCar;
+  const staleCar = editor.normalizeLoadedCarDocument({
+    ...JSON.parse(JSON.stringify(car)),
+    art: { ...(car.art || {}), body: 'saved-body-art' }
+  }, car.name || car.id);
+  saveProjectFile('cars', car.name || car.id, {
+    schemaVersion: 2,
+    kind: 'race-car',
+    savedAt: Date.now(),
+    selectedCarId: staleCar.id,
+    car: staleCar
+  }, { createVersion: false });
+  car.art = { ...(car.art || {}), body: 'current-working-body-art', artRef: 'current-working-body-art' };
+
+  editor.startPlaytest(car.id);
+
+  assert.equal(editor.playtestSession.carId, car.id);
+  assert.equal(editor.selectedCar.art.body, 'current-working-body-art');
+  resetProjectFilesForTests();
+  clearCachedProjectFilesForTests();
 });
 
 test('Race Editor exposes full tuning tabs and drivetrain-specific differential rows', () => {
@@ -10242,6 +11461,71 @@ test('Race Editor mobile playtest suppresses editor scaffold text and big previe
   const text = ctx.calls.filter((call) => call.type === 'text').map((call) => call.value);
   assert.equal(text.includes('Playtest'), false);
   assert.equal(text.some((value) => String(value).includes('preview scaffold')), false);
+});
+
+test('Race Editor simulated playtest controls use the shared level playtest gamepad layout in portrait', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    exitRaceEditor() {}
+  });
+  const ctx = createMockContext();
+  const layout = getPortraitHandheldLayout(390, 844);
+
+  editor.startPlaytest('starter-rwd');
+  editor.drawRaceHandheldControls(ctx, layout);
+
+  const controls = editor.raceMobileControls;
+  const dpad = editor.buttons.find((button) => button.id === 'race-dpad');
+  const go = editor.buttons.find((button) => button.id === 'race-go');
+  const brake = editor.buttons.find((button) => button.id === 'race-brake');
+  const start = editor.buttons.find((button) => button.id === 'race-start');
+  const select = editor.buttons.find((button) => button.id === 'race-select');
+
+  assert.deepEqual(dpad.bounds, { ...controls.dpadBounds, id: 'race-dpad' });
+  assert.deepEqual(go.bounds, {
+    x: controls.bButton.x - controls.bButton.r,
+    y: controls.bButton.y - controls.bButton.r,
+    w: controls.bButton.r * 2,
+    h: controls.bButton.r * 2,
+    id: 'race-go'
+  });
+  assert.deepEqual(brake.bounds, {
+    x: controls.attackPad.x - controls.attackPad.r,
+    y: controls.attackPad.y - controls.attackPad.r,
+    w: controls.attackPad.r * 2,
+    h: controls.attackPad.r * 2,
+    id: 'race-brake'
+  });
+  assert.deepEqual(start.bounds, { ...controls.startButton, id: 'race-start' });
+  assert.deepEqual(select.bounds, { ...controls.selectButton, id: 'race-select' });
+});
+
+test('Race Editor simulated playtest controls use the shared level playtest gamepad layout in landscape', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    exitRaceEditor() {}
+  });
+  const ctx = createMockContext();
+  const layout = getLandscapeHandheldLayout(844, 390);
+
+  editor.startPlaytest('starter-rwd');
+  editor.drawRaceHandheldControls(ctx, layout);
+
+  const controls = editor.raceMobileControls;
+  const dpad = editor.buttons.find((button) => button.id === 'race-dpad');
+  const go = editor.buttons.find((button) => button.id === 'race-go');
+  const brake = editor.buttons.find((button) => button.id === 'race-brake');
+  const start = editor.buttons.find((button) => button.id === 'race-start');
+  const select = editor.buttons.find((button) => button.id === 'race-select');
+
+  assert.deepEqual(dpad.bounds, { ...controls.dpadBounds, id: 'race-dpad' });
+  assert.equal(dpad.bounds.x < layout.screen.x, true);
+  assert.equal(go.bounds.x > layout.screen.x + layout.screen.w, true);
+  assert.equal(brake.bounds.x > layout.screen.x + layout.screen.w, true);
+  assert.deepEqual(start.bounds, { ...controls.startButton, id: 'race-start' });
+  assert.deepEqual(select.bounds, { ...controls.selectButton, id: 'race-select' });
 });
 
 test('Race Editor analog steering reduces available steering at speed', () => {
@@ -11307,6 +12591,95 @@ test('Race Editor airborne car cannot accelerate brake or steer from tire forces
   assert.equal(Math.abs(editor.playtestSession.carYaw) < 0.02, true);
 });
 
+test('Race Editor airborne drive wheels let the engine free rev in gear', () => {
+  const createEditor = ({ airborne = false } = {}) => {
+    const editor = new RaceEditor({
+      deviceIsMobile: true,
+      isMobile: true,
+      input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+      exitRaceEditor() {}
+    });
+    editor.startPlaytest('starter-rwd');
+    const tuning = editor.getRaceCarTuning(editor.selectedCar);
+    editor.playtestSession.launchLockMs = 0;
+    editor.playtestSession.elapsedMs = 1000;
+    editor.playtestSession.speedMps = 24;
+    editor.playtestSession.engineRpm = tuning.idleRpm + 300;
+    editor.playtestSession.heightM = airborne ? 8 : 0;
+    editor.playtestSession.bodyY = airborne ? 8 : 0;
+    editor.playtestSession.verticalVelocityMps = 0;
+    editor.playtestSession.grounded = !airborne;
+    editor.playtestSession.airborne = airborne;
+    if (editor.playtestSession.vehicle3d?.wheels) {
+      const staticLoads = editor.getRaceWheelNormalLoads(tuning);
+      Object.entries(editor.playtestSession.vehicle3d.wheels).forEach(([wheelId, wheel]) => {
+        wheel.inContact = !airborne;
+        wheel.normalLoadN = airborne ? 0 : staticLoads[wheelId];
+      });
+    }
+    editor.raceInput.gear = 2;
+    editor.raceInput.autoShift = false;
+    editor.raceInput.throttleAxis = 1;
+    return editor;
+  };
+  const editor = createEditor({ airborne: true });
+  const groundedEditor = createEditor({ airborne: false });
+  const beforeRpm = editor.playtestSession.engineRpm;
+  const beforeSpeed = editor.playtestSession.speedMps;
+
+  for (let index = 0; index < 8; index += 1) {
+    editor.updatePlaytest(1 / 60);
+    editor.playtestSession.grounded = false;
+    editor.playtestSession.airborne = true;
+    if (editor.playtestSession.vehicle3d?.wheels) {
+      Object.values(editor.playtestSession.vehicle3d.wheels).forEach((wheel) => {
+        wheel.inContact = false;
+        wheel.normalLoadN = 0;
+      });
+    }
+    groundedEditor.updatePlaytest(1 / 60);
+  }
+
+  assert.equal(editor.playtestSession.engineRpm > beforeRpm + 1800, true);
+  assert.equal(editor.playtestSession.engineRpm > groundedEditor.playtestSession.engineRpm + 650, true);
+  assert.equal(editor.playtestSession.speedMps <= beforeSpeed, true);
+});
+
+test('Race Editor contacted drive wheels stay coupled even before normal load is populated', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+
+  editor.startPlaytest('starter-rwd');
+  const tuning = editor.getRaceCarTuning(editor.selectedCar);
+  editor.playtestSession.launchLockMs = 0;
+  editor.playtestSession.elapsedMs = 1000;
+  editor.playtestSession.speedMps = 24;
+  editor.playtestSession.engineRpm = tuning.idleRpm + 300;
+  editor.playtestSession.heightM = 0;
+  editor.playtestSession.bodyY = 0;
+  editor.playtestSession.verticalVelocityMps = 0;
+  editor.playtestSession.grounded = true;
+  editor.playtestSession.airborne = false;
+  if (editor.playtestSession.vehicle3d?.wheels) {
+    Object.values(editor.playtestSession.vehicle3d.wheels).forEach((wheel) => {
+      wheel.inContact = true;
+      wheel.normalLoadN = 0;
+    });
+  }
+  editor.raceInput.gear = 2;
+  editor.raceInput.autoShift = false;
+  editor.raceInput.throttleAxis = 1;
+  const beforeRpm = editor.playtestSession.engineRpm;
+
+  editor.updatePlaytest(1 / 60);
+
+  assert.equal(editor.playtestSession.engineRpm < beforeRpm + 520, true);
+});
+
 test('Race Editor playtest samples per-wheel contact height for suspension travel and body roll', () => {
   const editor = new RaceEditor({
     deviceIsMobile: true,
@@ -11817,6 +13190,41 @@ test('Race default procedural car is built as dynamic Three geometry', () => {
   assert.equal(group.children.every((child) => child.isMesh), true);
 });
 
+test('Race body art can keep default Three wheel meshes without default body', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('starter-rwd');
+  const renderer = {
+    scene: new THREE.Scene(),
+    solidMaterialCache: new Map()
+  };
+  const added = editor.addRaceThreeProceduralCar(renderer, {
+    x: editor.playtestSession.worldX,
+    z: editor.playtestSession.worldZ,
+    elevation: Number(editor.playtestSession.bodyY || editor.playtestSession.heightM || 0) / 12,
+    yaw: editor.playtestSession.carYaw,
+    pitchRad: 0.1,
+    rollRad: -0.05,
+    frontTireAngle: 0.12,
+    braking: true,
+    car: editor.selectedCar,
+    session: editor.playtestSession,
+    drawBody: false,
+    drawWheels: true,
+    drawLights: false,
+    drawShadow: true,
+    stats: {}
+  });
+
+  assert.equal(added, true);
+  const group = renderer.scene.children[0];
+  const names = group.children.map((child) => child.name);
+  assert.equal(names.includes('raceCarBody'), false);
+  assert.equal(names.filter((name) => name.startsWith('raceWheel-')).length, 4);
+  assert.equal(names.filter((name) => name === 'raceHeadlight').length, 0);
+  assert.equal(names.filter((name) => name === 'raceTaillight').length, 0);
+  assert.equal(names.includes('raceCarShadow'), true);
+});
+
 test('Race third-person canvas skips default car overlay when Three rendered it', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   editor.startPlaytest('starter-rwd');
@@ -11838,6 +13246,210 @@ test('Race third-person canvas skips default car overlay when Three rendered it'
   editor.drawRaceThirdPersonCar(ctx, { x: 0, y: 0, w: 240, h: 160 });
 
   assert.equal(proceduralCalled, false);
+});
+
+test('Race body-only car art keeps default procedural wheels in playtest', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('starter-rwd');
+  editor.selectedCar.art = {
+    ...(editor.selectedCar.art || {}),
+    body: 'wrx-body-art',
+    tireTreads: { tarmac: { artRef: '', frameIndex: 0 } }
+  };
+  editor.playtestSession.worldX = 2;
+  editor.playtestSession.worldZ = 8;
+  editor.lastRaceRenderStats = {};
+  editor.lastRaceRenderCamera = {
+    camera: { x: 0, z: -12, elevation: 1, roadElevation: 0.1, horizonY: 80, scale: 1, nearPlane: 0.1 },
+    cameraYaw: 0,
+    bounds: { x: 0, y: 0, w: 240, h: 160 },
+    cameraView: 'third-person'
+  };
+  editor.getRaceVisualTravelDistance = () => 0;
+  editor.getRaceSegmentAtDistance = () => ({ segment: { elevation: 0 } });
+  editor.getRaceStitchedTerrainElevationAtWorldPoint = () => 0;
+  editor.projectRaceWorldPointToCamera = () => ({ visible: true, screenX: 120, screenY: 110 });
+  editor.getRaceThirdPersonCarAnchorY = () => 112;
+  editor.getRaceThirdPersonCarWidth = () => 80;
+  editor.getRaceWheelVisualCenterPositions = () => ({
+    fl: { x: 1.2, z: 8.8, elevation: 0.1 },
+    fr: { x: 2.8, z: 8.8, elevation: 0.1 },
+    rl: { x: 1.2, z: 7.2, elevation: 0.1 },
+    rr: { x: 2.8, z: 7.2, elevation: 0.1 }
+  });
+  editor.getRaceCarProjectedArtRef = () => ({ artRef: 'wrx-body-art', frameIndex: 0 });
+  const proceduralOptions = [];
+  const billboardOptions = [];
+  editor.drawRaceProjectedProceduralCar = (ctx, bounds, options) => {
+    proceduralOptions.push(options);
+    return true;
+  };
+  editor.drawRaceCarBillboardLayers = (ctx, options) => {
+    billboardOptions.push(options);
+  };
+
+  editor.drawRaceThirdPersonCar(createMockContext(), { x: 0, y: 0, w: 240, h: 160 });
+
+  assert.equal(proceduralOptions.length, 1);
+  assert.equal(proceduralOptions[0].drawBody, false);
+  assert.equal(proceduralOptions[0].drawWheels, true);
+  assert.equal(billboardOptions.length, 1);
+  assert.equal(billboardOptions[0].drawWheels, false);
+  assert.equal(billboardOptions[0].drawShadowLayer, false);
+});
+
+test('Race body-only car art overlays body when Three already drew default wheels', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('starter-rwd');
+  editor.selectedCar.art = {
+    ...(editor.selectedCar.art || {}),
+    body: 'wrx-body-art',
+    tireTreads: { tarmac: { artRef: '', frameIndex: 0 } }
+  };
+  editor.playtestSession.worldX = 2;
+  editor.playtestSession.worldZ = 8;
+  editor.lastRaceRenderStats = { threeProceduralCar: 1 };
+  editor.lastRaceRenderCamera = {
+    camera: { x: 0, z: -12, elevation: 1, roadElevation: 0.1, horizonY: 80, scale: 1, nearPlane: 0.1 },
+    cameraYaw: 0,
+    bounds: { x: 0, y: 0, w: 240, h: 160 },
+    cameraView: 'third-person'
+  };
+  editor.getRaceVisualTravelDistance = () => 0;
+  editor.getRaceSegmentAtDistance = () => ({ segment: { elevation: 0 } });
+  editor.getRaceStitchedTerrainElevationAtWorldPoint = () => 0;
+  editor.projectRaceWorldPointToCamera = () => ({ visible: true, screenX: 120, screenY: 110 });
+  editor.getRaceThirdPersonCarAnchorY = () => 112;
+  editor.getRaceThirdPersonCarWidth = () => 80;
+  editor.getRaceWheelVisualCenterPositions = () => ({
+    fl: { x: 1.2, z: 8.8, elevation: 0.1 },
+    fr: { x: 2.8, z: 8.8, elevation: 0.1 },
+    rl: { x: 1.2, z: 7.2, elevation: 0.1 },
+    rr: { x: 2.8, z: 7.2, elevation: 0.1 }
+  });
+  editor.getRaceCarProjectedArtRef = () => ({ artRef: 'wrx-body-art', frameIndex: 0 });
+  let proceduralCalls = 0;
+  const billboardOptions = [];
+  editor.drawRaceProjectedProceduralCar = () => {
+    proceduralCalls += 1;
+    return true;
+  };
+  editor.drawRaceCarBillboardLayers = (ctx, options) => {
+    billboardOptions.push(options);
+  };
+
+  editor.drawRaceThirdPersonCar(createMockContext(), { x: 0, y: 0, w: 240, h: 160 });
+
+  assert.equal(proceduralCalls, 0);
+  assert.equal(billboardOptions.length, 1);
+  assert.equal(billboardOptions[0].drawWheels, false);
+  assert.equal(billboardOptions[0].drawShadowLayer, false);
+});
+
+test('Race tire art override keeps default X slots while preserving suspension Y travel', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('starter-rwd');
+  editor.selectedCar.art = {
+    ...(editor.selectedCar.art || {}),
+    body: 'wrx-body-art',
+    tireTreads: { tarmac: { artRef: 'wrx-tire-art', frameIndex: 0 } }
+  };
+  editor.playtestSession.worldX = 2;
+  editor.playtestSession.worldZ = 8;
+  editor.lastRaceRenderStats = {};
+  editor.lastRaceRenderCamera = {
+    camera: { x: 0, z: -12, elevation: 1, roadElevation: 0.1, horizonY: 80, scale: 1, nearPlane: 0.1 },
+    cameraYaw: 0,
+    bounds: { x: 0, y: 0, w: 240, h: 160 },
+    cameraView: 'third-person'
+  };
+  editor.getRaceVisualTravelDistance = () => 0;
+  editor.getRaceSegmentAtDistance = () => ({ segment: { elevation: 0 } });
+  editor.getRaceStitchedTerrainElevationAtWorldPoint = () => 0;
+  editor.projectRaceWorldPointToCamera = () => ({ visible: true, screenX: 120, screenY: 110 });
+  editor.getRaceThirdPersonCarAnchorY = () => 112;
+  editor.getRaceThirdPersonCarWidth = () => 80;
+  editor.getRaceWheelVisualCenterPositions = () => ({
+    fl: { x: 1.2, z: 8.8, elevation: 0.1 },
+    fr: { x: 2.8, z: 8.8, elevation: 0.1 },
+    rl: { x: 1.2, z: 7.2, elevation: 0.1 },
+    rr: { x: 2.8, z: 7.2, elevation: 0.1 }
+  });
+  editor.getRaceCarProjectedArtRef = () => ({ artRef: 'wrx-body-art', frameIndex: 0 });
+  let proceduralCalls = 0;
+  const billboardOptions = [];
+  editor.drawRaceProjectedProceduralCar = () => {
+    proceduralCalls += 1;
+    return true;
+  };
+  editor.drawRaceCarBillboardLayers = (ctx, options) => {
+    billboardOptions.push(options);
+  };
+
+  editor.drawRaceThirdPersonCar(createMockContext(), { x: 0, y: 0, w: 240, h: 160 });
+
+  assert.equal(proceduralCalls, 0);
+  assert.equal(billboardOptions.length, 1);
+  assert.equal(billboardOptions[0].drawWheels, true);
+  assert.deepEqual(
+    ['fl', 'fr', 'rl', 'rr'].map((id) => Math.round(Number(billboardOptions[0].wheelDeltas[id].x) * 1000) / 1000),
+    [-25.6, 25.6, -30.4, 30.4]
+  );
+  assert.notEqual(Math.round(Number(billboardOptions[0].wheelDeltas.fl.y) * 1000) / 1000, -7.68);
+});
+
+test('Race billboard tire art keeps explicit wheel delta centers while steering', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const translateCalls = [];
+  const ctx = {
+    save() {},
+    restore() {},
+    translate(x, y) { translateCalls.push({ x, y }); },
+    rotate() {},
+    fillRect() {},
+    drawImage() {},
+    beginPath() {},
+    closePath() {},
+    moveTo() {},
+    lineTo() {},
+    fill() {},
+    set fillStyle(value) { this._fillStyle = value; },
+    get fillStyle() { return this._fillStyle; },
+    set imageSmoothingEnabled(value) { this._imageSmoothingEnabled = value; },
+    get imageSmoothingEnabled() { return this._imageSmoothingEnabled; }
+  };
+  const car = {
+    setup: { defaultTireCompound: 'tarmac' },
+    art: {
+      tireTreads: { tarmac: { artRef: 'test-tire-art', frameIndex: 0 } },
+      layerVisibility: { body: false, shadow: false }
+    }
+  };
+  editor.getRaceArtSpriteCanvas = () => ({ width: 16, height: 32 });
+  editor.drawScrolledCarTireArt = () => true;
+
+  editor.drawRaceCarBillboardLayers(ctx, {
+    car,
+    centerX: 100,
+    anchorY: 80,
+    baseWidth: 100,
+    baseHeight: 50,
+    frontTireAngle: 0.65,
+    drawShadowLayer: false,
+    wheelDeltas: {
+      fl: { x: -30, y: -12 },
+      fr: { x: 30, y: -12 },
+      rl: { x: -38, y: 14 },
+      rr: { x: 38, y: 14 }
+    }
+  });
+
+  assert.deepEqual(translateCalls.map(({ x, y }) => [Math.round(x * 1000) / 1000, Math.round(y * 1000) / 1000]), [
+    [70, 68],
+    [130, 68],
+    [62, 94],
+    [138, 94]
+  ]);
 });
 
 test('Race suspension steady compression does not accumulate bottom-out damage', () => {
@@ -12276,6 +13888,59 @@ test('Race Editor renders placed Pixel Editor artwork as vertical race sprites i
     assert.deepEqual(Array.from(imageWrites[0].imageData.data.slice(0, 4)), [255, 0, 0, 255]);
     assert.deepEqual(Array.from(imageWrites[0].imageData.data.slice(4, 8)), [0, 0, 0, 0]);
     assert.deepEqual(Array.from(imageWrites[0].imageData.data.slice(12, 16)), [0, 255, 0, 255]);
+  } finally {
+    globalThis.document = previousDocument;
+    clearCachedProjectFilesForTests();
+  }
+});
+
+test('Race Editor art sprite cache refreshes when a project art file is re-saved', () => {
+  const previousDocument = globalThis.document;
+  const imageWrites = [];
+  globalThis.document = {
+    createElement(tag) {
+      assert.equal(tag, 'canvas');
+      return {
+        width: 0,
+        height: 0,
+        getContext() {
+          return {
+            createImageData(width, height) {
+              return { data: new Uint8ClampedArray(width * height * 4) };
+            },
+            putImageData(imageData) {
+              imageWrites.push(Array.from(imageData.data.slice(0, 4)));
+            },
+            fillRect() {}
+          };
+        }
+      };
+    }
+  };
+
+  try {
+    clearCachedProjectFilesForTests();
+    const saveArt = (savedAt, color) => upsertCachedProjectFile('art', 'Race Billboard', JSON.stringify({
+      version: 1,
+      folder: 'art',
+      name: 'Race Billboard',
+      savedAt,
+      data: {
+        kind: 'pixel-art',
+        width: 1,
+        height: 1,
+        frames: [[color]]
+      }
+    }));
+    const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
+    saveArt(100, '#ff0000');
+    const first = editor.getRaceArtSpriteCanvas('Race Billboard');
+    saveArt(200, '#0000ff80');
+    const second = editor.getRaceArtSpriteCanvas('Race Billboard');
+
+    assert.notEqual(first, second);
+    assert.deepEqual(imageWrites[0], [255, 0, 0, 255]);
+    assert.deepEqual(imageWrites[1], [0, 0, 255, 128]);
   } finally {
     globalThis.document = previousDocument;
     clearCachedProjectFilesForTests();
@@ -13017,6 +14682,78 @@ test('Race editor top-down surface debug bands come from canonical surface cross
   assert.equal(raceEditorSource.includes("drawStrip('left', 'right'"), true);
   assert.equal(raceEditorSource.includes("drawPolyline('transitionLeft'"), true);
   assert.equal(raceEditorSource.includes('validation.magentaEdges'), true);
+});
+
+test('Race editor top-down map draws actual road surface preview under scenery by default', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.renderDebug = {
+    ...editor.getRaceRenderDebugSettings(),
+    editorSurfacePreviewEnabled: false,
+    editorSurfacePreview3dEnabled: false
+  };
+  const calls = [];
+  editor.drawRaceTopDownTileMap = () => calls.push('tile-map');
+  editor.drawRaceTopDownActualSurfacePreview = () => {
+    calls.push('actual-surface');
+    return true;
+  };
+  editor.drawRaceTopDownScenerySprites = () => calls.push('scenery');
+  editor.drawRaceTopDownDecals = () => calls.push('decals');
+  editor.drawRaceTilePalette = () => calls.push('palette');
+  editor.drawRaceSegmentLengthLabels = () => calls.push('labels');
+  editor.drawRaceMapScaleBar = () => calls.push('scale');
+
+  editor.drawRaceTopDownEditor(createMockContext(), { x: 0, y: 0, w: 720, h: 420 });
+
+  assert.equal(calls.includes('actual-surface'), true);
+  assert.equal(calls.indexOf('tile-map') < calls.indexOf('actual-surface'), true);
+  assert.equal(calls.indexOf('actual-surface') < calls.indexOf('scenery'), true);
+});
+
+test('Race editor actual top-down surface preview uses canonical surface bake geometry', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  let bakeRequests = 0;
+  editor.getRaceEditorSurfacePreviewBake = () => {
+    throw new Error('default placement preview should not build the heavy terrain debug bake');
+  };
+  const originalBake = editor.getRaceSurfaceBake.bind(editor);
+  editor.getRaceSurfaceBake = (options = {}) => {
+    bakeRequests += 1;
+    return originalBake(options);
+  };
+  const ctx = createMockContext();
+
+  const drew = editor.drawRaceTopDownActualSurfacePreview(ctx, { x: 0, y: 0, w: 720, h: 420 });
+
+  assert.equal(drew, true);
+  assert.equal(bakeRequests, 1);
+  assert.equal(ctx.calls.some((call) => call.type === 'fill' && call.style === '#59666a'), true);
+  assert.equal(ctx.calls.some((call) => call.type === 'moveTo'), true);
+});
+
+test('Race editor actual top-down surface preview caps long-route section drawing for pan performance', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const sourceSections = Array.from({ length: 2400 }, (_, index) => {
+    const z = index * 2;
+    return {
+      transitionLeft: { x: -8, z },
+      shoulderLeft: { x: -6, z },
+      marginLeft: { x: -4, z },
+      left: { x: -3, z },
+      right: { x: 3, z },
+      marginRight: { x: 4, z },
+      shoulderRight: { x: 6, z },
+      transitionRight: { x: 8, z }
+    };
+  });
+  editor.getRaceSurfaceBake = () => ({ sections: sourceSections });
+  const ctx = createMockContext();
+
+  assert.equal(editor.drawRaceTopDownActualSurfacePreview(ctx, { x: 0, y: 0, w: 720, h: 420 }), true);
+
+  const fillCalls = ctx.calls.filter((call) => call.type === 'fill').length;
+  assert.equal(fillCalls <= sourceSections.length, true);
+  assert.equal(fillCalls <= 4 * 720, true);
 });
 
 test('Race render debug settings persist editor surface preview controls', () => {

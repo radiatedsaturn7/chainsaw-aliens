@@ -37,6 +37,23 @@ export const UI_SUITE = {
   }
 };
 
+export const SHARED_EDITOR_MENU_BUTTON_CHROME = Object.freeze({
+  radius: 0,
+  border: UI_SUITE.colors.border,
+  fill: 'rgba(18,28,42,0.82)',
+  highlight: 'rgba(255,255,255,0.045)',
+  subtleFill: 'rgba(255,255,255,0.045)',
+  activeFill: 'rgba(46,86,132,0.72)',
+  activeHighlight: 'rgba(255,225,106,0.22)',
+  accent: 'rgba(111,171,231,0.72)',
+  activeAccent: UI_SUITE.colors.accent,
+  text: 'rgba(238,245,255,0.9)',
+  activeText: '#ffffff',
+  focusBorder: 'rgba(255,225,106,0.42)',
+  accentWidth: 4,
+  fontSize: 12
+});
+
 export function drawSharedPanel(ctx, bounds, {
   fill = UI_SUITE.colors.panel,
   border = UI_SUITE.colors.border,
@@ -262,7 +279,7 @@ export const SHARED_EDITOR_LEFT_MENU = {
   desktopContentGap: 12,
   fileLabel: 'File',
   closeLabel: 'Close Drawer',
-  exitLabel: 'Exit to Main Menu'
+  exitLabel: 'Exit'
 };
 
 export const SHARED_DESKTOP_CONTEXT_ALLOWED_CONTENT_ROLES = Object.freeze([
@@ -341,6 +358,7 @@ export class SharedEditorMenu {
     layoutMode = isMobile ? 'auto-grid' : 'list',
     minColumnWidth = 120,
     maxColumns = 2,
+    drawPanel = true,
     drawButton
   }) {
     const rowHeight = this.getButtonHeight(isMobile);
@@ -355,6 +373,7 @@ export class SharedEditorMenu {
       isMobile,
       footerMode,
       footerItem,
+      drawPanel,
       showTitle,
       layoutMode,
       minColumnWidth,
@@ -377,25 +396,57 @@ export class SharedEditorMenu {
 export function drawSharedMenuButtonChrome(ctx, bounds, {
   active = false,
   subtle = false,
-  alpha = 1
+  alpha = 1,
+  focused = false
 } = {}) {
+  const chrome = SHARED_EDITOR_MENU_BUTTON_CHROME;
   const fill = active
-    ? 'rgba(46,86,132,0.72)'
+    ? chrome.activeFill
     : subtle
-      ? 'rgba(255,255,255,0.045)'
-      : 'rgba(18,28,42,0.82)';
+      ? chrome.subtleFill
+      : chrome.fill;
   const prevAlpha = ctx.globalAlpha;
   ctx.globalAlpha = alpha;
   ctx.fillStyle = fill;
   ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-  ctx.fillStyle = active ? 'rgba(255,225,106,0.22)' : 'rgba(255,255,255,0.045)';
+  ctx.fillStyle = active ? chrome.activeHighlight : chrome.highlight;
   ctx.fillRect(bounds.x, bounds.y, bounds.w, Math.max(1, Math.floor(bounds.h / 2)));
-  ctx.fillStyle = active ? UI_SUITE.colors.accent : 'rgba(111,171,231,0.72)';
-  ctx.fillRect(bounds.x, bounds.y, 4, bounds.h);
-  ctx.strokeStyle = UI_SUITE.colors.border;
+  ctx.fillStyle = active ? chrome.activeAccent : chrome.accent;
+  ctx.fillRect(bounds.x, bounds.y, chrome.accentWidth, bounds.h);
+  ctx.strokeStyle = focused ? chrome.focusBorder : chrome.border;
   ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
   ctx.globalAlpha = prevAlpha;
-  return active ? '#ffffff' : 'rgba(238,245,255,0.9)';
+  if (focused) drawSharedFocusRing(ctx, bounds);
+  return active ? chrome.activeText : chrome.text;
+}
+
+export function applySharedDomMenuButtonChrome(element, {
+  active = false,
+  focused = false,
+  portrait = false,
+  minHeight = UI_SUITE.spacing.tap
+} = {}) {
+  if (!element?.style) return;
+  const chrome = SHARED_EDITOR_MENU_BUTTON_CHROME;
+  element.style.minHeight = `${minHeight}px`;
+  element.style.borderRadius = `${chrome.radius}`;
+  element.style.border = `1px solid ${focused ? chrome.focusBorder : chrome.border}`;
+  element.style.borderLeft = portrait
+    ? `${chrome.accentWidth}px solid ${active ? chrome.activeAccent : chrome.accent}`
+    : `1px solid ${focused ? chrome.focusBorder : chrome.border}`;
+  element.style.padding = '8px 10px';
+  element.style.backgroundColor = active ? chrome.activeFill : chrome.fill;
+  element.style.backgroundImage = active
+    ? `linear-gradient(to bottom, ${chrome.activeHighlight} 0 50%, transparent 50% 100%)`
+    : `linear-gradient(to bottom, ${chrome.highlight} 0 50%, transparent 50% 100%)`;
+  element.style.color = active ? chrome.activeText : chrome.text;
+  element.style.fontFamily = UI_SUITE.font.family;
+  element.style.fontSize = `${chrome.fontSize}px`;
+  element.style.lineHeight = '1.15';
+  element.style.boxSizing = 'border-box';
+  element.style.cursor = 'pointer';
+  element.style.outline = focused ? `2px solid ${chrome.activeAccent}` : 'none';
+  element.style.outlineOffset = focused ? '2px' : '0';
 }
 
 export function normalizeSharedControlBounds(bounds, {
@@ -1625,7 +1676,15 @@ export function getSharedMobileLandscapeEditorLayout(viewportWidth, viewportHeig
 
 export function splitFileDrawerStickyExitItems(items = [], exitId = 'exit-main') {
   const source = Array.isArray(items) ? items : [];
-  const exitItem = source.find((item) => item?.id === exitId) || null;
+  const rawExitItem = source.find((item) => item?.id === exitId) || null;
+  const exitItem = rawExitItem
+    ? {
+      ...rawExitItem,
+      label: rawExitItem.label === 'Exit to Main Menu'
+        ? SHARED_EDITOR_LEFT_MENU.exitLabel
+        : rawExitItem.label
+    }
+    : null;
   const listItems = source.filter((item) => item?.id !== exitId);
   while (listItems.length && (listItems[listItems.length - 1]?.divider || listItems[listItems.length - 1]?.separator)) {
     listItems.pop();

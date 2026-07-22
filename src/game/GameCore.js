@@ -55,6 +55,7 @@ import SfxEditor from '../ui/SfxEditor.js';
 import ActorEditor from '../ui/ActorEditor.js';
 import CutsceneEditor, { CutscenePlayer } from '../ui/CutsceneEditor.js';
 import RaceEditor from '../ui/RaceEditor.js';
+import DoodadEditor from '../ui/DoodadEditor.js';
 import {
   WEATHER_PRIORITY,
   createWeatherRuntimeState,
@@ -410,6 +411,7 @@ export default class Game {
     this.cutsceneEditor = new CutsceneEditor(this);
     this.raceEditor = new RaceEditor(this, { mode: 'race' });
     this.carEditor = new RaceEditor(this, { mode: 'car' });
+    this.doodadEditor = new DoodadEditor(this);
     this.cutscenePlayer = new CutscenePlayer(this);
     this.editorStateTargetKeys = {
       editor: 'editor',
@@ -419,7 +421,8 @@ export default class Game {
       'actor-editor': 'actorEditor',
       'cutscene-editor': 'cutsceneEditor',
       'race-editor': 'raceEditor',
-      'car-editor': 'carEditor'
+      'car-editor': 'carEditor',
+      'doodad-editor': 'doodadEditor'
     };
     this.editorStateDrawArgs = {
       editor: () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
@@ -429,7 +432,8 @@ export default class Game {
       'actor-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'cutscene-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'race-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
-      'car-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height]
+      'car-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'doodad-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height]
     };
     this.editorStateKeys = new Set(Object.keys(this.editorStateTargetKeys));
     this.robterSession = new RobterSession({ input: this.input, audio: this.audio, isMobile: this.deviceIsMobile });
@@ -734,7 +738,8 @@ export default class Game {
   }
 
   updateControlScheme() {
-    if (this.gamepadConnected) {
+    const hasGamepad = Boolean(this.gamepadConnected || this.input?.isGamepadConnected?.());
+    if (hasGamepad) {
       this.effectiveInputMode = 'gamepad';
     } else if (this.deviceIsMobile) {
       this.effectiveInputMode = 'mobile';
@@ -743,7 +748,7 @@ export default class Game {
     } else {
       this.effectiveInputMode = 'keyboard';
     }
-    const mobileControlsActive = this.deviceIsMobile && !this.gamepadConnected;
+    const mobileControlsActive = this.deviceIsMobile && !hasGamepad;
     this.isMobile = mobileControlsActive;
     this.mobileControls.setEnabled(mobileControlsActive);
     this.robterSession.setMobile(mobileControlsActive);
@@ -852,6 +857,8 @@ export default class Game {
         this.enterRaceEditor();
       } else if (action === 'car-editor') {
         this.enterCarEditor();
+      } else if (action === 'doodad-editor') {
+        this.enterDoodadEditor();
       } else if (action === 'midi-editor') {
         this.enterMidiComposer();
       } else if (action === 'sfx-editor') {
@@ -1601,7 +1608,18 @@ export default class Game {
     this.playtestActive = false;
   }
 
+  enterDoodadEditor() {
+    this.transitionTo('doodad-editor');
+    this.setRevAudio(false);
+    this.playtestActive = false;
+  }
+
   exitRaceEditor() {
+    this.playtestActive = false;
+    this.transitionTo('title', { forceCleanup: true });
+  }
+
+  exitDoodadEditor() {
     this.playtestActive = false;
     this.transitionTo('title', { forceCleanup: true });
   }
@@ -2884,13 +2902,18 @@ export default class Game {
       return;
     }
 
-    if (this.state === 'race-editor' || this.state === 'car-editor') {
+    if (this.state === 'race-editor' || this.state === 'car-editor' || this.state === 'doodad-editor') {
       if (this.input.wasPressed('cancel')) {
-        this.exitRaceEditor();
+        if (this.state === 'doodad-editor') this.exitDoodadEditor();
+        else this.exitRaceEditor();
         this.input.flush();
         return;
       }
-      const target = this.state === 'race-editor' ? this.raceEditor : this.carEditor;
+      const target = this.state === 'race-editor'
+        ? this.raceEditor
+        : this.state === 'car-editor'
+          ? this.carEditor
+          : this.doodadEditor;
       target.update(this.input, dt);
       this.input.flush();
       return;
@@ -10630,6 +10653,7 @@ export default class Game {
     this.stateManager.register('cutscene-editor', createDelegatedState(this, 'cutsceneEditor'));
     this.stateManager.register('race-editor', createDelegatedState(this, 'raceEditor'));
     this.stateManager.register('car-editor', createDelegatedState(this, 'carEditor'));
+    this.stateManager.register('doodad-editor', createDelegatedState(this, 'doodadEditor'));
     this.stateManager.register('robtersession', new RobterSessionState(this));
   }
 

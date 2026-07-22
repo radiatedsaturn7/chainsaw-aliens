@@ -34,6 +34,7 @@ import {
   getSharedThumbstickLayout,
   drawSharedPortraitScrollHints,
   normalizeSharedControlBounds,
+  renderSharedFileDrawer,
   resetSharedThumbstickState,
   SHARED_EDITOR_LEFT_MENU,
   splitFileDrawerStickyExitItems,
@@ -41,7 +42,7 @@ import {
 } from './uiSuite.js';
 import { EDITOR_INPUT_ACTIONS, EditorInputActionNormalizer, SHARED_EDITOR_GAMEPAD_BINDINGS, SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { ControllerMenuStack, buildControllerExitConfirmMenu, buildControllerHelpMenu, buildControllerSystemMenu, drawCanvasControllerMenu } from './shared/input/controllerMenuStack.js';
-import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopLeftContextRoles, getEditorPortraitRootMenuEntries, getEditorRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
+import { getEditorControllerRootMenuEntries, getEditorControllerRootMenuIds, getEditorDesktopLeftContextRoles, getEditorTouchRootMenuEntries, getEditorRootMenuEntries, getEditorRootMenuLabelMap, getStandardEditorActionRailIds } from './shared/editorMenuSpec.js';
 import { applyDesktopDropdownWheelScrollState, buildCompactLandscapeCommandRailActions, buildCompactLandscapeCommandRailButtonLayout, buildDesktopDropdownRenderPlan, buildDesktopEditorShellPlan, buildGamepadSlideOutMenuPlan, buildLandscapeRootDrawerGridLayout, buildLandscapeTouchEditorShellPlan, buildMenuScrollDragState, canRenderEditorPlanSurface, canRenderEditorSurface, createDesktopDropdownCommandHit, createDesktopRootMenuHit, createPendingDesktopDropdownHit, getEditorPointerInteractionPolicy, resolveClosedDesktopDropdownState, resolveDesktopDropdownHoverSwitch, resolveDesktopDropdownRootId, resolveDesktopDropdownState, resolveDesktopRootMenuHit, resolveEditorViewportModeFlags, resolveGamepadMenuState, resolveMenuScrollDrag, resolveOpenDesktopDropdownState, resolvePendingDesktopDropdownHit, shouldCloseDesktopDropdownOnPointerDown, updatePendingDesktopDropdownHit } from './shared/editorMenuLayout.js';
 
 const DEFAULT_SAMPLE_RATE = 44100;
@@ -52,7 +53,7 @@ const uid = () => `sfx_${Date.now().toString(36)}_${Math.random().toString(36).s
 
 export function buildSfxPortraitMenuModel() {
   return {
-    rootTabs: getEditorPortraitRootMenuEntries('sfx'),
+    rootTabs: getEditorTouchRootMenuEntries('sfx'),
     bottomRailActions: getStandardEditorActionRailIds('play'),
     menuLoopIds: ['loop'],
     portraitRootPlacement: 'bottom-rail'
@@ -326,7 +327,7 @@ export default class SfxEditor {
     this.sfx = createDefaultSfx();
     this.currentDocumentRef = null;
     this.savedSnapshot = JSON.stringify(this.serialize());
-    this.leftTab = 'generate';
+    this.leftTab = 'timeline';
     this.selectedFrameIndex = 0;
     this.selectedLayerIndex = 0;
     this.selectedEnvelopeType = 'volume';
@@ -601,11 +602,6 @@ export default class SfxEditor {
           action('stretch', 'Time Stretch', () => this.applyTool('stretch')),
           action('loop-wizard', 'Loop Wizard', () => this.applyTool('loop-wizard'))
         ]
-      },
-      settings: {
-        id: 'settings',
-        title: 'Settings',
-        items: []
       },
       file: {
         id: 'file',
@@ -904,7 +900,7 @@ export default class SfxEditor {
     this.selectedLayerIndex = 0;
     this.selectedEnvelopePointIndex = 0;
     this.selectedCustomWavePointIndex = 1;
-    this.leftTab = 'generate';
+    this.leftTab = 'timeline';
     this.bufferCache.clear();
     this.savedSnapshot = JSON.stringify(this.serialize());
     this.showMessage(`New SFX: ${name}`);
@@ -944,7 +940,7 @@ export default class SfxEditor {
       initialFolder: 'sfx',
       fixedFolder: 'sfx',
       mode: 'open',
-      onImport: () => this.fileInput.click()
+      onImport: () => this.openImportPicker()
     });
     if (result?.action === 'open' && result.name) {
       this.loadNamedFile(result.name);
@@ -952,6 +948,14 @@ export default class SfxEditor {
     if (result?.action === 'new') {
       await this.newDocument();
     }
+  }
+
+  openImportPicker() {
+    if (typeof this.fileInput?.click === 'function') {
+      this.fileInput.click();
+      return;
+    }
+    this.showMessage('Import picker unavailable');
   }
 
   loadNamedFile(name) {
@@ -2033,8 +2037,8 @@ export default class SfxEditor {
         viewportWidth: width,
         viewportHeight: height,
         bottomRailHeight: 96,
-        rightRailWidth: getSharedMobileRailWidth(width, height),
-        reserveRightRail: !gamepadSubmenuOnLeft
+        reserveRightRail: !gamepadSubmenuOnLeft,
+        capRightRailToLeftRailHeight: true
       })
       : null;
     const sharedMobileRailW = getSharedMobileRailWidth(width, height);
@@ -2068,6 +2072,9 @@ export default class SfxEditor {
     if (bottom.h > 0 && canRenderLandscapeBottomRail) {
       this.drawBottomRail(ctx, bottom);
     }
+    if (!gamepadSubmenuOnLeft && landscapeLayout?.surfaces.zoom) {
+      this.drawLandscapeZoomSlider(ctx, landscapeLayout.surfaces.zoom);
+    }
     const suppressLandscapeThumbstick = gamepadSubmenuOnLeft
       || this.landscapeRootDrawerOpen
       || !canRenderEditorSurface(viewportMode.mode, 'touch-thumbstick');
@@ -2099,6 +2106,40 @@ export default class SfxEditor {
 
   drawGamepadHintBar(ctx, bounds, contextLabel) {
     drawSharedGamepadHintBar(ctx, bounds, contextLabel, SHARED_EDITOR_GAMEPAD_HINTS, { maxHints: 5 });
+  }
+
+  drawLandscapeZoomSlider(ctx, bounds) {
+    if (!bounds || bounds.w <= 0 || bounds.h <= 0) return;
+    const frameDuration = Math.max(0.01, Number(this.selectedFrame?.duration || 1));
+    const minVisible = Math.min(frameDuration, 0.25);
+    const visible = clamp(Number(this.timelineVisibleDuration || frameDuration), minVisible, frameDuration);
+    const range = Math.max(0.0001, frameDuration - minVisible);
+    const ratio = clamp((frameDuration - visible) / range, 0, 1);
+    const rail = {
+      x: bounds.x + 12,
+      y: bounds.y + Math.max(0, Math.floor((bounds.h - 10) / 2)),
+      w: Math.max(1, bounds.w - 24),
+      h: 10
+    };
+    drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
+    drawSharedMobileZoomSlider(ctx, rail, ratio, {
+      knobColor: UI_SUITE.colors.accent,
+      alpha: 0.96
+    });
+    this.buttons.push({
+      kind: 'slider',
+      id: 'sfx-landscape-zoom',
+      x: rail.x,
+      y: bounds.y,
+      w: rail.w,
+      h: bounds.h,
+      min: 0,
+      max: 1,
+      set: (nextRatio) => {
+        const nextVisible = frameDuration - clamp(nextRatio, 0, 1) * range;
+        this.setTimelineVisibleDurationPreservingCenter(nextVisible, frameDuration);
+      }
+    });
   }
 
   drawDesktopTopMenu(ctx, plan) {
@@ -2296,6 +2337,8 @@ export default class SfxEditor {
           } else if (tab.id === 'redo') {
             action = () => this.redo();
             action.skipHistory = true;
+          } else if (tab.id === 'exit-main') {
+            action = () => this.exit();
           } else {
             action = () => { this.leftTab = tab.id; };
           }
@@ -2305,21 +2348,29 @@ export default class SfxEditor {
       return;
     }
     if (this.isMobileLandscape) {
+      const menuAction = () => { this.landscapeRootDrawerOpen = !this.landscapeRootDrawerOpen; };
+      menuAction.skipHistory = true;
+      const undoAction = () => this.undo();
+      undoAction.skipHistory = true;
+      const redoAction = () => this.redo();
+      redoAction.skipHistory = true;
+      const playAction = () => (this.isPlaying ? this.stop() : this.play());
+      playAction.skipHistory = true;
       const quickAction = {
         id: 'play',
-        label: this.isPlaying ? 'Stop' : 'Play',
-        action: () => (this.isPlaying ? this.stop() : this.play()),
+        label: this.isPlaying ? '❚❚' : '▶',
+        action: playAction,
         active: this.isPlaying
       };
       const actions = buildCompactLandscapeCommandRailActions({
         menu: {
           id: 'menu',
           label: 'Menu',
-          action: () => { this.landscapeRootDrawerOpen = !this.landscapeRootDrawerOpen; },
+          action: menuAction,
           active: this.landscapeRootDrawerOpen
         },
-        undo: { id: 'undo', label: 'Undo', action: () => this.undo() },
-        redo: { id: 'redo', label: 'Redo', action: () => this.redo() },
+        undo: { id: 'undo', label: 'Undo', action: undoAction },
+        redo: { id: 'redo', label: 'Redo', action: redoAction },
         quick: quickAction
       });
       buildCompactLandscapeCommandRailButtonLayout({
@@ -2666,7 +2717,57 @@ export default class SfxEditor {
       contentRoles: getEditorDesktopLeftContextRoles('sfx'),
       status: this.message || ''
     });
+    this.drawDesktopGenerateQuickSettings(ctx, contextBounds);
     if (transportBounds) this.drawDesktopTransportPanel(ctx, transportBounds);
+  }
+
+  drawDesktopGenerateQuickSettings(ctx, contextBounds) {
+    const pad = 10;
+    const gap = 6;
+    const panelX = contextBounds.x + pad;
+    const panelW = Math.max(0, contextBounds.w - pad * 2);
+    if (panelW < 120 || contextBounds.h < 218) return;
+    const panelY = Math.min(
+      contextBounds.y + contextBounds.h - 160,
+      contextBounds.y + 118
+    );
+    const panelH = Math.max(146, contextBounds.y + contextBounds.h - pad - panelY);
+    drawSharedPanel(ctx, { x: panelX, y: panelY, w: panelW, h: panelH }, {
+      fill: UI_SUITE.colors.panelAlt,
+      border: UI_SUITE.colors.border
+    });
+
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.font = `12px ${UI_SUITE.font.family}`;
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Generator Settings', panelX + 8, panelY + 16, panelW - 16);
+    ctx.restore();
+
+    const waves = ['noise', 'saw', 'triangle', 'square'];
+    const buttonGap = 5;
+    const rowH = 26;
+    const buttonW = Math.max(42, Math.floor((panelW - 16 - buttonGap * (waves.length - 1)) / waves.length));
+    const rowY = panelY + 30;
+    waves.forEach((wave, index) => {
+      this.drawButton(ctx, {
+        x: panelX + 8 + index * (buttonW + buttonGap),
+        y: rowY,
+        w: buttonW,
+        h: rowH
+      }, wave, this.sfx.toolOptions.generateWave === wave, () => {
+        this.sfx.toolOptions.generateWave = wave;
+      });
+    });
+    let y = rowY + rowH + 8;
+    y = this.drawSlider(ctx, panelX + 8, y, panelW - 16, 'Seconds', this.sfx.toolOptions.generateDuration, 0.03, 5, (value) => {
+      this.sfx.toolOptions.generateDuration = value;
+    });
+    if (y + 38 <= panelY + panelH - 6) {
+      this.drawSlider(ctx, panelX + 8, y, panelW - 16, 'Freq', this.sfx.toolOptions.generateFrequency, 20, 2000, (value) => {
+        this.sfx.toolOptions.generateFrequency = Math.round(value);
+      });
+    }
   }
 
   drawRightPanel(ctx, bounds) {
@@ -2729,7 +2830,8 @@ export default class SfxEditor {
   }
 
   drawLandscapeRootDrawer(ctx, panelBounds) {
-    const tabs = buildSfxSharedRootMenuEntries();
+    const tabs = buildSfxPortraitMenuModel().rootTabs;
+    drawSharedPanel(ctx, panelBounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
     const grid = buildLandscapeRootDrawerGridLayout({
       bounds: panelBounds,
       itemCount: tabs.length,
@@ -2751,8 +2853,12 @@ export default class SfxEditor {
         tab.label,
         this.leftTab === tab.id,
         () => {
+          if (tab.id === 'exit-main') {
+            this.exit();
+            return;
+          }
           this.leftTab = tab.id;
-          this.landscapeRootDrawerOpen = true;
+          this.landscapeRootDrawerOpen = false;
         },
         this.controllerMenu.isFocusedItem('root', tab.id)
       );
@@ -2854,7 +2960,7 @@ export default class SfxEditor {
         save: () => this.save(),
         'save-as': () => this.save({ forceSaveAs: true }),
         open: () => this.openFileModal(),
-        import: () => this.fileInput.click(),
+        import: () => this.openImportPicker(),
         export: () => this.exportSelectedWav()
       },
       footer: {
@@ -2886,6 +2992,40 @@ export default class SfxEditor {
       : { listItems: rows, exitItem: null };
     const rowH = this.getPanelRowHeight();
     const gap = SHARED_EDITOR_LEFT_MENU.buttonGap;
+    if (this.isMobilePortrait && exitItem) {
+      const result = renderSharedFileDrawer(ctx, {
+        panel: { x: bounds.x, y, w: bounds.w, h: Math.max(1, bounds.y + bounds.h - y) },
+        items: listItems,
+        title: '',
+        rowHeight: rowH,
+        rowGap: gap,
+        buttonHeight: rowH,
+        isMobile: true,
+        showTitle: false,
+        drawPanel: false,
+        footerMode: 'exit-only',
+        footerItem: exitItem,
+        layoutMode: 'auto-grid',
+        minColumnWidth: 118,
+        maxColumns: 2,
+        layout: {
+          padding: SHARED_EDITOR_LEFT_MENU.panelPadding,
+          headerHeight: 0,
+          footerHeight: rowH,
+          footerBottomPadding: SHARED_EDITOR_LEFT_MENU.panelPadding
+        },
+        drawButton: (buttonBounds, item) => {
+          this.drawButton(ctx, buttonBounds, item.label, false, item.action || item.onClick, this.controllerMenu.isFocusedItem('file', item.id));
+        }
+      });
+      this.menuScrollRegions.push({
+        menuId: 'file',
+        bounds: result.listBounds || { x: bounds.x, y, w: bounds.w, h: Math.max(1, bounds.y + bounds.h - y - rowH - gap) },
+        maxScroll: result.scrollMax,
+        lineHeight: rowH + gap
+      });
+      return y;
+    }
     const footerReserve = exitItem ? rowH + gap : 0;
     const visibleRows = Math.max(1, Math.floor((bounds.y + bounds.h - y - 8 - footerReserve) / (rowH + gap)));
     const start = this.controllerMenu.syncScrollToItem('file', this.controllerMenu.getFocusedItem('file')?.id, listItems, visibleRows, this.controllerMenu.scroll?.file || 0);
@@ -3262,7 +3402,7 @@ export default class SfxEditor {
           id: 'menu',
           label: '☰',
           onClick: () => {
-            this.leftTab = 'generate';
+            this.leftTab = 'file';
             this.controllerMenu.resetFocus();
             this.controllerMenu.scroll = { ...(this.controllerMenu.scroll || {}), root: 0 };
           }
@@ -3325,7 +3465,7 @@ export default class SfxEditor {
       [
         ['Add Frame', () => this.addEmptyFrame()],
         ['Add Layer', () => this.addLayer()],
-        ['Import', () => this.fileInput.click()]
+        ['Import', () => this.openImportPicker()]
       ].forEach(([label, action], index) => {
         this.drawButton(ctx, { x: commandX + index * (commandW + gap), y: transportY + 2, w: commandW, h: 38 }, label, false, action);
       });
@@ -3360,7 +3500,7 @@ export default class SfxEditor {
   drawButton(ctx, bounds, label, active = false, action = null, focused = false) {
     const controlBounds = normalizeSharedControlBounds(bounds);
     Object.assign(bounds, controlBounds);
-    const color = drawSharedMenuButtonChrome(ctx, controlBounds, { active, alpha: 0.92 });
+    const color = drawSharedMenuButtonChrome(ctx, controlBounds, { active });
     drawSharedMenuButtonLabel(ctx, controlBounds, label, {
       color,
       fontSize: Math.max(10, Math.min(12, Math.round(controlBounds.h * 0.31))),

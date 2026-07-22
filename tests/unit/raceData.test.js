@@ -1,11 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import zlib from 'node:zlib';
 
 import {
   DRIVETRAINS,
+  RACE_STOCK_PERFORMANCE_TARGETS,
   RACE_TIRE_COMPOUNDS,
   RACE_COMPETITION_MODES,
   RACE_TIME_OF_DAY,
+  STUDIO_SPRINT_GRAPHIC_SETTINGS,
   createBuiltInRaceCars,
   createBuiltInTestRaces,
   createDefaultCar,
@@ -141,12 +145,113 @@ test('built-in test races model requested real-world track references', () => {
 
   assert.equal(byId['daytona-tri-oval'].type, 'circuit');
   assert.equal(Math.abs(routeLength(byId['daytona-tri-oval']) - 4023) < 8, true);
-  assert.equal(byId['daytona-tri-oval'].road.width, 24);
+  assert.equal(byId['daytona-tri-oval'].road.width, 14.4);
   assert.equal(byId['daytona-tri-oval'].road.segments.some((segment) => segment.banking === 31), true);
+  assert.equal(byId['daytona-tri-oval'].renderSurfaceStepM, 10);
+  assert.deepEqual(byId['daytona-tri-oval'].scenery, []);
   assert.equal(byId['daytona-tri-oval'].referenceFacts.sourceLengthMi, 2.5);
   assert.equal(byId['daytona-tri-oval'].referenceFacts.bankingDegrees.turns, 31);
   assert.equal(byId['daytona-tri-oval'].referenceFacts.bankingDegrees.triOval, 18);
   assert.equal(byId['daytona-tri-oval'].referenceFacts.bankingDegrees.backstretch, 3);
+});
+
+test('WRX race car tuning exposes Daytona high speed calibration', () => {
+  const wrx = createDefaultCar('starter-rwd');
+
+  assert.equal(wrx.tuning.topSpeedMph, 161);
+  assert.equal(wrx.tuning.dragCoefficient <= 0.08, true);
+  assert.equal(wrx.tuning.accelerationCalibration >= 1.06, true);
+});
+
+test('built-in race cars expose real-world power, torque, drivetrain, and gear counts', () => {
+  const cars = Object.fromEntries(createBuiltInRaceCars().map((car) => [car.id, car]));
+
+  assert.equal(cars['starter-rwd'].tuning.powerHp, 271);
+  assert.equal(cars['starter-rwd'].tuning.torqueLbFt, 258);
+  assert.equal(cars['starter-rwd'].tuning.drivetrain, 'awd');
+  assert.equal(cars['starter-rwd'].transmissions.manual.gearRatios.length, 6);
+  assert.equal(cars['starter-rwd'].transmissions.automatic.gearRatios.length, 8);
+  assert.deepEqual(cars['starter-rwd'].transmissions.manual.gearRatios, [3.454, 1.947, 1.366, 0.972, 0.738, 0.666]);
+  assert.deepEqual(cars['starter-rwd'].transmissions.automatic.gearRatios, [3.49, 2.19, 1.55, 1.18, 0.92, 0.74, 0.58, 0.47]);
+  assert.equal(cars['starter-rwd'].transmissions.manual.gearFinalDrive, 4.11);
+
+  assert.equal(cars['subaru-brz-2022'].tuning.powerHp, 228);
+  assert.equal(cars['subaru-brz-2022'].tuning.torqueLbFt, 184);
+  assert.equal(cars['subaru-brz-2022'].tuning.drivetrain, 'rwd');
+  assert.equal(cars['subaru-brz-2022'].transmissions.manual.gearRatios.length, 6);
+  assert.equal(cars['subaru-brz-2022'].transmissions.automatic.gearRatios.length, 6);
+  assert.deepEqual(cars['subaru-brz-2022'].transmissions.manual.gearRatios, [3.626, 2.188, 1.541, 1.213, 1.0, 0.767]);
+  assert.deepEqual(cars['subaru-brz-2022'].transmissions.automatic.gearRatios, [3.538, 2.06, 1.404, 1.0, 0.713, 0.582]);
+  assert.equal(cars['subaru-brz-2022'].transmissions.manual.gearFinalDrive, 4.10);
+  assert.equal(cars['subaru-brz-2022'].transmissions.automatic.gearFinalDrive, 3.909);
+
+  assert.equal(cars['honda-civic-type-r-2023'].tuning.powerHp, 315);
+  assert.equal(cars['honda-civic-type-r-2023'].tuning.torqueLbFt, 310);
+  assert.equal(cars['honda-civic-type-r-2023'].tuning.drivetrain, 'fwd');
+  assert.equal(cars['honda-civic-type-r-2023'].transmissions.manual.gearRatios.length, 6);
+  assert.deepEqual(cars['honda-civic-type-r-2023'].transmissions.manual.gearRatios, [3.625, 2.115, 1.529, 1.125, 0.911, 0.734]);
+  assert.equal(cars['honda-civic-type-r-2023'].transmissions.manual.gearFinalDrive, 3.84);
+});
+
+test('built-in race car performance target bands match calibrated playtest ranges', () => {
+  assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['starter-rwd'].zeroToSixtySec, [4.8, 5.6]);
+  assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['starter-rwd'].quarterMileSec, [13.5, 14.3]);
+  assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['starter-rwd'].topSpeedMph, [158, 162]);
+
+  assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['subaru-brz-2022'].zeroToSixtySec, [5.3, 6.8]);
+  assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['subaru-brz-2022'].quarterMileSec, [13.8, 15.2]);
+  assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['subaru-brz-2022'].topSpeedMph, [136, 145]);
+
+  assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['honda-civic-type-r-2023'].zeroToSixtySec, [4.5, 5.4]);
+  assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['honda-civic-type-r-2023'].quarterMileSec, [13.2, 13.9]);
+  assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['honda-civic-type-r-2023'].topSpeedMph, [165, 171]);
+});
+
+test('built-in test races use Studio Sprint graphic settings by default', () => {
+  const races = [createDefaultRace(), ...createBuiltInTestRaces()];
+  races.forEach((race) => {
+    assert.equal(race.groundRenderer, STUDIO_SPRINT_GRAPHIC_SETTINGS.groundRenderer);
+    assert.equal(race.groundTextureBaseWorldM, STUDIO_SPRINT_GRAPHIC_SETTINGS.groundTextureBaseWorldM);
+    assert.equal(race.groundTextureFilterMode, STUDIO_SPRINT_GRAPHIC_SETTINGS.groundTextureFilterMode);
+    assert.equal(race.skyboxArtRef, STUDIO_SPRINT_GRAPHIC_SETTINGS.skyboxArtRef);
+    assert.equal(race.surfaceArt.boundary, STUDIO_SPRINT_GRAPHIC_SETTINGS.surfaceArt.boundary);
+    assert.equal(race.margin.marginMode, STUDIO_SPRINT_GRAPHIC_SETTINGS.margin.marginMode);
+    assert.equal(race.margin.shoulderMode, STUDIO_SPRINT_GRAPHIC_SETTINGS.margin.shoulderMode);
+    assert.equal(race.margin.collisionEdge, STUDIO_SPRINT_GRAPHIC_SETTINGS.margin.collisionEdge);
+    assert.equal(race.margin.collisionEffect, STUDIO_SPRINT_GRAPHIC_SETTINGS.margin.collisionEffect);
+    assert.equal(race.renderDebug.terrainEnabled, true);
+    assert.equal(race.renderDebug.texturesEnabled, true);
+    assert.equal(race.renderDebug.detailEnabled, false);
+    if (race.id === 'daytona-tri-oval') {
+      assert.equal(race.renderSurfaceStepM, 10);
+    }
+  });
+});
+
+test('built-in test races are seeded as editable storage race files', () => {
+  const storageNames = [
+    'WeatherTech Raceway Laguna Seca',
+    'Nurburgring Nordschleife',
+    'Col de Turini',
+    'Ouninpohja',
+    'Daytona Tri-Oval'
+  ];
+
+  storageNames.forEach((name) => {
+    const raw = JSON.parse(fs.readFileSync(`data/server-storage/files/races/${name}/document.json`, 'utf8'));
+    const payload = raw.__chainsawStorage
+      ? JSON.parse(zlib.gunzipSync(Buffer.from(raw.data, 'base64')).toString('utf8'))
+      : raw;
+    assert.equal(payload.kind, 'race-track');
+    assert.equal(payload.race.name, name);
+    assert.equal(payload.race.groundRenderer, STUDIO_SPRINT_GRAPHIC_SETTINGS.groundRenderer);
+    assert.equal(payload.race.skyboxArtRef, STUDIO_SPRINT_GRAPHIC_SETTINGS.skyboxArtRef);
+    assert.equal(payload.race.renderDebug.terrainEnabled, true);
+    assert.equal(payload.race.renderDebug.detailEnabled, false);
+    if (name === 'Daytona Tri-Oval') {
+      assert.equal(payload.race.renderSurfaceStepM, 10);
+    }
+  });
 });
 
 test('createTestTrackRace aliases WeatherTech by Laguna Seca name', () => {

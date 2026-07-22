@@ -56,7 +56,15 @@ export const rgbaToHex = (rgba) => `#${toHex(rgba.r)}${toHex(rgba.g)}${toHex(rgb
 export const hexToRgba = (hex) => {
   if (!hex) return { r: 0, g: 0, b: 0, a: 0 };
   const normalized = hex.replace('#', '');
-  const value = parseInt(normalized, 16);
+  if (normalized.length >= 8) {
+    return {
+      r: parseInt(normalized.slice(0, 2), 16),
+      g: parseInt(normalized.slice(2, 4), 16),
+      b: parseInt(normalized.slice(4, 6), 16),
+      a: parseInt(normalized.slice(6, 8), 16)
+    };
+  }
+  const value = parseInt(normalized.slice(0, 6), 16);
   return {
     r: (value >> 16) & 255,
     g: (value >> 8) & 255,

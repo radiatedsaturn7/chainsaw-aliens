@@ -45,6 +45,13 @@ export const RACE_TIRE_COMPOUNDS = [
     wearRate: 1.18
   },
   {
+    id: 'offroad',
+    label: 'Offroad',
+    surfaceGrip: { asphalt: 0.7, 'wet-asphalt': 0.68, dirt: 1.0, gravel: 1.08, mud: 1.02, 'wet-gravel': 1.04, snow: 0.66, slush: 0.76 },
+    weatherGrip: { clear: 0.98, rain: 0.96, storm: 0.9, snow: 0.66 },
+    wearRate: 1.08
+  },
+  {
     id: 'snow',
     label: 'Snow',
     surfaceGrip: { asphalt: 0.58, 'wet-asphalt': 0.62, dirt: 0.74, gravel: 0.76, mud: 0.62, 'wet-gravel': 0.72, snow: 1.08, slush: 0.95 },
@@ -165,9 +172,10 @@ export const WRX_2022_SHARED_TUNING = {
   torquePeakEndRpm: 5200,
   torqueFalloffRpm: 6500,
   wheelRadiusM: 0.337,
-  topSpeedMph: 135,
+  topSpeedMph: 161,
   zeroToSixtySec: 5.8,
-  dragCoefficient: 0.42,
+  dragCoefficient: 0.08,
+  accelerationCalibration: 1.06,
   drivetrainEfficiency: 0.84,
   differentialAccel: 0.45,
   differentialDecel: 0.2,
@@ -239,8 +247,8 @@ export const DEFAULT_CAR_TUNING = {
   launchRpm: 3200,
   autoUpshiftRpm: 5900,
   autoDownshiftRpm: 1750,
-  gearRatios: [3.45, 1.95, 1.37, 0.97, 0.74, 0.67],
-  reverseRatio: 3.33
+  gearRatios: [3.454, 1.947, 1.366, 0.972, 0.738, 0.666],
+  reverseRatio: 3.636
 };
 
 export const WRX_2022_TRANSMISSIONS = {
@@ -253,8 +261,8 @@ export const WRX_2022_TRANSMISSIONS = {
     launchRpm: 3200,
     autoUpshiftRpm: 5900,
     autoDownshiftRpm: 1750,
-    gearRatios: [3.45, 1.95, 1.37, 0.97, 0.74, 0.67],
-    reverseRatio: 3.33,
+    gearRatios: [3.454, 1.947, 1.366, 0.972, 0.738, 0.666],
+    reverseRatio: 3.636,
     gearFinalDrive: 4.11,
     drivetrainEfficiency: 0.84,
     engineProfile: 'wrx-flat-four-manual'
@@ -266,13 +274,14 @@ export const WRX_2022_TRANSMISSIONS = {
     shiftTimeMs: 220,
     clutchDelayMs: 0,
     launchRpm: 2600,
-    autoUpshiftRpm: 5700,
+    autoUpshiftRpm: 6250,
     autoDownshiftRpm: 1550,
     torqueConverterSlip: 0.12,
     gearRatios: [3.49, 2.19, 1.55, 1.18, 0.92, 0.74, 0.58, 0.47],
     reverseRatio: 3.32,
     gearFinalDrive: 4.44,
     drivetrainEfficiency: 0.9,
+    accelerationCalibration: 1.09,
     weightKg: 1603,
     zeroToSixtySec: 5.9,
     engineProfile: 'wrx-flat-four-cvt'
@@ -301,7 +310,7 @@ export const BRZ_2022_TUNING = {
   topSpeedMph: 140,
   zeroToSixtySec: 6.1,
   dragCoefficient: 0.35,
-  accelerationCalibration: 1.24,
+  accelerationCalibration: 1.28,
   drivetrainEfficiency: 0.86,
   differentialAccel: 0.5,
   differentialDecel: 0.25,
@@ -341,7 +350,7 @@ export const BRZ_2022_TRANSMISSIONS = {
     launchRpm: 3600,
     autoUpshiftRpm: 6800,
     autoDownshiftRpm: 2100,
-    gearRatios: [3.63, 2.19, 1.54, 1.21, 1.0, 0.77],
+    gearRatios: [3.626, 2.188, 1.541, 1.213, 1.0, 0.767],
     reverseRatio: 3.44,
     gearFinalDrive: 4.10,
     drivetrainEfficiency: 0.86,
@@ -357,9 +366,9 @@ export const BRZ_2022_TRANSMISSIONS = {
     autoUpshiftRpm: 6100,
     autoDownshiftRpm: 1800,
     torqueConverterSlip: 0.1,
-    gearRatios: [3.54, 2.06, 1.4, 1.0, 0.71, 0.58],
+    gearRatios: [3.538, 2.06, 1.404, 1.0, 0.713, 0.582],
     reverseRatio: 3.17,
-    gearFinalDrive: 3.91,
+    gearFinalDrive: 3.909,
     drivetrainEfficiency: 0.84,
     weightKg: 1298,
     zeroToSixtySec: 6.6,
@@ -389,7 +398,7 @@ export const CIVIC_TYPE_R_2023_TUNING = {
   topSpeedMph: 169,
   zeroToSixtySec: 5.0,
   dragCoefficient: 0.36,
-  accelerationCalibration: 0.94,
+  accelerationCalibration: 0.88,
   drivetrainEfficiency: 0.87,
   differentialAccel: 0.58,
   differentialDecel: 0.28,
@@ -429,8 +438,8 @@ export const CIVIC_TYPE_R_2023_TRANSMISSIONS = {
     launchRpm: 3600,
     autoUpshiftRpm: 6750,
     autoDownshiftRpm: 2300,
-    gearRatios: [3.63, 2.12, 1.53, 1.13, 0.91, 0.73],
-    reverseRatio: 3.76,
+    gearRatios: [3.625, 2.115, 1.529, 1.125, 0.911, 0.734],
+    reverseRatio: 3.757,
     gearFinalDrive: 3.84,
     drivetrainEfficiency: 0.87,
     engineProfile: 'civic-type-r-manual'
@@ -445,8 +454,8 @@ export const CIVIC_TYPE_R_2023_TRANSMISSIONS = {
     autoUpshiftRpm: 6600,
     autoDownshiftRpm: 2200,
     torqueConverterSlip: 0.04,
-    gearRatios: [3.63, 2.12, 1.53, 1.13, 0.91, 0.73],
-    reverseRatio: 3.76,
+    gearRatios: [3.625, 2.115, 1.529, 1.125, 0.911, 0.734],
+    reverseRatio: 3.757,
     gearFinalDrive: 3.84,
     drivetrainEfficiency: 0.87,
     zeroToSixtySec: 4.6,
@@ -461,7 +470,7 @@ export const RACE_STOCK_PERFORMANCE_TARGETS = {
     zeroToSixtySec: [4.8, 5.6],
     quarterMileSec: [13.5, 14.3],
     quarterMileTrapMph: [97, 103],
-    topSpeedMph: [132, 138],
+    topSpeedMph: [158, 162],
     lateralG: [0.90, 0.98],
     braking70To0Ft: [154, 168]
   },
@@ -478,7 +487,7 @@ export const RACE_STOCK_PERFORMANCE_TARGETS = {
   'honda-civic-type-r-2023': {
     carName: '2023 Honda Civic Type R',
     source: 'real-world',
-    zeroToSixtySec: [4.8, 5.4],
+    zeroToSixtySec: [4.5, 5.4],
     quarterMileSec: [13.2, 13.9],
     quarterMileTrapMph: [103, 109],
     topSpeedMph: [165, 171],
@@ -532,6 +541,8 @@ export function createDefaultCar(id = 'starter-rwd') {
     name: template.name,
     class: 'road',
     art: {
+      body: null,
+      artRef: null,
       shell: null,
       tires: [],
       spoilers: [],
@@ -583,7 +594,7 @@ export function createBuiltInRaceCars() {
 export function createDefaultRace(id = 'test-loop') {
   const laneCount = DEFAULT_RACE_LANE_COUNT;
   const laneWidthM = RACE_LANE_WIDTH_M;
-  return {
+  return applyStudioSprintGraphicSettings({
     id,
     name: 'Studio Sprint',
     type: 'circuit',
@@ -637,7 +648,7 @@ export function createDefaultRace(id = 'test-loop') {
       ]
     },
     scenery: []
-  };
+  });
 }
 
 function getTemplatePerimeter(points = []) {
@@ -700,11 +711,12 @@ function createRaceTemplate({
   calls = [],
   scenery = [],
   referenceNotes = [],
-  referenceFacts = {}
+  referenceFacts = {},
+  renderSurfaceStepM = null
 }) {
   const nodes = buildScaledRaceNodes(points, targetLength);
   const segments = buildSegmentsFromNodes(nodes, segmentHints, roadWidth);
-  return {
+  return applyStudioSprintGraphicSettings({
     id,
     name,
     type,
@@ -719,6 +731,9 @@ function createRaceTemplate({
     },
     referenceNotes,
     referenceFacts,
+    ...(Number.isFinite(Number(renderSurfaceStepM)) && Number(renderSurfaceStepM) > 0
+      ? { renderSurfaceStepM: Number(renderSurfaceStepM) }
+      : {}),
     road: {
       width: roadWidth,
       selectedGroundTileId,
@@ -746,7 +761,7 @@ function createRaceTemplate({
       calls
     },
     scenery
-  };
+  });
 }
 
 const LAGUNA_SECA_POINTS = [
@@ -1171,7 +1186,8 @@ export function createTestTrackRace(id) {
         targetLength: 4023,
         type: 'circuit',
         laps: 5,
-        roadWidth: 24,
+        roadWidth: 14.4,
+        renderSurfaceStepM: 10,
         points: DAYTONA_POINTS,
         segmentHints: DAYTONA_SEGMENTS,
         calls: [
@@ -1179,21 +1195,18 @@ export function createTestTrackRace(id) {
           { id: 'daytona-backstretch', at: 2050, text: 'Backstretch, draft zone', severity: 1 },
           { id: 'daytona-trioval', at: 3450, text: 'Tri-oval, banking eases at line', severity: 2 }
         ],
-        scenery: [
-          { type: 'tower', at: 200, side: 'right' },
-          { type: 'sign', at: 2050, side: 'left' }
-        ],
+        scenery: [],
         referenceNotes: [
           '2.5 mile asphalt tri-oval modeled as a 4.023 km circuit.',
           'High banked turns use 31 degrees while the tri-oval/front-stretch banking uses 18 degrees.',
-          'The wider road width reflects Daytona superspeedway lane count and drafting room.'
+          'The road width reflects a four-lane stock-car racing surface while keeping the 31 degree banking from creating exaggerated cross-track elevation changes.'
         ],
         referenceFacts: {
           referenceBasis: 'Daytona International Speedway tri-oval',
           sourceLengthMi: 2.5,
           sourceLengthKm: 4.023,
           surface: 'asphalt',
-          roadWidthM: 24,
+          roadWidthM: 14.4,
           bankingDegrees: {
             turns: 31,
             triOval: 18,

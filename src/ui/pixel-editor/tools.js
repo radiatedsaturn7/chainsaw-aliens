@@ -18,7 +18,10 @@ export const TOOL_IDS = {
   CLONE: 'clone',
   DITHER: 'dither',
   COLOR_REPLACE: 'color-replace',
-  HUE_SHIFT: 'hue-shift'
+  HUE_SHIFT: 'hue-shift',
+  SATURATION_SHIFT: 'saturation-shift',
+  BRIGHTNESS_SHIFT: 'brightness-shift',
+  CONTRAST_SHIFT: 'contrast-shift'
 };
 
 export const createToolRegistry = (editor) => ([
@@ -223,5 +226,35 @@ export const createToolRegistry = (editor) => ([
     onPointerMove: null,
     onPointerUp: null,
     optionsUI: ['hueShift', 'replaceScope']
+  },
+  {
+    id: TOOL_IDS.SATURATION_SHIFT,
+    name: 'Saturation',
+    category: 'tools',
+    cursor: 'crosshair',
+    onPointerDown: null,
+    onPointerMove: null,
+    onPointerUp: null,
+    optionsUI: ['saturationShift', 'replaceScope']
+  },
+  {
+    id: TOOL_IDS.BRIGHTNESS_SHIFT,
+    name: 'Brightness',
+    category: 'tools',
+    cursor: 'crosshair',
+    onPointerDown: null,
+    onPointerMove: null,
+    onPointerUp: null,
+    optionsUI: ['brightnessShift', 'replaceScope']
+  },
+  {
+    id: TOOL_IDS.CONTRAST_SHIFT,
+    name: 'Contrast',
+    category: 'tools',
+    cursor: 'crosshair',
+    onPointerDown: null,
+    onPointerMove: null,
+    onPointerUp: null,
+    optionsUI: ['contrastShift', 'replaceScope']
   }
 ]);

@@ -35,6 +35,18 @@ async function configureViewport(page, { width = 1280, height = 720, isMobile = 
     });
     game.updateControlScheme();
   }, { width, height, mobile: isMobile });
+  await flushEditorLayout(page);
+}
+
+async function flushEditorLayout(page) {
+  await page.evaluate(() => {
+    const game = window.__game;
+    game.updateControlScheme?.();
+    game.syncMobileControlsViewport?.();
+    game._drawByState?.();
+    game.actorEditor?.render?.();
+  });
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 }
 
 async function openEditor(page, editorId) {
@@ -65,7 +77,7 @@ async function openEditor(page, editorId) {
     car: 'car-editor'
   }[editorId];
   await page.waitForFunction((state) => window.__game.state === state, expectedState);
-  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  await flushEditorLayout(page);
 }
 
 test('desktop editor shells use desktop chrome instead of mobile landscape controls', async ({ page }) => {
@@ -617,6 +629,115 @@ test('comparison editor desktop left panels expose editor-specific context roles
       expect(result.surfaceX, `${editorId} work surface starts after left context`).toBeGreaterThan(0);
     }
   }
+});
+
+test('Pixel editor exposes direct desktop controls and contextual landscape/gamepad actions', async ({ page }) => {
+  await waitForGameReady(page);
+  await configureViewport(page, { width: 1280, height: 720, isMobile: false });
+  await openEditor(page, 'pixel');
+
+  const desktop = await page.evaluate(async () => {
+    const game = window.__game;
+    const editor = game.pixelStudio;
+    editor.setActiveTool('fill');
+    game._drawByState?.();
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    return {
+      mode: editor.activeViewportMode,
+      hasActiveOptions: editor.hasDesktopActiveToolOptions?.(),
+      toolFocusCount: editor.focusGroups?.tools?.length || 0,
+      toolOptionFocusCount: editor.focusGroups?.['tool-options']?.length || 0,
+      hasDesktopDropdown: Boolean(editor.desktopDropdown),
+      panJoystickRadius: Number(editor.panJoystick?.radius || 0)
+    };
+  });
+
+  expect(desktop.mode, 'Pixel desktop mode').toBe('desktop');
+  expect(desktop.hasActiveOptions, 'Pixel desktop active tool options').toBeTruthy();
+  expect(desktop.toolFocusCount, 'Pixel desktop direct tool grid').toBeGreaterThanOrEqual(12);
+  expect(desktop.toolOptionFocusCount, 'Pixel desktop direct active-tool controls').toBeGreaterThan(0);
+  expect(desktop.hasDesktopDropdown, 'Pixel desktop no initial dropdown').toBeFalsy();
+  expect(desktop.panJoystickRadius, 'Pixel desktop no thumbstick').toBe(0);
+
+  await configureViewport(page, { width: 844, height: 390, isMobile: true });
+  await openEditor(page, 'pixel');
+  const landscape = await page.evaluate(async () => {
+    const game = window.__game;
+    const editor = game.pixelStudio;
+    editor.setActiveTool('clone');
+    game._drawByState?.();
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    const contextAction = editor.getPixelLandscapeRailContextAction?.();
+    return {
+      mode: editor.activeViewportMode,
+      contextId: contextAction?.id || null,
+      contextLabel: contextAction?.label || null,
+      rootDrawerOnLeft: Boolean(editor.mobileLandscapeRootMenuBounds && editor.mobileLandscapeRootMenuBounds.x < 260),
+      hasDesktopDropdown: Boolean(editor.desktopDropdown),
+      renderedNavigationSurface: editor.isMobileLandscape ? 'left-rail' : null,
+      renderedPointerType: 'touch'
+    };
+  });
+
+  expect(landscape.mode, 'Pixel landscape mode').toBe('landscape-touch');
+  expect(landscape.contextId, 'Pixel landscape contextual rail action').toBe('clone-source');
+  expect(landscape.contextLabel, 'Pixel landscape contextual rail label').toBe('Source');
+  expect(landscape.hasDesktopDropdown, 'Pixel landscape no desktop dropdown').toBeFalsy();
+  expect(landscape.renderedNavigationSurface, 'Pixel landscape navigation surface').toBe(LANDSCAPE_PRESENTATION.persistentNavigationSurface);
+  expect(landscape.renderedPointerType, 'Pixel landscape pointer type').toBe(LANDSCAPE_INTERACTION.pointerType);
+
+  await page.evaluate(() => {
+    window.__game.input.isGamepadConnected = () => true;
+  });
+  await openEditor(page, 'pixel');
+  const gamepad = await page.evaluate(async () => {
+    const game = window.__game;
+    const editor = game.pixelStudio;
+    editor.setActiveTool('clone');
+    editor.setInputMode('ui');
+    editor.controllerMenu.setMenus(editor.buildControllerMenus(), {
+      rootId: 'root',
+      siblingOrder: editor.leftPanelTabs
+    });
+    editor.controllerMenu.openRoot();
+    game._drawByState?.();
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    const gamepadState = editor.getGamepadMenuState?.(844, 390);
+    const rootItems = editor.buildControllerMenus().root.items.filter((item) => !item.divider);
+    const contextItem = rootItems[0];
+    contextItem.onSelect?.(editor);
+    return {
+      mode: editor.activeViewportMode,
+      isGamepadLandscape: Boolean(gamepadState?.isLandscapeMenuMode),
+      slideOut: Boolean(gamepadState?.drawSlideOut),
+      controllerOverlay: Boolean(gamepadState?.drawControllerOverlay),
+      contextId: contextItem.id,
+      contextLabel: contextItem.label,
+      clonePickSourceArmed: Boolean(editor.clonePickSourceArmed),
+      inputMode: editor.inputMode,
+      thumbstickRadius: Number(editor.panJoystick?.radius || 0),
+      hasDesktopDropdown: Boolean(editor.desktopDropdown),
+      renderedNavigationSurface: gamepadState?.isLandscapeMenuMode ? 'left-slide-rail' : null,
+      renderedSubmenuSurface: gamepadState?.drawSlideOut ? 'left-slide-out-drawer' : null,
+      renderedPointerType: 'controller',
+      renderedRowActivation: 'confirm-button'
+    };
+  });
+
+  expect(gamepad.mode, 'Pixel gamepad mode').toBe('gamepad');
+  expect(gamepad.isGamepadLandscape, 'Pixel gamepad landscape state').toBeTruthy();
+  expect(gamepad.slideOut, 'Pixel gamepad left slide-out').toBeTruthy();
+  expect(gamepad.controllerOverlay, 'Pixel gamepad controller overlay').toBeTruthy();
+  expect(gamepad.contextId, 'Pixel gamepad context root row').toBe('context-action');
+  expect(gamepad.contextLabel, 'Pixel gamepad context root label').toBe('Context: Source');
+  expect(gamepad.clonePickSourceArmed, 'Pixel gamepad context action activates clone source').toBeTruthy();
+  expect(gamepad.inputMode, 'Pixel gamepad context returns to canvas').toBe('canvas');
+  expect(gamepad.thumbstickRadius, 'Pixel gamepad no virtual thumbstick').toBe(0);
+  expect(gamepad.hasDesktopDropdown, 'Pixel gamepad no desktop dropdown').toBeFalsy();
+  expect(gamepad.renderedNavigationSurface, 'Pixel gamepad navigation surface').toBe(GAMEPAD_PRESENTATION.persistentNavigationSurface);
+  expect(gamepad.renderedSubmenuSurface, 'Pixel gamepad submenu surface').toBe(GAMEPAD_PRESENTATION.submenuSurface);
+  expect(gamepad.renderedPointerType, 'Pixel gamepad pointer type').toBe(GAMEPAD_INTERACTION.pointerType);
+  expect(gamepad.renderedRowActivation, 'Pixel gamepad row activation').toBe(GAMEPAD_INTERACTION.rowActivation);
 });
 
 test('mobile portrait editor shells keep bottom-first menus and avoid desktop chrome', async ({ page }) => {

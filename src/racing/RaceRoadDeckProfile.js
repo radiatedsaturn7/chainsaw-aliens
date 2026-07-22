@@ -15,7 +15,7 @@ export function buildRaceRoadbedProfile({
   fillAllowance = 0.18,
   adapter = {}
 } = {}) {
-  const effectiveStep = clamp(Number(step) || 2.5, 1.25, 5);
+  const effectiveStep = clamp(Number(step) || 2.5, 1.25, 16);
   const sourceSamples = Array.isArray(samples) ? samples : null;
   const effectiveRouteLength = Math.max(
     1,

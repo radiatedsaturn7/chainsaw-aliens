@@ -1220,6 +1220,20 @@ test('MIDI placement duration remembers resized note length until selector chang
   assert.equal(resizeBody.includes('this.defaultNoteDurationTicks = Math.max(1, first.durationTicks);'), true);
 });
 
+test('MIDI desktop left panel exposes direct note length, loop bars, and tempo controls', () => {
+  const drawBody = midiMethodBody('drawDesktopTrackQuickActions', 'drawDesktopTransportPanel');
+  const pointerBody = midiMethodBody('handlePointerDown', 'handlePointerMove');
+
+  assert.equal(drawBody.includes('this.bounds.noteLength'), true);
+  assert.equal(drawBody.includes('this.bounds.barsMinus'), true);
+  assert.equal(drawBody.includes('this.bounds.barsPlus'), true);
+  assert.equal(drawBody.includes('this.bounds.tempoDown'), true);
+  assert.equal(drawBody.includes('this.bounds.tempoButton'), true);
+  assert.equal(drawBody.includes('this.bounds.tempoUp'), true);
+  assert.equal(pointerBody.includes('this.setTempo((this.song?.tempo || 120) - 1);'), true);
+  assert.equal(pointerBody.includes('this.setTempo((this.song?.tempo || 120) + 1);'), true);
+});
+
 test('MIDI resize snaps note length relative to the resized note start', () => {
   const resizeBody = midiMethodBody('resizeSelectionTo', 'resizeSelectedNotesBy');
   const controllerBody = midiMethodBody('resizeSelectedNotesBy', 'openSelectionMenu');

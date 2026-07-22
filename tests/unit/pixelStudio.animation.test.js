@@ -48,6 +48,24 @@ const makeFrame = (pixels, durationMs) => {
   return createFrame([layer], durationMs);
 };
 
+const makePixelStudioCropHarness = (width, height, layer) => {
+  const editor = Object.create(PixelStudio.prototype);
+  editor.canvasState = {
+    width,
+    height,
+    layers: [layer],
+    activeLayerIndex: 0
+  };
+  editor.animation = {
+    frames: [createFrame([layer], 120)],
+    currentFrameIndex: 0
+  };
+  editor.artSizeDraft = { width, height };
+  editor.selection = { active: false, bounds: null };
+  editor.syncTileData = () => {};
+  return editor;
+};
+
 test('animated GIF export writes multiple frames with frame delays', async () => {
   const frames = [
     makeFrame([0xff0000ff, 0x00000000], 120),
@@ -76,6 +94,103 @@ test('animated GIF export writes a valid single frame GIF', async () => {
   assert.equal(countByte(bytes, 0x2c), 1);
   assert.deepEqual(collectGifDelays(bytes), [2]);
   assert.equal(bytes[bytes.length - 1], 0x3b);
+});
+
+test('Pixel Studio crop defaults to visible opaque bounds and supports uneven edges', () => {
+  const layer = createLayer(6, 5, 'Layer');
+  layer.pixels[2 + 1 * 6] = 0xff0000ff;
+  layer.pixels[4 + 3 * 6] = 0xff00ff00;
+  const editor = makePixelStudioCropHarness(6, 5, layer);
+
+  assert.deepEqual(editor.getDefaultCropEdges(), { left: 2, top: 1, right: 1, bottom: 1 });
+
+  editor.cropCanvasEdges(editor.getDefaultCropEdges());
+
+  assert.equal(editor.canvasState.width, 3);
+  assert.equal(editor.canvasState.height, 3);
+  assert.equal(editor.animation.frames[0].layers[0].pixels[0], 0xff0000ff);
+  assert.equal(editor.animation.frames[0].layers[0].pixels[2 + 2 * 3], 0xff00ff00);
+});
+
+test('Pixel Studio crop defaults to active selection bounds when selected', () => {
+  const layer = createLayer(8, 6, 'Layer');
+  layer.pixels[1 + 1 * 8] = 0xff0000ff;
+  layer.pixels[6 + 5 * 8] = 0xff00ff00;
+  const editor = makePixelStudioCropHarness(8, 6, layer);
+  editor.selection.active = true;
+  editor.selection.bounds = { x: 2, y: 1, w: 4, h: 3 };
+
+  assert.deepEqual(editor.getDefaultCropEdges(), { left: 2, top: 1, right: 2, bottom: 2 });
+});
+
+test('Pixel Studio selection crop discards pixels outside the selected canvas area', () => {
+  const editor = makePixelStudioCropHarness(6, 5, createLayer(6, 5, 'Layer'));
+  const layer = editor.animation.frames[0].layers[0];
+  layer.pixels[2 + 1 * 6] = 0xff0000ff;
+  layer.pixels[4 + 3 * 6] = 0xff00ff00;
+  layer.pixels[1 + 4 * 6] = 0xff000000;
+  const mask = new Uint8Array(6 * 5);
+  mask[2 + 1 * 6] = 1;
+  mask[4 + 3 * 6] = 1;
+  editor.selection.active = true;
+  editor.selection.mask = mask;
+  editor.selection.bounds = { x: 2, y: 1, w: 3, h: 3 };
+
+  editor.cropCanvasEdges(editor.getDefaultCropEdges());
+
+  const cropped = editor.animation.frames[0].layers[0].pixels;
+  assert.equal(editor.canvasState.width, 3);
+  assert.equal(editor.canvasState.height, 3);
+  assert.equal(cropped[0], 0xff0000ff);
+  assert.equal(cropped[2 + 2 * 3], 0xff00ff00);
+  assert.equal(Array.from(cropped).includes(0xff000000), false);
+});
+
+test('Pixel Studio art serialization clamps layer pixels to current canvas bounds', () => {
+  const layer = createLayer(3, 3, 'Layer');
+  layer.pixels = { 0: 0xff0000ff, 20: 0xff00ff00 };
+  const editor = makePixelStudioCropHarness(3, 3, layer);
+
+  const doc = editor.serializeCurrentAnimationAsArtDocument();
+
+  assert.equal(doc.width, 3);
+  assert.equal(doc.height, 3);
+  assert.equal(doc.frames[0].length, 9);
+  assert.equal(doc.editor.frames[0].layers[0].pixels.length, 9);
+  assert.equal(doc.frames[0].includes('#00ff00'), false);
+});
+
+test('Pixel Studio art serialization preserves low-alpha pixels', () => {
+  const layer = createLayer(2, 1, 'Layer');
+  layer.pixels[0] = 0x20000000;
+  layer.pixels[1] = 0xff336699;
+  const editor = makePixelStudioCropHarness(2, 1, layer);
+
+  const doc = editor.serializeCurrentAnimationAsArtDocument();
+
+  assert.equal(doc.frames[0][0], '#00000020');
+  assert.equal(doc.frames[0][1], '#996633');
+});
+
+test('Pixel Studio art loading restores 8-digit alpha pixels', () => {
+  const editor = makePixelStudioCropHarness(1, 1, createLayer(1, 1, 'Layer'));
+  editor.tileEditSession = false;
+  editor.forceArtDocumentSave = true;
+  editor.boneEditor = {};
+  editor.resetLoadedBoneEditorState = () => {};
+  editor.ensureBoneNodeSelection = () => {};
+  editor.zoomToFitCanvas = () => {};
+  editor.clearSelection = () => {};
+
+  editor.loadAnimationArtDocument({
+    kind: 'actor-state-animation',
+    width: 1,
+    height: 1,
+    frames: [['#01020304']],
+    fps: 8
+  });
+
+  assert.equal(editor.animation.frames[0].layers[0].pixels[0], 0x04030201);
 });
 
 test('animated GIF export writes full-size large frames', async () => {

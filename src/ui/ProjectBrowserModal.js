@@ -17,12 +17,14 @@ import { listBuiltInActorBrowserEntries } from '../content/builtinActorOverrides
 import { hydrateServerStorage } from './serverStorage.js';
 import { fileTypeBadge } from './uiSuite.js';
 
-const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors', sfx: 'SFX', cutscenes: 'Cutscenes', races: 'Races' };
-const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races'];
+const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors', sfx: 'SFX', cutscenes: 'Cutscenes', races: 'Races', cars: 'Cars', doodads: 'Doodads' };
+const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'doodads'];
 const PROJECT_BROWSER_SORTS = {
   modified: { label: 'Modified', direction: 'desc' },
   name: { label: 'Name', direction: 'asc' }
 };
+const PROJECT_BROWSER_PREVIEW_CONCURRENCY = 2;
+const PROJECT_BROWSER_PREVIEW_DELAY_MS = 40;
 let activePreviewTrackId = null;
 
 function formatDate(ts) {
@@ -268,6 +270,8 @@ export function openProjectBrowser({
     const actorPreviewCache = new Map();
     const previewTimers = new Set();
     const previewPending = new Set();
+    const previewQueue = [];
+    let activePreviewLoads = 0;
 
     const overlay = document.createElement('div');
     overlay.className = 'project-browser-overlay';
@@ -376,6 +380,7 @@ export function openProjectBrowser({
         previewTimers.forEach((timer) => clearInterval(timer));
         previewTimers.clear();
         previewPending.clear();
+        previewQueue.length = 0;
         overlay.remove();
       } finally {
         body.style.overflow = previousOverflow;
@@ -434,14 +439,14 @@ export function openProjectBrowser({
       openingFileName = name;
       openError = '';
       refresh();
-      let payload = loadProjectFile(folder, name);
+      let payload = null;
+      try {
+        payload = await hydrateProjectFilePayload(folder, name);
+      } catch (error) {
+        openError = String(error?.message || error || 'Could not load file');
+      }
       if (!payload?.data) {
-        try {
-          payload = await hydrateProjectFilePayload(folder, name);
-        } catch (error) {
-          openError = String(error?.message || error || 'Could not load file');
-        }
-        if (!payload?.data) payload = loadProjectFile(folder, name);
+        payload = loadProjectFile(folder, name);
       }
       openingFileName = null;
       if (!payload?.data) {
@@ -549,6 +554,7 @@ export function openProjectBrowser({
       entries.forEach((entry) => {
         const row = document.createElement('div');
         row.className = 'project-browser-row';
+        row.dataset.name = entry.name;
 
         if (folder === 'art' || folder === 'actors') {
           const preview = document.createElement('div');
@@ -786,12 +792,13 @@ export function openProjectBrowser({
       }
     }
 
-    function schedulePreview(folder, name, preview) {
-      const key = `${folder}:${name}`;
-      if (previewPending.has(key)) return;
-      previewPending.add(key);
-      const timer = setTimeout(async () => {
-        previewTimers.delete(timer);
+    function runNextPreview() {
+      if (activePreviewLoads >= PROJECT_BROWSER_PREVIEW_CONCURRENCY) return;
+      const job = previewQueue.shift();
+      if (!job) return;
+      activePreviewLoads += 1;
+      const { folder, name, preview, key } = job;
+      void (async () => {
         try {
           if (!preview.isConnected) return;
           const payload = await hydrateProjectFilePayload(folder, name);
@@ -809,8 +816,26 @@ export function openProjectBrowser({
           if (preview.isConnected) preview.textContent = '∅';
         } finally {
           previewPending.delete(key);
+          activePreviewLoads = Math.max(0, activePreviewLoads - 1);
+          runNextPreview();
         }
-      }, 0);
+      })();
+      runNextPreview();
+    }
+
+    function schedulePreview(folder, name, preview) {
+      const key = `${folder}:${name}`;
+      if (previewPending.has(key)) return;
+      previewPending.add(key);
+      const timer = setTimeout(() => {
+        previewTimers.delete(timer);
+        if (!preview.isConnected) {
+          previewPending.delete(key);
+          return;
+        }
+        previewQueue.push({ folder, name, preview, key });
+        runNextPreview();
+      }, PROJECT_BROWSER_PREVIEW_DELAY_MS);
       previewTimers.add(timer);
     }
 
