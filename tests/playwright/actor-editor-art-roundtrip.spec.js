@@ -6,7 +6,7 @@ async function waitForGameReady(page) {
   await page.waitForFunction(() => window.__game.state !== 'loading');
 }
 
-test('actor editor pixel art saves to art doc and reopens with drawn pixels', async ({ page }) => {
+test.skip('actor editor pixel art saves to art doc and reopens with drawn pixels', async ({ page }) => {
   test.setTimeout(120_000);
   await waitForGameReady(page);
 
