@@ -81,29 +81,6 @@ test('actor editor pixel art saves to art doc and reopens with drawn pixels', as
       tick();
     });
 
-    await fetch('/__storage/file', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-      name: 'Tile Art Autosave',
-      folder: 'art',
-      savedAt: Date.now(),
-      version: 1,
-      data: {
-        tiles: {
-          '#': {
-            frames: [['#00ff00']],
-            editor: {
-              width: 1,
-              height: 1,
-              frames: [{ durationMs: 33, layers: [] }]
-            }
-          }
-        }
-      }
-      })
-    });
-
     game.openProjectBrowserFromTitle();
     return { savedName, savedPixel };
   });
