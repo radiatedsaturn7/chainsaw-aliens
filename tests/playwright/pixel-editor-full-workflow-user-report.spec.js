@@ -39,7 +39,7 @@ test('reported workflow: import -> save as -> exit -> project browser open saved
   });
 
   await page.getByRole('button', { name: 'Art' }).click();
-  await page.locator('.project-browser-row', { hasText: 'black' }).getByRole('button', { name: 'Open' }).click();
+  await page.locator('.project-browser-row[data-name="black"]').getByRole('button', { name: 'Open' }).click();
 
   await page.waitForFunction(() => window.__game.state === 'pixel-editor');
   const docName = await page.evaluate(() => window.__game.pixelStudio.currentDocumentRef?.name || null);

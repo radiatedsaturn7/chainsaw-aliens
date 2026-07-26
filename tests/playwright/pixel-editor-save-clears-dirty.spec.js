@@ -37,5 +37,5 @@ test('saving imported art clears dirty state and is listed in art browser', asyn
 
   await page.evaluate(() => window.__game.openProjectBrowserFromTitle());
   await page.getByRole('button', { name: 'Art' }).click();
-  await expect(page.locator('.project-browser-row', { hasText: 'black' })).toBeVisible();
+  await expect(page.locator('.project-browser-row[data-name="black"]')).toBeVisible();
 });

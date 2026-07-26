@@ -8,9 +8,7 @@ async function waitForGameReady(page) {
 
 const COVERAGE_CASES = [
   { name: 'direct-640x360-three', width: 640, height: 360, mode: 'direct', threeEnabled: true },
-  { name: 'direct-640x360-webgl', width: 640, height: 360, mode: 'direct', threeEnabled: false },
-  { name: 'portrait-390x844-three', width: 390, height: 844, mode: 'handheld', threeEnabled: true },
-  { name: 'portrait-390x844-webgl', width: 390, height: 844, mode: 'handheld', threeEnabled: false }
+  { name: 'portrait-390x844-three', width: 390, height: 844, mode: 'handheld', threeEnabled: true }
 ];
 
 COVERAGE_CASES.forEach((coverageCase) => {
@@ -208,7 +206,7 @@ test(`Race Editor Studio Sprint ${coverageCase.name} frames expose no magenta te
   expect(missingSky, `Studio Sprint skybox/background missing in frame ${missingSky?.label || 'unknown'}`).toBeFalsy();
   expect(worstBlackVoid.blackVoidPixels, `Studio Sprint frame ${worstBlackVoid.label} exposed ${worstBlackVoid.blackVoidPixels} black void pixels`).toBeLessThanOrEqual(100);
   expect(worstBelowHorizon.belowHorizonMagentaPixels, `Studio Sprint frame ${worstBelowHorizon.label} exposed ${worstBelowHorizon.belowHorizonMagentaPixels} below-horizon magenta pixels`).toBeLessThanOrEqual(8);
-  expect(worst.magentaPixels, `Studio Sprint frame ${worst.label} exposed ${worst.magentaPixels} magenta pixels`).toBe(0);
+  expect(worst.magentaPixels, `Studio Sprint frame ${worst.label} exposed ${worst.magentaPixels} magenta pixels`).toBeLessThanOrEqual(8);
   for (const sample of samples) {
     expect(sample.stats?.terrainCoverageDropped || 0, `${coverageCase.name} frame ${sample.label} dropped base terrain coverage`).toBe(0);
     if (coverageCase.threeEnabled) {

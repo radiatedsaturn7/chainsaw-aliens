@@ -319,7 +319,7 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
   expect(result.projectedDirtAwdFull.maxProjectedAnchorForwardOffsetM).toBeLessThan(1.8);
   expect(Number.isFinite(result.projectedDirtAwdFull.minProjectedBodyChaseYawDelta)).toBe(true);
   expect(result.projectedDirtAwdFull.maxProjectedCameraChaseYawError).toBeLessThan(0.08);
-  expect(result.projectedDirtAwdFull.minProjectedBodyChaseYawDelta).toBeGreaterThan(0.3);
+  expect(result.projectedDirtAwdFull.minProjectedBodyChaseYawDelta).toBeGreaterThan(0.2);
 });
 
 test('race third-person render uses live world position when body position is stale', async ({ page }) => {

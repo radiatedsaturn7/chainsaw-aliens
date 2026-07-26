@@ -27,5 +27,5 @@ test('open waits for pending save-as completion to avoid dirty prompt race', asy
   await page.getByRole('button', { name: 'Save' }).click();
   await page.evaluate(() => window.__game.pixelStudio.loadArtDocument());
 
-  await expect(page.locator('.project-browser-row', { hasText: 'black' })).toBeVisible();
+  await expect(page.locator('.project-browser-row[data-name="black"]')).toBeVisible();
 });
