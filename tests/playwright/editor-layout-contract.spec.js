@@ -35,17 +35,6 @@ async function configureViewport(page, { width = 1280, height = 720, isMobile = 
     });
     game.updateControlScheme();
   }, { width, height, mobile: isMobile });
-  await flushEditorLayout(page);
-}
-
-async function flushEditorLayout(page) {
-  await page.evaluate(() => {
-    const game = window.__game;
-    game.updateControlScheme?.();
-    game.syncMobileControlsViewport?.();
-    game._drawByState?.();
-  });
-  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 }
 
 async function openEditor(page, editorId) {
@@ -76,7 +65,7 @@ async function openEditor(page, editorId) {
     car: 'car-editor'
   }[editorId];
   await page.waitForFunction((state) => window.__game.state === state, expectedState);
-  await flushEditorLayout(page);
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 }
 
 test('desktop editor shells use desktop chrome instead of mobile landscape controls', async ({ page }) => {
