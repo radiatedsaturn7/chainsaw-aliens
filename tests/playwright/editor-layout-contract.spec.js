@@ -44,7 +44,6 @@ async function flushEditorLayout(page) {
     game.updateControlScheme?.();
     game.syncMobileControlsViewport?.();
     game._drawByState?.();
-    game.actorEditor?.render?.();
   });
   await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 }

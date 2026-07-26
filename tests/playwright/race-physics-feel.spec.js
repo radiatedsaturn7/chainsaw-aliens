@@ -91,6 +91,7 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
         canvas.height = 360;
       }
       const ctx = canvas?.getContext?.('2d') || null;
+      const session = editor.playtestSession;
       for (let frame = 0; frame < frames; frame += 1) {
         const frameSteer = Number.isFinite(Number(switchSteerFrame)) && frame >= Number(switchSteerFrame)
           ? -steerAxis
@@ -104,7 +105,6 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
         editor.raceInput.throttleAxis = throttleAxis;
         editor.raceInput.analogThrottleActive = throttleAxis < 0.95;
         editor.updatePlaytest(1 / 60);
-        const session = editor.playtestSession;
         const engineDrive = session.tireSlip?.engineDrive || {};
         maxWheelSpin = Math.max(maxWheelSpin, Number(session.tireSlip?.wheelSpin || 0));
         maxBodyTravelSlip = Math.max(maxBodyTravelSlip, Math.abs(normalizeAngle(session.carYaw - session.velocityYaw)));
@@ -165,7 +165,7 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
               maxProjectedCameraChaseYawError,
               Math.abs(normalizeAngle(chaseYaw - Number(renderCamera.cameraYaw || 0)))
             );
-            if (bodyTravelSlipYaw > 0.8) {
+            if (bodyTravelSlipYaw > 0.5) {
               minProjectedBodyChaseYawDelta = Math.min(
                 minProjectedBodyChaseYawDelta,
                 Math.abs(normalizeAngle(chaseYaw - Number(session.carYaw || 0)))
@@ -188,7 +188,7 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
             maxProjectedCameraChaseYawError,
             Math.abs(normalizeAngle(chaseYaw - Number(renderCamera.cameraYaw || 0)))
           );
-          if (bodyTravelSlipYaw > 0.8) {
+          if (bodyTravelSlipYaw > 0.5) {
             minProjectedBodyChaseYawDelta = Math.min(
               minProjectedBodyChaseYawDelta,
               Math.abs(normalizeAngle(chaseYaw - Number(session.carYaw || 0)))
@@ -196,7 +196,6 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
           }
         }
       }
-      const session = editor.playtestSession;
       return {
         surface,
         drivetrain,
@@ -260,6 +259,7 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
     };
   });
 
+  console.log(`race-physics-feel ${JSON.stringify(result)}`);
   expect(result.stockDirtPartial.maxWheelSpin).toBeLessThan(0.08);
   expect(result.stockDirtPartial.maxDrivenWheelLongitudinalUsage).toBeLessThan(1);
   expect(result.stockDirtPartial.speedMps).toBeGreaterThan(result.overpoweredDirtPartial.speedMps * 2);
@@ -416,6 +416,10 @@ test('race third-person render uses live world position when body position is st
     const originalDebugOverlay = editor.drawRaceGeometricDebugOverlay;
     const originalBillboardLayers = editor.drawRaceCarBillboardLayers;
     try {
+      editor.lastRaceRenderStats = {
+        ...(editor.lastRaceRenderStats || {}),
+        threeProceduralCar: false
+      };
       editor.drawRaceProjectedProceduralCar = () => false;
       editor.drawRaceGeometricDebugOverlay = () => false;
       editor.drawRaceCarBillboardLayers = (_ctx, args) => {
