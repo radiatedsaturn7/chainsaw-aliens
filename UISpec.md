@@ -169,7 +169,7 @@ Shared implementation helpers:
 - Track: draw road, add/move/remove nodes, remove edges, assign edge tile, asphalt, dirt, gravel, snow, wet asphalt, segment width, bumpiness, and snow condition. Circuit versus point-to-point behavior is inferred from whether the route endpoints connect; there must not be explicit Circuit/Destination menu toggles.
 - Ground: selected ground tile, paint ground, paint elevation, raise/lower, and brush size.
 - Sprites: add, move, delete, size, and behavior for vertical scenery sprites.
-- Settings: road width, AI racer count, weather clear/rain/storm/snow, finish behavior, and Debug.
+- Settings: road width, AI racer count, weather clear/rain/storm/snow, and finish behavior.
 - Debug: Physics Surface View is a session-only driving view of the exact triangles and wheel contacts used by vehicle physics. It is available from the editor Settings drawer and the playtest pause menu without adding a portrait root.
 - Top Play/Pause: Playtest opens a car picker, then launches the race in the handheld race playtest surface. The physics debug view suppresses authored road, terrain, scenery, and effects while retaining driving controls, HUD, and pause access.
 - Playtest pause uses the same scaled in-game text menu as Level Editor playtest. Race-specific Settings and Debug rows remain available, but editor button chrome must never render inside the pause surface.

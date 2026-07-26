@@ -246,7 +246,7 @@ export const EDITOR_MENU_SPECS = {
       { id: 'preview', label: 'Preview' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'load-preset', 'export', 'import', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo', 'copy-state', 'paste-state', 'duplicate-state', 'delete-state']),
       view: section('view', 'View', ['zoom-fit']),
       settings: section('settings', 'Settings', ['actor-settings', 'metadata', 'aggression', 'loot-rules']),
@@ -299,7 +299,7 @@ export const EDITOR_MENU_SPECS = {
       { id: 'settings', label: 'Settings' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'load-preset', 'export', 'import', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo', 'copy', 'cut', 'paste', 'delete']),
       view: section('view', 'View', ['zoom-fit', 'loop']),
       timeline: section('timeline', 'Timeline', ['play', 'stop', 'start', 'end']),
@@ -401,16 +401,16 @@ export const EDITOR_MENU_SPECS = {
     portraitRoot: [
       { id: 'file', label: 'File' },
       { id: 'art', label: 'Art' },
-      { id: 'drivetrain', label: 'Tools' },
+      { id: 'drivetrain', label: 'Drive' },
       { id: 'tuning', label: 'Tune' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'load-preset', 'export', 'import', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
       art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-camera-settings']),
-      drivetrain: section('drivetrain', 'Tools', ['summary-sheet']),
-      tuning: section('tuning', 'Tuning', ['transmission-type', 'power-curve', 'tires', 'tire-pressure', 'brake-balance', 'gearing', 'diff', 'aero-front', 'spring-front', 'damping-front', 'engine-sfx', 'weight-balance']),
+      drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sound-next', 'power-curve', 'weight-balance']),
+      tuning: section('tuning', 'Tuning', ['default-tires', 'tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel']),
       aero: section('aero', 'Aero', ['aero-front', 'aero-rear']),
       suspension: section('suspension', 'Suspension', ['spring-front', 'spring-rear', 'damping-front', 'damping-rear', 'antiroll-front', 'antiroll-rear']),
       drive: section('drive', 'Drive', ['test-drive'])

@@ -7714,7 +7714,7 @@ export default class RaceEditor {
       this.gamepadSubmenuOpen = false;
       return;
     }
-    if (!this.mobileRootOpen && !(this.mode === 'car' && this.activeRootId === 'tuning')) this.activeRootId = 'file';
+    if (!this.mobileRootOpen) this.activeRootId = 'file';
     this.mobileRootOpen = !this.mobileRootOpen;
   }
 
