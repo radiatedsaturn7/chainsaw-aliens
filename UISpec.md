@@ -48,7 +48,7 @@ Shared implementation helpers:
 - Landscape touch shell surfaces come from `LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT`. Root menu access starts from a fixed vertical rail on the left. Dense editors should use the shared 84px compact command rail with `Menu`, `Undo`, `Redo`, and one contextual quick action; this rail is not scrollable. `Menu` opens the full root drawer. The root drawer must originate from the compact left rail so it feels like an expanded main menu, show all categories in a grid when they fit, remain gesture-scrollable when they do not, and stay open while category picks switch the active section. The shared plan exposes this as `modeSurfaces.compactCommandRail: left-rail`, `modeSurfaces.rootDrawer: left-overlay-drawer`, `rootDrawerOverlayOrigin: left`, and `surfaceRoles.persistentNavigationActionLimit: COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT`.
 - Active submenu appears in a drawer/rail on the right. Opening the left root drawer must not hide or steal this right submenu rail; landscape touch should support roots on the left and the active submenu/context drawer on the right at the same time. The shared plan exposes this as `modeSurfaces.rootDrawerKeepsSubmenuVisible: true`.
 - The center remains the canvas, stage, waveform, timeline, or grid work surface.
-- The bottom rail is the persistent tool/options surface for zoom, ribbons, palette/context controls, transport, or quick actions when those controls should stay visible while the right submenu opens and closes. Pixel landscape should keep zoom in this bottom rail beside palette/layer/frame controls instead of reintroducing a separate top zoom strip.
+- The bottom rail is the persistent tool/options surface for ribbons, palette/context controls, transport, or quick actions when those controls should stay visible while the right submenu opens and closes. Pixel landscape keeps palette/layer/frame controls in this bottom rail and places zoom below the right submenu, not inside the bottom rail or a separate top strip.
 - Editors may opt into a shared top zoom strip when a bottom rail is already dedicated to persistent tool/palette controls and an over-canvas zoom chip would collide with the work surface.
 - Do not leave editor-specific landscape controls floating over the work surface when they can live in the shared bottom rail. If an editor omits the bottom rail, that should be because its active workflow has no persistent landscape control surface for the current mode.
 - Full drawers, sheets, right rails, bottom rails, and tool grids must scroll by gesture drag when content overflows. The compact four-button left command rail stays fixed.
@@ -129,7 +129,7 @@ Shared implementation helpers:
 
 ### MIDI Editor
 
-- Root: File, Edit, View, Grid, Song, Tracks/Mixer, Record, Pedals, Settings.
+- Root: File, Edit, View, Grid, Song, Tracks/Mixer, Record, Pedals.
 - Edit: undo, redo, copy, cut, paste, select all, delete.
 - Grid: direct note placement/erase on the grid, quantize, note length.
 - Song: play, stop, loop, tempo.
@@ -139,7 +139,7 @@ Shared implementation helpers:
 
 ### SFX Editor
 
-- Root: File, Edit, View, Timeline, Layers, Envelopes, Generate, Tools, Settings.
+- Root: File, Edit, View, Timeline, Layers, Envelopes, Generate, Tools.
 - Edit: undo, redo, copy, cut, paste, delete.
 - Timeline: play, stop, start, end.
 - Layers: add, duplicate, delete.
@@ -149,7 +149,7 @@ Shared implementation helpers:
 
 ### Cutscene Editor
 
-- Root: File, Edit, View, Add, Timeline, Clips, Keyframes, Stage, Audio, Settings.
+- Root: File, Edit, View, Add, Timeline, Clips, Keyframes, Stage, Audio.
 - Edit: undo, redo, copy, cut, paste, delete.
 - Add: art, actor, text, color board, music, SFX, effect, pause.
 - View: canvas, split, timeline, timeline zoom out, timeline zoom in, fit timeline.
@@ -170,20 +170,36 @@ Shared implementation helpers:
 - Ground: selected ground tile, paint ground, paint elevation, raise/lower, and brush size.
 - Sprites: add, move, delete, size, and behavior for vertical scenery sprites.
 - Settings: road width, AI racer count, weather clear/rain/storm/snow, and finish behavior.
-- Top Play/Pause: Playtest opens a car picker, then launches the race in the handheld race playtest surface. Runtime diagnostics and AI checks stay in code/tests rather than visible editor menu buttons.
+- Debug: Physics Surface View is a session-only driving view of the exact triangles and wheel contacts used by vehicle physics. It is available from the editor Settings drawer and the playtest pause menu without adding a portrait root.
+- Top Play/Pause: Playtest opens a car picker, then launches the race in the handheld race playtest surface. The physics debug view suppresses authored road, terrain, scenery, and effects while retaining driving controls, HUD, and pause access.
+- Playtest pause uses the same scaled in-game text menu as Level Editor playtest. Race-specific Settings and Debug rows remain available, but editor button chrome must never render inside the pause surface.
 - Desktop left panel should show selected race, inferred route shape, segment count, weather, and active tool while top drawers own commands.
 
 ### Car Editor
 
 - Root: File, Edit, View, Art, Drivetrain, Tuning, Aero, Suspension, Drive.
 - Edit: undo, redo.
-- Art: shell frame assignment, previous/next shell frame, reverse frame, tire treads, add-ons.
+- Art opens a shared three-row category menu: Exterior, Interior, and Camera Settings. Exterior owns shell frame assignment, previous/next shell frame, reverse frame, tire treads, add-ons, and per-component Body/Tires/Brakes/Shadow size and position controls. Each exterior component keeps artwork reset separate from a lower-right Reset Size action that restores `1.00x` scale and zero position offsets.
+- Overridden body artwork is a camera-facing billboard whose existing 50%-across/58%-down pivot is attached to the live physical rear-axle midpoint, located half the authored wheelbase behind the physics chassis center. Brake-light and add-on art share that anchor; tires remain on their physical wheel centers, the shadow remains on the ground footprint, and collision stays centered on the physics chassis.
+- Interior owns independent Dashboard and Steering Wheel artwork overrides with size, position, clear, Reset Size, and Reset Position controls. Either missing override falls back independently to the procedural tinted dashboard or steering wheel; authored steering-wheel art rotates with steering input.
+- Camera Settings saves Dynamic or Fixed Rear tracking per car. Dynamic retains travel/drift-aware chase yaw. Fixed Rear uses the physical rear axle as an exact, non-lagging chase origin, permits a temporary manual-look offset, and recenters behind the car when look input is released. When overridden body and tire art are both active, tire X positions remain rigidly aligned to that rear-axle body rig while physical suspension and terrain contact continue to control tire Y positions.
 - Drivetrain: nested drivetrain menu, engine sound, power curve, weight/balance.
 - Tuning: default tires, tire pressure, tire size, brake balance, final drive, differential accel/decel.
 - Aero: front and rear aero tuning through slider-style controls.
 - Suspension: front/rear springs, damping, and anti-roll through slider-style controls.
 - Drive: Playtest opens a car picker and starts the same handheld race playtest surface.
+- Playtest pause shares the Level Editor in-game text-menu scale, layout, selection treatment, and hit-target geometry through the common Race/Car playtest renderer.
 - Desktop left panel should show selected car, drivetrain, power, weight, and active tool while top drawers own commands.
+
+### Doodad Editor
+
+- Root: File, Edit, View, Artwork, Size, Hitbox, Collision, Preview.
+- Edit: undo, redo.
+- Artwork: pick art.
+- Size: width, height, plant/ground offset, and weight adjustments.
+- Hitbox: hitbox width and height adjustments.
+- Collision: default and speed-threshold behavior controls.
+- Desktop left panel should keep active doodad artwork, size, hitbox, and collision settings visible while top drawers own document and command actions.
 
 ## Gesture And Pointer Rules
 

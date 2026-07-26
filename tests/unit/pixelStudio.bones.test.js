@@ -7433,6 +7433,95 @@ test('mobile portrait drawer closes and still routes bone canvas taps', () => {
   assert.deepEqual(calls, ['ensure-bind-tool', ['bone', { col: 4, row: 5 }], 'cancel-long-press']);
 });
 
+test('bind mode canvas selection ignores grouped stale canvas ui hits in portrait and landscape', () => {
+  const cases = [
+    { mode: 'portrait', mobileDrawer: null, mobileDrawerBounds: null },
+    { mode: 'landscape-touch', mobileDrawer: 'submenu', mobileDrawerBounds: { x: 240, y: 0, w: 140, h: 390 } }
+  ];
+
+  cases.forEach(({ mode, mobileDrawer, mobileDrawerBounds }) => {
+    const calls = [];
+    const fakeEditor = {
+      activeViewportMode: mode,
+      leftPanelTab: 'bones',
+      mobileDrawer,
+      mobileDrawerBounds,
+      canvasBounds: { x: 20, y: 20, w: 200, h: 200, cellSize: 10, mainX: 20, mainY: 20 },
+      canvasViewportBounds: { x: 20, y: 20, w: 200, h: 200 },
+      cursor: {},
+      activeToolId: TOOL_IDS.PENCIL,
+      boneEditor: { mode: 'bind', drag: null, pendingBindNodeTap: null },
+      toolOptions: { wrapDraw: false },
+      panJoystick: { center: { x: -100, y: -100 }, radius: 1 },
+      view: { panX: 0, panY: 0 },
+      viewportController: {
+        beginPan() {
+          throw new Error(`${mode} bind selection should not pan`);
+        }
+      },
+      uiButtons: [{
+        bounds: { x: 20, y: 20, w: 200, h: 200 },
+        group: 'bone-actions',
+        onClick: () => calls.push('stale-canvas-ui')
+      }],
+      boneUiRegions: [],
+      isMobileLayout() {
+        return true;
+      },
+      isPointInBounds: PixelStudio.prototype.isPointInBounds,
+      isPointInCircle() {
+        return false;
+      },
+      hitTestUiButton: PixelStudio.prototype.hitTestUiButton,
+      isCanvasSizedUiHit: PixelStudio.prototype.isCanvasSizedUiHit,
+      isBoneEditorUiHit: PixelStudio.prototype.isBoneEditorUiHit,
+      isBoneEditorPointerUiHit: PixelStudio.prototype.isBoneEditorPointerUiHit,
+      shouldBoneCanvasOwnPointerDown: PixelStudio.prototype.shouldBoneCanvasOwnPointerDown,
+      handlePriorityUiDragHit: PixelStudio.prototype.handlePriorityUiDragHit,
+      handleButtonClick() {
+        calls.push('button-click');
+        return true;
+      },
+      startMenuScrollDrag() {
+        return false;
+      },
+      isBindSelectionTool: PixelStudio.prototype.isBindSelectionTool,
+      setActiveTool(toolId) {
+        this.activeToolId = toolId;
+        calls.push(['set-tool', toolId]);
+      },
+      ensureBindSelectionTool: PixelStudio.prototype.ensureBindSelectionTool,
+      shouldUseUnboundedWrapPointer: PixelStudio.prototype.shouldUseUnboundedWrapPointer,
+      getGridCellFromScreen() {
+        return { col: 4, row: 5 };
+      },
+      getBoneCanvasPointFromScreen(_x, _y, point) {
+        return point;
+      },
+      handleBonePointerDown(point) {
+        calls.push(['bone', point]);
+        return false;
+      },
+      handleToolPointerDown(point) {
+        calls.push(['tool', point, this.activeToolId]);
+      },
+      startLongPress() {},
+      setInputMode(inputMode) {
+        this.inputMode = inputMode;
+      }
+    };
+
+    PixelStudio.prototype.handlePointerDown.call(fakeEditor, { x: 60, y: 70, button: 0, touchCount: 1 });
+
+    assert.equal(fakeEditor.inputMode, 'canvas', mode);
+    assert.deepEqual(calls, [
+      ['set-tool', TOOL_IDS.SELECT_RECT],
+      ['bone', { col: 4, row: 5 }],
+      ['tool', { col: 4, row: 5 }, TOOL_IDS.SELECT_RECT]
+    ], mode);
+  });
+});
+
 test('bone overlay source uses yellow for selected nodes and only the selected edge', () => {
   const overlayStart = pixelStudioSource.indexOf('drawBoneOverlay(ctx');
   const overlayEnd = pixelStudioSource.indexOf('async choosePixelExportFormat()');
@@ -7581,7 +7670,7 @@ test('portrait bone editor uses one root action row with focused submenus', () =
   assert.equal(groups.bind.actionIds.includes('bind-add'), true);
   assert.equal(groups.bind.actionIds.includes('selection-clipboard'), false);
   assert.equal(groups.bind.actionIds.includes('selection-transform-tools'), false);
-  assert.deepEqual(groups.pose.actionIds, ['pose-target', 'pose-set', 'pose-reset', 'pose-copy', 'pose-paste', 'pose-delete', 'pose-length']);
+  assert.deepEqual(groups.pose.actionIds, ['pose-set', 'pose-delete', 'pose-reset', 'pose-copy', 'pose-paste', 'pose-cut', 'pose-target', 'pose-length']);
   assert.equal(groups.pose.actionIds.includes('pose-back'), false);
   assert.equal(groups.pose.actionIds.includes('pose-forward'), false);
   assert.equal(groups.pose.actionIds.includes('pose-time'), false);
@@ -7899,7 +7988,7 @@ test('bone transport popover uses an opaque panel with restored full viewport pl
 
   PixelStudio.prototype.drawTransportPopover.call(fakeEditor, ctx);
 
-  assert.equal(fillRects[0].fillStyle, 'rgba(8,10,14,0.98)');
+  assert.equal(fillRects[0].fillStyle, '#080c14');
   assert.ok(fillRects[0].y + fillRects[0].h > fakeEditor.canvasBounds.y + fakeEditor.canvasBounds.h);
   assert.equal(fakeEditor.transportPopoverButtons.length, 6);
   assert.equal(fakeEditor.transportPopoverButtons.some((button) => button.id === 'bone-loop'), true);

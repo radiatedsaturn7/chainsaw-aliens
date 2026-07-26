@@ -75,5 +75,5 @@ test('actor editor animation can import black.png, save as black, preview, and a
   expect(setup.previewUrl).toBeTruthy();
 
   await page.getByRole('button', { name: 'Art' }).click();
-  await expect(page.locator('.project-browser-row', { hasText: 'black' })).toBeVisible();
+  await expect(page.locator('.project-browser-row[data-name="black"]')).toBeVisible();
 });

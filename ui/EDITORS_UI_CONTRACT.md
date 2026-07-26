@@ -2,7 +2,7 @@
 
 Product-level editor menu behavior is specified in `../UISpec.md`. This file is the lower-level shell, layout, spacing, typography, and token contract used by the shared editor UI implementation.
 
-This document defines the shared layout and token contract for **Pixel Editor**, **Tile Editor**, **Level Editor**, **Actor Editor**, **MIDI Editor**, **SFX Editor**, **Cutscene Editor**, **Race Editor**, and **Car Editor**.
+This document defines the shared layout and token contract for **Pixel Editor**, **Tile Editor**, **Level Editor**, **Actor Editor**, **MIDI Editor**, **SFX Editor**, **Cutscene Editor**, **Race Editor**, **Car Editor**, and **Doodad Editor**.
 
 ## 1) Fixed Layout Dimensions
 
@@ -11,6 +11,7 @@ This document defines the shared layout and token contract for **Pixel Editor**,
 - **Top bar height:** `40px`
 - **Status bar height (reserved token):** `20px`
 - **Mobile toolbar height (reserved token):** `72px`
+- **Editor button radius:** shared `8px` radius from `UI_SUITE.spacing.radius` / `--editor-portrait-button-radius`
 
 ## 2) Layout Grid Rules
 
@@ -66,6 +67,7 @@ Desktop-specific shell rules:
 - Shared portrait menu-spec contracts place root menus on the `bottom-rail` and both submenus and settings on the `bottom-sheet`. Top portrait regions are persistent context/status only, not default settings command surfaces.
 - Shared portrait root menus must stay within `PORTRAIT_ROOT_MAX_ITEMS` bottom items; editors consolidate extra workflows into submenus instead of expanding the root rail.
 - Shared portrait action rails must build from `STANDARD_EDITOR_ACTION_RAIL_PREFIX` via `getStandardEditorActionRailIds()`, keeping Menu, Undo, Redo, and one contextual editor command in a consistent four-slot bottom rail.
+- Portrait editor buttons must use the shared RTG Studio chrome primitive for canvas editors and the matching DOM helper for DOM editors so radius, accent strip, gradient fill, text color, and focus outline stay identical across Pixel, Tile, Level, Actor, MIDI, SFX, Cutscene, Race, Car, and Doodad.
 - Shared generic mode plans expose `suppressedModeSurfaces` in every mode so each editor has one authoritative list of chrome from other modes that must not render in the current mode.
 - Shared generic mode plans expose `requiredModeSurfaces` in every mode so each editor has one authoritative list of chrome that must render for that mode, including portrait bottom rails/sheets, landscape left root/right submenu/bottom rail, desktop top menu/dropdown/left inspector/work surface, and gamepad left slide-out surfaces.
 - Shared mode plans expose `surfaceVisibility`, a map from surface id to `required` or `suppressed`, so renderer code can query one mode contract instead of manually searching separate required/suppressed arrays.
@@ -83,7 +85,7 @@ Landscape touch shell rules:
 - `LeftRail` is the persistent fixed compact command rail and maps to `surfaces.compactCommandRail` in the shared landscape shell plan. It is `84px` wide, shows `Menu`, `Undo`, `Redo`, and one contextual quick action, and does not scroll. Shared compact rail actions expose `slot`, `surface: left-rail`, `commandRail: compact-landscape`, `rowActivation: tap-release`, and `gestureScroll: false` so renderers do not treat the fixed rail like a scrollable root drawer.
 - `RootDrawer` is the full root menu opened by `Menu` and maps to `surfaces.rootDrawer`. It originates from the compact left rail as `left-overlay-drawer`, while `RightRail` remains reserved for active submenus and contextual drawers. Root drawers should use an all-visible grid when possible, remain gesture-scrollable when content overflows, and stay open while category picks switch the active section.
 - `RightRail` is the active submenu or settings drawer when a submenu is open. Do not conflate it with `RootDrawer` when an editor needs the main menu to expand from the left rail and submenus/context drawers to remain on the right. Opening `RootDrawer` must keep `RightRail` available for the active submenu; this is exposed as `modeSurfaces.rootDrawerKeepsSubmenuVisible`.
-- `BottomRail` is the persistent tool/options/zoom/ribbon surface and maps to `surfaces.toolOptions`, `surfaces.zoom`, and `surfaces.ribbon` in the shared landscape shell plan. Pixel landscape intentionally draws zoom from its bottom control rail while leaving the shell `surfaces.zoom` null, so the fixed left rail, left-origin root drawer, right submenu rail, and bottom controls do not compete for separate zoom space.
+- `BottomRail` is the persistent tool/options/ribbon surface and maps to `surfaces.toolOptions` and `surfaces.ribbon` in the shared landscape shell plan. Standard touch landscape keeps hot tools in the bottom rail, caps the right submenu to the compact left rail height, and uses a right-side `surfaces.zoom` slot directly below that submenu so zoom remains south of the right menu without competing with bottom controls.
 - `TopRail` is opt-in and maps to `surfaces.topRail`; when present it may own `surfaces.zoom` so zoom controls can stay off both the work surface and a bottom rail already used for tool/palette controls.
 - Shared mode plans expose `modeSurfaces.compactCommandRail`, `modeSurfaces.rootDrawer`, and `surfaceRoles.persistentNavigationActionLimit: COMPACT_LANDSCAPE_COMMAND_RAIL_ACTION_LIMIT` so editors do not treat the left compact rail as a scrollable full root menu.
 - Landscape touch drawers, right rails, bottom rails, and tool grids must remain gesture-scrollable with tap-drag suppression for accidental activation. The compact command rail itself stays fixed.
@@ -137,6 +139,13 @@ Editors should consume only shared color tokens:
 - `--editor-accent`
 - `--editor-accent-2`
 - `--editor-shadow`
+
+### Playtest Pause Surfaces
+
+- Level, Race, and Car editor playtests use the shared in-game text-menu renderer for pause title, row spacing, font scale, selection treatment, footer, and pointer bounds.
+- The menu scales from the gameplay `960x540` reference viewport into the active playtest screen without enlarging beyond the reference metrics.
+- Race and Car may retain editor-specific pause rows and submenus, but their pointer targets are registration-only. Shared editor button chrome must not be painted inside an in-game pause menu.
+- Car Editor Art category selection must use the shared mode command surface: desktop dropdown, portrait bottom sheet, landscape right drawer, or gamepad slide-out. Exterior, Interior, and Camera Settings must not bypass that shared submenu with an editor-specific direct jump.
 
 ## 6) Shared Component Responsibilities
 

@@ -21,6 +21,12 @@ test('project browser version restore requires confirmation and explains backup 
   assert.equal(source.includes('restoreConfirmTarget = version.id'), true);
 });
 
+test('project browser labels saved cars and doodads as first-class folders', () => {
+  assert.equal(source.includes("cars: 'Cars'"), true);
+  assert.equal(source.includes("doodads: 'Doodads'"), true);
+  assert.equal(source.includes("'doodads'"), true);
+});
+
 test('project browser refreshes versions after confirmed restore', () => {
   assert.equal(source.includes('versionEntries = await listProjectFileVersions(folder, name);'), true);
   assert.equal(source.includes('before-version-restore'), false);
@@ -36,10 +42,18 @@ test('project browser open hydrates and does not call onOpen with missing data',
   assert.equal(source.includes('openError = openError || `Could not load ${name}`;'), true);
   assert.equal(source.includes('onOpen?.({ folder, name, payload });'), true);
   assert.equal(source.indexOf('if (!payload?.data)') < source.indexOf('onOpen?.({ folder, name, payload });'), true);
+  const openStart = source.indexOf('async function openFile(folder, name)');
+  const openEnd = source.indexOf('async function openVersions(folder, name)', openStart);
+  const openBody = source.slice(openStart, openEnd);
+  assert.equal(openBody.indexOf('await hydrateProjectFilePayload(folder, name);') < openBody.indexOf('payload = loadProjectFile(folder, name);'), true);
 });
 
 test('project browser defers hydration previews and keeps versions lazy', () => {
   assert.equal(source.includes('function schedulePreview(folder, name, preview)'), true);
+  assert.equal(source.includes('const PROJECT_BROWSER_PREVIEW_CONCURRENCY = 2;'), true);
+  assert.equal(source.includes('const previewQueue = [];'), true);
+  assert.equal(source.includes('function runNextPreview()'), true);
+  assert.equal(source.includes('activePreviewLoads >= PROJECT_BROWSER_PREVIEW_CONCURRENCY'), true);
   assert.equal(source.includes("preview.textContent = '...';"), true);
   assert.equal(source.includes('void openVersions(folder, entry.name);'), true);
   assert.equal(source.includes('versionEntries = await listProjectFileVersions(folder, name);'), true);

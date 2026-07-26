@@ -25,6 +25,8 @@ test('pink solid tile persists in tile editor preview and level editor room acro
         }
       }
     }
+    game.editor.persistAutosave();
+    game.editor.flushPendingAutosave();
     window.__pinkRoomTarget = { x: 10, y: 10 };
     game.player.x = (10.5) * game.world.tileSize;
     game.player.y = (10.5) * game.world.tileSize;

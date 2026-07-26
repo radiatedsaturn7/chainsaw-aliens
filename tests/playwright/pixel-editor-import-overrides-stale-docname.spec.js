@@ -38,5 +38,5 @@ test('import image replaces stale current doc name so Save As targets imported f
 
   await page.evaluate(() => window.__game.openProjectBrowserFromTitle());
   await page.getByRole('button', { name: 'Art' }).click();
-  await expect(page.locator('.project-browser-row', { hasText: 'black' })).toBeVisible();
+  await expect(page.locator('.project-browser-row[data-name="black"]')).toBeVisible();
 });

@@ -17,6 +17,9 @@ If you prefer a local server, use either launcher script:
 
 Then visit `http://localhost:8000/index.html`.
 
+## Merge Checks
+GitHub Actions runs editor UI unit tests and the Playwright suite for PRs to `main` and pushes to `main`. Playwright runs in the matching Docker image and is required before merge. On Android/Termux, rely on the PR run instead of local Playwright execution.
+
 ## Controls
 - Move: **WASD** or **Arrow Keys**
 - Jump: **W** / **Arrow Up** / **Space**

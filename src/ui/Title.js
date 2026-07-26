@@ -26,6 +26,7 @@ export default class Title {
         'tile-editor',
         'race-editor',
         'car-editor',
+        'doodad-editor',
         'actor-editor',
         'back'
       ]
@@ -491,17 +492,19 @@ export default class Title {
             ? 'Race Editor'
             : action === 'car-editor'
               ? 'Car Editor'
-              : action === 'pixel-editor'
-                ? 'Pixel Editor'
-                : action === 'actor-editor'
-                  ? 'Actor Editor'
-                  : action === 'midi-editor'
-                    ? 'MIDI Editor'
-                    : action === 'sfx-editor'
-                      ? 'SFX Editor'
-                      : action === 'cutscene-editor'
-                        ? 'Cutscene Editor'
-                        : 'Back';
+              : action === 'doodad-editor'
+                ? 'Doodad Editor'
+                : action === 'pixel-editor'
+                  ? 'Pixel Editor'
+                  : action === 'actor-editor'
+                    ? 'Actor Editor'
+                    : action === 'midi-editor'
+                      ? 'MIDI Editor'
+                      : action === 'sfx-editor'
+                        ? 'SFX Editor'
+                        : action === 'cutscene-editor'
+                          ? 'Cutscene Editor'
+                          : 'Back';
       const bounds = { x: layout.buttonX, y, w: layout.buttonWidth, h: layout.buttonHeight };
       ctx.font = layout.labelFont;
       this.drawMenuButton(ctx, bounds, label, { selected });

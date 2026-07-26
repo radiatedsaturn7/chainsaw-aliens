@@ -1,3 +1,5 @@
+import { drawInGameTextMenu } from './shared/inGameTextMenu.js';
+
 export default class Pause {
   constructor() {
     this.shake = true;
@@ -48,39 +50,24 @@ export default class Pause {
   }
 
   draw(ctx, width, height, objective, { confirmExit = false } = {}) {
-    ctx.save();
-    ctx.fillStyle = 'rgba(0,0,0,0.7)';
-    ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = '#fff';
-    ctx.font = '22px Courier New';
-    ctx.textAlign = 'center';
-    ctx.fillText('Paused', width / 2, 120);
-    ctx.font = '16px Courier New';
-    ctx.textAlign = 'left';
     const items = this.getItems();
-    const startY = 205;
-    this.itemBounds = [];
-    items.forEach((item, index) => {
-      const y = startY + index * 44;
-      const bounds = { x: width / 2 - 160, y: y - 26, w: 320, h: 34 };
-      this.itemBounds.push({ ...bounds, id: item.id });
-      if (index === this.selection) {
-        ctx.fillStyle = 'rgba(214,193,96,0.24)';
-        ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-        ctx.strokeStyle = 'rgba(214,193,96,0.75)';
-        ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
-      }
-      ctx.fillStyle = '#fff';
-      const prefix = index === this.selection ? '> ' : '  ';
-      ctx.fillText(prefix + item.label, width / 2 - 138, y);
+    const menu = drawInGameTextMenu(ctx, {
+      bounds: { x: 0, y: 0, w: width, h: height },
+      title: 'Paused',
+      rows: items,
+      selectedIndex: this.selection,
+      objective,
+      footer: confirmExit
+        ? 'D-pad: Choose   R/G: Confirm'
+        : 'D-pad: Navigate   R/G: Select   START: Return'
     });
-    if (objective) {
-      ctx.textAlign = 'center';
-      ctx.fillText(`Objective: ${objective}`, width / 2, startY + items.length * 36 + 18);
-      ctx.textAlign = 'left';
-    }
+    this.itemBounds = menu.rowBounds.map((bounds, index) => ({
+      ...bounds,
+      id: items[index]?.id
+    }));
     const exit = this.itemBounds.find((item) => item.id === 'exit');
     this.exitBounds = exit ? { x: exit.x, y: exit.y, w: exit.w, h: exit.h } : null;
+    ctx.save();
     if (confirmExit) {
       const boxW = 360;
       const boxH = 150;
@@ -112,9 +99,6 @@ export default class Pause {
     } else {
       this.confirmBounds = [];
     }
-    ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.fillText(confirmExit ? 'D-pad: Choose   R/G: Confirm' : 'D-pad: Navigate   R/G: Select   START: Return', width / 2, height - 42);
     ctx.restore();
   }
 }

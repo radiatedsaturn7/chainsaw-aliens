@@ -10,6 +10,7 @@ import os
 import shutil
 import subprocess
 import tempfile
+import threading
 import time
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -63,6 +64,10 @@ def run_git_command(args: list[str]) -> subprocess.CompletedProcess[str]:
 
 class DevHandler(SimpleHTTPRequestHandler):
     debug_logs = False
+    storage_response_cache: dict[tuple[str, str, int, int, int, int], bytes] = {}
+    storage_response_cache_lock = threading.Lock()
+    storage_response_cache_max_bytes = 64 * 1024 * 1024
+    storage_response_cache_bytes = 0
 
     def log_message(self, format: str, *args: object) -> None:
         if self.debug_logs:
@@ -284,20 +289,49 @@ class DevHandler(SimpleHTTPRequestHandler):
             return False
         document_path = self._safe_doc_dir(folder, name) / "document.json"
         doc_dir = document_path.parent
+        metadata_path = doc_dir / "metadata.json"
+        try:
+            document_stat = document_path.stat()
+            metadata_stat = metadata_path.stat() if metadata_path.exists() else None
+        except OSError:
+            return False
+        cache_key = (
+            folder,
+            name,
+            int(document_stat.st_mtime_ns),
+            int(document_stat.st_size),
+            int(metadata_stat.st_mtime_ns if metadata_stat else 0),
+            int(metadata_stat.st_size if metadata_stat else 0),
+        )
+        with self.storage_response_cache_lock:
+            cached_body = self.storage_response_cache.get(cache_key)
+        if cached_body is not None:
+            self.send_response(HTTPStatus.OK)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(cached_body)))
+            self.end_headers()
+            self.wfile.write(cached_body)
+            return True
         try:
             data = self._read_stored_document(document_path, doc_dir)
         except Exception:
             return False
         file_json = json.dumps(metadata, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
         data_json = json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        body = b'{"ok":true,"file":' + file_json[:-1] + b',"data":' + data_json + b"}}"
+        with self.storage_response_cache_lock:
+            cache = self.storage_response_cache
+            while self.storage_response_cache_bytes + len(body) > self.storage_response_cache_max_bytes and cache:
+                oldest_key = next(iter(cache))
+                oldest_body = cache.pop(oldest_key)
+                self.__class__.storage_response_cache_bytes = max(0, self.storage_response_cache_bytes - len(oldest_body))
+            cache[cache_key] = body
+            self.__class__.storage_response_cache_bytes += len(body)
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
         self.end_headers()
-        self.wfile.write(b'{"ok":true,"file":')
-        self.wfile.write(file_json[:-1])
-        self.wfile.write(b',"data":')
-        self.wfile.write(data_json)
-        self.wfile.write(b"}}")
+        self.wfile.write(body)
         return True
 
     def _read_version_metadata(self, version_dir: Path, folder: str, name: str) -> dict:

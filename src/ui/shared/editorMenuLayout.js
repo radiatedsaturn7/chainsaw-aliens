@@ -1371,7 +1371,7 @@ export function buildDesktopTopMenuPlan(editorId, {
   dropdownScroll = 0
 } = {}) {
   const menuBounds = { ...DEFAULT_TOP_MENU, ...bounds };
-  const entries = getEditorRootMenuEntries(editorId, { labelOverrides });
+  const entries = getEditorRootMenuEntries(editorId, { labelOverrides, desktopOnly: true });
   const visibleEntries = entries.slice(0, Math.max(0, maxVisibleItems));
   const overflowEntries = entries.slice(visibleEntries.length);
   const availableW = Math.max(1, menuBounds.w - menuBounds.padding * 2 - Math.max(0, visibleEntries.length - 1) * menuBounds.gap);
@@ -1393,9 +1393,10 @@ export function buildDesktopTopMenuPlan(editorId, {
     },
     active: entry.id === activeRootId || entry.specId === activeRootId
   }));
-  const dropdown = activeRootId
+  const activeEntry = buttons.find((button) => button.id === activeRootId || button.specId === activeRootId) || null;
+  const dropdown = activeRootId && activeEntry
     ? buildDesktopDropdownPlan(editorId, activeRootId, {
-      anchor: buttons.find((button) => button.id === activeRootId || button.specId === activeRootId)?.bounds,
+      anchor: activeEntry.bounds,
       containerBounds: menuBounds,
       labelOverrides,
       ...(maxVisibleDropdownRows === undefined ? {} : { maxVisibleRows: maxVisibleDropdownRows }),
@@ -1433,6 +1434,7 @@ export function buildDesktopEditorShellPlan(editorId, {
   gap = DEFAULT_DESKTOP_SHELL.gap,
   minWorkSurfaceWidth = DEFAULT_DESKTOP_SHELL.minWorkSurfaceWidth,
   minWorkSurfaceHeight = DEFAULT_DESKTOP_SHELL.minWorkSurfaceHeight,
+  bottomReserveHeight = 0,
   dropdownScroll = 0
 } = {}) {
   const width = Math.max(1, Number(viewportWidth) || 0);
@@ -1448,8 +1450,9 @@ export function buildDesktopEditorShellPlan(editorId, {
     : Number(leftPanelWidth) || 0;
   const panelW = Math.max(0, Math.min(requestedPanelW, width - spacing - minWorkSurfaceWidth));
   const ribbonH = Math.max(0, Number(leftRibbonHeight) || 0);
+  const bottomReserve = Math.max(0, Number(bottomReserveHeight) || 0);
   const contentY = topH + spacing;
-  const contentH = Math.max(1, height - contentY - spacing);
+  const contentH = Math.max(1, height - contentY - spacing - bottomReserve);
   const leftColumn = {
     x: spacing,
     y: contentY,
@@ -1533,7 +1536,12 @@ export function buildLandscapeTouchEditorShellPlan(editorId, {
   minLeftRailHeight = undefined,
   thumbstick = null,
   padding = undefined,
-  gap = undefined
+  gap = undefined,
+  capRightRailToLeftRailHeight = true,
+  placeZoomBelowRightRail = true,
+  zoomFallsBackToBottomRail = false,
+  zoomRailMinHeight = 34,
+  zoomRailMaxHeight = 48
 } = {}) {
   const layout = getSharedMobileLandscapeEditorLayout(viewportWidth, viewportHeight, {
     leftRailWidth: leftRailWidth ?? LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.compactCommandRail.width,
@@ -1577,6 +1585,7 @@ export function buildLandscapeTouchEditorShellPlan(editorId, {
   const resolvedRootDrawerOverlayOrigin = LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootDrawerOverlayOrigin;
   const leftRootDrawerX = layout.leftRail.x + layout.leftRail.w + layout.gap;
   const safeViewportWidth = Math.max(1, Number(viewportWidth) || 1);
+  const safeViewportHeight = Math.max(1, Number(viewportHeight) || 1);
   const leftRootDrawerRight = reserveRightRail && layout.rightRail?.w > 0
     ? Math.max(leftRootDrawerX + 1, layout.rightRail.x - layout.gap)
     : safeViewportWidth - layout.padding;
@@ -1590,6 +1599,41 @@ export function buildLandscapeTouchEditorShellPlan(editorId, {
     h: layout.overlayDrawer.h
   };
   const rootDrawer = leftRootDrawer;
+  const baseSubmenu = reserveRightRail ? layout.rightRail : null;
+  const cappedSubmenu = baseSubmenu && capRightRailToLeftRailHeight
+    ? {
+      ...baseSubmenu,
+      h: Math.min(
+        baseSubmenu.h,
+        layout.leftRail?.h || baseSubmenu.h,
+        placeZoomBelowRightRail
+          ? Math.max(1, safeViewportHeight - layout.padding - layout.gap - Math.max(0, Number(zoomRailMinHeight) || 0))
+          : baseSubmenu.h
+      )
+    }
+    : baseSubmenu;
+  const zoomBelowRightRail = placeZoomBelowRightRail && cappedSubmenu
+    ? (() => {
+      const zoomY = Math.min(
+        safeViewportHeight - Math.max(0, Number(zoomRailMinHeight) || 0) - layout.padding,
+        cappedSubmenu.y + cappedSubmenu.h + layout.gap
+      );
+      const zoomH = Math.max(
+        Math.max(0, Number(zoomRailMinHeight) || 0),
+        Math.min(
+          Math.max(0, Number(zoomRailMaxHeight) || 0),
+          safeViewportHeight - zoomY - layout.padding
+        )
+      );
+      if (zoomH <= 0) return null;
+      return {
+        x: cappedSubmenu.x,
+        y: zoomY,
+        w: cappedSubmenu.w,
+        h: zoomH
+      };
+    })()
+    : null;
   const modeContract = getEditorModeContract(EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH);
   const presentation = {
     ...modeContract.presentation,
@@ -1614,7 +1658,7 @@ export function buildLandscapeTouchEditorShellPlan(editorId, {
     mode: EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH,
     placement: getEditorMenuPlacement(EDITOR_LAYOUT_MODES.LANDSCAPE_TOUCH),
     rootMenuSurface: LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.rootSurface,
-    submenuSurface: reserveRightRail ? LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.submenuSurface : null,
+    submenuSurface: cappedSubmenu ? LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.submenuSurface : null,
     bottomRailRole: bottomRailHeight > 0 ? LANDSCAPE_TOUCH_SHELL_SURFACE_CONTRACT.bottomRailRole : null,
     gestureScroll: true,
     bounds: {
@@ -1642,11 +1686,11 @@ export function buildLandscapeTouchEditorShellPlan(editorId, {
       compactCommandRail: layout.leftRail,
       rootMenu: layout.leftRail,
       rootDrawer,
-      submenu: reserveRightRail ? layout.rightRail : null,
+      submenu: cappedSubmenu,
       overlayDrawer: layout.overlayDrawer,
       topRail,
       toolOptions: bottomRailHeight > 0 ? layout.bottomRail : null,
-      zoom: topRail || (bottomRailHeight > 0 ? layout.bottomRail : null),
+      zoom: topRail || zoomBelowRightRail || (zoomFallsBackToBottomRail && bottomRailHeight > 0 ? layout.bottomRail : null),
       ribbon: bottomRailHeight > 0 ? layout.bottomRail : null,
       workSurface: resolvedLayout.workSurface || resolvedLayout.mainEditor
     },
@@ -1847,7 +1891,7 @@ export function buildDesktopDropdownPlan(editorId, rootId, {
   scroll = 0
 } = {}) {
   const spec = getEditorMenuSpec(editorId);
-  const rootEntry = getEditorRootMenuEntries(editorId, { labelOverrides })
+  const rootEntry = getEditorRootMenuEntries(editorId, { labelOverrides, desktopOnly: true })
     .find((entry) => entry.id === rootId || entry.specId === rootId);
   const sectionId = rootEntry?.specId || rootId;
   const section = spec?.sections?.[sectionId];

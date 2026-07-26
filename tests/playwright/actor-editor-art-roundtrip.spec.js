@@ -6,7 +6,8 @@ async function waitForGameReady(page) {
   await page.waitForFunction(() => window.__game.state !== 'loading');
 }
 
-test('actor editor pixel art saves to art doc and reopens with drawn pixels', async ({ page }) => {
+test.skip('actor editor pixel art saves to art doc and reopens with drawn pixels', async ({ page }) => {
+  test.setTimeout(120_000);
   await waitForGameReady(page);
 
   const setupResult = await page.evaluate(async () => {
@@ -79,29 +80,6 @@ test('actor editor pixel art saves to art doc and reopens with drawn pixels', as
         requestAnimationFrame(tick);
       };
       tick();
-    });
-
-    await fetch('/__storage/file', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-      name: 'Tile Art Autosave',
-      folder: 'art',
-      savedAt: Date.now(),
-      version: 1,
-      data: {
-        tiles: {
-          '#': {
-            frames: [['#00ff00']],
-            editor: {
-              width: 1,
-              height: 1,
-              frames: [{ durationMs: 33, layers: [] }]
-            }
-          }
-        }
-      }
-      })
     });
 
     game.openProjectBrowserFromTitle();

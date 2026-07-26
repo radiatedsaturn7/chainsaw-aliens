@@ -459,6 +459,19 @@ export default class AudioSystem {
           master.gain.value = level;
         }
       },
+      setPitchCents: (nextPitchCents = 0) => {
+        const nextPitchBase = pitchRand + Number(nextPitchCents || 0) / 1200;
+        const now = this.ctx.currentTime;
+        scheduled.forEach(({ source }) => {
+          const nextRate = 2 ** nextPitchBase;
+          source.playbackRate?.cancelScheduledValues?.(now);
+          if (source.playbackRate?.setTargetAtTime) {
+            source.playbackRate.setTargetAtTime(nextRate, now, 0.035);
+          } else if (source.playbackRate) {
+            source.playbackRate.value = nextRate;
+          }
+        });
+      },
       stop: () => {
         sources.forEach((source) => {
           try { source.stop(); } catch (_error) {}

@@ -20,8 +20,13 @@ test('latest changes exposes a running ordered summary for the options menu', ()
   const text = formatLatestChanges();
   assert.equal(text.startsWith('Latest Changes'), true);
   assert.equal(text.includes('Major Items I am Working Toward'), true);
+  assert.equal(text.includes('Current Status and Completion Estimate'), true);
   assert.equal(text.includes('Most Recent Major Changes'), true);
+  assert.equal(text.indexOf('Current Status and Completion Estimate') < text.indexOf('Most Recent Major Changes'), true);
   assert.equal(text.indexOf('Major Items I am Working Toward') < text.indexOf('Detailed Change Log'), true);
+  assert.ok(LATEST_MAJOR_WORK.currentStatus.some((item) => item.includes('97% complete')));
+  assert.ok(LATEST_MAJOR_WORK.currentStatus.some((item) => item.includes('Why this is not done yet')));
+  assert.ok(LATEST_MAJOR_WORK.currentStatus.some((item) => item.includes('Estimated remaining work')));
   assert.ok(LATEST_MAJOR_WORK.inProgress.some((item) => item.includes('desktop editor chrome')));
   assert.ok(LATEST_MAJOR_WORK.recentMajorChanges.some((item) => item.includes('Canvas desktop top menus')));
   assert.equal(text.includes(`${LATEST_CHANGES[0].date} ${LATEST_CHANGES[0].time} - ${LATEST_CHANGES[0].title || LATEST_CHANGES[0].summary}`), true);
@@ -103,7 +108,8 @@ test('latest changes overlay is a DOM dialog rather than a game-state prompt', (
     const list = panel.children[1];
     assert.equal(list.style.overflowY, 'auto');
     assert.equal(list.children[0].children[0].textContent, 'Major Items I am Working Toward');
-    assert.equal(list.children[1].children[0].textContent, 'Most Recent Major Changes');
+    assert.equal(list.children[1].children[0].textContent, 'Current Status and Completion Estimate');
+    assert.equal(list.children[2].children[0].textContent, 'Most Recent Major Changes');
     overlay.__closeLatestChanges();
     assert.equal(body.style.overflow, '');
     assert.equal(isLatestChangesOverlayOpen(), false);

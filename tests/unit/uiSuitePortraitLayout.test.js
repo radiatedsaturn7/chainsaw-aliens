@@ -257,11 +257,24 @@ test('file drawer sticky exit split keeps main menu exit out of scroll list', ()
     { id: 'new', label: 'New' },
     { id: 'save', label: 'Save' },
     { divider: true },
-    { id: 'exit-main', label: 'Exit to Main Menu' }
+    { id: 'exit-main', label: 'Exit' }
   ]);
 
   assert.equal(exitItem.id, 'exit-main');
+  assert.equal(exitItem.label, 'Exit');
   assert.deepEqual(listItems.map((item) => item.id), ['new', 'save']);
+});
+
+test('file drawer sticky exit split compacts only main menu exit labels', () => {
+  const { exitItem } = splitFileDrawerStickyExitItems([
+    { id: 'exit-main', label: 'Exit to Main Menu' }
+  ]);
+  const { exitItem: returnExitItem } = splitFileDrawerStickyExitItems([
+    { id: 'exit-main', label: 'Return To Level Editor' }
+  ]);
+
+  assert.equal(exitItem.label, 'Exit');
+  assert.equal(returnExitItem.label, 'Return To Level Editor');
 });
 
 test('shared file drawer auto-grid uses multiple columns before scrolling', () => {
@@ -307,7 +320,7 @@ test('shared file drawer auto-grid keeps sticky footer outside item bounds', () 
     buttonHeight: 44,
     showTitle: false,
     footerMode: 'exit-only',
-    footerItem: { id: 'exit-main', label: 'Exit to Main Menu' },
+    footerItem: { id: 'exit-main', label: 'Exit' },
     layoutMode: 'auto-grid',
     minColumnWidth: 120,
     maxColumns: 2,
@@ -321,7 +334,7 @@ test('shared file drawer auto-grid keeps sticky footer outside item bounds', () 
   });
 
   assert.equal(result.columns, 2);
-  assert.equal(result.exitBounds.id, 'exit-main');
+  assert.deepEqual(result.exitBounds, { x: 8, y: 128, w: 304, h: 44, id: 'exit-main' });
   assert.equal(result.itemBounds.some((bounds) => bounds.id === 'exit-main'), false);
   result.itemBounds.forEach((bounds) => {
     assert.ok(bounds.y + bounds.h <= result.exitBounds.y);

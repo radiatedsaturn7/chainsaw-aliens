@@ -16,9 +16,33 @@ import {
 } from '../../src/ui/serverStorage.js';
 import {
   getProjectFileSaveTimeoutMs,
+  PROJECT_FOLDERS,
   resetProjectFilesForTests,
+  saveProjectFile,
   saveProjectFileAndConfirm
 } from '../../src/ui/projectFiles.js';
+
+test('cars and doodads project folders are registered for project and server storage', () => {
+  assert.equal(PROJECT_FOLDERS.includes('cars'), true);
+  assert.equal(Object.hasOwn(listServerIndexedFiles(), 'cars'), true);
+  assert.equal(PROJECT_FOLDERS.includes('doodads'), true);
+  assert.equal(Object.hasOwn(listServerIndexedFiles(), 'doodads'), true);
+});
+
+test('project file fallback index supports saving doodads before server hydration', () => {
+  resetProjectFilesForTests();
+  try {
+    const saved = saveProjectFile('doodads', 'Cone', {
+      kind: 'race-doodad',
+      doodad: { name: 'Cone', artRef: 'Cone Art' }
+    }, { createVersion: false, timeoutMs: 1 });
+
+    assert.equal(saved.folder, 'doodads');
+    assert.equal(saved.name, 'Cone');
+  } finally {
+    resetProjectFilesForTests();
+  }
+});
 
 test('saveServerFile merges metadata-only persisted responses with local data', async () => {
   clearCachedProjectFilesForTests();

@@ -106,22 +106,28 @@ test('mobile portrait keeps viewport-sized DPR-backed canvas', () => {
   assert.equal(layout.scale, 1);
 });
 
-test('desktop keeps fixed canvas with fit scaling', () => {
-  const layout = getCanvasViewportLayout({
-    isMobile: false,
-    viewportWidth: 1280,
-    viewportHeight: 720,
-    defaultCanvasWidth: 960,
-    defaultCanvasHeight: 540,
-    devicePixelRatio: 2
-  });
+test('desktop canvas fills viewport without fit scaling', () => {
+  for (const [width, height] of [[1280, 720], [1920, 1080], [1440, 900]]) {
+    const layout = getCanvasViewportLayout({
+      isMobile: false,
+      viewportWidth: width,
+      viewportHeight: height,
+      defaultCanvasWidth: 960,
+      defaultCanvasHeight: 540,
+      devicePixelRatio: 2
+    });
 
-  assert.equal(layout.styleWidth, 960);
-  assert.equal(layout.styleHeight, 540);
-  assert.equal(layout.targetCanvasWidth, 960);
-  assert.equal(layout.targetCanvasHeight, 540);
-  assert.equal(layout.dpr, 1);
-  assert.equal(layout.scale, 1280 / 960);
+    assert.equal(layout.styleWidth, width);
+    assert.equal(layout.styleHeight, height);
+    assert.equal(layout.viewportWidth, width);
+    assert.equal(layout.viewportHeight, height);
+    assert.equal(layout.logicalWidth, width);
+    assert.equal(layout.logicalHeight, height);
+    assert.equal(layout.targetCanvasWidth, width);
+    assert.equal(layout.targetCanvasHeight, height);
+    assert.equal(layout.dpr, 1);
+    assert.equal(layout.scale, 1);
+  }
 });
 
 test('portrait handheld layout reserves top screen and bottom controls deck', () => {
