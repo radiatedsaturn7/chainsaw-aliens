@@ -44,6 +44,13 @@ async function flushEditorLayout(page) {
     game.updateControlScheme?.();
     game.syncMobileControlsViewport?.();
     game.draw?.();
+    const targetKey = game.editorStateTargetKeys?.[game.state];
+    const editor = targetKey ? game[targetKey] : null;
+    editor?.draw?.(
+      game.ctx,
+      game.viewport?.width || game.canvas?.width,
+      game.viewport?.height || game.canvas?.height
+    );
   });
   await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
 }
