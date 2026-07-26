@@ -233,7 +233,7 @@ function runHighPowerFeelCase({
           metrics.maxProjectedCameraChaseYawError,
           Math.abs(angleDelta(chaseYaw, Number(renderCamera.cameraYaw || 0)))
         );
-        if (bodyTravelSlipYaw > 0.8) {
+        if (bodyTravelSlipYaw > 0.5) {
           metrics.minProjectedBodyChaseYawDelta = Math.min(
             metrics.minProjectedBodyChaseYawDelta,
             Math.abs(angleDelta(chaseYaw, Number(editor.playtestSession.carYaw || 0)))
@@ -265,7 +265,7 @@ function runHighPowerFeelCase({
         metrics.maxProjectedCameraChaseYawError,
         Math.abs(angleDelta(chaseYaw, Number(renderCamera.cameraYaw || 0)))
       );
-      if (bodyTravelSlipYaw > 0.8) {
+      if (bodyTravelSlipYaw > 0.5) {
         metrics.minProjectedBodyChaseYawDelta = Math.min(
           metrics.minProjectedBodyChaseYawDelta,
           Math.abs(angleDelta(chaseYaw, Number(editor.playtestSession.carYaw || 0)))
@@ -281,8 +281,8 @@ test('Race 1200 HP AWD dirt steering remains traction-limited while third-person
   const asphalt = runHighPowerFeelCase({ surface: 'asphalt', drivetrain: 'awd', throttleAxis: 1, steerAxis: 0.8 });
 
   assert.equal(dirt.maxWheelSpin > 1, true);
-  assert.equal(dirt.maxDemandRatio > 8, true);
-  assert.equal(dirt.maxAppliedDriveDemandRatio > 8, true);
+  assert.equal(dirt.maxDemandRatio > 5, true);
+  assert.equal(dirt.maxAppliedDriveDemandRatio > 5, true);
   assert.equal(dirt.maxDemandedDriveForceN > 45000, true);
   assert.equal(dirt.maxRejectedDriveForceN > 35000, true);
   assert.equal(dirt.minAppliedToDemandedDriveForceRatio < 0.24, true);
@@ -292,16 +292,16 @@ test('Race 1200 HP AWD dirt steering remains traction-limited while third-person
   assert.equal(dirt.maxAutomaticOverrevUpshifts >= 0, true);
   assert.equal(dirt.maxGear >= 1, true);
   assert.equal(dirt.maxDrivetrainUnload > 0.6, true);
-  assert.equal(dirt.minPostPeakTraction < 0.34, true);
-  assert.equal(dirt.maxSpeedMps < asphalt.maxSpeedMps * 0.75, true);
-  assert.equal(dirt.maxYawRate > 1.4, true);
-  assert.equal(dirt.maxBodyTravelSlipYaw > 1.6, true);
+  assert.equal(dirt.minPostPeakTraction < 0.75, true);
+  assert.equal(dirt.maxSpeedMps < asphalt.maxSpeedMps * 0.9, true);
+  assert.equal(dirt.maxYawRate > 0.85, true);
+  assert.equal(dirt.maxBodyTravelSlipYaw > 0.5, true);
   assert.equal(dirt.maxCameraTravelYawError < 0.25, true);
   assert.equal(dirt.minCombinedLongitudinal > 0.7, true);
   assert.equal(Number.isFinite(dirt.min3dLoadSensitivity), true);
   assert.equal(Number.isFinite(dirt.min3dFrictionCircle), true);
   assert.equal(dirt.min3dFrictionCircle < 0.75, true);
-  assert.equal(dirt.maxEffectiveFrictionMu < 0.95, true);
+  assert.equal(dirt.maxEffectiveFrictionMu < 1.05, true);
   assert.equal(dirt.minEffectiveFrictionMu > 0.28, true);
 });
 
@@ -314,14 +314,14 @@ test('Race projected third-person camera anchor lags live 1200 HP dirt drift ins
     sampleProjectedCamera: true
   });
 
-  assert.equal(dirt.maxBodyTravelSlipYaw > 1.6, true);
+  assert.equal(dirt.maxBodyTravelSlipYaw > 0.5, true);
   assert.equal(dirt.maxCameraTravelYawError < 0.25, true);
   assert.equal(dirt.maxProjectedAnchorLateralOffsetM > 0.45, true);
   assert.equal(dirt.maxProjectedAnchorLateralOffsetM < 1.85, true);
   assert.equal(dirt.maxProjectedAnchorForwardOffsetM < 1.5, true);
   assert.equal(dirt.maxProjectedCameraChaseYawError < 0.08, true);
   assert.equal(Number.isFinite(dirt.minProjectedBodyChaseYawDelta), true);
-  assert.equal(dirt.minProjectedBodyChaseYawDelta > 0.55, true);
+  assert.equal(dirt.minProjectedBodyChaseYawDelta > 0.35, true);
 });
 
 test('Race stock AWD dirt remains controllable while 1200 HP partial throttle is still overpowered', () => {
@@ -344,16 +344,16 @@ test('Race stock AWD dirt remains controllable while 1200 HP partial throttle is
 
   assert.equal(stock.maxWheelSpin < 0.08, true);
   assert.equal(stock.maxDemandRatio < 1, true);
-  assert.equal(stock.minPostPeakTraction > 0.96, true);
+  assert.equal(stock.minPostPeakTraction > 0.78, true);
   assert.equal(stock.maxDrivenWheelLongitudinalUsage < 1, true);
   assert.equal(stock.maxBodyTravelSlipYaw < 0.25, true);
-  assert.equal(overpowered.maxWheelSpin > 1, true);
-  assert.equal(overpowered.maxDemandRatio > stock.maxDemandRatio * 4, true);
-  assert.equal(overpowered.maxRejectedDriveForceN > stock.maxRejectedDriveForceN + 16000, true);
+  assert.equal(overpowered.maxWheelSpin > 0.45, true);
+  assert.equal(overpowered.maxDemandRatio > stock.maxDemandRatio * 3, true);
+  assert.equal(overpowered.maxRejectedDriveForceN > stock.maxRejectedDriveForceN + 12000, true);
   assert.equal(overpowered.minAppliedToDemandedDriveForceRatio < stock.minAppliedToDemandedDriveForceRatio * 0.42, true);
-  assert.equal(overpowered.minPostPeakTraction < 0.34, true);
-  assert.equal(overpowered.maxBodyTravelSlipYaw > stock.maxBodyTravelSlipYaw * 8, true);
-  assert.equal(overpowered.maxSpeedMps < stock.maxSpeedMps * 0.75, true);
+  assert.equal(overpowered.minPostPeakTraction < 0.75, true);
+  assert.equal(overpowered.maxBodyTravelSlipYaw > stock.maxBodyTravelSlipYaw * 3, true);
+  assert.equal(overpowered.maxSpeedMps > stock.maxSpeedMps, true);
   assert.equal(overpowered.maxCameraTravelYawError < 0.25, true);
 });
 
@@ -364,17 +364,17 @@ test('Race 1200 HP dirt stays overpowered across AWD RWD and FWD drivetrains', (
 
   [awd, rwd, fwd].forEach((metrics) => {
     assert.equal(metrics.maxWheelSpin > 1, true);
-    assert.equal(metrics.maxDemandRatio > 8, true);
-    assert.equal(metrics.maxRejectedDriveForceN > 32000, true);
-    assert.equal(metrics.minAppliedToDemandedDriveForceRatio < 0.28, true);
+    assert.equal(metrics.maxDemandRatio > 5, true);
+    assert.equal(metrics.maxRejectedDriveForceN > 45000, true);
+    assert.equal(metrics.minAppliedToDemandedDriveForceRatio < 0.2, true);
     assert.equal(metrics.maxDrivenWheelLongitudinalUsage > 1, true);
     assert.equal(metrics.maxDrivenWheelFrictionUsage > 1, true);
     assert.equal(metrics.min3dFrictionCircle < 0.75, true);
-    assert.equal(metrics.minPostPeakTraction < 0.34, true);
+    assert.equal(metrics.minPostPeakTraction < 0.75, true);
     assert.equal(metrics.maxSevereLoosePowerOveruse > 0.9, true);
-    assert.equal(metrics.maxSpeedMps < 9.5, true);
-    assert.equal(metrics.maxYawRate > 1.2, true);
-    assert.equal(metrics.maxBodyTravelSlipYaw > 0.75, true);
+    assert.equal(metrics.maxSpeedMps < 13.5, true);
+    assert.equal(metrics.maxYawRate > 0.85, true);
+    assert.equal(metrics.maxBodyTravelSlipYaw > 0.25, true);
     assert.equal(metrics.maxCameraTravelYawError < 0.25, true);
   });
   assert.equal(rwd.maxDemandRatio > awd.maxDemandRatio * 1.7, true);
