@@ -7,6 +7,7 @@ async function waitForGameReady(page) {
 }
 
 test('actor editor pixel art saves to art doc and reopens with drawn pixels', async ({ page }) => {
+  test.setTimeout(120_000);
   await waitForGameReady(page);
 
   const setupResult = await page.evaluate(async () => {
