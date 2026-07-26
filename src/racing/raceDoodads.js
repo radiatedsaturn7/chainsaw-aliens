@@ -1,6 +1,11 @@
 export const RACE_DOODAD_SCHEMA_VERSION = 1;
 
 export const RACE_DOODAD_BEHAVIORS = ['collide', 'flatten', 'fly-off'];
+export const RACE_DOODAD_SIZE_LIMITS = Object.freeze({
+  minM: 0.1,
+  maxWidthM: 500,
+  maxHeightM: 500
+});
 
 export const DEFAULT_RACE_DOODAD = {
   id: 'new-doodad',
@@ -34,6 +39,10 @@ export const DEFAULT_RACE_DOODAD = {
 };
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+export function getRaceDoodadGroundOffsetLimit(heightM = DEFAULT_RACE_DOODAD.heightM) {
+  return clamp(Number(heightM) || DEFAULT_RACE_DOODAD.heightM, RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.maxHeightM);
+}
 
 export function normalizeDoodadBehavior(value = 'collide') {
   const behavior = String(value || '').trim();
@@ -84,15 +93,18 @@ export function normalizeRaceDoodadDocument(data = {}, fallbackName = '') {
   const rules = (Array.isArray(doodad.rules) ? doodad.rules : fallback.rules)
     .map((rule) => normalizeDoodadRule(rule, defaultRule))
     .sort((a, b) => a.minSpeedMph - b.minSpeedMph);
+  const widthM = clamp(Number(doodad.widthM) || fallback.widthM, RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.maxWidthM);
+  const heightM = clamp(Number(doodad.heightM) || fallback.heightM, RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.maxHeightM);
+  const groundOffsetLimitM = getRaceDoodadGroundOffsetLimit(heightM);
   return {
     id,
     name: String(doodad.name || cleanName || fallback.name),
     artRef: String(doodad.artRef || '').trim(),
-    widthM: clamp(Number(doodad.widthM) || fallback.widthM, 0.1, 80),
-    heightM: clamp(Number(doodad.heightM) || fallback.heightM, 0.1, 120),
-    groundOffsetM: clamp(Number(doodad.groundOffsetM) || 0, -20, 20),
-    hitboxWidthM: clamp(Number(doodad.hitboxWidthM ?? doodad.widthM) || fallback.hitboxWidthM || fallback.widthM, 0.1, 80),
-    hitboxHeightM: clamp(Number(doodad.hitboxHeightM ?? doodad.heightM) || fallback.hitboxHeightM || fallback.heightM, 0.1, 120),
+    widthM,
+    heightM,
+    groundOffsetM: clamp(Number(doodad.groundOffsetM) || 0, -groundOffsetLimitM, groundOffsetLimitM),
+    hitboxWidthM: clamp(Number(doodad.hitboxWidthM ?? doodad.widthM) || fallback.hitboxWidthM || fallback.widthM, RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.maxWidthM),
+    hitboxHeightM: clamp(Number(doodad.hitboxHeightM ?? doodad.heightM) || fallback.hitboxHeightM || fallback.heightM, RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.maxHeightM),
     weightKg: clamp(Number(doodad.weightKg) || fallback.weightKg, 0.1, 100000),
     defaultRule,
     rules

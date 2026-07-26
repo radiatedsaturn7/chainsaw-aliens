@@ -156,12 +156,23 @@ function makeRailPoint(section = {}, side = 'left', lateralAbs = 0, {
 
 function getInnerBoundary(section = {}, side = 'left') {
   const metrics = section.metrics || {};
+  const shoulderEnabled = Number(metrics.shoulderWidth || 0) > 0.0001;
   const marginEnabled = Number(metrics.marginWidth || 0) > 0.0001;
-  if (side === 'left') return marginEnabled ? (section.marginLeft || section.left) : section.left;
-  return marginEnabled ? (section.marginRight || section.right) : section.right;
+  if (side === 'left') {
+    if (shoulderEnabled) return section.shoulderLeft || section.marginLeft || section.left;
+    if (marginEnabled) return section.marginLeft || section.left;
+    return section.left;
+  }
+  if (shoulderEnabled) return section.shoulderRight || section.marginRight || section.right;
+  if (marginEnabled) return section.marginRight || section.right;
+  return section.right;
 }
 
-function buildSideRails(section = {}, side = 'left', { guardDistanceM = 720, adapter = {} } = {}) {
+function buildSideRails(section = {}, side = 'left', {
+  guardDistanceM = 720,
+  includeGuardTerrain = true,
+  adapter = {}
+} = {}) {
   const metrics = section.metrics || {};
   const inner = getInnerBoundary(section, side);
   if (!inner) return [];
@@ -176,9 +187,18 @@ function buildSideRails(section = {}, side = 'left', { guardDistanceM = 720, ada
   const flatJoinEnd = Math.max(shoulderEnd, Number(metrics.flatJoinEnd || shoulderEnd));
   const transitionEnd = Math.max(flatJoinEnd, sideTransitionEnd);
   const transitionSpan = Math.max(0.001, transitionEnd - flatJoinEnd);
-  const guardEnd = transitionEnd + Math.max(120, Number(guardDistanceM) || 720);
   const rawOffsets = [];
-  rawOffsets.push(guardEnd);
+  const guardEnd = transitionEnd + Math.max(120, Number(guardDistanceM) || 720);
+  if (includeGuardTerrain) {
+    let step = 8;
+    let offset = transitionEnd + step;
+    while (offset < guardEnd - 0.001) {
+      rawOffsets.push(offset);
+      step = Math.min(160, step * 1.55);
+      offset += step;
+    }
+    rawOffsets.push(guardEnd);
+  }
   const rails = [{
     rail: 'inner',
     lateralAbs: innerAbs,
@@ -191,6 +211,9 @@ function buildSideRails(section = {}, side = 'left', { guardDistanceM = 720, ada
       terrainRegion: 'inner',
       roadDeckElevation: true,
       corridorBoundary: true,
+      trackSeam: true,
+      exactRoadSeam: true,
+      roadSeamElevation: Number(inner.elevation ?? deckElevationAt(innerAbs)),
       hardCorridorEnd
     }
   }];
@@ -218,7 +241,7 @@ function buildSideRails(section = {}, side = 'left', { guardDistanceM = 720, ada
       })
     });
   }
-  [0.5].forEach((ratio) => {
+  [0.25, 0.5, 0.75].forEach((ratio) => {
     const lateralAbs = flatJoinEnd + transitionSpan * ratio;
     if (lateralAbs > flatJoinEnd + 0.0001 && lateralAbs < transitionEnd - 0.0001) {
       rails.push({
@@ -234,15 +257,22 @@ function buildSideRails(section = {}, side = 'left', { guardDistanceM = 720, ada
     }
   });
   if (transitionEnd > flatJoinEnd + 0.0001) {
+    const outerPoint = makeRailPoint(section, side, transitionEnd, {
+      region: 'transition',
+      blend: 1,
+      deckElevation: deckElevationAt(transitionEnd),
+      adapter
+    });
     rails.push({
       rail: 'transition-outer',
       lateralAbs: transitionEnd,
-      point: makeRailPoint(section, side, transitionEnd, {
-        region: 'transition',
-        blend: 1,
-        deckElevation: deckElevationAt(transitionEnd),
-        adapter
-      })
+      point: {
+        ...outerPoint,
+        trackSeam: true,
+        exactRoadSeam: true,
+        outerTerrainJoin: true,
+        roadSeamElevation: Number(outerPoint.elevation || 0)
+      }
     });
   }
   rawOffsets.forEach((lateralAbs, index) => {
@@ -330,7 +360,14 @@ function buildRailCells(rows = [], side = 'left', { runtimeType = 'destination',
       const b = current.rails[railIndex + 1].point;
       const c = next.rails[railIndex + 1].point;
       const d = next.rails[railIndex].point;
-      const cell = makeTerrainCell([a, b, c, d], {
+      const atStartCap = runtimeType !== 'circuit' && rowIndex === 0;
+      const atEndCap = runtimeType !== 'circuit' && rowIndex === pairCount - 1;
+      const cell = makeTerrainCell([
+        atStartCap ? { ...a, terrainDomainCap: true } : a,
+        atStartCap ? { ...b, terrainDomainCap: true } : b,
+        atEndCap ? { ...c, terrainDomainCap: true } : c,
+        atEndCap ? { ...d, terrainDomainCap: true } : d
+      ], {
         key: `corridor:${side}:${rowIndex}:${railIndex}`,
         groupKey: `corridor:${side}:${railIndex}`,
         layer: railIndex <= 4 ? 'base' : 'refinement',
@@ -370,6 +407,7 @@ export function buildRaceTerrainFromCorridor({
   surfaceBake = null,
   runtimeType = 'destination',
   guardDistanceM = 720,
+  includeGuardTerrain = true,
   adapter = {}
 } = {}) {
   const canonicalSections = getCanonicalSectionList(surfaceBake?.sections || [], { runtimeType });
@@ -391,13 +429,13 @@ export function buildRaceTerrainFromCorridor({
     section,
     index,
     inner: getInnerBoundary(section, 'left'),
-    rails: buildSideRails(section, 'left', { guardDistanceM, adapter })
+    rails: buildSideRails(section, 'left', { guardDistanceM, includeGuardTerrain, adapter })
   })).filter((row) => row.rails.length >= 2);
   const rightRows = sections.map((section, index) => ({
     section,
     index,
     inner: getInnerBoundary(section, 'right'),
-    rails: buildSideRails(section, 'right', { guardDistanceM, adapter })
+    rails: buildSideRails(section, 'right', { guardDistanceM, includeGuardTerrain, adapter })
   })).filter((row) => row.rails.length >= 2);
   const leftResult = buildRailCells(leftRows, 'left', { runtimeType, adapter });
   const rightResult = buildRailCells(rightRows, 'right', { runtimeType, adapter });

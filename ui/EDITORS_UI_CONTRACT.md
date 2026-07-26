@@ -11,6 +11,7 @@ This document defines the shared layout and token contract for **Pixel Editor**,
 - **Top bar height:** `40px`
 - **Status bar height (reserved token):** `20px`
 - **Mobile toolbar height (reserved token):** `72px`
+- **Editor button radius:** shared `8px` radius from `UI_SUITE.spacing.radius` / `--editor-portrait-button-radius`
 
 ## 2) Layout Grid Rules
 
@@ -66,6 +67,7 @@ Desktop-specific shell rules:
 - Shared portrait menu-spec contracts place root menus on the `bottom-rail` and both submenus and settings on the `bottom-sheet`. Top portrait regions are persistent context/status only, not default settings command surfaces.
 - Shared portrait root menus must stay within `PORTRAIT_ROOT_MAX_ITEMS` bottom items; editors consolidate extra workflows into submenus instead of expanding the root rail.
 - Shared portrait action rails must build from `STANDARD_EDITOR_ACTION_RAIL_PREFIX` via `getStandardEditorActionRailIds()`, keeping Menu, Undo, Redo, and one contextual editor command in a consistent four-slot bottom rail.
+- Portrait editor buttons must use the shared RTG Studio chrome primitive for canvas editors and the matching DOM helper for DOM editors so radius, accent strip, gradient fill, text color, and focus outline stay identical across Pixel, Tile, Level, Actor, MIDI, SFX, Cutscene, Race, Car, and Doodad.
 - Shared generic mode plans expose `suppressedModeSurfaces` in every mode so each editor has one authoritative list of chrome from other modes that must not render in the current mode.
 - Shared generic mode plans expose `requiredModeSurfaces` in every mode so each editor has one authoritative list of chrome that must render for that mode, including portrait bottom rails/sheets, landscape left root/right submenu/bottom rail, desktop top menu/dropdown/left inspector/work surface, and gamepad left slide-out surfaces.
 - Shared mode plans expose `surfaceVisibility`, a map from surface id to `required` or `suppressed`, so renderer code can query one mode contract instead of manually searching separate required/suppressed arrays.
@@ -137,6 +139,13 @@ Editors should consume only shared color tokens:
 - `--editor-accent`
 - `--editor-accent-2`
 - `--editor-shadow`
+
+### Playtest Pause Surfaces
+
+- Level, Race, and Car editor playtests use the shared in-game text-menu renderer for pause title, row spacing, font scale, selection treatment, footer, and pointer bounds.
+- The menu scales from the gameplay `960x540` reference viewport into the active playtest screen without enlarging beyond the reference metrics.
+- Race and Car may retain editor-specific pause rows and submenus, but their pointer targets are registration-only. Shared editor button chrome must not be painted inside an in-game pause menu.
+- Car Editor Art category selection must use the shared mode command surface: desktop dropdown, portrait bottom sheet, landscape right drawer, or gamepad slide-out. Exterior, Interior, and Camera Settings must not bypass that shared submenu with an editor-specific direct jump.
 
 ## 6) Shared Component Responsibilities
 

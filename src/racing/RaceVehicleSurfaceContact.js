@@ -35,7 +35,7 @@ export function getRaceWheelSurfaceState({
     terrainByWheel[wheelId] = terrain;
     regionByWheel[wheelId] = region;
     terrainGripScaleByWheel[wheelId] = terrainGripScale;
-    frictionByWheel[wheelId] = Number(trackSample.friction || surface.grip);
+    frictionByWheel[wheelId] = Number(trackSample.friction || (Number(surface.grip || 1) * terrainGripScale));
     normalByWheel[wheelId] = trackSample.normal || { x: 0, y: 1, z: 0 };
     surfaceGripByWheel[wheelId] = clamp(frictionByWheel[wheelId] * detailGrip, 0.18, 1.12);
     gripByWheel[wheelId] = adapter.getWheelGripForSurface?.({

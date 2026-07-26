@@ -284,9 +284,10 @@ export class RaceSurfaceModel {
     const leftRaw = Number.isFinite(Number(sample?.leftTerrainElevation)) ? Number(sample.leftTerrainElevation) : deckElevation;
     const rightRaw = Number.isFinite(Number(sample?.rightTerrainElevation)) ? Number(sample.rightTerrainElevation) : deckElevation;
     const sideWidthFor = (rawElevation) => {
-      const delta = Number(rawElevation || 0) - deckElevation;
-      const slope = delta > 0 ? this.maxCutSideSlope : this.maxFillSideSlope;
-      return Math.max(authoredTransitionWidth, Math.abs(delta) / Math.max(0.001, slope));
+      const deltaInternal = Number(rawElevation || 0) - deckElevation;
+      const slope = deltaInternal > 0 ? this.maxCutSideSlope : this.maxFillSideSlope;
+      const physicalRiseM = Math.abs(deltaInternal) * this.elevationScaleM;
+      return Math.max(authoredTransitionWidth, physicalRiseM / Math.max(0.001, slope));
     };
     const leftTransitionWidth = sideWidthFor(leftRaw);
     const rightTransitionWidth = sideWidthFor(rightRaw);
@@ -417,10 +418,12 @@ export class RaceSurfaceModel {
     } else if (region === 'shoulder') {
       elevation = this.getBankedDeckElevation(deck, lateral);
       terrainGripScale = 1;
+      surfaceId = this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState());
     } else if (region === 'transition') {
       const deckSideElevation = this.getBankedDeckElevation(deck, lateral);
       elevation = deckSideElevation * (1 - blend) + raw.elevation * blend;
       terrainGripScale = 1;
+      surfaceId = this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState());
     }
     surfaceId = this.getEffectiveSurfaceId(surfaceId, this.getWeatherState());
     const surface = this.getSurfaceById(surfaceId);
@@ -475,29 +478,52 @@ export class RaceSurfaceModel {
       ? this.adapter.projectWorldToTrack(worldPoint)
       : null;
     if (!projection?.segment || !Number.isFinite(Number(projection.lateral))) {
-      return {
+      const raw = {
         ...this.sampleRawTerrain(worldPoint, fallbackElevation),
         projection,
         roadElevation: this.clampElevation(fallbackElevation),
         metrics: null
       };
+      const baked = typeof this.adapter.sampleBakedSurface === 'function'
+        ? this.adapter.sampleBakedSurface(worldPoint, { preferredRegion: 'terrain' })
+        : null;
+      return baked?.region === 'terrain'
+        ? { ...raw, elevation: this.clampElevation(baked.elevation), normal: baked.normal, bakedSurfaceSource: baked.source }
+        : raw;
     }
     const track = this.sampleTrack(Number(projection.distance || 0), Number(projection.lateral || 0), {
       ...options,
       fallbackSurfaceId: projection.segment?.surface || options.fallbackSurfaceId || 'asphalt'
     });
     if (Math.abs(Number(projection.lateral || 0)) > Number(track.metrics?.transitionEnd || 0)) {
-      return {
+      const raw = {
         ...this.sampleRawTerrain(worldPoint, fallbackElevation),
         projection,
         roadElevation: track.roadElevation,
         metrics: track.metrics
       };
+      const baked = typeof this.adapter.sampleBakedSurface === 'function'
+        ? this.adapter.sampleBakedSurface(worldPoint, { preferredRegion: 'terrain' })
+        : null;
+      return baked?.region === 'terrain'
+        ? { ...raw, elevation: this.clampElevation(baked.elevation), normal: baked.normal, bakedSurfaceSource: baked.source }
+        : raw;
     }
+    const baked = typeof this.adapter.sampleBakedSurface === 'function'
+      ? this.adapter.sampleBakedSurface(worldPoint, { preferredRegion: track.region })
+      : null;
+    const bakedMatchesRegion = baked && (
+      baked.region === track.region
+      || (track.region === 'shoulder' && ['inner', 'flat-join'].includes(baked.region))
+      || (track.region === 'terrain' && baked.region === 'terrain')
+    );
     return {
       ...track,
       x: worldPoint.x,
       z: worldPoint.z,
+      elevation: bakedMatchesRegion ? this.clampElevation(baked.elevation) : track.elevation,
+      normal: bakedMatchesRegion ? baked.normal : track.normal,
+      bakedSurfaceSource: bakedMatchesRegion ? baked.source : null,
       projection: {
         ...projection,
         distance: Number(projection.distance || 0),

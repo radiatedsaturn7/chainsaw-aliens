@@ -1480,6 +1480,7 @@ export default class MidiComposer {
     this.midiPortraitTrackPickerScrollMax = 0;
     this.midiPortraitMasterVolumeOpen = false;
     this.midiPortraitRecordSettingsOpen = false;
+    this.midiRecordTuningOpen = false;
     this.midiRecordLandscapeMoreOpen = false;
     this.transportHold = null;
     this.transportPopover = null;
@@ -1533,10 +1534,13 @@ export default class MidiComposer {
       midiPortraitMasterVolumeSlider: null,
       recordVirtualInstrument: null,
       recordSettings: null,
+      recordTuning: null,
       recordMore: null,
       recordMoreMenuPanel: null,
       recordSettingsPanel: null,
       recordSettingsControls: [],
+      recordTuningPanel: null,
+      recordTuningControls: [],
       toolButtons: [],
       quantizeToggle: null,
       quantizeValue: null,
@@ -3796,6 +3800,10 @@ export default class MidiComposer {
     this.touchInput?.releaseAllNotes?.();
     this.stopLivePreviewNotes();
     this.recordModeActive = false;
+    this.midiPortraitRecordSettingsOpen = false;
+    this.midiRecordTuningOpen = false;
+    this.recordLayout.instrumentMenuOpen = false;
+    this.recordLayout.instrumentDropdown = null;
     if (this.recordGridSnapshot) {
       this.gridZoomX = this.recordGridSnapshot.gridZoomX;
       this.gridZoomY = this.recordGridSnapshot.gridZoomY;
@@ -3924,6 +3932,7 @@ export default class MidiComposer {
       this.recordLayout.bounds.instrumentConfigButtons = [];
       this.recordLayout.bounds.instrumentDropdownItems = [];
       this.midiPortraitRecordSettingsOpen = false;
+      this.midiRecordTuningOpen = false;
     }
   }
 
@@ -5630,13 +5639,22 @@ export default class MidiComposer {
       if (this.midiRecordLandscapeMoreOpen) {
         if (this.bounds.recordVirtualInstrument && this.pointInBounds(x, y, this.bounds.recordVirtualInstrument)) {
           this.midiPortraitRecordSettingsOpen = false;
+          this.midiRecordTuningOpen = false;
           this.recordLayout.instrumentMenuOpen = !this.recordLayout.instrumentMenuOpen;
           this.midiRecordLandscapeMoreOpen = false;
           return;
         }
         if (this.bounds.recordSettings && this.pointInBounds(x, y, this.bounds.recordSettings)) {
           this.recordLayout.instrumentMenuOpen = false;
+          this.midiRecordTuningOpen = false;
           this.midiPortraitRecordSettingsOpen = !this.midiPortraitRecordSettingsOpen;
+          this.midiRecordLandscapeMoreOpen = false;
+          return;
+        }
+        if (this.bounds.recordTuning && this.pointInBounds(x, y, this.bounds.recordTuning)) {
+          this.recordLayout.instrumentMenuOpen = false;
+          this.midiPortraitRecordSettingsOpen = false;
+          this.midiRecordTuningOpen = !this.midiRecordTuningOpen;
           this.midiRecordLandscapeMoreOpen = false;
           return;
         }
@@ -5671,6 +5689,12 @@ export default class MidiComposer {
       }
       const recordSettingsHit = this.bounds.recordSettingsControls?.find((bounds) => this.pointInBounds(x, y, bounds));
       if (recordSettingsHit) {
+        if (recordSettingsHit.id === 'record-settings-ok' || recordSettingsHit.id === 'record-settings-cancel') {
+          this.midiPortraitRecordSettingsOpen = false;
+          this.recordLayout.instrumentDropdown = null;
+          this.recordLayout.bounds.instrumentDropdownItems = [];
+          return;
+        }
         if (recordSettingsHit.id === 'record-quantize') this.recordQuantizeEnabled = !this.recordQuantizeEnabled;
         if (recordSettingsHit.id === 'record-countin') this.recordCountInEnabled = !this.recordCountInEnabled;
         if (recordSettingsHit.id === 'record-metronome') this.recordMetronomeEnabled = !this.recordMetronomeEnabled;
@@ -5680,27 +5704,61 @@ export default class MidiComposer {
         if (recordSettingsHit.id === 'record-keyboard-octave-up') {
           this.setKeyboardStartOctave((this.song.keyboardStartOctave ?? DEFAULT_KEYBOARD_START_OCTAVE) + 1);
         }
-        if (recordSettingsHit.id === 'record-tuning-string') {
-          this.cycleStringTuning(recordSettingsHit.instrument, recordSettingsHit.stringIndex, recordSettingsHit.delta ?? 1);
+        return;
+      }
+      const recordTuningHit = this.bounds.recordTuningControls?.find((bounds) => this.pointInBounds(x, y, bounds));
+      if (recordTuningHit?.id === 'record-tuning-ok' || recordTuningHit?.id === 'record-tuning-cancel') {
+        this.midiRecordTuningOpen = false;
+        this.recordLayout.instrumentDropdown = null;
+        this.recordLayout.bounds.instrumentDropdownItems = [];
+        return;
+      }
+      const recordTuningPickerHit = this.recordLayout.bounds.instrumentDropdownItems
+        .some((bounds) => this.pointInBounds(x, y, bounds))
+        || this.recordLayout.bounds.instrumentConfigButtons
+          .some((bounds) => this.pointInBounds(x, y, bounds));
+      if (this.midiRecordTuningOpen && recordTuningPickerHit) {
+        const action = this.recordLayout.handlePointerDown(payload);
+        if (action?.type === 'keyboard-octave') {
+          this.setKeyboardStartOctave(action.value);
         }
-        if (recordSettingsHit.id === 'record-tuning-reset') {
-          this.resetStringTuning(recordSettingsHit.instrument);
+        if (action?.type === 'string-tuning') {
+          const key = action.instrument === 'bass' ? 'bassTuning' : 'guitarTuning';
+          const fallback = action.instrument === 'bass' ? STANDARD_BASS_TUNING : STANDARD_GUITAR_TUNING;
+          const tuning = normalizeMidiTuning(this.song[key], fallback);
+          tuning[action.stringIndex] = action.pitch;
+          this.setStringTuning(action.instrument, tuning);
+        }
+        if (action?.type === 'standard-tuning') {
+          this.resetStringTuning(action.instrument);
         }
         return;
       }
       if (this.midiPortraitRecordSettingsOpen && this.bounds.recordSettingsPanel && this.pointInBounds(x, y, this.bounds.recordSettingsPanel)) {
         return;
       }
+      if (this.midiRecordTuningOpen && this.bounds.recordTuningPanel && this.pointInBounds(x, y, this.bounds.recordTuningPanel)) {
+        return;
+      }
       if (!pedalOverlayOpen && this.handlePedalPointerDown(x, y)) return;
       if (this.bounds.recordVirtualInstrument && this.pointInBounds(x, y, this.bounds.recordVirtualInstrument)) {
         this.midiPortraitRecordSettingsOpen = false;
+        this.midiRecordTuningOpen = false;
         this.recordLayout.instrumentMenuOpen = !this.recordLayout.instrumentMenuOpen;
         this.midiRecordLandscapeMoreOpen = false;
         return;
       }
       if (this.bounds.recordSettings && this.pointInBounds(x, y, this.bounds.recordSettings)) {
         this.recordLayout.instrumentMenuOpen = false;
+        this.midiRecordTuningOpen = false;
         this.midiPortraitRecordSettingsOpen = !this.midiPortraitRecordSettingsOpen;
+        this.midiRecordLandscapeMoreOpen = false;
+        return;
+      }
+      if (this.bounds.recordTuning && this.pointInBounds(x, y, this.bounds.recordTuning)) {
+        this.recordLayout.instrumentMenuOpen = false;
+        this.midiPortraitRecordSettingsOpen = false;
+        this.midiRecordTuningOpen = !this.midiRecordTuningOpen;
         this.midiRecordLandscapeMoreOpen = false;
         return;
       }
@@ -13219,7 +13277,7 @@ export default class MidiComposer {
       const quickY = Math.max(8, layout.instrumentBounds.y - 52);
       const quickGap = 8;
       const quickX = 10;
-      const quickW = Math.floor((width - quickX * 2 - quickGap * 2) / 3);
+      const quickW = Math.floor((width - quickX * 2 - quickGap * 3) / 4);
       this.bounds.recordVirtualInstrument = {
         x: quickX,
         y: quickY,
@@ -13234,20 +13292,38 @@ export default class MidiComposer {
         h: 42
       };
       this.drawButton(ctx, this.bounds.recordSettings, 'Settings', this.midiPortraitRecordSettingsOpen, false);
-      this.bounds.record = {
+      this.bounds.recordTuning = {
         x: quickX + (quickW + quickGap) * 2,
         y: quickY,
         w: quickW,
         h: 42
       };
+      this.drawButton(ctx, this.bounds.recordTuning, 'Tuning', this.midiRecordTuningOpen, false);
+      this.bounds.record = {
+        x: quickX + (quickW + quickGap) * 3,
+        y: quickY,
+        w: quickW,
+        h: 42
+      };
       this.drawButton(ctx, this.bounds.record, this.recorder.isRecording ? 'Stop Rec' : 'Record', this.recorder.isRecording, false);
+      this.bounds.recordTuningPanel = null;
+      this.bounds.recordTuningControls = [];
       if (this.midiPortraitRecordSettingsOpen) {
-        const settingsH = this.recordInstrument === 'guitar' ? 278 : this.recordInstrument === 'bass' ? 230 : 176;
+        const settingsH = 176;
         this.drawMidiPortraitRecordSettingsPanel(ctx, {
           x: 10,
           y: Math.max(8, quickY - settingsH - 10),
           w: width - 20,
           h: Math.min(settingsH, Math.max(132, quickY - 18))
+        });
+      }
+      if (this.midiRecordTuningOpen) {
+        const tuningH = this.recordInstrument === 'guitar' ? 230 : 184;
+        this.drawMidiRecordTuningPanel(ctx, {
+          x: 10,
+          y: Math.max(8, quickY - tuningH - 10),
+          w: width - 20,
+          h: Math.min(tuningH, Math.max(132, quickY - 18))
         });
       }
       if (pedalOverlayOpen) {
@@ -13338,6 +13414,8 @@ export default class MidiComposer {
       stickIndicators: this.recordStickIndicators,
       nowPlaying: null,
       showSettingsRail: false,
+      hideInstrumentConfig: true,
+      showInstrumentModalActions: true,
       instrumentModalViewportBounds: recordOverlayBounds,
       hideInstrumentModal: true
     });
@@ -13350,8 +13428,10 @@ export default class MidiComposer {
         h: Math.max(1, height - padding * 2 - topMenuH - gap)
       });
     }
+    this.bounds.recordTuningPanel = null;
+    this.bounds.recordTuningControls = [];
     if (this.midiPortraitRecordSettingsOpen) {
-      const settingsH = this.recordInstrument === 'guitar' ? 278 : this.recordInstrument === 'bass' ? 230 : 176;
+      const settingsH = 224;
       const panelW = Math.min(520, Math.max(1, recordOverlayBounds.w));
       const panelH = Math.min(settingsH, Math.max(132, recordOverlayBounds.h));
       this.drawMidiPortraitRecordSettingsPanel(ctx, {
@@ -13360,9 +13440,21 @@ export default class MidiComposer {
         w: panelW,
         h: panelH
       });
+    } else if (this.midiRecordTuningOpen) {
+      const tuningH = this.recordInstrument === 'guitar' ? 250 : 204;
+      const panelW = Math.min(520, Math.max(1, recordOverlayBounds.w));
+      const panelH = Math.min(tuningH, Math.max(132, recordOverlayBounds.h));
+      this.drawMidiRecordTuningPanel(ctx, {
+        x: recordOverlayBounds.x + (recordOverlayBounds.w - panelW) / 2,
+        y: recordOverlayBounds.y + (recordOverlayBounds.h - panelH) / 2,
+        w: panelW,
+        h: panelH
+      });
     } else {
       this.bounds.recordSettingsPanel = null;
       this.bounds.recordSettingsControls = [];
+      this.bounds.recordTuningPanel = null;
+      this.bounds.recordTuningControls = [];
     }
     this.recordLayout.instrumentModalViewportBounds = recordOverlayBounds;
     this.recordLayout.drawInstrumentModal(ctx);
@@ -13381,6 +13473,7 @@ export default class MidiComposer {
     this.bounds.recordMore = null;
     this.bounds.recordVirtualInstrument = null;
     this.bounds.recordSettings = null;
+    this.bounds.recordTuning = null;
     this.bounds.record = null;
     this.bounds.recordMoreMenuPanel = null;
 
@@ -13421,19 +13514,23 @@ export default class MidiComposer {
     const menuW = Math.min(260, Math.max(160, more.w + 48));
     const menuX = clamp(more.x + more.w - menuW, x, x + w - menuW);
     const menuY = more.y + more.h + 6;
-    const menuH = rowH * 3 + menuGap * 2 + pad * 2;
+    const menuH = rowH * 2 + menuGap + pad * 2;
     const panel = { x: menuX, y: menuY, w: menuW, h: menuH };
     this.bounds.recordMoreMenuPanel = panel;
     drawSharedPanel(ctx, panel, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
     [
       { key: 'recordVirtualInstrument', label: 'Virtual', active: this.recordLayout.instrumentMenuOpen },
+      { key: 'record', label: this.recorder.isRecording ? 'Stop Rec' : 'Record', active: this.recorder.isRecording },
       { key: 'recordSettings', label: 'Settings', active: this.midiPortraitRecordSettingsOpen },
-      { key: 'record', label: this.recorder.isRecording ? 'Stop Rec' : 'Record', active: this.recorder.isRecording }
+      { key: 'recordTuning', label: 'Tuning', active: this.midiRecordTuningOpen }
     ].forEach((entry, index) => {
+      const row = Math.floor(index / 2);
+      const col = index % 2;
+      const buttonW = Math.floor((panel.w - pad * 2 - menuGap) / 2);
       const buttonBounds = {
-        x: panel.x + pad,
-        y: panel.y + pad + index * (rowH + menuGap),
-        w: panel.w - pad * 2,
+        x: panel.x + pad + col * (buttonW + menuGap),
+        y: panel.y + pad + row * (rowH + menuGap),
+        w: buttonW,
         h: rowH
       };
       this.bounds[entry.key] = buttonBounds;
@@ -13694,7 +13791,7 @@ export default class MidiComposer {
       this.drawFilePanel(ctx, contentX, contentY, contentW, contentH);
     }
 
-    if (isLandscape && this.activeTab !== 'instruments' && this.activeTab !== 'song') {
+    if (isLandscape && this.activeTab !== 'instruments') {
       this.drawLandscapeZoomOverlay(ctx, width, height, landscapeLayout?.surfaces.zoom ?? landscapeBottomZoomSurface);
     }
   }
@@ -13973,46 +14070,70 @@ export default class MidiComposer {
       pushButton({ x: panel.x + 12 + (octaveW + gap) * 2, y: nextY, w: octaveW, h: buttonH, id: 'record-keyboard-octave-up' }, 'Oct +');
       nextY += buttonH + 10;
     }
-    if (this.recordInstrument === 'guitar' || this.recordInstrument === 'bass') {
-      const instrument = this.recordInstrument;
-      const fallback = instrument === 'bass' ? STANDARD_BASS_TUNING : STANDARD_GUITAR_TUNING;
-      const tuning = normalizeMidiTuning(
-        instrument === 'bass' ? this.song.bassTuning : this.song.guitarTuning,
-        fallback
-      );
-      drawSectionLabel(`${instrument === 'bass' ? 'Bass' : 'Guitar'} Tuning`);
-      const columns = instrument === 'bass' ? 4 : 3;
-      const stringButtonW = Math.floor((panel.w - 24 - gap * (columns - 1)) / columns);
-      const stringButtonH = 38;
-      tuning.forEach((pitch, index) => {
-        const row = Math.floor(index / columns);
-        const col = index % columns;
-        const bounds = {
-          x: panel.x + 12 + col * (stringButtonW + gap),
-          y: nextY + row * (stringButtonH + gap),
-          w: stringButtonW,
-          h: stringButtonH,
-          id: 'record-tuning-string',
-          instrument,
-          stringIndex: index,
-          delta: 1
-        };
-        pushButton(bounds, `S${index + 1} ${this.formatPitchLabel(pitch)}`);
-      });
-      nextY += Math.ceil(tuning.length / columns) * (stringButtonH + gap) + 2;
-      pushButton({
+    if (this.activeViewportMode === 'landscape-touch') {
+      const actionGap = 10;
+      const actionH = 38;
+      const actionW = Math.floor((panel.w - 24 - actionGap) / 2);
+      const actionY = panel.y + panel.h - actionH - 10;
+      const cancel = {
         x: panel.x + 12,
-        y: nextY,
-        w: panel.w - 24,
-        h: 38,
-        id: 'record-tuning-reset',
-        instrument
-      }, 'Reset Standard');
-      nextY += 46;
+        y: actionY,
+        w: actionW,
+        h: actionH,
+        id: 'record-settings-cancel'
+      };
+      const ok = {
+        x: cancel.x + actionW + actionGap,
+        y: actionY,
+        w: actionW,
+        h: actionH,
+        id: 'record-settings-ok'
+      };
+      pushButton(cancel, 'Cancel');
+      pushButton(ok, 'OK', true);
     }
-    ctx.fillStyle = UI_SUITE.colors.muted;
-    ctx.font = `11px ${UI_SUITE.font.family}`;
-    ctx.fillText('Tap string notes to tune up by semitone', panel.x + 12, panel.y + panel.h - 18);
+    ctx.restore();
+  }
+
+  drawMidiRecordTuningPanel(ctx, panel) {
+    this.bounds.recordTuningPanel = panel;
+    this.bounds.recordTuningControls = [];
+    drawSharedPanel(ctx, panel, { fill: UI_SUITE.colors.panelAlt, border: UI_SUITE.colors.border });
+    ctx.save();
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `13px ${UI_SUITE.font.family}`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    const stringInstrument = this.recordInstrument === 'bass' ? 'bass' : 'guitar';
+    ctx.fillText(`${stringInstrument === 'bass' ? 'Bass' : 'Guitar'} Tuning`, panel.x + 12, panel.y + 18);
+    const performanceInstrument = this.recordLayout.instrument;
+    this.recordLayout.instrument = stringInstrument;
+    this.recordLayout.instrumentModalBounds = panel;
+    this.recordLayout.hideInstrumentConfig = false;
+    this.recordLayout.drawInstrumentConfig(ctx, panel.x, panel.y, panel.w, panel.y + 36, { showTitle: false });
+    this.recordLayout.instrument = performanceInstrument;
+
+    const gap = 10;
+    const actionH = 38;
+    const actionW = Math.floor((panel.w - 24 - gap) / 2);
+    const actionY = panel.y + panel.h - actionH - 10;
+    const cancel = {
+      x: panel.x + 12,
+      y: actionY,
+      w: actionW,
+      h: actionH,
+      id: 'record-tuning-cancel'
+    };
+    const ok = {
+      x: cancel.x + actionW + gap,
+      y: actionY,
+      w: actionW,
+      h: actionH,
+      id: 'record-tuning-ok'
+    };
+    this.drawButton(ctx, cancel, 'Cancel', false, false);
+    this.drawButton(ctx, ok, 'OK', true, false);
+    this.bounds.recordTuningControls.push(cancel, ok);
     ctx.restore();
   }
 

@@ -6332,6 +6332,12 @@ export default class Game {
     const document = this.preparedCutsceneAudio?.sfx?.get(resolvedFxId) || this.getSfxDocument(resolvedFxId);
     if (!document) return;
     const key = options.key ? `${resolvedFxId}:${options.key}` : '';
+    const existing = key ? this.audio.activeSfxSources?.get?.(key) : null;
+    if (existing) {
+      existing.setVolume?.(Math.max(0, Number(options.volume ?? 1)));
+      existing.setPitchCents?.(Number(options.pitchCents || 0));
+      return;
+    }
     this.audio.playSfxDocument(document, {
       id: key || (options.loop ? resolvedFxId : ''),
       volume: Math.max(0, Number(options.volume ?? 1)),
@@ -6343,6 +6349,13 @@ export default class Game {
 
   stopSfxById(fxId = '', options = {}) {
     const resolvedFxId = String(fxId || '').trim();
+    if (!resolvedFxId && options.key) {
+      const suffix = `:${options.key}`;
+      Array.from(this.audio.activeSfxSources?.keys?.() || [])
+        .filter((key) => key.endsWith(suffix))
+        .forEach((key) => this.audio.stopSfx(key));
+      return;
+    }
     if (!resolvedFxId) {
       this.audio.stopSfx('');
       return;

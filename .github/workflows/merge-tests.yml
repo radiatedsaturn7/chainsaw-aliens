@@ -31,6 +31,30 @@ jobs:
       - name: Run editor UI unit tests
         run: node --test tests/unit/editorMenuLayout.test.js tests/unit/editorMenuSpec.test.js tests/unit/portraitEditorMenuModels.test.js
 
+      - name: Run race physics feel unit tests
+        run: npm run test:race-physics-feel
+
+  race-physics-feel-browser:
+    name: Race physics feel browser test
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run race physics feel browser test
+        run: npm run test:race-physics-feel:browser -- --reporter=line
+
   playwright:
     name: Playwright editor contract tests (${{ matrix.shard }})
     runs-on: ubuntu-latest

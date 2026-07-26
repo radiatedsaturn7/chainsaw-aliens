@@ -129,9 +129,13 @@ export function clipRaceTerrainTriangleOutsideTrackCorridor(triangle = [], {
       runtimeType,
       allowVisualExtension: runtimeType !== 'circuit'
     });
-    const seam = boundaryLateral < 0
-      ? (seamSection?.transitionLeft || seamSection?.terrainLeft || seamSection?.shoulderLeft)
-      : (seamSection?.transitionRight || seamSection?.terrainRight || seamSection?.shoulderRight);
+    const seam = includeTransition
+      ? (boundaryLateral < 0
+        ? (seamSection?.transitionLeft || seamSection?.terrainLeft || seamSection?.shoulderLeft)
+        : (seamSection?.transitionRight || seamSection?.terrainRight || seamSection?.shoulderRight))
+      : (boundaryLateral < 0
+        ? (seamSection?.shoulderLeft || seamSection?.marginLeft || seamSection?.left)
+        : (seamSection?.shoulderRight || seamSection?.marginRight || seamSection?.right));
     if (seam) {
       const welded = {
         ...seam,
@@ -262,4 +266,260 @@ export function getRaceTerrainTrianglesOutsideTrackCorridor(points = [], options
     });
   });
   return retained;
+}
+
+export function clipRaceTerrainTriangleOutsideSignedCorridor(triangle = [], {
+  runtimeType = 'destination',
+  routeLength = 1,
+  maxDepth = 2,
+  adapter = {}
+} = {}) {
+  if (!Array.isArray(triangle) || triangle.length !== 3) return [];
+  const routeEnd = Math.max(1, Number(routeLength) || 1);
+  const classificationCache = new Map();
+  const classify = (point = {}) => {
+    const cacheKey = `${Math.round(Number(point.x || 0) * 10000)},${Math.round(Number(point.z ?? point.y ?? 0) * 10000)}`;
+    const cached = classificationCache.get(cacheKey);
+    if (cached) return cached;
+    const projection = adapter.projectWorldToTrack?.(point);
+    if (!projection?.segment || !Number.isFinite(Number(projection.distance)) || !Number.isFinite(Number(projection.lateral))) {
+      const outside = { signed: Number.POSITIVE_INFINITY, projection, metrics: null };
+      classificationCache.set(cacheKey, outside);
+      return outside;
+    }
+    const section = adapter.getSurfaceSectionAtDistance?.(Number(projection.distance || 0), {
+      runtimeType,
+      routeLength: routeEnd,
+      allowVisualExtension: runtimeType !== 'circuit'
+    });
+    const metrics = section?.metrics || adapter.getCorridorMetrics?.(section?.center || projection, projection.segment) || {};
+    const hardHalfWidth = Math.max(0, Number(metrics.hardHalfWidth ?? metrics.shoulderEnd ?? metrics.marginEnd ?? metrics.roadEnd) || 0);
+    const result = {
+      signed: Math.abs(Number(projection.lateral || 0)) - hardHalfWidth,
+      projection,
+      metrics
+    };
+    classificationCache.set(cacheKey, result);
+    return result;
+  };
+  const midpoint = (a = {}, b = {}) => ({
+    x: (Number(a.x || 0) + Number(b.x || 0)) * 0.5,
+    z: (Number(a.z ?? a.y ?? 0) + Number(b.z ?? b.y ?? 0)) * 0.5,
+    elevation: (Number(a.elevation || 0) + Number(b.elevation || 0)) * 0.5
+  });
+  const centroid = (points = []) => ({
+    x: points.reduce((sum, point) => sum + Number(point.x || 0), 0) / points.length,
+    z: points.reduce((sum, point) => sum + Number(point.z ?? point.y ?? 0), 0) / points.length,
+    elevation: points.reduce((sum, point) => sum + Number(point.elevation || 0), 0) / points.length
+  });
+  const findSeam = (inside = {}, outside = {}) => {
+    let low = inside;
+    let high = outside;
+    let lowClass = classify(low);
+    let highClass = classify(high);
+    for (let iteration = 0; iteration < 12; iteration += 1) {
+      const candidate = midpoint(low, high);
+      const candidateClass = classify(candidate);
+      if (candidateClass.signed < 0) {
+        low = candidate;
+        lowClass = candidateClass;
+      } else {
+        high = candidate;
+        highClass = candidateClass;
+      }
+    }
+    const seamClass = Math.abs(lowClass.signed) < Math.abs(highClass.signed) ? lowClass : highClass;
+    const seamPoint = Math.abs(lowClass.signed) < Math.abs(highClass.signed) ? low : high;
+    const projection = seamClass.projection || {};
+    const welded = {
+      ...seamPoint,
+      x: Number(seamPoint.x || 0),
+      z: Number(seamPoint.z ?? seamPoint.y ?? 0),
+      y: Number(seamPoint.z ?? seamPoint.y ?? 0),
+      lateralOffset: Number(projection.lateral || 0),
+      roadDistance: Number(projection.distance || 0),
+      terrainClipDistance: Number(projection.distance || 0),
+      hardCorridorEnd: Number(seamClass.metrics?.hardHalfWidth || 0),
+      trackSeam: true
+    };
+    return adapter.weldSeamPoint?.(welded, {
+      distance: welded.terrainClipDistance,
+      side: welded.lateralOffset < 0 ? 'left' : 'right'
+    }) || welded;
+  };
+  const clip = (points = [], depth = 0) => {
+    const classes = points.map(classify);
+    const center = centroid(points);
+    const centerClass = classify(center);
+    const edgeClasses = points.map((point, index) => classify(midpoint(point, points[(index + 1) % points.length])));
+    const allOutside = classes.every((entry) => entry.signed >= -0.0001);
+    const allInside = classes.every((entry) => entry.signed < 0.0001);
+    const probesOutside = centerClass.signed >= -0.0001 && edgeClasses.every((entry) => entry.signed >= -0.0001);
+    const probesInside = centerClass.signed < 0.0001 && edgeClasses.every((entry) => entry.signed < 0.0001);
+    if (allOutside && probesOutside) return [points];
+    if (allInside && probesInside) return [];
+    if (depth < Math.max(0, Number(maxDepth) || 0) && (allOutside || allInside)) {
+      const [a, b, c] = points;
+      const ab = midpoint(a, b);
+      const bc = midpoint(b, c);
+      const ca = midpoint(c, a);
+      return [
+        [a, ab, ca],
+        [ab, b, bc],
+        [ca, bc, c],
+        [ab, bc, ca]
+      ].flatMap((piece) => clip(piece, depth + 1));
+    }
+    if (allOutside || allInside) return [];
+    const output = [];
+    for (let index = 0; index < points.length; index += 1) {
+      const current = points[index];
+      const previous = points[(index + points.length - 1) % points.length];
+      const currentClass = classify(current);
+      const previousClass = classify(previous);
+      const currentOutside = currentClass.signed >= 0;
+      const previousOutside = previousClass.signed >= 0;
+      if (currentOutside !== previousOutside) {
+        output.push(currentOutside ? findSeam(previous, current) : findSeam(current, previous));
+      }
+      if (currentOutside) output.push(current);
+    }
+    return output.length >= 3 ? [output] : [];
+  };
+  return clip(triangle).flatMap((polygon) => triangulateRaceTerrainPolygon(polygon));
+}
+
+export function subtractRaceTerrainPolygonByConvexPolygon(subject = [], clipPolygon = [], {
+  markSeam = true,
+  seamEdges = null
+} = {}) {
+  if (!Array.isArray(subject) || subject.length < 3 || !Array.isArray(clipPolygon) || clipPolygon.length < 3) {
+    return Array.isArray(subject) && subject.length >= 3 ? [subject] : [];
+  }
+  const clipArea = clipPolygon.reduce((sum, point, index) => {
+    const next = clipPolygon[(index + 1) % clipPolygon.length];
+    return sum + Number(point.x || 0) * Number(next.z ?? next.y ?? 0)
+      - Number(next.x || 0) * Number(point.z ?? point.y ?? 0);
+  }, 0);
+  const orientation = clipArea >= 0 ? 1 : -1;
+  const signedEdge = (point = {}, a = {}, b = {}) => orientation * (
+    (Number(b.x || 0) - Number(a.x || 0)) * (Number(point.z ?? point.y ?? 0) - Number(a.z ?? a.y ?? 0))
+      - (Number(b.z ?? b.y ?? 0) - Number(a.z ?? a.y ?? 0)) * (Number(point.x || 0) - Number(a.x || 0))
+  );
+  const clipIntersectionArea = () => {
+    let polygon = subject.map((point) => ({
+      x: Number(point.x || 0),
+      z: Number(point.z ?? point.y ?? 0)
+    }));
+    for (let edgeIndex = 0; edgeIndex < clipPolygon.length && polygon.length >= 3; edgeIndex += 1) {
+      const edgeA = clipPolygon[edgeIndex];
+      const edgeB = clipPolygon[(edgeIndex + 1) % clipPolygon.length];
+      const output = [];
+      for (let pointIndex = 0; pointIndex < polygon.length; pointIndex += 1) {
+        const current = polygon[pointIndex];
+        const previous = polygon[(pointIndex + polygon.length - 1) % polygon.length];
+        const currentSigned = signedEdge(current, edgeA, edgeB);
+        const previousSigned = signedEdge(previous, edgeA, edgeB);
+        const currentInside = currentSigned >= -0.000001;
+        const previousInside = previousSigned >= -0.000001;
+        if (currentInside !== previousInside) {
+          const denominator = previousSigned - currentSigned;
+          const t = Math.abs(denominator) < 0.0000001
+            ? 0.5
+            : clamp(previousSigned / denominator, 0, 1);
+          output.push({
+            x: previous.x + (current.x - previous.x) * t,
+            z: previous.z + (current.z - previous.z) * t
+          });
+        }
+        if (currentInside) output.push(current);
+      }
+      polygon = output;
+    }
+    if (polygon.length < 3) return 0;
+    return Math.abs(polygon.reduce((sum, point, index) => {
+      const next = polygon[(index + 1) % polygon.length];
+      return sum + point.x * next.z - next.x * point.z;
+    }, 0)) * 0.5;
+  };
+  // Bounding boxes are only a broad phase. Do not partition a terrain polygon
+  // along the infinite lines of a nearby road triangle unless their areas
+  // genuinely overlap.
+  if (clipIntersectionArea() <= 0.000001) return [subject];
+  const intersection = (a = {}, b = {}, edgeA = {}, edgeB = {}, markEdge = markSeam) => {
+    const da = signedEdge(a, edgeA, edgeB);
+    const db = signedEdge(b, edgeA, edgeB);
+    const denominator = da - db;
+    const t = Math.abs(denominator) < 0.0000001 ? 0.5 : clamp(da / denominator, 0, 1);
+    const x = Number(a.x || 0) + (Number(b.x || 0) - Number(a.x || 0)) * t;
+    const z = Number(a.z ?? a.y ?? 0) + (Number(b.z ?? b.y ?? 0) - Number(a.z ?? a.y ?? 0)) * t;
+    const edgeDx = Number(edgeB.x || 0) - Number(edgeA.x || 0);
+    const edgeDz = Number(edgeB.z ?? edgeB.y ?? 0) - Number(edgeA.z ?? edgeA.y ?? 0);
+    const edgeLengthSq = edgeDx * edgeDx + edgeDz * edgeDz;
+    const edgeT = edgeLengthSq > 0.0000001
+      ? clamp(((x - Number(edgeA.x || 0)) * edgeDx + (z - Number(edgeA.z ?? edgeA.y ?? 0)) * edgeDz) / edgeLengthSq, 0, 1)
+      : 0;
+    const roadSeamElevation = Number(edgeA.elevation || 0)
+      + (Number(edgeB.elevation || 0) - Number(edgeA.elevation || 0)) * edgeT;
+    return {
+      ...a,
+      x,
+      z,
+      y: z,
+      elevation: roadSeamElevation,
+      roadSeamElevation,
+      exactRoadSeam: markEdge,
+      trackSeam: markEdge
+    };
+  };
+  const clipHalfPlane = (polygon = [], edgeA = {}, edgeB = {}, keepInside = true, markEdge = markSeam) => {
+    const output = [];
+    const markPointOnEdge = (point = {}) => {
+      if (!markEdge || Math.abs(signedEdge(point, edgeA, edgeB)) > 0.00001) return point;
+      const edgeDx = Number(edgeB.x || 0) - Number(edgeA.x || 0);
+      const edgeDz = Number(edgeB.z ?? edgeB.y ?? 0) - Number(edgeA.z ?? edgeA.y ?? 0);
+      const edgeLengthSq = edgeDx * edgeDx + edgeDz * edgeDz;
+      const edgeT = edgeLengthSq > 0.0000001
+        ? clamp((
+          (Number(point.x || 0) - Number(edgeA.x || 0)) * edgeDx
+            + (Number(point.z ?? point.y ?? 0) - Number(edgeA.z ?? edgeA.y ?? 0)) * edgeDz
+        ) / edgeLengthSq, 0, 1)
+        : 0;
+      point.trackSeam = true;
+      point.exactRoadSeam = true;
+      point.roadSeamElevation = Number(edgeA.elevation || 0)
+        + (Number(edgeB.elevation || 0) - Number(edgeA.elevation || 0)) * edgeT;
+      point.elevation = point.roadSeamElevation;
+      return point;
+    };
+    for (let index = 0; index < polygon.length; index += 1) {
+      const current = polygon[index];
+      const previous = polygon[(index + polygon.length - 1) % polygon.length];
+      const currentInside = keepInside
+        ? signedEdge(current, edgeA, edgeB) >= -0.000001
+        : signedEdge(current, edgeA, edgeB) <= 0.000001;
+      const previousInside = keepInside
+        ? signedEdge(previous, edgeA, edgeB) >= -0.000001
+        : signedEdge(previous, edgeA, edgeB) <= 0.000001;
+      if (currentInside !== previousInside) output.push(intersection(previous, current, edgeA, edgeB, markEdge));
+      if (currentInside) output.push(markPointOnEdge(current));
+    }
+    return output;
+  };
+  let pending = [subject];
+  const retained = [];
+  for (let edgeIndex = 0; edgeIndex < clipPolygon.length && pending.length; edgeIndex += 1) {
+    const edgeA = clipPolygon[edgeIndex];
+    const edgeB = clipPolygon[(edgeIndex + 1) % clipPolygon.length];
+    const markEdge = markSeam && (!Array.isArray(seamEdges) || seamEdges[edgeIndex] === true);
+    const nextPending = [];
+    pending.forEach((piece) => {
+      const outside = clipHalfPlane(piece, edgeA, edgeB, false, markEdge);
+      if (outside.length >= 3) retained.push(outside);
+      const inside = clipHalfPlane(piece, edgeA, edgeB, true, markEdge);
+      if (inside.length >= 3) nextPending.push(inside);
+    });
+    pending = nextPending;
+  }
+  return retained.length ? retained : (pending.length ? [] : [subject]);
 }

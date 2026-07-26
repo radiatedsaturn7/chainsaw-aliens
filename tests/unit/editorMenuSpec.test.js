@@ -458,8 +458,7 @@ test('shared portrait specs declare intentional dynamic empty panels', () => {
     level: ['assets'],
     midi: ['settings'],
     sfx: ['settings'],
-    cutscene: ['settings'],
-    car: ['art']
+    cutscene: ['settings']
   });
   for (const [editorId, sectionIds] of Object.entries(PORTRAIT_DYNAMIC_EMPTY_SECTION_IDS)) {
     sectionIds.forEach((sectionId) => {
@@ -471,8 +470,7 @@ test('shared portrait specs declare intentional dynamic empty panels', () => {
 
 test('shared desktop specs declare intentional dynamic empty roots only', () => {
   assert.deepEqual(DESKTOP_DYNAMIC_EMPTY_SECTION_IDS, {
-    midi: ['tracks'],
-    car: ['art']
+    midi: ['tracks']
   });
   for (const [editorId, sectionIds] of Object.entries(DESKTOP_DYNAMIC_EMPTY_SECTION_IDS)) {
     sectionIds.forEach((sectionId) => {
@@ -619,7 +617,11 @@ test('Car Editor shared menu omits placeholder rows and keeps editable car field
   assert.equal(getEditorMenuSection('car', 'edit').actions.includes('copy-layer'), false);
   assert.equal(getEditorMenuSection('car', 'edit').actions.includes('delete-layer'), false);
   assert.deepEqual(getEditorMenuSection('car', 'view').actions, ['zoom-fit']);
-  assert.deepEqual(getEditorMenuSection('car', 'art').actions, []);
+  assert.deepEqual(getEditorMenuSection('car', 'art').actions, [
+    'car-art-exterior',
+    'car-art-interior',
+    'car-camera-settings'
+  ]);
   assert.equal(getEditorMenuSection('car', 'view').actions.includes('preview-turns'), false);
   assert.equal(getEditorMenuSection('car', 'view').actions.includes('toggle-tires'), false);
   assert.equal(getEditorMenuSection('car', 'drivetrain').actions.includes('power-curve'), true);
@@ -928,7 +930,7 @@ test('Race shared authoring roots include tile-backed terrain commands without s
     'ground-brush-strength-50'
   ].forEach((action) => assert.equal(getEditorMenuSection('race', 'ground').actions.includes(action), true, action));
   assert.deepEqual(getEditorMenuSection('race', 'sprites').actions, ['sprite-select', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']);
-  assert.deepEqual(getEditorMenuSection('race', 'settings').actions, ['ai-count', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale']);
+  assert.deepEqual(getEditorMenuSection('race', 'settings').actions, ['ai-count', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug']);
   assert.equal(uiSpecSource.includes('- File: standard document actions plus generate random race and load built-in reference tracks.'), true);
   assert.equal(uiSpecSource.includes('Surfaces: selected ground tile, paint ground, selected-segment edge tile'), false);
 });

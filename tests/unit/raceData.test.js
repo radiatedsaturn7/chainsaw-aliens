@@ -66,6 +66,9 @@ test('race data scaffold supports default races, cars, and surfaces', () => {
   assert.equal(project.cars[0].transmissions.automatic.shiftMode, 'automatic');
   assert.equal(project.cars[0].audio.engineSoundId, null);
   assert.equal(project.cars[0].audio.engineProfile, 'wrx-flat-four-cvt');
+  assert.equal(project.cars[0].camera.trackingMode, 'dynamic');
+  assert.equal(project.cars[0].art.interior.dashboard.artRef, null);
+  assert.equal(project.cars[0].art.interior.steeringWheel.artRef, null);
   assert.deepEqual(project.cars[0].setup.tireCompoundByWheel, { fl: 'tarmac', fr: 'tarmac', rl: 'tarmac', rr: 'tarmac' });
   assert.equal(RACE_TIRE_COMPOUNDS.some((compound) => compound.id === 'rain'), true);
   assert.equal(RACE_TIRE_COMPOUNDS.some((compound) => compound.id === 'snow'), true);
@@ -155,11 +158,11 @@ test('built-in test races model requested real-world track references', () => {
   assert.equal(byId['daytona-tri-oval'].referenceFacts.bankingDegrees.backstretch, 3);
 });
 
-test('WRX race car tuning exposes Daytona high speed calibration', () => {
+test('WRX race car tuning exposes real-world top speed calibration', () => {
   const wrx = createDefaultCar('starter-rwd');
 
-  assert.equal(wrx.tuning.topSpeedMph, 161);
-  assert.equal(wrx.tuning.dragCoefficient <= 0.08, true);
+  assert.equal(wrx.tuning.topSpeedMph, 145);
+  assert.equal(wrx.tuning.dragCoefficient, 0.34);
   assert.equal(wrx.tuning.accelerationCalibration >= 1.06, true);
 });
 
@@ -195,8 +198,11 @@ test('built-in race cars expose real-world power, torque, drivetrain, and gear c
 
 test('built-in race car performance target bands match calibrated playtest ranges', () => {
   assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['starter-rwd'].zeroToSixtySec, [4.8, 5.6]);
+  assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['starter-rwd'].zeroToSixtySecByTransmission.automatic, [5.6, 6.35]);
   assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['starter-rwd'].quarterMileSec, [13.5, 14.3]);
-  assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['starter-rwd'].topSpeedMph, [158, 162]);
+  assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['starter-rwd'].quarterMileSecByTransmission.automatic, [14.4, 15.2]);
+  assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['starter-rwd'].quarterMileTrapMphByTransmission.automatic, [90, 96]);
+  assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['starter-rwd'].topSpeedMph, [143, 146]);
 
   assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['subaru-brz-2022'].zeroToSixtySec, [5.3, 6.8]);
   assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['subaru-brz-2022'].quarterMileSec, [13.8, 15.2]);

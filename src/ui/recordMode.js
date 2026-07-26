@@ -28,6 +28,7 @@ export default class RecordModeLayout {
       instrumentButtons: [],
       instrumentConfigButtons: [],
       instrumentDropdownItems: [],
+      instrumentModalActions: [],
       settingsButtons: []
     };
     this.header = {
@@ -55,6 +56,7 @@ export default class RecordModeLayout {
     };
     this.instrumentDropdown = null;
     this.hideInstrumentConfig = false;
+    this.showInstrumentModalActions = false;
   }
 
   setDevice(device) {
@@ -175,6 +177,7 @@ export default class RecordModeLayout {
     nowPlayingPlacement = 'instrument',
     showSettingsRail = true,
     hideInstrumentConfig = false,
+    showInstrumentModalActions = false,
     instrumentModalViewportBounds = null,
     hideInstrumentModal = false
   }) {
@@ -204,6 +207,7 @@ export default class RecordModeLayout {
     }
 
     this.hideInstrumentConfig = hideInstrumentConfig;
+    this.showInstrumentModalActions = showInstrumentModalActions;
     this.instrumentModalViewportBounds = instrumentModalViewportBounds;
     this.drawStickIndicators(ctx, stickIndicators);
     this.drawNowPlayingModal(ctx, nowPlaying, nowPlayingPlacement);
@@ -269,7 +273,7 @@ export default class RecordModeLayout {
     });
   }
 
-  drawInstrumentConfig(ctx, modalX, modalY, modalW, startY) {
+  drawInstrumentConfig(ctx, modalX, modalY, modalW, startY, options = {}) {
     this.bounds.instrumentConfigButtons = [];
     this.bounds.instrumentDropdownItems = [];
     if (this.hideInstrumentConfig) {
@@ -281,10 +285,12 @@ export default class RecordModeLayout {
     const rowH = Math.max(30, Math.min(38, this.header.rowH));
     const gap = 8;
     let y = startY;
-    ctx.fillStyle = 'rgba(255,255,255,0.78)';
-    ctx.font = '12px Courier New';
-    ctx.fillText('Setup', configX, y + 13);
-    y += 20;
+    if (options.showTitle !== false) {
+      ctx.fillStyle = 'rgba(255,255,255,0.78)';
+      ctx.font = '12px Courier New';
+      ctx.fillText('Setup', configX, y + 13);
+      y += 20;
+    }
 
     const drawConfigButton = (id, label, value, x, buttonY, w, options = {}) => {
       const bounds = { id, x, y: buttonY, w, h: rowH, ...options };
@@ -409,6 +415,7 @@ export default class RecordModeLayout {
 
   drawInstrumentModal(ctx) {
     this.instrumentModalBounds = null;
+    this.bounds.instrumentModalActions = [];
     if (!this.instrumentMenuOpen) return;
     const { instrument } = this.bounds;
     if (!instrument) return;
@@ -426,7 +433,8 @@ export default class RecordModeLayout {
     const titleH = 34;
     const configRows = this.hideInstrumentConfig ? 0 : this.instrument === 'guitar' ? 4 : this.instrument === 'bass' ? 3 : this.instrument === 'keyboard' ? 2 : 0;
     const configH = configRows ? 22 + configRows * (this.header.rowH + gap) + 8 : 0;
-    const modalContentH = titleH + rows * this.header.rowH + Math.max(0, rows - 1) * gap + configH + 24;
+    const actionH = this.showInstrumentModalActions ? 48 : 0;
+    const modalContentH = titleH + rows * this.header.rowH + Math.max(0, rows - 1) * gap + configH + 24 + actionH;
     const modalH = Math.min(modalViewport.h - 24, Math.max(150, modalContentH));
     const modalX = modalViewport.x + (modalViewport.w - modalW) / 2;
     const modalY = modalViewport.y + (modalViewport.h - modalH) / 2;
@@ -442,6 +450,29 @@ export default class RecordModeLayout {
     this.drawInstrumentButtons(ctx);
     const configStartY = modalY + 54 + rows * this.header.rowH + Math.max(0, rows - 1) * gap + 18;
     this.drawInstrumentConfig(ctx, modalX, modalY, modalW, configStartY);
+    if (this.showInstrumentModalActions) {
+      const actionGap = 10;
+      const actionH = 38;
+      const actionY = modalY + modalH - actionH - 10;
+      const actionW = Math.floor((modalW - 32 - actionGap) / 2);
+      const cancel = {
+        id: 'instrument-modal-cancel',
+        x: modalX + 16,
+        y: actionY,
+        w: actionW,
+        h: actionH
+      };
+      const ok = {
+        id: 'instrument-modal-ok',
+        x: cancel.x + actionW + actionGap,
+        y: actionY,
+        w: actionW,
+        h: actionH
+      };
+      this.bounds.instrumentModalActions = [cancel, ok];
+      this.drawButton(ctx, cancel, 'Cancel', false);
+      this.drawButton(ctx, ok, 'OK', true);
+    }
     ctx.restore();
   }
 
@@ -739,6 +770,17 @@ export default class RecordModeLayout {
 
   handlePointerDown(payload) {
     const { x, y } = payload;
+    const hitModalAction = this.bounds.instrumentModalActions.find((item) => this.pointInBounds(x, y, item));
+    if (hitModalAction) {
+      this.instrumentMenuOpen = false;
+      this.instrumentModalBounds = null;
+      this.instrumentDropdown = null;
+      this.bounds.instrumentButtons = [];
+      this.bounds.instrumentConfigButtons = [];
+      this.bounds.instrumentDropdownItems = [];
+      this.bounds.instrumentModalActions = [];
+      return { type: hitModalAction.id };
+    }
     const hitDropdown = this.bounds.instrumentDropdownItems.find((item) => this.pointInBounds(x, y, item));
     if (hitDropdown) {
       const dropdown = hitDropdown.dropdown;

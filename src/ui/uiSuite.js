@@ -38,7 +38,7 @@ export const UI_SUITE = {
 };
 
 export const SHARED_EDITOR_MENU_BUTTON_CHROME = Object.freeze({
-  radius: 0,
+  radius: UI_SUITE.spacing.radius,
   border: UI_SUITE.colors.border,
   fill: 'rgba(18,28,42,0.82)',
   highlight: 'rgba(255,255,255,0.045)',
@@ -53,6 +53,33 @@ export const SHARED_EDITOR_MENU_BUTTON_CHROME = Object.freeze({
   accentWidth: 4,
   fontSize: 12
 });
+
+function drawSharedRoundedRectPath(ctx, bounds, radius = 0) {
+  const x = Number(bounds?.x || 0);
+  const y = Number(bounds?.y || 0);
+  const w = Math.max(0, Number(bounds?.w || 0));
+  const h = Math.max(0, Number(bounds?.h || 0));
+  const r = Math.max(0, Math.min(Number(radius) || 0, w / 2, h / 2));
+  ctx.beginPath();
+  if (r > 0 && typeof ctx.roundRect === 'function') {
+    ctx.roundRect(x, y, w, h, r);
+    return;
+  }
+  if (r > 0 && typeof ctx.quadraticCurveTo === 'function') {
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+    return;
+  }
+  ctx.rect(x, y, w, h);
+}
 
 export function drawSharedPanel(ctx, bounds, {
   fill = UI_SUITE.colors.panel,
@@ -407,14 +434,19 @@ export function drawSharedMenuButtonChrome(ctx, bounds, {
       : chrome.fill;
   const prevAlpha = ctx.globalAlpha;
   ctx.globalAlpha = alpha;
+  ctx.save();
+  drawSharedRoundedRectPath(ctx, bounds, chrome.radius);
+  ctx.clip();
   ctx.fillStyle = fill;
   ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
   ctx.fillStyle = active ? chrome.activeHighlight : chrome.highlight;
   ctx.fillRect(bounds.x, bounds.y, bounds.w, Math.max(1, Math.floor(bounds.h / 2)));
   ctx.fillStyle = active ? chrome.activeAccent : chrome.accent;
   ctx.fillRect(bounds.x, bounds.y, chrome.accentWidth, bounds.h);
+  ctx.restore();
   ctx.strokeStyle = focused ? chrome.focusBorder : chrome.border;
-  ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+  drawSharedRoundedRectPath(ctx, bounds, chrome.radius);
+  ctx.stroke();
   ctx.globalAlpha = prevAlpha;
   if (focused) drawSharedFocusRing(ctx, bounds);
   return active ? chrome.activeText : chrome.text;
@@ -429,7 +461,7 @@ export function applySharedDomMenuButtonChrome(element, {
   if (!element?.style) return;
   const chrome = SHARED_EDITOR_MENU_BUTTON_CHROME;
   element.style.minHeight = `${minHeight}px`;
-  element.style.borderRadius = `${chrome.radius}`;
+  element.style.borderRadius = `${chrome.radius}px`;
   element.style.border = `1px solid ${focused ? chrome.focusBorder : chrome.border}`;
   element.style.borderLeft = portrait
     ? `${chrome.accentWidth}px solid ${active ? chrome.activeAccent : chrome.accent}`
@@ -476,12 +508,13 @@ export function drawSharedFocusRing(ctx, bounds, {
   ctx.save();
   ctx.strokeStyle = color;
   ctx.lineWidth = lineWidth;
-  ctx.strokeRect(
-    bounds.x - padding,
-    bounds.y - padding,
-    bounds.w + padding * 2,
-    bounds.h + padding * 2
-  );
+  drawSharedRoundedRectPath(ctx, {
+    x: bounds.x - padding,
+    y: bounds.y - padding,
+    w: bounds.w + padding * 2,
+    h: bounds.h + padding * 2
+  }, SHARED_EDITOR_MENU_BUTTON_CHROME.radius + padding);
+  ctx.stroke();
   ctx.restore();
 }
 

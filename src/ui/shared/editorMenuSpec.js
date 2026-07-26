@@ -96,7 +96,18 @@ const actionEntries = (ids, labels = {}) => Object.fromEntries(ids.map((id) => [
     label: labels[id] || toTitleLabel(id)
   }
 ]));
-const EDITOR_ACTION_LABEL_OVERRIDES = {};
+const EDITOR_ACTION_LABEL_OVERRIDES = {
+  'aero-front': 'Aero',
+  'spring-front': 'Spring',
+  'damping-front': 'Damping',
+  'transmission-type': 'Transmission',
+  'summary-sheet': 'Summary Sheet',
+  'load-preset': 'Load Preset',
+  'car-art-exterior': 'Exterior',
+  'car-art-interior': 'Interior',
+  'car-camera-settings': 'Camera Settings',
+  gearing: 'Gearing'
+};
 
 export const REQUIRED_DESKTOP_ROOT_PREFIX = ['file', 'edit', 'view'];
 export const DESKTOP_FILE_BASELINE_ACTION_IDS = ['new', 'save', 'save-as', 'open', 'export', 'import'];
@@ -109,12 +120,10 @@ export const PORTRAIT_DYNAMIC_EMPTY_SECTION_IDS = {
   level: ['assets'],
   midi: ['settings'],
   sfx: ['settings'],
-  cutscene: ['settings'],
-  car: ['art']
+  cutscene: ['settings']
 };
 export const DESKTOP_DYNAMIC_EMPTY_SECTION_IDS = {
-  midi: ['tracks'],
-  car: ['art']
+  midi: ['tracks']
 };
 export const STANDARD_EDITOR_ACTION_RAIL_PREFIX = ['menu', 'undo', 'redo'];
 export const SHARED_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'car', 'tile', 'doodad'];
@@ -237,7 +246,7 @@ export const EDITOR_MENU_SPECS = {
       { id: 'preview', label: 'Preview' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'load-preset', 'export', 'import', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo', 'copy-state', 'paste-state', 'duplicate-state', 'delete-state']),
       view: section('view', 'View', ['zoom-fit']),
       settings: section('settings', 'Settings', ['actor-settings', 'metadata', 'aggression', 'loot-rules']),
@@ -290,7 +299,7 @@ export const EDITOR_MENU_SPECS = {
       { id: 'settings', label: 'Settings' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'load-preset', 'export', 'import', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo', 'copy', 'cut', 'paste', 'delete']),
       view: section('view', 'View', ['zoom-fit', 'loop']),
       timeline: section('timeline', 'Timeline', ['play', 'stop', 'start', 'end']),
@@ -381,7 +390,7 @@ export const EDITOR_MENU_SPECS = {
         'ground-brush-strength-100'
       ]),
       sprites: section('sprites', 'Sprites', ['sprite-select', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']),
-      settings: section('settings', 'Settings', ['ai-count', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale'])
+      settings: section('settings', 'Settings', ['ai-count', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
     }
   },
   car: {
@@ -392,16 +401,16 @@ export const EDITOR_MENU_SPECS = {
     portraitRoot: [
       { id: 'file', label: 'File' },
       { id: 'art', label: 'Art' },
-      { id: 'drivetrain', label: 'Drive' },
+      { id: 'drivetrain', label: 'Tools' },
       { id: 'tuning', label: 'Tune' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'load-preset', 'export', 'import', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
-      art: section('art', 'Art', []),
-      drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sound-next', 'power-curve', 'weight-balance']),
-      tuning: section('tuning', 'Tuning', ['default-tires', 'tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel']),
+      art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-camera-settings']),
+      drivetrain: section('drivetrain', 'Tools', ['summary-sheet']),
+      tuning: section('tuning', 'Tuning', ['transmission-type', 'power-curve', 'tires', 'tire-pressure', 'brake-balance', 'gearing', 'diff', 'aero-front', 'spring-front', 'damping-front', 'engine-sfx', 'weight-balance']),
       aero: section('aero', 'Aero', ['aero-front', 'aero-rear']),
       suspension: section('suspension', 'Suspension', ['spring-front', 'spring-rear', 'damping-front', 'damping-rear', 'antiroll-front', 'antiroll-rear']),
       drive: section('drive', 'Drive', ['test-drive'])

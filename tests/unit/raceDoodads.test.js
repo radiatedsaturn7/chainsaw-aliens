@@ -2,8 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
+  RACE_DOODAD_SIZE_LIMITS,
   createRaceDoodadFromLegacyScenery,
   getDoodadRuleForSpeed,
+  getRaceDoodadGroundOffsetLimit,
   normalizeRaceDoodadDocument,
   serializeRaceDoodadDocument
 } from '../../src/racing/raceDoodads.js';
@@ -69,4 +71,56 @@ test('race doodad documents preserve explicit hitbox dimensions', () => {
   assert.equal(payload.doodad.hitboxWidthM, 1.8);
   assert.equal(payload.doodad.hitboxHeightM, 4.5);
   assert.equal(payload.doodad.groundOffsetM, 1.4);
+});
+
+test('race doodad documents preserve large editor-authored dimensions', () => {
+  const doodad = normalizeRaceDoodadDocument({
+    name: 'Giant Billboard',
+    widthM: 240,
+    heightM: 180,
+    hitboxWidthM: 220,
+    hitboxHeightM: 160
+  });
+  const clamped = normalizeRaceDoodadDocument({
+    name: 'Overlarge Billboard',
+    widthM: RACE_DOODAD_SIZE_LIMITS.maxWidthM + 50,
+    heightM: RACE_DOODAD_SIZE_LIMITS.maxHeightM + 50,
+    hitboxWidthM: RACE_DOODAD_SIZE_LIMITS.maxWidthM + 50,
+    hitboxHeightM: RACE_DOODAD_SIZE_LIMITS.maxHeightM + 50
+  });
+
+  assert.equal(doodad.widthM, 240);
+  assert.equal(doodad.heightM, 180);
+  assert.equal(doodad.hitboxWidthM, 220);
+  assert.equal(doodad.hitboxHeightM, 160);
+  assert.equal(clamped.widthM, RACE_DOODAD_SIZE_LIMITS.maxWidthM);
+  assert.equal(clamped.heightM, RACE_DOODAD_SIZE_LIMITS.maxHeightM);
+  assert.equal(clamped.hitboxWidthM, RACE_DOODAD_SIZE_LIMITS.maxWidthM);
+  assert.equal(clamped.hitboxHeightM, RACE_DOODAD_SIZE_LIMITS.maxHeightM);
+});
+
+test('race doodad documents clamp plant depth to one full doodad height', () => {
+  const tall = normalizeRaceDoodadDocument({
+    name: 'Buried Tower',
+    widthM: 12,
+    heightM: 48,
+    groundOffsetM: 42
+  });
+  const overDeep = normalizeRaceDoodadDocument({
+    name: 'Too Deep Tower',
+    widthM: 12,
+    heightM: 48,
+    groundOffsetM: 80
+  });
+  const shallow = normalizeRaceDoodadDocument({
+    name: 'Short Sign',
+    widthM: 1,
+    heightM: 3,
+    groundOffsetM: 8
+  });
+
+  assert.equal(getRaceDoodadGroundOffsetLimit(tall.heightM), 48);
+  assert.equal(tall.groundOffsetM, 42);
+  assert.equal(overDeep.groundOffsetM, 48);
+  assert.equal(shallow.groundOffsetM, 3);
 });

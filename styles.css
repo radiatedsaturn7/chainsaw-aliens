@@ -37,7 +37,7 @@
   --editor-space-6: 32px;
   --editor-radius-sm: 4px;
   --editor-radius-md: var(--ui-radius);
-  --editor-portrait-button-radius: 0;
+  --editor-portrait-button-radius: var(--ui-radius);
   --editor-portrait-button-border: var(--ui-border);
   --editor-portrait-button-fill: rgba(18,28,42,0.82);
   --editor-portrait-button-highlight: rgba(255,255,255,0.045);

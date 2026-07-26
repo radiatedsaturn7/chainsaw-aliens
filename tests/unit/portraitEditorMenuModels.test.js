@@ -2652,7 +2652,8 @@ test('MIDI landscape touch uses compact left rail, left root drawer, and right u
   assert.equal(midiEditorSource.includes('const reserveLandscapeRightRail = showLandscapeRightDrawer;'), false);
   assert.equal(midiEditorSource.includes('reserveRightRail: showLandscapeRightDrawer'), false);
   assert.equal(midiEditorSource.includes('capRightRailToLeftRailHeight: true'), true);
-  assert.equal(midiEditorSource.includes("if (isLandscape && this.activeTab !== 'instruments' && this.activeTab !== 'song') {"), true);
+  assert.equal(midiEditorSource.includes("if (isLandscape && this.activeTab !== 'instruments') {"), true);
+  assert.equal(midiEditorSource.includes("if (isLandscape && this.activeTab !== 'instruments' && this.activeTab !== 'song') {"), false);
   assert.equal(midiEditorSource.includes("if (!isPortrait && !isMobile) {"), true);
   assert.equal(midiEditorSource.includes('this.drawLandscapeZoomOverlay(ctx, width, height, landscapeLayout?.surfaces.zoom ?? landscapeBottomZoomSurface);'), true);
   assert.equal(midiEditorSource.includes("rootDrawerOverlayOrigin: 'left'"), false);
@@ -3039,11 +3040,16 @@ test('MIDI record mode keeps desktop on the shared desktop shell', () => {
   assert.equal(recordBody.includes('if (grid && grid.h > 0) {'), true);
   assert.equal(recordBody.includes('controlRailBounds\n    });'), false);
   assert.equal(recordBody.includes('const recordOverlayBounds = {'), true);
+  assert.equal(recordBody.includes('const quickW = Math.floor((width - quickX * 2 - quickGap * 3) / 4);'), true);
+  assert.equal(recordBody.includes("this.drawButton(ctx, this.bounds.recordTuning, 'Tuning', this.midiRecordTuningOpen, false);"), true);
   assert.equal(recordBody.includes('instrumentModalViewportBounds: recordOverlayBounds'), true);
+  assert.equal(recordBody.includes('hideInstrumentConfig: true'), true);
+  assert.equal(recordBody.includes('showInstrumentModalActions: true'), true);
   assert.equal(recordBody.includes('hideInstrumentModal: true'), true);
   assert.equal(recordBody.includes('const recordPedalBounds = {'), true);
   assert.equal(recordBody.includes('this.drawPedalBoardPanel(ctx, recordPedalBounds.x, recordPedalBounds.y, recordPedalBounds.w, recordPedalBounds.h, track, { embedded: true, compact: true, hideTitle: true });'), true);
-  assert.equal(recordBody.includes("if (this.midiPortraitRecordSettingsOpen) {\n      const settingsH = this.recordInstrument === 'guitar' ? 278 : this.recordInstrument === 'bass' ? 230 : 176;"), true);
+  assert.equal(recordBody.includes("if (this.midiPortraitRecordSettingsOpen) {\n      const settingsH = 224;"), true);
+  assert.equal(recordBody.includes("} else if (this.midiRecordTuningOpen) {\n      const tuningH = this.recordInstrument === 'guitar' ? 250 : 204;"), true);
   assert.equal(recordBody.includes('this.drawMidiPortraitRecordSettingsPanel(ctx, {'), true);
   assert.equal(recordBody.includes('this.recordLayout.drawInstrumentModal(ctx);'), true);
   assert.equal(recordBody.indexOf('this.drawPedalBoardPanel(ctx, recordPedalBounds.x, recordPedalBounds.y, recordPedalBounds.w, recordPedalBounds.h, track, { embedded: true, compact: true, hideTitle: true });') < recordBody.indexOf('this.recordLayout.drawInstrumentModal(ctx);'), true);
@@ -3057,6 +3063,9 @@ test('MIDI record mode keeps desktop on the shared desktop shell', () => {
   assert.equal(midiEditorSource.includes("this.bounds.recordMore = buttonBounds;"), true);
   assert.equal(midiEditorSource.includes("{ key: 'recordVirtualInstrument', label: 'Virtual', active: this.recordLayout.instrumentMenuOpen }"), true);
   assert.equal(midiEditorSource.includes("{ key: 'recordSettings', label: 'Settings', active: this.midiPortraitRecordSettingsOpen }"), true);
+  assert.equal(midiEditorSource.includes("{ key: 'recordTuning', label: 'Tuning', active: this.midiRecordTuningOpen }"), true);
+  assert.equal(midiEditorSource.includes('const row = Math.floor(index / 2);'), true);
+  assert.equal(midiEditorSource.includes('const col = index % 2;'), true);
   assert.equal(midiEditorSource.includes("{ key: 'record', label: this.recorder.isRecording ? 'Stop Rec' : 'Record', active: this.recorder.isRecording }"), true);
   assert.equal(recordBody.includes('{ embedded: true, compact: true, hideTitle: true }'), true);
   assert.equal(midiEditorSource.includes('const hideTitle = options.hideTitle === true;'), true);
@@ -3070,6 +3079,14 @@ test('MIDI record mode keeps desktop on the shared desktop shell', () => {
   assert.equal(recordModeSource.includes('hideInstrumentModal = false'), true);
   assert.equal(recordModeSource.includes('const modalViewport = this.instrumentModalViewportBounds || instrument;'), true);
   assert.equal(recordModeSource.includes('ctx.fillRect(modalViewport.x, modalViewport.y, modalViewport.w, modalViewport.h);'), true);
+  assert.equal(recordModeSource.includes("id: 'instrument-modal-cancel'"), true);
+  assert.equal(recordModeSource.includes("id: 'instrument-modal-ok'"), true);
+  assert.equal(recordModeSource.includes('return { type: hitModalAction.id };'), true);
+  assert.equal(midiEditorSource.includes("id: 'record-settings-cancel'"), true);
+  assert.equal(midiEditorSource.includes("id: 'record-settings-ok'"), true);
+  assert.equal(midiEditorSource.includes('drawMidiRecordTuningPanel(ctx, panel)'), true);
+  assert.equal(midiEditorSource.includes('this.recordLayout.drawInstrumentConfig(ctx, panel.x, panel.y, panel.w, panel.y + 36, { showTitle: false });'), true);
+  assert.equal(midiEditorSource.includes("id: 'record-tuning-string'"), false);
   assert.equal(recordBody.includes('const isMobile = this.isMobileLayout();'), false);
   assert.equal(recordBody.includes('nowPlayingPlacement: this.isMobileLayout()'), false);
   assert.equal(pointerDownBody.includes("if (this.bounds.recordMore && this.pointInBounds(x, y, this.bounds.recordMore)) {\n        this.midiRecordLandscapeMoreOpen = !this.midiRecordLandscapeMoreOpen;"), true);
@@ -5960,7 +5977,7 @@ test('Actor collision editor thumbstick follows the shared touch surface contrac
   assert.equal(collisionBlock.includes("&& canRenderEditorSurface(collisionViewportMode.mode, 'touch-thumbstick')"), true);
 });
 
-test('Actor editor portrait DOM controls use consolidated square button chrome', () => {
+test('Actor editor portrait DOM controls use consolidated rounded button chrome', () => {
   assert.equal(stylesSource.includes('--ui-bg: #07090e;'), true);
   assert.equal(stylesSource.includes('--ui-panel: rgba(8, 12, 20, 0.88);'), true);
   assert.equal(stylesSource.includes('--ui-panel-alt: rgba(18, 28, 42, 0.82);'), true);
@@ -5975,7 +5992,7 @@ test('Actor editor portrait DOM controls use consolidated square button chrome',
   assert.equal(stylesSource.includes('--editor-accent: var(--ui-accent);'), true);
   assert.equal(stylesSource.includes('--editor-accent-2: var(--ui-accent-2);'), true);
   assert.equal(stylesSource.includes('--editor-top-bar-height: 40px;'), true);
-  assert.equal(stylesSource.includes('--editor-portrait-button-radius: 0;'), true);
+  assert.equal(stylesSource.includes('--editor-portrait-button-radius: var(--ui-radius);'), true);
   assert.equal(stylesSource.includes('--editor-portrait-button-fill: rgba(18,28,42,0.82);'), true);
   assert.equal(stylesSource.includes('--editor-portrait-button-highlight: rgba(255,255,255,0.045);'), true);
   assert.equal(stylesSource.includes('--editor-portrait-button-active-fill: rgba(46,86,132,0.72);'), true);
@@ -6012,8 +6029,8 @@ test('Actor editor portrait DOM controls use consolidated square button chrome',
   assert.equal(stylesSource.includes('.actor-editor-portrait-bottom-menu .actor-editor-btn {\n  min-height: 44px;\n  border-radius: 6px;'), false);
 });
 
-test('all portrait editor button wrappers consume one shared square chrome source', () => {
-  assert.equal(SHARED_EDITOR_MENU_BUTTON_CHROME.radius, 0);
+test('all portrait editor button wrappers consume one shared rounded chrome source', () => {
+  assert.equal(SHARED_EDITOR_MENU_BUTTON_CHROME.radius, UI_SUITE.spacing.radius);
   assert.equal(SHARED_EDITOR_MENU_BUTTON_CHROME.border, UI_SUITE.colors.border);
   assert.equal(SHARED_EDITOR_MENU_BUTTON_CHROME.fill, 'rgba(18,28,42,0.82)');
   assert.equal(SHARED_EDITOR_MENU_BUTTON_CHROME.highlight, 'rgba(255,255,255,0.045)');
@@ -6024,7 +6041,9 @@ test('all portrait editor button wrappers consume one shared square chrome sourc
   assert.equal(SHARED_EDITOR_MENU_BUTTON_CHROME.accentWidth, 4);
   assert.equal(uiSuiteSource.includes('export function drawSharedMenuButtonChrome(ctx, bounds'), true);
   assert.equal(uiSuiteSource.includes('const chrome = SHARED_EDITOR_MENU_BUTTON_CHROME;'), true);
+  assert.equal(uiSuiteSource.includes('drawSharedRoundedRectPath(ctx, bounds, chrome.radius);'), true);
   assert.equal(uiSuiteSource.includes('export function applySharedDomMenuButtonChrome(element'), true);
+  assert.equal(uiSuiteSource.includes('element.style.borderRadius = `${chrome.radius}px`;'), true);
   assert.equal(uiSuiteSource.includes('element.style.backgroundColor = active ? chrome.activeFill : chrome.fill;'), true);
   assert.equal(uiSuiteSource.includes('element.style.backgroundImage = active'), true);
   assert.equal(uiSuiteSource.includes('transparent 50% 100%'), true);

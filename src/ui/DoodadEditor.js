@@ -1,6 +1,8 @@
 import {
   DEFAULT_RACE_DOODAD,
+  RACE_DOODAD_SIZE_LIMITS,
   getDoodadRuleForSpeed,
+  getRaceDoodadGroundOffsetLimit,
   normalizeDoodadBehavior,
   normalizeRaceDoodadDocument,
   serializeRaceDoodadDocument
@@ -238,12 +240,19 @@ export default class DoodadEditor {
     return getRaceArtSpriteCanvasShared(artRef, { cache: this.artCanvasCache });
   }
 
+  getGroundOffsetLimitM(heightM = this.doodad.heightM) {
+    return getRaceDoodadGroundOffsetLimit(heightM);
+  }
+
   adjust(field, delta) {
-    if (field === 'width') this.doodad.widthM = clamp(Number(this.doodad.widthM || 0) + delta, 0.1, 80);
-    if (field === 'height') this.doodad.heightM = clamp(Number(this.doodad.heightM || 0) + delta, 0.1, 120);
-    if (field === 'ground-offset') this.doodad.groundOffsetM = clamp(Number(this.doodad.groundOffsetM || 0) + delta, -20, 20);
-    if (field === 'hitbox-width') this.doodad.hitboxWidthM = clamp(Number(this.doodad.hitboxWidthM || this.doodad.widthM || 0) + delta, 0.1, 80);
-    if (field === 'hitbox-height') this.doodad.hitboxHeightM = clamp(Number(this.doodad.hitboxHeightM || this.doodad.heightM || 0) + delta, 0.1, 120);
+    if (field === 'width') this.doodad.widthM = clamp(Number(this.doodad.widthM || 0) + delta, RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.maxWidthM);
+    if (field === 'height') this.doodad.heightM = clamp(Number(this.doodad.heightM || 0) + delta, RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.maxHeightM);
+    if (field === 'ground-offset') {
+      const limitM = this.getGroundOffsetLimitM();
+      this.doodad.groundOffsetM = clamp(Number(this.doodad.groundOffsetM || 0) + delta, -limitM, limitM);
+    }
+    if (field === 'hitbox-width') this.doodad.hitboxWidthM = clamp(Number(this.doodad.hitboxWidthM || this.doodad.widthM || 0) + delta, RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.maxWidthM);
+    if (field === 'hitbox-height') this.doodad.hitboxHeightM = clamp(Number(this.doodad.hitboxHeightM || this.doodad.heightM || 0) + delta, RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.maxHeightM);
     if (field === 'weight') this.doodad.weightKg = clamp(Number(this.doodad.weightKg || 0) + delta, 0.1, 100000);
     if (field === 'rule30') this.cycleRuleBehavior(30);
     if (field === 'rule120') this.cycleRuleBehavior(120);
@@ -292,11 +301,14 @@ export default class DoodadEditor {
   }
 
   setSliderValue(key, value) {
-    if (key === 'width') this.doodad.widthM = Math.round(clamp(Number(value) || 0.1, 0.1, 80) * 10) / 10;
-    else if (key === 'height') this.doodad.heightM = Math.round(clamp(Number(value) || 0.1, 0.1, 120) * 10) / 10;
-    else if (key === 'ground-offset') this.doodad.groundOffsetM = Math.round(clamp(Number(value) || 0, -20, 20) * 10) / 10;
-    else if (key === 'hitbox-width') this.doodad.hitboxWidthM = Math.round(clamp(Number(value) || 0.1, 0.1, 80) * 10) / 10;
-    else if (key === 'hitbox-height') this.doodad.hitboxHeightM = Math.round(clamp(Number(value) || 0.1, 0.1, 120) * 10) / 10;
+    if (key === 'width') this.doodad.widthM = Math.round(clamp(Number(value) || RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.maxWidthM) * 10) / 10;
+    else if (key === 'height') this.doodad.heightM = Math.round(clamp(Number(value) || RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.maxHeightM) * 10) / 10;
+    else if (key === 'ground-offset') {
+      const limitM = this.getGroundOffsetLimitM();
+      this.doodad.groundOffsetM = Math.round(clamp(Number(value) || 0, -limitM, limitM) * 10) / 10;
+    }
+    else if (key === 'hitbox-width') this.doodad.hitboxWidthM = Math.round(clamp(Number(value) || RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.maxWidthM) * 10) / 10;
+    else if (key === 'hitbox-height') this.doodad.hitboxHeightM = Math.round(clamp(Number(value) || RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.minM, RACE_DOODAD_SIZE_LIMITS.maxHeightM) * 10) / 10;
     else if (key === 'weight') this.doodad.weightKg = Math.round(clamp(Number(value) || 0.1, 0.1, 100000) * 10) / 10;
     else if (key === 'threshold-1' || key === 'threshold-2') this.setRuleSpeed(key, value);
     this.doodad = normalizeRaceDoodadDocument(this.doodad);
@@ -1273,10 +1285,11 @@ export default class DoodadEditor {
   }
 
   drawDoodadSizePanel(ctx, bounds) {
+    const groundOffsetLimitM = this.getGroundOffsetLimitM();
     const rows = [
-      { id: 'width', label: 'Width', min: 0.1, max: 80, value: Number(this.doodad.widthM) || 1.5, format: (value) => `${value.toFixed(1)}m` },
-      { id: 'height', label: 'Height', min: 0.1, max: 120, value: Number(this.doodad.heightM) || 2, format: (value) => `${value.toFixed(1)}m` },
-      { id: 'ground-offset', label: 'Plant', min: -20, max: 20, value: Number(this.doodad.groundOffsetM) || 0, format: (value) => `${value.toFixed(1)}m` },
+      { id: 'width', label: 'Width', min: RACE_DOODAD_SIZE_LIMITS.minM, max: RACE_DOODAD_SIZE_LIMITS.maxWidthM, value: Number(this.doodad.widthM) || 1.5, format: (value) => `${value.toFixed(1)}m` },
+      { id: 'height', label: 'Height', min: RACE_DOODAD_SIZE_LIMITS.minM, max: RACE_DOODAD_SIZE_LIMITS.maxHeightM, value: Number(this.doodad.heightM) || 2, format: (value) => `${value.toFixed(1)}m` },
+      { id: 'ground-offset', label: 'Plant', min: -groundOffsetLimitM, max: groundOffsetLimitM, value: Number(this.doodad.groundOffsetM) || 0, format: (value) => `${value.toFixed(1)}m` },
       { id: 'weight', label: 'Weight', min: 0.1, max: 100000, value: Number(this.doodad.weightKg) || 35, scale: 'log', format: (value) => `${Math.round(value)}kg` }
     ];
     rows.forEach((row, index) => {
@@ -1340,8 +1353,8 @@ export default class DoodadEditor {
 
   drawDoodadHitboxPanel(ctx, bounds) {
     const rows = [
-      { id: 'hitbox-width', label: 'Hit Width', min: 0.1, max: 80, value: Number(this.doodad.hitboxWidthM ?? this.doodad.widthM) || 1.5, format: (value) => `${value.toFixed(1)}m` },
-      { id: 'hitbox-height', label: 'Hit Height', min: 0.1, max: 120, value: Number(this.doodad.hitboxHeightM ?? this.doodad.heightM) || 2, format: (value) => `${value.toFixed(1)}m` }
+      { id: 'hitbox-width', label: 'Hit Width', min: RACE_DOODAD_SIZE_LIMITS.minM, max: RACE_DOODAD_SIZE_LIMITS.maxWidthM, value: Number(this.doodad.hitboxWidthM ?? this.doodad.widthM) || 1.5, format: (value) => `${value.toFixed(1)}m` },
+      { id: 'hitbox-height', label: 'Hit Height', min: RACE_DOODAD_SIZE_LIMITS.minM, max: RACE_DOODAD_SIZE_LIMITS.maxHeightM, value: Number(this.doodad.hitboxHeightM ?? this.doodad.heightM) || 2, format: (value) => `${value.toFixed(1)}m` }
     ];
     rows.forEach((row, index) => {
       this.drawDoodadSlider(ctx, {

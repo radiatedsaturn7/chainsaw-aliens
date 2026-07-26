@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 import DoodadEditor from '../../src/ui/DoodadEditor.js';
+import { RACE_DOODAD_SIZE_LIMITS } from '../../src/racing/raceDoodads.js';
 
 const doodadEditorSource = readFileSync(new URL('../../src/ui/DoodadEditor.js', import.meta.url), 'utf8');
 
@@ -352,16 +353,19 @@ test('Doodad Editor portrait hot menu switches size and collision panels', () =>
     touchCount: 1,
     id: 'width'
   });
-  assert.equal(editor.doodad.widthM, 80);
+  assert.equal(editor.doodad.widthM, RACE_DOODAD_SIZE_LIMITS.maxWidthM);
   editor.handlePointerUp({ id: 'width' });
+  editor.doodad.heightM = 36;
+  editor.draw(createMockContext(), 390, 844);
   const plantSlider = editor.sliderRegions.find((region) => region.id === 'doodad-ground-offset-slider');
+  assert.equal(plantSlider.max, 36);
   editor.handlePointerDown({
     x: plantSlider.track.x + plantSlider.track.w,
     y: plantSlider.bounds.y + plantSlider.bounds.h / 2,
     touchCount: 1,
     id: 'plant'
   });
-  assert.equal(editor.doodad.groundOffsetM, 20);
+  assert.equal(editor.doodad.groundOffsetM, 36);
   editor.handlePointerUp({ id: 'plant' });
 
   editor.handlePointerDown({
@@ -419,4 +423,37 @@ test('Doodad Editor portrait hot menu switches size and collision panels', () =>
   });
   assert.equal(editor.doodad.rules[0].minSpeedMph, editor.doodad.rules[1].minSpeedMph - 1);
   editor.handlePointerUp({ id: 'threshold' });
+});
+
+test('Doodad Editor size controls allow large scenery-scale doodads', () => {
+  const editor = new DoodadEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { isGamepadConnected: () => false }
+  });
+
+  editor.adjust('width', 1000);
+  editor.adjust('height', 1000);
+  editor.adjust('hitbox-width', 1000);
+  editor.adjust('hitbox-height', 1000);
+
+  assert.equal(editor.doodad.widthM, RACE_DOODAD_SIZE_LIMITS.maxWidthM);
+  assert.equal(editor.doodad.heightM, RACE_DOODAD_SIZE_LIMITS.maxHeightM);
+  assert.equal(editor.doodad.hitboxWidthM, RACE_DOODAD_SIZE_LIMITS.maxWidthM);
+  assert.equal(editor.doodad.hitboxHeightM, RACE_DOODAD_SIZE_LIMITS.maxHeightM);
+  assert.equal(RACE_DOODAD_SIZE_LIMITS.maxWidthM > 80, true);
+  assert.equal(RACE_DOODAD_SIZE_LIMITS.maxHeightM > 120, true);
+
+  editor.draw(createMockContext(), 390, 844);
+  editor.handlePointerDown({
+    x: editor.buttons.find((button) => button.id === 'hot-size').bounds.x + 4,
+    y: editor.buttons.find((button) => button.id === 'hot-size').bounds.y + 4,
+    touchCount: 1
+  });
+  editor.draw(createMockContext(), 390, 844);
+  const widthSlider = editor.sliderRegions.find((region) => region.id === 'doodad-width-slider');
+  const heightSlider = editor.sliderRegions.find((region) => region.id === 'doodad-height-slider');
+
+  assert.equal(widthSlider.max, RACE_DOODAD_SIZE_LIMITS.maxWidthM);
+  assert.equal(heightSlider.max, RACE_DOODAD_SIZE_LIMITS.maxHeightM);
 });

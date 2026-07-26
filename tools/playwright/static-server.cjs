@@ -1,12 +1,16 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const zlib = require('zlib');
 
 const rootDir = path.resolve(__dirname, '../..');
 const port = Number(process.env.PORT || 4173);
 const storageRoot = path.join(rootDir, 'data/server-storage/files');
 const storageFolders = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'doodads', 'settings'];
 const storageOverlay = new Map();
+const COMPACT_STORAGE_MARKER = '__chainsawStorage';
+const COMPACT_STORAGE_VERSION = 'compact-v1';
+const COMPACT_STORAGE_ENCODING = 'json-gzip-base64';
 
 const contentTypes = {
   '.html': 'text/html; charset=utf-8',
@@ -54,6 +58,16 @@ function getStoredFilePath(folder, name) {
   return filePath;
 }
 
+function decodeStoredDocument(payload) {
+  if (!payload || typeof payload !== 'object' || payload[COMPACT_STORAGE_MARKER] !== COMPACT_STORAGE_VERSION) {
+    return payload;
+  }
+  if (payload.encoding !== COMPACT_STORAGE_ENCODING || typeof payload.data !== 'string') {
+    throw new Error('Unsupported compact storage document');
+  }
+  return JSON.parse(zlib.gunzipSync(Buffer.from(payload.data, 'base64')).toString('utf8'));
+}
+
 function readStoredFile(folder, name) {
   const clean = normalizeName(name);
   if (!isValidStorageFolder(folder) || !clean) return null;
@@ -62,7 +76,7 @@ function readStoredFile(folder, name) {
   const filePath = getStoredFilePath(folder, clean);
   if (!filePath || !fs.existsSync(filePath)) return null;
   try {
-    const payload = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    const payload = decodeStoredDocument(JSON.parse(fs.readFileSync(filePath, 'utf8')));
     const data = Object.prototype.hasOwnProperty.call(payload, 'data') ? payload.data : payload;
     return {
       version: Number(payload.version || 1),
@@ -235,7 +249,11 @@ const server = http.createServer((req, res) => {
   fs.createReadStream(safePath).pipe(res);
 });
 
-server.listen(port, '127.0.0.1', () => {
-  // eslint-disable-next-line no-console
-  console.log(`Static server running at http://127.0.0.1:${port}`);
-});
+if (require.main === module) {
+  server.listen(port, '127.0.0.1', () => {
+    // eslint-disable-next-line no-console
+    console.log(`Static server running at http://127.0.0.1:${port}`);
+  });
+}
+
+module.exports = { decodeStoredDocument };
