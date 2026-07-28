@@ -241,9 +241,11 @@ const convertV2SongToLegacy = (song, patternsLibrary) => {
   Object.entries(song.sections || {}).forEach(([sectionName, section]) => {
     const guitarEvents = section.guitar || [];
     const bars = splitEventsIntoBars(guitarEvents).map((bar) => fixBarDurations(bar));
+    const normalizedSection = { ...section };
     if (bars.length) {
-      sections[sectionName] = bars;
+      normalizedSection.chords = bars;
     }
+    sections[sectionName] = normalizedSection;
   });
   return {
     ...song,
@@ -407,7 +409,17 @@ const normalizeSetlistSong = (song, patternsLibrary) => {
   if (!song.sections) return song;
   const fixedSections = {};
   Object.entries(song.sections).forEach(([sectionName, bars]) => {
-    fixedSections[sectionName] = bars.map((bar) => fixBarDurations(bar));
+    if (Array.isArray(bars)) {
+      fixedSections[sectionName] = bars.map((bar) => fixBarDurations(bar));
+      return;
+    }
+    const normalizedSection = { ...bars };
+    if (Array.isArray(bars?.chords)) {
+      normalizedSection.chords = bars.chords.map((bar) => fixBarDurations(bar));
+    } else if (Array.isArray(bars?.guitar)) {
+      normalizedSection.chords = splitEventsIntoBars(bars.guitar).map((bar) => fixBarDurations(bar));
+    }
+    fixedSections[sectionName] = normalizedSection;
   });
   return { ...song, sections: fixedSections, patternsLibrary };
 };
