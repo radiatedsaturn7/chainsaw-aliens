@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { seedRaceRuntimeFixtures } from './helpers/race-runtime-fixtures.js';
 
 async function waitForGameReady(page) {
   await page.goto('/index.html', { waitUntil: 'load' });
@@ -102,6 +103,7 @@ test('dark solid art remains visible in Level Editor and startup race travel fir
 
 test('cold level-to-race travel keeps loading, preparation, and first frames responsive', async ({ page }) => {
   await waitForGameReady(page);
+  await seedRaceRuntimeFixtures(page);
 
   await page.evaluate(async () => {
     const game = window.__game;
@@ -381,6 +383,7 @@ test('cold level-to-race travel keeps loading, preparation, and first frames res
 
 test('Race and Car Editor browser starts avoid main-thread world prewarm', async ({ page }) => {
   await waitForGameReady(page);
+  await seedRaceRuntimeFixtures(page);
 
   await page.evaluate(async () => {
     const editor = window.__game.raceEditor;
@@ -511,6 +514,7 @@ test('Race and Car Editor browser starts avoid main-thread world prewarm', async
 test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async ({ page }) => {
   test.setTimeout(120_000);
   await waitForGameReady(page);
+  await seedRaceRuntimeFixtures(page);
 
   await page.evaluate(async () => {
     const game = window.__game;

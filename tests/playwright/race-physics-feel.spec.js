@@ -42,6 +42,7 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
         tireCompoundByWheel: { fl: compound, fr: compound, rl: compound, rr: compound }
       };
     };
+    const preparedWorldBakes = new Map();
     const runCase = ({ surface = 'dirt', drivetrain = 'awd', powerHp = 1200, torqueLbFt = 1000, throttleAxis = 1, steerAxis = 0.8, startSpeedMps = 0, switchSteerFrame = null, frames = 120, sampleProjectedCamera = false } = {}) => {
       const game = window.__game;
       game.enterRaceEditor();
@@ -53,7 +54,18 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
         torqueLbFt,
         compound: surface === 'asphalt' ? 'tarmac' : 'dirt'
       });
-      editor.startPlaytest(editor.selectedCar.id);
+      let preparedWorldBake = preparedWorldBakes.get(surface);
+      if (!preparedWorldBake) {
+        preparedWorldBake = editor.buildRaceWorldBake(
+          editor.getRacePlaytestWorldBakeOptions()
+        );
+        preparedWorldBakes.set(surface, preparedWorldBake);
+      }
+      editor.startPlaytest(editor.selectedCar.id, {
+        hydrateCars: false,
+        preparedWorldBake
+      });
+      editor.playtestSession.startupFramePending = false;
       editor.playtestSession.launchLockMs = 0;
       editor.playtestSession.elapsedMs = 1000;
       editor.playtestSession.speedMps = Number(startSpeedMps) || 0;
@@ -332,7 +344,14 @@ test('race third-person render uses live world position when body position is st
     const editor = game.raceEditor;
     const bounds = { x: 0, y: 0, w: 640, h: 360 };
     editor.raceInput.cameraView = 'third-person';
-    editor.startPlaytest(editor.selectedCar.id);
+    const preparedWorldBake = editor.buildRaceWorldBake(
+      editor.getRacePlaytestWorldBakeOptions()
+    );
+    editor.startPlaytest(editor.selectedCar.id, {
+      hydrateCars: false,
+      preparedWorldBake
+    });
+    editor.playtestSession.startupFramePending = false;
     editor.playtestSession.launchLockMs = 0;
     editor.playtestSession.projectedDistance = 120;
     editor.playtestSession.distance = 120;

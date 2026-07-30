@@ -2537,10 +2537,13 @@ export default class Game {
     this.editor.deactivate();
     this.editor.flushWorldRefresh();
     if (playtest) {
+      const worldData = this.buildWorldData();
       this.levelEditorPlaytestSnapshot = {
-        worldData: this.buildWorldData()
+        worldData
       };
-      this.syncSpawnPoint();
+      // resetRun() resets from world.data. Commit the live editor snapshot first
+      // so playtesting cannot silently restore stale pre-editor tiles or artwork.
+      this.applyWorldData(worldData);
       this.debugMode = false;
       this.showCompanionPathDebug = false;
       this.transitionTo('playing', { forceCleanup: true });

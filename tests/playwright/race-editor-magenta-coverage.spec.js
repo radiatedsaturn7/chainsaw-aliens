@@ -43,6 +43,23 @@ test(`Race Editor Studio Sprint ${coverageCase.name} frames expose no magenta te
     };
     editor.raceInput.cameraView = 'third-person';
     editor.startPlaytest(editor.project.selectedCarId);
+    await new Promise((resolve, reject) => {
+      const deadline = performance.now() + 45_000;
+      const poll = () => {
+        const session = editor.playtestSession;
+        if (session?.running === true && session?.preparing !== true && session?.worldBake) {
+          resolve();
+          return;
+        }
+        if (performance.now() >= deadline) {
+          reject(new Error(`Race preparation timed out: ${editor.status || 'unknown status'}`));
+          return;
+        }
+        setTimeout(poll, 16);
+      };
+      poll();
+    });
+    editor.playtestSession.startupFramePending = false;
     editor.playtestSession.launchLockMs = 0;
     editor.playtestSession.elapsedMs = 4000;
     editor.playtestSession.running = true;

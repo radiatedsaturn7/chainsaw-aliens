@@ -16,6 +16,7 @@ test('normal Level Editor playtest resets once without running hidden golden-pat
   let refreshes = 0;
   let resets = 0;
   let spawnPauses = 0;
+  let appliedWorldData = null;
   const transitions = [];
   let resetOptions = null;
 
@@ -29,7 +30,9 @@ test('normal Level Editor playtest resets once without running hidden golden-pat
     }
   };
   game.buildWorldData = () => worldData;
-  game.syncSpawnPoint = () => {};
+  game.applyWorldData = (data) => {
+    appliedWorldData = data;
+  };
   game.transitionTo = (state) => transitions.push(state);
   game.resetRun = (options) => {
     resets += 1;
@@ -62,6 +65,7 @@ test('normal Level Editor playtest resets once without running hidden golden-pat
   assert.equal(game.debugMode, false);
   assert.equal(game.showCompanionPathDebug, false);
   assert.equal(game.levelEditorPlaytestSnapshot.worldData, worldData);
+  assert.equal(appliedWorldData, worldData);
 });
 
 test('first active playtest update tracks bounded FPS without stopping the game loop', () => {
