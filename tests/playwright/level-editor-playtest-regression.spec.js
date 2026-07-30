@@ -121,6 +121,7 @@ test('cold level-to-race travel keeps loading, preparation, and first frames res
     window.__raceSynchronousStorageReads = 0;
     window.__raceEngineStartedBeforeFirstFrame = 0;
     const originalXhrOpen = XMLHttpRequest.prototype.open;
+    window.__raceOriginalXhrOpen = originalXhrOpen;
     XMLHttpRequest.prototype.open = function trackedOpen(method, url, async = true, ...rest) {
       if (async === false && String(url || '').includes('/__storage/file')) {
         window.__raceSynchronousStorageReads += 1;
@@ -180,6 +181,11 @@ test('cold level-to-race travel keeps loading, preparation, and first frames res
   const result = await page.evaluate(async () => {
     const started = await window.__raceStartPromise;
     window.clearInterval(window.__racePreparationTimer);
+    const synchronousStorageReads = window.__raceSynchronousStorageReads;
+    if (window.__raceOriginalXhrOpen) {
+      XMLHttpRequest.prototype.open = window.__raceOriginalXhrOpen;
+      window.__raceOriginalXhrOpen = null;
+    }
     const editor = window.__game.raceEditor;
     const runtimeCar = editor.getRaceSessionCar(editor.playtestSession);
     const visibility = editor.getCarArtLayerVisibility(runtimeCar);
@@ -295,7 +301,7 @@ test('cold level-to-race travel keeps loading, preparation, and first frames res
       ticks: window.__racePreparationTicks,
       maxPreparationTickGapMs: window.__racePreparationMaxTickGapMs,
       maxPreparationProgress: window.__racePreparationMaxProgress,
-      synchronousStorageReads: window.__raceSynchronousStorageReads,
+      synchronousStorageReads,
       engineStartedBeforeFirstFrame: window.__raceEngineStartedBeforeFirstFrame,
       startupFramePending: editor.playtestSession?.startupFramePending === true,
       running: editor.playtestSession?.running === true,
@@ -444,6 +450,7 @@ test('Race and Car Editor browser starts avoid main-thread world prewarm', async
   expect(directRace.retainedTerrainObjects).toBe(0);
 
   await page.evaluate(() => {
+    window.__game.enterCarEditor();
     const editor = window.__game.carEditor;
     window.__carPreviewPrewarms = 0;
     const originalPrewarm = editor.prewarmRacePlaytestRenderResources.bind(editor);

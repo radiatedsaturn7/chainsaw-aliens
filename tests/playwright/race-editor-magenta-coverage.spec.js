@@ -42,23 +42,16 @@ test(`Race Editor Studio Sprint ${coverageCase.name} frames expose no magenta te
       overlaysEnabled: true
     };
     editor.raceInput.cameraView = 'third-person';
-    editor.startPlaytest(editor.project.selectedCarId);
-    await new Promise((resolve, reject) => {
-      const deadline = performance.now() + 45_000;
-      const poll = () => {
-        const session = editor.playtestSession;
-        if (session?.running === true && session?.preparing !== true && session?.worldBake) {
-          resolve();
-          return;
-        }
-        if (performance.now() >= deadline) {
-          reject(new Error(`Race preparation timed out: ${editor.status || 'unknown status'}`));
-          return;
-        }
-        setTimeout(poll, 16);
-      };
-      poll();
+    const preparedWorldBake = editor.buildRaceWorldBake(
+      editor.getRacePlaytestWorldBakeOptions()
+    );
+    editor.startPlaytest(editor.project.selectedCarId, {
+      hydrateCars: false,
+      preparedWorldBake
     });
+    if (!editor.playtestSession?.worldBake) {
+      throw new Error('Race geometry bake was not installed');
+    }
     editor.playtestSession.startupFramePending = false;
     editor.playtestSession.launchLockMs = 0;
     editor.playtestSession.elapsedMs = 4000;

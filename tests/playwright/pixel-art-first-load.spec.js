@@ -12,7 +12,10 @@ test('editor-only tile art renders immediately on first world draw', async ({ pa
   await page.evaluate(() => {
     const game = window.__game;
     game.enterEditor({ tab: 'tiles' });
-    const targetX = game.world.spawn?.x || 12;
+    const targetX = Math.min(
+      game.world.width - 2,
+      Math.max(1, Number(game.world.spawn?.x || 12) + 2)
+    );
     const targetY = game.world.spawn?.y || 12;
     const tileChar = 'X';
     const size = 16;

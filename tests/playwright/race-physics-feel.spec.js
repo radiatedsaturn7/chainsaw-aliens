@@ -66,6 +66,7 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
         preparedWorldBake
       });
       editor.playtestSession.startupFramePending = false;
+      editor.playtestSession.countdownRemainingMs = 0;
       editor.playtestSession.launchLockMs = 0;
       editor.playtestSession.elapsedMs = 1000;
       editor.playtestSession.speedMps = Number(startSpeedMps) || 0;
@@ -352,6 +353,7 @@ test('race third-person render uses live world position when body position is st
       preparedWorldBake
     });
     editor.playtestSession.startupFramePending = false;
+    editor.playtestSession.countdownRemainingMs = 0;
     editor.playtestSession.launchLockMs = 0;
     editor.playtestSession.projectedDistance = 120;
     editor.playtestSession.distance = 120;
