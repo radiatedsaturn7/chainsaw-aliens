@@ -119,12 +119,17 @@ test('cold level-to-race travel keeps loading, preparation, and first frames res
     window.__racePreparationMaxTickGapMs = 0;
     window.__racePreparationLastTickAt = performance.now();
     window.__raceSynchronousStorageReads = 0;
+    window.__raceSynchronousStorageReadDetails = [];
     window.__raceEngineStartedBeforeFirstFrame = 0;
     const originalXhrOpen = XMLHttpRequest.prototype.open;
     window.__raceOriginalXhrOpen = originalXhrOpen;
     XMLHttpRequest.prototype.open = function trackedOpen(method, url, async = true, ...rest) {
       if (async === false && String(url || '').includes('/__storage/file')) {
         window.__raceSynchronousStorageReads += 1;
+        window.__raceSynchronousStorageReadDetails.push({
+          url: String(url || ''),
+          stack: String(new Error().stack || '').split('\n').slice(1, 7)
+        });
       }
       return originalXhrOpen.call(this, method, url, async, ...rest);
     };
@@ -302,6 +307,7 @@ test('cold level-to-race travel keeps loading, preparation, and first frames res
       maxPreparationTickGapMs: window.__racePreparationMaxTickGapMs,
       maxPreparationProgress: window.__racePreparationMaxProgress,
       synchronousStorageReads,
+      synchronousStorageReadDetails: window.__raceSynchronousStorageReadDetails,
       engineStartedBeforeFirstFrame: window.__raceEngineStartedBeforeFirstFrame,
       startupFramePending: editor.playtestSession?.startupFramePending === true,
       running: editor.playtestSession?.running === true,
@@ -347,6 +353,7 @@ test('cold level-to-race travel keeps loading, preparation, and first frames res
   expect(result.ticks).toBeGreaterThan(5);
   expect(result.maxPreparationTickGapMs).toBeLessThan(1500);
   expect(result.maxPreparationProgress).toBeGreaterThanOrEqual(0.99);
+  expect(result.synchronousStorageReadDetails).toEqual([]);
   expect(result.synchronousStorageReads).toBe(0);
   expect(result.engineStartedBeforeFirstFrame).toBe(0);
   expect(result.startupFramePending).toBeFalsy();

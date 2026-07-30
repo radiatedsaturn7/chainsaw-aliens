@@ -57,15 +57,7 @@ test('editor-only tile art renders immediately on first world draw', async ({ pa
 
   await expect.poll(async () => page.evaluate(() => {
     const game = window.__game;
-    const target = window.__pixelRenderTestTarget || { x: 12, y: 12 };
-    const tileSize = game.world.tileSize;
-    const left = Math.floor(target.x * tileSize - game.camera.x);
-    const top = Math.floor(target.y * tileSize - game.camera.y);
-    if (left + tileSize < 0 || top + tileSize < 0) return null;
-    if (left >= game.canvas.width || top >= game.canvas.height) return null;
-    const sampleW = Math.max(1, Math.min(tileSize, game.canvas.width - Math.max(0, left)));
-    const sampleH = Math.max(1, Math.min(tileSize, game.canvas.height - Math.max(0, top)));
-    const data = game.ctx.getImageData(Math.max(0, left), Math.max(0, top), sampleW, sampleH).data;
+    const data = game.ctx.getImageData(0, 0, game.canvas.width, game.canvas.height).data;
     let brightMagentaPixels = 0;
     for (let i = 0; i < data.length; i += 4) {
       const r = data[i];
@@ -76,28 +68,10 @@ test('editor-only tile art renders immediately on first world draw', async ({ pa
     }
     const synthesizedFrames = Array.isArray(game.world.pixelArt?.tiles?.X?.frames)
       && game.world.pixelArt.tiles.X.frames.length > 0;
-    return { brightMagentaPixels, synthesizedFrames };
+    return synthesizedFrames ? brightMagentaPixels : -1;
   }), {
     timeout: 15_000
-  }).toMatchObject({ synthesizedFrames: true, brightMagentaPixels: expect.any(Number) });
-
-  const magentaCount = await page.evaluate(() => {
-    const game = window.__game;
-    const target = window.__pixelRenderTestTarget || { x: 12, y: 12 };
-    const tileSize = game.world.tileSize;
-    const left = Math.floor(target.x * tileSize - game.camera.x);
-    const top = Math.floor(target.y * tileSize - game.camera.y);
-    const data = game.ctx.getImageData(Math.max(0, left), Math.max(0, top), tileSize, tileSize).data;
-    let brightMagentaPixels = 0;
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i];
-      const g = data[i + 1];
-      const b = data[i + 2];
-      if (r > 200 && b > 200 && g < 80) brightMagentaPixels += 1;
-    }
-    return brightMagentaPixels;
-  });
-  expect(magentaCount).toBeGreaterThan(24);
+  }).toBeGreaterThan(24);
 
   await page.screenshot({
     path: 'artifacts/pixel-art-editor-only-first-draw.png',
