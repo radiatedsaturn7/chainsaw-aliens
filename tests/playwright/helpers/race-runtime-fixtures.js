@@ -58,7 +58,8 @@ export async function seedRaceRuntimeFixtures(page) {
     race.raceStart = {
       ...(race.raceStart || {}),
       countdown: false,
-      rollingStart: false
+      rollingStart: false,
+      musicTrackId: ''
     };
     race.competition = {
       ...(race.competition || {}),
@@ -95,6 +96,10 @@ export async function seedRaceRuntimeFixtures(page) {
     car.camera = {
       ...(car.camera || {}),
       trackingMode: 'fixed-rear'
+    };
+    car.audio = {
+      ...(car.audio || {}),
+      engineSoundId: ''
     };
     car.art = {
       ...(car.art || {}),

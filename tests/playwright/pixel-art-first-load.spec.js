@@ -47,8 +47,6 @@ test('editor-only tile art renders immediately on first world draw', async ({ pa
     };
     game.world.setTile(targetX, targetY, tileChar, { persist: true });
     window.__pixelRenderTestTarget = { x: targetX, y: targetY };
-    game.player.x = (targetX + 0.5) * game.world.tileSize;
-    game.player.y = (targetY + 0.5) * game.world.tileSize;
     game.snapCameraToPlayer();
   });
   await page.waitForFunction(() => window.__game.state === 'editor');

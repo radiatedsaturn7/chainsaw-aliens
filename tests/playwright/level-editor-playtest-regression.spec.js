@@ -486,6 +486,7 @@ test('Race and Car Editor browser starts avoid main-thread world prewarm', async
     editor.getNowMs = originalNow;
     return {
       initialWasPending: window.__carPreviewInitialResult === null,
+      initialDistance: Number(initialSession?.distance || 0),
       prewarms: window.__carPreviewPrewarms,
       running: editor.carEditorPreviewPlaytest?.session?.running === true,
       countdownRemainingMs:
@@ -509,7 +510,7 @@ test('Race and Car Editor browser starts avoid main-thread world prewarm', async
   expect(carPreview.prewarms).toBe(0);
   expect(carPreview.running).toBeTruthy();
   expect(carPreview.countdownRemainingMs).toBe(0);
-  expect(carPreview.distance).toBeGreaterThan(0);
+  expect(carPreview.initialDistance).toBeGreaterThan(0);
   expect(carPreview.packedTerrainTriangles).toBeGreaterThan(0);
   expect(carPreview.tuningRestartedSession).toBeTruthy();
   expect(carPreview.reusedWorldBake).toBeTruthy();
