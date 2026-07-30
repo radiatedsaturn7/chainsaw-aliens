@@ -11,6 +11,24 @@ test('editor-only tile art renders immediately on first world draw', async ({ pa
 
   await page.evaluate(() => {
     const game = window.__game;
+    const sizeTiles = 24;
+    game.applyWorldData({
+      schemaVersion: 1,
+      tileSize: 32,
+      width: sizeTiles,
+      height: sizeTiles,
+      spawn: { x: 12, y: 12 },
+      tiles: Array.from({ length: sizeTiles }, () => '.'.repeat(sizeTiles)),
+      regions: [],
+      enemies: [],
+      elevatorPaths: [],
+      elevators: [],
+      pixelArt: { tiles: {} },
+      musicZones: [],
+      midiTracks: [],
+      triggers: [],
+      decals: []
+    });
     game.enterEditor({ tab: 'tiles' });
     const targetX = Math.min(
       game.world.width - 2,

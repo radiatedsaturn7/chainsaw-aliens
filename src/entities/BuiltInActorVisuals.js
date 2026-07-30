@@ -1,8 +1,10 @@
 import { mergeBuiltInActorOverride } from '../content/builtinActorOverrides.js';
-import { loadProjectFile } from '../ui/projectFiles.js';
+import { hydrateProjectFilePayload } from '../ui/projectFiles.js';
 import { getSharedFrameImageEntry, resolveAnimationFrames } from './ScriptedActor.js';
 
 const visualCache = new Map();
+const visualHydration = new Map();
+const visualCacheEpoch = new Map();
 export const BUILT_IN_ACTOR_VISUAL_SCALE = 2.5;
 
 function getActorName(actorId = '') {
@@ -14,18 +16,38 @@ function getBuiltInActorDefinition(actorId = 'player') {
   const cached = visualCache.get(id);
   if (cached) return cached;
   const name = getActorName(id);
-  const payload = loadProjectFile('actors', name);
-  const definition = mergeBuiltInActorOverride(name, payload?.data || null);
-  visualCache.set(id, definition);
-  return definition;
+  const fallback = mergeBuiltInActorOverride(name, null);
+  visualCache.set(id, fallback);
+  if (!visualHydration.has(id)) {
+    const epoch = Number(visualCacheEpoch.get(id) || 0);
+    const pending = hydrateProjectFilePayload('actors', name)
+      .then((payload) => {
+        if (epoch === Number(visualCacheEpoch.get(id) || 0)) {
+          visualCache.set(id, mergeBuiltInActorOverride(name, payload?.data || null));
+        }
+      })
+      .catch(() => null)
+      .finally(() => {
+        if (visualHydration.get(id) === pending) visualHydration.delete(id);
+      });
+    visualHydration.set(id, pending);
+  }
+  return fallback;
 }
 
 export function invalidateBuiltInActorVisualCache(actorId = null) {
   if (actorId) {
-    visualCache.delete(String(actorId).toLowerCase());
+    const id = String(actorId).toLowerCase();
+    visualCacheEpoch.set(id, Number(visualCacheEpoch.get(id) || 0) + 1);
+    visualCache.delete(id);
+    visualHydration.delete(id);
     return;
   }
+  ['player', 'companion'].forEach((id) => {
+    visualCacheEpoch.set(id, Number(visualCacheEpoch.get(id) || 0) + 1);
+  });
   visualCache.clear();
+  visualHydration.clear();
 }
 
 function getEntityStateId(entity, states = []) {
