@@ -16,7 +16,8 @@ import {
   createDefaultRace,
   createDefaultRaceProject,
   createTestTrackRace,
-  getSurfaceById
+  getSurfaceById,
+  normalizeRaceFinishBehavior
 } from '../../src/racing/raceData.js';
 
 function routeLength(race) {
@@ -83,6 +84,42 @@ test('race data scaffold supports default races, cars, and surfaces', () => {
   assert.equal(project.cars[2].tuning.torqueLbFt, 310);
   assert.equal(project.cars[2].transmissions.automatic.label, 'Auto Assist');
   assert.equal(getSurfaceById('snow').grip < getSurfaceById('asphalt').grip, true);
+});
+
+test('race finish behavior normalizes legacy and linked destinations', () => {
+  assert.deepEqual(normalizeRaceFinishBehavior(), {
+    type: 'return-to-origin',
+    targetLevel: null,
+    targetRace: null,
+    spawnX: null,
+    spawnY: null
+  });
+  assert.deepEqual(normalizeRaceFinishBehavior({
+    type: 'level',
+    targetLevel: 'Hub',
+    targetRace: 'ignored',
+    spawnX: 12.9,
+    spawnY: 7.2
+  }), {
+    type: 'level',
+    targetLevel: 'Hub',
+    targetRace: null,
+    spawnX: 12,
+    spawnY: 7
+  });
+  assert.deepEqual(normalizeRaceFinishBehavior({
+    type: 'race',
+    targetRace: 'Final Run',
+    targetLevel: 'ignored',
+    spawnX: 4,
+    spawnY: 5
+  }), {
+    type: 'race',
+    targetLevel: null,
+    targetRace: 'Final Run',
+    spawnX: null,
+    spawnY: null
+  });
 });
 
 test('race data scaffold supports playtest scenarios, hazardless Studio Sprint, AI, and co-driver calls', () => {

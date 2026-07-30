@@ -6,16 +6,21 @@ export function getRaceArtSpriteCanvasShared(artRef = '', {
   documentRef = typeof document !== 'undefined' ? document : null,
   playtestSession = null,
   racePreloadingArt = false,
+  preparedFrames = null,
+  allowStorageLoad = true,
   getNowMs = () => 0,
   onRuntimeMiss = null
 } = {}) {
   const clean = String(artRef || '').trim();
   if (!clean || !documentRef) return null;
   const requestedFrameIndex = Math.max(0, Math.round(Number(frameIndex) || 0));
+  const prepared = preparedFrames?.get?.(`${clean}:frame:${requestedFrameIndex}`)
+    || preparedFrames?.get?.(`${clean}:frame:0`)
+    || null;
+  if (prepared) return prepared;
+  if (allowStorageLoad === false) return null;
   const missStartMs = playtestSession && !racePreloadingArt ? getNowMs() : 0;
   const payload = loadProjectFile('art', clean);
-  const cacheKey = `${clean}:${Number(payload?.savedAt || 0)}:frame:${requestedFrameIndex}`;
-  if (cache?.has?.(cacheKey)) return cache.get(cacheKey);
   let data = payload?.data || payload;
   if (payload?.__chainsawStorage && typeof payload.data === 'string' && payload.encoding === 'json') {
     try {
@@ -30,7 +35,10 @@ export function getRaceArtSpriteCanvasShared(artRef = '', {
   const rawFrames = Array.isArray(data?.frames)
     ? data.frames
     : (Array.isArray(data?.editor?.frames) ? data.editor.frames : []);
-  const frame = rawFrames[requestedFrameIndex] || rawFrames[0] || null;
+  const resolvedFrameIndex = rawFrames.length ? requestedFrameIndex % rawFrames.length : 0;
+  const cacheKey = `${clean}:${Number(payload?.savedAt || 0)}:frame:${resolvedFrameIndex}`;
+  if (cache?.has?.(cacheKey)) return cache.get(cacheKey);
+  const frame = rawFrames[resolvedFrameIndex] || rawFrames[0] || null;
   const normalizeFramePixels = (source) => {
     if (!source) return null;
     if (Array.isArray(source) && source.length && !Array.isArray(source[0])) return source;

@@ -1387,7 +1387,7 @@ test('cutscene editor main drawer exposes compact portrait root tabs', () => {
 
   const tabIds = editor.bounds.menuButtons.map((button) => button.id).filter((id) => String(id).startsWith('tab:'));
 
-  assert.deepEqual(tabIds, ['tab:file', 'tab:add', 'tab:timeline', 'tab:clips', 'tab:keyframes', 'tab:stage', 'tab:audio', 'tab:settings']);
+  assert.deepEqual(tabIds, ['tab:file', 'tab:add', 'tab:timeline', 'tab:clips', 'tab:keyframes', 'tab:stage', 'tab:audio', 'tab:settings', 'tab:exit-main']);
   assert.equal(editor.getMenuItems('file').some((item) => item.id === 'export'), true);
 });
 

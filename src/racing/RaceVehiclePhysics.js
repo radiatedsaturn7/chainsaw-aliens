@@ -3,6 +3,11 @@ const FRONT_WHEELS = new Set(['fl', 'fr']);
 const RIGHT_WHEELS = new Set(['fr', 'rr']);
 const DEFAULT_ELEVATION_SCALE_M = 12;
 const FIXED_STEP_SECONDS = 1 / 120;
+const MAX_VERTICAL_SPEED_MPS = 18;
+const MAX_TERRAIN_FOLLOW_SPEED_MPS = 8;
+const MAX_TERRAIN_FOLLOW_ACCELERATION_MPS2 = 120;
+const TERRAIN_FOLLOW_CONTACT_SETTLE_SECONDS = 0.08;
+const TERRAIN_FOLLOW_MAX_COMPRESSION_SPEED_MPS = 1.25;
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const normalizeAngle = (angle) => Math.atan2(Math.sin(angle), Math.cos(angle));
@@ -176,20 +181,24 @@ export function createRaceVehiclePhysicsState({
       const suspensionTopY = bodyY + rotated.y;
       const compressionM = clamp(restLengthM - (suspensionTopY - surfaceY), 0, travelM);
       const normalLoadN = compressionM > 0 ? clamp(rates.springRateNpm * compressionM, 0, massKg * 9.81 * 1.8) : 0;
+      const inContact = compressionM > 0.0005;
       const wheelRadiusM = Math.max(0.05, Number(tuning.wheelRadiusM) || 0.32);
       const rollingAngularSpeedRadps = speedMps / wheelRadiusM;
       return [wheelId, {
         id: wheelId,
         localAttachment: attachments[wheelId],
-        inContact: compressionM > 0.0005,
-        geometricContact: compressionM > 0.0005,
+        inContact,
+        geometricContact: inContact,
         loadBearing: normalLoadN > 1,
         compressionM,
+        compressionVelocityMps: 0,
         compressionRatio: clamp(compressionM / Math.max(0.001, travelM), 0, 1),
         normalLoadN,
         rawNormalLoadN: normalLoadN,
         filteredNormalLoadN: normalLoadN,
         normalLoadKnown: true,
+        continuousContactSeconds: inContact ? TERRAIN_FOLLOW_CONTACT_SETTLE_SECONDS : 0,
+        surfaceVerticalVelocityMps: 0,
         springRateNpm: rates.springRateNpm,
         damperRateNsM: rates.damperRateNsM,
         suspensionDampingMode: rates.dampingMode,
@@ -305,6 +314,8 @@ export function stepRaceVehiclePhysics(state = null, {
     let leftCompression = 0;
     let rightCompression = 0;
     let contactCount = 0;
+    let stableSupportVelocitySum = 0;
+    let stableSupportWeight = 0;
     const rawWheelStates = [];
     const forces = [];
     WHEEL_IDS.forEach((wheelId) => {
@@ -317,7 +328,8 @@ export function stepRaceVehiclePhysics(state = null, {
       const extensionM = suspensionTopY - surfaceY;
       const compressionM = clamp(restLengthM - extensionM, 0, travelM);
       const compressionRatio = clamp(compressionM / Math.max(0.001, travelM), 0, 1);
-      const previousCompression = Number(state.wheels?.[wheelId]?.compressionM || 0);
+      const previousWheel = state.wheels?.[wheelId] || null;
+      const previousCompression = Number(previousWheel?.compressionM || 0);
       const compressionVelocity = (compressionM - previousCompression) / fixedStep;
       const suspensionRates = getRaceVehicleSuspensionRates(tuning, mass, wheelId, compressionVelocity);
       const normal = normalize3(surface.normal, { x: 0, y: 1, z: 0 });
@@ -325,11 +337,22 @@ export function stepRaceVehiclePhysics(state = null, {
       const damperForce = suspensionRates.damperRateNsM * compressionVelocity;
       const rawNormalLoadN = compressionM > 0 ? clamp(springForce + damperForce, 0, mass * 9.81 * 1.8) : 0;
       const geometricContact = compressionM > 0.0005;
-      const previousFilteredLoad = Math.max(0, Number(state.wheels?.[wheelId]?.filteredNormalLoadN ?? state.wheels?.[wheelId]?.normalLoadN) || 0);
+      const previousGeometricContact = Boolean(previousWheel?.geometricContact ?? previousWheel?.inContact);
+      const previousFilteredLoad = Math.max(0, Number(previousWheel?.filteredNormalLoadN ?? previousWheel?.normalLoadN) || 0);
       const loadRate = rawNormalLoadN >= previousFilteredLoad ? 30 : 12;
       const loadAlpha = geometricContact ? clamp(1 - Math.exp(-loadRate * fixedStep), 0, 1) : 1;
       const filteredNormalLoadN = geometricContact
         ? previousFilteredLoad + (rawNormalLoadN - previousFilteredLoad) * loadAlpha
+        : 0;
+      const continuousContactSeconds = geometricContact && previousGeometricContact
+        ? Number(previousWheel?.continuousContactSeconds || 0) + fixedStep
+        : 0;
+      const normalY = Number(normal.y || 0);
+      const surfaceVerticalVelocityMps = normalY > 0.15
+        ? -(
+          Number(normal.x || 0) * Number(targetVelocity.x || 0)
+          + Number(normal.z || 0) * Number(targetVelocity.z || 0)
+        ) / normalY
         : 0;
       rawWheelStates.push({
         wheelId,
@@ -343,6 +366,11 @@ export function stepRaceVehiclePhysics(state = null, {
         rawNormalLoadN,
         normalLoadN: filteredNormalLoadN,
         geometricContact,
+        previousGeometricContact,
+        previousFilteredLoad,
+        continuousContactSeconds,
+        compressionVelocityMps: compressionVelocity,
+        surfaceVerticalVelocityMps,
         normal
       });
     });
@@ -383,6 +411,11 @@ export function stepRaceVehiclePhysics(state = null, {
         normalLoadN,
         rawNormalLoadN,
         geometricContact,
+        previousGeometricContact,
+        previousFilteredLoad,
+        continuousContactSeconds,
+        compressionVelocityMps,
+        surfaceVerticalVelocityMps,
         normal
       } = rawWheel;
       const friction = Math.max(0.05, Number(surface.friction || 1));
@@ -447,6 +480,17 @@ export function stepRaceVehiclePhysics(state = null, {
       const lateralForce = requestedLateralForce * frictionCircleScale;
       totalSuspensionForce += normalLoadN;
       if (geometricContact) contactCount += 1;
+      const stableSupport = geometricContact
+        && previousGeometricContact
+        && previousFilteredLoad > 1
+        && normalLoadN > 1
+        && continuousContactSeconds >= TERRAIN_FOLLOW_CONTACT_SETTLE_SECONDS
+        && Math.abs(compressionVelocityMps) <= TERRAIN_FOLLOW_MAX_COMPRESSION_SPEED_MPS;
+      if (stableSupport) {
+        const supportWeight = Math.max(1, normalLoadN);
+        stableSupportVelocitySum += surfaceVerticalVelocityMps * supportWeight;
+        stableSupportWeight += supportWeight;
+      }
       if (FRONT_WHEELS.has(wheelId)) frontCompression += compressionRatio;
       else rearCompression += compressionRatio;
       if (RIGHT_WHEELS.has(wheelId)) rightCompression += compressionRatio;
@@ -460,11 +504,14 @@ export function stepRaceVehiclePhysics(state = null, {
         geometricContact,
         loadBearing: normalLoadN > 1,
         compressionM,
+        compressionVelocityMps,
         compressionRatio,
         normalLoadN,
         rawNormalLoadN,
         filteredNormalLoadN: normalLoadN,
         normalLoadKnown: true,
+        continuousContactSeconds,
+        surfaceVerticalVelocityMps,
         requestedLongitudinalForceN: requestedLongitudinalForce,
         requestedLateralForceN: requestedLateralForce,
         frictionCircleScale,
@@ -495,22 +542,34 @@ export function stepRaceVehiclePhysics(state = null, {
       };
     });
     const averageSurfaceY = WHEEL_IDS.reduce((sum, wheelId) => sum + Number(state.wheels[wheelId]?.contactPoint?.y || 0), 0) / WHEEL_IDS.length;
-    const previousAverageSurfaceY = Number.isFinite(Number(state.averageSurfaceY))
-      ? Number(state.averageSurfaceY)
-      : averageSurfaceY;
-    const surfaceVerticalVelocityMps = (averageSurfaceY - previousAverageSurfaceY) / fixedStep;
     const suspensionAcceleration = (totalSuspensionForce - mass * 9.81) / mass;
-    state.linearVelocity.y = clamp(Number(state.linearVelocity.y || 0) + suspensionAcceleration * fixedStep, -18, 18);
+    state.linearVelocity.y = clamp(
+      Number(state.linearVelocity.y || 0) + suspensionAcceleration * fixedStep,
+      -MAX_VERTICAL_SPEED_MPS,
+      MAX_VERTICAL_SPEED_MPS
+    );
+    let terrainFollowVelocityMps = 0;
     if (contactCount > 0) {
       const contactRatio = clamp(contactCount / WHEEL_IDS.length, 0, 1);
       const verticalDamping = clamp(1 - fixedStep * (2.4 + contactRatio * 4.2), 0.86, 0.995);
       state.linearVelocity.y *= verticalDamping;
-      if (surfaceVerticalVelocityMps > 0) {
+      if (stableSupportWeight > 0) {
+        const stableSurfaceVerticalVelocityMps = stableSupportVelocitySum / stableSupportWeight;
         const averageCompressionRatio = (frontCompression + rearCompression) / Math.max(1, contactCount);
-        const terrainFollow = surfaceVerticalVelocityMps
+        const terrainFollowTarget = clamp(
+          stableSurfaceVerticalVelocityMps
           * (0.24 + contactRatio * 0.2)
-          * clamp(averageCompressionRatio / 0.42, 0, 1);
-        state.linearVelocity.y = Math.max(state.linearVelocity.y, terrainFollow);
+          * clamp(averageCompressionRatio / 0.42, 0, 1),
+          0,
+          MAX_TERRAIN_FOLLOW_SPEED_MPS
+        );
+        const terrainFollowCorrection = clamp(
+          terrainFollowTarget - Number(state.linearVelocity.y || 0),
+          0,
+          MAX_TERRAIN_FOLLOW_ACCELERATION_MPS2 * fixedStep
+        );
+        state.linearVelocity.y += terrainFollowCorrection;
+        terrainFollowVelocityMps = terrainFollowTarget;
       }
     }
     state.position.y += state.linearVelocity.y * fixedStep;
@@ -520,6 +579,12 @@ export function stepRaceVehiclePhysics(state = null, {
       state.position.y += (minBodyY - state.position.y) * Math.min(1, fixedStep * 30);
       state.linearVelocity.y = Math.max(0, Number(state.linearVelocity.y || 0) * 0.25);
     }
+    state.linearVelocity.y = clamp(
+      Number(state.linearVelocity.y || 0),
+      -MAX_VERTICAL_SPEED_MPS,
+      MAX_VERTICAL_SPEED_MPS
+    );
+    state.terrainFollowVelocityMps = terrainFollowVelocityMps;
     const desiredPitch = clamp((rearCompression * 0.5 - frontCompression * 0.5) * 0.34 * suspensionPitchCompliance, -0.55, 0.55);
     const desiredRoll = clamp((leftCompression * 0.5 - rightCompression * 0.5) * 0.42 * suspensionRollCompliance, -0.65, 0.65);
     const longAccel = Number(controls.longitudinalAcceleration || 0);

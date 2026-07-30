@@ -11,6 +11,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: merge-tests-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   unit:
     name: Editor UI unit tests
@@ -86,10 +90,10 @@ jobs:
         run: npm ci
 
       - name: Run Playwright tests
-        run: npm run test:playwright -- --reporter=line --workers=1 --shard=${{ matrix.shard }}
+        run: npm run test:playwright -- --config=playwright.editor.config.js --reporter=line --workers=1 --shard=${{ matrix.shard }}
 
       - name: Upload Playwright report
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ matrix.artifact }}

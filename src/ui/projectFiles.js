@@ -159,11 +159,11 @@ export function loadProjectFile(folder, name) {
   }
 }
 
-export async function hydrateProjectFilePayload(folder, name) {
+export async function hydrateProjectFilePayload(folder, name, options = {}) {
   assertFolder(folder);
   const clean = sanitizeProjectFileName(name);
   if (!clean) return null;
-  const payload = await hydrateProjectFile(folder, clean);
+  const payload = await hydrateProjectFile(folder, clean, options);
   if (!payload) return null;
   const raw = JSON.stringify(payload);
   cacheParsedPayload(`${folder}:${clean}`, raw, payload);

@@ -117,6 +117,67 @@ test('saveServerFile sends versioning policy to storage API', async () => {
   }
 });
 
+test('fresh project hydration replaces an older cached car with the newest server document', async () => {
+  clearCachedProjectFilesForTests();
+  const originalFetch = globalThis.fetch;
+  upsertCachedProjectFile('cars', '2022 Subaru WRX2', JSON.stringify({
+    version: 1,
+    folder: 'cars',
+    name: '2022 Subaru WRX2',
+    savedAt: 10,
+    data: {
+      car: {
+        id: 'starter-rwd',
+        art: { body: 'old-body' }
+      }
+    }
+  }));
+  globalThis.fetch = async () => {
+    throw new TypeError('Failed to fetch');
+  };
+  const offline = await hydrateProjectFile('cars', '2022 Subaru WRX2', {
+    freshness: 'newest'
+  });
+  assert.equal(offline.savedAt, 10);
+  globalThis.fetch = async (url) => {
+    assert.match(String(url), /__storage\/file/);
+    return {
+      ok: true,
+      async json() {
+        return {
+          ok: true,
+          file: {
+            version: 1,
+            folder: 'cars',
+            name: '2022 Subaru WRX2',
+            savedAt: 20,
+            data: {
+              car: {
+                id: 'starter-rwd',
+                art: { body: 'rtg-001' }
+              }
+            }
+          }
+        };
+      }
+    };
+  };
+  try {
+    const hydrated = await hydrateProjectFile('cars', '2022 Subaru WRX2', {
+      freshness: 'newest'
+    });
+    assert.equal(hydrated.savedAt, 20);
+    assert.equal(hydrated.data.car.art.body, 'rtg-001');
+    assert.equal(
+      JSON.parse(readCachedProjectFile('cars', '2022 Subaru WRX2')).savedAt,
+      20
+    );
+  } finally {
+    globalThis.fetch = originalFetch;
+    clearCachedProjectFilesForTests();
+  }
+});
+
 test('saveServerFile reports failed save requests without poisoning later saves', async () => {
   clearCachedProjectFilesForTests();
   const originalFetch = globalThis.fetch;

@@ -217,7 +217,8 @@ test('midi portrait paths use real mixer and portrait record layout', () => {
   assert.equal(midiComposerSource.includes("hideInstrumentConfig: true"), true);
   assert.equal(midiComposerSource.includes("nowPlayingPlacement: 'preview'"), true);
   assert.equal(midiComposerSource.includes("drawMidiPortraitRecordSettingsPanel"), true);
-  assert.equal(midiComposerSource.includes("record-tuning-string"), true);
+  assert.equal(midiComposerSource.includes('drawMidiRecordTuningPanel'), true);
+  assert.equal(midiComposerSource.includes("action?.type === 'string-tuning'"), true);
   assert.equal(midiComposerSource.includes("cycleStringTuning"), true);
   assert.equal(midiComposerSource.includes("setRecordInstrument(action.value)"), true);
   assert.equal(midiComposerSource.includes("return ['guitar', 'bass', 'keyboard', 'drums'];"), true);

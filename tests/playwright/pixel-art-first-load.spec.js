@@ -11,8 +11,29 @@ test('editor-only tile art renders immediately on first world draw', async ({ pa
 
   await page.evaluate(() => {
     const game = window.__game;
+    const sizeTiles = 24;
+    game.applyWorldData({
+      schemaVersion: 1,
+      tileSize: 32,
+      width: sizeTiles,
+      height: sizeTiles,
+      spawn: { x: 12, y: 12 },
+      tiles: Array.from({ length: sizeTiles }, () => '.'.repeat(sizeTiles)),
+      regions: [],
+      enemies: [],
+      elevatorPaths: [],
+      elevators: [],
+      pixelArt: { tiles: {} },
+      musicZones: [],
+      midiTracks: [],
+      triggers: [],
+      decals: []
+    });
     game.enterEditor({ tab: 'tiles' });
-    const targetX = game.world.spawn?.x || 12;
+    const targetX = Math.min(
+      game.world.width - 2,
+      Math.max(1, Number(game.world.spawn?.x || 12) + 2)
+    );
     const targetY = game.world.spawn?.y || 12;
     const tileChar = 'X';
     const size = 16;
@@ -44,59 +65,54 @@ test('editor-only tile art renders immediately on first world draw', async ({ pa
     };
     game.world.setTile(targetX, targetY, tileChar, { persist: true });
     window.__pixelRenderTestTarget = { x: targetX, y: targetY };
-    game.player.x = (targetX + 0.5) * game.world.tileSize;
-    game.player.y = (targetY + 0.5) * game.world.tileSize;
+    window.__pixelArtPlaytestDraws = 0;
+    window.__pixelArtOriginalDrawImage = game.ctx.drawImage;
+    game.ctx.drawImage = function trackedPixelArtDraw(source, ...args) {
+      const destinationX = Number(args[0]);
+      const destinationY = Number(args[1]);
+      if (destinationX === targetX * game.world.tileSize
+        && destinationY === targetY * game.world.tileSize
+        && Number(source?.width) === size
+        && Number(source?.height) === size) {
+        try {
+          const pixel = source.getContext?.('2d')?.getImageData?.(3, 3, 1, 1)?.data;
+          if (pixel && pixel[0] > 200 && pixel[2] > 200 && pixel[1] < 80 && pixel[3] > 200) {
+            window.__pixelArtPlaytestDraws += 1;
+          }
+        } catch (_error) {
+          // A non-readable source is not the generated tile frame.
+        }
+      }
+      return window.__pixelArtOriginalDrawImage.call(this, source, ...args);
+    };
     game.snapCameraToPlayer();
   });
   await page.waitForFunction(() => window.__game.state === 'editor');
   await page.evaluate(() => {
+    window.__pixelArtPlaytestDraws = 0;
     window.__game.exitEditor({ playtest: true });
   });
   await page.waitForFunction(() => window.__game.state === 'playing' && window.__game.playtestActive === true);
 
   await expect.poll(async () => page.evaluate(() => {
     const game = window.__game;
-    const target = window.__pixelRenderTestTarget || { x: 12, y: 12 };
-    const tileSize = game.world.tileSize;
-    const left = Math.floor(target.x * tileSize - game.camera.x);
-    const top = Math.floor(target.y * tileSize - game.camera.y);
-    if (left + tileSize < 0 || top + tileSize < 0) return null;
-    if (left >= game.canvas.width || top >= game.canvas.height) return null;
-    const sampleW = Math.max(1, Math.min(tileSize, game.canvas.width - Math.max(0, left)));
-    const sampleH = Math.max(1, Math.min(tileSize, game.canvas.height - Math.max(0, top)));
-    const data = game.ctx.getImageData(Math.max(0, left), Math.max(0, top), sampleW, sampleH).data;
-    let brightMagentaPixels = 0;
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i];
-      const g = data[i + 1];
-      const b = data[i + 2];
-      const a = data[i + 3];
-      if (a > 200 && r > 200 && b > 200 && g < 80) brightMagentaPixels += 1;
-    }
     const synthesizedFrames = Array.isArray(game.world.pixelArt?.tiles?.X?.frames)
       && game.world.pixelArt.tiles.X.frames.length > 0;
-    return { brightMagentaPixels, synthesizedFrames };
+    const target = window.__pixelRenderTestTarget;
+    const tilePersisted = target && game.world.getTile(target.x, target.y) === 'X';
+    return synthesizedFrames && tilePersisted
+      ? Number(window.__pixelArtPlaytestDraws || 0)
+      : -1;
   }), {
     timeout: 15_000
-  }).toMatchObject({ synthesizedFrames: true, brightMagentaPixels: expect.any(Number) });
+  }).toBeGreaterThan(0);
 
-  const magentaCount = await page.evaluate(() => {
-    const game = window.__game;
-    const target = window.__pixelRenderTestTarget || { x: 12, y: 12 };
-    const tileSize = game.world.tileSize;
-    const left = Math.floor(target.x * tileSize - game.camera.x);
-    const top = Math.floor(target.y * tileSize - game.camera.y);
-    const data = game.ctx.getImageData(Math.max(0, left), Math.max(0, top), tileSize, tileSize).data;
-    let brightMagentaPixels = 0;
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i];
-      const g = data[i + 1];
-      const b = data[i + 2];
-      if (r > 200 && b > 200 && g < 80) brightMagentaPixels += 1;
+  await page.evaluate(() => {
+    if (window.__pixelArtOriginalDrawImage) {
+      window.__game.ctx.drawImage = window.__pixelArtOriginalDrawImage;
+      window.__pixelArtOriginalDrawImage = null;
     }
-    return brightMagentaPixels;
   });
-  expect(magentaCount).toBeGreaterThan(24);
 
   await page.screenshot({
     path: 'artifacts/pixel-art-editor-only-first-draw.png',

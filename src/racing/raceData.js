@@ -15,10 +15,35 @@ export const RACE_COMPETITION_MODES = ['solo', 'ai-race', 'combat-run', 'mixed']
 
 export const RACE_TIME_OF_DAY = ['day', 'night'];
 
+export const RACE_FINISH_BEHAVIOR_TYPES = ['return-to-origin', 'race', 'level'];
+
+export function normalizeRaceFinishBehavior(value = {}) {
+  const source = value && typeof value === 'object' ? value : {};
+  const type = RACE_FINISH_BEHAVIOR_TYPES.includes(source.type)
+    ? source.type
+    : 'return-to-origin';
+  return {
+    type,
+    targetLevel: type === 'level' && typeof source.targetLevel === 'string' && source.targetLevel.trim()
+      ? source.targetLevel.trim()
+      : null,
+    targetRace: type === 'race' && typeof source.targetRace === 'string' && source.targetRace.trim()
+      ? source.targetRace.trim()
+      : null,
+    spawnX: type === 'level' && Number.isFinite(Number(source.spawnX))
+      ? Math.floor(Number(source.spawnX))
+      : null,
+    spawnY: type === 'level' && Number.isFinite(Number(source.spawnY))
+      ? Math.floor(Number(source.spawnY))
+      : null
+  };
+}
+
 export const RACE_SNOW_CONDITIONS = [
   { id: 'ice', label: 'Ice', grip: 0.52, bumpiness: 0.03 },
   { id: 'dusting', label: 'Dusting', grip: 0.68, bumpiness: 0.08 },
   { id: 'three-inch', label: '3 in Snow', grip: 0.56, bumpiness: 0.18 },
+  { id: 'six-inch', label: '6 in Snow', grip: 0.42, bumpiness: 0.34 },
   { id: 'slush', label: 'Slush', grip: 0.48, bumpiness: 0.14 }
 ];
 
@@ -672,7 +697,9 @@ export function createDefaultRace(id = 'test-loop') {
     finishBehavior: {
       type: 'return-to-origin',
       targetLevel: null,
-      targetRace: null
+      targetRace: null,
+      spawnX: null,
+      spawnY: null
     },
     road: {
       laneCount,
@@ -714,6 +741,13 @@ export function createDefaultRace(id = 'test-loop') {
         { id: 'jump-ahead', at: 620, text: 'Jump ahead, stay center', severity: 3 }
       ]
     },
+    raceStart: {
+      musicTrackId: '',
+      countdown: true,
+      rollingStart: false,
+      rollingStartSpeedMps: 13.4
+    },
+    triggers: [],
     scenery: []
   });
 }
@@ -794,7 +828,9 @@ function createRaceTemplate({
     finishBehavior: {
       type: 'return-to-origin',
       targetLevel: null,
-      targetRace: null
+      targetRace: null,
+      spawnX: null,
+      spawnY: null
     },
     referenceNotes,
     referenceFacts,

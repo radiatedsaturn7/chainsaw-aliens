@@ -115,6 +115,10 @@ Shared implementation helpers:
 - Tools: tile, actor, structure, shape, erase.
 - Assets: scrollable lists for tiles, actors, triggers, powerups, structures, decals, and tile art.
 - Settings: level metadata, MIDI, world settings.
+- New and art-free level documents use the built-in gray solid tile and never inherit the global Tile Art autosave; explicit level tile-art overrides remain document-owned.
+- Solid collision cells retain a visible editor-only blue silhouette and boundary even when their authored tile artwork is black or transparent; gameplay renders only the authored artwork.
+- Playtest starts the authored level immediately from one runtime reset. Startup triggers execute once, and automated golden-path validation remains an explicit testing action rather than a hidden playtest prerequisite.
+- Triggers may use Start Race to choose a saved race and either a specific saved car or a runtime Player Chooses picker. Cold race files yield to a cancellable loading screen before hydration, then terrain prepares off the main thread and transfers packed render and physics buffers instead of retaining per-triangle objects. Physics, timers, audio, and controls start only after preparation completes. Starting a race preserves the live level and durable player state so race completion can return to the exact departure point or continue into another authored destination.
 - Desktop left panel should expose current mode/tool/asset context without hiding the level canvas; the top drawers own asset and command selection.
 
 ### Actor Editor
@@ -166,10 +170,13 @@ Shared implementation helpers:
 - Portrait bottom menu: File, Track, Ground, Sprites, Settings.
 - Edit: undo, redo, copy segment, paste segment, delete segment.
 - File: standard document actions plus generate random race and load built-in reference tracks.
-- Track: draw road, add/move/remove nodes, remove edges, assign edge tile, asphalt, dirt, gravel, snow, wet asphalt, segment width, bumpiness, and snow condition. Circuit versus point-to-point behavior is inferred from whether the route endpoints connect; there must not be explicit Circuit/Destination menu toggles.
+- Track: the command menu contains only Add. Add is a persistent placement mode; empty-map taps add draggable nodes, while existing nodes are always selected and moved by direct tap-drag. Node and edge editing is selection-contextual rather than duplicated in the Track menu. Selected interior nodes expose Smooth, Tight, and Hard corner styles; selected edges expose insert/delete, edge tile, surface, width, bumpiness, boundary, and snow condition. Circuit versus point-to-point behavior is inferred from whether the route endpoints connect; there must not be explicit Circuit/Destination menu toggles.
 - Ground: selected ground tile, paint ground, paint elevation, raise/lower, and brush size.
+- Ground triggers are selected from the portrait Ground hot menu alongside Ground, Elevation, Sprite, and Doodad. Trigger mode uses the contextual hot rail for effect, target, and management controls; empty-map taps place triggers while marker taps select them. Triggers are placed in world space and may play a sprite or animation, create a saved doodad, or change race weather when the player enters their radius.
 - Sprites: add, move, delete, size, and behavior for vertical scenery sprites.
-- Settings: road width, AI racer count, weather clear/rain/storm/snow, and finish behavior.
+- Settings: road width, AI racer count, weather clear/rain/storm/snow, and On Race Complete behavior. On Race Complete supports Return to Origin, Next Race using the current car, or Load Level at a required tile selected from a full-level preview.
+- Race start settings select a saved MIDI track, enable or disable the 3-2-1-GO countdown, and enable a rolling start with an authored initial speed.
+- Race precipitation uses layered screen-space perspective: snow drifts gently while falling from the top of the race view, and rain/storm drops fall with a consistent downward wind vector. Far particles grow and spread mildly as accumulated vehicle travel brings them toward the camera. Braking may slow future approach but must never reverse precipitation, jump existing particles backward, or make it radiate around the car.
 - Debug: Physics Surface View is a session-only driving view of the exact triangles and wheel contacts used by vehicle physics. It is available from the editor Settings drawer and the playtest pause menu without adding a portrait root.
 - Top Play/Pause: Playtest opens a car picker, then launches the race in the handheld race playtest surface. The physics debug view suppresses authored road, terrain, scenery, and effects while retaining driving controls, HUD, and pause access.
 - Playtest pause uses the same scaled in-game text menu as Level Editor playtest. Race-specific Settings and Debug rows remain available, but editor button chrome must never render inside the pause surface.

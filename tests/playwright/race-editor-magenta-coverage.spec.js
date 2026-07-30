@@ -42,7 +42,17 @@ test(`Race Editor Studio Sprint ${coverageCase.name} frames expose no magenta te
       overlaysEnabled: true
     };
     editor.raceInput.cameraView = 'third-person';
-    editor.startPlaytest(editor.project.selectedCarId);
+    const preparedWorldBake = editor.buildRaceWorldBake(
+      editor.getRacePlaytestWorldBakeOptions()
+    );
+    editor.startPlaytest(editor.project.selectedCarId, {
+      hydrateCars: false,
+      preparedWorldBake
+    });
+    if (!editor.playtestSession?.worldBake) {
+      throw new Error('Race geometry bake was not installed');
+    }
+    editor.playtestSession.startupFramePending = false;
     editor.playtestSession.launchLockMs = 0;
     editor.playtestSession.elapsedMs = 4000;
     editor.playtestSession.running = true;

@@ -9,7 +9,7 @@ async function waitForGameReady(page) {
   await page.waitForFunction(() => window.__game.state !== 'loading');
 }
 
-test('tile editor solid block stays purple after full browser reopen from editor route', async () => {
+test('global tile art stays purple after a full browser reopen outside an art-free level', async () => {
   const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'chainsaw-aliens-purple-'));
 
   const context1 = await chromium.launchPersistentContext(userDataDir, { headless: true });
@@ -48,8 +48,8 @@ test('tile editor solid block stays purple after full browser reopen from editor
 
   await page2.evaluate(() => {
     const game = window.__game;
-    game.enterEditor({ tab: 'tiles' });
-    game.enterPixelStudio({ returnState: 'editor', tilePicker: true });
+    game.transitionTo('title', { forceCleanup: true });
+    game.enterPixelStudio({ returnState: 'title', tilePicker: true });
     const studio = game.pixelStudio;
     const solidTile = studio.tileLibrary.find((tile) => tile.id === 'solid');
     studio.setActiveTile(solidTile);

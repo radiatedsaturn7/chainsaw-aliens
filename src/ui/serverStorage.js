@@ -389,23 +389,38 @@ export function readCachedProjectFile(folder, name) {
   return payload ? volatileFiles.get(key) || null : null;
 }
 
-export async function hydrateProjectFile(folder, name) {
+export async function hydrateProjectFile(folder, name, options = {}) {
   if (!folder || !name) return null;
   const key = fileKey(folder, name);
+  const freshness = String(options?.freshness || '').trim().toLowerCase();
+  const requireNewest = freshness === 'newest' || options?.forceRefresh === true;
+  let cachedPayload = null;
+  let cachedSource = volatileFileSources.get(key) || 'cache';
   if (volatileFiles.has(key)) {
     try {
-      return attachStorageSource(JSON.parse(volatileFiles.get(key)), volatileFileSources.get(key) || 'cache');
+      cachedPayload = JSON.parse(volatileFiles.get(key));
+      if (!requireNewest) return attachStorageSource(cachedPayload, cachedSource);
     } catch (error) {
-      return null;
+      cachedPayload = null;
     }
   }
-  if (storageApiAvailable) {
+  if (storageApiAvailable || requireNewest) {
     try {
-      return await fetchServerFile(folder, name);
+      const serverPayload = await fetchServerFile(folder, name);
+      storageApiAvailable = true;
+      if (cachedPayload
+        && Number(cachedPayload.savedAt || 0) > Number(serverPayload?.savedAt || 0)) {
+        updateCachedPayload(cachedPayload, cachedSource);
+        return attachStorageSource(cachedPayload, cachedSource);
+      }
+      return serverPayload;
     } catch (error) {
       if (!isStorageApiUnavailable(error)) throw error;
       storageApiAvailable = false;
     }
+  }
+  if (cachedPayload) {
+    return attachStorageSource(cachedPayload, cachedSource);
   }
   await hydrateStaticStorageFiles();
   const cached = volatileFiles.get(key);

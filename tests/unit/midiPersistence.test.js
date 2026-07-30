@@ -13,8 +13,8 @@ const serverSource = fs.readFileSync(new URL('../../tools/dev_server.py', import
 test('MIDI composer exposes a non-destructive rescue save action', () => {
   assert.equal(source.includes("const MIDI_RESCUE_PREFIX = 'Intro Rescue';"), true);
   assert.equal(source.includes('async rescueSaveSong()'), true);
-  assert.equal(source.includes("action('rescue-save', 'Rescue Save'"), true);
-  assert.equal(source.includes("{ id: 'rescue-save', label: 'Rescue Save' }"), true);
+  assert.equal(source.includes("{ id: 'rescue-save', label: 'Rescue Save', onClick:"), true);
+  assert.equal(source.includes("this.handleFileMenu('rescue-save')"), true);
 });
 
 test('MIDI composer keeps per-document autosaves alongside global autosave', () => {

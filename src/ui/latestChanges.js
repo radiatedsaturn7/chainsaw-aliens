@@ -9,6 +9,36 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   currentStatus: [
+    '2026-07-30 17:09 EDT - Fixed Level Editor playtests restoring stale pre-editor world data by committing the live authored snapshot before reset, made Level-to-Race browser coverage seed exact portable Studio Sprint2 and WRX2 fixtures, and shortened merge validation with balanced per-test Playwright shards, no duplicate physics browser run, and automatic cancellation of superseded workflows.',
+    '2026-07-30 13:57 EDT - Replaced the visible third-person snow box with a terrain-aware streamed world field: deterministic thirty-two-meter cells now cover the weather-visible environment in one cached depth-tested Three.js point draw, while a softly faded near layer preserves large flakes and speed streaks without recurring full-field terrain scans.',
+    '2026-07-30 13:11 EDT - Scaled authored race weather to full visual intensity without changing its existing traction limits: 100% snow, rain, and storms now use dense nonlinear precipitation, distance-based world haze down to twenty-meter visibility, camera-frustum world snowfall, deterministic gusts, and storm-only lightning with panned procedural thunder.',
+    '2026-07-30 10:41 EDT - Let drivers free-rev to each car’s real redline with limiter bounce during standing and rolling countdowns while drivetrain torque remains staged until GO, and replaced screen-space snow with a deterministic 96-flake world-space field whose falling, wind, perspective growth, and camera-relative streaks occupy the live 3D race camera volume.',
+    '2026-07-30 02:59 EDT - Made race countdowns live instead of frozen: a separate scene clock keeps snow and rain moving, staged throttle now revs engine audio up to each car’s launch RPM, standing cars and AI remain locked without tire or Track State mutation, and rolling formations hold their authored speed until race timing and drivetrain control engage at GO.',
+    '2026-07-30 00:48 EDT - Repaired the Race, Level, and Car Editor race-start regressions by resolving the newest exact saved or live car document before worker preparation, streaming required artwork incrementally with explicit failure and presentation timeouts, keeping pause and editor input responsive until the first frame, and removing the obsolete synthetic Car preview while invalidating its real-track vehicle snapshot for every visual or tuning edit.',
+    '2026-07-29 22:59 EDT - Replaced the regressed monolithic race-art startup barrier with explicit core and critical-art readiness, bounded incremental art transfer, deferred scenery streaming, first-frame simulation gating, reusable runtime packages, and a real-track-only Car Editor preview whose tuning changes no longer rebake Studio Sprint.',
+    '2026-07-29 22:16 EDT - Eliminated the post-100% Studio Sprint2 startup freeze across Level triggers and Race/Car Editor by routing every browser playtest through worker-prepared terrain, physics, final-scale UVs, and artwork; removed synchronous playtest prewarm and SFX seeding, made the Car Editor live preview load behind a responsive fallback, and added first-frame render failure recovery.',
+    '2026-07-29 21:29 EDT - Removed the LevelA-to-Studio Sprint2 99% cold-start freeze by packing race and WRX artwork plus CPU texture mips in the race worker, transferring prepared RGBA buffers into runtime caches, eliminating synchronous artwork/SFX storage reads, and delaying engine audio until the first playable race frame.',
+    '2026-07-29 00:47 EDT - Exposed Trigger in the Race Editor portrait Ground hot menu with contextual effect, target, place/select, and delete controls, including marker-first map selection.',
+    '2026-07-29 00:44 EDT - Added speed-responsive perspective depth to snow, rain, and storms using monotonic accumulated vehicle travel, so precipitation grows toward the camera while continuing downward and cannot jump backward during braking or reverse driving.',
+    '2026-07-28 23:55 EDT - Added Race Editor ground triggers for sprite/animation, doodad, and weather effects, plus saved MIDI music, 3-2-1-GO countdown, and configurable rolling-start options.',
+    '2026-07-28 23:32 EDT - Fixed jump-to-jump sky launches by replacing unbounded sampled-height velocity injection with settled-contact surface-normal following, bounded vertical correction, and a final velocity safety clamp; the 3D vehicle now remains the sole vertical authority while active.',
+    '2026-07-28 23:29 EDT - Replaced car-centered radial snowfall with downward screen-space flakes whose positions cannot reverse under acceleration or braking, and aligned rain and storm streaks with their actual downward wind-driven motion.',
+    '2026-07-28 14:02 EDT - Restored visible persistent tire marks in Level-triggered, Race Editor, and Car Editor playtests by winding tread ribbons upward for single-sided Three.js rendering, rejecting degenerate faces, and retaining the software fallback when no valid GPU chunk is available.',
+    '2026-07-28 13:06 EDT - Matched Level-triggered race rendering and contact physics to Race/Car Editor by rebuilding packed terrain UVs after hydrated artwork reveals its true pixel dimensions and preserving Float64 surface positions, bounds, and normals across the worker boundary.',
+    '2026-07-28 00:01 EDT - Restored exact Level-triggered race terrain parity by preserving every authored terrain cell through worker loading while retaining packed render and physics buffers, eliminating texture loss and multi-meter road-profile divergence from Race Editor playtests.',
+    '2026-07-27 17:22 EDT - Unified Level-triggered and editor race startup around exact saved-car documents, session-owned runtime car snapshots, complete surface-cache invalidation, and prepared-terrain installation before suspension initialization so authored graphics, camera, tuning, and contact physics remain identical.',
+    '2026-07-27 13:13 EDT - Fixed Level Editor playtest freezing on its first active frame by replacing an undefined FPS clamp call with an inline bounded calculation, with regression coverage that proves the game loop continues for both high and low frame intervals.',
+    '2026-07-27 08:59 EDT - Fixed levelA startup playtest stalls by yielding to a cancellable race-loading screen before hydration and transferring Studio Sprint terrain and physics as compact worker-built buffers, eliminating 52,992 main-thread terrain objects while preserving the authored On Level Start race action.',
+    '2026-07-26 20:50 EDT - Stopped new and art-free levels from inheriting global black tile art, restored built-in gray solids by default, preserved explicit custom art with the blue collision outline, and moved cold level-to-race terrain preparation into a cancellable streaming worker so playtest remains responsive.',
+    '2026-07-26 19:55 EDT - Made dark solid blocks visible through an editor-only collision silhouette and changed normal Level Editor playtest to reset once without hidden golden-path validation, preventing On Level Start race travel from firing twice and freezing the transition.',
+    '2026-07-26 19:18 EDT - Added bidirectional race and level travel: Level triggers can launch a chosen race and car, race completion can return to the exact departure point, chain into another race with the same car, or load a level at an authored preview-selected tile while preserving player progression.',
+    '2026-07-26 15:14 EDT - Simplified Race Editor Track authoring to one persistent Add command across shared menu surfaces, made existing nodes directly draggable even while adding, moved node and edge operations into selection context, and restored Smooth, Tight, and exact Hard node corner styles.',
+    '2026-07-26 04:42 EDT - Corrected reverse steering so signed physical tire forces, bicycle yaw, velocity heading, breakaway yaw, countersteer, banking, and drift direction agree while leaving forward grip and steering coefficients unchanged.',
+    '2026-07-26 04:10 EDT - Removed end-of-race reversal stalls by moving persistent tire tracks from per-frame CPU projection into incrementally updated, frustum-culled Three.js chunks, with bounded direction-aware software fallback rendering.',
+    '2026-07-26 03:02 EDT - Made kicked-up tire FX select and tint itself from the rendered road or painted tile beneath each physical contact, including custom particle art, and added active-camera near-plane clipping plus a close-camera fade for stable tread ribbons.',
+    '2026-07-26 02:12 EDT - Corrected tire smoke and tread-mark projection so physical wheel-contact world coordinates use the same active Three.js camera as the rendered car and terrain instead of the legacy software camera.',
+    '2026-07-26 01:37 EDT - Made newly emitted tire smoke render at its exact physics contact before drifting and above authored cars, added playtest-persistent surface-conforming asphalt skid ribbons and visual dirt/gravel/snow ruts with bounded spatial culling, and replaced flat procedural shadows with five-centimeter-lifted conforming patches.',
+    '2026-07-26 01:04 EDT - Anchored dirt, gravel, smoke, and skid FX to each tire physics contact patch, standardized a three-centimeter render lift for authored and procedural car shadows, and changed hill-crest camera safety to preserve the ten-meter chase distance by anticipating and smoothing elevation before using a smooth emergency pull-in.',
     '2026-07-25 21:09 EDT - Made Fixed Rear an exact rear-axle chase mode without yaw or lateral drift lag, and added a rear-locked 2D tire rig that preserves physical suspension and terrain motion vertically without letting turns or body roll slide authored wheels sideways.',
     '2026-07-25 17:50 EDT - Corrected overridden car body, brake-light, and add-on artwork to use the physical rear-axle midpoint exactly half the authored wheelbase behind the chassis center, removing the former half-body-length and rear-overhang placement.',
     '2026-07-25 17:34 EDT - Moved overridden car body, brake-light, and add-on billboards from the chassis-center projection to the pitch-aware physical rear-bumper midpoint, while preserving physical wheel centers, ground shadows, collision, geometric chassis placement, and the existing artwork pivot and offsets.',
@@ -1416,6 +1446,72 @@ export const LATEST_MAJOR_WORK = {
 };
 
 export const LATEST_CHANGES = [
+  {
+    date: '2026-07-30',
+    time: '02:01 EDT',
+    title: 'Race countdowns recover and scenery-loaded WRX2 runs finish',
+    details: [
+      'Scenery collision physics now imports and executes the authored doodad speed-rule resolver, fixing the first simulation-frame exception that left Race Editor and level-triggered races frozen at the countdown.',
+      'Race simulation updates now have a shared failure boundary: level-triggered races return to their origin, direct Race Editor sessions return to authoring, and Car Editor clears only its preview while preserving editor controls.',
+      'Car Editor now tears down a completed preview session cleanly instead of retaining a null session that could immediately restart.',
+      'Regression coverage exercises real scenery rules, failure recovery, countdown progress, Car Editor preview liveness, and an autonomous WRX finish on Studio Sprint; the saved Studio Sprint2 and WRX2 documents also complete through the local runtime harness.'
+    ]
+  },
+  {
+    date: '2026-07-28',
+    time: '00:01 EDT',
+    title: 'Level-triggered races preserve exact authored terrain',
+    details: [
+      'Race travel workers now return the complete saved race document instead of discarding default-material terrain cells that still carry authored texture and elevation data.',
+      'Packed terrain geometry and packed physics samplers remain in place, so the runtime keeps its compact render and contact representation without changing the saved terrain source.',
+      'Level-triggered playtests now retain the exact race filename in their session and status text, even when the race document has an older internal display name.',
+      'Regression coverage compares saved and loaded terrain statistics, representative road profiles, prepared-bake identity, WRX2 graphics, and initial wheel contacts.'
+    ]
+  },
+  {
+    date: '2026-07-27',
+    time: '17:22 EDT',
+    title: 'Level-triggered races match saved car and race playtests',
+    details: [
+      'Specific-car race triggers now hydrate the exact saved document instead of accepting a stale in-memory car with the same internal ID.',
+      'Each playtest owns a normalized runtime car snapshot used consistently by physics, camera, rendering, wheel visibility, tuning, setup, dimensions, and audio while preserving player runtime controls.',
+      'Loaded races clear every derived surface cache, and worker-prepared terrain is installed before vehicle height, suspension compression, and wheel contact are initialized.',
+      'The levelA Studio Sprint trigger now selects the intended WRX2 document, whose fixed-rear camera and rear-only authored wheels are covered by unit and browser regressions.'
+    ]
+  },
+  {
+    date: '2026-07-26',
+    time: '19:55 EDT',
+    title: 'Level solids stay visible and playtest startup runs once',
+    details: [
+      'The Level Editor now draws an authoring-only blue collision silhouette over solid cells, keeping black or transparent tile artwork visible without changing gameplay graphics.',
+      'Normal Level Editor playtest now performs one runtime reset and no longer runs hidden golden-path validation before play begins.',
+      'On Level Start actions, including Start Race, now execute once during the real playtest instead of once during validation and again during gameplay.',
+      'Added focused unit and browser regressions for dark solid visibility, immediate playtest startup, and single race-travel dispatch.'
+    ]
+  },
+  {
+    date: '2026-07-26',
+    time: '19:18 EDT',
+    title: 'Races and levels can now link into complete travel flows',
+    details: [
+      'Race Settings now includes On Race Complete with Return to Origin, Next Race, and Load Level destinations.',
+      'Level arrivals are chosen from a full-level preview and require an explicit tile before the race setting can be saved.',
+      'Level trigger actions can start a saved race with a specific car or the existing Player Chooses flow.',
+      'Race chains retain the same car, exact level returns restore the departure point, and durable player progression survives race and level transitions.'
+    ]
+  },
+  {
+    date: '2026-07-26',
+    time: '15:12 EDT',
+    title: 'Snowfall is faster and accumulated snow remains driveable',
+    details: [
+      'Snow intensity now represents 1.5, 3, 4.5, or 6 inches of accumulation, including a new authored six-inch condition.',
+      'Wheel physics preserves the road material beneath the snow, blends tire grip by accumulation depth, and adds progressively stronger deep-snow plowing resistance for player and AI cars.',
+      'Stock-tire AWD regression coverage proves launch on shallow snow and a controlled five-degree gravel climb at three inches while six inches remains substantially harder.',
+      'Snowflakes now expand and streak toward the active camera with vehicle speed, and snowfall rendering is batched into at most two canvas draw calls with render-time diagnostics.'
+    ]
+  },
   {
     date: '2026-07-24',
     time: '12:18 EDT',
