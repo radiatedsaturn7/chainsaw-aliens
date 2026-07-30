@@ -131,9 +131,9 @@ export class RaceSurfaceModel {
     const back = this.clampElevation(sampler?.({ x, z: z - step }, fallbackElevation) ?? fallbackElevation);
     const front = this.clampElevation(sampler?.({ x, z: z + step }, fallbackElevation) ?? fallbackElevation);
     return normalizeVector3({
-      x: (left - right) / (step * 2),
+      x: ((left - right) * this.elevationScaleM) / (step * 2),
       y: 1,
-      z: (back - front) / (step * 2)
+      z: ((back - front) * this.elevationScaleM) / (step * 2)
     });
   }
 
@@ -144,9 +144,9 @@ export class RaceSurfaceModel {
     const back = this.clampElevation(this.adapter.sampleTerrain?.({ x, z: z - step }, fallbackElevation) ?? fallbackElevation);
     const front = this.clampElevation(this.adapter.sampleTerrain?.({ x, z: z + step }, fallbackElevation) ?? fallbackElevation);
     return normalizeVector3({
-      x: (left - right) / (step * 2),
+      x: ((left - right) * this.elevationScaleM) / (step * 2),
       y: 1,
-      z: (back - front) / (step * 2)
+      z: ((back - front) * this.elevationScaleM) / (step * 2)
     });
   }
 

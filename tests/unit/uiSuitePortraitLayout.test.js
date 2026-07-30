@@ -28,6 +28,8 @@ function createNoopContext() {
     fillRect(x, y, w, h) { rects.push({ x, y, w, h, fillStyle: this.fillStyle, globalAlpha: this.globalAlpha }); },
     strokeRect() {},
     beginPath() {},
+    rect(x, y, w, h) { rects.push({ x, y, w, h, path: true }); },
+    clip() {},
     moveTo() {},
     lineTo() {},
     closePath() {},

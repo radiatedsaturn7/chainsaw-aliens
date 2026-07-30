@@ -221,6 +221,7 @@ const TRIGGER_CONDITIONS = [
 
 const TRIGGER_ACTION_TYPES = [
   { id: 'load-level', label: 'Load Level' },
+  { id: 'start-race', label: 'Start Race' },
   { id: 'kill-player', label: 'Kill Player' },
   { id: 'kill-enemy', label: 'Kill Enemy' },
   { id: 'spawn-enemy', label: 'Spawn Enemy' },
@@ -457,6 +458,8 @@ export default class Editor {
     this.triggerEditorOptionCache = {
       levelNames: null,
       levelNamesAt: 0,
+      raceNames: null,
+      carNames: null,
       musicOptions: null,
       musicOptionsAt: 0
     };
@@ -510,9 +513,6 @@ export default class Editor {
         },
         applyLoadedData: (ctx, data) => {
           ctx.game.applyWorldData(data);
-          if (!data.pixelArt?.tiles || !Object.keys(data.pixelArt.tiles).length) {
-            ctx.game.restoreBestTileArtFromAutosaves?.();
-          }
           ctx.flushWorldRefresh();
         }
       },
@@ -1192,9 +1192,6 @@ export default class Editor {
     const projectFilePayload = loadProjectFile('levels', LEVEL_EDITOR_AUTOSAVE_DOC);
     if (projectFilePayload?.data?.tiles && projectFilePayload?.data?.width && projectFilePayload?.data?.height) {
       this.game.applyWorldData(projectFilePayload.data);
-      if (!projectFilePayload.data.pixelArt?.tiles || !Object.keys(projectFilePayload.data.pixelArt.tiles).length) {
-        this.game.restoreBestTileArtFromAutosaves?.();
-      }
       this.syncPreviewMinimap();
       return true;
     }
@@ -2691,7 +2688,7 @@ export default class Editor {
       enemies: [],
       elevatorPaths: [],
       elevators: [],
-      pixelArt: { tiles: {} },
+      pixelArt: { tiles: {}, tileProperties: {} },
       musicZones: [],
       midiTracks: []
     };
@@ -3051,6 +3048,9 @@ export default class Editor {
       case 'load-level':
         base.params = { levelName: 'Level 1', spawnX: null, spawnY: null, useFade: true };
         break;
+      case 'start-race':
+        base.params = { raceName: '', carSelection: 'player-chooses', carRef: null };
+        break;
       case 'kill-enemy':
         base.params = { target: TRIGGER_ENEMY_TARGET_OPTIONS[0], tag: 'boss' };
         break;
@@ -3167,6 +3167,9 @@ export default class Editor {
 
   commitTriggerActionDraft(trigger) {
     if (!trigger || !this.triggerActionDraft) return;
+    if (this.triggerActionDraft.type === 'start-race' && !this.triggerActionDraft.params?.raceName) {
+      this.triggerActionDraft.params.raceName = this.getTriggerRaceNames()[0] || '';
+    }
     if (this.triggerEditingActionId) {
       const index = trigger.actions.findIndex((entry) => entry.id === this.triggerEditingActionId);
       if (index >= 0) {
@@ -3297,6 +3300,17 @@ export default class Editor {
         if (!Number.isFinite(action.params.spawnY)) action.params.spawnY = null;
         if (typeof action.params.useFade !== 'boolean') action.params.useFade = true;
       }
+      if (action.type === 'start-race') {
+        if (typeof action.params.raceName !== 'string') action.params.raceName = '';
+        action.params.carSelection = action.params.carSelection === 'specific' ? 'specific' : 'player-chooses';
+        if (action.params.carSelection === 'specific') {
+          action.params.carRef = typeof action.params.carRef === 'string' && action.params.carRef
+            ? action.params.carRef
+            : null;
+        } else {
+          action.params.carRef = null;
+        }
+      }
       if (action.type === 'become-tile') {
         if (typeof action.params.tileChar !== 'string' || !action.params.tileChar) action.params.tileChar = '#';
       }
@@ -3321,6 +3335,24 @@ export default class Editor {
     this.triggerEditorOptionCache.levelNames = levelNames;
     this.triggerEditorOptionCache.levelNamesAt = Date.now();
     return levelNames;
+  }
+
+  getTriggerRaceNames() {
+    if (this.triggerEditorOptionCache.raceNames) return this.triggerEditorOptionCache.raceNames;
+    const names = listProjectFiles('races').map((entry) => entry.name);
+    this.triggerEditorOptionCache.raceNames = names;
+    return names;
+  }
+
+  getTriggerCarNames() {
+    if (this.triggerEditorOptionCache.carNames) return this.triggerEditorOptionCache.carNames;
+    const builtInNames = (this.game?.raceEditor?.project?.cars || [])
+      .map((entry) => String(entry?.name || entry?.id || '').trim())
+      .filter(Boolean);
+    const savedNames = listProjectFiles('cars').map((entry) => entry.name);
+    const names = [...new Set([...builtInNames, ...savedNames])];
+    this.triggerEditorOptionCache.carNames = ['Player Chooses', ...names];
+    return this.triggerEditorOptionCache.carNames;
   }
 
   getTriggerDecalOptions() {
@@ -3695,6 +3727,10 @@ export default class Editor {
         const fadeText = params.useFade === false ? ' [no fade]' : ' [fade]';
         return `Level: ${params.levelName || 'Level 1'}${spawnText}${fadeText}`;
       }
+      case 'start-race':
+        return `Race: ${params.raceName || '(choose race)'} · Car: ${
+          params.carSelection === 'specific' && params.carRef ? params.carRef : 'Player Chooses'
+        }`;
       case 'kill-enemy':
         return `Target: ${params.target || 'nearest'}`;
       case 'spawn-enemy':
@@ -3939,6 +3975,7 @@ export default class Editor {
     }
     this.resetView();
     this.syncPreviewMinimap();
+    this.persistAutosave();
   }
 
   cancelRandomLevel() {
@@ -7864,6 +7901,7 @@ export default class Editor {
         fastEditorRender
       }
     });
+    this.drawSolidCollisionOverlay(ctx);
     this.drawEditorMarkers(ctx);
     this.drawGrid(ctx);
     this.drawCursor(ctx);
@@ -7887,6 +7925,63 @@ export default class Editor {
       }
     }
     this.previousDrawCamera = { x: this.camera.x, y: this.camera.y, zoom: this.zoom };
+  }
+
+  drawSolidCollisionOverlay(ctx) {
+    const world = this.game?.world;
+    const tileSize = Number(world?.tileSize) || 32;
+    if (!world || !Number.isFinite(world.width) || !Number.isFinite(world.height)) return;
+    const { width, height } = this.getViewportSize();
+    const minX = Math.max(0, Math.floor(this.camera.x / tileSize) - 1);
+    const maxX = Math.min(world.width - 1, Math.ceil((this.camera.x + width / this.zoom) / tileSize) + 1);
+    const minY = Math.max(0, Math.floor(this.camera.y / tileSize) - 1);
+    const maxY = Math.min(world.height - 1, Math.ceil((this.camera.y + height / this.zoom) / tileSize) + 1);
+    const isSolid = (x, y) => {
+      if (x < 0 || y < 0 || x >= world.width || y >= world.height) return false;
+      return world.getTileProperties?.(x, y)?.solid === true;
+    };
+
+    ctx.save();
+    ctx.fillStyle = 'rgba(120, 200, 255, 0.11)';
+    for (let y = minY; y <= maxY; y += 1) {
+      for (let x = minX; x <= maxX; x += 1) {
+        if (!isSolid(x, y)) continue;
+        ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
+      }
+    }
+
+    ctx.beginPath();
+    for (let y = minY; y <= maxY; y += 1) {
+      for (let x = minX; x <= maxX; x += 1) {
+        if (!isSolid(x, y)) continue;
+        const left = x * tileSize;
+        const top = y * tileSize;
+        const right = left + tileSize;
+        const bottom = top + tileSize;
+        if (!isSolid(x, y - 1)) {
+          ctx.moveTo(left, top);
+          ctx.lineTo(right, top);
+        }
+        if (!isSolid(x + 1, y)) {
+          ctx.moveTo(right, top);
+          ctx.lineTo(right, bottom);
+        }
+        if (!isSolid(x, y + 1)) {
+          ctx.moveTo(right, bottom);
+          ctx.lineTo(left, bottom);
+        }
+        if (!isSolid(x - 1, y)) {
+          ctx.moveTo(left, bottom);
+          ctx.lineTo(left, top);
+        }
+      }
+    }
+    ctx.strokeStyle = 'rgba(120, 200, 255, 0.82)';
+    ctx.lineWidth = 2;
+    ctx.shadowColor = 'rgba(120, 200, 255, 0.45)';
+    ctx.shadowBlur = 4;
+    ctx.stroke();
+    ctx.restore();
   }
 
   drawGamepadHintBar(ctx, bounds, contextLabel) {
@@ -9944,6 +10039,8 @@ export default class Editor {
         const panelX = (width - panelWidth) / 2;
         const panelY = (height - panelHeight) / 2;
         const levelNames = this.getTriggerLevelNames();
+        const raceNames = this.getTriggerRaceNames();
+        const carNames = this.getTriggerCarNames();
         const enemyOptions = [...STANDARD_ENEMY_TYPES, ...getCustomActorEnemyTypes(), ...BOSS_ENEMY_TYPES].map((entry) => entry.id);
         const sectionButtonH = 40;
         const rowGap = 8;
@@ -10009,6 +10106,8 @@ export default class Editor {
           const numericAdvance = sectionButtonH + 4;
           if (draft.type === 'load-level') {
             local += sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4;
+          } else if (draft.type === 'start-race') {
+            local += sectionButtonH + 4 + sectionButtonH + 4;
           } else if (draft.type === 'spawn-enemy') {
             local += sectionButtonH + 4 + sectionButtonH + 4;
           } else if (draft.type === 'spawn-companion') {
@@ -10223,6 +10322,40 @@ export default class Editor {
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, hasSpawn ? `Spawn: (${draft.params.spawnX}, ${draft.params.spawnY})` : 'Spawn: default', this.triggerPlacementMode === 'load-level-spawn', () => { this.startLoadLevelSpawnPlacement(draft); }, 'Open target level and pick spawn location');
             y += sectionButtonH + 4;
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Fade out/in: ${draft.params.useFade === false ? 'Off' : 'On'}`, draft.params.useFade !== false, () => { draft.params.useFade = !(draft.params.useFade === false); }, 'Toggle fade to black before loading level');
+            y += sectionButtonH + 4;
+          } else if (draft.type === 'start-race') {
+            const selectedRace = draft.params.raceName || raceNames[0] || '';
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, selectedRace ? `Race: ${selectedRace}` : 'Race: none saved', false, () => {
+              if (!raceNames.length) return;
+              this.openTriggerOptionPicker({
+                title: 'Choose Race',
+                options: raceNames,
+                selectedValue: selectedRace,
+                onPick: (value) => {
+                  draft.params.raceName = value;
+                }
+              });
+            }, 'Choose saved race');
+            y += sectionButtonH + 4;
+            const carLabel = draft.params.carSelection === 'specific' && draft.params.carRef
+              ? draft.params.carRef
+              : 'Player Chooses';
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Car: ${carLabel}`, false, () => {
+              this.openTriggerOptionPicker({
+                title: 'Choose Car',
+                options: carNames,
+                selectedValue: carLabel,
+                onPick: (value) => {
+                  if (value === 'Player Chooses') {
+                    draft.params.carSelection = 'player-chooses';
+                    draft.params.carRef = null;
+                  } else {
+                    draft.params.carSelection = 'specific';
+                    draft.params.carRef = value;
+                  }
+                }
+              });
+            }, 'Choose a saved car or let the player choose');
             y += sectionButtonH + 4;
           } else if (draft.type === 'spawn-enemy') {
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Enemy: ${draft.params.enemyType || enemyOptions[0]}`, false, () => { this.openTriggerOptionPicker({ title: 'Choose Enemy', options: enemyOptions, selectedValue: draft.params.enemyType || enemyOptions[0], onPick: (value) => { draft.params.enemyType = value; } }); }, 'Pick enemy');

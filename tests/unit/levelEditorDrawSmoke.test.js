@@ -69,3 +69,97 @@ test('Level Editor draw does not throw in desktop, portrait, or landscape layout
     assert.doesNotThrow(() => editor.draw(ctx, width, height), label);
   });
 });
+
+test('Level Editor Start Race trigger actions normalize and summarize car selection', () => {
+  const game = createGameStub();
+  game.raceEditor = {
+    project: {
+      cars: [
+        { id: 'default-white', name: 'Default White' },
+        { id: 'unnamed-built-in' }
+      ]
+    }
+  };
+  const editor = new LevelEditorCore(game);
+  const action = editor.createTriggerAction('start-race');
+  assert.deepEqual(action.params, {
+    raceName: '',
+    carSelection: 'player-chooses',
+    carRef: null
+  });
+
+  const trigger = {
+    condition: 'When player enters this location',
+    actions: [{
+      id: 'start-race-1',
+      type: 'start-race',
+      params: {
+        raceName: 'Studio Sprint',
+        carSelection: 'specific',
+        carRef: '2022 Subaru WRX'
+      }
+    }]
+  };
+  editor.normalizeTrigger(trigger);
+  assert.equal(
+    editor.formatTriggerActionSummary(trigger.actions[0]),
+    'Race: Studio Sprint · Car: 2022 Subaru WRX'
+  );
+
+  trigger.actions[0].params.carSelection = 'invalid';
+  editor.normalizeTrigger(trigger);
+  assert.equal(trigger.actions[0].params.carSelection, 'player-chooses');
+  assert.equal(trigger.actions[0].params.carRef, null);
+
+  const carNames = editor.getTriggerCarNames();
+  assert.equal(carNames[0], 'Player Chooses');
+  assert.equal(carNames.includes('Default White'), true);
+  assert.equal(carNames.includes('unnamed-built-in'), true);
+});
+
+test('Level Editor draws an authoring-only outline over solid tile artwork', () => {
+  const game = createGameStub();
+  game.world.width = 4;
+  game.world.height = 4;
+  game.world.tiles = [
+    '....',
+    '.##.',
+    '....',
+    '....'
+  ];
+  game.world.getTile = (x, y) => game.world.tiles[y]?.[x] || '.';
+  game.world.getTileProperties = (x, y) => ({
+    solid: game.world.getTile(x, y) === '#'
+  });
+  const editor = new LevelEditorCore(game);
+  editor.camera = { x: 0, y: 0 };
+  editor.zoom = 1;
+
+  const fills = [];
+  let strokeCount = 0;
+  const ctx = createCanvasContextStub(game.canvas);
+  ctx.fillRect = (x, y, w, h) => fills.push({ x, y, w, h });
+  ctx.stroke = () => {
+    strokeCount += 1;
+  };
+
+  editor.drawSolidCollisionOverlay(ctx);
+
+  assert.deepEqual(fills, [
+    { x: 32, y: 32, w: 32, h: 32 },
+    { x: 64, y: 32, w: 32, h: 32 }
+  ]);
+  assert.equal(strokeCount, 1);
+  assert.equal(ctx.strokeStyle, 'rgba(120, 200, 255, 0.82)');
+});
+
+test('new Level Editor documents start with default art-free gray solids', () => {
+  const game = createGameStub();
+  const editor = new LevelEditorCore(game);
+
+  const data = editor.buildEmptyLevelData(24, 24);
+
+  assert.deepEqual(data.pixelArt, { tiles: {}, tileProperties: {} });
+  assert.equal(data.tiles[0], '#'.repeat(24));
+  assert.equal(data.tiles[12][12], '.');
+});

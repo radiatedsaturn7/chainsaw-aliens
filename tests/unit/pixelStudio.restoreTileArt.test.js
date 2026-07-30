@@ -11,6 +11,7 @@ const hydrateTileArtRef = PixelStudio.prototype.hydrateTileArtRef;
 const persistTileArtAutosave = PixelStudio.prototype.persistTileArtAutosave;
 const syncTileData = PixelStudio.prototype.syncTileData;
 const setTilePickerMode = PixelStudio.prototype.setTilePickerMode;
+const discardUneditedTilePickerDraft = PixelStudio.prototype.discardUneditedTilePickerDraft;
 const isTileArtDocument = PixelStudio.prototype.isTileArtDocument;
 const isTileArtEntry = PixelStudio.prototype.isTileArtEntry;
 const findLatestTileArtDocument = PixelStudio.prototype.findLatestTileArtDocument;
@@ -427,4 +428,36 @@ test('setTilePickerMode(true) triggers restore/hydration for preview rendering',
   assert.equal(editor.tilePickerMode, true);
   assert.equal(restoreCalls, 1);
   assert.equal(hydrateCalls, 1);
+});
+
+test('Level Editor tile picker does not import global art into an empty level', () => {
+  saveProjectFile('art', 'Tile Art Autosave', {
+    tiles: {
+      '#': { size: 1, frames: [['#000000']] }
+    }
+  });
+  const editor = createEditor({ pixelArt: { tiles: {} } });
+  editor.tilePickerMode = true;
+
+  restoreStoredTileArtIfNeeded.call(editor);
+
+  assert.deepEqual(editor.game.world.pixelArt.tiles, {});
+});
+
+test('closing an unedited tile picker removes its temporary empty override', () => {
+  const editor = createEditor({
+    pixelArt: {
+      tiles: {
+        '#': { size: 16, frames: [Array(256).fill(null)] }
+      }
+    }
+  });
+  editor.activeTile = { char: '#' };
+  editor.tilePickerMode = true;
+  editor.tilePickerOriginalOverrides = new Set();
+  editor.tilePickerEditedTiles = new Set();
+
+  discardUneditedTilePickerDraft.call(editor);
+
+  assert.equal(Object.hasOwn(editor.game.world.pixelArt.tiles, '#'), false);
 });

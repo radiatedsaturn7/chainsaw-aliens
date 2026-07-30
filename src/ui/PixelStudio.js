@@ -1305,6 +1305,11 @@ export default class PixelStudio {
   restoreStoredTileArtIfNeeded() {
     if (this.currentDocumentRef?.folder === 'art' && !this.tilePickerMode) return;
     const store = ensurePixelArtStore(this.game.world);
+    if (this.tilePickerMode
+      && this.game?.pixelStudioReturnState === 'editor'
+      && !Object.keys(store.tiles || {}).length) {
+      return;
+    }
     // Restore logic must be data-driven, not route-driven: PixelStudio can be entered from
     // multiple UI flows, and navigation state should not decide whether persisted art reloads.
     const hadLoadedInMemory = this.hasLoadedPixelArtData(store);
@@ -1559,6 +1564,7 @@ export default class PixelStudio {
     if (!tileChar || !this.game?.world?.pixelArt?.tiles) return;
     const tiles = this.game.world.pixelArt.tiles;
     if (!tiles[tileChar]) return;
+    if (this.tilePickerMode) this.tilePickerEditedTiles?.add(tileChar);
     const serializePixel = typeof this.serializeArtPixelValue === 'function'
       ? this.serializeArtPixelValue
       : PixelStudio.prototype.serializeArtPixelValue;
@@ -1875,9 +1881,23 @@ export default class PixelStudio {
     this.tilePickerMode = Boolean(enabled);
     this.tileEditSession = this.tilePickerMode;
     if (this.tilePickerMode) {
+      const store = this.game?.world ? ensurePixelArtStore(this.game.world) : { tiles: {} };
+      this.tilePickerOriginalOverrides = new Set(Object.keys(store.tiles || {}));
+      this.tilePickerEditedTiles = new Set();
       this.restoreStoredTileArtIfNeeded();
       this.hydrateTileArtRefs();
+    } else {
+      this.tilePickerOriginalOverrides = null;
+      this.tilePickerEditedTiles = null;
     }
+  }
+
+  discardUneditedTilePickerDraft() {
+    if (!this.tilePickerMode) return;
+    const tileChar = this.activeTile?.char;
+    if (!tileChar || this.tilePickerOriginalOverrides?.has(tileChar) || this.tilePickerEditedTiles?.has(tileChar)) return;
+    const tiles = this.game?.world?.pixelArt?.tiles;
+    if (tiles?.[tileChar]) delete tiles[tileChar];
   }
 
   exitTilePicker() {

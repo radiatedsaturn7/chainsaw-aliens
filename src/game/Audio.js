@@ -2485,6 +2485,91 @@ export default class AudioSystem {
     });
   }
 
+  playWeatherThunder({ intensity = 1, pan = 0 } = {}) {
+    this.ensure();
+    const normalizedIntensity = clamp(Number(intensity) || 0, 0, 1);
+    const normalizedPan = clamp(Number(pan) || 0, -1, 1);
+    const durationSeconds = clamp(1.4 + normalizedIntensity * 0.8, 1.4, 2.4);
+    if (
+      !this.ctx
+      || !this.master
+      || typeof this.ctx.createBuffer !== 'function'
+      || typeof this.ctx.createBufferSource !== 'function'
+      || typeof this.ctx.createOscillator !== 'function'
+      || typeof this.ctx.createGain !== 'function'
+    ) {
+      return {
+        played: false,
+        durationSeconds,
+        pan: normalizedPan
+      };
+    }
+
+    const now = Number(this.ctx.currentTime || 0);
+    const sampleRate = Math.max(1000, Number(this.ctx.sampleRate) || 44100);
+    const bufferSize = Math.max(1, Math.floor(sampleRate * durationSeconds));
+    const buffer = this.ctx.createBuffer(1, bufferSize, sampleRate);
+    const samples = buffer.getChannelData(0);
+    let noiseSeed = 0x6d2b79f5;
+    for (let index = 0; index < bufferSize; index += 1) {
+      noiseSeed = Math.imul(noiseSeed ^ (noiseSeed >>> 15), 1 | noiseSeed);
+      noiseSeed ^= noiseSeed + Math.imul(noiseSeed ^ (noiseSeed >>> 7), 61 | noiseSeed);
+      const random = (((noiseSeed ^ (noiseSeed >>> 14)) >>> 0) / 4294967296) * 2 - 1;
+      const progress = index / bufferSize;
+      const crack = Math.exp(-progress * 28);
+      const tail = Math.exp(-progress * 3.2);
+      samples[index] = random * (crack * 0.68 + tail * 0.32);
+    }
+
+    const noiseSource = this.ctx.createBufferSource();
+    const noiseGain = this.ctx.createGain();
+    const rumbleSource = this.ctx.createOscillator();
+    const rumbleGain = this.ctx.createGain();
+    const lowPass = typeof this.ctx.createBiquadFilter === 'function'
+      ? this.ctx.createBiquadFilter()
+      : null;
+    const panner = typeof this.ctx.createStereoPanner === 'function'
+      ? this.ctx.createStereoPanner()
+      : null;
+    const output = panner || this.master;
+    noiseSource.buffer = buffer;
+    rumbleSource.type = 'sine';
+    rumbleSource.frequency.setValueAtTime(42 + normalizedIntensity * 7, now);
+    rumbleSource.frequency.linearRampToValueAtTime(31, now + durationSeconds);
+    noiseGain.gain.setValueAtTime(0.0001, now);
+    noiseGain.gain.linearRampToValueAtTime(0.22 + normalizedIntensity * 0.28, now + 0.018);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + durationSeconds);
+    rumbleGain.gain.setValueAtTime(0.0001, now);
+    rumbleGain.gain.linearRampToValueAtTime(0.12 + normalizedIntensity * 0.18, now + 0.06);
+    rumbleGain.gain.exponentialRampToValueAtTime(0.0001, now + durationSeconds);
+    if (lowPass) {
+      lowPass.type = 'lowpass';
+      lowPass.frequency.setValueAtTime(1100 + normalizedIntensity * 700, now);
+      lowPass.frequency.exponentialRampToValueAtTime(240, now + durationSeconds);
+      lowPass.Q.value = 0.7;
+      noiseSource.connect(lowPass);
+      lowPass.connect(noiseGain);
+    } else {
+      noiseSource.connect(noiseGain);
+    }
+    noiseGain.connect(output);
+    rumbleSource.connect(rumbleGain);
+    rumbleGain.connect(output);
+    if (panner) {
+      panner.pan.setValueAtTime(normalizedPan, now);
+      panner.connect(this.master);
+    }
+    noiseSource.start(now);
+    rumbleSource.start(now);
+    noiseSource.stop(now + durationSeconds);
+    rumbleSource.stop(now + durationSeconds);
+    return {
+      played: true,
+      durationSeconds,
+      pan: normalizedPan
+    };
+  }
+
   noise(duration = 0.12, gainValue = 0.12) {
     this.ensure();
     const bufferSize = Math.floor(this.ctx.sampleRate * duration);

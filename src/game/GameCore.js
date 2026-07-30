@@ -56,6 +56,7 @@ import ActorEditor from '../ui/ActorEditor.js';
 import CutsceneEditor, { CutscenePlayer } from '../ui/CutsceneEditor.js';
 import RaceEditor from '../ui/RaceEditor.js';
 import DoodadEditor from '../ui/DoodadEditor.js';
+import RaceRuntimePreparation from '../racing/RaceRuntimePreparation.js';
 import {
   WEATHER_PRIORITY,
   createWeatherRuntimeState,
@@ -84,7 +85,13 @@ import ObstacleTestMap from '../debug/ObstacleTestMap.js';
 import { OBSTACLES } from '../world/Obstacles.js';
 import { MOVEMENT_MODEL } from './MovementModel.js';
 import { openProjectBrowser } from '../ui/ProjectBrowserModal.js';
-import { ensureProjectFileIndex, listProjectFiles, loadProjectFile } from '../ui/projectFiles.js';
+import {
+  ensureProjectFileIndex,
+  hydrateProjectFilePayload,
+  listProjectFiles,
+  loadProjectFile,
+  sanitizeProjectFileName
+} from '../ui/projectFiles.js';
 import { bootstrapServerStorage, flushServerStorage, isServerStorageEnabled, setServerStorageEnabled, syncServerSnapshotToGitHub } from '../ui/serverStorage.js';
 import { drawSharedPlayStopButton } from '../ui/uiSuite.js';
 import { getLandscapeHandheldLayout, getPortraitHandheldLayout, mapPortraitHandheldPoint } from '../ui/shared/canvasViewportLayout.js';
@@ -409,6 +416,7 @@ export default class Game {
     this.sfxEditor = new SfxEditor(this);
     this.actorEditor = new ActorEditor(this);
     this.cutsceneEditor = new CutsceneEditor(this);
+    this.raceRuntimePreparation = new RaceRuntimePreparation({ maxEntries: 3 });
     this.raceEditor = new RaceEditor(this, { mode: 'race' });
     this.carEditor = new RaceEditor(this, { mode: 'car' });
     this.doodadEditor = new DoodadEditor(this);
@@ -457,6 +465,8 @@ export default class Game {
     this.playtestPauseLock = 0;
     this.actorEditorTestSnapshot = null;
     this.levelEditorPlaytestSnapshot = null;
+    this.raceTravelSession = null;
+    this.raceEditorPlaytestReturn = false;
     this.runtimeActorDefinitions = new Map();
     this.missingRuntimeActorWarnings = new Set();
     this.preparedCutsceneAudio = {
@@ -1534,9 +1544,6 @@ export default class Game {
 
   enterEditor({ tab = null } = {}) {
     const fromState = this.state;
-    if (fromState === 'title' && (!this.hasCustomTileArtInWorld() || !this.hasTileCompatibleCurrentArtDocument())) {
-      this.restoreMostRecentArtDocument();
-    }
     this.editorReturnState = this.state;
     if (this.playtestActive) {
       this.world.reset();
@@ -1594,6 +1601,485 @@ export default class Game {
       this.restoreMostRecentActorDocument();
     }
     this.playtestActive = false;
+  }
+
+  captureRaceTravelPlayerState() {
+    const player = this.player || {};
+    return {
+      position: {
+        x: Number(player.x || 0),
+        y: Number(player.y || 0),
+        facing: Number(player.facing || 1) || 1
+      },
+      player: {
+        health: Number(player.health || 0),
+        maxHealth: Number(player.maxHealth || 0),
+        loot: Number(player.loot || 0),
+        credits: Number(player.credits || 0),
+        upgradeSlots: Number(player.upgradeSlots || 0),
+        equippedUpgrades: JSON.parse(JSON.stringify(player.equippedUpgrades || [])),
+        cosmetics: JSON.parse(JSON.stringify(player.cosmetics || [])),
+        oilLevel: Number(player.oilLevel || 0),
+        superCharge: Number(player.superCharge || 0),
+        superReady: player.superReady === true,
+        flameMode: player.flameMode === true
+      },
+      abilities: { ...(this.abilities || {}) },
+      activeWeaponIndex: Math.max(0, Math.floor(Number(this.activeWeaponIndex || 0)))
+    };
+  }
+
+  restoreRaceTravelPlayerState(snapshot = null, { restorePosition = false } = {}) {
+    if (!snapshot || !this.player) return;
+    const state = snapshot.player || {};
+    [
+      'health',
+      'maxHealth',
+      'loot',
+      'credits',
+      'upgradeSlots',
+      'oilLevel',
+      'superCharge'
+    ].forEach((key) => {
+      if (Number.isFinite(Number(state[key]))) this.player[key] = Number(state[key]);
+    });
+    this.player.equippedUpgrades = JSON.parse(JSON.stringify(state.equippedUpgrades || []));
+    this.player.cosmetics = JSON.parse(JSON.stringify(state.cosmetics || []));
+    this.player.superReady = state.superReady === true;
+    this.player.flameMode = state.flameMode === true;
+    this.player.applyUpgrades(this.player.equippedUpgrades);
+    this.abilities = { ...(snapshot.abilities || {}) };
+    this.activeWeaponIndex = Math.max(0, Math.floor(Number(snapshot.activeWeaponIndex || 0)));
+    this.ensureActiveWeaponAvailable?.();
+    if (restorePosition && snapshot.position) {
+      this.player.x = Number(snapshot.position.x || 0);
+      this.player.y = Number(snapshot.position.y || 0);
+      this.player.facing = Number(snapshot.position.facing || 1) || 1;
+    }
+    this.player.vx = 0;
+    this.player.vy = 0;
+    this.player.dead = false;
+    this.player.state = 'idle';
+    this.player.attackTimer = 0;
+    this.player.attackLungeTimer = 0;
+    this.player.dashTimer = 0;
+    this.player.hurtTimer = 0;
+    this.player.invulnTimer = 0;
+  }
+
+  resolveRaceTravelCar(carRef = '') {
+    const ref = sanitizeProjectFileName(carRef);
+    if (!ref || !this.raceEditor) return null;
+    const liveCar = this.getLiveRaceTravelCarDocument(ref);
+    if (liveCar) {
+      return this.registerRaceTravelCarDocument({
+        schemaVersion: 2,
+        kind: 'race-car',
+        savedAt: Date.now(),
+        car: liveCar
+      }, ref, {
+        source: 'live-car-editor',
+        liveRevision: JSON.stringify(liveCar)
+      });
+    }
+    const payload = loadProjectFile('cars', ref);
+    if (!payload?.data) return null;
+    return this.registerRaceTravelCarDocument(payload.data, ref, {
+      source: String(payload.storageSource || 'cache'),
+      savedAt: Number(payload.savedAt || payload.data?.savedAt || 0)
+    });
+  }
+
+  getLiveRaceTravelCarDocument(carRef = '') {
+    const ref = sanitizeProjectFileName(carRef);
+    const editor = this.carEditor;
+    const liveName = sanitizeProjectFileName(editor?.currentCarDocumentName || '');
+    const liveCar = editor?.selectedCar || null;
+    if (!ref || liveName !== ref || !liveCar) return null;
+    return typeof structuredClone === 'function'
+      ? structuredClone(liveCar)
+      : JSON.parse(JSON.stringify(liveCar));
+  }
+
+  registerRaceTravelCarDocument(document = null, carRef = '', {
+    source = 'saved',
+    savedAt = 0,
+    liveRevision = ''
+  } = {}) {
+    const ref = sanitizeProjectFileName(carRef);
+    if (!ref || !document || !this.raceEditor) return null;
+    const car = this.raceEditor.withSavedRaceCarRuntimeIdentity?.(
+      this.raceEditor.normalizeLoadedCarDocument?.(document, ref, { preserveExistingArt: true }),
+      ref
+    );
+    if (!car?.id) return null;
+    const id = this.raceEditor.getRaceCarProjectIdentity?.(car) || car.id;
+    if (!this.raceEditor.selectPlaytestCarEntry?.({ id, name: ref, car }, { silent: true })) return null;
+    return {
+      id,
+      name: ref,
+      documentName: ref,
+      savedAt: Math.max(0, Number(savedAt || document?.savedAt || 0)),
+      liveRevision: String(liveRevision || ''),
+      source: String(source || 'saved'),
+      artRefs: this.raceEditor.collectRaceCarArtRefs?.(car) || [],
+      car
+    };
+  }
+
+  async resolveRaceTravelCarAsync(carRef = '') {
+    const ref = sanitizeProjectFileName(carRef);
+    if (!ref) return null;
+    const liveCar = this.getLiveRaceTravelCarDocument(ref);
+    if (liveCar) {
+      return this.registerRaceTravelCarDocument({
+        schemaVersion: 2,
+        kind: 'race-car',
+        savedAt: Date.now(),
+        car: liveCar
+      }, ref, {
+        source: 'live-car-editor',
+        liveRevision: JSON.stringify(liveCar)
+      });
+    }
+    const payload = await hydrateProjectFilePayload('cars', ref, {
+      freshness: 'newest'
+    });
+    if (!payload?.data) return null;
+    return this.registerRaceTravelCarDocument(payload.data, ref, {
+      source: String(payload.storageSource || 'server'),
+      savedAt: Number(payload.savedAt || payload.data?.savedAt || 0)
+    });
+  }
+
+  async chooseRaceTravelCar() {
+    if (typeof document === 'undefined') {
+      const first = listProjectFiles('cars')[0]?.name || '';
+      return this.resolveRaceTravelCar(first);
+    }
+    let selected = null;
+    const picked = await openProjectBrowser({
+      mode: 'open',
+      fixedFolder: 'cars',
+      initialFolder: 'cars',
+      title: 'Choose Race Car',
+      onOpen: ({ name }) => {
+        selected = this.resolveRaceTravelCar(name);
+      }
+    });
+    if (!selected && picked?.action === 'open') selected = this.resolveRaceTravelCar(picked.name);
+    return selected;
+  }
+
+  createRaceTravelSession({ originState = this.state, car = null } = {}) {
+    return {
+      originState,
+      originPlaytestActive: this.playtestActive === true,
+      originEditor: originState === 'race-editor' ? 'race' : null,
+      playerSnapshot: this.captureRaceTravelPlayerState(),
+      carId: car?.id || null,
+      carRef: car?.name || null,
+      trackStateByRace: {}
+    };
+  }
+
+  async prepareRacePlaytestAudio({
+    engineSoundId = '',
+    musicTrackId = ''
+  } = {}) {
+    const requests = [];
+    const hydrateWithTimeout = (folder, ref) => {
+      const hydration = hydrateProjectFilePayload(folder, ref).catch(() => null);
+      if (typeof setTimeout !== 'function') return hydration;
+      return new Promise((resolve) => {
+        const timeout = setTimeout(() => resolve(null), 8000);
+        timeout?.unref?.();
+        hydration.then((value) => {
+          clearTimeout(timeout);
+          resolve(value);
+        });
+      });
+    };
+    const engineRef = String(engineSoundId || '').trim();
+    const musicRef = String(musicTrackId || '').trim();
+    if (engineRef) {
+      requests.push(hydrateWithTimeout('sfx', engineRef));
+    }
+    if (musicRef) {
+      requests.push(hydrateWithTimeout('music', musicRef));
+    }
+    await Promise.all(requests);
+    return true;
+  }
+
+  async startRaceTravel(params = {}) {
+    this.raceEditorPlaytestReturn = false;
+    const raceName = String(params.raceName || '').trim();
+    if (!raceName) {
+      this.showSystemToast?.('Choose a race first.');
+      return false;
+    }
+    let car = null;
+    try {
+      car = params.carSelection === 'specific'
+        ? await this.resolveRaceTravelCarAsync(params.carRef)
+        : null;
+    } catch (error) {
+      this.showSystemToast?.(`Car could not load: ${String(params.carRef || 'selected car')}`);
+      return false;
+    }
+    if (!car) car = await this.chooseRaceTravelCar();
+    if (!car) {
+      this.showSystemToast?.('Race start cancelled.');
+      return false;
+    }
+    const runtimeCar = car.car || car;
+    const engineSfxRef = String(runtimeCar.audio?.engineSoundId || '').trim();
+    const engineSfxPreparation = this.prepareRacePlaytestAudio({
+      engineSoundId: engineSfxRef
+    });
+    const originState = this.state;
+    this.raceTravelSession = this.createRaceTravelSession({ originState, car });
+    const travelSession = this.raceTravelSession;
+    this.transitionTo('race-editor', { forceCleanup: true });
+    this.setRevAudio(false);
+    this.raceEditor.beginRaceTravelLoading?.(raceName, car.id);
+    await new Promise((resolve) => {
+      if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve());
+      else setTimeout(resolve, 0);
+    });
+    let raceDocument = null;
+    let preparedWorldBake = null;
+    let preparedArtAssets = [];
+    let missingArtRefs = [];
+    let normalizedRaceDocument = false;
+    let racePreparationError = null;
+    try {
+      const prepared = await this.raceEditor.loadRaceTravelDocument?.(raceName, {
+        artRefs: Array.isArray(car.artRefs)
+          ? car.artRefs
+          : this.raceEditor.collectRaceCarArtRefs?.(runtimeCar) || []
+      });
+      void engineSfxPreparation;
+      if (prepared?.race && prepared?.bake) {
+        raceDocument = prepared.race;
+        preparedWorldBake = prepared.bake;
+        preparedArtAssets = Array.isArray(prepared.artAssets) ? prepared.artAssets : [];
+        missingArtRefs = Array.isArray(prepared.missingArtRefs) ? prepared.missingArtRefs : [];
+        normalizedRaceDocument = prepared.normalizedRace === true;
+      } else {
+        raceDocument = prepared;
+      }
+    } catch (error) {
+      if (this.raceTravelSession !== travelSession) return false;
+      racePreparationError = error;
+      if (Number(error?.racePreparationProgress || 0) >= 0.12) {
+        const stage = String(error?.racePreparationStage || 'preparation').replace(/-/g, ' ');
+        this.returnRaceTravelToOrigin({
+          message: `Race preparation failed during ${stage}: ${String(error?.message || error)}`
+        });
+        return false;
+      }
+    }
+    if (!raceDocument) {
+      try {
+        raceDocument = (await hydrateProjectFilePayload('races', raceName))?.data || null;
+      } catch (fallbackError) {
+        this.returnRaceTravelToOrigin({
+          message: racePreparationError?.message
+            ? `Race could not load: ${String(racePreparationError.message)}`
+            : `Race could not load: ${raceName}`
+        });
+        return false;
+      }
+    }
+    if (this.raceTravelSession !== travelSession) return false;
+    if (!raceDocument) {
+      this.returnRaceTravelToOrigin({ message: `Race not found: ${raceName}` });
+      return false;
+    }
+    try {
+      this.raceEditor.setRaceTravelPreparationPhase?.('applying-race', 0.992);
+      const selectedRaceDocument = raceDocument?.race || raceDocument;
+      const musicTrackId = String(selectedRaceDocument?.raceStart?.musicTrackId || '').trim();
+      if (musicTrackId) {
+        void this.prepareRacePlaytestAudio({ musicTrackId }).catch(() => null);
+      }
+      await new Promise((resolve) => {
+        if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve());
+        else setTimeout(resolve, 0);
+      });
+      if (this.raceTravelSession !== travelSession) return false;
+      if (!this.raceEditor.applyLoadedRaceDocument(raceDocument, {
+        name: raceName,
+        normalized: normalizedRaceDocument,
+        preservePreparation: true
+      })) {
+        throw new Error(`Race could not load: ${raceName}`);
+      }
+      this.raceEditor.setRaceTravelPreparationPhase?.('transfer-art', 0.994);
+      if (typeof this.raceEditor.adoptPreparedRaceArtAssetsIncrementally === 'function') {
+        await this.raceEditor.adoptPreparedRaceArtAssetsIncrementally(
+          preparedArtAssets,
+          {
+            missingArtRefs,
+            append: true
+          }
+        );
+      } else {
+        this.raceEditor.adoptPreparedRaceArtAssets?.(
+          preparedArtAssets,
+          {
+            missingArtRefs,
+            append: true
+          }
+        );
+      }
+      const runtimeCacheKey = this.raceEditor.getRaceRuntimePreparationKey?.(
+        preparedWorldBake,
+        runtimeCar
+      );
+      if (runtimeCacheKey && preparedWorldBake) {
+        this.raceEditor.cacheRaceRuntimePackage?.(runtimeCacheKey, {
+          worldBake: preparedWorldBake,
+          artAssets: preparedArtAssets,
+          missingArtRefs,
+          deferredComplete: false
+        });
+      }
+      this.raceEditor.setRaceTravelPreparationPhase?.('starting-race', 0.997);
+      await new Promise((resolve) => {
+        if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve());
+        else setTimeout(resolve, 0);
+      });
+      if (this.raceTravelSession !== travelSession) return false;
+      this.raceEditor.startPlaytest(car.id, {
+        hydrateCars: false,
+        raceTravel: true,
+        preparedWorldBake,
+        preparedArtOnly: true,
+        runtimeCarOverrides: runtimeCar,
+        trackStateSnapshot: travelSession.trackStateByRace?.[raceName]
+          || travelSession.trackStateByRace?.[raceDocument.id]
+          || null
+      });
+      if (this.raceEditor.playtestSession?.running !== true) {
+        throw new Error('Race playtest did not enter the running state');
+      }
+    } catch (error) {
+      this.raceEditor.cancelRacePlaytestPreparation?.();
+      this.returnRaceTravelToOrigin({
+        message: `Race start failed: ${String(error?.message || error || raceName)}`
+      });
+      return false;
+    }
+    return true;
+  }
+
+  ensureRaceTravelSession(carId = '') {
+    if (this.raceTravelSession) {
+      if (carId) this.raceTravelSession.carId = carId;
+      return this.raceTravelSession;
+    }
+    const car = this.raceEditor?.findRaceProjectCarById?.(carId)
+      || this.raceEditor?.project?.cars?.find?.((entry) => entry?.id === carId)
+      || null;
+    this.raceTravelSession = this.createRaceTravelSession({
+      originState: 'race-editor',
+      car: car ? {
+        id: this.raceEditor.getRaceCarProjectIdentity?.(car) || car.id,
+        name: car.__playtestDocumentName || car.name || car.id
+      } : { id: carId || null, name: null }
+    });
+    return this.raceTravelSession;
+  }
+
+  returnRaceTravelToOrigin({ message = '' } = {}) {
+    const session = this.raceTravelSession;
+    if (!session) return false;
+    this.raceTravelSession = null;
+    this.raceEditorPlaytestReturn = false;
+    this.playtestActive = session.originPlaytestActive === true;
+    if (session.originState === 'playing' || session.originState === 'pause') {
+      this.restoreRaceTravelPlayerState(session.playerSnapshot, { restorePosition: true });
+      this.lastSave = { x: this.player.x, y: this.player.y };
+      this.snapCameraToPlayer();
+      this.transitionTo('playing', { forceCleanup: true });
+    } else {
+      this.transitionTo('race-editor', { forceCleanup: true });
+      this.raceEditor?.restoreRaceAuthoringMenuState?.();
+    }
+    if (message) this.showSystemToast?.(message);
+    return true;
+  }
+
+  completeRaceTravel(finishBehavior = {}, {
+    carId = '',
+    raceId = '',
+    raceDocumentName = '',
+    trackStateSnapshot = null
+  } = {}) {
+    const session = this.ensureRaceTravelSession(carId);
+    session.trackStateByRace ||= {};
+    if (trackStateSnapshot) {
+      if (raceId) session.trackStateByRace[raceId] = trackStateSnapshot;
+      if (raceDocumentName) session.trackStateByRace[raceDocumentName] = trackStateSnapshot;
+    }
+    const type = ['race', 'level'].includes(finishBehavior?.type)
+      ? finishBehavior.type
+      : 'return-to-origin';
+    if (type === 'return-to-origin') {
+      return this.returnRaceTravelToOrigin();
+    }
+    if (type === 'race') {
+      const raceName = String(finishBehavior.targetRace || '').trim();
+      const payload = raceName ? loadProjectFile('races', raceName) : null;
+      if (!payload?.data || !this.raceEditor?.applyLoadedRaceDocument?.(payload.data, { name: raceName })) {
+        return this.returnRaceTravelToOrigin({ message: `Next race not found: ${raceName || 'unset'}` });
+      }
+      this.transitionTo('race-editor', { forceCleanup: true });
+      this.raceEditor.startPlaytest(session.carId, {
+        hydrateCars: false,
+        raceTravel: true,
+        trackStateSnapshot: session.trackStateByRace?.[raceName]
+          || session.trackStateByRace?.[payload.data.id]
+          || null
+      });
+      return true;
+    }
+    const levelName = String(finishBehavior.targetLevel || '').trim();
+    const payload = levelName ? loadProjectFile('levels', levelName) : null;
+    if (!payload?.data) {
+      return this.returnRaceTravelToOrigin({ message: `Level not found: ${levelName || 'unset'}` });
+    }
+    this.applyWorldData(payload.data);
+    const targetX = Math.floor(Number(finishBehavior.spawnX));
+    const targetY = Math.floor(Number(finishBehavior.spawnY));
+    const validTarget = Number.isFinite(targetX) && Number.isFinite(targetY)
+      && targetX >= 0 && targetY >= 0
+      && targetX < this.world.width && targetY < this.world.height;
+    if (validTarget) {
+      this.world.spawn = { x: targetX, y: targetY };
+      this.world.spawnPoint = {
+        x: (targetX + 0.5) * this.world.tileSize,
+        y: (targetY + 0.5) * this.world.tileSize
+      };
+      this.spawnPoint = { ...this.world.spawnPoint };
+    }
+    this.resetRun({ playtest: session.originPlaytestActive === true, startWithEverything: false });
+    this.restoreRaceTravelPlayerState(session.playerSnapshot, { restorePosition: false });
+    this.playtestActive = session.originPlaytestActive === true || session.originEditor === 'race';
+    this.raceEditorPlaytestReturn = session.originEditor === 'race';
+    this.raceTravelSession = null;
+    this.transitionTo('playing', { forceCleanup: true });
+    this.startSpawnPause();
+    if (!validTarget) this.showSystemToast?.('Arrival tile changed; used the level spawn.');
+    return true;
+  }
+
+  cancelRaceTravel() {
+    if (!this.raceTravelSession) return false;
+    return this.returnRaceTravelToOrigin();
   }
 
   enterRaceEditor() {
@@ -1669,6 +2155,7 @@ export default class Game {
     if (this.pixelStudio?.decalEditSession?.type === 'actor-state') {
       this.pixelStudio.commitDecalEditIfNeeded?.();
     } else {
+      this.pixelStudio?.discardUneditedTilePickerDraft?.();
       this.pixelStudio?.persistTileArtAutosave?.(true);
     }
     this.playtestActive = false;
@@ -2059,8 +2546,7 @@ export default class Game {
       this.transitionTo('playing', { forceCleanup: true });
       this.playtestActive = true;
       this.playtestPauseLock = 0.35;
-      this.runGoldenPathSimulation({
-        restoreState: 'playtest',
+      this.resetRun({
         playtest: true,
         startWithEverything: this.editor.startWithEverything
       });
@@ -2091,6 +2577,13 @@ export default class Game {
       this.actorEditorReturnState = snapshot.actorReturnState || 'title';
       this.transitionTo('actor-editor', { forceCleanup: true });
       this.actorEditor.activate();
+      return;
+    }
+    if (this.raceEditorPlaytestReturn) {
+      this.raceEditorPlaytestReturn = false;
+      this.playtestActive = false;
+      this.transitionTo('race-editor', { forceCleanup: true });
+      this.raceEditor?.restoreRaceAuthoringMenuState?.();
       return;
     }
     if (this.levelEditorPlaytestSnapshot?.worldData) {
@@ -6862,6 +7355,24 @@ export default class Game {
       }
       return;
     }
+    if (action.type === 'start-race') {
+      Promise.resolve(this.startRaceTravel(params)).then((started) => {
+        if (!started) {
+          onDone();
+          return;
+        }
+        const state = triggerId ? this.triggerState?.byId?.get?.(triggerId) : null;
+        if (state) {
+          state.queue = [];
+          state.active = false;
+          this.triggerState.byId.set(triggerId, state);
+        }
+      }).catch(() => {
+        this.showSystemToast?.('Race could not start.');
+        onDone();
+      });
+      return;
+    }
     if (action.type === 'display-text') {
       const text = String(params.text || '');
       const typewriterMsPerChar = Math.max(0, Number(params.typewriterMsPerChar || 0));
@@ -10593,7 +11104,7 @@ export default class Game {
     if (nowMs > 0) this.lastPlaytestFpsMs = nowMs;
     const seconds = wallSeconds > 0 ? wallSeconds : Number(dt) || 0;
     if (seconds <= 0) return;
-    const instant = clamp(1 / seconds, 1, 240);
+    const instant = Math.max(1, Math.min(240, 1 / seconds));
     this.playtestFps = this.playtestFps > 0
       ? this.playtestFps * 0.88 + instant * 0.12
       : instant;

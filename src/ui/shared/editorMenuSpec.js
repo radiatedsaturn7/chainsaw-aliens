@@ -106,6 +106,8 @@ const EDITOR_ACTION_LABEL_OVERRIDES = {
   'car-art-exterior': 'Exterior',
   'car-art-interior': 'Interior',
   'car-camera-settings': 'Camera Settings',
+  'draw-road': 'Add',
+  'race-complete': 'On Race Complete',
   gearing: 'Gearing'
 };
 
@@ -354,7 +356,7 @@ export const EDITOR_MENU_SPECS = {
       file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'generate-random-race', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo', 'copy-segment', 'paste-segment', 'delete-segment']),
       view: section('view', 'View', ['preview-mode7', 'zoom-fit', 'toggle-scenery', 'toggle-racing-line']),
-      track: section('track', 'Track', ['draw-road', 'move-node', 'remove-node', 'remove-edge', 'insert-node', 'snap-node', 'segment-width', 'segment-bumpiness', 'boundary-collidable', 'snow-condition', 'edge-tile', 'surface-asphalt', 'surface-dirt', 'surface-gravel', 'surface-snow', 'surface-wet-asphalt']),
+      track: section('track', 'Track', ['draw-road']),
       ground: section('ground', 'Ground', [
         'ground-tile-next',
         'ground-tile-grass',
@@ -363,6 +365,13 @@ export const EDITOR_MENU_SPECS = {
         'ground-tile-snow',
         'ground-tile-asphalt',
         'ground-tile-wet-asphalt',
+        'trigger-select',
+        'trigger-action',
+        'trigger-art',
+        'trigger-doodad',
+        'trigger-weather',
+        'place-trigger',
+        'delete-trigger',
         'elevation-up',
         'elevation-down',
         'elevation-up-tiny',
@@ -390,7 +399,7 @@ export const EDITOR_MENU_SPECS = {
         'ground-brush-strength-100'
       ]),
       sprites: section('sprites', 'Sprites', ['sprite-select', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']),
-      settings: section('settings', 'Settings', ['ai-count', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
+      settings: section('settings', 'Settings', ['race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-complete', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
     }
   },
   car: {

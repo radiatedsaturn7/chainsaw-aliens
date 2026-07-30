@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-import { RACE_STOCK_PERFORMANCE_TARGETS, getSurfaceById } from '../../src/racing/raceData.js';
+import { RACE_SNOW_CONDITIONS, RACE_STOCK_PERFORMANCE_TARGETS, getSurfaceById } from '../../src/racing/raceData.js';
 import { buildRaceBakedSurfaceSampler, sampleRaceBakedSurface } from '../../src/racing/RaceBakedSurfaceSampler.js';
 import { RaceSurfaceModel } from '../../src/racing/RaceSurfaceModel.js';
 import { subtractRaceTerrainPolygonByConvexPolygon } from '../../src/racing/RaceTerrainClipping.js';
@@ -1019,6 +1019,10 @@ function assessRaceDownhillBrakeMargin({
 function createRaceGradeSimulationEditor({
   surfaceId = 'asphalt',
   compound = 'tarmac',
+  drivetrain = null,
+  weather = surfaceId === 'snow' ? 'snow' : 'clear',
+  weatherIntensity = null,
+  elapsedMs = 1000,
   degree = 5,
   throttleAxis = 0,
   brakeAxis = 0,
@@ -1037,7 +1041,10 @@ function createRaceGradeSimulationEditor({
     exitRaceEditor() {}
   });
   const grade = Math.tan(degree * Math.PI / 180) * (uphill ? 1 : -1);
-  editor.selectedRace.weather = surfaceId === 'snow' ? 'snow' : 'clear';
+  editor.selectedRace.weather = weather;
+  if (Number.isFinite(Number(weatherIntensity))) {
+    editor.selectedRace.weatherIntensity = Number(weatherIntensity);
+  }
   editor.selectedRace.road.segments = [
     { length: 2200, curve: 0, elevation: 0, surface: surfaceId, turn: 'straight', hazardIds: [] }
   ];
@@ -1064,9 +1071,12 @@ function createRaceGradeSimulationEditor({
     segment: { surface: surfaceId }
   });
   const car = configureRaceGradeTestCar(editor, { compound });
+  if (drivetrain) {
+    car.tuning = { ...(car.tuning || {}), drivetrain };
+  }
   editor.startPlaytest(car.id);
   editor.playtestSession.launchLockMs = 0;
-  editor.playtestSession.elapsedMs = 1000;
+  editor.playtestSession.elapsedMs = elapsedMs;
   if (digitalThrottle) editor.raceInput.activeThrottlePointerId = 'grade-throttle';
   if (digitalBrake) editor.raceInput.activeBrakePointerId = 'grade-brake';
   return { editor, axes };
@@ -1239,6 +1249,8 @@ test('Race Editor portrait uses bottom menu roots and contextual node or edge ho
   assert.ok(editor.buttons.some((button) => button.id === 'insert-node'));
   assert.ok(editor.buttons.some((button) => button.id === 'remove-edge'));
 
+  editor.ensureRaceSegmentNodes();
+  editor.selectedSegmentIndex = editor.selectedRace.road.segments.length - 1;
   editor.raceSelectionType = 'node';
   editor.racePortraitHotMenu = null;
   editor.draw(ctx, 390, 844);
@@ -1275,8 +1287,12 @@ test('Race Editor portrait uses bottom menu roots and contextual node or edge ho
     y: trackButton.bounds.y + trackButton.bounds.h / 2,
     button: 0
   });
-  assert.equal(editor.mobileRootOpen, false);
-  assert.equal(editor.racePortraitMode, 'race');
+  editor.draw(ctx, 390, 844);
+  assert.equal(editor.mobileRootOpen, true);
+  assert.deepEqual(
+    editor.buttons.filter((button) => button.id === 'draw-road').map((button) => button.id),
+    ['draw-road']
+  );
 
   editor.handleMenuAction('paint-ground');
   assert.equal(editor.racePortraitMode, 'ground');
@@ -1410,6 +1426,60 @@ test('Race Editor portrait Ground Doodad mode opens picker from second hot butto
   assert.equal(editor.raceSpritePaintKind, 'doodad');
   assert.equal(editor.activeAction, 'paint-sprite');
   assert.equal(editor.racePortraitHotMenu, null);
+});
+
+test('Race Editor portrait Ground hot menu exposes Trigger mode and selects placed markers', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { isGamepadConnected: () => false },
+    exitRaceEditor() {}
+  });
+  const ctx = createMockContext();
+  editor.handleMenuAction('paint-ground');
+  editor.draw(ctx, 390, 844);
+
+  editor.buttons.find((button) => button.id === 'race-ground-mode').onClick();
+  editor.draw(ctx, 390, 844);
+  const triggerMode = editor.buttons.find((button) => button.id === 'race-ground-mode-trigger');
+  assert.ok(triggerMode);
+  triggerMode.onClick();
+  assert.equal(editor.getRaceGroundToolMode(), 'trigger');
+  assert.equal(editor.activeAction, 'place-trigger');
+
+  editor.draw(ctx, 390, 844);
+  assert.ok(editor.buttons.some((button) => button.id === 'race-trigger-effect'));
+  assert.ok(editor.buttons.some((button) => button.id === 'race-trigger-target'));
+  assert.ok(editor.buttons.some((button) => button.id === 'race-trigger-manage'));
+
+  const candidate = [0.25, 0.4, 0.55, 0.7].flatMap((xRatio) => (
+    [0.25, 0.4, 0.55, 0.7].map((yRatio) => ({
+      x: editor.raceMapBounds.x + editor.raceMapBounds.w * xRatio,
+      y: editor.raceMapBounds.y + editor.raceMapBounds.h * yRatio
+    }))
+  )).find((point) => !editor.buttons.some((button) => (
+    point.x >= button.bounds.x
+    && point.x <= button.bounds.x + button.bounds.w
+    && point.y >= button.bounds.y
+    && point.y <= button.bounds.y + button.bounds.h
+  )));
+  assert.ok(candidate);
+  const point = { id: 'place-trigger', ...candidate, button: 0 };
+  assert.equal(editor.placeRaceTriggerAtPoint(point), true);
+  assert.equal(editor.ensureRaceTriggers().length, 1);
+  assert.equal(editor.selectRaceTriggerAtPoint({ ...point, id: 'select-trigger' }), true);
+  assert.equal(editor.ensureRaceTriggers().length, 1);
+  assert.equal(editor.getSelectedRaceTrigger().id, editor.ensureRaceTriggers()[0].id);
+
+  editor.draw(ctx, 390, 844);
+  editor.buttons.find((button) => button.id === 'race-trigger-effect').onClick();
+  editor.draw(ctx, 390, 844);
+  assert.ok(editor.buttons.some((button) => button.id === 'trigger-effect-play-animation'));
+  editor.buttons.find((button) => button.id === 'trigger-effect-change-weather').onClick();
+  editor.draw(ctx, 390, 844);
+  editor.buttons.find((button) => button.id === 'race-trigger-target').onClick();
+  editor.draw(ctx, 390, 844);
+  assert.ok(editor.buttons.some((button) => button.id === 'trigger-weather-storm'));
 });
 
 test('Race Editor migrates old coarse terrain cells to finer five meter cells', () => {
@@ -4422,7 +4492,7 @@ test('Race Editor smooths sparse node-authored routes with bounded curve vertice
   assert.equal(raceEditorSource.includes('appendCurve(corner.entry, corner.control, corner.exit'), true);
 });
 
-test('Race Editor rounds explicit square node corners while preserving their semantic turn type', () => {
+test('Race Editor supports smooth, tight, and exact hard node corners', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   const nodes = [
     { x: 0, y: 0, elevation: 0 },
@@ -4433,20 +4503,26 @@ test('Race Editor rounds explicit square node corners while preserving their sem
     { length: 220, curve: 0, elevation: 0, surface: 'asphalt' },
     { length: 220, curve: 0, elevation: 0, surface: 'asphalt' }
   ];
-  const sharpSegments = [
+  const tightSegments = [
+    { length: 220, curve: 0, elevation: 0, surface: 'asphalt', turn: 'angled' },
+    { length: 220, curve: 0, elevation: 0, surface: 'asphalt' }
+  ];
+  const hardSegments = [
     { length: 220, curve: 0, elevation: 0, surface: 'asphalt', turn: 'square' },
     { length: 220, curve: 0, elevation: 0, surface: 'asphalt' }
   ];
 
   const smoothCorner = editor.getRaceNodeCornerPlan(nodes, 1, { step: 18, segments: smoothSegments });
-  const sharpCorner = editor.getRaceNodeCornerPlan(nodes, 1, { step: 18, segments: sharpSegments });
+  const tightCorner = editor.getRaceNodeCornerPlan(nodes, 1, { step: 18, segments: tightSegments });
+  const hardCorner = editor.getRaceNodeCornerPlan(nodes, 1, { step: 18, segments: hardSegments });
   const smoothDistance = Math.hypot(smoothCorner.control.x - smoothCorner.entry.x, smoothCorner.control.z - smoothCorner.entry.z);
-  const sharpDistance = Math.hypot(sharpCorner.control.x - sharpCorner.entry.x, sharpCorner.control.z - sharpCorner.entry.z);
+  const tightDistance = Math.hypot(tightCorner.control.x - tightCorner.entry.x, tightCorner.control.z - tightCorner.entry.z);
 
   assert.equal(smoothCorner.sharp, false);
-  assert.equal(sharpCorner.sharp, true);
-  assert.equal(sharpDistance > smoothDistance * 0.75, true);
-  assert.equal(sharpCorner.minPieces >= 16, true);
+  assert.equal(tightCorner.style, 'tight');
+  assert.equal(tightCorner.sharp, true);
+  assert.equal(tightDistance < smoothDistance, true);
+  assert.equal(hardCorner, null);
 });
 
 test('Race Editor auto-rounds sparse tight node turns with enough samples to read the apex', () => {
@@ -4535,14 +4611,18 @@ test('Race Editor exposes Move/Paint/Edge authoring modes and runtime Tile Edito
   assert.equal(raceEditorSource.includes("action === 'move-node'"), true);
 });
 
-test('Race Editor Draw Road mode appends draggable map nodes', () => {
+test('Race Editor Add mode persistently appends draggable map nodes without mutating on activation', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   editor.draw(createMockContext(), 1280, 800);
+  assert.deepEqual(editor.getMenuItems('track').map(({ id, label }) => ({ id, label })), [
+    { id: 'draw-road', label: 'Add' }
+  ]);
 
   const startingSegments = editor.selectedRace.road.segments.length;
   editor.handleMenuAction('draw-road');
   const afterMenuSegments = editor.selectedRace.road.segments.length;
-  assert.equal(afterMenuSegments, startingSegments + 1);
+  assert.equal(afterMenuSegments, startingSegments);
+  assert.equal(editor.activeAction, 'draw-road');
 
   const point = {
     id: 'draw-node',
@@ -4562,8 +4642,47 @@ test('Race Editor Draw Road mode appends draggable map nodes', () => {
   assert.equal(editor.raceNodeDrag, null);
   assert.ok(selected.length >= 35);
   assert.equal(Number.isFinite(selected.curve), true);
+  assert.equal(editor.activeAction, 'draw-road');
+  editor.handleMenuAction('draw-road');
+  assert.equal(editor.activeAction, 'move-node');
   assert.equal(raceEditorSource.includes('appendRaceNodeAtPoint'), true);
   assert.equal(raceEditorSource.includes('syncRaceSegmentFromNodePair'), true);
+});
+
+test('Race Editor Add mode drags an existing node instead of appending another node', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  seedEditableRaceRoute(editor);
+  editor.draw(createMockContext(), 1280, 800);
+  editor.handleMenuAction('draw-road');
+  const segmentCount = editor.selectedRace.road.segments.length;
+  const target = editor.getRaceMapPoints(editor.raceMapBounds)[1];
+
+  editor.handlePointerDown({ id: 'add-existing-node', x: target.screenX, y: target.screenY, button: 0 });
+  editor.handlePointerMove({ id: 'add-existing-node', x: target.screenX + 36, y: target.screenY + 18, button: 0 });
+  editor.handlePointerUp({ id: 'add-existing-node', x: target.screenX + 36, y: target.screenY + 18, button: 0 });
+
+  assert.equal(editor.selectedRace.road.segments.length, segmentCount);
+  assert.equal(editor.activeAction, 'draw-road');
+  assert.equal(editor.raceSelectionType, 'node');
+});
+
+test('Race Editor selected-node context writes smooth tight and hard corner styles', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  seedEditableRaceRoute(editor);
+  editor.selectedSegmentIndex = 0;
+  editor.raceSelectionType = 'node';
+
+  const actions = editor.getRaceTrackContextActions();
+  assert.deepEqual(
+    actions.filter((action) => action.id.startsWith('node-corner-')).map((action) => action.id),
+    ['node-corner-smooth', 'node-corner-tight', 'node-corner-hard']
+  );
+  actions.find((action) => action.id === 'node-corner-tight').onClick();
+  assert.equal(editor.selectedSegment.turn, 'angled');
+  editor.getRaceTrackContextActions().find((action) => action.id === 'node-corner-hard').onClick();
+  assert.equal(editor.selectedSegment.turn, 'square');
+  editor.getRaceTrackContextActions().find((action) => action.id === 'node-corner-smooth').onClick();
+  assert.equal(editor.selectedSegment.turn, undefined);
 });
 
 test('Race and Car desktop work surfaces do not duplicate top drawer commands', () => {
@@ -4617,7 +4736,7 @@ test('Car Editor landscape keeps Race builder controls out of the work surface',
   ['generate-random-race', 'draw-road', 'curve', 'elevation', 'cycle-surface'].forEach((id) => {
     assert.equal(editor.buttons.some((button) => button.id === id && !button.desktopRootId && !button.desktopDropdownItem), false, id);
   });
-  assert.equal(raceEditorSource.includes("if (this.mode === 'race') {\n      this.drawRaceBuilderOverlay(ctx, {"), true);
+  assert.equal(raceEditorSource.includes("if (this.mode === 'race') {\n      this.drawRaceBuilderOverlay(ctx, {"), false);
 });
 
 test('Race Editor landscape uses left rail and submenu actions', () => {
@@ -4633,7 +4752,7 @@ test('Race Editor landscape uses left rail and submenu actions', () => {
   assert.ok(editor.buttons.some((button) => button.bounds.x > 600));
 });
 
-test('Race Editor landscape exposes race creation shortcuts before opening menus', () => {
+test('Race Editor landscape removes legacy race creation shortcuts from the persistent surface', () => {
   const editor = new RaceEditor({
     deviceIsMobile: true,
     isMobile: true,
@@ -4642,8 +4761,8 @@ test('Race Editor landscape exposes race creation shortcuts before opening menus
   });
   editor.draw(createMockContext(), 844, 390);
 
-  assert.ok(editor.buttons.some((button) => button.id === 'generate-random-race'));
-  assert.ok(editor.buttons.some((button) => button.id === 'draw-road'));
+  assert.equal(editor.buttons.some((button) => button.id === 'generate-random-race'), false);
+  assert.equal(editor.buttons.some((button) => button.id === 'draw-road'), false);
 });
 
 test('Race and Car direct rails disable unavailable history commands', () => {
@@ -4710,6 +4829,9 @@ test('Race Editor touch landscape keeps root drawer on the left while submenu up
   assert.ok(editor.buttons.some((button) => button.id === 'track' && button.bounds.x < 240));
   assert.ok(editor.buttons.some((button) => button.id === 'draw-road' && button.bounds.x > 600));
   assert.equal(editor.buttons.filter((button) => button.id === 'draw-road').length, 1);
+  ['move-node', 'remove-node', 'remove-edge', 'insert-node', 'snap-node', 'segment-width'].forEach((id) => {
+    assert.equal(editor.buttons.some((button) => button.id === id && button.bounds.x > 600), false, id);
+  });
   assert.ok(editor.buttons.some((button) => button.id === 'test-drive' && button.bounds.y < 80));
 });
 
@@ -5196,7 +5318,7 @@ test('Car Editor portrait menu remains interactive while the embedded preview se
   tap(tuneRoot);
 
   editor.draw(ctx, 390, 844);
-  assert.ok(editor.buttons.some((button) => button.id === 'transmission-type'));
+  assert.ok(editor.buttons.some((button) => button.id === 'default-tires'));
 });
 
 test('Race and Car gamepad submenus render from the shared slide-out plan items', () => {
@@ -6106,7 +6228,7 @@ test('Car Editor preview renders through the real Studio Sprint playtest rendere
   assert.equal(editor.raceWorldBakeCache?.validation, null);
 });
 
-test('Car Editor preview reset keeps editor menus closed and refreshes after tuning changes', () => {
+test('Car Editor preview reset preserves editor menus and refreshes after tuning changes', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} }, { mode: 'car' });
   let nowMs = 1000;
   editor.getNowMs = () => nowMs;
@@ -6114,8 +6236,8 @@ test('Car Editor preview reset keeps editor menus closed and refreshes after tun
   editor.mobileRootOpen = true;
   editor.gamepadSubmenuOpen = true;
   editor.resetCarEditorPreviewPlaytest({ guardArtPicker: true, preserveEditorUi: true });
-  assert.equal(editor.mobileRootOpen, false);
-  assert.equal(editor.gamepadSubmenuOpen, false);
+  assert.equal(editor.mobileRootOpen, true);
+  assert.equal(editor.gamepadSubmenuOpen, true);
 
   const second = editor.ensureCarEditorPreviewPlaytestSession();
   assert.notEqual(second, first);
@@ -6857,7 +6979,7 @@ test('Race projected car sprites use shared billboard options and terrain shadow
   assert.ok(billboardOptions);
   assert.equal(billboardOptions.artChoice.artRef, 'shared-body');
   assert.equal(billboardOptions.forceDefaultShadowLayer, true);
-  assert.equal(billboardOptions.shadowGroundY, 60);
+  assert.equal(Math.abs(billboardOptions.shadowGroundY - (60 + 0.05 / 12 * 100)) < 0.000001, true);
   assert.equal(billboardOptions.bodyAnchorX, 190);
   assert.equal(Number.isFinite(billboardOptions.bodyAnchorY), true);
   assert.equal(billboardOptions.bodyAnchorY < billboardOptions.anchorY, true);
@@ -7439,7 +7561,6 @@ test('Race and Car desktop left context panels expose workflow quick controls', 
   assert.equal(contextBody.includes('drawSharedDesktopContextPanel(ctx, contextBounds,'), true);
   assert.equal(contextBody.includes('this.drawDesktopContextActions(ctx, actionBounds);'), true);
   assert.equal(raceEditorSource.includes('  getDesktopContextActions()'), true);
-  assert.equal(raceEditorSource.includes("action.id !== 'generate-random-race'"), true);
   assert.equal(raceEditorSource.includes("id: 'draw-road'"), true);
   assert.equal(raceEditorSource.includes("id: 'body-art'"), true);
   assert.equal(contextBody.includes('getRaceQuickActions()'), false);
@@ -7451,41 +7572,41 @@ test('Race and Car desktop left context panels expose workflow quick controls', 
   assert.equal(raceEditorSource.includes("this.drawButton(ctx, back, 'Back');"), false);
 });
 
-test('Race desktop keeps generation in top drawers while route tools stay in the left context panel', () => {
+test('Race desktop keeps Add in Track while selected edge properties stay contextual', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   const ctx = createMockContext();
   editor.draw(ctx, 1280, 800);
 
   const generate = editor.buttons.find((button) => button.id === 'generate-random-race' && button.contextPanelCommand);
   assert.equal(generate, undefined);
-  assert.ok(editor.buttons.some((button) => button.id === 'draw-road' && button.contextPanelCommand));
+  assert.equal(editor.buttons.some((button) => button.id === 'draw-road' && button.contextPanelCommand), false);
   assert.ok(editor.buttons.some((button) => button.id === 'cycle-surface' && button.contextPanelCommand));
 
-  const generateRoot = editor.buttons.find((button) => button.desktopRootId === 'file');
-  assert.ok(generateRoot);
+  const trackRoot = editor.buttons.find((button) => button.desktopRootId === 'track');
+  assert.ok(trackRoot);
   editor.handlePointerDown({
-    x: generateRoot.bounds.x + generateRoot.bounds.w / 2,
-    y: generateRoot.bounds.y + generateRoot.bounds.h / 2
+    x: trackRoot.bounds.x + trackRoot.bounds.w / 2,
+    y: trackRoot.bounds.y + trackRoot.bounds.h / 2
   });
   editor.draw(ctx, 1280, 800);
 
-  const drawerGenerate = editor.buttons.find((button) => button.id === 'generate-random-race' && button.desktopDropdownItem);
-  assert.ok(drawerGenerate);
-  assert.equal(editor.buttons.some((button) => (
-    button.id === 'generate-random-race'
-    && !button.contextPanelCommand
-    && !button.desktopRootId
-    && !button.desktopDropdownItem
-  )), false);
+  const trackCommands = editor.buttons.filter((button) => button.desktopDropdownItem);
+  assert.deepEqual(trackCommands.map((button) => button.id), ['draw-road']);
 });
 
-test('Race desktop left route tools activate on release', () => {
+test('Race desktop Track Add toggles on release without immediately mutating the route', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   const ctx = createMockContext();
   editor.draw(ctx, 1280, 800);
 
   const segmentCount = editor.selectedRace.road.segments.length;
-  const drawRoad = editor.buttons.find((button) => button.id === 'draw-road' && button.contextPanelCommand);
+  const trackRoot = editor.buttons.find((button) => button.desktopRootId === 'track');
+  editor.handlePointerDown({
+    x: trackRoot.bounds.x + trackRoot.bounds.w / 2,
+    y: trackRoot.bounds.y + trackRoot.bounds.h / 2
+  });
+  editor.draw(ctx, 1280, 800);
+  const drawRoad = editor.buttons.find((button) => button.id === 'draw-road' && button.desktopDropdownItem);
   assert.ok(drawRoad);
   editor.handlePointerDown({
     x: drawRoad.bounds.x + drawRoad.bounds.w / 2,
@@ -7497,7 +7618,8 @@ test('Race desktop left route tools activate on release', () => {
     y: drawRoad.bounds.y + drawRoad.bounds.h / 2
   });
 
-  assert.equal(editor.selectedRace.road.segments.length, segmentCount + 1);
+  assert.equal(editor.selectedRace.road.segments.length, segmentCount);
+  assert.equal(editor.activeAction, 'draw-road');
 });
 
 test('Race desktop exposes play through the top editor control instead of a Drive drawer', () => {
@@ -16064,11 +16186,11 @@ test('Race Editor road and surface commands mutate the selected segment', () => 
   const startingCount = editor.selectedRace.road.segments.length;
 
   editor.handleMenuAction('draw-road');
-  assert.equal(editor.selectedRace.road.segments.length, startingCount + 1);
-  assert.equal(editor.selectedSegmentIndex, 1);
+  assert.equal(editor.selectedRace.road.segments.length, startingCount);
+  assert.equal(editor.activeAction, 'draw-road');
 
   editor.handleMenuAction('segment-length');
-  assert.equal(editor.selectedSegment.length, 180);
+  assert.equal(editor.selectedSegment.length, 220);
 
   editor.handleMenuAction('curve');
   assert.equal(editor.selectedSegment.curve, 0.25);
@@ -17683,6 +17805,629 @@ test('Race snow condition grip preserves ice dusting and slush ordering', () => 
   assert.equal(bumpyIce >= 0.32, true);
 });
 
+test('Race snow weather intensity accumulates one and a half through six inches', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  [0.25, 0.5, 0.75, 1].forEach((weatherIntensity, index) => {
+    const state = editor.getRaceWeatherState(
+      { weather: 'snow', weatherIntensity },
+      { elapsedMs: 190000 }
+    );
+    assert.equal(state.snowDepthInches, [1.5, 3, 4.5, 6][index]);
+  });
+  assert.equal(RACE_SNOW_CONDITIONS.some((condition) => condition.id === 'six-inch'), true);
+});
+
+test('Race snow over gravel blends shallow traction before deep-snow resistance dominates', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const setup = editor.getRaceCarSetup(editor.selectedCar);
+  setup.tireCompoundByWheel = { fl: 'tarmac', fr: 'tarmac', rl: 'tarmac', rr: 'tarmac' };
+  const shallowGrip = editor.getRaceWheelGripForSurface({
+    car: editor.selectedCar,
+    wheelId: 'fl',
+    surfaceId: 'snow',
+    baseSurfaceId: 'gravel',
+    weather: 'snow',
+    snowDepthInches: 1.5
+  });
+  const threeInchGrip = editor.getRaceWheelGripForSurface({
+    car: editor.selectedCar,
+    wheelId: 'fl',
+    surfaceId: 'snow',
+    baseSurfaceId: 'gravel',
+    weather: 'snow',
+    snowDepthInches: 3
+  });
+  const deepGrip = editor.getRaceWheelGripForSurface({
+    car: editor.selectedCar,
+    wheelId: 'fl',
+    surfaceId: 'snow',
+    baseSurfaceId: 'gravel',
+    weather: 'snow',
+    snowDepthInches: 6
+  });
+
+  assert.equal(shallowGrip > threeInchGrip, true);
+  assert.equal(threeInchGrip > deepGrip, true);
+  assert.equal(threeInchGrip > 0.35, true);
+  assert.equal(editor.getRaceSnowResistanceMultiplier(1.5) < editor.getRaceSnowResistanceMultiplier(3), true);
+  assert.equal(editor.getRaceSnowResistanceMultiplier(3) < editor.getRaceSnowResistanceMultiplier(6), true);
+});
+
+test('Race AWD street tires launch and climb through shallow snow over gravel', () => {
+  const shallowLevel = simulateRaceGradeDrive({
+    surfaceId: 'gravel',
+    compound: 'tarmac',
+    drivetrain: 'awd',
+    weather: 'snow',
+    weatherIntensity: 0.25,
+    elapsedMs: 190000,
+    degree: 0,
+    digitalThrottle: true,
+    seconds: 5
+  });
+  const threeInchHill = simulateRaceGradeDrive({
+    surfaceId: 'gravel',
+    compound: 'tarmac',
+    drivetrain: 'awd',
+    weather: 'snow',
+    weatherIntensity: 0.5,
+    elapsedMs: 190000,
+    degree: 5,
+    digitalThrottle: true,
+    seconds: 7
+  });
+  const sixInchHill = simulateRaceGradeDrive({
+    surfaceId: 'gravel',
+    compound: 'tarmac',
+    drivetrain: 'awd',
+    weather: 'snow',
+    weatherIntensity: 1,
+    elapsedMs: 190000,
+    degree: 5,
+    digitalThrottle: true,
+    seconds: 7
+  });
+
+  assert.equal(shallowLevel.distance > 8, true);
+  assert.equal(threeInchHill.distance > 2, true);
+  assert.equal(sixInchHill.distance < threeInchHill.distance * 0.55, true);
+  assert.equal(threeInchHill.tireSlip.snowDepthInches, 3);
+  assert.equal(sixInchHill.tireSlip.snowDepthInches, 6);
+});
+
+test('Race weather approach distance accumulates monotonically through braking and reverse', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const session = { weatherApproachDistanceM: 0 };
+
+  assert.equal(editor.updateRaceWeatherApproachDistance(1, {
+    session,
+    previousSpeedMps: 30,
+    currentSpeedMps: 20
+  }), 25);
+  assert.equal(editor.updateRaceWeatherApproachDistance(1, {
+    session,
+    previousSpeedMps: 20,
+    currentSpeedMps: 5
+  }), 37.5);
+  assert.equal(editor.updateRaceWeatherApproachDistance(1, {
+    session,
+    previousSpeedMps: 5,
+    currentSpeedMps: -10
+  }), 45);
+  assert.equal(editor.updateRaceWeatherApproachDistance(-1, {
+    session,
+    previousSpeedMps: 80,
+    currentSpeedMps: 80
+  }), 45);
+});
+
+test('Race weather separates full visual intensity from existing physical forcing and exposes near-whiteout visibility', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const visibilityByIntensity = new Map([
+    [0.25, 260],
+    [0.5, 120],
+    [0.75, 50],
+    [1, 20]
+  ]);
+
+  for (const [weatherIntensity, visibilityDistanceM] of visibilityByIntensity) {
+    const snow = editor.getRaceWeatherState(
+      { weather: 'snow', weatherIntensity },
+      { elapsedMs: 300000 }
+    );
+    assert.equal(snow.visualIntensity, weatherIntensity);
+    assert.equal(snow.visibilityDistanceM, visibilityDistanceM);
+    assert.equal(snow.visibilityStrength > 0, true);
+  }
+
+  const rain = editor.getRaceWeatherState(
+    { weather: 'rain', weatherIntensity: 1 },
+    { elapsedMs: 300000 }
+  );
+  const storm = editor.getRaceWeatherState(
+    { weather: 'storm', weatherIntensity: 1 },
+    { elapsedMs: 300000 }
+  );
+  assert.equal(rain.visualIntensity, 1);
+  assert.equal(rain.targetIntensity, 0.72);
+  assert.equal(rain.effectiveIntensity, 0.72);
+  assert.equal(rain.visibilityDistanceM, 20);
+  assert.equal(storm.visualIntensity, 1);
+  assert.equal(storm.targetIntensity, 1);
+  assert.equal(storm.visibilityDistanceM, rain.visibilityDistanceM);
+});
+
+test('Race near snow layer falls, approaches the camera, fades softly, and respawns cleanly', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.playtestSession = {
+    elapsedMs: 10000,
+    sceneElapsedMs: 10000,
+    speedMps: 0,
+    weatherApproachDistanceM: 0,
+    worldX: 0,
+    worldZ: 0,
+    heightM: 0,
+    cameraYaw: 0,
+    snowParticles3d: [],
+    snowParticleRespawnSequence: 0
+  };
+  const bounds = { x: 0, y: 0, w: 640, h: 360 };
+  const weather = { id: 'snow', precipitationIntensity: 1, effectiveIntensity: 1, snowDepthInches: 6 };
+  const camera = {
+    x: 0,
+    z: -10,
+    elevation: 0.25,
+    horizonRatio: 0.31,
+    nearPlane: 1.6,
+    focalScale: 1.04,
+    roadWidthScale: 1
+  };
+  editor.lastRaceRenderCamera = { camera, cameraYaw: 0, bounds };
+  const particles = editor.ensureRaceSnowParticleField({
+    session: editor.playtestSession,
+    weatherState: weather,
+    camera,
+    cameraYaw: 0
+  });
+
+  assert.equal(particles.length, 128);
+  assert.equal(particles.every((particle) => (
+    Number.isFinite(particle.worldX)
+    && Number.isFinite(particle.worldZ)
+    && Number.isFinite(particle.heightM)
+    && particle.physicalRadiusM > 0
+  )), true);
+  const initialVisibleCount = particles.filter((_particle, index) => (
+    editor.getRaceSnowParticleVisual(index, bounds, {
+      camera,
+      cameraYaw: 0,
+      intensity: 1
+    })?.visible
+  )).length;
+  assert.equal(initialVisibleCount >= Math.ceil(particles.length * 0.65), true);
+  const representativeThreeCamera = new THREE.PerspectiveCamera(60, bounds.w / bounds.h, 0.064, 2200);
+  const threeCameraY = editor.getRaceThreeElevationM(camera);
+  representativeThreeCamera.position.set(camera.x, threeCameraY, camera.z);
+  representativeThreeCamera.lookAt(camera.x, threeCameraY - 0.6, camera.z + 80);
+  representativeThreeCamera.updateProjectionMatrix();
+  representativeThreeCamera.updateMatrixWorld(true);
+  const initialThreeVisibleCount = particles.filter((_particle, index) => (
+    editor.getRaceSnowParticleVisual(index, bounds, {
+      camera,
+      cameraYaw: 0,
+      intensity: 1,
+      activeThreeCamera: representativeThreeCamera
+    })?.visible
+  )).length;
+  assert.equal(initialThreeVisibleCount >= Math.ceil(particles.length * 0.65), true);
+  const mirrorEditor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  mirrorEditor.playtestSession = {
+    ...editor.playtestSession,
+    snowParticles3d: [],
+    snowParticleRespawnSequence: 0,
+    snowParticleWeatherId: ''
+  };
+  const mirroredParticles = mirrorEditor.ensureRaceSnowParticleField({
+    session: mirrorEditor.playtestSession,
+    weatherState: weather,
+    camera,
+    cameraYaw: 0
+  });
+  assert.deepEqual(
+    mirroredParticles.slice(0, 8).map((particle) => [
+      particle.worldX,
+      particle.worldZ,
+      particle.heightM,
+      particle.physicalRadiusM,
+      particle.fallSpeedMps
+    ]),
+    particles.slice(0, 8).map((particle) => [
+      particle.worldX,
+      particle.worldZ,
+      particle.heightM,
+      particle.physicalRadiusM,
+      particle.fallSpeedMps
+    ])
+  );
+
+  const fallingParticle = particles[4];
+  const fallStart = {
+    x: fallingParticle.worldX,
+    z: fallingParticle.worldZ,
+    heightM: fallingParticle.heightM
+  };
+  editor.updateRaceSnowParticleField(0.1, {
+    session: editor.playtestSession,
+    weatherState: weather,
+    camera,
+    cameraYaw: 0
+  });
+  assert.equal(fallingParticle.heightM < fallStart.heightM, true);
+  assert.equal(Math.hypot(
+    fallingParticle.worldX - fallStart.x,
+    fallingParticle.worldZ - fallStart.z
+  ) < 0.5, true);
+  const particleIdentities = particles.slice();
+  for (let frame = 0; frame < 600; frame += 1) {
+    editor.updateRaceSnowParticleField(1 / 60, {
+      session: editor.playtestSession,
+      weatherState: weather,
+      camera,
+      cameraYaw: 0
+    });
+  }
+  assert.equal(particles.length, 128);
+  assert.equal(particles.every((particle, index) => particle === particleIdentities[index]), true);
+  assert.doesNotThrow(() => JSON.stringify(particles));
+
+  const visibleIndex = particles.findIndex((_particle, index) => (
+    editor.getRaceSnowParticleVisual(index, bounds, {
+      camera,
+      cameraYaw: 0,
+      intensity: 1
+    })?.visible
+  ));
+  assert.notEqual(visibleIndex, -1);
+  const farParticle = editor.getRaceSnowParticleVisual(visibleIndex, bounds, {
+    camera,
+    cameraYaw: 0,
+    intensity: 1
+  });
+  const farCameraZ = farParticle.cameraZ;
+  const farRadius = farParticle.radius;
+  const nearParticle = editor.getRaceSnowParticleVisual(visibleIndex, bounds, {
+    camera: { ...camera, z: camera.z + 4 },
+    cameraYaw: 0,
+    intensity: 1
+  });
+  assert.equal(nearParticle.cameraZ < farCameraZ, true);
+  assert.equal(nearParticle.radius > farRadius, true);
+
+  const recycled = particles[0];
+  recycled.worldZ = camera.z - 80;
+  recycled.previousScreenX = 25;
+  recycled.previousScreenY = 30;
+  const respawnsBefore = recycled.respawnCount;
+  editor.updateRaceSnowParticleField(1 / 60, {
+    session: editor.playtestSession,
+    weatherState: weather,
+    camera,
+    cameraYaw: 0
+  });
+  assert.equal(recycled.respawnCount, respawnsBefore + 1);
+  assert.equal(recycled.previousScreenX, null);
+  assert.equal(recycled.previousScreenY, null);
+
+  const rendered = createMockContext();
+  editor.drawRaceWeatherFx(rendered, bounds, weather, {
+    camera,
+    cameraYaw: 0,
+    speedMps: 30
+  });
+  assert.equal(rendered.calls.filter((call) => call.type === 'arc').length <= 512, true);
+  assert.equal(rendered.calls.filter((call) => call.type === 'fill').length <= 6, true);
+  assert.equal(rendered.calls.filter((call) => call.type === 'stroke').length <= 1, true);
+  assert.equal(editor.lastRaceRenderStats.weatherFxParticles, 512);
+  assert.equal(editor.lastRaceRenderStats.weatherFxNearParticles, 128);
+  assert.equal(editor.lastRaceRenderStats.weatherFxEnvironmentParticles, 384);
+  const firstEnvironmentFill = rendered.calls.findIndex((call) => call.type === 'fill');
+  const firstHazeFill = rendered.calls.findIndex((call) => call.type === 'fillRect');
+  const lastNearFill = rendered.calls.findLastIndex((call) => call.type === 'fill');
+  assert.equal(firstEnvironmentFill >= 0 && firstEnvironmentFill < firstHazeFill, true);
+  assert.equal(firstHazeFill < lastNearFill, true);
+
+  const threeCamera = new THREE.PerspectiveCamera(60, bounds.w / bounds.h, 0.1, 100);
+  threeCamera.updateProjectionMatrix();
+  threeCamera.updateMatrixWorld(true);
+  editor.raceThreeWorldRenderer = {
+    camera: threeCamera,
+    canvas: { width: bounds.w, height: bounds.h }
+  };
+  editor.lastRaceRenderStats = { threeTerrainRenderer: 1 };
+  particles[1].worldX = 0;
+  particles[1].worldZ = -10;
+  particles[1].heightM = 0;
+  const activeCameraParticle = editor.getRaceSnowParticleVisual(1, bounds, {
+    camera,
+    cameraYaw: 0,
+    intensity: 1
+  });
+  assert.equal(activeCameraParticle.visible, true);
+  assert.equal(activeCameraParticle.threeProjected, true);
+
+  editor.updateRaceSnowParticleField(0, {
+    session: editor.playtestSession,
+    weatherState: { id: 'clear', precipitationIntensity: 0, effectiveIntensity: 0 },
+    camera,
+    cameraYaw: 0
+  });
+  assert.equal(editor.playtestSession.snowParticles3d.length, 0);
+});
+
+test('Race environment snow reuses one depth-tested Three.js point field across streamed updates', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.playtestSession = {
+    raceId: 'studio-sprint-2',
+    startedAt: 1234,
+    elapsedMs: 10000,
+    sceneElapsedMs: 10000,
+    speedMps: 24,
+    worldX: 0,
+    worldZ: 0,
+    heightM: 0,
+    cameraYaw: 0,
+    snowParticles3d: [],
+    snowParticleRespawnSequence: 0,
+    weatherFxState: {
+      gustXMps: 2,
+      gustZMps: 1
+    }
+  };
+  editor.getRaceCompositedSurfaceAtWorldPoint = ({ x, z }) => ({
+    elevation: (2 + Number(x || 0) * 0.002 + Number(z || 0) * 0.001) / 10
+  });
+  const bounds = { x: 0, y: 0, w: 640, h: 360 };
+  const camera = {
+    x: 0,
+    z: -10,
+    elevation: 0.25,
+    horizonRatio: 0.31,
+    nearPlane: 1.6,
+    farPlane: 2200
+  };
+  const weatherState = {
+    id: 'snow',
+    visualIntensity: 1,
+    precipitationIntensity: 1,
+    effectiveIntensity: 1,
+    visibilityDistanceM: 260
+  };
+  const particles = editor.updateRaceSnowEnvironmentRenderField({
+    session: editor.playtestSession,
+    bounds,
+    camera,
+    cameraYaw: 0,
+    cameraView: 'third-person',
+    weatherState,
+    maxGroundSamples: 384
+  });
+  assert.equal(particles.length, 384);
+  assert.equal(Math.max(...particles.map((particle) => particle.cameraDepthM)) > 260, true);
+
+  const renderer = { scene: new THREE.Scene() };
+  const stats = {};
+  assert.equal(editor.syncRaceThreeEnvironmentSnow(renderer, {
+    particles,
+    weatherState,
+    stats
+  }), true);
+  const points = renderer.environmentSnowPoints;
+  const geometry = points.geometry;
+  const material = points.material;
+  assert.equal(material.depthTest, true);
+  assert.equal(material.depthWrite, false);
+  assert.equal(points.frustumCulled, false);
+  assert.equal(stats.environmentSnowParticles, 384);
+  assert.equal(stats.environmentSnowDrawCalls, 1);
+
+  editor.playtestSession.sceneElapsedMs += 16;
+  const nextParticles = editor.updateRaceSnowEnvironmentRenderField({
+    session: editor.playtestSession,
+    bounds,
+    camera: { ...camera, x: 8, z: -3 },
+    cameraYaw: 0,
+    cameraView: 'third-person',
+    weatherState,
+    maxGroundSamples: 384
+  });
+  editor.syncRaceThreeEnvironmentSnow(renderer, {
+    particles: nextParticles,
+    weatherState,
+    stats
+  });
+  assert.equal(renderer.environmentSnowPoints, points);
+  assert.equal(renderer.environmentSnowPoints.geometry, geometry);
+  assert.equal(renderer.environmentSnowPoints.material, material);
+
+  const cleared = editor.updateRaceSnowEnvironmentRenderField({
+    session: editor.playtestSession,
+    bounds,
+    camera,
+    cameraYaw: 0,
+    cameraView: 'third-person',
+    weatherState: { id: 'clear', visualIntensity: 0 }
+  });
+  assert.deepEqual(cleared, []);
+  editor.syncRaceThreeEnvironmentSnow(renderer, {
+    particles: cleared,
+    weatherState: { id: 'clear', visualIntensity: 0 },
+    stats
+  });
+  assert.equal(points.visible, false);
+});
+
+test('Race rain and storm reach dense hurricane visuals with depth haze', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.playtestSession = {
+    elapsedMs: 300000,
+    sceneElapsedMs: 300000,
+    speedMps: 24,
+    weatherApproachDistanceM: 120,
+    worldX: 0,
+    worldZ: 0,
+    heightM: 0,
+    cameraYaw: 0,
+    snowParticles3d: [],
+    snowParticleRespawnSequence: 0
+  };
+  const bounds = { x: 0, y: 0, w: 640, h: 360 };
+  const camera = {
+    x: 0,
+    z: -10,
+    elevation: 0.25,
+    horizonRatio: 0.31,
+    nearPlane: 1.6,
+    focalScale: 1.04,
+    roadWidthScale: 1
+  };
+
+  for (const [id, expectedCount] of [['rain', 160], ['storm', 192]]) {
+    const weatherState = editor.getRaceWeatherState(
+      { weather: id, weatherIntensity: 1 },
+      editor.playtestSession
+    );
+    const ctx = createMockContext();
+    editor.drawRaceWeatherFx(ctx, bounds, weatherState, {
+      camera,
+      cameraYaw: 0,
+      speedMps: 24
+    });
+    assert.equal(editor.lastRaceRenderStats.weatherFxParticles, expectedCount);
+    assert.equal(editor.lastRaceRenderStats.weatherFxVisibilityDistanceM, 20);
+    assert.equal(editor.lastRaceRenderStats.weatherFxVisibilityStrength > 0.9, true);
+    assert.equal(ctx.calls.some((call) => (
+      call.type === 'fillRect'
+      && String(call.style || '').includes(id === 'rain' || id === 'storm' ? 'rgba' : '')
+    )), true);
+  }
+});
+
+test('Race storms schedule deterministic lightning and one thunder sound without affecting rain', () => {
+  const thunder = [];
+  const createEditor = () => {
+    const editor = new RaceEditor({
+      deviceIsMobile: false,
+      isMobile: false,
+      audio: {
+        playWeatherThunder(options) {
+          thunder.push(options);
+        }
+      },
+      exitRaceEditor() {}
+    });
+    editor.playtestSession = {
+      elapsedMs: 300000,
+      sceneElapsedMs: 300000,
+      speedMps: 0,
+      worldX: 0,
+      worldZ: 0,
+      heightM: 0,
+      cameraYaw: 0,
+      snowParticles3d: [],
+      snowParticleRespawnSequence: 0
+    };
+    return editor;
+  };
+  const storm = {
+    id: 'storm',
+    visualIntensity: 1,
+    precipitationIntensity: 1,
+    effectiveIntensity: 1,
+    visibilityDistanceM: 20,
+    visibilityStrength: 1
+  };
+  const first = createEditor();
+  first.updateRaceWeatherFxState(1 / 60, { weatherState: storm });
+  first.playtestSession.weatherFxState.lightningTimerMs = 0;
+  first.updateRaceWeatherFxState(1 / 60, { weatherState: storm });
+  const firstStrike = { ...first.playtestSession.weatherFxState };
+
+  const second = createEditor();
+  second.updateRaceWeatherFxState(1 / 60, { weatherState: storm });
+  second.playtestSession.weatherFxState.lightningTimerMs = 0;
+  second.updateRaceWeatherFxState(1 / 60, { weatherState: storm });
+  const secondStrike = { ...second.playtestSession.weatherFxState };
+
+  assert.equal(firstStrike.lightningSequence, 1);
+  assert.equal(firstStrike.lightningFlash > 0, true);
+  assert.equal(firstStrike.lightningX, secondStrike.lightningX);
+  assert.equal(thunder.length, 2);
+
+  const ctx = createMockContext();
+  first.drawRaceWeatherLightning(ctx, { x: 0, y: 0, w: 640, h: 360 }, firstStrike);
+  assert.equal(ctx.calls.filter((call) => call.type === 'stroke').length, 1);
+
+  first.updateRaceWeatherFxState(1, {
+    weatherState: {
+      ...storm,
+      id: 'rain'
+    }
+  });
+  assert.equal(first.playtestSession.weatherFxState.lightningFlash, 0);
+  assert.equal(thunder.length, 2);
+});
+
+test('Race rain streaks follow their downward screen-space motion', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const bounds = { x: 0, y: 0, w: 640, h: 360 };
+
+  for (const storm of [false, true]) {
+    for (let index = 0; index < 64; index += 1) {
+      const particle = editor.getRaceRainParticleVisual(index, bounds, {
+        elapsed: 12,
+        approachDistanceM: 0,
+        intensity: 0.8,
+        storm
+      });
+      const laterParticle = editor.getRaceRainParticleVisual(index, bounds, {
+        elapsed: 12.05,
+        approachDistanceM: 0,
+        intensity: 0.8,
+        storm
+      });
+      assert.equal(particle.x >= bounds.x - bounds.w * 0.05 && particle.x < bounds.x + bounds.w * 1.05, true);
+      assert.equal(particle.y >= bounds.y && particle.y < bounds.y + bounds.h, true);
+      assert.equal((laterParticle.y - particle.y + bounds.h) % bounds.h > 0, true);
+      assert.equal(particle.streakY > 0, true);
+      assert.equal(Math.abs(particle.streakY) > Math.abs(particle.streakX), true);
+    }
+
+    const depthIndex = Array.from({ length: 64 }, (_, index) => index).find((index) => (
+      editor.getRaceRainParticleVisual(index, bounds, {
+        elapsed: 12,
+        approachDistanceM: 0,
+        intensity: 0.8,
+        storm
+      }).proximity < 0.72
+    ));
+    assert.notEqual(depthIndex, undefined);
+    const farParticle = editor.getRaceRainParticleVisual(depthIndex, bounds, {
+      elapsed: 12,
+      approachDistanceM: 0,
+      intensity: 0.8,
+      storm
+    });
+    const nearParticle = editor.getRaceRainParticleVisual(depthIndex, bounds, {
+      elapsed: 12,
+      approachDistanceM: 8,
+      intensity: 0.8,
+      storm
+    });
+    assert.equal(nearParticle.proximity > farParticle.proximity, true);
+    assert.equal(nearParticle.length > farParticle.length, true);
+  }
+});
+
 test('Race Editor tire wear is per-wheel and harsher for street tires off road', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   editor.startPlaytest('starter-rwd');
@@ -18427,6 +19172,8 @@ test('Race dynamic hill climbs expose throttle-sensitive snow traction instead o
   const gentleSnowFive = simulateRaceGradeDrive({
     surfaceId: 'snow',
     compound: 'snow',
+    weatherIntensity: 0.5,
+    elapsedMs: 190000,
     degree: 5,
     throttleAxis: 0.18,
     seconds: 4
@@ -18434,6 +19181,8 @@ test('Race dynamic hill climbs expose throttle-sensitive snow traction instead o
   const fullDigitalSnowFive = simulateRaceGradeDrive({
     surfaceId: 'snow',
     compound: 'snow',
+    weatherIntensity: 0.5,
+    elapsedMs: 190000,
     degree: 5,
     digitalThrottle: true,
     seconds: 4
@@ -18441,7 +19190,11 @@ test('Race dynamic hill climbs expose throttle-sensitive snow traction instead o
 
   assert.equal(gentleSnowFive.distance > 2, true);
   assert.equal(gentleSnowFive.maxWheelSpin < 0.08, true);
-  assert.equal(fullDigitalSnowFive.maxWheelSpin > gentleSnowFive.maxWheelSpin + 0.3, true);
+  assert.equal(
+    fullDigitalSnowFive.tireSlip.wheelSpinRatio
+      > gentleSnowFive.tireSlip.wheelSpinRatio + 0.2,
+    true
+  );
 });
 
 test('Race dynamic hill climbs keep matched dirt and gravel tires usable through 15 degrees', () => {
@@ -19214,27 +19967,89 @@ test('Race Editor off-road projection avoids black near-camera planes', () => {
   assert.equal(blackProjectedFills.length, 0);
 });
 
-test('Race Editor reverse steering keeps controller direction intuitive', () => {
-  const editor = new RaceEditor({
-    deviceIsMobile: true,
-    isMobile: true,
-    exitRaceEditor() {}
+test('Race Editor reverse steering remains intuitive after tire forces settle', () => {
+  for (const drivetrain of ['fwd', 'rwd', 'awd']) {
+    const editor = new RaceEditor({
+      deviceIsMobile: true,
+      isMobile: true,
+      exitRaceEditor() {}
+    });
+    editor.startPlaytest('starter-rwd');
+    editor.selectedCar.tuning.drivetrain = drivetrain;
+    for (const speed of [-3, -6, -9]) {
+      for (const steering of [-1, 1]) {
+        Object.assign(editor.playtestSession, {
+          projectedDistance: 80,
+          distance: 80,
+          previousDistance: 80,
+          launchLockMs: 0,
+          elapsedMs: 1000,
+          speedMps: speed,
+          carYaw: 0,
+          velocityYaw: 0,
+          yawVelocityRadps: 0,
+          gear: -1,
+          tireSlipRelaxationAngles: {},
+          rearBreakawayMemory: 0,
+          driftLateral: 0
+        });
+        Object.assign(editor.raceInput, {
+          gear: -1,
+          binarySteer: steering,
+          steeringTarget: steering,
+          steeringWheel: steering
+        });
+
+        for (let frame = 0; frame < 60; frame += 1) {
+          editor.playtestSession.speedMps = speed;
+          editor.updatePlaytest(1 / 60);
+        }
+
+        assert.equal(
+          Math.sign(editor.playtestSession.carYaw),
+          Math.sign(steering),
+          `${drivetrain} reverse steering ${steering} at ${speed} m/s changed direction after settling`
+        );
+        assert.equal(
+          Math.sign(editor.playtestSession.velocityYaw),
+          Math.sign(steering),
+          `${drivetrain} reverse velocity heading diverged from chassis yaw at ${speed} m/s`
+        );
+        assert.equal(Math.abs(editor.playtestSession.carYaw) > 0.08, true);
+      }
+    }
+  }
+});
+
+test('Race Editor reverse physical tire force agrees with signed bicycle yaw', () => {
+  const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
+  editor.startPlaytest('starter-rwd');
+  Object.assign(editor.playtestSession, {
+    projectedDistance: 80,
+    distance: 80,
+    launchLockMs: 0,
+    elapsedMs: 1000,
+    speedMps: -6,
+    carYaw: 0,
+    velocityYaw: 0,
+    gear: -1
+  });
+  Object.assign(editor.raceInput, {
+    gear: -1,
+    binarySteer: 1,
+    steeringTarget: 1,
+    steeringWheel: 1
   });
 
-  editor.startPlaytest('starter-rwd');
-  editor.playtestSession.projectedDistance = 80;
-  editor.playtestSession.distance = 80;
-  editor.playtestSession.launchLockMs = 0;
-  editor.playtestSession.elapsedMs = 1000;
-  editor.playtestSession.speedMps = -8;
-  editor.playtestSession.carYaw = 0;
-  editor.playtestSession.velocityYaw = 0;
-  editor.raceInput.steeringTarget = 1;
-  editor.raceInput.steeringWheel = 1;
+  editor.updatePlaytest(1 / 30);
 
-  editor.updatePlaytest(0.25);
-
-  assert.equal(editor.playtestSession.carYaw > 0, true);
+  const tireSlip = editor.playtestSession.tireSlip;
+  assert.equal(tireSlip.tireTravelDirection, -1);
+  assert.equal(tireSlip.bicycleYawRate > 0, true);
+  assert.equal(tireSlip.physicalYawAcceleration > 0, true);
+  assert.equal(tireSlip.tireYawRateCorrection > 0, true);
+  assert.equal(tireSlip.velocityYawRateFromLateralForce > 0, true);
+  assert.equal(tireSlip.lateralAcceleration < 0, true);
 });
 
 test('Race Editor right steering follows map compass handedness', () => {
@@ -20951,6 +21766,7 @@ test('Race Editor playtest requires sustained unsupported rollover and recovers 
   });
 
   editor.startPlaytest('starter-rwd');
+  editor.playtestSession.vehicle3d.enabled = false;
   editor.playtestSession.speedMps = 34;
   editor.playtestSession.grounded = true;
   editor.updateRaceVerticalAndRollState({
@@ -21021,6 +21837,36 @@ test('Race Editor playtest requires sustained unsupported rollover and recovers 
 
   assert.equal(editor.playtestSession.rolledOver, false);
   assert.equal(editor.status, 'Recovered');
+});
+
+test('Race Editor legacy crest launch cannot override authoritative 3D vertical state', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 } },
+    exitRaceEditor() {}
+  });
+  editor.startPlaytest('starter-rwd');
+  const vehicle3d = editor.playtestSession.vehicle3d;
+  vehicle3d.position.y = 1.25;
+  vehicle3d.linearVelocity.y = -0.4;
+  Object.values(vehicle3d.wheels).forEach((wheel) => {
+    wheel.inContact = true;
+    wheel.geometricContact = true;
+  });
+
+  editor.updateRaceVerticalAndRollState({
+    seconds: 0.1,
+    tuning: editor.getRaceCarTuning(editor.selectedCar),
+    roadPose: { elevation: -1 },
+    previousRoadPose: { elevation: 0 },
+    lateralAcceleration: 0
+  });
+
+  assert.equal(editor.playtestSession.heightM, 1.25);
+  assert.equal(editor.playtestSession.verticalVelocityMps, -0.4);
+  assert.equal(editor.playtestSession.grounded, true);
+  assert.equal(editor.playtestSession.airborne, false);
 });
 
 test('Race Editor airborne car cannot accelerate brake or steer from tire forces', () => {
@@ -22331,9 +23177,12 @@ test('Race projected procedural car draws a height shadow under the rigid body',
 
   assert.equal(projectedQuads.length >= 6, true);
   assert.equal(String(projectedQuads[0].fillStyle).startsWith('rgba(0,0,0,'), true);
-  const shadowElevation = projectedQuads[0].points.reduce((sum, point) => sum + Number(point.elevation || 0), 0) / projectedQuads[0].points.length;
-  const bodyElevation = projectedQuads[1].points.reduce((sum, point) => sum + Number(point.elevation || 0), 0) / projectedQuads[1].points.length;
-  assert.equal(shadowElevation < 0.01, true);
+  const shadowQuads = projectedQuads.filter((entry) => String(entry.fillStyle).startsWith('rgba(0,0,0,'));
+  const bodyQuad = projectedQuads.find((entry) => !String(entry.fillStyle).startsWith('rgba(0,0,0,'));
+  const shadowElevations = shadowQuads.flatMap((entry) => entry.points.map((point) => Number(point.elevation || 0)));
+  const bodyElevation = bodyQuad.points.reduce((sum, point) => sum + Number(point.elevation || 0), 0) / bodyQuad.points.length;
+  assert.equal(shadowQuads.length, 8);
+  assert.equal(shadowElevations.every((value) => Math.abs(value - 0.05 / 12) < 0.000001), true);
   assert.equal(bodyElevation > 0.38, true);
 });
 
@@ -22344,6 +23193,7 @@ test('Race default procedural car is built as dynamic Three geometry', () => {
     scene: new THREE.Scene(),
     solidMaterialCache: new Map()
   };
+  editor.getRaceCompositedSurfaceAtWorldPoint = () => ({ elevation: 0 });
   const added = editor.addRaceThreeProceduralCar(renderer, {
     x: editor.playtestSession.worldX,
     z: editor.playtestSession.worldZ,
@@ -22367,6 +23217,11 @@ test('Race default procedural car is built as dynamic Three geometry', () => {
   assert.equal(names.filter((name) => name === 'raceHeadlight').length, 2);
   assert.equal(names.filter((name) => name === 'raceTaillight').length, 2);
   assert.equal(names.includes('raceCarShadow'), true);
+  const shadow = group.children.find((child) => child.name === 'raceCarShadow');
+  const shadowPositions = Array.from(shadow.geometry.getAttribute('position').array);
+  const shadowYs = shadowPositions.filter((_value, index) => index % 3 === 1);
+  assert.equal(shadow.position.y, 0);
+  assert.equal(shadowYs.every((value) => Math.abs(value - 0.05) < 0.000001), true);
   assert.equal(group.children.every((child) => child.isMesh), true);
 });
 
@@ -23307,6 +24162,31 @@ test('Race ten-meter chase camera shortens and raises when terrain blocks the fu
   assert.equal(placement.camera.elevation >= 0.8 + editor.getRaceThirdPersonCameraClearance(), true);
 });
 
+test('Race ten-meter chase camera raises before shortening for ordinary hill crests', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.getRaceCameraSafeTerrainElevation = (camera) => (
+    Number(camera.z || 0) > -5 ? 0.4 : 0
+  );
+
+  const placement = editor.getRaceThirdPersonSafeCameraPlacement({
+    carWorldX: 0,
+    carWorldZ: 0,
+    carYaw: 0,
+    desiredChaseDistance: 10,
+    roadElevation: 0,
+    eyeHeight: 0.32,
+    lookAheadDistanceM: 8,
+    routeCamera: { elevation: 0 },
+    cameraView: 'third-person'
+  });
+
+  assert.equal(placement.chaseDistance, 10);
+  assert.equal(placement.emergencyDistanceAdjustment, false);
+  assert.equal(placement.camera.elevation >= 0.4 + editor.getRaceThirdPersonCameraClearance(), true);
+  assert.equal(placement.safetyLiftM > 0, true);
+  assert.equal(placement.safetyLiftM <= 2, true);
+});
+
 test('Race third-person chase placement uses travel camera yaw during drift', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   editor.startPlaytest('starter-rwd');
@@ -23651,7 +24531,7 @@ test('Race projected road path keeps the resolved third-person camera above terr
 
   const camera = editor.lastRaceRenderCamera.camera;
   const safeTerrain = editor.getRaceCameraSafeTerrainElevation(camera, 0);
-  assert.equal(camera.z > -10, true);
+  assert.equal(Math.abs(camera.z + 10) < 0.001, true);
   assert.equal(camera.elevation >= safeTerrain + editor.getRaceThirdPersonCameraClearance(), true);
 });
 
@@ -23720,8 +24600,8 @@ test('Race third-person camera smooths chase-distance recovery after terrain saf
   assert.equal(recoveringPlacement.chaseDistance > pulledIn, true);
   assert.equal(recoveringPlacement.chaseDistance < desired - 4, true);
   assert.equal(unsafePullIn.chaseDistance < recoveringPlacement.chaseDistance, true);
-  assert.equal(Math.abs(unsafePullIn.chaseDistance - pulledIn) < 0.001, true);
-  assert.equal(Math.abs(session.thirdPersonCameraChaseDistanceM - pulledIn) < 0.001, true);
+  assert.equal(unsafePullIn.chaseDistance > pulledIn, true);
+  assert.equal(Math.abs(session.thirdPersonCameraChaseDistanceM - unsafePullIn.chaseDistance) < 0.001, true);
 });
 
 test('Race third-person camera avoids chase-distance snapback jitter over alternating hill safety samples', () => {
@@ -23769,8 +24649,8 @@ test('Race third-person camera avoids chase-distance snapback jitter over altern
   assert.equal(distances[1] < desired - 4, true);
   assert.equal(distances[2] > distances[1], true);
   assert.equal(distances[3] < distances[2], true);
-  assert.equal(Math.abs(distances[3] - pulledIn) < 0.001, true);
-  assert.equal(distances[4] < desired - 4, true);
+  assert.equal(distances[3] > pulledIn, true);
+  assert.equal(distances[4] > distances[3], true);
   assert.equal(distances[5] - distances[4] < 1.2, true);
   assert.equal(distances[6] - distances[5] < 1.2, true);
   assert.equal(Math.abs(session.thirdPersonCameraChaseDistanceM - distances[6]) < 0.001, true);
@@ -23895,6 +24775,15 @@ test('Race jump diagnostics preserve landing impact after vertical velocity is s
 test('Race tire FX emits terrain-specific particles from slipping wheels', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   editor.startPlaytest('subaru-brz-2022');
+  editor.playtestSession.vehicle3d.enabled = false;
+  editor.getRaceCompositedSurfaceAtWorldPoint = () => ({ elevation: 0 });
+  editor.getRaceTireFxVisualMaterialAtWorldPoint = () => ({
+    region: 'terrain',
+    surfaceId: 'dirt',
+    materialId: 'dirt',
+    effectSlotId: 'dirtDust',
+    sampledColor: '#7a5633'
+  });
   editor.selectedRace.tireFx = {
     dirtDust: {
       enabled: true,
@@ -23940,6 +24829,657 @@ test('Race tire FX emits terrain-specific particles from slipping wheels', () =>
   });
 
   assert.equal(ctx.calls.some((call) => call.type === 'drawImage'), true);
+});
+
+test('Race tire FX originates at the physical tire contact patch', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('subaru-brz-2022');
+  editor.selectedRace.tireFx = {
+    dirtDust: { enabled: true, density: 3, lifetimeMs: 800, scale: 1 }
+  };
+  editor.playtestSession.vehicle3d = {
+    enabled: true,
+    wheels: {
+      fl: { inContact: true, contactPoint: { x: 3.5, y: 2.3, z: 9.25 } },
+      fr: { inContact: true, contactPoint: { x: 5.5, y: 2.3, z: 9.25 } },
+      rl: {
+        inContact: true,
+        contactPoint: { x: 4.5, y: 2.4, z: 8.25 }
+      },
+      rr: { inContact: true, contactPoint: { x: 5.5, y: 2.4, z: 8.25 } }
+    }
+  };
+  ['fl', 'fr', 'rl', 'rr'].forEach((wheelId) => {
+    const position = editor.getRaceWheelFxEmissionPosition(wheelId, {
+      session: editor.playtestSession,
+      wheelSurfaceState: {}
+    });
+    assert.equal(position.physicalContact, true);
+    assert.equal(position.x, editor.playtestSession.vehicle3d.wheels[wheelId].contactPoint.x);
+    assert.equal(position.z, editor.playtestSession.vehicle3d.wheels[wheelId].contactPoint.z);
+  });
+
+  editor.emitRaceTireFxParticles(1, {
+    speedMps: 20,
+    tireSlipByWheel: { rl: 0.9 },
+    brakeState: { lockByWheel: { rl: 0 } },
+    wheelContactScaleByWheel: { rl: 1, fl: 0, fr: 0, rr: 0 },
+    wheelSurfaceState: {
+      positions: { rl: { x: 100, z: 100, elevation: 10 } },
+      surfaceByWheel: { rl: 'dirt' },
+      terrainByWheel: { rl: 'off-road' }
+    }
+  });
+
+  assert.equal(editor.playtestSession.tireFxParticles.length > 0, true);
+  editor.playtestSession.tireFxParticles.forEach((particle) => {
+    assert.equal(Math.abs(particle.x - 4.5) <= 0.12, true);
+    assert.equal(Math.abs(particle.z - 8.25) <= 0.12, true);
+    assert.equal(Math.abs(particle.elevation - (2.4 + 0.03) / 12) < 0.000001, true);
+  });
+});
+
+test('Race tire FX visual material follows the rendered terrain tile at the physical contact', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('subaru-brz-2022');
+  editor.getRaceCompositedSurfaceAtWorldPoint = () => ({
+    elevation: 0,
+    region: 'terrain',
+    surfaceId: 'snow',
+    materialId: 'snow',
+    segment: { surface: 'asphalt' }
+  });
+  editor.getRaceGroundPaintAtWorldPoint = () => ({
+    tileId: 'snow',
+    tileWeights: { snow: 1 },
+    artRef: ''
+  });
+
+  const material = editor.getRaceTireFxVisualMaterialAtWorldPoint({
+    x: 12,
+    z: 24,
+    elevation: 0
+  }, {
+    fallbackSurfaceId: 'dirt',
+    fallbackTerrain: 'terrain'
+  });
+
+  assert.equal(material.surfaceId, 'snow');
+  assert.equal(material.region, 'terrain');
+  assert.equal(material.effectSlotId, 'snowDust');
+  assert.equal(material.sampledColor, '#d7e5ec');
+});
+
+test('Race tire FX visual material samples road color instead of adjacent ground paint', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('subaru-brz-2022');
+  editor.getRaceCompositedSurfaceAtWorldPoint = () => ({
+    elevation: 0,
+    region: 'road',
+    surfaceId: 'gravel',
+    materialId: 'gravel',
+    segment: { surface: 'gravel' }
+  });
+  editor.getRaceGroundPaintAtWorldPoint = () => ({
+    tileId: 'grass',
+    tileWeights: { grass: 1 }
+  });
+  editor.getRaceSurfaceArtRefForSurface = () => '';
+
+  const material = editor.getRaceTireFxVisualMaterialAtWorldPoint({
+    x: 4,
+    z: 8,
+    elevation: 0
+  }, {
+    fallbackSurfaceId: 'dirt',
+    fallbackTerrain: 'terrain'
+  });
+
+  assert.equal(material.surfaceId, 'gravel');
+  assert.equal(material.region, 'road');
+  assert.equal(material.effectSlotId, 'gravelDust');
+  assert.equal(material.sampledColor, '#52534f');
+});
+
+test('Race tire FX texture color uses a local averaged world-space sample', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  let sample = null;
+  editor.getRaceArtTextureSampler = () => ({
+    worldWidthM: 2,
+    worldHeightM: 4,
+    terrainAverageSample(u, v, footprint) {
+      sample = { u, v, footprint };
+      return 'rgba(20, 180, 40, 1)';
+    }
+  });
+
+  const color = editor.getRaceTireFxTextureSampleColor({ x: 1, z: 2 }, 'grass-art', '#315734');
+
+  assert.equal(color, 'rgba(20, 180, 40, 1)');
+  assert.deepEqual(sample, { u: 0.5, v: 0.5, footprint: 0.2 });
+});
+
+test('Race tire FX sampled tint remains surface-led and preserves configured alpha', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const tint = editor.getRaceTireFxSurfaceTint('#315734', 'rgba(228,232,222,0.72)');
+  const rgba = editor.parseRaceCssColor(tint);
+
+  assert.equal(rgba[1] > rgba[0], true);
+  assert.equal(rgba[1] > rgba[2], true);
+  assert.equal(Math.abs(rgba[3] - 0.72) < 0.01, true);
+});
+
+test('Race custom tire FX artwork is tint-cached by sampled surface color', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const previousDocument = globalThis.document;
+  const operations = [];
+  const tintContext = {
+    globalAlpha: 1,
+    globalCompositeOperation: 'source-over',
+    fillStyle: '',
+    drawImage(source) {
+      operations.push({ type: 'drawImage', source });
+    },
+    save() {},
+    restore() {},
+    fillRect(x, y, w, h) {
+      operations.push({
+        type: 'fillRect',
+        x,
+        y,
+        w,
+        h,
+        color: this.fillStyle,
+        composite: this.globalCompositeOperation
+      });
+    }
+  };
+  const tintedCanvas = {
+    width: 0,
+    height: 0,
+    getContext: () => tintContext
+  };
+  globalThis.document = {
+    createElement: () => tintedCanvas
+  };
+  try {
+    const source = { width: 8, height: 6 };
+    const first = editor.getRaceTintedTireFxArtCanvas(source, 'custom-dust', 'rgba(80,140,70,0.7)');
+    const second = editor.getRaceTintedTireFxArtCanvas(source, 'custom-dust', 'rgba(80,140,70,0.7)');
+
+    assert.equal(first, tintedCanvas);
+    assert.equal(second, first);
+    assert.equal(editor.raceTireFxTintedArtCache.size, 1);
+    assert.equal(operations.filter((entry) => entry.type === 'drawImage').length, 1);
+    assert.equal(operations.some((entry) => entry.type === 'fillRect' && entry.composite === 'source-atop'), true);
+  } finally {
+    globalThis.document = previousDocument;
+  }
+});
+
+test('Race tire FX emission follows visible snow when legacy physics reports dirt', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('subaru-brz-2022');
+  editor.playtestSession.vehicle3d.enabled = false;
+  editor.getRaceTireFxVisualMaterialAtWorldPoint = () => ({
+    region: 'terrain',
+    surfaceId: 'snow',
+    materialId: 'snow',
+    effectSlotId: 'snowDust',
+    sampledColor: '#d7e5ec'
+  });
+  editor.selectedRace.tireFx = {
+    snowDust: {
+      enabled: true,
+      density: 3,
+      lifetimeMs: 800,
+      scale: 1,
+      color: 'rgba(230,240,244,0.74)'
+    }
+  };
+
+  editor.emitRaceTireFxParticles(1, {
+    speedMps: 18,
+    tireSlipByWheel: { rl: 0.1 },
+    brakeState: { lockByWheel: { rl: 0 } },
+    wheelContactScaleByWheel: { fl: 0, fr: 0, rl: 1, rr: 0 },
+    wheelSurfaceState: {
+      positions: { rl: { x: 2, z: 6, elevation: 0 } },
+      surfaceByWheel: { rl: 'dirt' },
+      terrainByWheel: { rl: 'terrain' }
+    }
+  });
+
+  assert.equal(editor.playtestSession.tireFxParticles.length > 0, true);
+  assert.equal(editor.playtestSession.tireFxParticles.every((particle) => particle.slotId === 'snowDust'), true);
+  assert.equal(editor.playtestSession.tireFxParticles.every((particle) => particle.visualMaterialId === 'snow'), true);
+});
+
+test('Race tire FX advances old particles before emitting a contact-anchored new frame', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('subaru-brz-2022');
+  editor.playtestSession.tireFxParticles = [{
+    id: 'old',
+    x: 0,
+    z: 0,
+    elevation: 0,
+    vx: 1,
+    vz: 0,
+    vy: 0,
+    ageMs: 0,
+    lifetimeMs: 2000
+  }];
+  editor.emitRaceTireFxParticles = () => {
+    editor.playtestSession.tireFxParticles.push({
+      id: 'new',
+      x: 10,
+      z: 20,
+      elevation: 0.25,
+      vx: -5,
+      vz: -5,
+      vy: 1,
+      ageMs: 0,
+      lifetimeMs: 2000
+    });
+  };
+
+  editor.stepRaceTireFxParticles(0.5, {});
+
+  const oldParticle = editor.playtestSession.tireFxParticles.find((particle) => particle.id === 'old');
+  const newParticle = editor.playtestSession.tireFxParticles.find((particle) => particle.id === 'new');
+  assert.equal(oldParticle.x, 0.5);
+  assert.equal(oldParticle.ageMs, 500);
+  assert.equal(newParticle.x, 10);
+  assert.equal(newParticle.z, 20);
+  assert.equal(newParticle.elevation, 0.25);
+  assert.equal(newParticle.ageMs, 0);
+});
+
+test('Race tire tracks connect physical contacts and break across airtime', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('subaru-brz-2022');
+  const wheel = editor.playtestSession.vehicle3d.wheels.rl;
+  wheel.inContact = true;
+  wheel.contactPoint = { x: 0, y: 0, z: 0 };
+  wheel.surfaceId = 'dirt';
+  wheel.region = 'terrain';
+  wheel.surface = { surfaceId: 'dirt', region: 'terrain' };
+  const context = {
+    speedMps: 12,
+    wheelContactScaleByWheel: { fl: 0, fr: 0, rl: 1, rr: 0 },
+    tireSlipByWheel: { rl: 0.1 },
+    wheelSpinByWheel: { rl: 0 },
+    brakeState: { lockByWheel: { rl: 0 } },
+    wheelSurfaceState: {
+      surfaceByWheel: { rl: 'dirt' },
+      terrainByWheel: { rl: 'terrain' },
+      positions: {}
+    }
+  };
+
+  editor.updateRaceTireTracks(context);
+  wheel.contactPoint = { x: 0, y: 0.12, z: 0.5 };
+  editor.updateRaceTireTracks(context);
+
+  assert.equal(editor.playtestSession.tireTrackSegments.length, 1);
+  assert.equal(editor.playtestSession.tireTrackSegments[0].wheelId, 'rl');
+  assert.equal(editor.playtestSession.tireTrackSegments[0].kind, 'dirt');
+
+  wheel.inContact = false;
+  editor.updateRaceTireTracks({
+    ...context,
+    wheelContactScaleByWheel: { fl: 0, fr: 0, rl: 0, rr: 0 }
+  });
+  wheel.inContact = true;
+  wheel.contactPoint = { x: 0, y: 0.16, z: 1 };
+  editor.updateRaceTireTracks(context);
+  wheel.contactPoint = { x: 0, y: 0.2, z: 1.5 };
+  editor.updateRaceTireTracks(context);
+
+  assert.equal(editor.playtestSession.tireTrackSegments.length, 2);
+  assert.equal(editor.playtestSession.tireTrackSegments[1].from.z, 1);
+  assert.equal(editor.playtestSession.tireTrackSegments[1].to.z, 1.5);
+});
+
+test('Race asphalt tracks require screech-level slip while loose surfaces retain rolling impressions', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('subaru-brz-2022');
+  const wheel = editor.playtestSession.vehicle3d.wheels.fl;
+  wheel.inContact = true;
+  wheel.surfaceId = 'asphalt';
+  wheel.region = 'road';
+  wheel.surface = { surfaceId: 'asphalt', region: 'road' };
+  const context = {
+    speedMps: 14,
+    wheelContactScaleByWheel: { fl: 1, fr: 0, rl: 0, rr: 0 },
+    tireSlipByWheel: { fl: 0.1 },
+    wheelSpinByWheel: { fl: 0 },
+    brakeState: { lockByWheel: { fl: 0 } },
+    wheelSurfaceState: {
+      surfaceByWheel: { fl: 'asphalt' },
+      terrainByWheel: { fl: 'road' },
+      positions: {}
+    }
+  };
+  wheel.contactPoint = { x: 0, y: 0, z: 0 };
+  editor.updateRaceTireTracks(context);
+  wheel.contactPoint = { x: 0, y: 0, z: 0.5 };
+  editor.updateRaceTireTracks(context);
+  assert.equal(editor.playtestSession.tireTrackSegments.length, 0);
+
+  context.tireSlipByWheel.fl = 0.8;
+  wheel.contactPoint = { x: 0, y: 0, z: 1 };
+  editor.updateRaceTireTracks(context);
+  wheel.contactPoint = { x: 0, y: 0, z: 1.5 };
+  editor.updateRaceTireTracks(context);
+  assert.equal(editor.playtestSession.tireTrackSegments.length, 1);
+  assert.equal(editor.playtestSession.tireTrackSegments[0].kind, 'asphalt');
+});
+
+test('Race tire-track renderer surface-conforms ribbons and caps visible work', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('subaru-brz-2022');
+  editor.getRaceCompositedSurfaceAtWorldPoint = ({ x, z }) => ({
+    elevation: Number(x || 0) * 0.01 + Number(z || 0) * 0.02
+  });
+  const segment = {
+    id: 1,
+    wheelId: 'rl',
+    kind: 'dirt',
+    from: { x: 0, z: 0, elevation: 0 },
+    to: { x: 0, z: 0.5, elevation: 0.01 },
+    widthM: 0.25,
+    intensity: 0.7
+  };
+  const quad = editor.getRaceTireTrackQuad(segment);
+  assert.equal(quad.length, 4);
+  quad.forEach((point) => {
+    const expectedSurface = point.x * 0.01 + point.z * 0.02;
+    assert.equal(Math.abs(point.elevation - (expectedSurface + 0.01 / 12)) < 0.000001, true);
+  });
+
+  editor.playtestSession.tireTrackSegments = Array.from({ length: 1700 }, (_, index) => ({
+    ...segment,
+    id: index + 1,
+    from: { x: index % 20, z: Math.floor(index / 20) % 20, elevation: 0 },
+    to: { x: index % 20, z: Math.floor(index / 20) % 20 + 0.5, elevation: 0 }
+  }));
+  editor.rebuildRaceTireTrackGrid(editor.playtestSession);
+  const visible = editor.getRaceVisibleTireTrackSegments({ x: 0, z: 0 }, { cameraYaw: 0 });
+  assert.equal(visible.length <= 400, true);
+  assert.equal(visible.every((entry) => {
+    const midZ = (Number(entry.from?.z || 0) + Number(entry.to?.z || 0)) * 0.5;
+    return midZ >= 0.75;
+  }), true);
+});
+
+test('Race Three tire tracks chunk persistent history and only rebuild the active tail', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('subaru-brz-2022');
+  const makeSegment = (id) => {
+    const z = id * 0.2;
+    return {
+      id,
+      kind: id % 3 ? 'dirt' : 'asphalt',
+      intensity: 0.7,
+      from: { x: 0, z, elevation: 0 },
+      to: { x: 0, z: z + 0.18, elevation: 0 },
+      widthM: 0.25,
+      centerQuad: [
+        { x: -0.125, z, elevation: 0.001 },
+        { x: 0.125, z, elevation: 0.001 },
+        { x: 0.125, z: z + 0.18, elevation: 0.001 },
+        { x: -0.125, z: z + 0.18, elevation: 0.001 }
+      ],
+      outerQuad: []
+    };
+  };
+  editor.playtestSession.tireTrackSegments = Array.from({ length: 1025 }, (_, index) => makeSegment(index + 1));
+  editor.playtestSession.tireTrackMinId = 1;
+  editor.playtestSession.tireTrackNextId = 1026;
+  const renderer = { scene: new THREE.Scene(), tireTrackChunks: new Map() };
+  const firstStats = {};
+
+  assert.equal(editor.syncRaceThreeTireTracks(renderer, { stats: firstStats }), true);
+  assert.equal(firstStats.threeTireTrackRenderer, 1);
+  assert.equal(firstStats.tireTrackGpuChunks, 3);
+  assert.equal(firstStats.tireTrackChunkRebuilds, 3);
+  assert.equal(renderer.tireTrackMaterial instanceof THREE.ShaderMaterial, true);
+  const firstGeometry = renderer.tireTrackChunks.get(0).mesh.geometry;
+  const tailGeometry = renderer.tireTrackChunks.get(2).mesh.geometry;
+
+  editor.playtestSession.tireTrackSegments.push(makeSegment(1026));
+  editor.playtestSession.tireTrackNextId = 1027;
+  const appendStats = {};
+  editor.syncRaceThreeTireTracks(renderer, { stats: appendStats });
+  assert.equal(appendStats.tireTrackChunkRebuilds, 1);
+  assert.equal(renderer.tireTrackChunks.get(0).mesh.geometry, firstGeometry);
+  assert.notEqual(renderer.tireTrackChunks.get(2).mesh.geometry, tailGeometry);
+
+  const stableTailGeometry = renderer.tireTrackChunks.get(2).mesh.geometry;
+  const yawOnlyStats = {};
+  editor.syncRaceThreeTireTracks(renderer, { stats: yawOnlyStats });
+  assert.equal(yawOnlyStats.tireTrackChunkRebuilds, 0);
+  assert.equal(renderer.tireTrackChunks.get(2).mesh.geometry, stableTailGeometry);
+
+  editor.playtestSession.tireTrackSegments = editor.playtestSession.tireTrackSegments.filter((segment) => segment.id >= 513);
+  editor.playtestSession.tireTrackMinId = 513;
+  editor.syncRaceThreeTireTracks(renderer, { stats: {} });
+  assert.equal(renderer.tireTrackChunks.has(0), false);
+  assert.equal(renderer.tireTrackChunks.size, 2);
+});
+
+test('Race tire-track software fallback bounds reverse-history projection work', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('subaru-brz-2022');
+  editor.playtestSession.tireTrackSegments = Array.from({ length: 8000 }, (_, index) => ({
+    id: index + 1,
+    kind: 'dirt',
+    intensity: 0.7,
+    from: { x: (index % 8) - 4, z: index * 0.18, elevation: 0 },
+    to: { x: (index % 8) - 4, z: index * 0.18 + 0.15, elevation: 0 },
+    widthM: 0.25
+  }));
+  editor.rebuildRaceTireTrackGrid(editor.playtestSession);
+  const forward = editor.getRaceVisibleTireTrackSegments({ x: 0, z: 1200 }, { cameraYaw: 0 });
+  const reverse = editor.getRaceVisibleTireTrackSegments({ x: 0, z: 1200 }, { cameraYaw: Math.PI });
+  assert.equal(forward.length <= 400, true);
+  assert.equal(reverse.length <= 400, true);
+  assert.equal(forward.every((segment) => ((segment.from.z + segment.to.z) * 0.5) > 1200), true);
+  assert.equal(reverse.every((segment) => ((segment.from.z + segment.to.z) * 0.5) < 1200), true);
+});
+
+test('Race tire particles and tracks use the active 3D world camera projection', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('subaru-brz-2022');
+  const bounds = { x: 0, y: 0, w: 390, h: 240 };
+  const projectedWorldPoints = [];
+  let legacyProjectionCount = 0;
+  editor.raceThreeWorldRenderer = { camera: { near: 0.06 } };
+  editor.lastRaceRenderStats = { threeTerrainRenderer: true };
+  editor.getRaceWorldPointActiveThreeCameraDepth = () => 10;
+  editor.projectRaceWorldPointToActiveThreeCamera = (point) => {
+    projectedWorldPoints.push(point);
+    return {
+      ...point,
+      visible: true,
+      screenX: 120,
+      screenY: 100,
+      cameraZ: 10,
+      renderZ: 10,
+      threeProjected: true
+    };
+  };
+  editor.projectRaceWorldPointToCamera = () => {
+    legacyProjectionCount += 1;
+    return {
+      visible: true,
+      screenX: 120,
+      screenY: 230,
+      cameraZ: 10,
+      renderZ: 10
+    };
+  };
+  editor.playtestSession.tireFxParticles = [{
+    id: 'physical-contact',
+    slotId: 'dirtDust',
+    x: 4.5,
+    z: 8.25,
+    elevation: 0.2,
+    ageMs: 0,
+    lifetimeMs: 1000,
+    sizeM: 0.5,
+    alpha: 0.8
+  }];
+  editor.playtestSession.tireTrackSegments = [{
+    id: 1,
+    kind: 'dirt',
+    intensity: 0.7,
+    from: { x: 4.5, z: 8, elevation: 0.2 },
+    to: { x: 4.5, z: 8.5, elevation: 0.2 },
+    widthM: 0.25,
+    centerQuad: [
+      { x: 4.4, z: 8, elevation: 0.2 },
+      { x: 4.6, z: 8, elevation: 0.2 },
+      { x: 4.6, z: 8.5, elevation: 0.2 },
+      { x: 4.4, z: 8.5, elevation: 0.2 }
+    ],
+    outerQuad: []
+  }];
+  editor.rebuildRaceTireTrackGrid(editor.playtestSession);
+
+  editor.drawRaceTireFxParticles(createMockContext(), bounds, {
+    camera: { x: 4.5, z: 0 },
+    cameraYaw: 0
+  });
+  editor.drawRaceTireTracks(createMockContext(), bounds, {
+    camera: { x: 4.5, z: 0 },
+    cameraYaw: 0
+  });
+
+  assert.equal(projectedWorldPoints.includes(editor.playtestSession.tireFxParticles[0]), true);
+  assert.equal(projectedWorldPoints.length >= 5, true);
+  assert.equal(legacyProjectionCount, 0);
+});
+
+test('Race tread polygons clip in active 3D camera space before projection', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const depths = new Map([
+    ['behind-left', 0.25],
+    ['behind-right', 0.25],
+    ['ahead-right', 2],
+    ['ahead-left', 2]
+  ]);
+  editor.raceThreeWorldRenderer = { camera: { near: 0.06 } };
+  editor.lastRaceRenderStats = { threeTerrainRenderer: true };
+  editor.getRaceWorldPointActiveThreeCameraDepth = (point) => depths.get(point.id);
+  editor.projectRaceWorldPointToActiveThreeCamera = (point) => ({
+    ...point,
+    visible: true,
+    cameraZ: editor.getRaceWorldPointActiveThreeCameraDepth(point),
+    renderZ: editor.getRaceWorldPointActiveThreeCameraDepth(point),
+    screenX: Number(point.x || 0) * 10 + 100,
+    screenY: Number(point.z || 0) * 10 + 100,
+    threeProjected: true
+  });
+  const polygon = [
+    { id: 'behind-left', x: -0.2, z: 0 },
+    { id: 'behind-right', x: 0.2, z: 0 },
+    { id: 'ahead-right', x: 0.2, z: 1 },
+    { id: 'ahead-left', x: -0.2, z: 1 }
+  ];
+
+  const result = editor.projectRaceWorldPolygonToVisualCamera(polygon, {
+    camera: { nearPlane: 1.6 },
+    cameraYaw: 0,
+    bounds: { x: 0, y: 0, w: 390, h: 240 }
+  });
+
+  assert.equal(result.points.length, 4);
+  assert.equal(result.points.every((point) => Number(point.cameraZ) >= 0.75), true);
+  assert.equal(result.points.every((point) => Number.isFinite(point.screenX) && Number.isFinite(point.screenY)), true);
+  assert.equal(result.nearOpacity > 0 && result.nearOpacity < 1, true);
+
+  depths.forEach((_depth, id) => depths.set(id, 0.25));
+  const hidden = editor.projectRaceWorldPolygonToVisualCamera(polygon, {
+    camera: { nearPlane: 1.6 },
+    cameraYaw: 0,
+    bounds: { x: 0, y: 0, w: 390, h: 240 }
+  });
+  assert.deepEqual(hidden.points, []);
+  assert.equal(hidden.nearOpacity, 0);
+});
+
+test('Race airborne tire FX renders after the authored third-person car', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('subaru-brz-2022');
+  editor.raceInput.cameraView = 'third-person';
+  editor.raceInput.lookAngle = 0;
+  const calls = [];
+  editor.drawMode7Preview = () => {
+    calls.push('world');
+    editor.lastRaceRenderCamera = {
+      camera: { x: 0, z: -10, elevation: 1 },
+      cameraYaw: 0
+    };
+  };
+  editor.drawRaceThirdPersonCar = () => calls.push('car');
+  editor.drawRaceTireFxParticles = (_ctx, _bounds, options) => calls.push(options.layer);
+  editor.drawRacePlaytestHud = () => {};
+  editor.drawRaceEdgeResetFade = () => {};
+
+  editor.drawRacePlaytestScreen(createMockContext(), { x: 0, y: 0, w: 320, h: 180 });
+
+  assert.deepEqual(calls, ['world', 'car', 'air']);
+});
+
+test('Race shadow ground points use one small render-only surface lift', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.getRaceVehicleGroundSurfacePoint = ({ x, z, segment }) => ({
+    x,
+    z,
+    elevation: 0.75,
+    segment
+  });
+
+  const shadowPoint = editor.getRaceShadowGroundSurfacePoint({
+    x: 2,
+    z: 3,
+    fallbackElevation: 0,
+    segment: { id: 'road' }
+  });
+
+  assert.equal(shadowPoint.x, 2);
+  assert.equal(shadowPoint.z, 3);
+  assert.equal(Math.abs(shadowPoint.elevation - (0.75 + 0.05 / 12)) < 0.000001, true);
+});
+
+test('Race conforming shadow footprint samples every vertex above the canonical surface', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.getRaceCompositedSurfaceAtWorldPoint = ({ x, z }) => ({
+    elevation: Number(x || 0) * 0.01 + Number(z || 0) * 0.02
+  });
+
+  const quads = editor.getRaceConformingShadowQuads({
+    x: 3,
+    z: 7,
+    yaw: 0.35,
+    car: editor.selectedCar,
+    scale: 1.1
+  });
+
+  assert.equal(quads.length, 8);
+  quads.forEach((quad) => {
+    const ax = quad[1].x - quad[0].x;
+    const az = quad[1].z - quad[0].z;
+    const bx = quad[2].x - quad[0].x;
+    const bz = quad[2].z - quad[0].z;
+    assert.equal(az * bx - ax * bz > 0, true);
+  });
+  quads.flat().forEach((point) => {
+    const surfaceElevation = point.x * 0.01 + point.z * 0.02;
+    assert.equal(Math.abs(point.elevation - (surfaceElevation + 0.05 / 12)) < 0.000001, true);
+  });
 });
 
 test('Race tire FX keeps asphalt cornering to marks instead of smoke', () => {
@@ -24000,6 +25540,13 @@ test('Race tire FX emits asphalt smoke for burnout wheelspin', () => {
 test('Race tire FX emits dirt dust from speed without a hard slide', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   editor.startPlaytest('subaru-brz-2022');
+  editor.getRaceTireFxVisualMaterialAtWorldPoint = () => ({
+    region: 'road',
+    surfaceId: 'dirt',
+    materialId: 'dirt',
+    effectSlotId: 'dirtDust',
+    sampledColor: '#6a4728'
+  });
   editor.selectedRace.tireFx = {
     dirtDust: { enabled: true, density: 3, lifetimeMs: 900, scale: 1 }
   };
@@ -24043,6 +25590,13 @@ test('Race tire FX emits dirt dust from speed without a hard slide', () => {
 test('Race tire FX emits grey gravel smoke separately from dirt dust', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   editor.startPlaytest('subaru-brz-2022');
+  editor.getRaceTireFxVisualMaterialAtWorldPoint = () => ({
+    region: 'road',
+    surfaceId: 'gravel',
+    materialId: 'gravel',
+    effectSlotId: 'gravelDust',
+    sampledColor: '#52534f'
+  });
   editor.selectedRace.tireFx = {
     gravelDust: {
       enabled: true,
@@ -25069,9 +26623,9 @@ function createSyntheticVehicleSurface({ slopeZ = 0, slopeX = 0, ridge = false }
       const z = Number(point.z || 0);
       const elevation = slopeZ * z + slopeX * x + (ridge ? Math.max(0, 1 - Math.abs(z) / 5) * 0.18 : 0);
       const normal = {
-        x: -slopeX,
+        x: -slopeX * 12,
         y: 1,
-        z: -slopeZ
+        z: -slopeZ * 12
       };
       const length = Math.hypot(normal.x, normal.y, normal.z) || 1;
       const absX = Math.abs(x);
@@ -25413,6 +26967,165 @@ test('Race 3D vehicle allows wheel contact loss and settles deterministically af
   assert.equal(Object.values(state.wheels).some((wheel) => wheel.inContact), true);
   assert.equal(Number.isFinite(state.position.y), true);
   assert.equal(Math.abs(state.linearVelocity.y) < 18, true);
+});
+
+function runWrxJumpLandingFixture({
+  riseM = 6,
+  dt = 1 / 60,
+  durationSeconds = 2
+} = {}) {
+  const tuning = {
+    weightKg: 1495,
+    wheelbaseM: 2.67,
+    trackFrontM: 1.56,
+    trackRearM: 1.56,
+    wheelRadiusM: 0.337,
+    rideHeightFront: 0.5,
+    rideHeightRear: 0.5,
+    suspensionTravelFront: 0.5,
+    suspensionTravelRear: 0.5,
+    springFront: 0.5,
+    springRear: 0.5,
+    bumpFront: 0.48,
+    bumpRear: 0.48,
+    reboundFront: 0.52,
+    reboundRear: 0.52
+  };
+  const carDimensions = {
+    wheelbaseM: 2.67,
+    trackFrontM: 1.56,
+    trackRearM: 1.56
+  };
+  const surfaceModel = {
+    sampleWorld: ({ z }) => ({
+      elevation: (Number(z || 0) < 10 ? 0 : riseM) / 12,
+      normal: { x: 0, y: 1, z: 0 },
+      region: 'road',
+      surfaceId: 'asphalt',
+      friction: 1
+    })
+  };
+  const state = createRaceVehiclePhysicsState({
+    session: {
+      worldX: 0,
+      worldZ: 0,
+      bodyY: 4,
+      speedMps: 25,
+      verticalVelocityMps: -2,
+      velocityYaw: 0,
+      carYaw: 0
+    },
+    tuning,
+    carDimensions,
+    surfaceModel,
+    elevationScaleM: 12
+  });
+  let peakUpwardVelocityMps = -Infinity;
+  let madeContact = false;
+  const frameCount = Math.round(durationSeconds / dt);
+  for (let frame = 0; frame < frameCount; frame += 1) {
+    stepRaceVehiclePhysics(state, {
+      dt,
+      tuning,
+      carDimensions,
+      surfaceModel,
+      elevationScaleM: 12,
+      planarVelocity: { x: 0, y: 0, z: 25 },
+      yaw: 0
+    });
+    peakUpwardVelocityMps = Math.max(peakUpwardVelocityMps, Number(state.linearVelocity.y || 0));
+    madeContact ||= Object.values(state.wheels).some((wheel) => wheel.inContact);
+  }
+  return { state, peakUpwardVelocityMps, madeContact };
+}
+
+test('Race 3D vehicle does not turn a jump-to-jump height discontinuity into launch velocity', () => {
+  [3, 6, 9].forEach((riseM) => {
+    const result = runWrxJumpLandingFixture({ riseM });
+    assert.equal(result.madeContact, true);
+    assert.equal(Number.isFinite(result.state.position.y), true);
+    assert.equal(Number.isFinite(result.state.linearVelocity.y), true);
+    assert.equal(result.peakUpwardVelocityMps < 4, true);
+    assert.equal(Math.abs(result.state.linearVelocity.y) <= 18, true);
+    assert.equal(Number(result.state.terrainFollowVelocityMps || 0), 0);
+  });
+});
+
+test('Race 3D vehicle still launches from a supported ramp without an unbounded impulse', () => {
+  const { state, tuning, carDimensions } = createVehiclePhysicsFixture();
+  const slope = 0.35;
+  const rampStartM = 10;
+  const rampEndM = rampStartM + 2 / slope;
+  const normalLength = Math.hypot(1, slope);
+  const surfaceModel = {
+    sampleWorld: ({ z }) => {
+      const onRamp = Number(z || 0) >= rampStartM && Number(z || 0) < rampEndM;
+      return {
+        elevation: (onRamp ? (Number(z || 0) - rampStartM) * slope : 0) / 12,
+        normal: onRamp
+          ? { x: 0, y: 1 / normalLength, z: -slope / normalLength }
+          : { x: 0, y: 1, z: 0 },
+        region: 'road',
+        surfaceId: 'asphalt',
+        friction: 1
+      };
+    }
+  };
+  let peakUpwardVelocityMps = -Infinity;
+  let airborneFrames = 0;
+  for (let frame = 0; frame < 120; frame += 1) {
+    stepRaceVehiclePhysics(state, {
+      dt: 1 / 60,
+      tuning,
+      carDimensions,
+      surfaceModel,
+      elevationScaleM: 12,
+      planarVelocity: { x: 0, y: 0, z: 25 },
+      yaw: 0
+    });
+    peakUpwardVelocityMps = Math.max(peakUpwardVelocityMps, Number(state.linearVelocity.y || 0));
+    if (Object.values(state.wheels).every((wheel) => !wheel.inContact)) airborneFrames += 1;
+  }
+
+  assert.equal(peakUpwardVelocityMps > 1, true);
+  assert.equal(peakUpwardVelocityMps < 8, true);
+  assert.equal(airborneFrames > 0, true);
+});
+
+test('Race 3D jump landing remains fixed-step deterministic at common frame rates', () => {
+  const runs = [1 / 30, 1 / 60, 1 / 120].map((dt) => runWrxJumpLandingFixture({ dt }));
+  const reference = runs[1];
+  runs.forEach((run) => {
+    assert.equal(Math.abs(run.peakUpwardVelocityMps - reference.peakUpwardVelocityMps) < 0.01, true);
+    assert.equal(Math.abs(run.state.position.y - reference.state.position.y) < 0.0001, true);
+    assert.equal(Math.abs(run.state.linearVelocity.y - reference.state.linearVelocity.y) < 0.0001, true);
+  });
+});
+
+test('Race 3D vehicle applies normal earth gravity while fully airborne', () => {
+  const { state, tuning, carDimensions, surfaceModel } = createVehiclePhysicsFixture(createSyntheticVehicleSurface());
+  state.position.y += 5;
+  state.linearVelocity.y = 3;
+  Object.values(state.wheels).forEach((wheel) => {
+    wheel.inContact = false;
+    wheel.geometricContact = false;
+    wheel.normalLoadN = 0;
+    wheel.filteredNormalLoadN = 0;
+    wheel.continuousContactSeconds = 0;
+  });
+  const beforeVelocityMps = state.linearVelocity.y;
+
+  stepRaceVehiclePhysics(state, {
+    dt: 1 / 60,
+    tuning,
+    carDimensions,
+    surfaceModel,
+    elevationScaleM: 12,
+    planarVelocity: { x: 0, y: beforeVelocityMps, z: 18 }
+  });
+
+  assert.equal(Object.values(state.wheels).every((wheel) => !wheel.inContact), true);
+  assert.equal(Math.abs(state.linearVelocity.y - (beforeVelocityMps - 9.81 / 60)) < 0.000001, true);
 });
 
 test('Race 3D vehicle preserves airborne pitch roll and yaw angular momentum without control torque', () => {
