@@ -61,9 +61,7 @@ export function updateRaceSimulation({
   });
   const weatherState = editor.getRaceWeatherState(editor.selectedRace, editor.playtestSession);
   const trackState = editor.playtestSession.trackState || null;
-  if (!countdownActive
-    && trackState
-    && editor.playtestSession.trackStateLastQueuedStep !== trackState.stepIndex) {
+  if (!countdownActive && trackState) {
     const trackStateAdvance = trackState.advance(
       seconds,
       systems.surface.createTrackStateWeatherForcing({

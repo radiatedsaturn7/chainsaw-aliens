@@ -23,6 +23,7 @@ import {
 } from './TrackStateSerialization.js';
 
 const WATER_FIELDS = ['moistureDepthMm', 'standingWaterDepthMm', 'snowDepthMm', 'iceDepthMm'];
+export const TRACK_STATE_EVENT_HISTORY_LIMIT = 8192;
 const NEIGHBORS = Object.freeze([
   { x: 1, z: 0 },
   { x: -1, z: 0 },
@@ -54,7 +55,7 @@ export class TrackState {
     sampleBaseSurface = null,
     profileOverrides = null,
     snapshot = null,
-    eventHistoryLimit = Infinity,
+    eventHistoryLimit = TRACK_STATE_EVENT_HISTORY_LIMIT,
     maxCellsPerStep = 512
   } = {}) {
     this.seed = Number(seed) >>> 0;
@@ -500,7 +501,8 @@ export class TrackState {
       this.eventHistory.push(event);
     });
     if (Number.isFinite(this.eventHistoryLimit) && this.eventHistory.length > this.eventHistoryLimit) {
-      this.eventHistory.splice(0, this.eventHistory.length - this.eventHistoryLimit);
+      const removed = this.eventHistory.splice(0, this.eventHistory.length - this.eventHistoryLimit);
+      removed.forEach((event) => this.eventIds.delete(event.id));
     }
     const active = [];
     const cellCount = this.orderedCellKeys.length;

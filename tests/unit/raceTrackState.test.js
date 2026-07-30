@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { performance } from 'node:perf_hooks';
 
-import { TrackState } from '../../src/racing/trackState/TrackState.js';
+import {
+  TRACK_STATE_EVENT_HISTORY_LIMIT,
+  TrackState
+} from '../../src/racing/trackState/TrackState.js';
 import {
   TRACK_STATE_SURFACE_PROFILES,
   getTrackStateSurfaceProfile
@@ -305,6 +308,45 @@ test('fixed-step work is bounded and inactive world regions stay sparse', () => 
   assert.equal(result.catchUpRemaining, true);
   assert.ok(state.cells.size < 64);
   assert.ok(result.processedCellCount < 320);
+});
+
+test('tire contacts are unique per vehicle, wheel, cell, and fixed step', () => {
+  const state = createState();
+  const contact = {
+    vehicleId: 'car-1',
+    wheelId: 'fl',
+    position: { x: 0.2, z: 0.2 },
+    previousPosition: { x: 0.1, z: 0.2 },
+    normalLoadN: 3500,
+    speedMps: 20,
+    slipEnergy: 0.4
+  };
+  assert.equal(state.queueTireContact(contact).length, 1);
+  assert.equal(state.queueTireContact(contact).length, 0);
+  state.advance(0.1, { type: 'clear' });
+  assert.equal(state.queueTireContact(contact).length, 1);
+});
+
+test('one-hour multi-car tire history and pending events stay explicitly bounded', () => {
+  const state = createState();
+  for (let step = 0; step < 36000; step += 1) {
+    for (const vehicleId of ['player', 'ai-1']) {
+      state.queueTireContact({
+        vehicleId,
+        wheelId: 'fl',
+        position: { x: (step % 20) + 0.2, z: vehicleId === 'player' ? 0.2 : 1.2 },
+        previousPosition: { x: (step % 20) + 0.2, z: vehicleId === 'player' ? 0.2 : 1.2 },
+        normalLoadN: 3500,
+        speedMps: 20,
+        slipEnergy: 0.2
+      });
+    }
+    state.advance(0.1, { type: 'clear', ambientTemperatureC: 20 });
+    assert.equal(state.pendingEvents.length, 0);
+  }
+  assert.equal(state.stepIndex, 36000);
+  assert.equal(state.eventHistory.length, TRACK_STATE_EVENT_HISTORY_LIMIT);
+  assert.equal(state.eventIds.size, TRACK_STATE_EVENT_HISTORY_LIMIT);
 });
 
 test('large persistent surfaces use a rotating deterministic cell budget instead of whole-track scans', () => {

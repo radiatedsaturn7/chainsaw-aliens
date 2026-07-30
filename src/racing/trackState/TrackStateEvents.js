@@ -24,6 +24,9 @@ export function normalizeTrackStateEvent(event = {}, fallbackSequence = 0) {
   const vehicleId = String(event.vehicleId || 'vehicle');
   const wheelId = String(event.wheelId || '');
   const cellKey = String(event.cellKey || getTrackStateCellKey(Math.floor(x), Math.floor(z)));
+  const deterministicId = type === 'tire-contact'
+    ? `${stepIndex}:${EVENT_TYPE_ORDER[type]}:${vehicleId}:${wheelId}:${cellKey}`
+    : `${stepIndex}:${EVENT_TYPE_ORDER[type] || 99}:${vehicleId}:${wheelId}:${sequence}:${cellKey}`;
   return {
     type,
     stepIndex,
@@ -34,7 +37,7 @@ export function normalizeTrackStateEvent(event = {}, fallbackSequence = 0) {
     z,
     cellKey,
     payload: canonicalPayload(event.payload || {}),
-    id: String(event.id || `${stepIndex}:${EVENT_TYPE_ORDER[type] || 99}:${vehicleId}:${wheelId}:${sequence}:${cellKey}`)
+    id: String(event.id || deterministicId)
   };
 }
 

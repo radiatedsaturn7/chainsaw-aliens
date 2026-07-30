@@ -36,6 +36,39 @@ const create = () => createRaceTrackState({
   elevationScaleM: 12
 });
 
+function createLiveRacePlaytest(mode = 'race') {
+  const editor = new RaceEditor({
+    deviceIsMobile: false,
+    isMobile: false,
+    exitRaceEditor() {}
+  });
+  editor.mode = mode;
+  editor.startPlaytest('starter-rwd', {
+    hydrateCars: false,
+    carEditorPreview: true
+  });
+  return editor;
+}
+
+test('live Race, Level, and Car playtests advance Track State for every unpaused frame', () => {
+  for (const mode of ['race', 'level', 'car']) {
+    const editor = createLiveRacePlaytest(mode);
+    for (let frame = 0; frame < 120; frame += 1) editor.updatePlaytest(1 / 60);
+    assert.equal(editor.playtestSession.trackState.fixedStepMs, 100, mode);
+    assert.equal(editor.playtestSession.trackState.stepIndex, 20, mode);
+  }
+});
+
+test('live RaceEditor Track State checksums are independent of render frame rate', () => {
+  const checksums = [30, 60, 90, 120, 144].map((fps) => {
+    const editor = createLiveRacePlaytest();
+    for (let frame = 0; frame < fps * 10; frame += 1) editor.updatePlaytest(1 / fps);
+    assert.equal(editor.playtestSession.trackState.stepIndex, 100);
+    return editor.playtestSession.trackState.getChecksum();
+  });
+  assert.equal(new Set(checksums).size, 1);
+});
+
 test('four physical tires consume four distinct exact local Track State cells', () => {
   const state = create();
   const positions = {
