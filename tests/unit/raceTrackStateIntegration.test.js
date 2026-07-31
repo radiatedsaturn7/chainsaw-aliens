@@ -69,6 +69,112 @@ test('live RaceEditor Track State checksums are independent of render frame rate
   assert.equal(new Set(checksums).size, 1);
 });
 
+function runMovingTrackStateScenario(fps) {
+  const state = createRaceTrackState({
+    seed: 19,
+    maxCatchUpSteps: 10,
+    eventHistoryLimit: 10000,
+    surfaceModel: {
+      getSurfaceById(id) {
+        return { grip: id === 'dirt' ? 0.72 : 1 };
+      },
+      sampleWorld(point = {}) {
+        const dirt = Number(point.x || 0) < 4;
+        return {
+          region: 'road',
+          segment: { surface: dirt ? 'dirt' : 'asphalt' },
+          baseSurfaceId: dirt ? 'dirt' : 'asphalt',
+          surfaceId: dirt ? 'dirt' : 'asphalt',
+          materialId: dirt ? 'dirt' : 'asphalt',
+          elevation: Number(point.x || 0) * -0.001,
+          normal: { x: 0, y: 1, z: 0 }
+        };
+      }
+    }
+  });
+  for (let x = 0; x < 50; x += 1) {
+    for (let z = 0; z < 4; z += 1) {
+      state.mutateCell({ x, z }, {
+        standingWaterDepthMm: 2,
+        looseMarbles: 0.3,
+        dirt: x < 4 ? 0.8 : 0,
+        mud: x < 4 ? 0.4 : 0
+      });
+    }
+  }
+  const wheels = ['fl', 'fr', 'rl', 'rr'];
+  let time = 0;
+  let hitchApplied = false;
+  while (time < 2.5 - 1e-10) {
+    let dt = Math.min(1 / fps, 2.5 - time);
+    if (!hitchApplied && time >= 1.4 - 1e-8) {
+      dt = Math.min(0.25, 2.5 - time);
+      hitchApplied = true;
+    }
+    wheels.forEach((wheelId, index) => {
+      const z = index + 0.2;
+      state.queueTireContact({
+        vehicleId: 'moving-car',
+        wheelId,
+        previousPosition: { x: time * 18 + 0.2, z },
+        position: { x: (time + dt) * 18 + 0.2, z },
+        contactDurationSeconds: dt,
+        contactScale: 1,
+        normalLoadN: 3600 + index * 100,
+        speedMps: 18,
+        slipEnergy: [1.1, 0.9, 0.7, 0.1][index],
+        brakeLock: index === 1 ? 0.95 : 0,
+        wheelSpin: index === 0 ? 1.2 : 0,
+        compoundId: 'tarmac',
+        tireTemperatureF: 95 + index * 3,
+        directionX: 1,
+        directionZ: index === 2 ? 0.4 : 0
+      });
+    });
+    state.advance(dt, time < 1 - 1e-8
+      ? { type: 'clear', ambientTemperatureC: 22, sunIntensity: 0.8 }
+      : {
+          type: 'rain',
+          precipitationRateMmPerS: 0.5,
+          ambientTemperatureC: 16,
+          humidity: 0.9
+        });
+    time += dt;
+  }
+  const sum = (field) => [...state.cells.values()]
+    .reduce((total, cell) => total + Number(cell[field] || 0), 0);
+  const replay = state.createReplayRecord();
+  return {
+    checksum: state.getChecksum(),
+    acceptedEventCount: state.eventHistory.length,
+    nextSequence: state.nextSequence,
+    rubberTotal: sum('rubber'),
+    standingWaterTotal: sum('standingWaterDepthMm'),
+    dirtTotal: sum('dirt'),
+    mudTotal: sum('mud'),
+    cells: state.createSnapshot().cells,
+    replayFinalChecksum: replay.finalChecksum,
+    pendingAggregateCount: state.contactAccumulator.size,
+    pendingEventCount: state.pendingEvents.length,
+    weatherRecordCount: state.weatherTimeline.size
+  };
+}
+
+test('moving tire mutation is fixed-step identical across supported render frame rates', () => {
+  const results = [30, 60, 90, 120, 144].map(runMovingTrackStateScenario);
+  results.slice(1).forEach((result) => assert.deepEqual(result, results[0]));
+  assert.equal(results[0].acceptedEventCount, 260);
+  assert.equal(results[0].nextSequence, 261);
+  assert.ok(results[0].rubberTotal > 0);
+  assert.ok(results[0].standingWaterTotal > 0);
+  assert.ok(results[0].dirtTotal > 0);
+  assert.ok(results[0].mudTotal > 0);
+  assert.equal(results[0].pendingAggregateCount, 0);
+  assert.equal(results[0].pendingEventCount, 0);
+  assert.equal(results[0].weatherRecordCount, 2);
+  assert.equal(results[0].replayFinalChecksum, results[0].checksum);
+});
+
 test('four physical tires consume four distinct exact local Track State cells', () => {
   const state = create();
   const positions = {

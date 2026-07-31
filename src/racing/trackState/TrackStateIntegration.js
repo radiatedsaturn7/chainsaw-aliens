@@ -97,6 +97,7 @@ export function queueRaceTrackStateTireEvents(trackState, {
   tireTemperatures = {},
   brakeState = {},
   wheelSpinByWheel = {},
+  contactDurationSeconds,
   direction = null
 } = {}) {
   if (!trackState) return [];
@@ -135,6 +136,7 @@ export function queueRaceTrackStateTireEvents(trackState, {
       slipEnergy,
       brakeLock: brakeState.lockByWheel?.[wheelId],
       wheelSpin: wheelSpinByWheel[wheelId],
+      contactDurationSeconds,
       compoundId: tireCompoundByWheel[wheelId] || 'tarmac',
       tireTemperatureF: tireTemperatures[wheelId]
     }));

@@ -61,21 +61,6 @@ export function updateRaceSimulation({
   });
   const weatherState = editor.getRaceWeatherState(editor.selectedRace, editor.playtestSession);
   const trackState = editor.playtestSession.trackState || null;
-  if (!countdownActive && trackState) {
-    const trackStateAdvance = trackState.advance(
-      seconds,
-      systems.surface.createTrackStateWeatherForcing({
-        weatherState,
-        race: editor.selectedRace
-      })
-    );
-    editor.playtestSession.trackStateRuntime = {
-      stepIndex: trackState.stepIndex,
-      simulationTimeMs: trackState.simulationTimeMs,
-      activeCellCount: trackState.cells.size,
-      ...trackStateAdvance
-    };
-  }
   const surface = getSurfaceById(editor.getRaceEffectiveSurfaceId(segmentInfo.segment?.surface || 'asphalt', weatherState));
   const engineJitter = damageEffects.engineJitter
     ? 1 - damageEffects.engineJitter * (0.5 + 0.5 * Math.sin(editor.playtestSession.elapsedMs / 173))
@@ -1812,6 +1797,7 @@ export function updateRaceSimulation({
       tireTemperatures: editor.playtestSession.diagnostics?.tireTemperature || tireTemperatures,
       brakeState,
       wheelSpinByWheel: contactWheelSpinRatioByWheel,
+      contactDurationSeconds: seconds,
       direction: editor.getRaceForwardVector(
         Number(editor.playtestSession.velocityYaw ?? editor.playtestSession.carYaw ?? roadYaw)
       )
@@ -1822,7 +1808,6 @@ export function updateRaceSimulation({
         { x: Number(position.x || 0), z: Number(position.z || 0) }
       ])
     );
-    editor.playtestSession.trackStateLastQueuedStep = trackState.stepIndex;
   }
   editor.updateRaceAiDrivers(seconds, {
     preStartMode: countdownActive
@@ -1834,6 +1819,22 @@ export function updateRaceSimulation({
     editor.recordRaceGhostSample();
     editor.updateRaceWearAndDamage(seconds);
     if (trackState) systems.surface.queueTrackStateCrashEvents(trackState, editor.playtestSession);
+    if (trackState) {
+      const trackStateAdvance = trackState.advance(
+        seconds,
+        systems.surface.createTrackStateWeatherForcing({
+          weatherState,
+          race: editor.selectedRace
+        })
+      );
+      editor.playtestSession.trackStateRuntime = {
+        stepIndex: trackState.stepIndex,
+        simulationTimeMs: trackState.simulationTimeMs,
+        activeCellCount: trackState.cells.size,
+        pendingAggregateCount: trackState.contactAccumulator.size,
+        ...trackStateAdvance
+      };
+    }
   }
 }
 

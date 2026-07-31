@@ -12,7 +12,10 @@ function cloneJson(value) {
   return value === undefined ? undefined : JSON.parse(JSON.stringify(value));
 }
 
-export function getTrackStateCanonicalPayload(state) {
+export function getTrackStateCanonicalPayload(state, {
+  includeEventHistory = true,
+  includeWeatherTimeline = true
+} = {}) {
   return {
     version: TRACK_STATE_SNAPSHOT_VERSION,
     seed: Number(state.seed) >>> 0,
@@ -20,21 +23,32 @@ export function getTrackStateCanonicalPayload(state) {
     fixedStepMs: Number(state.fixedStepMs || 100),
     maxCatchUpSteps: Math.max(1, Math.trunc(Number(state.maxCatchUpSteps) || 5)),
     maxCellsPerStep: Math.max(64, Math.trunc(Number(state.maxCellsPerStep) || 512)),
+    eventHistoryLimit: Number.isFinite(Number(state.eventHistoryLimit))
+      ? Math.max(100, Math.trunc(Number(state.eventHistoryLimit)))
+      : null,
     profileOverrides: cloneJson(state.profileOverrides || null),
     cellCursor: Math.max(0, Math.trunc(Number(state.cellCursor) || 0)),
     stepIndex: Math.max(0, Math.trunc(Number(state.stepIndex) || 0)),
     nextSequence: Math.max(1, Math.trunc(Number(state.nextSequence) || 1)),
+    accumulatorMs: Math.max(0, Number(Number(state.accumulatorMs || 0).toFixed(6))),
+    historyBaseStepIndex: Math.max(0, Math.trunc(Number(state.historyBaseStepIndex) || 0)),
+    historyBaseSequence: Math.max(0, Math.trunc(Number(state.historyBaseSequence) || 0)),
     cells: [...state.cells.entries()]
       .sort(([left], [right]) => compareTrackStateCellKeys(left, right))
       .map(([, cell]) => cloneJson(cell)),
     events: [...state.pendingEvents].sort(compareTrackStateEvents).map(cloneJson),
-    eventHistory: [...state.eventHistory].sort(compareTrackStateEvents).map(cloneJson),
+    eventHistory: includeEventHistory
+      ? [...state.eventHistory].sort(compareTrackStateEvents).map(cloneJson)
+      : [],
+    contactAggregates: state.contactAccumulator?.createSnapshot?.().map(cloneJson) || [],
     carryByTire: [...state.carryByTire.entries()]
       .sort(([left], [right]) => left.localeCompare(right))
       .map(([key, carry]) => [key, cloneJson(carry)]),
-    weatherTimeline: [...state.weatherTimeline.entries()]
-      .sort(([left], [right]) => Number(left) - Number(right))
-      .map(([step, forcing]) => [Number(step), cloneJson(forcing)]),
+    weatherTimeline: includeWeatherTimeline
+      ? [...state.weatherTimeline.entries()]
+        .sort(([left], [right]) => Number(left) - Number(right))
+        .map(([step, forcing]) => [Number(step), cloneJson(forcing)])
+      : [],
     totals: cloneJson(state.totals)
   };
 }
@@ -43,8 +57,8 @@ export function getTrackStateChecksum(state) {
   return hashTrackStateValue(stableTrackStateStringify(getTrackStateCanonicalPayload(state)));
 }
 
-export function createTrackStateSnapshot(state) {
-  const payload = getTrackStateCanonicalPayload(state);
+export function createTrackStateSnapshot(state, options = {}) {
+  const payload = getTrackStateCanonicalPayload(state, options);
   return {
     ...payload,
     checksum: hashTrackStateValue(stableTrackStateStringify(payload))
@@ -73,10 +87,15 @@ export function restoreTrackStateSnapshot(state, snapshot = {}) {
   state.fixedStepMs = Number(snapshot.fixedStepMs || 100);
   state.maxCatchUpSteps = Math.max(1, Math.trunc(Number(snapshot.maxCatchUpSteps) || state.maxCatchUpSteps || 5));
   state.maxCellsPerStep = Math.max(64, Math.trunc(Number(snapshot.maxCellsPerStep) || state.maxCellsPerStep || 512));
+  state.eventHistoryLimit = snapshot.eventHistoryLimit === null
+    ? Infinity
+    : Math.max(100, Math.trunc(Number(snapshot.eventHistoryLimit) || state.eventHistoryLimit || 8192));
   state.profileOverrides = cloneJson(snapshot.profileOverrides || null);
   state.stepIndex = Math.max(0, Math.trunc(Number(snapshot.stepIndex) || 0));
   state.nextSequence = Math.max(1, Math.trunc(Number(snapshot.nextSequence) || 1));
-  state.accumulatorMs = 0;
+  state.accumulatorMs = Math.max(0, Number(snapshot.accumulatorMs || 0));
+  state.historyBaseStepIndex = Math.max(0, Math.trunc(Number(snapshot.historyBaseStepIndex) || 0));
+  state.historyBaseSequence = Math.max(0, Math.trunc(Number(snapshot.historyBaseSequence) || 0));
   state.cells = cells;
   state.baseSurfaceCache = new Map();
   state.orderedCellKeys = [...cells.keys()].sort(compareTrackStateCellKeys);
@@ -87,6 +106,8 @@ export function restoreTrackStateSnapshot(state, snapshot = {}) {
   state.pendingEventsDirty = false;
   state.eventHistory = (snapshot.eventHistory || []).map((event) => normalizeTrackStateEvent(event)).sort(compareTrackStateEvents);
   state.eventIds = new Set([...state.pendingEvents, ...state.eventHistory].map((event) => event.id));
+  state.staleEventIds = new Set();
+  state.contactAccumulator.restoreSnapshot(snapshot.contactAggregates || []);
   state.carryByTire = new Map((snapshot.carryByTire || []).map(([key, value]) => [String(key), cloneJson(value)]));
   state.weatherTimeline = new Map((snapshot.weatherTimeline || []).map(([step, forcing]) => [Number(step), cloneJson(forcing)]));
   state.totals = {
