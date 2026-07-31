@@ -383,11 +383,6 @@ test('race third-person render uses live world position when body position is st
         normal: { x: 0, y: 1, z: 0 }
       }
     };
-    const beforeContact = { ...editor.playtestSession.vehicle3d.wheels.fl.contactPoint };
-    const deltaX = livePose.x - stalePose.x;
-    const deltaZ = livePose.z - stalePose.z;
-    editor.syncRaceSessionPlanarBodyToWorld(editor.playtestSession);
-    const syncedContact = editor.playtestSession.vehicle3d.wheels.fl.contactPoint;
     const updateSession = editor.playtestSession;
     updateSession.launchLockMs = 0;
     updateSession.elapsedMs = 1000;
@@ -396,7 +391,7 @@ test('race third-person render uses live world position when body position is st
     updateSession.carYaw = updateSession.startYaw;
     updateSession.bodyX = Number(updateSession.worldX || 0) - 8;
     updateSession.bodyZ = Number(updateSession.worldZ || 0) - 6;
-    const staleBodyAfterSync = { x: updateSession.bodyX, z: updateSession.bodyZ };
+    const staleBodyBeforeAuthority = { x: updateSession.bodyX, z: updateSession.bodyZ };
     updateSession.vehicle3d.position = {
       ...(updateSession.vehicle3d.position || {}),
       x: updateSession.bodyX,
@@ -427,9 +422,9 @@ test('race third-person render uses live world position when body position is st
       segment: livePose.segment
     }, editor.lastRaceRenderCamera.camera, editor.lastRaceRenderCamera.cameraYaw, bounds);
     const projectedStale = editor.projectRaceWorldPointToCamera({
-      x: staleBodyAfterSync.x,
-      z: staleBodyAfterSync.z,
-      elevation: editor.getRaceStitchedTerrainElevationAtWorldPoint(staleBodyAfterSync, Number(stalePose.elevation || 0)),
+      x: staleBodyBeforeAuthority.x,
+      z: staleBodyBeforeAuthority.z,
+      elevation: editor.getRaceStitchedTerrainElevationAtWorldPoint(staleBodyBeforeAuthority, Number(stalePose.elevation || 0)),
       segment: stalePose.segment
     }, editor.lastRaceRenderCamera.camera, editor.lastRaceRenderCamera.cameraYaw, bounds);
     let renderArgs = null;
@@ -456,8 +451,6 @@ test('race third-person render uses live world position when body position is st
       rendered: Boolean(renderArgs),
       liveErrorPx: Math.abs(Number(renderArgs?.centerX || 0) - Number(projectedLive.screenX || 0)),
       staleErrorPx: Math.abs(Number(renderArgs?.centerX || 0) - Number(projectedStale.screenX || 0)),
-      contactXError: Math.abs(Number(syncedContact.x || 0) - (Number(beforeContact.x || 0) + deltaX)),
-      contactZError: Math.abs(Number(syncedContact.z || 0) - (Number(beforeContact.z || 0) + deltaZ)),
       updateBodyWorldErrorM: Math.hypot(
         Number(updateSession.bodyX || 0) - Number(updateSession.worldX || 0),
         Number(updateSession.bodyZ || 0) - Number(updateSession.worldZ || 0)
@@ -474,8 +467,6 @@ test('race third-person render uses live world position when body position is st
   expect(result.rendered).toBe(true);
   expect(result.liveErrorPx).toBeLessThan(0.01);
   expect(result.staleErrorPx).toBeGreaterThan(4);
-  expect(result.contactXError).toBeLessThan(0.000001);
-  expect(result.contactZError).toBeLessThan(0.000001);
   expect(result.updateBodyWorldErrorM).toBeLessThan(0.000001);
   expect(result.updateVehicleWorldErrorM).toBeLessThan(0.000001);
   expect(result.updateWheelOffsetM).toBeLessThan(result.carWidthM * 1.6);

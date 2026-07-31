@@ -1,5 +1,11 @@
 import { RACE_PEDAL_INPUT, RACE_THREE_ELEVATION_M } from './simulation/RaceSimulationConfig.js';
 import { RACE_WHEEL_IDS, clamp } from './simulation/SimulationMath.js';
+import {
+  VehicleDynamicsRunner,
+  createVehicleDynamicsConfigFromTuning
+} from './simulation/VehicleDynamicsRunner.js';
+import { syncVehicleDynamicsCompatibilityOutputs } from './simulation/VehicleState.js';
+import { calculateWheelContactKinematics } from './simulation/ContactPatchTireModel.js';
 
 export function getRaceAiDifficultyProfile(editor, difficulty = 'easy') {
   return {
@@ -32,13 +38,16 @@ export function getRaceAiContactState(editor, ai = {}, car = editor.selectedCar,
   const roadHalfWidth = Math.max(1, Number(section.metrics?.roadEnd || editor.getRaceRoadHalfWidthWorld(pose.segment)));
   const lateral = clamp(Number(ai.lineOffset || 0), -0.85, 0.85) * roadHalfWidth;
   const right = editor.getRaceRightVector(pose.yaw);
+  const runnerState = ai.vehicleDynamicsRunner?.state;
   const aiSession = {
-    worldX: Number(pose.x || 0) + right.x * lateral,
-    worldZ: Number(pose.z ?? pose.y ?? 0) + right.z * lateral,
-    carYaw: Number(pose.yaw || 0),
+    worldX: Number(runnerState?.position?.x ?? ai.worldX ?? (Number(pose.x || 0) + right.x * lateral)),
+    worldZ: Number(runnerState?.position?.z ?? ai.worldZ ?? (Number(pose.z ?? pose.y ?? 0) + right.z * lateral)),
+    carYaw: Number(runnerState?.yawRad ?? ai.carYaw ?? pose.yaw ?? 0),
     speedMps: Number(ai.speedMps || 0),
     routeRuntimeType: runtimeType,
-    trackState: editor.playtestSession?.trackState || null
+    trackState: Number(editor.playtestSession?.countdownRemainingMs || 0) > 0
+      ? null
+      : editor.playtestSession?.trackState || null
   };
   const contacts = editor.getRaceWheelContactState({ car, tuning, session: aiSession });
   const surfaceGrip = RACE_WHEEL_IDS.reduce((sum, wheelId) => {
@@ -58,73 +67,90 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
   car = editor.selectedCar,
   tuning = editor.getRaceCarTuning(car),
   seconds = 0,
-  previousSpeedMps = Number(ai.speedMps || 0)
+  previousSpeedMps = Number(ai.speedMps || 0),
+  targetVelocityWorld = null
 } = {}) {
   if (!ai) return null;
   const contactState = editor.getRaceAiContactState(ai, car, tuning);
-  const aiSession = {
-    ...contactState.session,
-    vehicle3d: ai.vehicle3d,
-    bodyY: ai.bodyY,
-    pitchRad: ai.pitchRad,
-    rollRad: ai.rollRad,
-    verticalVelocityMps: ai.verticalVelocityMps || 0,
-    speedMps: Number(ai.speedMps || 0),
-    velocityYaw: contactState.session.carYaw,
-    yawVelocityRadps: 0,
-    routeRuntimeType: editor.playtestSession?.routeRuntimeType || editor.getSelectedRaceRuntimeType()
-  };
-  if (!aiSession.vehicle3d?.enabled) {
-    aiSession.vehicle3d = editor.raceSimulationSystems.chassis.createState({
-      session: aiSession,
-      tuning,
-      carDimensions: editor.getRaceCarDimensions(car),
-      surfaceModel: editor.getRaceSurfaceModel(),
-      elevationScaleM: RACE_THREE_ELEVATION_M
+  const engineDrive = ai.engineDrive || {};
+  if (!ai.vehicleDynamicsRunner) {
+    const config = createVehicleDynamicsConfigFromTuning(
+      { ...tuning, handlingPreset: 'sport' },
+      { maxCatchUpSteps: 120, telemetryLimit: 32, inputTimelineLimit: 512 }
+    );
+    ai.vehicleDynamicsRunner = new VehicleDynamicsRunner({
+      config,
+      initialState: {
+        worldX: contactState.session.worldX,
+        heightM: Number(contactState.contacts?.averageHeightM
+          ?? Number(contactState.pose?.elevation || 0) * RACE_THREE_ELEVATION_M)
+          + config.cgHeightM,
+        worldZ: contactState.session.worldZ,
+        speedMps: targetVelocityWorld
+          ? Math.hypot(Number(targetVelocityWorld.x || 0), Number(targetVelocityWorld.z || 0))
+          : Number(ai.speedMps || 0),
+        carYaw: contactState.session.carYaw,
+        engineRpm: ai.rpm,
+        gear: ai.gear
+      },
+      inputTimeline: [{ timeSeconds: 0, input: {} }]
     });
   }
-  const yaw = Number(aiSession.carYaw || 0);
-  const speed = Number(ai.speedMps || 0);
-  const previousSpeed = Number(previousSpeedMps || 0);
-  const dt = Math.max(0.0001, Number(seconds) || 0.0001);
-  const engineDrive = ai.engineDrive || {};
-  const lateralAcceleration = speed * speed * Number(contactState.pose?.segment?.curve || 0) * 0.0025;
-  const lateralForceTotal = lateralAcceleration * Math.max(450, Number(tuning.weightKg) || 1400);
-  const lateralForceByWheel = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
-    const isFront = wheelId === 'fl' || wheelId === 'fr';
-    const axleShare = isFront ? 0.56 : 0.44;
-    const usage = Number(engineDrive.wheelLateralUsage?.[wheelId] || 0);
-    return [wheelId, usage > 0 ? lateralForceTotal * axleShare * 0.5 : 0];
-  }));
-  editor.raceSimulationSystems.chassis.step(aiSession.vehicle3d, {
-    dt,
-    tuning,
-    carDimensions: editor.getRaceCarDimensions(car),
-    surfaceModel: editor.getRaceSurfaceModel(),
-    elevationScaleM: RACE_THREE_ELEVATION_M,
-    planarVelocity: {
-      x: Math.sin(yaw) * speed,
-      y: Number(ai.verticalVelocityMps || 0),
-      z: Math.cos(yaw) * speed
-    },
-    yaw,
-    controls: {
-      yawRate: 0,
-      longitudinalAcceleration: (speed - previousSpeed) / dt,
-      lateralAcceleration,
-      driveForceByWheel: engineDrive.combinedChassisLongitudinalForceByWheel || engineDrive.chassisLongitudinalForceByWheel || engineDrive.driveForceByWheel || {},
-      brakeForceByWheel: engineDrive.combinedBrakeState?.appliedByWheel || engineDrive.brakeState?.appliedByWheel || {},
-      longitudinalUsageByWheel: engineDrive.wheelLongitudinalUsage || {},
-      lateralUsageByWheel: engineDrive.wheelLateralUsage || {},
-      lateralForceByWheel
+  const runner = ai.vehicleDynamicsRunner;
+  runner.environmentProvider = ({ state, controls: fixedControls }) => {
+    const positions = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId,
+      calculateWheelContactKinematics({
+        state,
+        controls: fixedControls,
+        config: runner.config,
+        environment: {},
+        wheelId
+      }).contactPointWorld
+    ]));
+    const fixedContacts = editor.getRaceWheelContactState({
+      car,
+      tuning,
+      session: {
+        ...contactState.session,
+        worldX: Number(state.position?.x || 0),
+        worldZ: Number(state.position?.z || 0),
+        carYaw: Number(state.yawRad || 0),
+        grounded: state.grounded,
+        airborne: !state.grounded,
+        vehicle3d: null
+      },
+      wheelSurfaceState: { positions }
+    });
+    return {
+      surfaceHeightByWheel: { ...(fixedContacts.heights || {}) },
+      surfaceNormalByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+        wheelId, fixedContacts.contacts?.[wheelId]?.normal
+      ])),
+      materialByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
+        const contact = fixedContacts.contacts?.[wheelId] || {};
+        return [wheelId, {
+          ...(contact.trackState?.cell || {}),
+          grip: contact.friction ?? 1,
+          surfaceId: contact.surfaceId || contact.surface
+        }];
+      })),
+      targetVelocityWorld
+    };
+  };
+  const curve = Number(contactState.pose?.segment?.curve || 0);
+  runner.advance(seconds, {
+    input: {
+      steering: -clamp(curve * 18, -1, 1),
+      throttle: Number(engineDrive.throttle || 0),
+      brake: Number(engineDrive.brake || 0),
+      requestedGear: Number(ai.gear || 1),
+      assists: { stabilityControlEnabled: true }
     }
   });
-  editor.raceSimulationSystems.chassis.syncToSession(
-    aiSession.vehicle3d,
-    aiSession,
-    { preservePlanarPosition: true }
-  );
+  const aiSession = {};
+  syncVehicleDynamicsCompatibilityOutputs(runner, aiSession);
   ai.vehicle3d = aiSession.vehicle3d;
+  ai.speedMps = aiSession.speedMps;
   ai.worldX = aiSession.worldX;
   ai.worldZ = aiSession.worldZ;
   ai.carYaw = aiSession.carYaw;
@@ -133,6 +159,10 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
   ai.pitchRad = aiSession.pitchRad;
   ai.rollRad = aiSession.rollRad;
   ai.verticalVelocityMps = aiSession.verticalVelocityMps;
+  ai.velocityYaw = aiSession.velocityYaw;
+  ai.yawVelocityRadps = aiSession.yawVelocityRadps;
+  ai.rpm = aiSession.engineRpm;
+  ai.gear = aiSession.gear;
   ai.grounded = aiSession.grounded;
   ai.airborne = aiSession.airborne;
   ai.wheelContacts3d = aiSession.wheelContacts3d;
@@ -146,7 +176,7 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
       || contactState.contacts?.contacts?.[wheelId]?.region
       || 'terrain'
   ]));
-  return aiSession.vehicle3d;
+  return runner.state;
 }
 
 export function getRaceAiLongitudinalPhysicsStep(editor, ai = {}, {
@@ -718,15 +748,6 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
       const tuning = editor.getRaceCarTuning(car, {
         transmissionType: ai.shiftMode === 'manual' ? 'manual' : 'automatic'
       });
-      ai.speedMps = stagedSpeedMps;
-      if (stagedSpeedMps > 0) {
-        ai.distance = Number(ai.distance || 0) + stagedSpeedMps * dt;
-        if (isCircuit && ai.distance >= routeLength) ai.distance -= routeLength;
-        if (!isCircuit) ai.distance = Math.min(ai.distance, routeLength);
-      }
-      ai.projectedDistance = isCircuit
-        ? ((Number(ai.distance || 0) % routeLength) + routeLength) % routeLength
-        : clamp(Number(ai.distance || 0), 0, routeLength);
       ai.rpm = tuning.idleRpm;
       ai.engineDrive = {
         throttle: 0,
@@ -746,6 +767,23 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
           appliedByWheel: { fl: 0, fr: 0, rl: 0, rr: 0 }
         }
       };
+      const contactState = editor.getRaceAiContactState(ai, car, tuning);
+      const yaw = Number(ai.vehicleDynamicsRunner?.state?.yawRad ?? contactState.pose?.yaw ?? 0);
+      editor.updateRaceAiVehiclePhysics(ai, {
+        car,
+        tuning,
+        seconds: dt,
+        targetVelocityWorld: {
+          x: Math.sin(yaw) * stagedSpeedMps,
+          y: 0,
+          z: Math.cos(yaw) * stagedSpeedMps
+        }
+      });
+      const projection = editor.getRaceRouteProjectionForWorldPoint({ x: ai.worldX, z: ai.worldZ });
+      if (stagedSpeedMps > 0) ai.distance = Number(projection.distance ?? ai.distance ?? 0);
+      ai.projectedDistance = isCircuit
+        ? ((ai.distance % routeLength) + routeLength) % routeLength
+        : clamp(ai.distance, 0, routeLength);
     });
     return;
   }
@@ -828,6 +866,7 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
         * (1 + variance)
     );
     const previousSpeedMps = Number(ai.speedMps || 0);
+    const previousProjectedDistance = Number(ai.projectedDistance ?? ai.distance ?? 0);
     const aiPhysics = editor.getRaceAiLongitudinalPhysicsStep(ai, {
       car,
       tuning,
@@ -836,11 +875,16 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
       contactState,
       seconds: dt
     });
-    ai.speedMps = aiPhysics.speedMps;
-    ai.distance += ai.speedMps * dt;
+    editor.updateRaceAiVehiclePhysics(ai, { car, tuning, seconds: dt, previousSpeedMps });
+    const physicalProjection = editor.getRaceRouteProjectionForWorldPoint({
+      x: Number(ai.worldX || 0),
+      z: Number(ai.worldZ || 0)
+    });
+    ai.distance = Number(physicalProjection.distance ?? ai.distance ?? 0);
     if (isCircuit) {
-      while (ai.distance >= routeLength) {
-        ai.distance -= routeLength;
+      if (previousProjectedDistance > routeLength * 0.8
+        && ai.distance < routeLength * 0.2
+        && Number(ai.speedMps || 0) > 0) {
         ai.lap += 1;
         if (!ai.bestLapMs || ai.currentLapMs < ai.bestLapMs) ai.bestLapMs = ai.currentLapMs;
         ai.currentLapMs = 0;
@@ -851,7 +895,6 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
       ai.projectedDistance = clamp(ai.distance, 0, routeLength);
     }
     ai.currentLapMs += dt * 1000;
-    editor.updateRaceAiVehiclePhysics(ai, { car, tuning, seconds: dt, previousSpeedMps });
     if (session.trackState) {
       const aiSurfaceSession = {
         ...contactState.session,

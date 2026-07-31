@@ -1,8 +1,74 @@
 import { clamp } from './SimulationMath.js';
 
+export const HANDLING_ASSIST_PRESETS = Object.freeze({
+  simulation: Object.freeze({ yawDamping: 0, rollDamping: 0, countersteerMoment: 0, steeringResponse: 0, slipAlignment: 0, handbrakeRotation: 0 }),
+  sport: Object.freeze({ yawDamping: 0.16, rollDamping: 0.12, countersteerMoment: 0.1, steeringResponse: 2.5, slipAlignment: 10, handbrakeRotation: 1.5 }),
+  accessible: Object.freeze({ yawDamping: 0.38, rollDamping: 0.32, countersteerMoment: 0.28, steeringResponse: 0.38, slipAlignment: 1.4, handbrakeRotation: 0.7 })
+});
+
 export class HandlingAssist {
   constructor(steeringConfig = {}) {
     this.steering = steeringConfig;
+  }
+
+  getPreset(id = 'sport') {
+    return HANDLING_ASSIST_PRESETS[String(id || 'sport').toLowerCase()]
+      || HANDLING_ASSIST_PRESETS.sport;
+  }
+
+  calculatePhysicalInterventions({ preset = 'sport', state = {}, controls = {}, config = {} } = {}) {
+    const policy = this.getPreset(preset);
+    if (policy === HANDLING_ASSIST_PRESETS.simulation) return [];
+    const yawRate = Number(state.angularVelocityWorld?.y || state.yawRateRadps || 0);
+    const rollRate = Number(state.angularVelocityWorld?.z || 0);
+    const steer = Number(controls.steering || 0);
+    const inertia = Math.max(1, Number(config.yawInertiaKgM2 || 1));
+    const interventions = [];
+    const yawMoment = -yawRate * inertia * policy.yawDamping
+      + -Math.sign(yawRate) * Math.max(0, Math.abs(yawRate) - Math.abs(steer) * 0.8)
+        * inertia * policy.countersteerMoment;
+    if (Math.abs(yawMoment) > 0.001) interventions.push({
+      source: 'handling-assist', trigger: 'yaw-stability', requestedValue: yawMoment,
+      appliedValue: yawMoment, physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: yawMoment, z: 0 }
+    });
+    const speed = Math.abs(Number(state.speedMps || 0));
+    const steerAngle = steer * Number(config.maxSteerAngleRad || 0.52);
+    const desiredYawRate = speed * Math.tan(steerAngle) / Math.max(0.5, Number(config.wheelbaseM || 2.65));
+    const peakWheelSlip = Math.max(0, ...Object.values(state.contactPatches || {}).map((patch) => (
+      Math.abs(Number(patch?.slipRatio || 0))
+    )));
+    const slipAuthority = clamp((peakWheelSlip - 0.12) / 0.5, 0, 1);
+    const highPowerAuthority = clamp((Number(config.powerHp || 0) - 400) / 400, 0, 1);
+    const steeringMoment = (desiredYawRate - yawRate) * inertia * policy.steeringResponse
+      * slipAuthority * highPowerAuthority;
+    if (speed > 1 && Math.abs(steer) > 0.01 && Math.abs(steeringMoment) > 0.001) interventions.push({
+      source: 'handling-assist', trigger: 'steering-response', requestedValue: steeringMoment,
+      appliedValue: steeringMoment, physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: steeringMoment, z: 0 }
+    });
+    const velocityYaw = Math.atan2(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0));
+    const slipYaw = Math.atan2(Math.sin(velocityYaw - Number(state.yawRad || 0)), Math.cos(velocityYaw - Number(state.yawRad || 0)));
+    const alignmentAuthority = 1 - highPowerAuthority;
+    const alignmentMoment = clamp(
+      slipYaw * inertia * policy.slipAlignment * alignmentAuthority,
+      -15000,
+      15000
+    );
+    if (speed > 1 && Math.abs(slipYaw) > 0.01 && Math.abs(alignmentMoment) > 0.001) interventions.push({
+      source: 'handling-assist', trigger: 'slip-angle-stability', requestedValue: alignmentMoment,
+      appliedValue: alignmentMoment, physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: alignmentMoment, z: 0 }
+    });
+    const handbrakeMoment = steer * clamp(Number(controls.handbrake || 0), 0, 1)
+      * clamp(speed / 20, 0, 2.5) * inertia * policy.handbrakeRotation;
+    if (speed > 3 && Math.abs(handbrakeMoment) > 0.001) interventions.push({
+      source: 'handling-assist', trigger: 'handbrake-rotation', requestedValue: handbrakeMoment,
+      appliedValue: handbrakeMoment, physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: handbrakeMoment, z: 0 }
+    });
+    const rollMoment = -rollRate * inertia * 0.45 * policy.rollDamping;
+    if (Math.abs(rollMoment) > 0.001) interventions.push({
+      source: 'handling-assist', trigger: 'roll-stability', requestedValue: rollMoment,
+      appliedValue: rollMoment, physicalEffect: 'body-moment-z', momentWorldNm: { x: 0, y: 0, z: rollMoment }
+    });
+    return interventions;
   }
 
   getSetupPhysicsModifiers(tuning = {}) {

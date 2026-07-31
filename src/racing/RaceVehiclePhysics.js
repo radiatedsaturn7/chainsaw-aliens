@@ -458,7 +458,9 @@ export function stepRaceVehiclePhysics(state = null, {
         ? Math.abs(angularSpeedRadps * wheelRadiusM - groundLongitudinalSpeedMps)
           / Math.max(2.5, Math.abs(groundLongitudinalSpeedMps))
         : 0;
-      const longitudinalSlip = clamp(longitudinalSlipRatio, 0, 1.8);
+      const longitudinalSlip = clamp(Number(
+        controls.longitudinalUsageByWheel?.[wheelId] ?? longitudinalSlipRatio
+      ), 0, 1.8);
       const lateralSlip = clamp(Math.abs(Number(controls.lateralUsageByWheel?.[wheelId] || 0)), 0, 1.8);
       const combinedUsage = Math.hypot(longitudinalSlip, lateralSlip);
       const overLimitUsage = clamp((combinedUsage - 1) / 0.8, 0, 1);
@@ -616,15 +618,10 @@ export function stepRaceVehiclePhysics(state = null, {
   return state;
 }
 
-export function syncRaceVehiclePhysicsToSession(state = null, session = null, { preservePlanarPosition = true } = {}) {
+export function syncRaceVehiclePhysicsToSession(state = null, session = null) {
   if (!state || !session) return session;
-  if (!preservePlanarPosition) {
-    session.worldX = Number(state.position.x || 0);
-    session.worldZ = Number(state.position.z || 0);
-  } else {
-    state.position.x = Number(session.worldX || state.position.x || 0);
-    state.position.z = Number(session.worldZ || state.position.z || 0);
-  }
+  session.worldX = Number(state.position.x || 0);
+  session.worldZ = Number(state.position.z || 0);
   session.bodyX = Number(state.position.x || 0);
   session.bodyY = Number(state.position.y || 0);
   session.bodyZ = Number(state.position.z || 0);

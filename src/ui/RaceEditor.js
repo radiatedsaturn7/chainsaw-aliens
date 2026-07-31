@@ -2224,6 +2224,23 @@ export default class RaceEditor {
     this.clearRaceThirdPersonCameraState(this.playtestSession);
     this.raceInput.steeringTarget = 0;
     this.raceInput.steeringWheel = 0;
+    const authority = this.playtestSession.vehicleDynamicsRunner;
+    if (authority) {
+      authority.replaceAuthoritativeState({
+        worldX: this.playtestSession.worldX,
+        heightM: Number(pose.elevation || 0) * RACE_THREE_ELEVATION_M,
+        worldZ: this.playtestSession.worldZ,
+        velocity: {
+          x: Math.sin(yaw) * this.playtestSession.speedMps,
+          y: 0,
+          z: Math.cos(yaw) * this.playtestSession.speedMps
+        },
+        speedMps: this.playtestSession.speedMps,
+        carYaw: yaw,
+        engineRpm: this.playtestSession.engineRpm,
+        gear: this.playtestSession.gear
+      });
+    }
     const car = this.getRaceSessionCar(this.playtestSession);
     this.resetRaceVehiclePhysicsState({
       session: this.playtestSession,
@@ -13282,18 +13299,25 @@ export default class RaceEditor {
     const lateralRate = 7.2 - drift * 3.2;
     const lateralAlpha = clamp(1 - Math.exp(-dt * lateralRate), 0, 1);
     const maxDriftLagM = 0.7 + speedFactor * 0.45 + drift * 0.55;
-    const desiredLagM = clamp(drift * Math.abs(lateralError) * (1 - lateralAlpha), 0, maxDriftLagM);
+    const signedSlipYaw = normalizeAngle(
+      Number(session.velocityYaw ?? yaw) - Number(session.carYaw ?? yaw)
+    );
+    const slipLagM = drift * Math.abs(Math.sin(signedSlipYaw)) * (0.72 + speedFactor * 0.38);
+    const desiredLagM = clamp(Math.max(
+      drift * Math.abs(lateralError) * (1 - lateralAlpha),
+      slipLagM
+    ), 0, maxDriftLagM);
     const maxLateralError = maxDriftLagM;
     let nextX = previousX + forward.x * forwardError * forwardAlpha + right.x * lateralError * lateralAlpha;
     let nextZ = previousZ + forward.z * forwardError * forwardAlpha + right.z * lateralError * lateralAlpha;
     const nextDx = carX - nextX;
     const nextDz = carZ - nextZ;
     const nextLateralError = clamp(nextDx * right.x + nextDz * right.z, -maxLateralError, maxLateralError);
-    const nextForwardError = nextDx * forward.x + nextDz * forward.z;
+    const nextForwardError = clamp(nextDx * forward.x + nextDz * forward.z, -1.4, 1.4);
     nextX = carX - forward.x * nextForwardError - right.x * nextLateralError;
     nextZ = carZ - forward.z * nextForwardError - right.z * nextLateralError;
     if (desiredLagM > 0.001 && Math.abs(nextLateralError) < desiredLagM) {
-      const sign = Math.sign(lateralError || nextLateralError || 1);
+      const sign = Math.sign(signedSlipYaw || lateralError || nextLateralError || 1);
       nextX = carX - forward.x * nextForwardError - right.x * sign * desiredLagM;
       nextZ = carZ - forward.z * nextForwardError - right.z * sign * desiredLagM;
     }
@@ -15006,11 +15030,7 @@ export default class RaceEditor {
   } = {}) {
     if (!session) return null;
     session.vehicle3d = this.createRaceVehiclePhysicsStateForSession({ session, car, tuning });
-    this.raceSimulationSystems.chassis.syncToSession(
-      session.vehicle3d,
-      session,
-      { preservePlanarPosition: true }
-    );
+    this.raceSimulationSystems.chassis.syncToSession(session.vehicle3d, session);
     return session.vehicle3d;
   }
 
@@ -16313,17 +16333,22 @@ export default class RaceEditor {
     const launchHoldActive = Number(session?.launchLockMs || 0) > 0
       && absSpeed < 2.2
       && Math.abs(lookAngle) < 0.001;
-    if (launchHoldActive && Number.isFinite(session?.startYaw)) return Number(session.startYaw);
     const carYaw = Number(session?.carYaw || 0);
+    const preliminaryVelocityYaw = Number.isFinite(Number(session?.velocityYaw))
+      ? Number(session.velocityYaw)
+      : carYaw;
+    if (launchHoldActive
+      && Math.abs(normalizeAngle(preliminaryVelocityYaw - carYaw)) < 0.2
+      && Number.isFinite(session?.startYaw)) return Number(session.startYaw);
     const car = this.getRaceSessionCar(session);
     if (this.getCarCameraTrackingMode(car) === 'fixed-rear') {
       return normalizeAngle(carYaw + lookAngle);
     }
-    const velocityYaw = Number.isFinite(Number(session?.velocityYaw)) ? Number(session.velocityYaw) : carYaw;
+    const velocityYaw = preliminaryVelocityYaw;
     const slipYaw = Math.abs(normalizeAngle(velocityYaw - carYaw));
     const tireSlip = session?.tireSlip || {};
     const driftCameraAssist = Math.max(
-      clamp((slipYaw - 0.16) / 0.46, 0, 1),
+      clamp((slipYaw - 0.02) / 0.18, 0, 1),
       clamp(Number(tireSlip.rearBreakaway || 0), 0, 1) * 0.82,
       clamp(Number(tireSlip.wheelSpin || 0), 0, 1) * 0.58,
       clamp(Number(tireSlip.scrub || 0), 0, 1) * 0.48
@@ -16344,6 +16369,7 @@ export default class RaceEditor {
     const travelYaw = carYaw + normalizeAngle(velocityYaw - carYaw) * velocityBlend;
     const targetYaw = travelYaw + lookAngle;
     if (!smooth || !session) return targetYaw;
+    if (slipYaw > 0.12 || driftCameraAssist > 0.45 || severePowerSpin > 0.3) return normalizeAngle(targetYaw);
     const dt = clamp(Number(seconds) || 0, 0, 0.12);
     const previousYaw = Number.isFinite(Number(session.cameraYaw)) ? Number(session.cameraYaw) : targetYaw;
     const reset = Number(session.edgeResetFadeMs || 0) > 0
@@ -16352,10 +16378,12 @@ export default class RaceEditor {
     if (reset || dt <= 0) return targetYaw;
     const yawError = normalizeAngle(targetYaw - previousYaw);
     const speedFactor = clamp(absSpeed / 42, 0, 1);
-    const maxYawRate = 4.4 + speedFactor * 3.2 + driftCameraAssist * 2.4 + severePowerSpin * 2.2;
+    const maxYawRate = 4.4 + speedFactor * 3.2 + driftCameraAssist * 8.4 + severePowerSpin * 7.2;
     const maxStep = Math.max(0.015, maxYawRate * dt);
     const limitedStep = clamp(yawError, -maxStep, maxStep);
-    const catchUpAlpha = clamp(1 - Math.exp(-dt * (2.4 + speedFactor * 2.2 + driftCameraAssist * 2.6)), 0, 1);
+    const catchUpAlpha = clamp(1 - Math.exp(-dt * (
+      2.4 + speedFactor * 2.2 + driftCameraAssist * 9.6 + severePowerSpin * 7.5
+    )), 0, 1);
     return normalizeAngle(previousYaw + limitedStep + (yawError - limitedStep) * catchUpAlpha * 0.28);
   }
 
@@ -17341,9 +17369,16 @@ export default class RaceEditor {
     car = this.selectedCar,
     tuning = this.getRaceCarTuning(car),
     seconds = 0,
-    previousSpeedMps = Number(ai.speedMps || 0)
+    previousSpeedMps = Number(ai.speedMps || 0),
+    targetVelocityWorld = null
   } = {}) {
-    return updateRaceAiVehiclePhysics(this, ai, { car, tuning, seconds, previousSpeedMps });
+    return updateRaceAiVehiclePhysics(this, ai, {
+      car,
+      tuning,
+      seconds,
+      previousSpeedMps,
+      targetVelocityWorld
+    });
   }
 
   getRaceAiLongitudinalPhysicsStep(ai = {}, {
@@ -20107,27 +20142,6 @@ export default class RaceEditor {
         this.getAverageDamage(damage.tires)
       ))
     };
-  }
-
-  syncRaceSessionPlanarBodyToWorld(session = this.playtestSession) {
-    if (!session) return null;
-    const position = this.getRaceSessionPlanarWorldPosition(session);
-    session.bodyX = position.x;
-    session.bodyZ = position.z;
-    if (session.vehicle3d?.position) {
-      const vehicleDeltaX = position.x - Number(session.vehicle3d.position.x || 0);
-      const vehicleDeltaZ = position.z - Number(session.vehicle3d.position.z || 0);
-      session.vehicle3d.position.x = position.x;
-      session.vehicle3d.position.z = position.z;
-      if (Math.abs(vehicleDeltaX) > 0.000001 || Math.abs(vehicleDeltaZ) > 0.000001) {
-        Object.values(session.vehicle3d.wheels || {}).forEach((wheel) => {
-          if (!wheel?.contactPoint) return;
-          wheel.contactPoint.x = Number(wheel.contactPoint.x || 0) + vehicleDeltaX;
-          wheel.contactPoint.z = Number(wheel.contactPoint.z || 0) + vehicleDeltaZ;
-        });
-      }
-    }
-    return position;
   }
 
   recordRaceThirdPersonRenderPositionDiagnostics({
@@ -26256,24 +26270,6 @@ export default class RaceEditor {
         carEditorPreview: true,
         failureRevision: preview.tuningRevision
       })) return;
-      const nextProjection = this.getRaceRouteProjectionForWorldPoint({
-        x: Number(this.playtestSession?.worldX || 0),
-        z: Number(this.playtestSession?.worldZ || 0)
-      });
-      const nextDistance = Number(nextProjection?.distance ?? this.playtestSession?.distance ?? currentDistance);
-      const routePose = this.getRaceWorldPoseAtDistance(nextDistance, {
-        runtimeType: this.playtestSession?.routeRuntimeType || this.getSelectedRaceRuntimeType(),
-        routeLength
-      });
-      const halfWidth = Math.max(1, this.getRaceRoadHalfWidthWorld());
-      const lateralM = Number(nextProjection?.lateral || 0);
-      const correction = clamp((Math.abs(lateralM) - halfWidth * 0.22) / Math.max(0.001, halfWidth * 0.72), 0, 1) * Math.min(1, seconds * 3.8);
-      if (correction > 0 && this.playtestSession) {
-        this.playtestSession.worldX += (Number(routePose.x || 0) - Number(this.playtestSession.worldX || 0)) * correction;
-        this.playtestSession.worldZ += (Number(routePose.z || 0) - Number(this.playtestSession.worldZ || 0)) * correction;
-        this.playtestSession.carYaw += normalizeAngle(Number(routePose.yaw || 0) - Number(this.playtestSession.carYaw || 0)) * correction * 0.85;
-        this.playtestSession.cameraYaw = this.playtestSession.carYaw;
-      }
       if (!this.playtestSession
         || Number(this.playtestSession.distance || 0) >= routeLength
         || Number(this.playtestSession.lap || 1) > 1

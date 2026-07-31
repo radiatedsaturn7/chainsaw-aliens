@@ -98,6 +98,26 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
   const bodyProbeRadius = 0.18;
   const speed = Math.abs(Number(session.speedMps || 0));
   const speedMph = speed * 2.23694;
+  const queueVelocityScaleImpulse = (scaleAmount, point, { reverse = false } = {}) => {
+    const runner = session.vehicleDynamicsRunner;
+    if (!runner) return;
+    const velocity = runner.state.velocity || {};
+    const scale = reverse ? -Math.abs(scaleAmount) : Math.max(0, Number(scaleAmount || 0));
+    const mass = Math.max(1, Number(runner.config.massKg || 1));
+    runner.queueCollisionImpulse({
+      impulseWorldNs: {
+        x: (Number(velocity.x || 0) * scale - Number(velocity.x || 0)) * mass,
+        y: 0,
+        z: (Number(velocity.z || 0) * scale - Number(velocity.z || 0)) * mass
+      },
+      pointWorld: {
+        x: Number(point?.x ?? runner.state.position.x),
+        y: Number(point?.y ?? runner.state.position.y),
+        z: Number(point?.z ?? runner.state.position.z)
+      },
+      source: 'scenery-collision'
+    });
+  };
   scenery.forEach((sprite) => {
     if (!sprite?.id || session.removedSceneryIds.includes(sprite.id) || session.flattenedSceneryIds.includes(sprite.id) || session.triggeredSceneryIds.includes(sprite.id)) return;
     const doodad = editor.getRaceDoodadForScenery(sprite);
@@ -126,7 +146,7 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
     session.triggeredSceneryIds.push(sprite.id);
     if (rule.behavior === 'flatten') {
       session.flattenedSceneryIds.push(sprite.id);
-      session.speedMps *= Math.max(0.15, 1 - severity * (Number(rule.speedDrainPercent || 18) / 100));
+      queueVelocityScaleImpulse(Math.max(0.15, 1 - severity * (Number(rule.speedDrainPercent || 18) / 100)), hit.point);
       editor.applyRaceDamage('panels', severity * Number(rule.damage?.panels || 0), { keys: ['front'], source: `scenery:${sprite.id}` });
       editor.applyRaceDamage('suspension', severity * Number(rule.damage?.suspension || 0), { keys: ['fl', 'fr'], source: `scenery:${sprite.id}` });
       editor.applyRaceDamage('engine', severity * Number(rule.damage?.engine || 0), { source: `scenery:${sprite.id}` });
@@ -135,19 +155,14 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
     if (rule.behavior === 'fly-off') {
       session.removedSceneryIds.push(sprite.id);
       const weightFactor = clamp(45 / Math.max(5, Number(doodad.weightKg || sprite.weightKg || 35)), 0.12, 1.4);
-      session.speedMps *= Math.max(0.12, 1 - severity * (Number(rule.speedDrainPercent || 16) / 100) / weightFactor);
-      session.yawVelocityRadps += Math.sin(impactAngle) * severity * 0.32;
+      queueVelocityScaleImpulse(Math.max(0.12, 1 - severity * (Number(rule.speedDrainPercent || 16) / 100) / weightFactor), hit.point);
       editor.applyRaceDamage('panels', severity * Number(rule.damage?.panels || 0), { keys: ['front'], source: `scenery:${sprite.id}` });
       editor.applyRaceDamage('suspension', severity * Number(rule.damage?.suspension || 0), { keys: ['fl', 'fr'], source: `scenery:${sprite.id}` });
       editor.applyRaceDamage('engine', severity * Number(rule.damage?.engine || 0), { source: `scenery:${sprite.id}` });
       return;
     }
     const bounce = clamp(severity * (Number(rule.speedDrainPercent || 45) / 132), 0.12, 0.82);
-    session.speedMps *= -bounce;
-    session.yawVelocityRadps += Math.sin(impactAngle) * severity * 1.35;
-    session.carYaw += Math.sin(impactAngle) * severity * 0.18;
-    session.worldX += Math.sin(impactNormal) * Math.max(0.2, speed * Number(seconds || 0.016));
-    session.worldZ += Math.cos(impactNormal) * Math.max(0.2, speed * Number(seconds || 0.016));
+    queueVelocityScaleImpulse(bounce, hit.point, { reverse: true });
     editor.applyRaceDamage('panels', severity * Number(rule.damage?.panels || 0), { keys: Math.abs(impactAngle) > 1.2 ? ['left', 'right'] : ['front'], source: `scenery:${sprite.id}` });
     editor.applyRaceDamage('suspension', severity * Number(rule.damage?.suspension || 0), { keys: ['fl', 'fr'], pull: Math.sin(impactAngle) * 0.04, source: `scenery:${sprite.id}` });
     editor.applyRaceDamage('engine', severity * Number(rule.damage?.engine || 0), { source: `scenery:${sprite.id}` });
