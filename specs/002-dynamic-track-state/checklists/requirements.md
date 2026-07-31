@@ -31,6 +31,7 @@
 
 ## Notes
 
-- The source attachment ends mid-sentence after "living racing surface that
-  cha". The complete preceding requirements are preserved; no additional
-  requirement was inferred from the truncated fragment.
+- Revalidated 2026-07-31 for the physical-mutation production-hardening
+  milestone. The specification explicitly bounds scope, enumerates every
+  required accumulated total, and defines stationary-slip, render-partition,
+  compound-boundary, and catch-up checkpoint acceptance coverage.

@@ -9,6 +9,7 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   currentStatus: [
+    '2026-07-31 00:09 EDT - Hardened Dynamic Track State tire mutation around accumulated physical work totals, zero-translation burnout and locked-wheel heat/rubber/smoke, render-partition determinism, and catch-up-safe checkpoint rotation with exact replay.',
     '2026-07-30 17:09 EDT - Fixed Level Editor playtests restoring stale pre-editor world data by committing the live authored snapshot before reset, made Level-to-Race browser coverage seed exact portable Studio Sprint2 and WRX2 fixtures, and shortened merge validation with balanced per-test Playwright shards, no duplicate physics browser run, and automatic cancellation of superseded workflows.',
     '2026-07-30 13:57 EDT - Replaced the visible third-person snow box with a terrain-aware streamed world field: deterministic thirty-two-meter cells now cover the weather-visible environment in one cached depth-tested Three.js point draw, while a softly faded near layer preserves large flakes and speed streaks without recurring full-field terrain scans.',
     '2026-07-30 13:11 EDT - Scaled authored race weather to full visual intensity without changing its existing traction limits: 100% snow, rain, and storms now use dense nonlinear precipitation, distance-based world haze down to twenty-meter visibility, camera-frustum world snowfall, deterministic gusts, and storm-only lightning with panned procedural thunder.',

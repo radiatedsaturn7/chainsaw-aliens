@@ -89,6 +89,8 @@ export function queueRaceTrackStateTireEvents(trackState, {
   vehicleId = 'player',
   normalLoads = {},
   tireSlipByWheel = {},
+  longitudinalSlipByWheel = {},
+  lateralSlipByWheel = {},
   wheelContactScaleByWheel = {},
   wheelSurfaceState = {},
   previousPositions = {},
@@ -117,6 +119,20 @@ export function queueRaceTrackStateTireEvents(trackState, {
       Number(brakeState.lockByWheel?.[wheelId] || 0),
       Number(wheelSpinByWheel[wheelId] || 0)
     );
+    const longitudinalSlip = Math.max(
+      0,
+      Number(longitudinalSlipByWheel[wheelId] ?? 0)
+    );
+    const categorizedLongitudinalSlip = Math.max(
+      longitudinalSlip,
+      Number(brakeState.lockByWheel?.[wheelId] || 0),
+      Number(wheelSpinByWheel[wheelId] || 0)
+    );
+    const lateralSlip = Math.max(
+      0,
+      Number(lateralSlipByWheel[wheelId]
+        ?? Math.max(0, Number(tireSlipByWheel[wheelId] || 0) - categorizedLongitudinalSlip))
+    );
     if (distanceM < 0.002 && slipEnergy <= 0.001) return;
     const fallbackDirection = Math.hypot(dx, dz) > 0.0001
       ? { x: dx / Math.hypot(dx, dz), z: dz / Math.hypot(dx, dz) }
@@ -134,6 +150,8 @@ export function queueRaceTrackStateTireEvents(trackState, {
       directionX: fallbackDirection.x,
       directionZ: fallbackDirection.z,
       slipEnergy,
+      longitudinalSlip,
+      lateralSlip,
       brakeLock: brakeState.lockByWheel?.[wheelId],
       wheelSpin: wheelSpinByWheel[wheelId],
       contactDurationSeconds,

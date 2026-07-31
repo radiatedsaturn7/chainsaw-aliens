@@ -25511,30 +25511,35 @@ test('Race tire FX keeps asphalt cornering to marks instead of smoke', () => {
   assert.equal(editor.playtestSession.tireFxParticles.every((particle) => particle.slotId === 'asphaltSkid'), true);
 });
 
-test('Race tire FX emits asphalt smoke for burnout wheelspin', () => {
-  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
-  editor.startPlaytest('subaru-brz-2022');
-  editor.selectedRace.tireFx = {
-    skidSmoke: { enabled: true, density: 3, lifetimeMs: 900, scale: 1 }
-  };
+test('Race tire FX emits asphalt smoke for stationary wheelspin and locked-wheel slip', () => {
+  [
+    { wheelSpin: 1.1, brakeLock: 0 },
+    { wheelSpin: 0, brakeLock: 1 }
+  ].forEach(({ wheelSpin, brakeLock }) => {
+    const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+    editor.startPlaytest('subaru-brz-2022');
+    editor.selectedRace.tireFx = {
+      skidSmoke: { enabled: true, density: 3, lifetimeMs: 900, scale: 1 }
+    };
 
-  editor.emitRaceTireFxParticles(1, {
-    speedMps: 12,
-    wheelSpin: 1.1,
-    tireSlipByWheel: { rl: 0.35, rr: 0.36 },
-    brakeState: { lockByWheel: { rl: 0, rr: 0 } },
-    wheelSurfaceState: {
-      positions: {
-        rl: { x: -0.8, z: 8, elevation: 0 },
-        rr: { x: 0.8, z: 8, elevation: 0 }
-      },
-      surfaceByWheel: { rl: 'asphalt', rr: 'asphalt' },
-      terrainByWheel: { rl: 'road', rr: 'road' }
-    }
+    editor.emitRaceTireFxParticles(1, {
+      speedMps: 0,
+      wheelSpin,
+      tireSlipByWheel: { rl: 0.35, rr: 0.36 },
+      brakeState: { lockByWheel: { rl: brakeLock, rr: brakeLock } },
+      wheelSurfaceState: {
+        positions: {
+          rl: { x: -0.8, z: 8, elevation: 0 },
+          rr: { x: 0.8, z: 8, elevation: 0 }
+        },
+        surfaceByWheel: { rl: 'asphalt', rr: 'asphalt' },
+        terrainByWheel: { rl: 'road', rr: 'road' }
+      }
+    });
+
+    assert.equal(editor.playtestSession.tireFxParticles.length > 0, true);
+    assert.equal(editor.playtestSession.tireFxParticles.every((particle) => particle.slotId === 'skidSmoke'), true);
   });
-
-  assert.equal(editor.playtestSession.tireFxParticles.length > 0, true);
-  assert.equal(editor.playtestSession.tireFxParticles.every((particle) => particle.slotId === 'skidSmoke'), true);
 });
 
 test('Race tire FX emits dirt dust from speed without a hard slide', () => {

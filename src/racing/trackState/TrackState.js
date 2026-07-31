@@ -339,48 +339,66 @@ export class TrackState {
     );
     this.catchUpCellWeather(cell, this.stepIndex - 1);
     const contactScale = clamp(Number(payload.contactScale ?? 1), 0, 1);
-    const loadScale = clamp(Number(payload.normalLoadN || 0) / 4000, 0, 2);
     const distance = Math.max(0, Number(payload.distanceM) || 0);
     const slipEnergy = clamp(Number(payload.slipEnergy ?? payload.slip ?? 0), 0, 4);
-    const speedScale = clamp(0.35 + Math.abs(Number(payload.speedMps || 0)) / 35, 0.35, 1.6);
-    const compoundId = String(payload.compoundId || 'tarmac').toLowerCase();
-    const compoundRubberScale = /drift|soft|slick/.test(compoundId)
-      ? 1.22
-      : /snow|ice|studded/.test(compoundId)
-        ? 0.34
-        : /dirt|offroad|gravel/.test(compoundId)
-          ? 0.68
-          : /wet|rain/.test(compoundId)
-            ? 0.82
-            : 1;
-    const temperatureScale = clamp(
-      0.55 + (Number(payload.tireTemperatureF || 70) - 30) / 110,
-      0.45,
-      1.35
+    const physicalTotal = (field, fallback) => Math.max(
+      0,
+      Object.hasOwn(payload, field) ? Number(payload[field]) || 0 : fallback
+    );
+    const legacySlipWork = Math.max(0, Number(payload.slipWork)
+      || Number(payload.normalLoadN || 0) * distance * contactScale * slipEnergy);
+    const rollingDistance = physicalTotal('rollingDistanceM', distance);
+    const normalImpulse = physicalTotal(
+      'normalImpulseNs',
+      Number(payload.normalLoadN || 0)
+        * Number(payload.groundedContactDurationSeconds ?? payload.contactDurationSeconds ?? 0)
+        * contactScale
+    );
+    const surfaceHeatingWork = physicalTotal('surfaceHeatingWorkJ', legacySlipWork);
+    const rubberDepositionWork = physicalTotal(
+      'rubberDepositionWorkJ',
+      legacySlipWork + Number(payload.normalLoadN || 0) * rollingDistance * contactScale * 0.08
+    );
+    const waterDisplacementImpulse = physicalTotal(
+      'waterDisplacementImpulseNs',
+      Number(payload.normalLoadN || 0) * rollingDistance * contactScale
+    );
+    const looseMaterialSweepWork = physicalTotal(
+      'looseMaterialSweepWorkJ',
+      Number(payload.normalLoadN || 0) * rollingDistance * contactScale
+    );
+    const materialPickupCapacity = physicalTotal(
+      'materialPickupCapacity',
+      Number(payload.normalLoadN || 0) * rollingDistance * contactScale
+    );
+    const carriedMaterialDepositCapacity = physicalTotal(
+      'carriedMaterialDepositCapacity',
+      Number(payload.normalLoadN || 0) * rollingDistance * contactScale
     );
     const tireKey = `${event.vehicleId}:${event.wheelId}`;
     const carry = this.carryByTire.get(tireKey) || { dirt: 0, mud: 0, debris: 0 };
-    const depositScale = clamp(distance * 0.32, 0.04, 0.42);
+    const depositScale = clamp(carriedMaterialDepositCapacity / 12500, 0, 0.42);
     ['dirt', 'mud', 'debris'].forEach((field) => {
       const deposit = Math.min(Number(carry[field] || 0), Number(carry[field] || 0) * depositScale);
       cell[field] += deposit;
       carry[field] -= deposit;
     });
-    const pickupScale = clamp(contactScale * loadScale * distance * 0.11, 0, 0.32);
+    const pickupScale = clamp(materialPickupCapacity / 36000, 0, 0.32);
     ['dirt', 'mud'].forEach((field) => {
       const pickup = Math.min(Number(cell[field] || 0), Number(cell[field] || 0) * pickupScale);
       cell[field] -= pickup;
       carry[field] = clamp(Number(carry[field] || 0) + pickup, 0, 1);
     });
-    const rubberDeposit = distance * contactScale * loadScale
-      * (0.0008 + slipEnergy * 0.003)
-      * speedScale
-      * compoundRubberScale
-      * temperatureScale
+    const rubberDeposit = rubberDepositionWork
+      * 0.00000004
       * clamp(Number(cell.rubberAcceptance ?? 0.25), 0, 1);
     cell.rubber += rubberDeposit;
-    cell.surfaceTemperatureC += distance * loadScale * slipEnergy * 0.012;
-    cell.compaction += distance * loadScale * 0.0025;
+    cell.surfaceTemperatureC += surfaceHeatingWork * 0.000025;
+    const groundedDuration = Math.max(0, Number(payload.groundedContactDurationSeconds || 0));
+    const compactionWork = groundedDuration > 0
+      ? normalImpulse * rollingDistance / groundedDuration
+      : Number(payload.normalLoadN || 0) * rollingDistance * contactScale;
+    cell.compaction += Math.max(0, compactionWork) * 0.000000625;
 
     const directionLength = Math.hypot(Number(payload.directionX || 0), Number(payload.directionZ || 0)) || 1;
     const dx = Number(payload.directionX || 0) / directionLength;
@@ -404,21 +422,18 @@ export class TrackState {
       )
     ];
     receivers.forEach((receiver) => this.catchUpCellWeather(receiver, this.stepIndex - 1));
-    const displacementScale = clamp(
-      0.035 + Math.abs(Number(payload.speedMps || 0)) * 0.006 + loadScale * 0.035,
-      0,
-      0.38
-    ) * contactScale;
+    const displacementScale = clamp(waterDisplacementImpulse / 20000, 0, 0.38);
     const displacedWater = cell.standingWaterDepthMm * displacementScale;
     cell.standingWaterDepthMm -= displacedWater;
     receivers.forEach((receiver, index) => {
       receiver.standingWaterDepthMm += displacedWater * (index === 0 ? 0.5 : 0.25);
     });
-    const sweptMarbles = cell.looseMarbles * clamp(displacementScale * 1.4, 0, 0.55);
+    const sweepScale = clamp(looseMaterialSweepWork / 14000, 0, 0.55);
+    const sweptMarbles = cell.looseMarbles * sweepScale;
     cell.looseMarbles -= sweptMarbles;
     receivers[1].looseMarbles += sweptMarbles * 0.5;
     receivers[2].looseMarbles += sweptMarbles * 0.5;
-    const kickedLoose = (cell.dirt + cell.dust) * clamp(displacementScale * 0.16, 0, 0.12);
+    const kickedLoose = (cell.dirt + cell.dust) * clamp(sweepScale * 0.16, 0, 0.12);
     const dirtShare = cell.dirt / Math.max(0.000001, cell.dirt + cell.dust);
     cell.dirt -= kickedLoose * dirtShare;
     cell.dust -= kickedLoose * (1 - dirtShare);
@@ -468,7 +483,7 @@ export class TrackState {
     }
   }
 
-  rotateHistoryCheckpoint(forcing) {
+  rotateHistoryCheckpoint() {
     if (!Number.isFinite(this.eventHistoryLimit)
       || this.eventHistory.length < this.eventHistoryLimit) return false;
     this.orderedCellKeys.forEach((key) => {
@@ -487,11 +502,10 @@ export class TrackState {
       includeWeatherTimeline: false
     });
     this.weatherTimeline.clear();
-    this.weatherTimeline.set(this.stepIndex + 1, forcing);
     return true;
   }
 
-  step(forcing = {}) {
+  step(forcing = {}, { deferCheckpointRotation = false } = {}) {
     this.contactAccumulator.flushStep(this.stepIndex + 1);
     this.stepIndex += 1;
     const normalizedForcing = normalizeForcing(forcing);
@@ -521,7 +535,7 @@ export class TrackState {
     if (cellCount) this.cellCursor = (this.cellCursor + budget) % cellCount;
     active.forEach((cell) => this.catchUpCellWeather(cell, this.stepIndex));
     this.applyConservativeFlow(active);
-    this.rotateHistoryCheckpoint(normalizedForcing);
+    if (!deferCheckpointRotation) this.rotateHistoryCheckpoint();
     return { processedCellCount: active.length, processedEventCount: due.length };
   }
 
@@ -532,10 +546,13 @@ export class TrackState {
     let processedEventCount = 0;
     while (this.accumulatorMs + 1e-9 >= this.fixedStepMs && completedSteps < this.maxCatchUpSteps) {
       this.accumulatorMs -= this.fixedStepMs;
-      const result = this.step(forcing);
+      const result = this.step(forcing, { deferCheckpointRotation: true });
       processedCellCount += result.processedCellCount;
       processedEventCount += result.processedEventCount;
       completedSteps += 1;
+    }
+    if (completedSteps > 0) {
+      this.rotateHistoryCheckpoint();
     }
     return {
       completedSteps,

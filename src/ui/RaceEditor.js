@@ -16913,9 +16913,10 @@ export default class RaceEditor {
     if (surface === 'dirt') return 'dirtDust';
     if (terrain !== 'road' && terrain !== 'margin') return 'grassDust';
     const speed = Math.abs(Number(speedMps) || 0);
-    const burnout = Number(wheelSpin || 0) > 0.72 && speed > 1.2;
+    const burnout = Number(wheelSpin || 0) > 0.72;
     const hardRearLock = Number(handbrake || 0) > 0.2 && speed > 8;
-    const brakeFlatSpot = Number(brakeLock || 0) > 0.42 && speed > 7;
+    const brakeFlatSpot = Number(brakeLock || 0) > 0.72
+      || (Number(brakeLock || 0) > 0.42 && speed > 7);
     if (burnout || hardRearLock || brakeFlatSpot) return 'skidSmoke';
     return Number(slip || 0) > 0.54 && speed > 9 ? 'asphaltSkid' : '';
   }
@@ -17077,7 +17078,14 @@ export default class RaceEditor {
     session.tireFxParticles = particles;
     session.tireFxEmitAccumulators = session.tireFxEmitAccumulators || {};
     const speed = Math.abs(Number(speedMps || session.speedMps || 0));
-    if (speed < 0.9) return;
+    const hasStationarySlip = RACE_WHEEL_IDS.some((wheelId) => (
+      Math.max(
+        Number(tireSlipByWheel?.[wheelId] || 0),
+        Number(brakeState?.lockByWheel?.[wheelId] || 0),
+        Number(wheelSpinByWheel?.[wheelId] ?? wheelSpin) || 0
+      ) * clamp(Number(wheelContactScaleByWheel?.[wheelId] ?? 1) || 0, 0, 1) >= 0.24
+    ));
+    if (speed < 0.9 && !hasStationarySlip) return;
     const fxSettings = this.ensureRaceTireFxSettings();
     RACE_WHEEL_IDS.forEach((wheelId) => {
       const contact = clamp(Number(wheelContactScaleByWheel?.[wheelId] ?? 1) || 0, 0, 1);
