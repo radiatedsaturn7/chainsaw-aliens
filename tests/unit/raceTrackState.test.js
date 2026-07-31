@@ -286,7 +286,9 @@ test('10,000 ordered events, snapshots, restore, and sync packets are determinis
   }
   assert.equal(restored.getChecksum(), left.getChecksum());
 
-  const packet = left.createSyncPacket('events', { sinceSequence: 0 });
+  const packet = left.createSyncPacket('events', {
+    sinceSequence: left.historyBaseSequence
+  });
   const replica = createState();
   const firstApply = replica.applySyncPacket(left.createSyncPacket('snapshot'));
   const duplicateApply = replica.applySyncPacket(packet);
@@ -310,7 +312,7 @@ test('fixed-step work is bounded and inactive world regions stay sparse', () => 
   assert.ok(result.processedCellCount < 320);
 });
 
-test('tire contacts are unique per vehicle, wheel, cell, and fixed step', () => {
+test('repeated tire observations aggregate without consuming event sequences', () => {
   const state = createState();
   const contact = {
     vehicleId: 'car-1',
@@ -322,31 +324,153 @@ test('tire contacts are unique per vehicle, wheel, cell, and fixed step', () => 
     slipEnergy: 0.4
   };
   assert.equal(state.queueTireContact(contact).length, 1);
-  assert.equal(state.queueTireContact(contact).length, 0);
+  const checksumBeforeDuplicate = state.getChecksum();
+  const sequenceBeforeDuplicate = state.nextSequence;
+  assert.equal(state.queueTireContact(contact).length, 1);
+  assert.equal(state.nextSequence, sequenceBeforeDuplicate);
+  assert.notEqual(state.getChecksum(), checksumBeforeDuplicate);
   state.advance(0.1, { type: 'clear' });
+  assert.equal(state.eventHistory.length, 1);
+  assert.equal(state.nextSequence, 2);
+  assert.equal(state.eventHistory[0].payload.distanceM, 0.2);
   assert.equal(state.queueTireContact(contact).length, 1);
 });
 
-test('one-hour multi-car tire history and pending events stay explicitly bounded', () => {
-  const state = createState();
-  for (let step = 0; step < 36000; step += 1) {
-    for (const vehicleId of ['player', 'ai-1']) {
-      state.queueTireContact({
-        vehicleId,
-        wheelId: 'fl',
-        position: { x: (step % 20) + 0.2, z: vehicleId === 'player' ? 0.2 : 1.2 },
-        previousPosition: { x: (step % 20) + 0.2, z: vehicleId === 'player' ? 0.2 : 1.2 },
-        normalLoadN: 3500,
-        speedMps: 20,
-        slipEnergy: 0.2
+test('one-hour 20-car moving race keeps history, weather, queues, snapshots, and steps bounded', () => {
+  const state = createState({
+    cellSizeM: 5,
+    maxCatchUpSteps: 10,
+    eventHistoryLimit: TRACK_STATE_EVENT_HISTORY_LIMIT,
+    maxCellsPerStep: 64
+  });
+  let maximumAdvanceMs = 0;
+  const trackX = (second) => {
+    const phase = second % 50;
+    return phase <= 25 ? phase * 4 : (50 - phase) * 4;
+  };
+  for (let second = 0; second < 3600; second += 1) {
+    for (let vehicle = 0; vehicle < 20; vehicle += 1) {
+      for (let wheel = 0; wheel < 4; wheel += 1) {
+        state.queueTireContact({
+          vehicleId: `vehicle-${vehicle}`,
+          wheelId: `wheel-${wheel}`,
+          previousPosition: { x: trackX(second) + vehicle * 0.02, z: wheel + 0.2 },
+          position: { x: trackX(second + 1) + vehicle * 0.02, z: wheel + 0.2 },
+          contactDurationSeconds: 0.1,
+          normalLoadN: 3300 + wheel * 120,
+          speedMps: 40,
+          slipEnergy: 0.2 + vehicle % 4 * 0.1,
+          wheelSpin: vehicle % 7 === 0 ? 0.6 : 0,
+          brakeLock: vehicle % 11 === 0 ? 0.4 : 0
+        });
+      }
+    }
+    if (second % 60 === 0) {
+      state.queueCrashContamination({
+        vehicleId: `vehicle-${second % 20}`,
+        x: trackX(second),
+        z: second % 4,
+        debris: 0.04,
+        oil: second % 120 === 0 ? 0.02 : 0
       });
     }
-    state.advance(0.1, { type: 'clear', ambientTemperatureC: 20 });
+    const start = performance.now();
+    const result = state.advance(1, second % 1200 < 600
+      ? { type: 'rain', precipitationRateMmPerS: 0.15, ambientTemperatureC: 16 }
+      : { type: 'clear', ambientTemperatureC: 24, sunIntensity: 0.85 });
+    maximumAdvanceMs = Math.max(
+      maximumAdvanceMs,
+      (performance.now() - start) / Math.max(1, result.completedSteps)
+    );
     assert.equal(state.pendingEvents.length, 0);
+    assert.equal(state.contactAccumulator.size, 0);
   }
   assert.equal(state.stepIndex, 36000);
-  assert.equal(state.eventHistory.length, TRACK_STATE_EVENT_HISTORY_LIMIT);
-  assert.equal(state.eventIds.size, TRACK_STATE_EVENT_HISTORY_LIMIT);
+  assert.ok(state.eventHistory.length < TRACK_STATE_EVENT_HISTORY_LIMIT);
+  assert.ok(state.eventIds.size <= TRACK_STATE_EVENT_HISTORY_LIMIT);
+  assert.ok(state.historyBaseStepIndex > 0);
+  assert.ok(state.historyBaseSequence > 0);
+  assert.ok(state.weatherTimeline.size <= 2);
+  assert.ok(JSON.stringify(state.createSnapshot()).length < 8_000_000);
+  assert.ok(maximumAdvanceMs < 50, `Track State fixed step exceeded 50 ms: ${maximumAdvanceMs} ms`);
+});
+
+test('duplicate finalized events do not alter sequence or checksum state', () => {
+  const state = createState();
+  const event = state.queueEvent({
+    type: 'crash-debris',
+    stepIndex: 1,
+    vehicleId: 'car',
+    x: 1.2,
+    z: 2.2,
+    payload: { debris: 0.1 }
+  });
+  const sequence = state.nextSequence;
+  const checksum = state.getChecksum();
+  assert.equal(state.queueEvent(event), null);
+  assert.equal(state.nextSequence, sequence);
+  assert.equal(state.getChecksum(), checksum);
+});
+
+test('checkpoint replay reconstructs exactly and stale sync requests require snapshots', () => {
+  const state = createState({ eventHistoryLimit: 100 });
+  for (let step = 0; step < 250; step += 1) {
+    state.queueTireContact({
+      vehicleId: 'car',
+      wheelId: 'fl',
+      position: { x: (step % 12) + 0.2, z: 0.2 },
+      previousPosition: { x: (step % 12) + 0.1, z: 0.2 },
+      distanceM: 0.1,
+      contactDurationSeconds: 0.1,
+      normalLoadN: 3400,
+      speedMps: 18,
+      slipEnergy: 0.4
+    });
+    state.advance(0.1, step < 150
+      ? { type: 'rain', precipitationRateMmPerS: 0.3, ambientTemperatureC: 16 }
+      : { type: 'clear', ambientTemperatureC: 22, sunIntensity: 0.8 });
+  }
+  const replay = state.createReplayRecord();
+  assert.ok(replay.historyBaseStepIndex > 0);
+  assert.ok(replay.events.length < 100);
+  assert.ok(replay.weatherTimeline.length <= 2);
+
+  const restored = TrackState.fromSnapshot(replay.historyBaseSnapshot, {
+    sampleBaseSurface: baseSampler
+  });
+  replay.events.forEach((event) => restored.queueEvent(event));
+  const transitions = new Map(replay.weatherTimeline);
+  let forcing = {};
+  for (let step = restored.stepIndex + 1; step <= replay.finalStepIndex; step += 1) {
+    if (transitions.has(step)) forcing = transitions.get(step);
+    restored.advance(0.1, forcing);
+  }
+  assert.equal(restored.getChecksum(), replay.finalChecksum);
+
+  const stalePacket = state.createSyncPacket('events', {
+    sinceSequence: replay.historyBaseSequence - 1
+  });
+  assert.equal(stalePacket.snapshotRequired, true);
+  assert.equal(state.applySyncPacket(stalePacket).snapshotRequired, true);
+
+  const currentPacket = state.createSyncPacket('events', {
+    sinceSequence: replay.historyBaseSequence
+  });
+  assert.equal(currentPacket.snapshotRequired, false);
+  const staleEvent = {
+    ...replay.historyBaseSnapshot.eventHistory?.[0],
+    id: 'forgotten-event',
+    stepIndex: replay.historyBaseStepIndex,
+    sequence: replay.historyBaseSequence
+  };
+  const staleApply = state.applySyncPacket({
+    ...currentPacket,
+    checkpointChecksum: replay.historyBaseSnapshot.checksum,
+    checksum: null,
+    events: [staleEvent]
+  });
+  assert.equal(staleApply.staleCount, 1);
+  assert.equal(staleApply.appliedCount, 0);
 });
 
 test('large persistent surfaces use a rotating deterministic cell budget instead of whole-track scans', () => {

@@ -12207,7 +12207,6 @@ export default class RaceEditor {
       tireTrackLastContactByWheel: {},
       trackState: null,
       trackStatePreviousWheelPositions: {},
-      trackStateLastQueuedStep: -1,
       trackStateDamageLogCursor: 0,
       hazards,
       codriverCalls: [],

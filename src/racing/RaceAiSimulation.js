@@ -852,7 +852,7 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
     }
     ai.currentLapMs += dt * 1000;
     editor.updateRaceAiVehiclePhysics(ai, { car, tuning, seconds: dt, previousSpeedMps });
-    if (session.trackState && Number(ai.trackStateLastQueuedStep) !== Number(session.trackState.stepIndex)) {
+    if (session.trackState) {
       const aiSurfaceSession = {
         ...contactState.session,
         worldX: Number(ai.worldX ?? contactState.session.worldX ?? 0),
@@ -881,6 +881,7 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
         tireTemperatures: ai.tireTemperature || {},
         brakeState: ai.engineDrive?.combinedBrakeState || ai.engineDrive?.brakeState || {},
         wheelSpinByWheel: ai.engineDrive?.contactWheelSpinRatioByWheel || {},
+        contactDurationSeconds: dt,
         direction: editor.getRaceForwardVector(Number(ai.carYaw || 0))
       });
       ai.trackStatePreviousWheelPositions = Object.fromEntries(
@@ -889,7 +890,6 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
           { x: Number(position.x || 0), z: Number(position.z || 0) }
         ])
       );
-      ai.trackStateLastQueuedStep = session.trackState.stepIndex;
     }
     ai.consistencyError = variance + severity * (1 - profile.corner) * 0.2;
     ai.averageSurfaceGrip = Number(aiPhysics.gripFactor || contactState.averageSurfaceGrip || 1);

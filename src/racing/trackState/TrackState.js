@@ -4,8 +4,7 @@ import {
   getTrackStateCellCenter,
   getTrackStateCellCoordinates,
   getTrackStateCellKey,
-  quantizeTrackStateNumber,
-  traceTrackStateCells
+  quantizeTrackStateNumber
 } from './TrackStateMath.js';
 import {
   clampTrackStateCell,
@@ -21,6 +20,7 @@ import {
   getTrackStateChecksum,
   restoreTrackStateSnapshot
 } from './TrackStateSerialization.js';
+import { TrackStateContactAccumulator } from './TrackStateContactAccumulator.js';
 
 const WATER_FIELDS = ['moistureDepthMm', 'standingWaterDepthMm', 'snowDepthMm', 'iceDepthMm'];
 export const TRACK_STATE_EVENT_HISTORY_LIMIT = 8192;
@@ -79,8 +79,13 @@ export class TrackState {
     this.pendingEventsDirty = false;
     this.eventHistory = [];
     this.eventIds = new Set();
+    this.staleEventIds = new Set();
+    this.contactAccumulator = new TrackStateContactAccumulator(this);
     this.carryByTire = new Map();
     this.weatherTimeline = new Map();
+    this.historyBaseStepIndex = 0;
+    this.historyBaseSequence = 0;
+    this.historyBaseSnapshot = null;
     this.totals = {
       precipitationMm: 0,
       drainageMm: 0,
@@ -91,6 +96,7 @@ export class TrackState {
     if (snapshot) restoreTrackStateSnapshot(this, snapshot);
     this.initialSnapshot = createTrackStateSnapshot(this);
     this.initialChecksum = this.initialSnapshot.checksum;
+    this.historyBaseSnapshot = this.initialSnapshot;
   }
 
   static fromSnapshot(snapshot, options = {}) {
@@ -132,7 +138,7 @@ export class TrackState {
       ...coords,
       cellSizeM: this.cellSizeM,
       base,
-      stepIndex: 0,
+      stepIndex: this.historyBaseStepIndex,
       profileOverrides: this.profileOverrides
     });
     this.cells.set(key, cell);
@@ -145,16 +151,8 @@ export class TrackState {
     }
     this.orderedCellKeys.splice(low, 0, key);
     if (low <= this.cellCursor && this.orderedCellKeys.length > 1) this.cellCursor += 1;
-    if (Number(throughStep) > 0 && this.weatherTimeline.size) {
-      [...this.weatherTimeline.entries()]
-        .filter(([step]) => Number(step) <= Number(throughStep))
-        .sort(([a], [b]) => a - b)
-        .forEach(([step, forcing]) => this.applyWeatherToCell(
-          cell,
-          forcing,
-          this.fixedStepMs / 1000,
-          Number(step)
-        ));
+    if (Number(throughStep) > this.historyBaseStepIndex && this.weatherTimeline.size) {
+      this.catchUpCellWeather(cell, throughStep);
     }
     return cell;
   }
@@ -173,7 +171,7 @@ export class TrackState {
       Number(cell.lastUpdatedStep || 0) + 1
     );
     for (let stepIndex = startStep; stepIndex <= Number(throughStep || 0); stepIndex += 1) {
-      const forcing = this.weatherTimeline.get(stepIndex);
+      const forcing = this.getWeatherForStep(stepIndex);
       if (!forcing) continue;
       this.applyWeatherToCell(cell, forcing, this.fixedStepMs / 1000, stepIndex);
       appliedSteps += 1;
@@ -192,13 +190,17 @@ export class TrackState {
   }
 
   queueEvent(rawEvent = {}) {
+    const proposedSequence = rawEvent.sequence || this.nextSequence;
     const event = normalizeTrackStateEvent({
       ...rawEvent,
       stepIndex: rawEvent.stepIndex || this.stepIndex + 1,
-      sequence: rawEvent.sequence || this.nextSequence
-    }, this.nextSequence);
+      sequence: proposedSequence
+    }, proposedSequence);
+    if (event.stepIndex <= this.historyBaseStepIndex
+      || event.sequence <= this.historyBaseSequence
+      || this.eventIds.has(event.id)
+      || this.staleEventIds.has(event.id)) return null;
     this.nextSequence = Math.max(this.nextSequence, event.sequence + 1);
-    if (this.eventIds.has(event.id)) return null;
     this.eventIds.add(event.id);
     this.pendingEvents.push(event);
     this.pendingEventsDirty = true;
@@ -206,39 +208,7 @@ export class TrackState {
   }
 
   queueTireContact(contact = {}) {
-    if (contact.grounded === false || Number(contact.contactScale ?? 1) <= 0.001) return [];
-    const from = contact.previousPosition || contact.position || { x: contact.x, z: contact.z };
-    const to = contact.position || { x: contact.x, z: contact.z };
-    const cells = traceTrackStateCells(from, to, this.cellSizeM);
-    const totalDistance = Math.max(0.001, Number(contact.distanceM) || Math.hypot(
-      Number(to.x || 0) - Number(from.x || 0),
-      Number(to.z || 0) - Number(from.z || 0)
-    ));
-    return cells.map((coords, index) => this.queueEvent({
-      type: 'tire-contact',
-      stepIndex: contact.stepIndex || this.stepIndex + 1,
-      sequence: contact.sequence ? Number(contact.sequence) + index : undefined,
-      vehicleId: contact.vehicleId,
-      wheelId: contact.wheelId,
-      x: (coords.x + 0.5) * this.cellSizeM,
-      z: (coords.z + 0.5) * this.cellSizeM,
-      cellKey: coords.key,
-      payload: {
-        grounded: true,
-        contactScale: contact.contactScale ?? 1,
-        normalLoadN: contact.normalLoadN,
-        speedMps: contact.speedMps,
-        distanceM: totalDistance / cells.length,
-        directionX: contact.directionX,
-        directionZ: contact.directionZ,
-        slipEnergy: contact.slipEnergy,
-        slip: contact.slip,
-        brakeLock: contact.brakeLock,
-        wheelSpin: contact.wheelSpin,
-        compoundId: contact.compoundId,
-        tireTemperatureF: contact.tireTemperatureF
-      }
-    })).filter(Boolean);
+    return this.contactAccumulator.accumulate(contact);
   }
 
   queueCrashContamination(crash = {}) {
@@ -482,10 +452,50 @@ export class TrackState {
     }
   }
 
+  getWeatherForStep(stepIndex) {
+    let result = null;
+    for (const [transitionStep, forcing] of this.weatherTimeline.entries()) {
+      if (Number(transitionStep) > Number(stepIndex)) break;
+      result = forcing;
+    }
+    return result;
+  }
+
+  recordWeatherTransition(stepIndex, forcing) {
+    const previous = [...this.weatherTimeline.values()].at(-1);
+    if (!previous || JSON.stringify(previous) !== JSON.stringify(forcing)) {
+      this.weatherTimeline.set(stepIndex, forcing);
+    }
+  }
+
+  rotateHistoryCheckpoint(forcing) {
+    if (!Number.isFinite(this.eventHistoryLimit)
+      || this.eventHistory.length < this.eventHistoryLimit) return false;
+    this.orderedCellKeys.forEach((key) => {
+      this.catchUpCellWeather(this.cells.get(key), this.stepIndex);
+    });
+    this.historyBaseStepIndex = this.stepIndex;
+    this.historyBaseSequence = this.eventHistory.reduce(
+      (highest, event) => Math.max(highest, Number(event.sequence || 0)),
+      this.historyBaseSequence
+    );
+    this.eventHistory = [];
+    this.eventIds = new Set(this.pendingEvents.map((event) => event.id));
+    this.staleEventIds.clear();
+    this.historyBaseSnapshot = createTrackStateSnapshot(this, {
+      includeEventHistory: false,
+      includeWeatherTimeline: false
+    });
+    this.weatherTimeline.clear();
+    this.weatherTimeline.set(this.stepIndex + 1, forcing);
+    return true;
+  }
+
   step(forcing = {}) {
+    this.contactAccumulator.flushStep(this.stepIndex + 1);
     this.stepIndex += 1;
     const normalizedForcing = normalizeForcing(forcing);
-    this.weatherTimeline.set(this.stepIndex, normalizedForcing);
+    this.recordWeatherTransition(this.stepIndex, normalizedForcing);
     if (this.pendingEventsDirty) {
       this.pendingEvents.sort(compareTrackStateEvents);
       this.pendingEventsDirty = false;
@@ -500,10 +510,6 @@ export class TrackState {
       this.applyEvent(event);
       this.eventHistory.push(event);
     });
-    if (Number.isFinite(this.eventHistoryLimit) && this.eventHistory.length > this.eventHistoryLimit) {
-      const removed = this.eventHistory.splice(0, this.eventHistory.length - this.eventHistoryLimit);
-      removed.forEach((event) => this.eventIds.delete(event.id));
-    }
     const active = [];
     const cellCount = this.orderedCellKeys.length;
     const budget = Math.min(cellCount, this.maxCellsPerStep);
@@ -515,6 +521,7 @@ export class TrackState {
     if (cellCount) this.cellCursor = (this.cellCursor + budget) % cellCount;
     active.forEach((cell) => this.catchUpCellWeather(cell, this.stepIndex));
     this.applyConservativeFlow(active);
+    this.rotateHistoryCheckpoint(normalizedForcing);
     return { processedCellCount: active.length, processedEventCount: due.length };
   }
 
@@ -571,9 +578,12 @@ export class TrackState {
   createReplayRecord() {
     const finalSnapshot = this.createSnapshot();
     return {
-      version: 1,
-      initialSnapshot: this.initialSnapshot,
-      initialChecksum: this.initialChecksum,
+      version: 2,
+      historyBaseSnapshot: this.historyBaseSnapshot,
+      historyBaseStepIndex: this.historyBaseStepIndex,
+      historyBaseSequence: this.historyBaseSequence,
+      initialSnapshot: this.historyBaseSnapshot,
+      initialChecksum: this.historyBaseSnapshot.checksum,
       events: this.eventHistory.map((event) => ({ ...event, payload: { ...event.payload } })),
       weatherTimeline: [...this.weatherTimeline.entries()]
         .sort(([left], [right]) => Number(left) - Number(right))
@@ -585,12 +595,31 @@ export class TrackState {
   }
 
   createSyncPacket(kind = 'checksum', { sinceSequence = 0 } = {}) {
-    if (kind === 'snapshot') return { type: 'snapshot', snapshot: this.createSnapshot() };
+    if (kind === 'snapshot') {
+      return {
+        type: 'snapshot',
+        snapshot: this.createSnapshot(),
+        historyBaseSnapshot: this.historyBaseSnapshot
+      };
+    }
     if (kind === 'events') {
+      if (Number(sinceSequence || 0) < this.historyBaseSequence) {
+        return {
+          type: 'events',
+          snapshotRequired: true,
+          historyBaseStepIndex: this.historyBaseStepIndex,
+          historyBaseSequence: this.historyBaseSequence,
+          checkpointChecksum: this.historyBaseSnapshot?.checksum || ''
+        };
+      }
       return {
         type: 'events',
-        fromStepIndex: 0,
+        snapshotRequired: false,
+        fromStepIndex: this.historyBaseStepIndex,
         toStepIndex: this.stepIndex,
+        historyBaseSequence: this.historyBaseSequence,
+        checkpointChecksum: this.historyBaseSnapshot?.checksum || '',
+        checksum: this.getChecksum(),
         events: this.eventHistory.filter((event) => event.sequence > Number(sinceSequence || 0)),
         weatherTimeline: [...this.weatherTimeline.entries()]
           .sort(([left], [right]) => Number(left) - Number(right))
@@ -605,19 +634,45 @@ export class TrackState {
       this.restoreSnapshot(packet.snapshot);
       this.initialSnapshot = this.createSnapshot();
       this.initialChecksum = this.initialSnapshot.checksum;
+      this.historyBaseSnapshot = packet.historyBaseSnapshot || this.initialSnapshot;
       return { applied: true, type: 'snapshot' };
     }
     if (packet.type === 'events') {
+      if (packet.snapshotRequired) {
+        return { applied: false, type: 'events', snapshotRequired: true };
+      }
+      if (packet.checkpointChecksum
+        && String(packet.checkpointChecksum) !== String(this.historyBaseSnapshot?.checksum || '')) {
+        return { applied: false, type: 'events', snapshotRequired: true, checkpointMismatch: true };
+      }
       let appliedCount = 0;
       let duplicateCount = 0;
+      let staleCount = 0;
       (packet.events || []).forEach((event) => {
-        if (this.eventIds.has(event.id)) duplicateCount += 1;
+        if (Number(event.stepIndex || 0) <= this.historyBaseStepIndex
+          || Number(event.sequence || 0) <= this.historyBaseSequence) staleCount += 1;
+        else if (this.eventIds.has(event.id)) duplicateCount += 1;
         else if (this.queueEvent(event)) appliedCount += 1;
       });
-      (packet.weatherTimeline || []).forEach(([stepIndex, forcing]) => {
-        this.weatherTimeline.set(Number(stepIndex), normalizeForcing(forcing));
-      });
-      return { applied: true, type: 'events', appliedCount, duplicateCount };
+      const weatherEntries = [
+        ...this.weatherTimeline.entries(),
+        ...(packet.weatherTimeline || []).map(([stepIndex, forcing]) => [
+          Number(stepIndex),
+          normalizeForcing(forcing)
+        ])
+      ].sort(([left], [right]) => Number(left) - Number(right));
+      this.weatherTimeline = new Map(weatherEntries);
+      const checksumMatches = packet.checksum && Number(packet.toStepIndex) === this.stepIndex
+        ? String(packet.checksum) === this.getChecksum()
+        : null;
+      return {
+        applied: checksumMatches !== false,
+        type: 'events',
+        appliedCount,
+        duplicateCount,
+        staleCount,
+        checksumMatches
+      };
     }
     if (packet.type === 'checksum') {
       return {
@@ -653,7 +708,10 @@ export class TrackState {
       stepIndex: this.stepIndex,
       activeCellCount: this.cells.size,
       pendingEventCount: this.pendingEvents.length,
+      pendingAggregateCount: this.contactAccumulator.size,
       appliedEventCount: this.eventHistory.length,
+      historyBaseStepIndex: this.historyBaseStepIndex,
+      historyBaseSequence: this.historyBaseSequence,
       checksum: this.getChecksum(),
       totals: this.getConservationTotals(),
       cells: bounds ? this.getVisualCells(bounds) : undefined
