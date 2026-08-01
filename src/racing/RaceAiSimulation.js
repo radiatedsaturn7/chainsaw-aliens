@@ -6,6 +6,21 @@ import {
 } from './simulation/VehicleDynamicsRunner.js';
 import { syncVehicleDynamicsCompatibilityOutputs } from './simulation/VehicleState.js';
 import { calculateWheelContactKinematics } from './simulation/ContactPatchTireModel.js';
+import { createDeterministicAtmosphere, createRaceWakeSources } from './simulation/AeroEnvironment.js';
+
+export function getRaceAiAeroAwareness(wakeState = {}, { severity = 0, speedMps = 0, index = 0 } = {}) {
+  const wakeIntensity = clamp(Number(wakeState.intensity || 0), 0, 1);
+  return {
+    draftOpportunity: clamp(Number(wakeState.dragReduction || 0) * (1 - clamp(severity * 2, 0, 1)), 0, 0.35),
+    dirtyAirCornerPenalty: clamp(Number(wakeState.frontDownforceLoss || 0)
+      * clamp(severity * 2.8, 0, 1), 0, 0.55),
+    dirtyAirBrakingPenalty: clamp(Number(wakeState.frontDownforceLoss || 0)
+      * clamp(Math.abs(Number(speedMps || 0)) / 45, 0, 1), 0, 0.42),
+    crosswindRisk: clamp(Number(wakeState.crosswindRisk || 0), 0, 1),
+    overtakeOffset: wakeIntensity > 0.42 ? (index % 2 === 0 ? 0.18 : -0.18) : 0,
+    wakeIntensity
+  };
+}
 
 export function getRaceAiDifficultyProfile(editor, difficulty = 'easy') {
   return {
@@ -102,15 +117,18 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
   const ambientTemperatureC = aiWeather.id === 'snow' ? -4
     : aiWeather.id === 'storm' ? 13
       : aiWeather.id === 'rain' ? 16 : 22;
-  runner.environmentProvider = ({ state, controls: fixedControls }) => {
-    const positions = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId,
+  runner.environmentProvider = ({ state, controls: fixedControls, timeSeconds }) => {
+    const preliminaryPatches = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId,
       calculateWheelContactKinematics({
         state,
         controls: fixedControls,
         config: runner.config,
         environment: {},
         wheelId
-      }).contactPointWorld
+      })
+    ]));
+    const positions = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId,
+      preliminaryPatches[wheelId].contactPointWorld
     ]));
     const fixedContacts = editor.getRaceWheelContactState({
       car,
@@ -126,10 +144,52 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
       },
       wheelSurfaceState: { positions }
     });
+    const footprintOffsets = [[-0.7, -0.42], [-0.7, 0.42], [0.7, -0.42], [0.7, 0.42],
+      [-0.15, 0], [0.15, 0], [0, -0.48], [0, 0.48]]
+      .slice(0, runner.config.contactFootprintSamples);
+    const tireWidthM = Math.max(0.12, Number(tireSetup.tireSize?.widthMm || 245) / 1000);
+    const sampleFootprint = ([longitudinal, lateral]) => {
+      const samplePositions = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
+        const patch = preliminaryPatches[wheelId];
+        return [wheelId, {
+          x: patch.contactPointWorld.x + patch.wheelForwardWorld.x * longitudinal * 0.16
+            + patch.wheelLateralWorld.x * lateral * tireWidthM,
+          y: patch.contactPointWorld.y,
+          z: patch.contactPointWorld.z + patch.wheelForwardWorld.z * longitudinal * 0.16
+            + patch.wheelLateralWorld.z * lateral * tireWidthM
+        }];
+      }));
+      return editor.getRaceWheelContactState({ car, tuning,
+        session: { ...contactState.session, worldX: state.position.x, worldZ: state.position.z,
+          carYaw: state.yawRad, grounded: state.grounded, airborne: !state.grounded, vehicle3d: null },
+        wheelSurfaceState: { positions: samplePositions } });
+    };
+    const footprintContacts = footprintOffsets.slice(0, 4).map(sampleFootprint);
+    const needsAdaptiveSamples = RACE_WHEEL_IDS.some((wheelId) => {
+      const heights = footprintContacts.map((sample) => Number(sample.heights?.[wheelId]));
+      return heights.some((height) => !Number.isFinite(height))
+        || Math.max(...heights) - Math.min(...heights) > 0.02;
+    });
+    if (needsAdaptiveSamples) {
+      footprintContacts.push(...footprintOffsets.slice(4).map(sampleFootprint));
+    }
+    const atmosphere = createDeterministicAtmosphere({
+      weatherState: aiWeather,
+      race: editor.selectedRace,
+      timeSeconds
+    });
+    const panelDamage = ai.damage?.panels || {};
     return {
       surfaceHeightByWheel: { ...(fixedContacts.heights || {}) },
       surfaceNormalByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
         wheelId, fixedContacts.contacts?.[wheelId]?.normal
+      ])),
+      contactSamplesByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId,
+        footprintContacts.map((sample) => {
+          const normal = sample.contacts?.[wheelId]?.normal || { x: 0, y: 1, z: 0 };
+          return { heightM: sample.heights?.[wheelId], normalX: normal.x, normalY: normal.y,
+            normalZ: normal.z, supported: Number.isFinite(Number(sample.heights?.[wheelId])) };
+        })
       ])),
       materialByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
         const contact = fixedContacts.contacts?.[wheelId] || {};
@@ -158,6 +218,15 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
         }];
       })),
       ambientTemperatureC,
+      ...atmosphere,
+      vehicleId: String(ai.id || ai.driverId || 'ai'),
+      wakeSources: createRaceWakeSources(editor.playtestSession, {
+        playerWidthM: Number(editor.getRaceCarTuning(editor.selectedCar)?.widthM || 1.8)
+      }),
+      bodyDamage: Math.max(0, ...Object.values(panelDamage).map(Number)),
+      frontAeroDamage: clamp(Number(panelDamage.front || 0) / 100, 0, 1),
+      rearAeroDamage: clamp(Number(panelDamage.rear || 0) / 100, 0, 1),
+      activeAeroState: Number(ai.activeAeroState || 0),
       targetVelocityWorld
     };
   };
@@ -815,6 +884,12 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
     const car = editor.project.cars.find((candidate) => candidate.id === ai.carId) || editor.selectedCar;
     const tuning = editor.getRaceCarTuning(car, { transmissionType: ai.shiftMode === 'manual' ? 'manual' : 'automatic' });
     const profile = editor.getRaceAiDifficultyProfile(ai.difficulty);
+    const wakeState = ai.vehicleDynamicsRunner?.state?.aeroState?.wake || {};
+    const preliminaryAeroAwareness = getRaceAiAeroAwareness(wakeState, {
+      speedMps: ai.speedMps,
+      index
+    });
+    const overtakeOffset = preliminaryAeroAwareness.overtakeOffset;
     if (session.trackState
       && Number(ai.trackStateLastObservationStep) !== Number(session.trackState.stepIndex)) {
       const lineDecision = editor.raceSimulationSystems.surface.evaluateTrackStateAiCandidates({
@@ -846,7 +921,7 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
           };
         }
       });
-      ai.trackStateTargetLineOffset = lineDecision.chosenOffset;
+      ai.trackStateTargetLineOffset = clamp(lineDecision.chosenOffset + overtakeOffset, -0.78, 0.78);
       ai.trackStateNextLineSwitchStep = lineDecision.nextSwitchStep;
       ai.trackStateLineDecision = lineDecision;
       ai.trackStateLastObservationStep = session.trackState.stepIndex;
@@ -879,6 +954,8 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
       looseSurfaceFactor: editor.getRaceLooseSurfaceFactor(contactState.contacts)
     });
     const severity = editor.getRaceAiLookaheadSeverity(ai.projectedDistance || ai.distance || 0, ai.speedMps || 0) * (1 - bankAssist);
+    ai.aeroAwareness = getRaceAiAeroAwareness(wakeState, { severity, speedMps: ai.speedMps, index });
+    const { draftOpportunity, dirtyAirCornerPenalty, dirtyAirBrakingPenalty, crosswindRisk } = ai.aeroAwareness;
     const variance = Math.sin((Number(session.elapsedMs || 0) / 1000) * (0.45 + index * 0.04) + index) * profile.variance;
     const targetMps = Math.max(
       9,
@@ -887,6 +964,8 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
         * Math.sqrt(predictiveGripScale)
         * (1 - predictiveSurfaceRisk * 0.34)
         * (1 - clamp(severity * (0.48 - profile.corner * 0.16), 0, 0.66))
+        * (1 + draftOpportunity * 0.18)
+        * (1 - dirtyAirCornerPenalty * 0.32 - dirtyAirBrakingPenalty * 0.12 - crosswindRisk * 0.08)
         * (1 + variance)
     );
     const previousSpeedMps = Number(ai.speedMps || 0);
