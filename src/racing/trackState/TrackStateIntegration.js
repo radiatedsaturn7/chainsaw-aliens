@@ -99,6 +99,7 @@ export function queueRaceTrackStateTireEvents(trackState, {
   tireTemperatures = {},
   brakeState = {},
   wheelSpinByWheel = {},
+  physicalMutationTotalsByWheel = {},
   contactDurationSeconds,
   direction = null
 } = {}) {
@@ -156,7 +157,8 @@ export function queueRaceTrackStateTireEvents(trackState, {
       wheelSpin: wheelSpinByWheel[wheelId],
       contactDurationSeconds,
       compoundId: tireCompoundByWheel[wheelId] || 'tarmac',
-      tireTemperatureF: tireTemperatures[wheelId]
+      tireTemperatureF: tireTemperatures[wheelId],
+      physicalMutationTotals: physicalMutationTotalsByWheel[wheelId]
     }));
   });
   return events;

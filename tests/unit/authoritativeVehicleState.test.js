@@ -41,6 +41,24 @@ test('Simulation has no hidden stabilization while other presets report physical
   }
 });
 
+test('airborne support suppresses applied handling-assist moments without hiding requests', () => {
+  const assist = new HandlingAssist();
+  const interventions = assist.calculatePhysicalInterventions({
+    preset: 'sport',
+    state: { speedMps: 24, angularVelocityWorld: { x: 0, y: 1.2, z: 0.4 } },
+    controls: { steering: 0.1, handbrake: 1 },
+    config: { yawInertiaKgM2: 2200 },
+    supportScale: 0
+  });
+  assert.ok(interventions.length >= 2);
+  interventions.forEach((entry) => {
+    assert.equal(entry.appliedValue, 0);
+    assert.equal(entry.supportScale, 0);
+    assert.equal(entry.suppressionReason, 'airborne-contact');
+    assert.deepEqual(entry.momentWorldNm, { x: 0, y: 0, z: 0 });
+  });
+});
+
 test('collision impulses change authoritative velocity and angular velocity at their application point', () => {
   const runner = new VehicleDynamicsRunner({
     config: { massKg: 1000, handlingPreset: 'simulation' },

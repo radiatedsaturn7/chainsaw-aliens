@@ -16,9 +16,17 @@ export class HandlingAssist {
       || HANDLING_ASSIST_PRESETS.sport;
   }
 
-  calculatePhysicalInterventions({ preset = 'sport', state = {}, controls = {}, config = {} } = {}) {
+  calculatePhysicalInterventions({
+    preset = 'sport',
+    state = {},
+    controls = {},
+    config = {},
+    supportScale = 1
+  } = {}) {
     const policy = this.getPreset(preset);
     if (policy === HANDLING_ASSIST_PRESETS.simulation) return [];
+    const physicalSupport = clamp(Number(supportScale), 0, 1);
+    const supportedValue = (value) => physicalSupport <= 0 ? 0 : value * physicalSupport;
     const yawRate = Number(state.angularVelocityWorld?.y || state.yawRateRadps || 0);
     const rollRate = Number(state.angularVelocityWorld?.z || 0);
     const steer = Number(controls.steering || 0);
@@ -29,7 +37,9 @@ export class HandlingAssist {
         * inertia * policy.countersteerMoment;
     if (Math.abs(yawMoment) > 0.001) interventions.push({
       source: 'handling-assist', trigger: 'yaw-stability', requestedValue: yawMoment,
-      appliedValue: yawMoment, physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: yawMoment, z: 0 }
+      appliedValue: supportedValue(yawMoment), supportScale: physicalSupport,
+      suppressionReason: physicalSupport <= 0.001 ? 'airborne-contact' : null,
+      physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: supportedValue(yawMoment), z: 0 }
     });
     const speed = Math.abs(Number(state.speedMps || 0));
     const steerAngle = steer * Number(config.maxSteerAngleRad || 0.52);
@@ -43,7 +53,9 @@ export class HandlingAssist {
       * slipAuthority * highPowerAuthority;
     if (speed > 1 && Math.abs(steer) > 0.01 && Math.abs(steeringMoment) > 0.001) interventions.push({
       source: 'handling-assist', trigger: 'steering-response', requestedValue: steeringMoment,
-      appliedValue: steeringMoment, physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: steeringMoment, z: 0 }
+      appliedValue: supportedValue(steeringMoment), supportScale: physicalSupport,
+      suppressionReason: physicalSupport <= 0.001 ? 'airborne-contact' : null,
+      physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: supportedValue(steeringMoment), z: 0 }
     });
     const velocityYaw = Math.atan2(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0));
     const slipYaw = Math.atan2(Math.sin(velocityYaw - Number(state.yawRad || 0)), Math.cos(velocityYaw - Number(state.yawRad || 0)));
@@ -55,18 +67,24 @@ export class HandlingAssist {
     );
     if (speed > 1 && Math.abs(slipYaw) > 0.01 && Math.abs(alignmentMoment) > 0.001) interventions.push({
       source: 'handling-assist', trigger: 'slip-angle-stability', requestedValue: alignmentMoment,
-      appliedValue: alignmentMoment, physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: alignmentMoment, z: 0 }
+      appliedValue: supportedValue(alignmentMoment), supportScale: physicalSupport,
+      suppressionReason: physicalSupport <= 0.001 ? 'airborne-contact' : null,
+      physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: supportedValue(alignmentMoment), z: 0 }
     });
     const handbrakeMoment = steer * clamp(Number(controls.handbrake || 0), 0, 1)
       * clamp(speed / 20, 0, 2.5) * inertia * policy.handbrakeRotation;
     if (speed > 3 && Math.abs(handbrakeMoment) > 0.001) interventions.push({
       source: 'handling-assist', trigger: 'handbrake-rotation', requestedValue: handbrakeMoment,
-      appliedValue: handbrakeMoment, physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: handbrakeMoment, z: 0 }
+      appliedValue: supportedValue(handbrakeMoment), supportScale: physicalSupport,
+      suppressionReason: physicalSupport <= 0.001 ? 'airborne-contact' : null,
+      physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: supportedValue(handbrakeMoment), z: 0 }
     });
     const rollMoment = -rollRate * inertia * 0.45 * policy.rollDamping;
     if (Math.abs(rollMoment) > 0.001) interventions.push({
       source: 'handling-assist', trigger: 'roll-stability', requestedValue: rollMoment,
-      appliedValue: rollMoment, physicalEffect: 'body-moment-z', momentWorldNm: { x: 0, y: 0, z: rollMoment }
+      appliedValue: supportedValue(rollMoment), supportScale: physicalSupport,
+      suppressionReason: physicalSupport <= 0.001 ? 'airborne-contact' : null,
+      physicalEffect: 'body-moment-z', momentWorldNm: { x: 0, y: 0, z: supportedValue(rollMoment) }
     });
     return interventions;
   }

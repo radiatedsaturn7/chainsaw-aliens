@@ -28,6 +28,24 @@ export function normalizeQuaternion(value = {}) {
   return { x: x / length, y: y / length, z: z / length, w: w / length };
 }
 
+export function rotateVectorByQuaternion(value = {}, orientation = {}) {
+  const q = normalizeQuaternion(orientation);
+  const vector = {
+    x: Number(value.x || 0),
+    y: Number(value.y || 0),
+    z: Number(value.z || 0)
+  };
+  const quaternionVector = { x: q.x, y: q.y, z: q.z };
+  const twiceCross = scaleVector3(crossVector3(quaternionVector, vector), 2);
+  return addVector3(
+    vector,
+    addVector3(
+      scaleVector3(twiceCross, q.w),
+      crossVector3(quaternionVector, twiceCross)
+    )
+  );
+}
+
 export function quaternionFromEuler({ yaw = 0, pitch = 0, roll = 0 } = {}) {
   const multiply = (a, b) => ({
     x: a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,

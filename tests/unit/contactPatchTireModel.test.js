@@ -3,9 +3,11 @@ import test from 'node:test';
 import {
   ContactPatchTireModel,
   calculateBrushTireForce,
+  calculateAquaplaningState,
   calculateWheelContactKinematics,
   getAckermannSteeringAngles
 } from '../../src/racing/simulation/ContactPatchTireModel.js';
+import { advanceTireThermalState } from '../../src/racing/simulation/TireThermalModel.js';
 import { createVehicleDynamicsConfig, createVehicleDynamicsState } from '../../src/racing/simulation/VehicleDynamicsRunner.js';
 
 const config = createVehicleDynamicsConfig({
@@ -49,6 +51,51 @@ test('signed slip distinguishes braking, locked wheels, and wheelspin', () => {
   assert.ok(make(80).slipRatio > 1);
 });
 
+test('aquaplaning evacuates water per tire and unloads forces instead of applying static grip', () => {
+  const kinematics = {
+    longitudinalVelocityMps: 42,
+    lateralVelocityMps: 1.5,
+    wheelAngularVelocityRadps: 130,
+    effectiveRollingRadiusM: 0.33,
+    slipRatio: 0.08
+  };
+  const shallow = calculateAquaplaningState({
+    kinematics, normalLoadN: 3600,
+    tire: { widthMm: 245, pressurePsi: 34, treadDepthMm: 7 },
+    material: { standingWaterDepthMm: 0.2 }
+  });
+  const flooded = calculateAquaplaningState({
+    kinematics, normalLoadN: 3600,
+    tire: { widthMm: 285, pressurePsi: 24, treadDepthMm: 1.2 },
+    material: { standingWaterDepthMm: 7 }
+  });
+  assert.ok(flooded.liftFraction > shallow.liftFraction);
+  assert.ok(flooded.supportedNormalLoadN < shallow.supportedNormalLoadN);
+  assert.ok(flooded.lateralForceScale < flooded.longitudinalForceScale);
+  assert.ok(flooded.displacedWaterVolumeM3ps > 0);
+});
+
+test('three-node tire thermal state couples surface, airflow, water, and pressure', () => {
+  const base = { temperatureF: 100, coldPressurePsi: 32, pressureReferenceTemperatureC: 20 };
+  const hot = advanceTireThermalState({
+    previous: base, dt: 1,
+    patch: { longitudinalForceN: 3500, lateralForceN: 1800, longitudinalVelocityMps: 25,
+      lateralVelocityMps: 3, wheelAngularVelocityRadps: 95, effectiveRollingRadiusM: 0.33,
+      slipRatio: 0.25, slipAngleRad: 0.12, normalLoadN: 3800 },
+    material: { surfaceTemperatureC: 55 }, ambientTemperatureC: 30
+  });
+  const wet = advanceTireThermalState({
+    previous: base, dt: 1,
+    patch: { longitudinalVelocityMps: 25, wheelAngularVelocityRadps: 75,
+      effectiveRollingRadiusM: 0.33, normalLoadN: 3800 },
+    material: { surfaceTemperatureC: 5, standingWaterDepthMm: 5 }, ambientTemperatureC: 5
+  });
+  assert.ok(hot.treadTemperatureC > wet.treadTemperatureC);
+  assert.notEqual(hot.treadTemperatureC, hot.carcassTemperatureC);
+  assert.notEqual(hot.carcassTemperatureC, hot.internalAirTemperatureC);
+  assert.ok(hot.effectivePressurePsi > 32);
+});
+
 test('split grip and an unloaded wheel produce independent finite force limits', () => {
   const model = new ContactPatchTireModel();
   const result = model.step({
@@ -65,6 +112,49 @@ test('split grip and an unloaded wheel produce independent finite force limits',
   for (const wheel of Object.values(result.contactPatches)) {
     Object.values(wheel.worldForceN).forEach((value) => assert.ok(Number.isFinite(value)));
   }
+});
+
+test('known surface geometry never gives airborne wheels fallback static load', () => {
+  const model = new ContactPatchTireModel();
+  const surfaceHeightByWheel = { fl: 0, fr: 0, rl: 0, rr: 0 };
+  const airborneState = createVehicleDynamicsState({
+    position: { x: 0, y: config.cgHeightM + 1, z: 0 },
+    velocity: { x: 0, y: 0, z: 20 },
+    speedMps: 20
+  });
+  const result = model.step({
+    state: airborneState,
+    controls: { ...controls, steering: 1, throttle: 1, brake: 1, handbrake: 1 },
+    config,
+    dt: 1 / 360,
+    environment: { surfaceHeightByWheel }
+  });
+
+  assert.equal(result.grounded, false);
+  assert.deepEqual(result.wheelLoadsN, { fl: 0, fr: 0, rl: 0, rr: 0 });
+  assert.deepEqual(result.suspensionForceWorldN, { x: 0, y: 0, z: 0 });
+  assert.deepEqual(result.worldForceN, { x: 0, y: 0, z: 0 });
+  assert.deepEqual(result.worldMomentNm, { x: 0, y: 0, z: 0 });
+});
+
+test('geometric suspension preload supports weight and unloads continuously at full droop', () => {
+  const model = new ContactPatchTireModel();
+  const heights = { fl: 0, fr: 0, rl: 0, rr: 0 };
+  const evaluate = (heightM) => model.step({
+    state: createVehicleDynamicsState({ position: { x: 0, y: heightM, z: 0 } }),
+    controls,
+    config,
+    dt: 1 / 360,
+    environment: { surfaceHeightByWheel: heights }
+  });
+  const supported = evaluate(config.cgHeightM);
+  assert.ok(Math.abs(Object.values(supported.wheelLoadsN).reduce((sum, load) => sum + load, 0)
+    - config.massKg * 9.81) < 0.01);
+  const staticCompressionM = (config.massKg * 9.81 / 4) / config.suspensionSpringRateNpm;
+  const nearDroop = evaluate(config.cgHeightM + staticCompressionM - 0.0001);
+  const beyondDroop = evaluate(config.cgHeightM + staticCompressionM + 0.0001);
+  assert.ok(nearDroop.wheelLoadsN.fl < 5);
+  assert.equal(beyondDroop.wheelLoadsN.fl, 0);
 });
 
 test('physical deceleration differential allocates engine braking by per-wheel capacity', () => {

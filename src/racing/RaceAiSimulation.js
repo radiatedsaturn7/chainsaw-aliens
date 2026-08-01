@@ -97,6 +97,11 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
     });
   }
   const runner = ai.vehicleDynamicsRunner;
+  const tireSetup = editor.getRaceCarSetup(car);
+  const aiWeather = editor.getRaceWeatherState(editor.selectedRace, editor.playtestSession);
+  const ambientTemperatureC = aiWeather.id === 'snow' ? -4
+    : aiWeather.id === 'storm' ? 13
+      : aiWeather.id === 'rain' ? 16 : 22;
   runner.environmentProvider = ({ state, controls: fixedControls }) => {
     const positions = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId,
       calculateWheelContactKinematics({
@@ -134,6 +139,25 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
           surfaceId: contact.surfaceId || contact.surface
         }];
       })),
+      tireByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
+        const compound = editor.getRaceTireCompound(tireSetup.tireCompoundByWheel[wheelId]);
+        const thermal = state.tireState?.[wheelId] || {};
+        return [wheelId, {
+          compound,
+          compoundGrip: compound.surfaceGrip?.[fixedContacts.contacts?.[wheelId]?.surfaceId] ?? 1,
+          widthMm: tireSetup.tireSize?.widthMm,
+          aspectRatio: tireSetup.tireSize?.aspectRatio,
+          wheelDiameterIn: tireSetup.tireSize?.wheelDiameterIn,
+          coldPressurePsi: tireSetup.tirePressurePsi[wheelId],
+          pressurePsi: thermal.effectivePressurePsi ?? tireSetup.tirePressurePsi[wheelId],
+          effectivePressurePsi: thermal.effectivePressurePsi ?? tireSetup.tirePressurePsi[wheelId],
+          treadTemperatureC: thermal.treadTemperatureC,
+          temperatureF: thermal.temperatureF ?? 70,
+          wear: thermal.wear ?? 0,
+          damage: Number(ai.damage?.tires?.[wheelId] || 0)
+        }];
+      })),
+      ambientTemperatureC,
       targetVelocityWorld
     };
   };

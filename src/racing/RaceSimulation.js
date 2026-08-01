@@ -44,11 +44,27 @@ function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
     config,
     initialState: {
       worldX: session.worldX,
-      heightM: Number(initialContacts.averageHeightM || 0) + config.cgHeightM,
+      heightM: (session.grounded === false || session.airborne)
+        && Number.isFinite(Number(session.bodyY ?? session.heightM))
+        ? Number(session.bodyY ?? session.heightM)
+        : Number(initialContacts.averageHeightM || 0) + config.cgHeightM,
       worldZ: session.worldZ,
       speedMps: session.speedMps,
+      velocity: {
+        x: Math.sin(Number(session.velocityYaw ?? session.carYaw ?? 0)) * Number(session.speedMps || 0),
+        y: Number(session.verticalVelocityMps || 0),
+        z: Math.cos(Number(session.velocityYaw ?? session.carYaw ?? 0)) * Number(session.speedMps || 0)
+      },
       carYaw: session.carYaw,
       yawVelocityRadps: session.yawVelocityRadps,
+      pitchRad: session.pitchRad,
+      rollRad: session.rollRad,
+      angularVelocityWorld: {
+        x: Number(session.pitchRate || 0),
+        y: Number(session.yawVelocityRadps || 0),
+        z: Number(session.rollRate || 0)
+      },
+      grounded: session.grounded !== false && !session.airborne,
       engineRpm: session.engineRpm,
       gear: session.gear
     },
@@ -80,6 +96,42 @@ function emitAuthoritativeTrackStateStep({
   const perWheel = (value) => Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
     wheelId, value(patches[wheelId] || {}, wheelId)
   ]));
+  const fixedDt = 1 / 120;
+  const physicalMutationTotalsByWheel = perWheel((patch) => {
+    const radiusM = Math.max(0.01, Number(patch.effectiveRollingRadiusM || 0.33));
+    const rollingSurfaceSpeed = Number(patch.wheelAngularVelocityRadps || 0) * radiusM;
+    const groundSpeed = Number(patch.longitudinalVelocityMps || 0);
+    const longitudinalSlipSpeed = rollingSurfaceSpeed - groundSpeed;
+    const lateralSpeed = Number(patch.lateralVelocityMps || 0);
+    const longitudinalWorkJ = Math.abs(Number(patch.longitudinalForceN || 0) * longitudinalSlipSpeed) * fixedDt;
+    const lateralWorkJ = Math.abs(Number(patch.lateralForceN || 0) * lateralSpeed) * fixedDt;
+    const rollingDistanceM = Math.abs(groundSpeed) * fixedDt;
+    const normalLoadN = Math.max(0, Number(patch.normalLoadN || 0));
+    const aquaplaning = patch.aquaplaning || {};
+    const displacementImpulseNs = Math.max(0, Number(aquaplaning.displacedWaterVolumeM3ps || 0))
+      * 1000 * Math.max(Math.abs(groundSpeed), Math.abs(rollingSurfaceSpeed)) * fixedDt;
+    const lockedWheelWorkJ = longitudinalSlipSpeed < 0 ? longitudinalWorkJ : 0;
+    const wheelspinWorkJ = longitudinalSlipSpeed > 0 ? longitudinalWorkJ : 0;
+    const surfaceHeatingWorkJ = Number(patch.frictionHeatingWorkJ
+      ?? (longitudinalWorkJ + lateralWorkJ) * 0.62);
+    const sweepWorkJ = normalLoadN * rollingDistanceM;
+    return {
+      rollingDistanceM,
+      groundedContactDurationSeconds: normalLoadN > 1 ? fixedDt : 0,
+      normalImpulseNs: normalLoadN * fixedDt,
+      longitudinalSlipWorkJ: longitudinalWorkJ,
+      lateralScrubWorkJ: lateralWorkJ,
+      lockedWheelWorkJ,
+      wheelspinWorkJ,
+      surfaceHeatingWorkJ,
+      rubberDepositionWorkJ: (longitudinalWorkJ + lateralWorkJ) * 0.82
+        + normalLoadN * rollingDistanceM * 0.025,
+      waterDisplacementImpulseNs: displacementImpulseNs,
+      looseMaterialSweepWorkJ: sweepWorkJ,
+      materialPickupCapacity: sweepWorkJ,
+      carriedMaterialDepositCapacity: sweepWorkJ
+    };
+  });
   systems.surface.queueTrackStateTireEvents(trackState, {
     vehicleId: editor.playtestSession.carId || 'player',
     normalLoads: telemetry.state?.wheelLoadsN,
@@ -93,10 +145,13 @@ function emitAuthoritativeTrackStateStep({
     previousPositions,
     speedMps: Math.abs(Number(telemetry.state?.speedMps || 0)),
     tireCompoundByWheel: setup.tireCompoundByWheel,
-    tireTemperatures: perWheel((patch) => Number(patch.temperatureF || 70)),
+    tireTemperatures: perWheel((_patch, wheelId) => Number(
+      telemetry.state?.tireState?.[wheelId]?.temperatureF || 70
+    )),
     brakeState: { lockByWheel: perWheel((patch) => Math.max(0, -Number(patch.slipRatio || 0))) },
     wheelSpinByWheel: perWheel((patch) => Math.max(0, Number(patch.slipRatio || 0))),
-    contactDurationSeconds: 1 / 120,
+    physicalMutationTotalsByWheel,
+    contactDurationSeconds: fixedDt,
     direction: editor.getRaceForwardVector(Number(telemetry.state?.yawRad || 0))
   });
   return {
@@ -147,6 +202,7 @@ function advanceVehicleDynamicsAuthority(editor, {
       return [wheelId, {
         compound,
         pressurePsi: pressure.pressurePsi ?? setup.tirePressurePsi[wheelId],
+        coldPressurePsi: setup.tirePressurePsi[wheelId],
         targetPressurePsi: pressure.targetPsi,
         widthMm: setup.tireSize?.widthMm,
         aspectRatio: setup.tireSize?.aspectRatio,
@@ -180,6 +236,10 @@ function advanceVehicleDynamicsAuthority(editor, {
       },
       wheelSurfaceState: { positions }
     });
+    const trackWeatherForcing = systems.surface.createTrackStateWeatherForcing({
+      weatherState,
+      race: editor.selectedRace
+    });
     return {
       surfaceHeightByWheel: { ...(fixedContacts.heights || wheelContactState?.heights || {}) },
       surfaceNormalByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
@@ -197,6 +257,7 @@ function advanceVehicleDynamicsAuthority(editor, {
       }];
       })),
     targetVelocityWorld: countdownActive ? authority.formationTargetVelocityWorld : null,
+    ambientTemperatureC: trackWeatherForcing.ambientTemperatureC,
     tireByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
       const fixedTire = authority.tireConfigByWheel[wheelId];
       const localTrackState = fixedContacts.contacts?.[wheelId]?.trackState;
@@ -208,6 +269,13 @@ function advanceVehicleDynamicsAuthority(editor, {
         ...fixedTire,
         compoundGrip: fixedTire.compound.surfaceGrip?.[fixedContacts.contacts?.[wheelId]?.surfaceId] ?? 1,
         temperatureF: state.tireState?.[wheelId]?.temperatureF ?? 70,
+        treadTemperatureC: state.tireState?.[wheelId]?.treadTemperatureC,
+        carcassTemperatureC: state.tireState?.[wheelId]?.carcassTemperatureC,
+        internalAirTemperatureC: state.tireState?.[wheelId]?.internalAirTemperatureC,
+        effectivePressurePsi: state.tireState?.[wheelId]?.effectivePressurePsi
+          ?? fixedTire.pressurePsi,
+        pressurePsi: state.tireState?.[wheelId]?.effectivePressurePsi
+          ?? fixedTire.pressurePsi,
         wear: state.tireState?.[wheelId]?.wear ?? fixedTire.wear,
         damage: state.tireState?.[wheelId]?.damage ?? fixedTire.damage,
         rollingResistanceCoefficient: 0.012 * rollingMultiplier
@@ -1753,7 +1821,10 @@ export function updateRaceSimulation({
       steering: -editor.raceInput.steeringWheel,
       throttle: countdownActive ? driverThrottle : throttle,
       brake,
-      clutch: editor.raceInput.clutchAxis,
+      // Formation/countdown throttle is a free rev. Record clutch disengagement
+      // in the authoritative input timeline so replay cannot turn it into wheel
+      // torque or a suspension pitch moment.
+      clutch: countdownActive ? 1 : editor.raceInput.clutchAxis,
       handbrake,
       requestedGear: editor.raceInput.gear,
       assists: {
@@ -2048,6 +2119,21 @@ export function updateRaceSimulation({
       routeLength,
       routeRuntimeType
     });
+    const authoritativeTires = editor.playtestSession.vehicleDynamicsRunner?.state?.tireState || {};
+    editor.playtestSession.diagnostics.tireTemperature = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+      wheelId,
+      Number(authoritativeTires[wheelId]?.temperatureF
+        ?? editor.playtestSession.diagnostics.tireTemperature?.[wheelId] ?? 70)
+    ]));
+    editor.playtestSession.diagnostics.tireThermal = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+      wheelId,
+      {
+        treadTemperatureC: Number(authoritativeTires[wheelId]?.treadTemperatureC || 0),
+        carcassTemperatureC: Number(authoritativeTires[wheelId]?.carcassTemperatureC || 0),
+        internalAirTemperatureC: Number(authoritativeTires[wheelId]?.internalAirTemperatureC || 0),
+        effectivePressurePsi: Number(authoritativeTires[wheelId]?.effectivePressurePsi || 0)
+      }
+    ]));
   }
   const tireFxContext = {
     tireSlipByWheel,
