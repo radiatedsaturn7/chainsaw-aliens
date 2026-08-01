@@ -18985,6 +18985,7 @@ export default class RaceEditor {
   } = {}) {
     if (!camera || !this.playtestSession?.trackState) return 0;
     this.getRaceTrackStateVisualAtlas(debug ? 128 : 192, debug ? 140 : 192);
+    if (typeof document === 'undefined') return 0;
     const cells = this.getRaceTrackStateVisualCells(debug ? 70 : 95);
     if (!cells.length) return 0;
     const projectedCells = cells.map((cell) => {
