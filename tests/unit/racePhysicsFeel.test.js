@@ -307,7 +307,8 @@ test('Race 1200 HP AWD dirt steering remains traction-limited while third-person
   assert.equal(Number.isFinite(dirt.min3dLoadSensitivity), true);
   assert.equal(Number.isFinite(dirt.min3dFrictionCircle), true);
   assert.equal(dirt.min3dFrictionCircle < 0.75, true);
-  assert.equal(dirt.maxEffectiveFrictionMu < 1.05, true);
+  assert.equal(dirt.maxEffectiveFrictionMu < 1.05, true,
+    `expected dirt friction below 1.05, received ${dirt.maxEffectiveFrictionMu}`);
   assert.equal(dirt.minEffectiveFrictionMu > 0.28, true);
 });
 

@@ -150,7 +150,8 @@ test('geometric suspension preload supports weight and unloads continuously at f
   const supported = evaluate(config.cgHeightM);
   assert.ok(Math.abs(Object.values(supported.wheelLoadsN).reduce((sum, load) => sum + load, 0)
     - config.massKg * 9.81) < 0.01);
-  const staticCompressionM = (config.massKg * 9.81 / 4) / config.suspensionSpringRateNpm;
+  const staticCompressionM = (config.massKg * 9.81 / 4)
+    / supported.suspensionState.fl.geometry.wheelRateNpm;
   const nearDroop = evaluate(config.cgHeightM + staticCompressionM - 0.0001);
   const beyondDroop = evaluate(config.cgHeightM + staticCompressionM + 0.0001);
   assert.ok(nearDroop.wheelLoadsN.fl < 5);

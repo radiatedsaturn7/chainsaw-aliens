@@ -90,37 +90,6 @@ export class HandlingAssist {
   }
 
   getSetupPhysicsModifiers(tuning = {}) {
-    const camberGrip = clamp(
-      1 + (Math.abs(tuning.camberFront + 1.2) + Math.abs(tuning.camberRear + 1)) * -0.018,
-      0.9,
-      1.04
-    );
-    const toePenalty = clamp(1 - (Math.abs(tuning.toeFront) + Math.abs(tuning.toeRear)) * 0.035, 0.9, 1);
-    const casterStability = clamp(1 + (tuning.casterFront - 5.5) * 0.025, 0.92, 1.08);
-    const ridePenalty = clamp(
-      1 - Math.abs(tuning.rideHeightFront - tuning.rideHeightRear) * 0.08,
-      0.94,
-      1.02
-    );
-    const springBalance = clamp(1 + (tuning.springRear - tuning.springFront) * 0.08, 0.92, 1.08);
-    const antiRollBalance = clamp(
-      1 + (tuning.antiRollRear - tuning.antiRollFront) * 0.06,
-      0.94,
-      1.06
-    );
-    const dampingGrip = clamp(
-      1 - (
-        Math.abs(tuning.bumpFront - tuning.reboundFront)
-        + Math.abs(tuning.bumpRear - tuning.reboundRear)
-      ) * 0.035,
-      0.92,
-      1.03
-    );
-    const travelCompliance = clamp(
-      0.92 + (tuning.suspensionTravelFront + tuning.suspensionTravelRear) * 0.08,
-      0.9,
-      1.08
-    );
     const centerBias = tuning.drivetrain === 'awd'
       ? clamp(Number(tuning.centerDifferentialBalance) || 0.5, 0.1, 0.9)
       : 0.5;
@@ -131,18 +100,10 @@ export class HandlingAssist {
       ? clamp(1 + (centerBias - 0.5) * 0.18, 0.92, 1.08)
       : 1;
     return {
-      grip: camberGrip * toePenalty * ridePenalty * dampingGrip * travelCompliance,
-      frontGrip: awdFrontBias * clamp(
-        1 - (springBalance - 1) * 0.24 - (antiRollBalance - 1) * 0.18,
-        0.88,
-        1.12
-      ),
-      rearGrip: awdRearBias * clamp(
-        1 + (springBalance - 1) * 0.24 + (antiRollBalance - 1) * 0.18,
-        0.88,
-        1.12
-      ),
-      yawStability: casterStability * clamp(
+      grip: 1,
+      frontGrip: awdFrontBias,
+      rearGrip: awdRearBias,
+      yawStability: clamp(
         1 + (tuning.rearDifferentialDecel - tuning.frontDifferentialDecel) * 0.04,
         0.94,
         1.06

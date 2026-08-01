@@ -376,9 +376,10 @@ test('WRX GT launch, braking, and skidpad attitude stays physically bounded', ()
     initialState: { speedMps: 18, velocity: { x: 0, y: 0, z: 18 } }
   });
   const maxRollDeg = skidpad.maxRollRad * 180 / Math.PI;
-  assert.ok(skidpad.maxLateralAccelerationMps2 > 7.5);
-  assert.ok(maxRollDeg > 2.5);
-  assert.ok(maxRollDeg < 6);
+  assert.ok(skidpad.maxLateralAccelerationMps2 > 7.5,
+    `expected skidpad lateral acceleration above 7.5 m/s², got ${skidpad.maxLateralAccelerationMps2}`);
+  assert.ok(maxRollDeg > 2.5, `expected skidpad roll above 2.5°, got ${maxRollDeg}°`);
+  assert.ok(maxRollDeg < 6, `expected skidpad roll below 6°, got ${maxRollDeg}°`);
   assert.ok(skidpad.runner.state.suspensionState.fl.antiRollLoadTransferN
     !== skidpad.runner.state.suspensionState.fr.antiRollLoadTransferN);
 });
@@ -431,7 +432,8 @@ test('WRX GT cannot discharge impossible wheelspin into self-acceleration near 4
   assert.ok(Math.max(...Object.values(runner.state.wheelSlip)) < 0.1);
   for (let index = 0; index < 360; index += 1) {
     runner.advance(1 / 120);
-    assert.ok(runner.state.speedMps <= releaseSpeedMps + 0.000001);
+    assert.ok(runner.state.speedMps <= releaseSpeedMps + 0.000001,
+      `coast speed ${runner.state.speedMps} exceeded release speed ${releaseSpeedMps} at step ${index}`);
   }
   assert.ok(runner.state.speedMps < releaseSpeedMps - 3);
 });

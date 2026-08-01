@@ -15,6 +15,7 @@ import {
   normalizeVehicleControlInput
 } from './simulation/VehicleDynamicsRunner.js';
 import { calculateWheelContactKinematics } from './simulation/ContactPatchTireModel.js';
+import { createDeterministicAtmosphere, createRaceWakeSources } from './simulation/AeroEnvironment.js';
 
 function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
   const session = editor.playtestSession;
@@ -213,8 +214,8 @@ function advanceVehicleDynamicsAuthority(editor, {
       }];
     }));
   }
-  authority.runner.environmentProvider = ({ state, controls: fixedControls }) => {
-    const positions = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
+  authority.runner.environmentProvider = ({ state, controls: fixedControls, timeSeconds }) => {
+    const preliminaryPatches = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
       const patch = calculateWheelContactKinematics({
         state,
         controls: fixedControls,
@@ -222,8 +223,11 @@ function advanceVehicleDynamicsAuthority(editor, {
         environment: {},
         wheelId
       });
-      return [wheelId, patch.contactPointWorld];
+      return [wheelId, patch];
     }));
+    const positions = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+      wheelId, preliminaryPatches[wheelId].contactPointWorld
+    ]));
     const fixedContacts = editor.getRaceWheelContactState({
       car: editor.getRaceSessionCar(session),
       tuning,
@@ -240,10 +244,60 @@ function advanceVehicleDynamicsAuthority(editor, {
       weatherState,
       race: editor.selectedRace
     });
+    const atmosphere = createDeterministicAtmosphere({
+      weatherState,
+      race: editor.selectedRace,
+      timeSeconds
+    });
+    const panelDamage = damage.panels || {};
+    const footprintOffsets = [
+      [-0.7, -0.42], [-0.7, 0.42], [0.7, -0.42], [0.7, 0.42],
+      [-0.15, 0], [0.15, 0], [0, -0.48], [0, 0.48]
+    ].slice(0, authority.runner.config.contactFootprintSamples);
+    const tireWidthM = Math.max(0.12, Number(setup.tireSize?.widthMm || 245) / 1000);
+    const sampleFootprint = ([longitudinal, lateral]) => {
+      const samplePositions = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
+        const patch = preliminaryPatches[wheelId];
+        return [wheelId, {
+          x: patch.contactPointWorld.x + patch.wheelForwardWorld.x * longitudinal * 0.16
+            + patch.wheelLateralWorld.x * lateral * tireWidthM,
+          y: patch.contactPointWorld.y,
+          z: patch.contactPointWorld.z + patch.wheelForwardWorld.z * longitudinal * 0.16
+            + patch.wheelLateralWorld.z * lateral * tireWidthM
+        }];
+      }));
+      return editor.getRaceWheelContactState({
+        car: editor.getRaceSessionCar(session), tuning,
+        session: { ...session, grounded: state.grounded, airborne: !state.grounded, vehicle3d: null,
+          trackState: countdownActive ? null : session.trackState },
+        wheelSurfaceState: { positions: samplePositions }
+      });
+    };
+    const footprintContacts = footprintOffsets.slice(0, 4).map(sampleFootprint);
+    const needsAdaptiveSamples = RACE_WHEEL_IDS.some((wheelId) => {
+      const heights = footprintContacts.map((sample) => Number(sample.heights?.[wheelId]));
+      return heights.some((height) => !Number.isFinite(height))
+        || Math.max(...heights) - Math.min(...heights) > 0.02;
+    });
+    if (needsAdaptiveSamples) {
+      footprintContacts.push(...footprintOffsets.slice(4).map(sampleFootprint));
+    }
     return {
       surfaceHeightByWheel: { ...(fixedContacts.heights || wheelContactState?.heights || {}) },
       surfaceNormalByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
         wheelId, fixedContacts.contacts?.[wheelId]?.normal || wheelSurfaceState.normalByWheel?.[wheelId]
+      ])),
+      contactSamplesByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId,
+        footprintContacts.map((sample) => {
+          const normal = sample.contacts?.[wheelId]?.normal || { x: 0, y: 1, z: 0 };
+          return {
+            heightM: sample.heights?.[wheelId],
+            normalX: normal.x,
+            normalY: normal.y,
+            normalZ: normal.z,
+            supported: Number.isFinite(Number(sample.heights?.[wheelId]))
+          };
+        })
       ])),
       materialByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
       const contact = fixedContacts.contacts?.[wheelId] || {};
@@ -257,7 +311,14 @@ function advanceVehicleDynamicsAuthority(editor, {
       }];
       })),
     targetVelocityWorld: countdownActive ? authority.formationTargetVelocityWorld : null,
-    ambientTemperatureC: trackWeatherForcing.ambientTemperatureC,
+      ambientTemperatureC: trackWeatherForcing.ambientTemperatureC,
+      ...atmosphere,
+      vehicleId: 'player',
+      wakeSources: createRaceWakeSources(session, { playerWidthM: Number(tuning.widthM || 1.8) }),
+      bodyDamage: Math.max(0, ...Object.values(panelDamage).map(Number)),
+      frontAeroDamage: clamp(Number(panelDamage.front || 0) / 100, 0, 1),
+      rearAeroDamage: clamp(Number(panelDamage.rear || 0) / 100, 0, 1),
+      activeAeroState: Number(session.activeAeroState || 0),
     tireByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
       const fixedTire = authority.tireConfigByWheel[wheelId];
       const localTrackState = fixedContacts.contacts?.[wheelId]?.trackState;
