@@ -6,6 +6,7 @@ const raceEditorUrl = new URL('../../src/ui/RaceEditor.js', import.meta.url);
 const simulationUrl = new URL('../../src/racing/RaceSimulation.js', import.meta.url);
 const surfaceModelUrl = new URL('../../src/racing/simulation/SurfaceModel.js', import.meta.url);
 const trackStateUrl = new URL('../../src/racing/trackState/TrackState.js', import.meta.url);
+const damageModelUrl = new URL('../../src/racing/simulation/DamageModel.js', import.meta.url);
 
 test('RaceEditor playtest update is an orchestration boundary, not a dynamics loop', async () => {
   const source = await readFile(raceEditorUrl, 'utf8');
@@ -28,7 +29,24 @@ test('racing layer owns the extracted numerical player step', async () => {
   assert.match(source, /getAuthoritativeVehicleState/);
   assert.match(source, /getRaceDrivenTractionLimit/);
   assert.match(source, /getRaceBrakeForceForInput/);
-  assert.match(source, /updateRaceVehicle3DContactState/);
+  assert.match(source, /syncVehicleDynamicsCompatibilityOutputs/);
+  assert.match(source, /vehicleDynamicsRunner/);
+});
+
+test('normal runtime has no legacy planar follower or direct collision pose integrator', async () => {
+  const [editorSource, simulationSource, damageSource] = await Promise.all([
+    readFile(raceEditorUrl, 'utf8'),
+    readFile(simulationUrl, 'utf8'),
+    readFile(damageModelUrl, 'utf8')
+  ]);
+  assert.doesNotMatch(simulationSource, /playtestSession\.(?:speedMps|worldX|worldZ|carYaw|velocityYaw|yawVelocityRadps)\s*=/);
+  assert.doesNotMatch(damageSource, /session\.(?:speedMps|worldX|worldZ|carYaw|yawVelocityRadps)\s*[+*\/-]?=/);
+  assert.doesNotMatch(editorSource, /syncRaceSessionPlanarBodyToWorld/);
+  assert.doesNotMatch(editorSource, /preservePlanarPosition/);
+  const previewStart = editorSource.indexOf('  updateCarEditorPreviewPlaytest(');
+  const previewEnd = editorSource.indexOf('\n  drawCarEditorStudioSprintPreviewRoad(', previewStart);
+  const previewMethod = editorSource.slice(previewStart, previewEnd);
+  assert.doesNotMatch(previewMethod, /playtestSession\.(?:worldX|worldZ|carYaw)\s*[+\-]?=/);
 });
 
 test('Track State dynamics stay in the racing subsystem and RaceEditor only orchestrates them', async () => {

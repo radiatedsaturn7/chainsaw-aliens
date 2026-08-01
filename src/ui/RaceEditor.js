@@ -47,7 +47,9 @@ import {
   updateRaceWearAndDamage
 } from '../racing/simulation/DamageModel.js';
 import { RACE_CONTROLLER_STEERING, RACE_PEDAL_INPUT, RACE_THREE_ELEVATION_M } from '../racing/simulation/RaceSimulationConfig.js';
+import { syncVehicleDynamicsCompatibilityOutputs } from '../racing/simulation/VehicleState.js';
 import { createRaceTrackStateSeed } from '../racing/trackState/TrackStateIntegration.js';
+import { createTrackStateVisualAtlas } from '../racing/trackState/TrackStateVisualAtlas.js';
 import { DEFAULT_TILE_TYPES } from '../content/tileDefinitions.js';
 import { getLandscapeHandheldLayout, getPortraitHandheldLayout } from './shared/canvasViewportLayout.js';
 import {
@@ -2224,11 +2226,39 @@ export default class RaceEditor {
     this.clearRaceThirdPersonCameraState(this.playtestSession);
     this.raceInput.steeringTarget = 0;
     this.raceInput.steeringWheel = 0;
+    const authority = this.playtestSession.vehicleDynamicsRunner;
     const car = this.getRaceSessionCar(this.playtestSession);
+    const tuning = this.getRaceCarTuning(car);
+    if (authority) {
+      const resetContacts = this.getRaceWheelContactState({
+        car,
+        tuning,
+        session: { ...this.playtestSession, vehicle3d: null }
+      });
+      const resetSurfaceHeightM = Number.isFinite(Number(resetContacts?.averageHeightM))
+        ? Number(resetContacts.averageHeightM)
+        : Number(pose.elevation || 0) * RACE_THREE_ELEVATION_M;
+      authority.replaceAuthoritativeState({
+        worldX: this.playtestSession.worldX,
+        heightM: resetSurfaceHeightM + authority.config.cgHeightM,
+        worldZ: this.playtestSession.worldZ,
+        velocity: {
+          x: Math.sin(yaw) * this.playtestSession.speedMps,
+          y: 0,
+          z: Math.cos(yaw) * this.playtestSession.speedMps
+        },
+        speedMps: this.playtestSession.speedMps,
+        carYaw: yaw,
+        engineRpm: this.playtestSession.engineRpm,
+        gear: this.playtestSession.gear
+      });
+      syncVehicleDynamicsCompatibilityOutputs(authority, this.playtestSession);
+      return;
+    }
     this.resetRaceVehiclePhysicsState({
       session: this.playtestSession,
       car,
-      tuning: this.getRaceCarTuning(car)
+      tuning
     });
   }
 
@@ -13282,18 +13312,25 @@ export default class RaceEditor {
     const lateralRate = 7.2 - drift * 3.2;
     const lateralAlpha = clamp(1 - Math.exp(-dt * lateralRate), 0, 1);
     const maxDriftLagM = 0.7 + speedFactor * 0.45 + drift * 0.55;
-    const desiredLagM = clamp(drift * Math.abs(lateralError) * (1 - lateralAlpha), 0, maxDriftLagM);
+    const signedSlipYaw = normalizeAngle(
+      Number(session.velocityYaw ?? yaw) - Number(session.carYaw ?? yaw)
+    );
+    const slipLagM = drift * Math.abs(Math.sin(signedSlipYaw)) * (0.72 + speedFactor * 0.38);
+    const desiredLagM = clamp(Math.max(
+      drift * Math.abs(lateralError) * (1 - lateralAlpha),
+      slipLagM
+    ), 0, maxDriftLagM);
     const maxLateralError = maxDriftLagM;
     let nextX = previousX + forward.x * forwardError * forwardAlpha + right.x * lateralError * lateralAlpha;
     let nextZ = previousZ + forward.z * forwardError * forwardAlpha + right.z * lateralError * lateralAlpha;
     const nextDx = carX - nextX;
     const nextDz = carZ - nextZ;
     const nextLateralError = clamp(nextDx * right.x + nextDz * right.z, -maxLateralError, maxLateralError);
-    const nextForwardError = nextDx * forward.x + nextDz * forward.z;
+    const nextForwardError = clamp(nextDx * forward.x + nextDz * forward.z, -1.4, 1.4);
     nextX = carX - forward.x * nextForwardError - right.x * nextLateralError;
     nextZ = carZ - forward.z * nextForwardError - right.z * nextLateralError;
     if (desiredLagM > 0.001 && Math.abs(nextLateralError) < desiredLagM) {
-      const sign = Math.sign(lateralError || nextLateralError || 1);
+      const sign = Math.sign(signedSlipYaw || lateralError || nextLateralError || 1);
       nextX = carX - forward.x * nextForwardError - right.x * sign * desiredLagM;
       nextZ = carZ - forward.z * nextForwardError - right.z * sign * desiredLagM;
     }
@@ -15006,11 +15043,7 @@ export default class RaceEditor {
   } = {}) {
     if (!session) return null;
     session.vehicle3d = this.createRaceVehiclePhysicsStateForSession({ session, car, tuning });
-    this.raceSimulationSystems.chassis.syncToSession(
-      session.vehicle3d,
-      session,
-      { preservePlanarPosition: true }
-    );
+    this.raceSimulationSystems.chassis.syncToSession(session.vehicle3d, session);
     return session.vehicle3d;
   }
 
@@ -16313,17 +16346,22 @@ export default class RaceEditor {
     const launchHoldActive = Number(session?.launchLockMs || 0) > 0
       && absSpeed < 2.2
       && Math.abs(lookAngle) < 0.001;
-    if (launchHoldActive && Number.isFinite(session?.startYaw)) return Number(session.startYaw);
     const carYaw = Number(session?.carYaw || 0);
+    const preliminaryVelocityYaw = Number.isFinite(Number(session?.velocityYaw))
+      ? Number(session.velocityYaw)
+      : carYaw;
+    if (launchHoldActive
+      && Math.abs(normalizeAngle(preliminaryVelocityYaw - carYaw)) < 0.2
+      && Number.isFinite(session?.startYaw)) return Number(session.startYaw);
     const car = this.getRaceSessionCar(session);
     if (this.getCarCameraTrackingMode(car) === 'fixed-rear') {
       return normalizeAngle(carYaw + lookAngle);
     }
-    const velocityYaw = Number.isFinite(Number(session?.velocityYaw)) ? Number(session.velocityYaw) : carYaw;
+    const velocityYaw = preliminaryVelocityYaw;
     const slipYaw = Math.abs(normalizeAngle(velocityYaw - carYaw));
     const tireSlip = session?.tireSlip || {};
     const driftCameraAssist = Math.max(
-      clamp((slipYaw - 0.16) / 0.46, 0, 1),
+      clamp((slipYaw - 0.02) / 0.18, 0, 1),
       clamp(Number(tireSlip.rearBreakaway || 0), 0, 1) * 0.82,
       clamp(Number(tireSlip.wheelSpin || 0), 0, 1) * 0.58,
       clamp(Number(tireSlip.scrub || 0), 0, 1) * 0.48
@@ -16344,6 +16382,7 @@ export default class RaceEditor {
     const travelYaw = carYaw + normalizeAngle(velocityYaw - carYaw) * velocityBlend;
     const targetYaw = travelYaw + lookAngle;
     if (!smooth || !session) return targetYaw;
+    if (slipYaw > 0.12 || driftCameraAssist > 0.45 || severePowerSpin > 0.3) return normalizeAngle(targetYaw);
     const dt = clamp(Number(seconds) || 0, 0, 0.12);
     const previousYaw = Number.isFinite(Number(session.cameraYaw)) ? Number(session.cameraYaw) : targetYaw;
     const reset = Number(session.edgeResetFadeMs || 0) > 0
@@ -16352,10 +16391,12 @@ export default class RaceEditor {
     if (reset || dt <= 0) return targetYaw;
     const yawError = normalizeAngle(targetYaw - previousYaw);
     const speedFactor = clamp(absSpeed / 42, 0, 1);
-    const maxYawRate = 4.4 + speedFactor * 3.2 + driftCameraAssist * 2.4 + severePowerSpin * 2.2;
+    const maxYawRate = 4.4 + speedFactor * 3.2 + driftCameraAssist * 8.4 + severePowerSpin * 7.2;
     const maxStep = Math.max(0.015, maxYawRate * dt);
     const limitedStep = clamp(yawError, -maxStep, maxStep);
-    const catchUpAlpha = clamp(1 - Math.exp(-dt * (2.4 + speedFactor * 2.2 + driftCameraAssist * 2.6)), 0, 1);
+    const catchUpAlpha = clamp(1 - Math.exp(-dt * (
+      2.4 + speedFactor * 2.2 + driftCameraAssist * 9.6 + severePowerSpin * 7.5
+    )), 0, 1);
     return normalizeAngle(previousYaw + limitedStep + (yawError - limitedStep) * catchUpAlpha * 0.28);
   }
 
@@ -16913,9 +16954,10 @@ export default class RaceEditor {
     if (surface === 'dirt') return 'dirtDust';
     if (terrain !== 'road' && terrain !== 'margin') return 'grassDust';
     const speed = Math.abs(Number(speedMps) || 0);
-    const burnout = Number(wheelSpin || 0) > 0.72 && speed > 1.2;
+    const burnout = Number(wheelSpin || 0) > 0.72;
     const hardRearLock = Number(handbrake || 0) > 0.2 && speed > 8;
-    const brakeFlatSpot = Number(brakeLock || 0) > 0.42 && speed > 7;
+    const brakeFlatSpot = Number(brakeLock || 0) > 0.72
+      || (Number(brakeLock || 0) > 0.42 && speed > 7);
     if (burnout || hardRearLock || brakeFlatSpot) return 'skidSmoke';
     return Number(slip || 0) > 0.54 && speed > 9 ? 'asphaltSkid' : '';
   }
@@ -17077,7 +17119,14 @@ export default class RaceEditor {
     session.tireFxParticles = particles;
     session.tireFxEmitAccumulators = session.tireFxEmitAccumulators || {};
     const speed = Math.abs(Number(speedMps || session.speedMps || 0));
-    if (speed < 0.9) return;
+    const hasStationarySlip = RACE_WHEEL_IDS.some((wheelId) => (
+      Math.max(
+        Number(tireSlipByWheel?.[wheelId] || 0),
+        Number(brakeState?.lockByWheel?.[wheelId] || 0),
+        Number(wheelSpinByWheel?.[wheelId] ?? wheelSpin) || 0
+      ) * clamp(Number(wheelContactScaleByWheel?.[wheelId] ?? 1) || 0, 0, 1) >= 0.24
+    ));
+    if (speed < 0.9 && !hasStationarySlip) return;
     const fxSettings = this.ensureRaceTireFxSettings();
     RACE_WHEEL_IDS.forEach((wheelId) => {
       const contact = clamp(Number(wheelContactScaleByWheel?.[wheelId] ?? 1) || 0, 0, 1);
@@ -17333,9 +17382,16 @@ export default class RaceEditor {
     car = this.selectedCar,
     tuning = this.getRaceCarTuning(car),
     seconds = 0,
-    previousSpeedMps = Number(ai.speedMps || 0)
+    previousSpeedMps = Number(ai.speedMps || 0),
+    targetVelocityWorld = null
   } = {}) {
-    return updateRaceAiVehiclePhysics(this, ai, { car, tuning, seconds, previousSpeedMps });
+    return updateRaceAiVehiclePhysics(this, ai, {
+      car,
+      tuning,
+      seconds,
+      previousSpeedMps,
+      targetVelocityWorld
+    });
   }
 
   getRaceAiLongitudinalPhysicsStep(ai = {}, {
@@ -18639,6 +18695,7 @@ export default class RaceEditor {
     this.drawRaceCountdown(ctx, bounds);
     this.drawRaceEdgeResetFade(ctx, bounds);
     if (this.raceInput.paused) this.drawRacePauseOverlay(ctx, bounds);
+    this.drawRaceDisplayModeFilter(ctx, bounds);
     ctx.restore();
     if (renderStartMs > 0) {
       const elapsedMs = Math.max(0, performance.now() - renderStartMs);
@@ -18651,6 +18708,23 @@ export default class RaceEditor {
         physicsInDraw: false
       };
     }
+  }
+
+  drawRaceDisplayModeFilter(ctx, bounds = {}) {
+    if (!this.isLivePlaytestSession() || typeof this.game?.drawDisplayModeFilter !== 'function') return false;
+    const x = Number(bounds.x || 0);
+    const y = Number(bounds.y || 0);
+    const width = Math.max(0, Number(bounds.w || 0));
+    const height = Math.max(0, Number(bounds.h || 0));
+    if (width <= 0 || height <= 0) return false;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, width, height);
+    ctx.clip();
+    ctx.translate(x, y);
+    this.game.drawDisplayModeFilter(ctx, width, height);
+    ctx.restore();
+    return true;
   }
 
   getRacePhysicsSurfaceCamera(bounds = {}) {
@@ -18864,8 +18938,14 @@ export default class RaceEditor {
     })
       .filter((cell) => Math.max(
         Number(cell.wetness || 0),
+        Number(cell.dampness || 0),
+        Number(cell.standingWater || 0),
+        Number(cell.puddles || 0),
         Number(cell.rubber || 0),
         Number(cell.loose || 0),
+        Number(cell.marbles || 0),
+        Number(cell.dirt || 0),
+        Number(cell.mud || 0),
         Number(cell.snow || 0),
         Number(cell.ice || 0),
         Number(cell.oil || 0),
@@ -18881,12 +18961,31 @@ export default class RaceEditor {
     return cells;
   }
 
+  getRaceTrackStateVisualAtlas(resolution = 192, worldSizeM = 192) {
+    const session = this.playtestSession;
+    const trackState = session?.trackState;
+    if (!trackState) return null;
+    const planar = this.getRaceSessionPlanarWorldPosition(session);
+    const key = `${trackState.stepIndex}:${Math.floor(planar.x / 8)}:${Math.floor(planar.z / 8)}:${resolution}:${worldSizeM}`;
+    if (session.trackStateVisualAtlas?.key === key) return session.trackStateVisualAtlas.value;
+    const value = createTrackStateVisualAtlas(trackState, {
+      centerX: planar.x,
+      centerZ: planar.z,
+      resolution,
+      worldSizeM
+    });
+    session.trackStateVisualAtlas = { key, value };
+    return value;
+  }
+
   drawRaceTrackStateOverlay(ctx, bounds, {
     camera = null,
     cameraYaw = 0,
     debug = false
   } = {}) {
     if (!camera || !this.playtestSession?.trackState) return 0;
+    this.getRaceTrackStateVisualAtlas(debug ? 128 : 192, debug ? 140 : 192);
+    if (typeof document === 'undefined') return 0;
     const cells = this.getRaceTrackStateVisualCells(debug ? 70 : 95);
     if (!cells.length) return 0;
     const projectedCells = cells.map((cell) => {
@@ -18902,19 +19001,32 @@ export default class RaceEditor {
       const depth = points.reduce((sum, point) => sum + Number(point.cameraZ || point.renderZ || 0), 0) / points.length;
       return { cell, points, depth };
     }).filter(Boolean).sort((left, right) => right.depth - left.depth);
-    ctx.save();
+    const layer = this.playtestSession.trackStateVisualLayerCanvas
+      || (this.playtestSession.trackStateVisualLayerCanvas = document.createElement('canvas'));
+    const layerWidth = Math.max(1, Math.ceil(bounds.w));
+    const layerHeight = Math.max(1, Math.ceil(bounds.h));
+    if (layer.width !== layerWidth) layer.width = layerWidth;
+    if (layer.height !== layerHeight) layer.height = layerHeight;
+    const layerCtx = layer.getContext('2d');
+    layerCtx.clearRect(0, 0, layer.width, layer.height);
     projectedCells.forEach(({ cell, points }) => {
       const wet = clamp(Number(cell.wetness || 0), 0, 1);
       const rubber = clamp(Number(cell.rubber || 0), 0, 1);
-      const loose = clamp(Number(cell.loose || 0), 0, 1);
+      const loose = clamp(Math.max(Number(cell.loose || 0), Number(cell.marbles || 0)), 0, 1);
+      const dirt = clamp(Number(cell.dirt || 0), 0, 1);
+      const mud = clamp(Number(cell.mud || 0), 0, 1);
+      const standingWater = clamp(Number(cell.standingWater || 0), 0, 1);
       const snow = clamp(Number(cell.snow || 0), 0, 1);
       const ice = clamp(Number(cell.ice || 0), 0, 1);
       const oil = clamp(Number(cell.oil || 0), 0, 1);
       const debris = clamp(Number(cell.debris || 0), 0, 1);
       const weights = [
-        { value: wet, color: [30, 112, 178] },
+        { value: Math.max(wet, Number(cell.dampness || 0)), color: [30, 112, 178] },
+        { value: standingWater, color: [66, 151, 218] },
         { value: rubber * 0.9, color: [25, 24, 28] },
         { value: loose, color: [157, 116, 65] },
+        { value: dirt, color: [139, 101, 59] },
+        { value: mud, color: [91, 66, 43] },
         { value: snow, color: [232, 242, 249] },
         { value: ice, color: [118, 224, 246] },
         { value: oil, color: [66, 35, 82] },
@@ -18927,19 +19039,19 @@ export default class RaceEditor {
       ));
       const strength = Math.max(...weights.map((entry) => entry.value));
       const alpha = clamp((debug ? 0.28 : 0.08) + strength * (debug ? 0.52 : 0.24), 0.08, debug ? 0.82 : 0.32);
-      ctx.fillStyle = `rgba(${color[0]},${color[1]},${color[2]},${alpha.toFixed(3)})`;
-      ctx.beginPath();
-      ctx.moveTo(points[0].screenX, points[0].screenY);
-      points.slice(1).forEach((point) => ctx.lineTo(point.screenX, point.screenY));
-      ctx.closePath();
-      ctx.fill();
+      layerCtx.fillStyle = `rgba(${color[0]},${color[1]},${color[2]},${alpha.toFixed(3)})`;
+      layerCtx.beginPath();
+      layerCtx.moveTo(points[0].screenX - bounds.x, points[0].screenY - bounds.y);
+      points.slice(1).forEach((point) => layerCtx.lineTo(point.screenX - bounds.x, point.screenY - bounds.y));
+      layerCtx.closePath();
+      layerCtx.fill();
       if (debug) {
-        ctx.strokeStyle = `rgba(220,245,235,${Math.min(0.5, alpha).toFixed(3)})`;
-        ctx.lineWidth = 0.6;
-        ctx.stroke();
+        layerCtx.strokeStyle = `rgba(220,245,235,${Math.min(0.5, alpha).toFixed(3)})`;
+        layerCtx.lineWidth = 0.6;
+        layerCtx.stroke();
       }
     });
-    ctx.restore();
+    ctx.drawImage(layer, bounds.x, bounds.y, bounds.w, bounds.h);
     return projectedCells.length;
   }
 
@@ -20101,27 +20213,6 @@ export default class RaceEditor {
     };
   }
 
-  syncRaceSessionPlanarBodyToWorld(session = this.playtestSession) {
-    if (!session) return null;
-    const position = this.getRaceSessionPlanarWorldPosition(session);
-    session.bodyX = position.x;
-    session.bodyZ = position.z;
-    if (session.vehicle3d?.position) {
-      const vehicleDeltaX = position.x - Number(session.vehicle3d.position.x || 0);
-      const vehicleDeltaZ = position.z - Number(session.vehicle3d.position.z || 0);
-      session.vehicle3d.position.x = position.x;
-      session.vehicle3d.position.z = position.z;
-      if (Math.abs(vehicleDeltaX) > 0.000001 || Math.abs(vehicleDeltaZ) > 0.000001) {
-        Object.values(session.vehicle3d.wheels || {}).forEach((wheel) => {
-          if (!wheel?.contactPoint) return;
-          wheel.contactPoint.x = Number(wheel.contactPoint.x || 0) + vehicleDeltaX;
-          wheel.contactPoint.z = Number(wheel.contactPoint.z || 0) + vehicleDeltaZ;
-        });
-      }
-    }
-    return position;
-  }
-
   recordRaceThirdPersonRenderPositionDiagnostics({
     centerX = null,
     projected = null,
@@ -21012,11 +21103,19 @@ export default class RaceEditor {
       return true;
     }
     if (hit.playtestControl === 'go') {
+      if (this.raceInput.paused) {
+        this.activateRacePauseSelection();
+        return true;
+      }
       this.raceInput.throttle = true;
       this.raceInput.activeThrottlePointerId = payload.id ?? 'pointer';
       return true;
     }
     if (hit.playtestControl === 'brake') {
+      if (this.raceInput.paused) {
+        this.backRacePauseMenu();
+        return true;
+      }
       const now = Date.now();
       this.raceInput.handbrake = now - Number(this.raceInput.lastBrakeTapMs || 0) < 280;
       this.raceInput.lastBrakeTapMs = now;
@@ -26248,24 +26347,6 @@ export default class RaceEditor {
         carEditorPreview: true,
         failureRevision: preview.tuningRevision
       })) return;
-      const nextProjection = this.getRaceRouteProjectionForWorldPoint({
-        x: Number(this.playtestSession?.worldX || 0),
-        z: Number(this.playtestSession?.worldZ || 0)
-      });
-      const nextDistance = Number(nextProjection?.distance ?? this.playtestSession?.distance ?? currentDistance);
-      const routePose = this.getRaceWorldPoseAtDistance(nextDistance, {
-        runtimeType: this.playtestSession?.routeRuntimeType || this.getSelectedRaceRuntimeType(),
-        routeLength
-      });
-      const halfWidth = Math.max(1, this.getRaceRoadHalfWidthWorld());
-      const lateralM = Number(nextProjection?.lateral || 0);
-      const correction = clamp((Math.abs(lateralM) - halfWidth * 0.22) / Math.max(0.001, halfWidth * 0.72), 0, 1) * Math.min(1, seconds * 3.8);
-      if (correction > 0 && this.playtestSession) {
-        this.playtestSession.worldX += (Number(routePose.x || 0) - Number(this.playtestSession.worldX || 0)) * correction;
-        this.playtestSession.worldZ += (Number(routePose.z || 0) - Number(this.playtestSession.worldZ || 0)) * correction;
-        this.playtestSession.carYaw += normalizeAngle(Number(routePose.yaw || 0) - Number(this.playtestSession.carYaw || 0)) * correction * 0.85;
-        this.playtestSession.cameraYaw = this.playtestSession.carYaw;
-      }
       if (!this.playtestSession
         || Number(this.playtestSession.distance || 0) >= routeLength
         || Number(this.playtestSession.lap || 1) > 1
@@ -32428,7 +32509,7 @@ export default class RaceEditor {
       || !THREE?.BufferGeometry
       || !THREE?.Float32BufferAttribute) return false;
     const dimensions = this.getRaceCarDimensions(car);
-    const threePitch = this.getRaceThreeVehiclePitch(pitchRad);
+    const threePitch = this.getRaceThreeVehiclePitch(pitchRad, session);
     const bodyHeightM = clamp(Number(dimensions.heightM || car?.dimensions?.heightM || car?.tuning?.heightM || 1.25) * 0.34, 0.34, 0.62);
     const tireRadiusM = this.getRaceWheelVisualRadiusM(car);
     const tireLengthM = clamp(tireRadiusM * 1.78, 0.42, 0.76);
@@ -32629,8 +32710,11 @@ export default class RaceEditor {
     return true;
   }
 
-  getRaceThreeVehiclePitch(pitchRad = 0) {
-    return this.getRaceGeometricVehiclePitch(pitchRad);
+  getRaceThreeVehiclePitch(pitchRad = 0, session = this.playtestSession) {
+    const pitch = clamp(Number(pitchRad) || 0, -1.25, 1.25);
+    return session?.vehicle3d?.authoritativeSource === 'VehicleDynamicsRunner'
+      ? pitch
+      : this.getRaceGeometricVehiclePitch(pitch);
   }
 
   getRaceGeometricVehiclePitch(pitchRad = 0) {

@@ -1,7 +1,7 @@
-# Specification Quality Checklist: Dynamic Track State
+# Specification Quality Checklist: Vehicle Dynamics Shadow Runner
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
-**Created**: 2026-07-29
+**Created**: 2026-07-31
 **Feature**: [spec.md](../spec.md)
 
 ## Content Quality
@@ -31,7 +31,6 @@
 
 ## Notes
 
-- Revalidated 2026-07-31 for the physical-mutation production-hardening
-  milestone. The specification explicitly bounds scope, enumerates every
-  required accumulated total, and defines stationary-slip, render-partition,
-  compound-boundary, and catch-up checkpoint acceptance coverage.
+- The milestone is ready for planning with no unresolved clarifications.
+- Shadow isolation and zero player-visible behavior change are explicit
+  acceptance gates.

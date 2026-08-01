@@ -5,6 +5,88 @@ import {
 } from './TrackStateMath.js';
 
 const EPSILON = 1e-9;
+const PHYSICAL_TOTAL_FIELDS = Object.freeze([
+  'rollingDistanceM',
+  'groundedContactDurationSeconds',
+  'normalImpulseNs',
+  'longitudinalSlipWorkJ',
+  'lateralScrubWorkJ',
+  'lockedWheelWorkJ',
+  'wheelspinWorkJ',
+  'surfaceHeatingWorkJ',
+  'rubberDepositionWorkJ',
+  'waterDisplacementImpulseNs',
+  'looseMaterialSweepWorkJ',
+  'materialPickupCapacity',
+  'carriedMaterialDepositCapacity'
+]);
+
+function getPhysicalTotals(contact, {
+  distanceM,
+  durationSeconds,
+  contactScale,
+  normalLoadN
+}) {
+  const supplied = contact.physicalMutationTotals || contact.mutationTotals || {};
+  const groundedDuration = durationSeconds * contactScale;
+  const normalImpulse = normalLoadN * groundedDuration;
+  const speedMps = Math.abs(Number(contact.speedMps || 0));
+  const slip = Math.max(0, Math.abs(Number(contact.slipEnergy ?? contact.slip ?? 0)));
+  const brakeLock = Math.max(0, Number(contact.brakeLock || 0));
+  const wheelSpin = Math.max(0, Number(contact.wheelSpin || 0));
+  const longitudinalSlip = Math.max(
+    0,
+    Number(contact.longitudinalSlip ?? 0)
+  );
+  const lateralSlip = Math.max(
+    0,
+    Number(contact.lateralSlip
+      ?? Math.max(0, slip - Math.max(longitudinalSlip, brakeLock, wheelSpin)))
+  );
+  const rollingSpeedMps = groundedDuration > EPSILON ? distanceM / groundedDuration : 0;
+  const rollingWork = normalLoadN * distanceM * contactScale;
+  const longitudinalSlipSpeedMps = longitudinalSlip * Math.max(speedMps, rollingSpeedMps, 1);
+  const lateralSlipSpeedMps = lateralSlip * Math.max(speedMps, rollingSpeedMps);
+  const lockedSlipSpeedMps = brakeLock * Math.max(speedMps, rollingSpeedMps, 2);
+  const wheelspinSlipSpeedMps = wheelSpin * Math.max(speedMps, rollingSpeedMps, 5);
+  const longitudinalSlipWork = normalImpulse * longitudinalSlipSpeedMps;
+  const lateralScrubWork = normalImpulse * lateralSlipSpeedMps;
+  const lockedWheelWork = normalImpulse * lockedSlipSpeedMps;
+  const wheelspinWork = normalImpulse * wheelspinSlipSpeedMps;
+  const surfaceHeatingWork = longitudinalSlipWork + lateralScrubWork
+    + lockedWheelWork + wheelspinWork;
+  const temperatureF = Number(contact.tireTemperatureF || 70);
+  const temperatureScale = Math.max(0.45, Math.min(1.35, 0.55 + (temperatureF - 30) / 110));
+  const compoundId = String(contact.compoundId || 'tarmac').toLowerCase();
+  const compoundScale = /drift|soft|slick/.test(compoundId)
+    ? 1.22
+    : /snow|ice|studded/.test(compoundId)
+      ? 0.34
+      : /dirt|offroad|gravel/.test(compoundId)
+        ? 0.68
+        : /wet|rain/.test(compoundId)
+          ? 0.82
+          : 1;
+  const defaults = {
+    rollingDistanceM: distanceM,
+    groundedContactDurationSeconds: groundedDuration,
+    normalImpulseNs: normalImpulse,
+    longitudinalSlipWorkJ: longitudinalSlipWork,
+    lateralScrubWorkJ: lateralScrubWork,
+    lockedWheelWorkJ: lockedWheelWork,
+    wheelspinWorkJ: wheelspinWork,
+    surfaceHeatingWorkJ: surfaceHeatingWork,
+    rubberDepositionWorkJ: (rollingWork * 0.08 + surfaceHeatingWork) * compoundScale * temperatureScale,
+    waterDisplacementImpulseNs: rollingWork,
+    looseMaterialSweepWorkJ: rollingWork * (1 + lateralSlip),
+    materialPickupCapacity: rollingWork,
+    carriedMaterialDepositCapacity: rollingWork
+  };
+  return Object.fromEntries(PHYSICAL_TOTAL_FIELDS.map((field) => [
+    field,
+    Math.max(0, Number.isFinite(Number(supplied[field])) ? Number(supplied[field]) : defaults[field])
+  ]));
+}
 
 function clipSegmentToCell(from, to, coords, cellSizeM) {
   const minX = coords.x * cellSizeM;
@@ -89,12 +171,21 @@ export class TrackStateContactAccumulator {
         z: normalizedFrom.z + (normalizedTo.z - normalizedFrom.z) * endRatio
       };
       const stepIndex = state.stepIndex + stepOffset + 1;
+      const suppliedTotals = contact.physicalMutationTotals || contact.mutationTotals;
       acceptedKeys.push(...this.accumulateSlice({
         ...contact,
         stepTimeStartSeconds: withinStepMs / 1000,
         distanceM: Number.isFinite(Number(contact.distanceM))
           ? Number(contact.distanceM) * sliceMs / durationMs
-          : undefined
+          : undefined,
+        ...(suppliedTotals ? {
+          physicalMutationTotals: Object.fromEntries(PHYSICAL_TOTAL_FIELDS
+            .filter((field) => Object.hasOwn(suppliedTotals, field))
+            .map((field) => [
+              field,
+              Math.max(0, Number(suppliedTotals[field]) || 0) * sliceMs / durationMs
+            ]))
+        } : {})
       }, stepIndex, sliceFrom, sliceTo, sliceMs / 1000));
       consumedMs += sliceMs;
     }
@@ -152,6 +243,7 @@ export class TrackStateContactAccumulator {
         z: (piece.coords.z + 0.5) * state.cellSizeM,
         distanceM: 0,
         slipWork: 0,
+        ...Object.fromEntries(PHYSICAL_TOTAL_FIELDS.map((field) => [field, 0])),
         loadDuration: 0,
         temperatureWeight: 0,
         temperatureWeighted: 0,
@@ -169,8 +261,17 @@ export class TrackStateContactAccumulator {
         firstContactTimeSeconds: Number.POSITIVE_INFINITY
       };
       const distanceWeight = piece.distanceM > EPSILON ? piece.distanceM : duration;
+      const physicalTotals = getPhysicalTotals(contact, {
+        distanceM: segmentDistance,
+        durationSeconds,
+        contactScale,
+        normalLoadN
+      });
       aggregate.distanceM += piece.distanceM;
       aggregate.slipWork += slip * normalLoadN * piece.distanceM * contactScale;
+      PHYSICAL_TOTAL_FIELDS.forEach((field) => {
+        aggregate[field] += physicalTotals[field] * piece.ratio / Math.max(EPSILON, totalPieceRatio);
+      });
       aggregate.loadDuration += normalLoadN * duration * contactScale;
       aggregate.temperatureWeight += distanceWeight;
       aggregate.temperatureWeighted += tireTemperatureF * distanceWeight;
@@ -238,6 +339,10 @@ export class TrackStateContactAccumulator {
           directionZ: quantizeTrackStateNumber(aggregate.directionZWeighted / directionLength),
           slipEnergy: quantizeTrackStateNumber(slipEnergy),
           slipWork: quantizeTrackStateNumber(aggregate.slipWork),
+          ...Object.fromEntries(PHYSICAL_TOTAL_FIELDS.map((field) => [
+            field,
+            quantizeTrackStateNumber(aggregate[field])
+          ])),
           brakeLock: quantizeTrackStateNumber(aggregate.maxBrakeLock),
           wheelSpin: quantizeTrackStateNumber(aggregate.maxWheelSpin),
           contactDurationSeconds: quantizeTrackStateNumber(aggregate.contactDurationSeconds),

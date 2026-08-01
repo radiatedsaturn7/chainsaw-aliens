@@ -4,7 +4,7 @@
 
 **Created**: 2026-07-29
 
-**Status**: Draft
+**Status**: Production hardening
 
 **Input**: User description: "Implement a dynamic Track State simulation where every square meter of the racing surface evolves independently throughout a session."
 
@@ -144,6 +144,34 @@ compare their canonical serialized snapshots and checksums.
 4. **Given** any supported race surface and terrain data, **When** a race
    starts, **Then** Track State initializes automatically from that data.
 
+### User Story 6 - Tire Work Mutates the Surface Exactly (Priority: P1)
+
+As a driver, tire heat, rubber, water displacement, and loose-material movement
+reflect the physical work performed at each contact patch regardless of render
+frame timing or whether the vehicle translates.
+
+**Why this priority**: Reconstructing mutation from averaged observations loses
+stationary slip and allows render partitioning to alter the persistent surface.
+
+**Independent Test**: Run the same continuously varying analytical tire path
+through multiple regular and irregular render partitions, including a hitch,
+and compare all authoritative state, event, material, and replay results.
+
+**Acceptance Scenarios**:
+
+1. **Given** a stationary driven wheel spins under load, **When** contact work
+   accumulates, **Then** it heats the tire and surface, wears and deposits or
+   tears rubber, and can emit smoke without sweeping water or marbles as though
+   it traveled several meters.
+2. **Given** a stationary locked wheel under load, **When** locked-wheel work
+   accumulates, **Then** the same zero-translation constraints apply.
+3. **Given** load, slip, temperature, speed, and contact fraction vary within a
+   fixed step, **When** the observations are partitioned differently, **Then**
+   final surface state, event sequencing, and checksums are identical.
+4. **Given** a render hitch triggers several catch-up steps and checkpoint
+   rotation, **When** the checkpoint is replayed, **Then** it reconstructs the
+   uninterrupted final checksum exactly.
+
 ### Edge Cases
 
 - Cells outside the active race world remain unallocated until sampled or
@@ -161,6 +189,10 @@ compare their canonical serialized snapshots and checksums.
   deterministic step.
 - Large time deltas are resolved as bounded fixed steps so results do not
   depend on rendering frame rate.
+- A checkpoint is not committed halfway through one catch-up advance while
+  residual time or future contact aggregates still describe that operation.
+- A tire compound change takes effect only at a valid tire-change boundary;
+  already accumulated contact work retains the compound that produced it.
 - Corrupt or version-incompatible snapshots fail safely and fall back to a
   fresh state rather than partially applying data.
 
@@ -244,6 +276,26 @@ compare their canonical serialized snapshots and checksums.
 - **FR-033**: Debug and test interfaces MUST expose local cell state, effective
   grip, fixed-step index, event counts, checksum, and material conservation
   totals without changing simulation results.
+- **FR-034**: Every finalized tire-contact aggregate MUST provide deterministic
+  totals for rolling distance, grounded contact duration, normal impulse,
+  longitudinal slip work, lateral scrub work, locked-wheel work, wheelspin
+  work, surface-heating work, rubber-deposition work, water-displacement
+  impulse, loose-material sweep work, material-pickup capacity, and
+  carried-material deposit capacity.
+- **FR-035**: Surface mutation MUST consume the accumulated physical totals and
+  MUST NOT reconstruct mutation by multiplying averaged contact values.
+- **FR-036**: Stationary wheelspin and locked-wheel work MUST heat tires and
+  surfaces, wear and deposit or tear rubber, and produce appropriate effects
+  without requiring vehicle translation.
+- **FR-037**: Zero-translation tire work MUST NOT displace water, marbles, or
+  loose material by an implied travel distance.
+- **FR-038**: Checkpoint rotation MUST commit only at a safe logical boundary
+  and MUST preserve residual accumulator time, pending future events, and
+  pending future contact aggregates.
+- **FR-039**: A checkpoint created during a multi-step catch-up advance MUST
+  replay to the exact uninterrupted final checksum.
+- **FR-040**: This hardening milestone MUST NOT add weather types, content,
+  editor UI, or vehicle-handling features.
 
 ### Editor UI Contract Alignment
 
@@ -307,6 +359,17 @@ compare their canonical serialized snapshots and checksums.
   the performance test fixture.
 - **SC-009**: A player can observe distinct strategic dry, wet, dirty, snowy,
   icy, and oil-contaminated handling outcomes at the exact affected locations.
+- **SC-010**: The same analytical contact path partitioned at 30, 60, 90, 120,
+  and 144 frames per second, irregular alternating durations, and a
+  250-millisecond hitch produces identical checksums, sequence state, accepted
+  events, rubber, surface temperature, water, marbles, carried dirt and mud,
+  and checkpoint replay results.
+- **SC-011**: Explicit stationary burnout and stationary locked-brake tests
+  produce non-zero tire/surface heat and rubber work while producing zero
+  travel-based water and loose-material sweep totals.
+- **SC-012**: Rolling burnout, intermittent contact, valid-boundary compound
+  changes, and checkpoint rotation during catch-up each pass deterministic
+  regression tests.
 
 ## Assumptions
 

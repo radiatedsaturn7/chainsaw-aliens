@@ -18,8 +18,8 @@ export class ChassisIntegrator {
     return stepRaceVehiclePhysics(state, options);
   }
 
-  syncToSession(state, session, options = {}) {
-    return syncRaceVehiclePhysicsToSession(state, session, options);
+  syncToSession(state, session) {
+    return syncRaceVehiclePhysicsToSession(state, session);
   }
 
   getWheelWorldPose(state, wheelId = 'fl') {
@@ -295,7 +295,6 @@ export function updateRaceVehicle3DContactState(editor, {
   if (!session.vehicle3d?.enabled) {
     editor.resetRaceVehiclePhysicsState({ session, car, tuning });
   }
-  editor.syncRaceSessionPlanarBodyToWorld(session);
   const speedMps = Number(session.speedMps || 0);
   const velocityYaw = Number(session.velocityYaw ?? session.carYaw ?? 0);
   const planarVelocity = {
@@ -334,10 +333,6 @@ export function updateRaceVehicle3DContactState(editor, {
       lateralForceByWheel
     }
   });
-  editor.raceSimulationSystems.chassis.syncToSession(
-    session.vehicle3d,
-    session,
-    { preservePlanarPosition: true }
-  );
+  editor.raceSimulationSystems.chassis.syncToSession(session.vehicle3d, session);
   return session.vehicle3d;
 }

@@ -5,7 +5,325 @@ import {
   RACE_PEDAL_INPUT,
   RACE_THREE_ELEVATION_M
 } from './simulation/RaceSimulationConfig.js';
-import { getAuthoritativeVehicleState } from './simulation/VehicleState.js';
+import {
+  getAuthoritativeVehicleState,
+  syncVehicleDynamicsCompatibilityOutputs
+} from './simulation/VehicleState.js';
+import {
+  VehicleDynamicsRunner,
+  createVehicleDynamicsConfigFromTuning,
+  normalizeVehicleControlInput
+} from './simulation/VehicleDynamicsRunner.js';
+import { calculateWheelContactKinematics } from './simulation/ContactPatchTireModel.js';
+
+function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
+  const session = editor.playtestSession;
+  if (session.vehicleDynamicsRunner) {
+    if (!editor.vehicleDynamicsAuthority
+      || editor.vehicleDynamicsAuthority.runner !== session.vehicleDynamicsRunner) {
+      editor.vehicleDynamicsAuthority = { session, runner: session.vehicleDynamicsRunner };
+    }
+    return editor.vehicleDynamicsAuthority;
+  }
+  const config = createVehicleDynamicsConfigFromTuning(tuning, {
+    maxCatchUpSteps: 120,
+    // Two seconds is enough for live diagnostics. Replay owns its compact input
+    // timeline separately, so normal play must not retain thousands of deep
+    // per-wheel state snapshots for every active vehicle.
+    telemetryLimit: 32,
+    inputTimelineLimit: 512
+  });
+  const initialContacts = editor.getRaceWheelContactState({
+    car: editor.getRaceSessionCar(session),
+    tuning,
+    session: Number(session.countdownRemainingMs || 0) > 0
+      ? { ...session, trackState: null }
+      : session
+  });
+  const runner = new VehicleDynamicsRunner({
+    config,
+    initialState: {
+      worldX: session.worldX,
+      heightM: (session.grounded === false || session.airborne)
+        && Number.isFinite(Number(session.bodyY ?? session.heightM))
+        ? Number(session.bodyY ?? session.heightM)
+        : Number(initialContacts.averageHeightM || 0) + config.cgHeightM,
+      worldZ: session.worldZ,
+      speedMps: session.speedMps,
+      velocity: {
+        x: Math.sin(Number(session.velocityYaw ?? session.carYaw ?? 0)) * Number(session.speedMps || 0),
+        y: Number(session.verticalVelocityMps || 0),
+        z: Math.cos(Number(session.velocityYaw ?? session.carYaw ?? 0)) * Number(session.speedMps || 0)
+      },
+      carYaw: session.carYaw,
+      yawVelocityRadps: session.yawVelocityRadps,
+      pitchRad: session.pitchRad,
+      rollRad: session.rollRad,
+      angularVelocityWorld: {
+        x: Number(session.pitchRate || 0),
+        y: Number(session.yawVelocityRadps || 0),
+        z: Number(session.rollRate || 0)
+      },
+      grounded: session.grounded !== false && !session.airborne,
+      engineRpm: session.engineRpm,
+      gear: session.gear
+    },
+    inputTimeline: [{
+      timeSeconds: 0,
+      input: normalizeVehicleControlInput(controls)
+    }]
+  });
+  editor.vehicleDynamicsAuthority = { session, runner };
+  session.vehicleDynamicsRunner = runner;
+  return editor.vehicleDynamicsAuthority;
+}
+
+function emitAuthoritativeTrackStateStep({
+  editor,
+  systems,
+  trackState,
+  telemetry,
+  wheelSurfaceState,
+  setup,
+  weatherState,
+  previousPositions
+}) {
+  const patches = telemetry.state?.contactPatches || {};
+  const positions = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
+    const point = patches[wheelId]?.contactPointWorld || {};
+    return [wheelId, { x: Number(point.x || 0), z: Number(point.z || 0) }];
+  }));
+  const perWheel = (value) => Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+    wheelId, value(patches[wheelId] || {}, wheelId)
+  ]));
+  const fixedDt = 1 / 120;
+  const physicalMutationTotalsByWheel = perWheel((patch) => {
+    const radiusM = Math.max(0.01, Number(patch.effectiveRollingRadiusM || 0.33));
+    const rollingSurfaceSpeed = Number(patch.wheelAngularVelocityRadps || 0) * radiusM;
+    const groundSpeed = Number(patch.longitudinalVelocityMps || 0);
+    const longitudinalSlipSpeed = rollingSurfaceSpeed - groundSpeed;
+    const lateralSpeed = Number(patch.lateralVelocityMps || 0);
+    const longitudinalWorkJ = Math.abs(Number(patch.longitudinalForceN || 0) * longitudinalSlipSpeed) * fixedDt;
+    const lateralWorkJ = Math.abs(Number(patch.lateralForceN || 0) * lateralSpeed) * fixedDt;
+    const rollingDistanceM = Math.abs(groundSpeed) * fixedDt;
+    const normalLoadN = Math.max(0, Number(patch.normalLoadN || 0));
+    const aquaplaning = patch.aquaplaning || {};
+    const displacementImpulseNs = Math.max(0, Number(aquaplaning.displacedWaterVolumeM3ps || 0))
+      * 1000 * Math.max(Math.abs(groundSpeed), Math.abs(rollingSurfaceSpeed)) * fixedDt;
+    const lockedWheelWorkJ = longitudinalSlipSpeed < 0 ? longitudinalWorkJ : 0;
+    const wheelspinWorkJ = longitudinalSlipSpeed > 0 ? longitudinalWorkJ : 0;
+    const surfaceHeatingWorkJ = Number(patch.frictionHeatingWorkJ
+      ?? (longitudinalWorkJ + lateralWorkJ) * 0.62);
+    const sweepWorkJ = normalLoadN * rollingDistanceM;
+    return {
+      rollingDistanceM,
+      groundedContactDurationSeconds: normalLoadN > 1 ? fixedDt : 0,
+      normalImpulseNs: normalLoadN * fixedDt,
+      longitudinalSlipWorkJ: longitudinalWorkJ,
+      lateralScrubWorkJ: lateralWorkJ,
+      lockedWheelWorkJ,
+      wheelspinWorkJ,
+      surfaceHeatingWorkJ,
+      rubberDepositionWorkJ: (longitudinalWorkJ + lateralWorkJ) * 0.82
+        + normalLoadN * rollingDistanceM * 0.025,
+      waterDisplacementImpulseNs: displacementImpulseNs,
+      looseMaterialSweepWorkJ: sweepWorkJ,
+      materialPickupCapacity: sweepWorkJ,
+      carriedMaterialDepositCapacity: sweepWorkJ
+    };
+  });
+  systems.surface.queueTrackStateTireEvents(trackState, {
+    vehicleId: editor.playtestSession.carId || 'player',
+    normalLoads: telemetry.state?.wheelLoadsN,
+    tireSlipByWheel: telemetry.state?.wheelSlip,
+    longitudinalSlipByWheel: perWheel((patch) => Math.abs(Number(patch.slipRatio || 0))),
+    lateralSlipByWheel: perWheel((patch) => Math.abs(Math.tan(Number(patch.slipAngleRad || 0)))),
+    wheelContactScaleByWheel: perWheel((_patch, wheelId) => (
+      Number(telemetry.state?.wheelLoadsN?.[wheelId] || 0) > 1 ? 1 : 0
+    )),
+    wheelSurfaceState: { ...wheelSurfaceState, positions },
+    previousPositions,
+    speedMps: Math.abs(Number(telemetry.state?.speedMps || 0)),
+    tireCompoundByWheel: setup.tireCompoundByWheel,
+    tireTemperatures: perWheel((_patch, wheelId) => Number(
+      telemetry.state?.tireState?.[wheelId]?.temperatureF || 70
+    )),
+    brakeState: { lockByWheel: perWheel((patch) => Math.max(0, -Number(patch.slipRatio || 0))) },
+    wheelSpinByWheel: perWheel((patch) => Math.max(0, Number(patch.slipRatio || 0))),
+    physicalMutationTotalsByWheel,
+    contactDurationSeconds: fixedDt,
+    direction: editor.getRaceForwardVector(Number(telemetry.state?.yawRad || 0))
+  });
+  return {
+    positions,
+    advance: trackState.advance(
+      1 / 120,
+      systems.surface.createTrackStateWeatherForcing({ weatherState, race: editor.selectedRace })
+    )
+  };
+}
+
+function advanceVehicleDynamicsAuthority(editor, {
+  systems,
+  tuning,
+  seconds,
+  controls,
+  lateralAcceleration,
+  dynamicNormalLoads,
+  tireSlipByWheel,
+  wheelContactScaleByWheel,
+  wheelContactState,
+  wheelSurfaceState,
+  tirePressureDynamicsByWheel,
+  setup,
+  damage,
+  countdownActive,
+  trackState,
+  weatherState
+}) {
+  const session = editor.playtestSession;
+  const authority = ensureVehicleDynamicsAuthority(editor, tuning, controls);
+  if (countdownActive && !authority.formationTargetVelocityWorld) {
+    const yaw = Number(authority.runner.state.yawRad || 0);
+    const speed = Number(session.rollingStart ? session.rollingStartSpeedMps : 0);
+    authority.formationTargetVelocityWorld = {
+      x: Math.sin(yaw) * speed,
+      y: 0,
+      z: Math.cos(yaw) * speed
+    };
+  } else if (!countdownActive) {
+    authority.formationTargetVelocityWorld = null;
+  }
+  if (!authority.tireConfigByWheel) {
+    authority.tireConfigByWheel = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
+      const compound = editor.getRaceTireCompound(setup.tireCompoundByWheel[wheelId]);
+      const pressure = tirePressureDynamicsByWheel[wheelId] || {};
+      const tireDamage = Number(damage.tires?.[wheelId] || 0);
+      return [wheelId, {
+        compound,
+        pressurePsi: pressure.pressurePsi ?? setup.tirePressurePsi[wheelId],
+        coldPressurePsi: setup.tirePressurePsi[wheelId],
+        targetPressurePsi: pressure.targetPsi,
+        widthMm: setup.tireSize?.widthMm,
+        aspectRatio: setup.tireSize?.aspectRatio,
+        wheelDiameterIn: setup.tireSize?.wheelDiameterIn,
+        wear: tireDamage / 100,
+        damage: tireDamage,
+        loadSensitivityExponent: 0.08
+      }];
+    }));
+  }
+  authority.runner.environmentProvider = ({ state, controls: fixedControls }) => {
+    const positions = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
+      const patch = calculateWheelContactKinematics({
+        state,
+        controls: fixedControls,
+        config: authority.runner.config,
+        environment: {},
+        wheelId
+      });
+      return [wheelId, patch.contactPointWorld];
+    }));
+    const fixedContacts = editor.getRaceWheelContactState({
+      car: editor.getRaceSessionCar(session),
+      tuning,
+      session: {
+        ...session,
+        grounded: state.grounded,
+        airborne: !state.grounded,
+        vehicle3d: null,
+        trackState: countdownActive ? null : session.trackState
+      },
+      wheelSurfaceState: { positions }
+    });
+    const trackWeatherForcing = systems.surface.createTrackStateWeatherForcing({
+      weatherState,
+      race: editor.selectedRace
+    });
+    return {
+      surfaceHeightByWheel: { ...(fixedContacts.heights || wheelContactState?.heights || {}) },
+      surfaceNormalByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+        wheelId, fixedContacts.contacts?.[wheelId]?.normal || wheelSurfaceState.normalByWheel?.[wheelId]
+      ])),
+      materialByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
+      const contact = fixedContacts.contacts?.[wheelId] || {};
+      const sample = contact.trackState;
+      return [wheelId, {
+        ...(sample?.cell || {}),
+        surfaceId: contact.surfaceId || wheelSurfaceState.surfaceByWheel?.[wheelId],
+        grip: contact.friction
+          ?? wheelSurfaceState.frictionByWheel?.[wheelId]
+          ?? 1
+      }];
+      })),
+    targetVelocityWorld: countdownActive ? authority.formationTargetVelocityWorld : null,
+    ambientTemperatureC: trackWeatherForcing.ambientTemperatureC,
+    tireByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
+      const fixedTire = authority.tireConfigByWheel[wheelId];
+      const localTrackState = fixedContacts.contacts?.[wheelId]?.trackState;
+      const rollingMultiplier = localTrackState
+        ? Number(localTrackState.rollingResistanceMultiplier || 1)
+          / Math.max(0.2, Number(localTrackState.cell?.baseRollingResistance || 1))
+        : 1;
+      return [wheelId, {
+        ...fixedTire,
+        compoundGrip: fixedTire.compound.surfaceGrip?.[fixedContacts.contacts?.[wheelId]?.surfaceId] ?? 1,
+        temperatureF: state.tireState?.[wheelId]?.temperatureF ?? 70,
+        treadTemperatureC: state.tireState?.[wheelId]?.treadTemperatureC,
+        carcassTemperatureC: state.tireState?.[wheelId]?.carcassTemperatureC,
+        internalAirTemperatureC: state.tireState?.[wheelId]?.internalAirTemperatureC,
+        effectivePressurePsi: state.tireState?.[wheelId]?.effectivePressurePsi
+          ?? fixedTire.pressurePsi,
+        pressurePsi: state.tireState?.[wheelId]?.effectivePressurePsi
+          ?? fixedTire.pressurePsi,
+        wear: state.tireState?.[wheelId]?.wear ?? fixedTire.wear,
+        damage: state.tireState?.[wheelId]?.damage ?? fixedTire.damage,
+        rollingResistanceCoefficient: 0.012 * rollingMultiplier
+      }];
+    }))
+  };
+  };
+  const fixedStepTelemetry = [];
+  let previousTrackPositions = session.trackStatePreviousWheelPositions || {};
+  let latestTrackStateAdvance = null;
+  const advance = authority.runner.advance(seconds, {
+    input: controls,
+    onFixedStep: (telemetry) => {
+      fixedStepTelemetry.push(telemetry);
+      if (countdownActive || !trackState) return;
+      const result = emitAuthoritativeTrackStateStep({
+        editor,
+        systems,
+        trackState,
+        telemetry,
+        wheelSurfaceState,
+        setup,
+        weatherState,
+        previousPositions: previousTrackPositions
+      });
+      previousTrackPositions = result.positions;
+      latestTrackStateAdvance = result.advance;
+    }
+  });
+  if (!countdownActive && trackState) {
+    session.trackStatePreviousWheelPositions = previousTrackPositions;
+    session.trackStateRuntime = {
+      stepIndex: trackState.stepIndex,
+      simulationTimeMs: trackState.simulationTimeMs,
+      activeCellCount: trackState.cells.size,
+      pendingAggregateCount: trackState.contactAccumulator.size,
+      ...(latestTrackStateAdvance || {})
+    };
+  }
+  authority.latest = {
+    state: authority.runner.createStateSnapshot(),
+    telemetry: authority.runner.telemetry.at(-1) || null,
+    diagnostics: { ...authority.runner.diagnostics },
+    fixedStepTelemetry,
+    advance
+  };
+  syncVehicleDynamicsCompatibilityOutputs(authority.runner, session);
+}
 
 export function updateRaceSimulation({
   editor,
@@ -26,14 +344,25 @@ export function updateRaceSimulation({
   tuning.absEnabled = editor.playtestSession.absEnabled !== false;
   tuning.tractionControlEnabled = editor.playtestSession.tractionControlEnabled !== false;
   const seconds = Math.max(0, Number(dt) || 0);
+  ensureVehicleDynamicsAuthority(editor, tuning, {
+    steering: -editor.raceInput.steeringWheel,
+    throttle: editor.raceInput.throttleAxis,
+    brake: editor.raceInput.brakeAxis,
+    clutch: editor.raceInput.clutchAxis,
+    handbrake: editor.raceInput.handbrake ? 1 : 0,
+    requestedGear: editor.raceInput.gear,
+    assists: {
+      absEnabled: tuning.absEnabled,
+      tractionControlEnabled: tuning.tractionControlEnabled,
+      stabilityControlEnabled: editor.playtestSession.stabilityControlEnabled !== false,
+      autoShift: editor.raceInput.autoShift !== false
+    }
+  });
   const countdownActive = Number(editor.playtestSession.countdownRemainingMs || 0) > 0;
   editor.playtestSession.sceneElapsedMs = Math.max(
     0,
     Number(editor.playtestSession.sceneElapsedMs || 0) + seconds * 1000
   );
-  if (countdownActive && editor.playtestSession.rollingStart) {
-    editor.playtestSession.speedMps = Number(editor.playtestSession.rollingStartSpeedMps || 0);
-  }
   editor.applyRaceAnalogInput();
   const physicalGamepad = editor.hasPhysicalRaceGamepad();
   if (!physicalGamepad) editor.raceInput.lookIntentX = 0;
@@ -53,7 +382,6 @@ export function updateRaceSimulation({
     editor.playtestSession.heading = 0;
     editor.playtestSession.roadViewOffset = 0;
     editor.playtestSession.trackViewOffset = 0;
-    editor.playtestSession.yawVelocityRadps = 0;
   }
   const damageEffects = editor.getRaceDamageEffects();
   const segmentInfo = editor.getRaceSegmentAtDistance(editor.playtestSession.distance, {
@@ -61,6 +389,7 @@ export function updateRaceSimulation({
   });
   const weatherState = editor.getRaceWeatherState(editor.selectedRace, editor.playtestSession);
   const trackState = editor.playtestSession.trackState || null;
+  let latestTrackStateAdvance = null;
   const surface = getSurfaceById(editor.getRaceEffectiveSurfaceId(segmentInfo.segment?.surface || 'asphalt', weatherState));
   const engineJitter = damageEffects.engineJitter
     ? 1 - damageEffects.engineJitter * (0.5 + 0.5 * Math.sin(editor.playtestSession.elapsedMs / 173))
@@ -75,6 +404,11 @@ export function updateRaceSimulation({
     tuning,
     session: surfaceSession,
     damage
+  });
+  const wheelContactState = editor.getRaceWheelContactState({
+    car,
+    tuning,
+    session: surfaceSession
   });
   const snowDepthInches = RACE_WHEEL_IDS.reduce((sum, wheelId) => (
     sum + Number(wheelSurfaceState.snowDepthByWheel?.[wheelId] ?? weatherState.snowDepthInches ?? 0)
@@ -367,7 +701,7 @@ export function updateRaceSimulation({
     && drivenLoadScale > 0.001
     ? clamp((previousLongitudinalWheelSlipRatio - longitudinalSlipTarget) / 0.9, 0, 1) * (
       engineThrottle > RACE_PEDAL_INPUT.activeThreshold
-        ? 0.38 + looseSurfaceFactor * 0.24
+        ? 0.48 + looseSurfaceFactor * 0.3
         : 0.18 + looseSurfaceFactor * 0.2
     )
     : 0;
@@ -390,18 +724,22 @@ export function updateRaceSimulation({
     ? clamp((previousLongitudinalWheelSlipRatio - 0.8) / 0.9, 0, 1) * (0.28 + looseSurfaceFactor * 0.38)
     : 0;
   const effectiveRpmResponse = rpmResponse * (1 - liftOffWheelspinInertia);
-  editor.playtestSession.engineRpm = Number(editor.playtestSession.engineRpm || tuning.idleRpm)
-    + (loadedRpmTarget - Number(editor.playtestSession.engineRpm || tuning.idleRpm)) * Math.min(1, seconds * effectiveRpmResponse);
-  editor.playtestSession.engineRpm = clamp(editor.playtestSession.engineRpm, tuning.idleRpm * 0.72, tuning.revLimitRpm + (gearRatio ? 40 : 80));
-  const limiterActive = editor.playtestSession.engineRpm >= tuning.revLimitRpm - 80;
+  const diagnosticEngineRpm = clamp(
+    Number(editor.playtestSession.engineRpm || tuning.idleRpm)
+      + (loadedRpmTarget - Number(editor.playtestSession.engineRpm || tuning.idleRpm))
+        * Math.min(1, seconds * effectiveRpmResponse),
+    tuning.idleRpm * 0.72,
+    tuning.revLimitRpm + (gearRatio ? 40 : 80)
+  );
+  const limiterActive = diagnosticEngineRpm >= tuning.revLimitRpm - 80;
   const limiterCut = limiterActive && engineThrottle > RACE_PEDAL_INPUT.activeThreshold ? 0.08 + 0.18 * limiterPhase : 1;
   const shiftTorqueCut = editor.playtestSession.shiftCooldownMs > 0
     ? clamp(1 - (editor.playtestSession.shiftCooldownMs / shiftWindowMs), 0.12, 1)
     : 1;
   const launchAssistRpm = tuning.idleRpm + (tuning.launchRpm - tuning.idleRpm) * clamp(absSpeedBefore / 5, 0.35, 1);
   const torqueRpm = gearRatio && throttle > RACE_PEDAL_INPUT.activeThreshold && absSpeedBefore < 5
-    ? Math.max(editor.playtestSession.engineRpm, launchAssistRpm)
-    : editor.playtestSession.engineRpm;
+    ? Math.max(diagnosticEngineRpm, launchAssistRpm)
+    : diagnosticEngineRpm;
   const engineTorqueNm = editor.getRaceTorqueNmAtRpm(torqueRpm, tuning) * damageEffects.enginePower * engineJitter;
   const availablePowerW = tuning.powerHp * 745.7 * damageEffects.enginePower * engineJitter;
   const driveForceComponents = editor.getRaceDriveForceComponents({
@@ -504,12 +842,13 @@ export function updateRaceSimulation({
   });
   const drivenTractionLimit = drivenTraction.tractionLimitN;
   driveForceShareByWheel = drivenTraction.forceShareByWheel || driveForceShareByWheel;
+  const twoWheelDriveDemandScale = drivenWheelIds.length === 2 ? 1.25 : 1;
   const driveLoadSensitivityByWheel = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
       wheelId,
       editor.getRaceTireLoadSensitivityMultiplier(driveNormalLoads[wheelId], neutralReferenceNormalLoads[wheelId], looseSurfaceFactor)
   ]));
   const driveDemandRatio = driveForceDemandRaw
-    ? Math.abs(driveForceDemandRaw) / Math.max(1, drivenTractionLimit)
+    ? Math.abs(driveForceDemandRaw) / Math.max(1, drivenTractionLimit) * twoWheelDriveDemandScale
     : 0;
   const tractionControlSlip = measuredDrivenWheelSlipRatio;
   const tractionControlCutTarget = editor.getRaceTractionControlCutTarget(
@@ -527,7 +866,7 @@ export function updateRaceSimulation({
     ? driveForceCommandRaw * finalTractionControlCut
     : 0;
   const appliedDriveDemandRatio = driveForceRaw
-    ? Math.abs(driveForceRaw) / Math.max(1, drivenTractionLimit)
+    ? Math.abs(driveForceRaw) / Math.max(1, drivenTractionLimit) * twoWheelDriveDemandScale
     : 0;
   const excessDriveSlip = clamp(
     (measuredDrivenWheelSlipRatio - longitudinalSlipTarget) / Math.max(0.2, 0.65 + looseSurfaceFactor * 0.25),
@@ -558,7 +897,7 @@ export function updateRaceSimulation({
     gearRatio,
     throttle,
     speedMps: editor.playtestSession.speedMps,
-    engineRpm: editor.playtestSession.engineRpm,
+    engineRpm: diagnosticEngineRpm,
     drivenTractionLimit,
     tireContactScale: drivenLoadScale
   });
@@ -764,6 +1103,9 @@ export function updateRaceSimulation({
   const frontLongitudinalUsage = (wheelLongitudinalUsage.fl + wheelLongitudinalUsage.fr) * 0.5;
   const rearLongitudinalUsage = (wheelLongitudinalUsage.rl + wheelLongitudinalUsage.rr) * 0.5;
   const effectiveFrictionMuByWheel = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
+    const physicalMu = Number(effectiveWheelContacts3d?.[wheelId]?.gripCoefficient
+      ?? effectiveWheelContacts3d?.[wheelId]?.loadSensitivityMultiplier);
+    if (Number.isFinite(physicalMu)) return [wheelId, physicalMu];
     const load = Math.max(0, Number(dynamicNormalLoads[wheelId] || 0) * bankNormalLoadScale);
     const limit = editor.getRaceLoadSensitiveWheelLimit({
       wheelId,
@@ -915,20 +1257,9 @@ export function updateRaceSimulation({
     + gradeForce
     + resistanceDirection * dragForce
   ) / tuning.weightKg;
-  editor.playtestSession.speedMps += acceleration * seconds;
-  if (!throttle && Math.abs(editor.playtestSession.speedMps) < 0.08 && Math.abs(roadGrade) < 0.01) editor.playtestSession.speedMps = 0;
-  if (automaticReverseBrakeActive
-    && !controlsLockedByRollover
-    && drivenLoadScale > 0.001
-    && driverThrottle <= RACE_PEDAL_INPUT.activeThreshold) {
-    const reverseTargetMps = -clamp(1.1 + driverBrake * 1.9, 1.1, 3);
-    if (editor.playtestSession.speedMps > reverseTargetMps) {
-      editor.playtestSession.speedMps += (reverseTargetMps - editor.playtestSession.speedMps) * Math.min(1, seconds * 1.15);
-    } else if (editor.playtestSession.speedMps < reverseTargetMps) {
-      editor.playtestSession.speedMps += (reverseTargetMps - editor.playtestSession.speedMps) * Math.min(1, seconds * 2.8);
-    }
-    editor.playtestSession.speedMps = Math.max(editor.playtestSession.speedMps, reverseTargetMps);
-  }
+  // VehicleDynamicsRunner integrates longitudinal motion from tire, brake,
+  // aerodynamic, gravity, and grade forces. Legacy calculations below remain
+  // diagnostics and control-demand inputs only.
   const topSpeedMps = editor.getRaceRuntimeTopSpeedLimitMps(car, tuning, {
     setupModifiers,
     terrainResistance,
@@ -937,16 +1268,8 @@ export function updateRaceSimulation({
     looseSurfaceFactor,
     enginePowerScale: damageEffects.enginePower
   });
-  if (throttle > RACE_PEDAL_INPUT.activeThreshold && driveForce > 0 && editor.playtestSession.speedMps > topSpeedMps) {
-    editor.playtestSession.speedMps += (topSpeedMps - editor.playtestSession.speedMps) * Math.min(1, seconds * 1.8);
-  } else if (editor.playtestSession.speedMps < -9) {
-    editor.playtestSession.speedMps += (-9 - editor.playtestSession.speedMps) * Math.min(1, seconds * 3);
-  }
   if (countdownActive) {
     acceleration = 0;
-    editor.playtestSession.speedMps = editor.playtestSession.rollingStart
-      ? Number(editor.playtestSession.rollingStartSpeedMps || 0)
-      : 0;
   }
   const lateralAcceleration = launchAligning
     ? 0
@@ -1153,8 +1476,7 @@ export function updateRaceSimulation({
     yawSpinRecoveryRate = recoveryRate;
     yawRate *= Math.max(0.08, 1 - recoveryRate);
   }
-  editor.playtestSession.yawVelocityRadps = yawRate;
-  editor.playtestSession.carYaw = launchAligning
+  const predictedCarYaw = launchAligning
     ? roadYaw
     : previousCarYaw + yawRate * seconds;
   const velocityYawRateFromLateralForce = launchAligning
@@ -1166,7 +1488,7 @@ export function updateRaceSimulation({
   const velocityYawAfterForce = launchAligning
     ? roadYaw
     : normalizeAngle(previousVelocityYaw + velocityYawRateFromLateralForce * seconds);
-  const slipAngle = normalizeAngle(editor.playtestSession.carYaw - velocityYawAfterForce);
+  const slipAngle = normalizeAngle(predictedCarYaw - velocityYawAfterForce);
   const slipAlignmentOveruse = clamp(
     (Math.abs(slipAngle) - 0.18) / Math.max(0.22, 0.48 - looseSurfaceFactor * 0.12),
     0,
@@ -1188,7 +1510,7 @@ export function updateRaceSimulation({
   const velocityYaw = launchAligning
     ? roadYaw
     : velocityYawAfterForce + slipAngle * velocityAlignmentAlpha;
-  const slipAmountRaw = Math.abs(normalizeAngle(editor.playtestSession.carYaw - velocityYaw));
+  const slipAmountRaw = Math.abs(normalizeAngle(predictedCarYaw - velocityYaw));
   const lowSpeedSlipGate = clamp((absSpeed - 1.8) / 7, 0, 1);
   const rearBreakawayScrubAuthority = clamp(
     (Math.abs(vehicleSlipAngle) + Math.abs(previousYawVelocity) * 0.35 + Math.abs(steeringAngle) * 3 + Math.abs(roadSteer) * 1.5) / 0.18,
@@ -1200,10 +1522,6 @@ export function updateRaceSimulation({
     * clamp((absSpeed - 2.2) / 24, 0, 1)
     * (1 - bankSupportG * 0.32)
     * tireContactScale;
-  if (scrub > 0) {
-    const scrubLoss = 1 - Math.min(0.12, scrub * seconds * 0.78);
-    editor.playtestSession.speedMps *= scrubLoss;
-  }
   const wheelSpinSlip = Math.max(0, relaxedWheelSpinRatio - 0.78) * 1.1;
   const brakeLockSlip = Math.max(...Object.values(brakeState.lockByWheel));
   const lateralSlipFront = Math.max(
@@ -1264,7 +1582,6 @@ export function updateRaceSimulation({
       editor.raceInput.steeringTarget = clamp(Number(editor.raceInput.steeringTarget || 0) + selfAligningSteeringCorrection * 0.72, -1, 1);
     }
   }
-  editor.playtestSession.velocityYaw = velocityYaw;
   const automaticUpshiftRpm = editor.getRaceAutomaticUpshiftRpm(tuning);
   const automaticDownshiftRpm = editor.getRaceAutomaticDownshiftRpm(tuning);
   editor.playtestSession.tireSlip = {
@@ -1352,6 +1669,7 @@ export function updateRaceSimulation({
     aeroLoadEffectiveness,
     wheelNormalLoads: dynamicNormalLoads,
     wheelContactScaleByWheel,
+    wheelContactState,
     vehicle3dTireLimitByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
       wheelId,
       Number(effectiveWheelContacts3d?.[wheelId]?.tireLimitN || 0)
@@ -1485,23 +1803,6 @@ export function updateRaceSimulation({
     audibleSlip
   };
   editor.playtestSession.steeringWheelRotation = editor.getRaceSteeringWheelRotationForTireAngle(steeringAngle, car);
-  const wheelContactState = editor.getRaceWheelContactState({
-    car,
-    tuning,
-    session: surfaceSession,
-    wheelSurfaceState
-  });
-  editor.updateRaceVerticalAndRollState({
-    seconds,
-    tuning,
-    roadPose,
-    previousRoadPose,
-    lateralAcceleration,
-    wheelContactState,
-    wheelNormalLoads: dynamicNormalLoads,
-    referenceNormalLoads: dynamicReferenceNormalLoads,
-    wheelContacts3d: effectiveWheelContacts3d
-  });
   const lateralDrift = (
     normalizeAngle(editor.playtestSession.velocityYaw - roadYaw) * clamp(absSpeed / 32, 0, 1) * 0.04
     + Math.sign(steeringAngle || roadSteer || 0) * tireTravelDirection * rearBreakaway * 0.035
@@ -1511,26 +1812,59 @@ export function updateRaceSimulation({
     -0.24,
     0.24
   );
-  editor.playtestSession.worldX = Number(editor.playtestSession.worldX || 0)
-    + Math.sin(editor.playtestSession.velocityYaw) * editor.playtestSession.speedMps * seconds;
-  editor.playtestSession.worldZ = Number(editor.playtestSession.worldZ || 0)
-    + Math.cos(editor.playtestSession.velocityYaw) * editor.playtestSession.speedMps * seconds;
-  editor.updateRaceVehicle3DContactState({
-    seconds,
-    car,
+  if (!countdownActive) editor.updateRaceSceneryCollisions(seconds);
+  advanceVehicleDynamicsAuthority(editor, {
+    systems,
     tuning,
-    acceleration,
+    seconds,
+    controls: {
+      steering: -editor.raceInput.steeringWheel,
+      throttle: countdownActive ? driverThrottle : throttle,
+      brake,
+      // Formation/countdown throttle is a free rev. Record clutch disengagement
+      // in the authoritative input timeline so replay cannot turn it into wheel
+      // torque or a suspension pitch moment.
+      clutch: countdownActive ? 1 : editor.raceInput.clutchAxis,
+      handbrake,
+      requestedGear: editor.raceInput.gear,
+      assists: {
+        absEnabled: tuning.absEnabled,
+        tractionControlEnabled: tuning.tractionControlEnabled,
+        stabilityControlEnabled: editor.playtestSession.stabilityControlEnabled !== false,
+        autoShift: editor.raceInput.autoShift !== false
+      }
+    },
     lateralAcceleration,
-    brakeState: combinedBrakeState,
-    driveForce,
-    drivenWheelIds,
-    driveCommandForceByWheel,
-    driveForceByWheel: combinedChassisLongitudinalForceByWheel,
-    wheelLongitudinalUsage,
-    wheelLateralUsage,
-    frontLatForce,
-    rearLatForce
+    dynamicNormalLoads,
+    tireSlipByWheel,
+    wheelContactScaleByWheel,
+    wheelSurfaceState,
+    tirePressureDynamicsByWheel,
+    setup,
+    damage,
+    countdownActive,
+    trackState,
+    weatherState
   });
+  const authoritativeWheelLoads = { ...(editor.playtestSession.vehicleDynamicsRunner?.state?.wheelLoadsN || {}) };
+  if (RACE_WHEEL_IDS.every((wheelId) => Number.isFinite(Number(authoritativeWheelLoads[wheelId])))) {
+    editor.playtestSession.tireSlip.wheelNormalLoads = authoritativeWheelLoads;
+    if (throttle > 0.001) {
+      editor.playtestSession.tireSlip.driveNormalLoads = authoritativeWheelLoads;
+      editor.playtestSession.tireSlip.driveLoadSensitivityByWheel = Object.fromEntries(
+        RACE_WHEEL_IDS.map((wheelId) => [wheelId,
+          editor.getRaceTireLoadSensitivityMultiplier(
+            authoritativeWheelLoads[wheelId],
+            neutralReferenceNormalLoads[wheelId],
+            looseSurfaceFactor
+          )
+        ])
+      );
+    }
+    if (brake > 0.001 || handbrake > 0.001) {
+      editor.playtestSession.tireSlip.brakeNormalLoads = authoritativeWheelLoads;
+    }
+  }
   const routeLength = Math.max(1, Number(editor.playtestSession.routeLength || editor.getRaceRouteLength()));
   let projection = editor.getRaceRouteProjectionForWorldPoint({
     x: editor.playtestSession.worldX,
@@ -1578,8 +1912,9 @@ export function updateRaceSimulation({
       if (collisionEffect === 'reset') {
         editor.resetRaceCarToRouteCenter({ projection: hitProjection, roadYaw });
       } else {
-        editor.playtestSession.worldX -= right.x * side * boundaryHit.excess;
-        editor.playtestSession.worldZ -= right.z * side * boundaryHit.excess;
+        const authority = editor.playtestSession.vehicleDynamicsRunner;
+        authority.state.position.x -= right.x * side * boundaryHit.excess;
+        authority.state.position.z -= right.z * side * boundaryHit.excess;
         const speedMps = Number(editor.playtestSession.speedMps || 0);
         const velocityYaw = Number(editor.playtestSession.velocityYaw || editor.playtestSession.carYaw || 0);
         const vx = Math.sin(velocityYaw) * speedMps;
@@ -1595,19 +1930,31 @@ export function updateRaceSimulation({
           const nextTangentVelocity = tangentVelocity * tangentFriction;
           const nextVx = forward.x * nextTangentVelocity + normalX * nextNormalVelocity;
           const nextVz = forward.z * nextTangentVelocity + normalZ * nextNormalVelocity;
-          editor.playtestSession.speedMps = Math.hypot(nextVx, nextVz) * (nextTangentVelocity < 0 ? -1 : 1);
-          editor.playtestSession.velocityYaw = Math.atan2(nextVx, nextVz);
+          authority.queueCollisionImpulse({
+            impulseWorldNs: {
+              x: (nextVx - vx) * authority.config.massKg,
+              y: 0,
+              z: (nextVz - vz) * authority.config.massKg
+            },
+            pointWorld: boundaryHit.point,
+            source: `edge:${edgeCollisionMode}`
+          });
           const impactYaw = normalizeAngle(editor.playtestSession.carYaw - Math.atan2(normalX, normalZ));
-          editor.playtestSession.yawVelocityRadps = clamp(
-            Number(editor.playtestSession.yawVelocityRadps || 0) * 0.42 - Math.sin(impactYaw) * Math.abs(normalVelocity) * 0.035,
+          authority.state.angularVelocityWorld.y += clamp(
+            -Math.sin(impactYaw) * Math.abs(normalVelocity) * 0.035,
             -2.4,
             2.4
           );
-          editor.playtestSession.carYaw = normalizeAngle(Number(editor.playtestSession.carYaw || 0) + editor.playtestSession.yawVelocityRadps * seconds * 0.35);
         } else {
-          editor.playtestSession.speedMps *= 0.94;
-          editor.playtestSession.yawVelocityRadps = clamp(Number(editor.playtestSession.yawVelocityRadps || 0) * 0.72, -1.4, 1.4);
+          authority.state.velocity.x *= 0.94;
+          authority.state.velocity.z *= 0.94;
+          authority.state.angularVelocityWorld.y = clamp(
+            Number(authority.state.angularVelocityWorld.y || 0) * 0.72,
+            -1.4,
+            1.4
+          );
         }
+        syncVehicleDynamicsCompatibilityOutputs(authority, editor.playtestSession);
         editor.applyRaceDamage('panels', Math.min(14, Math.max(0.2, Math.abs(normalVelocity) * 0.42)), {
           keys: [side < 0 ? 'left' : 'right'],
           source: `edge:${edgeCollisionMode}`
@@ -1619,7 +1966,6 @@ export function updateRaceSimulation({
     x: editor.playtestSession.worldX,
     z: editor.playtestSession.worldZ
   });
-  editor.syncRaceSessionPlanarBodyToWorld(editor.playtestSession);
   editor.playtestSession.routeLateralM = Number(projection.lateral || 0);
   editor.playtestSession.routeLateralNormalized = clamp(
     Number(projection.lateral || 0) / Math.max(1, editor.getRaceRoadHalfWidthWorld(projection.segment || boundarySegment)),
@@ -1694,7 +2040,13 @@ export function updateRaceSimulation({
     editor.playtestSession.projectedDistance = routeProjectedDistance;
   }
   editor.playtestSession.heading = normalizeAngle(editor.playtestSession.carYaw - roadYaw);
-  editor.playtestSession.cameraYaw = editor.getRacePlaytestCameraYaw(editor.playtestSession, { seconds, smooth: true });
+  const cameraSlipYaw = Math.abs(normalizeAngle(
+    Number(editor.playtestSession.velocityYaw || 0) - Number(editor.playtestSession.carYaw || 0)
+  ));
+  editor.playtestSession.cameraYaw = editor.getCarCameraTrackingMode(car) !== 'fixed-rear'
+    && cameraSlipYaw > 0.12
+    ? Number(editor.playtestSession.velocityYaw || 0)
+    : editor.getRacePlaytestCameraYaw(editor.playtestSession, { seconds, smooth: true });
   editor.playtestSession.cameraChaseYaw = Number(editor.playtestSession.cameraYaw || roadYaw);
   const trackViewTarget = clamp(
     (-editor.playtestSession.lateral * 0.24) + (editor.playtestSession.heading * 0.66),
@@ -1702,7 +2054,7 @@ export function updateRaceSimulation({
     0.58
   );
   editor.playtestSession.roadViewOffset += (trackViewTarget - Number(editor.playtestSession.roadViewOffset || 0)) * Math.min(1, seconds * 3.2);
-  editor.playtestSession.rpm = clamp(editor.playtestSession.engineRpm / tuning.revLimitRpm, 0, 1.08);
+  editor.playtestSession.rpm = clamp(diagnosticEngineRpm / tuning.revLimitRpm, 0, 1.08);
   editor.updateRaceEngineAudio({ tuning, throttle: engineThrottle, load: relaxedWheelSpinRatio });
   editor.updateRaceTireAudio({
     slip: audibleSlip,
@@ -1717,7 +2069,7 @@ export function updateRaceSimulation({
     const currentGearRedlineSpeed = editor.getRaceRedlineSpeedMps(tuning, gear);
     const forwardSpeedMps = Number(editor.playtestSession.speedMps || 0);
     const stableDriveContact = drivenLoadScale >= 0.25 && drivetrainUnload < 0.55;
-    const wantsUpshift = editor.playtestSession.engineRpm > automaticUpshiftRpm * 0.96
+    const wantsUpshift = diagnosticEngineRpm > automaticUpshiftRpm * 0.96
       || absSpeed > currentGearRedlineSpeed * 0.9;
     if (throttle > RACE_PEDAL_INPUT.activeThreshold
       && forwardSpeedMps > 1
@@ -1728,7 +2080,7 @@ export function updateRaceSimulation({
     } else if (editor.raceInput.gear > 1
       && (
         forwardSpeedMps <= 0
-        || editor.playtestSession.engineRpm < automaticDownshiftRpm
+        || diagnosticEngineRpm < automaticDownshiftRpm
         || brake > RACE_PEDAL_INPUT.activeThreshold
         || absSpeed < lowerGearUsefulSpeed
       )
@@ -1738,7 +2090,6 @@ export function updateRaceSimulation({
   }
   editor.playtestSession.steeringWheel = editor.raceInput.steeringWheel;
   editor.playtestSession.steeringTarget = editor.raceInput.steeringTarget;
-  editor.playtestSession.gear = editor.raceInput.gear;
   editor.playtestSession.cameraView = editor.raceInput.cameraView;
   editor.updateRaceWeatherApproachDistance(seconds, {
     previousSpeedMps: absSpeedBefore,
@@ -1768,6 +2119,21 @@ export function updateRaceSimulation({
       routeLength,
       routeRuntimeType
     });
+    const authoritativeTires = editor.playtestSession.vehicleDynamicsRunner?.state?.tireState || {};
+    editor.playtestSession.diagnostics.tireTemperature = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+      wheelId,
+      Number(authoritativeTires[wheelId]?.temperatureF
+        ?? editor.playtestSession.diagnostics.tireTemperature?.[wheelId] ?? 70)
+    ]));
+    editor.playtestSession.diagnostics.tireThermal = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+      wheelId,
+      {
+        treadTemperatureC: Number(authoritativeTires[wheelId]?.treadTemperatureC || 0),
+        carcassTemperatureC: Number(authoritativeTires[wheelId]?.carcassTemperatureC || 0),
+        internalAirTemperatureC: Number(authoritativeTires[wheelId]?.internalAirTemperatureC || 0),
+        effectivePressurePsi: Number(authoritativeTires[wheelId]?.effectivePressurePsi || 0)
+      }
+    ]));
   }
   const tireFxContext = {
     tireSlipByWheel,
@@ -1783,32 +2149,6 @@ export function updateRaceSimulation({
     editor.updateRaceTireTracks(tireFxContext);
     editor.stepRaceTireFxParticles(seconds, tireFxContext);
   }
-  if (!countdownActive && trackState) {
-    const previousPositions = editor.playtestSession.trackStatePreviousWheelPositions || {};
-    systems.surface.queueTrackStateTireEvents(trackState, {
-      vehicleId: editor.playtestSession.carId || 'player',
-      normalLoads: dynamicNormalLoads,
-      tireSlipByWheel,
-      wheelContactScaleByWheel,
-      wheelSurfaceState,
-      previousPositions,
-      speedMps: absSpeed,
-      tireCompoundByWheel: setup.tireCompoundByWheel,
-      tireTemperatures: editor.playtestSession.diagnostics?.tireTemperature || tireTemperatures,
-      brakeState,
-      wheelSpinByWheel: contactWheelSpinRatioByWheel,
-      contactDurationSeconds: seconds,
-      direction: editor.getRaceForwardVector(
-        Number(editor.playtestSession.velocityYaw ?? editor.playtestSession.carYaw ?? roadYaw)
-      )
-    });
-    editor.playtestSession.trackStatePreviousWheelPositions = Object.fromEntries(
-      Object.entries(wheelSurfaceState.positions || {}).map(([wheelId, position]) => [
-        wheelId,
-        { x: Number(position.x || 0), z: Number(position.z || 0) }
-      ])
-    );
-  }
   editor.updateRaceAiDrivers(seconds, {
     preStartMode: countdownActive
       ? editor.playtestSession.rollingStart ? 'rolling' : 'standing'
@@ -1819,22 +2159,6 @@ export function updateRaceSimulation({
     editor.recordRaceGhostSample();
     editor.updateRaceWearAndDamage(seconds);
     if (trackState) systems.surface.queueTrackStateCrashEvents(trackState, editor.playtestSession);
-    if (trackState) {
-      const trackStateAdvance = trackState.advance(
-        seconds,
-        systems.surface.createTrackStateWeatherForcing({
-          weatherState,
-          race: editor.selectedRace
-        })
-      );
-      editor.playtestSession.trackStateRuntime = {
-        stepIndex: trackState.stepIndex,
-        simulationTimeMs: trackState.simulationTimeMs,
-        activeCellCount: trackState.cells.size,
-        pendingAggregateCount: trackState.contactAccumulator.size,
-        ...trackStateAdvance
-      };
-    }
   }
 }
 

@@ -197,7 +197,8 @@ export function getTrackStateCellSample(cell = {}, stepIndex = 0) {
     1
       + rubberEffect
       - (wetness - baseline.wetness) * 0.18
-      - (hydroplaningRisk - baseline.hydroplaningRisk) * 0.42
+      // Bulk water changes rolling resistance here, but aquaplaning lift and
+      // tire-force loss are calculated per wheel from tire/load kinematics.
       - (looseMaterialRisk - baseline.looseMaterialRisk) * 0.38
       - (contaminationRisk - baseline.contaminationRisk) * 0.72
       - (snowRisk - baseline.snowRisk) * 0.42
@@ -240,8 +241,16 @@ export function getTrackStateCellSample(cell = {}, stepIndex = 0) {
     )),
     visual: {
       wetness: quantizeTrackStateNumber(Math.max(0, wetness - baseline.wetness)),
+      dampness: quantizeTrackStateNumber(clamp(
+        Number(cell.moistureDepthMm || 0) / Math.max(0.1, Number(cell.saturationDepthMm || 1)), 0, 1
+      )),
+      standingWater: quantizeTrackStateNumber(clamp(Number(cell.standingWaterDepthMm || 0) / 6, 0, 1)),
+      puddles: quantizeTrackStateNumber(clamp((Number(cell.standingWaterDepthMm || 0) - 0.7) / 5.3, 0, 1)),
       rubber,
       loose: quantizeTrackStateNumber(Math.max(0, looseMaterialRisk - baseline.looseMaterialRisk)),
+      marbles: quantizeTrackStateNumber(clamp(Number(cell.looseMarbles || 0), 0, 1)),
+      dirt: quantizeTrackStateNumber(clamp(Number(cell.dirt || 0), 0, 1)),
+      mud: quantizeTrackStateNumber(clamp(Number(cell.mud || 0), 0, 1)),
       snow: quantizeTrackStateNumber(Math.max(0, snowRisk - baseline.snowRisk)),
       ice: quantizeTrackStateNumber(Math.max(
         0,

@@ -53,6 +53,8 @@ export const RACE_TIRE_COMPOUNDS = [
     label: 'Tarmac',
     surfaceGrip: { asphalt: 1.08, 'wet-asphalt': 0.9, dirt: 0.72, gravel: 0.64, mud: 0.42, 'wet-gravel': 0.49, snow: 0.24, slush: 0.32 },
     weatherGrip: { clear: 1, rain: 0.82, storm: 0.72, snow: 0.36 },
+    wetEvacuationFactor: 0.82,
+    treadDepthMm: 6.5,
     wearRate: 1
   },
   {
@@ -60,6 +62,8 @@ export const RACE_TIRE_COMPOUNDS = [
     label: 'Rain',
     surfaceGrip: { asphalt: 0.94, 'wet-asphalt': 1.03, dirt: 0.72, gravel: 0.7, mud: 0.56, 'wet-gravel': 0.76, snow: 0.34, slush: 0.5 },
     weatherGrip: { clear: 0.92, rain: 1.03, storm: 0.95, snow: 0.48 },
+    wetEvacuationFactor: 1.35,
+    treadDepthMm: 8.5,
     wearRate: 1.1
   },
   {
@@ -67,6 +71,8 @@ export const RACE_TIRE_COMPOUNDS = [
     label: 'Dirt',
     surfaceGrip: { asphalt: 0.78, 'wet-asphalt': 0.75, dirt: 1.16, gravel: 1.2, mud: 1.0, 'wet-gravel': 1.08, snow: 0.58, slush: 0.66 },
     weatherGrip: { clear: 1, rain: 0.92, storm: 0.84, snow: 0.56 },
+    wetEvacuationFactor: 1.08,
+    treadDepthMm: 10,
     wearRate: 1.18
   },
   {
@@ -74,6 +80,8 @@ export const RACE_TIRE_COMPOUNDS = [
     label: 'Offroad',
     surfaceGrip: { asphalt: 0.7, 'wet-asphalt': 0.68, dirt: 1.0, gravel: 1.08, mud: 1.02, 'wet-gravel': 1.04, snow: 0.66, slush: 0.76 },
     weatherGrip: { clear: 0.98, rain: 0.96, storm: 0.9, snow: 0.66 },
+    wetEvacuationFactor: 1.16,
+    treadDepthMm: 11,
     wearRate: 1.08
   },
   {
@@ -81,6 +89,8 @@ export const RACE_TIRE_COMPOUNDS = [
     label: 'Drift',
     surfaceGrip: { asphalt: 0.88, 'wet-asphalt': 0.78, dirt: 0.62, gravel: 0.58, mud: 0.38, 'wet-gravel': 0.48, snow: 0.24, slush: 0.3 },
     weatherGrip: { clear: 0.96, rain: 0.78, storm: 0.68, snow: 0.34 },
+    wetEvacuationFactor: 0.68,
+    treadDepthMm: 5,
     wearRate: 1.42
   },
   {
@@ -88,6 +98,8 @@ export const RACE_TIRE_COMPOUNDS = [
     label: 'Snow',
     surfaceGrip: { asphalt: 0.58, 'wet-asphalt': 0.62, dirt: 0.74, gravel: 0.76, mud: 0.62, 'wet-gravel': 0.72, snow: 1.08, slush: 0.95 },
     weatherGrip: { clear: 0.86, rain: 0.78, storm: 0.7, snow: 1.04 },
+    wetEvacuationFactor: 1.12,
+    treadDepthMm: 10.5,
     wearRate: 1.3
   }
 ];
@@ -98,7 +110,7 @@ export const RACE_CAR_DIMENSIONS = {
     widthM: 1.83,
     wheelbaseM: 2.67,
     trackFrontM: 1.56,
-    trackRearM: 1.56
+    trackRearM: 1.57
   },
   'brz-2022': {
     lengthM: 4.27,
