@@ -4,6 +4,7 @@ import { AeroModel, calculateRelativeAirflow, getAirDensityAtElevation } from '.
 import { createWakeSources, sampleWakeAtVehicle } from '../../src/racing/simulation/WakeModel.js';
 import { VehicleDynamicsRunner, createVehicleDynamicsConfig, createVehicleDynamicsState } from '../../src/racing/simulation/VehicleDynamicsRunner.js';
 import { getRaceAiAeroAwareness } from '../../src/racing/RaceAiSimulation.js';
+import { createDeterministicAtmosphere } from '../../src/racing/simulation/AeroEnvironment.js';
 
 const model = new AeroModel();
 const stateAt = ({ speed = 40, y = 0, pitch = 0, roll = 0, travel = 0.5 } = {}) => createVehicleDynamicsState({
@@ -128,6 +129,22 @@ test('relative airflow reports vehicle yaw to air and gust vectors', () => {
   assert.ok(airflow.speedMps > 25);
   assert.ok(airflow.yawRad < 0);
   assert.deepEqual(airflow.airVelocityWorldMps, { x: 10, y: 0, z: -3 });
+});
+
+test('zero-intensity clear weather is calm unless wind is explicitly authored', () => {
+  const calm = createDeterministicAtmosphere({
+    weatherState: { id: 'clear', effectiveIntensity: 0 },
+    race: {},
+    timeSeconds: 4
+  });
+  const authored = createDeterministicAtmosphere({
+    weatherState: { id: 'clear', effectiveIntensity: 0 },
+    race: { windSpeedMps: 9, windDirectionDeg: 90 },
+    timeSeconds: 4
+  });
+  assert.deepEqual(calm.windWorldMps, { x: 0, y: 0, z: 0 });
+  assert.deepEqual(calm.gustWorldMps, { x: 0, y: 0, z: 0 });
+  assert.ok(Math.abs(authored.windWorldMps.x - 9) < 0.000001);
 });
 
 test('AI distinguishes straight-line drafting from dirty-air cornering and braking risk', () => {

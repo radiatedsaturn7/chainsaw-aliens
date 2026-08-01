@@ -9,7 +9,7 @@ export function createDeterministicAtmosphere({ weatherState = {}, race = {}, ti
   const directionRad = Number(race.windDirectionRad
     ?? (Number(race.windDirectionDeg ?? race.weatherWindDirectionDeg ?? 0) * Math.PI / 180));
   const defaultWindMps = type === 'storm' ? 18 : type === 'rain' ? 10 : type === 'snow' ? 7 : 4;
-  const speedMps = Math.max(0, Number(race.windSpeedMps ?? defaultWindMps * (0.25 + intensity * 0.75)));
+  const speedMps = Math.max(0, Number(race.windSpeedMps ?? defaultWindMps * intensity));
   const gustStrength = clamp(Number(race.gustStrength ?? (type === 'storm' ? 0.38 : 0.16)), 0, 1);
   const time = Number(timeSeconds || 0);
   const gust = speedMps * gustStrength * (
