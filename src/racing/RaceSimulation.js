@@ -15,7 +15,7 @@ import {
   normalizeVehicleControlInput
 } from './simulation/VehicleDynamicsRunner.js';
 import { calculateWheelContactKinematics } from './simulation/ContactPatchTireModel.js';
-import { createDeterministicAtmosphere, createRaceWakeSources } from './simulation/AeroEnvironment.js';
+import { createDeterministicAtmosphere, getRaceWakeSourcesForFrame } from './simulation/AeroEnvironment.js';
 
 function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
   const session = editor.playtestSession;
@@ -32,6 +32,7 @@ function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
     // timeline separately, so normal play must not retain thousands of deep
     // per-wheel state snapshots for every active vehicle.
     telemetryLimit: 32,
+    telemetryRetention: 'transient',
     inputTimelineLimit: 512
   });
   const initialContacts = editor.getRaceWheelContactState({
@@ -214,6 +215,11 @@ function advanceVehicleDynamicsAuthority(editor, {
       }];
     }));
   }
+  const surfaceModel = editor.getRaceSurfaceModel();
+  const runtimeType = session.routeRuntimeType || editor.getActiveRaceRuntimeType();
+  const wakeSources = getRaceWakeSourcesForFrame(session, {
+    playerWidthM: Number(tuning.widthM || 1.8)
+  });
   authority.runner.environmentProvider = ({ state, controls: fixedControls, timeSeconds }) => {
     const preliminaryPatches = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
       const patch = calculateWheelContactKinematics({
@@ -311,8 +317,8 @@ function advanceVehicleDynamicsAuthority(editor, {
       }];
       })),
     sampleTerrainAtWorldPoint: (worldPoint) => {
-      const sample = editor.getRaceSurfaceModel().sampleWorld(worldPoint, 0, {
-        runtimeType: session.routeRuntimeType || editor.getActiveRaceRuntimeType(),
+      const sample = surfaceModel.sampleWorld(worldPoint, 0, {
+        runtimeType,
         fallbackSurfaceId: fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
       });
       return {
@@ -325,7 +331,7 @@ function advanceVehicleDynamicsAuthority(editor, {
       ambientTemperatureC: trackWeatherForcing.ambientTemperatureC,
       ...atmosphere,
       vehicleId: 'player',
-      wakeSources: createRaceWakeSources(session, { playerWidthM: Number(tuning.widthM || 1.8) }),
+      wakeSources,
       bodyDamage: Math.max(0, ...Object.values(panelDamage).map(Number)),
       frontAeroDamage: clamp(Number(panelDamage.front || 0) / 100, 0, 1),
       rearAeroDamage: clamp(Number(panelDamage.rear || 0) / 100, 0, 1),
@@ -355,13 +361,13 @@ function advanceVehicleDynamicsAuthority(editor, {
     }))
   };
   };
-  const fixedStepTelemetry = [];
+  let latestFixedStepTelemetry = null;
   let previousTrackPositions = session.trackStatePreviousWheelPositions || {};
   let latestTrackStateAdvance = null;
   const advance = authority.runner.advance(seconds, {
     input: controls,
     onFixedStep: (telemetry) => {
-      fixedStepTelemetry.push(telemetry);
+      latestFixedStepTelemetry = telemetry;
       if (countdownActive || !trackState) return;
       const result = emitAuthoritativeTrackStateStep({
         editor,
@@ -389,9 +395,9 @@ function advanceVehicleDynamicsAuthority(editor, {
   }
   authority.latest = {
     state: authority.runner.createStateSnapshot(),
-    telemetry: authority.runner.telemetry.at(-1) || null,
+    telemetry: latestFixedStepTelemetry,
     diagnostics: { ...authority.runner.diagnostics },
-    fixedStepTelemetry,
+    fixedStepTelemetry: latestFixedStepTelemetry ? [latestFixedStepTelemetry] : [],
     advance
   };
   syncVehicleDynamicsCompatibilityOutputs(authority.runner, session);

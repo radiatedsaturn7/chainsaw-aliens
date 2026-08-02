@@ -266,12 +266,16 @@ export function createVehicleDynamicsConfig(config = {}) {
     yy: Math.max(100, Number(config.yawInertiaKgM2) || massKg * 1.65),
     zz: Math.max(100, Number(config.rollInertiaKgM2) || massKg * 0.65)
   });
+  const telemetryRetention = ['history', 'latest', 'transient', 'none'].includes(config.telemetryRetention)
+    ? config.telemetryRetention
+    : 'history';
   return Object.freeze({
     chassisHz,
     tireHz,
     tireSubstepsPerChassisStep: tireHz / chassisHz,
     maxCatchUpSteps: Math.max(1, Math.trunc(Number(config.maxCatchUpSteps) || 30)),
     telemetryLimit: Math.max(1, Math.trunc(Number(config.telemetryLimit) || 4096)),
+    telemetryRetention,
     inputTimelineLimit: Math.max(0, Math.trunc(Number(config.inputTimelineLimit) || 0)),
     massKg,
     wheelbaseM,
@@ -403,6 +407,7 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
   tireHz = VEHICLE_DYNAMICS_MAX_TIRE_HZ,
   maxCatchUpSteps = 30,
   telemetryLimit = 4096,
+  telemetryRetention = 'history',
   inputTimelineLimit = 0
 } = {}) {
   const physical = tuning.physicalVehicleProfile || null;
@@ -432,6 +437,7 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
     tireHz,
     maxCatchUpSteps,
     telemetryLimit,
+    telemetryRetention,
     inputTimelineLimit,
     massKg,
     physicalProfileId: physical?.id,
@@ -632,19 +638,19 @@ function aggregateTireResults(results = [], tireSubstepDt = 0) {
     tireAngularImpulseWorldNms,
     externalAngularImpulseWorldNms,
     accumulatedDuration,
-    targetVelocityWorld: clone(latest.targetVelocityWorld || null),
+    targetVelocityWorld: latest.targetVelocityWorld || null,
     freeRevEngineRpm: latest.freeRevEngineRpm,
     verticalAccelerationMps2: average('verticalAccelerationMps2'),
     groundHeightM: latest.groundHeightM ?? null,
     grounded: results.some((result) => result.grounded !== false),
-    wheelLoadsN: clone(latest.wheelLoadsN || {}),
-    wheelSlip: clone(latest.wheelSlip || {}),
-    suspensionTravel: clone(latest.suspensionTravel || {}),
-    suspensionState: clone(latest.suspensionState || {}),
-    tireForcesN: clone(latest.tireForcesN || {}),
-    wheelAngularVelocityRadps: clone(latest.wheelAngularVelocityRadps || {}),
-    contactPatches: clone(latest.contactPatches || {}),
-    aeroState: clone(latest.aeroState || {})
+    wheelLoadsN: latest.wheelLoadsN || {},
+    wheelSlip: latest.wheelSlip || {},
+    suspensionTravel: latest.suspensionTravel || {},
+    suspensionState: latest.suspensionState || {},
+    tireForcesN: latest.tireForcesN || {},
+    wheelAngularVelocityRadps: latest.wheelAngularVelocityRadps || {},
+    contactPatches: latest.contactPatches || {},
+    aeroState: latest.aeroState || {}
   };
 }
 
@@ -743,6 +749,11 @@ export class VehicleDynamicsRunner {
       backlogSteps: 0,
       peakBacklogSteps: 0,
       droppedTimeSeconds: 0
+    };
+    this.performanceDiagnostics = {
+      environmentQueries: 0,
+      retainedTelemetrySnapshots: 0,
+      transientTelemetrySteps: 0
     };
   }
 
@@ -947,13 +958,13 @@ export class VehicleDynamicsRunner {
       config.maxRpm
     ));
     state.grounded = tires.grounded || Boolean(tires.bodyCollision?.contacts?.length);
-    state.wheelLoadsN = clone(tires.wheelLoadsN);
-    state.wheelSlip = clone(tires.wheelSlip);
-    state.suspensionTravel = clone(tires.suspensionTravel);
-    state.tireForcesN = clone(tires.tireForcesN);
-    state.wheelAngularVelocityRadps = clone(tires.wheelAngularVelocityRadps);
-    state.contactPatches = clone(tires.contactPatches);
-    state.aeroState = clone(tires.aeroState || {});
+    state.wheelLoadsN = tires.wheelLoadsN;
+    state.wheelSlip = tires.wheelSlip;
+    state.suspensionTravel = tires.suspensionTravel;
+    state.tireForcesN = tires.tireForcesN;
+    state.wheelAngularVelocityRadps = tires.wheelAngularVelocityRadps;
+    state.contactPatches = tires.contactPatches;
+    state.aeroState = tires.aeroState || {};
     state.powertrainState = {
       engineRpm: state.engineRpm,
       gear: state.gear,
@@ -961,7 +972,7 @@ export class VehicleDynamicsRunner {
       clutchCoupling: quantize(clutchCoupling),
       freeRevActive
     };
-    state.suspensionState = clone(tires.suspensionState);
+    state.suspensionState = tires.suspensionState;
     state.tireState = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
       const patch = tires.contactPatches?.[wheelId] || {};
       const previous = state.tireState?.[wheelId] || {};
@@ -975,7 +986,7 @@ export class VehicleDynamicsRunner {
       });
       const slipWorkJ = Number(thermal.frictionHeatingWorkJ || 0) / 0.78;
       return [wheelId, {
-        ...clone(patch),
+        ...patch,
         ...thermal,
         wear: quantize(clamp(Number(previous.wear || 0) + slipWorkJ * 1e-9, 0, 1)),
         damage: quantize(clamp(Number(previous.damage || 0), 0, 100))
@@ -1025,7 +1036,17 @@ export class VehicleDynamicsRunner {
     const controls = this.inputTimeline.sampleAt(stepTimeSeconds);
     const tireResults = [];
     const bodyCollisionResults = [];
-    let substepState = this.createStateSnapshot();
+    let substepState = {
+      ...this.state,
+      position: { ...this.state.position },
+      velocity: { ...this.state.velocity },
+      angularVelocityWorld: { ...this.state.angularVelocityWorld },
+      orientation: { ...this.state.orientation },
+      wheelLoadsN: { ...this.state.wheelLoadsN },
+      wheelSlip: { ...this.state.wheelSlip },
+      suspensionTravel: { ...this.state.suspensionTravel },
+      wheelAngularVelocityRadps: { ...this.state.wheelAngularVelocityRadps }
+    };
     const bodyCollisionState = this.bodyCollision.createWorkingState(substepState);
     for (let substepIndex = 0;
       substepIndex < this.config.tireSubstepsPerChassisStep;
@@ -1037,9 +1058,10 @@ export class VehicleDynamicsRunner {
         timeSeconds: substepTimeSeconds,
         stepIndex: nextStepIndex,
         substepIndex,
-        state: clone(substepState),
-        controls: clone(controls)
+        state: substepState,
+        controls
       }) || {};
+      this.performanceDiagnostics.environmentQueries += 1;
       if (Array.isArray(environment.wakeSources)) {
         environment.wakeState = sampleWakeAtVehicle({
           vehicle: {
@@ -1059,8 +1081,8 @@ export class VehicleDynamicsRunner {
         environment
       });
       const tireResult = this.tireContactSubsystem.step({
-        state: clone(substepState),
-        controls: clone(controls),
+        state: substepState,
+        controls,
         config: this.config,
         environment,
         dt: 1 / this.config.tireHz,
@@ -1069,15 +1091,15 @@ export class VehicleDynamicsRunner {
         timeSeconds: substepTimeSeconds
       });
       tireResult.externalForceWorldN = addVector3(
-        clone(environment.externalForceWorldN || {}),
+        environment.externalForceWorldN || {},
         aeroState.totalForceWorldN
       );
       tireResult.externalMomentWorldNm = addVector3(
-        clone(environment.externalMomentWorldNm || {}),
+        environment.externalMomentWorldNm || {},
         aeroState.totalMomentWorldNm
       );
-      tireResult.aeroState = clone(aeroState);
-      tireResult.targetVelocityWorld = clone(environment.targetVelocityWorld || null);
+      tireResult.aeroState = aeroState;
+      tireResult.targetVelocityWorld = environment.targetVelocityWorld || null;
       tireResult.freeRevEngineRpm = environment.freeRevEngineRpm;
       tireResults.push(tireResult);
       bodyCollisionState.velocity.y -= 9.81 / this.config.tireHz;
@@ -1087,8 +1109,8 @@ export class VehicleDynamicsRunner {
         environment,
         dt: 1 / this.config.tireHz
       }));
-      substepState.wheelAngularVelocityRadps = clone(tireResult.wheelAngularVelocityRadps || substepState.wheelAngularVelocityRadps);
-      substepState.suspensionState = clone(tireResult.suspensionState || substepState.suspensionState);
+      substepState.wheelAngularVelocityRadps = tireResult.wheelAngularVelocityRadps || substepState.wheelAngularVelocityRadps;
+      substepState.suspensionState = tireResult.suspensionState || substepState.suspensionState;
     }
     const tires = aggregateTireResults(tireResults, 1 / this.config.tireHz);
     const sumBodyVector = (field) => bodyCollisionResults.reduce((sum, result) => (
@@ -1115,29 +1137,40 @@ export class VehicleDynamicsRunner {
     this.stepIndex = nextStepIndex;
     this.diagnostics.completedSteps += 1;
     this.diagnostics.completedTireSubsteps += tireResults.length;
-    const state = this.createStateSnapshot();
+    const retention = this.config.telemetryRetention;
+    const retained = retention === 'history' || retention === 'latest';
+    if (retained) this.performanceDiagnostics.retainedTelemetrySnapshots += 1;
+    if (retention === 'transient') this.performanceDiagnostics.transientTelemetrySteps += 1;
+    const state = retained ? this.createStateSnapshot() : this.state;
     const telemetry = {
       stepIndex: this.stepIndex,
       timeSeconds: this.simulationTimeSeconds,
-      controls: clone(controls),
+      controls: retained ? clone(controls) : controls,
       subsystemOrder: [...VEHICLE_DYNAMICS_SUBSYSTEM_ORDER],
       tireSubstepCount: tireResults.length,
       state,
-      forces: clone(integration),
-      assistInterventions: clone(integration.assistInterventions),
+      forces: retained ? clone(integration) : integration,
+      assistInterventions: retained
+        ? clone(integration.assistInterventions)
+        : integration.assistInterventions,
       catchUp: {
         maxCatchUpSteps: this.config.maxCatchUpSteps,
         completedSteps: this.diagnostics.completedSteps,
         completedTireSubsteps: this.diagnostics.completedTireSubsteps,
         droppedTimeSeconds: this.diagnostics.droppedTimeSeconds
       },
-      legacyDifference: compareVehicleStates(legacySnapshot, state)
+      legacyDifference: retention === 'none' ? null : compareVehicleStates(legacySnapshot, state)
     };
-    this.telemetry.push(telemetry);
-    if (this.telemetry.length > this.config.telemetryLimit) {
-      this.telemetry.splice(0, this.telemetry.length - this.config.telemetryLimit);
+    if (retention === 'history') {
+      this.telemetry.push(telemetry);
+      if (this.telemetry.length > this.config.telemetryLimit) {
+        this.telemetry.splice(0, this.telemetry.length - this.config.telemetryLimit);
+      }
+    } else if (retention === 'latest') {
+      this.telemetry[0] = telemetry;
+      this.telemetry.length = 1;
     }
-    return telemetry;
+    return retention === 'none' ? null : telemetry;
   }
 
   advance(deltaSeconds = 0, {
@@ -1162,7 +1195,7 @@ export class VehicleDynamicsRunner {
     const completedSteps = Math.min(dueSteps, this.config.maxCatchUpSteps);
     for (let index = 0; index < completedSteps; index += 1) {
       const telemetry = this.runStep(legacySnapshot);
-      if (typeof onFixedStep === 'function') onFixedStep(telemetry);
+      if (telemetry && typeof onFixedStep === 'function') onFixedStep(telemetry);
     }
     const backlogSteps = Math.max(0, targetStepIndex - this.stepIndex);
     this.diagnostics.backlogSteps = backlogSteps;
