@@ -753,7 +753,9 @@ export class VehicleDynamicsRunner {
     this.performanceDiagnostics = {
       environmentQueries: 0,
       retainedTelemetrySnapshots: 0,
-      transientTelemetrySteps: 0
+      transientTelemetrySteps: 0,
+      bodyBroadphaseRejectedSubsteps: 0,
+      bodyNarrowphaseSubsteps: 0
     };
   }
 
@@ -1113,6 +1115,12 @@ export class VehicleDynamicsRunner {
       substepState.suspensionState = tireResult.suspensionState || substepState.suspensionState;
     }
     const tires = aggregateTireResults(tireResults, 1 / this.config.tireHz);
+    const bodyBroadphaseRejectedSubsteps = bodyCollisionResults.reduce((sum, result) => (
+      sum + (result.broadphaseRejected ? 1 : 0)
+    ), 0);
+    this.performanceDiagnostics.bodyBroadphaseRejectedSubsteps += bodyBroadphaseRejectedSubsteps;
+    this.performanceDiagnostics.bodyNarrowphaseSubsteps += bodyCollisionResults.length
+      - bodyBroadphaseRejectedSubsteps;
     const sumBodyVector = (field) => bodyCollisionResults.reduce((sum, result) => (
       addVector3(sum, result[field])
     ), { x: 0, y: 0, z: 0 });
@@ -1129,6 +1137,7 @@ export class VehicleDynamicsRunner {
       linearImpulseWorldNs: sumBodyVector('linearImpulseWorldNs'),
       angularImpulseWorldNms: sumBodyVector('angularImpulseWorldNms'),
       positionalCorrectionWorldM,
+      broadphaseRejectedSubsteps: bodyBroadphaseRejectedSubsteps,
       contacts: bodyCollisionResults.flatMap((result, substepIndex) => (
         result.contacts.map((contact) => ({ ...contact, substepIndex }))
       ))

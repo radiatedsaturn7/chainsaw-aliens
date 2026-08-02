@@ -135,7 +135,8 @@ export function getRaceWheelContactState({
     const position = positions[wheelId];
     const surfaceSample = surfaceModel?.sampleWorld?.(position, 0, {
       runtimeType,
-      fallbackSurfaceId: selectedSegment?.surface || 'asphalt'
+      fallbackSurfaceId: selectedSegment?.surface || 'asphalt',
+      physicsContact: true
     }) || {};
     const projection = surfaceSample.projection;
     const segment = surfaceSample.segment || projection?.segment || selectedSegment;

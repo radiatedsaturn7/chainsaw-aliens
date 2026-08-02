@@ -14,7 +14,7 @@ import {
   estimateRacePowerLimitedTopSpeedMps,
   updateRaceSimulation
 } from '../racing/RaceSimulation.js';
-import { appendRaceBakedSurfaceSamplerTerrainCells, buildRaceBakedSurfaceSampler, sampleRaceBakedSurface } from '../racing/RaceBakedSurfaceSampler.js';
+import { appendRaceBakedSurfaceSamplerTerrainCells, buildRaceBakedSurfaceSampler, getRaceBakedSurfaceMaximumElevationInBounds, sampleRaceBakedSurface } from '../racing/RaceBakedSurfaceSampler.js';
 import { buildRaceCanonicalSurfaceMesh } from '../racing/RaceCanonicalSurfaceMesh.js';
 import { createPackedRaceArtTextureSampler } from '../racing/RacePackedArt.js';
 import {
@@ -3260,6 +3260,7 @@ export default class RaceEditor {
     this.raceWorldBakeCache = null;
     this.raceTerrainBakeCache = null;
     this.raceEditorSurfacePreviewBake = null;
+    this.raceRouteProjectionIndex = null;
   }
 
   getRaceSurfaceModel() {
@@ -4102,6 +4103,11 @@ export default class RaceEditor {
     const worldBake = this.playtestSession?.worldBake || this.raceWorldBakeCache;
     if (!worldBake?.surfaceSampler) return null;
     return sampleRaceBakedSurface(worldBake.surfaceSampler, worldPoint, options);
+  }
+
+  getRaceBakedSurfaceMaximumElevationInBounds(bounds = {}) {
+    const worldBake = this.playtestSession?.worldBake || this.raceWorldBakeCache;
+    return getRaceBakedSurfaceMaximumElevationInBounds(worldBake?.surfaceSampler, bounds);
   }
 
   createRaceSurfaceSectionFromSample(sample = {}, {
@@ -12980,8 +12986,33 @@ export default class RaceEditor {
     }
     const px = Number(point.x || 0);
     const pz = Number(point.z || 0);
+    const projectionCellSizeM = 32;
+    const projectionSearchRadiusM = 64;
+    if (this.raceRouteProjectionIndex?.samples !== samples) {
+      const buckets = new Map();
+      for (let index = 1; index < samples.length; index += 1) {
+        const previous = samples[index - 1];
+        const next = samples[index];
+        const minX = Math.floor((Math.min(Number(previous.x || 0), Number(next.x || 0)) - projectionSearchRadiusM) / projectionCellSizeM);
+        const maxX = Math.floor((Math.max(Number(previous.x || 0), Number(next.x || 0)) + projectionSearchRadiusM) / projectionCellSizeM);
+        const minZ = Math.floor((Math.min(Number(previous.z || 0), Number(next.z || 0)) - projectionSearchRadiusM) / projectionCellSizeM);
+        const maxZ = Math.floor((Math.max(Number(previous.z || 0), Number(next.z || 0)) + projectionSearchRadiusM) / projectionCellSizeM);
+        for (let z = minZ; z <= maxZ; z += 1) {
+          for (let x = minX; x <= maxX; x += 1) {
+            const key = `${x},${z}`;
+            const entries = buckets.get(key) || [];
+            entries.push(index);
+            buckets.set(key, entries);
+          }
+        }
+      }
+      this.raceRouteProjectionIndex = { samples, buckets };
+    }
+    const projectionCandidates = this.raceRouteProjectionIndex.buckets.get(
+      `${Math.floor(px / projectionCellSizeM)},${Math.floor(pz / projectionCellSizeM)}`
+    ) || [];
     let best = null;
-    for (let index = 1; index < samples.length; index += 1) {
+    const considerSegment = (index) => {
       const previous = samples[index - 1];
       const next = samples[index];
       const ax = Number(previous.x || 0);
@@ -13014,6 +13045,11 @@ export default class RaceEditor {
           progress: t
         };
       }
+    };
+    projectionCandidates.forEach(considerSegment);
+    if (!best || Math.sqrt(best.distanceSq) > projectionSearchRadiusM) {
+      best = null;
+      for (let index = 1; index < samples.length; index += 1) considerSegment(index);
     }
     return best || {
       distance: 0,
@@ -19000,7 +19036,6 @@ export default class RaceEditor {
     debug = false
   } = {}) {
     if (!camera || !this.playtestSession?.trackState) return 0;
-    this.getRaceTrackStateVisualAtlas(debug ? 128 : 192, debug ? 140 : 192);
     if (typeof document === 'undefined') return 0;
     const cells = this.getRaceTrackStateVisualCells(debug ? 70 : 95);
     if (!cells.length) return 0;

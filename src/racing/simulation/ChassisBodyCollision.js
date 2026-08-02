@@ -94,7 +94,8 @@ export class ChassisBodyCollision {
 
   step({ workingState, config, environment = {}, dt = 0 }) {
     const sampleTerrain = environment.sampleTerrainAtWorldPoint;
-    if (typeof sampleTerrain !== 'function' || dt <= 0) {
+    const sampleTerrainBatch = environment.sampleTerrainAtWorldPoints;
+    if ((typeof sampleTerrain !== 'function' && typeof sampleTerrainBatch !== 'function') || dt <= 0) {
       return {
         linearImpulseWorldNs: { x: 0, y: 0, z: 0 },
         angularImpulseWorldNms: { x: 0, y: 0, z: 0 },
@@ -109,10 +110,40 @@ export class ChassisBodyCollision {
       dt
     );
     const toleranceM = Math.max(0.001, Number(config.bodyCollisionToleranceM || 0.008));
-    const contacts = this.candidates.map((candidate, candidateIndex) => {
+    const candidateWorld = this.candidates.map((candidate) => {
       const arm = rotateVectorByQuaternion(candidate.localPoint, workingState.orientation);
       const worldPoint = addVector3(workingState.position, arm);
-      const terrain = sampleTerrain(worldPoint) || {};
+      return { arm, worldPoint };
+    });
+    if (typeof environment.sampleTerrainMaximumHeightInBounds === 'function') {
+      const xs = candidateWorld.map(({ worldPoint }) => worldPoint.x);
+      const zs = candidateWorld.map(({ worldPoint }) => worldPoint.z);
+      const maximumTerrainHeightM = environment.sampleTerrainMaximumHeightInBounds({
+        minX: Math.min(...xs),
+        maxX: Math.max(...xs),
+        minZ: Math.min(...zs),
+        maxZ: Math.max(...zs)
+      });
+      const minimumCandidateHeightM = Math.min(...candidateWorld.map(({ worldPoint }) => worldPoint.y));
+      if (Number.isFinite(Number(maximumTerrainHeightM))
+        && minimumCandidateHeightM - Number(maximumTerrainHeightM) > toleranceM) {
+        return {
+          linearImpulseWorldNs: { x: 0, y: 0, z: 0 },
+          angularImpulseWorldNms: { x: 0, y: 0, z: 0 },
+          positionalCorrectionWorldM: { x: 0, y: 0, z: 0 },
+          contacts: [],
+          broadphaseRejected: true
+        };
+      }
+    }
+    const terrainBatch = typeof sampleTerrainBatch === 'function'
+      ? sampleTerrainBatch(candidateWorld.map(({ worldPoint }) => worldPoint))
+      : null;
+    const contacts = this.candidates.map((candidate, candidateIndex) => {
+      const { arm, worldPoint } = candidateWorld[candidateIndex];
+      const terrain = terrainBatch?.[candidateIndex]
+        || (typeof sampleTerrain === 'function' ? sampleTerrain(worldPoint) : null)
+        || {};
       const heightM = Number(terrain.heightM ?? terrain.elevationM);
       if (!Number.isFinite(heightM)) return null;
       const normal = normalize(terrain.normal || terrain.normalWorld);
