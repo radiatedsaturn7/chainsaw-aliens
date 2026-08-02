@@ -310,6 +310,17 @@ function advanceVehicleDynamicsAuthority(editor, {
           ?? 1
       }];
       })),
+    sampleTerrainAtWorldPoint: (worldPoint) => {
+      const sample = editor.getRaceSurfaceModel().sampleWorld(worldPoint, 0, {
+        runtimeType: session.routeRuntimeType || editor.getActiveRaceRuntimeType(),
+        fallbackSurfaceId: fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
+      });
+      return {
+        heightM: Number(sample.elevation || 0) * RACE_THREE_ELEVATION_M,
+        normal: sample.normal || { x: 0, y: 1, z: 0 },
+        friction: Number(sample.friction || 1)
+      };
+    },
     targetVelocityWorld: countdownActive ? authority.formationTargetVelocityWorld : null,
       ambientTemperatureC: trackWeatherForcing.ambientTemperatureC,
       ...atmosphere,
@@ -407,6 +418,19 @@ export function updateRaceSimulation({
   const seconds = Math.max(0, Number(dt) || 0);
   ensureVehicleDynamicsAuthority(editor, tuning, {
     steering: -editor.raceInput.steeringWheel,
+    centerSteeringAngleRad: -editor.getRaceResolvedCenterSteeringAngle(
+      editor.raceInput.steeringWheel,
+      editor.playtestSession.speedMps,
+      {
+        wheelbaseM: tuning.wheelbaseM,
+        availableLateralG: 0.95,
+        handlingPreset: tuning.handlingPreset || 'sport',
+        maxPhysicalAngleRad: 0.52
+      }
+    ),
+    steeringInputMode: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
+      ? 'simulation-wheel'
+      : editor.raceInput.analogSteeringActive ? 'gamepad' : 'keyboard',
     throttle: editor.raceInput.throttleAxis,
     brake: editor.raceInput.brakeAxis,
     clutch: editor.raceInput.clutchAxis,
@@ -419,7 +443,12 @@ export function updateRaceSimulation({
       autoShift: editor.raceInput.autoShift !== false
     }
   });
-  const countdownActive = Number(editor.playtestSession.countdownRemainingMs || 0) > 0;
+  const countdownRemainingMs = Number(editor.playtestSession.countdownRemainingMs || 0);
+  const countdownVisible = countdownRemainingMs > 0;
+  // The final second is the displayed GO phase, not another staged-countdown
+  // second. Release the drivetrain as soon as GO is shown while allowing the
+  // banner timer to finish independently.
+  const countdownActive = countdownRemainingMs > 1000;
   editor.playtestSession.sceneElapsedMs = Math.max(
     0,
     Number(editor.playtestSession.sceneElapsedMs || 0) + seconds * 1000
@@ -661,12 +690,13 @@ export function updateRaceSimulation({
   }
   const driveDirection = gear < 0 ? -1 : gear > 0 ? 1 : 0;
   editor.playtestSession.previousDistance = editor.playtestSession.distance;
-  if (countdownActive) {
+  if (countdownVisible) {
     editor.playtestSession.countdownRemainingMs = Math.max(0, Number(editor.playtestSession.countdownRemainingMs || 0) - seconds * 1000);
-    if (editor.playtestSession.countdownRemainingMs <= 0) {
+    if (editor.playtestSession.countdownRemainingMs <= 1000) {
       editor.playtestSession.startupPhase = 'running';
     }
-  } else {
+  }
+  if (!countdownActive) {
     editor.playtestSession.elapsedMs += seconds * 1000;
   }
   if (!countdownActive) editor.updateRaceTriggers();
@@ -1221,10 +1251,12 @@ export function updateRaceSimulation({
   );
   const usableFullLockTireAngle = launchAligning
     ? 0
-    : editor.getRaceUsableFullLockTireAngle(absSpeed, {
+    : Math.abs(editor.getRaceResolvedCenterSteeringAngle(1, absSpeed, {
       wheelbaseM,
-      availableLateralG: steeringEnvelopeCorneringG
-    });
+      availableLateralG: steeringEnvelopeCorneringG,
+      handlingPreset: tuning.handlingPreset || 'sport',
+      maxPhysicalAngleRad: 0.52
+    }));
   const steeringAngle = launchAligning
     ? 0
     : clamp(Number(effectiveRoadSteer) || 0, -1, 1) * usableFullLockTireAngle;
@@ -1880,6 +1912,10 @@ export function updateRaceSimulation({
     seconds,
     controls: {
       steering: -editor.raceInput.steeringWheel,
+      centerSteeringAngleRad: -steeringAngle,
+      steeringInputMode: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
+        ? 'simulation-wheel'
+        : editor.raceInput.analogSteeringActive ? 'gamepad' : 'keyboard',
       throttle: countdownActive ? driverThrottle : throttle,
       brake,
       // Formation/countdown throttle is a free rev. Record clutch disengagement

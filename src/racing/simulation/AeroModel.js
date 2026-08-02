@@ -74,10 +74,25 @@ export class AeroModel {
       gustWorldMps: environment.gustWorldMps
     });
     const wake = environment.wakeState || {};
-    const frontTravel = Number(state.suspensionTravel?.fl ?? 0.5) + Number(state.suspensionTravel?.fr ?? 0.5);
-    const rearTravel = Number(state.suspensionTravel?.rl ?? 0.5) + Number(state.suspensionTravel?.rr ?? 0.5);
-    const frontRideHeightM = clamp(config.frontRideHeightM - frontTravel * 0.5 * config.suspensionTravelFrontM, 0.015, 0.5);
-    const rearRideHeightM = clamp(config.rearRideHeightM - rearTravel * 0.5 * config.suspensionTravelRearM, 0.015, 0.5);
+    const compressionFromStaticSag = (wheelId, travelM, sagRatio) => {
+      const suspension = state.suspensionState?.[wheelId];
+      if (Number.isFinite(Number(suspension?.compressionM))) {
+        return Number(suspension.compressionM) - Number(suspension.staticSagTargetM ?? travelM * sagRatio);
+      }
+      const normalizedTravel = Number(state.suspensionTravel?.[wheelId]);
+      if (!Number.isFinite(normalizedTravel) || normalizedTravel === 0) return 0;
+      return (normalizedTravel - sagRatio) * travelM;
+    };
+    const frontCompressionDeltaM = (
+      compressionFromStaticSag('fl', config.suspensionTravelFrontM, config.staticSagRatioFront)
+      + compressionFromStaticSag('fr', config.suspensionTravelFrontM, config.staticSagRatioFront)
+    ) * 0.5;
+    const rearCompressionDeltaM = (
+      compressionFromStaticSag('rl', config.suspensionTravelRearM, config.staticSagRatioRear)
+      + compressionFromStaticSag('rr', config.suspensionTravelRearM, config.staticSagRatioRear)
+    ) * 0.5;
+    const frontRideHeightM = clamp(config.frontRideHeightM - frontCompressionDeltaM, 0.015, 0.5);
+    const rearRideHeightM = clamp(config.rearRideHeightM - rearCompressionDeltaM, 0.015, 0.5);
     const rakeRad = Math.atan2(rearRideHeightM - frontRideHeightM, Math.max(0.5, config.wheelbaseM));
     const bodyDamage = clamp(Number(environment.bodyDamage ?? state.bodyDamage ?? 0) / 100, 0, 1);
     const activeAeroState = clamp(Number(environment.activeAeroState || 0), 0, 1);

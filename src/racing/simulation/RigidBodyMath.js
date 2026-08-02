@@ -46,6 +46,97 @@ export function rotateVectorByQuaternion(value = {}, orientation = {}) {
   );
 }
 
+export function rotateVectorToBody(value = {}, orientation = {}) {
+  const q = normalizeQuaternion(orientation);
+  return rotateVectorByQuaternion(value, { x: -q.x, y: -q.y, z: -q.z, w: q.w });
+}
+
+export function normalizeBodyInertiaTensor(tensor = {}, fallback = {}) {
+  return Object.freeze({
+    xx: Math.max(EPSILON, Number(tensor.xx ?? fallback.xx ?? 1)),
+    xy: Number(tensor.xy ?? fallback.xy ?? 0) || 0,
+    xz: Number(tensor.xz ?? fallback.xz ?? 0) || 0,
+    yy: Math.max(EPSILON, Number(tensor.yy ?? fallback.yy ?? 1)),
+    yz: Number(tensor.yz ?? fallback.yz ?? 0) || 0,
+    zz: Math.max(EPSILON, Number(tensor.zz ?? fallback.zz ?? 1))
+  });
+}
+
+export function multiplyBodyInertia(tensor = {}, value = {}) {
+  const x = Number(value.x || 0);
+  const y = Number(value.y || 0);
+  const z = Number(value.z || 0);
+  return {
+    x: tensor.xx * x + tensor.xy * y + tensor.xz * z,
+    y: tensor.xy * x + tensor.yy * y + tensor.yz * z,
+    z: tensor.xz * x + tensor.yz * y + tensor.zz * z
+  };
+}
+
+export function inverseBodyInertiaMultiply(tensor = {}, value = {}) {
+  const a = Number(tensor.xx || 0);
+  const b = Number(tensor.xy || 0);
+  const c = Number(tensor.xz || 0);
+  const d = Number(tensor.yy || 0);
+  const e = Number(tensor.yz || 0);
+  const f = Number(tensor.zz || 0);
+  const cofactor00 = d * f - e * e;
+  const cofactor01 = c * e - b * f;
+  const cofactor02 = b * e - c * d;
+  const cofactor11 = a * f - c * c;
+  const cofactor12 = b * c - a * e;
+  const cofactor22 = a * d - b * b;
+  const determinant = a * cofactor00 + b * cofactor01 + c * cofactor02;
+  if (!Number.isFinite(determinant) || Math.abs(determinant) < EPSILON) {
+    return { x: 0, y: 0, z: 0 };
+  }
+  const inverseDeterminant = 1 / determinant;
+  const x = Number(value.x || 0);
+  const y = Number(value.y || 0);
+  const z = Number(value.z || 0);
+  return {
+    x: (cofactor00 * x + cofactor01 * y + cofactor02 * z) * inverseDeterminant,
+    y: (cofactor01 * x + cofactor11 * y + cofactor12 * z) * inverseDeterminant,
+    z: (cofactor02 * x + cofactor12 * y + cofactor22 * z) * inverseDeterminant
+  };
+}
+
+export function inverseInertiaWorldMultiply(value = {}, orientation = {}, tensor = {}) {
+  const bodyValue = rotateVectorToBody(value, orientation);
+  return rotateVectorByQuaternion(inverseBodyInertiaMultiply(tensor, bodyValue), orientation);
+}
+
+export function integrateBodyAngularMotion({
+  orientation = {},
+  angularVelocityWorld = {},
+  angularImpulseWorld = {},
+  inertiaTensorBody = {},
+  dt = 0
+} = {}) {
+  const normalizedOrientation = normalizeQuaternion(orientation);
+  const omegaBody = rotateVectorToBody(angularVelocityWorld, normalizedOrientation);
+  const angularMomentumBody = multiplyBodyInertia(inertiaTensorBody, omegaBody);
+  const gyroscopicTorqueBody = crossVector3(omegaBody, angularMomentumBody);
+  const appliedImpulseBody = rotateVectorToBody(angularImpulseWorld, normalizedOrientation);
+  const netImpulseBody = addVector3(
+    appliedImpulseBody,
+    scaleVector3(gyroscopicTorqueBody, -Math.max(0, Number(dt) || 0))
+  );
+  const nextOmegaBody = addVector3(
+    omegaBody,
+    inverseBodyInertiaMultiply(inertiaTensorBody, netImpulseBody)
+  );
+  const omegaWorldForOrientation = rotateVectorByQuaternion(nextOmegaBody, normalizedOrientation);
+  const nextOrientation = integrateQuaternion(normalizedOrientation, omegaWorldForOrientation, dt);
+  return {
+    orientation: nextOrientation,
+    angularVelocityBody: nextOmegaBody,
+    angularVelocityWorld: rotateVectorByQuaternion(nextOmegaBody, nextOrientation),
+    angularMomentumBody,
+    gyroscopicTorqueBody
+  };
+}
+
 export function quaternionFromEuler({ yaw = 0, pitch = 0, roll = 0 } = {}) {
   const multiply = (a, b) => ({
     x: a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,

@@ -1,10 +1,14 @@
 import { RACE_WHEEL_IDS, clamp, normalizeAngle } from './SimulationMath.js';
-import { ContactPatchTireModel } from './ContactPatchTireModel.js';
+import {
+  ContactPatchTireModel,
+  resolvePhysicalCenterSteeringAngle
+} from './ContactPatchTireModel.js';
 import { HandlingAssist } from './HandlingAssist.js';
 import { advanceTireThermalState } from './TireThermalModel.js';
 import { normalizeSuspensionDefinition } from './SuspensionGeometry.js';
 import { AeroModel } from './AeroModel.js';
 import { sampleWakeAtVehicle } from './WakeModel.js';
+import { ChassisBodyCollision } from './ChassisBodyCollision.js';
 import {
   getRaceNormalizedSuspensionTravelM,
   getRaceVehicleSuspensionRates
@@ -13,7 +17,8 @@ import {
   addVector3,
   crossVector3,
   eulerFromQuaternion,
-  integrateQuaternion,
+  integrateBodyAngularMotion,
+  normalizeBodyInertiaTensor,
   quaternionFromEuler,
   scaleVector3
 } from './RigidBodyMath.js';
@@ -59,8 +64,13 @@ function normalizeAssists(assists = {}) {
 }
 
 export function normalizeVehicleControlInput(input = {}) {
+  const explicitCenterAngle = input.centerSteeringAngleRad;
   return {
     steering: quantize(clamp(Number(input.steering ?? input.steeringWheel ?? 0), -1, 1)),
+    centerSteeringAngleRad: typeof explicitCenterAngle === 'number' && Number.isFinite(explicitCenterAngle)
+      ? quantize(explicitCenterAngle)
+      : null,
+    steeringInputMode: String(input.steeringInputMode || 'normalized'),
     throttle: quantize(clamp(Number(input.throttle ?? input.throttleAxis ?? 0), 0, 1)),
     brake: quantize(clamp(Number(input.brake ?? input.brakeAxis ?? 0), 0, 1)),
     clutch: quantize(clamp(Number(input.clutch ?? input.clutchAxis ?? 0), 0, 1)),
@@ -131,7 +141,9 @@ export class VehicleControlInputTimeline {
     const ratio = span > EPSILON ? clamp((time - left.timeSeconds) / span, 0, 1) : 0;
     const sampled = {
       requestedGear: left.input.requestedGear,
-      assists: clone(left.input.assists)
+      assists: clone(left.input.assists),
+      steeringInputMode: left.input.steeringInputMode,
+      centerSteeringAngleRad: null
     };
     CONTINUOUS_CONTROL_FIELDS.forEach((field) => {
       sampled[field] = quantize(
@@ -140,6 +152,15 @@ export class VehicleControlInputTimeline {
         4
       );
     });
+    if (typeof left.input.centerSteeringAngleRad === 'number'
+      && typeof right.input.centerSteeringAngleRad === 'number') {
+      sampled.centerSteeringAngleRad = quantize(
+        left.input.centerSteeringAngleRad
+          + (right.input.centerSteeringAngleRad - left.input.centerSteeringAngleRad) * ratio
+      );
+    } else if (typeof left.input.centerSteeringAngleRad === 'number') {
+      sampled.centerSteeringAngleRad = left.input.centerSteeringAngleRad;
+    }
     return sampled;
   }
 
@@ -235,10 +256,16 @@ export function createVehicleDynamicsConfig(config = {}) {
   const suspensionSpringRateNpm = Math.max(1000, Number(config.suspensionSpringRateNpm) || 32000);
   const suspensionDamperRateNsM = Math.max(100, Number(config.suspensionDamperRateNsM) || 3200);
   const suspensionTravelM = Math.max(0.05, Number(config.suspensionTravelM) || 0.22);
+  const staticSagRatio = clamp(Number(config.staticSagRatio ?? 0.42), 0.2, 0.7);
   const explicitPitchStiffness = Number(config.pitchStiffnessNmPerRad);
   const explicitRollStiffness = Number(config.rollStiffnessNmPerRad);
   const explicitPitchDamping = Number(config.pitchDampingNmsPerRad);
   const explicitRollDamping = Number(config.rollDampingNmsPerRad);
+  const inertiaTensorBodyKgM2 = normalizeBodyInertiaTensor(config.inertiaTensorBodyKgM2, {
+    xx: Math.max(100, Number(config.pitchInertiaKgM2) || massKg * 1.4),
+    yy: Math.max(100, Number(config.yawInertiaKgM2) || massKg * 1.65),
+    zz: Math.max(100, Number(config.rollInertiaKgM2) || massKg * 0.65)
+  });
   return Object.freeze({
     chassisHz,
     tireHz,
@@ -258,10 +285,24 @@ export function createVehicleDynamicsConfig(config = {}) {
     rearTrackWidthM: Math.max(0.5, Number(config.rearTrackWidthM || config.trackWidthM) || 1.58),
     wheelRadiusM: Math.max(0.1, Number(config.wheelRadiusM) || 0.337),
     cgHeightM: Math.max(0.15, Number(config.cgHeightM) || 0.55),
+    cgLocationBodyM: Object.freeze({
+      x: Number(config.cgLocationBodyM?.x || 0),
+      y: Number(config.cgLocationBodyM?.y ?? config.cgHeightM ?? 0.55),
+      z: Number(config.cgLocationBodyM?.z || 0)
+    }),
+    bodyLengthM: Math.max(1.6, Number(config.bodyLengthM || config.lengthM) || 4.5),
+    bodyWidthM: Math.max(0.9, Number(config.bodyWidthM || config.widthM) || 1.8),
+    bodyHeightM: Math.max(0.7, Number(config.bodyHeightM || config.heightM) || 1.45),
+    bodyGroundClearanceM: clamp(Number(config.bodyGroundClearanceM) || 0.12, 0.04, 0.5),
+    bodyCollisionToleranceM: clamp(Number(config.bodyCollisionToleranceM) || 0.008, 0.001, 0.04),
+    bodyCollisionRestitution: clamp(Number(config.bodyCollisionRestitution ?? 0.08), 0, 0.6),
+    bodyCollisionFriction: clamp(Number(config.bodyCollisionFriction ?? 0.62), 0, 1.5),
+    bodyCollisionSolverIterations: clamp(Math.trunc(Number(config.bodyCollisionSolverIterations) || 4), 1, 12),
     wheelInertiaKgM2: Math.max(0.05, Number(config.wheelInertiaKgM2) || 1.35),
-    yawInertiaKgM2: Math.max(100, Number(config.yawInertiaKgM2) || massKg * 1.65),
-    pitchInertiaKgM2: Math.max(100, Number(config.pitchInertiaKgM2) || massKg * 1.4),
-    rollInertiaKgM2: Math.max(100, Number(config.rollInertiaKgM2) || massKg * 0.65),
+    inertiaTensorBodyKgM2,
+    yawInertiaKgM2: inertiaTensorBodyKgM2.yy,
+    pitchInertiaKgM2: inertiaTensorBodyKgM2.xx,
+    rollInertiaKgM2: inertiaTensorBodyKgM2.zz,
     // Normal runtime body attitude is restored by suspension forces applied at
     // the four contact patches. These remain explicit opt-in compatibility
     // moments for isolated fixtures instead of hidden defaults.
@@ -280,8 +321,18 @@ export function createVehicleDynamicsConfig(config = {}) {
     suspensionReboundDamperRearNsM: Math.max(100, Number(config.suspensionReboundDamperRearNsM) || suspensionDamperRateNsM),
     suspensionTravelFrontM: Math.max(0.05, Number(config.suspensionTravelFrontM) || suspensionTravelM),
     suspensionTravelRearM: Math.max(0.05, Number(config.suspensionTravelRearM) || suspensionTravelM),
+    staticSagRatioFront: clamp(Number(config.staticSagRatioFront ?? staticSagRatio), 0.2, 0.7),
+    staticSagRatioRear: clamp(Number(config.staticSagRatioRear ?? staticSagRatio), 0.2, 0.7),
+    suspensionRestLengthFrontM: Math.max(0.05, Number(config.suspensionRestLengthFrontM)
+      || Math.max(0.05, (Number(config.cgHeightM) || 0.55) - (Number(config.wheelRadiusM) || 0.337)
+        + Math.max(0.05, Number(config.suspensionTravelFrontM) || suspensionTravelM) * clamp(Number(config.staticSagRatioFront ?? staticSagRatio), 0.2, 0.7))),
+    suspensionRestLengthRearM: Math.max(0.05, Number(config.suspensionRestLengthRearM)
+      || Math.max(0.05, (Number(config.cgHeightM) || 0.55) - (Number(config.wheelRadiusM) || 0.337)
+        + Math.max(0.05, Number(config.suspensionTravelRearM) || suspensionTravelM) * clamp(Number(config.staticSagRatioRear ?? staticSagRatio), 0.2, 0.7))),
     antiRollFront: clamp(Number(config.antiRollFront) || 0.5, 0.1, 1),
     antiRollRear: clamp(Number(config.antiRollRear) || 0.5, 0.1, 1),
+    antiRollStiffnessFrontNpm: Math.max(0, Number(config.antiRollStiffnessFrontNpm) || 0),
+    antiRollStiffnessRearNpm: Math.max(0, Number(config.antiRollStiffnessRearNpm) || 0),
     rollStiffnessNormalized: clamp(Number(config.rollStiffnessNormalized) || 0.76, 0.2, 1.4),
     maxSuspensionLoadFactor: Math.max(1, Number(config.maxSuspensionLoadFactor) || 6),
     ackermannRatio: clamp(Number(config.ackermannRatio ?? 1), 0, 1.5),
@@ -297,6 +348,10 @@ export function createVehicleDynamicsConfig(config = {}) {
     }, 'macpherson'),
     suspensionDefinitionRear: normalizeSuspensionDefinition(config.suspensionDefinitionRear, 'multilink'),
     unsprungMassKg: clamp(Number(config.unsprungMassKg) || 42, 12, 120),
+    unsprungMassByWheelKg: Object.freeze(Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+      wheelId,
+      clamp(Number(config.unsprungMassByWheelKg?.[wheelId] ?? config.unsprungMassKg) || 42, 12, 120)
+    ]))),
     tireVerticalStiffnessNpm: clamp(Number(config.tireVerticalStiffnessNpm) || 210000, 50000, 600000),
     tireVerticalDampingNsM: clamp(Number(config.tireVerticalDampingNsM) || 1800, 100, 12000),
     progressiveSpringRate: clamp(Number(config.progressiveSpringRate ?? 0.35), 0, 4),
@@ -305,8 +360,10 @@ export function createVehicleDynamicsConfig(config = {}) {
     damperHighSpeedThresholdMps: clamp(Number(config.damperHighSpeedThresholdMps) || 0.25, 0.05, 2),
     damperHighSpeedScale: clamp(Number(config.damperHighSpeedScale ?? 0.35), 0, 3),
     contactFootprintSamples: clamp(Math.trunc(Number(config.contactFootprintSamples) || 6), 4, 8),
-    contactFootprintMaxGapM: clamp(Number(config.contactFootprintMaxGapM) || 0.22, 0.03, 0.6),
+    contactFootprintMaxGapM: clamp(Number(config.contactFootprintMaxGapM) || 0.045, 0.015, 0.12),
     maxSteerAngleRad: clamp(Number(config.maxSteerAngleRad) || 0.52, 0.05, 1.2),
+    steeringWheelRatio: Math.max(1, Number(config.steeringWheelRatio) || 14),
+    physicalProfileId: config.physicalProfileId ? String(config.physicalProfileId) : null,
     powerHp: Math.max(0, Number(config.powerHp) || 0),
     enginePeakTorqueNm: Math.max(0, Number(config.enginePeakTorqueNm) || 0),
     drivetrainEfficiency: clamp(Number(config.drivetrainEfficiency) || 0.85, 0.35, 1),
@@ -348,8 +405,9 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
   telemetryLimit = 4096,
   inputTimelineLimit = 0
 } = {}) {
+  const physical = tuning.physicalVehicleProfile || null;
   const powerW = Math.max(0, Number(tuning.powerHp || 0) * 745.7);
-  const massKg = Math.max(100, Number(tuning.weightKg) || 1450);
+  const massKg = Math.max(100, Number(tuning.weightKg ?? physical?.massKg) || 1450);
   const torqueReferenceRpm = Math.max(
     1000,
     Number(tuning.torquePeakEndRpm)
@@ -376,17 +434,26 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
     telemetryLimit,
     inputTimelineLimit,
     massKg,
+    physicalProfileId: physical?.id,
+    cgLocationBodyM: physical?.cgLocationBodyM,
+    inertiaTensorBodyKgM2: physical?.inertiaTensorBodyKgM2,
     wheelbaseM: tuning.wheelbaseM,
-    frontWeightDistribution: tuning.frontWeightDistribution,
+    frontWeightDistribution: physical?.frontWeightDistribution ?? tuning.frontWeightDistribution,
     trackWidthM: tuning.trackWidthM,
     frontTrackWidthM: tuning.trackFrontM || tuning.trackWidthM,
     rearTrackWidthM: tuning.trackRearM || tuning.trackWidthM,
     wheelRadiusM: tuning.wheelRadiusM,
-    cgHeightM: tuning.cgHeightM,
+    cgHeightM: physical?.cgLocationBodyM?.y ?? tuning.cgHeightM,
+    bodyLengthM: tuning.lengthM,
+    bodyWidthM: tuning.widthM,
+    bodyHeightM: tuning.heightM,
+    bodyGroundClearanceM: tuning.groundClearanceM,
     wheelInertiaKgM2: tuning.wheelInertiaKgM2,
     yawInertiaKgM2: tuning.yawInertiaKgM2,
     ackermannRatio: tuning.ackermannRatio,
-    steeringRackRatio: tuning.steeringRackRatio,
+    maxSteerAngleRad: physical?.maxSteerAngleRad ?? tuning.maxSteerAngleRad,
+    steeringRackRatio: physical?.steeringRackRatio ?? tuning.steeringRackRatio,
+    steeringWheelRatio: physical?.steeringWheelRatio ?? tuning.steeringWheelRatio,
     camberFrontRad: Number(tuning.camberFront || 0) * Math.PI / 180,
     camberRearRad: Number(tuning.camberRear || 0) * Math.PI / 180,
     toeFrontRad: Number(tuning.toeFront || 0) * Math.PI / 180,
@@ -395,13 +462,14 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
     suspensionDefinitionFront: tuning.suspensionDefinitionFront || tuning.suspensionGeometry?.front,
     suspensionDefinitionRear: tuning.suspensionDefinitionRear || tuning.suspensionGeometry?.rear,
     unsprungMassKg: tuning.unsprungMassKg,
-    tireVerticalStiffnessNpm: tuning.tireVerticalStiffnessNpm,
-    tireVerticalDampingNsM: tuning.tireVerticalDampingNsM,
+    unsprungMassByWheelKg: physical?.unsprungMassByWheelKg ?? tuning.unsprungMassByWheelKg,
+    tireVerticalStiffnessNpm: physical?.tireVerticalStiffnessNpm ?? tuning.tireVerticalStiffnessNpm,
+    tireVerticalDampingNsM: physical?.tireVerticalDampingNsM ?? tuning.tireVerticalDampingNsM,
     progressiveSpringRate: tuning.progressiveSpringRate,
     bumpStopStartRatio: tuning.bumpStopStartRatio,
     bumpStopRateNpm: tuning.bumpStopRateNpm,
-    damperHighSpeedThresholdMps: tuning.damperHighSpeedThresholdMps,
-    damperHighSpeedScale: tuning.damperHighSpeedScale,
+    damperHighSpeedThresholdMps: physical?.damperHighSpeedThresholdMps ?? tuning.damperHighSpeedThresholdMps,
+    damperHighSpeedScale: physical?.damperHighSpeedScale ?? tuning.damperHighSpeedScale,
     contactFootprintSamples: tuning.contactFootprintSamples,
     contactFootprintMaxGapM: tuning.contactFootprintMaxGapM,
     powerHp: tuning.powerHp,
@@ -409,34 +477,42 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
     drivetrainEfficiency: tuning.drivetrainEfficiency,
     suspensionSpringRateNpm: tuning.springRateNpm,
     suspensionDamperRateNsM: tuning.damperRateNsM,
-    suspensionSpringRateFrontNpm: frontBump.springRateNpm,
-    suspensionSpringRateRearNpm: rearBump.springRateNpm,
-    suspensionBumpDamperFrontNsM: frontBump.damperRateNsM,
-    suspensionReboundDamperFrontNsM: frontRebound.damperRateNsM,
-    suspensionBumpDamperRearNsM: rearBump.damperRateNsM,
-    suspensionReboundDamperRearNsM: rearRebound.damperRateNsM,
-    suspensionTravelFrontM: getRaceNormalizedSuspensionTravelM(tuning.suspensionTravelFront),
-    suspensionTravelRearM: getRaceNormalizedSuspensionTravelM(tuning.suspensionTravelRear),
+    suspensionSpringRateFrontNpm: physical?.suspensionSpringRateFrontNpm ?? frontBump.springRateNpm,
+    suspensionSpringRateRearNpm: physical?.suspensionSpringRateRearNpm ?? rearBump.springRateNpm,
+    suspensionBumpDamperFrontNsM: physical?.suspensionBumpDamperFrontNsM ?? frontBump.damperRateNsM,
+    suspensionReboundDamperFrontNsM: physical?.suspensionReboundDamperFrontNsM ?? frontRebound.damperRateNsM,
+    suspensionBumpDamperRearNsM: physical?.suspensionBumpDamperRearNsM ?? rearBump.damperRateNsM,
+    suspensionReboundDamperRearNsM: physical?.suspensionReboundDamperRearNsM ?? rearRebound.damperRateNsM,
+    suspensionTravelFrontM: physical?.suspensionTravelFrontM ?? getRaceNormalizedSuspensionTravelM(tuning.suspensionTravelFront),
+    suspensionTravelRearM: physical?.suspensionTravelRearM ?? getRaceNormalizedSuspensionTravelM(tuning.suspensionTravelRear),
+    staticSagRatioFront: physical?.staticSagRatioFront ?? tuning.staticSagRatioFront ?? tuning.staticSagRatio,
+    staticSagRatioRear: physical?.staticSagRatioRear ?? tuning.staticSagRatioRear ?? tuning.staticSagRatio,
+    suspensionRestLengthFrontM: tuning.suspensionRestLengthFrontM,
+    suspensionRestLengthRearM: tuning.suspensionRestLengthRearM,
     antiRollFront: frontBump.antiRollNormalized,
     antiRollRear: rearBump.antiRollNormalized,
+    antiRollStiffnessFrontNpm: physical?.antiRollStiffnessFrontNpm,
+    antiRollStiffnessRearNpm: physical?.antiRollStiffnessRearNpm,
     rollStiffnessNormalized: tuning.rollStiffness,
     engineForceN: clamp(18000 + Math.max(0, powerW - 300000) / 45, 18000, 30000),
     engineBrakeForceN: Math.max(900, Number(tuning.weightKg || 1450) * 1.15),
     brakeForceN: Math.max(9000, Number(tuning.weightKg || 1450) * 10),
     rollingResistanceN: Math.max(100, Number(tuning.weightKg || 1450) * 0.12),
-    dragCoefficient: tuning.dragCoefficient,
-    frontalAreaM2: tuning.frontalAreaM2
-      || Math.max(1.55, Number(tuning.widthM || 1.8) * Number(tuning.lengthM || 4.5) * 0.26),
-    frontDownforceCoefficient: clamp(Number(tuning.aeroFront) || 0, 0, 1) * 0.6,
-    rearDownforceCoefficient: clamp(Number(tuning.aeroRear) || 0, 0, 1) * 0.6,
-    frontRideHeightM: tuning.frontRideHeightM
+    dragCoefficient: physical?.dragCoefficient ?? tuning.dragCoefficient,
+    frontalAreaM2: physical?.frontalAreaM2 ?? (tuning.frontalAreaM2
+      || Math.max(1.55, Number(tuning.widthM || 1.8) * Number(tuning.lengthM || 4.5) * 0.26)),
+    frontDownforceCoefficient: physical?.frontDownforceCoefficient
+      ?? clamp(Number(tuning.aeroFront) || 0, 0, 1) * 0.6,
+    rearDownforceCoefficient: physical?.rearDownforceCoefficient
+      ?? clamp(Number(tuning.aeroRear) || 0, 0, 1) * 0.6,
+    frontRideHeightM: physical?.frontRideHeightM ?? tuning.frontRideHeightM
       ?? (0.11 + clamp(Number(tuning.rideHeightFront ?? 0.5), 0, 1) * 0.1),
-    rearRideHeightM: tuning.rearRideHeightM
+    rearRideHeightM: physical?.rearRideHeightM ?? tuning.rearRideHeightM
       ?? (0.11 + clamp(Number(tuning.rideHeightRear ?? 0.5), 0, 1) * 0.1),
-    groundEffectGain: tuning.groundEffectGain,
-    groundEffectReferenceHeightM: tuning.groundEffectReferenceHeightM,
-    floorStallHeightM: tuning.floorStallHeightM,
-    diffuserRakeSensitivity: tuning.diffuserRakeSensitivity,
+    groundEffectGain: physical?.groundEffectGain ?? tuning.groundEffectGain,
+    groundEffectReferenceHeightM: physical?.groundEffectReferenceHeightM ?? tuning.groundEffectReferenceHeightM,
+    floorStallHeightM: physical?.floorStallHeightM ?? tuning.floorStallHeightM,
+    diffuserRakeSensitivity: physical?.diffuserRakeSensitivity ?? tuning.diffuserRakeSensitivity,
     yawDragSensitivity: tuning.yawDragSensitivity,
     extremeYawLiftCoefficient: tuning.extremeYawLiftCoefficient,
     damageDragGain: tuning.damageDragGain,
@@ -460,7 +536,7 @@ export class DeterministicTireContactSubsystem {
     const drivePerWheel = config.engineForceN * controls.throttle
       / Math.max(1, driven.size);
     const brakePerWheel = config.brakeForceN * controls.brake / RACE_WHEEL_IDS.length;
-    const steerAngle = controls.steering * config.maxSteerAngleRad;
+    const steerAngle = resolvePhysicalCenterSteeringAngle(controls, config);
     const lateralDemand = Math.abs(state.speedMps) ** 2
       * Math.tan(steerAngle) / Math.max(0.5, config.wheelbaseM)
       * config.massKg / RACE_WHEEL_IDS.length;
@@ -521,21 +597,41 @@ export class DeterministicTireContactSubsystem {
   }
 }
 
-function averageTireResults(results = []) {
+function aggregateTireResults(results = [], tireSubstepDt = 0) {
   const count = Math.max(1, results.length);
+  const accumulatedDuration = Math.max(EPSILON, results.length * tireSubstepDt);
   const average = (field) => quantize(
     results.reduce((sum, result) => sum + Number(result[field] || 0), 0) / count
   );
+  const impulse = (field) => results.reduce((total, result) => addVector3(
+    total,
+    scaleVector3(result[field] || {}, tireSubstepDt)
+  ), { x: 0, y: 0, z: 0 });
+  const tireImpulseWorldNs = impulse('worldForceN');
+  const suspensionImpulseWorldNs = impulse('suspensionForceWorldN');
+  const externalImpulseWorldNs = impulse('externalForceWorldN');
+  const tireAngularImpulseWorldNms = impulse('worldMomentNm');
+  const externalAngularImpulseWorldNms = impulse('externalMomentWorldNm');
+  const equivalentForce = (value) => scaleVector3(value, 1 / accumulatedDuration);
   const latest = results.at(-1) || {};
   return {
     longitudinalForceN: average('longitudinalForceN'),
     lateralForceN: average('lateralForceN'),
     yawMomentNm: average('yawMomentNm'),
-    worldForceN: clone(latest.worldForceN || {}),
-    worldMomentNm: clone(latest.worldMomentNm || {}),
-    suspensionForceWorldN: clone(latest.suspensionForceWorldN || {}),
-    externalForceWorldN: clone(latest.externalForceWorldN || {}),
-    externalMomentWorldNm: clone(latest.externalMomentWorldNm || {}),
+    // These equivalent forces remain useful telemetry, but chassis integration
+    // consumes the corresponding impulses below. No final substep vector is
+    // stretched over the public chassis interval.
+    worldForceN: equivalentForce(tireImpulseWorldNs),
+    worldMomentNm: equivalentForce(tireAngularImpulseWorldNms),
+    suspensionForceWorldN: equivalentForce(suspensionImpulseWorldNs),
+    externalForceWorldN: equivalentForce(externalImpulseWorldNs),
+    externalMomentWorldNm: equivalentForce(externalAngularImpulseWorldNms),
+    tireImpulseWorldNs,
+    suspensionImpulseWorldNs,
+    externalImpulseWorldNs,
+    tireAngularImpulseWorldNms,
+    externalAngularImpulseWorldNms,
+    accumulatedDuration,
     targetVelocityWorld: clone(latest.targetVelocityWorld || null),
     freeRevEngineRpm: latest.freeRevEngineRpm,
     verticalAccelerationMps2: average('verticalAccelerationMps2'),
@@ -633,6 +729,7 @@ export class VehicleDynamicsRunner {
       : () => ({});
     this.handlingAssist = handlingAssist || new HandlingAssist();
     this.aeroModel = new AeroModel();
+    this.bodyCollision = new ChassisBodyCollision(this.config);
     this.pendingCollisionImpulses = [];
     this.collisionTimeline = [];
     this.scheduledReplayCollisions = new Map();
@@ -701,23 +798,29 @@ export class VehicleDynamicsRunner {
       orientation: clone(state.orientation),
       angularVelocityWorld: clone(state.angularVelocityWorld)
     };
-    let totalForce = addVector3(
-      addVector3(tires.worldForceN, tires.suspensionForceWorldN),
-      addVector3({ x: 0, y: -config.massKg * 9.81, z: 0 }, tires.externalForceWorldN)
-    );
+    let totalLinearImpulse = addVector3(addVector3(
+      addVector3(tires.tireImpulseWorldNs, tires.suspensionImpulseWorldNs),
+      addVector3(
+        { x: 0, y: -config.massKg * 9.81 * dt, z: 0 },
+        tires.externalImpulseWorldNs
+      )
+    ), tires.bodyCollision?.linearImpulseWorldNs);
     if (tires.targetVelocityWorld) {
       const velocityError = addVector3(tires.targetVelocityWorld, scaleVector3(state.velocity, -1));
-      const targetForceScale = config.massKg / Math.max(dt, EPSILON);
-      totalForce.x = velocityError.x * targetForceScale;
-      totalForce.z = velocityError.z * targetForceScale;
+      totalLinearImpulse.x = velocityError.x * config.massKg;
+      totalLinearImpulse.z = velocityError.z * config.massKg;
     }
-    let totalMoment = addVector3(tires.worldMomentNm, tires.externalMomentWorldNm);
+    let totalAngularImpulse = addVector3(
+      addVector3(tires.tireAngularImpulseWorldNms, tires.externalAngularImpulseWorldNms),
+      tires.bodyCollision?.angularImpulseWorldNms
+    );
     const supportedLoadN = RACE_WHEEL_IDS.reduce((sum, wheelId) => (
       sum + Math.max(0, Number(tires.wheelLoadsN?.[wheelId] || 0))
     ), 0);
     const supportScale = clamp(supportedLoadN / Math.max(1, config.massKg * 9.81), 0, 1);
     const restingContact = tires.grounded
       && this.pendingCollisionImpulses.length === 0
+      && !tires.bodyCollision?.contacts?.length
       && Math.hypot(state.velocity.x, state.velocity.y, state.velocity.z) < 0.02
       && Math.hypot(
         state.angularVelocityWorld.x,
@@ -726,73 +829,57 @@ export class VehicleDynamicsRunner {
       ) < 0.02
       && Number(controls.throttle || 0) * (1 - Number(controls.clutch || 0)) < 0.001
       && Math.abs(supportedLoadN - config.massKg * 9.81) < config.massKg * 9.81 * 0.01;
-    totalMoment.x += (
+    totalAngularImpulse.x += (
       -Number(state.pitchRad || 0) * config.pitchStiffnessNmPerRad
       - Number(state.angularVelocityWorld.x || 0) * config.pitchDampingNmsPerRad
-    ) * supportScale;
-    totalMoment.z += (
+    ) * supportScale * dt;
+    totalAngularImpulse.z += (
       -Number(state.rollRad || 0) * config.rollStiffnessNmPerRad
       - Number(state.angularVelocityWorld.z || 0) * config.rollDampingNmsPerRad
-    ) * supportScale;
+    ) * supportScale * dt;
     const assistInterventions = this.handlingAssist.calculatePhysicalInterventions({
       preset: config.handlingPreset, state, controls, config, supportScale
     });
     assistInterventions.forEach((intervention) => {
-      totalMoment = addVector3(totalMoment, intervention.momentWorldNm);
+      totalAngularImpulse = addVector3(
+        totalAngularImpulse,
+        scaleVector3(intervention.momentWorldNm, dt)
+      );
     });
     const collisionImpulses = this.pendingCollisionImpulses.splice(0);
     collisionImpulses.forEach(({ impulseWorldNs, pointWorld }) => {
       state.velocity = addVector3(state.velocity, scaleVector3(impulseWorldNs, 1 / config.massKg));
       const arm = addVector3(pointWorld, scaleVector3(state.position, -1));
-      const angularImpulse = crossVector3(arm, impulseWorldNs);
-      state.angularVelocityWorld.x += angularImpulse.x / config.pitchInertiaKgM2;
-      state.angularVelocityWorld.y += angularImpulse.y / config.yawInertiaKgM2;
-      state.angularVelocityWorld.z += angularImpulse.z / config.rollInertiaKgM2;
+      totalAngularImpulse = addVector3(totalAngularImpulse, crossVector3(arm, impulseWorldNs));
     });
-    const acceleration = scaleVector3(totalForce, 1 / config.massKg);
-    state.velocity = addVector3(state.velocity, scaleVector3(acceleration, dt));
-    state.position = addVector3(state.position, scaleVector3(state.velocity, dt));
-    let groundConstraintImpulseNs = 0;
-    if (tires.grounded
-      && Number.isFinite(Number(tires.groundHeightM))
-      && Math.abs(Number(state.pitchRad || 0)) < 0.65
-      && Math.abs(Number(state.rollRad || 0)) < 0.65) {
-      const frontStaticCompressionM = clamp(
-        (config.massKg * 9.81 * config.frontWeightDistribution / 2)
-          / config.suspensionSpringRateFrontNpm,
-        0,
-        config.suspensionTravelFrontM
-      );
-      const rearStaticCompressionM = clamp(
-        (config.massKg * 9.81 * (1 - config.frontWeightDistribution) / 2)
-          / config.suspensionSpringRateRearNpm,
-        0,
-        config.suspensionTravelRearM
-      );
-      const maximumBumpM = Math.min(
-        Math.max(0, config.suspensionTravelFrontM - frontStaticCompressionM),
-        Math.max(0, config.suspensionTravelRearM - rearStaticCompressionM)
-      );
-      const minimumChassisHeightM = Number(tires.groundHeightM)
-        + config.cgHeightM
-        - maximumBumpM;
-      if (state.position.y < minimumChassisHeightM) {
-        state.position.y = minimumChassisHeightM;
-        if (state.velocity.y < 0) {
-          groundConstraintImpulseNs = -state.velocity.y * config.massKg;
-          state.velocity.y = 0;
-        }
-      }
-    }
-    state.angularVelocityWorld.x += totalMoment.x / config.pitchInertiaKgM2 * dt;
-    state.angularVelocityWorld.y += totalMoment.y / config.yawInertiaKgM2 * dt;
-    state.angularVelocityWorld.z += totalMoment.z / config.rollInertiaKgM2 * dt;
-    state.orientation = integrateQuaternion(state.orientation, state.angularVelocityWorld, dt);
+    const acceleration = scaleVector3(totalLinearImpulse, 1 / (config.massKg * dt));
+    state.velocity = addVector3(state.velocity, scaleVector3(totalLinearImpulse, 1 / config.massKg));
+    state.position = addVector3(
+      addVector3(state.position, tires.bodyCollision?.positionalCorrectionWorldM),
+      scaleVector3(state.velocity, dt)
+    );
+    const groundConstraintImpulseNs = Math.max(
+      0,
+      Number(tires.bodyCollision?.linearImpulseWorldNs?.y || 0)
+    );
+    const angularMotion = integrateBodyAngularMotion({
+      orientation: state.orientation,
+      angularVelocityWorld: state.angularVelocityWorld,
+      angularImpulseWorld: totalAngularImpulse,
+      inertiaTensorBody: config.inertiaTensorBodyKgM2,
+      dt
+    });
+    state.angularVelocityWorld = angularMotion.angularVelocityWorld;
+    state.orientation = angularMotion.orientation;
     if (restingContact) {
       state.position = restSnapshot.position;
       state.velocity = restSnapshot.velocity;
       state.orientation = restSnapshot.orientation;
       state.angularVelocityWorld = restSnapshot.angularVelocityWorld;
+    }
+    if (tires.targetVelocityWorld) {
+      state.velocity.x = Number(tires.targetVelocityWorld.x || 0);
+      state.velocity.z = Number(tires.targetVelocityWorld.z || 0);
     }
     const euler = eulerFromQuaternion(state.orientation);
     state.yawRad = quantize(normalizeAngle(euler.yaw));
@@ -801,6 +888,13 @@ export class VehicleDynamicsRunner {
     state.yawRateRadps = quantize(state.angularVelocityWorld.y);
     const forward = { x: Math.sin(state.yawRad), y: 0, z: Math.cos(state.yawRad) };
     state.speedMps = quantize(state.velocity.x * forward.x + state.velocity.z * forward.z);
+    if (tires.targetVelocityWorld) {
+      const targetMagnitude = Math.hypot(
+        Number(tires.targetVelocityWorld.x || 0),
+        Number(tires.targetVelocityWorld.z || 0)
+      );
+      state.speedMps = quantize(targetMagnitude * (controls.requestedGear < 0 ? -1 : 1));
+    }
     state.lateralAccelerationMps2 = quantize(acceleration.x * Math.cos(state.yawRad) - acceleration.z * Math.sin(state.yawRad));
     Object.keys(state.position).forEach((axis) => { state.position[axis] = quantize(state.position[axis]); });
     Object.keys(state.velocity).forEach((axis) => { state.velocity[axis] = quantize(state.velocity[axis]); });
@@ -852,7 +946,7 @@ export class VehicleDynamicsRunner {
       config.idleRpm,
       config.maxRpm
     ));
-    state.grounded = tires.grounded;
+    state.grounded = tires.grounded || Boolean(tires.bodyCollision?.contacts?.length);
     state.wheelLoadsN = clone(tires.wheelLoadsN);
     state.wheelSlip = clone(tires.wheelSlip);
     state.suspensionTravel = clone(tires.suspensionTravel);
@@ -902,8 +996,19 @@ export class VehicleDynamicsRunner {
       }
     ]));
     return {
-      totalForceWorldN: totalForce,
-      totalMomentWorldNm: totalMoment,
+      totalForceWorldN: scaleVector3(totalLinearImpulse, 1 / dt),
+      totalMomentWorldNm: scaleVector3(totalAngularImpulse, 1 / dt),
+      linearImpulseWorldNs: totalLinearImpulse,
+      angularImpulseWorldNms: totalAngularImpulse,
+      tireImpulseWorldNs: clone(tires.tireImpulseWorldNs),
+      suspensionImpulseWorldNs: clone(tires.suspensionImpulseWorldNs),
+      aerodynamicAndExternalImpulseWorldNs: clone(tires.externalImpulseWorldNs),
+      bodyCollisionImpulseWorldNs: clone(tires.bodyCollision?.linearImpulseWorldNs),
+      bodyCollisionAngularImpulseWorldNms: clone(tires.bodyCollision?.angularImpulseWorldNms),
+      bodyContacts: clone(tires.bodyCollision?.contacts || []),
+      collisionImpulseWorldNs: collisionImpulses.reduce((sum, collision) => (
+        addVector3(sum, collision.impulseWorldNs)
+      ), { x: 0, y: 0, z: 0 }),
       supportScale: quantize(supportScale),
       groundConstraintImpulseNs: quantize(groundConstraintImpulseNs),
       assistInterventions,
@@ -919,7 +1024,9 @@ export class VehicleDynamicsRunner {
     const stepTimeSeconds = nextStepIndex / this.config.chassisHz;
     const controls = this.inputTimeline.sampleAt(stepTimeSeconds);
     const tireResults = [];
+    const bodyCollisionResults = [];
     let substepState = this.createStateSnapshot();
+    const bodyCollisionState = this.bodyCollision.createWorkingState(substepState);
     for (let substepIndex = 0;
       substepIndex < this.config.tireSubstepsPerChassisStep;
       substepIndex += 1) {
@@ -973,10 +1080,37 @@ export class VehicleDynamicsRunner {
       tireResult.targetVelocityWorld = clone(environment.targetVelocityWorld || null);
       tireResult.freeRevEngineRpm = environment.freeRevEngineRpm;
       tireResults.push(tireResult);
+      bodyCollisionState.velocity.y -= 9.81 / this.config.tireHz;
+      bodyCollisionResults.push(this.bodyCollision.step({
+        workingState: bodyCollisionState,
+        config: this.config,
+        environment,
+        dt: 1 / this.config.tireHz
+      }));
       substepState.wheelAngularVelocityRadps = clone(tireResult.wheelAngularVelocityRadps || substepState.wheelAngularVelocityRadps);
       substepState.suspensionState = clone(tireResult.suspensionState || substepState.suspensionState);
     }
-    const tires = averageTireResults(tireResults);
+    const tires = aggregateTireResults(tireResults, 1 / this.config.tireHz);
+    const sumBodyVector = (field) => bodyCollisionResults.reduce((sum, result) => (
+      addVector3(sum, result[field])
+    ), { x: 0, y: 0, z: 0 });
+    let positionalCorrectionWorldM = sumBodyVector('positionalCorrectionWorldM');
+    const correctionMagnitude = Math.hypot(
+      positionalCorrectionWorldM.x,
+      positionalCorrectionWorldM.y,
+      positionalCorrectionWorldM.z
+    );
+    if (correctionMagnitude > 0.12) {
+      positionalCorrectionWorldM = scaleVector3(positionalCorrectionWorldM, 0.12 / correctionMagnitude);
+    }
+    tires.bodyCollision = {
+      linearImpulseWorldNs: sumBodyVector('linearImpulseWorldNs'),
+      angularImpulseWorldNms: sumBodyVector('angularImpulseWorldNms'),
+      positionalCorrectionWorldM,
+      contacts: bodyCollisionResults.flatMap((result, substepIndex) => (
+        result.contacts.map((contact) => ({ ...contact, substepIndex }))
+      ))
+    };
     const integration = this.integrateChassis(controls, tires, 1 / this.config.chassisHz);
     this.stepIndex = nextStepIndex;
     this.diagnostics.completedSteps += 1;

@@ -199,6 +199,17 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
           surfaceId: contact.surfaceId || contact.surface
         }];
       })),
+      sampleTerrainAtWorldPoint: (worldPoint) => {
+        const sample = editor.getRaceSurfaceModel().sampleWorld(worldPoint, 0, {
+          runtimeType: contactState.session.routeRuntimeType || editor.getActiveRaceRuntimeType(),
+          fallbackSurfaceId: fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
+        });
+        return {
+          heightM: Number(sample.elevation || 0) * RACE_THREE_ELEVATION_M,
+          normal: sample.normal || { x: 0, y: 1, z: 0 },
+          friction: Number(sample.friction || 1)
+        };
+      },
       tireByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
         const compound = editor.getRaceTireCompound(tireSetup.tireCompoundByWheel[wheelId]);
         const thermal = state.tireState?.[wheelId] || {};
@@ -231,9 +242,22 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
     };
   };
   const curve = Number(contactState.pose?.segment?.curve || 0);
+  const normalizedSteering = -clamp(curve * 18, -1, 1);
+  const physicalCenterSteeringAngle = editor.getRaceResolvedCenterSteeringAngle(
+    normalizedSteering,
+    Math.abs(Number(runner.state.speedMps || ai.speedMps || 0)),
+    {
+      wheelbaseM: tuning.wheelbaseM,
+      availableLateralG: clamp(Number(contactState.averageSurfaceGrip || 1) * 0.95, 0.18, 1.08),
+      handlingPreset: 'sport',
+      maxPhysicalAngleRad: runner.config.maxSteerAngleRad
+    }
+  );
   runner.advance(seconds, {
     input: {
-      steering: -clamp(curve * 18, -1, 1),
+      steering: normalizedSteering,
+      centerSteeringAngleRad: physicalCenterSteeringAngle,
+      steeringInputMode: 'ai',
       throttle: Number(engineDrive.throttle || 0),
       brake: Number(engineDrive.brake || 0),
       requestedGear: Number(ai.gear || 1),

@@ -42,7 +42,10 @@ export class HandlingAssist {
       physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: supportedValue(yawMoment), z: 0 }
     });
     const speed = Math.abs(Number(state.speedMps || 0));
-    const steerAngle = steer * Number(config.maxSteerAngleRad || 0.52);
+    const steerAngle = typeof controls.centerSteeringAngleRad === 'number'
+      && Number.isFinite(controls.centerSteeringAngleRad)
+      ? controls.centerSteeringAngleRad
+      : steer * Number(config.maxSteerAngleRad || 0.52);
     const desiredYawRate = speed * Math.tan(steerAngle) / Math.max(0.5, Number(config.wheelbaseM || 2.65));
     const peakWheelSlip = Math.max(0, ...Object.values(state.contactPatches || {}).map((patch) => (
       Math.abs(Number(patch?.slipRatio || 0))
@@ -194,6 +197,24 @@ export class HandlingAssist {
 
   getUsableTireAngleForSteering(steering = 0, speedMps = 0, options = {}) {
     return clamp(Number(steering) || 0, -1, 1) * this.getUsableFullLockTireAngle(speedMps, options);
+  }
+
+  resolvePhysicalCenterSteeringAngle({
+    driverInput = 0,
+    speedMps = 0,
+    wheelbaseM = 2.67,
+    availableLateralG = 0.95,
+    handlingPreset = 'sport',
+    maxPhysicalAngleRad = 0.52
+  } = {}) {
+    const normalizedInput = clamp(Number(driverInput) || 0, -1, 1);
+    if (String(handlingPreset || 'sport').toLowerCase() === 'simulation') {
+      return normalizedInput * clamp(Number(maxPhysicalAngleRad) || 0.52, 0.05, 1.2);
+    }
+    return this.getUsableTireAngleForSteering(normalizedInput, speedMps, {
+      wheelbaseM,
+      availableLateralG
+    });
   }
 
   getSteeringWheelRotationForTireAngle(tireAngle = 0, steeringRatio = this.steering.steeringRatio) {

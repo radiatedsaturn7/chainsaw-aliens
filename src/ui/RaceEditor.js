@@ -17620,6 +17620,22 @@ export default class RaceEditor {
     );
   }
 
+  getRaceResolvedCenterSteeringAngle(steering = this.raceInput.steeringWheel, speedMps = this.playtestSession?.speedMps || 0, {
+    wheelbaseM = 2.67,
+    availableLateralG = 0.95,
+    handlingPreset = 'sport',
+    maxPhysicalAngleRad = 0.52
+  } = {}) {
+    return this.raceSimulationSystems.handlingAssist.resolvePhysicalCenterSteeringAngle({
+      driverInput: steering,
+      speedMps,
+      wheelbaseM,
+      availableLateralG,
+      handlingPreset,
+      maxPhysicalAngleRad
+    });
+  }
+
   getRaceGripLimitedTireAngle(tireAngle = 0, speedMps = 0, { wheelbaseM = 2.67, availableLateralG = 0.95 } = {}) {
     return this.raceSimulationSystems.handlingAssist.getGripLimitedTireAngle(
       tireAngle,
