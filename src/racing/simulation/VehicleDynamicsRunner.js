@@ -210,9 +210,9 @@ export function createVehicleDynamicsState(initial = {}) {
     yawRad: quantize(initialYaw),
     yawRateRadps: quantize(initial.yawRateRadps ?? initial.yawVelocityRadps ?? 0),
     angularVelocityWorld: {
-      x: quantize(initial.angularVelocityWorld?.x ?? initial.rollRateRadps ?? 0),
+      x: quantize(initial.angularVelocityWorld?.x ?? initial.pitchRateRadps ?? 0),
       y: quantize(initial.angularVelocityWorld?.y ?? initial.yawRateRadps ?? initial.yawVelocityRadps ?? 0),
-      z: quantize(initial.angularVelocityWorld?.z ?? initial.pitchRateRadps ?? 0)
+      z: quantize(initial.angularVelocityWorld?.z ?? initial.rollRateRadps ?? 0)
     },
     orientation: clone(initial.orientation || quaternionFromEuler({
       yaw: initial.yawRad ?? initial.carYaw ?? 0,
@@ -513,7 +513,7 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
     engineBrakeForceN: Math.max(900, Number(tuning.weightKg || 1450) * 1.15),
     brakeForceN: Math.max(9000, Number(tuning.weightKg || 1450) * 10),
     handbrakeForceN: Math.max(4500, Number(tuning.handbrakeForceN) || Number(tuning.weightKg || 1450) * 5),
-    frontBrakeBias: tuning.frontBrakeBias,
+    frontBrakeBias: tuning.frontBrakeBias ?? tuning.brakeBalance ?? 0.62,
     brakePressure: tuning.brakePressure,
     rollingResistanceN: Math.max(100, Number(tuning.weightKg || 1450) * 0.12),
     dragCoefficient: physical?.dragCoefficient ?? tuning.dragCoefficient,

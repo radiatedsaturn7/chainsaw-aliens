@@ -12,6 +12,7 @@ export class DamageModel {
       panels: { front: 0, left: 0, right: 0, rear: 0 },
       engine: 0,
       transmission: 0,
+      brakes: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId, 0])),
       suspension: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId, 0])),
       suspensionPull: 0,
       tires: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId, 0]))
@@ -27,11 +28,15 @@ export class DamageModel {
     if (typeof state.suspension === 'number') {
       state.suspension = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId, state.suspension]));
     }
+    if (typeof state.brakes === 'number') {
+      state.brakes = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId, state.brakes]));
+    }
     if (typeof state.tires === 'number') {
       state.tires = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId, state.tires]));
     }
     state.panels = { ...base.panels, ...state.panels };
     state.suspension = { ...base.suspension, ...state.suspension };
+    state.brakes = { ...base.brakes, ...state.brakes };
     state.tires = { ...base.tires, ...state.tires };
     state.engine = Number(state.engine || 0);
     state.transmission = Number(state.transmission || 0);
@@ -45,6 +50,10 @@ export class DamageModel {
     if (part === 'tires') {
       (details.keys || RACE_WHEEL_IDS).forEach((key) => {
         state.tires[key] = clamp(Number(state.tires[key] || 0) + value, 0, 100);
+      });
+    } else if (part === 'brakes') {
+      (details.keys || RACE_WHEEL_IDS).forEach((key) => {
+        state.brakes[key] = clamp(Number(state.brakes[key] || 0) + value, 0, 100);
       });
     } else if (part === 'suspension') {
       (details.keys || RACE_WHEEL_IDS).forEach((key) => {
@@ -96,7 +105,7 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
   });
   const wheelProbeRadius = 0.34;
   const bodyProbeRadius = 0.18;
-  const speed = Math.abs(Number(session.speedMps || 0));
+  const speed = Math.max(0, Number(session.groundSpeedMps ?? Math.abs(session.speedMps || 0)) || 0);
   const speedMph = speed * 2.23694;
   const queueVelocityScaleImpulse = (scaleAmount, point, { reverse = false } = {}) => {
     const runner = session.vehicleDynamicsRunner;
@@ -173,45 +182,8 @@ export function updateRaceWearAndDamage(editor, seconds = 0) {
   const session = editor.playtestSession;
   if (!session) return;
   const car = editor.getRaceSessionCar(session);
-  const setup = editor.getRaceCarSetup(car);
-  const tireTemperatureWear = editor.getRaceTireTemperatureWearMultipliers(session.diagnostics?.tireTemperature || {});
-  const damage = editor.getRaceSessionDamage();
-  const speed = Number(session.speedMps || 0);
+  const speed = Number(session.bodyLongitudinalSpeedMps ?? session.speedMps ?? 0);
   const steer = Number(editor.raceInput.steeringWheel || 0);
-  const tireSlip = session.tireSlip || {};
-  const drift = Math.max(
-    Number(tireSlip.scrub || 0),
-    Number(tireSlip.wheelSpin || 0),
-    Number(tireSlip.brakeLock || 0),
-    Number(tireSlip.audibleSlip || 0)
-  ) + (editor.raceInput.handbrake ? 0.25 : 0);
-  const baseWear = seconds * (0.006 + Math.abs(speed) * 0.00055);
-  RACE_WHEEL_IDS.forEach((wheelId) => {
-    const wheelSlip = Math.max(0, Number(tireSlip[wheelId] || 0));
-    const contactLoadScale = clamp(Number(tireSlip.wheelContactScaleByWheel?.[wheelId] ?? 1) || 0, 0, 1);
-    const compoundWear = clamp(Number(editor.getRaceTireCompound(setup.tireCompoundByWheel[wheelId]).wearRate) || 1, 0.7, 1.6);
-    const axleWear = wheelId === 'rl' || wheelId === 'rr' ? 1.12 : 1;
-    const surfaceWear = editor.getRaceTireSurfaceWearMultiplier(
-      setup.tireCompoundByWheel[wheelId],
-      tireSlip.wheelTerrains?.[wheelId] || 'road',
-      tireSlip.wheelSurfaces?.[wheelId] || 'asphalt'
-    );
-    const pressureDynamics = editor.getRaceTirePressureDynamics({
-      pressurePsi: setup.tirePressurePsi[wheelId],
-      compoundId: setup.tireCompoundByWheel[wheelId],
-      surfaceId: tireSlip.wheelSurfaces?.[wheelId] || 'asphalt',
-      tireSize: setup.tireSize,
-      temperatureF: session.diagnostics?.tireTemperature?.[wheelId]
-    });
-    const tempWear = Number(tireTemperatureWear[wheelId] || 1);
-    const pressureWear = Number(pressureDynamics.wearMultiplier || 1);
-    const slipWear = wheelSlip > 0.025
-      ? seconds * wheelSlip * Math.max(wheelSlip, drift) * 0.24 * contactLoadScale
-      : 0;
-    const wear = (baseWear * contactLoadScale + slipWear) * compoundWear * axleWear * surfaceWear * tempWear * pressureWear;
-    damage.tires[wheelId] = clamp(Number(damage.tires[wheelId] || 0) + wear, 0, 100);
-  });
-
   const tuning = editor.getRaceCarTuning(car);
   if (session.rpm > 0.985 && editor.raceInput.throttle && editor.raceInput.gear < tuning.gearRatios.length) {
     editor.applyRaceDamage('engine', seconds * 2.8);

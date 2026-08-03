@@ -17,6 +17,14 @@ import {
 import { calculateWheelContactKinematics } from './simulation/ContactPatchTireModel.js';
 import { createDeterministicAtmosphere, getRaceWakeSourcesForFrame } from './simulation/AeroEnvironment.js';
 
+export function calculateAuthoritativeRouteAdvance({ velocityWorld = {}, roadYaw = 0, seconds = 0 } = {}) {
+  const roadForward = { x: Math.sin(Number(roadYaw || 0)), z: Math.cos(Number(roadYaw || 0)) };
+  return (
+    Number(velocityWorld.x || 0) * roadForward.x
+    + Number(velocityWorld.z || 0) * roadForward.z
+  ) * Math.max(0, Number(seconds || 0));
+}
+
 function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
   const session = editor.playtestSession;
   if (session.vehicleDynamicsRunner) {
@@ -709,7 +717,9 @@ export function updateRaceSimulation({
     editor.playtestSession.handbrakeSlipMs = Math.max(0, Number(editor.playtestSession.handbrakeSlipMs || 0) - seconds * 1000);
   }
   const rawHandbrakeSlip = clamp(Number(editor.playtestSession.handbrakeSlipMs || 0) / 760, 0, 1);
-  const absSpeedBefore = Math.abs(editor.playtestSession.speedMps);
+  const absSpeedBefore = Math.max(0, Number(
+    editor.playtestSession.groundSpeedMps ?? Math.abs(editor.playtestSession.speedMps || 0)
+  ) || 0);
   const physicsRouteRuntimeType = editor.playtestSession.routeRuntimeType || editor.getSelectedRaceRuntimeType();
   const previousStepDistance = Number(editor.playtestSession.previousDistance || editor.playtestSession.distance || 0);
   const contactRoadProfile = editor.getRaceRoadSurfaceProfileAtDistance(Number(editor.playtestSession.distance || 0), { runtimeType: physicsRouteRuntimeType });
@@ -1230,7 +1240,9 @@ export function updateRaceSimulation({
     + brakeDirection * brakeForce
   ) / tuning.weightKg;
   const routeRuntimeType = editor.playtestSession.routeRuntimeType || editor.getSelectedRaceRuntimeType();
-  const absSpeed = Math.abs(editor.playtestSession.speedMps);
+  const absSpeed = Math.max(0, Number(
+    editor.playtestSession.groundSpeedMps ?? Math.abs(editor.playtestSession.speedMps || 0)
+  ) || 0);
   const tireTravelDirection = editor.playtestSession.speedMps < -0.2 ? -1 : 1;
   const launchLockActive = editor.isRaceLaunchSteeringLocked(editor.playtestSession);
   const roadSteer = launchSteeringLocked ? 0 : editor.raceInput.steeringWheel;
@@ -1803,11 +1815,13 @@ export function updateRaceSimulation({
     speedMps: absSpeed
   });
   const selfAligningSteeringCorrection = editor.getRaceSelfAligningSteeringCorrection({
-    frontSlipAngle,
-    steeringAngle,
-    speedMps: absSpeed,
-    looseSurfaceFactor,
-    tireContactScale: tireContactScale * frontAxleContactScale,
+    contactPatches: editor.playtestSession.vehicleDynamicsRunner?.state?.contactPatches || {},
+    rackAngleRad: steeringAngle,
+    casterRad: Number(tuning.casterFront || 0) * Math.PI / 180,
+    wheelRadiusM: tuning.wheelRadiusM,
+    steeringInputMode: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
+      ? 'simulation-wheel'
+      : editor.raceInput.analogSteeringActive ? 'gamepad' : 'keyboard',
     seconds,
     activeTurnInput,
     launchAligning
@@ -2213,8 +2227,12 @@ export function updateRaceSimulation({
   editor.playtestSession.lateral = editor.playtestSession.routeLateralNormalized;
   const previousDistance = Number(editor.playtestSession.previousDistance || editor.playtestSession.distance || 0);
   const progressRoadYaw = editor.getRaceWorldPoseAtDistance(previousDistance).yaw;
-  const progressHeading = normalizeAngle(editor.playtestSession.velocityYaw - progressRoadYaw);
-  const routeAdvance = editor.playtestSession.speedMps * Math.cos(progressHeading) * seconds;
+  const authoritativeVelocity = editor.playtestSession.vehicleDynamicsRunner?.state?.velocity || {};
+  const routeAdvance = calculateAuthoritativeRouteAdvance({
+    velocityWorld: authoritativeVelocity,
+    roadYaw: progressRoadYaw,
+    seconds
+  });
   const integratedDistance = previousDistance + routeAdvance;
   if (routeRuntimeType === 'circuit') {
     const nextDistance = ((integratedDistance % routeLength) + routeLength) % routeLength;
@@ -2313,7 +2331,9 @@ export function updateRaceSimulation({
     && editor.playtestSession.shiftCooldownMs <= 0) {
     const lowerGearUsefulSpeed = gear > 1 ? editor.getRaceRedlineSpeedMps(tuning, gear - 1) * 0.72 : 0;
     const currentGearRedlineSpeed = editor.getRaceRedlineSpeedMps(tuning, gear);
-    const forwardSpeedMps = Number(editor.playtestSession.speedMps || 0);
+    const forwardSpeedMps = Number(
+      editor.playtestSession.bodyLongitudinalSpeedMps ?? editor.playtestSession.speedMps ?? 0
+    );
     const stableDriveContact = drivenLoadScale >= 0.25 && drivetrainUnload < 0.55;
     const wantsUpshift = authoritativeEngineRpm > automaticUpshiftRpm * 0.96
       || absSpeed > currentGearRedlineSpeed * 0.9;
@@ -2339,7 +2359,7 @@ export function updateRaceSimulation({
   editor.playtestSession.cameraView = editor.raceInput.cameraView;
   editor.updateRaceWeatherApproachDistance(seconds, {
     previousSpeedMps: absSpeedBefore,
-    currentSpeedMps: editor.playtestSession.speedMps
+    currentSpeedMps: editor.playtestSession.groundSpeedMps
   });
   editor.updateRaceWeatherFxState(seconds, {
     weatherState

@@ -24,7 +24,8 @@ export class HandlingAssist {
     supportScale = 1
   } = {}) {
     const policy = this.getPreset(preset);
-    if (policy === HANDLING_ASSIST_PRESETS.simulation) return [];
+    if (policy === HANDLING_ASSIST_PRESETS.simulation
+      || controls.assists?.stabilityControlEnabled === false) return [];
     const physicalSupport = clamp(Number(supportScale), 0, 1);
     const supportedValue = (value) => physicalSupport <= 0 ? 0 : value * physicalSupport;
     const yawRate = Number(state.angularVelocityWorld?.y || state.yawRateRadps || 0);
@@ -42,7 +43,7 @@ export class HandlingAssist {
       suppressionReason: physicalSupport <= 0.001 ? 'airborne-contact' : null,
       physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: supportedValue(yawMoment), z: 0 }
     });
-    const speed = Math.abs(Number(state.speedMps || 0));
+    const speed = Math.max(0, Number(state.groundSpeedMps ?? Math.abs(state.speedMps || 0)) || 0);
     const steerAngle = typeof controls.centerSteeringAngleRad === 'number'
       && Number.isFinite(controls.centerSteeringAngleRad)
       ? controls.centerSteeringAngleRad
@@ -233,33 +234,34 @@ export class HandlingAssist {
   }
 
   getSelfAligningSteeringCorrection({
-    frontSlipAngle = 0,
-    steeringAngle = 0,
-    speedMps = 0,
-    looseSurfaceFactor = 0,
-    tireContactScale = 1,
+    contactPatches = {},
+    rackAngleRad = 0,
+    casterRad = 0,
+    wheelRadiusM = 0.337,
+    steeringInputMode = 'gamepad',
     seconds = 0,
     activeTurnInput = false,
     launchAligning = false
   } = {}) {
-    if (activeTurnInput || launchAligning || seconds <= 0 || tireContactScale <= 0.001) return 0;
-    const speed = Math.abs(Number(speedMps) || 0);
-    if (speed < 4) return 0;
-    const slip = Number(frontSlipAngle) || 0;
-    const tireAngle = Number(steeringAngle) || 0;
-    const aligningSlip = clamp(Math.abs(slip) / 0.18, 0, 1);
-    const steeringLoad = clamp(Math.abs(tireAngle) / 0.22, 0.25, 1);
-    const loose = clamp(Number(looseSurfaceFactor) || 0, 0, 1);
-    const casterTrailRate = (2.8 + clamp(speed / 32, 0, 1) * 3.4)
-      * (1 - loose * 0.38)
-      * clamp(Number(tireContactScale) || 0, 0, 1);
-    const normalizedMaxAngle = Math.max(
-      0.08,
-      this.getTireSteerAngleForSpeed(speed) * this.getMaxSteerForSpeed(speed)
-    );
-    const correction = -(slip / normalizedMaxAngle)
-      * aligningSlip * steeringLoad * casterTrailRate * seconds;
-    return clamp(correction, -0.16, 0.16);
+    if (steeringInputMode === 'simulation-wheel' || activeTurnInput || launchAligning || seconds <= 0) return 0;
+    let frontLoadN = 0;
+    let rackMomentNm = 0;
+    ['fl', 'fr'].forEach((wheelId) => {
+      const patch = contactPatches?.[wheelId] || {};
+      const loadN = Math.max(0, Number(patch.normalLoadN || 0));
+      const lateralForceN = Number(patch.lateralForceN || 0);
+      const pneumaticMomentNm = Number(patch.selfAligningMomentNm || 0);
+      const mechanicalTrailM = Math.max(0, Number(wheelRadiusM || 0.337) * Math.sin(Math.abs(Number(casterRad || 0))));
+      frontLoadN += loadN;
+      rackMomentNm += pneumaticMomentNm - lateralForceN * mechanicalTrailM;
+    });
+    if (frontLoadN <= 1 || Math.abs(rackMomentNm) <= 0.001) return 0;
+    const normalizedMoment = rackMomentNm / Math.max(1, frontLoadN * Math.max(0.05, Number(wheelRadiusM || 0.337)));
+    const rackSign = Math.sign(Number(rackAngleRad || 0));
+    const returnDirection = rackSign && Math.sign(normalizedMoment) === rackSign
+      ? -normalizedMoment
+      : normalizedMoment;
+    return clamp(returnDirection * seconds * 2.8, -0.16, 0.16);
   }
 
   getTractionControlCutTarget(measuredSlipRatio = 0, targetSlip = 0.1, active = false) {
