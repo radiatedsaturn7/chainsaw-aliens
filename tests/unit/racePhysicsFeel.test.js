@@ -353,7 +353,8 @@ test('Race stock AWD dirt remains controllable while 1200 HP partial throttle is
     steerAxis: 0.5
   });
 
-  assert.equal(stock.maxWheelSpin < 0.08, true);
+  assert.equal(stock.maxWheelSpin < 0.08, true,
+    `expected stock wheelspin below 0.08, received ${stock.maxWheelSpin.toFixed(3)}`);
   assert.equal(stock.maxDemandRatio < 1.4, true);
   assert.equal(stock.minPostPeakTraction > 0.78, true);
   assert.equal(stock.maxDrivenWheelLongitudinalUsage < 1.6, true);

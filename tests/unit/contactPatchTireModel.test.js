@@ -54,6 +54,45 @@ test('signed slip distinguishes braking, locked wheels, and wheelspin', () => {
   assert.ok(make(80).slipRatio > 1);
 });
 
+test('substep wheel inertia settles sub-limit launch torque without false slip oscillation', () => {
+  const model = new ContactPatchTireModel();
+  const launchConfig = createVehicleDynamicsConfig({
+    ...config,
+    drivenWheelIds: ['fl', 'fr', 'rl', 'rr'],
+    enginePeakTorqueNm: 258,
+    powertrainTuning: {
+      drivetrain: 'awd',
+      gearRatios: [3.46],
+      finalDrive: 4.11,
+      drivetrainEfficiency: 0.88
+    }
+  });
+  const launchState = stateAt({ speed: 0 });
+  const surfaceHeightByWheel = { fl: 0, fr: 0, rl: 0, rr: 0 };
+  let maxSlipRatio = 0;
+  for (let substep = 0; substep < 120; substep += 1) {
+    const result = model.step({
+      state: launchState,
+      controls: { ...controls, throttle: 0.35 },
+      config: launchConfig,
+      dt: 1 / 360,
+      environment: {
+        surfaceHeightByWheel,
+        materialByWheel: Object.fromEntries(['fl', 'fr', 'rl', 'rr'].map((wheelId) => [
+          wheelId,
+          { baseSurfaceId: 'dirt', surfaceId: 'dirt', grip: 0.72 }
+        ]))
+      }
+    });
+    launchState.wheelAngularVelocityRadps = result.wheelAngularVelocityRadps;
+    maxSlipRatio = Math.max(
+      maxSlipRatio,
+      ...Object.values(result.contactPatches).map((patch) => Math.abs(Number(patch.slipRatio || 0)))
+    );
+  }
+  assert.ok(maxSlipRatio < 0.08, `expected stable static launch slip, received ${maxSlipRatio}`);
+});
+
 test('aquaplaning evacuates water per tire and unloads forces instead of applying static grip', () => {
   const kinematics = {
     longitudinalVelocityMps: 42,

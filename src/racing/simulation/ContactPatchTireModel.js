@@ -708,16 +708,42 @@ export class ContactPatchTireModel {
           : 0;
       const angularSign = Math.sign(angularReference);
       const reactionTorque = force.longitudinalForceN * kinematics.effectiveRollingRadiusM;
+      const appliedWheelTorque = driveTorque - brakeTorqueMagnitude * angularSign;
       let nextAngular = kinematics.wheelAngularVelocityRadps
-        + (driveTorque - brakeTorqueMagnitude * angularSign - reactionTorque) / config.wheelInertiaKgM2 * dt;
+        + (appliedWheelTorque - reactionTorque) / config.wheelInertiaKgM2 * dt;
       const rollingAngularVelocityRadps = kinematics.longitudinalVelocityMps
         / Math.max(EPSILON, kinematics.effectiveRollingRadiusM);
       const currentRollingError = kinematics.wheelAngularVelocityRadps - rollingAngularVelocityRadps;
       const nextRollingError = nextAngular - rollingAngularVelocityRadps;
-      if (Math.abs(driveTorque) <= EPSILON
-        && brakeTorqueMagnitude <= EPSILON
-        && currentRollingError * nextRollingError <= 0) {
+      const crossedRollingSpeed = currentRollingError * nextRollingError < 0;
+      const crossedAgainstAppliedTorque = Math.abs(appliedWheelTorque) <= EPSILON
+        || Math.sign(nextRollingError) !== Math.sign(appliedWheelTorque);
+      if (crossedRollingSpeed && crossedAgainstAppliedTorque) {
         nextAngular = rollingAngularVelocityRadps;
+      }
+      const rollingRadiusM = Math.max(EPSILON, kinematics.effectiveRollingRadiusM);
+      const staticTorqueCapacityNm = Math.max(0, Number(capacityByWheel[wheelId] || 0)) * rollingRadiusM;
+      const nearRollingConstraint = Math.abs(currentRollingError) < 0.05 || crossedRollingSpeed;
+      if (geometricContact
+        && nearRollingConstraint
+        && Math.abs(appliedWheelTorque) <= staticTorqueCapacityNm * 0.72) {
+        const tire = wheelInputs[wheelId].tire || {};
+        const widthScale = clamp(Number(tire.widthMm ?? 245) / 245, 0.7, 1.4);
+        const longitudinalStiffnessN = Math.max(
+          1000,
+          Number(tire.longitudinalStiffnessN || wheelInputs[wheelId].staticLoadN * 18) * widthScale
+        );
+        const equilibriumSlipRatio = clamp(
+          (appliedWheelTorque / rollingRadiusM) / longitudinalStiffnessN,
+          -0.08,
+          0.08
+        );
+        const slipReferenceSpeedMps = Math.max(
+          0.5,
+          Math.abs(kinematics.longitudinalVelocityMps)
+        );
+        nextAngular = (kinematics.longitudinalVelocityMps
+          + equilibriumSlipRatio * slipReferenceSpeedMps) / rollingRadiusM;
       }
       if (driven.has(wheelId)
         && clutchCoupling > 0.001
