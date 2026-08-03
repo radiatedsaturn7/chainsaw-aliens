@@ -880,7 +880,7 @@ export class ContactPatchTireModel {
         || (withinStaticSlipRange
           && Number(controls.throttle || 0) <= 0.5
           && appliedWheelTorque > 0
-          && equilibriumSlipDemand <= Math.min(0.02, peakSlip * 0.2));
+          && equilibriumSlipDemand <= Math.min(0.01, peakSlip * 0.1));
       if (geometricContact
         && nearRollingConstraint) {
         const equilibriumSlipRatio = clamp(
