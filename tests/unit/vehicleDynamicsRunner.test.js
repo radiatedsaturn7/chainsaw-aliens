@@ -593,7 +593,7 @@ test('WRX GT cannot discharge impossible wheelspin into self-acceleration near 4
   });
   for (let index = 0; index < 600; index += 1) runner.advance(1 / 120);
   const releaseSpeedMps = runner.state.speedMps;
-  assert.ok(releaseSpeedMps > 20 && releaseSpeedMps < 25);
+  assert.ok(releaseSpeedMps > 20 && releaseSpeedMps < 25, `release speed ${releaseSpeedMps}`);
   assert.ok(Math.max(...Object.values(runner.state.wheelAngularVelocityRadps)) < 100);
   assert.ok(Math.max(...Object.values(runner.state.wheelSlip)) < 0.1);
   for (let index = 0; index < 360; index += 1) {

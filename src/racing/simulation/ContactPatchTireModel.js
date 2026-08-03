@@ -857,11 +857,21 @@ export class ContactPatchTireModel {
       }
       const rollingRadiusM = Math.max(EPSILON, kinematics.effectiveRollingRadiusM);
       const staticTorqueCapacityNm = Math.max(0, Number(capacityByWheel[wheelId] || 0)) * rollingRadiusM;
-      const nearRollingConstraint = Math.abs(currentRollingError) < 0.05 || crossedRollingSpeed;
+      const tire = wheelInputs[wheelId].tire || {};
+      const peakSlip = clamp(Number(tire.peakSlip ?? 0.16), 0.03, 1.5);
+      const recoveryHysteresis = clamp(Number(tire.recoveryHysteresis ?? 0.04), 0, 0.3);
+      const withinStaticSlipRange = wheelInputs[wheelId].tireTransition?.breakawayActive !== true
+        && Math.abs(Number(wheelInputs[wheelId].tireTransition?.rawSlipRatio
+          ?? kinematics.slipRatio ?? 0)) <= Math.max(0.03, peakSlip - recoveryHysteresis);
+      const atRollingSpeed = Math.abs(currentRollingError) < 0.05 || crossedRollingSpeed;
+      const staticTorqueRatio = Math.abs(appliedWheelTorque) / Math.max(EPSILON, staticTorqueCapacityNm);
+      // Keep substep reaction torque from ratcheting a low-demand wheel out of
+      // static adhesion. Higher launch demand still has to re-enter through the
+      // rolling-speed crossing so genuine breakaway and wheelspin remain free.
+      const nearRollingConstraint = (atRollingSpeed && staticTorqueRatio <= 0.72)
+        || (withinStaticSlipRange && staticTorqueRatio <= 0.55);
       if (geometricContact
-        && nearRollingConstraint
-        && Math.abs(appliedWheelTorque) <= staticTorqueCapacityNm * 0.72) {
-        const tire = wheelInputs[wheelId].tire || {};
+        && nearRollingConstraint) {
         const widthScale = clamp(Number(tire.widthMm ?? 245) / 245, 0.7, 1.4);
         const longitudinalStiffnessN = Math.max(
           1000,
