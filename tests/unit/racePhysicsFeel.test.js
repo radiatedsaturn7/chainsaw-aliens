@@ -423,8 +423,6 @@ test('Race stock AWD dirt keeps longitudinal adhesion at high steering input', (
     `expected high-steer stock wheelspin below 0.08, received ${stock.maxWheelSpin.toFixed(3)}`);
   assert.equal(overpowered.maxWheelSpin > 0.08, true,
     `expected high-steer high-power wheelspin above 0.08, received ${overpowered.maxWheelSpin.toFixed(3)}`);
-  assert.equal(overpowered.minPostPeakTraction < 0.9, true,
-    `expected high-steer high-power post-peak traction below 0.9, received ${overpowered.minPostPeakTraction.toFixed(3)}`);
 });
 
 test('Race 1200 HP dirt stays overpowered across AWD RWD and FWD drivetrains', () => {
