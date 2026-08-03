@@ -401,6 +401,20 @@ test('Race stock AWD dirt remains controllable while 1200 HP partial throttle is
   assert.equal(overpowered.maxCameraTravelYawError < 0.25, true);
 });
 
+test('Race stock AWD dirt keeps longitudinal adhesion at high steering input', () => {
+  const stock = runHighPowerFeelCase({
+    surface: 'dirt',
+    drivetrain: 'awd',
+    powerHp: 271,
+    torqueLbFt: 258,
+    throttleAxis: 0.35,
+    steerAxis: 0.8
+  });
+
+  assert.equal(stock.maxWheelSpin < 0.08, true,
+    `expected high-steer stock wheelspin below 0.08, received ${stock.maxWheelSpin.toFixed(3)}`);
+});
+
 test('Race 1200 HP dirt stays overpowered across AWD RWD and FWD drivetrains', () => {
   const awd = runHighPowerFeelCase({ surface: 'dirt', drivetrain: 'awd', throttleAxis: 1, steerAxis: 0.8 });
   const rwd = runHighPowerFeelCase({ surface: 'dirt', drivetrain: 'rwd', throttleAxis: 1, steerAxis: 0.8 });

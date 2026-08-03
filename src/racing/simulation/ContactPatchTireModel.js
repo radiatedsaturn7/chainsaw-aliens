@@ -860,9 +860,9 @@ export class ContactPatchTireModel {
       const tire = wheelInputs[wheelId].tire || {};
       const peakSlip = clamp(Number(tire.peakSlip ?? 0.16), 0.03, 1.5);
       const recoveryHysteresis = clamp(Number(tire.recoveryHysteresis ?? 0.04), 0, 0.3);
-      const withinStaticSlipRange = wheelInputs[wheelId].tireTransition?.breakawayActive !== true
-        && Math.abs(Number(wheelInputs[wheelId].tireTransition?.rawSlipRatio
-          ?? kinematics.slipRatio ?? 0)) <= Math.max(0.03, peakSlip - recoveryHysteresis);
+      const withinStaticSlipRange = Math.abs(Number(
+        wheelInputs[wheelId].tireTransition?.rawSlipRatio ?? kinematics.slipRatio ?? 0
+      )) <= Math.max(0.03, peakSlip - recoveryHysteresis);
       const atRollingSpeed = Math.abs(currentRollingError) < 0.05 || crossedRollingSpeed;
       const staticTorqueRatio = Math.abs(appliedWheelTorque) / Math.max(EPSILON, staticTorqueCapacityNm);
       // Keep substep reaction torque from ratcheting a low-demand wheel out of
