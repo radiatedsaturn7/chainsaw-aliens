@@ -14004,7 +14004,7 @@ test('Race playtest loose road surfaces add rolling resistance while coasting on
   assert.equal(dirt.speedMps < asphalt.speedMps - 0.045, true);
 });
 
-test('Race tire wear uses each wheel compound instead of a car-wide average', () => {
+test('Race render-loop wear does not mutate structural tire damage', () => {
   const runWear = ({ flCompound = 'tarmac', frCompound = 'tarmac' } = {}) => {
     const editor = new RaceEditor({
       deviceIsMobile: false,
@@ -14040,8 +14040,8 @@ test('Race tire wear uses each wheel compound instead of a car-wide average', ()
   const mixed = runWear({ flCompound: 'drift', frCompound: 'tarmac' });
   const reversed = runWear({ flCompound: 'tarmac', frCompound: 'drift' });
 
-  assert.equal(mixed.fl > mixed.fr * 1.25, true);
-  assert.equal(reversed.fr > reversed.fl * 1.25, true);
+  assert.deepEqual(mixed, { fl: 0, fr: 0, rl: 0, rr: 0 });
+  assert.deepEqual(reversed, { fl: 0, fr: 0, rl: 0, rr: 0 });
 });
 
 test('Race high-power dirt wheelspin heats rear tires and degrades tire health', () => {
@@ -18495,7 +18495,7 @@ test('Race rain streaks follow their downward screen-space motion', () => {
   }
 });
 
-test('Race Editor tire wear is per-wheel and harsher for street tires off road', () => {
+test('Race Editor leaves normal tire wear to VehicleDynamicsRunner', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   editor.startPlaytest('starter-rwd');
   const setup = editor.getRaceCarSetup(editor.selectedCar);
@@ -18519,7 +18519,8 @@ test('Race Editor tire wear is per-wheel and harsher for street tires off road',
   editor.updateRaceWearAndDamage(5);
   const offroadWear = editor.getAverageDamage(editor.getRaceSessionDamage().tires);
 
-  assert.equal(tarmacWear > offroadWear, true);
+  assert.equal(tarmacWear, 0);
+  assert.equal(offroadWear, 0);
 });
 
 test('Race Editor playtest advances, exposes hazards, and top pause returns to editor', () => {

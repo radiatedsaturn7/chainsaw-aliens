@@ -17,6 +17,7 @@ import {
   getAuthoritativeVehicleState,
   getVehicleStateSnapshot
 } from '../../src/racing/simulation/VehicleState.js';
+import { WRX_2022_SHARED_TUNING } from '../../src/racing/raceData.js';
 
 const steeringConfig = {
   speedReferenceMps: 62,
@@ -276,6 +277,19 @@ test('authoritative powertrain follows the torque curve and physically modulates
   });
   assert.ok(stabilityOn.telemetry.stabilityBrakeTorqueNm > 0);
   assert.equal(stabilityOff.telemetry.stabilityBrakeTorqueNm, 0);
+  assert.equal(stabilityOff.telemetry.stabilityBrakeWheelId, null);
+
+  const stabilityWithAbsAndDamage = run({
+    previous: peak.state,
+    slipRatio: -0.8,
+    controls: { throttle: 0, brake: 0, centerSteeringAngleRad: 0 },
+    damage: { brakes: { fl: 50 } },
+    stateOverrides: { angularVelocityWorld: { y: 1 } }
+  });
+  assert.equal(stabilityWithAbsAndDamage.telemetry.stabilityBrakeWheelId, 'fl');
+  assert.ok(stabilityWithAbsAndDamage.telemetry.requestedStabilityBrakeTorqueNm > 0);
+  assert.ok(stabilityWithAbsAndDamage.telemetry.stabilityBrakeTorqueNm
+    < stabilityWithAbsAndDamage.telemetry.requestedStabilityBrakeTorqueNm);
 
   const damaged = run({
     previous: { engineRpm: 3500, gear: 1, targetGear: 1 },
@@ -327,6 +341,23 @@ test('tires and brakes produce no ground force without wheel load', () => {
   assert.ok(Object.values(braking.absInterventionByWheel).every((value) => value > 0));
 });
 
+test('legacy brakeBalance and the WRX authored 0.56 bias reach exact wheel torque', () => {
+  const brakes = new BrakeModel();
+  const result = brakes.calculate({
+    tuning: { ...WRX_2022_SHARED_TUNING, brakeForceN: 10000, absEnabled: false },
+    brake: 1,
+    limitByWheel: { fl: 10000, fr: 10000, rl: 10000, rr: 10000 },
+    speedMps: 20
+  });
+  assert.ok(Math.abs(result.requestedByWheel.fl - 2800) < 1e-9);
+  assert.ok(Math.abs(result.requestedByWheel.fr - 2800) < 1e-9);
+  assert.ok(Math.abs(result.requestedByWheel.rl - 2200) < 1e-9);
+  assert.ok(Math.abs(result.requestedByWheel.rr - 2200) < 1e-9);
+  assert.ok(Math.abs(
+    (result.requestedByWheel.fl + result.requestedByWheel.fr) / result.requested - 0.56
+  ) < 1e-12);
+});
+
 test('chassis load transfer conserves supported load before tire sensitivity', () => {
   const chassis = new ChassisIntegrator();
   const tuning = {
@@ -373,8 +404,11 @@ test('damage and assists return explicit next state without editor ownership', (
   const state = damage.createState();
   damage.apply(state, 'suspension', 20, { keys: ['fl'], pull: 0.1 });
   damage.apply(state, 'engine', 50);
+  damage.apply(state, 'brakes', 25, { keys: ['fr'] });
   assert.equal(state.suspension.fl, 20);
   assert.equal(state.suspension.fr, 0);
+  assert.equal(state.brakes.fr, 25);
+  assert.equal(state.brakes.fl, 0);
   assert.equal(damage.getEffects(state).enginePower, 0.7);
 
   const assists = new HandlingAssist(steeringConfig);
@@ -399,4 +433,35 @@ test('damage and assists return explicit next state without editor ownership', (
   }).find((entry) => entry.trigger === 'roll-stability');
   assert.ok(rollIntervention);
   assert.equal(Math.abs(rollIntervention.appliedValue - (-54)) < 0.001, true);
+  const disabledInterventions = assists.calculatePhysicalInterventions({
+    preset: 'accessible',
+    state: {
+      groundSpeedMps: 30,
+      angularVelocityWorld: { x: 0, y: 1, z: 1 },
+      velocity: { x: 10, y: 0, z: 20 },
+      contactPatches: {}
+    },
+    controls: { steering: 0.5, assists: { stabilityControlEnabled: false } },
+    config: { yawInertiaKgM2: 9000, rollInertiaKgM2: 1000, wheelbaseM: 2.65 },
+    supportScale: 1
+  });
+  assert.deepEqual(disabledInterventions, []);
+
+  const authoritativeReturn = assists.getSelfAligningSteeringCorrection({
+    contactPatches: {
+      fl: { normalLoadN: 3500, lateralForceN: 1800, selfAligningMomentNm: -45 },
+      fr: { normalLoadN: 3500, lateralForceN: 1700, selfAligningMomentNm: -42 }
+    },
+    rackAngleRad: 0.12,
+    casterRad: 6 * Math.PI / 180,
+    wheelRadiusM: 0.337,
+    seconds: 1 / 60
+  });
+  assert.ok(authoritativeReturn < 0);
+  assert.equal(assists.getSelfAligningSteeringCorrection({
+    contactPatches: { fl: { normalLoadN: 3500, selfAligningMomentNm: -45 } },
+    rackAngleRad: 0.12,
+    steeringInputMode: 'simulation-wheel',
+    seconds: 1 / 60
+  }), 0);
 });

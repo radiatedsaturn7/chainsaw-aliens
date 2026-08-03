@@ -544,7 +544,9 @@ export class PowertrainModel {
         : 0
     ]));
 
-    const frontBias = clamp(Number(tuning.frontBrakeBias ?? config.frontBrakeBias ?? 0.62), 0.4, 0.85);
+    const frontBias = clamp(Number(
+      tuning.frontBrakeBias ?? tuning.brakeBalance ?? config.frontBrakeBias ?? 0.62
+    ), 0.4, 0.85);
     const brakePressure = clamp(Number(tuning.brakePressure ?? config.brakePressure ?? 1), 0.2, 1.5);
     const serviceBrakeTorqueTotalNm = Math.max(0, Number(config.brakeForceN || 0))
       * Math.max(0.1, Number(config.wheelRadiusM || 0.33))
@@ -558,9 +560,26 @@ export class PowertrainModel {
       rl: serviceBrakeTorqueTotalNm * (1 - frontBias) * 0.5 + handbrakeTorqueTotalNm * 0.5,
       rr: serviceBrakeTorqueTotalNm * (1 - frontBias) * 0.5 + handbrakeTorqueTotalNm * 0.5
     };
+    const stabilityEnabled = controls.assists?.stabilityControlEnabled !== false;
+    const steeringAngle = Number(controls.centerSteeringAngleRad || 0);
+    const desiredYawRate = groundSpeedMps * Math.tan(steeringAngle)
+      / Math.max(0.5, Number(config.wheelbaseM || 2.65));
+    const yawRate = Number(state.angularVelocityWorld?.y || state.yawRateRadps || 0);
+    const yawError = desiredYawRate - yawRate;
+    let stabilityBrakeWheelId = null;
+    let requestedStabilityBrakeTorqueNm = 0;
+    if (stabilityEnabled && groundSpeedMps > 4 && Math.abs(yawError) > 0.18) {
+      stabilityBrakeWheelId = yawError > 0 ? 'fr' : 'fl';
+      requestedStabilityBrakeTorqueNm = Math.min(
+        Number(capacityByWheel[stabilityBrakeWheelId] || 0) * Number(config.wheelRadiusM || 0.33) * 0.35,
+        Math.abs(yawError) * 420
+      );
+      requestedBrakeTorqueNm[stabilityBrakeWheelId] += requestedStabilityBrakeTorqueNm;
+    }
     const previousAbs = previous.absModulationByWheel || {};
     const absModulationByWheel = {};
     const absInterventionByWheel = {};
+    const brakeDamageScaleByWheel = {};
     const wheelBrakeTorqueNm = {};
     RACE_WHEEL_IDS.forEach((wheelId) => {
       const wheel = kinematicsByWheel[wheelId] || {};
@@ -583,6 +602,7 @@ export class PowertrainModel {
         ? Number(perWheelBrakeDamage)
         : Number.isFinite(Number(damage.brakes)) ? Number(damage.brakes) : 0;
       const damageScale = clamp(1 - brakeDamageValue / 125, 0.15, 1);
+      brakeDamageScaleByWheel[wheelId] = damageScale;
       absModulationByWheel[wheelId] = modulation;
       wheelBrakeTorqueNm[wheelId] = requestedBrakeTorqueNm[wheelId] * modulation * damageScale;
       absInterventionByWheel[wheelId] = Math.max(
@@ -591,22 +611,11 @@ export class PowertrainModel {
       );
     });
 
-    const stabilityEnabled = controls.assists?.stabilityControlEnabled !== false;
-    const steeringAngle = Number(controls.centerSteeringAngleRad || 0);
-    const desiredYawRate = groundSpeedMps * Math.tan(steeringAngle)
-      / Math.max(0.5, Number(config.wheelbaseM || 2.65));
-    const yawRate = Number(state.angularVelocityWorld?.y || state.yawRateRadps || 0);
-    const yawError = desiredYawRate - yawRate;
-    let stabilityBrakeWheelId = null;
-    let stabilityBrakeTorqueNm = 0;
-    if (stabilityEnabled && groundSpeedMps > 4 && Math.abs(yawError) > 0.18) {
-      stabilityBrakeWheelId = yawError > 0 ? 'fr' : 'fl';
-      stabilityBrakeTorqueNm = Math.min(
-        Number(capacityByWheel[stabilityBrakeWheelId] || 0) * Number(config.wheelRadiusM || 0.33) * 0.35,
-        Math.abs(yawError) * 420
-      );
-      wheelBrakeTorqueNm[stabilityBrakeWheelId] += stabilityBrakeTorqueNm;
-    }
+    const stabilityBrakeTorqueNm = stabilityBrakeWheelId
+      ? requestedStabilityBrakeTorqueNm
+        * Number(brakeDamageScaleByWheel[stabilityBrakeWheelId] || 0)
+        * Number(absModulationByWheel[stabilityBrakeWheelId] || 0)
+      : 0;
     return {
       wheelDriveTorqueNm,
       wheelBrakeTorqueNm,
@@ -645,6 +654,7 @@ export class PowertrainModel {
         wheelBrakeTorqueNm: { ...wheelBrakeTorqueNm },
         appliedBrakeTorqueNm: { ...wheelBrakeTorqueNm },
         stabilityBrakeWheelId,
+        requestedStabilityBrakeTorqueNm,
         stabilityBrakeTorqueNm
       }
     };

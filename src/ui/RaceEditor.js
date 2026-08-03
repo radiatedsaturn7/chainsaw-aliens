@@ -17797,21 +17797,21 @@ export default class RaceEditor {
   }
 
   getRaceSelfAligningSteeringCorrection({
-    frontSlipAngle = 0,
-    steeringAngle = 0,
-    speedMps = 0,
-    looseSurfaceFactor = 0,
-    tireContactScale = 1,
+    contactPatches = {},
+    rackAngleRad = 0,
+    casterRad = 0,
+    wheelRadiusM = 0.337,
+    steeringInputMode = 'gamepad',
     seconds = 0,
     activeTurnInput = false,
     launchAligning = false
   } = {}) {
     return this.raceSimulationSystems.handlingAssist.getSelfAligningSteeringCorrection({
-      frontSlipAngle,
-      steeringAngle,
-      speedMps,
-      looseSurfaceFactor,
-      tireContactScale,
+      contactPatches,
+      rackAngleRad,
+      casterRad,
+      wheelRadiusM,
+      steeringInputMode,
       seconds,
       activeTurnInput,
       launchAligning

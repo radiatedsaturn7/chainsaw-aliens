@@ -16,7 +16,7 @@ export class BrakeModel {
     const requested = brakeCapacity * brakePressure;
     const handbrakeRequested = brakeCapacity * 0.92 * clamp(handbrake, 0, 1);
     const speedLockFactor = clamp(Math.abs(Number(speedMps) || 0) / 11, 0, 1);
-    const frontBias = clamp(Number(tuning.frontBrakeBias) || 0.62, 0.45, 0.78);
+    const frontBias = clamp(Number(tuning.frontBrakeBias ?? tuning.brakeBalance ?? 0.62), 0.45, 0.78);
     const requestedByWheel = {
       fl: requested * frontBias * 0.5,
       fr: requested * frontBias * 0.5,

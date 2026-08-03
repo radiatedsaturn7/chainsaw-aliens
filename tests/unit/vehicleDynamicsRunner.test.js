@@ -13,6 +13,7 @@ import {
   DEFAULT_CAR_TUNING,
   RACE_CAR_DIMENSIONS,
   WRX2_PHYSICAL_PROFILE,
+  WRX_2022_SHARED_TUNING,
   WRX_2022_TRANSMISSIONS
 } from '../../src/racing/raceData.js';
 
@@ -26,6 +27,23 @@ const WRX_GT_TUNING = Object.freeze({
   rollStiffness: 0.76
 });
 const WRX_GT_CONFIG = createVehicleDynamicsConfigFromTuning(WRX_GT_TUNING);
+
+test('named angular-rate fallbacks map to the authoritative world axes', () => {
+  const state = createVehicleDynamicsState({
+    pitchRateRadps: 1.25,
+    yawRateRadps: -0.5,
+    rollRateRadps: 0.75
+  });
+  assert.deepEqual(state.angularVelocityWorld, { x: 1.25, y: -0.5, z: 0.75 });
+});
+
+test('WRX legacy brakeBalance maps unchanged into authoritative configuration', () => {
+  const config = createVehicleDynamicsConfigFromTuning({
+    ...WRX_2022_SHARED_TUNING,
+    ...WRX_2022_TRANSMISSIONS.automatic
+  });
+  assert.equal(config.frontBrakeBias, 0.56);
+});
 
 test('authoritative velocity state separates ground, body, lateral, and signed travel speed', () => {
   const state = createVehicleDynamicsState({

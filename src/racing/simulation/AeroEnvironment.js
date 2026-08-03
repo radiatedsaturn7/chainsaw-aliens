@@ -35,7 +35,9 @@ export function createRaceWakeSources(session = {}, { playerWidthM = 1.8 } = {})
   const vehicles = [{
     id: 'player',
     position: { x: Number(session.worldX || 0), y: Number(session.bodyY ?? session.heightM ?? 0), z: Number(session.worldZ || 0) },
-    yawRad: Number(session.carYaw || 0), speedMps: Math.abs(Number(session.speedMps || 0)), widthM: playerWidthM
+    yawRad: Number(session.carYaw || 0),
+    speedMps: Math.max(0, Number(session.groundSpeedMps ?? Math.abs(session.speedMps || 0)) || 0),
+    widthM: playerWidthM
   }, ...(session.aiRuntime || []).map((ai, index) => ({
     id: String(ai.id || ai.driverId || `ai-${index}`),
     position: { x: Number(ai.worldX || 0), y: Number(ai.bodyY ?? ai.heightM ?? 0), z: Number(ai.worldZ || 0) },
