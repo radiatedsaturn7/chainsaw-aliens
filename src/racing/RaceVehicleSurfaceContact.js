@@ -27,7 +27,8 @@ export function getRaceWheelSurfaceState({
   wheelIds.forEach((wheelId) => {
     const position = positions[wheelId];
     const trackSample = surfaceModel?.sampleWorld?.(position, 0, {
-      fallbackSurfaceId: selectedSegment?.surface || 'asphalt'
+      fallbackSurfaceId: selectedSegment?.surface || 'asphalt',
+      applyWeatherSurface: !trackState
     }) || {};
     const segment = trackSample.segment || trackSample.projection?.segment || selectedSegment;
     const region = trackSample.region || 'terrain';
@@ -59,9 +60,9 @@ export function getRaceWheelSurfaceState({
     terrainByWheel[wheelId] = terrain;
     regionByWheel[wheelId] = region;
     terrainGripScaleByWheel[wheelId] = terrainGripScale;
-    const localGripMultiplier = Number(localTrackState?.effectiveGripMultiplier || 1);
-    frictionByWheel[wheelId] = Number(trackSample.friction || (Number(surface.grip || 1) * terrainGripScale))
-      * localGripMultiplier;
+    frictionByWheel[wheelId] = localTrackState
+      ? Number(localTrackState.effectiveGrip || localTrackState.cell?.baseGrip || 1) * terrainGripScale
+      : Number(trackSample.friction || (Number(surface.grip || 1) * terrainGripScale));
     normalByWheel[wheelId] = trackSample.normal || { x: 0, y: 1, z: 0 };
     surfaceGripByWheel[wheelId] = clamp(frictionByWheel[wheelId] * detailGrip, 0.18, 1.12);
     const compoundGrip = adapter.getWheelGripForSurface?.({
@@ -135,7 +136,9 @@ export function getRaceWheelContactState({
     const position = positions[wheelId];
     const surfaceSample = surfaceModel?.sampleWorld?.(position, 0, {
       runtimeType,
-      fallbackSurfaceId: selectedSegment?.surface || 'asphalt'
+      fallbackSurfaceId: selectedSegment?.surface || 'asphalt',
+      physicsContact: true,
+      applyWeatherSurface: !trackState
     }) || {};
     const projection = surfaceSample.projection;
     const segment = surfaceSample.segment || projection?.segment || selectedSegment;
@@ -151,8 +154,11 @@ export function getRaceWheelContactState({
       segment,
       terrain,
       region: surfaceSample.region,
+      baseSurfaceId: localTrackState?.cell?.baseSurfaceId || surfaceSample.surfaceId,
       surfaceId: localTrackState?.effectiveSurfaceId || surfaceSample.surfaceId,
-      friction: Number(surfaceSample.friction || 1) * Number(localTrackState?.effectiveGripMultiplier || 1),
+      friction: localTrackState
+        ? Number(localTrackState.effectiveGrip || localTrackState.cell?.baseGrip || surfaceSample.friction || 1)
+        : Number(surfaceSample.friction || 1),
       trackState: localTrackState,
       normal: surfaceSample.normal,
       elevation: surfaceElevation,

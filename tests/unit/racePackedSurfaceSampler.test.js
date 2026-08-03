@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 
 import {
   buildRaceBakedSurfaceSampler,
+  getRaceBakedSurfaceMaximumElevationInBounds,
   packRaceCanonicalSurfaceMesh,
   packRaceBakedSurfaceSampler,
   sampleRaceBakedSurface
@@ -105,4 +106,27 @@ test('canonical mesh packing matches the object sampler without allocating an in
     { preferredRegion: 'terrain' }
   );
   assert.deepEqual(meshSample, objectSample);
+});
+
+test('packed and object samplers expose the same conservative body broadphase height', () => {
+  const terrainCells = [{
+    key: 'terrain:bounds',
+    points: [
+      { x: 0, z: 0, elevation: 0.1, terrainRegion: 'terrain' },
+      { x: 5, z: 0, elevation: 0.4, terrainRegion: 'terrain' },
+      { x: 5, z: 5, elevation: 0.3, terrainRegion: 'terrain' },
+      { x: 0, z: 5, elevation: 0.2, terrainRegion: 'terrain' }
+    ]
+  }];
+  const objectSampler = buildRaceBakedSurfaceSampler({ terrainCells, bucketSizeM: 5 });
+  const packedSampler = packRaceBakedSurfaceSampler(objectSampler);
+  const bounds = { minX: 1, maxX: 4, minZ: 1, maxZ: 4 };
+  assert.equal(getRaceBakedSurfaceMaximumElevationInBounds(objectSampler, bounds), 0.4);
+  assert.equal(getRaceBakedSurfaceMaximumElevationInBounds(packedSampler, bounds), 0.4);
+  assert.equal(getRaceBakedSurfaceMaximumElevationInBounds(packedSampler, {
+    minX: 20,
+    maxX: 24,
+    minZ: 20,
+    maxZ: 24
+  }), null);
 });

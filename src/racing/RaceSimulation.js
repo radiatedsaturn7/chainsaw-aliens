@@ -15,7 +15,7 @@ import {
   normalizeVehicleControlInput
 } from './simulation/VehicleDynamicsRunner.js';
 import { calculateWheelContactKinematics } from './simulation/ContactPatchTireModel.js';
-import { createDeterministicAtmosphere, createRaceWakeSources } from './simulation/AeroEnvironment.js';
+import { createDeterministicAtmosphere, getRaceWakeSourcesForFrame } from './simulation/AeroEnvironment.js';
 
 function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
   const session = editor.playtestSession;
@@ -32,6 +32,7 @@ function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
     // timeline separately, so normal play must not retain thousands of deep
     // per-wheel state snapshots for every active vehicle.
     telemetryLimit: 32,
+    telemetryRetention: 'transient',
     inputTimelineLimit: 512
   });
   const initialContacts = editor.getRaceWheelContactState({
@@ -214,6 +215,15 @@ function advanceVehicleDynamicsAuthority(editor, {
       }];
     }));
   }
+  const surfaceModel = editor.getRaceSurfaceModel();
+  const runtimeType = session.routeRuntimeType || editor.getActiveRaceRuntimeType();
+  const physicsQueryContext = surfaceModel.createPhysicsQueryContext({
+    runtimeType,
+    weatherState
+  });
+  const wakeSources = getRaceWakeSourcesForFrame(session, {
+    playerWidthM: Number(tuning.widthM || 1.8)
+  });
   authority.runner.environmentProvider = ({ state, controls: fixedControls, timeSeconds }) => {
     const preliminaryPatches = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
       const patch = calculateWheelContactKinematics({
@@ -255,32 +265,47 @@ function advanceVehicleDynamicsAuthority(editor, {
       [-0.15, 0], [0.15, 0], [0, -0.48], [0, 0.48]
     ].slice(0, authority.runner.config.contactFootprintSamples);
     const tireWidthM = Math.max(0.12, Number(setup.tireSize?.widthMm || 245) / 1000);
-    const sampleFootprint = ([longitudinal, lateral]) => {
-      const samplePositions = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
-        const patch = preliminaryPatches[wheelId];
-        return [wheelId, {
-          x: patch.contactPointWorld.x + patch.wheelForwardWorld.x * longitudinal * 0.16
-            + patch.wheelLateralWorld.x * lateral * tireWidthM,
-          y: patch.contactPointWorld.y,
-          z: patch.contactPointWorld.z + patch.wheelForwardWorld.z * longitudinal * 0.16
-            + patch.wheelLateralWorld.z * lateral * tireWidthM
-        }];
-      }));
-      return editor.getRaceWheelContactState({
-        car: editor.getRaceSessionCar(session), tuning,
-        session: { ...session, grounded: state.grounded, airborne: !state.grounded, vehicle3d: null,
-          trackState: countdownActive ? null : session.trackState },
-        wheelSurfaceState: { positions: samplePositions }
+    const sampleFootprints = (offsets) => {
+      const requests = [];
+      offsets.forEach(([longitudinal, lateral], offsetIndex) => {
+        RACE_WHEEL_IDS.forEach((wheelId) => {
+          const patch = preliminaryPatches[wheelId];
+          requests.push({
+            wheelId,
+            offsetIndex,
+            point: {
+              x: patch.contactPointWorld.x + patch.wheelForwardWorld.x * longitudinal * 0.16
+                + patch.wheelLateralWorld.x * lateral * tireWidthM,
+              y: patch.contactPointWorld.y,
+              z: patch.contactPointWorld.z + patch.wheelForwardWorld.z * longitudinal * 0.16
+                + patch.wheelLateralWorld.z * lateral * tireWidthM
+            }
+          });
+        });
       });
+      const samples = surfaceModel.samplePhysicsGeometryBatch(
+        requests.map((request) => request.point),
+        {
+          ...physicsQueryContext,
+          fallbackSurfaceId: fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
+        }
+      );
+      const result = offsets.map(() => ({ contacts: {} }));
+      requests.forEach((request, requestIndex) => {
+        result[request.offsetIndex].contacts[request.wheelId] = samples[requestIndex];
+      });
+      return result;
     };
-    const footprintContacts = footprintOffsets.slice(0, 4).map(sampleFootprint);
+    const footprintContacts = sampleFootprints(footprintOffsets.slice(0, 4));
     const needsAdaptiveSamples = RACE_WHEEL_IDS.some((wheelId) => {
-      const heights = footprintContacts.map((sample) => Number(sample.heights?.[wheelId]));
+      const heights = footprintContacts.map((sample) => (
+        Number(sample.contacts?.[wheelId]?.elevation) * RACE_THREE_ELEVATION_M
+      ));
       return heights.some((height) => !Number.isFinite(height))
         || Math.max(...heights) - Math.min(...heights) > 0.02;
     });
     if (needsAdaptiveSamples) {
-      footprintContacts.push(...footprintOffsets.slice(4).map(sampleFootprint));
+      footprintContacts.push(...sampleFootprints(footprintOffsets.slice(4)));
     }
     return {
       surfaceHeightByWheel: { ...(fixedContacts.heights || wheelContactState?.heights || {}) },
@@ -289,32 +314,81 @@ function advanceVehicleDynamicsAuthority(editor, {
       ])),
       contactSamplesByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId,
         footprintContacts.map((sample) => {
-          const normal = sample.contacts?.[wheelId]?.normal || { x: 0, y: 1, z: 0 };
+          const geometry = sample.contacts?.[wheelId] || {};
+          const normal = geometry.normal || { x: 0, y: 1, z: 0 };
           return {
-            heightM: sample.heights?.[wheelId],
+            heightM: Number(geometry.elevation) * RACE_THREE_ELEVATION_M,
             normalX: normal.x,
             normalY: normal.y,
             normalZ: normal.z,
-            supported: Number.isFinite(Number(sample.heights?.[wheelId]))
+            supported: Number.isFinite(Number(geometry.elevation))
           };
         })
       ])),
       materialByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
       const contact = fixedContacts.contacts?.[wheelId] || {};
       const sample = contact.trackState;
+      const baseSurfaceId = sample?.cell?.baseSurfaceId || contact.baseSurfaceId
+        || wheelSurfaceState.baseSurfaceByWheel?.[wheelId] || 'asphalt';
+      const nominalBaseGrip = Math.max(0.025, Number(getSurfaceById(baseSurfaceId)?.grip || 1));
+      const localBaseGrip = Number(sample?.cell?.baseGrip ?? contact.friction ?? nominalBaseGrip);
+      const surfaceGripScale = localBaseGrip / nominalBaseGrip
+        * Number(sample?.effectiveGripMultiplier ?? 1);
       return [wheelId, {
         ...(sample?.cell || {}),
+        baseSurfaceId,
         surfaceId: contact.surfaceId || wheelSurfaceState.surfaceByWheel?.[wheelId],
-        grip: contact.friction
+        effectiveGrip: sample?.effectiveGrip ?? contact.friction
           ?? wheelSurfaceState.frictionByWheel?.[wheelId]
-          ?? 1
+          ?? 1,
+        effectiveGripMultiplier: sample?.effectiveGripMultiplier ?? 1,
+        surfaceGripScale,
+        grip: sample?.effectiveGrip ?? contact.friction
+          ?? wheelSurfaceState.frictionByWheel?.[wheelId]
+          ?? 1,
+        trackStateConditionApplied: Boolean(sample)
       }];
       })),
+    sampleTerrainAtWorldPoint: (worldPoint) => {
+      const sample = surfaceModel.samplePhysicsGeometry(worldPoint, {
+        ...physicsQueryContext,
+        fallbackSurfaceId: fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
+      });
+      return {
+        heightM: Number(sample.elevation || 0) * RACE_THREE_ELEVATION_M,
+        normal: sample.normal || { x: 0, y: 1, z: 0 },
+        friction: Number(sample.friction || 1)
+      };
+    },
+    sampleTerrainAtWorldPoints: (worldPoints) => surfaceModel.samplePhysicsGeometryBatch(
+      worldPoints,
+      {
+        ...physicsQueryContext,
+        fallbackSurfaceId: fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
+      }
+    ).map((sample) => ({
+      heightM: Number(sample.elevation || 0) * RACE_THREE_ELEVATION_M,
+      normal: sample.normal || { x: 0, y: 1, z: 0 },
+      friction: Number(sample.friction || 1)
+    })),
+    sampleTerrainMaximumHeightInBounds: (bounds) => {
+      const elevation = editor.getRaceBakedSurfaceMaximumElevationInBounds(bounds);
+      if (!Number.isFinite(Number(elevation))) return null;
+      const maximumPreparedHeightM = Number(elevation) * RACE_THREE_ELEVATION_M;
+      const fixedHeights = Object.values(fixedContacts.heights || {}).map(Number).filter(Number.isFinite);
+      const maximumFixedHeightM = fixedHeights.length ? Math.max(...fixedHeights) : null;
+      // The packed mesh is a safe broadphase only while it agrees with the
+      // analytical wheel surface. Authored hills and transition blends can
+      // intentionally diverge, in which case the exact candidate path wins.
+      if (!Number.isFinite(maximumFixedHeightM)
+        || Math.abs(maximumPreparedHeightM - maximumFixedHeightM) > 0.04) return null;
+      return maximumPreparedHeightM;
+    },
     targetVelocityWorld: countdownActive ? authority.formationTargetVelocityWorld : null,
       ambientTemperatureC: trackWeatherForcing.ambientTemperatureC,
       ...atmosphere,
       vehicleId: 'player',
-      wakeSources: createRaceWakeSources(session, { playerWidthM: Number(tuning.widthM || 1.8) }),
+      wakeSources,
       bodyDamage: Math.max(0, ...Object.values(panelDamage).map(Number)),
       frontAeroDamage: clamp(Number(panelDamage.front || 0) / 100, 0, 1),
       rearAeroDamage: clamp(Number(panelDamage.rear || 0) / 100, 0, 1),
@@ -328,7 +402,6 @@ function advanceVehicleDynamicsAuthority(editor, {
         : 1;
       return [wheelId, {
         ...fixedTire,
-        compoundGrip: fixedTire.compound.surfaceGrip?.[fixedContacts.contacts?.[wheelId]?.surfaceId] ?? 1,
         temperatureF: state.tireState?.[wheelId]?.temperatureF ?? 70,
         treadTemperatureC: state.tireState?.[wheelId]?.treadTemperatureC,
         carcassTemperatureC: state.tireState?.[wheelId]?.carcassTemperatureC,
@@ -344,13 +417,13 @@ function advanceVehicleDynamicsAuthority(editor, {
     }))
   };
   };
-  const fixedStepTelemetry = [];
+  let latestFixedStepTelemetry = null;
   let previousTrackPositions = session.trackStatePreviousWheelPositions || {};
   let latestTrackStateAdvance = null;
   const advance = authority.runner.advance(seconds, {
     input: controls,
     onFixedStep: (telemetry) => {
-      fixedStepTelemetry.push(telemetry);
+      latestFixedStepTelemetry = telemetry;
       if (countdownActive || !trackState) return;
       const result = emitAuthoritativeTrackStateStep({
         editor,
@@ -378,9 +451,9 @@ function advanceVehicleDynamicsAuthority(editor, {
   }
   authority.latest = {
     state: authority.runner.createStateSnapshot(),
-    telemetry: authority.runner.telemetry.at(-1) || null,
+    telemetry: latestFixedStepTelemetry,
     diagnostics: { ...authority.runner.diagnostics },
-    fixedStepTelemetry,
+    fixedStepTelemetry: latestFixedStepTelemetry ? [latestFixedStepTelemetry] : [],
     advance
   };
   syncVehicleDynamicsCompatibilityOutputs(authority.runner, session);
@@ -407,6 +480,19 @@ export function updateRaceSimulation({
   const seconds = Math.max(0, Number(dt) || 0);
   ensureVehicleDynamicsAuthority(editor, tuning, {
     steering: -editor.raceInput.steeringWheel,
+    centerSteeringAngleRad: -editor.getRaceResolvedCenterSteeringAngle(
+      editor.raceInput.steeringWheel,
+      editor.playtestSession.speedMps,
+      {
+        wheelbaseM: tuning.wheelbaseM,
+        availableLateralG: 0.95,
+        handlingPreset: tuning.handlingPreset || 'sport',
+        maxPhysicalAngleRad: 0.52
+      }
+    ),
+    steeringInputMode: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
+      ? 'simulation-wheel'
+      : editor.raceInput.analogSteeringActive ? 'gamepad' : 'keyboard',
     throttle: editor.raceInput.throttleAxis,
     brake: editor.raceInput.brakeAxis,
     clutch: editor.raceInput.clutchAxis,
@@ -419,7 +505,12 @@ export function updateRaceSimulation({
       autoShift: editor.raceInput.autoShift !== false
     }
   });
-  const countdownActive = Number(editor.playtestSession.countdownRemainingMs || 0) > 0;
+  const countdownRemainingMs = Number(editor.playtestSession.countdownRemainingMs || 0);
+  const countdownVisible = countdownRemainingMs > 0;
+  // The final second is the displayed GO phase, not another staged-countdown
+  // second. Release the drivetrain as soon as GO is shown while allowing the
+  // banner timer to finish independently.
+  const countdownActive = countdownRemainingMs > 1000;
   editor.playtestSession.sceneElapsedMs = Math.max(
     0,
     Number(editor.playtestSession.sceneElapsedMs || 0) + seconds * 1000
@@ -661,12 +752,13 @@ export function updateRaceSimulation({
   }
   const driveDirection = gear < 0 ? -1 : gear > 0 ? 1 : 0;
   editor.playtestSession.previousDistance = editor.playtestSession.distance;
-  if (countdownActive) {
+  if (countdownVisible) {
     editor.playtestSession.countdownRemainingMs = Math.max(0, Number(editor.playtestSession.countdownRemainingMs || 0) - seconds * 1000);
-    if (editor.playtestSession.countdownRemainingMs <= 0) {
+    if (editor.playtestSession.countdownRemainingMs <= 1000) {
       editor.playtestSession.startupPhase = 'running';
     }
-  } else {
+  }
+  if (!countdownActive) {
     editor.playtestSession.elapsedMs += seconds * 1000;
   }
   if (!countdownActive) editor.updateRaceTriggers();
@@ -1221,10 +1313,12 @@ export function updateRaceSimulation({
   );
   const usableFullLockTireAngle = launchAligning
     ? 0
-    : editor.getRaceUsableFullLockTireAngle(absSpeed, {
+    : Math.abs(editor.getRaceResolvedCenterSteeringAngle(1, absSpeed, {
       wheelbaseM,
-      availableLateralG: steeringEnvelopeCorneringG
-    });
+      availableLateralG: steeringEnvelopeCorneringG,
+      handlingPreset: tuning.handlingPreset || 'sport',
+      maxPhysicalAngleRad: 0.52
+    }));
   const steeringAngle = launchAligning
     ? 0
     : clamp(Number(effectiveRoadSteer) || 0, -1, 1) * usableFullLockTireAngle;
@@ -1880,6 +1974,10 @@ export function updateRaceSimulation({
     seconds,
     controls: {
       steering: -editor.raceInput.steeringWheel,
+      centerSteeringAngleRad: -steeringAngle,
+      steeringInputMode: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
+        ? 'simulation-wheel'
+        : editor.raceInput.analogSteeringActive ? 'gamepad' : 'keyboard',
       throttle: countdownActive ? driverThrottle : throttle,
       brake,
       // Formation/countdown throttle is a free rev. Record clutch disengagement

@@ -177,11 +177,13 @@ test('drivetrain and race clock engage immediately after the countdown reaches G
   const session = editor.playtestSession;
   editor.raceInput.keyboardThrottle = true;
 
-  runFrames(editor, 250);
+  session.countdownRemainingMs = 1000;
   const distanceAtGo = session.distance;
   runFrames(editor, 30);
 
-  assert.equal(session.countdownRemainingMs, 0);
+  assert.equal(session.countdownRemainingMs > 0, true);
+  assert.equal(session.countdownRemainingMs < 1000, true);
+  assert.equal(session.startupPhase, 'running');
   assert.equal(session.elapsedMs > 0, true);
   assert.equal(session.speedMps > 0.2, true);
   assert.equal(session.distance > distanceAtGo, true);

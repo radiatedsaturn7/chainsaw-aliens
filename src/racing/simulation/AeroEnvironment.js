@@ -1,6 +1,8 @@
 import { clamp } from './SimulationMath.js';
 import { createWakeSources } from './WakeModel.js';
 
+const wakeFrameCache = new WeakMap();
+
 const q = (value) => Number((Number(value) || 0).toFixed(6));
 
 export function createDeterministicAtmosphere({ weatherState = {}, race = {}, timeSeconds = 0 } = {}) {
@@ -41,4 +43,13 @@ export function createRaceWakeSources(session = {}, { playerWidthM = 1.8 } = {})
     widthM: Number(ai.vehicleDynamicsRunner?.config?.frontTrackWidthM || 1.8) + 0.25
   }))];
   return createWakeSources(vehicles);
+}
+
+export function getRaceWakeSourcesForFrame(session = {}, { playerWidthM = 1.8 } = {}) {
+  const frameKey = Number(session.sceneElapsedMs ?? session.elapsedMs ?? 0);
+  const cached = wakeFrameCache.get(session);
+  if (cached?.frameKey === frameKey && cached.playerWidthM === playerWidthM) return cached.sources;
+  const sources = createRaceWakeSources(session, { playerWidthM });
+  wakeFrameCache.set(session, { frameKey, playerWidthM, sources });
+  return sources;
 }

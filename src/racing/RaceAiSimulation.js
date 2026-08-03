@@ -1,12 +1,13 @@
 import { RACE_PEDAL_INPUT, RACE_THREE_ELEVATION_M } from './simulation/RaceSimulationConfig.js';
 import { RACE_WHEEL_IDS, clamp } from './simulation/SimulationMath.js';
+import { getSurfaceById } from './raceData.js';
 import {
   VehicleDynamicsRunner,
   createVehicleDynamicsConfigFromTuning
 } from './simulation/VehicleDynamicsRunner.js';
 import { syncVehicleDynamicsCompatibilityOutputs } from './simulation/VehicleState.js';
 import { calculateWheelContactKinematics } from './simulation/ContactPatchTireModel.js';
-import { createDeterministicAtmosphere, createRaceWakeSources } from './simulation/AeroEnvironment.js';
+import { createDeterministicAtmosphere, getRaceWakeSourcesForFrame } from './simulation/AeroEnvironment.js';
 
 export function getRaceAiAeroAwareness(wakeState = {}, { severity = 0, speedMps = 0, index = 0 } = {}) {
   const wakeIntensity = clamp(Number(wakeState.intensity || 0), 0, 1);
@@ -83,15 +84,22 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
   tuning = editor.getRaceCarTuning(car),
   seconds = 0,
   previousSpeedMps = Number(ai.speedMps || 0),
-  targetVelocityWorld = null
+  targetVelocityWorld = null,
+  contactState: suppliedContactState = null
 } = {}) {
   if (!ai) return null;
-  const contactState = editor.getRaceAiContactState(ai, car, tuning);
+  const contactState = suppliedContactState || editor.getRaceAiContactState(ai, car, tuning);
   const engineDrive = ai.engineDrive || {};
   if (!ai.vehicleDynamicsRunner) {
     const config = createVehicleDynamicsConfigFromTuning(
       { ...tuning, handlingPreset: 'sport' },
-      { maxCatchUpSteps: 120, telemetryLimit: 32, inputTimelineLimit: 512 }
+      {
+        tireHz: 120,
+        maxCatchUpSteps: 120,
+        telemetryLimit: 1,
+        telemetryRetention: 'none',
+        inputTimelineLimit: 512
+      }
     );
     ai.vehicleDynamicsRunner = new VehicleDynamicsRunner({
       config,
@@ -113,10 +121,27 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
   }
   const runner = ai.vehicleDynamicsRunner;
   const tireSetup = editor.getRaceCarSetup(car);
+  if (!ai.tireConfigByWheel) {
+    ai.tireConfigByWheel = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+      wheelId,
+      {
+        compound: editor.getRaceTireCompound(tireSetup.tireCompoundByWheel[wheelId]),
+        widthMm: tireSetup.tireSize?.widthMm,
+        aspectRatio: tireSetup.tireSize?.aspectRatio,
+        wheelDiameterIn: tireSetup.tireSize?.wheelDiameterIn,
+        coldPressurePsi: tireSetup.tirePressurePsi[wheelId]
+      }
+    ]));
+  }
   const aiWeather = editor.getRaceWeatherState(editor.selectedRace, editor.playtestSession);
   const ambientTemperatureC = aiWeather.id === 'snow' ? -4
     : aiWeather.id === 'storm' ? 13
       : aiWeather.id === 'rain' ? 16 : 22;
+  const surfaceModel = editor.getRaceSurfaceModel();
+  const runtimeType = contactState.session.routeRuntimeType || editor.getActiveRaceRuntimeType();
+  const wakeSources = getRaceWakeSourcesForFrame(editor.playtestSession, {
+    playerWidthM: Number(editor.getRaceCarTuning(editor.selectedCar)?.widthM || 1.8)
+  });
   runner.environmentProvider = ({ state, controls: fixedControls, timeSeconds }) => {
     const preliminaryPatches = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId,
       calculateWheelContactKinematics({
@@ -193,22 +218,38 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
       ])),
       materialByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
         const contact = fixedContacts.contacts?.[wheelId] || {};
+        const sample = contact.trackState;
+        const baseSurfaceId = sample?.cell?.baseSurfaceId || contact.baseSurfaceId || 'asphalt';
+        const nominalBaseGrip = Math.max(0.025, Number(getSurfaceById(baseSurfaceId)?.grip || 1));
+        const localBaseGrip = Number(sample?.cell?.baseGrip ?? contact.friction ?? nominalBaseGrip);
         return [wheelId, {
-          ...(contact.trackState?.cell || {}),
-          grip: contact.friction ?? 1,
-          surfaceId: contact.surfaceId || contact.surface
+          ...(sample?.cell || {}),
+          baseSurfaceId,
+          grip: sample?.effectiveGrip ?? contact.friction ?? 1,
+          effectiveGrip: sample?.effectiveGrip ?? contact.friction ?? 1,
+          effectiveGripMultiplier: sample?.effectiveGripMultiplier ?? 1,
+          surfaceGripScale: localBaseGrip / nominalBaseGrip
+            * Number(sample?.effectiveGripMultiplier ?? 1),
+          surfaceId: contact.surfaceId || contact.surface,
+          trackStateConditionApplied: Boolean(sample)
         }];
       })),
+      sampleTerrainAtWorldPoint: (worldPoint) => {
+        const sample = surfaceModel.sampleWorld(worldPoint, 0, {
+          runtimeType,
+          fallbackSurfaceId: fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
+        });
+        return {
+          heightM: Number(sample.elevation || 0) * RACE_THREE_ELEVATION_M,
+          normal: sample.normal || { x: 0, y: 1, z: 0 },
+          friction: Number(sample.friction || 1)
+        };
+      },
       tireByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
-        const compound = editor.getRaceTireCompound(tireSetup.tireCompoundByWheel[wheelId]);
+        const fixedTire = ai.tireConfigByWheel[wheelId];
         const thermal = state.tireState?.[wheelId] || {};
         return [wheelId, {
-          compound,
-          compoundGrip: compound.surfaceGrip?.[fixedContacts.contacts?.[wheelId]?.surfaceId] ?? 1,
-          widthMm: tireSetup.tireSize?.widthMm,
-          aspectRatio: tireSetup.tireSize?.aspectRatio,
-          wheelDiameterIn: tireSetup.tireSize?.wheelDiameterIn,
-          coldPressurePsi: tireSetup.tirePressurePsi[wheelId],
+          ...fixedTire,
           pressurePsi: thermal.effectivePressurePsi ?? tireSetup.tirePressurePsi[wheelId],
           effectivePressurePsi: thermal.effectivePressurePsi ?? tireSetup.tirePressurePsi[wheelId],
           treadTemperatureC: thermal.treadTemperatureC,
@@ -220,9 +261,7 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
       ambientTemperatureC,
       ...atmosphere,
       vehicleId: String(ai.id || ai.driverId || 'ai'),
-      wakeSources: createRaceWakeSources(editor.playtestSession, {
-        playerWidthM: Number(editor.getRaceCarTuning(editor.selectedCar)?.widthM || 1.8)
-      }),
+      wakeSources,
       bodyDamage: Math.max(0, ...Object.values(panelDamage).map(Number)),
       frontAeroDamage: clamp(Number(panelDamage.front || 0) / 100, 0, 1),
       rearAeroDamage: clamp(Number(panelDamage.rear || 0) / 100, 0, 1),
@@ -231,9 +270,22 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
     };
   };
   const curve = Number(contactState.pose?.segment?.curve || 0);
+  const normalizedSteering = -clamp(curve * 18, -1, 1);
+  const physicalCenterSteeringAngle = editor.getRaceResolvedCenterSteeringAngle(
+    normalizedSteering,
+    Math.abs(Number(runner.state.speedMps || ai.speedMps || 0)),
+    {
+      wheelbaseM: tuning.wheelbaseM,
+      availableLateralG: clamp(Number(contactState.averageSurfaceGrip || 1) * 0.95, 0.18, 1.08),
+      handlingPreset: 'sport',
+      maxPhysicalAngleRad: runner.config.maxSteerAngleRad
+    }
+  );
   runner.advance(seconds, {
     input: {
-      steering: -clamp(curve * 18, -1, 1),
+      steering: normalizedSteering,
+      centerSteeringAngleRad: physicalCenterSteeringAngle,
+      steeringInputMode: 'ai',
       throttle: Number(engineDrive.throttle || 0),
       brake: Number(engineDrive.brake || 0),
       requestedGear: Number(ai.gear || 1),
@@ -866,6 +918,7 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
         car,
         tuning,
         seconds: dt,
+        contactState,
         targetVelocityWorld: {
           x: Math.sin(yaw) * stagedSpeedMps,
           y: 0,
@@ -978,7 +1031,13 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
       contactState,
       seconds: dt
     });
-    editor.updateRaceAiVehiclePhysics(ai, { car, tuning, seconds: dt, previousSpeedMps });
+    editor.updateRaceAiVehiclePhysics(ai, {
+      car,
+      tuning,
+      seconds: dt,
+      previousSpeedMps,
+      contactState
+    });
     const physicalProjection = editor.getRaceRouteProjectionForWorldPoint({
       x: Number(ai.worldX || 0),
       z: Number(ai.worldZ || 0)

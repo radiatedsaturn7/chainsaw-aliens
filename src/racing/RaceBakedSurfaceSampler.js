@@ -488,4 +488,64 @@ export function sampleRaceBakedSurface(sampler = null, worldPoint = null, {
   return best;
 }
 
+export function getRaceBakedSurfaceMaximumElevationInBounds(sampler = null, bounds = {}) {
+  if (!sampler?.triangleCount) return null;
+  const minX = Number(bounds.minX);
+  const maxX = Number(bounds.maxX);
+  const minZ = Number(bounds.minZ);
+  const maxZ = Number(bounds.maxZ);
+  if (![minX, maxX, minZ, maxZ].every(Number.isFinite)) return null;
+  const bucketSize = Math.max(4, Number(sampler.bucketSizeM) || 20);
+  const triangleIndices = new Set();
+  if (sampler.packed) {
+    if (!sampler.bucketLookup) {
+      sampler.bucketLookup = new Map();
+      for (let index = 0; index < sampler.bucketOffsets.length - 1; index += 1) {
+        sampler.bucketLookup.set(
+          `${sampler.bucketCoords[index * 2]},${sampler.bucketCoords[index * 2 + 1]}`,
+          index
+        );
+      }
+    }
+    for (let z = Math.floor(minZ / bucketSize); z <= Math.floor(maxZ / bucketSize); z += 1) {
+      for (let x = Math.floor(minX / bucketSize); x <= Math.floor(maxX / bucketSize); x += 1) {
+        const bucketIndex = sampler.bucketLookup.get(`${x},${z}`);
+        if (!Number.isFinite(bucketIndex)) continue;
+        for (let entry = sampler.bucketOffsets[bucketIndex]; entry < sampler.bucketOffsets[bucketIndex + 1]; entry += 1) {
+          triangleIndices.add(sampler.bucketTriangles[entry]);
+        }
+      }
+    }
+    let maximum = -Infinity;
+    triangleIndices.forEach((triangleIndex) => {
+      const boundOffset = triangleIndex * 4;
+      if (sampler.bounds[boundOffset + 1] < minX || sampler.bounds[boundOffset] > maxX
+        || sampler.bounds[boundOffset + 3] < minZ || sampler.bounds[boundOffset + 2] > maxZ) return;
+      const positionOffset = triangleIndex * 9;
+      maximum = Math.max(
+        maximum,
+        sampler.positions[positionOffset + 1],
+        sampler.positions[positionOffset + 4],
+        sampler.positions[positionOffset + 7]
+      );
+    });
+    return Number.isFinite(maximum) ? maximum : null;
+  }
+  for (let z = Math.floor(minZ / bucketSize); z <= Math.floor(maxZ / bucketSize); z += 1) {
+    for (let x = Math.floor(minX / bucketSize); x <= Math.floor(maxX / bucketSize); x += 1) {
+      (sampler.buckets.get(`${x},${z}`) || []).forEach((index) => triangleIndices.add(index));
+    }
+  }
+  let maximum = -Infinity;
+  triangleIndices.forEach((triangleIndex) => {
+    const triangle = sampler.triangles[triangleIndex];
+    if (!triangle || triangle.maxX < minX || triangle.minX > maxX
+      || triangle.maxZ < minZ || triangle.minZ > maxZ) return;
+    (triangle.vertices || []).forEach((point) => {
+      maximum = Math.max(maximum, Number(point?.elevation));
+    });
+  });
+  return Number.isFinite(maximum) ? maximum : null;
+}
+
 export default buildRaceBakedSurfaceSampler;

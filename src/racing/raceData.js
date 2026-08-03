@@ -208,7 +208,56 @@ export const DEFAULT_AI_DRIVER = {
   enabled: true
 };
 
+// SI-unit calibration for the authoritative solver. These values are kept
+// separate from the legacy 0..1 setup sliders so their meanings cannot be
+// accidentally mixed by the compatibility tuning path.
+export const WRX2_PHYSICAL_PROFILE = Object.freeze({
+  id: 'wrx2-2022-physical-v1',
+  massKg: 1495,
+  cgLocationBodyM: Object.freeze({ x: 0, y: 0.54, z: -0.06 }),
+  frontWeightDistribution: 0.58,
+  inertiaTensorBodyKgM2: Object.freeze({
+    xx: 2280,
+    xy: 0,
+    xz: -18,
+    yy: 2640,
+    yz: 0,
+    zz: 690
+  }),
+  maxSteerAngleRad: 0.56,
+  steeringWheelRatio: 14.4,
+  steeringRackRatio: 1,
+  suspensionSpringRateFrontNpm: 33500,
+  suspensionSpringRateRearNpm: 30500,
+  suspensionBumpDamperFrontNsM: 2850,
+  suspensionReboundDamperFrontNsM: 4050,
+  suspensionBumpDamperRearNsM: 2600,
+  suspensionReboundDamperRearNsM: 3700,
+  damperHighSpeedThresholdMps: 0.25,
+  damperHighSpeedScale: 0.62,
+  staticSagRatioFront: 0.42,
+  staticSagRatioRear: 0.44,
+  suspensionTravelFrontM: 0.15,
+  suspensionTravelRearM: 0.15,
+  antiRollStiffnessFrontNpm: 22000,
+  antiRollStiffnessRearNpm: 17000,
+  tireVerticalStiffnessNpm: 215000,
+  tireVerticalDampingNsM: 1750,
+  unsprungMassByWheelKg: Object.freeze({ fl: 44, fr: 44, rl: 42, rr: 42 }),
+  dragCoefficient: 0.34,
+  frontalAreaM2: 2.24,
+  frontDownforceCoefficient: 0,
+  rearDownforceCoefficient: 0,
+  frontRideHeightM: 0.145,
+  rearRideHeightM: 0.152,
+  groundEffectGain: 0.035,
+  groundEffectReferenceHeightM: 0.14,
+  floorStallHeightM: 0.065,
+  diffuserRakeSensitivity: 0.8
+});
+
 export const WRX_2022_SHARED_TUNING = {
+  physicalVehicleProfile: WRX2_PHYSICAL_PROFILE,
   drivetrain: 'awd',
   powerHp: 271,
   torqueLbFt: 258,
@@ -253,6 +302,8 @@ export const WRX_2022_SHARED_TUNING = {
   rideHeightRear: 0.5,
   suspensionTravelFront: 0.5,
   suspensionTravelRear: 0.5,
+  staticSagRatioFront: 0.42,
+  staticSagRatioRear: 0.44,
   dampingFront: 0.5,
   dampingRear: 0.5,
   bumpFront: 0.48,

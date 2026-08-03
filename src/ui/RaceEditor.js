@@ -14,7 +14,7 @@ import {
   estimateRacePowerLimitedTopSpeedMps,
   updateRaceSimulation
 } from '../racing/RaceSimulation.js';
-import { appendRaceBakedSurfaceSamplerTerrainCells, buildRaceBakedSurfaceSampler, sampleRaceBakedSurface } from '../racing/RaceBakedSurfaceSampler.js';
+import { appendRaceBakedSurfaceSamplerTerrainCells, buildRaceBakedSurfaceSampler, getRaceBakedSurfaceMaximumElevationInBounds, sampleRaceBakedSurface } from '../racing/RaceBakedSurfaceSampler.js';
 import { buildRaceCanonicalSurfaceMesh } from '../racing/RaceCanonicalSurfaceMesh.js';
 import { createPackedRaceArtTextureSampler } from '../racing/RacePackedArt.js';
 import {
@@ -309,6 +309,7 @@ const RACE_EDGE_RESET_FADE_OUT_MS = 620;
 const RACE_EDGE_RESET_BLACK_HOLD_MS = 250;
 const RACE_EDGE_RESET_FADE_IN_MS = 620;
 const RACE_EDGE_RESET_TOTAL_MS = RACE_EDGE_RESET_FADE_OUT_MS + RACE_EDGE_RESET_BLACK_HOLD_MS + RACE_EDGE_RESET_FADE_IN_MS;
+const RACE_SELECT_RESET_HOLD_MS = 1000;
 const RACE_TILE_MAP_SCHEMA_VERSION = 2;
 const RACE_TILE_MAP_RENDER_CELL_TARGET_PX = 3;
 const RACE_TILE_MAP_RENDER_CELL_BUDGET = 2600;
@@ -965,7 +966,10 @@ export default class RaceEditor {
       activeThrottlePointerId: null,
       activeBrakePointerId: null,
       throttlePulseMs: 0,
-      lastBrakeTapMs: 0
+      lastBrakeTapMs: 0,
+      gamepadSelectHoldActive: false,
+      gamepadSelectHoldMs: 0,
+      gamepadSelectHoldTriggered: false
     };
     this.raceMobileControls = new MobileControls();
     this.normalizeRaceProjectData();
@@ -1001,7 +1005,7 @@ export default class RaceEditor {
       this.mobileRootOpen = false;
       this.gamepadSubmenuOpen = false;
     }
-    this.updateRaceKeyboardInput(input);
+    this.updateRaceKeyboardInput(input, dt);
     if (liveSession && !startupFramePending && !this.updatePlaytestSafely(dt)) return;
     if (this.mode === 'car' && !liveSession) {
       this.updateCarEditorPreviewPlaytest(dt);
@@ -1255,6 +1259,7 @@ export default class RaceEditor {
     this.raceInput.activeDpadMenuDirection = null;
     this.raceInput.activeThrottlePointerId = null;
     this.raceInput.activeBrakePointerId = null;
+    this.clearRaceGamepadSelectHold();
   }
 
   hasPhysicalRaceGamepad() {
@@ -2212,6 +2217,8 @@ export default class RaceEditor {
     this.playtestSession.cameraYaw = yaw;
     this.playtestSession.yawVelocityRadps = 0;
     this.playtestSession.speedMps = preserveMotion ? previousSpeedMps : 0;
+    this.playtestSession.pitchRad = 0;
+    this.playtestSession.rollRad = 0;
     this.playtestSession.lateral = 0;
     this.playtestSession.heading = 0;
     delete this.playtestSession.bodyY;
@@ -2238,6 +2245,8 @@ export default class RaceEditor {
       const resetSurfaceHeightM = Number.isFinite(Number(resetContacts?.averageHeightM))
         ? Number(resetContacts.averageHeightM)
         : Number(pose.elevation || 0) * RACE_THREE_ELEVATION_M;
+      const resetPitchRad = -Number(resetContacts?.terrainPitchRad || 0);
+      const resetRollRad = Number(resetContacts?.terrainRollRad || 0);
       authority.replaceAuthoritativeState({
         worldX: this.playtestSession.worldX,
         heightM: resetSurfaceHeightM + authority.config.cgHeightM,
@@ -2249,6 +2258,9 @@ export default class RaceEditor {
         },
         speedMps: this.playtestSession.speedMps,
         carYaw: yaw,
+        pitchRad: resetPitchRad,
+        rollRad: resetRollRad,
+        grounded: true,
         engineRpm: this.playtestSession.engineRpm,
         gear: this.playtestSession.gear
       });
@@ -2262,10 +2274,11 @@ export default class RaceEditor {
     });
   }
 
-  resetRaceCarToRouteCenter({ projection = null, roadYaw = 0, immediate = false } = {}) {
+  resetRaceCarToRouteCenter({ projection = null, roadYaw = 0, immediate = false, preserveMotion = null } = {}) {
     if (!this.playtestSession) return;
+    const shouldPreserveMotion = preserveMotion === null ? !immediate : preserveMotion !== false;
     if (immediate) {
-      this.applyRaceCarRouteCenterReset({ projection, roadYaw });
+      this.applyRaceCarRouteCenterReset({ projection, roadYaw, preserveMotion: shouldPreserveMotion });
       this.playtestSession.edgeResetFadeMs = RACE_EDGE_RESET_TOTAL_MS;
       this.status = 'Reset to track center';
       return;
@@ -2279,6 +2292,7 @@ export default class RaceEditor {
     this.playtestSession.pendingEdgeCenterReset = {
       distance,
       roadYaw: Number(roadYaw || 0),
+      preserveMotion: shouldPreserveMotion,
       moved: false
     };
     this.playtestSession.edgeResetFadeMs = RACE_EDGE_RESET_TOTAL_MS;
@@ -2294,7 +2308,7 @@ export default class RaceEditor {
       this.applyRaceCarRouteCenterReset({
         projection: { distance: pending.distance },
         roadYaw: pending.roadYaw,
-        preserveMotion: true
+        preserveMotion: pending.preserveMotion !== false
       });
       this.playtestSession.pendingEdgeCenterReset = {
         ...pending,
@@ -3260,6 +3274,7 @@ export default class RaceEditor {
     this.raceWorldBakeCache = null;
     this.raceTerrainBakeCache = null;
     this.raceEditorSurfacePreviewBake = null;
+    this.raceRouteProjectionIndex = null;
   }
 
   getRaceSurfaceModel() {
@@ -4102,6 +4117,11 @@ export default class RaceEditor {
     const worldBake = this.playtestSession?.worldBake || this.raceWorldBakeCache;
     if (!worldBake?.surfaceSampler) return null;
     return sampleRaceBakedSurface(worldBake.surfaceSampler, worldPoint, options);
+  }
+
+  getRaceBakedSurfaceMaximumElevationInBounds(bounds = {}) {
+    const worldBake = this.playtestSession?.worldBake || this.raceWorldBakeCache;
+    return getRaceBakedSurfaceMaximumElevationInBounds(worldBake?.surfaceSampler, bounds);
   }
 
   createRaceSurfaceSectionFromSample(sample = {}, {
@@ -12298,7 +12318,10 @@ export default class RaceEditor {
       activeDpadMenuDirection: null,
       activeThrottlePointerId: null,
       activeBrakePointerId: null,
-      throttlePulseMs: 0
+      throttlePulseMs: 0,
+      gamepadSelectHoldActive: false,
+      gamepadSelectHoldMs: 0,
+      gamepadSelectHoldTriggered: false
     };
     if (options?.preparedWorldBake) {
       const preparation = this.racePlaytestPreparation;
@@ -12980,8 +13003,33 @@ export default class RaceEditor {
     }
     const px = Number(point.x || 0);
     const pz = Number(point.z || 0);
+    const projectionCellSizeM = 32;
+    const projectionSearchRadiusM = 64;
+    if (this.raceRouteProjectionIndex?.samples !== samples) {
+      const buckets = new Map();
+      for (let index = 1; index < samples.length; index += 1) {
+        const previous = samples[index - 1];
+        const next = samples[index];
+        const minX = Math.floor((Math.min(Number(previous.x || 0), Number(next.x || 0)) - projectionSearchRadiusM) / projectionCellSizeM);
+        const maxX = Math.floor((Math.max(Number(previous.x || 0), Number(next.x || 0)) + projectionSearchRadiusM) / projectionCellSizeM);
+        const minZ = Math.floor((Math.min(Number(previous.z || 0), Number(next.z || 0)) - projectionSearchRadiusM) / projectionCellSizeM);
+        const maxZ = Math.floor((Math.max(Number(previous.z || 0), Number(next.z || 0)) + projectionSearchRadiusM) / projectionCellSizeM);
+        for (let z = minZ; z <= maxZ; z += 1) {
+          for (let x = minX; x <= maxX; x += 1) {
+            const key = `${x},${z}`;
+            const entries = buckets.get(key) || [];
+            entries.push(index);
+            buckets.set(key, entries);
+          }
+        }
+      }
+      this.raceRouteProjectionIndex = { samples, buckets };
+    }
+    const projectionCandidates = this.raceRouteProjectionIndex.buckets.get(
+      `${Math.floor(px / projectionCellSizeM)},${Math.floor(pz / projectionCellSizeM)}`
+    ) || [];
     let best = null;
-    for (let index = 1; index < samples.length; index += 1) {
+    const considerSegment = (index) => {
       const previous = samples[index - 1];
       const next = samples[index];
       const ax = Number(previous.x || 0);
@@ -13014,6 +13062,11 @@ export default class RaceEditor {
           progress: t
         };
       }
+    };
+    projectionCandidates.forEach(considerSegment);
+    if (!best || Math.sqrt(best.distanceSq) > projectionSearchRadiusM) {
+      best = null;
+      for (let index = 1; index < samples.length; index += 1) considerSegment(index);
     }
     return best || {
       distance: 0,
@@ -15958,6 +16011,15 @@ export default class RaceEditor {
     const selectedTransmissionType = transmissionType || this.getRaceTransmissionType(car);
     const transmission = car?.transmissions?.[selectedTransmissionType] || {};
     const merged = { ...tuning, ...transmission };
+    // Saved built-in car documents can predate the authoritative SI profile.
+    // Rehydrate only the physical profile by canonical chassis identity while
+    // preserving every authored tuning, setup, transmission, and art value.
+    const canonicalPhysicalProfile = createBuiltInRaceCars()
+      .find((candidate) => candidate.id === car?.id)
+      ?.tuning?.physicalVehicleProfile || null;
+    const physicalVehicleProfile = tuning.physicalVehicleProfile
+      || car?.physicalVehicleProfile
+      || canonicalPhysicalProfile;
     const dimensions = this.getRaceCarDimensions(car);
     const idleRpm = Math.max(500, Number(merged.idleRpm) || 850);
     const redlineRpm = Math.max(3000, Number(merged.redlineRpm) || 6100);
@@ -15972,6 +16034,7 @@ export default class RaceEditor {
       ? Number(merged.stockAccelerationCalibration)
       : Number(merged.accelerationCalibration);
     return {
+      physicalVehicleProfile,
       drivetrain: merged.drivetrain || 'awd',
       transmissionType: selectedTransmissionType,
       shiftMode: merged.shiftMode || selectedTransmissionType || 'manual',
@@ -17465,10 +17528,66 @@ export default class RaceEditor {
     }
   }
 
-  updateRaceKeyboardInput(input) {
+  clearRaceGamepadSelectHold() {
+    this.raceInput.gamepadSelectHoldActive = false;
+    this.raceInput.gamepadSelectHoldMs = 0;
+    this.raceInput.gamepadSelectHoldTriggered = false;
+  }
+
+  updateRaceGamepadSelectHold({ isDown = false, wasPressed = false, deltaMs = 0 } = {}) {
+    const state = this.raceInput;
+    const eligible = Boolean(
+      this.playtestSession?.running
+      && !state.paused
+    );
+    if (!eligible) {
+      this.clearRaceGamepadSelectHold();
+      return false;
+    }
+    if (wasPressed || (isDown && !state.gamepadSelectHoldActive && !state.gamepadSelectHoldTriggered)) {
+      state.gamepadSelectHoldActive = true;
+      state.gamepadSelectHoldMs = 0;
+    }
+    if (state.gamepadSelectHoldActive && isDown) {
+      const canReset = Number(this.playtestSession.countdownRemainingMs || 0) <= 0
+        && !this.playtestSession.pendingEdgeCenterReset;
+      state.gamepadSelectHoldMs = Math.min(
+        RACE_SELECT_RESET_HOLD_MS,
+        Number(state.gamepadSelectHoldMs || 0) + (canReset ? Math.max(0, Number(deltaMs || 0)) : 0)
+      );
+      if (canReset && !state.gamepadSelectHoldTriggered && state.gamepadSelectHoldMs >= RACE_SELECT_RESET_HOLD_MS) {
+        state.gamepadSelectHoldTriggered = true;
+        state.gamepadSelectHoldActive = false;
+        const distance = Number(this.playtestSession.distance || 0);
+        const pose = this.getRaceWorldPoseAtDistance(distance, {
+          runtimeType: this.playtestSession.routeRuntimeType || this.getSelectedRaceRuntimeType()
+        });
+        this.resetRaceCarToRouteCenter({
+          projection: { distance },
+          roadYaw: Number(pose?.yaw || 0),
+          preserveMotion: false
+        });
+        return true;
+      }
+      return false;
+    }
+    if (!isDown && state.gamepadSelectHoldActive) {
+      state.gamepadSelectHoldActive = false;
+      state.gamepadSelectHoldMs = 0;
+      this.toggleRaceCameraView();
+    }
+    if (!isDown && state.gamepadSelectHoldTriggered) {
+      state.gamepadSelectHoldTriggered = false;
+      state.gamepadSelectHoldMs = 0;
+    }
+    return false;
+  }
+
+  updateRaceKeyboardInput(input, dt = 1 / 60) {
     const hasActiveDpadPointer = this.raceInput.activeDpadPointerId !== null
       && this.raceInput.activeDpadPointerId !== undefined;
     if (!this.playtestSession?.running || !input) {
+      this.clearRaceGamepadSelectHold();
       this.raceInput.keyboardThrottle = false;
       this.raceInput.keyboardBrake = false;
       this.raceInput.keyboardSteer = 0;
@@ -17495,6 +17614,7 @@ export default class RaceEditor {
       || gamepadPressed?.has?.('gamepadSelect') || gamepadPressed?.has?.('gamepadStart')
     );
     if (this.raceInput.paused) {
+      this.clearRaceGamepadSelectHold();
       this.handleRacePauseMenuInput({
         wasPressed,
         wasPressedCode,
@@ -17532,8 +17652,16 @@ export default class RaceEditor {
     if (wasPressed('down') || wasPressedCode('ArrowDown') || wasPressedCode('KeyS') || wasGamepadPressed('gamepadX') || (!rawGamepadActive && wasGamepadPressed('rev'))) {
       this.shiftRaceGear(-1);
     }
-    if (wasGamepadPressed('gamepadSelect')) {
-      this.toggleRaceCameraView();
+    if (!hasRawGamepadState
+      && this.raceInput.gamepadSelectHoldActive
+      && !wasGamepadPressed('gamepadSelect')) {
+      this.clearRaceGamepadSelectHold();
+    } else {
+      this.updateRaceGamepadSelectHold({
+        isDown: isGamepadDown('gamepadSelect'),
+        wasPressed: wasGamepadPressed('gamepadSelect'),
+        deltaMs: Math.max(0, Number(dt || 0)) * 1000
+      });
     }
     if (wasGamepadPressed('gamepadStart')) {
       this.toggleRacePause();
@@ -17618,6 +17746,22 @@ export default class RaceEditor {
       availableLateralG
       }
     );
+  }
+
+  getRaceResolvedCenterSteeringAngle(steering = this.raceInput.steeringWheel, speedMps = this.playtestSession?.speedMps || 0, {
+    wheelbaseM = 2.67,
+    availableLateralG = 0.95,
+    handlingPreset = 'sport',
+    maxPhysicalAngleRad = 0.52
+  } = {}) {
+    return this.raceSimulationSystems.handlingAssist.resolvePhysicalCenterSteeringAngle({
+      driverInput: steering,
+      speedMps,
+      wheelbaseM,
+      availableLateralG,
+      handlingPreset,
+      maxPhysicalAngleRad
+    });
   }
 
   getRaceGripLimitedTireAngle(tireAngle = 0, speedMps = 0, { wheelbaseM = 2.67, availableLateralG = 0.95 } = {}) {
@@ -17791,6 +17935,7 @@ export default class RaceEditor {
   }
 
   toggleRacePause() {
+    this.clearRaceGamepadSelectHold();
     this.raceInput.paused = !this.raceInput.paused;
     this.raceInput.activeDpadMenuDirection = null;
     this.raceInput.binarySteer = 0;
@@ -18878,11 +19023,13 @@ export default class RaceEditor {
 
   drawRacePhysicsContactOverlay(ctx, bounds, cameraState = null) {
     const wheels = this.playtestSession?.vehicle3d?.wheels || this.playtestSession?.wheelContacts3d || {};
+    const patches = this.playtestSession?.vehicleDynamicsRunner?.state?.contactPatches || {};
     if (!cameraState?.camera) return;
     ctx.save();
-    Object.values(wheels).forEach((wheel) => {
+    Object.entries(wheels).forEach(([wheelId, wheel]) => {
       const contact = wheel?.contactPoint;
       if (!contact) return;
+      const patch = patches[wheelId] || {};
       const normal = wheel.normal || wheel.surface?.normal || { x: 0, y: 1, z: 0 };
       const point = {
         x: Number(contact.x || 0),
@@ -18898,7 +19045,10 @@ export default class RaceEditor {
       const projected = this.projectRaceWorldPointToCamera(point, cameraState.camera, cameraState.cameraYaw, bounds);
       const projectedEnd = this.projectRaceWorldPointToCamera(end, cameraState.camera, cameraState.cameraYaw, bounds);
       if (!projected?.visible) return;
-      const color = wheel.inContact === false ? '#ff5577' : '#5cff8d';
+      const grip = Number(patch.gripCoefficient);
+      const color = wheel.inContact === false
+        ? '#ff5577'
+        : `rgb(${this.getRacePhysicsTractionColor(grip).join(',')})`;
       ctx.fillStyle = color;
       ctx.beginPath();
       ctx.arc(projected.screenX, projected.screenY, 4, 0, Math.PI * 2);
@@ -18911,11 +19061,128 @@ export default class RaceEditor {
         ctx.lineTo(projectedEnd.screenX, projectedEnd.screenY);
         ctx.stroke();
       }
+      const footprint = this.playtestSession?.vehicleDynamicsRunner?.state
+        ?.suspensionState?.[wheelId]?.footprint || {};
+      const material = patch.material || {};
+      let labelLines = [[
+        String(wheelId).toUpperCase(),
+        `μ${Number.isFinite(grip) ? grip.toFixed(2) : '--'}`,
+        this.getRacePhysicsCompositeSurfaceLabel(material)
+      ].join(' · '), [
+        `${(Number(patch.normalLoadN || 0) / 1000).toFixed(1)}kN`,
+        `sup${Math.round(Number(footprint.supportedFraction || 0) * 100)}%`,
+        `str${(Number(patch.steeringAngleRad || 0) * 180 / Math.PI).toFixed(1)}°`,
+        Number(patch.aquaplaning?.liftFraction || 0) > 0.005
+          ? `aqua ${Math.round(Number(patch.aquaplaning.liftFraction) * 100)}%`
+          : null
+      ].filter(Boolean).join(' · ')];
+      if (typeof ctx.fillText === 'function') {
+        ctx.font = '10px monospace';
+        const maximumTextWidth = Math.max(24, bounds.w - 18);
+        labelLines = labelLines.map((label) => {
+          if (typeof ctx.measureText !== 'function') return label;
+          let fitted = label;
+          while (fitted.length > 4 && ctx.measureText(`${fitted}…`).width > maximumTextWidth) {
+            fitted = fitted.slice(0, -1);
+          }
+          return fitted === label ? label : `${fitted}…`;
+        });
+        const textWidth = Math.max(...labelLines.map((label) => (
+          typeof ctx.measureText === 'function' ? ctx.measureText(label).width : label.length * 6
+        )));
+        const leftLimit = bounds.x + 6;
+        const rightLimit = bounds.x + bounds.w - 6;
+        const drawOnLeft = projected.screenX + 9 + textWidth > rightLimit;
+        const textX = drawOnLeft
+          ? Math.max(leftLimit + textWidth, projected.screenX - 9)
+          : Math.min(rightLimit - textWidth, projected.screenX + 9);
+        const textY = clamp(projected.screenY - 17, bounds.y + 28, bounds.y + bounds.h - 8);
+        ctx.textAlign = drawOnLeft ? 'right' : 'left';
+        ctx.textBaseline = 'bottom';
+        const boxX = drawOnLeft ? textX - textWidth - 3 : textX - 3;
+        ctx.fillStyle = 'rgba(4,8,7,0.76)';
+        ctx.fillRect(boxX, textY - 12, textWidth + 6, 24);
+        ctx.fillStyle = '#f3f8f5';
+        ctx.fillText(labelLines[0], textX, textY);
+        ctx.fillText(labelLines[1], textX, textY + 11);
+      }
     });
     ctx.restore();
   }
 
-  getRaceTrackStateVisualCells(radiusM = 95) {
+  getRacePhysicsTractionColor(grip = 1) {
+    const numericGrip = Number(grip);
+    const value = clamp(Number.isFinite(numericGrip) ? numericGrip : 1, 0, 1.2);
+    const stops = [
+      [0, [220, 48, 62]],
+      [0.35, [244, 113, 44]],
+      [0.65, [242, 197, 61]],
+      [0.9, [82, 205, 105]],
+      [1.2, [66, 218, 197]]
+    ];
+    const rightIndex = Math.max(1, stops.findIndex(([stop]) => value <= stop));
+    const [leftValue, leftColor] = stops[rightIndex - 1];
+    const [rightValue, rightColor] = stops[rightIndex];
+    const ratio = clamp((value - leftValue) / Math.max(0.0001, rightValue - leftValue), 0, 1);
+    return leftColor.map((channel, index) => Math.round(
+      channel + (rightColor[index] - channel) * ratio
+    ));
+  }
+
+  getRacePhysicsDominantSurfaceCondition(cell = {}) {
+    const normalizedOrDepth = (normalizedField, depthField, depthScale) => (
+      cell[normalizedField] !== undefined
+        ? Number(cell[normalizedField] || 0)
+        : Number(cell[depthField] || 0) / depthScale
+    );
+    const conditions = [
+      ['ice', normalizedOrDepth('ice', 'iceDepthMm', 2)],
+      ['oil', Number(cell.oil || 0)],
+      ['snow', normalizedOrDepth('snow', 'snowDepthMm', 35)],
+      ['water', normalizedOrDepth('standingWater', 'standingWaterDepthMm', 6)],
+      ['mud', Number(cell.mud || 0)],
+      ['loose', Math.max(Number(cell.loose || 0), Number(cell.marbles ?? cell.looseMarbles ?? 0))],
+      ['wet', Math.max(
+        Number(cell.wetness || 0),
+        Number(cell.dampness || 0),
+        Number(cell.moistureDepthMm || 0) / Math.max(0.1, Number(cell.saturationDepthMm || 1))
+      )]
+    ].sort((left, right) => right[1] - left[1]);
+    return conditions[0][1] >= 0.01 ? conditions[0][0] : 'dry';
+  }
+
+  getRacePhysicsConditionColor(condition = 'dry') {
+    return {
+      wet: '#3f9fe8',
+      water: '#69c7ff',
+      snow: '#f0f6fa',
+      ice: '#78e2f5',
+      oil: '#b16bd4',
+      mud: '#8f6845',
+      loose: '#d49a58',
+      dry: '#dce9df'
+    }[condition] || '#dce9df';
+  }
+
+  getRacePhysicsCompositeSurfaceLabel(material = {}) {
+    const baseSurfaceId = String(material.baseSurfaceId || material.surfaceId || 'unknown')
+      .replaceAll('-', ' ')
+      .toUpperCase();
+    const condition = this.getRacePhysicsDominantSurfaceCondition(material);
+    if (condition === 'dry') return baseSurfaceId;
+    const depthMm = {
+      snow: Number(material.snowDepthMm || 0),
+      ice: Number(material.iceDepthMm || 0),
+      water: Number(material.standingWaterDepthMm || 0),
+      wet: Number(material.moistureDepthMm || 0)
+    }[condition];
+    const depthLabel = Number.isFinite(depthMm) && depthMm >= 0.05
+      ? ` ${depthMm.toFixed(depthMm < 10 ? 1 : 0)}mm`
+      : '';
+    return `${baseSurfaceId} + ${condition.toUpperCase()}${depthLabel}`;
+  }
+
+  getRaceTrackStateVisualCells(radiusM = 95, { includeAll = false } = {}) {
     const session = this.playtestSession;
     const trackState = session?.trackState;
     if (!trackState) return [];
@@ -18925,7 +19192,8 @@ export default class RaceEditor {
       trackState.stepIndex,
       Math.floor(Number(planar.x || 0) / 8),
       Math.floor(Number(planar.z || 0) / 8),
-      radius
+      radius,
+      includeAll ? 'all' : 'changed'
     ].join(':');
     if (session.trackStateVisualCache?.key === cacheKey) {
       return session.trackStateVisualCache.cells;
@@ -18936,7 +19204,7 @@ export default class RaceEditor {
       minZ: Number(planar.z || 0) - radius,
       maxZ: Number(planar.z || 0) + radius
     })
-      .filter((cell) => Math.max(
+      .filter((cell) => includeAll || Math.max(
         Number(cell.wetness || 0),
         Number(cell.dampness || 0),
         Number(cell.standingWater || 0),
@@ -18984,9 +19252,8 @@ export default class RaceEditor {
     debug = false
   } = {}) {
     if (!camera || !this.playtestSession?.trackState) return 0;
-    this.getRaceTrackStateVisualAtlas(debug ? 128 : 192, debug ? 140 : 192);
     if (typeof document === 'undefined') return 0;
-    const cells = this.getRaceTrackStateVisualCells(debug ? 70 : 95);
+    const cells = this.getRaceTrackStateVisualCells(debug ? 70 : 95, { includeAll: debug });
     if (!cells.length) return 0;
     const projectedCells = cells.map((cell) => {
       const elevation = Number(cell.elevationM || 0) / RACE_THREE_ELEVATION_M + 0.0015;
@@ -19033,12 +19300,16 @@ export default class RaceEditor {
         { value: debris, color: [215, 77, 48] }
       ].filter((entry) => entry.value > 0.001);
       const total = weights.reduce((sum, entry) => sum + entry.value, 0);
-      if (total <= 0) return;
-      const color = [0, 1, 2].map((channel) => Math.round(
-        weights.reduce((sum, entry) => sum + entry.color[channel] * entry.value, 0) / total
-      ));
+      if (!debug && total <= 0) return;
+      const color = debug
+        ? this.getRacePhysicsTractionColor(Number(cell.effectiveGrip || 0))
+        : [0, 1, 2].map((channel) => Math.round(
+          weights.reduce((sum, entry) => sum + entry.color[channel] * entry.value, 0) / total
+        ));
       const strength = Math.max(...weights.map((entry) => entry.value));
-      const alpha = clamp((debug ? 0.28 : 0.08) + strength * (debug ? 0.52 : 0.24), 0.08, debug ? 0.82 : 0.32);
+      const alpha = debug
+        ? 0.64
+        : clamp(0.08 + strength * 0.24, 0.08, 0.32);
       layerCtx.fillStyle = `rgba(${color[0]},${color[1]},${color[2]},${alpha.toFixed(3)})`;
       layerCtx.beginPath();
       layerCtx.moveTo(points[0].screenX - bounds.x, points[0].screenY - bounds.y);
@@ -19046,13 +19317,70 @@ export default class RaceEditor {
       layerCtx.closePath();
       layerCtx.fill();
       if (debug) {
-        layerCtx.strokeStyle = `rgba(220,245,235,${Math.min(0.5, alpha).toFixed(3)})`;
-        layerCtx.lineWidth = 0.6;
+        const condition = this.getRacePhysicsDominantSurfaceCondition(cell);
+        layerCtx.strokeStyle = this.getRacePhysicsConditionColor(condition);
+        layerCtx.lineWidth = condition === 'dry' ? 0.55 : 1.4;
         layerCtx.stroke();
       }
     });
     ctx.drawImage(layer, bounds.x, bounds.y, bounds.w, bounds.h);
     return projectedCells.length;
+  }
+
+  drawRacePhysicsTractionLegend(ctx, bounds) {
+    if (typeof ctx.fillText !== 'function') return;
+    const x = bounds.x + 10;
+    const y = bounds.y + 10;
+    const width = Math.max(80, Math.min(360, bounds.w - 20));
+    const padding = 8;
+    const barX = x + padding;
+    const barWidth = Math.max(1, width - padding * 2);
+    const conditionLabels = ['wet', 'water', 'snow', 'ice', 'oil', 'mud', 'loose'];
+    ctx.save();
+    ctx.font = '10px monospace';
+    let layoutX = barX;
+    let layoutY = y + 47;
+    const conditionLayout = conditionLabels.map((condition) => {
+      const labelWidth = (typeof ctx.measureText === 'function'
+        ? ctx.measureText(condition).width
+        : condition.length * 6) + 18;
+      if (layoutX + labelWidth > x + width - padding && layoutX > barX) {
+        layoutX = barX;
+        layoutY += 14;
+      }
+      const entry = { condition, x: layoutX, y: layoutY };
+      layoutX += labelWidth;
+      return entry;
+    });
+    const panelHeight = Math.min(
+      Math.max(46, bounds.h - 20),
+      Math.max(78, layoutY - y + 14)
+    );
+    ctx.fillStyle = 'rgba(4,8,7,0.82)';
+    ctx.fillRect(x, y, width, panelHeight);
+    const steps = 32;
+    for (let index = 0; index < steps; index += 1) {
+      const grip = index / (steps - 1) * 1.2;
+      ctx.fillStyle = `rgb(${this.getRacePhysicsTractionColor(grip).join(',')})`;
+      ctx.fillRect(barX + index * barWidth / steps, y + 19, barWidth / steps + 1, 9);
+    }
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = '#f3f8f5';
+    ctx.fillText('SURFACE TRACTION μ', barX, y + 5);
+    [0, 0.3, 0.6, 0.9, 1.2].forEach((grip, index, ticks) => {
+      const tickX = barX + grip / 1.2 * barWidth;
+      ctx.textAlign = index === 0 ? 'left' : index === ticks.length - 1 ? 'right' : 'center';
+      ctx.fillText(grip.toFixed(1), tickX, y + 31);
+    });
+    ctx.textAlign = 'left';
+    conditionLayout.forEach(({ condition, x: cursorX, y: cursorY }) => {
+      ctx.fillStyle = this.getRacePhysicsConditionColor(condition);
+      ctx.fillRect(cursorX, cursorY + 2, 8, 8);
+      ctx.fillStyle = '#f3f8f5';
+      ctx.fillText(condition, cursorX + 11, cursorY);
+    });
+    ctx.restore();
   }
 
   drawRacePhysicsSurfaceView(ctx, bounds) {
@@ -19066,8 +19394,9 @@ export default class RaceEditor {
     const renderer = this.getRaceThreePhysicsSurfaceRenderer(bounds.w, bounds.h);
     ctx.fillStyle = '#050807';
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    if (!sampler?.triangleCount || !cameraState?.camera || !renderer?.threeRenderer) return false;
-    const surfaceKey = String(worldBake.surfaceRevision || worldBake.key || sampler.triangleCount);
+    const triangleCount = Number(sampler?.triangleCount || sampler?.triangles?.length || 0);
+    if (!triangleCount || !cameraState?.camera || !renderer?.threeRenderer) return false;
+    const surfaceKey = String(worldBake.surfaceRevision || worldBake.key || triangleCount);
     if (renderer.physicsSurfaceKey !== surfaceKey) {
       this.clearRaceThreeScene(renderer);
       const geometry = this.buildRaceThreePhysicsSurfaceGeometry(sampler);
@@ -19134,10 +19463,11 @@ export default class RaceEditor {
       debug: true
     });
     this.drawRacePhysicsContactOverlay(ctx, bounds, cameraState);
+    this.drawRacePhysicsTractionLegend(ctx, bounds);
     this.lastRaceRenderStats = {
       ...(this.lastRaceRenderStats || {}),
       physicsSurfaceView: true,
-      polygons: sampler.triangleCount,
+      polygons: triangleCount,
       drawCalls: 2,
       terrainCells: worldBake.terrainCells?.length || 0
     };
@@ -20511,9 +20841,33 @@ export default class RaceEditor {
     this.drawRaceTimePanel(ctx, bounds);
     this.drawRaceCarStatusPanel(ctx, bounds);
     this.drawRaceTachPanel(ctx, bounds, { speedMph });
+    this.drawRaceSelectResetProgress(ctx, bounds);
     if (this.raceInput.telemetryVisible || this.playtestSession?.diagnosticMode) {
       this.drawRaceDiagnosticsHud(ctx, bounds);
     }
+  }
+
+  drawRaceSelectResetProgress(ctx, bounds) {
+    if (!this.raceInput.gamepadSelectHoldActive || this.raceInput.gamepadSelectHoldTriggered) return;
+    const progress = clamp(Number(this.raceInput.gamepadSelectHoldMs || 0) / RACE_SELECT_RESET_HOLD_MS, 0, 1);
+    if (progress <= 0) return;
+    const width = Math.min(190, Math.max(112, bounds.w * 0.34));
+    const height = 28;
+    const x = bounds.x + (bounds.w - width) / 2;
+    const y = bounds.y + bounds.h - height - 12;
+    ctx.save();
+    ctx.fillStyle = 'rgba(5,8,7,0.82)';
+    ctx.fillRect(x, y, width, height);
+    ctx.fillStyle = 'rgba(217,230,210,0.22)';
+    ctx.fillRect(x + 6, y + height - 7, width - 12, 3);
+    ctx.fillStyle = UI_SUITE.colors.accent;
+    ctx.fillRect(x + 6, y + height - 7, (width - 12) * progress, 3);
+    ctx.fillStyle = UI_SUITE.colors.text;
+    ctx.font = `700 9px ${UI_SUITE.font.family}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('HOLD SELECT TO RESET', x + width / 2, y + 10);
+    ctx.restore();
   }
 
   drawRacePlaytestTopControls(ctx, bounds) {

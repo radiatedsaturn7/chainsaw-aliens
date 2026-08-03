@@ -36,6 +36,11 @@ export class RaceSurfaceModel {
     this.maxCutSideSlope = Math.max(0.05, Number(adapter.maxCutSideSlope) || 0.5);
     this.maxFillSideSlope = Math.max(0.05, Number(adapter.maxFillSideSlope) || 0.5);
     this.elevationScaleM = Math.max(0.001, Number(adapter.elevationScaleM) || 1);
+    this.performanceDiagnostics = {
+      fullSurfaceQueries: 0,
+      geometryQueries: 0,
+      rawTerrainQueries: 0
+    };
   }
 
   clampElevation(value = 0) {
@@ -90,6 +95,7 @@ export class RaceSurfaceModel {
   }
 
   sampleRawTerrain(x = 0, z = 0, fallbackElevation = 0) {
+    this.performanceDiagnostics.rawTerrainQueries += 1;
     const worldPoint = typeof x === 'object'
       ? { x: Number(x.x || 0), z: Number(x.z ?? x.y ?? 0) }
       : { x: Number(x || 0), z: Number(z || 0) };
@@ -153,14 +159,14 @@ export class RaceSurfaceModel {
   sampleDeckAtDistance(distance = 0, options = {}) {
     const runtimeType = options.runtimeType || this.getRuntimeType();
     const routeLength = Math.max(1, Number(options.routeLength || this.getRouteLength()) || 1);
-    const roadbed = typeof this.adapter.getRoadbedProfile === 'function'
+    const roadbed = options.roadbedProfile || (typeof this.adapter.getRoadbedProfile === 'function'
       ? this.adapter.getRoadbedProfile({
         samples: options.samples || null,
         routeLength,
         runtimeType,
         allowVisualExtension: Boolean(options.allowVisualExtension)
       })
-      : null;
+      : null);
     const local = typeof this.adapter.sampleRoadbedProfileAtDistance === 'function'
       ? this.adapter.sampleRoadbedProfileAtDistance(distance, roadbed)
       : null;
@@ -400,32 +406,53 @@ export class RaceSurfaceModel {
     const x = Number(deck.x || 0) + Number(right.x || 0) * Number(lateral || 0);
     const z = Number(deck.z || 0) + Number(right.z || 0) * Number(lateral || 0);
     const fallbackSurface = deck.segment?.surface || options.fallbackSurfaceId || 'asphalt';
-    const raw = this.sampleRawTerrain(x, z, deck.elevation);
+    const applyWeatherSurface = options.applyWeatherSurface !== false;
     const classification = this.classifyLateral(lateral, deck, deck.segment);
     let region = classification.region;
     let blend = classification.blend;
+    const physicsContactCanSkipRaw = options.physicsContact === true
+      && ['road', 'margin', 'shoulder'].includes(region);
+    const raw = physicsContactCanSkipRaw
+      ? {
+        elevation: deck.elevation,
+        normal: deck.normal,
+        surfaceId: fallbackSurface,
+        materialId: fallbackSurface,
+        tile: null
+      }
+      : this.sampleRawTerrain(x, z, deck.elevation);
     let elevation = raw.elevation;
     let terrainGripScale = 1;
     let surfaceId = raw.surfaceId || this.getGroundSurfaceId({ x, z }, fallbackSurface);
     if (region === 'road') {
       elevation = this.getBankedDeckElevation(deck, lateral);
       terrainGripScale = 1;
-      surfaceId = this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState());
+      surfaceId = applyWeatherSurface
+        ? this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState())
+        : this.getSurfaceById(fallbackSurface).id;
     } else if (region === 'margin') {
       elevation = this.getBankedDeckElevation(deck, lateral);
       terrainGripScale = 0.96;
-      surfaceId = this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState());
+      surfaceId = applyWeatherSurface
+        ? this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState())
+        : this.getSurfaceById(fallbackSurface).id;
     } else if (region === 'shoulder') {
       elevation = this.getBankedDeckElevation(deck, lateral);
       terrainGripScale = 1;
-      surfaceId = this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState());
+      surfaceId = applyWeatherSurface
+        ? this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState())
+        : this.getSurfaceById(fallbackSurface).id;
     } else if (region === 'transition') {
       const deckSideElevation = this.getBankedDeckElevation(deck, lateral);
       elevation = deckSideElevation * (1 - blend) + raw.elevation * blend;
       terrainGripScale = 1;
-      surfaceId = this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState());
+      surfaceId = applyWeatherSurface
+        ? this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState())
+        : this.getSurfaceById(fallbackSurface).id;
     }
-    surfaceId = this.getEffectiveSurfaceId(surfaceId, this.getWeatherState());
+    surfaceId = applyWeatherSurface
+      ? this.getEffectiveSurfaceId(surfaceId, this.getWeatherState())
+      : this.getSurfaceById(surfaceId).id;
     const surface = this.getSurfaceById(surfaceId);
     const deckNormal = this.getBankedDeckNormal(deck);
     const normal = region === 'terrain'
@@ -468,6 +495,7 @@ export class RaceSurfaceModel {
   }
 
   sampleWorld(x = 0, z = 0, options = {}) {
+    this.performanceDiagnostics.fullSurfaceQueries += 1;
     const worldPoint = typeof x === 'object'
       ? { x: Number(x.x || 0), z: Number(x.z ?? x.y ?? 0) }
       : { x: Number(x || 0), z: Number(z || 0) };
@@ -530,6 +558,99 @@ export class RaceSurfaceModel {
         lateral: Number(projection.lateral || 0)
       }
     };
+  }
+
+  createPhysicsQueryContext(options = {}) {
+    const runtimeType = options.runtimeType || this.getRuntimeType();
+    const routeLength = Math.max(1, Number(options.routeLength || this.getRouteLength()) || 1);
+    const roadbedProfile = typeof this.adapter.getRoadbedProfile === 'function'
+      ? this.adapter.getRoadbedProfile({
+        routeLength,
+        runtimeType,
+        allowVisualExtension: Boolean(options.allowVisualExtension)
+      })
+      : null;
+    return Object.freeze({
+      runtimeType,
+      routeLength,
+      roadbedProfile,
+      weatherState: options.weatherState || this.getWeatherState(),
+      allowVisualExtension: Boolean(options.allowVisualExtension),
+      fallbackSurfaceId: options.fallbackSurfaceId || 'asphalt'
+    });
+  }
+
+  samplePhysicsGeometry(worldPoint = {}, context = {}) {
+    this.performanceDiagnostics.geometryQueries += 1;
+    const point = {
+      x: Number(worldPoint.x || 0),
+      z: Number(worldPoint.z ?? worldPoint.y ?? 0)
+    };
+    const projection = typeof this.adapter.projectWorldToTrack === 'function'
+      ? this.adapter.projectWorldToTrack(point)
+      : null;
+    if (!projection?.segment || !Number.isFinite(Number(projection.lateral))) {
+      const full = this.sampleWorld(point, Number(context.fallbackElevation || 0), context);
+      return {
+        elevation: full.elevation,
+        normal: full.normal,
+        region: full.region,
+        friction: full.friction,
+        surfaceId: full.surfaceId,
+        projection: full.projection
+      };
+    }
+    const deck = this.sampleDeckAtDistance(Number(projection.distance || 0), {
+      ...context,
+      roadbedProfile: context.roadbedProfile
+    });
+    const classification = this.classifyLateral(
+      Number(projection.lateral || 0),
+      deck,
+      projection.segment
+    );
+    if (classification.region === 'transition' || classification.region === 'terrain') {
+      const full = this.sampleWorld(point, Number(context.fallbackElevation || 0), context);
+      return {
+        elevation: full.elevation,
+        normal: full.normal,
+        region: full.region,
+        friction: full.friction,
+        surfaceId: full.surfaceId,
+        projection: full.projection
+      };
+    }
+    const region = classification.region;
+    const analyticElevation = this.getBankedDeckElevation(deck, Number(projection.lateral || 0));
+    const analyticNormal = this.getBankedDeckNormal(deck);
+    const baked = typeof this.adapter.sampleBakedSurface === 'function'
+      ? this.adapter.sampleBakedSurface(point, { preferredRegion: region })
+      : null;
+    const bakedMatchesRegion = baked && (
+      baked.region === region
+      || (region === 'shoulder' && ['inner', 'flat-join'].includes(baked.region))
+    );
+    const surfaceId = this.getEffectiveSurfaceId(
+      projection.segment?.surface || context.fallbackSurfaceId || 'asphalt',
+      context.weatherState || this.getWeatherState()
+    );
+    const terrainGripScale = region === 'margin' ? 0.96 : 1;
+    return {
+      elevation: bakedMatchesRegion ? this.clampElevation(baked.elevation) : analyticElevation,
+      normal: bakedMatchesRegion ? baked.normal : analyticNormal,
+      region,
+      friction: clamp(Number(this.getSurfaceById(surfaceId).grip || 1) * terrainGripScale, 0.18, 1.2),
+      surfaceId,
+      projection: {
+        ...projection,
+        segment: projection.segment || deck.segment,
+        yaw: Number(projection.yaw ?? deck.yaw ?? 0)
+      }
+    };
+  }
+
+  samplePhysicsGeometryBatch(points = [], context = {}) {
+    return points.map((point) => this.samplePhysicsGeometry(point, context));
   }
 }
 

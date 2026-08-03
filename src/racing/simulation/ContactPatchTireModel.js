@@ -3,6 +3,7 @@ import { PowertrainModel } from './PowertrainModel.js';
 import { rotateVectorByQuaternion } from './RigidBodyMath.js';
 import { solveSuspensionGeometry } from './SuspensionGeometry.js';
 import { resolveContactFootprint } from './ContactFootprint.js';
+import { resolveCompoundSurfaceGrip } from './SurfaceConditionGrip.js';
 
 const powertrainModel = new PowertrainModel();
 
@@ -51,7 +52,29 @@ export function getAckermannSteeringAngles({
     : { fl: q(blend(inner)), fr: q(blend(outer)), rl: 0, rr: 0 };
 }
 
+export function resolvePhysicalCenterSteeringAngle(controls = {}, config = {}) {
+  const maximumAngleRad = Math.max(0.05, Number(config.maxSteerAngleRad) || 0.52);
+  return typeof controls.centerSteeringAngleRad === 'number'
+    && Number.isFinite(controls.centerSteeringAngleRad)
+    ? clamp(controls.centerSteeringAngleRad, -maximumAngleRad, maximumAngleRad)
+    : clamp(Number(controls.steering) || 0, -1, 1)
+      * maximumAngleRad
+      * Math.max(0.01, Number(config.steeringRackRatio) || 1);
+}
+
 export function getContactPatchMaterialGrip(material = {}) {
+  if (Number.isFinite(Number(material.surfaceGripScale))) {
+    return clamp(Number(material.surfaceGripScale), 0.025, 2);
+  }
+  if (material.trackStateConditionApplied === true) {
+    return clamp(Number(
+      material.effectiveGripMultiplier
+      ?? material.effectiveGrip
+      ?? material.grip
+      ?? material.baseGrip
+      ?? 1
+    ), 0.025, 2);
+  }
   const moisture = Math.max(0, Number(material.moistureDepthMm || 0));
   const snow = Math.max(0, Number(material.snowDepthMm || 0));
   const ice = Math.max(0, Number(material.iceDepthMm || 0));
@@ -72,6 +95,28 @@ export function getContactPatchMaterialGrip(material = {}) {
     * (1 - mud * 0.48)
     * (1 - oil * 0.72);
   return clamp(baseGrip * contamination * (1 + rubber * 0.1) * (1 - roughness * 0.08), 0.025, 2);
+}
+
+export function calculateVelocitySensitiveDamperForce({
+  relativeVelocityMps = 0,
+  bumpDamperNsM = 0,
+  reboundDamperNsM = 0,
+  highSpeedThresholdMps = 0.25,
+  highSpeedScale = 1
+} = {}) {
+  const velocityMps = Number(relativeVelocityMps) || 0;
+  const speedMps = Math.abs(velocityMps);
+  if (speedMps <= EPSILON) return 0;
+  const lowSpeedDamperNsM = Math.max(0, velocityMps >= 0
+    ? Number(bumpDamperNsM) || 0
+    : Number(reboundDamperNsM) || 0);
+  const thresholdMps = Math.max(EPSILON, Number(highSpeedThresholdMps) || 0.25);
+  const highSpeedDamperNsM = lowSpeedDamperNsM * Math.max(0, Number(highSpeedScale) || 0);
+  const lowSpeedVelocityMps = Math.min(speedMps, thresholdMps);
+  const highSpeedVelocityMps = Math.max(0, speedMps - thresholdMps);
+  const forceN = lowSpeedDamperNsM * lowSpeedVelocityMps
+    + highSpeedDamperNsM * highSpeedVelocityMps;
+  return q(Math.sign(velocityMps) * forceN);
 }
 
 export function calculateAquaplaningState({
@@ -138,6 +183,20 @@ export function calculateWheelContactKinematics({ state, config, controls, envir
   const front = wheelId[0] === 'f';
   const left = wheelId[1] === 'l';
   const track = front ? config.frontTrackWidthM : config.rearTrackWidthM;
+  const suspensionTravelM = front ? config.suspensionTravelFrontM : config.suspensionTravelRearM;
+  const staticSagRatio = front ? config.staticSagRatioFront : config.staticSagRatioRear;
+  const staticSagTargetM = suspensionTravelM * staticSagRatio;
+  const droopTravelM = staticSagTargetM;
+  const bumpTravelM = suspensionTravelM - staticSagTargetM;
+  const definition = front ? config.suspensionDefinitionFront : config.suspensionDefinitionRear;
+  const suspensionAxisLocal = normalize(vector(definition?.suspensionAxis, { x: 0, y: -1, z: 0 }), { x: 0, y: -1, z: 0 });
+  const suspension = environment.suspensionStateByWheel?.[wheelId]
+    || state.suspensionState?.[wheelId]
+    || {};
+  const compressionM = clamp(Number(suspension.compressionM ?? staticSagTargetM), 0, suspensionTravelM);
+  const compressionVelocityMps = Number(suspension.compressionVelocityMps
+    ?? suspension.unsprungVelocityMps
+    ?? 0);
   const yaw = Number(state.yawRad || 0);
   const orientation = state.orientation || {
     x: 0,
@@ -145,22 +204,34 @@ export function calculateWheelContactKinematics({ state, config, controls, envir
     z: 0,
     w: Math.cos(yaw * 0.5)
   };
-  const localOffset = {
+  const staticHubOffset = {
     x: (left ? -0.5 : 0.5) * track,
     y: -config.cgHeightM + config.wheelRadiusM,
     z: front ? config.frontAxleDistanceFromCgM : -config.rearAxleDistanceFromCgM
   };
+  const localOffset = add(staticHubOffset, scale(suspensionAxisLocal, staticSagTargetM - compressionM));
+  const suspensionRestLengthM = front ? config.suspensionRestLengthFrontM : config.suspensionRestLengthRearM;
+  const fullDroopHubOffset = add(staticHubOffset, scale(suspensionAxisLocal, staticSagTargetM));
+  const suspensionMountOffset = add(fullDroopHubOffset, scale(suspensionAxisLocal, -suspensionRestLengthM));
   const chassisForward = normalize(rotateVectorByQuaternion({ x: 0, y: 0, z: 1 }, orientation), { x: 0, y: 0, z: 1 });
   const chassisRight = normalize(rotateVectorByQuaternion({ x: 1, y: 0, z: 0 }, orientation), { x: 1, y: 0, z: 0 });
   const centerRadius = rotateVectorByQuaternion(localOffset, orientation);
   const center = add(vector(state.position), centerRadius);
+  const mountRadius = rotateVectorByQuaternion(suspensionMountOffset, orientation);
+  const mountPosition = add(vector(state.position), mountRadius);
+  const suspensionAxisWorld = normalize(
+    rotateVectorByQuaternion(suspensionAxisLocal, orientation),
+    { x: 0, y: -1, z: 0 }
+  );
   const normal = normalize(vector(environment.surfaceNormalByWheel?.[wheelId], { x: 0, y: 1, z: 0 }));
+  const centerSteeringAngleRad = resolvePhysicalCenterSteeringAngle(controls, config);
   const steeringAngles = getAckermannSteeringAngles({
-    steeringAngleRad: controls.steering * config.maxSteerAngleRad,
+    steeringAngleRad: centerSteeringAngleRad,
     wheelbaseM: config.wheelbaseM,
     frontTrackWidthM: config.frontTrackWidthM,
     ackermannRatio: config.ackermannRatio,
-    steeringRackRatio: config.steeringRackRatio
+    // centerSteeringAngleRad is already the physical post-rack center angle.
+    steeringRackRatio: 1
   });
   const steeringAngleRad = steeringAngles[wheelId] + Number(environment.toeByWheel?.[wheelId] || 0);
   const rawForward = add(scale(chassisForward, Math.cos(steeringAngleRad)), scale(chassisRight, Math.sin(steeringAngleRad)));
@@ -173,7 +244,16 @@ export function calculateWheelContactKinematics({ state, config, controls, envir
     y: Number(state.yawRateRadps || 0),
     z: 0
   });
-  const contactVelocity = add(vector(state.velocity), cross(angularVelocity, radius));
+  const hubRelativeVelocity = scale(suspensionAxisWorld, -compressionVelocityMps);
+  const hubVelocity = add(
+    add(vector(state.velocity), cross(angularVelocity, centerRadius)),
+    hubRelativeVelocity
+  );
+  const mountVelocity = add(vector(state.velocity), cross(angularVelocity, mountRadius));
+  const contactVelocity = add(
+    hubVelocity,
+    cross(angularVelocity, add(radius, scale(centerRadius, -1)))
+  );
   const longitudinalVelocityMps = dot(contactVelocity, wheelForward);
   const lateralVelocityMps = dot(contactVelocity, wheelLateral);
   const effectiveRollingRadiusM = config.wheelRadiusM * clamp(Number(environment.effectiveRadiusScaleByWheel?.[wheelId] ?? 1), 0.82, 1.05);
@@ -187,6 +267,18 @@ export function calculateWheelContactKinematics({ state, config, controls, envir
   return {
     wheelId,
     wheelCenterWorld: cleanVector(center),
+    hubPositionWorld: cleanVector(center),
+    hubVelocityWorld: cleanVector(hubVelocity),
+    suspensionMountPositionWorld: cleanVector(mountPosition),
+    suspensionMountVelocityWorld: cleanVector(mountVelocity),
+    suspensionAxisLocal: cleanVector(suspensionAxisLocal),
+    suspensionAxisWorld: cleanVector(suspensionAxisWorld),
+    suspensionCompressionM: q(compressionM),
+    suspensionCompressionVelocityMps: q(compressionVelocityMps),
+    suspensionRestLengthM: q(suspensionRestLengthM),
+    suspensionDroopTravelM: q(droopTravelM),
+    suspensionBumpTravelM: q(bumpTravelM),
+    staticSagTargetM: q(staticSagTargetM),
     contactPointWorld: cleanVector(contactPoint),
     steeringAngleRad: q(steeringAngleRad),
     wheelForwardWorld: cleanVector(wheelForward),
@@ -207,7 +299,7 @@ export function calculateWheelContactKinematics({ state, config, controls, envir
 
 function getTireGrip(tire, material, loadN, referenceLoadN) {
   const compound = tire.compound || {};
-  const compoundGrip = Number(tire.compoundGrip ?? compound.grip ?? compound.surfaceGrip?.[material.surfaceId] ?? 1);
+  const compoundGrip = Number(tire.compoundGrip ?? resolveCompoundSurfaceGrip(compound, material));
   const pressureDelta = Math.abs(Number(tire.effectivePressurePsi ?? tire.pressurePsi ?? 32)
     - Number(tire.targetPressurePsi ?? 32));
   const pressureScale = clamp(1 - pressureDelta * 0.009, 0.72, 1.05);
@@ -315,6 +407,10 @@ export class ContactPatchTireModel {
       const suspensionTravelM = front
         ? config.suspensionTravelFrontM
         : config.suspensionTravelRearM;
+      const staticSagRatio = front ? config.staticSagRatioFront : config.staticSagRatioRear;
+      const staticSagTargetM = suspensionTravelM * staticSagRatio;
+      const droopTravelM = staticSagTargetM;
+      const bumpTravelM = suspensionTravelM - staticSagTargetM;
       const footprint = resolveContactFootprint(environment.contactSamplesByWheel?.[wheelId] || [], {
         maxGapM: config.contactFootprintMaxGapM,
         minimumSamples: 4
@@ -335,36 +431,37 @@ export class ContactPatchTireModel {
         : 0;
       const contactVelocityNormalMps = dot(kinematics.contactVelocityWorld, kinematics.surfaceNormalWorld);
       const compressionVelocityMps = -contactVelocityNormalMps;
-      const damperRateNsM = front
-        ? (compressionVelocityMps >= 0
-          ? config.suspensionBumpDamperFrontNsM
-          : config.suspensionReboundDamperFrontNsM)
-        : (compressionVelocityMps >= 0
-          ? config.suspensionBumpDamperRearNsM
-          : config.suspensionReboundDamperRearNsM);
       const baseGeometry = solveSuspensionGeometry({
         definition: front ? config.suspensionDefinitionFront : config.suspensionDefinitionRear,
         compressionM: 0,
         springRateNpm
       });
-      const staticCompressionM = clamp(
-        staticLoad / Math.max(1, baseGeometry.wheelRateNpm),
+      const staticCompressionM = staticSagTargetM;
+      const previousSuspension = state.suspensionState?.[wheelId] || {};
+      const hasPreviousSuspensionState = Number.isFinite(Number(previousSuspension.compressionM));
+      const previousCompressionM = clamp(
+        Number(previousSuspension.compressionM ?? staticCompressionM),
         0,
         suspensionTravelM
       );
       const targetCompressionM = hasSurfaceHeight
-        ? clamp(staticCompressionM + penetrationM, 0, suspensionTravelM)
+        ? clamp(previousCompressionM + penetrationM, 0, suspensionTravelM)
         : null;
-      const previousSuspension = state.suspensionState?.[wheelId] || {};
       let unsprungVelocityMps = Number(previousSuspension.unsprungVelocityMps || 0);
-      let compressionM = Number(previousSuspension.compressionM ?? targetCompressionM ?? 0);
+      let compressionM = previousCompressionM;
       if (hasSurfaceHeight) {
-        const tireErrorM = Number(targetCompressionM) - compressionM;
-        const tireForceN = tireErrorM * config.tireVerticalStiffnessNpm
-          - unsprungVelocityMps * config.tireVerticalDampingNsM;
-        unsprungVelocityMps += tireForceN / config.unsprungMassKg * dt;
-        compressionM = clamp(compressionM + unsprungVelocityMps * dt, 0, suspensionTravelM);
-        if (compressionM === 0 || compressionM === suspensionTravelM) unsprungVelocityMps *= 0.35;
+        if (!hasPreviousSuspensionState) {
+          compressionM = Number(targetCompressionM);
+          unsprungVelocityMps = 0;
+        } else {
+          const tireErrorM = Number(targetCompressionM) - compressionM;
+          const tireForceN = tireErrorM * config.tireVerticalStiffnessNpm
+            - unsprungVelocityMps * config.tireVerticalDampingNsM;
+          const unsprungMassKg = Number(config.unsprungMassByWheelKg?.[wheelId] || config.unsprungMassKg);
+          unsprungVelocityMps += tireForceN / unsprungMassKg * dt;
+          compressionM = clamp(compressionM + unsprungVelocityMps * dt, 0, suspensionTravelM);
+          if (compressionM === 0 || compressionM === suspensionTravelM) unsprungVelocityMps *= 0.35;
+        }
       } else {
         unsprungVelocityMps -= 9.81 * dt;
         compressionM = Math.max(0, compressionM + unsprungVelocityMps * dt);
@@ -373,33 +470,67 @@ export class ContactPatchTireModel {
       const geometry = solveSuspensionGeometry({
         definition: front ? config.suspensionDefinitionFront : config.suspensionDefinitionRear,
         compressionM: compressionM - staticCompressionM,
-        steeringAngleRad: controls.steering * config.maxSteerAngleRad,
+        steeringAngleRad: resolvePhysicalCenterSteeringAngle(controls, config),
         staticCamberRad: front ? config.camberFrontRad : config.camberRearRad,
         staticToeRad: front ? config.toeFrontRad : config.toeRearRad,
         springRateNpm
       });
       kinematics = calculateWheelContactKinematics({ state, config, controls, environment: {
         ...resolvedEnvironment,
+        suspensionStateByWheel: {
+          ...resolvedEnvironment.suspensionStateByWheel,
+          [wheelId]: { compressionM, compressionVelocityMps: unsprungVelocityMps }
+        },
         camberByWheel: { ...resolvedEnvironment.camberByWheel, [wheelId]: geometry.camberRad },
         toeByWheel: { ...resolvedEnvironment.toeByWheel, [wheelId]: geometry.toeRad }
       }, wheelId });
-      const geometricContact = hasSurfaceHeight && compressionM > EPSILON;
+      const geometricContact = hasSurfaceHeight && Number(targetCompressionM) > EPSILON;
       const compressionRatio = compressionM / suspensionTravelM;
-      const bumpTravelRatio = Math.max(0, compressionM - staticCompressionM) / suspensionTravelM;
+      const bumpTravelRatio = clamp(
+        Math.max(0, compressionM - staticCompressionM) / Math.max(EPSILON, bumpTravelM),
+        0,
+        1
+      );
       const progressiveRate = geometry.wheelRateNpm * (1 + config.progressiveSpringRate * bumpTravelRatio ** 2);
       const bumpStopStartM = staticCompressionM
-        + (suspensionTravelM - staticCompressionM) * config.bumpStopStartRatio;
+        + bumpTravelM * config.bumpStopStartRatio;
       const bumpStopCompressionM = Math.max(0, compressionM - bumpStopStartM);
       const bumpStopRangeM = Math.max(EPSILON, suspensionTravelM - bumpStopStartM);
       const bumpStopForceN = compressionM > bumpStopStartM
         ? config.bumpStopRateNpm * bumpStopCompressionM
           * (1 + 2 * bumpStopCompressionM / bumpStopRangeM)
         : 0;
-      const velocityRatio = Math.abs(unsprungVelocityMps) / config.damperHighSpeedThresholdMps;
-      const velocityDamperScale = 1 + Math.max(0, velocityRatio - 1) * config.damperHighSpeedScale;
-      const suspensionRelativeVelocityMps = unsprungVelocityMps;
+      const relativeHubVelocityWorld = add(
+        vector(kinematics.hubVelocityWorld),
+        scale(vector(kinematics.suspensionMountVelocityWorld), -1)
+      );
+      const suspensionRelativeVelocityMps = -dot(
+        relativeHubVelocityWorld,
+        vector(kinematics.suspensionAxisWorld, { x: 0, y: -1, z: 0 })
+      );
+      const damperRateNsM = front
+        ? (suspensionRelativeVelocityMps >= 0
+          ? config.suspensionBumpDamperFrontNsM
+          : config.suspensionReboundDamperFrontNsM)
+        : (suspensionRelativeVelocityMps >= 0
+          ? config.suspensionBumpDamperRearNsM
+          : config.suspensionReboundDamperRearNsM);
+      const damperForceN = calculateVelocitySensitiveDamperForce({
+        relativeVelocityMps: suspensionRelativeVelocityMps,
+        bumpDamperNsM: front
+          ? config.suspensionBumpDamperFrontNsM
+          : config.suspensionBumpDamperRearNsM,
+        reboundDamperNsM: front
+          ? config.suspensionReboundDamperFrontNsM
+          : config.suspensionReboundDamperRearNsM,
+        highSpeedThresholdMps: config.damperHighSpeedThresholdMps,
+        highSpeedScale: config.damperHighSpeedScale
+      });
+      const springDisplacementFromSagM = compressionM - staticCompressionM;
       const baseSuspensionLoadN = geometricContact
-        ? progressiveRate * compressionM + suspensionRelativeVelocityMps * damperRateNsM * velocityDamperScale + bumpStopForceN
+        ? staticLoad + progressiveRate * springDisplacementFromSagM
+          + damperForceN
+          + bumpStopForceN
         : hasSurfaceHeight ? 0 : null;
       const geometryPitchSupport = front
         ? geometry.antiDive * Number(controls.brake || 0)
@@ -429,6 +560,9 @@ export class ContactPatchTireModel {
         springRateNpm,
         damperRateNsM,
         suspensionTravelM,
+        staticSagTargetM,
+        droopTravelM,
+        bumpTravelM,
         material,
         tire,
         hasSurfaceHeight,
@@ -441,10 +575,11 @@ export class ContactPatchTireModel {
         geometry,
         footprint,
         progressiveRate,
-        bumpStopForceN
+        bumpStopForceN,
+        damperForceN
       }];
     }));
-    const applyAntiRollTransfer = (leftId, rightId, antiRollNormalized) => {
+    const applyAntiRollTransfer = (leftId, rightId, antiRollNormalized, physicalStiffnessNpm) => {
       const left = wheelInputs[leftId];
       const right = wheelInputs[rightId];
       if (!left || !right) return;
@@ -452,8 +587,10 @@ export class ContactPatchTireModel {
       const compressionDeltaM = Number(left.compressionM || 0) - Number(right.compressionM || 0);
       const authoredRollScale = clamp(config.rollStiffnessNormalized / 0.76, 0.5, 1.75);
       const requestedTransferN = clamp(
-        (compressionDeltaM / Math.max(0.05, travelM)) * config.massKg * 9.81
-          * (0.065 + antiRollNormalized * 0.26) * authoredRollScale,
+        physicalStiffnessNpm > 0
+          ? compressionDeltaM * physicalStiffnessNpm
+          : (compressionDeltaM / Math.max(0.05, travelM)) * config.massKg * 9.81
+            * (0.065 + antiRollNormalized * 0.26) * authoredRollScale,
         -config.massKg * 9.81 * 0.22,
         config.massKg * 9.81 * 0.22
       );
@@ -465,8 +602,8 @@ export class ContactPatchTireModel {
       left.normalLoadN = Math.max(0, Number(left.normalLoadN || 0) + transferN);
       right.normalLoadN = Math.max(0, Number(right.normalLoadN || 0) - transferN);
     };
-    applyAntiRollTransfer('fl', 'fr', config.antiRollFront);
-    applyAntiRollTransfer('rl', 'rr', config.antiRollRear);
+    applyAntiRollTransfer('fl', 'fr', config.antiRollFront, config.antiRollStiffnessFrontNpm);
+    applyAntiRollTransfer('rl', 'rr', config.antiRollRear, config.antiRollStiffnessRearNpm);
     RACE_WHEEL_IDS.forEach((wheelId) => {
       const input = wheelInputs[wheelId];
       input.aquaplaning = calculateAquaplaningState({
@@ -571,16 +708,42 @@ export class ContactPatchTireModel {
           : 0;
       const angularSign = Math.sign(angularReference);
       const reactionTorque = force.longitudinalForceN * kinematics.effectiveRollingRadiusM;
+      const appliedWheelTorque = driveTorque - brakeTorqueMagnitude * angularSign;
       let nextAngular = kinematics.wheelAngularVelocityRadps
-        + (driveTorque - brakeTorqueMagnitude * angularSign - reactionTorque) / config.wheelInertiaKgM2 * dt;
+        + (appliedWheelTorque - reactionTorque) / config.wheelInertiaKgM2 * dt;
       const rollingAngularVelocityRadps = kinematics.longitudinalVelocityMps
         / Math.max(EPSILON, kinematics.effectiveRollingRadiusM);
       const currentRollingError = kinematics.wheelAngularVelocityRadps - rollingAngularVelocityRadps;
       const nextRollingError = nextAngular - rollingAngularVelocityRadps;
-      if (Math.abs(driveTorque) <= EPSILON
-        && brakeTorqueMagnitude <= EPSILON
-        && currentRollingError * nextRollingError <= 0) {
+      const crossedRollingSpeed = currentRollingError * nextRollingError < 0;
+      const crossedAgainstAppliedTorque = Math.abs(appliedWheelTorque) <= EPSILON
+        || Math.sign(nextRollingError) !== Math.sign(appliedWheelTorque);
+      if (crossedRollingSpeed && crossedAgainstAppliedTorque) {
         nextAngular = rollingAngularVelocityRadps;
+      }
+      const rollingRadiusM = Math.max(EPSILON, kinematics.effectiveRollingRadiusM);
+      const staticTorqueCapacityNm = Math.max(0, Number(capacityByWheel[wheelId] || 0)) * rollingRadiusM;
+      const nearRollingConstraint = Math.abs(currentRollingError) < 0.05 || crossedRollingSpeed;
+      if (geometricContact
+        && nearRollingConstraint
+        && Math.abs(appliedWheelTorque) <= staticTorqueCapacityNm * 0.72) {
+        const tire = wheelInputs[wheelId].tire || {};
+        const widthScale = clamp(Number(tire.widthMm ?? 245) / 245, 0.7, 1.4);
+        const longitudinalStiffnessN = Math.max(
+          1000,
+          Number(tire.longitudinalStiffnessN || wheelInputs[wheelId].staticLoadN * 18) * widthScale
+        );
+        const equilibriumSlipRatio = clamp(
+          (appliedWheelTorque / rollingRadiusM) / longitudinalStiffnessN,
+          -0.08,
+          0.08
+        );
+        const slipReferenceSpeedMps = Math.max(
+          0.5,
+          Math.abs(kinematics.longitudinalVelocityMps)
+        );
+        nextAngular = (kinematics.longitudinalVelocityMps
+          + equilibriumSlipRatio * slipReferenceSpeedMps) / rollingRadiusM;
       }
       if (driven.has(wheelId)
         && clutchCoupling > 0.001
@@ -607,12 +770,26 @@ export class ContactPatchTireModel {
         )),
         compressionRatio: suspensionTravel[wheelId],
         compressionVelocityMps: q(wheelInputs[wheelId].compressionVelocityMps),
+        suspensionAxisLocal: kinematics.suspensionAxisLocal,
+        suspensionAxisWorld: kinematics.suspensionAxisWorld,
+        restLengthM: kinematics.suspensionRestLengthM,
+        droopTravelM: q(wheelInputs[wheelId].droopTravelM),
+        bumpTravelM: q(wheelInputs[wheelId].bumpTravelM),
+        staticSagTargetM: q(wheelInputs[wheelId].staticSagTargetM),
+        bumpStopClearanceM: q(Math.max(0, wheelInputs[wheelId].staticSagTargetM
+          + wheelInputs[wheelId].bumpTravelM * config.bumpStopStartRatio - compressionM)),
+        hubPositionWorld: kinematics.hubPositionWorld,
+        hubVelocityWorld: kinematics.hubVelocityWorld,
+        suspensionMountPositionWorld: kinematics.suspensionMountPositionWorld,
+        suspensionMountVelocityWorld: kinematics.suspensionMountVelocityWorld,
         springForceN: q(Math.max(0, normalLoadN)),
         springRateNpm: q(springRateNpm),
         damperRateNsM: q(damperRateNsM),
+        damperVelocityMps: q(wheelInputs[wheelId].compressionVelocityMps),
+        damperForceN: q(wheelInputs[wheelId].damperForceN),
         antiRollLoadTransferN: q(antiRollLoadTransferN),
         unsprungVelocityMps: q(wheelInputs[wheelId].unsprungVelocityMps),
-        unsprungMassKg: q(config.unsprungMassKg),
+        unsprungMassKg: q(config.unsprungMassByWheelKg?.[wheelId] || config.unsprungMassKg),
         tireVerticalStiffnessNpm: q(config.tireVerticalStiffnessNpm),
         bumpStopForceN: q(wheelInputs[wheelId].bumpStopForceN),
         geometry: wheelInputs[wheelId].geometry,
@@ -639,11 +816,26 @@ export class ContactPatchTireModel {
           carcassThermalMassKg: q(wheelInputs[wheelId].tire.carcassThermalMassKg ?? 6.8)
         },
         material: {
+          baseSurfaceId: String(wheelInputs[wheelId].material.baseSurfaceId || 'unknown'),
+          surfaceId: String(wheelInputs[wheelId].material.surfaceId
+            || wheelInputs[wheelId].material.baseSurfaceId || 'unknown'),
+          effectiveGrip: q(wheelInputs[wheelId].material.effectiveGrip ?? 1),
+          effectiveGripMultiplier: q(
+            wheelInputs[wheelId].material.effectiveGripMultiplier ?? 1
+          ),
+          surfaceGripScale: q(wheelInputs[wheelId].material.surfaceGripScale ?? 1),
+          trackStateConditionApplied: wheelInputs[wheelId].material.trackStateConditionApplied === true,
           surfaceTemperatureC: q(wheelInputs[wheelId].material.surfaceTemperatureC ?? 21),
           moistureDepthMm: q(wheelInputs[wheelId].material.moistureDepthMm || 0),
           standingWaterDepthMm: q(wheelInputs[wheelId].material.standingWaterDepthMm || 0),
           snowDepthMm: q(wheelInputs[wheelId].material.snowDepthMm || 0),
-          iceDepthMm: q(wheelInputs[wheelId].material.iceDepthMm || 0)
+          iceDepthMm: q(wheelInputs[wheelId].material.iceDepthMm || 0),
+          looseMarbles: q(wheelInputs[wheelId].material.looseMarbles || 0),
+          dirt: q(wheelInputs[wheelId].material.dirt || 0),
+          mud: q(wheelInputs[wheelId].material.mud || 0),
+          oil: q(wheelInputs[wheelId].material.oil || 0),
+          roughness: q(wheelInputs[wheelId].material.roughness || 0),
+          debris: q(wheelInputs[wheelId].material.debris || 0)
         },
         ambientTemperatureC: q(environment.ambientTemperatureC ?? 21)
       };

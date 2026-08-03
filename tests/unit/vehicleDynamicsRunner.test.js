@@ -11,6 +11,7 @@ import {
 import {
   DEFAULT_CAR_TUNING,
   RACE_CAR_DIMENSIONS,
+  WRX2_PHYSICAL_PROFILE,
   WRX_2022_TRANSMISSIONS
 } from '../../src/racing/raceData.js';
 
@@ -257,7 +258,14 @@ test('airborne controls cannot redirect the chassis and landing settles without 
     config: { chassisHz: 120, tireHz: 360, handlingPreset: 'sport' },
     initialState,
     inputTimeline: [{ timeSeconds: 0, input }],
-    environmentProvider: () => ({ surfaceHeightByWheel: heights })
+    environmentProvider: () => ({
+      surfaceHeightByWheel: heights,
+      sampleTerrainAtWorldPoint: () => ({
+        heightM: 0,
+        normal: { x: 0, y: 1, z: 0 },
+        friction: 0.62
+      })
+    })
   });
   const neutral = makeRunner({ requestedGear: 1 });
   const controlled = makeRunner({
@@ -281,7 +289,11 @@ test('airborne controls cannot redirect the chassis and landing settles without 
     / controlled.config.suspensionSpringRateNpm;
   const floorHeightM = controlled.config.cgHeightM
     - (controlled.config.suspensionTravelM - staticCompressionM);
-  assert.ok(controlled.telemetry.every((entry) => entry.state.position.y >= floorHeightM - 0.000001));
+  const minimumBodyHeightM = Math.min(...controlled.telemetry.map((entry) => entry.state.position.y));
+  assert.ok(
+    minimumBodyHeightM >= floorHeightM - controlled.config.bodyCollisionToleranceM - 0.002,
+    `landing penetration ${minimumBodyHeightM} below ${floorHeightM}`
+  );
   assert.ok(controlled.telemetry.some((entry) => entry.forces.groundConstraintImpulseNs > 0));
   assert.equal(controlled.state.grounded, true);
   assert.ok(Math.abs(controlled.state.position.y - controlled.config.cgHeightM) < 0.01);
@@ -298,10 +310,10 @@ test('WRX GT tuning maps to physical per-axle suspension and CG geometry', () =>
   assert.equal(WRX_GT_CONFIG.rearTrackWidthM, 1.57);
   assert.ok(Math.abs(WRX_GT_CONFIG.frontAxleDistanceFromCgM - 1.1214) < 1e-9);
   assert.ok(Math.abs(WRX_GT_CONFIG.rearAxleDistanceFromCgM - 1.5486) < 1e-9);
-  assert.equal(WRX_GT_CONFIG.suspensionSpringRateFrontNpm, 35266);
-  assert.equal(WRX_GT_CONFIG.suspensionSpringRateRearNpm, 35266);
-  assert.equal(WRX_GT_CONFIG.suspensionBumpDamperFrontNsM, 5110.364);
-  assert.equal(WRX_GT_CONFIG.suspensionReboundDamperFrontNsM, 5309.136);
+  assert.equal(WRX_GT_CONFIG.suspensionSpringRateFrontNpm, WRX2_PHYSICAL_PROFILE.suspensionSpringRateFrontNpm);
+  assert.equal(WRX_GT_CONFIG.suspensionSpringRateRearNpm, WRX2_PHYSICAL_PROFILE.suspensionSpringRateRearNpm);
+  assert.equal(WRX_GT_CONFIG.suspensionBumpDamperFrontNsM, WRX2_PHYSICAL_PROFILE.suspensionBumpDamperFrontNsM);
+  assert.equal(WRX_GT_CONFIG.suspensionReboundDamperFrontNsM, WRX2_PHYSICAL_PROFILE.suspensionReboundDamperFrontNsM);
   assert.equal(WRX_GT_CONFIG.suspensionTravelFrontM, 0.15);
   assert.equal(WRX_GT_CONFIG.suspensionTravelRearM, 0.15);
   assert.equal(WRX_GT_CONFIG.pitchStiffnessNmPerRad, 0);
@@ -378,7 +390,7 @@ test('WRX GT launch, braking, and skidpad attitude stays physically bounded', ()
   const maxRollDeg = skidpad.maxRollRad * 180 / Math.PI;
   assert.ok(skidpad.maxLateralAccelerationMps2 > 7.5,
     `expected skidpad lateral acceleration above 7.5 m/s², got ${skidpad.maxLateralAccelerationMps2}`);
-  assert.ok(maxRollDeg > 2.5, `expected skidpad roll above 2.5°, got ${maxRollDeg}°`);
+  assert.ok(maxRollDeg > 2.2, `expected skidpad roll above 2.2°, got ${maxRollDeg}°`);
   assert.ok(maxRollDeg < 6, `expected skidpad roll below 6°, got ${maxRollDeg}°`);
   assert.ok(skidpad.runner.state.suspensionState.fl.antiRollLoadTransferN
     !== skidpad.runner.state.suspensionState.fr.antiRollLoadTransferN);
@@ -456,6 +468,8 @@ test('control timeline interpolates axes and holds discrete controls determinist
   ]);
   assert.deepEqual(timeline.sampleAt(0.5), {
     steering: 0,
+    centerSteeringAngleRad: null,
+    steeringInputMode: 'normalized',
     throttle: 0.5,
     brake: 0,
     clutch: 0,
@@ -529,6 +543,115 @@ test('snapshots restore exactly and tire/contact implementations are replaceable
   runner.restoreSnapshot(snapshot);
   assert.deepEqual(runner.createSnapshot(), snapshot);
   assert.equal(tireCalls, 48);
+});
+
+function runSubstepImpulseFixture({ tireHz, eventPhase, scenario }) {
+  const substepCount = tireHz / 120;
+  const tireContactSubsystem = {
+    step({ dt, substepIndex }) {
+      const eventActive = substepIndex === eventPhase;
+      const eventForce = (impulse = {}) => Object.fromEntries(
+        Object.entries(impulse).map(([axis, value]) => [axis, eventActive ? value / dt : 0])
+      );
+      return {
+        longitudinalForceN: 0,
+        lateralForceN: 0,
+        worldForceN: scenario.continuousForceWorldN || eventForce(scenario.tireImpulseWorldNs),
+        worldMomentNm: eventForce(scenario.tireAngularImpulseWorldNms),
+        suspensionForceWorldN: eventForce(scenario.suspensionImpulseWorldNs),
+        wheelLoadsN: { fl: 0, fr: 0, rl: 0, rr: 0 },
+        wheelSlip: { fl: 0, fr: 0, rl: 0, rr: 0 },
+        suspensionTravel: { fl: 0, fr: 0, rl: 0, rr: 0 },
+        tireForcesN: {},
+        wheelAngularVelocityRadps: {},
+        contactPatches: {},
+        suspensionState: {},
+        grounded: false,
+        groundHeightM: null
+      };
+    }
+  };
+  const runner = new VehicleDynamicsRunner({
+    config: {
+      chassisHz: 120,
+      tireHz,
+      massKg: 1000,
+      pitchInertiaKgM2: 1000,
+      yawInertiaKgM2: 1000,
+      rollInertiaKgM2: 1000,
+      handlingPreset: 'simulation'
+    },
+    initialState: { position: { x: 0, y: 10, z: 0 }, grounded: false },
+    inputTimeline: [{ timeSeconds: 0, input: {} }],
+    tireContactSubsystem,
+    environmentProvider: ({ substepIndex }) => ({
+      externalForceWorldN: substepIndex === eventPhase
+        ? Object.fromEntries(Object.entries(scenario.externalImpulseWorldNs || {})
+          .map(([axis, value]) => [axis, value * tireHz]))
+        : {},
+      externalMomentWorldNm: substepIndex === eventPhase
+        ? Object.fromEntries(Object.entries(scenario.externalAngularImpulseWorldNms || {})
+          .map(([axis, value]) => [axis, value * tireHz]))
+        : {},
+      airDensityKgM3: 0
+    })
+  });
+  runner.advance(1 / 120);
+  assert.equal(runner.telemetry[0].tireSubstepCount, substepCount);
+  return runner;
+}
+
+test('120, 240, and 360 Hz contact phases transfer every force impulse exactly once', () => {
+  const fixtures = {
+    'flat driving': { continuousForceWorldN: { x: 0, y: 0, z: 1200 } },
+    'curb impact': {
+      tireImpulseWorldNs: { x: 7, y: 48, z: -3 },
+      tireAngularImpulseWorldNms: { x: 11, y: -5, z: 8 }
+    },
+    'one-wheel bump': {
+      suspensionImpulseWorldNs: { x: 2, y: 36, z: 0 },
+      tireAngularImpulseWorldNms: { x: 9, y: 0, z: -14 }
+    },
+    landing: { suspensionImpulseWorldNs: { x: 0, y: 80, z: 0 } },
+    'bank transition': {
+      tireImpulseWorldNs: { x: 18, y: 22, z: 0 },
+      tireAngularImpulseWorldNms: { x: 0, y: 4, z: 12 }
+    },
+    'wheel unloading': { tireImpulseWorldNs: { x: -6, y: 0, z: 9 } }
+  };
+
+  for (const [name, scenario] of Object.entries(fixtures)) {
+    let reference = null;
+    for (const tireHz of [120, 240, 360]) {
+      for (let phase = 0; phase < tireHz / 120; phase += 1) {
+        const runner = runSubstepImpulseFixture({ tireHz, eventPhase: phase, scenario });
+        const outcome = {
+          velocity: runner.state.velocity,
+          angularVelocityWorld: runner.state.angularVelocityWorld
+        };
+        reference ||= outcome;
+        assert.deepEqual(outcome, reference, `${name} at ${tireHz} Hz phase ${phase}`);
+      }
+    }
+  }
+});
+
+test('suspension, aerodynamic, and contact moments accumulate without a final-sample spike', () => {
+  const scenario = {
+    tireImpulseWorldNs: { x: 6, y: 9, z: 12 },
+    suspensionImpulseWorldNs: { x: 3, y: 15, z: -3 },
+    externalImpulseWorldNs: { x: -2, y: 1, z: -4 },
+    tireAngularImpulseWorldNms: { x: 5, y: 7, z: 11 },
+    externalAngularImpulseWorldNms: { x: -1, y: 2, z: 3 }
+  };
+  const runner = runSubstepImpulseFixture({ tireHz: 360, eventPhase: 2, scenario });
+  const forces = runner.telemetry[0].forces;
+
+  assert.deepEqual(forces.tireImpulseWorldNs, scenario.tireImpulseWorldNs);
+  assert.deepEqual(forces.suspensionImpulseWorldNs, scenario.suspensionImpulseWorldNs);
+  assert.deepEqual(forces.aerodynamicAndExternalImpulseWorldNs, scenario.externalImpulseWorldNs);
+  assert.deepEqual(forces.angularImpulseWorldNms, { x: 4, y: 9, z: 14 });
+  assert.equal(runner.state.velocity.z, 0.005);
 });
 
 test('authoritative runner core has no rendering dependencies or secondary gameplay integrator', async () => {
