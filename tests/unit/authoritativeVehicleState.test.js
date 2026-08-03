@@ -29,8 +29,8 @@ test('Simulation has no hidden stabilization while other presets report physical
   assert.deepEqual(assist.calculatePhysicalInterventions({ ...context, preset: 'simulation' }), []);
   for (const preset of ['sport', 'accessible']) {
     const interventions = assist.calculatePhysicalInterventions({ ...context, preset });
-    assert.ok(interventions.length >= 2);
-    assert.ok(interventions.some((entry) => entry.trigger === 'handbrake-rotation'));
+    assert.equal(interventions.length, 1);
+    assert.equal(interventions[0].trigger, 'roll-stability');
     interventions.forEach((entry) => {
       assert.equal(entry.source, 'handling-assist');
       assert.ok(entry.trigger);
@@ -50,7 +50,7 @@ test('airborne support suppresses applied handling-assist moments without hiding
     config: { yawInertiaKgM2: 2200 },
     supportScale: 0
   });
-  assert.ok(interventions.length >= 2);
+  assert.equal(interventions.length, 1);
   interventions.forEach((entry) => {
     assert.equal(entry.appliedValue, 0);
     assert.equal(entry.supportScale, 0);
@@ -70,6 +70,70 @@ test('collision impulses change authoritative velocity and angular velocity at t
   assert.ok(runner.state.velocity.x > 0.9);
   assert.notEqual(runner.state.angularVelocityWorld.y, 0);
   assert.equal(runner.telemetry[0].forces.collisionImpulses.length, 1);
+});
+
+const inertContactSubsystem = {
+  step() {
+    return {
+      worldForceN: {}, worldMomentNm: {}, suspensionForceWorldN: {},
+      wheelLoadsN: {}, wheelSlip: {}, suspensionTravel: {}, tireForcesN: {},
+      wheelAngularVelocityRadps: {}, contactPatches: {}, suspensionState: {}, grounded: false
+    };
+  }
+};
+
+test('edge contacts use authoritative world velocity for aligned, 45-degree, and broadside impacts', () => {
+  const velocities = [
+    { x: 20, y: 0, z: 0 },
+    { x: Math.SQRT1_2 * 20, y: 0, z: Math.SQRT1_2 * 20 },
+    { x: 0, y: 0, z: 20 }
+  ];
+  const outcomes = velocities.map((velocity) => {
+    const runner = new VehicleDynamicsRunner({
+      config: { massKg: 1000, handlingPreset: 'simulation', tireHz: 120 },
+      initialState: { position: { x: 0, y: 10, z: 0 }, velocity },
+      inputTimeline: [{ timeSeconds: 0, input: {} }],
+      tireContactSubsystem: inertContactSubsystem,
+      environmentProvider: () => ({ airDensityKgM3: 0 })
+    });
+    runner.queueCollisionContact({
+      pointWorld: { x: 1, y: 10, z: 0 },
+      normalWorld: { x: 1, y: 0, z: 0 },
+      penetrationM: 0.04,
+      restitution: 0.25,
+      friction: 0.2,
+      source: 'edge:test'
+    });
+    runner.advance(1 / 120);
+    return runner;
+  });
+  assert.ok(outcomes[0].state.velocity.x < -4.9);
+  assert.ok(outcomes[1].state.velocity.x < -3.4);
+  assert.ok(Math.abs(outcomes[2].state.velocity.x) < 1e-9);
+  outcomes.forEach((runner) => assert.equal(runner.collisionTimeline[0].contact, true));
+});
+
+test('edge collision contact history replays to the exact final authoritative state', () => {
+  const options = {
+    config: { massKg: 1000, handlingPreset: 'simulation', tireHz: 120 },
+    initialState: { position: { x: 0, y: 10, z: 0 }, velocity: { x: 18, y: 0, z: 4 } },
+    inputTimeline: [{ timeSeconds: 0, input: {} }],
+    tireContactSubsystem: inertContactSubsystem,
+    environmentProvider: () => ({ airDensityKgM3: 0 })
+  };
+  const runner = new VehicleDynamicsRunner(options);
+  runner.queueCollisionContact({
+    pointWorld: { x: 1, y: 10, z: 0 }, normalWorld: { x: 1, y: 0, z: 0 },
+    penetrationM: 0.03, restitution: 0.2, friction: 0.25, source: 'edge:replay'
+  });
+  runner.advance(1 / 30);
+  const record = runner.createReplayRecord();
+  const replay = VehicleDynamicsRunner.replay(record, {
+    tireContactSubsystem: inertContactSubsystem,
+    environmentProvider: () => ({ airDensityKgM3: 0 })
+  });
+  assert.deepEqual(replay.state, runner.state);
+  assert.deepEqual(replay.collisionTimeline, runner.collisionTimeline);
 });
 
 test('legacy pose fields are derived from the runner state in one synchronization boundary', () => {

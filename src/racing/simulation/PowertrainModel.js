@@ -403,7 +403,7 @@ export class PowertrainModel {
     const idleRpm = Math.max(500, Number(config.idleRpm ?? tuning.idleRpm) || 800);
     const maxRpm = Math.max(idleRpm + 500, Number(config.maxRpm
       ?? tuning.revLimitRpm ?? tuning.redlineRpm) || 7000);
-    const requestedGear = Math.trunc(Number(controls.requestedGear || 0));
+    let requestedGear = Math.trunc(Number(controls.requestedGear || 0));
     let gear = Number.isInteger(previous.gear) ? previous.gear : requestedGear;
     let targetGear = Number.isInteger(previous.targetGear) ? previous.targetGear : gear;
     let shiftTimeRemainingSeconds = Math.max(0, Number(previous.shiftTimeRemainingSeconds || 0));
@@ -415,6 +415,40 @@ export class PowertrainModel {
     const shiftDurationSeconds = Math.max(0.03, (
       Number(tuning.shiftTimeMs || 180) + Number(tuning.shiftDelayMs || 0)
     ) / 1000 * (1 + transmissionDamage * 0.012));
+    const drivenIds = (config.drivenWheelIds || this.getDrivenWheelIds(tuning))
+      .filter((wheelId) => RACE_WHEEL_IDS.includes(wheelId));
+    const averageDrivenOmega = drivenIds.length
+      ? drivenIds.reduce((sum, wheelId) => (
+        sum + Math.abs(Number(kinematicsByWheel[wheelId]?.wheelAngularVelocityRadps || 0))
+      ), 0) / drivenIds.length
+      : 0;
+    if (controls.assists?.autoShift === true && requestedGear > 0 && gear > 0
+      && shiftTimeRemainingSeconds <= 0) {
+      const ratios = Array.isArray(tuning.gearRatios) ? tuning.gearRatios : [];
+      const finalDriveForShift = Math.max(0.1, Math.abs(Number(
+        tuning.gearFinalDrive ?? tuning.finalDrive ?? 1
+      )));
+      const projectedRpm = (candidateGear) => {
+        const ratio = Math.abs(Number(this.getGearRatio(tuning, candidateGear)) || 0);
+        return averageDrivenOmega * ratio * finalDriveForShift * 60 / (Math.PI * 2);
+      };
+      const currentRpm = Number(previous.engineRpm ?? state.engineRpm ?? idleRpm);
+      const upshiftRpm = clamp(Number(tuning.autoUpshiftRpm || maxRpm * 0.92), idleRpm + 500, maxRpm * 0.99);
+      const downshiftRpm = clamp(Number(tuning.autoDownshiftRpm || maxRpm * 0.34), idleRpm * 1.1, upshiftRpm - 400);
+      const throttle = clamp(Number(controls.throttle || 0), 0, 1);
+      const brake = clamp(Number(controls.brake || 0), 0, 1);
+      const forwardSpeed = Number(state.bodyLongitudinalSpeedMps || 0);
+      if (gear < ratios.length && currentRpm >= upshiftRpm
+        && projectedRpm(gear + 1) >= idleRpm * (1.15 + throttle * 0.25)) {
+        requestedGear = gear + 1;
+      } else if (gear > 1 && forwardSpeed > 0.5
+        && (currentRpm <= downshiftRpm || brake > 0.2)
+        && projectedRpm(gear - 1) <= maxRpm * 0.94) {
+        requestedGear = gear - 1;
+      } else {
+        requestedGear = gear;
+      }
+    }
     if (requestedGear !== targetGear && shiftTimeRemainingSeconds <= 0) {
       targetGear = requestedGear;
       shiftTimeRemainingSeconds = shiftDurationSeconds;
@@ -448,13 +482,6 @@ export class PowertrainModel {
       tuning.gearFinalDrive ?? tuning.finalDrive ?? 1
     )));
     const overallRatio = gearRatio * finalDrive;
-    const drivenIds = (config.drivenWheelIds || this.getDrivenWheelIds(tuning))
-      .filter((wheelId) => RACE_WHEEL_IDS.includes(wheelId));
-    const averageDrivenOmega = drivenIds.length
-      ? drivenIds.reduce((sum, wheelId) => (
-        sum + Math.abs(Number(kinematicsByWheel[wheelId]?.wheelAngularVelocityRadps || 0))
-      ), 0) / drivenIds.length
-      : 0;
     const coupledRpm = overallRatio > 0
       ? averageDrivenOmega * overallRatio * 60 / (Math.PI * 2)
       : idleRpm;
@@ -522,7 +549,7 @@ export class PowertrainModel {
     const combustionTorqueNm = curveTorqueNm * clamp(Number(controls.throttle || 0), 0, 1)
       * engineDamageScale * limiterTorqueScale * launchTorqueScale * tractionTorqueScale;
     const rpmRatio = clamp((engineRpm - idleRpm) / Math.max(1, maxRpm - idleRpm), 0, 1);
-    const engineBrakeTorqueNm = overallRatio > 0
+    const engineBrakeTorqueNm = overallRatio > 0 && groundSpeedMps > 0.65
       ? Math.max(0, Number(tuning.engineBrakeTorqueNm || curveTorqueNm * 0.185))
         * (1 - clamp(Number(controls.throttle || 0), 0, 1)) * (0.35 + rpmRatio * 0.65)
       : 0;
@@ -566,10 +593,28 @@ export class PowertrainModel {
       / Math.max(0.5, Number(config.wheelbaseM || 2.65));
     const yawRate = Number(state.angularVelocityWorld?.y || state.yawRateRadps || 0);
     const yawError = desiredYawRate - yawRate;
+    const bodySlipAngleRad = Math.atan2(
+      Number(state.bodyLateralSpeedMps || 0),
+      Math.max(0.5, Math.abs(Number(state.bodyLongitudinalSpeedMps || 0)))
+    );
     let stabilityBrakeWheelId = null;
     let requestedStabilityBrakeTorqueNm = 0;
+    let stabilityClassification = 'inactive';
     if (stabilityEnabled && groundSpeedMps > 4 && Math.abs(yawError) > 0.18) {
-      stabilityBrakeWheelId = yawError > 0 ? 'fr' : 'fl';
+      const turnSign = Math.sign(steeringAngle || desiredYawRate || yawRate || 1);
+      const countersteerRecovery = Math.sign(steeringAngle) !== 0
+        && Math.sign(steeringAngle) !== Math.sign(yawRate)
+        && Math.abs(bodySlipAngleRad) > 0.12;
+      stabilityClassification = countersteerRecovery
+        ? 'countersteer-recovery'
+        : yawError * turnSign > 0 ? 'understeer' : 'oversteer';
+      const candidates = stabilityClassification === 'understeer'
+        ? (turnSign > 0 ? ['rl', 'fl'] : ['rr', 'fr'])
+        : (turnSign > 0 ? ['fr', 'rr'] : ['fl', 'rl']);
+      stabilityBrakeWheelId = candidates.reduce((best, wheelId) => (
+        Number(capacityByWheel[wheelId] || 0) > Number(capacityByWheel[best] || 0)
+          ? wheelId : best
+      ), candidates[0]);
       requestedStabilityBrakeTorqueNm = Math.min(
         Number(capacityByWheel[stabilityBrakeWheelId] || 0) * Number(config.wheelRadiusM || 0.33) * 0.35,
         Math.abs(yawError) * 420
@@ -654,6 +699,9 @@ export class PowertrainModel {
         wheelBrakeTorqueNm: { ...wheelBrakeTorqueNm },
         appliedBrakeTorqueNm: { ...wheelBrakeTorqueNm },
         stabilityBrakeWheelId,
+        stabilityClassification,
+        desiredYawRate,
+        yawError,
         requestedStabilityBrakeTorqueNm,
         stabilityBrakeTorqueNm
       }

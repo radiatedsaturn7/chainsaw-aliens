@@ -52,14 +52,57 @@ export function getAckermannSteeringAngles({
     : { fl: q(blend(inner)), fr: q(blend(outer)), rl: 0, rr: 0 };
 }
 
-export function resolvePhysicalCenterSteeringAngle(controls = {}, config = {}) {
+export function calculateAuthoritativeSteeringEnvelope(state = {}, config = {}) {
+  const front = ['fl', 'fr'].map((wheelId) => state.contactPatches?.[wheelId]).filter((patch) => (
+    Number(patch?.normalLoadN || 0) > 1
+  ));
   const maximumAngleRad = Math.max(0.05, Number(config.maxSteerAngleRad) || 0.52);
-  return typeof controls.centerSteeringAngleRad === 'number'
-    && Number.isFinite(controls.centerSteeringAngleRad)
-    ? clamp(controls.centerSteeringAngleRad, -maximumAngleRad, maximumAngleRad)
-    : clamp(Number(controls.steering) || 0, -1, 1)
-      * maximumAngleRad
-      * Math.max(0.01, Number(config.steeringRackRatio) || 1);
+  const speedMps = Math.max(0, Number(state.groundSpeedMps
+    ?? Math.hypot(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0))) || 0);
+  if (!front.length || speedMps < 1) return maximumAngleRad;
+  let supportedLoadN = 0;
+  let weightedGrip = 0;
+  front.forEach((patch) => {
+    const loadN = Math.max(0, Number(patch.normalLoadN || 0));
+    const suspensionLoadN = Math.max(loadN, Number(patch.suspensionNormalLoadN || loadN));
+    const aquaplaningSupport = clamp(loadN / Math.max(1, suspensionLoadN), 0, 1);
+    const utilizationReserve = Math.sqrt(Math.max(0.04, 1 - clamp(Number(patch.utilization || 0), 0, 1) ** 2));
+    const grip = Math.max(0.025, Number(patch.gripCoefficient
+      ?? patch.material?.effectiveGrip ?? 1));
+    supportedLoadN += loadN;
+    weightedGrip += loadN * grip * aquaplaningSupport * utilizationReserve;
+  });
+  const effectiveMu = weightedGrip / Math.max(1, supportedLoadN);
+  const contactScale = front.length / 2;
+  const frontReferenceLoadN = Math.max(1, Number(config.massKg || 1450) * 9.81
+    * clamp(Number(config.frontWeightDistribution ?? 0.55), 0.3, 0.75));
+  const loadSupportScale = clamp(supportedLoadN / frontReferenceLoadN, 0.12, 1);
+  const lateralAccelerationMps2 = 9.81 * effectiveMu * contactScale * loadSupportScale;
+  const gripAngle = Math.atan(
+    lateralAccelerationMps2 * Math.max(0.5, Number(config.wheelbaseM || 2.65))
+    / Math.max(1, speedMps * speedMps)
+  );
+  return clamp(gripAngle, 0.002, maximumAngleRad);
+}
+
+export function resolvePhysicalCenterSteeringAngle(controls = {}, config = {}, state = {}) {
+  const maximumAngleRad = Math.max(0.05, Number(config.maxSteerAngleRad) || 0.52);
+  const direct = String(config.handlingPreset || 'sport').toLowerCase() === 'simulation'
+    || controls.steeringInputMode === 'simulation-wheel';
+  if (direct) {
+    return typeof controls.centerSteeringAngleRad === 'number'
+      && Number.isFinite(controls.centerSteeringAngleRad)
+      ? clamp(controls.centerSteeringAngleRad, -maximumAngleRad, maximumAngleRad)
+      : clamp(Number(controls.steering) || 0, -1, 1) * maximumAngleRad;
+  }
+  if (!config.handlingPreset && !controls.steeringInputMode
+    && typeof controls.centerSteeringAngleRad === 'number'
+    && Number.isFinite(controls.centerSteeringAngleRad)) {
+    return clamp(controls.centerSteeringAngleRad, -maximumAngleRad, maximumAngleRad);
+  }
+  const envelope = calculateAuthoritativeSteeringEnvelope(state, config)
+    * (String(config.handlingPreset || 'sport').toLowerCase() === 'accessible' ? 1.08 : 1);
+  return clamp(Number(controls.steering) || 0, -1, 1) * Math.min(maximumAngleRad, envelope);
 }
 
 export function getContactPatchMaterialGrip(material = {}) {
@@ -224,7 +267,7 @@ export function calculateWheelContactKinematics({ state, config, controls, envir
     { x: 0, y: -1, z: 0 }
   );
   const normal = normalize(vector(environment.surfaceNormalByWheel?.[wheelId], { x: 0, y: 1, z: 0 }));
-  const centerSteeringAngleRad = resolvePhysicalCenterSteeringAngle(controls, config);
+  const centerSteeringAngleRad = resolvePhysicalCenterSteeringAngle(controls, config, state);
   const steeringAngles = getAckermannSteeringAngles({
     steeringAngleRad: centerSteeringAngleRad,
     wheelbaseM: config.wheelbaseM,
@@ -398,6 +441,7 @@ export function calculateBrushTireForce({ kinematics, normalLoadN, tire = {}, ma
 export class ContactPatchTireModel {
   step({ state, controls, config, environment = {}, dt = 0 }) {
     const driven = new Set(config.drivenWheelIds);
+    const centerSteeringAngleRad = resolvePhysicalCenterSteeringAngle(controls, config, state);
     const outputs = {};
     const wheelLoadsN = {};
     const wheelSlip = {};
@@ -484,7 +528,7 @@ export class ContactPatchTireModel {
       const geometry = solveSuspensionGeometry({
         definition: front ? config.suspensionDefinitionFront : config.suspensionDefinitionRear,
         compressionM: compressionM - staticCompressionM,
-        steeringAngleRad: resolvePhysicalCenterSteeringAngle(controls, config),
+        steeringAngleRad: resolvePhysicalCenterSteeringAngle(controls, config, state),
         staticCamberRad: front ? config.camberFrontRad : config.camberRearRad,
         staticToeRad: front ? config.toeFrontRad : config.toeRearRad,
         springRateNpm
@@ -731,7 +775,7 @@ export class ContactPatchTireModel {
     const powertrainStep = powertrainModel.stepAuthoritativeWheelTorques({
       tuning: powertrainTuning,
       config,
-      controls,
+      controls: { ...controls, centerSteeringAngleRad },
       previous: state.powertrainState || {},
       kinematicsByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
         wheelId, wheelInputs[wheelId].kinematics

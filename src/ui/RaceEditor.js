@@ -19028,6 +19028,32 @@ export default class RaceEditor {
     return geometry;
   }
 
+  getRacePhysicsDoodadColliderSprites() {
+    const hiddenIds = new Set([
+      ...(this.playtestSession?.removedSceneryIds || []),
+      ...(this.playtestSession?.flattenedSceneryIds || [])
+    ]);
+    return this.ensureRaceScenery().filter((sprite) => (
+      sprite
+      && sprite.state !== 'removed'
+      && sprite.state !== 'flattened'
+      && !hiddenIds.has(sprite.id)
+      && (sprite.presetId === 'doodad' || sprite.doodadRef || sprite.previewDoodad)
+    ));
+  }
+
+  addRaceThreePhysicsDoodadColliders(renderer = null, sprites = []) {
+    if (!renderer?.scene || !THREE?.Group) return 0;
+    const group = new THREE.Group();
+    group.name = 'racePhysicsDoodadColliders';
+    sprites.forEach((sprite) => {
+      this.addRaceThreeDoodadHitboxMeshes(renderer, group, sprite, { forceVisible: true });
+    });
+    if (!group.children.length) return 0;
+    renderer.scene.add(group);
+    return group.children.length;
+  }
+
   drawRacePhysicsContactOverlay(ctx, bounds, cameraState = null) {
     const wheels = this.playtestSession?.vehicle3d?.wheels || this.playtestSession?.wheelContacts3d || {};
     const patches = this.playtestSession?.vehicleDynamicsRunner?.state?.contactPatches || {};
@@ -19403,7 +19429,9 @@ export default class RaceEditor {
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
     const triangleCount = Number(sampler?.triangleCount || sampler?.triangles?.length || 0);
     if (!triangleCount || !cameraState?.camera || !renderer?.threeRenderer) return false;
-    const surfaceKey = String(worldBake.surfaceRevision || worldBake.key || triangleCount);
+    const colliderSprites = this.getRacePhysicsDoodadColliderSprites();
+    const colliderKey = this.getRaceThreeDoodadSceneKey(colliderSprites);
+    const surfaceKey = `${String(worldBake.surfaceRevision || worldBake.key || triangleCount)}::${colliderKey}`;
     if (renderer.physicsSurfaceKey !== surfaceKey) {
       this.clearRaceThreeScene(renderer);
       const geometry = this.buildRaceThreePhysicsSurfaceGeometry(sampler);
@@ -19433,6 +19461,7 @@ export default class RaceEditor {
       wireMesh.renderOrder = 1;
       renderer.scene.add(surfaceMesh);
       renderer.scene.add(wireMesh);
+      renderer.physicsDoodadColliderCount = this.addRaceThreePhysicsDoodadColliders(renderer, colliderSprites);
       renderer.physicsSurfaceKey = surfaceKey;
     }
     const camera = cameraState.camera;
@@ -19475,7 +19504,8 @@ export default class RaceEditor {
       ...(this.lastRaceRenderStats || {}),
       physicsSurfaceView: true,
       polygons: triangleCount,
-      drawCalls: 2,
+      drawCalls: 2 + Number(renderer.physicsDoodadColliderCount || 0),
+      physicsDoodadColliders: colliderSprites.length,
       terrainCells: worldBake.terrainCells?.length || 0
     };
     return true;
@@ -32674,8 +32704,8 @@ export default class RaceEditor {
       .filter(Boolean);
   }
 
-  getRaceDoodadHitboxWorldMeshes(sprite = {}) {
-    if (!sprite?.previewHitbox) return [];
+  getRaceDoodadHitboxWorldMeshes(sprite = {}, { forceVisible = false } = {}) {
+    if (!forceVisible && !sprite?.previewHitbox) return [];
     const doodad = this.getRaceDoodadForScenery(sprite);
     const radius = Math.max(0.05, Number(doodad.hitboxWidthM ?? doodad.widthM ?? sprite.widthM ?? 1.5) * 0.5);
     const heightM = Math.max(0.05, Number(doodad.hitboxHeightM ?? doodad.heightM ?? sprite.heightM ?? 2));
@@ -32714,8 +32744,22 @@ export default class RaceEditor {
     return meshes;
   }
 
-  getRaceDoodadHitboxWorldMeshBatch() {
-    return this.ensureRaceScenery().flatMap((sprite) => this.getRaceDoodadHitboxWorldMeshes(sprite));
+  getRaceDoodadHitboxWorldMeshBatch({ forceVisible = false, activeOnly = false } = {}) {
+    const hiddenIds = new Set(activeOnly ? [
+      ...(this.playtestSession?.removedSceneryIds || []),
+      ...(this.playtestSession?.flattenedSceneryIds || [])
+    ] : []);
+    return this.ensureRaceScenery()
+      .filter((sprite) => (
+        sprite
+        && (!activeOnly || (
+          sprite.state !== 'removed'
+          && sprite.state !== 'flattened'
+          && !hiddenIds.has(sprite.id)
+          && (sprite.presetId === 'doodad' || sprite.doodadRef || sprite.previewDoodad)
+        ))
+      ))
+      .flatMap((sprite) => this.getRaceDoodadHitboxWorldMeshes(sprite, { forceVisible }));
   }
 
   addRaceThreeDoodads(renderer = null, { stats = null } = {}) {
@@ -32792,9 +32836,12 @@ export default class RaceEditor {
     return true;
   }
 
-  addRaceThreeDoodadHitboxMeshes(renderer = null, group = null, sprite = {}, { stats = null } = {}) {
+  addRaceThreeDoodadHitboxMeshes(renderer = null, group = null, sprite = {}, {
+    stats = null,
+    forceVisible = false
+  } = {}) {
     if (!renderer || !group || !THREE?.BufferGeometry || !THREE?.Float32BufferAttribute || !THREE?.Mesh) return false;
-    const meshes = this.getRaceDoodadHitboxWorldMeshes(sprite);
+    const meshes = this.getRaceDoodadHitboxWorldMeshes(sprite, { forceVisible });
     if (!meshes.length) return false;
     const material = this.getRaceThreeSolidMaterial(renderer, '#ff4040', {
       transparent: true,

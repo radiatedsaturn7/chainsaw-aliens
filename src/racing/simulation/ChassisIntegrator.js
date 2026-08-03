@@ -6,7 +6,7 @@ import {
   stepRaceVehiclePhysics,
   syncRaceVehiclePhysicsToSession
 } from '../RaceVehiclePhysics.js';
-import { RACE_WHEEL_IDS, clamp } from './SimulationMath.js';
+import { RACE_WHEEL_IDS, clamp, deterministicUnitFloat } from './SimulationMath.js';
 import { RACE_THREE_ELEVATION_M } from './RaceSimulationConfig.js';
 
 export class ChassisIntegrator {
@@ -161,7 +161,15 @@ export function updateRaceVerticalAndRollState(editor, {
         session.lastLandingImpactMps = landingImpact;
         session.lastLandingImpactAtMs = Number(session.elapsedMs || 0);
         if (landingImpact > 4.8) {
-          editor.applyRaceDamage('suspension', (landingImpact - 4.8) * 1.7, { pull: (Math.random() - 0.5) * 0.05 });
+          const damageSequence = Math.max(0, Math.trunc(Number(session.damageEventSequence || 0)));
+          session.damageEventSequence = damageSequence + 1;
+          const variation = deterministicUnitFloat(
+            editor.selectedRace?.seed ?? editor.selectedRace?.id ?? 'race',
+            editor.getRaceSessionCar?.(session)?.id ?? session.vehicleId ?? 'vehicle',
+            'landing',
+            damageSequence
+          );
+          editor.applyRaceDamage('suspension', (landingImpact - 4.8) * 1.7, { pull: (variation - 0.5) * 0.05 });
         }
       }
     } else {
