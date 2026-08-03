@@ -4,11 +4,14 @@ import {
   ContactPatchTireModel,
   calculateBrushTireForce,
   calculateAquaplaningState,
+  calculateVelocitySensitiveDamperForce,
   calculateWheelContactKinematics,
   getAckermannSteeringAngles
 } from '../../src/racing/simulation/ContactPatchTireModel.js';
 import { advanceTireThermalState } from '../../src/racing/simulation/TireThermalModel.js';
 import { createVehicleDynamicsConfig, createVehicleDynamicsState } from '../../src/racing/simulation/VehicleDynamicsRunner.js';
+import { RACE_TIRE_COMPOUNDS } from '../../src/racing/raceData.js';
+import { resolveCompoundSurfaceGrip } from '../../src/racing/simulation/SurfaceConditionGrip.js';
 
 const config = createVehicleDynamicsConfig({
   massKg: 1400,
@@ -158,6 +161,37 @@ test('geometric suspension preload supports weight and unloads continuously at f
   assert.equal(beyondDroop.wheelLoadsN.fl, 0);
 });
 
+test('velocity-sensitive dampers use continuous digressive bump and rebound slopes', () => {
+  const options = {
+    bumpDamperNsM: 2850,
+    reboundDamperNsM: 4050,
+    highSpeedThresholdMps: 0.25,
+    highSpeedScale: 0.62
+  };
+  const atThreshold = calculateVelocitySensitiveDamperForce({
+    ...options,
+    relativeVelocityMps: 0.25
+  });
+  const justAbove = calculateVelocitySensitiveDamperForce({
+    ...options,
+    relativeVelocityMps: 0.250001
+  });
+  const highSpeed = calculateVelocitySensitiveDamperForce({
+    ...options,
+    relativeVelocityMps: 1
+  });
+  const rebound = calculateVelocitySensitiveDamperForce({
+    ...options,
+    relativeVelocityMps: -1
+  });
+
+  assert.equal(atThreshold, 712.5);
+  assert.ok(Math.abs(justAbove - atThreshold) < 0.01);
+  assert.equal(highSpeed, 2037.75);
+  assert.equal(rebound, -2895.75);
+  assert.ok(highSpeed < 2850, 'high-speed damping must use the reduced slope, not multiply the full force');
+});
+
 test('physical deceleration differential allocates engine braking by per-wheel capacity', () => {
   const model = new ContactPatchTireModel();
   const decelConfig = createVehicleDynamicsConfig({
@@ -246,4 +280,66 @@ test('compound, pressure, size, temperature, wear, damage, load sensitivity, and
     material: { grip: 1, standingWaterDepthMm: 6, snowDepthMm: 20, iceDepthMm: 1, dirt: 0.5, mud: 0.5, oil: 0.4, looseMarbles: 0.5, roughness: 0.6 }
   });
   assert.ok(healthy.gripCoefficient > contaminated.gripCoefficient);
+});
+
+test('Track State snow and compound grip remain continuous across the display-surface threshold', () => {
+  const compound = RACE_TIRE_COMPOUNDS.find((entry) => entry.id === 'tarmac');
+  const gripAt = (snowDepthMm) => {
+    const effectiveGrip = 1 - Math.min(1, snowDepthMm / 35) * 0.42;
+    const material = {
+      baseSurfaceId: 'asphalt',
+      surfaceId: snowDepthMm > 2 ? 'snow' : 'asphalt',
+      snowDepthMm,
+      effectiveGrip,
+      grip: effectiveGrip,
+      trackStateConditionApplied: true
+    };
+    const compoundGrip = resolveCompoundSurfaceGrip(compound, material);
+    const force = calculateBrushTireForce({
+      kinematics: { slipRatio: 0.08, slipAngleRad: 0.06, camberAngleRad: 0 },
+      normalLoadN: 4000,
+      tire: { compound, pressurePsi: 32, effectivePressurePsi: 32, targetPressurePsi: 32,
+        treadTemperatureC: 75, referenceLoadN: 4000, widthMm: 245 },
+      material
+    });
+    return { compoundGrip, mu: force.gripCoefficient };
+  };
+  const before = gripAt(1.99);
+  const after = gripAt(2.01);
+  assert.ok(Math.abs(after.compoundGrip - before.compoundGrip) < 0.002);
+  assert.ok(Math.abs(after.mu - before.mu) < 0.002);
+  assert.ok(gripAt(10).mu < after.mu);
+  assert.ok(gripAt(35).mu < gripAt(10).mu);
+  assert.ok(gripAt(35).mu > 0.1, 'deep snow must not receive the same penalty repeatedly');
+});
+
+test('Track State grip scale does not apply the base gravel coefficient twice', () => {
+  const compound = RACE_TIRE_COMPOUNDS.find((entry) => entry.id === 'tarmac');
+  const material = {
+    baseSurfaceId: 'gravel',
+    surfaceId: 'snow',
+    snowDepthMm: 4,
+    effectiveGrip: 0.64189,
+    effectiveGripMultiplier: 0.943956,
+    surfaceGripScale: 0.943956,
+    trackStateConditionApplied: true
+  };
+  const compoundGrip = resolveCompoundSurfaceGrip(compound, material);
+  const force = calculateBrushTireForce({
+    kinematics: { slipRatio: 0.08, slipAngleRad: 0.04, camberAngleRad: 0 },
+    normalLoadN: 4000,
+    tire: {
+      compound,
+      pressurePsi: 32,
+      effectivePressurePsi: 32,
+      targetPressurePsi: 32,
+      treadTemperatureC: 75,
+      referenceLoadN: 4000,
+      widthMm: 245
+    },
+    material
+  });
+
+  assert.ok(Math.abs(force.gripCoefficient - compoundGrip * material.surfaceGripScale) < 0.00001);
+  assert.ok(force.gripCoefficient > compoundGrip * material.effectiveGrip + 0.15);
 });

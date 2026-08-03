@@ -10857,6 +10857,48 @@ test('Race physics surface car consumes the shared authoritative player render p
   assert.equal(captured.frontTireAngle, 0.11);
 });
 
+test('Race physics traction debug maps effective grip and identifies surface conditions read-only', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const low = editor.getRacePhysicsTractionColor(0.2);
+  const high = editor.getRacePhysicsTractionColor(1.05);
+  assert.ok(low[0] > low[1]);
+  assert.ok(high[1] > high[0]);
+  assert.equal(editor.getRacePhysicsDominantSurfaceCondition({ snowDepthMm: 12, moistureDepthMm: 0.2 }), 'snow');
+  assert.equal(editor.getRacePhysicsDominantSurfaceCondition({ standingWaterDepthMm: 5, snowDepthMm: 1 }), 'water');
+  assert.equal(editor.getRacePhysicsCompositeSurfaceLabel({
+    baseSurfaceId: 'gravel',
+    surfaceId: 'snow',
+    snowDepthMm: 4
+  }), 'GRAVEL + SNOW 4.0mm');
+
+  const legendContext = createMockContext();
+  editor.drawRacePhysicsTractionLegend(legendContext, { x: 0, y: 0, w: 240, h: 180 });
+  const legendText = legendContext.calls.filter((call) => call.type === 'text');
+  assert.ok(legendText.some((call) => call.value === 'SURFACE TRACTION μ'));
+  assert.ok(legendText.some((call) => call.value === '0.0'));
+  assert.ok(legendText.some((call) => call.value === '1.2'));
+  assert.ok(legendText.some((call) => call.value === 'snow'));
+  assert.ok(legendText.every((call) => call.x >= 10 && call.x <= 230));
+
+  let reads = 0;
+  const dryCell = { key: '0,0', x: 0.5, z: 0.5, elevationM: 0, effectiveGrip: 1 };
+  editor.playtestSession = {
+    worldX: 0,
+    worldZ: 0,
+    trackState: {
+      stepIndex: 12,
+      getVisualCells() {
+        reads += 1;
+        return [dryCell];
+      }
+    }
+  };
+  assert.deepEqual(editor.getRaceTrackStateVisualCells(70), []);
+  assert.deepEqual(editor.getRaceTrackStateVisualCells(70, { includeAll: true }), [dryCell]);
+  assert.equal(editor.playtestSession.trackState.stepIndex, 12);
+  assert.equal(reads, 2);
+});
+
 test('Race editor exposes no legacy planar body follower', () => {
   const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
   assert.equal(editor.syncRaceSessionPlanarBodyToWorld, undefined);
@@ -20563,7 +20605,7 @@ test('Race Editor maps plugged-in gamepad buttons to race-specific controls', ()
 
   editor.playtestSession.shiftCooldownMs = 0;
   gameInput.gamepadActions = { dpadLeft: true, gamepadA: false };
-  gameInput.gamepadPressed = new Set(['gamepadX', 'gamepadSelect', 'gamepadStart']);
+  gameInput.gamepadPressed = new Set(['gamepadX', 'gamepadSelect']);
   editor.updateRaceKeyboardInput({
     isDown: () => false,
     isDownCode: () => false,
@@ -20574,7 +20616,55 @@ test('Race Editor maps plugged-in gamepad buttons to race-specific controls', ()
   assert.equal(editor.raceInput.handbrake, false);
   assert.equal(editor.raceInput.gear, 1);
   assert.equal(editor.raceInput.cameraView, 'first-person');
+  gameInput.gamepadPressed = new Set(['gamepadStart']);
+  editor.updateRaceKeyboardInput({
+    isDown: () => false,
+    isDownCode: () => false,
+    wasPressed: () => false,
+    wasPressedCode: () => false
+  });
   assert.equal(editor.raceInput.paused, true);
+});
+
+test('Race Editor defers a short Select press until release', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('starter-rwd');
+  editor.playtestSession.countdownRemainingMs = 0;
+
+  editor.updateRaceGamepadSelectHold({ isDown: true, wasPressed: true, deltaMs: 16 });
+  assert.equal(editor.raceInput.cameraView, 'third-person');
+  assert.equal(Boolean(editor.playtestSession.pendingEdgeCenterReset), false);
+
+  editor.updateRaceGamepadSelectHold({ isDown: false, deltaMs: 16 });
+  assert.equal(editor.raceInput.cameraView, 'first-person');
+});
+
+test('Race Editor Select hold reset is frame-partition independent and stops the car', () => {
+  [30, 60, 90, 120, 144].forEach((fps) => {
+    const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+    editor.startPlaytest('starter-rwd');
+    editor.playtestSession.countdownRemainingMs = 0;
+    editor.playtestSession.distance = 137;
+    editor.playtestSession.speedMps = 24;
+    const deltaMs = 1000 / fps;
+    let triggered = false;
+    for (let frame = 0; frame < fps + 2; frame += 1) {
+      triggered = editor.updateRaceGamepadSelectHold({
+        isDown: true,
+        wasPressed: frame === 0,
+        deltaMs
+      }) || triggered;
+    }
+
+    assert.equal(triggered, true, `${fps} FPS hold should trigger`);
+    assert.equal(editor.playtestSession.pendingEdgeCenterReset.distance, 137);
+    assert.equal(editor.playtestSession.pendingEdgeCenterReset.preserveMotion, false);
+    assert.equal(editor.raceInput.cameraView, 'third-person');
+    editor.playtestSession.edgeResetFadeMs = 0;
+    editor.updateRaceEdgeCenterResetFade();
+    assert.equal(editor.playtestSession.speedMps, 0);
+    assert.equal(editor.playtestSession.pendingEdgeCenterReset, null);
+  });
 });
 
 test('Race Editor clears held gamepad handbrake on A release', () => {

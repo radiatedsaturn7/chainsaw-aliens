@@ -5,9 +5,11 @@ import {
   DEFAULT_CAR_TUNING,
   RACE_CAR_DIMENSIONS,
   WRX2_PHYSICAL_PROFILE,
-  WRX_2022_TRANSMISSIONS
+  WRX_2022_TRANSMISSIONS,
+  createBuiltInRaceCars
 } from '../../src/racing/raceData.js';
 import { createVehicleDynamicsConfigFromTuning } from '../../src/racing/simulation/VehicleDynamicsRunner.js';
+import RaceEditor from '../../src/ui/RaceEditor.js';
 
 const config = createVehicleDynamicsConfigFromTuning({
   ...DEFAULT_CAR_TUNING,
@@ -50,4 +52,28 @@ test('WRX2 aero calibration implies a plausible power-limited top-speed envelope
   );
   const equilibriumSpeedMph = equilibriumSpeedMps * 2.2369362921;
   assert.ok(equilibriumSpeedMph > 125 && equilibriumSpeedMph < 165);
+});
+
+test('saved automatic WRX2 rehydrates its physical profile and supported footprint at runtime', () => {
+  const savedCar = structuredClone(createBuiltInRaceCars().find((car) => car.id === 'starter-rwd'));
+  delete savedCar.tuning.physicalVehicleProfile;
+  savedCar.defaultTransmissionType = 'automatic';
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, input: { gamepadAxes: {} }, exitRaceEditor() {} });
+  assert.equal(editor.applyLoadedCarDocument({ kind: 'race-car', car: savedCar }, { name: '2022 Subaru WRX2' }), true);
+  editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false });
+  editor.playtestSession.countdownRemainingMs = 0;
+  editor.playtestSession.launchLockMs = 0;
+  editor.playtestSession.elapsedMs = 1000;
+  editor.updatePlaytest(1 / 60);
+  const runner = editor.playtestSession.vehicleDynamicsRunner;
+  assert.equal(runner.config.physicalProfileId, WRX2_PHYSICAL_PROFILE.id);
+  assert.equal(runner.config.massKg, 1603);
+  assert.deepEqual(runner.config.inertiaTensorBodyKgM2, WRX2_PHYSICAL_PROFILE.inertiaTensorBodyKgM2);
+  assert.equal(runner.config.antiRollStiffnessFrontNpm, 22000);
+  assert.equal(runner.config.antiRollStiffnessRearNpm, 17000);
+  assert.equal(runner.config.dragCoefficient, 0.34);
+  Object.values(runner.state.suspensionState).forEach((suspension) => {
+    assert.equal(suspension.footprint.supportedFraction, 1);
+    assert.equal(suspension.footprint.samples.length, 4);
+  });
 });

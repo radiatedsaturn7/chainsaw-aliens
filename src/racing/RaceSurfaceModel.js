@@ -406,6 +406,7 @@ export class RaceSurfaceModel {
     const x = Number(deck.x || 0) + Number(right.x || 0) * Number(lateral || 0);
     const z = Number(deck.z || 0) + Number(right.z || 0) * Number(lateral || 0);
     const fallbackSurface = deck.segment?.surface || options.fallbackSurfaceId || 'asphalt';
+    const applyWeatherSurface = options.applyWeatherSurface !== false;
     const classification = this.classifyLateral(lateral, deck, deck.segment);
     let region = classification.region;
     let blend = classification.blend;
@@ -426,22 +427,32 @@ export class RaceSurfaceModel {
     if (region === 'road') {
       elevation = this.getBankedDeckElevation(deck, lateral);
       terrainGripScale = 1;
-      surfaceId = this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState());
+      surfaceId = applyWeatherSurface
+        ? this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState())
+        : this.getSurfaceById(fallbackSurface).id;
     } else if (region === 'margin') {
       elevation = this.getBankedDeckElevation(deck, lateral);
       terrainGripScale = 0.96;
-      surfaceId = this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState());
+      surfaceId = applyWeatherSurface
+        ? this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState())
+        : this.getSurfaceById(fallbackSurface).id;
     } else if (region === 'shoulder') {
       elevation = this.getBankedDeckElevation(deck, lateral);
       terrainGripScale = 1;
-      surfaceId = this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState());
+      surfaceId = applyWeatherSurface
+        ? this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState())
+        : this.getSurfaceById(fallbackSurface).id;
     } else if (region === 'transition') {
       const deckSideElevation = this.getBankedDeckElevation(deck, lateral);
       elevation = deckSideElevation * (1 - blend) + raw.elevation * blend;
       terrainGripScale = 1;
-      surfaceId = this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState());
+      surfaceId = applyWeatherSurface
+        ? this.getEffectiveSurfaceId(fallbackSurface, this.getWeatherState())
+        : this.getSurfaceById(fallbackSurface).id;
     }
-    surfaceId = this.getEffectiveSurfaceId(surfaceId, this.getWeatherState());
+    surfaceId = applyWeatherSurface
+      ? this.getEffectiveSurfaceId(surfaceId, this.getWeatherState())
+      : this.getSurfaceById(surfaceId).id;
     const surface = this.getSurfaceById(surfaceId);
     const deckNormal = this.getBankedDeckNormal(deck);
     const normal = region === 'terrain'

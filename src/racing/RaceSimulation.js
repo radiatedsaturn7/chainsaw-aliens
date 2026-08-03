@@ -321,19 +321,32 @@ function advanceVehicleDynamicsAuthority(editor, {
             normalX: normal.x,
             normalY: normal.y,
             normalZ: normal.z,
-            supported: Number.isFinite(Number(sample.heights?.[wheelId]))
+            supported: Number.isFinite(Number(geometry.elevation))
           };
         })
       ])),
       materialByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
       const contact = fixedContacts.contacts?.[wheelId] || {};
       const sample = contact.trackState;
+      const baseSurfaceId = sample?.cell?.baseSurfaceId || contact.baseSurfaceId
+        || wheelSurfaceState.baseSurfaceByWheel?.[wheelId] || 'asphalt';
+      const nominalBaseGrip = Math.max(0.025, Number(getSurfaceById(baseSurfaceId)?.grip || 1));
+      const localBaseGrip = Number(sample?.cell?.baseGrip ?? contact.friction ?? nominalBaseGrip);
+      const surfaceGripScale = localBaseGrip / nominalBaseGrip
+        * Number(sample?.effectiveGripMultiplier ?? 1);
       return [wheelId, {
         ...(sample?.cell || {}),
+        baseSurfaceId,
         surfaceId: contact.surfaceId || wheelSurfaceState.surfaceByWheel?.[wheelId],
-        grip: contact.friction
+        effectiveGrip: sample?.effectiveGrip ?? contact.friction
           ?? wheelSurfaceState.frictionByWheel?.[wheelId]
-          ?? 1
+          ?? 1,
+        effectiveGripMultiplier: sample?.effectiveGripMultiplier ?? 1,
+        surfaceGripScale,
+        grip: sample?.effectiveGrip ?? contact.friction
+          ?? wheelSurfaceState.frictionByWheel?.[wheelId]
+          ?? 1,
+        trackStateConditionApplied: Boolean(sample)
       }];
       })),
     sampleTerrainAtWorldPoint: (worldPoint) => {
@@ -389,7 +402,6 @@ function advanceVehicleDynamicsAuthority(editor, {
         : 1;
       return [wheelId, {
         ...fixedTire,
-        compoundGrip: fixedTire.compound.surfaceGrip?.[fixedContacts.contacts?.[wheelId]?.surfaceId] ?? 1,
         temperatureF: state.tireState?.[wheelId]?.temperatureF ?? 70,
         treadTemperatureC: state.tireState?.[wheelId]?.treadTemperatureC,
         carcassTemperatureC: state.tireState?.[wheelId]?.carcassTemperatureC,

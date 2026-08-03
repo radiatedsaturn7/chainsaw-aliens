@@ -1,5 +1,6 @@
 import { RACE_PEDAL_INPUT, RACE_THREE_ELEVATION_M } from './simulation/RaceSimulationConfig.js';
 import { RACE_WHEEL_IDS, clamp } from './simulation/SimulationMath.js';
+import { getSurfaceById } from './raceData.js';
 import {
   VehicleDynamicsRunner,
   createVehicleDynamicsConfigFromTuning
@@ -217,10 +218,20 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
       ])),
       materialByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
         const contact = fixedContacts.contacts?.[wheelId] || {};
+        const sample = contact.trackState;
+        const baseSurfaceId = sample?.cell?.baseSurfaceId || contact.baseSurfaceId || 'asphalt';
+        const nominalBaseGrip = Math.max(0.025, Number(getSurfaceById(baseSurfaceId)?.grip || 1));
+        const localBaseGrip = Number(sample?.cell?.baseGrip ?? contact.friction ?? nominalBaseGrip);
         return [wheelId, {
-          ...(contact.trackState?.cell || {}),
-          grip: contact.friction ?? 1,
-          surfaceId: contact.surfaceId || contact.surface
+          ...(sample?.cell || {}),
+          baseSurfaceId,
+          grip: sample?.effectiveGrip ?? contact.friction ?? 1,
+          effectiveGrip: sample?.effectiveGrip ?? contact.friction ?? 1,
+          effectiveGripMultiplier: sample?.effectiveGripMultiplier ?? 1,
+          surfaceGripScale: localBaseGrip / nominalBaseGrip
+            * Number(sample?.effectiveGripMultiplier ?? 1),
+          surfaceId: contact.surfaceId || contact.surface,
+          trackStateConditionApplied: Boolean(sample)
         }];
       })),
       sampleTerrainAtWorldPoint: (worldPoint) => {
@@ -236,11 +247,9 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
       },
       tireByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
         const fixedTire = ai.tireConfigByWheel[wheelId];
-        const compound = fixedTire.compound;
         const thermal = state.tireState?.[wheelId] || {};
         return [wheelId, {
           ...fixedTire,
-          compoundGrip: compound.surfaceGrip?.[fixedContacts.contacts?.[wheelId]?.surfaceId] ?? 1,
           pressurePsi: thermal.effectivePressurePsi ?? tireSetup.tirePressurePsi[wheelId],
           effectivePressurePsi: thermal.effectivePressurePsi ?? tireSetup.tirePressurePsi[wheelId],
           treadTemperatureC: thermal.treadTemperatureC,
