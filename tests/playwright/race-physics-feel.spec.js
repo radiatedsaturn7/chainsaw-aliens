@@ -180,7 +180,7 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
               maxProjectedCameraChaseYawError,
               Math.abs(normalizeAngle(chaseYaw - Number(renderCamera.cameraYaw || 0)))
             );
-            if (bodyTravelSlipYaw > 0.4) {
+            if (bodyTravelSlipYaw > 0.15) {
               minProjectedBodyChaseYawDelta = Math.min(
                 minProjectedBodyChaseYawDelta,
                 Math.abs(normalizeAngle(chaseYaw - Number(session.carYaw || 0)))
@@ -203,7 +203,7 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
             maxProjectedCameraChaseYawError,
             Math.abs(normalizeAngle(chaseYaw - Number(renderCamera.cameraYaw || 0)))
           );
-          if (bodyTravelSlipYaw > 0.4) {
+          if (bodyTravelSlipYaw > 0.15) {
             minProjectedBodyChaseYawDelta = Math.min(
               minProjectedBodyChaseYawDelta,
               Math.abs(normalizeAngle(chaseYaw - Number(session.carYaw || 0)))
