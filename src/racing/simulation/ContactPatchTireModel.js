@@ -860,6 +860,14 @@ export class ContactPatchTireModel {
       const tire = wheelInputs[wheelId].tire || {};
       const peakSlip = clamp(Number(tire.peakSlip ?? 0.16), 0.03, 1.5);
       const recoveryHysteresis = clamp(Number(tire.recoveryHysteresis ?? 0.04), 0, 0.3);
+      const widthScale = clamp(Number(tire.widthMm ?? 245) / 245, 0.7, 1.4);
+      const longitudinalStiffnessN = Math.max(
+        1000,
+        Number(tire.longitudinalStiffnessN || wheelInputs[wheelId].staticLoadN * 18) * widthScale
+      );
+      const equilibriumSlipDemand = Math.abs(
+        (appliedWheelTorque / rollingRadiusM) / longitudinalStiffnessN
+      );
       const withinStaticSlipRange = Math.abs(Number(
         wheelInputs[wheelId].tireTransition?.rawSlipRatio ?? kinematics.slipRatio ?? 0
       )) <= Math.max(0.03, peakSlip - recoveryHysteresis);
@@ -872,14 +880,9 @@ export class ContactPatchTireModel {
         || (withinStaticSlipRange
           && Number(controls.throttle || 0) <= 0.5
           && appliedWheelTorque > 0
-          && staticTorqueRatio <= 0.72);
+          && equilibriumSlipDemand <= Math.min(0.03, peakSlip * 0.25));
       if (geometricContact
         && nearRollingConstraint) {
-        const widthScale = clamp(Number(tire.widthMm ?? 245) / 245, 0.7, 1.4);
-        const longitudinalStiffnessN = Math.max(
-          1000,
-          Number(tire.longitudinalStiffnessN || wheelInputs[wheelId].staticLoadN * 18) * widthScale
-        );
         const equilibriumSlipRatio = clamp(
           (appliedWheelTorque / rollingRadiusM) / longitudinalStiffnessN,
           -0.08,

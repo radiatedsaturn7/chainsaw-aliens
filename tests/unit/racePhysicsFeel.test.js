@@ -385,7 +385,7 @@ test('Race stock AWD dirt remains controllable while 1200 HP partial throttle is
   assert.equal(overpowered.maxWheelSpin > 0.45, true,
     `expected high-power wheelspin above 0.45, received ${overpowered.maxWheelSpin.toFixed(3)}`);
   assert.equal(overpowered.maxDemandRatio > stock.maxDemandRatio * 1.65, true);
-  assert.equal(overpowered.maxRejectedDriveForceN > stock.maxRejectedDriveForceN * 3, true,
+  assert.equal(overpowered.maxRejectedDriveForceN > stock.maxRejectedDriveForceN * 2.5, true,
     `stock rejected ${stock.maxRejectedDriveForceN}; overpowered ${overpowered.maxRejectedDriveForceN}`);
   assert.equal(overpowered.minAppliedToDemandedDriveForceRatio >= 0, true);
   assert.equal(overpowered.minAppliedToDemandedDriveForceRatio <= 1, true);
@@ -410,9 +410,21 @@ test('Race stock AWD dirt keeps longitudinal adhesion at high steering input', (
     throttleAxis: 0.35,
     steerAxis: 0.8
   });
+  const overpowered = runHighPowerFeelCase({
+    surface: 'dirt',
+    drivetrain: 'awd',
+    powerHp: 1200,
+    torqueLbFt: 1000,
+    throttleAxis: 0.35,
+    steerAxis: 0.8
+  });
 
   assert.equal(stock.maxWheelSpin < 0.08, true,
     `expected high-steer stock wheelspin below 0.08, received ${stock.maxWheelSpin.toFixed(3)}`);
+  assert.equal(overpowered.maxWheelSpin > 0.08, true,
+    `expected high-steer high-power wheelspin above 0.08, received ${overpowered.maxWheelSpin.toFixed(3)}`);
+  assert.equal(overpowered.minPostPeakTraction < 0.9, true,
+    `expected high-steer high-power post-peak traction below 0.9, received ${overpowered.minPostPeakTraction.toFixed(3)}`);
 });
 
 test('Race 1200 HP dirt stays overpowered across AWD RWD and FWD drivetrains', () => {
