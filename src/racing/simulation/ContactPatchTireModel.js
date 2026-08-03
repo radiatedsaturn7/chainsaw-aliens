@@ -878,7 +878,7 @@ export class ContactPatchTireModel {
       // rolling-speed crossing so genuine breakaway and wheelspin remain free.
       const nearRollingConstraint = (atRollingSpeed && staticTorqueRatio <= 0.72)
         || (withinStaticSlipRange
-          && (staticTorqueRatio <= 0.55
+          && ((Number(controls.throttle || 0) > 0.5 && staticTorqueRatio <= 0.55)
             || (Number(controls.throttle || 0) <= 0.5
               && appliedWheelTorque > 0
               && equilibriumSlipDemand <= Math.min(0.01, peakSlip * 0.1))));
