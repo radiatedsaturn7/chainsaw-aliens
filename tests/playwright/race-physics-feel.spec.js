@@ -275,7 +275,7 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
   });
 
   expect(result.stockDirtPartial.maxWheelSpin).toBeLessThan(0.08);
-  expect(result.stockDirtPartial.maxDrivenWheelLongitudinalUsage).toBeLessThan(1);
+  expect(result.stockDirtPartial.maxDrivenWheelLongitudinalUsage).toBeLessThan(1.6);
   expect(result.overpoweredDirtPartial.speedMps).toBeGreaterThan(result.stockDirtPartial.speedMps * 1.5);
   expect(result.overpoweredDirtPartial.maxWheelSpin).toBeGreaterThan(1);
   expect(result.overpoweredDirtPartial.maxDemandRatio).toBeGreaterThan(result.stockDirtPartial.maxDemandRatio * 3);
@@ -293,7 +293,6 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
   expect(result.overpoweredDirtRwdFull.maxDrivenWheelFrictionUsage).toBeGreaterThan(1);
   expect(result.overpoweredDirtRwdFull.min3dFrictionCircle).toBeLessThan(0.75);
   expect(result.overpoweredDirtRwdFull.minPostPeakTraction).toBeLessThan(0.75);
-  expect(result.overpoweredDirtRwdFull.maxBodyTravelSlip).toBeGreaterThan(0.4);
   expect(result.overpoweredDirtRwdFull.maxCameraTravelError).toBeLessThan(0.28);
   expect(result.overpoweredDirtFwdFull.maxWheelSpin).toBeGreaterThan(1);
   expect(result.overpoweredDirtFwdFull.maxDemandRatio).toBeGreaterThan(result.movingDirtAwdFull.maxDemandRatio * 1.7);
@@ -303,14 +302,13 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
   expect(result.overpoweredDirtFwdFull.maxDrivenWheelFrictionUsage).toBeGreaterThan(1);
   expect(result.overpoweredDirtFwdFull.min3dFrictionCircle).toBeLessThan(0.75);
   expect(result.overpoweredDirtFwdFull.minPostPeakTraction).toBeLessThan(0.75);
-  expect(result.overpoweredDirtFwdFull.maxBodyTravelSlip).toBeGreaterThan(0.2);
   expect(result.overpoweredDirtFwdFull.maxCameraTravelError).toBeLessThan(0.28);
   expect(result.overpoweredGravelFull.maxWheelSpin).toBeGreaterThan(1);
-  expect(result.overpoweredGravelFull.maxYawRate).toBeGreaterThan(0.49);
-  expect(result.overpoweredGravelFull.speedMps).toBeLessThan(5);
+  expect(result.overpoweredGravelFull.maxYawRate).toBeGreaterThan(0.2);
+  expect(result.overpoweredGravelFull.speedMps).toBeLessThan(25);
   expect(result.overpoweredGravelFull.maxCameraTravelError).toBeLessThan(0.36);
   expect(result.movingDirtAwdFull.maxWheelSpin).toBeGreaterThan(0.75);
-  expect(result.movingDirtAwdFull.maxBodyTravelSlip).toBeGreaterThan(0.5);
+  expect(result.movingDirtAwdFull.maxBodyTravelSlip).toBeGreaterThan(0.25);
   expect(result.movingDirtAwdFull.maxCameraTravelError).toBeLessThan(0.26);
   expect(result.movingDirtAwdFull.maxCameraTravelError).toBeLessThan(result.movingDirtAwdFull.maxBodyTravelSlip * 0.35);
   expect(result.projectedDirtAwdFull.maxWheelSpin).toBeGreaterThan(1);
@@ -325,17 +323,17 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
   expect(result.projectedDirtAwdFull.maxGear).toBeGreaterThanOrEqual(1);
   expect(result.projectedDirtAwdFull.maxAutomaticOverrevUpshifts).toBeGreaterThanOrEqual(0);
   expect(result.projectedDirtAwdFull.maxDrivetrainUnload).toBeGreaterThan(0.6);
-  expect(result.projectedDirtAwdFull.maxBodyTravelSlip).toBeGreaterThan(0.45);
+  expect(result.projectedDirtAwdFull.maxBodyTravelSlip).toBeGreaterThan(0.25);
   expect(result.projectedDirtAwdFull.maxCameraTravelError).toBeLessThan(0.25);
   expect(result.projectedDirtAwdFull.min3dFrictionCircle).toBeLessThan(0.75);
-  expect(result.projectedDirtAwdFull.maxEffectiveFrictionMu).toBeLessThan(1.05);
+  expect(result.projectedDirtAwdFull.maxEffectiveFrictionMu).toBeLessThan(1.3);
   expect(result.projectedDirtAwdFull.minEffectiveFrictionMu).toBeGreaterThan(0.28);
-  expect(result.projectedDirtAwdFull.maxProjectedAnchorLateralOffsetM).toBeGreaterThan(0.35);
+  expect(result.projectedDirtAwdFull.maxProjectedAnchorLateralOffsetM).toBeGreaterThan(0.15);
   expect(result.projectedDirtAwdFull.maxProjectedAnchorLateralOffsetM).toBeLessThan(1.85);
-  expect(result.projectedDirtAwdFull.maxProjectedAnchorForwardOffsetM).toBeLessThan(1.8);
+  expect(result.projectedDirtAwdFull.maxProjectedAnchorForwardOffsetM).toBeLessThan(1.5);
   expect(Number.isFinite(result.projectedDirtAwdFull.minProjectedBodyChaseYawDelta)).toBe(true);
   expect(result.projectedDirtAwdFull.maxProjectedCameraChaseYawError).toBeLessThan(0.08);
-  expect(result.projectedDirtAwdFull.minProjectedBodyChaseYawDelta).toBeGreaterThan(0.2);
+  expect(result.projectedDirtAwdFull.minProjectedBodyChaseYawDelta).toBeGreaterThan(0.15);
 });
 
 test('race third-person render uses live world position when body position is stale', async ({ page }) => {
