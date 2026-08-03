@@ -200,6 +200,13 @@ export function createVehicleDynamicsState(initial = {}) {
       z: quantize(hasExplicitVelocity ? initial.velocity?.z : Math.cos(initialYaw) * initialSpeed)
     },
     speedMps: quantize(initialSpeed),
+    groundSpeedMps: quantize(initial.groundSpeedMps ?? Math.hypot(
+      Number(hasExplicitVelocity ? initial.velocity?.x : Math.sin(initialYaw) * initialSpeed) || 0,
+      Number(hasExplicitVelocity ? initial.velocity?.z : Math.cos(initialYaw) * initialSpeed) || 0
+    )),
+    bodyLongitudinalSpeedMps: quantize(initial.bodyLongitudinalSpeedMps ?? initialSpeed),
+    bodyLateralSpeedMps: quantize(initial.bodyLateralSpeedMps ?? 0),
+    signedTravelSpeedMps: quantize(initial.signedTravelSpeedMps ?? initialSpeed),
     yawRad: quantize(initialYaw),
     yawRateRadps: quantize(initial.yawRateRadps ?? initial.yawVelocityRadps ?? 0),
     angularVelocityWorld: {
@@ -375,6 +382,8 @@ export function createVehicleDynamicsConfig(config = {}) {
     engineBrakeForceN: Math.max(0, Number(config.engineBrakeForceN) || 1600),
     brakeForceN: Math.max(0, Number(config.brakeForceN) || 14500),
     handbrakeForceN: Math.max(0, Number(config.handbrakeForceN) || 7200),
+    frontBrakeBias: clamp(Number(config.frontBrakeBias ?? 0.62), 0.4, 0.85),
+    brakePressure: clamp(Number(config.brakePressure ?? 1), 0.2, 1.5),
     rollingResistanceN: Math.max(0, Number(config.rollingResistanceN) || 180),
     dragCoefficient: clamp(Number(config.dragCoefficient) || 0.34, 0.04, 1.5),
     frontalAreaM2: clamp(Number(config.frontalAreaM2) || 2.2, 0.8, 6),
@@ -503,6 +512,9 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
     engineForceN: clamp(18000 + Math.max(0, powerW - 300000) / 45, 18000, 30000),
     engineBrakeForceN: Math.max(900, Number(tuning.weightKg || 1450) * 1.15),
     brakeForceN: Math.max(9000, Number(tuning.weightKg || 1450) * 10),
+    handbrakeForceN: Math.max(4500, Number(tuning.handbrakeForceN) || Number(tuning.weightKg || 1450) * 5),
+    frontBrakeBias: tuning.frontBrakeBias,
+    brakePressure: tuning.brakePressure,
     rollingResistanceN: Math.max(100, Number(tuning.weightKg || 1450) * 0.12),
     dragCoefficient: physical?.dragCoefficient ?? tuning.dragCoefficient,
     frontalAreaM2: physical?.frontalAreaM2 ?? (tuning.frontalAreaM2
@@ -620,6 +632,24 @@ function aggregateTireResults(results = [], tireSubstepDt = 0) {
   const externalAngularImpulseWorldNms = impulse('externalMomentWorldNm');
   const equivalentForce = (value) => scaleVector3(value, 1 / accumulatedDuration);
   const latest = results.at(-1) || {};
+  const tireEnergyFields = [
+    'longitudinalFrictionWorkJ',
+    'lateralFrictionWorkJ',
+    'carcassFlexWorkJ',
+    'loadHeatingWorkJ',
+    'surfaceConductionWorkJ',
+    'waterCoolingWorkJ'
+  ];
+  const contactPatches = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
+    const latestPatch = latest.contactPatches?.[wheelId] || {};
+    const tireEnergyWork = Object.fromEntries(tireEnergyFields.map((field) => [
+      field,
+      quantize(results.reduce((sum, result) => (
+        sum + Number(result.contactPatches?.[wheelId]?.tireEnergyWork?.[field] || 0)
+      ), 0))
+    ]));
+    return [wheelId, { ...latestPatch, tireEnergyWork }];
+  }));
   return {
     longitudinalForceN: average('longitudinalForceN'),
     lateralForceN: average('lateralForceN'),
@@ -649,8 +679,10 @@ function aggregateTireResults(results = [], tireSubstepDt = 0) {
     suspensionState: latest.suspensionState || {},
     tireForcesN: latest.tireForcesN || {},
     wheelAngularVelocityRadps: latest.wheelAngularVelocityRadps || {},
-    contactPatches: latest.contactPatches || {},
-    aeroState: latest.aeroState || {}
+    contactPatches,
+    aeroState: latest.aeroState || {},
+    powertrainState: latest.powertrainState || {},
+    powertrainTelemetry: latest.powertrainTelemetry || {}
   };
 }
 
@@ -900,65 +932,43 @@ export class VehicleDynamicsRunner {
     state.rollRad = quantize(euler.roll);
     state.yawRateRadps = quantize(state.angularVelocityWorld.y);
     const forward = { x: Math.sin(state.yawRad), y: 0, z: Math.cos(state.yawRad) };
-    state.speedMps = quantize(state.velocity.x * forward.x + state.velocity.z * forward.z);
+    const right = { x: Math.cos(state.yawRad), y: 0, z: -Math.sin(state.yawRad) };
+    const bodyLongitudinalSpeedMps = state.velocity.x * forward.x + state.velocity.z * forward.z;
+    const bodyLateralSpeedMps = state.velocity.x * right.x + state.velocity.z * right.z;
+    const groundSpeedMps = Math.hypot(state.velocity.x, state.velocity.z);
+    const travelDirectionThresholdMps = Math.max(0.1, groundSpeedMps * 0.02);
+    const signedTravelSpeedMps = groundSpeedMps <= EPSILON
+      ? 0
+      : groundSpeedMps * (Math.abs(bodyLongitudinalSpeedMps) > travelDirectionThresholdMps
+        ? Math.sign(bodyLongitudinalSpeedMps)
+        : controls.requestedGear < 0 ? -1 : 1);
+    state.speedMps = quantize(bodyLongitudinalSpeedMps);
+    state.groundSpeedMps = quantize(groundSpeedMps);
+    state.bodyLongitudinalSpeedMps = quantize(bodyLongitudinalSpeedMps);
+    state.bodyLateralSpeedMps = quantize(bodyLateralSpeedMps);
+    state.signedTravelSpeedMps = quantize(signedTravelSpeedMps);
     if (tires.targetVelocityWorld) {
       const targetMagnitude = Math.hypot(
         Number(tires.targetVelocityWorld.x || 0),
         Number(tires.targetVelocityWorld.z || 0)
       );
       state.speedMps = quantize(targetMagnitude * (controls.requestedGear < 0 ? -1 : 1));
+      state.groundSpeedMps = quantize(targetMagnitude);
+      state.bodyLongitudinalSpeedMps = state.speedMps;
+      state.bodyLateralSpeedMps = 0;
+      state.signedTravelSpeedMps = state.speedMps;
     }
     state.lateralAccelerationMps2 = quantize(acceleration.x * Math.cos(state.yawRad) - acceleration.z * Math.sin(state.yawRad));
     Object.keys(state.position).forEach((axis) => { state.position[axis] = quantize(state.position[axis]); });
     Object.keys(state.velocity).forEach((axis) => { state.velocity[axis] = quantize(state.velocity[axis]); });
     Object.keys(state.angularVelocityWorld).forEach((axis) => { state.angularVelocityWorld[axis] = quantize(state.angularVelocityWorld[axis]); });
-    state.gear = controls.requestedGear;
-    const powertrainTuning = config.powertrainTuning || {};
-    const requestedGear = Math.trunc(Number(controls.requestedGear || 0));
-    const selectedGearRatio = requestedGear < 0
-      ? Math.abs(Number(powertrainTuning.reverseRatio || 0))
-      : requestedGear > 0
-        ? Math.abs(Number(powertrainTuning.gearRatios?.[requestedGear - 1] || 0))
-        : 0;
-    const finalDriveRatio = Math.abs(Number(
-      powertrainTuning.gearFinalDrive || powertrainTuning.finalDrive || 1
-    ));
-    const overallDriveRatio = selectedGearRatio * finalDriveRatio;
-    const drivenWheelOmegaRadps = config.drivenWheelIds.length
-      ? config.drivenWheelIds.reduce((sum, wheelId) => (
-        sum + Math.abs(Number(tires.wheelAngularVelocityRadps?.[wheelId] || 0))
-      ), 0) / config.drivenWheelIds.length
-      : 0;
-    const mechanicallyCoupledRpm = overallDriveRatio > EPSILON
-      ? drivenWheelOmegaRadps * overallDriveRatio * 60 / (Math.PI * 2)
-      : config.idleRpm;
-    const launchRpm = Math.max(config.idleRpm, Number(powertrainTuning.launchRpm) || config.idleRpm);
-    const launchSlipScale = clamp(1 - Math.abs(state.speedMps) / 5, 0, 1);
-    const launchRpmFloor = config.idleRpm
-      + (launchRpm - config.idleRpm) * controls.throttle * launchSlipScale;
-    const wheelCoupledRpm = clamp(
-      Math.max(config.idleRpm, mechanicallyCoupledRpm, launchRpmFloor),
-      config.idleRpm,
-      config.maxRpm
-    );
-    let freeRpm = config.idleRpm + (config.maxRpm - config.idleRpm) * controls.throttle;
-    const clutchCoupling = clamp(1 - Number(controls.clutch || 0), 0, 1);
-    const freeRevActive = Boolean(tires.targetVelocityWorld) || clutchCoupling < 0.999;
-    const limiterActive = freeRevActive
-      && controls.throttle > 0.95
-      && state.engineRpm >= config.maxRpm - config.revLimiterDropRpm * 0.35;
-    if (limiterActive && Math.floor(this.stepIndex / 4) % 2 === 0) {
-      freeRpm = config.maxRpm - config.revLimiterDropRpm;
-    }
-    const rpmTarget = tires.targetVelocityWorld
-      ? freeRpm
-      : wheelCoupledRpm * clutchCoupling + freeRpm * (1 - clutchCoupling);
-    const rpmResponse = limiterActive ? 16 : freeRevActive ? 7.6 : 12;
+    const authoritativePowertrain = tires.powertrainState || state.powertrainState || {};
     state.engineRpm = quantize(clamp(
-      state.engineRpm + (rpmTarget - state.engineRpm) * Math.min(1, dt * rpmResponse),
+      Number(authoritativePowertrain.engineRpm ?? state.engineRpm ?? config.idleRpm),
       config.idleRpm,
       config.maxRpm
     ));
+    state.gear = Math.trunc(Number(authoritativePowertrain.gear ?? state.gear ?? 0));
     state.grounded = tires.grounded || Boolean(tires.bodyCollision?.contacts?.length);
     state.wheelLoadsN = tires.wheelLoadsN;
     state.wheelSlip = tires.wheelSlip;
@@ -968,11 +978,10 @@ export class VehicleDynamicsRunner {
     state.contactPatches = tires.contactPatches;
     state.aeroState = tires.aeroState || {};
     state.powertrainState = {
+      ...authoritativePowertrain,
       engineRpm: state.engineRpm,
       gear: state.gear,
-      revLimiterActive: limiterActive,
-      clutchCoupling: quantize(clutchCoupling),
-      freeRevActive
+      telemetry: tires.powertrainTelemetry || {}
     };
     state.suspensionState = tires.suspensionState;
     state.tireState = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
@@ -991,7 +1000,7 @@ export class VehicleDynamicsRunner {
         ...patch,
         ...thermal,
         wear: quantize(clamp(Number(previous.wear || 0) + slipWorkJ * 1e-9, 0, 1)),
-        damage: quantize(clamp(Number(previous.damage || 0), 0, 100))
+        damage: quantize(clamp(Number(patch.tireParameters?.damage ?? previous.damage ?? 0), 0, 100))
       }];
     }));
     state.contactPatches = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
@@ -1113,6 +1122,10 @@ export class VehicleDynamicsRunner {
       }));
       substepState.wheelAngularVelocityRadps = tireResult.wheelAngularVelocityRadps || substepState.wheelAngularVelocityRadps;
       substepState.suspensionState = tireResult.suspensionState || substepState.suspensionState;
+      substepState.contactPatches = tireResult.contactPatches || substepState.contactPatches;
+      substepState.powertrainState = tireResult.powertrainState || substepState.powertrainState;
+      substepState.engineRpm = Number(substepState.powertrainState?.engineRpm ?? substepState.engineRpm);
+      substepState.gear = Number(substepState.powertrainState?.gear ?? substepState.gear);
     }
     const tires = aggregateTireResults(tireResults, 1 / this.config.tireHz);
     const bodyBroadphaseRejectedSubsteps = bodyCollisionResults.reduce((sum, result) => (

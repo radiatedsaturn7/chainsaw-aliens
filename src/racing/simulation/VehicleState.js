@@ -28,6 +28,10 @@ export function syncVehicleDynamicsCompatibilityOutputs(runner = null, session =
   session.velocityY = Number(state.velocity.y || 0);
   session.velocityZ = Number(state.velocity.z || 0);
   session.speedMps = Number(state.speedMps || 0);
+  session.groundSpeedMps = Number(state.groundSpeedMps ?? Math.hypot(session.velocityX, session.velocityZ));
+  session.bodyLongitudinalSpeedMps = Number(state.bodyLongitudinalSpeedMps ?? state.speedMps ?? 0);
+  session.bodyLateralSpeedMps = Number(state.bodyLateralSpeedMps || 0);
+  session.signedTravelSpeedMps = Number(state.signedTravelSpeedMps ?? state.speedMps ?? 0);
   session.velocityYaw = Math.atan2(session.velocityX, session.velocityZ);
   session.carYaw = Number(state.yawRad || 0);
   session.yawVelocityRadps = Number(state.angularVelocityWorld?.y || 0);
@@ -94,6 +98,13 @@ export function getVehicleStateSnapshot(vehicleState = null) {
     worldX: Number(state.worldX || 0),
     worldZ: Number(state.worldZ || 0),
     speedMps: Number(state.speedMps || 0),
+    groundSpeedMps: Number(state.groundSpeedMps ?? Math.hypot(
+      Number(state.velocityX || 0),
+      Number(state.velocityZ || 0)
+    )),
+    bodyLongitudinalSpeedMps: Number(state.bodyLongitudinalSpeedMps ?? state.speedMps ?? 0),
+    bodyLateralSpeedMps: Number(state.bodyLateralSpeedMps || 0),
+    signedTravelSpeedMps: Number(state.signedTravelSpeedMps ?? state.speedMps ?? 0),
     carYaw: Number(state.carYaw || 0),
     velocityYaw: Number(state.velocityYaw ?? state.carYaw ?? 0),
     bodyY: Number(chassis?.position?.y ?? state.bodyY ?? state.heightM ?? 0),

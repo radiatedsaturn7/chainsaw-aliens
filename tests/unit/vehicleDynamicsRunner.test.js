@@ -5,6 +5,7 @@ import {
   VEHICLE_DYNAMICS_SUBSYSTEM_ORDER,
   VehicleControlInputTimeline,
   VehicleDynamicsRunner,
+  createVehicleDynamicsState,
   createVehicleDynamicsConfigFromTuning,
   normalizeVehicleControlInput
 } from '../../src/racing/simulation/VehicleDynamicsRunner.js';
@@ -25,6 +26,38 @@ const WRX_GT_TUNING = Object.freeze({
   rollStiffness: 0.76
 });
 const WRX_GT_CONFIG = createVehicleDynamicsConfigFromTuning(WRX_GT_TUNING);
+
+test('authoritative velocity state separates ground, body, lateral, and signed travel speed', () => {
+  const state = createVehicleDynamicsState({
+    yawRad: 0,
+    velocity: { x: 20, y: 0, z: 0 },
+    speedMps: 0
+  });
+  assert.equal(state.groundSpeedMps, 20);
+  assert.equal(state.bodyLongitudinalSpeedMps, 0);
+  assert.equal(state.bodyLateralSpeedMps, 0);
+
+  const runner = new VehicleDynamicsRunner({
+    config: { handlingPreset: 'simulation', tireHz: 120 },
+    initialState: state,
+    inputTimeline: [{ timeSeconds: 0, input: { requestedGear: 1 } }],
+    tireContactSubsystem: {
+      step() {
+        return {
+          worldForceN: {}, worldMomentNm: {}, suspensionForceWorldN: {},
+          wheelLoadsN: {}, wheelSlip: {}, suspensionTravel: {}, tireForcesN: {},
+          wheelAngularVelocityRadps: {}, contactPatches: {}, suspensionState: {}, grounded: false
+        };
+      }
+    },
+    environmentProvider: () => ({ airDensityKgM3: 0 })
+  });
+  runner.advance(1 / 120);
+  assert.ok(runner.state.groundSpeedMps > 19.9);
+  assert.ok(Math.abs(runner.state.bodyLongitudinalSpeedMps) < 0.01);
+  assert.ok(runner.state.bodyLateralSpeedMps > 19.9);
+  assert.ok(runner.state.signedTravelSpeedMps > 19.9);
+});
 
 function piecewise(time, points) {
   if (time <= points[0][0]) return points[0][1];
@@ -396,6 +429,78 @@ test('WRX GT launch, braking, and skidpad attitude stays physically bounded', ()
     !== skidpad.runner.state.suspensionState.fr.antiRollLoadTransferN);
 });
 
+test('authoritative traction control and ABS flags change physical wheel outcomes', () => {
+  const run = ({ input, initialState = {}, material, steps = 180 }) => {
+    const runner = new VehicleDynamicsRunner({
+      config: { ...WRX_GT_CONFIG, tireHz: 120 },
+      initialState: { heightM: WRX_GT_CONFIG.cgHeightM, ...initialState },
+      inputTimeline: [{ timeSeconds: 0, input }],
+      environmentProvider: () => ({
+        surfaceHeightByWheel: FLAT_SURFACE_HEIGHTS,
+        materialByWheel: Object.fromEntries(['fl', 'fr', 'rl', 'rr']
+          .map((wheelId) => [wheelId, material]))
+      })
+    });
+    let maximumDrivenSlip = 0;
+    let maximumBrakeSlip = 0;
+    for (let index = 0; index < steps; index += 1) {
+      runner.advance(1 / 120);
+      maximumDrivenSlip = Math.max(maximumDrivenSlip,
+        ...['fl', 'fr', 'rl', 'rr'].map((wheelId) => Math.max(0,
+          Number(runner.state.contactPatches[wheelId]?.rawSlipRatio || 0))));
+      maximumBrakeSlip = Math.max(maximumBrakeSlip,
+        ...['fl', 'fr', 'rl', 'rr'].map((wheelId) => Math.max(0,
+          -Number(runner.state.contactPatches[wheelId]?.rawSlipRatio || 0))));
+    }
+    return { runner, maximumDrivenSlip, maximumBrakeSlip };
+  };
+  const looseMaterial = { baseSurfaceId: 'gravel', surfaceId: 'gravel', grip: 0.48 };
+  const tcOn = run({
+    input: { throttle: 1, requestedGear: 1, assists: { tractionControlEnabled: true } },
+    material: looseMaterial
+  });
+  const tcOff = run({
+    input: { throttle: 1, requestedGear: 1, assists: { tractionControlEnabled: false } },
+    material: looseMaterial
+  });
+  assert.ok(tcOn.maximumDrivenSlip < tcOff.maximumDrivenSlip,
+    `TC slip ${tcOn.maximumDrivenSlip} should be below disabled slip ${tcOff.maximumDrivenSlip}`);
+
+  const wetMaterial = {
+    baseSurfaceId: 'asphalt', surfaceId: 'asphalt', grip: 0.58,
+    standingWaterDepthMm: 2.5
+  };
+  const wetTcOn = run({
+    input: { throttle: 1, requestedGear: 1, assists: { tractionControlEnabled: true } },
+    material: wetMaterial,
+    steps: 120
+  });
+  const wetTcOff = run({
+    input: { throttle: 1, requestedGear: 1, assists: { tractionControlEnabled: false } },
+    material: wetMaterial,
+    steps: 120
+  });
+  assert.ok(wetTcOn.maximumDrivenSlip < wetTcOff.maximumDrivenSlip,
+    `wet TC slip ${wetTcOn.maximumDrivenSlip} should be below disabled slip ${wetTcOff.maximumDrivenSlip}`);
+  const brakingState = { speedMps: 28, velocity: { x: 0, y: 0, z: 28 } };
+  const absOn = run({
+    input: { brake: 1, requestedGear: 3, assists: { absEnabled: true } },
+    initialState: brakingState,
+    material: wetMaterial,
+    steps: 120
+  });
+  const absOff = run({
+    input: { brake: 1, requestedGear: 3, assists: { absEnabled: false } },
+    initialState: brakingState,
+    material: wetMaterial,
+    steps: 120
+  });
+  assert.ok(absOn.maximumBrakeSlip < absOff.maximumBrakeSlip,
+    `ABS slip ${absOn.maximumBrakeSlip} should be below disabled slip ${absOff.maximumBrakeSlip}`);
+  assert.ok(absOn.runner.state.groundSpeedMps < absOff.runner.state.groundSpeedMps,
+    'ABS must improve authoritative wet stopping outcome');
+});
+
 test('WRX GT free rev on an uphill grade follows the surface without nose dive', () => {
   const slope = 0.1;
   const normalScale = 1 / Math.sqrt(1 + slope * slope);
@@ -419,7 +524,8 @@ test('WRX GT free rev on an uphill grade follows the surface without nose dive',
   });
   for (let index = 0; index < 360; index += 1) runner.advance(1 / 120);
   assert.ok(runner.state.pitchRad < 0, 'uphill chassis pitch must raise the nose');
-  assert.ok(Math.abs(runner.state.pitchRad + Math.atan(slope)) < 0.01);
+  assert.ok(Math.abs(runner.state.pitchRad + Math.atan(slope)) < 0.01,
+    `expected ${-Math.atan(slope)} rad grade pitch, got ${runner.state.pitchRad}`);
   assert.equal(runner.state.position.x, 0);
   assert.equal(runner.state.position.z, 0);
   assert.ok(runner.state.engineRpm > WRX_GT_CONFIG.idleRpm);
@@ -431,13 +537,13 @@ test('WRX GT cannot discharge impossible wheelspin into self-acceleration near 4
     initialState: { heightM: WRX_GT_CONFIG.cgHeightM },
     inputTimeline: [
       { timeSeconds: 0, input: { throttle: 1, requestedGear: 2 } },
-      { timeSeconds: 4, input: { throttle: 1, requestedGear: 2 } },
-      { timeSeconds: 4.001, input: { throttle: 0, requestedGear: 2 } },
-      { timeSeconds: 7, input: { throttle: 0, requestedGear: 2 } }
+      { timeSeconds: 5, input: { throttle: 1, requestedGear: 2 } },
+      { timeSeconds: 5.001, input: { throttle: 0, requestedGear: 2 } },
+      { timeSeconds: 8, input: { throttle: 0, requestedGear: 2 } }
     ],
     environmentProvider: () => ({ surfaceHeightByWheel: FLAT_SURFACE_HEIGHTS })
   });
-  for (let index = 0; index < 480; index += 1) runner.advance(1 / 120);
+  for (let index = 0; index < 600; index += 1) runner.advance(1 / 120);
   const releaseSpeedMps = runner.state.speedMps;
   assert.ok(releaseSpeedMps > 20 && releaseSpeedMps < 25);
   assert.ok(Math.max(...Object.values(runner.state.wheelAngularVelocityRadps)) < 100);
@@ -447,7 +553,8 @@ test('WRX GT cannot discharge impossible wheelspin into self-acceleration near 4
     assert.ok(runner.state.speedMps <= releaseSpeedMps + 0.000001,
       `coast speed ${runner.state.speedMps} exceeded release speed ${releaseSpeedMps} at step ${index}`);
   }
-  assert.ok(runner.state.speedMps < releaseSpeedMps - 3);
+  assert.ok(runner.state.speedMps < releaseSpeedMps - 3,
+    `expected at least 3 m/s coast-down from ${releaseSpeedMps}, got ${runner.state.speedMps}`);
 });
 
 test('recorded input playback reproduces state and telemetry exactly', () => {
@@ -633,6 +740,46 @@ test('120, 240, and 360 Hz contact phases transfer every force impulse exactly o
         assert.deepEqual(outcome, reference, `${name} at ${tireHz} Hz phase ${phase}`);
       }
     }
+  }
+});
+
+test('120, 240, and 360 Hz accumulate identical tire-energy work at the chassis boundary', () => {
+  const energyRates = {
+    longitudinalFrictionWorkJ: 900,
+    lateralFrictionWorkJ: 420,
+    carcassFlexWorkJ: 180,
+    loadHeatingWorkJ: 75,
+    surfaceConductionWorkJ: -35,
+    waterCoolingWorkJ: 55
+  };
+  let reference = null;
+  for (const tireHz of [120, 240, 360]) {
+    const runner = new VehicleDynamicsRunner({
+      config: { chassisHz: 120, tireHz, handlingPreset: 'simulation' },
+      initialState: { position: { x: 0, y: 10, z: 0 }, grounded: false },
+      inputTimeline: [{ timeSeconds: 0, input: {} }],
+      tireContactSubsystem: {
+        step({ dt }) {
+          const tireEnergyWork = Object.fromEntries(Object.entries(energyRates)
+            .map(([field, rate]) => [field, rate * dt]));
+          const patch = { tireEnergyWork };
+          return {
+            worldForceN: {}, worldMomentNm: {}, suspensionForceWorldN: {},
+            wheelLoadsN: {}, wheelSlip: {}, suspensionTravel: {}, tireForcesN: {},
+            wheelAngularVelocityRadps: {}, suspensionState: {}, grounded: false,
+            contactPatches: { fl: patch, fr: patch, rl: patch, rr: patch }
+          };
+        }
+      },
+      environmentProvider: () => ({ airDensityKgM3: 0 })
+    });
+    runner.advance(1 / 120);
+    const outcome = {
+      accumulated: runner.telemetry[0].state.contactPatches.fl.tireEnergyWork,
+      thermalAndWear: runner.state.tireState.fl
+    };
+    reference ||= outcome;
+    assert.deepEqual(outcome, reference, `${tireHz} Hz tire energy, thermal state, and wear`);
   }
 });
 

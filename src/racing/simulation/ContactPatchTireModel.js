@@ -343,10 +343,19 @@ export function calculateBrushTireForce({ kinematics, normalLoadN, tire = {}, ma
   );
   const camberActivation = contactMotionMps
     / Math.sqrt(contactMotionMps * contactMotionMps + 0.25 * 0.25);
-  const demandX = longitudinalStiffness * Number(kinematics.slipRatio || 0);
-  const demandY = -corneringStiffness * Math.tan(Number(kinematics.slipAngleRad || 0))
+  const rawDemandX = longitudinalStiffness * Number(kinematics.slipRatio || 0);
+  const rawDemandY = -corneringStiffness * Math.tan(Number(kinematics.slipAngleRad || 0))
     + camberStiffness * Number(kinematics.camberAngleRad || 0) * camberActivation;
+  const naturalPeakSlip = 3 * limit / longitudinalStiffness;
+  const configuredPeakSlip = Number(tire.peakSlip);
+  const peakSlipScale = Number.isFinite(configuredPeakSlip) && configuredPeakSlip > EPSILON
+    ? naturalPeakSlip / configuredPeakSlip
+    : 1;
+  const demandX = rawDemandX * peakSlipScale;
+  const demandY = rawDemandY * peakSlipScale;
   const demand = Math.hypot(demandX, demandY);
+  const slidingFrictionRatio = clamp(Number(tire.slidingFrictionRatio ?? 0.66), 0.35, 1);
+  const postPeakFalloff = clamp(Number(tire.postPeakFalloff ?? 1.8), 0.1, 8);
   const transition = Math.max(EPSILON, 3 * limit);
   let magnitude;
   let postPeakSlidingForceN = limit;
@@ -355,7 +364,12 @@ export function calculateBrushTireForce({ kinematics, normalLoadN, tire = {}, ma
     magnitude = demand * (1 - ratio + ratio * ratio / 3);
   } else {
     const excess = (demand - transition) / transition;
-    postPeakSlidingForceN = limit * (0.66 + 0.22 * Math.exp(-1.8 * excess));
+    // The squared exponent leaves both value and first derivative continuous
+    // at the brush/sliding boundary: F(0)=limit and dF/d(excess)(0)=0.
+    postPeakSlidingForceN = limit * (
+      slidingFrictionRatio
+      + (1 - slidingFrictionRatio) * Math.exp(-postPeakFalloff * excess * excess)
+    );
     magnitude = postPeakSlidingForceN;
   }
   const directionScale = demand > EPSILON ? magnitude / demand : 0;
@@ -552,7 +566,22 @@ export class ContactPatchTireModel {
       const material = environment.trackStateByWheel?.[wheelId] || environment.materialByWheel?.[wheelId] || {
         grip: environment.gripByWheel?.[wheelId] ?? 1
       };
-      const tire = environment.tireByWheel?.[wheelId] || config.tireByWheel?.[wheelId] || {};
+      const authoredTire = {
+        ...(config.tireByWheel?.[wheelId] || {}),
+        ...(environment.tireByWheel?.[wheelId] || {})
+      };
+      const tireState = state.tireState?.[wheelId] || {};
+      const tire = {
+        ...authoredTire,
+        treadTemperatureC: tireState.treadTemperatureC ?? authoredTire.treadTemperatureC,
+        carcassTemperatureC: tireState.carcassTemperatureC ?? authoredTire.carcassTemperatureC,
+        internalAirTemperatureC: tireState.internalAirTemperatureC
+          ?? authoredTire.internalAirTemperatureC,
+        effectivePressurePsi: tireState.effectivePressurePsi ?? authoredTire.effectivePressurePsi,
+        temperatureF: tireState.temperatureF ?? authoredTire.temperatureF,
+        wear: tireState.wear ?? authoredTire.wear,
+        damage: authoredTire.damage ?? tireState.damage
+      };
       return [wheelId, {
         kinematics,
         normalLoadN,
@@ -606,6 +635,54 @@ export class ContactPatchTireModel {
     applyAntiRollTransfer('rl', 'rr', config.antiRollRear, config.antiRollStiffnessRearNpm);
     RACE_WHEEL_IDS.forEach((wheelId) => {
       const input = wheelInputs[wheelId];
+      const rawKinematics = input.kinematics;
+      const previousPatch = state.contactPatches?.[wheelId] || {};
+      // Profiles can opt into a longer physical relaxation length. Keep the
+      // compatibility default short so vehicles without authored tire data do
+      // not acquire an unintended large transient lag.
+      const relaxationLengthM = clamp(Number(input.tire.relaxationLengthM ?? 0.03), 0.03, 3);
+      const peakSlip = clamp(Number(input.tire.peakSlip ?? 0.16), 0.03, 1.5);
+      const breakawayHysteresis = clamp(Number(input.tire.breakawayHysteresis ?? 0.025), 0, 0.3);
+      const recoveryHysteresis = clamp(Number(input.tire.recoveryHysteresis ?? 0.04), 0, 0.3);
+      const rawCombinedSlip = Math.hypot(
+        Number(rawKinematics.slipRatio || 0),
+        Math.tan(Number(rawKinematics.slipAngleRad || 0))
+      );
+      const wasBrokenAway = previousPatch.breakawayActive === true;
+      const breakawayActive = wasBrokenAway
+        ? rawCombinedSlip > Math.max(0, peakSlip - recoveryHysteresis)
+        : rawCombinedSlip > peakSlip + breakawayHysteresis;
+      const contactTravelM = Math.max(
+        0.5,
+        Math.abs(Number(rawKinematics.longitudinalVelocityMps || 0)),
+        Math.abs(Number(rawKinematics.wheelAngularVelocityRadps || 0)
+          * Number(rawKinematics.effectiveRollingRadiusM || 0))
+      ) * dt;
+      const baseRelaxationAlpha = 1 - Math.exp(-contactTravelM / relaxationLengthM);
+      const relaxationAlpha = clamp(
+        baseRelaxationAlpha * (breakawayActive ? 1 : 1 - recoveryHysteresis * 1.5),
+        0,
+        1
+      );
+      input.kinematics = {
+        ...rawKinematics,
+        slipRatio: Number(previousPatch.relaxedSlipRatio ?? rawKinematics.slipRatio)
+          + (Number(rawKinematics.slipRatio || 0)
+            - Number(previousPatch.relaxedSlipRatio ?? rawKinematics.slipRatio)) * relaxationAlpha,
+        slipAngleRad: Number(previousPatch.relaxedSlipAngleRad ?? rawKinematics.slipAngleRad)
+          + (Number(rawKinematics.slipAngleRad || 0)
+            - Number(previousPatch.relaxedSlipAngleRad ?? rawKinematics.slipAngleRad)) * relaxationAlpha
+      };
+      input.tireTransition = {
+        rawSlipRatio: q(rawKinematics.slipRatio),
+        rawSlipAngleRad: q(rawKinematics.slipAngleRad),
+        relaxedSlipRatio: q(input.kinematics.slipRatio),
+        relaxedSlipAngleRad: q(input.kinematics.slipAngleRad),
+        relaxationLengthM: q(relaxationLengthM),
+        breakawayHysteresis: q(breakawayHysteresis),
+        recoveryHysteresis: q(recoveryHysteresis),
+        breakawayActive
+      };
       input.aquaplaning = calculateAquaplaningState({
         kinematics: input.kinematics,
         normalLoadN: input.normalLoadN,
@@ -633,7 +710,16 @@ export class ContactPatchTireModel {
       wheelInputs[wheelId].aquaplaning.supportedNormalLoadN
         * Math.max(0.1, Number(wheelInputs[wheelId].force.gripCoefficient || 1))
     ]));
-    const powertrainTuning = config.powertrainTuning || {};
+    const powertrainTuning = {
+      torqueLbFt: Number(config.powertrainTuning?.torqueLbFt)
+        || Number(config.enginePeakTorqueNm || 0) / 1.35582,
+      idleRpm: config.idleRpm,
+      revLimitRpm: config.maxRpm,
+      torquePeakStartRpm: config.idleRpm + (config.maxRpm - config.idleRpm) * 0.35,
+      torquePeakEndRpm: config.idleRpm + (config.maxRpm - config.idleRpm) * 0.68,
+      torqueFalloffRpm: config.maxRpm,
+      ...(config.powertrainTuning || {})
+    };
     const mode = controls.throttle > 0.001 ? 'accel' : 'decel';
     const drivetrainCapacity = powertrainModel.resolveDrivetrainCapacity({
       tuning: powertrainTuning,
@@ -642,21 +728,34 @@ export class ContactPatchTireModel {
       mode
     });
     const driveShareByWheel = drivetrainCapacity.forceShareByWheel;
-    const clutchCoupling = clamp(1 - Number(controls.clutch || 0), 0, 1);
-    const requestedGear = Math.trunc(Number(controls.requestedGear || 0));
-    const selectedGearRatio = requestedGear < 0
+    const powertrainStep = powertrainModel.stepAuthoritativeWheelTorques({
+      tuning: powertrainTuning,
+      config,
+      controls,
+      previous: state.powertrainState || {},
+      kinematicsByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+        wheelId, wheelInputs[wheelId].kinematics
+      ])),
+      capacityByWheel,
+      driveShareByWheel,
+      state,
+      damage: environment.damage || {
+        engine: environment.engineDamage,
+        transmission: environment.transmissionDamage,
+        brakes: environment.brakeDamageByWheel
+      },
+      dt
+    });
+    const powertrainGear = Math.trunc(Number(powertrainStep.state.gear || 0));
+    const selectedGearRatio = powertrainGear < 0
       ? Math.abs(Number(powertrainTuning.reverseRatio || 0))
-      : requestedGear > 0
-        ? Math.abs(Number(powertrainTuning.gearRatios?.[requestedGear - 1] || 0))
+      : powertrainGear > 0
+        ? Math.abs(Number(powertrainTuning.gearRatios?.[powertrainGear - 1] || 0))
         : 0;
     const finalDriveRatio = Math.abs(Number(
       powertrainTuning.gearFinalDrive || powertrainTuning.finalDrive || 1
     ));
     const overallDriveRatio = selectedGearRatio * finalDriveRatio;
-    const transmittedEngineTorqueNm = config.enginePeakTorqueNm > 0 && overallDriveRatio > EPSILON
-      ? config.enginePeakTorqueNm * overallDriveRatio * config.drivetrainEfficiency
-        * controls.throttle * clutchCoupling
-      : null;
     const maximumPoweredWheelOmegaRadps = overallDriveRatio > EPSILON
       ? (config.maxRpm * Math.PI * 2 / 60) / overallDriveRatio
         * (1 + clamp(Number(powertrainTuning.torqueConverterSlip || 0), 0, 0.25))
@@ -688,19 +787,10 @@ export class ContactPatchTireModel {
       );
       suspensionForce = add(suspensionForce, normalForceWorld);
       worldForce = add(worldForce, forceWorld);
-      const direction = controls.requestedGear < 0 ? -1 : 1;
-      const driveTorque = driven.has(wheelId)
-        ? Number(driveShareByWheel[wheelId] || 0) * direction
-          * (transmittedEngineTorqueNm ?? (
-            config.engineForceN * controls.throttle * kinematics.effectiveRollingRadiusM * clutchCoupling
-          ))
-        : 0;
-      const brakeTorqueMagnitude = config.brakeForceN * controls.brake / 4 * kinematics.effectiveRollingRadiusM
-        + ((wheelId === 'rl' || wheelId === 'rr') ? config.handbrakeForceN * controls.handbrake * 0.5 * kinematics.effectiveRollingRadiusM : 0)
-        + (driven.has(wheelId) && controls.requestedGear !== 0
-          ? config.engineBrakeForceN * (1 - controls.throttle) * Number(driveShareByWheel[wheelId] || 0)
-            * kinematics.effectiveRollingRadiusM * clutchCoupling
-          : 0);
+      const driveTorque = Number(powertrainStep.wheelDriveTorqueNm[wheelId] || 0);
+      const brakeTorqueMagnitude = Math.max(0, Number(
+        powertrainStep.wheelBrakeTorqueNm[wheelId] || 0
+      ));
       const angularReference = Math.abs(kinematics.wheelAngularVelocityRadps) > 0.05
         ? kinematics.wheelAngularVelocityRadps
         : Math.abs(kinematics.longitudinalVelocityMps) > 0.05
@@ -746,7 +836,7 @@ export class ContactPatchTireModel {
           + equilibriumSlipRatio * slipReferenceSpeedMps) / rollingRadiusM;
       }
       if (driven.has(wheelId)
-        && clutchCoupling > 0.001
+        && powertrainStep.state.clutchCoupling > 0.001
         && Number.isFinite(maximumPoweredWheelOmegaRadps)) {
         const rollingOmega = Math.abs(
           kinematics.longitudinalVelocityMps / Math.max(EPSILON, kinematics.effectiveRollingRadiusM)
@@ -798,8 +888,42 @@ export class ContactPatchTireModel {
         inContact: normalLoadN > 1
       };
       tireForcesN[wheelId] = { longitudinal: q(localLongitudinal), lateral: force.lateralForceN };
+      const rollingSurfaceSpeedMps = kinematics.wheelAngularVelocityRadps
+        * kinematics.effectiveRollingRadiusM;
+      const longitudinalSlipSpeedMps = rollingSurfaceSpeedMps - kinematics.longitudinalVelocityMps;
+      const contactSpeedMps = Math.hypot(
+        kinematics.longitudinalVelocityMps,
+        kinematics.lateralVelocityMps
+      );
+      const treadTemperatureC = Number(wheelInputs[wheelId].tire.treadTemperatureC
+        ?? ((Number(wheelInputs[wheelId].tire.temperatureF ?? 70) - 32) * 5 / 9));
+      const surfaceTemperatureC = Number(wheelInputs[wheelId].material.surfaceTemperatureC
+        ?? environment.ambientTemperatureC ?? 21);
+      const standingWaterDepthMm = Math.max(0, Number(
+        wheelInputs[wheelId].material.standingWaterDepthMm || 0
+      ));
+      const surfaceConductanceWPerC = normalLoadN > 1
+        ? 32 + Math.min(90, normalLoadN / 55)
+        : 0;
+      const waterCoolingWPerC = normalLoadN > 1
+        ? clamp(standingWaterDepthMm / 2.5, 0, 1) * (45 + contactSpeedMps * 5)
+        : 0;
+      const tireEnergyWork = {
+        longitudinalFrictionWorkJ: q(Math.abs(force.longitudinalForceN * longitudinalSlipSpeedMps) * dt),
+        lateralFrictionWorkJ: q(Math.abs(force.lateralForceN * kinematics.lateralVelocityMps) * dt),
+        carcassFlexWorkJ: q(normalLoadN * (
+          Math.abs(kinematics.slipRatio) * 0.34
+          + Math.abs(kinematics.slipAngleRad) * 0.42
+        ) * dt),
+        loadHeatingWorkJ: q(normalLoadN * contactSpeedMps * 0.0028 * dt),
+        surfaceConductionWorkJ: q((surfaceTemperatureC - treadTemperatureC)
+          * surfaceConductanceWPerC * dt),
+        waterCoolingWorkJ: q(Math.max(0, treadTemperatureC - Number(environment.ambientTemperatureC ?? 21))
+          * waterCoolingWPerC * dt)
+      };
       outputs[wheelId] = {
         ...kinematics,
+        ...wheelInputs[wheelId].tireTransition,
         normalLoadN: q(wheelInputs[wheelId].aquaplaning.supportedNormalLoadN),
         suspensionNormalLoadN: q(normalLoadN),
         ...force,
@@ -808,12 +932,17 @@ export class ContactPatchTireModel {
         forceApplicationPointWorld: kinematics.contactPointWorld,
         momentApplicationPointWorld: kinematics.contactPointWorld,
         aligningMomentAxisWorld: kinematics.surfaceNormalWorld,
+        tireEnergyWork,
+        driveTorqueNm: q(driveTorque),
+        brakeTorqueNm: q(brakeTorqueMagnitude),
+        absModulation: q(powertrainStep.state.absModulationByWheel?.[wheelId] ?? 1),
         tireParameters: {
           pressurePsi: q(wheelInputs[wheelId].tire.pressurePsi ?? 32),
           coldPressurePsi: q(wheelInputs[wheelId].tire.coldPressurePsi
             ?? wheelInputs[wheelId].tire.pressurePsi ?? 32),
           treadThermalMassKg: q(wheelInputs[wheelId].tire.treadThermalMassKg ?? 3.4),
-          carcassThermalMassKg: q(wheelInputs[wheelId].tire.carcassThermalMassKg ?? 6.8)
+          carcassThermalMassKg: q(wheelInputs[wheelId].tire.carcassThermalMassKg ?? 6.8),
+          damage: q(wheelInputs[wheelId].tire.damage ?? 0)
         },
         material: {
           baseSurfaceId: String(wheelInputs[wheelId].material.baseSurfaceId || 'unknown'),
@@ -856,6 +985,8 @@ export class ContactPatchTireModel {
           : null,
       grounded: RACE_WHEEL_IDS.some((wheelId) => wheelLoadsN[wheelId] > 0),
       driveForceShareByWheel: { ...driveShareByWheel },
+      powertrainState: powertrainStep.state,
+      powertrainTelemetry: powertrainStep.telemetry,
       wheelLoadsN, wheelSlip, suspensionTravel, suspensionState, tireForcesN, wheelAngularVelocityRadps,
       contactPatches: outputs
     };

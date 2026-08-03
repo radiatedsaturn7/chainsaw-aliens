@@ -47,11 +47,24 @@ export function advanceTireThermalState({
   const longitudinalSlipSpeed = rollingSurfaceSpeed - Number(patch.longitudinalVelocityMps || 0);
   const longitudinalWorkW = Math.abs(Number(patch.longitudinalForceN || 0) * longitudinalSlipSpeed);
   const lateralWorkW = Math.abs(Number(patch.lateralForceN || 0) * Number(patch.lateralVelocityMps || 0));
-  const frictionHeatingW = (longitudinalWorkW + lateralWorkW) * 0.78;
+  const accumulated = patch.tireEnergyWork || null;
+  const longitudinalFrictionWorkJ = accumulated
+    ? Math.max(0, Number(accumulated.longitudinalFrictionWorkJ || 0))
+    : longitudinalWorkW * seconds;
+  const lateralFrictionWorkJ = accumulated
+    ? Math.max(0, Number(accumulated.lateralFrictionWorkJ || 0))
+    : lateralWorkW * seconds;
+  const frictionHeatingWorkJ = (longitudinalFrictionWorkJ + lateralFrictionWorkJ) * 0.78;
   const loadN = Math.max(0, Number(patch.suspensionNormalLoadN ?? patch.normalLoadN ?? 0));
-  const loadHeatingW = loadN * speedMps * 0.0028;
-  const flexHeatingW = loadN * Math.abs(Number(patch.slipRatio || 0)) * 0.34
+  const fallbackLoadHeatingW = loadN * speedMps * 0.0028;
+  const fallbackFlexHeatingW = loadN * Math.abs(Number(patch.slipRatio || 0)) * 0.34
     + loadN * Math.abs(Number(patch.slipAngleRad || 0)) * 0.42;
+  const loadHeatingWorkJ = accumulated
+    ? Math.max(0, Number(accumulated.loadHeatingWorkJ || 0))
+    : fallbackLoadHeatingW * seconds;
+  const carcassFlexHeatingWorkJ = accumulated
+    ? Math.max(0, Number(accumulated.carcassFlexWorkJ || 0))
+    : fallbackFlexHeatingW * seconds;
   const surfaceTemperatureC = Number(material.surfaceTemperatureC ?? ambientTemperatureC);
   const waterDepthMm = Math.max(0, Number(material.standingWaterDepthMm || 0));
   const snowDepthMm = Math.max(0, Number(material.snowDepthMm || 0));
@@ -69,13 +82,23 @@ export function advanceTireThermalState({
   const carcassToAirW = (state.carcassTemperatureC - state.internalAirTemperatureC) * carcassAirConductanceWPerC;
   const ambientCoolingW = (state.treadTemperatureC - ambientTemperatureC)
     * (airflowWPerC + waterCoolingWPerC + frozenCoolingWPerC);
+  const surfaceConductionWorkJ = accumulated
+    ? Number(accumulated.surfaceConductionWorkJ || 0)
+    : treadToSurfaceW * seconds;
+  const waterCoolingWorkJ = accumulated
+    ? Math.max(0, Number(accumulated.waterCoolingWorkJ || 0))
+    : Math.max(0, (state.treadTemperatureC - ambientTemperatureC) * waterCoolingWPerC) * seconds;
+  const nonWaterAmbientCoolingWorkJ = Math.max(0, ambientCoolingW) * seconds
+    - Math.max(0, (state.treadTemperatureC - ambientTemperatureC) * waterCoolingWPerC) * seconds;
   const nextTreadC = clamp(state.treadTemperatureC + (
-    frictionHeatingW + treadToSurfaceW - treadToCarcassW - ambientCoolingW
-  ) * seconds / treadHeatCapacity, -45, 230);
+    frictionHeatingWorkJ + surfaceConductionWorkJ - treadToCarcassW * seconds
+      - Math.max(0, nonWaterAmbientCoolingWorkJ) - waterCoolingWorkJ
+  ) / treadHeatCapacity, -45, 230);
   const nextCarcassC = clamp(state.carcassTemperatureC + (
-    flexHeatingW + loadHeatingW + treadToCarcassW - carcassToAirW
-    - (state.carcassTemperatureC - ambientTemperatureC) * (2.5 + Math.sqrt(speedMps) * 1.3)
-  ) * seconds / carcassHeatCapacity, -45, 200);
+    carcassFlexHeatingWorkJ + loadHeatingWorkJ + (treadToCarcassW - carcassToAirW) * seconds
+      - (state.carcassTemperatureC - ambientTemperatureC) * (2.5 + Math.sqrt(speedMps) * 1.3)
+        * seconds
+  ) / carcassHeatCapacity, -45, 200);
   const nextAirC = clamp(state.internalAirTemperatureC + (
     carcassToAirW - (state.internalAirTemperatureC - ambientTemperatureC) * 0.65
   ) * seconds / airHeatCapacityJPerC, -45, 180);
@@ -94,10 +117,13 @@ export function advanceTireThermalState({
     coldPressurePsi: state.coldPressurePsi,
     pressureReferenceTemperatureC: state.pressureReferenceTemperatureC,
     effectivePressurePsi: q(effectivePressurePsi),
-    frictionHeatingWorkJ: q(frictionHeatingW * seconds),
-    carcassFlexHeatingWorkJ: q(flexHeatingW * seconds),
-    loadHeatingWorkJ: q(loadHeatingW * seconds),
-    surfaceConductionWorkJ: q(treadToSurfaceW * seconds),
+    longitudinalFrictionWorkJ: q(longitudinalFrictionWorkJ),
+    lateralFrictionWorkJ: q(lateralFrictionWorkJ),
+    frictionHeatingWorkJ: q(frictionHeatingWorkJ),
+    carcassFlexHeatingWorkJ: q(carcassFlexHeatingWorkJ),
+    loadHeatingWorkJ: q(loadHeatingWorkJ),
+    surfaceConductionWorkJ: q(surfaceConductionWorkJ),
+    waterCoolingWorkJ: q(waterCoolingWorkJ),
     ambientCoolingWorkJ: q(Math.max(0, ambientCoolingW) * seconds)
   };
 }
