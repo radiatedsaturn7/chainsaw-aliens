@@ -965,6 +965,7 @@ export default class RaceEditor {
       activeDpadMenuDirection: null,
       activeThrottlePointerId: null,
       activeBrakePointerId: null,
+      activeSelectPointerId: null,
       throttlePulseMs: 0,
       lastBrakeTapMs: 0,
       gamepadSelectHoldActive: false,
@@ -1274,6 +1275,7 @@ export default class RaceEditor {
     this.raceInput.activeDpadMenuDirection = null;
     this.raceInput.activeThrottlePointerId = null;
     this.raceInput.activeBrakePointerId = null;
+    this.clearRaceGamepadSelectHold();
     this.raceInput.binarySteer = 0;
     this.raceInput.throttle = false;
     this.raceInput.brake = false;
@@ -12318,6 +12320,7 @@ export default class RaceEditor {
       activeDpadMenuDirection: null,
       activeThrottlePointerId: null,
       activeBrakePointerId: null,
+      activeSelectPointerId: null,
       throttlePulseMs: 0,
       gamepadSelectHoldActive: false,
       gamepadSelectHoldMs: 0,
@@ -17529,6 +17532,7 @@ export default class RaceEditor {
   }
 
   clearRaceGamepadSelectHold() {
+    this.raceInput.activeSelectPointerId = null;
     this.raceInput.gamepadSelectHoldActive = false;
     this.raceInput.gamepadSelectHoldMs = 0;
     this.raceInput.gamepadSelectHoldTriggered = false;
@@ -17602,6 +17606,8 @@ export default class RaceEditor {
     const gamepadPressed = this.game?.input?.gamepadPressed || input.gamepadPressed || new Set();
     const isGamepadDown = (action) => Boolean(gamepadActions[action]);
     const wasGamepadPressed = (action) => Boolean(gamepadPressed?.has?.(action));
+    const virtualSelectDown = this.raceInput.activeSelectPointerId !== null
+      && this.raceInput.activeSelectPointerId !== undefined;
     const hasRawGamepadState = Object.prototype.hasOwnProperty.call(gamepadActions, 'gamepadA')
       || Object.prototype.hasOwnProperty.call(gamepadActions, 'gamepadB')
       || Object.prototype.hasOwnProperty.call(gamepadActions, 'gamepadX')
@@ -17654,11 +17660,12 @@ export default class RaceEditor {
     }
     if (!hasRawGamepadState
       && this.raceInput.gamepadSelectHoldActive
+      && !virtualSelectDown
       && !wasGamepadPressed('gamepadSelect')) {
       this.clearRaceGamepadSelectHold();
     } else {
       this.updateRaceGamepadSelectHold({
-        isDown: isGamepadDown('gamepadSelect'),
+        isDown: virtualSelectDown || isGamepadDown('gamepadSelect'),
         wasPressed: wasGamepadPressed('gamepadSelect'),
         deltaMs: Math.max(0, Number(dt || 0)) * 1000
       });
@@ -21395,7 +21402,7 @@ export default class RaceEditor {
     this.buttons.push({
       id: 'race-select',
       bounds: { ...controls.selectButton, id: 'race-select' },
-      onClick: () => this.toggleRaceCameraView()
+      playtestControl: 'select'
     });
   }
 
@@ -21475,6 +21482,17 @@ export default class RaceEditor {
       this.raceInput.lastBrakeTapMs = now;
       this.raceInput.brake = true;
       this.raceInput.activeBrakePointerId = payload.id ?? 'pointer';
+      return true;
+    }
+    if (hit.playtestControl === 'select') {
+      if (this.raceInput.paused) {
+        this.toggleRaceCameraView();
+        return true;
+      }
+      if (this.raceInput.activeSelectPointerId !== null
+        && this.raceInput.activeSelectPointerId !== undefined) return true;
+      this.raceInput.activeSelectPointerId = payload.id ?? 'pointer';
+      this.updateRaceGamepadSelectHold({ isDown: true, wasPressed: true, deltaMs: 0 });
       return true;
     }
     hit.onClick?.();
@@ -36392,6 +36410,13 @@ export default class RaceEditor {
         this.raceInput.activeBrakePointerId = null;
         this.raceInput.brake = false;
         this.raceInput.handbrake = false;
+      }
+      if (this.raceInput.activeSelectPointerId === id) {
+        this.raceInput.activeSelectPointerId = null;
+        this.updateRaceGamepadSelectHold({
+          isDown: Boolean(this.game?.input?.gamepadActions?.gamepadSelect),
+          deltaMs: 0
+        });
       }
       return;
     }

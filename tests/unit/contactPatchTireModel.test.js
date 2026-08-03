@@ -306,6 +306,91 @@ test('post-peak force falls smoothly and aligning torque provides pneumatic retu
   assert.ok(corner.selfAligningMomentNm * corner.lateralForceN <= 0);
 });
 
+test('brush-to-sliding transition is continuous in value and first derivative', () => {
+  const normalLoadN = 3600;
+  const tire = { compoundGrip: 1, longitudinalStiffnessN: normalLoadN * 18 };
+  const material = { surfaceGripScale: 1 };
+  const peakSlipRatio = (3 * normalLoadN) / tire.longitudinalStiffnessN;
+  const forceAt = (slipRatio) => calculateBrushTireForce({
+    normalLoadN,
+    tire,
+    material,
+    kinematics: { slipRatio, slipAngleRad: 0, camberAngleRad: 0 }
+  }).longitudinalForceN;
+  const delta = 1e-4;
+  const leftValue = forceAt(peakSlipRatio - delta);
+  const peakValue = forceAt(peakSlipRatio);
+  const rightValue = forceAt(peakSlipRatio + delta);
+  const leftDerivative = (peakValue - leftValue) / delta;
+  const rightDerivative = (rightValue - peakValue) / delta;
+
+  assert.ok(Math.abs(rightValue - leftValue) < 1);
+  assert.ok(Math.abs(rightDerivative - leftDerivative) < 250);
+  assert.ok(Math.abs(peakValue - normalLoadN) < 0.01);
+
+  const configuredTire = { ...tire, peakSlip: 0.24, slidingFrictionRatio: 0.72 };
+  const configuredForceAt = (slipRatio) => calculateBrushTireForce({
+    normalLoadN,
+    tire: configuredTire,
+    material,
+    kinematics: { slipRatio, slipAngleRad: 0, camberAngleRad: 0 }
+  }).longitudinalForceN;
+  const configuredLeft = configuredForceAt(configuredTire.peakSlip - delta);
+  const configuredPeak = configuredForceAt(configuredTire.peakSlip);
+  const configuredRight = configuredForceAt(configuredTire.peakSlip + delta);
+  assert.ok(Math.abs(configuredRight - configuredLeft) < 1);
+  assert.ok(Math.abs(
+    (configuredRight - configuredPeak) / delta
+      - (configuredPeak - configuredLeft) / delta
+  ) < 250);
+  assert.ok(Math.abs(configuredPeak - normalLoadN) < 0.01);
+});
+
+test('relaxation length and breakaway hysteresis preserve per-wheel transition state', () => {
+  const model = new ContactPatchTireModel();
+  const transitionConfig = createVehicleDynamicsConfig({
+    ...config,
+    tireByWheel: Object.fromEntries(['fl', 'fr', 'rl', 'rr'].map((wheelId) => [wheelId, {
+        relaxationLengthM: 1.2,
+        peakSlip: 0.12,
+        breakawayHysteresis: 0.02,
+        recoveryHysteresis: 0.04
+      }]))
+  });
+  const transitionState = stateAt({ speed: 20 });
+  const neutral = model.step({
+    state: transitionState,
+    controls,
+    config: transitionConfig,
+    dt: 1 / 360,
+    environment
+  });
+  transitionState.contactPatches = neutral.contactPatches;
+  const turnIn = model.step({
+    state: transitionState,
+    controls: { ...controls, steering: 1 },
+    config: transitionConfig,
+    dt: 1 / 360,
+    environment
+  });
+  const front = turnIn.contactPatches.fl;
+  assert.ok(Math.abs(front.relaxedSlipAngleRad) < Math.abs(front.rawSlipAngleRad));
+
+  transitionState.contactPatches = {
+    ...turnIn.contactPatches,
+    fl: { ...front, breakawayActive: true }
+  };
+  const recovering = model.step({
+    state: transitionState,
+    controls: { ...controls, steering: 0.25 },
+    config: transitionConfig,
+    dt: 1 / 360,
+    environment
+  });
+  assert.equal(typeof recovering.contactPatches.fl.breakawayActive, 'boolean');
+  assert.equal(recovering.contactPatches.fl.relaxationLengthM, 1.2);
+});
+
 test('compound, pressure, size, temperature, wear, damage, load sensitivity, and Track State contamination affect grip', () => {
   const kinematics = { slipRatio: 0.2, slipAngleRad: 0.08, camberAngleRad: 0 };
   const healthy = calculateBrushTireForce({

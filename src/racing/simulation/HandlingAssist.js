@@ -30,11 +30,12 @@ export class HandlingAssist {
     const yawRate = Number(state.angularVelocityWorld?.y || state.yawRateRadps || 0);
     const rollRate = Number(state.angularVelocityWorld?.z || 0);
     const steer = Number(controls.steering || 0);
-    const inertia = Math.max(1, Number(config.yawInertiaKgM2 || 1));
+    const yawInertia = Math.max(1, Number(config.yawInertiaKgM2 || 1));
+    const rollInertia = Math.max(1, Number(config.rollInertiaKgM2 || yawInertia));
     const interventions = [];
-    const yawMoment = -yawRate * inertia * policy.yawDamping
+    const yawMoment = -yawRate * yawInertia * policy.yawDamping
       + -Math.sign(yawRate) * Math.max(0, Math.abs(yawRate) - Math.abs(steer) * 0.8)
-        * inertia * policy.countersteerMoment;
+        * yawInertia * policy.countersteerMoment;
     if (Math.abs(yawMoment) > 0.001) interventions.push({
       source: 'handling-assist', trigger: 'yaw-stability', requestedValue: yawMoment,
       appliedValue: supportedValue(yawMoment), supportScale: physicalSupport,
@@ -52,7 +53,7 @@ export class HandlingAssist {
     )));
     const slipAuthority = clamp((peakWheelSlip - 0.12) / 0.5, 0, 1);
     const highPowerAuthority = clamp((Number(config.powerHp || 0) - 400) / 400, 0, 1);
-    const steeringMoment = (desiredYawRate - yawRate) * inertia * policy.steeringResponse
+    const steeringMoment = (desiredYawRate - yawRate) * yawInertia * policy.steeringResponse
       * slipAuthority * highPowerAuthority;
     if (speed > 1 && Math.abs(steer) > 0.01 && Math.abs(steeringMoment) > 0.001) interventions.push({
       source: 'handling-assist', trigger: 'steering-response', requestedValue: steeringMoment,
@@ -64,7 +65,7 @@ export class HandlingAssist {
     const slipYaw = Math.atan2(Math.sin(velocityYaw - Number(state.yawRad || 0)), Math.cos(velocityYaw - Number(state.yawRad || 0)));
     const alignmentAuthority = 1 - highPowerAuthority;
     const alignmentMoment = clamp(
-      slipYaw * inertia * policy.slipAlignment * alignmentAuthority,
+      slipYaw * yawInertia * policy.slipAlignment * alignmentAuthority,
       -15000,
       15000
     );
@@ -75,14 +76,14 @@ export class HandlingAssist {
       physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: supportedValue(alignmentMoment), z: 0 }
     });
     const handbrakeMoment = steer * clamp(Number(controls.handbrake || 0), 0, 1)
-      * clamp(speed / 20, 0, 2.5) * inertia * policy.handbrakeRotation;
+      * clamp(speed / 20, 0, 2.5) * yawInertia * policy.handbrakeRotation;
     if (speed > 3 && Math.abs(handbrakeMoment) > 0.001) interventions.push({
       source: 'handling-assist', trigger: 'handbrake-rotation', requestedValue: handbrakeMoment,
       appliedValue: supportedValue(handbrakeMoment), supportScale: physicalSupport,
       suppressionReason: physicalSupport <= 0.001 ? 'airborne-contact' : null,
       physicalEffect: 'body-moment-y', momentWorldNm: { x: 0, y: supportedValue(handbrakeMoment), z: 0 }
     });
-    const rollMoment = -rollRate * inertia * 0.45 * policy.rollDamping;
+    const rollMoment = -rollRate * rollInertia * 0.45 * policy.rollDamping;
     if (Math.abs(rollMoment) > 0.001) interventions.push({
       source: 'handling-assist', trigger: 'roll-stability', requestedValue: rollMoment,
       appliedValue: supportedValue(rollMoment), supportScale: physicalSupport,

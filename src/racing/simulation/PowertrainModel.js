@@ -387,6 +387,269 @@ export class PowertrainModel {
     };
   }
 
+  stepAuthoritativeWheelTorques({
+    tuning = {},
+    config = {},
+    controls = {},
+    previous = {},
+    kinematicsByWheel = {},
+    capacityByWheel = {},
+    driveShareByWheel = {},
+    state = {},
+    damage = {},
+    dt = 0
+  } = {}) {
+    const seconds = Math.max(0, Number(dt) || 0);
+    const idleRpm = Math.max(500, Number(config.idleRpm ?? tuning.idleRpm) || 800);
+    const maxRpm = Math.max(idleRpm + 500, Number(config.maxRpm
+      ?? tuning.revLimitRpm ?? tuning.redlineRpm) || 7000);
+    const requestedGear = Math.trunc(Number(controls.requestedGear || 0));
+    let gear = Number.isInteger(previous.gear) ? previous.gear : requestedGear;
+    let targetGear = Number.isInteger(previous.targetGear) ? previous.targetGear : gear;
+    let shiftTimeRemainingSeconds = Math.max(0, Number(previous.shiftTimeRemainingSeconds || 0));
+    let shiftRecoveryTimeRemainingSeconds = Math.max(
+      0,
+      Number(previous.shiftRecoveryTimeRemainingSeconds || 0) - seconds
+    );
+    const transmissionDamage = clamp(Number(damage.transmission || 0), 0, 100);
+    const shiftDurationSeconds = Math.max(0.03, (
+      Number(tuning.shiftTimeMs || 180) + Number(tuning.shiftDelayMs || 0)
+    ) / 1000 * (1 + transmissionDamage * 0.012));
+    if (requestedGear !== targetGear && shiftTimeRemainingSeconds <= 0) {
+      targetGear = requestedGear;
+      shiftTimeRemainingSeconds = shiftDurationSeconds;
+      shiftRecoveryTimeRemainingSeconds = 0;
+    }
+    let shiftTorqueScale = 1;
+    if (shiftTimeRemainingSeconds > 0) {
+      const shiftProgress = clamp(1 - shiftTimeRemainingSeconds / shiftDurationSeconds, 0, 1);
+      if (shiftProgress >= 0.5) gear = targetGear;
+      // Physical clutch/torque interruption. The smooth end ramps avoid an
+      // instantaneous ratio swap under full transmitted torque.
+      shiftTorqueScale = shiftProgress < 0.2
+        ? 1 - shiftProgress / 0.2
+        : shiftProgress > 0.8 ? (shiftProgress - 0.8) / 0.2 : 0;
+      shiftTimeRemainingSeconds = Math.max(0, shiftTimeRemainingSeconds - seconds);
+      if (shiftTimeRemainingSeconds <= 0) {
+        gear = targetGear;
+        shiftTorqueScale = 1;
+        shiftRecoveryTimeRemainingSeconds = Math.max(
+          shiftRecoveryTimeRemainingSeconds,
+          Number(tuning.shiftRecoveryTimeMs ?? 160) / 1000
+        );
+      }
+    }
+    const gearRatio = Math.abs(Number(this.getGearRatio({
+      ...tuning,
+      finalDrive: tuning.gearFinalDrive ?? tuning.finalDrive,
+      gearRatios: tuning.gearRatios || []
+    }, gear)) || 0);
+    const finalDrive = Math.max(0.1, Math.abs(Number(
+      tuning.gearFinalDrive ?? tuning.finalDrive ?? 1
+    )));
+    const overallRatio = gearRatio * finalDrive;
+    const drivenIds = (config.drivenWheelIds || this.getDrivenWheelIds(tuning))
+      .filter((wheelId) => RACE_WHEEL_IDS.includes(wheelId));
+    const averageDrivenOmega = drivenIds.length
+      ? drivenIds.reduce((sum, wheelId) => (
+        sum + Math.abs(Number(kinematicsByWheel[wheelId]?.wheelAngularVelocityRadps || 0))
+      ), 0) / drivenIds.length
+      : 0;
+    const coupledRpm = overallRatio > 0
+      ? averageDrivenOmega * overallRatio * 60 / (Math.PI * 2)
+      : idleRpm;
+    const freeRpmTarget = idleRpm + (maxRpm - idleRpm) * clamp(Number(controls.throttle || 0), 0, 1);
+    const driverClutchCoupling = clamp(1 - Number(controls.clutch || 0), 0, 1);
+    const converterSlip = clamp(Number(tuning.torqueConverterSlip || 0), 0, 0.35);
+    const converterCoupling = overallRatio > 0
+      ? clamp(1 - Math.abs(coupledRpm - Number(previous.engineRpm || state.engineRpm || idleRpm))
+        / Math.max(800, maxRpm * (0.35 + converterSlip)), 0.25, 1)
+      : 0;
+    const clutchCoupling = driverClutchCoupling * shiftTorqueScale;
+    const rpmCoupling = clutchCoupling * (converterSlip > 0 ? converterCoupling : 1);
+    const rpmTarget = overallRatio > 0
+      ? coupledRpm * rpmCoupling + freeRpmTarget * (1 - rpmCoupling)
+      : freeRpmTarget;
+    let engineRpm = clamp(Number(previous.engineRpm ?? state.engineRpm ?? idleRpm), idleRpm, maxRpm);
+    engineRpm += (clamp(rpmTarget, idleRpm, maxRpm) - engineRpm)
+      * Math.min(1, seconds * (overallRatio > 0 ? 12 : 7.5));
+    const limiterActive = engineRpm >= maxRpm - Math.max(40, Number(config.revLimiterDropRpm || 280) * 0.35)
+      && controls.throttle > 0.05;
+    const limiterPhase = Math.floor(Number(previous.limiterSequence || 0)) % 4;
+    const limiterTorqueScale = limiterActive && limiterPhase < 2 ? 0 : 1;
+    const engineDamage = clamp(Number(damage.engine || 0), 0, 100);
+    const engineDamageScale = clamp(1 - engineDamage * 0.006, 0.25, 1);
+    const transmissionEfficiency = clamp(Number(config.drivetrainEfficiency
+      ?? tuning.drivetrainEfficiency ?? 0.85), 0.35, 1)
+      * clamp(1 - transmissionDamage * 0.0045, 0.45, 1);
+    const drivenSlip = drivenIds.length
+      ? Math.max(...drivenIds.map((wheelId) => Math.max(0, Number(
+        kinematicsByWheel[wheelId]?.slipRatio || 0
+      ))))
+      : 0;
+    const groundSpeedMps = Math.max(0, Number(state.groundSpeedMps
+      ?? Math.hypot(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0))) || 0);
+    const launchControlActive = controls.assists?.launchControlEnabled === true
+      && groundSpeedMps < 8
+      && controls.throttle > 0.7
+      && overallRatio > 0;
+    const tractionControlActive = controls.assists?.tractionControlEnabled !== false
+      && controls.throttle > 0.02
+      && overallRatio > 0;
+    const targetDrivenSlip = launchControlActive
+      ? clamp(Number(tuning.launchSlipTarget ?? 0.09), 0.04, 0.2)
+      : clamp(Number(tuning.tractionControlSlipTarget ?? 0.12), 0.05, 0.3);
+    const targetTractionScale = tractionControlActive && drivenSlip > targetDrivenSlip
+      ? clamp(targetDrivenSlip / drivenSlip, 0.08, 1)
+      : 1;
+    const previousTractionScale = clamp(Number(previous.tractionTorqueScale ?? 1), 0.05, 1);
+    const tractionRate = targetTractionScale < previousTractionScale ? 18 : 8;
+    const tractionTorqueScale = tractionControlActive
+      ? previousTractionScale + (targetTractionScale - previousTractionScale)
+        * Math.min(1, seconds * tractionRate)
+      : 1;
+    const launchRpm = clamp(Number(tuning.launchRpm || idleRpm), idleRpm, maxRpm);
+    const launchTorqueScale = launchControlActive
+      && drivenSlip > targetDrivenSlip
+      && engineRpm > launchRpm
+      ? clamp(1 - (engineRpm - launchRpm) / 1400, 0.22, 1)
+      : 1;
+    const converterTorqueMultiplier = converterSlip > 0 && overallRatio > 0
+      ? 1 + (1 - converterCoupling) * clamp(Number(tuning.torqueConverterMultiplication ?? 0), 0, 1.5)
+      : 1;
+    const direction = gear < 0 ? -1 : gear > 0 ? 1 : 0;
+    const curveTorqueNm = this.getTorqueNmAtRpm(engineRpm, tuning);
+    const combustionTorqueNm = curveTorqueNm * clamp(Number(controls.throttle || 0), 0, 1)
+      * engineDamageScale * limiterTorqueScale * launchTorqueScale * tractionTorqueScale;
+    const rpmRatio = clamp((engineRpm - idleRpm) / Math.max(1, maxRpm - idleRpm), 0, 1);
+    const engineBrakeTorqueNm = overallRatio > 0
+      ? Math.max(0, Number(tuning.engineBrakeTorqueNm || curveTorqueNm * 0.185))
+        * (1 - clamp(Number(controls.throttle || 0), 0, 1)) * (0.35 + rpmRatio * 0.65)
+      : 0;
+    const averageDrivenTravelMps = drivenIds.length
+      ? drivenIds.reduce((sum, wheelId) => (
+        sum + Number(kinematicsByWheel[wheelId]?.longitudinalVelocityMps || 0)
+      ), 0) / drivenIds.length
+      : 0;
+    const travelDirection = Math.abs(averageDrivenTravelMps) > 0.1
+      ? Math.sign(averageDrivenTravelMps)
+      : direction;
+    const wheelDriveTorqueTotalNm = (
+      direction * combustionTorqueNm - travelDirection * engineBrakeTorqueNm
+    ) * overallRatio * transmissionEfficiency * clutchCoupling * converterTorqueMultiplier;
+    const wheelDriveTorqueNm = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+      wheelId,
+      drivenIds.includes(wheelId)
+        ? wheelDriveTorqueTotalNm * Number(driveShareByWheel[wheelId] || 0)
+        : 0
+    ]));
+
+    const frontBias = clamp(Number(tuning.frontBrakeBias ?? config.frontBrakeBias ?? 0.62), 0.4, 0.85);
+    const brakePressure = clamp(Number(tuning.brakePressure ?? config.brakePressure ?? 1), 0.2, 1.5);
+    const serviceBrakeTorqueTotalNm = Math.max(0, Number(config.brakeForceN || 0))
+      * Math.max(0.1, Number(config.wheelRadiusM || 0.33))
+      * Math.pow(clamp(Number(controls.brake || 0), 0, 1), 0.82) * brakePressure;
+    const handbrakeTorqueTotalNm = Math.max(0, Number(config.handbrakeForceN || 0))
+      * Math.max(0.1, Number(config.wheelRadiusM || 0.33))
+      * clamp(Number(controls.handbrake || 0), 0, 1);
+    const requestedBrakeTorqueNm = {
+      fl: serviceBrakeTorqueTotalNm * frontBias * 0.5,
+      fr: serviceBrakeTorqueTotalNm * frontBias * 0.5,
+      rl: serviceBrakeTorqueTotalNm * (1 - frontBias) * 0.5 + handbrakeTorqueTotalNm * 0.5,
+      rr: serviceBrakeTorqueTotalNm * (1 - frontBias) * 0.5 + handbrakeTorqueTotalNm * 0.5
+    };
+    const previousAbs = previous.absModulationByWheel || {};
+    const absModulationByWheel = {};
+    const absInterventionByWheel = {};
+    const wheelBrakeTorqueNm = {};
+    RACE_WHEEL_IDS.forEach((wheelId) => {
+      const wheel = kinematicsByWheel[wheelId] || {};
+      const travelSign = Math.sign(Number(wheel.longitudinalVelocityMps || 0));
+      const signedBrakeSlip = Math.max(0, -Number(wheel.slipRatio || 0) * travelSign);
+      const absEnabled = controls.assists?.absEnabled !== false
+        && Number(controls.handbrake || 0) < 0.01;
+      const absTargetSlip = clamp(Number(tuning.absSlipTarget ?? 0.13), 0.06, 0.24);
+      const targetModulation = absEnabled && signedBrakeSlip > absTargetSlip
+        ? clamp(absTargetSlip / signedBrakeSlip, 0.05, 1)
+        : 1;
+      const previousModulation = clamp(Number(previousAbs[wheelId] ?? 1), 0.05, 1);
+      const modulationRate = targetModulation < previousModulation ? 30 : 14;
+      const modulation = absEnabled
+        ? previousModulation + (targetModulation - previousModulation)
+          * Math.min(1, seconds * modulationRate)
+        : 1;
+      const perWheelBrakeDamage = damage.brakes?.[wheelId];
+      const brakeDamageValue = Number.isFinite(Number(perWheelBrakeDamage))
+        ? Number(perWheelBrakeDamage)
+        : Number.isFinite(Number(damage.brakes)) ? Number(damage.brakes) : 0;
+      const damageScale = clamp(1 - brakeDamageValue / 125, 0.15, 1);
+      absModulationByWheel[wheelId] = modulation;
+      wheelBrakeTorqueNm[wheelId] = requestedBrakeTorqueNm[wheelId] * modulation * damageScale;
+      absInterventionByWheel[wheelId] = Math.max(
+        0,
+        requestedBrakeTorqueNm[wheelId] * damageScale - wheelBrakeTorqueNm[wheelId]
+      );
+    });
+
+    const stabilityEnabled = controls.assists?.stabilityControlEnabled !== false;
+    const steeringAngle = Number(controls.centerSteeringAngleRad || 0);
+    const desiredYawRate = groundSpeedMps * Math.tan(steeringAngle)
+      / Math.max(0.5, Number(config.wheelbaseM || 2.65));
+    const yawRate = Number(state.angularVelocityWorld?.y || state.yawRateRadps || 0);
+    const yawError = desiredYawRate - yawRate;
+    let stabilityBrakeWheelId = null;
+    let stabilityBrakeTorqueNm = 0;
+    if (stabilityEnabled && groundSpeedMps > 4 && Math.abs(yawError) > 0.18) {
+      stabilityBrakeWheelId = yawError > 0 ? 'fr' : 'fl';
+      stabilityBrakeTorqueNm = Math.min(
+        Number(capacityByWheel[stabilityBrakeWheelId] || 0) * Number(config.wheelRadiusM || 0.33) * 0.35,
+        Math.abs(yawError) * 420
+      );
+      wheelBrakeTorqueNm[stabilityBrakeWheelId] += stabilityBrakeTorqueNm;
+    }
+    return {
+      wheelDriveTorqueNm,
+      wheelBrakeTorqueNm,
+      state: {
+        engineRpm,
+        gear,
+        targetGear,
+        shiftTimeRemainingSeconds,
+        shiftRecoveryTimeRemainingSeconds,
+        shiftTorqueScale,
+        clutchCoupling,
+        rpmCoupling,
+        revLimiterActive: limiterActive,
+        limiterSequence: Number(previous.limiterSequence || 0) + (limiterActive ? 1 : 0),
+        tractionTorqueScale,
+        absModulationByWheel
+      },
+      telemetry: {
+        curveTorqueNm,
+        combustionTorqueNm,
+        engineBrakeTorqueNm,
+        overallRatio,
+        drivetrainEfficiency: transmissionEfficiency,
+        shiftTorqueScale,
+        clutchCoupling,
+        rpmCoupling,
+        converterTorqueMultiplier,
+        revLimiterActive: limiterActive,
+        tractionControlActive,
+        tractionTorqueScale,
+        drivenSlip,
+        launchControlActive,
+        absInterventionByWheel,
+        requestedBrakeTorqueNm,
+        wheelDriveTorqueNm: { ...wheelDriveTorqueNm },
+        wheelBrakeTorqueNm: { ...wheelBrakeTorqueNm },
+        appliedBrakeTorqueNm: { ...wheelBrakeTorqueNm },
+        stabilityBrakeWheelId,
+        stabilityBrakeTorqueNm
+      }
+    };
+  }
+
   getEngineBrakingForce({
     tuning = {},
     gearRatio = 0,

@@ -107,6 +107,183 @@ test('powertrain resolves driven wheels and honors axle/center capacity for ever
   assert.deepEqual(rwd.forceByWheel, { fl: 0, fr: 0, rl: 2000, rr: 4000 });
 });
 
+test('authoritative powertrain follows the torque curve and physically modulates shifts and assists', () => {
+  const model = new PowertrainModel();
+  const tuning = {
+    drivetrain: 'awd',
+    gearRatios: [3.5, 2.1, 1.4],
+    reverseRatio: 3.2,
+    finalDrive: 4,
+    gearFinalDrive: 4,
+    shiftTimeMs: 180,
+    idleRpm: 800,
+    revLimitRpm: 7000,
+    launchRpm: 3600,
+    frontBrakeBias: 0.64,
+    brakePressure: 1,
+    engineCurve: {
+      torquePoints: [
+        { rpm: 800, torqueLbFt: 120 },
+        { rpm: 3500, torqueLbFt: 300 },
+        { rpm: 7000, torqueLbFt: 180 }
+      ]
+    }
+  };
+  const config = {
+    ...tuning,
+    idleRpm: 800,
+    maxRpm: 7000,
+    revLimiterDropRpm: 280,
+    drivetrainEfficiency: 0.86,
+    brakeForceN: 16000,
+    handbrakeForceN: 7000,
+    wheelRadiusM: 0.33,
+    wheelbaseM: 2.65,
+    drivenWheelIds: ['fl', 'fr', 'rl', 'rr']
+  };
+  const capacityByWheel = { fl: 4000, fr: 4000, rl: 4000, rr: 4000 };
+  const driveShareByWheel = { fl: 0.25, fr: 0.25, rl: 0.25, rr: 0.25 };
+  const kinematicsAtSlip = (slipRatio = 0) => Object.fromEntries(
+    ['fl', 'fr', 'rl', 'rr'].map((wheelId) => [wheelId, {
+      wheelAngularVelocityRadps: 80,
+      longitudinalVelocityMps: 25,
+      slipRatio
+    }])
+  );
+  const run = ({ previous = {}, controls = {}, slipRatio = 0, damage = {}, groundSpeedMps = 25,
+    stateOverrides = {} } = {}) => (
+    model.stepAuthoritativeWheelTorques({
+      tuning,
+      config,
+      previous,
+      controls: {
+        throttle: 1,
+        brake: 0,
+        clutch: 0,
+        handbrake: 0,
+        requestedGear: 1,
+        centerSteeringAngleRad: 0,
+        assists: {
+          absEnabled: true,
+          tractionControlEnabled: true,
+          stabilityControlEnabled: true,
+          launchControlEnabled: true
+        },
+        ...controls
+      },
+      kinematicsByWheel: kinematicsAtSlip(slipRatio),
+      capacityByWheel,
+      driveShareByWheel,
+      state: {
+        groundSpeedMps,
+        engineRpm: previous.engineRpm || 3500,
+        angularVelocityWorld: {},
+        ...stateOverrides
+      },
+      damage,
+      dt: 1 / 120
+    })
+  );
+
+  const peak = run({ previous: { engineRpm: 3500, gear: 1, targetGear: 1 } });
+  const low = run({ previous: { engineRpm: 800, gear: 1, targetGear: 1 } });
+  assert.ok(peak.telemetry.curveTorqueNm > low.telemetry.curveTorqueNm * 1.5);
+
+  let shifting = run({
+    previous: peak.state,
+    controls: { requestedGear: 2 }
+  });
+  let minimumShiftTorqueScale = shifting.state.shiftTorqueScale;
+  for (let step = 0; step < 24; step += 1) {
+    shifting = run({ previous: shifting.state, controls: { requestedGear: 2 } });
+    minimumShiftTorqueScale = Math.min(minimumShiftTorqueScale, shifting.state.shiftTorqueScale);
+  }
+  assert.ok(minimumShiftTorqueScale < 0.05);
+  assert.equal(shifting.state.gear, 2);
+
+  const clutchOpen = run({
+    previous: { engineRpm: 3500, gear: 1, targetGear: 1 },
+    controls: { clutch: 1 }
+  });
+  assert.ok(Object.values(clutchOpen.wheelDriveTorqueNm).every((torque) => torque === 0));
+
+  const limited = run({
+    previous: { engineRpm: 7000, gear: 1, targetGear: 1, limiterSequence: 0 }
+  });
+  assert.equal(limited.telemetry.revLimiterActive, true);
+  assert.equal(limited.telemetry.combustionTorqueNm, 0);
+
+  let tractionControlled = peak;
+  for (let step = 0; step < 18; step += 1) {
+    tractionControlled = run({ previous: tractionControlled.state, slipRatio: 0.8 });
+  }
+  const tractionDisabled = run({
+    previous: tractionControlled.state,
+    slipRatio: 0.8,
+    controls: { assists: { tractionControlEnabled: false, absEnabled: true } }
+  });
+  assert.ok(tractionControlled.state.tractionTorqueScale < 0.5);
+  assert.equal(tractionDisabled.state.tractionTorqueScale, 1);
+
+  const launchOn = run({
+    previous: { engineRpm: 5200, gear: 1, targetGear: 1 },
+    slipRatio: 0.5,
+    groundSpeedMps: 2,
+    controls: { assists: { launchControlEnabled: true, tractionControlEnabled: false } }
+  });
+  const launchOff = run({
+    previous: { engineRpm: 5200, gear: 1, targetGear: 1 },
+    slipRatio: 0.5,
+    groundSpeedMps: 2,
+    controls: { assists: { launchControlEnabled: false, tractionControlEnabled: false } }
+  });
+  assert.equal(launchOn.telemetry.launchControlActive, true);
+  assert.ok(Math.abs(launchOn.wheelDriveTorqueNm.fl) < Math.abs(launchOff.wheelDriveTorqueNm.fl));
+
+  const absOn = run({
+    previous: peak.state,
+    slipRatio: -0.8,
+    controls: { throttle: 0, brake: 1 }
+  });
+  const absOff = run({
+    previous: peak.state,
+    slipRatio: -0.8,
+    controls: { throttle: 0, brake: 1, assists: { absEnabled: false, tractionControlEnabled: false } }
+  });
+  assert.ok(absOn.wheelBrakeTorqueNm.fl < absOff.wheelBrakeTorqueNm.fl);
+  assert.ok(absOn.wheelBrakeTorqueNm.fl > absOn.wheelBrakeTorqueNm.rl);
+  const undamagedBrakeMap = run({
+    previous: peak.state,
+    slipRatio: -0.3,
+    controls: { throttle: 0, brake: 1 },
+    damage: { brakes: {} }
+  });
+  assert.ok(Object.values(undamagedBrakeMap.wheelBrakeTorqueNm).every(Number.isFinite));
+
+  const stabilityOn = run({
+    previous: peak.state,
+    controls: { throttle: 0, centerSteeringAngleRad: 0 },
+    stateOverrides: { angularVelocityWorld: { y: 1 } }
+  });
+  const stabilityOff = run({
+    previous: peak.state,
+    controls: {
+      throttle: 0,
+      centerSteeringAngleRad: 0,
+      assists: { stabilityControlEnabled: false }
+    },
+    stateOverrides: { angularVelocityWorld: { y: 1 } }
+  });
+  assert.ok(stabilityOn.telemetry.stabilityBrakeTorqueNm > 0);
+  assert.equal(stabilityOff.telemetry.stabilityBrakeTorqueNm, 0);
+
+  const damaged = run({
+    previous: { engineRpm: 3500, gear: 1, targetGear: 1 },
+    damage: { engine: 60, transmission: 40 }
+  });
+  assert.ok(Math.abs(damaged.wheelDriveTorqueNm.fl) < Math.abs(peak.wheelDriveTorqueNm.fl));
+});
+
 test('aero and rolling resistance remain deterministic and contact-aware', () => {
   const aero = new AeroModel();
   const tuning = {
@@ -212,4 +389,14 @@ test('damage and assists return explicit next state without editor ownership', (
   });
   assert.ok(tractionControl.appliedCut < 1);
   assert.equal(tractionControl.nextCut, tractionControl.appliedCut);
+
+  const rollIntervention = assists.calculatePhysicalInterventions({
+    preset: 'sport',
+    state: { angularVelocityWorld: { x: 0, y: 0, z: 1 }, velocity: {}, contactPatches: {} },
+    controls: {},
+    config: { yawInertiaKgM2: 9000, rollInertiaKgM2: 1000, wheelbaseM: 2.65 },
+    supportScale: 1
+  }).find((entry) => entry.trigger === 'roll-stability');
+  assert.ok(rollIntervention);
+  assert.equal(Math.abs(rollIntervention.appliedValue - (-54)) < 0.001, true);
 });
