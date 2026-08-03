@@ -869,7 +869,10 @@ export class ContactPatchTireModel {
       // static adhesion. Higher launch demand still has to re-enter through the
       // rolling-speed crossing so genuine breakaway and wheelspin remain free.
       const nearRollingConstraint = (atRollingSpeed && staticTorqueRatio <= 0.72)
-        || (withinStaticSlipRange && staticTorqueRatio <= 0.55);
+        || (withinStaticSlipRange
+          && Number(controls.throttle || 0) <= 0.5
+          && appliedWheelTorque > 0
+          && staticTorqueRatio <= 0.72);
       if (geometricContact
         && nearRollingConstraint) {
         const widthScale = clamp(Number(tire.widthMm ?? 245) / 245, 0.7, 1.4);
