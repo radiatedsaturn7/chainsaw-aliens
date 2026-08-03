@@ -1,4 +1,4 @@
-import { RACE_WHEEL_IDS, clamp } from './SimulationMath.js';
+import { RACE_WHEEL_IDS, clamp, deterministicUnitFloat } from './SimulationMath.js';
 import { getDoodadRuleForSpeed } from '../raceDoodads.js';
 
 const averageDamage = (damage = {}) => {
@@ -185,6 +185,16 @@ export function updateRaceWearAndDamage(editor, seconds = 0) {
   const speed = Number(session.bodyLongitudinalSpeedMps ?? session.speedMps ?? 0);
   const steer = Number(editor.raceInput.steeringWheel || 0);
   const tuning = editor.getRaceCarTuning(car);
+  const nextDamageVariation = (eventId) => {
+    const sequence = Math.max(0, Math.trunc(Number(session.damageEventSequence || 0)));
+    session.damageEventSequence = sequence + 1;
+    return deterministicUnitFloat(
+      editor.selectedRace?.seed ?? editor.selectedRace?.id ?? 'race',
+      car?.id ?? session.vehicleId ?? 'vehicle',
+      eventId,
+      sequence
+    );
+  };
   if (session.rpm > 0.985 && editor.raceInput.throttle && editor.raceInput.gear < tuning.gearRatios.length) {
     editor.applyRaceDamage('engine', seconds * 2.8);
   }
@@ -209,7 +219,7 @@ export function updateRaceWearAndDamage(editor, seconds = 0) {
     if (hazard.type === 'jump') {
       const impact = Math.max(0, speed / 30 - Number(hazard.landingForgiveness || 0.35));
       editor.applyRaceDamage('suspension', impact * 10 + Number(hazard.height || 0) * 12, {
-        pull: (Math.random() - 0.5) * 0.08,
+        pull: (nextDamageVariation(hazard.id) - 0.5) * 0.08,
         source: `hazard:${hazard.id}`
       });
     } else if (editor.didRaceHazardContactCar(hazard, session)) {

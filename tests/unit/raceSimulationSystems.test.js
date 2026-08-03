@@ -279,6 +279,14 @@ test('authoritative powertrain follows the torque curve and physically modulates
   assert.equal(stabilityOff.telemetry.stabilityBrakeTorqueNm, 0);
   assert.equal(stabilityOff.telemetry.stabilityBrakeWheelId, null);
 
+  const understeer = run({
+    previous: peak.state,
+    controls: { throttle: 0, centerSteeringAngleRad: 0.12 },
+    stateOverrides: { angularVelocityWorld: { y: 0 }, bodyLateralSpeedMps: 0 }
+  });
+  assert.equal(understeer.telemetry.stabilityClassification, 'understeer');
+  assert.ok(['rl', 'fl'].includes(understeer.telemetry.stabilityBrakeWheelId));
+
   const stabilityWithAbsAndDamage = run({
     previous: peak.state,
     slipRatio: -0.8,
@@ -286,7 +294,8 @@ test('authoritative powertrain follows the torque curve and physically modulates
     damage: { brakes: { fl: 50 } },
     stateOverrides: { angularVelocityWorld: { y: 1 } }
   });
-  assert.equal(stabilityWithAbsAndDamage.telemetry.stabilityBrakeWheelId, 'fl');
+  assert.equal(stabilityWithAbsAndDamage.telemetry.stabilityBrakeWheelId, 'fr');
+  assert.equal(stabilityWithAbsAndDamage.telemetry.stabilityClassification, 'oversteer');
   assert.ok(stabilityWithAbsAndDamage.telemetry.requestedStabilityBrakeTorqueNm > 0);
   assert.ok(stabilityWithAbsAndDamage.telemetry.stabilityBrakeTorqueNm
     < stabilityWithAbsAndDamage.telemetry.requestedStabilityBrakeTorqueNm);

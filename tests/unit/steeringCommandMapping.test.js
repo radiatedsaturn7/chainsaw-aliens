@@ -4,6 +4,7 @@ import test from 'node:test';
 import { HandlingAssist } from '../../src/racing/simulation/HandlingAssist.js';
 import { RACE_CONTROLLER_STEERING } from '../../src/racing/simulation/RaceSimulationConfig.js';
 import {
+  calculateAuthoritativeSteeringEnvelope,
   calculateWheelContactKinematics,
   resolvePhysicalCenterSteeringAngle
 } from '../../src/racing/simulation/ContactPatchTireModel.js';
@@ -11,6 +12,35 @@ import {
   VehicleControlInputTimeline,
   normalizeVehicleControlInput
 } from '../../src/racing/simulation/VehicleDynamicsRunner.js';
+
+test('authoritative steering envelope responds to front support and aquaplaning', () => {
+  const config = {
+    handlingPreset: 'sport', maxSteerAngleRad: 0.52, massKg: 1500,
+    frontWeightDistribution: 0.58, wheelbaseM: 2.68
+  };
+  const patch = {
+    normalLoadN: 4200, suspensionNormalLoadN: 4200,
+    gripCoefficient: 1, utilization: 0.2
+  };
+  const twoWheel = calculateAuthoritativeSteeringEnvelope({
+    groundSpeedMps: 25, contactPatches: { fl: patch, fr: patch }
+  }, config);
+  const oneWheel = calculateAuthoritativeSteeringEnvelope({
+    groundSpeedMps: 25, contactPatches: { fl: patch }
+  }, config);
+  const aquaplaning = calculateAuthoritativeSteeringEnvelope({
+    groundSpeedMps: 25,
+    contactPatches: {
+      fl: { ...patch, normalLoadN: 900 },
+      fr: { ...patch, normalLoadN: 900 }
+    }
+  }, config);
+  assert.ok(twoWheel > oneWheel);
+  assert.ok(oneWheel > aquaplaning);
+  assert.equal(resolvePhysicalCenterSteeringAngle({ steering: 1 }, config, {
+    groundSpeedMps: 25, contactPatches: { fl: patch, fr: patch }
+  }), twoWheel);
+});
 
 const MPH_TO_MPS = 0.44704;
 const SPEEDS_MPH = [0, 15, 30, 60, 100];

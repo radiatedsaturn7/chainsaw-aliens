@@ -36,6 +36,46 @@ export const VEHICLE_DYNAMICS_SUBSYSTEM_ORDER = Object.freeze([
 ]);
 
 const EPSILON = 1e-9;
+const dotVector3 = (a = {}, b = {}) => (
+  Number(a.x || 0) * Number(b.x || 0)
+  + Number(a.y || 0) * Number(b.y || 0)
+  + Number(a.z || 0) * Number(b.z || 0)
+);
+
+export function evaluatePhysicalSleepCondition({
+  state = {}, config = {}, tires = {}, totalLinearImpulse = {}, totalAngularImpulse = {},
+  dt = 1 / 120, pendingCollisionCount = 0
+} = {}) {
+  const patches = RACE_WHEEL_IDS.map((wheelId) => state.contactPatches?.[wheelId])
+    .filter((patch) => Number(patch?.normalLoadN || 0) > 1);
+  if (!tires.grounded || pendingCollisionCount || tires.bodyCollision?.contacts?.length || !patches.length) return false;
+  const normal = patches.reduce((sum, patch) => addVector3(sum, patch.surfaceNormalWorld), { x: 0, y: 0, z: 0 });
+  const normalLength = Math.max(EPSILON, Math.hypot(normal.x, normal.y, normal.z));
+  const gravityTangentN = Number(config.massKg || 0) * 9.81
+    * Math.sqrt(Math.max(0, 1 - clamp(normal.y / normalLength, -1, 1) ** 2));
+  const staticFrictionCapacityN = patches.reduce((sum, patch) => (
+    sum + Number(patch.normalLoadN || 0) * Math.max(0, Number(patch.gripCoefficient || 0)) * 0.92
+  ), 0);
+  const activeDriveTorqueNm = patches.reduce((sum, patch) => (
+    sum + Math.abs(Number(patch.driveTorqueNm || 0))
+  ), 0);
+  const netForceN = Math.hypot(
+    Number(totalLinearImpulse.x || 0), Number(totalLinearImpulse.y || 0), Number(totalLinearImpulse.z || 0)
+  ) / Math.max(EPSILON, dt);
+  const netMomentNm = Math.hypot(
+    Number(totalAngularImpulse.x || 0), Number(totalAngularImpulse.y || 0), Number(totalAngularImpulse.z || 0)
+  ) / Math.max(EPSILON, dt);
+  return gravityTangentN <= staticFrictionCapacityN
+    && netForceN < Number(config.massKg || 0) * 9.81 * 0.025
+    && netMomentNm < Math.max(50, Number(config.massKg || 0) * 9.81 * 0.03)
+    && activeDriveTorqueNm < 0.5
+    && Math.hypot(Number(state.velocity?.x || 0), Number(state.velocity?.y || 0), Number(state.velocity?.z || 0)) < 0.025
+    && Math.hypot(
+      Number(state.angularVelocityWorld?.x || 0),
+      Number(state.angularVelocityWorld?.y || 0),
+      Number(state.angularVelocityWorld?.z || 0)
+    ) < 0.025;
+}
 const CONTINUOUS_CONTROL_FIELDS = Object.freeze([
   'steering',
   'throttle',
@@ -554,7 +594,7 @@ export class DeterministicTireContactSubsystem {
     const drivePerWheel = config.engineForceN * controls.throttle
       / Math.max(1, driven.size);
     const brakePerWheel = config.brakeForceN * controls.brake / RACE_WHEEL_IDS.length;
-    const steerAngle = resolvePhysicalCenterSteeringAngle(controls, config);
+    const steerAngle = resolvePhysicalCenterSteeringAngle(controls, config, state);
     const lateralDemand = Math.abs(state.speedMps) ** 2
       * Math.tan(steerAngle) / Math.max(0.5, config.wheelbaseM)
       * config.massKg / RACE_WHEEL_IDS.length;
@@ -834,15 +874,38 @@ export class VehicleDynamicsRunner {
     if (record) this.collisionTimeline.push({ stepIndex, ...clone(collision) });
   }
 
+  queueCollisionContact({
+    pointWorld = null,
+    normalWorld = {},
+    penetrationM = 0,
+    restitution = 0.2,
+    friction = 0.7,
+    source = 'collision-contact'
+  } = {}, { record = true, stepIndex = this.stepIndex + 1 } = {}) {
+    const length = Math.hypot(
+      Number(normalWorld.x || 0), Number(normalWorld.y || 0), Number(normalWorld.z || 0)
+    );
+    if (length <= EPSILON) return;
+    const collision = {
+      contact: true,
+      pointWorld: clone(pointWorld || this.state.position),
+      normalWorld: {
+        x: Number(normalWorld.x || 0) / length,
+        y: Number(normalWorld.y || 0) / length,
+        z: Number(normalWorld.z || 0) / length
+      },
+      penetrationM: quantize(Math.max(0, Number(penetrationM || 0))),
+      restitution: quantize(clamp(Number(restitution), 0, 1)),
+      friction: quantize(clamp(Number(friction), 0, 1.5)),
+      source
+    };
+    this.pendingCollisionImpulses.push(collision);
+    if (record) this.collisionTimeline.push({ stepIndex, ...clone(collision) });
+  }
+
   integrateChassis(controls, tires, dt) {
     const state = this.state;
     const config = this.config;
-    const restSnapshot = {
-      position: clone(state.position),
-      velocity: clone(state.velocity),
-      orientation: clone(state.orientation),
-      angularVelocityWorld: clone(state.angularVelocityWorld)
-    };
     let totalLinearImpulse = addVector3(addVector3(
       addVector3(tires.tireImpulseWorldNs, tires.suspensionImpulseWorldNs),
       addVector3(
@@ -863,17 +926,6 @@ export class VehicleDynamicsRunner {
       sum + Math.max(0, Number(tires.wheelLoadsN?.[wheelId] || 0))
     ), 0);
     const supportScale = clamp(supportedLoadN / Math.max(1, config.massKg * 9.81), 0, 1);
-    const restingContact = tires.grounded
-      && this.pendingCollisionImpulses.length === 0
-      && !tires.bodyCollision?.contacts?.length
-      && Math.hypot(state.velocity.x, state.velocity.y, state.velocity.z) < 0.02
-      && Math.hypot(
-        state.angularVelocityWorld.x,
-        state.angularVelocityWorld.y,
-        state.angularVelocityWorld.z
-      ) < 0.02
-      && Number(controls.throttle || 0) * (1 - Number(controls.clutch || 0)) < 0.001
-      && Math.abs(supportedLoadN - config.massKg * 9.81) < config.massKg * 9.81 * 0.01;
     totalAngularImpulse.x += (
       -Number(state.pitchRad || 0) * config.pitchStiffnessNmPerRad
       - Number(state.angularVelocityWorld.x || 0) * config.pitchDampingNmsPerRad
@@ -891,8 +943,38 @@ export class VehicleDynamicsRunner {
         scaleVector3(intervention.momentWorldNm, dt)
       );
     });
+    const canSleep = evaluatePhysicalSleepCondition({
+      state, config, tires, totalLinearImpulse, totalAngularImpulse, dt,
+      pendingCollisionCount: this.pendingCollisionImpulses.length
+    });
     const collisionImpulses = this.pendingCollisionImpulses.splice(0);
-    collisionImpulses.forEach(({ impulseWorldNs, pointWorld }) => {
+    collisionImpulses.forEach((collision) => {
+      const { pointWorld } = collision;
+      let impulseWorldNs = collision.impulseWorldNs;
+      if (collision.contact) {
+        const normal = collision.normalWorld;
+        const arm = addVector3(pointWorld, scaleVector3(state.position, -1));
+        const pointVelocity = addVector3(state.velocity, crossVector3(state.angularVelocityWorld, arm));
+        const normalVelocity = dotVector3(pointVelocity, normal);
+        const tangentVelocity = addVector3(pointVelocity, scaleVector3(normal, -normalVelocity));
+        const tangentSpeed = Math.hypot(tangentVelocity.x, tangentVelocity.y, tangentVelocity.z);
+        const normalImpulse = normalVelocity > 0
+          ? config.massKg * normalVelocity * (1 + collision.restitution)
+          : 0;
+        const tangentImpulse = Math.min(
+          config.massKg * tangentSpeed,
+          normalImpulse * collision.friction
+        );
+        impulseWorldNs = addVector3(
+          scaleVector3(normal, -normalImpulse),
+          tangentSpeed > EPSILON
+            ? scaleVector3(tangentVelocity, -tangentImpulse / tangentSpeed)
+            : { x: 0, y: 0, z: 0 }
+        );
+        const correction = Math.min(0.12, Math.max(0, collision.penetrationM - 0.002) * 0.65);
+        state.position = addVector3(state.position, scaleVector3(normal, -correction));
+        collision.impulseWorldNs = clone(impulseWorldNs);
+      }
       state.velocity = addVector3(state.velocity, scaleVector3(impulseWorldNs, 1 / config.massKg));
       const arm = addVector3(pointWorld, scaleVector3(state.position, -1));
       totalAngularImpulse = addVector3(totalAngularImpulse, crossVector3(arm, impulseWorldNs));
@@ -916,11 +998,9 @@ export class VehicleDynamicsRunner {
     });
     state.angularVelocityWorld = angularMotion.angularVelocityWorld;
     state.orientation = angularMotion.orientation;
-    if (restingContact) {
-      state.position = restSnapshot.position;
-      state.velocity = restSnapshot.velocity;
-      state.orientation = restSnapshot.orientation;
-      state.angularVelocityWorld = restSnapshot.angularVelocityWorld;
+    if (canSleep) {
+      state.velocity = { x: 0, y: 0, z: 0 };
+      state.angularVelocityWorld = { x: 0, y: 0, z: 0 };
     }
     if (tires.targetVelocityWorld) {
       state.velocity.x = Number(tires.targetVelocityWorld.x || 0);
@@ -1034,6 +1114,7 @@ export class VehicleDynamicsRunner {
       supportScale: quantize(supportScale),
       groundConstraintImpulseNs: quantize(groundConstraintImpulseNs),
       assistInterventions,
+      sleeping: canSleep,
       collisionImpulses
     };
   }
@@ -1041,7 +1122,11 @@ export class VehicleDynamicsRunner {
   runStep(legacySnapshot = null) {
     const nextStepIndex = this.stepIndex + 1;
     (this.scheduledReplayCollisions.get(nextStepIndex) || []).forEach((collision) => {
-      this.queueCollisionImpulse(collision, { record: false, stepIndex: nextStepIndex });
+      if (collision.contact) {
+        this.queueCollisionContact(collision, { record: false, stepIndex: nextStepIndex });
+      } else {
+        this.queueCollisionImpulse(collision, { record: false, stepIndex: nextStepIndex });
+      }
     });
     const stepTimeSeconds = nextStepIndex / this.config.chassisHz;
     const controls = this.inputTimeline.sampleAt(stepTimeSeconds);
@@ -1323,6 +1408,7 @@ export class VehicleDynamicsRunner {
     });
     runner.advance(record.finalObservedTimeSeconds);
     runner.drainCatchUp();
+    runner.collisionTimeline = clone(record.collisionTimeline || []);
     return runner;
   }
 }

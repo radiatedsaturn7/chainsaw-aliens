@@ -590,7 +590,9 @@ export function updateRaceSimulation({
       absEnabled: tuning.absEnabled,
       tractionControlEnabled: tuning.tractionControlEnabled,
       launchControlEnabled: tuning.launchControlEnabled === true,
-      stabilityControlEnabled: editor.playtestSession.stabilityControlEnabled !== false,
+      stabilityControlEnabled: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
+        ? editor.playtestSession.stabilityControlExplicitlyEnabled === true
+        : editor.playtestSession.stabilityControlEnabled !== false,
       autoShift: editor.raceInput.autoShift !== false
     }
   });
@@ -766,17 +768,6 @@ export function updateRaceSimulation({
   if (isAutomatic && gear < 0 && driverThrottle > RACE_PEDAL_INPUT.activeThreshold && absSpeedBefore < 0.75) {
     gear = 1;
     editor.raceInput.gear = 1;
-  }
-  if (isAutomatic && gear > 0 && Number(editor.playtestSession.speedMps || 0) > 0.75) {
-    const safeCurrentGearRpm = Math.max(editor.getRaceAutomaticUpshiftRpm(tuning), tuning.revLimitRpm * 0.985);
-    while (
-      gear < tuning.gearRatios.length
-      && editor.getRaceProjectedEngineRpmForGear(tuning, absSpeedBefore, gear) > safeCurrentGearRpm
-    ) {
-      gear += 1;
-      automaticOverrevUpshifts += 1;
-      editor.raceInput.gear = gear;
-    }
   }
   const gearRatio = editor.getRaceGearRatio(tuning, gear);
   const binarySteer = launchSteeringLocked ? 0 : clamp(Number(editor.raceInput.binarySteer || 0), -1, 1);
@@ -2085,7 +2076,9 @@ export function updateRaceSimulation({
         absEnabled: tuning.absEnabled,
         tractionControlEnabled: tuning.tractionControlEnabled,
         launchControlEnabled: tuning.launchControlEnabled === true,
-        stabilityControlEnabled: editor.playtestSession.stabilityControlEnabled !== false,
+        stabilityControlEnabled: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
+          ? editor.playtestSession.stabilityControlExplicitlyEnabled === true
+          : editor.playtestSession.stabilityControlEnabled !== false,
         autoShift: editor.raceInput.autoShift !== false
       }
     },
@@ -2159,54 +2152,25 @@ export function updateRaceSimulation({
       const side = Math.sign(boundaryHit.lateral || 1);
       const hitProjection = boundaryHit.projection || projection;
       const right = editor.getRaceRightVector(Number(hitProjection.yaw || roadYaw || 0));
-      const forward = editor.getRaceForwardVector(Number(hitProjection.yaw || roadYaw || 0));
       const collisionEffect = editor.getRaceEdgeCollisionEffect();
       if (collisionEffect === 'reset') {
         editor.resetRaceCarToRouteCenter({ projection: hitProjection, roadYaw });
       } else {
         const authority = editor.playtestSession.vehicleDynamicsRunner;
-        authority.state.position.x -= right.x * side * boundaryHit.excess;
-        authority.state.position.z -= right.z * side * boundaryHit.excess;
-        const speedMps = Number(editor.playtestSession.speedMps || 0);
-        const velocityYaw = Number(editor.playtestSession.velocityYaw || editor.playtestSession.carYaw || 0);
-        const vx = Math.sin(velocityYaw) * speedMps;
-        const vz = Math.cos(velocityYaw) * speedMps;
         const normalX = right.x * side;
         const normalZ = right.z * side;
-        const normalVelocity = vx * normalX + vz * normalZ;
-        const tangentVelocity = vx * forward.x + vz * forward.z;
+        const velocity = authority.state.velocity || {};
+        const normalVelocity = Number(velocity.x || 0) * normalX + Number(velocity.z || 0) * normalZ;
         const restitution = clamp(0.18 + Math.abs(normalVelocity) / 72, 0.18, 0.48);
         const tangentFriction = clamp(0.82 - Math.abs(normalVelocity) / 140, 0.55, 0.84);
-        if (normalVelocity > 0.05) {
-          const nextNormalVelocity = -normalVelocity * restitution;
-          const nextTangentVelocity = tangentVelocity * tangentFriction;
-          const nextVx = forward.x * nextTangentVelocity + normalX * nextNormalVelocity;
-          const nextVz = forward.z * nextTangentVelocity + normalZ * nextNormalVelocity;
-          authority.queueCollisionImpulse({
-            impulseWorldNs: {
-              x: (nextVx - vx) * authority.config.massKg,
-              y: 0,
-              z: (nextVz - vz) * authority.config.massKg
-            },
-            pointWorld: boundaryHit.point,
-            source: `edge:${edgeCollisionMode}`
-          });
-          const impactYaw = normalizeAngle(editor.playtestSession.carYaw - Math.atan2(normalX, normalZ));
-          authority.state.angularVelocityWorld.y += clamp(
-            -Math.sin(impactYaw) * Math.abs(normalVelocity) * 0.035,
-            -2.4,
-            2.4
-          );
-        } else {
-          authority.state.velocity.x *= 0.94;
-          authority.state.velocity.z *= 0.94;
-          authority.state.angularVelocityWorld.y = clamp(
-            Number(authority.state.angularVelocityWorld.y || 0) * 0.72,
-            -1.4,
-            1.4
-          );
-        }
-        syncVehicleDynamicsCompatibilityOutputs(authority, editor.playtestSession);
+        authority.queueCollisionContact({
+          pointWorld: boundaryHit.point,
+          normalWorld: { x: normalX, y: 0, z: normalZ },
+          penetrationM: boundaryHit.excess,
+          restitution,
+          friction: 1 - tangentFriction,
+          source: `edge:${edgeCollisionMode}`
+        });
         editor.applyRaceDamage('panels', Math.min(14, Math.max(0.2, Math.abs(normalVelocity) * 0.42)), {
           keys: [side < 0 ? 'left' : 'right'],
           source: `edge:${edgeCollisionMode}`
@@ -2311,12 +2275,6 @@ export function updateRaceSimulation({
   );
   editor.playtestSession.roadViewOffset += (trackViewTarget - Number(editor.playtestSession.roadViewOffset || 0)) * Math.min(1, seconds * 3.2);
   const authoritativeEngineRpm = Number(editor.playtestSession.engineRpm || diagnosticEngineRpm);
-  const authoritativeShiftInProgress = Number(
-    editor.playtestSession.vehicleDynamicsRunner?.state?.powertrainState?.shiftTimeRemainingSeconds || 0
-  ) > 0 || Number(
-    editor.playtestSession.vehicleDynamicsRunner?.state?.powertrainState
-      ?.shiftRecoveryTimeRemainingSeconds || 0
-  ) > 0;
   editor.playtestSession.rpm = clamp(authoritativeEngineRpm / tuning.revLimitRpm, 0, 1.08);
   editor.updateRaceEngineAudio({ tuning, throttle: engineThrottle, load: relaxedWheelSpinRatio });
   editor.updateRaceTireAudio({
@@ -2324,35 +2282,8 @@ export function updateRaceSimulation({
     surface: segmentInfo.segment?.surface,
     speedMps: absSpeed
   });
-  if (!countdownActive
-    && editor.raceInput.autoShift
-    && gear > 0
-    && !authoritativeShiftInProgress
-    && editor.playtestSession.shiftCooldownMs <= 0) {
-    const lowerGearUsefulSpeed = gear > 1 ? editor.getRaceRedlineSpeedMps(tuning, gear - 1) * 0.72 : 0;
-    const currentGearRedlineSpeed = editor.getRaceRedlineSpeedMps(tuning, gear);
-    const forwardSpeedMps = Number(
-      editor.playtestSession.bodyLongitudinalSpeedMps ?? editor.playtestSession.speedMps ?? 0
-    );
-    const stableDriveContact = drivenLoadScale >= 0.25 && drivetrainUnload < 0.55;
-    const wantsUpshift = authoritativeEngineRpm > automaticUpshiftRpm * 0.96
-      || absSpeed > currentGearRedlineSpeed * 0.9;
-    if (throttle > RACE_PEDAL_INPUT.activeThreshold
-      && forwardSpeedMps > 1
-      && stableDriveContact
-      && wantsUpshift
-      && editor.raceInput.gear < tuning.gearRatios.length) {
-      editor.shiftRaceGear(1);
-    } else if (editor.raceInput.gear > 1
-      && (
-        forwardSpeedMps <= 0
-        || authoritativeEngineRpm < automaticDownshiftRpm
-        || brake > RACE_PEDAL_INPUT.activeThreshold
-        || absSpeed < lowerGearUsefulSpeed
-      )
-      && editor.canRaceAutomaticDownshift(tuning, absSpeed, editor.raceInput.gear - 1)) {
-      editor.shiftRaceGear(-1);
-    }
+  if (editor.raceInput.autoShift && editor.playtestSession.vehicleDynamicsRunner?.state) {
+    editor.raceInput.gear = Number(editor.playtestSession.vehicleDynamicsRunner.state.gear || gear);
   }
   editor.playtestSession.steeringWheel = editor.raceInput.steeringWheel;
   editor.playtestSession.steeringTarget = editor.raceInput.steeringTarget;

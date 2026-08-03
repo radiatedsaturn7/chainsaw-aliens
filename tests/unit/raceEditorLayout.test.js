@@ -21053,7 +21053,9 @@ test('Race Editor automatic transmission downshifts while braking or coasting', 
   editor.raceInput.brakeAxis = 1;
   editor.updatePlaytest(1 / 30);
 
-  assert.equal(editor.raceInput.gear, 4);
+  assert.equal(runner.state.powertrainState.targetGear, 4);
+  for (let index = 0; index < 40; index += 1) editor.updatePlaytest(1 / 120);
+  assert.ok(editor.raceInput.gear <= 4);
 });
 
 test('Race Editor automatic transmission skips downshift that would over-rev the engine', () => {
@@ -23190,6 +23192,7 @@ test('Race Editor solid track edge reflects velocity and damps runaway wall spin
     { length: 200, curve: 0, elevation: 0, surface: 'asphalt', roadWidthM: 8, hazardIds: [] }
   ];
   editor.startPlaytest('starter-rwd');
+  editor.updatePlaytest(0);
   const pose = editor.getRaceWorldPoseAtDistance(35);
   const right = editor.getRaceRightVector(pose.yaw);
   editor.playtestSession.launchLockMs = 0;
@@ -23202,8 +23205,14 @@ test('Race Editor solid track edge reflects velocity and damps runaway wall spin
   editor.playtestSession.carYaw = Math.PI / 2;
   editor.playtestSession.speedMps = 24;
   editor.playtestSession.yawVelocityRadps = 3.4;
+  const runner = editor.playtestSession.vehicleDynamicsRunner;
+  runner.state.position.x = editor.playtestSession.worldX;
+  runner.state.position.z = editor.playtestSession.worldZ;
+  runner.state.velocity = { x: 24, y: 0, z: 0 };
+  runner.state.angularVelocityWorld.y = 3.4;
 
   editor.updatePlaytest(1 / 30);
+  for (let index = 0; index < 45; index += 1) editor.updatePlaytest(1 / 120);
 
   assert.equal(editor.playtestSession.speedMps < 24, true);
   assert.equal(Math.abs(editor.playtestSession.yawVelocityRadps) < 3.4, true);
@@ -27790,6 +27799,48 @@ test('Race Editor physics debug geometry uses the exact baked sampler vertices a
   assert.deepEqual(Array.from(position.array), [1, 3, 2, 4, 6, 2, 1, 9, 5]);
   assert.equal(color.count, 3);
   assert.deepEqual(Array.from(color.array.slice(0, 3)).map((value) => Math.round(value * 100)), [47, 84, 42]);
+});
+
+test('Race Editor physics debug exposes active collidable doodad hitboxes', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.scenery = [{
+    id: 'debug-barrier',
+    presetId: 'doodad',
+    x: 12,
+    z: 18,
+    widthM: 3,
+    heightM: 2.5,
+    hitboxWidthM: 4,
+    hitboxHeightM: 3,
+    behavior: 'collide',
+    state: 'standing'
+  }];
+  editor.playtestSession = {
+    removedSceneryIds: [],
+    flattenedSceneryIds: []
+  };
+
+  const sprites = editor.getRacePhysicsDoodadColliderSprites();
+  const meshes = editor.getRaceDoodadHitboxWorldMeshBatch({ forceVisible: true, activeOnly: true });
+  assert.deepEqual(sprites.map((sprite) => sprite.id), ['debug-barrier']);
+  assert.equal(meshes.length, 12);
+  assert.equal(meshes.every((mesh) => mesh.source === 'doodad-hitbox'), true);
+  const scene = {
+    children: [],
+    add(child) {
+      this.children.push(child);
+      child.parent = this;
+    }
+  };
+  assert.equal(editor.addRaceThreePhysicsDoodadColliders({
+    scene,
+    solidMaterialCache: new Map()
+  }, sprites), 12);
+  assert.equal(scene.children[0].name, 'racePhysicsDoodadColliders');
+
+  editor.playtestSession.flattenedSceneryIds.push('debug-barrier');
+  assert.equal(editor.getRacePhysicsDoodadColliderSprites().length, 0);
+  assert.equal(editor.getRaceDoodadHitboxWorldMeshBatch({ forceVisible: true, activeOnly: true }).length, 0);
 });
 
 test('Race painted terrain outer join splits corridor rails and collapses micro saw-tooth spans', () => {

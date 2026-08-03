@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { calculateAuthoritativeRouteAdvance } from '../../src/racing/RaceSimulation.js';
+import { deterministicUnitFloat } from '../../src/racing/simulation/SimulationMath.js';
 
 test('route progress follows authoritative world motion through arbitrary body slip', () => {
   const dt = 0.5;
@@ -24,4 +25,11 @@ test('route progress follows authoritative world motion through arbitrary body s
   assert.ok(calculateAuthoritativeRouteAdvance({
     velocityWorld: { x: -5, z: 18 }, roadYaw: 0, seconds: dt
   }) > 0);
+});
+
+test('hazard damage variation is deterministic by race, vehicle, hazard, and sequence', () => {
+  const first = deterministicUnitFloat('race-seed', 'wrx2', 'wall-4', 7);
+  assert.equal(deterministicUnitFloat('race-seed', 'wrx2', 'wall-4', 7), first);
+  assert.notEqual(deterministicUnitFloat('race-seed', 'wrx2', 'wall-4', 8), first);
+  assert.notEqual(deterministicUnitFloat('race-seed', 'wrx2', 'wall-5', 7), first);
 });
