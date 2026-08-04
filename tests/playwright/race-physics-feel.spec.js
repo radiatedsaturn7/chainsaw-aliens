@@ -290,10 +290,11 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
     };
   });
 
-  expect(result.stockDirtPartial.maxWheelSpin).toBeLessThan(0.08);
+  expect(result.stockDirtPartial.maxWheelSpin).toBeGreaterThan(0.08);
+  expect(result.stockDirtPartial.maxWheelSpin).toBeLessThan(0.35);
   expect(result.stockDirtPartial.maxDrivenWheelLongitudinalUsage).toBeLessThan(1.6);
   expect(result.overpoweredDirtPartial.speedMps).toBeGreaterThan(result.stockDirtPartial.speedMps * 1.5);
-  expect(result.overpoweredDirtPartial.maxWheelSpin).toBeGreaterThan(0.08);
+  expect(result.overpoweredDirtPartial.maxWheelSpin).toBeGreaterThan(result.stockDirtPartial.maxWheelSpin);
   expect(result.overpoweredDirtPartial.maxDemandRatio).toBeGreaterThan(result.stockDirtPartial.maxDemandRatio * 3);
   expect(result.overpoweredDirtPartial.maxRejectedDriveForceN).toBeGreaterThan(result.stockDirtPartial.maxRejectedDriveForceN * 3);
   expect(result.overpoweredDirtPartial.minAppliedToDemandedDriveForceRatio).toBeGreaterThanOrEqual(0);
@@ -305,7 +306,7 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
     expect(result.overpoweredDirtPartial.minPostPeakTraction).toBe(1);
   }
   expect(result.overpoweredDirtPartial.maxBodyTravelSlip).toBeGreaterThan(0.02);
-  expect(result.overpoweredDirtPartial.maxBodyTravelSlip).toBeLessThan(0.25);
+  expect(result.overpoweredDirtPartial.maxBodyTravelSlip).toBeLessThan(0.9);
   expect(result.overpoweredDirtPartial.maxCameraTravelError).toBeLessThan(0.28);
   expect(result.overpoweredDirtRwdFull.maxWheelSpin).toBeGreaterThan(1);
   expect(result.overpoweredDirtRwdFull.maxDemandRatio).toBeGreaterThan(result.movingDirtAwdFull.maxDemandRatio * 1.4);

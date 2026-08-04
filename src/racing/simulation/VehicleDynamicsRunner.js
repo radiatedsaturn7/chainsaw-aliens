@@ -18,8 +18,10 @@ import {
   crossVector3,
   eulerFromQuaternion,
   integrateBodyAngularMotion,
+  multiplyBodyInertia,
   normalizeBodyInertiaTensor,
   quaternionFromEuler,
+  rotateVectorToBody,
   scaleVector3
 } from './RigidBodyMath.js';
 
@@ -89,6 +91,27 @@ function quantize(value, precision = 6) {
   return Number.isFinite(numeric) ? Number(numeric.toFixed(precision)) : 0;
 }
 
+function calculateKineticEnergyJ(state = {}, config = {}) {
+  const velocity = state.velocity || {};
+  const translational = 0.5 * Number(config.massKg || 0) * (
+    Number(velocity.x || 0) ** 2
+    + Number(velocity.y || 0) ** 2
+    + Number(velocity.z || 0) ** 2
+  );
+  const omegaBody = rotateVectorToBody(
+    state.angularVelocityWorld || {}, state.orientation || {}
+  );
+  const angularMomentumBody = multiplyBodyInertia(
+    config.inertiaTensorBodyKgM2 || {}, omegaBody
+  );
+  const rotational = 0.5 * dotVector3(omegaBody, angularMomentumBody);
+  const wheelRotational = RACE_WHEEL_IDS.reduce((sum, wheelId) => {
+    const angularVelocityRadps = Number(state.wheelAngularVelocityRadps?.[wheelId] || 0);
+    return sum + 0.5 * Number(config.wheelInertiaKgM2 || 0) * angularVelocityRadps ** 2;
+  }, 0);
+  return quantize(Math.max(0, translational + rotational + wheelRotational));
+}
+
 function clone(value) {
   return value === undefined ? undefined : JSON.parse(JSON.stringify(value));
 }
@@ -115,6 +138,8 @@ export function normalizeVehicleControlInput(input = {}) {
     brake: quantize(clamp(Number(input.brake ?? input.brakeAxis ?? 0), 0, 1)),
     clutch: quantize(clamp(Number(input.clutch ?? input.clutchAxis ?? 0), 0, 1)),
     handbrake: quantize(clamp(Number(input.handbrake || 0), 0, 1)),
+    handbrakeHoldSequence: Math.max(0, Math.trunc(Number(input.handbrakeHoldSequence || 0))),
+    handbrakeHoldSeconds: quantize(clamp(Number(input.handbrakeHoldSeconds ?? 0.36), 0, 2)),
     requestedGear: Math.trunc(Number(input.requestedGear ?? input.gear ?? 0) || 0),
     assists: normalizeAssists(input.assists || {
       absEnabled: input.absEnabled !== false,
@@ -183,6 +208,8 @@ export class VehicleControlInputTimeline {
       requestedGear: left.input.requestedGear,
       assists: clone(left.input.assists),
       steeringInputMode: left.input.steeringInputMode,
+      handbrakeHoldSequence: left.input.handbrakeHoldSequence,
+      handbrakeHoldSeconds: left.input.handbrakeHoldSeconds,
       centerSteeringAngleRad: null
     };
     CONTINUOUS_CONTROL_FIELDS.forEach((field) => {
@@ -264,6 +291,11 @@ export function createVehicleDynamicsState(initial = {}) {
     lateralAccelerationMps2: quantize(initial.lateralAccelerationMps2 ?? 0),
     engineRpm: quantize(initial.engineRpm ?? initial.rpm ?? 800),
     gear: Math.trunc(Number(initial.gear || 0)),
+    handbrakeCommandState: clone(initial.handbrakeCommandState || {
+      active: false,
+      remainingSeconds: 0,
+      consumedHoldSequence: 0
+    }),
     powertrainState: clone(initial.powertrainState || { engineRpm: initial.engineRpm ?? initial.rpm ?? 800, gear: initial.gear || 0 }),
     suspensionState: clone(initial.suspensionState || {}),
     tireState: clone(initial.tireState || {}),
@@ -280,6 +312,7 @@ export function createVehicleDynamicsState(initial = {}) {
       }
     ])),
     contactPatches: clone(initial.contactPatches || {}),
+    steeringTelemetry: clone(initial.steeringTelemetry || {}),
     aeroState: clone(initial.aeroState || {})
   };
 }
@@ -690,6 +723,18 @@ function aggregateTireResults(results = [], tireSubstepDt = 0) {
     ]));
     return [wheelId, { ...latestPatch, tireEnergyWork }];
   }));
+  const suspensionImpulseByWheelNs = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+    wheelId,
+    quantize(results.reduce((sum, result) => (
+      sum + Number(result.contactPatches?.[wheelId]?.suspensionForceN || 0) * tireSubstepDt
+    ), 0))
+  ]));
+  const tireVerticalImpulseByWheelNs = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+    wheelId,
+    quantize(results.reduce((sum, result) => (
+      sum + Number(result.contactPatches?.[wheelId]?.tireVerticalForceN || 0) * tireSubstepDt
+    ), 0))
+  ]));
   return {
     longitudinalForceN: average('longitudinalForceN'),
     lateralForceN: average('lateralForceN'),
@@ -719,10 +764,19 @@ function aggregateTireResults(results = [], tireSubstepDt = 0) {
     suspensionState: latest.suspensionState || {},
     tireForcesN: latest.tireForcesN || {},
     wheelAngularVelocityRadps: latest.wheelAngularVelocityRadps || {},
+    wheelAngularMomentumReactionImpulseWorldNms: Object.fromEntries(
+      RACE_WHEEL_IDS.map((wheelId) => [wheelId, results.reduce((sum, result) => addVector3(
+        sum,
+        result.wheelAngularMomentumReactionImpulseWorldNms?.[wheelId]
+      ), { x: 0, y: 0, z: 0 })])
+    ),
     contactPatches,
+    suspensionImpulseByWheelNs,
+    tireVerticalImpulseByWheelNs,
     aeroState: latest.aeroState || {},
     powertrainState: latest.powertrainState || {},
-    powertrainTelemetry: latest.powertrainTelemetry || {}
+    powertrainTelemetry: latest.powertrainTelemetry || {},
+    steeringTelemetry: latest.steeringTelemetry || {}
   };
 }
 
@@ -814,6 +868,18 @@ export class VehicleDynamicsRunner {
     this.stepIndex = 0;
     this.observedTimeSeconds = 0;
     this.telemetry = [];
+    this.impactHistory = [];
+    this.activeImpact = null;
+    this.takeoffHistory = [];
+    this.takeoffContactState = {
+      initialized: false,
+      frontGrounded: false,
+      rearGrounded: false,
+      recentFrontSuspensionImpulse: [],
+      recentRearSuspensionImpulse: [],
+      recentUnderbodyContacts: [],
+      activeTakeoff: null
+    };
     this.diagnostics = {
       completedSteps: 0,
       completedTireSubsteps: 0,
@@ -903,7 +969,7 @@ export class VehicleDynamicsRunner {
     if (record) this.collisionTimeline.push({ stepIndex, ...clone(collision) });
   }
 
-  integrateChassis(controls, tires, dt) {
+  integrateChassis(controls, tires, dt, { preintegrated = false } = {}) {
     const state = this.state;
     const config = this.config;
     let totalLinearImpulse = addVector3(addVector3(
@@ -922,24 +988,33 @@ export class VehicleDynamicsRunner {
       addVector3(tires.tireAngularImpulseWorldNms, tires.externalAngularImpulseWorldNms),
       tires.bodyCollision?.angularImpulseWorldNms
     );
+    let postSubstepAngularImpulse = { x: 0, y: 0, z: 0 };
     const supportedLoadN = RACE_WHEEL_IDS.reduce((sum, wheelId) => (
       sum + Math.max(0, Number(tires.wheelLoadsN?.[wheelId] || 0))
     ), 0);
     const supportScale = clamp(supportedLoadN / Math.max(1, config.massKg * 9.81), 0, 1);
-    totalAngularImpulse.x += (
+    const pitchSupportImpulse = (
       -Number(state.pitchRad || 0) * config.pitchStiffnessNmPerRad
       - Number(state.angularVelocityWorld.x || 0) * config.pitchDampingNmsPerRad
     ) * supportScale * dt;
-    totalAngularImpulse.z += (
+    const rollSupportImpulse = (
       -Number(state.rollRad || 0) * config.rollStiffnessNmPerRad
       - Number(state.angularVelocityWorld.z || 0) * config.rollDampingNmsPerRad
     ) * supportScale * dt;
+    totalAngularImpulse.x += pitchSupportImpulse;
+    totalAngularImpulse.z += rollSupportImpulse;
+    postSubstepAngularImpulse.x += pitchSupportImpulse;
+    postSubstepAngularImpulse.z += rollSupportImpulse;
     const assistInterventions = this.handlingAssist.calculatePhysicalInterventions({
       preset: config.handlingPreset, state, controls, config, supportScale
     });
     assistInterventions.forEach((intervention) => {
       totalAngularImpulse = addVector3(
         totalAngularImpulse,
+        scaleVector3(intervention.momentWorldNm, dt)
+      );
+      postSubstepAngularImpulse = addVector3(
+        postSubstepAngularImpulse,
         scaleVector3(intervention.momentWorldNm, dt)
       );
     });
@@ -977,14 +1052,18 @@ export class VehicleDynamicsRunner {
       }
       state.velocity = addVector3(state.velocity, scaleVector3(impulseWorldNs, 1 / config.massKg));
       const arm = addVector3(pointWorld, scaleVector3(state.position, -1));
-      totalAngularImpulse = addVector3(totalAngularImpulse, crossVector3(arm, impulseWorldNs));
+      const collisionAngularImpulse = crossVector3(arm, impulseWorldNs);
+      totalAngularImpulse = addVector3(totalAngularImpulse, collisionAngularImpulse);
+      postSubstepAngularImpulse = addVector3(postSubstepAngularImpulse, collisionAngularImpulse);
     });
     const acceleration = scaleVector3(totalLinearImpulse, 1 / (config.massKg * dt));
-    state.velocity = addVector3(state.velocity, scaleVector3(totalLinearImpulse, 1 / config.massKg));
-    state.position = addVector3(
-      addVector3(state.position, tires.bodyCollision?.positionalCorrectionWorldM),
-      scaleVector3(state.velocity, dt)
-    );
+    if (!preintegrated) {
+      state.velocity = addVector3(state.velocity, scaleVector3(totalLinearImpulse, 1 / config.massKg));
+      state.position = addVector3(
+        addVector3(state.position, tires.bodyCollision?.positionalCorrectionWorldM),
+        scaleVector3(state.velocity, dt)
+      );
+    }
     const groundConstraintImpulseNs = Math.max(
       0,
       Number(tires.bodyCollision?.linearImpulseWorldNs?.y || 0)
@@ -992,12 +1071,15 @@ export class VehicleDynamicsRunner {
     const angularMotion = integrateBodyAngularMotion({
       orientation: state.orientation,
       angularVelocityWorld: state.angularVelocityWorld,
-      angularImpulseWorld: totalAngularImpulse,
+      angularImpulseWorld: preintegrated ? postSubstepAngularImpulse : totalAngularImpulse,
       inertiaTensorBody: config.inertiaTensorBodyKgM2,
-      dt
+      dt: preintegrated ? 0 : dt
     });
     state.angularVelocityWorld = angularMotion.angularVelocityWorld;
     state.orientation = angularMotion.orientation;
+    state.angularVelocityWorld = Object.fromEntries(Object.entries(
+      state.angularVelocityWorld
+    ).map(([axis, value]) => [axis, Math.abs(Number(value || 0)) < 1e-12 ? 0 : value]));
     if (canSleep) {
       state.velocity = { x: 0, y: 0, z: 0 };
       state.angularVelocityWorld = { x: 0, y: 0, z: 0 };
@@ -1056,6 +1138,7 @@ export class VehicleDynamicsRunner {
     state.tireForcesN = tires.tireForcesN;
     state.wheelAngularVelocityRadps = tires.wheelAngularVelocityRadps;
     state.contactPatches = tires.contactPatches;
+    state.steeringTelemetry = tires.steeringTelemetry || {};
     state.aeroState = tires.aeroState || {};
     state.powertrainState = {
       ...authoritativePowertrain,
@@ -1107,6 +1190,9 @@ export class VehicleDynamicsRunner {
       aerodynamicAndExternalImpulseWorldNs: clone(tires.externalImpulseWorldNs),
       bodyCollisionImpulseWorldNs: clone(tires.bodyCollision?.linearImpulseWorldNs),
       bodyCollisionAngularImpulseWorldNms: clone(tires.bodyCollision?.angularImpulseWorldNms),
+      wheelAngularMomentumReactionImpulseWorldNms: clone(
+        tires.wheelAngularMomentumReactionImpulseWorldNms || {}
+      ),
       bodyContacts: clone(tires.bodyCollision?.contacts || []),
       collisionImpulseWorldNs: collisionImpulses.reduce((sum, collision) => (
         addVector3(sum, collision.impulseWorldNs)
@@ -1119,8 +1205,129 @@ export class VehicleDynamicsRunner {
     };
   }
 
+  recordTakeoffSubstep({ timeSeconds, tireResult, bodyResult, state, environment, dt }) {
+    const tracking = this.takeoffContactState;
+    const currentEuler = eulerFromQuaternion(state.orientation);
+    const wheelSupported = (wheelId) => tireResult.contactPatches?.[wheelId]?.inContact === true
+      || Number(tireResult.wheelLoadsN?.[wheelId] || 0) > 1;
+    const frontGrounded = wheelSupported('fl') || wheelSupported('fr');
+    const rearGrounded = wheelSupported('rl') || wheelSupported('rr');
+    const axleImpulse = (wheelIds) => wheelIds.reduce((sum, wheelId) => (
+      sum + Math.max(0, Number(
+        tireResult.contactPatches?.[wheelId]?.suspensionNormalLoadN
+          ?? tireResult.wheelLoadsN?.[wheelId]
+          ?? 0
+      )) * dt
+    ), 0);
+    const cutoffTimeSeconds = timeSeconds - 0.25;
+    tracking.recentFrontSuspensionImpulse.push({
+      timeSeconds,
+      impulseNs: quantize(axleImpulse(['fl', 'fr']))
+    });
+    tracking.recentRearSuspensionImpulse.push({
+      timeSeconds,
+      impulseNs: quantize(axleImpulse(['rl', 'rr']))
+    });
+    tracking.recentFrontSuspensionImpulse = tracking.recentFrontSuspensionImpulse.filter(
+      (sample) => sample.timeSeconds >= cutoffTimeSeconds
+    );
+    tracking.recentRearSuspensionImpulse = tracking.recentRearSuspensionImpulse.filter(
+      (sample) => sample.timeSeconds >= cutoffTimeSeconds
+    );
+    (bodyResult.contacts || []).filter(({ id }) => (
+      /underbody|underside|rocker/.test(String(id || ''))
+    )).forEach((contact) => tracking.recentUnderbodyContacts.push({
+      timeSeconds: quantize(timeSeconds, 12),
+      id: contact.id,
+      penetrationM: quantize(contact.penetrationM || 0)
+    }));
+    tracking.recentUnderbodyContacts = tracking.recentUnderbodyContacts.filter(
+      (sample) => sample.timeSeconds >= timeSeconds - 0.1
+    );
+    if (!tracking.initialized) {
+      tracking.initialized = true;
+      tracking.frontGrounded = frontGrounded;
+      tracking.rearGrounded = rearGrounded;
+      return;
+    }
+    const previousAnyContact = tracking.frontGrounded || tracking.rearGrounded;
+    const anyContact = frontGrounded || rearGrounded;
+    const rampId = environment.authoredRampId ?? environment.rampId ?? null;
+    const ensureTakeoff = () => {
+      if (!tracking.activeTakeoff) {
+        tracking.activeTakeoff = {
+          sequence: Math.max(0, Number(this.takeoffHistory.at(-1)?.sequence || 0)) + 1,
+          rampId,
+          frontWheelReleaseTimeSeconds: null,
+          rearWheelReleaseTimeSeconds: null,
+          frontSuspensionImpulseBeforeReleaseNs: null,
+          rearSuspensionImpulseBeforeReleaseNs: null,
+          underbodyContactsNearCrest: [],
+          pitchAngularVelocityAtFinalContactRadps: null,
+          takeoffPitchAngleRad: null,
+          flightPitchSamples: [],
+          landingTimeSeconds: null,
+          landingOrientation: null,
+          complete: false
+        };
+      }
+      if (tracking.activeTakeoff.rampId === null && rampId !== null) {
+        tracking.activeTakeoff.rampId = rampId;
+      }
+      return tracking.activeTakeoff;
+    };
+    if (tracking.frontGrounded && !frontGrounded) {
+      const takeoff = ensureTakeoff();
+      takeoff.frontWheelReleaseTimeSeconds = quantize(timeSeconds, 12);
+      takeoff.frontSuspensionImpulseBeforeReleaseNs = quantize(
+        tracking.recentFrontSuspensionImpulse.reduce((sum, sample) => sum + sample.impulseNs, 0)
+      );
+    }
+    if (tracking.rearGrounded && !rearGrounded) {
+      const takeoff = ensureTakeoff();
+      takeoff.rearWheelReleaseTimeSeconds = quantize(timeSeconds, 12);
+      takeoff.rearSuspensionImpulseBeforeReleaseNs = quantize(
+        tracking.recentRearSuspensionImpulse.reduce((sum, sample) => sum + sample.impulseNs, 0)
+      );
+    }
+    if (previousAnyContact && !anyContact) {
+      const takeoff = ensureTakeoff();
+      takeoff.finalContactTimeSeconds = quantize(timeSeconds, 12);
+      takeoff.pitchAngularVelocityAtFinalContactRadps = quantize(
+        state.angularVelocityWorld?.x || 0
+      );
+      takeoff.takeoffPitchAngleRad = quantize(currentEuler.pitch || 0);
+      takeoff.underbodyContactsNearCrest = clone(tracking.recentUnderbodyContacts);
+    }
+    if (!anyContact && tracking.activeTakeoff?.finalContactTimeSeconds !== undefined) {
+      tracking.activeTakeoff.flightPitchSamples.push({
+        timeSeconds: quantize(timeSeconds, 12),
+        pitchAngleRad: quantize(currentEuler.pitch || 0),
+        pitchAngularVelocityRadps: quantize(state.angularVelocityWorld?.x || 0)
+      });
+    }
+    if (!previousAnyContact && anyContact && tracking.activeTakeoff) {
+      const takeoff = tracking.activeTakeoff;
+      takeoff.landingTimeSeconds = quantize(timeSeconds, 12);
+      takeoff.landingOrientation = {
+        quaternion: clone(state.orientation),
+        yawRad: quantize(currentEuler.yaw || 0),
+        pitchRad: quantize(currentEuler.pitch || 0),
+        rollRad: quantize(currentEuler.roll || 0)
+      };
+      takeoff.complete = true;
+      this.takeoffHistory.push(takeoff);
+      if (this.takeoffHistory.length > 128) this.takeoffHistory.shift();
+      tracking.activeTakeoff = null;
+    }
+    tracking.frontGrounded = frontGrounded;
+    tracking.rearGrounded = rearGrounded;
+  }
+
   runStep(legacySnapshot = null) {
     const nextStepIndex = this.stepIndex + 1;
+    const chassisStepPreImpactKineticEnergyJ = calculateKineticEnergyJ(this.state, this.config);
+    const preImpactVerticalVelocityMps = Number(this.state.velocity?.y || 0);
     (this.scheduledReplayCollisions.get(nextStepIndex) || []).forEach((collision) => {
       if (collision.contact) {
         this.queueCollisionContact(collision, { record: false, stepIndex: nextStepIndex });
@@ -1129,7 +1336,32 @@ export class VehicleDynamicsRunner {
       }
     });
     const stepTimeSeconds = nextStepIndex / this.config.chassisHz;
-    const controls = this.inputTimeline.sampleAt(stepTimeSeconds);
+    const sampledControls = this.inputTimeline.sampleAt(stepTimeSeconds);
+    const previousHandbrakeCommand = this.state.handbrakeCommandState || {};
+    const holdSequence = Math.max(0, Math.trunc(Number(sampledControls.handbrakeHoldSequence || 0)));
+    const newHoldCommand = holdSequence > Math.max(0, Math.trunc(Number(
+      previousHandbrakeCommand.consumedHoldSequence || 0
+    )));
+    let handbrakeRemainingSeconds = newHoldCommand
+      ? Math.max(0, Number(sampledControls.handbrakeHoldSeconds || 0.36))
+      : Math.max(0, Number(previousHandbrakeCommand.remainingSeconds || 0));
+    const directHandbrake = Number(sampledControls.handbrake || 0) > 0.001;
+    const authoritativeHandbrakeActive = directHandbrake || handbrakeRemainingSeconds > EPSILON;
+    const controls = {
+      ...sampledControls,
+      handbrake: authoritativeHandbrakeActive ? Math.max(1, Number(sampledControls.handbrake || 0)) : 0
+    };
+    handbrakeRemainingSeconds = directHandbrake
+      ? handbrakeRemainingSeconds
+      : Math.max(0, handbrakeRemainingSeconds - 1 / this.config.chassisHz);
+    this.state.handbrakeCommandState = {
+      active: authoritativeHandbrakeActive,
+      remainingSeconds: quantize(handbrakeRemainingSeconds, 12),
+      consumedHoldSequence: Math.max(
+        Math.trunc(Number(previousHandbrakeCommand.consumedHoldSequence || 0)), holdSequence
+      ),
+      direct: directHandbrake
+    };
     const tireResults = [];
     const bodyCollisionResults = [];
     let substepState = {
@@ -1143,7 +1375,6 @@ export class VehicleDynamicsRunner {
       suspensionTravel: { ...this.state.suspensionTravel },
       wheelAngularVelocityRadps: { ...this.state.wheelAngularVelocityRadps }
     };
-    const bodyCollisionState = this.bodyCollision.createWorkingState(substepState);
     for (let substepIndex = 0;
       substepIndex < this.config.tireSubstepsPerChassisStep;
       substepIndex += 1) {
@@ -1198,13 +1429,134 @@ export class VehicleDynamicsRunner {
       tireResult.targetVelocityWorld = environment.targetVelocityWorld || null;
       tireResult.freeRevEngineRpm = environment.freeRevEngineRpm;
       tireResults.push(tireResult);
-      bodyCollisionState.velocity.y -= 9.81 / this.config.tireHz;
-      bodyCollisionResults.push(this.bodyCollision.step({
-        workingState: bodyCollisionState,
+      const tireSubstepDt = 1 / this.config.tireHz;
+      const tireAndSuspensionLinearImpulse = scaleVector3(addVector3(
+        tireResult.worldForceN || {}, tireResult.suspensionForceWorldN || {}
+      ), tireSubstepDt);
+      const aeroAndGravityLinearImpulse = scaleVector3(addVector3(
+        tireResult.externalForceWorldN || {}, {
+          x: 0, y: -this.config.massKg * 9.81, z: 0
+        }
+      ), tireSubstepDt);
+      const tireAngularImpulse = scaleVector3(
+        tireResult.worldMomentNm || {}, tireSubstepDt
+      );
+      const externalAngularImpulse = scaleVector3(
+        tireResult.externalMomentWorldNm || {}, tireSubstepDt
+      );
+      substepState.velocity = addVector3(
+        substepState.velocity,
+        scaleVector3(tireAndSuspensionLinearImpulse, 1 / this.config.massKg)
+      );
+      let angularMotion = integrateBodyAngularMotion({
+        orientation: substepState.orientation,
+        angularVelocityWorld: substepState.angularVelocityWorld,
+        angularImpulseWorld: tireAngularImpulse,
+        inertiaTensorBody: this.config.inertiaTensorBodyKgM2,
+        dt: 0
+      });
+      substepState.angularVelocityWorld = angularMotion.angularVelocityWorld;
+      substepState.velocity = addVector3(
+        substepState.velocity,
+        scaleVector3(aeroAndGravityLinearImpulse, 1 / this.config.massKg)
+      );
+      angularMotion = integrateBodyAngularMotion({
+        orientation: substepState.orientation,
+        angularVelocityWorld: substepState.angularVelocityWorld,
+        angularImpulseWorld: externalAngularImpulse,
+        inertiaTensorBody: this.config.inertiaTensorBodyKgM2,
+        dt: 0
+      });
+      substepState.angularVelocityWorld = angularMotion.angularVelocityWorld;
+      if (tireResult.targetVelocityWorld) {
+        substepState.velocity.x = Number(tireResult.targetVelocityWorld.x || 0);
+        substepState.velocity.z = Number(tireResult.targetVelocityWorld.z || 0);
+      }
+      angularMotion = integrateBodyAngularMotion({
+        orientation: substepState.orientation,
+        angularVelocityWorld: substepState.angularVelocityWorld,
+        angularImpulseWorld: {},
+        inertiaTensorBody: this.config.inertiaTensorBodyKgM2,
+        dt: tireSubstepDt
+      });
+      substepState.angularVelocityWorld = angularMotion.angularVelocityWorld;
+      substepState.orientation = angularMotion.orientation;
+      substepState.position = addVector3(
+        substepState.position,
+        scaleVector3(substepState.velocity, tireSubstepDt)
+      );
+      const euler = eulerFromQuaternion(substepState.orientation);
+      substepState.yawRad = normalizeAngle(euler.yaw);
+      substepState.pitchRad = euler.pitch;
+      substepState.rollRad = euler.roll;
+      substepState.yawRateRadps = Number(substepState.angularVelocityWorld.y || 0);
+      substepState.groundSpeedMps = Math.hypot(
+        Number(substepState.velocity.x || 0), Number(substepState.velocity.z || 0)
+      );
+      const forward = { x: Math.sin(substepState.yawRad), y: 0, z: Math.cos(substepState.yawRad) };
+      const right = { x: Math.cos(substepState.yawRad), y: 0, z: -Math.sin(substepState.yawRad) };
+      substepState.bodyLongitudinalSpeedMps = dotVector3(substepState.velocity, forward);
+      substepState.bodyLateralSpeedMps = dotVector3(substepState.velocity, right);
+      const supportedWheels = RACE_WHEEL_IDS.filter((wheelId) => (
+        Number(tireResult.wheelLoadsN?.[wheelId] || 0) > 1
+      ));
+      const availableBumpTravelM = supportedWheels.length
+        ? Math.max(...supportedWheels.map((wheelId) => {
+            const suspension = tireResult.suspensionState?.[wheelId] || {};
+            const travelM = wheelId[0] === 'f'
+              ? this.config.suspensionTravelFrontM : this.config.suspensionTravelRearM;
+            return Math.max(0, travelM - Number(suspension.compressionM || 0));
+          }))
+        : 0;
+      environment.suspensionBodyContactSupport = {
+        supportedWheelCount: supportedWheels.length,
+        availableBumpTravelM
+      };
+      const bodyPreImpactKineticEnergyJ = calculateKineticEnergyJ(substepState, this.config);
+      const bodyResult = this.bodyCollision.step({
+        workingState: substepState,
         config: this.config,
         environment,
-        dt: 1 / this.config.tireHz
-      }));
+        dt: tireSubstepDt,
+        advanceState: false
+      });
+      bodyResult.preImpactKineticEnergyJ = bodyPreImpactKineticEnergyJ;
+      bodyResult.postImpactKineticEnergyJ = calculateKineticEnergyJ(substepState, this.config);
+      const bodyCorrection = bodyResult.positionalCorrectionWorldM || {};
+      if (Math.hypot(
+        Number(bodyCorrection.x || 0),
+        Number(bodyCorrection.y || 0),
+        Number(bodyCorrection.z || 0)
+      ) > EPSILON) {
+        RACE_WHEEL_IDS.forEach((wheelId) => {
+          const suspension = tireResult.suspensionState?.[wheelId];
+          if (!suspension || suspension.inContact !== true) return;
+          const axis = suspension.suspensionAxisWorld || { x: 0, y: -1, z: 0 };
+          const correctionAlongAxisM = dotVector3(bodyCorrection, axis);
+          const travelM = wheelId[0] === 'f'
+            ? this.config.suspensionTravelFrontM
+            : this.config.suspensionTravelRearM;
+          const correctedCompressionM = clamp(
+            Number(suspension.compressionM || 0) + correctionAlongAxisM,
+            0,
+            travelM
+          );
+          tireResult.suspensionState[wheelId] = {
+            ...suspension,
+            compressionM: quantize(correctedCompressionM),
+            compressionRatio: quantize(correctedCompressionM / Math.max(EPSILON, travelM))
+          };
+        });
+      }
+      this.recordTakeoffSubstep({
+        timeSeconds: substepTimeSeconds,
+        tireResult,
+        bodyResult,
+        state: substepState,
+        environment,
+        dt: tireSubstepDt
+      });
+      bodyCollisionResults.push(bodyResult);
       substepState.wheelAngularVelocityRadps = tireResult.wheelAngularVelocityRadps || substepState.wheelAngularVelocityRadps;
       substepState.suspensionState = tireResult.suspensionState || substepState.suspensionState;
       substepState.contactPatches = tireResult.contactPatches || substepState.contactPatches;
@@ -1238,9 +1590,128 @@ export class VehicleDynamicsRunner {
       broadphaseRejectedSubsteps: bodyBroadphaseRejectedSubsteps,
       contacts: bodyCollisionResults.flatMap((result, substepIndex) => (
         result.contacts.map((contact) => ({ ...contact, substepIndex }))
-      ))
+      )),
+      bodyNormalImpulseNs: bodyCollisionResults.reduce((sum, result) => (
+        sum + Number(result.bodyNormalImpulseNs || 0)
+      ), 0),
+      bodyFrictionImpulseNs: bodyCollisionResults.reduce((sum, result) => (
+        sum + Number(result.bodyFrictionImpulseNs || 0)
+      ), 0),
+      restitutionContributionNs: bodyCollisionResults.reduce((sum, result) => (
+        sum + Number(result.restitutionContributionNs || 0)
+      ), 0),
+      penetrationBiasContributionNs: 0
     };
-    const integration = this.integrateChassis(controls, tires, 1 / this.config.chassisHz);
+    this.state.position = { ...substepState.position };
+    this.state.velocity = { ...substepState.velocity };
+    this.state.orientation = { ...substepState.orientation };
+    this.state.angularVelocityWorld = Object.fromEntries(Object.entries(
+      substepState.angularVelocityWorld
+    ).map(([axis, value]) => [axis, Math.abs(Number(value || 0)) < 1e-12 ? 0 : value]));
+    this.state.yawRad = substepState.yawRad;
+    this.state.pitchRad = substepState.pitchRad;
+    this.state.rollRad = substepState.rollRad;
+    const integrationControls = tires.powertrainState?.handbrakeEscSuppressed === true
+      ? {
+          ...controls,
+          assists: { ...(controls.assists || {}), stabilityControlEnabled: false }
+        }
+      : controls;
+    const integration = this.integrateChassis(
+      integrationControls, tires, 1 / this.config.chassisHz, { preintegrated: true }
+    );
+    const postImpactKineticEnergyJ = calculateKineticEnergyJ(this.state, this.config);
+    const bodyNormalImpulseNs = Number(tires.bodyCollision.bodyNormalImpulseNs || 0);
+    const tireVerticalImpulseNs = RACE_WHEEL_IDS.reduce((sum, wheelId) => (
+      sum + Number(tires.tireVerticalImpulseByWheelNs?.[wheelId] || 0)
+    ), 0);
+    const impactStarted = bodyNormalImpulseNs > 1 || (
+      preImpactVerticalVelocityMps < -0.25 && tireVerticalImpulseNs > 1
+    );
+    const physicalBodyImpactSubsteps = bodyCollisionResults.filter((result) => (
+      Number(result.bodyNormalImpulseNs || 0) > 0
+    ));
+    const preImpactKineticEnergyJ = physicalBodyImpactSubsteps.length
+      ? Number(physicalBodyImpactSubsteps[0].preImpactKineticEnergyJ || 0)
+      : chassisStepPreImpactKineticEnergyJ;
+    const resolvedPostImpactKineticEnergyJ = physicalBodyImpactSubsteps.length
+      ? preImpactKineticEnergyJ + physicalBodyImpactSubsteps.reduce((energyDeltaJ, result) => (
+          energyDeltaJ
+          + Number(result.postImpactKineticEnergyJ || 0)
+          - Number(result.preImpactKineticEnergyJ || 0)
+        ), 0)
+      : postImpactKineticEnergyJ;
+    if (impactStarted && (!this.activeImpact || this.activeImpact.complete === true)) {
+      const impact = {
+        sequence: Math.max(0, Number(this.impactHistory.at(-1)?.sequence || 0)) + 1,
+        stepIndex: nextStepIndex,
+        timeSeconds: quantize(nextStepIndex / this.config.chassisHz, 12),
+        preImpactKineticEnergyJ,
+        postImpactKineticEnergyJ: resolvedPostImpactKineticEnergyJ,
+        suspensionImpulseByWheelNs: clone(tires.suspensionImpulseByWheelNs),
+        tireVerticalImpulseByWheelNs: clone(tires.tireVerticalImpulseByWheelNs),
+        bodyNormalImpulseNs: quantize(bodyNormalImpulseNs),
+        bodyFrictionImpulseNs: quantize(tires.bodyCollision.bodyFrictionImpulseNs || 0),
+        restitutionContributionNs: quantize(tires.bodyCollision.restitutionContributionNs || 0),
+        penetrationBiasContributionNs: 0,
+        positionalCorrectionWorldM: clone(tires.bodyCollision.positionalCorrectionWorldM),
+        firstReboundApexM: null,
+        secondReboundApexM: null,
+        reboundPhase: 'awaiting-first-apex',
+        previousVerticalVelocityMps: Number(this.state.velocity?.y || 0),
+        complete: false
+      };
+      this.impactHistory.push(impact);
+      if (this.impactHistory.length > 128) this.impactHistory.shift();
+      this.activeImpact = impact;
+    } else if (this.activeImpact) {
+      RACE_WHEEL_IDS.forEach((wheelId) => {
+        this.activeImpact.suspensionImpulseByWheelNs[wheelId] = quantize(
+          Number(this.activeImpact.suspensionImpulseByWheelNs?.[wheelId] || 0)
+            + Number(tires.suspensionImpulseByWheelNs?.[wheelId] || 0)
+        );
+        this.activeImpact.tireVerticalImpulseByWheelNs[wheelId] = quantize(
+          Number(this.activeImpact.tireVerticalImpulseByWheelNs?.[wheelId] || 0)
+            + Number(tires.tireVerticalImpulseByWheelNs?.[wheelId] || 0)
+        );
+      });
+      this.activeImpact.bodyNormalImpulseNs = quantize(
+        Number(this.activeImpact.bodyNormalImpulseNs || 0) + bodyNormalImpulseNs
+      );
+      this.activeImpact.bodyFrictionImpulseNs = quantize(
+        Number(this.activeImpact.bodyFrictionImpulseNs || 0)
+          + Number(tires.bodyCollision.bodyFrictionImpulseNs || 0)
+      );
+      this.activeImpact.restitutionContributionNs = quantize(
+        Number(this.activeImpact.restitutionContributionNs || 0)
+          + Number(tires.bodyCollision.restitutionContributionNs || 0)
+      );
+      this.activeImpact.positionalCorrectionWorldM = addVector3(
+        this.activeImpact.positionalCorrectionWorldM,
+        tires.bodyCollision.positionalCorrectionWorldM
+      );
+      const previousVy = Number(this.activeImpact.previousVerticalVelocityMps || 0);
+      const currentVy = Number(this.state.velocity?.y || 0);
+      if (this.activeImpact.reboundPhase === 'awaiting-second-impact'
+        && impactStarted && preImpactVerticalVelocityMps < -0.25) {
+        this.activeImpact.reboundPhase = 'awaiting-second-apex';
+      }
+      if (previousVy > 0 && currentVy <= 0) {
+        if (this.activeImpact.reboundPhase === 'awaiting-first-apex') {
+          this.activeImpact.firstReboundApexM = quantize(this.state.position.y);
+          this.activeImpact.reboundPhase = 'awaiting-second-impact';
+        } else if (this.activeImpact.reboundPhase === 'awaiting-second-apex') {
+          this.activeImpact.secondReboundApexM = quantize(this.state.position.y);
+          this.activeImpact.reboundPhase = 'complete';
+          this.activeImpact.complete = true;
+        }
+      }
+      this.activeImpact.previousVerticalVelocityMps = currentVy;
+    }
+    integration.impactEnergy = this.activeImpact ? clone(this.activeImpact) : null;
+    integration.takeoff = clone(
+      this.takeoffContactState.activeTakeoff || this.takeoffHistory.at(-1) || null
+    );
     this.stepIndex = nextStepIndex;
     this.diagnostics.completedSteps += 1;
     this.diagnostics.completedTireSubsteps += tireResults.length;
@@ -1352,6 +1823,10 @@ export class VehicleDynamicsRunner {
       observedTimeSeconds: this.observedTimeSeconds,
       inputTimeline: this.inputTimeline.createSnapshot(),
       telemetry: clone(this.telemetry),
+      impactHistory: clone(this.impactHistory),
+      activeImpactSequence: this.activeImpact?.sequence || null,
+      takeoffHistory: clone(this.takeoffHistory),
+      takeoffContactState: clone(this.takeoffContactState),
       diagnostics: clone(this.diagnostics),
       pendingCollisionImpulses: clone(this.pendingCollisionImpulses),
       collisionTimeline: clone(this.collisionTimeline)
@@ -1368,6 +1843,20 @@ export class VehicleDynamicsRunner {
     this.observedTimeSeconds = quantize(snapshot.observedTimeSeconds, 12);
     this.inputTimeline.restoreSnapshot(snapshot.inputTimeline || []);
     this.telemetry = clone(snapshot.telemetry || []);
+    this.impactHistory = clone(snapshot.impactHistory || []);
+    this.activeImpact = this.impactHistory.find((impact) => (
+      impact.sequence === snapshot.activeImpactSequence
+    )) || null;
+    this.takeoffHistory = clone(snapshot.takeoffHistory || []);
+    this.takeoffContactState = clone(snapshot.takeoffContactState || {
+      initialized: false,
+      frontGrounded: false,
+      rearGrounded: false,
+      recentFrontSuspensionImpulse: [],
+      recentRearSuspensionImpulse: [],
+      recentUnderbodyContacts: [],
+      activeTakeoff: null
+    });
     this.diagnostics = clone(snapshot.diagnostics || this.diagnostics);
     this.pendingCollisionImpulses = clone(snapshot.pendingCollisionImpulses || []);
     this.collisionTimeline = clone(snapshot.collisionTimeline || []);
@@ -1384,6 +1873,8 @@ export class VehicleDynamicsRunner {
       finalStepIndex: this.stepIndex,
       finalState: this.createStateSnapshot(),
       finalTelemetry: clone(this.telemetry),
+      impactHistory: clone(this.impactHistory),
+      takeoffHistory: clone(this.takeoffHistory),
       finalDiagnostics: clone(this.diagnostics),
       collisionTimeline: clone(this.collisionTimeline)
     };

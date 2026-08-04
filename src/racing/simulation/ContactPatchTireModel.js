@@ -59,30 +59,32 @@ export function calculateAuthoritativeSteeringEnvelope(state = {}, config = {}) 
   const maximumAngleRad = Math.max(0.05, Number(config.maxSteerAngleRad) || 0.52);
   const speedMps = Math.max(0, Number(state.groundSpeedMps
     ?? Math.hypot(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0))) || 0);
-  if (!front.length || speedMps < 1) return maximumAngleRad;
+  if (speedMps < 1) return maximumAngleRad;
+  if (!front.length) return 0.002;
   let supportedLoadN = 0;
-  let weightedGrip = 0;
+  let supportedSuspensionLoadN = 0;
   front.forEach((patch) => {
     const loadN = Math.max(0, Number(patch.normalLoadN || 0));
     const suspensionLoadN = Math.max(loadN, Number(patch.suspensionNormalLoadN || loadN));
-    const aquaplaningSupport = clamp(loadN / Math.max(1, suspensionLoadN), 0, 1);
-    const utilizationReserve = Math.sqrt(Math.max(0.04, 1 - clamp(Number(patch.utilization || 0), 0, 1) ** 2));
-    const grip = Math.max(0.025, Number(patch.gripCoefficient
-      ?? patch.material?.effectiveGrip ?? 1));
     supportedLoadN += loadN;
-    weightedGrip += loadN * grip * aquaplaningSupport * utilizationReserve;
+    supportedSuspensionLoadN += suspensionLoadN;
   });
-  const effectiveMu = weightedGrip / Math.max(1, supportedLoadN);
   const contactScale = front.length / 2;
   const frontReferenceLoadN = Math.max(1, Number(config.massKg || 1450) * 9.81
     * clamp(Number(config.frontWeightDistribution ?? 0.55), 0.3, 0.75));
-  const loadSupportScale = clamp(supportedLoadN / frontReferenceLoadN, 0.12, 1);
-  const lateralAccelerationMps2 = 9.81 * effectiveMu * contactScale * loadSupportScale;
-  const gripAngle = Math.atan(
-    lateralAccelerationMps2 * Math.max(0.5, Number(config.wheelbaseM || 2.65))
-    / Math.max(1, speedMps * speedMps)
+  const loadSupportScale = clamp(supportedLoadN / frontReferenceLoadN, 0, 1);
+  const aquaplaningSupport = clamp(
+    supportedLoadN / Math.max(1, supportedSuspensionLoadN), 0, 1
   );
-  return clamp(gripAngle, 0.002, maximumAngleRad);
+  // The controller envelope is a safety limit, not a no-slip target. Tire
+  // utilization and surface mu must remain free to create saturation and
+  // understeer after the rack has received the driver's command.
+  const speedEnvelope = maximumAngleRad / (
+    1 + Math.pow(speedMps / Math.max(8, Number(config.steeringEnvelopeSpeedMps || 23)), 1.35)
+  );
+  const contactAuthority = contactScale * clamp(loadSupportScale / 0.35, 0, 1);
+  const hydroAuthority = clamp((aquaplaningSupport - 0.12) / 0.58, 0, 1);
+  return clamp(speedEnvelope * contactAuthority * hydroAuthority, 0.002, maximumAngleRad);
 }
 
 export function resolvePhysicalCenterSteeringAngle(controls = {}, config = {}, state = {}) {
@@ -448,6 +450,7 @@ export class ContactPatchTireModel {
     const suspensionTravel = {};
     const tireForcesN = {};
     const wheelAngularVelocityRadps = {};
+    const wheelAngularMomentumReactionImpulseWorldNms = {};
     const suspensionState = {};
     let worldForce = { x: 0, y: 0, z: 0 };
     let worldMoment = { x: 0, y: 0, z: 0 };
@@ -908,6 +911,20 @@ export class ContactPatchTireModel {
         );
         nextAngular = clamp(nextAngular, -coupledLimit, coupledLimit);
       }
+      const wheelAngularMomentumDeltaNms = config.wheelInertiaKgM2
+        * (nextAngular - kinematics.wheelAngularVelocityRadps);
+      const chassisReactionImpulseWorldNms = scale(
+        kinematics.wheelLateralWorld,
+        -wheelAngularMomentumDeltaNms
+      );
+      const chassisReactionMomentWorldNm = scale(
+        chassisReactionImpulseWorldNms,
+        1 / Math.max(EPSILON, dt)
+      );
+      worldMoment = add(worldMoment, chassisReactionMomentWorldNm);
+      wheelAngularMomentumReactionImpulseWorldNms[wheelId] = cleanVector(
+        chassisReactionImpulseWorldNms
+      );
       wheelAngularVelocityRadps[wheelId] = q(nextAngular);
       wheelLoadsN[wheelId] = q(wheelInputs[wheelId].aquaplaning.supportedNormalLoadN);
       wheelSlip[wheelId] = q(Math.hypot(kinematics.slipRatio, Math.tan(kinematics.slipAngleRad)));
@@ -987,6 +1004,14 @@ export class ContactPatchTireModel {
         ...wheelInputs[wheelId].tireTransition,
         normalLoadN: q(wheelInputs[wheelId].aquaplaning.supportedNormalLoadN),
         suspensionNormalLoadN: q(normalLoadN),
+        suspensionForceN: q(Math.max(0,
+          Number(wheelInputs[wheelId].progressiveRate || 0)
+            * Math.max(0, Number(wheelInputs[wheelId].compressionM || 0)
+              - Number(wheelInputs[wheelId].staticSagTargetM || 0))
+          + Number(wheelInputs[wheelId].damperForceN || 0)
+          + Number(wheelInputs[wheelId].bumpStopForceN || 0)
+        )),
+        tireVerticalForceN: q(wheelInputs[wheelId].aquaplaning.supportedNormalLoadN),
         ...force,
         localForceN: { longitudinal: q(localLongitudinal), lateral: force.lateralForceN, normal: 0 },
         worldForceN: cleanVector(forceWorld),
@@ -996,6 +1021,12 @@ export class ContactPatchTireModel {
         tireEnergyWork,
         driveTorqueNm: q(driveTorque),
         brakeTorqueNm: q(brakeTorqueMagnitude),
+        wheelAngularAccelerationRadps2: q(
+          (nextAngular - kinematics.wheelAngularVelocityRadps) / Math.max(EPSILON, dt)
+        ),
+        chassisWheelReactionImpulseWorldNms: cleanVector(
+          chassisReactionImpulseWorldNms
+        ),
         absModulation: q(powertrainStep.state.absModulationByWheel?.[wheelId] ?? 1),
         tireParameters: {
           pressurePsi: q(wheelInputs[wheelId].tire.pressurePsi ?? 32),
@@ -1048,7 +1079,32 @@ export class ContactPatchTireModel {
       driveForceShareByWheel: { ...driveShareByWheel },
       powertrainState: powertrainStep.state,
       powertrainTelemetry: powertrainStep.telemetry,
-      wheelLoadsN, wheelSlip, suspensionTravel, suspensionState, tireForcesN, wheelAngularVelocityRadps,
+      steeringTelemetry: {
+        normalizedDriverSteering: q(clamp(Number(controls.steering || 0), -1, 1)),
+        requestedRackAngleRad: q(clamp(Number(controls.steering || 0), -1, 1)
+          * Math.max(0.05, Number(config.maxSteerAngleRad) || 0.52)),
+        permittedRackAngleRad: q(calculateAuthoritativeSteeringEnvelope(state, config)),
+        resolvedCenterRackAngleRad: q(centerSteeringAngleRad),
+        actualWheelAnglesRad: {
+          fl: q(outputs.fl?.steeringAngleRad || 0),
+          fr: q(outputs.fr?.steeringAngleRad || 0)
+        },
+        frontLoadsN: { fl: q(outputs.fl?.normalLoadN || 0), fr: q(outputs.fr?.normalLoadN || 0) },
+        frontGripCoefficients: {
+          fl: q(outputs.fl?.gripCoefficient || 0), fr: q(outputs.fr?.gripCoefficient || 0)
+        },
+        frontUtilization: { fl: q(outputs.fl?.utilization || 0), fr: q(outputs.fr?.utilization || 0) },
+        frontSlipAnglesRad: { fl: q(outputs.fl?.slipAngleRad || 0), fr: q(outputs.fr?.slipAngleRad || 0) },
+        aquaplaningSupport: {
+          fl: q(1 - Number(outputs.fl?.aquaplaning?.liftFraction || 0)),
+          fr: q(1 - Number(outputs.fr?.aquaplaning?.liftFraction || 0))
+        },
+        yawRateRadps: q(state.angularVelocityWorld?.y || state.yawRateRadps || 0),
+        bodySlipAngleRad: q(Math.atan2(Number(state.bodyLateralSpeedMps || 0),
+          Math.max(0.5, Math.abs(Number(state.bodyLongitudinalSpeedMps || 0)))))
+      },
+      wheelLoadsN, wheelSlip, suspensionTravel, suspensionState, tireForcesN,
+      wheelAngularVelocityRadps, wheelAngularMomentumReactionImpulseWorldNms,
       contactPatches: outputs
     };
   }

@@ -300,6 +300,31 @@ test('authoritative powertrain follows the torque curve and physically modulates
   assert.ok(stabilityWithAbsAndDamage.telemetry.stabilityBrakeTorqueNm
     < stabilityWithAbsAndDamage.telemetry.requestedStabilityBrakeTorqueNm);
 
+  const handbrakeOn = run({
+    previous: peak.state,
+    slipRatio: -0.8,
+    controls: { throttle: 1, brake: 0, handbrake: 1, centerSteeringAngleRad: 0.08 }
+  });
+  assert.equal(handbrakeOn.telemetry.handbrakeActive, true);
+  assert.equal(handbrakeOn.telemetry.tractionControlActive, false);
+  assert.equal(handbrakeOn.telemetry.stabilityBrakeTorqueNm, 0);
+  assert.equal(handbrakeOn.telemetry.awdCenterCouplingScale, 0.05);
+  assert.ok(handbrakeOn.wheelBrakeTorqueNm.rl > handbrakeOn.wheelBrakeTorqueNm.fl);
+  assert.equal(handbrakeOn.state.absModulationByWheel.rl, 1);
+  assert.ok(handbrakeOn.telemetry.combustionTorqueNm < peak.telemetry.combustionTorqueNm * 0.1);
+  const handbrakeRecovery = run({
+    previous: handbrakeOn.state,
+    slipRatio: -0.2,
+    controls: { throttle: 0, handbrake: 0, centerSteeringAngleRad: 0.08 }
+  });
+  assert.equal(handbrakeRecovery.telemetry.handbrakeEscSuppressed, true);
+  const handbrakeRecovered = run({
+    previous: handbrakeRecovery.state,
+    slipRatio: -0.01,
+    controls: { throttle: 0, handbrake: 0, centerSteeringAngleRad: 0.08 }
+  });
+  assert.equal(handbrakeRecovered.telemetry.handbrakeEscSuppressed, false);
+
   const damaged = run({
     previous: { engineRpm: 3500, gear: 1, targetGear: 1 },
     damage: { engine: 60, transmission: 40 }

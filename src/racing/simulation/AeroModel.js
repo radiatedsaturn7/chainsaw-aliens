@@ -120,9 +120,13 @@ export class AeroModel {
     const extremeYawLift = clamp((yawMagnitude - 0.55) / 0.7, 0, 1);
     const attitudeScale = clamp(1 - Math.abs(Number(state.rollRad || 0)) * 0.35
       - Math.abs(Number(state.pitchRad || 0)) * 0.22, 0.45, 1.1);
-    const dynamicPressure = 0.5 * getAirDensityAtElevation(
+    const calculatedAirDensityKgM3 = getAirDensityAtElevation(
       Number(state.position?.y || 0), environment.ambientTemperatureC
-    ) * airflow.speedMps * airflow.speedMps;
+    );
+    const airDensityKgM3 = Number.isFinite(Number(environment.airDensityKgM3))
+      ? Math.max(0, Number(environment.airDensityKgM3))
+      : calculatedAirDensityKgM3;
+    const dynamicPressure = 0.5 * airDensityKgM3 * airflow.speedMps * airflow.speedMps;
     const frontDamageScale = clamp(1 - Number(environment.frontAeroDamage ?? bodyDamage) * 0.75, 0.15, 1);
     const rearDamageScale = clamp(1 - Number(environment.rearAeroDamage ?? bodyDamage) * 0.75, 0.15, 1);
     const baseFloorScale = groundEffect * (1 - floorStall * 0.78) * diffuserRakeScale * attitudeScale;
@@ -160,7 +164,7 @@ export class AeroModel {
     const totalMomentWorldNm = addVector3(crossVector3(frontArm, frontForce), crossVector3(rearArm, rearForce));
     return {
       totalForceWorldN, totalMomentWorldNm, airflow,
-      airDensityKgM3: getAirDensityAtElevation(Number(state.position?.y || 0), environment.ambientTemperatureC),
+      airDensityKgM3,
       dynamicPressurePa: q(dynamicPressure), dragCoefficient: q(dragCoefficient),
       dragForceN: q(magnitude(dragForce)), frontDownforceN: q(frontDownforceN),
       rearDownforceN: q(rearDownforceN), liftN: q(liftN), frontPoint, rearPoint,

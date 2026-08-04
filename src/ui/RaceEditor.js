@@ -934,6 +934,9 @@ export default class RaceEditor {
       throttle: false,
       brake: false,
       handbrake: false,
+      handbrakeHoldSequence: 0,
+      handbrakeHoldSeconds: 0.36,
+      inputClockMs: 0,
       rawThrottleAxis: 0,
       rawBrakeAxis: 0,
       throttleAxis: 0,
@@ -968,6 +971,7 @@ export default class RaceEditor {
       activeSelectPointerId: null,
       throttlePulseMs: 0,
       lastBrakeTapMs: 0,
+      hasBrakeTap: false,
       gamepadSelectHoldActive: false,
       gamepadSelectHoldMs: 0,
       gamepadSelectHoldTriggered: false
@@ -1241,6 +1245,10 @@ export default class RaceEditor {
     this.raceInput.throttle = false;
     this.raceInput.brake = false;
     this.raceInput.handbrake = false;
+    this.raceInput.handbrakeHoldSequence = 0;
+    this.raceInput.inputClockMs = 0;
+    this.raceInput.lastBrakeTapMs = 0;
+    this.raceInput.hasBrakeTap = false;
     this.raceInput.rawThrottleAxis = 0;
     this.raceInput.rawBrakeAxis = 0;
     this.raceInput.throttleAxis = 0;
@@ -17633,10 +17641,8 @@ export default class RaceEditor {
       if (!hasActiveDpadPointer) this.raceInput.binarySteer = 0;
       return;
     }
-    if (!hasRawGamepadState && this.raceInput.handbrakeUntilMs && Date.now() > Number(this.raceInput.handbrakeUntilMs)) {
-      this.raceInput.handbrake = false;
-      this.raceInput.handbrakeUntilMs = 0;
-    }
+    this.raceInput.inputClockMs = Number(this.raceInput.inputClockMs || 0)
+      + Math.max(0, Number(dt || 0)) * 1000;
     this.raceInput.throttlePulseMs = Math.max(0, Number(this.raceInput.throttlePulseMs || 0) - 16);
     if (wasPressed('interact') || wasPressedCode('KeyG') || (!rawGamepadActive && wasGamepadPressed('jump'))) {
       this.raceInput.throttlePulseMs = 120;
@@ -17675,15 +17681,17 @@ export default class RaceEditor {
     }
     if (rawGamepadActive) {
       this.raceInput.handbrake = isGamepadDown('gamepadA');
-      this.raceInput.handbrakeUntilMs = 0;
     }
     if ((wasPressedCode('KeyR') || (!rawGamepadActive && wasGamepadPressed('dash'))) && this.raceInput.keyboardBrake) {
-      const now = Date.now();
-      if (now - Number(this.raceInput.lastBrakeTapMs || 0) < 260) {
-        this.raceInput.handbrake = true;
-        this.raceInput.handbrakeUntilMs = now + 220;
+      const now = Number(this.raceInput.inputClockMs || 0);
+      if (this.raceInput.hasBrakeTap === true
+        && now - Number(this.raceInput.lastBrakeTapMs || 0) < 260) {
+        this.raceInput.handbrakeHoldSequence = Math.max(0, Math.trunc(Number(
+          this.raceInput.handbrakeHoldSequence || 0
+        ))) + 1;
       }
       this.raceInput.lastBrakeTapMs = now;
+      this.raceInput.hasBrakeTap = true;
     }
   }
 
@@ -19688,7 +19696,8 @@ export default class RaceEditor {
         pitchRad: this.getRaceGeometricVehiclePitch(Number(this.playtestSession?.pitchRad || 0)),
         rollRad: Number(this.playtestSession?.rollRad || 0),
         session: this.playtestSession,
-        braking: Boolean(this.raceInput.brake || this.raceInput.handbrake),
+        braking: Boolean(this.raceInput.brake || this.raceInput.handbrake
+          || this.playtestSession?.authoritativeHandbrakeActive),
         segment
       });
       if (drewFlatCar) {
@@ -19724,7 +19733,8 @@ export default class RaceEditor {
         pitchRad: this.getRaceGeometricVehiclePitch(Number(this.playtestSession?.pitchRad || 0)),
         rollRad: Number(this.playtestSession?.rollRad || 0),
         session: this.playtestSession,
-        braking: Boolean(this.raceInput.brake || this.raceInput.handbrake),
+        braking: Boolean(this.raceInput.brake || this.raceInput.handbrake
+          || this.playtestSession?.authoritativeHandbrakeActive),
         segment,
         drawBody: false,
         drawWheels: true,
@@ -19763,7 +19773,8 @@ export default class RaceEditor {
         artChoice,
         frontTireAngle,
         tireScroll: this.getRaceTireTextureScroll(car),
-        braking: Boolean(this.raceInput.brake || this.raceInput.handbrake),
+        braking: Boolean(this.raceInput.brake || this.raceInput.handbrake
+          || this.playtestSession?.authoritativeHandbrakeActive),
         damageColor: this.getDamageColor(totalDamage),
         drawWheels: hasAuthoredTireArt,
         drawShadowLayer: hasCustomShadowArt || (!threeRenderedCarShadow && !proceduralCarShadowDrawn),
@@ -19875,7 +19886,8 @@ export default class RaceEditor {
         const drawH = drawW * (Number(addOnCanvas.height || 1) / Math.max(1, Number(addOnCanvas.width || 1)));
         ctx.drawImage(addOnCanvas, centerX - drawW * 0.5 + carW * Number(entry.offsetX || 0), y + carH * 0.3 + carH * Number(entry.offsetY || 0), drawW, drawH);
       });
-    if (layerVisibility.body && (this.raceInput.brake || this.raceInput.handbrake)) {
+    if (layerVisibility.body && (this.raceInput.brake || this.raceInput.handbrake
+      || this.playtestSession?.authoritativeHandbrakeActive)) {
       ctx.fillStyle = '#ff4f4f';
       ctx.fillRect(centerX - carW * 0.42, y + carH * 0.38, carW * 0.2, carH * 0.12);
       ctx.fillRect(centerX + carW * 0.22, y + carH * 0.38, carW * 0.2, carH * 0.12);
@@ -20565,7 +20577,8 @@ export default class RaceEditor {
     const damage = this.getRaceSessionDamage();
     return {
       ...renderPose,
-      braking: Boolean(this.raceInput.brake || this.raceInput.handbrake),
+      braking: Boolean(this.raceInput.brake || this.raceInput.handbrake
+        || this.playtestSession?.authoritativeHandbrakeActive),
       drawBody: !hasBodyArt,
       drawWheels: !hasTireArt,
       drawLights: !hasBodyArt,
@@ -21147,7 +21160,7 @@ export default class RaceEditor {
         `Applied ${appliedDriveDemand.toFixed(2)}  TC ${Math.round(tractionControlCut * 100)}% Shift ${Math.round(shiftTorqueCut * 100)}% Un ${Math.round(drivetrainUnload * 100)}% Pwr ${Math.round(powerLimitBlend * 100)}%`,
         `PowerYaw ${powerYaw.toFixed(2)} Tire ${Math.round(tireHealth * 100)}% Fx ${Math.round(demandedDriveLbf)}/${Math.round(appliedDriveLbf)} L${Math.round(driveForceLossLbf)}`,
         `Brake R${Math.round(brakeRequestedLbf)} A${Math.round(brakeAppliedLbf)} ABS${Math.round(absInterventionLbf)} Lock${Math.round(maxBrakeLock * 100)}%`,
-        `Pedal T${throttle} B${brake}  HB ${this.raceInput.handbrake ? 'ON' : 'off'}`,
+        `Pedal T${throttle} B${brake}  HB ${this.playtestSession?.authoritativeHandbrakeActive || this.raceInput.handbrake ? 'ON' : 'off'}`,
         `Aero F${Math.round(aeroFrontLbf)} R${Math.round(aeroRearLbf)} Grade ${gradePercent.toFixed(1)}% ${Math.round(gradeForceLbf)}lb AI ${aiMaxDriveDemand.toFixed(1)}`,
         `Surface ${RACE_WHEEL_IDS.map((wheelId) => surfaceCode(slip.wheelSurfaces?.[wheelId] || 'asphalt')).join('')}`,
         `Terrain ${RACE_WHEEL_IDS.map((wheelId) => terrainCode(slip.wheelTerrains?.[wheelId] || 'road')).join('')}`,
@@ -21507,9 +21520,15 @@ export default class RaceEditor {
         this.backRacePauseMenu();
         return true;
       }
-      const now = Date.now();
-      this.raceInput.handbrake = now - Number(this.raceInput.lastBrakeTapMs || 0) < 280;
+      const now = Number(this.raceInput.inputClockMs || 0);
+      if (this.raceInput.hasBrakeTap === true
+        && now - Number(this.raceInput.lastBrakeTapMs || 0) < 280) {
+        this.raceInput.handbrakeHoldSequence = Math.max(0, Math.trunc(Number(
+          this.raceInput.handbrakeHoldSequence || 0
+        ))) + 1;
+      }
       this.raceInput.lastBrakeTapMs = now;
+      this.raceInput.hasBrakeTap = true;
       this.raceInput.brake = true;
       this.raceInput.activeBrakePointerId = payload.id ?? 'pointer';
       return true;

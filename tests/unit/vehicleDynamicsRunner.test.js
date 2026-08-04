@@ -321,7 +321,7 @@ test('all authoritative fixed-step fixtures are exact across rendering frame par
   }
 });
 
-test('airborne controls cannot redirect the chassis and landing settles without gaining energy', () => {
+test('airborne controls cannot redirect translation, but wheel torque reacts before landing', () => {
   const heights = { fl: 0, fr: 0, rl: 0, rr: 0 };
   const initialState = {
     position: { x: 0, y: 4.55, z: 0 },
@@ -355,7 +355,11 @@ test('airborne controls cannot redirect the chassis and landing settles without 
   controlled.advance(0.5);
   assert.deepEqual(controlled.state.position, neutral.state.position);
   assert.deepEqual(controlled.state.velocity, neutral.state.velocity);
-  assert.deepEqual(controlled.state.angularVelocityWorld, neutral.state.angularVelocityWorld);
+  assert.notDeepEqual(controlled.state.angularVelocityWorld, neutral.state.angularVelocityWorld);
+  assert.ok(Math.abs(controlled.state.angularVelocityWorld.x - neutral.state.angularVelocityWorld.x) > 0.01);
+  assert.ok(controlled.telemetry.every((entry) => Object.values(
+    entry.forces.wheelAngularMomentumReactionImpulseWorldNms || {}
+  ).every((impulse) => Math.abs(Number(impulse.y || 0)) < 1e-9)));
   assert.ok(controlled.telemetry.every((entry) => entry.forces.supportScale === 0));
   assert.ok(controlled.telemetry.flatMap((entry) => entry.assistInterventions)
     .every((entry) => entry.appliedValue === 0));
@@ -372,8 +376,14 @@ test('airborne controls cannot redirect the chassis and landing settles without 
   );
   assert.ok(controlled.telemetry.some((entry) => entry.forces.groundConstraintImpulseNs > 0));
   assert.equal(controlled.state.grounded, true);
-  assert.ok(Math.abs(controlled.state.position.y - controlled.config.cgHeightM) < 0.01);
-  assert.ok(Math.abs(controlled.state.velocity.y) < 0.02);
+  assert.ok(controlled.impactHistory.length > 0);
+  assert.ok(controlled.impactHistory.every((impact) => (
+    impact.postImpactKineticEnergyJ <= impact.preImpactKineticEnergyJ * 1.003
+  )), JSON.stringify(controlled.impactHistory));
+  for (let index = 1; index < controlled.impactHistory.length; index += 1) {
+    assert.ok(controlled.impactHistory[index].preImpactKineticEnergyJ
+      < controlled.impactHistory[index - 1].preImpactKineticEnergyJ);
+  }
   assert.ok(Object.values(controlled.state.wheelLoadsN).every((load) => (
     load <= controlled.config.massKg * 9.81 / 4 * controlled.config.maxSuspensionLoadFactor
   )));
@@ -629,6 +639,8 @@ test('control timeline interpolates axes and holds discrete controls determinist
     brake: 0,
     clutch: 0,
     handbrake: 0,
+    handbrakeHoldSequence: 0,
+    handbrakeHoldSeconds: 0.36,
     requestedGear: 1,
     assists: { abs: true }
   });
@@ -640,6 +652,86 @@ test('control timeline interpolates axes and holds discrete controls determinist
   timeline.addSample(4, held);
   assert.equal(timeline.samples.length, 4);
   assert.deepEqual(timeline.sampleAt(3.5), normalizeVehicleControlInput(held));
+});
+
+test('fixed-step handbrake pulse duration and replay are render-partition independent', () => {
+  const run = (fps) => {
+    const runner = new VehicleDynamicsRunner({
+      config: { chassisHz: 120, tireHz: 120, telemetryRetention: 'history', telemetryLimit: 256 },
+      inputTimeline: [{
+        timeSeconds: 0,
+        input: { requestedGear: 1, handbrakeHoldSequence: 1, handbrakeHoldSeconds: 0.36 }
+      }],
+      environmentProvider: () => ({ airDensityKgM3: 0 })
+    });
+    for (let frame = 0; frame < fps; frame += 1) runner.advance(1 / fps);
+    runner.drainCatchUp();
+    return runner;
+  };
+  const reference = run(30);
+  const activeSteps = reference.telemetry.filter((entry) => entry.controls.handbrake > 0.5).length;
+  assert.ok(activeSteps >= 43 && activeSteps <= 44, `active steps ${activeSteps}`);
+  for (const fps of RENDER_FPS.slice(1)) {
+    const candidate = run(fps);
+    assert.equal(candidate.telemetry.filter((entry) => entry.controls.handbrake > 0.5).length, activeSteps);
+    assert.deepEqual(candidate.createStateSnapshot(), reference.createStateSnapshot());
+  }
+  const replay = VehicleDynamicsRunner.replay(reference.createReplayRecord(), {
+    environmentProvider: () => ({ airDensityKgM3: 0 })
+  });
+  assert.deepEqual(replay.createStateSnapshot(), reference.createStateSnapshot());
+  assert.equal(replay.telemetry.filter((entry) => entry.controls.handbrake > 0.5).length, activeSteps);
+
+  const runDirect = (fps) => {
+    const direct = new VehicleDynamicsRunner({
+      config: { chassisHz: 120, tireHz: 120, telemetryRetention: 'history', telemetryLimit: 256 },
+      inputTimeline: [
+        { timeSeconds: 0, input: { requestedGear: 1, handbrake: 1 } },
+        { timeSeconds: 0.36, input: { requestedGear: 1, handbrake: 1 } },
+        { timeSeconds: 0.360001, input: { requestedGear: 1, handbrake: 0 } }
+      ],
+      environmentProvider: () => ({ airDensityKgM3: 0 })
+    });
+    for (let frame = 0; frame < fps; frame += 1) direct.advance(1 / fps);
+    direct.drainCatchUp();
+    return direct.telemetry.filter((entry) => entry.controls.handbrake > 0.5).length;
+  };
+  const directSteps = runDirect(30);
+  assert.ok(Math.abs(directSteps - activeSteps) <= 1);
+  for (const fps of RENDER_FPS.slice(1)) assert.equal(runDirect(fps), directSteps);
+});
+
+test('WRX authoritative handbrake locks rear wheels without ESC cancelling rotation', () => {
+  const speedMps = 45 * 0.44704;
+  const wheelOmega = speedMps / WRX_GT_CONFIG.wheelRadiusM;
+  const runner = new VehicleDynamicsRunner({
+    config: { ...WRX_GT_CONFIG, telemetryRetention: 'history', telemetryLimit: 128 },
+    initialState: {
+      heightM: WRX_GT_CONFIG.cgHeightM,
+      velocity: { x: 0, y: 0, z: speedMps },
+      speedMps,
+      gear: 2,
+      engineRpm: 3500,
+      wheelAngularVelocityRadps: { fl: wheelOmega, fr: wheelOmega, rl: wheelOmega, rr: wheelOmega }
+    },
+    inputTimeline: [{ timeSeconds: 0, input: {
+      steering: 0.28,
+      throttle: 0.2,
+      handbrake: 1,
+      requestedGear: 2,
+      assists: { absEnabled: true, tractionControlEnabled: true, stabilityControlEnabled: true }
+    } }],
+    environmentProvider: () => ({ surfaceHeightByWheel: FLAT_SURFACE_HEIGHTS, airDensityKgM3: 0 })
+  });
+  for (let step = 0; step < 48; step += 1) runner.advance(1 / 120);
+  const patches = runner.state.contactPatches;
+  const rearSlip = Math.min(Number(patches.rl?.rawSlipRatio || 0), Number(patches.rr?.rawSlipRatio || 0));
+  const frontSlip = Math.min(Number(patches.fl?.rawSlipRatio || 0), Number(patches.fr?.rawSlipRatio || 0));
+  assert.ok(rearSlip < -0.3, `rear slip ${rearSlip}`);
+  assert.ok(frontSlip > rearSlip + 0.2, `front ${frontSlip}, rear ${rearSlip}`);
+  assert.ok(Math.abs(runner.state.yawRateRadps) > 0.03, `yaw rate ${runner.state.yawRateRadps}`);
+  assert.ok(runner.telemetry.every((entry) => entry.state.powertrainState.telemetry.stabilityBrakeTorqueNm === 0));
+  assert.ok(runner.telemetry.every((entry) => entry.state.powertrainState.telemetry.tractionControlActive === false));
 });
 
 test('runner enforces deterministic ordering, tire rate, and catch-up budget', () => {
