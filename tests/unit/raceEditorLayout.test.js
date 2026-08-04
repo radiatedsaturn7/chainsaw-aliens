@@ -18591,6 +18591,8 @@ test('Race Editor mobile playtest maps G, R, d-pad, and Select camera controls',
   const ctx = createMockContext();
 
   editor.startPlaytest('starter-rwd');
+  editor.playtestSession.countdownRemainingMs = 0;
+  editor.playtestSession.launchLockMs = 0;
   editor.draw(ctx, 844, 390);
 
   const go = editor.buttons.find((button) => button.id === 'race-go');
@@ -18622,7 +18624,9 @@ test('Race Editor mobile playtest maps G, R, d-pad, and Select camera controls',
   editor.handlePointerDown({ id: 'r1', x: brake.bounds.x + brake.bounds.w / 2, y: brake.bounds.y + brake.bounds.h / 2 });
   editor.handlePointerUp({ id: 'r1', x: brake.bounds.x + brake.bounds.w / 2, y: brake.bounds.y + brake.bounds.h / 2 });
   editor.handlePointerDown({ id: 'r2', x: brake.bounds.x + brake.bounds.w / 2, y: brake.bounds.y + brake.bounds.h / 2 });
-  assert.equal(editor.raceInput.handbrake, true);
+  assert.equal(editor.raceInput.handbrakeHoldSequence, 1);
+  editor.updatePlaytest(1 / 60);
+  assert.equal(editor.playtestSession.authoritativeHandbrakeActive, true);
 
   editor.handlePointerDown({ id: 'start', x: start.bounds.x + start.bounds.w / 2, y: start.bounds.y + start.bounds.h / 2 });
   assert.equal(editor.raceInput.paused, true);

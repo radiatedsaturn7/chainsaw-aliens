@@ -516,11 +516,24 @@ export class PowertrainModel {
       : 0;
     const groundSpeedMps = Math.max(0, Number(state.groundSpeedMps
       ?? Math.hypot(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0))) || 0);
-    const launchControlActive = controls.assists?.launchControlEnabled === true
+    const handbrakeActive = Number(controls.handbrake || 0) > 0.001;
+    const rearBrakeSlip = Math.max(0, ...['rl', 'rr'].map((wheelId) => {
+      const wheel = kinematicsByWheel[wheelId] || {};
+      const travelSign = Math.sign(Number(wheel.longitudinalVelocityMps || 0)) || 1;
+      return -Number(wheel.slipRatio || 0) * travelSign;
+    }));
+    const handbrakeEscRecoverySlip = clamp(Number(
+      tuning.handbrakeEscRecoverySlip ?? 0.08
+    ), 0.02, 0.4);
+    const handbrakeEscSuppressed = handbrakeActive
+      || (previous.handbrakeEscSuppressed === true && rearBrakeSlip > handbrakeEscRecoverySlip);
+    const launchControlActive = !handbrakeActive
+      && controls.assists?.launchControlEnabled === true
       && groundSpeedMps < 8
       && controls.throttle > 0.7
       && overallRatio > 0;
-    const tractionControlActive = controls.assists?.tractionControlEnabled !== false
+    const tractionControlActive = !handbrakeActive
+      && controls.assists?.tractionControlEnabled !== false
       && controls.throttle > 0.02
       && overallRatio > 0;
     const targetDrivenSlip = launchControlActive
@@ -546,8 +559,12 @@ export class PowertrainModel {
       : 1;
     const direction = gear < 0 ? -1 : gear > 0 ? 1 : 0;
     const curveTorqueNm = this.getTorqueNmAtRpm(engineRpm, tuning);
+    const handbrakeCombustionScale = handbrakeActive
+      ? clamp(Number(tuning.handbrakeCombustionTorqueScale ?? 0.05), 0, 0.25)
+      : 1;
     const combustionTorqueNm = curveTorqueNm * clamp(Number(controls.throttle || 0), 0, 1)
-      * engineDamageScale * limiterTorqueScale * launchTorqueScale * tractionTorqueScale;
+      * engineDamageScale * limiterTorqueScale * launchTorqueScale * tractionTorqueScale
+      * handbrakeCombustionScale;
     const rpmRatio = clamp((engineRpm - idleRpm) / Math.max(1, maxRpm - idleRpm), 0, 1);
     const engineBrakeTorqueNm = overallRatio > 0 && groundSpeedMps > 0.65
       ? Math.max(0, Number(tuning.engineBrakeTorqueNm || curveTorqueNm * 0.185))
@@ -561,9 +578,14 @@ export class PowertrainModel {
     const travelDirection = Math.abs(averageDrivenTravelMps) > 0.1
       ? Math.sign(averageDrivenTravelMps)
       : direction;
+    const awdCenterCouplingScale = handbrakeActive
+      && String(tuning.drivetrain || '').toLowerCase() === 'awd'
+      ? clamp(Number(tuning.handbrakeAwdCenterCouplingScale ?? 0.05), 0, 0.2)
+      : 1;
     const wheelDriveTorqueTotalNm = (
       direction * combustionTorqueNm - travelDirection * engineBrakeTorqueNm
-    ) * overallRatio * transmissionEfficiency * clutchCoupling * converterTorqueMultiplier;
+    ) * overallRatio * transmissionEfficiency * clutchCoupling * converterTorqueMultiplier
+      * awdCenterCouplingScale;
     const wheelDriveTorqueNm = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
       wheelId,
       drivenIds.includes(wheelId)
@@ -587,7 +609,8 @@ export class PowertrainModel {
       rl: serviceBrakeTorqueTotalNm * (1 - frontBias) * 0.5 + handbrakeTorqueTotalNm * 0.5,
       rr: serviceBrakeTorqueTotalNm * (1 - frontBias) * 0.5 + handbrakeTorqueTotalNm * 0.5
     };
-    const stabilityEnabled = controls.assists?.stabilityControlEnabled !== false;
+    const stabilityEnabled = controls.assists?.stabilityControlEnabled !== false
+      && !handbrakeEscSuppressed;
     const steeringAngle = Number(controls.centerSteeringAngleRad || 0);
     const desiredYawRate = groundSpeedMps * Math.tan(steeringAngle)
       / Math.max(0.5, Number(config.wheelbaseM || 2.65));
@@ -630,8 +653,8 @@ export class PowertrainModel {
       const wheel = kinematicsByWheel[wheelId] || {};
       const travelSign = Math.sign(Number(wheel.longitudinalVelocityMps || 0));
       const signedBrakeSlip = Math.max(0, -Number(wheel.slipRatio || 0) * travelSign);
-      const absEnabled = controls.assists?.absEnabled !== false
-        && Number(controls.handbrake || 0) < 0.01;
+      const rearHandbrakeWheel = handbrakeActive && (wheelId === 'rl' || wheelId === 'rr');
+      const absEnabled = controls.assists?.absEnabled !== false && !rearHandbrakeWheel;
       const absTargetSlip = clamp(Number(tuning.absSlipTarget ?? 0.13), 0.06, 0.24);
       const targetModulation = absEnabled && signedBrakeSlip > absTargetSlip
         ? clamp(absTargetSlip / signedBrakeSlip, 0.05, 1)
@@ -676,6 +699,7 @@ export class PowertrainModel {
         revLimiterActive: limiterActive,
         limiterSequence: Number(previous.limiterSequence || 0) + (limiterActive ? 1 : 0),
         tractionTorqueScale,
+        handbrakeEscSuppressed,
         absModulationByWheel
       },
       telemetry: {
@@ -693,6 +717,12 @@ export class PowertrainModel {
         tractionTorqueScale,
         drivenSlip,
         launchControlActive,
+        handbrakeActive,
+        handbrakeEscSuppressed,
+        rearBrakeSlip,
+        handbrakeEscRecoverySlip,
+        handbrakeCombustionScale,
+        awdCenterCouplingScale,
         absInterventionByWheel,
         requestedBrakeTorqueNm,
         wheelDriveTorqueNm: { ...wheelDriveTorqueNm },

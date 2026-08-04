@@ -42,6 +42,67 @@ test('authoritative steering envelope responds to front support and aquaplaning'
   }), twoWheel);
 });
 
+test('loose-surface grip and current utilization do not collapse Sport rack authority', () => {
+  const config = {
+    handlingPreset: 'sport', maxSteerAngleRad: 0.52, massKg: 1550,
+    frontWeightDistribution: 0.58, wheelbaseM: 2.68
+  };
+  const patch = (gripCoefficient, utilization) => ({
+    normalLoadN: 4400, suspensionNormalLoadN: 4400,
+    gripCoefficient, utilization
+  });
+  const clean = { groundSpeedMps: 24.6, contactPatches: {
+    fl: patch(1.05, 0.05), fr: patch(1.05, 0.05)
+  } };
+  const poweredGravel = { groundSpeedMps: 24.6, contactPatches: {
+    fl: patch(0.48, 0.96), fr: patch(0.48, 0.96)
+  } };
+  const cleanAngle = resolvePhysicalCenterSteeringAngle({ steering: 1 }, config, clean);
+  const gravelAngle = resolvePhysicalCenterSteeringAngle({ steering: 1 }, config, poweredGravel);
+  assert.equal(gravelAngle, cleanAngle);
+  assert.ok(gravelAngle > 0.16, `permitted rack angle ${gravelAngle}`);
+  assert.ok(gravelAngle > Math.atan(0.48 * 9.81 * config.wheelbaseM / (24.6 ** 2)) * 4);
+});
+
+test('WRX2 Sport rack can command beyond ideal slip-free steering on loose surfaces', () => {
+  const config = {
+    handlingPreset: 'sport', maxSteerAngleRad: 0.52, massKg: 1575,
+    frontWeightDistribution: 0.58, wheelbaseM: 2.68
+  };
+  const surfaces = {
+    gravel: 0.52,
+    'wet-gravel': 0.4,
+    mud: 0.34,
+    asphalt: 1.02
+  };
+  for (const mph of [35, 45, 55]) {
+    const speedMps = mph * MPH_TO_MPS;
+    for (const [surface, grip] of Object.entries(surfaces)) {
+      for (const compound of ['tarmac', 'dirt']) {
+        const contact = (utilization) => ({
+          normalLoadN: 4480,
+          suspensionNormalLoadN: 4480,
+          gripCoefficient: grip * (compound === 'dirt' && surface !== 'asphalt' ? 1.08 : 1),
+          utilization
+        });
+        const state = { groundSpeedMps: speedMps, contactPatches: {
+          fl: contact(0.98), fr: contact(0.98)
+        } };
+        const permitted = resolvePhysicalCenterSteeringAngle({ steering: 1 }, config, state);
+        const unloadedDemand = resolvePhysicalCenterSteeringAngle({ steering: 1 }, config, {
+          ...state, contactPatches: { fl: contact(0), fr: contact(0) }
+        });
+        assert.equal(permitted, unloadedDemand, `${mph} mph ${surface} ${compound}`);
+        if (surface !== 'asphalt') {
+          const idealNoSlip = Math.atan(grip * 9.81 * config.wheelbaseM / (speedMps ** 2));
+          assert.ok(permitted > idealNoSlip * 2.5,
+            `${mph} mph ${surface} ${compound}: ${permitted} <= ${idealNoSlip}`);
+        }
+      }
+    }
+  }
+});
+
 const MPH_TO_MPS = 0.44704;
 const SPEEDS_MPH = [0, 15, 30, 60, 100];
 const assist = new HandlingAssist(RACE_CONTROLLER_STEERING);

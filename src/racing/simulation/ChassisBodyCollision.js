@@ -92,7 +92,7 @@ export class ChassisBodyCollision {
     };
   }
 
-  step({ workingState, config, environment = {}, dt = 0 }) {
+  step({ workingState, config, environment = {}, dt = 0, advanceState = true }) {
     const sampleTerrain = environment.sampleTerrainAtWorldPoint;
     const sampleTerrainBatch = environment.sampleTerrainAtWorldPoints;
     if ((typeof sampleTerrain !== 'function' && typeof sampleTerrainBatch !== 'function') || dt <= 0) {
@@ -103,12 +103,14 @@ export class ChassisBodyCollision {
         contacts: []
       };
     }
-    workingState.position = addVector3(workingState.position, scaleVector3(workingState.velocity, dt));
-    workingState.orientation = integrateQuaternion(
-      workingState.orientation,
-      workingState.angularVelocityWorld,
-      dt
-    );
+    if (advanceState) {
+      workingState.position = addVector3(workingState.position, scaleVector3(workingState.velocity, dt));
+      workingState.orientation = integrateQuaternion(
+        workingState.orientation,
+        workingState.angularVelocityWorld,
+        dt
+      );
+    }
     const toleranceM = Math.max(0.001, Number(config.bodyCollisionToleranceM || 0.008));
     const candidateWorld = this.candidates.map((candidate) => {
       const arm = rotateVectorByQuaternion(candidate.localPoint, workingState.orientation);
@@ -159,13 +161,34 @@ export class ChassisBodyCollision {
         penetrationM,
         friction: clamp(Number(terrain.friction ?? config.bodyCollisionFriction ?? 0.62), 0, 1.5),
         normalImpulseNs: 0,
-        tangentialImpulseNs: 0
+        tangentialImpulseNs: 0,
+        restitutionImpulseNs: 0,
+        penetrationBiasImpulseNs: 0,
+        restitutionTargetSpeedMps: 0,
+        suspensionSupported: Number(
+          environment.suspensionBodyContactSupport?.supportedWheelCount || 0
+        ) > 0 && /underbody|underside|rocker/.test(candidate.id)
       };
     }).filter(Boolean);
     let linearImpulse = { x: 0, y: 0, z: 0 };
     let angularImpulse = { x: 0, y: 0, z: 0 };
     const restitution = clamp(Number(config.bodyCollisionRestitution ?? 0.08), 0, 0.6);
+    const restitutionThresholdMps = Math.max(
+      0,
+      Number(config.bodyCollisionRestitutionThresholdMps ?? 2)
+    );
     const iterations = Math.max(1, Math.trunc(Number(config.bodyCollisionSolverIterations || 4)));
+    contacts.forEach((contact) => {
+      const initialPointVelocity = addVector3(
+        workingState.velocity,
+        crossVector3(workingState.angularVelocityWorld, contact.arm)
+      );
+      const initialClosingSpeedMps = Math.max(0, -dot(initialPointVelocity, contact.normal));
+      contact.restitutionTargetSpeedMps = !contact.suspensionSupported
+        && initialClosingSpeedMps >= restitutionThresholdMps
+        ? initialClosingSpeedMps * restitution
+        : 0;
+    });
     for (let iteration = 0; iteration < iterations; iteration += 1) {
       contacts.forEach((contact) => {
         const pointVelocity = addVector3(
@@ -173,21 +196,32 @@ export class ChassisBodyCollision {
           crossVector3(workingState.angularVelocityWorld, contact.arm)
         );
         const normalSpeed = dot(pointVelocity, contact.normal);
-        const penetrationBias = Math.min(3, Math.max(0, contact.penetrationM - toleranceM) * 0.18 / dt);
-        const desiredNormalDelta = Math.max(0, -(1 + restitution) * normalSpeed + penetrationBias);
+        // Split impulse: penetration is corrected in position only. Physical
+        // normal velocity comes exclusively from actual closing velocity and
+        // configured restitution, so overlap stabilization cannot create a
+        // rebound or feed energy into the chassis.
+        const closingSpeed = Math.max(0, -normalSpeed);
+        const stoppingDelta = closingSpeed;
+        const restitutionDelta = Math.max(
+          0,
+          contact.restitutionTargetSpeedMps - Math.max(0, normalSpeed)
+        );
+        const desiredNormalDelta = stoppingDelta + restitutionDelta;
         const normalDenominator = Math.max(EPSILON, effectiveMassDenominator(
           contact.normal,
           contact.arm,
           config,
           workingState.orientation
         ));
-        const normalImpulseMagnitude = desiredNormalDelta / normalDenominator / iterations;
+        const normalImpulseMagnitude = desiredNormalDelta / normalDenominator;
         const normalImpulse = scaleVector3(contact.normal, normalImpulseMagnitude);
         applyImpulse(workingState, normalImpulse, contact.arm, config);
         linearImpulse = addVector3(linearImpulse, normalImpulse);
         const normalAngularImpulse = crossVector3(contact.arm, normalImpulse);
         angularImpulse = addVector3(angularImpulse, normalAngularImpulse);
         contact.normalImpulseNs += normalImpulseMagnitude;
+        contact.restitutionImpulseNs += restitutionDelta
+          / normalDenominator;
 
         const postNormalVelocity = addVector3(
           workingState.velocity,
@@ -206,7 +240,7 @@ export class ChassisBodyCollision {
           config,
           workingState.orientation
         ));
-        const requestedFrictionImpulse = tangentSpeed / tangentDenominator / iterations;
+        const requestedFrictionImpulse = tangentSpeed / tangentDenominator;
         const frictionImpulseMagnitude = Math.min(
           requestedFrictionImpulse,
           contact.friction * normalImpulseMagnitude
@@ -231,6 +265,10 @@ export class ChassisBodyCollision {
       linearImpulseWorldNs: linearImpulse,
       angularImpulseWorldNms: angularImpulse,
       positionalCorrectionWorldM: boundedCorrection,
+      bodyNormalImpulseNs: contacts.reduce((sum, contact) => sum + contact.normalImpulseNs, 0),
+      bodyFrictionImpulseNs: contacts.reduce((sum, contact) => sum + contact.tangentialImpulseNs, 0),
+      restitutionContributionNs: contacts.reduce((sum, contact) => sum + contact.restitutionImpulseNs, 0),
+      penetrationBiasContributionNs: 0,
       contacts
     };
   }

@@ -470,6 +470,9 @@ function advanceVehicleDynamicsAuthority(editor, {
   };
   syncVehicleDynamicsCompatibilityOutputs(authority.runner, session);
   const authoritativeState = authority.runner.state;
+  session.authoritativeHandbrakeActive = authoritativeState.handbrakeCommandState?.active === true;
+  session.handbrakeCommandState = { ...(authoritativeState.handbrakeCommandState || {}) };
+  session.steeringTelemetry = { ...(authoritativeState.steeringTelemetry || {}) };
   const authoritativePatches = authoritativeState.contactPatches || {};
   const powertrainTelemetry = authoritativeState.powertrainState?.telemetry || {};
   const drivenWheelIds = authority.runner.config.drivenWheelIds || [];
@@ -585,6 +588,8 @@ export function updateRaceSimulation({
     brake: editor.raceInput.brakeAxis,
     clutch: editor.raceInput.clutchAxis,
     handbrake: editor.raceInput.handbrake ? 1 : 0,
+    handbrakeHoldSequence: editor.raceInput.handbrakeHoldSequence,
+    handbrakeHoldSeconds: editor.raceInput.handbrakeHoldSeconds,
     requestedGear: editor.raceInput.gear,
     assists: {
       absEnabled: tuning.absEnabled,
@@ -710,7 +715,7 @@ export function updateRaceSimulation({
     brake = 0;
   }
   const engineThrottle = controlsLockedByRollover ? 0 : driverThrottle;
-  const handbrake = controlsLockedByRollover || countdownActive
+  let handbrake = controlsLockedByRollover || countdownActive
     ? 0
     : editor.raceInput.handbrake ? 1 : 0;
   if (handbrake) {
@@ -2071,6 +2076,8 @@ export function updateRaceSimulation({
       // torque or a suspension pitch moment.
       clutch: countdownActive ? 1 : editor.raceInput.clutchAxis,
       handbrake,
+      handbrakeHoldSequence: editor.raceInput.handbrakeHoldSequence,
+      handbrakeHoldSeconds: editor.raceInput.handbrakeHoldSeconds,
       requestedGear: editor.raceInput.gear,
       assists: {
         absEnabled: tuning.absEnabled,
@@ -2091,6 +2098,7 @@ export function updateRaceSimulation({
     trackState,
     weatherState
   });
+  handbrake = editor.playtestSession.authoritativeHandbrakeActive ? 1 : handbrake;
   const authoritativeWheelLoads = { ...(editor.playtestSession.vehicleDynamicsRunner?.state?.wheelLoadsN || {}) };
   if (RACE_WHEEL_IDS.every((wheelId) => Number.isFinite(Number(authoritativeWheelLoads[wheelId])))) {
     editor.playtestSession.tireSlip.wheelNormalLoads = authoritativeWheelLoads;

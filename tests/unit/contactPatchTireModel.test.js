@@ -176,7 +176,60 @@ test('known surface geometry never gives airborne wheels fallback static load', 
   assert.deepEqual(result.wheelLoadsN, { fl: 0, fr: 0, rl: 0, rr: 0 });
   assert.deepEqual(result.suspensionForceWorldN, { x: 0, y: 0, z: 0 });
   assert.deepEqual(result.worldForceN, { x: 0, y: 0, z: 0 });
-  assert.deepEqual(result.worldMomentNm, { x: 0, y: 0, z: 0 });
+  assert.equal(result.worldMomentNm.y, 0);
+  assert.ok(Math.abs(result.worldMomentNm.x) > 1);
+});
+
+test('airborne wheel acceleration and braking conserve wheel-plus-chassis angular momentum', () => {
+  const model = new ContactPatchTireModel();
+  const airborneConfig = createVehicleDynamicsConfig({
+    ...config,
+    drivenWheelIds: ['fl', 'fr', 'rl', 'rr'],
+    enginePeakTorqueNm: 320,
+    powertrainTuning: { drivetrain: 'awd', gearRatios: [3.4, 1.9], finalDrive: 4.1 }
+  });
+  const initialOmega = 20 / airborneConfig.wheelRadiusM;
+  const makeState = () => createVehicleDynamicsState({
+    position: { x: 0, y: airborneConfig.cgHeightM + 2, z: 0 },
+    velocity: { x: 0, y: 0, z: 20 },
+    speedMps: 20,
+    engineRpm: 4500,
+    gear: 2,
+    wheelAngularVelocityRadps: {
+      fl: initialOmega, fr: initialOmega, rl: initialOmega, rr: initialOmega
+    }
+  });
+  const run = (input) => model.step({
+    state: makeState(),
+    controls: { ...controls, requestedGear: 2, ...input },
+    config: airborneConfig,
+    dt: 1 / 360,
+    environment: {
+      grounded: false,
+      surfaceHeightByWheel: { fl: Number.NaN, fr: Number.NaN, rl: Number.NaN, rr: Number.NaN }
+    }
+  });
+  const accelerating = run({ throttle: 1, brake: 0 });
+  const braking = run({ throttle: 0, brake: 1 });
+
+  for (const result of [accelerating, braking]) {
+    for (const wheelId of ['fl', 'fr', 'rl', 'rr']) {
+      const patch = result.contactPatches[wheelId];
+      const deltaOmega = result.wheelAngularVelocityRadps[wheelId] - initialOmega;
+      const expectedImpulse = -airborneConfig.wheelInertiaKgM2 * deltaOmega;
+      const reaction = result.wheelAngularMomentumReactionImpulseWorldNms[wheelId];
+      const projectedReaction = reaction.x * patch.wheelLateralWorld.x
+        + reaction.y * patch.wheelLateralWorld.y
+        + reaction.z * patch.wheelLateralWorld.z;
+      assert.ok(Math.abs(projectedReaction - expectedImpulse) < 1e-4,
+        `${wheelId}: ${projectedReaction} versus ${expectedImpulse}`);
+    }
+    assert.equal(result.worldMomentNm.y, 0, 'airborne steering/torque must not invent yaw');
+  }
+  assert.ok(accelerating.worldMomentNm.x * braking.worldMomentNm.x < 0,
+    'acceleration and braking must create opposite pitch reactions');
+  assert.ok(accelerating.wheelAngularVelocityRadps.fl > initialOmega);
+  assert.ok(braking.wheelAngularVelocityRadps.fl < initialOmega);
 });
 
 test('geometric suspension preload supports weight and unloads continuously at full droop', () => {
