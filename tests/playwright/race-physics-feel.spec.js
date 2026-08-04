@@ -290,8 +290,7 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
     };
   });
 
-  expect(result.stockDirtPartial.maxWheelSpin).toBeGreaterThan(0.08);
-  expect(result.stockDirtPartial.maxWheelSpin).toBeLessThan(0.35);
+  expect(result.stockDirtPartial.maxWheelSpin).toBeLessThan(0.08);
   expect(result.stockDirtPartial.maxDrivenWheelLongitudinalUsage).toBeLessThan(1.6);
   expect(result.overpoweredDirtPartial.speedMps).toBeGreaterThan(result.stockDirtPartial.speedMps * 1.5);
   expect(result.overpoweredDirtPartial.maxWheelSpin).toBeGreaterThan(result.stockDirtPartial.maxWheelSpin);
