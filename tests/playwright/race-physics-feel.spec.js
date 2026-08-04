@@ -177,7 +177,9 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
           min3dFrictionCircle,
           ...Object.values(session.tireSlip?.vehicle3dFrictionCircleScaleByWheel || { x: 1 }).map(Number)
         );
-        const effectiveMuValues = Object.values(session.tireSlip?.effectiveFrictionMuByWheel || {}).map(Number).filter(Number.isFinite);
+        const effectiveMuValues = Object.values(session.tireSlip?.effectiveFrictionMuByWheel || {})
+          .map(Number)
+          .filter((value) => Number.isFinite(value) && value > 0);
         if (effectiveMuValues.length) {
           minEffectiveFrictionMu = Math.min(minEffectiveFrictionMu, ...effectiveMuValues);
           maxEffectiveFrictionMu = Math.max(maxEffectiveFrictionMu, ...effectiveMuValues);
