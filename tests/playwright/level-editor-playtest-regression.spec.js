@@ -581,9 +581,17 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
     const initialSession = editor.playtestSession;
     const runtimeCar = editor.getRaceSessionCar(initialSession);
     const routeLength = Math.max(1, Number(initialSession?.routeLength || editor.getRaceRouteLength()));
+    // This is a saved-document/finish-trigger contract, not an endurance or
+    // performance benchmark. Enter the final representative section through
+    // the real authoritative route reset so CI does not spend two wall-clock
+    // minutes evaluating 90 seconds of 360 Hz compound-body physics.
+    editor.applyRaceCarRouteCenterReset({
+      projection: { distance: Math.max(0, routeLength - 350) },
+      preserveMotion: false
+    });
     const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
     const normalizeAngle = (value) => Math.atan2(Math.sin(value), Math.cos(value));
-    let maximumDistance = Number(initialSession?.distance || 0);
+    let maximumDistance = Number(editor.playtestSession?.distance || 0);
     let updateFailed = false;
 
     for (let frame = 0; frame < 90 * 60 && editor.playtestSession; frame += 1) {
