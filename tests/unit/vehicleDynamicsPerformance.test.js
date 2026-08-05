@@ -75,6 +75,12 @@ test('single-player fixed steps use geometry-only footprints and reject clear bo
   surface.performanceDiagnostics.fullSurfaceQueries = 0;
   surface.performanceDiagnostics.geometryQueries = 0;
   surface.performanceDiagnostics.rawTerrainQueries = 0;
+  const originalGeometryBatch = surface.samplePhysicsGeometryBatch.bind(surface);
+  const geometryBatchSizes = [];
+  surface.samplePhysicsGeometryBatch = (points, context) => {
+    geometryBatchSizes.push(points.length);
+    return originalGeometryBatch(points, context);
+  };
   const runner = editor.playtestSession.vehicleDynamicsRunner;
   runner.performanceDiagnostics.environmentQueries = 0;
   runner.performanceDiagnostics.bodyBroadphaseRejectedSubsteps = 0;
@@ -88,6 +94,32 @@ test('single-player fixed steps use geometry-only footprints and reject clear bo
   assert.equal(surface.performanceDiagnostics.geometryQueries >= 96, true);
   assert.equal(surface.performanceDiagnostics.fullSurfaceQueries < 40, true);
   assert.equal(surface.performanceDiagnostics.rawTerrainQueries < 40, true);
+  assert.equal(geometryBatchSizes.filter((size) => size >= 20).length, 6,
+    'each contact substep shares its four wheel centers with one footprint batch');
+});
+
+test('a 250 ms race hitch preserves backlog while bounding each render-frame catch-up', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { getGamepadAxes: () => ({}), isGamepadConnected: () => false },
+    exitRaceEditor() {}
+  });
+  editor.startPlaytest(editor.selectedCar.id);
+  editor.playtestSession.launchLockMs = 0;
+  editor.playtestSession.countdownRemainingMs = 0;
+  editor.playtestSession.elapsedMs = 1000;
+  editor.updatePlaytest(1 / 60);
+  const runner = editor.playtestSession.vehicleDynamicsRunner;
+
+  const hitch = runner.advance(0.25);
+  assert.equal(runner.config.maxCatchUpSteps, 8);
+  assert.equal(hitch.completedSteps, 8);
+  assert.equal(hitch.backlogSteps >= 22, true);
+  const followingFrame = runner.advance(1 / 60);
+  assert.equal(followingFrame.completedSteps, 8);
+  assert.equal(followingFrame.backlogSteps < hitch.backlogSteps, true);
+  assert.equal(Number.isFinite(followingFrame.advanceWallTimeMs), true);
 });
 
 test('geometry-only surface queries exactly match authoritative geometry', () => {

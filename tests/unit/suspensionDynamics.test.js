@@ -83,7 +83,7 @@ test('unsprung wheel state remains finite through hop, bottoming, bank, and airb
   assert.notEqual(curb.suspensionState.fl.unsprungVelocityMps, initialVelocity);
   let bottom;
   for (let index = 0; index < 90; index += 1) {
-    bottom = step({ fl: 0.3, fr: 0.3, rl: 0.3, rr: 0.3 });
+    bottom = step({ fl: 0.14, fr: 0.14, rl: 0.14, rr: 0.14 });
   }
   assert.ok(bottom.suspensionState.fl.bumpStopForceN > 0);
   const bottomCompression = bottom.suspensionState.fl.compressionM;
@@ -201,7 +201,7 @@ test('compression-to-droop, bottom-out, and top-out preserve hub travel limits',
   const fixture = createCoupledSuspensionFixture({ bumpStopStartRatio: 0.72 });
   let result;
   for (let index = 0; index < 160; index += 1) {
-    result = fixture.step({ fl: 0.3, fr: 0.3, rl: 0.3, rr: 0.3 });
+    result = fixture.step({ fl: 0.14, fr: 0.14, rl: 0.14, rr: 0.14 });
   }
   const bottomHubY = result.suspensionState.fl.hubPositionWorld.y;
   assert.ok(result.suspensionState.fl.bumpStopForceN > 0);

@@ -421,6 +421,11 @@ export function createVehicleDynamicsConfig(config = {}) {
     treadReachToleranceM: clamp(Number(config.treadReachToleranceM ?? 0.025), 0.002, 0.08),
     emergencyBodyPenetrationM: clamp(Number(config.emergencyBodyPenetrationM ?? 0.18), 0.05, 0.5),
     penetrationFailureStepLimit: clamp(Math.trunc(Number(config.penetrationFailureStepLimit) || 4), 2, 12),
+    penetrationRecoveryRewindM: clamp(Number(config.penetrationRecoveryRewindM ?? 0.35), 0.1, 1),
+    penetrationHistoryLimit: clamp(Math.trunc(Number(config.penetrationHistoryLimit) || 32), 4, 128),
+    penetrationHistoryMaximumAgeSeconds: clamp(
+      Number(config.penetrationHistoryMaximumAgeSeconds ?? 0.25), 0.05, 1
+    ),
     terrainDiscrepancyToleranceM: clamp(Number(config.terrainDiscrepancyToleranceM ?? 0.02), 0.005, 0.1),
     surfaceConsistencySampleIntervalSteps: clamp(Math.trunc(Number(
       config.surfaceConsistencySampleIntervalSteps
@@ -935,6 +940,7 @@ export class VehicleDynamicsRunner {
       activeTakeoff: null
     };
     this.lastNonPenetratingState = null;
+    this.nonPenetratingStateHistory = [];
     this.penetrationRecoveryState = {
       previousMaximumPenetrationM: 0,
       failedProgressSteps: 0,
@@ -955,7 +961,9 @@ export class VehicleDynamicsRunner {
       retainedTelemetrySnapshots: 0,
       transientTelemetrySteps: 0,
       bodyBroadphaseRejectedSubsteps: 0,
-      bodyNarrowphaseSubsteps: 0
+      bodyNarrowphaseSubsteps: 0,
+      lastAdvanceWallTimeMs: 0,
+      peakAdvanceWallTimeMs: 0
     };
   }
 
@@ -1411,8 +1419,25 @@ export class VehicleDynamicsRunner {
         contactPatches: clone(tireResult.contactPatches || state.contactPatches || {})
       },
       powertrainState: clone(tireResult.powertrainState || state.powertrainState || {}),
-      simulationStep
+      simulationStep,
+      sourceKey: `${simulationStep}:${quantize(state.position?.x)}:${quantize(state.position?.y)}:${quantize(state.position?.z)}`
     };
+  }
+
+  recordNonPenetratingState(state, tireResult, simulationStep) {
+    const snapshot = this.createLastNonPenetratingState(state, tireResult, simulationStep);
+    this.lastNonPenetratingState = snapshot;
+    const previous = this.nonPenetratingStateHistory.at(-1);
+    if (previous?.sourceKey !== snapshot.sourceKey) {
+      this.nonPenetratingStateHistory.push(snapshot);
+      if (this.nonPenetratingStateHistory.length > this.config.penetrationHistoryLimit) {
+        this.nonPenetratingStateHistory.splice(
+          0,
+          this.nonPenetratingStateHistory.length - this.config.penetrationHistoryLimit
+        );
+      }
+    }
+    return snapshot;
   }
 
   sampleSurfaceConsistency({ previousState, proposedState, tireResult, bodyResult, environment }) {
@@ -1467,24 +1492,102 @@ export class VehicleDynamicsRunner {
     return { samples, discrepancies: samples.filter((sample) => sample.discrepancy) };
   }
 
-  recoverFromPenetration({ reason, substepState, tireResult, environment, stepIndex }) {
-    const previousSourceStep = this.lastNonPenetratingState?.simulationStep;
-    const recoveryHistoryNewestFirst = [...this.penetrationRecoveryState.history].reverse();
-    const firstDifferentSource = recoveryHistoryNewestFirst.findIndex(
-      (recovery) => recovery.restoredSimulationStep !== previousSourceStep
-    );
-    const repeatedSourceRecoveries = firstDifferentSource < 0
-      ? recoveryHistoryNewestFirst.length
-      : firstDifferentSource;
-    const source = repeatedSourceRecoveries >= this.config.penetrationFailureStepLimit
-      ? null
-      : this.lastNonPenetratingState;
+  updateDerivedMotionState(state) {
+    const euler = eulerFromQuaternion(state.orientation);
+    state.yawRad = normalizeAngle(euler.yaw);
+    state.pitchRad = euler.pitch;
+    state.rollRad = euler.roll;
+    state.yawRateRadps = Number(state.angularVelocityWorld?.y || 0);
+    state.pitchRateRadps = Number(state.angularVelocityWorld?.x || 0);
+    state.rollRateRadps = Number(state.angularVelocityWorld?.z || 0);
+    state.groundSpeedMps = Math.hypot(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0));
+    const forward = { x: Math.sin(state.yawRad), y: 0, z: Math.cos(state.yawRad) };
+    const right = { x: Math.cos(state.yawRad), y: 0, z: -Math.sin(state.yawRad) };
+    state.bodyLongitudinalSpeedMps = dotVector3(state.velocity, forward);
+    state.bodyLateralSpeedMps = dotVector3(state.velocity, right);
+    state.signedTravelSpeedMps = state.groundSpeedMps
+      * (Math.sign(state.bodyLongitudinalSpeedMps) || 1);
+  }
+
+  createWheelCollisionSupportFeatures(tireResult) {
+    return RACE_WHEEL_IDS.flatMap((wheelId) => {
+      const patch = tireResult.contactPatches?.[wheelId];
+      const hub = patch?.hubPositionWorld || patch?.wheelCenterWorld;
+      if (!hub) return [];
+      const lateral = patch.wheelLateralWorld || { x: 1, y: 0, z: 0 };
+      const forwardAxis = patch.wheelForwardWorld || { x: 0, y: 0, z: 1 };
+      const suspensionAxis = patch.suspensionAxisWorld || { x: 0, y: -1, z: 0 };
+      const radiusM = Math.max(0.1, Number(patch.effectiveRollingRadiusM || this.config.wheelRadiusM));
+      const widthM = Math.max(0.08, Number(this.config.tireByWheel?.[wheelId]?.widthMm || 225) / 1000);
+      const indices = patch.validTreadContact ? [0, 4, 5, 6, 7] : [0, 1, 2, 3, 4, 5, 6, 7];
+      return [-1, 1].flatMap((side) => indices.map((index) => {
+        const angle = index * Math.PI / 4;
+        const radial = addVector3(
+          scaleVector3(forwardAxis, Math.cos(angle) * radiusM),
+          scaleVector3(suspensionAxis, Math.sin(angle) * radiusM)
+        );
+        return {
+          id: `wheel-${wheelId}-sidewall-${side < 0 ? 'inner' : 'outer'}-${index}`,
+          wheelId,
+          contactType: 'wheel-sidewall',
+          worldPoint: addVector3(addVector3(hub, radial), scaleVector3(lateral, side * widthM * 0.5)),
+          friction: this.config.bodyCollisionFriction
+        };
+      }));
+    });
+  }
+
+  recoverFromPenetration({ reason, substepState, environment, stepIndex }) {
+    const toleranceM = this.config.bodyCollisionToleranceM + 1e-6;
+    const failedPosition = clone(substepState.position);
+    const maximumAgeSteps = Math.max(1, Math.ceil(
+      this.config.penetrationHistoryMaximumAgeSeconds * this.config.chassisHz
+    ));
+    const recentSourceKeys = new Set(this.penetrationRecoveryState.history
+      .slice(-this.config.penetrationFailureStepLimit)
+      .map((recovery) => recovery.sourceKey)
+      .filter(Boolean));
+    const history = this.nonPenetratingStateHistory.length
+      ? this.nonPenetratingStateHistory
+      : (this.lastNonPenetratingState ? [this.lastNonPenetratingState] : []);
+    let source = null;
+    for (let index = history.length - 1; index >= 0 && !source; index -= 1) {
+      const candidate = history[index];
+      const ageSteps = Math.max(0, stepIndex - Number(candidate.simulationStep || 0));
+      const distanceM = Math.hypot(
+        Number(candidate.position?.x || 0) - Number(failedPosition.x || 0),
+        Number(candidate.position?.z || 0) - Number(failedPosition.z || 0)
+      );
+      const candidateSpeedMps = Math.hypot(
+        Number(candidate.velocity?.x || 0),
+        Number(candidate.velocity?.y || 0),
+        Number(candidate.velocity?.z || 0)
+      );
+      const maximumReachM = Math.max(
+        2,
+        candidateSpeedMps * this.config.penetrationHistoryMaximumAgeSeconds + 1
+      );
+      if (ageSteps > maximumAgeSteps || distanceM > maximumReachM
+        || recentSourceKeys.has(candidate.sourceKey)) continue;
+      const sample = this.bodyCollision.samplePosePenetration(
+        candidate, environment, this.config.bodyCollisionToleranceM
+      );
+      if (sample.maximumPenetrationM !== null
+        && sample.maximumPenetrationM <= toleranceM
+        && !sample.allTerrainSamplesInvalid) source = candidate;
+    }
     const routeRecoveryState = !source && typeof environment.getRouteRecoveryState === 'function'
-      ? environment.getRouteRecoveryState() || null
+      ? environment.getRouteRecoveryState({
+          failedState: clone(substepState),
+          lastSafeState: clone(this.lastNonPenetratingState),
+          reason,
+          stepIndex
+        }) || null
       : null;
-    const fallback = createVehicleDynamicsState({
-      ...this.initialState,
-      ...(routeRecoveryState || {})
+    const fallback = createVehicleDynamicsState(routeRecoveryState || {
+      ...substepState,
+      velocity: { x: 0, y: 0, z: 0 },
+      angularVelocityWorld: { x: 0, y: 0, z: 0 }
     });
     const restored = source || {
       position: clone(fallback.position),
@@ -1499,7 +1602,8 @@ export class VehicleDynamicsRunner {
         contactPatches: clone(fallback.contactPatches)
       },
       powertrainState: clone(fallback.powertrainState),
-      simulationStep: 0
+      simulationStep: stepIndex,
+      routeDistance: routeRecoveryState?.routeDistance
     };
     substepState.position = clone(restored.position);
     substepState.orientation = clone(restored.orientation);
@@ -1519,22 +1623,30 @@ export class VehicleDynamicsRunner {
     substepState.angularVelocityWorld = angularSpeed > 6
       ? scaleVector3(restored.angularVelocityWorld, 6 / angularSpeed)
       : clone(restored.angularVelocityWorld);
+    substepState.suspensionState = clone(restored.suspensionState || {});
+    substepState.wheelAngularVelocityRadps = clone(restored.wheelState?.wheelAngularVelocityRadps || {});
+    substepState.wheelLoadsN = clone(restored.wheelState?.wheelLoadsN || {});
+    substepState.wheelSlip = clone(restored.wheelState?.wheelSlip || {});
+    substepState.contactPatches = clone(restored.wheelState?.contactPatches || {});
+    substepState.powertrainState = clone(restored.powertrainState || {});
     if (!source && typeof environment.sampleTerrainAtWorldPoint === 'function') {
-      const terrain = environment.sampleTerrainAtWorldPoint(substepState.position) || {};
-      const terrainHeightM = Number(terrain.heightM ?? terrain.elevationM);
-      if (Number.isFinite(terrainHeightM)) {
-        substepState.position.y = Math.max(
-          Number(substepState.position.y || 0),
-          terrainHeightM + this.config.cgHeightM + this.config.bodyCollisionToleranceM
+      // A route projection should already be clear, but verify it here. The
+      // local fallback is lifted only along world-up and never substitutes the
+      // race-start pose, so recovery cannot jump back to the beginning.
+      for (let attempt = 0; attempt < 4; attempt += 1) {
+        const sample = this.bodyCollision.samplePosePenetration(
+          substepState, environment, this.config.bodyCollisionToleranceM
         );
+        if (sample.maximumPenetrationM !== null
+          && sample.maximumPenetrationM <= toleranceM
+          && !sample.allTerrainSamplesInvalid) break;
+        const liftM = Number.isFinite(Number(sample.maximumPenetrationM))
+          ? Math.max(0.02, Number(sample.maximumPenetrationM) + toleranceM + 0.002)
+          : Math.max(0.1, this.config.cgHeightM);
+        substepState.position.y += liftM;
       }
     }
-    tireResult.suspensionState = clone(restored.suspensionState || {});
-    tireResult.wheelAngularVelocityRadps = clone(restored.wheelState?.wheelAngularVelocityRadps || {});
-    tireResult.wheelLoadsN = clone(restored.wheelState?.wheelLoadsN || {});
-    tireResult.wheelSlip = clone(restored.wheelState?.wheelSlip || {});
-    tireResult.contactPatches = clone(restored.wheelState?.contactPatches || {});
-    tireResult.powertrainState = clone(restored.powertrainState || {});
+    this.updateDerivedMotionState(substepState);
     const recovery = {
       sequence: ++this.penetrationRecoveryState.sequence,
       stepIndex,
@@ -1542,6 +1654,14 @@ export class VehicleDynamicsRunner {
       restoredSimulationStep: restored.simulationStep,
       usedLastNonPenetratingState: Boolean(source),
       usedRouteRecoveryPath: Boolean(routeRecoveryState),
+      sourceKey: source?.sourceKey || null,
+      sourceAgeSteps: source ? Math.max(0, stepIndex - Number(source.simulationStep || 0)) : null,
+      rewindDistanceM: source ? quantize(Math.hypot(
+        Number(source.position?.x || 0) - Number(failedPosition.x || 0),
+        Number(source.position?.z || 0) - Number(failedPosition.z || 0)
+      )) : 0,
+      routeDistance: Number.isFinite(Number(restored.routeDistance))
+        ? quantize(Number(restored.routeDistance)) : null,
       position: clone(substepState.position)
     };
     this.penetrationRecoveryState.history.push(recovery);
@@ -1617,7 +1737,7 @@ export class VehicleDynamicsRunner {
       const substepTimeSeconds = (
         this.stepIndex * this.config.tireSubstepsPerChassisStep + substepIndex + 1
       ) / this.config.tireHz;
-      const environment = this.environmentProvider({
+      let environment = this.environmentProvider({
         timeSeconds: substepTimeSeconds,
         stepIndex: nextStepIndex,
         substepIndex,
@@ -1643,7 +1763,7 @@ export class VehicleDynamicsRunner {
         config: this.config,
         environment
       });
-      const tireResult = this.tireContactSubsystem.step({
+      let tireResult = this.tireContactSubsystem.step({
         state: substepState,
         controls,
         config: this.config,
@@ -1664,7 +1784,6 @@ export class VehicleDynamicsRunner {
       tireResult.aeroState = aeroState;
       tireResult.targetVelocityWorld = environment.targetVelocityWorld || null;
       tireResult.freeRevEngineRpm = environment.freeRevEngineRpm;
-      tireResults.push(tireResult);
       const tireSubstepDt = 1 / this.config.tireHz;
       const tireAndSuspensionLinearImpulse = scaleVector3(addVector3(
         tireResult.worldForceN || {}, tireResult.suspensionForceWorldN || {}
@@ -1778,7 +1897,7 @@ export class VehicleDynamicsRunner {
         }));
       });
       const bodyPreImpactKineticEnergyJ = calculateKineticEnergyJ(substepState, this.config);
-      const bodyResult = this.bodyCollision.step({
+      let bodyResult = this.bodyCollision.step({
         workingState: substepState,
         previousWorkingState: substepStartState,
         config: this.config,
@@ -1838,6 +1957,7 @@ export class VehicleDynamicsRunner {
       }
       else if (penetrationSample.allBodySamplesBelowTerrain) recoveryReason = 'all-body-samples-submerged';
       else if (currentPenetrationM > this.config.emergencyBodyPenetrationM) recoveryReason = 'deep-body-penetration';
+      else if (currentPenetrationM > resolvedToleranceM) recoveryReason = 'unresolved-body-penetration';
       else if (this.penetrationRecoveryState.failedProgressSteps
         >= this.config.penetrationFailureStepLimit) recoveryReason = 'penetration-correction-stalled';
       else if (Number.isFinite(cgTerrainHeightM)
@@ -1845,23 +1965,96 @@ export class VehicleDynamicsRunner {
         recoveryReason = 'body-below-terrain-envelope';
       }
       if (recoveryReason) {
-        bodyResult.emergencyRecovery = this.recoverFromPenetration({
+        const recovery = this.recoverFromPenetration({
           reason: recoveryReason,
           substepState,
-          tireResult,
           environment,
           stepIndex: nextStepIndex
         });
+        // The failed manifold is transactionally discarded. Re-query the
+        // environment and rebuild wheel, suspension, tread, body and sidewall
+        // contacts from the restored pose; no impulse or correction produced
+        // by the submerged pose survives this boundary.
+        environment = this.environmentProvider({
+          timeSeconds: substepTimeSeconds,
+          stepIndex: nextStepIndex,
+          substepIndex,
+          state: substepState,
+          controls,
+          recoveryRecalculation: true
+        }) || {};
+        this.performanceDiagnostics.environmentQueries += 1;
+        tireResult = this.tireContactSubsystem.step({
+          state: substepState,
+          controls,
+          config: this.config,
+          environment,
+          dt: tireSubstepDt,
+          stepIndex: nextStepIndex,
+          substepIndex,
+          timeSeconds: substepTimeSeconds,
+          recoveryRecalculation: true
+        });
+        const cleanAeroState = this.aeroModel.calculateForces({
+          state: substepState,
+          config: this.config,
+          environment
+        });
+        tireResult.externalForceWorldN = addVector3(
+          environment.externalForceWorldN || {}, cleanAeroState.totalForceWorldN
+        );
+        tireResult.externalMomentWorldNm = addVector3(
+          environment.externalMomentWorldNm || {}, cleanAeroState.totalMomentWorldNm
+        );
+        tireResult.aeroState = cleanAeroState;
+        tireResult.targetVelocityWorld = environment.targetVelocityWorld || null;
+        tireResult.freeRevEngineRpm = environment.freeRevEngineRpm;
+        substepState.suspensionState = tireResult.suspensionState || {};
+        substepState.wheelAngularVelocityRadps = tireResult.wheelAngularVelocityRadps || {};
+        substepState.wheelLoadsN = tireResult.wheelLoadsN || {};
+        substepState.wheelSlip = tireResult.wheelSlip || {};
+        substepState.contactPatches = tireResult.contactPatches || {};
+        substepState.powertrainState = tireResult.powertrainState || substepState.powertrainState;
+        this.updateDerivedMotionState(substepState);
+        const cleanSupportedWheels = RACE_WHEEL_IDS.filter((wheelId) => (
+          Number(tireResult.wheelLoadsN?.[wheelId] || 0) > 1
+        ));
+        environment.suspensionBodyContactSupport = {
+          supportedWheelCount: cleanSupportedWheels.length,
+          availableBumpTravelM: cleanSupportedWheels.length
+            ? Math.max(...cleanSupportedWheels.map((wheelId) => {
+                const travelM = wheelId[0] === 'f'
+                  ? this.config.suspensionTravelFrontM : this.config.suspensionTravelRearM;
+                return Math.max(0, travelM - Number(
+                  tireResult.suspensionState?.[wheelId]?.compressionM || 0
+                ));
+              })) : 0
+        };
+        environment.wheelCollisionSupportFeatures = this.createWheelCollisionSupportFeatures(tireResult);
+        const cleanBodyPreImpactKineticEnergyJ = calculateKineticEnergyJ(substepState, this.config);
+        bodyResult = this.bodyCollision.step({
+          workingState: substepState,
+          previousWorkingState: null,
+          config: this.config,
+          environment,
+          dt: tireSubstepDt,
+          advanceState: false
+        });
+        bodyResult.emergencyRecovery = recovery;
+        bodyResult.discardedFailedManifold = true;
+        bodyResult.preImpactKineticEnergyJ = cleanBodyPreImpactKineticEnergyJ;
+        bodyResult.postImpactKineticEnergyJ = calculateKineticEnergyJ(substepState, this.config);
+        bodyResult.surfaceConsistency = { samples: [], discrepancies: [] };
+        const cleanPenetration = this.bodyCollision.samplePosePenetration(
+          substepState, environment, this.config.bodyCollisionToleranceM
+        );
+        bodyResult.maximumPenetrationAfterSolveM = cleanPenetration.maximumPenetrationM;
       } else if (hasBodyTerrainQuery
         && substepIndex === this.config.tireSubstepsPerChassisStep - 1
         && currentPenetrationM <= resolvedToleranceM
         && (!penetrationSample.allTerrainSamplesInvalid
           || environment.requireValidTerrainEnvelope !== true)) {
-        this.lastNonPenetratingState = this.createLastNonPenetratingState(
-          substepState,
-          tireResult,
-          nextStepIndex
-        );
+        this.recordNonPenetratingState(substepState, tireResult, nextStepIndex);
       }
       const bodyCorrection = bodyResult.positionalCorrectionWorldM || {};
       if (Math.hypot(
@@ -1897,6 +2090,7 @@ export class VehicleDynamicsRunner {
         environment,
         dt: tireSubstepDt
       });
+      tireResults.push(tireResult);
       bodyCollisionResults.push(bodyResult);
       substepState.wheelAngularVelocityRadps = tireResult.wheelAngularVelocityRadps || substepState.wheelAngularVelocityRadps;
       substepState.suspensionState = tireResult.suspensionState || substepState.suspensionState;
@@ -2117,6 +2311,8 @@ export class VehicleDynamicsRunner {
     legacySnapshot = null,
     onFixedStep = null
   } = {}) {
+    const wallStartMs = typeof globalThis.performance?.now === 'function'
+      ? globalThis.performance.now() : null;
     const delta = Math.max(0, Number(deltaSeconds) || 0);
     const nextObservedTime = quantize(
       inputTimeSeconds === null
@@ -2142,6 +2338,14 @@ export class VehicleDynamicsRunner {
       backlogSteps
     );
     if (backlogSteps > 0) this.diagnostics.catchUpLimitedAdvances += 1;
+    const advanceWallTimeMs = wallStartMs === null ? 0 : Math.max(
+      0, globalThis.performance.now() - wallStartMs
+    );
+    this.performanceDiagnostics.lastAdvanceWallTimeMs = advanceWallTimeMs;
+    this.performanceDiagnostics.peakAdvanceWallTimeMs = Math.max(
+      Number(this.performanceDiagnostics.peakAdvanceWallTimeMs || 0),
+      advanceWallTimeMs
+    );
     return {
       completedSteps,
       completedTireSubsteps: completedSteps * this.config.tireSubstepsPerChassisStep,
@@ -2149,6 +2353,7 @@ export class VehicleDynamicsRunner {
       simulationTimeSeconds: this.simulationTimeSeconds,
       observedTimeSeconds: this.observedTimeSeconds,
       backlogSteps,
+      advanceWallTimeMs,
       catchUpLimited: backlogSteps > 0,
       peakBacklogSteps: this.diagnostics.peakBacklogSteps,
       droppedTimeSeconds: this.diagnostics.droppedTimeSeconds
@@ -2191,6 +2396,7 @@ export class VehicleDynamicsRunner {
       pendingCollisionImpulses: clone(this.pendingCollisionImpulses),
       collisionTimeline: clone(this.collisionTimeline),
       lastNonPenetratingState: clone(this.lastNonPenetratingState),
+      nonPenetratingStateHistory: clone(this.nonPenetratingStateHistory),
       penetrationRecoveryState: clone(this.penetrationRecoveryState),
       surfaceConsistencyCursor: this.surfaceConsistencyCursor
     };
@@ -2224,6 +2430,8 @@ export class VehicleDynamicsRunner {
     this.pendingCollisionImpulses = clone(snapshot.pendingCollisionImpulses || []);
     this.collisionTimeline = clone(snapshot.collisionTimeline || []);
     this.lastNonPenetratingState = clone(snapshot.lastNonPenetratingState || null);
+    this.nonPenetratingStateHistory = clone(snapshot.nonPenetratingStateHistory
+      || (this.lastNonPenetratingState ? [this.lastNonPenetratingState] : []));
     this.penetrationRecoveryState = clone(snapshot.penetrationRecoveryState || {
       previousMaximumPenetrationM: 0,
       failedProgressSteps: 0,

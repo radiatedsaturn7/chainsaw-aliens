@@ -16,6 +16,8 @@ import {
 } from './simulation/VehicleDynamicsRunner.js';
 import { calculateWheelContactKinematics } from './simulation/ContactPatchTireModel.js';
 import { createDeterministicAtmosphere, getRaceWakeSourcesForFrame } from './simulation/AeroEnvironment.js';
+import { quaternionFromEuler } from './simulation/RigidBodyMath.js';
+import { createRaceWheelContactStateFromSamples } from './RaceVehicleSurfaceContact.js';
 
 export function calculateAuthoritativeRouteAdvance({ velocityWorld = {}, roadYaw = 0, seconds = 0 } = {}) {
   const roadForward = { x: Math.sin(Number(roadYaw || 0)), z: Math.cos(Number(roadYaw || 0)) };
@@ -35,7 +37,10 @@ function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
     return editor.vehicleDynamicsAuthority;
   }
   const config = createVehicleDynamicsConfigFromTuning(tuning, {
-    maxCatchUpSteps: 120,
+    // Preserve any remaining fixed-step backlog instead of trying to consume a
+    // long hitch in one render frame and creating a self-sustaining frame-time
+    // spiral.
+    maxCatchUpSteps: 8,
     // Two seconds is enough for live diagnostics. Replay owns its compact input
     // timeline separately, so normal play must not retain thousands of deep
     // per-wheel state snapshots for every active vehicle.
@@ -245,18 +250,6 @@ function advanceVehicleDynamicsAuthority(editor, {
     const positions = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
       wheelId, preliminaryPatches[wheelId].contactPointWorld
     ]));
-    const fixedContacts = editor.getRaceWheelContactState({
-      car: editor.getRaceSessionCar(session),
-      tuning,
-      session: {
-        ...session,
-        grounded: state.grounded,
-        airborne: !state.grounded,
-        vehicle3d: null,
-        trackState: countdownActive ? null : session.trackState
-      },
-      wheelSurfaceState: { positions }
-    });
     const trackWeatherForcing = systems.surface.createTrackStateWeatherForcing({
       weatherState,
       race: editor.selectedRace
@@ -272,7 +265,7 @@ function advanceVehicleDynamicsAuthority(editor, {
       [-0.15, 0], [0.15, 0], [0, -0.48], [0, 0.48]
     ].slice(0, authority.runner.config.contactFootprintSamples);
     const tireWidthM = Math.max(0.12, Number(setup.tireSize?.widthMm || 245) / 1000);
-    const sampleFootprints = (offsets) => {
+    const createFootprintRequests = (offsets) => {
       const requests = [];
       offsets.forEach(([longitudinal, lateral], offsetIndex) => {
         RACE_WHEEL_IDS.forEach((wheelId) => {
@@ -290,6 +283,47 @@ function advanceVehicleDynamicsAuthority(editor, {
           });
         });
       });
+      return requests;
+    };
+    const baseFootprintOffsets = footprintOffsets.slice(0, 4);
+    const baseFootprintRequests = createFootprintRequests(baseFootprintOffsets);
+    const centerRequests = RACE_WHEEL_IDS.map((wheelId) => ({
+      wheelId,
+      point: positions[wheelId]
+    }));
+    const baseGeometrySamples = surfaceModel.samplePhysicsGeometryBatch(
+      centerRequests.concat(baseFootprintRequests).map((request) => request.point),
+      {
+        ...physicsQueryContext,
+        fallbackSurfaceId: editor.selectedSegment?.surface || 'asphalt'
+      }
+    );
+    const centerSamples = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId, index) => [
+      wheelId, baseGeometrySamples[index] || {}
+    ]));
+    const activeTrackState = countdownActive ? null : session.trackState;
+    const fixedContacts = createRaceWheelContactStateFromSamples({
+      wheelIds: RACE_WHEEL_IDS,
+      positions,
+      surfaceSamples: centerSamples,
+      carDimensions: editor.getRaceCarDimensions(editor.getRaceSessionCar(session)),
+      tuning,
+      selectedSegment: editor.selectedSegment,
+      trackState: activeTrackState,
+      groundedByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+        wheelId, state.validTreadContactByWheel?.[wheelId] !== false
+      ])),
+      elevationScaleM: RACE_THREE_ELEVATION_M
+    });
+    const collectFootprintSamples = (offsets, requests, samples, sampleOffset = 0) => {
+      const result = offsets.map(() => ({ contacts: {} }));
+      requests.forEach((request, requestIndex) => {
+        result[request.offsetIndex].contacts[request.wheelId] = samples[sampleOffset + requestIndex];
+      });
+      return result;
+    };
+    const sampleFootprints = (offsets) => {
+      const requests = createFootprintRequests(offsets);
       const samples = surfaceModel.samplePhysicsGeometryBatch(
         requests.map((request) => request.point),
         {
@@ -297,13 +331,14 @@ function advanceVehicleDynamicsAuthority(editor, {
           fallbackSurfaceId: fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
         }
       );
-      const result = offsets.map(() => ({ contacts: {} }));
-      requests.forEach((request, requestIndex) => {
-        result[request.offsetIndex].contacts[request.wheelId] = samples[requestIndex];
-      });
-      return result;
+      return collectFootprintSamples(offsets, requests, samples);
     };
-    const footprintContacts = sampleFootprints(footprintOffsets.slice(0, 4));
+    const footprintContacts = collectFootprintSamples(
+      baseFootprintOffsets,
+      baseFootprintRequests,
+      baseGeometrySamples,
+      centerRequests.length
+    );
     const needsAdaptiveSamples = RACE_WHEEL_IDS.some((wheelId) => {
       const heights = footprintContacts.map((sample) => (
         Number(sample.contacts?.[wheelId]?.elevation) * RACE_THREE_ELEVATION_M
@@ -316,26 +351,43 @@ function advanceVehicleDynamicsAuthority(editor, {
     }
     return {
       requireValidTerrainEnvelope: true,
-      getRouteRecoveryState: () => {
+      getRouteRecoveryState: ({ failedState } = {}) => {
         const routeLength = Math.max(1, Number(session.routeLength || editor.getRaceRouteLength()));
+        const failedPosition = failedState?.position || state.position || {
+          x: session.worldX,
+          z: session.worldZ
+        };
+        const projection = editor.getRaceRouteProjectionForWorldPoint(failedPosition);
+        const projectedDistance = Number(projection?.distance);
+        const localDistance = Number.isFinite(projectedDistance) ? projectedDistance : 0;
         const distance = runtimeType === 'circuit'
-          ? ((Number(session.distance || 0) % routeLength) + routeLength) % routeLength
-          : clamp(Number(session.distance || 0), 0, routeLength);
+          ? ((localDistance % routeLength) + routeLength) % routeLength
+          : clamp(localDistance, 0, routeLength);
         const pose = editor.getRaceWorldPoseAtDistance(distance, { runtimeType });
-        const surfaceHeightM = Number.isFinite(Number(fixedContacts.averageHeightM))
-          ? Number(fixedContacts.averageHeightM)
+        const routeSurface = surfaceModel.samplePhysicsGeometry({
+          x: Number(pose.x || 0),
+          y: Number(failedPosition.y || 0),
+          z: Number(pose.z || 0)
+        }, {
+          ...physicsQueryContext,
+          fallbackSurfaceId: pose.segment?.surface || editor.selectedSegment?.surface || 'asphalt'
+        });
+        const surfaceHeightM = Number.isFinite(Number(routeSurface?.elevation))
+          ? Number(routeSurface.elevation) * RACE_THREE_ELEVATION_M
           : Number(pose.elevation || 0) * RACE_THREE_ELEVATION_M;
         return {
-          worldX: Number(pose.x || 0),
-          heightM: surfaceHeightM + authority.runner.config.cgHeightM,
-          worldZ: Number(pose.z || 0),
-          carYaw: Number(pose.yaw || 0),
-          pitchRad: -Number(fixedContacts.terrainPitchRad || 0),
-          rollRad: Number(fixedContacts.terrainRollRad || 0),
+          position: {
+            x: Number(pose.x || 0),
+            y: surfaceHeightM + authority.runner.config.cgHeightM,
+            z: Number(pose.z || 0)
+          },
+          orientation: quaternionFromEuler({ yaw: Number(pose.yaw || 0) }),
           velocity: { x: 0, y: 0, z: 0 },
+          angularVelocityWorld: { x: 0, y: 0, z: 0 },
           grounded: true,
           engineRpm: Number(session.engineRpm || authority.runner.config.idleRpm),
-          gear: Number(session.gear || 0)
+          gear: Number(session.gear || 0),
+          routeDistance: distance
         };
       },
       surfaceHeightByWheel: { ...(fixedContacts.heights || wheelContactState?.heights || {}) },
@@ -422,6 +474,7 @@ function advanceVehicleDynamicsAuthority(editor, {
         || Math.abs(maximumPreparedHeightM - maximumFixedHeightM) > 0.04) return null;
       return maximumPreparedHeightM;
     },
+    adaptiveBodySupport: needsAdaptiveSamples,
     targetVelocityWorld: countdownActive ? authority.formationTargetVelocityWorld : null,
       ambientTemperatureC: trackWeatherForcing.ambientTemperatureC,
       ...atmosphere,

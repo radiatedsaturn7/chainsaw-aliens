@@ -118,28 +118,22 @@ export function getRaceWheelSurfaceState({
   };
 }
 
-export function getRaceWheelContactState({
+export function createRaceWheelContactStateFromSamples({
   wheelIds = ['fl', 'fr', 'rl', 'rr'],
   positions = {},
+  surfaceSamples = {},
   carDimensions = {},
   tuning = {},
   selectedSegment = null,
   trackState = null,
   groundedByWheel = null,
-  surfaceModel = null,
-  elevationScaleM = 12,
-  runtimeType = 'destination'
+  elevationScaleM = 12
 } = {}) {
   const contacts = {};
   const heights = {};
   wheelIds.forEach((wheelId) => {
     const position = positions[wheelId];
-    const surfaceSample = surfaceModel?.sampleWorld?.(position, 0, {
-      runtimeType,
-      fallbackSurfaceId: selectedSegment?.surface || 'asphalt',
-      physicsContact: true,
-      applyWeatherSurface: !trackState
-    }) || {};
+    const surfaceSample = surfaceSamples[wheelId] || {};
     const projection = surfaceSample.projection;
     const segment = surfaceSample.segment || projection?.segment || selectedSegment;
     const surfaceElevation = Number(surfaceSample.elevation || 0);
@@ -185,4 +179,37 @@ export function getRaceWheelContactState({
     terrainPitchRad: clamp(Math.atan2(frontHeightM - rearHeightM, wheelbaseM), -0.42, 0.42),
     terrainRollRad: clamp(Math.atan2(rightHeightM - leftHeightM, trackWidthM), -0.42, 0.42)
   };
+}
+
+export function getRaceWheelContactState({
+  wheelIds = ['fl', 'fr', 'rl', 'rr'],
+  positions = {},
+  carDimensions = {},
+  tuning = {},
+  selectedSegment = null,
+  trackState = null,
+  groundedByWheel = null,
+  surfaceModel = null,
+  elevationScaleM = 12,
+  runtimeType = 'destination'
+} = {}) {
+  const surfaceSamples = Object.fromEntries(wheelIds.map((wheelId) => [wheelId,
+    surfaceModel?.sampleWorld?.(positions[wheelId], 0, {
+      runtimeType,
+      fallbackSurfaceId: selectedSegment?.surface || 'asphalt',
+      physicsContact: true,
+      applyWeatherSurface: !trackState
+    }) || {}
+  ]));
+  return createRaceWheelContactStateFromSamples({
+    wheelIds,
+    positions,
+    surfaceSamples,
+    carDimensions,
+    tuning,
+    selectedSegment,
+    trackState,
+    groundedByWheel,
+    elevationScaleM
+  });
 }

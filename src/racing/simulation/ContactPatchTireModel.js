@@ -68,27 +68,56 @@ function resolveTreadContactValidity({
   if (environment.bodyOccludedByWheel?.[wheelId] === true) {
     return { valid: false, reason: 'body-occluded', supportAlignment: q(supportAlignment), geometricProximity };
   }
-  // A terrain point inside the body collider cannot be reached by the tread.
-  // Transform it to body space using the inverse unit quaternion.
+  // Test the complete mount-to-contact path in body space. A suspension mount
+  // may begin inside its mounting body, but after the path exits that piece it
+  // must not enter any compound piece again before reaching the tread.
   const orientation = state.orientation || { x: 0, y: 0, z: 0, w: 1 };
-  const relative = add(vector(kinematics.contactPointWorld), scale(vector(state.position), -1));
-  const localContact = rotateVectorByQuaternion(relative, {
+  const inverseOrientation = {
     x: -Number(orientation.x || 0),
     y: -Number(orientation.y || 0),
     z: -Number(orientation.z || 0),
     w: Number(orientation.w ?? 1)
-  });
-  const insideBody = (config.bodyProfile?.pieces || []).some((piece) => {
-    const half = {
+  };
+  const toBody = (point) => rotateVectorByQuaternion(
+    add(vector(point), scale(vector(state.position), -1)), inverseOrientation
+  );
+  const localMount = toBody(kinematics.suspensionMountPositionWorld
+    || kinematics.hubPositionWorld || kinematics.wheelCenterWorld);
+  const localContact = toBody(kinematics.contactPointWorld);
+  const insidePiece = (point, piece) => {
+    const vertices = piece.type === 'convex' && piece.vertices?.length
+      ? piece.vertices : null;
+    const half = vertices ? null : {
       x: Number(piece.sizeM?.x || 0) * 0.5,
       y: Number(piece.sizeM?.y || 0) * 0.5,
       z: Number(piece.sizeM?.z || 0) * 0.5
     };
-    return Math.abs(localContact.x - Number(piece.centerM?.x || 0)) < half.x * 0.98
-      && Math.abs(localContact.y - Number(piece.centerM?.y || 0)) < half.y * 0.98
-      && Math.abs(localContact.z - Number(piece.centerM?.z || 0)) < half.z * 0.98;
+    const bounds = vertices ? ['x', 'y', 'z'].reduce((result, axis) => ({
+      ...result,
+      [axis]: {
+        min: Math.min(...vertices.map((vertex) => Number(vertex[axis] || 0))),
+        max: Math.max(...vertices.map((vertex) => Number(vertex[axis] || 0)))
+      }
+    }), {}) : null;
+    return ['x', 'y', 'z'].every((axis) => {
+      const relativeValue = Number(point[axis] || 0) - Number(piece.centerM?.[axis] || 0);
+      return vertices
+        ? relativeValue > bounds[axis].min * 0.98 && relativeValue < bounds[axis].max * 0.98
+        : Math.abs(relativeValue) < half[axis] * 0.98;
+    });
+  };
+  const pathOccluded = (config.bodyProfile?.pieces || []).some((piece) => {
+    let hasExitedStartingPiece = !insidePiece(localMount, piece);
+    for (let sample = 1; sample <= 12; sample += 1) {
+      const fraction = sample / 12;
+      const point = add(localMount, scale(add(localContact, scale(localMount, -1)), fraction));
+      const inside = insidePiece(point, piece);
+      if (!inside) hasExitedStartingPiece = true;
+      else if (hasExitedStartingPiece) return true;
+    }
+    return false;
   });
-  if (insideBody) {
+  if (pathOccluded) {
     return { valid: false, reason: 'body-occluded', supportAlignment: q(supportAlignment), geometricProximity };
   }
   return { valid: true, reason: null, supportAlignment: q(supportAlignment), geometricProximity };
@@ -647,7 +676,16 @@ export class ContactPatchTireModel {
         camberByWheel: { ...resolvedEnvironment.camberByWheel, [wheelId]: geometry.camberRad },
         toeByWheel: { ...resolvedEnvironment.toeByWheel, [wheelId]: geometry.toeRad }
       }, wheelId });
-      const contactValidity = initialContactValidity;
+      const contactValidity = resolveTreadContactValidity({
+        state,
+        config,
+        environment: resolvedEnvironment,
+        wheelId,
+        kinematics,
+        hasSurfaceHeight,
+        rawTargetCompressionM,
+        suspensionTravelM
+      });
       const geometricContact = contactValidity.valid && Number(targetCompressionM) > EPSILON;
       const compressionRatio = compressionM / suspensionTravelM;
       const bumpTravelRatio = clamp(

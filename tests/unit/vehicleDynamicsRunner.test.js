@@ -631,6 +631,9 @@ test('control timeline interpolates axes and holds discrete controls determinist
   ]);
   assert.deepEqual(timeline.sampleAt(0.5), {
     steering: 0,
+    driverSteeringIntent: 0,
+    steeringTarget: 0,
+    controllerFilterOutput: 0,
     centerSteeringAngleRad: null,
     steeringInputMode: 'normalized',
     throttle: 0.5,
