@@ -19102,14 +19102,32 @@ export default class RaceEditor {
     }[String(region || 'terrain')] || [0.72, 0.72, 0.72];
   }
 
-  buildRaceThreePhysicsSurfaceGeometry(sampler = null) {
+  buildRaceThreePhysicsSurfaceGeometry(sampler = null, {
+    center = null,
+    radiusM = Infinity
+  } = {}) {
     if ((!sampler?.triangles?.length && !sampler?.packed)
       || !THREE?.BufferGeometry
       || !THREE?.Float32BufferAttribute) return null;
     const positions = [];
     const colors = [];
+    let includedTriangleCount = 0;
+    const includeTriangle = (points) => {
+      if (!center || !Number.isFinite(radiusM)) return true;
+      const centerX = points.reduce((sum, point) => sum + Number(point.x || 0), 0) / 3;
+      const centerZ = points.reduce((sum, point) => sum + Number(point.z || 0), 0) / 3;
+      const dx = centerX - Number(center.x || 0);
+      const dz = centerZ - Number(center.z || 0);
+      return dx * dx + dz * dz <= radiusM * radiusM;
+    };
     if (sampler.packed) {
       for (let triangleIndex = 0; triangleIndex < sampler.triangleCount; triangleIndex += 1) {
+        const trianglePoints = [0, 1, 2].map((vertexIndex) => {
+          const offset = triangleIndex * 9 + vertexIndex * 3;
+          return { x: sampler.positions[offset], z: sampler.positions[offset + 2] };
+        });
+        if (!includeTriangle(trianglePoints)) continue;
+        includedTriangleCount += 1;
         const color = this.getRacePhysicsSurfaceTriangleColor(
           sampler.regionTable[sampler.regions[triangleIndex]] || 'terrain'
         );
@@ -19125,6 +19143,11 @@ export default class RaceEditor {
       }
     } else {
       sampler.triangles.forEach((triangle) => {
+        const trianglePoints = (triangle.vertices || []).map((point) => ({
+          x: Number(point.x || 0), z: Number(point.z ?? point.y ?? 0)
+        }));
+        if (trianglePoints.length < 3 || !includeTriangle(trianglePoints)) return;
+        includedTriangleCount += 1;
         const color = this.getRacePhysicsSurfaceTriangleColor(triangle.region);
         (triangle.vertices || []).forEach((point) => {
           positions.push(
@@ -19138,6 +19161,7 @@ export default class RaceEditor {
     }
     if (!positions.length) return null;
     const geometry = new THREE.BufferGeometry();
+    geometry.userData.physicsTriangleCount = includedTriangleCount;
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
     geometry.computeBoundingSphere?.();
@@ -19694,12 +19718,34 @@ export default class RaceEditor {
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
     const triangleCount = Number(sampler?.triangleCount || sampler?.triangles?.length || 0);
     if (!triangleCount || !cameraState?.camera || !renderer?.threeRenderer) return false;
-    const colliderSprites = this.getRacePhysicsDoodadColliderSprites();
+    const debugRadiusM = 360;
+    const debugCameraCenter = {
+      x: Number(cameraState.camera.x || 0),
+      z: Number(cameraState.camera.z || 0)
+    };
+    const debugTileM = 80;
+    const debugTileX = Math.floor(debugCameraCenter.x / debugTileM);
+    const debugTileZ = Math.floor(debugCameraCenter.z / debugTileM);
+    const debugCenter = {
+      x: (debugTileX + 0.5) * debugTileM,
+      z: (debugTileZ + 0.5) * debugTileM
+    };
+    const colliderSprites = this.getRacePhysicsDoodadColliderSprites().filter((sprite) => {
+      const quad = this.getRaceDoodadWorldQuad(sprite);
+      return (quad?.points || []).some((point) => Math.hypot(
+        Number(point.x || 0) - debugCameraCenter.x,
+        Number(point.z || 0) - debugCameraCenter.z
+      ) <= debugRadiusM + 40);
+    });
     const colliderKey = this.getRaceThreeDoodadSceneKey(colliderSprites);
-    const surfaceKey = `${String(worldBake.surfaceRevision || worldBake.key || triangleCount)}::${colliderKey}`;
+    const surfaceTileKey = `${debugTileX}:${debugTileZ}`;
+    const surfaceKey = `${String(worldBake.surfaceRevision || worldBake.key || triangleCount)}::${surfaceTileKey}::${colliderKey}`;
     if (renderer.physicsSurfaceKey !== surfaceKey) {
       this.clearRaceThreeScene(renderer);
-      const geometry = this.buildRaceThreePhysicsSurfaceGeometry(sampler);
+      const geometry = this.buildRaceThreePhysicsSurfaceGeometry(sampler, {
+        center: debugCenter,
+        radiusM: debugRadiusM
+      });
       if (!geometry) return false;
       const fill = new THREE.MeshBasicMaterial({
         vertexColors: true,
@@ -19727,6 +19773,7 @@ export default class RaceEditor {
       renderer.scene.add(surfaceMesh);
       renderer.scene.add(wireMesh);
       renderer.physicsDoodadColliderCount = this.addRaceThreePhysicsDoodadColliders(renderer, colliderSprites);
+      renderer.physicsSurfaceTriangleCount = Number(geometry.userData?.physicsTriangleCount || 0);
       renderer.physicsSurfaceKey = surfaceKey;
     }
     const camera = cameraState.camera;
@@ -19735,7 +19782,7 @@ export default class RaceEditor {
     renderer.camera.position.set(Number(camera.x || 0), cameraY, Number(camera.z || 0));
     renderer.camera.up.set(0, 1, 0);
     renderer.camera.near = Math.max(0.06, Number(camera.nearPlane || 1.6) * 0.04);
-    renderer.camera.far = Math.max(400, Number(camera.farPlane || 2200));
+    renderer.camera.far = Math.max(220, Math.min(280, Number(camera.farPlane || 2200)));
     renderer.camera.fov = this.getRaceThreeCameraFov(cameraState.cameraView);
     renderer.camera.aspect = Math.max(1, Number(bounds.w || 1)) / Math.max(1, Number(bounds.h || 1));
     renderer.camera.lookAt(
@@ -19768,7 +19815,8 @@ export default class RaceEditor {
     this.lastRaceRenderStats = {
       ...(this.lastRaceRenderStats || {}),
       physicsSurfaceView: true,
-      polygons: triangleCount,
+      polygons: Number(renderer.physicsSurfaceTriangleCount || 0),
+      totalPhysicsSurfacePolygons: triangleCount,
       drawCalls: 2 + Number(renderer.physicsDoodadColliderCount || 0),
       physicsDoodadColliders: colliderSprites.length,
       terrainCells: worldBake.terrainCells?.length || 0

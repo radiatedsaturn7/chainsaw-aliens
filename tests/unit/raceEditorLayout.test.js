@@ -27846,6 +27846,28 @@ test('Race Editor physics debug geometry uses the exact baked sampler vertices a
   assert.deepEqual(Array.from(color.array.slice(0, 3)).map((value) => Math.round(value * 100)), [47, 84, 42]);
 });
 
+test('Race Editor physics debug geometry streams only the camera-local terrain neighborhood', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const sampler = buildRaceBakedSurfaceSampler({
+    terrainCells: [0, 1000].map((x, index) => ({
+      key: `debug-terrain-${index}`,
+      points: [
+        { x, z: 0, elevation: 0, terrainRegion: 'terrain' },
+        { x: x + 4, z: 0, elevation: 0, terrainRegion: 'terrain' },
+        { x, z: 4, elevation: 0, terrainRegion: 'terrain' }
+      ]
+    })),
+    elevationScaleM: 12
+  });
+
+  const geometry = editor.buildRaceThreePhysicsSurfaceGeometry(sampler, {
+    center: { x: 0, z: 0 },
+    radiusM: 100
+  });
+  assert.equal(geometry.userData.physicsTriangleCount, 1);
+  assert.equal(geometry.getAttribute('position').count, 3);
+});
+
 test('Race Editor physics debug exposes active collidable doodad hitboxes', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   editor.selectedRace.scenery = [{

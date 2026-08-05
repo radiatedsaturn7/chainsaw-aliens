@@ -13,6 +13,7 @@ import {
   scaleVector3
 } from '../../src/racing/simulation/RigidBodyMath.js';
 import { VehicleDynamicsRunner } from '../../src/racing/simulation/VehicleDynamicsRunner.js';
+import { STUDIO_SPRINT_2_TERRAIN_FIXTURE } from '../fixtures/studioSprint2TerrainRegression.js';
 
 const DT = 1 / 360;
 const dotVector3 = (a, b) => a.x * b.x + a.y * b.y + a.z * b.z;
@@ -100,6 +101,176 @@ test('compound body pieces expose dense corners, edges, and faces instead of a s
   )).map(({ localPoint }) => Number(localPoint.z.toFixed(6))))].sort((a, b) => a - b);
   const maximumGapM = Math.max(...lowerBottomZ.slice(1).map((value, index) => value - lowerBottomZ[index]));
   assert.equal(maximumGapM <= 0.551, true, `maximum support gap ${maximumGapM}`);
+});
+
+test('custom convex pieces generate deterministic edge and face support features', () => {
+  const candidates = createChassisBodyContactCandidates({
+    ...CONFIG,
+    bodyProfile: {
+      preset: 'custom',
+      customColliders: [{ id: 'wedge', type: 'convex', centerM: {}, sizeM: { x: 2, y: 1, z: 3 },
+        vertices: [
+          { x: -1, y: -0.5, z: -1.5 }, { x: 1, y: -0.5, z: -1.5 },
+          { x: -1, y: -0.5, z: 1.5 }, { x: 1, y: -0.5, z: 1.5 },
+          { x: 0, y: 0.5, z: 0 }
+        ] }]
+    }
+  });
+  assert.equal(candidates.some(({ id }) => id.includes('-edge-')), true);
+  assert.equal(candidates.some(({ id }) => id.includes('-face-')), true);
+});
+
+test('compound support adaptively subdivides only a materially varying terrain neighborhood', () => {
+  const collision = new ChassisBodyCollision(CONFIG);
+  const pose = createWorking({ heightM: 0.55 });
+  const flat = collision.getAdaptiveSupportWorld(pose, {
+    adaptiveBodySupport: true,
+    sampleTerrainAtWorldPoint: () => ({ heightM: 0, normal: { x: 0, y: 1, z: 0 } })
+  });
+  const crest = collision.getAdaptiveSupportWorld(pose, {
+    adaptiveBodySupport: true,
+    sampleTerrainAtWorldPoint: (point) => ({
+      heightM: Math.abs(point.x) < 0.18 ? 0.16 : 0,
+      normal: Math.abs(point.x) < 0.18
+        ? { x: 0.3, y: 0.954, z: 0 } : { x: 0, y: 1, z: 0 }
+    })
+  });
+  assert.equal(flat.some(({ candidate }) => candidate.adaptive), false);
+  assert.equal(crest.some(({ candidate }) => candidate.adaptive), true);
+});
+
+test('emergency recovery atomically discards the failed manifold and rebuilds restored contacts', () => {
+  let tireCalls = 0;
+  let bodyCalls = 0;
+  const runner = new VehicleDynamicsRunner({
+    config: { ...CONFIG, chassisHz: 120, tireHz: 360, handlingPreset: 'simulation' },
+    initialState: { position: { x: 0, y: 0.8, z: 0 }, grounded: false },
+    tireContactSubsystem: { step: ({ state }) => {
+      tireCalls += 1;
+      return emptyTireResult({
+        suspensionState: { fl: { compressionM: state.position.y > 0 ? 0.123 : 0.299, inContact: true } },
+        contactPatches: { fl: { contactPointWorld: { x: 0, y: 0, z: 1 }, validTreadContact: true } }
+      });
+    } },
+    environmentProvider: () => ({ sampleTerrainAtWorldPoint: terrain(), airDensityKgM3: 0 })
+  });
+  runner.lastNonPenetratingState = runner.createLastNonPenetratingState(
+    runner.state, emptyTireResult(), 0
+  );
+  runner.bodyCollision.step = ({ workingState }) => {
+    bodyCalls += 1;
+    if (bodyCalls === 1) {
+      workingState.position.y = -5;
+      return { linearImpulseWorldNs: { y: 900 }, angularImpulseWorldNms: { x: 80 },
+        positionalCorrectionWorldM: { y: 0.06 }, contacts: [{ id: 'failed-underbody' }] };
+    }
+    return { linearImpulseWorldNs: {}, angularImpulseWorldNms: {},
+      positionalCorrectionWorldM: {}, contacts: [] };
+  };
+  runner.bodyCollision.samplePosePenetration = (pose) => ({
+    maximumPenetrationM: pose.position.y < 0 ? 1 : 0,
+    invalidTerrainSampleCount: 0, allBodySamplesBelowTerrain: pose.position.y < 0,
+    allTerrainSamplesInvalid: false
+  });
+  runner.advance(1 / 120);
+  assert.equal(tireCalls >= 4, true, 'three ordinary substeps plus restored-state recalculation');
+  assert.equal(runner.state.position.y >= 0, true);
+  assert.equal(runner.state.suspensionState.fl.compressionM, 0.123);
+  const collision = runner.telemetry.at(-1).forces.bodyCollision;
+  assert.deepEqual(collision.positionalCorrectionWorldM, { x: 0, y: 0, z: 0 });
+  assert.equal(collision.contacts.some(({ id }) => id === 'failed-underbody'), false);
+  assert.equal(collision.emergencyRecoveries.length, 1);
+});
+
+test('repeated recovery selects an older recorded path state and then escalates locally', () => {
+  const runner = new VehicleDynamicsRunner({
+    config: { ...CONFIG, penetrationFailureStepLimit: 4 },
+    initialState: { position: { x: 0, y: 0.8, z: 4 }, velocity: { z: 10 } },
+    tireContactSubsystem: { step: () => emptyTireResult() }
+  });
+  const newest = runner.createLastNonPenetratingState(
+    runner.state, emptyTireResult(), 7
+  );
+  const olderState = { ...runner.state, position: { ...runner.state.position, z: 3.4 } };
+  const older = runner.createLastNonPenetratingState(olderState, emptyTireResult(), 6);
+  runner.lastNonPenetratingState = newest;
+  runner.nonPenetratingStateHistory = [older, newest];
+  runner.penetrationRecoveryState.history.push({
+    restoredSimulationStep: 7,
+    sourceKey: newest.sourceKey
+  });
+  const state = { ...runner.state, position: { ...runner.state.position, z: 4.1 } };
+  const recovery = runner.recoverFromPenetration({ reason: 'repeat', substepState: state,
+    environment: { sampleTerrainAtWorldPoint: terrain(), getRouteRecoveryState: () => null }, stepIndex: 9 });
+  assert.equal(recovery.rewindDistanceM > 0, true);
+  assert.equal(state.position.z, older.position.z);
+
+  runner.penetrationRecoveryState.history.push({
+    restoredSimulationStep: 6,
+    sourceKey: older.sourceKey
+  });
+  const routed = { ...runner.state, position: { ...runner.state.position } };
+  const routeRecovery = runner.recoverFromPenetration({ reason: 'blocked-rewind', substepState: routed,
+    environment: {
+      sampleTerrainAtWorldPoint: () => ({ heightM: 10, normal: { x: 0, y: 1, z: 0 } }),
+      getRouteRecoveryState: () => ({ position: { x: 5, y: 12, z: 5 }, velocity: {} })
+    }, stepIndex: 10 });
+  assert.equal(routeRecovery.usedRouteRecoveryPath, true);
+});
+
+test('captured Studio Sprint 2 recovery fixture is exact across render partitions', () => {
+  assert.equal(STUDIO_SPRINT_2_TERRAIN_FIXTURE.sourceDocumentSha256,
+    '5eb6003c11fe5eac2d3fd2515b55a2d0b7f6304ccf371e8d90bb13c52b6e807b');
+  STUDIO_SPRINT_2_TERRAIN_FIXTURE.recoveryLocations.forEach((location) => {
+    assert.equal(Math.abs(location.bakedHeightM - location.analyticalHeightM) <= 0.02, true);
+  });
+  const results = [30, 60, 90, 120, 144].map((fps) => {
+    const states = STUDIO_SPRINT_2_TERRAIN_FIXTURE.recoveryLocations.map((location) => {
+      const sampleTerrain = () => ({ heightM: location.bakedHeightM,
+        normal: { x: 0, y: 1, z: 0 }, friction: 0.62 });
+      const runner = new VehicleDynamicsRunner({
+        config: { ...CONFIG, chassisHz: 120, tireHz: 360, handlingPreset: 'simulation',
+          bodyProfile: STUDIO_SPRINT_2_TERRAIN_FIXTURE.bodyProfile },
+        initialState: { position: { ...location.world }, velocity: { x: 0, y: 0, z: 4 },
+          grounded: false },
+        tireContactSubsystem: { step: () => emptyTireResult() },
+        environmentProvider: () => ({
+          sampleTerrainAtWorldPoint: sampleTerrain,
+          sampleRenderedTerrainAtWorldPoint: sampleTerrain,
+          requireValidTerrainEnvelope: true,
+          getRouteRecoveryState: () => ({ position: { x: location.world.x,
+            y: location.bakedHeightM + 1.2, z: location.world.z }, velocity: {} }),
+          airDensityKgM3: 0
+        })
+      });
+      STUDIO_SPRINT_2_TERRAIN_FIXTURE.inputTimeline.forEach((sample) => (
+        runner.addInputSample(sample.timeSeconds, sample)
+      ));
+      let elapsed = 0;
+      while (elapsed < 1 / 30 - 1e-12) {
+        const duration = Math.min(1 / fps, 1 / 30 - elapsed);
+        runner.advance(duration);
+        elapsed += duration;
+      }
+      const penetration = runner.bodyCollision.samplePosePenetration(runner.state, {
+        sampleTerrainAtWorldPoint: sampleTerrain
+      }, runner.config.bodyCollisionToleranceM);
+      assert.equal(Number(penetration.maximumPenetrationM || 0)
+        <= runner.config.bodyCollisionToleranceM + 0.002, true);
+      assert.equal(runner.penetrationRecoveryState.history.length > 0, true);
+      assert.equal(new Set(runner.penetrationRecoveryState.history.map((recovery) => (
+        `${recovery.restoredSimulationStep}:${recovery.position.x}:${recovery.position.y}:${recovery.position.z}`
+      ))).size, runner.penetrationRecoveryState.history.length);
+      assert.equal(Object.values(runner.state.contactPatches || {}).some((patch) => (
+        patch.validTreadContact && Number(patch.normalLoadN || 0) > 0
+          && runner.state.rollRad > Math.PI * 0.75
+      )), false);
+      return { snapshot: runner.createStateSnapshot(),
+        recoveryHistory: runner.penetrationRecoveryState.history };
+    });
+    return JSON.stringify(states);
+  });
+  results.slice(1).forEach((result) => assert.equal(result, results[0]));
 });
 
 for (const fixture of [
@@ -253,13 +424,17 @@ test('deeply submerged initial state recovers deterministically and records the 
   partitioned.slice(1).forEach((candidate) => assert.deepEqual(candidate, partitioned[0]));
 });
 
-test('stalled body correction restores the last non-penetrating state once', () => {
+test('an unresolved body correction uses one verified local route recovery', () => {
   const runner = new VehicleDynamicsRunner({
     config: { ...CONFIG, chassisHz: 120, tireHz: 360, handlingPreset: 'simulation',
       penetrationFailureStepLimit: 2 },
     initialState: { position: { x: 0, y: 0.8, z: 0 }, grounded: false },
     tireContactSubsystem: { step: () => emptyTireResult() },
-    environmentProvider: () => ({ sampleTerrainAtWorldPoint: terrain(), airDensityKgM3: 0 })
+    environmentProvider: () => ({
+      sampleTerrainAtWorldPoint: terrain(),
+      getRouteRecoveryState: () => ({ position: { x: 0, y: 1.2, z: 0 }, velocity: {} }),
+      airDensityKgM3: 0
+    })
   });
   runner.lastNonPenetratingState = runner.createLastNonPenetratingState(
     runner.state,
@@ -271,16 +446,16 @@ test('stalled body correction restores the last non-penetrating state once', () 
     contacts: [], bodyNormalImpulseNs: 0, bodyFrictionImpulseNs: 0,
     restitutionContributionNs: 0, penetrationBiasContributionNs: 0
   });
-  runner.bodyCollision.samplePosePenetration = () => ({
-    maximumPenetrationM: 0.04,
+  runner.bodyCollision.samplePosePenetration = (pose) => ({
+    maximumPenetrationM: pose.position.y < 1 ? 0.04 : 0,
     invalidTerrainSampleCount: 0,
     allBodySamplesBelowTerrain: false,
     allTerrainSamplesInvalid: false
   });
   runner.advance(1 / 120);
   assert.equal(runner.penetrationRecoveryState.history.length, 1);
-  assert.equal(runner.penetrationRecoveryState.history[0].reason, 'penetration-correction-stalled');
-  assert.equal(runner.penetrationRecoveryState.history[0].usedLastNonPenetratingState, true);
+  assert.equal(runner.penetrationRecoveryState.history[0].reason, 'unresolved-body-penetration');
+  assert.equal(runner.penetrationRecoveryState.history[0].usedRouteRecoveryPath, true);
 });
 
 test('surface consistency telemetry flags baked and physics height differences over two centimeters', () => {
@@ -318,7 +493,7 @@ test('an inverted car slides downhill on its roof without being teleported uprig
   assert.equal(Math.abs(result.working.orientation.w - initialOrientation.w) < 0.65, true);
 });
 
-test('authoritative runner samples body terrain at every tire substep and commits once', () => {
+test('authoritative runner rejects an initially submerged inverted pose before commit', () => {
   let terrainSamples = 0;
   const runner = new VehicleDynamicsRunner({
     config: { ...CONFIG, chassisHz: 120, tireHz: 360, handlingPreset: 'simulation' },
@@ -353,8 +528,13 @@ test('authoritative runner samples body terrain at every tire substep and commit
     'continuous sweep and post-solve validation may sample intermediate poses'
   );
   assert.equal(runner.telemetry[0].tireSubstepCount, 3);
-  assert.equal(runner.telemetry[0].forces.bodyContacts.length > 0, true);
-  assert.equal(runner.state.grounded, true);
+  const residual = runner.bodyCollision.samplePosePenetration(
+    runner.state,
+    { sampleTerrainAtWorldPoint: terrain() },
+    CONFIG.bodyCollisionToleranceM
+  );
+  assert.equal(Number(residual.maximumPenetrationM) <= CONFIG.bodyCollisionToleranceM + 1e-6, true);
+  assert.equal(runner.telemetry[0].forces.bodyCollision.emergencyRecoveries.length > 0, true);
 });
 
 test('penetration stabilization corrects position without manufacturing rebound velocity', () => {

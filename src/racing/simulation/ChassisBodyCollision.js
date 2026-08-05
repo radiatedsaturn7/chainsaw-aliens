@@ -54,6 +54,65 @@ export function createChassisBodyContactCandidates(config = {}) {
         id: `${piece.id}-vertex-${index}`, pieceId: piece.id, pieceType: piece.type,
         localPoint: addVector3(piece.centerM, vertex)
       })));
+      // Custom convex pieces need support between authored vertices as well as
+      // at them. Deterministic edge interpolation and a face/interior support
+      // point prevent narrow crests from passing through a sparse vertex cage.
+      for (let first = 0; first < piece.vertices.length; first += 1) {
+        for (let second = first + 1; second < piece.vertices.length; second += 1) {
+          const start = piece.vertices[first];
+          const end = piece.vertices[second];
+          const edgeLength = length(addVector3(end, scaleVector3(start, -1)));
+          const divisions = Math.max(2, Math.ceil(edgeLength / supportSpacingM));
+          for (let division = 1; division < divisions; division += 1) {
+            candidates.push(Object.freeze({
+              id: `${piece.id}-edge-${first}-${second}-${division}`,
+              pieceId: piece.id,
+              pieceType: piece.type,
+              localPoint: addVector3(piece.centerM, mixVector(start, end, division / divisions))
+            }));
+          }
+        }
+      }
+      const faceKeys = new Set();
+      for (let first = 0; first < piece.vertices.length - 2; first += 1) {
+        for (let second = first + 1; second < piece.vertices.length - 1; second += 1) {
+          for (let third = second + 1; third < piece.vertices.length; third += 1) {
+            const a = piece.vertices[first];
+            const b = piece.vertices[second];
+            const c = piece.vertices[third];
+            const rawNormal = crossVector3(
+              addVector3(b, scaleVector3(a, -1)),
+              addVector3(c, scaleVector3(a, -1))
+            );
+            if (length(rawNormal) <= EPSILON) continue;
+            let normal = normalize(rawNormal);
+            const sides = piece.vertices.map((vertex) => dot(
+              addVector3(vertex, scaleVector3(a, -1)), normal
+            ));
+            const hasPositive = sides.some((side) => side > 1e-6);
+            const hasNegative = sides.some((side) => side < -1e-6);
+            if (hasPositive && hasNegative) continue;
+            if (hasPositive) normal = scaleVector3(normal, -1);
+            const faceVertices = piece.vertices.filter((vertex) => Math.abs(dot(
+              addVector3(vertex, scaleVector3(a, -1)), normal
+            )) <= 1e-6);
+            const key = faceVertices.map((vertex) => piece.vertices.indexOf(vertex))
+              .sort((left, right) => left - right).join('-');
+            if (faceKeys.has(key)) continue;
+            faceKeys.add(key);
+            const centroid = scaleVector3(faceVertices.reduce((sum, vertex) => (
+              addVector3(sum, vertex)
+            ), { x: 0, y: 0, z: 0 }), 1 / faceVertices.length);
+            candidates.push(Object.freeze({
+              id: `${piece.id}-face-${key}`,
+              pieceId: piece.id,
+              pieceType: piece.type,
+              localNormals: Object.freeze([Object.freeze(normal)]),
+              localPoint: addVector3(piece.centerM, centroid)
+            }));
+          }
+        }
+      }
       return;
     }
     const half = scaleVector3(piece.sizeM, 0.5);
@@ -185,13 +244,98 @@ export class ChassisBodyCollision {
     return result;
   }
 
-  samplePosePenetration(pose, environment, toleranceM) {
-    const sampleTerrain = environment.sampleTerrainAtWorldPoint;
-    const sampleTerrainBatch = environment.sampleTerrainAtWorldPoints;
-    const points = this.getSupportCandidates(pose).map((candidate) => {
+  getAdaptiveSupportWorld(pose, environment = {}) {
+    const base = this.getSupportCandidates(pose).map((candidate) => {
       const arm = rotateVectorByQuaternion(candidate.localPoint, pose.orientation);
       return { candidate, arm, worldPoint: addVector3(pose.position, arm) };
     });
+    const sampleTerrain = environment.sampleTerrainAtWorldPoint;
+    // Prepared terrain bakes flag only tiles containing meaningful height or
+    // normal variation. Flat tiles retain the bounded cached support set.
+    if (typeof sampleTerrain !== 'function'
+      || (environment.adaptiveBodySupport !== true
+        && environment.terrainHasDiscontinuities !== true)) return base;
+    const heightErrorM = Math.max(0.005, Number(environment.bodySupportHeightErrorM || 0.025));
+    const normalError = Math.max(0.0001, Number(environment.bodySupportNormalError || 0.01));
+    const minimumSpacingM = Math.max(0.04, Number(environment.bodySupportMinimumSpacingM || 0.08));
+    const maximumDepth = Math.max(1, Math.min(3, Math.trunc(Number(
+      environment.bodySupportMaximumSubdivisionDepth ?? 2
+    ))));
+    const maximumAdditions = Math.max(4, Math.min(64, Math.trunc(Number(
+      environment.bodySupportMaximumAdaptiveSamples ?? 32
+    ))));
+    const additions = [];
+    const sampled = new Map();
+    const terrainAt = (point) => {
+      const key = `${point.x.toFixed(6)}:${point.z.toFixed(6)}`;
+      if (!sampled.has(key)) sampled.set(key, sampleTerrain(point) || {});
+      return sampled.get(key);
+    };
+    const subdivide = (left, right, depth) => {
+      if (additions.length >= maximumAdditions) return;
+      const distanceM = length(addVector3(right.worldPoint, scaleVector3(left.worldPoint, -1)));
+      if (distanceM <= minimumSpacingM || depth >= maximumDepth) return;
+      const leftTerrain = terrainAt(left.worldPoint);
+      const rightTerrain = terrainAt(right.worldPoint);
+      const leftHeight = Number(leftTerrain.heightM ?? leftTerrain.elevationM);
+      const rightHeight = Number(rightTerrain.heightM ?? rightTerrain.elevationM);
+      if (!Number.isFinite(leftHeight) || !Number.isFinite(rightHeight)) return;
+      const leftNormal = normalize(leftTerrain.normal || leftTerrain.normalWorld);
+      const rightNormal = normalize(rightTerrain.normal || rightTerrain.normalWorld);
+      if (Math.abs(leftHeight - rightHeight) <= heightErrorM
+        && 1 - dot(leftNormal, rightNormal) <= normalError) return;
+      const localPoint = mixVector(left.candidate.localPoint, right.candidate.localPoint, 0.5);
+      const arm = rotateVectorByQuaternion(localPoint, pose.orientation);
+      const middle = {
+        candidate: {
+          id: `${left.candidate.pieceId}-adaptive-${left.candidate.id}-${right.candidate.id}-${depth}`,
+          pieceId: left.candidate.pieceId,
+          pieceType: left.candidate.pieceType,
+          localPoint,
+          adaptive: true
+        },
+        arm,
+        worldPoint: addVector3(pose.position, arm)
+      };
+      additions.push(middle);
+      if (additions.length >= maximumAdditions) return;
+      subdivide(left, middle, depth + 1);
+      subdivide(middle, right, depth + 1);
+    };
+    const neighborLimitM = this.supportEnvelopeBucketM * 3;
+    const buckets = new Map();
+    base.forEach((entry, index) => {
+      const key = `${entry.candidate.pieceId}:${Math.floor(entry.worldPoint.x / neighborLimitM)}:${Math.floor(entry.worldPoint.z / neighborLimitM)}`;
+      if (!buckets.has(key)) buckets.set(key, []);
+      buckets.get(key).push(index);
+    });
+    const visitedPairs = new Set();
+    base.forEach((entry, first) => {
+      const bucketX = Math.floor(entry.worldPoint.x / neighborLimitM);
+      const bucketZ = Math.floor(entry.worldPoint.z / neighborLimitM);
+      for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
+        for (let offsetZ = -1; offsetZ <= 1; offsetZ += 1) {
+          const key = `${entry.candidate.pieceId}:${bucketX + offsetX}:${bucketZ + offsetZ}`;
+          (buckets.get(key) || []).forEach((second) => {
+            if (second <= first) return;
+            const pairKey = `${first}:${second}`;
+            if (visitedPairs.has(pairKey)) return;
+            visitedPairs.add(pairKey);
+            if (length(addVector3(base[second].worldPoint,
+              scaleVector3(entry.worldPoint, -1))) <= neighborLimitM) {
+              subdivide(entry, base[second], 0);
+            }
+          });
+        }
+      }
+    });
+    return base.concat(additions);
+  }
+
+  samplePosePenetration(pose, environment, toleranceM) {
+    const sampleTerrain = environment.sampleTerrainAtWorldPoint;
+    const sampleTerrainBatch = environment.sampleTerrainAtWorldPoints;
+    const points = this.getAdaptiveSupportWorld(pose, environment);
     const terrainBatch = typeof sampleTerrainBatch === 'function'
       ? sampleTerrainBatch(points.map(({ worldPoint }) => worldPoint))
       : null;
@@ -352,11 +496,8 @@ export class ChassisBodyCollision {
       workingState.position = { ...sweep.pose.position };
       workingState.orientation = { ...sweep.pose.orientation };
     }
-    const candidateWorld = this.getSupportCandidates(workingState).map((candidate) => {
-      const arm = rotateVectorByQuaternion(candidate.localPoint, workingState.orientation);
-      const worldPoint = addVector3(workingState.position, arm);
-      return { candidate, arm, worldPoint };
-    }).concat((environment.wheelCollisionSupportFeatures || []).map((feature) => ({
+    const candidateWorld = this.getAdaptiveSupportWorld(workingState, environment)
+      .concat((environment.wheelCollisionSupportFeatures || []).map((feature) => ({
       candidate: feature,
       arm: addVector3(feature.worldPoint, scaleVector3(workingState.position, -1)),
       worldPoint: feature.worldPoint
@@ -548,7 +689,48 @@ export class ChassisBodyCollision {
       finalCorrection = addVector3(finalCorrection, applied);
       remainingCorrectionBudgetM -= length(applied);
     }
-    const totalPositionalCorrection = addVector3(boundedCorrection, finalCorrection);
+    let totalPositionalCorrection = addVector3(boundedCorrection, finalCorrection);
+    let safePoseRollbackFraction = null;
+    let residualPenetration = this.samplePosePenetration(workingState, environment, toleranceM);
+    if (Number(residualPenetration.maximumPenetrationM) > toleranceM
+      && previousWorkingState) {
+      const previousPenetration = this.samplePosePenetration(
+        previousWorkingState, environment, toleranceM
+      );
+      if (!(Number(previousPenetration.maximumPenetrationM) > toleranceM)) {
+        const penetratedPose = this.createWorkingState(workingState);
+        let low = 0;
+        let high = 1;
+        for (let iteration = 0; iteration < 14; iteration += 1) {
+          const middle = (low + high) * 0.5;
+          const pose = {
+            position: mixVector(previousWorkingState.position, penetratedPose.position, middle),
+            orientation: mixQuaternion(
+              previousWorkingState.orientation, penetratedPose.orientation, middle
+            )
+          };
+          const sample = this.samplePosePenetration(pose, environment, toleranceM);
+          if (Number(sample.maximumPenetrationM) > toleranceM) high = middle;
+          else low = middle;
+        }
+        const safePose = {
+          position: mixVector(previousWorkingState.position, penetratedPose.position, low),
+          orientation: mixQuaternion(
+            previousWorkingState.orientation, penetratedPose.orientation, low
+          )
+        };
+        const rollbackCorrection = addVector3(
+          safePose.position, scaleVector3(workingState.position, -1)
+        );
+        workingState.position = safePose.position;
+        workingState.orientation = safePose.orientation;
+        totalPositionalCorrection = addVector3(totalPositionalCorrection, rollbackCorrection);
+        safePoseRollbackFraction = low;
+        residualPenetration = this.samplePosePenetration(
+          workingState, environment, toleranceM
+        );
+      }
+    }
     return {
       linearImpulseWorldNs: linearImpulse,
       angularImpulseWorldNms: angularImpulse,
@@ -562,6 +744,8 @@ export class ChassisBodyCollision {
       maximumPenetrationM: contacts.reduce((maximum, contact) => (
         Math.max(maximum, Number(contact.penetrationM || 0))
       ), 0),
+      residualPenetrationM: residualPenetration.maximumPenetrationM,
+      safePoseRollbackFraction,
       contacts
     };
   }
