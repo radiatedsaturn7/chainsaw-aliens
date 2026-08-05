@@ -121,14 +121,14 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
       }
       const ctx = canvas?.getContext?.('2d') || null;
       const session = editor.playtestSession;
+      editor.game.input.gamepadAxes = editor.game.input.gamepadAxes || {};
       for (let frame = 0; frame < frames; frame += 1) {
         const frameSteer = Number.isFinite(Number(switchSteerFrame)) && frame >= Number(switchSteerFrame)
           ? -steerAxis
           : steerAxis;
-        editor.raceInput.steeringTarget = frameSteer;
-        editor.raceInput.steeringWheel = frameSteer;
-        editor.raceInput.analogSteeringActive = Math.abs(frameSteer) > 0;
-        editor.raceInput.analogSteeringIntent = frameSteer;
+        editor.game.input.gamepadAxes.leftX = Math.sign(frameSteer)
+          * Math.pow(Math.abs(frameSteer), 1 / 1.18);
+        editor.applyRaceAnalogInput();
         editor.raceInput.activeThrottlePointerId = throttleAxis >= 0.95 ? 'browser-physics' : null;
         editor.raceInput.rawThrottleAxis = throttleAxis;
         editor.raceInput.throttleAxis = throttleAxis;

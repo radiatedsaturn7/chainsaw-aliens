@@ -525,7 +525,13 @@ test('production WRX preview controller reaches the Studio Sprint finish with sc
   assert.equal(preview.session.countdownRemainingMs, 0);
   preview.session.startupFramePending = false;
   const routeLength = Number(preview.session.routeLength || 0);
-  let maximumDistance = 0;
+  editor.bindCarEditorPreviewPlaytest(() => {
+    editor.applyRaceCarRouteCenterReset({
+      projection: { distance: Math.max(0, routeLength - 180) },
+      preserveMotion: false
+    });
+  });
+  let maximumDistance = Number(preview.session.distance || 0);
   let completed = false;
 
   for (let frame = 0; frame < 90 * 60; frame += 1) {

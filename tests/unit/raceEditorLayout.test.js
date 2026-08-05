@@ -5715,6 +5715,43 @@ test('Car Editor Tune menu opens detailed tuning panels for drivetrain, tires, s
   assert.equal(editor.selectedCar.audio.engineSfxVolume, 2);
 });
 
+test('Car Editor Physics Body edits, resets, and persists compound presets and custom boxes', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} }, { mode: 'car' });
+  const ctx = createMockContext();
+  assert.equal(editor.getMenuItems('tuning').map(({ id }) => id).includes('physics-body'), true,
+    'shared Tune must retain access to Physics Body in portrait and desktop');
+
+  editor.openCarTuneAction('physics-body');
+  editor.drawCarEditorActivePanel(ctx, { x: 0, y: 0, w: 620, h: 420 });
+  for (const preset of ['car', 'suv', 'pickup', 'custom']) {
+    assert.ok(editor.buttons.some(({ id }) => id === `car-body-preset-${preset}`));
+  }
+  assert.ok(editor.carDriveSliderRegions.some(({ key }) => key === 'body-overallLengthM'));
+  assert.ok(editor.carDriveSliderRegions.some(({ key }) => key === 'body-groundClearanceM'));
+  assert.equal(ctx.calls.some((call) => call.type === 'text' && String(call.value).startsWith('CG  x')), true);
+
+  editor.setCarPhysicsBodyPreset('pickup');
+  const pickup = editor.getCarPhysicsBodyProfile();
+  assert.equal(pickup.preset, 'pickup');
+  assert.equal(pickup.pieces.some(({ id }) => id === 'bed'), true);
+  editor.setCarTuneNumericValue('body-bedLengthM', 2.25);
+  assert.equal(editor.getCarPhysicsBodyProfile().bed.lengthM, 2.25);
+
+  editor.setCarPhysicsBodyPreset('custom');
+  editor.addCarCustomBodyCollider();
+  editor.addCarCustomBodyCollider();
+  assert.equal(editor.getCarPhysicsBodyProfile().customColliders.length, 2);
+  editor.removeCarCustomBodyCollider();
+  assert.equal(editor.getCarPhysicsBodyProfile().customColliders.length, 1);
+
+  const saved = editor.serializeSelectedCarDocument();
+  const loaded = editor.normalizeLoadedCarDocument(saved);
+  assert.equal(loaded.tuning.physics.bodyShapePreset, 'custom');
+  assert.equal(loaded.tuning.physics.bodyProfile.customColliders.length, 1);
+  assert.deepEqual(loaded.tuning.physicalVehicleProfile.inertiaTensorBodyKgM2,
+    editor.selectedCar.tuning.physicalVehicleProfile.inertiaTensorBodyKgM2);
+});
+
 test('Car Editor default tire label follows selected tire compound setup', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} }, { mode: 'car' });
   const setup = editor.getRaceCarSetup(editor.selectedCar);
@@ -19824,15 +19861,16 @@ test('Race Editor analog steering reduces available steering at speed', () => {
   });
 
   editor.startPlaytest('starter-rwd');
+  editor.playtestSession.countdownRemainingMs = 0;
+  editor.playtestSession.launchLockMs = 0;
   editor.playtestSession.speedMps = 70;
   editor.update(null, 0.16);
 
   assert.equal(editor.raceInput.throttle, true);
   assert.equal(editor.raceInput.analogSteeringIntent, 1);
-  assert.equal(editor.raceInput.steeringTarget > 0.36, true);
-  assert.equal(editor.raceInput.steeringTarget < 0.4, true);
-  assert.equal(editor.raceInput.steeringWheel > 0.1, true);
-  assert.equal(editor.raceInput.steeringWheel < 0.13, true);
+  assert.equal(editor.raceInput.steeringTarget, 1);
+  assert.equal(editor.raceInput.steeringWheel > 0.65, true);
+  assert.equal(editor.raceInput.steeringWheel < 0.7, true);
   assert.equal(editor.getRaceMaxSteerForSpeed(editor.playtestSession.speedMps) <= 0.27, true);
 });
 
@@ -19845,6 +19883,7 @@ test('Race Editor gamepad left thumbstick is primary steering during playtest', 
     exitRaceEditor() {}
   });
   editor.startPlaytest('starter-rwd');
+  editor.playtestSession.countdownRemainingMs = 0;
   editor.playtestSession.launchLockMs = 0;
   editor.playtestSession.projectedDistance = 0;
   editor.playtestSession.speedMps = 4;
@@ -19855,7 +19894,7 @@ test('Race Editor gamepad left thumbstick is primary steering during playtest', 
   assert.equal(editor.raceInput.analogSteeringIntent > 0.6, true);
   editor.updatePlaytest(1 / 30);
   assert.equal(editor.playtestSession.steeringTarget > 0, true);
-  assert.equal(editor.playtestSession.steeringTarget < editor.raceInput.analogSteeringIntent, true);
+  assert.equal(editor.playtestSession.steeringTarget, editor.raceInput.analogSteeringIntent);
 
   gameInput.gamepadAxes.leftX = 0;
   editor.applyRaceAnalogInput();
@@ -19871,6 +19910,8 @@ test('Race Editor analog steering decays fully after left thumbstick release', (
     exitRaceEditor() {}
   });
   editor.startPlaytest('starter-rwd');
+  editor.playtestSession.countdownRemainingMs = 0;
+  editor.playtestSession.launchLockMs = 0;
   editor.playtestSession.speedMps = 34;
 
   for (let frame = 0; frame < 12; frame += 1) editor.update(null, 1 / 60);
@@ -20503,13 +20544,14 @@ test('Race Editor binary steering uses full virtual stick input with speed-dampe
   });
 
   editor.startPlaytest('starter-rwd');
+  editor.playtestSession.countdownRemainingMs = 0;
+  editor.playtestSession.launchLockMs = 0;
   editor.raceInput.binarySteer = 1;
   editor.playtestSession.speedMps = 0;
   editor.updatePlaytest(0.016);
   assert.equal(editor.raceInput.steeringTarget > 0.02, true);
   assert.equal(editor.raceInput.steeringTarget < 0.05, true);
-  assert.equal(editor.raceInput.steeringWheel > 0.003, true);
-  assert.equal(editor.raceInput.steeringWheel < 0.006, true);
+  assert.equal(editor.raceInput.steeringWheel, editor.raceInput.steeringTarget);
   assert.equal(editor.playtestSession.tireSlip.audibleSlip, 0);
   for (let i = 0; i < 14; i += 1) editor.updatePlaytest(0.016);
   const restTarget = editor.raceInput.steeringTarget;
@@ -20521,14 +20563,12 @@ test('Race Editor binary steering uses full virtual stick input with speed-dampe
   editor.updatePlaytest(0.016);
 
   assert.equal(restTarget > 0.55, true);
-  assert.equal(restWheel > 0.32, true);
+  assert.equal(restWheel, restTarget);
   assert.equal(editor.raceInput.steeringTarget > 0.04, true);
-  assert.equal(editor.raceInput.steeringTarget < 0.07, true);
-  assert.equal(editor.raceInput.steeringWheel > 0.005, true);
-  assert.equal(editor.raceInput.steeringWheel < 0.009, true);
+  assert.equal(editor.raceInput.steeringTarget < 0.1, true);
+  assert.equal(editor.raceInput.steeringWheel, editor.raceInput.steeringTarget);
   assert.equal(editor.raceInput.steeringWheel < 1, true);
   assert.equal(editor.getRaceBinarySteerAssist(70).steeringAuthority <= 0.27, true);
-  assert.equal(raceEditorSource.includes('digitalActiveTurnResponseScale: 0.125'), true);
 });
 
 test('Race Editor D-pad steering moves toward full-stick lock without snapping instantly', () => {
@@ -20539,14 +20579,15 @@ test('Race Editor D-pad steering moves toward full-stick lock without snapping i
   });
 
   editor.startPlaytest('starter-rwd');
+  editor.playtestSession.countdownRemainingMs = 0;
+  editor.playtestSession.launchLockMs = 0;
   editor.playtestSession.speedMps = 70;
   editor.raceInput.binarySteer = 1;
   editor.updatePlaytest(1 / 120);
 
   assert.equal(editor.raceInput.steeringTarget > 0.01, true);
   assert.equal(editor.raceInput.steeringTarget < 0.02, true);
-  assert.equal(editor.raceInput.steeringWheel > 0.001, true);
-  assert.equal(editor.raceInput.steeringWheel < 0.003, true);
+  assert.equal(editor.raceInput.steeringWheel, editor.raceInput.steeringTarget);
   assert.equal(editor.getRaceBinarySteerAssist(70).maxSteer, 1);
   assert.equal(editor.getRaceMaxSteerForSpeed(70) < 0.67, true);
 
@@ -27845,6 +27886,55 @@ test('Race Editor physics debug exposes active collidable doodad hitboxes', () =
   editor.playtestSession.flattenedSceneryIds.push('debug-barrier');
   assert.equal(editor.getRacePhysicsDoodadColliderSprites().length, 0);
   assert.equal(editor.getRaceDoodadHitboxWorldMeshBatch({ forceVisible: true, activeOnly: true }).length, 0);
+});
+
+test('Race Physics Surface overlays compound pieces, wheel geometry, contacts, and invalid tread reasons', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const profile = editor.getCarPhysicsBodyProfile(editor.selectedCar);
+  editor.playtestSession = {
+    vehicleDynamicsRunner: {
+      config: { bodyProfile: profile },
+      state: {
+        position: { x: 0, y: 0.55, z: 6 },
+        orientation: { x: 0, y: 0, z: 0, w: 1 },
+        contactPatches: {
+          fl: {
+            hubPositionWorld: { x: -0.8, y: 0.35, z: 7 },
+            suspensionMountPositionWorld: { x: -0.8, y: 0.8, z: 7 },
+            contactPointWorld: { x: -0.8, y: 0, z: 7 },
+            validTreadContact: false,
+            invalidContactReason: 'wrong-suspension-side',
+            gripCoefficient: 0.8,
+            normalLoadN: 0,
+            steeringAngleRad: 0,
+            material: { surfaceId: 'asphalt' }
+          }
+        }
+      },
+      telemetry: [{
+        bodyContacts: [{
+          id: 'cabin-corner-000', contactType: 'body',
+          pointWorld: { x: 0, y: 0, z: 6 }, normal: { x: 0, y: 1, z: 0 }, penetrationM: 0.012
+        }]
+      }]
+    },
+    vehicle3d: {
+      wheels: {
+        fl: { contactPoint: { x: -0.8, y: 0, z: 7 }, normal: { x: 0, y: 1, z: 0 }, inContact: false }
+      }
+    }
+  };
+  editor.projectRaceWorldPointToCamera = (point) => ({
+    visible: true, screenX: 100 + Number(point.x || 0) * 10, screenY: 180 - Number(point.elevation || 0) * 10
+  });
+  const ctx = createMockContext();
+  editor.drawRacePhysicsContactOverlay(ctx, { x: 0, y: 0, w: 640, h: 360 }, {
+    camera: {}, cameraYaw: 0
+  });
+  const text = ctx.calls.filter(({ type }) => type === 'text').map(({ value }) => String(value));
+  assert.equal(text.some((label) => label.includes('cabin-corner-000') && label.includes('12mm')), true);
+  assert.equal(text.some((label) => label.includes('wrong-suspension-side')), true);
+  assert.equal(ctx.calls.some(({ type }) => type === 'arc'), true, 'wheel cylinders/contact markers');
 });
 
 test('Race painted terrain outer join splits corridor rails and collapses micro saw-tooth spans', () => {

@@ -87,13 +87,19 @@ function emptyTireResult(overrides = {}) {
   };
 }
 
-test('body candidates cover the underbody, rockers, bumpers, roof, nose, and tail', () => {
-  const ids = createChassisBodyContactCandidates(CONFIG).map(({ id }) => id);
-  for (const required of [
-    'underbody-fl', 'underbody-center', 'front-underside', 'rear-underside',
-    'left-rocker-front', 'right-rocker-front', 'front-bumper-left', 'rear-bumper-right',
-    'roof-fl', 'roof-center', 'nose', 'tail'
-  ]) assert.equal(ids.includes(required), true, required);
+test('compound body pieces expose dense corners, edges, and faces instead of a sparse cage', () => {
+  const candidates = createChassisBodyContactCandidates(CONFIG);
+  const ids = candidates.map(({ id }) => id);
+  for (const feature of ['corner', 'edge', 'face']) {
+    assert.equal(ids.some((id) => id.startsWith('lower-chassis-') && id.includes(feature)), true, feature);
+  }
+  assert.equal(new Set(candidates.map(({ pieceId }) => pieceId)).size, 4);
+  assert.equal(candidates.length >= 100, true);
+  const lowerBottomZ = [...new Set(candidates.filter(({ pieceId, localNormals }) => (
+    pieceId === 'lower-chassis' && localNormals?.some((normal) => normal.y === -1)
+  )).map(({ localPoint }) => Number(localPoint.z.toFixed(6))))].sort((a, b) => a - b);
+  const maximumGapM = Math.max(...lowerBottomZ.slice(1).map((value, index) => value - lowerBottomZ[index]));
+  assert.equal(maximumGapM <= 0.551, true, `maximum support gap ${maximumGapM}`);
 });
 
 for (const fixture of [
@@ -106,7 +112,7 @@ for (const fixture of [
   test(`${fixture.name} resolves without an upright-only angle gate`, () => {
     const result = simulate({ working: fixture.working, steps: 720 });
     assert.equal(result.maximumContacts > 0, true);
-    assert.equal(result.clearance >= -CONFIG.bodyCollisionToleranceM * 2.5, true, result.clearance);
+    assert.equal(result.clearance >= -CONFIG.bodyCollisionToleranceM - 0.002, true, result.clearance);
     assert.equal(Number.isFinite(result.working.orientation.w), true);
   });
 }
@@ -126,10 +132,10 @@ test('a rollover across a side slope remains free to rotate', () => {
   assert.equal(result.maximumContacts > 0, true);
   assert.equal(result.working.position.x > 1, true);
   assert.equal(Math.abs(result.working.orientation.z) > 0.05, true);
-  assert.equal(result.clearance >= -CONFIG.bodyCollisionToleranceM * 3, true);
+  assert.equal(result.clearance >= -CONFIG.bodyCollisionToleranceM - 0.002, true);
 });
 
-test('a crest beneath the vehicle center contacts the underbody center', () => {
+test('a crest beneath the vehicle center contacts the lower-chassis bottom face', () => {
   const collision = new ChassisBodyCollision(CONFIG);
   const working = createWorking({ heightM: 0.55 });
   const result = collision.step({
@@ -138,7 +144,9 @@ test('a crest beneath the vehicle center contacts the underbody center', () => {
     environment: { sampleTerrainAtWorldPoint: terrain({ crest: true }) },
     dt: DT
   });
-  assert.equal(result.contacts.some(({ id }) => id === 'underbody-center'), true);
+  assert.equal(result.contacts.some(({ id, pieceId }) => (
+    pieceId === 'lower-chassis' && id.includes('face')
+  )), true);
 });
 
 test('a high-speed tunneling attempt is stopped within bounded penetration', () => {
@@ -147,8 +155,153 @@ test('a high-speed tunneling attempt is stopped within bounded penetration', () 
     steps: 90
   });
   assert.equal(result.maximumContacts > 0, true);
-  assert.equal(result.clearance >= -CONFIG.bodyCollisionToleranceM * 3, true, result.clearance);
+  assert.equal(result.clearance >= -CONFIG.bodyCollisionToleranceM - 0.002, true, result.clearance);
   assert.equal(result.working.velocity.y > -2, true);
+});
+
+test('continuous body sweep catches a narrow crest between proposed-pose probes', () => {
+  const collision = new ChassisBodyCollision(CONFIG);
+  const previous = createWorking({ heightM: 0.55, velocity: { z: 360 } });
+  previous.position.z = -0.5;
+  const proposed = collision.createWorkingState(previous);
+  proposed.position.z = 0.5;
+  const result = collision.step({
+    workingState: proposed,
+    previousWorkingState: previous,
+    config: CONFIG,
+    environment: {
+      sampleTerrainAtWorldPoint: (point) => ({
+        heightM: Math.abs(point.z) < 0.025 ? 0.2 : -1,
+        normal: { x: 0, y: 1, z: 0 },
+        friction: 0.62
+      })
+    },
+    dt: DT,
+    advanceState: false
+  });
+  assert.equal(result.swept, true);
+  assert.ok(result.timeOfImpactFraction > 0 && result.timeOfImpactFraction < 1);
+  assert.ok(result.contacts.length > 0);
+});
+
+test('wheel sidewall support resolves collision separately from powered tread contact', () => {
+  const collision = new ChassisBodyCollision(CONFIG);
+  const working = createWorking({ heightM: 1.4, velocity: { x: 0, y: -3, z: 0 } });
+  const sidewallPoint = { x: 0.9, y: -0.03, z: 1.2 };
+  const result = collision.step({
+    workingState: working,
+    config: CONFIG,
+    environment: {
+      sampleTerrainAtWorldPoint: terrain(),
+      wheelCollisionSupportFeatures: [{
+        id: 'wheel-fl-sidewall-outer-0', wheelId: 'fl',
+        contactType: 'wheel-sidewall', worldPoint: sidewallPoint, friction: 0.6
+      }]
+    },
+    dt: DT
+  });
+  const contact = result.contacts.find(({ id }) => id === 'wheel-fl-sidewall-outer-0');
+  assert.equal(contact?.contactType, 'wheel-sidewall');
+  assert.equal(contact?.wheelId, 'fl');
+  assert.equal(Number(contact?.normalImpulseNs || 0) > 0, true);
+  assert.equal(Object.hasOwn(contact || {}, 'driveTorqueNm'), false,
+    'sidewall collision must not become a powered tread contact');
+});
+
+test('deeply submerged initial state recovers deterministically and records the reason', () => {
+  const makeRunner = () => new VehicleDynamicsRunner({
+    config: { ...CONFIG, chassisHz: 120, tireHz: 360, handlingPreset: 'simulation' },
+    initialState: { position: { x: 0, y: -2, z: 0 }, grounded: false },
+    tireContactSubsystem: { step: () => emptyTireResult() },
+    environmentProvider: () => ({
+      airDensityKgM3: 0,
+      sampleTerrainAtWorldPoint: terrain(),
+      getRouteRecoveryState: () => ({
+        position: { x: 4, y: CONFIG.cgHeightM + 0.02, z: 8 },
+        velocity: { x: 0, y: 0, z: 0 },
+        grounded: true
+      })
+    })
+  });
+  const first = makeRunner();
+  const second = makeRunner();
+  first.advance(1 / 120);
+  second.advance(1 / 120);
+  assert.deepEqual(first.createStateSnapshot(), second.createStateSnapshot());
+  assert.deepEqual(first.penetrationRecoveryState.history, second.penetrationRecoveryState.history);
+  assert.ok(first.state.position.y >= CONFIG.cgHeightM);
+  assert.ok(first.penetrationRecoveryState.history.length > 0);
+  assert.match(first.penetrationRecoveryState.history[0].reason, /submerged|penetration|terrain/);
+  assert.equal(first.penetrationRecoveryState.history[0].usedRouteRecoveryPath, true);
+  const snapshot = first.createSnapshot();
+  const restored = makeRunner().restoreSnapshot(snapshot);
+  assert.deepEqual(restored.createStateSnapshot(), first.createStateSnapshot());
+  assert.deepEqual(restored.penetrationRecoveryState, first.penetrationRecoveryState);
+  const partitioned = [30, 60, 90, 120, 144].map((fps) => {
+    const runner = makeRunner();
+    let elapsed = 0;
+    while (elapsed < 1 / 30 - 1e-12) {
+      const duration = Math.min(1 / fps, 1 / 30 - elapsed);
+      runner.advance(duration);
+      elapsed += duration;
+    }
+    return {
+      state: runner.createStateSnapshot(),
+      recovery: runner.penetrationRecoveryState.history
+    };
+  });
+  partitioned.slice(1).forEach((candidate) => assert.deepEqual(candidate, partitioned[0]));
+});
+
+test('stalled body correction restores the last non-penetrating state once', () => {
+  const runner = new VehicleDynamicsRunner({
+    config: { ...CONFIG, chassisHz: 120, tireHz: 360, handlingPreset: 'simulation',
+      penetrationFailureStepLimit: 2 },
+    initialState: { position: { x: 0, y: 0.8, z: 0 }, grounded: false },
+    tireContactSubsystem: { step: () => emptyTireResult() },
+    environmentProvider: () => ({ sampleTerrainAtWorldPoint: terrain(), airDensityKgM3: 0 })
+  });
+  runner.lastNonPenetratingState = runner.createLastNonPenetratingState(
+    runner.state,
+    emptyTireResult(),
+    0
+  );
+  runner.bodyCollision.step = () => ({
+    linearImpulseWorldNs: {}, angularImpulseWorldNms: {}, positionalCorrectionWorldM: {},
+    contacts: [], bodyNormalImpulseNs: 0, bodyFrictionImpulseNs: 0,
+    restitutionContributionNs: 0, penetrationBiasContributionNs: 0
+  });
+  runner.bodyCollision.samplePosePenetration = () => ({
+    maximumPenetrationM: 0.04,
+    invalidTerrainSampleCount: 0,
+    allBodySamplesBelowTerrain: false,
+    allTerrainSamplesInvalid: false
+  });
+  runner.advance(1 / 120);
+  assert.equal(runner.penetrationRecoveryState.history.length, 1);
+  assert.equal(runner.penetrationRecoveryState.history[0].reason, 'penetration-correction-stalled');
+  assert.equal(runner.penetrationRecoveryState.history[0].usedLastNonPenetratingState, true);
+});
+
+test('surface consistency telemetry flags baked and physics height differences over two centimeters', () => {
+  const runner = new VehicleDynamicsRunner({
+    config: { ...CONFIG, chassisHz: 120, tireHz: 360, handlingPreset: 'simulation' },
+    initialState: { position: { x: 0, y: 0.7, z: 0 }, grounded: false },
+    tireContactSubsystem: { step: () => emptyTireResult() },
+    environmentProvider: () => ({
+      airDensityKgM3: 0,
+      sampleTerrainAtWorldPoint: terrain(),
+      sampleRenderedTerrainAtWorldPoint: () => ({
+        heightM: 0.03,
+        normal: { x: 0, y: 1, z: 0 }
+      })
+    })
+  });
+  runner.advance(1 / 120);
+  const discrepancies = runner.telemetry[0].forces.bodyCollision.surfaceDiscrepancies;
+  assert.ok(discrepancies.length > 0);
+  assert.ok(discrepancies.every((sample) => sample.differenceM > 0.02));
+  assert.ok(discrepancies.some((sample) => sample.id === 'cg-proposed'));
 });
 
 test('an inverted car slides downhill on its roof without being teleported upright', () => {
@@ -161,7 +314,7 @@ test('an inverted car slides downhill on its roof without being teleported uprig
   const result = simulate({ working: start, sampleTerrain: terrain({ slopeX: 0.18 }), steps: 540 });
   assert.equal(result.maximumContacts > 0, true);
   assert.equal(result.working.position.x < -0.25, true);
-  assert.equal(result.clearance >= -CONFIG.bodyCollisionToleranceM * 3, true);
+  assert.equal(result.clearance >= -CONFIG.bodyCollisionToleranceM - 0.002, true);
   assert.equal(Math.abs(result.working.orientation.w - initialOrientation.w) < 0.65, true);
 });
 
@@ -194,7 +347,11 @@ test('authoritative runner samples body terrain at every tire substep and commit
   });
   runner.advance(1 / 120);
 
-  assert.equal(terrainSamples, createChassisBodyContactCandidates(CONFIG).length * 3);
+  assert.equal(
+    terrainSamples >= createChassisBodyContactCandidates(CONFIG).length * 3,
+    true,
+    'continuous sweep and post-solve validation may sample intermediate poses'
+  );
   assert.equal(runner.telemetry[0].tireSubstepCount, 3);
   assert.equal(runner.telemetry[0].forces.bodyContacts.length > 0, true);
   assert.equal(runner.state.grounded, true);
@@ -245,7 +402,11 @@ test('a single physical contact follows configured restitution independently of 
   const config = { ...CONFIG, bodyCollisionRestitution: restitution };
   const collision = new ChassisBodyCollision(config);
   const working = createWorking({ heightM: 0.42, velocity: { y: -5 } });
-  const centerOnlyTerrain = (point) => Math.hypot(point.x, point.z) < 0.01
+  const target = collision.getSupportCandidates(working).reduce((nearest, candidate) => (
+    !nearest || Math.hypot(candidate.localPoint.x, candidate.localPoint.z)
+      < Math.hypot(nearest.localPoint.x, nearest.localPoint.z) ? candidate : nearest
+  ), null).localPoint;
+  const centerOnlyTerrain = (point) => Math.hypot(point.x - target.x, point.z - target.z) < 0.01
     ? { heightM: 0, normal: { x: 0, y: 1, z: 0 }, friction: 0 }
     : { heightM: Number.NaN, normal: { x: 0, y: 1, z: 0 }, friction: 0 };
   const result = collision.step({

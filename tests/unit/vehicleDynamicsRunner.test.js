@@ -365,14 +365,12 @@ test('airborne controls cannot redirect translation, but wheel torque reacts bef
     .every((entry) => entry.appliedValue === 0));
 
   for (let index = 0; index < 420; index += 1) controlled.advance(1 / 120);
-  const staticCompressionM = (controlled.config.massKg * 9.81 / 4)
-    / controlled.config.suspensionSpringRateNpm;
-  const floorHeightM = controlled.config.cgHeightM
-    - (controlled.config.suspensionTravelM - staticCompressionM);
-  const minimumBodyHeightM = Math.min(...controlled.telemetry.map((entry) => entry.state.position.y));
+  const maximumBodyPenetrationM = Math.max(...controlled.telemetry.map((entry) => (
+    Number(entry.forces.bodyCollision?.maximumPenetrationAfterSolveM || 0)
+  )));
   assert.ok(
-    minimumBodyHeightM >= floorHeightM - controlled.config.bodyCollisionToleranceM - 0.002,
-    `landing penetration ${minimumBodyHeightM} below ${floorHeightM}`
+    maximumBodyPenetrationM <= controlled.config.bodyCollisionToleranceM + 0.002,
+    `landing hull penetration ${maximumBodyPenetrationM}`
   );
   assert.ok(controlled.telemetry.some((entry) => entry.forces.groundConstraintImpulseNs > 0));
   assert.equal(controlled.state.grounded, true);

@@ -12,6 +12,7 @@ import { advanceTireThermalState } from '../../src/racing/simulation/TireThermal
 import { createVehicleDynamicsConfig, createVehicleDynamicsState } from '../../src/racing/simulation/VehicleDynamicsRunner.js';
 import { RACE_TIRE_COMPOUNDS } from '../../src/racing/raceData.js';
 import { resolveCompoundSurfaceGrip } from '../../src/racing/simulation/SurfaceConditionGrip.js';
+import { quaternionFromEuler } from '../../src/racing/simulation/RigidBodyMath.js';
 
 const config = createVehicleDynamicsConfig({
   massKg: 1400,
@@ -52,6 +53,62 @@ test('signed slip distinguishes braking, locked wheels, and wheelspin', () => {
   assert.ok(make(20).slipRatio < 0);
   assert.ok(make(0).slipRatio < -0.99);
   assert.ok(make(80).slipRatio > 1);
+});
+
+test('inverted suspension rejects wrong-side tread support while wheels remain free to spin', () => {
+  const model = new ContactPatchTireModel();
+  const inverted = createVehicleDynamicsState({
+    position: { x: 0, y: config.bodyHeightM - config.cgHeightM, z: 0 },
+    orientation: quaternionFromEuler({ roll: Math.PI }),
+    grounded: false,
+    wheelAngularVelocityRadps: { fl: 0, fr: 0, rl: 40, rr: 40 }
+  });
+  const result = model.step({
+    state: inverted,
+    controls: { ...controls, throttle: 1 },
+    config,
+    dt: 1 / 360,
+    environment: {
+      surfaceHeightByWheel: { fl: 0, fr: 0, rl: 0, rr: 0 },
+      surfaceNormalByWheel: environment.surfaceNormalByWheel
+    }
+  });
+  assert.equal(result.wheelGrounded, false);
+  assert.equal(result.supportedWheelCount, 0);
+  assert.deepEqual(result.validTreadContactByWheel, {
+    fl: false, fr: false, rl: false, rr: false
+  });
+  assert.ok(Object.values(result.invalidContactReasonByWheel).every(Boolean));
+  assert.deepEqual(result.worldForceN, { x: 0, y: 0, z: 0 });
+  assert.deepEqual(result.suspensionForceWorldN, { x: 0, y: 0, z: 0 });
+  assert.ok(Math.abs(result.wheelAngularVelocityRadps.rl) > 1);
+  assert.ok(Math.abs(result.wheelAngularVelocityRadps.rr) > 1);
+});
+
+test('side-resting suspension cannot turn steering or wheelspin into chassis tire force', () => {
+  const model = new ContactPatchTireModel();
+  const sideResting = createVehicleDynamicsState({
+    position: { x: 0, y: config.bodyWidthM * 0.5, z: 0 },
+    orientation: quaternionFromEuler({ roll: Math.PI / 2 }),
+    grounded: false,
+    wheelAngularVelocityRadps: { fl: 30, fr: 30, rl: 50, rr: 50 }
+  });
+  const result = model.step({
+    state: sideResting,
+    controls: { ...controls, steering: 1, throttle: 1 },
+    config,
+    dt: 1 / 360,
+    environment: {
+      surfaceHeightByWheel: { fl: 0, fr: 0, rl: 0, rr: 0 },
+      surfaceNormalByWheel: environment.surfaceNormalByWheel
+    }
+  });
+  assert.equal(result.supportedWheelCount, 0);
+  assert.deepEqual(result.worldForceN, { x: 0, y: 0, z: 0 });
+  assert.deepEqual(result.suspensionForceWorldN, { x: 0, y: 0, z: 0 });
+  assert.ok(Object.values(result.contactPatches).every((patch) => (
+    patch.worldForceN.x === 0 && patch.worldForceN.y === 0 && patch.worldForceN.z === 0
+  )));
 });
 
 test('substep wheel inertia settles sub-limit launch torque without false slip oscillation', () => {

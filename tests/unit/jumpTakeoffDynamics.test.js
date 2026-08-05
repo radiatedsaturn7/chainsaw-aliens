@@ -129,6 +129,7 @@ test('Studio Sprint 2 takeoff telemetry is exact across render rates at 40, 60, 
     const replay = VehicleDynamicsRunner.replay(baseline.createReplayRecord(), {
       environmentProvider: ({ state }) => createRampEnvironment(baseline.config, state)
     });
+    assert.deepEqual(replay.config, baseline.config, `${mph} mph replay config`);
     assert.deepEqual(replay.takeoffHistory, baseline.takeoffHistory, `${mph} mph replay telemetry`);
     assert.deepEqual(replay.createStateSnapshot(), baseline.createStateSnapshot(),
       `${mph} mph replay state`);
