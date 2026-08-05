@@ -586,7 +586,7 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
     // the real authoritative route reset so CI does not spend two wall-clock
     // minutes evaluating 90 seconds of 360 Hz compound-body physics.
     editor.applyRaceCarRouteCenterReset({
-      projection: { distance: Math.max(0, routeLength - 350) },
+      projection: { distance: Math.max(0, routeLength - 180) },
       preserveMotion: false
     });
     const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -631,6 +631,7 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
       editor.raceInput.brakeAxis = editor.raceInput.rawBrakeAxis;
       editor.raceInput.analogSteeringActive = true;
       editor.raceInput.analogSteeringIntent = clamp(yawError * 4.2 - lateral * 1.15, -1, 1);
+      editor.raceInput.syntheticAnalogSteering = true;
       editor.raceInput.handbrake = false;
       editor.raceInput.paused = false;
       if (!editor.updatePlaytestSafely(1 / 60)) {

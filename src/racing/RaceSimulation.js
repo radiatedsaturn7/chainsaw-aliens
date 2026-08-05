@@ -647,7 +647,9 @@ export function updateRaceSimulation({
     0,
     Number(editor.playtestSession.sceneElapsedMs || 0) + seconds * 1000
   );
-  editor.applyRaceAnalogInput();
+  if (editor.raceInput.syntheticAnalogSteering !== true) {
+    editor.applyRaceAnalogInput();
+  }
   const physicalGamepad = editor.hasPhysicalRaceGamepad();
   if (!physicalGamepad) editor.raceInput.lookIntentX = 0;
   const lookTarget = physicalGamepad ? clamp(Number(editor.raceInput.lookIntentX || 0), -1, 1) * Math.PI : 0;

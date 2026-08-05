@@ -27086,6 +27086,7 @@ export default class RaceEditor {
       this.raceInput.brakeAxis = this.raceInput.rawBrakeAxis;
       this.raceInput.analogSteeringActive = true;
       this.raceInput.analogSteeringIntent = clamp(yawError * 4.2 - lateral * 1.15, -1, 1);
+      this.raceInput.syntheticAnalogSteering = true;
       this.raceInput.handbrake = false;
       this.raceInput.paused = false;
       this.raceInput.cameraView = 'third-person';
