@@ -585,10 +585,17 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
     // performance benchmark. Enter the final representative section through
     // the real authoritative route reset so CI does not spend two wall-clock
     // minutes evaluating 90 seconds of 360 Hz compound-body physics.
+    const representativeStartDistance = Math.max(0, routeLength - 180);
     editor.applyRaceCarRouteCenterReset({
-      projection: { distance: Math.max(0, routeLength - 180) },
+      projection: { distance: representativeStartDistance },
       preserveMotion: false
     });
+    const passedCheckpointCount = (editor.playtestSession.checkpointDistances || [])
+      .filter((distance) => Number(distance) <= representativeStartDistance).length;
+    editor.playtestSession.checkpointIndex = passedCheckpointCount;
+    editor.playtestSession.passedCheckpoints = Array.from(
+      { length: passedCheckpointCount }, (_entry, index) => index
+    );
     const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
     const normalizeAngle = (value) => Math.atan2(Math.sin(value), Math.cos(value));
     let maximumDistance = Number(editor.playtestSession?.distance || 0);
