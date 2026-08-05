@@ -315,6 +315,29 @@ function advanceVehicleDynamicsAuthority(editor, {
       footprintContacts.push(...sampleFootprints(footprintOffsets.slice(4)));
     }
     return {
+      requireValidTerrainEnvelope: true,
+      getRouteRecoveryState: () => {
+        const routeLength = Math.max(1, Number(session.routeLength || editor.getRaceRouteLength()));
+        const distance = runtimeType === 'circuit'
+          ? ((Number(session.distance || 0) % routeLength) + routeLength) % routeLength
+          : clamp(Number(session.distance || 0), 0, routeLength);
+        const pose = editor.getRaceWorldPoseAtDistance(distance, { runtimeType });
+        const surfaceHeightM = Number.isFinite(Number(fixedContacts.averageHeightM))
+          ? Number(fixedContacts.averageHeightM)
+          : Number(pose.elevation || 0) * RACE_THREE_ELEVATION_M;
+        return {
+          worldX: Number(pose.x || 0),
+          heightM: surfaceHeightM + authority.runner.config.cgHeightM,
+          worldZ: Number(pose.z || 0),
+          carYaw: Number(pose.yaw || 0),
+          pitchRad: -Number(fixedContacts.terrainPitchRad || 0),
+          rollRad: Number(fixedContacts.terrainRollRad || 0),
+          velocity: { x: 0, y: 0, z: 0 },
+          grounded: true,
+          engineRpm: Number(session.engineRpm || authority.runner.config.idleRpm),
+          gear: Number(session.gear || 0)
+        };
+      },
       surfaceHeightByWheel: { ...(fixedContacts.heights || wheelContactState?.heights || {}) },
       surfaceNormalByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
         wheelId, fixedContacts.contacts?.[wheelId]?.normal || wheelSurfaceState.normalByWheel?.[wheelId]
@@ -378,6 +401,14 @@ function advanceVehicleDynamicsAuthority(editor, {
       normal: sample.normal || { x: 0, y: 1, z: 0 },
       friction: Number(sample.friction || 1)
     })),
+    sampleRenderedTerrainAtWorldPoint: (worldPoint) => {
+      const sample = editor.getRaceBakedSurfaceAtWorldPoint(worldPoint) || {};
+      const elevation = Number(sample.elevation);
+      return {
+        heightM: Number.isFinite(elevation) ? elevation * RACE_THREE_ELEVATION_M : null,
+        normal: sample.normal || null
+      };
+    },
     sampleTerrainMaximumHeightInBounds: (bounds) => {
       const elevation = editor.getRaceBakedSurfaceMaximumElevationInBounds(bounds);
       if (!Number.isFinite(Number(elevation))) return null;
@@ -571,6 +602,11 @@ export function updateRaceSimulation({
   const seconds = Math.max(0, Number(dt) || 0);
   ensureVehicleDynamicsAuthority(editor, tuning, {
     steering: -editor.raceInput.steeringWheel,
+    driverSteeringIntent: -Number(editor.raceInput.analogSteeringActive
+      ? editor.raceInput.analogSteeringIntent
+      : editor.raceInput.binarySteer || 0),
+    steeringTarget: -Number(editor.raceInput.steeringTarget || 0),
+    controllerFilterOutput: -Number(editor.raceInput.steeringWheel || 0),
     centerSteeringAngleRad: -editor.getRaceResolvedCenterSteeringAngle(
       editor.raceInput.steeringWheel,
       steeringSafetySpeedMps,
@@ -583,7 +619,7 @@ export function updateRaceSimulation({
     ),
     steeringInputMode: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
       ? 'simulation-wheel'
-      : editor.raceInput.analogSteeringActive ? 'gamepad' : 'keyboard',
+      : editor.raceInput.controllerSteeringMode || (editor.raceInput.analogSteeringActive ? 'gamepad' : 'keyboard'),
     throttle: editor.raceInput.throttleAxis,
     brake: editor.raceInput.brakeAxis,
     clutch: editor.raceInput.clutchAxis,
@@ -777,14 +813,17 @@ export function updateRaceSimulation({
   const gearRatio = editor.getRaceGearRatio(tuning, gear);
   const binarySteer = launchSteeringLocked ? 0 : clamp(Number(editor.raceInput.binarySteer || 0), -1, 1);
   const binaryActive = Math.abs(binarySteer) > 0.01;
+  const simulationWheelInput = String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation';
   if (launchSteeringLocked) {
     editor.raceInput.digitalSteerHoldMs = 0;
   } else if (editor.raceInput.analogSteeringActive) {
     editor.raceInput.lastSteeringInputMode = 'analog';
     editor.raceInput.digitalSteerHoldMs = 0;
     const analogIntent = clamp(Number(editor.raceInput.analogSteeringIntent || 0), -1, 1);
-    const analogRate = editor.getRaceAnalogSteeringTargetRate(steeringSafetySpeedMps, analogIntent);
-    editor.raceInput.steeringTarget += (analogIntent - Number(editor.raceInput.steeringTarget || 0)) * Math.min(0.38, seconds * analogRate);
+    // Analog intent is the target. A single controller response stage below
+    // produces the rack command; filtering this target first caused the old
+    // disconnected, cascaded response on dirt.
+    editor.raceInput.steeringTarget = analogIntent;
   } else {
     if (binaryActive) {
       editor.raceInput.lastSteeringInputMode = 'binary';
@@ -809,25 +848,30 @@ export function updateRaceSimulation({
       const analogCentered = editor.raceInput.lastSteeringInputMode === 'analog';
       const centeredMs = Number(editor.raceInput.analogSteeringCenteredMs || 0) + (analogCentered ? seconds * 1000 : 0);
       if (analogCentered) editor.raceInput.analogSteeringCenteredMs = centeredMs;
-      const returnRate = analogCentered
-        ? editor.getRaceAnalogSteeringReleaseRate(steeringSafetySpeedMps) * (centeredMs > 90 ? 1.45 : 1)
-        : editor.getRaceSteeringReturnRate(steeringSafetySpeedMps);
-      editor.raceInput.steeringTarget += (0 - Number(editor.raceInput.steeringTarget || 0)) * Math.min(0.88, seconds * returnRate);
+      if (analogCentered) {
+        editor.raceInput.steeringTarget = 0;
+      } else {
+        const returnRate = editor.getRaceSteeringReturnRate(steeringSafetySpeedMps);
+        editor.raceInput.steeringTarget += (0 - Number(editor.raceInput.steeringTarget || 0)) * Math.min(0.88, seconds * returnRate);
+      }
     }
   }
   editor.raceInput.steeringTarget = clamp(editor.raceInput.steeringTarget, -1, 1);
   const activeTurnInput = !launchSteeringLocked && (binaryActive || editor.raceInput.analogSteeringActive);
-  const wheelResponse = editor.raceInput.analogSteeringActive
-    ? editor.getRaceAnalogSteerResponse(steeringSafetySpeedMps)
-    : (binaryActive ? editor.getRaceBinarySteerAssist(steeringSafetySpeedMps).response : editor.getRaceSteeringReturnRate(steeringSafetySpeedMps) + 1.2);
-  const activeTurnResponseScale = editor.raceInput.analogSteeringActive
-    ? RACE_CONTROLLER_STEERING.analogActiveTurnResponseScale
-    : RACE_CONTROLLER_STEERING.digitalActiveTurnResponseScale;
-  const wheelResponseStep = Math.min(
-    activeTurnInput ? 1.05 * activeTurnResponseScale : 0.94,
-    seconds * wheelResponse * (activeTurnInput ? activeTurnResponseScale : 1)
-  );
-  editor.raceInput.steeringWheel += (editor.raceInput.steeringTarget - editor.raceInput.steeringWheel) * wheelResponseStep;
+  const controllerInputMode = simulationWheelInput
+    ? 'simulation-wheel'
+    : editor.raceInput.analogSteeringActive || editor.raceInput.lastSteeringInputMode === 'analog'
+      ? 'gamepad'
+      : 'keyboard';
+  editor.raceInput.steeringWheel = controllerInputMode === 'keyboard'
+    ? editor.raceInput.steeringTarget
+    : systems.handlingAssist.stepControllerToRackInput({
+      mode: controllerInputMode,
+      intent: editor.raceInput.steeringTarget,
+      currentOutput: editor.raceInput.steeringWheel,
+      seconds
+    });
+  editor.raceInput.controllerSteeringMode = controllerInputMode;
   if (!editor.raceInput.analogSteeringActive
     && !binaryActive
     && Math.abs(editor.raceInput.steeringWheel) < 0.026
@@ -2065,10 +2109,15 @@ export function updateRaceSimulation({
     seconds,
     controls: {
       steering: -editor.raceInput.steeringWheel,
+      driverSteeringIntent: -Number(editor.raceInput.analogSteeringActive
+        ? editor.raceInput.analogSteeringIntent
+        : editor.raceInput.binarySteer || 0),
+      steeringTarget: -Number(editor.raceInput.steeringTarget || 0),
+      controllerFilterOutput: -Number(editor.raceInput.steeringWheel || 0),
       centerSteeringAngleRad: -steeringAngle,
       steeringInputMode: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
         ? 'simulation-wheel'
-        : editor.raceInput.analogSteeringActive ? 'gamepad' : 'keyboard',
+        : editor.raceInput.controllerSteeringMode || (editor.raceInput.analogSteeringActive ? 'gamepad' : 'keyboard'),
       throttle: countdownActive ? driverThrottle : throttle,
       brake,
       // Formation/countdown throttle is a free rev. Record clutch disengagement

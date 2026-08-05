@@ -301,6 +301,9 @@ test('cold level-to-race travel keeps loading, preparation, and first frames res
         }
         return normalYs;
       });
+    const authoritativeRunner = editor.playtestSession?.vehicleDynamicsRunner;
+    const authoritativeState = authoritativeRunner?.state || {};
+    const latestPhysics = authoritativeRunner?.telemetry?.at(-1)?.forces || {};
     const output = {
       started,
       ticks: window.__racePreparationTicks,
@@ -344,6 +347,15 @@ test('cold level-to-race travel keeps loading, preparation, and first frames res
       pauseResponsive,
       grounded: editor.playtestSession?.grounded === true,
       contactCount: wheelContacts.filter((wheel) => wheel?.inContact).length,
+      supportedWheelCount: Number(authoritativeState.supportedWheelCount || 0),
+      validTreadContactCount: Object.values(
+        authoritativeState.validTreadContactByWheel || {}
+      ).filter(Boolean).length,
+      bodyGrounded: authoritativeState.bodyGrounded === true,
+      maximumBodyPenetrationM: Number(
+        latestPhysics.bodyCollision?.maximumPenetrationAfterSolveM || 0
+      ),
+      bodyCollisionToleranceM: Number(authoritativeRunner?.config?.bodyCollisionToleranceM || 0.008),
       verticalVelocityMps: Math.abs(Number(editor.playtestSession?.verticalVelocityMps || 0))
     };
     editor.endPlaytest();
@@ -391,6 +403,11 @@ test('cold level-to-race travel keeps loading, preparation, and first frames res
   expect(result.pauseResponsive).toBeTruthy();
   expect(result.grounded).toBeTruthy();
   expect(result.contactCount).toBeGreaterThanOrEqual(2);
+  expect(result.supportedWheelCount).toBeGreaterThanOrEqual(2);
+  expect(result.validTreadContactCount).toBe(result.supportedWheelCount);
+  expect(result.maximumBodyPenetrationM).toBeLessThanOrEqual(
+    result.bodyCollisionToleranceM + 0.002
+  );
   expect(result.verticalVelocityMps).toBeLessThan(0.75);
 });
 

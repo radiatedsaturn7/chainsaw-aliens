@@ -115,6 +115,26 @@ export class HandlingAssist {
       + Math.pow(speedFactor, 0.72) * config.analogTargetReleaseHighSpeedBonus;
   }
 
+  stepControllerToRackInput({
+    mode = 'keyboard',
+    intent = 0,
+    currentOutput = 0,
+    seconds = 0
+  } = {}) {
+    const profileId = mode === 'simulation-wheel' ? 'simulationWheel' : mode;
+    const profile = this.steering.responseProfiles?.[profileId] || {};
+    const target = clamp(Number(intent) || 0, -1, 1);
+    const current = clamp(Number(currentOutput) || 0, -1, 1);
+    const dt = Math.max(0, Number(seconds) || 0);
+    if (profile.direct === true) return target;
+    const rate = Math.max(0.01, Number(
+      Math.abs(target) > Math.abs(current)
+        ? profile.responseRatePerSecond
+        : profile.releaseRatePerSecond
+    ) || 7);
+    return clamp(target + (current - target) * Math.exp(-rate * dt), -1, 1);
+  }
+
   getTireSteerAngleForSpeed(speedMps = 0) {
     const config = this.steering;
     const speedFactor = clamp(Math.max(0, Number(speedMps) || 0) / 64, 0, 1);

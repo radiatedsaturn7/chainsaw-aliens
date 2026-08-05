@@ -258,6 +258,26 @@ export const WRX2_PHYSICAL_PROFILE = Object.freeze({
 
 export const WRX_2022_SHARED_TUNING = {
   physicalVehicleProfile: WRX2_PHYSICAL_PROFILE,
+  physics: {
+    bodyShapePreset: 'car',
+    bodyProfile: {
+      preset: 'car',
+      overallLengthM: 4.67,
+      overallWidthM: 1.83,
+      overallHeightM: 1.465,
+      groundClearanceM: 0.135,
+      frontOverhangM: 0.91,
+      rearOverhangM: 1.09,
+      lowerBodyHeightM: 0.47,
+      hood: { lengthM: 1.22, widthM: 1.72, heightM: 0.4 },
+      cabin: { centerZM: -0.12, lengthM: 2.25, widthM: 1.67, heightM: 0.82 },
+      bed: { centerZM: -1.3, lengthM: 0, widthM: 0, heightM: 0 },
+      cgPositionM: WRX2_PHYSICAL_PROFILE.cgLocationBodyM,
+      collisionFriction: 0.62,
+      collisionRestitution: 0.08,
+      customColliders: []
+    }
+  },
   drivetrain: 'awd',
   powerHp: 271,
   torqueLbFt: 258,

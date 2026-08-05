@@ -419,7 +419,7 @@ export const EDITOR_MENU_SPECS = {
       view: section('view', 'View', ['zoom-fit']),
       art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-camera-settings']),
       drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sound-next', 'power-curve', 'weight-balance']),
-      tuning: section('tuning', 'Tuning', ['default-tires', 'tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel']),
+      tuning: section('tuning', 'Tuning', ['default-tires', 'tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel', 'physics-body']),
       aero: section('aero', 'Aero', ['aero-front', 'aero-rear']),
       suspension: section('suspension', 'Suspension', ['spring-front', 'spring-rear', 'damping-front', 'damping-rear', 'antiroll-front', 'antiroll-rear']),
       drive: section('drive', 'Drive', ['test-drive'])

@@ -9,6 +9,7 @@ import { normalizeSuspensionDefinition } from './SuspensionGeometry.js';
 import { AeroModel } from './AeroModel.js';
 import { sampleWakeAtVehicle } from './WakeModel.js';
 import { ChassisBodyCollision } from './ChassisBodyCollision.js';
+import { normalizeVehicleBodyProfile, resolveVehicleBodyProfile } from './VehicleBodyProfile.js';
 import {
   getRaceNormalizedSuspensionTravelM,
   getRaceVehicleSuspensionRates
@@ -21,6 +22,7 @@ import {
   multiplyBodyInertia,
   normalizeBodyInertiaTensor,
   quaternionFromEuler,
+  rotateVectorByQuaternion,
   rotateVectorToBody,
   scaleVector3
 } from './RigidBodyMath.js';
@@ -80,6 +82,9 @@ export function evaluatePhysicalSleepCondition({
 }
 const CONTINUOUS_CONTROL_FIELDS = Object.freeze([
   'steering',
+  'driverSteeringIntent',
+  'steeringTarget',
+  'controllerFilterOutput',
   'throttle',
   'brake',
   'clutch',
@@ -130,6 +135,9 @@ export function normalizeVehicleControlInput(input = {}) {
   const explicitCenterAngle = input.centerSteeringAngleRad;
   return {
     steering: quantize(clamp(Number(input.steering ?? input.steeringWheel ?? 0), -1, 1)),
+    driverSteeringIntent: quantize(clamp(Number(input.driverSteeringIntent ?? input.steering ?? 0), -1, 1)),
+    steeringTarget: quantize(clamp(Number(input.steeringTarget ?? input.steering ?? 0), -1, 1)),
+    controllerFilterOutput: quantize(clamp(Number(input.controllerFilterOutput ?? input.steering ?? 0), -1, 1)),
     centerSteeringAngleRad: typeof explicitCenterAngle === 'number' && Number.isFinite(explicitCenterAngle)
       ? quantize(explicitCenterAngle)
       : null,
@@ -300,6 +308,19 @@ export function createVehicleDynamicsState(initial = {}) {
     suspensionState: clone(initial.suspensionState || {}),
     tireState: clone(initial.tireState || {}),
     grounded: initial.grounded !== false,
+    wheelGrounded: initial.wheelGrounded ?? initial.grounded !== false,
+    bodyGrounded: initial.bodyGrounded === true,
+    wheelSidewallGrounded: initial.wheelSidewallGrounded === true,
+    supportedWheelCount: Math.max(0, Math.trunc(Number(initial.supportedWheelCount
+      ?? (initial.grounded === false ? 0 : 4)))),
+    validTreadContactByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+      wheelId,
+      Boolean(initial.validTreadContactByWheel?.[wheelId] ?? initial.grounded !== false)
+    ])),
+    invalidContactReasonByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+      wheelId,
+      initial.invalidContactReasonByWheel?.[wheelId] || null
+    ])),
     wheelLoadsN: wheelValue('wheelLoadsN'),
     wheelSlip: wheelValue('wheelSlip'),
     wheelAngularVelocityRadps: wheelValue('wheelAngularVelocityRadps'),
@@ -313,7 +334,8 @@ export function createVehicleDynamicsState(initial = {}) {
     ])),
     contactPatches: clone(initial.contactPatches || {}),
     steeringTelemetry: clone(initial.steeringTelemetry || {}),
-    aeroState: clone(initial.aeroState || {})
+    aeroState: clone(initial.aeroState || {}),
+    penetrationRecovery: clone(initial.penetrationRecovery || null)
   };
 }
 
@@ -349,6 +371,15 @@ export function createVehicleDynamicsConfig(config = {}) {
   const telemetryRetention = ['history', 'latest', 'transient', 'none'].includes(config.telemetryRetention)
     ? config.telemetryRetention
     : 'history';
+  const bodyProfile = normalizeVehicleBodyProfile(config.bodyProfile || {}, {
+    lengthM: config.bodyLengthM || config.lengthM,
+    widthM: config.bodyWidthM || config.widthM,
+    heightM: config.bodyHeightM || config.heightM,
+    groundClearanceM: config.bodyGroundClearanceM,
+    cgPositionM: config.cgLocationBodyM || { y: config.cgHeightM },
+    collisionFriction: config.bodyCollisionFriction,
+    collisionRestitution: config.bodyCollisionRestitution
+  });
   return Object.freeze({
     chassisHz,
     tireHz,
@@ -374,14 +405,29 @@ export function createVehicleDynamicsConfig(config = {}) {
       y: Number(config.cgLocationBodyM?.y ?? config.cgHeightM ?? 0.55),
       z: Number(config.cgLocationBodyM?.z || 0)
     }),
-    bodyLengthM: Math.max(1.6, Number(config.bodyLengthM || config.lengthM) || 4.5),
-    bodyWidthM: Math.max(0.9, Number(config.bodyWidthM || config.widthM) || 1.8),
-    bodyHeightM: Math.max(0.7, Number(config.bodyHeightM || config.heightM) || 1.45),
-    bodyGroundClearanceM: clamp(Number(config.bodyGroundClearanceM) || 0.12, 0.04, 0.5),
+    bodyProfile,
+    bodyShapePreset: bodyProfile.preset,
+    bodyLengthM: bodyProfile.overallLengthM,
+    bodyWidthM: bodyProfile.overallWidthM,
+    bodyHeightM: bodyProfile.overallHeightM,
+    bodyGroundClearanceM: bodyProfile.groundClearanceM,
     bodyCollisionToleranceM: clamp(Number(config.bodyCollisionToleranceM) || 0.008, 0.001, 0.04),
-    bodyCollisionRestitution: clamp(Number(config.bodyCollisionRestitution ?? 0.08), 0, 0.6),
-    bodyCollisionFriction: clamp(Number(config.bodyCollisionFriction ?? 0.62), 0, 1.5),
+    bodyCollisionRestitution: bodyProfile.collisionRestitution,
+    bodyCollisionFriction: bodyProfile.collisionFriction,
     bodyCollisionSolverIterations: clamp(Math.trunc(Number(config.bodyCollisionSolverIterations) || 4), 1, 12),
+    bodyCollisionSupportSpacingM: clamp(Number(config.bodyCollisionSupportSpacingM || 0.55), 0.2, 0.8),
+    minimumTreadSupportAlignment: clamp(Number(config.minimumTreadSupportAlignment ?? 0.2), 0.01, 0.95),
+    maximumTreadAxleNormalAlignment: clamp(Number(config.maximumTreadAxleNormalAlignment ?? 0.72), 0.2, 0.95),
+    treadReachToleranceM: clamp(Number(config.treadReachToleranceM ?? 0.025), 0.002, 0.08),
+    emergencyBodyPenetrationM: clamp(Number(config.emergencyBodyPenetrationM ?? 0.18), 0.05, 0.5),
+    penetrationFailureStepLimit: clamp(Math.trunc(Number(config.penetrationFailureStepLimit) || 4), 2, 12),
+    terrainDiscrepancyToleranceM: clamp(Number(config.terrainDiscrepancyToleranceM ?? 0.02), 0.005, 0.1),
+    surfaceConsistencySampleIntervalSteps: clamp(Math.trunc(Number(
+      config.surfaceConsistencySampleIntervalSteps
+    ) || 60), 1, 120),
+    surfaceConsistencySamplesPerCheck: clamp(Math.trunc(Number(
+      config.surfaceConsistencySamplesPerCheck
+    ) || 2), 1, 16),
     wheelInertiaKgM2: Math.max(0.05, Number(config.wheelInertiaKgM2) || 1.35),
     inertiaTensorBodyKgM2,
     yawInertiaKgM2: inertiaTensorBodyKgM2.yy,
@@ -514,6 +560,7 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
   const rearBump = getRaceVehicleSuspensionRates(tuning, massKg, 'rl', 1);
   const rearRebound = getRaceVehicleSuspensionRates(tuning, massKg, 'rl', -1);
   const drivetrain = String(tuning.drivetrain || tuning.driveType || 'RWD').toUpperCase();
+  const bodyProfile = resolveVehicleBodyProfile(tuning);
   return createVehicleDynamicsConfig({
     chassisHz,
     tireHz,
@@ -536,6 +583,7 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
     bodyWidthM: tuning.widthM,
     bodyHeightM: tuning.heightM,
     bodyGroundClearanceM: tuning.groundClearanceM,
+    bodyProfile,
     wheelInertiaKgM2: tuning.wheelInertiaKgM2,
     yawInertiaKgM2: tuning.yawInertiaKgM2,
     ackermannRatio: tuning.ackermannRatio,
@@ -758,6 +806,12 @@ function aggregateTireResults(results = [], tireSubstepDt = 0) {
     verticalAccelerationMps2: average('verticalAccelerationMps2'),
     groundHeightM: latest.groundHeightM ?? null,
     grounded: results.some((result) => result.grounded !== false),
+    wheelGrounded: latest.wheelGrounded === true,
+    supportedWheelCount: Math.max(0, Number(latest.supportedWheelCount || 0)),
+    validTreadContactByWheel: latest.validTreadContactByWheel || {},
+    invalidContactReasonByWheel: latest.invalidContactReasonByWheel || {},
+    geometricTerrainProximityByWheel: latest.geometricTerrainProximityByWheel || {},
+    contactTypeByWheel: latest.contactTypeByWheel || {},
     wheelLoadsN: latest.wheelLoadsN || {},
     wheelSlip: latest.wheelSlip || {},
     suspensionTravel: latest.suspensionTravel || {},
@@ -880,6 +934,14 @@ export class VehicleDynamicsRunner {
       recentUnderbodyContacts: [],
       activeTakeoff: null
     };
+    this.lastNonPenetratingState = null;
+    this.penetrationRecoveryState = {
+      previousMaximumPenetrationM: 0,
+      failedProgressSteps: 0,
+      sequence: 0,
+      history: []
+    };
+    this.surfaceConsistencyCursor = 0;
     this.diagnostics = {
       completedSteps: 0,
       completedTireSubsteps: 0,
@@ -1131,7 +1193,13 @@ export class VehicleDynamicsRunner {
       config.maxRpm
     ));
     state.gear = Math.trunc(Number(authoritativePowertrain.gear ?? state.gear ?? 0));
-    state.grounded = tires.grounded || Boolean(tires.bodyCollision?.contacts?.length);
+    state.wheelGrounded = tires.wheelGrounded === true;
+    state.bodyGrounded = tires.bodyCollision?.bodyGrounded === true;
+    state.wheelSidewallGrounded = tires.bodyCollision?.wheelSidewallGrounded === true;
+    state.grounded = state.wheelGrounded || state.bodyGrounded || state.wheelSidewallGrounded;
+    state.supportedWheelCount = Math.max(0, Number(tires.supportedWheelCount || 0));
+    state.validTreadContactByWheel = { ...(tires.validTreadContactByWheel || {}) };
+    state.invalidContactReasonByWheel = { ...(tires.invalidContactReasonByWheel || {}) };
     state.wheelLoadsN = tires.wheelLoadsN;
     state.wheelSlip = tires.wheelSlip;
     state.suspensionTravel = tires.suspensionTravel;
@@ -1190,6 +1258,7 @@ export class VehicleDynamicsRunner {
       aerodynamicAndExternalImpulseWorldNs: clone(tires.externalImpulseWorldNs),
       bodyCollisionImpulseWorldNs: clone(tires.bodyCollision?.linearImpulseWorldNs),
       bodyCollisionAngularImpulseWorldNms: clone(tires.bodyCollision?.angularImpulseWorldNms),
+      bodyCollision: tires.bodyCollision || {},
       wheelAngularMomentumReactionImpulseWorldNms: clone(
         tires.wheelAngularMomentumReactionImpulseWorldNms || {}
       ),
@@ -1252,6 +1321,9 @@ export class VehicleDynamicsRunner {
     }
     const previousAnyContact = tracking.frontGrounded || tracking.rearGrounded;
     const anyContact = frontGrounded || rearGrounded;
+    const bodyContact = (bodyResult.contacts || []).some(
+      (contact) => contact.contactType !== 'wheel-sidewall'
+    );
     const rampId = environment.authoredRampId ?? environment.rampId ?? null;
     const ensureTakeoff = () => {
       if (!tracking.activeTakeoff) {
@@ -1306,7 +1378,7 @@ export class VehicleDynamicsRunner {
         pitchAngularVelocityRadps: quantize(state.angularVelocityWorld?.x || 0)
       });
     }
-    if (!previousAnyContact && anyContact && tracking.activeTakeoff) {
+    if (!previousAnyContact && (anyContact || bodyContact) && tracking.activeTakeoff) {
       const takeoff = tracking.activeTakeoff;
       takeoff.landingTimeSeconds = quantize(timeSeconds, 12);
       takeoff.landingOrientation = {
@@ -1322,6 +1394,163 @@ export class VehicleDynamicsRunner {
     }
     tracking.frontGrounded = frontGrounded;
     tracking.rearGrounded = rearGrounded;
+  }
+
+  createLastNonPenetratingState(state, tireResult, simulationStep) {
+    return {
+      position: clone(state.position),
+      orientation: clone(state.orientation),
+      velocity: clone(state.velocity),
+      angularVelocityWorld: clone(state.angularVelocityWorld),
+      suspensionState: clone(tireResult.suspensionState || state.suspensionState || {}),
+      wheelState: {
+        wheelAngularVelocityRadps: clone(tireResult.wheelAngularVelocityRadps
+          || state.wheelAngularVelocityRadps || {}),
+        wheelLoadsN: clone(tireResult.wheelLoadsN || state.wheelLoadsN || {}),
+        wheelSlip: clone(tireResult.wheelSlip || state.wheelSlip || {}),
+        contactPatches: clone(tireResult.contactPatches || state.contactPatches || {})
+      },
+      powertrainState: clone(tireResult.powertrainState || state.powertrainState || {}),
+      simulationStep
+    };
+  }
+
+  sampleSurfaceConsistency({ previousState, proposedState, tireResult, bodyResult, environment }) {
+    const physicsSample = environment.sampleTerrainAtWorldPoint;
+    const renderedSample = environment.sampleRenderedTerrainAtWorldPoint
+      || environment.sampleBakedTerrainAtWorldPoint;
+    if (typeof physicsSample !== 'function' || typeof renderedSample !== 'function') {
+      return { samples: [], discrepancies: [] };
+    }
+    const points = [
+      { id: 'cg-previous', point: previousState.position },
+      { id: 'cg-proposed', point: proposedState.position }
+    ];
+    const bodyContactIds = new Set((bodyResult?.contacts || []).map((contact) => contact.id));
+    this.bodyCollision.candidates.filter((candidate) => bodyContactIds.has(candidate.id)).forEach((candidate) => {
+      const previousArm = rotateVectorByQuaternion(candidate.localPoint, previousState.orientation);
+      const proposedArm = rotateVectorByQuaternion(candidate.localPoint, proposedState.orientation);
+      points.push({ id: `body-${candidate.id}-previous`, point: addVector3(previousState.position, previousArm) });
+      points.push({ id: `body-${candidate.id}-proposed`, point: addVector3(proposedState.position, proposedArm) });
+    });
+    RACE_WHEEL_IDS.forEach((wheelId) => {
+      const previousPoint = previousState.contactPatches?.[wheelId]?.contactPointWorld;
+      const proposedPoint = tireResult.contactPatches?.[wheelId]?.contactPointWorld;
+      if (previousPoint) points.push({ id: `wheel-${wheelId}-previous`, point: previousPoint });
+      if (proposedPoint) points.push({ id: `wheel-${wheelId}-proposed`, point: proposedPoint });
+    });
+    const sampleCount = Math.min(this.config.surfaceConsistencySamplesPerCheck, points.length);
+    const selectedPoints = Array.from({ length: sampleCount }, (_unused, offset) => (
+      points[(this.surfaceConsistencyCursor + offset) % points.length]
+    ));
+    this.surfaceConsistencyCursor = points.length
+      ? (this.surfaceConsistencyCursor + sampleCount) % points.length
+      : 0;
+    const samples = selectedPoints.map(({ id, point }) => {
+      const physics = physicsSample(point) || {};
+      const rendered = typeof renderedSample === 'function' ? renderedSample(point) || {} : {};
+      const physicsHeightM = Number(physics.heightM ?? physics.elevationM);
+      const renderedHeightM = Number(rendered.heightM ?? rendered.elevationM);
+      const differenceM = Number.isFinite(physicsHeightM) && Number.isFinite(renderedHeightM)
+        ? Math.abs(physicsHeightM - renderedHeightM)
+        : null;
+      return {
+        id,
+        point: clone(point),
+        physicsHeightM: Number.isFinite(physicsHeightM) ? quantize(physicsHeightM) : null,
+        renderedHeightM: Number.isFinite(renderedHeightM) ? quantize(renderedHeightM) : null,
+        differenceM: differenceM === null ? null : quantize(differenceM),
+        discrepancy: differenceM !== null
+          && differenceM > this.config.terrainDiscrepancyToleranceM
+      };
+    });
+    return { samples, discrepancies: samples.filter((sample) => sample.discrepancy) };
+  }
+
+  recoverFromPenetration({ reason, substepState, tireResult, environment, stepIndex }) {
+    const previousSourceStep = this.lastNonPenetratingState?.simulationStep;
+    const recoveryHistoryNewestFirst = [...this.penetrationRecoveryState.history].reverse();
+    const firstDifferentSource = recoveryHistoryNewestFirst.findIndex(
+      (recovery) => recovery.restoredSimulationStep !== previousSourceStep
+    );
+    const repeatedSourceRecoveries = firstDifferentSource < 0
+      ? recoveryHistoryNewestFirst.length
+      : firstDifferentSource;
+    const source = repeatedSourceRecoveries >= this.config.penetrationFailureStepLimit
+      ? null
+      : this.lastNonPenetratingState;
+    const routeRecoveryState = !source && typeof environment.getRouteRecoveryState === 'function'
+      ? environment.getRouteRecoveryState() || null
+      : null;
+    const fallback = createVehicleDynamicsState({
+      ...this.initialState,
+      ...(routeRecoveryState || {})
+    });
+    const restored = source || {
+      position: clone(fallback.position),
+      orientation: clone(fallback.orientation),
+      velocity: clone(fallback.velocity),
+      angularVelocityWorld: clone(fallback.angularVelocityWorld),
+      suspensionState: clone(fallback.suspensionState),
+      wheelState: {
+        wheelAngularVelocityRadps: clone(fallback.wheelAngularVelocityRadps),
+        wheelLoadsN: clone(fallback.wheelLoadsN),
+        wheelSlip: clone(fallback.wheelSlip),
+        contactPatches: clone(fallback.contactPatches)
+      },
+      powertrainState: clone(fallback.powertrainState),
+      simulationStep: 0
+    };
+    substepState.position = clone(restored.position);
+    substepState.orientation = clone(restored.orientation);
+    const speed = Math.hypot(
+      Number(restored.velocity?.x || 0),
+      Number(restored.velocity?.y || 0),
+      Number(restored.velocity?.z || 0)
+    );
+    substepState.velocity = speed > 35
+      ? scaleVector3(restored.velocity, 35 / speed)
+      : clone(restored.velocity);
+    const angularSpeed = Math.hypot(
+      Number(restored.angularVelocityWorld?.x || 0),
+      Number(restored.angularVelocityWorld?.y || 0),
+      Number(restored.angularVelocityWorld?.z || 0)
+    );
+    substepState.angularVelocityWorld = angularSpeed > 6
+      ? scaleVector3(restored.angularVelocityWorld, 6 / angularSpeed)
+      : clone(restored.angularVelocityWorld);
+    if (!source && typeof environment.sampleTerrainAtWorldPoint === 'function') {
+      const terrain = environment.sampleTerrainAtWorldPoint(substepState.position) || {};
+      const terrainHeightM = Number(terrain.heightM ?? terrain.elevationM);
+      if (Number.isFinite(terrainHeightM)) {
+        substepState.position.y = Math.max(
+          Number(substepState.position.y || 0),
+          terrainHeightM + this.config.cgHeightM + this.config.bodyCollisionToleranceM
+        );
+      }
+    }
+    tireResult.suspensionState = clone(restored.suspensionState || {});
+    tireResult.wheelAngularVelocityRadps = clone(restored.wheelState?.wheelAngularVelocityRadps || {});
+    tireResult.wheelLoadsN = clone(restored.wheelState?.wheelLoadsN || {});
+    tireResult.wheelSlip = clone(restored.wheelState?.wheelSlip || {});
+    tireResult.contactPatches = clone(restored.wheelState?.contactPatches || {});
+    tireResult.powertrainState = clone(restored.powertrainState || {});
+    const recovery = {
+      sequence: ++this.penetrationRecoveryState.sequence,
+      stepIndex,
+      reason,
+      restoredSimulationStep: restored.simulationStep,
+      usedLastNonPenetratingState: Boolean(source),
+      usedRouteRecoveryPath: Boolean(routeRecoveryState),
+      position: clone(substepState.position)
+    };
+    this.penetrationRecoveryState.history.push(recovery);
+    if (this.penetrationRecoveryState.history.length > 128) {
+      this.penetrationRecoveryState.history.shift();
+    }
+    this.penetrationRecoveryState.failedProgressSteps = 0;
+    this.penetrationRecoveryState.previousMaximumPenetrationM = 0;
+    return recovery;
   }
 
   runStep(legacySnapshot = null) {
@@ -1378,6 +1607,13 @@ export class VehicleDynamicsRunner {
     for (let substepIndex = 0;
       substepIndex < this.config.tireSubstepsPerChassisStep;
       substepIndex += 1) {
+      const substepStartState = {
+        position: clone(substepState.position),
+        orientation: clone(substepState.orientation),
+        velocity: clone(substepState.velocity),
+        angularVelocityWorld: clone(substepState.angularVelocityWorld),
+        contactPatches: substepState.contactPatches || {}
+      };
       const substepTimeSeconds = (
         this.stepIndex * this.config.tireSubstepsPerChassisStep + substepIndex + 1
       ) / this.config.tireHz;
@@ -1512,9 +1748,39 @@ export class VehicleDynamicsRunner {
         supportedWheelCount: supportedWheels.length,
         availableBumpTravelM
       };
+      environment.wheelCollisionSupportFeatures = RACE_WHEEL_IDS.flatMap((wheelId) => {
+        const patch = tireResult.contactPatches?.[wheelId];
+        const hub = patch?.hubPositionWorld || patch?.wheelCenterWorld;
+        if (!hub) return [];
+        const lateral = patch.wheelLateralWorld || { x: 1, y: 0, z: 0 };
+        const forwardAxis = patch.wheelForwardWorld || { x: 0, y: 0, z: 1 };
+        const suspensionAxis = patch.suspensionAxisWorld || { x: 0, y: -1, z: 0 };
+        const radiusM = Math.max(0.1, Number(patch.effectiveRollingRadiusM || this.config.wheelRadiusM));
+        const widthM = Math.max(0.08, Number(
+          this.config.tireByWheel?.[wheelId]?.widthMm || 225
+        ) / 1000);
+        const sidewallRingIndices = patch.validTreadContact
+          ? [0, 4, 5, 6, 7]
+          : [0, 1, 2, 3, 4, 5, 6, 7];
+        return [-1, 1].flatMap((side) => sidewallRingIndices.map((index) => {
+          const angle = index * Math.PI / 4;
+          const radial = addVector3(
+            scaleVector3(forwardAxis, Math.cos(angle) * radiusM),
+            scaleVector3(suspensionAxis, Math.sin(angle) * radiusM)
+          );
+          return {
+            id: `wheel-${wheelId}-sidewall-${side < 0 ? 'inner' : 'outer'}-${index}`,
+            wheelId,
+            contactType: 'wheel-sidewall',
+            worldPoint: addVector3(addVector3(hub, radial), scaleVector3(lateral, side * widthM * 0.5)),
+            friction: this.config.bodyCollisionFriction
+          };
+        }));
+      });
       const bodyPreImpactKineticEnergyJ = calculateKineticEnergyJ(substepState, this.config);
       const bodyResult = this.bodyCollision.step({
         workingState: substepState,
+        previousWorkingState: substepStartState,
         config: this.config,
         environment,
         dt: tireSubstepDt,
@@ -1522,6 +1788,81 @@ export class VehicleDynamicsRunner {
       });
       bodyResult.preImpactKineticEnergyJ = bodyPreImpactKineticEnergyJ;
       bodyResult.postImpactKineticEnergyJ = calculateKineticEnergyJ(substepState, this.config);
+      bodyResult.surfaceConsistency = substepIndex === this.config.tireSubstepsPerChassisStep - 1
+        && this.stepIndex % this.config.surfaceConsistencySampleIntervalSteps === 0
+        ? this.sampleSurfaceConsistency({
+            previousState: substepStartState,
+            proposedState: substepState,
+            tireResult,
+            bodyResult,
+            environment
+          })
+        : { samples: [], discrepancies: [] };
+      const hasBodyTerrainQuery = typeof environment.sampleTerrainAtWorldPoint === 'function'
+        || typeof environment.sampleTerrainAtWorldPoints === 'function';
+      const penetrationSample = hasBodyTerrainQuery && !bodyResult.broadphaseRejected
+        ? this.bodyCollision.samplePosePenetration(
+            substepState,
+            environment,
+            this.config.bodyCollisionToleranceM
+          )
+        : {
+            maximumPenetrationM: 0,
+            invalidTerrainSampleCount: 0,
+            allBodySamplesBelowTerrain: false,
+            allTerrainSamplesInvalid: false
+          };
+      bodyResult.maximumPenetrationAfterSolveM = penetrationSample.maximumPenetrationM;
+      bodyResult.invalidTerrainSampleCount = penetrationSample.invalidTerrainSampleCount;
+      bodyResult.allBodySamplesBelowTerrain = penetrationSample.allBodySamplesBelowTerrain;
+      const currentPenetrationM = Math.max(0, Number(penetrationSample.maximumPenetrationM || 0));
+      const resolvedToleranceM = this.config.bodyCollisionToleranceM + 1e-6;
+      const previousPenetrationM = Math.max(0, Number(
+        this.penetrationRecoveryState.previousMaximumPenetrationM || 0
+      ));
+      if (currentPenetrationM > resolvedToleranceM
+        && currentPenetrationM >= previousPenetrationM - 0.001) {
+        this.penetrationRecoveryState.failedProgressSteps += 1;
+      } else if (currentPenetrationM <= resolvedToleranceM) {
+        this.penetrationRecoveryState.failedProgressSteps = 0;
+      }
+      this.penetrationRecoveryState.previousMaximumPenetrationM = currentPenetrationM;
+      const cgTerrain = typeof environment.sampleTerrainAtWorldPoint === 'function'
+        ? environment.sampleTerrainAtWorldPoint(substepState.position) || {}
+        : {};
+      const cgTerrainHeightM = Number(cgTerrain.heightM ?? cgTerrain.elevationM);
+      let recoveryReason = null;
+      if (penetrationSample.allTerrainSamplesInvalid
+        && environment.requireValidTerrainEnvelope === true) {
+        recoveryReason = 'invalid-terrain-envelope';
+      }
+      else if (penetrationSample.allBodySamplesBelowTerrain) recoveryReason = 'all-body-samples-submerged';
+      else if (currentPenetrationM > this.config.emergencyBodyPenetrationM) recoveryReason = 'deep-body-penetration';
+      else if (this.penetrationRecoveryState.failedProgressSteps
+        >= this.config.penetrationFailureStepLimit) recoveryReason = 'penetration-correction-stalled';
+      else if (Number.isFinite(cgTerrainHeightM)
+        && Number(substepState.position.y || 0) < cgTerrainHeightM - 0.1) {
+        recoveryReason = 'body-below-terrain-envelope';
+      }
+      if (recoveryReason) {
+        bodyResult.emergencyRecovery = this.recoverFromPenetration({
+          reason: recoveryReason,
+          substepState,
+          tireResult,
+          environment,
+          stepIndex: nextStepIndex
+        });
+      } else if (hasBodyTerrainQuery
+        && substepIndex === this.config.tireSubstepsPerChassisStep - 1
+        && currentPenetrationM <= resolvedToleranceM
+        && (!penetrationSample.allTerrainSamplesInvalid
+          || environment.requireValidTerrainEnvelope !== true)) {
+        this.lastNonPenetratingState = this.createLastNonPenetratingState(
+          substepState,
+          tireResult,
+          nextStepIndex
+        );
+      }
       const bodyCorrection = bodyResult.positionalCorrectionWorldM || {};
       if (Math.hypot(
         Number(bodyCorrection.x || 0),
@@ -1600,7 +1941,21 @@ export class VehicleDynamicsRunner {
       restitutionContributionNs: bodyCollisionResults.reduce((sum, result) => (
         sum + Number(result.restitutionContributionNs || 0)
       ), 0),
-      penetrationBiasContributionNs: 0
+      penetrationBiasContributionNs: 0,
+      bodyGrounded: Boolean(bodyCollisionResults.at(-1)?.contacts?.some(
+        (contact) => contact.contactType !== 'wheel-sidewall'
+      )),
+      wheelSidewallGrounded: Boolean(bodyCollisionResults.at(-1)?.contacts?.some(
+        (contact) => contact.contactType === 'wheel-sidewall'
+      )),
+      sweptContactCount: bodyCollisionResults.filter((result) => result.swept).length,
+      maximumPenetrationAfterSolveM: bodyCollisionResults.reduce((maximum, result) => (
+        Math.max(maximum, Number(result.maximumPenetrationAfterSolveM || 0))
+      ), 0),
+      emergencyRecoveries: bodyCollisionResults.map((result) => result.emergencyRecovery).filter(Boolean),
+      surfaceDiscrepancies: bodyCollisionResults.flatMap((result) => (
+        result.surfaceConsistency?.discrepancies || []
+      ))
     };
     this.state.position = { ...substepState.position };
     this.state.velocity = { ...substepState.velocity };
@@ -1611,6 +1966,11 @@ export class VehicleDynamicsRunner {
     this.state.yawRad = substepState.yawRad;
     this.state.pitchRad = substepState.pitchRad;
     this.state.rollRad = substepState.rollRad;
+    this.state.penetrationRecovery = clone(
+      tires.bodyCollision.emergencyRecoveries.at(-1)
+        || this.penetrationRecoveryState.history.at(-1)
+        || null
+    );
     const integrationControls = tires.powertrainState?.handbrakeEscSuppressed === true
       ? {
           ...controls,
@@ -1829,7 +2189,10 @@ export class VehicleDynamicsRunner {
       takeoffContactState: clone(this.takeoffContactState),
       diagnostics: clone(this.diagnostics),
       pendingCollisionImpulses: clone(this.pendingCollisionImpulses),
-      collisionTimeline: clone(this.collisionTimeline)
+      collisionTimeline: clone(this.collisionTimeline),
+      lastNonPenetratingState: clone(this.lastNonPenetratingState),
+      penetrationRecoveryState: clone(this.penetrationRecoveryState),
+      surfaceConsistencyCursor: this.surfaceConsistencyCursor
     };
   }
 
@@ -1860,6 +2223,16 @@ export class VehicleDynamicsRunner {
     this.diagnostics = clone(snapshot.diagnostics || this.diagnostics);
     this.pendingCollisionImpulses = clone(snapshot.pendingCollisionImpulses || []);
     this.collisionTimeline = clone(snapshot.collisionTimeline || []);
+    this.lastNonPenetratingState = clone(snapshot.lastNonPenetratingState || null);
+    this.penetrationRecoveryState = clone(snapshot.penetrationRecoveryState || {
+      previousMaximumPenetrationM: 0,
+      failedProgressSteps: 0,
+      sequence: 0,
+      history: []
+    });
+    this.surfaceConsistencyCursor = Math.max(0, Math.trunc(Number(
+      snapshot.surfaceConsistencyCursor || 0
+    )));
     return this;
   }
 

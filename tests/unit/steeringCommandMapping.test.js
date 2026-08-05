@@ -6,6 +6,7 @@ import { RACE_CONTROLLER_STEERING } from '../../src/racing/simulation/RaceSimula
 import {
   calculateAuthoritativeSteeringEnvelope,
   calculateWheelContactKinematics,
+  classifySteeringResponseTelemetry,
   resolvePhysicalCenterSteeringAngle
 } from '../../src/racing/simulation/ContactPatchTireModel.js';
 import {
@@ -204,4 +205,75 @@ test('input timeline keeps normalized driver command separate from physical cent
   assert.equal(sampled.steering, 1);
   assert.equal(sampled.centerSteeringAngleRad, 0.03);
   assert.equal(sampled.steeringInputMode, 'keyboard');
+});
+
+test('gamepad uses one controller response stage and reaches playability timing targets', () => {
+  let output = 0;
+  const samples = new Map();
+  for (let elapsedMs = 10; elapsedMs <= 400; elapsedMs += 10) {
+    output = assist.stepControllerToRackInput({
+      mode: 'gamepad', intent: 1, currentOutput: output, seconds: 0.01
+    });
+    samples.set(elapsedMs, output);
+  }
+  assert.ok(samples.get(10) > 0.05, `first visible response ${samples.get(10)}`);
+  const halfTime = [...samples].find(([, value]) => value >= 0.5)?.[0];
+  const ninetyTime = [...samples].find(([, value]) => value >= 0.9)?.[0];
+  assert.ok(halfTime >= 100 && halfTime <= 160, `50% at ${halfTime} ms`);
+  assert.ok(ninetyTime >= 250 && ninetyTime <= 350, `90% at ${ninetyTime} ms`);
+});
+
+test('gamepad controller response is render-partition independent at supported frame rates', () => {
+  const run = (fps) => {
+    let output = 0;
+    for (let frame = 0; frame < fps; frame += 1) {
+      output = assist.stepControllerToRackInput({
+        mode: 'gamepad', intent: 0.82, currentOutput: output, seconds: 1 / fps
+      });
+    }
+    return output;
+  };
+  const expected = run(120);
+  for (const fps of [30, 60, 90, 120, 144]) {
+    assert.ok(Math.abs(run(fps) - expected) < 1e-12, `${fps} FPS response drift`);
+  }
+});
+
+test('simulation wheel is direct while controller metadata remains replayable', () => {
+  assert.equal(assist.stepControllerToRackInput({
+    mode: 'simulation-wheel', intent: -0.73, currentOutput: 0.8, seconds: 1 / 30
+  }), -0.73);
+  const timeline = new VehicleControlInputTimeline([
+    { timeSeconds: 0, input: {
+      steering: 0, driverSteeringIntent: 0, steeringTarget: 0, controllerFilterOutput: 0
+    } },
+    { timeSeconds: 1, input: {
+      steering: 1, driverSteeringIntent: 1, steeringTarget: 1, controllerFilterOutput: 0.8
+    } }
+  ]);
+  assert.deepEqual(
+    Object.fromEntries(['driverSteeringIntent', 'steeringTarget', 'controllerFilterOutput']
+      .map((key) => [key, timeline.sampleAt(0.5)[key]])),
+    { driverSteeringIntent: 0.5, steeringTarget: 0.5, controllerFilterOutput: 0.4 }
+  );
+});
+
+test('dirt response diagnostics classify latency, envelope, saturation, drivetrain, ESC, and grip failures', () => {
+  const base = {
+    inputIntent: 1, steeringTarget: 1, controllerFilterOutput: 1,
+    requestedRackAngleRad: 0.3, permittedRackAngleRad: 0.3,
+    frontUtilization: { fl: 0.5, fr: 0.5 },
+    throttleFrictionCircleUse: { fl: 0, fr: 0 },
+    frontGripCoefficients: { fl: 0.6, fr: 0.6 }
+  };
+  assert.equal(classifySteeringResponseTelemetry({ ...base, controllerFilterOutput: 0.2 }), 'input-latency');
+  assert.equal(classifySteeringResponseTelemetry({ ...base, permittedRackAngleRad: 0.1 }), 'steering-envelope-limitation');
+  assert.equal(classifySteeringResponseTelemetry({ ...base, frontUtilization: { fl: 0.98, fr: 0.9 } }), 'front-tire-saturation');
+  assert.equal(classifySteeringResponseTelemetry({
+    ...base, frontUtilization: { fl: 0.9, fr: 0.85 }, throttleFrictionCircleUse: { fl: 0.7, fr: 0.65 }
+  }), 'drivetrain-understeer');
+  assert.equal(classifySteeringResponseTelemetry({ ...base, escInterventionActive: true }), 'esc-intervention');
+  assert.equal(classifySteeringResponseTelemetry({
+    ...base, frontGripCoefficients: { fl: 0.3, fr: 0.35 }
+  }), 'insufficient-surface-grip');
 });

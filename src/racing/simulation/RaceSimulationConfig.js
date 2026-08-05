@@ -1,6 +1,11 @@
 export const RACE_THREE_ELEVATION_M = 12;
 
 export const RACE_CONTROLLER_STEERING = Object.freeze({
+  responseProfiles: Object.freeze({
+    keyboard: Object.freeze({ pressRatePerSecond: 3.6, releaseRatePerSecond: 7.8 }),
+    gamepad: Object.freeze({ responseRatePerSecond: 7.0, releaseRatePerSecond: 9.5 }),
+    simulationWheel: Object.freeze({ direct: true })
+  }),
   speedReferenceMps: 62,
   digitalResponseBase: 84,
   digitalResponseLowSpeedBonus: 36,

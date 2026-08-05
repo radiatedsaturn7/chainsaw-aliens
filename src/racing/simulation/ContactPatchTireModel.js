@@ -32,6 +32,75 @@ const normalize = (value, fallback = { x: 0, y: 1, z: 0 }) => {
 const projectOnPlane = (value, normal) => add(value, scale(normal, -dot(value, normal)));
 const cleanVector = (value) => ({ x: q(value.x), y: q(value.y), z: q(value.z) });
 
+function resolveTreadContactValidity({
+  state,
+  config,
+  environment,
+  wheelId,
+  kinematics,
+  hasSurfaceHeight,
+  rawTargetCompressionM,
+  suspensionTravelM
+}) {
+  if (!hasSurfaceHeight) {
+    return { valid: false, reason: 'no-terrain', supportAlignment: 0, geometricProximity: false };
+  }
+  const normal = normalize(vector(kinematics.surfaceNormalWorld, { x: 0, y: 1, z: 0 }));
+  const axis = normalize(vector(kinematics.suspensionAxisWorld, { x: 0, y: -1, z: 0 }));
+  const supportAlignment = dot(axis, scale(normal, -1));
+  const minimumAlignment = clamp(Number(config.minimumTreadSupportAlignment ?? 0.2), 0.01, 0.95);
+  const reachToleranceM = Math.max(0.002, Number(config.treadReachToleranceM ?? 0.025));
+  const geometricProximity = Number(rawTargetCompressionM) >= -reachToleranceM
+    && Number(rawTargetCompressionM) <= suspensionTravelM + reachToleranceM;
+  if (!geometricProximity) {
+    return { valid: false, reason: 'outside-suspension-reach', supportAlignment: q(supportAlignment), geometricProximity };
+  }
+  if (supportAlignment < minimumAlignment) {
+    return { valid: false, reason: 'wrong-suspension-side', supportAlignment: q(supportAlignment), geometricProximity };
+  }
+  const axleNormalAlignment = Math.abs(dot(
+    normalize(vector(kinematics.wheelLateralWorld, { x: 1, y: 0, z: 0 })),
+    normal
+  ));
+  if (axleNormalAlignment > Math.max(0.2, Number(config.maximumTreadAxleNormalAlignment ?? 0.72))) {
+    return { valid: false, reason: 'sidewall-normal', supportAlignment: q(supportAlignment), geometricProximity };
+  }
+  if (environment.bodyOccludedByWheel?.[wheelId] === true) {
+    return { valid: false, reason: 'body-occluded', supportAlignment: q(supportAlignment), geometricProximity };
+  }
+  // A terrain point inside the body collider cannot be reached by the tread.
+  // Transform it to body space using the inverse unit quaternion.
+  const orientation = state.orientation || { x: 0, y: 0, z: 0, w: 1 };
+  const relative = add(vector(kinematics.contactPointWorld), scale(vector(state.position), -1));
+  const localContact = rotateVectorByQuaternion(relative, {
+    x: -Number(orientation.x || 0),
+    y: -Number(orientation.y || 0),
+    z: -Number(orientation.z || 0),
+    w: Number(orientation.w ?? 1)
+  });
+  const insideBody = (config.bodyProfile?.pieces || []).some((piece) => {
+    const half = {
+      x: Number(piece.sizeM?.x || 0) * 0.5,
+      y: Number(piece.sizeM?.y || 0) * 0.5,
+      z: Number(piece.sizeM?.z || 0) * 0.5
+    };
+    return Math.abs(localContact.x - Number(piece.centerM?.x || 0)) < half.x * 0.98
+      && Math.abs(localContact.y - Number(piece.centerM?.y || 0)) < half.y * 0.98
+      && Math.abs(localContact.z - Number(piece.centerM?.z || 0)) < half.z * 0.98;
+  });
+  if (insideBody) {
+    return { valid: false, reason: 'body-occluded', supportAlignment: q(supportAlignment), geometricProximity };
+  }
+  return { valid: true, reason: null, supportAlignment: q(supportAlignment), geometricProximity };
+}
+
+function classifyWheelContact(contactValidity) {
+  if (contactValidity.valid) return 'tread-support';
+  if (contactValidity.reason === 'sidewall-normal') return 'sidewall-contact';
+  if (contactValidity.reason === 'body-occluded') return 'body-contact';
+  return 'unsupported-suspension';
+}
+
 export function getAckermannSteeringAngles({
   steeringAngleRad = 0,
   wheelbaseM = 2.65,
@@ -85,6 +154,26 @@ export function calculateAuthoritativeSteeringEnvelope(state = {}, config = {}) 
   const contactAuthority = contactScale * clamp(loadSupportScale / 0.35, 0, 1);
   const hydroAuthority = clamp((aquaplaningSupport - 0.12) / 0.58, 0, 1);
   return clamp(speedEnvelope * contactAuthority * hydroAuthority, 0.002, maximumAngleRad);
+}
+
+export function classifySteeringResponseTelemetry(telemetry = {}) {
+  const intent = Math.abs(Number(telemetry.inputIntent || 0));
+  const target = Math.abs(Number(telemetry.steeringTarget || 0));
+  const output = Math.abs(Number(telemetry.controllerFilterOutput || 0));
+  const requested = Math.abs(Number(telemetry.requestedRackAngleRad || 0));
+  const permitted = Math.abs(Number(telemetry.permittedRackAngleRad || 0));
+  const utilization = Math.max(0, ...Object.values(telemetry.frontUtilization || {}).map(Number));
+  const longitudinalUse = Math.max(0, ...Object.values(telemetry.throttleFrictionCircleUse || {}).map(Number));
+  const grip = Object.values(telemetry.frontGripCoefficients || {}).map(Number).filter(Number.isFinite);
+  if (intent > 0.2 && target > 0.1 && output < target * 0.65) return 'input-latency';
+  if (requested > 0.01 && permitted < requested * 0.75) return 'steering-envelope-limitation';
+  if (telemetry.escInterventionActive === true) return 'esc-intervention';
+  if (longitudinalUse > 0.55 && utilization > 0.82) return 'drivetrain-understeer';
+  if (utilization > 0.92) return 'front-tire-saturation';
+  if (grip.length && grip.reduce((sum, value) => sum + value, 0) / grip.length < 0.45) {
+    return 'insufficient-surface-grip';
+  }
+  return 'responsive';
 }
 
 export function resolvePhysicalCenterSteeringAngle(controls = {}, config = {}, state = {}) {
@@ -505,12 +594,25 @@ export class ContactPatchTireModel {
         0,
         suspensionTravelM
       );
-      const targetCompressionM = hasSurfaceHeight
-        ? clamp(previousCompressionM + penetrationM, 0, suspensionTravelM)
+      const rawTargetCompressionM = hasSurfaceHeight
+        ? previousCompressionM + penetrationM
+        : null;
+      const initialContactValidity = resolveTreadContactValidity({
+        state,
+        config,
+        environment: resolvedEnvironment,
+        wheelId,
+        kinematics,
+        hasSurfaceHeight,
+        rawTargetCompressionM,
+        suspensionTravelM
+      });
+      const targetCompressionM = initialContactValidity.valid
+        ? clamp(rawTargetCompressionM, 0, suspensionTravelM)
         : null;
       let unsprungVelocityMps = Number(previousSuspension.unsprungVelocityMps || 0);
       let compressionM = previousCompressionM;
-      if (hasSurfaceHeight) {
+      if (initialContactValidity.valid) {
         if (!hasPreviousSuspensionState) {
           compressionM = Number(targetCompressionM);
           unsprungVelocityMps = 0;
@@ -545,7 +647,8 @@ export class ContactPatchTireModel {
         camberByWheel: { ...resolvedEnvironment.camberByWheel, [wheelId]: geometry.camberRad },
         toeByWheel: { ...resolvedEnvironment.toeByWheel, [wheelId]: geometry.toeRad }
       }, wheelId });
-      const geometricContact = hasSurfaceHeight && Number(targetCompressionM) > EPSILON;
+      const contactValidity = initialContactValidity;
+      const geometricContact = contactValidity.valid && Number(targetCompressionM) > EPSILON;
       const compressionRatio = compressionM / suspensionTravelM;
       const bumpTravelRatio = clamp(
         Math.max(0, compressionM - staticCompressionM) / Math.max(EPSILON, bumpTravelM),
@@ -642,6 +745,7 @@ export class ContactPatchTireModel {
         material,
         tire,
         hasSurfaceHeight,
+        contactValidity,
         geometricContact,
         compressionM,
         penetrationM,
@@ -809,7 +913,7 @@ export class ContactPatchTireModel {
       : null;
     RACE_WHEEL_IDS.forEach((wheelId) => {
       const {
-        kinematics, normalLoadN, force, hasSurfaceHeight, geometricContact,
+        kinematics, normalLoadN, force, hasSurfaceHeight, geometricContact, contactValidity,
         compressionM, contactVelocityNormalMps, suspensionTravelM,
         springRateNpm, damperRateNsM, antiRollLoadTransferN = 0
       } = wheelInputs[wheelId];
@@ -963,7 +1067,13 @@ export class ContactPatchTireModel {
         geometry: wheelInputs[wheelId].geometry,
         footprint: wheelInputs[wheelId].footprint,
         geometricContact: hasSurfaceHeight ? geometricContact : normalLoadN > 1,
-        inContact: normalLoadN > 1
+        geometricTerrainProximity: contactValidity.geometricProximity,
+        validTreadContact: contactValidity.valid && normalLoadN > 1,
+        invalidContactReason: contactValidity.valid ? null : contactValidity.reason,
+        supportAlignment: contactValidity.supportAlignment,
+        geometricTerrainProximity: contactValidity.geometricProximity,
+        contactType: classifyWheelContact(contactValidity),
+        inContact: contactValidity.valid && normalLoadN > 1
       };
       tireForcesN[wheelId] = { longitudinal: q(localLongitudinal), lateral: force.lateralForceN };
       const rollingSurfaceSpeedMps = kinematics.wheelAngularVelocityRadps
@@ -1013,6 +1123,10 @@ export class ContactPatchTireModel {
         )),
         tireVerticalForceN: q(wheelInputs[wheelId].aquaplaning.supportedNormalLoadN),
         ...force,
+        wheelGrounded: contactValidity.valid && normalLoadN > 1,
+        validTreadContact: contactValidity.valid && normalLoadN > 1,
+        invalidContactReason: contactValidity.valid ? null : contactValidity.reason,
+        supportAlignment: contactValidity.supportAlignment,
         localForceN: { longitudinal: q(localLongitudinal), lateral: force.lateralForceN, normal: 0 },
         worldForceN: cleanVector(forceWorld),
         forceApplicationPointWorld: kinematics.contactPointWorld,
@@ -1075,11 +1189,31 @@ export class ContactPatchTireModel {
         : sampledSurfaceHeights.length
           ? q(sampledSurfaceHeights.reduce((sum, height) => sum + height, 0) / sampledSurfaceHeights.length)
           : null,
-      grounded: RACE_WHEEL_IDS.some((wheelId) => wheelLoadsN[wheelId] > 0),
+      grounded: RACE_WHEEL_IDS.some((wheelId) => outputs[wheelId]?.validTreadContact === true),
+      wheelGrounded: RACE_WHEEL_IDS.some((wheelId) => outputs[wheelId]?.validTreadContact === true),
+      supportedWheelCount: RACE_WHEEL_IDS.filter((wheelId) => (
+        outputs[wheelId]?.validTreadContact === true
+      )).length,
+      validTreadContactByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+        wheelId, outputs[wheelId]?.validTreadContact === true
+      ])),
+      invalidContactReasonByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+        wheelId, outputs[wheelId]?.invalidContactReason || null
+      ])),
+      geometricTerrainProximityByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+        wheelId, outputs[wheelId]?.geometricTerrainProximity === true
+      ])),
+      contactTypeByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+        wheelId, outputs[wheelId]?.contactType || 'unsupported-suspension'
+      ])),
       driveForceShareByWheel: { ...driveShareByWheel },
       powertrainState: powertrainStep.state,
       powertrainTelemetry: powertrainStep.telemetry,
-      steeringTelemetry: {
+      steeringTelemetry: (() => {
+        const telemetry = {
+        inputIntent: q(clamp(Number((controls.driverSteeringIntent ?? controls.steering) || 0), -1, 1)),
+        steeringTarget: q(clamp(Number((controls.steeringTarget ?? controls.steering) || 0), -1, 1)),
+        controllerFilterOutput: q(clamp(Number((controls.controllerFilterOutput ?? controls.steering) || 0), -1, 1)),
         normalizedDriverSteering: q(clamp(Number(controls.steering || 0), -1, 1)),
         requestedRackAngleRad: q(clamp(Number(controls.steering || 0), -1, 1)
           * Math.max(0.05, Number(config.maxSteerAngleRad) || 0.52)),
@@ -1095,14 +1229,25 @@ export class ContactPatchTireModel {
         },
         frontUtilization: { fl: q(outputs.fl?.utilization || 0), fr: q(outputs.fr?.utilization || 0) },
         frontSlipAnglesRad: { fl: q(outputs.fl?.slipAngleRad || 0), fr: q(outputs.fr?.slipAngleRad || 0) },
+        frontLateralForceN: { fl: q(outputs.fl?.lateralForceN || 0), fr: q(outputs.fr?.lateralForceN || 0) },
+        throttleFrictionCircleUse: {
+          fl: q(Math.abs(Number(outputs.fl?.longitudinalForceN || 0)) / Math.max(1, Number(outputs.fl?.combinedSlipLimitN || 0))),
+          fr: q(Math.abs(Number(outputs.fr?.longitudinalForceN || 0)) / Math.max(1, Number(outputs.fr?.combinedSlipLimitN || 0)))
+        },
         aquaplaningSupport: {
           fl: q(1 - Number(outputs.fl?.aquaplaning?.liftFraction || 0)),
           fr: q(1 - Number(outputs.fr?.aquaplaning?.liftFraction || 0))
         },
         yawRateRadps: q(state.angularVelocityWorld?.y || state.yawRateRadps || 0),
         bodySlipAngleRad: q(Math.atan2(Number(state.bodyLateralSpeedMps || 0),
-          Math.max(0.5, Math.abs(Number(state.bodyLongitudinalSpeedMps || 0)))))
-      },
+          Math.max(0.5, Math.abs(Number(state.bodyLongitudinalSpeedMps || 0))))),
+        turnRadiusM: q(Math.abs(Number(state.angularVelocityWorld?.y || state.yawRateRadps || 0)) > 0.001
+          ? Number(state.groundSpeedMps || 0) / Math.abs(Number(state.angularVelocityWorld?.y || state.yawRateRadps || 0))
+          : 1000000)
+        };
+        telemetry.responseClassification = classifySteeringResponseTelemetry(telemetry);
+        return telemetry;
+      })(),
       wheelLoadsN, wheelSlip, suspensionTravel, suspensionState, tireForcesN,
       wheelAngularVelocityRadps, wheelAngularMomentumReactionImpulseWorldNms,
       contactPatches: outputs

@@ -50,6 +50,13 @@ import { RACE_CONTROLLER_STEERING, RACE_PEDAL_INPUT, RACE_THREE_ELEVATION_M } fr
 import { syncVehicleDynamicsCompatibilityOutputs } from '../racing/simulation/VehicleState.js';
 import { createRaceTrackStateSeed } from '../racing/trackState/TrackStateIntegration.js';
 import { createTrackStateVisualAtlas } from '../racing/trackState/TrackStateVisualAtlas.js';
+import {
+  VEHICLE_BODY_SHAPE_PRESETS,
+  getVehicleBodyPreset,
+  normalizeVehicleBodyProfile,
+  resolveVehicleBodyProfile
+} from '../racing/simulation/VehicleBodyProfile.js';
+import { rotateVectorByQuaternion } from '../racing/simulation/RigidBodyMath.js';
 import { DEFAULT_TILE_TYPES } from '../content/tileDefinitions.js';
 import { getLandscapeHandheldLayout, getPortraitHandheldLayout } from './shared/canvasViewportLayout.js';
 import {
@@ -572,6 +579,7 @@ const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   'damping-rear',
   'antiroll-front',
   'antiroll-rear',
+  'physics-body',
   'load-wrx',
   'load-brz',
   'load-civic',
@@ -5977,7 +5985,8 @@ export default class RaceEditor {
       'damping-front': `Damping: ${Math.round((Number(this.selectedCar?.tuning?.dampingFront) || 0) * 100)}%`,
       'damping-rear': `Rear Damping: ${Math.round((Number(this.selectedCar?.tuning?.dampingRear) || 0) * 100)}%`,
       'antiroll-front': `Front ARB: ${Math.round((Number(this.selectedCar?.tuning?.antiRollFront) || 0) * 100)}%`,
-      'antiroll-rear': `Rear ARB: ${Math.round((Number(this.selectedCar?.tuning?.antiRollRear) || 0) * 100)}%`
+      'antiroll-rear': `Rear ARB: ${Math.round((Number(this.selectedCar?.tuning?.antiRollRear) || 0) * 100)}%`,
+      'physics-body': `Body: ${String(this.selectedCar?.tuning?.physics?.bodyShapePreset || 'car').toUpperCase()}`
     };
     const builtInRace = BUILT_IN_RACE_LOAD_ACTIONS.find((entry) => entry.id === id);
     if (builtInRace) return `Load ${createTestTrackRace(builtInRace.raceId).name}`;
@@ -6753,7 +6762,8 @@ export default class RaceEditor {
       'antiroll-front': 'suspension',
       'antiroll-rear': 'suspension',
       'weight-balance': 'weight',
-      'engine-sfx': 'sfx'
+      'engine-sfx': 'sfx',
+      'physics-body': 'body'
     };
     const tab = tabByAction[action];
     if (!tab) return false;
@@ -6783,8 +6793,70 @@ export default class RaceEditor {
       { id: 'suspension', label: 'Susp' },
       { id: 'aero', label: 'Aero' },
       { id: 'weight', label: 'Weight' },
-      { id: 'sfx', label: 'SFX' }
+      { id: 'sfx', label: 'SFX' },
+      { id: 'body', label: 'Body' }
     ];
+  }
+
+  getCarPhysicsBodyProfile(car = this.selectedCar) {
+    if (!car) return normalizeVehicleBodyProfile();
+    car.tuning = car.tuning || {};
+    car.tuning.physics = car.tuning.physics || {};
+    const profile = normalizeVehicleBodyProfile(car.tuning.physics.bodyProfile || {
+      bodyShapePreset: car.tuning.physics.bodyShapePreset || 'car'
+    }, {
+      lengthM: car.dimensions?.lengthM,
+      widthM: car.dimensions?.widthM,
+      heightM: car.dimensions?.heightM,
+      cgPositionM: car.tuning.physicalVehicleProfile?.cgLocationBodyM
+    });
+    car.tuning.physics.bodyShapePreset = profile.preset;
+    car.tuning.physics.bodyProfile = JSON.parse(JSON.stringify(profile));
+    return profile;
+  }
+
+  setCarPhysicsBodyPreset(preset = 'car', { reset = true } = {}) {
+    const car = this.selectedCar;
+    if (!car || !VEHICLE_BODY_SHAPE_PRESETS.includes(preset)) return false;
+    const current = this.getCarPhysicsBodyProfile(car);
+    const source = reset ? getVehicleBodyPreset(preset) : current;
+    const profile = normalizeVehicleBodyProfile({ ...source, preset }, {
+      cgPositionM: car.tuning?.physicalVehicleProfile?.cgLocationBodyM || current.cgPositionM
+    });
+    car.tuning.physics = {
+      ...(car.tuning.physics || {}),
+      bodyShapePreset: preset,
+      bodyProfile: JSON.parse(JSON.stringify(profile))
+    };
+    this.markCarEditorTuningInputChanged();
+    this.status = `Physics body: ${preset}`;
+    return true;
+  }
+
+  addCarCustomBodyCollider() {
+    const car = this.selectedCar;
+    if (!car) return false;
+    if (this.getCarPhysicsBodyProfile(car).preset !== 'custom') this.setCarPhysicsBodyPreset('custom');
+    const profile = car.tuning.physics.bodyProfile;
+    profile.customColliders = Array.isArray(profile.customColliders) ? profile.customColliders : [];
+    profile.customColliders.push({
+      id: `custom-${profile.customColliders.length + 1}`,
+      type: 'box', centerM: { x: 0, y: 0, z: 0 }, sizeM: { x: 1, y: 0.5, z: 1.5 }
+    });
+    car.tuning.physics.bodyProfile = JSON.parse(JSON.stringify(normalizeVehicleBodyProfile(profile)));
+    this.markCarEditorTuningInputChanged();
+    this.status = 'Custom body collider added';
+    return true;
+  }
+
+  removeCarCustomBodyCollider() {
+    const profile = this.selectedCar?.tuning?.physics?.bodyProfile;
+    if (!Array.isArray(profile?.customColliders) || !profile.customColliders.length) return false;
+    profile.customColliders.pop();
+    this.selectedCar.tuning.physics.bodyProfile = JSON.parse(JSON.stringify(normalizeVehicleBodyProfile(profile)));
+    this.markCarEditorTuningInputChanged();
+    this.status = 'Custom body collider removed';
+    return true;
   }
 
   setCarTuneNumericValue(path = '', value = 0) {
@@ -6795,6 +6867,21 @@ export default class RaceEditor {
     const transmissionType = this.getRaceTransmissionType(car);
     const transmission = car.transmissions?.[transmissionType] || {};
     const rounded = Math.round(Number(value || 0) * 1000) / 1000;
+    if (path.startsWith('body-')) {
+      const profile = JSON.parse(JSON.stringify(this.getCarPhysicsBodyProfile(car)));
+      const key = path.slice(5);
+      const nested = {
+        hoodLengthM: ['hood', 'lengthM'], cabinLengthM: ['cabin', 'lengthM'],
+        cabinHeightM: ['cabin', 'heightM'], cabinCenterZM: ['cabin', 'centerZM'],
+        bedLengthM: ['bed', 'lengthM'], bedHeightM: ['bed', 'heightM']
+      }[key];
+      if (nested) profile[nested[0]][nested[1]] = rounded;
+      else profile[key] = rounded;
+      car.tuning.physics.bodyProfile = JSON.parse(JSON.stringify(normalizeVehicleBodyProfile(profile)));
+      car.tuning.physics.bodyShapePreset = car.tuning.physics.bodyProfile.preset;
+      this.status = `Body ${key}: ${rounded}`;
+      return true;
+    }
     if (path.startsWith('pressure-')) {
       const wheelId = path.replace('pressure-', '');
       setup.tirePressurePsi[wheelId] = Math.round(clamp(Number(value) || 0, 18, 46));
@@ -7621,6 +7708,24 @@ export default class RaceEditor {
       wheelDiameterIn: Math.max(10, Math.round(Number(clone.setup.tireSize.wheelDiameterIn) || DEFAULT_TIRE_SIZE.wheelDiameterIn))
     };
     clone.tuning = clone.tuning && typeof clone.tuning === 'object' ? clone.tuning : {};
+    const legacyPreset = clone.tuning.physics?.bodyShapePreset
+      || clone.tuning.bodyShapePreset
+      || ({ suv: 'suv', truck: 'pickup', pickup: 'pickup' }[clone.class] || 'car');
+    const bodyProfile = normalizeVehicleBodyProfile(
+      clone.tuning.physics?.bodyProfile || { bodyShapePreset: legacyPreset },
+      {
+        lengthM: clone.dimensions?.lengthM || clone.tuning.lengthM,
+        widthM: clone.dimensions?.widthM || clone.tuning.widthM,
+        heightM: clone.dimensions?.heightM || clone.tuning.heightM,
+        groundClearanceM: clone.tuning.groundClearanceM,
+        cgPositionM: clone.tuning.physicalVehicleProfile?.cgLocationBodyM || { y: clone.tuning.cgHeightM }
+      }
+    );
+    clone.tuning.physics = {
+      ...(clone.tuning.physics || {}),
+      bodyShapePreset: bodyProfile.preset,
+      bodyProfile: JSON.parse(JSON.stringify(bodyProfile))
+    };
     this.syncCarTuningFromEngineCurve(clone.tuning);
     clone.transmissions = clone.transmissions && typeof clone.transmissions === 'object' ? clone.transmissions : {};
     clone.defaultTransmissionType = clone.defaultTransmissionType || (clone.transmissions.automatic ? 'automatic' : 'manual');
@@ -16046,6 +16151,9 @@ export default class RaceEditor {
       : Number(merged.accelerationCalibration);
     return {
       physicalVehicleProfile,
+      physics: merged.physics || tuning.physics || {},
+      bodyShapePreset: merged.physics?.bodyShapePreset || tuning.physics?.bodyShapePreset || 'car',
+      bodyProfile: resolveVehicleBodyProfile({ ...merged, physics: merged.physics || tuning.physics }),
       drivetrain: merged.drivetrain || 'awd',
       transmissionType: selectedTransmissionType,
       shiftMode: merged.shiftMode || selectedTransmissionType || 'manual',
@@ -19064,9 +19172,157 @@ export default class RaceEditor {
 
   drawRacePhysicsContactOverlay(ctx, bounds, cameraState = null) {
     const wheels = this.playtestSession?.vehicle3d?.wheels || this.playtestSession?.wheelContacts3d || {};
-    const patches = this.playtestSession?.vehicleDynamicsRunner?.state?.contactPatches || {};
+    const runner = this.playtestSession?.vehicleDynamicsRunner;
+    const state = runner?.state || {};
+    const patches = state.contactPatches || {};
     if (!cameraState?.camera) return;
     ctx.save();
+    const projectPhysicalPoint = (point = {}) => this.projectRaceWorldPointToCamera({
+      x: Number(point.x || 0), z: Number(point.z || 0),
+      elevation: Number(point.y || 0) / RACE_THREE_ELEVATION_M
+    }, cameraState.camera, cameraState.cameraYaw, bounds);
+    const bodyProfile = runner?.config?.bodyProfile;
+    if (bodyProfile?.pieces?.length && state.position && state.orientation) {
+      const edges = [
+        [0, 1], [0, 2], [0, 4], [1, 3], [1, 5], [2, 3],
+        [2, 6], [3, 7], [4, 5], [4, 6], [5, 7], [6, 7]
+      ];
+      ctx.lineWidth = 1.5;
+      bodyProfile.pieces.forEach((piece, pieceIndex) => {
+        const half = { x: piece.sizeM.x * 0.5, y: piece.sizeM.y * 0.5, z: piece.sizeM.z * 0.5 };
+        const corners = [-1, 1].flatMap((x) => [-1, 1].flatMap((y) => [-1, 1].map((z) => {
+          const local = {
+            x: piece.centerM.x + x * half.x,
+            y: piece.centerM.y + y * half.y,
+            z: piece.centerM.z + z * half.z
+          };
+          const rotated = rotateVectorByQuaternion(local, state.orientation);
+          return projectPhysicalPoint({
+            x: state.position.x + rotated.x,
+            y: state.position.y + rotated.y,
+            z: state.position.z + rotated.z
+          });
+        })));
+        ctx.strokeStyle = ['#52e6ff', '#f6d65b', '#ff8ad8', '#9eff72'][pieceIndex % 4];
+        edges.forEach(([from, to]) => {
+          if (!corners[from]?.visible || !corners[to]?.visible) return;
+          ctx.beginPath();
+          ctx.moveTo(corners[from].screenX, corners[from].screenY);
+          ctx.lineTo(corners[to].screenX, corners[to].screenY);
+          ctx.stroke();
+        });
+      });
+      const broadphaseHalf = {
+        x: bodyProfile.overallWidthM * 0.5,
+        y: bodyProfile.overallHeightM * 0.5,
+        z: bodyProfile.overallLengthM * 0.5
+      };
+      const centerY = bodyProfile.groundClearanceM - bodyProfile.cgPositionM.y
+        + bodyProfile.overallHeightM * 0.5;
+      const broadphaseCorners = [-1, 1].flatMap((x) => [-1, 1].flatMap((y) => [-1, 1].map((z) => {
+        const rotated = rotateVectorByQuaternion({
+          x: x * broadphaseHalf.x, y: centerY + y * broadphaseHalf.y, z: z * broadphaseHalf.z
+        }, state.orientation);
+        return projectPhysicalPoint({
+          x: state.position.x + rotated.x, y: state.position.y + rotated.y, z: state.position.z + rotated.z
+        });
+      })));
+      ctx.strokeStyle = 'rgba(255,255,255,0.42)';
+      ctx.setLineDash?.([4, 3]);
+      edges.forEach(([from, to]) => {
+        if (!broadphaseCorners[from]?.visible || !broadphaseCorners[to]?.visible) return;
+        ctx.beginPath();
+        ctx.moveTo(broadphaseCorners[from].screenX, broadphaseCorners[from].screenY);
+        ctx.lineTo(broadphaseCorners[to].screenX, broadphaseCorners[to].screenY);
+        ctx.stroke();
+      });
+      ctx.setLineDash?.([]);
+    }
+    Object.entries(patches).forEach(([wheelId, patch]) => {
+      const hub = patch.hubPositionWorld || patch.wheelCenterWorld;
+      const mount = patch.suspensionMountPositionWorld;
+      const contact = patch.contactPointWorld;
+      const hubProjected = hub && projectPhysicalPoint(hub);
+      const mountProjected = mount && projectPhysicalPoint(mount);
+      const contactProjected = contact && projectPhysicalPoint(contact);
+      if (hubProjected?.visible) {
+        const radiusM = Number(patch.effectiveRollingRadiusM || runner?.config?.wheelRadiusM || 0.33);
+        const widthM = Number(runner?.config?.tireByWheel?.[wheelId]?.widthMm || 225) / 1000;
+        const axis = patch.suspensionAxisWorld || { x: 0, y: -1, z: 0 };
+        const lateral = patch.wheelLateralWorld || { x: 1, y: 0, z: 0 };
+        const topProjected = projectPhysicalPoint({
+          x: hub.x - Number(axis.x || 0) * radiusM,
+          y: hub.y - Number(axis.y || -1) * radiusM,
+          z: hub.z - Number(axis.z || 0) * radiusM
+        });
+        const bottomProjected = projectPhysicalPoint({
+          x: hub.x + Number(axis.x || 0) * radiusM,
+          y: hub.y + Number(axis.y || -1) * radiusM,
+          z: hub.z + Number(axis.z || 0) * radiusM
+        });
+        const innerProjected = projectPhysicalPoint({
+          x: hub.x - Number(lateral.x || 0) * widthM * 0.5,
+          y: hub.y - Number(lateral.y || 0) * widthM * 0.5,
+          z: hub.z - Number(lateral.z || 0) * widthM * 0.5
+        });
+        const outerProjected = projectPhysicalPoint({
+          x: hub.x + Number(lateral.x || 0) * widthM * 0.5,
+          y: hub.y + Number(lateral.y || 0) * widthM * 0.5,
+          z: hub.z + Number(lateral.z || 0) * widthM * 0.5
+        });
+        ctx.strokeStyle = '#d9e3e0';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        const screenRadius = topProjected?.visible && bottomProjected?.visible
+          ? Math.max(3, Math.hypot(
+              topProjected.screenX - bottomProjected.screenX,
+              topProjected.screenY - bottomProjected.screenY
+            ) * 0.5)
+          : 7;
+        ctx.arc(hubProjected.screenX, hubProjected.screenY, screenRadius, 0, Math.PI * 2);
+        ctx.stroke();
+        if (innerProjected?.visible && outerProjected?.visible) {
+          ctx.beginPath();
+          ctx.moveTo(innerProjected.screenX, innerProjected.screenY);
+          ctx.lineTo(outerProjected.screenX, outerProjected.screenY);
+          ctx.stroke();
+        }
+      }
+      if (hubProjected?.visible && mountProjected?.visible) {
+        ctx.strokeStyle = '#b18cff';
+        ctx.beginPath();
+        ctx.moveTo(mountProjected.screenX, mountProjected.screenY);
+        ctx.lineTo(hubProjected.screenX, hubProjected.screenY);
+        ctx.stroke();
+      }
+      if (contactProjected?.visible && patch.validTreadContact) {
+        ctx.fillStyle = '#73ff9b';
+        ctx.fillRect(contactProjected.screenX - 3, contactProjected.screenY - 3, 6, 6);
+      }
+    });
+    const latestTelemetry = runner?.telemetry?.at?.(-1) || runner?.latestTelemetry || {};
+    (latestTelemetry.bodyContacts || latestTelemetry.bodyCollision?.contacts || []).forEach((contact) => {
+      const projected = projectPhysicalPoint(contact.pointWorld);
+      if (!projected?.visible) return;
+      const normalEnd = projectPhysicalPoint({
+        x: contact.pointWorld.x + Number(contact.normal?.x || 0) * 0.6,
+        y: contact.pointWorld.y + Number(contact.normal?.y || 0) * 0.6,
+        z: contact.pointWorld.z + Number(contact.normal?.z || 0) * 0.6
+      });
+      ctx.fillStyle = contact.contactType === 'wheel-sidewall' ? '#ff9d55' : '#ff4f67';
+      ctx.beginPath();
+      ctx.arc(projected.screenX, projected.screenY, 4, 0, Math.PI * 2);
+      ctx.fill();
+      if (normalEnd?.visible) {
+        ctx.strokeStyle = ctx.fillStyle;
+        ctx.beginPath();
+        ctx.moveTo(projected.screenX, projected.screenY);
+        ctx.lineTo(normalEnd.screenX, normalEnd.screenY);
+        ctx.stroke();
+      }
+      ctx.font = '9px monospace';
+      ctx.fillText(`${contact.id} ${(Number(contact.penetrationM || 0) * 1000).toFixed(0)}mm`, projected.screenX + 5, projected.screenY - 5);
+    });
     Object.entries(wheels).forEach(([wheelId, wheel]) => {
       const contact = wheel?.contactPoint;
       if (!contact) return;
@@ -19117,6 +19373,7 @@ export default class RaceEditor {
           ? `aqua ${Math.round(Number(patch.aquaplaning.liftFraction) * 100)}%`
           : null
       ].filter(Boolean).join(' · ')];
+      if (patch.invalidContactReason) labelLines[1] += ` · ${patch.invalidContactReason}`;
       if (typeof ctx.fillText === 'function') {
         ctx.font = '10px monospace';
         const maximumTextWidth = Math.max(24, bounds.w - 18);
@@ -25274,6 +25531,76 @@ export default class RaceEditor {
         { id: 'weightKg', label: 'Weight', value: tuning.weightKg ?? 1495, min: 450, max: 2400, format: (value) => `${Math.round(value)} kg` },
         { id: 'weight-balance', label: 'Balance', value: tuning.frontWeightDistribution ?? 0.5, min: 0.35, max: 0.75, format: (value) => `${Math.round(value * 100)}% F` }
       ]);
+      return;
+    }
+    if (this.carTuneTab === 'body') {
+      const profile = this.getCarPhysicsBodyProfile(car);
+      const buttonWidth = Math.floor((content.w - gap * 3) / 4);
+      VEHICLE_BODY_SHAPE_PRESETS.forEach((preset, index) => {
+        this.registerDrawnButton(ctx, {
+          x: content.x + index * (buttonWidth + gap), y: content.y,
+          w: buttonWidth, h: 26
+        }, {
+          id: `car-body-preset-${preset}`,
+          label: preset.toUpperCase(),
+          active: profile.preset === preset,
+          onClick: () => this.setCarPhysicsBodyPreset(preset)
+        });
+      });
+      const resetY = content.y + 32;
+      this.registerDrawnButton(ctx, {
+        x: content.x, y: resetY, w: Math.floor((content.w - gap) / 2), h: 26
+      }, {
+        id: 'car-body-reset-preset', label: 'Reset to Preset',
+        onClick: () => this.setCarPhysicsBodyPreset(profile.preset)
+      });
+      if (profile.preset === 'custom') {
+        this.registerDrawnButton(ctx, {
+          x: content.x + Math.floor((content.w - gap) / 2) + gap, y: resetY,
+          w: Math.floor((content.w - gap) / 4), h: 26
+        }, { id: 'car-body-add-collider', label: '+ Box', onClick: () => this.addCarCustomBodyCollider() });
+        this.registerDrawnButton(ctx, {
+          x: content.x + Math.floor((content.w - gap) / 4) * 3 + gap, y: resetY,
+          w: Math.floor((content.w - gap) / 4), h: 26
+        }, { id: 'car-body-remove-collider', label: '- Box', onClick: () => this.removeCarCustomBodyCollider() });
+      }
+      ctx.save();
+      ctx.fillStyle = UI_SUITE.colors.muted;
+      ctx.font = `700 10px ${UI_SUITE.font.family}`;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      ctx.fillText(`CG  x ${profile.cgPositionM.x.toFixed(2)}  y ${profile.cgPositionM.y.toFixed(2)}  z ${profile.cgPositionM.z.toFixed(2)} m`, content.x, resetY + 32);
+      if (profile.preset === 'custom') {
+        const colliderNames = profile.customColliders.map(({ id }) => id).join(', ') || 'None';
+        ctx.fillText(`Custom colliders (${profile.customColliders.length}): ${colliderNames}`, content.x, resetY + 45, content.w);
+      }
+      ctx.restore();
+      const rows = [
+        { id: 'body-overallLengthM', label: 'Length', value: profile.overallLengthM, min: 1.6, max: 8 },
+        { id: 'body-overallWidthM', label: 'Width', value: profile.overallWidthM, min: 0.9, max: 3 },
+        { id: 'body-overallHeightM', label: 'Height', value: profile.overallHeightM, min: 0.7, max: 3 },
+        { id: 'body-groundClearanceM', label: 'Clearance', value: profile.groundClearanceM, min: 0.04, max: 0.6 },
+        { id: 'body-frontOverhangM', label: 'Front OH', value: profile.frontOverhangM, min: 0.15, max: 2 },
+        { id: 'body-rearOverhangM', label: 'Rear OH', value: profile.rearOverhangM, min: 0.15, max: 2 },
+        { id: 'body-lowerBodyHeightM', label: 'Lower Body', value: profile.lowerBodyHeightM, min: 0.12, max: 1.4 },
+        { id: 'body-hoodLengthM', label: 'Hood', value: profile.hood.lengthM, min: 0.2, max: 2.5 },
+        { id: 'body-cabinLengthM', label: 'Cabin Len', value: profile.cabin.lengthM, min: 0.4, max: 4.5 },
+        { id: 'body-cabinHeightM', label: 'Cabin H', value: profile.cabin.heightM, min: 0.2, max: 2 },
+        ...(profile.preset === 'pickup' ? [
+          { id: 'body-bedLengthM', label: 'Bed Len', value: profile.bed.lengthM, min: 0.3, max: 3.5 },
+          { id: 'body-bedHeightM', label: 'Bed H', value: profile.bed.heightM, min: 0.15, max: 1.5 }
+        ] : []),
+        { id: 'body-collisionFriction', label: 'Friction', value: profile.collisionFriction, min: 0, max: 1.5 },
+        { id: 'body-collisionRestitution', label: 'Restitution', value: profile.collisionRestitution, min: 0, max: 0.6 }
+      ];
+      const originalY = content.y;
+      content.y = resetY + 60;
+      content.h = Math.max(1, bounds.y + bounds.h - content.y - 10);
+      drawSliderRows(rows.map((row) => ({
+        ...row, format: (value) => row.id.includes('Friction') || row.id.includes('Restitution')
+          ? value.toFixed(2) : `${value.toFixed(2)} m`
+      })), { scrollKey: 'car-tune-physics-body' });
+      content.y = originalY;
       return;
     }
     if (this.carTuneTab === 'sfx') {
