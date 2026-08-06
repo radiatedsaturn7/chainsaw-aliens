@@ -140,6 +140,38 @@ test('smooth ramp retains authored support normal while its sharp entry is swept
   assert.equal(sharp.contacts.some(({ triangleId }) => triangleId === 'sharp-ramp'), true);
 });
 
+test('race broadphase leaves a smooth tangent ramp to ordinary tread support', () => {
+  const grade = 0.1;
+  const magnitude = Math.hypot(grade, 1);
+  const normal = { x: -grade / magnitude, y: 1 / magnitude, z: 0 };
+  let detailedTerrainQueries = 0;
+  let triangleQueries = 0;
+  const result = sweepWheelCylinders({
+    cylinders: [cylinder()],
+    environment: {
+      surfaceHeightByWheel: { fl: -0.08 * grade },
+      surfaceNormalByWheel: { fl: normal },
+      sampleTerrainMaximumHeightInBounds: (bounds) => bounds.maxX * grade,
+      sampleTerrainAtWorldPoint: (point) => {
+        detailedTerrainQueries += 1;
+        return surfaceSample(point.x * grade, 'smooth-ramp', normal);
+      },
+      sampleTerrainTrianglesInBounds: () => {
+        triangleQueries += 1;
+        return [];
+      }
+    },
+    toleranceM: 0.008,
+    spacingM: 0.01,
+    radialSamples: 32
+  });
+  assert.equal(result, null);
+  assert.equal(detailedTerrainQueries, 0,
+    'a planar grade must not enter the expensive cylinder feature sweep');
+  assert.equal(triangleQueries, 0,
+    'ordinary lower-tread support owns smooth terrain rather than the body manifold');
+});
+
 test('narrow convex crest cannot pass between the previous and proposed cylinder poses', () => {
   const result = sweepWheelCylinders({
     cylinders: [cylinder({
@@ -168,18 +200,17 @@ test('prepared triangle identity is preserved through a wheel-cylinder sweep', (
     })],
     environment: {
       sampleTerrainAtWorldPoint: (point) => surfaceSample(
-        0.1 + point.x * 0.3,
-        'prepared-triangle-42',
-        { x: -0.287348, y: 0.957826, z: 0 }
+        point.x >= 0 ? 0.1 : 0,
+        point.x >= 0 ? 'prepared-triangle-42' : 'road-flat'
       ),
       sampleTerrainTrianglesInBounds: () => [{
         id: 'prepared-triangle-42',
         vertices: [
-          { x: -1, y: -0.2, z: -2 },
-          { x: 2, y: 0.7, z: -2 },
-          { x: -1, y: -0.2, z: 2 }
+          { x: 0, y: 0, z: -2 },
+          { x: 0, y: 1, z: -2 },
+          { x: 0, y: 0, z: 2 }
         ],
-        normal: { x: -0.287348, y: 0.957826, z: 0 },
+        normal: { x: -1, y: 0, z: 0 },
         source: 'prepared-wrx2-fixture',
         region: 'road'
       }]
@@ -416,7 +447,9 @@ test('all WRX2 rise fixtures keep the same swept contact across speed and render
       const results = [30, 60, 90, 120, 144].map((fps) => (
         run(sampleTerrainAtWorldPoint, speedMps, fps)
       ));
-      assert.ok(results[0], `${name} at ${speedMps} m/s must produce a cylinder contact`);
+      if (name !== 'smooth-ramp') {
+        assert.ok(results[0], `${name} at ${speedMps} m/s must produce a cylinder contact`);
+      }
       results.slice(1).forEach((result) => assert.deepEqual(result, results[0]));
     });
   });

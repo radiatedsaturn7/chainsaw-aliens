@@ -319,30 +319,71 @@ function findHeightSweepContacts(cylinders, featuresByWheel, environment, tolera
   return contacts;
 }
 
+function createActivationReference(cylinder, environment) {
+  const heightM = Number(
+    environment.surfaceHeightByWheel?.[cylinder.wheelId]
+      ?? environment.groundHeightM
+  );
+  const rawNormal = environment.surfaceNormalByWheel?.[cylinder.wheelId];
+  if (!Number.isFinite(heightM) || !rawNormal) return null;
+  const normal = normalize(rawNormal);
+  if (Math.abs(normal.y) < 0.1) return null;
+  return {
+    point: cylinder.previousHubPositionWorld,
+    heightM,
+    normal
+  };
+}
+
+function tangentHeightAt(reference, point) {
+  if (!reference || Math.abs(reference.normal.y) < 0.1) return null;
+  return reference.heightM - (
+    reference.normal.x * (Number(point.x || 0) - reference.point.x)
+      + reference.normal.z * (Number(point.z || 0) - reference.point.z)
+  ) / reference.normal.y;
+}
+
+function cylinderActivationBounds(cylinder) {
+  return {
+    minX: Math.min(cylinder.previousHubPositionWorld.x, cylinder.hubPositionWorld.x)
+      - cylinder.radiusM,
+    maxX: Math.max(cylinder.previousHubPositionWorld.x, cylinder.hubPositionWorld.x)
+      + cylinder.radiusM,
+    minZ: Math.min(cylinder.previousHubPositionWorld.z, cylinder.hubPositionWorld.z)
+      - cylinder.radiusM - cylinder.widthM * 0.5,
+    maxZ: Math.max(cylinder.previousHubPositionWorld.z, cylinder.hubPositionWorld.z)
+      + cylinder.radiusM + cylinder.widthM * 0.5
+  };
+}
+
+function maximumTangentHeightInBounds(reference, bounds) {
+  return Math.max(
+    tangentHeightAt(reference, { x: bounds.minX, z: bounds.minZ }),
+    tangentHeightAt(reference, { x: bounds.minX, z: bounds.maxZ }),
+    tangentHeightAt(reference, { x: bounds.maxX, z: bounds.minZ }),
+    tangentHeightAt(reference, { x: bounds.maxX, z: bounds.maxZ })
+  );
+}
+
 function findActiveCylinders(cylinders, environment, spacingM) {
   if (typeof environment.sampleTerrainAtWorldPoint !== 'function'
     && typeof environment.sampleTerrainAtWorldPoints !== 'function') return [];
   const records = [];
   const directlyActiveWheelIds = new Set();
+  const activationReferences = new Map(cylinders.map((cylinder) => [
+    cylinder.wheelId, createActivationReference(cylinder, environment)
+  ]));
   const unresolvedCylinders = cylinders.filter((cylinder) => {
-    const baseHeightM = Number(
-      environment.surfaceHeightByWheel?.[cylinder.wheelId]
-        ?? environment.groundHeightM
-    );
-    if (!Number.isFinite(baseHeightM)
+    const reference = activationReferences.get(cylinder.wheelId);
+    if (!reference
       || typeof environment.sampleTerrainMaximumHeightInBounds !== 'function') return true;
-    const maximumHeightM = Number(environment.sampleTerrainMaximumHeightInBounds({
-      minX: Math.min(cylinder.previousHubPositionWorld.x, cylinder.hubPositionWorld.x)
-        - cylinder.radiusM,
-      maxX: Math.max(cylinder.previousHubPositionWorld.x, cylinder.hubPositionWorld.x)
-        + cylinder.radiusM,
-      minZ: Math.min(cylinder.previousHubPositionWorld.z, cylinder.hubPositionWorld.z)
-        - cylinder.radiusM - cylinder.widthM * 0.5,
-      maxZ: Math.max(cylinder.previousHubPositionWorld.z, cylinder.hubPositionWorld.z)
-        + cylinder.radiusM + cylinder.widthM * 0.5
-    }));
+    const bounds = cylinderActivationBounds(cylinder);
+    const maximumHeightM = Number(environment.sampleTerrainMaximumHeightInBounds(bounds));
     if (!Number.isFinite(maximumHeightM)) return true;
-    if (maximumHeightM - baseHeightM > 0.004) directlyActiveWheelIds.add(cylinder.wheelId);
+    const maximumTangentHeightM = maximumTangentHeightInBounds(reference, bounds);
+    if (maximumHeightM - maximumTangentHeightM > 0.004) {
+      directlyActiveWheelIds.add(cylinder.wheelId);
+    }
     return false;
   });
   unresolvedCylinders.forEach((cylinder) => {
@@ -400,45 +441,34 @@ function findActiveCylinders(cylinders, environment, spacingM) {
       source: 'wheel-cylinder-activation'
     });
     if (!sample.valid) return;
-    if (!stats.has(record.cylinder.wheelId)) stats.set(record.cylinder.wheelId, {
-      minimumHeightM: Infinity,
-      maximumHeightM: -Infinity,
-      firstNormal: sample.normal,
-      maximumNormalChange: 0
-    });
+    if (!stats.has(record.cylinder.wheelId)) {
+      const authoredReference = activationReferences.get(record.cylinder.wheelId);
+      stats.set(record.cylinder.wheelId, {
+        reference: authoredReference || {
+          point: record.point,
+          heightM: sample.heightM,
+          normal: sample.normal
+        },
+        minimumResidualM: Infinity,
+        maximumResidualM: -Infinity,
+        maximumNormalChange: 0
+      });
+    }
     const entry = stats.get(record.cylinder.wheelId);
-    entry.minimumHeightM = Math.min(entry.minimumHeightM, sample.heightM);
-    entry.maximumHeightM = Math.max(entry.maximumHeightM, sample.heightM);
+    const tangentHeightM = tangentHeightAt(entry.reference, record.point);
+    const residualM = sample.heightM - tangentHeightM;
+    entry.minimumResidualM = Math.min(entry.minimumResidualM, residualM);
+    entry.maximumResidualM = Math.max(entry.maximumResidualM, residualM);
     entry.maximumNormalChange = Math.max(
       entry.maximumNormalChange,
-      1 - clamp(dot(entry.firstNormal, sample.normal), -1, 1)
+      1 - clamp(dot(entry.reference.normal, sample.normal), -1, 1)
     );
   });
   return cylinders.filter((cylinder) => {
     if (directlyActiveWheelIds.has(cylinder.wheelId)) return true;
     const entry = stats.get(cylinder.wheelId);
     if (!entry) return false;
-    if (typeof environment.sampleTerrainMaximumHeightInBounds === 'function') {
-      const minimumX = Math.min(
-        cylinder.previousHubPositionWorld.x, cylinder.hubPositionWorld.x
-      ) - cylinder.radiusM;
-      const maximumX = Math.max(
-        cylinder.previousHubPositionWorld.x, cylinder.hubPositionWorld.x
-      ) + cylinder.radiusM;
-      const minimumZ = Math.min(
-        cylinder.previousHubPositionWorld.z, cylinder.hubPositionWorld.z
-      ) - cylinder.radiusM - cylinder.widthM * 0.5;
-      const maximumZ = Math.max(
-        cylinder.previousHubPositionWorld.z, cylinder.hubPositionWorld.z
-      ) + cylinder.radiusM + cylinder.widthM * 0.5;
-      const maximum = Number(environment.sampleTerrainMaximumHeightInBounds({
-        minX: minimumX, maxX: maximumX, minZ: minimumZ, maxZ: maximumZ
-      }));
-      if (Number.isFinite(maximum)) entry.maximumHeightM = Math.max(
-        entry.maximumHeightM, maximum
-      );
-    }
-    return entry.maximumHeightM - entry.minimumHeightM > 0.004
+    return entry.maximumResidualM - entry.minimumResidualM > 0.004
       || entry.maximumNormalChange > 1 - Math.cos(0.5 * Math.PI / 180);
   });
 }
