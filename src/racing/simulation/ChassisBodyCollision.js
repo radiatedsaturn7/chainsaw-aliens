@@ -7,6 +7,11 @@ import {
   scaleVector3
 } from './RigidBodyMath.js';
 import { normalizeVehicleBodyProfile } from './VehicleBodyProfile.js';
+import { createSurfaceSample } from './SurfaceSample.js';
+import {
+  createWheelCylinderSupportFeatures,
+  sweepWheelCylinders
+} from './WheelCylinderCollision.js';
 
 const EPSILON = 1e-9;
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -268,7 +273,10 @@ export class ChassisBodyCollision {
     const sampled = new Map();
     const terrainAt = (point) => {
       const key = `${point.x.toFixed(6)}:${point.z.toFixed(6)}`;
-      if (!sampled.has(key)) sampled.set(key, sampleTerrain(point) || {});
+      if (!sampled.has(key)) sampled.set(key, createSurfaceSample(sampleTerrain(point), {
+        queryPosition: point,
+        source: 'body-adaptive-support'
+      }));
       return sampled.get(key);
     };
     const subdivide = (left, right, depth) => {
@@ -277,9 +285,9 @@ export class ChassisBodyCollision {
       if (distanceM <= minimumSpacingM || depth >= maximumDepth) return;
       const leftTerrain = terrainAt(left.worldPoint);
       const rightTerrain = terrainAt(right.worldPoint);
-      const leftHeight = Number(leftTerrain.heightM ?? leftTerrain.elevationM);
-      const rightHeight = Number(rightTerrain.heightM ?? rightTerrain.elevationM);
-      if (!Number.isFinite(leftHeight) || !Number.isFinite(rightHeight)) return;
+      if (!leftTerrain.valid || !rightTerrain.valid) return;
+      const leftHeight = leftTerrain.heightM;
+      const rightHeight = rightTerrain.heightM;
       const leftNormal = normalize(leftTerrain.normal || leftTerrain.normalWorld);
       const rightNormal = normalize(rightTerrain.normal || rightTerrain.normalWorld);
       if (Math.abs(leftHeight - rightHeight) <= heightErrorM
@@ -343,15 +351,23 @@ export class ChassisBodyCollision {
     let deepestNormal = null;
     let invalidTerrainSampleCount = 0;
     let belowTerrainSampleCount = 0;
-    points.forEach(({ worldPoint }, index) => {
-      const terrain = terrainBatch?.[index]
+    let terrainTriangleIds = null;
+    let terrainSources = null;
+    let terrainRegions = null;
+    let penetratingFeatureIds = null;
+    points.forEach(({ candidate, worldPoint }, index) => {
+      const rawTerrain = terrainBatch?.[index]
         || (typeof sampleTerrain === 'function' ? sampleTerrain(worldPoint) : null)
         || {};
-      const heightM = Number(terrain.heightM ?? terrain.elevationM);
-      if (!Number.isFinite(heightM)) {
+      const terrain = createSurfaceSample(rawTerrain, {
+        queryPosition: worldPoint,
+        source: 'body-penetration-query'
+      });
+      if (!terrain.valid) {
         invalidTerrainSampleCount += 1;
         return;
       }
+      const heightM = terrain.heightM;
       const normal = normalize(terrain.normal || terrain.normalWorld);
       const surfacePoint = { x: worldPoint.x, y: heightM, z: worldPoint.z };
       const penetrationM = -dot(
@@ -361,7 +377,19 @@ export class ChassisBodyCollision {
         maximumPenetrationM = penetrationM;
         deepestNormal = normal;
       }
-      if (penetrationM > toleranceM) belowTerrainSampleCount += 1;
+      if (penetrationM > toleranceM) {
+        belowTerrainSampleCount += 1;
+        terrainTriangleIds ||= new Set();
+        terrainSources ||= new Set();
+        terrainRegions ||= new Set();
+        penetratingFeatureIds ||= new Set();
+        if (terrain.triangleId !== null && terrain.triangleId !== undefined) {
+          terrainTriangleIds.add(String(terrain.triangleId));
+        }
+        if (terrain.source) terrainSources.add(String(terrain.source));
+        if (terrain.region) terrainRegions.add(String(terrain.region));
+        if (candidate?.id) penetratingFeatureIds.add(String(candidate.id));
+      }
     });
     return {
       maximumPenetrationM: Number.isFinite(maximumPenetrationM) ? maximumPenetrationM : null,
@@ -369,6 +397,10 @@ export class ChassisBodyCollision {
       invalidTerrainSampleCount,
       validTerrainSampleCount: points.length - invalidTerrainSampleCount,
       belowTerrainSampleCount,
+      terrainTriangleIds: terrainTriangleIds ? [...terrainTriangleIds].sort() : [],
+      terrainSources: terrainSources ? [...terrainSources].sort() : [],
+      terrainRegions: terrainRegions ? [...terrainRegions].sort() : [],
+      penetratingFeatureIds: penetratingFeatureIds ? [...penetratingFeatureIds].sort() : [],
       allBodySamplesBelowTerrain: belowTerrainSampleCount > 0
         && belowTerrainSampleCount === points.length - invalidTerrainSampleCount,
       allTerrainSamplesInvalid: invalidTerrainSampleCount === points.length
@@ -477,8 +509,16 @@ export class ChassisBodyCollision {
     );
     const conservativeMinimumBodyHeightM = Math.min(...endpointWorldPoints.map((point) => point.y))
       - bodyRadiusM * angularTravelRad;
+    const wheelCylinderSweep = sweepWheelCylinders({
+      cylinders: environment.wheelCylinderSweeps || [],
+      environment,
+      toleranceM,
+      spacingM: config.wheelCylinderSweepSpacingM,
+      radialSamples: config.wheelCylinderRadialSamples
+    });
     if (Number.isFinite(knownMaximumTerrainHeightM)
-      && conservativeMinimumBodyHeightM - knownMaximumTerrainHeightM > toleranceM) {
+      && conservativeMinimumBodyHeightM - knownMaximumTerrainHeightM > toleranceM
+      && !wheelCylinderSweep) {
       return {
         linearImpulseWorldNs: { x: 0, y: 0, z: 0 },
         angularImpulseWorldNms: { x: 0, y: 0, z: 0 },
@@ -488,16 +528,50 @@ export class ChassisBodyCollision {
         maximumPenetrationM: 0
       };
     }
-    const sweep = this.findSweepImpact(previousWorkingState, proposedState, environment, toleranceM, {
+    const bodySweep = this.findSweepImpact(previousWorkingState, proposedState, environment, toleranceM, {
       ...config,
       __collisionSubstepDt: dt
     });
+    let sweep = bodySweep;
+    let sweepSource = bodySweep ? 'body' : null;
+    if (wheelCylinderSweep && (!sweep
+      || wheelCylinderSweep.fraction < sweep.fraction - 1e-8)) {
+      sweep = {
+        fraction: wheelCylinderSweep.fraction,
+        pose: {
+          position: mixVector(
+            previousWorkingState?.position || proposedState.position,
+            proposedState.position,
+            wheelCylinderSweep.fraction
+          ),
+          orientation: mixQuaternion(
+            previousWorkingState?.orientation || proposedState.orientation,
+            proposedState.orientation,
+            wheelCylinderSweep.fraction
+          )
+        },
+        sample: null
+      };
+      sweepSource = 'wheel-cylinder';
+    }
     if (sweep) {
       workingState.position = { ...sweep.pose.position };
       workingState.orientation = { ...sweep.pose.orientation };
     }
+    const wheelSupportFeatures = environment.wheelCylinderSweeps?.length
+      ? createWheelCylinderSupportFeatures(
+        environment.wheelCylinderSweeps, sweep?.fraction ?? 1
+      )
+      : (environment.wheelCollisionSupportFeatures || []);
+    const sweptWheelContactFeatures = wheelCylinderSweep
+      && wheelCylinderSweep.fraction <= (sweep?.fraction ?? 1) + 2e-4
+      ? wheelCylinderSweep.contacts : [];
+    const uniqueWheelSupportFeatures = wheelSupportFeatures.filter((feature) => (
+      !sweptWheelContactFeatures.some((contact) => contact.wheelId === feature.wheelId
+        && length(addVector3(contact.worldPoint, scaleVector3(feature.worldPoint, -1))) < 1e-5)
+    ));
     const candidateWorld = this.getAdaptiveSupportWorld(workingState, environment)
-      .concat((environment.wheelCollisionSupportFeatures || []).map((feature) => ({
+      .concat(uniqueWheelSupportFeatures.concat(sweptWheelContactFeatures).map((feature) => ({
       candidate: feature,
       arm: addVector3(feature.worldPoint, scaleVector3(workingState.position, -1)),
       worldPoint: feature.worldPoint
@@ -527,18 +601,25 @@ export class ChassisBodyCollision {
       ? sampleTerrainBatch(candidateWorld.map(({ worldPoint }) => worldPoint))
       : null;
     const contacts = candidateWorld.map(({ candidate, arm, worldPoint }, candidateIndex) => {
-      const terrain = terrainBatch?.[candidateIndex]
+      const rawTerrain = candidate.surfaceSample || terrainBatch?.[candidateIndex]
         || (typeof sampleTerrain === 'function' ? sampleTerrain(worldPoint) : null)
         || {};
-      const heightM = Number(terrain.heightM ?? terrain.elevationM);
-      if (!Number.isFinite(heightM)) return null;
-      const normal = normalize(terrain.normal || terrain.normalWorld);
+      const terrain = createSurfaceSample(rawTerrain, {
+        queryPosition: worldPoint,
+        source: 'body-contact-query'
+      });
+      if (!terrain.valid) return null;
+      const heightM = terrain.heightM;
+      const normal = normalize(candidate.collisionNormal || terrain.normal || terrain.normalWorld);
       const surfacePoint = { x: worldPoint.x, y: heightM, z: worldPoint.z };
-      const penetrationM = -dot(addVector3(worldPoint, scaleVector3(surfacePoint, -1)), normal);
+      const penetrationM = Number.isFinite(Number(candidate.penetrationM))
+        ? Number(candidate.penetrationM)
+        : -dot(addVector3(worldPoint, scaleVector3(surfacePoint, -1)), normal);
       if (penetrationM <= toleranceM) return null;
       return {
         id: candidate.id,
         candidateIndex,
+        localPoint: candidate.localPoint || null,
         arm,
         pointWorld: worldPoint,
         normal,
@@ -550,6 +631,13 @@ export class ChassisBodyCollision {
         pieceId: candidate.pieceId || null,
         wheelId: candidate.wheelId || null,
         contactType: candidate.contactType || 'body',
+        triangleId: candidate.triangleId ?? terrain.triangleId,
+        terrainSource: candidate.terrainSource ?? terrain.source,
+        terrainRegion: candidate.terrainRegion ?? terrain.region,
+        poweredTreadContact: candidate.poweredTreadContact === true,
+        widthFraction: candidate.widthFraction ?? null,
+        partialWidth: candidate.partialWidth === true,
+        sweepMechanism: candidate.mechanism || null,
         normalImpulseNs: 0,
         tangentialImpulseNs: 0,
         restitutionImpulseNs: 0,
@@ -560,6 +648,18 @@ export class ChassisBodyCollision {
         ) > 0 && /lower|frame|underbody|underside|rocker/.test(candidate.id)
       };
     }).filter(Boolean);
+    const unsupportedAtContactStart = Number(
+      environment.suspensionBodyContactSupport?.supportedWheelCount || 0
+    ) === 0;
+    const initialUnsupportedMaximumPenetrationM = unsupportedAtContactStart
+      ? contacts.reduce((maximum, contact) => Math.max(maximum, contact.penetrationM), 0)
+      : null;
+    const initialUnsupportedAllBodySamplesBelowTerrain = unsupportedAtContactStart
+      && contacts.length > 0
+      && contacts.filter((contact) => !contact.contactType.startsWith('wheel-')).length
+        === candidateWorld.filter(({ candidate }) => (
+          !String(candidate.contactType || '').startsWith('wheel-')
+        )).length;
     let linearImpulse = { x: 0, y: 0, z: 0 };
     let angularImpulse = { x: 0, y: 0, z: 0 };
     const restitution = clamp(Number(config.bodyCollisionRestitution ?? 0.08), 0, 0.6);
@@ -642,21 +742,103 @@ export class ChassisBodyCollision {
         contact.tangentialImpulseNs += frictionImpulseMagnitude;
       });
     }
-    // Correct against the deepest manifold point. Averaging penetration over
-    // every contact leaves the deepest point underground and produces a train
-    // of small visible pops on subsequent substeps.
-    const deepestContact = contacts.reduce((deepest, contact) => (
-      !deepest || contact.penetrationM > deepest.penetrationM ? contact : deepest
-    ), null);
-    const correction = deepestContact
+    // Split-impulse stabilization operates on pose only. Solving its angular
+    // component is essential on a convex rise: rotating the chassis onto its
+    // tire/body support manifold avoids a large vertical translation while
+    // adding no velocity or rebound energy.
+    const maximumPositionalCorrectionM = clamp(
+      Number(config.bodyCollisionMaximumPositionalCorrectionM ?? 0.25),
+      0.06,
+      0.25
+    );
+    let splitPositionalCorrection = { x: 0, y: 0, z: 0 };
+    let splitAngularCorrection = { x: 0, y: 0, z: 0 };
+    const maximumSplitTranslationM = maximumPositionalCorrectionM;
+    const maximumSplitRotationRad = 0.35;
+    for (let iteration = 0; iteration < 6; iteration += 1) {
+      let corrected = false;
+      contacts.forEach((contact) => {
+        // Swept wheel-cylinder contacts are velocity constraints at a physical
+        // tire/terrain feature. Giving them the body's split-impulse lift
+        // would manufacture a climbing force; normal and friction impulses
+        // alone carry their response until ordinary tread support takes over.
+        if (contact.contactType === 'wheel-leading-tread'
+          || contact.contactType === 'wheel-sidewall') return;
+        const arm = contact.localPoint
+          ? rotateVectorByQuaternion(contact.localPoint, workingState.orientation)
+          : contact.arm;
+        const pointWorld = addVector3(workingState.position, arm);
+        const terrain = createSurfaceSample(
+          typeof sampleTerrain === 'function' ? sampleTerrain(pointWorld) : null,
+          { queryPosition: pointWorld, source: 'body-split-impulse-query' }
+        );
+        if (!terrain.valid) return;
+        const normal = terrain.normal;
+        const surfacePoint = { x: pointWorld.x, y: terrain.heightM, z: pointWorld.z };
+        const penetrationM = -dot(
+          addVector3(pointWorld, scaleVector3(surfacePoint, -1)), normal
+        );
+        if (!(penetrationM > toleranceM)) return;
+        const denominator = Math.max(EPSILON, effectiveMassDenominator(
+          normal, arm, config, workingState.orientation
+        ));
+        const pseudoImpulseMagnitude = (penetrationM - toleranceM) / denominator * 0.72;
+        const pseudoImpulse = scaleVector3(normal, pseudoImpulseMagnitude);
+        let linearCorrection = scaleVector3(pseudoImpulse, 1 / Math.max(1, config.massKg));
+        const remainingTranslationM = Math.max(
+          0,
+          maximumSplitTranslationM - length(splitPositionalCorrection)
+        );
+        const linearLength = length(linearCorrection);
+        if (linearLength > remainingTranslationM && linearLength > EPSILON) {
+          linearCorrection = scaleVector3(linearCorrection, remainingTranslationM / linearLength);
+        }
+        let angularCorrection = inverseInertiaWorldMultiply(
+          crossVector3(arm, pseudoImpulse),
+          workingState.orientation,
+          config.inertiaTensorBodyKgM2
+        );
+        const remainingRotationRad = Math.max(
+          0,
+          maximumSplitRotationRad - length(splitAngularCorrection)
+        );
+        const angularLength = length(angularCorrection);
+        if (angularLength > remainingRotationRad && angularLength > EPSILON) {
+          angularCorrection = scaleVector3(
+            angularCorrection, remainingRotationRad / angularLength
+          );
+        }
+        workingState.position = addVector3(workingState.position, linearCorrection);
+        workingState.orientation = integrateQuaternion(
+          workingState.orientation,
+          angularCorrection,
+          1
+        );
+        splitPositionalCorrection = addVector3(
+          splitPositionalCorrection, linearCorrection
+        );
+        splitAngularCorrection = addVector3(splitAngularCorrection, angularCorrection);
+        corrected = true;
+      });
+      if (!corrected) break;
+    }
+    const postSplitPenetration = this.samplePosePenetration(
+      workingState, environment, toleranceM
+    );
+    const correction = Number(postSplitPenetration.maximumPenetrationM) > toleranceM
+      && postSplitPenetration.deepestNormal
       ? scaleVector3(
-          deepestContact.normal,
-          Math.max(0, deepestContact.penetrationM - toleranceM)
+          postSplitPenetration.deepestNormal,
+          Number(postSplitPenetration.maximumPenetrationM) - toleranceM
         )
       : { x: 0, y: 0, z: 0 };
     const correctionLength = length(correction);
-    const boundedCorrection = correctionLength > 0.06
-      ? scaleVector3(correction, 0.06 / correctionLength)
+    const remainingDirectCorrectionM = Math.max(
+      0,
+      maximumPositionalCorrectionM - length(splitPositionalCorrection)
+    );
+    const boundedCorrection = correctionLength > remainingDirectCorrectionM
+      ? scaleVector3(correction, remainingDirectCorrectionM / Math.max(EPSILON, correctionLength))
       : correction;
     workingState.position = addVector3(workingState.position, boundedCorrection);
     const remainingDt = sweep ? Math.max(0, dt * (1 - sweep.fraction)) : 0;
@@ -672,7 +854,12 @@ export class ChassisBodyCollision {
       );
     }
     let finalCorrection = { x: 0, y: 0, z: 0 };
-    let remainingCorrectionBudgetM = Math.max(0, 0.06 - length(boundedCorrection));
+    let remainingCorrectionBudgetM = Math.max(
+      0,
+      maximumPositionalCorrectionM
+        - length(splitPositionalCorrection)
+        - length(boundedCorrection)
+    );
     for (let iteration = 0; iteration < 4 && remainingCorrectionBudgetM > EPSILON; iteration += 1) {
       const finalPenetration = this.samplePosePenetration(workingState, environment, toleranceM);
       if (!(Number(finalPenetration.maximumPenetrationM) > toleranceM)
@@ -689,7 +876,10 @@ export class ChassisBodyCollision {
       finalCorrection = addVector3(finalCorrection, applied);
       remainingCorrectionBudgetM -= length(applied);
     }
-    let totalPositionalCorrection = addVector3(boundedCorrection, finalCorrection);
+    let totalPositionalCorrection = addVector3(
+      splitPositionalCorrection,
+      addVector3(boundedCorrection, finalCorrection)
+    );
     let safePoseRollbackFraction = null;
     let residualPenetration = this.samplePosePenetration(workingState, environment, toleranceM);
     if (Number(residualPenetration.maximumPenetrationM) > toleranceM
@@ -737,15 +927,52 @@ export class ChassisBodyCollision {
       positionalCorrectionWorldM: totalPositionalCorrection,
       bodyNormalImpulseNs: contacts.reduce((sum, contact) => sum + contact.normalImpulseNs, 0),
       bodyFrictionImpulseNs: contacts.reduce((sum, contact) => sum + contact.tangentialImpulseNs, 0),
+      wheelCylinderNormalImpulseNs: contacts.filter(({ contactType }) => (
+        String(contactType).startsWith('wheel-')
+      )).reduce((sum, contact) => sum + contact.normalImpulseNs, 0),
+      wheelCylinderFrictionImpulseNs: contacts.filter(({ contactType }) => (
+        String(contactType).startsWith('wheel-')
+      )).reduce((sum, contact) => sum + contact.tangentialImpulseNs, 0),
       restitutionContributionNs: contacts.reduce((sum, contact) => sum + contact.restitutionImpulseNs, 0),
       penetrationBiasContributionNs: 0,
+      maximumPositionalCorrectionM,
+      positionalAngularCorrectionWorldRad: splitAngularCorrection,
+      initialUnsupportedMaximumPenetrationM,
+      initialUnsupportedAllBodySamplesBelowTerrain,
       swept: Boolean(sweep),
+      sweepSource,
+      wheelCylinderSweep: wheelCylinderSweep ? {
+        fraction: wheelCylinderSweep.fraction,
+        activeWheelIds: [...wheelCylinderSweep.activeWheelIds],
+        terrainTriangleIds: [...wheelCylinderSweep.terrainTriangleIds],
+        contacts: wheelCylinderSweep.contacts.map((contact) => ({
+          id: contact.id,
+          wheelId: contact.wheelId,
+          contactType: contact.contactType,
+          poweredTreadContact: contact.poweredTreadContact,
+          triangleId: contact.triangleId,
+          terrainSource: contact.terrainSource,
+          widthFraction: contact.widthFraction,
+          partialWidth: contact.partialWidth,
+          sweepFraction: contact.sweepFraction,
+          mechanism: contact.mechanism
+        }))
+      } : null,
       timeOfImpactFraction: sweep?.fraction ?? null,
       maximumPenetrationM: contacts.reduce((maximum, contact) => (
         Math.max(maximum, Number(contact.penetrationM || 0))
       ), 0),
       residualPenetrationM: residualPenetration.maximumPenetrationM,
       safePoseRollbackFraction,
+      supportPoints: environment.capturePhysicsIncidentDiagnostics === true
+        ? candidateWorld.map(({ candidate, worldPoint }) => ({
+            id: candidate.id,
+            pieceId: candidate.pieceId || null,
+            wheelId: candidate.wheelId || null,
+            contactType: candidate.contactType || 'body',
+            worldPoint: { ...worldPoint }
+          }))
+        : [],
       contacts
     };
   }
