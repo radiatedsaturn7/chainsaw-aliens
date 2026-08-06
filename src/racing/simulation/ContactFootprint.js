@@ -1,7 +1,8 @@
 import { clamp } from './SimulationMath.js';
 
 export function resolveContactFootprint(samples = [], { maxGapM = 0.045, minimumSamples = 4 } = {}) {
-  const valid = samples.filter((s) => Number.isFinite(Number(s.heightM)) && s.supported !== false)
+  const valid = samples.filter((s) => s.valid !== false
+      && Number.isFinite(Number(s.heightM)) && s.supported !== false)
     .slice(0, 8);
   if (!valid.length) return { supportedFraction: 0, heightM: null, normal: { x: 0, y: 1, z: 0 }, samples: [] };
   const sorted = [...valid].sort((left, right) => Number(right.heightM) - Number(left.heightM));

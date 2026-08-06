@@ -423,6 +423,7 @@ function samplePackedRaceBakedSurface(sampler, worldPoint, preferredRegion = nul
     if (!best || score > best.score || (score === best.score && elevation > best.elevation)) {
       const normalOffset = triangleIndex * 3;
       best = {
+        triangleId: triangleIndex,
         elevation,
         normal: {
           x: sampler.normals[normalOffset],
@@ -477,6 +478,7 @@ export function sampleRaceBakedSurface(sampler = null, worldPoint = null, {
     const score = Number(triangle.priority || 0) + (regionMatch ? 20 : 0);
     if (!best || score > best.score || (score === best.score && elevation > best.elevation)) {
       best = {
+        triangleId: triangleIndex,
         elevation,
         normal: triangle.normal,
         region: triangle.region,
@@ -546,6 +548,93 @@ export function getRaceBakedSurfaceMaximumElevationInBounds(sampler = null, boun
     });
   });
   return Number.isFinite(maximum) ? maximum : null;
+}
+
+function collectTriangleIndicesInBounds(sampler, { minX, maxX, minZ, maxZ }) {
+  const bucketSize = Math.max(4, Number(sampler.bucketSizeM) || 20);
+  const indices = new Set();
+  if (sampler.packed) {
+    if (!sampler.bucketLookup) {
+      sampler.bucketLookup = new Map();
+      for (let index = 0; index < sampler.bucketOffsets.length - 1; index += 1) {
+        sampler.bucketLookup.set(
+          `${sampler.bucketCoords[index * 2]},${sampler.bucketCoords[index * 2 + 1]}`,
+          index
+        );
+      }
+    }
+    for (let z = Math.floor(minZ / bucketSize); z <= Math.floor(maxZ / bucketSize); z += 1) {
+      for (let x = Math.floor(minX / bucketSize); x <= Math.floor(maxX / bucketSize); x += 1) {
+        const bucketIndex = sampler.bucketLookup.get(`${x},${z}`);
+        if (!Number.isFinite(bucketIndex)) continue;
+        for (let entry = sampler.bucketOffsets[bucketIndex]; entry < sampler.bucketOffsets[bucketIndex + 1]; entry += 1) {
+          indices.add(Number(sampler.bucketTriangles[entry]));
+        }
+      }
+    }
+  } else {
+    for (let z = Math.floor(minZ / bucketSize); z <= Math.floor(maxZ / bucketSize); z += 1) {
+      for (let x = Math.floor(minX / bucketSize); x <= Math.floor(maxX / bucketSize); x += 1) {
+        (sampler.buckets.get(`${x},${z}`) || []).forEach((index) => indices.add(index));
+      }
+    }
+  }
+  return [...indices].sort((left, right) => left - right);
+}
+
+// Diagnostic export used by incident fixtures. It deliberately copies the
+// prepared sampler's exact vertices and normals instead of rebuilding a local
+// approximation from route distance or analytical elevation.
+export function getRaceBakedSurfaceTrianglesInBounds(sampler = null, bounds = {}) {
+  if (!sampler?.triangleCount) return [];
+  const resolved = {
+    minX: Number(bounds.minX), maxX: Number(bounds.maxX),
+    minZ: Number(bounds.minZ), maxZ: Number(bounds.maxZ)
+  };
+  if (!Object.values(resolved).every(Number.isFinite)) return [];
+  return collectTriangleIndicesInBounds(sampler, resolved).flatMap((triangleIndex) => {
+    if (sampler.packed) {
+      const boundOffset = triangleIndex * 4;
+      if (sampler.bounds[boundOffset + 1] < resolved.minX
+        || sampler.bounds[boundOffset] > resolved.maxX
+        || sampler.bounds[boundOffset + 3] < resolved.minZ
+        || sampler.bounds[boundOffset + 2] > resolved.maxZ) return [];
+      const positionOffset = triangleIndex * 9;
+      const normalOffset = triangleIndex * 3;
+      return [{
+        id: triangleIndex,
+        vertices: [0, 1, 2].map((vertexIndex) => ({
+          x: Number(sampler.positions[positionOffset + vertexIndex * 3]),
+          elevation: Number(sampler.positions[positionOffset + vertexIndex * 3 + 1]),
+          z: Number(sampler.positions[positionOffset + vertexIndex * 3 + 2])
+        })),
+        normal: {
+          x: Number(sampler.normals[normalOffset]),
+          y: Number(sampler.normals[normalOffset + 1]),
+          z: Number(sampler.normals[normalOffset + 2])
+        },
+        region: sampler.regionTable[sampler.regions[triangleIndex]] || 'terrain',
+        source: sampler.sourceTable[sampler.sources[triangleIndex]] || 'terrain',
+        priority: Number(sampler.priorities[triangleIndex] || 0)
+      }];
+    }
+    const triangle = sampler.triangles[triangleIndex];
+    if (!triangle || triangle.maxX < resolved.minX || triangle.minX > resolved.maxX
+      || triangle.maxZ < resolved.minZ || triangle.minZ > resolved.maxZ) return [];
+    return [{
+      id: triangleIndex,
+      canonicalTriangleIndex: triangle.canonicalTriangleIndex ?? null,
+      vertices: triangle.vertices.map((vertex) => ({
+        x: Number(vertex.x || 0),
+        elevation: Number(vertex.elevation || 0),
+        z: pointZ(vertex)
+      })),
+      normal: { ...triangle.normal },
+      region: triangle.region,
+      source: triangle.source,
+      priority: Number(triangle.priority || 0)
+    }];
+  });
 }
 
 export default buildRaceBakedSurfaceSampler;

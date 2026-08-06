@@ -1,3 +1,5 @@
+import { createSurfaceSample } from './simulation/SurfaceSample.js';
+
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 export function getRaceWheelSurfaceState({
@@ -133,15 +135,22 @@ export function createRaceWheelContactStateFromSamples({
   const heights = {};
   wheelIds.forEach((wheelId) => {
     const position = positions[wheelId];
-    const surfaceSample = surfaceSamples[wheelId] || {};
+    const rawSurfaceSample = surfaceSamples[wheelId] || {};
+    const authoritativeSample = createSurfaceSample(rawSurfaceSample, {
+      queryPosition: position,
+      heightScale: elevationScaleM,
+      source: rawSurfaceSample.bakedSurfaceSource || 'race-wheel-contact'
+    });
+    const surfaceSample = { ...rawSurfaceSample, ...authoritativeSample };
     const projection = surfaceSample.projection;
     const segment = surfaceSample.segment || projection?.segment || selectedSegment;
-    const surfaceElevation = Number(surfaceSample.elevation || 0);
+    const surfaceElevation = authoritativeSample.valid
+      ? authoritativeSample.heightM / elevationScaleM : null;
     const localTrackState = groundedByWheel?.[wheelId] === false
       ? null
       : trackState?.sample?.(position) || null;
     const terrain = surfaceSample.region === 'terrain' ? 'off-road' : surfaceSample.region;
-    const heightM = surfaceElevation * elevationScaleM;
+    const heightM = authoritativeSample.valid ? authoritativeSample.heightM : null;
     contacts[wheelId] = {
       ...position,
       projection,
@@ -156,15 +165,24 @@ export function createRaceWheelContactStateFromSamples({
       trackState: localTrackState,
       normal: surfaceSample.normal,
       elevation: surfaceElevation,
-      heightM
+      heightM,
+      surfaceSample: authoritativeSample,
+      valid: authoritativeSample.valid,
+      triangleId: authoritativeSample.triangleId,
+      source: authoritativeSample.source,
+      invalidReason: authoritativeSample.reason
     };
-    heights[wheelId] = heightM;
+    if (authoritativeSample.valid) heights[wheelId] = heightM;
   });
-  const averageHeightM = wheelIds.reduce((sum, wheelId) => sum + Number(heights[wheelId] || 0), 0) / wheelIds.length;
-  const leftHeightM = ((heights.fl || 0) + (heights.rl || 0)) * 0.5;
-  const rightHeightM = ((heights.fr || 0) + (heights.rr || 0)) * 0.5;
-  const frontHeightM = ((heights.fl || 0) + (heights.fr || 0)) * 0.5;
-  const rearHeightM = ((heights.rl || 0) + (heights.rr || 0)) * 0.5;
+  const averageFinite = (ids) => {
+    const values = ids.map((wheelId) => heights[wheelId]).filter(Number.isFinite);
+    return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
+  };
+  const averageHeightM = averageFinite(wheelIds);
+  const leftHeightM = averageFinite(['fl', 'rl']);
+  const rightHeightM = averageFinite(['fr', 'rr']);
+  const frontHeightM = averageFinite(['fl', 'fr']);
+  const rearHeightM = averageFinite(['rl', 'rr']);
   const wheelbaseM = Math.max(2.1, Number(tuning.wheelbaseM) || carDimensions.wheelbaseM || 2.7);
   const trackWidthM = Math.max(1.2, Number(tuning.trackWidthM) || carDimensions.trackWidthM || 1.55);
   return {
@@ -176,8 +194,10 @@ export function createRaceWheelContactStateFromSamples({
     rightHeightM,
     frontHeightM,
     rearHeightM,
-    terrainPitchRad: clamp(Math.atan2(frontHeightM - rearHeightM, wheelbaseM), -0.42, 0.42),
-    terrainRollRad: clamp(Math.atan2(rightHeightM - leftHeightM, trackWidthM), -0.42, 0.42)
+    terrainPitchRad: Number.isFinite(frontHeightM) && Number.isFinite(rearHeightM)
+      ? clamp(Math.atan2(frontHeightM - rearHeightM, wheelbaseM), -0.42, 0.42) : 0,
+    terrainRollRad: Number.isFinite(rightHeightM) && Number.isFinite(leftHeightM)
+      ? clamp(Math.atan2(rightHeightM - leftHeightM, trackWidthM), -0.42, 0.42) : 0
   };
 }
 

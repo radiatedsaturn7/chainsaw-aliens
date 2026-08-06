@@ -1,3 +1,5 @@
+import { createInvalidSurfaceSample, createSurfaceSample } from './simulation/SurfaceSample.js';
+
 const DEFAULT_FLAT_JOIN_WIDTH_M = 0.5;
 const DEFAULT_SLOPE_BLEND_WIDTH_M = 4;
 const DEG_TO_RAD = Math.PI / 180;
@@ -516,7 +518,9 @@ export class RaceSurfaceModel {
         ? this.adapter.sampleBakedSurface(worldPoint, { preferredRegion: 'terrain' })
         : null;
       return baked?.region === 'terrain'
-        ? { ...raw, elevation: this.clampElevation(baked.elevation), normal: baked.normal, bakedSurfaceSource: baked.source }
+        ? { ...raw, elevation: this.clampElevation(baked.elevation), normal: baked.normal,
+            bakedSurfaceSource: baked.source, bakedTriangleId: baked.triangleId,
+            bakedElevation: baked.elevation, bakedNormal: baked.normal }
         : raw;
     }
     const track = this.sampleTrack(Number(projection.distance || 0), Number(projection.lateral || 0), {
@@ -534,7 +538,9 @@ export class RaceSurfaceModel {
         ? this.adapter.sampleBakedSurface(worldPoint, { preferredRegion: 'terrain' })
         : null;
       return baked?.region === 'terrain'
-        ? { ...raw, elevation: this.clampElevation(baked.elevation), normal: baked.normal, bakedSurfaceSource: baked.source }
+        ? { ...raw, elevation: this.clampElevation(baked.elevation), normal: baked.normal,
+            bakedSurfaceSource: baked.source, bakedTriangleId: baked.triangleId,
+            bakedElevation: baked.elevation, bakedNormal: baked.normal }
         : raw;
     }
     const baked = typeof this.adapter.sampleBakedSurface === 'function'
@@ -552,6 +558,9 @@ export class RaceSurfaceModel {
       elevation: bakedMatchesRegion ? this.clampElevation(baked.elevation) : track.elevation,
       normal: bakedMatchesRegion ? baked.normal : track.normal,
       bakedSurfaceSource: bakedMatchesRegion ? baked.source : null,
+      bakedTriangleId: bakedMatchesRegion ? baked.triangleId : null,
+      bakedElevation: bakedMatchesRegion ? baked.elevation : null,
+      bakedNormal: bakedMatchesRegion ? baked.normal : null,
       projection: {
         ...projection,
         distance: Number(projection.distance || 0),
@@ -582,23 +591,60 @@ export class RaceSurfaceModel {
 
   samplePhysicsGeometry(worldPoint = {}, context = {}) {
     this.performanceDiagnostics.geometryQueries += 1;
+    const queryX = worldPoint?.x;
+    const queryZ = worldPoint?.z ?? worldPoint?.y;
+    if (queryX === null || queryX === undefined || queryZ === null || queryZ === undefined
+      || !Number.isFinite(Number(queryX)) || !Number.isFinite(Number(queryZ))) {
+      return {
+        ...createInvalidSurfaceSample({
+          queryPosition: worldPoint,
+          source: 'prepared-race-surface',
+          reason: 'invalid-query-position'
+        }),
+        elevation: null,
+        friction: null,
+        surfaceId: null,
+        projection: null
+      };
+    }
     const point = {
-      x: Number(worldPoint.x || 0),
-      z: Number(worldPoint.z ?? worldPoint.y ?? 0)
+      x: Number(queryX),
+      z: Number(queryZ)
+    };
+    const finalize = (sample) => {
+      const contract = createSurfaceSample(sample, {
+        queryPosition: point,
+        heightScale: this.elevationScaleM,
+        source: sample.bakedSurfaceSource || `race-${sample.region || 'terrain'}`
+      });
+      return {
+        ...sample,
+        ...contract,
+        elevation: contract.valid && Number.isFinite(Number(sample.elevation))
+          ? Number(sample.elevation)
+          : contract.valid ? contract.heightM / this.elevationScaleM : null,
+        normal: contract.normal
+      };
     };
     const projection = typeof this.adapter.projectWorldToTrack === 'function'
       ? this.adapter.projectWorldToTrack(point)
       : null;
     if (!projection?.segment || !Number.isFinite(Number(projection.lateral))) {
       const full = this.sampleWorld(point, Number(context.fallbackElevation || 0), context);
-      return {
+      return finalize({
         elevation: full.elevation,
         normal: full.normal,
         region: full.region,
         friction: full.friction,
         surfaceId: full.surfaceId,
-        projection: full.projection
-      };
+        projection: full.projection,
+        analyticalElevation: full.rawElevation ?? full.roadElevation ?? full.elevation,
+        analyticalNormal: full.rawNormal ?? full.normal,
+        bakedTriangleId: full.bakedTriangleId ?? null,
+        bakedElevation: full.bakedElevation ?? null,
+        bakedNormal: full.bakedNormal ?? null,
+        bakedSurfaceSource: full.bakedSurfaceSource ?? null
+      });
     }
     const deck = this.sampleDeckAtDistance(Number(projection.distance || 0), {
       ...context,
@@ -611,14 +657,20 @@ export class RaceSurfaceModel {
     );
     if (classification.region === 'transition' || classification.region === 'terrain') {
       const full = this.sampleWorld(point, Number(context.fallbackElevation || 0), context);
-      return {
+      return finalize({
         elevation: full.elevation,
         normal: full.normal,
         region: full.region,
         friction: full.friction,
         surfaceId: full.surfaceId,
-        projection: full.projection
-      };
+        projection: full.projection,
+        analyticalElevation: full.rawElevation ?? full.roadElevation ?? full.elevation,
+        analyticalNormal: full.rawNormal ?? full.normal,
+        bakedTriangleId: full.bakedTriangleId ?? null,
+        bakedElevation: full.bakedElevation ?? null,
+        bakedNormal: full.bakedNormal ?? null,
+        bakedSurfaceSource: full.bakedSurfaceSource ?? null
+      });
     }
     const region = classification.region;
     const analyticElevation = this.getBankedDeckElevation(deck, Number(projection.lateral || 0));
@@ -635,18 +687,24 @@ export class RaceSurfaceModel {
       context.weatherState || this.getWeatherState()
     );
     const terrainGripScale = region === 'margin' ? 0.96 : 1;
-    return {
+    return finalize({
       elevation: bakedMatchesRegion ? this.clampElevation(baked.elevation) : analyticElevation,
       normal: bakedMatchesRegion ? baked.normal : analyticNormal,
       region,
       friction: clamp(Number(this.getSurfaceById(surfaceId).grip || 1) * terrainGripScale, 0.18, 1.2),
       surfaceId,
+      analyticalElevation: analyticElevation,
+      analyticalNormal: analyticNormal,
+      bakedTriangleId: bakedMatchesRegion ? baked.triangleId : null,
+      bakedElevation: bakedMatchesRegion ? baked.elevation : null,
+      bakedNormal: bakedMatchesRegion ? baked.normal : null,
+      bakedSurfaceSource: bakedMatchesRegion ? baked.source : null,
       projection: {
         ...projection,
         segment: projection.segment || deck.segment,
         yaw: Number(projection.yaw ?? deck.yaw ?? 0)
       }
-    };
+    });
   }
 
   samplePhysicsGeometryBatch(points = [], context = {}) {

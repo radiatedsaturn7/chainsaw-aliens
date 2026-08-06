@@ -1,12 +1,32 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { createPenetrationRecoveryRouteSearch } from '../../src/racing/RaceSimulation.js';
 
 const raceEditorUrl = new URL('../../src/ui/RaceEditor.js', import.meta.url);
 const simulationUrl = new URL('../../src/racing/RaceSimulation.js', import.meta.url);
 const surfaceModelUrl = new URL('../../src/racing/simulation/SurfaceModel.js', import.meta.url);
 const trackStateUrl = new URL('../../src/racing/trackState/TrackState.js', import.meta.url);
 const damageModelUrl = new URL('../../src/racing/simulation/DamageModel.js', import.meta.url);
+
+test('penetration route fallback never invents distance zero when every route source is missing', () => {
+  assert.deepEqual(createPenetrationRecoveryRouteSearch({
+    preferredRouteDistances: [],
+    projectedDistance: null,
+    sessionRouteDistance: undefined,
+    routeLength: 500
+  }), []);
+  const fromHistory = createPenetrationRecoveryRouteSearch({
+    preferredRouteDistances: [238, 236],
+    projectedDistance: null,
+    sessionRouteDistance: null,
+    routeLength: 500,
+    searchStepM: 2,
+    maximumSearchM: 6
+  });
+  assert.deepEqual(fromHistory, [238, 236, 234, 232]);
+  assert.equal(fromHistory.includes(0), false);
+});
 
 test('RaceEditor playtest update is an orchestration boundary, not a dynamics loop', async () => {
   const source = await readFile(raceEditorUrl, 'utf8');
