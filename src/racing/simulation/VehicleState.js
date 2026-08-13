@@ -5,11 +5,31 @@
  * suspension outputs are synchronized into session fields only for legacy
  * render/audio consumers.
  */
+function copyRecordInto(target, source) {
+  for (const key in target) {
+    if (!Object.hasOwn(source || {}, key)) delete target[key];
+  }
+  for (const key in source || {}) target[key] = source[key];
+  return target;
+}
+
+function copyVectorInto(target, source, includeW = false) {
+  target.x = Number(source?.x || 0);
+  target.y = Number(source?.y || 0);
+  target.z = Number(source?.z || 0);
+  if (includeW) target.w = Number(source?.w ?? 1);
+  return target;
+}
+
 export function getAuthoritativeVehicleState(session = null) {
   return session && typeof session === 'object' ? session : null;
 }
 
 export function getAuthoritativeChassisState(vehicleState = null) {
+  if (vehicleState?.vehicle3d?.authoritativeSource === 'VehicleDynamicsWorker'
+    && vehicleState?.vehicleDynamicsPresentationState) {
+    return vehicleState.vehicleDynamicsPresentationState;
+  }
   if (vehicleState?.vehicleDynamicsRunner?.state) return vehicleState.vehicleDynamicsRunner.state;
   return vehicleState?.vehicle3d?.enabled ? vehicleState.vehicle3d : null;
 }
@@ -17,6 +37,7 @@ export function getAuthoritativeChassisState(vehicleState = null) {
 export function syncVehicleDynamicsCompatibilityOutputs(runner = null, session = null) {
   if (!runner?.state || !session) return session;
   const state = runner.state;
+  session.vehicleDynamicsPresentationState = null;
   session.vehicleDynamicsRunner = runner;
   session.worldX = Number(state.position.x || 0);
   session.worldY = Number(state.position.y || 0);
@@ -42,51 +63,108 @@ export function syncVehicleDynamicsCompatibilityOutputs(runner = null, session =
   session.verticalVelocityMps = session.velocityY;
   session.engineRpm = Number(state.powertrainState?.engineRpm ?? state.engineRpm ?? 0);
   session.gear = Number(state.powertrainState?.gear ?? state.gear ?? 0);
-  session.suspensionTravel = { ...(state.suspensionTravel || {}) };
-  session.diagnostics = {
-    ...(session.diagnostics || {}),
-    tireTemperature: Object.fromEntries(Object.entries(state.tireState || {}).map(([wheelId, tire]) => [
-      wheelId, Number(tire.temperatureF ?? 70)
-    ])),
-    tireWear: Object.fromEntries(Object.entries(state.tireState || {}).map(([wheelId, tire]) => [
-      wheelId, Number(tire.wear || 0)
-    ]))
-  };
-  session.wheelAngularVelocityRadps = { ...(state.wheelAngularVelocityRadps || {}) };
-  session.wheelContacts = { ...(state.contactPatches || {}) };
+  session.suspensionTravel = copyRecordInto(
+    session.suspensionTravel || {},
+    state.suspensionTravel
+  );
+  const diagnostics = session.diagnostics || {};
+  const tireTemperature = diagnostics.tireTemperature || {};
+  const tireWear = diagnostics.tireWear || {};
+  const tireState = state.tireState || {};
+  for (const wheelId in tireTemperature) {
+    if (!Object.hasOwn(tireState, wheelId)) delete tireTemperature[wheelId];
+  }
+  for (const wheelId in tireWear) {
+    if (!Object.hasOwn(tireState, wheelId)) delete tireWear[wheelId];
+  }
+  for (const wheelId in tireState) {
+    const tire = tireState[wheelId] || {};
+    tireTemperature[wheelId] = Number(tire.temperatureF ?? 70);
+    tireWear[wheelId] = Number(tire.wear || 0);
+  }
+  diagnostics.tireTemperature = tireTemperature;
+  diagnostics.tireWear = tireWear;
+  session.diagnostics = diagnostics;
+  session.wheelAngularVelocityRadps = copyRecordInto(
+    session.wheelAngularVelocityRadps || {},
+    state.wheelAngularVelocityRadps
+  );
+  session.wheelContacts = copyRecordInto(
+    session.wheelContacts || {},
+    state.contactPatches
+  );
   session.grounded = state.grounded !== false;
   session.airborne = !session.grounded;
-  session.vehicle3d = {
-    ...(session.vehicle3d || {}),
-    enabled: true,
-    authoritativeSource: 'VehicleDynamicsRunner',
-    position: { ...state.position },
-    linearVelocity: { ...state.velocity },
-    orientation: { ...state.orientation },
-    angularVelocity: { ...state.angularVelocityWorld },
-    yaw: session.carYaw,
-    pitch: session.pitchRad,
-    roll: session.rollRad,
-    wheels: Object.fromEntries(Object.entries(state.contactPatches || {}).map(([wheelId, patch]) => [
-      wheelId,
-      {
-        ...(session.vehicle3d?.wheels?.[wheelId] || {}),
-        id: wheelId,
-        inContact: Number(patch.normalLoadN || 0) > 1,
-        normalLoadN: Number(patch.normalLoadN || 0),
-        angularSpeedRadps: Number(state.wheelAngularVelocityRadps?.[wheelId] || 0),
-        compressionRatio: Number(state.suspensionTravel?.[wheelId] || 0),
-        contactPoint: { ...patch.contactPointWorld },
-        normal: { ...patch.surfaceNormalWorld },
-        longitudinalSlipRatio: Number(patch.slipRatio || 0),
-        slipLateral: Math.abs(Math.tan(Number(patch.slipAngleRad || 0))),
-        tireLimitN: Number(patch.combinedSlipLimitN || 0),
-        loadSensitivityMultiplier: Number(patch.gripCoefficient || 1),
-        gripCoefficient: Number(patch.gripCoefficient || 1),
-        frictionCircleScale: Math.max(0.5, Math.min(1, 1 - Number(patch.utilization || 0) * 0.42))
-      }
-    ]))
-  };
+  const vehicle3d = session.vehicle3d || {};
+  vehicle3d.enabled = true;
+  vehicle3d.authoritativeSource = 'VehicleDynamicsRunner';
+  vehicle3d.position = copyVectorInto(vehicle3d.position || {}, state.position);
+  vehicle3d.linearVelocity = copyVectorInto(
+    vehicle3d.linearVelocity || {}, state.velocity
+  );
+  vehicle3d.orientation = copyVectorInto(
+    vehicle3d.orientation || {}, state.orientation, true
+  );
+  vehicle3d.angularVelocity = copyVectorInto(
+    vehicle3d.angularVelocity || {}, state.angularVelocityWorld
+  );
+  vehicle3d.yaw = session.carYaw;
+  vehicle3d.pitch = session.pitchRad;
+  vehicle3d.roll = session.rollRad;
+  const wheels = vehicle3d.wheels || {};
+  const contactPatches = state.contactPatches || {};
+  for (const wheelId in wheels) {
+    if (!Object.hasOwn(contactPatches, wheelId)) delete wheels[wheelId];
+  }
+  for (const wheelId in contactPatches) {
+    const patch = contactPatches[wheelId] || {};
+    const wheel = wheels[wheelId] || {};
+    wheel.id = wheelId;
+    wheel.inContact = Number(patch.normalLoadN || 0) > 1;
+    wheel.normalLoadN = Number(patch.normalLoadN || 0);
+    wheel.angularSpeedRadps = Number(state.wheelAngularVelocityRadps?.[wheelId] || 0);
+    wheel.compressionRatio = Number(state.suspensionTravel?.[wheelId] || 0);
+    const suspension = state.suspensionState?.[wheelId] || {};
+    const hubPosition = patch.hubPositionWorld
+      || suspension.hubPositionWorld
+      || patch.wheelCenterWorld;
+    if (hubPosition) {
+      wheel.position = copyVectorInto(wheel.position || {}, hubPosition);
+    } else {
+      delete wheel.position;
+    }
+    const suspensionMount = patch.suspensionMountPositionWorld
+      || suspension.suspensionMountPositionWorld;
+    if (suspensionMount) {
+      wheel.suspensionMount = copyVectorInto(
+        wheel.suspensionMount || {}, suspensionMount
+      );
+    } else {
+      delete wheel.suspensionMount;
+    }
+    const suspensionAxis = patch.suspensionAxisWorld || suspension.suspensionAxisWorld;
+    if (suspensionAxis) {
+      wheel.suspensionAxis = copyVectorInto(wheel.suspensionAxis || {}, suspensionAxis);
+    } else {
+      delete wheel.suspensionAxis;
+    }
+    wheel.contactPoint = copyVectorInto(
+      wheel.contactPoint || {}, patch.contactPointWorld
+    );
+    wheel.normal = copyVectorInto(wheel.normal || {}, patch.surfaceNormalWorld);
+    wheel.longitudinalSlipRatio = Number(patch.slipRatio || 0);
+    wheel.slipLateral = Math.abs(Math.tan(Number(patch.slipAngleRad || 0)));
+    wheel.tireLimitN = Number(patch.combinedSlipLimitN || 0);
+    wheel.loadSensitivityMultiplier = Number(patch.gripCoefficient || 1);
+    wheel.gripCoefficient = Number(patch.gripCoefficient || 1);
+    wheel.frictionCircleScale = Math.max(
+      0.5,
+      Math.min(1, 1 - Number(patch.utilization || 0) * 0.42)
+    );
+    wheels[wheelId] = wheel;
+  }
+  vehicle3d.wheels = wheels;
+  session.vehicle3d = vehicle3d;
   return session;
 }
 

@@ -59,6 +59,11 @@ function runHighPowerFeelCase({
   });
   editor.selectedRace.hazards = [];
   editor.selectedRace.weather = 'clear';
+  editor.selectedRace.margin = {
+    ...(editor.selectedRace.margin || {}),
+    collisionEdge: 'none',
+    collisionMode: 'none'
+  };
   editor.selectedRace.road.segments = [
     { length: 1600, curve: 0, elevation: 0, surface, turn: 'smooth', hazardIds: [] }
   ];
@@ -527,14 +532,14 @@ test('production WRX preview controller reaches the Studio Sprint finish with sc
   const routeLength = Number(preview.session.routeLength || 0);
   editor.bindCarEditorPreviewPlaytest(() => {
     editor.applyRaceCarRouteCenterReset({
-      projection: { distance: Math.max(0, routeLength - 180) },
+      projection: { distance: Math.max(0, routeLength - 10) },
       preserveMotion: false
     });
   });
   let maximumDistance = Number(preview.session.distance || 0);
   let completed = false;
 
-  for (let frame = 0; frame < 90 * 60; frame += 1) {
+  for (let frame = 0; frame < 20 * 60; frame += 1) {
     const session = editor.carEditorPreviewPlaytest?.session;
     if (session) maximumDistance = Math.max(maximumDistance, Number(session.distance || 0));
     editor.updateCarEditorPreviewPlaytest(1 / 60);

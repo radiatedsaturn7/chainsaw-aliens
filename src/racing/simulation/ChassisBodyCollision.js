@@ -12,8 +12,13 @@ import {
   createWheelCylinderSupportFeatures,
   sweepWheelCylinders
 } from './WheelCylinderCollision.js';
+import { StaticColliderCollision } from './StaticRaceColliderWorld.js';
 
 const EPSILON = 1e-9;
+const terrainSampleContract = (raw, queryPosition, source) => {
+  if (raw?.physicsTerrainQueryFrameSample === true) return raw;
+  return createSurfaceSample(raw, { queryPosition, source });
+};
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const dot = (a = {}, b = {}) => Number(a.x || 0) * Number(b.x || 0)
   + Number(a.y || 0) * Number(b.y || 0)
@@ -42,6 +47,69 @@ const mixQuaternion = (a = {}, b = {}, t = 0) => {
   const magnitude = Math.hypot(mixed.x, mixed.y, mixed.z, mixed.w) || 1;
   return { x: mixed.x / magnitude, y: mixed.y / magnitude, z: mixed.z / magnitude, w: mixed.w / magnitude };
 };
+
+function mixPoseInto(previousState = {}, proposedState = {}, fraction = 0, target = {}) {
+  const previousPosition = previousState.position || {};
+  const proposedPosition = proposedState.position || {};
+  const position = target.position;
+  position.x = Number(previousPosition.x || 0)
+    + (Number(proposedPosition.x || 0) - Number(previousPosition.x || 0)) * fraction;
+  position.y = Number(previousPosition.y || 0)
+    + (Number(proposedPosition.y || 0) - Number(previousPosition.y || 0)) * fraction;
+  position.z = Number(previousPosition.z || 0)
+    + (Number(proposedPosition.z || 0) - Number(previousPosition.z || 0)) * fraction;
+  const previousOrientation = previousState.orientation || {};
+  const proposedOrientation = proposedState.orientation || {};
+  const ax = Number(previousOrientation.x || 0);
+  const ay = Number(previousOrientation.y || 0);
+  const az = Number(previousOrientation.z || 0);
+  const aw = Number(previousOrientation.w ?? 1);
+  const bx = Number(proposedOrientation.x || 0);
+  const by = Number(proposedOrientation.y || 0);
+  const bz = Number(proposedOrientation.z || 0);
+  const bw = Number(proposedOrientation.w ?? 1);
+  const sign = ax * bx + ay * by + az * bz + aw * bw < 0 ? -1 : 1;
+  const orientation = target.orientation;
+  orientation.x = ax + (bx * sign - ax) * fraction;
+  orientation.y = ay + (by * sign - ay) * fraction;
+  orientation.z = az + (bz * sign - az) * fraction;
+  orientation.w = aw + (bw * sign - aw) * fraction;
+  const magnitude = Math.hypot(
+    orientation.x,
+    orientation.y,
+    orientation.z,
+    orientation.w
+  ) || 1;
+  orientation.x /= magnitude;
+  orientation.y /= magnitude;
+  orientation.z /= magnitude;
+  orientation.w /= magnitude;
+  return target;
+}
+
+function rotateVectorInto(vector = {}, quaternion = {}, target = {}) {
+  const vx = Number(vector.x || 0);
+  const vy = Number(vector.y || 0);
+  const vz = Number(vector.z || 0);
+  const qx = Number(quaternion.x || 0);
+  const qy = Number(quaternion.y || 0);
+  const qz = Number(quaternion.z || 0);
+  const qw = Number(quaternion.w ?? 1);
+  const tx = 2 * (qy * vz - qz * vy);
+  const ty = 2 * (qz * vx - qx * vz);
+  const tz = 2 * (qx * vy - qy * vx);
+  target.x = vx + qw * tx + (qy * tz - qz * ty);
+  target.y = vy + qw * ty + (qz * tx - qx * tz);
+  target.z = vz + qw * tz + (qx * ty - qy * tx);
+  return target;
+}
+
+function integerPairKey(first, second) {
+  const encodedFirst = first >= 0 ? first * 2 : -first * 2 - 1;
+  const encodedSecond = second >= 0 ? second * 2 : -second * 2 - 1;
+  const sum = encodedFirst + encodedSecond;
+  return sum * (sum + 1) * 0.5 + encodedSecond;
+}
 
 export function createChassisBodyContactCandidates(config = {}) {
   const profile = normalizeVehicleBodyProfile(config.bodyProfile || {}, {
@@ -205,12 +273,59 @@ function applyImpulse(working, impulse, arm, config) {
 export class ChassisBodyCollision {
   constructor(config = {}) {
     this.candidates = createChassisBodyContactCandidates(config);
+    this.staticColliderCollision = new StaticColliderCollision({ candidates: this.candidates });
     this.supportEnvelopeBucketM = clamp(
       Number(config.bodyCollisionSupportSpacingM || 0.55) * 0.5,
       0.1,
       0.4
     );
     this.supportCandidateCache = new Map();
+    this.penetrationCacheCapacity = 64;
+    this.penetrationCacheFrameSequence = -1;
+    this.penetrationCacheKeys = new Float64Array(this.penetrationCacheCapacity * 8);
+    this.penetrationCacheValues = new Array(this.penetrationCacheCapacity).fill(null);
+    this.broadphaseLocalScratch = { x: 0, y: 0, z: 0 };
+    this.broadphaseArmScratch = { x: 0, y: 0, z: 0 };
+    this.broadphaseBoundsScratch = { minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
+    this.lowerHullVariationReference = {
+      point: { x: 0, y: 0, z: 0 },
+      heightM: 0,
+      normal: { x: 0, y: 1, z: 0 }
+    };
+    this.lowerHullVariationOptions = {
+      heightToleranceM: 0.025,
+      normalToleranceRad: 8 * Math.PI / 180
+    };
+    this.sweepPoseScratch = {
+      position: { x: 0, y: 0, z: 0 },
+      orientation: { x: 0, y: 0, z: 0, w: 1 }
+    };
+    this.adaptivePieceBuckets = new Map();
+    this.adaptiveBucketArrayPool = [];
+    const minimumLocalY = this.candidates.reduce((minimum, candidate) => (
+      Math.min(minimum, Number(candidate.localPoint?.y ?? Infinity))
+    ), Infinity);
+    const lowerFacing = this.candidates.filter((candidate) => (
+      Number(candidate.localPoint?.y ?? Infinity) <= minimumLocalY + 0.03
+      || candidate.localNormals?.some((normal) => Number(normal.y || 0) < -0.5)
+    ));
+    const lowerBuckets = new Map();
+    const lowerSpacingM = Math.max(0.45, this.supportEnvelopeBucketM * 3);
+    lowerFacing.forEach((candidate) => {
+      const point = candidate.localPoint || {};
+      const key = `${Math.round(Number(point.x || 0) / lowerSpacingM)}:${Math.round(
+        Number(point.z || 0) / lowerSpacingM
+      )}`;
+      const existing = lowerBuckets.get(key);
+      if (!existing || Number(point.y || 0) < Number(existing.localPoint?.y || 0)
+        || (Number(point.y || 0) === Number(existing.localPoint?.y || 0)
+          && String(candidate.id) < String(existing.id))) {
+        lowerBuckets.set(key, candidate);
+      }
+    });
+    this.lowerHullCandidates = Object.freeze([...lowerBuckets.values()].sort((left, right) => (
+      String(left.id).localeCompare(String(right.id))
+    )));
   }
 
   createWorkingState(state = {}) {
@@ -249,11 +364,40 @@ export class ChassisBodyCollision {
     return result;
   }
 
-  getAdaptiveSupportWorld(pose, environment = {}) {
-    const base = this.getSupportCandidates(pose).map((candidate) => {
-      const arm = rotateVectorByQuaternion(candidate.localPoint, pose.orientation);
-      return { candidate, arm, worldPoint: addVector3(pose.position, arm) };
-    });
+  getAdaptiveSupportWorldUnprofiled(pose, environment = {}, target = null) {
+    const precomputedCandidates = environment.precomputedAdaptiveBodySupportCandidates;
+    const sourceCandidates = Array.isArray(precomputedCandidates)
+      ? precomputedCandidates : this.getSupportCandidates(pose);
+    const targetBuffer = target && !Array.isArray(target) ? target : null;
+    const base = targetBuffer?.entries || target || [];
+    const spareEntries = targetBuffer?.spareEntries || null;
+    if (spareEntries) {
+      while (base.length > sourceCandidates.length) spareEntries.push(base.pop());
+    } else {
+      base.length = sourceCandidates.length;
+    }
+    for (let index = 0; index < sourceCandidates.length; index += 1) {
+      const candidate = sourceCandidates[index];
+      let entry = base[index] || spareEntries?.pop();
+      if (!entry) {
+        entry = {
+          candidate: null,
+          arm: { x: 0, y: 0, z: 0 },
+          worldPoint: { x: 0, y: 0, z: 0 }
+        };
+        if (target) {
+          environment.physicsCostAccounting?.count('temporaryObjects', 3);
+          environment.physicsCostAccounting?.count('bodySupportEntryAllocations');
+        }
+      }
+      entry.candidate = candidate;
+      rotateVectorInto(candidate.localPoint, pose.orientation, entry.arm);
+      entry.worldPoint.x = Number(pose.position?.x || 0) + entry.arm.x;
+      entry.worldPoint.y = Number(pose.position?.y || 0) + entry.arm.y;
+      entry.worldPoint.z = Number(pose.position?.z || 0) + entry.arm.z;
+      base[index] = entry;
+    }
+    if (Array.isArray(precomputedCandidates)) return base;
     const sampleTerrain = environment.sampleTerrainAtWorldPoint;
     // Prepared terrain bakes flag only tiles containing meaningful height or
     // normal variation. Flat tiles retain the bounded cached support set.
@@ -272,12 +416,11 @@ export class ChassisBodyCollision {
     const additions = [];
     const sampled = new Map();
     const terrainAt = (point) => {
-      const key = `${point.x.toFixed(6)}:${point.z.toFixed(6)}`;
-      if (!sampled.has(key)) sampled.set(key, createSurfaceSample(sampleTerrain(point), {
+      if (!sampled.has(point)) sampled.set(point, createSurfaceSample(sampleTerrain(point), {
         queryPosition: point,
         source: 'body-adaptive-support'
       }));
-      return sampled.get(key);
+      return sampled.get(point);
     };
     const subdivide = (left, right, depth) => {
       if (additions.length >= maximumAdditions) return;
@@ -311,71 +454,260 @@ export class ChassisBodyCollision {
       subdivide(middle, right, depth + 1);
     };
     const neighborLimitM = this.supportEnvelopeBucketM * 3;
-    const buckets = new Map();
-    base.forEach((entry, index) => {
-      const key = `${entry.candidate.pieceId}:${Math.floor(entry.worldPoint.x / neighborLimitM)}:${Math.floor(entry.worldPoint.z / neighborLimitM)}`;
-      if (!buckets.has(key)) buckets.set(key, []);
-      buckets.get(key).push(index);
-    });
-    const visitedPairs = new Set();
-    base.forEach((entry, first) => {
+    for (const pieceBuckets of this.adaptivePieceBuckets.values()) pieceBuckets.clear();
+    let bucketArrayCount = 0;
+    for (let index = 0; index < base.length; index += 1) {
+      const entry = base[index];
+      const pieceId = entry.candidate.pieceId;
+      let pieceBuckets = this.adaptivePieceBuckets.get(pieceId);
+      if (!pieceBuckets) {
+        pieceBuckets = new Map();
+        this.adaptivePieceBuckets.set(pieceId, pieceBuckets);
+      }
       const bucketX = Math.floor(entry.worldPoint.x / neighborLimitM);
       const bucketZ = Math.floor(entry.worldPoint.z / neighborLimitM);
+      const key = integerPairKey(bucketX, bucketZ);
+      let bucket = pieceBuckets.get(key);
+      if (!bucket) {
+        bucket = this.adaptiveBucketArrayPool[bucketArrayCount] || [];
+        this.adaptiveBucketArrayPool[bucketArrayCount] = bucket;
+        bucketArrayCount += 1;
+        bucket.length = 0;
+        pieceBuckets.set(key, bucket);
+      }
+      bucket.push(index);
+    }
+    for (let first = 0; first < base.length; first += 1) {
+      const entry = base[first];
+      const bucketX = Math.floor(entry.worldPoint.x / neighborLimitM);
+      const bucketZ = Math.floor(entry.worldPoint.z / neighborLimitM);
+      const pieceBuckets = this.adaptivePieceBuckets.get(entry.candidate.pieceId);
       for (let offsetX = -1; offsetX <= 1; offsetX += 1) {
         for (let offsetZ = -1; offsetZ <= 1; offsetZ += 1) {
-          const key = `${entry.candidate.pieceId}:${bucketX + offsetX}:${bucketZ + offsetZ}`;
-          (buckets.get(key) || []).forEach((second) => {
-            if (second <= first) return;
-            const pairKey = `${first}:${second}`;
-            if (visitedPairs.has(pairKey)) return;
-            visitedPairs.add(pairKey);
-            if (length(addVector3(base[second].worldPoint,
-              scaleVector3(entry.worldPoint, -1))) <= neighborLimitM) {
+          const bucket = pieceBuckets?.get(integerPairKey(
+            bucketX + offsetX,
+            bucketZ + offsetZ
+          ));
+          if (!bucket) continue;
+          for (let bucketIndex = 0; bucketIndex < bucket.length; bucketIndex += 1) {
+            const second = bucket[bucketIndex];
+            if (second <= first) continue;
+            const secondPoint = base[second].worldPoint;
+            if (Math.hypot(
+              Number(secondPoint.x || 0) - Number(entry.worldPoint.x || 0),
+              Number(secondPoint.y || 0) - Number(entry.worldPoint.y || 0),
+              Number(secondPoint.z || 0) - Number(entry.worldPoint.z || 0)
+            ) <= neighborLimitM) {
               subdivide(entry, base[second], 0);
             }
-          });
+          }
         }
       }
-    });
+    }
     return base.concat(additions);
   }
 
-  samplePosePenetration(pose, environment, toleranceM) {
+  getLowerHullSupportWorldUnprofiled(pose, environment = {}, target = null) {
+    const targetBuffer = target && !Array.isArray(target) ? target : null;
+    const base = targetBuffer?.entries || target || [];
+    const spareEntries = targetBuffer?.spareEntries || null;
+    if (spareEntries) {
+      while (base.length > this.lowerHullCandidates.length) spareEntries.push(base.pop());
+    } else {
+      base.length = this.lowerHullCandidates.length;
+    }
+    for (let index = 0; index < this.lowerHullCandidates.length; index += 1) {
+      const candidate = this.lowerHullCandidates[index];
+      let entry = base[index] || spareEntries?.pop();
+      if (!entry) {
+        entry = {
+          candidate: null,
+          arm: { x: 0, y: 0, z: 0 },
+          worldPoint: { x: 0, y: 0, z: 0 }
+        };
+        if (target) {
+          environment.physicsCostAccounting?.count('temporaryObjects', 3);
+          environment.physicsCostAccounting?.count('bodyLowerHullEntryAllocations');
+        }
+      }
+      entry.candidate = candidate;
+      rotateVectorInto(candidate.localPoint, pose.orientation, entry.arm);
+      entry.worldPoint.x = Number(pose.position?.x || 0) + entry.arm.x;
+      entry.worldPoint.y = Number(pose.position?.y || 0) + entry.arm.y;
+      entry.worldPoint.z = Number(pose.position?.z || 0) + entry.arm.z;
+      base[index] = entry;
+    }
+    return base;
+  }
+
+  sampleLowerHullMaximumPenetrationM(pose, environment = {}) {
+    const queryFrame = environment.physicsTerrainQueryFrame;
     const sampleTerrain = environment.sampleTerrainAtWorldPoint;
-    const sampleTerrainBatch = environment.sampleTerrainAtWorldPoints;
-    const points = this.getAdaptiveSupportWorld(pose, environment);
-    const terrainBatch = typeof sampleTerrainBatch === 'function'
-      ? sampleTerrainBatch(points.map(({ worldPoint }) => worldPoint))
+    const supportBuffer = queryFrame?.acquireBodySupportBuffer?.() || null;
+    const support = this.getLowerHullSupportWorldUnprofiled(
+      pose,
+      environment,
+      supportBuffer
+    );
+    const terrainBatch = typeof queryFrame?.sampleSupportEntries === 'function'
+      ? queryFrame.sampleSupportEntries(support)
       : null;
     let maximumPenetrationM = -Infinity;
-    let deepestNormal = null;
+    for (let index = 0; index < support.length; index += 1) {
+      const point = support[index].worldPoint;
+      const raw = terrainBatch?.[index]
+        || (typeof sampleTerrain === 'function' ? sampleTerrain(point) : null);
+      const heightM = Number(raw?.heightM);
+      if (raw?.valid === false || !Number.isFinite(heightM)) {
+        queryFrame?.releaseBodySupportBuffer?.(supportBuffer);
+        return null;
+      }
+      const normalY = Math.max(0.05, Number(raw?.normal?.y ?? raw?.normalWorld?.y ?? 1));
+      maximumPenetrationM = Math.max(
+        maximumPenetrationM,
+        (heightM - Number(point.y || 0)) * normalY
+      );
+    }
+    queryFrame?.releaseBodySupportBuffer?.(supportBuffer);
+    return maximumPenetrationM;
+  }
+
+  prepareAdaptiveSupportCandidates(previousPose, proposedPose, environment = {}) {
+    if (environment.adaptiveBodySupport !== true
+      && environment.terrainHasDiscontinuities !== true) return null;
+    // Avoid cloning the full contact environment inside the 360 Hz path. The
+    // adaptive-support override is the only property that differs here.
+    const buildEnvironment = Object.create(environment);
+    buildEnvironment.precomputedAdaptiveBodySupportCandidates = null;
+    const previous = previousPose
+      ? this.getAdaptiveSupportWorldUnprofiled(previousPose, buildEnvironment) : [];
+    const proposed = this.getAdaptiveSupportWorldUnprofiled(proposedPose, buildEnvironment);
+    const candidates = [];
+    const keys = new Set();
+    previous.concat(proposed).forEach(({ candidate }) => {
+      const local = candidate.localPoint || {};
+      const key = `${candidate.id}:${Number(local.x || 0).toFixed(6)}:${Number(local.y || 0).toFixed(6)}:${Number(local.z || 0).toFixed(6)}`;
+      if (keys.has(key)) return;
+      keys.add(key);
+      candidates.push(candidate);
+    });
+    environment.precomputedAdaptiveBodySupportCandidates = candidates;
+    return candidates;
+  }
+
+  getAdaptiveSupportWorld(pose, environment = {}) {
+    const physicsCosts = environment.physicsCostAccounting;
+    const queryFrame = environment.physicsTerrainQueryFrame;
+    const collect = () => {
+      const result = this.getAdaptiveSupportWorldUnprofiled(pose, environment);
+      physicsCosts?.count('bodySupportFeatures', result.length);
+      physicsCosts?.count('adaptiveBodySupportFeatures', result.filter(
+        ({ candidate }) => candidate?.adaptive === true
+      ).length);
+      physicsCosts?.count('temporaryObjects', result.length);
+      return result;
+    };
+    return physicsCosts
+      ? physicsCosts.measure('bodySupportGeneration', collect)
+      : collect();
+  }
+
+  samplePosePenetrationUnprofiled(pose, environment, toleranceM) {
+    const sampleTerrain = environment.sampleTerrainAtWorldPoint;
+    const sampleTerrainBatch = environment.sampleTerrainAtWorldPoints;
+    const queryFrame = environment.physicsTerrainQueryFrame;
+    const supportBuffer = queryFrame?.acquireBodySupportBuffer?.() || null;
+    const points = supportBuffer
+      ? this.getAdaptiveSupportWorldUnprofiled(pose, environment, supportBuffer)
+      : this.getAdaptiveSupportWorld(pose, environment);
+    if (supportBuffer) {
+      environment.physicsCostAccounting?.count('bodySupportFeatures', points.length);
+      let adaptiveCount = 0;
+      for (let index = 0; index < points.length; index += 1) {
+        if (points[index].candidate?.adaptive === true) adaptiveCount += 1;
+      }
+      environment.physicsCostAccounting?.count('adaptiveBodySupportFeatures', adaptiveCount);
+    }
+    const terrainBatch = typeof queryFrame?.sampleSupportEntries === 'function'
+      ? queryFrame.sampleSupportEntries(points)
+      : typeof sampleTerrainBatch === 'function'
+        ? sampleTerrainBatch(points.map(({ worldPoint }) => worldPoint))
+        : null;
+    let maximumPenetrationM = -Infinity;
+    let minimumPenetrationM = Infinity;
+    let deepestNormalX = 0;
+    let deepestNormalY = 1;
+    let deepestNormalZ = 0;
+    let hasDeepestNormal = false;
     let invalidTerrainSampleCount = 0;
     let belowTerrainSampleCount = 0;
+    let validLowerBodySupportSampleCount = 0;
+    let submergedLowerBodySupportSampleCount = 0;
+    let minimumLowerBodySupportPenetrationM = Infinity;
     let terrainTriangleIds = null;
     let terrainSources = null;
     let terrainRegions = null;
     let penetratingFeatureIds = null;
-    points.forEach(({ candidate, worldPoint }, index) => {
+    let minimumLocalSupportY = Infinity;
+    for (let index = 0; index < points.length; index += 1) {
+      minimumLocalSupportY = Math.min(
+        minimumLocalSupportY,
+        Number(points[index].candidate?.localPoint?.y ?? Infinity)
+      );
+    }
+    for (let index = 0; index < points.length; index += 1) {
+      const { candidate, worldPoint } = points[index];
+      let downwardFacing = false;
+      const localNormals = candidate?.localNormals || [];
+      for (let normalIndex = 0; normalIndex < localNormals.length; normalIndex += 1) {
+        if (Number(localNormals[normalIndex].y || 0) < -0.5) {
+          downwardFacing = true;
+          break;
+        }
+      }
+      const lowerBodySupportFeature = Number(candidate?.localPoint?.y ?? Infinity)
+          <= minimumLocalSupportY + 1e-6
+        && downwardFacing;
       const rawTerrain = terrainBatch?.[index]
         || (typeof sampleTerrain === 'function' ? sampleTerrain(worldPoint) : null)
         || {};
-      const terrain = createSurfaceSample(rawTerrain, {
-        queryPosition: worldPoint,
-        source: 'body-penetration-query'
-      });
+      const terrain = terrainSampleContract(
+        rawTerrain, worldPoint, 'body-penetration-query'
+      );
       if (!terrain.valid) {
         invalidTerrainSampleCount += 1;
-        return;
+        continue;
       }
       const heightM = terrain.heightM;
-      const normal = normalize(terrain.normal || terrain.normalWorld);
-      const surfacePoint = { x: worldPoint.x, y: heightM, z: worldPoint.z };
-      const penetrationM = -dot(
-        addVector3(worldPoint, scaleVector3(surfacePoint, -1)), normal
+      const rawNormal = terrain.normal || terrain.normalWorld || {};
+      const normalMagnitude = Math.hypot(
+        Number(rawNormal.x || 0),
+        Number(rawNormal.y || 0),
+        Number(rawNormal.z || 0)
       );
+      const inverseNormalMagnitude = normalMagnitude > EPSILON ? 1 / normalMagnitude : 1;
+      const normalX = normalMagnitude > EPSILON
+        ? Number(rawNormal.x || 0) * inverseNormalMagnitude : 0;
+      const normalY = normalMagnitude > EPSILON
+        ? Number(rawNormal.y || 0) * inverseNormalMagnitude : 1;
+      const normalZ = normalMagnitude > EPSILON
+        ? Number(rawNormal.z || 0) * inverseNormalMagnitude : 0;
+      const penetrationM = (heightM - worldPoint.y) * normalY;
       if (penetrationM > maximumPenetrationM) {
         maximumPenetrationM = penetrationM;
-        deepestNormal = normal;
+        deepestNormalX = normalX;
+        deepestNormalY = normalY;
+        deepestNormalZ = normalZ;
+        hasDeepestNormal = true;
+      }
+      minimumPenetrationM = Math.min(minimumPenetrationM, penetrationM);
+      if (lowerBodySupportFeature) {
+        validLowerBodySupportSampleCount += 1;
+        minimumLowerBodySupportPenetrationM = Math.min(
+          minimumLowerBodySupportPenetrationM,
+          penetrationM
+        );
+        if (penetrationM > toleranceM) submergedLowerBodySupportSampleCount += 1;
       }
       if (penetrationM > toleranceM) {
         belowTerrainSampleCount += 1;
@@ -390,13 +722,23 @@ export class ChassisBodyCollision {
         if (terrain.region) terrainRegions.add(String(terrain.region));
         if (candidate?.id) penetratingFeatureIds.add(String(candidate.id));
       }
-    });
-    return {
+    }
+    const result = {
       maximumPenetrationM: Number.isFinite(maximumPenetrationM) ? maximumPenetrationM : null,
-      deepestNormal,
+      minimumPenetrationM: Number.isFinite(minimumPenetrationM) ? minimumPenetrationM : null,
+      deepestNormal: hasDeepestNormal
+        ? { x: deepestNormalX, y: deepestNormalY, z: deepestNormalZ }
+        : null,
       invalidTerrainSampleCount,
       validTerrainSampleCount: points.length - invalidTerrainSampleCount,
       belowTerrainSampleCount,
+      validLowerBodySupportSampleCount,
+      submergedLowerBodySupportSampleCount,
+      minimumLowerBodySupportPenetrationM: Number.isFinite(
+        minimumLowerBodySupportPenetrationM
+      ) ? minimumLowerBodySupportPenetrationM : null,
+      allLowerBodySupportFeaturesBelowTerrain: validLowerBodySupportSampleCount > 0
+        && submergedLowerBodySupportSampleCount === validLowerBodySupportSampleCount,
       terrainTriangleIds: terrainTriangleIds ? [...terrainTriangleIds].sort() : [],
       terrainSources: terrainSources ? [...terrainSources].sort() : [],
       terrainRegions: terrainRegions ? [...terrainRegions].sort() : [],
@@ -405,13 +747,87 @@ export class ChassisBodyCollision {
         && belowTerrainSampleCount === points.length - invalidTerrainSampleCount,
       allTerrainSamplesInvalid: invalidTerrainSampleCount === points.length
     };
+    queryFrame?.releaseBodySupportBuffer?.(supportBuffer);
+    return result;
   }
 
-  findSweepImpact(previousState, proposedState, environment, toleranceM, config) {
+  samplePosePenetration(pose, environment, toleranceM) {
+    const physicsCosts = environment.physicsCostAccounting;
+    const queryFrame = environment.physicsTerrainQueryFrame;
+    // Without a query frame there is no prepared-world revision identity with
+    // which to validate a cached terrain result. Preserve the exact legacy
+    // query behavior instead of allowing results to leak between substeps.
+    if (!queryFrame) {
+      return physicsCosts
+        ? physicsCosts.measure('penetrationValidation', () => (
+            this.samplePosePenetrationUnprofiled(pose, environment, toleranceM)
+          ))
+        : this.samplePosePenetrationUnprofiled(pose, environment, toleranceM);
+    }
+    const frameSequence = Number(queryFrame.sequence);
+    if (frameSequence !== this.penetrationCacheFrameSequence) {
+      this.penetrationCacheFrameSequence = frameSequence;
+      this.penetrationCacheValues.fill(null);
+    }
+    const position = pose?.position || {};
+    const orientation = pose?.orientation || {};
+    const positionX = Number(position.x || 0);
+    const positionY = Number(position.y || 0);
+    const positionZ = Number(position.z || 0);
+    const orientationX = Number(orientation.x || 0);
+    const orientationY = Number(orientation.y || 0);
+    const orientationZ = Number(orientation.z || 0);
+    const orientationW = Number(orientation.w ?? 1);
+    const tolerance = Number(toleranceM || 0);
+    let hash = 0;
+    hash ^= Math.imul(Math.round(positionX * 1e6) | 0, 2654435761);
+    hash ^= Math.imul(Math.round(positionY * 1e6) | 0, 2654435761 + 97);
+    hash ^= Math.imul(Math.round(positionZ * 1e6) | 0, 2654435761 + 2 * 97);
+    hash ^= Math.imul(Math.round(orientationX * 1e6) | 0, 2654435761 + 3 * 97);
+    hash ^= Math.imul(Math.round(orientationY * 1e6) | 0, 2654435761 + 4 * 97);
+    hash ^= Math.imul(Math.round(orientationZ * 1e6) | 0, 2654435761 + 5 * 97);
+    hash ^= Math.imul(Math.round(orientationW * 1e6) | 0, 2654435761 + 6 * 97);
+    hash ^= Math.imul(Math.round(tolerance * 1e6) | 0, 2654435761 + 7 * 97);
+    const slot = hash & (this.penetrationCacheCapacity - 1);
+    const offset = slot * 8;
+    const cached = this.penetrationCacheValues[slot];
+    const matches = cached !== null
+      && this.penetrationCacheKeys[offset] === positionX
+      && this.penetrationCacheKeys[offset + 1] === positionY
+      && this.penetrationCacheKeys[offset + 2] === positionZ
+      && this.penetrationCacheKeys[offset + 3] === orientationX
+      && this.penetrationCacheKeys[offset + 4] === orientationY
+      && this.penetrationCacheKeys[offset + 5] === orientationZ
+      && this.penetrationCacheKeys[offset + 6] === orientationW
+      && this.penetrationCacheKeys[offset + 7] === tolerance;
+    if (matches) {
+      physicsCosts?.count('penetrationValidationCacheHits');
+      return cached;
+    }
+    const sample = physicsCosts
+      ? physicsCosts.measure('penetrationValidation', () => (
+          this.samplePosePenetrationUnprofiled(pose, environment, toleranceM)
+        ))
+      : this.samplePosePenetrationUnprofiled(pose, environment, toleranceM);
+    this.penetrationCacheKeys[offset] = positionX;
+    this.penetrationCacheKeys[offset + 1] = positionY;
+    this.penetrationCacheKeys[offset + 2] = positionZ;
+    this.penetrationCacheKeys[offset + 3] = orientationX;
+    this.penetrationCacheKeys[offset + 4] = orientationY;
+    this.penetrationCacheKeys[offset + 5] = orientationZ;
+    this.penetrationCacheKeys[offset + 6] = orientationW;
+    this.penetrationCacheKeys[offset + 7] = tolerance;
+    this.penetrationCacheValues[slot] = sample;
+    return sample;
+  }
+
+  findSweepImpactUnprofiled(previousState, proposedState, environment, toleranceM, config) {
     if (!previousState) return null;
-    const translationM = length(addVector3(
-      proposedState.position, scaleVector3(previousState.position, -1)
-    ));
+    const translationM = Math.hypot(
+      Number(proposedState.position?.x || 0) - Number(previousState.position?.x || 0),
+      Number(proposedState.position?.y || 0) - Number(previousState.position?.y || 0),
+      Number(proposedState.position?.z || 0) - Number(previousState.position?.z || 0)
+    );
     const angularSpeed = length(previousState.angularVelocityWorld);
     const bodyRadiusM = Math.hypot(
       Number(config.bodyLengthM || 4.5) * 0.5,
@@ -420,15 +836,25 @@ export class ChassisBodyCollision {
     );
     const slices = clamp(Math.ceil((translationM + angularSpeed * bodyRadiusM
       * Math.max(0, Number(config.__collisionSubstepDt || 0))) / 0.02), 1, 128);
-    const poseAt = (fraction) => ({
-      position: mixVector(previousState.position, proposedState.position, fraction),
-      orientation: mixQuaternion(previousState.orientation, proposedState.orientation, fraction)
-    });
+    environment.physicsCostAccounting?.count('bodySweepSlices', slices);
+    const useLowerHullSweep = config.__useLowerHullSweep === true;
+    const sampleAt = (fraction) => {
+      const pose = mixPoseInto(
+        previousState,
+        proposedState,
+        fraction,
+        this.sweepPoseScratch
+      );
+      if (!useLowerHullSweep) return this.samplePosePenetration(pose, environment, toleranceM);
+      return {
+        maximumPenetrationM: this.sampleLowerHullMaximumPenetrationM(pose, environment)
+      };
+    };
     let previousFraction = 0;
-    let previousSample = this.samplePosePenetration(poseAt(0), environment, toleranceM);
+    let previousSample = sampleAt(0);
     for (let slice = 1; slice <= slices; slice += 1) {
       const fraction = slice / slices;
-      const sample = this.samplePosePenetration(poseAt(fraction), environment, toleranceM);
+      const sample = sampleAt(fraction);
       if (sample.maximumPenetrationM !== null
         && sample.maximumPenetrationM > toleranceM
         && (previousSample.maximumPenetrationM === null
@@ -436,14 +862,31 @@ export class ChassisBodyCollision {
         let low = previousFraction;
         let high = fraction;
         for (let iteration = 0; iteration < 10; iteration += 1) {
+          environment.physicsCostAccounting?.count('binarySearchIterations');
           const middle = (low + high) * 0.5;
-          const middleSample = this.samplePosePenetration(poseAt(middle), environment, toleranceM);
+          const middleSample = sampleAt(middle);
           if (middleSample.maximumPenetrationM !== null
             && middleSample.maximumPenetrationM > toleranceM) high = middle;
           else low = middle;
         }
         const impactFraction = Math.min(1, high + 1e-5);
-        return { fraction: impactFraction, pose: poseAt(impactFraction), sample };
+        const impactPose = {
+          position: mixVector(
+            previousState.position,
+            proposedState.position,
+            impactFraction
+          ),
+          orientation: mixQuaternion(
+            previousState.orientation,
+            proposedState.orientation,
+            impactFraction
+          )
+        };
+        const impactSample = useLowerHullSweep
+          ? this.samplePosePenetration(impactPose, environment, toleranceM) : sample;
+        if (Number(impactSample.maximumPenetrationM) > toleranceM) {
+          return { fraction: impactFraction, pose: impactPose, sample: impactSample };
+        }
       }
       previousFraction = fraction;
       previousSample = sample;
@@ -451,7 +894,20 @@ export class ChassisBodyCollision {
     return null;
   }
 
-  step({ workingState, previousWorkingState = null, config, environment = {}, dt = 0, advanceState = true }) {
+  findSweepImpact(previousState, proposedState, environment, toleranceM, config) {
+    const physicsCosts = environment.physicsCostAccounting;
+    return physicsCosts
+      ? physicsCosts.measure('bodyContinuousSweep', () => (
+          this.findSweepImpactUnprofiled(
+            previousState, proposedState, environment, toleranceM, config
+          )
+        ))
+      : this.findSweepImpactUnprofiled(
+          previousState, proposedState, environment, toleranceM, config
+        );
+  }
+
+  stepTerrain({ workingState, previousWorkingState = null, config, environment = {}, dt = 0, advanceState = true }) {
     const sampleTerrain = environment.sampleTerrainAtWorldPoint;
     const sampleTerrainBatch = environment.sampleTerrainAtWorldPoints;
     if ((typeof sampleTerrain !== 'function' && typeof sampleTerrainBatch !== 'function') || dt <= 0) {
@@ -470,35 +926,65 @@ export class ChassisBodyCollision {
         dt
       );
     }
+    const physicsCosts = environment.physicsCostAccounting;
+    const queryFrame = environment.physicsTerrainQueryFrame;
+    const broadphaseTimer = physicsCosts?.start('bodyBroadphase');
     const toleranceM = Math.max(0.001, Number(config.bodyCollisionToleranceM || 0.008));
     const proposedState = this.createWorkingState(workingState);
-    const endpointStates = previousWorkingState ? [previousWorkingState, proposedState] : [proposedState];
     const profile = config.bodyProfile || {};
     const halfWidth = Number(profile.overallWidthM || config.bodyWidthM || 1.8) * 0.5;
     const halfLength = Number(profile.overallLengthM || config.bodyLengthM || 4.5) * 0.5;
     const bottom = Number(profile.groundClearanceM ?? config.bodyGroundClearanceM ?? 0.12)
       - Number(profile.cgPositionM?.y ?? config.cgHeightM ?? 0.55);
     const top = bottom + Number(profile.overallHeightM || config.bodyHeightM || 1.45);
-    const broadphaseLocalCorners = [-1, 1].flatMap((x) => [bottom, top].flatMap((y) => (
-      [-1, 1].map((z) => ({ x: x * halfWidth, y, z: z * halfLength }))
-    )));
-    const endpointWorldPoints = endpointStates.flatMap((pose) => broadphaseLocalCorners.map((localPoint) => (
-      addVector3(pose.position, rotateVectorByQuaternion(localPoint, pose.orientation))
-    )));
-    const endpointXs = endpointWorldPoints.map((point) => point.x);
-    const endpointZs = endpointWorldPoints.map((point) => point.z);
-    const explicitHeights = [
-      environment.groundHeightM,
-      ...Object.values(environment.surfaceHeightByWheel || {})
-    ].map(Number).filter(Number.isFinite);
-    let knownMaximumTerrainHeightM = explicitHeights.length ? Math.max(...explicitHeights) : null;
+    let endpointMinX = Infinity;
+    let endpointMaxX = -Infinity;
+    let endpointMinZ = Infinity;
+    let endpointMaxZ = -Infinity;
+    let endpointMinimumHeightM = Infinity;
+    const endpointCount = previousWorkingState ? 2 : 1;
+    for (let endpointIndex = 0; endpointIndex < endpointCount; endpointIndex += 1) {
+      const pose = endpointIndex === 0 && previousWorkingState
+        ? previousWorkingState : proposedState;
+      for (let xSign = -1; xSign <= 1; xSign += 2) {
+        for (let yIndex = 0; yIndex < 2; yIndex += 1) {
+          for (let zSign = -1; zSign <= 1; zSign += 2) {
+            this.broadphaseLocalScratch.x = xSign * halfWidth;
+            this.broadphaseLocalScratch.y = yIndex === 0 ? bottom : top;
+            this.broadphaseLocalScratch.z = zSign * halfLength;
+            rotateVectorInto(
+              this.broadphaseLocalScratch, pose.orientation, this.broadphaseArmScratch
+            );
+            const worldX = Number(pose.position?.x || 0) + this.broadphaseArmScratch.x;
+            const worldY = Number(pose.position?.y || 0) + this.broadphaseArmScratch.y;
+            const worldZ = Number(pose.position?.z || 0) + this.broadphaseArmScratch.z;
+            endpointMinX = Math.min(endpointMinX, worldX);
+            endpointMaxX = Math.max(endpointMaxX, worldX);
+            endpointMinZ = Math.min(endpointMinZ, worldZ);
+            endpointMaxZ = Math.max(endpointMaxZ, worldZ);
+            endpointMinimumHeightM = Math.min(endpointMinimumHeightM, worldY);
+          }
+        }
+      }
+    }
+    let knownMaximumTerrainHeightM = Number(environment.groundHeightM);
+    if (!Number.isFinite(knownMaximumTerrainHeightM)) knownMaximumTerrainHeightM = null;
+    const wheelSurfaceHeights = environment.surfaceHeightByWheel || {};
+    for (const wheelId in wheelSurfaceHeights) {
+      const heightM = Number(wheelSurfaceHeights[wheelId]);
+      if (Number.isFinite(heightM)) {
+        knownMaximumTerrainHeightM = knownMaximumTerrainHeightM === null
+          ? heightM : Math.max(knownMaximumTerrainHeightM, heightM);
+      }
+    }
     if (typeof environment.sampleTerrainMaximumHeightInBounds === 'function') {
-      const sampledMaximum = Number(environment.sampleTerrainMaximumHeightInBounds({
-        minX: Math.min(...endpointXs),
-        maxX: Math.max(...endpointXs),
-        minZ: Math.min(...endpointZs),
-        maxZ: Math.max(...endpointZs)
-      }));
+      this.broadphaseBoundsScratch.minX = endpointMinX;
+      this.broadphaseBoundsScratch.maxX = endpointMaxX;
+      this.broadphaseBoundsScratch.minZ = endpointMinZ;
+      this.broadphaseBoundsScratch.maxZ = endpointMaxZ;
+      const sampledMaximum = Number(environment.sampleTerrainMaximumHeightInBounds(
+        this.broadphaseBoundsScratch
+      ));
       if (Number.isFinite(sampledMaximum)) knownMaximumTerrainHeightM = sampledMaximum;
     }
     const angularTravelRad = length(previousWorkingState?.angularVelocityWorld || {}) * dt;
@@ -507,8 +993,12 @@ export class ChassisBodyCollision {
       Number(config.bodyWidthM || 1.8) * 0.5,
       Number(config.bodyHeightM || 1.45)
     );
-    const conservativeMinimumBodyHeightM = Math.min(...endpointWorldPoints.map((point) => point.y))
+    const conservativeMinimumBodyHeightM = endpointMinimumHeightM
       - bodyRadiusM * angularTravelRad;
+    const conservativeClearanceM = Number.isFinite(knownMaximumTerrainHeightM)
+      ? conservativeMinimumBodyHeightM - knownMaximumTerrainHeightM
+      : null;
+    physicsCosts?.end(broadphaseTimer);
     const wheelCylinderSweep = sweepWheelCylinders({
       cylinders: environment.wheelCylinderSweeps || [],
       environment,
@@ -516,22 +1006,175 @@ export class ChassisBodyCollision {
       spacingM: config.wheelCylinderSweepSpacingM,
       radialSamples: config.wheelCylinderRadialSamples
     });
-    if (Number.isFinite(knownMaximumTerrainHeightM)
-      && conservativeMinimumBodyHeightM - knownMaximumTerrainHeightM > toleranceM
-      && !wheelCylinderSweep) {
-      return {
-        linearImpulseWorldNs: { x: 0, y: 0, z: 0 },
-        angularImpulseWorldNms: { x: 0, y: 0, z: 0 },
-        positionalCorrectionWorldM: { x: 0, y: 0, z: 0 },
-        contacts: [],
-        broadphaseRejected: true,
-        maximumPenetrationM: 0
-      };
+    let lowerHullDeepestNormal = null;
+    let lowerHullMaximumPenetrationM = 0;
+    let uprightForLowerHullProbe = false;
+    if (Number.isFinite(knownMaximumTerrainHeightM) && !wheelCylinderSweep) {
+      const lowerHullProbeRangeM = Math.max(0.05, Number(
+        config.bodyCollisionLowerHullProbeRangeM ?? 0.08
+      ));
+      if (conservativeClearanceM > lowerHullProbeRangeM) {
+        physicsCosts?.count('bodyAabbRejections');
+        return {
+          linearImpulseWorldNs: { x: 0, y: 0, z: 0 },
+          angularImpulseWorldNms: { x: 0, y: 0, z: 0 },
+          positionalCorrectionWorldM: { x: 0, y: 0, z: 0 },
+          contacts: [],
+          broadphaseRejected: true,
+          bodySupportLod: 'aabb',
+          maximumPenetrationM: 0
+        };
+      }
+      this.broadphaseLocalScratch.x = 0;
+      this.broadphaseLocalScratch.y = 1;
+      this.broadphaseLocalScratch.z = 0;
+      rotateVectorInto(
+        this.broadphaseLocalScratch,
+        proposedState.orientation,
+        this.broadphaseArmScratch
+      );
+      uprightForLowerHullProbe = this.broadphaseArmScratch.y > 0.55;
+      // A small lower-envelope batch is authoritative as a rejection on clear
+      // poses. A conservative overlap on globally varying terrain gets a second
+      // continuity check against the exact lower-hull bounds before deciding
+      // whether adaptive compound support is actually required.
+      let requiresAdaptiveOverlap = environment.terrainHasDiscontinuities === true
+        && conservativeClearanceM <= toleranceM;
+      if (uprightForLowerHullProbe) {
+        physicsCosts?.count('bodyLowerHullProbes');
+        const supportBuffer = queryFrame?.acquireBodySupportBuffer?.() || null;
+        const lowerSupport = this.getLowerHullSupportWorldUnprofiled(
+          proposedState,
+          environment,
+          supportBuffer
+        );
+        physicsCosts?.count('bodyLowerHullSupportFeatures', lowerSupport.length);
+        const terrainBatch = typeof queryFrame?.sampleSupportEntries === 'function'
+          ? queryFrame.sampleSupportEntries(lowerSupport)
+          : typeof sampleTerrainBatch === 'function'
+            ? sampleTerrainBatch(lowerSupport.map(({ worldPoint }) => worldPoint))
+            : null;
+        let unresolvedLowerHullContact = false;
+        let lowerMinX = Infinity;
+        let lowerMaxX = -Infinity;
+        let lowerMinZ = Infinity;
+        let lowerMaxZ = -Infinity;
+        let hasVariationReference = false;
+        for (let index = 0; index < lowerSupport.length; index += 1) {
+          const entry = lowerSupport[index];
+          lowerMinX = Math.min(lowerMinX, entry.worldPoint.x);
+          lowerMaxX = Math.max(lowerMaxX, entry.worldPoint.x);
+          lowerMinZ = Math.min(lowerMinZ, entry.worldPoint.z);
+          lowerMaxZ = Math.max(lowerMaxZ, entry.worldPoint.z);
+          const rawTerrain = terrainBatch?.[index]
+            || (typeof sampleTerrain === 'function' ? sampleTerrain(entry.worldPoint) : null);
+          const terrain = terrainSampleContract(
+            rawTerrain, entry.worldPoint, 'body-lower-hull-lod'
+          );
+          if (!terrain.valid) {
+            unresolvedLowerHullContact = true;
+            break;
+          }
+          const rawNormal = terrain.normal || terrain.normalWorld || {};
+          const normalMagnitude = Math.hypot(
+            Number(rawNormal.x || 0),
+            Number(rawNormal.y || 0),
+            Number(rawNormal.z || 0)
+          );
+          const inverseNormalMagnitude = normalMagnitude > EPSILON ? 1 / normalMagnitude : 1;
+          const normalX = normalMagnitude > EPSILON
+            ? Number(rawNormal.x || 0) * inverseNormalMagnitude : 0;
+          const normalY = normalMagnitude > EPSILON
+            ? Number(rawNormal.y || 0) * inverseNormalMagnitude : 1;
+          const normalZ = normalMagnitude > EPSILON
+            ? Number(rawNormal.z || 0) * inverseNormalMagnitude : 0;
+          if (!hasVariationReference) {
+            const reference = this.lowerHullVariationReference;
+            reference.point.x = entry.worldPoint.x;
+            reference.point.y = entry.worldPoint.y;
+            reference.point.z = entry.worldPoint.z;
+            reference.heightM = terrain.heightM;
+            reference.normal.x = normalX;
+            reference.normal.y = normalY;
+            reference.normal.z = normalZ;
+            hasVariationReference = true;
+          }
+          const penetrationM = (terrain.heightM - entry.worldPoint.y) * normalY;
+          if (penetrationM > lowerHullMaximumPenetrationM) {
+            lowerHullMaximumPenetrationM = penetrationM;
+            lowerHullDeepestNormal = terrain.normal;
+          }
+          if (penetrationM > toleranceM) {
+            unresolvedLowerHullContact = true;
+            break;
+          }
+        }
+        if (!unresolvedLowerHullContact && requiresAdaptiveOverlap
+          && hasVariationReference
+          && typeof queryFrame?.terrainVariationInBounds === 'function') {
+          this.broadphaseBoundsScratch.minX = lowerMinX;
+          this.broadphaseBoundsScratch.maxX = lowerMaxX;
+          this.broadphaseBoundsScratch.minZ = lowerMinZ;
+          this.broadphaseBoundsScratch.maxZ = lowerMaxZ;
+          this.lowerHullVariationOptions.heightToleranceM = Math.max(0.025, Number(
+            environment.bodySupportHeightErrorM || 0.025
+          ));
+          const localVariation = queryFrame.terrainVariationInBounds(
+            this.broadphaseBoundsScratch,
+            this.lowerHullVariationReference,
+            this.lowerHullVariationOptions
+          );
+          requiresAdaptiveOverlap = !localVariation.valid || localVariation.discontinuity;
+          if (!requiresAdaptiveOverlap) {
+            physicsCosts?.count('bodyLocalContinuityRejections');
+          }
+        }
+        queryFrame?.releaseBodySupportBuffer?.(supportBuffer);
+        if (!unresolvedLowerHullContact && !requiresAdaptiveOverlap) {
+          physicsCosts?.count('bodyLowerHullRejections');
+          return {
+            linearImpulseWorldNs: { x: 0, y: 0, z: 0 },
+            angularImpulseWorldNms: { x: 0, y: 0, z: 0 },
+            positionalCorrectionWorldM: { x: 0, y: 0, z: 0 },
+            contacts: [],
+            broadphaseRejected: true,
+            bodySupportLod: 'lower-hull',
+            maximumPenetrationM: 0
+          };
+        }
+      }
     }
-    const bodySweep = this.findSweepImpact(previousWorkingState, proposedState, environment, toleranceM, {
-      ...config,
-      __collisionSubstepDt: dt
-    });
+    physicsCosts?.count('bodyFullEnvelopeActivations');
+    this.prepareAdaptiveSupportCandidates(
+      previousWorkingState, proposedState, environment
+    );
+    const lowerHullClosingSpeedMps = lowerHullDeepestNormal
+      ? Math.max(0, -dot(proposedState.velocity, lowerHullDeepestNormal)) : 0;
+    const angularSurfaceSpeedMps = length(proposedState.angularVelocityWorld) * bodyRadiusM;
+    const bodyTranslationM = previousWorkingState ? Math.hypot(
+      Number(proposedState.position?.x || 0)
+        - Number(previousWorkingState.position?.x || 0),
+      Number(proposedState.position?.y || 0)
+        - Number(previousWorkingState.position?.y || 0),
+      Number(proposedState.position?.z || 0)
+        - Number(previousWorkingState.position?.z || 0)
+    ) : 0;
+    const requiresContinuousBodySweep = Boolean(previousWorkingState) && (
+      environment.terrainHasDiscontinuities === true
+      || wheelCylinderSweep
+      || bodyTranslationM > 0.3
+      || lowerHullClosingSpeedMps + angularSurfaceSpeedMps > 3
+      || Math.abs(Number(proposedState.pitchRad || 0)) > 0.35
+      || Math.abs(Number(proposedState.rollRad || 0)) > 0.35
+      || lowerHullMaximumPenetrationM > Math.max(0.03, toleranceM * 3)
+    );
+    const bodySweep = requiresContinuousBodySweep
+      ? this.findSweepImpact(previousWorkingState, proposedState, environment, toleranceM, {
+          ...config,
+          __collisionSubstepDt: dt,
+          __useLowerHullSweep: uprightForLowerHullProbe
+        })
+      : null;
     let sweep = bodySweep;
     let sweepSource = bodySweep ? 'body' : null;
     if (wheelCylinderSweep && (!sweep
@@ -558,6 +1201,7 @@ export class ChassisBodyCollision {
       workingState.position = { ...sweep.pose.position };
       workingState.orientation = { ...sweep.pose.orientation };
     }
+    const manifoldTimer = physicsCosts?.start('bodyManifoldSolve');
     const wheelSupportFeatures = environment.wheelCylinderSweeps?.length
       ? createWheelCylinderSupportFeatures(
         environment.wheelCylinderSweeps, sweep?.fraction ?? 1
@@ -570,24 +1214,53 @@ export class ChassisBodyCollision {
       !sweptWheelContactFeatures.some((contact) => contact.wheelId === feature.wheelId
         && length(addVector3(contact.worldPoint, scaleVector3(feature.worldPoint, -1))) < 1e-5)
     ));
-    const candidateWorld = this.getAdaptiveSupportWorld(workingState, environment)
-      .concat(uniqueWheelSupportFeatures.concat(sweptWheelContactFeatures).map((feature) => ({
-      candidate: feature,
-      arm: addVector3(feature.worldPoint, scaleVector3(workingState.position, -1)),
-      worldPoint: feature.worldPoint
-    })));
-    if (typeof environment.sampleTerrainMaximumHeightInBounds === 'function') {
-      const xs = candidateWorld.map(({ worldPoint }) => worldPoint.x);
-      const zs = candidateWorld.map(({ worldPoint }) => worldPoint.z);
-      const maximumTerrainHeightM = environment.sampleTerrainMaximumHeightInBounds({
-        minX: Math.min(...xs),
-        maxX: Math.max(...xs),
-        minZ: Math.min(...zs),
-        maxZ: Math.max(...zs)
+    const manifoldSupportBuffer = queryFrame?.acquireBodySupportBuffer?.() || null;
+    const candidateWorld = manifoldSupportBuffer
+      ? this.getAdaptiveSupportWorldUnprofiled(
+          workingState, environment, manifoldSupportBuffer
+        )
+      : this.getAdaptiveSupportWorld(workingState, environment);
+    if (manifoldSupportBuffer) {
+      physicsCosts?.count('bodySupportFeatures', candidateWorld.length);
+      let adaptiveCount = 0;
+      for (let index = 0; index < candidateWorld.length; index += 1) {
+        if (candidateWorld[index].candidate?.adaptive === true) adaptiveCount += 1;
+      }
+      physicsCosts?.count('adaptiveBodySupportFeatures', adaptiveCount);
+    }
+    const appendWheelFeature = (feature) => {
+      candidateWorld.push({
+        candidate: feature,
+        arm: addVector3(feature.worldPoint, scaleVector3(workingState.position, -1)),
+        worldPoint: feature.worldPoint
       });
-      const minimumCandidateHeightM = Math.min(...candidateWorld.map(({ worldPoint }) => worldPoint.y));
+    };
+    uniqueWheelSupportFeatures.forEach(appendWheelFeature);
+    sweptWheelContactFeatures.forEach(appendWheelFeature);
+    if (typeof environment.sampleTerrainMaximumHeightInBounds === 'function') {
+      let candidateMinX = Infinity;
+      let candidateMaxX = -Infinity;
+      let candidateMinZ = Infinity;
+      let candidateMaxZ = -Infinity;
+      let minimumCandidateHeightM = Infinity;
+      for (let index = 0; index < candidateWorld.length; index += 1) {
+        const point = candidateWorld[index].worldPoint;
+        candidateMinX = Math.min(candidateMinX, point.x);
+        candidateMaxX = Math.max(candidateMaxX, point.x);
+        candidateMinZ = Math.min(candidateMinZ, point.z);
+        candidateMaxZ = Math.max(candidateMaxZ, point.z);
+        minimumCandidateHeightM = Math.min(minimumCandidateHeightM, point.y);
+      }
+      const maximumTerrainHeightM = environment.sampleTerrainMaximumHeightInBounds({
+        minX: candidateMinX,
+        maxX: candidateMaxX,
+        minZ: candidateMinZ,
+        maxZ: candidateMaxZ
+      });
       if (Number.isFinite(Number(maximumTerrainHeightM))
         && minimumCandidateHeightM - Number(maximumTerrainHeightM) > toleranceM) {
+        queryFrame?.releaseBodySupportBuffer?.(manifoldSupportBuffer);
+        physicsCosts?.end(manifoldTimer);
         return {
           linearImpulseWorldNs: { x: 0, y: 0, z: 0 },
           angularImpulseWorldNms: { x: 0, y: 0, z: 0 },
@@ -597,31 +1270,52 @@ export class ChassisBodyCollision {
         };
       }
     }
-    const terrainBatch = typeof sampleTerrainBatch === 'function'
-      ? sampleTerrainBatch(candidateWorld.map(({ worldPoint }) => worldPoint))
-      : null;
-    const contacts = candidateWorld.map(({ candidate, arm, worldPoint }, candidateIndex) => {
+    const terrainBatch = typeof queryFrame?.sampleSupportEntries === 'function'
+      ? queryFrame.sampleSupportEntries(candidateWorld)
+      : typeof sampleTerrainBatch === 'function'
+        ? sampleTerrainBatch(candidateWorld.map(({ worldPoint }) => worldPoint))
+        : null;
+    const contacts = [];
+    let maximumContactPenetrationM = 0;
+    let nonWheelCandidateCount = 0;
+    let nonWheelContactCount = 0;
+    for (let candidateIndex = 0; candidateIndex < candidateWorld.length; candidateIndex += 1) {
+      const { candidate, arm, worldPoint } = candidateWorld[candidateIndex];
+      const contactType = candidate.contactType || 'body';
+      const wheelContact = String(contactType).startsWith('wheel-');
+      if (!wheelContact) nonWheelCandidateCount += 1;
       const rawTerrain = candidate.surfaceSample || terrainBatch?.[candidateIndex]
         || (typeof sampleTerrain === 'function' ? sampleTerrain(worldPoint) : null)
         || {};
-      const terrain = createSurfaceSample(rawTerrain, {
-        queryPosition: worldPoint,
-        source: 'body-contact-query'
-      });
-      if (!terrain.valid) return null;
+      const terrain = terrainSampleContract(rawTerrain, worldPoint, 'body-contact-query');
+      if (!terrain.valid) continue;
       const heightM = terrain.heightM;
-      const normal = normalize(candidate.collisionNormal || terrain.normal || terrain.normalWorld);
-      const surfacePoint = { x: worldPoint.x, y: heightM, z: worldPoint.z };
+      const rawNormal = candidate.collisionNormal || terrain.normal || terrain.normalWorld || {};
+      const normalMagnitude = Math.hypot(
+        Number(rawNormal.x || 0),
+        Number(rawNormal.y || 0),
+        Number(rawNormal.z || 0)
+      );
+      const inverseNormalMagnitude = normalMagnitude > EPSILON ? 1 / normalMagnitude : 1;
+      const normalX = normalMagnitude > EPSILON
+        ? Number(rawNormal.x || 0) * inverseNormalMagnitude : 0;
+      const normalY = normalMagnitude > EPSILON
+        ? Number(rawNormal.y || 0) * inverseNormalMagnitude : 1;
+      const normalZ = normalMagnitude > EPSILON
+        ? Number(rawNormal.z || 0) * inverseNormalMagnitude : 0;
       const penetrationM = Number.isFinite(Number(candidate.penetrationM))
         ? Number(candidate.penetrationM)
-        : -dot(addVector3(worldPoint, scaleVector3(surfacePoint, -1)), normal);
-      if (penetrationM <= toleranceM) return null;
-      return {
+        : (heightM - worldPoint.y) * normalY;
+      if (penetrationM <= toleranceM) continue;
+      const normal = { x: normalX, y: normalY, z: normalZ };
+      maximumContactPenetrationM = Math.max(maximumContactPenetrationM, penetrationM);
+      if (!wheelContact) nonWheelContactCount += 1;
+      contacts.push({
         id: candidate.id,
         candidateIndex,
         localPoint: candidate.localPoint || null,
-        arm,
-        pointWorld: worldPoint,
+        arm: { ...arm },
+        pointWorld: { ...worldPoint },
         normal,
         penetrationM,
         friction: clamp(Math.sqrt(
@@ -630,7 +1324,7 @@ export class ChassisBodyCollision {
         ), 0, 1.5),
         pieceId: candidate.pieceId || null,
         wheelId: candidate.wheelId || null,
-        contactType: candidate.contactType || 'body',
+        contactType,
         triangleId: candidate.triangleId ?? terrain.triangleId,
         terrainSource: candidate.terrainSource ?? terrain.source,
         terrainRegion: candidate.terrainRegion ?? terrain.region,
@@ -640,26 +1334,23 @@ export class ChassisBodyCollision {
         sweepMechanism: candidate.mechanism || null,
         normalImpulseNs: 0,
         tangentialImpulseNs: 0,
+        tangentialImpulseWorldNs: { x: 0, y: 0, z: 0 },
         restitutionImpulseNs: 0,
         penetrationBiasImpulseNs: 0,
         restitutionTargetSpeedMps: 0,
         suspensionSupported: Number(
           environment.suspensionBodyContactSupport?.supportedWheelCount || 0
         ) > 0 && /lower|frame|underbody|underside|rocker/.test(candidate.id)
-      };
-    }).filter(Boolean);
+      });
+    }
     const unsupportedAtContactStart = Number(
       environment.suspensionBodyContactSupport?.supportedWheelCount || 0
     ) === 0;
     const initialUnsupportedMaximumPenetrationM = unsupportedAtContactStart
-      ? contacts.reduce((maximum, contact) => Math.max(maximum, contact.penetrationM), 0)
-      : null;
+      ? maximumContactPenetrationM : null;
     const initialUnsupportedAllBodySamplesBelowTerrain = unsupportedAtContactStart
       && contacts.length > 0
-      && contacts.filter((contact) => !contact.contactType.startsWith('wheel-')).length
-        === candidateWorld.filter(({ candidate }) => (
-          !String(candidate.contactType || '').startsWith('wheel-')
-        )).length;
+      && nonWheelContactCount === nonWheelCandidateCount;
     let linearImpulse = { x: 0, y: 0, z: 0 };
     let angularImpulse = { x: 0, y: 0, z: 0 };
     const restitution = clamp(Number(config.bodyCollisionRestitution ?? 0.08), 0, 0.6);
@@ -690,28 +1381,29 @@ export class ChassisBodyCollision {
         // normal velocity comes exclusively from actual closing velocity and
         // configured restitution, so overlap stabilization cannot create a
         // rebound or feed energy into the chassis.
-        const closingSpeed = Math.max(0, -normalSpeed);
-        const stoppingDelta = closingSpeed;
-        const restitutionDelta = Math.max(
-          0,
-          contact.restitutionTargetSpeedMps - Math.max(0, normalSpeed)
-        );
-        const desiredNormalDelta = stoppingDelta + restitutionDelta;
+        const desiredNormalDelta = contact.restitutionTargetSpeedMps - normalSpeed;
         const normalDenominator = Math.max(EPSILON, effectiveMassDenominator(
           contact.normal,
           contact.arm,
           config,
           workingState.orientation
         ));
-        const normalImpulseMagnitude = desiredNormalDelta / normalDenominator;
+        const previousNormalImpulseNs = Number(contact.normalImpulseNs || 0);
+        const accumulatedNormalImpulseNs = Math.max(
+          0,
+          previousNormalImpulseNs + desiredNormalDelta / normalDenominator
+        );
+        const normalImpulseMagnitude = accumulatedNormalImpulseNs - previousNormalImpulseNs;
         const normalImpulse = scaleVector3(contact.normal, normalImpulseMagnitude);
         applyImpulse(workingState, normalImpulse, contact.arm, config);
         linearImpulse = addVector3(linearImpulse, normalImpulse);
         const normalAngularImpulse = crossVector3(contact.arm, normalImpulse);
         angularImpulse = addVector3(angularImpulse, normalAngularImpulse);
-        contact.normalImpulseNs += normalImpulseMagnitude;
-        contact.restitutionImpulseNs += restitutionDelta
-          / normalDenominator;
+        contact.normalImpulseNs = accumulatedNormalImpulseNs;
+        contact.restitutionImpulseNs = Math.min(
+          accumulatedNormalImpulseNs,
+          contact.restitutionTargetSpeedMps / normalDenominator
+        );
 
         const postNormalVelocity = addVector3(
           workingState.velocity,
@@ -730,16 +1422,33 @@ export class ChassisBodyCollision {
           config,
           workingState.orientation
         ));
-        const requestedFrictionImpulse = tangentSpeed / tangentDenominator;
-        const frictionImpulseMagnitude = Math.min(
-          requestedFrictionImpulse,
-          contact.friction * normalImpulseMagnitude
+        const previousFrictionImpulse = contact.tangentialImpulseWorldNs;
+        const requestedFrictionImpulse = scaleVector3(
+          tangent,
+          -tangentSpeed / tangentDenominator
         );
-        const frictionImpulse = scaleVector3(tangent, -frictionImpulseMagnitude);
+        const accumulatedFrictionImpulse = addVector3(
+          previousFrictionImpulse,
+          requestedFrictionImpulse
+        );
+        const maximumFrictionImpulseNs = contact.friction * accumulatedNormalImpulseNs;
+        const accumulatedMagnitude = length(accumulatedFrictionImpulse);
+        const clampedFrictionImpulse = accumulatedMagnitude > maximumFrictionImpulseNs
+          && accumulatedMagnitude > EPSILON
+          ? scaleVector3(
+              accumulatedFrictionImpulse,
+              maximumFrictionImpulseNs / accumulatedMagnitude
+            )
+          : accumulatedFrictionImpulse;
+        const frictionImpulse = addVector3(
+          clampedFrictionImpulse,
+          scaleVector3(previousFrictionImpulse, -1)
+        );
         applyImpulse(workingState, frictionImpulse, contact.arm, config);
         linearImpulse = addVector3(linearImpulse, frictionImpulse);
         angularImpulse = addVector3(angularImpulse, crossVector3(contact.arm, frictionImpulse));
-        contact.tangentialImpulseNs += frictionImpulseMagnitude;
+        contact.tangentialImpulseWorldNs = clampedFrictionImpulse;
+        contact.tangentialImpulseNs = length(clampedFrictionImpulse);
       });
     }
     // Split-impulse stabilization operates on pose only. Solving its angular
@@ -768,9 +1477,10 @@ export class ChassisBodyCollision {
           ? rotateVectorByQuaternion(contact.localPoint, workingState.orientation)
           : contact.arm;
         const pointWorld = addVector3(workingState.position, arm);
-        const terrain = createSurfaceSample(
+        const terrain = terrainSampleContract(
           typeof sampleTerrain === 'function' ? sampleTerrain(pointWorld) : null,
-          { queryPosition: pointWorld, source: 'body-split-impulse-query' }
+          pointWorld,
+          'body-split-impulse-query'
         );
         if (!terrain.valid) return;
         const normal = terrain.normal;
@@ -882,7 +1592,11 @@ export class ChassisBodyCollision {
     );
     let safePoseRollbackFraction = null;
     let residualPenetration = this.samplePosePenetration(workingState, environment, toleranceM);
-    if (Number(residualPenetration.maximumPenetrationM) > toleranceM
+    const localRollbackMinimumPenetrationM = Math.max(
+      toleranceM,
+      Number(config.shallowContactPenetrationM ?? 0.03)
+    );
+    if (Number(residualPenetration.maximumPenetrationM) > localRollbackMinimumPenetrationM
       && previousWorkingState) {
       const previousPenetration = this.samplePosePenetration(
         previousWorkingState, environment, toleranceM
@@ -892,6 +1606,7 @@ export class ChassisBodyCollision {
         let low = 0;
         let high = 1;
         for (let iteration = 0; iteration < 14; iteration += 1) {
+          physicsCosts?.count('binarySearchIterations');
           const middle = (low + high) * 0.5;
           const pose = {
             position: mixVector(previousWorkingState.position, penetratedPose.position, middle),
@@ -921,7 +1636,8 @@ export class ChassisBodyCollision {
         );
       }
     }
-    return {
+    const result = {
+      bodySupportLod: 'full-compound',
       linearImpulseWorldNs: linearImpulse,
       angularImpulseWorldNms: angularImpulse,
       positionalCorrectionWorldM: totalPositionalCorrection,
@@ -963,6 +1679,7 @@ export class ChassisBodyCollision {
         Math.max(maximum, Number(contact.penetrationM || 0))
       ), 0),
       residualPenetrationM: residualPenetration.maximumPenetrationM,
+      finalPenetrationSample: residualPenetration,
       safePoseRollbackFraction,
       supportPoints: environment.capturePhysicsIncidentDiagnostics === true
         ? candidateWorld.map(({ candidate, worldPoint }) => ({
@@ -974,6 +1691,76 @@ export class ChassisBodyCollision {
           }))
         : [],
       contacts
+    };
+    queryFrame?.releaseBodySupportBuffer?.(manifoldSupportBuffer);
+    physicsCosts?.end(manifoldTimer);
+    return result;
+  }
+
+  step(args = {}) {
+    const staticResult = this.staticColliderCollision.step(args);
+    if (!staticResult) return this.stepTerrain(args);
+    if (args.environment?.staticCollidersOwnBodyCollision === true) {
+      return {
+        ...staticResult,
+        staticCollision: staticResult,
+        bodySupportLod: 'prepared-static-collider'
+      };
+    }
+    const suspensionSupport = args.environment?.suspensionBodyContactSupport || {};
+    const skipTerrainCollision = args.environment?.terrainCollisionClassification
+        === 'smooth-connected-surface'
+      && args.environment?.bodyCollisionPredicted !== true
+      && Number(suspensionSupport.maximumOvertravelM || 0) <= 0;
+    if (skipTerrainCollision) {
+      staticResult.bodySupportLod = args.environment?.reuseContactGeometry === true
+        ? 'chassis-geometry-reuse' : 'chassis-clearance-broadphase';
+      staticResult.terrainCollisionDeferred = true;
+      return staticResult;
+    }
+    const terrainResult = this.stepTerrain({
+      ...args,
+      // The static solver has already advanced from its TOI through the
+      // remaining substep. Terrain still validates/corrects that final pose,
+      // but must not replay the original trajectory a second time.
+      previousWorkingState: staticResult.swept ? null : args.previousWorkingState
+    });
+    const sumVector = (field) => addVector3(
+      staticResult[field] || {},
+      terrainResult[field] || {}
+    );
+    const staticToi = Number(staticResult.timeOfImpactFraction);
+    const terrainToi = Number(terrainResult.timeOfImpactFraction);
+    const timeOfImpactFraction = Number.isFinite(staticToi)
+      ? Number.isFinite(terrainToi) ? Math.min(staticToi, terrainToi) : staticToi
+      : Number.isFinite(terrainToi) ? terrainToi : null;
+    return {
+      ...terrainResult,
+      linearImpulseWorldNs: sumVector('linearImpulseWorldNs'),
+      angularImpulseWorldNms: sumVector('angularImpulseWorldNms'),
+      positionalCorrectionWorldM: sumVector('positionalCorrectionWorldM'),
+      contacts: [...(staticResult.contacts || []), ...(terrainResult.contacts || [])],
+      bodyNormalImpulseNs: Number(staticResult.bodyNormalImpulseNs || 0)
+        + Number(terrainResult.bodyNormalImpulseNs || 0),
+      bodyFrictionImpulseNs: Number(staticResult.bodyFrictionImpulseNs || 0)
+        + Number(terrainResult.bodyFrictionImpulseNs || 0),
+      restitutionContributionNs: Number(staticResult.restitutionContributionNs || 0)
+        + Number(terrainResult.restitutionContributionNs || 0),
+      swept: staticResult.swept === true || terrainResult.swept === true,
+      sweepSource: staticResult.swept === true
+        ? 'static-collider' : terrainResult.sweepSource,
+      timeOfImpactFraction,
+      maximumPenetrationM: Math.max(
+        Number(staticResult.maximumPenetrationM || 0),
+        Number(terrainResult.maximumPenetrationM || 0)
+      ),
+      residualPenetrationM: Math.max(
+        Number(staticResult.residualPenetrationM || 0),
+        Number(terrainResult.residualPenetrationM || 0)
+      ),
+      broadphaseRejected: staticResult.broadphaseRejected === true
+        && terrainResult.broadphaseRejected === true,
+      staticCollision: staticResult
     };
   }
 }

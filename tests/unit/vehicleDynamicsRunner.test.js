@@ -51,6 +51,24 @@ test('physical sleep holds a shallow slope but cannot defeat a steep low-grip sl
   assert.equal(evaluatePhysicalSleepCondition({
     ...context, state: makeState(28 * Math.PI / 180, 0.22)
   }), false);
+  assert.equal(evaluatePhysicalSleepCondition({
+    ...context,
+    state: { ...makeState(0, 1), angularVelocityWorld: { x: 0.05, y: 0, z: -0.05 } },
+    tires: {
+      ...context.tires,
+      suspensionState: Object.fromEntries(['fl', 'fr', 'rl', 'rr'].map((wheelId) => [
+        wheelId, { unsprungVelocityMps: 0.02 }
+      ]))
+    }
+  }), true);
+  assert.equal(evaluatePhysicalSleepCondition({
+    ...context,
+    state: makeState(0, 1),
+    tires: {
+      ...context.tires,
+      suspensionState: { fl: { unsprungVelocityMps: 0.12 } }
+    }
+  }), false);
 });
 
 test('named angular-rate fallbacks map to the authoritative world axes', () => {

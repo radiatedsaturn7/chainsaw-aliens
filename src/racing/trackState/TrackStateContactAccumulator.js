@@ -20,13 +20,23 @@ const PHYSICAL_TOTAL_FIELDS = Object.freeze([
   'materialPickupCapacity',
   'carriedMaterialDepositCapacity'
 ]);
+const EMPTY_ACCEPTED_KEYS = Object.freeze([]);
 
-function getPhysicalTotals(contact, {
+function readPhysicalTotal(supplied, field, fallback, scale) {
+  if (!Object.hasOwn(supplied, field)) return Math.max(0, fallback);
+  const scaled = Math.max(0, Number(supplied[field]) || 0) * scale;
+  return Math.max(0, Number.isFinite(Number(scaled)) ? Number(scaled) : fallback);
+}
+
+function getPhysicalTotals(
+  contact,
   distanceM,
   durationSeconds,
   contactScale,
-  normalLoadN
-}) {
+  normalLoadN,
+  suppliedScale,
+  target
+) {
   const supplied = contact.physicalMutationTotals || contact.mutationTotals || {};
   const groundedDuration = durationSeconds * contactScale;
   const normalImpulse = normalLoadN * groundedDuration;
@@ -67,53 +77,74 @@ function getPhysicalTotals(contact, {
         : /wet|rain/.test(compoundId)
           ? 0.82
           : 1;
-  const defaults = {
-    rollingDistanceM: distanceM,
-    groundedContactDurationSeconds: groundedDuration,
-    normalImpulseNs: normalImpulse,
-    longitudinalSlipWorkJ: longitudinalSlipWork,
-    lateralScrubWorkJ: lateralScrubWork,
-    lockedWheelWorkJ: lockedWheelWork,
-    wheelspinWorkJ: wheelspinWork,
-    surfaceHeatingWorkJ: surfaceHeatingWork,
-    rubberDepositionWorkJ: (rollingWork * 0.08 + surfaceHeatingWork) * compoundScale * temperatureScale,
-    waterDisplacementImpulseNs: rollingWork,
-    looseMaterialSweepWorkJ: rollingWork * (1 + lateralSlip),
-    materialPickupCapacity: rollingWork,
-    carriedMaterialDepositCapacity: rollingWork
-  };
-  return Object.fromEntries(PHYSICAL_TOTAL_FIELDS.map((field) => [
-    field,
-    Math.max(0, Number.isFinite(Number(supplied[field])) ? Number(supplied[field]) : defaults[field])
-  ]));
+  const output = target || {};
+  const scale = Number(suppliedScale);
+  output.rollingDistanceM = readPhysicalTotal(supplied, 'rollingDistanceM', distanceM, scale);
+  output.groundedContactDurationSeconds = readPhysicalTotal(
+    supplied, 'groundedContactDurationSeconds', groundedDuration, scale
+  );
+  output.normalImpulseNs = readPhysicalTotal(supplied, 'normalImpulseNs', normalImpulse, scale);
+  output.longitudinalSlipWorkJ = readPhysicalTotal(
+    supplied, 'longitudinalSlipWorkJ', longitudinalSlipWork, scale
+  );
+  output.lateralScrubWorkJ = readPhysicalTotal(
+    supplied, 'lateralScrubWorkJ', lateralScrubWork, scale
+  );
+  output.lockedWheelWorkJ = readPhysicalTotal(
+    supplied, 'lockedWheelWorkJ', lockedWheelWork, scale
+  );
+  output.wheelspinWorkJ = readPhysicalTotal(
+    supplied, 'wheelspinWorkJ', wheelspinWork, scale
+  );
+  output.surfaceHeatingWorkJ = readPhysicalTotal(
+    supplied, 'surfaceHeatingWorkJ', surfaceHeatingWork, scale
+  );
+  output.rubberDepositionWorkJ = readPhysicalTotal(
+    supplied,
+    'rubberDepositionWorkJ',
+    (rollingWork * 0.08 + surfaceHeatingWork) * compoundScale * temperatureScale,
+    scale
+  );
+  output.waterDisplacementImpulseNs = readPhysicalTotal(
+    supplied, 'waterDisplacementImpulseNs', rollingWork, scale
+  );
+  output.looseMaterialSweepWorkJ = readPhysicalTotal(
+    supplied, 'looseMaterialSweepWorkJ', rollingWork * (1 + lateralSlip), scale
+  );
+  output.materialPickupCapacity = readPhysicalTotal(
+    supplied, 'materialPickupCapacity', rollingWork, scale
+  );
+  output.carriedMaterialDepositCapacity = readPhysicalTotal(
+    supplied, 'carriedMaterialDepositCapacity', rollingWork, scale
+  );
+  return output;
 }
 
-function clipSegmentToCell(from, to, coords, cellSizeM) {
+function clipAxis(interval, origin, delta, low, high) {
+  if (Math.abs(delta) <= EPSILON) return origin >= low && origin <= high;
+  const first = (low - origin) / delta;
+  const second = (high - origin) / delta;
+  const entry = Math.min(first, second);
+  const exit = Math.max(first, second);
+  interval.start = Math.max(interval.start, entry);
+  interval.end = Math.min(interval.end, exit);
+  return interval.end >= interval.start;
+}
+
+function clipSegmentToCell(from, to, coords, cellSizeM, target) {
   const minX = coords.x * cellSizeM;
   const maxX = minX + cellSizeM;
   const minZ = coords.z * cellSizeM;
   const maxZ = minZ + cellSizeM;
   const dx = to.x - from.x;
   const dz = to.z - from.z;
-  let start = 0;
-  let end = 1;
-  for (const [origin, delta, low, high] of [
-    [from.x, dx, minX, maxX],
-    [from.z, dz, minZ, maxZ]
-  ]) {
-    if (Math.abs(delta) <= EPSILON) {
-      if (origin < low || origin > high) return null;
-      continue;
-    }
-    const first = (low - origin) / delta;
-    const second = (high - origin) / delta;
-    const entry = Math.min(first, second);
-    const exit = Math.max(first, second);
-    start = Math.max(start, entry);
-    end = Math.min(end, exit);
-    if (end < start) return null;
-  }
-  return { start: Math.max(0, start), end: Math.min(1, end) };
+  target.start = 0;
+  target.end = 1;
+  if (!clipAxis(target, from.x, dx, minX, maxX)
+    || !clipAxis(target, from.z, dz, minZ, maxZ)) return null;
+  target.start = Math.max(0, target.start);
+  target.end = Math.min(1, target.end);
+  return target;
 }
 
 function compareAggregates(left, right) {
@@ -128,6 +159,16 @@ export class TrackStateContactAccumulator {
   constructor(trackState) {
     this.trackState = trackState;
     this.aggregates = new Map();
+    this.normalizedFromScratch = { x: 0, z: 0 };
+    this.normalizedToScratch = { x: 0, z: 0 };
+    this.sliceFromScratch = { x: 0, z: 0 };
+    this.sliceToScratch = { x: 0, z: 0 };
+    this.clipScratch = { start: 0, end: 1 };
+    this.singleTraceCoordinates = { x: 0, z: 0, key: '' };
+    this.singleTrace = [this.singleTraceCoordinates];
+    this.pieceScratch = [];
+    this.physicalTotalsScratch = {};
+    this.dueScratch = [];
   }
 
   get size() {
@@ -138,8 +179,10 @@ export class TrackStateContactAccumulator {
     this.aggregates.clear();
   }
 
-  accumulate(contact = {}) {
-    if (contact.grounded === false || Number(contact.contactScale ?? 1) <= 0.001) return [];
+  accumulate(contact = {}, { collectAcceptedKeys = true } = {}) {
+    if (contact.grounded === false || Number(contact.contactScale ?? 1) <= 0.001) {
+      return collectAcceptedKeys ? [] : EMPTY_ACCEPTED_KEYS;
+    }
     const state = this.trackState;
     const durationMs = Math.max(
       EPSILON,
@@ -151,9 +194,13 @@ export class TrackStateContactAccumulator {
       z: Number(contact.z || 0)
     };
     const to = contact.position || { x: Number(contact.x || 0), z: Number(contact.z || 0) };
-    const normalizedFrom = { x: Number(from.x || 0), z: Number(from.z || 0) };
-    const normalizedTo = { x: Number(to.x || 0), z: Number(to.z || 0) };
-    const acceptedKeys = [];
+    const normalizedFrom = this.normalizedFromScratch;
+    normalizedFrom.x = Number(from.x || 0);
+    normalizedFrom.z = Number(from.z || 0);
+    const normalizedTo = this.normalizedToScratch;
+    normalizedTo.x = Number(to.x || 0);
+    normalizedTo.z = Number(to.z || 0);
+    const acceptedKeys = collectAcceptedKeys ? [] : null;
     let consumedMs = 0;
     while (consumedMs < durationMs - EPSILON) {
       const absoluteMs = startAccumulatorMs + consumedMs;
@@ -162,60 +209,103 @@ export class TrackStateContactAccumulator {
       const sliceMs = Math.min(durationMs - consumedMs, state.fixedStepMs - withinStepMs);
       const startRatio = consumedMs / durationMs;
       const endRatio = (consumedMs + sliceMs) / durationMs;
-      const sliceFrom = {
-        x: normalizedFrom.x + (normalizedTo.x - normalizedFrom.x) * startRatio,
-        z: normalizedFrom.z + (normalizedTo.z - normalizedFrom.z) * startRatio
-      };
-      const sliceTo = {
-        x: normalizedFrom.x + (normalizedTo.x - normalizedFrom.x) * endRatio,
-        z: normalizedFrom.z + (normalizedTo.z - normalizedFrom.z) * endRatio
-      };
+      const sliceFrom = this.sliceFromScratch;
+      sliceFrom.x = normalizedFrom.x + (normalizedTo.x - normalizedFrom.x) * startRatio;
+      sliceFrom.z = normalizedFrom.z + (normalizedTo.z - normalizedFrom.z) * startRatio;
+      const sliceTo = this.sliceToScratch;
+      sliceTo.x = normalizedFrom.x + (normalizedTo.x - normalizedFrom.x) * endRatio;
+      sliceTo.z = normalizedFrom.z + (normalizedTo.z - normalizedFrom.z) * endRatio;
       const stepIndex = state.stepIndex + stepOffset + 1;
-      const suppliedTotals = contact.physicalMutationTotals || contact.mutationTotals;
-      acceptedKeys.push(...this.accumulateSlice({
-        ...contact,
-        stepTimeStartSeconds: withinStepMs / 1000,
-        distanceM: Number.isFinite(Number(contact.distanceM))
-          ? Number(contact.distanceM) * sliceMs / durationMs
-          : undefined,
-        ...(suppliedTotals ? {
-          physicalMutationTotals: Object.fromEntries(PHYSICAL_TOTAL_FIELDS
-            .filter((field) => Object.hasOwn(suppliedTotals, field))
-            .map((field) => [
-              field,
-              Math.max(0, Number(suppliedTotals[field]) || 0) * sliceMs / durationMs
-            ]))
-        } : {})
-      }, stepIndex, sliceFrom, sliceTo, sliceMs / 1000));
+      const sliceScale = sliceMs / durationMs;
+      const sliceDistanceM = Number.isFinite(Number(contact.distanceM))
+        ? Number(contact.distanceM) * sliceScale
+        : undefined;
+      const sliceAcceptedKeys = this.accumulateSlice(
+        contact,
+        stepIndex,
+        sliceFrom,
+        sliceTo,
+        sliceMs / 1000,
+        collectAcceptedKeys,
+        sliceDistanceM,
+        withinStepMs / 1000,
+        sliceScale
+      );
+      if (collectAcceptedKeys) {
+        for (let keyIndex = 0; keyIndex < sliceAcceptedKeys.length; keyIndex += 1) {
+          acceptedKeys.push(sliceAcceptedKeys[keyIndex]);
+        }
+      }
       consumedMs += sliceMs;
     }
-    return acceptedKeys;
+    return acceptedKeys || EMPTY_ACCEPTED_KEYS;
   }
 
-  accumulateSlice(contact, stepIndex, from, to, durationSeconds) {
+  accumulateSlice(
+    contact,
+    stepIndex,
+    from,
+    to,
+    durationSeconds,
+    collectAcceptedKeys = true,
+    distanceMOverride = undefined,
+    stepTimeStartSeconds = undefined,
+    suppliedTotalsScale = 1
+  ) {
     const state = this.trackState;
     const dx = to.x - from.x;
     const dz = to.z - from.z;
     const geometricDistance = Math.hypot(dx, dz);
-    const segmentDistance = Number.isFinite(Number(contact.distanceM))
-      ? Math.max(0, Number(contact.distanceM))
+    const segmentDistance = Number.isFinite(Number(distanceMOverride))
+      ? Math.max(0, Number(distanceMOverride))
+      : Number.isFinite(Number(contact.distanceM))
+        ? Math.max(0, Number(contact.distanceM))
       : geometricDistance;
-    const traced = geometricDistance > EPSILON
-      ? traceTrackStateCells(from, to, state.cellSizeM)
-      : [{ ...getTrackStateCellCoordinates(to, state.cellSizeM), key: `${Math.floor(to.x / state.cellSizeM)},${Math.floor(to.z / state.cellSizeM)}` }];
-    const pieces = traced.map((coords) => {
-      const clipped = clipSegmentToCell(from, to, coords, state.cellSizeM);
+    const fromCellX = Math.floor(from.x / state.cellSizeM);
+    const fromCellZ = Math.floor(from.z / state.cellSizeM);
+    const toCellX = Math.floor(to.x / state.cellSizeM);
+    const toCellZ = Math.floor(to.z / state.cellSizeM);
+    let traced;
+    if (fromCellX === toCellX && fromCellZ === toCellZ) {
+      this.singleTraceCoordinates.x = toCellX;
+      this.singleTraceCoordinates.z = toCellZ;
+      this.singleTraceCoordinates.key = `${toCellX},${toCellZ}`;
+      traced = this.singleTrace;
+    } else if (geometricDistance > EPSILON) {
+      traced = traceTrackStateCells(from, to, state.cellSizeM);
+    } else {
+      const coordinates = getTrackStateCellCoordinates(to, state.cellSizeM);
+      this.singleTraceCoordinates.x = coordinates.x;
+      this.singleTraceCoordinates.z = coordinates.z;
+      this.singleTraceCoordinates.key = `${toCellX},${toCellZ}`;
+      traced = this.singleTrace;
+    }
+    const pieces = this.pieceScratch;
+    let pieceCount = 0;
+    let totalPieceRatio = 0;
+    for (let traceIndex = 0; traceIndex < traced.length; traceIndex += 1) {
+      const coords = traced[traceIndex];
+      const clipped = clipSegmentToCell(
+        from, to, coords, state.cellSizeM, this.clipScratch
+      );
       const ratio = geometricDistance > EPSILON && clipped
         ? Math.max(0, clipped.end - clipped.start)
         : 1;
-      return {
-        coords,
-        ratio,
-        entryRatio: clipped?.start || 0,
-        distanceM: segmentDistance * ratio
-      };
-    }).filter((piece) => piece.distanceM > EPSILON || segmentDistance <= EPSILON);
-    const totalPieceRatio = pieces.reduce((sum, piece) => sum + piece.ratio, 0);
+      const pieceDistanceM = segmentDistance * ratio;
+      if (!(pieceDistanceM > EPSILON || segmentDistance <= EPSILON)) continue;
+      let piece = pieces[pieceCount];
+      if (!piece) {
+        piece = {};
+        pieces[pieceCount] = piece;
+      }
+      piece.coords = coords;
+      piece.ratio = ratio;
+      piece.entryRatio = clipped?.start || 0;
+      piece.distanceM = pieceDistanceM;
+      totalPieceRatio += ratio;
+      pieceCount += 1;
+    }
+    pieces.length = pieceCount;
     const vehicleId = String(contact.vehicleId || 'vehicle');
     const wheelId = String(contact.wheelId || '');
     const contactScale = Math.max(0, Math.min(1, Number(contact.contactScale ?? 1)));
@@ -228,7 +318,9 @@ export class TrackStateContactAccumulator {
     ) || 1;
     const directionX = Number(contact.directionX ?? dx) / directionLength;
     const directionZ = Number(contact.directionZ ?? dz) / directionLength;
-    return pieces.map((piece) => {
+    const acceptedKeys = collectAcceptedKeys ? [] : null;
+    for (let pieceIndex = 0; pieceIndex < pieceCount; pieceIndex += 1) {
+      const piece = pieces[pieceIndex];
       const duration = segmentDistance > EPSILON && totalPieceRatio > EPSILON
         ? durationSeconds * piece.ratio / totalPieceRatio
         : durationSeconds / Math.max(1, pieces.length);
@@ -243,7 +335,19 @@ export class TrackStateContactAccumulator {
         z: (piece.coords.z + 0.5) * state.cellSizeM,
         distanceM: 0,
         slipWork: 0,
-        ...Object.fromEntries(PHYSICAL_TOTAL_FIELDS.map((field) => [field, 0])),
+        rollingDistanceM: 0,
+        groundedContactDurationSeconds: 0,
+        normalImpulseNs: 0,
+        longitudinalSlipWorkJ: 0,
+        lateralScrubWorkJ: 0,
+        lockedWheelWorkJ: 0,
+        wheelspinWorkJ: 0,
+        surfaceHeatingWorkJ: 0,
+        rubberDepositionWorkJ: 0,
+        waterDisplacementImpulseNs: 0,
+        looseMaterialSweepWorkJ: 0,
+        materialPickupCapacity: 0,
+        carriedMaterialDepositCapacity: 0,
         loadDuration: 0,
         temperatureWeight: 0,
         temperatureWeighted: 0,
@@ -261,17 +365,21 @@ export class TrackStateContactAccumulator {
         firstContactTimeSeconds: Number.POSITIVE_INFINITY
       };
       const distanceWeight = piece.distanceM > EPSILON ? piece.distanceM : duration;
-      const physicalTotals = getPhysicalTotals(contact, {
-        distanceM: segmentDistance,
+      const physicalTotals = getPhysicalTotals(
+        contact,
+        segmentDistance,
         durationSeconds,
         contactScale,
-        normalLoadN
-      });
+        normalLoadN,
+        suppliedTotalsScale,
+        this.physicalTotalsScratch
+      );
       aggregate.distanceM += piece.distanceM;
       aggregate.slipWork += slip * normalLoadN * piece.distanceM * contactScale;
-      PHYSICAL_TOTAL_FIELDS.forEach((field) => {
+      for (let fieldIndex = 0; fieldIndex < PHYSICAL_TOTAL_FIELDS.length; fieldIndex += 1) {
+        const field = PHYSICAL_TOTAL_FIELDS[fieldIndex];
         aggregate[field] += physicalTotals[field] * piece.ratio / Math.max(EPSILON, totalPieceRatio);
-      });
+      }
       aggregate.loadDuration += normalLoadN * duration * contactScale;
       aggregate.temperatureWeight += distanceWeight;
       aggregate.temperatureWeighted += tireTemperatureF * distanceWeight;
@@ -285,23 +393,38 @@ export class TrackStateContactAccumulator {
       aggregate.contactDurationSeconds += duration;
       aggregate.groundedDurationSeconds += duration * contactScale;
       aggregate.slipDurationWeighted += slip * duration * contactScale;
-      aggregate.compoundId = [aggregate.compoundId, String(contact.compoundId || 'tarmac')].sort()[0];
+      const compoundId = String(contact.compoundId || 'tarmac');
+      if (compoundId < aggregate.compoundId) aggregate.compoundId = compoundId;
       aggregate.firstContactTimeSeconds = quantizeTrackStateNumber(Math.min(
         aggregate.firstContactTimeSeconds,
-        Number(contact.stepTimeStartSeconds || 0) + durationSeconds * piece.entryRatio
+        Number(stepTimeStartSeconds ?? contact.stepTimeStartSeconds ?? 0)
+          + durationSeconds * piece.entryRatio
       ));
       this.aggregates.set(key, aggregate);
-      return { stepIndex, vehicleId, wheelId, cellKey };
-    });
+      if (collectAcceptedKeys) acceptedKeys.push({ stepIndex, vehicleId, wheelId, cellKey });
+    }
+    return acceptedKeys || EMPTY_ACCEPTED_KEYS;
   }
 
-  flushStep(stepIndex) {
-    const due = [...this.aggregates.entries()]
-      .filter(([, aggregate]) => aggregate.stepIndex <= stepIndex)
-      .map(([key, aggregate]) => ({ key, aggregate }))
-      .sort((left, right) => compareAggregates(left.aggregate, right.aggregate));
-    const events = [];
-    due.forEach(({ key, aggregate }) => {
+  flushStep(stepIndex, { collectEvents = true } = {}) {
+    const due = this.dueScratch;
+    let dueCount = 0;
+    for (const [key, aggregate] of this.aggregates) {
+      if (aggregate.stepIndex > stepIndex) continue;
+      let entry = due[dueCount];
+      if (!entry) {
+        entry = { key: null, aggregate: null };
+        due[dueCount] = entry;
+      }
+      entry.key = key;
+      entry.aggregate = aggregate;
+      dueCount += 1;
+    }
+    due.length = dueCount;
+    due.sort((left, right) => compareAggregates(left.aggregate, right.aggregate));
+    const events = collectEvents ? [] : null;
+    for (let dueIndex = 0; dueIndex < dueCount; dueIndex += 1) {
+      const { key, aggregate } = due[dueIndex];
       this.aggregates.delete(key);
       const groundedFraction = aggregate.contactDurationSeconds > EPSILON
         ? aggregate.groundedDurationSeconds / aggregate.contactDurationSeconds
@@ -339,10 +462,25 @@ export class TrackStateContactAccumulator {
           directionZ: quantizeTrackStateNumber(aggregate.directionZWeighted / directionLength),
           slipEnergy: quantizeTrackStateNumber(slipEnergy),
           slipWork: quantizeTrackStateNumber(aggregate.slipWork),
-          ...Object.fromEntries(PHYSICAL_TOTAL_FIELDS.map((field) => [
-            field,
-            quantizeTrackStateNumber(aggregate[field])
-          ])),
+          rollingDistanceM: quantizeTrackStateNumber(aggregate.rollingDistanceM),
+          groundedContactDurationSeconds: quantizeTrackStateNumber(
+            aggregate.groundedContactDurationSeconds
+          ),
+          normalImpulseNs: quantizeTrackStateNumber(aggregate.normalImpulseNs),
+          longitudinalSlipWorkJ: quantizeTrackStateNumber(aggregate.longitudinalSlipWorkJ),
+          lateralScrubWorkJ: quantizeTrackStateNumber(aggregate.lateralScrubWorkJ),
+          lockedWheelWorkJ: quantizeTrackStateNumber(aggregate.lockedWheelWorkJ),
+          wheelspinWorkJ: quantizeTrackStateNumber(aggregate.wheelspinWorkJ),
+          surfaceHeatingWorkJ: quantizeTrackStateNumber(aggregate.surfaceHeatingWorkJ),
+          rubberDepositionWorkJ: quantizeTrackStateNumber(aggregate.rubberDepositionWorkJ),
+          waterDisplacementImpulseNs: quantizeTrackStateNumber(
+            aggregate.waterDisplacementImpulseNs
+          ),
+          looseMaterialSweepWorkJ: quantizeTrackStateNumber(aggregate.looseMaterialSweepWorkJ),
+          materialPickupCapacity: quantizeTrackStateNumber(aggregate.materialPickupCapacity),
+          carriedMaterialDepositCapacity: quantizeTrackStateNumber(
+            aggregate.carriedMaterialDepositCapacity
+          ),
           brakeLock: quantizeTrackStateNumber(aggregate.maxBrakeLock),
           wheelSpin: quantizeTrackStateNumber(aggregate.maxWheelSpin),
           contactDurationSeconds: quantizeTrackStateNumber(aggregate.contactDurationSeconds),
@@ -352,9 +490,9 @@ export class TrackStateContactAccumulator {
             : 70)
         }
       });
-      if (event) events.push(event);
-    });
-    return events;
+      if (event && collectEvents) events.push(event);
+    }
+    return events || EMPTY_ACCEPTED_KEYS;
   }
 
   createSnapshot() {

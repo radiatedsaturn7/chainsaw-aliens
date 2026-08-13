@@ -123,67 +123,77 @@ export function createTrackStateCell({
   });
 }
 
-export function getTrackStateCellSample(cell = {}, stepIndex = 0) {
-  const condition = (source = cell, prefix = '') => {
-    const read = (field) => Math.max(0, Number(source[`${prefix}${field}`] || 0));
-    const water = read('StandingWaterDepthMm');
-    const moisture = read('MoistureDepthMm');
+function calculateCellConditionInto(target, cell, baseline = false) {
+    const water = Math.max(0, Number(
+      baseline ? cell.baselineStandingWaterDepthMm : cell.standingWaterDepthMm
+    ) || 0);
+    const moisture = Math.max(0, Number(
+      baseline ? cell.baselineMoistureDepthMm : cell.moistureDepthMm
+    ) || 0);
+    const looseMarbles = Math.max(0, Number(
+      baseline ? cell.baselineLooseMarbles : cell.looseMarbles
+    ) || 0);
+    const dust = Math.max(0, Number(baseline ? cell.baselineDust : cell.dust) || 0);
+    const dirt = Math.max(0, Number(baseline ? cell.baselineDirt : cell.dirt) || 0);
+    const mud = Math.max(0, Number(baseline ? cell.baselineMud : cell.mud) || 0);
+    const debris = Math.max(0, Number(baseline ? cell.baselineDebris : cell.debris) || 0);
+    const oil = Math.max(0, Number(baseline ? cell.baselineOil : cell.oil) || 0);
+    const iceDepthMm = Math.max(0, Number(
+      baseline ? cell.baselineIceDepthMm : cell.iceDepthMm
+    ) || 0);
+    const snowDepthMm = Math.max(0, Number(
+      baseline ? cell.baselineSnowDepthMm : cell.snowDepthMm
+    ) || 0);
+    const roughness = Math.max(0, Number(
+      baseline ? cell.baselineRoughness : cell.roughness
+    ) || 0);
     const wetness = clamp(moisture / Math.max(0.1, Number(cell.saturationDepthMm || 1)) + water / 4, 0, 1);
     const hydroplaningRisk = clamp((water - 0.6) / 5.4, 0, 1);
     const looseMaterialRisk = clamp(
-      read('LooseMarbles') * 0.55
-        + read('Dust') * 0.18
-        + read('Dirt') * 0.26
-        + read('Mud') * 0.7
-        + read('Debris') * 0.4,
+      looseMarbles * 0.55
+        + dust * 0.18
+        + dirt * 0.26
+        + mud * 0.7
+        + debris * 0.4,
       0,
       1
     );
     const contaminationRisk = clamp(
-      read('Oil') * 0.9
-        + clamp(read('IceDepthMm') / 2, 0, 1) * 0.78,
+      oil * 0.9
+        + clamp(iceDepthMm / 2, 0, 1) * 0.78,
       0,
       1
     );
-    const snowRisk = clamp(read('SnowDepthMm') / 35, 0, 1);
-    const roughnessRisk = clamp(read('Roughness'), 0, 1);
+    const snowRisk = clamp(snowDepthMm / 35, 0, 1);
+    const roughnessRisk = clamp(roughness, 0, 1);
     const rollingFactor = 1
       + water * 0.025
-      + read('LooseMarbles') * 0.12
-      + read('Dust') * 0.05
-      + read('Dirt') * 0.16
-      + read('Mud') * 0.55
-      + read('Oil') * 0.08
+      + looseMarbles * 0.12
+      + dust * 0.05
+      + dirt * 0.16
+      + mud * 0.55
+      + oil * 0.08
       + snowRisk * 0.85
-      + clamp(read('IceDepthMm') / 2, 0, 1) * 0.1
-      + read('Debris') * 0.24
+      + clamp(iceDepthMm / 2, 0, 1) * 0.1
+      + debris * 0.24
       + roughnessRisk * 0.18;
-    return {
-      water,
-      moisture,
-      wetness,
-      hydroplaningRisk,
-      looseMaterialRisk,
-      contaminationRisk,
-      snowRisk,
-      roughnessRisk,
-      rollingFactor
-    };
-  };
-  const current = condition({
-    StandingWaterDepthMm: cell.standingWaterDepthMm,
-    MoistureDepthMm: cell.moistureDepthMm,
-    LooseMarbles: cell.looseMarbles,
-    Dust: cell.dust,
-    Dirt: cell.dirt,
-    Mud: cell.mud,
-    Debris: cell.debris,
-    Oil: cell.oil,
-    IceDepthMm: cell.iceDepthMm,
-    SnowDepthMm: cell.snowDepthMm,
-    Roughness: cell.roughness
-  });
-  const baseline = condition(cell, 'baseline');
+    target.water = water;
+    target.moisture = moisture;
+    target.wetness = wetness;
+    target.hydroplaningRisk = hydroplaningRisk;
+    target.looseMaterialRisk = looseMaterialRisk;
+    target.contaminationRisk = contaminationRisk;
+    target.snowRisk = snowRisk;
+    target.roughnessRisk = roughnessRisk;
+    target.rollingFactor = rollingFactor;
+    return target;
+}
+
+export function getTrackStateCellSample(
+  cell = {}, stepIndex = 0, target = null, conditionScratch = null
+) {
+  const current = calculateCellConditionInto(conditionScratch?.current || {}, cell, false);
+  const baseline = calculateCellConditionInto(conditionScratch?.baseline || {}, cell, true);
   const water = current.water;
   const wetness = current.wetness;
   const rubber = clamp(Number(cell.rubber || 0), 0, 1);
@@ -219,46 +229,56 @@ export function getTrackStateCellSample(cell = {}, stepIndex = 0) {
       : water > 0.1 && cell.baseSurfaceId === 'asphalt'
         ? 'wet-asphalt'
         : cell.baseSurfaceId;
-  return {
-    cellKey: cell.key,
-    stepIndex,
-    cell,
-    effectiveSurfaceId,
-    effectiveGripMultiplier: quantizeTrackStateNumber(gripMultiplier),
-    effectiveGrip: quantizeTrackStateNumber(Number(cell.baseGrip || 1) * gripMultiplier),
-    rollingResistanceMultiplier: quantizeTrackStateNumber(rollingResistanceMultiplier),
-    wetness: quantizeTrackStateNumber(wetness),
-    hydroplaningRisk: quantizeTrackStateNumber(hydroplaningRisk),
-    looseMaterialRisk: quantizeTrackStateNumber(looseMaterialRisk),
-    contaminationRisk: quantizeTrackStateNumber(contaminationRisk),
-    risk: quantizeTrackStateNumber(clamp(
-      Math.max(0, hydroplaningRisk - baseline.hydroplaningRisk) * 0.42
-        + Math.max(0, looseMaterialRisk - baseline.looseMaterialRisk) * 0.35
-        + Math.max(0, contaminationRisk - baseline.contaminationRisk) * 0.65
-        + Math.max(0, snowRisk - baseline.snowRisk) * 0.38,
-      0,
-      1
-    )),
-    visual: {
-      wetness: quantizeTrackStateNumber(Math.max(0, wetness - baseline.wetness)),
-      dampness: quantizeTrackStateNumber(clamp(
-        Number(cell.moistureDepthMm || 0) / Math.max(0.1, Number(cell.saturationDepthMm || 1)), 0, 1
-      )),
-      standingWater: quantizeTrackStateNumber(clamp(Number(cell.standingWaterDepthMm || 0) / 6, 0, 1)),
-      puddles: quantizeTrackStateNumber(clamp((Number(cell.standingWaterDepthMm || 0) - 0.7) / 5.3, 0, 1)),
-      rubber,
-      loose: quantizeTrackStateNumber(Math.max(0, looseMaterialRisk - baseline.looseMaterialRisk)),
-      marbles: quantizeTrackStateNumber(clamp(Number(cell.looseMarbles || 0), 0, 1)),
-      dirt: quantizeTrackStateNumber(clamp(Number(cell.dirt || 0), 0, 1)),
-      mud: quantizeTrackStateNumber(clamp(Number(cell.mud || 0), 0, 1)),
-      snow: quantizeTrackStateNumber(Math.max(0, snowRisk - baseline.snowRisk)),
-      ice: quantizeTrackStateNumber(Math.max(
-        0,
-        clamp(Number(cell.iceDepthMm || 0) / 2, 0, 1)
-          - clamp(Number(cell.baselineIceDepthMm || 0) / 2, 0, 1)
-      )),
-      oil: quantizeTrackStateNumber(Math.max(0, Number(cell.oil || 0) - Number(cell.baselineOil || 0))),
-      debris: quantizeTrackStateNumber(Math.max(0, Number(cell.debris || 0) - Number(cell.baselineDebris || 0)))
-    }
-  };
+  const output = target && typeof target === 'object' ? target : {};
+  const visual = output.visual && typeof output.visual === 'object' ? output.visual : {};
+  output.cellKey = cell.key;
+  output.stepIndex = stepIndex;
+  output.cell = cell;
+  output.effectiveSurfaceId = effectiveSurfaceId;
+  output.effectiveGripMultiplier = quantizeTrackStateNumber(gripMultiplier);
+  output.effectiveGrip = quantizeTrackStateNumber(Number(cell.baseGrip || 1) * gripMultiplier);
+  output.rollingResistanceMultiplier = quantizeTrackStateNumber(rollingResistanceMultiplier);
+  output.wetness = quantizeTrackStateNumber(wetness);
+  output.hydroplaningRisk = quantizeTrackStateNumber(hydroplaningRisk);
+  output.looseMaterialRisk = quantizeTrackStateNumber(looseMaterialRisk);
+  output.contaminationRisk = quantizeTrackStateNumber(contaminationRisk);
+  output.risk = quantizeTrackStateNumber(clamp(
+    Math.max(0, hydroplaningRisk - baseline.hydroplaningRisk) * 0.42
+      + Math.max(0, looseMaterialRisk - baseline.looseMaterialRisk) * 0.35
+      + Math.max(0, contaminationRisk - baseline.contaminationRisk) * 0.65
+      + Math.max(0, snowRisk - baseline.snowRisk) * 0.38,
+    0,
+    1
+  ));
+  visual.wetness = quantizeTrackStateNumber(Math.max(0, wetness - baseline.wetness));
+  visual.dampness = quantizeTrackStateNumber(clamp(
+    Number(cell.moistureDepthMm || 0) / Math.max(0.1, Number(cell.saturationDepthMm || 1)), 0, 1
+  ));
+  visual.standingWater = quantizeTrackStateNumber(clamp(
+    Number(cell.standingWaterDepthMm || 0) / 6, 0, 1
+  ));
+  visual.puddles = quantizeTrackStateNumber(clamp(
+    (Number(cell.standingWaterDepthMm || 0) - 0.7) / 5.3, 0, 1
+  ));
+  visual.rubber = rubber;
+  visual.loose = quantizeTrackStateNumber(Math.max(
+    0, looseMaterialRisk - baseline.looseMaterialRisk
+  ));
+  visual.marbles = quantizeTrackStateNumber(clamp(Number(cell.looseMarbles || 0), 0, 1));
+  visual.dirt = quantizeTrackStateNumber(clamp(Number(cell.dirt || 0), 0, 1));
+  visual.mud = quantizeTrackStateNumber(clamp(Number(cell.mud || 0), 0, 1));
+  visual.snow = quantizeTrackStateNumber(Math.max(0, snowRisk - baseline.snowRisk));
+  visual.ice = quantizeTrackStateNumber(Math.max(
+    0,
+    clamp(Number(cell.iceDepthMm || 0) / 2, 0, 1)
+      - clamp(Number(cell.baselineIceDepthMm || 0) / 2, 0, 1)
+  ));
+  visual.oil = quantizeTrackStateNumber(Math.max(
+    0, Number(cell.oil || 0) - Number(cell.baselineOil || 0)
+  ));
+  visual.debris = quantizeTrackStateNumber(Math.max(
+    0, Number(cell.debris || 0) - Number(cell.baselineDebris || 0)
+  ));
+  output.visual = visual;
+  return output;
 }

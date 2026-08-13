@@ -8,6 +8,7 @@ import {
 import { syncVehicleDynamicsCompatibilityOutputs } from './simulation/VehicleState.js';
 import { calculateWheelContactKinematics } from './simulation/ContactPatchTireModel.js';
 import { createDeterministicAtmosphere, getRaceWakeSourcesForFrame } from './simulation/AeroEnvironment.js';
+import { applyRaceVehicleRenderSnapshot } from './simulation/RaceVehicleDynamicsWorkerBridge.js';
 
 export function getRaceAiAeroAwareness(wakeState = {}, { severity = 0, speedMps = 0, index = 0 } = {}) {
   const wakeIntensity = clamp(Number(wakeState.intensity || 0), 0, 1);
@@ -54,7 +55,7 @@ export function getRaceAiContactState(editor, ai = {}, car = editor.selectedCar,
   const roadHalfWidth = Math.max(1, Number(section.metrics?.roadEnd || editor.getRaceRoadHalfWidthWorld(pose.segment)));
   const lateral = clamp(Number(ai.lineOffset || 0), -0.85, 0.85) * roadHalfWidth;
   const right = editor.getRaceRightVector(pose.yaw);
-  const runnerState = ai.vehicleDynamicsRunner?.state;
+  const runnerState = ai.vehicleDynamicsPresentationState || ai.vehicleDynamicsRunner?.state;
   const aiSession = {
     worldX: Number(runnerState?.position?.x ?? ai.worldX ?? (Number(pose.x || 0) + right.x * lateral)),
     worldZ: Number(runnerState?.position?.z ?? ai.worldZ ?? (Number(pose.z ?? pose.y ?? 0) + right.z * lateral)),
@@ -281,20 +282,34 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
       maxPhysicalAngleRad: runner.config.maxSteerAngleRad
     }
   );
-  runner.advance(seconds, {
-    input: {
-      steering: normalizedSteering,
-      centerSteeringAngleRad: physicalCenterSteeringAngle,
-      steeringInputMode: 'ai',
-      throttle: Number(engineDrive.throttle || 0),
-      brake: Number(engineDrive.brake || 0),
-      requestedGear: Number(ai.gear || 1),
-      assists: { stabilityControlEnabled: true }
-    }
-  });
+  const physicsInput = {
+    steering: normalizedSteering,
+    centerSteeringAngleRad: physicalCenterSteeringAngle,
+    steeringInputMode: 'ai',
+    throttle: Number(engineDrive.throttle || 0),
+    brake: Number(engineDrive.brake || 0),
+    requestedGear: Number(ai.gear || 1),
+    assists: { stabilityControlEnabled: true }
+  };
+  const workerBridge = editor.vehicleDynamicsAuthority?.workerBridge;
+  const workerSnapshot = workerBridge && ai.workerVehicleId
+    ? workerBridge.updateAiVehicle({
+        vehicleId: ai.workerVehicleId,
+      controls: physicsInput,
+      ai,
+      active: ai.sleeping !== true
+      })
+    : null;
+  if (!workerBridge) runner.advance(seconds, { input: physicsInput });
+  if (workerBridge && !workerSnapshot) return runner.state;
   const aiSession = {};
-  syncVehicleDynamicsCompatibilityOutputs(runner, aiSession);
+  if (workerSnapshot) {
+    applyRaceVehicleRenderSnapshot(aiSession, workerSnapshot);
+  } else {
+    syncVehicleDynamicsCompatibilityOutputs(runner, aiSession);
+  }
   ai.vehicle3d = aiSession.vehicle3d;
+  ai.vehicleDynamicsPresentationState = aiSession.vehicleDynamicsPresentationState;
   ai.speedMps = aiSession.speedMps;
   ai.worldX = aiSession.worldX;
   ai.worldZ = aiSession.worldZ;
@@ -321,7 +336,7 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
       || contactState.contacts?.contacts?.[wheelId]?.region
       || 'terrain'
   ]));
-  return runner.state;
+  return workerSnapshot || runner.state;
 }
 
 export function getRaceAiLongitudinalPhysicsStep(editor, ai = {}, {
@@ -913,7 +928,12 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
         }
       };
       const contactState = editor.getRaceAiContactState(ai, car, tuning);
-      const yaw = Number(ai.vehicleDynamicsRunner?.state?.yawRad ?? contactState.pose?.yaw ?? 0);
+      const yaw = Number(
+        ai.vehicleDynamicsPresentationState?.yawRad
+          ?? ai.vehicleDynamicsRunner?.state?.yawRad
+          ?? contactState.pose?.yaw
+          ?? 0
+      );
       editor.updateRaceAiVehiclePhysics(ai, {
         car,
         tuning,
@@ -937,7 +957,8 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
     const car = editor.project.cars.find((candidate) => candidate.id === ai.carId) || editor.selectedCar;
     const tuning = editor.getRaceCarTuning(car, { transmissionType: ai.shiftMode === 'manual' ? 'manual' : 'automatic' });
     const profile = editor.getRaceAiDifficultyProfile(ai.difficulty);
-    const wakeState = ai.vehicleDynamicsRunner?.state?.aeroState?.wake || {};
+    const wakeState = ai.vehicleDynamicsPresentationState?.aeroState?.wake
+      || ai.vehicleDynamicsRunner?.state?.aeroState?.wake || {};
     const preliminaryAeroAwareness = getRaceAiAeroAwareness(wakeState, {
       speedMps: ai.speedMps,
       index

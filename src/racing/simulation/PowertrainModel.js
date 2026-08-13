@@ -441,7 +441,7 @@ export class PowertrainModel {
       if (gear < ratios.length && currentRpm >= upshiftRpm
         && projectedRpm(gear + 1) >= idleRpm * (1.15 + throttle * 0.25)) {
         requestedGear = gear + 1;
-      } else if (gear > 1 && forwardSpeed > 0.5
+      } else if (gear > 1
         && (currentRpm <= downshiftRpm || brake > 0.2)
         && projectedRpm(gear - 1) <= maxRpm * 0.94) {
         requestedGear = gear - 1;

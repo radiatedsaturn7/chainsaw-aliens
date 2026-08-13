@@ -20,6 +20,7 @@
     "test:robtersession-midi": "node tools/robtersession-midi-tests.cjs",
     "test:race-physics-feel": "node --test tests/unit/racePhysicsFeel.test.js",
     "test:studio-sprint2-hill-acceptance": "node --test tests/unit/studioSprint2PhysicsIncident.test.js",
+    "test:studio-sprint2-physics-performance": "node tools/run-studio-sprint2-physics-performance.mjs",
     "test:race-physics-feel:browser": "playwright test tests/playwright/race-physics-feel.spec.js",
     "test:playwright": "playwright test tests/playwright",
     "test:playwright:headed": "playwright test --headed"

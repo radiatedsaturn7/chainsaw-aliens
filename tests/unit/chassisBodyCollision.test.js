@@ -138,6 +138,36 @@ test('compound support adaptively subdivides only a materially varying terrain n
   assert.equal(crest.some(({ candidate }) => candidate.adaptive), true);
 });
 
+test('body collision LOD uses AABB, lower-hull, and full-envelope tiers', () => {
+  const collision = new ChassisBodyCollision(CONFIG);
+  const environment = {
+    sampleTerrainAtWorldPoint: terrain(),
+    sampleTerrainAtWorldPoints: (points) => points.map(terrain()),
+    sampleTerrainMaximumHeightInBounds: () => 0
+  };
+  const solve = (heightM) => collision.step({
+    workingState: createWorking({ heightM }),
+    config: CONFIG,
+    environment,
+    dt: DT,
+    advanceState: false
+  });
+
+  const generous = solve(1);
+  assert.equal(generous.broadphaseRejected, true);
+  assert.equal(generous.bodySupportLod, 'aabb');
+
+  const ordinary = solve(0.49);
+  assert.equal(ordinary.broadphaseRejected, true);
+  assert.equal(ordinary.bodySupportLod, 'lower-hull');
+  assert.ok(collision.lowerHullCandidates.length > 0);
+  assert.ok(collision.lowerHullCandidates.length < collision.candidates.length);
+
+  const contact = solve(0.42);
+  assert.notEqual(contact.bodySupportLod, 'lower-hull');
+  assert.equal(contact.broadphaseRejected === true && contact.contacts.length === 0, false);
+});
+
 test('emergency recovery atomically discards the failed manifold and rebuilds restored contacts', () => {
   let tireCalls = 0;
   let bodyCalls = 0;
@@ -180,6 +210,8 @@ test('emergency recovery atomically discards the failed manifold and rebuilds re
   assert.deepEqual(collision.positionalCorrectionWorldM, { x: 0, y: 0, z: 0 });
   assert.equal(collision.contacts.some(({ id }) => id === 'failed-underbody'), false);
   assert.equal(collision.emergencyRecoveries.length, 1);
+  assert.equal(runner.contactStabilizationState.catastrophicHistoricalRecoveryCount, 1);
+  assert.equal(runner.contactStabilizationState.gameplayResetCount, 1);
 });
 
 test('one historical recovery blacklists its source and the next failure escalates to route', () => {
@@ -507,7 +539,7 @@ test('deeply submerged initial state recovers deterministically and records the 
   partitioned.slice(1).forEach((candidate) => assert.deepEqual(candidate, partitioned[0]));
 });
 
-test('shallow residual penetration waits for complete chassis-step stall before route recovery', () => {
+test('persistent ordinary penetration never promotes a contact stall to route recovery', () => {
   const runner = new VehicleDynamicsRunner({
     config: { ...CONFIG, chassisHz: 120, tireHz: 360, handlingPreset: 'simulation',
       penetrationFailureStepLimit: 2 },
@@ -543,10 +575,11 @@ test('shallow residual penetration waits for complete chassis-step stall before 
   runner.advance(1 / 120);
   assert.equal(runner.penetrationRecoveryState.history.length, 0,
     'one solver pass must not substitute recovery for ordinary contact');
-  runner.advance(1 / 120);
-  assert.equal(runner.penetrationRecoveryState.history.length, 1);
-  assert.equal(runner.penetrationRecoveryState.history[0].reason, 'penetration-correction-stalled');
-  assert.equal(runner.penetrationRecoveryState.history[0].usedRouteRecoveryPath, true);
+  runner.advance(9 / 120);
+  assert.equal(runner.penetrationRecoveryState.history.length, 0,
+    'stalled ordinary contact must never enter gameplay recovery history');
+  assert.equal(runner.contactStabilizationState.ordinaryCorrectionCount > 0, true);
+  assert.equal(runner.contactStabilizationState.gameplayResetCount, 0);
 });
 
 test('surface consistency telemetry flags baked and physics height differences over two centimeters', () => {

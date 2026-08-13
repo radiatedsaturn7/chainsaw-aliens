@@ -41,27 +41,29 @@ export function normalizeSuspensionDefinition(value = {}, fallbackType = 'macphe
 }
 
 export function solveSuspensionGeometry({ definition = {}, compressionM = 0, steeringAngleRad = 0,
-  staticCamberRad = 0, staticToeRad = 0, springRateNpm = 30000 } = {}) {
+  staticCamberRad = 0, staticToeRad = 0, springRateNpm = 30000, target = null } = {}) {
   const d = normalizeSuspensionDefinition(definition);
   const travel = Number(compressionM) || 0;
   const bumpSteerRad = d.toeGainRadPerM * travel;
   const motionRatio = clamp(d.motionRatio * (1 - Math.abs(travel) * 0.08), 0.3, 1.5);
-  return {
-    type: d.type,
-    suspensionAxis: d.suspensionAxis,
-    restLengthM: d.restLengthM,
-    camberRad: q(staticCamberRad + d.camberGainRadPerM * travel),
-    toeRad: q(staticToeRad + bumpSteerRad),
-    bumpSteerRad: q(bumpSteerRad),
-    casterRad: q(d.casterRad),
-    kingpinInclinationRad: q(d.kingpinInclinationRad),
-    scrubRadiusM: q(d.scrubRadiusM),
-    mechanicalTrailM: q(d.mechanicalTrailM + Math.tan(d.casterRad) * 0.01),
-    rollCenterHeightM: q(d.rollCenterHeightM + travel * d.rollCenterGain),
-    motionRatio: q(motionRatio),
-    antiDive: q(d.antiDive),
-    antiSquat: q(d.antiSquat),
-    wheelRateNpm: q(Number(springRateNpm) * motionRatio * motionRatio),
-    steeringAxisTrailMomentArmM: q(d.mechanicalTrailM + d.scrubRadiusM * Math.sin(steeringAngleRad))
-  };
+  const output = target && typeof target === 'object' ? target : {};
+  output.type = d.type;
+  output.suspensionAxis = d.suspensionAxis;
+  output.restLengthM = d.restLengthM;
+  output.camberRad = q(staticCamberRad + d.camberGainRadPerM * travel);
+  output.toeRad = q(staticToeRad + bumpSteerRad);
+  output.bumpSteerRad = q(bumpSteerRad);
+  output.casterRad = q(d.casterRad);
+  output.kingpinInclinationRad = q(d.kingpinInclinationRad);
+  output.scrubRadiusM = q(d.scrubRadiusM);
+  output.mechanicalTrailM = q(d.mechanicalTrailM + Math.tan(d.casterRad) * 0.01);
+  output.rollCenterHeightM = q(d.rollCenterHeightM + travel * d.rollCenterGain);
+  output.motionRatio = q(motionRatio);
+  output.antiDive = q(d.antiDive);
+  output.antiSquat = q(d.antiSquat);
+  output.wheelRateNpm = q(Number(springRateNpm) * motionRatio * motionRatio);
+  output.steeringAxisTrailMomentArmM = q(
+    d.mechanicalTrailM + d.scrubRadiusM * Math.sin(steeringAngleRad)
+  );
+  return output;
 }

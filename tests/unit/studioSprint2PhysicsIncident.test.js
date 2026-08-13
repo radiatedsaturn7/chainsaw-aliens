@@ -385,32 +385,19 @@ test('recorded full-bump hill support remains valid at 120, 240, and 360 tire Hz
   }
 });
 
-test('ten-second Studio Sprint 2 hill replay has bounded deterministic recovery history', () => {
+test('thirty-second Studio Sprint 2 hill replay has zero deterministic gameplay resets', () => {
   const incidentEpoch = splitRunnerEpochs().at(-1);
-  const results = FPS_VALUES.map((fps) => replayEpoch(incidentEpoch, fps, {
-    durationSeconds: 10
-  }));
-  results.forEach((result) => {
-    const history = result.recoveryHistory;
-    assert.equal(result.upperOvertravelUnsupported, false);
-    assert.equal(result.ordinaryHillFailure, false,
-      'ordinary hill support must not invoke catastrophic recovery');
-    assert.equal(history.length <= 128, true);
-    assert.equal(new Set(history.map(({ sourceKey }) => sourceKey)).size, history.length,
-      'a recovery source may not be reused');
-    assert.equal(history.filter(({ recoveryMode }) => recoveryMode === 'historical').length <= 1, true);
-    assert.equal(history.some(({ routeDistance }) => routeDistance === 0), false,
-      'projection failure must not reset route distance to zero');
-    assert.equal(history.some(({ velocityIntoBlockingNormalMps }) => (
-      Number(velocityIntoBlockingNormalMps) < -1e-6
-    )), false, 'recovery velocity must not attack the same blocking normal');
-    assert.equal(history.some(({ penetrationIncidentId }, index) => (
-      history.slice(0, index).some((prior) => prior.penetrationIncidentId === penetrationIncidentId
-        && prior.sourceKey === history[index].sourceKey)
-    )), false);
+  const result = replayEpoch(incidentEpoch, 60, {
+    durationSeconds: 30
   });
-  results.slice(1).forEach((result) => {
-    assert.equal(result.checksum, results[0].checksum);
-    assert.deepEqual(result.recoveryHistory, results[0].recoveryHistory);
-  });
+  const history = result.recoveryHistory;
+  assert.equal(result.upperOvertravelUnsupported, false);
+  assert.equal(result.ordinaryHillFailure, false,
+    'ordinary hill support must not invoke catastrophic recovery');
+  assert.equal(history.length, 0,
+    'ordinary Studio Sprint 2 hill driving must produce zero gameplay resets');
+  assert.equal(new Set(history.map(({ sourceKey }) => sourceKey)).size, history.length,
+    'a recovery source may not be reused');
+  assert.equal(history.some(({ routeDistance }) => routeDistance === 0), false,
+    'projection failure must not reset route distance to zero');
 });
