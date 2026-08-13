@@ -306,7 +306,10 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
   } else {
     expect(result.overpoweredDirtPartial.minPostPeakTraction).toBe(1);
   }
-  expect(result.overpoweredDirtPartial.maxBodyTravelSlip).toBeGreaterThan(0.02);
+  expect(
+    result.overpoweredDirtPartial.maxBodyTravelSlip,
+    `loose-surface physics diagnostics: ${JSON.stringify(result)}`
+  ).toBeGreaterThan(0.02);
   expect(result.overpoweredDirtPartial.maxBodyTravelSlip).toBeLessThan(0.9);
   expect(result.overpoweredDirtPartial.maxCameraTravelError).toBeLessThan(0.28);
   expect(result.overpoweredDirtRwdFull.maxWheelSpin).toBeGreaterThan(1);
