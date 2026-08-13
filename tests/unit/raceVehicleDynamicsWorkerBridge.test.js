@@ -1,0 +1,233 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+
+import {
+  applyRaceVehicleProvisionalResetPresentation,
+  RaceVehicleDynamicsWorkerBridge,
+  applyRaceVehicleRenderSnapshot,
+  createRaceVehicleDynamicsWorkerInitialization
+} from '../../src/racing/simulation/RaceVehicleDynamicsWorkerBridge.js';
+import {
+  quaternionFromEuler,
+  rotateVectorToBody
+} from '../../src/racing/simulation/RigidBodyMath.js';
+import {
+  buildRaceBakedSurfaceSampler,
+  packRaceBakedSurfaceSampler
+} from '../../src/racing/RaceBakedSurfaceSampler.js';
+
+class FakeWorker {
+  constructor() { this.messages = []; this.listeners = new Set(); }
+  addEventListener(type, listener) { if (type === 'message') this.listeners.add(listener); }
+  removeEventListener(type, listener) { if (type === 'message') this.listeners.delete(listener); }
+  postMessage(message, transferables = []) { this.messages.push({ message, transferables }); }
+  terminate() {}
+}
+
+test('production worker initialization copies and transfers packed world only once', () => {
+  const original = packRaceBakedSurfaceSampler(buildRaceBakedSurfaceSampler({
+    mesh: { triangles: [{ region: 'road', vertices: [
+      { x: 0, y: 0, elevation: 0 }, { x: 1, y: 0, elevation: 0 }, { x: 0, y: 1, elevation: 0 }
+    ] }] }
+  }));
+  const runner = {
+    config: { chassisHz: 120 },
+    state: {},
+    createStateSnapshot: () => ({ heightM: 0.55 }),
+    inputTimeline: { createSnapshot: () => [{ timeSeconds: 0, input: {} }] }
+  };
+  const initialization = createRaceVehicleDynamicsWorkerInitialization({
+    runner,
+    surfaceSampler: original,
+    environmentState: { bodyDamage: 20 },
+    activeAiVehicles: [{
+      id: 'ai-1',
+      runner,
+      environmentState: { bodyDamage: 0 }
+    }]
+  });
+  const workerSampler = initialization.payload.vehicles[0].physicsWorld.surfaceSampler;
+  assert.notEqual(workerSampler.positions.buffer, original.positions.buffer);
+  assert.ok(initialization.transferables.includes(workerSampler.positions.buffer));
+  assert.equal(initialization.payload.vehicles[0].physicsWorld.environmentState.bodyDamage, 20);
+  assert.equal(initialization.payload.vehicles[1].physicsWorld.environmentState.bodyDamage, 0);
+  assert.notEqual(
+    initialization.payload.vehicles[0].physicsWorld,
+    initialization.payload.vehicles[1].physicsWorld
+  );
+  structuredClone(initialization.payload, { transfer: initialization.transferables });
+  assert.equal(workerSampler.positions.byteLength, 0);
+  assert.equal(original.positions.byteLength > 0, true);
+});
+
+test('render snapshot updates presentation compatibility without exposing a runner', () => {
+  const session = {};
+  applyRaceVehicleRenderSnapshot(session, {
+    position: { x: 1, y: 2, z: 3 },
+    orientation: { x: 0, y: 0, z: 0, w: 1 },
+    wheelPoses: { fl: {}, fr: {}, rl: {}, rr: {} },
+    suspensionPose: { fl: 0.1, fr: 0.1, rl: 0.2, rr: 0.2 },
+    speedMps: 20,
+    engineRpm: 4000,
+    eventSequence: 11,
+    visualState: 2
+  });
+  assert.equal(session.worldX, 1);
+  assert.equal(session.vehicle3d.authoritativeSource, 'VehicleDynamicsWorker');
+  assert.equal(session.vehicleDynamicsRunner, undefined);
+  assert.equal(session.vehicleDynamicsEventSequence, 11);
+});
+
+test('rolled worker snapshots update body, wheel, and debug state atomically', () => {
+  const half = Math.SQRT1_2;
+  const dormantRunnerState = {
+    position: { x: 99, y: 99, z: 99 },
+    orientation: { x: 0, y: 0, z: 0, w: 1 }
+  };
+  const wheel = {
+    position: { x: 1.4, y: 2, z: 3.8 },
+    orientation: { x: 0, y: 0, z: half, w: half },
+    contactPoint: { x: 1.1, y: 2, z: 3.8 },
+    normal: { x: 1, y: 0, z: 0 },
+    suspensionMount: { x: 1.8, y: 2, z: 3.8 },
+    suspensionAxis: { x: -1, y: 0, z: 0 },
+    normalLoadN: 2800,
+    gripCoefficient: 0.9,
+    steeringAngleRad: 0.1,
+    lateralForceN: 600,
+    selfAligningMomentNm: -18,
+    validTreadContact: true,
+    geometricContact: true,
+    normalLoadKnown: true,
+    inContact: true
+  };
+  const session = { vehicleDynamicsRunner: { state: dormantRunnerState } };
+  applyRaceVehicleRenderSnapshot(session, {
+    position: { x: 1, y: 2, z: 3 },
+    orientation: { x: 0, y: 0, z: half, w: half },
+    velocity: { x: 4, y: -2, z: 1 },
+    angularVelocity: { x: 0.2, y: 0.3, z: 0.4 },
+    wheelPoses: { fl: wheel, fr: wheel, rl: wheel, rr: wheel },
+    suspensionPose: { fl: 0.2, fr: 0.2, rl: 0.3, rr: 0.3 },
+    wheelAngularVelocity: { fl: 4, fr: 4, rl: 5, rr: 5 },
+    tireTemperature: { fl: 91, fr: 92, rl: 93, rr: 94 },
+    speedMps: 4.5,
+    groundSpeedMps: 4.1,
+    bodyLongitudinalSpeedMps: 1,
+    bodyLateralSpeedMps: 4,
+    signedTravelSpeedMps: 4.1,
+    engineRpm: 3200,
+    gear: 2,
+    eventSequence: 12,
+    visualState: 1
+  });
+  assert.equal(Math.abs(session.rollRad - Math.PI / 2) < 1e-12, true);
+  assert.deepEqual(session.vehicle3d.wheels.fl.position, wheel.position);
+  assert.deepEqual(
+    session.vehicleDynamicsPresentationState.contactPatches.fl.hubPositionWorld,
+    wheel.position
+  );
+  assert.equal(session.vehicleDynamicsPresentationState.wheelLoadsN.fl, 2800);
+  assert.equal(session.gear, 2);
+  assert.deepEqual(dormantRunnerState.position, { x: 99, y: 99, z: 99 });
+});
+
+test('worker reset immediately moves body and all wheels as one rigid presentation', () => {
+  const previousOrientation = quaternionFromEuler({ yaw: 0.2, roll: 0.4 });
+  const nextOrientation = quaternionFromEuler({ yaw: 1.1, pitch: -0.2, roll: -0.1 });
+  const session = {
+    vehicleDynamicsPresentationState: { position: { x: 1, y: 2, z: 3 } },
+    vehicle3d: {
+      enabled: true,
+      authoritativeSource: 'VehicleDynamicsWorker',
+      position: { x: 1, y: 2, z: 3 },
+      orientation: previousOrientation,
+      wheels: {
+        fl: {
+          position: { x: 0.2, y: 1.6, z: 4.2 },
+          suspensionMount: { x: 0.2, y: 2.1, z: 4.2 },
+          suspensionAxis: { x: 0, y: -1, z: 0 }
+        },
+        fr: {
+          position: { x: 1.8, y: 1.6, z: 4.2 },
+          suspensionMount: { x: 1.8, y: 2.1, z: 4.2 },
+          suspensionAxis: { x: 0, y: -1, z: 0 }
+        }
+      }
+    }
+  };
+  const beforeBody = structuredClone(session.vehicle3d.position);
+  const beforeOffsets = Object.fromEntries(Object.entries(session.vehicle3d.wheels).map(
+    ([wheelId, wheel]) => [wheelId, rotateVectorToBody({
+      x: wheel.position.x - beforeBody.x,
+      y: wheel.position.y - beforeBody.y,
+      z: wheel.position.z - beforeBody.z
+    }, previousOrientation)]
+  ));
+  assert.equal(applyRaceVehicleProvisionalResetPresentation(session, {
+    position: { x: 20, y: 5, z: -10 },
+    orientation: nextOrientation
+  }), true);
+  assert.equal(session.vehicleDynamicsPresentationState, null);
+  for (const [wheelId, wheel] of Object.entries(session.vehicle3d.wheels)) {
+    const afterOffset = rotateVectorToBody({
+      x: wheel.position.x - session.vehicle3d.position.x,
+      y: wheel.position.y - session.vehicle3d.position.y,
+      z: wheel.position.z - session.vehicle3d.position.z
+    }, nextOrientation);
+    assert.ok(Math.hypot(
+      afterOffset.x - beforeOffsets[wheelId].x,
+      afterOffset.y - beforeOffsets[wheelId].y,
+      afterOffset.z - beforeOffsets[wheelId].z
+    ) < 1e-9);
+  }
+});
+
+test('AI active state is synchronized without stepping it on the render thread', () => {
+  const worker = new FakeWorker();
+  let now = 0;
+  const bridge = new RaceVehicleDynamicsWorkerBridge({
+    worker,
+    qualification: {
+      achievedStepsPerSecond: 140,
+      p95StepMs: 7,
+      backlogStart: 0,
+      backlogEnd: 0
+    },
+    now: () => ++now
+  });
+  bridge.updateAiVehicle({ vehicleId: 'ai-1', controls: {}, ai: {}, active: false });
+  bridge.updateAiVehicle({ vehicleId: 'ai-1', controls: {}, ai: {}, active: false });
+  bridge.updateAiVehicle({ vehicleId: 'ai-1', controls: {}, ai: {}, active: true });
+  assert.deepEqual(worker.messages.filter(({ message }) => (
+    message.type === 'setVehicleActive'
+  )).map(({ message }) => message.active), [false, true]);
+  assert.equal(worker.messages.filter(({ message }) => message.type === 'input').length, 1);
+});
+
+test('render thread transfers mutable physics environment as a compact buffer', () => {
+  const worker = new FakeWorker();
+  const bridge = new RaceVehicleDynamicsWorkerBridge({
+    worker,
+    qualification: {
+      achievedStepsPerSecond: 140,
+      p95StepMs: 7,
+      backlogStart: 0,
+      backlogEnd: 0
+    },
+    now: () => 1
+  });
+  bridge.update({
+    controls: {},
+    session: {},
+    environmentUpdate: {
+      weatherState: { id: 'rain', effectiveIntensity: 0.5 },
+      weatherForcing: { precipitationRateMmPerS: 0.25 },
+      damage: {}
+    }
+  });
+  const update = worker.messages.find(({ message }) => message.type === 'environmentUpdate');
+  assert.ok(update);
+  assert.deepEqual(update.transferables, [update.message.buffer]);
+  assert.equal(update.message.buffer.byteLength > 0, true, 'fake transfer does not detach automatically');
+});

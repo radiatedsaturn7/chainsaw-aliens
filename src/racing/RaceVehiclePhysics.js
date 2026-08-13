@@ -223,6 +223,20 @@ export function createRaceVehiclePhysicsState({
 }
 
 export function getRaceVehicleWheelWorldPose(state = {}, wheelId = 'fl') {
+  const authoritativePosition = state.wheels?.[wheelId]?.position;
+  if (authoritativePosition
+    && Number.isFinite(Number(authoritativePosition.x))
+    && Number.isFinite(Number(authoritativePosition.y))
+    && Number.isFinite(Number(authoritativePosition.z))) {
+    return {
+      x: Number(authoritativePosition.x),
+      y: Number(authoritativePosition.y),
+      z: Number(authoritativePosition.z),
+      local: state.wheels?.[wheelId]?.localAttachment || null,
+      relative: null,
+      authoritative: true
+    };
+  }
   const local = state.wheelAttachments?.[wheelId] || state.wheels?.[wheelId]?.localAttachment || { x: 0, y: 0, z: 0 };
   const rotated = rotateLocalToWorld(local, state);
   return {

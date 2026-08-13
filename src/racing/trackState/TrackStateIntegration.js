@@ -1,6 +1,8 @@
 import { clamp, hashTrackStateValue, quantizeTrackStateNumber } from './TrackStateMath.js';
 import { TrackState } from './TrackState.js';
 
+const EMPTY_ACCEPTED_TIRE_EVENTS = Object.freeze([]);
+
 function getAuthoredBaseSurface(sample = {}) {
   const region = String(sample.region || 'terrain');
   if (region !== 'terrain') {
@@ -101,16 +103,22 @@ export function queueRaceTrackStateTireEvents(trackState, {
   wheelSpinByWheel = {},
   physicalMutationTotalsByWheel = {},
   contactDurationSeconds,
-  direction = null
+  direction = null,
+  wheelIds: providedWheelIds = null,
+  collectAcceptedEvents = true,
+  contactByWheel = null
 } = {}) {
-  if (!trackState) return [];
+  if (!trackState) return collectAcceptedEvents ? [] : EMPTY_ACCEPTED_TIRE_EVENTS;
   const current = wheelSurfaceState.positions || {};
-  const wheelIds = [...new Set([...Object.keys(current), ...Object.keys(wheelContactScaleByWheel)])].sort();
-  const events = [];
-  wheelIds.forEach((wheelId) => {
+  const wheelIds = providedWheelIds || [
+    ...new Set([...Object.keys(current), ...Object.keys(wheelContactScaleByWheel)])
+  ].sort();
+  const events = collectAcceptedEvents ? [] : null;
+  for (let wheelIndex = 0; wheelIndex < wheelIds.length; wheelIndex += 1) {
+    const wheelId = wheelIds[wheelIndex];
     const position = current[wheelId];
     const contactScale = Number(wheelContactScaleByWheel[wheelId] ?? 0);
-    if (!position || contactScale <= 0.001) return;
+    if (!position || contactScale <= 0.001) continue;
     const previousPosition = previousPositions[wheelId] || position;
     const dx = Number(position.x || 0) - Number(previousPosition.x || 0);
     const dz = Number(position.z || 0) - Number(previousPosition.z || 0);
@@ -134,34 +142,44 @@ export function queueRaceTrackStateTireEvents(trackState, {
       Number(lateralSlipByWheel[wheelId]
         ?? Math.max(0, Number(tireSlipByWheel[wheelId] || 0) - categorizedLongitudinalSlip))
     );
-    if (distanceM < 0.002 && slipEnergy <= 0.001) return;
-    const fallbackDirection = Math.hypot(dx, dz) > 0.0001
-      ? { x: dx / Math.hypot(dx, dz), z: dz / Math.hypot(dx, dz) }
-      : { x: Number(direction?.x || 1), z: Number(direction?.z || 0) };
-    events.push(...trackState.queueTireContact({
-      vehicleId,
-      wheelId,
-      position,
-      previousPosition,
-      grounded: true,
-      contactScale,
-      normalLoadN: normalLoads[wheelId],
-      speedMps,
-      distanceM,
-      directionX: fallbackDirection.x,
-      directionZ: fallbackDirection.z,
-      slipEnergy,
-      longitudinalSlip,
-      lateralSlip,
-      brakeLock: brakeState.lockByWheel?.[wheelId],
-      wheelSpin: wheelSpinByWheel[wheelId],
-      contactDurationSeconds,
-      compoundId: tireCompoundByWheel[wheelId] || 'tarmac',
-      tireTemperatureF: tireTemperatures[wheelId],
-      physicalMutationTotals: physicalMutationTotalsByWheel[wheelId]
-    }));
-  });
-  return events;
+    if (distanceM < 0.002 && slipEnergy <= 0.001) continue;
+    const pathLength = Math.hypot(dx, dz);
+    const directionX = pathLength > 0.0001
+      ? dx / pathLength : Number(direction?.x || 1);
+    const directionZ = pathLength > 0.0001
+      ? dz / pathLength : Number(direction?.z || 0);
+    const contact = contactByWheel?.[wheelId] || {};
+    contact.vehicleId = vehicleId;
+    contact.wheelId = wheelId;
+    contact.position = position;
+    contact.previousPosition = previousPosition;
+    contact.grounded = true;
+    contact.contactScale = contactScale;
+    contact.normalLoadN = normalLoads[wheelId];
+    contact.speedMps = speedMps;
+    contact.distanceM = distanceM;
+    contact.directionX = directionX;
+    contact.directionZ = directionZ;
+    contact.slipEnergy = slipEnergy;
+    contact.longitudinalSlip = longitudinalSlip;
+    contact.lateralSlip = lateralSlip;
+    contact.brakeLock = brakeState.lockByWheel?.[wheelId];
+    contact.wheelSpin = wheelSpinByWheel[wheelId];
+    contact.contactDurationSeconds = contactDurationSeconds;
+    contact.compoundId = tireCompoundByWheel[wheelId] || 'tarmac';
+    contact.tireTemperatureF = tireTemperatures[wheelId];
+    contact.physicalMutationTotals = physicalMutationTotalsByWheel[wheelId];
+    const accepted = trackState.queueTireContact(
+      contact,
+      { collectAcceptedKeys: collectAcceptedEvents }
+    );
+    if (collectAcceptedEvents) {
+      for (let acceptedIndex = 0; acceptedIndex < accepted.length; acceptedIndex += 1) {
+        events.push(accepted[acceptedIndex]);
+      }
+    }
+  }
+  return events || EMPTY_ACCEPTED_TIRE_EVENTS;
 }
 
 export function queueRaceTrackStateCrashEvents(trackState, session = {}) {

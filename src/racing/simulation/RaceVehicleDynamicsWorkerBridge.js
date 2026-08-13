@@ -1,0 +1,411 @@
+import { getPackedRaceWorkerEnvironmentTransferables } from './PackedRaceWorkerEnvironment.js';
+import {
+  createVehicleControlInputBuffer,
+  createVehicleEnvironmentUpdateBuffer,
+  createVehicleResetCommandBuffer
+} from './VehicleDynamicsWorkerProtocol.js';
+import { VehicleDynamicsWorkerClient } from './VehicleDynamicsWorkerClient.js';
+import {
+  eulerFromQuaternion,
+  rotateVectorByQuaternion,
+  rotateVectorToBody
+} from './RigidBodyMath.js';
+
+function copyVector(target = {}, source = {}, includeW = false) {
+  target.x = Number(source?.x || 0);
+  target.y = Number(source?.y || 0);
+  target.z = Number(source?.z || 0);
+  if (includeW) target.w = Number(source?.w ?? 1);
+  return target;
+}
+
+function transformResetPoint(point = {}, previousPosition = {}, previousOrientation = {},
+  nextPosition = {}, nextOrientation = {}) {
+  const relativeWorld = {
+    x: Number(point.x || 0) - Number(previousPosition.x || 0),
+    y: Number(point.y || 0) - Number(previousPosition.y || 0),
+    z: Number(point.z || 0) - Number(previousPosition.z || 0)
+  };
+  const local = rotateVectorToBody(relativeWorld, previousOrientation);
+  const rotated = rotateVectorByQuaternion(local, nextOrientation);
+  return {
+    x: Number(nextPosition.x || 0) + rotated.x,
+    y: Number(nextPosition.y || 0) + rotated.y,
+    z: Number(nextPosition.z || 0) + rotated.z
+  };
+}
+
+export function applyRaceVehicleProvisionalResetPresentation(session, resetState = {}) {
+  if (!session?.vehicle3d?.enabled) return false;
+  const vehicle = session.vehicle3d;
+  const previousPosition = vehicle.position || session.vehicleDynamicsPresentationState?.position;
+  const previousOrientation = vehicle.orientation
+    || session.vehicleDynamicsPresentationState?.orientation;
+  const nextPosition = resetState.position;
+  const nextOrientation = resetState.orientation;
+  if (!previousPosition || !previousOrientation || !nextPosition || !nextOrientation) return false;
+  const wheels = vehicle.wheels || {};
+  for (const wheelId of Object.keys(wheels)) {
+    const wheel = wheels[wheelId] || {};
+    for (const field of ['position', 'suspensionMount', 'contactPoint']) {
+      if (!wheel[field]) continue;
+      wheel[field] = transformResetPoint(
+        wheel[field], previousPosition, previousOrientation, nextPosition, nextOrientation
+      );
+    }
+    for (const field of ['suspensionAxis', 'normal']) {
+      if (!wheel[field]) continue;
+      wheel[field] = rotateVectorByQuaternion(
+        rotateVectorToBody(wheel[field], previousOrientation), nextOrientation
+      );
+    }
+  }
+  const euler = eulerFromQuaternion(nextOrientation);
+  vehicle.position = copyVector(vehicle.position || {}, nextPosition);
+  vehicle.orientation = copyVector(vehicle.orientation || {}, nextOrientation, true);
+  vehicle.linearVelocity = { x: 0, y: 0, z: 0 };
+  vehicle.angularVelocity = { x: 0, y: 0, z: 0 };
+  vehicle.yaw = euler.yaw;
+  vehicle.pitch = euler.pitch;
+  vehicle.roll = euler.roll;
+  session.worldX = Number(nextPosition.x || 0);
+  session.worldY = Number(nextPosition.y || 0);
+  session.worldZ = Number(nextPosition.z || 0);
+  session.carYaw = euler.yaw;
+  session.pitchRad = euler.pitch;
+  session.rollRad = euler.roll;
+  session.vehicleDynamicsPresentationState = null;
+  return true;
+}
+
+function syncWorkerPresentationState(session, snapshot, euler) {
+  const state = session.vehicleDynamicsPresentationState || {};
+  state.authoritativeSource = 'VehicleDynamicsWorkerSnapshot';
+  state.position = copyVector(state.position || {}, snapshot.position);
+  state.orientation = copyVector(state.orientation || {}, snapshot.orientation, true);
+  state.velocity = copyVector(state.velocity || {}, snapshot.velocity);
+  state.angularVelocityWorld = copyVector(
+    state.angularVelocityWorld || {}, snapshot.angularVelocity
+  );
+  state.yawRad = euler.yaw;
+  state.pitchRad = euler.pitch;
+  state.rollRad = euler.roll;
+  state.speedMps = Number(snapshot.speedMps || 0);
+  state.groundSpeedMps = Number(snapshot.groundSpeedMps ?? snapshot.speedMps ?? 0);
+  state.bodyLongitudinalSpeedMps = Number(
+    snapshot.bodyLongitudinalSpeedMps ?? snapshot.speedMps ?? 0
+  );
+  state.bodyLateralSpeedMps = Number(snapshot.bodyLateralSpeedMps || 0);
+  state.signedTravelSpeedMps = Number(
+    snapshot.signedTravelSpeedMps ?? snapshot.speedMps ?? 0
+  );
+  state.gear = Number(snapshot.gear || 0);
+  state.engineRpm = Number(snapshot.engineRpm || 0);
+  state.grounded = (Number(snapshot.visualState || 0) & 1) !== 0;
+  state.suspensionTravel = { ...snapshot.suspensionPose };
+  state.wheelAngularVelocityRadps = { ...snapshot.wheelAngularVelocity };
+  state.wheelLoadsN ||= {};
+  state.contactPatches ||= {};
+  state.suspensionState ||= {};
+  state.tireState ||= {};
+  for (const [wheelId, wheel] of Object.entries(snapshot.wheelPoses || {})) {
+    const lateral = rotateVectorByQuaternion({ x: 1, y: 0, z: 0 }, wheel.orientation);
+    const patch = state.contactPatches[wheelId] || {};
+    patch.hubPositionWorld = copyVector(patch.hubPositionWorld || {}, wheel.position);
+    patch.wheelCenterWorld = copyVector(patch.wheelCenterWorld || {}, wheel.position);
+    patch.contactPointWorld = copyVector(patch.contactPointWorld || {}, wheel.contactPoint);
+    patch.surfaceNormalWorld = copyVector(patch.surfaceNormalWorld || {}, wheel.normal);
+    patch.suspensionMountPositionWorld = copyVector(
+      patch.suspensionMountPositionWorld || {}, wheel.suspensionMount
+    );
+    patch.suspensionAxisWorld = copyVector(
+      patch.suspensionAxisWorld || {}, wheel.suspensionAxis
+    );
+    patch.wheelLateralWorld = copyVector(patch.wheelLateralWorld || {}, lateral);
+    patch.normalLoadN = Number(wheel.normalLoadN || 0);
+    patch.gripCoefficient = Number(wheel.gripCoefficient || 0);
+    patch.steeringAngleRad = Number(wheel.steeringAngleRad || 0);
+    patch.lateralForceN = Number(wheel.lateralForceN || 0);
+    patch.selfAligningMomentNm = Number(wheel.selfAligningMomentNm || 0);
+    patch.validTreadContact = wheel.validTreadContact === true;
+    patch.geometricContact = wheel.geometricContact === true;
+    patch.normalLoadKnown = wheel.normalLoadKnown !== false;
+    state.contactPatches[wheelId] = patch;
+    state.wheelLoadsN[wheelId] = patch.normalLoadN;
+    state.suspensionState[wheelId] = {
+      ...(state.suspensionState[wheelId] || {}),
+      hubPositionWorld: patch.hubPositionWorld,
+      suspensionMountPositionWorld: patch.suspensionMountPositionWorld,
+      suspensionAxisWorld: patch.suspensionAxisWorld,
+      compressionRatio: Number(snapshot.suspensionPose?.[wheelId] || 0)
+    };
+    state.tireState[wheelId] = {
+      ...(state.tireState[wheelId] || {}),
+      temperatureF: Number(snapshot.tireTemperature?.[wheelId] ?? 70)
+    };
+  }
+  state.powertrainState = {
+    ...(state.powertrainState || {}),
+    engineRpm: state.engineRpm,
+    gear: state.gear
+  };
+  session.vehicleDynamicsPresentationState = state;
+  return state;
+}
+
+function clonePackedSampler(sampler = null) {
+  if (!sampler?.packed) return null;
+  const clone = { ...sampler, bucketLookup: null };
+  for (const key of [
+    'positions', 'normals', 'bounds', 'regions', 'sources', 'priorities',
+    'bucketCoords', 'bucketOffsets', 'bucketTriangles'
+  ]) {
+    if (ArrayBuffer.isView(sampler[key])) clone[key] = sampler[key].slice();
+  }
+  clone.regionTable = [...(sampler.regionTable || [])];
+  clone.sourceTable = [...(sampler.sourceTable || [])];
+  return clone;
+}
+
+export function prepareRaceVehicleDynamicsWorkerSurface(sampler = null) {
+  const prepared = clonePackedSampler(sampler);
+  if (prepared) prepared.workerTransferOwned = true;
+  return prepared;
+}
+
+export function createRaceVehicleDynamicsWorkerInitialization({
+  runner,
+  surfaceSampler,
+  staticColliderDefinitions = [],
+  materialByRegion = {},
+  environmentState = {},
+  trackState = null,
+  weatherForcing = {},
+  tireCompoundByWheel = {},
+  activeAiVehicles = []
+} = {}) {
+  if (!runner?.config || !runner?.state) {
+    throw new TypeError('Worker initialization requires the qualified authoritative runner');
+  }
+  const workerSampler = surfaceSampler?.workerTransferOwned === true
+    ? surfaceSampler
+    : clonePackedSampler(surfaceSampler);
+  if (!workerSampler) throw new TypeError('Worker initialization requires a packed race surface');
+  const physicsWorld = {
+    surfaceSampler: workerSampler,
+    staticColliderDefinitions,
+    materialByRegion,
+    environmentState
+  };
+  const vehicles = [{
+    id: 'player',
+    player: true,
+    active: true,
+    config: { ...runner.config, telemetryRetention: 'none' },
+    initialState: runner.createStateSnapshot(),
+    inputTimeline: runner.inputTimeline?.createSnapshot?.() || [],
+    physicsWorld
+  }, ...activeAiVehicles.filter(({ runner: aiRunner }) => aiRunner?.config).map((entry, index) => ({
+    id: entry.id || `ai-${index}`,
+    player: false,
+    active: entry.active !== false,
+    config: { ...entry.runner.config, telemetryRetention: 'none' },
+    initialState: entry.runner.createStateSnapshot(),
+    inputTimeline: entry.runner.inputTimeline?.createSnapshot?.() || [],
+    physicsWorld: {
+      ...physicsWorld,
+      environmentState: entry.environmentState || physicsWorld.environmentState
+    }
+  }))];
+  return {
+    payload: {
+      vehicles,
+      trackState: trackState ? {
+        snapshot: trackState.createSnapshot(),
+        weatherForcing,
+        tireCompoundByWheel,
+        contactStepSeconds: 1 / runner.config.chassisHz
+      } : null
+    },
+    transferables: getPackedRaceWorkerEnvironmentTransferables(physicsWorld)
+  };
+}
+
+export function applyRaceVehicleRenderSnapshot(session, snapshot) {
+  if (!session || !snapshot) return;
+  const euler = eulerFromQuaternion(snapshot.orientation);
+  const state = syncWorkerPresentationState(session, snapshot, euler);
+  session.worldX = snapshot.position.x;
+  session.worldY = snapshot.position.y;
+  session.worldZ = snapshot.position.z;
+  session.bodyX = snapshot.position.x;
+  session.bodyY = snapshot.position.y;
+  session.bodyZ = snapshot.position.z;
+  session.velocityX = Number(snapshot.velocity?.x || 0);
+  session.velocityY = Number(snapshot.velocity?.y || 0);
+  session.velocityZ = Number(snapshot.velocity?.z || 0);
+  session.speedMps = snapshot.speedMps;
+  session.groundSpeedMps = Number(snapshot.groundSpeedMps ?? snapshot.speedMps);
+  session.bodyLongitudinalSpeedMps = state.bodyLongitudinalSpeedMps;
+  session.bodyLateralSpeedMps = state.bodyLateralSpeedMps;
+  session.signedTravelSpeedMps = state.signedTravelSpeedMps;
+  session.velocityYaw = Math.atan2(session.velocityX, session.velocityZ);
+  session.verticalVelocityMps = session.velocityY;
+  session.engineRpm = snapshot.engineRpm;
+  session.gear = Number(snapshot.gear || 0);
+  session.carYaw = euler.yaw;
+  session.pitchRad = euler.pitch;
+  session.rollRad = euler.roll;
+  session.pitchRate = Number(snapshot.angularVelocity?.x || 0);
+  session.yawVelocityRadps = Number(snapshot.angularVelocity?.y || 0);
+  session.rollRate = Number(snapshot.angularVelocity?.z || 0);
+  session.grounded = state.grounded;
+  session.airborne = !state.grounded;
+  session.authoritativeHandbrakeActive = (Number(snapshot.visualState || 0) & 8) !== 0;
+  session.vehicle3d ||= {};
+  session.vehicle3d.enabled = true;
+  session.vehicle3d.authoritativeSource = 'VehicleDynamicsWorker';
+  session.vehicle3d.position = state.position;
+  session.vehicle3d.linearVelocity = state.velocity;
+  session.vehicle3d.orientation = state.orientation;
+  session.vehicle3d.angularVelocity = state.angularVelocityWorld;
+  session.vehicle3d.yaw = euler.yaw;
+  session.vehicle3d.pitch = euler.pitch;
+  session.vehicle3d.roll = euler.roll;
+  session.vehicle3d.wheels = snapshot.wheelPoses;
+  session.suspensionTravel = snapshot.suspensionPose;
+  session.wheelAngularVelocityRadps = snapshot.wheelAngularVelocity;
+  session.wheelContacts = state.contactPatches;
+  session.vehicleDynamicsEventSequence = snapshot.eventSequence;
+  session.vehicleDynamicsVisualState = snapshot.visualState;
+}
+
+export class RaceVehicleDynamicsWorkerBridge {
+  constructor({ worker, qualification, now = () => performance.now() } = {}) {
+    this.now = now;
+    this.client = new VehicleDynamicsWorkerClient({
+      worker,
+      performanceQualification: qualification,
+      now
+    });
+    this.inputSequence = 0;
+    this.inputSequenceByVehicle = new Map();
+    this.activeByVehicle = new Map();
+    this.resetSequence = 0;
+    this.backlogWarningFrames = 0;
+  }
+
+  initialize(options) {
+    const initialization = createRaceVehicleDynamicsWorkerInitialization(options);
+    this.client.initialize(initialization.payload, initialization.transferables);
+  }
+
+  update({ controls, session, environmentUpdate = null }) {
+    const renderStartMs = this.now();
+    this.inputSequence += 1;
+    if (environmentUpdate) {
+      this.client.submitEnvironmentUpdate(
+        createVehicleEnvironmentUpdateBuffer(environmentUpdate)
+      );
+    }
+    this.client.submitInput(
+      createVehicleControlInputBuffer({
+        ...controls,
+        gear: controls.gear ?? controls.requestedGear,
+        absEnabled: controls.absEnabled ?? controls.assists?.absEnabled,
+        tractionControlEnabled: controls.tractionControlEnabled
+          ?? controls.assists?.tractionControlEnabled,
+        autoShift: controls.autoShift ?? controls.assists?.autoShift
+      }),
+      this.inputSequence,
+      this.now()
+    );
+    const latest = this.client.latestSnapshot;
+    if (!latest) return null;
+    const elapsedSinceReceiveSeconds = Math.max(
+      0, (this.now() - this.client.latestReceiveTimeMs) / 1000
+    );
+    const renderTimeSeconds = latest.simulationTimeSeconds
+      - 1 / 120
+      + elapsedSinceReceiveSeconds;
+    const snapshot = this.client.getInterpolatedSnapshot(renderTimeSeconds);
+    applyRaceVehicleRenderSnapshot(session, snapshot);
+    session.vehicleDynamicsWorkerError = this.client.lastError;
+    this.client.metrics.recordRender(this.now() - renderStartMs);
+    session.vehicleDynamicsWorkerMetrics = this.client.getMetrics({ force: false });
+    const backlogSteps = Number(
+      session.vehicleDynamicsWorkerMetrics?.backlog?.current || 0
+    );
+    this.backlogWarningFrames = backlogSteps > 8 ? this.backlogWarningFrames + 1 : 0;
+    session.vehicleDynamicsWorkerBacklogWarning = this.backlogWarningFrames >= 60
+      ? { backlogSteps, sustainedFrames: this.backlogWarningFrames }
+      : null;
+    return snapshot;
+  }
+
+  updateAiVehicle({ vehicleId, controls, ai, active = true }) {
+    const renderStartMs = this.now();
+    const id = String(vehicleId);
+    const isActive = active !== false;
+    if (this.activeByVehicle.get(id) !== isActive) {
+      this.activeByVehicle.set(id, isActive);
+      this.client.setVehicleActive(id, isActive);
+    }
+    if (!isActive) {
+      this.client.metrics.recordRender(this.now() - renderStartMs);
+      return null;
+    }
+    const sequence = (this.inputSequenceByVehicle.get(id) || 0) + 1;
+    this.inputSequenceByVehicle.set(id, sequence);
+    this.client.submitInput(
+      createVehicleControlInputBuffer({
+        ...controls,
+        gear: controls.gear ?? controls.requestedGear,
+        absEnabled: controls.absEnabled ?? controls.assists?.absEnabled,
+        tractionControlEnabled: controls.tractionControlEnabled
+          ?? controls.assists?.tractionControlEnabled,
+        autoShift: controls.autoShift ?? controls.assists?.autoShift
+      }),
+      sequence,
+      this.now(),
+      id
+    );
+    const latest = this.client.snapshotsByVehicle.get(id)?.latest;
+    if (!latest) {
+      this.client.metrics.recordRender(this.now() - renderStartMs);
+      return null;
+    }
+    const renderTimeSeconds = latest.simulationTimeSeconds - 1 / 120;
+    const snapshot = this.client.getInterpolatedSnapshot(renderTimeSeconds, id);
+    ai.worldX = snapshot.position.x;
+    ai.worldY = snapshot.position.y;
+    ai.worldZ = snapshot.position.z;
+    ai.speedMps = snapshot.speedMps;
+    ai.rpm = snapshot.engineRpm;
+    ai.carYaw = Math.atan2(
+      2 * (snapshot.orientation.w * snapshot.orientation.y
+        + snapshot.orientation.x * snapshot.orientation.z),
+      1 - 2 * (snapshot.orientation.y ** 2 + snapshot.orientation.z ** 2)
+    );
+    ai.vehicleDynamicsSnapshot = snapshot;
+    this.client.metrics.recordRender(this.now() - renderStartMs);
+    return snapshot;
+  }
+
+  resetVehicle(state, vehicleId = 'player', session = null) {
+    if (vehicleId === 'player' && session) {
+      applyRaceVehicleProvisionalResetPresentation(session, state);
+    }
+    this.resetSequence += 1;
+    this.client.submitReset(
+      createVehicleResetCommandBuffer(state),
+      this.resetSequence,
+      vehicleId
+    );
+    return this.resetSequence;
+  }
+
+  close() {
+    this.client.close();
+  }
+}

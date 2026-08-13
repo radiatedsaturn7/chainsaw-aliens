@@ -9,6 +9,20 @@ export const HANDLING_ASSIST_PRESETS = Object.freeze({
 export class HandlingAssist {
   constructor(steeringConfig = {}) {
     this.steering = steeringConfig;
+    this.interventionScratchCursor = 0;
+    this.interventionScratch = Array.from({ length: 8 }, () => ({
+      list: [],
+      roll: {
+        source: 'handling-assist',
+        trigger: 'roll-stability',
+        requestedValue: 0,
+        appliedValue: 0,
+        supportScale: 0,
+        suppressionReason: null,
+        physicalEffect: 'body-moment-z',
+        momentWorldNm: { x: 0, y: 0, z: 0 }
+      }
+    }));
   }
 
   getPreset(id = 'sport') {
@@ -24,22 +38,29 @@ export class HandlingAssist {
     supportScale = 1
   } = {}) {
     const policy = this.getPreset(preset);
+    const scratch = this.interventionScratch[
+      this.interventionScratchCursor++ % this.interventionScratch.length
+    ];
+    const interventions = scratch.list;
+    interventions.length = 0;
     if (policy === HANDLING_ASSIST_PRESETS.simulation
-      || controls.assists?.stabilityControlEnabled === false) return [];
+      || controls.assists?.stabilityControlEnabled === false) return interventions;
     const physicalSupport = clamp(Number(supportScale), 0, 1);
-    const supportedValue = (value) => physicalSupport <= 0 ? 0 : value * physicalSupport;
     const rollRate = Number(state.angularVelocityWorld?.z || 0);
     const rollInertia = Math.max(1, Number(config.rollInertiaKgM2 || config.yawInertiaKgM2 || 1));
-    const interventions = [];
     // Yaw stabilization is owned by the coordinated per-wheel ESC brake
     // controller in PowertrainModel. Do not add a second body-yaw controller.
     const rollMoment = -rollRate * rollInertia * 0.45 * policy.rollDamping;
-    if (Math.abs(rollMoment) > 0.001) interventions.push({
-      source: 'handling-assist', trigger: 'roll-stability', requestedValue: rollMoment,
-      appliedValue: supportedValue(rollMoment), supportScale: physicalSupport,
-      suppressionReason: physicalSupport <= 0.001 ? 'airborne-contact' : null,
-      physicalEffect: 'body-moment-z', momentWorldNm: { x: 0, y: 0, z: supportedValue(rollMoment) }
-    });
+    if (Math.abs(rollMoment) > 0.001) {
+      const intervention = scratch.roll;
+      const appliedValue = physicalSupport <= 0 ? 0 : rollMoment * physicalSupport;
+      intervention.requestedValue = rollMoment;
+      intervention.appliedValue = appliedValue;
+      intervention.supportScale = physicalSupport;
+      intervention.suppressionReason = physicalSupport <= 0.001 ? 'airborne-contact' : null;
+      intervention.momentWorldNm.z = appliedValue;
+      interventions.push(intervention);
+    }
     return interventions;
   }
 

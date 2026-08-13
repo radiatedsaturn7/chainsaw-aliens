@@ -371,7 +371,9 @@ export function getPackedRaceSurfaceTransferables(sampler = null) {
   ].map((entry) => entry?.buffer).filter(Boolean);
 }
 
-function samplePackedRaceBakedSurface(sampler, worldPoint, preferredRegion = null) {
+function samplePackedRaceBakedSurface(
+  sampler, worldPoint, preferredRegion = null, physicsCostAccounting = null
+) {
   const x = Number(worldPoint.x || 0);
   const z = pointZ(worldPoint);
   if (!sampler.bucketLookup) {
@@ -384,12 +386,14 @@ function samplePackedRaceBakedSurface(sampler, worldPoint, preferredRegion = nul
     }
   }
   const bucketKey = `${Math.floor(x / sampler.bucketSizeM)},${Math.floor(z / sampler.bucketSizeM)}`;
+  physicsCostAccounting?.count('bakedTriangleBucketLookups');
   const bucketIndex = sampler.bucketLookup.get(bucketKey);
   if (!Number.isFinite(bucketIndex)) return null;
   let best = null;
   const start = sampler.bucketOffsets[bucketIndex];
   const end = sampler.bucketOffsets[bucketIndex + 1];
   for (let entryIndex = start; entryIndex < end; entryIndex += 1) {
+    physicsCostAccounting?.count('preparedTrianglesVisited');
     const triangleIndex = sampler.bucketTriangles[entryIndex];
     const boundsOffset = triangleIndex * 4;
     if (x < sampler.bounds[boundsOffset] - 0.0001
@@ -440,17 +444,22 @@ function samplePackedRaceBakedSurface(sampler, worldPoint, preferredRegion = nul
 }
 
 export function sampleRaceBakedSurface(sampler = null, worldPoint = null, {
-  preferredRegion = null
+  preferredRegion = null,
+  physicsCostAccounting = null
 } = {}) {
   if (!worldPoint) return null;
-  if (sampler?.packed) return samplePackedRaceBakedSurface(sampler, worldPoint, preferredRegion);
+  if (sampler?.packed) return samplePackedRaceBakedSurface(
+    sampler, worldPoint, preferredRegion, physicsCostAccounting
+  );
   if (!sampler?.triangles?.length) return null;
   const x = Number(worldPoint.x || 0);
   const z = pointZ(worldPoint);
   const key = `${Math.floor(x / sampler.bucketSizeM)},${Math.floor(z / sampler.bucketSizeM)}`;
+  physicsCostAccounting?.count('bakedTriangleBucketLookups');
   const candidates = sampler.buckets.get(key) || [];
   let best = null;
   candidates.forEach((triangleIndex) => {
+    physicsCostAccounting?.count('preparedTrianglesVisited');
     const triangle = sampler.triangles[triangleIndex];
     if (x < triangle.minX - 0.0001 || x > triangle.maxX + 0.0001
       || z < triangle.minZ - 0.0001 || z > triangle.maxZ + 0.0001) return;
@@ -490,7 +499,9 @@ export function sampleRaceBakedSurface(sampler = null, worldPoint = null, {
   return best;
 }
 
-export function getRaceBakedSurfaceMaximumElevationInBounds(sampler = null, bounds = {}) {
+export function getRaceBakedSurfaceMaximumElevationInBounds(
+  sampler = null, bounds = {}, { physicsCostAccounting = null } = {}
+) {
   if (!sampler?.triangleCount) return null;
   const minX = Number(bounds.minX);
   const maxX = Number(bounds.maxX);
@@ -511,6 +522,7 @@ export function getRaceBakedSurfaceMaximumElevationInBounds(sampler = null, boun
     }
     for (let z = Math.floor(minZ / bucketSize); z <= Math.floor(maxZ / bucketSize); z += 1) {
       for (let x = Math.floor(minX / bucketSize); x <= Math.floor(maxX / bucketSize); x += 1) {
+        physicsCostAccounting?.count('bakedTriangleBucketLookups');
         const bucketIndex = sampler.bucketLookup.get(`${x},${z}`);
         if (!Number.isFinite(bucketIndex)) continue;
         for (let entry = sampler.bucketOffsets[bucketIndex]; entry < sampler.bucketOffsets[bucketIndex + 1]; entry += 1) {
@@ -520,6 +532,7 @@ export function getRaceBakedSurfaceMaximumElevationInBounds(sampler = null, boun
     }
     let maximum = -Infinity;
     triangleIndices.forEach((triangleIndex) => {
+      physicsCostAccounting?.count('preparedTrianglesVisited');
       const boundOffset = triangleIndex * 4;
       if (sampler.bounds[boundOffset + 1] < minX || sampler.bounds[boundOffset] > maxX
         || sampler.bounds[boundOffset + 3] < minZ || sampler.bounds[boundOffset + 2] > maxZ) return;
@@ -535,11 +548,13 @@ export function getRaceBakedSurfaceMaximumElevationInBounds(sampler = null, boun
   }
   for (let z = Math.floor(minZ / bucketSize); z <= Math.floor(maxZ / bucketSize); z += 1) {
     for (let x = Math.floor(minX / bucketSize); x <= Math.floor(maxX / bucketSize); x += 1) {
+      physicsCostAccounting?.count('bakedTriangleBucketLookups');
       (sampler.buckets.get(`${x},${z}`) || []).forEach((index) => triangleIndices.add(index));
     }
   }
   let maximum = -Infinity;
   triangleIndices.forEach((triangleIndex) => {
+    physicsCostAccounting?.count('preparedTrianglesVisited');
     const triangle = sampler.triangles[triangleIndex];
     if (!triangle || triangle.maxX < minX || triangle.minX > maxX
       || triangle.maxZ < minZ || triangle.minZ > maxZ) return;
@@ -585,14 +600,24 @@ function collectTriangleIndicesInBounds(sampler, { minX, maxX, minZ, maxZ }) {
 // Diagnostic export used by incident fixtures. It deliberately copies the
 // prepared sampler's exact vertices and normals instead of rebuilding a local
 // approximation from route distance or analytical elevation.
-export function getRaceBakedSurfaceTrianglesInBounds(sampler = null, bounds = {}) {
+export function getRaceBakedSurfaceTrianglesInBounds(
+  sampler = null, bounds = {}, { physicsCostAccounting = null } = {}
+) {
   if (!sampler?.triangleCount) return [];
   const resolved = {
     minX: Number(bounds.minX), maxX: Number(bounds.maxX),
     minZ: Number(bounds.minZ), maxZ: Number(bounds.maxZ)
   };
   if (!Object.values(resolved).every(Number.isFinite)) return [];
-  return collectTriangleIndicesInBounds(sampler, resolved).flatMap((triangleIndex) => {
+  const indices = collectTriangleIndicesInBounds(sampler, resolved);
+  physicsCostAccounting?.count('bakedTriangleBucketLookups', Math.max(1,
+    (Math.floor(resolved.maxX / Math.max(4, Number(sampler.bucketSizeM) || 20))
+      - Math.floor(resolved.minX / Math.max(4, Number(sampler.bucketSizeM) || 20)) + 1)
+    * (Math.floor(resolved.maxZ / Math.max(4, Number(sampler.bucketSizeM) || 20))
+      - Math.floor(resolved.minZ / Math.max(4, Number(sampler.bucketSizeM) || 20)) + 1)
+  ));
+  physicsCostAccounting?.count('preparedTrianglesVisited', indices.length);
+  return indices.flatMap((triangleIndex) => {
     if (sampler.packed) {
       const boundOffset = triangleIndex * 4;
       if (sampler.bounds[boundOffset + 1] < resolved.minX

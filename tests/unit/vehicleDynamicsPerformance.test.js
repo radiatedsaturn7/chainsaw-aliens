@@ -53,7 +53,7 @@ test('history remains the replay-safe default and latest retains exactly one own
   assert.equal(latest.telemetry[0].stepIndex, 3);
 });
 
-test('single-player fixed steps use geometry-only footprints and reject clear body manifolds', () => {
+test('realtime single-player builds one shared geometry frame per chassis step', () => {
   const editor = new RaceEditor({
     deviceIsMobile: true,
     isMobile: true,
@@ -75,27 +75,82 @@ test('single-player fixed steps use geometry-only footprints and reject clear bo
   surface.performanceDiagnostics.fullSurfaceQueries = 0;
   surface.performanceDiagnostics.geometryQueries = 0;
   surface.performanceDiagnostics.rawTerrainQueries = 0;
-  const originalGeometryBatch = surface.samplePhysicsGeometryBatch.bind(surface);
-  const geometryBatchSizes = [];
-  surface.samplePhysicsGeometryBatch = (points, context) => {
-    geometryBatchSizes.push(points.length);
-    return originalGeometryBatch(points, context);
-  };
   const runner = editor.playtestSession.vehicleDynamicsRunner;
+  const terrainFrame = editor.vehicleDynamicsAuthority.terrainQueryFrameCache.frame;
+  const frameSequenceBefore = terrainFrame.sequence;
   runner.performanceDiagnostics.environmentQueries = 0;
   runner.performanceDiagnostics.bodyBroadphaseRejectedSubsteps = 0;
   runner.performanceDiagnostics.bodyNarrowphaseSubsteps = 0;
 
   editor.updatePlaytest(1 / 60);
 
-  assert.equal(runner.performanceDiagnostics.environmentQueries, 6);
-  assert.equal(runner.performanceDiagnostics.bodyBroadphaseRejectedSubsteps, 6);
+  assert.equal(runner.config.physicsQualityProfile, 'realtime');
+  assert.equal(runner.config.chassisHz, 120);
+  assert.equal(runner.config.tireHz, 120);
+  assert.equal(runner.config.geometryHz, 120);
+  assert.equal(runner.performanceDiagnostics.environmentQueries, 2);
+  assert.equal(terrainFrame.sequence - frameSequenceBefore, 2);
+  assert.equal(runner.performanceDiagnostics.bodyBroadphaseRejectedSubsteps, 2);
   assert.equal(runner.performanceDiagnostics.bodyNarrowphaseSubsteps, 0);
-  assert.equal(surface.performanceDiagnostics.geometryQueries >= 96, true);
-  assert.equal(surface.performanceDiagnostics.fullSurfaceQueries < 40, true);
-  assert.equal(surface.performanceDiagnostics.rawTerrainQueries < 40, true);
-  assert.equal(geometryBatchSizes.filter((size) => size >= 20).length, 6,
-    'each contact substep shares its four wheel centers with one footprint batch');
+  assert.equal(surface.performanceDiagnostics.geometryQueries, 0,
+    'footprint and body geometry must use the prepared query frame directly');
+  assert.equal(surface.performanceDiagnostics.fullSurfaceQueries <= 8, true,
+    'only four wheel regions per chassis boundary may request material classification');
+  assert.equal(surface.performanceDiagnostics.rawTerrainQueries <= 8, true);
+  assert.equal(terrainFrame.statistics.batchQueries, 2,
+    'wheel centres and footprint points are the only steady-state geometry batches');
+  assert.equal(terrainFrame.statistics.pointQueries <= 40, true,
+    'clear-body penetration validation must stay deferred');
+  assert.equal(terrainFrame.statistics.trianglesVisited < 500, true,
+    'fine-grid sampling must not fall back to a complete baked bucket');
+});
+
+test('high-fidelity tire substeps reuse 120 Hz geometry unless contact leaves its frame', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: {
+      getGamepadAxes: () => ({ leftX: 0, rightTrigger: 0.4, leftTrigger: 0, rightX: 0 }),
+      isGamepadConnected: () => true
+    },
+    exitRaceEditor() {}
+  });
+  editor.selectedRace.hazards = [];
+  editor.startPlaytest(editor.selectedCar.id);
+  editor.playtestSession.physicsQualityProfile = 'high-fidelity';
+  editor.playtestSession.physicsPerformanceVisible = true;
+  editor.playtestSession.launchLockMs = 0;
+  editor.playtestSession.countdownRemainingMs = 0;
+  editor.playtestSession.elapsedMs = 1000;
+  editor.raceInput.rawThrottleAxis = 0.4;
+  editor.raceInput.throttleAxis = 0.4;
+  editor.updatePlaytest(1 / 60);
+
+  const runner = editor.playtestSession.vehicleDynamicsRunner;
+  const cost = runner.physicsCostAccounting;
+  editor.updatePlaytest(1 / 60);
+  const frame = cost.getLatestFrame();
+  const count = (name) => Number(frame?.counters?.[name] || 0);
+
+  assert.equal(runner.config.physicsQualityProfile, 'high-fidelity');
+  assert.equal(runner.config.chassisHz, 120);
+  assert.equal(runner.config.tireHz, 360);
+  assert.equal(runner.config.geometryHz, 120);
+  assert.equal(count('completedSteps'), 2);
+  assert.equal(count('completedTireSubsteps'), 6);
+  assert.equal(
+    count('chassisGeometryFrames'),
+    count('completedSteps') + count('tireSubstepGeometryRefreshes'),
+    'only the chassis boundary and explicit event refreshes may build geometry'
+  );
+  assert.equal(
+    count('tireSubstepGeometryReuses') + count('tireSubstepGeometryRefreshes'),
+    count('completedTireSubsteps') - count('completedSteps'),
+    'every intermediate tire substep must either reuse geometry or record its refresh'
+  );
+  assert.equal(count('tireSubstepGeometryReuses') >= 3, true,
+    'steady high-fidelity contact must reuse geometry for most intermediate substeps');
+  assert.equal(count('recoveryRecalculations'), 0);
 });
 
 test('a 250 ms race hitch preserves backlog while bounding each render-frame catch-up', () => {

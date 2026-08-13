@@ -7,20 +7,24 @@ const q = (value, precision = 6) => {
 const fahrenheitToCelsius = (value) => (Number(value) - 32) * 5 / 9;
 const celsiusToFahrenheit = (value) => Number(value) * 9 / 5 + 32;
 
-export function createTireThermalState(previous = {}, tire = {}, ambientTemperatureC = 21) {
+export function createTireThermalState(
+  previous = {}, tire = {}, ambientTemperatureC = 21, target = null
+) {
   const legacyTemperatureC = fahrenheitToCelsius(previous.temperatureF ?? 70);
   const treadTemperatureC = Number(previous.treadTemperatureC ?? legacyTemperatureC);
   const carcassTemperatureC = Number(previous.carcassTemperatureC ?? treadTemperatureC);
   const internalAirTemperatureC = Number(previous.internalAirTemperatureC ?? carcassTemperatureC);
   const coldPressurePsi = Number(previous.coldPressurePsi ?? tire.coldPressurePsi
     ?? tire.pressurePsi ?? tire.targetPressurePsi ?? 32);
-  return {
-    treadTemperatureC: q(treadTemperatureC),
-    carcassTemperatureC: q(carcassTemperatureC),
-    internalAirTemperatureC: q(internalAirTemperatureC),
-    coldPressurePsi: q(coldPressurePsi),
-    pressureReferenceTemperatureC: q(Number(previous.pressureReferenceTemperatureC ?? ambientTemperatureC))
-  };
+  const state = target && typeof target === 'object' ? target : {};
+  state.treadTemperatureC = q(treadTemperatureC);
+  state.carcassTemperatureC = q(carcassTemperatureC);
+  state.internalAirTemperatureC = q(internalAirTemperatureC);
+  state.coldPressurePsi = q(coldPressurePsi);
+  state.pressureReferenceTemperatureC = q(Number(
+    previous.pressureReferenceTemperatureC ?? ambientTemperatureC
+  ));
+  return state;
 }
 
 export function advanceTireThermalState({
@@ -29,9 +33,10 @@ export function advanceTireThermalState({
   patch = {},
   material = {},
   ambientTemperatureC = 21,
-  dt = 0
+  dt = 0,
+  target = null
 } = {}) {
-  const state = createTireThermalState(previous, tire, ambientTemperatureC);
+  const state = createTireThermalState(previous, tire, ambientTemperatureC, target);
   const seconds = Math.max(0, Number(dt) || 0);
   const treadMassKg = clamp(Number(tire.treadThermalMassKg ?? 3.4), 1.2, 8);
   const carcassMassKg = clamp(Number(tire.carcassThermalMassKg ?? 6.8), 2.5, 14);
@@ -109,21 +114,18 @@ export function advanceTireThermalState({
     8,
     80
   );
-  return {
-    treadTemperatureC: q(nextTreadC),
-    carcassTemperatureC: q(nextCarcassC),
-    internalAirTemperatureC: q(nextAirC),
-    temperatureF: q(celsiusToFahrenheit(nextTreadC)),
-    coldPressurePsi: state.coldPressurePsi,
-    pressureReferenceTemperatureC: state.pressureReferenceTemperatureC,
-    effectivePressurePsi: q(effectivePressurePsi),
-    longitudinalFrictionWorkJ: q(longitudinalFrictionWorkJ),
-    lateralFrictionWorkJ: q(lateralFrictionWorkJ),
-    frictionHeatingWorkJ: q(frictionHeatingWorkJ),
-    carcassFlexHeatingWorkJ: q(carcassFlexHeatingWorkJ),
-    loadHeatingWorkJ: q(loadHeatingWorkJ),
-    surfaceConductionWorkJ: q(surfaceConductionWorkJ),
-    waterCoolingWorkJ: q(waterCoolingWorkJ),
-    ambientCoolingWorkJ: q(Math.max(0, ambientCoolingW) * seconds)
-  };
+  state.treadTemperatureC = q(nextTreadC);
+  state.carcassTemperatureC = q(nextCarcassC);
+  state.internalAirTemperatureC = q(nextAirC);
+  state.temperatureF = q(celsiusToFahrenheit(nextTreadC));
+  state.effectivePressurePsi = q(effectivePressurePsi);
+  state.longitudinalFrictionWorkJ = q(longitudinalFrictionWorkJ);
+  state.lateralFrictionWorkJ = q(lateralFrictionWorkJ);
+  state.frictionHeatingWorkJ = q(frictionHeatingWorkJ);
+  state.carcassFlexHeatingWorkJ = q(carcassFlexHeatingWorkJ);
+  state.loadHeatingWorkJ = q(loadHeatingWorkJ);
+  state.surfaceConductionWorkJ = q(surfaceConductionWorkJ);
+  state.waterCoolingWorkJ = q(waterCoolingWorkJ);
+  state.ambientCoolingWorkJ = q(Math.max(0, ambientCoolingW) * seconds);
+  return state;
 }

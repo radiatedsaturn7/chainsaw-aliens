@@ -6,6 +6,7 @@ import {
   RACE_THREE_ELEVATION_M
 } from './simulation/RaceSimulationConfig.js';
 import {
+  getAuthoritativeChassisState,
   getAuthoritativeVehicleState,
   syncVehicleDynamicsCompatibilityOutputs
 } from './simulation/VehicleState.js';
@@ -14,13 +15,275 @@ import {
   createVehicleDynamicsConfigFromTuning,
   normalizeVehicleControlInput
 } from './simulation/VehicleDynamicsRunner.js';
-import { calculateWheelContactKinematics } from './simulation/ContactPatchTireModel.js';
+import {
+  calculateWheelContactKinematics,
+  createWheelContactKinematicsScratch
+} from './simulation/ContactPatchTireModel.js';
 import { createDeterministicAtmosphere, getRaceWakeSourcesForFrame } from './simulation/AeroEnvironment.js';
 import { quaternionFromEuler, rotateVectorByQuaternion } from './simulation/RigidBodyMath.js';
 import { createInvalidSurfaceSample, createSurfaceSample } from './simulation/SurfaceSample.js';
+import { createPhysicsTerrainQueryFrameCache } from './simulation/PhysicsTerrainQueryFrame.js';
+import { prepareStaticRaceColliders } from './simulation/StaticRaceColliderWorld.js';
 import { createRaceWheelContactStateFromSamples } from './RaceVehicleSurfaceContact.js';
-import { getRaceBakedSurfaceTrianglesInBounds } from './RaceBakedSurfaceSampler.js';
+import {
+  getRaceBakedSurfaceTrianglesInBounds,
+  packRaceBakedSurfaceSampler
+} from './RaceBakedSurfaceSampler.js';
 import { hashTrackStateValue, stableTrackStateStringify } from './trackState/TrackStateMath.js';
+import {
+  RaceVehicleDynamicsWorkerBridge,
+  prepareRaceVehicleDynamicsWorkerSurface
+} from './simulation/RaceVehicleDynamicsWorkerBridge.js';
+
+const RACE_TIRE_FOOTPRINT_OFFSETS = new Float64Array([
+  -0.7, -0.42,
+  -0.7, 0.42,
+  0.7, -0.42,
+  0.7, 0.42,
+  -0.15, 0,
+  0.15, 0,
+  0, -0.48,
+  0, 0.48
+]);
+const MAX_RACE_TIRE_FOOTPRINT_SAMPLES = RACE_TIRE_FOOTPRINT_OFFSETS.length / 2;
+const RACE_BODY_VARIATION_OPTIONS = Object.freeze({
+  heightToleranceM: 0.025,
+  normalToleranceRad: 8 * Math.PI / 180
+});
+const RACE_ENVIRONMENT_SCRATCH_COUNT = 8;
+
+function createRaceEnvironmentScratch() {
+  const centerSamples = {};
+  const groundedByWheel = {};
+  const surfaceHeightByWheel = {};
+  const surfaceSamplesByWheel = {};
+  const surfaceNormalByWheel = {};
+  const contactSamplesByWheel = {};
+  const footprintSamplesByWheel = {};
+  const contactTriangleByWheel = {};
+  const materialByWheel = {};
+  const tireByWheel = {};
+  const trackStateSampleByWheel = {};
+  const trackStateConditionScratchByWheel = {};
+  const footprintContactEntries = Array.from(
+    { length: MAX_RACE_TIRE_FOOTPRINT_SAMPLES },
+    () => ({ contacts: {} })
+  );
+  const footprintContacts = [];
+  for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+    const wheelId = RACE_WHEEL_IDS[wheelIndex];
+    groundedByWheel[wheelId] = true;
+    contactSamplesByWheel[wheelId] = new Array(MAX_RACE_TIRE_FOOTPRINT_SAMPLES);
+    footprintSamplesByWheel[wheelId] = Array.from(
+      { length: MAX_RACE_TIRE_FOOTPRINT_SAMPLES },
+      () => ({
+        valid: false,
+        heightM: null,
+        normal: null,
+        region: null,
+        source: null,
+        triangleId: null,
+        queryPosition: null,
+        reason: 'unqueried',
+        normalX: null,
+        normalY: null,
+        normalZ: null,
+        supported: false
+      })
+    );
+    contactTriangleByWheel[wheelId] = { triangleId: null };
+    materialByWheel[wheelId] = {};
+    tireByWheel[wheelId] = {};
+    trackStateSampleByWheel[wheelId] = { visual: {} };
+    trackStateConditionScratchByWheel[wheelId] = { current: {}, baseline: {} };
+  }
+  return {
+    centerSamples,
+    groundedByWheel,
+    surfaceHeightByWheel,
+    surfaceSamplesByWheel,
+    surfaceNormalByWheel,
+    contactSamplesByWheel,
+    footprintSamplesByWheel,
+    contactTriangleByWheel,
+    materialByWheel,
+    tireByWheel,
+    trackStateSampleByWheel,
+    trackStateConditionScratchByWheel,
+    footprintContactEntries,
+    footprintContacts,
+    atmosphere: {
+      windWorldMps: { x: 0, y: 0, z: 0 },
+      gustWorldMps: { x: 0, y: 0, z: 0 }
+    },
+    brakeDamage: {}
+  };
+}
+
+function copyRecordInto(target, source) {
+  for (const key in target) delete target[key];
+  for (const key in source || {}) target[key] = source[key];
+  return target;
+}
+
+function createRaceCompatibilityTelemetryScratch() {
+  return {
+    demandedForceByWheel: {},
+    appliedForceByWheel: {},
+    limitByWheel: {},
+    wheelLongitudinalUsage: {},
+    wheelFrictionUsage: {},
+    diagnostics: {},
+    fixedStepTelemetry: [],
+    latest: {
+      state: null,
+      telemetry: null,
+      diagnostics: null,
+      fixedStepTelemetry: null,
+      advance: null
+    }
+  };
+}
+
+function createWorkerEnvironmentStateSnapshot(environment = {}) {
+  const copyVector = (value = {}) => ({
+    x: Number(value.x || 0), y: Number(value.y || 0), z: Number(value.z || 0)
+  });
+  return {
+    ambientTemperatureC: Number(environment.ambientTemperatureC || 0),
+    windWorldMps: copyVector(environment.windWorldMps),
+    gustWorldMps: copyVector(environment.gustWorldMps),
+    windSpeedMps: Number(environment.windSpeedMps || 0),
+    windDirectionRad: Number(environment.windDirectionRad || 0),
+    gustStrength: Number(environment.gustStrength || 0),
+    bodyDamage: Number(environment.bodyDamage || 0),
+    frontAeroDamage: Number(environment.frontAeroDamage || 0),
+    rearAeroDamage: Number(environment.rearAeroDamage || 0),
+    activeAeroState: Number(environment.activeAeroState || 0),
+    damage: environment.damage ? structuredClone(environment.damage) : null,
+    tireByWheel: environment.tireByWheel ? structuredClone(environment.tireByWheel) : {}
+  };
+}
+
+function createRaceStaticColliderWorld(editor, {
+  authority,
+  worldBake,
+  runtimeType,
+  routeLength
+} = {}) {
+  const race = editor.selectedRace || {};
+  const margin = editor.ensureRaceMarginSettings?.() || {};
+  const scenery = editor.ensureRaceScenery?.() || [];
+  const authored = [
+    ...(Array.isArray(worldBake?.staticColliders) ? worldBake.staticColliders : []),
+    ...(Array.isArray(race.staticColliders) ? race.staticColliders : [])
+  ];
+  const scenerySignature = scenery.map((sprite) => [
+    sprite?.id || '', sprite?.doodadRef || '',
+    Math.round(Number(sprite?.x || 0) * 100),
+    Math.round(Number(sprite?.z || 0) * 100),
+    Math.round(Number(sprite?.yaw || 0) * 1000),
+    sprite?.solid === true || sprite?.collidable === true ? 1 : 0
+  ].join(':')).join('|');
+  const revision = [
+    worldBake?.surfaceRevision || worldBake?.revision || worldBake?.key || 'surface',
+    race.id || race.name || 'race',
+    runtimeType,
+    Math.round(Number(routeLength || 0) * 10),
+    margin.collisionEdge || margin.collisionMode || 'none',
+    margin.collisionEffect || 'collide',
+    Math.round(Number(margin.widthM || 0) * 100),
+    margin.marginMode || 'off',
+    Math.round(Number(margin.shoulderWidthM || 0) * 100),
+    margin.shoulderMode || 'off',
+    authored.length,
+    scenerySignature
+  ].join('::static-colliders::');
+  if (authority.staticColliderWorldCache?.revision === revision) {
+    return authority.staticColliderWorldCache.world;
+  }
+  const definitions = authored.slice();
+  const samples = editor.getRacePathSamplesCached?.({ step: 3 }) || [];
+  for (let index = 1; index < samples.length; index += 1) {
+    const previous = samples[index - 1];
+    const next = samples[index];
+    const segment = next.segment || previous.segment || editor.selectedSegment;
+    const edgeMode = editor.getRaceEdgeCollisionMode(segment);
+    if (edgeMode === 'none') continue;
+    const dx = Number(next.x || 0) - Number(previous.x || 0);
+    const dz = Number(next.z || 0) - Number(previous.z || 0);
+    const segmentLengthM = Math.hypot(dx, dz);
+    if (!(segmentLengthM > 0.05)) continue;
+    const yaw = Math.atan2(dx, dz);
+    const right = editor.getRaceRightVector(yaw);
+    const roadHalfWidthM = editor.getRaceRoadHalfWidthWorld(segment);
+    const contactLimitM = Math.max(0.2,
+      roadHalfWidthM
+      + editor.getRaceCollisionMarginWidthWorld(segment, edgeMode)
+      + editor.getRaceCollisionShoulderWidthWorld(segment, edgeMode));
+    const thicknessM = 0.4;
+    const centerX = (Number(previous.x || 0) + Number(next.x || 0)) * 0.5;
+    const centerZ = (Number(previous.z || 0) + Number(next.z || 0)) * 0.5;
+    const centerY = (
+      (Number(previous.elevation || 0) + Number(next.elevation || 0)) * 0.5
+      * RACE_THREE_ELEVATION_M
+    ) + 2;
+    const orientation = quaternionFromEuler({ yaw });
+    for (const side of [-1, 1]) {
+      definitions.push({
+        id: `road-edge:${edgeMode}:${index}:${side < 0 ? 'left' : 'right'}`,
+        type: 'box',
+        center: {
+          x: centerX + Number(right.x || 0) * side * (contactLimitM + thicknessM * 0.5),
+          y: centerY,
+          z: centerZ + Number(right.z || 0) * side * (contactLimitM + thicknessM * 0.5)
+        },
+        orientation,
+        size: { x: thicknessM, y: 6, z: segmentLengthM + 1.2 },
+        friction: 0.7,
+        restitution: 0.22,
+        source: `edge:${edgeMode}`
+      });
+    }
+  }
+  scenery.forEach((sprite) => {
+    const doodad = editor.getRaceDoodadForScenery?.(sprite) || {};
+    const rules = [doodad.defaultRule, ...(doodad.rules || [])].filter(Boolean);
+    const permanentlySolid = sprite?.solid === true
+      || sprite?.collidable === true
+      || (rules.length > 0 && rules.every((rule) => rule.behavior === 'collide'));
+    if (!permanentlySolid || !sprite?.id) return;
+    const widthM = Math.max(0.1, Number(
+      doodad.hitboxWidthM ?? doodad.widthM ?? sprite.widthM ?? 1
+    ));
+    const heightM = Math.max(0.1, Number(
+      doodad.hitboxHeightM ?? doodad.heightM ?? sprite.heightM ?? 1
+    ));
+    const ground = editor.sampleRaceDoodadGroundPoint?.(
+      Number(sprite.x || 0), Number(sprite.z || 0), sprite, doodad
+    );
+    definitions.push({
+      id: `solid-scenery:${sprite.id}`,
+      type: 'box',
+      center: {
+        x: Number(sprite.x || 0),
+        y: Number(ground?.elevation || 0) * RACE_THREE_ELEVATION_M + heightM * 0.5,
+        z: Number(sprite.z || 0)
+      },
+      orientation: quaternionFromEuler({ yaw: Number(sprite.yaw || 0) }),
+      size: { x: widthM, y: heightM, z: widthM },
+      friction: 0.72,
+      restitution: 0.08,
+      source: `scenery:${sprite.id}`
+    });
+  });
+  const world = definitions.length
+    ? prepareStaticRaceColliders(definitions, { revision, bucketSizeM: 16 })
+    : null;
+  authority.staticColliderWorldCache = { revision, world, definitions };
+  authority.staticColliderDefinitions = definitions;
+  return world;
+}
 
 export function calculateAuthoritativeRouteAdvance({ velocityWorld = {}, roadYaw = 0, seconds = 0 } = {}) {
   const roadForward = { x: Math.sin(Number(roadYaw || 0)), z: Math.cos(Number(roadYaw || 0)) };
@@ -71,11 +334,18 @@ function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
   if (session.vehicleDynamicsRunner) {
     if (!editor.vehicleDynamicsAuthority
       || editor.vehicleDynamicsAuthority.runner !== session.vehicleDynamicsRunner) {
+      editor.vehicleDynamicsAuthority?.workerBridge?.close?.();
       editor.vehicleDynamicsAuthority = { session, runner: session.vehicleDynamicsRunner };
     }
     return editor.vehicleDynamicsAuthority;
   }
+  const requestedPhysicsQualityProfile = String(
+    session.physicsQualityProfile
+      || globalThis.__RTG_VEHICLE_PHYSICS_QUALITY_PROFILE__
+      || 'realtime'
+  ).toLowerCase();
   const config = createVehicleDynamicsConfigFromTuning(tuning, {
+    physicsQualityProfile: requestedPhysicsQualityProfile,
     // Preserve any remaining fixed-step backlog instead of trying to consume a
     // long hitch in one render frame and creating a self-sustaining frame-time
     // spiral.
@@ -152,6 +422,81 @@ function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
   return editor.vehicleDynamicsAuthority;
 }
 
+function createTrackStateStepScratch() {
+  const positions = {};
+  const longitudinalSlipByWheel = {};
+  const lateralSlipByWheel = {};
+  const wheelContactScaleByWheel = {};
+  const tireTemperatures = {};
+  const lockByWheel = {};
+  const wheelSpinByWheel = {};
+  const physicalMutationTotalsByWheel = {};
+  const trackStateContactByWheel = {};
+  for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+    const wheelId = RACE_WHEEL_IDS[wheelIndex];
+    positions[wheelId] = { x: 0, z: 0 };
+    longitudinalSlipByWheel[wheelId] = 0;
+    lateralSlipByWheel[wheelId] = 0;
+    wheelContactScaleByWheel[wheelId] = 0;
+    tireTemperatures[wheelId] = 70;
+    lockByWheel[wheelId] = 0;
+    wheelSpinByWheel[wheelId] = 0;
+    physicalMutationTotalsByWheel[wheelId] = {
+      rollingDistanceM: 0,
+      groundedContactDurationSeconds: 0,
+      normalImpulseNs: 0,
+      longitudinalSlipWorkJ: 0,
+      lateralScrubWorkJ: 0,
+      lockedWheelWorkJ: 0,
+      wheelspinWorkJ: 0,
+      surfaceHeatingWorkJ: 0,
+      rubberDepositionWorkJ: 0,
+      waterDisplacementImpulseNs: 0,
+      looseMaterialSweepWorkJ: 0,
+      materialPickupCapacity: 0,
+      carriedMaterialDepositCapacity: 0
+    };
+    trackStateContactByWheel[wheelId] = {};
+  }
+  const wheelSurfaceState = { positions };
+  const brakeState = { lockByWheel };
+  return {
+    positions,
+    longitudinalSlipByWheel,
+    lateralSlipByWheel,
+    wheelContactScaleByWheel,
+    tireTemperatures,
+    lockByWheel,
+    wheelSpinByWheel,
+    physicalMutationTotalsByWheel,
+    wheelSurfaceState,
+    brakeState,
+    direction: { x: 0, z: 1 },
+    queueOptions: {
+      vehicleId: 'player',
+      wheelIds: RACE_WHEEL_IDS,
+      collectAcceptedEvents: false,
+      contactByWheel: trackStateContactByWheel,
+      normalLoads: null,
+      tireSlipByWheel: null,
+      longitudinalSlipByWheel,
+      lateralSlipByWheel,
+      wheelContactScaleByWheel,
+      wheelSurfaceState,
+      previousPositions: null,
+      speedMps: 0,
+      tireCompoundByWheel: null,
+      tireTemperatures,
+      brakeState,
+      wheelSpinByWheel,
+      physicalMutationTotalsByWheel,
+      contactDurationSeconds: 1 / 120,
+      direction: null
+    },
+    result: { positions, advance: null }
+  };
+}
+
 function emitAuthoritativeTrackStateStep({
   editor,
   systems,
@@ -160,18 +505,19 @@ function emitAuthoritativeTrackStateStep({
   wheelSurfaceState,
   setup,
   weatherState,
-  previousPositions
+  weatherForcing = null,
+  previousPositions,
+  scratch = createTrackStateStepScratch()
 }) {
   const patches = telemetry.state?.contactPatches || {};
-  const positions = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
-    const point = patches[wheelId]?.contactPointWorld || {};
-    return [wheelId, { x: Number(point.x || 0), z: Number(point.z || 0) }];
-  }));
-  const perWheel = (value) => Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
-    wheelId, value(patches[wheelId] || {}, wheelId)
-  ]));
+  const positions = scratch.positions;
   const fixedDt = 1 / 120;
-  const physicalMutationTotalsByWheel = perWheel((patch) => {
+  for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+    const wheelId = RACE_WHEEL_IDS[wheelIndex];
+    const patch = patches[wheelId] || {};
+    const point = patch.contactPointWorld || {};
+    positions[wheelId].x = Number(point.x || 0);
+    positions[wheelId].z = Number(point.z || 0);
     const energy = patch.tireEnergyWork || {};
     const radiusM = Math.max(0.01, Number(patch.effectiveRollingRadiusM || 0.33));
     const rollingSurfaceSpeed = Number(patch.wheelAngularVelocityRadps || 0) * radiusM;
@@ -192,52 +538,52 @@ function emitAuthoritativeTrackStateStep({
     const surfaceHeatingWorkJ = Math.max(0, Number(patch.frictionHeatingWorkJ
       ?? (longitudinalWorkJ + lateralWorkJ) * 0.62));
     const sweepWorkJ = normalLoadN * rollingDistanceM;
-    return {
-      rollingDistanceM,
-      groundedContactDurationSeconds: normalLoadN > 1 ? fixedDt : 0,
-      normalImpulseNs: normalLoadN * fixedDt,
-      longitudinalSlipWorkJ: longitudinalWorkJ,
-      lateralScrubWorkJ: lateralWorkJ,
-      lockedWheelWorkJ,
-      wheelspinWorkJ,
-      surfaceHeatingWorkJ,
-      rubberDepositionWorkJ: (longitudinalWorkJ + lateralWorkJ) * 0.82
-        + normalLoadN * rollingDistanceM * 0.025,
-      waterDisplacementImpulseNs: displacementImpulseNs,
-      looseMaterialSweepWorkJ: sweepWorkJ,
-      materialPickupCapacity: sweepWorkJ,
-      carriedMaterialDepositCapacity: sweepWorkJ
-    };
-  });
-  systems.surface.queueTrackStateTireEvents(trackState, {
-    vehicleId: editor.playtestSession.carId || 'player',
-    normalLoads: telemetry.state?.wheelLoadsN,
-    tireSlipByWheel: telemetry.state?.wheelSlip,
-    longitudinalSlipByWheel: perWheel((patch) => Math.abs(Number(patch.slipRatio || 0))),
-    lateralSlipByWheel: perWheel((patch) => Math.abs(Math.tan(Number(patch.slipAngleRad || 0)))),
-    wheelContactScaleByWheel: perWheel((_patch, wheelId) => (
-      Number(telemetry.state?.wheelLoadsN?.[wheelId] || 0) > 1 ? 1 : 0
-    )),
-    wheelSurfaceState: { ...wheelSurfaceState, positions },
-    previousPositions,
-    speedMps: Math.abs(Number(telemetry.state?.speedMps || 0)),
-    tireCompoundByWheel: setup.tireCompoundByWheel,
-    tireTemperatures: perWheel((_patch, wheelId) => Number(
+    const totals = scratch.physicalMutationTotalsByWheel[wheelId];
+    totals.rollingDistanceM = rollingDistanceM;
+    totals.groundedContactDurationSeconds = normalLoadN > 1 ? fixedDt : 0;
+    totals.normalImpulseNs = normalLoadN * fixedDt;
+    totals.longitudinalSlipWorkJ = longitudinalWorkJ;
+    totals.lateralScrubWorkJ = lateralWorkJ;
+    totals.lockedWheelWorkJ = lockedWheelWorkJ;
+    totals.wheelspinWorkJ = wheelspinWorkJ;
+    totals.surfaceHeatingWorkJ = surfaceHeatingWorkJ;
+    totals.rubberDepositionWorkJ = (longitudinalWorkJ + lateralWorkJ) * 0.82
+      + normalLoadN * rollingDistanceM * 0.025;
+    totals.waterDisplacementImpulseNs = displacementImpulseNs;
+    totals.looseMaterialSweepWorkJ = sweepWorkJ;
+    totals.materialPickupCapacity = sweepWorkJ;
+    totals.carriedMaterialDepositCapacity = sweepWorkJ;
+    scratch.longitudinalSlipByWheel[wheelId] = Math.abs(Number(patch.slipRatio || 0));
+    scratch.lateralSlipByWheel[wheelId] = Math.abs(Math.tan(Number(patch.slipAngleRad || 0)));
+    scratch.wheelContactScaleByWheel[wheelId] = Number(
+      telemetry.state?.wheelLoadsN?.[wheelId] || 0
+    ) > 1 ? 1 : 0;
+    scratch.tireTemperatures[wheelId] = Number(
       telemetry.state?.tireState?.[wheelId]?.temperatureF || 70
-    )),
-    brakeState: { lockByWheel: perWheel((patch) => Math.max(0, -Number(patch.slipRatio || 0))) },
-    wheelSpinByWheel: perWheel((patch) => Math.max(0, Number(patch.slipRatio || 0))),
-    physicalMutationTotalsByWheel,
-    contactDurationSeconds: fixedDt,
-    direction: editor.getRaceForwardVector(Number(telemetry.state?.yawRad || 0))
-  });
-  return {
-    positions,
-    advance: trackState.advance(
-      1 / 120,
-      systems.surface.createTrackStateWeatherForcing({ weatherState, race: editor.selectedRace })
-    )
-  };
+    );
+    scratch.lockByWheel[wheelId] = Math.max(0, -Number(patch.slipRatio || 0));
+    scratch.wheelSpinByWheel[wheelId] = Math.max(0, Number(patch.slipRatio || 0));
+  }
+  const direction = editor.getRaceForwardVector(Number(telemetry.state?.yawRad || 0));
+  scratch.direction.x = Number(direction.x || 0);
+  scratch.direction.z = Number(direction.z || 0);
+  const queueOptions = scratch.queueOptions;
+  queueOptions.vehicleId = editor.playtestSession.carId || 'player';
+  queueOptions.normalLoads = telemetry.state?.wheelLoadsN;
+  queueOptions.tireSlipByWheel = telemetry.state?.wheelSlip;
+  queueOptions.previousPositions = previousPositions;
+  queueOptions.speedMps = Math.abs(Number(telemetry.state?.speedMps || 0));
+  queueOptions.tireCompoundByWheel = setup.tireCompoundByWheel;
+  queueOptions.direction = scratch.direction;
+  systems.surface.queueTrackStateTireEvents(trackState, queueOptions);
+  scratch.result.advance = trackState.advance(
+    fixedDt,
+    weatherForcing || systems.surface.createTrackStateWeatherForcing({
+      weatherState,
+      race: editor.selectedRace
+    })
+  );
+  return scratch.result;
 }
 
 function advanceVehicleDynamicsAuthority(editor, {
@@ -256,6 +602,53 @@ function advanceVehicleDynamicsAuthority(editor, {
 }) {
   const session = editor.playtestSession;
   const authority = ensureVehicleDynamicsAuthority(editor, tuning, controls);
+  if (authority.workerBridge) {
+    const workerSnapshot = authority.workerBridge.update({
+      controls,
+      session,
+      environmentUpdate: {
+        weatherState,
+        race: editor.selectedRace,
+        weatherForcing: systems.surface.createTrackStateWeatherForcing({
+          weatherState,
+          race: editor.selectedRace
+        }),
+        damage
+      }
+    });
+    if (!workerSnapshot
+      && authority.workerBridge.client.lastError
+      && !authority.workerBridge.client.latestSnapshot) {
+      const failure = authority.workerBridge.client.lastError.message;
+      authority.workerBridge.close();
+      authority.workerBridge = null;
+      authority.authoritativeThread = 'render-thread-fallback';
+      authority.workerMigrationFailure = failure;
+      session.vehicleDynamicsAuthorityThread = 'render';
+      session.vehicleDynamicsWorkerMigrationFailure = failure;
+    } else {
+      session.vehicleDynamicsWorkerStatus = workerSnapshot
+        ? 'active' : authority.workerBridge.client.ready ? 'awaiting-snapshot' : 'initializing';
+      session.physicsPerformance = {
+        ...session.physicsPerformance,
+        vehicleDynamicsWorker: session.vehicleDynamicsWorkerMetrics
+      };
+      return;
+    }
+  }
+  authority.terrainQueryFrameCache ||= createPhysicsTerrainQueryFrameCache({
+    resultCapacity: 128
+  });
+  const physicsCosts = authority.runner.physicsCostAccounting;
+  physicsCosts.enabled = editor.raceInput.physicsPerformanceVisible === true
+    || session.physicsPerformanceVisible === true
+    || globalThis.__RTG_PHYSICS_COST_ACCOUNTING__ === true;
+  const ownsCostFrame = physicsCosts.beginFrame({
+    source: 'RaceSimulation',
+    deltaSeconds: Number(seconds) || 0,
+    renderFps: Number(editor.playtestFps || 0)
+  });
+  const authorityTimer = physicsCosts.start('raceSimulationVehicleAuthorityUpdate');
   if (countdownActive && !authority.formationTargetVelocityWorld) {
     const yaw = Number(authority.runner.state.yawRad || 0);
     const speed = Number(session.rollingStart ? session.rollingStartSpeedMps : 0);
@@ -287,20 +680,112 @@ function advanceVehicleDynamicsAuthority(editor, {
     }));
   }
   const surfaceModel = editor.getRaceSurfaceModel();
+  surfaceModel.physicsCostAccounting = physicsCosts;
   const runtimeType = session.routeRuntimeType || editor.getActiveRaceRuntimeType();
   const physicsQueryContext = surfaceModel.createPhysicsQueryContext({
     runtimeType,
     weatherState
   });
+  const wheelPhysicsQueryContext = Object.create(physicsQueryContext, {
+    fallbackSurfaceId: {
+      value: editor.selectedSegment?.surface || 'asphalt',
+      enumerable: true,
+      writable: false,
+      configurable: false
+    }
+  });
+  const trackWeatherForcing = systems.surface.createTrackStateWeatherForcing({
+    weatherState,
+    race: editor.selectedRace
+  });
   const wakeSources = getRaceWakeSourcesForFrame(session, {
     playerWidthM: Number(tuning.widthM || 1.8)
   });
-  authority.runner.environmentProvider = ({ state, controls: fixedControls, timeSeconds }) => {
+  const carDimensions = editor.getRaceCarDimensions(editor.getRaceSessionCar(session));
+  const preparedWorldBake = editor.playtestSession?.worldBake || editor.raceWorldBakeCache;
+  const staticColliderWorld = createRaceStaticColliderWorld(editor, {
+    authority,
+    worldBake: preparedWorldBake,
+    runtimeType,
+    routeLength: session.routeLength || editor.getRaceRouteLength()
+  });
+  authority.runner.environmentProvider = ({
+    state,
+    previousState = null,
+    controls: fixedControls,
+    timeSeconds,
+    tireSubstepDt = 1 / authority.runner.config.tireHz,
+    chassisStepDt = 1 / authority.runner.config.chassisHz,
+    substepIndex = 0,
+    reuseContactGeometry = false
+  }) => {
+    if (reuseContactGeometry === true && authority.chassisGeometryEnvironment) {
+      const cachedEnvironment = authority.chassisGeometryEnvironment;
+      cachedEnvironment.contactGeometrySubstepIndex = substepIndex;
+      cachedEnvironment.contactGeometryState = state;
+      cachedEnvironment.reuseContactGeometry = true;
+      cachedEnvironment.geometryRefreshRequested = false;
+      return cachedEnvironment;
+    }
+    authority.raceEnvironmentScratch ||= Array.from(
+      { length: RACE_ENVIRONMENT_SCRATCH_COUNT },
+      createRaceEnvironmentScratch
+    );
+    authority.raceEnvironmentScratchCursor ||= 0;
+    const environmentScratch = authority.raceEnvironmentScratch[
+      authority.raceEnvironmentScratchCursor++ % authority.raceEnvironmentScratch.length
+    ];
+    const wheelQueryTimer = physicsCosts.start('wheelCenterAndFootprintQueries');
+    physicsCosts.count('chassisGeometryFrames');
+    const worldBake = preparedWorldBake;
+    const preparedSampler = worldBake?.surfaceSampler || null;
+    const profile = authority.runner.config.bodyProfile || {};
+    const bodyHalfWidthM = Number(
+      profile.overallWidthM || authority.runner.config.bodyWidthM || 1.8
+    ) * 0.5;
+    const bodyHalfLengthM = Number(
+      profile.overallLengthM || authority.runner.config.bodyLengthM || 4.5
+    ) * 0.5;
+    const bodyHeightM = Number(
+      profile.overallHeightM || authority.runner.config.bodyHeightM || 1.45
+    );
+    const horizontalReachM = Math.hypot(bodyHalfWidthM, bodyHalfLengthM, bodyHeightM)
+      + Math.max(0.5, Number(authority.runner.config.wheelRadiusM || 0.34));
+    const predictedX = Number(state.position?.x || 0)
+      + Number(state.velocity?.x || 0) * chassisStepDt;
+    const predictedZ = Number(state.position?.z || 0)
+      + Number(state.velocity?.z || 0) * chassisStepDt;
+    const previousX = Number(previousState?.position?.x ?? state.position?.x ?? 0);
+    const previousZ = Number(previousState?.position?.z ?? state.position?.z ?? 0);
+    authority.terrainQueryBounds ||= {
+      minX: 0,
+      maxX: 0,
+      minZ: 0,
+      maxZ: 0
+    };
+    authority.terrainQueryBounds.minX = Math.min(
+      previousX, Number(state.position?.x || 0), predictedX
+    ) - horizontalReachM;
+    authority.terrainQueryBounds.maxX = Math.max(
+      previousX, Number(state.position?.x || 0), predictedX
+    ) + horizontalReachM;
+    authority.terrainQueryBounds.minZ = Math.min(
+      previousZ, Number(state.position?.z || 0), predictedZ
+    ) - horizontalReachM;
+    authority.terrainQueryBounds.maxZ = Math.max(
+      previousZ, Number(state.position?.z || 0), predictedZ
+    ) + horizontalReachM;
+    const terrainQueryFrame = authority.terrainQueryFrameCache.begin({
+      sampler: preparedSampler,
+      revision: worldBake?.surfaceRevision ?? worldBake?.revision ?? worldBake?.key ?? 0,
+      bounds: authority.terrainQueryBounds,
+      elevationScaleM: RACE_THREE_ELEVATION_M,
+      physicsCostAccounting: physicsCosts
+    });
     const capturePhysicsIncidentDiagnostics = authority.runner.config.physicsIncidentRecordingEnabled;
-    const incidentTerrainSamples = [];
-    const incidentTerrainSampleKeys = new Set();
-    const recordTerrainSamples = (kind, requests, samples) => {
-      if (!capturePhysicsIncidentDiagnostics) return;
+    const incidentTerrainSamples = capturePhysicsIncidentDiagnostics ? [] : null;
+    const incidentTerrainSampleKeys = capturePhysicsIncidentDiagnostics ? new Set() : null;
+    const recordTerrainSamples = capturePhysicsIncidentDiagnostics ? (kind, requests, samples) => {
       requests.forEach((request, index) => {
         const sample = samples[index] || {};
         const bakedElevation = Number(sample.bakedElevation);
@@ -351,121 +836,208 @@ function advanceVehicleDynamicsAuthority(editor, {
           incidentTerrainSamples.push(entry);
         }
       });
-    };
-    const preliminaryPatches = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
-      const patch = calculateWheelContactKinematics({
+    } : null;
+    authority.preliminaryWheelKinematicsScratch ||= Object.fromEntries(
+      RACE_WHEEL_IDS.map((wheelId) => [wheelId, createWheelContactKinematicsScratch()])
+    );
+    authority.preliminaryWheelPatches ||= {};
+    authority.preliminaryWheelPositions ||= {};
+    authority.emptyWheelKinematicsEnvironment ||= {};
+    const preliminaryPatches = authority.preliminaryWheelPatches;
+    const positions = authority.preliminaryWheelPositions;
+    for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+      const wheelId = RACE_WHEEL_IDS[wheelIndex];
+      const kinematicsScratch = authority.preliminaryWheelKinematicsScratch[wheelId];
+      preliminaryPatches[wheelId] = calculateWheelContactKinematics({
         state,
         controls: fixedControls,
         config: authority.runner.config,
-        environment: {},
-        wheelId
+        environment: authority.emptyWheelKinematicsEnvironment,
+        wheelId,
+        target: kinematicsScratch.target,
+        computationScratch: kinematicsScratch.computation
       });
-      return [wheelId, patch];
-    }));
-    const positions = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
-      wheelId, preliminaryPatches[wheelId].contactPointWorld
-    ]));
-    const trackWeatherForcing = systems.surface.createTrackStateWeatherForcing({
-      weatherState,
-      race: editor.selectedRace
-    });
+      positions[wheelId] = preliminaryPatches[wheelId].contactPointWorld;
+    }
     const atmosphere = createDeterministicAtmosphere({
       weatherState,
       race: editor.selectedRace,
-      timeSeconds
+      timeSeconds,
+      target: environmentScratch.atmosphere
     });
     const panelDamage = damage.panels || {};
-    const footprintOffsets = [
-      [-0.7, -0.42], [-0.7, 0.42], [0.7, -0.42], [0.7, 0.42],
-      [-0.15, 0], [0.15, 0], [0, -0.48], [0, 0.48]
-    ].slice(0, authority.runner.config.contactFootprintSamples);
+    const footprintSampleCount = Math.max(4, Math.min(
+      MAX_RACE_TIRE_FOOTPRINT_SAMPLES,
+      Math.trunc(Number(authority.runner.config.contactFootprintSamples) || 4)
+    ));
     const tireWidthM = Math.max(0.12, Number(setup.tireSize?.widthMm || 245) / 1000);
-    const createFootprintRequests = (offsets) => {
-      const requests = [];
-      offsets.forEach(([longitudinal, lateral], offsetIndex) => {
-        RACE_WHEEL_IDS.forEach((wheelId) => {
-          const patch = preliminaryPatches[wheelId];
-          requests.push({
-            wheelId,
-            offsetIndex,
-            point: {
-              x: patch.contactPointWorld.x + patch.wheelForwardWorld.x * longitudinal * 0.16
-                + patch.wheelLateralWorld.x * lateral * tireWidthM,
-              y: patch.contactPointWorld.y,
-              z: patch.contactPointWorld.z + patch.wheelForwardWorld.z * longitudinal * 0.16
-                + patch.wheelLateralWorld.z * lateral * tireWidthM
-            }
-          });
-        });
-      });
-      return requests;
-    };
-    const baseFootprintOffsets = footprintOffsets.slice(0, 4);
-    const baseFootprintRequests = createFootprintRequests(baseFootprintOffsets);
-    const centerRequests = RACE_WHEEL_IDS.map((wheelId) => ({
-      wheelId,
-      point: positions[wheelId]
-    }));
-    const baseGeometrySamples = surfaceModel.samplePhysicsGeometryBatch(
-      centerRequests.concat(baseFootprintRequests).map((request) => request.point),
-      {
-        ...physicsQueryContext,
-        fallbackSurfaceId: editor.selectedSegment?.surface || 'asphalt'
-      }
+    authority.terrainFootprintPointBuffer ||= new Float64Array(
+      MAX_RACE_TIRE_FOOTPRINT_SAMPLES * RACE_WHEEL_IDS.length * 3
     );
-    recordTerrainSamples('wheel-center-and-footprint', centerRequests.concat(baseFootprintRequests), baseGeometrySamples);
-    const centerSamples = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId, index) => [
-      wheelId, baseGeometrySamples[index] || {}
-    ]));
+    const footprintPointBuffer = authority.terrainFootprintPointBuffer;
+    for (let offsetIndex = 0; offsetIndex < footprintSampleCount; offsetIndex += 1) {
+      const longitudinal = RACE_TIRE_FOOTPRINT_OFFSETS[offsetIndex * 2];
+      const lateral = RACE_TIRE_FOOTPRINT_OFFSETS[offsetIndex * 2 + 1];
+      for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+        const wheelId = RACE_WHEEL_IDS[wheelIndex];
+        const patch = preliminaryPatches[wheelId];
+        const pointOffset = (offsetIndex * RACE_WHEEL_IDS.length + wheelIndex) * 3;
+        footprintPointBuffer[pointOffset] = patch.contactPointWorld.x
+          + patch.wheelForwardWorld.x * longitudinal * 0.16
+          + patch.wheelLateralWorld.x * lateral * tireWidthM;
+        footprintPointBuffer[pointOffset + 1] = patch.contactPointWorld.y;
+        footprintPointBuffer[pointOffset + 2] = patch.contactPointWorld.z
+          + patch.wheelForwardWorld.z * longitudinal * 0.16
+          + patch.wheelLateralWorld.z * lateral * tireWidthM;
+      }
+    }
+    // Only wheel centers need route, weather, material, and Track State
+    // classification. Footprint/body points consume prepared geometry from the
+    // shared substep frame and therefore avoid repeating route projection.
+    authority.terrainCenterPointBuffer ||= new Float64Array(RACE_WHEEL_IDS.length * 3);
+    const centerPointBuffer = authority.terrainCenterPointBuffer;
+    for (let index = 0; index < RACE_WHEEL_IDS.length; index += 1) {
+      const wheelId = RACE_WHEEL_IDS[index];
+      const point = positions[wheelId];
+      const pointOffset = index * 3;
+      centerPointBuffer[pointOffset] = point.x;
+      centerPointBuffer[pointOffset + 1] = point.y;
+      centerPointBuffer[pointOffset + 2] = point.z;
+    }
+    const centerGeometrySamples = terrainQueryFrame.samplePackedPoints(
+      centerPointBuffer,
+      RACE_WHEEL_IDS.length
+    );
+    let fullSurfaceClassificationCount = 0;
+    for (let index = 0; index < RACE_WHEEL_IDS.length; index += 1) {
+      const wheelId = RACE_WHEEL_IDS[index];
+      const point = positions[wheelId];
+      const geometrySample = centerGeometrySamples[index];
+      const missesBefore = terrainQueryFrame.statistics.materialCacheMisses;
+      const materialSample = terrainQueryFrame.materialForWheel(
+        index,
+        `${wheelId}:${geometrySample.triangleId}:${geometrySample.region}:${geometrySample.source}`,
+        () => surfaceModel.samplePhysicsGeometry(point, wheelPhysicsQueryContext)
+      );
+      if (terrainQueryFrame.statistics.materialCacheMisses > missesBefore) {
+        fullSurfaceClassificationCount += 1;
+      }
+      geometrySample.friction = Number.isFinite(Number(materialSample?.friction))
+        ? Number(materialSample.friction) : null;
+      geometrySample.surfaceId = materialSample?.surfaceId || null;
+      geometrySample.projection = materialSample?.projection || null;
+      geometrySample.segment = materialSample?.segment
+        || materialSample?.projection?.segment || null;
+    }
+    terrainQueryFrame.noteFullSurfaceClassification(fullSurfaceClassificationCount);
+    const baseFootprintPointCount = Math.min(4, footprintSampleCount) * RACE_WHEEL_IDS.length;
+    const baseFootprintGeometrySamples = terrainQueryFrame.samplePackedPoints(
+      footprintPointBuffer,
+      baseFootprintPointCount
+    );
+    if (capturePhysicsIncidentDiagnostics) {
+      const diagnosticRequests = [];
+      const diagnosticSamples = [];
+      for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+        const wheelId = RACE_WHEEL_IDS[wheelIndex];
+        diagnosticRequests.push({ wheelId, point: positions[wheelId] });
+        diagnosticSamples.push(centerGeometrySamples[wheelIndex]);
+      }
+      for (let index = 0; index < baseFootprintPointCount; index += 1) {
+        diagnosticRequests.push({
+          wheelId: RACE_WHEEL_IDS[index % RACE_WHEEL_IDS.length],
+          offsetIndex: Math.trunc(index / RACE_WHEEL_IDS.length),
+          point: baseFootprintGeometrySamples[index].queryPosition
+        });
+        diagnosticSamples.push(baseFootprintGeometrySamples[index]);
+      }
+      recordTerrainSamples('wheel-center-and-footprint', diagnosticRequests, diagnosticSamples);
+    }
+    const centerSamples = environmentScratch.centerSamples;
+    const groundedByWheel = environmentScratch.groundedByWheel;
+    for (let index = 0; index < RACE_WHEEL_IDS.length; index += 1) {
+      const wheelId = RACE_WHEEL_IDS[index];
+      centerSamples[wheelId] = centerGeometrySamples[index] || {};
+      groundedByWheel[wheelId] = state.validTreadContactByWheel?.[wheelId] !== false;
+    }
     const activeTrackState = countdownActive ? null : session.trackState;
+    authority.fixedContactScratch ||= {};
     const fixedContacts = createRaceWheelContactStateFromSamples({
       wheelIds: RACE_WHEEL_IDS,
       positions,
       surfaceSamples: centerSamples,
-      carDimensions: editor.getRaceCarDimensions(editor.getRaceSessionCar(session)),
+      carDimensions,
       tuning,
       selectedSegment: editor.selectedSegment,
       trackState: activeTrackState,
-      groundedByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
-        wheelId, state.validTreadContactByWheel?.[wheelId] !== false
-      ])),
-      elevationScaleM: RACE_THREE_ELEVATION_M
+      groundedByWheel,
+      elevationScaleM: RACE_THREE_ELEVATION_M,
+      preparedSamples: true,
+      trackStateSampleByWheel: environmentScratch.trackStateSampleByWheel,
+      trackStateConditionScratchByWheel: environmentScratch.trackStateConditionScratchByWheel,
+      target: authority.fixedContactScratch
     });
-    const collectFootprintSamples = (offsets, requests, samples, sampleOffset = 0) => {
-      const result = offsets.map(() => ({ contacts: {} }));
-      requests.forEach((request, requestIndex) => {
-        result[request.offsetIndex].contacts[request.wheelId] = samples[sampleOffset + requestIndex];
-      });
-      return result;
-    };
-    const sampleFootprints = (offsets) => {
-      const requests = createFootprintRequests(offsets);
-      const samples = surfaceModel.samplePhysicsGeometryBatch(
-        requests.map((request) => request.point),
-        {
-          ...physicsQueryContext,
-          fallbackSurfaceId: fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
-        }
-      );
-      recordTerrainSamples('adaptive-footprint', requests, samples);
-      return collectFootprintSamples(offsets, requests, samples);
-    };
-    const footprintContacts = collectFootprintSamples(
-      baseFootprintOffsets,
-      baseFootprintRequests,
-      baseGeometrySamples,
-      centerRequests.length
-    );
-    const needsAdaptiveSamples = RACE_WHEEL_IDS.some((wheelId) => {
-      const heights = footprintContacts.map((sample) => (
-        Number(sample.contacts?.[wheelId]?.elevation) * RACE_THREE_ELEVATION_M
-      ));
-      return heights.some((height) => !Number.isFinite(height))
-        || Math.max(...heights) - Math.min(...heights) > 0.02;
-    });
-    if (needsAdaptiveSamples) {
-      footprintContacts.push(...sampleFootprints(footprintOffsets.slice(4)));
+    const footprintContacts = environmentScratch.footprintContacts;
+    const footprintContactEntries = environmentScratch.footprintContactEntries;
+    footprintContacts.length = 0;
+    for (let offsetIndex = 0; offsetIndex < Math.min(4, footprintSampleCount); offsetIndex += 1) {
+      const entry = footprintContactEntries[offsetIndex];
+      const contacts = entry.contacts;
+      footprintContacts.push(entry);
+      for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+        contacts[RACE_WHEEL_IDS[wheelIndex]] = baseFootprintGeometrySamples[
+          offsetIndex * RACE_WHEEL_IDS.length + wheelIndex
+        ];
+      }
     }
+    let needsAdaptiveSamples = false;
+    for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+      const wheelId = RACE_WHEEL_IDS[wheelIndex];
+      let minimumHeightM = Infinity;
+      let maximumHeightM = -Infinity;
+      for (let offsetIndex = 0; offsetIndex < Math.min(4, footprintSampleCount); offsetIndex += 1) {
+        const heightM = Number(footprintContacts[offsetIndex].contacts[wheelId]?.elevation)
+          * RACE_THREE_ELEVATION_M;
+        if (!Number.isFinite(heightM)) {
+          needsAdaptiveSamples = true;
+          break;
+        }
+        minimumHeightM = Math.min(minimumHeightM, heightM);
+        maximumHeightM = Math.max(maximumHeightM, heightM);
+      }
+      if (maximumHeightM - minimumHeightM > 0.02) needsAdaptiveSamples = true;
+    }
+    if (needsAdaptiveSamples && footprintSampleCount > 4) {
+      const adaptiveOffsetCount = footprintSampleCount - 4;
+      const adaptivePointCount = adaptiveOffsetCount * RACE_WHEEL_IDS.length;
+      const adaptiveSamples = terrainQueryFrame.samplePackedPoints(
+        footprintPointBuffer,
+        adaptivePointCount,
+        { startIndex: 4 * RACE_WHEEL_IDS.length }
+      );
+      for (let adaptiveOffset = 0; adaptiveOffset < adaptiveOffsetCount; adaptiveOffset += 1) {
+        const entry = footprintContactEntries[adaptiveOffset + 4];
+        const contacts = entry.contacts;
+        footprintContacts.push(entry);
+        for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+          contacts[RACE_WHEEL_IDS[wheelIndex]] = adaptiveSamples[
+            adaptiveOffset * RACE_WHEEL_IDS.length + wheelIndex
+          ];
+        }
+      }
+      if (capturePhysicsIncidentDiagnostics) {
+        const requests = new Array(adaptivePointCount);
+        for (let index = 0; index < adaptivePointCount; index += 1) {
+          requests[index] = {
+            wheelId: RACE_WHEEL_IDS[index % RACE_WHEEL_IDS.length],
+            offsetIndex: 4 + Math.trunc(index / RACE_WHEEL_IDS.length),
+            point: adaptiveSamples[index].queryPosition
+          };
+        }
+        recordTerrainSamples('adaptive-footprint', requests, adaptiveSamples);
+      }
+    }
+    physicsCosts.end(wheelQueryTimer);
     const sampleRecoveryTerrain = (worldPoint, fallbackSurfaceId = 'asphalt') => {
       const sample = surfaceModel.samplePhysicsGeometry(worldPoint, {
         ...physicsQueryContext,
@@ -624,7 +1196,147 @@ function advanceVehicleDynamicsAuthority(editor, {
       && recordedRouteDistance !== undefined
       && Number.isFinite(Number(recordedRouteDistance))
       ? Number(recordedRouteDistance) : null;
-    return {
+    const bodyVariationBounds = terrainQueryFrame.bodyVariationBounds;
+    const bodyCollisionReachM = Math.hypot(bodyHalfWidthM, bodyHalfLengthM) + 0.15;
+    bodyVariationBounds.minX = Math.min(Number(state.position?.x || 0), predictedX)
+      - bodyCollisionReachM;
+    bodyVariationBounds.maxX = Math.max(Number(state.position?.x || 0), predictedX)
+      + bodyCollisionReachM;
+    bodyVariationBounds.minZ = Math.min(Number(state.position?.z || 0), predictedZ)
+      - bodyCollisionReachM;
+    bodyVariationBounds.maxZ = Math.max(Number(state.position?.z || 0), predictedZ)
+      + bodyCollisionReachM;
+    const terrainCollisionClassification = terrainQueryFrame
+      .classifyCollisionFeaturesInBounds(bodyVariationBounds);
+    const terrainHasDiscontinuities = terrainCollisionClassification.discontinuity === true;
+    const chassisMaximumTerrainHeightM = terrainQueryFrame.maximumHeightInBounds(
+      bodyVariationBounds
+    );
+    const chassisCenterTerrainSample = terrainQueryFrame.samplePoint(state.position);
+    const chassisCenterTerrainHeightM = Number(chassisCenterTerrainSample.heightM);
+    const uprightUnderbodyHeightM = Number(state.position?.y || 0)
+      - Number(authority.runner.config.cgHeightM || 0.55)
+      + Number(authority.runner.config.bodyGroundClearanceM || 0.13);
+    const predictedUnderbodyHeightM = uprightUnderbodyHeightM + Math.min(
+      0,
+      Number(state.velocity?.y || 0) * chassisStepDt
+    ) - Math.hypot(
+      Number(state.angularVelocityWorld?.x || 0),
+      Number(state.angularVelocityWorld?.z || 0)
+    ) * chassisStepDt * Math.max(bodyHalfWidthM, bodyHalfLengthM);
+    const bodyCollisionPredicted = terrainHasDiscontinuities
+      || !Number.isFinite(chassisCenterTerrainHeightM)
+      || predictedUnderbodyHeightM - chassisCenterTerrainHeightM
+        <= Number(authority.runner.config.bodyCollisionLowerHullProbeRangeM ?? 0.08)
+      || Math.abs(Number(state.pitchRad || 0)) > 0.35
+      || Math.abs(Number(state.rollRad || 0)) > 0.35;
+    const surfaceHeightByWheel = environmentScratch.surfaceHeightByWheel;
+    const surfaceSamplesByWheel = environmentScratch.surfaceSamplesByWheel;
+    const surfaceNormalByWheel = environmentScratch.surfaceNormalByWheel;
+    const contactSamplesByWheel = environmentScratch.contactSamplesByWheel;
+    const footprintSamplesByWheel = environmentScratch.footprintSamplesByWheel;
+    const contactTriangleByWheel = environmentScratch.contactTriangleByWheel;
+    const materialByWheel = environmentScratch.materialByWheel;
+    const tireByWheel = environmentScratch.tireByWheel;
+    for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+      const wheelId = RACE_WHEEL_IDS[wheelIndex];
+      surfaceHeightByWheel[wheelId] = fixedContacts.heights?.[wheelId]
+        ?? wheelContactState?.heights?.[wheelId];
+      surfaceSamplesByWheel[wheelId] = fixedContacts.contacts?.[wheelId]?.surfaceSample
+        || createInvalidSurfaceSample({
+          queryPosition: positions[wheelId],
+          source: 'race-wheel-contact',
+          reason: 'missing-wheel-surface'
+        });
+      surfaceNormalByWheel[wheelId] = fixedContacts.contacts?.[wheelId]?.normal
+        || wheelSurfaceState.normalByWheel?.[wheelId];
+      const contactSamples = contactSamplesByWheel[wheelId];
+      contactSamples.length = footprintContacts.length;
+      for (let sampleIndex = 0; sampleIndex < footprintContacts.length; sampleIndex += 1) {
+        const geometry = footprintContacts[sampleIndex].contacts?.[wheelId] || {};
+        const sample = footprintSamplesByWheel[wheelId][sampleIndex];
+        const valid = geometry.valid === true
+          && Number.isFinite(Number(geometry.heightM))
+          && geometry.normal !== null;
+        sample.valid = valid;
+        sample.heightM = valid ? Number(geometry.heightM) : null;
+        sample.normal = valid ? geometry.normal : null;
+        sample.region = geometry.region ?? null;
+        sample.source = geometry.source ?? geometry.bakedSurfaceSource
+          ?? 'race-wheel-footprint';
+        sample.triangleId = geometry.triangleId ?? geometry.bakedTriangleId ?? null;
+        sample.queryPosition = geometry.queryPosition || positions[wheelId];
+        sample.reason = valid ? null : geometry.reason || 'invalid-surface-sample';
+        sample.normalX = valid ? geometry.normal.x : null;
+        sample.normalY = valid ? geometry.normal.y : null;
+        sample.normalZ = valid ? geometry.normal.z : null;
+        sample.supported = valid;
+        contactSamples[sampleIndex] = sample;
+      }
+      let contactTriangleId = surfaceSamplesByWheel[wheelId]?.triangleId ?? null;
+      if (contactTriangleId === null || contactTriangleId === undefined) {
+        for (let sampleIndex = 0; sampleIndex < contactSamples.length; sampleIndex += 1) {
+          const triangleId = contactSamples[sampleIndex]?.triangleId;
+          if (!Number.isInteger(Number(triangleId))) continue;
+          contactTriangleId = triangleId;
+          break;
+        }
+      }
+      contactTriangleByWheel[wheelId].triangleId = contactTriangleId;
+
+      const contact = fixedContacts.contacts?.[wheelId] || {};
+      const trackSample = contact.trackState;
+      const cell = trackSample?.cell || null;
+      const baseSurfaceId = cell?.baseSurfaceId || contact.baseSurfaceId
+        || wheelSurfaceState.baseSurfaceByWheel?.[wheelId] || 'asphalt';
+      const nominalBaseGrip = Math.max(0.025, Number(getSurfaceById(baseSurfaceId)?.grip || 1));
+      const localBaseGrip = Number(cell?.baseGrip ?? contact.friction ?? nominalBaseGrip);
+      const surfaceGripScale = localBaseGrip / nominalBaseGrip
+        * Number(trackSample?.effectiveGripMultiplier ?? 1);
+      const material = materialByWheel[wheelId];
+      for (const key in material) delete material[key];
+      if (cell) {
+        for (const key in cell) material[key] = cell[key];
+      }
+      material.baseSurfaceId = baseSurfaceId;
+      material.surfaceId = contact.surfaceId || wheelSurfaceState.surfaceByWheel?.[wheelId];
+      material.effectiveGrip = trackSample?.effectiveGrip ?? contact.friction
+        ?? wheelSurfaceState.frictionByWheel?.[wheelId] ?? 1;
+      material.effectiveGripMultiplier = trackSample?.effectiveGripMultiplier ?? 1;
+      material.surfaceGripScale = surfaceGripScale;
+      material.grip = material.effectiveGrip;
+      material.trackStateConditionApplied = Boolean(trackSample);
+      const fixedTire = authority.tireConfigByWheel[wheelId];
+      const localTrackState = fixedContacts.contacts?.[wheelId]?.trackState;
+      const rollingMultiplier = localTrackState
+        ? Number(localTrackState.rollingResistanceMultiplier || 1)
+          / Math.max(0.2, Number(localTrackState.cell?.baseRollingResistance || 1))
+        : 1;
+      const tire = tireByWheel[wheelId];
+      for (const key in tire) delete tire[key];
+      for (const key in fixedTire) tire[key] = fixedTire[key];
+      tire.temperatureF = state.tireState?.[wheelId]?.temperatureF ?? 70;
+      tire.treadTemperatureC = state.tireState?.[wheelId]?.treadTemperatureC;
+      tire.carcassTemperatureC = state.tireState?.[wheelId]?.carcassTemperatureC;
+      tire.internalAirTemperatureC = state.tireState?.[wheelId]?.internalAirTemperatureC;
+      tire.effectivePressurePsi = state.tireState?.[wheelId]?.effectivePressurePsi
+        ?? fixedTire.pressurePsi;
+      tire.pressurePsi = tire.effectivePressurePsi;
+      tire.wear = state.tireState?.[wheelId]?.wear ?? fixedTire.wear;
+      tire.damage = Number(damage.tires?.[wheelId] ?? fixedTire.damage ?? 0);
+      tire.rollingResistanceCoefficient = 0.012 * rollingMultiplier;
+    }
+    const brakeDamage = environmentScratch.brakeDamage;
+    for (const key in brakeDamage) delete brakeDamage[key];
+    const sourceBrakeDamage = damage.brakes || {};
+    for (const key in sourceBrakeDamage) brakeDamage[key] = sourceBrakeDamage[key];
+    let bodyDamage = 0;
+    for (const key in panelDamage) bodyDamage = Math.max(bodyDamage, Number(panelDamage[key]) || 0);
+    let environmentResult = null;
+    environmentResult = {
+      physicsTerrainQueryFrame: terrainQueryFrame,
+      staticColliderWorld,
+      physicsTerrainQueryStatistics: terrainQueryFrame.statistics,
       capturePhysicsIncidentDiagnostics,
       routeDistanceM: incidentRouteDistanceM,
       physicsIncidentDiagnostics: capturePhysicsIncidentDiagnostics ? {
@@ -633,6 +1345,13 @@ function advanceVehicleDynamicsAuthority(editor, {
         recoveryState: authority.runner.penetrationRecoveryState
       } : null,
       requireValidTerrainEnvelope: true,
+      contactGeometrySubstepIndex: substepIndex,
+      contactGeometryState: state,
+      reuseContactGeometry: false,
+      geometryRefreshRequested: false,
+      contactTriangleByWheel,
+      chassisMaximumTerrainHeightM,
+      bodyCollisionPredicted,
       getRouteRecoveryState: ({
         failedState,
         preferredRouteDistances = [],
@@ -676,80 +1395,63 @@ function advanceVehicleDynamicsAuthority(editor, {
         }
         return null;
       },
-      surfaceHeightByWheel: { ...(fixedContacts.heights || wheelContactState?.heights || {}) },
-      surfaceSamplesByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
-        wheelId,
-        fixedContacts.contacts?.[wheelId]?.surfaceSample
-          || createInvalidSurfaceSample({
-            queryPosition: positions[wheelId],
-            source: 'race-wheel-contact',
-            reason: 'missing-wheel-surface'
-          })
-      ])),
-      surfaceNormalByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
-        wheelId, fixedContacts.contacts?.[wheelId]?.normal || wheelSurfaceState.normalByWheel?.[wheelId]
-      ])),
-      contactSamplesByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId,
-        footprintContacts.map((sample) => {
-          const geometry = sample.contacts?.[wheelId] || {};
-          const authoritativeSample = createSurfaceSample(geometry, {
-            queryPosition: positions[wheelId],
-            heightScale: RACE_THREE_ELEVATION_M,
-            source: geometry.bakedSurfaceSource || 'race-wheel-footprint'
-          });
-          const normal = authoritativeSample.normal;
-          return {
-            ...authoritativeSample,
-            normalX: normal?.x ?? null,
-            normalY: normal?.y ?? null,
-            normalZ: normal?.z ?? null,
-            supported: authoritativeSample.valid
-          };
-        })
-      ])),
-      materialByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
-      const contact = fixedContacts.contacts?.[wheelId] || {};
-      const sample = contact.trackState;
-      const baseSurfaceId = sample?.cell?.baseSurfaceId || contact.baseSurfaceId
-        || wheelSurfaceState.baseSurfaceByWheel?.[wheelId] || 'asphalt';
-      const nominalBaseGrip = Math.max(0.025, Number(getSurfaceById(baseSurfaceId)?.grip || 1));
-      const localBaseGrip = Number(sample?.cell?.baseGrip ?? contact.friction ?? nominalBaseGrip);
-      const surfaceGripScale = localBaseGrip / nominalBaseGrip
-        * Number(sample?.effectiveGripMultiplier ?? 1);
-      return [wheelId, {
-        ...(sample?.cell || {}),
-        baseSurfaceId,
-        surfaceId: contact.surfaceId || wheelSurfaceState.surfaceByWheel?.[wheelId],
-        effectiveGrip: sample?.effectiveGrip ?? contact.friction
-          ?? wheelSurfaceState.frictionByWheel?.[wheelId]
-          ?? 1,
-        effectiveGripMultiplier: sample?.effectiveGripMultiplier ?? 1,
-        surfaceGripScale,
-        grip: sample?.effectiveGrip ?? contact.friction
-          ?? wheelSurfaceState.frictionByWheel?.[wheelId]
-          ?? 1,
-        trackStateConditionApplied: Boolean(sample)
-      }];
-      })),
+      surfaceHeightByWheel,
+      surfaceSamplesByWheel,
+      surfaceNormalByWheel,
+      contactSamplesByWheel,
+      materialByWheel,
     sampleTerrainAtWorldPoint: (worldPoint, query = {}) => {
-      const sample = surfaceModel.samplePhysicsGeometry(worldPoint, {
-        ...physicsQueryContext,
-        fallbackSurfaceId: fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
-      });
-      recordTerrainSamples(query.query === 'iterative-tread-contact'
-        ? 'iterative-tread-contact' : 'body', [{
-        point: worldPoint,
-        wheelId: query.wheelId || null,
-        offsetIndex: Number.isFinite(Number(query.iteration)) ? Number(query.iteration) : null
-      }], [sample]);
+      let sample = null;
+      const wheelId = query.wheelId;
+      if (!capturePhysicsIncidentDiagnostics
+        && environmentResult.reuseContactGeometry === true
+        && wheelId
+        && typeof terrainQueryFrame.samplePointOnTriangle === 'function') {
+        const contactTriangle = contactTriangleByWheel[wheelId];
+        sample = terrainQueryFrame.samplePointOnTriangle(
+          worldPoint,
+          contactTriangle?.triangleId,
+          query.target || null
+        );
+        if (!sample.valid) {
+          environmentResult.geometryRefreshRequested = true;
+          terrainQueryFrame.statistics.contactTriangleExitRefreshes += 1;
+          physicsCosts.count('contactTriangleExitRefreshes');
+          sample = terrainQueryFrame.samplePoint(worldPoint, query.target || undefined);
+          if (sample.valid && contactTriangle) contactTriangle.triangleId = sample.triangleId;
+        }
+      }
+      if (!sample) sample = capturePhysicsIncidentDiagnostics
+        ? surfaceModel.samplePhysicsGeometry(worldPoint, {
+            ...physicsQueryContext,
+            fallbackSurfaceId: fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
+          })
+        : terrainQueryFrame.samplePoint(worldPoint, query.target || undefined);
+      if (!capturePhysicsIncidentDiagnostics && wheelId && sample.valid) {
+        contactTriangleByWheel[wheelId].triangleId = sample.triangleId;
+      }
+      if (capturePhysicsIncidentDiagnostics) {
+        recordTerrainSamples(query.query === 'iterative-tread-contact'
+          ? 'iterative-tread-contact' : 'body', [{
+          point: worldPoint,
+          wheelId: query.wheelId || null,
+          offsetIndex: Number.isFinite(Number(query.iteration)) ? Number(query.iteration) : null
+        }], [sample]);
+      }
+      if (!capturePhysicsIncidentDiagnostics) return sample;
       const authoritativeSample = createSurfaceSample(sample, {
         queryPosition: worldPoint,
         heightScale: RACE_THREE_ELEVATION_M,
         source: sample.bakedSurfaceSource || `race-${sample.region || 'terrain'}`
       });
-      return { ...authoritativeSample, friction: Number(sample.friction ?? 1), surfaceId: sample.surfaceId || null };
+      return {
+        ...authoritativeSample,
+        friction: Number(sample.friction ?? 1),
+        surfaceId: sample.surfaceId || null
+      };
     },
     sampleTerrainAtWorldPoints: (worldPoints) => {
+      if (!capturePhysicsIncidentDiagnostics) return terrainQueryFrame.samplePoints(worldPoints);
       const samples = surfaceModel.samplePhysicsGeometryBatch(worldPoints, {
         ...physicsQueryContext,
         fallbackSurfaceId: fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
@@ -768,7 +1470,11 @@ function advanceVehicleDynamicsAuthority(editor, {
     sampleTerrainTrianglesInBounds: (bounds) => {
       const sampler = (editor.playtestSession?.worldBake || editor.raceWorldBakeCache)
         ?.surfaceSampler;
-      return getRaceBakedSurfaceTrianglesInBounds(sampler, bounds).map((triangle) => ({
+      return physicsCosts.measure('bakedSurfaceSampling', () => (
+        getRaceBakedSurfaceTrianglesInBounds(sampler, bounds, {
+          physicsCostAccounting: physicsCosts
+        })
+      )).map((triangle) => ({
         ...triangle,
         triangleId: triangle.id,
         vertices: triangle.vertices.map((vertex) => ({
@@ -788,66 +1494,98 @@ function advanceVehicleDynamicsAuthority(editor, {
       });
     },
     sampleTerrainMaximumHeightInBounds: (bounds) => {
-      const elevation = editor.getRaceBakedSurfaceMaximumElevationInBounds(bounds);
-      if (!Number.isFinite(Number(elevation))) return null;
-      const maximumPreparedHeightM = Number(elevation) * RACE_THREE_ELEVATION_M;
-      const fixedHeights = Object.values(fixedContacts.heights || {}).map(Number).filter(Number.isFinite);
-      const maximumFixedHeightM = fixedHeights.length ? Math.max(...fixedHeights) : null;
-      // The packed mesh is a safe broadphase only while it agrees with the
-      // analytical wheel surface. Authored hills and transition blends can
-      // intentionally diverge, in which case the exact candidate path wins.
-      if (!Number.isFinite(maximumFixedHeightM)
-        || Math.abs(maximumPreparedHeightM - maximumFixedHeightM) > 0.04) return null;
-      return maximumPreparedHeightM;
+      if (bounds.minX >= bodyVariationBounds.minX
+        && bounds.maxX <= bodyVariationBounds.maxX
+        && bounds.minZ >= bodyVariationBounds.minZ
+        && bounds.maxZ <= bodyVariationBounds.maxZ
+        && Number.isFinite(chassisMaximumTerrainHeightM)) {
+        return chassisMaximumTerrainHeightM;
+      }
+      return physicsCosts.measure('bakedSurfaceSampling', () => (
+        terrainQueryFrame.maximumHeightInBounds(bounds)
+      ));
     },
-    adaptiveBodySupport: needsAdaptiveSamples,
+    adaptiveBodySupport: terrainHasDiscontinuities,
+    terrainHasDiscontinuities,
+    terrainCollisionClassification: terrainCollisionClassification.classification,
     targetVelocityWorld: countdownActive ? authority.formationTargetVelocityWorld : null,
       ambientTemperatureC: trackWeatherForcing.ambientTemperatureC,
-      ...atmosphere,
+      windWorldMps: atmosphere.windWorldMps,
+      gustWorldMps: atmosphere.gustWorldMps,
+      windSpeedMps: atmosphere.windSpeedMps,
+      windDirectionRad: atmosphere.windDirectionRad,
+      gustStrength: atmosphere.gustStrength,
       vehicleId: 'player',
       wakeSources,
-      bodyDamage: Math.max(0, ...Object.values(panelDamage).map(Number)),
+      bodyDamage,
       frontAeroDamage: clamp(Number(panelDamage.front || 0) / 100, 0, 1),
       rearAeroDamage: clamp(Number(panelDamage.rear || 0) / 100, 0, 1),
       activeAeroState: Number(session.activeAeroState || 0),
     damage: {
       engine: Number(damage.engine || 0),
       transmission: Number(damage.transmission || 0),
-      brakes: { ...(damage.brakes || {}) }
+      brakes: brakeDamage
     },
-    tireByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
-      const fixedTire = authority.tireConfigByWheel[wheelId];
-      const localTrackState = fixedContacts.contacts?.[wheelId]?.trackState;
-      const rollingMultiplier = localTrackState
-        ? Number(localTrackState.rollingResistanceMultiplier || 1)
-          / Math.max(0.2, Number(localTrackState.cell?.baseRollingResistance || 1))
-        : 1;
-      return [wheelId, {
-        ...fixedTire,
-        temperatureF: state.tireState?.[wheelId]?.temperatureF ?? 70,
-        treadTemperatureC: state.tireState?.[wheelId]?.treadTemperatureC,
-        carcassTemperatureC: state.tireState?.[wheelId]?.carcassTemperatureC,
-        internalAirTemperatureC: state.tireState?.[wheelId]?.internalAirTemperatureC,
-        effectivePressurePsi: state.tireState?.[wheelId]?.effectivePressurePsi
-          ?? fixedTire.pressurePsi,
-        pressurePsi: state.tireState?.[wheelId]?.effectivePressurePsi
-          ?? fixedTire.pressurePsi,
-        wear: state.tireState?.[wheelId]?.wear ?? fixedTire.wear,
-        damage: Number(damage.tires?.[wheelId] ?? fixedTire.damage ?? 0),
-        rollingResistanceCoefficient: 0.012 * rollingMultiplier
-      }];
-    }))
+    tireByWheel
   };
+    authority.chassisGeometryEnvironment = environmentResult;
+    return environmentResult;
   };
   let latestFixedStepTelemetry = null;
   let previousTrackPositions = session.trackStatePreviousWheelPositions || {};
   let latestTrackStateAdvance = null;
+  authority.trackStateStepScratch ||= Array.from(
+    { length: 8 }, createTrackStateStepScratch
+  );
+  authority.trackStateStepScratchCursor ||= 0;
   const advance = authority.runner.advance(seconds, {
     input: controls,
     onFixedStep: (telemetry) => {
       latestFixedStepTelemetry = telemetry;
+      const staticContacts = telemetry?.forces?.bodyCollision?.contacts?.filter((contact) => (
+        contact.contactType === 'static-body'
+          && Number(contact.normalImpulseNs || 0) > 1
+          && /^(edge|scenery):/.test(String(contact.colliderSource || ''))
+      )) || [];
+      if (staticContacts.length) {
+        session.staticColliderDamageHistory ||= [];
+        staticContacts.forEach((contact) => {
+          const damageKey = `${telemetry.stepIndex}:${contact.colliderId}:${contact.pieceId || ''}`;
+          if (session.staticColliderDamageHistory.includes(damageKey)) return;
+          session.staticColliderDamageHistory.push(damageKey);
+          if (session.staticColliderDamageHistory.length > 128) {
+            session.staticColliderDamageHistory.splice(
+              0, session.staticColliderDamageHistory.length - 128
+            );
+          }
+          const normal = contact.normal || {};
+          const yaw = Number(telemetry.state?.yawRad || 0);
+          const forward = { x: Math.sin(yaw), z: Math.cos(yaw) };
+          const right = { x: Math.cos(yaw), z: -Math.sin(yaw) };
+          const forwardDot = Number(normal.x || 0) * forward.x
+            + Number(normal.z || 0) * forward.z;
+          const rightDot = Number(normal.x || 0) * right.x
+            + Number(normal.z || 0) * right.z;
+          const panel = Math.abs(rightDot) > Math.abs(forwardDot)
+            ? (rightDot > 0 ? 'left' : 'right')
+            : (forwardDot < 0 ? 'front' : 'rear');
+          const severity = clamp(
+            Number(contact.normalImpulseNs || 0)
+              / Math.max(1, authority.runner.config.massKg * 18) * 14,
+            0.2,
+            14
+          );
+          editor.applyRaceDamage('panels', severity, {
+            keys: [panel],
+            source: String(contact.colliderSource)
+          });
+        });
+      }
       if (countdownActive || !trackState) return;
-      const result = emitAuthoritativeTrackStateStep({
+      const trackStateScratch = authority.trackStateStepScratch[
+        authority.trackStateStepScratchCursor++ % authority.trackStateStepScratch.length
+      ];
+      const result = physicsCosts.measure('trackState', () => emitAuthoritativeTrackStateStep({
         editor,
         systems,
         trackState,
@@ -855,8 +1593,10 @@ function advanceVehicleDynamicsAuthority(editor, {
         wheelSurfaceState,
         setup,
         weatherState,
-        previousPositions: previousTrackPositions
-      });
+        weatherForcing: trackWeatherForcing,
+        previousPositions: previousTrackPositions,
+        scratch: trackStateScratch
+      }));
       previousTrackPositions = result.positions;
       latestTrackStateAdvance = result.advance;
     }
@@ -871,88 +1611,216 @@ function advanceVehicleDynamicsAuthority(editor, {
       ...(latestTrackStateAdvance || {})
     };
   }
-  authority.latest = {
-    state: authority.runner.createStateSnapshot(),
-    telemetry: latestFixedStepTelemetry,
-    diagnostics: { ...authority.runner.diagnostics },
-    fixedStepTelemetry: latestFixedStepTelemetry ? [latestFixedStepTelemetry] : [],
-    advance
-  };
+  const legacyWorkerPreference = globalThis.__RTG_ENABLE_VEHICLE_DYNAMICS_WORKER__;
+  const requestedWorkerMode = String(
+    globalThis.__RTG_VEHICLE_DYNAMICS_WORKER_MODE__
+      || (legacyWorkerPreference === true ? 'force' : 'off')
+  ).toLowerCase();
+  const workerPermitted = requestedWorkerMode === 'force' && typeof Worker === 'function';
+  if (!authority.workerBridge && !workerPermitted) {
+    authority.authoritativeThread = 'render-thread';
+    session.vehicleDynamicsAuthorityThread = 'render';
+  }
+  if (!authority.workerBridge
+    && !authority.workerMigrationAttempted
+    && !authority.preparedWorkerSurfaceSampler
+    && countdownActive
+    && workerPermitted) {
+    try {
+      const sourceSurfaceSampler = preparedWorldBake?.surfaceSampler;
+      const packedSurfaceSampler = sourceSurfaceSampler?.packed
+        ? sourceSurfaceSampler
+        : packRaceBakedSurfaceSampler(sourceSurfaceSampler);
+      authority.preparedWorkerSurfaceSampler = prepareRaceVehicleDynamicsWorkerSurface(
+        packedSurfaceSampler
+      );
+    } catch (error) {
+      authority.workerPreparationFailure = String(error?.message || error);
+    }
+  }
+  if (!authority.workerBridge
+    && !authority.workerMigrationAttempted
+    && !countdownActive
+    && workerPermitted
+    && (session.aiRuntime || []).every((ai) => ai.sleeping === true || ai.vehicleDynamicsRunner)) {
+    authority.workerMigrationAttempted = true;
+    let migrationWorker = null;
+    try {
+      const qualification = globalThis.__RTG_VEHICLE_DYNAMICS_WORKER_QUALIFICATION__;
+      const sourceSurfaceSampler = preparedWorldBake?.surfaceSampler;
+      const packedSurfaceSampler = sourceSurfaceSampler?.packed
+        ? sourceSurfaceSampler
+        : packRaceBakedSurfaceSampler(sourceSurfaceSampler);
+      const surfaceSampler = authority.preparedWorkerSurfaceSampler
+        || prepareRaceVehicleDynamicsWorkerSurface(packedSurfaceSampler);
+      if (!surfaceSampler?.packed) {
+        throw new Error('vehicle dynamics worker requires a packed immutable surface');
+      }
+      migrationWorker = new Worker(
+        new URL('./simulation/vehicleDynamicsWorker.js', import.meta.url),
+        { type: 'module', name: 'rtg-vehicle-dynamics' }
+      );
+      const bridge = new RaceVehicleDynamicsWorkerBridge({
+        worker: migrationWorker,
+        qualification
+      });
+      bridge.initialize({
+        runner: authority.runner,
+        surfaceSampler,
+        staticColliderDefinitions: authority.staticColliderDefinitions || [],
+        materialByRegion: { default: { grip: 1 } },
+        environmentState: createWorkerEnvironmentStateSnapshot(
+          authority.chassisGeometryEnvironment || {}
+        ),
+        trackState: countdownActive ? null : trackState,
+        weatherForcing: trackWeatherForcing,
+        tireCompoundByWheel: setup.tireCompoundByWheel,
+        activeAiVehicles: (session.aiRuntime || []).map((ai, index) => {
+          ai.workerVehicleId = `ai-${ai.id || index}`;
+          const aiRunner = ai.vehicleDynamicsRunner;
+          const aiEnvironment = aiRunner?.environmentProvider?.({
+            state: aiRunner.state,
+            previousState: aiRunner.state,
+            controls: {},
+            timeSeconds: aiRunner.simulationTimeSeconds,
+            tireSubstepDt: 1 / Math.max(1, Number(aiRunner.config?.tireHz || 120)),
+            chassisStepDt: 1 / Math.max(1, Number(aiRunner.config?.chassisHz || 120)),
+            substepIndex: 0,
+            reuseContactGeometry: false
+          }) || {};
+          return {
+            id: ai.workerVehicleId,
+            runner: aiRunner,
+            active: ai.sleeping !== true,
+            environmentState: createWorkerEnvironmentStateSnapshot(aiEnvironment)
+          };
+        })
+      });
+      authority.workerBridge = bridge;
+      authority.preparedWorkerSurfaceSampler = null;
+      authority.authoritativeThread = 'vehicle-dynamics-worker';
+      session.vehicleDynamicsAuthorityThread = 'worker';
+    } catch (error) {
+      migrationWorker?.terminate?.();
+      authority.workerMigrationFailure = String(error?.message || error);
+      session.vehicleDynamicsAuthorityThread = 'render';
+      session.vehicleDynamicsWorkerMigrationFailure = authority.workerMigrationFailure;
+    }
+  }
+  authority.compatibilityTelemetryScratch ||= createRaceCompatibilityTelemetryScratch();
+  const compatibilityScratch = authority.compatibilityTelemetryScratch;
+  copyRecordInto(compatibilityScratch.diagnostics, authority.runner.diagnostics);
+  compatibilityScratch.fixedStepTelemetry.length = latestFixedStepTelemetry ? 1 : 0;
+  if (latestFixedStepTelemetry) {
+    compatibilityScratch.fixedStepTelemetry[0] = latestFixedStepTelemetry;
+  }
+  const latest = compatibilityScratch.latest;
+  // This is a transient render-frame view. Replay/checkpoint callers use the
+  // runner snapshot API explicitly, so its wrapper storage may be reused.
+  latest.state = authority.runner.state;
+  latest.telemetry = latestFixedStepTelemetry;
+  latest.diagnostics = compatibilityScratch.diagnostics;
+  latest.fixedStepTelemetry = compatibilityScratch.fixedStepTelemetry;
+  latest.advance = advance;
+  authority.latest = latest;
   syncVehicleDynamicsCompatibilityOutputs(authority.runner, session);
+  session.physicsCatchUpWarning = advance.catchUpBudgetWarning || null;
   const authoritativeState = authority.runner.state;
   session.authoritativeHandbrakeActive = authoritativeState.handbrakeCommandState?.active === true;
-  session.handbrakeCommandState = { ...(authoritativeState.handbrakeCommandState || {}) };
-  session.steeringTelemetry = { ...(authoritativeState.steeringTelemetry || {}) };
+  session.handbrakeCommandState = copyRecordInto(
+    session.handbrakeCommandState || {},
+    authoritativeState.handbrakeCommandState
+  );
+  session.steeringTelemetry = copyRecordInto(
+    session.steeringTelemetry || {},
+    authoritativeState.steeringTelemetry
+  );
   const authoritativePatches = authoritativeState.contactPatches || {};
   const powertrainTelemetry = authoritativeState.powertrainState?.telemetry || {};
   const drivenWheelIds = authority.runner.config.drivenWheelIds || [];
   const wheelRadiusM = Math.max(0.1, Number(authority.runner.config.wheelRadiusM || 0.33));
-  const demandedForceByWheel = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
-    wheelId,
-    Math.abs(Number(powertrainTelemetry.wheelDriveTorqueNm?.[wheelId] || 0)) / wheelRadiusM
-  ]));
-  const appliedForceByWheel = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
-    wheelId,
-    Math.abs(Number(authoritativePatches[wheelId]?.longitudinalForceN || 0))
-  ]));
-  const limitByWheel = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
-    wheelId,
-    Math.max(0, Number(authoritativePatches[wheelId]?.combinedSlipLimitN || 0))
-  ]));
-  const sumDriven = (values) => drivenWheelIds.reduce((sum, wheelId) => (
-    sum + Number(values[wheelId] || 0)
-  ), 0);
-  const demandedForceN = sumDriven(demandedForceByWheel);
-  const appliedForceN = sumDriven(appliedForceByWheel);
-  const drivenLimitN = Math.max(1, sumDriven(limitByWheel));
-  const driveDemandRatio = demandedForceN / drivenLimitN;
-  const appliedDriveDemandRatio = appliedForceN / drivenLimitN;
-  const wheelLongitudinalUsage = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
-    wheelId,
-    demandedForceByWheel[wheelId] / Math.max(1, limitByWheel[wheelId])
-  ]));
-  const wheelFrictionUsage = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
-    wheelId,
-    Math.hypot(
-      Number(authoritativePatches[wheelId]?.longitudinalForceN || 0),
-      Number(authoritativePatches[wheelId]?.lateralForceN || 0)
-    ) / Math.max(1, limitByWheel[wheelId])
-  ]));
-  const drivenPostPeakEfficiency = drivenWheelIds.length
-    ? Math.min(...drivenWheelIds.map((wheelId) => (
+  const demandedForceByWheel = compatibilityScratch.demandedForceByWheel;
+  const appliedForceByWheel = compatibilityScratch.appliedForceByWheel;
+  const limitByWheel = compatibilityScratch.limitByWheel;
+  const wheelLongitudinalUsage = compatibilityScratch.wheelLongitudinalUsage;
+  const wheelFrictionUsage = compatibilityScratch.wheelFrictionUsage;
+  let wheelSpin = 0;
+  for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+    const wheelId = RACE_WHEEL_IDS[wheelIndex];
+    const patch = authoritativePatches[wheelId] || {};
+    demandedForceByWheel[wheelId] = Math.abs(Number(
+      powertrainTelemetry.wheelDriveTorqueNm?.[wheelId] || 0
+    )) / wheelRadiusM;
+    appliedForceByWheel[wheelId] = Math.abs(Number(patch.longitudinalForceN || 0));
+    limitByWheel[wheelId] = Math.max(0, Number(patch.combinedSlipLimitN || 0));
+    wheelLongitudinalUsage[wheelId] = demandedForceByWheel[wheelId]
+      / Math.max(1, limitByWheel[wheelId]);
+    wheelFrictionUsage[wheelId] = Math.hypot(
+      Number(patch.longitudinalForceN || 0),
+      Number(patch.lateralForceN || 0)
+    ) / Math.max(1, limitByWheel[wheelId]);
+    wheelSpin = Math.max(
+      wheelSpin,
+      Number(patch.rawSlipRatio ?? patch.slipRatio ?? 0)
+    );
+  }
+  let demandedForceN = 0;
+  let appliedForceN = 0;
+  let drivenLimitN = 0;
+  let drivenPostPeakEfficiency = drivenWheelIds.length ? Infinity : 1;
+  for (let index = 0; index < drivenWheelIds.length; index += 1) {
+    const wheelId = drivenWheelIds[index];
+    demandedForceN += Number(demandedForceByWheel[wheelId] || 0);
+    appliedForceN += Number(appliedForceByWheel[wheelId] || 0);
+    drivenLimitN += Number(limitByWheel[wheelId] || 0);
+    drivenPostPeakEfficiency = Math.min(
+      drivenPostPeakEfficiency,
       Number(authoritativePatches[wheelId]?.postPeakSlidingForceN || limitByWheel[wheelId])
         / Math.max(1, limitByWheel[wheelId])
-    )))
-    : 1;
+    );
+  }
+  drivenLimitN = Math.max(1, drivenLimitN);
+  const driveDemandRatio = demandedForceN / drivenLimitN;
+  const appliedDriveDemandRatio = appliedForceN / drivenLimitN;
   session.tireSlip = session.tireSlip || {};
-  session.tireSlip.wheelSpin = Math.max(0, ...RACE_WHEEL_IDS.map((wheelId) => (
-    Number(authoritativePatches[wheelId]?.rawSlipRatio
-      ?? authoritativePatches[wheelId]?.slipRatio ?? 0)
-  )));
-  session.tireSlip.effectiveFrictionMuByWheel = Object.fromEntries(
-    RACE_WHEEL_IDS.map((wheelId) => [
-      wheelId,
-      Number(authoritativePatches[wheelId]?.gripCoefficient || 0)
-    ])
+  session.tireSlip.wheelSpin = Math.max(0, wheelSpin);
+  const effectiveFrictionMuByWheel = session.tireSlip.effectiveFrictionMuByWheel || {};
+  for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+    const wheelId = RACE_WHEEL_IDS[wheelIndex];
+    effectiveFrictionMuByWheel[wheelId] = Number(
+      authoritativePatches[wheelId]?.gripCoefficient || 0
+    );
+  }
+  session.tireSlip.effectiveFrictionMuByWheel = effectiveFrictionMuByWheel;
+  const engineDrive = session.tireSlip.engineDrive || {};
+  engineDrive.demandedForceN = demandedForceN;
+  engineDrive.appliedRawForceN = appliedForceN;
+  engineDrive.appliedForceN = appliedForceN;
+  engineDrive.driveDemandRatio = driveDemandRatio;
+  engineDrive.appliedDriveDemandRatio = appliedDriveDemandRatio;
+  engineDrive.wheelLongitudinalUsage = wheelLongitudinalUsage;
+  engineDrive.wheelFrictionUsage = wheelFrictionUsage;
+  engineDrive.tractionControlCut = Number(powertrainTelemetry.tractionTorqueScale ?? 1);
+  engineDrive.shiftTorqueCut = Number(powertrainTelemetry.shiftTorqueScale ?? 1);
+  engineDrive.drivetrainUnload = demandedForceN > 1
+    ? clamp(1 - appliedForceN / demandedForceN, 0, 1)
+    : 0;
+  engineDrive.postPeakTractionEfficiency = drivenPostPeakEfficiency;
+  engineDrive.combinedSlipEfficiency = clamp(
+    1 - Math.max(0, appliedDriveDemandRatio - 1), 0, 1
   );
-  session.tireSlip.engineDrive = {
-    ...(session.tireSlip.engineDrive || {}),
-    demandedForceN,
-    appliedRawForceN: appliedForceN,
-    appliedForceN,
-    driveDemandRatio,
-    appliedDriveDemandRatio,
-    wheelLongitudinalUsage,
-    wheelFrictionUsage,
-    tractionControlCut: Number(powertrainTelemetry.tractionTorqueScale ?? 1),
-    shiftTorqueCut: Number(powertrainTelemetry.shiftTorqueScale ?? 1),
-    drivetrainUnload: demandedForceN > 1
-      ? clamp(1 - appliedForceN / demandedForceN, 0, 1)
-      : 0,
-    postPeakTractionEfficiency: drivenPostPeakEfficiency,
-    combinedSlipEfficiency: clamp(1 - Math.max(0, appliedDriveDemandRatio - 1), 0, 1),
-    authoritative: true
-  };
+  engineDrive.authoritative = true;
+  session.tireSlip.engineDrive = engineDrive;
+  physicsCosts.end(authorityTimer);
+  physicsCosts.setFrameCounter('backlogSteps', advance.backlogSteps);
+  if (ownsCostFrame) physicsCosts.finishFrame({
+    completedSteps: advance.completedSteps,
+    completedTireSubsteps: advance.completedTireSubsteps,
+    backlogSteps: advance.backlogSteps,
+    advanceWallTimeMs: advance.advanceWallTimeMs,
+    renderFps: Number(editor.playtestFps || 0)
+  });
+  session.physicsPerformance = physicsCosts.getSummary();
 }
 
 export function updateRaceSimulation({
@@ -2243,7 +3111,7 @@ export function updateRaceSimulation({
     speedMps: absSpeed
   });
   const selfAligningSteeringCorrection = editor.getRaceSelfAligningSteeringCorrection({
-    contactPatches: editor.playtestSession.vehicleDynamicsRunner?.state?.contactPatches || {},
+    contactPatches: getAuthoritativeChassisState(editor.playtestSession)?.contactPatches || {},
     rackAngleRad: steeringAngle,
     casterRad: Number(tuning.casterFront || 0) * Math.PI / 180,
     wheelRadiusM: tuning.wheelRadiusM,
@@ -2536,7 +3404,8 @@ export function updateRaceSimulation({
     weatherState
   });
   handbrake = editor.playtestSession.authoritativeHandbrakeActive ? 1 : handbrake;
-  const authoritativeWheelLoads = { ...(editor.playtestSession.vehicleDynamicsRunner?.state?.wheelLoadsN || {}) };
+  const presentationState = getAuthoritativeChassisState(editor.playtestSession) || {};
+  const authoritativeWheelLoads = { ...(presentationState.wheelLoadsN || {}) };
   if (RACE_WHEEL_IDS.every((wheelId) => Number.isFinite(Number(authoritativeWheelLoads[wheelId])))) {
     editor.playtestSession.tireSlip.wheelNormalLoads = authoritativeWheelLoads;
     if (throttle > 0.001) {
@@ -2567,62 +3436,9 @@ export function updateRaceSimulation({
   editor.playtestSession.routeLateralM = projectedLateralMeters;
   editor.playtestSession.routeLateralNormalized = projectedLateralNormalized;
   editor.playtestSession.lateral = projectedLateralNormalized;
-  const edgeCollisionMode = editor.getRaceEdgeCollisionMode(boundarySegment);
-  if (edgeCollisionMode !== 'none') {
-    const roadHalfWidth = editor.getRaceRoadHalfWidthWorld(boundarySegment);
-    const marginWidth = editor.getRaceCollisionMarginWidthWorld(boundarySegment, edgeCollisionMode);
-    const shoulderWidth = editor.getRaceCollisionShoulderWidthWorld(boundarySegment, edgeCollisionMode);
-    const contactLimit = Math.max(0.2, roadHalfWidth + marginWidth + shoulderWidth);
-    let boundaryHit = null;
-    const contactPoints = editor.getRaceVehicleCollisionContactPoints({
-      session: editor.playtestSession,
-      car,
-      tuning
-    });
-    contactPoints.forEach((point) => {
-      const pointProjection = editor.getRaceRouteProjectionForWorldPoint(point);
-      const lateral = Number(pointProjection.lateral || 0);
-      const excess = Math.abs(lateral) - contactLimit;
-      if (excess <= 0) return;
-      if (!boundaryHit || excess > boundaryHit.excess) {
-        boundaryHit = {
-          point,
-          projection: pointProjection,
-          lateral,
-          excess
-        };
-      }
-    });
-    if (boundaryHit) {
-      const side = Math.sign(boundaryHit.lateral || 1);
-      const hitProjection = boundaryHit.projection || projection;
-      const right = editor.getRaceRightVector(Number(hitProjection.yaw || roadYaw || 0));
-      const collisionEffect = editor.getRaceEdgeCollisionEffect();
-      if (collisionEffect === 'reset') {
-        editor.resetRaceCarToRouteCenter({ projection: hitProjection, roadYaw });
-      } else {
-        const authority = editor.playtestSession.vehicleDynamicsRunner;
-        const normalX = right.x * side;
-        const normalZ = right.z * side;
-        const velocity = authority.state.velocity || {};
-        const normalVelocity = Number(velocity.x || 0) * normalX + Number(velocity.z || 0) * normalZ;
-        const restitution = clamp(0.18 + Math.abs(normalVelocity) / 72, 0.18, 0.48);
-        const tangentFriction = clamp(0.82 - Math.abs(normalVelocity) / 140, 0.55, 0.84);
-        authority.queueCollisionContact({
-          pointWorld: boundaryHit.point,
-          normalWorld: { x: normalX, y: 0, z: normalZ },
-          penetrationM: boundaryHit.excess,
-          restitution,
-          friction: 1 - tangentFriction,
-          source: `edge:${edgeCollisionMode}`
-        });
-        editor.applyRaceDamage('panels', Math.min(14, Math.max(0.2, Math.abs(normalVelocity) * 0.42)), {
-          keys: [side < 0 ? 'left' : 'right'],
-          source: `edge:${edgeCollisionMode}`
-        });
-      }
-    }
-  }
+  // Road-edge geometry is prepared once and swept by VehicleDynamicsRunner at
+  // the tire/contact rate. This render-frame projection remains diagnostic and
+  // cannot queue an impulse, mutate the authoritative pose, or reset progress.
   projection = editor.getRaceRouteProjectionForWorldPoint({
     x: editor.playtestSession.worldX,
     z: editor.playtestSession.worldZ
@@ -2636,7 +3452,7 @@ export function updateRaceSimulation({
   editor.playtestSession.lateral = editor.playtestSession.routeLateralNormalized;
   const previousDistance = Number(editor.playtestSession.previousDistance || editor.playtestSession.distance || 0);
   const progressRoadYaw = editor.getRaceWorldPoseAtDistance(previousDistance).yaw;
-  const authoritativeVelocity = editor.playtestSession.vehicleDynamicsRunner?.state?.velocity || {};
+  const authoritativeVelocity = presentationState.velocity || {};
   const routeAdvance = calculateAuthoritativeRouteAdvance({
     velocityWorld: authoritativeVelocity,
     roadYaw: progressRoadYaw,
@@ -2727,8 +3543,8 @@ export function updateRaceSimulation({
     surface: segmentInfo.segment?.surface,
     speedMps: absSpeed
   });
-  if (editor.raceInput.autoShift && editor.playtestSession.vehicleDynamicsRunner?.state) {
-    editor.raceInput.gear = Number(editor.playtestSession.vehicleDynamicsRunner.state.gear || gear);
+  if (editor.raceInput.autoShift && Number.isFinite(Number(presentationState.gear))) {
+    editor.raceInput.gear = Number(presentationState.gear || gear);
   }
   editor.playtestSession.steeringWheel = editor.raceInput.steeringWheel;
   editor.playtestSession.steeringTarget = editor.raceInput.steeringTarget;
@@ -2761,7 +3577,7 @@ export function updateRaceSimulation({
       routeLength,
       routeRuntimeType
     });
-    const authoritativeTires = editor.playtestSession.vehicleDynamicsRunner?.state?.tireState || {};
+    const authoritativeTires = presentationState.tireState || {};
     editor.playtestSession.diagnostics.tireTemperature = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
       wheelId,
       Number(authoritativeTires[wheelId]?.temperatureF

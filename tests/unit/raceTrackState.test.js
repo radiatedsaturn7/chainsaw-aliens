@@ -10,6 +10,11 @@ import {
   TRACK_STATE_SURFACE_PROFILES,
   getTrackStateSurfaceProfile
 } from '../../src/racing/trackState/TrackStateProfiles.js';
+import {
+  createIncrementalTrackStateHash,
+  getTrackStateCanonicalPayload
+} from '../../src/racing/trackState/TrackStateSerialization.js';
+import { hashTrackStateValue, stableTrackStateStringify } from '../../src/racing/trackState/TrackStateMath.js';
 
 const baseSampler = ({ x = 0, z = 0 } = {}) => ({
   baseSurfaceId: 'asphalt',
@@ -27,6 +32,92 @@ const createState = (options = {}) => new TrackState({
   seed: 42,
   sampleBaseSurface: baseSampler,
   ...options
+});
+
+test('incremental Track State hashing is byte-compatible with the legacy canonical checksum', () => {
+  const state = createState();
+  for (let index = 0; index < 32; index += 1) {
+    state.mutateCell({ x: index, z: index % 3 }, {
+      standingWaterDepthMm: index / 7,
+      rubber: index / 31,
+      surfaceTemperatureC: 10 + index / 3
+    });
+  }
+  const payload = getTrackStateCanonicalPayload(state);
+  const expected = hashTrackStateValue(stableTrackStateStringify(payload));
+  const task = createIncrementalTrackStateHash(payload);
+  let slices = 0;
+  while (!task.done) {
+    task.process(37);
+    slices += 1;
+  }
+  assert.ok(slices > 10);
+  assert.equal(task.checksum, expected);
+});
+
+test('automatic checkpoints use a soft event cap while bounded capture and hashing finish', () => {
+  const state = createState({
+    eventHistoryLimit: 100,
+    checkpointCellsPerStep: 1,
+    checkpointHashCharactersPerStep: 256
+  });
+  for (let index = 0; index < 64; index += 1) state.sample({ x: index + 0.2, z: 0.2 });
+  for (let sequence = 1; sequence <= 100; sequence += 1) {
+    state.queueCrashContamination({
+      sequence,
+      stepIndex: 1,
+      vehicleId: 'checkpoint-car',
+      x: sequence % 4 + 0.2,
+      z: 0.2,
+      debris: 0.0001
+    });
+  }
+  state.advance(0.1, { type: 'clear', ambientTemperatureC: 22 });
+  assert.notEqual(state.getDebugState().checkpointPhase, 'idle');
+  let sequence = 101;
+  let maximumHistory = state.eventHistory.length;
+  for (let index = 0; index < 1000 && state.historyBaseSequence === 0; index += 1) {
+    state.queueCrashContamination({
+      sequence,
+      stepIndex: state.stepIndex + 1,
+      vehicleId: 'checkpoint-car',
+      x: sequence % 4 + 0.2,
+      z: 0.2,
+      debris: 0.0001
+    });
+    sequence += 1;
+    state.advance(0.1, { type: 'clear', ambientTemperatureC: 22 });
+    maximumHistory = Math.max(maximumHistory, state.eventHistory.length);
+  }
+  assert.ok(maximumHistory > state.eventHistoryLimit);
+  assert.equal(state.historyBaseSequence, 100);
+  assert.equal(state.getDebugState().checkpointCompletedCount, 1);
+  assert.ok(
+    state.getDebugState().checkpointMaximumSliceMs < 20,
+    `checkpoint slice exceeded 20 ms: ${state.getDebugState().checkpointMaximumSliceMs} ms`
+  );
+  assert.ok(state.eventHistory.every((event) => event.sequence > state.historyBaseSequence));
+});
+
+test('weather transitions persistently wake every historical cell across bounded steps', () => {
+  const state = createState({ maxCellsPerStep: 64 });
+  for (let index = 0; index < 200; index += 1) state.sample({ x: index + 0.2, z: 0.2 });
+  const first = state.advance(0.1, {
+    type: 'rain',
+    precipitationRateMmPerS: 0.5,
+    ambientTemperatureC: 16
+  });
+  assert.equal(first.processedCellCount, 64);
+  assert.equal(first.weatherWakeRemaining, 136);
+  state.advance(0.3, {
+    type: 'rain',
+    precipitationRateMmPerS: 0.5,
+    ambientTemperatureC: 16
+  });
+  assert.equal(state.getDebugState().weatherWakeRemaining, 0);
+  state.cells.forEach((cell) => {
+    assert.ok(cell.moistureDepthMm + cell.standingWaterDepthMm > 0, cell.key);
+  });
 });
 
 test('Track State cells persist every required independent field at one-meter resolution', () => {
@@ -299,7 +390,7 @@ test('10,000 ordered events, snapshots, restore, and sync packets are determinis
   const replay = left.createReplayRecord();
   const replayFinal = TrackState.fromSnapshot(replay.finalSnapshot, { sampleBaseSurface: baseSampler });
   assert.equal(replayFinal.getChecksum(), replay.finalChecksum);
-  assert.deepEqual(replay.weatherTimeline, [...left.weatherTimeline.entries()]);
+  assert.deepEqual(replay.weatherTimeline, left.getWeatherTimelineAfterHistoryBase());
 });
 
 test('fixed-step work is bounded and inactive world regions stay sparse', () => {
@@ -637,18 +728,23 @@ test('checkpoint rotation waits for the catch-up advance boundary and replays fu
   });
   const catchUp = state.advance(0.5, { type: 'clear', ambientTemperatureC: 20 });
   assert.equal(catchUp.completedSteps, 5);
-  assert.equal(state.historyBaseStepIndex, state.stepIndex);
-  assert.equal(state.historyBaseSnapshot.stepIndex, state.stepIndex);
-  assert.equal(state.historyBaseSnapshot.accumulatorMs, state.accumulatorMs);
+  while (state.getDebugState().checkpointPhase !== 'idle') {
+    state.advance(0.1, { type: 'clear', ambientTemperatureC: 20 });
+  }
+  assert.ok(state.historyBaseStepIndex <= state.stepIndex);
+  assert.equal(state.historyBaseSnapshot.stepIndex, state.historyBaseStepIndex);
   assert.ok(state.historyBaseSnapshot.contactAggregates.length > 0);
-  assert.equal(state.historyBaseSnapshot.checksum, state.getChecksum());
-  assert.equal(state.createReplayRecord().initialChecksum, state.getChecksum());
-
-  const replayed = TrackState.fromSnapshot(state.historyBaseSnapshot, {
+  const replay = state.createReplayRecord();
+  const replayed = TrackState.fromSnapshot(replay.historyBaseSnapshot, {
     sampleBaseSurface: baseSampler
   });
-  state.advance(0.2, { type: 'clear', ambientTemperatureC: 20 });
-  replayed.advance(0.2, { type: 'clear', ambientTemperatureC: 20 });
+  replay.events.forEach((event) => replayed.queueEvent(event));
+  const replayWeather = new Map(replay.weatherTimeline);
+  let replayForcing = {};
+  for (let step = replayed.stepIndex + 1; step <= replay.finalStepIndex; step += 1) {
+    if (replayWeather.has(step)) replayForcing = replayWeather.get(step);
+    replayed.advance(0.1, replayForcing);
+  }
   assert.equal(replayed.getChecksum(), state.getChecksum());
 });
 
@@ -767,7 +863,7 @@ test('continuously varying physical totals are identical across render partition
   assert.equal(results[0].checkpointReplayResult, results[0].checksum);
 });
 
-test('large persistent surfaces use a rotating deterministic cell budget instead of whole-track scans', () => {
+test('large persistent surfaces bound work and retire settled cells from environmental processing', () => {
   const state = createState({ maxCellsPerStep: 256 });
   for (let index = 0; index < 5000; index += 1) {
     state.sample({ x: index + 0.2, z: 0.2 });
@@ -785,8 +881,9 @@ test('large persistent surfaces use a rotating deterministic cell budget instead
     durations.push(performance.now() - stepStart);
   }
   assert.equal(first.processedCellCount, 256);
-  assert.equal(second.processedCellCount, 256);
-  assert.notEqual(state.cellCursor, firstCursor);
+  assert.ok(second.processedCellCount <= 256);
+  assert.ok(state.getDebugState().environmentActiveCellCount < initialCellCount);
+  assert.equal(firstCursor, 0);
   assert.equal(state.cells.size, initialCellCount);
   assert.ok(Math.max(...durations) < 100, `Track State step exceeded 100 ms: ${Math.max(...durations)} ms`);
 
@@ -794,4 +891,49 @@ test('large persistent surfaces use a rotating deterministic cell budget instead
   assert.equal(restored.cellCursor, state.cellCursor);
   assert.equal(restored.maxCellsPerStep, 256);
   assert.equal(restored.getChecksum(), state.getChecksum());
+});
+
+test('dry tire contacts do not allocate empty neighboring receiver cells', () => {
+  const state = createState();
+  state.queueEvent({
+    type: 'tire-contact',
+    vehicleId: 'dry-car',
+    wheelId: 'rl',
+    x: 0.2,
+    z: 0.2,
+    payload: {
+      grounded: true,
+      contactScale: 1,
+      directionX: 1,
+      directionZ: 0,
+      rollingDistanceM: 0,
+      normalImpulseNs: 0,
+      surfaceHeatingWorkJ: 0,
+      rubberDepositionWorkJ: 0,
+      waterDisplacementImpulseNs: 0,
+      looseMaterialSweepWorkJ: 0,
+      materialPickupCapacity: 0,
+      carriedMaterialDepositCapacity: 0
+    }
+  });
+  const result = state.advance(0.1, { type: 'clear', ambientTemperatureC: 22 });
+  assert.equal(state.cells.size, 1);
+  assert.equal(result.receiverCellsCreated, 0);
+});
+
+test('Track State reuses flow buffers and rebuilds derived active work after restore', () => {
+  const state = createState();
+  state.mutateCell({ x: 0, z: 0 }, { standingWaterDepthMm: 2 });
+  const deltaBuffer = state.flowDeltaByKey;
+  const keyBuffer = state.flowDeltaKeysScratch;
+  state.advance(0.2, { type: 'clear', ambientTemperatureC: 22 });
+  assert.equal(state.flowDeltaByKey, deltaBuffer);
+  assert.equal(state.flowDeltaKeysScratch, keyBuffer);
+
+  const restored = TrackState.fromSnapshot(state.createSnapshot(), { sampleBaseSurface: baseSampler });
+  assert.equal(restored.getChecksum(), state.getChecksum());
+  assert.equal(
+    restored.getDebugState().environmentActiveCellCount,
+    state.getDebugState().environmentActiveCellCount
+  );
 });

@@ -5,7 +5,9 @@ const wakeFrameCache = new WeakMap();
 
 const q = (value) => Number((Number(value) || 0).toFixed(6));
 
-export function createDeterministicAtmosphere({ weatherState = {}, race = {}, timeSeconds = 0 } = {}) {
+export function createDeterministicAtmosphere({
+  weatherState = {}, race = {}, timeSeconds = 0, target = null
+} = {}) {
   const type = String(weatherState.id || race.weather || 'clear');
   const intensity = clamp(Number(weatherState.effectiveIntensity ?? weatherState.targetIntensity ?? race.weatherIntensity ?? 0), 0, 1);
   const directionRad = Number(race.windDirectionRad
@@ -18,17 +20,25 @@ export function createDeterministicAtmosphere({ weatherState = {}, race = {}, ti
     Math.sin(time * 1.731 + 0.37) * 0.62 + Math.sin(time * 0.417 + 1.91) * 0.38
   );
   const lateralGust = speedMps * gustStrength * Math.sin(time * 0.913 + 2.47) * 0.35;
-  const forward = { x: Math.sin(directionRad), z: Math.cos(directionRad) };
-  const right = { x: Math.cos(directionRad), z: -Math.sin(directionRad) };
-  return {
-    windWorldMps: { x: q(forward.x * speedMps), y: 0, z: q(forward.z * speedMps) },
-    gustWorldMps: {
-      x: q(forward.x * gust + right.x * lateralGust),
-      y: 0,
-      z: q(forward.z * gust + right.z * lateralGust)
-    },
-    windSpeedMps: q(speedMps), windDirectionRad: q(directionRad), gustStrength: q(gustStrength)
-  };
+  const forwardX = Math.sin(directionRad);
+  const forwardZ = Math.cos(directionRad);
+  const rightX = Math.cos(directionRad);
+  const rightZ = -Math.sin(directionRad);
+  const output = target && typeof target === 'object' ? target : {};
+  const windWorldMps = output.windWorldMps || { x: 0, y: 0, z: 0 };
+  const gustWorldMps = output.gustWorldMps || { x: 0, y: 0, z: 0 };
+  windWorldMps.x = q(forwardX * speedMps);
+  windWorldMps.y = 0;
+  windWorldMps.z = q(forwardZ * speedMps);
+  gustWorldMps.x = q(forwardX * gust + rightX * lateralGust);
+  gustWorldMps.y = 0;
+  gustWorldMps.z = q(forwardZ * gust + rightZ * lateralGust);
+  output.windWorldMps = windWorldMps;
+  output.gustWorldMps = gustWorldMps;
+  output.windSpeedMps = q(speedMps);
+  output.windDirectionRad = q(directionRad);
+  output.gustStrength = q(gustStrength);
+  return output;
 }
 
 export function createRaceWakeSources(session = {}, { playerWidthM = 1.8 } = {}) {

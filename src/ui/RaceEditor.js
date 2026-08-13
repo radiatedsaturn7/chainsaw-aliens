@@ -47,7 +47,10 @@ import {
   updateRaceWearAndDamage
 } from '../racing/simulation/DamageModel.js';
 import { RACE_CONTROLLER_STEERING, RACE_PEDAL_INPUT, RACE_THREE_ELEVATION_M } from '../racing/simulation/RaceSimulationConfig.js';
-import { syncVehicleDynamicsCompatibilityOutputs } from '../racing/simulation/VehicleState.js';
+import {
+  getAuthoritativeChassisState,
+  syncVehicleDynamicsCompatibilityOutputs
+} from '../racing/simulation/VehicleState.js';
 import { createRaceTrackStateSeed } from '../racing/trackState/TrackStateIntegration.js';
 import { createTrackStateVisualAtlas } from '../racing/trackState/TrackStateVisualAtlas.js';
 import {
@@ -56,7 +59,10 @@ import {
   normalizeVehicleBodyProfile,
   resolveVehicleBodyProfile
 } from '../racing/simulation/VehicleBodyProfile.js';
-import { rotateVectorByQuaternion } from '../racing/simulation/RigidBodyMath.js';
+import {
+  quaternionFromEuler,
+  rotateVectorByQuaternion
+} from '../racing/simulation/RigidBodyMath.js';
 import { DEFAULT_TILE_TYPES } from '../content/tileDefinitions.js';
 import { getLandscapeHandheldLayout, getPortraitHandheldLayout } from './shared/canvasViewportLayout.js';
 import {
@@ -958,6 +964,7 @@ export default class RaceEditor {
       telemetryVisible: false,
       debugHudVisible: false,
       physicsSurfaceVisible: false,
+      physicsPerformanceVisible: false,
       keyboardThrottle: false,
       keyboardBrake: false,
       keyboardSteer: 0,
@@ -2217,7 +2224,17 @@ export default class RaceEditor {
 
   applyRaceCarRouteCenterReset({ projection = null, roadYaw = 0, preserveMotion = false } = {}) {
     if (!this.playtestSession) return;
-    const previousSpeedMps = Number(this.playtestSession.speedMps || 0);
+    const previousPlacement = {
+      distance: this.playtestSession.distance,
+      projectedDistance: this.playtestSession.projectedDistance,
+      previousDistance: this.playtestSession.previousDistance,
+      worldX: this.playtestSession.worldX,
+      worldZ: this.playtestSession.worldZ,
+      carYaw: this.playtestSession.carYaw,
+      velocityYaw: this.playtestSession.velocityYaw,
+      cameraYaw: this.playtestSession.cameraYaw,
+      speedMps: this.playtestSession.speedMps
+    };
     const routeLength = Math.max(1, Number(this.playtestSession.routeLength || this.getRaceRouteLength()));
     const routeRuntimeType = this.playtestSession.routeRuntimeType || this.getSelectedRaceRuntimeType();
     const distance = routeRuntimeType === 'circuit'
@@ -2234,7 +2251,10 @@ export default class RaceEditor {
     this.playtestSession.velocityYaw = yaw;
     this.playtestSession.cameraYaw = yaw;
     this.playtestSession.yawVelocityRadps = 0;
-    this.playtestSession.speedMps = preserveMotion ? previousSpeedMps : 0;
+    // A track-center reset is a settled stop. Carrying planar speed into a
+    // newly terrain-aligned pose injected suspension energy on hills and made
+    // the reset car bounce or immediately re-enter collision recovery.
+    this.playtestSession.speedMps = 0;
     this.playtestSession.pitchRad = 0;
     this.playtestSession.rollRad = 0;
     this.playtestSession.lateral = 0;
@@ -2254,6 +2274,11 @@ export default class RaceEditor {
     const authority = this.playtestSession.vehicleDynamicsRunner;
     const car = this.getRaceSessionCar(this.playtestSession);
     const tuning = this.getRaceCarTuning(car);
+    const resetGear = this.raceInput.autoShift !== false ? 1 : this.playtestSession.gear;
+    if (this.raceInput.autoShift !== false) {
+      this.raceInput.gear = 1;
+      this.playtestSession.gear = 1;
+    }
     if (authority) {
       const resetContacts = this.getRaceWheelContactState({
         car,
@@ -2265,36 +2290,69 @@ export default class RaceEditor {
         : Number(pose.elevation || 0) * RACE_THREE_ELEVATION_M;
       const resetPitchRad = -Number(resetContacts?.terrainPitchRad || 0);
       const resetRollRad = Number(resetContacts?.terrainRollRad || 0);
-      authority.replaceAuthoritativeState({
-        worldX: this.playtestSession.worldX,
-        heightM: resetSurfaceHeightM + authority.config.cgHeightM,
-        worldZ: this.playtestSession.worldZ,
-        velocity: {
-          x: Math.sin(yaw) * this.playtestSession.speedMps,
-          y: 0,
-          z: Math.cos(yaw) * this.playtestSession.speedMps
-        },
-        speedMps: this.playtestSession.speedMps,
-        carYaw: yaw,
-        pitchRad: resetPitchRad,
-        rollRad: resetRollRad,
-        grounded: true,
-        engineRpm: this.playtestSession.engineRpm,
-        gear: this.playtestSession.gear
-      });
+      const workerBridge = this.vehicleDynamicsAuthority?.runner === authority
+        ? this.vehicleDynamicsAuthority.workerBridge : null;
+      if (workerBridge) {
+        workerBridge.resetVehicle({
+          position: {
+            x: this.playtestSession.worldX,
+            y: resetSurfaceHeightM + authority.config.cgHeightM,
+            z: this.playtestSession.worldZ
+          },
+          orientation: quaternionFromEuler({
+            yaw,
+            pitch: resetPitchRad,
+            roll: resetRollRad
+          }),
+          routeDistance: distance,
+          grounded: true,
+          engineRpm: authority.config.idleRpm,
+          gear: resetGear,
+          parkUntilDrive: true
+        }, 'player', this.playtestSession);
+        return true;
+      }
+      try {
+        const reset = authority.resetAuthoritativeState({
+          routeDistance: distance,
+          worldX: this.playtestSession.worldX,
+          heightM: resetSurfaceHeightM + authority.config.cgHeightM,
+          worldZ: this.playtestSession.worldZ,
+          velocity: { x: 0, y: 0, z: 0 },
+          speedMps: 0,
+          carYaw: yaw,
+          pitchRad: resetPitchRad,
+          rollRad: resetRollRad,
+          grounded: true,
+          engineRpm: authority.config.idleRpm,
+          gear: resetGear
+        }, { reason: 'track-center-reset', parkUntilDrive: true });
+        const resolvedDistance = Number(reset.state.routeDistance);
+        if (Number.isFinite(resolvedDistance)) {
+          this.playtestSession.distance = resolvedDistance;
+          this.playtestSession.projectedDistance = resolvedDistance;
+          this.playtestSession.previousDistance = resolvedDistance;
+        }
+      } catch (error) {
+        Object.assign(this.playtestSession, previousPlacement);
+        syncVehicleDynamicsCompatibilityOutputs(authority, this.playtestSession);
+        this.status = `Reset unavailable: ${String(error?.message || error)}`;
+        return false;
+      }
       syncVehicleDynamicsCompatibilityOutputs(authority, this.playtestSession);
-      return;
+      return true;
     }
     this.resetRaceVehiclePhysicsState({
       session: this.playtestSession,
       car,
       tuning
     });
+    return true;
   }
 
   resetRaceCarToRouteCenter({ projection = null, roadYaw = 0, immediate = false, preserveMotion = null } = {}) {
     if (!this.playtestSession) return;
-    const shouldPreserveMotion = preserveMotion === null ? !immediate : preserveMotion !== false;
+    const shouldPreserveMotion = false;
     if (immediate) {
       this.applyRaceCarRouteCenterReset({ projection, roadYaw, preserveMotion: shouldPreserveMotion });
       this.playtestSession.edgeResetFadeMs = RACE_EDGE_RESET_TOTAL_MS;
@@ -2465,7 +2523,8 @@ export default class RaceEditor {
   openRaceDebugDialog() {
     this.raceSettingsDialog = 'debug';
     this.raceSettingsDialogDraft = {
-      physicsSurfaceVisible: this.raceInput.physicsSurfaceVisible === true
+      physicsSurfaceVisible: this.raceInput.physicsSurfaceVisible === true,
+      physicsPerformanceVisible: this.raceInput.physicsPerformanceVisible === true
     };
     this.raceSettingsSliderRegions = [];
   }
@@ -2602,6 +2661,7 @@ export default class RaceEditor {
       this.setRaceRenderDebugSettings(draft);
     } else if (accept && dialog === 'debug') {
       this.setRacePhysicsSurfaceVisible(draft.physicsSurfaceVisible === true);
+      this.setRacePhysicsPerformanceVisible(draft.physicsPerformanceVisible === true);
     } else if (accept && dialog === 'complete' && this.selectedRace) {
       this.selectedRace.finishBehavior = normalizeRaceFinishBehavior(draft);
       const finish = this.selectedRace.finishBehavior;
@@ -3345,6 +3405,11 @@ export default class RaceEditor {
       seed: createRaceTrackStateSeed(raceIdentity),
       surfaceModel: this.getRaceSurfaceModel(),
       elevationScaleM: RACE_THREE_ELEVATION_M,
+      // Environment evolution is exact-on-access through TrackState's cell
+      // catch-up path. Keep the background sweep deliberately small so the
+      // 100 ms numerical boundary cannot turn hundreds of cooling tire cells
+      // into a visible render-thread hitch late in a race.
+      maxCellsPerStep: 64,
       profileOverrides: this.selectedRace?.trackState?.surfaceProfiles || null
     };
     try {
@@ -4137,9 +4202,11 @@ export default class RaceEditor {
     return sampleRaceBakedSurface(worldBake.surfaceSampler, worldPoint, options);
   }
 
-  getRaceBakedSurfaceMaximumElevationInBounds(bounds = {}) {
+  getRaceBakedSurfaceMaximumElevationInBounds(bounds = {}, options = {}) {
     const worldBake = this.playtestSession?.worldBake || this.raceWorldBakeCache;
-    return getRaceBakedSurfaceMaximumElevationInBounds(worldBake?.surfaceSampler, bounds);
+    return getRaceBakedSurfaceMaximumElevationInBounds(
+      worldBake?.surfaceSampler, bounds, options
+    );
   }
 
   createRaceSurfaceSectionFromSample(sample = {}, {
@@ -12353,6 +12420,7 @@ export default class RaceEditor {
       tractionControlEnabled: startTractionControlEnabled,
       telemetryVisible: this.raceInput.telemetryVisible === true,
       physicsSurfaceVisible: this.raceInput.physicsSurfaceVisible === true,
+      physicsPerformanceVisible: this.raceInput.physicsPerformanceVisible === true,
       carEditorPreview: options?.carEditorPreview === true,
       engineSoundId: car.audio?.engineSoundId || tuning.engineSoundId || null,
       engineSoundProfile: this.getRaceEngineProfileForTransmission(car, tuning),
@@ -12416,6 +12484,7 @@ export default class RaceEditor {
       telemetryVisible: this.raceInput.telemetryVisible === true,
       debugHudVisible: this.raceInput.debugHudVisible === true,
       physicsSurfaceVisible: this.raceInput.physicsSurfaceVisible === true,
+      physicsPerformanceVisible: this.raceInput.physicsPerformanceVisible === true,
       keyboardThrottle: false,
       keyboardBrake: false,
       keyboardSteer: 0,
@@ -18079,6 +18148,13 @@ export default class RaceEditor {
           onClick: () => this.toggleRacePhysicsSurfaceVisible()
         },
         {
+          id: 'race-toggle-physics-performance',
+          label: 'Physics Performance',
+          value: this.raceInput.physicsPerformanceVisible === true ? 'On' : 'Off',
+          onAdjust: () => this.toggleRacePhysicsPerformanceVisible(),
+          onClick: () => this.toggleRacePhysicsPerformanceVisible()
+        },
+        {
           id: 'race-toggle-debug-hud',
           label: 'Debug HUD',
           value: this.raceInput.debugHudVisible ? 'On' : 'Off',
@@ -18262,6 +18338,18 @@ export default class RaceEditor {
 
   toggleRacePhysicsSurfaceVisible() {
     this.setRacePhysicsSurfaceVisible(this.raceInput.physicsSurfaceVisible !== true);
+  }
+
+  setRacePhysicsPerformanceVisible(visible = false) {
+    this.raceInput.physicsPerformanceVisible = visible === true;
+    if (this.playtestSession) {
+      this.playtestSession.physicsPerformanceVisible = this.raceInput.physicsPerformanceVisible;
+    }
+    this.status = `Physics performance ${this.raceInput.physicsPerformanceVisible ? 'on' : 'off'}`;
+  }
+
+  toggleRacePhysicsPerformanceVisible() {
+    this.setRacePhysicsPerformanceVisible(this.raceInput.physicsPerformanceVisible !== true);
   }
 
   getRaceEquivalentFovDegrees(cameraView = this.raceInput.cameraView, speedFactor = 0, bounds = { w: 390 }) {
@@ -19197,7 +19285,7 @@ export default class RaceEditor {
   drawRacePhysicsContactOverlay(ctx, bounds, cameraState = null) {
     const wheels = this.playtestSession?.vehicle3d?.wheels || this.playtestSession?.wheelContacts3d || {};
     const runner = this.playtestSession?.vehicleDynamicsRunner;
-    const state = runner?.state || {};
+    const state = getAuthoritativeChassisState(this.playtestSession) || {};
     const patches = state.contactPatches || {};
     if (!cameraState?.camera) return;
     ctx.save();
@@ -19382,8 +19470,7 @@ export default class RaceEditor {
         ctx.lineTo(projectedEnd.screenX, projectedEnd.screenY);
         ctx.stroke();
       }
-      const footprint = this.playtestSession?.vehicleDynamicsRunner?.state
-        ?.suspensionState?.[wheelId]?.footprint || {};
+      const footprint = state.suspensionState?.[wheelId]?.footprint || {};
       const material = patch.material || {};
       let labelLines = [[
         String(wheelId).toUpperCase(),
@@ -20483,6 +20570,17 @@ export default class RaceEditor {
     if (session?.vehicle3d?.enabled) {
       return Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
         const wheel = session.vehicle3d.wheels?.[wheelId] || {};
+        if (Number.isFinite(Number(wheel.position?.x))
+          && Number.isFinite(Number(wheel.position?.y))
+          && Number.isFinite(Number(wheel.position?.z))) {
+          return [wheelId, {
+            x: Number(wheel.position.x),
+            z: Number(wheel.position.z),
+            elevation: Number(wheel.position.y) / RACE_THREE_ELEVATION_M,
+            physicalContact: wheel.inContact === true,
+            authoritativeHub: true
+          }];
+        }
         if (wheel.inContact && wheel.contactPoint) {
           const normal = {
             x: Number(wheel.normal?.x || wheel.surface?.normal?.x || 0),
@@ -21200,6 +21298,106 @@ export default class RaceEditor {
     if (this.raceInput.telemetryVisible || this.playtestSession?.diagnosticMode) {
       this.drawRaceDiagnosticsHud(ctx, bounds);
     }
+    if (this.raceInput.physicsPerformanceVisible === true
+      || session.physicsPerformanceVisible === true) {
+      this.drawRacePhysicsPerformanceOverlay(ctx, bounds);
+    }
+  }
+
+  drawRacePhysicsPerformanceOverlay(ctx, bounds) {
+    const report = this.playtestSession?.physicsPerformance;
+    if (!report || typeof ctx.fillText !== 'function') return;
+    const compact = bounds.w < 560;
+    const panelWidth = Math.min(compact ? 244 : 344, Math.max(180, bounds.w - 16));
+    const workerMetrics = report.vehicleDynamicsWorker
+      || this.playtestSession?.vehicleDynamicsWorkerMetrics;
+    const panelHeight = Math.min(
+      compact ? (workerMetrics ? 216 : 194) : (workerMetrics ? 262 : 238),
+      Math.max(120, bounds.h - 16)
+    );
+    const panel = {
+      x: bounds.x + 8,
+      y: bounds.y + bounds.h - panelHeight - 8,
+      w: panelWidth,
+      h: panelHeight
+    };
+    const counters = report.latestCounters || {};
+    const update = report.physicsUpdateMs || {};
+    const backlog = report.backlog || {};
+    const ccd = report.ccdActivationRates || {};
+    const recovery = report.recovery || {};
+    const qualityProfile = this.playtestSession?.vehicleDynamicsRunner?.config
+      ?.physicsQualityProfile || 'custom';
+    const catchUpWarning = this.playtestSession?.physicsCatchUpWarning;
+    const names = {
+      environmentProvider: 'Environment',
+      wheelCenterAndFootprintQueries: 'Wheel/footprint',
+      iterativeTireContactSolving: 'Tire contact',
+      raceSurfaceModelProjection: 'Route projection',
+      bakedSurfaceSampling: 'Baked surface',
+      bodyBroadphase: 'Body broadphase',
+      bodySupportGeneration: 'Body supports',
+      bodyContinuousSweep: 'Body sweep',
+      bodyManifoldSolve: 'Body manifold',
+      staticColliderBroadphase: 'Static broadphase',
+      staticColliderContinuousSweep: 'Static sweep',
+      staticColliderManifoldSolve: 'Static manifold',
+      wheelCylinderActivation: 'Wheel activation',
+      wheelCylinderTriangleSweep: 'Wheel triangles',
+      wheelCylinderHeightSweep: 'Wheel height CCD',
+      penetrationValidation: 'Penetration',
+      recoveryRebuilding: 'Recovery rebuild',
+      trackState: 'Track State',
+      telemetryConstruction: 'Telemetry'
+    };
+    const integer = (value) => Math.max(0, Math.round(Number(value) || 0));
+    const lines = [
+      `FPS ${Number(this.playtestFps || 0).toFixed(1)}  PHYS ${Number(update.current || 0).toFixed(2)}ms`,
+      `p50 ${Number(update.p50 || 0).toFixed(2)}  p95 ${Number(update.p95 || 0).toFixed(2)}  p99 ${Number(update.p99 || 0).toFixed(2)}ms`,
+      `BACKLOG ${integer(backlog.current)}  PEAK ${integer(backlog.peak)}  STEPS ${integer(counters.completedSteps)}${catchUpWarning ? '  WARNING' : ''}`,
+      `PROFILE ${qualityProfile}  GEOM ${integer(counters.chassisGeometryFrames)} reuse ${integer(counters.tireSubstepGeometryReuses)} refresh ${integer(counters.tireSubstepGeometryRefreshes)}`,
+      `QUERY geo ${integer(counters.physicsGeometryPointsQueried)} route ${integer(counters.routeProjections)}`,
+      `BAKE buckets ${integer(counters.bakedTriangleBucketLookups)} tris ${integer(counters.preparedTrianglesVisited)}`,
+      `BODY support ${integer(counters.bodySupportFeatures)} +${integer(counters.adaptiveBodySupportFeatures)} slice ${integer(counters.bodySweepSlices)} bin ${integer(counters.binarySearchIterations)}`,
+      `STATIC cand ${integer(counters.staticColliderCandidates)} narrow ${integer(counters.staticColliderNarrowphaseTests)} contacts ${integer(counters.staticColliderManifoldContacts)}`,
+      `WHEEL act ${integer(counters.activeWheelCylinders)}/${integer(counters.wheelCylinderActivationPoints)} feat ${integer(counters.wheelCylinderFeatures)}`,
+      `CCD tri ${integer(counters.triangleIntersectionTests)} height ${integer(counters.heightfieldSweepSamples)} rate B${(Number(ccd.body || 0) * 100).toFixed(1)}% W${(Number(ccd.wheel || 0) * 100).toFixed(1)}% S${(Number(ccd.static || 0) * 100).toFixed(1)}%`,
+      `ENV ${integer(counters.environmentProviderCalls)} plane ${integer(counters.analyticContactPlaneQueries)}  RECALC ${integer(counters.recoveryRecalculations)}  TEMP ${integer(counters.temporaryObjects)}`,
+      `RECOVERY ${integer(recovery.count)} ${recovery.lastReason || 'none'}`
+    ];
+    if (workerMetrics) {
+      const worker = workerMetrics.worker || {};
+      const render = workerMetrics.render || {};
+      lines.splice(3, 0,
+        `WORKER p50 ${Number(worker.p50 || 0).toFixed(2)} p95 ${Number(worker.p95 || 0).toFixed(2)} p99 ${Number(worker.p99 || 0).toFixed(2)}ms`,
+        `RENDER p50 ${Number(render.p50 || 0).toFixed(2)} p95 ${Number(render.p95 || 0).toFixed(2)} p99 ${Number(render.p99 || 0).toFixed(2)}ms`
+      );
+    }
+    const top = (report.expensiveSubsystems || []).slice(0, 5).map((entry, index) => (
+      `${index + 1} ${(names[entry.name] || entry.name).slice(0, compact ? 18 : 24)} ${Number(entry.inclusiveMs || 0).toFixed(2)}i/${Number(entry.exclusiveMs || 0).toFixed(2)}e`
+    ));
+    ctx.save();
+    ctx.fillStyle = 'rgba(3,7,6,0.9)';
+    ctx.fillRect(panel.x, panel.y, panel.w, panel.h);
+    ctx.strokeStyle = 'rgba(88,214,255,0.56)';
+    ctx.strokeRect(panel.x, panel.y, panel.w, panel.h);
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    ctx.fillStyle = '#58d6ff';
+    ctx.font = `700 ${compact ? 8 : 9}px monospace`;
+    ctx.fillText('PHYSICS PERFORMANCE', panel.x + 7, panel.y + 6);
+    ctx.font = `${compact ? 7 : 8}px monospace`;
+    const lineStep = compact ? 10 : 12;
+    lines.forEach((line, index) => {
+      ctx.fillStyle = index < 3 ? '#f3f8f5' : 'rgba(217,230,210,0.86)';
+      ctx.fillText(line, panel.x + 7, panel.y + 20 + index * lineStep, panel.w - 14);
+    });
+    const topStartY = panel.y + 20 + lines.length * lineStep + 3;
+    top.forEach((line, index) => {
+      ctx.fillStyle = index === 0 ? '#ffd166' : '#b8c9c0';
+      ctx.fillText(line, panel.x + 7, topStartY + index * lineStep, panel.w - 14);
+    });
+    ctx.restore();
   }
 
   drawRaceSelectResetProgress(ctx, bounds) {
@@ -23269,6 +23467,19 @@ export default class RaceEditor {
           draft.physicsSurfaceVisible = draft.physicsSurfaceVisible !== true;
         }
       });
+      this.registerDrawnButton(ctx, {
+        x: panel.x + 14,
+        y: panel.y + 118,
+        w: panel.w - 28,
+        h: 36
+      }, {
+        id: 'debug-dialog-physics-performance',
+        label: `Physics Performance: ${draft.physicsPerformanceVisible === true ? 'On' : 'Off'}`,
+        active: draft.physicsPerformanceVisible === true,
+        onClick: () => {
+          draft.physicsPerformanceVisible = draft.physicsPerformanceVisible !== true;
+        }
+      });
       const legend = [
         ['#3de5ff', 'Road'],
         ['#6394ff', 'Margin'],
@@ -23277,7 +23488,7 @@ export default class RaceEditor {
         ['#78d66a', 'Terrain']
       ];
       legend.forEach(([color, label], index) => {
-        const y = panel.y + 142 + index * 22;
+        const y = panel.y + 178 + index * 22;
         ctx.fillStyle = color;
         ctx.fillRect(panel.x + 18, y - 6, 12, 12);
         ctx.fillStyle = UI_SUITE.colors.text;

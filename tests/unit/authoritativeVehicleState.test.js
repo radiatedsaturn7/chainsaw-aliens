@@ -7,7 +7,11 @@ import {
   quaternionFromEuler
 } from '../../src/racing/simulation/RigidBodyMath.js';
 import { VehicleDynamicsRunner } from '../../src/racing/simulation/VehicleDynamicsRunner.js';
-import { syncVehicleDynamicsCompatibilityOutputs } from '../../src/racing/simulation/VehicleState.js';
+import {
+  getAuthoritativeChassisState,
+  syncVehicleDynamicsCompatibilityOutputs
+} from '../../src/racing/simulation/VehicleState.js';
+import { getRaceVehicleWheelWorldPose } from '../../src/racing/RaceVehiclePhysics.js';
 
 test('quaternion integration owns yaw, pitch, and roll compatibility outputs', () => {
   let orientation = quaternionFromEuler({ yaw: 0.4, pitch: -0.1, roll: 0.15 });
@@ -156,4 +160,55 @@ test('legacy pose fields are derived from the runner state in one synchronizatio
   assert.equal(session.carYaw, 0.3);
   assert.equal(session.engineRpm, 4200);
   assert.equal(session.vehicleDynamicsRunner, runner);
+});
+
+test('render-thread synchronization keeps wheel hubs coherent with rotating chassis snapshots', () => {
+  const runner = new VehicleDynamicsRunner();
+  const session = {};
+  const firstHub = { x: -0.8, y: 0.2, z: 1.25 };
+  const secondHub = { x: 0.3, y: -0.9, z: 1.25 };
+  runner.state.contactPatches.fl = {
+    ...(runner.state.contactPatches.fl || {}),
+    hubPositionWorld: firstHub,
+    suspensionMountPositionWorld: { x: -0.8, y: 0.6, z: 1.25 },
+    suspensionAxisWorld: { x: 0, y: -1, z: 0 },
+    contactPointWorld: { x: -0.8, y: -0.14, z: 1.25 },
+    surfaceNormalWorld: { x: 0, y: 1, z: 0 },
+    normalLoadN: 3000
+  };
+  syncVehicleDynamicsCompatibilityOutputs(runner, session);
+  assert.deepEqual(session.vehicle3d.wheels.fl.position, firstHub);
+
+  runner.state.orientation = quaternionFromEuler({ roll: Math.PI });
+  runner.state.contactPatches.fl.hubPositionWorld = secondHub;
+  runner.state.contactPatches.fl.suspensionMountPositionWorld = { x: 0.3, y: -0.5, z: 1.25 };
+  runner.state.contactPatches.fl.suspensionAxisWorld = { x: 0, y: 1, z: 0 };
+  syncVehicleDynamicsCompatibilityOutputs(runner, session);
+  assert.deepEqual(session.vehicle3d.wheels.fl.position, secondHub);
+  assert.deepEqual(session.vehicle3d.wheels.fl.suspensionAxis, { x: 0, y: 1, z: 0 });
+  assert.notDeepEqual(session.vehicle3d.wheels.fl.position, firstHub);
+});
+
+test('worker presentation state supersedes the dormant runner and preserves absolute wheel hubs', () => {
+  const workerState = { position: { x: 1, y: 2, z: 3 } };
+  const session = {
+    vehicle3d: { authoritativeSource: 'VehicleDynamicsWorker' },
+    vehicleDynamicsPresentationState: workerState,
+    vehicleDynamicsRunner: { state: { position: { x: 90, y: 90, z: 90 } } }
+  };
+  assert.equal(getAuthoritativeChassisState(session), workerState);
+  assert.deepEqual(getRaceVehicleWheelWorldPose({
+    position: { x: 100, y: 100, z: 100 },
+    yaw: 0,
+    pitch: 0,
+    roll: 0,
+    wheels: { fl: { position: { x: 1.5, y: 1.8, z: 4.1 } } }
+  }, 'fl'), {
+    x: 1.5,
+    y: 1.8,
+    z: 4.1,
+    local: null,
+    relative: null,
+    authoritative: true
+  });
 });

@@ -59,6 +59,11 @@ function runHighPowerFeelCase({
   });
   editor.selectedRace.hazards = [];
   editor.selectedRace.weather = 'clear';
+  editor.selectedRace.margin = {
+    ...(editor.selectedRace.margin || {}),
+    collisionEdge: 'none',
+    collisionMode: 'none'
+  };
   editor.selectedRace.road.segments = [
     { length: 1600, curve: 0, elevation: 0, surface, turn: 'smooth', hazardIds: [] }
   ];

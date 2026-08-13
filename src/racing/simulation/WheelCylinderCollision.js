@@ -2,6 +2,10 @@ import { createSurfaceSample } from './SurfaceSample.js';
 import { addVector3, scaleVector3 } from './RigidBodyMath.js';
 
 const EPSILON = 1e-9;
+const WHEEL_VARIATION_OPTIONS = Object.freeze({
+  heightToleranceM: 0.004,
+  normalToleranceRad: 8 * Math.PI / 180
+});
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const dot = (a = {}, b = {}) => Number(a.x || 0) * Number(b.x || 0)
   + Number(a.y || 0) * Number(b.y || 0)
@@ -106,6 +110,7 @@ function terrainAt(environment, point, cylinder, fraction) {
 }
 
 function penetrationAt(environment, cylinder, feature, fraction) {
+  environment.physicsCostAccounting?.count('heightfieldSweepSamples');
   const geometry = pointForFeature(cylinder, feature, fraction);
   const terrain = terrainAt(environment, geometry.point, cylinder, fraction);
   if (!terrain.valid) return { ...geometry, terrain, penetrationM: null };
@@ -213,13 +218,14 @@ function makeContact({ cylinder, feature, fraction, point, terrain, normal, pene
   };
 }
 
-function findTriangleContacts(cylinders, featuresByWheel, triangles, toleranceM) {
+function findTriangleContactsUnprofiled(cylinders, featuresByWheel, triangles, toleranceM, physicsCosts) {
   const contacts = [];
   cylinders.forEach((cylinder) => {
     (featuresByWheel.get(cylinder.wheelId) || []).forEach((feature) => {
       const start = pointForFeature(cylinder, feature, 0).point;
       const end = pointForFeature(cylinder, feature, 1).point;
       triangles.forEach((triangle) => {
+        physicsCosts?.count('triangleIntersectionTests');
         const hit = segmentTriangleIntersection(start, end, triangle);
         if (!hit || hit.fraction <= 1e-6) return;
         const sample = {
@@ -247,7 +253,72 @@ function findTriangleContacts(cylinders, featuresByWheel, triangles, toleranceM)
   return contacts;
 }
 
-function findHeightSweepContacts(cylinders, featuresByWheel, environment, toleranceM, spacingM) {
+function findTriangleContacts(cylinders, featuresByWheel, triangles, toleranceM, physicsCosts) {
+  return physicsCosts
+    ? physicsCosts.measure('wheelCylinderTriangleSweep', () => (
+        findTriangleContactsUnprofiled(
+          cylinders, featuresByWheel, triangles, toleranceM, physicsCosts
+        )
+      ))
+    : findTriangleContactsUnprofiled(
+        cylinders, featuresByWheel, triangles, toleranceM, physicsCosts
+      );
+}
+
+function findFrameTriangleContactsUnprofiled(
+  cylinders, featuresByWheel, queryFrame, toleranceM, physicsCosts
+) {
+  const contacts = [];
+  cylinders.forEach((cylinder) => {
+    (featuresByWheel.get(cylinder.wheelId) || []).forEach((feature) => {
+      const start = pointForFeature(cylinder, feature, 0).point;
+      const end = pointForFeature(cylinder, feature, 1).point;
+      const hit = queryFrame.segmentTriangleSweep(start, end);
+      if (!hit.hit) return;
+      const sample = {
+        ...createSurfaceSample({
+          valid: true,
+          heightM: hit.point.y,
+          normal: hit.normal,
+          triangleId: hit.triangleId,
+          source: hit.source,
+          region: hit.region
+        }, { queryPosition: hit.point, source: 'wheel-cylinder-triangle-frame' }),
+        friction: null
+      };
+      contacts.push(makeContact({
+        cylinder,
+        feature,
+        fraction: hit.fraction,
+        point: hit.point,
+        terrain: sample,
+        normal: hit.normal,
+        penetrationM: toleranceM + 1e-4,
+        mechanism: 'prepared-triangle-frame',
+        examinedTriangleIds: [hit.triangleId]
+      }));
+    });
+  });
+  return contacts;
+}
+
+function findFrameTriangleContacts(
+  cylinders, featuresByWheel, queryFrame, toleranceM, physicsCosts
+) {
+  return physicsCosts
+    ? physicsCosts.measure('wheelCylinderTriangleSweep', () => (
+        findFrameTriangleContactsUnprofiled(
+          cylinders, featuresByWheel, queryFrame, toleranceM, physicsCosts
+        )
+      ))
+    : findFrameTriangleContactsUnprofiled(
+        cylinders, featuresByWheel, queryFrame, toleranceM, physicsCosts
+      );
+}
+
+function findHeightSweepContactsUnprofiled(
+  cylinders, featuresByWheel, environment, toleranceM, spacingM
+) {
   const contacts = [];
   cylinders.forEach((cylinder) => {
     const hubTravelM = length(subtract(
@@ -273,6 +344,7 @@ function findHeightSweepContacts(cylinders, featuresByWheel, environment, tolera
         let lowSample = previous;
         let highSample = current;
         for (let iteration = 0; iteration < 11; iteration += 1) {
+          environment.physicsCostAccounting?.count('binarySearchIterations');
           const middle = (low + high) * 0.5;
           const middleSample = penetrationAt(environment, cylinder, feature, middle);
           if (middleSample.penetrationM !== null && middleSample.penetrationM > toleranceM) {
@@ -319,20 +391,38 @@ function findHeightSweepContacts(cylinders, featuresByWheel, environment, tolera
   return contacts;
 }
 
-function createActivationReference(cylinder, environment) {
+function findHeightSweepContacts(cylinders, featuresByWheel, environment, toleranceM, spacingM) {
+  const physicsCosts = environment.physicsCostAccounting;
+  return physicsCosts
+    ? physicsCosts.measure('wheelCylinderHeightSweep', () => (
+        findHeightSweepContactsUnprofiled(
+          cylinders, featuresByWheel, environment, toleranceM, spacingM
+        )
+      ))
+    : findHeightSweepContactsUnprofiled(
+        cylinders, featuresByWheel, environment, toleranceM, spacingM
+      );
+}
+
+function createActivationReference(cylinder, environment, target = null) {
   const heightM = Number(
     environment.surfaceHeightByWheel?.[cylinder.wheelId]
       ?? environment.groundHeightM
   );
   const rawNormal = environment.surfaceNormalByWheel?.[cylinder.wheelId];
   if (!Number.isFinite(heightM) || !rawNormal) return null;
-  const normal = normalize(rawNormal);
-  if (Math.abs(normal.y) < 0.1) return null;
-  return {
-    point: cylinder.previousHubPositionWorld,
-    heightM,
-    normal
-  };
+  const normalMagnitude = Math.hypot(
+    Number(rawNormal.x || 0), Number(rawNormal.y || 0), Number(rawNormal.z || 0)
+  );
+  if (!(normalMagnitude > EPSILON)) return null;
+  const result = target || { point: null, heightM: 0, normal: { x: 0, y: 1, z: 0 } };
+  result.normal.x = Number(rawNormal.x || 0) / normalMagnitude;
+  result.normal.y = Number(rawNormal.y || 0) / normalMagnitude;
+  result.normal.z = Number(rawNormal.z || 0) / normalMagnitude;
+  if (Math.abs(result.normal.y) < 0.1) return null;
+  result.point = cylinder.previousHubPositionWorld;
+  result.heightM = heightM;
+  return result;
 }
 
 function tangentHeightAt(reference, point) {
@@ -343,17 +433,17 @@ function tangentHeightAt(reference, point) {
   ) / reference.normal.y;
 }
 
-function cylinderActivationBounds(cylinder) {
-  return {
-    minX: Math.min(cylinder.previousHubPositionWorld.x, cylinder.hubPositionWorld.x)
-      - cylinder.radiusM,
-    maxX: Math.max(cylinder.previousHubPositionWorld.x, cylinder.hubPositionWorld.x)
-      + cylinder.radiusM,
-    minZ: Math.min(cylinder.previousHubPositionWorld.z, cylinder.hubPositionWorld.z)
-      - cylinder.radiusM - cylinder.widthM * 0.5,
-    maxZ: Math.max(cylinder.previousHubPositionWorld.z, cylinder.hubPositionWorld.z)
-      + cylinder.radiusM + cylinder.widthM * 0.5
-  };
+function cylinderActivationBounds(cylinder, target = null) {
+  const result = target || { minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
+  result.minX = Math.min(cylinder.previousHubPositionWorld.x, cylinder.hubPositionWorld.x)
+    - cylinder.radiusM;
+  result.maxX = Math.max(cylinder.previousHubPositionWorld.x, cylinder.hubPositionWorld.x)
+    + cylinder.radiusM;
+  result.minZ = Math.min(cylinder.previousHubPositionWorld.z, cylinder.hubPositionWorld.z)
+    - cylinder.radiusM - cylinder.widthM * 0.5;
+  result.maxZ = Math.max(cylinder.previousHubPositionWorld.z, cylinder.hubPositionWorld.z)
+    + cylinder.radiusM + cylinder.widthM * 0.5;
+  return result;
 }
 
 function maximumTangentHeightInBounds(reference, bounds) {
@@ -365,9 +455,93 @@ function maximumTangentHeightInBounds(reference, bounds) {
   );
 }
 
-function findActiveCylinders(cylinders, environment, spacingM) {
+function minimumSweptCollisionFeatureHeight(cylinder, radialSamples = 24) {
+  const movement = subtract(cylinder.hubPositionWorld, cylinder.previousHubPositionWorld);
+  const horizontalMovement = { x: movement.x, y: 0, z: movement.z };
+  const movementDirection = normalize(horizontalMovement, cylinder.wheelForwardWorld);
+  const halfWidthM = cylinder.widthM * 0.5;
+  let minimum = Infinity;
+  for (let endpoint = 0; endpoint < 2; endpoint += 1) {
+    const fraction = endpoint;
+    const pose = cylinderPoseAt(cylinder, fraction);
+    for (let radialIndex = 0; radialIndex < radialSamples; radialIndex += 1) {
+      const angleRad = radialIndex * Math.PI * 2 / radialSamples;
+      const cosine = Math.cos(angleRad);
+      const sine = Math.sin(angleRad);
+      const radialX = pose.forward.x * cosine + pose.suspension.x * sine;
+      const radialY = pose.forward.y * cosine + pose.suspension.y * sine;
+      const radialZ = pose.forward.z * cosine + pose.suspension.z * sine;
+      const leadingAlignment = radialX * movementDirection.x
+        + radialY * movementDirection.y + radialZ * movementDirection.z;
+      const bottomAlignment = radialX * pose.suspension.x
+        + radialY * pose.suspension.y + radialZ * pose.suspension.z;
+      if (length(horizontalMovement) > 1e-5 && leadingAlignment < -0.02) continue;
+      if (cylinder.validTreadContact && bottomAlignment > 0.995) continue;
+      minimum = Math.min(
+        minimum,
+        pose.hub.y + radialY * cylinder.radiusM
+          - Math.abs(pose.lateral.y) * halfWidthM
+      );
+    }
+  }
+  return minimum;
+}
+
+function findActiveCylindersUnprofiled(cylinders, environment, spacingM) {
   if (typeof environment.sampleTerrainAtWorldPoint !== 'function'
     && typeof environment.sampleTerrainAtWorldPoints !== 'function') return [];
+  // Count the conservative bounds probe as an activation point too; on smooth
+  // terrain it is precisely the query that prevents denser point generation.
+  environment.physicsCostAccounting?.count('wheelCylinderActivationPoints', cylinders.length);
+  const queryFrame = environment.physicsTerrainQueryFrame;
+  if (environment.terrainCollisionClassification === 'smooth-connected-surface') {
+    environment.physicsCostAccounting?.count('smoothWheelCcdRejections', cylinders.length);
+    return [];
+  }
+  if (typeof queryFrame?.classifyCollisionFeaturesInBounds === 'function') {
+    const active = [];
+    for (let index = 0; index < cylinders.length; index += 1) {
+      const cylinder = cylinders[index];
+      const bounds = cylinderActivationBounds(
+        cylinder, queryFrame.wheelActivationBounds[index]
+      );
+      const classification = queryFrame.classifyCollisionFeaturesInBounds(bounds);
+      if (classification.discontinuity === true) active.push(cylinder);
+      else environment.physicsCostAccounting?.count('smoothWheelCcdRejections');
+    }
+    return active;
+  }
+  if (typeof queryFrame?.terrainVariationInBounds === 'function') {
+    const active = [];
+    let everyCylinderResolved = true;
+    for (let index = 0; index < cylinders.length; index += 1) {
+      const cylinder = cylinders[index];
+      const reference = createActivationReference(
+        cylinder, environment, queryFrame.wheelActivationReferences[index]
+      );
+      if (!reference) {
+        everyCylinderResolved = false;
+        break;
+      }
+      const bounds = cylinderActivationBounds(
+        cylinder, queryFrame.wheelActivationBounds[index]
+      );
+      const variation = queryFrame.terrainVariationInBounds(
+        bounds, reference, WHEEL_VARIATION_OPTIONS
+      );
+      if (variation.discontinuity) {
+        active.push(cylinder);
+        continue;
+      }
+      if (cylinder.nearFullBump === true || cylinder.bottomedOut === true) {
+        const maximumHeightM = queryFrame.maximumHeightInBounds(bounds);
+        const collisionFeatureClear = Number.isFinite(maximumHeightM)
+          && minimumSweptCollisionFeatureHeight(cylinder) - maximumHeightM > -0.004;
+        if (!collisionFeatureClear) active.push(cylinder);
+      }
+    }
+    if (everyCylinderResolved) return active;
+  }
   const records = [];
   const directlyActiveWheelIds = new Set();
   const activationReferences = new Map(cylinders.map((cylinder) => [
@@ -375,6 +549,33 @@ function findActiveCylinders(cylinders, environment, spacingM) {
   ]));
   const unresolvedCylinders = cylinders.filter((cylinder) => {
     const reference = activationReferences.get(cylinder.wheelId);
+    const queryFrame = environment.physicsTerrainQueryFrame;
+    if (reference && typeof queryFrame?.terrainVariationInBounds === 'function') {
+      const bounds = cylinderActivationBounds(cylinder);
+      const variation = queryFrame.terrainVariationInBounds(bounds, reference, {
+          heightToleranceM: 0.004,
+          // Prepared triangles approximate a smooth authored hill. A large
+          // local normal break denotes a curb/step; ordinary gradual normal
+          // evolution remains owned by tread contact.
+          normalToleranceRad: 8 * Math.PI / 180
+        }
+      );
+      let directlyActive = variation.discontinuity;
+      if (!directlyActive
+        && (cylinder.nearFullBump === true || cylinder.bottomedOut === true)) {
+        const maximumHeightM = queryFrame.maximumHeightInBounds(bounds);
+        directlyActive = !(Number.isFinite(maximumHeightM)
+          && minimumSweptCollisionFeatureHeight(cylinder) - maximumHeightM > -0.004);
+      }
+      if (directlyActive) {
+        directlyActiveWheelIds.add(cylinder.wheelId);
+      }
+      return false;
+    }
+    if (cylinder.nearFullBump === true || cylinder.bottomedOut === true) {
+      directlyActiveWheelIds.add(cylinder.wheelId);
+      return false;
+    }
     if (!reference
       || typeof environment.sampleTerrainMaximumHeightInBounds !== 'function') return true;
     const bounds = cylinderActivationBounds(cylinder);
@@ -427,6 +628,7 @@ function findActiveCylinders(cylinders, environment, spacingM) {
   });
   const rawBatch = typeof environment.sampleTerrainAtWorldPoints === 'function'
     ? environment.sampleTerrainAtWorldPoints(records.map(({ point }) => point)) : null;
+  environment.physicsCostAccounting?.count('wheelCylinderActivationPoints', records.length);
   const stats = new Map();
   records.forEach((record, index) => {
     const raw = rawBatch?.[index]
@@ -473,6 +675,15 @@ function findActiveCylinders(cylinders, environment, spacingM) {
   });
 }
 
+function findActiveCylinders(cylinders, environment, spacingM) {
+  const physicsCosts = environment.physicsCostAccounting;
+  return physicsCosts
+    ? physicsCosts.measure('wheelCylinderActivation', () => (
+        findActiveCylindersUnprofiled(cylinders, environment, spacingM)
+      ))
+    : findActiveCylindersUnprofiled(cylinders, environment, spacingM);
+}
+
 /**
  * Sweeps finite-width wheel cylinders against the authoritative terrain
  * source. Ordinary bottom-tread support stays in the tire solver; every
@@ -489,10 +700,15 @@ export function sweepWheelCylinders({
   ));
   const active = findActiveCylinders(validCylinders, environment, spacingM);
   if (!active.length) return null;
+  const physicsCosts = environment.physicsCostAccounting;
+  physicsCosts?.count('activeWheelCylinders', active.length);
   const featuresByWheel = new Map(active.map((cylinder) => [
     cylinder.wheelId,
     createLeadingFeatures(cylinder, clamp(Math.trunc(radialSamples), 16, 48))
   ]));
+  physicsCosts?.count('wheelCylinderFeatures', [...featuresByWheel.values()].reduce(
+    (sum, features) => sum + features.length, 0
+  ));
   const bounds = active.reduce((result, cylinder) => {
     [cylinder.previousHubPositionWorld, cylinder.hubPositionWorld].forEach((hub) => {
       result.minX = Math.min(result.minX, hub.x - cylinder.radiusM - cylinder.widthM);
@@ -504,20 +720,29 @@ export function sweepWheelCylinders({
     });
     return result;
   }, { minX: Infinity, maxX: -Infinity, minY: Infinity, maxY: -Infinity, minZ: Infinity, maxZ: -Infinity });
-  const triangles = typeof environment.sampleTerrainTrianglesInBounds === 'function'
-    ? (environment.sampleTerrainTrianglesInBounds(bounds) || []).map(normalizeTriangle).filter(Boolean)
-    : [];
-  const triangleContacts = triangles.length
-    ? findTriangleContacts(active, featuresByWheel, triangles, toleranceM) : [];
-  const heightContacts = findHeightSweepContacts(
-    active, featuresByWheel, environment, toleranceM, clamp(spacingM, 0.005, 0.05)
-  );
+  const queryFrame = environment.physicsTerrainQueryFrame;
+  let triangleContacts = [];
+  let heightContacts = [];
+  if (typeof queryFrame?.segmentTriangleSweep === 'function' && queryFrame.sampler?.triangleCount) {
+    triangleContacts = findFrameTriangleContacts(
+      active, featuresByWheel, queryFrame, toleranceM, physicsCosts
+    );
+  } else {
+    const triangles = typeof environment.sampleTerrainTrianglesInBounds === 'function'
+      ? (environment.sampleTerrainTrianglesInBounds(bounds) || []).map(normalizeTriangle).filter(Boolean)
+      : [];
+    triangleContacts = triangles.length
+      ? findTriangleContacts(active, featuresByWheel, triangles, toleranceM, physicsCosts) : [];
+    heightContacts = findHeightSweepContacts(
+      active, featuresByWheel, environment, toleranceM, clamp(spacingM, 0.005, 0.05)
+    );
+  }
   const contactByFeature = new Map();
   triangleContacts.concat(heightContacts).forEach((contact) => {
     const existing = contactByFeature.get(contact.id);
     if (!existing || contact.sweepFraction < existing.sweepFraction - 1e-8
       || (Math.abs(contact.sweepFraction - existing.sweepFraction) <= 1e-8
-        && contact.mechanism === 'prepared-triangle')) {
+        && contact.mechanism.startsWith('prepared-triangle'))) {
       contactByFeature.set(contact.id, contact);
     }
   });

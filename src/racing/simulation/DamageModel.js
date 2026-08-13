@@ -130,6 +130,15 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
   scenery.forEach((sprite) => {
     if (!sprite?.id || session.removedSceneryIds.includes(sprite.id) || session.flattenedSceneryIds.includes(sprite.id) || session.triggeredSceneryIds.includes(sprite.id)) return;
     const doodad = editor.getRaceDoodadForScenery(sprite);
+    const authoredRules = [doodad?.defaultRule, ...(doodad?.rules || [])].filter(Boolean);
+    if (sprite.solid === true || sprite.collidable === true
+      || (authoredRules.length > 0
+        && authoredRules.every((entry) => entry.behavior === 'collide'))) {
+      // Permanently solid scenery belongs to the prepared static-collider
+      // world and is resolved continuously by VehicleDynamicsRunner. The
+      // render-frame scenery pass must not add a second velocity impulse.
+      return;
+    }
     const rule = getDoodadRuleForSpeed(doodad, speedMph);
     const spriteRadius = Math.max(0.35, Number(doodad.hitboxWidthM ?? doodad.widthM ?? sprite.widthM ?? 1.4) * 0.5);
     let hit = null;

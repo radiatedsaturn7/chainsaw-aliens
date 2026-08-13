@@ -43,6 +43,30 @@ export class RaceSurfaceModel {
       geometryQueries: 0,
       rawTerrainQueries: 0
     };
+    this.physicsCostAccounting = null;
+  }
+
+  projectWorldToTrack(worldPoint) {
+    if (typeof this.adapter.projectWorldToTrack !== 'function') return null;
+    this.physicsCostAccounting?.count('routeProjections');
+    return this.physicsCostAccounting
+      ? this.physicsCostAccounting.measure('raceSurfaceModelProjection', () => (
+          this.adapter.projectWorldToTrack(worldPoint)
+        ))
+      : this.adapter.projectWorldToTrack(worldPoint);
+  }
+
+  sampleBakedSurface(worldPoint, options = {}) {
+    if (typeof this.adapter.sampleBakedSurface !== 'function') return null;
+    const resolvedOptions = {
+      ...options,
+      physicsCostAccounting: this.physicsCostAccounting
+    };
+    return this.physicsCostAccounting
+      ? this.physicsCostAccounting.measure('bakedSurfaceSampling', () => (
+          this.adapter.sampleBakedSurface(worldPoint, resolvedOptions)
+        ))
+      : this.adapter.sampleBakedSurface(worldPoint, resolvedOptions);
   }
 
   clampElevation(value = 0) {
@@ -504,9 +528,7 @@ export class RaceSurfaceModel {
     const fallbackElevation = typeof x === 'object'
       ? Number(z ?? options.fallbackElevation ?? 0)
       : Number(options.fallbackElevation ?? 0);
-    const projection = typeof this.adapter.projectWorldToTrack === 'function'
-      ? this.adapter.projectWorldToTrack(worldPoint)
-      : null;
+    const projection = this.projectWorldToTrack(worldPoint);
     if (!projection?.segment || !Number.isFinite(Number(projection.lateral))) {
       const raw = {
         ...this.sampleRawTerrain(worldPoint, fallbackElevation),
@@ -514,9 +536,7 @@ export class RaceSurfaceModel {
         roadElevation: this.clampElevation(fallbackElevation),
         metrics: null
       };
-      const baked = typeof this.adapter.sampleBakedSurface === 'function'
-        ? this.adapter.sampleBakedSurface(worldPoint, { preferredRegion: 'terrain' })
-        : null;
+      const baked = this.sampleBakedSurface(worldPoint, { preferredRegion: 'terrain' });
       return baked?.region === 'terrain'
         ? { ...raw, elevation: this.clampElevation(baked.elevation), normal: baked.normal,
             bakedSurfaceSource: baked.source, bakedTriangleId: baked.triangleId,
@@ -534,18 +554,14 @@ export class RaceSurfaceModel {
         roadElevation: track.roadElevation,
         metrics: track.metrics
       };
-      const baked = typeof this.adapter.sampleBakedSurface === 'function'
-        ? this.adapter.sampleBakedSurface(worldPoint, { preferredRegion: 'terrain' })
-        : null;
+      const baked = this.sampleBakedSurface(worldPoint, { preferredRegion: 'terrain' });
       return baked?.region === 'terrain'
         ? { ...raw, elevation: this.clampElevation(baked.elevation), normal: baked.normal,
             bakedSurfaceSource: baked.source, bakedTriangleId: baked.triangleId,
             bakedElevation: baked.elevation, bakedNormal: baked.normal }
         : raw;
     }
-    const baked = typeof this.adapter.sampleBakedSurface === 'function'
-      ? this.adapter.sampleBakedSurface(worldPoint, { preferredRegion: track.region })
-      : null;
+    const baked = this.sampleBakedSurface(worldPoint, { preferredRegion: track.region });
     const bakedMatchesRegion = baked && (
       baked.region === track.region
       || (track.region === 'shoulder' && ['inner', 'flat-join'].includes(baked.region))
@@ -591,6 +607,7 @@ export class RaceSurfaceModel {
 
   samplePhysicsGeometry(worldPoint = {}, context = {}) {
     this.performanceDiagnostics.geometryQueries += 1;
+    this.physicsCostAccounting?.count('physicsGeometryPointsQueried');
     const queryX = worldPoint?.x;
     const queryZ = worldPoint?.z ?? worldPoint?.y;
     if (queryX === null || queryX === undefined || queryZ === null || queryZ === undefined
@@ -626,9 +643,7 @@ export class RaceSurfaceModel {
         normal: contract.normal
       };
     };
-    const projection = typeof this.adapter.projectWorldToTrack === 'function'
-      ? this.adapter.projectWorldToTrack(point)
-      : null;
+    const projection = this.projectWorldToTrack(point);
     if (!projection?.segment || !Number.isFinite(Number(projection.lateral))) {
       const full = this.sampleWorld(point, Number(context.fallbackElevation || 0), context);
       return finalize({
@@ -675,9 +690,7 @@ export class RaceSurfaceModel {
     const region = classification.region;
     const analyticElevation = this.getBankedDeckElevation(deck, Number(projection.lateral || 0));
     const analyticNormal = this.getBankedDeckNormal(deck);
-    const baked = typeof this.adapter.sampleBakedSurface === 'function'
-      ? this.adapter.sampleBakedSurface(point, { preferredRegion: region })
-      : null;
+    const baked = this.sampleBakedSurface(point, { preferredRegion: region });
     const bakedMatchesRegion = baked && (
       baked.region === region
       || (region === 'shoulder' && ['inner', 'flat-join'].includes(baked.region))
@@ -708,7 +721,16 @@ export class RaceSurfaceModel {
   }
 
   samplePhysicsGeometryBatch(points = [], context = {}) {
-    return points.map((point) => this.samplePhysicsGeometry(point, context));
+    if (context.physicsTerrainQueryFrame && context.geometryOnly === true) {
+      return context.physicsTerrainQueryFrame.samplePoints(points, {
+        preferredRegion: context.preferredRegion || null
+      });
+    }
+    const samples = new Array(points.length);
+    for (let index = 0; index < points.length; index += 1) {
+      samples[index] = this.samplePhysicsGeometry(points[index], context);
+    }
+    return samples;
   }
 }
 
