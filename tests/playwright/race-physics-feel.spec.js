@@ -136,7 +136,7 @@ test('race playtest feel keeps 1200 HP loose-surface cars traction limited with 
         editor.updatePlaytest(1 / 60);
         const engineDrive = session.tireSlip?.engineDrive || {};
         maxWheelSpin = Math.max(maxWheelSpin, Number(session.tireSlip?.wheelSpin || 0));
-        if (Math.abs(Number(session.speedMps || 0)) > 3) {
+        if (Math.abs(Number(session.speedMps || 0)) > 1) {
           maxBodyTravelSlip = Math.max(maxBodyTravelSlip, Math.abs(normalizeAngle(session.carYaw - session.velocityYaw)));
         }
         maxCameraTravelError = Math.max(maxCameraTravelError, Math.abs(normalizeAngle(session.cameraYaw - session.velocityYaw)));
