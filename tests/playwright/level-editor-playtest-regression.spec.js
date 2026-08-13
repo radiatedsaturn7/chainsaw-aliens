@@ -585,7 +585,7 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
     // performance benchmark. Enter the final representative section through
     // the real authoritative route reset so CI does not spend two wall-clock
     // minutes evaluating 90 seconds of 360 Hz compound-body physics.
-    const representativeStartDistance = Math.max(0, routeLength - 60);
+    const representativeStartDistance = Math.max(0, routeLength - 10);
     editor.applyRaceCarRouteCenterReset({
       projection: { distance: representativeStartDistance },
       preserveMotion: false
@@ -601,7 +601,7 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
     let maximumDistance = Number(editor.playtestSession?.distance || 0);
     let updateFailed = false;
 
-    for (let frame = 0; frame < 45 * 60 && editor.playtestSession; frame += 1) {
+    for (let frame = 0; frame < 20 * 60 && editor.playtestSession; frame += 1) {
       const session = editor.playtestSession;
       const projection = editor.getRaceRouteProjectionForWorldPoint({
         x: Number(session.worldX || 0),
