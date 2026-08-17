@@ -150,6 +150,14 @@ test('RaceSimulation auto mode waits for a passing live single-thread qualificat
     editor.updatePlaytest(1 / 60);
     assert.equal(FakeWorker.instances.length, 1);
     assert.equal(editor.playtestSession.vehicleDynamicsAuthorityThread, 'worker');
+    const authoritativeTireSlip = editor.playtestSession.tireSlip;
+    assert.equal(authoritativeTireSlip.engineDrive.authoritative, true);
+    editor.updatePlaytest(1 / 60);
+    assert.strictEqual(
+      editor.playtestSession.tireSlip,
+      authoritativeTireSlip,
+      'worker frames must not expose the legacy render-thread tire calculation'
+    );
     editor.vehicleDynamicsAuthority.workerBridge.close();
   }, { enable: undefined, mode: 'auto' });
 });

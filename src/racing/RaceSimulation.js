@@ -935,6 +935,13 @@ function advanceVehicleDynamicsAuthority(editor, {
       session.vehicleDynamicsAuthorityThread = 'render';
       session.vehicleDynamicsWorkerMigrationFailure = failure;
     } else {
+      // The legacy render calculation runs before this authority adapter and
+      // replaces session.tireSlip every frame. While the worker owns physics,
+      // keep presenting the last authoritative compatibility view instead of
+      // exposing that non-authoritative intermediate calculation as telemetry.
+      if (authority.compatibilityTireSlip) {
+        session.tireSlip = authority.compatibilityTireSlip;
+      }
       session.vehicleDynamicsWorkerStatus = workerSnapshot
         ? 'active' : authority.workerBridge.client.ready ? 'awaiting-snapshot' : 'initializing';
       session.physicsPerformance = {
@@ -2163,6 +2170,7 @@ function advanceVehicleDynamicsAuthority(editor, {
   );
   engineDrive.authoritative = true;
   session.tireSlip.engineDrive = engineDrive;
+  authority.compatibilityTireSlip = session.tireSlip;
   physicsCosts.end(authorityTimer);
   physicsCosts.setFrameCounter('backlogSteps', advance.backlogSteps);
   if (ownsCostFrame) physicsCosts.finishFrame({
