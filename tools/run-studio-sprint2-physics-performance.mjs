@@ -266,6 +266,7 @@ function runAtFps({ editor, worldBake, fps, sectionSeconds }) {
       throw new Error(`Expected normal transient telemetry, received ${runner.config.telemetryRetention}`);
     }
     runner.physicsCostAccounting.detailedStepRecords = false;
+    runner.physicsCostAccounting.stepHistoryMode = 'elapsed-ring';
     setSectionInitialState(editor, section);
     runner.physicsCostAccounting.reset();
     const frames = Math.round(sectionSeconds * fps);
@@ -288,13 +289,9 @@ function runAtFps({ editor, worldBake, fps, sectionSeconds }) {
       if (runner.state.bodyGrounded) observedBodyContactFrames += 1;
       if (!runner.state.wheelGrounded && !runner.state.bodyGrounded) observedAirborneFrames += 1;
     }
-    const stepSamples = runner.physicsCostAccounting.stepHistory.map((record) => (
-      Number(record?.elapsedMs || 0)
-    ));
+    const stepSamples = runner.physicsCostAccounting.appendStepElapsedHistory([]);
     aggregate.physicsStepMs.push(...stepSamples);
     sectionAggregate.physicsStepMs.push(...stepSamples);
-    aggregate.physicsStepRecords.push(...runner.physicsCostAccounting.stepHistory);
-    sectionAggregate.physicsStepRecords.push(...runner.physicsCostAccounting.stepHistory);
     const sectionCounters = Object.fromEntries(PHYSICS_COST_COUNTER_NAMES.map((name) => [
       name,
       Math.round(Number(aggregate.counters[name] || 0) - Number(beforeCounters[name] || 0))
@@ -402,11 +399,14 @@ const report = {
     referenceMachineId: designatedReferenceMachine ? referenceMachineId : null
   },
   acceptanceTargets: {
-    fullGeometryQueryReductionRatio: 0.75,
-    temporaryObjectReductionRatio: 0.75,
+    fullGeometryQueryReductionRatio: 0.8,
+    temporaryObjectReductionRatio: 0.8,
+    physicsP50MsAt60Fps: 4,
     physicsP95MsAt60Fps: 8,
+    physicsP99MsAt60Fps: 16,
     zeroSteadyStateBacklogAt60Fps: true,
-    zeroOrdinaryHillRecoveryRecalculations: true
+    zeroOrdinaryHillRecoveryRecalculations: true,
+    maximumSmoothRoadWheelCcdActivationRatio: 0.01
   },
   source: {
     racePath,

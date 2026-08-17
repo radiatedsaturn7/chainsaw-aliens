@@ -29,7 +29,14 @@ const WRX_GT_TUNING = Object.freeze({
 });
 const WRX_GT_CONFIG = createVehicleDynamicsConfigFromTuning(WRX_GT_TUNING);
 
-test('physical sleep holds a shallow slope but cannot defeat a steep low-grip slope', () => {
+const ACTIVE_THEME = globalThis.__vehicleDynamicsTestTheme;
+function themedTest(theme, name, options, callback) {
+  if (ACTIVE_THEME !== theme) return;
+  if (typeof options === 'function') test(name, options);
+  else test(name, options, callback);
+}
+
+themedTest('state', 'physical sleep holds a shallow slope but cannot defeat a steep low-grip slope', () => {
   const config = { massKg: 1500 };
   const makeState = (slopeRad, gripCoefficient) => ({
     velocity: {}, angularVelocityWorld: {},
@@ -71,7 +78,7 @@ test('physical sleep holds a shallow slope but cannot defeat a steep low-grip sl
   }), false);
 });
 
-test('named angular-rate fallbacks map to the authoritative world axes', () => {
+themedTest('state', 'named angular-rate fallbacks map to the authoritative world axes', () => {
   const state = createVehicleDynamicsState({
     pitchRateRadps: 1.25,
     yawRateRadps: -0.5,
@@ -80,7 +87,7 @@ test('named angular-rate fallbacks map to the authoritative world axes', () => {
   assert.deepEqual(state.angularVelocityWorld, { x: 1.25, y: -0.5, z: 0.75 });
 });
 
-test('WRX legacy brakeBalance maps unchanged into authoritative configuration', () => {
+themedTest('wrx', 'WRX legacy brakeBalance maps unchanged into authoritative configuration', () => {
   const config = createVehicleDynamicsConfigFromTuning({
     ...WRX_2022_SHARED_TUNING,
     ...WRX_2022_TRANSMISSIONS.automatic
@@ -88,7 +95,7 @@ test('WRX legacy brakeBalance maps unchanged into authoritative configuration', 
   assert.equal(config.frontBrakeBias, 0.56);
 });
 
-test('authoritative velocity state separates ground, body, lateral, and signed travel speed', () => {
+themedTest('state', 'authoritative velocity state separates ground, body, lateral, and signed travel speed', () => {
   const state = createVehicleDynamicsState({
     yawRad: 0,
     velocity: { x: 20, y: 0, z: 0 },
@@ -99,7 +106,7 @@ test('authoritative velocity state separates ground, body, lateral, and signed t
   assert.equal(state.bodyLateralSpeedMps, 0);
 
   const runner = new VehicleDynamicsRunner({
-    config: { handlingPreset: 'simulation', tireHz: 120 },
+    config: { handlingPreset: 'simulation', tireHz: 120, telemetryRetention: 'none' },
     initialState: state,
     inputTimeline: [{ timeSeconds: 0, input: { requestedGear: 1 } }],
     tireContactSubsystem: {
@@ -152,7 +159,7 @@ function controlsAt(time, scenario) {
   return controls;
 }
 
-const scenarios = [
+export const vehicleDynamicsScenarios = [
   {
     name: 'wrx gt physical suspension launch',
     config: WRX_GT_CONFIG,
@@ -266,80 +273,138 @@ const scenarios = [
   }
 ];
 
-function frameDurations(fps, scenario) {
+function frameDurations(fps, scenario, durationSeconds = DURATION_SECONDS) {
   const durations = [];
   const breakpoints = [...(scenario.breakpoints || [])];
   if (scenario.hitch) breakpoints.push(0.75, 1);
   let time = 0;
-  while (time < DURATION_SECONDS - 1e-10) {
+  while (time < durationSeconds - 1e-10) {
     let duration = 1 / fps;
     const boundary = breakpoints.find((point) => point > time + 1e-10 && point < time + duration - 1e-10);
     if (boundary !== undefined) duration = boundary - time;
     if (scenario.hitch && Math.abs(time - 0.75) < 1e-9) duration = 0.25;
-    duration = Math.min(duration, DURATION_SECONDS - time);
+    duration = Math.min(duration, durationSeconds - time);
     durations.push(duration);
     time = Number((time + duration).toFixed(12));
   }
   return durations;
 }
 
-function runScenario(scenario, fps) {
-  const inputTimeline = Array.from({ length: 241 }, (_unused, stepIndex) => ({
+export function runVehicleDynamicsScenario(scenario, fps, {
+  durationSeconds = DURATION_SECONDS,
+  telemetryRetention = 'transient',
+  onTelemetry = null,
+  replayRecord = null
+} = {}) {
+  const finalStepCount = Math.round(durationSeconds * 120);
+  const inputTimeline = replayRecord?.inputTimeline || Array.from(
+    { length: finalStepCount + 1 }, (_unused, stepIndex) => ({
     timeSeconds: stepIndex / 120,
     input: controlsAt(stepIndex / 120, scenario)
-  }));
+    })
+  );
   const runner = new VehicleDynamicsRunner({
     config: {
       chassisHz: 120,
       tireHz: 360,
       maxCatchUpSteps: 18,
-      telemetryLimit: 1000,
-      ...(scenario.config || {})
+      ...(replayRecord?.config || scenario.config || {}),
+      telemetryRetention
     },
-    initialState: scenario.initialState,
+    initialState: replayRecord?.initialState || scenario.initialState,
     inputTimeline,
     environmentProvider: ({ timeSeconds }) => scenario.environment?.(timeSeconds) || {}
   });
+  for (const collision of replayRecord?.collisionTimeline || []) {
+    const scheduled = runner.scheduledReplayCollisions.get(collision.stepIndex) || [];
+    scheduled.push(structuredClone(collision));
+    runner.scheduledReplayCollisions.set(collision.stepIndex, scheduled);
+  }
   let time = 0;
   let sawCatchUpLimit = false;
-  for (const duration of frameDurations(fps, scenario)) {
+  const observeFixedStep = (telemetry) => {
+    onTelemetry?.(telemetry);
+    if (replayRecord || telemetry.stepIndex !== scenario.collisionStep) return;
+    runner.queueCollisionImpulse({
+      impulseWorldNs: { x: 4200, y: 900, z: -7800 },
+      pointWorld: { x: 0.8, y: 0.1, z: 0.6 },
+      source: 'fixture-collision'
+    });
+  };
+  for (const duration of frameDurations(fps, scenario, durationSeconds)) {
     time = Number((time + duration).toFixed(12));
     const result = runner.advance(duration, {
       inputTimeSeconds: time,
-      onFixedStep: scenario.collisionStep ? (telemetry) => {
-        if (telemetry.stepIndex !== scenario.collisionStep) return;
-        runner.queueCollisionImpulse({
-          impulseWorldNs: { x: 4200, y: 900, z: -7800 },
-          pointWorld: { x: 0.8, y: 0.1, z: 0.6 },
-          source: 'fixture-collision'
-        });
-      } : null
+      onFixedStep: observeFixedStep
     });
     sawCatchUpLimit ||= result.catchUpLimited;
   }
-  runner.drainCatchUp();
+  while (runner.diagnostics.backlogSteps > 0) {
+    runner.advance(0, { inputTimeSeconds: time, onFixedStep: observeFixedStep });
+  }
+  if (replayRecord) {
+    runner.collisionTimeline = structuredClone(replayRecord.collisionTimeline || []);
+    runner.resetTimeline = structuredClone(replayRecord.resetTimeline || []);
+  }
   return { runner, sawCatchUpLimit };
 }
 
-test('all authoritative fixed-step fixtures are exact across rendering frame partitions', () => {
-  for (const scenario of scenarios) {
-    const baseline = runScenario(scenario, RENDER_FPS[0]);
-    assert.equal(baseline.runner.stepIndex, 240, scenario.name);
-    assert.equal(baseline.runner.diagnostics.completedTireSubsteps, 720, scenario.name);
-    for (const fps of RENDER_FPS.slice(1)) {
-      const candidate = runScenario(scenario, fps);
-      assert.deepEqual(candidate.runner.createStateSnapshot(), baseline.runner.createStateSnapshot(),
-        `${scenario.name} state at ${fps} FPS`);
-      assert.deepEqual(candidate.runner.telemetry, baseline.runner.telemetry,
-        `${scenario.name} telemetry at ${fps} FPS`);
-      assert.deepEqual(candidate.runner.diagnostics, baseline.runner.diagnostics,
-        `${scenario.name} diagnostics at ${fps} FPS`);
-    }
-    if (scenario.hitch) assert.equal(baseline.sawCatchUpLimit, true);
+function hashText(seed, text) {
+  let hash = seed >>> 0;
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 16777619) >>> 0;
   }
-});
+  return hash;
+}
 
-test('airborne controls cannot redirect translation, but wheel torque reacts before landing', () => {
+export function createDeterminismChecksum() {
+  let hash = 2166136261;
+  let collisionSequence = 0;
+  return {
+    observe(telemetry) {
+      const state = telemetry.state;
+      const collisionImpulse = telemetry.forces?.collisionImpulseWorldNs || {};
+      if (Math.hypot(
+        Number(collisionImpulse.x || 0),
+        Number(collisionImpulse.y || 0),
+        Number(collisionImpulse.z || 0)
+      ) > 0) collisionSequence += 1;
+      hash = hashText(hash, JSON.stringify([
+        telemetry.stepIndex,
+        state.position,
+        state.velocity,
+        state.orientation || state.orientationQuaternion || {
+          pitchRad: state.pitchRad, yawRad: state.yawRad, rollRad: state.rollRad
+        },
+        state.angularVelocityWorld,
+        state.wheelLoadsN,
+        state.wheelSlip,
+        state.suspensionTravel,
+        state.validTreadContactByWheel,
+        state.engineRpm,
+        state.gear,
+        collisionSequence,
+        state.contactStabilization?.latest?.recoverySequence ?? null
+      ]));
+    },
+    digest() { return hash.toString(16).padStart(8, '0'); }
+  };
+}
+
+export function compactScenarioOutcome(runner, telemetryChecksum) {
+  return {
+    finalState: runner.createStateSnapshot(),
+    telemetryChecksum: telemetryChecksum.digest(),
+    diagnosticsChecksum: hashText(2166136261, JSON.stringify(runner.diagnostics)).toString(16),
+    collisionTimelineChecksum: hashText(2166136261, JSON.stringify(runner.collisionTimeline)).toString(16),
+    recoveryHistoryChecksum: hashText(2166136261, JSON.stringify(
+      runner.contactStabilizationState.history
+    )).toString(16)
+  };
+}
+
+themedTest('controls', 'airborne controls cannot redirect translation, but wheel torque reacts before landing', () => {
   const heights = { fl: 0, fr: 0, rl: 0, rr: 0 };
   const initialState = {
     position: { x: 0, y: 4.55, z: 0 },
@@ -348,8 +413,11 @@ test('airborne controls cannot redirect translation, but wheel torque reacts bef
     yawVelocityRadps: 0.4,
     grounded: false
   };
-  const makeRunner = (input) => new VehicleDynamicsRunner({
-    config: { chassisHz: 120, tireHz: 360, handlingPreset: 'sport' },
+  const makeRunner = (input, telemetryRetention = 'none') => new VehicleDynamicsRunner({
+    config: {
+      chassisHz: 120, tireHz: 360, handlingPreset: 'sport',
+      telemetryRetention, telemetryLimit: 480
+    },
     initialState,
     inputTimeline: [{ timeSeconds: 0, input }],
     environmentProvider: () => ({
@@ -368,7 +436,7 @@ test('airborne controls cannot redirect translation, but wheel torque reacts bef
     brake: 1,
     handbrake: 1,
     requestedGear: 1
-  });
+  }, 'history');
   neutral.advance(0.5);
   controlled.advance(0.5);
   assert.deepEqual(controlled.state.position, neutral.state.position);
@@ -405,7 +473,7 @@ test('airborne controls cannot redirect translation, but wheel torque reacts bef
   )));
 });
 
-test('WRX GT tuning maps to physical per-axle suspension and CG geometry', () => {
+themedTest('wrx', 'WRX GT tuning maps to physical per-axle suspension and CG geometry', () => {
   assert.equal(WRX_GT_CONFIG.massKg, 1603);
   assert.equal(WRX_GT_CONFIG.frontWeightDistribution, 0.58);
   assert.equal(WRX_GT_CONFIG.frontTrackWidthM, 1.56);
@@ -422,10 +490,10 @@ test('WRX GT tuning maps to physical per-axle suspension and CG geometry', () =>
   assert.equal(WRX_GT_CONFIG.rollStiffnessNmPerRad, 0);
 });
 
-test('WRX GT free rev and stationary engine braking cannot move or pitch the chassis', () => {
+themedTest('wrx', 'WRX GT free rev and stationary engine braking cannot move or pitch the chassis', () => {
   const runStationary = (input) => {
     const runner = new VehicleDynamicsRunner({
-      config: WRX_GT_CONFIG,
+      config: { ...WRX_GT_CONFIG, telemetryRetention: 'none' },
       initialState: { heightM: WRX_GT_CONFIG.cgHeightM },
       inputTimeline: [{ timeSeconds: 0, input }],
       environmentProvider: () => ({ surfaceHeightByWheel: FLAT_SURFACE_HEIGHTS })
@@ -455,10 +523,10 @@ test('WRX GT free rev and stationary engine braking cannot move or pitch the cha
   assert.ok(Math.abs(engineBraking.state.rollRad) < 0.01);
 });
 
-test('WRX GT launch, braking, and skidpad attitude stays physically bounded', () => {
+themedTest('wrx', 'WRX GT launch, braking, and skidpad attitude stays physically bounded', () => {
   const run = ({ input, initialState = {}, steps = 360 }) => {
     const runner = new VehicleDynamicsRunner({
-      config: WRX_GT_CONFIG,
+      config: { ...WRX_GT_CONFIG, telemetryRetention: 'none' },
       initialState: { heightM: WRX_GT_CONFIG.cgHeightM, ...initialState },
       inputTimeline: [{ timeSeconds: 0, input }],
       environmentProvider: () => ({ surfaceHeightByWheel: FLAT_SURFACE_HEIGHTS })
@@ -503,10 +571,10 @@ test('WRX GT launch, braking, and skidpad attitude stays physically bounded', ()
     !== skidpad.runner.state.suspensionState.fr.antiRollLoadTransferN);
 });
 
-test('authoritative traction control and ABS flags change physical wheel outcomes', () => {
+themedTest('assists', 'authoritative traction control and ABS flags change physical wheel outcomes', () => {
   const run = ({ input, initialState = {}, material, steps = 180 }) => {
     const runner = new VehicleDynamicsRunner({
-      config: { ...WRX_GT_CONFIG, tireHz: 120 },
+      config: { ...WRX_GT_CONFIG, tireHz: 120, telemetryRetention: 'none' },
       initialState: { heightM: WRX_GT_CONFIG.cgHeightM, ...initialState },
       inputTimeline: [{ timeSeconds: 0, input }],
       environmentProvider: () => ({
@@ -575,14 +643,14 @@ test('authoritative traction control and ABS flags change physical wheel outcome
     'ABS must improve authoritative wet stopping outcome');
 });
 
-test('WRX GT free rev on an uphill grade follows the surface without nose dive', () => {
+themedTest('wrx', 'WRX GT free rev on an uphill grade follows the surface without nose dive', () => {
   const slope = 0.1;
   const normalScale = 1 / Math.sqrt(1 + slope * slope);
   const surfaceNormal = { x: 0, y: normalScale, z: -slope * normalScale };
   const frontHeight = slope * WRX_GT_CONFIG.frontAxleDistanceFromCgM;
   const rearHeight = -slope * WRX_GT_CONFIG.rearAxleDistanceFromCgM;
   const runner = new VehicleDynamicsRunner({
-    config: WRX_GT_CONFIG,
+    config: { ...WRX_GT_CONFIG, telemetryRetention: 'none' },
     initialState: { heightM: WRX_GT_CONFIG.cgHeightM },
     inputTimeline: [{
       timeSeconds: 0,
@@ -605,9 +673,9 @@ test('WRX GT free rev on an uphill grade follows the surface without nose dive',
   assert.ok(runner.state.engineRpm > WRX_GT_CONFIG.idleRpm);
 });
 
-test('WRX GT cannot discharge impossible wheelspin into self-acceleration near 45 mph', () => {
+themedTest('wrx', 'WRX GT cannot discharge impossible wheelspin into self-acceleration near 45 mph', () => {
   const runner = new VehicleDynamicsRunner({
-    config: WRX_GT_CONFIG,
+    config: { ...WRX_GT_CONFIG, telemetryRetention: 'none' },
     initialState: { heightM: WRX_GT_CONFIG.cgHeightM },
     inputTimeline: [
       { timeSeconds: 0, input: { throttle: 1, requestedGear: 2, assists: { autoShift: false } } },
@@ -631,18 +699,7 @@ test('WRX GT cannot discharge impossible wheelspin into self-acceleration near 4
     `expected at least 3 m/s coast-down from ${releaseSpeedMps}, got ${runner.state.speedMps}`);
 });
 
-test('recorded input playback reproduces state and telemetry exactly', () => {
-  for (const scenario of scenarios) {
-    const original = runScenario(scenario, 90).runner;
-    const replay = VehicleDynamicsRunner.replay(original.createReplayRecord(), {
-      environmentProvider: ({ timeSeconds }) => scenario.environment?.(timeSeconds) || {}
-    });
-    assert.deepEqual(replay.createStateSnapshot(), original.createStateSnapshot(), scenario.name);
-    assert.deepEqual(replay.telemetry, original.telemetry, scenario.name);
-  }
-});
-
-test('control timeline interpolates axes and holds discrete controls deterministically', () => {
+themedTest('controls', 'control timeline interpolates axes and holds discrete controls deterministically', () => {
   const timeline = new VehicleControlInputTimeline([
     { timeSeconds: 0, input: { steering: -1, throttle: 0, requestedGear: 1, assists: { abs: true } } },
     { timeSeconds: 1, input: { steering: 1, throttle: 1, requestedGear: 3, assists: { abs: false } } }
@@ -673,10 +730,10 @@ test('control timeline interpolates axes and holds discrete controls determinist
   assert.deepEqual(timeline.sampleAt(3.5), normalizeVehicleControlInput(held));
 });
 
-test('fixed-step handbrake pulse duration and replay are render-partition independent', () => {
+themedTest('replay', 'fixed-step handbrake pulse duration and replay are render-partition independent', () => {
   const run = (fps) => {
     const runner = new VehicleDynamicsRunner({
-      config: { chassisHz: 120, tireHz: 120, telemetryRetention: 'history', telemetryLimit: 256 },
+      config: { chassisHz: 120, tireHz: 120, telemetryRetention: 'history', telemetryLimit: 120 },
       inputTimeline: [{
         timeSeconds: 0,
         input: { requestedGear: 1, handbrakeHoldSequence: 1, handbrakeHoldSeconds: 0.36 }
@@ -703,7 +760,7 @@ test('fixed-step handbrake pulse duration and replay are render-partition indepe
 
   const runDirect = (fps) => {
     const direct = new VehicleDynamicsRunner({
-      config: { chassisHz: 120, tireHz: 120, telemetryRetention: 'history', telemetryLimit: 256 },
+      config: { chassisHz: 120, tireHz: 120, telemetryRetention: 'history', telemetryLimit: 120 },
       inputTimeline: [
         { timeSeconds: 0, input: { requestedGear: 1, handbrake: 1 } },
         { timeSeconds: 0.36, input: { requestedGear: 1, handbrake: 1 } },
@@ -720,11 +777,11 @@ test('fixed-step handbrake pulse duration and replay are render-partition indepe
   for (const fps of RENDER_FPS.slice(1)) assert.equal(runDirect(fps), directSteps);
 });
 
-test('WRX authoritative handbrake locks rear wheels without ESC cancelling rotation', () => {
+themedTest('wrx', 'WRX authoritative handbrake locks rear wheels without ESC cancelling rotation', () => {
   const speedMps = 45 * 0.44704;
   const wheelOmega = speedMps / WRX_GT_CONFIG.wheelRadiusM;
   const runner = new VehicleDynamicsRunner({
-    config: { ...WRX_GT_CONFIG, telemetryRetention: 'history', telemetryLimit: 128 },
+    config: { ...WRX_GT_CONFIG, telemetryRetention: 'history', telemetryLimit: 48 },
     initialState: {
       heightM: WRX_GT_CONFIG.cgHeightM,
       velocity: { x: 0, y: 0, z: speedMps },
@@ -753,13 +810,15 @@ test('WRX authoritative handbrake locks rear wheels without ESC cancelling rotat
   assert.ok(runner.telemetry.every((entry) => entry.state.powertrainState.telemetry.tractionControlActive === false));
 });
 
-test('runner enforces deterministic ordering, tire rate, and catch-up budget', () => {
+themedTest('substeps', 'runner enforces deterministic ordering, tire rate, and catch-up budget', () => {
   assert.throws(
     () => new VehicleDynamicsRunner({ config: { chassisHz: 120, tireHz: 240.5 } }),
     /integer multiple/
   );
   const runner = new VehicleDynamicsRunner({
-    config: { chassisHz: 120, tireHz: 360, maxCatchUpSteps: 5 },
+    config: {
+      chassisHz: 120, tireHz: 360, maxCatchUpSteps: 5, telemetryRetention: 'latest'
+    },
     inputTimeline: [{ timeSeconds: 0, input: { throttle: 1, requestedGear: 1 } }]
   });
   const hitch = runner.advance(0.25, { input: { throttle: 1, requestedGear: 1 } });
@@ -767,11 +826,23 @@ test('runner enforces deterministic ordering, tire rate, and catch-up budget', (
   assert.equal(hitch.completedTireSubsteps, 15);
   assert.equal(hitch.catchUpLimited, true);
   assert.equal(hitch.backlogSteps, 25);
+  assert.deepEqual(hitch.catchUpBudgetWarning, {
+    code: 'render-rate-below-fixed-step-catch-up-budget',
+    renderDeltaSeconds: 0.25,
+    estimatedRenderFps: 4,
+    chassisHz: 120,
+    maxCatchUpSteps: 5,
+    dueSteps: 30,
+    completedSteps: 5,
+    backlogSteps: 25,
+    minimumSustainableRenderFps: 24
+  });
+  assert.equal(runner.diagnostics.catchUpBudgetWarnings, 1);
   assert.deepEqual(runner.telemetry[0].subsystemOrder, VEHICLE_DYNAMICS_SUBSYSTEM_ORDER);
   assert.equal(runner.drainCatchUp(), 25);
 
   const bounded = new VehicleDynamicsRunner({
-    config: { inputTimelineLimit: 3 },
+    config: { inputTimelineLimit: 3, telemetryRetention: 'none' },
     inputTimeline: [{ timeSeconds: 0, input: {} }]
   });
   for (let index = 1; index <= 5; index += 1) {
@@ -781,7 +852,7 @@ test('runner enforces deterministic ordering, tire rate, and catch-up budget', (
   assert.equal(bounded.inputTimeline.sampleAt(5).steering, 0.5);
 });
 
-test('snapshots restore exactly and tire/contact implementations are replaceable', () => {
+themedTest('state', 'snapshots restore exactly and tire/contact implementations are replaceable', () => {
   let tireCalls = 0;
   const tireContactSubsystem = {
     step() {
@@ -799,7 +870,7 @@ test('snapshots restore exactly and tire/contact implementations are replaceable
     }
   };
   const runner = new VehicleDynamicsRunner({
-    config: { chassisHz: 120, tireHz: 240 },
+    config: { chassisHz: 120, tireHz: 240, telemetryRetention: 'none' },
     inputTimeline: [{ timeSeconds: 0, input: { throttle: 1, requestedGear: 1 } }],
     tireContactSubsystem
   });
@@ -845,7 +916,8 @@ function runSubstepImpulseFixture({ tireHz, eventPhase, scenario }) {
       pitchInertiaKgM2: 1000,
       yawInertiaKgM2: 1000,
       rollInertiaKgM2: 1000,
-      handlingPreset: 'simulation'
+      handlingPreset: 'simulation',
+      telemetryRetention: 'latest'
     },
     initialState: { position: { x: 0, y: 10, z: 0 }, grounded: false },
     inputTimeline: [{ timeSeconds: 0, input: {} }],
@@ -867,7 +939,7 @@ function runSubstepImpulseFixture({ tireHz, eventPhase, scenario }) {
   return runner;
 }
 
-test('120, 240, and 360 Hz contact phases transfer every force impulse exactly once', () => {
+themedTest('substeps', '120, 240, and 360 Hz contact phases transfer every force impulse exactly once', () => {
   const fixtures = {
     'flat driving': { continuousForceWorldN: { x: 0, y: 0, z: 1200 } },
     'curb impact': {
@@ -902,7 +974,7 @@ test('120, 240, and 360 Hz contact phases transfer every force impulse exactly o
   }
 });
 
-test('120, 240, and 360 Hz accumulate identical tire-energy work at the chassis boundary', () => {
+themedTest('substeps', '120, 240, and 360 Hz accumulate identical tire-energy work at the chassis boundary', () => {
   const energyRates = {
     longitudinalFrictionWorkJ: 900,
     lateralFrictionWorkJ: 420,
@@ -914,7 +986,9 @@ test('120, 240, and 360 Hz accumulate identical tire-energy work at the chassis 
   let reference = null;
   for (const tireHz of [120, 240, 360]) {
     const runner = new VehicleDynamicsRunner({
-      config: { chassisHz: 120, tireHz, handlingPreset: 'simulation' },
+      config: {
+        chassisHz: 120, tireHz, handlingPreset: 'simulation', telemetryRetention: 'latest'
+      },
       initialState: { position: { x: 0, y: 10, z: 0 }, grounded: false },
       inputTimeline: [{ timeSeconds: 0, input: {} }],
       tireContactSubsystem: {
@@ -942,7 +1016,7 @@ test('120, 240, and 360 Hz accumulate identical tire-energy work at the chassis 
   }
 });
 
-test('suspension, aerodynamic, and contact moments accumulate without a final-sample spike', () => {
+themedTest('substeps', 'suspension, aerodynamic, and contact moments accumulate without a final-sample spike', () => {
   const scenario = {
     tireImpulseWorldNs: { x: 6, y: 9, z: 12 },
     suspensionImpulseWorldNs: { x: 3, y: 15, z: -3 },
@@ -960,7 +1034,7 @@ test('suspension, aerodynamic, and contact moments accumulate without a final-sa
   assert.equal(runner.state.velocity.z, 0.005);
 });
 
-test('authoritative runner core has no rendering dependencies or secondary gameplay integrator', async () => {
+themedTest('state', 'authoritative runner core has no rendering dependencies or secondary gameplay integrator', async () => {
   const source = await readFile(
     new URL('../../src/racing/simulation/VehicleDynamicsRunner.js', import.meta.url),
     'utf8'

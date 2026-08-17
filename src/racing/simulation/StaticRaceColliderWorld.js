@@ -10,6 +10,15 @@ import {
 
 const EPSILON = 1e-9;
 const DEFAULT_BUCKET_SIZE_M = 16;
+const BOX_VERTEX_SIGNS = new Int8Array([
+  -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1,
+  -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1
+]);
+const BOX_FACE_INDICES = new Uint8Array([
+  0, 2, 1, 0, 3, 2, 4, 5, 6, 4, 6, 7,
+  0, 7, 3, 0, 4, 7, 1, 2, 6, 1, 6, 5,
+  0, 1, 5, 0, 5, 4, 3, 7, 6, 3, 6, 2
+]);
 const clamp = (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value));
 const finite = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
 const dot = (left = {}, right = {}) => finite(left.x) * finite(right.x)
@@ -42,6 +51,26 @@ const transformPoint = (point = {}, position = {}, orientation = {}) => addVecto
   position,
   rotateVectorByQuaternion(point, orientation)
 );
+const copyCollisionStateInto = (source = {}, target) => {
+  const sourcePosition = source.position || {};
+  target.position.x = finite(sourcePosition.x);
+  target.position.y = finite(sourcePosition.y);
+  target.position.z = finite(sourcePosition.z);
+  const sourceOrientation = source.orientation || {};
+  target.orientation.x = finite(sourceOrientation.x);
+  target.orientation.y = finite(sourceOrientation.y);
+  target.orientation.z = finite(sourceOrientation.z);
+  target.orientation.w = finite(sourceOrientation.w, 1);
+  const sourceVelocity = source.velocity || {};
+  target.velocity.x = finite(sourceVelocity.x);
+  target.velocity.y = finite(sourceVelocity.y);
+  target.velocity.z = finite(sourceVelocity.z);
+  const sourceAngularVelocity = source.angularVelocityWorld || {};
+  target.angularVelocityWorld.x = finite(sourceAngularVelocity.x);
+  target.angularVelocityWorld.y = finite(sourceAngularVelocity.y);
+  target.angularVelocityWorld.z = finite(sourceAngularVelocity.z);
+  return target;
+};
 const boundsOverlap = (left = {}, right = {}) => left.minX <= right.maxX
   && left.maxX >= right.minX
   && left.minY <= right.maxY
@@ -61,6 +90,29 @@ const includePoint = (bounds, point) => {
   bounds.maxZ = Math.max(bounds.maxZ, finite(point.z));
   return bounds;
 };
+const includeTransformedPoint = (bounds, point, position, q) => {
+  const x = finite(point.x);
+  const y = finite(point.y);
+  const z = finite(point.z);
+  const crossX = q.y * z - q.z * y;
+  const crossY = q.z * x - q.x * z;
+  const crossZ = q.x * y - q.y * x;
+  const twiceCrossX = crossX * 2;
+  const twiceCrossY = crossY * 2;
+  const twiceCrossZ = crossZ * 2;
+  const worldX = finite(position.x) + x
+    + (twiceCrossX * q.w + (q.y * twiceCrossZ - q.z * twiceCrossY));
+  const worldY = finite(position.y) + y
+    + (twiceCrossY * q.w + (q.z * twiceCrossX - q.x * twiceCrossZ));
+  const worldZ = finite(position.z) + z
+    + (twiceCrossZ * q.w + (q.x * twiceCrossY - q.y * twiceCrossX));
+  bounds.minX = Math.min(bounds.minX, worldX);
+  bounds.minY = Math.min(bounds.minY, worldY);
+  bounds.minZ = Math.min(bounds.minZ, worldZ);
+  bounds.maxX = Math.max(bounds.maxX, worldX);
+  bounds.maxY = Math.max(bounds.maxY, worldY);
+  bounds.maxZ = Math.max(bounds.maxZ, worldZ);
+};
 const expandBounds = (bounds, amount = 0) => ({
   minX: bounds.minX - amount,
   minY: bounds.minY - amount,
@@ -79,15 +131,15 @@ function triangleBounds(a, b, c) {
 }
 
 function createTriangle({ a, b, c, colliderIndex, colliderId, featureId, friction,
-  restitution, twoSided = false }) {
+  restitution, twoSided = false, reuseVertices = false }) {
   const rawNormal = crossVector3(subtract(b, a), subtract(c, a));
   const rawLength = length(rawNormal);
   if (!(rawLength > EPSILON)) return null;
   const normal = scaleVector3(rawNormal, 1 / rawLength);
   return Object.freeze({
-    a: Object.freeze({ ...a }),
-    b: Object.freeze({ ...b }),
-    c: Object.freeze({ ...c }),
+    a: reuseVertices ? a : Object.freeze({ ...a }),
+    b: reuseVertices ? b : Object.freeze({ ...b }),
+    c: reuseVertices ? c : Object.freeze({ ...c }),
     normal: Object.freeze(normal),
     offset: dot(normal, a),
     bounds: Object.freeze(triangleBounds(a, b, c)),
@@ -113,43 +165,40 @@ function boxGeometry(definition, colliderIndex, common) {
     z: Math.max(0.0005, finite(size.z, 1) * 0.5)
   };
   const orientation = normalizeQuaternion(definition.orientation || {});
-  const local = [
-    { x: -half.x, y: -half.y, z: -half.z },
-    { x: half.x, y: -half.y, z: -half.z },
-    { x: half.x, y: half.y, z: -half.z },
-    { x: -half.x, y: half.y, z: -half.z },
-    { x: -half.x, y: -half.y, z: half.z },
-    { x: half.x, y: -half.y, z: half.z },
-    { x: half.x, y: half.y, z: half.z },
-    { x: -half.x, y: half.y, z: half.z }
-  ];
-  const vertices = transformedVertices(local, center, orientation);
-  const faceIndices = [
-    [0, 2, 1], [0, 3, 2],
-    [4, 5, 6], [4, 6, 7],
-    [0, 7, 3], [0, 4, 7],
-    [1, 2, 6], [1, 6, 5],
-    [0, 1, 5], [0, 5, 4],
-    [3, 7, 6], [3, 6, 2]
-  ];
-  const triangles = faceIndices.map((indices, index) => createTriangle({
-    a: vertices[indices[0]], b: vertices[indices[1]], c: vertices[indices[2]],
-    colliderIndex, colliderId: common.id, featureId: `${common.id}:face:${index >> 1}`,
-    friction: common.friction, restitution: common.restitution
-  })).filter(Boolean);
+  const vertices = new Array(8);
+  const localPoint = { x: 0, y: 0, z: 0 };
+  for (let vertexIndex = 0; vertexIndex < 8; vertexIndex += 1) {
+    const signOffset = vertexIndex * 3;
+    localPoint.x = half.x * BOX_VERTEX_SIGNS[signOffset];
+    localPoint.y = half.y * BOX_VERTEX_SIGNS[signOffset + 1];
+    localPoint.z = half.z * BOX_VERTEX_SIGNS[signOffset + 2];
+    vertices[vertexIndex] = Object.freeze(transformPoint(localPoint, center, orientation));
+  }
+  const triangles = new Array(12);
+  for (let faceIndex = 0; faceIndex < 12; faceIndex += 1) {
+    const indexOffset = faceIndex * 3;
+    triangles[faceIndex] = createTriangle({
+      a: vertices[BOX_FACE_INDICES[indexOffset]],
+      b: vertices[BOX_FACE_INDICES[indexOffset + 1]],
+      c: vertices[BOX_FACE_INDICES[indexOffset + 2]],
+      colliderIndex,
+      colliderId: common.id,
+      featureId: `${common.id}:face:${faceIndex >> 1}`,
+      friction: common.friction,
+      restitution: common.restitution,
+      reuseVertices: true
+    });
+  }
   const planes = [];
-  const planeKeys = new Set();
-  triangles.forEach((triangle) => {
-    const key = `${Math.round(triangle.normal.x * 1e6)}:${Math.round(triangle.normal.y * 1e6)}:${Math.round(triangle.normal.z * 1e6)}:${Math.round(triangle.offset * 1e6)}`;
-    if (planeKeys.has(key)) return;
-    planeKeys.add(key);
+  for (let faceIndex = 0; faceIndex < triangles.length; faceIndex += 2) {
+    const triangle = triangles[faceIndex];
     planes.push(Object.freeze({
       normal: triangle.normal,
       offset: triangle.offset,
       featureId: triangle.featureId
     }));
-  });
-  return { vertices, triangles, planes };
+  }
+  return { vertices, triangles, planes, verticesImmutable: true };
 }
 
 function convexGeometry(definition, colliderIndex, common) {
@@ -308,12 +357,15 @@ function prepareCollider(definition = {}, colliderIndex = 0) {
       ? meshGeometry(definition, colliderIndex, common)
       : boxGeometry(definition, colliderIndex, common);
   const bounds = emptyBounds();
-  geometry.vertices.forEach((vertex) => includePoint(bounds, vertex));
-  geometry.triangles.forEach((triangle) => {
+  for (let vertexIndex = 0; vertexIndex < geometry.vertices.length; vertexIndex += 1) {
+    includePoint(bounds, geometry.vertices[vertexIndex]);
+  }
+  for (let triangleIndex = 0; triangleIndex < geometry.triangles.length; triangleIndex += 1) {
+    const triangle = geometry.triangles[triangleIndex];
     includePoint(bounds, triangle.a);
     includePoint(bounds, triangle.b);
     includePoint(bounds, triangle.c);
-  });
+  }
   return Object.freeze({
     index: colliderIndex,
     id,
@@ -324,7 +376,9 @@ function prepareCollider(definition = {}, colliderIndex = 0) {
     source: String(definition.source || id),
     infinite: false,
     solidBelow: definition.solidBelow === true,
-    vertices: Object.freeze(geometry.vertices.map((vertex) => Object.freeze({ ...vertex }))),
+    vertices: Object.freeze(geometry.verticesImmutable
+      ? geometry.vertices
+      : geometry.vertices.map((vertex) => Object.freeze({ ...vertex }))),
     triangles: Object.freeze(geometry.triangles),
     planes: Object.freeze(geometry.planes),
     bounds: Object.freeze(bounds)
@@ -335,15 +389,22 @@ export class PreparedStaticRaceColliderWorld {
   constructor(definitions = [], { revision = 0, bucketSizeM = DEFAULT_BUCKET_SIZE_M } = {}) {
     this.revision = String(revision ?? 0);
     this.bucketSizeM = Math.max(1, finite(bucketSizeM, DEFAULT_BUCKET_SIZE_M));
-    this.colliders = Object.freeze((Array.isArray(definitions) ? definitions : [])
-      .filter((definition) => definition?.enabled !== false)
-      .map(prepareCollider));
+    const sourceDefinitions = Array.isArray(definitions) ? definitions : [];
+    const colliders = [];
+    for (let definitionIndex = 0; definitionIndex < sourceDefinitions.length;
+      definitionIndex += 1) {
+      const definition = sourceDefinitions[definitionIndex];
+      if (definition?.enabled === false) continue;
+      colliders.push(prepareCollider(definition, colliders.length));
+    }
+    this.colliders = Object.freeze(colliders);
     this.infiniteColliderIndices = [];
     this.buckets = new Map();
-    this.colliders.forEach((collider) => {
+    for (let colliderIndex = 0; colliderIndex < this.colliders.length; colliderIndex += 1) {
+      const collider = this.colliders[colliderIndex];
       if (collider.infinite || !collider.bounds) {
         this.infiniteColliderIndices.push(collider.index);
-        return;
+        continue;
       }
       const minX = Math.floor(collider.bounds.minX / this.bucketSizeM);
       const maxX = Math.floor(collider.bounds.maxX / this.bucketSizeM);
@@ -357,7 +418,7 @@ export class PreparedStaticRaceColliderWorld {
           this.buckets.set(key, bucket);
         }
       }
-    });
+    }
     this.buckets.forEach((indices, key) => {
       this.buckets.set(key, Object.freeze([...new Set(indices)].sort((a, b) => a - b)));
     });
@@ -507,18 +568,32 @@ function pointInsideMeshSurface(point, collider, toleranceM = 0) {
   return deepest;
 }
 
-function bodySweptBounds(candidates, previousState, proposedState, toleranceM) {
+function bodySweptBounds(candidates, previousState, proposedState, toleranceM, envelope = null) {
   const bounds = emptyBounds();
-  let maximumRadiusM = 0;
-  candidates.forEach((candidate) => {
-    maximumRadiusM = Math.max(maximumRadiusM, length(candidate.localPoint));
-    includePoint(bounds, transformPoint(
-      candidate.localPoint, previousState.position, previousState.orientation
-    ));
-    includePoint(bounds, transformPoint(
-      candidate.localPoint, proposedState.position, proposedState.orientation
-    ));
-  });
+  let maximumRadiusM = Number(envelope?.maximumRadiusM || 0);
+  if (envelope?.corners?.length) {
+    const previousOrientation = normalizeQuaternion(previousState.orientation);
+    const proposedOrientation = normalizeQuaternion(proposedState.orientation);
+    for (let index = 0; index < envelope.corners.length; index += 1) {
+      const point = envelope.corners[index];
+      includeTransformedPoint(
+        bounds, point, previousState.position, previousOrientation
+      );
+      includeTransformedPoint(
+        bounds, point, proposedState.position, proposedOrientation
+      );
+    }
+  } else {
+    candidates.forEach((candidate) => {
+      maximumRadiusM = Math.max(maximumRadiusM, length(candidate.localPoint));
+      includePoint(bounds, transformPoint(
+        candidate.localPoint, previousState.position, previousState.orientation
+      ));
+      includePoint(bounds, transformPoint(
+        candidate.localPoint, proposedState.position, proposedState.orientation
+      ));
+    });
+  }
   const angularTravel = length(previousState.angularVelocityWorld || {})
     + length(proposedState.angularVelocityWorld || {});
   return expandBounds(bounds, toleranceM + maximumRadiusM * Math.min(1, angularTravel * 0.002));
@@ -553,6 +628,49 @@ function applyImpulse(state, impulse, arm, config) {
 export class StaticColliderCollision {
   constructor({ candidates = [] } = {}) {
     this.candidates = candidates;
+    let minX = Infinity;
+    let minY = Infinity;
+    let minZ = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    let maxZ = -Infinity;
+    let maximumRadiusM = 0;
+    for (let index = 0; index < candidates.length; index += 1) {
+      const point = candidates[index].localPoint || {};
+      const x = Number(point.x || 0);
+      const y = Number(point.y || 0);
+      const z = Number(point.z || 0);
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      minZ = Math.min(minZ, z);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+      maxZ = Math.max(maxZ, z);
+      maximumRadiusM = Math.max(maximumRadiusM, Math.hypot(x, y, z));
+    }
+    const corners = [];
+    if (candidates.length) {
+      for (let xIndex = 0; xIndex < 2; xIndex += 1) {
+        for (let yIndex = 0; yIndex < 2; yIndex += 1) {
+          for (let zIndex = 0; zIndex < 2; zIndex += 1) {
+            corners.push({
+              x: xIndex ? maxX : minX,
+              y: yIndex ? maxY : minY,
+              z: zIndex ? maxZ : minZ
+            });
+          }
+        }
+      }
+    }
+    this.bodyEnvelope = { corners, maximumRadiusM };
+    const collisionState = () => ({
+      position: { x: 0, y: 0, z: 0 },
+      orientation: { x: 0, y: 0, z: 0, w: 1 },
+      velocity: { x: 0, y: 0, z: 0 },
+      angularVelocityWorld: { x: 0, y: 0, z: 0 }
+    });
+    this.proposedStateScratch = collisionState();
+    this.previousStateScratch = collisionState();
   }
 
   poseAt(previousState, proposedState, fraction) {
@@ -566,7 +684,13 @@ export class StaticColliderCollision {
 
   findEarliestImpact({ previousState, proposedState, world, toleranceM, dt,
     physicsCostAccounting }) {
-    const bounds = bodySweptBounds(this.candidates, previousState, proposedState, toleranceM);
+    const bounds = bodySweptBounds(
+      this.candidates,
+      previousState,
+      proposedState,
+      toleranceM,
+      this.bodyEnvelope
+    );
     const broadphaseTimer = physicsCostAccounting?.start('staticColliderBroadphase');
     const colliders = world.querySweptAabb(bounds, physicsCostAccounting);
     physicsCostAccounting?.end(broadphaseTimer);
@@ -914,18 +1038,12 @@ export class StaticColliderCollision {
     const physicsCostAccounting = environment.physicsCostAccounting;
     const toleranceM = Math.max(0.001, finite(config.staticColliderToleranceM,
       finite(config.bodyCollisionToleranceM, 0.008)));
-    const proposedState = {
-      position: { ...workingState.position },
-      orientation: { ...workingState.orientation },
-      velocity: { ...workingState.velocity },
-      angularVelocityWorld: { ...workingState.angularVelocityWorld }
-    };
-    const previousState = previousWorkingState || {
-      position: { ...workingState.position },
-      orientation: { ...workingState.orientation },
-      velocity: { ...workingState.velocity },
-      angularVelocityWorld: { ...workingState.angularVelocityWorld }
-    };
+    const proposedState = copyCollisionStateInto(
+      workingState, this.proposedStateScratch
+    );
+    const previousState = previousWorkingState || copyCollisionStateInto(
+      workingState, this.previousStateScratch
+    );
     const sweep = this.findEarliestImpact({
       previousState,
       proposedState,

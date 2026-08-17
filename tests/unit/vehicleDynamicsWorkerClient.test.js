@@ -31,6 +31,8 @@ const qualified = Object.freeze({
 });
 
 test('worker migration gate rejects slow physics even when Worker is available', () => {
+  assert.throws(() => new VehicleDynamicsWorkerClient({ worker: new FakeWorker() }),
+    /performance gate failed/);
   const slow = qualifyVehicleDynamicsWorkerMigration({
     achievedStepsPerSecond: 119,
     p95StepMs: 9,

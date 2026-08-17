@@ -106,6 +106,8 @@ export class TrackState {
     this.nextSequence = 1;
     this.accumulatorMs = 0;
     this.cells = new Map();
+    this.cellSampleRevisions = new WeakMap();
+    this.cellLookupRevision = 0;
     this.baseSurfaceCache = new Map();
     this.orderedCellKeys = [];
     this.cellCursor = 0;
@@ -277,6 +279,10 @@ export class TrackState {
   }
 
   prepareCellMutation(cell) {
+    if (cell) this.cellSampleRevisions.set(
+      cell,
+      Number(this.cellSampleRevisions.get(cell) || 0) + 1
+    );
     const builder = this.checkpointBuilder;
     if (!cell || !builder) return;
     if (!builder.frozen) {
@@ -479,9 +485,39 @@ export class TrackState {
   }
 
   sample(point = {}, target = null, conditionScratch = null) {
-    const cell = this.getOrCreateCell(point);
+    const cellX = Math.floor(Number(point.x || 0) / this.cellSizeM);
+    const cellZ = Math.floor(Number(point.z ?? point.y ?? 0) / this.cellSizeM);
+    let cell = null;
+    if (conditionScratch
+      && conditionScratch.lookupRevision === this.cellLookupRevision
+      && conditionScratch.lookupCellX === cellX
+      && conditionScratch.lookupCellZ === cellZ) {
+      cell = conditionScratch.lookupCell;
+    }
+    if (!cell) {
+      cell = this.getOrCreateCell({ x: cellX, z: cellZ }, { coordinates: true });
+      if (conditionScratch) {
+        conditionScratch.lookupRevision = this.cellLookupRevision;
+        conditionScratch.lookupCellX = cellX;
+        conditionScratch.lookupCellZ = cellZ;
+        conditionScratch.lookupCell = cell;
+      }
+    }
     this.catchUpCellWeather(cell, this.stepIndex);
-    return getTrackStateCellSample(cell, this.stepIndex, target, conditionScratch);
+    const sampleRevision = Number(this.cellSampleRevisions.get(cell)) || 0;
+    if (target && conditionScratch
+      && conditionScratch.sampleCell === cell
+      && conditionScratch.sampleRevision === sampleRevision
+      && conditionScratch.sampleStepIndex === this.stepIndex) {
+      return target;
+    }
+    const sample = getTrackStateCellSample(cell, this.stepIndex, target, conditionScratch);
+    if (conditionScratch) {
+      conditionScratch.sampleCell = cell;
+      conditionScratch.sampleRevision = sampleRevision;
+      conditionScratch.sampleStepIndex = this.stepIndex;
+    }
+    return sample;
   }
 
   catchUpCellWeather(cell, throughStep = this.stepIndex) {
@@ -943,7 +979,7 @@ export class TrackState {
     return this.stepResultScratch;
   }
 
-  advance(deltaSeconds = 0, forcing = {}) {
+  advance(deltaSeconds = 0, forcing = {}, target = null) {
     this.runMaintenancePreparationSlice();
     this.accumulatorMs += Math.max(0, Number(deltaSeconds) || 0) * 1000;
     let completedSteps = 0;
@@ -959,29 +995,29 @@ export class TrackState {
         || this.accumulatorMs + 1e-9 < this.fixedStepMs;
       this.rotateHistoryCheckpoint({ allowFreeze: atAdvanceBoundary });
     }
-    return {
-      completedSteps,
-      stepIndex: this.stepIndex,
-      activeCellCount: this.cells.size,
-      environmentActiveCellCount: this.environmentActiveKeys.length,
-      pendingEventCount: this.pendingEvents.length,
-      processedCellCount,
-      processedEventCount,
-      receiverCellsCreated: this.performanceCounters.receiverCellsCreated,
-      flowBufferHighWater: this.performanceCounters.flowBufferHighWater,
-      maintenancePreparedCellCount: this.performanceCounters.maintenancePreparedCellCount,
-      weatherWakeRemaining: this.weatherWakeRemaining,
-      checkpointPhase: this.checkpointBuilder?.phase || 'idle',
-      checkpointTargetStep: this.checkpointBuilder?.targetPayload?.stepIndex || 0,
-      checkpointPendingCells: this.checkpointBuilder?.frozen
-        ? Math.max(0, this.checkpointBuilder.targetKeys.length - this.checkpointBuilder.cellCopies.size)
-        : this.checkpointBuilder?.pendingKeySet?.size || 0,
-      checkpointHashCharacters: this.checkpointBuilder?.hashTask?.processedCharacters || 0,
-      checkpointEventOverage: Math.max(0, this.eventHistory.length - this.eventHistoryLimit),
-      checkpointCompletedCount: this.performanceCounters.checkpointCompletedCount,
-      checkpointMaximumSliceMs: this.performanceCounters.checkpointMaximumSliceMs,
-      catchUpRemaining: this.accumulatorMs + 1e-9 >= this.fixedStepMs
-    };
+    const result = target || {};
+    result.completedSteps = completedSteps;
+    result.stepIndex = this.stepIndex;
+    result.activeCellCount = this.cells.size;
+    result.environmentActiveCellCount = this.environmentActiveKeys.length;
+    result.pendingEventCount = this.pendingEvents.length;
+    result.processedCellCount = processedCellCount;
+    result.processedEventCount = processedEventCount;
+    result.receiverCellsCreated = this.performanceCounters.receiverCellsCreated;
+    result.flowBufferHighWater = this.performanceCounters.flowBufferHighWater;
+    result.maintenancePreparedCellCount = this.performanceCounters.maintenancePreparedCellCount;
+    result.weatherWakeRemaining = this.weatherWakeRemaining;
+    result.checkpointPhase = this.checkpointBuilder?.phase || 'idle';
+    result.checkpointTargetStep = this.checkpointBuilder?.targetPayload?.stepIndex || 0;
+    result.checkpointPendingCells = this.checkpointBuilder?.frozen
+      ? Math.max(0, this.checkpointBuilder.targetKeys.length - this.checkpointBuilder.cellCopies.size)
+      : this.checkpointBuilder?.pendingKeySet?.size || 0;
+    result.checkpointHashCharacters = this.checkpointBuilder?.hashTask?.processedCharacters || 0;
+    result.checkpointEventOverage = Math.max(0, this.eventHistory.length - this.eventHistoryLimit);
+    result.checkpointCompletedCount = this.performanceCounters.checkpointCompletedCount;
+    result.checkpointMaximumSliceMs = this.performanceCounters.checkpointMaximumSliceMs;
+    result.catchUpRemaining = this.accumulatorMs + 1e-9 >= this.fixedStepMs;
+    return result;
   }
 
   getStoredWaterMm() {
@@ -1005,6 +1041,7 @@ export class TrackState {
 
   restoreSnapshot(snapshot) {
     const restored = restoreTrackStateSnapshot(this, snapshot);
+    this.cellLookupRevision += 1;
     this.rebuildDerivedRuntimeState();
     return restored;
   }

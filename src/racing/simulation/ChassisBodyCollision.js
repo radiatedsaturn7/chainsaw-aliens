@@ -1,7 +1,9 @@
 import {
   addVector3,
+  createInverseInertiaWorldScratch,
   crossVector3,
   inverseInertiaWorldMultiply,
+  inverseInertiaWorldMultiplyInto,
   integrateQuaternion,
   rotateVectorByQuaternion,
   scaleVector3
@@ -196,6 +198,12 @@ export function createChassisBodyContactCandidates(config = {}) {
     };
     const featureMap = new Map();
     const addFaceGrid = (fixedAxis, fixedSign, axisA, axisB) => {
+      const faceName = fixedAxis === 'x'
+        ? (fixedSign < 0 ? 'left' : 'right')
+        : fixedAxis === 'y'
+          ? (fixedSign < 0 ? 'bottom' : 'top')
+          : (fixedSign < 0 ? 'rear' : 'front');
+      if (piece.exposedFaces && !piece.exposedFaces.includes(faceName)) return;
       for (let a = 0; a <= divisions[axisA]; a += 1) {
         for (let b = 0; b <= divisions[axisB]; b += 1) {
           const normalized = { x: 0, y: 0, z: 0 };
@@ -241,7 +249,24 @@ export function createChassisBodyContactCandidates(config = {}) {
       }));
     });
   });
-  return Object.freeze(candidates);
+  const exposedCandidates = candidates.filter((candidate) => {
+    const point = candidate.localPoint;
+    for (let pieceIndex = 0; pieceIndex < profile.pieces.length; pieceIndex += 1) {
+      const piece = profile.pieces[pieceIndex];
+      if (piece.id === candidate.pieceId || piece.type !== 'box') continue;
+      const halfX = piece.sizeM.x * 0.5;
+      const halfY = piece.sizeM.y * 0.5;
+      const halfZ = piece.sizeM.z * 0.5;
+      if (point.x > piece.centerM.x - halfX + 1e-7
+        && point.x < piece.centerM.x + halfX - 1e-7
+        && point.y > piece.centerM.y - halfY + 1e-7
+        && point.y < piece.centerM.y + halfY - 1e-7
+        && point.z > piece.centerM.z - halfZ + 1e-7
+        && point.z < piece.centerM.z + halfZ - 1e-7) return false;
+    }
+    return true;
+  });
+  return Object.freeze(exposedCandidates);
 }
 
 function inverseInertiaMultiply(value, config, orientation) {
@@ -255,14 +280,55 @@ function inverseInertiaMultiply(value, config, orientation) {
   });
 }
 
-function effectiveMassDenominator(direction, arm, config, orientation) {
+function inertiaTensorForScratch(config, scratch) {
+  if (config.inertiaTensorBodyKgM2) return config.inertiaTensorBodyKgM2;
+  const tensor = scratch.fallbackTensor;
+  tensor.xx = Number(config.pitchInertiaKgM2 || 1);
+  tensor.yy = Number(config.yawInertiaKgM2 || 1);
+  tensor.zz = Number(config.rollInertiaKgM2 || 1);
+  return tensor;
+}
+
+function effectiveMassDenominator(direction, arm, config, orientation, scratch = null) {
+  if (scratch) {
+    const armCrossDirection = crossVector3(arm, direction, scratch.crossInput);
+    const angularVelocityPerImpulse = inverseInertiaWorldMultiplyInto(
+      armCrossDirection,
+      orientation,
+      inertiaTensorForScratch(config, scratch),
+      scratch.angularVelocity,
+      scratch.inverseInertia
+    );
+    return 1 / config.massKg + dot(
+      direction,
+      crossVector3(angularVelocityPerImpulse, arm, scratch.crossOutput)
+    );
+  }
   const armCrossDirection = crossVector3(arm, direction);
   const angularVelocityPerImpulse = inverseInertiaMultiply(armCrossDirection, config, orientation);
   return 1 / config.massKg
     + dot(direction, crossVector3(angularVelocityPerImpulse, arm));
 }
 
-function applyImpulse(working, impulse, arm, config) {
+function applyImpulse(working, impulse, arm, config, scratch = null) {
+  if (scratch) {
+    const inverseMass = 1 / config.massKg;
+    working.velocity.x += Number(impulse.x || 0) * inverseMass;
+    working.velocity.y += Number(impulse.y || 0) * inverseMass;
+    working.velocity.z += Number(impulse.z || 0) * inverseMass;
+    const angularImpulse = crossVector3(arm, impulse, scratch.crossInput);
+    const angularDelta = inverseInertiaWorldMultiplyInto(
+      angularImpulse,
+      working.orientation,
+      inertiaTensorForScratch(config, scratch),
+      scratch.angularVelocity,
+      scratch.inverseInertia
+    );
+    working.angularVelocityWorld.x += angularDelta.x;
+    working.angularVelocityWorld.y += angularDelta.y;
+    working.angularVelocityWorld.z += angularDelta.z;
+    return;
+  }
   working.velocity = addVector3(working.velocity, scaleVector3(impulse, 1 / config.massKg));
   working.angularVelocityWorld = addVector3(
     working.angularVelocityWorld,
@@ -302,6 +368,28 @@ export class ChassisBodyCollision {
     };
     this.adaptivePieceBuckets = new Map();
     this.adaptiveBucketArrayPool = [];
+    this.preparedAdaptiveCandidatesScratch = [];
+    this.preparedAdaptiveCandidateKeysScratch = new Set();
+    this.bodySweepConfigSource = null;
+    this.bodySweepConfigScratch = null;
+    this.manifoldQueryCandidatesScratch = [];
+    this.manifoldQueryCandidateIndicesScratch = [];
+    this.uniqueWheelSupportFeaturesScratch = [];
+    this.contactPoolCursor = 0;
+    this.contactPools = Array.from({ length: 8 }, () => []);
+    this.manifoldVectorScratch = Array.from(
+      { length: 12 },
+      () => ({ x: 0, y: 0, z: 0 })
+    );
+    const impulseScratch = () => ({
+      crossInput: { x: 0, y: 0, z: 0 },
+      crossOutput: { x: 0, y: 0, z: 0 },
+      angularVelocity: { x: 0, y: 0, z: 0 },
+      fallbackTensor: { xx: 1, xy: 0, xz: 0, yy: 1, yz: 0, zz: 1 },
+      inverseInertia: createInverseInertiaWorldScratch()
+    });
+    this.manifoldImpulseScratch = impulseScratch();
+    this.manifoldDenominatorScratch = impulseScratch();
     const minimumLocalY = this.candidates.reduce((minimum, candidate) => (
       Math.min(minimum, Number(candidate.localPoint?.y ?? Infinity))
     ), Infinity);
@@ -326,6 +414,36 @@ export class ChassisBodyCollision {
     this.lowerHullCandidates = Object.freeze([...lowerBuckets.values()].sort((left, right) => (
       String(left.id).localeCompare(String(right.id))
     )));
+    const probeDirections = [
+      [-1, -1], [0, -1], [1, -1], [1, 0],
+      [1, 1], [0, 1], [-1, 1], [-1, 0]
+    ];
+    const lowerHullProbeCandidates = [];
+    for (let directionIndex = 0; directionIndex < probeDirections.length;
+      directionIndex += 1) {
+      const direction = probeDirections[directionIndex];
+      let selected = null;
+      let selectedScore = -Infinity;
+      for (let candidateIndex = 0; candidateIndex < this.lowerHullCandidates.length;
+        candidateIndex += 1) {
+        const candidate = this.lowerHullCandidates[candidateIndex];
+        const point = candidate.localPoint || {};
+        const score = Number(point.x || 0) * direction[0]
+          + Number(point.z || 0) * direction[1];
+        if (score > selectedScore
+          || (score === selectedScore
+            && Number(point.y || 0) < Number(selected?.localPoint?.y ?? Infinity))) {
+          selected = candidate;
+          selectedScore = score;
+        }
+      }
+      if (selected && !lowerHullProbeCandidates.includes(selected)) {
+        lowerHullProbeCandidates.push(selected);
+      }
+    }
+    this.lowerHullProbeCandidates = Object.freeze(lowerHullProbeCandidates.sort((left, right) => (
+      String(left.id).localeCompare(String(right.id))
+    )));
   }
 
   createWorkingState(state = {}) {
@@ -337,7 +455,47 @@ export class ChassisBodyCollision {
     };
   }
 
-  getSupportCandidates(pose = {}) {
+  getSupportCandidates(pose = {}, targetBuffer = null) {
+    if (targetBuffer) {
+      const result = targetBuffer.supportCandidates;
+      const envelope = targetBuffer.supportEnvelopeCandidates;
+      const envelopeHeights = targetBuffer.supportEnvelopeHeights;
+      result.length = 0;
+      envelope.clear();
+      envelopeHeights.clear();
+      const spacing = this.supportEnvelopeBucketM;
+      const rotatedPoint = this.broadphaseArmScratch;
+      const rotatedNormal = this.broadphaseLocalScratch;
+      for (let candidateIndex = 0;
+        candidateIndex < this.candidates.length;
+        candidateIndex += 1) {
+        const candidate = this.candidates[candidateIndex];
+        const normals = candidate.localNormals;
+        let facing = !normals?.length;
+        if (!facing) {
+          for (let normalIndex = 0; normalIndex < normals.length; normalIndex += 1) {
+            rotateVectorInto(normals[normalIndex], pose.orientation, rotatedNormal);
+            if (rotatedNormal.y < -0.05) {
+              facing = true;
+              break;
+            }
+          }
+        }
+        if (!facing) continue;
+        rotateVectorInto(candidate.localPoint, pose.orientation, rotatedPoint);
+        const key = integerPairKey(
+          Math.round(rotatedPoint.x / spacing),
+          Math.round(rotatedPoint.z / spacing)
+        );
+        const existingHeight = envelopeHeights.get(key);
+        if (existingHeight === undefined || rotatedPoint.y < existingHeight) {
+          envelope.set(key, candidate);
+          envelopeHeights.set(key, rotatedPoint.y);
+        }
+      }
+      for (const candidate of envelope.values()) result.push(candidate);
+      return result;
+    }
     const orientation = pose.orientation || {};
     const cacheKey = ['x', 'y', 'z', 'w'].map((axis) => (
       Math.round(Number(orientation[axis] ?? (axis === 'w' ? 1 : 0)) * 10000)
@@ -366,9 +524,9 @@ export class ChassisBodyCollision {
 
   getAdaptiveSupportWorldUnprofiled(pose, environment = {}, target = null) {
     const precomputedCandidates = environment.precomputedAdaptiveBodySupportCandidates;
-    const sourceCandidates = Array.isArray(precomputedCandidates)
-      ? precomputedCandidates : this.getSupportCandidates(pose);
     const targetBuffer = target && !Array.isArray(target) ? target : null;
+    const sourceCandidates = Array.isArray(precomputedCandidates)
+      ? precomputedCandidates : this.getSupportCandidates(pose, targetBuffer);
     const base = targetBuffer?.entries || target || [];
     const spareEntries = targetBuffer?.spareEntries || null;
     if (spareEntries) {
@@ -382,6 +540,8 @@ export class ChassisBodyCollision {
       if (!entry) {
         entry = {
           candidate: null,
+          contactTriangleCandidateId: null,
+          contactTriangleId: null,
           arm: { x: 0, y: 0, z: 0 },
           worldPoint: { x: 0, y: 0, z: 0 }
         };
@@ -413,8 +573,10 @@ export class ChassisBodyCollision {
     const maximumAdditions = Math.max(4, Math.min(64, Math.trunc(Number(
       environment.bodySupportMaximumAdaptiveSamples ?? 32
     ))));
-    const additions = [];
-    const sampled = new Map();
+    const additions = targetBuffer?.adaptiveAdditions || [];
+    additions.length = 0;
+    const sampled = targetBuffer?.sampledTerrain || new Map();
+    sampled.clear();
     const terrainAt = (point) => {
       if (!sampled.has(point)) sampled.set(point, createSurfaceSample(sampleTerrain(point), {
         queryPosition: point,
@@ -435,19 +597,52 @@ export class ChassisBodyCollision {
       const rightNormal = normalize(rightTerrain.normal || rightTerrain.normalWorld);
       if (Math.abs(leftHeight - rightHeight) <= heightErrorM
         && 1 - dot(leftNormal, rightNormal) <= normalError) return;
-      const localPoint = mixVector(left.candidate.localPoint, right.candidate.localPoint, 0.5);
-      const arm = rotateVectorByQuaternion(localPoint, pose.orientation);
-      const middle = {
-        candidate: {
-          id: `${left.candidate.pieceId}-adaptive-${left.candidate.id}-${right.candidate.id}-${depth}`,
-          pieceId: left.candidate.pieceId,
-          pieceType: left.candidate.pieceType,
-          localPoint,
-          adaptive: true
-        },
-        arm,
-        worldPoint: addVector3(pose.position, arm)
+      let middle = spareEntries?.pop() || null;
+      if (!middle) {
+        middle = {
+          candidate: null,
+          contactTriangleCandidateId: null,
+          contactTriangleId: null,
+          adaptiveCandidate: {
+            id: '',
+            pieceId: null,
+            pieceType: null,
+            localPoint: { x: 0, y: 0, z: 0 },
+            adaptive: true
+          },
+          arm: { x: 0, y: 0, z: 0 },
+          worldPoint: { x: 0, y: 0, z: 0 }
+        };
+        if (targetBuffer) {
+          environment.physicsCostAccounting?.count('temporaryObjects', 5);
+          environment.physicsCostAccounting?.count('bodySupportEntryAllocations');
+        }
+      }
+      const candidate = middle.adaptiveCandidate || {
+        id: '',
+        pieceId: null,
+        pieceType: null,
+        localPoint: { x: 0, y: 0, z: 0 },
+        adaptive: true
       };
+      middle.adaptiveCandidate = candidate;
+      candidate.id = `${left.candidate.pieceId}-adaptive-${left.candidate.id}-${right.candidate.id}-${depth}`;
+      candidate.pieceId = left.candidate.pieceId;
+      candidate.pieceType = left.candidate.pieceType;
+      candidate.localPoint.x = Number(left.candidate.localPoint?.x || 0)
+        + (Number(right.candidate.localPoint?.x || 0)
+          - Number(left.candidate.localPoint?.x || 0)) * 0.5;
+      candidate.localPoint.y = Number(left.candidate.localPoint?.y || 0)
+        + (Number(right.candidate.localPoint?.y || 0)
+          - Number(left.candidate.localPoint?.y || 0)) * 0.5;
+      candidate.localPoint.z = Number(left.candidate.localPoint?.z || 0)
+        + (Number(right.candidate.localPoint?.z || 0)
+          - Number(left.candidate.localPoint?.z || 0)) * 0.5;
+      middle.candidate = candidate;
+      rotateVectorInto(candidate.localPoint, pose.orientation, middle.arm);
+      middle.worldPoint.x = Number(pose.position?.x || 0) + middle.arm.x;
+      middle.worldPoint.y = Number(pose.position?.y || 0) + middle.arm.y;
+      middle.worldPoint.z = Number(pose.position?.z || 0) + middle.arm.z;
       additions.push(middle);
       if (additions.length >= maximumAdditions) return;
       subdivide(left, middle, depth + 1);
@@ -504,24 +699,32 @@ export class ChassisBodyCollision {
         }
       }
     }
-    return base.concat(additions);
+    if (!targetBuffer) return base.concat(additions);
+    for (let index = 0; index < additions.length; index += 1) {
+      base.push(additions[index]);
+    }
+    return base;
   }
 
-  getLowerHullSupportWorldUnprofiled(pose, environment = {}, target = null) {
+  getLowerHullSupportWorldUnprofiled(
+    pose, environment = {}, target = null, candidates = this.lowerHullCandidates
+  ) {
     const targetBuffer = target && !Array.isArray(target) ? target : null;
     const base = targetBuffer?.entries || target || [];
     const spareEntries = targetBuffer?.spareEntries || null;
     if (spareEntries) {
-      while (base.length > this.lowerHullCandidates.length) spareEntries.push(base.pop());
+      while (base.length > candidates.length) spareEntries.push(base.pop());
     } else {
-      base.length = this.lowerHullCandidates.length;
+      base.length = candidates.length;
     }
-    for (let index = 0; index < this.lowerHullCandidates.length; index += 1) {
-      const candidate = this.lowerHullCandidates[index];
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
       let entry = base[index] || spareEntries?.pop();
       if (!entry) {
         entry = {
           candidate: null,
+          contactTriangleCandidateId: null,
+          contactTriangleId: null,
           arm: { x: 0, y: 0, z: 0 },
           worldPoint: { x: 0, y: 0, z: 0 }
         };
@@ -540,14 +743,19 @@ export class ChassisBodyCollision {
     return base;
   }
 
-  sampleLowerHullMaximumPenetrationM(pose, environment = {}) {
+  sampleLowerHullMaximumPenetrationM(
+    pose,
+    environment = {},
+    candidates = this.lowerHullCandidates
+  ) {
     const queryFrame = environment.physicsTerrainQueryFrame;
     const sampleTerrain = environment.sampleTerrainAtWorldPoint;
     const supportBuffer = queryFrame?.acquireBodySupportBuffer?.() || null;
     const support = this.getLowerHullSupportWorldUnprofiled(
       pose,
       environment,
-      supportBuffer
+      supportBuffer,
+      candidates
     );
     const terrainBatch = typeof queryFrame?.sampleSupportEntries === 'function'
       ? queryFrame.sampleSupportEntries(support)
@@ -575,22 +783,39 @@ export class ChassisBodyCollision {
   prepareAdaptiveSupportCandidates(previousPose, proposedPose, environment = {}) {
     if (environment.adaptiveBodySupport !== true
       && environment.terrainHasDiscontinuities !== true) return null;
-    // Avoid cloning the full contact environment inside the 360 Hz path. The
-    // adaptive-support override is the only property that differs here.
-    const buildEnvironment = Object.create(environment);
-    buildEnvironment.precomputedAdaptiveBodySupportCandidates = null;
+    const queryFrame = environment.physicsTerrainQueryFrame;
+    environment.precomputedAdaptiveBodySupportCandidates = null;
+    const previousBuffer = previousPose
+      ? queryFrame?.acquireBodySupportBuffer?.() || null : null;
+    const proposedBuffer = queryFrame?.acquireBodySupportBuffer?.() || null;
     const previous = previousPose
-      ? this.getAdaptiveSupportWorldUnprofiled(previousPose, buildEnvironment) : [];
-    const proposed = this.getAdaptiveSupportWorldUnprofiled(proposedPose, buildEnvironment);
-    const candidates = [];
-    const keys = new Set();
-    previous.concat(proposed).forEach(({ candidate }) => {
-      const local = candidate.localPoint || {};
-      const key = `${candidate.id}:${Number(local.x || 0).toFixed(6)}:${Number(local.y || 0).toFixed(6)}:${Number(local.z || 0).toFixed(6)}`;
-      if (keys.has(key)) return;
+      ? this.getAdaptiveSupportWorldUnprofiled(previousPose, environment, previousBuffer)
+      : null;
+    const proposed = this.getAdaptiveSupportWorldUnprofiled(
+      proposedPose, environment, proposedBuffer
+    );
+    const candidates = this.preparedAdaptiveCandidatesScratch;
+    const keys = this.preparedAdaptiveCandidateKeysScratch;
+    candidates.length = 0;
+    keys.clear();
+    if (previous) {
+      for (let index = 0; index < previous.length; index += 1) {
+        const candidate = previous[index].candidate;
+        const key = candidate?.id;
+        if (!key || keys.has(key)) continue;
+        keys.add(key);
+        candidates.push(candidate);
+      }
+    }
+    for (let index = 0; index < proposed.length; index += 1) {
+      const candidate = proposed[index].candidate;
+      const key = candidate?.id;
+      if (!key || keys.has(key)) continue;
       keys.add(key);
       candidates.push(candidate);
-    });
+    }
+    queryFrame?.releaseBodySupportBuffer?.(previousBuffer);
+    queryFrame?.releaseBodySupportBuffer?.(proposedBuffer);
     environment.precomputedAdaptiveBodySupportCandidates = candidates;
     return candidates;
   }
@@ -977,6 +1202,7 @@ export class ChassisBodyCollision {
           ? heightM : Math.max(knownMaximumTerrainHeightM, heightM);
       }
     }
+    let manifoldMaximumTerrainHeightM = null;
     if (typeof environment.sampleTerrainMaximumHeightInBounds === 'function') {
       this.broadphaseBoundsScratch.minX = endpointMinX;
       this.broadphaseBoundsScratch.maxX = endpointMaxX;
@@ -1046,7 +1272,8 @@ export class ChassisBodyCollision {
         const lowerSupport = this.getLowerHullSupportWorldUnprofiled(
           proposedState,
           environment,
-          supportBuffer
+          supportBuffer,
+          this.lowerHullProbeCandidates
         );
         physicsCosts?.count('bodyLowerHullSupportFeatures', lowerSupport.length);
         const terrainBatch = typeof queryFrame?.sampleSupportEntries === 'function'
@@ -1145,9 +1372,6 @@ export class ChassisBodyCollision {
       }
     }
     physicsCosts?.count('bodyFullEnvelopeActivations');
-    this.prepareAdaptiveSupportCandidates(
-      previousWorkingState, proposedState, environment
-    );
     const lowerHullClosingSpeedMps = lowerHullDeepestNormal
       ? Math.max(0, -dot(proposedState.velocity, lowerHullDeepestNormal)) : 0;
     const angularSurfaceSpeedMps = length(proposedState.angularVelocityWorld) * bodyRadiusM;
@@ -1159,21 +1383,67 @@ export class ChassisBodyCollision {
       Number(proposedState.position?.z || 0)
         - Number(previousWorkingState.position?.z || 0)
     ) : 0;
+    const sweepForWheelCrossing = Boolean(wheelCylinderSweep);
+    const sweepForTranslation = bodyTranslationM > 0.3;
+    const closingSpeedSweepCandidate = lowerHullClosingSpeedMps + angularSurfaceSpeedMps > 3;
+    const penetrationSweepCandidate = lowerHullMaximumPenetrationM
+      > Math.max(0.03, toleranceM * 3);
+    const previousLowerHullPenetrationM = (closingSpeedSweepCandidate
+      || penetrationSweepCandidate) && previousWorkingState
+      ? this.sampleLowerHullMaximumPenetrationM(
+          previousWorkingState,
+          environment,
+          this.lowerHullProbeCandidates
+        )
+      : null;
+    const enteringLowerHullContact = !Number.isFinite(previousLowerHullPenetrationM)
+      || previousLowerHullPenetrationM <= toleranceM;
+    const sweepForClosingSpeed = closingSpeedSweepCandidate
+      && enteringLowerHullContact;
+    const sweepForAttitude = Math.abs(Number(proposedState.pitchRad || 0)) > 0.35
+      || Math.abs(Number(proposedState.rollRad || 0)) > 0.35;
+    const sweepForPenetration = penetrationSweepCandidate && enteringLowerHullContact;
+    const catastrophicBodyPenetration = lowerHullMaximumPenetrationM
+      > Math.max(0.35, Number(config.catastrophicBodyPenetrationM || 0));
     const requiresContinuousBodySweep = Boolean(previousWorkingState) && (
-      environment.terrainHasDiscontinuities === true
-      || wheelCylinderSweep
-      || bodyTranslationM > 0.3
-      || lowerHullClosingSpeedMps + angularSurfaceSpeedMps > 3
-      || Math.abs(Number(proposedState.pitchRad || 0)) > 0.35
-      || Math.abs(Number(proposedState.rollRad || 0)) > 0.35
-      || lowerHullMaximumPenetrationM > Math.max(0.03, toleranceM * 3)
+      sweepForWheelCrossing
+      || sweepForTranslation
+      || sweepForClosingSpeed
+      || sweepForAttitude
+      || sweepForPenetration
     );
+    const requiresCompleteCompoundSupport = requiresContinuousBodySweep
+      || catastrophicBodyPenetration;
+    if (requiresContinuousBodySweep) {
+      if (sweepForWheelCrossing) physicsCosts?.count('bodySweepWheelCrossingActivations');
+      else if (sweepForTranslation) physicsCosts?.count('bodySweepTranslationActivations');
+      else if (sweepForClosingSpeed) physicsCosts?.count('bodySweepClosingSpeedActivations');
+      else if (sweepForAttitude) physicsCosts?.count('bodySweepAttitudeActivations');
+      else physicsCosts?.count('bodySweepPenetrationActivations');
+    } else if ((closingSpeedSweepCandidate || penetrationSweepCandidate)
+      && Number.isFinite(previousLowerHullPenetrationM)) {
+      physicsCosts?.count('bodySweepPersistentContactRejections');
+    }
+    environment.precomputedAdaptiveBodySupportCandidates = null;
+    if (requiresContinuousBodySweep) {
+      this.prepareAdaptiveSupportCandidates(
+        previousWorkingState, proposedState, environment
+      );
+    }
+    if (this.bodySweepConfigSource !== config) {
+      this.bodySweepConfigSource = config;
+      this.bodySweepConfigScratch = Object.create(config);
+    }
+    this.bodySweepConfigScratch.__collisionSubstepDt = dt;
+    this.bodySweepConfigScratch.__useLowerHullSweep = uprightForLowerHullProbe;
     const bodySweep = requiresContinuousBodySweep
-      ? this.findSweepImpact(previousWorkingState, proposedState, environment, toleranceM, {
-          ...config,
-          __collisionSubstepDt: dt,
-          __useLowerHullSweep: uprightForLowerHullProbe
-        })
+      ? this.findSweepImpact(
+          previousWorkingState,
+          proposedState,
+          environment,
+          toleranceM,
+          this.bodySweepConfigScratch
+        )
       : null;
     let sweep = bodySweep;
     let sweepSource = bodySweep ? 'body' : null;
@@ -1210,16 +1480,49 @@ export class ChassisBodyCollision {
     const sweptWheelContactFeatures = wheelCylinderSweep
       && wheelCylinderSweep.fraction <= (sweep?.fraction ?? 1) + 2e-4
       ? wheelCylinderSweep.contacts : [];
-    const uniqueWheelSupportFeatures = wheelSupportFeatures.filter((feature) => (
-      !sweptWheelContactFeatures.some((contact) => contact.wheelId === feature.wheelId
-        && length(addVector3(contact.worldPoint, scaleVector3(feature.worldPoint, -1))) < 1e-5)
-    ));
+    const uniqueWheelSupportFeatures = this.uniqueWheelSupportFeaturesScratch;
+    uniqueWheelSupportFeatures.length = 0;
+    for (let featureIndex = 0; featureIndex < wheelSupportFeatures.length; featureIndex += 1) {
+      const feature = wheelSupportFeatures[featureIndex];
+      let duplicate = false;
+      for (let contactIndex = 0;
+        contactIndex < sweptWheelContactFeatures.length;
+        contactIndex += 1) {
+        const contact = sweptWheelContactFeatures[contactIndex];
+        if (contact.wheelId !== feature.wheelId) continue;
+        const dx = Number(contact.worldPoint?.x || 0) - Number(feature.worldPoint?.x || 0);
+        const dy = Number(contact.worldPoint?.y || 0) - Number(feature.worldPoint?.y || 0);
+        const dz = Number(contact.worldPoint?.z || 0) - Number(feature.worldPoint?.z || 0);
+        if (Math.hypot(dx, dy, dz) < 1e-5) {
+          duplicate = true;
+          break;
+        }
+      }
+      if (!duplicate) uniqueWheelSupportFeatures.push(feature);
+    }
     const manifoldSupportBuffer = queryFrame?.acquireBodySupportBuffer?.() || null;
+    const useOrdinaryUnderbodySupport = uprightForLowerHullProbe
+      && !requiresCompleteCompoundSupport
+      && !wheelCylinderSweep;
+    if (useOrdinaryUnderbodySupport) {
+      physicsCosts?.count('bodyOrdinaryUnderbodyManifolds');
+    }
     const candidateWorld = manifoldSupportBuffer
-      ? this.getAdaptiveSupportWorldUnprofiled(
-          workingState, environment, manifoldSupportBuffer
-        )
-      : this.getAdaptiveSupportWorld(workingState, environment);
+      ? useOrdinaryUnderbodySupport
+        ? this.getLowerHullSupportWorldUnprofiled(
+            workingState,
+            environment,
+            manifoldSupportBuffer,
+            this.lowerHullProbeCandidates
+          )
+        : this.getAdaptiveSupportWorldUnprofiled(
+            workingState, environment, manifoldSupportBuffer
+          )
+      : useOrdinaryUnderbodySupport
+        ? this.getLowerHullSupportWorldUnprofiled(
+            workingState, environment, null, this.lowerHullProbeCandidates
+          )
+        : this.getAdaptiveSupportWorld(workingState, environment);
     if (manifoldSupportBuffer) {
       physicsCosts?.count('bodySupportFeatures', candidateWorld.length);
       let adaptiveCount = 0;
@@ -1228,15 +1531,33 @@ export class ChassisBodyCollision {
       }
       physicsCosts?.count('adaptiveBodySupportFeatures', adaptiveCount);
     }
-    const appendWheelFeature = (feature) => {
-      candidateWorld.push({
-        candidate: feature,
-        arm: addVector3(feature.worldPoint, scaleVector3(workingState.position, -1)),
-        worldPoint: feature.worldPoint
-      });
-    };
-    uniqueWheelSupportFeatures.forEach(appendWheelFeature);
-    sweptWheelContactFeatures.forEach(appendWheelFeature);
+    for (let featureGroupIndex = 0; featureGroupIndex < 2; featureGroupIndex += 1) {
+      const features = featureGroupIndex === 0
+        ? uniqueWheelSupportFeatures : sweptWheelContactFeatures;
+      for (let index = 0; index < features.length; index += 1) {
+        const feature = features[index];
+        let entry = manifoldSupportBuffer?.spareEntries?.pop();
+        if (!entry) {
+          entry = {
+            candidate: null,
+            contactTriangleCandidateId: null,
+            contactTriangleId: null,
+            arm: { x: 0, y: 0, z: 0 },
+            worldPoint: { x: 0, y: 0, z: 0 }
+          };
+          physicsCosts?.count('temporaryObjects', 3);
+          physicsCosts?.count('bodySupportEntryAllocations');
+        }
+        entry.candidate = feature;
+        entry.arm.x = Number(feature.worldPoint?.x || 0) - Number(workingState.position?.x || 0);
+        entry.arm.y = Number(feature.worldPoint?.y || 0) - Number(workingState.position?.y || 0);
+        entry.arm.z = Number(feature.worldPoint?.z || 0) - Number(workingState.position?.z || 0);
+        entry.worldPoint.x = Number(feature.worldPoint?.x || 0);
+        entry.worldPoint.y = Number(feature.worldPoint?.y || 0);
+        entry.worldPoint.z = Number(feature.worldPoint?.z || 0);
+        candidateWorld.push(entry);
+      }
+    }
     if (typeof environment.sampleTerrainMaximumHeightInBounds === 'function') {
       let candidateMinX = Infinity;
       let candidateMaxX = -Infinity;
@@ -1257,6 +1578,9 @@ export class ChassisBodyCollision {
         minZ: candidateMinZ,
         maxZ: candidateMaxZ
       });
+      if (Number.isFinite(Number(maximumTerrainHeightM))) {
+        manifoldMaximumTerrainHeightM = Number(maximumTerrainHeightM);
+      }
       if (Number.isFinite(Number(maximumTerrainHeightM))
         && minimumCandidateHeightM - Number(maximumTerrainHeightM) > toleranceM) {
         queryFrame?.releaseBodySupportBuffer?.(manifoldSupportBuffer);
@@ -1270,21 +1594,46 @@ export class ChassisBodyCollision {
         };
       }
     }
+    let queryCandidates = candidateWorld;
+    let queryCandidateIndices = null;
+    if (manifoldMaximumTerrainHeightM !== null) {
+      queryCandidates = this.manifoldQueryCandidatesScratch;
+      queryCandidateIndices = this.manifoldQueryCandidateIndicesScratch;
+      queryCandidates.length = 0;
+      queryCandidateIndices.length = 0;
+      for (let candidateIndex = 0; candidateIndex < candidateWorld.length; candidateIndex += 1) {
+        const entry = candidateWorld[candidateIndex];
+        const candidate = entry.candidate || {};
+        const explicitContact = Number.isFinite(Number(candidate.penetrationM))
+          || String(candidate.contactType || '').startsWith('wheel-');
+        if (!explicitContact
+          && Number(entry.worldPoint?.y || 0) > manifoldMaximumTerrainHeightM + toleranceM) {
+          continue;
+        }
+        queryCandidates.push(entry);
+        queryCandidateIndices.push(candidateIndex);
+      }
+    }
     const terrainBatch = typeof queryFrame?.sampleSupportEntries === 'function'
-      ? queryFrame.sampleSupportEntries(candidateWorld)
+      ? queryFrame.sampleSupportEntries(queryCandidates)
       : typeof sampleTerrainBatch === 'function'
-        ? sampleTerrainBatch(candidateWorld.map(({ worldPoint }) => worldPoint))
+        ? sampleTerrainBatch(queryCandidates.map(({ worldPoint }) => worldPoint))
         : null;
-    const contacts = [];
+    const contactPool = this.contactPools[
+      this.contactPoolCursor++ % this.contactPools.length
+    ];
+    let contactCount = 0;
+    const contacts = contactPool;
     let maximumContactPenetrationM = 0;
     let nonWheelCandidateCount = 0;
     let nonWheelContactCount = 0;
-    for (let candidateIndex = 0; candidateIndex < candidateWorld.length; candidateIndex += 1) {
-      const { candidate, arm, worldPoint } = candidateWorld[candidateIndex];
+    for (let queryIndex = 0; queryIndex < queryCandidates.length; queryIndex += 1) {
+      const candidateIndex = queryCandidateIndices?.[queryIndex] ?? queryIndex;
+      const { candidate, arm, worldPoint } = queryCandidates[queryIndex];
       const contactType = candidate.contactType || 'body';
       const wheelContact = String(contactType).startsWith('wheel-');
       if (!wheelContact) nonWheelCandidateCount += 1;
-      const rawTerrain = candidate.surfaceSample || terrainBatch?.[candidateIndex]
+      const rawTerrain = candidate.surfaceSample || terrainBatch?.[queryIndex]
         || (typeof sampleTerrain === 'function' ? sampleTerrain(worldPoint) : null)
         || {};
       const terrain = terrainSampleContract(rawTerrain, worldPoint, 'body-contact-query');
@@ -1307,42 +1656,62 @@ export class ChassisBodyCollision {
         ? Number(candidate.penetrationM)
         : (heightM - worldPoint.y) * normalY;
       if (penetrationM <= toleranceM) continue;
-      const normal = { x: normalX, y: normalY, z: normalZ };
+      let contact = contactPool[contactCount];
+      if (!contact) {
+        contact = {
+          arm: { x: 0, y: 0, z: 0 },
+          pointWorld: { x: 0, y: 0, z: 0 },
+          normal: { x: 0, y: 1, z: 0 },
+          splitArm: { x: 0, y: 0, z: 0 },
+          splitPointWorld: { x: 0, y: 0, z: 0 },
+          tangentialImpulseWorldNs: { x: 0, y: 0, z: 0 }
+        };
+        contactPool[contactCount] = contact;
+      }
+      const normal = contact.normal;
+      normal.x = normalX;
+      normal.y = normalY;
+      normal.z = normalZ;
       maximumContactPenetrationM = Math.max(maximumContactPenetrationM, penetrationM);
       if (!wheelContact) nonWheelContactCount += 1;
-      contacts.push({
-        id: candidate.id,
-        candidateIndex,
-        localPoint: candidate.localPoint || null,
-        arm: { ...arm },
-        pointWorld: { ...worldPoint },
-        normal,
-        penetrationM,
-        friction: clamp(Math.sqrt(
-          Math.max(0, Number(candidate.friction ?? config.bodyCollisionFriction ?? 0.62))
-          * Math.max(0, Number(terrain.friction ?? config.bodyCollisionFriction ?? 0.62))
-        ), 0, 1.5),
-        pieceId: candidate.pieceId || null,
-        wheelId: candidate.wheelId || null,
-        contactType,
-        triangleId: candidate.triangleId ?? terrain.triangleId,
-        terrainSource: candidate.terrainSource ?? terrain.source,
-        terrainRegion: candidate.terrainRegion ?? terrain.region,
-        poweredTreadContact: candidate.poweredTreadContact === true,
-        widthFraction: candidate.widthFraction ?? null,
-        partialWidth: candidate.partialWidth === true,
-        sweepMechanism: candidate.mechanism || null,
-        normalImpulseNs: 0,
-        tangentialImpulseNs: 0,
-        tangentialImpulseWorldNs: { x: 0, y: 0, z: 0 },
-        restitutionImpulseNs: 0,
-        penetrationBiasImpulseNs: 0,
-        restitutionTargetSpeedMps: 0,
-        suspensionSupported: Number(
-          environment.suspensionBodyContactSupport?.supportedWheelCount || 0
-        ) > 0 && /lower|frame|underbody|underside|rocker/.test(candidate.id)
-      });
+      contact.id = candidate.id;
+      contact.candidateIndex = candidateIndex;
+      contact.localPoint = candidate.localPoint || null;
+      contact.arm.x = arm.x;
+      contact.arm.y = arm.y;
+      contact.arm.z = arm.z;
+      contact.pointWorld.x = worldPoint.x;
+      contact.pointWorld.y = worldPoint.y;
+      contact.pointWorld.z = worldPoint.z;
+      contact.penetrationM = penetrationM;
+      contact.friction = clamp(Math.sqrt(
+        Math.max(0, Number(candidate.friction ?? config.bodyCollisionFriction ?? 0.62))
+        * Math.max(0, Number(terrain.friction ?? config.bodyCollisionFriction ?? 0.62))
+      ), 0, 1.5);
+      contact.pieceId = candidate.pieceId || null;
+      contact.wheelId = candidate.wheelId || null;
+      contact.contactType = contactType;
+      contact.triangleId = candidate.triangleId ?? terrain.triangleId;
+      contact.terrainSource = candidate.terrainSource ?? terrain.source;
+      contact.terrainRegion = candidate.terrainRegion ?? terrain.region;
+      contact.poweredTreadContact = candidate.poweredTreadContact === true;
+      contact.widthFraction = candidate.widthFraction ?? null;
+      contact.partialWidth = candidate.partialWidth === true;
+      contact.sweepMechanism = candidate.mechanism || null;
+      contact.normalImpulseNs = 0;
+      contact.tangentialImpulseNs = 0;
+      contact.tangentialImpulseWorldNs.x = 0;
+      contact.tangentialImpulseWorldNs.y = 0;
+      contact.tangentialImpulseWorldNs.z = 0;
+      contact.restitutionImpulseNs = 0;
+      contact.penetrationBiasImpulseNs = 0;
+      contact.restitutionTargetSpeedMps = 0;
+      contact.suspensionSupported = Number(
+        environment.suspensionBodyContactSupport?.supportedWheelCount || 0
+      ) > 0 && /lower|frame|underbody|underside|rocker/.test(candidate.id);
+      contactCount += 1;
     }
+    contacts.length = contactCount;
     const unsupportedAtContactStart = Number(
       environment.suspensionBodyContactSupport?.supportedWheelCount || 0
     ) === 0;
@@ -1358,23 +1727,28 @@ export class ChassisBodyCollision {
       0,
       Number(config.bodyCollisionRestitutionThresholdMps ?? 2)
     );
+    const vectorScratch = this.manifoldVectorScratch;
     const iterations = Math.max(1, Math.trunc(Number(config.bodyCollisionSolverIterations || 4)));
-    contacts.forEach((contact) => {
+    for (let contactIndex = 0; contactIndex < contacts.length; contactIndex += 1) {
+      const contact = contacts[contactIndex];
       const initialPointVelocity = addVector3(
         workingState.velocity,
-        crossVector3(workingState.angularVelocityWorld, contact.arm)
+        crossVector3(workingState.angularVelocityWorld, contact.arm, vectorScratch[0]),
+        vectorScratch[1]
       );
       const initialClosingSpeedMps = Math.max(0, -dot(initialPointVelocity, contact.normal));
       contact.restitutionTargetSpeedMps = !contact.suspensionSupported
         && initialClosingSpeedMps >= restitutionThresholdMps
         ? initialClosingSpeedMps * restitution
         : 0;
-    });
+    }
     for (let iteration = 0; iteration < iterations; iteration += 1) {
-      contacts.forEach((contact) => {
+      for (let contactIndex = 0; contactIndex < contacts.length; contactIndex += 1) {
+        const contact = contacts[contactIndex];
         const pointVelocity = addVector3(
           workingState.velocity,
-          crossVector3(workingState.angularVelocityWorld, contact.arm)
+          crossVector3(workingState.angularVelocityWorld, contact.arm, vectorScratch[0]),
+          vectorScratch[1]
         );
         const normalSpeed = dot(pointVelocity, contact.normal);
         // Split impulse: penetration is corrected in position only. Physical
@@ -1386,7 +1760,8 @@ export class ChassisBodyCollision {
           contact.normal,
           contact.arm,
           config,
-          workingState.orientation
+          workingState.orientation,
+          this.manifoldDenominatorScratch
         ));
         const previousNormalImpulseNs = Number(contact.normalImpulseNs || 0);
         const accumulatedNormalImpulseNs = Math.max(
@@ -1394,11 +1769,25 @@ export class ChassisBodyCollision {
           previousNormalImpulseNs + desiredNormalDelta / normalDenominator
         );
         const normalImpulseMagnitude = accumulatedNormalImpulseNs - previousNormalImpulseNs;
-        const normalImpulse = scaleVector3(contact.normal, normalImpulseMagnitude);
-        applyImpulse(workingState, normalImpulse, contact.arm, config);
-        linearImpulse = addVector3(linearImpulse, normalImpulse);
-        const normalAngularImpulse = crossVector3(contact.arm, normalImpulse);
-        angularImpulse = addVector3(angularImpulse, normalAngularImpulse);
+        const normalImpulse = scaleVector3(
+          contact.normal, normalImpulseMagnitude, vectorScratch[2]
+        );
+        applyImpulse(
+          workingState,
+          normalImpulse,
+          contact.arm,
+          config,
+          this.manifoldImpulseScratch
+        );
+        linearImpulse.x += normalImpulse.x;
+        linearImpulse.y += normalImpulse.y;
+        linearImpulse.z += normalImpulse.z;
+        const normalAngularImpulse = crossVector3(
+          contact.arm, normalImpulse, vectorScratch[3]
+        );
+        angularImpulse.x += normalAngularImpulse.x;
+        angularImpulse.y += normalAngularImpulse.y;
+        angularImpulse.z += normalAngularImpulse.z;
         contact.normalImpulseNs = accumulatedNormalImpulseNs;
         contact.restitutionImpulseNs = Math.min(
           accumulatedNormalImpulseNs,
@@ -1407,29 +1796,40 @@ export class ChassisBodyCollision {
 
         const postNormalVelocity = addVector3(
           workingState.velocity,
-          crossVector3(workingState.angularVelocityWorld, contact.arm)
+          crossVector3(workingState.angularVelocityWorld, contact.arm, vectorScratch[0]),
+          vectorScratch[1]
         );
         const tangentVelocity = addVector3(
           postNormalVelocity,
-          scaleVector3(contact.normal, -dot(postNormalVelocity, contact.normal))
+          scaleVector3(
+            contact.normal,
+            -dot(postNormalVelocity, contact.normal),
+            vectorScratch[4]
+          ),
+          vectorScratch[5]
         );
         const tangentSpeed = length(tangentVelocity);
-        if (tangentSpeed <= EPSILON) return;
-        const tangent = scaleVector3(tangentVelocity, 1 / tangentSpeed);
+        if (tangentSpeed <= EPSILON) continue;
+        const tangent = scaleVector3(
+          tangentVelocity, 1 / tangentSpeed, vectorScratch[6]
+        );
         const tangentDenominator = Math.max(EPSILON, effectiveMassDenominator(
           tangent,
           contact.arm,
           config,
-          workingState.orientation
+          workingState.orientation,
+          this.manifoldDenominatorScratch
         ));
         const previousFrictionImpulse = contact.tangentialImpulseWorldNs;
         const requestedFrictionImpulse = scaleVector3(
           tangent,
-          -tangentSpeed / tangentDenominator
+          -tangentSpeed / tangentDenominator,
+          vectorScratch[7]
         );
         const accumulatedFrictionImpulse = addVector3(
           previousFrictionImpulse,
-          requestedFrictionImpulse
+          requestedFrictionImpulse,
+          vectorScratch[8]
         );
         const maximumFrictionImpulseNs = contact.friction * accumulatedNormalImpulseNs;
         const accumulatedMagnitude = length(accumulatedFrictionImpulse);
@@ -1437,19 +1837,36 @@ export class ChassisBodyCollision {
           && accumulatedMagnitude > EPSILON
           ? scaleVector3(
               accumulatedFrictionImpulse,
-              maximumFrictionImpulseNs / accumulatedMagnitude
+              maximumFrictionImpulseNs / accumulatedMagnitude,
+              vectorScratch[9]
             )
           : accumulatedFrictionImpulse;
         const frictionImpulse = addVector3(
           clampedFrictionImpulse,
-          scaleVector3(previousFrictionImpulse, -1)
+          scaleVector3(previousFrictionImpulse, -1, vectorScratch[10]),
+          vectorScratch[11]
         );
-        applyImpulse(workingState, frictionImpulse, contact.arm, config);
-        linearImpulse = addVector3(linearImpulse, frictionImpulse);
-        angularImpulse = addVector3(angularImpulse, crossVector3(contact.arm, frictionImpulse));
-        contact.tangentialImpulseWorldNs = clampedFrictionImpulse;
+        applyImpulse(
+          workingState,
+          frictionImpulse,
+          contact.arm,
+          config,
+          this.manifoldImpulseScratch
+        );
+        linearImpulse.x += frictionImpulse.x;
+        linearImpulse.y += frictionImpulse.y;
+        linearImpulse.z += frictionImpulse.z;
+        const frictionAngularImpulse = crossVector3(
+          contact.arm, frictionImpulse, vectorScratch[3]
+        );
+        angularImpulse.x += frictionAngularImpulse.x;
+        angularImpulse.y += frictionAngularImpulse.y;
+        angularImpulse.z += frictionAngularImpulse.z;
+        contact.tangentialImpulseWorldNs.x = clampedFrictionImpulse.x;
+        contact.tangentialImpulseWorldNs.y = clampedFrictionImpulse.y;
+        contact.tangentialImpulseWorldNs.z = clampedFrictionImpulse.z;
         contact.tangentialImpulseNs = length(clampedFrictionImpulse);
-      });
+      }
     }
     // Split-impulse stabilization operates on pose only. Solving its angular
     // component is essential on a convex rise: rotating the chassis onto its
@@ -1466,29 +1883,46 @@ export class ChassisBodyCollision {
     const maximumSplitRotationRad = 0.35;
     for (let iteration = 0; iteration < 6; iteration += 1) {
       let corrected = false;
-      contacts.forEach((contact) => {
+      for (let contactIndex = 0; contactIndex < contacts.length; contactIndex += 1) {
+        const contact = contacts[contactIndex];
         // Swept wheel-cylinder contacts are velocity constraints at a physical
         // tire/terrain feature. Giving them the body's split-impulse lift
         // would manufacture a climbing force; normal and friction impulses
         // alone carry their response until ordinary tread support takes over.
         if (contact.contactType === 'wheel-leading-tread'
-          || contact.contactType === 'wheel-sidewall') return;
+          || contact.contactType === 'wheel-sidewall') continue;
         const arm = contact.localPoint
-          ? rotateVectorByQuaternion(contact.localPoint, workingState.orientation)
+          ? rotateVectorInto(
+              contact.localPoint,
+              workingState.orientation,
+              contact.splitArm
+            )
           : contact.arm;
-        const pointWorld = addVector3(workingState.position, arm);
+        const pointWorld = contact.splitPointWorld;
+        pointWorld.x = Number(workingState.position?.x || 0) + Number(arm.x || 0);
+        pointWorld.y = Number(workingState.position?.y || 0) + Number(arm.y || 0);
+        pointWorld.z = Number(workingState.position?.z || 0) + Number(arm.z || 0);
+        let rawTerrain = null;
+        if (contact.triangleId !== null && contact.triangleId !== undefined
+          && typeof queryFrame?.samplePointOnTriangle === 'function') {
+          rawTerrain = queryFrame.samplePointOnTriangle(
+            pointWorld,
+            contact.triangleId
+          );
+          if (rawTerrain?.valid !== true) rawTerrain = null;
+        }
         const terrain = terrainSampleContract(
-          typeof sampleTerrain === 'function' ? sampleTerrain(pointWorld) : null,
+          rawTerrain || (typeof sampleTerrain === 'function'
+            ? sampleTerrain(pointWorld) : null),
           pointWorld,
           'body-split-impulse-query'
         );
-        if (!terrain.valid) return;
+        if (!terrain.valid) continue;
         const normal = terrain.normal;
-        const surfacePoint = { x: pointWorld.x, y: terrain.heightM, z: pointWorld.z };
-        const penetrationM = -dot(
-          addVector3(pointWorld, scaleVector3(surfacePoint, -1)), normal
+        const penetrationM = -(
+          (pointWorld.y + -terrain.heightM) * Number(normal.y || 0)
         );
-        if (!(penetrationM > toleranceM)) return;
+        if (!(penetrationM > toleranceM)) continue;
         const denominator = Math.max(EPSILON, effectiveMassDenominator(
           normal, arm, config, workingState.orientation
         ));
@@ -1529,7 +1963,7 @@ export class ChassisBodyCollision {
         );
         splitAngularCorrection = addVector3(splitAngularCorrection, angularCorrection);
         corrected = true;
-      });
+      }
       if (!corrected) break;
     }
     const postSplitPenetration = this.samplePosePenetration(
@@ -1636,20 +2070,37 @@ export class ChassisBodyCollision {
         );
       }
     }
+    let bodyNormalImpulseNs = 0;
+    let bodyFrictionImpulseNs = 0;
+    let wheelCylinderNormalImpulseNs = 0;
+    let wheelCylinderFrictionImpulseNs = 0;
+    let restitutionContributionNs = 0;
+    let maximumPenetrationM = 0;
+    for (let contactIndex = 0; contactIndex < contacts.length; contactIndex += 1) {
+      const contact = contacts[contactIndex];
+      bodyNormalImpulseNs += contact.normalImpulseNs;
+      bodyFrictionImpulseNs += contact.tangentialImpulseNs;
+      restitutionContributionNs += contact.restitutionImpulseNs;
+      maximumPenetrationM = Math.max(
+        maximumPenetrationM,
+        Number(contact.penetrationM || 0)
+      );
+      if (String(contact.contactType).startsWith('wheel-')) {
+        wheelCylinderNormalImpulseNs += contact.normalImpulseNs;
+        wheelCylinderFrictionImpulseNs += contact.tangentialImpulseNs;
+      }
+    }
     const result = {
-      bodySupportLod: 'full-compound',
+      bodySupportLod: useOrdinaryUnderbodySupport
+        ? 'exposed-underbody' : 'full-compound',
       linearImpulseWorldNs: linearImpulse,
       angularImpulseWorldNms: angularImpulse,
       positionalCorrectionWorldM: totalPositionalCorrection,
-      bodyNormalImpulseNs: contacts.reduce((sum, contact) => sum + contact.normalImpulseNs, 0),
-      bodyFrictionImpulseNs: contacts.reduce((sum, contact) => sum + contact.tangentialImpulseNs, 0),
-      wheelCylinderNormalImpulseNs: contacts.filter(({ contactType }) => (
-        String(contactType).startsWith('wheel-')
-      )).reduce((sum, contact) => sum + contact.normalImpulseNs, 0),
-      wheelCylinderFrictionImpulseNs: contacts.filter(({ contactType }) => (
-        String(contactType).startsWith('wheel-')
-      )).reduce((sum, contact) => sum + contact.tangentialImpulseNs, 0),
-      restitutionContributionNs: contacts.reduce((sum, contact) => sum + contact.restitutionImpulseNs, 0),
+      bodyNormalImpulseNs,
+      bodyFrictionImpulseNs,
+      wheelCylinderNormalImpulseNs,
+      wheelCylinderFrictionImpulseNs,
+      restitutionContributionNs,
       penetrationBiasContributionNs: 0,
       maximumPositionalCorrectionM,
       positionalAngularCorrectionWorldRad: splitAngularCorrection,
@@ -1675,9 +2126,7 @@ export class ChassisBodyCollision {
         }))
       } : null,
       timeOfImpactFraction: sweep?.fraction ?? null,
-      maximumPenetrationM: contacts.reduce((maximum, contact) => (
-        Math.max(maximum, Number(contact.penetrationM || 0))
-      ), 0),
+      maximumPenetrationM,
       residualPenetrationM: residualPenetration.maximumPenetrationM,
       finalPenetrationSample: residualPenetration,
       safePoseRollbackFraction,

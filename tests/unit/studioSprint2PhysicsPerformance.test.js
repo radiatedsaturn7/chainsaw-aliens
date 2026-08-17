@@ -98,18 +98,18 @@ test('realtime and high-fidelity reports retain their independent deterministic 
   assert.equal(OPTIMIZED.settings.physicsSurfaceDebug, false);
 
   const expectedHighFidelityChecksums = new Map([
-    [30, '7c88be69'],
-    [60, '27f163c0'],
-    [90, '1e05ba89'],
-    [120, 'ad803f7a'],
-    [144, 'a4111a0a']
+    [30, '03df5c06'],
+    [60, 'ad3db40e'],
+    [90, '95f1c7b8'],
+    [120, '641a5591'],
+    [144, '974494ae']
   ]);
   const expectedRealtimeChecksums = new Map([
-    [30, 'fadc6ba2'],
-    [60, 'f5bf5472'],
-    [90, 'd962f35b'],
-    [120, 'e273106e'],
-    [144, 'eca2716e']
+    [30, '4f5e6d06'],
+    [60, 'a4d088be'],
+    [90, 'd0268eab'],
+    [120, '86d39249'],
+    [144, 'e3dc8a44']
   ]);
 
   OPTIMIZED.runs.forEach((run) => {
@@ -118,6 +118,10 @@ test('realtime and high-fidelity reports retain their independent deterministic 
     assert.equal(run.recovery.count, 0);
     assert.equal(run.peakBacklogSteps, 0);
     assert.equal(run.finalStepIndex, 1440);
+    assert.equal(
+      run.counters.bodyCollisionDeferredTireSubsteps,
+      run.counters.completedTireSubsteps - run.counters.completedSteps
+    );
     assert.equal(run.finalChecksum, expectedHighFidelityChecksums.get(run.fps));
   });
   BASELINE.runs.forEach((run) => {
@@ -129,6 +133,17 @@ test('realtime and high-fidelity reports retain their independent deterministic 
     assert.equal(run.counters.completedTireSubsteps, run.counters.completedSteps);
     assert.ok(run.counters.terrainQueryFrames >= run.counters.completedSteps);
     assert.ok(run.counters.terrainQueryFrames <= run.counters.completedSteps * 1.12);
+    const underbody = run.sections.find(({ id }) => id === 'underbody-scrape');
+    assert.ok(underbody);
+    assert.ok(
+      underbody.counters.bodyOrdinaryUnderbodyManifolds
+        > underbody.counters.bodyCcdActivations,
+      'ordinary bottoming must favor the exposed-underbody manifold over complete CCD'
+    );
+    assert.ok(
+      underbody.counters.bodySweepSlices < underbody.counters.completedSteps * 0.2,
+      'ordinary bottoming must not repeatedly activate complete compound-body sweeps'
+    );
     assert.equal(run.finalChecksum, expectedRealtimeChecksums.get(run.fps));
   });
 });

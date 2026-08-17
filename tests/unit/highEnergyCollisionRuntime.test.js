@@ -699,6 +699,8 @@ test('high-energy runtime fixture uses exact 300 mph and complete WRX2 physical 
   assert.equal(134.112 / 0.44704, 300);
   assert.equal(WRX2_CONFIG.physicalProfileId, 'wrx2-2022-physical-v1');
   assert.equal(WRX2_CONFIG.bodyProfile.preset, 'car');
+  // The immutable recorded incident embeds its original four-piece body;
+  // current WRX2 configuration coverage lives in vehicleBodyProfile.test.js.
   assert.equal(WRX2_CONFIG.bodyProfile.pieces.length, 4);
   assert.equal(WRX2_CONFIG.contactFootprintSamples >= 4, true);
   assert.equal(buildPreparedFloor('flat').surfaceModel instanceof RaceSurfaceModel, true);

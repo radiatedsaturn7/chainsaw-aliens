@@ -134,7 +134,39 @@ test('maximum height clips triangles to query bounds and segment sweep reuses th
   assert.equal(reusedView, true);
 });
 
-test('RaceSurfaceModel geometry-only batches consume the shared prepared frame', () => {
+test('pooled body support reuses its contact triangle and refreshes after triangle exit', () => {
+  const frame = createPhysicsTerrainQueryFrameCache().begin({
+    sampler: createSlopedSampler(),
+    revision: 1,
+    elevationScaleM: 1,
+    bounds: { minX: 0, maxX: 10, minZ: 0, maxZ: 10 }
+  });
+  const entry = {
+    candidate: { id: 'underbody-center' },
+    worldPoint: { x: 2, y: 1, z: 1 },
+    contactTriangleCandidateId: null,
+    contactTriangleId: null
+  };
+  const first = frame.sampleSupportEntries([entry])[0];
+  const fullQueriesAfterFirst = frame.statistics.pointQueries;
+  entry.worldPoint.x = 2.1;
+  entry.worldPoint.z = 1.05;
+  const reused = frame.sampleSupportEntries([entry])[0];
+  const reusedHeightM = reused.heightM;
+  const fullQueriesAfterReuse = frame.statistics.pointQueries;
+  entry.worldPoint.x = 1;
+  entry.worldPoint.z = 2;
+  const refreshed = frame.sampleSupportEntries([entry])[0];
+
+  assert.equal(first.valid, true);
+  assert.ok(Math.abs(reusedHeightM - 0.21) < 1e-12);
+  assert.equal(fullQueriesAfterReuse, fullQueriesAfterFirst);
+  assert.equal(refreshed.valid, true);
+  assert.ok(frame.statistics.pointQueries > fullQueriesAfterFirst);
+  assert.ok(frame.statistics.analyticContactPlaneQueries >= 2);
+});
+
+test('RaceSurfaceModel batches consume the shared prepared frame without an opt-in hint', () => {
   let routeProjectionCalls = 0;
   const model = new RaceSurfaceModel({
     elevationScaleM: 1,
@@ -153,14 +185,42 @@ test('RaceSurfaceModel geometry-only batches consume the shared prepared frame',
     { x: 0.5, z: 0.5 },
     { x: 1.5, z: 0.5 }
   ], {
-    physicsTerrainQueryFrame: frame,
-    geometryOnly: true
+    physicsTerrainQueryFrame: frame
   });
 
   assert.equal(routeProjectionCalls, 0);
   assert.ok(Math.abs(samples[0].heightM - 0.05) < 1e-12);
   assert.ok(Math.abs(samples[1].heightM - 0.15) < 1e-12);
   assert.equal(frame.statistics.batchQueries, 1);
+});
+
+test('prepared edge classifications are reused when a vehicle revisits a bucket range', () => {
+  const cache = createPhysicsTerrainQueryFrameCache();
+  const sampler = createSlopedSampler();
+  const first = cache.begin({
+    sampler,
+    revision: 1,
+    elevationScaleM: 1,
+    bounds: { minX: 0, maxX: 2, minZ: 0, maxZ: 2 }
+  });
+  const firstEdges = first.cache.discontinuityEdges;
+  const firstCounts = first.cache.edgeClassificationCounts;
+  cache.begin({
+    sampler,
+    revision: 1,
+    elevationScaleM: 1,
+    bounds: { minX: 8, maxX: 10, minZ: 8, maxZ: 10 }
+  });
+  const revisited = cache.begin({
+    sampler,
+    revision: 1,
+    elevationScaleM: 1,
+    bounds: { minX: 0, maxX: 2, minZ: 0, maxZ: 2 }
+  });
+
+  assert.equal(revisited.cache.discontinuityEdges, firstEdges);
+  assert.equal(revisited.cache.edgeClassificationCounts, firstCounts);
+  assert.equal(revisited.cache.edgeClassificationsByBucketRange.size, 2);
 });
 
 test('local triangle growth preserves early faces and keeps point queries on the fine grid', () => {

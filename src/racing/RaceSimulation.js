@@ -34,6 +34,7 @@ import {
   RaceVehicleDynamicsWorkerBridge,
   prepareRaceVehicleDynamicsWorkerSurface
 } from './simulation/RaceVehicleDynamicsWorkerBridge.js';
+import { qualifyVehicleDynamicsWorkerMigration } from './simulation/VehicleDynamicsWorkerClient.js';
 
 const RACE_TIRE_FOOTPRINT_OFFSETS = new Float64Array([
   -0.7, -0.42,
@@ -70,6 +71,225 @@ function createRaceEnvironmentScratch() {
     () => ({ contacts: {} })
   );
   const footprintContacts = [];
+  const bodyCollisionClassification = {
+    classification: 'smooth-connected-surface',
+    discontinuity: false,
+    featureCount: 0,
+    edgeClassifications: null
+  };
+  const wheelCollisionClassification = {
+    classification: 'smooth-connected-surface',
+    discontinuity: false,
+    featureCount: 0,
+    edgeClassifications: null
+  };
+  const wheelVariationBounds = {
+    minX: 0, maxX: 0, minY: 0, maxY: 0, minZ: 0, maxZ: 0
+  };
+  const callbackContext = {};
+  const atmosphereRequest = {
+    weatherState: null, race: null, timeSeconds: 0, target: null
+  };
+  const fixedContactRequest = {
+    wheelIds: RACE_WHEEL_IDS,
+    positions: null,
+    surfaceSamples: null,
+    carDimensions: null,
+    tuning: null,
+    selectedSegment: null,
+    trackState: null,
+    groundedByWheel: null,
+    elevationScaleM: RACE_THREE_ELEVATION_M,
+    preparedSamples: true,
+    trackStateSampleByWheel,
+    trackStateConditionScratchByWheel,
+    target: null
+  };
+  const adaptivePackedQueryOptions = {
+    startIndex: RACE_WHEEL_IDS.length + 4 * RACE_WHEEL_IDS.length
+  };
+  const wheelMaterialContext = { surfaceModel: null, queryContext: null };
+  const wheelMaterialResolver = (point, context) => (
+    context.surfaceModel.samplePhysicsGeometry(point, context.queryContext)
+  );
+  const sampleRecoveryTerrain = (worldPoint, fallbackSurfaceId = 'asphalt') => {
+    const context = callbackContext;
+    const sample = context.surfaceModel.samplePhysicsGeometry(worldPoint, {
+      ...context.physicsQueryContext,
+      fallbackSurfaceId
+    });
+    return {
+      ...createSurfaceSample(sample, {
+        queryPosition: worldPoint,
+        heightScale: RACE_THREE_ELEVATION_M,
+        source: sample.bakedSurfaceSource || `race-${sample.region || 'terrain'}`
+      }),
+      friction: Number(sample.friction ?? 1),
+      surfaceId: sample.surfaceId || null
+    };
+  };
+  const getRouteRecoveryState = ({
+    failedState,
+    preferredRouteDistances = [],
+    rejectedSourceKeys = [],
+    stage = 'route'
+  } = {}) => {
+    const context = callbackContext;
+    const { session, editor, state, authority, runtimeType } = context;
+    const routeLength = Math.max(1, Number(session.routeLength || editor.getRaceRouteLength()));
+    const failedPosition = failedState?.position || state.position || {
+      x: session.worldX,
+      z: session.worldZ
+    };
+    const projection = editor.getRaceRouteProjectionForWorldPoint(failedPosition);
+    const rawProjectedDistance = projection?.distance;
+    const projectedDistance = rawProjectedDistance !== null
+      && rawProjectedDistance !== undefined
+      && rawProjectedDistance !== ''
+      && Number.isFinite(Number(rawProjectedDistance))
+      ? Number(rawProjectedDistance) : null;
+    const rawSessionRouteDistance = session.projectedDistance ?? session.distance;
+    const sessionRouteDistance = rawSessionRouteDistance !== null
+      && rawSessionRouteDistance !== undefined
+      && rawSessionRouteDistance !== ''
+      && Number.isFinite(Number(rawSessionRouteDistance))
+      ? Number(rawSessionRouteDistance) : null;
+    const searchStepM = Math.max(0.5, Number(
+      authority.runner.config.penetrationRecoveryRewindM || 0.35
+    ));
+    const maximumSearchM = stage === 'hard-stop' ? 80 : 50;
+    const searchDistances = createPenetrationRecoveryRouteSearch({
+      preferredRouteDistances,
+      projectedDistance,
+      sessionRouteDistance,
+      routeLength,
+      runtimeType,
+      searchStepM,
+      maximumSearchM
+    });
+    for (const distance of searchDistances) {
+      const candidate = context.createTerrainAlignedRecoveryState(distance, rejectedSourceKeys);
+      if (candidate) return candidate;
+    }
+    return null;
+  };
+  const sampleTerrainAtWorldPoint = (worldPoint, query = {}) => {
+    const context = callbackContext;
+    const terrainQueryFrame = context.terrainQueryFrame;
+    let sample = null;
+    const wheelId = query.wheelId;
+    if (!context.capturePhysicsIncidentDiagnostics
+      && context.environmentResult?.reuseContactGeometry === true
+      && wheelId
+      && typeof terrainQueryFrame?.samplePointOnTriangle === 'function') {
+      const contactTriangle = context.contactTriangleByWheel[wheelId];
+      sample = terrainQueryFrame.samplePointOnTriangle(
+        worldPoint,
+        contactTriangle?.triangleId,
+        query.target || null
+      );
+      if (!sample.valid) {
+        context.environmentResult.geometryRefreshRequested = true;
+        terrainQueryFrame.statistics.contactTriangleExitRefreshes += 1;
+        context.physicsCosts.count('contactTriangleExitRefreshes');
+        sample = terrainQueryFrame.samplePoint(worldPoint, query.target || undefined);
+        if (sample.valid && contactTriangle) contactTriangle.triangleId = sample.triangleId;
+      }
+    }
+    if (!sample) sample = context.capturePhysicsIncidentDiagnostics
+      ? context.surfaceModel.samplePhysicsGeometry(worldPoint, {
+          ...context.physicsQueryContext,
+          fallbackSurfaceId: context.fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
+        })
+      : terrainQueryFrame.samplePoint(worldPoint, query.target || undefined);
+    if (!context.capturePhysicsIncidentDiagnostics && wheelId && sample.valid) {
+      context.contactTriangleByWheel[wheelId].triangleId = sample.triangleId;
+    }
+    if (context.capturePhysicsIncidentDiagnostics) {
+      context.recordTerrainSamples(query.query === 'iterative-tread-contact'
+        ? 'iterative-tread-contact' : 'body', [{
+        point: worldPoint,
+        wheelId: query.wheelId || null,
+        offsetIndex: Number.isFinite(Number(query.iteration)) ? Number(query.iteration) : null
+      }], [sample]);
+    }
+    if (!context.capturePhysicsIncidentDiagnostics) return sample;
+    const authoritativeSample = createSurfaceSample(sample, {
+      queryPosition: worldPoint,
+      heightScale: RACE_THREE_ELEVATION_M,
+      source: sample.bakedSurfaceSource || `race-${sample.region || 'terrain'}`
+    });
+    return {
+      ...authoritativeSample,
+      friction: Number(sample.friction ?? 1),
+      surfaceId: sample.surfaceId || null
+    };
+  };
+  const sampleTerrainMaximumHeightInBounds = (bounds) => {
+    const context = callbackContext;
+    const bodyBounds = context.bodyVariationBounds;
+    if (bounds.minX >= bodyBounds.minX
+      && bounds.maxX <= bodyBounds.maxX
+      && bounds.minZ >= bodyBounds.minZ
+      && bounds.maxZ <= bodyBounds.maxZ
+      && Number.isFinite(context.chassisMaximumTerrainHeightM)) {
+      return context.chassisMaximumTerrainHeightM;
+    }
+    const timer = context.physicsCosts.start('bakedSurfaceSampling');
+    const maximumHeightM = context.terrainQueryFrame.maximumHeightInBounds(bounds);
+    context.physicsCosts.end(timer);
+    return maximumHeightM;
+  };
+  const sampleTerrainAtWorldPoints = (worldPoints) => {
+    const context = callbackContext;
+    if (!context.capturePhysicsIncidentDiagnostics) {
+      return context.terrainQueryFrame.samplePoints(worldPoints);
+    }
+    const samples = context.surfaceModel.samplePhysicsGeometryBatch(worldPoints, {
+      ...context.physicsQueryContext,
+      fallbackSurfaceId: context.fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
+    });
+    context.recordTerrainSamples(
+      'body-batch', worldPoints.map((point) => ({ point })), samples
+    );
+    return samples.map((sample, index) => ({
+      ...createSurfaceSample(sample, {
+        queryPosition: worldPoints[index],
+        heightScale: RACE_THREE_ELEVATION_M,
+        source: sample.bakedSurfaceSource || `race-${sample.region || 'terrain'}`
+      }),
+      friction: Number(sample.friction ?? 1),
+      surfaceId: sample.surfaceId || null
+    }));
+  };
+  const sampleTerrainTrianglesInBounds = (bounds) => {
+    const context = callbackContext;
+    const sampler = (context.editor.playtestSession?.worldBake
+      || context.editor.raceWorldBakeCache)?.surfaceSampler;
+    const timer = context.physicsCosts.start('bakedSurfaceSampling');
+    const triangles = getRaceBakedSurfaceTrianglesInBounds(sampler, bounds, {
+      physicsCostAccounting: context.physicsCosts
+    });
+    context.physicsCosts.end(timer);
+    return triangles.map((triangle) => ({
+      ...triangle,
+      triangleId: triangle.id,
+      vertices: triangle.vertices.map((vertex) => ({
+        x: vertex.x,
+        y: Number(vertex.elevation) * RACE_THREE_ELEVATION_M,
+        z: vertex.z
+      }))
+    }));
+  };
+  const sampleRenderedTerrainAtWorldPoint = (worldPoint) => {
+    const sample = callbackContext.editor.getRaceBakedSurfaceAtWorldPoint(worldPoint) || {};
+    const elevation = Number(sample.elevation);
+    return createSurfaceSample(sample, {
+      queryPosition: worldPoint,
+      heightScale: RACE_THREE_ELEVATION_M,
+      source: sample.source || 'rendered-race-surface'
+    });
+  };
   for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
     const wheelId = RACE_WHEEL_IDS[wheelIndex];
     groundedByWheel[wheelId] = true;
@@ -97,7 +317,53 @@ function createRaceEnvironmentScratch() {
     trackStateSampleByWheel[wheelId] = { visual: {} };
     trackStateConditionScratchByWheel[wheelId] = { current: {}, baseline: {} };
   }
-  return {
+  const environmentResult = {
+    physicsTerrainQueryFrame: null,
+    staticColliderWorld: null,
+    physicsTerrainQueryStatistics: null,
+    capturePhysicsIncidentDiagnostics: false,
+    routeDistanceM: null,
+    physicsIncidentDiagnostics: null,
+    requireValidTerrainEnvelope: true,
+    contactGeometrySubstepIndex: 0,
+    contactGeometryState: null,
+    reuseContactGeometry: false,
+    geometryRefreshRequested: false,
+    contactTriangleByWheel,
+    chassisMaximumTerrainHeightM: null,
+    bodyCollisionPredicted: false,
+    getRouteRecoveryState,
+    surfaceHeightByWheel,
+    surfaceSamplesByWheel,
+    surfaceNormalByWheel,
+    contactSamplesByWheel,
+    materialByWheel,
+    sampleTerrainAtWorldPoint,
+    sampleTerrainAtWorldPoints,
+    sampleTerrainTrianglesInBounds,
+    sampleRenderedTerrainAtWorldPoint,
+    sampleTerrainMaximumHeightInBounds,
+    adaptiveBodySupport: false,
+    terrainHasDiscontinuities: false,
+    terrainCollisionClassification: 'smooth-connected-surface',
+    bodyTerrainCollisionClassification: 'smooth-connected-surface',
+    targetVelocityWorld: null,
+    ambientTemperatureC: 0,
+    windWorldMps: null,
+    gustWorldMps: null,
+    windSpeedMps: 0,
+    windDirectionRad: 0,
+    gustStrength: 0,
+    vehicleId: 'player',
+    wakeSources: null,
+    bodyDamage: 0,
+    frontAeroDamage: 0,
+    rearAeroDamage: 0,
+    activeAeroState: 0,
+    damage: { engine: 0, transmission: 0, brakes: null },
+    tireByWheel
+  };
+  const scratch = {
     centerSamples,
     groundedByWheel,
     surfaceHeightByWheel,
@@ -112,12 +378,30 @@ function createRaceEnvironmentScratch() {
     trackStateConditionScratchByWheel,
     footprintContactEntries,
     footprintContacts,
+    bodyCollisionClassification,
+    wheelCollisionClassification,
+    wheelVariationBounds,
+    callbackContext,
+    atmosphereRequest,
+    fixedContactRequest,
+    adaptivePackedQueryOptions,
+    wheelMaterialContext,
+    wheelMaterialResolver,
+    sampleRecoveryTerrain,
+    getRouteRecoveryState,
+    environmentResult,
+    sampleTerrainAtWorldPoint,
+    sampleTerrainAtWorldPoints,
+    sampleTerrainMaximumHeightInBounds,
+    sampleTerrainTrianglesInBounds,
+    sampleRenderedTerrainAtWorldPoint,
     atmosphere: {
       windWorldMps: { x: 0, y: 0, z: 0 },
       gustWorldMps: { x: 0, y: 0, z: 0 }
     },
     brakeDamage: {}
   };
+  return scratch;
 }
 
 function copyRecordInto(target, source) {
@@ -127,7 +411,7 @@ function copyRecordInto(target, source) {
 }
 
 function createRaceCompatibilityTelemetryScratch() {
-  return {
+  const scratch = {
     demandedForceByWheel: {},
     appliedForceByWheel: {},
     limitByWheel: {},
@@ -143,6 +427,7 @@ function createRaceCompatibilityTelemetryScratch() {
       advance: null
     }
   };
+  return scratch;
 }
 
 function createWorkerEnvironmentStateSnapshot(environment = {}) {
@@ -171,12 +456,22 @@ function createRaceStaticColliderWorld(editor, {
   runtimeType,
   routeLength
 } = {}) {
-  const race = editor.selectedRace || {};
+  // Keep the cache identity stable even for playtests backed by an applied
+  // document rather than a selected library entry. `|| {}` manufactured a
+  // new identity on every render update and defeated the fast cache check.
+  const race = editor.selectedRace || null;
+  const cachedWorld = authority.staticColliderWorldCache;
+  if (cachedWorld?.worldBake === worldBake
+    && cachedWorld.race === race
+    && cachedWorld.runtimeType === runtimeType
+    && cachedWorld.routeLength === routeLength) {
+    return cachedWorld.world;
+  }
   const margin = editor.ensureRaceMarginSettings?.() || {};
   const scenery = editor.ensureRaceScenery?.() || [];
   const authored = [
     ...(Array.isArray(worldBake?.staticColliders) ? worldBake.staticColliders : []),
-    ...(Array.isArray(race.staticColliders) ? race.staticColliders : [])
+    ...(Array.isArray(race?.staticColliders) ? race.staticColliders : [])
   ];
   const scenerySignature = scenery.map((sprite) => [
     sprite?.id || '', sprite?.doodadRef || '',
@@ -187,7 +482,7 @@ function createRaceStaticColliderWorld(editor, {
   ].join(':')).join('|');
   const revision = [
     worldBake?.surfaceRevision || worldBake?.revision || worldBake?.key || 'surface',
-    race.id || race.name || 'race',
+    race?.id || race?.name || 'race',
     runtimeType,
     Math.round(Number(routeLength || 0) * 10),
     margin.collisionEdge || margin.collisionMode || 'none',
@@ -280,7 +575,15 @@ function createRaceStaticColliderWorld(editor, {
   const world = definitions.length
     ? prepareStaticRaceColliders(definitions, { revision, bucketSizeM: 16 })
     : null;
-  authority.staticColliderWorldCache = { revision, world, definitions };
+  authority.staticColliderWorldCache = {
+    revision,
+    world,
+    definitions,
+    worldBake,
+    race,
+    runtimeType,
+    routeLength
+  };
   authority.staticColliderDefinitions = definitions;
   return world;
 }
@@ -460,7 +763,7 @@ function createTrackStateStepScratch() {
   }
   const wheelSurfaceState = { positions };
   const brakeState = { lockByWheel };
-  return {
+  const scratch = {
     positions,
     longitudinalSlipByWheel,
     lateralSlipByWheel,
@@ -493,8 +796,12 @@ function createTrackStateStepScratch() {
       contactDurationSeconds: 1 / 120,
       direction: null
     },
-    result: { positions, advance: null }
+    advanceResult: {},
+    result: { positions, advance: null },
+    emitRequest: null
   };
+  scratch.emitRequest = { scratch };
+  return scratch;
 }
 
 function emitAuthoritativeTrackStateStep({
@@ -564,9 +871,9 @@ function emitAuthoritativeTrackStateStep({
     scratch.lockByWheel[wheelId] = Math.max(0, -Number(patch.slipRatio || 0));
     scratch.wheelSpinByWheel[wheelId] = Math.max(0, Number(patch.slipRatio || 0));
   }
-  const direction = editor.getRaceForwardVector(Number(telemetry.state?.yawRad || 0));
-  scratch.direction.x = Number(direction.x || 0);
-  scratch.direction.z = Number(direction.z || 0);
+  const yaw = Number(telemetry.state?.yawRad || 0);
+  scratch.direction.x = Math.sin(yaw);
+  scratch.direction.z = Math.cos(yaw);
   const queueOptions = scratch.queueOptions;
   queueOptions.vehicleId = editor.playtestSession.carId || 'player';
   queueOptions.normalLoads = telemetry.state?.wheelLoadsN;
@@ -581,7 +888,8 @@ function emitAuthoritativeTrackStateStep({
     weatherForcing || systems.surface.createTrackStateWeatherForcing({
       weatherState,
       race: editor.selectedRace
-    })
+    }),
+    scratch.advanceResult
   );
   return scratch.result;
 }
@@ -627,6 +935,13 @@ function advanceVehicleDynamicsAuthority(editor, {
       session.vehicleDynamicsAuthorityThread = 'render';
       session.vehicleDynamicsWorkerMigrationFailure = failure;
     } else {
+      // The legacy render calculation runs before this authority adapter and
+      // replaces session.tireSlip every frame. While the worker owns physics,
+      // keep presenting the last authoritative compatibility view instead of
+      // exposing that non-authoritative intermediate calculation as telemetry.
+      if (authority.compatibilityTireSlip) {
+        session.tireSlip = authority.compatibilityTireSlip;
+      }
       session.vehicleDynamicsWorkerStatus = workerSnapshot
         ? 'active' : authority.workerBridge.client.ready ? 'awaiting-snapshot' : 'initializing';
       session.physicsPerformance = {
@@ -640,9 +955,18 @@ function advanceVehicleDynamicsAuthority(editor, {
     resultCapacity: 128
   });
   const physicsCosts = authority.runner.physicsCostAccounting;
+  const qualificationWorkerMode = String(
+    globalThis.__RTG_VEHICLE_DYNAMICS_WORKER_MODE__
+      || (globalThis.__RTG_ENABLE_VEHICLE_DYNAMICS_WORKER__ === true ? 'force' : 'auto')
+  ).toLowerCase();
+  const collectingLiveWorkerQualification = qualificationWorkerMode === 'auto'
+    && !authority.liveWorkerQualification
+    && typeof Worker === 'function';
   physicsCosts.enabled = editor.raceInput.physicsPerformanceVisible === true
     || session.physicsPerformanceVisible === true
-    || globalThis.__RTG_PHYSICS_COST_ACCOUNTING__ === true;
+    || globalThis.__RTG_PHYSICS_COST_ACCOUNTING__ === true
+    || collectingLiveWorkerQualification;
+  if (collectingLiveWorkerQualification) physicsCosts.stepHistoryMode = 'elapsed-ring';
   const ownsCostFrame = physicsCosts.beginFrame({
     source: 'RaceSimulation',
     deltaSeconds: Number(seconds) || 0,
@@ -682,22 +1006,26 @@ function advanceVehicleDynamicsAuthority(editor, {
   const surfaceModel = editor.getRaceSurfaceModel();
   surfaceModel.physicsCostAccounting = physicsCosts;
   const runtimeType = session.routeRuntimeType || editor.getActiveRaceRuntimeType();
-  const physicsQueryContext = surfaceModel.createPhysicsQueryContext({
-    runtimeType,
-    weatherState
-  });
-  const wheelPhysicsQueryContext = Object.create(physicsQueryContext, {
-    fallbackSurfaceId: {
-      value: editor.selectedSegment?.surface || 'asphalt',
-      enumerable: true,
-      writable: false,
-      configurable: false
-    }
-  });
-  const trackWeatherForcing = systems.surface.createTrackStateWeatherForcing({
-    weatherState,
-    race: editor.selectedRace
-  });
+  authority.physicsQueryContextRequest ||= { target: {}, roadbedRequest: {} };
+  const physicsQueryContextRequest = authority.physicsQueryContextRequest;
+  physicsQueryContextRequest.runtimeType = runtimeType;
+  physicsQueryContextRequest.weatherState = weatherState;
+  const physicsQueryContext = surfaceModel.createPhysicsQueryContext(physicsQueryContextRequest);
+  authority.wheelPhysicsQueryContext ||= {};
+  const wheelPhysicsQueryContext = authority.wheelPhysicsQueryContext;
+  wheelPhysicsQueryContext.runtimeType = physicsQueryContext.runtimeType;
+  wheelPhysicsQueryContext.routeLength = physicsQueryContext.routeLength;
+  wheelPhysicsQueryContext.roadbedProfile = physicsQueryContext.roadbedProfile;
+  wheelPhysicsQueryContext.weatherState = physicsQueryContext.weatherState;
+  wheelPhysicsQueryContext.allowVisualExtension = physicsQueryContext.allowVisualExtension;
+  wheelPhysicsQueryContext.fallbackSurfaceId = editor.selectedSegment?.surface || 'asphalt';
+  authority.trackWeatherForcingRequest ||= { target: {} };
+  const trackWeatherForcingRequest = authority.trackWeatherForcingRequest;
+  trackWeatherForcingRequest.weatherState = weatherState;
+  trackWeatherForcingRequest.race = editor.selectedRace;
+  const trackWeatherForcing = systems.surface.createTrackStateWeatherForcing(
+    trackWeatherForcingRequest
+  );
   const wakeSources = getRaceWakeSourcesForFrame(session, {
     playerWidthM: Number(tuning.widthM || 1.8)
   });
@@ -709,17 +1037,61 @@ function advanceVehicleDynamicsAuthority(editor, {
     runtimeType,
     routeLength: session.routeLength || editor.getRaceRouteLength()
   });
-  authority.runner.environmentProvider = ({
+  authority.raceEnvironmentProviderContext ||= {};
+  const providerContext = authority.raceEnvironmentProviderContext;
+  providerContext.physicsCosts = physicsCosts;
+  providerContext.preparedWorldBake = preparedWorldBake;
+  providerContext.weatherState = weatherState;
+  providerContext.editor = editor;
+  providerContext.session = session;
+  providerContext.surfaceModel = surfaceModel;
+  providerContext.runtimeType = runtimeType;
+  providerContext.physicsQueryContext = physicsQueryContext;
+  providerContext.wheelPhysicsQueryContext = wheelPhysicsQueryContext;
+  providerContext.damage = damage;
+  providerContext.setup = setup;
+  providerContext.tuning = tuning;
+  providerContext.carDimensions = carDimensions;
+  providerContext.trackWeatherForcing = trackWeatherForcing;
+  providerContext.wheelSurfaceState = wheelSurfaceState;
+  providerContext.countdownActive = countdownActive;
+  providerContext.staticColliderWorld = staticColliderWorld;
+  providerContext.wakeSources = wakeSources;
+  if (!authority.raceEnvironmentProvider) authority.raceEnvironmentProvider = ({
     state,
     previousState = null,
     controls: fixedControls,
     timeSeconds,
+    stepIndex = 0,
     tireSubstepDt = 1 / authority.runner.config.tireHz,
     chassisStepDt = 1 / authority.runner.config.chassisHz,
     substepIndex = 0,
-    reuseContactGeometry = false
+    reuseContactGeometry = false,
+    recoveryRecalculation = false
   }) => {
-    if (reuseContactGeometry === true && authority.chassisGeometryEnvironment) {
+    const {
+      physicsCosts,
+      preparedWorldBake,
+      weatherState,
+      editor,
+      session,
+      surfaceModel,
+      runtimeType,
+      physicsQueryContext,
+      wheelPhysicsQueryContext,
+      damage,
+      setup,
+      tuning,
+      carDimensions,
+      trackWeatherForcing,
+      wheelSurfaceState,
+      countdownActive,
+      staticColliderWorld,
+      wakeSources
+    } = authority.raceEnvironmentProviderContext;
+    if (reuseContactGeometry === true
+      && authority.chassisGeometryEnvironment
+      && authority.chassisGeometryStepIndex === stepIndex) {
       const cachedEnvironment = authority.chassisGeometryEnvironment;
       cachedEnvironment.contactGeometrySubstepIndex = substepIndex;
       cachedEnvironment.contactGeometryState = state;
@@ -736,7 +1108,10 @@ function advanceVehicleDynamicsAuthority(editor, {
       authority.raceEnvironmentScratchCursor++ % authority.raceEnvironmentScratch.length
     ];
     const wheelQueryTimer = physicsCosts.start('wheelCenterAndFootprintQueries');
-    physicsCosts.count('chassisGeometryFrames');
+    const refreshWithinChassisStep = recoveryRecalculation !== true
+      && authority.chassisGeometryStepIndex === stepIndex
+      && authority.chassisGeometryEnvironment?.physicsTerrainQueryFrame;
+    if (!refreshWithinChassisStep) physicsCosts.count('chassisGeometryFrames');
     const worldBake = preparedWorldBake;
     const preparedSampler = worldBake?.surfaceSampler || null;
     const profile = authority.runner.config.bodyProfile || {};
@@ -775,13 +1150,20 @@ function advanceVehicleDynamicsAuthority(editor, {
     authority.terrainQueryBounds.maxZ = Math.max(
       previousZ, Number(state.position?.z || 0), predictedZ
     ) + horizontalReachM;
-    const terrainQueryFrame = authority.terrainQueryFrameCache.begin({
-      sampler: preparedSampler,
-      revision: worldBake?.surfaceRevision ?? worldBake?.revision ?? worldBake?.key ?? 0,
-      bounds: authority.terrainQueryBounds,
-      elevationScaleM: RACE_THREE_ELEVATION_M,
-      physicsCostAccounting: physicsCosts
-    });
+    // Event-triggered tire refreshes update contact state inside the swept
+    // terrain prepared at the 120 Hz chassis boundary. They must not rebuild
+    // world geometry or discard the frame caches at tire frequency.
+    authority.terrainQueryFrameBeginOptions ||= {};
+    const queryFrameBeginOptions = authority.terrainQueryFrameBeginOptions;
+    queryFrameBeginOptions.sampler = preparedSampler;
+    queryFrameBeginOptions.revision = worldBake?.surfaceRevision
+      ?? worldBake?.revision ?? worldBake?.key ?? 0;
+    queryFrameBeginOptions.bounds = authority.terrainQueryBounds;
+    queryFrameBeginOptions.elevationScaleM = RACE_THREE_ELEVATION_M;
+    queryFrameBeginOptions.physicsCostAccounting = physicsCosts;
+    const terrainQueryFrame = refreshWithinChassisStep
+      ? authority.chassisGeometryEnvironment.physicsTerrainQueryFrame
+      : authority.terrainQueryFrameCache.begin(queryFrameBeginOptions);
     const capturePhysicsIncidentDiagnostics = authority.runner.config.physicsIncidentRecordingEnabled;
     const incidentTerrainSamples = capturePhysicsIncidentDiagnostics ? [] : null;
     const incidentTerrainSampleKeys = capturePhysicsIncidentDiagnostics ? new Set() : null;
@@ -837,9 +1219,16 @@ function advanceVehicleDynamicsAuthority(editor, {
         }
       });
     } : null;
-    authority.preliminaryWheelKinematicsScratch ||= Object.fromEntries(
-      RACE_WHEEL_IDS.map((wheelId) => [wheelId, createWheelContactKinematicsScratch()])
-    );
+    if (!authority.preliminaryWheelKinematicsScratch) {
+      authority.preliminaryWheelKinematicsScratch = {};
+      authority.preliminaryWheelKinematicsRequests = {};
+      for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+        const wheelId = RACE_WHEEL_IDS[wheelIndex];
+        authority.preliminaryWheelKinematicsScratch[wheelId] =
+          createWheelContactKinematicsScratch();
+        authority.preliminaryWheelKinematicsRequests[wheelId] = { wheelId };
+      }
+    }
     authority.preliminaryWheelPatches ||= {};
     authority.preliminaryWheelPositions ||= {};
     authority.emptyWheelKinematicsEnvironment ||= {};
@@ -848,45 +1237,57 @@ function advanceVehicleDynamicsAuthority(editor, {
     for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
       const wheelId = RACE_WHEEL_IDS[wheelIndex];
       const kinematicsScratch = authority.preliminaryWheelKinematicsScratch[wheelId];
-      preliminaryPatches[wheelId] = calculateWheelContactKinematics({
-        state,
-        controls: fixedControls,
-        config: authority.runner.config,
-        environment: authority.emptyWheelKinematicsEnvironment,
-        wheelId,
-        target: kinematicsScratch.target,
-        computationScratch: kinematicsScratch.computation
-      });
+      const kinematicsRequest = authority.preliminaryWheelKinematicsRequests[wheelId];
+      kinematicsRequest.state = state;
+      kinematicsRequest.controls = fixedControls;
+      kinematicsRequest.config = authority.runner.config;
+      kinematicsRequest.environment = authority.emptyWheelKinematicsEnvironment;
+      kinematicsRequest.target = kinematicsScratch.target;
+      kinematicsRequest.computationScratch = kinematicsScratch.computation;
+      preliminaryPatches[wheelId] = calculateWheelContactKinematics(kinematicsRequest);
       positions[wheelId] = preliminaryPatches[wheelId].contactPointWorld;
     }
-    const atmosphere = createDeterministicAtmosphere({
-      weatherState,
-      race: editor.selectedRace,
-      timeSeconds,
-      target: environmentScratch.atmosphere
-    });
+    const atmosphereRequest = environmentScratch.atmosphereRequest;
+    atmosphereRequest.weatherState = weatherState;
+    atmosphereRequest.race = editor.selectedRace;
+    atmosphereRequest.timeSeconds = timeSeconds;
+    atmosphereRequest.target = environmentScratch.atmosphere;
+    const atmosphere = createDeterministicAtmosphere(atmosphereRequest);
+    const wheelMaterialResolver = environmentScratch.wheelMaterialResolver;
+    const wheelMaterialContext = environmentScratch.wheelMaterialContext;
+    wheelMaterialContext.surfaceModel = surfaceModel;
+    wheelMaterialContext.queryContext = wheelPhysicsQueryContext;
     const panelDamage = damage.panels || {};
     const footprintSampleCount = Math.max(4, Math.min(
       MAX_RACE_TIRE_FOOTPRINT_SAMPLES,
       Math.trunc(Number(authority.runner.config.contactFootprintSamples) || 4)
     ));
     const tireWidthM = Math.max(0.12, Number(setup.tireSize?.widthMm || 245) / 1000);
-    authority.terrainFootprintPointBuffer ||= new Float64Array(
-      MAX_RACE_TIRE_FOOTPRINT_SAMPLES * RACE_WHEEL_IDS.length * 3
+    authority.terrainWheelPointBuffer ||= new Float64Array(
+      (1 + MAX_RACE_TIRE_FOOTPRINT_SAMPLES) * RACE_WHEEL_IDS.length * 3
     );
-    const footprintPointBuffer = authority.terrainFootprintPointBuffer;
+    const wheelPointBuffer = authority.terrainWheelPointBuffer;
+    for (let index = 0; index < RACE_WHEEL_IDS.length; index += 1) {
+      const wheelId = RACE_WHEEL_IDS[index];
+      const point = positions[wheelId];
+      const pointOffset = index * 3;
+      wheelPointBuffer[pointOffset] = point.x;
+      wheelPointBuffer[pointOffset + 1] = point.y;
+      wheelPointBuffer[pointOffset + 2] = point.z;
+    }
     for (let offsetIndex = 0; offsetIndex < footprintSampleCount; offsetIndex += 1) {
       const longitudinal = RACE_TIRE_FOOTPRINT_OFFSETS[offsetIndex * 2];
       const lateral = RACE_TIRE_FOOTPRINT_OFFSETS[offsetIndex * 2 + 1];
       for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
         const wheelId = RACE_WHEEL_IDS[wheelIndex];
         const patch = preliminaryPatches[wheelId];
-        const pointOffset = (offsetIndex * RACE_WHEEL_IDS.length + wheelIndex) * 3;
-        footprintPointBuffer[pointOffset] = patch.contactPointWorld.x
+        const pointOffset = (RACE_WHEEL_IDS.length
+          + offsetIndex * RACE_WHEEL_IDS.length + wheelIndex) * 3;
+        wheelPointBuffer[pointOffset] = patch.contactPointWorld.x
           + patch.wheelForwardWorld.x * longitudinal * 0.16
           + patch.wheelLateralWorld.x * lateral * tireWidthM;
-        footprintPointBuffer[pointOffset + 1] = patch.contactPointWorld.y;
-        footprintPointBuffer[pointOffset + 2] = patch.contactPointWorld.z
+        wheelPointBuffer[pointOffset + 1] = patch.contactPointWorld.y;
+        wheelPointBuffer[pointOffset + 2] = patch.contactPointWorld.z
           + patch.wheelForwardWorld.z * longitudinal * 0.16
           + patch.wheelLateralWorld.z * lateral * tireWidthM;
       }
@@ -894,30 +1295,26 @@ function advanceVehicleDynamicsAuthority(editor, {
     // Only wheel centers need route, weather, material, and Track State
     // classification. Footprint/body points consume prepared geometry from the
     // shared substep frame and therefore avoid repeating route projection.
-    authority.terrainCenterPointBuffer ||= new Float64Array(RACE_WHEEL_IDS.length * 3);
-    const centerPointBuffer = authority.terrainCenterPointBuffer;
-    for (let index = 0; index < RACE_WHEEL_IDS.length; index += 1) {
-      const wheelId = RACE_WHEEL_IDS[index];
-      const point = positions[wheelId];
-      const pointOffset = index * 3;
-      centerPointBuffer[pointOffset] = point.x;
-      centerPointBuffer[pointOffset + 1] = point.y;
-      centerPointBuffer[pointOffset + 2] = point.z;
-    }
-    const centerGeometrySamples = terrainQueryFrame.samplePackedPoints(
-      centerPointBuffer,
-      RACE_WHEEL_IDS.length
+    const baseFootprintPointCount = Math.min(4, footprintSampleCount) * RACE_WHEEL_IDS.length;
+    const baseFootprintSampleStart = RACE_WHEEL_IDS.length;
+    const wheelGeometrySamples = terrainQueryFrame.samplePackedPoints(
+      wheelPointBuffer,
+      baseFootprintSampleStart + baseFootprintPointCount
     );
     let fullSurfaceClassificationCount = 0;
     for (let index = 0; index < RACE_WHEEL_IDS.length; index += 1) {
       const wheelId = RACE_WHEEL_IDS[index];
       const point = positions[wheelId];
-      const geometrySample = centerGeometrySamples[index];
+      const geometrySample = wheelGeometrySamples[index];
       const missesBefore = terrainQueryFrame.statistics.materialCacheMisses;
-      const materialSample = terrainQueryFrame.materialForWheel(
+      const materialSample = terrainQueryFrame.materialForWheelSignature(
         index,
-        `${wheelId}:${geometrySample.triangleId}:${geometrySample.region}:${geometrySample.source}`,
-        () => surfaceModel.samplePhysicsGeometry(point, wheelPhysicsQueryContext)
+        geometrySample.triangleId,
+        geometrySample.region,
+        geometrySample.source,
+        wheelMaterialResolver,
+        point,
+        wheelMaterialContext
       );
       if (terrainQueryFrame.statistics.materialCacheMisses > missesBefore) {
         fullSurfaceClassificationCount += 1;
@@ -930,26 +1327,21 @@ function advanceVehicleDynamicsAuthority(editor, {
         || materialSample?.projection?.segment || null;
     }
     terrainQueryFrame.noteFullSurfaceClassification(fullSurfaceClassificationCount);
-    const baseFootprintPointCount = Math.min(4, footprintSampleCount) * RACE_WHEEL_IDS.length;
-    const baseFootprintGeometrySamples = terrainQueryFrame.samplePackedPoints(
-      footprintPointBuffer,
-      baseFootprintPointCount
-    );
     if (capturePhysicsIncidentDiagnostics) {
       const diagnosticRequests = [];
       const diagnosticSamples = [];
       for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
         const wheelId = RACE_WHEEL_IDS[wheelIndex];
         diagnosticRequests.push({ wheelId, point: positions[wheelId] });
-        diagnosticSamples.push(centerGeometrySamples[wheelIndex]);
+        diagnosticSamples.push(wheelGeometrySamples[wheelIndex]);
       }
       for (let index = 0; index < baseFootprintPointCount; index += 1) {
         diagnosticRequests.push({
           wheelId: RACE_WHEEL_IDS[index % RACE_WHEEL_IDS.length],
           offsetIndex: Math.trunc(index / RACE_WHEEL_IDS.length),
-          point: baseFootprintGeometrySamples[index].queryPosition
+          point: wheelGeometrySamples[baseFootprintSampleStart + index].queryPosition
         });
-        diagnosticSamples.push(baseFootprintGeometrySamples[index]);
+        diagnosticSamples.push(wheelGeometrySamples[baseFootprintSampleStart + index]);
       }
       recordTerrainSamples('wheel-center-and-footprint', diagnosticRequests, diagnosticSamples);
     }
@@ -957,26 +1349,21 @@ function advanceVehicleDynamicsAuthority(editor, {
     const groundedByWheel = environmentScratch.groundedByWheel;
     for (let index = 0; index < RACE_WHEEL_IDS.length; index += 1) {
       const wheelId = RACE_WHEEL_IDS[index];
-      centerSamples[wheelId] = centerGeometrySamples[index] || {};
+      centerSamples[wheelId] = wheelGeometrySamples[index] || {};
       groundedByWheel[wheelId] = state.validTreadContactByWheel?.[wheelId] !== false;
     }
     const activeTrackState = countdownActive ? null : session.trackState;
     authority.fixedContactScratch ||= {};
-    const fixedContacts = createRaceWheelContactStateFromSamples({
-      wheelIds: RACE_WHEEL_IDS,
-      positions,
-      surfaceSamples: centerSamples,
-      carDimensions,
-      tuning,
-      selectedSegment: editor.selectedSegment,
-      trackState: activeTrackState,
-      groundedByWheel,
-      elevationScaleM: RACE_THREE_ELEVATION_M,
-      preparedSamples: true,
-      trackStateSampleByWheel: environmentScratch.trackStateSampleByWheel,
-      trackStateConditionScratchByWheel: environmentScratch.trackStateConditionScratchByWheel,
-      target: authority.fixedContactScratch
-    });
+    const fixedContactRequest = environmentScratch.fixedContactRequest;
+    fixedContactRequest.positions = positions;
+    fixedContactRequest.surfaceSamples = centerSamples;
+    fixedContactRequest.carDimensions = carDimensions;
+    fixedContactRequest.tuning = tuning;
+    fixedContactRequest.selectedSegment = editor.selectedSegment;
+    fixedContactRequest.trackState = activeTrackState;
+    fixedContactRequest.groundedByWheel = groundedByWheel;
+    fixedContactRequest.target = authority.fixedContactScratch;
+    const fixedContacts = createRaceWheelContactStateFromSamples(fixedContactRequest);
     const footprintContacts = environmentScratch.footprintContacts;
     const footprintContactEntries = environmentScratch.footprintContactEntries;
     footprintContacts.length = 0;
@@ -985,8 +1372,8 @@ function advanceVehicleDynamicsAuthority(editor, {
       const contacts = entry.contacts;
       footprintContacts.push(entry);
       for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
-        contacts[RACE_WHEEL_IDS[wheelIndex]] = baseFootprintGeometrySamples[
-          offsetIndex * RACE_WHEEL_IDS.length + wheelIndex
+        contacts[RACE_WHEEL_IDS[wheelIndex]] = wheelGeometrySamples[
+          baseFootprintSampleStart + offsetIndex * RACE_WHEEL_IDS.length + wheelIndex
         ];
       }
     }
@@ -1011,9 +1398,9 @@ function advanceVehicleDynamicsAuthority(editor, {
       const adaptiveOffsetCount = footprintSampleCount - 4;
       const adaptivePointCount = adaptiveOffsetCount * RACE_WHEEL_IDS.length;
       const adaptiveSamples = terrainQueryFrame.samplePackedPoints(
-        footprintPointBuffer,
+        wheelPointBuffer,
         adaptivePointCount,
-        { startIndex: 4 * RACE_WHEEL_IDS.length }
+        environmentScratch.adaptivePackedQueryOptions
       );
       for (let adaptiveOffset = 0; adaptiveOffset < adaptiveOffsetCount; adaptiveOffset += 1) {
         const entry = footprintContactEntries[adaptiveOffset + 4];
@@ -1038,22 +1425,13 @@ function advanceVehicleDynamicsAuthority(editor, {
       }
     }
     physicsCosts.end(wheelQueryTimer);
-    const sampleRecoveryTerrain = (worldPoint, fallbackSurfaceId = 'asphalt') => {
-      const sample = surfaceModel.samplePhysicsGeometry(worldPoint, {
-        ...physicsQueryContext,
-        fallbackSurfaceId
-      });
-      return {
-        ...createSurfaceSample(sample, {
-          queryPosition: worldPoint,
-          heightScale: RACE_THREE_ELEVATION_M,
-          source: sample.bakedSurfaceSource || `race-${sample.region || 'terrain'}`
-        }),
-        friction: Number(sample.friction ?? 1),
-        surfaceId: sample.surfaceId || null
-      };
-    };
-    const createTerrainAlignedRecoveryState = (distance, rejectedSourceKeys = []) => {
+    const sampleRecoveryTerrain = environmentScratch.sampleRecoveryTerrain;
+    let createTerrainAlignedRecoveryState = environmentScratch.createTerrainAlignedRecoveryState;
+    if (!createTerrainAlignedRecoveryState) {
+      createTerrainAlignedRecoveryState = (distance, rejectedSourceKeys = []) => {
+      const {
+        editor, runtimeType, authority, state, session
+      } = environmentScratch.callbackContext;
       const pose = editor.getRaceWorldPoseAtDistance(distance, { runtimeType });
       const poseX = Number(pose?.x);
       const poseZ = Number(pose?.z);
@@ -1189,7 +1567,9 @@ function advanceVehicleDynamicsAuthority(editor, {
           terrainSources
         }
       };
-    };
+      };
+      environmentScratch.createTerrainAlignedRecoveryState = createTerrainAlignedRecoveryState;
+    }
     const recordedRouteDistance = centerSamples.fl?.projection?.distance
       ?? editor.getRaceRouteProjectionForWorldPoint(state.position)?.distance;
     const incidentRouteDistanceM = recordedRouteDistance !== null
@@ -1206,14 +1586,6 @@ function advanceVehicleDynamicsAuthority(editor, {
       - bodyCollisionReachM;
     bodyVariationBounds.maxZ = Math.max(Number(state.position?.z || 0), predictedZ)
       + bodyCollisionReachM;
-    const terrainCollisionClassification = terrainQueryFrame
-      .classifyCollisionFeaturesInBounds(bodyVariationBounds);
-    const terrainHasDiscontinuities = terrainCollisionClassification.discontinuity === true;
-    const chassisMaximumTerrainHeightM = terrainQueryFrame.maximumHeightInBounds(
-      bodyVariationBounds
-    );
-    const chassisCenterTerrainSample = terrainQueryFrame.samplePoint(state.position);
-    const chassisCenterTerrainHeightM = Number(chassisCenterTerrainSample.heightM);
     const uprightUnderbodyHeightM = Number(state.position?.y || 0)
       - Number(authority.runner.config.cgHeightM || 0.55)
       + Number(authority.runner.config.bodyGroundClearanceM || 0.13);
@@ -1224,6 +1596,50 @@ function advanceVehicleDynamicsAuthority(editor, {
       Number(state.angularVelocityWorld?.x || 0),
       Number(state.angularVelocityWorld?.z || 0)
     ) * chassisStepDt * Math.max(bodyHalfWidthM, bodyHalfLengthM);
+    const lowerHullProbeRangeM = Number(
+      authority.runner.config.bodyCollisionLowerHullProbeRangeM ?? 0.08
+    );
+    bodyVariationBounds.minY = predictedUnderbodyHeightM - lowerHullProbeRangeM;
+    bodyVariationBounds.maxY = Math.max(
+      Number(state.position?.y || 0),
+      Number(state.position?.y || 0) + Number(state.velocity?.y || 0) * chassisStepDt
+    ) + bodyHeightM;
+    const bodyTerrainCollisionClassification = terrainQueryFrame
+      .classifyCollisionFeaturesInBounds(
+        bodyVariationBounds,
+        environmentScratch.bodyCollisionClassification
+      );
+    const terrainHasDiscontinuities = bodyTerrainCollisionClassification.discontinuity === true;
+    const wheelVariationBounds = environmentScratch.wheelVariationBounds;
+    wheelVariationBounds.minX = bodyVariationBounds.minX;
+    wheelVariationBounds.maxX = bodyVariationBounds.maxX;
+    wheelVariationBounds.minZ = bodyVariationBounds.minZ;
+    wheelVariationBounds.maxZ = bodyVariationBounds.maxZ;
+    wheelVariationBounds.minY = Infinity;
+    wheelVariationBounds.maxY = -Infinity;
+    const wheelRadiusM = Math.max(0.1, Number(authority.runner.config.wheelRadiusM || 0.34));
+    for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+      const wheelPointY = Number(positions[RACE_WHEEL_IDS[wheelIndex]]?.y || 0);
+      wheelVariationBounds.minY = Math.min(
+        wheelVariationBounds.minY,
+        wheelPointY - wheelRadiusM - lowerHullProbeRangeM
+      );
+      wheelVariationBounds.maxY = Math.max(
+        wheelVariationBounds.maxY,
+        wheelPointY + wheelRadiusM + lowerHullProbeRangeM
+      );
+    }
+    const wheelTerrainCollisionClassification = terrainQueryFrame
+      .classifyCollisionFeaturesInBounds(
+        wheelVariationBounds,
+        environmentScratch.wheelCollisionClassification
+      );
+    const chassisMaximumTerrainHeightM = refreshWithinChassisStep
+      && Number.isFinite(authority.chassisGeometryMaximumTerrainHeightM)
+      ? authority.chassisGeometryMaximumTerrainHeightM
+      : terrainQueryFrame.maximumHeightInBounds(bodyVariationBounds);
+    const chassisCenterTerrainSample = terrainQueryFrame.samplePoint(state.position);
+    const chassisCenterTerrainHeightM = Number(chassisCenterTerrainSample.heightM);
     const bodyCollisionPredicted = terrainHasDiscontinuities
       || !Number.isFinite(chassisCenterTerrainHeightM)
       || predictedUnderbodyHeightM - chassisCenterTerrainHeightM
@@ -1332,205 +1748,69 @@ function advanceVehicleDynamicsAuthority(editor, {
     for (const key in sourceBrakeDamage) brakeDamage[key] = sourceBrakeDamage[key];
     let bodyDamage = 0;
     for (const key in panelDamage) bodyDamage = Math.max(bodyDamage, Number(panelDamage[key]) || 0);
-    let environmentResult = null;
-    environmentResult = {
-      physicsTerrainQueryFrame: terrainQueryFrame,
-      staticColliderWorld,
-      physicsTerrainQueryStatistics: terrainQueryFrame.statistics,
-      capturePhysicsIncidentDiagnostics,
-      routeDistanceM: incidentRouteDistanceM,
-      physicsIncidentDiagnostics: capturePhysicsIncidentDiagnostics ? {
+    const callbackContext = environmentScratch.callbackContext;
+    callbackContext.terrainQueryFrame = terrainQueryFrame;
+    callbackContext.capturePhysicsIncidentDiagnostics = capturePhysicsIncidentDiagnostics;
+    callbackContext.contactTriangleByWheel = contactTriangleByWheel;
+    callbackContext.physicsCosts = physicsCosts;
+    callbackContext.surfaceModel = surfaceModel;
+    callbackContext.physicsQueryContext = physicsQueryContext;
+    callbackContext.fixedContacts = fixedContacts;
+    callbackContext.recordTerrainSamples = recordTerrainSamples;
+    callbackContext.editor = editor;
+    callbackContext.session = session;
+    callbackContext.state = state;
+    callbackContext.authority = authority;
+    callbackContext.runtimeType = runtimeType;
+    callbackContext.createTerrainAlignedRecoveryState = createTerrainAlignedRecoveryState;
+    callbackContext.bodyVariationBounds = bodyVariationBounds;
+    callbackContext.chassisMaximumTerrainHeightM = chassisMaximumTerrainHeightM;
+    const environmentResult = environmentScratch.environmentResult;
+    environmentResult.physicsTerrainQueryFrame = terrainQueryFrame;
+    environmentResult.staticColliderWorld = staticColliderWorld;
+    environmentResult.physicsTerrainQueryStatistics = terrainQueryFrame.statistics;
+    environmentResult.capturePhysicsIncidentDiagnostics = capturePhysicsIncidentDiagnostics;
+    environmentResult.routeDistanceM = incidentRouteDistanceM;
+    environmentResult.physicsIncidentDiagnostics = capturePhysicsIncidentDiagnostics ? {
         terrainSamples: incidentTerrainSamples,
         routeDistanceM: incidentRouteDistanceM,
         recoveryState: authority.runner.penetrationRecoveryState
-      } : null,
-      requireValidTerrainEnvelope: true,
-      contactGeometrySubstepIndex: substepIndex,
-      contactGeometryState: state,
-      reuseContactGeometry: false,
-      geometryRefreshRequested: false,
-      contactTriangleByWheel,
-      chassisMaximumTerrainHeightM,
-      bodyCollisionPredicted,
-      getRouteRecoveryState: ({
-        failedState,
-        preferredRouteDistances = [],
-        rejectedSourceKeys = [],
-        stage = 'route'
-      } = {}) => {
-        const routeLength = Math.max(1, Number(session.routeLength || editor.getRaceRouteLength()));
-        const failedPosition = failedState?.position || state.position || {
-          x: session.worldX,
-          z: session.worldZ
-        };
-        const projection = editor.getRaceRouteProjectionForWorldPoint(failedPosition);
-        const rawProjectedDistance = projection?.distance;
-        const projectedDistance = rawProjectedDistance !== null
-          && rawProjectedDistance !== undefined
-          && rawProjectedDistance !== ''
-          && Number.isFinite(Number(rawProjectedDistance))
-          ? Number(rawProjectedDistance) : null;
-        const rawSessionRouteDistance = session.projectedDistance ?? session.distance;
-        const sessionRouteDistance = rawSessionRouteDistance !== null
-          && rawSessionRouteDistance !== undefined
-          && rawSessionRouteDistance !== ''
-          && Number.isFinite(Number(rawSessionRouteDistance))
-          ? Number(rawSessionRouteDistance) : null;
-        const searchStepM = Math.max(0.5, Number(
-          authority.runner.config.penetrationRecoveryRewindM || 0.35
-        ));
-        const maximumSearchM = stage === 'hard-stop' ? 80 : 50;
-        const searchDistances = createPenetrationRecoveryRouteSearch({
-          preferredRouteDistances,
-          projectedDistance,
-          sessionRouteDistance,
-          routeLength,
-          runtimeType,
-          searchStepM,
-          maximumSearchM
-        });
-        for (const distance of searchDistances) {
-          const candidate = createTerrainAlignedRecoveryState(distance, rejectedSourceKeys);
-          if (candidate) return candidate;
-        }
-        return null;
-      },
-      surfaceHeightByWheel,
-      surfaceSamplesByWheel,
-      surfaceNormalByWheel,
-      contactSamplesByWheel,
-      materialByWheel,
-    sampleTerrainAtWorldPoint: (worldPoint, query = {}) => {
-      let sample = null;
-      const wheelId = query.wheelId;
-      if (!capturePhysicsIncidentDiagnostics
-        && environmentResult.reuseContactGeometry === true
-        && wheelId
-        && typeof terrainQueryFrame.samplePointOnTriangle === 'function') {
-        const contactTriangle = contactTriangleByWheel[wheelId];
-        sample = terrainQueryFrame.samplePointOnTriangle(
-          worldPoint,
-          contactTriangle?.triangleId,
-          query.target || null
-        );
-        if (!sample.valid) {
-          environmentResult.geometryRefreshRequested = true;
-          terrainQueryFrame.statistics.contactTriangleExitRefreshes += 1;
-          physicsCosts.count('contactTriangleExitRefreshes');
-          sample = terrainQueryFrame.samplePoint(worldPoint, query.target || undefined);
-          if (sample.valid && contactTriangle) contactTriangle.triangleId = sample.triangleId;
-        }
-      }
-      if (!sample) sample = capturePhysicsIncidentDiagnostics
-        ? surfaceModel.samplePhysicsGeometry(worldPoint, {
-            ...physicsQueryContext,
-            fallbackSurfaceId: fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
-          })
-        : terrainQueryFrame.samplePoint(worldPoint, query.target || undefined);
-      if (!capturePhysicsIncidentDiagnostics && wheelId && sample.valid) {
-        contactTriangleByWheel[wheelId].triangleId = sample.triangleId;
-      }
-      if (capturePhysicsIncidentDiagnostics) {
-        recordTerrainSamples(query.query === 'iterative-tread-contact'
-          ? 'iterative-tread-contact' : 'body', [{
-          point: worldPoint,
-          wheelId: query.wheelId || null,
-          offsetIndex: Number.isFinite(Number(query.iteration)) ? Number(query.iteration) : null
-        }], [sample]);
-      }
-      if (!capturePhysicsIncidentDiagnostics) return sample;
-      const authoritativeSample = createSurfaceSample(sample, {
-        queryPosition: worldPoint,
-        heightScale: RACE_THREE_ELEVATION_M,
-        source: sample.bakedSurfaceSource || `race-${sample.region || 'terrain'}`
-      });
-      return {
-        ...authoritativeSample,
-        friction: Number(sample.friction ?? 1),
-        surfaceId: sample.surfaceId || null
-      };
-    },
-    sampleTerrainAtWorldPoints: (worldPoints) => {
-      if (!capturePhysicsIncidentDiagnostics) return terrainQueryFrame.samplePoints(worldPoints);
-      const samples = surfaceModel.samplePhysicsGeometryBatch(worldPoints, {
-        ...physicsQueryContext,
-        fallbackSurfaceId: fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
-      });
-      recordTerrainSamples('body-batch', worldPoints.map((point) => ({ point })), samples);
-      return samples.map((sample, index) => ({
-        ...createSurfaceSample(sample, {
-          queryPosition: worldPoints[index],
-          heightScale: RACE_THREE_ELEVATION_M,
-          source: sample.bakedSurfaceSource || `race-${sample.region || 'terrain'}`
-        }),
-        friction: Number(sample.friction ?? 1),
-        surfaceId: sample.surfaceId || null
-      }));
-    },
-    sampleTerrainTrianglesInBounds: (bounds) => {
-      const sampler = (editor.playtestSession?.worldBake || editor.raceWorldBakeCache)
-        ?.surfaceSampler;
-      return physicsCosts.measure('bakedSurfaceSampling', () => (
-        getRaceBakedSurfaceTrianglesInBounds(sampler, bounds, {
-          physicsCostAccounting: physicsCosts
-        })
-      )).map((triangle) => ({
-        ...triangle,
-        triangleId: triangle.id,
-        vertices: triangle.vertices.map((vertex) => ({
-          x: vertex.x,
-          y: Number(vertex.elevation) * RACE_THREE_ELEVATION_M,
-          z: vertex.z
-        }))
-      }));
-    },
-    sampleRenderedTerrainAtWorldPoint: (worldPoint) => {
-      const sample = editor.getRaceBakedSurfaceAtWorldPoint(worldPoint) || {};
-      const elevation = Number(sample.elevation);
-      return createSurfaceSample(sample, {
-        queryPosition: worldPoint,
-        heightScale: RACE_THREE_ELEVATION_M,
-        source: sample.source || 'rendered-race-surface'
-      });
-    },
-    sampleTerrainMaximumHeightInBounds: (bounds) => {
-      if (bounds.minX >= bodyVariationBounds.minX
-        && bounds.maxX <= bodyVariationBounds.maxX
-        && bounds.minZ >= bodyVariationBounds.minZ
-        && bounds.maxZ <= bodyVariationBounds.maxZ
-        && Number.isFinite(chassisMaximumTerrainHeightM)) {
-        return chassisMaximumTerrainHeightM;
-      }
-      return physicsCosts.measure('bakedSurfaceSampling', () => (
-        terrainQueryFrame.maximumHeightInBounds(bounds)
-      ));
-    },
-    adaptiveBodySupport: terrainHasDiscontinuities,
-    terrainHasDiscontinuities,
-    terrainCollisionClassification: terrainCollisionClassification.classification,
-    targetVelocityWorld: countdownActive ? authority.formationTargetVelocityWorld : null,
-      ambientTemperatureC: trackWeatherForcing.ambientTemperatureC,
-      windWorldMps: atmosphere.windWorldMps,
-      gustWorldMps: atmosphere.gustWorldMps,
-      windSpeedMps: atmosphere.windSpeedMps,
-      windDirectionRad: atmosphere.windDirectionRad,
-      gustStrength: atmosphere.gustStrength,
-      vehicleId: 'player',
-      wakeSources,
-      bodyDamage,
-      frontAeroDamage: clamp(Number(panelDamage.front || 0) / 100, 0, 1),
-      rearAeroDamage: clamp(Number(panelDamage.rear || 0) / 100, 0, 1),
-      activeAeroState: Number(session.activeAeroState || 0),
-    damage: {
-      engine: Number(damage.engine || 0),
-      transmission: Number(damage.transmission || 0),
-      brakes: brakeDamage
-    },
-    tireByWheel
-  };
+      } : null;
+    environmentResult.contactGeometrySubstepIndex = substepIndex;
+    environmentResult.contactGeometryState = state;
+    environmentResult.reuseContactGeometry = false;
+    environmentResult.geometryRefreshRequested = false;
+    environmentResult.chassisMaximumTerrainHeightM = chassisMaximumTerrainHeightM;
+    environmentResult.bodyCollisionPredicted = bodyCollisionPredicted;
+    environmentResult.adaptiveBodySupport = terrainHasDiscontinuities;
+    environmentResult.terrainHasDiscontinuities = terrainHasDiscontinuities;
+    environmentResult.terrainCollisionClassification =
+      wheelTerrainCollisionClassification.classification;
+    environmentResult.bodyTerrainCollisionClassification =
+      bodyTerrainCollisionClassification.classification;
+    environmentResult.targetVelocityWorld = countdownActive
+      ? authority.formationTargetVelocityWorld : null;
+    environmentResult.ambientTemperatureC = trackWeatherForcing.ambientTemperatureC;
+    environmentResult.windWorldMps = atmosphere.windWorldMps;
+    environmentResult.gustWorldMps = atmosphere.gustWorldMps;
+    environmentResult.windSpeedMps = atmosphere.windSpeedMps;
+    environmentResult.windDirectionRad = atmosphere.windDirectionRad;
+    environmentResult.gustStrength = atmosphere.gustStrength;
+    environmentResult.wakeSources = wakeSources;
+    environmentResult.bodyDamage = bodyDamage;
+    environmentResult.frontAeroDamage = clamp(Number(panelDamage.front || 0) / 100, 0, 1);
+    environmentResult.rearAeroDamage = clamp(Number(panelDamage.rear || 0) / 100, 0, 1);
+    environmentResult.activeAeroState = Number(session.activeAeroState || 0);
+    environmentResult.damage.engine = Number(damage.engine || 0);
+    environmentResult.damage.transmission = Number(damage.transmission || 0);
+    environmentResult.damage.brakes = brakeDamage;
+    callbackContext.environmentResult = environmentResult;
     authority.chassisGeometryEnvironment = environmentResult;
+    authority.chassisGeometryStepIndex = stepIndex;
+    authority.chassisGeometryMaximumTerrainHeightM = chassisMaximumTerrainHeightM;
     return environmentResult;
   };
+  authority.runner.environmentProvider = authority.raceEnvironmentProvider;
   let latestFixedStepTelemetry = null;
   let previousTrackPositions = session.trackStatePreviousWheelPositions || {};
   let latestTrackStateAdvance = null;
@@ -1538,20 +1818,49 @@ function advanceVehicleDynamicsAuthority(editor, {
     { length: 8 }, createTrackStateStepScratch
   );
   authority.trackStateStepScratchCursor ||= 0;
-  const advance = authority.runner.advance(seconds, {
-    input: controls,
-    onFixedStep: (telemetry) => {
-      latestFixedStepTelemetry = telemetry;
-      const staticContacts = telemetry?.forces?.bodyCollision?.contacts?.filter((contact) => (
-        contact.contactType === 'static-body'
-          && Number(contact.normalImpulseNs || 0) > 1
-          && /^(edge|scenery):/.test(String(contact.colliderSource || ''))
-      )) || [];
-      if (staticContacts.length) {
-        session.staticColliderDamageHistory ||= [];
-        staticContacts.forEach((contact) => {
+  authority.raceFixedStepContext ||= {};
+  const fixedStepContext = authority.raceFixedStepContext;
+  fixedStepContext.editor = editor;
+  fixedStepContext.session = session;
+  fixedStepContext.authority = authority;
+  fixedStepContext.countdownActive = countdownActive;
+  fixedStepContext.trackState = trackState;
+  fixedStepContext.systems = systems;
+  fixedStepContext.wheelSurfaceState = wheelSurfaceState;
+  fixedStepContext.setup = setup;
+  fixedStepContext.weatherState = weatherState;
+  fixedStepContext.trackWeatherForcing = trackWeatherForcing;
+  fixedStepContext.physicsCosts = physicsCosts;
+  fixedStepContext.previousTrackPositions = previousTrackPositions;
+  fixedStepContext.latestFixedStepTelemetry = null;
+  fixedStepContext.latestTrackStateAdvance = null;
+  if (!authority.raceFixedStepCallback) authority.raceFixedStepCallback = (telemetry) => {
+      const {
+        editor,
+        session,
+        authority,
+        countdownActive,
+        trackState,
+        systems,
+        wheelSurfaceState,
+        setup,
+        weatherState,
+        trackWeatherForcing,
+        physicsCosts
+      } = fixedStepContext;
+      fixedStepContext.latestFixedStepTelemetry = telemetry;
+      const bodyContacts = telemetry?.forces?.bodyCollision?.contacts;
+      if (bodyContacts?.length) {
+        for (let contactIndex = 0; contactIndex < bodyContacts.length; contactIndex += 1) {
+          const contact = bodyContacts[contactIndex];
+          const colliderSource = String(contact.colliderSource || '');
+          if (contact.contactType !== 'static-body'
+            || Number(contact.normalImpulseNs || 0) <= 1
+            || (!colliderSource.startsWith('edge:')
+              && !colliderSource.startsWith('scenery:'))) continue;
+          session.staticColliderDamageHistory ||= [];
           const damageKey = `${telemetry.stepIndex}:${contact.colliderId}:${contact.pieceId || ''}`;
-          if (session.staticColliderDamageHistory.includes(damageKey)) return;
+          if (session.staticColliderDamageHistory.includes(damageKey)) continue;
           session.staticColliderDamageHistory.push(damageKey);
           if (session.staticColliderDamageHistory.length > 128) {
             session.staticColliderDamageHistory.splice(
@@ -1560,12 +1869,12 @@ function advanceVehicleDynamicsAuthority(editor, {
           }
           const normal = contact.normal || {};
           const yaw = Number(telemetry.state?.yawRad || 0);
-          const forward = { x: Math.sin(yaw), z: Math.cos(yaw) };
-          const right = { x: Math.cos(yaw), z: -Math.sin(yaw) };
-          const forwardDot = Number(normal.x || 0) * forward.x
-            + Number(normal.z || 0) * forward.z;
-          const rightDot = Number(normal.x || 0) * right.x
-            + Number(normal.z || 0) * right.z;
+          const sinYaw = Math.sin(yaw);
+          const cosYaw = Math.cos(yaw);
+          const forwardDot = Number(normal.x || 0) * sinYaw
+            + Number(normal.z || 0) * cosYaw;
+          const rightDot = Number(normal.x || 0) * cosYaw
+            - Number(normal.z || 0) * sinYaw;
           const panel = Math.abs(rightDot) > Math.abs(forwardDot)
             ? (rightDot > 0 ? 'left' : 'right')
             : (forwardDot < 0 ? 'front' : 'rear');
@@ -1577,46 +1886,97 @@ function advanceVehicleDynamicsAuthority(editor, {
           );
           editor.applyRaceDamage('panels', severity, {
             keys: [panel],
-            source: String(contact.colliderSource)
+            source: colliderSource
           });
-        });
+        }
       }
       if (countdownActive || !trackState) return;
       const trackStateScratch = authority.trackStateStepScratch[
         authority.trackStateStepScratchCursor++ % authority.trackStateStepScratch.length
       ];
-      const result = physicsCosts.measure('trackState', () => emitAuthoritativeTrackStateStep({
-        editor,
-        systems,
-        trackState,
-        telemetry,
-        wheelSurfaceState,
-        setup,
-        weatherState,
-        weatherForcing: trackWeatherForcing,
-        previousPositions: previousTrackPositions,
-        scratch: trackStateScratch
-      }));
-      previousTrackPositions = result.positions;
-      latestTrackStateAdvance = result.advance;
+      const emitRequest = trackStateScratch.emitRequest;
+      emitRequest.editor = editor;
+      emitRequest.systems = systems;
+      emitRequest.trackState = trackState;
+      emitRequest.telemetry = telemetry;
+      emitRequest.wheelSurfaceState = wheelSurfaceState;
+      emitRequest.setup = setup;
+      emitRequest.weatherState = weatherState;
+      emitRequest.weatherForcing = trackWeatherForcing;
+      emitRequest.previousPositions = fixedStepContext.previousTrackPositions;
+      const trackStateTimer = physicsCosts.start('trackState');
+      let result;
+      try {
+        result = emitAuthoritativeTrackStateStep(emitRequest);
+      } finally {
+        physicsCosts.end(trackStateTimer);
+      }
+      fixedStepContext.previousTrackPositions = result.positions;
+      fixedStepContext.latestTrackStateAdvance = result.advance;
+    };
+  authority.raceAdvanceRequest ||= { input: null, onFixedStep: authority.raceFixedStepCallback };
+  authority.raceAdvanceRequest.input = controls;
+  const advance = authority.runner.advance(seconds, authority.raceAdvanceRequest);
+  if (!countdownActive && Number(advance.completedSteps || 0) > 0
+    && Number(advance.advanceWallTimeMs || 0) > 0) {
+    authority.workerQualificationSamples ||= [];
+    authority.workerQualificationCompletedSteps ||= 0;
+    authority.workerQualificationWallTimeMs ||= 0;
+    authority.workerQualificationPeakBacklog ||= 0;
+    const samples = authority.workerQualificationSamples;
+    samples.push(Number(advance.advanceWallTimeMs) / Number(advance.completedSteps));
+    authority.workerQualificationCompletedSteps += Number(advance.completedSteps);
+    authority.workerQualificationWallTimeMs += Number(advance.advanceWallTimeMs);
+    authority.workerQualificationPeakBacklog = Math.max(
+      authority.workerQualificationPeakBacklog,
+      Number(advance.backlogSteps || 0)
+    );
+    if (samples.length > 240) samples.shift();
+    const exactStepSamples = physicsCosts.appendStepElapsedHistory([]);
+    if (exactStepSamples.length >= 240 && !authority.liveWorkerQualification) {
+      const sorted = exactStepSamples.slice(-240).sort((left, right) => left - right);
+      const p95Index = Math.min(sorted.length - 1, Math.ceil(sorted.length * 0.95) - 1);
+      authority.liveWorkerQualification = qualifyVehicleDynamicsWorkerMigration({
+        achievedStepsPerSecond: authority.workerQualificationCompletedSteps
+          / Math.max(1e-6, authority.workerQualificationWallTimeMs / 1000),
+        p95StepMs: sorted[p95Index],
+        backlogStart: 0,
+        backlogEnd: Number(advance.backlogSteps || 0),
+        growingBacklog: authority.workerQualificationPeakBacklog > 0
+      });
+      session.vehicleDynamicsWorkerQualification = authority.liveWorkerQualification;
     }
-  });
+  }
+  latestFixedStepTelemetry = fixedStepContext.latestFixedStepTelemetry;
+  previousTrackPositions = fixedStepContext.previousTrackPositions;
+  latestTrackStateAdvance = fixedStepContext.latestTrackStateAdvance;
   if (!countdownActive && trackState) {
     session.trackStatePreviousWheelPositions = previousTrackPositions;
-    session.trackStateRuntime = {
-      stepIndex: trackState.stepIndex,
-      simulationTimeMs: trackState.simulationTimeMs,
-      activeCellCount: trackState.cells.size,
-      pendingAggregateCount: trackState.contactAccumulator.size,
-      ...(latestTrackStateAdvance || {})
-    };
+    session.trackStateRuntime ||= {};
+    const trackStateRuntime = session.trackStateRuntime;
+    trackStateRuntime.stepIndex = trackState.stepIndex;
+    trackStateRuntime.simulationTimeMs = trackState.simulationTimeMs;
+    trackStateRuntime.activeCellCount = trackState.cells.size;
+    trackStateRuntime.pendingAggregateCount = trackState.contactAccumulator.size;
+    if (latestTrackStateAdvance) {
+      for (const key in latestTrackStateAdvance) {
+        trackStateRuntime[key] = latestTrackStateAdvance[key];
+      }
+    }
   }
   const legacyWorkerPreference = globalThis.__RTG_ENABLE_VEHICLE_DYNAMICS_WORKER__;
   const requestedWorkerMode = String(
     globalThis.__RTG_VEHICLE_DYNAMICS_WORKER_MODE__
-      || (legacyWorkerPreference === true ? 'force' : 'off')
+      || (legacyWorkerPreference === true ? 'force' : 'auto')
   ).toLowerCase();
-  const workerPermitted = requestedWorkerMode === 'force' && typeof Worker === 'function';
+  const explicitQualification = globalThis.__RTG_VEHICLE_DYNAMICS_WORKER_QUALIFICATION__;
+  const qualification = requestedWorkerMode === 'force'
+    ? qualifyVehicleDynamicsWorkerMigration(explicitQualification || {})
+    : authority.liveWorkerQualification;
+  const workerPermitted = typeof Worker === 'function' && (
+    requestedWorkerMode === 'force'
+    || (requestedWorkerMode === 'auto' && qualification?.qualified === true)
+  );
   if (!authority.workerBridge && !workerPermitted) {
     authority.authoritativeThread = 'render-thread';
     session.vehicleDynamicsAuthorityThread = 'render';
@@ -1646,7 +2006,6 @@ function advanceVehicleDynamicsAuthority(editor, {
     authority.workerMigrationAttempted = true;
     let migrationWorker = null;
     try {
-      const qualification = globalThis.__RTG_VEHICLE_DYNAMICS_WORKER_QUALIFICATION__;
       const sourceSurfaceSampler = preparedWorldBake?.surfaceSampler;
       const packedSurfaceSampler = sourceSurfaceSampler?.packed
         ? sourceSurfaceSampler
@@ -1811,6 +2170,7 @@ function advanceVehicleDynamicsAuthority(editor, {
   );
   engineDrive.authoritative = true;
   session.tireSlip.engineDrive = engineDrive;
+  authority.compatibilityTireSlip = session.tireSlip;
   physicsCosts.end(authorityTimer);
   physicsCosts.setFrameCounter('backlogSteps', advance.backlogSteps);
   if (ownsCostFrame) physicsCosts.finishFrame({
