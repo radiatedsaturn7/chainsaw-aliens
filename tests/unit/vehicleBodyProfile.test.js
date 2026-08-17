@@ -77,6 +77,56 @@ test('WRX2 resolves explicit production dimensions without replacing authored CG
   assert.equal(config.bodyProfile.groundClearanceM, 0.135);
   assert.deepEqual(config.cgLocationBodyM, WRX2_PHYSICAL_PROFILE.cgLocationBodyM);
   assert.deepEqual(config.inertiaTensorBodyKgM2, WRX2_PHYSICAL_PROFILE.inertiaTensorBodyKgM2);
+  assert.equal(config.bodyProfile.wheelWellAware, true);
+  assert.deepEqual(config.bodyProfile.pieces.map(({ id }) => id), [
+    'central-underfloor', 'transmission-tunnel', 'left-rocker-rail',
+    'right-rocker-rail', 'front-subframe', 'rear-subframe',
+    'front-bumper-structure', 'rear-bumper-structure', 'front-body-hood',
+    'cabin', 'rear-body-trunk'
+  ]);
+  assert.equal(config.cgHeightM, 0.54);
+  assert.equal(wrx.tuning.tireGrip, 1);
+});
+
+test('WRX2 exposed compound preserves four swept wheel-well voids with authored clearance', () => {
+  const config = createVehicleDynamicsConfigFromTuning(createDefaultCar().tuning);
+  const profile = config.bodyProfile;
+  const radius = profile.wheelRadiusM + profile.maximumTireDeflectionM
+    + profile.wheelWellClearanceMarginM;
+  const wheelCenters = [
+    [-profile.trackWidthM / 2, profile.frontAxleDistanceFromCgM],
+    [profile.trackWidthM / 2, profile.frontAxleDistanceFromCgM],
+    [-profile.trackWidthM / 2, -profile.rearAxleDistanceFromCgM],
+    [profile.trackWidthM / 2, -profile.rearAxleDistanceFromCgM]
+  ];
+  for (const [wheelX, wheelZ] of wheelCenters) {
+    for (const piece of profile.pieces) {
+      const halfX = piece.sizeM.x / 2;
+      const halfZ = piece.sizeM.z / 2;
+      const overlapsX = piece.centerM.x + halfX > wheelX - radius
+        && piece.centerM.x - halfX < wheelX + radius;
+      const overlapsZ = piece.centerM.z + halfZ > wheelZ - radius
+        && piece.centerM.z - halfZ < wheelZ + radius;
+      assert.equal(overlapsX && overlapsZ, false, `${piece.id} intersects wheel ${wheelX}/${wheelZ}`);
+    }
+  }
+  const candidates = createChassisBodyContactCandidates(config);
+  assert.equal(candidates.some(({ id }) => /hood|cabin|trunk/.test(id)
+    && id.includes('bottom')), false);
+  assert.equal(candidates.some(({ pieceId }) => pieceId === 'lower-chassis'), false);
+  for (const candidate of candidates) {
+    for (const piece of profile.pieces) {
+      if (piece.id === candidate.pieceId || piece.type !== 'box') continue;
+      const half = { x: piece.sizeM.x / 2, y: piece.sizeM.y / 2, z: piece.sizeM.z / 2 };
+      const enclosed = candidate.localPoint.x > piece.centerM.x - half.x + 1e-7
+        && candidate.localPoint.x < piece.centerM.x + half.x - 1e-7
+        && candidate.localPoint.y > piece.centerM.y - half.y + 1e-7
+        && candidate.localPoint.y < piece.centerM.y + half.y - 1e-7
+        && candidate.localPoint.z > piece.centerM.z - half.z + 1e-7
+        && candidate.localPoint.z < piece.centerM.z + half.z - 1e-7;
+      assert.equal(enclosed, false, `${candidate.id} is enclosed by ${piece.id}`);
+    }
+  }
 });
 
 for (const preset of VEHICLE_BODY_SHAPE_PRESETS) {

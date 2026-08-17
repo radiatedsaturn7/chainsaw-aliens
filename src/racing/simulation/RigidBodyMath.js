@@ -1,22 +1,34 @@
 const EPSILON = 1e-12;
 
-export const addVector3 = (a = {}, b = {}) => ({
-  x: Number(a.x || 0) + Number(b.x || 0),
-  y: Number(a.y || 0) + Number(b.y || 0),
-  z: Number(a.z || 0) + Number(b.z || 0)
-});
+export const addVector3 = (a = {}, b = {}, target = null) => {
+  const output = target || {};
+  output.x = Number(a.x || 0) + Number(b.x || 0);
+  output.y = Number(a.y || 0) + Number(b.y || 0);
+  output.z = Number(a.z || 0) + Number(b.z || 0);
+  return output;
+};
 
-export const scaleVector3 = (value = {}, scale = 1) => ({
-  x: Number(value.x || 0) * scale,
-  y: Number(value.y || 0) * scale,
-  z: Number(value.z || 0) * scale
-});
+export const scaleVector3 = (value = {}, scale = 1, target = null) => {
+  const output = target || {};
+  output.x = Number(value.x || 0) * scale;
+  output.y = Number(value.y || 0) * scale;
+  output.z = Number(value.z || 0) * scale;
+  return output;
+};
 
-export const crossVector3 = (a = {}, b = {}) => ({
-  x: Number(a.y || 0) * Number(b.z || 0) - Number(a.z || 0) * Number(b.y || 0),
-  y: Number(a.z || 0) * Number(b.x || 0) - Number(a.x || 0) * Number(b.z || 0),
-  z: Number(a.x || 0) * Number(b.y || 0) - Number(a.y || 0) * Number(b.x || 0)
-});
+export const crossVector3 = (a = {}, b = {}, target = null) => {
+  const output = target || {};
+  const x = Number(a.y || 0) * Number(b.z || 0)
+    - Number(a.z || 0) * Number(b.y || 0);
+  const y = Number(a.z || 0) * Number(b.x || 0)
+    - Number(a.x || 0) * Number(b.z || 0);
+  const z = Number(a.x || 0) * Number(b.y || 0)
+    - Number(a.y || 0) * Number(b.x || 0);
+  output.x = x;
+  output.y = y;
+  output.z = z;
+  return output;
+};
 
 export function normalizeQuaternion(value = {}) {
   const x = Number(value.x || 0);
@@ -104,6 +116,44 @@ export function inverseBodyInertiaMultiply(tensor = {}, value = {}) {
 export function inverseInertiaWorldMultiply(value = {}, orientation = {}, tensor = {}) {
   const bodyValue = rotateVectorToBody(value, orientation);
   return rotateVectorByQuaternion(inverseBodyInertiaMultiply(tensor, bodyValue), orientation);
+}
+
+export function createInverseInertiaWorldScratch() {
+  const vector = () => ({ x: 0, y: 0, z: 0 });
+  const quaternion = () => ({ x: 0, y: 0, z: 0, w: 1 });
+  return {
+    bodyValue: vector(),
+    bodyResult: vector(),
+    bodyRotation: {
+      normalizedQuaternion: quaternion(),
+      conjugate: quaternion(),
+      rotation: { normalizedQuaternion: quaternion() }
+    },
+    worldRotation: { normalizedQuaternion: quaternion() }
+  };
+}
+
+export function inverseInertiaWorldMultiplyInto(
+  value = {}, orientation = {}, tensor = {}, target = {}, scratch = null
+) {
+  const workspace = scratch || createInverseInertiaWorldScratch();
+  const bodyValue = rotateVectorToBodyInto(
+    value,
+    orientation,
+    workspace.bodyValue,
+    workspace.bodyRotation
+  );
+  const bodyResult = inverseBodyInertiaMultiplyInto(
+    tensor,
+    bodyValue,
+    workspace.bodyResult
+  );
+  return rotateVectorByQuaternionInto(
+    bodyResult,
+    orientation,
+    target,
+    workspace.worldRotation
+  );
 }
 
 function normalizeQuaternionInto(value, target) {

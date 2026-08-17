@@ -174,14 +174,22 @@ export function packRaceBakedSurfaceSampler(sampler = null) {
   if (!sampler?.triangles?.length) return null;
   const triangles = sampler.triangles;
   const regionTable = [...new Set(triangles.map((triangle) => String(triangle.region || 'terrain')))];
-  const sourceTable = ['road', 'margin', 'terrain'];
+  const sourceTable = [...new Set(triangles.map((triangle) => String(
+    triangle.source || 'terrain'
+  )))];
+  const sourceIndices = new Map();
+  for (let index = 0; index < sourceTable.length; index += 1) {
+    sourceIndices.set(sourceTable[index], index);
+  }
   // Surface selection can land exactly on a shared triangle edge. Keep the
   // authored precision so packing cannot change which face wins the tie.
   const positions = new Float64Array(triangles.length * 9);
   const normals = new Float64Array(triangles.length * 3);
   const bounds = new Float64Array(triangles.length * 4);
   const regions = new Uint8Array(triangles.length);
-  const sources = new Uint8Array(triangles.length);
+  const sources = sourceTable.length <= 256
+    ? new Uint8Array(triangles.length)
+    : new Uint32Array(triangles.length);
   const priorities = new Uint8Array(triangles.length);
   triangles.forEach((triangle, triangleIndex) => {
     (triangle.vertices || []).slice(0, 3).forEach((point, vertexIndex) => {
@@ -200,12 +208,8 @@ export function packRaceBakedSurfaceSampler(sampler = null) {
     bounds[boundsOffset + 2] = Number(triangle.minZ || 0);
     bounds[boundsOffset + 3] = Number(triangle.maxZ || 0);
     regions[triangleIndex] = Math.max(0, regionTable.indexOf(String(triangle.region || 'terrain')));
-    const source = String(triangle.source || '');
-    sources[triangleIndex] = source.startsWith('road')
-      ? 0
-      : source.startsWith('margin')
-        ? 1
-        : 2;
+    const source = String(triangle.source || 'terrain');
+    sources[triangleIndex] = sourceIndices.get(source) ?? 0;
     priorities[triangleIndex] = Math.max(0, Math.min(255, Math.round(Number(triangle.priority || 0))));
   });
   const bucketEntries = [...sampler.buckets.entries()];
@@ -251,12 +255,20 @@ export function packRaceCanonicalSurfaceMesh(mesh = null, {
   if (!Array.isArray(mesh?.triangles) || !mesh.triangles.length) return null;
   const triangles = mesh.triangles;
   const regionTable = [...new Set(triangles.map((triangle) => String(triangle?.region || 'terrain')))];
-  const sourceTable = ['road', 'margin', 'terrain'];
+  const sourceTable = [...new Set(triangles.map((triangle) => String(
+    triangle?.source || 'terrain'
+  )))];
+  const sourceIndices = new Map();
+  for (let index = 0; index < sourceTable.length; index += 1) {
+    sourceIndices.set(sourceTable[index], index);
+  }
   const positions = new Float64Array(triangles.length * 9);
   const normals = new Float64Array(triangles.length * 3);
   const bounds = new Float64Array(triangles.length * 4);
   const regions = new Uint8Array(triangles.length);
-  const sources = new Uint8Array(triangles.length);
+  const sources = sourceTable.length <= 256
+    ? new Uint8Array(triangles.length)
+    : new Uint32Array(triangles.length);
   const priorities = new Uint8Array(triangles.length);
   const bucketSize = Math.max(4, Number(bucketSizeM) || 20);
   const buckets = new Map();
@@ -294,12 +306,8 @@ export function packRaceCanonicalSurfaceMesh(mesh = null, {
 
     const region = String(triangle?.region || 'terrain');
     regions[triangleIndex] = Math.max(0, regionTable.indexOf(region));
-    const source = String(triangle?.source || '');
-    sources[triangleIndex] = source.startsWith('road')
-      ? 0
-      : source.startsWith('margin')
-        ? 1
-        : 2;
+    const source = String(triangle?.source || 'terrain');
+    sources[triangleIndex] = sourceIndices.get(source) ?? 0;
     priorities[triangleIndex] = Math.max(
       0,
       Math.min(255, Math.round(Number(triangle?.priority ?? regionPriority[region] ?? regionPriority.terrain)))

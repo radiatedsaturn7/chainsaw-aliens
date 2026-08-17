@@ -1,4 +1,6 @@
 const BARYCENTRIC_EPSILON = 0.0001;
+const EMPTY_SAMPLE_POINTS_OPTIONS = Object.freeze({});
+const EMPTY_PACKED_POINTS_OPTIONS = Object.freeze({});
 const DEFAULT_RESULT_CAPACITY = 256;
 
 const pointZ = (point = {}) => Number(point.z ?? point.y ?? 0);
@@ -366,6 +368,7 @@ export class PhysicsTerrainQueryFrameCache {
     this.fineCellTriangles = new Uint32Array(0);
     this.discontinuityEdges = [];
     this.edgeClassificationCounts = Object.create(null);
+    this.edgeClassificationsByBucketRange = new Map();
     this.resultCapacity = Math.max(32, Math.trunc(Number(resultCapacity) || DEFAULT_RESULT_CAPACITY));
     this.frame = new PhysicsTerrainQueryFrame(this);
   }
@@ -432,6 +435,13 @@ export class PhysicsTerrainQueryFrame {
       createBatchBuffer(cache.resultCapacity || DEFAULT_RESULT_CAPACITY)
     ));
     this.batchBufferCursor = 0;
+    // Body support batches are consumed synchronously by collision loops and
+    // never cross the public environment snapshot boundary. Keeping one
+    // dedicated buffer prevents tire-frequency collision work from growing the
+    // rotating wheel/environment batch pool for the duration of a chassis step.
+    this.bodySupportBatch = createBatchBuffer(
+      cache.resultCapacity || DEFAULT_RESULT_CAPACITY
+    );
     this.lastBatch = null;
     this.scalarResult = createMutableSample();
     this.analyticResults = Array.from({ length: 8 }, () => createMutableSample());
@@ -440,6 +450,9 @@ export class PhysicsTerrainQueryFrame {
     this.projectionKeys = new Array(8).fill(null);
     this.materialValues = new Array(4).fill(null);
     this.materialKeys = new Array(4).fill(null);
+    this.materialTriangleIds = new Int32Array(4).fill(-1);
+    this.materialRegions = new Array(4).fill(null);
+    this.materialSources = new Array(4).fill(null);
     this.segmentResult = {
       hit: false,
       fraction: null,
@@ -478,7 +491,9 @@ export class PhysicsTerrainQueryFrame {
       heightM: 0,
       normal: { x: 0, y: 1, z: 0 }
     };
-    this.bodyVariationBounds = { minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
+    this.bodyVariationBounds = {
+      minX: 0, maxX: 0, minY: -Infinity, maxY: Infinity, minZ: 0, maxZ: 0
+    };
     this.pointCacheCapacity = 8192;
     this.pointCacheStamps = new Uint32Array(this.pointCacheCapacity);
     this.pointCacheX = new Float64Array(this.pointCacheCapacity);
@@ -510,8 +525,22 @@ export class PhysicsTerrainQueryFrame {
     this.bodySupportBuffers = Array.from({ length: 4 }, () => ({
       inUse: false,
       entries: [],
-      spareEntries: Array.from({ length: 128 }, () => ({
+      adaptiveAdditions: [],
+      sampledTerrain: new Map(),
+      supportCandidates: [],
+      supportEnvelopeCandidates: new Map(),
+      supportEnvelopeHeights: new Map(),
+      spareEntries: Array.from({ length: 256 }, () => ({
         candidate: null,
+        contactTriangleCandidateId: null,
+        contactTriangleId: null,
+        adaptiveCandidate: {
+          id: '',
+          pieceId: null,
+          pieceType: null,
+          localPoint: { x: 0, y: 0, z: 0 },
+          adaptive: true
+        },
         arm: { x: 0, y: 0, z: 0 },
         worldPoint: { x: 0, y: 0, z: 0 }
       }))
@@ -528,6 +557,7 @@ export class PhysicsTerrainQueryFrame {
   } = {}) {
     const nextRevision = revision ?? sampler?.revision ?? 0;
     const retainMaterialCache = this.sampler === sampler && this.revision === nextRevision;
+    if (!retainMaterialCache) this.cache.edgeClassificationsByBucketRange.clear();
     this.sampler = sampler;
     this.revision = nextRevision;
     this.bounds = finiteBounds(bounds);
@@ -545,6 +575,9 @@ export class PhysicsTerrainQueryFrame {
     if (!retainMaterialCache) {
       this.materialValues.fill(null);
       this.materialKeys.fill(null);
+      this.materialTriangleIds.fill(-1);
+      this.materialRegions.fill(null);
+      this.materialSources.fill(null);
     }
     this.pointCacheStamp = (this.pointCacheStamp + 1) >>> 0;
     if (this.pointCacheStamp === 0) {
@@ -656,13 +689,20 @@ export class PhysicsTerrainQueryFrame {
     this.buildFineTriangleGrid({
       minBucketX, maxBucketX, minBucketZ, maxBucketZ, bucketSize
     });
-    this.buildLocalEdgeClassifications();
+    this.buildLocalEdgeClassifications(key);
     this.statistics.localTriangleCount = localCount;
   }
 
-  buildLocalEdgeClassifications() {
+  buildLocalEdgeClassifications(bucketRangeKey = '') {
     const sampler = this.sampler;
     const cache = this.cache;
+    const preparedKey = `${String(this.revision)}:${bucketRangeKey}`;
+    const prepared = cache.edgeClassificationsByBucketRange.get(preparedKey);
+    if (prepared) {
+      cache.discontinuityEdges = prepared.discontinuityEdges;
+      cache.edgeClassificationCounts = prepared.edgeClassificationCounts;
+      return;
+    }
     const edges = new Map();
     const quantize = (value) => Math.round(Number(value) * 10000);
     const appendEdge = (firstX, firstY, firstZ, secondX, secondY, secondZ,
@@ -682,6 +722,8 @@ export class PhysicsTerrainQueryFrame {
         edge = {
           minX: Math.min(ax, bx),
           maxX: Math.max(ax, bx),
+          minY: Math.min(ay, by) * this.elevationScaleM,
+          maxY: Math.max(ay, by) * this.elevationScaleM,
           minZ: Math.min(az, bz),
           maxZ: Math.max(az, bz),
           entries: []
@@ -756,8 +798,8 @@ export class PhysicsTerrainQueryFrame {
       appendEdge(bx, by, bz, cx, cy, cz, normalX, normalY, normalZ, region, source);
       appendEdge(cx, cy, cz, ax, ay, az, normalX, normalY, normalZ, region, source);
     }
-    cache.discontinuityEdges.length = 0;
-    cache.edgeClassificationCounts = Object.create(null);
+    const discontinuityEdges = [];
+    const edgeClassificationCounts = Object.create(null);
     edges.forEach((edge) => {
       const entries = edge.entries;
       let classification = 'smooth-connected-surface';
@@ -794,18 +836,26 @@ export class PhysicsTerrainQueryFrame {
         classification = first.region !== second.region || first.source !== second.source
             ? 'curb-or-authored-step' : 'sharp-dihedral-edge';
       }
-      cache.edgeClassificationCounts[classification] = Number(
-        cache.edgeClassificationCounts[classification] || 0
+      edgeClassificationCounts[classification] = Number(
+        edgeClassificationCounts[classification] || 0
       ) + 1;
       if (classification !== 'smooth-connected-surface') {
-        cache.discontinuityEdges.push({
+        discontinuityEdges.push({
           minX: edge.minX,
           maxX: edge.maxX,
+          minY: edge.minY,
+          maxY: edge.maxY,
           minZ: edge.minZ,
           maxZ: edge.maxZ,
           classification
         });
       }
+    });
+    cache.discontinuityEdges = discontinuityEdges;
+    cache.edgeClassificationCounts = edgeClassificationCounts;
+    cache.edgeClassificationsByBucketRange.set(preparedKey, {
+      discontinuityEdges,
+      edgeClassificationCounts
     });
   }
 
@@ -1341,6 +1391,10 @@ export class PhysicsTerrainQueryFrame {
       const feature = features[index];
       if (feature.maxX < resolved.minX - BARYCENTRIC_EPSILON
         || feature.minX > resolved.maxX + BARYCENTRIC_EPSILON
+        || (Number.isFinite(Number(resolved.minY))
+          && feature.maxY < resolved.minY - BARYCENTRIC_EPSILON)
+        || (Number.isFinite(Number(resolved.maxY))
+          && feature.minY > resolved.maxY + BARYCENTRIC_EPSILON)
         || feature.maxZ < resolved.minZ - BARYCENTRIC_EPSILON
         || feature.minZ > resolved.maxZ + BARYCENTRIC_EPSILON) continue;
       target.featureCount += 1;
@@ -1354,7 +1408,9 @@ export class PhysicsTerrainQueryFrame {
     return target;
   }
 
-  samplePoints(points = [], { preferredRegion = null } = {}) {
+  samplePoints(points = [], {
+    preferredRegion = null
+  } = EMPTY_SAMPLE_POINTS_OPTIONS) {
     const count = points.length;
     this.statistics.batchQueries += 1;
     this.physicsCostAccounting?.count('terrainQueryFrameBatchQueries');
@@ -1381,17 +1437,39 @@ export class PhysicsTerrainQueryFrame {
     const count = entries.length;
     this.statistics.batchQueries += 1;
     this.physicsCostAccounting?.count('terrainQueryFrameBatchQueries');
-    const batch = this.acquireBatchBuffer(count);
+    const batch = this.bodySupportBatch;
+    if (growBatchBuffer(batch, count)) {
+      this.statistics.temporaryObjects += 5;
+      this.physicsCostAccounting?.count('temporaryObjects', 5);
+      this.physicsCostAccounting?.count('terrainBatchBufferGrowths');
+    }
+    batch.count = count;
+    batch.samples.length = count;
     const samples = batch.samples;
     for (let index = 0; index < count; index += 1) {
-      const point = entries[index].worldPoint;
+      const entry = entries[index];
+      const point = entry.worldPoint;
       if (!batch.targets[index]) {
         batch.targets[index] = createMutableSample();
         this.statistics.temporaryObjects += 2;
         this.physicsCostAccounting?.count('temporaryObjects', 2);
         this.physicsCostAccounting?.count('terrainBatchTargetAllocations');
       }
-      const sample = this.samplePoint(point, batch.targets[index]);
+      const candidateId = entry.candidate?.id || null;
+      let sample = null;
+      if (candidateId && entry.contactTriangleCandidateId === candidateId
+        && Number.isInteger(entry.contactTriangleId)) {
+        sample = this.samplePointOnTriangle(
+          point,
+          entry.contactTriangleId,
+          batch.targets[index]
+        );
+      }
+      if (!sample?.valid) sample = this.samplePoint(point, batch.targets[index]);
+      if (candidateId && sample.valid) {
+        entry.contactTriangleCandidateId = candidateId;
+        entry.contactTriangleId = sample.triangleId;
+      }
       this.writeBatchResult(batch, index, point, sample);
     }
     this.lastBatch = batch;
@@ -1405,7 +1483,7 @@ export class PhysicsTerrainQueryFrame {
     yOffset = 1,
     zOffset = 2,
     preferredRegion = null
-  } = {}) {
+  } = EMPTY_PACKED_POINTS_OPTIONS) {
     const resolvedCount = Math.max(0, Math.trunc(Number(count) || 0));
     this.statistics.batchQueries += 1;
     this.physicsCostAccounting?.count('terrainQueryFrameBatchQueries');
@@ -1899,15 +1977,71 @@ export class PhysicsTerrainQueryFrame {
     return value;
   }
 
+  materialForWheelSignature(
+    wheelIndex,
+    triangleId,
+    region,
+    source,
+    resolver,
+    point,
+    context = null
+  ) {
+    const slot = Math.max(0, Math.min(3, Math.trunc(Number(wheelIndex) || 0)));
+    const resolvedTriangleId = Number.isInteger(Number(triangleId))
+      ? Number(triangleId) : -1;
+    if (this.materialTriangleIds[slot] === resolvedTriangleId
+      && this.materialRegions[slot] === region
+      && this.materialSources[slot] === source) {
+      this.statistics.materialCacheHits += 1;
+      return this.materialValues[slot];
+    }
+    this.statistics.materialCacheMisses += 1;
+    const value = typeof resolver === 'function'
+      ? resolver(point, context) : null;
+    this.materialTriangleIds[slot] = resolvedTriangleId;
+    this.materialRegions[slot] = region;
+    this.materialSources[slot] = source;
+    this.materialValues[slot] = value;
+    return value;
+  }
+
   noteFullSurfaceClassification(count = 1) {
     this.statistics.fullSurfaceClassifications += Number(count) || 0;
     this.physicsCostAccounting?.count('terrainQueryFrameFullSurfaceClassifications', count);
   }
 
   acquireBodySupportBuffer() {
-    let buffer = this.bodySupportBuffers.find((candidate) => candidate.inUse === false);
+    let buffer = null;
+    for (let index = 0; index < this.bodySupportBuffers.length; index += 1) {
+      if (this.bodySupportBuffers[index].inUse === false) {
+        buffer = this.bodySupportBuffers[index];
+        break;
+      }
+    }
     if (!buffer) {
-      buffer = { inUse: false, entries: [], spareEntries: [] };
+      buffer = {
+        inUse: false,
+        entries: [],
+        adaptiveAdditions: [],
+        sampledTerrain: new Map(),
+        supportCandidates: [],
+        supportEnvelopeCandidates: new Map(),
+        supportEnvelopeHeights: new Map(),
+        spareEntries: Array.from({ length: 256 }, () => ({
+          candidate: null,
+          contactTriangleCandidateId: null,
+          contactTriangleId: null,
+          adaptiveCandidate: {
+            id: '',
+            pieceId: null,
+            pieceType: null,
+            localPoint: { x: 0, y: 0, z: 0 },
+            adaptive: true
+          },
+          arm: { x: 0, y: 0, z: 0 },
+          worldPoint: { x: 0, y: 0, z: 0 }
+        }))
+      };
       this.bodySupportBuffers.push(buffer);
       this.statistics.temporaryObjects += 2;
       this.physicsCostAccounting?.count('temporaryObjects', 2);

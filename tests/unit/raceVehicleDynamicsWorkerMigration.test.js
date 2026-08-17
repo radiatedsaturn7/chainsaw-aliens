@@ -127,6 +127,33 @@ test('RaceSimulation hands authority to the worker only with a qualifying single
   });
 });
 
+test('RaceSimulation auto mode waits for a passing live single-thread qualification', async () => {
+  await withWorkerGlobals(undefined, () => {
+    const editor = createEditor();
+    editor.selectedRace.hazards = [];
+    const worldBake = editor.buildRaceWorldBake(editor.getRacePlaytestWorldBakeOptions());
+    editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false, preparedWorldBake: worldBake });
+    editor.playtestSession.countdownRemainingMs = 0;
+    editor.playtestSession.launchLockMs = 0;
+    editor.playtestSession.elapsedMs = 1000;
+    editor.playtestSession.startupFramePending = false;
+    editor.updatePlaytest(1 / 60);
+    assert.equal(FakeWorker.instances.length, 0);
+    editor.vehicleDynamicsAuthority.liveWorkerQualification = {
+      qualified: true,
+      achievedStepsPerSecond: 140,
+      p95StepMs: 7,
+      backlogStart: 0,
+      backlogEnd: 0,
+      reasons: []
+    };
+    editor.updatePlaytest(1 / 60);
+    assert.equal(FakeWorker.instances.length, 1);
+    assert.equal(editor.playtestSession.vehicleDynamicsAuthorityThread, 'worker');
+    editor.vehicleDynamicsAuthority.workerBridge.close();
+  }, { enable: undefined, mode: 'auto' });
+});
+
 test('RaceSimulation keeps single-thread authority when the hot path misses budget', async () => {
   await withWorkerGlobals({
     achievedStepsPerSecond: 100,

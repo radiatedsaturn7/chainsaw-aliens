@@ -14,7 +14,7 @@ import {
   estimateRacePowerLimitedTopSpeedMps,
   updateRaceSimulation
 } from '../racing/RaceSimulation.js';
-import { appendRaceBakedSurfaceSamplerTerrainCells, buildRaceBakedSurfaceSampler, getRaceBakedSurfaceMaximumElevationInBounds, sampleRaceBakedSurface } from '../racing/RaceBakedSurfaceSampler.js';
+import { appendRaceBakedSurfaceSamplerTerrainCells, buildRaceBakedSurfaceSampler, getRaceBakedSurfaceMaximumElevationInBounds, packRaceCanonicalSurfaceMesh, sampleRaceBakedSurface } from '../racing/RaceBakedSurfaceSampler.js';
 import { buildRaceCanonicalSurfaceMesh } from '../racing/RaceCanonicalSurfaceMesh.js';
 import { createPackedRaceArtTextureSampler } from '../racing/RacePackedArt.js';
 import {
@@ -10836,12 +10836,10 @@ export default class RaceEditor {
         builtMs: startMs > 0 ? Math.max(0, this.getNowMs() - startMs) : 0
       };
       bake.surfaceSampler = buildSurfaceSampler
-        ? buildRaceBakedSurfaceSampler({
-          mesh: bake.mesh,
-          runtimeType,
-          elevationScaleM: RACE_THREE_ELEVATION_M,
-          bucketSizeM: Math.max(10, Math.min(24, effectiveTerrainSize * 0.2))
-        })
+        ? packRaceCanonicalSurfaceMesh(bake.mesh, {
+            elevationScaleM: RACE_THREE_ELEVATION_M,
+            bucketSizeM: Math.max(10, Math.min(24, effectiveTerrainSize * 0.2))
+          })
         : null;
       bake.validation = validate && this.playtestSession?.carEditorPreview !== true
         ? this.validateRaceSurfaceGeometry(bake)

@@ -275,6 +275,13 @@ export const WRX_2022_SHARED_TUNING = {
       cgPositionM: WRX2_PHYSICAL_PROFILE.cgLocationBodyM,
       collisionFriction: 0.62,
       collisionRestitution: 0.08,
+      wheelWellAware: true,
+      wheelWellClearanceMarginM: 0.06,
+      maximumTireDeflectionM: 0.04,
+      wheelRadiusM: 0.337,
+      trackWidthM: 1.57,
+      frontAxleDistanceFromCgM: 1.1214,
+      rearAxleDistanceFromCgM: 1.5486,
       customColliders: []
     }
   },

@@ -1164,6 +1164,13 @@ export class ContactPatchTireModel {
           force: {},
           kinematicsTarget: kinematicsScratch.target,
           kinematicsComputationScratch: kinematicsScratch.computation,
+          kinematicsRequest: {},
+          suspensionGeometryRequest: {},
+          initialContactValidityRequest: {},
+          contactValidityRequest: {},
+          damperRequest: {},
+          aquaplaningRequest: {},
+          brushForceRequest: {},
           initialContactValidity: {},
           contactValidity: {}
         };
@@ -1190,6 +1197,8 @@ export class ContactPatchTireModel {
       };
       scratch.capacityByWheel = {};
       scratch.kinematicsByWheel = {};
+      scratch.drivetrainCapacityRequest = {};
+      scratch.powertrainStepRequest = {};
       scratch.powertrainTuning = {};
       scratch.powertrainControls = {};
       scratch.fallbackDamage = { engine: null, transmission: null, brakes: null };
@@ -1218,7 +1227,6 @@ export class ContactPatchTireModel {
 
   step({ state, controls, config, environment = {}, dt = 0 }) {
     const physicsCosts = environment.physicsCostAccounting || null;
-    physicsCosts?.count('temporaryObjects', 3);
     const drivenWheelIds = config.drivenWheelIds || [];
     const centerSteeringAngleRad = resolvePhysicalCenterSteeringAngle(controls, config, state);
     const scratch = this.stepScratch[this.stepScratchCursor++ % this.stepScratch.length];
@@ -1308,16 +1316,21 @@ export class ContactPatchTireModel {
         environment.contactScaleByWheel?.[wheelId]
           ?? (environment.grounded === false ? 0 : 1)
       ) : footprint.supportedFraction;
-      let kinematics = calculateWheelContactKinematics({
-        state,
-        config,
-        controls,
-        environment,
-        wheelId,
-        surfaceNormalOverride: surfaceSample.valid ? surfaceSample.normal : null,
-        target: wheelInputs[wheelId].kinematicsTarget,
-        computationScratch: wheelInputs[wheelId].kinematicsComputationScratch
-      });
+      const wheelRequestScratch = wheelInputs[wheelId];
+      const kinematicsRequest = wheelRequestScratch.kinematicsRequest;
+      kinematicsRequest.state = state;
+      kinematicsRequest.config = config;
+      kinematicsRequest.controls = controls;
+      kinematicsRequest.environment = environment;
+      kinematicsRequest.wheelId = wheelId;
+      kinematicsRequest.surfaceNormalOverride = surfaceSample.valid ? surfaceSample.normal : null;
+      kinematicsRequest.suspensionCompressionOverrideM = undefined;
+      kinematicsRequest.suspensionCompressionVelocityOverrideMps = undefined;
+      kinematicsRequest.camberOverrideRad = undefined;
+      kinematicsRequest.toeOverrideRad = undefined;
+      kinematicsRequest.target = wheelRequestScratch.kinematicsTarget;
+      kinematicsRequest.computationScratch = wheelRequestScratch.kinematicsComputationScratch;
+      let kinematics = calculateWheelContactKinematics(kinematicsRequest);
       let contactSolveIterationCount = 0;
       if (typeof environment.sampleTerrainAtWorldPoint === 'function') {
         const iterativeContactTimer = physicsCosts?.start('iterativeTireContactSolving');
@@ -1357,16 +1370,8 @@ export class ContactPatchTireModel {
             || surfaceSample.normal.x !== previousSample.normal.x
             || surfaceSample.normal.y !== previousSample.normal.y
             || surfaceSample.normal.z !== previousSample.normal.z) {
-            kinematics = calculateWheelContactKinematics({
-              state,
-              config,
-              controls,
-              environment,
-              wheelId,
-              surfaceNormalOverride: surfaceSample.normal,
-              target: wheelInputs[wheelId].kinematicsTarget,
-              computationScratch: wheelInputs[wheelId].kinematicsComputationScratch
-            });
+            kinematicsRequest.surfaceNormalOverride = surfaceSample.normal;
+            kinematics = calculateWheelContactKinematics(kinematicsRequest);
           }
           previousSample = surfaceSample;
           if (heightDeltaM < 0.001 && normalDeltaRad < 0.5 * Math.PI / 180) break;
@@ -1392,17 +1397,17 @@ export class ContactPatchTireModel {
       const rawRequestedCompressionM = hasSurfaceHeight
         ? previousCompressionM + penetrationM
         : null;
-      const initialContactValidity = resolveTreadContactValidity({
-        state,
-        config,
-        environment,
-        wheelId,
-        kinematics,
-        surfaceSample,
-        rawRequestedCompressionM,
-        suspensionTravelM,
-        target: wheelInputs[wheelId].initialContactValidity
-      });
+      const initialValidityRequest = wheelRequestScratch.initialContactValidityRequest;
+      initialValidityRequest.state = state;
+      initialValidityRequest.config = config;
+      initialValidityRequest.environment = environment;
+      initialValidityRequest.wheelId = wheelId;
+      initialValidityRequest.kinematics = kinematics;
+      initialValidityRequest.surfaceSample = surfaceSample;
+      initialValidityRequest.rawRequestedCompressionM = rawRequestedCompressionM;
+      initialValidityRequest.suspensionTravelM = suspensionTravelM;
+      initialValidityRequest.target = wheelRequestScratch.initialContactValidity;
+      const initialContactValidity = resolveTreadContactValidity(initialValidityRequest);
       const clampedCompressionM = initialContactValidity.valid
         ? clamp(rawRequestedCompressionM, 0, suspensionTravelM)
         : null;
@@ -1445,41 +1450,36 @@ export class ContactPatchTireModel {
         compressionM = Math.max(0, compressionM + unsprungVelocityMps * dt);
         if (compressionM === 0) unsprungVelocityMps = 0;
       }
-      const geometry = solveSuspensionGeometry({
-        definition: front ? config.suspensionDefinitionFront : config.suspensionDefinitionRear,
-        compressionM: compressionM - staticCompressionM,
-        steeringAngleRad: resolvePhysicalCenterSteeringAngle(controls, config, state),
-        staticCamberRad: front ? config.camberFrontRad : config.camberRearRad,
-        staticToeRad: front ? config.toeFrontRad : config.toeRearRad,
-        springRateNpm,
-        target: scratch.geometryByWheel[wheelId]
-      });
-      kinematics = calculateWheelContactKinematics({
-        state,
-        config,
-        controls,
-        environment,
-        wheelId,
-        surfaceNormalOverride: surfaceSample.valid ? surfaceSample.normal : null,
-        suspensionCompressionOverrideM: compressionM,
-        suspensionCompressionVelocityOverrideMps: unsprungVelocityMps,
-        camberOverrideRad: geometry.camberRad,
-        toeOverrideRad: geometry.toeRad,
-        target: wheelInputs[wheelId].kinematicsTarget,
-        computationScratch: wheelInputs[wheelId].kinematicsComputationScratch
-      });
-      const contactValidity = resolveTreadContactValidity({
-        state,
-        config,
-        environment,
-        wheelId,
-        kinematics,
-        hasSurfaceHeight,
-        surfaceSample,
-        rawRequestedCompressionM,
-        suspensionTravelM,
-        target: wheelInputs[wheelId].contactValidity
-      });
+      const geometryRequest = wheelRequestScratch.suspensionGeometryRequest;
+      geometryRequest.definition = front
+        ? config.suspensionDefinitionFront : config.suspensionDefinitionRear;
+      geometryRequest.compressionM = compressionM - staticCompressionM;
+      geometryRequest.steeringAngleRad = resolvePhysicalCenterSteeringAngle(
+        controls, config, state
+      );
+      geometryRequest.staticCamberRad = front ? config.camberFrontRad : config.camberRearRad;
+      geometryRequest.staticToeRad = front ? config.toeFrontRad : config.toeRearRad;
+      geometryRequest.springRateNpm = springRateNpm;
+      geometryRequest.target = scratch.geometryByWheel[wheelId];
+      const geometry = solveSuspensionGeometry(geometryRequest);
+      kinematicsRequest.surfaceNormalOverride = surfaceSample.valid ? surfaceSample.normal : null;
+      kinematicsRequest.suspensionCompressionOverrideM = compressionM;
+      kinematicsRequest.suspensionCompressionVelocityOverrideMps = unsprungVelocityMps;
+      kinematicsRequest.camberOverrideRad = geometry.camberRad;
+      kinematicsRequest.toeOverrideRad = geometry.toeRad;
+      kinematics = calculateWheelContactKinematics(kinematicsRequest);
+      const validityRequest = wheelRequestScratch.contactValidityRequest;
+      validityRequest.state = state;
+      validityRequest.config = config;
+      validityRequest.environment = environment;
+      validityRequest.wheelId = wheelId;
+      validityRequest.kinematics = kinematics;
+      validityRequest.hasSurfaceHeight = hasSurfaceHeight;
+      validityRequest.surfaceSample = surfaceSample;
+      validityRequest.rawRequestedCompressionM = rawRequestedCompressionM;
+      validityRequest.suspensionTravelM = suspensionTravelM;
+      validityRequest.target = wheelRequestScratch.contactValidity;
+      const contactValidity = resolveTreadContactValidity(validityRequest);
       const geometricContact = contactValidity.valid && Number(clampedCompressionM) > EPSILON;
       const compressionRatio = compressionM / suspensionTravelM;
       const bumpTravelRatio = clamp(
@@ -1531,17 +1531,17 @@ export class ContactPatchTireModel {
         : (suspensionRelativeVelocityMps >= 0
           ? config.suspensionBumpDamperRearNsM
           : config.suspensionReboundDamperRearNsM);
-      const damperForceN = calculateVelocitySensitiveDamperForce({
-        relativeVelocityMps: suspensionRelativeVelocityMps,
-        bumpDamperNsM: front
+      const damperRequest = wheelRequestScratch.damperRequest;
+      damperRequest.relativeVelocityMps = suspensionRelativeVelocityMps;
+      damperRequest.bumpDamperNsM = front
           ? config.suspensionBumpDamperFrontNsM
-          : config.suspensionBumpDamperRearNsM,
-        reboundDamperNsM: front
+          : config.suspensionBumpDamperRearNsM;
+      damperRequest.reboundDamperNsM = front
           ? config.suspensionReboundDamperFrontNsM
-          : config.suspensionReboundDamperRearNsM,
-        highSpeedThresholdMps: config.damperHighSpeedThresholdMps,
-        highSpeedScale: config.damperHighSpeedScale
-      });
+          : config.suspensionReboundDamperRearNsM;
+      damperRequest.highSpeedThresholdMps = config.damperHighSpeedThresholdMps;
+      damperRequest.highSpeedScale = config.damperHighSpeedScale;
+      const damperForceN = calculateVelocitySensitiveDamperForce(damperRequest);
       const springDisplacementFromSagM = compressionM - staticCompressionM;
       const baseSuspensionLoadN = geometricContact
         ? staticLoad + progressiveRate * springDisplacementFromSagM
@@ -1679,24 +1679,24 @@ export class ContactPatchTireModel {
       tireTransition.breakawayHysteresis = q(breakawayHysteresis);
       tireTransition.recoveryHysteresis = q(recoveryHysteresis);
       tireTransition.breakawayActive = breakawayActive;
-      calculateAquaplaningState({
-        kinematics: input.kinematics,
-        normalLoadN: input.normalLoadN,
-        tire: input.tire,
-        material: input.material,
-        target: input.aquaplaning
-      });
+      const aquaplaningRequest = input.aquaplaningRequest;
+      aquaplaningRequest.kinematics = input.kinematics;
+      aquaplaningRequest.normalLoadN = input.normalLoadN;
+      aquaplaningRequest.tire = input.tire;
+      aquaplaningRequest.material = input.material;
+      aquaplaningRequest.target = input.aquaplaning;
+      calculateAquaplaningState(aquaplaningRequest);
       const brushTire = input.brushTire;
       for (const key in brushTire) delete brushTire[key];
       brushTire.referenceLoadN = input.staticLoadN;
       for (const key in input.tire) brushTire[key] = input.tire[key];
-      const brushForce = calculateBrushTireForce({
-        kinematics: input.kinematics,
-        normalLoadN: input.aquaplaning.supportedNormalLoadN,
-        tire: brushTire,
-        material: input.material,
-        target: input.force
-      });
+      const brushForceRequest = input.brushForceRequest;
+      brushForceRequest.kinematics = input.kinematics;
+      brushForceRequest.normalLoadN = input.aquaplaning.supportedNormalLoadN;
+      brushForceRequest.tire = brushTire;
+      brushForceRequest.material = input.material;
+      brushForceRequest.target = input.force;
+      const brushForce = calculateBrushTireForce(brushForceRequest);
       input.force.longitudinalForceN = q(
         brushForce.longitudinalForceN * input.aquaplaning.longitudinalForceScale
       );
@@ -1737,12 +1737,14 @@ export class ContactPatchTireModel {
       powertrainTuning[key] = configuredPowertrain[key];
     }
     const mode = controls.throttle > 0.001 ? 'accel' : 'decel';
-    const drivetrainCapacity = powertrainModel.resolveDrivetrainCapacity({
-      tuning: powertrainTuning,
-      drivenWheelIds: config.drivenWheelIds,
-      capacityByWheel,
-      mode
-    });
+    const drivetrainCapacityRequest = scratch.drivetrainCapacityRequest;
+    drivetrainCapacityRequest.tuning = powertrainTuning;
+    drivetrainCapacityRequest.drivenWheelIds = config.drivenWheelIds;
+    drivetrainCapacityRequest.capacityByWheel = capacityByWheel;
+    drivetrainCapacityRequest.mode = mode;
+    const drivetrainCapacity = powertrainModel.resolveDrivetrainCapacity(
+      drivetrainCapacityRequest
+    );
     const driveShareByWheel = drivetrainCapacity.forceShareByWheel;
     const powertrainControls = scratch.powertrainControls;
     for (const key in powertrainControls) delete powertrainControls[key];
@@ -1752,18 +1754,20 @@ export class ContactPatchTireModel {
     fallbackDamage.engine = environment.engineDamage;
     fallbackDamage.transmission = environment.transmissionDamage;
     fallbackDamage.brakes = environment.brakeDamageByWheel;
-    const powertrainStep = powertrainModel.stepAuthoritativeWheelTorques({
-      tuning: powertrainTuning,
-      config,
-      controls: powertrainControls,
-      previous: state.powertrainState || {},
-      kinematicsByWheel,
-      capacityByWheel,
-      driveShareByWheel,
-      state,
-      damage: environment.damage || fallbackDamage,
-      dt
-    });
+    const powertrainStepRequest = scratch.powertrainStepRequest;
+    powertrainStepRequest.tuning = powertrainTuning;
+    powertrainStepRequest.config = config;
+    powertrainStepRequest.controls = powertrainControls;
+    powertrainStepRequest.previous = state.powertrainState || {};
+    powertrainStepRequest.kinematicsByWheel = kinematicsByWheel;
+    powertrainStepRequest.capacityByWheel = capacityByWheel;
+    powertrainStepRequest.driveShareByWheel = driveShareByWheel;
+    powertrainStepRequest.state = state;
+    powertrainStepRequest.damage = environment.damage || fallbackDamage;
+    powertrainStepRequest.dt = dt;
+    const powertrainStep = powertrainModel.stepAuthoritativeWheelTorques(
+      powertrainStepRequest
+    );
     const powertrainGear = Math.trunc(Number(powertrainStep.state.gear || 0));
     const selectedGearRatio = powertrainGear < 0
       ? Math.abs(Number(powertrainTuning.reverseRatio || 0))

@@ -59,9 +59,35 @@ export function createRaceWakeSources(session = {}, { playerWidthM = 1.8 } = {})
 
 export function getRaceWakeSourcesForFrame(session = {}, { playerWidthM = 1.8 } = {}) {
   const frameKey = Number(session.sceneElapsedMs ?? session.elapsedMs ?? 0);
-  const cached = wakeFrameCache.get(session);
+  let cached = wakeFrameCache.get(session);
   if (cached?.frameKey === frameKey && cached.playerWidthM === playerWidthM) return cached.sources;
+  if (!(session.aiRuntime || []).length) {
+    if (!cached?.playerOnly) {
+      const source = {
+        id: 'player',
+        position: { x: 0, y: 0, z: 0 },
+        yawRad: 0,
+        speedMps: 0,
+        widthM: 1.8,
+        dragAreaM2: 0.75
+      };
+      cached = { frameKey, playerWidthM, playerOnly: true, source, sources: [source] };
+      wakeFrameCache.set(session, cached);
+    }
+    const source = cached.source;
+    source.position.x = Number(session.worldX || 0);
+    source.position.y = Number(session.bodyY ?? session.heightM ?? 0);
+    source.position.z = Number(session.worldZ || 0);
+    source.yawRad = Number(session.carYaw || 0);
+    source.speedMps = Math.max(0, Number(
+      session.groundSpeedMps ?? Math.abs(session.speedMps || 0)
+    ) || 0);
+    source.widthM = clamp(Number(playerWidthM) || 1.8, 1, 3);
+    cached.frameKey = frameKey;
+    cached.playerWidthM = playerWidthM;
+    return cached.sources;
+  }
   const sources = createRaceWakeSources(session, { playerWidthM });
-  wakeFrameCache.set(session, { frameKey, playerWidthM, sources });
+  wakeFrameCache.set(session, { frameKey, playerWidthM, playerOnly: false, sources });
   return sources;
 }

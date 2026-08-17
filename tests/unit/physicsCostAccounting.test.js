@@ -143,3 +143,49 @@ test('lightweight fixed-step records retain elapsed time and backlog without dup
   assert.equal(frame.timings.environmentProvider.inclusiveMs, 5);
   assert.equal(frame.counters.physicsGeometryPointsQueried, 12);
 });
+
+test('elapsed-ring step accounting preserves chronological samples without retaining records', () => {
+  let nowMs = 0;
+  const costs = new PhysicsCostAccounting({
+    now: () => nowMs,
+    detailedStepRecords: false,
+    stepHistoryLimit: 120
+  });
+  costs.stepHistoryMode = 'elapsed-ring';
+  for (let index = 0; index < 125; index += 1) {
+    costs.beginStep({ stepIndex: index });
+    nowMs += index + 1;
+    costs.finishStep({ backlogSteps: 0 });
+  }
+  assert.equal(costs.stepHistory.length, 0);
+  assert.deepEqual(
+    costs.appendStepElapsedHistory([]),
+    Array.from({ length: 120 }, (_, index) => index + 6)
+  );
+  assert.equal(costs.getLatestStep().elapsedMs, 125);
+  costs.reset();
+  assert.deepEqual(costs.appendStepElapsedHistory([]), []);
+});
+
+test('bounded diagnostic histories recycle evicted records without retaining stale values', () => {
+  let nowMs = 0;
+  const costs = new PhysicsCostAccounting({
+    now: () => nowMs,
+    frameHistoryLimit: 30,
+    stepHistoryLimit: 120
+  });
+  let firstFrame = null;
+  for (let index = 0; index < 32; index += 1) {
+    costs.beginFrame({ frameIndex: index });
+    if (index === 0) {
+      costs.count('physicsGeometryPointsQueried', 7);
+      firstFrame = costs.currentFrame;
+    }
+    nowMs += 1;
+    costs.finishFrame();
+  }
+  assert.equal(costs.frameHistory.length, 30);
+  assert.equal(costs.frameHistory.at(-1), firstFrame);
+  assert.equal(firstFrame.metadata.frameIndex, 31);
+  assert.deepEqual(firstFrame.counters, { backlogSteps: 0 });
+});

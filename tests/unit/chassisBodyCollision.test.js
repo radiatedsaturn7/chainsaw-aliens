@@ -140,9 +140,13 @@ test('compound support adaptively subdivides only a materially varying terrain n
 
 test('body collision LOD uses AABB, lower-hull, and full-envelope tiers', () => {
   const collision = new ChassisBodyCollision(CONFIG);
+  const bodyBatchSizes = [];
   const environment = {
     sampleTerrainAtWorldPoint: terrain(),
-    sampleTerrainAtWorldPoints: (points) => points.map(terrain()),
+    sampleTerrainAtWorldPoints: (points) => {
+      bodyBatchSizes.push(points.length);
+      return points.map(terrain());
+    },
     sampleTerrainMaximumHeightInBounds: () => 0
   };
   const solve = (heightM) => collision.step({
@@ -162,9 +166,12 @@ test('body collision LOD uses AABB, lower-hull, and full-envelope tiers', () => 
   assert.equal(ordinary.bodySupportLod, 'lower-hull');
   assert.ok(collision.lowerHullCandidates.length > 0);
   assert.ok(collision.lowerHullCandidates.length < collision.candidates.length);
+  assert.ok(collision.lowerHullProbeCandidates.length <= 8);
+  assert.ok(collision.lowerHullProbeCandidates.length < collision.lowerHullCandidates.length);
+  assert.equal(bodyBatchSizes.at(-1), collision.lowerHullProbeCandidates.length);
 
   const contact = solve(0.42);
-  assert.notEqual(contact.bodySupportLod, 'lower-hull');
+  assert.equal(contact.bodySupportLod, 'exposed-underbody');
   assert.equal(contact.broadphaseRejected === true && contact.contacts.length === 0, false);
 });
 

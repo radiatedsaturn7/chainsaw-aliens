@@ -37,6 +37,7 @@ export const PHYSICS_COST_COUNTER_NAMES = Object.freeze([
   'bodyLowerHullRejections',
   'bodyLocalContinuityRejections',
   'bodyFullEnvelopeActivations',
+  'bodyOrdinaryUnderbodyManifolds',
   'bodySweepSlices',
   'binarySearchIterations',
   'wheelCylinderActivationPoints',
@@ -64,6 +65,13 @@ export const PHYSICS_COST_COUNTER_NAMES = Object.freeze([
   'terrainBatchBufferAllocations',
   'terrainBatchBufferGrowths',
   'bodyCcdActivations',
+  'bodySweepWheelCrossingActivations',
+  'bodySweepTranslationActivations',
+  'bodySweepClosingSpeedActivations',
+  'bodySweepPersistentContactRejections',
+  'bodySweepAttitudeActivations',
+  'bodySweepPenetrationActivations',
+  'bodyCollisionDeferredTireSubsteps',
   'staticColliderBroadphaseQueries',
   'staticColliderCandidates',
   'staticColliderNarrowphaseTests',
@@ -100,6 +108,17 @@ function createRecord(metadata = {}) {
     startedAtMs: 0,
     elapsedMs: 0
   };
+}
+
+function resetRecord(record, metadata = {}) {
+  const metadataTarget = record.metadata;
+  for (const key in metadataTarget) delete metadataTarget[key];
+  Object.assign(metadataTarget, metadata);
+  for (const key in record.timings) delete record.timings[key];
+  for (const key in record.counters) delete record.counters[key];
+  record.startedAtMs = 0;
+  record.elapsedMs = 0;
+  return record;
 }
 
 function addTiming(record, name, inclusiveMs, exclusiveMs) {
@@ -162,6 +181,13 @@ export class PhysicsCostAccounting {
     )));
     this.frameHistory = [];
     this.stepHistory = [];
+    this.frameRecordPool = [];
+    this.stepRecordPool = [];
+    this.stepHistoryMode = 'records';
+    this.stepElapsedHistory = new Float64Array(this.stepHistoryLimit);
+    this.stepElapsedHistoryLength = 0;
+    this.stepElapsedHistoryCursor = 0;
+    this.lightweightStepRecord = createRecord();
     this.currentFrame = null;
     this.currentStep = null;
     this.timerStack = [];
@@ -177,7 +203,11 @@ export class PhysicsCostAccounting {
 
   beginFrame(metadata = {}) {
     if (!this.enabled || this.currentFrame) return false;
-    this.currentFrame = createRecord({ sequence: ++this.sequence, ...metadata });
+    const frame = this.frameRecordPool.pop() || createRecord();
+    const sequence = ++this.sequence;
+    resetRecord(frame, metadata);
+    if (!Object.hasOwn(frame.metadata, 'sequence')) frame.metadata.sequence = sequence;
+    this.currentFrame = frame;
     this.currentFrame.startedAtMs = this.now();
     return true;
   }
@@ -194,8 +224,8 @@ export class PhysicsCostAccounting {
     frame.counters.backlogSteps = backlogSteps;
     this.peakBacklogSteps = Math.max(this.peakBacklogSteps, backlogSteps);
     this.frameHistory.push(publicRecord(frame));
-    if (this.frameHistory.length > this.frameHistoryLimit) {
-      this.frameHistory.splice(0, this.frameHistory.length - this.frameHistoryLimit);
+    while (this.frameHistory.length > this.frameHistoryLimit) {
+      this.frameRecordPool.push(this.frameHistory.shift());
     }
     this.currentFrame = null;
     this.timerStack.length = 0;
@@ -204,7 +234,18 @@ export class PhysicsCostAccounting {
 
   beginStep(metadata = {}) {
     if (!this.enabled || this.currentStep) return false;
-    this.currentStep = createRecord(metadata);
+    if (this.stepHistoryMode === 'elapsed-ring') {
+      const step = this.lightweightStepRecord;
+      step.metadata = metadata;
+      step.startedAtMs = this.now();
+      step.elapsedMs = 0;
+      step.counters.backlogSteps = 0;
+      this.currentStep = step;
+      return true;
+    }
+    const step = this.stepRecordPool.pop() || createRecord();
+    resetRecord(step, metadata);
+    this.currentStep = step;
     this.currentStep.startedAtMs = this.now();
     return true;
   }
@@ -214,9 +255,21 @@ export class PhysicsCostAccounting {
     const step = this.currentStep;
     Object.assign(step.metadata, metadata);
     step.elapsedMs = Math.max(0, this.now() - step.startedAtMs);
+    if (this.stepHistoryMode === 'elapsed-ring') {
+      this.stepElapsedHistory[this.stepElapsedHistoryCursor] = step.elapsedMs;
+      this.stepElapsedHistoryCursor = (
+        this.stepElapsedHistoryCursor + 1
+      ) % this.stepHistoryLimit;
+      this.stepElapsedHistoryLength = Math.min(
+        this.stepHistoryLimit,
+        this.stepElapsedHistoryLength + 1
+      );
+      this.currentStep = null;
+      return step;
+    }
     this.stepHistory.push(publicRecord(step));
-    if (this.stepHistory.length > this.stepHistoryLimit) {
-      this.stepHistory.splice(0, this.stepHistory.length - this.stepHistoryLimit);
+    while (this.stepHistory.length > this.stepHistoryLimit) {
+      this.stepRecordPool.push(this.stepHistory.shift());
     }
     this.currentStep = null;
     return this.stepHistory.at(-1);
@@ -291,7 +344,27 @@ export class PhysicsCostAccounting {
   }
 
   getLatestStep() {
+    if (this.stepHistoryMode === 'elapsed-ring' && this.stepElapsedHistoryLength) {
+      return this.lightweightStepRecord;
+    }
     return this.stepHistory.at(-1) || null;
+  }
+
+  appendStepElapsedHistory(target = []) {
+    if (this.stepHistoryMode !== 'elapsed-ring') {
+      for (let index = 0; index < this.stepHistory.length; index += 1) {
+        target.push(finite(this.stepHistory[index]?.elapsedMs));
+      }
+      return target;
+    }
+    const start = (
+      this.stepElapsedHistoryCursor - this.stepElapsedHistoryLength
+      + this.stepHistoryLimit
+    ) % this.stepHistoryLimit;
+    for (let index = 0; index < this.stepElapsedHistoryLength; index += 1) {
+      target.push(this.stepElapsedHistory[(start + index) % this.stepHistoryLimit]);
+    }
+    return target;
   }
 
   getSummary({ windowFrames = 240, force = false } = {}) {
@@ -369,8 +442,16 @@ export class PhysicsCostAccounting {
   }
 
   reset() {
+    for (let index = 0; index < this.frameHistory.length; index += 1) {
+      this.frameRecordPool.push(this.frameHistory[index]);
+    }
+    for (let index = 0; index < this.stepHistory.length; index += 1) {
+      this.stepRecordPool.push(this.stepHistory[index]);
+    }
     this.frameHistory.length = 0;
     this.stepHistory.length = 0;
+    this.stepElapsedHistoryLength = 0;
+    this.stepElapsedHistoryCursor = 0;
     this.currentFrame = null;
     this.currentStep = null;
     this.timerStack.length = 0;

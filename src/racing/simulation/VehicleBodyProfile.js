@@ -51,6 +51,9 @@ function normalizePiece(piece = {}, index = 0) {
       y: clamp(finite(size.y, 0.5), 0.05, 4),
       z: clamp(finite(size.z, 0.5), 0.05, 12)
     }),
+    exposedFaces: Object.freeze((Array.isArray(piece.exposedFaces) ? piece.exposedFaces : [
+      'left', 'right', 'bottom', 'top', 'front', 'rear'
+    ]).map(String)),
     vertices: Object.freeze((Array.isArray(piece.vertices) ? piece.vertices : []).map((vertex) => Object.freeze({
       x: finite(vertex.x, 0), y: finite(vertex.y, 0), z: finite(vertex.z, 0)
     })))
@@ -66,9 +69,74 @@ export function createVehicleBodyCompoundPieces(profile = {}) {
   const clearance = profile.groundClearanceM;
   const lowerHeight = profile.lowerBodyHeightM;
   const bottom = clearance - profile.cgPositionM.y;
-  const box = (id, center, size) => Object.freeze({
-    id, type: 'box', centerM: Object.freeze(center), sizeM: Object.freeze(size), vertices: Object.freeze([])
+  const box = (id, center, size, exposedFaces = [
+    'left', 'right', 'bottom', 'top', 'front', 'rear'
+  ]) => Object.freeze({
+    id, type: 'box', centerM: Object.freeze(center), sizeM: Object.freeze(size),
+    exposedFaces: Object.freeze(exposedFaces),
+    vertices: Object.freeze([])
   });
+  if (profile.wheelWellAware === true) {
+    const frontZ = profile.frontAxleDistanceFromCgM;
+    const rearZ = -profile.rearAxleDistanceFromCgM;
+    const envelopeRadius = profile.wheelRadiusM + profile.wheelWellClearanceMarginM
+      + profile.maximumTireDeflectionM;
+    const innerEdge = profile.trackWidthM * 0.5 - envelopeRadius;
+    const centralWidth = Math.max(0.2, innerEdge * 2 - 0.02);
+    const floorHeight = Math.min(lowerHeight, 0.2);
+    const floorY = bottom + floorHeight * 0.5;
+    const wheelVoidGapM = 0.01;
+    const centralFront = frontZ - envelopeRadius - wheelVoidGapM;
+    const centralRear = rearZ + envelopeRadius + wheelVoidGapM;
+    const centralLength = Math.max(0.2, centralFront - centralRear);
+    const rockerWidth = Math.max(0.08, (width - centralWidth) * 0.18);
+    const rockerX = width * 0.5 - rockerWidth * 0.5;
+    const floorFaces = ['bottom', 'front', 'rear'];
+    const pieces = [
+      box('central-underfloor', { x: 0, y: floorY, z: (centralFront + centralRear) * 0.5 },
+        { x: centralWidth, y: floorHeight, z: centralLength }, floorFaces),
+      box('transmission-tunnel', { x: 0, y: floorY + floorHeight * 0.65, z: 0 },
+        { x: centralWidth * 0.48, y: lowerHeight * 0.65, z: Math.max(0.5, centralLength) },
+        ['left', 'right', 'front', 'rear']),
+      box('left-rocker-rail', { x: -rockerX, y: floorY + 0.04, z: (centralFront + centralRear) * 0.5 },
+        { x: rockerWidth, y: floorHeight + 0.08, z: centralLength }, ['left', 'bottom', 'front', 'rear']),
+      box('right-rocker-rail', { x: rockerX, y: floorY + 0.04, z: (centralFront + centralRear) * 0.5 },
+        { x: rockerWidth, y: floorHeight + 0.08, z: centralLength }, ['right', 'bottom', 'front', 'rear']),
+      box('front-subframe', { x: 0, y: floorY + 0.03, z: frontZ },
+        { x: centralWidth, y: floorHeight + 0.06, z: envelopeRadius * 1.5 }, floorFaces),
+      box('rear-subframe', { x: 0, y: floorY + 0.03, z: rearZ },
+        { x: centralWidth, y: floorHeight + 0.06, z: envelopeRadius * 1.5 }, floorFaces),
+      box('front-bumper-structure', {
+        x: 0, y: bottom + lowerHeight * 0.62,
+        z: (length * 0.5 + frontZ + envelopeRadius + wheelVoidGapM) * 0.5
+      }, { x: width, y: lowerHeight * 0.72,
+        z: length * 0.5 - frontZ - envelopeRadius - wheelVoidGapM },
+      ['left', 'right', 'bottom', 'top', 'front']),
+      box('rear-bumper-structure', {
+        x: 0, y: bottom + lowerHeight * 0.62,
+        z: (-length * 0.5 + rearZ - envelopeRadius - wheelVoidGapM) * 0.5
+      }, { x: width, y: lowerHeight * 0.72,
+        z: length * 0.5 + rearZ - envelopeRadius - wheelVoidGapM },
+      ['left', 'right', 'bottom', 'top', 'rear'])
+    ];
+    const hoodZ = length * 0.5 - profile.frontOverhangM - profile.hood.lengthM * 0.5;
+    pieces.push(
+      box('front-body-hood', { x: 0, y: bottom + lowerHeight + profile.hood.heightM * 0.5, z: hoodZ },
+        { x: Math.min(profile.hood.widthM, centralWidth), y: profile.hood.heightM, z: profile.hood.lengthM },
+        ['left', 'right', 'top', 'front']),
+      box('cabin', { x: 0, y: bottom + lowerHeight + profile.cabin.heightM * 0.5, z: profile.cabin.centerZM },
+        { x: Math.min(profile.cabin.widthM, centralWidth), y: profile.cabin.heightM, z: profile.cabin.lengthM },
+        ['left', 'right', 'top'])
+    );
+    const rearLength = Math.max(0.35, length - profile.frontOverhangM - profile.rearOverhangM
+      - profile.hood.lengthM - profile.cabin.lengthM * 0.62);
+    pieces.push(box('rear-body-trunk', {
+      x: 0, y: bottom + lowerHeight + profile.hood.heightM * 0.42,
+      z: -length * 0.5 + profile.rearOverhangM + rearLength * 0.5
+    }, { x: Math.min(width * 0.94, centralWidth), y: profile.hood.heightM * 0.84, z: rearLength },
+    ['left', 'right', 'top', 'rear']));
+    return Object.freeze(pieces);
+  }
   const lower = box(profile.preset === 'pickup' ? 'lower-frame-body' : 'lower-chassis',
     { x: 0, y: bottom + lowerHeight * 0.5, z: 0 },
     { x: width, y: lowerHeight, z: length });
@@ -133,6 +201,15 @@ export function normalizeVehicleBodyProfile(source = {}, fallback = {}) {
     },
     collisionFriction: clamp(finite(source.collisionFriction, finite(fallback.collisionFriction, defaults.collisionFriction)), 0, 1.5),
     collisionRestitution: clamp(finite(source.collisionRestitution, finite(fallback.collisionRestitution, defaults.collisionRestitution)), 0, 0.6),
+    wheelWellAware: source.wheelWellAware === true,
+    wheelWellClearanceMarginM: clamp(finite(source.wheelWellClearanceMarginM, 0.06), 0.01, 0.25),
+    maximumTireDeflectionM: clamp(finite(source.maximumTireDeflectionM, 0.04), 0, 0.12),
+    wheelRadiusM: clamp(finite(source.wheelRadiusM, finite(fallback.wheelRadiusM, 0.337)), 0.1, 0.8),
+    trackWidthM: clamp(finite(source.trackWidthM, finite(fallback.trackWidthM, 1.58)), 0.5, 4),
+    frontAxleDistanceFromCgM: clamp(finite(source.frontAxleDistanceFromCgM,
+      finite(fallback.frontAxleDistanceFromCgM, overallLengthM * 0.24)), 0.1, overallLengthM),
+    rearAxleDistanceFromCgM: clamp(finite(source.rearAxleDistanceFromCgM,
+      finite(fallback.rearAxleDistanceFromCgM, overallLengthM * 0.32)), 0.1, overallLengthM),
     customColliders: (Array.isArray(source.customColliders) ? source.customColliders : []).map(normalizePiece)
   };
   profile.pieces = createVehicleBodyCompoundPieces(profile);
@@ -149,6 +226,10 @@ export function resolveVehicleBodyProfile(tuning = {}) {
   }, {
     lengthM: tuning.lengthM, widthM: tuning.widthM, heightM: tuning.heightM,
     groundClearanceM: tuning.groundClearanceM,
+    wheelRadiusM: tuning.wheelRadiusM,
+    trackWidthM: tuning.trackWidthM,
+    frontAxleDistanceFromCgM: tuning.frontAxleDistanceFromCgM,
+    rearAxleDistanceFromCgM: tuning.rearAxleDistanceFromCgM,
     cgPositionM: tuning.physicalVehicleProfile?.cgLocationBodyM || { y: tuning.cgHeightM },
     collisionFriction: tuning.bodyCollisionFriction,
     collisionRestitution: tuning.bodyCollisionRestitution

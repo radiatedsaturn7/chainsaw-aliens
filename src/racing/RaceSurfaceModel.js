@@ -588,21 +588,22 @@ export class RaceSurfaceModel {
   createPhysicsQueryContext(options = {}) {
     const runtimeType = options.runtimeType || this.getRuntimeType();
     const routeLength = Math.max(1, Number(options.routeLength || this.getRouteLength()) || 1);
+    const roadbedRequest = options.roadbedRequest
+      && typeof options.roadbedRequest === 'object' ? options.roadbedRequest : {};
+    roadbedRequest.routeLength = routeLength;
+    roadbedRequest.runtimeType = runtimeType;
+    roadbedRequest.allowVisualExtension = Boolean(options.allowVisualExtension);
     const roadbedProfile = typeof this.adapter.getRoadbedProfile === 'function'
-      ? this.adapter.getRoadbedProfile({
-        routeLength,
-        runtimeType,
-        allowVisualExtension: Boolean(options.allowVisualExtension)
-      })
+      ? this.adapter.getRoadbedProfile(roadbedRequest)
       : null;
-    return Object.freeze({
-      runtimeType,
-      routeLength,
-      roadbedProfile,
-      weatherState: options.weatherState || this.getWeatherState(),
-      allowVisualExtension: Boolean(options.allowVisualExtension),
-      fallbackSurfaceId: options.fallbackSurfaceId || 'asphalt'
-    });
+    const output = options.target && typeof options.target === 'object' ? options.target : {};
+    output.runtimeType = runtimeType;
+    output.routeLength = routeLength;
+    output.roadbedProfile = roadbedProfile;
+    output.weatherState = options.weatherState || this.getWeatherState();
+    output.allowVisualExtension = Boolean(options.allowVisualExtension);
+    output.fallbackSurfaceId = options.fallbackSurfaceId || 'asphalt';
+    return options.target ? output : Object.freeze(output);
   }
 
   samplePhysicsGeometry(worldPoint = {}, context = {}) {
@@ -721,7 +722,10 @@ export class RaceSurfaceModel {
   }
 
   samplePhysicsGeometryBatch(points = [], context = {}) {
-    if (context.physicsTerrainQueryFrame && context.geometryOnly === true) {
+    // A chassis-step query frame is the authoritative prepared geometry for
+    // every batch consumer. Do not fall back to N complete route/roadbed/world
+    // queries merely because a caller omitted the old geometryOnly hint.
+    if (context.physicsTerrainQueryFrame) {
       return context.physicsTerrainQueryFrame.samplePoints(points, {
         preferredRegion: context.preferredRegion || null
       });

@@ -5,38 +5,63 @@ const EPSILON = 1e-9;
 const q = (value) => Number((Number(value) || 0).toFixed(6));
 const vector = (value = {}) => ({ x: Number(value.x || 0), y: Number(value.y || 0), z: Number(value.z || 0) });
 const magnitude = (value) => Math.hypot(value.x, value.y, value.z);
+const AERO_INPUT_SCALES = Object.freeze([
+  ['speedMps', 60], ['yawRad', 0.5], ['pitchRad', 0.25], ['rollRad', 0.4],
+  ['frontRideHeightM', 0.2], ['rearRideHeightM', 0.2], ['rakeRad', 0.12],
+  ['activeAeroState', 1], ['bodyDamage', 1]
+]);
+const AERO_OUTPUT_KEYS = Object.freeze([
+  'dragCoefficient', 'frontLiftCoefficient', 'rearLiftCoefficient', 'centerOfPressureM'
+]);
 const normalize = (value, fallback = { x: 0, y: 0, z: 1 }) => {
   const length = magnitude(value);
   return length > EPSILON ? scaleVector3(value, 1 / length) : { ...fallback };
 };
 
-function sampleAeroMap(map = {}, inputs = {}, fallback = {}) {
+function sampleAeroMap(map = {}, inputs = {}, fallback = {}, scratch = null) {
   const samples = Array.isArray(map.samples) ? map.samples : [];
   if (!samples.length) return { ...fallback };
-  const scales = {
-    speedMps: 60, yawRad: 0.5, pitchRad: 0.25, rollRad: 0.4,
-    frontRideHeightM: 0.2, rearRideHeightM: 0.2, rakeRad: 0.12,
-    activeAeroState: 1, bodyDamage: 1
-  };
-  const ranked = samples.map((sample, index) => {
-    const distance = Object.keys(scales).reduce((sum, key) => {
-      if (!Number.isFinite(Number(sample[key]))) return sum;
-      const delta = (Number(inputs[key] || 0) - Number(sample[key])) / scales[key];
-      return sum + delta * delta;
-    }, 0);
-    return { sample, index, distance };
-  }).sort((left, right) => left.distance - right.distance || left.index - right.index).slice(0, 4);
+  const workspace = scratch || { ranked: [], weights: new Float64Array(4) };
+  const ranked = workspace.ranked;
+  while (ranked.length < samples.length) ranked.push({ sample: null, index: 0, distance: 0 });
+  ranked.length = samples.length;
+  for (let sampleIndex = 0; sampleIndex < samples.length; sampleIndex += 1) {
+    const sample = samples[sampleIndex];
+    let distance = 0;
+    for (let inputIndex = 0; inputIndex < AERO_INPUT_SCALES.length; inputIndex += 1) {
+      const [key, scale] = AERO_INPUT_SCALES[inputIndex];
+      if (!Number.isFinite(Number(sample[key]))) continue;
+      const delta = (Number(inputs[key] || 0) - Number(sample[key])) / scale;
+      distance += delta * delta;
+    }
+    const entry = ranked[sampleIndex];
+    entry.sample = sample;
+    entry.index = sampleIndex;
+    entry.distance = distance;
+  }
+  ranked.sort((left, right) => left.distance - right.distance || left.index - right.index);
+  const rankedCount = Math.min(4, ranked.length);
   if (ranked[0]?.distance <= EPSILON) return { ...fallback, ...ranked[0].sample };
-  const weights = ranked.map((entry) => 1 / Math.max(0.0001, entry.distance));
-  const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+  const weights = workspace.weights;
+  let totalWeight = 0;
+  for (let index = 0; index < rankedCount; index += 1) {
+    weights[index] = 1 / Math.max(0.0001, ranked[index].distance);
+    totalWeight += weights[index];
+  }
   const result = { ...fallback };
-  ['dragCoefficient', 'frontLiftCoefficient', 'rearLiftCoefficient', 'centerOfPressureM'].forEach((key) => {
-    const contributors = ranked.filter((entry) => Number.isFinite(Number(entry.sample[key])));
-    if (!contributors.length) return;
-    result[key] = ranked.reduce((sum, entry, index) => (
-      sum + Number(entry.sample[key] ?? fallback[key] ?? 0) * weights[index]
-    ), 0) / totalWeight;
-  });
+  for (let keyIndex = 0; keyIndex < AERO_OUTPUT_KEYS.length; keyIndex += 1) {
+    const key = AERO_OUTPUT_KEYS[keyIndex];
+    let hasContributor = false;
+    for (let index = 0; index < rankedCount; index += 1) {
+      hasContributor ||= Number.isFinite(Number(ranked[index].sample[key]));
+    }
+    if (!hasContributor) continue;
+    let sum = 0;
+    for (let index = 0; index < rankedCount; index += 1) {
+      sum += Number(ranked[index].sample[key] ?? fallback[key] ?? 0) * weights[index];
+    }
+    result[key] = sum / totalWeight;
+  }
   return result;
 }
 
@@ -67,6 +92,10 @@ export function calculateRelativeAirflow({ state = {}, windWorldMps = {}, gustWo
 }
 
 export class AeroModel {
+  constructor() {
+    this.mapWorkspace = { ranked: [], weights: new Float64Array(4) };
+  }
+
   calculateForces({ state = {}, config = {}, environment = {} } = {}) {
     const airflow = calculateRelativeAirflow({
       state,
@@ -106,7 +135,7 @@ export class AeroModel {
       frontLiftCoefficient: -config.frontDownforceCoefficient,
       rearLiftCoefficient: -config.rearDownforceCoefficient,
       centerOfPressureM: 0
-    });
+    }, this.mapWorkspace);
     const yawMagnitude = Math.abs(airflow.yawRad);
     const groundClearance = (frontRideHeightM + rearRideHeightM) * 0.5;
     const groundEffect = 1 + config.groundEffectGain

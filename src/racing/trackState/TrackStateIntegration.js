@@ -64,7 +64,8 @@ export function createRaceTrackState({
 export function createRaceTrackStateWeatherForcing({
   weatherState = {},
   race = {},
-  windDirectionRad = 0
+  windDirectionRad = 0,
+  target = null
 } = {}) {
   const type = String(weatherState.id || race.weather || 'clear');
   const intensity = clamp(Number(weatherState.effectiveIntensity ?? weatherState.targetIntensity ?? 0), 0, 1);
@@ -76,15 +77,18 @@ export function createRaceTrackStateWeatherForcing({
       : type === 'snow'
         ? 0.6
         : 0;
-  return {
-    type,
-    precipitationRateMmPerS: quantizeTrackStateNumber(intensity * precipitationScale),
-    ambientTemperatureC: type === 'snow' ? -4 : type === 'storm' ? 13 : type === 'rain' ? 16 : night ? 14 : 22,
-    sunIntensity: night ? 0 : type === 'clear' ? 0.9 : type === 'snow' ? 0.18 : 0.12,
-    windIntensity: type === 'storm' ? 0.9 : type === 'rain' ? 0.48 : type === 'snow' ? 0.35 : 0.18,
-    windDirectionRad: quantizeTrackStateNumber(windDirectionRad),
-    humidity: type === 'storm' ? 0.96 : type === 'rain' ? 0.9 : type === 'snow' ? 0.82 : 0.42
-  };
+  const output = target && typeof target === 'object' ? target : {};
+  output.type = type;
+  output.precipitationRateMmPerS = quantizeTrackStateNumber(intensity * precipitationScale);
+  output.ambientTemperatureC = type === 'snow' ? -4
+    : type === 'storm' ? 13 : type === 'rain' ? 16 : night ? 14 : 22;
+  output.sunIntensity = night ? 0 : type === 'clear' ? 0.9 : type === 'snow' ? 0.18 : 0.12;
+  output.windIntensity = type === 'storm' ? 0.9
+    : type === 'rain' ? 0.48 : type === 'snow' ? 0.35 : 0.18;
+  output.windDirectionRad = quantizeTrackStateNumber(windDirectionRad);
+  output.humidity = type === 'storm' ? 0.96
+    : type === 'rain' ? 0.9 : type === 'snow' ? 0.82 : 0.42;
+  return output;
 }
 
 export function queueRaceTrackStateTireEvents(trackState, {
@@ -183,9 +187,14 @@ export function queueRaceTrackStateTireEvents(trackState, {
 }
 
 export function queueRaceTrackStateCrashEvents(trackState, session = {}) {
-  if (!trackState) return [];
+  if (!trackState) return EMPTY_ACCEPTED_TIRE_EVENTS;
   const log = Array.isArray(session.damageLog) ? session.damageLog : [];
   const cursor = Math.max(0, Math.trunc(Number(session.trackStateDamageLogCursor) || 0));
+  if (!log.length) return EMPTY_ACCEPTED_TIRE_EVENTS;
+  const latestSequence = Math.max(1, Math.trunc(Number(
+    log[log.length - 1]?.sequence
+  ) || log.length));
+  if (latestSequence <= cursor) return EMPTY_ACCEPTED_TIRE_EVENTS;
   const pending = log
     .map((entry, index) => ({
       entry,

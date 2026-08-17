@@ -37,6 +37,7 @@ function createScratch() {
     wheelSpinByWheel,
     physicalMutationTotalsByWheel,
     contactByWheel,
+    advanceResult: {},
     wheelSurfaceState: { positions },
     brakeState: { lockByWheel },
     direction: { x: 0, z: 1 }
@@ -146,7 +147,11 @@ export function createWorkerTrackStateAuthority({
       collectAcceptedEvents: false,
       contactByWheel: scratch.contactByWheel
     });
-    const advance = trackState.advance(contactStepSeconds, liveWeatherForcing);
+    const advance = trackState.advance(
+      contactStepSeconds,
+      liveWeatherForcing,
+      scratch.advanceResult
+    );
     return {
       eventCount: Math.max(0, trackState.nextSequence - beforeSequence),
       eventSequence: Math.max(0, trackState.nextSequence - 1),

@@ -169,6 +169,7 @@ export class TrackStateContactAccumulator {
     this.pieceScratch = [];
     this.physicalTotalsScratch = {};
     this.dueScratch = [];
+    this.lastAggregateSlots = [];
   }
 
   get size() {
@@ -177,6 +178,7 @@ export class TrackStateContactAccumulator {
 
   clear() {
     this.aggregates.clear();
+    this.lastAggregateSlots.length = 0;
   }
 
   accumulate(contact = {}, { collectAcceptedKeys = true } = {}) {
@@ -325,8 +327,32 @@ export class TrackStateContactAccumulator {
         ? durationSeconds * piece.ratio / totalPieceRatio
         : durationSeconds / Math.max(1, pieces.length);
       const cellKey = piece.coords.key;
-      const key = `${stepIndex}\u0000${vehicleId}\u0000${wheelId}\u0000${cellKey}`;
-      const aggregate = this.aggregates.get(key) || {
+      let aggregateSlot = null;
+      for (let slotIndex = 0; slotIndex < this.lastAggregateSlots.length; slotIndex += 1) {
+        const slot = this.lastAggregateSlots[slotIndex];
+        if (slot.vehicleId === vehicleId && slot.wheelId === wheelId) {
+          aggregateSlot = slot;
+          break;
+        }
+      }
+      if (!aggregateSlot) {
+        aggregateSlot = {
+          vehicleId,
+          wheelId,
+          stepIndex: -1,
+          cellKey: '',
+          aggregateKey: '',
+          aggregate: null
+        };
+        this.lastAggregateSlots.push(aggregateSlot);
+      }
+      const cacheHit = aggregateSlot.stepIndex === stepIndex
+        && aggregateSlot.cellKey === cellKey
+        && aggregateSlot.aggregate !== null;
+      const key = cacheHit
+        ? aggregateSlot.aggregateKey
+        : `${stepIndex}\u0000${vehicleId}\u0000${wheelId}\u0000${cellKey}`;
+      const aggregate = cacheHit ? aggregateSlot.aggregate : this.aggregates.get(key) || {
         stepIndex,
         vehicleId,
         wheelId,
@@ -364,6 +390,12 @@ export class TrackStateContactAccumulator {
         compoundId: String(contact.compoundId || 'tarmac'),
         firstContactTimeSeconds: Number.POSITIVE_INFINITY
       };
+      if (!cacheHit) {
+        aggregateSlot.stepIndex = stepIndex;
+        aggregateSlot.cellKey = cellKey;
+        aggregateSlot.aggregateKey = key;
+        aggregateSlot.aggregate = aggregate;
+      }
       const distanceWeight = piece.distanceM > EPSILON ? piece.distanceM : duration;
       const physicalTotals = getPhysicalTotals(
         contact,

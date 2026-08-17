@@ -89,12 +89,10 @@ export function qualifyVehicleDynamicsWorkerMigration(result = {}) {
 export class VehicleDynamicsWorkerClient {
   constructor({ worker, performanceQualification, now = () => performance.now() } = {}) {
     if (!worker?.postMessage) throw new TypeError('VehicleDynamicsWorkerClient requires a Worker');
-    const enforceQualification = performanceQualification !== undefined
-      && performanceQualification !== null;
-    this.qualification = enforceQualification
-      ? qualifyVehicleDynamicsWorkerMigration(performanceQualification)
-      : Object.freeze({ qualified: true, mode: 'runtime-auto', reasons: Object.freeze([]) });
-    if (enforceQualification && !this.qualification.qualified) {
+    this.qualification = qualifyVehicleDynamicsWorkerMigration(
+      performanceQualification || {}
+    );
+    if (!this.qualification.qualified) {
       throw new Error(`Vehicle dynamics worker performance gate failed: ${this.qualification.reasons.join('; ')}`);
     }
     this.worker = worker;

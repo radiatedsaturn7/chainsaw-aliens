@@ -28,7 +28,7 @@ test('runtime telemetry policies avoid retained snapshots while preserving fixed
     environmentProvider: () => ({ surfaceHeightByWheel: HEIGHTS })
   });
   none.advance(1 / 30, { onFixedStep: () => { noneCallbacks += 1; } });
-  assert.equal(noneCallbacks, 0);
+  assert.equal(noneCallbacks, 4);
   assert.equal(none.telemetry.length, 0);
   assert.equal(none.performanceDiagnostics.environmentQueries, 4);
   assert.equal(none.performanceDiagnostics.retainedTelemetrySnapshots, 0);
@@ -97,12 +97,46 @@ test('realtime single-player builds one shared geometry frame per chassis step',
   assert.equal(surface.performanceDiagnostics.fullSurfaceQueries <= 8, true,
     'only four wheel regions per chassis boundary may request material classification');
   assert.equal(surface.performanceDiagnostics.rawTerrainQueries <= 8, true);
-  assert.equal(terrainFrame.statistics.batchQueries, 2,
-    'wheel centres and footprint points are the only steady-state geometry batches');
+  assert.equal(terrainFrame.statistics.batchQueries, 1,
+    'wheel centres and base footprint points must share one steady-state geometry batch');
   assert.equal(terrainFrame.statistics.pointQueries <= 40, true,
     'clear-body penetration validation must stay deferred');
   assert.equal(terrainFrame.statistics.trianglesVisited < 500, true,
     'fine-grid sampling must not fall back to a complete baked bucket');
+});
+
+test('same-step contact rollback rebuilds contacts without rebuilding prepared geometry', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true,
+    isMobile: true,
+    input: { getGamepadAxes: () => ({}), isGamepadConnected: () => false },
+    exitRaceEditor() {}
+  });
+  editor.selectedRace.hazards = [];
+  editor.startPlaytest(editor.selectedCar.id);
+  editor.playtestSession.countdownRemainingMs = 0;
+  editor.updatePlaytest(1 / 60);
+  const authority = editor.vehicleDynamicsAuthority;
+  const runner = editor.playtestSession.vehicleDynamicsRunner;
+  const terrainFrame = authority.terrainQueryFrameCache.frame;
+  const request = {
+    stepIndex: runner.stepIndex + 1,
+    substepIndex: 0,
+    state: runner.state,
+    previousState: runner.state,
+    controls: {},
+    timeSeconds: runner.simulationTimeSeconds,
+    tireSubstepDt: 1 / runner.config.tireHz,
+    chassisStepDt: 1 / runner.config.chassisHz,
+    reuseContactGeometry: false
+  };
+  const sequenceBefore = terrainFrame.sequence;
+  authority.raceEnvironmentProvider(request);
+  request.localCcdRollbackRecalculation = true;
+  request.contactRebuildOnly = true;
+  authority.raceEnvironmentProvider(request);
+  assert.equal(terrainFrame.sequence - sequenceBefore, 1,
+    'rollback contact rebuilding must consume the chassis step query frame');
 });
 
 test('high-fidelity tire substeps reuse 120 Hz geometry unless contact leaves its frame', () => {
@@ -128,6 +162,12 @@ test('high-fidelity tire substeps reuse 120 Hz geometry unless contact leaves it
 
   const runner = editor.playtestSession.vehicleDynamicsRunner;
   const cost = runner.physicsCostAccounting;
+  const originalBodyCollisionStep = runner.bodyCollision.step.bind(runner.bodyCollision);
+  let bodyCollisionCalls = 0;
+  runner.bodyCollision.step = (request) => {
+    bodyCollisionCalls += 1;
+    return originalBodyCollisionStep(request);
+  };
   editor.updatePlaytest(1 / 60);
   const frame = cost.getLatestFrame();
   const count = (name) => Number(frame?.counters?.[name] || 0);
@@ -138,10 +178,17 @@ test('high-fidelity tire substeps reuse 120 Hz geometry unless contact leaves it
   assert.equal(runner.config.geometryHz, 120);
   assert.equal(count('completedSteps'), 2);
   assert.equal(count('completedTireSubsteps'), 6);
+  assert.equal(bodyCollisionCalls, count('completedSteps'),
+    'prepared body collision must resolve at chassis rate, not tire rate');
+  assert.equal(
+    count('bodyCollisionDeferredTireSubsteps'),
+    count('completedTireSubsteps') - count('completedSteps'),
+    'every intermediate tire substep must defer body collision to the chassis boundary'
+  );
   assert.equal(
     count('chassisGeometryFrames'),
-    count('completedSteps') + count('tireSubstepGeometryRefreshes'),
-    'only the chassis boundary and explicit event refreshes may build geometry'
+    count('completedSteps'),
+    'exactly one authoritative swept geometry frame may be built per chassis step'
   );
   assert.equal(
     count('tireSubstepGeometryReuses') + count('tireSubstepGeometryRefreshes'),
