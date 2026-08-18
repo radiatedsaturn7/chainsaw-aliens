@@ -45,7 +45,8 @@ export class VehicleDynamicsWorkerAuthority {
     postSnapshot = () => {},
     onError = null,
     mutateTrackState = null,
-    snapshotPoolSize = 3
+    snapshotPoolSize = 3,
+    snapshotSequenceControl = null
   } = {}) {
     this.now = now;
     this.postSnapshot = postSnapshot;
@@ -66,6 +67,13 @@ export class VehicleDynamicsWorkerAuthority {
     );
     this.sharedSnapshotCursor = 0;
     this.droppedSnapshots = 0;
+    this.overwrittenSnapshots = 0;
+    this.bufferStarvationCount = 0;
+    this.snapshotSequence = 0;
+    this.snapshotSequenceControl = typeof SharedArrayBuffer === 'function'
+      && snapshotSequenceControl instanceof SharedArrayBuffer
+      ? new Int32Array(snapshotSequenceControl)
+      : null;
     this.pendingTrackStateVisualDelta = null;
     runners.forEach((entry, index) => this.addVehicle(entry.id || `vehicle-${index}`, entry.runner, entry));
   }
@@ -103,7 +111,8 @@ export class VehicleDynamicsWorkerAuthority {
     if (!vehicle) return null;
     const reset = vehicle.runner.resetAuthoritativeState(state, {
       reason,
-      parkUntilDrive: state.parkUntilDrive === true
+      parkUntilDrive: state.parkUntilDrive === true,
+      resetGeneration: sequence
     });
     vehicle.lastImpactSequence = Math.max(
       0,
@@ -117,6 +126,7 @@ export class VehicleDynamicsWorkerAuthority {
       Number(sequence) >>> 0,
       Number(reset.event?.sequence || 0)
     );
+    if (reset.renderState) reset.renderState.eventSequence = this.eventSequence;
     return reset;
   }
 
@@ -215,25 +225,42 @@ export class VehicleDynamicsWorkerAuthority {
       if (advance.completedSteps > 0 && this.snapshotBuffers.length) {
         const hasSharedRing = typeof SharedArrayBuffer === 'function'
           && this.snapshotBuffers[0] instanceof SharedArrayBuffer;
+        const ringCursor = this.sharedSnapshotCursor++;
+        const snapshotSlot = hasSharedRing ? ringCursor % this.snapshotBuffers.length : -1;
         const buffer = hasSharedRing
-          ? this.snapshotBuffers[this.sharedSnapshotCursor++ % this.snapshotBuffers.length]
+          ? this.snapshotBuffers[snapshotSlot]
           : this.snapshotBuffers.pop();
+        if (hasSharedRing && ringCursor >= this.snapshotBuffers.length) {
+          this.overwrittenSnapshots += 1;
+        }
+        this.snapshotSequence += 1;
+        if (snapshotSlot >= 0 && this.snapshotSequenceControl) {
+          Atomics.store(this.snapshotSequenceControl, snapshotSlot, this.snapshotSequence * 2 - 1);
+        }
         writeVehicleRenderSnapshot(buffer, createVehicleRenderSnapshotFromRunner(vehicle.runner, {
           eventSequence: this.eventSequence
         }));
+        if (snapshotSlot >= 0 && this.snapshotSequenceControl) {
+          Atomics.store(this.snapshotSequenceControl, snapshotSlot, this.snapshotSequence * 2);
+        }
         pendingSnapshots.push({
           vehicleId: vehicle.id,
           buffer,
+          snapshotSequence: this.snapshotSequence,
+          snapshotSlot,
           backlogSteps: advance.backlogSteps
         });
       } else if (advance.completedSteps > 0) {
         this.droppedSnapshots += 1;
+        this.bufferStarvationCount += 1;
       }
     }
     const workerStepMs = Math.max(0, this.now() - wallStart);
     for (const snapshot of pendingSnapshots) {
       snapshot.workerStepMs = workerStepMs;
       snapshot.droppedSnapshots = this.droppedSnapshots;
+      snapshot.overwrittenSnapshots = this.overwrittenSnapshots;
+      snapshot.bufferStarvationCount = this.bufferStarvationCount;
       if (this.pendingTrackStateVisualDelta) {
         snapshot.trackStateVisualDelta = this.pendingTrackStateVisualDelta;
         this.pendingTrackStateVisualDelta = null;

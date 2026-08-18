@@ -1210,6 +1210,8 @@ export class TrackState {
       .sort(compareTrackStateCellKeys)
       .slice(0, limit);
     const cells = [];
+    const dirtyTileKeys = new Set();
+    const tileSizeM = 16;
     for (const key of keys) {
       this.visualDirtyKeys.delete(key);
       const cell = this.cells.get(key);
@@ -1224,10 +1226,17 @@ export class TrackState {
         effectiveGrip: sample.effectiveGrip,
         ...sample.visual
       });
+      dirtyTileKeys.add(`${Math.floor(cell.worldX / tileSizeM)}:${Math.floor(cell.worldZ / tileSizeM)}`);
     }
     return {
       stepIndex: this.stepIndex,
       cellRevision: this.visualRevision,
+      visualRevision: this.visualRevision,
+      tileSizeM,
+      dirtyAtlasTiles: [...dirtyTileKeys].map((key) => {
+        const [tileX, tileZ] = key.split(':').map(Number);
+        return { tileX, tileZ, revision: this.visualRevision };
+      }),
       cells,
       remainingDirtyCellCount: this.visualDirtyKeys.size
     };

@@ -10,6 +10,11 @@ import {
   rotateVectorByQuaternion,
   rotateVectorToBody
 } from './RigidBodyMath.js';
+import { RACE_WHEEL_IDS } from './SimulationMath.js';
+import {
+  reconstructVehicleRenderState,
+  VEHICLE_RENDER_WHEEL_FLAGS
+} from './VehicleRenderState.js';
 
 function copyVector(target = {}, source = {}, includeW = false) {
   target.x = Number(source?.x || 0);
@@ -35,52 +40,85 @@ function transformResetPoint(point = {}, previousPosition = {}, previousOrientat
   };
 }
 
-export function applyRaceVehicleProvisionalResetPresentation(session, resetState = {}) {
-  if (!session?.vehicle3d?.enabled) return false;
-  const vehicle = session.vehicle3d;
-  const previousPosition = vehicle.position || session.vehicleDynamicsPresentationState?.position;
-  const previousOrientation = vehicle.orientation
-    || session.vehicleDynamicsPresentationState?.orientation;
+export function createRaceVehicleProvisionalResetRenderState(
+  session, resetState = {}, resetGeneration = 0
+) {
+  if (!session) return null;
+  const canonical = session.vehicleRenderState || session.vehicleDynamicsPresentationState;
+  const vehicle = session.vehicle3d || {};
+  const previousPosition = canonical?.position || vehicle.position;
+  const previousOrientation = canonical?.orientation || vehicle.orientation;
   const nextPosition = resetState.position;
   const nextOrientation = resetState.orientation;
-  if (!previousPosition || !previousOrientation || !nextPosition || !nextOrientation) return false;
-  const wheels = vehicle.wheels || {};
-  for (const wheelId of Object.keys(wheels)) {
-    const wheel = wheels[wheelId] || {};
-    for (const field of ['position', 'suspensionMount', 'contactPoint']) {
-      if (!wheel[field]) continue;
-      wheel[field] = transformResetPoint(
-        wheel[field], previousPosition, previousOrientation, nextPosition, nextOrientation
-      );
-    }
-    for (const field of ['suspensionAxis', 'normal']) {
-      if (!wheel[field]) continue;
-      wheel[field] = rotateVectorByQuaternion(
-        rotateVectorToBody(wheel[field], previousOrientation), nextOrientation
-      );
-    }
+  if (!previousPosition || !previousOrientation || !nextPosition || !nextOrientation) return null;
+  const wheels = {};
+  for (const wheelId of RACE_WHEEL_IDS) {
+    const prior = canonical?.wheels?.[wheelId] || {};
+    const front = wheelId[0] === 'f';
+    const left = wheelId[1] === 'l';
+    const fallbackHub = { x: left ? -0.8 : 0.8, y: -0.2, z: front ? 1.3 : -1.3 };
+    const contactPointWorld = prior.contactPointWorld
+      ? transformResetPoint(
+          prior.contactPointWorld, previousPosition, previousOrientation,
+          nextPosition, nextOrientation
+        ) : { ...nextPosition };
+    const surfaceNormalWorld = prior.surfaceNormalWorld
+      ? rotateVectorByQuaternion(
+          rotateVectorToBody(prior.surfaceNormalWorld, previousOrientation), nextOrientation
+        ) : { x: 0, y: 1, z: 0 };
+    wheels[wheelId] = {
+      ...prior,
+      hubPositionBody: { ...(prior.hubPositionBody || fallbackHub) },
+      suspensionMountBody: {
+        ...(prior.suspensionMountBody || {
+          x: fallbackHub.x, y: fallbackHub.y + 0.3, z: fallbackHub.z
+        })
+      },
+      suspensionAxisBody: { ...(prior.suspensionAxisBody || { x: 0, y: -1, z: 0 }) },
+      contactPointWorld,
+      surfaceNormalWorld,
+      normalLoadN: 0,
+      flags: VEHICLE_RENDER_WHEEL_FLAGS.provisional,
+      validTreadContact: false,
+      geometricContact: false,
+      loadBearing: false,
+      normalLoadKnown: false,
+      terrainDataAvailable: false,
+      provisional: true,
+      resetGeneration
+    };
   }
-  const euler = eulerFromQuaternion(nextOrientation);
-  vehicle.position = copyVector(vehicle.position || {}, nextPosition);
-  vehicle.orientation = copyVector(vehicle.orientation || {}, nextOrientation, true);
-  vehicle.linearVelocity = { x: 0, y: 0, z: 0 };
-  vehicle.angularVelocity = { x: 0, y: 0, z: 0 };
-  vehicle.yaw = euler.yaw;
-  vehicle.pitch = euler.pitch;
-  vehicle.roll = euler.roll;
-  session.worldX = Number(nextPosition.x || 0);
-  session.worldY = Number(nextPosition.y || 0);
-  session.worldZ = Number(nextPosition.z || 0);
-  session.carYaw = euler.yaw;
-  session.pitchRad = euler.pitch;
-  session.rollRad = euler.roll;
-  session.vehicleDynamicsPresentationState = null;
-  return true;
+  return reconstructVehicleRenderState({
+    ...(canonical || {}),
+    resetGeneration,
+    position: { ...nextPosition },
+    orientation: { ...nextOrientation },
+    velocity: { x: 0, y: 0, z: 0 },
+    angularVelocity: { x: 0, y: 0, z: 0 },
+    wheels,
+    suspensionPose: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+      wheelId, Number(wheels[wheelId].suspensionCompressionM || 0)
+    ])),
+    provisional: true
+  });
+}
+
+export function applyRaceVehicleProvisionalResetPresentation(
+  session, resetState = {}, resetGeneration = 0
+) {
+  const renderState = createRaceVehicleProvisionalResetRenderState(
+    session, resetState, resetGeneration
+  );
+  if (!renderState) return false;
+  applyRaceVehicleRenderSnapshot(session, renderState);
+  session.vehicleDynamicsPresentationState.resetGeneration = resetGeneration;
+  return renderState;
 }
 
 function syncWorkerPresentationState(session, snapshot, euler) {
   const state = session.vehicleDynamicsPresentationState || {};
   state.authoritativeSource = 'VehicleDynamicsWorkerSnapshot';
+  state.resetGeneration = Number(snapshot.resetGeneration || 0);
   state.position = copyVector(state.position || {}, snapshot.position);
   state.orientation = copyVector(state.orientation || {}, snapshot.orientation, true);
   state.velocity = copyVector(state.velocity || {}, snapshot.velocity);
@@ -130,6 +168,8 @@ function syncWorkerPresentationState(session, snapshot, euler) {
     patch.validTreadContact = wheel.validTreadContact === true;
     patch.geometricContact = wheel.geometricContact === true;
     patch.normalLoadKnown = wheel.normalLoadKnown !== false;
+    patch.resetGeneration = Number(snapshot.resetGeneration || 0);
+    patch.provisional = wheel.provisional === true;
     state.contactPatches[wheelId] = patch;
     state.wheelLoadsN[wheelId] = patch.normalLoadN;
     state.suspensionState[wheelId] = {
@@ -151,6 +191,7 @@ function syncWorkerPresentationState(session, snapshot, euler) {
   };
   session.vehicleDynamicsPresentationState = state;
   session.vehicleRenderState = snapshot;
+  session.vehicleResetGeneration = Number(snapshot.resetGeneration || 0);
   return state;
 }
 
@@ -268,6 +309,7 @@ export function applyRaceVehicleRenderSnapshot(session, snapshot) {
   session.vehicle3d ||= {};
   session.vehicle3d.enabled = true;
   session.vehicle3d.authoritativeSource = 'VehicleDynamicsWorker';
+  session.vehicle3d.resetGeneration = Number(snapshot.resetGeneration || 0);
   session.vehicle3d.position = state.position;
   session.vehicle3d.linearVelocity = state.velocity;
   session.vehicle3d.orientation = state.orientation;
@@ -285,6 +327,7 @@ export function applyRaceVehicleRenderSnapshot(session, snapshot) {
 
 export function applyWorkerTrackStateVisualDelta(session, delta = null) {
   if (!session || !delta?.cells) return 0;
+  const startedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
   session.workerTrackStateVisual ||= {
     cells: new Map(), stepIndex: 0, cellRevision: 0, eventSequence: 0
   };
@@ -298,11 +341,40 @@ export function applyWorkerTrackStateVisualDelta(session, delta = null) {
   }
   visual.stepIndex = Math.max(visual.stepIndex, Number(delta.stepIndex || 0));
   visual.cellRevision = Math.max(visual.cellRevision, Number(delta.cellRevision || 0));
+  visual.visualRevision = Math.max(
+    Number(visual.visualRevision || 0), Number(delta.visualRevision ?? delta.cellRevision ?? 0)
+  );
+  visual.dirtyAtlasTiles = (delta.dirtyAtlasTiles || []).map((tile) => ({ ...tile }));
   visual.eventSequence = Math.max(visual.eventSequence, Number(delta.eventSequence || 0));
   visual.remainingDirtyCellCount = Number(delta.remainingDirtyCellCount || 0);
   session.trackStateVisualCache = null;
   session.trackStateVisualAtlas = null;
+  const elapsedMs = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - startedAt;
+  const timers = session.physicsSurfaceDebugTimers
+    || (session.physicsSurfaceDebugTimers = Object.create(null));
+  const samples = timers.trackStateVisualSynchronization
+    || (timers.trackStateVisualSynchronization = []);
+  samples.push(Math.max(0, elapsedMs));
+  if (samples.length > 120) samples.splice(0, samples.length - 120);
   return applied;
+}
+
+export function resetWorkerTrackStateVisualPresentation(session, {
+  clearCells = true, eventSequence = null
+} = {}) {
+  if (!session) return;
+  const previous = session.workerTrackStateVisual;
+  session.workerTrackStateVisual = {
+    cells: clearCells ? new Map() : new Map(previous?.cells || []),
+    stepIndex: 0,
+    cellRevision: 0,
+    visualRevision: 0,
+    eventSequence: Number(eventSequence ?? session.vehicleDynamicsEventSequence ?? 0),
+    dirtyAtlasTiles: [],
+    remainingDirtyCellCount: 0
+  };
+  session.trackStateVisualCache = null;
+  session.trackStateVisualAtlas = null;
 }
 
 export class RaceVehicleDynamicsWorkerBridge {
@@ -318,6 +390,8 @@ export class RaceVehicleDynamicsWorkerBridge {
     this.activeByVehicle = new Map();
     this.resetSequence = 0;
     this.backlogWarningFrames = 0;
+    this.presentationTimeSeconds = null;
+    this.lastPresentationWallTimeMs = null;
   }
 
   initialize(options) {
@@ -362,13 +436,32 @@ export class RaceVehicleDynamicsWorkerBridge {
       1 / 120, Number(history?.snapshotIntervalSeconds || 0)
     );
     const interpolationDelaySeconds = intervalSeconds * 2;
-    const renderTimeSeconds = latest.simulationTimeSeconds - interpolationDelaySeconds;
+    const delivery = this.client.getPresentationTelemetry();
+    const desiredRenderTimeSeconds = latest.simulationTimeSeconds
+      + Math.max(0, Number(delivery.snapshotAgeMs || 0)) / 1000
+      - interpolationDelaySeconds;
+    const elapsedPresentationSeconds = this.lastPresentationWallTimeMs === null
+      ? intervalSeconds
+      : Math.max(0, (renderStartMs - this.lastPresentationWallTimeMs) / 1000);
+    const maximumAdvanceSeconds = Math.max(
+      intervalSeconds,
+      Math.min(0.033, elapsedPresentationSeconds * 1.5)
+    );
+    this.presentationTimeSeconds = this.presentationTimeSeconds === null
+      ? desiredRenderTimeSeconds
+      : Math.min(
+          desiredRenderTimeSeconds,
+          this.presentationTimeSeconds + maximumAdvanceSeconds
+        );
+    this.lastPresentationWallTimeMs = renderStartMs;
+    const renderTimeSeconds = this.presentationTimeSeconds;
     const snapshot = this.client.getInterpolatedSnapshot(renderTimeSeconds);
     applyRaceVehicleRenderSnapshot(session, snapshot);
     session.vehicleDynamicsWorkerError = this.client.lastError;
+    session.vehicleDynamicsResetDiagnostics = this.client.latestResetAcknowledgementByVehicle
+      .get('player') || session.vehicleDynamicsResetDiagnostics || null;
     this.client.metrics.recordRender(this.now() - renderStartMs);
     session.vehicleDynamicsWorkerMetrics = this.client.getMetrics({ force: false });
-    const delivery = this.client.getPresentationTelemetry();
     const quaternionDot = Math.abs(
       Number(snapshot.orientation?.x || 0) * Number(latest.orientation?.x || 0)
       + Number(snapshot.orientation?.y || 0) * Number(latest.orientation?.y || 0)
@@ -389,6 +482,7 @@ export class RaceVehicleDynamicsWorkerBridge {
       authorityThread: 'worker',
       workerMigrationTimeMs: Number(session.vehicleDynamicsWorkerMigrationTimeMs || 0),
       ...delivery,
+      interpolationDelayMs: interpolationDelaySeconds * 1000,
       interpolationAlpha: Number(snapshot.interpolationAlpha ?? 1),
       extrapolationDurationMs: Number(snapshot.extrapolationDurationSeconds || 0) * 1000,
       bodyVisualAuthoritativeAngleErrorDeg: 2 * Math.acos(Math.min(1, quaternionDot)) * 180 / Math.PI,
@@ -454,14 +548,24 @@ export class RaceVehicleDynamicsWorkerBridge {
   }
 
   resetVehicle(state, vehicleId = 'player', session = null) {
+    this.resetSequence = Math.max(
+      this.resetSequence,
+      Number(session?.vehicleRenderState?.resetGeneration || 0),
+      Number(session?.vehicleResetGeneration || 0)
+    ) + 1;
+    let provisionalSnapshot = null;
     if (vehicleId === 'player' && session) {
-      applyRaceVehicleProvisionalResetPresentation(session, state);
+      provisionalSnapshot = applyRaceVehicleProvisionalResetPresentation(
+        session, state, this.resetSequence
+      );
+      session.trackStateVisualCache = null;
+      session.trackStateVisualAtlas = null;
     }
-    this.resetSequence += 1;
     this.client.submitReset(
       createVehicleResetCommandBuffer(state),
       this.resetSequence,
-      vehicleId
+      vehicleId,
+      provisionalSnapshot
     );
     return this.resetSequence;
   }

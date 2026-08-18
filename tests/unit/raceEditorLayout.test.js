@@ -24555,7 +24555,12 @@ test('Race route-center respawn resets an existing authoritative runner at CG he
 
   editor.applyRaceCarRouteCenterReset({ projection: { distance: 40 }, roadYaw: 0 });
 
+  assert.equal(editor.playtestSession.running, true);
   assert.equal(editor.playtestSession.vehicleDynamicsRunner, runner);
+  const trackPose = editor.getRaceWorldPoseAtDistance(40, {
+    runtimeType: editor.playtestSession.routeRuntimeType
+  });
+  assert.ok(Math.abs(Number(runner.state.yawRad || 0) - Number(trackPose.yaw || 0)) < 1e-9);
   assert.ok(Math.abs(runner.state.position.y - runner.config.cgHeightM) < 0.000001);
   assert.deepEqual(runner.state.velocity, { x: 0, y: 0, z: 0 });
   assert.deepEqual(runner.state.angularVelocityWorld, { x: 0, y: 0, z: 0 });
@@ -28155,6 +28160,10 @@ test('Physics Surface debug projection clips the near plane and rejects behind-c
   assert.ok(crossing);
   assert.equal(crossing[0].cameraZ >= 2, true);
   assert.equal(crossing.flatMap((point) => [point.screenX, point.screenY]).every(Number.isFinite), true);
+  assert.equal(crossing.every((point) => point.screenX >= bounds.x
+    && point.screenX <= bounds.x + bounds.w
+    && point.screenY >= bounds.y
+    && point.screenY <= bounds.y + bounds.h), true);
   const clippedTriangle = editor.projectRaceWorldDebugPolygon([
     { x: -1, z: 1, elevation: 0 },
     { x: 1, z: 4, elevation: 0 },
@@ -28162,7 +28171,57 @@ test('Physics Surface debug projection clips the near plane and rejects behind-c
   ], camera, 0, bounds);
   assert.equal(clippedTriangle.length >= 3, true);
   assert.equal(clippedTriangle.every((point) => point.cameraZ >= 2), true);
+  assert.equal(clippedTriangle.every((point) => point.screenX >= bounds.x
+    && point.screenX <= bounds.x + bounds.w
+    && point.screenY >= bounds.y
+    && point.screenY <= bounds.y + bounds.h), true);
   assert.equal(editor.projectRaceWorldDebugLine(
     { x: -1, z: 3, elevation: 0 }, { x: 1, z: 5, elevation: 0 }, camera, Math.PI, bounds
   ), null);
+});
+
+test('Race sprite mode switches atomically to a non-billboarded three-dimensional physics rig', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('starter-rwd');
+  const renderer = { scene: new THREE.Scene(), solidMaterialCache: new Map() };
+  const state = editor.playtestSession.vehicleRenderState;
+  const added = editor.addRaceThreePhysicsVehicleRig(renderer, {
+    renderState: state,
+    profile: editor.playtestSession.vehicleRenderProfile
+  });
+  assert.equal(added, true);
+  const rig = renderer.scene.getObjectByName('racePhysicsVehicleRig');
+  assert.ok(rig);
+  assert.deepEqual(
+    [rig.quaternion.x, rig.quaternion.y, rig.quaternion.z, rig.quaternion.w],
+    [state.orientation.x, state.orientation.y, state.orientation.z, state.orientation.w]
+  );
+  const names = [];
+  rig.traverse((entry) => names.push(entry.name));
+  assert.equal(names.some((name) => name.startsWith('physicsBodyPiece:')), true);
+  assert.equal(names.filter((name) => name.startsWith('physicsWheelCylinder:')).length, 4);
+  assert.equal(names.filter((name) => name.startsWith('physicsSuspensionMount:')).length, 4);
+  assert.equal(names.filter((name) => name.startsWith('physicsWheelHub:')).length, 4);
+  assert.equal(names.includes('physicsCentreOfGravity'), true);
+  assert.equal(names.includes('physicsBodyForwardAxis'), true);
+  assert.equal(names.includes('physicsBodyRightAxis'), true);
+  assert.equal(names.includes('physicsBodyUpAxis'), true);
+
+  let spriteDraws = 0;
+  let rigDraws = 0;
+  editor.drawMode7Preview = () => {};
+  editor.drawRaceThirdPersonCar = () => { spriteDraws += 1; };
+  editor.drawRacePhysicsSurfaceView = () => { rigDraws += 1; return true; };
+  editor.drawRacePlaytestHud = () => {};
+  editor.drawRaceCountdown = () => {};
+  editor.drawRaceEdgeResetFade = () => {};
+  editor.drawRaceDisplayModeFilter = () => {};
+  const ctx = createMockContext();
+  editor.raceInput.physicsVehicleRigVisible = false;
+  editor.drawRacePlaytestScreen(ctx, { x: 0, y: 0, w: 320, h: 180 });
+  assert.equal(spriteDraws, 1);
+  editor.raceInput.physicsVehicleRigVisible = true;
+  editor.drawRacePlaytestScreen(ctx, { x: 0, y: 0, w: 320, h: 180 });
+  assert.equal(spriteDraws, 1);
+  assert.equal(rigDraws, 1);
 });

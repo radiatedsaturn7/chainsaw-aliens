@@ -6,7 +6,10 @@ import {
   createVehicleRenderSnapshotFromRunner,
   VEHICLE_VISUAL_STATE
 } from '../../src/racing/simulation/VehicleDynamicsWorkerAuthority.js';
-import { readVehicleRenderSnapshot } from '../../src/racing/simulation/VehicleDynamicsWorkerProtocol.js';
+import {
+  createVehicleRenderSnapshotBuffer,
+  readVehicleRenderSnapshot
+} from '../../src/racing/simulation/VehicleDynamicsWorkerProtocol.js';
 
 class FakeRunner {
   constructor() {
@@ -174,4 +177,36 @@ test('worker authority applies reset inside the owner and clears presentation sp
   assert.equal(authority.latestInputs.has('player'), false);
   assert.equal(authority.vehicles.get('player').wheelSpinAngles.fl, 0);
   assert.equal(authority.eventSequence, 8);
+});
+
+test('shared snapshot ring keeps publishing latest state through a 250 ms render stall', {
+  skip: typeof SharedArrayBuffer !== 'function'
+}, () => {
+  const runner = new FakeRunner();
+  const buffers = Array.from(
+    { length: 4 }, () => createVehicleRenderSnapshotBuffer({ shared: true })
+  );
+  const control = new SharedArrayBuffer(buffers.length * Int32Array.BYTES_PER_ELEMENT);
+  const published = [];
+  const authority = new VehicleDynamicsWorkerAuthority({
+    runners: [{ id: 'player', runner, player: true }],
+    now: () => 0,
+    snapshotSequenceControl: control,
+    postSnapshot: (message) => published.push(message)
+  });
+  authority.snapshotBuffers.length = 0;
+  buffers.forEach((buffer) => authority.recycleSnapshotBuffer(buffer));
+  authority.tick(0);
+  for (let milliseconds = 9; milliseconds <= 250; milliseconds += 9) {
+    authority.tick(milliseconds);
+  }
+  const latest = published.at(-1);
+  const counters = new Int32Array(control);
+  assert.equal(published.length > buffers.length, true);
+  assert.equal(latest.snapshotSequence, published.length);
+  assert.equal(Atomics.load(counters, latest.snapshotSlot), latest.snapshotSequence * 2);
+  assert.equal(readVehicleRenderSnapshot(latest.buffer).stepIndex, runner.stepIndex);
+  assert.equal(authority.bufferStarvationCount, 0);
+  assert.equal(authority.overwrittenSnapshots > 0, true);
+  assert.equal(authority.snapshotBuffers.length, buffers.length);
 });

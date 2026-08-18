@@ -41,6 +41,8 @@ export function syncVehicleDynamicsCompatibilityOutputs(runner = null, session =
     visualState: (state.grounded === false ? 0 : 1)
   });
   session.vehicleRenderState = renderState;
+  session.vehicleResetGeneration = Number(renderState.resetGeneration || 0);
+  session.vehicleRenderProfile ||= createVehicleRenderProfileFromRunner(runner);
   session.vehicleDynamicsPresentationTelemetry = {
     authorityThread: 'render',
     workerMigrationTimeMs: 0,
@@ -128,47 +130,31 @@ export function syncVehicleDynamicsCompatibilityOutputs(runner = null, session =
   vehicle3d.yaw = session.carYaw;
   vehicle3d.pitch = session.pitchRad;
   vehicle3d.roll = session.rollRad;
+  vehicle3d.resetGeneration = Number(renderState.resetGeneration || 0);
   const wheels = vehicle3d.wheels || {};
   const contactPatches = state.contactPatches || {};
-  for (const wheelId in wheels) {
-    if (!Object.hasOwn(contactPatches, wheelId)) delete wheels[wheelId];
-  }
-  for (const wheelId in contactPatches) {
+  for (const wheelId in renderState.wheelPoses) {
     const patch = contactPatches[wheelId] || {};
+    const canonicalWheel = renderState.wheelPoses[wheelId];
     const wheel = wheels[wheelId] || {};
     wheel.id = wheelId;
-    wheel.inContact = Number(patch.normalLoadN || 0) > 1;
-    wheel.normalLoadN = Number(patch.normalLoadN || 0);
-    wheel.angularSpeedRadps = Number(state.wheelAngularVelocityRadps?.[wheelId] || 0);
-    wheel.compressionRatio = Number(state.suspensionTravel?.[wheelId] || 0);
-    const suspension = state.suspensionState?.[wheelId] || {};
-    const hubPosition = patch.hubPositionWorld
-      || suspension.hubPositionWorld
-      || patch.wheelCenterWorld;
-    if (hubPosition) {
-      wheel.position = copyVectorInto(wheel.position || {}, hubPosition);
-    } else {
-      delete wheel.position;
-    }
-    const suspensionMount = patch.suspensionMountPositionWorld
-      || suspension.suspensionMountPositionWorld;
-    if (suspensionMount) {
-      wheel.suspensionMount = copyVectorInto(
-        wheel.suspensionMount || {}, suspensionMount
-      );
-    } else {
-      delete wheel.suspensionMount;
-    }
-    const suspensionAxis = patch.suspensionAxisWorld || suspension.suspensionAxisWorld;
-    if (suspensionAxis) {
-      wheel.suspensionAxis = copyVectorInto(wheel.suspensionAxis || {}, suspensionAxis);
-    } else {
-      delete wheel.suspensionAxis;
-    }
-    wheel.contactPoint = copyVectorInto(
-      wheel.contactPoint || {}, patch.contactPointWorld
+    wheel.resetGeneration = Number(renderState.resetGeneration || 0);
+    wheel.inContact = canonicalWheel.loadBearing === true;
+    wheel.normalLoadN = Number(canonicalWheel.normalLoadN || 0);
+    wheel.angularSpeedRadps = Number(canonicalWheel.angularSpeedRadps || 0);
+    wheel.compressionRatio = Number(canonicalWheel.compressionRatio || 0);
+    wheel.position = copyVectorInto(wheel.position || {}, canonicalWheel.position);
+    wheel.suspensionMount = copyVectorInto(
+      wheel.suspensionMount || {}, canonicalWheel.suspensionMount
     );
-    wheel.normal = copyVectorInto(wheel.normal || {}, patch.surfaceNormalWorld);
+    wheel.suspensionAxis = copyVectorInto(
+      wheel.suspensionAxis || {}, canonicalWheel.suspensionAxis
+    );
+    wheel.contactPoint = copyVectorInto(wheel.contactPoint || {}, canonicalWheel.contactPoint);
+    wheel.normal = copyVectorInto(wheel.normal || {}, canonicalWheel.normal);
+    wheel.validTreadContact = canonicalWheel.validTreadContact === true;
+    wheel.geometricContact = canonicalWheel.geometricContact === true;
+    wheel.terrainDataAvailable = canonicalWheel.terrainDataAvailable === true;
     wheel.longitudinalSlipRatio = Number(patch.slipRatio || 0);
     wheel.slipLateral = Math.abs(Math.tan(Number(patch.slipAngleRad || 0)));
     wheel.tireLimitN = Number(patch.combinedSlipLimitN || 0);
@@ -210,4 +196,7 @@ export function getVehicleStateSnapshot(vehicleState = null) {
     chassis
   };
 }
-import { createVehicleRenderStateFromRunner } from './VehicleRenderState.js';
+import {
+  createVehicleRenderProfileFromRunner,
+  createVehicleRenderStateFromRunner
+} from './VehicleRenderState.js';

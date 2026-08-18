@@ -55,7 +55,9 @@ export function getRaceAiContactState(editor, ai = {}, car = editor.selectedCar,
   const roadHalfWidth = Math.max(1, Number(section.metrics?.roadEnd || editor.getRaceRoadHalfWidthWorld(pose.segment)));
   const lateral = clamp(Number(ai.lineOffset || 0), -0.85, 0.85) * roadHalfWidth;
   const right = editor.getRaceRightVector(pose.yaw);
-  const runnerState = ai.vehicleDynamicsPresentationState || ai.vehicleDynamicsRunner?.state;
+  const runnerState = ai.vehicleDynamicsRunner?.dormant !== true
+    ? ai.vehicleDynamicsRunner?.state
+    : ai.vehicleRenderState || ai.vehicleDynamicsPresentationState;
   const aiSession = {
     worldX: Number(runnerState?.position?.x ?? ai.worldX ?? (Number(pose.x || 0) + right.x * lateral)),
     worldZ: Number(runnerState?.position?.z ?? ai.worldZ ?? (Number(pose.z ?? pose.y ?? 0) + right.z * lateral)),
@@ -309,6 +311,7 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
     syncVehicleDynamicsCompatibilityOutputs(runner, aiSession);
   }
   ai.vehicle3d = aiSession.vehicle3d;
+  ai.vehicleRenderState = aiSession.vehicleRenderState;
   ai.vehicleDynamicsPresentationState = aiSession.vehicleDynamicsPresentationState;
   ai.speedMps = aiSession.speedMps;
   ai.worldX = aiSession.worldX;
@@ -929,7 +932,7 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
       };
       const contactState = editor.getRaceAiContactState(ai, car, tuning);
       const yaw = Number(
-        ai.vehicleDynamicsPresentationState?.yawRad
+        ai.vehicleRenderState?.yawRad ?? ai.vehicleDynamicsPresentationState?.yawRad
           ?? ai.vehicleDynamicsRunner?.state?.yawRad
           ?? contactState.pose?.yaw
           ?? 0
@@ -957,7 +960,8 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
     const car = editor.project.cars.find((candidate) => candidate.id === ai.carId) || editor.selectedCar;
     const tuning = editor.getRaceCarTuning(car, { transmissionType: ai.shiftMode === 'manual' ? 'manual' : 'automatic' });
     const profile = editor.getRaceAiDifficultyProfile(ai.difficulty);
-    const wakeState = ai.vehicleDynamicsPresentationState?.aeroState?.wake
+    const wakeState = ai.vehicleRenderState?.aeroState?.wake
+      || ai.vehicleDynamicsPresentationState?.aeroState?.wake
       || ai.vehicleDynamicsRunner?.state?.aeroState?.wake || {};
     const preliminaryAeroAwareness = getRaceAiAeroAwareness(wakeState, {
       speedMps: ai.speedMps,

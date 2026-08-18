@@ -8,6 +8,7 @@ import {
 } from '../../src/racing/simulation/VehicleDynamicsWorkerClient.js';
 import {
   createVehicleRenderSnapshotBuffer,
+  readVehicleRenderSnapshot,
   writeVehicleRenderSnapshot
 } from '../../src/racing/simulation/VehicleDynamicsWorkerProtocol.js';
 
@@ -114,8 +115,15 @@ test('client transfers compact inputs, keeps two snapshots, and recycles snapsho
   assert.equal(client.getMetrics().worker.samples, 3);
 
   const resetBuffer = new ArrayBuffer(48);
-  client.submitReset(resetBuffer, 7);
-  assert.equal(client.latestSnapshot, null);
+  const provisionalReset = readVehicleRenderSnapshot(writeVehicleRenderSnapshot(
+    createVehicleRenderSnapshotBuffer(), {
+      resetGeneration: 7, stepIndex: 3, eventSequence: 7,
+      simulationTimeSeconds: 3, position: { x: 4 }, orientation: { w: 1 },
+      wheelPoses: {}, suspensionPose: {}
+    }
+  ));
+  client.submitReset(resetBuffer, 7, 'player', provisionalReset);
+  assert.equal(client.latestSnapshot.position.x, 4);
   assert.equal(worker.messages.at(-1).message.type, 'resetVehicle');
   assert.deepEqual(worker.messages.at(-1).transfers, [resetBuffer]);
   const stale = createVehicleRenderSnapshotBuffer();
@@ -129,13 +137,25 @@ test('client transfers compact inputs, keeps two snapshots, and recycles snapsho
     suspensionPose: {}
   });
   worker.emit({ type: 'snapshot', buffer: stale, workerStepMs: 1, backlogSteps: 0 });
-  assert.equal(client.latestSnapshot, null, 'in-flight pre-reset snapshots must be discarded');
+  assert.equal(client.latestSnapshot.position.x, 4,
+    'in-flight pre-reset snapshots must not replace provisional reset geometry');
   worker.emit({
-    type: 'resetApplied', vehicleId: 'player', resetSequence: 7, eventSequence: 10
+    type: 'resetApplied', vehicleId: 'player', resetSequence: 7, eventSequence: 10,
+    resetGeneration: 7,
+    buffer: writeVehicleRenderSnapshot(createVehicleRenderSnapshotBuffer(), {
+      resetGeneration: 7,
+      stepIndex: 4,
+      eventSequence: 10,
+      simulationTimeSeconds: 4,
+      position: { x: 5 }, orientation: { w: 1 }, wheelPoses: {}, suspensionPose: {}
+    })
   });
+  assert.equal(client.latestSnapshot.position.x, 5);
+  assert.equal(client.latestSnapshot.resetGeneration, 7);
   const settled = createVehicleRenderSnapshotBuffer();
   writeVehicleRenderSnapshot(settled, {
     stepIndex: 4,
+    resetGeneration: 7,
     eventSequence: 10,
     simulationTimeSeconds: 4,
     position: { x: 5 },
@@ -145,4 +165,44 @@ test('client transfers compact inputs, keeps two snapshots, and recycles snapsho
   });
   worker.emit({ type: 'snapshot', buffer: settled, workerStepMs: 1, backlogSteps: 0 });
   assert.equal(client.latestSnapshot.position.x, 5);
+});
+
+test('client keeps bounded ordered history and reads latest-wins shared ring sequences', {
+  skip: typeof SharedArrayBuffer !== 'function'
+}, () => {
+  const worker = new FakeWorker();
+  const client = new VehicleDynamicsWorkerClient({
+    worker, performanceQualification: qualified, now: () => 500
+  });
+  client.initialize({ vehicles: [{ id: 'player' }] });
+  const initialization = worker.messages[0].message;
+  const counters = new Int32Array(initialization.snapshotSequenceControl);
+  for (let sequence = 1; sequence <= 12; sequence += 1) {
+    const slot = sequence % initialization.snapshotBuffers.length;
+    const buffer = initialization.snapshotBuffers[slot];
+    Atomics.store(counters, slot, sequence * 2 - 1);
+    writeVehicleRenderSnapshot(buffer, {
+      stepIndex: sequence,
+      simulationTimeSeconds: sequence / 120,
+      position: { x: sequence, y: 0, z: 0 },
+      orientation: { w: 1 }, wheelPoses: {}, suspensionPose: {}
+    });
+    Atomics.store(counters, slot, sequence * 2);
+    worker.emit({
+      type: 'snapshot', buffer, snapshotSlot: slot, snapshotSequence: sequence,
+      overwrittenSnapshots: Math.max(0, sequence - initialization.snapshotBuffers.length),
+      bufferStarvationCount: 0, workerStepMs: 1, backlogSteps: 0
+    });
+    if (sequence === 4) client.getInterpolatedSnapshot(3.5 / 120);
+  }
+  const history = client.snapshotsByVehicle.get('player');
+  assert.equal(history.snapshots.length, 4);
+  assert.deepEqual(history.snapshots.map(({ stepIndex }) => stepIndex), [9, 10, 11, 12]);
+  assert.equal(client.latestSnapshot.position.x, 12);
+  assert.equal(history.renderedSnapshot.position.x < history.snapshots[0].position.x, true);
+  client.getInterpolatedSnapshot(11.5 / 120);
+  const telemetry = client.getPresentationTelemetry();
+  assert.equal(telemetry.latestWorkerSequence, 12);
+  assert.equal(telemetry.displayedSequence >= 11, true);
+  assert.equal(telemetry.bufferStarvationCount, 0);
 });

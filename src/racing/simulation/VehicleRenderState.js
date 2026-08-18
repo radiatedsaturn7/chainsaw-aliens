@@ -11,7 +11,9 @@ export const VEHICLE_RENDER_WHEEL_FLAGS = Object.freeze({
   validTreadContact: 1,
   geometricContact: 2,
   loadBearing: 4,
-  normalLoadKnown: 8
+  normalLoadKnown: 8,
+  terrainDataAvailable: 16,
+  provisional: 32
 });
 
 const finite = (value, fallback = 0) => {
@@ -53,8 +55,14 @@ export function reconstructVehicleRenderWheelPose(body, wheel = {}) {
   const mountOffset = rotateVectorByQuaternion(wheel.suspensionMountBody, orientation);
   const steering = finite(wheel.steeringAngleRad);
   const spin = finite(wheel.spinAngleRad);
+  const camber = finite(wheel.camberAngleRad);
+  const toe = finite(wheel.toeAngleRad);
   const steerOrientation = {
-    x: 0, y: Math.sin(steering * 0.5), z: 0, w: Math.cos(steering * 0.5)
+    x: 0, y: Math.sin((steering + toe) * 0.5), z: 0,
+    w: Math.cos((steering + toe) * 0.5)
+  };
+  const camberOrientation = {
+    x: 0, y: 0, z: Math.sin(camber * 0.5), w: Math.cos(camber * 0.5)
   };
   const spinOrientation = {
     x: Math.sin(spin * 0.5), y: 0, z: 0, w: Math.cos(spin * 0.5)
@@ -67,7 +75,9 @@ export function reconstructVehicleRenderWheelPose(body, wheel = {}) {
       z: finite(position.z) + hubOffset.z
     },
     orientation: multiplyQuaternion(
-      multiplyQuaternion(orientation, steerOrientation), spinOrientation
+      multiplyQuaternion(
+        multiplyQuaternion(orientation, steerOrientation), camberOrientation
+      ), spinOrientation
     ),
     suspensionMount: {
       x: finite(position.x) + mountOffset.x,
@@ -84,12 +94,17 @@ export function reconstructVehicleRenderWheelPose(body, wheel = {}) {
 }
 
 export function reconstructVehicleRenderState(state = {}) {
+  state.wheels ||= {};
   const wheelPoses = {};
   const contactPatches = {};
   const suspensionState = {};
   const wheelLoadsN = {};
   for (const wheelId of RACE_WHEEL_IDS) {
-    const pose = reconstructVehicleRenderWheelPose(state, state.wheels?.[wheelId]);
+    const wheel = state.wheels?.[wheelId] || {};
+    wheel.resetGeneration = Math.max(0, Math.trunc(Number(state.resetGeneration) || 0));
+    state.wheels[wheelId] = wheel;
+    const pose = reconstructVehicleRenderWheelPose(state, wheel);
+    pose.resetGeneration = Math.max(0, Math.trunc(Number(state.resetGeneration) || 0));
     wheelPoses[wheelId] = pose;
     contactPatches[wheelId] = {
       hubPositionWorld: pose.position,
@@ -168,6 +183,9 @@ export function createVehicleRenderStateFromRunner(runner, {
         ? VEHICLE_RENDER_WHEEL_FLAGS.geometricContact : 0)
       | (normalLoadN > 1 ? VEHICLE_RENDER_WHEEL_FLAGS.loadBearing : 0)
       | (patch.normalLoadKnown === false ? 0 : VEHICLE_RENDER_WHEEL_FLAGS.normalLoadKnown)
+      | (Object.hasOwn(state.contactPatches || {}, wheelId)
+        && patch.terrainSampleValid !== false
+        ? VEHICLE_RENDER_WHEEL_FLAGS.terrainDataAvailable : 0)
     );
     wheels[wheelId] = {
       hubPositionBody: hubWorld
@@ -184,6 +202,14 @@ export function createVehicleRenderStateFromRunner(runner, {
         patch.steeringAngleRad,
         state.steeringTelemetry?.actualWheelAnglesRad?.[wheelId]
       ),
+      camberAngleRad: finite(
+        patch.camberAngleRad,
+        front ? config.camberFrontRad : config.camberRearRad
+      ),
+      toeAngleRad: finite(
+        patch.toeAngleRad,
+        front ? config.toeFrontRad : config.toeRearRad
+      ),
       spinAngleRad: finite(runner?.renderWheelSpinAngles?.[wheelId]),
       wheelAngularVelocityRadps: finite(state.wheelAngularVelocityRadps?.[wheelId]),
       normalLoadN,
@@ -196,7 +222,10 @@ export function createVehicleRenderStateFromRunner(runner, {
       validTreadContact: (flags & VEHICLE_RENDER_WHEEL_FLAGS.validTreadContact) !== 0,
       geometricContact: (flags & VEHICLE_RENDER_WHEEL_FLAGS.geometricContact) !== 0,
       loadBearing: (flags & VEHICLE_RENDER_WHEEL_FLAGS.loadBearing) !== 0,
-      normalLoadKnown: (flags & VEHICLE_RENDER_WHEEL_FLAGS.normalLoadKnown) !== 0
+      normalLoadKnown: (flags & VEHICLE_RENDER_WHEEL_FLAGS.normalLoadKnown) !== 0,
+      resetGeneration: Math.max(0, Math.trunc(Number(state.vehicleResetGeneration) || 0)),
+      terrainDataAvailable: (flags & VEHICLE_RENDER_WHEEL_FLAGS.terrainDataAvailable) !== 0,
+      provisional: false
     };
     suspensionPose[wheelId] = compression;
     tireTemperature[wheelId] = finite(state.tireState?.[wheelId]?.temperatureF, 70);
@@ -205,6 +234,7 @@ export function createVehicleRenderStateFromRunner(runner, {
   return reconstructVehicleRenderState({
     schemaVersion: VEHICLE_RENDER_STATE_SCHEMA_VERSION,
     stepIndex: runner?.stepIndex || 0,
+    resetGeneration: Math.max(0, Math.trunc(Number(state.vehicleResetGeneration) || 0)),
     eventSequence,
     visualState,
     simulationTimeSeconds: runner?.simulationTimeSeconds || 0,
@@ -224,4 +254,23 @@ export function createVehicleRenderStateFromRunner(runner, {
     engineRpm: finite(state.powertrainState?.engineRpm, state.engineRpm),
     gear: finite(state.powertrainState?.gear, state.gear)
   });
+}
+
+export function createVehicleRenderProfileFromRunner(runner) {
+  const config = runner?.config || {};
+  const bodyProfile = config.bodyProfile || {};
+  return {
+    bodyColliderPieces: (bodyProfile.pieces || []).map((piece) => ({
+      id: String(piece.id || piece.name || 'body-piece'),
+      centerBody: vector(piece.centerM),
+      sizeM: vector(piece.sizeM)
+    })),
+    // The authoritative body transform is centred on the CG; collider-piece
+    // centres are already expressed relative to that origin.
+    cgPositionBody: { x: 0, y: 0, z: 0 },
+    wheelRadiusM: finite(config.wheelRadiusM, 0.337),
+    tireWidthMByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+      wheelId, finite(config.tireByWheel?.[wheelId]?.widthMm, 225) / 1000
+    ]))
+  };
 }
