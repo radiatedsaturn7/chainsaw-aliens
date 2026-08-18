@@ -1,6 +1,13 @@
 import { RACE_WHEEL_IDS, clamp } from './SimulationMath.js';
+import {
+  VEHICLE_RENDER_STATE_SCHEMA_VERSION,
+  VEHICLE_RENDER_WHEEL_FLAGS,
+  reconstructVehicleRenderState
+} from './VehicleRenderState.js';
 
-export const VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION = 2;
+export { VEHICLE_RENDER_WHEEL_FLAGS } from './VehicleRenderState.js';
+
+export const VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION = 3;
 export const VEHICLE_RENDER_SNAPSHOT_HEADER_WORDS = 4;
 export const VEHICLE_RENDER_SNAPSHOT_FLOATS = 133;
 export const VEHICLE_RENDER_SNAPSHOT_BYTES = (
@@ -65,25 +72,21 @@ export const VEHICLE_RENDER_SNAPSHOT_FLOAT = Object.freeze({
 
 export const VEHICLE_RENDER_WHEEL_STRIDE = 25;
 export const VEHICLE_RENDER_WHEEL_FLOAT = Object.freeze({
-  position: 0,
-  orientation: 3,
-  contactPoint: 7,
-  surfaceNormal: 10,
-  suspensionMount: 13,
-  suspensionAxis: 16,
+  hubPositionBody: 0,
+  suspensionMountBody: 3,
+  suspensionAxisBody: 6,
+  contactPointWorld: 9,
+  surfaceNormalWorld: 12,
+  suspensionCompressionM: 15,
+  steeringAngleRad: 16,
+  spinAngleRad: 17,
+  wheelAngularVelocityRadps: 18,
   normalLoadN: 19,
   gripCoefficient: 20,
-  steeringAngleRad: 21,
-  lateralForceN: 22,
-  selfAligningMomentNm: 23,
-  flags: 24
-});
-
-export const VEHICLE_RENDER_WHEEL_FLAGS = Object.freeze({
-  validTreadContact: 1,
-  geometricContact: 2,
-  loadBearing: 4,
-  normalLoadKnown: 8
+  lateralForceN: 21,
+  selfAligningMomentNm: 22,
+  flags: 23,
+  reserved: 24
 });
 
 export function createVehicleRenderSnapshotBuffer({ shared = false } = {}) {
@@ -337,16 +340,22 @@ export function writeVehicleRenderSnapshot(buffer, snapshot = {}) {
   writeVector(values, VEHICLE_RENDER_SNAPSHOT_FLOAT.angularVelocity, snapshot.angularVelocity);
   let offset = VEHICLE_RENDER_SNAPSHOT_FLOAT.wheelPoses;
   for (const wheelId of RACE_WHEEL_IDS) {
-    const pose = snapshot.wheelPoses?.[wheelId] || {};
-    writeVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.position, pose.position);
-    writeQuaternion(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.orientation, pose.orientation);
-    writeVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.contactPoint, pose.contactPoint);
-    writeVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.surfaceNormal, pose.normal);
-    writeVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.suspensionMount, pose.suspensionMount);
-    writeVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.suspensionAxis, pose.suspensionAxis);
+    const pose = snapshot.wheels?.[wheelId] || snapshot.wheelPoses?.[wheelId] || {};
+    writeVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.hubPositionBody, pose.hubPositionBody);
+    writeVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.suspensionMountBody, pose.suspensionMountBody);
+    writeVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.suspensionAxisBody, pose.suspensionAxisBody);
+    writeVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.contactPointWorld, pose.contactPointWorld || pose.contactPoint);
+    writeVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.surfaceNormalWorld, pose.surfaceNormalWorld || pose.normal);
+    values[offset + VEHICLE_RENDER_WHEEL_FLOAT.suspensionCompressionM] = finite(
+      pose.suspensionCompressionM, snapshot.suspensionPose?.[wheelId]
+    );
+    values[offset + VEHICLE_RENDER_WHEEL_FLOAT.steeringAngleRad] = finite(pose.steeringAngleRad);
+    values[offset + VEHICLE_RENDER_WHEEL_FLOAT.spinAngleRad] = finite(pose.spinAngleRad);
+    values[offset + VEHICLE_RENDER_WHEEL_FLOAT.wheelAngularVelocityRadps] = finite(
+      pose.wheelAngularVelocityRadps, snapshot.wheelAngularVelocity?.[wheelId]
+    );
     values[offset + VEHICLE_RENDER_WHEEL_FLOAT.normalLoadN] = finite(pose.normalLoadN);
     values[offset + VEHICLE_RENDER_WHEEL_FLOAT.gripCoefficient] = finite(pose.gripCoefficient, 1);
-    values[offset + VEHICLE_RENDER_WHEEL_FLOAT.steeringAngleRad] = finite(pose.steeringAngleRad);
     values[offset + VEHICLE_RENDER_WHEEL_FLOAT.lateralForceN] = finite(pose.lateralForceN);
     values[offset + VEHICLE_RENDER_WHEEL_FLOAT.selfAligningMomentNm] = finite(pose.selfAligningMomentNm);
     values[offset + VEHICLE_RENDER_WHEEL_FLOAT.flags] = finite(pose.flags);
@@ -380,7 +389,7 @@ function readQuaternion(values, offset) {
 
 export function readVehicleRenderSnapshot(buffer) {
   const { header, values } = getVehicleRenderSnapshotViews(buffer);
-  const wheelPoses = {};
+  const wheels = {};
   const suspensionPose = {};
   const tireTemperature = {};
   const wheelAngularVelocity = {};
@@ -388,13 +397,15 @@ export function readVehicleRenderSnapshot(buffer) {
   for (let index = 0; index < RACE_WHEEL_IDS.length; index += 1) {
     const wheelId = RACE_WHEEL_IDS[index];
     const flags = Math.trunc(values[offset + VEHICLE_RENDER_WHEEL_FLOAT.flags]);
-    wheelPoses[wheelId] = {
-      position: readVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.position),
-      orientation: readQuaternion(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.orientation),
-      contactPoint: readVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.contactPoint),
-      normal: readVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.surfaceNormal),
-      suspensionMount: readVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.suspensionMount),
-      suspensionAxis: readVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.suspensionAxis),
+    wheels[wheelId] = {
+      hubPositionBody: readVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.hubPositionBody),
+      suspensionMountBody: readVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.suspensionMountBody),
+      suspensionAxisBody: readVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.suspensionAxisBody),
+      contactPointWorld: readVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.contactPointWorld),
+      surfaceNormalWorld: readVector(values, offset + VEHICLE_RENDER_WHEEL_FLOAT.surfaceNormalWorld),
+      suspensionCompressionM: values[offset + VEHICLE_RENDER_WHEEL_FLOAT.suspensionCompressionM],
+      spinAngleRad: values[offset + VEHICLE_RENDER_WHEEL_FLOAT.spinAngleRad],
+      wheelAngularVelocityRadps: values[offset + VEHICLE_RENDER_WHEEL_FLOAT.wheelAngularVelocityRadps],
       normalLoadN: values[offset + VEHICLE_RENDER_WHEEL_FLOAT.normalLoadN],
       gripCoefficient: values[offset + VEHICLE_RENDER_WHEEL_FLOAT.gripCoefficient],
       steeringAngleRad: values[offset + VEHICLE_RENDER_WHEEL_FLOAT.steeringAngleRad],
@@ -412,7 +423,8 @@ export function readVehicleRenderSnapshot(buffer) {
     wheelAngularVelocity[wheelId] = values[VEHICLE_RENDER_SNAPSHOT_FLOAT.wheelAngularVelocity + index];
     offset += VEHICLE_RENDER_WHEEL_STRIDE;
   }
-  return {
+  return reconstructVehicleRenderState({
+    schemaVersion: VEHICLE_RENDER_STATE_SCHEMA_VERSION,
     protocolVersion: header[VEHICLE_RENDER_SNAPSHOT_HEADER.protocolVersion],
     stepIndex: header[VEHICLE_RENDER_SNAPSHOT_HEADER.stepIndex],
     eventSequence: header[VEHICLE_RENDER_SNAPSHOT_HEADER.eventSequence],
@@ -422,7 +434,7 @@ export function readVehicleRenderSnapshot(buffer) {
     orientation: readQuaternion(values, VEHICLE_RENDER_SNAPSHOT_FLOAT.orientation),
     velocity: readVector(values, VEHICLE_RENDER_SNAPSHOT_FLOAT.velocity),
     angularVelocity: readVector(values, VEHICLE_RENDER_SNAPSHOT_FLOAT.angularVelocity),
-    wheelPoses,
+    wheels,
     suspensionPose,
     tireTemperature,
     wheelAngularVelocity,
@@ -433,7 +445,7 @@ export function readVehicleRenderSnapshot(buffer) {
     signedTravelSpeedMps: values[VEHICLE_RENDER_SNAPSHOT_FLOAT.signedTravelSpeedMps],
     engineRpm: values[VEHICLE_RENDER_SNAPSHOT_FLOAT.engineRpm],
     gear: Math.trunc(values[VEHICLE_RENDER_SNAPSHOT_FLOAT.gear])
-  };
+  });
 }
 
 function lerp(left, right, alpha) {
@@ -462,6 +474,31 @@ function interpolateQuaternion(left = { x: 0, y: 0, z: 0, w: 1 }, right = left, 
   return { x: x * inverseLength, y: y * inverseLength, z: z * inverseLength, w: w * inverseLength };
 }
 
+function extrapolateQuaternion(orientation = {}, angularVelocity = {}, seconds = 0) {
+  const magnitude = Math.hypot(
+    finite(angularVelocity.x), finite(angularVelocity.y), finite(angularVelocity.z)
+  );
+  if (magnitude < 1e-9 || seconds <= 0) return { ...orientation };
+  const halfAngle = magnitude * seconds * 0.5;
+  const scale = Math.sin(halfAngle) / magnitude;
+  const delta = {
+    x: finite(angularVelocity.x) * scale,
+    y: finite(angularVelocity.y) * scale,
+    z: finite(angularVelocity.z) * scale,
+    w: Math.cos(halfAngle)
+  };
+  return interpolateQuaternion(orientation, {
+    x: orientation.w * delta.x + orientation.x * delta.w
+      + orientation.y * delta.z - orientation.z * delta.y,
+    y: orientation.w * delta.y - orientation.x * delta.z
+      + orientation.y * delta.w + orientation.z * delta.x,
+    z: orientation.w * delta.z + orientation.x * delta.y
+      - orientation.y * delta.x + orientation.z * delta.w,
+    w: orientation.w * delta.w - orientation.x * delta.x
+      - orientation.y * delta.y - orientation.z * delta.z
+  }, 1);
+}
+
 export function interpolateVehicleRenderSnapshots(previous, latest, renderTimeSeconds) {
   if (!previous) return latest || null;
   if (!latest) return previous;
@@ -469,40 +506,52 @@ export function interpolateVehicleRenderSnapshots(previous, latest, renderTimeSe
   const alpha = duration > 0
     ? clamp((finite(renderTimeSeconds) - previous.simulationTimeSeconds) / duration, 0, 1)
     : 1;
-  const wheelPoses = {};
+  const wheels = {};
   const suspensionPose = {};
   for (const wheelId of RACE_WHEEL_IDS) {
-    wheelPoses[wheelId] = {
-      position: interpolateVector(previous.wheelPoses[wheelId].position, latest.wheelPoses[wheelId].position, alpha),
-      orientation: interpolateQuaternion(previous.wheelPoses[wheelId].orientation, latest.wheelPoses[wheelId].orientation, alpha),
-      contactPoint: interpolateVector(previous.wheelPoses[wheelId].contactPoint, latest.wheelPoses[wheelId].contactPoint, alpha),
-      normal: interpolateVector(previous.wheelPoses[wheelId].normal, latest.wheelPoses[wheelId].normal, alpha),
-      suspensionMount: interpolateVector(previous.wheelPoses[wheelId].suspensionMount, latest.wheelPoses[wheelId].suspensionMount, alpha),
-      suspensionAxis: interpolateVector(previous.wheelPoses[wheelId].suspensionAxis, latest.wheelPoses[wheelId].suspensionAxis, alpha),
-      normalLoadN: lerp(previous.wheelPoses[wheelId].normalLoadN, latest.wheelPoses[wheelId].normalLoadN, alpha),
-      gripCoefficient: lerp(previous.wheelPoses[wheelId].gripCoefficient, latest.wheelPoses[wheelId].gripCoefficient, alpha),
-      steeringAngleRad: lerp(previous.wheelPoses[wheelId].steeringAngleRad, latest.wheelPoses[wheelId].steeringAngleRad, alpha),
-      lateralForceN: lerp(previous.wheelPoses[wheelId].lateralForceN, latest.wheelPoses[wheelId].lateralForceN, alpha),
-      selfAligningMomentNm: lerp(previous.wheelPoses[wheelId].selfAligningMomentNm, latest.wheelPoses[wheelId].selfAligningMomentNm, alpha),
-      flags: latest.wheelPoses[wheelId].flags,
-      validTreadContact: latest.wheelPoses[wheelId].validTreadContact,
-      geometricContact: latest.wheelPoses[wheelId].geometricContact,
-      loadBearing: latest.wheelPoses[wheelId].loadBearing,
-      normalLoadKnown: latest.wheelPoses[wheelId].normalLoadKnown,
-      inContact: latest.wheelPoses[wheelId].inContact
+    const leftWheel = previous.wheels[wheelId];
+    const rightWheel = latest.wheels[wheelId];
+    let spinDelta = finite(rightWheel.spinAngleRad) - finite(leftWheel.spinAngleRad);
+    const expectedDirection = Math.sign(lerp(
+      leftWheel.wheelAngularVelocityRadps, rightWheel.wheelAngularVelocityRadps, alpha
+    ));
+    while (expectedDirection >= 0 && spinDelta < 0) spinDelta += Math.PI * 2;
+    while (expectedDirection < 0 && spinDelta > 0) spinDelta -= Math.PI * 2;
+    wheels[wheelId] = {
+      hubPositionBody: interpolateVector(leftWheel.hubPositionBody, rightWheel.hubPositionBody, alpha),
+      suspensionMountBody: interpolateVector(leftWheel.suspensionMountBody, rightWheel.suspensionMountBody, alpha),
+      suspensionAxisBody: interpolateVector(leftWheel.suspensionAxisBody, rightWheel.suspensionAxisBody, alpha),
+      contactPointWorld: interpolateVector(leftWheel.contactPointWorld, rightWheel.contactPointWorld, alpha),
+      surfaceNormalWorld: interpolateVector(leftWheel.surfaceNormalWorld, rightWheel.surfaceNormalWorld, alpha),
+      suspensionCompressionM: lerp(leftWheel.suspensionCompressionM, rightWheel.suspensionCompressionM, alpha),
+      steeringAngleRad: lerp(leftWheel.steeringAngleRad, rightWheel.steeringAngleRad, alpha),
+      spinAngleRad: finite(leftWheel.spinAngleRad) + spinDelta * alpha,
+      wheelAngularVelocityRadps: lerp(leftWheel.wheelAngularVelocityRadps, rightWheel.wheelAngularVelocityRadps, alpha),
+      normalLoadN: lerp(leftWheel.normalLoadN, rightWheel.normalLoadN, alpha),
+      gripCoefficient: lerp(leftWheel.gripCoefficient, rightWheel.gripCoefficient, alpha),
+      lateralForceN: lerp(leftWheel.lateralForceN, rightWheel.lateralForceN, alpha),
+      selfAligningMomentNm: lerp(leftWheel.selfAligningMomentNm, rightWheel.selfAligningMomentNm, alpha),
+      flags: rightWheel.flags,
+      validTreadContact: rightWheel.validTreadContact,
+      geometricContact: rightWheel.geometricContact,
+      loadBearing: rightWheel.loadBearing,
+      normalLoadKnown: rightWheel.normalLoadKnown
     };
     suspensionPose[wheelId] = lerp(
       previous.suspensionPose[wheelId], latest.suspensionPose[wheelId], alpha
     );
   }
-  return {
+  const extrapolationDurationSeconds = clamp(
+    finite(renderTimeSeconds) - latest.simulationTimeSeconds, 0, 0.033
+  );
+  const result = {
     ...latest,
     simulationTimeSeconds: lerp(previous.simulationTimeSeconds, latest.simulationTimeSeconds, alpha),
     position: interpolateVector(previous.position, latest.position, alpha),
     orientation: interpolateQuaternion(previous.orientation, latest.orientation, alpha),
     velocity: interpolateVector(previous.velocity, latest.velocity, alpha),
     angularVelocity: interpolateVector(previous.angularVelocity, latest.angularVelocity, alpha),
-    wheelPoses,
+    wheels,
     suspensionPose,
     speedMps: lerp(previous.speedMps, latest.speedMps, alpha),
     groundSpeedMps: lerp(previous.groundSpeedMps, latest.groundSpeedMps, alpha),
@@ -510,6 +559,23 @@ export function interpolateVehicleRenderSnapshots(previous, latest, renderTimeSe
     bodyLateralSpeedMps: lerp(previous.bodyLateralSpeedMps, latest.bodyLateralSpeedMps, alpha),
     signedTravelSpeedMps: lerp(previous.signedTravelSpeedMps, latest.signedTravelSpeedMps, alpha),
     engineRpm: lerp(previous.engineRpm, latest.engineRpm, alpha),
-    interpolationAlpha: alpha
+    interpolationAlpha: alpha,
+    extrapolationDurationSeconds
   };
+  if (extrapolationDurationSeconds > 0) {
+    result.position = {
+      x: result.position.x + result.velocity.x * extrapolationDurationSeconds,
+      y: result.position.y + result.velocity.y * extrapolationDurationSeconds,
+      z: result.position.z + result.velocity.z * extrapolationDurationSeconds
+    };
+    result.orientation = extrapolateQuaternion(
+      result.orientation, result.angularVelocity, extrapolationDurationSeconds
+    );
+    for (const wheelId of RACE_WHEEL_IDS) {
+      result.wheels[wheelId].spinAngleRad += Number(
+        result.wheels[wheelId].wheelAngularVelocityRadps || 0
+      ) * extrapolationDurationSeconds;
+    }
+  }
+  return reconstructVehicleRenderState(result);
 }

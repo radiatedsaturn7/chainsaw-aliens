@@ -107,6 +107,9 @@ export class TrackState {
     this.accumulatorMs = 0;
     this.cells = new Map();
     this.cellSampleRevisions = new WeakMap();
+    this.visualDirtyKeys = new Set();
+    this.visualCellRevisions = new Map();
+    this.visualRevision = 0;
     this.cellLookupRevision = 0;
     this.baseSurfaceCache = new Map();
     this.orderedCellKeys = [];
@@ -279,10 +282,14 @@ export class TrackState {
   }
 
   prepareCellMutation(cell) {
-    if (cell) this.cellSampleRevisions.set(
-      cell,
-      Number(this.cellSampleRevisions.get(cell) || 0) + 1
-    );
+    if (cell) {
+      this.cellSampleRevisions.set(
+        cell, Number(this.cellSampleRevisions.get(cell) || 0) + 1
+      );
+      this.visualRevision += 1;
+      this.visualCellRevisions.set(cell.key, this.visualRevision);
+      this.visualDirtyKeys.add(cell.key);
+    }
     const builder = this.checkpointBuilder;
     if (!cell || !builder) return;
     if (!builder.frozen) {
@@ -1043,6 +1050,11 @@ export class TrackState {
     const restored = restoreTrackStateSnapshot(this, snapshot);
     this.cellLookupRevision += 1;
     this.rebuildDerivedRuntimeState();
+    this.visualRevision += 1;
+    for (const key of this.orderedCellKeys) {
+      this.visualCellRevisions.set(key, this.visualRevision);
+      this.visualDirtyKeys.add(key);
+    }
     return restored;
   }
 
@@ -1187,6 +1199,38 @@ export class TrackState {
           ...sample.visual
         };
       });
+  }
+
+  consumeVisualDelta({ maximumCells = 256, includeAll = false } = {}) {
+    if (includeAll) {
+      for (const key of this.orderedCellKeys) this.visualDirtyKeys.add(key);
+    }
+    const limit = Math.max(1, Math.min(1024, Math.trunc(Number(maximumCells) || 256)));
+    const keys = [...this.visualDirtyKeys]
+      .sort(compareTrackStateCellKeys)
+      .slice(0, limit);
+    const cells = [];
+    for (const key of keys) {
+      this.visualDirtyKeys.delete(key);
+      const cell = this.cells.get(key);
+      if (!cell) continue;
+      const sample = getTrackStateCellSample(cell, this.stepIndex);
+      cells.push({
+        key,
+        x: cell.worldX,
+        z: cell.worldZ,
+        elevationM: cell.elevationM,
+        revision: Number(this.visualCellRevisions.get(key) || 0),
+        effectiveGrip: sample.effectiveGrip,
+        ...sample.visual
+      });
+    }
+    return {
+      stepIndex: this.stepIndex,
+      cellRevision: this.visualRevision,
+      cells,
+      remainingDirtyCellCount: this.visualDirtyKeys.size
+    };
   }
 
   getDebugState(bounds = null) {

@@ -26,17 +26,34 @@ export function getAuthoritativeVehicleState(session = null) {
 }
 
 export function getAuthoritativeChassisState(vehicleState = null) {
-  if (vehicleState?.vehicle3d?.authoritativeSource === 'VehicleDynamicsWorker'
-    && vehicleState?.vehicleDynamicsPresentationState) {
-    return vehicleState.vehicleDynamicsPresentationState;
-  }
-  if (vehicleState?.vehicleDynamicsRunner?.state) return vehicleState.vehicleDynamicsRunner.state;
+  if (vehicleState?.vehicleDynamicsRunner?.dormant !== true
+    && vehicleState?.vehicleDynamicsRunner?.state) return vehicleState.vehicleDynamicsRunner.state;
+  if (vehicleState?.vehicleRenderState) return vehicleState.vehicleRenderState;
+  if (vehicleState?.vehicleDynamicsPresentationState) return vehicleState.vehicleDynamicsPresentationState;
   return vehicleState?.vehicle3d?.enabled ? vehicleState.vehicle3d : null;
 }
 
 export function syncVehicleDynamicsCompatibilityOutputs(runner = null, session = null) {
   if (!runner?.state || !session) return session;
   const state = runner.state;
+  const renderState = createVehicleRenderStateFromRunner(runner, {
+    eventSequence: Number(session.vehicleDynamicsEventSequence || 0),
+    visualState: (state.grounded === false ? 0 : 1)
+  });
+  session.vehicleRenderState = renderState;
+  session.vehicleDynamicsPresentationTelemetry = {
+    authorityThread: 'render',
+    workerMigrationTimeMs: 0,
+    snapshotAgeMs: 0,
+    snapshotIntervalMs: 1000 / Math.max(1, Number(runner.config?.chassisHz || 120)),
+    droppedSnapshots: 0,
+    interpolationAlpha: 1,
+    extrapolationDurationMs: 0,
+    bodyVisualAuthoritativeAngleErrorDeg: 0,
+    wheelLocalOffsetErrorByWheel: Object.fromEntries(
+      Object.keys(renderState.wheels).map((wheelId) => [wheelId, 0])
+    )
+  };
   session.vehicleDynamicsPresentationState = null;
   session.vehicleDynamicsRunner = runner;
   session.worldX = Number(state.position.x || 0);
@@ -163,7 +180,8 @@ export function syncVehicleDynamicsCompatibilityOutputs(runner = null, session =
     );
     wheels[wheelId] = wheel;
   }
-  vehicle3d.wheels = wheels;
+  session.wheelContacts3d = wheels;
+  vehicle3d.wheels = renderState.wheelPoses;
   session.vehicle3d = vehicle3d;
   return session;
 }
@@ -192,3 +210,4 @@ export function getVehicleStateSnapshot(vehicleState = null) {
     chassis
   };
 }
+import { createVehicleRenderStateFromRunner } from './VehicleRenderState.js';

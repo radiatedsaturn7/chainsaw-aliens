@@ -67,3 +67,21 @@ test('worker Track State applies live weather forcing at fixed-step boundaries',
   assert.equal(authority.trackState.stepIndex, 1);
   assert.equal(authority.trackState.getStoredWaterMm() > 0, true);
 });
+
+test('worker Track State publishes bounded revisioned visual deltas', () => {
+  const authority = createWorkerTrackStateAuthority({
+    options: { seed: 11, fixedStepMs: 100 }
+  });
+  const vehicle = { id: 'player', runner: { state: {} } };
+  let visualDelta = null;
+  for (let step = 1; step <= 24; step += 1) {
+    visualDelta = authority.mutate({ vehicle, telemetry: telemetry(step, step * 0.1) })
+      .visualDelta || visualDelta;
+  }
+  assert.ok(visualDelta);
+  assert.equal(visualDelta.cells.length > 0, true);
+  assert.equal(visualDelta.cells.length <= 192, true);
+  assert.equal(visualDelta.stepIndex, authority.trackState.stepIndex);
+  assert.equal(visualDelta.cellRevision > 0, true);
+  assert.equal(visualDelta.cells.every((cell) => Number(cell.revision) > 0), true);
+});

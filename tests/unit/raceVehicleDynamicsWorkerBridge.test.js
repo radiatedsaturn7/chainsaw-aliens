@@ -5,12 +5,42 @@ import {
   applyRaceVehicleProvisionalResetPresentation,
   RaceVehicleDynamicsWorkerBridge,
   applyRaceVehicleRenderSnapshot,
+  applyWorkerTrackStateVisualDelta,
   createRaceVehicleDynamicsWorkerInitialization
 } from '../../src/racing/simulation/RaceVehicleDynamicsWorkerBridge.js';
+
+test('worker Track State visual deltas update only newer bounded cells', () => {
+  const session = {};
+  applyWorkerTrackStateVisualDelta(session, {
+    stepIndex: 8,
+    cellRevision: 4,
+    eventSequence: 12,
+    cells: [{ key: '0:0', x: 0, z: 0, revision: 4, wetness: 0.6 }]
+  });
+  applyWorkerTrackStateVisualDelta(session, {
+    stepIndex: 9,
+    cellRevision: 5,
+    eventSequence: 13,
+    cells: [{ key: '0:0', x: 0, z: 0, revision: 3, wetness: 0.1 }]
+  });
+  assert.equal(session.workerTrackStateVisual.cells.size, 1);
+  assert.equal(session.workerTrackStateVisual.cells.get('0:0').wetness, 0.6);
+  assert.equal(session.workerTrackStateVisual.stepIndex, 9);
+  assert.equal(session.workerTrackStateVisual.cellRevision, 5);
+  assert.equal(session.workerTrackStateVisual.eventSequence, 13);
+});
 import {
   quaternionFromEuler,
+  rotateVectorByQuaternion,
   rotateVectorToBody
 } from '../../src/racing/simulation/RigidBodyMath.js';
+import { createVehicleRenderStateFromRunner } from '../../src/racing/simulation/VehicleRenderState.js';
+import {
+  createVehicleRenderSnapshotBuffer,
+  interpolateVehicleRenderSnapshots,
+  readVehicleRenderSnapshot,
+  writeVehicleRenderSnapshot
+} from '../../src/racing/simulation/VehicleDynamicsWorkerProtocol.js';
 import {
   buildRaceBakedSurfaceSampler,
   packRaceBakedSurfaceSampler
@@ -130,6 +160,80 @@ test('rolled worker snapshots update body, wheel, and debug state atomically', (
   assert.equal(session.vehicleDynamicsPresentationState.wheelLoadsN.fl, 2800);
   assert.equal(session.gear, 2);
   assert.deepEqual(dormantRunnerState.position, { x: 99, y: 99, z: 99 });
+});
+
+test('worker handoff keeps canonical body-local presentation continuous through driving incidents', () => {
+  const scenarios = [
+    { name: 'straight', euler: { yaw: 0.1 }, steering: 0, compression: 0.08 },
+    { name: 'steering', euler: { yaw: 0.4 }, steering: 0.35, compression: 0.09 },
+    { name: 'compression', euler: { pitch: -0.08 }, steering: 0.1, compression: 0.18 },
+    { name: 'jump', euler: { pitch: 0.2 }, steering: 0.05, compression: 0.01 },
+    { name: 'rollover', euler: { yaw: 0.5, roll: 2.4 }, steering: -0.2, compression: 0.04 },
+    { name: 'collision-correction', euler: { yaw: 0.7, roll: 0.15 }, steering: 0.2, compression: 0.14 },
+    { name: 'recovery', euler: { yaw: 1.1 }, steering: 0, compression: 0.1 }
+  ];
+  for (const [scenarioIndex, scenario] of scenarios.entries()) {
+    const orientation = quaternionFromEuler(scenario.euler);
+    const position = { x: scenarioIndex * 3, y: 1 + scenarioIndex * 0.03, z: 20 };
+    const contactPatches = {};
+    const suspensionState = {};
+    for (const [wheelIndex, wheelId] of ['fl', 'fr', 'rl', 'rr'].entries()) {
+      const local = {
+        x: wheelId[1] === 'l' ? -0.78 : 0.78,
+        y: -0.3 - scenario.compression,
+        z: wheelId[0] === 'f' ? 1.3 : -1.3
+      };
+      const rotated = rotateVectorByQuaternion(local, orientation);
+      const hub = { x: position.x + rotated.x, y: position.y + rotated.y, z: position.z + rotated.z };
+      contactPatches[wheelId] = {
+        hubPositionWorld: hub,
+        contactPointWorld: { ...hub, y: hub.y - 0.33 },
+        surfaceNormalWorld: { x: 0, y: 1, z: 0 },
+        suspensionMountPositionWorld: { ...hub, y: hub.y + 0.4 },
+        suspensionAxisWorld: rotateVectorByQuaternion({ x: 0, y: -1, z: 0 }, orientation),
+        normalLoadN: scenario.name === 'jump' ? 0 : 3000 + wheelIndex,
+        normalLoadKnown: true,
+        validTreadContact: scenario.name !== 'jump',
+        geometricContact: scenario.name !== 'jump',
+        steeringAngleRad: wheelId[0] === 'f' ? scenario.steering : 0
+      };
+      suspensionState[wheelId] = { compressionM: scenario.compression };
+    }
+    const runner = {
+      stepIndex: 120 + scenarioIndex,
+      simulationTimeSeconds: 1 + scenarioIndex / 120,
+      renderWheelSpinAngles: { fl: 6.2, fr: 6.2, rl: 6.2, rr: 6.2 },
+      config: { wheelbaseM: 2.6, frontTrackWidthM: 1.56, rearTrackWidthM: 1.56 },
+      state: {
+        position, orientation, velocity: { x: 4, y: 0, z: 20 },
+        angularVelocityWorld: { x: 0.2, y: 0.5, z: scenario.name === 'rollover' ? 2 : 0.1 },
+        contactPatches, suspensionState,
+        suspensionTravel: Object.fromEntries(['fl', 'fr', 'rl', 'rr'].map((id) => [id, scenario.compression])),
+        wheelAngularVelocityRadps: { fl: 30, fr: 30, rl: 30, rr: 30 },
+        tireState: {}, grounded: scenario.name !== 'jump'
+      }
+    };
+    const inline = createVehicleRenderStateFromRunner(runner, { visualState: runner.state.grounded ? 1 : 0 });
+    const worker = readVehicleRenderSnapshot(writeVehicleRenderSnapshot(
+      createVehicleRenderSnapshotBuffer(), inline
+    ));
+    assert.deepEqual(Object.keys(worker.wheels.fl).sort(), Object.keys(worker.wheels.fr).sort());
+    const dot = Math.abs(inline.orientation.x * worker.orientation.x
+      + inline.orientation.y * worker.orientation.y + inline.orientation.z * worker.orientation.z
+      + inline.orientation.w * worker.orientation.w);
+    assert.equal(2 * Math.acos(Math.min(1, dot)) * 180 / Math.PI < 1, true, scenario.name);
+    for (const wheelId of ['fl', 'fr', 'rl', 'rr']) {
+      const before = inline.wheelPoses[wheelId].position;
+      const after = worker.wheelPoses[wheelId].position;
+      assert.equal(Math.hypot(after.x - before.x, after.y - before.y, after.z - before.z) < 0.02, true, `${scenario.name}:${wheelId}`);
+      assert.equal(Math.abs(worker.wheels[wheelId].hubPositionBody.x) < 1.2, true);
+    }
+    const stalled100 = interpolateVehicleRenderSnapshots(inline, worker, worker.simulationTimeSeconds + 0.1);
+    const stalled250 = interpolateVehicleRenderSnapshots(inline, worker, worker.simulationTimeSeconds + 0.25);
+    assert.equal(stalled100.extrapolationDurationSeconds <= 0.033, true);
+    assert.equal(stalled250.extrapolationDurationSeconds <= 0.033, true);
+    assert.equal(stalled100.wheels.fl.spinAngleRad > worker.wheels.fl.spinAngleRad, true);
+  }
 });
 
 test('worker reset immediately moves body and all wheels as one rigid presentation', () => {

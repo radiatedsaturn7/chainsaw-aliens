@@ -28137,3 +28137,32 @@ test('Race playtest physics surface view bypasses the authored world renderer', 
   assert.equal(physicsDraws, 1);
   assert.equal(authoredDraws, 0);
 });
+
+test('Physics Surface debug projection clips the near plane and rejects behind-camera geometry', () => {
+  const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
+  const bounds = { x: 0, y: 0, w: 320, h: 180 };
+  const camera = { x: 0, z: 0, elevation: 0, nearPlane: 2, nearPlaneMin: 0.1 };
+  const behind = editor.projectRaceWorldPointToCamera(
+    { x: 0, z: -5, elevation: 0 }, camera, 0, bounds
+  );
+  assert.equal(behind.visible, false);
+  assert.equal(editor.projectRaceWorldDebugLine(
+    { x: -1, z: -5, elevation: 0 }, { x: 1, z: -3, elevation: 0 }, camera, 0, bounds
+  ), null);
+  const crossing = editor.projectRaceWorldDebugLine(
+    { x: 0, z: 1, elevation: 0 }, { x: 0, z: 8, elevation: 0 }, camera, 0, bounds
+  );
+  assert.ok(crossing);
+  assert.equal(crossing[0].cameraZ >= 2, true);
+  assert.equal(crossing.flatMap((point) => [point.screenX, point.screenY]).every(Number.isFinite), true);
+  const clippedTriangle = editor.projectRaceWorldDebugPolygon([
+    { x: -1, z: 1, elevation: 0 },
+    { x: 1, z: 4, elevation: 0 },
+    { x: -1, z: 4, elevation: 0 }
+  ], camera, 0, bounds);
+  assert.equal(clippedTriangle.length >= 3, true);
+  assert.equal(clippedTriangle.every((point) => point.cameraZ >= 2), true);
+  assert.equal(editor.projectRaceWorldDebugLine(
+    { x: -1, z: 3, elevation: 0 }, { x: 1, z: 5, elevation: 0 }, camera, Math.PI, bounds
+  ), null);
+});

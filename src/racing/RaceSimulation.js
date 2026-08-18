@@ -1973,7 +1973,9 @@ function advanceVehicleDynamicsAuthority(editor, {
   const qualification = requestedWorkerMode === 'force'
     ? qualifyVehicleDynamicsWorkerMigration(explicitQualification || {})
     : authority.liveWorkerQualification;
-  const workerPermitted = typeof Worker === 'function' && (
+  const mobileDevice = Boolean(editor.game?.deviceIsMobile || editor.game?.isMobile);
+  const mobileAutoMigrationBlocked = mobileDevice && requestedWorkerMode === 'auto';
+  const workerPermitted = typeof Worker === 'function' && !mobileAutoMigrationBlocked && (
     requestedWorkerMode === 'force'
     || (requestedWorkerMode === 'auto' && qualification?.qualified === true)
   );
@@ -2058,7 +2060,24 @@ function advanceVehicleDynamicsAuthority(editor, {
       authority.workerBridge = bridge;
       authority.preparedWorkerSurfaceSampler = null;
       authority.authoritativeThread = 'vehicle-dynamics-worker';
+      authority.runner.dormant = true;
+      authority.runner.dormantSinceStepIndex = authority.runner.stepIndex;
+      session.workerTrackStateVisual = {
+        cells: new Map(),
+        stepIndex: Number(session.trackState?.stepIndex || 0),
+        cellRevision: 0,
+        eventSequence: Number(session.vehicleDynamicsEventSequence || 0),
+        remainingDirtyCellCount: 0
+      };
+      session.trackStateVisualCache = null;
+      session.trackStateVisualAtlas = null;
+      for (const ai of session.aiRuntime || []) {
+        if (!ai.vehicleDynamicsRunner) continue;
+        ai.vehicleDynamicsRunner.dormant = true;
+        ai.vehicleDynamicsRunner.dormantSinceStepIndex = ai.vehicleDynamicsRunner.stepIndex;
+      }
       session.vehicleDynamicsAuthorityThread = 'worker';
+      session.vehicleDynamicsWorkerMigrationTimeMs = performance.now();
     } catch (error) {
       migrationWorker?.terminate?.();
       authority.workerMigrationFailure = String(error?.message || error);
@@ -2200,7 +2219,7 @@ export function updateRaceSimulation({
   const car = editor.getRaceSessionCar(editor.playtestSession);
   const tuning = editor.getRaceCarTuning(car);
   const authoritativeGroundSpeedMps = Number(editor.playtestSession.groundSpeedMps
-    ?? editor.playtestSession.vehicleDynamicsRunner?.state?.groundSpeedMps);
+    ?? getAuthoritativeChassisState(editor.playtestSession)?.groundSpeedMps);
   const steeringSafetySpeedMps = Number.isFinite(authoritativeGroundSpeedMps)
     ? Math.max(0, authoritativeGroundSpeedMps)
     : Math.abs(Number(editor.playtestSession.speedMps) || 0);
@@ -2509,7 +2528,11 @@ export function updateRaceSimulation({
   editor.playtestSession.edgeResetFadeMs = Math.max(0, Number(editor.playtestSession.edgeResetFadeMs || 0) - seconds * 1000);
   editor.updateRaceEdgeCenterResetFade();
   editor.playtestSession.shiftCooldownMs = Math.max(0, Number(editor.playtestSession.shiftCooldownMs || 0) - seconds * 1000);
-  const wheelContacts3d = editor.playtestSession.vehicle3d?.wheels || editor.playtestSession.wheelContacts3d || null;
+  const inlineRunnerActive = editor.playtestSession.vehicleDynamicsRunner?.dormant !== true;
+  const wheelContacts3d = (inlineRunnerActive ? editor.playtestSession.wheelContacts3d : null)
+    || getAuthoritativeChassisState(editor.playtestSession)?.contactPatches
+    || editor.playtestSession.vehicle3d?.wheels
+    || null;
   const effectiveWheelContacts3d = crestLaunchPredicted
     ? Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId, {
       ...(wheelContacts3d?.[wheelId] || {}),

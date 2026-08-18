@@ -1905,6 +1905,9 @@ export class VehicleDynamicsRunner {
     this.stationaryResetHold = null;
     this.suspensionModeSettleSteps = 0;
     this.stepIndex = 0;
+    this.renderWheelSpinAngles = Object.fromEntries(
+      RACE_WHEEL_IDS.map((wheelId) => [wheelId, 0])
+    );
     this.observedTimeSeconds = 0;
     this.telemetry = [];
     this.impactHistory = [];
@@ -2246,6 +2249,7 @@ export class VehicleDynamicsRunner {
     resetState.gear = requestedGear;
     resetState.penetrationRecovery = null;
     this.state = resetState;
+    for (const wheelId of RACE_WHEEL_IDS) this.renderWheelSpinAngles[wheelId] = 0;
     this.stationaryResetHold = parkUntilDrive ? {
       position: clone(resetState.position),
       orientation: clone(resetState.orientation),
@@ -5058,6 +5062,12 @@ export class VehicleDynamicsRunner {
     integration.impactEnergy = this.activeImpact || null;
     integration.takeoff = this.takeoffContactState.activeTakeoff
       || this.takeoffHistory.at(-1) || null;
+    for (const wheelId of RACE_WHEEL_IDS) {
+      this.renderWheelSpinAngles[wheelId] = quantize((
+        Number(this.renderWheelSpinAngles[wheelId] || 0)
+        + Number(this.state.wheelAngularVelocityRadps?.[wheelId] || 0) * chassisStepDt
+      ) % (Math.PI * 2), 12);
+    }
     this.stepIndex = nextStepIndex;
     this.diagnostics.completedSteps += 1;
     this.diagnostics.completedTireSubsteps += tireResults.length;
@@ -5255,6 +5265,7 @@ export class VehicleDynamicsRunner {
       config: clone(this.config),
       initialState: clone(this.initialState),
       state: this.createStateSnapshot(),
+      renderWheelSpinAngles: clone(this.renderWheelSpinAngles),
       stepIndex: this.stepIndex,
       observedTimeSeconds: this.observedTimeSeconds,
       inputTimeline: this.inputTimeline.createSnapshot(),
@@ -5286,6 +5297,9 @@ export class VehicleDynamicsRunner {
     this.state = createVehicleDynamicsState(snapshot.state);
     this.initialState = createVehicleDynamicsState(snapshot.initialState);
     this.stepIndex = Math.max(0, Math.trunc(Number(snapshot.stepIndex) || 0));
+    for (const wheelId of RACE_WHEEL_IDS) {
+      this.renderWheelSpinAngles[wheelId] = Number(snapshot.renderWheelSpinAngles?.[wheelId] || 0);
+    }
     this.observedTimeSeconds = quantize(snapshot.observedTimeSeconds, 12);
     this.inputTimeline.restoreSnapshot(snapshot.inputTimeline || []);
     this.telemetry = clone(snapshot.telemetry || []);

@@ -18,10 +18,15 @@ test('bounded visual atlas exposes authoritative channels without mutating simul
   state.advance(0.1, { ambientTemperatureC: 20 });
   const checksum = state.getChecksum();
   const compact = createTrackStateVisualAtlas(state, { resolution: 32, worldSizeM: 32 });
+  const reusedPixels = new Uint8ClampedArray(32 * 32 * 4);
+  const reused = createTrackStateVisualAtlas(state, {
+    resolution: 32, worldSizeM: 32, targetPixels: reusedPixels
+  });
   const detailed = createTrackStateVisualAtlas(state, { resolution: 128, worldSizeM: 64 });
   assert.equal(compact.pixels.length, 32 * 32 * 4);
   assert.equal(detailed.pixels.length, 128 * 128 * 4);
   assert.ok(compact.pixels.some((value) => value > 0));
+  assert.equal(reused.pixels, reusedPixels);
   assert.equal(state.getChecksum(), checksum);
   assert.equal(state.stepIndex, compact.stepIndex);
 });

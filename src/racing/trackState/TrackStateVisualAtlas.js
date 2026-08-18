@@ -18,13 +18,17 @@ export function createTrackStateVisualAtlas(trackState, {
   centerX = 0,
   centerZ = 0,
   resolution = 192,
-  worldSizeM = 192
+  worldSizeM = 192,
+  targetPixels = null
 } = {}) {
   const size = Math.max(16, Math.min(512, Math.trunc(Number(resolution) || 192)));
   const span = Math.max(16, Number(worldSizeM) || 192);
   const minX = Math.floor((Number(centerX) - span * 0.5));
   const minZ = Math.floor((Number(centerZ) - span * 0.5));
-  const pixels = new Uint8ClampedArray(size * size * 4);
+  const pixels = targetPixels instanceof Uint8ClampedArray
+    && targetPixels.length === size * size * 4
+    ? targetPixels : new Uint8ClampedArray(size * size * 4);
+  pixels.fill(0);
   const cells = trackState?.getVisualCells?.({
     minX,
     maxX: minX + span,

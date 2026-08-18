@@ -109,7 +109,7 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
   const speedMph = speed * 2.23694;
   const queueVelocityScaleImpulse = (scaleAmount, point, { reverse = false } = {}) => {
     const runner = session.vehicleDynamicsRunner;
-    if (!runner) return;
+    if (!runner || runner.dormant === true) return;
     const velocity = runner.state.velocity || {};
     const scale = reverse ? -Math.abs(scaleAmount) : Math.max(0, Number(scaleAmount || 0));
     const mass = Math.max(1, Number(runner.config.massKg || 1));

@@ -20,12 +20,14 @@ import {
 import { VehicleDynamicsWorkerMetrics } from '../../src/racing/simulation/VehicleDynamicsWorkerMetrics.js';
 
 const wheels = Object.fromEntries(['fl', 'fr', 'rl', 'rr'].map((id, index) => [id, {
-  position: { x: index, y: index + 1, z: index + 2 },
-  orientation: { x: 0, y: 0, z: 0, w: 1 },
-  contactPoint: { x: index, y: 0, z: index + 2 },
-  normal: { x: 0, y: 1, z: 0 },
-  suspensionMount: { x: index, y: index + 1.4, z: index + 2 },
-  suspensionAxis: { x: 0, y: -1, z: 0 },
+  hubPositionBody: { x: index - 1.5, y: -0.2, z: index < 2 ? 1.2 : -1.2 },
+  suspensionMountBody: { x: index - 1.5, y: 0.2, z: index < 2 ? 1.2 : -1.2 },
+  suspensionAxisBody: { x: 0, y: -1, z: 0 },
+  contactPointWorld: { x: index, y: 0, z: index + 2 },
+  surfaceNormalWorld: { x: 0, y: 1, z: 0 },
+  suspensionCompressionM: 0.1 + index * 0.01,
+  spinAngleRad: 0.2 + index,
+  wheelAngularVelocityRadps: 70 + index,
   normalLoadN: 3000 + index,
   gripCoefficient: 0.9,
   steeringAngleRad: index < 2 ? 0.1 : 0,
@@ -44,7 +46,7 @@ function snapshot(overrides = {}) {
     orientation: { x: 0, y: 0, z: 0, w: 1 },
     velocity: { x: 3, y: -1, z: 24 },
     angularVelocity: { x: 0.1, y: 0.2, z: 0.3 },
-    wheelPoses: wheels,
+    wheels,
     suspensionPose: { fl: 0.1, fr: 0.2, rl: 0.3, rr: 0.4 },
     tireTemperature: { fl: 90, fr: 91, rl: 92, rr: 93 },
     wheelAngularVelocity: { fl: 70, fr: 71, rl: 72, rr: 73 },
@@ -67,7 +69,8 @@ test('render snapshots use one compact transferable buffer without telemetry or 
   assert.equal(decoded.stepIndex, 120);
   assert.equal(decoded.eventSequence, 9);
   assert.equal(decoded.position.z, 20);
-  assert.equal(decoded.wheelPoses.rr.position.x, 3);
+  assert.equal(decoded.wheels.rr.hubPositionBody.x, 1.5);
+  assert.equal(decoded.wheelPoses.rr.position.x, 11.5);
   assert.equal(decoded.wheelPoses.fl.normalLoadN, 3000);
   assert.equal(decoded.wheelPoses.fl.validTreadContact, true);
   assert.deepEqual(decoded.velocity, { x: 3, y: -1, z: 24 });
@@ -174,6 +177,36 @@ test('render interpolation uses only the two newest authoritative snapshots', ()
   assert.equal(rendered.speedMps, 12.5);
   assert.equal(rendered.interpolationAlpha, 0.25);
   assert.equal(rendered.eventSequence, latest.eventSequence);
+});
+
+test('canonical VehicleRenderState preserves local wheels, spin direction, and bounded presentation timing', () => {
+  const previous = snapshot({
+    simulationTimeSeconds: 1,
+    position: { x: 0, y: 0, z: 0 },
+    wheels: Object.fromEntries(Object.entries(wheels).map(([id, wheel]) => [id, {
+      ...wheel, spinAngleRad: Math.PI * 2 - 0.05, wheelAngularVelocityRadps: 20
+    }]))
+  });
+  const latest = snapshot({
+    simulationTimeSeconds: 1.01,
+    position: { x: 0.1, y: 0, z: 0 },
+    wheels: Object.fromEntries(Object.entries(wheels).map(([id, wheel]) => [id, {
+      ...wheel, spinAngleRad: 0.15, wheelAngularVelocityRadps: 20
+    }]))
+  });
+  const decoded = readVehicleRenderSnapshot(
+    writeVehicleRenderSnapshot(createVehicleRenderSnapshotBuffer(), latest)
+  );
+  assert.deepEqual(
+    Object.keys(decoded.wheels.fl).sort(),
+    Object.keys(decoded.wheels.fr).sort()
+  );
+  assert.equal(decoded.schemaVersion, 1);
+  const rendered = interpolateVehicleRenderSnapshots(previous, latest, 1.005);
+  assert.equal(rendered.wheels.fl.spinAngleRad > previous.wheels.fl.spinAngleRad, true);
+  assert.equal(rendered.wheelPoses.fl.position.x - rendered.position.x,
+    rendered.wheels.fl.hubPositionBody.x);
+  assert.equal(rendered.extrapolationDurationSeconds, 0);
 });
 
 test('worker and render latency percentiles remain independent', () => {

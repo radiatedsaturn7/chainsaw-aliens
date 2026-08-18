@@ -56,6 +56,8 @@ export function createWorkerTrackStateAuthority({
     : new TrackState(options);
   const scratchByVehicle = new Map();
   const liveWeatherForcing = { ...weatherForcing };
+  let lastVisualSyncStepIndex = -Infinity;
+  let initialVisualSyncPending = true;
   const mutate = ({ vehicle, telemetry }) => {
     const vehicleId = vehicle.id || 'player';
     let scratch = scratchByVehicle.get(vehicleId);
@@ -152,10 +154,21 @@ export function createWorkerTrackStateAuthority({
       liveWeatherForcing,
       scratch.advanceResult
     );
+    let visualDelta = null;
+    if (trackState.stepIndex > lastVisualSyncStepIndex) {
+      visualDelta = trackState.consumeVisualDelta({
+        maximumCells: 192,
+        includeAll: initialVisualSyncPending
+      });
+      initialVisualSyncPending = false;
+      lastVisualSyncStepIndex = trackState.stepIndex;
+      visualDelta.eventSequence = Math.max(0, trackState.nextSequence - 1);
+    }
     return {
       eventCount: Math.max(0, trackState.nextSequence - beforeSequence),
       eventSequence: Math.max(0, trackState.nextSequence - 1),
-      advance
+      advance,
+      visualDelta
     };
   };
   return {
