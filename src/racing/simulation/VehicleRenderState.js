@@ -4,6 +4,7 @@ import {
   rotateVectorByQuaternion,
   rotateVectorToBody
 } from './RigidBodyMath.js';
+import { resolvePerWheelAlignment } from './SuspensionGeometry.js';
 
 export const VEHICLE_RENDER_STATE_SCHEMA_VERSION = 1;
 
@@ -155,11 +156,22 @@ export function createVehicleRenderStateFromRunner(runner, {
   const suspensionPose = {};
   const tireTemperature = {};
   const wheelAngularVelocity = {};
-  const frontZ = finite(config.cgToFrontAxleM, finite(config.wheelbaseM, 2.65) * 0.5);
-  const rearZ = -finite(config.cgToRearAxleM, finite(config.wheelbaseM, 2.65) * 0.5);
+  const frontZ = finite(
+    config.frontAxleDistanceFromCgM,
+    finite(config.wheelbaseM, 2.65) * 0.5
+  );
+  const rearZ = -finite(
+    config.rearAxleDistanceFromCgM,
+    finite(config.wheelbaseM, 2.65) * 0.5
+  );
   for (const wheelId of RACE_WHEEL_IDS) {
     const front = wheelId[0] === 'f';
     const left = wheelId[1] === 'l';
+    const fallbackAlignment = resolvePerWheelAlignment({
+      wheelId,
+      axleCamberRad: front ? config.camberFrontRad : config.camberRearRad,
+      axleToeRad: front ? config.toeFrontRad : config.toeRearRad
+    });
     const patch = state.contactPatches?.[wheelId] || {};
     const suspension = state.suspensionState?.[wheelId] || {};
     const compression = finite(
@@ -204,11 +216,11 @@ export function createVehicleRenderStateFromRunner(runner, {
       ),
       camberAngleRad: finite(
         patch.camberAngleRad,
-        front ? config.camberFrontRad : config.camberRearRad
+        fallbackAlignment.camberRad
       ),
       toeAngleRad: finite(
         patch.toeAngleRad,
-        front ? config.toeFrontRad : config.toeRearRad
+        fallbackAlignment.toeRad
       ),
       spinAngleRad: finite(runner?.renderWheelSpinAngles?.[wheelId]),
       wheelAngularVelocityRadps: finite(state.wheelAngularVelocityRadps?.[wheelId]),

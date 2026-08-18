@@ -1,7 +1,10 @@
 import { RACE_WHEEL_IDS, clamp } from './SimulationMath.js';
 import { PowertrainModel } from './PowertrainModel.js';
 import { rotateVectorByQuaternion } from './RigidBodyMath.js';
-import { solveSuspensionGeometry } from './SuspensionGeometry.js';
+import {
+  resolvePerWheelAlignment,
+  solveSuspensionGeometry
+} from './SuspensionGeometry.js';
 import {
   createContactFootprintScratch,
   resolveContactFootprint
@@ -778,9 +781,16 @@ export function calculateWheelContactKinematics({
     steeringRackRatio: 1,
     target: computationScratch?.steeringAngles
   });
-  const steeringAngleRad = steeringAngles[wheelId] + Number(
-    toeOverrideRad ?? environment.toeByWheel?.[wheelId] ?? 0
+  const fallbackAlignment = resolvePerWheelAlignment({
+    wheelId,
+    axleCamberRad: front ? config.camberFrontRad : config.camberRearRad,
+    axleToeRad: front ? config.toeFrontRad : config.toeRearRad
+  });
+  const physicalSteeringAngleRad = steeringAngles[wheelId];
+  const toeAngleRad = Number(
+    toeOverrideRad ?? environment.toeByWheel?.[wheelId] ?? fallbackAlignment.toeRad
   );
+  const steeringAngleRad = physicalSteeringAngleRad + toeAngleRad;
   let rawForward;
   let wheelForward;
   let wheelLateral;
@@ -893,7 +903,7 @@ export function calculateWheelContactKinematics({
   const slipAngleRad = Math.atan2(lateralVelocityMps, Math.max(0.35, Math.abs(longitudinalVelocityMps)));
   const camberAngleRad = Number(camberOverrideRad
     ?? environment.camberByWheel?.[wheelId]
-    ?? (front ? config.camberFrontRad : config.camberRearRad));
+    ?? fallbackAlignment.camberRad);
   const output = target && typeof target === 'object' ? target : {};
   output.wheelId = wheelId;
   output.wheelCenterWorld = cleanVectorInto(output.wheelCenterWorld, center);
@@ -914,7 +924,8 @@ export function calculateWheelContactKinematics({
   output.suspensionBumpTravelM = q(bumpTravelM);
   output.staticSagTargetM = q(staticSagTargetM);
   output.contactPointWorld = cleanVectorInto(output.contactPointWorld, contactPoint);
-  output.steeringAngleRad = q(steeringAngleRad);
+  output.steeringAngleRad = q(physicalSteeringAngleRad);
+  output.toeAngleRad = q(toeAngleRad);
   output.wheelForwardWorld = cleanVectorInto(output.wheelForwardWorld, wheelForward);
   output.wheelLateralWorld = cleanVectorInto(output.wheelLateralWorld, wheelLateral);
   output.surfaceNormalWorld = cleanVectorInto(output.surfaceNormalWorld, normal);
@@ -1266,6 +1277,7 @@ export class ContactPatchTireModel {
         sampledSurfaceHeightCount += 1;
       }
       const front = wheelId[0] === 'f';
+      const left = wheelId[1] === 'l';
       const staticLoad = config.massKg * 9.81
         * (front ? config.frontWeightDistribution : 1 - config.frontWeightDistribution) / 2;
       const springRateNpm = front
@@ -1411,9 +1423,21 @@ export class ContactPatchTireModel {
       initialValidityRequest.suspensionTravelM = suspensionTravelM;
       initialValidityRequest.target = wheelRequestScratch.initialContactValidity;
       const initialContactValidity = resolveTreadContactValidity(initialValidityRequest);
-      const clampedCompressionM = initialContactValidity.valid
+      let clampedCompressionM = initialContactValidity.valid
         ? clamp(rawRequestedCompressionM, 0, suspensionTravelM)
         : null;
+      const stationaryContinuousSupport = initialContactValidity.valid
+        && hasPreviousSuspensionState
+        && Math.abs(Number(state.groundSpeedMps || state.speedMps || 0)) < 0.05
+        && Math.abs(Number(contactVelocityNormalMps || 0)) < 0.03
+        && environment.bodyTerrainCollisionClassification?.discontinuity !== true
+        && environment.wheelTerrainCollisionClassification?.[wheelId]?.discontinuity !== true;
+      if (stationaryContinuousSupport
+        && Math.abs(Number(clampedCompressionM) - previousCompressionM) < 0.00025) {
+        // Coplanar triangle boundaries and sub-millimetre barycentric noise are
+        // not suspension motion. Real steps/curbs remain outside this gate.
+        clampedCompressionM = previousCompressionM;
+      }
       const overtravelM = initialContactValidity.valid
         ? Math.max(0, Number(rawRequestedCompressionM) - suspensionTravelM) : 0;
       let unsprungVelocityMps = Number(previousSuspension.unsprungVelocityMps || 0);
@@ -1466,6 +1490,7 @@ export class ContactPatchTireModel {
       );
       geometryRequest.staticCamberRad = front ? config.camberFrontRad : config.camberRearRad;
       geometryRequest.staticToeRad = front ? config.toeFrontRad : config.toeRearRad;
+      geometryRequest.alignmentSideSign = left ? 1 : -1;
       geometryRequest.springRateNpm = springRateNpm;
       geometryRequest.target = scratch.geometryByWheel[wheelId];
       const geometry = solveSuspensionGeometry(geometryRequest);

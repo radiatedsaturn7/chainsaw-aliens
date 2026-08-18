@@ -59,6 +59,8 @@ const EPSILON = 1e-9;
 // intentional analog press still exceed this threshold immediately.
 const STATIONARY_RESET_WAKE_THROTTLE = 0.15;
 const RESET_HOLD_MAX_CONFIRMATION_SECONDS = 1.5;
+const RESET_HOLD_HEIGHT_TOLERANCE_M = 0.0005;
+const RESET_HOLD_NORMAL_TOLERANCE_RAD = 0.1 * Math.PI / 180;
 const dotVector3 = (a = {}, b = {}) => (
   Number(a.x || 0) * Number(b.x || 0)
   + Number(a.y || 0) * Number(b.y || 0)
@@ -86,6 +88,64 @@ function hasStableResetSupport(contactPatches = {}, state = {}) {
     dz * (cgX - Number(points[0].x)) - dx * (cgZ - Number(points[0].z))
   ) / length;
   return lineDistance <= 0.18;
+}
+
+function deepFreeze(value) {
+  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
+  Object.freeze(value);
+  for (const key of Object.keys(value)) deepFreeze(value[key]);
+  return value;
+}
+
+function createStaticVehicleSupportState(state, supportResult, resetGeneration, terrain = {}) {
+  const snapshot = {
+    resetGeneration,
+    terrainRevision: terrain.revision ?? null,
+    terrainFrameGeneration: terrain.frameGeneration ?? null,
+    position: clone(state.position),
+    orientation: clone(state.orientation),
+    routeDistance: finiteNumber(state.routeDistance),
+    suspensionState: clone(state.suspensionState || {}),
+    contactPatches: clone(state.contactPatches || {}),
+    wheelLoadsN: clone(state.wheelLoadsN || {}),
+    supportedWheelCount: Number(state.supportedWheelCount || 0),
+    validTreadContactByWheel: clone(state.validTreadContactByWheel || {}),
+    invalidContactReasonByWheel: clone(state.invalidContactReasonByWheel || {}),
+    supportResult: clone(supportResult || {})
+  };
+  for (const wheelId of RACE_WHEEL_IDS) {
+    const suspension = snapshot.suspensionState[wheelId] ||= {};
+    suspension.unsprungVelocityMps = 0;
+    suspension.compressionVelocityMps = 0;
+    suspension.damperVelocityMps = 0;
+  }
+  return deepFreeze(snapshot);
+}
+
+function stationarySupportTireResult(staticSupportState) {
+  const result = clone(staticSupportState.supportResult || {});
+  result.suspensionState = clone(staticSupportState.suspensionState);
+  result.contactPatches = clone(staticSupportState.contactPatches);
+  result.wheelLoadsN = clone(staticSupportState.wheelLoadsN);
+  result.validTreadContactByWheel = clone(staticSupportState.validTreadContactByWheel);
+  result.invalidContactReasonByWheel = clone(staticSupportState.invalidContactReasonByWheel);
+  result.supportedWheelCount = staticSupportState.supportedWheelCount;
+  result.worldForceN = { x: 0, y: 0, z: 0 };
+  result.suspensionForceWorldN = { x: 0, y: 0, z: 0 };
+  result.worldMomentNm = { x: 0, y: 0, z: 0 };
+  result.suspensionImpulseByWheelNs = Object.fromEntries(
+    RACE_WHEEL_IDS.map((wheelId) => [wheelId, 0])
+  );
+  result.tireVerticalImpulseByWheelNs = Object.fromEntries(
+    RACE_WHEEL_IDS.map((wheelId) => [wheelId, 0])
+  );
+  result.tireForcesN = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId, {
+    longitudinal: 0, lateral: 0
+  }]));
+  result.wheelAngularVelocityRadps = Object.fromEntries(
+    RACE_WHEEL_IDS.map((wheelId) => [wheelId, 0])
+  );
+  return result;
 }
 
 function orientationDifferenceRad(a = {}, b = {}) {
@@ -2228,6 +2288,8 @@ export class VehicleDynamicsRunner {
       reuseContactGeometry: false,
       contactRebuildOnly: resetContactRebuild,
       authoritativeReset: true,
+      forceFreshTerrainQueryFrame: true,
+      terrainQueryFrameGeneration: vehicleResetGeneration,
       physicsCostAccounting: this.physicsCostAccounting
     });
     let environment = this.environmentProvider(environmentRequest(resetState)) || {};
@@ -2436,15 +2498,16 @@ export class VehicleDynamicsRunner {
       && Number(resetState.supportedWheelCount || 0) === 0);
     this.stationaryResetHold = parkUntilDrive && equilibrium.status === 'converged'
       && !explicitlyAirborne ? {
-      position: clone(resetState.position),
-      orientation: clone(resetState.orientation),
-      routeDistance: finiteNumber(resetState.routeDistance),
-      suspensionState: clone(resetState.suspensionState),
-      contactPatches: clone(resetState.contactPatches),
-      wheelLoadsN: clone(resetState.wheelLoadsN),
-      supportedWheelCount: Number(resetState.supportedWheelCount || equilibrium.supportedWheelCount),
-      validTreadContactByWheel: clone(resetState.validTreadContactByWheel),
-      invalidContactReasonByWheel: clone(resetState.invalidContactReasonByWheel),
+      staticSupportState: createStaticVehicleSupportState(
+        resetState,
+        rebuilt,
+        vehicleResetGeneration,
+        {
+          revision: environment.physicsTerrainQueryFrame?.revision
+            ?? environment.preparedTerrainRevision ?? null,
+          frameGeneration: vehicleResetGeneration
+        }
+      ),
       validContactConfirmations: 0,
       confirmationSteps: 0,
       maximumConfirmationSteps: Math.max(2, Math.ceil(
@@ -2575,8 +2638,9 @@ export class VehicleDynamicsRunner {
   applyStationaryResetHold(state = this.state) {
     const hold = this.stationaryResetHold;
     if (!hold) return state;
-    state.position = clone(hold.position);
-    state.orientation = clone(hold.orientation);
+    const support = hold.staticSupportState;
+    state.position = clone(support.position);
+    state.orientation = clone(support.orientation);
     state.velocity = { x: 0, y: 0, z: 0 };
     state.angularVelocityWorld = { x: 0, y: 0, z: 0 };
     state.speedMps = 0;
@@ -2588,10 +2652,10 @@ export class VehicleDynamicsRunner {
     state.suspensionState ||= {};
     state.contactPatches ||= {};
     state.wheelLoadsN ||= {};
-    if (hold.routeDistance !== null) state.routeDistance = hold.routeDistance;
-    state.supportedWheelCount = Number(hold.supportedWheelCount || 0);
-    state.validTreadContactByWheel = clone(hold.validTreadContactByWheel || {});
-    state.invalidContactReasonByWheel = clone(hold.invalidContactReasonByWheel || {});
+    if (support.routeDistance !== null) state.routeDistance = support.routeDistance;
+    state.supportedWheelCount = Number(support.supportedWheelCount || 0);
+    state.validTreadContactByWheel = clone(support.validTreadContactByWheel || {});
+    state.invalidContactReasonByWheel = clone(support.invalidContactReasonByWheel || {});
     const euler = eulerFromQuaternion(state.orientation, this.eulerScratch);
     state.yawRad = quantize(euler.yaw);
     state.pitchRad = quantize(euler.pitch);
@@ -2599,7 +2663,7 @@ export class VehicleDynamicsRunner {
     for (const wheelId of RACE_WHEEL_IDS) {
       state.wheelAngularVelocityRadps[wheelId] = 0;
       state.wheelSlip[wheelId] = 0;
-      const heldSuspension = hold.suspensionState?.[wheelId];
+      const heldSuspension = support.suspensionState?.[wheelId];
       if (heldSuspension) {
         const suspension = state.suspensionState[wheelId] || {};
         Object.assign(suspension, heldSuspension);
@@ -2608,17 +2672,55 @@ export class VehicleDynamicsRunner {
         suspension.damperVelocityMps = 0;
         state.suspensionState[wheelId] = suspension;
       }
-      const heldPatch = hold.contactPatches?.[wheelId];
+      const heldPatch = support.contactPatches?.[wheelId];
       if (heldPatch) {
         const patch = state.contactPatches[wheelId] || {};
         Object.assign(patch, heldPatch);
         state.contactPatches[wheelId] = patch;
       }
       state.wheelLoadsN[wheelId] = Number(
-        hold.wheelLoadsN?.[wheelId] ?? heldPatch?.normalLoadN ?? 0
+        support.wheelLoadsN?.[wheelId] ?? heldPatch?.normalLoadN ?? 0
       );
     }
     return state;
+  }
+
+  stationaryResetHoldGeometryChanged(environment = {}) {
+    const support = this.stationaryResetHold?.staticSupportState;
+    if (!support) return false;
+    const revision = environment.physicsTerrainQueryFrame?.revision
+      ?? environment.preparedTerrainRevision ?? null;
+    if (support.terrainRevision !== null && revision !== null
+      && revision !== support.terrainRevision) return true;
+    const samplePoint = typeof environment.sampleTerrainAtWorldPoint === 'function'
+      ? environment.sampleTerrainAtWorldPoint
+      : environment.physicsTerrainQueryFrame?.samplePoint?.bind(
+          environment.physicsTerrainQueryFrame
+        );
+    if (typeof samplePoint !== 'function') return false;
+    for (const wheelId of RACE_WHEEL_IDS) {
+      const patch = support.contactPatches?.[wheelId];
+      const point = patch?.contactPointWorld;
+      if (!point) continue;
+      const sample = samplePoint(point, { wheelId, contactTriangleId: patch.contactTriangleId });
+      if (!sample?.valid || !Number.isFinite(Number(sample.heightM))) return true;
+      const heldHeightM = Number(patch.surfaceHeightM ?? patch.terrainHeightM ?? point.y);
+      if (Math.abs(Number(sample.heightM) - heldHeightM) > RESET_HOLD_HEIGHT_TOLERANCE_M) {
+        return true;
+      }
+      const heldNormal = patch.surfaceNormalWorld || { x: 0, y: 1, z: 0 };
+      const sampledNormal = sample.normal || { x: 0, y: 1, z: 0 };
+      const normalDot = clamp(dotVector3(heldNormal, sampledNormal), -1, 1);
+      if (Math.acos(normalDot) > RESET_HOLD_NORMAL_TOLERANCE_RAD) return true;
+    }
+    const penetration = this.bodyCollision.samplePosePenetration(
+      support,
+      environment,
+      this.config.bodyCollisionToleranceM
+    );
+    return penetration.maximumPenetrationM !== null
+      && Number(penetration.maximumPenetrationM || 0)
+        > this.config.bodyCollisionToleranceM + 1e-6;
   }
 
   queueCollisionImpulse({ impulseWorldNs = {}, pointWorld = null, source = 'collision' } = {}, {
@@ -4174,6 +4276,9 @@ export class VehicleDynamicsRunner {
       this.stationaryResetHold.wakeRequested = true;
       if (Number(this.stationaryResetHold.validContactConfirmations || 0) >= 2
         || this.stationaryResetHold.confirmationTimedOut === true) {
+        // Wake always starts from the exact converged transaction. Parked
+        // validation never donates dynamic wheel state to this transition.
+        this.applyStationaryResetHold(this.state);
         this.stationaryResetHold = null;
         suppressThrottleForResetRelease = true;
       }
@@ -4268,6 +4373,23 @@ export class VehicleDynamicsRunner {
       }
       this.performanceDiagnostics.environmentQueries += 1;
       this.physicsCostAccounting.count('environmentProviderCalls');
+      if (substepIndex === 0 && this.stationaryResetHold
+        && this.stationaryResetHold.rebuildScheduled !== true
+        && this.stationaryResetHoldGeometryChanged(environment)) {
+        const support = this.stationaryResetHold.staticSupportState;
+        this.stationaryResetHold.rebuildScheduled = true;
+        this.scheduledReplayResets.set(nextStepIndex + 1, {
+          state: {
+            ...this.createStateSnapshot(),
+            position: clone(support.position),
+            orientation: clone(support.orientation),
+            routeDistance: support.routeDistance,
+            vehicleResetGeneration: support.resetGeneration
+          },
+          reason: 'stationary-reset-terrain-change',
+          parkUntilDrive: true
+        });
+      }
       if (Array.isArray(environment.wakeSources)) {
         const vehicleId = String(environment.vehicleId || 'vehicle');
         let hasExternalWakeSource = false;
@@ -4315,7 +4437,9 @@ export class VehicleDynamicsRunner {
       tireStepRequest.substepIndex = substepIndex;
       tireStepRequest.timeSeconds = substepTimeSeconds;
       tireStepRequest.recoveryRecalculation = false;
-      let tireResult = this.tireContactSubsystem.step(tireStepRequest);
+      let tireResult = this.stationaryResetHold
+        ? stationarySupportTireResult(this.stationaryResetHold.staticSupportState)
+        : this.tireContactSubsystem.step(tireStepRequest);
       let tireTerrainPatchCount = 0;
       let tireTerrainValidityCount = 0;
       let invalidTireTerrainCount = 0;
@@ -5338,34 +5462,8 @@ export class VehicleDynamicsRunner {
       substepState.engineRpm = Number(substepState.powertrainState?.engineRpm ?? substepState.engineRpm);
       substepState.gear = Number(substepState.powertrainState?.gear ?? substepState.gear);
       if (this.stationaryResetHold) {
-        const rebuiltHeldContacts = RACE_WHEEL_IDS.every((wheelId) => {
-          const point = substepState.contactPatches?.[wheelId]?.contactPointWorld;
-          return point && Number.isFinite(Number(point.x))
-            && Number.isFinite(Number(point.y)) && Number.isFinite(Number(point.z));
-        });
-        if (substepRecovery) {
-          // A terrain correction immediately after reset is not driver intent.
-          // Adopt its verified pose and rebuilt contacts as the new parked
-          // equilibrium; releasing here lets the recovered body fall back into
-          // the hill and reactivates the crash oscillator forever.
-          this.stationaryResetHold.position = clone(substepState.position);
-          this.stationaryResetHold.orientation = clone(substepState.orientation);
-          this.stationaryResetHold.routeDistance = finiteNumber(substepState.routeDistance);
-        }
-        if (rebuiltHeldContacts) {
-          this.stationaryResetHold.suspensionState = clone(substepState.suspensionState);
-          this.stationaryResetHold.contactPatches = clone(substepState.contactPatches);
-          this.stationaryResetHold.wheelLoadsN = clone(substepState.wheelLoadsN || {});
-          this.stationaryResetHold.supportedWheelCount = Number(
-            substepState.supportedWheelCount || 0
-          );
-          this.stationaryResetHold.validTreadContactByWheel = clone(
-            substepState.validTreadContactByWheel || {}
-          );
-          this.stationaryResetHold.invalidContactReasonByWheel = clone(
-            substepState.invalidContactReasonByWheel || {}
-          );
-        }
+        // The converged StaticVehicleSupportState is immutable. In particular,
+        // collision recovery and the ordinary tire path may not rewrite it.
         this.applyStationaryResetHold(substepState);
       }
     }
@@ -5444,7 +5542,8 @@ export class VehicleDynamicsRunner {
     this.collisionEscapeState.lastPosition.y = Number(substepState.position.y || 0);
     this.collisionEscapeState.lastPosition.z = Number(substepState.position.z || 0);
     if (this.stationaryResetHold) {
-      const stableSupport = hasStableResetSupport(tires.contactPatches, substepState);
+      const heldSupport = this.stationaryResetHold.staticSupportState;
+      const stableSupport = hasStableResetSupport(heldSupport.contactPatches, substepState);
       this.stationaryResetHold.validContactConfirmations = stableSupport
         ? Math.min(2, Number(this.stationaryResetHold.validContactConfirmations || 0) + 1)
         : 0;
@@ -5673,17 +5772,48 @@ export class VehicleDynamicsRunner {
     integration.impactEnergy = this.activeImpact || null;
     integration.takeoff = this.takeoffContactState.activeTakeoff
       || this.takeoffHistory.at(-1) || null;
-    if (this.postResetTelemetry.length < 60 && this.postResetTelemetryGeneration > 0) {
+    if (this.postResetTelemetry.length < 600 && this.postResetTelemetryGeneration > 0) {
       const compressionByWheel = {};
       const loadByWheel = {};
       const unsprungVelocityByWheel = {};
+      const wheelSupportTelemetry = {};
       for (const wheelId of RACE_WHEEL_IDS) {
         const suspension = this.state.suspensionState?.[wheelId] || {};
+        const patch = this.state.contactPatches?.[wheelId] || {};
         compressionByWheel[wheelId] = Number(suspension.compressionM
           ?? this.state.suspensionTravel?.[wheelId] ?? 0);
-        loadByWheel[wheelId] = Number(this.state.contactPatches?.[wheelId]?.normalLoadN
+        loadByWheel[wheelId] = Number(patch.normalLoadN
           ?? this.state.wheelLoadsN?.[wheelId] ?? 0);
         unsprungVelocityByWheel[wheelId] = Number(suspension.unsprungVelocityMps || 0);
+        wheelSupportTelemetry[wheelId] = {
+          rawRequestedCompressionM: Number(
+            patch.rawRequestedCompressionM ?? suspension.rawRequestedCompressionM
+              ?? compressionByWheel[wheelId]
+          ),
+          clampedTargetCompressionM: Number(
+            patch.clampedTargetCompressionM ?? suspension.targetCompressionM
+              ?? compressionByWheel[wheelId]
+          ),
+          actualCompressionM: compressionByWheel[wheelId],
+          compressionErrorM: Number(
+            patch.compressionErrorM ?? suspension.compressionErrorM ?? 0
+          ),
+          unsprungVelocityMps: unsprungVelocityByWheel[wheelId],
+          springForceN: Number(patch.springForceN ?? suspension.springForceN ?? 0),
+          damperForceN: Number(patch.damperForceN ?? suspension.damperForceN ?? 0),
+          tireVerticalForceN: Number(patch.tireVerticalForceN ?? patch.normalLoadN ?? 0),
+          antiRollTransferN: Number(patch.antiRollLoadTransferN ?? 0),
+          normalLoadN: loadByWheel[wheelId],
+          terrainHeightM: Number(patch.surfaceHeightM ?? patch.terrainHeightM ?? NaN),
+          terrainNormal: clone(patch.surfaceNormalWorld || null),
+          triangleId: patch.contactTriangleId ?? patch.triangleId ?? null,
+          footprintSupportedFraction: Number(
+            patch.footprint?.supportedFraction ?? patch.supportedFraction ?? 0
+          ),
+          contactValid: patch.validTreadContact === true,
+          contactValidityReason: patch.contactValidityReason
+            ?? this.state.invalidContactReasonByWheel?.[wheelId] ?? null
+        };
       }
       const sampleIndex = this.postResetTelemetry.length;
       this.postResetTelemetry.push({
@@ -5696,6 +5826,7 @@ export class VehicleDynamicsRunner {
         compressionByWheel,
         loadByWheel,
         unsprungVelocityByWheel,
+        wheelSupportTelemetry,
         suspensionImpulseByWheelNs: clone(tires.suspensionImpulseByWheelNs || {}),
         tireVerticalImpulseByWheelNs: clone(tires.tireVerticalImpulseByWheelNs || {}),
         bodyCollisionImpulseNs: Number(tires.bodyCollision?.bodyNormalImpulseNs || 0),
@@ -5716,6 +5847,24 @@ export class VehicleDynamicsRunner {
           resetPresentationReplacement: sampleIndex === 0
         }
       });
+      const frontCompressionDifferenceM = Math.abs(
+        compressionByWheel.fl - compressionByWheel.fr
+      );
+      const rearCompressionDifferenceM = Math.abs(
+        compressionByWheel.rl - compressionByWheel.rr
+      );
+      const frontLoadDifferenceRatio = Math.abs(loadByWheel.fl - loadByWheel.fr)
+        / Math.max(1, (loadByWheel.fl + loadByWheel.fr) * 0.5);
+      const rearLoadDifferenceRatio = Math.abs(loadByWheel.rl - loadByWheel.rr)
+        / Math.max(1, (loadByWheel.rl + loadByWheel.rr) * 0.5);
+      const parkedUnsprungExceeded = this.stationaryResetHold && Object.values(
+        unsprungVelocityByWheel
+      ).some((velocity) => Math.abs(velocity) > 0.03);
+      if ((frontCompressionDifferenceM > 0.001 || rearCompressionDifferenceM > 0.001
+        || frontLoadDifferenceRatio > 0.02 || rearLoadDifferenceRatio > 0.02
+        || parkedUnsprungExceeded) && !this.diagnostics.resetSymmetryIncident) {
+        this.diagnostics.resetSymmetryIncident = clone(this.postResetTelemetry.at(-1));
+      }
     }
     for (const wheelId of RACE_WHEEL_IDS) {
       this.renderWheelSpinAngles[wheelId] = quantize((

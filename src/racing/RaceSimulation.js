@@ -1069,7 +1069,9 @@ function advanceVehicleDynamicsAuthority(editor, {
     chassisStepDt = 1 / authority.runner.config.chassisHz,
     substepIndex = 0,
     reuseContactGeometry = false,
-    recoveryRecalculation = false
+    recoveryRecalculation = false,
+    forceFreshTerrainQueryFrame = false,
+    terrainQueryFrameGeneration = null
   }) => {
     const {
       physicsCosts,
@@ -1091,7 +1093,7 @@ function advanceVehicleDynamicsAuthority(editor, {
       staticColliderWorld,
       wakeSources
     } = authority.raceEnvironmentProviderContext;
-    if (reuseContactGeometry === true
+    if (forceFreshTerrainQueryFrame !== true && reuseContactGeometry === true
       && authority.chassisGeometryEnvironment
       && authority.chassisGeometryStepIndex === stepIndex) {
       const cachedEnvironment = authority.chassisGeometryEnvironment;
@@ -1110,7 +1112,8 @@ function advanceVehicleDynamicsAuthority(editor, {
       authority.raceEnvironmentScratchCursor++ % authority.raceEnvironmentScratch.length
     ];
     const wheelQueryTimer = physicsCosts.start('wheelCenterAndFootprintQueries');
-    const refreshWithinChassisStep = recoveryRecalculation !== true
+    const refreshWithinChassisStep = forceFreshTerrainQueryFrame !== true
+      && recoveryRecalculation !== true
       && authority.chassisGeometryStepIndex === stepIndex
       && authority.chassisGeometryEnvironment?.physicsTerrainQueryFrame;
     if (!refreshWithinChassisStep) physicsCosts.count('chassisGeometryFrames');
@@ -1769,6 +1772,7 @@ function advanceVehicleDynamicsAuthority(editor, {
     callbackContext.chassisMaximumTerrainHeightM = chassisMaximumTerrainHeightM;
     const environmentResult = environmentScratch.environmentResult;
     environmentResult.physicsTerrainQueryFrame = terrainQueryFrame;
+    environmentResult.terrainQueryFrameGeneration = terrainQueryFrameGeneration;
     environmentResult.staticColliderWorld = staticColliderWorld;
     environmentResult.physicsTerrainQueryStatistics = terrainQueryFrame.statistics;
     environmentResult.capturePhysicsIncidentDiagnostics = capturePhysicsIncidentDiagnostics;

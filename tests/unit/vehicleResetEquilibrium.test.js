@@ -71,6 +71,78 @@ test('real static support solve converges and installs one final flat-ground pos
   }
 });
 
+test('immutable reset hold preserves the converged four-wheel support transaction', () => {
+  const config = createVehicleDynamicsConfig({
+    handlingPreset: 'simulation', tireHz: 120, telemetryRetention: 'none'
+  });
+  const environment = createAnalyticalTerrain();
+  const runner = new VehicleDynamicsRunner({
+    config,
+    initialState: {
+      position: { x: 0, y: config.cgHeightM + 0.08, z: 0 },
+      orientation: { x: 0, y: 0, z: 0, w: 1 }
+    },
+    environmentProvider: () => environment
+  });
+  const reset = runner.resetAuthoritativeState({
+    position: { x: 0, y: config.cgHeightM + 0.08, z: 0 },
+    orientation: { x: 0, y: 0, z: 0, w: 1 }, gear: 1
+  }, { parkUntilDrive: true });
+  const support = runner.stationaryResetHold.staticSupportState;
+  assert.equal(Object.isFrozen(support), true);
+  assert.equal(Object.isFrozen(support.suspensionState.fl), true);
+  assert.equal(support.resetGeneration, reset.resetGeneration);
+  const original = structuredClone(support);
+  for (let step = 0; step < 600; step += 1) {
+    runner.advance(1 / 120, { input: { throttle: 0 } });
+  }
+  assert.deepEqual(runner.stationaryResetHold.staticSupportState, original);
+  for (const wheelId of WHEEL_IDS) {
+    assert.equal(runner.state.suspensionState[wheelId].unsprungVelocityMps, 0);
+    assert.equal(runner.state.suspensionState[wheelId].compressionVelocityMps, 0);
+    assert.equal(runner.state.suspensionState[wheelId].damperVelocityMps, 0);
+    assert.equal(
+      runner.state.suspensionState[wheelId].compressionM,
+      original.suspensionState[wheelId].compressionM
+    );
+    assert.equal(runner.state.wheelLoadsN[wheelId], original.wheelLoadsN[wheelId]);
+  }
+});
+
+test('wake transition restores immutable support and suppresses throttle for one step', () => {
+  const config = createVehicleDynamicsConfig({
+    handlingPreset: 'simulation', tireHz: 120, telemetryRetention: 'latest'
+  });
+  const environment = createAnalyticalTerrain();
+  const runner = new VehicleDynamicsRunner({
+    config,
+    initialState: {
+      position: { x: 0, y: config.cgHeightM + 0.08, z: 0 },
+      orientation: { x: 0, y: 0, z: 0, w: 1 }
+    },
+    environmentProvider: () => environment
+  });
+  runner.resetAuthoritativeState({
+    position: { x: 0, y: config.cgHeightM + 0.08, z: 0 },
+    orientation: { x: 0, y: 0, z: 0, w: 1 }, gear: 1
+  }, { parkUntilDrive: true });
+  runner.advance(2 / 120, { input: { throttle: 0 } });
+  const held = structuredClone(runner.stationaryResetHold.staticSupportState);
+  runner.addInputSample(runner.simulationTimeSeconds, { throttle: 0.2, requestedGear: 1 });
+  runner.advance(1 / 120);
+  assert.equal(runner.stationaryResetHold, null);
+  assert.equal(runner.telemetry.at(-1).controls.throttle, 0);
+  for (const wheelId of WHEEL_IDS) {
+    assert.ok(Math.abs(
+      runner.state.suspensionState[wheelId].compressionM
+        - held.suspensionState[wheelId].compressionM
+    ) < 0.00025);
+    assert.equal(runner.state.suspensionState[wheelId].unsprungVelocityMps, 0);
+  }
+  runner.advance(1 / 120);
+  assert.ok(runner.telemetry.at(-1).controls.throttle > 0);
+});
+
 test('real static support solve covers slopes bank crest and crash attitudes', () => {
   const cases = [
     ['10-percent slope', { grade: 0.1 }, {}],

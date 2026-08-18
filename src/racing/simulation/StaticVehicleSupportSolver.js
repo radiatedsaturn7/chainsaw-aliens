@@ -1,5 +1,9 @@
 import { RACE_WHEEL_IDS, clamp } from './SimulationMath.js';
-import { eulerFromQuaternion, quaternionFromEuler } from './RigidBodyMath.js';
+import {
+  eulerFromQuaternion,
+  quaternionFromEuler,
+  rotateVectorToBody
+} from './RigidBodyMath.js';
 
 const EPSILON = 1e-9;
 const clone = (value) => value === undefined ? undefined : structuredClone(value);
@@ -185,16 +189,20 @@ export function solveStaticVehicleSupportState({
       candidate, environment, config.bodyCollisionToleranceM
     );
     const euler = eulerFromQuaternion(candidate.orientation);
+    const bodyMomentResidual = rotateVectorToBody(
+      lastResidual.momentResidual,
+      candidate.orientation
+    );
     const heaveCorrectionM = clamp(
       lastResidual.forceResidual.y / heaveRateNpm * 0.55, -0.02, 0.02
     );
     const pitchCorrectionRad = clamp(
-      lastResidual.momentResidual.x / pitchRateNmRad * 0.45,
+      bodyMomentResidual.x / pitchRateNmRad * 0.45,
       -0.5 * Math.PI / 180,
       0.5 * Math.PI / 180
     );
     const rollCorrectionRad = clamp(
-      lastResidual.momentResidual.z / rollRateNmRad * 0.45,
+      bodyMomentResidual.z / rollRateNmRad * 0.45,
       -0.5 * Math.PI / 180,
       0.5 * Math.PI / 180
     );
@@ -213,6 +221,7 @@ export function solveStaticVehicleSupportState({
       ])),
       forceResidual: clone(lastResidual.forceResidual),
       momentResidual: clone(lastResidual.momentResidual),
+      bodyMomentResidual: clone(bodyMomentResidual),
       forceResidualN: lastResidual.forceResidualN,
       momentResidualNm: lastResidual.momentResidualNm,
       maximumPenetrationM: penetration.maximumPenetrationM,
