@@ -2528,7 +2528,11 @@ export function updateRaceSimulation({
   editor.playtestSession.edgeResetFadeMs = Math.max(0, Number(editor.playtestSession.edgeResetFadeMs || 0) - seconds * 1000);
   editor.updateRaceEdgeCenterResetFade();
   editor.playtestSession.shiftCooldownMs = Math.max(0, Number(editor.playtestSession.shiftCooldownMs || 0) - seconds * 1000);
-  const wheelContacts3d = editor.playtestSession.vehicle3d?.wheels || editor.playtestSession.wheelContacts3d || null;
+  const inlineRunnerActive = editor.playtestSession.vehicleDynamicsRunner?.dormant !== true;
+  const wheelContacts3d = (inlineRunnerActive ? editor.playtestSession.wheelContacts3d : null)
+    || getAuthoritativeChassisState(editor.playtestSession)?.contactPatches
+    || editor.playtestSession.vehicle3d?.wheels
+    || null;
   const effectiveWheelContacts3d = crestLaunchPredicted
     ? Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId, {
       ...(wheelContacts3d?.[wheelId] || {}),

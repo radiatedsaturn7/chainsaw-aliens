@@ -26,10 +26,10 @@ export function getAuthoritativeVehicleState(session = null) {
 }
 
 export function getAuthoritativeChassisState(vehicleState = null) {
-  if (vehicleState?.vehicleRenderState) return vehicleState.vehicleRenderState;
-  if (vehicleState?.vehicleDynamicsPresentationState) return vehicleState.vehicleDynamicsPresentationState;
   if (vehicleState?.vehicleDynamicsRunner?.dormant !== true
     && vehicleState?.vehicleDynamicsRunner?.state) return vehicleState.vehicleDynamicsRunner.state;
+  if (vehicleState?.vehicleRenderState) return vehicleState.vehicleRenderState;
+  if (vehicleState?.vehicleDynamicsPresentationState) return vehicleState.vehicleDynamicsPresentationState;
   return vehicleState?.vehicle3d?.enabled ? vehicleState.vehicle3d : null;
 }
 
@@ -180,6 +180,7 @@ export function syncVehicleDynamicsCompatibilityOutputs(runner = null, session =
     );
     wheels[wheelId] = wheel;
   }
+  session.wheelContacts3d = wheels;
   vehicle3d.wheels = renderState.wheelPoses;
   session.vehicle3d = vehicle3d;
   return session;
