@@ -1973,7 +1973,9 @@ function advanceVehicleDynamicsAuthority(editor, {
   const qualification = requestedWorkerMode === 'force'
     ? qualifyVehicleDynamicsWorkerMigration(explicitQualification || {})
     : authority.liveWorkerQualification;
-  const workerPermitted = typeof Worker === 'function' && (
+  const mobileDevice = Boolean(editor.game?.deviceIsMobile || editor.game?.isMobile);
+  const mobileAutoMigrationBlocked = mobileDevice && requestedWorkerMode === 'auto';
+  const workerPermitted = typeof Worker === 'function' && !mobileAutoMigrationBlocked && (
     requestedWorkerMode === 'force'
     || (requestedWorkerMode === 'auto' && qualification?.qualified === true)
   );
@@ -2058,7 +2060,24 @@ function advanceVehicleDynamicsAuthority(editor, {
       authority.workerBridge = bridge;
       authority.preparedWorkerSurfaceSampler = null;
       authority.authoritativeThread = 'vehicle-dynamics-worker';
+      authority.runner.dormant = true;
+      authority.runner.dormantSinceStepIndex = authority.runner.stepIndex;
+      session.workerTrackStateVisual = {
+        cells: new Map(),
+        stepIndex: Number(session.trackState?.stepIndex || 0),
+        cellRevision: 0,
+        eventSequence: Number(session.vehicleDynamicsEventSequence || 0),
+        remainingDirtyCellCount: 0
+      };
+      session.trackStateVisualCache = null;
+      session.trackStateVisualAtlas = null;
+      for (const ai of session.aiRuntime || []) {
+        if (!ai.vehicleDynamicsRunner) continue;
+        ai.vehicleDynamicsRunner.dormant = true;
+        ai.vehicleDynamicsRunner.dormantSinceStepIndex = ai.vehicleDynamicsRunner.stepIndex;
+      }
       session.vehicleDynamicsAuthorityThread = 'worker';
+      session.vehicleDynamicsWorkerMigrationTimeMs = performance.now();
     } catch (error) {
       migrationWorker?.terminate?.();
       authority.workerMigrationFailure = String(error?.message || error);
@@ -2200,7 +2219,7 @@ export function updateRaceSimulation({
   const car = editor.getRaceSessionCar(editor.playtestSession);
   const tuning = editor.getRaceCarTuning(car);
   const authoritativeGroundSpeedMps = Number(editor.playtestSession.groundSpeedMps
-    ?? editor.playtestSession.vehicleDynamicsRunner?.state?.groundSpeedMps);
+    ?? getAuthoritativeChassisState(editor.playtestSession)?.groundSpeedMps);
   const steeringSafetySpeedMps = Number.isFinite(authoritativeGroundSpeedMps)
     ? Math.max(0, authoritativeGroundSpeedMps)
     : Math.abs(Number(editor.playtestSession.speedMps) || 0);

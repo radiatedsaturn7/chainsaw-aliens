@@ -150,6 +150,7 @@ function syncWorkerPresentationState(session, snapshot, euler) {
     gear: state.gear
   };
   session.vehicleDynamicsPresentationState = state;
+  session.vehicleRenderState = snapshot;
   return state;
 }
 
@@ -203,6 +204,7 @@ export function createRaceVehicleDynamicsWorkerInitialization({
     active: true,
     config: { ...runner.config, telemetryRetention: 'none' },
     initialState: runner.createStateSnapshot(),
+    renderWheelSpinAngles: { ...runner.renderWheelSpinAngles },
     inputTimeline: runner.inputTimeline?.createSnapshot?.() || [],
     physicsWorld
   }, ...activeAiVehicles.filter(({ runner: aiRunner }) => aiRunner?.config).map((entry, index) => ({
@@ -211,6 +213,7 @@ export function createRaceVehicleDynamicsWorkerInitialization({
     active: entry.active !== false,
     config: { ...entry.runner.config, telemetryRetention: 'none' },
     initialState: entry.runner.createStateSnapshot(),
+    renderWheelSpinAngles: { ...entry.runner.renderWheelSpinAngles },
     inputTimeline: entry.runner.inputTimeline?.createSnapshot?.() || [],
     physicsWorld: {
       ...physicsWorld,
@@ -280,6 +283,28 @@ export function applyRaceVehicleRenderSnapshot(session, snapshot) {
   session.vehicleDynamicsVisualState = snapshot.visualState;
 }
 
+export function applyWorkerTrackStateVisualDelta(session, delta = null) {
+  if (!session || !delta?.cells) return 0;
+  session.workerTrackStateVisual ||= {
+    cells: new Map(), stepIndex: 0, cellRevision: 0, eventSequence: 0
+  };
+  const visual = session.workerTrackStateVisual;
+  let applied = 0;
+  for (const cell of delta.cells) {
+    const previous = visual.cells.get(cell.key);
+    if (previous && Number(previous.revision || 0) > Number(cell.revision || 0)) continue;
+    visual.cells.set(cell.key, { ...cell });
+    applied += 1;
+  }
+  visual.stepIndex = Math.max(visual.stepIndex, Number(delta.stepIndex || 0));
+  visual.cellRevision = Math.max(visual.cellRevision, Number(delta.cellRevision || 0));
+  visual.eventSequence = Math.max(visual.eventSequence, Number(delta.eventSequence || 0));
+  visual.remainingDirtyCellCount = Number(delta.remainingDirtyCellCount || 0);
+  session.trackStateVisualCache = null;
+  session.trackStateVisualAtlas = null;
+  return applied;
+}
+
 export class RaceVehicleDynamicsWorkerBridge {
   constructor({ worker, qualification, now = () => performance.now() } = {}) {
     this.now = now;
@@ -321,18 +346,54 @@ export class RaceVehicleDynamicsWorkerBridge {
       this.now()
     );
     const latest = this.client.latestSnapshot;
-    if (!latest) return null;
-    const elapsedSinceReceiveSeconds = Math.max(
-      0, (this.now() - this.client.latestReceiveTimeMs) / 1000
+    const trackStateVisualDelta = this.client.latestTrackStateVisualDelta;
+    if (trackStateVisualDelta) {
+      applyWorkerTrackStateVisualDelta(session, trackStateVisualDelta);
+      this.client.latestTrackStateVisualDelta = null;
+    }
+    if (!latest) {
+      if (session.vehicleRenderState) applyRaceVehicleRenderSnapshot(
+        session, session.vehicleRenderState
+      );
+      return session.vehicleRenderState || null;
+    }
+    const history = this.client.snapshotsByVehicle.get('player');
+    const intervalSeconds = Math.max(
+      1 / 120, Number(history?.snapshotIntervalSeconds || 0)
     );
-    const renderTimeSeconds = latest.simulationTimeSeconds
-      - 1 / 120
-      + elapsedSinceReceiveSeconds;
+    const interpolationDelaySeconds = intervalSeconds * 2;
+    const renderTimeSeconds = latest.simulationTimeSeconds - interpolationDelaySeconds;
     const snapshot = this.client.getInterpolatedSnapshot(renderTimeSeconds);
     applyRaceVehicleRenderSnapshot(session, snapshot);
     session.vehicleDynamicsWorkerError = this.client.lastError;
     this.client.metrics.recordRender(this.now() - renderStartMs);
     session.vehicleDynamicsWorkerMetrics = this.client.getMetrics({ force: false });
+    const delivery = this.client.getPresentationTelemetry();
+    const quaternionDot = Math.abs(
+      Number(snapshot.orientation?.x || 0) * Number(latest.orientation?.x || 0)
+      + Number(snapshot.orientation?.y || 0) * Number(latest.orientation?.y || 0)
+      + Number(snapshot.orientation?.z || 0) * Number(latest.orientation?.z || 0)
+      + Number(snapshot.orientation?.w ?? 1) * Number(latest.orientation?.w ?? 1)
+    );
+    const wheelLocalOffsetErrorByWheel = {};
+    for (const wheelId of Object.keys(snapshot.wheels || {})) {
+      const rendered = snapshot.wheels[wheelId]?.hubPositionBody || {};
+      const authoritative = latest.wheels?.[wheelId]?.hubPositionBody || {};
+      wheelLocalOffsetErrorByWheel[wheelId] = Math.hypot(
+        Number(rendered.x || 0) - Number(authoritative.x || 0),
+        Number(rendered.y || 0) - Number(authoritative.y || 0),
+        Number(rendered.z || 0) - Number(authoritative.z || 0)
+      );
+    }
+    session.vehicleDynamicsPresentationTelemetry = {
+      authorityThread: 'worker',
+      workerMigrationTimeMs: Number(session.vehicleDynamicsWorkerMigrationTimeMs || 0),
+      ...delivery,
+      interpolationAlpha: Number(snapshot.interpolationAlpha ?? 1),
+      extrapolationDurationMs: Number(snapshot.extrapolationDurationSeconds || 0) * 1000,
+      bodyVisualAuthoritativeAngleErrorDeg: 2 * Math.acos(Math.min(1, quaternionDot)) * 180 / Math.PI,
+      wheelLocalOffsetErrorByWheel
+    };
     const backlogSteps = Number(
       session.vehicleDynamicsWorkerMetrics?.backlog?.current || 0
     );

@@ -1,43 +1,12 @@
-import { RACE_WHEEL_IDS } from './SimulationMath.js';
 import {
   createVehicleRenderSnapshotBuffer,
-  VEHICLE_RENDER_WHEEL_FLAGS,
   writeVehicleRenderSnapshot
 } from './VehicleDynamicsWorkerProtocol.js';
+import { createVehicleRenderStateFromRunner } from './VehicleRenderState.js';
 
 function finite(value, fallback = 0) {
   const number = Number(value);
   return Number.isFinite(number) ? number : fallback;
-}
-
-function rotateLocalOffset(orientation = {}, offset = {}) {
-  const qx = finite(orientation.x);
-  const qy = finite(orientation.y);
-  const qz = finite(orientation.z);
-  const qw = finite(orientation.w, 1);
-  const x = finite(offset.x);
-  const y = finite(offset.y);
-  const z = finite(offset.z);
-  const ix = qw * x + qy * z - qz * y;
-  const iy = qw * y + qz * x - qx * z;
-  const iz = qw * z + qx * y - qy * x;
-  const iw = -qx * x - qy * y - qz * z;
-  return {
-    x: ix * qw + iw * -qx + iy * -qz - iz * -qy,
-    y: iy * qw + iw * -qy + iz * -qx - ix * -qz,
-    z: iz * qw + iw * -qz + ix * -qy - iy * -qx
-  };
-}
-
-function multiplyQuaternion(left = {}, right = {}) {
-  const lx = finite(left.x); const ly = finite(left.y); const lz = finite(left.z); const lw = finite(left.w, 1);
-  const rx = finite(right.x); const ry = finite(right.y); const rz = finite(right.z); const rw = finite(right.w, 1);
-  return {
-    x: lw * rx + lx * rw + ly * rz - lz * ry,
-    y: lw * ry - lx * rz + ly * rw + lz * rx,
-    z: lw * rz + lx * ry - ly * rx + lz * rw,
-    w: lw * rw - lx * rx - ly * ry - lz * rz
-  };
 }
 
 export const VEHICLE_VISUAL_STATE = Object.freeze({
@@ -61,99 +30,12 @@ export function getVehicleVisualState(state = {}) {
 
 export function createVehicleRenderSnapshotFromRunner(runner, {
   eventSequence = 0,
-  visualState = null,
-  wheelSpinAngles = {}
+  visualState = null
 } = {}) {
-  const state = runner?.state || {};
-  const config = runner?.config || {};
-  const position = state.position || {};
-  const orientation = state.orientation || { w: 1 };
-  const frontZ = finite(config.cgToFrontAxleM, finite(config.wheelbaseM, 2.65) * 0.5);
-  const rearZ = -finite(config.cgToRearAxleM, finite(config.wheelbaseM, 2.65) * 0.5);
-  const wheelPoses = {};
-  const suspensionPose = {};
-  for (const wheelId of RACE_WHEEL_IDS) {
-    const isFront = wheelId[0] === 'f';
-    const isLeft = wheelId[1] === 'l';
-    const halfTrack = finite(
-      isFront ? config.frontTrackWidthM : config.rearTrackWidthM,
-      1.58
-    ) * 0.5;
-    const suspension = state.suspensionState?.[wheelId] || {};
-    const patch = state.contactPatches?.[wheelId] || {};
-    const travel = finite(
-      state.suspensionTravel?.[wheelId],
-      suspension.compressionRatio ?? suspension.compressionM
-    );
-    const hubPosition = patch.hubPositionWorld
-      || suspension.hubPositionWorld
-      || patch.wheelCenterWorld;
-    const local = rotateLocalOffset(orientation, {
-      x: isLeft ? -halfTrack : halfTrack,
-      y: -finite(config.cgHeightM, 0.55) + finite(config.wheelRadiusM, 0.337) - travel,
-      z: isFront ? frontZ : rearZ
-    });
-    const steeringAngle = finite(state.steeringTelemetry?.actualWheelAnglesRad?.[wheelId]);
-    const spinAngle = finite(wheelSpinAngles[wheelId]);
-    const steerOrientation = { x: 0, y: Math.sin(steeringAngle * 0.5), z: 0, w: Math.cos(steeringAngle * 0.5) };
-    const spinOrientation = { x: Math.sin(spinAngle * 0.5), y: 0, z: 0, w: Math.cos(spinAngle * 0.5) };
-    const normalLoadN = finite(patch.normalLoadN);
-    const flags = (
-      (patch.validTreadContact === true ? VEHICLE_RENDER_WHEEL_FLAGS.validTreadContact : 0)
-      | (patch.geometricContact === true || patch.contactPointWorld
-        ? VEHICLE_RENDER_WHEEL_FLAGS.geometricContact : 0)
-      | (normalLoadN > 1 ? VEHICLE_RENDER_WHEEL_FLAGS.loadBearing : 0)
-      | (patch.normalLoadKnown === false ? 0 : VEHICLE_RENDER_WHEEL_FLAGS.normalLoadKnown)
-    );
-    wheelPoses[wheelId] = {
-      position: hubPosition ? {
-        x: finite(hubPosition.x),
-        y: finite(hubPosition.y),
-        z: finite(hubPosition.z)
-      } : {
-        x: finite(position.x) + local.x,
-        y: finite(position.y) + local.y,
-        z: finite(position.z) + local.z
-      },
-      orientation: multiplyQuaternion(multiplyQuaternion(orientation, steerOrientation), spinOrientation),
-      contactPoint: patch.contactPointWorld || {},
-      normal: patch.surfaceNormalWorld || { x: 0, y: 1, z: 0 },
-      suspensionMount: patch.suspensionMountPositionWorld
-        || suspension.suspensionMountPositionWorld || {},
-      suspensionAxis: patch.suspensionAxisWorld
-        || suspension.suspensionAxisWorld || { x: 0, y: -1, z: 0 },
-      normalLoadN,
-      gripCoefficient: finite(patch.gripCoefficient, 1),
-      steeringAngleRad: finite(patch.steeringAngleRad, steeringAngle),
-      lateralForceN: finite(patch.lateralForceN),
-      selfAligningMomentNm: finite(patch.selfAligningMomentNm),
-      flags
-    };
-    suspensionPose[wheelId] = travel;
-  }
-  return {
-    stepIndex: runner?.stepIndex || 0,
+  return createVehicleRenderStateFromRunner(runner, {
     eventSequence,
-    visualState: visualState === null ? getVehicleVisualState(state) : visualState,
-    simulationTimeSeconds: runner?.simulationTimeSeconds || 0,
-    position,
-    orientation,
-    velocity: state.velocity || {},
-    angularVelocity: state.angularVelocityWorld || {},
-    wheelPoses,
-    suspensionPose,
-    tireTemperature: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
-      wheelId, finite(state.tireState?.[wheelId]?.temperatureF, 70)
-    ])),
-    wheelAngularVelocity: state.wheelAngularVelocityRadps || {},
-    speedMps: finite(state.speedMps, state.groundSpeedMps),
-    groundSpeedMps: finite(state.groundSpeedMps, state.speedMps),
-    bodyLongitudinalSpeedMps: finite(state.bodyLongitudinalSpeedMps, state.speedMps),
-    bodyLateralSpeedMps: finite(state.bodyLateralSpeedMps),
-    signedTravelSpeedMps: finite(state.signedTravelSpeedMps, state.speedMps),
-    engineRpm: finite(state.powertrainState?.engineRpm, state.engineRpm),
-    gear: finite(state.powertrainState?.gear, state.gear)
-  };
+    visualState: visualState === null ? getVehicleVisualState(runner?.state) : visualState
+  });
 }
 
 export class VehicleDynamicsWorkerAuthority {
@@ -182,6 +64,9 @@ export class VehicleDynamicsWorkerAuthority {
       { length: Math.max(2, Number(snapshotPoolSize) || 3) },
       () => createVehicleRenderSnapshotBuffer()
     );
+    this.sharedSnapshotCursor = 0;
+    this.droppedSnapshots = 0;
+    this.pendingTrackStateVisualDelta = null;
     runners.forEach((entry, index) => this.addVehicle(entry.id || `vehicle-${index}`, entry.runner, entry));
   }
 
@@ -189,8 +74,7 @@ export class VehicleDynamicsWorkerAuthority {
     if (!runner?.advance) throw new TypeError('Worker authority vehicle requires a dynamics runner');
     this.vehicles.set(String(id), {
       id: String(id), runner, player, active, environmentController,
-      lastImpactSequence: Math.max(0, Number(runner.activeImpact?.sequence || 0)),
-      wheelSpinAngles: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId, 0]))
+      lastImpactSequence: Math.max(0, Number(runner.activeImpact?.sequence || 0))
     });
   }
 
@@ -221,7 +105,6 @@ export class VehicleDynamicsWorkerAuthority {
       reason,
       parkUntilDrive: state.parkUntilDrive === true
     });
-    for (const wheelId of RACE_WHEEL_IDS) vehicle.wheelSpinAngles[wheelId] = 0;
     vehicle.lastImpactSequence = Math.max(
       0,
       Number(vehicle.runner.activeImpact?.sequence
@@ -252,7 +135,13 @@ export class VehicleDynamicsWorkerAuthority {
   }
 
   recycleSnapshotBuffer(buffer) {
-    if (buffer instanceof ArrayBuffer && buffer.byteLength > 0) this.snapshotBuffers.push(buffer);
+    const shared = typeof SharedArrayBuffer === 'function' && buffer instanceof SharedArrayBuffer;
+    if (shared && !(this.snapshotBuffers[0] instanceof SharedArrayBuffer)) {
+      this.snapshotBuffers.length = 0;
+      this.sharedSnapshotCursor = 0;
+    }
+    if ((buffer instanceof ArrayBuffer || shared) && buffer.byteLength > 0
+      && !this.snapshotBuffers.includes(buffer)) this.snapshotBuffers.push(buffer);
   }
 
   tick(clockTimeMs = this.now()) {
@@ -291,18 +180,10 @@ export class VehicleDynamicsWorkerAuthority {
       if (!vehicle.active) continue;
       vehicle.environmentController?.setWakeSources?.(this.wakeSources, vehicle.id);
       const latest = this.latestInputs.get(vehicle.id);
-      const fixedStepSeconds = 1 / Math.max(1, Number(vehicle.runner.config?.chassisHz || 120));
       const advance = vehicle.runner.advance(deltaSeconds, {
         input: latest?.input || null,
         inputTimeSeconds: latest?.timeSeconds,
         onFixedStep: (telemetry) => {
-          for (const wheelId of RACE_WHEEL_IDS) {
-            vehicle.wheelSpinAngles[wheelId] = (
-              vehicle.wheelSpinAngles[wheelId]
-              + Number(vehicle.runner.state?.wheelAngularVelocityRadps?.[wheelId] || 0)
-                * fixedStepSeconds
-            ) % (Math.PI * 2);
-          }
           const impactSequence = Math.max(
             0,
             Number(vehicle.runner.activeImpact?.sequence
@@ -320,6 +201,9 @@ export class VehicleDynamicsWorkerAuthority {
                 this.eventSequence = Math.max(
                   this.eventSequence, Number(mutation.eventSequence) || 0
                 );
+                if (mutation.visualDelta?.cells) {
+                  this.pendingTrackStateVisualDelta = mutation.visualDelta;
+                }
               } else {
                 this.eventSequence += Math.max(0, Number(mutation) || 0);
               }
@@ -329,21 +213,31 @@ export class VehicleDynamicsWorkerAuthority {
       completedSteps += Number(advance.completedSteps || 0);
       backlogSteps = Math.max(backlogSteps, Number(advance.backlogSteps || 0));
       if (advance.completedSteps > 0 && this.snapshotBuffers.length) {
-        const buffer = this.snapshotBuffers.pop();
+        const hasSharedRing = typeof SharedArrayBuffer === 'function'
+          && this.snapshotBuffers[0] instanceof SharedArrayBuffer;
+        const buffer = hasSharedRing
+          ? this.snapshotBuffers[this.sharedSnapshotCursor++ % this.snapshotBuffers.length]
+          : this.snapshotBuffers.pop();
         writeVehicleRenderSnapshot(buffer, createVehicleRenderSnapshotFromRunner(vehicle.runner, {
-          eventSequence: this.eventSequence,
-          wheelSpinAngles: vehicle.wheelSpinAngles
+          eventSequence: this.eventSequence
         }));
         pendingSnapshots.push({
           vehicleId: vehicle.id,
           buffer,
           backlogSteps: advance.backlogSteps
         });
+      } else if (advance.completedSteps > 0) {
+        this.droppedSnapshots += 1;
       }
     }
     const workerStepMs = Math.max(0, this.now() - wallStart);
     for (const snapshot of pendingSnapshots) {
       snapshot.workerStepMs = workerStepMs;
+      snapshot.droppedSnapshots = this.droppedSnapshots;
+      if (this.pendingTrackStateVisualDelta) {
+        snapshot.trackStateVisualDelta = this.pendingTrackStateVisualDelta;
+        this.pendingTrackStateVisualDelta = null;
+      }
       this.postSnapshot(snapshot);
     }
     return {

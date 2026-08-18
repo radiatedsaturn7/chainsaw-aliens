@@ -13898,6 +13898,10 @@ export default class RaceEditor {
     const visible = cameraZ >= nearPlane && Number.isFinite(cameraZ);
     const z = Math.max(nearPlane, cameraZ);
     const screenY = this.projectRaceDepthToScreenY(z, dy, camera, bounds);
+    const screenX = Number(bounds.x || 0) + Number(bounds.w || 1) / 2
+      + cameraX * roadWidthScale * (focal / Math.max(nearPlane, z));
+    const finiteProjection = Number.isFinite(screenX) && Number.isFinite(screenY)
+      && Math.abs(screenX) <= 1e6 && Math.abs(screenY) <= 1e6;
     return {
       ...point,
       cameraX,
@@ -13905,8 +13909,8 @@ export default class RaceEditor {
       cameraZ,
       renderZ: z,
       clippedToNearPlane: cameraZ <= nearPlane,
-      visible,
-      screenX: Number(bounds.x || 0) + Number(bounds.w || 1) / 2 + cameraX * roadWidthScale * (focal / Math.max(nearPlane, z)),
+      visible: visible && finiteProjection,
+      screenX,
       screenY,
       halfWidth: clamp(
         (this.getRaceRoadHalfWidthWorld(point.segment) * roadWidthScale) * (focal / Math.max(38, z)),
@@ -13914,6 +13918,48 @@ export default class RaceEditor {
         Number(bounds.w || 1) * roadMaxWidthRatio
       )
     };
+  }
+
+  projectRaceWorldDebugLine(from = {}, to = {}, camera = {}, cameraYaw = 0, bounds = {}) {
+    const projectedFrom = this.projectRaceWorldPointToCamera(from, camera, cameraYaw, bounds);
+    const projectedTo = this.projectRaceWorldPointToCamera(to, camera, cameraYaw, bounds);
+    const nearPlane = Math.max(
+      Number(camera.nearPlaneMin) || 1.2, Number(camera.nearPlane) || 1.6
+    );
+    if (projectedFrom.cameraZ < nearPlane && projectedTo.cameraZ < nearPlane) return null;
+    let clippedFrom = projectedFrom;
+    let clippedTo = projectedTo;
+    if (projectedFrom.cameraZ < nearPlane) {
+      clippedFrom = this.interpolateRaceNearPlaneClipPoint(
+        projectedFrom, projectedTo, nearPlane, camera, bounds
+      );
+    } else if (projectedTo.cameraZ < nearPlane) {
+      clippedTo = this.interpolateRaceNearPlaneClipPoint(
+        projectedFrom, projectedTo, nearPlane, camera, bounds
+      );
+    }
+    const margin = Math.max(32, Math.max(Number(bounds.w || 0), Number(bounds.h || 0)) * 2);
+    const finite = [clippedFrom, clippedTo].every((point) => (
+      Number.isFinite(point.screenX) && Number.isFinite(point.screenY)
+      && point.screenX >= Number(bounds.x || 0) - margin
+      && point.screenX <= Number(bounds.x || 0) + Number(bounds.w || 0) + margin
+      && point.screenY >= Number(bounds.y || 0) - margin
+      && point.screenY <= Number(bounds.y || 0) + Number(bounds.h || 0) + margin
+    ));
+    return finite ? [clippedFrom, clippedTo] : null;
+  }
+
+  projectRaceWorldDebugPolygon(points = [], camera = {}, cameraYaw = 0, bounds = {}) {
+    const clipped = this.getRaceProjectedPolygonForWebGL(
+      points, camera, cameraYaw, bounds
+    );
+    const margin = Math.max(32, Math.max(Number(bounds.w || 0), Number(bounds.h || 0)) * 2);
+    return clipped.filter((point) => Number.isFinite(point.screenX)
+      && Number.isFinite(point.screenY)
+      && point.screenX >= Number(bounds.x || 0) - margin
+      && point.screenX <= Number(bounds.x || 0) + Number(bounds.w || 0) + margin
+      && point.screenY >= Number(bounds.y || 0) - margin
+      && point.screenY <= Number(bounds.y || 0) + Number(bounds.h || 0) + margin);
   }
 
   projectRaceCameraSpacePointToScreen(point = {}, camera = {}, bounds = {}) {
@@ -19190,7 +19236,10 @@ export default class RaceEditor {
 
   buildRaceThreePhysicsSurfaceGeometry(sampler = null, {
     center = null,
-    radiusM = Infinity
+    radiusM = Infinity,
+    camera = null,
+    cameraYaw = 0,
+    maxTriangles = Infinity
   } = {}) {
     if ((!sampler?.triangles?.length && !sampler?.packed)
       || !THREE?.BufferGeometry
@@ -19204,7 +19253,17 @@ export default class RaceEditor {
       const centerZ = points.reduce((sum, point) => sum + Number(point.z || 0), 0) / 3;
       const dx = centerX - Number(center.x || 0);
       const dz = centerZ - Number(center.z || 0);
-      return dx * dx + dz * dz <= radiusM * radiusM;
+      if (dx * dx + dz * dz > radiusM * radiusM) return false;
+      if (camera) {
+        const cameraDx = centerX - Number(camera.x || 0);
+        const cameraDz = centerZ - Number(camera.z || 0);
+        const forward = this.getRaceForwardVector(cameraYaw);
+        const right = this.getRaceRightVector(cameraYaw);
+        const depth = cameraDx * forward.x + cameraDz * forward.z;
+        const lateral = Math.abs(cameraDx * right.x + cameraDz * right.z);
+        if (depth < -4 || lateral > Math.max(12, depth * 1.4 + 8)) return false;
+      }
+      return includedTriangleCount < Math.max(1, Number(maxTriangles) || 1);
     };
     if (sampler.packed) {
       for (let triangleIndex = 0; triangleIndex < sampler.triangleCount; triangleIndex += 1) {
@@ -19287,10 +19346,36 @@ export default class RaceEditor {
     const patches = state.contactPatches || {};
     if (!cameraState?.camera) return;
     ctx.save();
+    ctx.beginPath();
+    ctx.rect(bounds.x, bounds.y, bounds.w, bounds.h);
+    ctx.clip();
     const projectPhysicalPoint = (point = {}) => this.projectRaceWorldPointToCamera({
       x: Number(point.x || 0), z: Number(point.z || 0),
       elevation: Number(point.y || 0) / RACE_THREE_ELEVATION_M
     }, cameraState.camera, cameraState.cameraYaw, bounds);
+    const projectPhysicalLine = (from = {}, to = {}) => this.projectRaceWorldDebugLine({
+      x: Number(from.x || 0), z: Number(from.z || 0),
+      elevation: Number(from.y || 0) / RACE_THREE_ELEVATION_M
+    }, {
+      x: Number(to.x || 0), z: Number(to.z || 0),
+      elevation: Number(to.y || 0) / RACE_THREE_ELEVATION_M
+    }, cameraState.camera, cameraState.cameraYaw, bounds);
+    const strokeWorldEdges = (points, edges, color, lineDash = []) => {
+      ctx.strokeStyle = color;
+      ctx.setLineDash?.(lineDash);
+      ctx.beginPath();
+      let segmentCount = 0;
+      for (const [from, to] of edges) {
+        const line = projectPhysicalLine(points[from], points[to]);
+        if (!line) continue;
+        ctx.moveTo(line[0].screenX, line[0].screenY);
+        ctx.lineTo(line[1].screenX, line[1].screenY);
+        segmentCount += 1;
+      }
+      if (segmentCount) ctx.stroke();
+      ctx.setLineDash?.([]);
+      return segmentCount;
+    };
     const bodyProfile = runner?.config?.bodyProfile;
     if (bodyProfile?.pieces?.length && state.position && state.orientation) {
       const edges = [
@@ -19307,20 +19392,16 @@ export default class RaceEditor {
             z: piece.centerM.z + z * half.z
           };
           const rotated = rotateVectorByQuaternion(local, state.orientation);
-          return projectPhysicalPoint({
+          return {
             x: state.position.x + rotated.x,
             y: state.position.y + rotated.y,
             z: state.position.z + rotated.z
-          });
+          };
         })));
-        ctx.strokeStyle = ['#52e6ff', '#f6d65b', '#ff8ad8', '#9eff72'][pieceIndex % 4];
-        edges.forEach(([from, to]) => {
-          if (!corners[from]?.visible || !corners[to]?.visible) return;
-          ctx.beginPath();
-          ctx.moveTo(corners[from].screenX, corners[from].screenY);
-          ctx.lineTo(corners[to].screenX, corners[to].screenY);
-          ctx.stroke();
-        });
+        strokeWorldEdges(
+          corners, edges,
+          ['#52e6ff', '#f6d65b', '#ff8ad8', '#9eff72'][pieceIndex % 4]
+        );
       });
       const broadphaseHalf = {
         x: bodyProfile.overallWidthM * 0.5,
@@ -19333,20 +19414,11 @@ export default class RaceEditor {
         const rotated = rotateVectorByQuaternion({
           x: x * broadphaseHalf.x, y: centerY + y * broadphaseHalf.y, z: z * broadphaseHalf.z
         }, state.orientation);
-        return projectPhysicalPoint({
+        return {
           x: state.position.x + rotated.x, y: state.position.y + rotated.y, z: state.position.z + rotated.z
-        });
+        };
       })));
-      ctx.strokeStyle = 'rgba(255,255,255,0.42)';
-      ctx.setLineDash?.([4, 3]);
-      edges.forEach(([from, to]) => {
-        if (!broadphaseCorners[from]?.visible || !broadphaseCorners[to]?.visible) return;
-        ctx.beginPath();
-        ctx.moveTo(broadphaseCorners[from].screenX, broadphaseCorners[from].screenY);
-        ctx.lineTo(broadphaseCorners[to].screenX, broadphaseCorners[to].screenY);
-        ctx.stroke();
-      });
-      ctx.setLineDash?.([]);
+      strokeWorldEdges(broadphaseCorners, edges, 'rgba(255,255,255,0.42)', [4, 3]);
     }
     Object.entries(patches).forEach(([wheelId, patch]) => {
       const hub = patch.hubPositionWorld || patch.wheelCenterWorld;
@@ -19360,49 +19432,52 @@ export default class RaceEditor {
         const widthM = Number(runner?.config?.tireByWheel?.[wheelId]?.widthMm || 225) / 1000;
         const axis = patch.suspensionAxisWorld || { x: 0, y: -1, z: 0 };
         const lateral = patch.wheelLateralWorld || { x: 1, y: 0, z: 0 };
-        const topProjected = projectPhysicalPoint({
+        const topPoint = {
           x: hub.x - Number(axis.x || 0) * radiusM,
           y: hub.y - Number(axis.y || -1) * radiusM,
           z: hub.z - Number(axis.z || 0) * radiusM
-        });
-        const bottomProjected = projectPhysicalPoint({
+        };
+        const bottomPoint = {
           x: hub.x + Number(axis.x || 0) * radiusM,
           y: hub.y + Number(axis.y || -1) * radiusM,
           z: hub.z + Number(axis.z || 0) * radiusM
-        });
-        const innerProjected = projectPhysicalPoint({
+        };
+        const innerPoint = {
           x: hub.x - Number(lateral.x || 0) * widthM * 0.5,
           y: hub.y - Number(lateral.y || 0) * widthM * 0.5,
           z: hub.z - Number(lateral.z || 0) * widthM * 0.5
-        });
-        const outerProjected = projectPhysicalPoint({
+        };
+        const outerPoint = {
           x: hub.x + Number(lateral.x || 0) * widthM * 0.5,
           y: hub.y + Number(lateral.y || 0) * widthM * 0.5,
           z: hub.z + Number(lateral.z || 0) * widthM * 0.5
-        });
+        };
+        const diameterLine = projectPhysicalLine(topPoint, bottomPoint);
+        const widthLine = projectPhysicalLine(innerPoint, outerPoint);
         ctx.strokeStyle = '#d9e3e0';
         ctx.lineWidth = 2;
         ctx.beginPath();
-        const screenRadius = topProjected?.visible && bottomProjected?.visible
+        const screenRadius = diameterLine
           ? Math.max(3, Math.hypot(
-              topProjected.screenX - bottomProjected.screenX,
-              topProjected.screenY - bottomProjected.screenY
+              diameterLine[0].screenX - diameterLine[1].screenX,
+              diameterLine[0].screenY - diameterLine[1].screenY
             ) * 0.5)
           : 7;
         ctx.arc(hubProjected.screenX, hubProjected.screenY, screenRadius, 0, Math.PI * 2);
         ctx.stroke();
-        if (innerProjected?.visible && outerProjected?.visible) {
+        if (widthLine) {
           ctx.beginPath();
-          ctx.moveTo(innerProjected.screenX, innerProjected.screenY);
-          ctx.lineTo(outerProjected.screenX, outerProjected.screenY);
+          ctx.moveTo(widthLine[0].screenX, widthLine[0].screenY);
+          ctx.lineTo(widthLine[1].screenX, widthLine[1].screenY);
           ctx.stroke();
         }
       }
-      if (hubProjected?.visible && mountProjected?.visible) {
+      const suspensionLine = hub && mount ? projectPhysicalLine(mount, hub) : null;
+      if (suspensionLine) {
         ctx.strokeStyle = '#b18cff';
         ctx.beginPath();
-        ctx.moveTo(mountProjected.screenX, mountProjected.screenY);
-        ctx.lineTo(hubProjected.screenX, hubProjected.screenY);
+        ctx.moveTo(suspensionLine[0].screenX, suspensionLine[0].screenY);
+        ctx.lineTo(suspensionLine[1].screenX, suspensionLine[1].screenY);
         ctx.stroke();
       }
       if (contactProjected?.visible && patch.validTreadContact) {
@@ -19414,20 +19489,21 @@ export default class RaceEditor {
     (latestTelemetry.bodyContacts || latestTelemetry.bodyCollision?.contacts || []).forEach((contact) => {
       const projected = projectPhysicalPoint(contact.pointWorld);
       if (!projected?.visible) return;
-      const normalEnd = projectPhysicalPoint({
+      const normalEndPoint = {
         x: contact.pointWorld.x + Number(contact.normal?.x || 0) * 0.6,
         y: contact.pointWorld.y + Number(contact.normal?.y || 0) * 0.6,
         z: contact.pointWorld.z + Number(contact.normal?.z || 0) * 0.6
-      });
+      };
       ctx.fillStyle = contact.contactType === 'wheel-sidewall' ? '#ff9d55' : '#ff4f67';
       ctx.beginPath();
       ctx.arc(projected.screenX, projected.screenY, 4, 0, Math.PI * 2);
       ctx.fill();
-      if (normalEnd?.visible) {
+      const normalLine = projectPhysicalLine(contact.pointWorld, normalEndPoint);
+      if (normalLine) {
         ctx.strokeStyle = ctx.fillStyle;
         ctx.beginPath();
-        ctx.moveTo(projected.screenX, projected.screenY);
-        ctx.lineTo(normalEnd.screenX, normalEnd.screenY);
+        ctx.moveTo(normalLine[0].screenX, normalLine[0].screenY);
+        ctx.lineTo(normalLine[1].screenX, normalLine[1].screenY);
         ctx.stroke();
       }
       ctx.font = '9px monospace';
@@ -19450,7 +19526,9 @@ export default class RaceEditor {
         elevation: point.elevation + (Number(normal.y ?? 1) / normalLength) / RACE_THREE_ELEVATION_M
       };
       const projected = this.projectRaceWorldPointToCamera(point, cameraState.camera, cameraState.cameraYaw, bounds);
-      const projectedEnd = this.projectRaceWorldPointToCamera(end, cameraState.camera, cameraState.cameraYaw, bounds);
+      const normalLine = this.projectRaceWorldDebugLine(
+        point, end, cameraState.camera, cameraState.cameraYaw, bounds
+      );
       if (!projected?.visible) return;
       const grip = Number(patch.gripCoefficient);
       const color = wheel.inContact === false
@@ -19460,12 +19538,12 @@ export default class RaceEditor {
       ctx.beginPath();
       ctx.arc(projected.screenX, projected.screenY, 4, 0, Math.PI * 2);
       ctx.fill();
-      if (projectedEnd?.visible) {
+      if (normalLine) {
         ctx.strokeStyle = color;
         ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(projected.screenX, projected.screenY);
-        ctx.lineTo(projectedEnd.screenX, projectedEnd.screenY);
+        ctx.moveTo(normalLine[0].screenX, normalLine[0].screenY);
+        ctx.lineTo(normalLine[1].screenX, normalLine[1].screenY);
         ctx.stroke();
       }
       const footprint = state.suspensionState?.[wheelId]?.footprint || {};
@@ -19591,12 +19669,14 @@ export default class RaceEditor {
 
   getRaceTrackStateVisualCells(radiusM = 95, { includeAll = false } = {}) {
     const session = this.playtestSession;
-    const trackState = session?.trackState;
+    const workerVisual = session?.vehicleDynamicsAuthorityThread === 'worker'
+      ? session.workerTrackStateVisual : null;
+    const trackState = workerVisual || session?.trackState;
     if (!trackState) return [];
     const planar = this.getRaceSessionPlanarWorldPosition(session);
     const radius = Math.max(20, Number(radiusM) || 95);
     const cacheKey = [
-      trackState.stepIndex,
+      trackState.cellRevision ?? trackState.stepIndex,
       Math.floor(Number(planar.x || 0) / 8),
       Math.floor(Number(planar.z || 0) / 8),
       radius,
@@ -19605,12 +19685,17 @@ export default class RaceEditor {
     if (session.trackStateVisualCache?.key === cacheKey) {
       return session.trackStateVisualCache.cells;
     }
-    const cells = trackState.getVisualCells({
+    const sourceCells = workerVisual
+      ? [...workerVisual.cells.values()]
+      : trackState.getVisualCells({
       minX: Number(planar.x || 0) - radius,
       maxX: Number(planar.x || 0) + radius,
       minZ: Number(planar.z || 0) - radius,
       maxZ: Number(planar.z || 0) + radius
-    })
+    });
+    const cells = sourceCells
+      .filter((cell) => Math.abs(Number(cell.x || 0) - Number(planar.x || 0)) <= radius
+        && Math.abs(Number(cell.z || 0) - Number(planar.z || 0)) <= radius)
       .filter((cell) => includeAll || Math.max(
         Number(cell.wetness || 0),
         Number(cell.dampness || 0),
@@ -19631,26 +19716,53 @@ export default class RaceEditor {
         const rightDistance = Math.hypot(right.x - planar.x, right.z - planar.z);
         return leftDistance - rightDistance;
       })
-      .slice(0, 1400);
+      .slice(0, Boolean(this.game?.deviceIsMobile || this.game?.isMobile) ? 320 : 1400);
     session.trackStateVisualCache = { key: cacheKey, cells };
     return cells;
   }
 
   getRaceTrackStateVisualAtlas(resolution = 192, worldSizeM = 192) {
     const session = this.playtestSession;
-    const trackState = session?.trackState;
+    const workerVisual = session?.vehicleDynamicsAuthorityThread === 'worker'
+      ? session.workerTrackStateVisual : null;
+    const trackState = workerVisual
+      ? { stepIndex: workerVisual.stepIndex, getVisualCells: () => [...workerVisual.cells.values()] }
+      : session?.trackState;
     if (!trackState) return null;
     const planar = this.getRaceSessionPlanarWorldPosition(session);
-    const key = `${trackState.stepIndex}:${Math.floor(planar.x / 8)}:${Math.floor(planar.z / 8)}:${resolution}:${worldSizeM}`;
+    const revision = workerVisual?.cellRevision ?? trackState.stepIndex;
+    const key = `${revision}:${Math.floor(planar.x / 8)}:${Math.floor(planar.z / 8)}:${resolution}:${worldSizeM}`;
     if (session.trackStateVisualAtlas?.key === key) return session.trackStateVisualAtlas.value;
+    const startedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
     const value = createTrackStateVisualAtlas(trackState, {
       centerX: planar.x,
       centerZ: planar.z,
       resolution,
-      worldSizeM
+      worldSizeM,
+      targetPixels: session.trackStateVisualAtlasPixels
     });
+    session.trackStateVisualAtlasPixels = value.pixels;
     session.trackStateVisualAtlas = { key, value };
+    this.recordRacePhysicsDebugTimer('trackStateAtlasUpdate',
+      (typeof performance !== 'undefined' ? performance.now() : Date.now()) - startedAt);
     return value;
+  }
+
+  recordRacePhysicsDebugTimer(name, elapsedMs) {
+    const session = this.playtestSession;
+    if (!session || !Number.isFinite(elapsedMs)) return;
+    const timers = session.physicsSurfaceDebugTimers
+      || (session.physicsSurfaceDebugTimers = Object.create(null));
+    const samples = timers[name] || (timers[name] = []);
+    samples.push(Math.max(0, elapsedMs));
+    if (samples.length > 120) samples.splice(0, samples.length - 120);
+  }
+
+  getRacePhysicsDebugTimerPercentile(name, percentile = 0.95) {
+    const samples = this.playtestSession?.physicsSurfaceDebugTimers?.[name] || [];
+    if (!samples.length) return 0;
+    const ordered = [...samples].sort((left, right) => left - right);
+    return ordered[Math.min(ordered.length - 1, Math.floor(ordered.length * percentile))] || 0;
   }
 
   drawRaceTrackStateOverlay(ctx, bounds, {
@@ -19658,23 +19770,26 @@ export default class RaceEditor {
     cameraYaw = 0,
     debug = false
   } = {}) {
-    if (!camera || !this.playtestSession?.trackState) return 0;
+    if (!camera || (!this.playtestSession?.trackState && !this.playtestSession?.workerTrackStateVisual)) return 0;
     if (typeof document === 'undefined') return 0;
     const cells = this.getRaceTrackStateVisualCells(debug ? 70 : 95, { includeAll: debug });
     if (!cells.length) return 0;
+    const projectionStartedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
     const projectedCells = cells.map((cell) => {
       const elevation = Number(cell.elevationM || 0) / RACE_THREE_ELEVATION_M + 0.0015;
       const half = 0.49;
-      const points = [
+      const points = this.projectRaceWorldDebugPolygon([
         { x: cell.x - half, z: cell.z - half, elevation },
         { x: cell.x + half, z: cell.z - half, elevation },
         { x: cell.x + half, z: cell.z + half, elevation },
         { x: cell.x - half, z: cell.z + half, elevation }
-      ].map((point) => this.projectRaceWorldPointToCamera(point, camera, cameraYaw, bounds));
-      if (points.some((point) => !point?.visible)) return null;
+      ], camera, cameraYaw, bounds);
+      if (points.length < 3) return null;
       const depth = points.reduce((sum, point) => sum + Number(point.cameraZ || point.renderZ || 0), 0) / points.length;
       return { cell, points, depth };
     }).filter(Boolean).sort((left, right) => right.depth - left.depth);
+    this.recordRacePhysicsDebugTimer('surfaceDebugProjection',
+      (typeof performance !== 'undefined' ? performance.now() : Date.now()) - projectionStartedAt);
     const layer = this.playtestSession.trackStateVisualLayerCanvas
       || (this.playtestSession.trackStateVisualLayerCanvas = document.createElement('canvas'));
     const layerWidth = Math.max(1, Math.ceil(bounds.w));
@@ -19683,6 +19798,7 @@ export default class RaceEditor {
     if (layer.height !== layerHeight) layer.height = layerHeight;
     const layerCtx = layer.getContext('2d');
     layerCtx.clearRect(0, 0, layer.width, layer.height);
+    const pathStartedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
     projectedCells.forEach(({ cell, points }) => {
       const wet = clamp(Number(cell.wetness || 0), 0, 1);
       const rubber = clamp(Number(cell.rubber || 0), 0, 1);
@@ -19730,7 +19846,12 @@ export default class RaceEditor {
         layerCtx.stroke();
       }
     });
+    this.recordRacePhysicsDebugTimer('debugPathConstruction',
+      (typeof performance !== 'undefined' ? performance.now() : Date.now()) - pathStartedAt);
+    const drawingStartedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
     ctx.drawImage(layer, bounds.x, bounds.y, bounds.w, bounds.h);
+    this.recordRacePhysicsDebugTimer('debugCanvasDrawing',
+      (typeof performance !== 'undefined' ? performance.now() : Date.now()) - drawingStartedAt);
     return projectedCells.length;
   }
 
@@ -19803,33 +19924,39 @@ export default class RaceEditor {
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
     const triangleCount = Number(sampler?.triangleCount || sampler?.triangles?.length || 0);
     if (!triangleCount || !cameraState?.camera || !renderer?.threeRenderer) return false;
-    const debugRadiusM = 360;
+    const mobile = Boolean(this.game?.deviceIsMobile || this.game?.isMobile);
+    const debugRadiusM = mobile ? 120 : 360;
+    const maxTriangles = mobile ? 1800 : Infinity;
     const debugCameraCenter = {
       x: Number(cameraState.camera.x || 0),
       z: Number(cameraState.camera.z || 0)
     };
-    const debugTileM = 80;
+    const debugTileM = mobile ? 48 : 80;
     const debugTileX = Math.floor(debugCameraCenter.x / debugTileM);
     const debugTileZ = Math.floor(debugCameraCenter.z / debugTileM);
     const debugCenter = {
       x: (debugTileX + 0.5) * debugTileM,
       z: (debugTileZ + 0.5) * debugTileM
     };
+    const cullingStartedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
     const colliderSprites = this.getRacePhysicsDoodadColliderSprites().filter((sprite) => {
       const quad = this.getRaceDoodadWorldQuad(sprite);
       return (quad?.points || []).some((point) => Math.hypot(
         Number(point.x || 0) - debugCameraCenter.x,
         Number(point.z || 0) - debugCameraCenter.z
       ) <= debugRadiusM + 40);
-    });
+    }).slice(0, mobile ? 96 : 512);
     const colliderKey = this.getRaceThreeDoodadSceneKey(colliderSprites);
     const surfaceTileKey = `${debugTileX}:${debugTileZ}`;
-    const surfaceKey = `${String(worldBake.surfaceRevision || worldBake.key || triangleCount)}::${surfaceTileKey}::${colliderKey}`;
+    const surfaceKey = `${String(worldBake.surfaceRevision || worldBake.key || triangleCount)}::${surfaceTileKey}::${colliderKey}::${mobile ? 'mobile' : 'desktop'}`;
     if (renderer.physicsSurfaceKey !== surfaceKey) {
       this.clearRaceThreeScene(renderer);
       const geometry = this.buildRaceThreePhysicsSurfaceGeometry(sampler, {
         center: debugCenter,
-        radiusM: debugRadiusM
+        radiusM: debugRadiusM,
+        camera: cameraState.camera,
+        cameraYaw: cameraState.cameraYaw,
+        maxTriangles
       });
       if (!geometry) return false;
       const fill = new THREE.MeshBasicMaterial({
@@ -19861,6 +19988,8 @@ export default class RaceEditor {
       renderer.physicsSurfaceTriangleCount = Number(geometry.userData?.physicsTriangleCount || 0);
       renderer.physicsSurfaceKey = surfaceKey;
     }
+    this.recordRacePhysicsDebugTimer('surfaceDebugCulling',
+      (typeof performance !== 'undefined' ? performance.now() : Date.now()) - cullingStartedAt);
     const camera = cameraState.camera;
     const forward = this.getRaceForwardVector(cameraState.cameraYaw);
     const cameraY = this.getRaceThreeElevationM(camera);
@@ -19877,15 +20006,11 @@ export default class RaceEditor {
     );
     renderer.camera.updateProjectionMatrix();
     this.alignRaceThreeCameraHorizon(renderer.camera, camera, cameraState.cameraYaw, bounds);
-    const renderPose = this.getRacePlayerRenderPose(session, this.getRaceSessionCar(session));
-    this.addRaceThreeProceduralCar(renderer, {
-      ...renderPose,
-      color: '#f5f7fa',
-      drawLights: false,
-      drawShadow: false
-    });
+    const threeProjectionStartedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
     renderer.threeRenderer.clear(true, true, true);
     renderer.threeRenderer.render(renderer.scene, renderer.camera);
+    this.recordRacePhysicsDebugTimer('surfaceDebugProjection',
+      (typeof performance !== 'undefined' ? performance.now() : Date.now()) - threeProjectionStartedAt);
     const previousSmoothing = ctx.imageSmoothingEnabled;
     ctx.imageSmoothingEnabled = false;
     ctx.drawImage(renderer.canvas, bounds.x, bounds.y, bounds.w, bounds.h);
@@ -19896,6 +20021,7 @@ export default class RaceEditor {
       debug: true
     });
     this.drawRacePhysicsContactOverlay(ctx, bounds, cameraState);
+    this.drawRaceThirdPersonCar(ctx, bounds);
     this.drawRacePhysicsTractionLegend(ctx, bounds);
     this.lastRaceRenderStats = {
       ...(this.lastRaceRenderStats || {}),
@@ -21363,6 +21489,13 @@ export default class RaceEditor {
       `ENV ${integer(counters.environmentProviderCalls)} plane ${integer(counters.analyticContactPlaneQueries)}  RECALC ${integer(counters.recoveryRecalculations)}  TEMP ${integer(counters.temporaryObjects)}`,
       `RECOVERY ${integer(recovery.count)} ${recovery.lastReason || 'none'}`
     ];
+    const debugTimers = this.playtestSession?.physicsSurfaceDebugTimers;
+    if (debugTimers) {
+      lines.push(
+        `DEBUG p95 atlas ${this.getRacePhysicsDebugTimerPercentile('trackStateAtlasUpdate').toFixed(2)} cull ${this.getRacePhysicsDebugTimerPercentile('surfaceDebugCulling').toFixed(2)} proj ${this.getRacePhysicsDebugTimerPercentile('surfaceDebugProjection').toFixed(2)}ms`,
+        `DEBUG p95 path ${this.getRacePhysicsDebugTimerPercentile('debugPathConstruction').toFixed(2)} draw ${this.getRacePhysicsDebugTimerPercentile('debugCanvasDrawing').toFixed(2)}ms`
+      );
+    }
     if (workerMetrics) {
       const worker = workerMetrics.worker || {};
       const render = workerMetrics.render || {};

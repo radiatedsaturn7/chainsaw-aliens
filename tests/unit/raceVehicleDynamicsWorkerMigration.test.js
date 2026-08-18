@@ -18,10 +18,10 @@ class FakeWorker {
   terminate() { this.terminated = true; }
 }
 
-function createEditor() {
+function createEditor({ mobile = false } = {}) {
   return new RaceEditor({
-    deviceIsMobile: true,
-    isMobile: true,
+    deviceIsMobile: mobile,
+    isMobile: mobile,
     input: { getGamepadAxes: () => ({}), isGamepadConnected: () => false },
     exitRaceEditor() {}
   });
@@ -159,6 +159,28 @@ test('RaceSimulation auto mode waits for a passing live single-thread qualificat
       'worker frames must not expose the legacy render-thread tire calculation'
     );
     editor.vehicleDynamicsAuthority.workerBridge.close();
+  }, { enable: undefined, mode: 'auto' });
+});
+
+test('RaceSimulation blocks automatic mobile migration while explicit debug force remains available', async () => {
+  await withWorkerGlobals(undefined, () => {
+    const editor = createEditor({ mobile: true });
+    editor.selectedRace.hazards = [];
+    const worldBake = editor.buildRaceWorldBake(editor.getRacePlaytestWorldBakeOptions());
+    editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false, preparedWorldBake: worldBake });
+    editor.playtestSession.countdownRemainingMs = 0;
+    editor.playtestSession.launchLockMs = 0;
+    editor.playtestSession.elapsedMs = 1000;
+    editor.playtestSession.startupFramePending = false;
+    editor.vehicleDynamicsAuthority = null;
+    editor.updatePlaytest(1 / 60);
+    editor.vehicleDynamicsAuthority.liveWorkerQualification = {
+      qualified: true, achievedStepsPerSecond: 140, p95StepMs: 7,
+      backlogStart: 0, backlogEnd: 0, reasons: []
+    };
+    editor.updatePlaytest(1 / 60);
+    assert.equal(FakeWorker.instances.length, 0);
+    assert.equal(editor.playtestSession.vehicleDynamicsAuthorityThread, 'render');
   }, { enable: undefined, mode: 'auto' });
 });
 

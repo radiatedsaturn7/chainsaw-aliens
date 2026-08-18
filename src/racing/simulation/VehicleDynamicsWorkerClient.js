@@ -104,6 +104,7 @@ export class VehicleDynamicsWorkerClient {
     this.pendingResetSequenceByVehicle = new Map();
     this.minimumEventSequenceByVehicle = new Map();
     this.latestReceiveTimeMs = 0;
+    this.latestTrackStateVisualDelta = null;
     this.lastError = null;
     this.ready = false;
     this.closed = false;
@@ -122,13 +123,21 @@ export class VehicleDynamicsWorkerClient {
 
   initialize(payload = {}, transferables = []) {
     if (this.closed) return;
-    const snapshotBuffers = [createVehicleRenderSnapshotBuffer(), createVehicleRenderSnapshotBuffer()];
+    const vehicleCount = Math.max(1, Number(payload.vehicles?.length || 1));
+    const shared = typeof SharedArrayBuffer === 'function';
+    const snapshotBuffers = Array.from(
+      { length: shared ? Math.max(4, vehicleCount * 4) : Math.max(40, vehicleCount * 40) },
+      () => createVehicleRenderSnapshotBuffer({ shared })
+    );
     this.worker.postMessage({
       type: 'initialize',
       protocolVersion: VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION,
       payload,
       snapshotBuffers
-    }, [...snapshotBuffers, ...transferables]);
+    }, [
+      ...snapshotBuffers.filter((buffer) => buffer instanceof ArrayBuffer),
+      ...transferables
+    ]);
   }
 
   submitInput(inputBuffer, inputSequence, collectedAtMs = this.now(), vehicleId = 'player') {
@@ -188,20 +197,39 @@ export class VehicleDynamicsWorkerClient {
     if (message.type === 'snapshot' && message.buffer) {
       const receiveStart = this.now();
       const decoded = readVehicleRenderSnapshot(message.buffer);
+      if (message.trackStateVisualDelta?.cells) {
+        this.latestTrackStateVisualDelta = message.trackStateVisualDelta;
+      }
       const vehicleId = String(message.vehicleId || 'player');
       const pendingReset = this.pendingResetSequenceByVehicle.has(vehicleId);
       const minimumEventSequence = Number(
         this.minimumEventSequenceByVehicle.get(vehicleId) || 0
       );
       if (pendingReset || decoded.eventSequence < minimumEventSequence) {
-        this.worker.postMessage(
-          { type: 'recycleSnapshotBuffer', buffer: message.buffer },
-          [message.buffer]
-        );
+        if (message.buffer instanceof ArrayBuffer) {
+          this.worker.postMessage(
+            { type: 'recycleSnapshotBuffer', buffer: message.buffer }, [message.buffer]
+          );
+        }
         return;
       }
-      const history = this.snapshotsByVehicle.get(vehicleId) || { previous: null, latest: null };
+      const history = this.snapshotsByVehicle.get(vehicleId) || {
+        snapshots: [], previous: null, latest: null, droppedSnapshots: 0, snapshotIntervalSeconds: 0
+      };
+      history.droppedSnapshots = Math.max(
+        history.droppedSnapshots, Number(message.droppedSnapshots || 0)
+      );
       if (!history.latest || decoded.stepIndex > history.latest.stepIndex) {
+        if (history.latest && decoded.stepIndex > history.latest.stepIndex + 1) {
+          history.droppedSnapshots += decoded.stepIndex - history.latest.stepIndex - 1;
+        }
+        if (history.latest) {
+          history.snapshotIntervalSeconds = Math.max(
+            0, decoded.simulationTimeSeconds - history.latest.simulationTimeSeconds
+          );
+        }
+        history.snapshots.push(decoded);
+        if (history.snapshots.length > 4) history.snapshots.shift();
         history.previous = history.latest;
         history.latest = decoded;
         this.snapshotsByVehicle.set(vehicleId, history);
@@ -212,7 +240,11 @@ export class VehicleDynamicsWorkerClient {
         this.latestReceiveTimeMs = receiveStart;
       }
       this.metrics.recordWorker(message.workerStepMs, message.backlogSteps);
-      this.worker.postMessage({ type: 'recycleSnapshotBuffer', buffer: message.buffer }, [message.buffer]);
+      if (message.buffer instanceof ArrayBuffer) {
+        this.worker.postMessage(
+          { type: 'recycleSnapshotBuffer', buffer: message.buffer }, [message.buffer]
+        );
+      }
     } else if (message.type === 'ready') {
       this.ready = true;
     } else if (message.type === 'resetApplied') {
@@ -246,11 +278,31 @@ export class VehicleDynamicsWorkerClient {
 
   getInterpolatedSnapshot(renderTimeSeconds, vehicleId = 'player') {
     const history = this.snapshotsByVehicle.get(String(vehicleId));
+    const snapshots = history?.snapshots || [];
+    let previous = snapshots.at(-2) || history?.previous;
+    let latest = snapshots.at(-1) || history?.latest;
+    for (let index = 1; index < snapshots.length; index += 1) {
+      if (renderTimeSeconds <= snapshots[index].simulationTimeSeconds) {
+        previous = snapshots[index - 1];
+        latest = snapshots[index];
+        break;
+      }
+    }
     return interpolateVehicleRenderSnapshots(
-      history?.previous || (vehicleId === 'player' ? this.previousSnapshot : null),
-      history?.latest || (vehicleId === 'player' ? this.latestSnapshot : null),
+      previous || (vehicleId === 'player' ? this.previousSnapshot : null),
+      latest || (vehicleId === 'player' ? this.latestSnapshot : null),
       renderTimeSeconds
     );
+  }
+
+  getPresentationTelemetry(vehicleId = 'player') {
+    const history = this.snapshotsByVehicle.get(String(vehicleId));
+    const latest = history?.latest || null;
+    return {
+      snapshotAgeMs: latest ? Math.max(0, this.now() - this.latestReceiveTimeMs) : Infinity,
+      snapshotIntervalMs: Number(history?.snapshotIntervalSeconds || 0) * 1000,
+      droppedSnapshots: Number(history?.droppedSnapshots || 0)
+    };
   }
 
   getMetrics(options) {

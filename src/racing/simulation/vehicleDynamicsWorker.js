@@ -17,7 +17,10 @@ export function createVehicleDynamicsWorkerMessageHandler({
 } = {}) {
   let authority = null;
   let trackStateAuthority = null;
-  const postSnapshot = (message) => scope.postMessage({ type: 'snapshot', ...message }, [message.buffer]);
+  const postSnapshot = (message) => {
+    const transfer = message.buffer instanceof ArrayBuffer ? [message.buffer] : [];
+    scope.postMessage({ type: 'snapshot', ...message }, transfer);
+  };
   const postStatus = (message) => scope.postMessage(message);
 
   return function handleMessage(event) {
@@ -51,6 +54,11 @@ export function createVehicleDynamicsWorkerMessageHandler({
             // not part of this protocol.
             environmentProvider: (request) => packedEnvironment(request, runner?.config)
           });
+          for (const wheelId of Object.keys(runner.renderWheelSpinAngles || {})) {
+            runner.renderWheelSpinAngles[wheelId] = Number(
+              definition.renderWheelSpinAngles?.[wheelId] || 0
+            );
+          }
           return {
             id: definition.id || `vehicle-${index}`,
             player: definition.player === true,
