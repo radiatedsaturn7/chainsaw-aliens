@@ -127,6 +127,159 @@ themedTest('state', 'authoritative velocity state separates ground, body, latera
   assert.ok(runner.state.signedTravelSpeedMps > 19.9);
 });
 
+themedTest('state', 'authoritative reset returns one generated canonical four-wheel transaction', () => {
+  const runner = new VehicleDynamicsRunner({
+    config: { handlingPreset: 'simulation', tireHz: 120, telemetryRetention: 'none' },
+    initialState: {
+      position: { x: 0, y: 1, z: 0 }, orientation: { x: 0, y: 0, z: 0, w: 1 }
+    },
+    environmentProvider: () => ({})
+  });
+  runner.bodyCollision = {
+    samplePosePenetration() {
+      return { maximumPenetrationM: 0, invalidTerrainSampleCount: 0, deepestNormal: { y: 1 } };
+    }
+  };
+  const reset = runner.resetAuthoritativeState({
+    position: { x: 12, y: 2, z: -4 },
+    orientation: { x: 0, y: 0, z: 0, w: 1 }, gear: 1, grounded: false
+  }, { rebuildContacts: false, resetGeneration: 9 });
+  assert.equal(reset.resetGeneration, 9);
+  assert.equal(reset.state.vehicleResetGeneration, 9);
+  assert.equal(reset.renderState.resetGeneration, 9);
+  assert.equal(reset.event.sequence, 9);
+  assert.equal(reset.contactRebuildStatus, 'not-requested');
+  assert.equal(reset.supportedWheelCount, 0);
+  assert.deepEqual(Object.keys(reset.renderState.wheels).sort(), ['fl', 'fr', 'rl', 'rr']);
+  for (const wheelId of ['fl', 'fr', 'rl', 'rr']) {
+    assert.equal(reset.renderState.wheels[wheelId].resetGeneration, 9);
+    assert.equal(Number.isFinite(reset.renderState.wheels[wheelId].hubPositionBody.x), true);
+    assert.equal(reset.perWheelContactValidity[wheelId].supported, false);
+  }
+  runner.tireContactSubsystem = { step() { throw new Error('terrain unavailable'); } };
+  runner.bodyCollision.samplePosePenetration = () => ({
+    maximumPenetrationM: null, invalidTerrainSampleCount: 1, deepestNormal: { y: 1 }
+  });
+  const unavailable = runner.resetAuthoritativeState({
+    position: { x: 13, y: 2, z: -4 }, orientation: { x: 0, y: 0, z: 0, w: 1 }
+  }, { resetGeneration: 10 });
+  assert.equal(unavailable.contactRebuildStatus, 'failed');
+  assert.match(unavailable.contactRebuildError, /terrain unavailable/);
+  assert.deepEqual(Object.keys(unavailable.renderState.wheels).sort(), ['fl', 'fr', 'rl', 'rr']);
+  assert.equal(Object.values(unavailable.perWheelContactValidity).every(
+    ({ terrainAvailable }) => terrainAvailable === false
+  ), true);
+});
+
+themedTest('state', 'static reset equilibrium stays motionless and wakes through confirmed contacts', () => {
+  const massKg = 1200;
+  const targetHeightM = 1;
+  let normal = { x: 0, y: 1, z: 0 };
+  let uneven = false;
+  const tireContactSubsystem = {
+    step({ state, staticEquilibriumIteration }) {
+      const targetTotalN = massKg * 9.81 / normal.y;
+      const heightErrorM = Number(state.position.y || 0) - targetHeightM;
+      const totalLoadN = Math.max(0, targetTotalN - heightErrorM * 112000);
+      const weights = uneven ? [0.12, 0.38, 0.18, 0.32] : [0.25, 0.25, 0.25, 0.25];
+      const ids = ['fl', 'fr', 'rl', 'rr'];
+      const contactPatches = {};
+      const suspensionState = {};
+      const wheelLoadsN = {};
+      for (let index = 0; index < ids.length; index += 1) {
+        const wheelId = ids[index];
+        const loadN = totalLoadN * weights[index];
+        wheelLoadsN[wheelId] = loadN;
+        contactPatches[wheelId] = {
+          normalLoadN: loadN,
+          validTreadContact: true,
+          geometricContact: true,
+          normalLoadKnown: true,
+          terrainSampleValid: true,
+          contactPointWorld: {
+            x: wheelId[1] === 'l' ? -0.8 : 0.8,
+            y: uneven && wheelId === 'fl' ? 0.08 : 0,
+            z: wheelId[0] === 'f' ? 1.3 : -1.3
+          },
+          surfaceNormalWorld: normal,
+          suspensionForceN: staticEquilibriumIteration === undefined ? loadN : 0,
+          tireVerticalForceN: staticEquilibriumIteration === undefined ? loadN : 0
+        };
+        suspensionState[wheelId] = {
+          compressionM: 0.1 + (uneven && wheelId === 'fl' ? 0.02 : 0),
+          unsprungVelocityMps: 0,
+          compressionVelocityMps: 0,
+          damperVelocityMps: 0
+        };
+      }
+      return {
+        worldForceN: {}, worldMomentNm: {}, suspensionForceWorldN: {},
+        wheelLoadsN, wheelSlip: {}, suspensionTravel: {}, tireForcesN: {},
+        wheelAngularVelocityRadps: {}, contactPatches, suspensionState,
+        supportedWheelCount: 4, grounded: true, wheelGrounded: true,
+        validTreadContactByWheel: Object.fromEntries(ids.map((id) => [id, true])),
+        invalidContactReasonByWheel: Object.fromEntries(ids.map((id) => [id, null])),
+        bodyCollision: { contacts: [], positionalCorrectionWorldM: {}, bodyNormalImpulseNs: 0 }
+      };
+    }
+  };
+  const runner = new VehicleDynamicsRunner({
+    config: {
+      massKg, handlingPreset: 'simulation', tireHz: 120,
+      telemetryRetention: 'none', suspensionSpringRateFrontNpm: 32000,
+      suspensionSpringRateRearNpm: 32000, tireVerticalStiffnessNpm: 210000
+    },
+    initialState: {
+      position: { x: 0, y: targetHeightM, z: 0 },
+      orientation: { x: 0, y: 0, z: 0, w: 1 }
+    },
+    tireContactSubsystem,
+    environmentProvider: () => ({ airDensityKgM3: 0 })
+  });
+  runner.bodyCollision.samplePosePenetration = () => ({
+    maximumPenetrationM: 0, invalidTerrainSampleCount: 0, deepestNormal: normal
+  });
+  const cases = [
+    ['flat', 1, false], ['slope-10', 1 / Math.hypot(1, 0.1), false],
+    ['slope-20', 1 / Math.hypot(1, 0.2), false], ['uneven', 1, true],
+    ['post-crash', 1, false], ['rollover', 1, false], ['jump', 1, false]
+  ];
+  for (let index = 0; index < cases.length; index += 1) {
+    const [name, normalY, unevenTerrain] = cases[index];
+    normal = { x: 0, y: normalY, z: Math.sqrt(Math.max(0, 1 - normalY ** 2)) };
+    uneven = unevenTerrain;
+    const reset = runner.resetAuthoritativeState({
+      position: { x: index, y: targetHeightM + 0.03, z: index * 2 },
+      orientation: { x: 0, y: 0, z: 0, w: 1 }, gear: 1
+    }, { resetGeneration: index + 1, parkUntilDrive: true });
+    assert.equal(reset.equilibrium.status, 'converged', name);
+    assert.equal(reset.equilibrium.iterations <= 32, true, name);
+    assert.equal(Math.abs(reset.equilibrium.loadTotalN
+      - reset.equilibrium.targetLoadTotalN) / reset.equilibrium.targetLoadTotalN < 0.01, true, name);
+    assert.equal(reset.supportedWheelCount, 4, name);
+  }
+  const heldHeight = runner.state.position.y;
+  const heldLoads = Object.fromEntries(['fl', 'fr', 'rl', 'rr'].map((wheelId) => [
+    wheelId, runner.state.contactPatches[wheelId].normalLoadN
+  ]));
+  for (let step = 0; step < 60; step += 1) {
+    runner.advance(1 / 120, { input: { throttle: 0 } });
+  }
+  assert.equal(runner.postResetTelemetry.length, 60);
+  assert.equal(Math.abs(runner.state.position.y - heldHeight) < 0.002, true);
+  assert.equal(Math.abs(runner.state.velocity.y) < 1e-9, true);
+  assert.equal(runner.postResetTelemetry.every((sample) => (
+    sample.impactEventCount === 0 && sample.recoveryEventCount === 0
+  )), true);
+  runner.addInputSample(runner.simulationTimeSeconds, { throttle: 1, requestedGear: 1 });
+  runner.advance(1 / 120);
+  assert.equal(runner.stationaryResetHold, null);
+  assert.deepEqual(Object.fromEntries(['fl', 'fr', 'rl', 'rr'].map((wheelId) => [
+    wheelId, runner.state.contactPatches[wheelId].normalLoadN
+  ])), heldLoads);
+  assert.equal(Number(runner.state.velocity.y || 0) <= 0, true);
+});
+
 function piecewise(time, points) {
   if (time <= points[0][0]) return points[0][1];
   for (let index = 1; index < points.length; index += 1) {

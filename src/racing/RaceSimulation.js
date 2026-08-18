@@ -32,7 +32,8 @@ import {
 import { hashTrackStateValue, stableTrackStateStringify } from './trackState/TrackStateMath.js';
 import {
   RaceVehicleDynamicsWorkerBridge,
-  prepareRaceVehicleDynamicsWorkerSurface
+  prepareRaceVehicleDynamicsWorkerSurface,
+  resetWorkerTrackStateVisualPresentation
 } from './simulation/RaceVehicleDynamicsWorkerBridge.js';
 import { qualifyVehicleDynamicsWorkerMigration } from './simulation/VehicleDynamicsWorkerClient.js';
 
@@ -934,6 +935,7 @@ function advanceVehicleDynamicsAuthority(editor, {
       authority.workerMigrationFailure = failure;
       session.vehicleDynamicsAuthorityThread = 'render';
       session.vehicleDynamicsWorkerMigrationFailure = failure;
+      resetWorkerTrackStateVisualPresentation(session);
     } else {
       // The legacy render calculation runs before this authority adapter and
       // replaces session.tireSlip every frame. While the worker owns physics,
@@ -2062,15 +2064,7 @@ function advanceVehicleDynamicsAuthority(editor, {
       authority.authoritativeThread = 'vehicle-dynamics-worker';
       authority.runner.dormant = true;
       authority.runner.dormantSinceStepIndex = authority.runner.stepIndex;
-      session.workerTrackStateVisual = {
-        cells: new Map(),
-        stepIndex: Number(session.trackState?.stepIndex || 0),
-        cellRevision: 0,
-        eventSequence: Number(session.vehicleDynamicsEventSequence || 0),
-        remainingDirtyCellCount: 0
-      };
-      session.trackStateVisualCache = null;
-      session.trackStateVisualAtlas = null;
+      resetWorkerTrackStateVisualPresentation(session);
       for (const ai of session.aiRuntime || []) {
         if (!ai.vehicleDynamicsRunner) continue;
         ai.vehicleDynamicsRunner.dormant = true;
@@ -2083,6 +2077,7 @@ function advanceVehicleDynamicsAuthority(editor, {
       authority.workerMigrationFailure = String(error?.message || error);
       session.vehicleDynamicsAuthorityThread = 'render';
       session.vehicleDynamicsWorkerMigrationFailure = authority.workerMigrationFailure;
+      resetWorkerTrackStateVisualPresentation(session);
     }
   }
   authority.compatibilityTelemetryScratch ||= createRaceCompatibilityTelemetryScratch();

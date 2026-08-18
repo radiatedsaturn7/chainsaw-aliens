@@ -23,7 +23,17 @@ test('worker entry initializes all active dynamics runners and accepts only pack
     updateEnvironmentState(update) { environmentUpdates.push(update); },
     resetVehicle(id, state, metadata) {
       resets.push({ id, state, metadata });
-      return { event: { stepIndex: 12 } };
+      return {
+        event: { stepIndex: 12 }, resetGeneration: metadata.sequence,
+        contactRebuildStatus: 'rebuilt', supportedWheelCount: 4,
+        perWheelContactValidity: {},
+        renderState: {
+          resetGeneration: metadata.sequence,
+          stepIndex: 12, eventSequence: metadata.sequence,
+          position: state.position, orientation: state.orientation,
+          wheels: {}, suspensionPose: {}
+        }
+      };
     },
     start() { started = true; },
     stop() {}
@@ -80,4 +90,6 @@ test('worker entry initializes all active dynamics runners and accepts only pack
   assert.equal(resets[0].state.position.x, 3);
   assert.equal(resets[0].metadata.sequence, 6);
   assert.equal(messages.at(-1).message.type, 'resetApplied');
+  assert.equal(messages.at(-1).message.resetGeneration, 6);
+  assert.equal(messages.at(-1).message.buffer instanceof ArrayBuffer, true);
 });

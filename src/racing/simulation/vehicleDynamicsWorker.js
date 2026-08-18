@@ -2,9 +2,11 @@ import { VehicleDynamicsRunner } from './VehicleDynamicsRunner.js';
 import { VehicleDynamicsWorkerAuthority } from './VehicleDynamicsWorkerAuthority.js';
 import {
   VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION,
+  createVehicleRenderSnapshotBuffer,
   readVehicleControlInput,
   readVehicleEnvironmentUpdate,
-  readVehicleResetCommand
+  readVehicleResetCommand,
+  writeVehicleRenderSnapshot
 } from './VehicleDynamicsWorkerProtocol.js';
 import { createPackedRaceWorkerEnvironmentProvider } from './PackedRaceWorkerEnvironment.js';
 import { createWorkerTrackStateAuthority } from './VehicleTrackStateAuthority.js';
@@ -77,7 +79,8 @@ export function createVehicleDynamicsWorkerMessageHandler({
             stack: String(error?.stack || '')
           }),
           mutateTrackState: trackStateAuthority?.mutate,
-          snapshotPoolSize: Math.max(3, runners.length * 2)
+          snapshotPoolSize: Math.max(3, runners.length * 2),
+          snapshotSequenceControl: message.snapshotSequenceControl
         });
         authority.trackState = trackStateAuthority?.trackState || null;
         (message.snapshotBuffers || []).forEach((buffer) => authority.recycleSnapshotBuffer(buffer));
@@ -114,13 +117,22 @@ export function createVehicleDynamicsWorkerMessageHandler({
           }
         );
         if (!reset) throw new Error(`Unknown vehicle dynamics worker vehicle ${vehicleId}`);
-        postStatus({
+        const resetSnapshotBuffer = writeVehicleRenderSnapshot(
+          createVehicleRenderSnapshotBuffer(), reset.renderState
+        );
+        scope.postMessage({
           type: 'resetApplied',
           vehicleId,
           resetSequence: Number(message.resetSequence) >>> 0,
           eventSequence: authority.eventSequence,
-          stepIndex: reset.event?.stepIndex ?? null
-        });
+          stepIndex: reset.event?.stepIndex ?? null,
+          resetGeneration: reset.resetGeneration,
+          contactRebuildStatus: reset.contactRebuildStatus,
+          supportedWheelCount: reset.supportedWheelCount,
+          perWheelContactValidity: reset.perWheelContactValidity,
+          equilibrium: reset.equilibrium,
+          buffer: resetSnapshotBuffer
+        }, [resetSnapshotBuffer]);
       } else if (message.type === 'recycleSnapshotBuffer') {
         authority.recycleSnapshotBuffer(message.buffer);
       } else if (message.type === 'requestTrackStateCheckpoint') {

@@ -32,6 +32,7 @@ import {
   rotateVectorToBody,
   scaleVector3
 } from './RigidBodyMath.js';
+import { createVehicleRenderStateFromRunner } from './VehicleRenderState.js';
 
 export const VEHICLE_DYNAMICS_CHASSIS_HZ = 120;
 export const VEHICLE_DYNAMICS_MAX_TIRE_HZ = 360;
@@ -615,7 +616,8 @@ export function createVehicleDynamicsState(initial = {}) {
     steeringTelemetry: clone(initial.steeringTelemetry || {}),
     aeroState: clone(initial.aeroState || {}),
     contactStabilization: clone(initial.contactStabilization || null),
-    penetrationRecovery: clone(initial.penetrationRecovery || null)
+    penetrationRecovery: clone(initial.penetrationRecovery || null),
+    vehicleResetGeneration: Math.max(0, Math.trunc(Number(initial.vehicleResetGeneration) || 0))
   };
 }
 
@@ -1901,7 +1903,9 @@ export class VehicleDynamicsRunner {
     this.scheduledReplayCollisions = new Map();
     this.resetTimeline = [];
     this.scheduledReplayResets = new Map();
-    this.authoritativeResetSequence = 0;
+    this.authoritativeResetSequence = Math.max(
+      0, Math.trunc(Number(this.state.vehicleResetGeneration) || 0)
+    );
     this.stationaryResetHold = null;
     this.suspensionModeSettleSteps = 0;
     this.stepIndex = 0;
@@ -1912,6 +1916,10 @@ export class VehicleDynamicsRunner {
     this.telemetry = [];
     this.impactHistory = [];
     this.activeImpact = null;
+    this.postResetTelemetry = [];
+    this.postResetTelemetryGeneration = 0;
+    this.postResetImpactBaseline = 0;
+    this.postResetRecoveryBaseline = 0;
     this.takeoffHistory = [];
     this.takeoffContactState = {
       initialized: false,
@@ -2078,8 +2086,13 @@ export class VehicleDynamicsRunner {
     reason = 'authoritative-reset',
     record = true,
     rebuildContacts = true,
-    parkUntilDrive = false
+    parkUntilDrive = false,
+    resetGeneration = null
   } = {}) {
+    const vehicleResetGeneration = Math.max(
+      this.authoritativeResetSequence + 1,
+      Math.trunc(Number(resetGeneration) || 0)
+    );
     const routeDistance = finiteNumber(nextState.routeDistance);
     const idleRpm = Math.max(0, Number(this.config.idleRpm || 800));
     const requestedGear = Math.trunc(Number(nextState.gear ?? 1) || 0);
@@ -2114,7 +2127,8 @@ export class VehicleDynamicsRunner {
       wheelLoadsN: {},
       wheelSlip: {},
       wheelAngularVelocityRadps: {},
-      grounded: true
+      grounded: true,
+      vehicleResetGeneration
     });
     if (routeDistance !== null) resetState.routeDistance = routeDistance;
     const resetTimeSeconds = this.simulationTimeSeconds;
@@ -2192,36 +2206,171 @@ export class VehicleDynamicsRunner {
         this.config.bodyCollisionToleranceM
       );
     }
-    if (bodySample.maximumPenetrationM === null
-      || Number(bodySample.invalidTerrainSampleCount || 0) > 0
-      || Number(bodySample.maximumPenetrationM || 0)
+    const resetTerrainAvailable = bodySample.maximumPenetrationM !== null
+      && Number(bodySample.invalidTerrainSampleCount || 0) === 0;
+    if (resetTerrainAvailable && Number(bodySample.maximumPenetrationM || 0)
         > this.config.bodyCollisionToleranceM + 1e-6) {
       throw new Error('Unable to find a collision-safe vehicle reset pose');
     }
     let rebuilt = null;
+    let contactRebuildError = null;
+    const equilibrium = {
+      status: rebuildContacts ? 'iterating' : 'not-requested',
+      iterations: 0,
+      maximumIterations: 32,
+      bodyPositionChangeM: Infinity,
+      pitchRollChangeRad: Infinity,
+      maximumWheelLoadChangeRatio: Infinity,
+      loadTotalN: 0,
+      targetLoadTotalN: 0,
+      supportedWheelCount: 0,
+      maximumPenetrationM: bodySample.maximumPenetrationM,
+      underbodyClearanceValid: resetTerrainAvailable
+    };
     if (rebuildContacts) {
-      environment = this.environmentProvider(environmentRequest(resetState, true)) || environment;
-      rebuilt = this.tireContactSubsystem.step({
-        state: resetState,
-        controls: normalizeVehicleControlInput({ requestedGear }),
-        config: this.config,
-        environment,
-        dt: 0,
-        stepIndex: this.stepIndex,
-        substepIndex: 0,
-        timeSeconds: resetTimeSeconds,
-        contactRebuildOnly: true,
-        authoritativeReset: true
-      }) || {};
-      for (const field of [
-        'suspensionState', 'tireState', 'wheelLoadsN', 'wheelSlip',
-        'wheelAngularVelocityRadps', 'contactPatches', 'suspensionTravel',
-        'validTreadContactByWheel', 'invalidContactReasonByWheel',
-        'supportedWheelCount', 'grounded', 'wheelGrounded', 'powertrainState'
-      ]) {
-        if (rebuilt[field] !== undefined) resetState[field] = clone(rebuilt[field]);
+      let previousPosition = clone(resetState.position);
+      let previousPitch = Number(resetState.pitchRad || 0);
+      let previousRoll = Number(resetState.rollRad || 0);
+      let previousLoads = null;
+      for (let iteration = 0; iteration < equilibrium.maximumIterations; iteration += 1) {
+        environment = this.environmentProvider(environmentRequest(resetState, true)) || environment;
+        try {
+          rebuilt = this.tireContactSubsystem.step({
+            state: resetState,
+            controls: normalizeVehicleControlInput({ requestedGear }),
+            config: this.config,
+            environment,
+            dt: 0,
+            stepIndex: this.stepIndex,
+            substepIndex: 0,
+            timeSeconds: resetTimeSeconds,
+            contactRebuildOnly: true,
+            authoritativeReset: true,
+            staticEquilibriumIteration: iteration
+          }) || {};
+        } catch (error) {
+          contactRebuildError = String(error?.message || error);
+          rebuilt = null;
+          equilibrium.status = 'failed';
+          break;
+        }
+        for (const field of [
+          'suspensionState', 'tireState', 'wheelLoadsN', 'wheelSlip',
+          'wheelAngularVelocityRadps', 'contactPatches', 'suspensionTravel',
+          'validTreadContactByWheel', 'invalidContactReasonByWheel',
+          'supportedWheelCount', 'grounded', 'wheelGrounded', 'powertrainState'
+        ]) {
+          if (rebuilt[field] !== undefined) resetState[field] = clone(rebuilt[field]);
+        }
+        let loadTotalN = 0;
+        let normalXTotal = 0;
+        let normalYTotal = 0;
+        let normalZTotal = 0;
+        let normalCount = 0;
+        let maximumLoadChangeRatio = 0;
+        const loads = {};
+        for (const wheelId of RACE_WHEEL_IDS) {
+          const patch = resetState.contactPatches?.[wheelId] || {};
+          const loadN = Math.max(0, Number(patch.normalLoadN
+            ?? resetState.wheelLoadsN?.[wheelId] ?? 0));
+          loads[wheelId] = loadN;
+          loadTotalN += loadN;
+          if (patch.surfaceNormalWorld) {
+            normalXTotal += Number(patch.surfaceNormalWorld.x || 0);
+            normalYTotal += Math.max(0.1, Number(patch.surfaceNormalWorld.y || 0));
+            normalZTotal += Number(patch.surfaceNormalWorld.z || 0);
+            normalCount += 1;
+          }
+          if (previousLoads) maximumLoadChangeRatio = Math.max(
+            maximumLoadChangeRatio,
+            Math.abs(loadN - previousLoads[wheelId]) / Math.max(1, previousLoads[wheelId])
+          );
+        }
+        const averageNormalY = normalCount ? normalYTotal / normalCount : 1;
+        const targetLoadTotalN = this.config.massKg * 9.81 / Math.max(0.2, averageNormalY);
+        const frontRate = this.config.suspensionSpringRateFrontNpm;
+        const rearRate = this.config.suspensionSpringRateRearNpm;
+        const tireRate = this.config.tireVerticalStiffnessNpm;
+        const frontEffective = frontRate * tireRate / Math.max(1, frontRate + tireRate);
+        const rearEffective = rearRate * tireRate / Math.max(1, rearRate + tireRate);
+        const totalVerticalRate = Math.max(1, 2 * frontEffective + 2 * rearEffective);
+        const loadCorrectionM = clamp(
+          (loadTotalN - targetLoadTotalN) / totalVerticalRate, -0.02, 0.02
+        );
+        const euler = eulerFromQuaternion(resetState.orientation, this.eulerScratch);
+        equilibrium.iterations = iteration + 1;
+        equilibrium.bodyPositionChangeM = Math.hypot(
+          resetState.position.x - previousPosition.x,
+          resetState.position.y - previousPosition.y,
+          resetState.position.z - previousPosition.z
+        );
+        equilibrium.pitchRollChangeRad = Math.max(
+          Math.abs(euler.pitch - previousPitch), Math.abs(euler.roll - previousRoll)
+        );
+        equilibrium.maximumWheelLoadChangeRatio = previousLoads
+          ? maximumLoadChangeRatio : Infinity;
+        equilibrium.loadTotalN = loadTotalN;
+        equilibrium.targetLoadTotalN = targetLoadTotalN;
+        equilibrium.supportedWheelCount = RACE_WHEEL_IDS.reduce((count, wheelId) => (
+          count + (loads[wheelId] > 1 ? 1 : 0)
+        ), 0);
+        bodySample = this.bodyCollision.samplePosePenetration(
+          resetState, environment, this.config.bodyCollisionToleranceM
+        );
+        equilibrium.maximumPenetrationM = bodySample.maximumPenetrationM;
+        equilibrium.underbodyClearanceValid = bodySample.maximumPenetrationM !== null
+          && Number(bodySample.invalidTerrainSampleCount || 0) === 0
+          && Number(bodySample.maximumPenetrationM || 0)
+            <= this.config.bodyCollisionToleranceM + 1e-6;
+        const loadErrorRatio = Math.abs(loadTotalN - targetLoadTotalN)
+          / Math.max(1, targetLoadTotalN);
+        if (iteration > 0
+          && equilibrium.bodyPositionChangeM < 0.0005
+          && equilibrium.pitchRollChangeRad < 0.05 * Math.PI / 180
+          && maximumLoadChangeRatio < 0.01
+          && loadErrorRatio < 0.01
+          && equilibrium.underbodyClearanceValid) {
+          equilibrium.status = 'converged';
+          break;
+        }
+        previousPosition = clone(resetState.position);
+        previousPitch = euler.pitch;
+        previousRoll = euler.roll;
+        previousLoads = loads;
+        if (normalCount > 0) {
+          const normalLength = Math.max(EPSILON, Math.hypot(
+            normalXTotal, normalYTotal, normalZTotal
+          ));
+          const supportNormal = {
+            x: normalXTotal / normalLength,
+            y: normalYTotal / normalLength,
+            z: normalZTotal / normalLength
+          };
+          const desiredPitch = Math.atan2(supportNormal.z, supportNormal.y);
+          const desiredRoll = -Math.atan2(supportNormal.x, supportNormal.y);
+          const maximumAngularCorrection = 0.5 * Math.PI / 180;
+          const correctedPitch = euler.pitch + clamp(
+            desiredPitch - euler.pitch,
+            -maximumAngularCorrection,
+            maximumAngularCorrection
+          );
+          const correctedRoll = euler.roll + clamp(
+            desiredRoll - euler.roll,
+            -maximumAngularCorrection,
+            maximumAngularCorrection
+          );
+          resetState.orientation = quaternionFromEuler({
+            yaw: euler.yaw, pitch: correctedPitch, roll: correctedRoll
+          });
+          resetState.pitchRad = quantize(correctedPitch, 12);
+          resetState.rollRad = quantize(correctedRoll, 12);
+        }
+        if (equilibrium.supportedWheelCount > 0 && Math.abs(loadCorrectionM) >= 0.00005) {
+          resetState.position.y = quantize(resetState.position.y + loadCorrectionM, 12);
+        }
       }
-    }
+      if (equilibrium.status === 'iterating') equilibrium.status = 'failed';
+      }
     for (const wheelId of RACE_WHEEL_IDS) {
       resetState.wheelAngularVelocityRadps[wheelId] = 0;
       resetState.wheelSlip[wheelId] = 0;
@@ -2248,6 +2397,7 @@ export class VehicleDynamicsRunner {
     resetState.engineRpm = idleRpm;
     resetState.gear = requestedGear;
     resetState.penetrationRecovery = null;
+    resetState.resetEquilibrium = clone(equilibrium);
     this.state = resetState;
     for (const wheelId of RACE_WHEEL_IDS) this.renderWheelSpinAngles[wheelId] = 0;
     this.stationaryResetHold = parkUntilDrive ? {
@@ -2255,11 +2405,18 @@ export class VehicleDynamicsRunner {
       orientation: clone(resetState.orientation),
       routeDistance: finiteNumber(resetState.routeDistance),
       suspensionState: clone(resetState.suspensionState),
-      contactPatches: clone(resetState.contactPatches)
+      contactPatches: clone(resetState.contactPatches),
+      wheelLoadsN: clone(resetState.wheelLoadsN),
+      supportedWheelCount: Number(resetState.supportedWheelCount || equilibrium.supportedWheelCount),
+      validTreadContactByWheel: clone(resetState.validTreadContactByWheel),
+      invalidContactReasonByWheel: clone(resetState.invalidContactReasonByWheel),
+      validContactConfirmations: 0,
+      wakeRequested: false,
+      equilibriumGeneration: vehicleResetGeneration
     } : null;
     this.suspensionModeSettleSteps = 0;
     this.pendingCollisionImpulses.length = 0;
-    this.lastValidLocalCollisionFrame = rebuilt
+    this.lastValidLocalCollisionFrame = rebuilt && resetTerrainAvailable
       ? this.createLocalCollisionFrame(resetState, rebuilt, {
           stepIndex: this.stepIndex,
           substepIndex: 0,
@@ -2267,7 +2424,7 @@ export class VehicleDynamicsRunner {
           supportNormal: bodySample.deepestNormal || { x: 0, y: 1, z: 0 }
         })
       : null;
-    this.lastNonPenetratingState = rebuilt
+    this.lastNonPenetratingState = rebuilt && resetTerrainAvailable
       ? this.createLastNonPenetratingState(resetState, rebuilt, this.stepIndex, {
           penetrationSample: bodySample,
           bodyResult: { residualPenetrationM: bodySample.maximumPenetrationM },
@@ -2286,6 +2443,11 @@ export class VehicleDynamicsRunner {
     this.contactStabilizationState.localRollbackFailureCount = 0;
     this.contactStabilizationState.latest = null;
     this.activeImpact = null;
+    this.postResetTelemetry = [];
+    this.postResetTelemetryGeneration = vehicleResetGeneration;
+    this.postResetImpactBaseline = this.impactHistory.length;
+    this.postResetRecoveryBaseline = this.penetrationRecoveryState.history.length;
+    this.diagnostics.postResetTelemetry = this.postResetTelemetry;
     this.takeoffContactState = {
       initialized: false,
       frontGrounded: false,
@@ -2309,15 +2471,45 @@ export class VehicleDynamicsRunner {
       settledSnapshot.routeDistance = Number(resetState.routeDistance);
     }
     const event = {
-      sequence: ++this.authoritativeResetSequence,
+      sequence: vehicleResetGeneration,
       stepIndex: this.stepIndex + 1,
       timeSeconds: resetTimeSeconds,
       reason,
       parkUntilDrive: Boolean(parkUntilDrive),
       state: settledSnapshot
     };
+    this.authoritativeResetSequence = vehicleResetGeneration;
     if (record) this.resetTimeline.push(event);
-    return { state: clone(settledSnapshot), event: clone(event) };
+    const renderState = createVehicleRenderStateFromRunner(this, {
+      eventSequence: event.sequence,
+      visualState: resetState.grounded === false ? 0 : 1
+    });
+    const perWheelContactValidity = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
+      wheelId,
+      {
+        validTreadContact: resetState.contactPatches?.[wheelId]?.validTreadContact === true,
+        geometricContact: Boolean(
+          resetState.contactPatches?.[wheelId]?.geometricContact
+          || resetState.contactPatches?.[wheelId]?.contactPointWorld
+        ),
+        supported: Number(resetState.contactPatches?.[wheelId]?.normalLoadN || 0) > 1,
+        terrainAvailable: resetTerrainAvailable
+      }
+    ]));
+    return {
+      state: clone(settledSnapshot),
+      renderState,
+      event: clone(event),
+      resetGeneration: vehicleResetGeneration,
+      contactRebuildStatus: rebuildContacts
+        ? (rebuilt ? 'rebuilt' : 'failed') : 'not-requested',
+      contactRebuildError,
+      equilibrium: clone(equilibrium),
+      supportedWheelCount: RACE_WHEEL_IDS.reduce((count, wheelId) => (
+        count + (perWheelContactValidity[wheelId].supported ? 1 : 0)
+      ), 0),
+      perWheelContactValidity
+    };
   }
 
   applyStationaryResetHold(state = this.state) {
@@ -2335,7 +2527,11 @@ export class VehicleDynamicsRunner {
     state.yawRateRadps = 0;
     state.suspensionState ||= {};
     state.contactPatches ||= {};
+    state.wheelLoadsN ||= {};
     if (hold.routeDistance !== null) state.routeDistance = hold.routeDistance;
+    state.supportedWheelCount = Number(hold.supportedWheelCount || 0);
+    state.validTreadContactByWheel = clone(hold.validTreadContactByWheel || {});
+    state.invalidContactReasonByWheel = clone(hold.invalidContactReasonByWheel || {});
     const euler = eulerFromQuaternion(state.orientation, this.eulerScratch);
     state.yawRad = quantize(euler.yaw);
     state.pitchRad = quantize(euler.pitch);
@@ -2358,6 +2554,9 @@ export class VehicleDynamicsRunner {
         Object.assign(patch, heldPatch);
         state.contactPatches[wheelId] = patch;
       }
+      state.wheelLoadsN[wheelId] = Number(
+        hold.wheelLoadsN?.[wheelId] ?? heldPatch?.normalLoadN ?? 0
+      );
     }
     return state;
   }
@@ -3908,11 +4107,17 @@ export class VehicleDynamicsRunner {
       stepTimeSeconds,
       this.sampledControlsScratch
     );
+    let suppressThrottleForResetRelease = false;
     if (this.stationaryResetHold
       && Number(sampledControls.throttle || 0) > STATIONARY_RESET_WAKE_THROTTLE) {
-      this.stationaryResetHold = null;
+      this.stationaryResetHold.wakeRequested = true;
+      if (Number(this.stationaryResetHold.validContactConfirmations || 0) >= 2) {
+        this.stationaryResetHold = null;
+        suppressThrottleForResetRelease = true;
+      }
     } else if (this.stationaryResetHold && this.pendingCollisionImpulses.length > 0) {
       this.stationaryResetHold = null;
+      suppressThrottleForResetRelease = true;
     }
     const previousHandbrakeCommand = this.state.handbrakeCommandState || {};
     const holdSequence = Math.max(0, Math.trunc(Number(sampledControls.handbrakeHoldSequence || 0)));
@@ -3925,6 +4130,7 @@ export class VehicleDynamicsRunner {
     const directHandbrake = Number(sampledControls.handbrake || 0) > 0.001;
     const authoritativeHandbrakeActive = directHandbrake || handbrakeRemainingSeconds > EPSILON;
     const controls = sampledControls;
+    if (this.stationaryResetHold || suppressThrottleForResetRelease) controls.throttle = 0;
     controls.handbrake = authoritativeHandbrakeActive
       ? Math.max(1, Number(sampledControls.handbrake || 0)) : 0;
     handbrakeRemainingSeconds = directHandbrake
@@ -4824,6 +5030,11 @@ export class VehicleDynamicsRunner {
       substepState.engineRpm = Number(substepState.powertrainState?.engineRpm ?? substepState.engineRpm);
       substepState.gear = Number(substepState.powertrainState?.gear ?? substepState.gear);
       if (this.stationaryResetHold) {
+        const rebuiltHeldContacts = RACE_WHEEL_IDS.every((wheelId) => {
+          const point = substepState.contactPatches?.[wheelId]?.contactPointWorld;
+          return point && Number.isFinite(Number(point.x))
+            && Number.isFinite(Number(point.y)) && Number.isFinite(Number(point.z));
+        });
         if (substepRecovery) {
           // A terrain correction immediately after reset is not driver intent.
           // Adopt its verified pose and rebuilt contacts as the new parked
@@ -4832,8 +5043,20 @@ export class VehicleDynamicsRunner {
           this.stationaryResetHold.position = clone(substepState.position);
           this.stationaryResetHold.orientation = clone(substepState.orientation);
           this.stationaryResetHold.routeDistance = finiteNumber(substepState.routeDistance);
+        }
+        if (rebuiltHeldContacts) {
           this.stationaryResetHold.suspensionState = clone(substepState.suspensionState);
           this.stationaryResetHold.contactPatches = clone(substepState.contactPatches);
+          this.stationaryResetHold.wheelLoadsN = clone(substepState.wheelLoadsN || {});
+          this.stationaryResetHold.supportedWheelCount = Number(
+            substepState.supportedWheelCount || 0
+          );
+          this.stationaryResetHold.validTreadContactByWheel = clone(
+            substepState.validTreadContactByWheel || {}
+          );
+          this.stationaryResetHold.invalidContactReasonByWheel = clone(
+            substepState.invalidContactReasonByWheel || {}
+          );
         }
         this.applyStationaryResetHold(substepState);
       }
@@ -4850,6 +5073,22 @@ export class VehicleDynamicsRunner {
       bodyCollisionResults,
       tireAggregateScratch
     );
+    if (this.stationaryResetHold) {
+      let validGeometry = true;
+      for (const wheelId of RACE_WHEEL_IDS) {
+        const patch = tires.contactPatches?.[wheelId];
+        const point = patch?.contactPointWorld;
+        if (!point || !Number.isFinite(Number(point.x))
+          || !Number.isFinite(Number(point.y)) || !Number.isFinite(Number(point.z))
+          || patch.terrainSampleValid === false) {
+          validGeometry = false;
+          break;
+        }
+      }
+      this.stationaryResetHold.validContactConfirmations = validGeometry
+        ? Math.min(2, Number(this.stationaryResetHold.validContactConfirmations || 0) + 1)
+        : 0;
+    }
     const bodyBroadphaseRejectedSubsteps = bodyCollisionAggregate.broadphaseRejectedSubsteps;
     this.performanceDiagnostics.bodyBroadphaseRejectedSubsteps += bodyBroadphaseRejectedSubsteps;
     this.performanceDiagnostics.bodyNarrowphaseSubsteps += bodyCollisionResults.length
@@ -4970,8 +5209,10 @@ export class VehicleDynamicsRunner {
         tires.tireVerticalImpulseByWheelNs?.[RACE_WHEEL_IDS[wheelIndex]] || 0
       );
     }
-    const impactStarted = bodyNormalImpulseNs > 1 || (
+    const impactStarted = !this.stationaryResetHold && !suppressThrottleForResetRelease && (
+      bodyNormalImpulseNs > 1 || (
       preImpactVerticalVelocityMps < -0.25 && tireVerticalImpulseNs > 1
+      )
     );
     let physicalBodyImpactCount = 0;
     let preImpactKineticEnergyJ = chassisStepPreImpactKineticEnergyJ;
@@ -5062,6 +5303,50 @@ export class VehicleDynamicsRunner {
     integration.impactEnergy = this.activeImpact || null;
     integration.takeoff = this.takeoffContactState.activeTakeoff
       || this.takeoffHistory.at(-1) || null;
+    if (this.postResetTelemetry.length < 60 && this.postResetTelemetryGeneration > 0) {
+      const compressionByWheel = {};
+      const loadByWheel = {};
+      const unsprungVelocityByWheel = {};
+      for (const wheelId of RACE_WHEEL_IDS) {
+        const suspension = this.state.suspensionState?.[wheelId] || {};
+        compressionByWheel[wheelId] = Number(suspension.compressionM
+          ?? this.state.suspensionTravel?.[wheelId] ?? 0);
+        loadByWheel[wheelId] = Number(this.state.contactPatches?.[wheelId]?.normalLoadN
+          ?? this.state.wheelLoadsN?.[wheelId] ?? 0);
+        unsprungVelocityByWheel[wheelId] = Number(suspension.unsprungVelocityMps || 0);
+      }
+      const sampleIndex = this.postResetTelemetry.length;
+      this.postResetTelemetry.push({
+        resetGeneration: this.postResetTelemetryGeneration,
+        stepIndex: nextStepIndex,
+        bodyHeightM: Number(this.state.position.y || 0),
+        verticalVelocityMps: Number(this.state.velocity.y || 0),
+        pitchVelocityRadps: Number(this.state.angularVelocityWorld.x || 0),
+        rollVelocityRadps: Number(this.state.angularVelocityWorld.z || 0),
+        compressionByWheel,
+        loadByWheel,
+        unsprungVelocityByWheel,
+        suspensionImpulseByWheelNs: clone(tires.suspensionImpulseByWheelNs || {}),
+        tireVerticalImpulseByWheelNs: clone(tires.tireVerticalImpulseByWheelNs || {}),
+        bodyCollisionImpulseNs: Number(tires.bodyCollision?.bodyNormalImpulseNs || 0),
+        positionalCorrectionWorldM: clone(
+          tires.bodyCollision?.positionalCorrectionWorldM || { x: 0, y: 0, z: 0 }
+        ),
+        kineticEnergyJ: calculateKineticEnergyJ(this.state, this.config),
+        impactEventCount: Math.max(0, this.impactHistory.length - this.postResetImpactBaseline),
+        recoveryEventCount: Math.max(
+          0, this.penetrationRecoveryState.history.length - this.postResetRecoveryBaseline
+        ),
+        movementSource: {
+          authoritativeBodyMotion: !this.stationaryResetHold,
+          suspensionMotion: Object.values(unsprungVelocityByWheel).some(
+            (velocity) => Math.abs(velocity) > 1e-9
+          ),
+          renderInterpolation: false,
+          resetPresentationReplacement: sampleIndex === 0
+        }
+      });
+    }
     for (const wheelId of RACE_WHEEL_IDS) {
       this.renderWheelSpinAngles[wheelId] = quantize((
         Number(this.renderWheelSpinAngles[wheelId] || 0)

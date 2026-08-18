@@ -6,6 +6,7 @@ import {
   RaceVehicleDynamicsWorkerBridge,
   applyRaceVehicleRenderSnapshot,
   applyWorkerTrackStateVisualDelta,
+  resetWorkerTrackStateVisualPresentation,
   createRaceVehicleDynamicsWorkerInitialization
 } from '../../src/racing/simulation/RaceVehicleDynamicsWorkerBridge.js';
 
@@ -13,7 +14,8 @@ test('worker Track State visual deltas update only newer bounded cells', () => {
   const session = {};
   applyWorkerTrackStateVisualDelta(session, {
     stepIndex: 8,
-    cellRevision: 4,
+    cellRevision: 4, visualRevision: 4,
+    dirtyAtlasTiles: [{ tileX: 0, tileZ: 0, revision: 4 }],
     eventSequence: 12,
     cells: [{ key: '0:0', x: 0, z: 0, revision: 4, wetness: 0.6 }]
   });
@@ -28,6 +30,10 @@ test('worker Track State visual deltas update only newer bounded cells', () => {
   assert.equal(session.workerTrackStateVisual.stepIndex, 9);
   assert.equal(session.workerTrackStateVisual.cellRevision, 5);
   assert.equal(session.workerTrackStateVisual.eventSequence, 13);
+  assert.equal(session.workerTrackStateVisual.visualRevision, 5);
+  resetWorkerTrackStateVisualPresentation(session);
+  assert.equal(session.workerTrackStateVisual.cells.size, 0);
+  assert.equal(session.trackStateVisualCache, null);
 });
 import {
   quaternionFromEuler,
@@ -162,14 +168,16 @@ test('rolled worker snapshots update body, wheel, and debug state atomically', (
   assert.deepEqual(dormantRunnerState.position, { x: 99, y: 99, z: 99 });
 });
 
-test('worker handoff keeps canonical body-local presentation continuous through driving incidents', () => {
+test('worker hill handoff keeps canonical body-local presentation continuous through driving incidents', () => {
   const scenarios = [
     { name: 'straight', euler: { yaw: 0.1 }, steering: 0, compression: 0.08 },
     { name: 'steering', euler: { yaw: 0.4 }, steering: 0.35, compression: 0.09 },
     { name: 'compression', euler: { pitch: -0.08 }, steering: 0.1, compression: 0.18 },
+    { name: 'hill-transition', euler: { pitch: 0.31, roll: -0.12 }, steering: 0.08, compression: 0.13 },
     { name: 'jump', euler: { pitch: 0.2 }, steering: 0.05, compression: 0.01 },
     { name: 'rollover', euler: { yaw: 0.5, roll: 2.4 }, steering: -0.2, compression: 0.04 },
     { name: 'collision-correction', euler: { yaw: 0.7, roll: 0.15 }, steering: 0.2, compression: 0.14 },
+    { name: 'local-ccd-rollback', euler: { yaw: 0.65, pitch: -0.12 }, steering: 0.18, compression: 0.11 },
     { name: 'recovery', euler: { yaw: 1.1 }, steering: 0, compression: 0.1 }
   ];
   for (const [scenarioIndex, scenario] of scenarios.entries()) {
@@ -221,11 +229,11 @@ test('worker handoff keeps canonical body-local presentation continuous through 
     const dot = Math.abs(inline.orientation.x * worker.orientation.x
       + inline.orientation.y * worker.orientation.y + inline.orientation.z * worker.orientation.z
       + inline.orientation.w * worker.orientation.w);
-    assert.equal(2 * Math.acos(Math.min(1, dot)) * 180 / Math.PI < 1, true, scenario.name);
+    assert.equal(2 * Math.acos(Math.min(1, dot)) * 180 / Math.PI < 0.5, true, scenario.name);
     for (const wheelId of ['fl', 'fr', 'rl', 'rr']) {
       const before = inline.wheelPoses[wheelId].position;
       const after = worker.wheelPoses[wheelId].position;
-      assert.equal(Math.hypot(after.x - before.x, after.y - before.y, after.z - before.z) < 0.02, true, `${scenario.name}:${wheelId}`);
+      assert.equal(Math.hypot(after.x - before.x, after.y - before.y, after.z - before.z) < 0.01, true, `${scenario.name}:${wheelId}`);
       assert.equal(Math.abs(worker.wheels[wheelId].hubPositionBody.x) < 1.2, true);
     }
     const stalled100 = interpolateVehicleRenderSnapshots(inline, worker, worker.simulationTimeSeconds + 0.1);
@@ -239,51 +247,51 @@ test('worker handoff keeps canonical body-local presentation continuous through 
 test('worker reset immediately moves body and all wheels as one rigid presentation', () => {
   const previousOrientation = quaternionFromEuler({ yaw: 0.2, roll: 0.4 });
   const nextOrientation = quaternionFromEuler({ yaw: 1.1, pitch: -0.2, roll: -0.1 });
+  const wheelIds = ['fl', 'fr', 'rl', 'rr'];
+  const localByWheel = {
+    fl: { x: -0.8, y: -0.3, z: 1.3 }, fr: { x: 0.8, y: -0.3, z: 1.3 },
+    rl: { x: -0.8, y: -0.3, z: -1.3 }, rr: { x: 0.8, y: -0.3, z: -1.3 }
+  };
   const session = {
-    vehicleDynamicsPresentationState: { position: { x: 1, y: 2, z: 3 } },
+    vehicleRenderState: {
+      resetGeneration: 3,
+      position: { x: 1, y: 2, z: 3 }, orientation: previousOrientation,
+      velocity: {}, angularVelocity: {}, visualState: 1,
+      wheels: Object.fromEntries(wheelIds.map((wheelId) => [wheelId, {
+        hubPositionBody: localByWheel[wheelId],
+        suspensionMountBody: { ...localByWheel[wheelId], y: 0.1 },
+        suspensionAxisBody: { x: 0, y: -1, z: 0 },
+        suspensionCompressionM: 0.1, spinAngleRad: 0,
+        contactPointWorld: {}, surfaceNormalWorld: { x: 0, y: 1, z: 0 }
+      }]))
+    },
     vehicle3d: {
       enabled: true,
-      authoritativeSource: 'VehicleDynamicsWorker',
-      position: { x: 1, y: 2, z: 3 },
-      orientation: previousOrientation,
-      wheels: {
-        fl: {
-          position: { x: 0.2, y: 1.6, z: 4.2 },
-          suspensionMount: { x: 0.2, y: 2.1, z: 4.2 },
-          suspensionAxis: { x: 0, y: -1, z: 0 }
-        },
-        fr: {
-          position: { x: 1.8, y: 1.6, z: 4.2 },
-          suspensionMount: { x: 1.8, y: 2.1, z: 4.2 },
-          suspensionAxis: { x: 0, y: -1, z: 0 }
-        }
-      }
+      authoritativeSource: 'VehicleDynamicsWorker'
     }
   };
-  const beforeBody = structuredClone(session.vehicle3d.position);
-  const beforeOffsets = Object.fromEntries(Object.entries(session.vehicle3d.wheels).map(
-    ([wheelId, wheel]) => [wheelId, rotateVectorToBody({
-      x: wheel.position.x - beforeBody.x,
-      y: wheel.position.y - beforeBody.y,
-      z: wheel.position.z - beforeBody.z
-    }, previousOrientation)]
-  ));
-  assert.equal(applyRaceVehicleProvisionalResetPresentation(session, {
+  const provisional = applyRaceVehicleProvisionalResetPresentation(session, {
     position: { x: 20, y: 5, z: -10 },
     orientation: nextOrientation
-  }), true);
-  assert.equal(session.vehicleDynamicsPresentationState, null);
-  for (const [wheelId, wheel] of Object.entries(session.vehicle3d.wheels)) {
+  }, 4);
+  assert.equal(provisional.resetGeneration, 4);
+  assert.equal(session.vehicleRenderState, provisional);
+  assert.equal(session.vehicleDynamicsPresentationState.resetGeneration, 4);
+  assert.deepEqual(Object.keys(session.vehicle3d.wheels).sort(), wheelIds);
+  for (const wheelId of wheelIds) {
+    const wheel = session.vehicle3d.wheels[wheelId];
     const afterOffset = rotateVectorToBody({
       x: wheel.position.x - session.vehicle3d.position.x,
       y: wheel.position.y - session.vehicle3d.position.y,
       z: wheel.position.z - session.vehicle3d.position.z
     }, nextOrientation);
     assert.ok(Math.hypot(
-      afterOffset.x - beforeOffsets[wheelId].x,
-      afterOffset.y - beforeOffsets[wheelId].y,
-      afterOffset.z - beforeOffsets[wheelId].z
+      afterOffset.x - localByWheel[wheelId].x,
+      afterOffset.y - localByWheel[wheelId].y,
+      afterOffset.z - localByWheel[wheelId].z
     ) < 1e-9);
+    assert.equal(wheel.resetGeneration, 4);
+    assert.equal(wheel.inContact, false);
   }
 });
 

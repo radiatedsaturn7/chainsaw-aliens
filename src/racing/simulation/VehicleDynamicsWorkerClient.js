@@ -103,6 +103,8 @@ export class VehicleDynamicsWorkerClient {
     this.snapshotsByVehicle = new Map();
     this.pendingResetSequenceByVehicle = new Map();
     this.minimumEventSequenceByVehicle = new Map();
+    this.minimumResetGenerationByVehicle = new Map();
+    this.latestResetAcknowledgementByVehicle = new Map();
     this.latestReceiveTimeMs = 0;
     this.latestTrackStateVisualDelta = null;
     this.lastError = null;
@@ -129,11 +131,17 @@ export class VehicleDynamicsWorkerClient {
       { length: shared ? Math.max(4, vehicleCount * 4) : Math.max(40, vehicleCount * 40) },
       () => createVehicleRenderSnapshotBuffer({ shared })
     );
+    const snapshotSequenceControl = shared
+      ? new SharedArrayBuffer(snapshotBuffers.length * Int32Array.BYTES_PER_ELEMENT)
+      : null;
+    this.snapshotBuffers = snapshotBuffers;
+    this.snapshotSequenceControl = snapshotSequenceControl;
     this.worker.postMessage({
       type: 'initialize',
       protocolVersion: VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION,
       payload,
-      snapshotBuffers
+      snapshotBuffers,
+      snapshotSequenceControl
     }, [
       ...snapshotBuffers.filter((buffer) => buffer instanceof ArrayBuffer),
       ...transferables
@@ -173,17 +181,26 @@ export class VehicleDynamicsWorkerClient {
     }, [buffer]);
   }
 
-  submitReset(buffer, resetSequence, vehicleId = 'player') {
+  submitReset(buffer, resetSequence, vehicleId = 'player', provisionalSnapshot = null) {
     if (this.closed) return;
     if (!(buffer instanceof ArrayBuffer)) {
       throw new TypeError('Worker reset must be a compact transferable ArrayBuffer');
     }
     const id = String(vehicleId);
     this.pendingResetSequenceByVehicle.set(id, Number(resetSequence) >>> 0);
-    this.snapshotsByVehicle.delete(id);
-    if (id === 'player') {
-      this.previousSnapshot = null;
-      this.latestSnapshot = null;
+    this.minimumResetGenerationByVehicle.set(id, Number(resetSequence) >>> 0);
+    if (provisionalSnapshot) {
+      const history = {
+        snapshots: [provisionalSnapshot], previous: provisionalSnapshot,
+        latest: provisionalSnapshot, renderedSnapshot: provisionalSnapshot,
+        droppedSnapshots: 0, overwrittenSnapshots: 0, bufferStarvationCount: 0,
+        latestWorkerSequence: 0, displayedSequence: 0, snapshotIntervalSeconds: 0
+      };
+      this.snapshotsByVehicle.set(id, history);
+      if (id === 'player') {
+        this.previousSnapshot = provisionalSnapshot;
+        this.latestSnapshot = provisionalSnapshot;
+      }
     }
     this.worker.postMessage({
       type: 'resetVehicle',
@@ -196,16 +213,44 @@ export class VehicleDynamicsWorkerClient {
   #handleMessage(message = {}) {
     if (message.type === 'snapshot' && message.buffer) {
       const receiveStart = this.now();
-      const decoded = readVehicleRenderSnapshot(message.buffer);
+      let decoded = null;
+      if (this.snapshotSequenceControl && Number.isInteger(message.snapshotSlot)) {
+        const counters = new Int32Array(this.snapshotSequenceControl);
+        const expected = (Number(message.snapshotSequence) * 2) | 0;
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          const before = Atomics.load(counters, message.snapshotSlot);
+          if ((before & 1) !== 0) continue;
+          const candidate = readVehicleRenderSnapshot(message.buffer);
+          const after = Atomics.load(counters, message.snapshotSlot);
+          if (before === after && after === expected) {
+            decoded = candidate;
+            break;
+          }
+        }
+        // This notification was overtaken in the latest-wins ring. A newer
+        // notification points at the coherent state, so never queue the stale copy.
+        if (!decoded) return;
+      } else {
+        decoded = readVehicleRenderSnapshot(message.buffer);
+      }
+      decoded.workerSequence = Number(message.snapshotSequence || decoded.stepIndex || 0);
       if (message.trackStateVisualDelta?.cells) {
         this.latestTrackStateVisualDelta = message.trackStateVisualDelta;
       }
       const vehicleId = String(message.vehicleId || 'player');
       const pendingReset = this.pendingResetSequenceByVehicle.has(vehicleId);
+      const pendingResetGeneration = Number(
+        this.pendingResetSequenceByVehicle.get(vehicleId) || 0
+      );
+      const minimumResetGeneration = Number(
+        this.minimumResetGenerationByVehicle.get(vehicleId) || 0
+      );
       const minimumEventSequence = Number(
         this.minimumEventSequenceByVehicle.get(vehicleId) || 0
       );
-      if (pendingReset || decoded.eventSequence < minimumEventSequence) {
+      if ((pendingReset && Number(decoded.resetGeneration || 0) < pendingResetGeneration)
+        || Number(decoded.resetGeneration || 0) < minimumResetGeneration
+        || decoded.eventSequence < minimumEventSequence) {
         if (message.buffer instanceof ArrayBuffer) {
           this.worker.postMessage(
             { type: 'recycleSnapshotBuffer', buffer: message.buffer }, [message.buffer]
@@ -214,19 +259,34 @@ export class VehicleDynamicsWorkerClient {
         return;
       }
       const history = this.snapshotsByVehicle.get(vehicleId) || {
-        snapshots: [], previous: null, latest: null, droppedSnapshots: 0, snapshotIntervalSeconds: 0
+        snapshots: [], previous: null, latest: null, droppedSnapshots: 0,
+        overwrittenSnapshots: 0, bufferStarvationCount: 0,
+        latestWorkerSequence: 0, displayedSequence: 0,
+        snapshotIntervalSeconds: 0, renderedSnapshot: null
       };
       history.droppedSnapshots = Math.max(
         history.droppedSnapshots, Number(message.droppedSnapshots || 0)
+      );
+      history.overwrittenSnapshots = Math.max(
+        history.overwrittenSnapshots, Number(message.overwrittenSnapshots || 0)
+      );
+      history.bufferStarvationCount = Math.max(
+        history.bufferStarvationCount, Number(message.bufferStarvationCount || 0)
+      );
+      history.latestWorkerSequence = Math.max(
+        history.latestWorkerSequence, Number(message.snapshotSequence || decoded.stepIndex || 0)
       );
       if (!history.latest || decoded.stepIndex > history.latest.stepIndex) {
         if (history.latest && decoded.stepIndex > history.latest.stepIndex + 1) {
           history.droppedSnapshots += decoded.stepIndex - history.latest.stepIndex - 1;
         }
         if (history.latest) {
-          history.snapshotIntervalSeconds = Math.max(
+          const measuredInterval = Math.max(
             0, decoded.simulationTimeSeconds - history.latest.simulationTimeSeconds
           );
+          history.snapshotIntervalSeconds = history.snapshotIntervalSeconds > 0
+            ? history.snapshotIntervalSeconds * 0.8 + measuredInterval * 0.2
+            : measuredInterval;
         }
         history.snapshots.push(decoded);
         if (history.snapshots.length > 4) history.snapshots.shift();
@@ -251,15 +311,43 @@ export class VehicleDynamicsWorkerClient {
       const vehicleId = String(message.vehicleId || 'player');
       const pending = this.pendingResetSequenceByVehicle.get(vehicleId);
       if (pending !== undefined && Number(message.resetSequence) >= pending) {
+        const resetSnapshot = message.buffer
+          ? readVehicleRenderSnapshot(message.buffer) : null;
+        if (!resetSnapshot
+          || Number(resetSnapshot.resetGeneration || 0) < Number(pending)) return;
+        resetSnapshot.workerSequence = Number(message.snapshotSequence || resetSnapshot.stepIndex || 0);
+        const history = {
+          snapshots: [resetSnapshot], previous: resetSnapshot, latest: resetSnapshot,
+          renderedSnapshot: resetSnapshot, droppedSnapshots: 0,
+          overwrittenSnapshots: 0, bufferStarvationCount: 0,
+          latestWorkerSequence: resetSnapshot.workerSequence,
+          displayedSequence: resetSnapshot.workerSequence,
+          snapshotIntervalSeconds: 0
+        };
+        this.snapshotsByVehicle.set(vehicleId, history);
+        if (vehicleId === 'player') {
+          this.previousSnapshot = resetSnapshot;
+          this.latestSnapshot = resetSnapshot;
+        }
         this.pendingResetSequenceByVehicle.delete(vehicleId);
+        this.minimumResetGenerationByVehicle.set(
+          vehicleId, Number(resetSnapshot.resetGeneration || pending)
+        );
+        this.latestResetAcknowledgementByVehicle.set(vehicleId, {
+          resetGeneration: Number(message.resetGeneration || resetSnapshot.resetGeneration || 0),
+          contactRebuildStatus: message.contactRebuildStatus || null,
+          supportedWheelCount: Number(message.supportedWheelCount || 0),
+          perWheelContactValidity: message.perWheelContactValidity || {},
+          equilibrium: message.equilibrium || null
+        });
         this.minimumEventSequenceByVehicle.set(
           vehicleId,
           Math.max(0, Number(message.eventSequence) || 0)
         );
-        this.snapshotsByVehicle.delete(vehicleId);
-        if (vehicleId === 'player') {
-          this.previousSnapshot = null;
-          this.latestSnapshot = null;
+        if (message.buffer instanceof ArrayBuffer) {
+          this.worker.postMessage(
+            { type: 'recycleSnapshotBuffer', buffer: message.buffer }, [message.buffer]
+          );
         }
       }
     } else if (message.type === 'error') {
@@ -281,6 +369,11 @@ export class VehicleDynamicsWorkerClient {
     const snapshots = history?.snapshots || [];
     let previous = snapshots.at(-2) || history?.previous;
     let latest = snapshots.at(-1) || history?.latest;
+    if (history?.renderedSnapshot && snapshots.length
+      && renderTimeSeconds < snapshots[0].simulationTimeSeconds) {
+      previous = history.renderedSnapshot;
+      latest = snapshots[0];
+    }
     for (let index = 1; index < snapshots.length; index += 1) {
       if (renderTimeSeconds <= snapshots[index].simulationTimeSeconds) {
         previous = snapshots[index - 1];
@@ -288,11 +381,20 @@ export class VehicleDynamicsWorkerClient {
         break;
       }
     }
-    return interpolateVehicleRenderSnapshots(
+    const rendered = interpolateVehicleRenderSnapshots(
       previous || (vehicleId === 'player' ? this.previousSnapshot : null),
       latest || (vehicleId === 'player' ? this.latestSnapshot : null),
       renderTimeSeconds
     );
+    if (rendered && history) {
+      history.displayedSequence = Number(
+        rendered.interpolationAlpha < 1
+          ? previous?.workerSequence || previous?.stepIndex || 0
+          : latest?.workerSequence || latest?.stepIndex || 0
+      );
+      history.renderedSnapshot = rendered;
+    }
+    return rendered;
   }
 
   getPresentationTelemetry(vehicleId = 'player') {
@@ -300,8 +402,12 @@ export class VehicleDynamicsWorkerClient {
     const latest = history?.latest || null;
     return {
       snapshotAgeMs: latest ? Math.max(0, this.now() - this.latestReceiveTimeMs) : Infinity,
+      latestWorkerSequence: Number(history?.latestWorkerSequence || 0),
+      displayedSequence: Number(history?.displayedSequence || 0),
       snapshotIntervalMs: Number(history?.snapshotIntervalSeconds || 0) * 1000,
-      droppedSnapshots: Number(history?.droppedSnapshots || 0)
+      droppedSnapshots: Number(history?.droppedSnapshots || 0),
+      overwrittenSnapshots: Number(history?.overwrittenSnapshots || 0),
+      bufferStarvationCount: Number(history?.bufferStarvationCount || 0)
     };
   }
 

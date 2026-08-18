@@ -31,6 +31,8 @@ const wheels = Object.fromEntries(['fl', 'fr', 'rl', 'rr'].map((id, index) => [i
   normalLoadN: 3000 + index,
   gripCoefficient: 0.9,
   steeringAngleRad: index < 2 ? 0.1 : 0,
+  camberAngleRad: index % 2 === 0 ? -0.03 : 0.03,
+  toeAngleRad: index < 2 ? 0.01 : -0.005,
   lateralForceN: 400 + index,
   selfAligningMomentNm: -12 - index,
   flags: 15
@@ -68,6 +70,7 @@ test('render snapshots use one compact transferable buffer without telemetry or 
   const decoded = readVehicleRenderSnapshot(buffer);
   assert.equal(decoded.stepIndex, 120);
   assert.equal(decoded.eventSequence, 9);
+  assert.equal(decoded.resetGeneration, 0);
   assert.equal(decoded.position.z, 20);
   assert.equal(decoded.wheels.rr.hubPositionBody.x, 1.5);
   assert.equal(decoded.wheelPoses.rr.position.x, 11.5);
@@ -84,6 +87,26 @@ test('render snapshots use one compact transferable buffer without telemetry or 
   const transferred = structuredClone(buffer, { transfer: [buffer] });
   assert.equal(buffer.byteLength, 0);
   assert.equal(transferred.byteLength, VEHICLE_RENDER_SNAPSHOT_BYTES);
+});
+
+test('worker snapshots preserve reset generation and never interpolate across resets', () => {
+  const before = snapshot({
+    resetGeneration: 4, simulationTimeSeconds: 1,
+    position: { x: -100, y: 0, z: 0 }
+  });
+  const after = snapshot({
+    resetGeneration: 5, simulationTimeSeconds: 1.01,
+    position: { x: 20, y: 2, z: 8 }
+  });
+  const decoded = readVehicleRenderSnapshot(writeVehicleRenderSnapshot(
+    createVehicleRenderSnapshotBuffer(), after
+  ));
+  assert.equal(decoded.resetGeneration, 5);
+  assert.deepEqual(Object.keys(decoded.wheels).sort(), ['fl', 'fr', 'rl', 'rr']);
+  const rendered = interpolateVehicleRenderSnapshots(before, decoded, 1.005);
+  assert.equal(rendered.resetGeneration, 5);
+  assert.equal(rendered.position.x, 20);
+  assert.deepEqual(Object.keys(rendered.wheelPoses).sort(), ['fl', 'fr', 'rl', 'rr']);
 });
 
 test('mutable weather and damage use one compact transferable update buffer', () => {
@@ -202,11 +225,52 @@ test('canonical VehicleRenderState preserves local wheels, spin direction, and b
     Object.keys(decoded.wheels.fr).sort()
   );
   assert.equal(decoded.schemaVersion, 1);
+  assert.ok(Math.abs(decoded.wheels.fl.camberAngleRad + 0.03) < 1e-6);
+  assert.ok(Math.abs(decoded.wheels.fl.toeAngleRad - 0.01) < 1e-6);
   const rendered = interpolateVehicleRenderSnapshots(previous, latest, 1.005);
   assert.equal(rendered.wheels.fl.spinAngleRad > previous.wheels.fl.spinAngleRad, true);
   assert.equal(rendered.wheelPoses.fl.position.x - rendered.position.x,
     rendered.wheels.fl.hubPositionBody.x);
   assert.equal(rendered.extrapolationDurationSeconds, 0);
+});
+
+test('presentation stalls stay coherent, cap extrapolation, and preserve rotation direction', () => {
+  const previous = snapshot({
+    stepIndex: 1,
+    simulationTimeSeconds: 0,
+    position: { x: 0, y: 0, z: 0 },
+    velocity: { x: 10, y: 0, z: 0 },
+    angularVelocity: { x: 0, y: 4, z: 0 }
+  });
+  const angle = 190 * Math.PI / 180;
+  const latest = snapshot({
+    stepIndex: 2,
+    simulationTimeSeconds: 0.01,
+    position: { x: 0.1, y: 0, z: 0 },
+    velocity: { x: 10, y: 0, z: 0 },
+    orientation: { x: 0, y: Math.sin(angle / 2), z: 0, w: Math.cos(angle / 2) },
+    angularVelocity: { x: 0, y: 4, z: 0 }
+  });
+  const halfway = interpolateVehicleRenderSnapshots(previous, latest, 0.005);
+  assert.equal(halfway.orientation.y > 0, true);
+  for (const stallMs of [16, 33, 100, 250]) {
+    const rendered = interpolateVehicleRenderSnapshots(
+      previous, latest, latest.simulationTimeSeconds + stallMs / 1000
+    );
+    assert.equal(rendered.extrapolationDurationSeconds <= 0.033, true);
+    assert.equal(Number.isFinite(rendered.position.x), true);
+    for (const wheelId of ['fl', 'fr', 'rl', 'rr']) {
+      assert.deepEqual(
+        rendered.wheels[wheelId].hubPositionBody,
+        latest.wheels[wheelId].hubPositionBody
+      );
+      assert.equal(Number.isFinite(rendered.wheelPoses[wheelId].position.x), true);
+    }
+  }
+  const held100 = interpolateVehicleRenderSnapshots(previous, latest, 0.11);
+  const held250 = interpolateVehicleRenderSnapshots(previous, latest, 0.26);
+  assert.deepEqual(held100.position, held250.position);
+  assert.deepEqual(held100.orientation, held250.orientation);
 });
 
 test('worker and render latency percentiles remain independent', () => {

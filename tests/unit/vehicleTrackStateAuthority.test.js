@@ -83,5 +83,10 @@ test('worker Track State publishes bounded revisioned visual deltas', () => {
   assert.equal(visualDelta.cells.length <= 192, true);
   assert.equal(visualDelta.stepIndex, authority.trackState.stepIndex);
   assert.equal(visualDelta.cellRevision > 0, true);
+  assert.equal(visualDelta.visualRevision, visualDelta.cellRevision);
+  assert.equal(visualDelta.dirtyAtlasTiles.length > 0, true);
+  assert.equal(visualDelta.dirtyAtlasTiles.every((tile) => (
+    Number.isInteger(tile.tileX) && Number.isInteger(tile.tileZ)
+  )), true);
   assert.equal(visualDelta.cells.every((cell) => Number(cell.revision) > 0), true);
 });
