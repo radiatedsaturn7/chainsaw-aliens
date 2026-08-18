@@ -1225,7 +1225,10 @@ export class ContactPatchTireModel {
     }
   }
 
-  step({ state, controls, config, environment = {}, dt = 0 }) {
+  step({
+    state, controls, config, environment = {}, dt = 0,
+    staticSupportSolve = false, collisionContactRebuild = false
+  }) {
     const physicsCosts = environment.physicsCostAccounting || null;
     const drivenWheelIds = config.drivenWheelIds || [];
     const centerSteeringAngleRad = resolvePhysicalCenterSteeringAngle(controls, config, state);
@@ -1416,9 +1419,13 @@ export class ContactPatchTireModel {
       let unsprungVelocityMps = Number(previousSuspension.unsprungVelocityMps || 0);
       let compressionM = previousCompressionM;
       if (initialContactValidity.valid) {
-        if (!hasPreviousSuspensionState) {
+        if (staticSupportSolve || collisionContactRebuild || !hasPreviousSuspensionState) {
           compressionM = Number(clampedCompressionM);
-          unsprungVelocityMps = 0;
+          // Split correction changes configuration, not generalized velocity.
+          // Preserve the physical unsprung velocity while rebuilding every
+          // geometric/contact field at the corrected body pose.
+          unsprungVelocityMps = staticSupportSolve
+            ? 0 : Number(previousSuspension.unsprungVelocityMps || 0);
         } else {
           const tireErrorM = Number(clampedCompressionM) - compressionM;
           const unsprungMassKg = Number(config.unsprungMassByWheelKg?.[wheelId] || config.unsprungMassKg);

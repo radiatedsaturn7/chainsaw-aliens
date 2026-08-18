@@ -7,6 +7,10 @@ import {
   rotateVectorByQuaternion,
   scaleVector3
 } from './RigidBodyMath.js';
+import {
+  PersistentManifoldHistory,
+  reducePersistentContactManifold
+} from './PersistentContactManifold.js';
 
 const EPSILON = 1e-9;
 const DEFAULT_BUCKET_SIZE_M = 16;
@@ -671,6 +675,16 @@ export class StaticColliderCollision {
     });
     this.proposedStateScratch = collisionState();
     this.previousStateScratch = collisionState();
+    this.persistentManifoldHistory = new PersistentManifoldHistory();
+    this.manifoldStepSequence = 0;
+  }
+
+  createPersistentManifoldSnapshot() {
+    return this.persistentManifoldHistory.createSnapshot();
+  }
+
+  restorePersistentManifoldSnapshot(snapshot) {
+    this.persistentManifoldHistory.restoreSnapshot(snapshot);
   }
 
   poseAt(previousState, proposedState, fraction) {
@@ -845,6 +859,7 @@ export class StaticColliderCollision {
         restitution: clamp(event.collider.restitution, 0, 0.6),
         normalImpulseNs: 0,
         tangentialImpulseNs: 0,
+        tangentialImpulseWorldNs: { x: 0, y: 0, z: 0 },
         restitutionImpulseNs: 0,
         contactType: 'static-body'
       });
@@ -900,7 +915,10 @@ export class StaticColliderCollision {
         crossVector3(state.angularVelocityWorld, contact.arm)
       );
       const closingSpeed = Math.max(0, -dot(pointVelocity, contact.normal));
-      contact.restitutionTargetSpeedMps = closingSpeed >= restitutionThreshold
+      contact.preImpactManifoldNormalVelocityMps = -closingSpeed;
+      contact.restitutionTargetSpeedMps = contact.manifoldRepresentativeIndex === 0
+        && contact.persistentManifold !== true
+        && closingSpeed >= restitutionThreshold
         ? closingSpeed * contact.restitution : 0;
     });
     const iterations = Math.max(4, Math.trunc(finite(config.bodyCollisionSolverIterations, 4)));
@@ -941,18 +959,34 @@ export class StaticColliderCollision {
         const tangentDenominator = Math.max(EPSILON, inverseMassDenominator(
           tangent, contact.arm, config, state.orientation
         ));
-        const frictionMagnitude = Math.min(
-          tangentSpeed / tangentDenominator,
-          contact.friction * magnitude
+        const requestedFrictionImpulse = scaleVector3(
+          tangent, -tangentSpeed / tangentDenominator
         );
-        const frictionImpulse = scaleVector3(tangent, -frictionMagnitude);
+        const accumulatedFrictionImpulse = addVector3(
+          contact.tangentialImpulseWorldNs,
+          requestedFrictionImpulse
+        );
+        const maximumFrictionImpulseNs = contact.friction * contact.normalImpulseNs;
+        const accumulatedFrictionMagnitude = length(accumulatedFrictionImpulse);
+        const clampedAccumulatedFriction = accumulatedFrictionMagnitude
+            > maximumFrictionImpulseNs && accumulatedFrictionMagnitude > EPSILON
+          ? scaleVector3(
+              accumulatedFrictionImpulse,
+              maximumFrictionImpulseNs / accumulatedFrictionMagnitude
+            ) : accumulatedFrictionImpulse;
+        const frictionImpulse = subtract(
+          clampedAccumulatedFriction,
+          contact.tangentialImpulseWorldNs
+        );
+        const frictionMagnitude = length(frictionImpulse);
         applyImpulse(state, frictionImpulse, contact.arm, config);
         linearImpulse = addVector3(linearImpulse, frictionImpulse);
         angularImpulse = addVector3(
           angularImpulse,
           crossVector3(contact.arm, frictionImpulse)
         );
-        contact.tangentialImpulseNs += frictionMagnitude;
+        contact.tangentialImpulseWorldNs = clampedAccumulatedFriction;
+        contact.tangentialImpulseNs = length(clampedAccumulatedFriction);
       });
     }
     return { linearImpulse, angularImpulse };
@@ -961,11 +995,15 @@ export class StaticColliderCollision {
   measureAndCorrectPenetration(state, colliders, toleranceM, config) {
     let maximumPenetrationM = 0;
     let correction = { x: 0, y: 0, z: 0 };
+    let angularCorrection = { x: 0, y: 0, z: 0 };
     const maximumCorrectionM = Math.max(0.01, finite(
-      config.staticColliderMaximumPositionalCorrectionM, 1
+      config.staticColliderMaximumPositionalCorrectionM, 0.06
     ));
-    for (let iteration = 0; iteration < 16; iteration += 1) {
-      let deepest = null;
+    const maximumAngularCorrectionRad = Math.max(0.01, finite(
+      config.staticColliderMaximumAngularCorrectionRad, 8 * Math.PI / 180
+    ));
+    for (let iteration = 0; iteration < 4; iteration += 1) {
+      const overlaps = [];
       this.candidates.forEach((candidate) => {
         const point = transformPoint(candidate.localPoint, state.position, state.orientation);
         colliders.forEach((collider) => {
@@ -987,19 +1025,57 @@ export class StaticColliderCollision {
             const meshOverlap = pointInsideMeshSurface(point, collider, toleranceM);
             if (meshOverlap) overlap = { ...meshOverlap, collider };
           }
-          if (overlap && (!deepest || overlap.penetrationM > deepest.penetrationM)) {
-            deepest = overlap;
+          if (overlap) {
+            overlaps.push({
+              ...overlap,
+              colliderId: collider.id,
+              featureId: overlap.featureId || collider.featureId || collider.type,
+              pieceId: candidate.pieceId || null,
+              pointWorld: point,
+              arm: subtract(point, state.position)
+            });
           }
         });
       });
-      if (!deepest) break;
-      maximumPenetrationM = Math.max(maximumPenetrationM, deepest.penetrationM);
-      const remaining = Math.max(0, maximumCorrectionM - length(correction));
-      if (!(remaining > EPSILON)) break;
-      const magnitude = Math.min(remaining, deepest.penetrationM - toleranceM + 1e-6);
-      const applied = scaleVector3(deepest.normal, magnitude);
-      state.position = addVector3(state.position, applied);
-      correction = addVector3(correction, applied);
+      if (!overlaps.length) break;
+      const constraints = reducePersistentContactManifold(overlaps).contacts;
+      let corrected = false;
+      for (let index = 0; index < constraints.length; index += 1) {
+        const constraint = constraints[index];
+        maximumPenetrationM = Math.max(maximumPenetrationM, constraint.penetrationM);
+        const positionalRemainingM = Math.max(0, maximumCorrectionM - length(correction));
+        const angularRemainingRad = Math.max(
+          0, maximumAngularCorrectionRad - length(angularCorrection)
+        );
+        if (!(positionalRemainingM > EPSILON || angularRemainingRad > EPSILON)) break;
+        const denominator = Math.max(EPSILON, inverseMassDenominator(
+          constraint.normal, constraint.arm, config, state.orientation
+        ));
+        const pseudoImpulse = scaleVector3(
+          constraint.normal,
+          Math.max(0, constraint.penetrationM - toleranceM + 1e-6) / denominator
+        );
+        let linear = scaleVector3(pseudoImpulse, 1 / Math.max(1, config.massKg));
+        const linearLength = length(linear);
+        if (linearLength > positionalRemainingM && linearLength > EPSILON) {
+          linear = scaleVector3(linear, positionalRemainingM / linearLength);
+        }
+        let angular = inverseInertiaWorldMultiply(
+          crossVector3(constraint.arm, pseudoImpulse),
+          state.orientation,
+          config.inertiaTensorBodyKgM2
+        );
+        const angularLength = length(angular);
+        if (angularLength > angularRemainingRad && angularLength > EPSILON) {
+          angular = scaleVector3(angular, angularRemainingRad / angularLength);
+        }
+        state.position = addVector3(state.position, linear);
+        state.orientation = integrateQuaternion(state.orientation, angular, 1);
+        correction = addVector3(correction, linear);
+        angularCorrection = addVector3(angularCorrection, angular);
+        corrected = true;
+      }
+      if (!corrected) break;
     }
     let residualPenetrationM = 0;
     this.candidates.forEach((candidate) => {
@@ -1026,7 +1102,8 @@ export class StaticColliderCollision {
     return {
       maximumPenetrationM: Math.max(0, maximumPenetrationM),
       residualPenetrationM: Math.max(0, residualPenetrationM),
-      correction
+      correction,
+      angularCorrection
     };
   }
 
@@ -1070,7 +1147,18 @@ export class StaticColliderCollision {
     );
     workingState.position = { ...impactPose.position };
     workingState.orientation = { ...impactPose.orientation };
-    const contacts = this.buildManifold(sweep.impact, workingState, config);
+    const collisionStepIndex = Number.isFinite(Number(environment.collisionStepIndex))
+      ? Number(environment.collisionStepIndex) : ++this.manifoldStepSequence;
+    this.persistentManifoldHistory.begin(collisionStepIndex);
+    const initialRawContacts = this.buildManifold(sweep.impact, workingState, config);
+    let reduced = reducePersistentContactManifold(initialRawContacts);
+    let contacts = reduced.contacts;
+    for (let index = 0; index < contacts.length; index += 1) {
+      contacts[index].persistentManifold = this.persistentManifoldHistory.classifyAndRemember(
+        contacts[index].manifoldClusterKey
+      );
+    }
+    physicsCostAccounting?.count('staticColliderRawManifoldContacts', initialRawContacts.length);
     physicsCostAccounting?.count('staticColliderManifoldContacts', contacts.length);
     const manifoldTimer = physicsCostAccounting?.start('staticColliderManifoldSolve');
     let resolved = this.resolveManifold(workingState, contacts, config);
@@ -1079,6 +1167,8 @@ export class StaticColliderCollision {
     const maximumImpactIterations = clamp(Math.trunc(finite(
       config.staticColliderImpactIterations, 16
     )), 1, 24);
+    let previousZeroTimeSignature = null;
+    let zeroTimeRepeatCount = 0;
     // Integrate the post-impact remainder through the same swept query. A
     // corner impulse can rotate another compound piece into the obstacle even
     // after the first feature has stopped closing; checking the remainder is
@@ -1127,7 +1217,25 @@ export class StaticColliderCollision {
       );
       workingState.position = { ...nextImpactPose.position };
       workingState.orientation = { ...nextImpactPose.orientation };
-      const nextContacts = this.buildManifold(remainderSweep.impact, workingState, config);
+      const nextRawContacts = this.buildManifold(remainderSweep.impact, workingState, config);
+      reduced = reducePersistentContactManifold(nextRawContacts);
+      const nextContacts = reduced.contacts;
+      let zeroTimeSignature = '';
+      for (let index = 0; index < nextContacts.length; index += 1) {
+        zeroTimeSignature += `${nextContacts[index].manifoldClusterKey};`;
+      }
+      const zeroTimeRepeat = remainderSweep.impact.fraction <= 1e-8
+        && zeroTimeSignature === previousZeroTimeSignature;
+      zeroTimeRepeatCount = zeroTimeRepeat ? zeroTimeRepeatCount + 1 : 0;
+      previousZeroTimeSignature = remainderSweep.impact.fraction <= 1e-8
+        ? zeroTimeSignature : null;
+      for (let index = 0; index < nextContacts.length; index += 1) {
+        nextContacts[index].persistentManifold = zeroTimeRepeat
+          || this.persistentManifoldHistory.classifyAndRemember(
+            nextContacts[index].manifoldClusterKey
+          );
+      }
+      physicsCostAccounting?.count('staticColliderRawManifoldContacts', nextRawContacts.length);
       physicsCostAccounting?.count('staticColliderManifoldContacts', nextContacts.length);
       const nextResolved = this.resolveManifold(workingState, nextContacts, config);
       resolved = {
@@ -1137,6 +1245,23 @@ export class StaticColliderCollision {
       contacts.push(...nextContacts);
       const consumedFraction = clamp(remainderSweep.impact.fraction, 0, 1);
       remainingDt *= Math.max(0, 1 - consumedFraction);
+      if (zeroTimeRepeatCount >= 1) {
+        // The persistent solve has removed inward normal velocity. Consume the
+        // remainder once along the surviving tangent instead of replaying the
+        // same zero-time impact as another bounce.
+        workingState.position = addVector3(
+          workingState.position,
+          scaleVector3(workingState.velocity, remainingDt)
+        );
+        workingState.orientation = integrateQuaternion(
+          workingState.orientation,
+          workingState.angularVelocityWorld,
+          remainingDt
+        );
+        remainingDt = 0;
+        physicsCostAccounting?.count('staticColliderZeroTimeManifoldTerminations');
+        break;
+      }
       if (consumedFraction <= 1e-8 && nextContacts.every((contact) => (
         contact.normalImpulseNs <= EPSILON
       ))) break;
@@ -1156,11 +1281,17 @@ export class StaticColliderCollision {
     const penetration = this.measureAndCorrectPenetration(
       workingState, activeColliders, toleranceM, config
     );
+    const finalReduced = reducePersistentContactManifold(contacts);
+    contacts = finalReduced.contacts;
     return {
       linearImpulseWorldNs: resolved.linearImpulse,
       angularImpulseWorldNms: resolved.angularImpulse,
       positionalCorrectionWorldM: penetration.correction,
+      positionalAngularCorrectionWorldRad: penetration.angularCorrection,
       contacts,
+      rawContactCount: initialRawContacts.length,
+      reducedContactCount: contacts.length,
+      zeroTimeRepeatCount,
       candidates: activeColliders.length,
       swept: true,
       sweepSource: 'static-collider',

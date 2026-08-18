@@ -15,6 +15,10 @@ import {
   sweepWheelCylinders
 } from './WheelCylinderCollision.js';
 import { StaticColliderCollision } from './StaticRaceColliderWorld.js';
+import {
+  PersistentManifoldHistory,
+  reducePersistentContactManifold
+} from './PersistentContactManifold.js';
 
 const EPSILON = 1e-9;
 const terrainSampleContract = (raw, queryPosition, source) => {
@@ -377,6 +381,8 @@ export class ChassisBodyCollision {
     this.uniqueWheelSupportFeaturesScratch = [];
     this.contactPoolCursor = 0;
     this.contactPools = Array.from({ length: 8 }, () => []);
+    this.persistentManifoldHistory = new PersistentManifoldHistory();
+    this.manifoldStepSequence = 0;
     this.manifoldVectorScratch = Array.from(
       { length: 12 },
       () => ({ x: 0, y: 0, z: 0 })
@@ -453,6 +459,18 @@ export class ChassisBodyCollision {
       velocity: { ...state.velocity },
       angularVelocityWorld: { ...state.angularVelocityWorld }
     };
+  }
+
+  createPersistentManifoldSnapshot() {
+    return {
+      terrain: this.persistentManifoldHistory.createSnapshot(),
+      staticCollider: this.staticColliderCollision.createPersistentManifoldSnapshot()
+    };
+  }
+
+  restorePersistentManifoldSnapshot(snapshot = {}) {
+    this.persistentManifoldHistory.restoreSnapshot(snapshot.terrain);
+    this.staticColliderCollision.restorePersistentManifoldSnapshot(snapshot.staticCollider);
   }
 
   getSupportCandidates(pose = {}, targetBuffer = null) {
@@ -1623,7 +1641,7 @@ export class ChassisBodyCollision {
       this.contactPoolCursor++ % this.contactPools.length
     ];
     let contactCount = 0;
-    const contacts = contactPool;
+    let contacts = contactPool;
     let maximumContactPenetrationM = 0;
     let nonWheelCandidateCount = 0;
     let nonWheelContactCount = 0;
@@ -1712,6 +1730,22 @@ export class ChassisBodyCollision {
       contactCount += 1;
     }
     contacts.length = contactCount;
+    const rawContactCount = contactCount;
+    const reducedManifold = reducePersistentContactManifold(contacts);
+    contacts = reducedManifold.contacts;
+    const collisionStepIndex = Number.isFinite(Number(environment.collisionStepIndex))
+      ? Number(environment.collisionStepIndex)
+      : Number.isFinite(Number(queryFrame?.stepIndex))
+        ? Number(queryFrame.stepIndex) : ++this.manifoldStepSequence;
+    this.persistentManifoldHistory.begin(collisionStepIndex);
+    for (let clusterIndex = 0; clusterIndex < contacts.length; clusterIndex += 1) {
+      const contact = contacts[clusterIndex];
+      contact.persistentManifold = this.persistentManifoldHistory.classifyAndRemember(
+        contact.manifoldClusterKey
+      );
+    }
+    physicsCosts?.count('bodyRawManifoldContacts', rawContactCount);
+    physicsCosts?.count('bodyReducedManifoldContacts', contacts.length);
     const unsupportedAtContactStart = Number(
       environment.suspensionBodyContactSupport?.supportedWheelCount || 0
     ) === 0;
@@ -1737,7 +1771,10 @@ export class ChassisBodyCollision {
         vectorScratch[1]
       );
       const initialClosingSpeedMps = Math.max(0, -dot(initialPointVelocity, contact.normal));
-      contact.restitutionTargetSpeedMps = !contact.suspensionSupported
+      contact.preImpactManifoldNormalVelocityMps = -initialClosingSpeedMps;
+      contact.restitutionTargetSpeedMps = contact.manifoldRepresentativeIndex === 0
+        && contact.persistentManifold !== true
+        && !contact.suspensionSupported
         && initialClosingSpeedMps >= restitutionThresholdMps
         ? initialClosingSpeedMps * restitution
         : 0;
@@ -2101,6 +2138,8 @@ export class ChassisBodyCollision {
       wheelCylinderNormalImpulseNs,
       wheelCylinderFrictionImpulseNs,
       restitutionContributionNs,
+      rawContactCount,
+      reducedContactCount: contacts.length,
       penetrationBiasContributionNs: 0,
       maximumPositionalCorrectionM,
       positionalAngularCorrectionWorldRad: splitAngularCorrection,
@@ -2188,6 +2227,7 @@ export class ChassisBodyCollision {
       linearImpulseWorldNs: sumVector('linearImpulseWorldNs'),
       angularImpulseWorldNms: sumVector('angularImpulseWorldNms'),
       positionalCorrectionWorldM: sumVector('positionalCorrectionWorldM'),
+      positionalAngularCorrectionWorldRad: sumVector('positionalAngularCorrectionWorldRad'),
       contacts: [...(staticResult.contacts || []), ...(terrainResult.contacts || [])],
       bodyNormalImpulseNs: Number(staticResult.bodyNormalImpulseNs || 0)
         + Number(terrainResult.bodyNormalImpulseNs || 0),
