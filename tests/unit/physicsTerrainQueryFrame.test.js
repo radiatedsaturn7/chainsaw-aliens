@@ -91,6 +91,37 @@ test('one terrain query frame batches prepared geometry and caches its local tri
   assert.equal(frame.statistics.cacheHit, false);
 });
 
+test('wheel terrain samples retain distinct mutable ownership across a packed batch', () => {
+  const frame = createPhysicsTerrainQueryFrameCache({ resultCapacity: 16 }).begin({
+    sampler: createSlopedSampler(),
+    revision: 9,
+    elevationScaleM: 1,
+    bounds: { minX: 0, maxX: 4, minZ: 0, maxZ: 4 }
+  });
+  const coordinates = new Float64Array([
+    0.5, 0, 0.5,
+    1.0, 0, 0.5,
+    0.5, 0, 1.0,
+    1.0, 0, 1.0
+  ]);
+  const samples = frame.samplePackedPoints(coordinates, 4);
+  const originals = structuredClone(samples);
+  for (let wheelIndex = 0; wheelIndex < samples.length; wheelIndex += 1) {
+    for (let otherIndex = 0; otherIndex < samples.length; otherIndex += 1) {
+      if (wheelIndex === otherIndex) continue;
+      assert.notEqual(samples[wheelIndex], samples[otherIndex]);
+      assert.notEqual(samples[wheelIndex].normal, samples[otherIndex].normal);
+    }
+    samples[wheelIndex].heightM += 100 + wheelIndex;
+    samples[wheelIndex].normal.x += 10 + wheelIndex;
+    for (let otherIndex = wheelIndex + 1; otherIndex < samples.length; otherIndex += 1) {
+      assert.deepEqual(samples[otherIndex], originals[otherIndex]);
+    }
+  }
+  const next = frame.samplePackedPoints(coordinates, 4);
+  assert.deepEqual(next, originals);
+});
+
 test('maximum height clips triangles to query bounds and segment sweep reuses their vertices', () => {
   const sampler = createSlopedSampler();
   const frame = createPhysicsTerrainQueryFrameCache().begin({

@@ -17,6 +17,27 @@ const DEFAULTS = Object.freeze({
   'solid-axle': { camberGainDegPerM: 0, toeGainDegPerM: 0, motionRatio: 1, rollCenterHeightM: 0.3 }
 });
 
+/**
+ * Physical axle alignment convention, with chassis +X pointing right:
+ * - negative axle camber means both wheel tops lean toward the centreline;
+ * - positive axle toe means both wheel forwards point toward the centreline.
+ *
+ * Rotations are expressed in the body basis. Therefore the authored axle
+ * angle applies directly on the left and is sign-mirrored on the right.
+ */
+export function resolvePerWheelAlignment({
+  wheelId,
+  axleCamberRad = 0,
+  axleToeRad = 0
+} = {}) {
+  const sideSign = String(wheelId || '')[1] === 'r' ? -1 : 1;
+  return {
+    camberRad: q(Number(axleCamberRad) * sideSign),
+    toeRad: q(Number(axleToeRad) * sideSign),
+    sideSign
+  };
+}
+
 export function normalizeSuspensionDefinition(value = {}, fallbackType = 'macpherson') {
   const type = String(value.type || fallbackType).toLowerCase();
   const base = DEFAULTS[type] || DEFAULTS.macpherson;
@@ -41,7 +62,8 @@ export function normalizeSuspensionDefinition(value = {}, fallbackType = 'macphe
 }
 
 export function solveSuspensionGeometry({ definition = {}, compressionM = 0, steeringAngleRad = 0,
-  staticCamberRad = 0, staticToeRad = 0, springRateNpm = 30000, target = null } = {}) {
+  staticCamberRad = 0, staticToeRad = 0, alignmentSideSign = 1,
+  springRateNpm = 30000, target = null } = {}) {
   const d = normalizeSuspensionDefinition(definition);
   const travel = Number(compressionM) || 0;
   const bumpSteerRad = d.toeGainRadPerM * travel;
@@ -50,9 +72,10 @@ export function solveSuspensionGeometry({ definition = {}, compressionM = 0, ste
   output.type = d.type;
   output.suspensionAxis = d.suspensionAxis;
   output.restLengthM = d.restLengthM;
-  output.camberRad = q(staticCamberRad + d.camberGainRadPerM * travel);
-  output.toeRad = q(staticToeRad + bumpSteerRad);
-  output.bumpSteerRad = q(bumpSteerRad);
+  output.camberRad = q((staticCamberRad + d.camberGainRadPerM * travel)
+    * alignmentSideSign);
+  output.toeRad = q((staticToeRad + bumpSteerRad) * alignmentSideSign);
+  output.bumpSteerRad = q(bumpSteerRad * alignmentSideSign);
   output.casterRad = q(d.casterRad);
   output.kingpinInclinationRad = q(d.kingpinInclinationRad);
   output.scrubRadiusM = q(d.scrubRadiusM);
