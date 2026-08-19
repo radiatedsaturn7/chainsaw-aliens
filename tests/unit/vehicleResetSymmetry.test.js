@@ -33,12 +33,44 @@ function flatPackedSampler(oppositeDiagonal = false) {
   });
 }
 
-function createProductionFlatEnvironment(config, yawRad, oppositeDiagonal) {
+function bumpyPackedSampler() {
+  const triangles = [];
+  const spacingM = 0.5;
+  const heightAt = (x, z) => 0.028 * Math.sin(x * 1.7) * Math.cos(z * 1.3)
+    + 0.009 * Math.sin((x + z) * 2.4);
+  for (let x = -4; x < 4; x += spacingM) {
+    for (let z = -4; z < 4; z += spacingM) {
+      const a = { x, z, elevation: heightAt(x, z) };
+      const b = { x: x + spacingM, z, elevation: heightAt(x + spacingM, z) };
+      const c = {
+        x: x + spacingM,
+        z: z + spacingM,
+        elevation: heightAt(x + spacingM, z + spacingM)
+      };
+      const d = { x, z: z + spacingM, elevation: heightAt(x, z + spacingM) };
+      triangles.push(
+        { region: 'road', source: `bump-${x}-${z}-a`, vertices: [a, b, c] },
+        { region: 'road', source: `bump-${x}-${z}-b`, vertices: [a, c, d] }
+      );
+    }
+  }
+  return buildRaceBakedSurfaceSampler({
+    elevationScaleM: 1,
+    bucketSizeM: 4,
+    mesh: { triangles }
+  });
+}
+
+function createProductionFlatEnvironment(config, yawRad, oppositeDiagonal, {
+  sampler: samplerOverride = null,
+  revision: revisionOverride = null
+} = {}) {
   const cache = createPhysicsTerrainQueryFrameCache({ resultCapacity: 64 });
-  const sampler = flatPackedSampler(oppositeDiagonal);
+  const sampler = samplerOverride || flatPackedSampler(oppositeDiagonal);
+  const revision = revisionOverride ?? (oppositeDiagonal ? 2 : 1);
   return ({ state = {} } = {}) => {
     const frame = cache.begin({
-      sampler, revision: oppositeDiagonal ? 2 : 1, elevationScaleM: 1,
+      sampler, revision, elevationScaleM: 1,
       bounds: { minX: -10, maxX: 10, minZ: -10, maxZ: 10 }
     });
     const cosine = Math.cos(yawRad);
@@ -80,7 +112,7 @@ function createProductionFlatEnvironment(config, yawRad, oppositeDiagonal) {
       airDensityKgM3: 0,
       requireValidTerrainEnvelope: true,
       physicsTerrainQueryFrame: frame,
-      preparedTerrainRevision: oppositeDiagonal ? 2 : 1,
+      preparedTerrainRevision: revision,
       surfaceSamplesByWheel,
       surfaceHeightByWheel,
       surfaceNormalByWheel,
@@ -184,6 +216,132 @@ test('WRX2 bilateral suspension remains symmetric across packed flat mesh diagon
       }
     }
   }
+});
+
+test('stationary WRX2 does not bounce on unchanged bumpy prepared terrain', () => {
+  const config = { ...WRX2_CONFIG, tireHz: 360, telemetryRetention: 'none' };
+  const environmentProvider = createProductionFlatEnvironment(config, 0, false, {
+    sampler: bumpyPackedSampler(),
+    revision: 'static-bumpy-road-1'
+  });
+  const runner = new VehicleDynamicsRunner({
+    config,
+    initialState: {
+      position: { x: 0, y: Number(config.cgHeightM || 0.55) + 0.15, z: 0 },
+      orientation: { x: 0, y: 0, z: 0, w: 1 }
+    },
+    environmentProvider
+  });
+  const reset = runner.resetAuthoritativeState({
+    position: { x: 0, y: Number(config.cgHeightM || 0.55) + 0.15, z: 0 },
+    orientation: { x: 0, y: 0, z: 0, w: 1 },
+    gear: 1
+  }, { reason: 'bumpy-stationary-hypothesis', parkUntilDrive: true });
+  assert.equal(reset.equilibrium.status, 'converged');
+  assert.ok(runner.stationaryResetHold);
+  assert.ok(Number(runner.state.supportedWheelCount || 0) >= 3);
+  const resetTerrain = environmentProvider({ state: runner.state });
+  const terrainHeights = WHEEL_IDS.map((wheelId) => Number(
+    resetTerrain.surfaceHeightByWheel[wheelId]
+  ));
+  assert.ok(Math.max(...terrainHeights) - Math.min(...terrainHeights) > 0.015,
+    `fixture was not bumpy: ${terrainHeights.join(',')}`);
+  const parkedPosition = structuredClone(runner.state.position);
+  const parkedOrientation = structuredClone(runner.state.orientation);
+  const heldCompression = Object.fromEntries(WHEEL_IDS.map((wheelId) => [
+    wheelId, Number(runner.state.suspensionState[wheelId].compressionM)
+  ]));
+  const heldLoads = Object.fromEntries(WHEEL_IDS.map((wheelId) => [
+    wheelId, Number(runner.state.wheelLoadsN[wheelId])
+  ]));
+  const validity = Object.fromEntries(WHEEL_IDS.map((wheelId) => [
+    wheelId, runner.state.contactPatches[wheelId].validTreadContact
+  ]));
+  const impactCount = runner.impactHistory.length;
+  const recoveryCount = runner.penetrationRecoveryState.history.length;
+  for (let step = 0; step < 600; step += 1) {
+    runner.advance(1 / 120, { input: { throttle: 0, brake: 0, steering: 0 } });
+    assert.deepEqual(runner.state.position, parkedPosition, JSON.stringify({
+      assertion: `body position ${step}`,
+      geometryChange: runner.diagnostics.stationaryResetHoldGeometryChange
+    }));
+    assert.deepEqual(runner.state.orientation, parkedOrientation, `body orientation ${step}`);
+    assert.deepEqual(runner.state.velocity, { x: 0, y: 0, z: 0 }, `body velocity ${step}`);
+    assert.deepEqual(
+      runner.state.angularVelocityWorld,
+      { x: 0, y: 0, z: 0 },
+      `body angular velocity ${step}`
+    );
+    for (const wheelId of WHEEL_IDS) {
+      const suspension = runner.state.suspensionState[wheelId];
+      assert.equal(Number(suspension.unsprungVelocityMps || 0), 0, `${wheelId}:unsprung:${step}`);
+      assert.equal(Number(suspension.compressionVelocityMps || 0), 0,
+        `${wheelId}:compression velocity:${step}`);
+      assert.equal(Number(suspension.damperVelocityMps || 0), 0,
+        `${wheelId}:damper:${step}`);
+      assert.equal(Number(suspension.compressionM), heldCompression[wheelId],
+        `${wheelId}:compression:${step}`);
+      assert.equal(Number(runner.state.wheelLoadsN[wheelId]), heldLoads[wheelId],
+        `${wheelId}:load:${step}`);
+      assert.equal(runner.state.contactPatches[wheelId].validTreadContact, validity[wheelId],
+        `${wheelId}:validity:${step}`);
+    }
+  }
+  assert.equal(runner.impactHistory.length, impactCount);
+  assert.equal(runner.penetrationRecoveryState.history.length, recoveryCount);
+  assert.equal(runner.diagnostics.resetSymmetryIncident, undefined);
+  runner.stationaryResetHold = null;
+  const releasedHeightM = Number(runner.state.position.y);
+  let maximumReleasedHeightDriftM = 0;
+  let maximumReleasedVerticalSpeedMps = 0;
+  let maximumReleasedAngularSpeedRadps = 0;
+  let maximumReleasedUnsprungSpeedMps = 0;
+  for (let step = 0; step < 600; step += 1) {
+    runner.advance(1 / 120, { input: { throttle: 0, brake: 0, steering: 0 } });
+    maximumReleasedHeightDriftM = Math.max(
+      maximumReleasedHeightDriftM,
+      Math.abs(Number(runner.state.position.y) - releasedHeightM)
+    );
+    maximumReleasedVerticalSpeedMps = Math.max(
+      maximumReleasedVerticalSpeedMps,
+      Math.abs(Number(runner.state.velocity.y || 0))
+    );
+    maximumReleasedAngularSpeedRadps = Math.max(
+      maximumReleasedAngularSpeedRadps,
+      Math.hypot(
+        Number(runner.state.angularVelocityWorld.x || 0),
+        Number(runner.state.angularVelocityWorld.z || 0)
+      )
+    );
+    for (const wheelId of WHEEL_IDS) maximumReleasedUnsprungSpeedMps = Math.max(
+      maximumReleasedUnsprungSpeedMps,
+      Math.abs(Number(runner.state.suspensionState[wheelId].unsprungVelocityMps || 0))
+    );
+    for (const wheelId of WHEEL_IDS) assert.equal(
+      runner.state.contactPatches[wheelId].validTreadContact,
+      validity[wheelId],
+      `${wheelId}:released validity:${step}`
+    );
+  }
+  assert.ok(maximumReleasedHeightDriftM < 0.002,
+    JSON.stringify({
+      releasedHeightM,
+      finalHeightM: runner.state.position.y,
+      maximumReleasedHeightDriftM,
+      maximumReleasedVerticalSpeedMps,
+      maximumReleasedAngularSpeedRadps,
+      maximumReleasedUnsprungSpeedMps,
+      suspension: runner.state.suspensionState,
+      loads: runner.state.wheelLoadsN
+    }));
+  assert.ok(maximumReleasedVerticalSpeedMps < 0.03,
+    `released vertical speed ${maximumReleasedVerticalSpeedMps}`);
+  assert.ok(maximumReleasedAngularSpeedRadps < 0.03,
+    `released pitch/roll speed ${maximumReleasedAngularSpeedRadps}`);
+  assert.ok(maximumReleasedUnsprungSpeedMps < 0.03,
+    `released unsprung speed ${maximumReleasedUnsprungSpeedMps}`);
+  assert.equal(runner.impactHistory.length, impactCount);
+  assert.equal(runner.penetrationRecoveryState.history.length, recoveryCount);
 });
 
 test('WRX2 axle alignment resolves to mirrored physical wheel rotations', () => {

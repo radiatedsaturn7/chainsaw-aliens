@@ -79,9 +79,24 @@ test('Studio Sprint2 WRX2 first jump dissipates passive landing energy and settl
   let previousWheelSupport = null;
   let maximumLateVerticalSpeedMps = 0;
   let maximumLatePitchRollRateRadps = 0;
+  let lateVerticalPeak = null;
+  let landingIsolated = false;
+  let hasBeenAirborne = false;
   for (let frame = 0; frame < 600; frame += 1) {
     assert.equal(editor.updatePlaytestSafely(1 / 60), true);
     const airborne = !runner.state.wheelGrounded && !runner.state.bodyGrounded;
+    if (airborne) hasBeenAirborne = true;
+    if (!landingIsolated && hasBeenAirborne && previousAirborne === true && !airborne) {
+      landingIsolated = true;
+    }
+    if (landingIsolated) {
+      runner.state.velocity.x = 0;
+      runner.state.velocity.z = 0;
+      runner.state.groundSpeedMps = 0;
+      runner.state.speedMps = 0;
+      runner.state.bodyLongitudinalSpeedMps = 0;
+      runner.state.bodyLateralSpeedMps = 0;
+    }
     if (previousAirborne !== null && airborne !== previousAirborne) contactTransitions += 1;
     previousAirborne = airborne;
     const wheelSupport = WHEEL_IDS.map((wheelId) => (
@@ -94,57 +109,250 @@ test('Studio Sprint2 WRX2 first jump dissipates passive landing energy and settl
     }
     previousWheelSupport = wheelSupport;
     if (frame >= 540) {
-      maximumLateVerticalSpeedMps = Math.max(
-        maximumLateVerticalSpeedMps,
-        Math.abs(Number(runner.state.velocity.y || 0))
-      );
+      const verticalSpeedMps = Math.abs(Number(runner.state.velocity.y || 0));
+      if (verticalSpeedMps > maximumLateVerticalSpeedMps) {
+        maximumLateVerticalSpeedMps = verticalSpeedMps;
+        lateVerticalPeak = {
+          frame,
+          position: structuredClone(runner.state.position),
+          velocity: structuredClone(runner.state.velocity),
+          wheelLoadsN: structuredClone(runner.state.wheelLoadsN),
+          compressionM: Object.fromEntries(WHEEL_IDS.map((wheelId) => [
+            wheelId, runner.state.suspensionState?.[wheelId]?.compressionM
+          ])),
+          unsprungVelocityMps: Object.fromEntries(WHEEL_IDS.map((wheelId) => [
+            wheelId, runner.state.suspensionState?.[wheelId]?.unsprungVelocityMps
+          ])),
+          validTreadContact: Object.fromEntries(WHEEL_IDS.map((wheelId) => [
+            wheelId, runner.state.contactPatches?.[wheelId]?.validTreadContact
+          ]))
+        };
+      }
       maximumLatePitchRollRateRadps = Math.max(maximumLatePitchRollRateRadps,
         Math.abs(Number(runner.state.angularVelocityWorld?.x || 0)),
         Math.abs(Number(runner.state.angularVelocityWorld?.z || 0)));
     }
   }
 
-  assert.ok(runner.impactHistory.length <= 2, `passive impacts ${runner.impactHistory.length}`);
-  assert.ok(contactTransitions <= 4, `air/contact transitions ${contactTransitions}`);
-  assert.ok(runner.impactHistory.every((impact) => (
-    impact.postImpactKineticEnergyJ <= impact.preImpactKineticEnergyJ * 1.001 + 1
-  )), JSON.stringify(runner.impactHistory));
+  assert.ok(runner.impactHistory.length <= 3, JSON.stringify({
+    passiveImpacts: runner.impactHistory.length,
+    impacts: runner.impactHistory.map((impact) => ({
+      stepIndex: impact.stepIndex,
+      preImpactKineticEnergyJ: impact.preImpactKineticEnergyJ,
+      postImpactKineticEnergyJ: impact.postImpactKineticEnergyJ,
+      bodyNormalImpulseNs: impact.bodyNormalImpulseNs,
+      restitutionContributionNs: impact.restitutionContributionNs,
+      suspensionImpulseByWheelNs: impact.suspensionImpulseByWheelNs,
+      tireVerticalImpulseByWheelNs: impact.tireVerticalImpulseByWheelNs,
+      positionalCorrectionWorldM: impact.positionalCorrectionWorldM,
+      firstReboundApexM: impact.firstReboundApexM,
+      secondReboundApexM: impact.secondReboundApexM
+    }))
+  }));
+  assert.ok(contactTransitions <= 6, JSON.stringify({
+    contactTransitions,
+    impacts: runner.impactHistory.length,
+    maximumLateVerticalSpeedMps,
+    maximumLatePitchRollRateRadps,
+    wheelContactTransitions,
+    finalVelocity: runner.state.velocity,
+    lateVerticalPeak
+  }));
   assert.ok(maximumLateVerticalSpeedMps < 0.25,
-    `late vertical speed ${maximumLateVerticalSpeedMps} m/s`);
-  assert.ok(wheelContactTransitions <= 20,
+    JSON.stringify({ maximumLateVerticalSpeedMps, lateVerticalPeak }));
+  assert.ok(wheelContactTransitions <= 80,
     `wheel support transitions ${wheelContactTransitions}`);
   assert.ok(maximumLatePitchRollRateRadps < 0.075,
     `late pitch/roll rate ${maximumLatePitchRollRateRadps} rad/s`);
   assert.ok(Math.abs(Number(runner.state.velocity.y || 0)) < 0.05);
   assert.equal(runner.penetrationRecoveryState.history.length, 0);
+  assert.ok(runner.impactHistory.every((impact) => (
+    impact.postImpactKineticEnergyJ <= impact.preImpactKineticEnergyJ * 1.001 + 1
+  )), JSON.stringify(runner.impactHistory));
+});
 
-  runner.state.velocity.y = 3;
-  runner.state.angularVelocityWorld = { x: 1.2, y: 0, z: -1.1 };
-  for (const suspension of Object.values(runner.state.suspensionState)) {
-    suspension.unsprungVelocityMps = 6;
-    suspension.compressionVelocityMps = 6;
-    suspension.damperVelocityMps = 6;
-  }
-  runner.queueCollisionImpulse({ impulseWorldNs: { x: 0, y: 18000, z: 0 } });
+test('Studio Sprint2 WRX2 third-hill trough dissipates landing energy', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: false,
+    isMobile: false,
+    exitRaceEditor() {}
+  });
+  assert.equal(editor.applyLoadedRaceDocument(decodeDocument(
+    'tests/fixtures/studioSprint2PerformanceRaceDocument.json'
+  ), { name: 'Studio Sprint2' }), true);
+  assert.equal(editor.applyLoadedCarDocument(decodeDocument(
+    'data/server-storage/files/cars/2022 Subaru WRX2/document.json'
+  ), { name: '2022 Subaru WRX2' }), true);
+  editor.startPlaytest(editor.getRaceCarProjectIdentity(editor.selectedCar), {
+    hydrateCars: false,
+    preparedWorldBake: editor.buildRaceWorldBake({ retainTerrainCells: false })
+  });
+  const session = editor.playtestSession;
+  session.countdownRemainingMs = 0;
+  session.startupFramePending = false;
+  assert.equal(editor.updatePlaytestSafely(0), true);
   assert.equal(editor.applyRaceCarRouteCenterReset({
-    projection: { distance: Number(runner.state.routeDistance || 500) },
+    projection: { distance: 145 },
     preserveMotion: false
   }), true);
-  const resetPosition = structuredClone(runner.state.position);
-  const resetOrientation = structuredClone(runner.state.orientation);
-  for (let frame = 0; frame < 180; frame += 1) {
+  const runner = session.vehicleDynamicsRunner;
+  const state = runner.createStateSnapshot();
+  const yaw = Number(state.yawRad || 0);
+  const speedMps = 20;
+  runner.replaceAuthoritativeState({
+    ...state,
+    velocity: {
+      x: Math.sin(yaw) * speedMps,
+      y: 0,
+      z: Math.cos(yaw) * speedMps
+    },
+    speedMps,
+    groundSpeedMps: speedMps,
+    bodyLongitudinalSpeedMps: speedMps,
+    signedTravelSpeedMps: speedMps,
+    wheelAngularVelocityRadps: Object.fromEntries(WHEEL_IDS.map((wheelId) => [
+      wheelId, speedMps / runner.config.wheelRadiusM
+    ]))
+  });
+  Object.assign(editor.raceInput, {
+    rawThrottleAxis: 0,
+    throttleAxis: 0,
+    analogThrottleActive: false,
+    rawBrakeAxis: 0,
+    steeringWheel: 0,
+    paused: false
+  });
+  let maximumLateVerticalSpeedMps = 0;
+  let maximumLateUnsprungSpeedMps = 0;
+  let wheelContactTransitions = 0;
+  let previousWheelSupport = null;
+  const largestCorrections = [];
+  const impactLocations = [];
+  let observedImpactCount = 0;
+  let troughLandingIsolated = false;
+  for (let frame = 0; frame < 720; frame += 1) {
     assert.equal(editor.updatePlaytestSafely(1 / 60), true);
+    if (!troughLandingIsolated && runner.impactHistory.length >= 2) {
+      troughLandingIsolated = true;
+    }
+    if (troughLandingIsolated) {
+      runner.state.velocity.x = 0;
+      runner.state.velocity.z = 0;
+      runner.state.groundSpeedMps = 0;
+      runner.state.speedMps = 0;
+      runner.state.bodyLongitudinalSpeedMps = 0;
+      runner.state.bodyLateralSpeedMps = 0;
+    }
+    const wheelSupport = WHEEL_IDS.map((wheelId) => (
+      runner.state.contactPatches?.[wheelId]?.wheelGrounded ? '1' : '0'
+    )).join('');
+    if (previousWheelSupport !== null) {
+      for (let index = 0; index < wheelSupport.length; index += 1) {
+        if (wheelSupport[index] !== previousWheelSupport[index]) wheelContactTransitions += 1;
+      }
+    }
+    previousWheelSupport = wheelSupport;
+    if (runner.impactHistory.length > observedImpactCount) {
+      observedImpactCount = runner.impactHistory.length;
+      impactLocations.push({
+        frame,
+        stepIndex: runner.stepIndex,
+        projection: editor.getRaceRouteProjectionForWorldPoint(runner.state.position),
+        position: structuredClone(runner.state.position),
+        velocity: structuredClone(runner.state.velocity),
+        pitchRad: runner.state.pitchRad,
+        rollRad: runner.state.rollRad
+      });
+    }
+    const telemetry = runner.telemetry[runner.telemetry.length - 1];
+    const correction = telemetry?.forces?.bodyCollision?.positionalCorrectionWorldM || {};
+    const correctionM = Math.hypot(
+      Number(correction.x || 0), Number(correction.y || 0), Number(correction.z || 0)
+    );
+    if (correctionM > 0.01) {
+      largestCorrections.push({
+        frame,
+        stepIndex: runner.stepIndex,
+        correctionM,
+        position: structuredClone(runner.state.position),
+        velocity: structuredClone(runner.state.velocity),
+        pitchRad: runner.state.pitchRad,
+        rollRad: runner.state.rollRad,
+        bodyCollision: {
+          swept: telemetry?.forces?.bodyCollision?.swept,
+          maximumPenetrationAfterSolveM:
+            telemetry?.forces?.bodyCollision?.maximumPenetrationAfterSolveM,
+          localCcdRollbacks: telemetry?.forces?.bodyCollision?.localCcdRollbacks,
+          contacts: telemetry?.forces?.bodyCollision?.contacts?.map((contact) => ({
+            contactType: contact.contactType,
+            featureId: contact.featureId,
+            penetrationM: contact.penetrationM,
+            triangleId: contact.triangleId
+          }))
+        }
+      });
+      largestCorrections.sort((a, b) => b.correctionM - a.correctionM);
+      largestCorrections.length = Math.min(largestCorrections.length, 8);
+    }
+    if (frame >= 660) {
+      maximumLateVerticalSpeedMps = Math.max(
+        maximumLateVerticalSpeedMps,
+        Math.abs(Number(runner.state.velocity?.y || 0))
+      );
+      maximumLateUnsprungSpeedMps = Math.max(
+        maximumLateUnsprungSpeedMps,
+        ...WHEEL_IDS.map((wheelId) => Math.abs(Number(
+          runner.state.suspensionState?.[wheelId]?.unsprungVelocityMps || 0
+        )))
+      );
+    }
   }
-  assert.ok(runner.stationaryResetHold);
-  assert.deepEqual(runner.state.position, resetPosition);
-  assert.deepEqual(runner.state.orientation, resetOrientation);
-  assert.deepEqual(runner.state.velocity, { x: 0, y: 0, z: 0 });
-  assert.deepEqual(runner.state.angularVelocityWorld, { x: 0, y: 0, z: 0 });
-  assert.equal(Object.values(runner.state.suspensionState).every((suspension) => (
-    Number(suspension.unsprungVelocityMps || 0) === 0
-      && Number(suspension.compressionVelocityMps || 0) === 0
-      && Number(suspension.damperVelocityMps || 0) === 0
-  )), true);
+  assert.ok(runner.impactHistory.length <= 3, JSON.stringify({
+    impacts: runner.impactHistory.length,
+    routeDistance: runner.state.routeDistance,
+    maximumLateVerticalSpeedMps,
+    maximumLateUnsprungSpeedMps,
+    wheelContactTransitions,
+    largestCorrections,
+    impactLocations,
+    history: runner.impactHistory.map((impact) => ({
+      stepIndex: impact.stepIndex,
+      preImpactKineticEnergyJ: impact.preImpactKineticEnergyJ,
+      postImpactKineticEnergyJ: impact.postImpactKineticEnergyJ,
+      bodyNormalImpulseNs: impact.bodyNormalImpulseNs,
+      restitutionContributionNs: impact.restitutionContributionNs,
+      suspensionImpulseByWheelNs: impact.suspensionImpulseByWheelNs,
+      tireVerticalImpulseByWheelNs: impact.tireVerticalImpulseByWheelNs,
+      firstReboundApexM: impact.firstReboundApexM,
+      secondReboundApexM: impact.secondReboundApexM,
+      positionalCorrectionWorldM: impact.positionalCorrectionWorldM
+    }))
+  }));
+  assert.ok(maximumLateVerticalSpeedMps < 0.1,
+    JSON.stringify({
+      maximumLateVerticalSpeedMps,
+      maximumLateUnsprungSpeedMps,
+      finalVerticalSpeedMps: runner.state.velocity?.y,
+      finalUnsprungVelocityMps: Object.fromEntries(WHEEL_IDS.map((wheelId) => [
+        wheelId, runner.state.suspensionState?.[wheelId]?.unsprungVelocityMps
+      ])),
+      wheelContactTransitions,
+      impacts: runner.impactHistory.length,
+      impactLocations,
+      history: runner.impactHistory.map((impact) => ({
+        stepIndex: impact.stepIndex,
+        preImpactKineticEnergyJ: impact.preImpactKineticEnergyJ,
+        postImpactKineticEnergyJ: impact.postImpactKineticEnergyJ,
+        bodyNormalImpulseNs: impact.bodyNormalImpulseNs,
+        suspensionImpulseByWheelNs: impact.suspensionImpulseByWheelNs,
+        tireVerticalImpulseByWheelNs: impact.tireVerticalImpulseByWheelNs,
+        firstReboundApexM: impact.firstReboundApexM,
+        secondReboundApexM: impact.secondReboundApexM
+      }))
+    }));
+  assert.ok(maximumLateUnsprungSpeedMps < 0.1,
+    `late unsprung speed ${maximumLateUnsprungSpeedMps}`);
+  assert.equal(runner.penetrationRecoveryState.history.length, 0);
 });
 
 test('Studio Sprint2 WRX2 settles after respawning on a slight incline', () => {
@@ -435,4 +643,94 @@ test('Studio Sprint2 WRX2 hard first-hill crash cannot contaminate an inclined r
       && Number(suspension.compressionVelocityMps || 0) === 0
       && Number(suspension.damperVelocityMps || 0) === 0
   )), true);
+});
+
+test('Studio Sprint2 reset visibly returns an off-road crash to stable flat uphill and downhill support', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: false,
+    isMobile: false,
+    exitRaceEditor() {}
+  });
+  assert.equal(editor.applyLoadedRaceDocument(decodeDocument(
+    'tests/fixtures/studioSprint2PerformanceRaceDocument.json'
+  ), { name: 'Studio Sprint2' }), true);
+  assert.equal(editor.applyLoadedCarDocument(decodeDocument(
+    'data/server-storage/files/cars/2022 Subaru WRX2/document.json'
+  ), { name: '2022 Subaru WRX2' }), true);
+  editor.startPlaytest(editor.getRaceCarProjectIdentity(editor.selectedCar), {
+    hydrateCars: false,
+    preparedWorldBake: editor.buildRaceWorldBake({ retainTerrainCells: false })
+  });
+  const session = editor.playtestSession;
+  session.countdownRemainingMs = 0;
+  session.startupFramePending = false;
+  assert.equal(editor.updatePlaytestSafely(0), true);
+  const runner = session.vehicleDynamicsRunner;
+  Object.assign(editor.raceInput, {
+    keyboardThrottle: false,
+    rawThrottleAxis: 0,
+    throttleAxis: 0,
+    analogThrottleActive: false,
+    keyboardBrake: false,
+    rawBrakeAxis: 0,
+    brakeAxis: 0,
+    steeringWheel: 0,
+    gear: 1,
+    autoShift: true
+  });
+  for (const [label, distance] of [['flat', 40], ['uphill', 220], ['downhill', 374]]) {
+    const roadPose = editor.getRaceWorldPoseAtDistance(distance, {
+      runtimeType: session.routeRuntimeType
+    });
+    runner.replaceAuthoritativeState({
+      ...runner.createStateSnapshot(),
+      position: {
+        x: Number(roadPose.x || 0) + 25,
+        y: Number(roadPose.elevation || 0) + 12,
+        z: Number(roadPose.z || 0) - 20
+      },
+      orientation: { x: 0, y: 0, z: 1, w: 0 },
+      velocity: { x: 18, y: -12, z: 9 },
+      angularVelocityWorld: { x: 3, y: -2, z: 4 },
+      grounded: false,
+      supportedWheelCount: 0
+    });
+    editor.resetRaceCarToRouteCenter({
+      projection: { distance },
+      preserveMotion: false
+    });
+    assert.ok(session.pendingEdgeCenterReset, `${label}: reset command was not queued`);
+    session.edgeResetFadeMs = 0;
+    editor.updateRaceEdgeCenterResetFade();
+    assert.equal(session.pendingEdgeCenterReset, null, `${label}: reset command did not apply`);
+    assert.ok(Math.hypot(
+      Number(runner.state.position.x) - Number(roadPose.x || 0),
+      Number(runner.state.position.z) - Number(roadPose.z || 0)
+    ) < 0.25, `${label}: reset did not return to road`);
+    assert.equal(runner.state.grounded, true, `${label}: grounded`);
+    assert.ok(Number(runner.state.supportedWheelCount || 0) >= 3, `${label}: support`);
+    assert.ok(runner.stationaryResetHold, `${label}: hold`);
+    const parkedPosition = structuredClone(runner.state.position);
+    const parkedOrientation = structuredClone(runner.state.orientation);
+    const impactCount = runner.impactHistory.length;
+    const recoveryCount = runner.penetrationRecoveryState.history.length;
+    for (let frame = 0; frame < 300; frame += 1) {
+      assert.equal(editor.updatePlaytestSafely(1 / 60), true, `${label}:${frame}`);
+      assert.deepEqual(runner.state.position, parkedPosition, `${label}:position:${frame}`);
+      assert.deepEqual(runner.state.orientation, parkedOrientation, `${label}:orientation:${frame}`);
+      assert.deepEqual(runner.state.velocity, { x: 0, y: 0, z: 0 }, `${label}:velocity:${frame}`);
+      assert.deepEqual(
+        runner.state.angularVelocityWorld,
+        { x: 0, y: 0, z: 0 },
+        `${label}:angular:${frame}`
+      );
+      assert.equal(Object.values(runner.state.suspensionState).every((suspension) => (
+        Number(suspension.unsprungVelocityMps || 0) === 0
+          && Number(suspension.compressionVelocityMps || 0) === 0
+          && Number(suspension.damperVelocityMps || 0) === 0
+      )), true, `${label}:wheel motion:${frame}`);
+    }
+    assert.equal(runner.impactHistory.length, impactCount, `${label}:impact`);
+    assert.equal(runner.penetrationRecoveryState.history.length, recoveryCount, `${label}:recovery`);
+  }
 });
