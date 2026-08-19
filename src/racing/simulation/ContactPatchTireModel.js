@@ -2025,6 +2025,7 @@ export class ContactPatchTireModel {
       : null;
     for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
       const wheelId = RACE_WHEEL_IDS[wheelIndex];
+      const previousPatch = state.contactPatches?.[wheelId] || {};
       const {
         kinematics, normalLoadN, force, hasSurfaceHeight, geometricContact, contactValidity,
         compressionM, contactVelocityNormalMps, suspensionTravelM,
