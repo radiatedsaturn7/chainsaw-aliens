@@ -19,6 +19,14 @@ import {
   PersistentManifoldHistory,
   reducePersistentContactManifold
 } from './PersistentContactManifold.js';
+import {
+  BODY_KINETIC_ENTRY_SPEED_MPS,
+  BODY_STATIC_CAPTURE_SPEED_MPS,
+  BODY_STATIC_CAPTURE_STEPS,
+  bodyCollisionMaterial,
+  combineCollisionMaterials,
+  terrainCollisionMaterial
+} from './CollisionMaterials.js';
 
 const EPSILON = 1e-9;
 const terrainSampleContract = (raw, queryPosition, source) => {
@@ -1702,10 +1710,14 @@ export class ChassisBodyCollision {
       contact.pointWorld.y = worldPoint.y;
       contact.pointWorld.z = worldPoint.z;
       contact.penetrationM = penetrationM;
-      contact.friction = clamp(Math.sqrt(
-        Math.max(0, Number(candidate.friction ?? config.bodyCollisionFriction ?? 0.62))
-        * Math.max(0, Number(terrain.friction ?? config.bodyCollisionFriction ?? 0.62))
-      ), 0, 1.5);
+      const bodyMaterial = bodyCollisionMaterial(candidate.pieceId, contactType);
+      const terrainMaterial = terrainCollisionMaterial(terrain);
+      const collisionMaterial = combineCollisionMaterials(bodyMaterial, terrainMaterial);
+      contact.bodyFrictionInput = bodyMaterial.kineticFriction;
+      contact.terrainFrictionInput = terrainMaterial.kineticFriction;
+      contact.staticFriction = collisionMaterial.staticFriction;
+      contact.kineticFriction = collisionMaterial.kineticFriction;
+      contact.friction = contact.kineticFriction;
       contact.pieceId = candidate.pieceId || null;
       contact.wheelId = candidate.wheelId || null;
       contact.contactType = contactType;
@@ -1743,6 +1755,7 @@ export class ChassisBodyCollision {
       contact.persistentManifold = this.persistentManifoldHistory.classifyAndRemember(
         contact.manifoldClusterKey
       );
+      contact.manifoldAge = this.persistentManifoldHistory.age(contact.manifoldClusterKey);
     }
     physicsCosts?.count('bodyRawManifoldContacts', rawContactCount);
     physicsCosts?.count('bodyReducedManifoldContacts', contacts.length);
@@ -1778,6 +1791,25 @@ export class ChassisBodyCollision {
         initialPointVelocity.y - contact.normal.y * initialNormalSpeedMps,
         initialPointVelocity.z - contact.normal.z * initialNormalSpeedMps
       );
+      const initialSliding = contact.preImpactManifoldTangentSpeedMps
+        >= BODY_KINETIC_ENTRY_SPEED_MPS;
+      contact.frictionClassification = initialSliding ? 'kinetic' : 'pending-static';
+      contact.staticCaptureEligible = !initialSliding
+        && contact.manifoldAge >= BODY_STATIC_CAPTURE_STEPS
+        && contact.preImpactManifoldTangentSpeedMps <= BODY_STATIC_CAPTURE_SPEED_MPS
+        && !contact.suspensionSupported;
+      contact.initialTangentCancellationImpulseNs = contact.preImpactManifoldTangentSpeedMps
+        / Math.max(EPSILON, effectiveMassDenominator(
+          normalize({
+            x: initialPointVelocity.x - contact.normal.x * initialNormalSpeedMps,
+            y: initialPointVelocity.y - contact.normal.y * initialNormalSpeedMps,
+            z: initialPointVelocity.z - contact.normal.z * initialNormalSpeedMps
+          }, { x: 1, y: 0, z: 0 }),
+          contact.arm,
+          config,
+          workingState.orientation,
+          this.manifoldDenominatorScratch
+        ));
       contact.restitutionTargetSpeedMps = contact.manifoldRepresentativeIndex === 0
         && contact.persistentManifold !== true
         && !contact.suspensionSupported
@@ -1864,17 +1896,28 @@ export class ChassisBodyCollision {
           this.manifoldDenominatorScratch
         ));
         const previousFrictionImpulse = contact.tangentialImpulseWorldNs;
+        const frictionCoefficient = contact.staticCaptureEligible
+          ? contact.staticFriction : contact.kineticFriction;
+        const cancellationMagnitudeNs = tangentSpeed / tangentDenominator;
+        const kineticLimitNs = frictionCoefficient * accumulatedNormalImpulseNs;
+        const requestedMagnitudeNs = contact.staticCaptureEligible
+          ? cancellationMagnitudeNs
+          : Math.min(cancellationMagnitudeNs, kineticLimitNs);
         const requestedFrictionImpulse = scaleVector3(
-          tangent,
-          -tangentSpeed / tangentDenominator,
-          vectorScratch[7]
+          tangent, -requestedMagnitudeNs, vectorScratch[7]
         );
         const accumulatedFrictionImpulse = addVector3(
           previousFrictionImpulse,
           requestedFrictionImpulse,
           vectorScratch[8]
         );
-        const maximumFrictionImpulseNs = contact.friction * accumulatedNormalImpulseNs;
+        const coulombLimitNs = frictionCoefficient * accumulatedNormalImpulseNs;
+        // A fresh high-speed scrape cannot become a no-slip constraint during
+        // its first solver pass. Persistent sliding remains Coulomb-limited and
+        // may naturally slow into the low-speed static capture band later.
+        const entrySlidingLimitNs = contact.persistentManifold
+          ? Infinity : contact.initialTangentCancellationImpulseNs;
+        const maximumFrictionImpulseNs = Math.min(coulombLimitNs, entrySlidingLimitNs);
         const accumulatedMagnitude = length(accumulatedFrictionImpulse);
         const clampedFrictionImpulse = accumulatedMagnitude > maximumFrictionImpulseNs
           && accumulatedMagnitude > EPSILON
@@ -1910,6 +1953,14 @@ export class ChassisBodyCollision {
         contact.tangentialImpulseWorldNs.z = clampedFrictionImpulse.z;
         contact.tangentialImpulseNs = length(clampedFrictionImpulse);
       }
+    }
+    for (let contactIndex = 0; contactIndex < contacts.length; contactIndex += 1) {
+      const contact = contacts[contactIndex];
+      if (contact.staticCaptureEligible) {
+        const frictionCapacityNs = contact.staticFriction * Number(contact.normalImpulseNs || 0);
+        contact.frictionClassification = Number(contact.tangentialImpulseNs || 0)
+          < frictionCapacityNs - 1e-6 ? 'static' : 'kinetic';
+      } else contact.frictionClassification = 'kinetic';
     }
     // Split-impulse stabilization operates on pose only. Solving its angular
     // component is essential on a convex rise: rotating the chassis onto its

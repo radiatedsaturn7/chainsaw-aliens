@@ -1649,12 +1649,55 @@ function advanceVehicleDynamicsAuthority(editor, {
       };
       environmentScratch.createTerrainAlignedRecoveryState = createTerrainAlignedRecoveryState;
     }
-    const recordedRouteDistance = centerSamples.fl?.projection?.distance
-      ?? editor.getRaceRouteProjectionForWorldPoint(state.position)?.distance;
+    const recordedProjection = centerSamples.fl?.projection
+      ?? editor.getRaceRouteProjectionForWorldPoint(state.position);
+    const recordedRouteDistance = recordedProjection?.distance;
     const incidentRouteDistanceM = recordedRouteDistance !== null
       && recordedRouteDistance !== undefined
       && Number.isFinite(Number(recordedRouteDistance))
       ? Number(recordedRouteDistance) : null;
+    let incidentNormalX = 0;
+    let incidentNormalY = 0;
+    let incidentNormalZ = 0;
+    let incidentNormalCount = 0;
+    for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+      const sample = centerSamples[RACE_WHEEL_IDS[wheelIndex]] || {};
+      const normal = sample.bakedNormal || sample.normal || sample.normalWorld;
+      if (!Number.isFinite(Number(normal?.x))
+        || !Number.isFinite(Number(normal?.y))
+        || !Number.isFinite(Number(normal?.z))) continue;
+      incidentNormalX += Number(normal.x);
+      incidentNormalY += Number(normal.y);
+      incidentNormalZ += Number(normal.z);
+      incidentNormalCount += 1;
+    }
+    const incidentNormalMagnitude = Math.hypot(
+      incidentNormalX, incidentNormalY, incidentNormalZ
+    );
+    const incidentRoadSupportNormal = incidentNormalCount > 0 && incidentNormalMagnitude > 1e-9
+      ? {
+          x: incidentNormalX / incidentNormalMagnitude,
+          y: incidentNormalY / incidentNormalMagnitude,
+          z: incidentNormalZ / incidentNormalMagnitude
+        }
+      : { x: 0, y: 1, z: 0 };
+    const incidentYaw = Number(recordedProjection?.yaw || 0);
+    const horizontalRouteTangent = {
+      x: Math.sin(incidentYaw), y: 0, z: Math.cos(incidentYaw)
+    };
+    const tangentNormalDot = horizontalRouteTangent.x * incidentRoadSupportNormal.x
+      + horizontalRouteTangent.z * incidentRoadSupportNormal.z;
+    const incidentRouteTangent = {
+      x: horizontalRouteTangent.x - incidentRoadSupportNormal.x * tangentNormalDot,
+      y: -incidentRoadSupportNormal.y * tangentNormalDot,
+      z: horizontalRouteTangent.z - incidentRoadSupportNormal.z * tangentNormalDot
+    };
+    const incidentRouteTangentMagnitude = Math.max(1e-9, Math.hypot(
+      incidentRouteTangent.x, incidentRouteTangent.y, incidentRouteTangent.z
+    ));
+    incidentRouteTangent.x /= incidentRouteTangentMagnitude;
+    incidentRouteTangent.y /= incidentRouteTangentMagnitude;
+    incidentRouteTangent.z /= incidentRouteTangentMagnitude;
     const bodyVariationBounds = terrainQueryFrame.bodyVariationBounds;
     const bodyCollisionReachM = Math.hypot(bodyHalfWidthM, bodyHalfLengthM) + 0.15;
     bodyVariationBounds.minX = Math.min(Number(state.position?.x || 0), predictedX)
@@ -1854,6 +1897,10 @@ function advanceVehicleDynamicsAuthority(editor, {
     environmentResult.physicsIncidentDiagnostics = capturePhysicsIncidentDiagnostics ? {
         terrainSamples: incidentTerrainSamples,
         routeDistanceM: incidentRouteDistanceM,
+        lateralRouteOffsetM: Number(recordedProjection?.lateral || 0),
+        roadHalfWidthM: editor.getRaceRoadHalfWidthWorld(recordedProjection?.segment),
+        routeTangentWorld: incidentRouteTangent,
+        roadSupportNormalWorld: incidentRoadSupportNormal,
         recoveryState: authority.runner.penetrationRecoveryState
       } : null;
     environmentResult.contactGeometrySubstepIndex = substepIndex;

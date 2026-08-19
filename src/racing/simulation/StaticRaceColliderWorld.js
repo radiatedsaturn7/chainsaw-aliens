@@ -11,6 +11,14 @@ import {
   PersistentManifoldHistory,
   reducePersistentContactManifold
 } from './PersistentContactManifold.js';
+import {
+  BODY_KINETIC_ENTRY_SPEED_MPS,
+  BODY_STATIC_CAPTURE_SPEED_MPS,
+  BODY_STATIC_CAPTURE_STEPS,
+  bodyCollisionMaterial,
+  combineCollisionMaterials,
+  staticObstacleCollisionMaterial
+} from './CollisionMaterials.js';
 
 const EPSILON = 1e-9;
 const DEFAULT_BUCKET_SIZE_M = 16;
@@ -331,6 +339,11 @@ function prepareCollider(definition = {}, colliderIndex = 0) {
   const id = String(definition.id || `static-collider-${colliderIndex}`);
   const common = {
     id,
+    material: definition.material || definition.collisionMaterial || null,
+    staticFriction: Number.isFinite(Number(definition.staticFriction))
+      ? clamp(Number(definition.staticFriction), 0, 1.5) : null,
+    kineticFriction: Number.isFinite(Number(definition.kineticFriction))
+      ? clamp(Number(definition.kineticFriction), 0, 1.5) : null,
     friction: clamp(finite(definition.friction, 0.62), 0, 1.5),
     restitution: clamp(finite(definition.restitution, 0.08), 0, 0.6)
   };
@@ -349,6 +362,9 @@ function prepareCollider(definition = {}, colliderIndex = 0) {
       infinite: true,
       enabled: definition.enabled !== false,
       source: String(definition.source || id),
+      material: common.material,
+      staticFriction: common.staticFriction,
+      kineticFriction: common.kineticFriction,
       triangles: Object.freeze([]),
       planes: Object.freeze([]),
       vertices: Object.freeze([]),
@@ -378,6 +394,9 @@ function prepareCollider(definition = {}, colliderIndex = 0) {
     restitution: common.restitution,
     enabled: definition.enabled !== false,
     source: String(definition.source || id),
+    material: common.material,
+    staticFriction: common.staticFriction,
+    kineticFriction: common.kineticFriction,
     infinite: false,
     solidBelow: definition.solidBelow === true,
     vertices: Object.freeze(geometry.verticesImmutable
@@ -840,6 +859,10 @@ export class StaticColliderCollision {
       const pointWorld = transformPoint(
         event.candidate.localPoint, state.position, state.orientation
       );
+      const collisionMaterial = combineCollisionMaterials(
+        bodyCollisionMaterial(event.candidate.pieceId, 'static-body'),
+        staticObstacleCollisionMaterial(event.collider)
+      );
       contacts.push({
         id: `static:${event.collider.id}:${event.featureId}:${event.candidate.id}`,
         colliderId: event.collider.id,
@@ -852,10 +875,9 @@ export class StaticColliderCollision {
         arm: subtract(pointWorld, state.position),
         normal: { ...event.normal },
         penetrationM: Math.max(0, finite(event.penetrationM)),
-        friction: clamp(Math.sqrt(
-          Math.max(0, event.collider.friction)
-            * Math.max(0, finite(config.bodyCollisionFriction, 0.62))
-        ), 0, 1.5),
+        staticFriction: collisionMaterial.staticFriction,
+        kineticFriction: collisionMaterial.kineticFriction,
+        friction: collisionMaterial.kineticFriction,
         restitution: clamp(event.collider.restitution, 0, 0.6),
         normalImpulseNs: 0,
         tangentialImpulseNs: 0,
@@ -916,6 +938,19 @@ export class StaticColliderCollision {
       );
       const closingSpeed = Math.max(0, -dot(pointVelocity, contact.normal));
       contact.preImpactManifoldNormalVelocityMps = -closingSpeed;
+      const tangentVelocity = subtract(pointVelocity,
+        scaleVector3(contact.normal, dot(pointVelocity, contact.normal)));
+      contact.preImpactManifoldTangentSpeedMps = length(tangentVelocity);
+      const entrySliding = contact.preImpactManifoldTangentSpeedMps
+        >= BODY_KINETIC_ENTRY_SPEED_MPS;
+      contact.staticCaptureEligible = !entrySliding
+        && Number(contact.manifoldAge || 0) >= BODY_STATIC_CAPTURE_STEPS
+        && contact.preImpactManifoldTangentSpeedMps <= BODY_STATIC_CAPTURE_SPEED_MPS;
+      const tangentDirection = normalize(tangentVelocity, { x: 1, y: 0, z: 0 });
+      contact.initialTangentCancellationImpulseNs = contact.preImpactManifoldTangentSpeedMps
+        / Math.max(EPSILON, inverseMassDenominator(
+          tangentDirection, contact.arm, config, state.orientation
+        ));
       contact.restitutionTargetSpeedMps = contact.manifoldRepresentativeIndex === 0
         && contact.persistentManifold !== true
         && closingSpeed >= restitutionThreshold
@@ -966,7 +1001,12 @@ export class StaticColliderCollision {
           contact.tangentialImpulseWorldNs,
           requestedFrictionImpulse
         );
-        const maximumFrictionImpulseNs = contact.friction * contact.normalImpulseNs;
+        const frictionCoefficient = contact.staticCaptureEligible
+          ? contact.staticFriction : contact.kineticFriction;
+        const coulombLimitNs = frictionCoefficient * contact.normalImpulseNs;
+        const entryLimitNs = contact.persistentManifold
+          ? Infinity : contact.initialTangentCancellationImpulseNs * 0.7;
+        const maximumFrictionImpulseNs = Math.min(coulombLimitNs, entryLimitNs);
         const accumulatedFrictionMagnitude = length(accumulatedFrictionImpulse);
         const clampedAccumulatedFriction = accumulatedFrictionMagnitude
             > maximumFrictionImpulseNs && accumulatedFrictionMagnitude > EPSILON
@@ -1157,6 +1197,9 @@ export class StaticColliderCollision {
       contacts[index].persistentManifold = this.persistentManifoldHistory.classifyAndRemember(
         contacts[index].manifoldClusterKey
       );
+      contacts[index].manifoldAge = this.persistentManifoldHistory.age(
+        contacts[index].manifoldClusterKey
+      );
     }
     physicsCostAccounting?.count('staticColliderRawManifoldContacts', initialRawContacts.length);
     physicsCostAccounting?.count('staticColliderManifoldContacts', contacts.length);
@@ -1234,6 +1277,9 @@ export class StaticColliderCollision {
           || this.persistentManifoldHistory.classifyAndRemember(
             nextContacts[index].manifoldClusterKey
           );
+        nextContacts[index].manifoldAge = this.persistentManifoldHistory.age(
+          nextContacts[index].manifoldClusterKey
+        );
       }
       physicsCostAccounting?.count('staticColliderRawManifoldContacts', nextRawContacts.length);
       physicsCostAccounting?.count('staticColliderManifoldContacts', nextContacts.length);

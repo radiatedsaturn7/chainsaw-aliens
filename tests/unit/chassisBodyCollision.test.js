@@ -796,6 +796,46 @@ test('physical closing velocity owns restitution while impact telemetry separate
   assert.equal(postEnergyJ <= preEnergyJ, true, `${postEnergyJ} <= ${preEnergyJ}`);
 });
 
+test('high-speed underbody terrain impact stays kinetic and cannot statically capture tangent speed', () => {
+  const collide = (reportedTireGrip) => {
+    const collision = new ChassisBodyCollision(CONFIG);
+    const working = createWorking({
+      heightM: 0.42,
+      velocity: { x: 12, y: -5, z: 0 }
+    });
+    const result = collision.step({
+      workingState: working,
+      config: CONFIG,
+      environment: {
+        suspensionBodyContactSupport: { supportedWheelCount: 4 },
+        sampleTerrainAtWorldPoint(point) {
+          return {
+            heightM: 0,
+            normal: { x: 0, y: 1, z: 0 },
+            friction: reportedTireGrip,
+            surfaceType: 'asphalt',
+            region: 'road',
+            source: 'driveable-road'
+          };
+        }
+      },
+      dt: DT,
+      advanceState: false
+    });
+    return { result, working };
+  };
+  const lowGrip = collide(0.05);
+  const highGrip = collide(1.4);
+  assert.ok(lowGrip.result.contacts.length > 0);
+  assert.equal(lowGrip.result.contacts.every((contact) => (
+    contact.frictionClassification === 'kinetic'
+  )), true);
+  assert.ok(lowGrip.working.velocity.x > 12 * 0.25, lowGrip.working.velocity.x);
+  assert.equal(lowGrip.working.velocity.x, highGrip.working.velocity.x,
+    'tire surface grip must not leak into body scrape friction');
+  assert.equal(lowGrip.result.contacts.some((contact) => contact.staticCaptureEligible), false);
+});
+
 test('a single physical contact follows configured restitution independently of penetration depth', () => {
   const restitution = 0.18;
   const config = { ...CONFIG, bodyCollisionRestitution: restitution };

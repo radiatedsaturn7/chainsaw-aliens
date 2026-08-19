@@ -378,10 +378,20 @@ function resolveTreadContactValidity({
       supportAlignment: q(supportAlignment), geometricProximity: false, bottomedOut: false
     });
   }
-  if (requestedCompressionM <= EPSILON) {
+  const previousPatch = state.contactPatches?.[wheelId] || {};
+  const surfaceClassification = `${surfaceSample.region || ''} ${surfaceSample.source || ''}`;
+  const smoothConnectedSurface = !/(curb|step|gap|discontinuity|wall|barrier|shoulder)/i
+    .test(surfaceClassification);
+  const physicalEnterToleranceM = 0.0001;
+  const physicalExitToleranceM = -0.00025;
+  const contactThresholdM = previousPatch.validTreadContact === true
+    && smoothConnectedSurface ? physicalExitToleranceM : physicalEnterToleranceM;
+  if (requestedCompressionM <= contactThresholdM) {
     return setTreadContactValidity(target, {
       valid: false, state: 'airborne', reason: 'airborne',
-      supportAlignment: q(supportAlignment), geometricProximity: true, bottomedOut: false
+      supportAlignment: q(supportAlignment),
+      geometricProximity: requestedCompressionM > -reachToleranceM,
+      bottomedOut: false
     });
   }
   const bottomedOut = requestedCompressionM >= suspensionTravelM - EPSILON;
@@ -2315,6 +2325,25 @@ export class ContactPatchTireModel {
       output.terrainTriangleId = wheelInputs[wheelId].surfaceSample.triangleId;
       output.terrainSampleSource = wheelInputs[wheelId].surfaceSample.source;
       output.terrainSampleReason = wheelInputs[wheelId].surfaceSample.reason;
+      const priorTriangleId = previousPatch.terrainTriangleId;
+      const priorNormal = previousPatch.surfaceSampleNormalWorld;
+      const currentNormal = output.surfaceSampleNormalWorld;
+      const normalDot = priorNormal ? Number(priorNormal.x || 0) * currentNormal.x
+        + Number(priorNormal.y ?? 1) * currentNormal.y
+        + Number(priorNormal.z || 0) * currentNormal.z : -1;
+      const smoothTriangleTransition = priorTriangleId !== null
+        && priorTriangleId !== undefined
+        && output.terrainTriangleId !== priorTriangleId
+        && !/(curb|step|gap|discontinuity|wall|barrier|shoulder)/i.test(
+          `${output.terrainSampleSource || ''} ${wheelInputs[wheelId].surfaceSample.region || ''}`
+        )
+        && normalDot >= Math.cos(0.1 * Math.PI / 180)
+        && Math.abs(Number(previousPatch.rawRequestedCompressionM || 0)
+          - Number(output.rawRequestedCompressionM || 0)) <= 0.00025;
+      if (smoothTriangleTransition) {
+        output.terrainTriangleId = priorTriangleId;
+        output.coplanarTriangleTransitionRetained = true;
+      } else output.coplanarTriangleTransitionRetained = false;
       output.contactSolveIterationCount = wheelInputs[wheelId].contactSolveIterationCount;
       output.supportAlignment = contactValidity.supportAlignment;
       output.localForceN.longitudinal = q(localLongitudinal);

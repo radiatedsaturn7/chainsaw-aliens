@@ -5,6 +5,10 @@ import { gunzipSync } from 'node:zlib';
 
 import RaceEditor from '../../src/ui/RaceEditor.js';
 import { rotateVectorToBody } from '../../src/racing/simulation/RigidBodyMath.js';
+import {
+  unpackPhysicsIncidentFrame,
+  verifyPhysicsIncidentFixture
+} from '../../src/racing/simulation/PhysicsIncidentRecorder.js';
 
 const WHEEL_IDS = ['fl', 'fr', 'rl', 'rr'];
 
@@ -76,6 +80,8 @@ test('Studio Sprint2 WRX2 first jump dissipates passive landing energy and settl
   let previousAirborne = null;
   let contactTransitions = 0;
   let wheelContactTransitions = 0;
+  let settledWheelContactTransitions = 0;
+  let landingFrame = null;
   let previousWheelSupport = null;
   let maximumLateVerticalSpeedMps = 0;
   let maximumLatePitchRollRateRadps = 0;
@@ -88,6 +94,7 @@ test('Studio Sprint2 WRX2 first jump dissipates passive landing energy and settl
     if (airborne) hasBeenAirborne = true;
     if (!landingIsolated && hasBeenAirborne && previousAirborne === true && !airborne) {
       landingIsolated = true;
+      landingFrame = frame;
     }
     if (landingIsolated) {
       runner.state.velocity.x = 0;
@@ -104,7 +111,12 @@ test('Studio Sprint2 WRX2 first jump dissipates passive landing energy and settl
     )).join('');
     if (previousWheelSupport !== null) {
       for (let index = 0; index < wheelSupport.length; index += 1) {
-        if (wheelSupport[index] !== previousWheelSupport[index]) wheelContactTransitions += 1;
+        if (wheelSupport[index] !== previousWheelSupport[index]) {
+          wheelContactTransitions += 1;
+          if (landingFrame !== null && frame >= landingFrame + 60) {
+            settledWheelContactTransitions += 1;
+          }
+        }
       }
     }
     previousWheelSupport = wheelSupport;
@@ -160,8 +172,10 @@ test('Studio Sprint2 WRX2 first jump dissipates passive landing energy and settl
   }));
   assert.ok(maximumLateVerticalSpeedMps < 0.25,
     JSON.stringify({ maximumLateVerticalSpeedMps, lateVerticalPeak }));
-  assert.ok(wheelContactTransitions <= 80,
+  assert.ok(wheelContactTransitions <= 16,
     `wheel support transitions ${wheelContactTransitions}`);
+  assert.ok(settledWheelContactTransitions <= 2,
+    `settled wheel support transitions ${settledWheelContactTransitions}`);
   assert.ok(maximumLatePitchRollRateRadps < 0.075,
     `late pitch/roll rate ${maximumLatePitchRollRateRadps} rad/s`);
   assert.ok(Math.abs(Number(runner.state.velocity.y || 0)) < 0.05);
@@ -285,6 +299,97 @@ test('Studio Sprint2 WRX2 first-jump landing cannot erase forward motion through
   assert.equal(Number.isFinite(runner.state.position.x), true);
   assert.equal(Number.isFinite(runner.state.position.y), true);
   assert.equal(Number.isFinite(runner.state.position.z), true);
+});
+
+test.skip('Studio Sprint2 WRX2 captures and classifies the exact post-first-hill speed-loss incident', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  assert.equal(editor.applyLoadedRaceDocument(decodeDocument(
+    'tests/fixtures/studioSprint2PerformanceRaceDocument.json'
+  ), { name: 'Studio Sprint2' }), true);
+  assert.equal(editor.applyLoadedCarDocument(decodeDocument(
+    'data/server-storage/files/cars/2022 Subaru WRX2/document.json'
+  ), { name: '2022 Subaru WRX2' }), true);
+  globalThis.__RTG_CAPTURE_PHYSICS_INCIDENTS__ = true;
+  editor.startPlaytest(editor.getRaceCarProjectIdentity(editor.selectedCar), {
+    hydrateCars: false,
+    preparedWorldBake: editor.buildRaceWorldBake({ retainTerrainCells: false })
+  });
+  const session = editor.playtestSession;
+  session.countdownRemainingMs = 0;
+  session.startupFramePending = false;
+  assert.equal(editor.updatePlaytestSafely(0), true);
+  assert.equal(editor.applyRaceCarRouteCenterReset({
+    projection: { distance: 145 }, preserveMotion: false
+  }), true);
+  const runner = session.vehicleDynamicsRunner;
+  delete globalThis.__RTG_CAPTURE_PHYSICS_INCIDENTS__;
+  runner.physicsIncidentRecorder.preIncidentSubsteps = Math.ceil(0.75 * runner.config.tireHz);
+  runner.physicsIncidentRecorder.postIncidentSubsteps = Math.ceil(1.5 * runner.config.tireHz);
+  const state = runner.createStateSnapshot();
+  const yaw = Number(state.yawRad || 0);
+  const speedMps = 20;
+  runner.replaceAuthoritativeState({
+    ...state,
+    velocity: {
+      x: Math.sin(yaw) * speedMps,
+      y: 0,
+      z: Math.cos(yaw) * speedMps
+    },
+    speedMps,
+    groundSpeedMps: speedMps,
+    bodyLongitudinalSpeedMps: speedMps,
+    signedTravelSpeedMps: speedMps,
+    wheelAngularVelocityRadps: Object.fromEntries(WHEEL_IDS.map((wheelId) => [
+      wheelId, speedMps / runner.config.wheelRadiusM
+    ])),
+    gear: 3,
+    engineRpm: 2800,
+    powertrainState: { ...state.powertrainState, gear: 3, engineRpm: 2800 }
+  });
+  Object.assign(editor.raceInput, {
+    rawThrottleAxis: 0,
+    throttleAxis: 0,
+    analogThrottleActive: false,
+    rawBrakeAxis: 0,
+    steeringWheel: 0,
+    gear: 3,
+    autoShift: false,
+    paused: false
+  });
+  let fixture = null;
+  for (let frame = 0; frame < 240 && !fixture; frame += 1) {
+    assert.equal(editor.updatePlaytestSafely(1 / 60), true);
+    fixture = runner.physicsIncidentRecorder.completed.find((candidate) => (
+      candidate.trigger.reasons.some((reason) => reason.type === 'route-tangent-speed-collapse')
+    )) || null;
+    if (!fixture) runner.physicsIncidentRecorder.completed.length = 0;
+  }
+  assert.ok(fixture, JSON.stringify({
+    speedMps: runner.state.bodyLongitudinalSpeedMps,
+    routeDistance: runner.state.routeDistance,
+    active: runner.physicsIncidentRecorder.active?.reasons || null
+  }));
+  assert.equal(verifyPhysicsIncidentFixture(fixture).valid, true);
+  const reason = fixture.trigger.reasons.find((entry) => (
+    entry.type === 'route-tangent-speed-collapse'
+  ));
+  assert.ok(reason, JSON.stringify(fixture.trigger));
+  assert.ok(reason.preEventRouteTangentSpeedMps > 5);
+  assert.ok(reason.retainedPercent < 30);
+  assert.ok(reason.windowSeconds <= 0.1 + 1e-9);
+  assert.ok(fixture.durationSeconds >= 2.25);
+  assert.ok(fixture.analysis, JSON.stringify(fixture.trigger));
+  assert.notEqual(fixture.analysis.triangleId, null);
+  assert.ok(fixture.analysis.triangleVertices.length === 3);
+  assert.ok(fixture.analysis.contactFeatureId);
+  assert.ok(Number.isFinite(fixture.analysis.collisionToRoadNormalAngleDegrees));
+  assert.ok(Number.isFinite(fixture.analysis.routeTangentSpeedRetainedPercent));
+  assert.equal(fixture.inputTimeline.length > 0, true);
+  const frames = fixture.frames.map((frame) => (
+    unpackPhysicsIncidentFrame(frame, fixture.terrainSampleTable)
+  ));
+  assert.equal(frames.some((frame) => frame.motion?.wheelContactTransitions), true);
+  assert.equal(fixture.vehicleConfiguration.physicalVehicleProfile.id, 'wrx2');
 });
 
 test('Studio Sprint2 WRX2 third-hill trough dissipates landing energy', () => {

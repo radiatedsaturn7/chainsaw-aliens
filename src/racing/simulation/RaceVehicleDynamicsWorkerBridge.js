@@ -15,6 +15,7 @@ import {
   reconstructVehicleRenderState,
   VEHICLE_RENDER_WHEEL_FLAGS
 } from './VehicleRenderState.js';
+import { updateWheelContactPresentationState } from './WheelContactPresentationState.js';
 
 function copyVector(target = {}, source = {}, includeW = false) {
   target.x = Number(source?.x || 0);
@@ -191,6 +192,10 @@ function syncWorkerPresentationState(session, snapshot, euler) {
   };
   session.vehicleDynamicsPresentationState = state;
   session.vehicleRenderState = snapshot;
+  session.wheelContactPresentationState = updateWheelContactPresentationState(
+    session.wheelContactPresentationState,
+    { stepIndex: snapshot.stepIndex, renderState: snapshot }
+  );
   session.vehicleResetGeneration = Number(snapshot.resetGeneration || 0);
   return state;
 }
