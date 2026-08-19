@@ -19450,6 +19450,7 @@ export default class RaceEditor {
       ?? authoritativeState.resetGeneration ?? 0) === Number(renderState.resetGeneration || 0)
       ? authoritativeState.contactPatches || renderState.contactPatches || {}
       : renderState.contactPatches || {};
+    const presentationContacts = this.playtestSession?.wheelContactPresentationState?.wheels || {};
     if (!cameraState?.camera) return;
     ctx.save();
     ctx.beginPath();
@@ -19586,9 +19587,18 @@ export default class RaceEditor {
         ctx.lineTo(suspensionLine[1].screenX, suspensionLine[1].screenY);
         ctx.stroke();
       }
-      if (contactProjected?.visible && patch.validTreadContact) {
-        ctx.fillStyle = '#73ff9b';
-        ctx.fillRect(contactProjected.screenX - 3, contactProjected.screenY - 3, 6, 6);
+      if (contactProjected?.visible) {
+        const presented = presentationContacts[wheelId] || {};
+        ctx.fillStyle = presented.supported ? '#73ff9b'
+          : presented.geometricProximity ? '#f6d65b'
+            : presented.terrainAvailable === false ? '#8b929c' : '#ff4f67';
+        ctx.fillRect(contactProjected.screenX - 4, contactProjected.screenY - 4, 8, 8);
+        ctx.fillStyle = patch.validTreadContact ? '#52e6ff' : '#ff4f67';
+        ctx.fillRect(contactProjected.screenX - 2, contactProjected.screenY - 2, 4, 4);
+        if (Number(patch.normalLoadN || 0) > 1) {
+          ctx.strokeStyle = '#ffffff';
+          ctx.strokeRect(contactProjected.screenX - 5, contactProjected.screenY - 5, 10, 10);
+        }
       }
     });
     const latestTelemetry = runner?.telemetry?.at?.(-1) || runner?.latestTelemetry || {};
@@ -33861,6 +33871,12 @@ export default class RaceEditor {
         transparent: true, opacity: 0.5, depthWrite: false
       })
     };
+    const contactIndicators = {
+      raw: this.getRaceThreeSolidMaterial(renderer, '#52e6ff'),
+      proximity: this.getRaceThreeSolidMaterial(renderer, '#f6d65b'),
+      load: this.getRaceThreeSolidMaterial(renderer, '#73ff9b'),
+      unavailable: this.getRaceThreeSolidMaterial(renderer, '#8b929c')
+    };
     const hubMaterial = this.getRaceThreeSolidMaterial(renderer, '#ffffff');
     const mountMaterial = this.getRaceThreeSolidMaterial(renderer, '#b18cff');
     const contactMaterial = this.getRaceThreeSolidMaterial(renderer, '#73ff9b');
@@ -33894,6 +33910,8 @@ export default class RaceEditor {
     const suspensionLines = [];
     for (const wheelId of ['fl', 'fr', 'rl', 'rr']) {
       const wheel = renderState.wheels[wheelId] || {};
+      const presentedContact = this.playtestSession?.wheelContactPresentationState
+        ?.wheels?.[wheelId] || {};
       const hub = wheel.hubPositionBody || {};
       const mount = wheel.suspensionMountBody || {};
       const axis = wheel.suspensionAxisBody || { y: -1 };
@@ -33920,11 +33938,11 @@ export default class RaceEditor {
         Number(wheel.camberAngleRad || 0),
         'YXZ'
       );
-      const wheelMaterial = wheel.terrainDataAvailable === false
+      const wheelMaterial = presentedContact.terrainAvailable === false
         ? wheelMaterials.unavailable
-        : wheel.validTreadContact && wheel.loadBearing
+        : presentedContact.supported
           ? wheelMaterials.supported
-          : wheel.geometricContact
+          : presentedContact.geometricProximity
             ? wheelMaterials.proximity : wheelMaterials.unsupported;
       const cylinder = new THREE.Mesh(new THREE.CylinderGeometry(
         Math.max(0.04, Number(profile.wheelRadiusM || 0.337)),
@@ -33940,6 +33958,22 @@ export default class RaceEditor {
       hubMarker.name = `physicsWheelHub:${wheelId}`;
       hubMarker.renderOrder = 15;
       wheelGroup.add(hubMarker);
+      const indicators = [
+        ['raw', presentedContact.rawPhysicalContact, -0.09],
+        ['proximity', presentedContact.geometricProximity, 0],
+        ['load', presentedContact.loadBearing, 0.09]
+      ];
+      for (const [indicator, active, offset] of indicators) {
+        if (!active) continue;
+        const marker = new THREE.Mesh(
+          new THREE.SphereGeometry(0.026, 6, 4),
+          contactIndicators[indicator]
+        );
+        marker.name = `physicsWheelContactIndicator:${wheelId}:${indicator}`;
+        marker.position.set(offset, Number(profile.wheelRadiusM || 0.337) + 0.08, 0);
+        marker.renderOrder = 16;
+        wheelGroup.add(marker);
+      }
       root.add(wheelGroup);
     }
     addLocalLineSegments('physicsSuspensionAxes', suspensionLines, 0xb18cff);

@@ -14,7 +14,8 @@ const vectorObject = (value) => value ? { x: value[0], y: value[1], z: value[2] 
 const FRAME = Object.freeze({
   step: 0, substep: 1, time: 2, previousPosition: 3, state: 4, controls: 5,
   routeDistance: 6, worldPosition: 7, wheels: 8, terrain: 9, bodySupport: 10,
-  body: 11, triangleIds: 12, recovery: 13, recoveryState: 14, triggers: 15
+  body: 11, triangleIds: 12, recovery: 13, recoveryState: 14, triggers: 15,
+  motion: 16
 });
 
 function stateChecksum(state = {}) {
@@ -130,13 +131,29 @@ function packPhysicsIncidentFrame(frame) {
       contacts: frame.body.contacts.map((contact) => [
         contact.id || null, contact.pieceId || null, contact.wheelId || null,
         contact.contactType || 'body', vectorArray(contact.pointWorld), vectorArray(contact.normal),
-        q(contact.penetrationM), q(contact.normalImpulseNs), q(contact.tangentialImpulseNs)
+        q(contact.penetrationM), q(contact.normalImpulseNs), q(contact.tangentialImpulseNs),
+        vectorArray(contact.arm), q(contact.preImpactManifoldNormalVelocityMps),
+        q(contact.preImpactManifoldTangentSpeedMps), q(contact.postImpactManifoldNormalVelocityMps),
+        q(contact.postImpactManifoldTangentSpeedMps), q(contact.restitutionImpulseNs),
+        vectorArray(contact.tangentialImpulseWorldNs), q(contact.bodyFrictionInput),
+        q(contact.terrainFrictionInput), q(contact.friction),
+        contact.frictionClassification || null, contact.triangleId ?? null,
+        contact.terrainSource || null, contact.terrainRegion || null,
+        contact.colliderId || null, contact.colliderSource || null,
+        contact.persistentManifold === true ? 1 : 0, contact.sweepMechanism || null
       ]),
       maximumPenetrationM: frame.body.maximumPenetrationM,
       positionalCorrectionWorldM: vectorArray(frame.body.positionalCorrectionWorldM),
+      positionalAngularCorrectionWorldRad: vectorArray(
+        frame.body.positionalAngularCorrectionWorldRad
+      ),
+      localCcdRollback: frame.body.localCcdRollback,
+      velocityResolutionOwner: frame.body.velocityResolutionOwner,
+      contactTransaction: frame.body.contactTransaction,
       surfaceConsistency: frame.body.surfaceConsistency
     },
-    frame.preparedTriangleIds, frame.recovery, frame.recoveryState, frame.triggers
+    frame.preparedTriangleIds, frame.recovery, frame.recoveryState, frame.triggers,
+    frame.motion
   ];
 }
 
@@ -169,14 +186,31 @@ export function unpackPhysicsIncidentFrame(packed = [], terrainSampleTable = nul
       contacts: (body.contacts || []).map((contact) => ({
         id: contact[0], pieceId: contact[1], wheelId: contact[2], contactType: contact[3],
         pointWorld: vectorObject(contact[4]), normal: vectorObject(contact[5]), penetrationM: contact[6],
-        normalImpulseNs: contact[7], tangentialImpulseNs: contact[8]
+        normalImpulseNs: contact[7], tangentialImpulseNs: contact[8],
+        arm: vectorObject(contact[9]), preImpactManifoldNormalVelocityMps: contact[10],
+        preImpactManifoldTangentSpeedMps: contact[11],
+        postImpactManifoldNormalVelocityMps: contact[12],
+        postImpactManifoldTangentSpeedMps: contact[13], restitutionImpulseNs: contact[14],
+        tangentialImpulseWorldNs: vectorObject(contact[15]), bodyFrictionInput: contact[16],
+        terrainFrictionInput: contact[17], friction: contact[18],
+        frictionClassification: contact[19], triangleId: contact[20] ?? null,
+        terrainSource: contact[21], terrainRegion: contact[22], colliderId: contact[23],
+        colliderSource: contact[24], persistentManifold: contact[25] === 1,
+        sweepMechanism: contact[26]
       })),
       maximumPenetrationM: body.maximumPenetrationM,
       positionalCorrectionWorldM: vectorObject(body.positionalCorrectionWorldM),
+      positionalAngularCorrectionWorldRad: vectorObject(
+        body.positionalAngularCorrectionWorldRad
+      ),
+      localCcdRollback: body.localCcdRollback || null,
+      velocityResolutionOwner: body.velocityResolutionOwner || null,
+      contactTransaction: body.contactTransaction || null,
       surfaceConsistency: body.surfaceConsistency || {}
     },
     preparedTriangleIds: packed[FRAME.triangleIds] || [], recovery: packed[FRAME.recovery],
-    recoveryState: packed[FRAME.recoveryState], triggers: packed[FRAME.triggers] || []
+    recoveryState: packed[FRAME.recoveryState], triggers: packed[FRAME.triggers] || [],
+    motion: packed[FRAME.motion] || null
   };
 }
 
@@ -303,6 +337,7 @@ function compactAuthoritativeState(state = {}) {
     signedTravelSpeedMps: state.signedTravelSpeedMps,
     wheelAngularVelocityRadps: state.wheelAngularVelocityRadps,
     wheelRotationRad: state.wheelRotationRad,
+    wheelLoadsN: state.wheelLoadsN,
     // Suspension is recorded once in `frame.wheels`; retaining it again here
     // more than doubles a five-second incident without adding replay state.
     suspensionTravel: state.suspensionTravel,
@@ -329,6 +364,62 @@ function compactAuthoritativeState(state = {}) {
       position: state.penetrationRecovery.position
     } : null
   });
+}
+
+function dotVector(left = {}, right = {}) {
+  return Number(left.x || 0) * Number(right.x || 0)
+    + Number(left.y || 0) * Number(right.y || 0)
+    + Number(left.z || 0) * Number(right.z || 0);
+}
+
+function motionEventFlags(frame = {}) {
+  const contacts = frame.body?.contacts || [];
+  return {
+    bodyContact: contacts.some((contact) => contact.contactType === 'body'),
+    wheelCylinderContact: contacts.some((contact) => String(contact.contactType).includes('wheel')),
+    terrainContact: contacts.some((contact) => contact.triangleId !== null
+      || contact.terrainSource || contact.terrainRegion),
+    staticColliderContact: contacts.some((contact) => contact.colliderId
+      || String(contact.contactType).startsWith('static')),
+    rollback: Boolean(frame.body?.localCcdRollback),
+    recovery: Boolean(frame.recovery),
+    wheelContactTransition: Object.keys(frame.motion?.wheelContactTransitions || {}).length > 0
+  };
+}
+
+function hasQualifyingMotionEvent(flags = {}) {
+  return flags.bodyContact || flags.wheelCylinderContact || flags.terrainContact
+    || flags.staticColliderContact || flags.rollback || flags.recovery
+    || flags.wheelContactTransition;
+}
+
+function createMotionFrame(frame, diagnostics, previousFrame) {
+  const routeTangentWorld = clone(diagnostics.routeTangentWorld || { x: 0, y: 0, z: 1 });
+  const roadSupportNormalWorld = clone(
+    diagnostics.roadSupportNormalWorld || { x: 0, y: 1, z: 0 }
+  );
+  const velocity = frame.state?.velocity || {};
+  const wheelContactTransitions = {};
+  for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+    const wheelId = RACE_WHEEL_IDS[wheelIndex];
+    const before = previousFrame?.wheels?.[wheelId]?.validTreadContact;
+    const after = frame.wheels?.[wheelId]?.validTreadContact;
+    if (before !== undefined && before !== after) {
+      wheelContactTransitions[wheelId] = { before, after };
+    }
+  }
+  const motion = {
+    lateralRouteOffsetM: q(diagnostics.lateralRouteOffsetM),
+    roadHalfWidthM: q(diagnostics.roadHalfWidthM),
+    routeTangentWorld,
+    roadSupportNormalWorld,
+    routeTangentVelocityMps: q(dotVector(velocity, routeTangentWorld)),
+    routeNormalVelocityMps: q(dotVector(velocity, roadSupportNormalWorld)),
+    wheelContactTransitions
+  };
+  frame.motion = motion;
+  motion.eventFlags = motionEventFlags(frame);
+  return motion;
 }
 
 function incidentReasons(frame, previousFrame, recoveryRegions, toleranceM) {
@@ -370,6 +461,139 @@ function incidentReasons(frame, previousFrame, recoveryRegions, toleranceM) {
   return reasons;
 }
 
+function angleBetweenDegrees(left = {}, right = {}) {
+  const leftMagnitude = Math.hypot(Number(left.x || 0), Number(left.y || 0), Number(left.z || 0));
+  const rightMagnitude = Math.hypot(Number(right.x || 0), Number(right.y || 0), Number(right.z || 0));
+  if (!(leftMagnitude > 1e-9) || !(rightMagnitude > 1e-9)) return null;
+  const cosine = Math.max(-1, Math.min(1,
+    dotVector(left, right) / (leftMagnitude * rightMagnitude)));
+  return q(Math.acos(cosine) * 180 / Math.PI);
+}
+
+function classifyCapturedSpeedLoss({ frames, terrainSampleTable, triangles, vehicleConfiguration,
+  reasons } = {}) {
+  const speedLoss = reasons.find((reason) => reason.type === 'route-tangent-speed-collapse');
+  if (!speedLoss) return null;
+  const unpacked = frames.map((frame) => unpackPhysicsIncidentFrame(frame, terrainSampleTable));
+  const withinWindow = unpacked.filter((frame) => (
+    frame.stepIndex >= speedLoss.preEventStepIndex
+      && frame.stepIndex <= speedLoss.postEventStepIndex
+  ));
+  let dominantFrame = null;
+  let dominantContact = null;
+  for (let frameIndex = 0; frameIndex < withinWindow.length; frameIndex += 1) {
+    const frame = withinWindow[frameIndex];
+    const contacts = frame.body?.contacts || [];
+    for (let contactIndex = 0; contactIndex < contacts.length; contactIndex += 1) {
+      const contact = contacts[contactIndex];
+      if (Number(contact.normalImpulseNs || 0)
+        <= Number(dominantContact?.normalImpulseNs || 0)) continue;
+      dominantFrame = frame;
+      dominantContact = contact;
+    }
+  }
+  dominantFrame ||= withinWindow.at(-1) || unpacked.at(-1);
+  const supportNormal = dominantFrame?.motion?.roadSupportNormalWorld || { x: 0, y: 1, z: 0 };
+  const routeTangent = dominantFrame?.motion?.routeTangentWorld || { x: 0, y: 0, z: 1 };
+  const collisionNormal = dominantContact?.normal || supportNormal;
+  const surfaceAngleDegrees = angleBetweenDegrees(collisionNormal, supportNormal);
+  const mismatchThresholdDegrees = 12;
+  const source = String(dominantContact?.terrainSource || '');
+  const region = String(dominantContact?.terrainRegion || '');
+  const feature = String(dominantContact?.id || '');
+  const driveableRoadTriangle = region === 'road' || source === 'road'
+    || source.startsWith('road:');
+  const roadNormalMismatch = driveableRoadTriangle
+    && Number(surfaceAngleDegrees || 0) > mismatchThresholdDegrees;
+  const recovery = withinWindow.find((frame) => frame.recovery)?.recovery || null;
+  const rollback = withinWindow.find((frame) => frame.body?.localCcdRollback)
+    ?.body?.localCcdRollback || null;
+  let classification = 'driveable road impact';
+  if (recovery || rollback) classification = 'recovery or rollback motion loss';
+  else if (dominantContact?.colliderId
+    || String(dominantContact?.contactType || '').startsWith('static')) {
+    classification = 'static obstacle';
+  } else if (/curb|step/i.test(`${source}:${feature}`)) classification = 'authored curb or step';
+  else if (/shoulder|margin|corridor:(?:left|right)/i.test(`${region}:${source}`)) {
+    classification = 'shoulder or corridor-side impact';
+  } else if (roadNormalMismatch) classification = 'malformed terrain seam';
+  else if (/underbody|underside|lower-chassis/i.test(feature)) {
+    classification = 'underbody bottom-out';
+  } else if (/bumper|rocker/i.test(feature)) classification = 'bumper or rocker strike';
+  else if (Number(surfaceAngleDegrees || 0) > 6) classification = 'road-transition impact';
+  const massKg = Math.max(1, Number(vehicleConfiguration?.massKg || 1));
+  const preSpeedMps = Math.max(1e-9, Number(speedLoss.preEventRouteTangentSpeedMps || 0));
+  const normalRouteDeltaMps = dominantContact
+    ? dotVector(collisionNormal, routeTangent) * Number(dominantContact.normalImpulseNs || 0)
+      / massKg : 0;
+  const frictionRouteDeltaMps = dominantContact
+    ? dotVector(dominantContact.tangentialImpulseWorldNs, routeTangent) / massKg : 0;
+  const triangleId = dominantContact?.triangleId ?? null;
+  const triangle = triangles.find((candidate) => String(candidate.id ?? candidate.triangleId)
+    === String(triangleId)) || null;
+  return {
+    classification,
+    normalMismatchThresholdDegrees,
+    driveableRoadTriangle,
+    roadNormalMismatch,
+    triangleId,
+    triangleSource: dominantContact?.terrainSource || null,
+    triangleVertices: clone(triangle?.vertices || []),
+    triangleNormal: clone(triangle?.normal || null),
+    terrainRegion: dominantContact?.terrainRegion || null,
+    bodyPieceId: dominantContact?.pieceId || null,
+    contactFeatureId: dominantContact?.id || null,
+    contactType: dominantContact?.contactType || null,
+    contactPointWorld: clone(dominantContact?.pointWorld || null),
+    contactArmWorld: clone(dominantContact?.arm || null),
+    collisionNormal: clone(collisionNormal),
+    localRoadSupportNormal: clone(supportNormal),
+    localRouteTangent: clone(routeTangent),
+    collisionToRoadNormalAngleDegrees: surfaceAngleDegrees,
+    preImpactNormalVelocityMps: dominantContact?.preImpactManifoldNormalVelocityMps ?? null,
+    preImpactTangentVelocityMps: dominantContact?.preImpactManifoldTangentSpeedMps ?? null,
+    postImpactNormalVelocityMps: dominantContact?.postImpactManifoldNormalVelocityMps ?? null,
+    postImpactTangentVelocityMps: dominantContact?.postImpactManifoldTangentSpeedMps ?? null,
+    normalImpulseNs: dominantContact?.normalImpulseNs ?? 0,
+    frictionImpulseNs: dominantContact?.tangentialImpulseNs ?? 0,
+    restitutionImpulseNs: dominantContact?.restitutionImpulseNs ?? 0,
+    bodyFrictionInput: dominantContact?.bodyFrictionInput ?? null,
+    terrainFrictionInput: dominantContact?.terrainFrictionInput ?? null,
+    effectiveFrictionCoefficient: dominantContact?.friction ?? null,
+    frictionClassification: dominantContact?.frictionClassification || null,
+    positionalCorrectionWorldM: clone(dominantFrame?.body?.positionalCorrectionWorldM || null),
+    positionalAngularCorrectionWorldRad: clone(
+      dominantFrame?.body?.positionalAngularCorrectionWorldRad || null
+    ),
+    localCcdRollback: clone(rollback),
+    recovery: clone(recovery),
+    routeDistanceM: dominantFrame?.routeDistanceM ?? null,
+    lateralRouteOffsetM: dominantFrame?.motion?.lateralRouteOffsetM ?? null,
+    roadHalfWidthM: dominantFrame?.motion?.roadHalfWidthM ?? null,
+    preEventVelocity: clone(speedLoss.preEventVelocity),
+    postEventVelocity: clone(speedLoss.postEventVelocity),
+    preEventRouteTangentSpeedMps: speedLoss.preEventRouteTangentSpeedMps,
+    postEventRouteTangentSpeedMps: speedLoss.postEventRouteTangentSpeedMps,
+    preEventRouteNormalVelocityMps: speedLoss.preEventRouteNormalVelocityMps,
+    postEventRouteNormalVelocityMps: speedLoss.postEventRouteNormalVelocityMps,
+    routeTangentSpeedRetainedPercent: speedLoss.retainedPercent,
+    routeTangentSpeedRemovedByNormalImpulsePercent: q(
+      Math.max(0, -normalRouteDeltaMps) / preSpeedMps * 100
+    ),
+    routeTangentSpeedRemovedByBodyFrictionPercent: q(
+      Math.max(0, -frictionRouteDeltaMps) / preSpeedMps * 100
+    ),
+    recoveryChangedVelocity: Boolean(recovery && (
+      JSON.stringify(recovery.velocityBeforeRecovery) !== JSON.stringify(recovery.velocityAfterRecovery)
+    )),
+    rollbackChangedVelocity: Number(rollback?.removedInwardSpeedMps || 0) > 0,
+    wheelLoadsN: clone(dominantFrame?.state?.wheelLoadsN || null),
+    supportedWheelCount: dominantFrame?.state?.supportedWheelCount ?? null,
+    controls: clone(dominantFrame?.controls || {}),
+    wheelContactTransitions: clone(dominantFrame?.motion?.wheelContactTransitions || {})
+  };
+}
+
 export class PhysicsIncidentRecorder {
   constructor({
     tireHz = 360,
@@ -394,6 +618,7 @@ export class PhysicsIncidentRecorder {
     this.recoveryRegions = new Map();
     this.sequence = 0;
     this.cooldownRemainingSubsteps = 0;
+    this.motionWindow = [];
   }
 
   configureMetadata({ sourceDocumentChecksum, vehicleConfiguration, triangleProvider } = {}) {
@@ -424,6 +649,24 @@ export class PhysicsIncidentRecorder {
         maximumPenetrationM: q(bodyResult?.maximumPenetrationAfterSolveM
           ?? bodyResult?.residualPenetrationM ?? bodyResult?.maximumPenetrationM ?? 0),
         positionalCorrectionWorldM: clone(bodyResult?.positionalCorrectionWorldM || {}),
+        positionalAngularCorrectionWorldRad: clone(
+          bodyResult?.positionalAngularCorrectionWorldRad || {}
+        ),
+        localCcdRollback: clone(bodyResult?.localCcdRollback || null),
+        velocityResolutionOwner: bodyResult?.velocityResolutionOwner || null,
+        contactTransaction: bodyResult?.contactTransaction ? clone({
+          generation: bodyResult.contactTransaction.generation,
+          solverFailure: bodyResult.contactTransaction.solverFailure,
+          recoveredSolverFailure: bodyResult.contactTransaction.recoveredSolverFailure,
+          iterations: (bodyResult.contactTransaction.iterations || []).map((iteration) => ({
+            iteration: iteration.iteration,
+            correctionM: iteration.correctionM,
+            angularCorrectionRad: iteration.angularCorrectionRad,
+            splitCorrectionM: iteration.splitCorrectionM,
+            splitAngularCorrectionRad: iteration.splitAngularCorrectionRad,
+            contactCount: iteration.contactCount
+          }))
+        }) : null,
         surfaceConsistency: clone(bodyResult?.surfaceConsistency || {})
       },
       preparedTriangleIds: [...new Set((diagnostics.terrainSamples || [])
@@ -440,13 +683,69 @@ export class PhysicsIncidentRecorder {
         latest: diagnostics.recoveryState.history?.at(-1) || null
       }) : null
     };
+    createMotionFrame(frame, diagnostics, this.previousFrame);
     frame.triggers = incidentReasons(frame, this.previousFrame, this.recoveryRegions, toleranceM);
     return frame;
+  }
+
+  detectRouteSpeedLoss(frame) {
+    const cutoffTime = Number(frame.timeSeconds || 0) - 0.1;
+    while (this.motionWindow.length
+      && Number(this.motionWindow[0].timeSeconds || 0) < cutoffTime - 1e-9) {
+      this.motionWindow.shift();
+    }
+    let preEventFrame = null;
+    let preEventSpeedMps = 0;
+    let maximumBrake = Math.max(0, Number(frame.controls?.brake || 0));
+    const eventFlags = { ...frame.motion?.eventFlags };
+    let qualifyingEvent = hasQualifyingMotionEvent(eventFlags);
+    for (let index = 0; index < this.motionWindow.length; index += 1) {
+      const candidate = this.motionWindow[index];
+      const candidateSpeedMps = Number(candidate.motion?.routeTangentVelocityMps || 0);
+      if (candidateSpeedMps > preEventSpeedMps) {
+        preEventSpeedMps = candidateSpeedMps;
+        preEventFrame = candidate;
+      }
+      maximumBrake = Math.max(maximumBrake, Number(candidate.controls?.brake || 0));
+      const candidateFlags = candidate.motion?.eventFlags || {};
+      for (const key of Object.keys(candidateFlags)) {
+        eventFlags[key] ||= candidateFlags[key] === true;
+      }
+      qualifyingEvent ||= hasQualifyingMotionEvent(candidateFlags);
+    }
+    const postEventSpeedMps = Number(frame.motion?.routeTangentVelocityMps || 0);
+    const retainedFraction = preEventSpeedMps > 0 ? postEventSpeedMps / preEventSpeedMps : 1;
+    const triggered = preEventFrame
+      && preEventSpeedMps > 5
+      && retainedFraction < 0.3
+      && maximumBrake < 0.05
+      && qualifyingEvent;
+    this.motionWindow.push(frame);
+    if (!triggered) return null;
+    return {
+      type: 'route-tangent-speed-collapse',
+      windowSeconds: q(Number(frame.timeSeconds) - Number(preEventFrame.timeSeconds), 12),
+      preEventStepIndex: preEventFrame.stepIndex,
+      preEventSubstepIndex: preEventFrame.substepIndex,
+      postEventStepIndex: frame.stepIndex,
+      postEventSubstepIndex: frame.substepIndex,
+      preEventRouteTangentSpeedMps: q(preEventSpeedMps),
+      postEventRouteTangentSpeedMps: q(postEventSpeedMps),
+      retainedPercent: q(retainedFraction * 100),
+      preEventVelocity: clone(preEventFrame.state?.velocity),
+      postEventVelocity: clone(frame.state?.velocity),
+      preEventRouteNormalVelocityMps: q(preEventFrame.motion?.routeNormalVelocityMps),
+      postEventRouteNormalVelocityMps: q(frame.motion?.routeNormalVelocityMps),
+      eventFlags: clone(eventFlags),
+      maximumBrake: q(maximumBrake)
+    };
   }
 
   recordSubstep(payload = {}) {
     if (!this.enabled) return null;
     const frame = this.createFrame(payload);
+    const speedLossReason = this.detectRouteSpeedLoss(frame);
+    if (speedLossReason) frame.triggers.push(speedLossReason);
     const packedFrame = packPhysicsIncidentFrame(frame);
     if (this.cooldownRemainingSubsteps > 0) this.cooldownRemainingSubsteps -= 1;
     if (!this.active && this.cooldownRemainingSubsteps === 0 && frame.triggers.length) {
@@ -498,6 +797,14 @@ export class PhysicsIncidentRecorder {
       });
       return compact;
     });
+    const preparedWorldTriangles = clone(this.triangleProvider?.(sweptAabb) || []);
+    const analysis = classifyCapturedSpeedLoss({
+      frames: compactFrames,
+      terrainSampleTable,
+      triangles: preparedWorldTriangles,
+      vehicleConfiguration: this.vehicleConfiguration,
+      reasons: this.active.reasons
+    });
     const fixture = {
       version: PHYSICS_INCIDENT_FIXTURE_VERSION,
       sequence: this.active.sequence,
@@ -520,7 +827,8 @@ export class PhysicsIncidentRecorder {
         timeSeconds: frame[FRAME.time],
         input: frame[FRAME.controls]
       })),
-      preparedWorldTriangles: clone(this.triangleProvider?.(sweptAabb) || []),
+      preparedWorldTriangles,
+      analysis,
       frames: compactFrames
     };
     fixture.fixtureChecksum = hashTrackStateValue(JSON.stringify(fixture));

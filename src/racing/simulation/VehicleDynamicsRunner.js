@@ -1348,6 +1348,7 @@ function createTireAggregateScratch() {
       invalidContactReasonByWheel: {},
       geometricTerrainProximityByWheel: {},
       contactTypeByWheel: {},
+      wheelContactTelemetryByWheel: {},
       wheelLoadsN: {},
       wheelSlip: {},
       suspensionTravel: {},
@@ -1578,11 +1579,102 @@ function accumulateScaledVector3(target, value, scale) {
   target.z += Number(value?.z || 0) * scale;
 }
 
-function aggregateTireResults(results = [], tireSubstepDt = 0, scratch = createTireAggregateScratch()) {
+export function aggregateTireResults(results = [], tireSubstepDt = 0,
+  scratch = createTireAggregateScratch()) {
   const output = scratch.result;
   const count = Math.max(1, results.length);
   const accumulatedDuration = Math.max(EPSILON, results.length * tireSubstepDt);
   const latest = results[results.length - 1] || {};
+  const wheelContactTelemetryByWheel = output.wheelContactTelemetryByWheel;
+  for (const wheelId of RACE_WHEEL_IDS) {
+    const triangleIds = new Set();
+    let validCount = 0;
+    let proximityCount = 0;
+    let transitionCount = 0;
+    let previousValid = null;
+    let loadSumN = 0;
+    let minimumLoadN = Infinity;
+    let maximumLoadN = -Infinity;
+    let minimumSupportedFraction = Infinity;
+    let maximumSupportedFraction = -Infinity;
+    let minimumRequestedCompressionM = Infinity;
+    let maximumRequestedCompressionM = -Infinity;
+    let minimumActualCompressionM = Infinity;
+    let maximumActualCompressionM = -Infinity;
+    const normalMinimum = { x: Infinity, y: Infinity, z: Infinity };
+    const normalMaximum = { x: -Infinity, y: -Infinity, z: -Infinity };
+    let finalInvalidReason = null;
+    for (let resultIndex = 0; resultIndex < results.length; resultIndex += 1) {
+      const result = results[resultIndex];
+      const patch = result.contactPatches?.[wheelId] || {};
+      const suspension = result.suspensionState?.[wheelId] || {};
+      const valid = patch.validTreadContact === true;
+      const proximity = patch.geometricContact === true || patch.contactPointWorld != null;
+      const loadN = Number(patch.normalLoadN ?? result.wheelLoadsN?.[wheelId] ?? 0);
+      const fraction = Number(patch.footprint?.supportedFraction
+        ?? suspension.footprint?.supportedFraction ?? patch.supportedFraction ?? 0);
+      const requested = Number(patch.rawRequestedCompressionM
+        ?? suspension.rawRequestedCompressionM ?? suspension.targetCompressionM ?? 0);
+      const actual = Number(suspension.compressionM
+        ?? result.suspensionTravel?.[wheelId] ?? 0);
+      const normal = patch.surfaceNormalWorld || patch.contactNormalWorld;
+      if (valid) validCount += 1;
+      if (proximity) proximityCount += 1;
+      if (previousValid !== null && previousValid !== valid) transitionCount += 1;
+      previousValid = valid;
+      loadSumN += loadN;
+      minimumLoadN = Math.min(minimumLoadN, loadN);
+      maximumLoadN = Math.max(maximumLoadN, loadN);
+      minimumSupportedFraction = Math.min(minimumSupportedFraction, fraction);
+      maximumSupportedFraction = Math.max(maximumSupportedFraction, fraction);
+      minimumRequestedCompressionM = Math.min(minimumRequestedCompressionM, requested);
+      maximumRequestedCompressionM = Math.max(maximumRequestedCompressionM, requested);
+      minimumActualCompressionM = Math.min(minimumActualCompressionM, actual);
+      maximumActualCompressionM = Math.max(maximumActualCompressionM, actual);
+      const triangleId = patch.contactTriangleId ?? patch.terrainTriangleId
+        ?? suspension.terrainTriangleId ?? patch.triangleId;
+      if (triangleId !== null && triangleId !== undefined) triangleIds.add(String(triangleId));
+      if (normal) for (const axis of ['x', 'y', 'z']) {
+        const component = Number(normal[axis] ?? (axis === 'y' ? 1 : 0));
+        normalMinimum[axis] = Math.min(normalMinimum[axis], component);
+        normalMaximum[axis] = Math.max(normalMaximum[axis], component);
+      }
+      finalInvalidReason = patch.invalidContactReason
+        ?? result.invalidContactReasonByWheel?.[wheelId] ?? null;
+    }
+    const samples = results.length;
+    wheelContactTelemetryByWheel[wheelId] = {
+      substepCount: samples,
+      validContactSubstepCount: validCount,
+      geometricProximitySubstepCount: proximityCount,
+      normalLoadN: {
+        minimum: samples ? minimumLoadN : 0,
+        maximum: samples ? maximumLoadN : 0,
+        average: samples ? loadSumN / samples : 0
+      },
+      firstValidContact: results[0]?.contactPatches?.[wheelId]?.validTreadContact === true,
+      finalValidContact: results.at(-1)?.contactPatches?.[wheelId]?.validTreadContact === true,
+      contactTransitionCount: transitionCount,
+      triangleIds: [...triangleIds].sort(),
+      supportPlaneNormalRange: {
+        minimum: Number.isFinite(normalMinimum.x) ? normalMinimum : null,
+        maximum: Number.isFinite(normalMaximum.x) ? normalMaximum : null
+      },
+      footprintSupportedFractionRange: {
+        minimum: samples ? minimumSupportedFraction : 0,
+        maximum: samples ? maximumSupportedFraction : 0
+      },
+      rawRequestedCompressionRangeM: {
+        minimum: samples ? minimumRequestedCompressionM : 0,
+        maximum: samples ? maximumRequestedCompressionM : 0
+      },
+      actualCompressionRangeM: {
+        minimum: samples ? minimumActualCompressionM : 0,
+        maximum: samples ? maximumActualCompressionM : 0
+      },
+      finalInvalidReason
+    };
+  }
   resetMutableVector3(output.tireImpulseWorldNs);
   resetMutableVector3(output.suspensionImpulseWorldNs);
   resetMutableVector3(output.externalImpulseWorldNs);
@@ -4767,9 +4859,26 @@ export class VehicleDynamicsRunner {
           if (correctionM <= 0.001 && angularCorrectionRad <= 0.05 * Math.PI / 180) break;
           cumulativeCoupledCorrectionM += splitCorrectionM;
           cumulativeCoupledAngularCorrectionRad += splitAngularCorrectionRad;
+          const terrainContacts = bodyResult.contacts?.filter((contact) => (
+            !contact.colliderId && contact.terrainSource
+          )) || [];
+          const driveableRoadContact = terrainContacts.length > 0
+            && terrainContacts.every((contact) => {
+              const classification = `${contact.terrainRegion || ''} ${contact.terrainSource || ''}`
+                .toLowerCase();
+              return classification.includes('road')
+                && !/(corridor|curb|step|wall|barrier|obstacle|shoulder)/.test(classification);
+            });
+          // Prepared driveable hills may need the coupled body/wheel solve to
+          // traverse several small split corrections. This is not permission
+          // for obstacle contacts to depenetrate deeply: their original 6 cm
+          // and 10 degree catastrophic limits remain unchanged.
+          const correctionFailureLimitM = driveableRoadContact ? 0.18 : 0.06;
+          const angularFailureLimitRad = (driveableRoadContact ? 20 : 10) * Math.PI / 180;
           if (bodyResult.swept !== true && (
-            splitCorrectionM > 0.06 || cumulativeCoupledCorrectionM > 0.06
-            || cumulativeCoupledAngularCorrectionRad > 10 * Math.PI / 180
+            splitCorrectionM > correctionFailureLimitM
+            || cumulativeCoupledCorrectionM > correctionFailureLimitM
+            || cumulativeCoupledAngularCorrectionRad > angularFailureLimitRad
           )) {
             coupledSolverFailure = {
               reason: 'catastrophic-collision-correction',
@@ -5646,6 +5755,7 @@ export class VehicleDynamicsRunner {
       1 / this.config.tireHz,
       tireAggregateScratch
     );
+    this.latestWheelContactTelemetryByWheel = tires.wheelContactTelemetryByWheel;
     const bodyCollisionAggregate = aggregateBodyCollisionResults(
       bodyCollisionResults,
       tireAggregateScratch
@@ -6154,6 +6264,9 @@ export class VehicleDynamicsRunner {
         ? [...VEHICLE_DYNAMICS_SUBSYSTEM_ORDER]
         : VEHICLE_DYNAMICS_SUBSYSTEM_ORDER;
       telemetry.tireSubstepCount = tireResults.length;
+      telemetry.wheelContactTelemetryByWheel = retained
+        ? clone(tires.wheelContactTelemetryByWheel)
+        : tires.wheelContactTelemetryByWheel;
       telemetry.state = state;
       telemetry.forces = retained ? clone(integration) : integration;
       telemetry.assistInterventions = retained

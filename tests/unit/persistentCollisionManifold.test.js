@@ -83,6 +83,10 @@ test('wall manifold bounds contacts applies restitution once and preserves glanc
   assert.ok(first.contacts.length <= 4);
   assert.ok(first.rawContactCount > first.reducedContactCount);
   assert.ok(first.restitutionContributionNs > 0);
+  assert.equal(first.contacts.every((contact) => (
+    contact.preImpactManifoldTangentSpeedMps < 0.35
+      || contact.staticCaptureEligible === false
+  )), true);
   assert.ok(Number.isFinite(working.position.x) && Number.isFinite(working.position.z));
   assert.ok(working.velocity.x > 1, `glancing tangent ${working.velocity.x}`);
 

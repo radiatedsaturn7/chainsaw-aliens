@@ -1,3 +1,5 @@
+import { updateWheelContactPresentationState } from './WheelContactPresentationState.js';
+
 /**
  * The playtest session is the single authoritative vehicle aggregate.
  *
@@ -41,6 +43,14 @@ export function syncVehicleDynamicsCompatibilityOutputs(runner = null, session =
     visualState: (state.grounded === false ? 0 : 1)
   });
   session.vehicleRenderState = renderState;
+  session.wheelContactPresentationState = updateWheelContactPresentationState(
+    session.wheelContactPresentationState,
+    {
+      stepIndex: Number(runner.stepIndex || 0),
+      wheelContactTelemetryByWheel: runner.latestWheelContactTelemetryByWheel || {},
+      renderState
+    }
+  );
   session.vehicleResetGeneration = Number(renderState.resetGeneration || 0);
   session.vehicleRenderProfile ||= createVehicleRenderProfileFromRunner(runner);
   session.vehicleDynamicsPresentationTelemetry = {

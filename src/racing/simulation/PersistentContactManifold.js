@@ -111,6 +111,8 @@ export class PersistentManifoldHistory {
     this.previousKeys = new Set();
     this.currentStep = -1;
     this.currentKeys = new Set();
+    this.previousAges = new Map();
+    this.currentAges = new Map();
   }
 
   begin(stepIndex) {
@@ -118,15 +120,23 @@ export class PersistentManifoldHistory {
     if (step === this.currentStep) return;
     this.previousStep = this.currentStep;
     this.previousKeys = this.currentKeys;
+    this.previousAges = this.currentAges;
     this.currentStep = step;
     this.currentKeys = new Set();
+    this.currentAges = new Map();
   }
 
   classifyAndRemember(clusterKey) {
     const persistent = this.previousStep === this.currentStep - 1
       && this.previousKeys.has(clusterKey);
     this.currentKeys.add(clusterKey);
+    this.currentAges.set(clusterKey, persistent
+      ? (this.previousAges.get(clusterKey) || 1) + 1 : 1);
     return persistent;
+  }
+
+  age(clusterKey) {
+    return this.currentAges.get(clusterKey) || 0;
   }
 
   createSnapshot() {
@@ -134,7 +144,9 @@ export class PersistentManifoldHistory {
       previousStep: this.previousStep,
       previousKeys: [...this.previousKeys].sort(),
       currentStep: this.currentStep,
-      currentKeys: [...this.currentKeys].sort()
+      currentKeys: [...this.currentKeys].sort(),
+      previousAges: [...this.previousAges.entries()],
+      currentAges: [...this.currentAges.entries()]
     };
   }
 
@@ -143,5 +155,7 @@ export class PersistentManifoldHistory {
     this.previousKeys = new Set(snapshot.previousKeys || []);
     this.currentStep = Math.trunc(Number(snapshot.currentStep ?? -1));
     this.currentKeys = new Set(snapshot.currentKeys || []);
+    this.previousAges = new Map(snapshot.previousAges || []);
+    this.currentAges = new Map(snapshot.currentAges || []);
   }
 }
