@@ -475,6 +475,87 @@ test('continuous body sweep catches a narrow crest between proposed-pose probes'
   assert.ok(result.contacts.length > 0);
 });
 
+test('the recorded Studio Sprint 2 head-on hill preserves deflection and rotation', () => {
+  // Compact production-geometry fixture: prepared triangle 45278 from the
+  // current Studio Sprint 2 packed world, including its authored normal.
+  const origin = {
+    x: 77.78331765607261,
+    y: -0.2577835792881728,
+    z: 474.72046256294846
+  };
+  const normal = {
+    x: 0.4922326071131103,
+    y: 0.422502096348717,
+    z: -0.7610512723040216
+  };
+  const hillTerrain = (point) => ({
+    valid: true,
+    heightM: origin.y - (
+      normal.x * (Number(point.x || 0) - origin.x)
+        + normal.z * (Number(point.z || 0) - origin.z)
+    ) / normal.y,
+    normal,
+    friction: CONFIG.bodyCollisionFriction,
+    triangleId: 45278,
+    source: 'corridor:right:333:4'
+  });
+  const collision = new ChassisBodyCollision(CONFIG);
+  const impactDt = 1 / 60;
+  const horizontalNormalMagnitude = Math.hypot(normal.x, normal.z);
+  const velocity = {
+    x: -30 * normal.x / horizontalNormalMagnitude,
+    y: 0,
+    z: -30 * normal.z / horizontalNormalMagnitude
+  };
+  const previous = createWorking({ heightM: 0, velocity });
+  previous.orientation = quaternionFromEuler({
+    yaw: Math.atan2(velocity.x, velocity.z)
+  });
+  previous.position.x = origin.x - velocity.x * 0.1;
+  previous.position.z = origin.z - velocity.z * 0.1;
+  previous.position.y += 0.03 - minimumClearance(previous, hillTerrain);
+  const proposed = collision.createWorkingState(previous);
+  proposed.position.x += previous.velocity.x * impactDt;
+  proposed.position.z += previous.velocity.z * impactDt;
+  const preEnergyJ = 0.5 * CONFIG.massKg * 30 ** 2;
+
+  const result = collision.step({
+    workingState: proposed,
+    previousWorkingState: previous,
+    config: CONFIG,
+    environment: {
+      sampleTerrainAtWorldPoint: hillTerrain,
+      adaptiveBodySupport: true,
+      terrainHasDiscontinuities: true,
+      bodyCollisionPredicted: true
+    },
+    dt: impactDt,
+    advanceState: false
+  });
+  const postEnergyJ = 0.5 * CONFIG.massKg * (
+    proposed.velocity.x ** 2 + proposed.velocity.y ** 2 + proposed.velocity.z ** 2
+  );
+
+  assert.equal(result.swept, true, JSON.stringify(result));
+  assert.ok(result.timeOfImpactFraction > 0 && result.timeOfImpactFraction < 1);
+  assert.ok(result.contacts.length > 0);
+  assert.equal(result.contacts.every((contact) => (
+    Number(contact.tangentialImpulseNs || 0)
+      <= Number(contact.friction || 0) * Number(contact.normalImpulseNs || 0) + 1e-6
+  )), true, 'the hill impact must preserve the configured Coulomb friction bound');
+  assert.ok(result.contacts.some((contact) => (
+    Number(contact.postImpactManifoldNormalVelocityMps || 0) >= -0.1
+  )));
+  assert.ok(Math.hypot(
+    proposed.angularVelocityWorld.x,
+    proposed.angularVelocityWorld.y,
+    proposed.angularVelocityWorld.z
+  ) > 0.01, JSON.stringify(proposed.angularVelocityWorld));
+  assert.ok(postEnergyJ <= preEnergyJ + 1, `${postEnergyJ} <= ${preEnergyJ}`);
+  assert.ok(result.residualPenetrationM <= CONFIG.bodyCollisionToleranceM + 0.002,
+    result.residualPenetrationM);
+});
+
 test('wheel sidewall support resolves collision separately from powered tread contact', () => {
   const collision = new ChassisBodyCollision(CONFIG);
   const working = createWorking({ heightM: 1.4, velocity: { x: 0, y: -3, z: 0 } });
@@ -706,6 +787,12 @@ test('physical closing velocity owns restitution while impact telemetry separate
   assert.equal(result.restitutionContributionNs > 0, true);
   assert.equal(result.penetrationBiasContributionNs, 0);
   assert.equal(Number.isFinite(result.bodyFrictionImpulseNs), true);
+  assert.equal(result.contacts.every((contact) => (
+    Number.isFinite(contact.preImpactManifoldNormalVelocityMps)
+      && Number.isFinite(contact.preImpactManifoldTangentSpeedMps)
+      && Number.isFinite(contact.postImpactManifoldNormalVelocityMps)
+      && Number.isFinite(contact.postImpactManifoldTangentSpeedMps)
+  )), true);
   assert.equal(postEnergyJ <= preEnergyJ, true, `${postEnergyJ} <= ${preEnergyJ}`);
 });
 

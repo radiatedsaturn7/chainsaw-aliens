@@ -323,6 +323,7 @@ export function applyRaceVehicleRenderSnapshot(session, snapshot) {
   session.wheelContacts = state.contactPatches;
   session.vehicleDynamicsEventSequence = snapshot.eventSequence;
   session.vehicleDynamicsVisualState = snapshot.visualState;
+  session.vehicleDynamicsImpactEvents = snapshot.impactEvents || [];
 }
 
 export function applyWorkerTrackStateVisualDelta(session, delta = null) {

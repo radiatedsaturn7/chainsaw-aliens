@@ -242,6 +242,94 @@ test('a separating hill overlap does not roll back into the contact and can back
   assert.equal(routeRecoveryRequests(), 0);
 });
 
+test('a swept head-on hill impact keeps the manifold-resolved deflection', () => {
+  const { runner, routeRecoveryRequests } = createTierRunner({
+    initialState: {
+      position: { x: 0, y: 0.8, z: 0 },
+      velocity: { x: 0, y: 0, z: 12 }
+    }
+  });
+  const normal = { x: 0, y: Math.SQRT1_2, z: -Math.SQRT1_2 };
+  let collisionCalls = 0;
+  runner.bodyCollision.step = ({ workingState }) => {
+    collisionCalls += 1;
+    if (collisionCalls > 1) return {
+      linearImpulseWorldNs: {}, angularImpulseWorldNms: {},
+      positionalCorrectionWorldM: {}, contacts: [], bodyNormalImpulseNs: 0,
+      bodyFrictionImpulseNs: 0, restitutionContributionNs: 0,
+      penetrationBiasContributionNs: 0, maximumPenetrationM: 0,
+      residualPenetrationM: 0, safePoseRollbackFraction: null
+    };
+    workingState.velocity = { x: 0, y: 4, z: 4 };
+    workingState.angularVelocityWorld = { x: 1.2, y: 0, z: 0 };
+    workingState.position = {
+      ...workingState.position,
+      y: Number(workingState.position.y || 0) + 0.01
+    };
+    return {
+      linearImpulseWorldNs: { x: 0, y: 5800, z: -11600 },
+      angularImpulseWorldNms: { x: 900, y: 0, z: 0 },
+      positionalCorrectionWorldM: { x: 0, y: 0.01, z: 0 },
+      contacts: [{
+        id: 'studio-sprint2-hill-face',
+        featureId: 'prepared-hill-triangle',
+        triangleId: 45278,
+        terrainSource: 'corridor:right:333:4',
+        contactType: 'body',
+        pointWorld: { x: 0, y: 0.3, z: 1.8 },
+        arm: { x: 0, y: -0.35, z: 1.8 },
+        normal,
+        penetrationM: 0.04,
+        normalImpulseNs: 11600,
+        preImpactManifoldNormalVelocityMps: -12 * Math.SQRT1_2,
+        preImpactManifoldTangentSpeedMps: 12 * Math.SQRT1_2,
+        postImpactManifoldNormalVelocityMps: 0,
+        postImpactManifoldTangentSpeedMps: 4 * Math.SQRT2
+      }],
+      bodyNormalImpulseNs: 11600,
+      bodyFrictionImpulseNs: 0,
+      restitutionContributionNs: 0,
+      penetrationBiasContributionNs: 0,
+      swept: true,
+      sweepSource: 'body',
+      timeOfImpactFraction: 0.42,
+      maximumPenetrationM: 0.04,
+      residualPenetrationM: 0.04,
+      safePoseRollbackFraction: 0.42
+    };
+  };
+  runner.bodyCollision.samplePosePenetration = () => ({
+    maximumPenetrationM: collisionCalls === 1 ? 0.04 : 0,
+    minimumPenetrationM: 0,
+    deepestNormal: normal,
+    invalidTerrainSampleCount: 0,
+    allBodySamplesBelowTerrain: false,
+    allTerrainSamplesInvalid: false,
+    terrainTriangleIds: [45278],
+    terrainSources: ['studio-sprint2-packed-hill']
+  });
+  runner.lastValidLocalCollisionFrame = runner.createLocalCollisionFrame(
+    { ...runner.state, position: { ...runner.state.position, z: -0.5 } },
+    emptyTireResult(),
+    { stepIndex: 0, substepIndex: 0, routeDistanceM: 75 }
+  );
+
+  runner.advance(1 / 120);
+
+  assert.ok(runner.state.velocity.y > 3.8, runner.state.velocity.y);
+  assert.ok(runner.state.velocity.z > 3.8, runner.state.velocity.z);
+  assert.ok(runner.state.angularVelocityWorld.x > 1.1,
+    runner.state.angularVelocityWorld.x);
+  assert.equal(runner.contactStabilizationState.localCcdRollbackCount, 0);
+  assert.equal(runner.contactStabilizationState.ordinaryCorrectionCount, 0);
+  assert.equal(runner.contactStabilizationState.gameplayResetCount, 0);
+  assert.equal(routeRecoveryRequests(), 0);
+  assert.equal(runner.impactHistory.length, 1);
+  assert.equal(runner.impactHistory[0].terrainImpact, true);
+  assert.equal(runner.impactHistory[0].impactTriangleId, 45278);
+  assert.ok(runner.impactHistory[0].preImpactNormalSpeedMps > 8);
+});
+
 test('400 mm body submersion performs one deterministic catastrophic gameplay recovery', () => {
   const run = () => {
     const { runner } = createTierRunner({ penetrationM: 0.4, allBelow: true });

@@ -2045,6 +2045,9 @@ export class VehicleDynamicsRunner {
     this.observedTimeSeconds = 0;
     this.telemetry = [];
     this.impactHistory = [];
+    this.terrainImpactHistory = [];
+    this.terrainImpactSequence = 0;
+    this.terrainImpactContactActive = false;
     this.activeImpact = null;
     this.postResetTelemetry = [];
     this.resetIncidentHistory = [];
@@ -2553,6 +2556,7 @@ export class VehicleDynamicsRunner {
     this.contactStabilizationState.localRollbackFailureCount = 0;
     this.contactStabilizationState.latest = null;
     this.activeImpact = null;
+    this.terrainImpactContactActive = false;
     this.postResetTelemetry = [];
     this.postResetTelemetryGeneration = vehicleResetGeneration;
     this.postResetImpactBaseline = this.impactHistory.length;
@@ -4735,6 +4739,7 @@ export class VehicleDynamicsRunner {
       const coupledIterations = [];
       const coupledBodyResults = [bodyResult];
       let coupledSolverFailure = null;
+      let recoveredCoupledSolverFailure = null;
       let cumulativeCoupledCorrectionM = 0;
       let cumulativeCoupledAngularCorrectionRad = 0;
       if (!deferBodyCollisionToChassisBoundary) {
@@ -5085,16 +5090,140 @@ export class VehicleDynamicsRunner {
         bodyResult.contacts || [],
         penetrationSample.deepestNormal
       );
+      let resolvedImpactPass = null;
+      for (let resultIndex = 0; resultIndex < coupledBodyResults.length
+        && !resolvedImpactPass; resultIndex += 1) {
+        const candidateResult = coupledBodyResults[resultIndex];
+        if (candidateResult.swept !== true
+          || !Number.isFinite(Number(candidateResult.timeOfImpactFraction))) continue;
+        const candidateContacts = candidateResult.contacts || [];
+        for (let contactIndex = 0; contactIndex < candidateContacts.length;
+          contactIndex += 1) {
+          const candidateContact = candidateContacts[contactIndex];
+          if (Number(candidateContact.normalImpulseNs || 0) <= 1e-9
+            || Number(candidateContact.preImpactManifoldNormalVelocityMps || 0) >= -1e-6) continue;
+          resolvedImpactPass = candidateResult;
+          break;
+        }
+      }
+      const resolvedCurrentSubstepImpact = Boolean(resolvedImpactPass);
+      if (resolvedCurrentSubstepImpact) {
+        bodyResult.velocityResolutionOwner = 'current-substep-toi-manifold';
+        bodyResult.resolvedImpactTimeOfImpactFraction = Number(
+          resolvedImpactPass.timeOfImpactFraction
+        );
+        bodyResult.resolvedImpactSweepSource = resolvedImpactPass.sweepSource || null;
+        const resolvedContacts = resolvedImpactPass.contacts || [];
+        let resolvedImpactContact = null;
+        for (let contactIndex = 0; contactIndex < resolvedContacts.length;
+          contactIndex += 1) {
+          const contact = resolvedContacts[contactIndex];
+          if (Number(contact.normalImpulseNs || 0)
+            <= Number(resolvedImpactContact?.normalImpulseNs || 0)) continue;
+          resolvedImpactContact = contact;
+        }
+        if (resolvedImpactContact) {
+          bodyResult.resolvedImpactContact = {
+            id: resolvedImpactContact.id || null,
+            colliderId: resolvedImpactContact.colliderId || null,
+            contactType: resolvedImpactContact.contactType || 'body',
+            triangleId: resolvedImpactContact.triangleId ?? null,
+            terrainSource: resolvedImpactContact.terrainSource || null,
+            pointWorld: clone(resolvedImpactContact.pointWorld),
+            normal: clone(resolvedImpactContact.normal),
+            normalImpulseNs: Number(resolvedImpactContact.normalImpulseNs || 0),
+            preImpactManifoldNormalVelocityMps: Number(
+              resolvedImpactContact.preImpactManifoldNormalVelocityMps || 0
+            ),
+            persistentManifold: resolvedImpactContact.persistentManifold === true,
+            manifoldRepresentativeIndex: Number(
+              resolvedImpactContact.manifoldRepresentativeIndex || 0
+            )
+          };
+        }
+      }
       // A previous-frame rollback is a one-sided impact constraint. Reusing it
       // after the chassis has begun separating snaps the car back into the
       // hill every substep and can make an otherwise recoverable contact feel
       // welded in place. Current-substep CCD still owns actual crossings; an
       // artificial/no-manifold fixture retains the conservative fallback.
-      const historicalRollbackRequired = bodyResult.swept === true
-        || contactClosingSpeedMps > 1e-4
-        || !(bodyResult.contacts?.length > 0);
+      const historicalRollbackRequired = !resolvedCurrentSubstepImpact && (
+        contactClosingSpeedMps > 1e-4
+          || !(bodyResult.contacts?.length > 0)
+      );
       let localRollback = null;
-      if (bodyResult.safePoseRollbackFraction !== null
+      if (coupledSolverFailure?.reason === 'catastrophic-collision-correction'
+        && !authoritativeTerrainUnavailable
+        && isFiniteVehiclePose(substepState)
+        && currentPenetrationM <= this.config.catastrophicBodyPenetrationM) {
+        const resolvedAngularVelocityWorld = clone(substepState.angularVelocityWorld);
+        localRollback = this.restoreLocalCollisionFrame(
+          substepState,
+          this.lastValidLocalCollisionFrame,
+          penetrationSample.deepestNormal,
+          nextStepIndex
+        );
+        if (localRollback) {
+          // Positional validation is not an impulse owner. Return the complete
+          // body/wheel transaction to its most recent local safe pose while
+          // retaining the physical collision result and terrain-tangent
+          // motion calculated for this substep.
+          substepState.angularVelocityWorld = resolvedAngularVelocityWorld;
+          recoveredCoupledSolverFailure = coupledSolverFailure;
+          coupledSolverFailure = null;
+          bodyResult.velocityResolutionOwner = 'recoverable-coupled-safe-pose';
+          bodyResult.recoverableCoupledCorrectionFailure = {
+            ...recoveredCoupledSolverFailure,
+            safePoseStepIndex: Number(this.lastValidLocalCollisionFrame?.stepIndex || 0),
+            retainedTangentSpeedMps: Math.hypot(
+              Number(localRollback.velocity?.x || 0),
+              Number(localRollback.velocity?.y || 0),
+              Number(localRollback.velocity?.z || 0)
+            )
+          };
+          if (bodyResult.contactTransaction) {
+            bodyResult.contactTransaction.recoveredSolverFailure
+              = bodyResult.contactTransaction.solverFailure;
+            bodyResult.contactTransaction.solverFailure = null;
+          }
+          let dominantRecoveredContact = null;
+          for (let resultIndex = 0; resultIndex < coupledBodyResults.length;
+            resultIndex += 1) {
+            const resultContacts = coupledBodyResults[resultIndex].contacts || [];
+            for (let contactIndex = 0; contactIndex < resultContacts.length;
+              contactIndex += 1) {
+              const contact = resultContacts[contactIndex];
+              if (contact.contactType !== 'body'
+                || contact.colliderId
+                || !contact.terrainSource
+                || Number(contact.normalImpulseNs || 0)
+                  <= Number(dominantRecoveredContact?.normalImpulseNs || 0)) continue;
+              dominantRecoveredContact = contact;
+            }
+          }
+          if (dominantRecoveredContact) {
+            bodyResult.resolvedImpactContact = {
+              id: dominantRecoveredContact.id || null,
+              colliderId: null,
+              contactType: 'body',
+              triangleId: dominantRecoveredContact.triangleId ?? null,
+              terrainSource: dominantRecoveredContact.terrainSource || null,
+              pointWorld: clone(dominantRecoveredContact.pointWorld),
+              normal: clone(dominantRecoveredContact.normal),
+              normalImpulseNs: Number(dominantRecoveredContact.normalImpulseNs || 0),
+              preImpactManifoldNormalVelocityMps: Number(
+                dominantRecoveredContact.preImpactManifoldNormalVelocityMps || 0
+              ),
+              persistentManifold: dominantRecoveredContact.persistentManifold === true,
+              manifoldRepresentativeIndex: Number(
+                dominantRecoveredContact.manifoldRepresentativeIndex || 0
+              )
+            };
+          }
+        }
+      }
+      if (!localRollback && !resolvedCurrentSubstepImpact
+        && bodyResult.safePoseRollbackFraction !== null
         && bodyResult.safePoseRollbackFraction !== undefined) {
         localRollback = removeVelocityIntoNormal(
           substepState.velocity,
@@ -5102,7 +5231,7 @@ export class VehicleDynamicsRunner {
         );
         substepState.velocity = localRollback.velocity;
         this.updateDerivedMotionState(substepState);
-      } else if (moderatePenetration
+      } else if (!localRollback && moderatePenetration
         && historicalRollbackRequired
         && !authoritativeTerrainUnavailable) {
         localRollback = this.restoreLocalCollisionFrame(
@@ -5128,7 +5257,9 @@ export class VehicleDynamicsRunner {
             routeDistanceAfter: routeDistance,
             normal: localRollback.normal,
             removedInwardSpeedMps: localRollback.removedInwardSpeedMps,
-            reason: bodyResult.safePoseRollbackFraction === null
+            reason: recoveredCoupledSolverFailure
+              ? 'coupled-correction-safe-pose'
+              : bodyResult.safePoseRollbackFraction === null
               || bodyResult.safePoseRollbackFraction === undefined
               ? 'previous-local-frame' : 'current-substep-toi'
           }
@@ -5254,7 +5385,8 @@ export class VehicleDynamicsRunner {
           >= this.config.localCcdRollbackFailureLimit) {
         recoveryReason = 'catastrophic-local-rollback-failure';
       }
-      if (!recoveryReason && !localRollback && contactPenetrationM > resolvedToleranceM) {
+      if (!recoveryReason && !localRollback && !resolvedCurrentSubstepImpact
+        && contactPenetrationM > resolvedToleranceM) {
         const stabilization = removeVelocityIntoNormal(
           substepState.velocity,
           penetrationSample.deepestNormal || { x: 0, y: 1, z: 0 }
@@ -5275,6 +5407,9 @@ export class VehicleDynamicsRunner {
               ? 'shallow-manifold-settling' : 'bounded-contact-settling'
           }
         );
+      } else if (!recoveryReason && resolvedCurrentSubstepImpact
+        && contactPenetrationM > resolvedToleranceM) {
+        bodyResult.postImpactVelocityProjectionSuppressed = true;
       }
       const activeIncident = this.penetrationRecoveryState.currentIncident;
       if (recoveryReason && activeIncident?.lastRecoveryStepIndex === nextStepIndex) {
@@ -5722,8 +5857,39 @@ export class VehicleDynamicsRunner {
     let physicalBodyImpactCount = 0;
     let preImpactKineticEnergyJ = chassisStepPreImpactKineticEnergyJ;
     let physicalImpactEnergyDeltaJ = 0;
+    let dominantTerrainImpactContact = null;
+    let dominantTerrainImpactImpulseNs = 0;
+    let dominantTerrainImpactRecoveredCoupledCorrection = false;
     for (let resultIndex = 0; resultIndex < bodyCollisionResults.length; resultIndex += 1) {
       const result = bodyCollisionResults[resultIndex];
+      const resolvedImpactContact = result.resolvedImpactContact;
+      if (resolvedImpactContact?.contactType === 'body'
+        && !resolvedImpactContact.colliderId
+        && resolvedImpactContact.terrainSource
+        && Number(resolvedImpactContact.normalImpulseNs || 0)
+          > dominantTerrainImpactImpulseNs) {
+        dominantTerrainImpactContact = resolvedImpactContact;
+        dominantTerrainImpactImpulseNs = Number(
+          resolvedImpactContact.normalImpulseNs || 0
+        );
+        dominantTerrainImpactRecoveredCoupledCorrection = Boolean(
+          result.recoverableCoupledCorrectionFailure
+        );
+      }
+      const resultContacts = result.contacts || [];
+      for (let contactIndex = 0; contactIndex < resultContacts.length; contactIndex += 1) {
+        const contact = resultContacts[contactIndex];
+        const normalImpulseNs = Number(contact.normalImpulseNs || 0);
+        if (contact.contactType !== 'body'
+          || contact.colliderId
+          || !contact.terrainSource
+          || normalImpulseNs <= dominantTerrainImpactImpulseNs) continue;
+        dominantTerrainImpactContact = contact;
+        dominantTerrainImpactImpulseNs = normalImpulseNs;
+        dominantTerrainImpactRecoveredCoupledCorrection = Boolean(
+          result.recoverableCoupledCorrectionFailure
+        );
+      }
       if (!(Number(result.bodyNormalImpulseNs || 0) > 0)) continue;
       if (physicalBodyImpactCount === 0) {
         preImpactKineticEnergyJ = Number(result.preImpactKineticEnergyJ || 0);
@@ -5735,6 +5901,39 @@ export class VehicleDynamicsRunner {
     const resolvedPostImpactKineticEnergyJ = physicalBodyImpactCount > 0
       ? preImpactKineticEnergyJ + physicalImpactEnergyDeltaJ
       : postImpactKineticEnergyJ;
+    let terrainImpactEvent = null;
+    const terrainImpactClosingSpeedMps = Math.max(0, -Number(
+      dominantTerrainImpactContact?.preImpactManifoldNormalVelocityMps || 0
+    ));
+    const terrainImpactContactQualifies = !this.stationaryResetHold
+      && dominantTerrainImpactContact
+      && dominantTerrainImpactImpulseNs > 1
+      && terrainImpactClosingSpeedMps > 0.25;
+    if (terrainImpactContactQualifies && !this.terrainImpactContactActive) {
+      terrainImpactEvent = {
+        sequence: ++this.terrainImpactSequence,
+        stepIndex: nextStepIndex,
+        timeSeconds: quantize(nextStepIndex / this.config.chassisHz, 12),
+        resetGeneration: Math.max(0, Math.trunc(Number(
+          this.state.vehicleResetGeneration || 0
+        ))),
+        terrainImpact: true,
+        recoveredCoupledCorrection: dominantTerrainImpactRecoveredCoupledCorrection,
+        bodyNormalImpulseNs: quantize(dominantTerrainImpactImpulseNs),
+        preImpactNormalSpeedMps: quantize(terrainImpactClosingSpeedMps),
+        preImpactKineticEnergyJ: quantize(preImpactKineticEnergyJ),
+        postImpactKineticEnergyJ: quantize(resolvedPostImpactKineticEnergyJ),
+        impactPointWorld: clone(dominantTerrainImpactContact.pointWorld),
+        impactNormalWorld: clone(dominantTerrainImpactContact.normal),
+        impactTriangleId: dominantTerrainImpactContact.triangleId ?? null,
+        impactFeatureId: dominantTerrainImpactContact.id || null,
+        impactTerrainSource: dominantTerrainImpactContact.terrainSource || null,
+        impactYawRad: Number(this.state.yawRad || 0)
+      };
+      this.terrainImpactHistory.push(terrainImpactEvent);
+      if (this.terrainImpactHistory.length > 32) this.terrainImpactHistory.shift();
+    }
+    this.terrainImpactContactActive = Boolean(terrainImpactContactQualifies);
     if (impactStarted && (!this.activeImpact || this.activeImpact.complete === true)) {
       const impact = {
         sequence: Math.max(0, Number(this.impactHistory.at(-1)?.sequence || 0)) + 1,
@@ -5749,6 +5948,22 @@ export class VehicleDynamicsRunner {
         restitutionContributionNs: quantize(tires.bodyCollision.restitutionContributionNs || 0),
         penetrationBiasContributionNs: 0,
         positionalCorrectionWorldM: clone(tires.bodyCollision.positionalCorrectionWorldM),
+        resetGeneration: Math.max(0, Math.trunc(Number(
+          this.state.vehicleResetGeneration || 0
+        ))),
+        terrainImpact: Boolean(dominantTerrainImpactContact),
+        impactPointWorld: dominantTerrainImpactContact
+          ? clone(dominantTerrainImpactContact.pointWorld) : null,
+        impactNormalWorld: dominantTerrainImpactContact
+          ? clone(dominantTerrainImpactContact.normal) : null,
+        impactTriangleId: dominantTerrainImpactContact?.triangleId ?? null,
+        impactFeatureId: dominantTerrainImpactContact?.id || null,
+        impactTerrainSource: dominantTerrainImpactContact?.terrainSource || null,
+        preImpactNormalSpeedMps: dominantTerrainImpactContact
+          ? Math.max(0, -Number(
+              dominantTerrainImpactContact.preImpactManifoldNormalVelocityMps || 0
+            )) : 0,
+        impactYawRad: Number(this.state.yawRad || 0),
         firstReboundApexM: null,
         secondReboundApexM: null,
         reboundPhase: 'awaiting-first-apex',
@@ -5806,6 +6021,7 @@ export class VehicleDynamicsRunner {
     // clones the complete integration record below; transient telemetry can
     // safely expose the current read-only view without cloning it every step.
     integration.impactEnergy = this.activeImpact || null;
+    integration.terrainImpactEvent = terrainImpactEvent;
     integration.takeoff = this.takeoffContactState.activeTakeoff
       || this.takeoffHistory.at(-1) || null;
     if (this.postResetTelemetry.length < 600 && this.postResetTelemetryGeneration > 0) {
@@ -6120,6 +6336,9 @@ export class VehicleDynamicsRunner {
       inputTimeline: this.inputTimeline.createSnapshot(),
       telemetry: clone(this.telemetry),
       impactHistory: clone(this.impactHistory),
+      terrainImpactHistory: clone(this.terrainImpactHistory),
+      terrainImpactSequence: this.terrainImpactSequence,
+      terrainImpactContactActive: this.terrainImpactContactActive,
       activeImpactSequence: this.activeImpact?.sequence || null,
       takeoffHistory: clone(this.takeoffHistory),
       takeoffContactState: clone(this.takeoffContactState),
@@ -6155,6 +6374,11 @@ export class VehicleDynamicsRunner {
     this.inputTimeline.restoreSnapshot(snapshot.inputTimeline || []);
     this.telemetry = clone(snapshot.telemetry || []);
     this.impactHistory = clone(snapshot.impactHistory || []);
+    this.terrainImpactHistory = clone(snapshot.terrainImpactHistory || []);
+    this.terrainImpactSequence = Math.max(0, Math.trunc(Number(
+      snapshot.terrainImpactSequence || this.terrainImpactHistory.at(-1)?.sequence || 0
+    )));
+    this.terrainImpactContactActive = snapshot.terrainImpactContactActive === true;
     this.activeImpact = this.impactHistory.find((impact) => (
       impact.sequence === snapshot.activeImpactSequence
     )) || null;
@@ -6239,6 +6463,7 @@ export class VehicleDynamicsRunner {
       finalState: this.createStateSnapshot(),
       finalTelemetry: clone(this.telemetry),
       impactHistory: clone(this.impactHistory),
+      terrainImpactHistory: clone(this.terrainImpactHistory),
       takeoffHistory: clone(this.takeoffHistory),
       contactStabilizationState: clone(this.contactStabilizationState),
       finalDiagnostics: clone(this.diagnostics),

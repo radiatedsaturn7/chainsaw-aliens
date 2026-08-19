@@ -106,12 +106,14 @@ test('render snapshot updates presentation compatibility without exposing a runn
     speedMps: 20,
     engineRpm: 4000,
     eventSequence: 11,
-    visualState: 2
+    visualState: 2,
+    impactEvents: [{ sequence: 4, terrainImpact: true }]
   });
   assert.equal(session.worldX, 1);
   assert.equal(session.vehicle3d.authoritativeSource, 'VehicleDynamicsWorker');
   assert.equal(session.vehicleDynamicsRunner, undefined);
   assert.equal(session.vehicleDynamicsEventSequence, 11);
+  assert.equal(session.vehicleDynamicsImpactEvents[0].sequence, 4);
 });
 
 test('rolled worker snapshots update body, wheel, and debug state atomically', () => {
