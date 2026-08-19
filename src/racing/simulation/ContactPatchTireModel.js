@@ -1086,6 +1086,12 @@ function applyAntiRollTransfer(
   right.antiRollLoadTransferN = -transferN;
   left.normalLoadN = Math.max(0, Number(left.normalLoadN || 0) + transferN);
   right.normalLoadN = Math.max(0, Number(right.normalLoadN || 0) - transferN);
+  left.chassisSupportLoadN = Math.max(
+    0, Number(left.chassisSupportLoadN || 0) + transferN
+  );
+  right.chassisSupportLoadN = Math.max(
+    0, Number(right.chassisSupportLoadN || 0) - transferN
+  );
 }
 
 export class ContactPatchTireModel {
@@ -1445,6 +1451,7 @@ export class ContactPatchTireModel {
       let unsprungVelocityMps = Number(previousSuspension.unsprungVelocityMps || 0);
       let compressionM = previousCompressionM;
       let tireSupportForceN = null;
+      let verticalCoupledActive = previousSuspension.verticalCoupledActive === true;
       if (initialContactValidity.valid) {
         if (staticSupportSolve || !hasPreviousSuspensionState) {
           const previousPatchLoadN = Number(
@@ -1472,6 +1479,7 @@ export class ContactPatchTireModel {
           // geometric/contact field at the corrected body pose.
           unsprungVelocityMps = staticSupportSolve
             ? 0 : Number(previousSuspension.unsprungVelocityMps || 0);
+          verticalCoupledActive = false;
         } else if (collisionContactRebuild) {
           // A pose-only collision correction must rebuild contact geometry
           // around the same wheel generalized coordinate. Snapping the wheel
@@ -1479,6 +1487,7 @@ export class ContactPatchTireModel {
           // and injects a new suspension state into the corrected chassis.
           compressionM = previousCompressionM;
           unsprungVelocityMps = Number(previousSuspension.unsprungVelocityMps || 0);
+          verticalCoupledActive = true;
           const tireErrorM = Number(clampedCompressionM) - compressionM;
           const normalizedUnsprungSpeed = unsprungVelocityMps / 0.32;
           const normalizedTireError = tireErrorM / 0.018;
@@ -1504,6 +1513,25 @@ export class ContactPatchTireModel {
           const effectiveTireVerticalDampingNsM = config.tireVerticalDampingNsM
             + (Math.min(6000, 2.8 * config.tireVerticalDampingNsM)
               - config.tireVerticalDampingNsM) * lowSpeedTireModeBlend;
+          verticalCoupledActive = verticalCoupledActive
+            || state.contactPatches?.[wheelId]?.validTreadContact === false
+            || Math.abs(contactVelocityNormalMps) > 0.25;
+          if (verticalCoupledActive
+            && Math.abs(contactVelocityNormalMps) < 0.03
+            && Math.abs(unsprungVelocityMps) < 0.03
+            && Math.abs(tireErrorM) < 0.00025) {
+            verticalCoupledActive = false;
+          }
+          if (!verticalCoupledActive) {
+            const tireForceN = tireErrorM * config.tireVerticalStiffnessNpm
+              - unsprungVelocityMps * effectiveTireVerticalDampingNsM;
+            unsprungVelocityMps += tireForceN / unsprungMassKg * dt;
+            compressionM = clamp(
+              compressionM + unsprungVelocityMps * dt,
+              0,
+              suspensionTravelM
+            );
+          } else {
           const currentSpringDisplacementM = compressionM - staticCompressionM;
           const currentBumpStopStartM = staticCompressionM
             + bumpTravelM * config.bumpStopStartRatio;
@@ -1557,6 +1585,7 @@ export class ContactPatchTireModel {
               + effectiveTireVerticalDampingNsM * (
                 targetCompressionVelocityMps - unsprungVelocityMps
               ));
+          }
           if (compressionM === 0 && unsprungVelocityMps < 0) unsprungVelocityMps = 0;
           if (compressionM === suspensionTravelM && unsprungVelocityMps > 0) {
             unsprungVelocityMps = 0;
@@ -1570,6 +1599,7 @@ export class ContactPatchTireModel {
           unsprungVelocityMps = Math.min(0, unsprungVelocityMps);
         }
       } else {
+        verticalCoupledActive = true;
         const unsprungMassKg = Math.max(EPSILON, Number(
           config.unsprungMassByWheelKg?.[wheelId] || config.unsprungMassKg
         ));
@@ -1756,6 +1786,11 @@ export class ContactPatchTireModel {
         ?? staticLoad * Number(environment.normalLoadScaleByWheel?.[wheelId] ?? 1);
       const maxNormalLoadN = staticLoad * config.maxSuspensionLoadFactor;
       const normalLoadN = clamp(
+        Number(suspensionLoadN ?? fallbackLoadN),
+        0,
+        maxNormalLoadN
+      ) * contactScale;
+      const chassisSupportLoadN = clamp(
         Number(tireSupportForceN ?? suspensionLoadN ?? fallbackLoadN),
         0,
         maxNormalLoadN
@@ -1785,6 +1820,8 @@ export class ContactPatchTireModel {
       tire.damage = tire.damage ?? tireState.damage;
       wheelInput.kinematics = kinematics;
       wheelInput.normalLoadN = normalLoadN;
+      wheelInput.chassisSupportLoadN = chassisSupportLoadN;
+      wheelInput.verticalCoupledActive = verticalCoupledActive;
       wheelInput.staticLoadN = staticLoad;
       wheelInput.springRateNpm = springRateNpm;
       wheelInput.damperRateNsM = damperRateNsM;
@@ -1981,7 +2018,8 @@ export class ContactPatchTireModel {
       const {
         kinematics, normalLoadN, force, hasSurfaceHeight, geometricContact, contactValidity,
         compressionM, contactVelocityNormalMps, suspensionTravelM,
-        rawRequestedCompressionM, springRateNpm, damperRateNsM, antiRollLoadTransferN = 0
+        rawRequestedCompressionM, springRateNpm, damperRateNsM,
+        chassisSupportLoadN = normalLoadN, antiRollLoadTransferN = 0
       } = wheelInputs[wheelId];
       const rollingVelocity = Number(kinematics.longitudinalVelocityMps || 0);
       const rollingSign = rollingVelocity / Math.sqrt(rollingVelocity * rollingVelocity + 0.25 * 0.25);
@@ -2005,9 +2043,9 @@ export class ContactPatchTireModel {
       const momentY = radius.z * forceWorld.x - radius.x * forceWorld.z;
       const momentZ = radius.x * forceWorld.y - radius.y * forceWorld.x;
       const normalForceWorld = scratch.normalForceByWheel[wheelId];
-      normalForceWorld.x = kinematics.surfaceNormalWorld.x * normalLoadN;
-      normalForceWorld.y = kinematics.surfaceNormalWorld.y * normalLoadN;
-      normalForceWorld.z = kinematics.surfaceNormalWorld.z * normalLoadN;
+      normalForceWorld.x = kinematics.surfaceNormalWorld.x * chassisSupportLoadN;
+      normalForceWorld.y = kinematics.surfaceNormalWorld.y * chassisSupportLoadN;
+      normalForceWorld.z = kinematics.surfaceNormalWorld.z * chassisSupportLoadN;
       const suspensionMomentX = radius.y * normalForceWorld.z
         - radius.z * normalForceWorld.y;
       const suspensionMomentY = radius.z * normalForceWorld.x
@@ -2163,6 +2201,7 @@ export class ContactPatchTireModel {
       storedSuspension.damperForceN = q(wheelInputs[wheelId].damperForceN);
       storedSuspension.antiRollLoadTransferN = q(antiRollLoadTransferN);
       storedSuspension.unsprungVelocityMps = q(wheelInputs[wheelId].unsprungVelocityMps);
+      storedSuspension.verticalCoupledActive = wheelInputs[wheelId].verticalCoupledActive === true;
       storedSuspension.unsprungMassKg = q(
         config.unsprungMassByWheelKg?.[wheelId] || config.unsprungMassKg
       );
@@ -2230,6 +2269,7 @@ export class ContactPatchTireModel {
       Object.assign(output, kinematics, wheelInputs[wheelId].tireTransition, force);
       output.normalLoadN = q(wheelInputs[wheelId].aquaplaning.supportedNormalLoadN);
       output.suspensionNormalLoadN = q(normalLoadN);
+      output.chassisSupportLoadN = q(chassisSupportLoadN);
       output.suspensionForceN = q(Math.max(0,
           Number(wheelInputs[wheelId].progressiveRate || 0)
             * Math.max(0, Number(wheelInputs[wheelId].compressionM || 0)
