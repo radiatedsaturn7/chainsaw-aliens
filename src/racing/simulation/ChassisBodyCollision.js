@@ -1770,8 +1770,14 @@ export class ChassisBodyCollision {
         crossVector3(workingState.angularVelocityWorld, contact.arm, vectorScratch[0]),
         vectorScratch[1]
       );
-      const initialClosingSpeedMps = Math.max(0, -dot(initialPointVelocity, contact.normal));
+      const initialNormalSpeedMps = dot(initialPointVelocity, contact.normal);
+      const initialClosingSpeedMps = Math.max(0, -initialNormalSpeedMps);
       contact.preImpactManifoldNormalVelocityMps = -initialClosingSpeedMps;
+      contact.preImpactManifoldTangentSpeedMps = Math.hypot(
+        initialPointVelocity.x - contact.normal.x * initialNormalSpeedMps,
+        initialPointVelocity.y - contact.normal.y * initialNormalSpeedMps,
+        initialPointVelocity.z - contact.normal.z * initialNormalSpeedMps
+      );
       contact.restitutionTargetSpeedMps = contact.manifoldRepresentativeIndex === 0
         && contact.persistentManifold !== true
         && !contact.suspensionSupported
@@ -2115,6 +2121,18 @@ export class ChassisBodyCollision {
     let maximumPenetrationM = 0;
     for (let contactIndex = 0; contactIndex < contacts.length; contactIndex += 1) {
       const contact = contacts[contactIndex];
+      const postImpactPointVelocity = addVector3(
+        workingState.velocity,
+        crossVector3(workingState.angularVelocityWorld, contact.arm, vectorScratch[0]),
+        vectorScratch[1]
+      );
+      const postImpactNormalSpeedMps = dot(postImpactPointVelocity, contact.normal);
+      contact.postImpactManifoldNormalVelocityMps = postImpactNormalSpeedMps;
+      contact.postImpactManifoldTangentSpeedMps = Math.hypot(
+        postImpactPointVelocity.x - contact.normal.x * postImpactNormalSpeedMps,
+        postImpactPointVelocity.y - contact.normal.y * postImpactNormalSpeedMps,
+        postImpactPointVelocity.z - contact.normal.z * postImpactNormalSpeedMps
+      );
       bodyNormalImpulseNs += contact.normalImpulseNs;
       bodyFrictionImpulseNs += contact.tangentialImpulseNs;
       restitutionContributionNs += contact.restitutionImpulseNs;

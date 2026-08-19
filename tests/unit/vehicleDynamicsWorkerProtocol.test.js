@@ -59,6 +59,20 @@ function snapshot(overrides = {}) {
     signedTravelSpeedMps: 24.2,
     engineRpm: 4200,
     gear: 4,
+    impactEvents: [{
+      sequence: 3,
+      stepIndex: 118,
+      resetGeneration: 2,
+      normalImpulseNs: 9200,
+      vehicleMassKg: 1450,
+      recoveredCoupledCorrection: true,
+      preImpactNormalSpeedMps: 11,
+      energyLossJ: 48000,
+      pointWorld: { x: 11, y: 0.4, z: 23 },
+      normalWorld: { x: 0.2, y: 0.5, z: -0.84 },
+      vehicleYawRad: 0.25,
+      terrainImpact: true
+    }],
     ...overrides
   };
 }
@@ -82,6 +96,12 @@ test('render snapshots use one compact transferable buffer without telemetry or 
   assert.ok(Math.abs(decoded.groundSpeedMps - 24.2) < 1e-5);
   assert.equal(decoded.gear, 4);
   assert.equal(decoded.engineRpm, 4200);
+  assert.equal(decoded.impactEvents.length, 1);
+  assert.equal(decoded.impactEvents[0].sequence, 3);
+  assert.equal(decoded.impactEvents[0].resetGeneration, 2);
+  assert.equal(decoded.impactEvents[0].vehicleMassKg, 1450);
+  assert.equal(decoded.impactEvents[0].recoveredCoupledCorrection, true);
+  assert.ok(Math.abs(decoded.impactEvents[0].normalWorld.z + 0.84) < 1e-5);
   assert.equal('telemetry' in decoded, false);
   assert.equal('terrain' in decoded, false);
   const transferred = structuredClone(buffer, { transfer: [buffer] });

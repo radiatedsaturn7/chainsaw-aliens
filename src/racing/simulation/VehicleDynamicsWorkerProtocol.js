@@ -7,9 +7,11 @@ import {
 
 export { VEHICLE_RENDER_WHEEL_FLAGS } from './VehicleRenderState.js';
 
-export const VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION = 5;
-export const VEHICLE_RENDER_SNAPSHOT_HEADER_WORDS = 5;
-export const VEHICLE_RENDER_SNAPSHOT_FLOATS = 141;
+export const VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION = 6;
+export const VEHICLE_RENDER_SNAPSHOT_HEADER_WORDS = 6;
+export const VEHICLE_RENDER_SNAPSHOT_FLOATS = 201;
+export const VEHICLE_RENDER_IMPACT_EVENT_CAPACITY = 4;
+export const VEHICLE_RENDER_IMPACT_EVENT_STRIDE = 15;
 export const VEHICLE_RENDER_SNAPSHOT_BYTES = (
   VEHICLE_RENDER_SNAPSHOT_HEADER_WORDS * Uint32Array.BYTES_PER_ELEMENT
   + VEHICLE_RENDER_SNAPSHOT_FLOATS * Float32Array.BYTES_PER_ELEMENT
@@ -49,7 +51,8 @@ export const VEHICLE_RENDER_SNAPSHOT_HEADER = Object.freeze({
   stepIndex: 1,
   eventSequence: 2,
   visualState: 3,
-  resetGeneration: 4
+  resetGeneration: 4,
+  impactEventCount: 5
 });
 
 export const VEHICLE_RENDER_SNAPSHOT_FLOAT = Object.freeze({
@@ -68,7 +71,22 @@ export const VEHICLE_RENDER_SNAPSHOT_FLOAT = Object.freeze({
   signedTravelSpeedMps: 134,
   engineRpm: 135,
   gear: 136,
-  wheelAngularVelocity: 137
+  wheelAngularVelocity: 137,
+  impactEvents: 141
+});
+
+export const VEHICLE_RENDER_IMPACT_EVENT_FLOAT = Object.freeze({
+  sequence: 0,
+  stepIndex: 1,
+  resetGeneration: 2,
+  normalImpulseNs: 3,
+  vehicleMassKg: 4,
+  preImpactNormalSpeedMps: 5,
+  energyLossJ: 6,
+  pointWorld: 7,
+  normalWorld: 10,
+  vehicleYawRad: 13,
+  recoveredCoupledCorrection: 14
 });
 
 export const VEHICLE_RENDER_WHEEL_STRIDE = 27;
@@ -338,6 +356,9 @@ export function writeVehicleRenderSnapshot(buffer, snapshot = {}) {
   header[VEHICLE_RENDER_SNAPSHOT_HEADER.visualState] = Number(snapshot.visualState || 0) >>> 0;
   header[VEHICLE_RENDER_SNAPSHOT_HEADER.resetGeneration]
     = Number(snapshot.resetGeneration || 0) >>> 0;
+  const impactEvents = Array.isArray(snapshot.impactEvents)
+    ? snapshot.impactEvents.slice(-VEHICLE_RENDER_IMPACT_EVENT_CAPACITY) : [];
+  header[VEHICLE_RENDER_SNAPSHOT_HEADER.impactEventCount] = impactEvents.length;
   values[VEHICLE_RENDER_SNAPSHOT_FLOAT.simulationTimeSeconds] = finite(snapshot.simulationTimeSeconds);
   writeVector(values, VEHICLE_RENDER_SNAPSHOT_FLOAT.position, snapshot.position);
   writeQuaternion(values, VEHICLE_RENDER_SNAPSHOT_FLOAT.orientation, snapshot.orientation);
@@ -381,6 +402,39 @@ export function writeVehicleRenderSnapshot(buffer, snapshot = {}) {
   values[VEHICLE_RENDER_SNAPSHOT_FLOAT.signedTravelSpeedMps] = finite(snapshot.signedTravelSpeedMps, snapshot.speedMps);
   values[VEHICLE_RENDER_SNAPSHOT_FLOAT.engineRpm] = finite(snapshot.engineRpm);
   values[VEHICLE_RENDER_SNAPSHOT_FLOAT.gear] = finite(snapshot.gear);
+  for (let index = 0; index < VEHICLE_RENDER_IMPACT_EVENT_CAPACITY; index += 1) {
+    const impact = impactEvents[index] || {};
+    const impactOffset = VEHICLE_RENDER_SNAPSHOT_FLOAT.impactEvents
+      + index * VEHICLE_RENDER_IMPACT_EVENT_STRIDE;
+    values[impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.sequence]
+      = index < impactEvents.length ? finite(impact.sequence) : 0;
+    values[impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.stepIndex]
+      = index < impactEvents.length ? finite(impact.stepIndex) : 0;
+    values[impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.resetGeneration]
+      = index < impactEvents.length ? finite(impact.resetGeneration) : 0;
+    values[impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.normalImpulseNs]
+      = index < impactEvents.length ? finite(impact.normalImpulseNs) : 0;
+    values[impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.vehicleMassKg]
+      = index < impactEvents.length ? finite(impact.vehicleMassKg) : 0;
+    values[impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.preImpactNormalSpeedMps]
+      = index < impactEvents.length ? finite(impact.preImpactNormalSpeedMps) : 0;
+    values[impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.energyLossJ]
+      = index < impactEvents.length ? finite(impact.energyLossJ) : 0;
+    writeVector(
+      values,
+      impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.pointWorld,
+      impact.pointWorld
+    );
+    writeVector(
+      values,
+      impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.normalWorld,
+      impact.normalWorld
+    );
+    values[impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.vehicleYawRad]
+      = index < impactEvents.length ? finite(impact.vehicleYawRad) : 0;
+    values[impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.recoveredCoupledCorrection]
+      = index < impactEvents.length && impact.recoveredCoupledCorrection === true ? 1 : 0;
+  }
   return buffer;
 }
 
@@ -400,6 +454,7 @@ export function readVehicleRenderSnapshot(buffer) {
   const suspensionPose = {};
   const tireTemperature = {};
   const wheelAngularVelocity = {};
+  const impactEvents = [];
   let offset = VEHICLE_RENDER_SNAPSHOT_FLOAT.wheelPoses;
   for (let index = 0; index < RACE_WHEEL_IDS.length; index += 1) {
     const wheelId = RACE_WHEEL_IDS[index];
@@ -434,11 +489,50 @@ export function readVehicleRenderSnapshot(buffer) {
     wheelAngularVelocity[wheelId] = values[VEHICLE_RENDER_SNAPSHOT_FLOAT.wheelAngularVelocity + index];
     offset += VEHICLE_RENDER_WHEEL_STRIDE;
   }
+  const impactEventCount = Math.min(
+    VEHICLE_RENDER_IMPACT_EVENT_CAPACITY,
+    header[VEHICLE_RENDER_SNAPSHOT_HEADER.impactEventCount]
+  );
+  for (let index = 0; index < impactEventCount; index += 1) {
+    const impactOffset = VEHICLE_RENDER_SNAPSHOT_FLOAT.impactEvents
+      + index * VEHICLE_RENDER_IMPACT_EVENT_STRIDE;
+    impactEvents.push({
+      sequence: Math.trunc(values[impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.sequence]),
+      stepIndex: Math.trunc(values[impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.stepIndex]),
+      resetGeneration: Math.trunc(
+        values[impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.resetGeneration]
+      ),
+      normalImpulseNs: values[
+        impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.normalImpulseNs
+      ],
+      vehicleMassKg: values[
+        impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.vehicleMassKg
+      ],
+      preImpactNormalSpeedMps: values[
+        impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.preImpactNormalSpeedMps
+      ],
+      energyLossJ: values[impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.energyLossJ],
+      pointWorld: readVector(
+        values, impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.pointWorld
+      ),
+      normalWorld: readVector(
+        values, impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.normalWorld
+      ),
+      vehicleYawRad: values[
+        impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.vehicleYawRad
+      ],
+      recoveredCoupledCorrection: values[
+        impactOffset + VEHICLE_RENDER_IMPACT_EVENT_FLOAT.recoveredCoupledCorrection
+      ] >= 0.5,
+      terrainImpact: true
+    });
+  }
   return reconstructVehicleRenderState({
     schemaVersion: VEHICLE_RENDER_STATE_SCHEMA_VERSION,
     protocolVersion: header[VEHICLE_RENDER_SNAPSHOT_HEADER.protocolVersion],
     stepIndex: header[VEHICLE_RENDER_SNAPSHOT_HEADER.stepIndex],
     eventSequence: header[VEHICLE_RENDER_SNAPSHOT_HEADER.eventSequence],
+    impactEvents,
     visualState: header[VEHICLE_RENDER_SNAPSHOT_HEADER.visualState],
     resetGeneration: header[VEHICLE_RENDER_SNAPSHOT_HEADER.resetGeneration],
     simulationTimeSeconds: values[VEHICLE_RENDER_SNAPSHOT_FLOAT.simulationTimeSeconds],

@@ -97,13 +97,30 @@ test('worker authority owns fixed clock, player and active AI stepping, Track St
 
 test('snapshot extraction includes authoritative wheel and suspension poses', () => {
   const runner = new FakeRunner();
+  runner.impactHistory = [{
+    terrainImpact: true,
+    sequence: 2,
+    stepIndex: 1,
+    resetGeneration: 0,
+    bodyNormalImpulseNs: 9200,
+    preImpactNormalSpeedMps: 8,
+    preImpactKineticEnergyJ: 100000,
+    postImpactKineticEnergyJ: 40000,
+    impactPointWorld: { x: 0, y: 1, z: 2 },
+    impactNormalWorld: { x: 0, y: 0.5, z: -0.8660254 },
+    impactYawRad: 0
+  }];
   const snapshot = createVehicleRenderSnapshotFromRunner(runner, { eventSequence: 7 });
   assert.equal(snapshot.eventSequence, 7);
   assert.equal(snapshot.wheelPoses.fl.position.x < snapshot.position.x, true);
   assert.equal(snapshot.wheelPoses.fr.position.x > snapshot.position.x, true);
   assert.equal(snapshot.suspensionPose.rr, 0.2);
   assert.equal(snapshot.visualState & VEHICLE_VISUAL_STATE.grounded, VEHICLE_VISUAL_STATE.grounded);
-  const spinning = createVehicleRenderSnapshotFromRunner(runner, { wheelSpinAngles: { fl: Math.PI } });
+  assert.equal(snapshot.impactEvents.length, 1);
+  assert.equal(snapshot.impactEvents[0].sequence, 2);
+  assert.equal(snapshot.impactEvents[0].vehicleMassKg, 1450);
+  runner.renderWheelSpinAngles = { fl: Math.PI };
+  const spinning = createVehicleRenderSnapshotFromRunner(runner);
   assert.notDeepEqual(spinning.wheelPoses.fl.orientation, snapshot.wheelPoses.fl.orientation);
 });
 

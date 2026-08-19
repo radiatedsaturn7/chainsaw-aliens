@@ -156,6 +156,23 @@ export function createVehicleRenderStateFromRunner(runner, {
   const suspensionPose = {};
   const tireTemperature = {};
   const wheelAngularVelocity = {};
+  const impactEvents = (runner?.terrainImpactHistory || runner?.impactHistory || []).filter((impact) => (
+    impact.terrainImpact === true
+  )).slice(-4).map((impact) => ({
+    sequence: Math.max(0, Math.trunc(Number(impact.sequence) || 0)),
+    stepIndex: Math.max(0, Math.trunc(Number(impact.stepIndex) || 0)),
+    resetGeneration: Math.max(0, Math.trunc(Number(impact.resetGeneration) || 0)),
+    normalImpulseNs: finite(impact.bodyNormalImpulseNs),
+    vehicleMassKg: Math.max(1, finite(config.massKg, 1450)),
+    preImpactNormalSpeedMps: finite(impact.preImpactNormalSpeedMps),
+    energyLossJ: Math.max(0, finite(impact.preImpactKineticEnergyJ)
+      - finite(impact.postImpactKineticEnergyJ)),
+    pointWorld: vector(impact.impactPointWorld),
+    normalWorld: vector(impact.impactNormalWorld, { y: 1 }),
+    vehicleYawRad: finite(impact.impactYawRad),
+    recoveredCoupledCorrection: impact.recoveredCoupledCorrection === true,
+    terrainImpact: true
+  }));
   const frontZ = finite(
     config.frontAxleDistanceFromCgM,
     finite(config.wheelbaseM, 2.65) * 0.5
@@ -248,6 +265,7 @@ export function createVehicleRenderStateFromRunner(runner, {
     stepIndex: runner?.stepIndex || 0,
     resetGeneration: Math.max(0, Math.trunc(Number(state.vehicleResetGeneration) || 0)),
     eventSequence,
+    impactEvents,
     visualState,
     simulationTimeSeconds: runner?.simulationTimeSeconds || 0,
     position,

@@ -895,6 +895,77 @@ function emitAuthoritativeTrackStateStep({
   return scratch.result;
 }
 
+export function applyRaceVehicleImpactEvents(editor, session, events = []) {
+  if (!editor || !session || !Array.isArray(events) || events.length === 0) return 0;
+  const presentationGeneration = Math.max(0, Math.trunc(Number(
+    session.vehicleRenderState?.resetGeneration
+      ?? session.vehicle3d?.resetGeneration
+      ?? session.vehicleDynamicsPresentationState?.vehicleResetGeneration
+      ?? 0
+  )));
+  const cursor = session.terrainImpactDamageCursor || {
+    resetGeneration: presentationGeneration,
+    sequence: 0
+  };
+  if (cursor.resetGeneration !== presentationGeneration) {
+    cursor.resetGeneration = presentationGeneration;
+    cursor.sequence = 0;
+  }
+  let applied = 0;
+  for (let index = 0; index < events.length; index += 1) {
+    const impact = events[index] || {};
+    const sequence = Math.max(0, Math.trunc(Number(impact.sequence) || 0));
+    const resetGeneration = Math.max(0, Math.trunc(Number(
+      impact.resetGeneration || 0
+    )));
+    if (sequence <= cursor.sequence || impact.terrainImpact !== true) continue;
+    if (resetGeneration !== presentationGeneration) continue;
+    cursor.sequence = sequence;
+    const normalImpulseNs = Math.max(0, Number(
+      impact.normalImpulseNs ?? impact.bodyNormalImpulseNs ?? 0
+    ));
+    const preImpactNormalSpeedMps = Math.max(0, Number(
+      impact.preImpactNormalSpeedMps || 0
+    ));
+    const massKg = Math.max(1, Number(
+      impact.vehicleMassKg
+        ?? session.vehicleDynamicsRunner?.config?.massKg
+        ?? session.vehicleDynamicsAuthority?.runner?.config?.massKg
+        ?? 1450
+    ));
+    const recoveredCoupledCorrection = impact.recoveredCoupledCorrection === true;
+    if (recoveredCoupledCorrection
+      ? normalImpulseNs <= massKg * 0.25 || preImpactNormalSpeedMps < 1
+      : normalImpulseNs <= massKg * 0.5 || preImpactNormalSpeedMps < 2) continue;
+    const normal = impact.normalWorld || impact.impactNormalWorld || {};
+    const yaw = Number(impact.vehicleYawRad ?? impact.impactYawRad ?? session.carYaw ?? 0);
+    const sinYaw = Math.sin(yaw);
+    const cosYaw = Math.cos(yaw);
+    const forwardDot = Number(normal.x || 0) * sinYaw
+      + Number(normal.z || 0) * cosYaw;
+    const rightDot = Number(normal.x || 0) * cosYaw
+      - Number(normal.z || 0) * sinYaw;
+    const panel = Math.abs(rightDot) > Math.abs(forwardDot)
+      ? (rightDot > 0 ? 'left' : 'right')
+      : (forwardDot < 0 ? 'front' : 'rear');
+    const severity = clamp(normalImpulseNs / (massKg * 18) * 14, 0.2, 14);
+    editor.applyRaceDamage('panels', severity, {
+      keys: [panel],
+      source: 'terrain-impact'
+    });
+    session.latestVehicleImpactEvent = {
+      ...impact,
+      sequence,
+      resetGeneration,
+      panel,
+      severity
+    };
+    applied += 1;
+  }
+  session.terrainImpactDamageCursor = cursor;
+  return applied;
+}
+
 function advanceVehicleDynamicsAuthority(editor, {
   systems,
   tuning,
@@ -925,6 +996,9 @@ function advanceVehicleDynamicsAuthority(editor, {
         damage
       }
     });
+    if (workerSnapshot) {
+      applyRaceVehicleImpactEvents(editor, session, workerSnapshot.impactEvents);
+    }
     if (!workerSnapshot
       && authority.workerBridge.client.lastError
       && !authority.workerBridge.client.latestSnapshot) {
@@ -1855,6 +1929,11 @@ function advanceVehicleDynamicsAuthority(editor, {
         physicsCosts
       } = fixedStepContext;
       fixedStepContext.latestFixedStepTelemetry = telemetry;
+      applyRaceVehicleImpactEvents(
+        editor,
+        session,
+        telemetry?.forces?.terrainImpactEvent ? [telemetry.forces.terrainImpactEvent] : []
+      );
       const bodyContacts = telemetry?.forces?.bodyCollision?.contacts;
       if (bodyContacts?.length) {
         for (let contactIndex = 0; contactIndex < bodyContacts.length; contactIndex += 1) {

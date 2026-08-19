@@ -171,6 +171,122 @@ test('Studio Sprint2 WRX2 first jump dissipates passive landing energy and settl
   )), JSON.stringify(runner.impactHistory));
 });
 
+test('Studio Sprint2 WRX2 first-jump landing cannot erase forward motion through route recovery', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: false,
+    isMobile: false,
+    exitRaceEditor() {}
+  });
+  assert.equal(editor.applyLoadedRaceDocument(decodeDocument(
+    'tests/fixtures/studioSprint2PerformanceRaceDocument.json'
+  ), { name: 'Studio Sprint2' }), true);
+  assert.equal(editor.applyLoadedCarDocument(decodeDocument(
+    'data/server-storage/files/cars/2022 Subaru WRX2/document.json'
+  ), { name: '2022 Subaru WRX2' }), true);
+  editor.startPlaytest(editor.getRaceCarProjectIdentity(editor.selectedCar), {
+    hydrateCars: false,
+    preparedWorldBake: editor.buildRaceWorldBake({ retainTerrainCells: false })
+  });
+  const session = editor.playtestSession;
+  session.countdownRemainingMs = 0;
+  session.startupFramePending = false;
+  assert.equal(editor.updatePlaytestSafely(0), true);
+  assert.equal(editor.applyRaceCarRouteCenterReset({
+    projection: { distance: 500 },
+    preserveMotion: false
+  }), true);
+  const runner = session.vehicleDynamicsRunner;
+  const state = runner.createStateSnapshot();
+  const yaw = Number(state.yawRad || 0);
+  const speedMps = 20;
+  runner.replaceAuthoritativeState({
+    ...state,
+    velocity: {
+      x: Math.sin(yaw) * speedMps,
+      y: 0,
+      z: Math.cos(yaw) * speedMps
+    },
+    speedMps,
+    groundSpeedMps: speedMps,
+    bodyLongitudinalSpeedMps: speedMps,
+    signedTravelSpeedMps: speedMps,
+    wheelAngularVelocityRadps: Object.fromEntries(WHEEL_IDS.map((wheelId) => [
+      wheelId, speedMps / runner.config.wheelRadiusM
+    ])),
+    gear: 3,
+    engineRpm: 2800,
+    powertrainState: { ...state.powertrainState, gear: 3, engineRpm: 2800 }
+  });
+  Object.assign(editor.raceInput, {
+    rawThrottleAxis: 0,
+    throttleAxis: 0,
+    analogThrottleActive: false,
+    rawBrakeAxis: 0,
+    steeringWheel: 0,
+    gear: 3,
+    autoShift: false,
+    paused: false
+  });
+
+  let hasBeenAirborne = false;
+  let landingStepIndex = null;
+  let previousAirborne = null;
+  let unexplainedMotionErase = null;
+  let previousVelocityMagnitudeMps = speedMps;
+  for (let frame = 0; frame < 100; frame += 1) {
+    assert.equal(editor.updatePlaytestSafely(1 / 60), true);
+    const airborne = !runner.state.wheelGrounded && !runner.state.bodyGrounded;
+    if (airborne) hasBeenAirborne = true;
+    if (hasBeenAirborne && previousAirborne === true && !airborne
+      && landingStepIndex === null) {
+      landingStepIndex = runner.stepIndex;
+    }
+    const velocityMagnitudeMps = Math.hypot(
+      Number(runner.state.velocity?.x || 0),
+      Number(runner.state.velocity?.y || 0),
+      Number(runner.state.velocity?.z || 0)
+    );
+    if (landingStepIndex !== null
+      && previousVelocityMagnitudeMps > 5
+      && velocityMagnitudeMps < 1e-9) {
+      unexplainedMotionErase = {
+        frame,
+        stepIndex: runner.stepIndex,
+        previousVelocityMagnitudeMps,
+        recovery: runner.penetrationRecoveryState.history.at(-1) || null
+      };
+    }
+    previousVelocityMagnitudeMps = velocityMagnitudeMps;
+    previousAirborne = airborne;
+  }
+
+  assert.notEqual(landingStepIndex, null);
+  assert.equal(unexplainedMotionErase, null, JSON.stringify(unexplainedMotionErase));
+  assert.equal(runner.penetrationRecoveryState.history.length, 0,
+    JSON.stringify(runner.penetrationRecoveryState.history));
+  assert.equal(runner.contactStabilizationState.history.some((event) => (
+    event.outcome === 'catastrophic-route-recovery'
+  )), false, JSON.stringify(runner.contactStabilizationState.history));
+  assert.equal(runner.contactStabilizationState.history.some((event) => (
+    event.reason === 'coupled-correction-safe-pose'
+  )), true, JSON.stringify(runner.contactStabilizationState.history));
+  assert.equal(runner.impactHistory.some((impact) => impact.terrainImpact === true), true);
+  assert.ok(session.latestVehicleImpactEvent?.stepIndex >= landingStepIndex,
+    JSON.stringify({
+      landingStepIndex,
+      impact: session.latestVehicleImpactEvent,
+      terrainImpacts: runner.terrainImpactHistory
+    }));
+  assert.equal(session.latestVehicleImpactEvent.recoveredCoupledCorrection, true);
+  assert.equal(
+    session.latestVehicleImpactEvent.sequence,
+    runner.terrainImpactHistory.at(-1)?.sequence
+  );
+  assert.equal(Number.isFinite(runner.state.position.x), true);
+  assert.equal(Number.isFinite(runner.state.position.y), true);
+  assert.equal(Number.isFinite(runner.state.position.z), true);
+});
+
 test('Studio Sprint2 WRX2 third-hill trough dissipates landing energy', () => {
   const editor = new RaceEditor({
     deviceIsMobile: false,
