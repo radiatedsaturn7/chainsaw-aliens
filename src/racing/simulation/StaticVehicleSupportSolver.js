@@ -163,6 +163,7 @@ export function solveStaticVehicleSupportState({
   let lastResidual = null;
   let status = 'failed';
   let error = null;
+  let consecutiveConvergedIterations = 0;
   for (let iteration = 0; iteration < maximumIterations; iteration += 1) {
     const environment = createEnvironment(candidate, false, iteration) || {};
     try {
@@ -237,17 +238,26 @@ export function solveStaticVehicleSupportState({
       || (lastResidual.stableSupportCount >= 2
         && Math.abs(lastResidual.momentResidual.x) <= momentToleranceNm
         && Math.abs(lastResidual.momentResidual.z) <= momentToleranceNm);
-    if (iteration > 0
+    const iterationConverged = iteration > 0
       && lastResidual.forceResidualN <= forceToleranceN
       && lastResidual.momentResidualNm <= momentToleranceNm
       && Math.abs(heaveCorrectionM) < 0.0005
       && Math.abs(pitchCorrectionRad) < 0.05 * Math.PI / 180
       && Math.abs(rollCorrectionRad) < 0.05 * Math.PI / 180
       && penetrationResolved
-      && stableSupport) {
-      status = 'converged';
-      break;
+      && stableSupport;
+    if (iterationConverged) {
+      consecutiveConvergedIterations += 1;
+      if (consecutiveConvergedIterations >= 2) {
+        status = 'converged';
+        break;
+      }
+      // Rebuild once more at the identical pose. Static tire deflection uses
+      // the preceding pass's wheel loads, so a single successful pass is not
+      // yet proof that the installed load/contact state is a fixed point.
+      continue;
     }
+    consecutiveConvergedIterations = 0;
     candidate.position.y += heaveCorrectionM;
     candidate.orientation = quaternionFromEuler({
       yaw: euler.yaw,

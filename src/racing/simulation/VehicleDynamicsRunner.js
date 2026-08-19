@@ -2508,7 +2508,14 @@ export class VehicleDynamicsRunner {
           frameGeneration: vehicleResetGeneration
         }
       ),
-      validContactConfirmations: 0,
+      // The converged iteration and mandatory final rebuild are already two
+      // consecutive support confirmations at the installed pose. Discarding
+      // that evidence made the first intentional post-reset command appear
+      // ignored even though the car was fully grounded.
+      validContactConfirmations: hasStableResetSupport(
+        resetState.contactPatches,
+        resetState
+      ) ? 2 : 0,
       confirmationSteps: 0,
       maximumConfirmationSteps: Math.max(2, Math.ceil(
         this.config.chassisHz * RESET_HOLD_MAX_CONFIRMATION_SECONDS
@@ -2691,7 +2698,12 @@ export class VehicleDynamicsRunner {
     const revision = environment.physicsTerrainQueryFrame?.revision
       ?? environment.preparedTerrainRevision ?? null;
     if (support.terrainRevision !== null && revision !== null
-      && revision !== support.terrainRevision) return true;
+      && revision !== support.terrainRevision) {
+      this.diagnostics.stationaryResetHoldGeometryChange = {
+        reason: 'terrain-revision', held: support.terrainRevision, sampled: revision
+      };
+      return true;
+    }
     const samplePoint = typeof environment.sampleTerrainAtWorldPoint === 'function'
       ? environment.sampleTerrainAtWorldPoint
       : environment.physicsTerrainQueryFrame?.samplePoint?.bind(
@@ -2702,25 +2714,49 @@ export class VehicleDynamicsRunner {
       const patch = support.contactPatches?.[wheelId];
       const point = patch?.contactPointWorld;
       if (!point) continue;
-      const sample = samplePoint(point, { wheelId, contactTriangleId: patch.contactTriangleId });
-      if (!sample?.valid || !Number.isFinite(Number(sample.heightM))) return true;
-      const heldHeightM = Number(patch.surfaceHeightM ?? patch.terrainHeightM ?? point.y);
-      if (Math.abs(Number(sample.heightM) - heldHeightM) > RESET_HOLD_HEIGHT_TOLERANCE_M) {
+      const queryPoint = patch.surfaceQueryPositionWorld || point;
+      const sample = samplePoint(queryPoint, {
+        wheelId, contactTriangleId: patch.contactTriangleId
+      });
+      if (!sample?.valid || !Number.isFinite(Number(sample.heightM))) {
+        this.diagnostics.stationaryResetHoldGeometryChange = {
+          reason: 'invalid-wheel-sample', wheelId, sample: clone(sample)
+        };
         return true;
       }
-      const heldNormal = patch.surfaceNormalWorld || { x: 0, y: 1, z: 0 };
+      const heldHeightM = Number(patch.surfaceHeightM ?? patch.terrainHeightM ?? point.y);
+      if (Math.abs(Number(sample.heightM) - heldHeightM) > RESET_HOLD_HEIGHT_TOLERANCE_M) {
+        this.diagnostics.stationaryResetHoldGeometryChange = {
+          reason: 'terrain-height', wheelId, heldHeightM, sampledHeightM: Number(sample.heightM)
+        };
+        return true;
+      }
+      const heldNormal = patch.surfaceSampleNormalWorld
+        || patch.surfaceNormalWorld || { x: 0, y: 1, z: 0 };
       const sampledNormal = sample.normal || { x: 0, y: 1, z: 0 };
       const normalDot = clamp(dotVector3(heldNormal, sampledNormal), -1, 1);
-      if (Math.acos(normalDot) > RESET_HOLD_NORMAL_TOLERANCE_RAD) return true;
+      if (Math.acos(normalDot) > RESET_HOLD_NORMAL_TOLERANCE_RAD) {
+        this.diagnostics.stationaryResetHoldGeometryChange = {
+          reason: 'terrain-normal', wheelId, heldNormal: clone(heldNormal),
+          sampledNormal: clone(sampledNormal), normalDeltaRad: Math.acos(normalDot)
+        };
+        return true;
+      }
     }
     const penetration = this.bodyCollision.samplePosePenetration(
       support,
       environment,
       this.config.bodyCollisionToleranceM
     );
-    return penetration.maximumPenetrationM !== null
+    const changed = penetration.maximumPenetrationM !== null
       && Number(penetration.maximumPenetrationM || 0)
         > this.config.bodyCollisionToleranceM + 1e-6;
+    if (changed) this.diagnostics.stationaryResetHoldGeometryChange = {
+      reason: 'body-penetration',
+      maximumPenetrationM: Number(penetration.maximumPenetrationM || 0),
+      toleranceM: this.config.bodyCollisionToleranceM
+    };
+    return changed;
   }
 
   queueCollisionImpulse({ impulseWorldNs = {}, pointWorld = null, source = 'collision' } = {}, {
@@ -5860,9 +5896,18 @@ export class VehicleDynamicsRunner {
       const parkedUnsprungExceeded = this.stationaryResetHold && Object.values(
         unsprungVelocityByWheel
       ).some((velocity) => Math.abs(velocity) > 0.03);
-      if ((frontCompressionDifferenceM > 0.001 || rearCompressionDifferenceM > 0.001
+      const referenceNormal = this.state.contactPatches?.fl?.surfaceNormalWorld;
+      const coplanarSupport = referenceNormal && RACE_WHEEL_IDS.every((wheelId) => {
+        const normal = this.state.contactPatches?.[wheelId]?.surfaceNormalWorld;
+        if (!normal) return false;
+        return dotVector3(referenceNormal, normal) >= Math.cos(0.1 * Math.PI / 180);
+      });
+      const flatSymmetryExceeded = coplanarSupport && (
+        frontCompressionDifferenceM > 0.001 || rearCompressionDifferenceM > 0.001
         || frontLoadDifferenceRatio > 0.02 || rearLoadDifferenceRatio > 0.02
-        || parkedUnsprungExceeded) && !this.diagnostics.resetSymmetryIncident) {
+      );
+      if ((flatSymmetryExceeded || parkedUnsprungExceeded)
+        && !this.diagnostics.resetSymmetryIncident) {
         this.diagnostics.resetSymmetryIncident = clone(this.postResetTelemetry.at(-1));
       }
     }
