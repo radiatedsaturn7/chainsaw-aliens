@@ -11,6 +11,129 @@ const regionPriority = {
 };
 
 const PACKED_SURFACE_VERSION = 2;
+const DRIVEABLE_SUPPORT_REGIONS = new Set([
+  'road', 'margin', 'shoulder', 'flat-join', 'inner'
+]);
+const SUPPORT_EDGE_CLASSIFICATION = Object.freeze({
+  smooth: 0,
+  curbOrStep: 1,
+  heightDiscontinuity: 2,
+  sharpDihedral: 3,
+  nonManifold: 4,
+  verticalObstacle: 5
+});
+
+function buildPreparedSupportTopology(triangles, normals, elevationScaleM) {
+  const triangleCount = triangles.length;
+  const parents = new Uint32Array(triangleCount);
+  const edgeFlags = new Uint8Array(triangleCount);
+  for (let index = 0; index < triangleCount; index += 1) parents[index] = index;
+  const find = (value) => {
+    let root = value;
+    while (parents[root] !== root) root = parents[root];
+    while (parents[value] !== root) {
+      const next = parents[value];
+      parents[value] = root;
+      value = next;
+    }
+    return root;
+  };
+  const union = (first, second) => {
+    const firstRoot = find(first);
+    const secondRoot = find(second);
+    if (firstRoot === secondRoot) return;
+    parents[Math.max(firstRoot, secondRoot)] = Math.min(firstRoot, secondRoot);
+  };
+  const vertexKey = (vertex) => {
+    if (!vertex || typeof vertex !== 'object') return 'invalid';
+    return [
+      Math.round(Number(vertex.x || 0) * 10000),
+      Math.round(pointZ(vertex) * 10000)
+    ].join(':');
+  };
+  const edges = new Map();
+  const appendEdge = (triangleIndex, first, second) => {
+    const firstKey = vertexKey(first);
+    const secondKey = vertexKey(second);
+    const forward = firstKey < secondKey;
+    const key = forward ? `${firstKey}|${secondKey}` : `${secondKey}|${firstKey}`;
+    let entries = edges.get(key);
+    if (!entries) {
+      entries = [];
+      edges.set(key, entries);
+    }
+    entries.push({
+      triangleIndex,
+      firstHeightM: Number((forward ? first : second)?.elevation || 0) * elevationScaleM,
+      secondHeightM: Number((forward ? second : first)?.elevation || 0) * elevationScaleM
+    });
+  };
+  for (let triangleIndex = 0; triangleIndex < triangleCount; triangleIndex += 1) {
+    const vertices = triangles[triangleIndex]?.vertices || [];
+    if (vertices.length < 3) continue;
+    appendEdge(triangleIndex, vertices[0], vertices[1]);
+    appendEdge(triangleIndex, vertices[1], vertices[2]);
+    appendEdge(triangleIndex, vertices[2], vertices[0]);
+  }
+  for (const entries of edges.values()) {
+    let maximumHeightMismatchM = 0;
+    let maximumNormalAngleRad = 0;
+    let containsVertical = false;
+    for (let firstIndex = 0; firstIndex < entries.length; firstIndex += 1) {
+      const first = entries[firstIndex];
+      const firstNormalOffset = first.triangleIndex * 3;
+      if (Number(normals[firstNormalOffset + 1] || 0) < 0.35) containsVertical = true;
+      for (let secondIndex = firstIndex + 1; secondIndex < entries.length; secondIndex += 1) {
+        const second = entries[secondIndex];
+        const secondNormalOffset = second.triangleIndex * 3;
+        maximumHeightMismatchM = Math.max(maximumHeightMismatchM,
+          Math.abs(first.firstHeightM - second.firstHeightM),
+          Math.abs(first.secondHeightM - second.secondHeightM));
+        const normalDot = Math.max(-1, Math.min(1,
+          Number(normals[firstNormalOffset] || 0) * Number(normals[secondNormalOffset] || 0)
+            + Number(normals[firstNormalOffset + 1] || 0)
+              * Number(normals[secondNormalOffset + 1] || 0)
+            + Number(normals[firstNormalOffset + 2] || 0)
+              * Number(normals[secondNormalOffset + 2] || 0)));
+        maximumNormalAngleRad = Math.max(maximumNormalAngleRad, Math.acos(normalDot));
+      }
+    }
+    let classification = SUPPORT_EDGE_CLASSIFICATION.smooth;
+    if (containsVertical) classification = SUPPORT_EDGE_CLASSIFICATION.verticalObstacle;
+    else if (maximumHeightMismatchM > 0.012) {
+      classification = SUPPORT_EDGE_CLASSIFICATION.heightDiscontinuity;
+    } else if (entries.length > 2 && maximumNormalAngleRad > 35 * Math.PI / 180) {
+      classification = SUPPORT_EDGE_CLASSIFICATION.nonManifold;
+    } else if (maximumNormalAngleRad > 35 * Math.PI / 180) {
+      classification = SUPPORT_EDGE_CLASSIFICATION.sharpDihedral;
+    }
+    if (classification === SUPPORT_EDGE_CLASSIFICATION.smooth && entries.length > 1) {
+      for (let index = 1; index < entries.length; index += 1) {
+        union(entries[0].triangleIndex, entries[index].triangleIndex);
+      }
+    } else if (classification !== SUPPORT_EDGE_CLASSIFICATION.smooth) {
+      for (const entry of entries) {
+        edgeFlags[entry.triangleIndex] = Math.max(
+          edgeFlags[entry.triangleIndex], classification
+        );
+      }
+    }
+  }
+  const supportFamilyIds = new Uint32Array(triangleCount);
+  const driveableFamilies = new Uint8Array(triangleCount);
+  for (let triangleIndex = 0; triangleIndex < triangleCount; triangleIndex += 1) {
+    const familyId = find(triangleIndex);
+    supportFamilyIds[triangleIndex] = familyId;
+    if (DRIVEABLE_SUPPORT_REGIONS.has(String(triangles[triangleIndex]?.region || 'terrain'))) {
+      driveableFamilies[familyId] = 1;
+    }
+  }
+  const supportFamilyDriveable = new Uint8Array(triangleCount);
+  for (let triangleIndex = 0; triangleIndex < triangleCount; triangleIndex += 1) {
+    supportFamilyDriveable[triangleIndex] = driveableFamilies[supportFamilyIds[triangleIndex]];
+  }
+  return { supportFamilyIds, supportFamilyDriveable, supportEdgeFlags: edgeFlags };
+}
 
 function triangleNormal(a = {}, b = {}, c = {}, elevationScaleM = 12) {
   const ab = {
@@ -111,6 +234,17 @@ function indexSamplerTriangles(sampler, startIndex = 0) {
     }
   }
   sampler.triangleCount = triangles.length;
+  const normals = new Float64Array(triangles.length * 3);
+  for (let triangleIndex = 0; triangleIndex < triangles.length; triangleIndex += 1) {
+    const normal = triangles[triangleIndex].normal || {};
+    const offset = triangleIndex * 3;
+    normals[offset] = Number(normal.x || 0);
+    normals[offset + 1] = Number(normal.y ?? 1);
+    normals[offset + 2] = Number(normal.z || 0);
+  }
+  Object.assign(sampler, buildPreparedSupportTopology(
+    triangles, normals, elevationScaleM
+  ));
   return sampler;
 }
 
@@ -212,6 +346,9 @@ export function packRaceBakedSurfaceSampler(sampler = null) {
     sources[triangleIndex] = sourceIndices.get(source) ?? 0;
     priorities[triangleIndex] = Math.max(0, Math.min(255, Math.round(Number(triangle.priority || 0))));
   });
+  const supportTopology = buildPreparedSupportTopology(
+    triangles, normals, sampler.elevationScaleM
+  );
   const bucketEntries = [...sampler.buckets.entries()];
   const bucketCoords = new Int32Array(bucketEntries.length * 2);
   const bucketOffsets = new Uint32Array(bucketEntries.length + 1);
@@ -239,6 +376,7 @@ export function packRaceBakedSurfaceSampler(sampler = null) {
     regions,
     sources,
     priorities,
+    ...supportTopology,
     regionTable,
     sourceTable,
     bucketCoords,
@@ -326,6 +464,15 @@ export function packRaceCanonicalSurfaceMesh(mesh = null, {
       }
     }
   });
+  const topologyTriangles = triangles.map((triangle) => ({
+    ...triangle,
+    vertices: Array.isArray(triangle?.vertices) && triangle.vertices.length >= 3
+      ? triangle.vertices
+      : (triangle?.indices || []).slice(0, 3).map((index) => mesh.vertices?.[index]).filter(Boolean)
+  }));
+  const supportTopology = buildPreparedSupportTopology(
+    topologyTriangles, normals, elevationScaleM
+  );
 
   const bucketEntries = [...buckets.entries()];
   const bucketCoords = new Int32Array(bucketEntries.length * 2);
@@ -355,6 +502,7 @@ export function packRaceCanonicalSurfaceMesh(mesh = null, {
     regions,
     sources,
     priorities,
+    ...supportTopology,
     regionTable,
     sourceTable,
     bucketCoords,
@@ -373,6 +521,9 @@ export function getPackedRaceSurfaceTransferables(sampler = null) {
     sampler.regions,
     sampler.sources,
     sampler.priorities,
+    sampler.supportFamilyIds,
+    sampler.supportFamilyDriveable,
+    sampler.supportEdgeFlags,
     sampler.bucketCoords,
     sampler.bucketOffsets,
     sampler.bucketTriangles

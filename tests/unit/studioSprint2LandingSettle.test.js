@@ -282,8 +282,9 @@ test('Studio Sprint2 WRX2 first-jump landing cannot erase forward motion through
     event.outcome === 'catastrophic-route-recovery'
   )), false, JSON.stringify(runner.contactStabilizationState.history));
   assert.equal(runner.contactStabilizationState.history.some((event) => (
-    event.reason === 'coupled-correction-safe-pose'
-  )), true, JSON.stringify(runner.contactStabilizationState.history));
+    event.outcome === 'catastrophic-historical-recovery'
+      || event.outcome === 'catastrophic-route-recovery'
+  )), false, JSON.stringify(runner.contactStabilizationState.history));
   assert.equal(runner.impactHistory.some((impact) => impact.terrainImpact === true), true);
   assert.ok(session.latestVehicleImpactEvent?.stepIndex >= landingStepIndex,
     JSON.stringify({
@@ -291,7 +292,7 @@ test('Studio Sprint2 WRX2 first-jump landing cannot erase forward motion through
       impact: session.latestVehicleImpactEvent,
       terrainImpacts: runner.terrainImpactHistory
     }));
-  assert.equal(session.latestVehicleImpactEvent.recoveredCoupledCorrection, true);
+  assert.notEqual(session.latestVehicleImpactEvent.recoveredCoupledCorrection, true);
   assert.equal(
     session.latestVehicleImpactEvent.sequence,
     runner.terrainImpactHistory.at(-1)?.sequence

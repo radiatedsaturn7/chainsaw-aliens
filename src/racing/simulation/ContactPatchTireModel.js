@@ -2326,6 +2326,11 @@ export class ContactPatchTireModel {
       output.terrainTriangleId = wheelInputs[wheelId].surfaceSample.triangleId;
       output.terrainSampleSource = wheelInputs[wheelId].surfaceSample.source;
       output.terrainSampleReason = wheelInputs[wheelId].surfaceSample.reason;
+      output.supportFamilyId = wheelInputs[wheelId].surfaceSample.supportFamilyId ?? null;
+      output.supportFamilyDriveable
+        = wheelInputs[wheelId].surfaceSample.supportFamilyDriveable === true;
+      output.supportEdgeClassification
+        = wheelInputs[wheelId].surfaceSample.supportEdgeClassification ?? null;
       const priorTriangleId = previousPatch.terrainTriangleId;
       const priorNormal = previousPatch.surfaceSampleNormalWorld;
       const currentNormal = output.surfaceSampleNormalWorld;
@@ -2335,9 +2340,12 @@ export class ContactPatchTireModel {
       const smoothTriangleTransition = priorTriangleId !== null
         && priorTriangleId !== undefined
         && output.terrainTriangleId !== priorTriangleId
-        && !/(curb|step|gap|discontinuity|wall|barrier|shoulder)/i.test(
-          `${output.terrainSampleSource || ''} ${wheelInputs[wheelId].surfaceSample.region || ''}`
-        )
+        && ((output.supportFamilyDriveable === true
+          && output.supportFamilyId !== null
+          && output.supportFamilyId === previousPatch.supportFamilyId)
+          || !/(curb|step|gap|discontinuity|wall|barrier|shoulder)/i.test(
+            `${output.terrainSampleSource || ''} ${wheelInputs[wheelId].surfaceSample.region || ''}`
+          ))
         && normalDot >= Math.cos(0.1 * Math.PI / 180)
         && Math.abs(Number(previousPatch.rawRequestedCompressionM || 0)
           - Number(output.rawRequestedCompressionM || 0)) <= 0.00025;
