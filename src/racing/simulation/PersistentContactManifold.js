@@ -10,9 +10,16 @@ function normalClusterKey(normal = {}) {
 }
 
 export function contactManifoldClusterKey(contact = {}) {
+  const connectedTerrainFamily = contact.colliderId == null
+    && contact.supportFamilyId !== null
+    && contact.supportFamilyId !== undefined
+    && contact.supportEdgeClassification === 'smooth-connected-surface'
+      ? `terrain-support:${contact.supportFamilyId}` : null;
   return [
-    contact.colliderId ?? contact.terrainSource ?? 'terrain',
-    contact.featureId ?? contact.contactType ?? contact.triangleId ?? 'feature',
+    contact.colliderId ?? connectedTerrainFamily ?? contact.terrainSource ?? 'terrain',
+    connectedTerrainFamily
+      ? (contact.contactType ?? 'connected-surface')
+      : (contact.featureId ?? contact.contactType ?? contact.triangleId ?? 'feature'),
     contact.pieceId ?? contact.wheelId ?? 'body',
     normalClusterKey(contact.normal)
   ].join('|');

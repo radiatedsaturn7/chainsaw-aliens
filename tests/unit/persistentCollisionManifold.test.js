@@ -64,6 +64,33 @@ test('dense probe faces reduce to four persistent representatives per physical m
   assert.equal(history.classifyAndRemember(reduced[0].manifoldClusterKey), true);
 });
 
+test('smooth connected terrain keeps one manifold identity across triangle sources', () => {
+  const contacts = [{
+    id: 'underfloor-road', pieceId: 'underfloor', contactType: 'body',
+    triangleId: 12, terrainSource: 'road:12', supportFamilyId: 7,
+    supportEdgeClassification: 'smooth-connected-surface',
+    normal: { x: 0, y: 1, z: 0 }, pointWorld: { x: -0.2, y: 0, z: 0 },
+    penetrationM: 0.01
+  }, {
+    id: 'underfloor-apron', pieceId: 'underfloor', contactType: 'body',
+    triangleId: 18, terrainSource: 'corridor:right:12:5', supportFamilyId: 7,
+    supportEdgeClassification: 'smooth-connected-surface',
+    normal: { x: 0.01, y: 0.99995, z: 0 }, pointWorld: { x: 0.2, y: 0, z: 0 },
+    penetrationM: 0.012
+  }];
+  const reduced = reducePersistentContactManifold(contacts);
+  assert.equal(reduced.clusters.size, 1);
+  assert.equal(reduced.contacts[0].manifoldRawContactCount, 2);
+  const history = new PersistentManifoldHistory();
+  history.begin(20);
+  assert.equal(history.classifyAndRemember(reduced.contacts[0].manifoldClusterKey), false);
+  history.begin(21);
+  const next = reducePersistentContactManifold(contacts.map((contact) => ({
+    ...contact, triangleId: contact.triangleId + 100, terrainSource: `${contact.terrainSource}:next`
+  })));
+  assert.equal(history.classifyAndRemember(next.contacts[0].manifoldClusterKey), true);
+});
+
 test('wall manifold bounds contacts applies restitution once and preserves glancing tangent', () => {
   const world = prepareStaticRaceColliders([{
     id: 'wall', type: 'plane', point: { z: 0 }, normal: { x: 0, y: 0, z: -1 },

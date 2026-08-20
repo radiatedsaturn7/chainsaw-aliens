@@ -4864,6 +4864,11 @@ export class VehicleDynamicsRunner {
           )) || [];
           const driveableRoadContact = terrainContacts.length > 0
             && terrainContacts.every((contact) => {
+              if (contact.supportFamilyId !== null
+                && contact.supportFamilyId !== undefined) {
+                return contact.supportFamilyDriveable === true
+                  && contact.supportEdgeClassification === 'smooth-connected-surface';
+              }
               const classification = `${contact.terrainRegion || ''} ${contact.terrainSource || ''}`
                 .toLowerCase();
               return classification.includes('road')
@@ -4882,6 +4887,7 @@ export class VehicleDynamicsRunner {
           )) {
             coupledSolverFailure = {
               reason: 'catastrophic-collision-correction',
+              driveableSurface: driveableRoadContact,
               requiredCorrectionM: correctionM,
               requiredAngularCorrectionRad: angularCorrectionRad,
               cumulativeCorrectionM: cumulativeCoupledCorrectionM,
@@ -5261,17 +5267,36 @@ export class VehicleDynamicsRunner {
           || !(bodyResult.contacts?.length > 0)
       );
       let localRollback = null;
+      let discardedCurrentSubstepCorrection = false;
       if (coupledSolverFailure?.reason === 'catastrophic-collision-correction'
         && !authoritativeTerrainUnavailable
         && isFiniteVehiclePose(substepState)
         && currentPenetrationM <= this.config.catastrophicBodyPenetrationM) {
         const resolvedAngularVelocityWorld = clone(substepState.angularVelocityWorld);
-        localRollback = this.restoreLocalCollisionFrame(
-          substepState,
-          this.lastValidLocalCollisionFrame,
-          penetrationSample.deepestNormal,
-          nextStepIndex
-        );
+        if (coupledSolverFailure.driveableSurface === true) {
+          // A failed split-position validation is not an impact or a reason to
+          // rewind to an older chassis frame. Discard only the current
+          // validation correction, retain the collision-resolved velocity,
+          // and rebuild the complete contact transaction at this substep pose.
+          substepState.position = clone(collisionPoseBefore.position);
+          substepState.orientation = clone(collisionPoseBefore.orientation);
+          localRollback = {
+            velocity: clone(substepState.velocity),
+            normal: normalizeRecoveryNormal(
+              penetrationSample.deepestNormal || { x: 0, y: 1, z: 0 }
+            ),
+            removedInwardSpeedMps: 0
+          };
+          discardedCurrentSubstepCorrection = true;
+          this.updateDerivedMotionState(substepState);
+        } else {
+          localRollback = this.restoreLocalCollisionFrame(
+            substepState,
+            this.lastValidLocalCollisionFrame,
+            penetrationSample.deepestNormal,
+            nextStepIndex
+          );
+        }
         if (localRollback) {
           // Positional validation is not an impulse owner. Return the complete
           // body/wheel transaction to its most recent local safe pose while
@@ -5280,10 +5305,13 @@ export class VehicleDynamicsRunner {
           substepState.angularVelocityWorld = resolvedAngularVelocityWorld;
           recoveredCoupledSolverFailure = coupledSolverFailure;
           coupledSolverFailure = null;
-          bodyResult.velocityResolutionOwner = 'recoverable-coupled-safe-pose';
+          bodyResult.velocityResolutionOwner = discardedCurrentSubstepCorrection
+            ? 'current-substep-correction-discard'
+            : 'recoverable-coupled-safe-pose';
           bodyResult.recoverableCoupledCorrectionFailure = {
             ...recoveredCoupledSolverFailure,
             safePoseStepIndex: Number(this.lastValidLocalCollisionFrame?.stepIndex || 0),
+            discardedCurrentSubstepCorrection,
             retainedTangentSpeedMps: Math.hypot(
               Number(localRollback.velocity?.x || 0),
               Number(localRollback.velocity?.y || 0),
@@ -5367,7 +5395,9 @@ export class VehicleDynamicsRunner {
             normal: localRollback.normal,
             removedInwardSpeedMps: localRollback.removedInwardSpeedMps,
             reason: recoveredCoupledSolverFailure
-              ? 'coupled-correction-safe-pose'
+              ? discardedCurrentSubstepCorrection
+                ? 'coupled-correction-current-substep-discard'
+                : 'coupled-correction-safe-pose'
               : bodyResult.safePoseRollbackFraction === null
               || bodyResult.safePoseRollbackFraction === undefined
               ? 'previous-local-frame' : 'current-substep-toi'

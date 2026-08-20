@@ -41,6 +41,9 @@ test('packed race surface sampler preserves object sampler results', () => {
   assert.equal(packedSampler.positions instanceof Float64Array, true);
   assert.equal(packedSampler.normals instanceof Float64Array, true);
   assert.equal(packedSampler.bounds instanceof Float64Array, true);
+  assert.equal(packedSampler.supportFamilyIds instanceof Uint32Array, true);
+  assert.equal(packedSampler.supportFamilyDriveable instanceof Uint8Array, true);
+  assert.equal(packedSampler.supportEdgeFlags instanceof Uint8Array, true);
   assert.equal(packedSampler.triangleCount, objectSampler.triangleCount);
   assert.ok(packedSample);
   assert.equal(packedSample.elevation, objectSample.elevation);
@@ -91,6 +94,12 @@ test('canonical mesh packing matches the object sampler without allocating an in
   assert.deepEqual(Array.from(packedMeshSampler.regions), Array.from(packedObjectSampler.regions));
   assert.deepEqual(Array.from(packedMeshSampler.sources), Array.from(packedObjectSampler.sources));
   assert.deepEqual(Array.from(packedMeshSampler.priorities), Array.from(packedObjectSampler.priorities));
+  assert.deepEqual(Array.from(packedMeshSampler.supportFamilyIds),
+    Array.from(packedObjectSampler.supportFamilyIds));
+  assert.deepEqual(Array.from(packedMeshSampler.supportFamilyDriveable),
+    Array.from(packedObjectSampler.supportFamilyDriveable));
+  assert.deepEqual(Array.from(packedMeshSampler.supportEdgeFlags),
+    Array.from(packedObjectSampler.supportEdgeFlags));
   assert.deepEqual(Array.from(packedMeshSampler.bucketCoords), Array.from(packedObjectSampler.bucketCoords));
   assert.deepEqual(Array.from(packedMeshSampler.bucketOffsets), Array.from(packedObjectSampler.bucketOffsets));
   assert.deepEqual(Array.from(packedMeshSampler.bucketTriangles), Array.from(packedObjectSampler.bucketTriangles));

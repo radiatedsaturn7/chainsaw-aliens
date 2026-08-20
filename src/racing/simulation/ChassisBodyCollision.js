@@ -1724,6 +1724,11 @@ export class ChassisBodyCollision {
       contact.triangleId = candidate.triangleId ?? terrain.triangleId;
       contact.terrainSource = candidate.terrainSource ?? terrain.source;
       contact.terrainRegion = candidate.terrainRegion ?? terrain.region;
+      contact.supportFamilyId = candidate.supportFamilyId ?? terrain.supportFamilyId ?? null;
+      contact.supportFamilyDriveable = candidate.supportFamilyDriveable
+        ?? terrain.supportFamilyDriveable ?? false;
+      contact.supportEdgeClassification = candidate.supportEdgeClassification
+        ?? terrain.supportEdgeClassification ?? null;
       contact.poweredTreadContact = candidate.poweredTreadContact === true;
       contact.widthFraction = candidate.widthFraction ?? null;
       contact.partialWidth = candidate.partialWidth === true;

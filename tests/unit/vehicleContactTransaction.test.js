@@ -187,3 +187,75 @@ test('persistent shallow wall contact schedules physical reverse escape without 
   assert.equal(runner.contactStabilizationState.gameplayResetCount, 0);
   assert.equal(runner.penetrationRecoveryState.history.length, 0);
 });
+
+test('driveable coupled correction failure discards only the current substep correction', () => {
+  let collisionCalls = 0;
+  const terrainContact = {
+    id: 'underfloor-apron', pieceId: 'underfloor', contactType: 'body',
+    terrainSource: 'corridor:right:333:5', terrainRegion: 'transition',
+    supportFamilyId: 18000, supportFamilyDriveable: true,
+    supportEdgeClassification: 'smooth-connected-surface',
+    normal: { x: 0, y: 1, z: 0 }, penetrationM: 0.01,
+    normalImpulseNs: 40, tangentialImpulseNs: 2,
+    preImpactManifoldNormalVelocityMps: -1
+  };
+  const runner = new VehicleDynamicsRunner({
+    config: { handlingPreset: 'simulation', tireHz: 120, telemetryRetention: 'latest' },
+    initialState: {
+      position: { x: 0, y: 1, z: 0 },
+      orientation: { x: 0, y: 0, z: 0, w: 1 },
+      velocity: { x: 0, y: 0, z: 12 }
+    },
+    tireContactSubsystem: { step({ state }) { return tireResultAt(state); } },
+    environmentProvider: () => ({
+      airDensityKgM3: 0,
+      sampleTerrainAtWorldPoint(point) {
+        return {
+          valid: true, heightM: 0, normal: { x: 0, y: 1, z: 0 },
+          region: 'transition', source: 'corridor:right:333:5', triangleId: 18000,
+          queryPosition: point, supportFamilyId: 18000, supportFamilyDriveable: true,
+          supportEdgeClassification: 'smooth-connected-surface'
+        };
+      }
+    })
+  });
+  runner.lastValidLocalCollisionFrame = {
+    position: { x: -20, y: 1, z: -20 },
+    orientation: { x: 0, y: 0, z: 0, w: 1 },
+    velocity: { x: 0, y: 0, z: 0 },
+    angularVelocityWorld: { x: 0, y: 0, z: 0 },
+    supportNormal: { x: 0, y: 1, z: 0 },
+    stepIndex: 0,
+    suspensionState: {}, tireState: {}, wheelAngularVelocityRadps: {},
+    wheelLoadsN: {}, wheelSlip: {}, contactPatches: {}, powertrainState: {}
+  };
+  runner.bodyCollision = {
+    step({ workingState }) {
+      collisionCalls += 1;
+      if (collisionCalls === 1) workingState.position.x += 0.2;
+      return {
+        ...collisionResult(collisionCalls === 1 ? { x: 0.2, y: 0, z: 0 } : undefined),
+        contacts: [{ ...terrainContact }]
+      };
+    },
+    samplePosePenetration() {
+      return {
+        maximumPenetrationM: 0.01, invalidTerrainSampleCount: 0,
+        allBodySamplesBelowTerrain: false, allLowerBodySupportFeaturesBelowTerrain: false
+      };
+    }
+  };
+
+  runner.advance(1 / 120, { input: { throttle: 0.2 } });
+
+  assert.ok(runner.state.position.x > -0.01 && runner.state.position.x < 0.01,
+    `must not restore the older x=-20 frame: ${runner.state.position.x}`);
+  assert.ok(runner.state.position.z > 0, `tangent progress ${runner.state.position.z}`);
+  assert.equal(runner.penetrationRecoveryState.history.length, 0);
+  assert.equal(runner.contactStabilizationState.history.some((event) => (
+    event.reason === 'coupled-correction-safe-pose'
+  )), false);
+  assert.equal(runner.contactStabilizationState.history.some((event) => (
+    event.reason === 'coupled-correction-current-substep-discard'
+  )), true, JSON.stringify(runner.contactStabilizationState.history));
+});

@@ -220,6 +220,9 @@ function createMutableSample() {
     score: -Infinity,
     friction: null,
     surfaceId: null,
+    supportFamilyId: null,
+    supportFamilyDriveable: false,
+    supportEdgeClassification: null,
     bakedElevation: null,
     bakedNormal: normal,
     bakedTriangleId: null,
@@ -281,9 +284,35 @@ function resetSample(sample, queryPosition) {
   sample.score = -Infinity;
   sample.friction = null;
   sample.surfaceId = null;
+  sample.supportFamilyId = null;
+  sample.supportFamilyDriveable = false;
+  sample.supportEdgeClassification = null;
   sample.bakedElevation = null;
   sample.bakedTriangleId = null;
   sample.bakedSurfaceSource = null;
+  return sample;
+}
+
+const SUPPORT_EDGE_CLASSIFICATIONS = Object.freeze([
+  'smooth-connected-surface',
+  'curb-or-authored-step',
+  'height-discontinuity',
+  'sharp-dihedral-edge',
+  'non-manifold-seam',
+  'vertical-static-obstacle'
+]);
+
+function annotatePreparedSupport(sampler, sample) {
+  if (!sample?.valid || sample.triangleId === null || sample.triangleId === undefined) {
+    return sample;
+  }
+  const triangleIndex = Number(sample.triangleId);
+  sample.supportFamilyId = Number(sampler?.supportFamilyIds?.[triangleIndex] ?? triangleIndex);
+  sample.supportFamilyDriveable = sampler?.supportFamilyDriveable?.[triangleIndex] === 1;
+  const edgeFlag = Number(sampler?.supportEdgeFlags?.[triangleIndex] || 0);
+  sample.supportEdgeClassification = sample.supportFamilyDriveable
+    ? 'smooth-connected-surface'
+    : (SUPPORT_EDGE_CLASSIFICATIONS[edgeFlag] || 'smooth-connected-surface');
   return sample;
 }
 
@@ -1114,7 +1143,7 @@ export class PhysicsTerrainQueryFrame {
       sample.bakedElevation = sample.elevation;
       sample.bakedTriangleId = sample.triangleId;
       sample.bakedSurfaceSource = sample.source;
-      return sample;
+      return annotatePreparedSupport(this.sampler, sample);
     }
     this.statistics.pointCacheMisses += 1;
     const range = this.getBucketRangeForPoint(x, z, !skipFineGrid);
@@ -1226,6 +1255,7 @@ export class PhysicsTerrainQueryFrame {
       sample.bakedElevation = sample.elevation;
       sample.bakedTriangleId = sample.triangleId;
       sample.bakedSurfaceSource = sample.source;
+      annotatePreparedSupport(this.sampler, sample);
     }
     if (!preferredRegion) {
       this.pointCacheStamps[cacheSlot] = this.pointCacheStamp;
@@ -1364,7 +1394,7 @@ export class PhysicsTerrainQueryFrame {
     sample.bakedElevation = elevation;
     sample.bakedTriangleId = triangleIndex;
     sample.bakedSurfaceSource = source;
-    return sample;
+    return annotatePreparedSupport(this.sampler, sample);
   }
 
   classifyCollisionFeaturesInBounds(bounds = this.bounds, target = this.collisionClassificationResult) {

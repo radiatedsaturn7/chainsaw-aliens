@@ -254,6 +254,66 @@ test('prepared edge classifications are reused when a vehicle revisits a bucket 
   assert.equal(revisited.cache.edgeClassificationsByBucketRange.size, 2);
 });
 
+test('smooth road apron and terrain transition share one driveable support family', () => {
+  const sampler = buildRaceBakedSurfaceSampler({
+    elevationScaleM: 1,
+    bucketSizeM: 8,
+    mesh: {
+      triangles: [{
+        region: 'road', source: 'road:12',
+        vertices: [
+          { x: 0, elevation: 0, z: 0 },
+          { x: 2, elevation: 0.1, z: 0 },
+          { x: 2, elevation: 0.1, z: 2 }
+        ]
+      }, {
+        region: 'transition', source: 'corridor:right:12:5',
+        vertices: [
+          { x: 0, elevation: 0, z: 0 },
+          { x: 2, elevation: 0.1, z: 2 },
+          { x: 0, elevation: 0, z: 2 }
+        ]
+      }, {
+        region: 'transition', source: 'corridor:right:12:6',
+        vertices: [
+          { x: 2, elevation: 0.1, z: 0 },
+          { x: 2.2, elevation: 1.2, z: 0 },
+          { x: 2, elevation: 0.1, z: 2 }
+        ]
+      }]
+    }
+  });
+  const frame = createPhysicsTerrainQueryFrameCache().begin({
+    sampler, revision: 1, elevationScaleM: 1,
+    bounds: { minX: 0, maxX: 2.2, minZ: 0, maxZ: 2 }
+  });
+  const road = structuredClone(frame.samplePoint({ x: 1.5, z: 0.25 }));
+  const apronTransition = structuredClone(frame.samplePoint({ x: 0.5, z: 1.5 }));
+  const sharpFace = structuredClone(frame.samplePoint({ x: 2.05, z: 0.5 }));
+
+  assert.equal(road.supportFamilyId, apronTransition.supportFamilyId);
+  assert.equal(road.supportFamilyDriveable, true);
+  assert.equal(apronTransition.supportFamilyDriveable, true);
+  assert.equal(apronTransition.supportEdgeClassification, 'smooth-connected-surface');
+  assert.notEqual(sharpFace.supportFamilyId, road.supportFamilyId);
+  assert.equal(sharpFace.supportFamilyDriveable, false);
+  assert.equal(frame.classifyCollisionFeaturesInBounds({
+    minX: 1.95, maxX: 2.15, minY: 0, maxY: 1.3, minZ: 0, maxZ: 2
+  }).discontinuity, true);
+
+  const roadOnly = createPhysicsTerrainQueryFrameCache().begin({
+    sampler, revision: 1, elevationScaleM: 1,
+    bounds: { minX: 1.2, maxX: 1.9, minZ: 0.1, maxZ: 0.8 }
+  }).samplePoint({ x: 1.5, z: 0.25 });
+  const transitionOnly = createPhysicsTerrainQueryFrameCache().begin({
+    sampler, revision: 1, elevationScaleM: 1,
+    bounds: { minX: 0.1, maxX: 0.8, minZ: 1.2, maxZ: 1.9 }
+  }).samplePoint({ x: 0.5, z: 1.5 });
+  assert.equal(roadOnly.supportFamilyId, transitionOnly.supportFamilyId,
+    'support identity must not depend on the local query-frame bucket range');
+  assert.equal(transitionOnly.supportFamilyDriveable, true);
+});
+
 test('local triangle growth preserves early faces and keeps point queries on the fine grid', () => {
   const triangles = [];
   for (let zIndex = 0; zIndex < 10; zIndex += 1) {

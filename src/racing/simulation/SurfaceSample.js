@@ -45,6 +45,9 @@ export function createInvalidSurfaceSample({
     region: region === null || region === undefined ? null : String(region),
     source: source === null || source === undefined ? null : String(source),
     triangleId: triangleIdentity(triangleId),
+    supportFamilyId: null,
+    supportFamilyDriveable: false,
+    supportEdgeClassification: null,
     queryPosition: finitePoint(queryPosition || {}),
     reason: String(reason || 'invalid-surface-sample')
   });
@@ -110,6 +113,10 @@ export function createSurfaceSample(sample = {}, {
           : String(sample.bakedSurfaceSource))
       : String(sample.source),
     triangleId: triangleIdentity(sample.triangleId ?? sample.bakedTriangleId),
+    supportFamilyId: triangleIdentity(sample.supportFamilyId),
+    supportFamilyDriveable: sample.supportFamilyDriveable === true,
+    supportEdgeClassification: sample.supportEdgeClassification == null
+      ? null : String(sample.supportEdgeClassification),
     queryPosition: position,
     reason: null
   });
