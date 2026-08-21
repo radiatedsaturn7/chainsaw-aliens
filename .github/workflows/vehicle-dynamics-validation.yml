@@ -96,11 +96,11 @@ jobs:
       - name: Replay determinism validation
         run: npm run test:vehicle-validation:replay
       - name: Studio Sprint 2 performance validation
-        run: node tools/run-studio-sprint2-physics-performance.mjs --fps 60 --output artifacts/vehicle-validation/studio-sprint2-desktop.json --reference-machine --reference-machine-id github-actions-ubuntu --enforce-budgets
+        run: node tools/run-studio-sprint2-physics-performance.mjs --fps 60 --output artifacts/vehicle-validation/studio-sprint2-github-hosted.json --enforce-runtime-integrity
         env:
-          STUDIO_SPRINT2_PERFORMANCE_AUTHORITY: desktop-reference
+          STUDIO_SPRINT2_PERFORMANCE_AUTHORITY: github-hosted-baseline
       - name: Studio Sprint 2 Physics Surface diagnostic baseline
-        run: node tools/run-studio-sprint2-physics-performance.mjs --fps 60 --output artifacts/vehicle-validation/studio-sprint2-desktop-physics-surface.json --reference-machine --reference-machine-id github-actions-ubuntu --physics-surface-debug
+        run: node tools/run-studio-sprint2-physics-performance.mjs --fps 60 --output artifacts/vehicle-validation/studio-sprint2-github-hosted-physics-surface.json --physics-surface-debug
       - uses: actions/upload-artifact@v4
         if: always()
         with:

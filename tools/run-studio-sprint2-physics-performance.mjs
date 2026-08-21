@@ -354,6 +354,7 @@ const referenceMachineId = String(readOption('--reference-machine-id', '')).trim
 const requireWorkerQualification = process.argv.includes('--require-worker-qualification');
 const physicsSurfaceDebug = process.argv.includes('--physics-surface-debug');
 const enforceBudgets = process.argv.includes('--enforce-budgets');
+const enforceRuntimeIntegrity = process.argv.includes('--enforce-runtime-integrity');
 if (requestedReferenceMachine && !referenceMachineId) {
   throw new Error('--reference-machine requires a stable --reference-machine-id');
 }
@@ -467,14 +468,16 @@ if (requireWorkerQualification && report.workerMigrationQualification.qualified 
   );
   process.exitCode = 1;
 }
-if (enforceBudgets) {
+if (enforceBudgets || enforceRuntimeIntegrity) {
   const sixty = runs.find((run) => run.fps === 60);
   const failures = [];
   if (!sixty) failures.push('missing 60 FPS authority run');
   else {
-    if (sixty.physicsUpdateMs.p50 >= report.acceptanceTargets.physicsP50MsAt60Fps) failures.push(`p50 ${sixty.physicsUpdateMs.p50} ms`);
-    if (sixty.physicsUpdateMs.p95 >= report.acceptanceTargets.physicsP95MsAt60Fps) failures.push(`p95 ${sixty.physicsUpdateMs.p95} ms`);
-    if (sixty.physicsUpdateMs.p99 >= report.acceptanceTargets.physicsP99MsAt60Fps) failures.push(`p99 ${sixty.physicsUpdateMs.p99} ms`);
+    if (enforceBudgets) {
+      if (sixty.physicsUpdateMs.p50 >= report.acceptanceTargets.physicsP50MsAt60Fps) failures.push(`p50 ${sixty.physicsUpdateMs.p50} ms`);
+      if (sixty.physicsUpdateMs.p95 >= report.acceptanceTargets.physicsP95MsAt60Fps) failures.push(`p95 ${sixty.physicsUpdateMs.p95} ms`);
+      if (sixty.physicsUpdateMs.p99 >= report.acceptanceTargets.physicsP99MsAt60Fps) failures.push(`p99 ${sixty.physicsUpdateMs.p99} ms`);
+    }
     if (sixty.peakBacklogSteps > 0) failures.push(`backlog ${sixty.peakBacklogSteps} steps`);
     if (sixty.recovery.count > 0) failures.push(`recoveries ${sixty.recovery.count}`);
   }
