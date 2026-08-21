@@ -145,3 +145,126 @@ test('Studio Sprint2 WRX2 angled apron-edge hill landing cannot become a lawn da
       JSON.stringify(result));
   }
 });
+
+test('Studio Sprint2 WRX2 outside-bend hill slide remains mobile and escapable', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  assert.equal(editor.applyLoadedRaceDocument(decodeDocument(
+    'tests/fixtures/studioSprint2PerformanceRaceDocument.json'
+  ), { name: 'Studio Sprint2' }), true);
+  assert.equal(editor.applyLoadedCarDocument(decodeDocument(
+    'data/server-storage/files/cars/2022 Subaru WRX2/document.json'
+  ), { name: '2022 Subaru WRX2' }), true);
+  editor.startPlaytest(editor.getRaceCarProjectIdentity(editor.selectedCar), {
+    hydrateCars: false,
+    preparedWorldBake: editor.buildRaceWorldBake({ retainTerrainCells: false })
+  });
+  const session = editor.playtestSession;
+  session.countdownRemainingMs = 0;
+  session.startupFramePending = false;
+  assert.equal(editor.updatePlaytestSafely(0), true);
+  assert.equal(editor.applyRaceCarRouteCenterReset({
+    projection: { distance: 500 }, preserveMotion: false
+  }), true);
+  const runner = session.vehicleDynamicsRunner;
+  const centered = runner.createStateSnapshot();
+  const yaw = Number(centered.yawRad || session.carYaw || 0);
+  const right = { x: Math.cos(yaw), z: -Math.sin(yaw) };
+  const forward = { x: Math.sin(yaw), z: Math.cos(yaw) };
+  const position = {
+    x: Number(centered.position.x) - right.x * 3.2,
+    y: Number(centered.position.y) + 0.45,
+    z: Number(centered.position.z) - right.z * 3.2
+  };
+  const forwardSpeedMps = 13;
+  const outwardSpeedMps = 6;
+  runner.replaceAuthoritativeState({
+    ...centered,
+    position,
+    worldX: position.x,
+    worldZ: position.z,
+    heightM: position.y,
+    velocity: {
+      x: forward.x * forwardSpeedMps - right.x * outwardSpeedMps,
+      y: -1.5,
+      z: forward.z * forwardSpeedMps - right.z * outwardSpeedMps
+    },
+    speedMps: forwardSpeedMps,
+    groundSpeedMps: Math.hypot(forwardSpeedMps, outwardSpeedMps),
+    bodyLongitudinalSpeedMps: forwardSpeedMps,
+    bodyLateralSpeedMps: -outwardSpeedMps,
+    signedTravelSpeedMps: forwardSpeedMps,
+    gear: 2,
+    engineRpm: 2600,
+    wheelAngularVelocityRadps: Object.fromEntries(WHEEL_IDS.map((wheelId) => [
+      wheelId, forwardSpeedMps / runner.config.wheelRadiusM
+    ])),
+    powertrainState: { ...centered.powertrainState, gear: 2, engineRpm: 2600 }
+  });
+  Object.assign(editor.raceInput, {
+    rawThrottleAxis: 0.2,
+    throttleAxis: 0.2,
+    analogThrottleActive: true,
+    rawBrakeAxis: 0,
+    brakeAxis: 0,
+    steeringWheel: -0.35,
+    gear: 2,
+    autoShift: false,
+    paused: false
+  });
+  const recoveryStart = runner.penetrationRecoveryState.history.length;
+  let supportedFrames = 0;
+  let longestSupportedStallFrames = 0;
+  let supportedStallFrames = 0;
+  let bodyContactFrames = 0;
+  let smoothSupportedScrapeSeen = false;
+  const bodyTerrainSources = new Set();
+  for (let frame = 0; frame < 180; frame += 1) {
+    assert.equal(editor.updatePlaytestSafely(1 / 60), true);
+    const supported = Number(runner.state.supportedWheelCount || 0) >= 2;
+    const moving = Math.hypot(
+      Number(runner.state.velocity?.x || 0), Number(runner.state.velocity?.z || 0)
+    ) > 0.12;
+    if (supported) supportedFrames += 1;
+    if (supported && !moving) supportedStallFrames += 1;
+    else supportedStallFrames = 0;
+    longestSupportedStallFrames = Math.max(longestSupportedStallFrames, supportedStallFrames);
+    if (runner.state.bodyGrounded) bodyContactFrames += 1;
+    const bodyContacts = runner.transientTelemetryScratch?.forces?.bodyCollision?.contacts || [];
+    for (const contact of bodyContacts) {
+      if (contact.terrainSource) bodyTerrainSources.add(contact.terrainSource);
+      if (contact.suspensionSupported === true
+        && contact.supportEdgeClassification === 'smooth-connected-surface'
+        && contact.frictionClassification === 'kinetic') {
+        smoothSupportedScrapeSeen = true;
+      }
+    }
+  }
+  const beforeEscape = structuredClone(runner.state.position);
+  Object.assign(editor.raceInput, {
+    rawThrottleAxis: 0.45,
+    throttleAxis: 0.45,
+    steeringWheel: 0.7,
+    gear: -1,
+    autoShift: false
+  });
+  for (let frame = 0; frame < 90; frame += 1) {
+    assert.equal(editor.updatePlaytestSafely(1 / 60), true);
+  }
+  const escapeDistanceM = Math.hypot(
+    Number(runner.state.position.x) - Number(beforeEscape.x),
+    Number(runner.state.position.z) - Number(beforeEscape.z)
+  );
+  assert.ok(supportedFrames > 30, `supported frames ${supportedFrames}`);
+  assert.ok(bodyContactFrames > 0, 'fixture must exercise body-to-terrain contact');
+  assert.ok(bodyTerrainSources.size > 0, 'fixture must retain prepared terrain identities');
+  assert.equal(smoothSupportedScrapeSeen, true,
+    `expected a supported kinetic scrape; terrain=${[...bodyTerrainSources].join(',')}`);
+  assert.ok(longestSupportedStallFrames < 18,
+    `wheel-supported stall lasted ${longestSupportedStallFrames} render frames`);
+  assert.ok(escapeDistanceM > 0.25, `escape distance ${escapeDistanceM} m`);
+  assert.deepEqual(runner.penetrationRecoveryState.history.slice(recoveryStart), []);
+  assert.equal(runner.contactStabilizationState.gameplayResetCount, 0);
+  assert.equal(Number.isFinite(Number(runner.state.position.x)), true);
+  assert.equal(Number.isFinite(Number(runner.state.position.y)), true);
+  assert.equal(Number.isFinite(Number(runner.state.position.z)), true);
+});

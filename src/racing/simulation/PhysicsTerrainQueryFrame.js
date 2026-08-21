@@ -310,7 +310,7 @@ function annotatePreparedSupport(sampler, sample) {
   sample.supportFamilyId = Number(sampler?.supportFamilyIds?.[triangleIndex] ?? triangleIndex);
   sample.supportFamilyDriveable = sampler?.supportFamilyDriveable?.[triangleIndex] === 1;
   const edgeFlag = Number(sampler?.supportEdgeFlags?.[triangleIndex] || 0);
-  sample.supportEdgeClassification = sample.supportFamilyDriveable
+  sample.supportEdgeClassification = edgeFlag === 0
     ? 'smooth-connected-surface'
     : (SUPPORT_EDGE_CLASSIFICATIONS[edgeFlag] || 'smooth-connected-surface');
   return sample;

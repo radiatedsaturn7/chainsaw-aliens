@@ -67,6 +67,126 @@ const dotVector3 = (a = {}, b = {}) => (
   + Number(a.z || 0) * Number(b.z || 0)
 );
 
+function getVehicleBodyUpY(orientation = {}) {
+  return Number(rotateVectorByQuaternion({ x: 0, y: 1, z: 0 }, orientation).y || 0);
+}
+
+function createUprightResetOrientation(orientation = {}, fallbackOrientation = null) {
+  if (getVehicleBodyUpY(orientation) > 0.1) return clone(orientation);
+  const forward = rotateVectorByQuaternion({ x: 0, y: 0, z: 1 }, orientation);
+  const fallbackEuler = fallbackOrientation && getVehicleBodyUpY(fallbackOrientation) > 0.1
+    ? eulerFromQuaternion(fallbackOrientation) : null;
+  const horizontalForward = Math.hypot(Number(forward.x || 0), Number(forward.z || 0));
+  const yaw = horizontalForward > EPSILON
+    ? Math.atan2(Number(forward.x || 0), Number(forward.z || 0))
+    : Number(fallbackEuler?.yaw || 0);
+  const candidate = quaternionFromEuler({
+    yaw,
+    pitch: Number(fallbackEuler?.pitch || 0),
+    roll: Number(fallbackEuler?.roll || 0)
+  });
+  return getVehicleBodyUpY(candidate) > 0.1
+    ? candidate : quaternionFromEuler({ yaw, pitch: 0, roll: 0 });
+}
+
+function resolveCollisionEscapeConstraints(contacts = [], requested = {}, {
+  shallowPenetrationM = 0.03,
+  moderateTerrainPenetrationM = 0.18,
+  supportedWheelCount = 0
+} = {}) {
+  const normals = [];
+  const clusterKeys = new Set();
+  let deepestContact = null;
+  for (let index = 0; index < contacts.length; index += 1) {
+    const contact = contacts[index] || {};
+    const penetrationM = Math.max(0, Number(contact.penetrationM || 0));
+    const smoothSupportedTerrain = supportedWheelCount > 0
+      && !contact.colliderId
+      && contact.supportEdgeClassification === 'smooth-connected-surface'
+      && penetrationM <= moderateTerrainPenetrationM;
+    if (penetrationM > shallowPenetrationM && !smoothSupportedTerrain) continue;
+    const rawNormal = contact.normal || {};
+    const normalLength = Math.hypot(
+      Number(rawNormal.x || 0), Number(rawNormal.y || 0), Number(rawNormal.z || 0)
+    );
+    if (!(normalLength > EPSILON)) continue;
+    const normal = {
+      x: Number(rawNormal.x || 0) / normalLength,
+      y: Number(rawNormal.y || 0) / normalLength,
+      z: Number(rawNormal.z || 0) / normalLength
+    };
+    const key = contact.manifoldClusterKey || [
+      contact.colliderId ?? contact.supportFamilyId ?? contact.terrainSource ?? 'terrain',
+      Math.round(normal.x * 20), Math.round(normal.y * 20), Math.round(normal.z * 20)
+    ].join('|');
+    if (!clusterKeys.has(key)) {
+      clusterKeys.add(key);
+      normals.push(normal);
+    }
+    if (!deepestContact || penetrationM > Number(deepestContact.penetrationM || 0)) {
+      deepestContact = contact;
+    }
+  }
+  const requestedDirection = {
+    x: Number(requested.x || 0), y: 0, z: Number(requested.z || 0)
+  };
+  const requestedMagnitude = Math.hypot(requestedDirection.x, requestedDirection.z);
+  const feasibleDirection = { ...requestedDirection };
+  // Project the requested ground-plane motion into the intersection of every
+  // active contact half-space. Unlike an averaged normal, this cannot cancel
+  // a wall against a bank or the two sides of a multi-feature contact.
+  for (let pass = 0; pass < 3; pass += 1) {
+    for (let index = 0; index < normals.length; index += 1) {
+      const normal = normals[index];
+      const horizontalLength = Math.hypot(normal.x, normal.z);
+      if (!(horizontalLength > EPSILON)) continue;
+      const nx = normal.x / horizontalLength;
+      const nz = normal.z / horizontalLength;
+      const inward = feasibleDirection.x * nx + feasibleDirection.z * nz;
+      if (inward >= 0) continue;
+      feasibleDirection.x -= inward * nx;
+      feasibleDirection.z -= inward * nz;
+    }
+  }
+  const feasibleMagnitude = Math.hypot(feasibleDirection.x, feasibleDirection.z);
+  let separatingNormal = null;
+  let bestSeparation = 0;
+  for (let index = 0; index < normals.length; index += 1) {
+    const normal = normals[index];
+    const horizontalLength = Math.hypot(normal.x, normal.z);
+    if (!(horizontalLength > EPSILON)) continue;
+    const separation = requestedDirection.x * normal.x / horizontalLength
+      + requestedDirection.z * normal.z / horizontalLength;
+    if (separation > bestSeparation) {
+      bestSeparation = separation;
+      separatingNormal = normal;
+    }
+  }
+  if (!separatingNormal && deepestContact?.normal) {
+    const normalLength = Math.hypot(
+      Number(deepestContact.normal.x || 0), Number(deepestContact.normal.y || 0),
+      Number(deepestContact.normal.z || 0)
+    );
+    if (normalLength > EPSILON) separatingNormal = {
+      x: Number(deepestContact.normal.x || 0) / normalLength,
+      y: Number(deepestContact.normal.y || 0) / normalLength,
+      z: Number(deepestContact.normal.z || 0) / normalLength
+    };
+  }
+  return {
+    normals,
+    contactCount: clusterKeys.size,
+    requestedMagnitude,
+    feasibleDirection,
+    feasibleMagnitude,
+    separatingNormal,
+    driverRequestsEscape: normals.length > 0
+      && requestedMagnitude > 0.05
+      && feasibleMagnitude > 0.05
+      && (bestSeparation > 0.03 || feasibleMagnitude >= requestedMagnitude * 0.35)
+  };
+}
+
 function hasStableResetSupport(contactPatches = {}, state = {}) {
   const points = [];
   for (const wheelId of RACE_WHEEL_IDS) {
@@ -1308,7 +1428,8 @@ function createTireAggregateScratch() {
     ordinaryCorrections: [],
     localCcdRollbacks: [],
     catastrophicRecoveries: [],
-    surfaceDiscrepancies: []
+    surfaceDiscrepancies: [],
+    collisionStuckEscape: null
   };
   for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
     const wheelId = RACE_WHEEL_IDS[wheelIndex];
@@ -1877,6 +1998,7 @@ function aggregateBodyCollisionResults(results, scratch) {
   output.localCcdRollbacks.length = 0;
   output.catastrophicRecoveries.length = 0;
   output.surfaceDiscrepancies.length = 0;
+  output.collisionStuckEscape = null;
   output.bodyNormalImpulseNs = 0;
   output.bodyFrictionImpulseNs = 0;
   output.wheelCylinderNormalImpulseNs = 0;
@@ -2199,6 +2321,7 @@ export class VehicleDynamicsRunner {
       lastPosition: clone(this.state.position),
       negligibleProgressSteps: 0,
       pendingNormal: null,
+      pendingNormals: null,
       escapeCount: 0,
       latest: null
     };
@@ -2342,8 +2465,19 @@ export class VehicleDynamicsRunner {
     const preservedTireState = copyPersistentTireState(
       nextState.tireState || this.state.tireState || {}
     );
+    const requestedOrientation = nextState.orientation || quaternionFromEuler({
+      yaw: Number(nextState.yawRad ?? nextState.carYaw ?? 0),
+      pitch: Number(nextState.pitchRad || 0),
+      roll: Number(nextState.rollRad || 0)
+    });
+    const uprightRequestedOrientation = createUprightResetOrientation(requestedOrientation);
+    const uprightRequestedEuler = eulerFromQuaternion(uprightRequestedOrientation);
     let resetState = createVehicleDynamicsState({
       ...nextState,
+      orientation: uprightRequestedOrientation,
+      yawRad: uprightRequestedEuler.yaw,
+      pitchRad: uprightRequestedEuler.pitch,
+      rollRad: uprightRequestedEuler.roll,
       velocity: { x: 0, y: 0, z: 0 },
       speedMps: 0,
       groundSpeedMps: 0,
@@ -2402,9 +2536,17 @@ export class VehicleDynamicsRunner {
       });
       const selected = Array.isArray(routeCandidate) ? routeCandidate[0] : routeCandidate;
       if (selected?.position && selected?.orientation) {
+        const selectedOrientation = createUprightResetOrientation(
+          selected.orientation, uprightRequestedOrientation
+        );
+        const selectedEuler = eulerFromQuaternion(selectedOrientation);
         resetState = createVehicleDynamicsState({
           ...resetState,
           ...selected,
+          orientation: selectedOrientation,
+          yawRad: selectedEuler.yaw,
+          pitchRad: selectedEuler.pitch,
+          rollRad: selectedEuler.roll,
           velocity: { x: 0, y: 0, z: 0 },
           angularVelocityWorld: { x: 0, y: 0, z: 0 },
           wheelAngularVelocityRadps: {},
@@ -2464,19 +2606,30 @@ export class VehicleDynamicsRunner {
       trace: []
     };
     if (rebuildContacts && !explicitlyAirborneReset) {
-      const solveCandidate = (candidate) => solveStaticVehicleSupportState({
-        state: candidate,
-        config: this.config,
-        tireContactSubsystem: this.tireContactSubsystem,
-        bodyCollision: this.bodyCollision,
-        controls: normalizeVehicleControlInput({ requestedGear }),
-        stepIndex: this.stepIndex,
-        timeSeconds: resetTimeSeconds,
-        physicsCostAccounting: this.physicsCostAccounting,
-        createEnvironment: (candidate) => (
-          this.environmentProvider(environmentRequest(candidate, true)) || environment
-        )
-      });
+      const solveCandidate = (candidate) => {
+        const solved = solveStaticVehicleSupportState({
+          state: candidate,
+          config: this.config,
+          tireContactSubsystem: this.tireContactSubsystem,
+          bodyCollision: this.bodyCollision,
+          controls: normalizeVehicleControlInput({ requestedGear }),
+          stepIndex: this.stepIndex,
+          timeSeconds: resetTimeSeconds,
+          physicsCostAccounting: this.physicsCostAccounting,
+          createEnvironment: (candidate) => (
+            this.environmentProvider(environmentRequest(candidate, true)) || environment
+          )
+        });
+        if (solved.status === 'converged'
+          && getVehicleBodyUpY(solved.state?.orientation) <= 0.1) {
+          return {
+            ...solved,
+            status: 'failed',
+            error: 'static reset support converged to an inverted body pose'
+          };
+        }
+        return solved;
+      };
       let staticSolve = solveCandidate(resetState);
       const rejectedEquilibria = [];
       if (staticSolve.status !== 'converged'
@@ -2507,9 +2660,17 @@ export class VehicleDynamicsRunner {
         const recoveredCandidates = Array.isArray(recovered) ? recovered : [recovered];
         for (const recoveredCandidate of recoveredCandidates) {
           if (!recoveredCandidate?.position || !recoveredCandidate?.orientation) continue;
+          const recoveredOrientation = createUprightResetOrientation(
+            recoveredCandidate.orientation, uprightRequestedOrientation
+          );
+          const recoveredEuler = eulerFromQuaternion(recoveredOrientation);
           const candidateState = createVehicleDynamicsState({
             ...resetState,
             ...recoveredCandidate,
+            orientation: recoveredOrientation,
+            yawRad: recoveredEuler.yaw,
+            pitchRad: recoveredEuler.pitch,
+            rollRad: recoveredEuler.roll,
             velocity: { x: 0, y: 0, z: 0 },
             angularVelocityWorld: { x: 0, y: 0, z: 0 },
             suspensionState: {}, contactPatches: {}, wheelLoadsN: {}, wheelSlip: {},
@@ -4452,9 +4613,14 @@ export class VehicleDynamicsRunner {
       substepState.position.x += Number(escapeNormal.x || 0) * 0.002;
       substepState.position.y += Number(escapeNormal.y || 0) * 0.002;
       substepState.position.z += Number(escapeNormal.z || 0) * 0.002;
-      const separated = removeVelocityIntoNormal(substepState.velocity, escapeNormal);
-      substepState.velocity = separated.velocity;
+      const activeNormals = this.collisionEscapeState.pendingNormals?.length
+        ? this.collisionEscapeState.pendingNormals : [escapeNormal];
+      for (let normalIndex = 0; normalIndex < activeNormals.length; normalIndex += 1) {
+        const separated = removeVelocityIntoNormal(substepState.velocity, activeNormals[normalIndex]);
+        substepState.velocity = separated.velocity;
+      }
       this.collisionEscapeState.pendingNormal = null;
+      this.collisionEscapeState.pendingNormals = null;
     }
     const tireSubstepDt = 1 / this.config.tireHz;
     const chassisStepDt = 1 / this.config.chassisHz;
@@ -5791,19 +5957,6 @@ export class VehicleDynamicsRunner {
       tireAggregateScratch
     );
     const escapeContacts = bodyCollisionAggregate.contacts || [];
-    let escapeNormalX = 0;
-    let escapeNormalY = 0;
-    let escapeNormalZ = 0;
-    let shallowEscapeContactCount = 0;
-    for (let contactIndex = 0; contactIndex < escapeContacts.length; contactIndex += 1) {
-      const contact = escapeContacts[contactIndex];
-      if (Number(contact.penetrationM || 0) > this.config.shallowContactPenetrationM) continue;
-      escapeNormalX += Number(contact.normal?.x || 0);
-      escapeNormalY += Number(contact.normal?.y || 0);
-      escapeNormalZ += Number(contact.normal?.z || 0);
-      shallowEscapeContactCount += 1;
-    }
-    const escapeNormalLength = Math.hypot(escapeNormalX, escapeNormalY, escapeNormalZ);
     const forwardXForEscape = Math.sin(Number(substepState.yawRad || 0));
     const forwardZForEscape = Math.cos(Number(substepState.yawRad || 0));
     const rightXForEscape = forwardZForEscape;
@@ -5815,21 +5968,27 @@ export class VehicleDynamicsRunner {
     const requestedEscapeZ = forwardZForEscape * requestedDirectionSign
       * Math.max(0, Number(controls.throttle || 0))
       + rightZForEscape * Number(controls.steering || 0);
-    const normalizedEscapeNormal = escapeNormalLength > EPSILON ? {
-      x: escapeNormalX / escapeNormalLength,
-      y: escapeNormalY / escapeNormalLength,
-      z: escapeNormalZ / escapeNormalLength
-    } : null;
-    const driverRequestsSeparation = normalizedEscapeNormal
-      && requestedEscapeX * normalizedEscapeNormal.x
-        + requestedEscapeZ * normalizedEscapeNormal.z > 0.05;
+    const escapeConstraints = escapeContacts.length > 0
+      && Math.hypot(requestedEscapeX, requestedEscapeZ) > 0.05
+      ? resolveCollisionEscapeConstraints(
+          escapeContacts,
+          { x: requestedEscapeX, z: requestedEscapeZ },
+          {
+            shallowPenetrationM: this.config.shallowContactPenetrationM,
+            moderateTerrainPenetrationM: Math.min(
+              Number(this.config.catastrophicBodyPenetrationM || 0.35) - 0.001,
+              0.18
+            ),
+            supportedWheelCount: Number(tires.supportedWheelCount || 0)
+          }
+        ) : null;
     const collisionProgressM = Math.hypot(
       Number(substepState.position.x || 0)
         - Number(this.collisionEscapeState.lastPosition?.x || 0),
       Number(substepState.position.z || 0)
         - Number(this.collisionEscapeState.lastPosition?.z || 0)
     );
-    if (shallowEscapeContactCount > 0 && driverRequestsSeparation
+    if (escapeConstraints?.contactCount > 0 && escapeConstraints.driverRequestsEscape
       && collisionProgressM < 0.002 && isFiniteVehiclePose(substepState)) {
       this.collisionEscapeState.negligibleProgressSteps += 1;
     } else {
@@ -5837,13 +5996,19 @@ export class VehicleDynamicsRunner {
     }
     if (this.collisionEscapeState.negligibleProgressSteps
         >= Math.max(2, Math.ceil(this.config.chassisHz * 0.25))) {
-      this.collisionEscapeState.pendingNormal = clone(normalizedEscapeNormal);
+      this.collisionEscapeState.pendingNormal = clone(escapeConstraints.separatingNormal);
+      this.collisionEscapeState.pendingNormals = clone(escapeConstraints.normals);
       this.collisionEscapeState.escapeCount += 1;
       this.collisionEscapeState.latest = {
         stepIndex: nextStepIndex,
-        normal: clone(normalizedEscapeNormal),
-        contactCount: shallowEscapeContactCount,
+        normal: clone(escapeConstraints.separatingNormal),
+        normals: clone(escapeConstraints.normals),
+        contactCount: escapeConstraints.contactCount,
         progressM: collisionProgressM,
+        requestedDirection: { x: requestedEscapeX, y: 0, z: requestedEscapeZ },
+        feasibleDirection: clone(escapeConstraints.feasibleDirection),
+        feasibleMagnitude: escapeConstraints.feasibleMagnitude,
+        supportedWheelCount: Number(tires.supportedWheelCount || 0),
         routeReset: false
       };
       bodyCollisionAggregate.collisionStuckEscape = this.collisionEscapeState.latest;
@@ -6581,6 +6746,7 @@ export class VehicleDynamicsRunner {
       lastPosition: clone(this.state.position),
       negligibleProgressSteps: 0,
       pendingNormal: null,
+      pendingNormals: null,
       escapeCount: 0,
       latest: null,
       ...clone(snapshot.collisionEscapeState || {})

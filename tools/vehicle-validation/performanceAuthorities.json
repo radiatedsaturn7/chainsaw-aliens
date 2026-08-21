@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "calibrationVersion": "vehicle-validation-baseline-v1",
+  "budgets": {
+    "physicsUpdateMs": { "p50": 4, "p95": 8, "p99": 16 },
+    "debugSurfaceDrawP95Ms": 4,
+    "growingBacklogAllowed": false,
+    "ordinaryDrivingRecoveryAllowed": false
+  },
+  "authorities": {
+    "desktop-reference": {
+      "status": "generated-by-required-github-workflow",
+      "modes": ["normal-gameplay", "physics-surface-debug"],
+      "artifact": "vehicle-validation-studio-sprint2-performance"
+    },
+    "target-android-phone": {
+      "status": "external-measurement-required",
+      "modes": ["normal-gameplay", "physics-surface-debug"],
+      "artifact": null,
+      "note": "GitHub CI must not claim Android authority. Import the designated phone report before declaring the mobile budget validated."
+    }
+  }
+}

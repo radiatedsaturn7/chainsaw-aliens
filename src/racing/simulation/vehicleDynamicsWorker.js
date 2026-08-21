@@ -113,7 +113,7 @@ export function createVehicleDynamicsWorkerMessageHandler({
           readVehicleResetCommand(message.buffer),
           {
             sequence: message.resetSequence,
-            reason: 'track-center-reset'
+            reason: String(message.reason || 'track-center-reset')
           }
         );
         if (!reset) throw new Error(`Unknown vehicle dynamics worker vehicle ${vehicleId}`);
@@ -127,6 +127,7 @@ export function createVehicleDynamicsWorkerMessageHandler({
           eventSequence: authority.eventSequence,
           stepIndex: reset.event?.stepIndex ?? null,
           resetGeneration: reset.resetGeneration,
+          resetReason: String(message.reason || 'track-center-reset'),
           contactRebuildStatus: reset.contactRebuildStatus,
           supportedWheelCount: reset.supportedWheelCount,
           perWheelContactValidity: reset.perWheelContactValidity,

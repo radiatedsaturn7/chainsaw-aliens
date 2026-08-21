@@ -188,6 +188,50 @@ test('persistent shallow wall contact schedules physical reverse escape without 
   assert.equal(runner.penetrationRecoveryState.history.length, 0);
 });
 
+test('wheel-supported multi-normal hill contact cannot cancel steering-away escape', () => {
+  const runner = new VehicleDynamicsRunner({
+    config: { handlingPreset: 'simulation', tireHz: 120, telemetryRetention: 'none' },
+    initialState: {
+      position: { x: 0, y: 1, z: 0 },
+      orientation: { x: 0, y: 0, z: 0, w: 1 }
+    },
+    tireContactSubsystem: { step({ state }) { return tireResultAt(state); } },
+    environmentProvider: () => ({ airDensityKgM3: 0 })
+  });
+  const contacts = [
+    { id: 'left-rocker-bank', pieceId: 'left-rocker', normal: { x: 0.6, y: 0.8, z: 0 } },
+    { id: 'front-bumper-bank', pieceId: 'front-bumper', normal: { x: -0.6, y: 0.8, z: 0 } }
+  ].map((contact, index) => ({
+    ...contact,
+    manifoldClusterKey: `outside-bank-${index}`,
+    contactType: 'body',
+    terrainSource: `terrain:outside-bank:${index}`,
+    supportFamilyId: 440,
+    supportFamilyDriveable: true,
+    supportEdgeClassification: 'smooth-connected-surface',
+    penetrationM: 0.08,
+    normalImpulseNs: 0,
+    tangentialImpulseNs: 0
+  }));
+  runner.bodyCollision = {
+    step() { return { ...collisionResult(), contacts }; },
+    samplePosePenetration() {
+      return { maximumPenetrationM: 0, invalidTerrainSampleCount: 0 };
+    }
+  };
+  for (let step = 0; step < 40; step += 1) {
+    runner.advance(1 / 120, {
+      input: { throttle: 0.4, requestedGear: -1, steering: 0.6 }
+    });
+  }
+  assert.ok(runner.collisionEscapeState.escapeCount >= 1);
+  assert.equal(runner.collisionEscapeState.latest.contactCount, 2);
+  assert.equal(runner.collisionEscapeState.latest.normals.length, 2);
+  assert.ok(runner.collisionEscapeState.latest.feasibleMagnitude > 0.05);
+  assert.equal(runner.contactStabilizationState.gameplayResetCount, 0);
+  assert.equal(runner.penetrationRecoveryState.history.length, 0);
+});
+
 test('driveable coupled correction failure discards only the current substep correction', () => {
   let collisionCalls = 0;
   const terrainContact = {

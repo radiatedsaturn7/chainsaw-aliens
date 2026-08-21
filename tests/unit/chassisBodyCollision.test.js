@@ -440,6 +440,70 @@ test('a crest beneath the vehicle center contacts the lower-chassis bottom face'
   )), true);
 });
 
+test('wheel-supported body contact on a smooth outside bank remains a kinetic scrape', () => {
+  const collision = new ChassisBodyCollision(CONFIG);
+  let latest = null;
+  for (let stepIndex = 1; stepIndex <= 6; stepIndex += 1) {
+    const working = createWorking({ heightM: 0.42, velocity: { z: 0.12 } });
+    latest = collision.step({
+      workingState: working,
+      config: CONFIG,
+      environment: {
+        collisionStepIndex: stepIndex,
+        suspensionBodyContactSupport: { supportedWheelCount: 4 },
+        sampleTerrainAtWorldPoint: (point) => ({
+          valid: true,
+          heightM: 0,
+          normal: { x: 0, y: 1, z: 0 },
+          queryPosition: point,
+          triangleId: 440,
+          source: 'terrain:outside-bank',
+          region: 'terrain',
+          supportFamilyId: 440,
+          supportFamilyDriveable: true,
+          supportEdgeClassification: 'smooth-connected-surface'
+        })
+      },
+      dt: DT,
+      advanceState: false
+    });
+    assert.ok(latest.contacts.length > 0);
+  }
+  assert.ok(latest.contacts.every((contact) => contact.suspensionSupported === true));
+  assert.ok(latest.contacts.every((contact) => contact.staticCaptureEligible === false));
+  assert.ok(latest.contacts.every((contact) => contact.frictionClassification === 'kinetic'));
+});
+
+test('static body capture requires sustained low-speed unsupported contact', () => {
+  const collision = new ChassisBodyCollision(CONFIG);
+  const eligibility = [];
+  for (let stepIndex = 1; stepIndex <= 5; stepIndex += 1) {
+    const working = createWorking({
+      heightM: 0.42, velocity: { y: -1, z: 0.1 }
+    });
+    const result = collision.step({
+      workingState: working,
+      config: CONFIG,
+      environment: {
+        collisionStepIndex: stepIndex,
+        suspensionBodyContactSupport: { supportedWheelCount: 0 },
+        sampleTerrainAtWorldPoint: (point) => ({
+          valid: true, heightM: 0, normal: { x: 0, y: 1, z: 0 },
+          queryPosition: point, triangleId: 12, source: 'static-capture-floor',
+          region: 'terrain', supportFamilyId: 12,
+          supportEdgeClassification: 'smooth-connected-surface'
+        })
+      },
+      dt: DT,
+      advanceState: false
+    });
+    assert.ok(result.contacts.length > 0);
+    eligibility.push(result.contacts.some((contact) => contact.staticCaptureEligible));
+  }
+  assert.deepEqual(eligibility.slice(0, 2), [false, false]);
+  assert.equal(eligibility.slice(2).some(Boolean), true);
+});
+
 test('a high-speed tunneling attempt is stopped within bounded penetration', () => {
   const result = simulate({
     working: createWorking({ heightM: 4, velocity: { y: -110 } }),

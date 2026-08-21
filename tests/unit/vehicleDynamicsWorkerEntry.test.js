@@ -80,6 +80,7 @@ test('worker entry initializes all active dynamics runners and accepts only pack
     type: 'resetVehicle',
     vehicleId: 'player',
     resetSequence: 6,
+    reason: 'automatic-upside-down',
     buffer: createVehicleResetCommandBuffer({
       position: { x: 3, y: 1, z: 8 },
       orientation: { w: 1 },
@@ -89,7 +90,9 @@ test('worker entry initializes all active dynamics runners and accepts only pack
   assert.equal(resets.length, 1);
   assert.equal(resets[0].state.position.x, 3);
   assert.equal(resets[0].metadata.sequence, 6);
+  assert.equal(resets[0].metadata.reason, 'automatic-upside-down');
   assert.equal(messages.at(-1).message.type, 'resetApplied');
   assert.equal(messages.at(-1).message.resetGeneration, 6);
+  assert.equal(messages.at(-1).message.resetReason, 'automatic-upside-down');
   assert.equal(messages.at(-1).message.buffer instanceof ArrayBuffer, true);
 });
