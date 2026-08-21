@@ -1741,9 +1741,22 @@ export class ChassisBodyCollision {
       contact.restitutionImpulseNs = 0;
       contact.penetrationBiasImpulseNs = 0;
       contact.restitutionTargetSpeedMps = 0;
-      contact.suspensionSupported = Number(
+      const supportedWheelCount = Number(
         environment.suspensionBodyContactSupport?.supportedWheelCount || 0
-      ) > 0 && /lower|frame|underbody|underside|rocker/.test(candidate.id);
+      );
+      const lowerBodyContact = /lower|frame|underbody|underside|rocker/.test(
+        `${candidate.id || ''} ${candidate.pieceId || ''}`
+      );
+      const smoothWheelSupportedTerrain = supportedWheelCount > 0
+        && contact.supportEdgeClassification === 'smooth-connected-surface'
+        && Number(contact.normal.y || 0) > 0.35
+        && contactType === 'body';
+      // A body piece briefly touching the same smooth support surface as a
+      // loaded tire is a scrape, even when that piece happens to be named
+      // bumper rather than underfloor. Allowing it to enter static capture can
+      // weld an otherwise supported car to an outside bank after a slide.
+      contact.suspensionSupported = supportedWheelCount > 0
+        && (lowerBodyContact || smoothWheelSupportedTerrain);
       contactCount += 1;
     }
     contacts.length = contactCount;

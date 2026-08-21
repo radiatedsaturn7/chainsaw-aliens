@@ -15,15 +15,28 @@ const fullScenarios = [
   'airborne motion and landing', 'reverse driving', 'render hitch recovery',
   'collision impulse', 'rollover', 'countersteer recovery'
 ];
-const specs = mode === 'smoke'
+const allSpecs = mode === 'smoke'
   ? smokeScenarios.map((name) => ({ file: 'tests/heavy/vehicleDynamicsSmoke.test.js', name: `replay smoke: ${name}` }))
   : fullScenarios.flatMap((name) => ['full determinism', 'full replay'].map((kind) => ({
       file: 'tests/heavy/vehicleDynamicsDeterminism.full.test.js', name: `${kind}: ${name}`
     })));
 
+const shardTotal = Math.max(1, Math.trunc(Number(
+  process.env.VEHICLE_DYNAMICS_SHARD_TOTAL || 1
+)));
+const shardIndex = Math.trunc(Number(process.env.VEHICLE_DYNAMICS_SHARD_INDEX || 0));
+if (shardIndex < 0 || shardIndex >= shardTotal) {
+  throw new Error(`Invalid vehicle dynamics shard ${shardIndex}/${shardTotal}`);
+}
+const specs = allSpecs.filter((_spec, index) => index % shardTotal === shardIndex);
+
 if (!['smoke', 'full'].includes(mode)) throw new Error(`Unknown vehicle dynamics test mode: ${mode}`);
 if (mode === 'full' && process.env.GITHUB_ACTIONS !== 'true') {
   throw new Error('The full vehicle dynamics matrix is restricted to GitHub Actions.');
+}
+
+if (mode === 'full') {
+  console.log(`Vehicle dynamics full shard ${shardIndex + 1}/${shardTotal}: ${specs.length} exact tests`);
 }
 
 for (const spec of specs) {

@@ -181,7 +181,8 @@ export class VehicleDynamicsWorkerClient {
     }, [buffer]);
   }
 
-  submitReset(buffer, resetSequence, vehicleId = 'player', provisionalSnapshot = null) {
+  submitReset(buffer, resetSequence, vehicleId = 'player', provisionalSnapshot = null,
+    reason = 'track-center-reset') {
     if (this.closed) return;
     if (!(buffer instanceof ArrayBuffer)) {
       throw new TypeError('Worker reset must be a compact transferable ArrayBuffer');
@@ -206,6 +207,7 @@ export class VehicleDynamicsWorkerClient {
       type: 'resetVehicle',
       vehicleId: id,
       resetSequence: Number(resetSequence) >>> 0,
+      reason: String(reason || 'track-center-reset'),
       buffer
     }, [buffer]);
   }
@@ -335,6 +337,7 @@ export class VehicleDynamicsWorkerClient {
         );
         this.latestResetAcknowledgementByVehicle.set(vehicleId, {
           resetGeneration: Number(message.resetGeneration || resetSnapshot.resetGeneration || 0),
+          resetReason: String(message.resetReason || 'track-center-reset'),
           contactRebuildStatus: message.contactRebuildStatus || null,
           supportedWheelCount: Number(message.supportedWheelCount || 0),
           perWheelContactValidity: message.perWheelContactValidity || {},

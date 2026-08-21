@@ -8,7 +8,10 @@ import { RaceSurfaceModel } from '../../src/racing/RaceSurfaceModel.js';
 import { subtractRaceTerrainPolygonByConvexPolygon } from '../../src/racing/RaceTerrainClipping.js';
 import { getRaceWheelSurfaceState as getRaceWheelSurfaceStateModule } from '../../src/racing/RaceVehicleSurfaceContact.js';
 import { cloneRaceVehiclePhysicsState, createRaceVehiclePhysicsState, getRaceNormalizedRideHeightM, getRaceNormalizedSuspensionTravelM, getRaceTireLoadSensitivityMultiplierForLoose, getRaceVehicleSuspensionRates, getRaceVehicleTireLoadSensitivityMultiplier, stepRaceVehiclePhysics, syncRaceVehiclePhysicsToSession } from '../../src/racing/RaceVehiclePhysics.js';
-import { quaternionFromEuler } from '../../src/racing/simulation/RigidBodyMath.js';
+import {
+  quaternionFromEuler,
+  rotateVectorByQuaternion
+} from '../../src/racing/simulation/RigidBodyMath.js';
 import RaceEditor from '../../src/ui/RaceEditor.js';
 import { getLandscapeHandheldLayout, getPortraitHandheldLayout } from '../../src/ui/shared/canvasViewportLayout.js';
 import { listProjectFiles, loadProjectFile, resetProjectFilesForTests, saveProjectFile } from '../../src/ui/projectFiles.js';
@@ -5002,6 +5005,13 @@ test('Car Editor fixed-rear camera chase origin is the physical rear axle withou
       z: 40,
       elapsedMs: 1000,
       resetKey: 7
+    },
+    vehicleRenderState: {
+      orientation: quaternionFromEuler({ yaw: Math.PI / 2, pitch: 0, roll: 0 }),
+      wheels: {
+        rl: { hubPositionBody: { x: -0.78, y: -0.2, z: -1.5486 } },
+        rr: { hubPositionBody: { x: 0.78, y: -0.2, z: -1.5486 } }
+      }
     }
   };
 
@@ -5013,7 +5023,7 @@ test('Car Editor fixed-rear camera chase origin is the physical rear axle withou
     routeCamera: { x: 10, z: 20 }
   });
 
-  assert.ok(Math.abs(anchor.x - 8.65) < 0.000001);
+  assert.ok(Math.abs(anchor.x - (10 - 1.5486)) < 0.000001);
   assert.ok(Math.abs(anchor.z - 20) < 0.000001);
   assert.equal(anchor.anchorType, 'rear-axle');
   assert.equal(anchor.snapped, true);
@@ -5021,6 +5031,23 @@ test('Car Editor fixed-rear camera chase origin is the physical rear axle withou
   assert.equal(anchor.forwardOffsetM, 0);
   assert.equal(session.thirdPersonCameraAnchor.x, anchor.x);
   assert.equal(session.thirdPersonCameraAnchor.z, anchor.z);
+
+  session.pitchRad = 0.28;
+  session.vehicleRenderState.orientation = quaternionFromEuler({
+    yaw: Math.PI / 2, pitch: 0.28, roll: -0.16
+  });
+  session.vehicleRenderState.wheels.rl.hubPositionBody.z = -1.49;
+  session.vehicleRenderState.wheels.rr.hubPositionBody.z = -1.61;
+  session.elapsedMs += 16;
+  const nextAnchor = editor.getRaceThirdPersonCameraAnchor(session, {
+    carWorldX: 10,
+    carWorldZ: 20,
+    cameraYaw: Math.PI / 2,
+    cameraView: 'third-person',
+    routeCamera: { x: 10, z: 20 }
+  });
+  assert.equal(nextAnchor.x, anchor.x);
+  assert.equal(nextAnchor.z, anchor.z);
 });
 
 test('Race and Car gamepad mode helpers match the shared desktop versus mobile contract', () => {
@@ -23524,40 +23551,46 @@ test('Race Three renderer preserves authoritative quaternion pitch convention', 
   assert.equal(editor.getRaceGeometricVehiclePitch(-0.18), 0.18);
 });
 
-test('Race wheel visuals use authoritative hubs while drifting and inverted', () => {
+test('Race wheel visuals use the same canonical snapshot as the body', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   editor.startPlaytest('starter-rwd');
-  const state = editor.playtestSession.vehicle3d;
-  state.position.y = 5;
-  state.pitch = 0.4;
-  state.roll = Math.PI;
-  Object.entries(state.wheels).forEach(([wheelId, wheel], index) => {
-    wheel.inContact = true;
-    wheel.normal = { x: 1, y: 0, z: 0 };
-    wheel.contactPoint = {
-      x: -2,
-      y: 0.1,
-      z: index
-    };
+  const session = editor.playtestSession;
+  const canonical = session.vehicleRenderState = {
+    position: { x: 8, y: 5, z: 18 },
+    resetGeneration: 7,
+    wheelPoses: Object.fromEntries(['fl', 'fr', 'rl', 'rr'].map((wheelId) => [
+      wheelId, { position: { x: 0, y: 0, z: 0 } }
+    ]))
+  };
+  Object.entries(canonical.wheelPoses).forEach(([wheelId, wheel], index) => {
+    wheel.loadBearing = index !== 2;
+    wheel.inContact = index !== 2;
     wheel.position = {
       x: 10 + index,
       y: 4 - index * 0.2,
       z: 20 + index
     };
+    // A delayed compatibility update must not pull the tire away from its body.
+    session.vehicle3d.wheels[wheelId] = {
+      ...session.vehicle3d.wheels[wheelId],
+      position: { x: -100 - index, y: -50, z: -100 - index },
+      inContact: false
+    };
   });
 
   const visuals = editor.getRaceWheelVisualCenterPositions({
-    session: editor.playtestSession,
+    session,
     car: editor.selectedCar
   });
   Object.entries(visuals).forEach(([wheelId, visual]) => {
-    const hub = state.wheels[wheelId].position;
+    const hub = canonical.wheelPoses[wheelId].position;
     assert.deepEqual(visual, {
       x: hub.x,
       z: hub.z,
       elevation: hub.y / 12,
-      physicalContact: true,
-      authoritativeHub: true
+      physicalContact: canonical.wheelPoses[wheelId].loadBearing === true,
+      authoritativeHub: true,
+      resetGeneration: 7
     });
   });
 });
@@ -23797,7 +23830,7 @@ test('Race body-only car art overlays body when Three already drew default wheel
   assert.equal(billboardOptions[0].drawShadowLayer, false);
 });
 
-test('Race override body art stays upright and flat on the physical rear-axle anchor', () => {
+test('Race override body art rolls with the canonical chassis around the rear-axle anchor', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   editor.startPlaytest('starter-rwd');
   editor.selectedCar.dimensions = {
@@ -23816,6 +23849,11 @@ test('Race override body art stays upright and flat on the physical rear-axle an
   editor.playtestSession.bodyX = 2;
   editor.playtestSession.bodyZ = 8;
   editor.playtestSession.carYaw = 0;
+  editor.playtestSession.rollRad = 0.3;
+  editor.playtestSession.vehicleRenderState ||= {};
+  editor.playtestSession.vehicleRenderState.orientation = quaternionFromEuler({
+    yaw: 0, pitch: 0, roll: 0.3
+  });
   editor.lastRaceRenderStats = { threeProceduralCar: 1 };
   editor.lastRaceRenderCamera = {
     camera: { x: 2, z: -8, elevation: 1, roadElevation: 0.1, horizonY: 80, scale: 1, nearPlane: 0.1 },
@@ -23831,8 +23869,8 @@ test('Race override body art stays upright and flat on the physical rear-axle an
   editor.getRaceCarProjectedArtRef = () => ({ artRef: 'wrx-body-art', frameIndex: 0 });
   editor.projectRaceWorldPointToCamera = (point) => ({
     visible: true,
-    screenX: 100 + Number(point.z || 0) * 4,
-    screenY: 90 + Number(point.z || 0) * 2,
+    screenX: 100 + Number(point.z || 0) * 4 + (Number(point.x || 0) - 2) * 4,
+    screenY: 90 + Number(point.z || 0) * 2 - Number(point.elevation || 0) * 12,
     cameraZ: Number(point.z || 0) + 12,
     renderZ: Number(point.z || 0) + 12,
     elevation: Number(point.elevation || 0)
@@ -23846,11 +23884,14 @@ test('Race override body art stays upright and flat on the physical rear-axle an
   editor.drawRaceThirdPersonCar(createMockContext(), { x: 0, y: 0, w: 240, h: 160 });
 
   assert.ok(billboardOptions);
-  const rearZ = 8 - 2.7 * 0.5;
-  assert.equal(billboardOptions.centerX, 100 + 8 * 4);
-  assert.equal(billboardOptions.bodyAnchorX, 100 + rearZ * 4);
-  assert.equal(billboardOptions.bodyAnchorY, 90 + rearZ * 2);
+  assert.equal(Number.isFinite(billboardOptions.bodyAnchorX), true);
+  assert.equal(Number.isFinite(billboardOptions.bodyAnchorY), true);
+  assert.ok(Math.abs(billboardOptions.bodyRotationRad) > 0.05);
   assert.equal(editor.lastRaceRenderStats.thirdPersonCarArtAnchor, 'rear-axle');
+  assert.notEqual(
+    editor.lastRaceRenderStats.thirdPersonCarArtAnchorPhysicalSource,
+    'wheelbase-midpoint-fallback'
+  );
   assert.ok(editor.lastRaceRenderStats.thirdPersonCarArtAnchorScreenErrorPx < 0.000001);
   assert.ok(editor.lastRaceRenderStats.thirdPersonCarArtAnchorDistanceErrorM < 0.000001);
 
@@ -23866,6 +23907,7 @@ test('Race override body art stays upright and flat on the physical rear-axle an
     bodyAnchorY: billboardOptions.bodyAnchorY,
     baseWidth: 80,
     baseHeight: 48,
+    bodyRotationRad: billboardOptions.bodyRotationRad,
     artChoice: { artRef: 'wrx-body-art', frameIndex: 0 },
     drawWheels: false,
     drawShadowLayer: false
@@ -23873,8 +23915,10 @@ test('Race override body art stays upright and flat on the physical rear-axle an
 
   const bodyCall = ctx.calls.find((call) => call.type === 'drawImage');
   assert.ok(bodyCall);
-  assert.equal(Math.round(Number(bodyCall.args[1])), Math.round(Number(billboardOptions.bodyAnchorX) - 40));
-  assert.equal(ctx.calls.some((call) => call.type === 'rotate'), false);
+  assert.equal(Math.round(Number(bodyCall.args[1])), -40);
+  const bodyRotationCall = ctx.calls.find((call) => call.type === 'rotate');
+  assert.ok(bodyRotationCall);
+  assert.ok(Math.abs(bodyRotationCall.angle - billboardOptions.bodyRotationRad) < 0.000001);
 });
 
 test('Race player third-person car draws geometric debug overlay when enabled', () => {
@@ -24038,6 +24082,60 @@ test('Race rear-axle body anchor follows authored wheelbase, yaw, and chassis pi
   assert.ok(Math.abs(pitched.elevation - (1 - 1.35 * Math.sin(0.2) / 12)) < 0.000001);
 });
 
+test('Race WRX2 body override anchors to canonical asymmetric rear axle geometry', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const orientation = quaternionFromEuler({ yaw: Math.PI / 2, pitch: 0.2, roll: 0.3 });
+  const renderState = {
+    position: { x: 10, y: 12, z: 20 },
+    orientation,
+    wheels: {
+      rl: { hubPositionBody: { x: -0.785, y: -0.2, z: -1.5486 } },
+      rr: { hubPositionBody: { x: 0.785, y: -0.2, z: -1.5486 } }
+    }
+  };
+  const car = {
+    dimensions: { widthM: 1.83, lengthM: 4.67, wheelbaseM: 2.67 },
+    tuning: {
+      frontWeightDistribution: 0.58,
+      physics: { bodyProfile: { rearAxleDistanceFromCgM: 1.5486 } }
+    }
+  };
+  const pose = {
+    x: renderState.position.x,
+    z: renderState.position.z,
+    elevation: renderState.position.y / 12,
+    yaw: Math.PI / 2,
+    pitchRad: 0.2,
+    rollRad: 0.3
+  };
+  const anchor = editor.getRaceCarRearAxleBodyAnchor(pose, car, { renderState });
+  const rotated = rotateVectorByQuaternion({ x: 0, y: 0, z: -1.5486 }, orientation);
+
+  assert.ok(Math.abs(anchor.x - (pose.x + rotated.x)) < 0.000001);
+  assert.ok(Math.abs(anchor.z - (pose.z + rotated.z)) < 0.000001);
+  assert.ok(Math.abs(anchor.elevation - (pose.elevation + rotated.y / 12)) < 0.000001);
+  assert.equal(anchor.longitudinalOffsetM, -1.5486);
+  assert.equal(anchor.physicalSource, 'body-profile');
+  assert.notEqual(anchor.longitudinalOffsetM, -car.dimensions.wheelbaseM * 0.5);
+
+  renderState.wheels.rl.hubPositionBody.z = -1.49;
+  renderState.wheels.rr.hubPositionBody.z = -1.61;
+  const stableAnchor = editor.getRaceCarRearAxleBodyAnchor(pose, car, { renderState });
+  assert.equal(stableAnchor.x, anchor.x);
+  assert.equal(stableAnchor.z, anchor.z);
+  assert.equal(stableAnchor.elevation, anchor.elevation);
+
+  const profileFallback = editor.getRaceCarRearAxleBodyAnchor(pose, car);
+  assert.equal(profileFallback.longitudinalOffsetM, -1.5486);
+  assert.equal(profileFallback.physicalSource, 'body-profile');
+
+  const canonicalFallback = editor.getRaceCarRearAxleBodyAnchor(pose, {
+    dimensions: car.dimensions
+  }, { renderState });
+  assert.equal(canonicalFallback.longitudinalOffsetM, -1.55);
+  assert.equal(canonicalFallback.physicalSource, 'vehicle-render-state');
+});
+
 test('Race brake lights and add-ons share the rear body anchor while wheel and shadow anchors stay centered', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   const ctx = createMockContext();
@@ -24077,9 +24175,9 @@ test('Race brake lights and add-ons share the rear body anchor while wheel and s
   const imageCalls = Object.fromEntries(ctx.calls
     .filter((call) => call.type === 'drawImage')
     .map((call) => [call.args[0]?.artRef, call]));
-  assert.equal(imageCalls['scaled:body-art'].args[1] + imageCalls['scaled:body-art'].args[3] * 0.5, 70);
-  assert.equal(imageCalls['scaled:addon-art'].args[1] + imageCalls['scaled:addon-art'].args[3] * 0.5, 70);
-  assert.equal(imageCalls['scaled:brake-art'].args[1] + imageCalls['scaled:brake-art'].args[3] * 0.5, 70);
+  assert.equal(imageCalls['scaled:body-art'].args[1] + imageCalls['scaled:body-art'].args[3] * 0.5, 0);
+  assert.equal(imageCalls['scaled:addon-art'].args[1] + imageCalls['scaled:addon-art'].args[3] * 0.5, 0);
+  assert.equal(imageCalls['scaled:brake-art'].args[1] + imageCalls['scaled:brake-art'].args[3] * 0.5, 0);
 });
 
 test('Race player third-person geometric overlay draws when Three procedural car already rendered', () => {
@@ -24135,10 +24233,16 @@ test('Race player third-person geometric overlay draws when Three procedural car
 test('Race tire art override follows projected physics wheel centers', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   editor.startPlaytest('starter-rwd');
-  editor.selectedCar.art = {
-    ...(editor.selectedCar.art || {}),
+  const renderCar = editor.getRaceSessionCar(editor.playtestSession);
+  renderCar.art = {
+    ...(renderCar.art || {}),
     body: 'wrx-body-art',
     tireTreads: { tarmac: { artRef: 'wrx-tire-art', frameIndex: 0 } }
+  };
+  renderCar.setup = {
+    ...(renderCar.setup || {}),
+    defaultTireCompound: 'tarmac',
+    tireCompoundByWheel: { fl: 'tarmac', fr: 'tarmac', rl: 'tarmac', rr: 'tarmac' }
   };
   editor.playtestSession.worldX = 2;
   editor.playtestSession.worldZ = 8;
@@ -24160,6 +24264,7 @@ test('Race tire art override follows projected physics wheel centers', () => {
   });
   editor.getRaceThirdPersonCarAnchorY = () => 112;
   editor.getRaceThirdPersonCarWidth = () => 80;
+  editor.isCarGeometricOverlayEnabled = () => false;
   editor.getRaceWheelVisualCenterPositions = () => ({
     fl: { x: 1.2, z: 8.8, elevation: 0.1 },
     fr: { x: 2.8, z: 8.8, elevation: 0.1 },
@@ -24269,6 +24374,174 @@ test('Race fixed-rear 2D tire rig locks wheel X to body and preserves physical Y
     enabled: true
   });
   assert.equal(manualLook, physical);
+});
+
+test('Race fixed-rear tire override rotates all wheel centers with the body rig', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const car = {
+    camera: { trackingMode: 'fixed-rear' },
+    dimensions: { widthM: 2, wheelbaseM: 2.7, trackFrontM: 1.6, trackRearM: 1.4 }
+  };
+  const bodyAnchorX = 100;
+  const bodyAnchorY = 80;
+  const bodyRotationRad = Math.PI / 2;
+  const localCenters = {
+    fl: { x: -52, y: -9 }, fr: { x: 51, y: -4 },
+    rl: { x: -38, y: 24 }, rr: { x: 39, y: 31 }
+  };
+  const physical = Object.fromEntries(Object.entries(localCenters).map(([wheelId, local]) => [
+    wheelId,
+    {
+      x: bodyAnchorX - local.y,
+      y: bodyAnchorY + local.x,
+      width: 10,
+      height: 20,
+      sizeValid: true
+    }
+  ]));
+
+  const rotated = editor.getRaceFixedRear2DWheelBillboards({
+    car,
+    wheelBillboards: physical,
+    bodyAnchorX,
+    bodyAnchorY,
+    bodyBaseWidth: 100,
+    bodyBaseHeight: 74,
+    bodyRotationRad,
+    session: { vehicleRenderState: { resetGeneration: 1 } }
+  });
+
+  assert.deepEqual(
+    ['fl', 'fr', 'rl', 'rr'].map((id) => Math.round(rotated[id].x)),
+    [109, 104, 76, 69]
+  );
+  assert.deepEqual(
+    ['fl', 'fr', 'rl', 'rr'].map((id) => Math.round(rotated[id].y)),
+    [40, 120, 45, 115]
+  );
+  assert.equal(Object.values(rotated).every((wheel) => (
+    wheel.bodyRotationRad === bodyRotationRad
+      && Number.isFinite(wheel.bodyRigLocalX)
+      && Number.isFinite(wheel.bodyRigLocalY)
+  )), true);
+});
+
+test('Race tire override artwork uses the same rotation as the body', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const bodyRotationRad = Math.PI * 0.75;
+  const car = {
+    setup: { defaultTireCompound: 'tarmac' },
+    art: {
+      tireTreads: { tarmac: { artRef: 'tire-art', frameIndex: 0 } },
+      layerVisibility: {
+        body: false, frontWheels: true, rearWheels: true, brakes: false, shadow: false
+      }
+    }
+  };
+  editor.getRaceArtSpriteCanvas = () => ({ width: 16, height: 32 });
+  editor.getRaceCarBillboardLayerCanvas = (canvas) => canvas;
+  editor.drawScrolledCarTireArt = () => true;
+  const ctx = createMockContext();
+  const rotations = [];
+  ctx.rotate = (angle) => rotations.push(angle);
+
+  editor.drawRaceCarBillboardLayers(ctx, {
+    car,
+    bodyAnchorX: 100,
+    bodyAnchorY: 80,
+    bodyRotationRad,
+    drawShadowLayer: false,
+    wheelBillboards: Object.fromEntries(['fl', 'fr', 'rl', 'rr'].map((wheelId, index) => [
+      wheelId,
+      { x: 60 + index * 25, y: 90, width: 10, height: 20, cameraZ: index }
+    ]))
+  });
+
+  assert.deepEqual(rotations, [bodyRotationRad, bodyRotationRad, bodyRotationRad, bodyRotationRad]);
+});
+
+test('Race fixed-rear tire overlays retain four coherent wheels through projection gaps', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const car = {
+    camera: { trackingMode: 'fixed-rear' },
+    dimensions: {
+      widthM: 2,
+      wheelbaseM: 2.7,
+      trackFrontM: 1.6,
+      trackRearM: 1.4
+    }
+  };
+  const session = { vehicleRenderState: { resetGeneration: 3 } };
+  const complete = {
+    fl: { x: 60, y: 70, width: 10, height: 20, cameraZ: 8, sizeValid: true },
+    fr: { x: 140, y: 72, width: 10, height: 20, cameraZ: 8, sizeValid: true },
+    rl: { x: 65, y: 103, width: 11, height: 22, cameraZ: 7, sizeValid: true },
+    rr: { x: 135, y: 111, width: 11, height: 22, cameraZ: 7, sizeValid: true }
+  };
+  editor.getRaceFixedRear2DWheelBillboards({
+    car,
+    wheelBillboards: complete,
+    bodyAnchorX: 100,
+    bodyAnchorY: 80,
+    bodyBaseWidth: 100,
+    bodyBaseHeight: 74,
+    session
+  });
+
+  const partial = { ...complete };
+  delete partial.rr;
+  partial.fl = { ...partial.fl, width: null, height: null, sizeValid: false };
+  const retained = editor.getRaceFixedRear2DWheelBillboards({
+    car,
+    wheelBillboards: partial,
+    bodyAnchorX: 110,
+    bodyAnchorY: 85,
+    bodyBaseWidth: 100,
+    bodyBaseHeight: 74,
+    session
+  });
+
+  assert.deepEqual(Object.keys(retained), ['fl', 'fr', 'rl', 'rr']);
+  assert.equal(retained.rr.x, 145);
+  assert.equal(retained.rr.y, 116);
+  assert.equal(retained.rr.width, 11);
+  assert.equal(retained.rr.height, 22);
+  assert.equal(retained.rr.presentationRetained, true);
+  assert.equal(retained.fl.width, 10);
+  assert.equal(retained.fl.height, 20);
+  assert.equal(retained.fl.presentationRetained, true);
+  assert.equal(editor.lastRaceRenderStats.fixedRear2DWheelRetainedCount, 2);
+
+  session.vehicleRenderState.resetGeneration = 4;
+  const afterReset = editor.getRaceFixedRear2DWheelBillboards({
+    car,
+    wheelBillboards: null,
+    bodyAnchorX: 110,
+    bodyAnchorY: 85,
+    bodyBaseWidth: 100,
+    bodyBaseHeight: 74,
+    session
+  });
+  assert.equal(Object.values(afterReset).every((wheel) => wheel.presentationRetained), true);
+  assert.notEqual(afterReset.rr.width, retained.rr.width);
+  assert.equal(session.fixedRear2DWheelBillboardCache.resetGeneration, 4);
+
+  const centers = Object.fromEntries(['fl', 'fr', 'rl', 'rr'].map((wheelId, index) => [
+    wheelId,
+    { x: index, z: 4 + index, elevation: 0 }
+  ]));
+  const projected = editor.getRaceProjectedPhysicalWheelBillboards({
+    car,
+    wheelCenters: centers,
+    projectPoint: (point) => ({
+      visible: Number(point.elevation || 0) <= 0.02,
+      screenX: Number(point.x || 0) * 10,
+      screenY: 100 - Number(point.elevation || 0) * 100,
+      cameraZ: Number(point.z || 0)
+    })
+  });
+  assert.deepEqual(Object.keys(projected), ['fl', 'fr', 'rl', 'rr']);
+  assert.equal(Object.values(projected).every((wheel) => wheel.sizeValid), true);
 });
 
 test('Race physical tire billboard anchors receive saved offsets exactly once', () => {

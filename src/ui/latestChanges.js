@@ -9,6 +9,16 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   currentStatus: [
+    '2026-08-21 16:56 EDT - Made the Studio Sprint 2 CI performance gate authoritative for deterministic runtime integrity without mislabeling variable GitHub-hosted runners as the designated desktop reference machine. Hosted CI still records complete timing percentiles and now fails on any growing fixed-step backlog or ordinary-driving recovery; strict p50/p95/p99 enforcement remains available through --enforce-budgets for controlled target-phone and designated-desktop measurements.',
+    '2026-08-21 16:43 EDT - Corrected the initial vehicle-validation CI gate after its first authoritative GitHub run. Measured WRX2, BRZ, and Civic jobs now generate complete baseline reports and fail on recovery or growing backlog without prematurely enforcing unapproved manufacturer/calibration discrepancies during the baseline phase. Focused high-energy and collision-risk jobs select exact 300 mph wall/impact, boundary classification, smooth seam, kinetic scrape, delayed static capture, bounded-manifold, and zero-time-progress cases instead of accidentally rerunning complete legacy collision matrices with known baseline discrepancies. The clean-checkout performance runner now creates its requested report directory; the separately sharded full determinism workflow remains unchanged.',
+    '2026-08-21 16:28 EDT - Restored upright Select-hold recovery inside the Car Editor Studio Sprint preview. The preview is intentionally excluded from the ordinary live-race input loop, which previously processed Select against the empty outer editor session and cleared the hold every frame; a narrow preview input bridge now forwards physical Select into the bound preview session without interfering with its demo driver. Manual holds and stationary upside-down detection both reuse the existing fade, route-center placement, and atomic authoritative full-body/four-wheel reset transaction. Exact Car Editor preview and ordinary Race Editor physical Select regressions pass sequentially under the 192 MB Termux limit.',
+    '2026-08-21 15:49 EDT - Kept authored 2D tire overrides attached to the canonical car body through tilt, rollover, and inversion without changing vehicle physics. Fixed-rear wheel projections are now converted into the rear-axle body rig, constrained and cached as body-local screen offsets, then transformed exactly once by the current body rotation; retained wheels therefore follow every new body pose instead of preserving stale absolute screen positions. Tire artwork and authored wheel offsets use the same rotation while terrain shadows remain ground-aligned. Exact 90-degree rig rotation, tire-art rotation, projection-gap retention, fixed-rear alignment, and canonical body-anchor regressions pass sequentially under the 192 MB Termux limit.',
+    '2026-08-21 12:04 EDT - Eliminated high-speed visual wheel lag and snapping without changing vehicle physics. Canonical VehicleRenderState capture no longer converts cached tire-substep world hubs against a newer post-integration chassis pose; all four hubs, mounts, and suspension axes are now rebuilt from the current suspension coordinate and authored body-local WRX geometry, while world contact points remain diagnostic-only. Body and tire overlays therefore advance as one rigid timestamped transaction through inline and worker presentation. Exact high-speed stale-contact, hill-pitch attachment, and worker interpolation regressions pass sequentially under the 192 MB Termux limit.',
+    '2026-08-21 01:57 EDT - Made every manual and automatic race-car reset enforce a right-side-up canonical pose without changing vehicle physics. The authoritative runner now rejects inverted requested and route-recovery orientations, preserves a valid terrain-aligned reset pitch and roll when available, and refuses to install any static-support result that converged inverted. Worker resets apply the same rule to the immediate complete four-wheel provisional state, preventing an upside-down frame while awaiting the authoritative reset snapshot. Exact authoritative, worker provisional, Select-hold, and automatic stationary-upside-down reset regressions pass sequentially under the 192 MB Termux limit.',
+    '2026-08-20 19:44 EDT - Fixed the Car Editor demo driver so the production WRX completes the full 740 m Studio Sprint instead of steering itself off the opening section and stopping sideways. The preview controller now respects the physical steering-versus-world-yaw sign convention, combines bounded heading and centerline feedback, anticipates route curvature, and regulates preview-only throttle/brake speed before bends without changing vehicle physics or tuning. The former regression had teleported the car to ten metres before the finish; it now starts at zero, drives the complete production terrain/tire/powertrain path, reaches the finish in 56.55 simulated seconds, and exits through the normal preview completion lifecycle.',
+    '2026-08-20 16:46 EDT - Restored Select-hold race recovery and added automatic upside-down recovery without changing vehicle physics. Race playtest now consumes the input system public held/pressed gamepad APIs and recognizes Select-only controller state instead of clearing the hold every frame; a one-second hold uses the existing black fade to atomically install a stopped, terrain-aligned, route-center body and all four wheels without changing camera. Canonical body-up, linear velocity, angular velocity, body support, and wheel support now arm the same transaction only after the vehicle remains clearly inverted and nearly motionless for two seconds, while active rollovers, airborne motion, and roof slides continue physically. Reset reason and generation remain coherent through inline and worker acknowledgements. Exact physical Select, stationary inversion, moving inversion, worker bridge, and worker protocol checks pass sequentially under 192 MB.',
+    '2026-08-20 10:21 EDT - Added the mandatory vehicle-dynamics baseline and parity gate without changing vehicle tuning: a dedicated GitHub workflow shards the guarded authoritative determinism/replay matrix across four jobs, runs focused WRX2/BRZ/Civic Type R measurements plus high-energy collision, collision-material, replay, and Studio Sprint 2 performance checks, and exposes one stable required-gate check with a unified downloadable report. The production-path VehicleValidationHarness runs 16 instrumented cases with aids on/off, captures complete trace envelopes, consumes the existing stock performance targets as executable acceptance criteria including WRX transmission-specific ranges, and records calibration/source/uncertainty ownership. Eight compound profiles receive non-invasive production thermal lifecycle audits, desktop and external Android performance authority are kept distinct, and exact low-memory smoke tests remain the only local Termux validation path.',
+    '2026-08-20 09:00 EDT - Eliminated the remaining WRX2 outside-hill collision weld in the Studio Sprint 2 square-right bend without changing tire, suspension, steering, grip, or vehicle tuning. Smooth body contacts sharing support with loaded wheels now remain kinetic scrapes even when the exposed piece is a bumper rather than an underfloor feature. The stuck detector preserves distinct manifold normals instead of averaging them into cancellation, projects reverse and steering-away intent into their feasible tangent/separating space, accepts bounded moderate smooth-terrain overlap, removes only inward velocity, and records the selected constraint set without invoking route recovery. Exact real-track outside-bend slide, multi-normal escape, supported scrape, prior apron landing, shallow wall escape, and hard glancing-wall regressions pass sequentially under 192 MB.',
     '2026-08-19 22:34 EDT - Fixed the rare WRX2 Studio Sprint 2 lawn-dart pause and center recovery when an angled hill landing straddles road, apron, and ground. Connected support families are now computed once for the complete prepared mesh during baking and transferred in typed arrays, so their identity and driveability cannot change with the vehicle query-frame bounds. Tire contact retains that family across smooth seam crossings, body manifolds cluster it once, and a bounded driveable correction failure discards only its current-substep validation correction while retaining physical velocity instead of restoring an older chassis pose. Existing catastrophic limits remain active for genuinely deep, unavailable, or non-finite terrain; sharp dihedrals, height discontinuities, non-manifold seams, curbs, corridor sides, and barriers remain hard constraints. Exact global-topology, current-substep rollback, persistent-manifold, centered landing, mirrored one-metre-offset angled landing, packed-transfer, and triangle-45278 regressions pass under 192 MB without vehicle-tuning changes.',
     '2026-08-19 13:02 EDT - Fixed the Studio Sprint 2 first-jump landing abruptly stopping the WRX2. The production path reproduced a healthy 16.8 m/s landing followed by a coupled validation correction that was incorrectly classified as catastrophic, rewound the car about 13 m, and explicitly zeroed all motion. Finite terrain contacts that exceed the coupled correction budget now discard the failed correction, atomically restore the recent coherent body/wheel pose, retain collision-resolved tangent and angular velocity, and rebuild contacts instead of route-recovering. New terrain-manifold events are independent of rebound bookkeeping, bounded, generation-aware, worker-safe, and apply the existing panel damage once for the actual recovered hill strike. Exact moving-landing, recorded triangle 45278, manifold ownership, protocol, bridge, and damage-deduplication tests pass under the 192 MB Termux limit without changing vehicle tuning.',
     '2026-08-18 22:30 EDT - Eliminated the WRX2 bounce after the third Studio Sprint 2 hill without changing authored handling or suspension/tire coefficients. Unsupported wheels now continue a bounded implicit unsprung spring/damper solve instead of freezing a loaded state, while the total-vehicle chassis receives only the external tire-support force. The coupled vertical solve is incident-gated with deterministic settle hysteresis, preserving established flat-road tire-load behavior while retaining physical landing support. Collision contact rebuilds preserve wheel coordinates but recompute tire force from the corrected pose and closing velocity, preventing static-load fallback during a landing. Static reset convergence now requires two consecutive production contact fixed-point passes, and contact patches retain their exact terrain sample height, normal, and query position so immutable holds validate terrain against terrain rather than tire deflection. Exact asphalt/dirt handling, stock dirt wheelspin, first-jump, third-trough, bumpy reset-hold, and incline reset/wake regressions pass sequentially under the 192 MB Termux limit.',
@@ -1526,6 +1536,56 @@ export const LATEST_MAJOR_WORK = {
 };
 
 export const LATEST_CHANGES = [
+  {
+    date: '2026-08-21',
+    time: '01:35 EDT',
+    title: 'Authored tire overlays remain attached through projection gaps',
+    details: [
+      'Wheel projection no longer discards the complete four-wheel overlay when one radius endpoint is briefly clipped; a visible centre plus either radius endpoint is sufficient.',
+      'The fixed-rear presentation retains one bounded body-relative pose per wheel, keeping all four overlays attached to the current body when a projection sample is incomplete.',
+      'Reset generations invalidate retained poses, and the visual retention path never changes physical wheel contact, suspension, or tire forces.'
+    ]
+  },
+  {
+    date: '2026-08-21',
+    time: '01:24 EDT',
+    title: 'Authored 2D car bodies now follow physical chassis roll',
+    details: [
+      'The 2D body override derives its screen rotation from the camera projection of the canonical chassis up axis, preserving the correct roll direction through banking and rollover.',
+      'Body art, spoilers, add-ons, and brake lights rotate together around the physical rear-axle anchor while wheel billboards and ground shadows remain independently reconstructed.',
+      'The same camera-correct body rotation is applied to player and AI overrides without changing authoritative vehicle physics.'
+    ]
+  },
+  {
+    date: '2026-08-21',
+    time: '00:55 EDT',
+    title: 'Fixed-rear race cameras no longer follow suspension chatter',
+    details: [
+      'The fixed-rear camera now follows a stable authored rear-axle station using planar body position and yaw instead of live suspension hub movement, pitch, or roll.',
+      'The 2D body keeps its physical rear-axle alignment while canonical wheel poses remain free to show real suspension movement.',
+      'Regression coverage varies rear hub positions, pitch, and roll between frames and verifies that a stationary camera anchor remains unchanged.'
+    ]
+  },
+  {
+    date: '2026-08-21',
+    time: '00:07 EDT',
+    title: '2D vehicle bodies align with the physical rear axle',
+    details: [
+      'Authored 2D body overrides now anchor to the canonical rear-wheel station instead of assuming the centre of gravity is halfway between the axles.',
+      'Player rendering, AI rendering, fixed-rear camera tracking, brake lights, and body add-ons share the corrected physical anchor while retaining authored visual offsets.',
+      'Body-profile and weight-distribution fallbacks preserve correct placement for saved cars without a live render snapshot, with midpoint placement retained only for legacy cars lacking physical axle data.'
+    ]
+  },
+  {
+    date: '2026-08-20',
+    time: '22:54 EDT',
+    title: 'Vehicle tires stay locked to the canonical rendered body',
+    details: [
+      'Normal gameplay tire rendering now reads all four reconstructed wheel poses from the same canonical VehicleRenderState snapshot used for the body.',
+      'Legacy mutable vehicle3d wheel data remains only as a compatibility fallback when no complete canonical snapshot exists, preventing delayed contact updates from producing visible wheel lag or flicker.',
+      'Focused coverage deliberately desynchronizes the legacy wheel cache and verifies that every displayed tire remains attached to the matching canonical body and reset generation.'
+    ]
+  },
   {
     date: '2026-07-30',
     time: '02:01 EDT',

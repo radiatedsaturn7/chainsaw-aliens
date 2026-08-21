@@ -314,6 +314,34 @@ test('smooth road apron and terrain transition share one driveable support famil
   assert.equal(transitionOnly.supportFamilyDriveable, true);
 });
 
+test('driveable sharp boundary is never silently classified as smooth support', () => {
+  const sampler = buildRaceBakedSurfaceSampler({
+    elevationScaleM: 1,
+    bucketSizeM: 8,
+    mesh: { triangles: [{
+      region: 'road', source: 'road:lower', vertices: [
+        { x: 0, elevation: 0, z: 0 }, { x: 2, elevation: 0, z: 0 },
+        { x: 2, elevation: 0, z: 2 }
+      ]
+    }, {
+      region: 'road', source: 'road:sharp-rise', vertices: [
+        { x: 0, elevation: 0, z: 0 }, { x: 2, elevation: 0, z: 2 },
+        { x: 0, elevation: 2, z: 2 }
+      ]
+    }] }
+  });
+  const frame = createPhysicsTerrainQueryFrameCache().begin({
+    sampler, revision: 1, elevationScaleM: 1,
+    bounds: { minX: 0, maxX: 2, minZ: 0, maxZ: 2 }
+  });
+  const lower = frame.samplePoint({ x: 1.6, z: 0.2 });
+  assert.equal(lower.supportFamilyDriveable, true);
+  assert.equal(lower.supportEdgeClassification, 'sharp-dihedral-edge');
+  assert.equal(frame.classifyCollisionFeaturesInBounds({
+    minX: 0, maxX: 2, minY: 0, maxY: 2, minZ: 0, maxZ: 2
+  }).discontinuity, true);
+});
+
 test('local triangle growth preserves early faces and keeps point queries on the fine grid', () => {
   const triangles = [];
   for (let zIndex = 0; zIndex < 10; zIndex += 1) {

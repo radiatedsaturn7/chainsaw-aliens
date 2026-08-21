@@ -323,6 +323,11 @@ const RACE_EDGE_RESET_BLACK_HOLD_MS = 250;
 const RACE_EDGE_RESET_FADE_IN_MS = 620;
 const RACE_EDGE_RESET_TOTAL_MS = RACE_EDGE_RESET_FADE_OUT_MS + RACE_EDGE_RESET_BLACK_HOLD_MS + RACE_EDGE_RESET_FADE_IN_MS;
 const RACE_SELECT_RESET_HOLD_MS = 1000;
+const RACE_UPSIDE_DOWN_RESET_HOLD_MS = 2000;
+const RACE_UPSIDE_DOWN_ENTER_DOT = -0.25;
+const RACE_UPSIDE_DOWN_EXIT_DOT = 0;
+const RACE_UPSIDE_DOWN_MAX_LINEAR_SPEED_MPS = 0.75;
+const RACE_UPSIDE_DOWN_MAX_ANGULAR_SPEED_RADPS = 0.5;
 const RACE_TILE_MAP_SCHEMA_VERSION = 2;
 const RACE_TILE_MAP_RENDER_CELL_TARGET_PX = 3;
 const RACE_TILE_MAP_RENDER_CELL_BUDGET = 2600;
@@ -1028,7 +1033,9 @@ export default class RaceEditor {
     }
     this.updateRaceKeyboardInput(input, dt);
     if (liveSession && !startupFramePending && !this.updatePlaytestSafely(dt)) return;
+    if (liveSession && !startupFramePending) this.updateRaceAutomaticVehicleRecovery(dt);
     if (this.mode === 'car' && !liveSession) {
+      this.updateCarEditorPreviewSelectHold(input, dt);
       this.updateCarEditorPreviewPlaytest(dt);
     }
     if (liveSession && (input?.wasPressed?.('pause') || input?.wasPressed?.('start') || (!this.raceInput.paused && input?.wasPressedCode?.('Enter')))) {
@@ -2223,8 +2230,10 @@ export default class RaceEditor {
     return RACE_EDGE_COLLISION_EFFECT_IDS.has(String(margin.collisionEffect || '')) ? String(margin.collisionEffect) : 'collide';
   }
 
-  applyRaceCarRouteCenterReset({ projection = null, roadYaw = 0, preserveMotion = false } = {}) {
+  applyRaceCarRouteCenterReset({ projection = null, roadYaw = 0, preserveMotion = false,
+    reason = 'track-center-reset' } = {}) {
     if (!this.playtestSession) return;
+    this.playtestSession.lastVehicleResetReason = String(reason || 'track-center-reset');
     const previousPlacement = {
       distance: this.playtestSession.distance,
       projectedDistance: this.playtestSession.projectedDistance,
@@ -2268,6 +2277,8 @@ export default class RaceEditor {
     this.playtestSession.rolledOver = false;
     this.playtestSession.rolloverCandidateMs = 0;
     this.playtestSession.rolloverRecoveryMs = 0;
+    this.playtestSession.upsideDownRecoveryMs = 0;
+    this.playtestSession.upsideDownRecoveryArmed = false;
     this.playtestSession.tireTrackLastContactByWheel = {};
     this.clearRaceThirdPersonCameraState(this.playtestSession);
     this.raceInput.steeringTarget = 0;
@@ -2289,8 +2300,19 @@ export default class RaceEditor {
       const resetSurfaceHeightM = Number.isFinite(Number(resetContacts?.averageHeightM))
         ? Number(resetContacts.averageHeightM)
         : Number(pose.elevation || 0) * RACE_THREE_ELEVATION_M;
-      const resetPitchRad = -Number(resetContacts?.terrainPitchRad || 0);
-      const resetRollRad = Number(resetContacts?.terrainRollRad || 0);
+      let resetPitchRad = -Number(resetContacts?.terrainPitchRad || 0);
+      let resetRollRad = Number(resetContacts?.terrainRollRad || 0);
+      let resetOrientation = quaternionFromEuler({
+        yaw,
+        pitch: resetPitchRad,
+        roll: resetRollRad
+      });
+      const resetBodyUp = rotateVectorByQuaternion({ x: 0, y: 1, z: 0 }, resetOrientation);
+      if (!(Number(resetBodyUp.y || 0) > 0.1)) {
+        resetPitchRad = 0;
+        resetRollRad = 0;
+        resetOrientation = quaternionFromEuler({ yaw, pitch: 0, roll: 0 });
+      }
       const workerBridge = this.vehicleDynamicsAuthority?.runner === authority
         ? this.vehicleDynamicsAuthority.workerBridge : null;
       if (workerBridge) {
@@ -2300,17 +2322,13 @@ export default class RaceEditor {
             y: resetSurfaceHeightM + authority.config.cgHeightM,
             z: this.playtestSession.worldZ
           },
-          orientation: quaternionFromEuler({
-            yaw,
-            pitch: resetPitchRad,
-            roll: resetRollRad
-          }),
+          orientation: resetOrientation,
           routeDistance: distance,
           grounded: true,
           engineRpm: authority.config.idleRpm,
           gear: resetGear,
           parkUntilDrive: true
-        }, 'player', this.playtestSession);
+        }, 'player', this.playtestSession, reason);
         return true;
       }
       let reset = null;
@@ -2328,7 +2346,7 @@ export default class RaceEditor {
           grounded: true,
           engineRpm: authority.config.idleRpm,
           gear: resetGear
-        }, { reason: 'track-center-reset', parkUntilDrive: true });
+        }, { reason, parkUntilDrive: true });
         const resolvedDistance = Number(reset.state.routeDistance);
         if (Number.isFinite(resolvedDistance)) {
           this.playtestSession.distance = resolvedDistance;
@@ -2346,6 +2364,7 @@ export default class RaceEditor {
       this.playtestSession.vehicleResetGeneration = reset.resetGeneration;
       this.playtestSession.vehicle3d.wheels = reset.renderState.wheelPoses;
       this.playtestSession.vehicle3d.resetGeneration = reset.resetGeneration;
+      this.playtestSession.lastVehicleResetReason = reason;
       return true;
     }
     this.resetRaceVehiclePhysicsState({
@@ -2356,12 +2375,15 @@ export default class RaceEditor {
     return true;
   }
 
-  resetRaceCarToRouteCenter({ projection = null, roadYaw = 0, immediate = false, preserveMotion = null } = {}) {
+  resetRaceCarToRouteCenter({ projection = null, roadYaw = 0, immediate = false,
+    preserveMotion = null, reason = 'track-center-reset' } = {}) {
     if (!this.playtestSession) return;
     this.invalidateRaceTrackStateVisualPresentation();
     const shouldPreserveMotion = false;
     if (immediate) {
-      this.applyRaceCarRouteCenterReset({ projection, roadYaw, preserveMotion: shouldPreserveMotion });
+      this.applyRaceCarRouteCenterReset({
+        projection, roadYaw, preserveMotion: shouldPreserveMotion, reason
+      });
       this.playtestSession.edgeResetFadeMs = RACE_EDGE_RESET_TOTAL_MS;
       this.status = 'Reset to track center';
       return;
@@ -2376,6 +2398,7 @@ export default class RaceEditor {
       distance,
       roadYaw: Number(roadYaw || 0),
       preserveMotion: shouldPreserveMotion,
+      reason,
       moved: false
     };
     this.playtestSession.edgeResetFadeMs = RACE_EDGE_RESET_TOTAL_MS;
@@ -2391,7 +2414,8 @@ export default class RaceEditor {
       this.applyRaceCarRouteCenterReset({
         projection: { distance: pending.distance },
         roadYaw: pending.roadYaw,
-        preserveMotion: pending.preserveMotion !== false
+        preserveMotion: pending.preserveMotion !== false,
+        reason: pending.reason || 'track-center-reset'
       });
       this.playtestSession.pendingEdgeCenterReset = {
         ...pending,
@@ -12402,6 +12426,10 @@ export default class RaceEditor {
       rolledOver: false,
       rolloverCandidateMs: 0,
       rolloverRecoveryMs: 0,
+      upsideDownRecoveryMs: 0,
+      upsideDownRecoveryArmed: false,
+      automaticVehicleResetCount: 0,
+      lastVehicleResetReason: null,
       rolloverSupportedWheelCount: RACE_WHEEL_IDS.length,
       rolloverSupportedLoadRatio: 1,
       engineRpm: tuning.idleRpm,
@@ -13493,7 +13521,7 @@ export default class RaceEditor {
         elevation: Number(session.heightM || 0) / RACE_THREE_ELEVATION_M,
         yaw: Number(session.carYaw || 0),
         pitchRad: Number(session.pitchRad || 0)
-      }, car);
+      }, car, { renderState: session.vehicleRenderState, planar: true });
       const anchor = {
         x: Number(rearAxle.x || 0),
         z: Number(rearAxle.z || 0),
@@ -17839,6 +17867,78 @@ export default class RaceEditor {
     }
   }
 
+  updateRaceAutomaticVehicleRecovery(dt = 0) {
+    const session = this.playtestSession;
+    if (!session?.running || this.raceInput.paused
+      || Number(session.countdownRemainingMs || 0) > 0
+      || session.pendingEdgeCenterReset) {
+      if (!session?.pendingEdgeCenterReset && session) {
+        session.upsideDownRecoveryMs = 0;
+        session.upsideDownRecoveryArmed = false;
+      }
+      return false;
+    }
+    const state = getAuthoritativeChassisState(session);
+    const orientation = state?.orientation;
+    if (!orientation) {
+      session.upsideDownRecoveryMs = 0;
+      session.upsideDownRecoveryArmed = false;
+      return false;
+    }
+    const bodyUp = rotateVectorByQuaternion({ x: 0, y: 1, z: 0 }, orientation);
+    const upDot = Number(bodyUp?.y ?? 1);
+    const velocity = state.velocity || state.linearVelocity || {};
+    const angularVelocity = state.angularVelocityWorld || state.angularVelocity || {};
+    const linearSpeed = Math.hypot(
+      Number(velocity.x || 0), Number(velocity.y || 0), Number(velocity.z || 0)
+    );
+    const angularSpeed = Math.hypot(
+      Number(angularVelocity.x || 0), Number(angularVelocity.y || 0),
+      Number(angularVelocity.z || 0)
+    );
+    const supportedWheelCount = Number(state.supportedWheelCount || 0);
+    const hasGroundEvidence = state.bodyGrounded === true || state.grounded === true
+      || supportedWheelCount > 0;
+    if (!session.upsideDownRecoveryArmed && upDot <= RACE_UPSIDE_DOWN_ENTER_DOT) {
+      session.upsideDownRecoveryArmed = true;
+    } else if (session.upsideDownRecoveryArmed && upDot >= RACE_UPSIDE_DOWN_EXIT_DOT) {
+      session.upsideDownRecoveryArmed = false;
+    }
+    const stationaryAndSupported = session.upsideDownRecoveryArmed
+      && hasGroundEvidence
+      && linearSpeed <= RACE_UPSIDE_DOWN_MAX_LINEAR_SPEED_MPS
+      && angularSpeed <= RACE_UPSIDE_DOWN_MAX_ANGULAR_SPEED_RADPS;
+    session.upsideDownRecoveryMs = stationaryAndSupported
+      ? Math.min(RACE_UPSIDE_DOWN_RESET_HOLD_MS,
+        Number(session.upsideDownRecoveryMs || 0) + Math.max(0, Number(dt || 0)) * 1000)
+      : 0;
+    session.vehicleRecoveryDiagnostics = {
+      upDot,
+      linearSpeedMps: linearSpeed,
+      angularSpeedRadps: angularSpeed,
+      supportedWheelCount,
+      bodyGrounded: state.bodyGrounded === true,
+      armed: session.upsideDownRecoveryArmed,
+      dwellMs: session.upsideDownRecoveryMs
+    };
+    if (session.upsideDownRecoveryMs < RACE_UPSIDE_DOWN_RESET_HOLD_MS) return false;
+    const distance = Number(session.distance || 0);
+    const pose = this.getRaceWorldPoseAtDistance(distance, {
+      runtimeType: session.routeRuntimeType || this.getSelectedRaceRuntimeType()
+    });
+    session.upsideDownRecoveryMs = 0;
+    session.upsideDownRecoveryArmed = false;
+    session.automaticVehicleResetCount = Number(session.automaticVehicleResetCount || 0) + 1;
+    session.eventLog = [...(session.eventLog || []).slice(-5), 'Automatic upside-down reset'];
+    this.resetRaceCarToRouteCenter({
+      projection: { distance },
+      roadYaw: Number(pose?.yaw || 0),
+      preserveMotion: false,
+      reason: 'automatic-upside-down'
+    });
+    return true;
+  }
+
   clearRaceGamepadSelectHold() {
     this.raceInput.activeSelectPointerId = null;
     this.raceInput.gamepadSelectHoldActive = false;
@@ -17877,7 +17977,8 @@ export default class RaceEditor {
         this.resetRaceCarToRouteCenter({
           projection: { distance },
           roadYaw: Number(pose?.yaw || 0),
-          preserveMotion: false
+          preserveMotion: false,
+          reason: 'select-hold-reset'
         });
         return true;
       }
@@ -17910,16 +18011,24 @@ export default class RaceEditor {
     const isDownCode = (code) => Boolean(input.isDownCode?.(code));
     const wasPressed = (action) => Boolean(input.wasPressed?.(action));
     const wasPressedCode = (code) => Boolean(input.wasPressedCode?.(code));
-    const gamepadActions = this.game?.input?.gamepadActions || input.gamepadActions || {};
-    const gamepadPressed = this.game?.input?.gamepadPressed || input.gamepadPressed || new Set();
-    const isGamepadDown = (action) => Boolean(gamepadActions[action]);
-    const wasGamepadPressed = (action) => Boolean(gamepadPressed?.has?.(action));
+    const gamepadInput = this.game?.input || input;
+    const gamepadActions = gamepadInput?.getGamepadActions?.()
+      || gamepadInput?.gamepadActions || input.gamepadActions || {};
+    const gamepadPressed = gamepadInput?.gamepadPressed || input.gamepadPressed || new Set();
+    const isGamepadDown = (action) => typeof gamepadInput?.isGamepadDown === 'function'
+      ? Boolean(gamepadInput.isGamepadDown(action)) : Boolean(gamepadActions[action]);
+    const wasGamepadPressed = (action) => typeof gamepadInput?.wasGamepadPressed === 'function'
+      ? Boolean(gamepadInput.wasGamepadPressed(action))
+      : Boolean(gamepadPressed?.has?.(action));
     const virtualSelectDown = this.raceInput.activeSelectPointerId !== null
       && this.raceInput.activeSelectPointerId !== undefined;
     const hasRawGamepadState = Object.prototype.hasOwnProperty.call(gamepadActions, 'gamepadA')
       || Object.prototype.hasOwnProperty.call(gamepadActions, 'gamepadB')
       || Object.prototype.hasOwnProperty.call(gamepadActions, 'gamepadX')
-      || Boolean(this.game?.input?.gamepadConnected || this.game?.input?.gamepadAvailable || input.gamepadConnected);
+      || Object.prototype.hasOwnProperty.call(gamepadActions, 'gamepadSelect')
+      || Boolean(gamepadInput?.isGamepadConnected?.()
+        || gamepadInput?.gamepadConnected || gamepadInput?.gamepadAvailable
+        || input.gamepadConnected);
     const rawGamepadActive = Boolean(
       hasRawGamepadState
       || gamepadActions.gamepadA || gamepadActions.gamepadB || gamepadActions.gamepadX || gamepadActions.gamepadY
@@ -20243,6 +20352,29 @@ export default class RaceEditor {
         segment
       })
       : null;
+    const bodyOrientation = this.playtestSession?.vehicleRenderState?.orientation
+      || quaternionFromEuler({
+        yaw: Number(renderPose.yaw || 0),
+        pitch: Number(renderPose.pitchRad || 0),
+        roll: Number(renderPose.rollRad || 0)
+      });
+    const bodyUpWorld = rotateVectorByQuaternion({ x: 0, y: 1, z: 0 }, bodyOrientation);
+    const bodyUpPoint = this.playtestSession && renderCamera?.camera
+      ? projectVisualPoint({
+        x: rearBodyAnchor.x + Number(bodyUpWorld.x || 0),
+        z: rearBodyAnchor.z + Number(bodyUpWorld.z || 0),
+        elevation: rearBodyAnchor.elevation
+          + Number(bodyUpWorld.y || 0) / RACE_THREE_ELEVATION_M,
+        segment
+      })
+      : null;
+    const projectedBodyUpX = Number(bodyUpPoint?.screenX) - Number(rearBodyPoint?.screenX);
+    const projectedBodyUpY = Number(bodyUpPoint?.screenY) - Number(rearBodyPoint?.screenY);
+    const bodyScreenRotationRad = bodyUpPoint?.visible && rearBodyPoint?.visible
+      && Number.isFinite(projectedBodyUpX) && Number.isFinite(projectedBodyUpY)
+      && Math.hypot(projectedBodyUpX, projectedBodyUpY) > 0.001
+      ? Math.atan2(projectedBodyUpX, -projectedBodyUpY)
+      : Number(renderPose.rollRad || 0);
     const roadContactPoint = this.playtestSession && renderCamera?.camera
       ? projectVisualPoint({
         x: carWorldX,
@@ -20276,6 +20408,9 @@ export default class RaceEditor {
       bodyAnchorProjected: rearBodyPoint,
       bodyAnchorWorldX: rearBodyAnchor.x,
       bodyAnchorWorldZ: rearBodyAnchor.z,
+      bodyAnchorLongitudinalOffsetM: rearBodyAnchor.longitudinalOffsetM,
+      bodyAnchorPhysicalSource: rearBodyAnchor.physicalSource,
+      bodyScreenRotationRad,
       session: this.playtestSession
     });
     const artChoice = this.getRaceCarProjectedArtRef(car, Number(this.playtestSession?.carYaw || 0), Number(renderCamera?.cameraYaw || 0), {
@@ -20417,8 +20552,12 @@ export default class RaceEditor {
         car,
         wheelBillboards: physicalWheelBillboards,
         bodyAnchorX,
+        bodyAnchorY,
         bodyBaseWidth: bodyW,
+        bodyBaseHeight: bodyH,
+        bodyRotationRad: bodyScreenRotationRad,
         lookAngle: Number(this.raceInput?.lookAngle || 0),
+        session: this.playtestSession,
         enabled: hasBodyArt && hasAuthoredTireArt
       });
       const threeRenderedCarShadow = Boolean(this.lastRaceRenderStats?.threeProceduralCar);
@@ -20432,6 +20571,7 @@ export default class RaceEditor {
         baseHeight: carH,
         bodyBaseWidth: bodyW,
         bodyBaseHeight: bodyH,
+        bodyRotationRad: bodyScreenRotationRad,
         artChoice,
         frontTireAngle,
         tireScroll: this.getRaceTireTextureScroll(car),
@@ -20566,6 +20706,7 @@ export default class RaceEditor {
     baseHeight = 48,
     bodyBaseWidth = baseWidth,
     bodyBaseHeight = baseHeight,
+    bodyRotationRad = 0,
     artChoice = null,
     frontTireAngle = 0,
     tireScroll = 0,
@@ -20588,6 +20729,8 @@ export default class RaceEditor {
     const bodyH = Number(bodyBaseHeight) || carH;
     const bodyX = Number.isFinite(Number(bodyAnchorX)) ? Number(bodyAnchorX) : centerX;
     const bodyY = Number.isFinite(Number(bodyAnchorY)) ? Number(bodyAnchorY) : anchorY;
+    const bodyRotation = Number.isFinite(Number(bodyRotationRad))
+      ? Number(bodyRotationRad) : 0;
     const wheelBaseW = carW;
     const wheelBaseH = carH;
     const wheelW = wheelBaseW * 0.16 * artScale.tireX;
@@ -20610,14 +20753,17 @@ export default class RaceEditor {
     };
     const steerVisualX = (wheelDeltas || tireCanvas) ? 0 : clamp(Number(frontTireAngle || 0), -0.65, 0.65) * carW * 0.11;
     const drawMirroredImage = (canvas, x, y, w, h) => {
-      if (!choice?.mirrored) {
-        ctx.drawImage(canvas, x, y, w, h);
-        return;
-      }
       ctx.save();
-      ctx.translate(bodyX, 0);
-      ctx.scale(-1, 1);
-      ctx.drawImage(canvas, -(x - bodyX) - w, y, w, h);
+      ctx.translate(bodyX, bodyY);
+      ctx.rotate(bodyRotation);
+      if (choice?.mirrored) ctx.scale(-1, 1);
+      ctx.drawImage(
+        canvas,
+        choice?.mirrored ? -(x - bodyX) - w : x - bodyX,
+        y - bodyY,
+        w,
+        h
+      );
       ctx.restore();
     };
     const drawShadow = () => {
@@ -20650,9 +20796,28 @@ export default class RaceEditor {
       ctx.globalAlpha = previousAlpha;
       ctx.restore();
     };
-    const drawWheel = (x, y, turn = 0, drawWidth = wheelW, drawHeight = wheelH) => {
+    const rotateWheelCenterWithBody = (x, y) => {
+      const dx = Number(x) - bodyX;
+      const dy = Number(y) - bodyY;
+      const cosine = Math.cos(bodyRotation);
+      const sine = Math.sin(bodyRotation);
+      return {
+        x: bodyX + dx * cosine - dy * sine,
+        y: bodyY + dx * sine + dy * cosine
+      };
+    };
+    const drawWheel = (
+      x, y, turn = 0, drawWidth = wheelW, drawHeight = wheelH,
+      wheelBodyRotation = bodyRotation, offsetX = 0, offsetY = 0
+    ) => {
+      const cosine = Math.cos(wheelBodyRotation);
+      const sine = Math.sin(wheelBodyRotation);
       ctx.save();
-      ctx.translate(x, y);
+      ctx.translate(
+        Number(x) + Number(offsetX) * cosine - Number(offsetY) * sine,
+        Number(y) + Number(offsetX) * sine + Number(offsetY) * cosine
+      );
+      ctx.rotate?.(wheelBodyRotation);
       if (tireCanvas && typeof ctx.drawImage === 'function') {
         const scaledTire = this.getRaceCarBillboardLayerCanvas(tireCanvas, drawWidth, drawHeight, `tire:${tireEntry?.artRef || tireCompound}:${tireEntry?.frameIndex || 0}`);
         this.drawScrolledCarTireArt(ctx, scaledTire, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight, { scroll: tireScroll });
@@ -20684,24 +20849,36 @@ export default class RaceEditor {
           const offsetX = (front ? artOffsets.frontTireX : artOffsets.rearTireX) * wheelBaseW * 0.14;
           const offsetY = (front ? artOffsets.frontTireY : artOffsets.rearTireY) * wheelBaseH * 0.2;
           drawWheel(
-            Number(billboard.x) + offsetX,
-            Number(billboard.y) + offsetY,
+            Number(billboard.x),
+            Number(billboard.y),
             front ? frontTireAngle : 0,
             Math.max(1, Number(billboard.width) || wheelW),
-            Math.max(1, Number(billboard.height) || wheelH)
+            Math.max(1, Number(billboard.height) || wheelH),
+            Number.isFinite(Number(billboard.bodyRotationRad))
+              ? Number(billboard.bodyRotationRad) : bodyRotation,
+            offsetX,
+            offsetY
           );
         });
     } else if (drawWheels && layerVisibility.frontWheels) {
       const fl = getDelta('fl', -wheelBaseW * 0.32, -wheelBaseH * 0.24);
       const fr = getDelta('fr', wheelBaseW * 0.32, -wheelBaseH * 0.24);
-      drawWheel(centerX + fl.x + steerVisualX + artOffsets.frontTireX * wheelBaseW * 0.14, anchorY + fl.y + artOffsets.frontTireY * wheelBaseH * 0.2, frontTireAngle);
-      drawWheel(centerX + fr.x + steerVisualX + artOffsets.frontTireX * wheelBaseW * 0.14, anchorY + fr.y + artOffsets.frontTireY * wheelBaseH * 0.2, frontTireAngle);
+      const flCenter = rotateWheelCenterWithBody(centerX + fl.x + steerVisualX, anchorY + fl.y);
+      const frCenter = rotateWheelCenterWithBody(centerX + fr.x + steerVisualX, anchorY + fr.y);
+      drawWheel(flCenter.x, flCenter.y, frontTireAngle, wheelW, wheelH, bodyRotation,
+        artOffsets.frontTireX * wheelBaseW * 0.14, artOffsets.frontTireY * wheelBaseH * 0.2);
+      drawWheel(frCenter.x, frCenter.y, frontTireAngle, wheelW, wheelH, bodyRotation,
+        artOffsets.frontTireX * wheelBaseW * 0.14, artOffsets.frontTireY * wheelBaseH * 0.2);
     }
     if (drawWheels && !hasProjectedWheelBillboards && layerVisibility.rearWheels) {
       const rl = getDelta('rl', -wheelBaseW * 0.38, wheelBaseH * 0.28);
       const rr = getDelta('rr', wheelBaseW * 0.38, wheelBaseH * 0.28);
-      drawWheel(centerX + rl.x + artOffsets.rearTireX * wheelBaseW * 0.14, anchorY + rl.y + artOffsets.rearTireY * wheelBaseH * 0.2, 0);
-      drawWheel(centerX + rr.x + artOffsets.rearTireX * wheelBaseW * 0.14, anchorY + rr.y + artOffsets.rearTireY * wheelBaseH * 0.2, 0);
+      const rlCenter = rotateWheelCenterWithBody(centerX + rl.x, anchorY + rl.y);
+      const rrCenter = rotateWheelCenterWithBody(centerX + rr.x, anchorY + rr.y);
+      drawWheel(rlCenter.x, rlCenter.y, 0, wheelW, wheelH, bodyRotation,
+        artOffsets.rearTireX * wheelBaseW * 0.14, artOffsets.rearTireY * wheelBaseH * 0.2);
+      drawWheel(rrCenter.x, rrCenter.y, 0, wheelW, wheelH, bodyRotation,
+        artOffsets.rearTireX * wheelBaseW * 0.14, artOffsets.rearTireY * wheelBaseH * 0.2);
     }
     if (layerVisibility.body && !shellCanvas) {
       ctx.fillStyle = damageColor;
@@ -20769,9 +20946,13 @@ export default class RaceEditor {
         );
         ctx.imageSmoothingEnabled = previousSmoothing;
       } else {
+        ctx.save();
+        ctx.translate(bodyX, bodyY);
+        ctx.rotate(bodyRotation);
         ctx.fillStyle = '#ff4f4f';
-        ctx.fillRect(bodyX - bodyW * 0.42 + artOffsets.brakeX * bodyW * 0.18, bodyY + bodyH * 0.38 + artOffsets.brakeY * bodyH * 0.22, bodyW * 0.2, bodyH * 0.12);
-        ctx.fillRect(bodyX + bodyW * 0.22 + artOffsets.brakeX * bodyW * 0.18, bodyY + bodyH * 0.38 + artOffsets.brakeY * bodyH * 0.22, bodyW * 0.2, bodyH * 0.12);
+        ctx.fillRect(-bodyW * 0.42 + artOffsets.brakeX * bodyW * 0.18, bodyH * 0.38 + artOffsets.brakeY * bodyH * 0.22, bodyW * 0.2, bodyH * 0.12);
+        ctx.fillRect(bodyW * 0.22 + artOffsets.brakeX * bodyW * 0.18, bodyH * 0.38 + artOffsets.brakeY * bodyH * 0.22, bodyW * 0.2, bodyH * 0.12);
+        ctx.restore();
       }
     }
   }
@@ -20837,6 +21018,25 @@ export default class RaceEditor {
     car = this.selectedCar
   } = {}) {
     const tireRadiusM = this.getRaceWheelVisualRadiusM(car);
+    const canonicalWheelPoses = session?.vehicleRenderState?.wheelPoses;
+    if (canonicalWheelPoses && RACE_WHEEL_IDS.every((wheelId) => {
+      const position = canonicalWheelPoses[wheelId]?.position;
+      return Number.isFinite(Number(position?.x))
+        && Number.isFinite(Number(position?.y))
+        && Number.isFinite(Number(position?.z));
+    })) {
+      return Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
+        const wheel = canonicalWheelPoses[wheelId];
+        return [wheelId, {
+          x: Number(wheel.position.x),
+          z: Number(wheel.position.z),
+          elevation: Number(wheel.position.y) / RACE_THREE_ELEVATION_M,
+          physicalContact: wheel.loadBearing === true || wheel.inContact === true,
+          authoritativeHub: true,
+          resetGeneration: Number(session.vehicleRenderState.resetGeneration || 0)
+        }];
+      }));
+    }
     if (session?.vehicle3d?.enabled) {
       return Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
         const wheel = session.vehicle3d.wheels?.[wheelId] || {};
@@ -20932,39 +21132,49 @@ export default class RaceEditor {
         elevation: point.elevation - radiusM / RACE_THREE_ELEVATION_M
       });
       if (!projected?.visible
-        || !top?.visible
-        || !bottom?.visible
         || !Number.isFinite(projected.screenX)
-        || !Number.isFinite(projected.screenY)
-        || !Number.isFinite(top.screenY)
-        || !Number.isFinite(bottom.screenY)) return;
-      const physicalHeight = Math.abs(Number(bottom.screenY) - Number(top.screenY));
-      if (!(physicalHeight > 0.01)) return;
-      const height = Math.max(1, physicalHeight * artScale.tireY);
+        || !Number.isFinite(projected.screenY)) return;
+      const topY = top?.visible && Number.isFinite(top.screenY) ? Number(top.screenY) : null;
+      const bottomY = bottom?.visible && Number.isFinite(bottom.screenY)
+        ? Number(bottom.screenY) : null;
+      const physicalHeight = topY !== null && bottomY !== null
+        ? Math.abs(bottomY - topY)
+        : topY !== null
+          ? Math.abs(Number(projected.screenY) - topY) * 2
+          : bottomY !== null
+            ? Math.abs(bottomY - Number(projected.screenY)) * 2
+            : null;
+      const sizeValid = Number.isFinite(physicalHeight) && physicalHeight > 0.01;
+      const height = sizeValid ? Math.max(1, physicalHeight * artScale.tireY) : null;
       result[wheelId] = {
         x: Number(projected.screenX),
         y: Number(projected.screenY),
-        width: Math.max(1, physicalHeight * aspect * artScale.tireX),
+        width: sizeValid ? Math.max(1, physicalHeight * aspect * artScale.tireX) : null,
         height,
+        sizeValid,
         cameraZ: Number(projected.cameraZ || projected.renderZ || 0),
         physicalCenter: center
       };
     });
-    return RACE_WHEEL_IDS.every((wheelId) => result[wheelId]) ? result : null;
+    return Object.keys(result).length ? result : null;
   }
 
   getRaceFixedRear2DWheelBillboards({
     car = this.selectedCar,
     wheelBillboards = null,
     bodyAnchorX = 0,
+    bodyAnchorY = 0,
     bodyBaseWidth = 0,
+    bodyBaseHeight = 0,
+    bodyRotationRad = 0,
     lookAngle = Number(this.raceInput?.lookAngle || 0),
+    session = this.playtestSession,
     enabled = true
   } = {}) {
     if (!enabled
-      || !wheelBillboards
       || this.getCarCameraTrackingMode(car) !== 'fixed-rear'
       || !Number.isFinite(Number(bodyAnchorX))
+      || !Number.isFinite(Number(bodyAnchorY))
       || !(Number(bodyBaseWidth) > 0)) return wheelBillboards;
     const dimensions = this.getRaceCarDimensions(car);
     const pixelsPerMeter = Number(bodyBaseWidth) / Math.max(0.1, Number(dimensions.widthM || 1.8));
@@ -20972,31 +21182,94 @@ export default class RaceEditor {
     const smoothLookProgress = manualLookProgress * manualLookProgress * (3 - 2 * manualLookProgress);
     const lockWeight = 1 - smoothLookProgress;
     if (lockWeight <= 0.000001) return wheelBillboards;
+    const resetGeneration = Number(session?.vehicleRenderState?.resetGeneration || 0);
+    const previousCache = session?.fixedRear2DWheelBillboardCache;
+    const cache = previousCache?.resetGeneration === resetGeneration
+      ? previousCache : { resetGeneration, wheels: {} };
+    cache.wheels ||= {};
+    const fallbackHeight = Math.max(
+      1,
+      this.getRaceWheelVisualRadiusM(car) * 2 * pixelsPerMeter
+    );
+    const fallbackWidth = Math.max(1, fallbackHeight * 0.5);
+    const fallbackBodyHeight = Math.max(1, Number(bodyBaseHeight || bodyBaseWidth * 0.74));
+    const bodyRotation = Number.isFinite(Number(bodyRotationRad))
+      ? Number(bodyRotationRad) : 0;
+    const rotationCos = Math.cos(bodyRotation);
+    const rotationSin = Math.sin(bodyRotation);
     let maxHorizontalErrorPx = 0;
+    let retainedWheelCount = 0;
     const result = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
-      const billboard = wheelBillboards[wheelId];
-      if (!billboard) return [wheelId, billboard];
+      const incoming = wheelBillboards?.[wheelId] || null;
+      const retained = cache.wheels[wheelId] || null;
       const front = wheelId === 'fl' || wheelId === 'fr';
       const right = wheelId === 'fr' || wheelId === 'rr';
       const trackM = front
         ? Number(dimensions.trackFrontM || dimensions.trackWidthM || 1.56)
         : Number(dimensions.trackRearM || dimensions.trackWidthM || 1.56);
       const lockedX = Number(bodyAnchorX) + (right ? 1 : -1) * trackM * 0.5 * pixelsPerMeter;
-      const x = Number(billboard.x) + (lockedX - Number(billboard.x)) * lockWeight;
+      const incomingX = Number(incoming?.x);
+      const incomingY = Number(incoming?.y);
+      const hasIncomingCenter = Number.isFinite(incomingX) && Number.isFinite(incomingY);
+      const incomingDx = hasIncomingCenter ? incomingX - Number(bodyAnchorX) : 0;
+      const incomingDy = hasIncomingCenter ? incomingY - Number(bodyAnchorY) : 0;
+      const incomingLocalY = -incomingDx * rotationSin + incomingDy * rotationCos;
+      const localY = hasIncomingCenter
+        ? incomingLocalY
+        : Number.isFinite(Number(retained?.localY))
+          ? Number(retained.localY)
+          : (front ? -0.24 : 0.28) * fallbackBodyHeight;
+      const width = Number.isFinite(Number(incoming?.width)) && Number(incoming.width) > 0
+        ? Number(incoming.width)
+        : Number.isFinite(Number(retained?.width)) && Number(retained.width) > 0
+          ? Number(retained.width) : fallbackWidth;
+      const height = Number.isFinite(Number(incoming?.height)) && Number(incoming.height) > 0
+        ? Number(incoming.height)
+        : Number.isFinite(Number(retained?.height)) && Number(retained.height) > 0
+          ? Number(retained.height) : fallbackHeight;
+      const lockedLocalX = lockedX - Number(bodyAnchorX);
+      const incomingLocalX = hasIncomingCenter
+        ? incomingDx * rotationCos + incomingDy * rotationSin
+        : Number.isFinite(Number(retained?.localX))
+          ? Number(retained.localX) : lockedLocalX;
+      const localX = incomingLocalX + (lockedLocalX - incomingLocalX) * lockWeight;
+      const x = Number(bodyAnchorX) + localX * rotationCos - localY * rotationSin;
+      const y = Number(bodyAnchorY) + localX * rotationSin + localY * rotationCos;
+      const presentationRetained = !hasIncomingCenter || incoming?.sizeValid === false;
+      if (presentationRetained) retainedWheelCount += 1;
       maxHorizontalErrorPx = Math.max(maxHorizontalErrorPx, Math.abs(x - lockedX));
-      return [wheelId, {
-        ...billboard,
+      const billboard = {
+        ...(retained || {}),
+        ...(incoming || {}),
         x,
-        physicalX: Number(billboard.x),
+        y,
+        width,
+        height,
+        physicalX: hasIncomingCenter ? incomingX : Number(retained?.physicalX ?? lockedX),
         fixedRearRigX: lockedX,
-        fixedRearRigWeight: lockWeight
-      }];
+        fixedRearRigWeight: lockWeight,
+        bodyRigLocalX: localX,
+        bodyRigLocalY: localY,
+        bodyRotationRad: bodyRotation,
+        presentationRetained
+      };
+      cache.wheels[wheelId] = {
+        localX,
+        localY,
+        width,
+        height,
+        cameraZ: Number(billboard.cameraZ || 0),
+        physicalX: billboard.physicalX
+      };
+      return [wheelId, billboard];
     }));
+    if (session) session.fixedRear2DWheelBillboardCache = cache;
     this.lastRaceRenderStats = {
       ...(this.lastRaceRenderStats || {}),
       fixedRear2DWheelRig: true,
       fixedRear2DWheelRigWeight: lockWeight,
-      fixedRear2DWheelRigMaxHorizontalErrorPx: maxHorizontalErrorPx
+      fixedRear2DWheelRigMaxHorizontalErrorPx: maxHorizontalErrorPx,
+      fixedRear2DWheelRetainedCount: retainedWheelCount
     };
     return result;
   }
@@ -21221,20 +21494,56 @@ export default class RaceEditor {
     };
   }
 
-  getRaceCarRearAxleBodyAnchor(pose = {}, car = this.selectedCar) {
+  getRaceCarRearAxleBodyAnchor(pose = {}, car = this.selectedCar, {
+    renderState = pose?.renderState || pose?.session?.vehicleRenderState || null,
+    planar = false
+  } = {}) {
     const dimensions = this.getRaceCarDimensions(car);
     const yaw = Number(pose?.yaw || 0);
-    const pitch = clamp(Number(pose?.pitchRad || 0), -1.25, 1.25);
-    const rearwardM = -Number(dimensions.wheelbaseM || 2.67) * 0.5;
+    const pitch = planar ? 0 : clamp(Number(pose?.pitchRad || 0), -1.25, 1.25);
+    const rearLeft = renderState?.wheels?.rl || renderState?.wheelPoses?.rl;
+    const rearRight = renderState?.wheels?.rr || renderState?.wheelPoses?.rr;
+    const rearLeftZ = Number(rearLeft?.hubPositionBody?.z);
+    const rearRightZ = Number(rearRight?.hubPositionBody?.z);
+    const authoredRearDistanceM = Number(
+      car?.tuning?.physics?.bodyProfile?.rearAxleDistanceFromCgM
+      ?? car?.tuning?.bodyProfile?.rearAxleDistanceFromCgM
+      ?? car?.bodyProfile?.rearAxleDistanceFromCgM
+    );
+    const frontWeightDistribution = Number(car?.tuning?.frontWeightDistribution);
+    let rearwardM;
+    let physicalSource;
+    if (Number.isFinite(authoredRearDistanceM) && authoredRearDistanceM > 0) {
+      rearwardM = -authoredRearDistanceM;
+      physicalSource = 'body-profile';
+    } else if (Number.isFinite(frontWeightDistribution)
+      && frontWeightDistribution > 0 && frontWeightDistribution < 1) {
+      rearwardM = -Number(dimensions.wheelbaseM || 2.67) * frontWeightDistribution;
+      physicalSource = 'weight-distribution';
+    } else if (Number.isFinite(rearLeftZ) && Number.isFinite(rearRightZ)) {
+      rearwardM = (rearLeftZ + rearRightZ) * 0.5;
+      physicalSource = 'vehicle-render-state';
+    } else {
+      rearwardM = -Number(dimensions.wheelbaseM || 2.67) * 0.5;
+      physicalSource = 'wheelbase-midpoint-fallback';
+    }
+    const canonicalOrientation = planar ? null : renderState?.orientation;
+    const canonicalOffset = canonicalOrientation
+      ? rotateVectorByQuaternion({ x: 0, y: 0, z: rearwardM }, canonicalOrientation)
+      : null;
     const horizontalM = rearwardM * Math.cos(pitch);
     const forward = this.getRaceForwardVector(yaw);
     return {
       ...pose,
-      x: Number(pose?.x || 0) + forward.x * horizontalM,
-      z: Number(pose?.z || 0) + forward.z * horizontalM,
-      elevation: Number(pose?.elevation || 0) + (rearwardM * Math.sin(pitch)) / RACE_THREE_ELEVATION_M,
+      x: Number(pose?.x || 0) + Number(canonicalOffset?.x ?? forward.x * horizontalM),
+      z: Number(pose?.z || 0) + Number(canonicalOffset?.z ?? forward.z * horizontalM),
+      elevation: Number(pose?.elevation || 0) + Number(
+        canonicalOffset?.y ?? rearwardM * Math.sin(pitch)
+      ) / RACE_THREE_ELEVATION_M,
       anchorType: 'rear-axle',
-      longitudinalOffsetM: rearwardM
+      longitudinalOffsetM: rearwardM,
+      physicalSource,
+      planar
     };
   }
 
@@ -21284,6 +21593,9 @@ export default class RaceEditor {
     bodyAnchorProjected = null,
     bodyAnchorWorldX = null,
     bodyAnchorWorldZ = null,
+    bodyAnchorLongitudinalOffsetM = null,
+    bodyAnchorPhysicalSource = null,
+    bodyScreenRotationRad = 0,
     session = this.playtestSession
   } = {}) {
     const bodyX = Number(session?.bodyX);
@@ -21300,8 +21612,7 @@ export default class RaceEditor {
       && Number.isFinite(Number(bodyAnchorX))
       ? Math.abs(Number(bodyAnchorX) - projectedAnchorScreenX)
       : null;
-    const expectedRearwardM = Number(this.getRaceCarDimensions(this.getRaceSessionCar(session)).wheelbaseM || 2.67)
-      * 0.5
+    const expectedRearwardM = Math.abs(Number(bodyAnchorLongitudinalOffsetM || 0))
       * Math.cos(clamp(Number(session?.pitchRad || 0), -1.25, 1.25));
     const actualRearwardM = Number.isFinite(Number(bodyAnchorWorldX))
       && Number.isFinite(Number(bodyAnchorWorldZ))
@@ -21317,6 +21628,9 @@ export default class RaceEditor {
         ? Math.hypot(liveX - bodyX, liveZ - bodyZ)
         : null,
       thirdPersonCarArtAnchor: 'rear-axle',
+      thirdPersonCarArtAnchorPhysicalSource: bodyAnchorPhysicalSource,
+      thirdPersonCarArtAnchorLongitudinalOffsetM: Number(bodyAnchorLongitudinalOffsetM || 0),
+      thirdPersonCarArtBodyScreenRotationRad: Number(bodyScreenRotationRad || 0),
       thirdPersonCarArtAnchorScreenErrorPx: bodyAnchorScreenErrorPx,
       thirdPersonCarArtAnchorDistanceErrorM: Number.isFinite(actualRearwardM)
         ? Math.abs(actualRearwardM - expectedRearwardM)
@@ -27621,17 +27935,25 @@ export default class RaceEditor {
       const blendedTargetYaw = normalizeAngle(nearYaw + normalizeAngle(targetYaw - nearYaw) * 0.72);
       const yawError = normalizeAngle(blendedTargetYaw - Number(session.carYaw || 0));
       const lateral = clamp(Number(projection?.lateral || 0) / Math.max(1, this.getRaceRoadHalfWidthWorld()), -1.5, 1.5);
-      const sharpTurn = Math.abs(yawError) > 0.34;
+      const routeTurn = Math.abs(normalizeAngle(targetYaw - nearYaw));
+      const sharpTurn = Math.abs(yawError) > 0.3 || routeTurn > 0.18;
       const currentSpeed = Math.abs(Number(session.speedMps || 0));
-      this.raceInput.keyboardThrottle = !sharpTurn || currentSpeed < 10;
-      this.raceInput.keyboardBrake = sharpTurn && currentSpeed > 9;
+      const targetSpeedMps = clamp(18 - routeTurn * 30, 8, 18);
+      this.raceInput.keyboardThrottle = currentSpeed < targetSpeedMps - 0.5;
+      this.raceInput.keyboardBrake = currentSpeed > targetSpeedMps + (sharpTurn ? 0.25 : 1.5);
       this.raceInput.binarySteer = 0;
-      this.raceInput.rawThrottleAxis = this.raceInput.keyboardThrottle ? 0.82 : 0.18;
+      this.raceInput.rawThrottleAxis = this.raceInput.keyboardThrottle ? 0.72 : 0.08;
       this.raceInput.throttleAxis = this.raceInput.rawThrottleAxis;
-      this.raceInput.rawBrakeAxis = this.raceInput.keyboardBrake ? 0.42 : 0;
+      this.raceInput.rawBrakeAxis = this.raceInput.keyboardBrake ? 0.5 : 0;
       this.raceInput.brakeAxis = this.raceInput.rawBrakeAxis;
       this.raceInput.analogSteeringActive = true;
-      this.raceInput.analogSteeringIntent = clamp(yawError * 4.2 - lateral * 1.15, -1, 1);
+      // Physical steering uses the opposite sign from world yaw: negative
+      // steering increases yaw. Route lateral is positive on the left, so
+      // both the heading and centering errors must be negated here. The old
+      // positive yaw term overwhelmed centering before the first bend.
+      this.raceInput.analogSteeringIntent = clamp(
+        -yawError * 1.55 - lateral * 0.38, -0.62, 0.62
+      );
       this.raceInput.syntheticAnalogSteering = true;
       this.raceInput.handbrake = false;
       this.raceInput.paused = false;
@@ -27642,6 +27964,7 @@ export default class RaceEditor {
         carEditorPreview: true,
         failureRevision: preview.tuningRevision
       })) return;
+      this.updateRaceAutomaticVehicleRecovery(seconds);
       if (!this.playtestSession
         || Number(this.playtestSession.distance || 0) >= routeLength
         || Number(this.playtestSession.lap || 1) > 1
@@ -27652,6 +27975,28 @@ export default class RaceEditor {
     if (this.carEditorPreviewRuntimeFailureMessage) {
       this.status = this.carEditorPreviewRuntimeFailureMessage;
     }
+  }
+
+  updateCarEditorPreviewSelectHold(input = null, dt = 0) {
+    if (this.mode !== 'car') return false;
+    let triggered = false;
+    this.bindCarEditorPreviewPlaytest(() => {
+      const gamepadInput = this.game?.input || input || {};
+      const gamepadActions = gamepadInput?.getGamepadActions?.()
+        || gamepadInput?.gamepadActions || input?.gamepadActions || {};
+      const isSelectDown = typeof gamepadInput?.isGamepadDown === 'function'
+        ? Boolean(gamepadInput.isGamepadDown('gamepadSelect'))
+        : Boolean(gamepadActions.gamepadSelect);
+      const wasSelectPressed = typeof gamepadInput?.wasGamepadPressed === 'function'
+        ? Boolean(gamepadInput.wasGamepadPressed('gamepadSelect'))
+        : Boolean(gamepadInput?.gamepadPressed?.has?.('gamepadSelect'));
+      triggered = this.updateRaceGamepadSelectHold({
+        isDown: isSelectDown,
+        wasPressed: wasSelectPressed,
+        deltaMs: Math.max(0, Number(dt || 0)) * 1000
+      });
+    });
+    return triggered;
   }
 
   drawCarEditorStudioSprintPreviewRoad(ctx, bounds, { phase = 0 } = {}) {
@@ -36303,12 +36648,20 @@ export default class RaceEditor {
         yaw: Number(pose.yaw || 0),
         cameraYaw,
         car,
+        renderState: ai.vehicleRenderState,
         color: ai.difficulty === 'expert' ? '#ff5f57' : ai.difficulty === 'hard' ? '#f2d45c' : ai.difficulty === 'medium' ? '#7ed957' : '#58d6ff'
       });
     });
   }
 
-  drawRaceProjectedCarSprite(ctx, bounds, { projected = null, yaw = 0, cameraYaw = 0, car = this.selectedCar, color = '#58d6ff' } = {}) {
+  drawRaceProjectedCarSprite(ctx, bounds, {
+    projected = null,
+    yaw = 0,
+    cameraYaw = 0,
+    car = this.selectedCar,
+    renderState = null,
+    color = '#58d6ff'
+  } = {}) {
     if (!projected?.visible) return;
     let { width, height } = this.getRaceProjectedCarBillboardSize(bounds, { projected, car });
     const x = projected.screenX;
@@ -36324,7 +36677,7 @@ export default class RaceEditor {
         yaw,
         pitchRad: 0,
         rollRad: 0
-      }, car);
+      }, car, { renderState });
       const rearBodyProjected = this.projectRaceWorldPointToCamera({
         x: rearBodyAnchor.x,
         z: rearBodyAnchor.z,
@@ -36353,6 +36706,23 @@ export default class RaceEditor {
       const bodyAnchorY = rearBodyProjected?.visible && Number.isFinite(Number(rearBodyProjected.screenY))
         ? Number(rearBodyProjected.screenY) - bodyHeight * 0.42
         : y - height * 0.42;
+      const bodyOrientation = renderState?.orientation
+        || quaternionFromEuler({ yaw, pitch: 0, roll: 0 });
+      const bodyUpWorld = rotateVectorByQuaternion({ x: 0, y: 1, z: 0 }, bodyOrientation);
+      const bodyUpProjected = this.projectRaceWorldPointToCamera({
+        x: rearBodyAnchor.x + Number(bodyUpWorld.x || 0),
+        z: rearBodyAnchor.z + Number(bodyUpWorld.z || 0),
+        elevation: rearBodyAnchor.elevation
+          + Number(bodyUpWorld.y || 0) / RACE_THREE_ELEVATION_M,
+        segment: projected.segment || null
+      }, camera, cameraYaw, bounds);
+      const bodyUpX = Number(bodyUpProjected?.screenX) - Number(rearBodyProjected?.screenX);
+      const bodyUpY = Number(bodyUpProjected?.screenY) - Number(rearBodyProjected?.screenY);
+      const bodyRotationRad = bodyUpProjected?.visible && rearBodyProjected?.visible
+        && Number.isFinite(bodyUpX) && Number.isFinite(bodyUpY)
+        && Math.hypot(bodyUpX, bodyUpY) > 0.001
+        ? Math.atan2(bodyUpX, -bodyUpY)
+        : Number(renderState?.rollRad || 0);
       const shadowGroundPoint = this.getRaceShadowGroundSurfacePoint({
         x: Number(projected.x || 0),
         z: Number(projected.z || 0),
@@ -36370,6 +36740,7 @@ export default class RaceEditor {
         baseHeight: height,
         bodyBaseWidth: bodyWidth,
         bodyBaseHeight: bodyHeight,
+        bodyRotationRad,
         artChoice,
         frontTireAngle: 0,
         tireScroll: this.getRaceTireTextureScroll(car),

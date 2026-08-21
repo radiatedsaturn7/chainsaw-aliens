@@ -94,3 +94,30 @@ test('VehicleRenderState always contains four finite attached wheels without con
     assert.equal(Number.isFinite(state.wheelPoses[wheelId].position.x), true);
   }
 });
+
+test('VehicleRenderState ignores stale tire-substep world hubs at high chassis speed', () => {
+  const runner = runnerFor({ position: { x: 80, y: 1.2, z: 160 } });
+  for (const wheelId of wheelIds) {
+    runner.state.contactPatches[wheelId].hubPositionWorld = {
+      x: wheelId[1] === 'l' ? -0.8 : 0.8,
+      y: 0.5,
+      z: wheelId[0] === 'f' ? 1.35 : -1.35
+    };
+    runner.state.contactPatches[wheelId].suspensionMountPositionWorld = {
+      x: 0,
+      y: 1,
+      z: 0
+    };
+  }
+
+  const first = createVehicleRenderStateFromRunner(runner);
+  runner.state.position = { x: 86, y: 1.2, z: 172 };
+  const second = createVehicleRenderStateFromRunner(runner);
+
+  for (const wheelId of wheelIds) {
+    assert.deepEqual(second.wheels[wheelId].hubPositionBody,
+      first.wheels[wheelId].hubPositionBody);
+    assert.equal(second.wheelPoses[wheelId].position.x - first.wheelPoses[wheelId].position.x, 6);
+    assert.equal(second.wheelPoses[wheelId].position.z - first.wheelPoses[wheelId].position.z, 12);
+  }
+});

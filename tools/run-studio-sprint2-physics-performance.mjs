@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 
 import RaceEditor from '../src/ui/RaceEditor.js';
@@ -234,7 +235,7 @@ function checksumRun(editor) {
   }));
 }
 
-function runAtFps({ editor, worldBake, fps, sectionSeconds }) {
+function runAtFps({ editor, worldBake, fps, sectionSeconds, physicsSurfaceDebug = false }) {
   const aggregate = beginAggregate();
   const sections = [];
   let recoveryCount = 0;
@@ -248,10 +249,10 @@ function runAtFps({ editor, worldBake, fps, sectionSeconds }) {
     const session = editor.playtestSession;
     session.countdownRemainingMs = 0;
     session.startupFramePending = false;
-    editor.raceInput.physicsSurfaceVisible = false;
+    editor.raceInput.physicsSurfaceVisible = physicsSurfaceDebug;
     editor.raceInput.physicsPerformanceVisible = true;
     editor.raceInput.telemetryVisible = false;
-    session.physicsSurfaceVisible = false;
+    session.physicsSurfaceVisible = physicsSurfaceDebug;
     session.physicsPerformanceVisible = true;
     session.telemetryVisible = false;
     if (!editor.updatePlaytestSafely(0)) {
@@ -351,6 +352,9 @@ const physicsQualityProfile = readOption('--profile', 'realtime');
 const requestedReferenceMachine = process.argv.includes('--reference-machine');
 const referenceMachineId = String(readOption('--reference-machine-id', '')).trim();
 const requireWorkerQualification = process.argv.includes('--require-worker-qualification');
+const physicsSurfaceDebug = process.argv.includes('--physics-surface-debug');
+const enforceBudgets = process.argv.includes('--enforce-budgets');
+const enforceRuntimeIntegrity = process.argv.includes('--enforce-runtime-integrity');
 if (requestedReferenceMachine && !referenceMachineId) {
   throw new Error('--reference-machine requires a stable --reference-machine-id');
 }
@@ -384,7 +388,8 @@ const runs = activeFpsValues.map((fps) => runAtFps({
   editor,
   worldBake,
   fps,
-  sectionSeconds
+  sectionSeconds,
+  physicsSurfaceDebug
 }));
 const resolvedPhysicsConfig = editor.vehicleDynamicsAuthority?.runner?.config || null;
 const report = {
@@ -428,7 +433,7 @@ const report = {
     totalSecondsPerFps: SECTIONS.length * sectionSeconds,
     renderFpsValues: activeFpsValues,
     physicsIncidentRecording: false,
-    physicsSurfaceDebug: false,
+    physicsSurfaceDebug,
     telemetryRetention: 'transient',
     physicsCostAccounting: true,
     physicsStepAccounting: 'elapsed-and-backlog'
@@ -439,6 +444,7 @@ const report = {
   runs
 };
 report.workerMigrationQualification = createVehicleDynamicsWorkerQualificationFromReport(report);
+mkdirSync(dirname(outputPath), { recursive: true });
 writeFileSync(outputPath, `${JSON.stringify(report, null, 2)}\n`);
 process.stdout.write(`${JSON.stringify({
   outputPath,
@@ -461,4 +467,22 @@ if (requireWorkerQualification && report.workerMigrationQualification.qualified 
     }\n`
   );
   process.exitCode = 1;
+}
+if (enforceBudgets || enforceRuntimeIntegrity) {
+  const sixty = runs.find((run) => run.fps === 60);
+  const failures = [];
+  if (!sixty) failures.push('missing 60 FPS authority run');
+  else {
+    if (enforceBudgets) {
+      if (sixty.physicsUpdateMs.p50 >= report.acceptanceTargets.physicsP50MsAt60Fps) failures.push(`p50 ${sixty.physicsUpdateMs.p50} ms`);
+      if (sixty.physicsUpdateMs.p95 >= report.acceptanceTargets.physicsP95MsAt60Fps) failures.push(`p95 ${sixty.physicsUpdateMs.p95} ms`);
+      if (sixty.physicsUpdateMs.p99 >= report.acceptanceTargets.physicsP99MsAt60Fps) failures.push(`p99 ${sixty.physicsUpdateMs.p99} ms`);
+    }
+    if (sixty.peakBacklogSteps > 0) failures.push(`backlog ${sixty.peakBacklogSteps} steps`);
+    if (sixty.recovery.count > 0) failures.push(`recoveries ${sixty.recovery.count}`);
+  }
+  if (failures.length) {
+    process.stderr.write(`Studio Sprint2 performance budget failed: ${failures.join('; ')}\n`);
+    process.exitCode = 1;
+  }
 }

@@ -1,8 +1,7 @@
 import { RACE_WHEEL_IDS } from './SimulationMath.js';
 import {
   eulerFromQuaternion,
-  rotateVectorByQuaternion,
-  rotateVectorToBody
+  rotateVectorByQuaternion
 } from './RigidBodyMath.js';
 import { resolvePerWheelAlignment } from './SuspensionGeometry.js';
 
@@ -32,11 +31,15 @@ const quaternion = (value = {}) => ({
   x: finite(value.x), y: finite(value.y), z: finite(value.z), w: finite(value.w, 1)
 });
 
-const subtract = (point = {}, origin = {}) => ({
-  x: finite(point.x) - finite(origin.x),
-  y: finite(point.y) - finite(origin.y),
-  z: finite(point.z) - finite(origin.z)
-});
+const normalizedVector = (value = {}, fallback = { x: 0, y: -1, z: 0 }) => {
+  const x = finite(value.x, finite(fallback.x));
+  const y = finite(value.y, finite(fallback.y, -1));
+  const z = finite(value.z, finite(fallback.z));
+  const length = Math.hypot(x, y, z);
+  return length > 1e-9
+    ? { x: x / length, y: y / length, z: z / length }
+    : vector(fallback, { y: -1 });
+};
 
 function multiplyQuaternion(left = {}, right = {}) {
   const lx = finite(left.x); const ly = finite(left.y); const lz = finite(left.z); const lw = finite(left.w, 1);
@@ -196,15 +199,46 @@ export function createVehicleRenderStateFromRunner(runner, {
       state.suspensionTravel?.[wheelId] ?? suspension.compressionRatio
     );
     const halfTrack = finite(front ? config.frontTrackWidthM : config.rearTrackWidthM, 1.58) * 0.5;
-    const fallbackHubBody = {
+    const suspensionAxisBody = normalizedVector(
+      patch.suspensionAxisLocal
+        || suspension.suspensionAxisLocal
+        || (front
+          ? config.suspensionDefinitionFront?.suspensionAxis
+          : config.suspensionDefinitionRear?.suspensionAxis),
+      { x: 0, y: -1, z: 0 }
+    );
+    const suspensionTravelM = finite(
+      front ? config.suspensionTravelFrontM : config.suspensionTravelRearM
+    );
+    const staticSagRatio = finite(
+      front ? config.staticSagRatioFront : config.staticSagRatioRear
+    );
+    const staticSagM = finite(
+      suspension.staticSagTargetM,
+      suspensionTravelM * staticSagRatio
+    );
+    const staticHubBody = {
       x: left ? -halfTrack : halfTrack,
-      y: -finite(config.cgHeightM, 0.55) + finite(config.wheelRadiusM, 0.337) - compression,
+      y: -finite(config.cgHeightM, 0.55) + finite(config.wheelRadiusM, 0.337),
       z: front ? frontZ : rearZ
     };
-    const hubWorld = patch.hubPositionWorld || suspension.hubPositionWorld || patch.wheelCenterWorld;
-    const mountWorld = patch.suspensionMountPositionWorld
-      || suspension.suspensionMountPositionWorld;
-    const axisWorld = patch.suspensionAxisWorld || suspension.suspensionAxisWorld;
+    // Render geometry is reconstructed from the current body pose and current
+    // suspension coordinate. World-space contact kinematics may belong to an
+    // earlier tire substep and must never make a visual wheel trail the body
+    // until the next contact refresh.
+    const hubPositionBody = {
+      x: staticHubBody.x + suspensionAxisBody.x * (staticSagM - compression),
+      y: staticHubBody.y + suspensionAxisBody.y * (staticSagM - compression),
+      z: staticHubBody.z + suspensionAxisBody.z * (staticSagM - compression)
+    };
+    const suspensionRestLengthM = finite(
+      front ? config.suspensionRestLengthFrontM : config.suspensionRestLengthRearM
+    );
+    const suspensionMountBody = {
+      x: staticHubBody.x + suspensionAxisBody.x * (staticSagM - suspensionRestLengthM),
+      y: staticHubBody.y + suspensionAxisBody.y * (staticSagM - suspensionRestLengthM),
+      z: staticHubBody.z + suspensionAxisBody.z * (staticSagM - suspensionRestLengthM)
+    };
     const normalLoadN = finite(patch.normalLoadN);
     const flags = (
       (patch.validTreadContact === true ? VEHICLE_RENDER_WHEEL_FLAGS.validTreadContact : 0)
@@ -217,15 +251,9 @@ export function createVehicleRenderStateFromRunner(runner, {
         ? VEHICLE_RENDER_WHEEL_FLAGS.terrainDataAvailable : 0)
     );
     wheels[wheelId] = {
-      hubPositionBody: hubWorld
-        ? vector(rotateVectorToBody(subtract(hubWorld, position), orientation))
-        : fallbackHubBody,
-      suspensionMountBody: mountWorld
-        ? vector(rotateVectorToBody(subtract(mountWorld, position), orientation))
-        : { x: fallbackHubBody.x, y: fallbackHubBody.y + compression, z: fallbackHubBody.z },
-      suspensionAxisBody: axisWorld
-        ? vector(rotateVectorToBody(axisWorld, orientation))
-        : { x: 0, y: -1, z: 0 },
+      hubPositionBody,
+      suspensionMountBody,
+      suspensionAxisBody,
       suspensionCompressionM: compression,
       steeringAngleRad: finite(
         patch.steeringAngleRad,

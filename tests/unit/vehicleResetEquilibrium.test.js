@@ -8,6 +8,10 @@ import {
 import { unpackPhysicsIncidentFrame } from '../../src/racing/simulation/PhysicsIncidentRecorder.js';
 import { createSurfaceSample } from '../../src/racing/simulation/SurfaceSample.js';
 import {
+  quaternionFromEuler,
+  rotateVectorByQuaternion
+} from '../../src/racing/simulation/RigidBodyMath.js';
+import {
   buildRaceBakedSurfaceSampler,
   sampleRaceBakedSurface
 } from '../../src/racing/RaceBakedSurfaceSampler.js';
@@ -69,6 +73,35 @@ test('real static support solve converges and installs one final flat-ground pos
     assert.ok(Number.isFinite(reset.state.contactPatches[wheelId].contactPointWorld.y));
     assert.equal(reset.state.suspensionState[wheelId].unsprungVelocityMps, 0);
   }
+});
+
+test('authoritative reset rejects an upside-down requested orientation', () => {
+  const config = createVehicleDynamicsConfig({
+    handlingPreset: 'simulation', tireHz: 120, telemetryRetention: 'none'
+  });
+  const runner = new VehicleDynamicsRunner({
+    config,
+    initialState: {
+      position: { x: 0, y: config.cgHeightM + 0.08, z: 0 },
+      orientation: quaternionFromEuler({ yaw: 0.4, roll: Math.PI })
+    },
+    environmentProvider: () => createAnalyticalTerrain()
+  });
+  const reset = runner.resetAuthoritativeState({
+    position: { x: 0, y: config.cgHeightM + 0.08, z: 0 },
+    orientation: quaternionFromEuler({ yaw: 0.4, roll: Math.PI }),
+    gear: 1
+  }, { parkUntilDrive: true });
+  const stateUp = rotateVectorByQuaternion(
+    { x: 0, y: 1, z: 0 }, reset.state.orientation
+  );
+  const renderUp = rotateVectorByQuaternion(
+    { x: 0, y: 1, z: 0 }, reset.renderState.orientation
+  );
+  assert.equal(reset.equilibrium.status, 'converged');
+  assert.ok(stateUp.y > 0.9);
+  assert.ok(renderUp.y > 0.9);
+  assert.equal(reset.state.rollRad > -Math.PI / 2 && reset.state.rollRad < Math.PI / 2, true);
 });
 
 test('immutable reset hold preserves the converged four-wheel support transaction', () => {

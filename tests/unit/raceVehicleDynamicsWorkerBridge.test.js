@@ -297,6 +297,39 @@ test('worker reset immediately moves body and all wheels as one rigid presentati
   }
 });
 
+test('worker provisional reset replaces an inverted body with an upright complete vehicle', () => {
+  const wheelIds = ['fl', 'fr', 'rl', 'rr'];
+  const session = {
+    vehicleRenderState: {
+      resetGeneration: 8,
+      position: { x: 1, y: 2, z: 3 },
+      orientation: quaternionFromEuler({ yaw: 0.2, roll: Math.PI }),
+      velocity: {}, angularVelocity: {}, visualState: 1,
+      wheels: Object.fromEntries(wheelIds.map((wheelId) => [wheelId, {
+        hubPositionBody: { x: wheelId[1] === 'l' ? -0.8 : 0.8, y: -0.3,
+          z: wheelId[0] === 'f' ? 1.3 : -1.3 },
+        suspensionMountBody: { x: 0, y: 0.1, z: 0 },
+        suspensionAxisBody: { x: 0, y: -1, z: 0 }
+      }]))
+    },
+    vehicle3d: { enabled: true }
+  };
+  const provisional = applyRaceVehicleProvisionalResetPresentation(session, {
+    position: { x: 20, y: 5, z: -10 },
+    orientation: quaternionFromEuler({ yaw: 1.1, roll: Math.PI })
+  }, 9);
+  const up = rotateVectorByQuaternion({ x: 0, y: 1, z: 0 }, provisional.orientation);
+  assert.ok(up.y > 0.9);
+  assert.equal(provisional.resetGeneration, 9);
+  assert.deepEqual(Object.keys(provisional.wheelPoses).sort(), wheelIds);
+  assert.equal(Object.values(provisional.wheelPoses).every((wheel) => (
+    wheel.resetGeneration === 9
+    && Number.isFinite(wheel.position.x)
+    && Number.isFinite(wheel.position.y)
+    && Number.isFinite(wheel.position.z)
+  )), true);
+});
+
 test('AI active state is synchronized without stepping it on the render thread', () => {
   const worker = new FakeWorker();
   let now = 0;

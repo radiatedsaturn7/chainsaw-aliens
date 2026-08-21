@@ -1,0 +1,144 @@
+name: Vehicle Dynamics Validation
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vehicle-dynamics-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  full-matrix:
+    name: Full determinism matrix (${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: 1/4
+            index: 0
+          - shard: 2/4
+            index: 1
+          - shard: 3/4
+            index: 2
+          - shard: 4/4
+            index: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Run authoritative full physics matrix shard
+        run: npm run test:vehicle-dynamics:full
+        env:
+          FULL_PHYSICS_MATRIX: 1
+          VEHICLE_DYNAMICS_SHARD_TOTAL: 4
+          VEHICLE_DYNAMICS_SHARD_INDEX: ${{ matrix.index }}
+
+  measured-vehicles:
+    name: Measured ${{ matrix.label }} validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: WRX2
+            script: test:vehicle-validation:wrx
+            artifact: wrx
+          - label: BRZ
+            script: test:vehicle-validation:brz
+            artifact: brz
+          - label: Civic-Type-R
+            script: test:vehicle-validation:civic
+            artifact: civic-type-r
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run ${{ matrix.script }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vehicle-validation-${{ matrix.artifact }}
+          path: artifacts/vehicle-validation/
+          if-no-files-found: error
+          retention-days: 30
+
+  focused-physics:
+    name: Focused collision replay and performance
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: High-energy collision validation
+        run: npm run test:vehicle-validation:high-energy
+      - name: Collision classification and friction risks
+        run: npm run test:vehicle-validation:collision-risks
+      - name: Replay determinism validation
+        run: npm run test:vehicle-validation:replay
+      - name: Studio Sprint 2 performance validation
+        run: node tools/run-studio-sprint2-physics-performance.mjs --fps 60 --output artifacts/vehicle-validation/studio-sprint2-github-hosted.json --enforce-runtime-integrity
+        env:
+          STUDIO_SPRINT2_PERFORMANCE_AUTHORITY: github-hosted-baseline
+      - name: Studio Sprint 2 Physics Surface diagnostic baseline
+        run: node tools/run-studio-sprint2-physics-performance.mjs --fps 60 --output artifacts/vehicle-validation/studio-sprint2-github-hosted-physics-surface.json --physics-surface-debug
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vehicle-validation-studio-sprint2-performance
+          path: artifacts/vehicle-validation/
+          if-no-files-found: ignore
+          retention-days: 30
+
+  required:
+    name: Vehicle dynamics required gate
+    if: always()
+    needs: [full-matrix, measured-vehicles, focused-physics]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        if: always()
+        with:
+          pattern: vehicle-validation-*
+          path: artifacts/required-gate-input
+          merge-multiple: true
+      - name: Generate unified human-readable report
+        if: always()
+        run: node tools/vehicle-validation/merge-reports.mjs --input=artifacts/required-gate-input --output=artifacts/vehicle-validation-report.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vehicle-validation-required-gate-report
+          path: artifacts/vehicle-validation-report.md
+          if-no-files-found: error
+          retention-days: 30
+      - name: Require every validation job
+        env:
+          FULL_MATRIX: ${{ needs.full-matrix.result }}
+          MEASURED: ${{ needs.measured-vehicles.result }}
+          FOCUSED: ${{ needs.focused-physics.result }}
+        run: |
+          test "$FULL_MATRIX" = success
+          test "$MEASURED" = success
+          test "$FOCUSED" = success
+          echo "Full vehicle dynamics matrix has a visible successful workflow run."

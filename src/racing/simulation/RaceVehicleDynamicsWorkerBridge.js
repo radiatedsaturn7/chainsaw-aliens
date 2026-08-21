@@ -7,6 +7,7 @@ import {
 import { VehicleDynamicsWorkerClient } from './VehicleDynamicsWorkerClient.js';
 import {
   eulerFromQuaternion,
+  quaternionFromEuler,
   rotateVectorByQuaternion,
   rotateVectorToBody
 } from './RigidBodyMath.js';
@@ -41,6 +42,15 @@ function transformResetPoint(point = {}, previousPosition = {}, previousOrientat
   };
 }
 
+function getUprightResetPresentationOrientation(orientation = {}) {
+  const up = rotateVectorByQuaternion({ x: 0, y: 1, z: 0 }, orientation);
+  if (Number(up.y || 0) > 0.1) return orientation;
+  const forward = rotateVectorByQuaternion({ x: 0, y: 0, z: 1 }, orientation);
+  const yaw = Math.hypot(Number(forward.x || 0), Number(forward.z || 0)) > 1e-9
+    ? Math.atan2(Number(forward.x || 0), Number(forward.z || 0)) : 0;
+  return quaternionFromEuler({ yaw, pitch: 0, roll: 0 });
+}
+
 export function createRaceVehicleProvisionalResetRenderState(
   session, resetState = {}, resetGeneration = 0
 ) {
@@ -50,7 +60,7 @@ export function createRaceVehicleProvisionalResetRenderState(
   const previousPosition = canonical?.position || vehicle.position;
   const previousOrientation = canonical?.orientation || vehicle.orientation;
   const nextPosition = resetState.position;
-  const nextOrientation = resetState.orientation;
+  const nextOrientation = getUprightResetPresentationOrientation(resetState.orientation);
   if (!previousPosition || !previousOrientation || !nextPosition || !nextOrientation) return null;
   const wheels = {};
   for (const wheelId of RACE_WHEEL_IDS) {
@@ -553,7 +563,7 @@ export class RaceVehicleDynamicsWorkerBridge {
     return snapshot;
   }
 
-  resetVehicle(state, vehicleId = 'player', session = null) {
+  resetVehicle(state, vehicleId = 'player', session = null, reason = 'track-center-reset') {
     this.resetSequence = Math.max(
       this.resetSequence,
       Number(session?.vehicleRenderState?.resetGeneration || 0),
@@ -571,7 +581,8 @@ export class RaceVehicleDynamicsWorkerBridge {
       createVehicleResetCommandBuffer(state),
       this.resetSequence,
       vehicleId,
-      provisionalSnapshot
+      provisionalSnapshot,
+      reason
     );
     return this.resetSequence;
   }
