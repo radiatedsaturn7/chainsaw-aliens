@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 
 import RaceEditor from '../src/ui/RaceEditor.js';
@@ -442,6 +443,7 @@ const report = {
   runs
 };
 report.workerMigrationQualification = createVehicleDynamicsWorkerQualificationFromReport(report);
+mkdirSync(dirname(outputPath), { recursive: true });
 writeFileSync(outputPath, `${JSON.stringify(report, null, 2)}\n`);
 process.stdout.write(`${JSON.stringify({
   outputPath,
