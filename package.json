@@ -22,6 +22,8 @@
     "test:vehicle-dynamics:smoke": "node tools/run-vehicle-dynamics-tests.mjs smoke",
     "test:vehicle-dynamics:full": "FULL_PHYSICS_MATRIX=1 node tools/run-vehicle-dynamics-tests.mjs full",
     "test:vehicle-validation:smoke": "node --test --test-concurrency=1 --test-name-pattern='exact WRX validation smoke' tests/unit/vehicleValidationHarness.test.js",
+    "test:vehicle-validation:self": "node --test --test-concurrency=1 --test-name-pattern='^harness self-validation:' tests/unit/vehicleValidationHarness.test.js",
+    "test:vehicle-validation:physics-surface-browser": "playwright test tests/playwright/vehicle-physics-surface-performance.spec.js",
     "test:vehicle-validation:wrx": "node tools/vehicle-validation/run-validation.mjs --vehicle=wrx-manual,wrx-automatic --case=all --aids=both --report=artifacts/vehicle-validation/wrx.json",
     "test:vehicle-validation:brz": "node tools/vehicle-validation/run-validation.mjs --vehicle=brz-manual --case=all --aids=both --report=artifacts/vehicle-validation/brz.json",
     "test:vehicle-validation:civic": "node tools/vehicle-validation/run-validation.mjs --vehicle=civic-type-r-manual --case=all --aids=both --report=artifacts/vehicle-validation/civic-type-r.json",

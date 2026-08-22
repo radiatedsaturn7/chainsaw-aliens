@@ -153,7 +153,9 @@ for (const cycle of report.tireCompoundCycles) {
   lines.push(`| ${cycle.name} | ${cycle.checks.heating ? 'pass' : 'fail'} | ${cycle.checks.peakPerformance ? 'pass' : 'fail'} | ${cycle.checks.degradation ? 'pass' : 'fail'} | ${cycle.checks.cooling ? 'pass' : 'fail'} | ${cycle.checks.pressureCycle ? 'pass' : 'fail'} |`);
 }
 lines.push('', '## Known discrepancies', '', ...(report.knownDiscrepancies.length
-  ? report.knownDiscrepancies.map((entry) => `- ${entry.vehicleKey}/${entry.caseName}: ${entry.metric} measured ${entry.measured}; target ${entry.target.range.join('–')} ${entry.target.unit}.`)
+  ? report.knownDiscrepancies.map((entry) => entry.target
+    ? `- ${entry.vehicleKey}/${entry.caseName}: ${entry.metric} measured ${entry.measured}; target ${entry.target.range.join('–')} ${entry.target.unit}.`
+    : `- ${entry.vehicleKey}/${entry.caseName}: required ${entry.metric} was not measured.`)
   : ['- None.']));
 await writeFile(markdownPath, `${lines.join('\n')}\n`);
 if (referencePath && updateReference) {
@@ -163,9 +165,14 @@ if (referencePath && updateReference) {
 process.stdout.write(`${markdownPath}\n`);
 const outsideReferenceEnvelope = results.some((result) =>
   String(result.referenceStatus).startsWith('outside-envelope'));
+const missingReference = results.some((result) => result.referenceStatus === 'missing-baseline');
+const missingRequiredMeasurement = results.some((result) => Object.entries(result.checks)
+  .some(([name, check]) => check.status === 'fail'
+    && !Number.isFinite(Number(result.values[name]))));
 const compoundFailure = report.tireCompoundCycles.some((cycle) =>
   Object.values(cycle.checks).some((pass) => !pass));
 if (report.summary.recoveries > 0 || report.summary.growingBacklogCases > 0
-  || (enforce && (report.summary.fail > 0 || outsideReferenceEnvelope || compoundFailure))) {
+  || (enforce && (!referencePath || missingReference || missingRequiredMeasurement
+    || report.summary.fail > 0 || outsideReferenceEnvelope || compoundFailure))) {
   process.exitCode = 1;
 }

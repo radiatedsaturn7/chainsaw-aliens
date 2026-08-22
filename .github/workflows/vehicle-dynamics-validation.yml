@@ -15,6 +15,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  harness-self-validation:
+    name: Vehicle validation harness self-checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:vehicle-validation:self
+
   full-matrix:
     name: Full determinism matrix (${{ matrix.shard }})
     runs-on: ubuntu-latest
@@ -47,6 +60,7 @@ jobs:
 
   measured-vehicles:
     name: Measured ${{ matrix.label }} validation
+    needs: harness-self-validation
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -109,10 +123,26 @@ jobs:
           if-no-files-found: ignore
           retention-days: 30
 
+  physics-surface-browser:
+    name: Physics Surface real-browser benchmark
+    needs: harness-self-validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:vehicle-validation:physics-surface-browser -- --reporter=line --workers=1
+
   required:
     name: Vehicle dynamics required gate
     if: always()
-    needs: [full-matrix, measured-vehicles, focused-physics]
+    needs: [harness-self-validation, full-matrix, measured-vehicles, focused-physics, physics-surface-browser]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -135,10 +165,14 @@ jobs:
       - name: Require every validation job
         env:
           FULL_MATRIX: ${{ needs.full-matrix.result }}
+          HARNESS_SELF_VALIDATION: ${{ needs.harness-self-validation.result }}
           MEASURED: ${{ needs.measured-vehicles.result }}
           FOCUSED: ${{ needs.focused-physics.result }}
+          PHYSICS_SURFACE_BROWSER: ${{ needs.physics-surface-browser.result }}
         run: |
+          test "$HARNESS_SELF_VALIDATION" = success
           test "$FULL_MATRIX" = success
           test "$MEASURED" = success
           test "$FOCUSED" = success
+          test "$PHYSICS_SURFACE_BROWSER" = success
           echo "Full vehicle dynamics matrix has a visible successful workflow run."
