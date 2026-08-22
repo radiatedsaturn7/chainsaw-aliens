@@ -43,14 +43,33 @@ function configureValidationTrack(editor, caseName, trackLengthM = 3000) {
   editor.selectedRace.hazards = [];
   editor.selectedRace.weather = caseName === 'standing-wet-launch' ? 'rain' : 'clear';
   editor.selectedRace.road.width = 11;
-  editor.selectedRace.road.nodes = [
-    { x: 0, y: 0, elevation: 0, role: 'start', locked: true },
-    { x: 0, y: trackLengthM, elevation: banked ? 0.08 : 0, role: 'finish' }
-  ];
-  editor.selectedRace.road.segments = [{
-    length: trackLengthM, curve: banked ? 0.12 : 0, elevation: banked ? 0.08 : 0,
-    banking: banked ? 0.32 : 0, surface: 'asphalt', turn: 'smooth', hazardIds: []
-  }];
+  if (banked) {
+    const approachM = trackLengthM * 0.2;
+    const transitionM = trackLengthM * 0.2;
+    editor.selectedRace.road.nodes = [
+      { x: 0, y: 0, elevation: 0, role: 'start', locked: true },
+      { x: 0, y: approachM, elevation: 0 },
+      { x: 0, y: approachM + transitionM, elevation: 0.08 },
+      { x: 0, y: trackLengthM, elevation: 0.08, role: 'finish' }
+    ];
+    editor.selectedRace.road.segments = [
+      { length: approachM, curve: 0, elevation: 0, banking: 0,
+        surface: 'asphalt', turn: 'smooth', hazardIds: [] },
+      { length: transitionM, curve: 0.06, elevation: 0.08, banking: 0.32,
+        surface: 'asphalt', turn: 'smooth', hazardIds: [] },
+      { length: trackLengthM - approachM - transitionM, curve: 0.12,
+        elevation: 0.08, banking: 0.32, surface: 'asphalt', turn: 'smooth', hazardIds: [] }
+    ];
+  } else {
+    editor.selectedRace.road.nodes = [
+      { x: 0, y: 0, elevation: 0, role: 'start', locked: true },
+      { x: 0, y: trackLengthM, elevation: 0, role: 'finish' }
+    ];
+    editor.selectedRace.road.segments = [{
+      length: trackLengthM, curve: 0, elevation: 0, banking: 0,
+      surface: 'asphalt', turn: 'smooth', hazardIds: []
+    }];
+  }
   if (curb) {
     editor.selectedRace.margin = {
       ...(editor.selectedRace.margin || {}), enabled: true, marginMode: 'on',

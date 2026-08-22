@@ -153,7 +153,9 @@ for (const cycle of report.tireCompoundCycles) {
   lines.push(`| ${cycle.name} | ${cycle.checks.heating ? 'pass' : 'fail'} | ${cycle.checks.peakPerformance ? 'pass' : 'fail'} | ${cycle.checks.degradation ? 'pass' : 'fail'} | ${cycle.checks.cooling ? 'pass' : 'fail'} | ${cycle.checks.pressureCycle ? 'pass' : 'fail'} |`);
 }
 lines.push('', '## Known discrepancies', '', ...(report.knownDiscrepancies.length
-  ? report.knownDiscrepancies.map((entry) => `- ${entry.vehicleKey}/${entry.caseName}: ${entry.metric} measured ${entry.measured}; target ${entry.target.range.join('–')} ${entry.target.unit}.`)
+  ? report.knownDiscrepancies.map((entry) => entry.target
+    ? `- ${entry.vehicleKey}/${entry.caseName}: ${entry.metric} measured ${entry.measured}; target ${entry.target.range.join('–')} ${entry.target.unit}.`
+    : `- ${entry.vehicleKey}/${entry.caseName}: required ${entry.metric} was not measured.`)
   : ['- None.']));
 await writeFile(markdownPath, `${lines.join('\n')}\n`);
 if (referencePath && updateReference) {
