@@ -1,6 +1,6 @@
 import { RACE_STOCK_PERFORMANCE_TARGETS } from '../../src/racing/raceData.js';
 
-export const VEHICLE_VALIDATION_VERSION = 'vehicle-validation-baseline-v1';
+export const VEHICLE_VALIDATION_VERSION = 'vehicle-validation-coherent-baseline-v2';
 
 export const VEHICLE_VALIDATION_VEHICLES = Object.freeze({
   'wrx-manual': Object.freeze({ carId: 'starter-rwd', label: 'WRX2 manual', transmission: 'manual' }),
@@ -17,8 +17,10 @@ export const VEHICLE_VALIDATION_CASES = Object.freeze([
 ]);
 
 export const VEHICLE_TRACE_FIELDS = Object.freeze([
-  'speedMps', 'engineRpm', 'gear', 'longitudinalAccelerationMps2',
+  'phase', 'speedMps', 'engineRpm', 'gear', 'requestedGear', 'shiftState',
+  'longitudinalAccelerationMps2',
   'lateralAccelerationMps2', 'yawRateRadps', 'bodySlipRad', 'steeringAngleRad',
+  'physicalRackAngleRad', 'wheelSteeringAnglesRad', 'assistState',
   'wheelLoadsN', 'slipRatioByWheel', 'slipAngleByWheel', 'suspensionCompressionM',
   'brakePressure', 'tireTemperatureC', 'tirePressurePsi'
 ]);

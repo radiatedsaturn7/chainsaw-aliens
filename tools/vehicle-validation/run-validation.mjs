@@ -163,9 +163,14 @@ if (referencePath && updateReference) {
 process.stdout.write(`${markdownPath}\n`);
 const outsideReferenceEnvelope = results.some((result) =>
   String(result.referenceStatus).startsWith('outside-envelope'));
+const missingReference = results.some((result) => result.referenceStatus === 'missing-baseline');
+const missingRequiredMeasurement = results.some((result) => Object.entries(result.checks)
+  .some(([name, check]) => check.status === 'fail'
+    && !Number.isFinite(Number(result.values[name]))));
 const compoundFailure = report.tireCompoundCycles.some((cycle) =>
   Object.values(cycle.checks).some((pass) => !pass));
 if (report.summary.recoveries > 0 || report.summary.growingBacklogCases > 0
-  || (enforce && (report.summary.fail > 0 || outsideReferenceEnvelope || compoundFailure))) {
+  || (enforce && (!referencePath || missingReference || missingRequiredMeasurement
+    || report.summary.fail > 0 || outsideReferenceEnvelope || compoundFailure))) {
   process.exitCode = 1;
 }
