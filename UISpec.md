@@ -167,12 +167,12 @@ Shared implementation helpers:
 ### Race Editor
 
 - Root: File, Edit, View, Track, Ground, Sprites, Settings.
-- Portrait bottom menu: File, Track, Ground, Sprites, Settings.
+- Portrait bottom menu: File, Ground, Sprites, Settings. Track is the first mode in the Ground mode picker rather than a separate portrait root; choosing it exposes Add, Move, and the selection-contextual node/edge controls on the work surface.
 - Edit: undo, redo, copy segment, paste segment, delete segment.
 - File: standard document actions plus generate random race and load built-in reference tracks.
 - Track: the command menu contains only Add. Add is a persistent placement mode; empty-map taps add draggable nodes, while existing nodes are always selected and moved by direct tap-drag. Node and edge editing is selection-contextual rather than duplicated in the Track menu. Selected interior nodes expose Smooth, Tight, and Hard corner styles; selected edges expose insert/delete, edge tile, surface, width, bumpiness, boundary, and snow condition. Circuit versus point-to-point behavior is inferred from whether the route endpoints connect; there must not be explicit Circuit/Destination menu toggles.
 - Ground: selected ground tile, paint ground, paint elevation, raise/lower, and brush size.
-- Ground triggers are selected from the portrait Ground hot menu alongside Ground, Elevation, Sprite, and Doodad. Trigger mode uses the contextual hot rail for effect, target, and management controls; empty-map taps place triggers while marker taps select them. Triggers are placed in world space and may play a sprite or animation, create a saved doodad, or change race weather when the player enters their radius.
+- Ground triggers are selected from the portrait Ground hot menu alongside Track, Ground, Elevation, Sprite, and Doodad. Trigger mode uses the contextual hot rail for effect, target, and management controls; empty-map taps place triggers while marker taps select them. Triggers are placed in world space and may play a sprite or animation, create a saved doodad, or change race weather when the player enters their radius.
 - Sprites: add, move, delete, size, and behavior for vertical scenery sprites.
 - Settings: road width, AI racer count, weather clear/rain/storm/snow, and On Race Complete behavior. On Race Complete supports Return to Origin, Next Race using the current car, or Load Level at a required tile selected from a full-level preview.
 - Race start settings select a saved MIDI track, enable or disable the 3-2-1-GO countdown, and enable a rolling start with an authored initial speed.

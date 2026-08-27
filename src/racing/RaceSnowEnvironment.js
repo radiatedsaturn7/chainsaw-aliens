@@ -5,8 +5,8 @@ export const RACE_SNOW_ENVIRONMENT_LIMITS = Object.freeze({
   cellSizeM: 32,
   snapDistanceM: 16,
   headingBucketRad: Math.PI / 18,
-  nearFadeStartM: 18,
-  nearFadeEndM: 34,
+  nearFadeStartM: 1.5,
+  nearFadeEndM: 5,
   columnHeightM: 24,
   maxParticles: 384,
   maxCachedParticles: 2048,
@@ -114,13 +114,15 @@ const createParticleRecord = (state, candidate) => {
     fallSpeedMps: 1.05 + randomFrom(seed, cellX, cellZ, slot, 4) * 1.85,
     swayPhase: randomFrom(seed, cellX, cellZ, slot, 5) * Math.PI * 2,
     swayFrequency: 0.34 + randomFrom(seed, cellX, cellZ, slot, 6) * 0.52,
-    sizePx: 1.2 + randomFrom(seed, cellX, cellZ, slot, 7) * 2.1,
+    sizePx: 0.9 + randomFrom(seed, cellX, cellZ, slot, 7) * 1.3,
     baseOpacity: 0.3 + randomFrom(seed, cellX, cellZ, slot, 8) * 0.7,
     worldX: 0,
     worldZ: 0,
     heightM: 0,
     cameraDepthM: 0,
     opacity: 0,
+    fallVelocityMps: 0,
+    lateralVelocityMps: 0,
     lastUsedTick: state.tick
   };
 };
@@ -389,6 +391,10 @@ export const updateRaceSnowEnvironmentField = (state, {
     particle.heightM = Number(
       particle.hydrated ? particle.groundHeightM : Number(camera.heightM || 0) - 3
     ) + 0.35 + limits.columnHeightM - fallTravelM;
+    particle.fallVelocityMps = particle.fallSpeedMps;
+    particle.lateralVelocityMps = gustMagnitude * 0.12
+      + Math.abs(Math.cos(particle.swayPhase + elapsedSeconds * particle.swayFrequency)
+        * particle.swayFrequency * 0.65);
     const dx = particle.worldX - Number(camera.x || 0);
     const dz = particle.worldZ - Number(camera.z || 0);
     particle.cameraDepthM = dx * basis.forwardX + dz * basis.forwardZ;

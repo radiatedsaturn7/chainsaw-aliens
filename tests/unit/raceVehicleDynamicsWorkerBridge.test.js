@@ -330,6 +330,35 @@ test('worker provisional reset replaces an inverted body with an upright complet
   )), true);
 });
 
+test('worker provisional reset replaces a near-side-rest body with an upright complete vehicle', () => {
+  const wheelIds = ['fl', 'fr', 'rl', 'rr'];
+  const sideRestOrientation = quaternionFromEuler({
+    yaw: 0.45, pitch: 0, roll: 80 * Math.PI / 180
+  });
+  const session = {
+    vehicleRenderState: {
+      resetGeneration: 12,
+      position: { x: 1, y: 2, z: 3 },
+      orientation: sideRestOrientation,
+      velocity: {}, angularVelocity: {}, visualState: 1,
+      wheels: Object.fromEntries(wheelIds.map((wheelId) => [wheelId, {
+        hubPositionBody: { x: wheelId[1] === 'l' ? -0.8 : 0.8, y: -0.3,
+          z: wheelId[0] === 'f' ? 1.3 : -1.3 },
+        suspensionMountBody: { x: 0, y: 0.1, z: 0 },
+        suspensionAxisBody: { x: 0, y: -1, z: 0 }
+      }]))
+    },
+    vehicle3d: { enabled: true }
+  };
+  const provisional = applyRaceVehicleProvisionalResetPresentation(session, {
+    position: { x: 20, y: 5, z: -10 },
+    orientation: sideRestOrientation
+  }, 13);
+  const up = rotateVectorByQuaternion({ x: 0, y: 1, z: 0 }, provisional.orientation);
+  assert.ok(up.y > 0.9);
+  assert.deepEqual(Object.keys(provisional.wheelPoses).sort(), wheelIds);
+});
+
 test('AI active state is synchronized without stepping it on the render thread', () => {
   const worker = new FakeWorker();
   let now = 0;

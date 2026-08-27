@@ -29,6 +29,9 @@ test('exact physical Select hold uses public gamepad state and performs an uprig
   editor.playtestSession.countdownRemainingMs = 0;
   editor.playtestSession.distance = 137;
   editor.playtestSession.worldX += 8;
+  editor.playtestSession.vehicleDynamicsRunner.state.orientation = quaternionFromEuler({
+    yaw: 0.35, pitch: 0, roll: 80 * Math.PI / 180
+  });
   for (let frame = 0; frame < 62; frame += 1) {
     editor.updateRaceKeyboardInput(idleInput, 1 / 60);
     selectPressed = false;
@@ -46,10 +49,64 @@ test('exact physical Select hold uses public gamepad state and performs an uprig
   const up = rotateVectorByQuaternion(
     { x: 0, y: 1, z: 0 }, editor.playtestSession.vehicleDynamicsRunner.state.orientation
   );
-  assert.ok(up.y > 0.5);
+  assert.ok(up.y > 0.9);
+  assert.equal(editor.playtestSession.vehicleDynamicsRunner.state.supportedWheelCount, 4);
   selectDown = false;
   editor.updateRaceKeyboardInput(idleInput, 1 / 60);
   assert.equal(editor.raceInput.cameraView, 'third-person');
+});
+
+test('exact hill reset retries a rejected first support solve before fading in', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('starter-rwd');
+  editor.updatePlaytestSafely(0);
+  const session = editor.playtestSession;
+  session.countdownRemainingMs = 0;
+  session.distance = 137;
+  const runner = session.vehicleDynamicsRunner;
+  runner.state.orientation = quaternionFromEuler({
+    yaw: 0.35, pitch: 0.2, roll: Math.PI
+  });
+  const originalReset = runner.resetAuthoritativeState.bind(runner);
+  const attemptedGenerations = [];
+  let attempts = 0;
+  runner.resetAuthoritativeState = (...args) => {
+    attempts += 1;
+    if (attempts === 1) {
+      const environmentProvider = runner.environmentProvider;
+      runner.environmentProvider = () => {
+        throw new Error('stale prepared hill terrain frame');
+      };
+      try {
+        return originalReset(...args);
+      } finally {
+        attemptedGenerations.push(runner.authoritativeResetAttemptSequence);
+        runner.environmentProvider = environmentProvider;
+      }
+    }
+    const result = originalReset(...args);
+    attemptedGenerations.push(runner.authoritativeResetAttemptSequence);
+    return result;
+  };
+  editor.resetRaceCarToRouteCenter({
+    projection: { distance: 137 }, reason: 'select-hold-reset'
+  });
+  session.edgeResetFadeMs = 0;
+  editor.updateRaceEdgeCenterResetFade();
+  assert.equal(session.pendingEdgeCenterReset?.moved, false);
+  assert.equal(session.pendingEdgeCenterReset?.attempts, 1);
+  assert.ok(session.edgeResetFadeMs > 0);
+  const stillOverturnedUp = rotateVectorByQuaternion(
+    { x: 0, y: 1, z: 0 }, runner.state.orientation
+  );
+  assert.ok(stillOverturnedUp.y < 0);
+  editor.updateRaceEdgeCenterResetFade();
+  assert.equal(session.pendingEdgeCenterReset?.moved, true);
+  assert.equal(session.pendingEdgeCenterReset?.attempts, 2);
+  assert.equal(attemptedGenerations[1] > attemptedGenerations[0], true);
+  const up = rotateVectorByQuaternion({ x: 0, y: 1, z: 0 }, runner.state.orientation);
+  assert.ok(up.y > 0.9);
+  assert.equal(runner.state.supportedWheelCount, 4);
 });
 
 test('exact Car Editor preview Select hold performs an upright authoritative reset', () => {

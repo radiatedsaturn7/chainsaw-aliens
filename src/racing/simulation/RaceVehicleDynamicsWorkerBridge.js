@@ -44,7 +44,9 @@ function transformResetPoint(point = {}, previousPosition = {}, previousOrientat
 
 function getUprightResetPresentationOrientation(orientation = {}) {
   const up = rotateVectorByQuaternion({ x: 0, y: 1, z: 0 }, orientation);
-  if (Number(up.y || 0) > 0.1) return orientation;
+  // Do not provisionally present a door-resting car as a successful reset.
+  // Match the authoritative reset's wheel-side-down validity threshold.
+  if (Number(up.y || 0) > 0.5) return orientation;
   const forward = rotateVectorByQuaternion({ x: 0, y: 0, z: 1 }, orientation);
   const yaw = Math.hypot(Number(forward.x || 0), Number(forward.z || 0)) > 1e-9
     ? Math.atan2(Number(forward.x || 0), Number(forward.z || 0)) : 0;
