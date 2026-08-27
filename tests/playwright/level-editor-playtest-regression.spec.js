@@ -250,6 +250,7 @@ test('cold level-to-race travel keeps loading, preparation, and first frames res
     const groundArtCanvas = groundArtRef ? editor.getRaceArtSpriteCanvas(groundArtRef) : null;
     const effectiveTextureWorldM = editor.getRaceEffectiveGroundTextureWorldM(groundArtCanvas);
     const rearLeftWheel = editor.playtestSession?.vehicle3d?.wheels?.rl;
+    const canonicalRearLeftWheel = editor.playtestSession?.vehicleRenderState?.wheels?.rl;
     const initialContact = rearLeftWheel?.contactPoint || {
       x: Number(editor.playtestSession?.worldX || 0),
       y: Number(editor.playtestSession?.heightM || 0),
@@ -261,6 +262,12 @@ test('cold level-to-race travel keeps loading, preparation, and first frames res
       rearLeftWheel.region = 'road';
       rearLeftWheel.surface = { surfaceId: 'asphalt', region: 'road' };
       rearLeftWheel.contactPoint = { ...initialContact };
+    }
+    if (canonicalRearLeftWheel) {
+      canonicalRearLeftWheel.loadBearing = true;
+      canonicalRearLeftWheel.validTreadContact = true;
+      canonicalRearLeftWheel.geometricContact = true;
+      canonicalRearLeftWheel.contactPointWorld = { ...initialContact };
     }
     const tireTrackContext = {
       speedMps: 14,
@@ -277,6 +284,12 @@ test('cold level-to-race travel keeps loading, preparation, and first frames res
     editor.updateRaceTireTracks(tireTrackContext);
     if (rearLeftWheel) {
       rearLeftWheel.contactPoint = {
+        ...initialContact,
+        z: Number(initialContact.z || 0) + 0.5
+      };
+    }
+    if (canonicalRearLeftWheel) {
+      canonicalRearLeftWheel.contactPointWorld = {
         ...initialContact,
         z: Number(initialContact.z || 0) + 0.5
       };
