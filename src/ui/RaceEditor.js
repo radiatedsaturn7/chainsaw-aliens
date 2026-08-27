@@ -141,6 +141,9 @@ const RACE_TIRE_TRACK_FALLBACK_MAX_VISIBLE_SEGMENTS = 400;
 const RACE_TIRE_TRACK_GPU_CHUNK_SEGMENTS = 512;
 const RACE_TIRE_TRACK_MIN_SAMPLE_M = 0.18;
 const RACE_TIRE_TRACK_MAX_BRIDGE_M = 1.8;
+// Legacy local-field constants remain only for deserializing/inspecting older
+// race sessions. Production weather rendering no longer advances or draws
+// that field; RaceSnowEnvironment is the sole active snow owner.
 const RACE_SNOW_NEAR_PARTICLE_MAX = 128;
 const RACE_RAIN_PARTICLE_MAX = 160;
 const RACE_STORM_PARTICLE_MAX = 192;
@@ -504,6 +507,7 @@ const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   'race-ground-paint',
   'race-ground-intensity',
   'race-ground-brush',
+  'race-ground-mode-track',
   'race-ground-mode-ground',
   'race-ground-mode-elevation',
   'race-ground-mode-sprites',
@@ -2232,7 +2236,7 @@ export default class RaceEditor {
 
   applyRaceCarRouteCenterReset({ projection = null, roadYaw = 0, preserveMotion = false,
     reason = 'track-center-reset' } = {}) {
-    if (!this.playtestSession) return;
+    if (!this.playtestSession) return false;
     this.playtestSession.lastVehicleResetReason = String(reason || 'track-center-reset');
     const previousPlacement = {
       distance: this.playtestSession.distance,
@@ -2411,16 +2415,30 @@ export default class RaceEditor {
     const blackStartRemainingMs = RACE_EDGE_RESET_FADE_IN_MS + RACE_EDGE_RESET_BLACK_HOLD_MS;
     if (!session.pendingEdgeCenterReset.moved && Number(session.edgeResetFadeMs || 0) <= blackStartRemainingMs) {
       const pending = session.pendingEdgeCenterReset;
-      this.applyRaceCarRouteCenterReset({
+      const resetApplied = this.applyRaceCarRouteCenterReset({
         projection: { distance: pending.distance },
         roadYaw: pending.roadYaw,
         preserveMotion: pending.preserveMotion !== false,
         reason: pending.reason || 'track-center-reset'
       });
-      this.playtestSession.pendingEdgeCenterReset = {
-        ...pending,
-        moved: true
-      };
+      if (resetApplied) {
+        this.playtestSession.pendingEdgeCenterReset = {
+          ...pending,
+          moved: true,
+          attempts: Number(pending.attempts || 0) + 1
+        };
+      } else {
+        // A terrain/static-support solve can reject a stale hill query frame.
+        // Do not fade back in over the unchanged crashed pose and call that a
+        // completed reset. Keep the screen black and retry the full transaction.
+        this.playtestSession.pendingEdgeCenterReset = {
+          ...pending,
+          moved: false,
+          attempts: Number(pending.attempts || 0) + 1
+        };
+        this.playtestSession.edgeResetFadeMs = blackStartRemainingMs;
+        return;
+      }
     }
     if (Number(this.playtestSession.edgeResetFadeMs || 0) <= 0) {
       this.playtestSession.pendingEdgeCenterReset = null;
@@ -8455,6 +8473,8 @@ export default class RaceEditor {
       this.activeRootId = 'ground';
       this.racePortraitHotMenu = this.racePortraitHotMenu === 'ground-mode' ? null : 'ground-mode';
       this.status = 'Choose race editor mode';
+    } else if (action === 'race-ground-mode-track') {
+      this.setRacePortraitMode('race');
     } else if (action === 'race-ground-mode-ground') {
       this.racePortraitMode = 'ground';
       this.activeRootId = 'ground';
@@ -8761,6 +8781,7 @@ export default class RaceEditor {
         this.activeAction = 'paint-ground';
       }
     }
+    if (action === 'race-ground-mode-track') this.activeAction = 'move-node';
     if (action === 'race-ground-mode-ground') this.activeAction = 'paint-ground';
     if (action === 'race-ground-mode-elevation' || action === 'race-ground-paint-raise' || action === 'race-ground-paint-lower') this.activeAction = 'paint-elevation';
     if (action === 'race-ground-mode-sprites') this.activeAction = this.getRaceSpritePaintActionId();
@@ -8789,7 +8810,7 @@ export default class RaceEditor {
     if (action === 'sprite-size' || action === 'sprite-height' || action === 'sprite-behavior') {
       this.activeAction = 'paint-sprite';
     }
-    if (!['generate-random-race', ...BUILT_IN_RACE_LOAD_ACTIONS.map((entry) => entry.id), ...Object.keys(CAR_EDITOR_TUNING_ACTION_PATHS), 'ground-tile-next', 'paint-ground', 'paint-elevation', 'elevation-up', 'elevation-down', 'elevation-brush-size', 'race-ground-mode', 'race-ground-paint', 'race-ground-intensity', 'race-ground-brush', 'race-ground-mode-ground', 'race-ground-mode-elevation', 'race-ground-mode-sprites', 'race-ground-mode-doodad', 'race-ground-paint-raise', 'race-ground-paint-lower', 'race-ground-intensity-erase', 'edge-tile', 'segment-width', 'segment-bumpiness', 'boundary-collidable', 'snow-condition', 'move-node', 'insert-node', 'snap-node', 'remove-node', 'remove-edge', 'transmission-type', 'load-preset', 'summary-sheet', 'engine-sound-next', 'engine-sfx', 'add-sprite', 'sprite-select', 'doodad-select', 'paint-sprite', 'erase-sprite', 'move-sprite', 'delete-sprite', 'sprite-size', 'sprite-height', 'sprite-behavior', 'weather-intensity', 'skybox-next', 'ai-count', 'race-sun', 'race-weather', 'race-tiles', 'race-margin', 'race-tire-fx', 'race-texture-scale', 'race-debug', 'race-decal', 'race-ground-box', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile', 'sprite-brush-settings'].includes(action) && !action.startsWith('weather-') && !action.startsWith('ground-tile-') && !action.startsWith('ground-brush-') && !action.startsWith('elevation-up-') && !action.startsWith('elevation-down-')) {
+    if (!['generate-random-race', ...BUILT_IN_RACE_LOAD_ACTIONS.map((entry) => entry.id), ...Object.keys(CAR_EDITOR_TUNING_ACTION_PATHS), 'ground-tile-next', 'paint-ground', 'paint-elevation', 'elevation-up', 'elevation-down', 'elevation-brush-size', 'race-ground-mode', 'race-ground-paint', 'race-ground-intensity', 'race-ground-brush', 'race-ground-mode-track', 'race-ground-mode-ground', 'race-ground-mode-elevation', 'race-ground-mode-sprites', 'race-ground-mode-doodad', 'race-ground-paint-raise', 'race-ground-paint-lower', 'race-ground-intensity-erase', 'edge-tile', 'segment-width', 'segment-bumpiness', 'boundary-collidable', 'snow-condition', 'move-node', 'insert-node', 'snap-node', 'remove-node', 'remove-edge', 'transmission-type', 'load-preset', 'summary-sheet', 'engine-sound-next', 'engine-sfx', 'add-sprite', 'sprite-select', 'doodad-select', 'paint-sprite', 'erase-sprite', 'move-sprite', 'delete-sprite', 'sprite-size', 'sprite-height', 'sprite-behavior', 'weather-intensity', 'skybox-next', 'ai-count', 'race-sun', 'race-weather', 'race-tiles', 'race-margin', 'race-tire-fx', 'race-texture-scale', 'race-debug', 'race-decal', 'race-ground-box', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile', 'sprite-brush-settings'].includes(action) && !action.startsWith('weather-') && !action.startsWith('ground-tile-') && !action.startsWith('ground-brush-') && !action.startsWith('elevation-up-') && !action.startsWith('elevation-down-')) {
       this.status = `${action.replace(/-/g, ' ')} selected`;
     }
     this.activeRootId = this.findRootForAction(action) || this.activeRootId;
@@ -11577,9 +11598,6 @@ export default class RaceEditor {
       running: false,
       sceneElapsedMs: 0,
       weatherApproachDistanceM: 0,
-      snowParticles3d: [],
-      snowParticleRespawnSequence: 0,
-      snowParticleWeatherId: '',
       snowEnvironmentState: null,
       weatherFxState: null
     };
@@ -12371,9 +12389,6 @@ export default class RaceEditor {
       elapsedMs: 0,
       sceneElapsedMs: 0,
       weatherApproachDistanceM: 0,
-      snowParticles3d: [],
-      snowParticleRespawnSequence: 0,
-      snowParticleWeatherId: '',
       snowEnvironmentState: null,
       weatherFxState: null,
       distance: 0,
@@ -15198,7 +15213,7 @@ export default class RaceEditor {
   getRaceWeatherParticleCount(weatherState = this.getRaceWeatherState()) {
     const intensity = this.getRaceWeatherVisualIntensity(weatherState);
     const maximum = weatherState?.id === 'snow'
-      ? RACE_SNOW_NEAR_PARTICLE_MAX + RACE_SNOW_ENVIRONMENT_LIMITS.maxParticles
+      ? RACE_SNOW_ENVIRONMENT_LIMITS.maxParticles
       : weatherState?.id === 'storm'
         ? RACE_STORM_PARTICLE_MAX
         : weatherState?.id === 'rain'
@@ -15209,6 +15224,8 @@ export default class RaceEditor {
       : 0;
   }
 
+  // Compatibility-only sizing for legacy session inspection. The production
+  // weather update and render paths do not create this local population.
   getRaceSnowNearParticleCount(weatherState = this.getRaceWeatherState()) {
     const intensity = this.getRaceWeatherVisualIntensity(weatherState);
     return weatherState?.id === 'snow' && intensity > 0.02
@@ -15530,6 +15547,20 @@ export default class RaceEditor {
     session = this.playtestSession,
     wheelSurfaceState = {}
   } = {}) {
+    const canonicalWheel = session?.vehicleRenderState?.wheels?.[wheelId];
+    const canonicalContact = canonicalWheel?.contactPointWorld;
+    if (canonicalContact
+      && Number.isFinite(Number(canonicalContact.x))
+      && Number.isFinite(Number(canonicalContact.y))
+      && Number.isFinite(Number(canonicalContact.z))) {
+      return {
+        x: Number(canonicalContact.x),
+        z: Number(canonicalContact.z),
+        elevation: Number(canonicalContact.y) / RACE_THREE_ELEVATION_M,
+        physicalContact: true,
+        canonicalContact: true
+      };
+    }
     const physicalWheel = session?.vehicle3d?.enabled
       ? session.vehicle3d.wheels?.[wheelId]
       : null;
@@ -15669,10 +15700,26 @@ export default class RaceEditor {
     session.tireTrackLastContactByWheel = session.tireTrackLastContactByWheel || {};
     const speed = Math.abs(Number(speedMps || session.speedMps || 0));
     const added = [];
+    const authoritativeState = getAuthoritativeChassisState(session) || {};
+    const matchingGeneration = Number(
+      authoritativeState.vehicleResetGeneration ?? authoritativeState.resetGeneration ?? 0
+    ) === Number(session.vehicleRenderState?.resetGeneration || 0);
     RACE_WHEEL_IDS.forEach((wheelId) => {
-      const contactScale = clamp(Number(wheelContactScaleByWheel?.[wheelId] ?? 0) || 0, 0, 1);
+      const canonicalWheel = session.vehicleRenderState?.wheels?.[wheelId] || null;
+      const presentedContact = session.wheelContactPresentationState?.wheels?.[wheelId] || null;
       const physicalWheel = session.vehicle3d?.wheels?.[wheelId] || {};
-      if (contactScale <= 0.001 || physicalWheel.inContact === false) {
+      const canonicalContact = canonicalWheel
+        ? Boolean(
+          presentedContact?.supported
+          || canonicalWheel.loadBearing
+          || (canonicalWheel.validTreadContact && canonicalWheel.geometricContact)
+        )
+        : physicalWheel.inContact !== false;
+      const contactScale = clamp(Math.max(
+        Number(wheelContactScaleByWheel?.[wheelId] ?? 0) || 0,
+        canonicalWheel?.loadBearing || presentedContact?.supported ? 1 : 0
+      ), 0, 1);
+      if (contactScale <= 0.001 || !canonicalContact) {
         delete session.tireTrackLastContactByWheel[wheelId];
         return;
       }
@@ -15681,8 +15728,12 @@ export default class RaceEditor {
         delete session.tireTrackLastContactByWheel[wheelId];
         return;
       }
+      const authoritativePatch = matchingGeneration
+        ? authoritativeState.contactPatches?.[wheelId] || null
+        : null;
       const surfaceId = String(
-        physicalWheel.surfaceId
+        authoritativePatch?.material?.surfaceId
+          || physicalWheel.surfaceId
           || physicalWheel.surface?.surfaceId
           || wheelSurfaceState.surfaceByWheel?.[wheelId]
           || 'asphalt'
@@ -15695,7 +15746,12 @@ export default class RaceEditor {
       );
       const kind = this.getRaceTireTrackKind(surfaceId, terrain);
       const isRear = wheelId === 'rl' || wheelId === 'rr';
-      const slip = Math.max(0, Number(tireSlipByWheel?.[wheelId] || 0));
+      const slip = Math.max(
+        0,
+        Number(tireSlipByWheel?.[wheelId] || 0),
+        Math.abs(Number(authoritativePatch?.slipRatio || 0)),
+        Math.abs(Math.tan(Number(authoritativePatch?.slipAngleRad || 0)))
+      );
       const brakeLock = Math.max(0, Number(brakeState?.lockByWheel?.[wheelId] || 0)) * contactScale;
       const wheelSpin = Math.max(0, Number(wheelSpinByWheel?.[wheelId] || 0)) * contactScale;
       const handbrakeSlip = isRear ? Math.max(0, Number(handbrake || 0)) * 0.65 * contactScale : 0;
@@ -16961,6 +17017,8 @@ export default class RaceEditor {
     return session.weatherApproachDistanceM;
   }
 
+  // Compatibility helper for older serialized sessions and focused migration
+  // tests. The production update/render path never calls this local field.
   resetRaceSnowParticleField(session = this.playtestSession) {
     if (!session) return [];
     session.snowParticles3d = [];
@@ -16980,7 +17038,6 @@ export default class RaceEditor {
 
   resetRaceWeatherFxState(session = this.playtestSession) {
     if (!session) return null;
-    this.resetRaceSnowParticleField(session);
     this.resetRaceSnowEnvironmentField(session);
     session.weatherFxState = null;
     return session.weatherFxState;
@@ -17090,7 +17147,6 @@ export default class RaceEditor {
     const weatherId = String(weatherState?.id || 'clear');
     const visualIntensity = this.getRaceWeatherVisualIntensity(weatherState);
     if (!session.weatherFxState || session.weatherFxState.weatherId !== weatherId) {
-      this.resetRaceSnowParticleField(session);
       this.resetRaceSnowEnvironmentField(session);
       session.weatherFxState = this.createRaceWeatherFxState(weatherState);
     }
@@ -17106,7 +17162,6 @@ export default class RaceEditor {
       state.gustTargetZMps = 0;
       state.lightningFlash = 0;
       state.lightningTimerMs = 0;
-      this.resetRaceSnowParticleField(session);
       this.resetRaceSnowEnvironmentField(session);
       return state;
     }
@@ -17152,12 +17207,6 @@ export default class RaceEditor {
       state.lightningTimerMs = 0;
     }
 
-    this.updateRaceSnowParticleField(dt, {
-      session,
-      weatherState,
-      camera,
-      cameraYaw
-    });
     return state;
   }
 
@@ -23483,6 +23532,8 @@ export default class RaceEditor {
       : this.racePortraitMode === 'sprites'
         ? this.getRacePortraitSpriteActions()
         : [
+          { id: 'draw-road', label: 'Add', active: this.activeAction === 'draw-road', onClick: () => this.handleMenuAction('draw-road') },
+          { id: 'move-node', label: 'Move', active: this.activeAction === 'move-node', onClick: () => this.handleMenuAction('move-node') },
           ...this.getRacePortraitHotMenuActions(selected)
         ];
     const quickW = Math.max(48, Math.floor((bounds.w - pad * 2 - gap * Math.max(0, quickActions.length - 1)) / Math.max(1, quickActions.length)));
@@ -24864,9 +24915,6 @@ export default class RaceEditor {
       elapsedMs: 0,
       sceneElapsedMs: 0,
       weatherApproachDistanceM: 0,
-      snowParticles3d: [],
-      snowParticleRespawnSequence: 0,
-      snowParticleWeatherId: '',
       snowEnvironmentState: null,
       weatherFxState: null,
       distance: 0,
@@ -25303,6 +25351,7 @@ export default class RaceEditor {
     if (this.racePortraitHotMenu === 'ground-mode') {
       return [
         close,
+        { id: 'race-ground-mode-track', label: 'Track', active: false, onClick: () => this.handleMenuAction('race-ground-mode-track') },
         { id: 'race-ground-mode-ground', label: 'Ground', active: mode === 'ground', onClick: () => this.handleMenuAction('race-ground-mode-ground') },
         { id: 'race-ground-mode-elevation', label: 'Elevation', active: mode === 'elevation', onClick: () => this.handleMenuAction('race-ground-mode-elevation') },
         { id: 'race-ground-mode-sprites', label: 'Sprite', active: mode === 'sprite', onClick: () => this.handleMenuAction('race-ground-mode-sprites') },
@@ -30097,7 +30146,8 @@ export default class RaceEditor {
 
   drawRaceEnvironmentSnowFallback(ctx, bounds, particles = [], {
     camera = this.lastRaceRenderCamera?.camera || {},
-    cameraYaw = this.lastRaceRenderCamera?.cameraYaw ?? this.playtestSession?.cameraYaw ?? 0
+    cameraYaw = this.lastRaceRenderCamera?.cameraYaw ?? this.playtestSession?.cameraYaw ?? 0,
+    speedMps = this.playtestSession?.speedMps || 0
   } = {}) {
     if (!Array.isArray(particles) || !particles.length) {
       return { visibleCount: 0, drawCalls: 0 };
@@ -30139,7 +30189,13 @@ export default class RaceEditor {
           0.35,
           2.8
         ),
-        opacity
+        opacity,
+        streakLength: clamp(
+          (Math.abs(Number(speedMps) || 0) * 0.08 + Number(particle.fallVelocityMps || 0) * 0.35)
+            * (1 - depthRatio),
+          0,
+          6
+        )
       });
     });
     let visibleCount = 0;
@@ -30159,6 +30215,22 @@ export default class RaceEditor {
       visibleCount += bucket.length;
       drawCalls += 1;
     });
+    if (Math.abs(Number(speedMps) || 0) > 4) {
+      let hasStreaks = false;
+      ctx.beginPath();
+      buckets.forEach((bucket) => bucket.forEach((particle) => {
+        if (particle.streakLength <= 0.2) return;
+        ctx.moveTo(particle.x, particle.y - particle.streakLength);
+        ctx.lineTo(particle.x, particle.y);
+        hasStreaks = true;
+      }));
+      if (hasStreaks) {
+        ctx.strokeStyle = 'rgba(238,248,255,0.24)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        drawCalls += 1;
+      }
+    }
     return { visibleCount, drawCalls };
   }
 
@@ -30179,9 +30251,10 @@ export default class RaceEditor {
     const approachDistanceM = Math.max(0, Number(this.playtestSession?.weatherApproachDistanceM) || 0);
     let count = this.getRaceWeatherParticleCount(weatherState);
     let visibleCount = 0;
-    let nearCount = 0;
     let environmentCount = 0;
     let environmentVisibleCount = 0;
+    let snowBackend = 'none';
+    let snowDrawCalls = 0;
     let drawCalls = 0;
     ctx.save();
     ctx.beginPath();
@@ -30194,6 +30267,7 @@ export default class RaceEditor {
       );
       let environmentParticles = this.playtestSession?.snowEnvironmentState?.activeParticles || [];
       if (!environmentRenderedInThree) {
+        snowBackend = 'canvas';
         environmentParticles = this.updateRaceSnowEnvironmentRenderField({
           bounds,
           camera,
@@ -30205,92 +30279,25 @@ export default class RaceEditor {
           ctx,
           bounds,
           environmentParticles,
-          { camera, cameraYaw }
+          { camera, cameraYaw, speedMps }
         );
         environmentVisibleCount = fallback.visibleCount;
         drawCalls += fallback.drawCalls;
+        snowDrawCalls = fallback.drawCalls;
       } else {
+        snowBackend = 'webgl';
         environmentVisibleCount = environmentParticles.filter(
           (particle) => Number(particle.opacity || 0) > 0.01
         ).length;
         drawCalls += environmentParticles.length ? 1 : 0;
+        snowDrawCalls = environmentParticles.length ? 1 : 0;
       }
       environmentCount = environmentParticles.length;
       if (this.drawRaceWeatherVisibilityVeil(ctx, bounds, weatherState, { camera })) {
         drawCalls += 1;
       }
-      const particles = this.ensureRaceSnowParticleField({
-        weatherState,
-        camera,
-        cameraYaw
-      });
-      nearCount = particles.length;
-      count = environmentCount + nearCount;
-      const activeThreeCamera = this.lastRaceRenderStats?.threeTerrainRenderer
-        ? this.raceThreeWorldRenderer?.camera
-        : null;
-      activeThreeCamera?.updateMatrixWorld?.(true);
-      const buckets = this.raceSnowRenderBuckets || (this.raceSnowRenderBuckets = [[], [], []]);
-      buckets[0].length = 0;
-      buckets[1].length = 0;
-      buckets[2].length = 0;
+      count = environmentCount;
       visibleCount = environmentVisibleCount;
-      for (let index = 0; index < nearCount; index += 1) {
-        const visual = this.getRaceSnowParticleVisual(index, bounds, {
-          speedMps,
-          intensity,
-          camera,
-          cameraYaw,
-          activeThreeCamera
-        });
-        if (!visual?.visible) {
-          particles[index].previousScreenX = null;
-          particles[index].previousScreenY = null;
-          continue;
-        }
-        buckets[visual.depthBucket].push(visual);
-        visibleCount += 1;
-      }
-      const bucketOpacity = [0.34, 0.55, 0.78];
-      for (let bucketIndex = 0; bucketIndex < buckets.length; bucketIndex += 1) {
-        const bucket = buckets[bucketIndex];
-        if (!bucket.length) continue;
-        ctx.fillStyle = `rgba(238,248,255,${bucketOpacity[bucketIndex] * (0.5 + intensity * 0.5)})`;
-        ctx.beginPath();
-        for (const visual of bucket) {
-          ctx.moveTo?.(visual.x + visual.radius, visual.y);
-          ctx.arc(visual.x, visual.y, visual.radius, 0, Math.PI * 2);
-        }
-        ctx.fill();
-        drawCalls += 1;
-      }
-      let hasStreaks = false;
-      if (Math.abs(Number(speedMps) || 0) > 4) {
-        ctx.beginPath();
-        for (const bucket of buckets) {
-          for (const visual of bucket) {
-            if (visual.streakLength <= 0.2) continue;
-            ctx.moveTo(visual.x - visual.streakX, visual.y - visual.streakY);
-            ctx.lineTo(visual.x, visual.y);
-            hasStreaks = true;
-          }
-        }
-        if (hasStreaks) {
-          ctx.strokeStyle = `rgba(238,248,255,${0.12 + intensity * 0.2})`;
-          ctx.lineWidth = 1;
-          ctx.stroke();
-          drawCalls += 1;
-        }
-      }
-      for (const bucket of buckets) {
-        for (const visual of bucket) {
-          const particle = particles[visual.particleIndex];
-          if (!particle) continue;
-          particle.previousScreenX = visual.x;
-          particle.previousScreenY = visual.y;
-          particle.respawned = false;
-        }
-      }
     } else {
       visibleCount = count;
       if (this.drawRaceWeatherVisibilityVeil(ctx, bounds, weatherState, { camera })) {
@@ -30336,9 +30343,12 @@ export default class RaceEditor {
       weatherFxParticles: count,
       weatherFxVisibleParticles: visibleCount,
       weatherFxDrawCalls: drawCalls,
-      weatherFxNearParticles: nearCount,
+      weatherFxNearParticles: 0,
       weatherFxEnvironmentParticles: environmentCount,
       weatherFxEnvironmentVisibleParticles: environmentVisibleCount,
+      weatherFxSnowBackend: snowBackend,
+      weatherFxSnowParticles: environmentCount,
+      weatherFxSnowDrawCalls: snowDrawCalls,
       weatherFxVisibilityDistanceM: Number(visibilityProfile.visibilityDistanceM),
       weatherFxVisibilityStrength: Number(visibilityProfile.visibilityStrength || 0),
       snowDepthInches: Number(weatherState.snowDepthInches || 0),
@@ -33313,22 +33323,33 @@ export default class RaceEditor {
       vertexShader: `
         attribute float snowSize;
         attribute float snowOpacity;
+        attribute float snowStreak;
         varying float vSnowOpacity;
+        varying float vSnowStreakRatio;
         void main() {
           vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);
           float perspectiveSize = snowSize * (0.9 + 60.0 / max(1.0, -viewPosition.z));
-          gl_PointSize = clamp(perspectiveSize, 1.0, 8.0);
+          float pointSize = clamp(perspectiveSize + snowStreak, 1.0, 8.0);
+          gl_PointSize = pointSize;
           gl_Position = projectionMatrix * viewPosition;
           vSnowOpacity = snowOpacity;
+          vSnowStreakRatio = clamp(snowStreak / pointSize, 0.0, 0.82);
         }
       `,
       fragmentShader: `
         varying float vSnowOpacity;
+        varying float vSnowStreakRatio;
         void main() {
           vec2 centered = gl_PointCoord - vec2(0.5);
-          float radius = length(centered);
-          if (radius > 0.5) discard;
-          float edge = 1.0 - smoothstep(0.3, 0.5, radius);
+          vec2 segmentStart = vec2(0.0, -vSnowStreakRatio * 0.5);
+          vec2 segmentEnd = vec2(0.0, vSnowStreakRatio * 0.5);
+          vec2 segment = segmentEnd - segmentStart;
+          float segmentLengthSquared = max(dot(segment, segment), 0.000001);
+          float along = clamp(dot(centered - segmentStart, segment) / segmentLengthSquared, 0.0, 1.0);
+          float radius = length(centered - (segmentStart + segment * along));
+          float flakeRadius = mix(0.34, 0.12, vSnowStreakRatio);
+          if (radius > flakeRadius) discard;
+          float edge = 1.0 - smoothstep(flakeRadius * 0.62, flakeRadius, radius);
           gl_FragColor = vec4(0.94, 0.975, 1.0, vSnowOpacity * edge);
         }
       `,
@@ -33344,6 +33365,7 @@ export default class RaceEditor {
   syncRaceThreeEnvironmentSnow(renderer = null, {
     particles = [],
     weatherState = this.getRaceWeatherState(),
+    speedMps = this.playtestSession?.speedMps || 0,
     stats = null
   } = {}) {
     if (
@@ -33369,14 +33391,17 @@ export default class RaceEditor {
       const position = new THREE.Float32BufferAttribute(new Float32Array(capacity * 3), 3);
       const size = new THREE.Float32BufferAttribute(new Float32Array(capacity), 1);
       const opacity = new THREE.Float32BufferAttribute(new Float32Array(capacity), 1);
+      const streak = new THREE.Float32BufferAttribute(new Float32Array(capacity), 1);
       if (THREE.DynamicDrawUsage) {
         position.setUsage?.(THREE.DynamicDrawUsage);
         size.setUsage?.(THREE.DynamicDrawUsage);
         opacity.setUsage?.(THREE.DynamicDrawUsage);
+        streak.setUsage?.(THREE.DynamicDrawUsage);
       }
       geometry.setAttribute('position', position);
       geometry.setAttribute('snowSize', size);
       geometry.setAttribute('snowOpacity', opacity);
+      geometry.setAttribute('snowStreak', streak);
       geometry.setDrawRange(0, 0);
       const material = this.getRaceThreeEnvironmentSnowMaterial(renderer);
       if (!material) {
@@ -33401,6 +33426,7 @@ export default class RaceEditor {
       const positions = points.geometry.getAttribute('position');
       const sizes = points.geometry.getAttribute('snowSize');
       const opacities = points.geometry.getAttribute('snowOpacity');
+      const streaks = points.geometry.getAttribute('snowStreak');
       for (let index = 0; index < count; index += 1) {
         const particle = particles[index];
         const offset = index * 3;
@@ -33409,17 +33435,30 @@ export default class RaceEditor {
         positions.array[offset + 2] = Number(particle.worldZ || 0);
         sizes.array[index] = Number(particle.sizePx || 1.5);
         opacities.array[index] = clamp(Number(particle.opacity || 0), 0, 1);
+        const depthRatio = clamp(
+          Number(particle.cameraDepthM || 0)
+            / Math.max(1, Number(this.playtestSession?.snowEnvironmentState?.coverageDistanceM || 120)),
+          0,
+          1
+        );
+        streaks.array[index] = clamp(
+          (Math.abs(Number(speedMps) || 0) * 0.08 + Number(particle.fallVelocityMps || 0) * 0.35)
+            * (1 - depthRatio),
+          0,
+          6
+        );
       }
       positions.needsUpdate = true;
       sizes.needsUpdate = true;
       opacities.needsUpdate = true;
+      streaks.needsUpdate = true;
     }
     points.geometry.setDrawRange(0, count);
     if (stats) {
       stats.environmentSnowParticles = count;
       stats.environmentSnowDrawCalls = count > 0 ? 1 : 0;
       stats.drawCalls = Number(stats.drawCalls || 0) + (count > 0 ? 1 : 0);
-      stats.bufferUploads = Number(stats.bufferUploads || 0) + (count > 0 ? 3 : 0);
+      stats.bufferUploads = Number(stats.bufferUploads || 0) + (count > 0 ? 4 : 0);
     }
     return count > 0;
   }
@@ -35007,6 +35046,7 @@ export default class RaceEditor {
     const environmentSnowRendered = this.syncRaceThreeEnvironmentSnow(renderer, {
       particles: environmentSnowParticles,
       weatherState,
+      speedMps: Number(this.playtestSession?.speedMps || 0),
       stats
     });
     if (stats) stats.weatherFxEnvironmentRenderedInThree = environmentSnowRendered ? 1 : 0;

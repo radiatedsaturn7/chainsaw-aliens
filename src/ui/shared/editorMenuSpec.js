@@ -347,7 +347,6 @@ export const EDITOR_MENU_SPECS = {
     root: ['file', 'edit', 'view', 'track', 'ground', 'sprites', 'settings'],
     portraitRoot: [
       { id: 'file', label: 'File' },
-      { id: 'track', label: 'Track' },
       { id: 'ground', label: 'Ground' },
       { id: 'sprites', label: 'Sprites' },
       { id: 'settings', label: 'Settings' }

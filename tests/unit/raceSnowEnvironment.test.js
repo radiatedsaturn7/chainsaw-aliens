@@ -32,6 +32,8 @@ test('environment snowfall covers the visible landscape instead of ending at the
   assert.equal(particles.length, RACE_SNOW_ENVIRONMENT_LIMITS.maxParticles);
   assert.equal(state.coverageDistanceM, 312);
   assert.equal(Math.max(...particles.map((particle) => particle.cameraDepthM)) > 260, true);
+  assert.equal(particles.some((particle) => particle.cameraDepthM < 18), true);
+  assert.equal(particles.some((particle) => particle.cameraDepthM > 52), true);
   const depthBands = [0, 0, 0];
   particles.forEach((particle) => {
     const ratio = particle.cameraDepthM / state.coverageDistanceM;

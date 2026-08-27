@@ -61,6 +61,12 @@ const STATIONARY_RESET_WAKE_THROTTLE = 0.15;
 const RESET_HOLD_MAX_CONFIRMATION_SECONDS = 1.5;
 const RESET_HOLD_HEIGHT_TOLERANCE_M = 0.0005;
 const RESET_HOLD_NORMAL_TOLERANCE_RAD = 0.1 * Math.PI / 180;
+// A reset pose must be recognizably wheel-side down. The former 0.1 guard
+// accepted a chassis leaning about 84 degrees, allowing a car resting on its
+// doors to pass through the reset transaction unchanged. Production roads can
+// still retain their authored pitch/bank while side and roof poses are rebuilt
+// from their horizontal heading.
+const RESET_UPRIGHT_MIN_BODY_UP_Y = 0.5;
 const dotVector3 = (a = {}, b = {}) => (
   Number(a.x || 0) * Number(b.x || 0)
   + Number(a.y || 0) * Number(b.y || 0)
@@ -72,9 +78,10 @@ function getVehicleBodyUpY(orientation = {}) {
 }
 
 function createUprightResetOrientation(orientation = {}, fallbackOrientation = null) {
-  if (getVehicleBodyUpY(orientation) > 0.1) return clone(orientation);
+  if (getVehicleBodyUpY(orientation) > RESET_UPRIGHT_MIN_BODY_UP_Y) return clone(orientation);
   const forward = rotateVectorByQuaternion({ x: 0, y: 0, z: 1 }, orientation);
-  const fallbackEuler = fallbackOrientation && getVehicleBodyUpY(fallbackOrientation) > 0.1
+  const fallbackEuler = fallbackOrientation
+    && getVehicleBodyUpY(fallbackOrientation) > RESET_UPRIGHT_MIN_BODY_UP_Y
     ? eulerFromQuaternion(fallbackOrientation) : null;
   const horizontalForward = Math.hypot(Number(forward.x || 0), Number(forward.z || 0));
   const yaw = horizontalForward > EPSILON
@@ -85,7 +92,7 @@ function createUprightResetOrientation(orientation = {}, fallbackOrientation = n
     pitch: Number(fallbackEuler?.pitch || 0),
     roll: Number(fallbackEuler?.roll || 0)
   });
-  return getVehicleBodyUpY(candidate) > 0.1
+  return getVehicleBodyUpY(candidate) > RESET_UPRIGHT_MIN_BODY_UP_Y
     ? candidate : quaternionFromEuler({ yaw, pitch: 0, roll: 0 });
 }
 
@@ -2250,6 +2257,7 @@ export class VehicleDynamicsRunner {
     this.authoritativeResetSequence = Math.max(
       0, Math.trunc(Number(this.state.vehicleResetGeneration) || 0)
     );
+    this.authoritativeResetAttemptSequence = this.authoritativeResetSequence;
     this.stationaryResetHold = null;
     this.suspensionModeSettleSteps = 0;
     this.stepIndex = 0;
@@ -2453,8 +2461,12 @@ export class VehicleDynamicsRunner {
     };
     const vehicleResetGeneration = Math.max(
       this.authoritativeResetSequence + 1,
+      this.authoritativeResetAttemptSequence + 1,
       Math.trunc(Number(resetGeneration) || 0)
     );
+    // Advance before terrain/contact work. A rejected reset must not cause the
+    // next attempt to reuse the failed prepared-query generation on a hill.
+    this.authoritativeResetAttemptSequence = vehicleResetGeneration;
     const routeDistance = finiteNumber(nextState.routeDistance);
     const idleRpm = Math.max(0, Number(this.config.idleRpm || 800));
     const requestedGear = Math.trunc(Number(nextState.gear ?? 1) || 0);
@@ -2621,7 +2633,7 @@ export class VehicleDynamicsRunner {
           )
         });
         if (solved.status === 'converged'
-          && getVehicleBodyUpY(solved.state?.orientation) <= 0.1) {
+          && getVehicleBodyUpY(solved.state?.orientation) <= RESET_UPRIGHT_MIN_BODY_UP_Y) {
           return {
             ...solved,
             status: 'failed',
@@ -6655,6 +6667,7 @@ export class VehicleDynamicsRunner {
       collisionTimeline: clone(this.collisionTimeline),
       resetTimeline: clone(this.resetTimeline),
       authoritativeResetSequence: this.authoritativeResetSequence,
+      authoritativeResetAttemptSequence: this.authoritativeResetAttemptSequence,
       stationaryResetHold: clone(this.stationaryResetHold),
       suspensionModeSettleSteps: this.suspensionModeSettleSteps,
       lastNonPenetratingState: clone(this.lastNonPenetratingState),
@@ -6709,6 +6722,10 @@ export class VehicleDynamicsRunner {
         ?? this.resetTimeline.at(-1)?.sequence
         ?? 0
     )));
+    this.authoritativeResetAttemptSequence = Math.max(
+      this.authoritativeResetSequence,
+      Math.trunc(Number(snapshot.authoritativeResetAttemptSequence) || 0)
+    );
     this.stationaryResetHold = clone(snapshot.stationaryResetHold || null);
     this.suspensionModeSettleSteps = Math.max(0, Math.trunc(Number(
       snapshot.suspensionModeSettleSteps || 0
@@ -6809,6 +6826,7 @@ export class VehicleDynamicsRunner {
     runner.authoritativeResetSequence = Math.max(0, Math.trunc(Number(
       runner.resetTimeline.at(-1)?.sequence || 0
     )));
+    runner.authoritativeResetAttemptSequence = runner.authoritativeResetSequence;
     return runner;
   }
 }

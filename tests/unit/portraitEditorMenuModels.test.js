@@ -479,7 +479,7 @@ test('Race and Car portrait menu models use the shared bottom rail contract', ()
   const raceModel = buildRacePortraitMenuModel();
   const carModel = buildCarPortraitMenuModel();
 
-  assert.deepEqual(raceModel.rootTabs.map((tab) => tab.id), ['file', 'track', 'ground', 'sprites', 'settings', 'exit-main']);
+  assert.deepEqual(raceModel.rootTabs.map((tab) => tab.id), ['file', 'ground', 'sprites', 'settings', 'exit-main']);
   assert.deepEqual(carModel.rootTabs.map((tab) => tab.id), ['file', 'art', 'drivetrain', 'tuning', 'exit-main']);
   assert.deepEqual(raceModel.bottomRailActions, ['menu', 'undo', 'redo', 'race-context']);
   assert.deepEqual(carModel.bottomRailActions, ['menu', 'undo', 'redo', 'test-drive']);
@@ -497,7 +497,7 @@ test('Race and Car portrait menu models use the shared bottom rail contract', ()
 test('Race and Car rollout modes preserve portrait and use shared landscape and gamepad surfaces', () => {
   const expected = {
     race: {
-      portraitRoots: ['file', 'track', 'ground', 'sprites', 'settings', 'exit-main'],
+      portraitRoots: ['file', 'ground', 'sprites', 'settings', 'exit-main'],
       contextAction: 'race-context',
       landscapeRoot: 'track',
       submenuAction: 'draw-road'

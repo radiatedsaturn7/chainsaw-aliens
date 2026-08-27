@@ -1165,9 +1165,10 @@ test('Race Editor portrait bottom menu exposes authoring roots and top Play cont
   });
   editor.draw(ctx, 390, 844);
 
-  ['file', 'track', 'ground', 'sprites', 'settings'].forEach((id) => {
+  ['file', 'ground', 'sprites', 'settings'].forEach((id) => {
     assert.ok(editor.buttons.some((button) => button.id === id), id);
   });
+  assert.equal(editor.buttons.some((button) => button.id === 'track'), false);
   assert.equal(editor.buttons.some((button) => button.id === 'drive'), false);
   assert.ok(editor.buttons.some((button) => button.id === 'test-drive' && button.bounds.y < 80), 'test-drive');
 
@@ -1259,8 +1260,8 @@ test('Race Editor portrait uses bottom menu roots and contextual node or edge ho
   editor.racePortraitHotMenu = null;
   editor.draw(ctx, 390, 844);
   assert.ok(editor.buttons.some((button) => button.id === 'hot-menu-edit'));
-  assert.equal(editor.buttons.some((button) => button.id === 'move-node'), false);
-  assert.equal(editor.buttons.some((button) => button.id === 'draw-road'), false);
+  assert.ok(editor.buttons.some((button) => button.id === 'move-node'));
+  assert.ok(editor.buttons.some((button) => button.id === 'draw-road'));
 
   editor.buttons.find((button) => button.id === 'hot-menu-edit').onClick();
   editor.draw(ctx, 390, 844);
@@ -1276,27 +1277,8 @@ test('Race Editor portrait uses bottom menu roots and contextual node or edge ho
     button: 0
   });
   editor.draw(ctx, 390, 844);
-  const trackButton = editor.buttons.find((button) => button.id === 'track');
-  assert.ok(trackButton);
   assert.equal(editor.mobileRootOpen, true);
-  editor.handlePointerDown({
-    id: 'track-root',
-    x: trackButton.bounds.x + trackButton.bounds.w / 2,
-    y: trackButton.bounds.y + trackButton.bounds.h / 2,
-    button: 0
-  });
-  editor.handlePointerUp({
-    id: 'track-root-up',
-    x: trackButton.bounds.x + trackButton.bounds.w / 2,
-    y: trackButton.bounds.y + trackButton.bounds.h / 2,
-    button: 0
-  });
-  editor.draw(ctx, 390, 844);
-  assert.equal(editor.mobileRootOpen, true);
-  assert.deepEqual(
-    editor.buttons.filter((button) => button.id === 'draw-road').map((button) => button.id),
-    ['draw-road']
-  );
+  assert.equal(editor.buttons.some((button) => button.id === 'track'), false);
 
   editor.handleMenuAction('paint-ground');
   assert.equal(editor.racePortraitMode, 'ground');
@@ -1316,10 +1298,19 @@ test('Race Editor portrait uses bottom menu roots and contextual node or edge ho
 
   editor.buttons.find((button) => button.id === 'race-ground-mode').onClick();
   editor.draw(ctx, 390, 844);
+  assert.ok(editor.buttons.some((button) => button.id === 'race-ground-mode-track'));
   assert.ok(editor.buttons.some((button) => button.id === 'race-ground-mode-ground'));
   assert.ok(editor.buttons.some((button) => button.id === 'race-ground-mode-elevation'));
   assert.ok(editor.buttons.some((button) => button.id === 'race-ground-mode-sprites'));
-  editor.buttons.find((button) => button.id === 'race-ground-mode-ground').onClick();
+  editor.buttons.find((button) => button.id === 'race-ground-mode-track').onClick();
+
+  editor.draw(ctx, 390, 844);
+  assert.equal(editor.racePortraitMode, 'race');
+  assert.equal(editor.activeAction, 'move-node');
+  assert.ok(editor.buttons.some((button) => button.id === 'draw-road'));
+  assert.ok(editor.buttons.some((button) => button.id === 'move-node'));
+
+  editor.handleMenuAction('paint-ground');
 
   editor.draw(ctx, 390, 844);
   editor.buttons.find((button) => button.id === 'race-ground-paint').onClick();
@@ -18089,6 +18080,52 @@ test('Race weather separates full visual intensity from existing physical forcin
   assert.equal(storm.visibilityDistanceM, rain.visibilityDistanceM);
 });
 
+test('Race snowfall production path owns one canonical near-to-far particle field', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.playtestSession = {
+    raceId: 'studio-sprint-2',
+    raceDocumentName: 'Studio Sprint 2',
+    routeRuntimeType: 'point-to-point',
+    elapsedMs: 300000,
+    sceneElapsedMs: 300000,
+    speedMps: 30,
+    worldX: 0,
+    worldZ: 0,
+    heightM: 0,
+    cameraYaw: 0,
+    snowEnvironmentState: null,
+    weatherFxState: null
+  };
+  const bounds = { x: 0, y: 0, w: 640, h: 360 };
+  const camera = {
+    x: 0, z: -10, elevation: 0.25, roadElevation: 0,
+    horizonRatio: 0.31, nearPlane: 1.6, farPlane: 2200
+  };
+  const weather = {
+    id: 'snow', visualIntensity: 1, precipitationIntensity: 1,
+    effectiveIntensity: 1, visibilityDistanceM: 260
+  };
+  editor.lastRaceRenderCamera = { bounds, camera, cameraYaw: 0 };
+  editor.updateRaceWeatherFxState(1 / 60, {
+    session: editor.playtestSession,
+    weatherState: weather,
+    camera,
+    cameraYaw: 0
+  });
+  assert.equal(Object.hasOwn(editor.playtestSession, 'snowParticles3d'), false);
+  editor.drawRaceWeatherFx(createMockContext(), bounds, weather, {
+    camera,
+    cameraYaw: 0,
+    speedMps: 30
+  });
+  assert.equal(editor.playtestSession.snowEnvironmentState.activeParticles.length, 384);
+  assert.equal(editor.lastRaceRenderStats.weatherFxParticles, 384);
+  assert.equal(editor.lastRaceRenderStats.weatherFxNearParticles, 0);
+  assert.equal(editor.lastRaceRenderStats.weatherFxEnvironmentParticles, 384);
+  assert.equal(editor.lastRaceRenderStats.weatherFxSnowBackend, 'canvas');
+  assert.equal(editor.lastRaceRenderStats.weatherFxSnowParticles, 384);
+});
+
 test('Race near snow layer falls, approaches the camera, fades softly, and respawns cleanly', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   editor.playtestSession = {
@@ -18259,14 +18296,14 @@ test('Race near snow layer falls, approaches the camera, fades softly, and respa
   assert.equal(rendered.calls.filter((call) => call.type === 'arc').length <= 512, true);
   assert.equal(rendered.calls.filter((call) => call.type === 'fill').length <= 6, true);
   assert.equal(rendered.calls.filter((call) => call.type === 'stroke').length <= 1, true);
-  assert.equal(editor.lastRaceRenderStats.weatherFxParticles, 512);
-  assert.equal(editor.lastRaceRenderStats.weatherFxNearParticles, 128);
+  assert.equal(editor.lastRaceRenderStats.weatherFxParticles, 384);
+  assert.equal(editor.lastRaceRenderStats.weatherFxNearParticles, 0);
   assert.equal(editor.lastRaceRenderStats.weatherFxEnvironmentParticles, 384);
   const firstEnvironmentFill = rendered.calls.findIndex((call) => call.type === 'fill');
   const firstHazeFill = rendered.calls.findIndex((call) => call.type === 'fillRect');
-  const lastNearFill = rendered.calls.findLastIndex((call) => call.type === 'fill');
+  const lastEnvironmentFill = rendered.calls.findLastIndex((call) => call.type === 'fill');
   assert.equal(firstEnvironmentFill >= 0 && firstEnvironmentFill < firstHazeFill, true);
-  assert.equal(firstHazeFill < lastNearFill, true);
+  assert.equal(lastEnvironmentFill < firstHazeFill, true);
 
   const threeCamera = new THREE.PerspectiveCamera(60, bounds.w / bounds.h, 0.1, 100);
   threeCamera.updateProjectionMatrix();
@@ -18361,6 +18398,9 @@ test('Race environment snow reuses one depth-tested Three.js point field across 
   assert.equal(points.frustumCulled, false);
   assert.equal(stats.environmentSnowParticles, 384);
   assert.equal(stats.environmentSnowDrawCalls, 1);
+  assert.equal(Math.max(...particles.map((particle) => particle.sizePx)) <= 2.2, true);
+  assert.match(material.vertexShader, /clamp\(perspectiveSize \+ snowStreak, 1\.0, 8\.0\)/);
+  assert.ok(geometry.getAttribute('snowStreak'));
 
   editor.playtestSession.sceneElapsedMs += 16;
   const nextParticles = editor.updateRaceSnowEnvironmentRenderField({
@@ -25930,6 +25970,75 @@ test('Race tire tracks connect physical contacts and break across airtime', () =
   assert.equal(editor.playtestSession.tireTrackSegments.length, 2);
   assert.equal(editor.playtestSession.tireTrackSegments[1].from.z, 1);
   assert.equal(editor.playtestSession.tireTrackSegments[1].to.z, 1.5);
+});
+
+test('Race loose-surface tracks use canonical post-step contact despite stale legacy wheels', () => {
+  const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.startPlaytest('subaru-brz-2022');
+  editor.updatePlaytestSafely(0);
+  const session = editor.playtestSession;
+  const wheelId = 'rl';
+  const wheel = session.vehicleRenderState.wheels[wheelId];
+  const legacyWheel = session.vehicle3d.wheels[wheelId];
+  session.wheelContactPresentationState = {
+    wheels: { [wheelId]: { supported: true, geometricProximity: true } }
+  };
+  const presented = session.wheelContactPresentationState.wheels[wheelId];
+  legacyWheel.inContact = false;
+  wheel.validTreadContact = true;
+  wheel.geometricContact = true;
+  wheel.loadBearing = true;
+  presented.supported = true;
+  presented.geometricProximity = true;
+  const patch = session.vehicleDynamicsRunner.state.contactPatches[wheelId]
+    || (session.vehicleDynamicsRunner.state.contactPatches[wheelId] = {});
+  patch.validTreadContact = true;
+  patch.geometricContact = true;
+  patch.normalLoadN = 2500;
+  const surfaces = [
+    ['snow', 'road', 'snow'],
+    ['dirt', 'terrain', 'dirt'],
+    ['gravel', 'terrain', 'gravel'],
+    ['mud', 'terrain', 'dirt'],
+    ['grass', 'terrain', 'dirt']
+  ];
+  surfaces.forEach(([surfaceId, terrain, expectedKind], index) => {
+    session.tireTrackLastContactByWheel = {};
+    patch.material = { ...(patch.material || {}), surfaceId };
+    wheel.contactPointWorld = { x: index * 3, y: 0, z: 0 };
+    const context = {
+      speedMps: 8,
+      wheelContactScaleByWheel: { fl: 0, fr: 0, rl: 0, rr: 0 },
+      tireSlipByWheel: { rl: 0 },
+      wheelSpinByWheel: { rl: 0 },
+      brakeState: { lockByWheel: { rl: 0 } },
+      wheelSurfaceState: {
+        surfaceByWheel: { rl: surfaceId },
+        terrainByWheel: { rl: terrain },
+        positions: {}
+      }
+    };
+    editor.updateRaceTireTracks(context);
+    wheel.contactPointWorld = { x: index * 3, y: 0, z: 0.5 };
+    editor.updateRaceTireTracks(context);
+    assert.equal(session.tireTrackSegments.at(-1)?.kind, expectedKind);
+  });
+  const segmentCount = session.tireTrackSegments.length;
+  wheel.validTreadContact = false;
+  wheel.geometricContact = false;
+  wheel.loadBearing = false;
+  presented.supported = false;
+  presented.geometricProximity = false;
+  editor.updateRaceTireTracks({
+    speedMps: 8,
+    wheelContactScaleByWheel: { fl: 0, fr: 0, rl: 0, rr: 0 }
+  });
+  wheel.contactPointWorld = { x: 12, y: 0, z: 1 };
+  editor.updateRaceTireTracks({
+    speedMps: 8,
+    wheelContactScaleByWheel: { fl: 0, fr: 0, rl: 0, rr: 0 }
+  });
+  assert.equal(session.tireTrackSegments.length, segmentCount);
 });
 
 test('Race asphalt tracks require screech-level slip while loose surfaces retain rolling impressions', () => {

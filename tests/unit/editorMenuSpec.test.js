@@ -641,7 +641,7 @@ test('canonical UI spec root lists include the required desktop View root', () =
   assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Timeline, Layers, Envelopes, Generate, Tools, Settings.'), false);
   assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Add, Timeline, Clips, Keyframes, Stage, Audio, Settings.'), false);
   assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Track, Ground, Sprites, Settings.'), true);
-  assert.equal(uiSpecSource.includes('- Portrait bottom menu: File, Track, Ground, Sprites, Settings.'), true);
+  assert.equal(uiSpecSource.includes('- Portrait bottom menu: File, Ground, Sprites, Settings.'), true);
   assert.equal(uiSpecSource.includes('- Root: File, Edit, View, Art, Drivetrain, Tuning, Aero, Suspension, Drive.'), true);
 });
 
@@ -699,7 +699,7 @@ test('shared editor menu specs expose compact portrait bottom roots', () => {
     midi: ['file', 'grid', 'song', 'instruments', 'virtual-instruments', 'pedals', 'settings'],
     sfx: ['file', 'generate', 'timeline', 'layers', 'envelopes', 'tools', 'settings'],
     cutscene: ['file', 'add', 'timeline', 'clips', 'keyframes', 'stage', 'audio', 'settings'],
-    race: ['file', 'track', 'ground', 'sprites', 'settings'],
+    race: ['file', 'ground', 'sprites', 'settings'],
     car: ['file', 'art', 'drivetrain', 'tuning'],
     doodad: ['file', 'artwork']
   };
