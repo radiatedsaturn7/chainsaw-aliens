@@ -23,6 +23,51 @@ const raceMaterialBatchingSource = readFileSync(new URL('../../src/racing/RaceMa
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const normalizeAngle = (angle) => Math.atan2(Math.sin(angle), Math.cos(angle));
 
+test('Race Editor hydrates doodad art referenced by a clean project cache', async () => {
+  resetProjectFilesForTests();
+  upsertCachedProjectFile('doodads', 'Factory', JSON.stringify({
+    version: 1,
+    folder: 'doodads',
+    name: 'Factory',
+    savedAt: 5,
+    data: { name: 'Factory', artRef: '1000014256' }
+  }));
+  const originalFetch = globalThis.fetch;
+  let requestCount = 0;
+  globalThis.fetch = async (url) => {
+    requestCount += 1;
+    assert.match(String(url), /\/__storage\/file\?folder=art&name=1000014256/);
+    return {
+      ok: true,
+      async json() {
+        return {
+          ok: true,
+          file: {
+            version: 1,
+            folder: 'art',
+            name: '1000014256',
+            savedAt: 8,
+            data: { width: 1, height: 1, frames: [['#778899ff']] }
+          }
+        };
+      }
+    };
+  };
+  try {
+    const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+    const doodad = editor.loadRaceDoodadDocument('Factory');
+    const art = await editor.hydrateRaceArt(doodad.artRef);
+
+    assert.equal(doodad.artRef, '1000014256');
+    assert.equal(requestCount, 1);
+    assert.equal(art?.data?.frames?.[0]?.[0], '#778899ff');
+    assert.equal(loadProjectFile('art', '1000014256')?.data?.width, 1);
+  } finally {
+    globalThis.fetch = originalFetch;
+    resetProjectFilesForTests();
+  }
+});
+
 test('Race baked surface sampler returns the unlifted rendered triangle height and normal', () => {
   const terrainCells = [{
     key: 'heightmap:0,0',

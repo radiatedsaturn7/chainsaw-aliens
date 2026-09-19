@@ -1,4 +1,20 @@
-import { loadProjectFile } from '../projectFiles.js';
+import { hydrateProjectFilePayload, loadProjectFile } from '../projectFiles.js';
+
+const pendingArtHydrations = new Map();
+
+export function hydrateRaceArtSpriteShared(artRef = '') {
+  const clean = String(artRef || '').trim();
+  if (!clean) return Promise.resolve(null);
+  const cached = loadProjectFile('art', clean);
+  if (cached) return Promise.resolve(cached);
+  const pending = pendingArtHydrations.get(clean);
+  if (pending) return pending;
+  const hydration = hydrateProjectFilePayload('art', clean)
+    .catch(() => null)
+    .finally(() => pendingArtHydrations.delete(clean));
+  pendingArtHydrations.set(clean, hydration);
+  return hydration;
+}
 
 export function getRaceArtSpriteCanvasShared(artRef = '', {
   frameIndex = 0,

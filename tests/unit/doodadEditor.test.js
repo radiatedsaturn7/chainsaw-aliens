@@ -4,8 +4,48 @@ import { readFileSync } from 'node:fs';
 
 import DoodadEditor from '../../src/ui/DoodadEditor.js';
 import { RACE_DOODAD_SIZE_LIMITS } from '../../src/racing/raceDoodads.js';
+import { loadProjectFile, resetProjectFilesForTests } from '../../src/ui/projectFiles.js';
 
 const doodadEditorSource = readFileSync(new URL('../../src/ui/DoodadEditor.js', import.meta.url), 'utf8');
+
+test('Doodad Editor hydrates referenced art on a clean device', async () => {
+  resetProjectFilesForTests();
+  const originalFetch = globalThis.fetch;
+  const requests = [];
+  globalThis.fetch = async (url) => {
+    requests.push(String(url));
+    assert.match(String(url), /\/__storage\/file\?folder=art&name=tree/);
+    return {
+      ok: true,
+      async json() {
+        return {
+          ok: true,
+          file: {
+            version: 1,
+            folder: 'art',
+            name: 'tree',
+            savedAt: 10,
+            data: { width: 1, height: 1, frames: [['#00aa00ff']] }
+          }
+        };
+      }
+    };
+  };
+  try {
+    const editor = new DoodadEditor({ input: { isGamepadConnected: () => false } });
+    editor.artCanvasCache.set('stale', null);
+    editor.loadDoodadDocument({ name: 'Tree', artRef: 'tree' }, 'tree');
+    const payload = await editor.hydrateDoodadArt('tree');
+
+    assert.equal(requests.length, 1);
+    assert.equal(payload?.data?.frames?.[0]?.[0], '#00aa00ff');
+    assert.equal(loadProjectFile('art', 'tree')?.data?.width, 1);
+    assert.equal(editor.artCanvasCache.size, 0);
+  } finally {
+    globalThis.fetch = originalFetch;
+    resetProjectFilesForTests();
+  }
+});
 
 function createMockContext() {
   const noop = () => {};
