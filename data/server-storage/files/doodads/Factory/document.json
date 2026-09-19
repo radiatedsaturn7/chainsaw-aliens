@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1784692868133,
+  "selectedDoodadId": "new-doodad",
+  "doodad": {
+    "id": "new-doodad",
+    "name": "1000014256",
+    "artRef": "1000014256",
+    "widthM": 141.2,
+    "heightM": 169.7,
+    "groundOffsetM": 24.4,
+    "hitboxWidthM": 49.4,
+    "hitboxHeightM": 120,
+    "weightKg": 35,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "collide",
+      "speedDrainPercent": 45,
+      "damage": {
+        "panels": 14,
+        "suspension": 6,
+        "engine": 3.5
+      }
+    },
+    "rules": [
+      {
+        "minSpeedMph": 30,
+        "behavior": "collide",
+        "speedDrainPercent": 18,
+        "damage": {
+          "panels": 2.5,
+          "suspension": 0,
+          "engine": 0
+        }
+      },
+      {
+        "minSpeedMph": 120,
+        "behavior": "collide",
+        "speedDrainPercent": 16,
+        "damage": {
+          "panels": 4.5,
+          "suspension": 0,
+          "engine": 0
+        }
+      }
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "kind": "race-car",
-  "savedAt": 1784043196504,
+  "savedAt": 1784093996387,
   "selectedCarId": "starter-rwd",
   "car": {
     "id": "starter-rwd",
@@ -66,6 +66,12 @@
       "frontTireOffsetY": 0,
       "rearTireOffsetX": 0,
       "rearTireOffsetY": 0,
+      "shadowArtRef": null,
+      "shadowFrameIndex": 0,
+      "shadowScaleX": 1,
+      "shadowScaleY": 1,
+      "shadowOffsetX": 0,
+      "shadowOffsetY": 0,
       "brakeLightArtRef": null,
       "brakeLightScaleX": 1,
       "brakeLightScaleY": 1,
@@ -73,8 +79,11 @@
       "brakeLightOffsetY": 0,
       "layerVisibility": {
         "body": true,
+        "tires": true,
         "frontWheels": true,
-        "rearWheels": true
+        "rearWheels": true,
+        "brakes": true,
+        "shadow": true
       }
     },
     "dimensions": {

@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-track",
+  "savedAt": 1787701277004,
+  "selectedRaceId": "test-loop",
+  "race": {
+    "id": "test-loop",
+    "name": "Studio Sprint",
+    "type": "circuit",
+    "laps": 3,
+    "weather": "clear",
+    "timeOfDay": "day",
+    "entryBehavior": "return-to-origin",
+    "finishBehavior": {
+      "type": "return-to-origin",
+      "targetLevel": null,
+      "targetRace": null,
+      "spawnX": null,
+      "spawnY": null
+    },
+    "road": {
+      "laneCount": 1,
+      "laneWidthM": 3.6,
+      "width": 3.6,
+      "selectedGroundTileId": "grass",
+      "groundTiles": [],
+      "tileMap": {
+        "schemaVersion": 2,
+        "normalized": true,
+        "revision": 1,
+        "cellSizeM": 5,
+        "defaultTileId": "grass",
+        "minElevation": -1,
+        "maxElevation": 1,
+        "cells": {}
+      },
+      "nodes": [
+        {
+          "x": 0,
+          "y": 0,
+          "elevation": 0,
+          "role": "start",
+          "locked": true
+        }
+      ],
+      "segments": [
+        {
+          "length": 180,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "hazardIds": []
+        },
+        {
+          "length": 120,
+          "curve": 0.55,
+          "elevation": 0.08,
+          "surface": "asphalt",
+          "codriver": "medium-right"
+        },
+        {
+          "length": 150,
+          "curve": -0.35,
+          "elevation": -0.04,
+          "surface": "dirt",
+          "hazardIds": []
+        },
+        {
+          "length": 110,
+          "curve": 0.9,
+          "elevation": 0.02,
+          "surface": "gravel",
+          "turn": "square",
+          "codriver": "square-right"
+        },
+        {
+          "length": 180,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "hazardIds": []
+        }
+      ],
+      "tilePaintSource": "tile-editor"
+    },
+    "competition": {
+      "mode": "solo",
+      "aiDrivers": [
+        {
+          "id": "rookie-ai",
+          "name": "Rookie AI",
+          "carId": "starter-rwd",
+          "aggression": 0.35,
+          "skill": 0.45,
+          "rubberBanding": 0.2,
+          "enabled": false
+        }
+      ],
+      "playerStartGrid": 1,
+      "trafficEnabled": false
+    },
+    "hazards": [],
+    "codriver": {
+      "enabled": true,
+      "voice": "default",
+      "calls": [
+        {
+          "id": "medium-right",
+          "at": 190,
+          "text": "Medium right over crest",
+          "severity": 2
+        },
+        {
+          "id": "square-right",
+          "at": 430,
+          "text": "Square right, gravel, do not cut",
+          "severity": 4
+        },
+        {
+          "id": "jump-ahead",
+          "at": 620,
+          "text": "Jump ahead, stay center",
+          "severity": 3
+        }
+      ]
+    },
+    "raceStart": {
+      "musicTrackId": "",
+      "countdown": true,
+      "rollingStart": false,
+      "rollingStartSpeedMps": 13.4
+    },
+    "triggers": [],
+    "scenery": [],
+    "groundRenderer": "webgl-track",
+    "groundTextureBaseWorldM": 1.002,
+    "groundTextureFilterMode": "balanced",
+    "skyboxArtRef": "providence",
+    "skyboxSettings": {
+      "artRef": "providence",
+      "offsetXTurns": 0,
+      "offsetYRatio": 0
+    },
+    "surfaceArt": {
+      "boundary": "apron"
+    },
+    "margin": {
+      "enabled": true,
+      "shoulderEnabled": true,
+      "widthM": 0.22,
+      "shoulderWidthM": 12,
+      "collisionMode": "shoulder",
+      "artRef": "apron",
+      "marginMode": "on",
+      "shoulderMode": "hidden",
+      "collisionEdge": "shoulder",
+      "collisionEffect": "reset"
+    },
+    "renderDebug": {
+      "lightingEnabled": true,
+      "terrainEnabled": true,
+      "texturesEnabled": true,
+      "detailEnabled": false,
+      "terrainCullingEnabled": true,
+      "terrainLodEnabled": true,
+      "terrainBudgetEnabled": true,
+      "farRoadDecimationEnabled": true,
+      "rawTerrainPolygonsEnabled": false
+    },
+    "decals": []
+  }
+}

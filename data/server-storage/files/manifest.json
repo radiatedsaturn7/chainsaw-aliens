@@ -2,6 +2,7 @@
   "folders": {
     "levels": {
       "Game": "levels/Game/document.json",
+      "levelA": "levels/levelA/document.json",
       "Leevel0": "levels/Leevel0/document.json",
       "Level Editor Autosave": "levels/Level Editor Autosave/document.json",
       "level0": "levels/level0/document.json",
@@ -15,6 +16,8 @@
       "new-level": "levels/new-level/document.json"
     },
     "art": {
+      "rtg-001": "art/rtg-001/document.json",
+      "tire": "art/tire/document.json",
       "Head2": "art/Head2/document.json",
       "Tile Art 23": "art/Tile Art 23/document.json",
       "Tile Art Autosave": "art/Tile Art Autosave/document.json",
@@ -90,17 +93,37 @@
       "Player": "actors/Player/document.json"
     },
     "sfx": {
-      "Alarm": "sfx/Alarm/document.json"
+      "Alarm": "sfx/Alarm/document.json",
+      "Engine WRX SPT": "sfx/Engine WRX SPT/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
       "c2": "cutscenes/c2/document.json",
       "c3": "cutscenes/c3/document.json"
     },
+    "races": {
+      "Studio Sprint": "races/Studio Sprint/document.json",
+      "WeatherTech Raceway Laguna Seca": "races/WeatherTech Raceway Laguna Seca/document.json",
+      "Nurburgring Nordschleife": "races/Nurburgring Nordschleife/document.json",
+      "Col de Turini": "races/Col de Turini/document.json",
+      "Ouninpohja": "races/Ouninpohja/document.json",
+      "Daytona Tri-Oval": "races/Daytona Tri-Oval/document.json",
+      "Studio Sprint2": "races/Studio Sprint2/document.json"
+    },
     "settings": {
       "chainsaw-gm-soundfont-url": "settings/chainsaw-gm-soundfont-url/document.json",
       "chainsaw-midi-audio": "settings/chainsaw-midi-audio/document.json",
       "chainsaw-midi-recent": "settings/chainsaw-midi-recent/document.json"
+    },
+    "cars": {
+      "2022 Subaru WRX": "cars/2022 Subaru WRX/document.json",
+      "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
+      "2023 Honda Civic Type R": "cars/2023 Honda Civic Type R/document.json",
+      "2022 Subaru WRX2": "cars/2022 Subaru WRX2/document.json"
+    },
+    "doodads": {
+      "tree": "doodads/tree/document.json",
+      "Factory": "doodads/Factory/document.json"
     }
   }
 }
