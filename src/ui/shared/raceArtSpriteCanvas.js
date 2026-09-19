@@ -1,4 +1,5 @@
 import { hydrateProjectFilePayload, loadProjectFile } from '../projectFiles.js';
+import { getArtDocumentFrames, normalizeArtFramePixels, parseArtPixelRgba } from './artDocumentPixels.js';
 
 const pendingArtHydrations = new Map();
 
@@ -45,43 +46,13 @@ export function getRaceArtSpriteCanvasShared(artRef = '', {
       data = null;
     }
   }
-  if (!Array.isArray(data?.frames) && data?.tiles && typeof data.tiles === 'object') {
-    data = Object.values(data.tiles).find((entry) => entry) || data;
-  }
-  const rawFrames = Array.isArray(data?.frames)
-    ? data.frames
-    : (Array.isArray(data?.editor?.frames) ? data.editor.frames : []);
+  const { frames: rawFrames, source } = getArtDocumentFrames(data);
+  data = source || data;
   const resolvedFrameIndex = rawFrames.length ? requestedFrameIndex % rawFrames.length : 0;
   const cacheKey = `${clean}:${Number(payload?.savedAt || 0)}:frame:${resolvedFrameIndex}`;
   if (cache?.has?.(cacheKey)) return cache.get(cacheKey);
   const frame = rawFrames[resolvedFrameIndex] || rawFrames[0] || null;
-  const normalizeFramePixels = (source) => {
-    if (!source) return null;
-    if (Array.isArray(source) && source.length && !Array.isArray(source[0])) return source;
-    if (Array.isArray(source) && Array.isArray(source[0])) return source[0];
-    if (source && typeof source === 'object') {
-      if (Array.isArray(source.pixels) && source.pixels.length) return source.pixels;
-      if (Array.isArray(source.data) && source.data.length) return source.data;
-      const layers = Array.isArray(source.layers) ? source.layers : [];
-      const width = Math.max(1, Math.round(Number(data?.width || data?.editor?.width || data?.size || 16)));
-      const height = Math.max(1, Math.round(Number(data?.height || data?.editor?.height || data?.size || width)));
-      const composite = new Array(width * height).fill(0);
-      let painted = false;
-      layers.forEach((layer) => {
-        if (layer?.visible === false) return;
-        const pixels = Array.isArray(layer?.pixels) ? layer.pixels : Array.isArray(layer?.data) ? layer.data : null;
-        if (!pixels) return;
-        pixels.forEach((value, index) => {
-          if (!value) return;
-          composite[index] = value;
-          painted = true;
-        });
-      });
-      if (painted) return composite;
-    }
-    return null;
-  };
-  const pixels = normalizeFramePixels(frame) || normalizeFramePixels(data);
+  const pixels = normalizeArtFramePixels(frame, data) || normalizeArtFramePixels(data, data);
   if (!Array.isArray(pixels) || !pixels.length) {
     cache?.set?.(cacheKey, null);
     return null;
@@ -97,29 +68,10 @@ export function getRaceArtSpriteCanvasShared(artRef = '', {
     cache?.set?.(cacheKey, null);
     return null;
   }
-  const parsePixel = (value) => {
-    if (typeof value === 'number' && Number.isFinite(value)) {
-      return {
-        r: value & 255,
-        g: (value >>> 8) & 255,
-        b: (value >>> 16) & 255,
-        a: (value >>> 24) & 255
-      };
-    }
-    const text = String(value || '').trim();
-    if (!/^#?[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/.test(text)) return null;
-    const hex = text.startsWith('#') ? text.slice(1) : text;
-    return {
-      r: parseInt(hex.slice(0, 2), 16),
-      g: parseInt(hex.slice(2, 4), 16),
-      b: parseInt(hex.slice(4, 6), 16),
-      a: hex.length >= 8 ? parseInt(hex.slice(6, 8), 16) : 255
-    };
-  };
   if (typeof artCtx.createImageData === 'function' && typeof artCtx.putImageData === 'function') {
     const imageData = artCtx.createImageData(width, height);
     for (let i = 0; i < width * height; i += 1) {
-      const color = parsePixel(pixels[i]);
+      const color = parseArtPixelRgba(pixels[i]);
       const base = i * 4;
       if (!color || color.a === 0) {
         imageData.data[base + 3] = 0;
@@ -133,7 +85,7 @@ export function getRaceArtSpriteCanvasShared(artRef = '', {
     artCtx.putImageData(imageData, 0, 0);
   } else {
     pixels.forEach((value, index) => {
-      const color = parsePixel(value);
+      const color = parseArtPixelRgba(value);
       if (!color || color.a === 0) return;
       artCtx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a / 255})`;
       artCtx.fillRect(index % width, Math.floor(index / width), 1, 1);

@@ -99,6 +99,9 @@ export default class DoodadEditor {
     this.pendingDesktopDropdownHit = null;
     this.desktopDropdownRegions = [];
     this.artCanvasCache = new Map();
+    this.artLoadState = { ref: '', status: 'idle', retryAfterMs: 0 };
+    this.artHydrationPromise = null;
+    this.artHydrationSequence = 0;
     this.sliderRegions = [];
     this.sliderDrag = null;
     this.lastStudioSprintPreviewOverlay = null;
@@ -191,16 +194,39 @@ export default class DoodadEditor {
     this.doodad = doodad;
     this.currentDocumentName = sanitizeProjectFileName(name || doodad.name || doodad.id);
     this.status = `Loaded ${doodad.name}`;
-    void this.hydrateDoodadArt(doodad.artRef);
+    void this.hydrateDoodadArt(doodad.artRef, { force: true });
     return true;
   }
 
-  async hydrateDoodadArt(artRef = this.doodad.artRef) {
+  hydrateDoodadArt(artRef = this.doodad.artRef, { force = false } = {}) {
     const clean = String(artRef || '').trim();
-    if (!clean) return null;
-    const payload = await hydrateRaceArtSpriteShared(clean);
-    if (payload) this.artCanvasCache.clear();
-    return payload;
+    if (!clean) return Promise.resolve(null);
+    if (this.artLoadState.ref === clean && this.artLoadState.status === 'loading' && this.artHydrationPromise) {
+      return this.artHydrationPromise;
+    }
+    if (!force && this.artLoadState.ref === clean && this.artLoadState.status === 'failed'
+      && Date.now() < this.artLoadState.retryAfterMs) {
+      return Promise.resolve(null);
+    }
+    const sequence = ++this.artHydrationSequence;
+    this.artLoadState = { ref: clean, status: 'loading', retryAfterMs: 0 };
+    if (clean === this.doodad.artRef) this.status = `Loading artwork: ${clean}`;
+    const hydration = hydrateRaceArtSpriteShared(clean).then((payload) => {
+      if (sequence !== this.artHydrationSequence || clean !== this.doodad.artRef) return payload;
+      if (payload) {
+        this.artCanvasCache.clear();
+        this.artLoadState = { ref: clean, status: 'ready', retryAfterMs: 0 };
+        this.status = `Artwork ready: ${clean}`;
+      } else {
+        this.artLoadState = { ref: clean, status: 'failed', retryAfterMs: Date.now() + 1500 };
+        this.status = `Artwork unavailable: ${clean}`;
+      }
+      return payload;
+    }).finally(() => {
+      if (sequence === this.artHydrationSequence) this.artHydrationPromise = null;
+    });
+    this.artHydrationPromise = hydration;
+    return hydration;
   }
 
   openDoodad() {
@@ -239,6 +265,7 @@ export default class DoodadEditor {
       this.artCanvasCache.delete(this.doodad.artRef);
       if (!this.doodad.name || this.doodad.name === DEFAULT_RACE_DOODAD.name) this.doodad.name = this.doodad.artRef;
       this.status = `Art: ${this.doodad.artRef}`;
+      void this.hydrateDoodadArt(this.doodad.artRef, { force: true });
       return this.doodad.artRef;
     }
     this.status = 'Art picker closed';
