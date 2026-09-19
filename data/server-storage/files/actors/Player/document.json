@@ -76,9 +76,9 @@
       "animation": {
         "imageDataUrl": "",
         "frames": [],
-        "fps": 8,
-        "updatedAt": 0,
-        "artRef": ""
+        "fps": 21,
+        "updatedAt": 1785471043021,
+        "artRef": "player-walk-art2"
       },
       "movement": {
         "type": "none",
@@ -113,9 +113,9 @@
       "animation": {
         "imageDataUrl": "",
         "frames": [],
-        "fps": 8,
-        "updatedAt": 0,
-        "artRef": ""
+        "fps": 21,
+        "updatedAt": 1785471142274,
+        "artRef": "player-walk-art2"
       },
       "movement": {
         "type": "none",
@@ -150,9 +150,9 @@
       "animation": {
         "imageDataUrl": "",
         "frames": [],
-        "fps": 8,
-        "updatedAt": 0,
-        "artRef": ""
+        "fps": 9,
+        "updatedAt": 1785641263821,
+        "artRef": "player-jump"
       },
       "movement": {
         "type": "none",
@@ -187,9 +187,9 @@
       "animation": {
         "imageDataUrl": "",
         "frames": [],
-        "fps": 8,
-        "updatedAt": 0,
-        "artRef": ""
+        "fps": 9,
+        "updatedAt": 1785642789619,
+        "artRef": "player-fall"
       },
       "movement": {
         "type": "none",
@@ -335,9 +335,9 @@
       "animation": {
         "imageDataUrl": "",
         "frames": [],
-        "fps": 8,
-        "updatedAt": 0,
-        "artRef": ""
+        "fps": 32,
+        "updatedAt": 1785644550095,
+        "artRef": "player-attack"
       },
       "movement": {
         "type": "none",

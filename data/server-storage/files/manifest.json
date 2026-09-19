@@ -71,7 +71,11 @@
       "providenceGround": "art/providenceGround/document.json",
       "tree": "art/tree/document.json",
       "grass": "art/grass/document.json",
-      "Tile Art solid": "art/Tile Art solid/document.json"
+      "Tile Art solid": "art/Tile Art solid/document.json",
+      "player-walk-art2": "art/player-walk-art2/document.json",
+      "player-jump": "art/player-jump/document.json",
+      "player-fall": "art/player-fall/document.json",
+      "player-attack": "art/player-attack/document.json"
     },
     "music": {
       "1": "music/1/document.json",
@@ -90,7 +94,10 @@
       "Intro": "music/Intro/document.json",
       "KeyboardTyping": "music/KeyboardTyping/document.json",
       "KeyboardTyping Autosave": "music/KeyboardTyping Autosave/document.json",
-      "Intro Autosave": "music/Intro Autosave/document.json"
+      "Intro Autosave": "music/Intro Autosave/document.json",
+      "NIN1": "music/NIN1/document.json",
+      "Race1": "music/Race1/document.json",
+      "p": "music/p/document.json"
     },
     "actors": {
       "Head.json": "actors/Head.json/document.json",
@@ -101,7 +108,14 @@
     },
     "sfx": {
       "Alarm": "sfx/Alarm/document.json",
-      "Engine WRX SPT": "sfx/Engine WRX SPT/document.json"
+      "Engine WRX SPT": "sfx/Engine WRX SPT/document.json",
+      "Engine WRX Manual": "sfx/Engine WRX Manual/document.json",
+      "Engine BRZ Manual": "sfx/Engine BRZ Manual/document.json",
+      "Engine BRZ Auto": "sfx/Engine BRZ Auto/document.json",
+      "Engine Civic Manual": "sfx/Engine Civic Manual/document.json",
+      "Engine Civic CVT": "sfx/Engine Civic CVT/document.json",
+      "Engine Inline Four": "sfx/Engine Inline Four/document.json",
+      "Engine V8": "sfx/Engine V8/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",

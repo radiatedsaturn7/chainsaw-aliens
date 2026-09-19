@@ -1,20 +1,20 @@
 {
   "version": 1,
-  "name": "Alarm",
+  "name": "Engine BRZ Auto",
   "frames": [
     {
-      "id": "sfx_mpr6ewvb_o1beia",
-      "name": "Frame 1",
+      "id": "brz-flat-four-auto-idle-frame",
+      "name": "Idle Loop",
       "layers": [
         {
-          "id": "sfx_mpr6ewvb_7a79dd",
-          "name": "Layer 1 A",
+          "id": "brz-flat-four-auto-idle-layer",
+          "name": "BRZ Auto Idle",
           "wavDataUrl": {
             "__chainsawAssetRef": "assets/audio-1.wav",
             "mime": "audio/wav"
           },
-          "duration": 1.043,
-          "sampleRate": 48000,
+          "duration": 0.8,
+          "sampleRate": 11025,
           "channels": 1,
           "startTime": 0,
           "volume": 1,
@@ -35,19 +35,6 @@
               ]
             },
             "pitch": {
-              "enabled": true,
-              "points": [
-                {
-                  "time": 0,
-                  "value": 0
-                },
-                {
-                  "time": 1,
-                  "value": 1749
-                }
-              ]
-            },
-            "pan": {
               "enabled": false,
               "points": [
                 {
@@ -57,49 +44,6 @@
                 {
                   "time": 1,
                   "value": 0
-                }
-              ]
-            }
-          }
-        },
-        {
-          "id": "sfx_mpr6f4bn_1v66e2",
-          "name": "Layer 2 A",
-          "wavDataUrl": {
-            "__chainsawAssetRef": "assets/audio-2.wav",
-            "mime": "audio/wav"
-          },
-          "duration": 1.043,
-          "sampleRate": 48000,
-          "channels": 1,
-          "startTime": 0,
-          "volume": 1,
-          "pan": 0,
-          "muted": false,
-          "envelopes": {
-            "volume": {
-              "enabled": false,
-              "points": [
-                {
-                  "time": 0,
-                  "value": 1
-                },
-                {
-                  "time": 1,
-                  "value": 1
-                }
-              ]
-            },
-            "pitch": {
-              "enabled": true,
-              "points": [
-                {
-                  "time": 0,
-                  "value": 0
-                },
-                {
-                  "time": 1,
-                  "value": 1749
                 }
               ]
             },
@@ -119,11 +63,11 @@
           }
         }
       ],
-      "duration": 1.043,
-      "sampleRate": 48000,
+      "duration": 0.8,
+      "sampleRate": 11025,
       "channels": 1,
       "loopStart": 0,
-      "loopEnd": 0,
+      "loopEnd": 0.8,
       "envelopes": {
         "volume": {
           "enabled": false,
@@ -139,7 +83,7 @@
           ]
         },
         "pitch": {
-          "enabled": true,
+          "enabled": false,
           "points": [
             {
               "time": 0,
@@ -147,7 +91,7 @@
             },
             {
               "time": 1,
-              "value": 1749
+              "value": 0
             }
           ]
         },
@@ -166,7 +110,7 @@
         }
       },
       "pitchEnvelope": {
-        "enabled": true,
+        "enabled": false,
         "points": [
           {
             "time": 0,
@@ -174,7 +118,7 @@
           },
           {
             "time": 1,
-            "value": 1749
+            "value": 0
           }
         ]
       }
@@ -185,8 +129,8 @@
     "enabledFrames": [],
     "pitchVarianceCents": 0,
     "volumeVariance": 0,
-    "loop": false,
-    "baseVolume": 1,
+    "loop": true,
+    "baseVolume": 0.78,
     "envelopes": {
       "volume": {
         "enabled": false,
@@ -243,12 +187,34 @@
     }
   },
   "toolOptions": {
-    "generateWave": "square",
-    "generateDuration": 1.6209960443002207,
-    "generateFrequency": 428,
+    "generateWave": "triangle",
+    "generateDuration": 0.8,
+    "generateFrequency": 83,
     "fadeSeconds": 0.03,
-    "bitDepth": 8,
+    "bitDepth": 16,
     "sampleRateFactor": 4,
-    "timeStretch": 1.25
-  }
+    "timeStretch": 1,
+    "customWaveSmooth": true,
+    "customWavePoints": [
+      {
+        "time": 0,
+        "value": 0
+      },
+      {
+        "time": 0.35,
+        "value": 1
+      },
+      {
+        "time": 0.7,
+        "value": -0.7
+      },
+      {
+        "time": 1,
+        "value": 0
+      }
+    ]
+  },
+  "engineProfileId": "brz-flat-four-auto",
+  "generatedBy": "race-editor-engine-profile",
+  "engineSfxVersion": 3
 }
