@@ -63,7 +63,7 @@ import {
 } from './shared/editorMenuSpec.js';
 import { SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import { drawSharedMobileZoomSlider } from './shared/mobileZoomSlider.js';
-import { getRaceArtSpriteCanvasShared } from './shared/raceArtSpriteCanvas.js';
+import { getRaceArtSpriteCanvasShared, hydrateRaceArtSpriteShared } from './shared/raceArtSpriteCanvas.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 const BEHAVIOR_ORDER = ['collide', 'flatten', 'fly-off'];
@@ -191,7 +191,16 @@ export default class DoodadEditor {
     this.doodad = doodad;
     this.currentDocumentName = sanitizeProjectFileName(name || doodad.name || doodad.id);
     this.status = `Loaded ${doodad.name}`;
+    void this.hydrateDoodadArt(doodad.artRef);
     return true;
+  }
+
+  async hydrateDoodadArt(artRef = this.doodad.artRef) {
+    const clean = String(artRef || '').trim();
+    if (!clean) return null;
+    const payload = await hydrateRaceArtSpriteShared(clean);
+    if (payload) this.artCanvasCache.clear();
+    return payload;
   }
 
   openDoodad() {
@@ -237,7 +246,9 @@ export default class DoodadEditor {
   }
 
   getDoodadArtCanvas(artRef = this.doodad.artRef) {
-    return getRaceArtSpriteCanvasShared(artRef, { cache: this.artCanvasCache });
+    const canvas = getRaceArtSpriteCanvasShared(artRef, { cache: this.artCanvasCache });
+    if (!canvas) void this.hydrateDoodadArt(artRef);
+    return canvas;
   }
 
   getGroundOffsetLimitM(heightM = this.doodad.heightM) {

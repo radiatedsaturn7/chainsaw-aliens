@@ -88,7 +88,7 @@ import {
 } from './uiSuite.js';
 import { drawSharedMobileZoomSlider } from './shared/mobileZoomSlider.js';
 import { drawInGameTextMenu } from './shared/inGameTextMenu.js';
-import { getRaceArtSpriteCanvasShared } from './shared/raceArtSpriteCanvas.js';
+import { getRaceArtSpriteCanvasShared, hydrateRaceArtSpriteShared } from './shared/raceArtSpriteCanvas.js';
 import {
   applyDesktopDropdownWheelScrollState,
   buildCompactLandscapeCommandRailActions,
@@ -1513,11 +1513,24 @@ export default class RaceEditor {
     if (cached && cached.savedAt === savedAt && cached.payload === payload) return cached.document;
     const document = normalizeRaceDoodadDocument(payload?.data || payload, clean);
     this.raceDoodadDocumentCache.set(clean, { savedAt, payload, document });
+    void this.hydrateRaceArt(document.artRef);
     if (this.raceDoodadDocumentCache.size > 64) {
       const first = this.raceDoodadDocumentCache.keys().next().value;
       if (first) this.raceDoodadDocumentCache.delete(first);
     }
     return document;
+  }
+
+  async hydrateRaceArt(artRef = '') {
+    const clean = String(artRef || '').trim();
+    if (!clean) return null;
+    const payload = await hydrateRaceArtSpriteShared(clean);
+    if (payload) {
+      this.raceArtSpriteCache.clear();
+      this.raceArtTextureCache.clear();
+      this.raceArtTextureMipCache.clear();
+    }
+    return payload;
   }
 
   getSelectedRaceDoodad() {
@@ -29232,7 +29245,7 @@ export default class RaceEditor {
   }
 
   getRaceArtSpriteCanvas(artRef = '', { frameIndex = 0 } = {}) {
-    return getRaceArtSpriteCanvasShared(artRef, {
+    const canvas = getRaceArtSpriteCanvasShared(artRef, {
       frameIndex,
       cache: this.raceArtSpriteCache,
       playtestSession: this.playtestSession,
@@ -29249,6 +29262,10 @@ export default class RaceEditor {
         };
       }
     });
+    if (!canvas && this.playtestSession?.raceTravelPreparedArtOnly !== true) {
+      void this.hydrateRaceArt(artRef);
+    }
+    return canvas;
   }
 
   getRaceArtTextureSampler(artRef = '') {
