@@ -16,6 +16,7 @@
       "new-level": "levels/new-level/document.json"
     },
     "art": {
+      "1000014256": "art/1000014256/document.json",
       "rtg-001": "art/rtg-001/document.json",
       "tire": "art/tire/document.json",
       "Head2": "art/Head2/document.json",
@@ -64,7 +65,13 @@
       "zombie-attack": "art/zombie-attack/document.json",
       "zombie-idle": "art/zombie-idle/document.json",
       "zombie-walk": "art/zombie-walk/document.json",
-      "player-idle-art": "art/player-idle-art/document.json"
+      "player-idle-art": "art/player-idle-art/document.json",
+      "apron": "art/apron/document.json",
+      "providence": "art/providence/document.json",
+      "providenceGround": "art/providenceGround/document.json",
+      "tree": "art/tree/document.json",
+      "grass": "art/grass/document.json",
+      "Tile Art solid": "art/Tile Art solid/document.json"
     },
     "music": {
       "1": "music/1/document.json",
