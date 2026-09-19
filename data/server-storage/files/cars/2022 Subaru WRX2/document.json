@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "kind": "race-car",
-  "savedAt": 1785207879941,
+  "savedAt": 1787287707040,
   "selectedCarId": "starter-rwd",
   "car": {
     "id": "starter-rwd",
@@ -84,7 +84,7 @@
         }
       },
       "addOns": [],
-      "bodyOffsetY": -2.041852678571429,
+      "bodyOffsetY": -0.770577566964286,
       "rearTireOffsetY": 0,
       "frontTireOffsetY": 0,
       "bodyScaleX": 1.5847864782258707,
@@ -311,6 +311,145 @@
             "torqueLbFt": 150
           }
         ]
+      },
+      "physics": {
+        "bodyShapePreset": "car",
+        "bodyProfile": {
+          "preset": "car",
+          "overallLengthM": 4.67,
+          "overallWidthM": 1.83,
+          "overallHeightM": 1.46,
+          "groundClearanceM": 0.14,
+          "frontOverhangM": 0.92,
+          "rearOverhangM": 0.93,
+          "lowerBodyHeightM": 0.48,
+          "hood": {
+            "lengthM": 1.2,
+            "widthM": 1.68,
+            "heightM": 0.42
+          },
+          "cabin": {
+            "centerZM": -0.12,
+            "lengthM": 2.15,
+            "widthM": 1.62,
+            "heightM": 0.83
+          },
+          "bed": {
+            "centerZM": -1.35,
+            "lengthM": 0,
+            "widthM": 0,
+            "heightM": 0
+          },
+          "cgPositionM": {
+            "x": 0,
+            "y": 0.55,
+            "z": 0
+          },
+          "collisionFriction": 0.62,
+          "collisionRestitution": 0.08,
+          "wheelWellAware": false,
+          "wheelWellClearanceMarginM": 0.06,
+          "maximumTireDeflectionM": 0.04,
+          "wheelRadiusM": 0.337,
+          "trackWidthM": 1.58,
+          "frontAxleDistanceFromCgM": 1.1208,
+          "rearAxleDistanceFromCgM": 1.4944,
+          "customColliders": [],
+          "pieces": [
+            {
+              "id": "lower-chassis",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": -0.17000000000000004,
+                "z": 0
+              },
+              "sizeM": {
+                "x": 1.83,
+                "y": 0.48,
+                "z": 4.67
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "bottom",
+                "top",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "front-body-hood",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": 0.2799999999999999,
+                "z": 0.8150000000000001
+              },
+              "sizeM": {
+                "x": 1.68,
+                "y": 0.42,
+                "z": 1.2
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "bottom",
+                "top",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "cabin",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": 0.48499999999999993,
+                "z": -0.12
+              },
+              "sizeM": {
+                "x": 1.62,
+                "y": 0.83,
+                "z": 2.15
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "bottom",
+                "top",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "rear-body-trunk",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": 0.24639999999999992,
+                "z": -1.2299999999999998
+              },
+              "sizeM": {
+                "x": 1.7202,
+                "y": 0.35279999999999995,
+                "z": 0.35
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "bottom",
+                "top",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            }
+          ]
+        }
       }
     },
     "camera": {

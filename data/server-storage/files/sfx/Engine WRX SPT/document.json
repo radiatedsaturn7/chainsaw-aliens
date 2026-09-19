@@ -1,0 +1,220 @@
+{
+  "version": 1,
+  "name": "Engine WRX SPT",
+  "frames": [
+    {
+      "id": "wrx-flat-four-cvt-idle-frame",
+      "name": "Idle Loop",
+      "layers": [
+        {
+          "id": "wrx-flat-four-cvt-idle-layer",
+          "name": "WRX SPT Idle",
+          "wavDataUrl": {
+            "__chainsawAssetRef": "assets/audio-1.wav",
+            "mime": "audio/wav"
+          },
+          "duration": 0.8,
+          "sampleRate": 11025,
+          "channels": 1,
+          "startTime": 0,
+          "volume": 1,
+          "pan": 0,
+          "muted": false,
+          "envelopes": {
+            "volume": {
+              "enabled": false,
+              "points": [
+                {
+                  "time": 0,
+                  "value": 1
+                },
+                {
+                  "time": 1,
+                  "value": 1
+                }
+              ]
+            },
+            "pitch": {
+              "enabled": false,
+              "points": [
+                {
+                  "time": 0,
+                  "value": 0
+                },
+                {
+                  "time": 1,
+                  "value": 0
+                }
+              ]
+            },
+            "pan": {
+              "enabled": false,
+              "points": [
+                {
+                  "time": 0,
+                  "value": 0
+                },
+                {
+                  "time": 1,
+                  "value": 0
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "duration": 0.8,
+      "sampleRate": 11025,
+      "channels": 1,
+      "loopStart": 0,
+      "loopEnd": 0.8,
+      "envelopes": {
+        "volume": {
+          "enabled": false,
+          "points": [
+            {
+              "time": 0,
+              "value": 1
+            },
+            {
+              "time": 1,
+              "value": 1
+            }
+          ]
+        },
+        "pitch": {
+          "enabled": false,
+          "points": [
+            {
+              "time": 0,
+              "value": 0
+            },
+            {
+              "time": 1,
+              "value": 0
+            }
+          ]
+        },
+        "pan": {
+          "enabled": false,
+          "points": [
+            {
+              "time": 0,
+              "value": 0
+            },
+            {
+              "time": 1,
+              "value": 0
+            }
+          ]
+        }
+      },
+      "pitchEnvelope": {
+        "enabled": false,
+        "points": [
+          {
+            "time": 0,
+            "value": 0
+          },
+          {
+            "time": 1,
+            "value": 0
+          }
+        ]
+      }
+    }
+  ],
+  "settings": {
+    "frameMode": "random",
+    "enabledFrames": [],
+    "pitchVarianceCents": 0,
+    "volumeVariance": 0,
+    "loop": true,
+    "baseVolume": 0.78,
+    "envelopes": {
+      "volume": {
+        "enabled": false,
+        "points": [
+          {
+            "time": 0,
+            "value": 1
+          },
+          {
+            "time": 1,
+            "value": 1
+          }
+        ]
+      },
+      "pitch": {
+        "enabled": false,
+        "points": [
+          {
+            "time": 0,
+            "value": 0
+          },
+          {
+            "time": 1,
+            "value": 0
+          }
+        ]
+      },
+      "pan": {
+        "enabled": false,
+        "points": [
+          {
+            "time": 0,
+            "value": 0
+          },
+          {
+            "time": 1,
+            "value": 0
+          }
+        ]
+      }
+    },
+    "pitchEnvelope": {
+      "enabled": false,
+      "points": [
+        {
+          "time": 0,
+          "value": 0
+        },
+        {
+          "time": 1,
+          "value": 0
+        }
+      ]
+    }
+  },
+  "toolOptions": {
+    "generateWave": "saw",
+    "generateDuration": 0.8,
+    "generateFrequency": 78,
+    "fadeSeconds": 0.03,
+    "bitDepth": 16,
+    "sampleRateFactor": 4,
+    "timeStretch": 1,
+    "customWaveSmooth": true,
+    "customWavePoints": [
+      {
+        "time": 0,
+        "value": 0
+      },
+      {
+        "time": 0.35,
+        "value": 1
+      },
+      {
+        "time": 0.7,
+        "value": -0.7
+      },
+      {
+        "time": 1,
+        "value": 0
+      }
+    ]
+  },
+  "engineProfileId": "wrx-flat-four-cvt",
+  "generatedBy": "race-editor-engine-profile",
+  "engineSfxVersion": 3
+}
