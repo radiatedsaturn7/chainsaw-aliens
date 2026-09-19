@@ -16,6 +16,7 @@ import {
 import { listBuiltInActorBrowserEntries } from '../content/builtinActorOverrides.js';
 import { hydrateServerStorage } from './serverStorage.js';
 import { fileTypeBadge } from './uiSuite.js';
+import { buildArtPreviewPixels, getArtDocumentFrames } from './shared/artDocumentPixels.js';
 
 const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors', sfx: 'SFX', cutscenes: 'Cutscenes', races: 'Races', cars: 'Cars', doodads: 'Doodads' };
 const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'doodads'];
@@ -113,82 +114,22 @@ export function sortProjectBrowserEntries(entries = [], sortBy = 'modified') {
   });
 }
 
-function parseHexColorToRgba(hex) {
-  if (typeof hex !== 'string') return null;
-  const value = hex.trim();
-  if (!/^#?[0-9a-fA-F]{6}$/.test(value)) return null;
-  const clean = value.startsWith('#') ? value.slice(1) : value;
-  return {
-    r: parseInt(clean.slice(0, 2), 16),
-    g: parseInt(clean.slice(2, 4), 16),
-    b: parseInt(clean.slice(4, 6), 16),
-    a: 255
-  };
-}
-
-function createArtPreviewDataUrl(data) {
-  if (!data) return null;
-  let tileData = data;
-  if (!Array.isArray(data?.frames) && data?.tiles && typeof data.tiles === 'object') {
-    const first = Object.values(data.tiles).find((entry) => entry);
-    if (first) tileData = first;
-  }
-  const normalizeFramePixels = (frame) => {
-    if (Array.isArray(frame) && frame.some((value) => typeof value === 'string')) return frame;
-    if (Array.isArray(frame) && Array.isArray(frame[0]) && frame[0].some((value) => typeof value === 'string')) return frame[0];
-    if (frame && typeof frame === 'object') {
-      if (Array.isArray(frame.pixels) && frame.pixels.some((value) => typeof value === 'string')) return frame.pixels;
-      if (Array.isArray(frame.data) && frame.data.some((value) => typeof value === 'string')) return frame.data;
-    }
-    return null;
-  };
-  const frame = Array.isArray(tileData?.frames) ? normalizeFramePixels(tileData.frames[0]) : null;
-  if (!Array.isArray(frame) || !frame.length) return null;
-  const parsedWidth = Number(tileData?.width);
-  const parsedHeight = Number(tileData?.height);
-  const size = Number.isFinite(tileData?.size) ? Number(tileData.size) : Math.round(Math.sqrt(frame.length));
-  const width = Math.max(1, Number.isFinite(parsedWidth) && parsedWidth > 0 ? Math.round(parsedWidth) : (Number.isFinite(size) ? Math.round(size) : 1));
-  const inferredHeight = Math.max(1, Math.round(frame.length / width));
-  const height = Math.max(1, Number.isFinite(parsedHeight) && parsedHeight > 0 ? Math.round(parsedHeight) : inferredHeight);
-  const MAX_PREVIEW_DIMENSION = 64;
-  const scale = Math.max(1, Math.ceil(Math.max(width, height) / MAX_PREVIEW_DIMENSION));
-  const previewWidth = Math.max(1, Math.floor(width / scale));
-  const previewHeight = Math.max(1, Math.floor(height / scale));
-  const canvas = document.createElement('canvas');
-  canvas.width = previewWidth;
-  canvas.height = previewHeight;
+export function createArtPreviewDataUrl(data, documentRef = document) {
+  const preview = buildArtPreviewPixels(data, { maxDimension: 64 });
+  if (!preview) return null;
+  const canvas = documentRef.createElement('canvas');
+  canvas.width = preview.width;
+  canvas.height = preview.height;
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
-  const imageData = ctx.createImageData(previewWidth, previewHeight);
-  for (let py = 0; py < previewHeight; py += 1) {
-    for (let px = 0; px < previewWidth; px += 1) {
-      const sourceX = Math.min(width - 1, px * scale);
-      const sourceY = Math.min(height - 1, py * scale);
-      const sourceIndex = sourceY * width + sourceX;
-      const rgba = parseHexColorToRgba(frame[sourceIndex]);
-      const base = (py * previewWidth + px) * 4;
-      if (!rgba) {
-        imageData.data[base + 3] = 0;
-        continue;
-      }
-      imageData.data[base] = rgba.r;
-      imageData.data[base + 1] = rgba.g;
-      imageData.data[base + 2] = rgba.b;
-      imageData.data[base + 3] = rgba.a;
-    }
-  }
+  const imageData = ctx.createImageData(preview.width, preview.height);
+  imageData.data.set(preview.rgba);
   ctx.putImageData(imageData, 0, 0);
   return canvas.toDataURL('image/png');
 }
 
 function getArtFrames(data) {
-  if (!data) return { frames: [], source: null };
-  if (Array.isArray(data?.frames) && data.frames.length) return { frames: data.frames, source: data };
-  if (data?.tiles && typeof data.tiles === 'object') {
-    const first = Object.values(data.tiles).find((entry) => Array.isArray(entry?.frames) && entry.frames.length);
-    if (first) return { frames: first.frames, source: first };
-  }
-  return { frames: [], source: null };
+  return getArtDocumentFrames(data);
 }
 
 function createArtAnimationPreviewUrls(data, maxFrames = 24) {
