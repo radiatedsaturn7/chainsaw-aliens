@@ -24,6 +24,8 @@ test('desktop modeling menus render a mesh and support undo and native roundtrip
   await page.setViewportSize({width:1280,height:800});await open(page);
   await clickButton(page,'mesh');await clickButton(page,'shape-box');
   await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.model.vertices.length)).toBe(8);
+  await clickButton(page,'mesh');
+  await expect.poll(()=>page.evaluate(()=>Boolean(window.__game.modelEditor.desktopDropdown))).toBe(true);
   await page.keyboard.press('Escape');
   await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('model-editor');
   await expect.poll(()=>page.evaluate(()=>Boolean(window.__game.modelEditor.modelRenderer.root?.children.length))).toBe(true);

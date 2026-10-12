@@ -75,3 +75,28 @@ for (const prepared of [true, false]) test(`a saved variant preview uses the cor
   e.ensureCarEditorPreviewPlaytestSession=()=>preview;
   e.bindCarEditorPreviewPlaytest(()=>assert.equal(e.selectedCar,variant));
 });
+
+test('opening a saved variant replaces that document and keeps other variants independent',()=>{
+  const e=makeEditor();
+  const base=structuredClone(e.selectedCar);
+  const first=e.withSavedRaceCarRuntimeIdentity(structuredClone(base),'Placement A');
+  const second=e.withSavedRaceCarRuntimeIdentity(structuredClone(base),'Placement B');
+  first.art.tireScaleX=2;
+  second.art.tireScaleX=3;
+  e.upsertRaceProjectCar(first);e.upsertRaceProjectCar(second);
+  // Save As can retain the source document's runtime metadata in old files.
+  const saved=structuredClone(first);saved.art.tireScaleX=4;
+  e.applyLoadedCarDocument({kind:'race-car',car:saved},{name:'Placement B'});
+  assert.equal(e.selectedCar.__playtestDocumentName,'Placement B');
+  assert.equal(e.selectedCar.art.tireScaleX,4);
+  assert.equal(e.findRaceProjectCarById(e.getRaceCarProjectIdentity(first)).art.tireScaleX,2);
+  assert.equal(e.findRaceProjectCarById(e.getRaceCarProjectIdentity(second)).art.tireScaleX,4);
+  assert.equal(e.project.cars.filter(car=>e.getRaceCarProjectIdentity(car)===e.getRaceCarProjectIdentity(second)).length,1);
+});
+
+test('base car lookup prefers its exact identity over saved variants with the same source id',()=>{
+  const e=makeEditor();const base=e.selectedCar;
+  const variant=e.withSavedRaceCarRuntimeIdentity(structuredClone(base),'Variant');
+  e.project.cars.unshift(variant);
+  assert.equal(e.findRaceProjectCarById(base.id),base);
+});

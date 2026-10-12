@@ -2,7 +2,7 @@
 
 Product-level editor menu behavior is specified in `../UISpec.md`. This file is the lower-level shell, layout, spacing, typography, and token contract used by the shared editor UI implementation.
 
-This document defines the shared layout and token contract for **Pixel Editor**, **Tile Editor**, **Level Editor**, **Actor Editor**, **MIDI Editor**, **SFX Editor**, **Cutscene Editor**, **Race Editor**, **Car Editor**, **Tire Editor**, and **Doodad Editor**.
+This document defines the shared layout and token contract for **Pixel Editor**, **Tile Editor**, **Level Editor**, **Actor Editor**, **MIDI Editor**, **SFX Editor**, **Cutscene Editor**, **Race Editor**, **Car Editor**, **Tire Editor**, **Doodad Editor**, and **3D Object Editor**.
 
 ## 1) Fixed Layout Dimensions
 

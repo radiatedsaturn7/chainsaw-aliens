@@ -1240,7 +1240,8 @@ export default class RaceEditor {
   findRaceProjectCarById(carId = '') {
     const id = String(carId || '');
     if (!id || !Array.isArray(this.project?.cars)) return null;
-    return this.project.cars.find((car) => this.getRaceCarProjectIdentity(car) === id || car?.id === id) || null;
+    return this.project.cars.find((car) => this.getRaceCarProjectIdentity(car) === id)
+      || this.project.cars.find((car) => car?.id === id) || null;
   }
 
   upsertRaceProjectCar(car = null) {
@@ -7986,11 +7987,12 @@ export default class RaceEditor {
     // previous runtime copy and in-flight preparation cannot be reused here.
     this.resetCarEditorPreviewPlaytest({ preserveEditorUi: true });
     this.carArtSliderDrag = null;
-    const existingIndex = this.project.cars.findIndex((candidate) => candidate.id === car.id);
-    if (existingIndex >= 0) this.project.cars[existingIndex] = car;
-    else this.project.cars.push(car);
-    this.project.selectedCarId = car.id;
+    // Saved variants share the stock car id. The opened filename, not stale
+    // runtime metadata from Save As, identifies the document being replaced.
     this.currentCarDocumentName = sanitizeProjectFileName(name || car.name || car.id);
+    this.withSavedRaceCarRuntimeIdentity(car, this.currentCarDocumentName);
+    this.upsertRaceProjectCar(car);
+    this.project.selectedCarId = this.getRaceCarProjectIdentity(car);
     this.activeRootId = 'art';
     this.playtestSession = null;
     this.status = `Loaded ${car.name}`;
@@ -34074,6 +34076,9 @@ export default class RaceEditor {
 
   syncRaceTileModels(renderer,camera={}) {
     const map=this.ensureRaceTileMap();if(!map)return;
+    const configured=Object.values(map.models||{}).some(binding=>binding?.ref)
+      || (this.game?.world?.tileDefinitions?.all||[]).some(tile=>tile.model?.ref&&!Object.hasOwn(map.models||{},tile.id));
+    if(!configured)return syncRaceModelTiles(renderer,[],0);
     const placements=[],size=Number(map.cellSizeM)||1;
     const bindings=new Map();
     const entries=this.getRaceTileMapEntries(map);

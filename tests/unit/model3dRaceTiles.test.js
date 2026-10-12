@@ -26,3 +26,9 @@ test('Race saves inherited tile models independently from the active Level and r
   assert.equal(loaded.road.tileMap.models.solid.ref,'Tile');
   e.ensureRaceTileMap().models.solid=null;assert.equal(e.serializeSelectedRaceDocument().race.road.tileMap.models.solid,null);
 });
+
+test('races without model tiles do not scan terrain or sample surfaces for model rendering',()=>{
+  const e=new RaceEditor({}),renderer={scene:new THREE.Scene()};
+  e.getRaceTileMapEntries=()=>{throw Error('ordinary races must not scan model placements');};
+  assert.equal(e.syncRaceTileModels(renderer,{x:0,z:0}),false);
+});

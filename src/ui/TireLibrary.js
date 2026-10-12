@@ -36,7 +36,7 @@ export function openTireLibrary({allowEditor=false,currentRef=''}={}) {
   return new Promise(resolve=>{
     const {dialog,el,close}=modal('Select Tire');let done=false,revision=0,prepared=null;
     const finish=result=>{if(done)return;done=true;revision++;close();resolve(result);};
-    const label=el('label','Tire');const select=el('select','',label);
+    const label=el('label','Tire');const select=el('select','',label);select.setAttribute('aria-label','Tire');
     const model=buildTireLibraryChoices(listProjectFiles('tires'),currentRef);
     let group=null,groupName='';
     for(const choice of model.choices){

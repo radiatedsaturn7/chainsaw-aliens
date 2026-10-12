@@ -5,7 +5,7 @@
     "tree": "6a5e7525fe598515bf98b91d7a9ce2ed13c14886",
     "verified": true
   },
-  "implementationBranch": "feature/3d-object-editor",
+  "implementationBranch": "work/3d-object-editor",
   "requirements": [
     {
       "id": "mesh",
@@ -67,7 +67,8 @@
     "Saved user project data and generated artifacts excluded from checkpoint.",
     "No subagents authorized.",
     "Local Android browser testing unavailable; AGENTS requires GitHub Docker Playwright for authoritative execution.",
-    "Keep goal active until every feature and engine integration is implemented and verified."
+    "Keep goal active until every feature and engine integration is implemented and verified.",
+    "Car loading now identifies saved variants by document name; WRX3/WRX4 tire transforms verified intact; 44 targeted car checks passed."
   ],
   "evidence": {
     "unitTests": "47 focused tests pass: model3d*.test.js, scriptedActor.timing.test.js, pixelStudio.actorStateSave.test.js (local Node; no browser claim)",
@@ -77,7 +78,8 @@
     "level": "Tile model bindings serialize with tile properties and preserve collision. GameCore uses side-view models for tiles and model scenery, including fast-editor requests. Level Graphics adds model/model-doodad placement and editing via existing decal transforms. Static model snapshots are cached independently from shared renderer canvas. 33 focused Level/tile tests pass; browser checks remain.",
     "raceTiles": "Instanced model tiles render in Race, support repeated animated geometry, implicit default tiles and explicit painted cells. Assignments normalized and saved on Race tile map; inherited Level models snapshot at paint/save. Model tile and packed tile tests pass.",
     "rigHierarchy": "Joint selection list, new roots, reparent/delete, weight controls, weighted vertex selection, clip properties and previous/next key navigation implemented. Reparent/delete tests preserve sampled animation world transforms and remove invalid links.",
-    "input": "Shared menu contract validation now covers model3d; 258 menu/model unit tests passed. Keyboard shortcuts, shared gamepad semantic input, menu-first cancellation, model cursor and axis-aware panning implemented. UV work surface includes simultaneous rendered preview. Browser desktop/portrait workflow tests written but not yet executed."
+    "input": "Shared menu contract validation now covers model3d; 258 menu/model unit tests passed. Keyboard shortcuts, shared gamepad semantic input, menu-first cancellation, model cursor and axis-aware panning implemented. UV work surface includes simultaneous rendered preview. Browser desktop/portrait workflow tests written but not yet executed.",
+    "validation": "41 model tests and 98 UI/menu/tire-library tests pass locally. Portrait 3D editor browser test passed in initial GitHub CI. Desktop test now explicitly opens menu before checking Escape; new real-WebGL actor animation pixel test awaits CI."
   },
   "remaining": [
     "Race AI and non-Three fallback audit; model preload/worker path audit; browser verification of car/wheel/doodad/tile models",
@@ -85,5 +87,14 @@
     "Level authoring model previews and built-in actor visual browser coverage",
     "Comprehensive editor keyboard/gamepad input review, UV rendered preview, import/document validation and browser interactions",
     "Browser Playwright coverage in GitHub Docker, documentation and complete requirements audit"
-  ]
+  ],
+  "publication": {
+    "branch": "feature/3d-object-editor",
+    "commit": "bd520a79e18de6b52d5f4dcbd8fab75e768a53aa",
+    "tree": "5b4d73a1f38ccc68c30a8345190b66945a7b26fa",
+    "draftPr": "https://github.com/radiatedsaturn7/chainsaw-aliens/pull/540",
+    "mergeTestsRun": 38217780661,
+    "vehicleValidationRun": 38217780773,
+    "status": "Initial CI: vehicle validation passed; Playwright shard 2 passed, shard 1 still running at last poll; shards 3/4 and UI units failed. Fixes prepared for menu assertions, explicit tire selector accessible name, and browser Escape test menu setup."
+  }
 }
