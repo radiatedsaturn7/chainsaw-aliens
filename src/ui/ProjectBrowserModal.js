@@ -18,8 +18,8 @@ import { hydrateServerStorage } from './serverStorage.js';
 import { fileTypeBadge } from './uiSuite.js';
 import { buildArtPreviewPixels, getArtDocumentFrames } from './shared/artDocumentPixels.js';
 
-const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors', sfx: 'SFX', cutscenes: 'Cutscenes', races: 'Races', cars: 'Cars', tires: 'Tires', doodads: 'Doodads' };
-const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'doodads'];
+const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors', sfx: 'SFX', cutscenes: 'Cutscenes', races: 'Races', cars: 'Cars', tires: 'Tires', models: '3D Models', doodads: 'Doodads' };
+const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'doodads'];
 const PROJECT_BROWSER_SORTS = {
   modified: { label: 'Modified', direction: 'desc' },
   name: { label: 'Name', direction: 'asc' }

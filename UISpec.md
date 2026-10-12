@@ -265,3 +265,15 @@ Shared implementation helpers:
 - Choosing saved exterior Art opens Single Frame (with source-frame selection), Sprite Sheet (split selected frame in the import dialog), or Use Existing Frames for supported animations (8 frames; tires also 2/4). The saved art is not modified. Import detects opaque light/checkerboard backgrounds and offers an enabled removal checkbox for detected cases; removal floods only light neutral border-connected pixels, before safe sprite separation and tire fitting. The original source remains available when toggling removal off.
 
 - Car camera settings offer Dynamic, Dynamic Fixed, and Fixed Rear. Dynamic Fixed retains dynamic chase position and selects 45° camera bearings relative to the car, with hysteresis between views, so pixel-art body frames and tire projections share an angle. Tire animation follows signed wheel spin, including reverse and wheel slip; saving retains tire texture crop and cylinder settings.
+
+### 3D Object Editor
+
+- Graphics includes **3D Object Editor**. Model documents live in the Models project folder.
+- Desktop roots are File, Edit, View, Mesh, Rig, Animation, and Texture. Portrait roots use File, Tools, Camera, Mesh, Rig, Anim, and UV; Tools and Camera expose the corresponding desktop commands through the shared nested menu shell.
+- Portrait retains the shared thumbstick and exactly four bottom controls: Menu, Undo, Redo, and animation Play/Pause. The work surface has a modeling hotbar and the shared zoom slider above that rail.
+- Mesh tools create primitives, place/select/move vertices, join ordered vertices into polygons, extrude selected faces, and weld two vertices. Copy/cut/paste, duplicate, mirror, and independent X/Y/Z symmetry live under Edit/Tools.
+- X/Y/Z orthographic views and an orbit view share stable framing. Zoom Fit explicitly reframes geometry. Background images support tracing. Selected faces and vertices are highlighted.
+- Rig tools support roots, child joints, hierarchy changes, weighted vertex assignment, posing, and optional IK. Animation clips have keyframes, timing, looping, and playback.
+- UV mode displays editable UVs and a simultaneous rendered model preview. Painting targets the chosen material; imported multi-material models retain their separate textures.
+- Native JSON, OBJ, and glTF/GLB imports create editable model documents. glTF supports rigid-node and skeletal animation; morph targets and compressed meshes requiring external decoders are not supported.
+- Model bindings select a saved model, optional animation clip, playback speed, and position/rotation/scale. Actor states, tile properties, Level scenery, car bodies/wheels, and Race doodads/tiles expose these bindings. Level models render from the side. Race models use continuous 3D orientation and retain the existing camera modes.

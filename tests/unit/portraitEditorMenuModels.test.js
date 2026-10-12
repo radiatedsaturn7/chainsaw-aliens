@@ -88,6 +88,7 @@ const editorSourceById = {
   midi: midiEditorSource,
   sfx: sfxEditorSource,
   cutscene: cutsceneEditorSource,
+  model3d: raceEditorSource + readFileSync(new URL('../../src/ui/ModelEditor.js', import.meta.url), 'utf8'),
   race: raceEditorSource,
   car: raceEditorSource,
   tire: raceEditorSource + readFileSync(new URL('../../src/ui/TireEditor.js', import.meta.url), 'utf8'),
@@ -331,6 +332,7 @@ test('all editor portrait sources use shared bottom-first helpers without empty 
       'drawSharedPortraitActionRail',
       'getSharedMobilePortraitEditorLayout'
     ],
+    model3d: ['buildRacePortraitMenuModel(this.editorId).bottomRailActions','drawSharedPortraitActionRail','getSharedMobilePortraitEditorLayout'],
     tire: [
       'buildRacePortraitMenuModel(this.editorId).bottomRailActions',
       'drawSharedPortraitActionRail',

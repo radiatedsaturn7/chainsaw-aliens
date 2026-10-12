@@ -1,3 +1,4 @@
+import {pickModelBinding} from './ModelPicker.js';
 import {
   buildPalette,
   loadPalettePresets,
@@ -2707,6 +2708,8 @@ export default class PixelStudio {
         id: 'tile-properties',
         title: 'Properties',
         items: [
+          action('tile-model', 'Use 3D Model', async () => {try{const model=await pickModelBinding(props.model);if(model)this.saveTileProperties(tile,{...this.getEditableTileProperties(tile),model});}catch(error){this.game.showSystemToast?.(error.message);}}, {disabled:!tile}),
+          action('tile-clear-model', 'Use 2D Artwork', () => this.saveTileProperties(tile,{...this.getEditableTileProperties(tile),model:null}), {disabled:!tile}),
           action('tile-edit-properties', 'Edit Properties', () => this.editTileProperties(tile), { disabled: !tile }),
           action('tile-toggle-solid', props.solid ? 'Collision: Solid' : 'Set Solid', () => setCollision(props.solid ? 'empty' : 'solid'), { disabled: !tile }),
           action('tile-toggle-one-way', props.oneWay ? 'Collision: One-way' : 'Set One-way', () => setCollision(props.oneWay ? 'empty' : 'one-way'), { disabled: !tile }),

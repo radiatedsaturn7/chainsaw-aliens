@@ -117,6 +117,12 @@ export function resolveCarAngleLayers(car, slot = 'front') {
     art.layerVisibility.frontWheels = ['front', 'left', 'right', 'visible'].includes(resolved);
     art.layerVisibility.rearWheels = ['rear', 'left', 'right', 'visible'].includes(resolved);
   }
+  // Models are complete objects; their own depth hides the far wheels.
+  // Directional sprite visibility must not remove model faces or wheels.
+  if(art.bodyModel?.ref)art.layerVisibility.body=car.art.layerVisibility?.body!==false;
+  if(art.wheelModel?.ref){
+    for(const key of ['tires','frontWheels','rearWheels','leftWheels','rightWheels'])art.layerVisibility[key]=car.art.layerVisibility?.[key]!==false;
+  }
   return { ...car, art };
 }
 

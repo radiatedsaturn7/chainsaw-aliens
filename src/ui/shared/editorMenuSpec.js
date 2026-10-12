@@ -110,6 +110,12 @@ const EDITOR_ACTION_LABEL_OVERRIDES = {
   'tire-import': 'Import Graphic',
   'tire-properties': 'Properties',
   'tire-spin': 'Spin / Pause',
+  'race-tile-model': '3D Tile Model',
+  'race-clear-tile-model': 'Use Default Tile Artwork',
+  'car-body-model': '3D Body Model',
+  'car-wheel-model': '3D Wheel Model',
+  'car-clear-body-model': 'Use 2D / Default Body',
+  'car-clear-wheel-model': 'Use 2D / Default Wheels',
   'car-import-graphic': 'Import Graphic',
   'car-art-settings': 'Settings',
   'car-art-exterior': 'Exterior',
@@ -137,14 +143,14 @@ export const DESKTOP_DYNAMIC_EMPTY_SECTION_IDS = {
   midi: ['tracks']
 };
 export const STANDARD_EDITOR_ACTION_RAIL_PREFIX = ['menu', 'undo', 'redo'];
-export const SHARED_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'tire', 'car', 'tile', 'doodad'];
+export const SHARED_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'model3d', 'tire', 'car', 'tile', 'doodad'];
 export const SUPPORTED_EDITOR_WORK_SURFACES = ['canvas', 'stage', 'grid', 'timeline'];
 export const EDITOR_STANDARD_REFERENCE = deepFreeze({
   primaryEditorId: 'midi',
   secondaryEditorId: 'pixel',
   comparisonEditorIds: ['level', 'cutscene', 'actor'],
   portraitRepairEditorIds: ['level', 'race', 'car'],
-  rolloutOrder: ['midi', 'pixel', 'level', 'cutscene', 'actor', 'race', 'tire', 'car', 'sfx', 'tile', 'doodad']
+  rolloutOrder: ['midi', 'pixel', 'level', 'cutscene', 'actor', 'race', 'model3d', 'tire', 'car', 'sfx', 'tile', 'doodad']
 });
 export const EDITOR_DESKTOP_LEFT_CONTEXT_ROLES = deepFreeze({
   pixel: ['active-tool', 'swatches', 'layers', 'frames'],
@@ -155,6 +161,7 @@ export const EDITOR_DESKTOP_LEFT_CONTEXT_ROLES = deepFreeze({
   cutscene: ['insert-palette', 'selected-clip', 'timeline', 'scene-settings'],
   race: ['active-tool', 'tile-palette', 'route-painting', 'track-settings'],
   tire: ['tire-properties', 'preview-settings'],
+  model3d: ['active-tool', 'preview-settings'],
   car: ['active-tool', 'car-properties', 'paint-swatches', 'test-drive-settings'],
   tile: ['active-tool', 'tile-palette', 'tile-properties', 'preview-settings'],
   doodad: ['active-tool', 'artwork-settings', 'size-settings', 'collision-settings']
@@ -164,9 +171,9 @@ export const EDIT_ACTION_ROLE_GROUPS = {
   history: ['undo', 'redo'],
   clipboard: ['copy', 'cut', 'paste', 'copy-state', 'paste-state', 'copy-segment', 'paste-segment', 'copy-layer', 'paste-layer'],
   selection: ['select-all'],
-  duplicate: ['duplicate-state'],
+  duplicate: ['duplicate-state', 'duplicate'],
   destructive: ['clear', 'delete', 'delete-state', 'delete-segment', 'delete-layer', 'tile-reset'],
-  targetEdit: ['tile-edit-art']
+  targetEdit: ['tile-edit-art','mirror-x','mirror-y','mirror-z','symmetry-x','symmetry-y','symmetry-z']
 };
 export const EDIT_ACTION_ROLE_ORDER = ['history', 'clipboard', 'selection', 'duplicate', 'targetEdit', 'destructive'];
 
@@ -240,7 +247,7 @@ export const EDITOR_MENU_SPECS = {
       triggers: section('triggers', 'Triggers', ['trigger-draw', 'spawn']),
       powerups: section('powerups', 'Powerups', ['powerup-place']),
       structures: section('structures', 'Structures', ['prefab-mode']),
-      graphics: section('graphics', 'Graphics', ['open-graphics', 'graphics-take-screenshot', 'graphics-apply-decal']),
+      graphics: section('graphics', 'Graphics', ['open-graphics', 'graphics-take-screenshot', 'graphics-apply-decal', 'graphics-model', 'graphics-doodad']),
       music: section('music', 'Music', ['open-music', 'music-trigger', 'music-paint', 'music-erase', 'open-midi-composer']),
       settings: section('settings', 'Settings', ['resize-level', 'crop-level', 'spawn-point', 'start-everything', 'random-level', 'midi']),
       playtest: section('playtest', 'Playtest', ['playtest'])
@@ -367,6 +374,8 @@ export const EDITOR_MENU_SPECS = {
       view: section('view', 'View', ['preview-mode7', 'zoom-fit', 'toggle-scenery', 'toggle-racing-line']),
       track: section('track', 'Track', ['draw-road']),
       ground: section('ground', 'Ground', [
+        'race-tile-model',
+        'race-clear-tile-model',
         'ground-tile-next',
         'ground-tile-grass',
         'ground-tile-dirt',
@@ -411,6 +420,20 @@ export const EDITOR_MENU_SPECS = {
       settings: section('settings', 'Settings', ['race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-complete', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
     }
   },
+  model3d: {
+    editorId:'model3d',title:'3D Object Editor',workSurface:'stage',
+    root:['file','edit','view','mesh','rig','animation','texture'],
+    portraitRoot:[{id:'file',label:'File'},{id:'mesh-edit',label:'Tools',panel:'edit'},{id:'camera',label:'Camera',panel:'view'},{id:'mesh',label:'Mesh'},{id:'rig',label:'Rig'},{id:'animation',label:'Anim'},{id:'texture',label:'UV'}],
+    sections:{
+      file:section('file','File',['new','save','save-as','open','export','import','exit-main']),
+      edit:section('edit','Edit',['undo','redo','copy','cut','paste','select-all','duplicate','mirror-x','mirror-y','mirror-z','symmetry-x','symmetry-y','symmetry-z','delete']),
+      view:section('view','View',['view-x','view-y','view-z','view-orbit','zoom-fit','wireframe','background-image','background-clear']),
+      mesh:section('mesh','Mesh',['shape-box','shape-sphere','shape-cylinder','shape-cone','shape-plane','shape-torus','select-vertices','select-faces','place-vertex','move-vertices','join-polygon','extrude-faces','weld-vertices','transform-selection']),
+      rig:section('rig','Rig',['select-joints','joint-select-list','place-joint','joint-root','joint-properties','joint-reparent','joint-delete','select-joint-vertices','assign-joint','toggle-ik','pose-joint']),
+      animation:section('animation','Animation',['animation-new','animation-select','animation-properties','keyframe-prev','keyframe-next','animation-time','keyframe-set','keyframe-delete','animation-play','bind-pose']),
+      texture:section('texture','Texture',['uv-generate','uv-editor','uv-move','uv-paint','texture-material','paint-color','paint-size','texture-import','texture-export'])
+    }
+  },
   tire: {
     editorId:'tire', title:'Tire Editor', workSurface:'stage',
     root:['file','edit','view','art','properties'],
@@ -438,7 +461,7 @@ export const EDITOR_MENU_SPECS = {
       file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
-      art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-import-graphic', 'car-art-settings', 'car-camera-settings']),
+      art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-import-graphic', 'car-body-model', 'car-wheel-model', 'car-clear-body-model', 'car-clear-wheel-model', 'car-art-settings', 'car-camera-settings']),
       drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sfx', 'power-curve', 'weight-balance', 'summary-sheet']),
       tuning: {
         ...section('tuning', 'Tuning', ['default-tires', 'tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel', 'physics-body']),
@@ -465,7 +488,7 @@ export const EDITOR_MENU_SPECS = {
       edit: section('edit', 'Edit', ['undo', 'redo', 'tile-edit-art', 'tile-reset']),
       view: section('view', 'View', ['zoom-fit', 'tile-preview']),
       tiles: section('tiles', 'Tiles', ['tile-prev', 'tile-next']),
-      properties: section('properties', 'Properties', ['tile-edit-properties', 'tile-toggle-solid', 'tile-toggle-one-way', 'tile-toggle-destructible'])
+      properties: section('properties', 'Properties', ['tile-model', 'tile-clear-model', 'tile-edit-properties', 'tile-toggle-solid', 'tile-toggle-one-way', 'tile-toggle-destructible'])
     }
   },
   doodad: {
@@ -481,7 +504,7 @@ export const EDITOR_MENU_SPECS = {
       file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
-      artwork: section('artwork', 'Artwork', ['pick-art']),
+      artwork: section('artwork', 'Artwork', ['pick-art','pick-model','clear-model']),
       size: section('size', 'Size', ['width-down', 'width-up', 'height-down', 'height-up', 'ground-offset-down', 'ground-offset-up', 'weight-down', 'weight-up']),
       hitbox: section('hitbox', 'Hitbox', ['hitbox-width-down', 'hitbox-width-up', 'hitbox-height-down', 'hitbox-height-up']),
       collision: section('collision', 'Collision', ['collision-default-collide', 'collision-default-flatten', 'collision-default-fly-off', 'collision-threshold-1-collide', 'collision-threshold-1-flatten', 'collision-threshold-1-fly-off', 'collision-threshold-2-collide', 'collision-threshold-2-flatten', 'collision-threshold-2-fly-off']),

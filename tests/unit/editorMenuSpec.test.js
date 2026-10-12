@@ -71,6 +71,7 @@ test('shared editor menu specs validate for every editor', () => {
     sfx: 'timeline',
     cutscene: 'stage',
     race: 'stage',
+    model3d: 'stage',
     tire: 'stage',
     car: 'stage',
     tile: 'grid',
@@ -597,7 +598,7 @@ test('shared editor menu specs preserve required root menu order', () => {
 test('Doodad shared menu spec exposes desktop document and settings drawers', () => {
   assert.deepEqual(getEditorMenuSection('doodad', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('doodad', 'edit').actions, ['undo', 'redo']);
-  assert.deepEqual(getEditorMenuSection('doodad', 'artwork').actions, ['pick-art']);
+  assert.deepEqual(getEditorMenuSection('doodad', 'artwork').actions, ['pick-art', 'pick-model', 'clear-model']);
   assert.ok(getEditorMenuSection('doodad', 'size').actions.includes('ground-offset-up'));
   assert.ok(getEditorMenuSection('doodad', 'hitbox').actions.includes('hitbox-width-down'));
   assert.ok(getEditorMenuSection('doodad', 'collision').actions.includes('collision-threshold-2-fly-off'));
@@ -622,6 +623,7 @@ test('Car Editor shared menu omits placeholder rows and keeps editable car field
     'car-art-exterior',
     'car-art-interior',
     'car-import-graphic',
+    'car-body-model', 'car-wheel-model', 'car-clear-body-model', 'car-clear-wheel-model',
     'car-art-settings',
     'car-camera-settings'
   ]);
@@ -916,7 +918,8 @@ test('Race shared authoring roots include tile-backed terrain commands without s
   assert.deepEqual(getEditorMenuSection('race', 'file').actions.slice(6), ['race-from-image', 'generate-random-race', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('race', 'track').actions, ['draw-road']);
   assert.equal(getEditorMenuSection('race', 'track').actions.includes('paint-elevation'), false);
-  assert.deepEqual(getEditorMenuSection('race', 'ground').actions.slice(0, 4), [
+  assert.deepEqual(getEditorMenuSection('race', 'ground').actions.slice(0, 6), [
+    'race-tile-model', 'race-clear-tile-model',
     'ground-tile-next',
     'ground-tile-grass',
     'ground-tile-dirt',
@@ -1153,7 +1156,7 @@ test('Level shared menu spec uses stable runtime command ids instead of placehol
   assert.deepEqual(getEditorMenuSection('level', 'graphics').actions, [
     'open-graphics',
     'graphics-take-screenshot',
-    'graphics-apply-decal'
+    'graphics-apply-decal', 'graphics-model', 'graphics-doodad'
   ]);
   assert.deepEqual(getEditorMenuSection('level', 'settings').actions, [
     'resize-level',

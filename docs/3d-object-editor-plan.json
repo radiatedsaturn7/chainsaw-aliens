@@ -1,0 +1,89 @@
+{
+  "checkpoint": {
+    "branch": "staging",
+    "commit": "e66b95702b49c848e82e5ea07ceb18f2e737f5b0",
+    "tree": "6a5e7525fe598515bf98b91d7a9ce2ed13c14886",
+    "verified": true
+  },
+  "implementationBranch": "feature/3d-object-editor",
+  "requirements": [
+    {
+      "id": "mesh",
+      "scope": "Create primitive shapes; select/place/move vertices; join polygons; extrude selected faces; weld two vertices",
+      "status": "in-progress"
+    },
+    {
+      "id": "edit",
+      "scope": "Undo/redo, copy/paste/cut/duplicate, mirror, X/Y/Z symmetry",
+      "status": "in-progress"
+    },
+    {
+      "id": "views",
+      "scope": "X/Y/Z orthographic and orbit camera; background image tracing",
+      "status": "in-progress"
+    },
+    {
+      "id": "uv",
+      "scope": "Generate and edit UV maps, paint textures, preview textured model",
+      "status": "in-progress"
+    },
+    {
+      "id": "rig",
+      "scope": "Joint hierarchy, vertex assignments/weights, optional IK",
+      "status": "in-progress"
+    },
+    {
+      "id": "animation",
+      "scope": "Bone animation clips, keyframe timeline, playback and editing",
+      "status": "in-progress"
+    },
+    {
+      "id": "import",
+      "scope": "Common model/animation import (OBJ and glTF/GLB), native save/load/export",
+      "status": "in-progress"
+    },
+    {
+      "id": "shell",
+      "scope": "Graphics menu entry; shared portrait thumbstick, four-button rail, hotbar, zoom bar, nested menus; desktop/landscape/gamepad",
+      "status": "in-progress"
+    },
+    {
+      "id": "level",
+      "scope": "3D actor animations, tiles and doodads in Level Editor and gameplay, rendered from side",
+      "status": "in-progress"
+    },
+    {
+      "id": "race",
+      "scope": "3D car bodies, wheels, doodads/tiles in Race and editor previews; continuous orientation and existing camera modes",
+      "status": "in-progress"
+    },
+    {
+      "id": "validation",
+      "scope": "Unit/integration tests, portrait and desktop browser coverage, persistence and import fixtures, runtime rendering validation",
+      "status": "in-progress"
+    }
+  ],
+  "notes": [
+    "Saved user project data and generated artifacts excluded from checkpoint.",
+    "No subagents authorized.",
+    "Local Android browser testing unavailable; AGENTS requires GitHub Docker Playwright for authoritative execution.",
+    "Keep goal active until every feature and engine integration is implemented and verified."
+  ],
+  "evidence": {
+    "unitTests": "47 focused tests pass: model3d*.test.js, scriptedActor.timing.test.js, pixelStudio.actorStateSave.test.js (local Node; no browser claim)",
+    "editor": "Primitives/topology, rig/IK, keyframes, OBJ/glTF, shared shell implemented; stable camera framing and active-material texture painting tested.",
+    "runtime": "Shared model resource cache, isolated animated Three.js instances, side-view sprite renderer, Actor Editor model/clip picker, scripted and built-in actor draw paths; model bindings preserved by actor normalization; preload and scripted timing tested.",
+    "race": "Car Art menu body/wheel model bindings; Three.js replacement parts with continuous physics orientation, steering/spin, live bindings and cleanup. Doodad models fit authored size, animate in cached scenes and respect collision removal. Unit tests verify those paths and non-quantized dynamic/fixed-rear camera modes.",
+    "level": "Tile model bindings serialize with tile properties and preserve collision. GameCore uses side-view models for tiles and model scenery, including fast-editor requests. Level Graphics adds model/model-doodad placement and editing via existing decal transforms. Static model snapshots are cached independently from shared renderer canvas. 33 focused Level/tile tests pass; browser checks remain.",
+    "raceTiles": "Instanced model tiles render in Race, support repeated animated geometry, implicit default tiles and explicit painted cells. Assignments normalized and saved on Race tile map; inherited Level models snapshot at paint/save. Model tile and packed tile tests pass.",
+    "rigHierarchy": "Joint selection list, new roots, reparent/delete, weight controls, weighted vertex selection, clip properties and previous/next key navigation implemented. Reparent/delete tests preserve sampled animation world transforms and remove invalid links.",
+    "input": "Shared menu contract validation now covers model3d; 258 menu/model unit tests passed. Keyboard shortcuts, shared gamepad semantic input, menu-first cancellation, model cursor and axis-aware panning implemented. UV work surface includes simultaneous rendered preview. Browser desktop/portrait workflow tests written but not yet executed."
+  },
+  "remaining": [
+    "Race AI and non-Three fallback audit; model preload/worker path audit; browser verification of car/wheel/doodad/tile models",
+    "Level actor authoring preview audit; browser verification for model tiles/scenery",
+    "Level authoring model previews and built-in actor visual browser coverage",
+    "Comprehensive editor keyboard/gamepad input review, UV rendered preview, import/document validation and browser interactions",
+    "Browser Playwright coverage in GitHub Docker, documentation and complete requirements audit"
+  ]
+}

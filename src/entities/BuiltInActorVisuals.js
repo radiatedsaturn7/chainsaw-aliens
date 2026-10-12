@@ -1,3 +1,4 @@
+import {modelSprites} from '../model3d/ModelSprites.js';
 import { mergeBuiltInActorOverride } from '../content/builtinActorOverrides.js';
 import { hydrateProjectFilePayload } from '../ui/projectFiles.js';
 import { getSharedFrameImageEntry, resolveAnimationFrames } from './ScriptedActor.js';
@@ -89,8 +90,9 @@ export function drawBuiltInActorOverride(ctx, entity, actorId = 'player') {
     || states.find((entry) => entry?.animation?.imageDataUrl || entry?.animation?.artRef || entry?.animation?.frames?.length);
   const frame = getCurrentFrame(state, entity.animTime);
   const imageEntry = getSharedFrameImageEntry(frame?.imageDataUrl || '');
-  if (!imageEntry?.ready || !imageEntry.image) return false;
-  const image = imageEntry.image;
+  const binding=state?.animation?.model;
+  const image=binding?.ref?modelSprites.image(binding,entity.animTime,getBuiltInActorOverrideDrawSize(definition,null,entity)):(imageEntry?.ready?imageEntry.image:null);
+  if(!image)return false;
   const { width, height } = getBuiltInActorOverrideDrawSize(definition, image, entity);
   const hurtShake = Number(entity.hurtTimer || 0) > 0 ? 1 : 0;
   const shakeX = hurtShake ? Math.sin(Number(entity.animTime || 0) * 50) * 2 : 0;

@@ -183,3 +183,7 @@ Before a new editor ships, add it to the shared menu spec with:
 - Portrait and landscape contextual action ids for the shared Menu/Undo/Redo/action rail.
 - Gamepad focus/back behavior through the shared controller menu stack and slide-out helpers.
 - Any workflow exception documented in the feature contract with a unit or browser validation path.
+
+## 3D Object Editor integration
+
+`model3d` uses the shared canvas editor shell, menu specifications, portrait action rail, zoom slider, and gamepad semantic input. Desktop Edit/View appear as Tools/Camera in portrait. The model work surface owns selection, orbit/pan, the timeline, modeling hotbar, and UV/model split preview. Escape/Back closes active menus before leaving the editor. Numeric dialogs trap editor key events while open.

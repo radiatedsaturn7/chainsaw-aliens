@@ -1,3 +1,5 @@
+import {pickModelBinding} from './ModelPicker.js';
+import {modelSprites} from '../model3d/ModelSprites.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { ensureProjectFileIndex, listProjectFiles, loadProjectFile, saveProjectFile, saveProjectFileAndConfirm } from './projectFiles.js';
 import { ACTOR_ATTACK_TARGETS, ACTION_TYPES, CONDITION_TYPES, createDefaultActor, createDefaultState, DEFAULT_TAXONOMIES, ensureActorDefinition, LOOT_ITEM_OPTIONS, MOVEMENT_BEHAVIORS, MOVEMENT_PRESET_TEMPLATES } from '../content/actorEditorData.js';
@@ -3256,6 +3258,12 @@ export default class ActorEditor {
       event.stopPropagation();
       this.openStateAnimation(state);
     };
+    if(state.animation?.model?.ref){
+      preview.onclick=()=>this.game?.enterModelEditor?.();
+      const canvas=el('canvas','actor-editor-preview-image');canvas.width=192;canvas.height=192;preview.appendChild(canvas);
+      const timerIndex=this.previewTimers.length;const started=Date.now();const render=()=>{if(!preview.isConnected)return;const image=modelSprites.image(state.animation.model,(Date.now()-started)/1000,{width:192,height:192});const ctx=canvas.getContext('2d');ctx.clearRect(0,0,192,192);if(image)ctx.drawImage(image,0,0);this.previewTimers[timerIndex]=setTimeout(render,50);};
+      this.previewTimers.push(setTimeout(render,0));preview.appendChild(el('span','actor-editor-preview-label',state.animation.model.ref));return preview;
+    }
     const frames = this.getAnimationPreviewFrames(state.animation || {});
     if (frames.length) {
       const image = el('img', 'actor-editor-preview-image');
@@ -3359,6 +3367,11 @@ export default class ActorEditor {
     };
     section.appendChild(name);
     section.appendChild(this.buildStatePreviewButton(state, { large: true }));
+    const modelButton=el('button','actor-editor-btn',state.animation?.model?.ref?`3D Model: ${state.animation.model.ref}`:'Use 3D Model');
+    modelButton.onclick=async()=>{try{const binding=await pickModelBinding(state.animation?.model);if(!binding)return;const next=clone(this.actor);const target=next.states.find(s=>s.id===state.id);target.animation.model=binding;target.animation.updatedAt=Date.now();this.setActor(next);}catch(error){this.game?.showSystemToast?.(error.message);}};
+    section.appendChild(modelButton);
+    if(state.animation?.model?.ref){const clear=el('button','actor-editor-btn','Use 2D Animation');clear.onclick=()=>{const next=clone(this.actor);delete next.states.find(s=>s.id===state.id).animation.model;this.setActor(next);};section.appendChild(clear);}
+
     const zoneRow = el('div', 'actor-editor-inline-actions');
     const inheritedZones = !Array.isArray(state.collisionZones);
     const inheritToggle = el('label', 'actor-editor-toggle');

@@ -1,3 +1,7 @@
+import {openProjectBrowser} from './ProjectBrowserModal.js';
+import {pickModelBinding} from './ModelPicker.js';
+import {modelSprites} from '../model3d/ModelSprites.js';
+import {normalizeRaceDoodadDocument} from '../racing/raceDoodads.js';
 import Minimap from '../world/Minimap.js';
 import { deleteProjectFile, listProjectFiles, loadProjectFile, saveProjectFile } from './projectFiles.js';
 import { UI_SUITE, SHARED_EDITOR_LEFT_MENU, buildSharedDesktopContextTransportLayout, buildSharedEditorFileMenu, drawSharedContextRibbon, drawSharedDesktopContextPanel, drawSharedDesktopDropdown, drawSharedDesktopRibbon, drawSharedDesktopTopMenu, drawSharedFocusRing, drawSharedGamepadHintBar, drawSharedGamepadSlideOutHeader, drawSharedMenuButtonChrome, drawSharedMenuButtonLabel, drawSharedPanel, drawSharedPlayStopButton, drawSharedPortraitActionRail, drawSharedPortraitMultiRowTabStrip, drawSharedPortraitScrollHints, drawSharedPortraitSheet, drawSharedThumbstick, getSharedEditorDrawerWidth, getSharedMobileDrawerWidth, getSharedMobilePortraitEditorLayout, getSharedMobileRailWidth, getSharedPortraitActionRailLayout, getSharedPortraitMenuMetrics, getSharedThumbstickLayout, normalizeSharedControlBounds, renderSharedFileDrawer, resetSharedThumbstickState, SharedEditorMenu, splitFileDrawerStickyExitItems } from './uiSuite.js';
@@ -813,6 +817,7 @@ export default class Editor {
             this.setGraphicsStatus('No decal selected');
           } else {
             selected.imageDataUrl = imageDataUrl;
+            delete selected.model;delete selected.doodadRef;
             this.persistAutosave();
             this.setGraphicsStatus('Decal replaced');
           }
@@ -1972,6 +1977,8 @@ export default class Editor {
           tooltip: 'Copy current level view (without UI) to clipboard',
           onClick: () => { this.takeGraphicsScreenshot(); }
         },
+        {id:'graphics-model',label:'Add 3D Model',onClick:()=>this.addModelScenery()},
+        {id:'graphics-doodad',label:'Add 3D Doodad',onClick:()=>this.addModelScenery({doodad:true})},
         {
           id: 'graphics-apply-decal',
           label: 'Apply Decal (Upload)',
@@ -3476,6 +3483,22 @@ export default class Editor {
     };
   }
 
+  async addModelScenery({doodad=false}={}) {
+    try{
+      let model,name,definition,ref;
+      if(doodad){
+        const picked=await openProjectBrowser({mode:'open',fixedFolder:'doodads',initialFolder:'doodads',title:'Choose 3D Doodad'});if(!picked?.name)return;
+        definition=normalizeRaceDoodadDocument(picked.payload?.data||loadProjectFile('doodads',picked.name)?.data);
+        if(!definition.model?.ref){this.setGraphicsStatus('Choose a doodad with a 3D model assigned');return;}
+        model=definition.model;name=definition.name;ref=picked.name;
+      }else{model=await pickModelBinding();if(!model)return;name=model.ref;}
+      const placement=this.resolveDecalPlacement(128,128),size=this.game.world.tileSize||32;
+      if(definition){placement.w=definition.widthM*size;placement.h=definition.heightM*size;}
+      const entry={id:`model-${Date.now()}-${Math.floor(Math.random()*9999)}`,name,model,doodadRef:ref||null,...placement,baseW:placement.w,baseH:placement.h,rotation:0};
+      this.ensureDecals().push(entry);this.selectedDecalId=entry.id;this.persistAutosave();this.setGraphicsStatus(`Added ${name}`);
+    }catch(error){this.setGraphicsStatus(error.message);}
+  }
+
   async addDecalImage(imageDataUrl, sourceName = null) {
     if (!imageDataUrl) return;
     let imageSize = { width: 1, height: 1 };
@@ -3689,6 +3712,7 @@ export default class Editor {
 
   editSelectedDecal() {
     const decal = this.ensureDecals().find((entry) => entry.id === this.selectedDecalId);
+    if(decal?.model?.ref){void pickModelBinding(decal.model).then(model=>{if(model){decal.model=model;this.persistAutosave();this.setGraphicsStatus('Model updated');}}).catch(error=>this.setGraphicsStatus(error.message));return;}
     if (!decal?.imageDataUrl) {
       this.setGraphicsStatus('No decal selected');
       return;
@@ -8555,6 +8579,8 @@ export default class Editor {
 
     const drawTilePreview = (x, y, size, tile) => {
       const char = tile?.id === 'hidden-path' ? 'H' : tile?.char;
+      const binding=this.game.world.getTilePropertiesByChar?.(char)?.model;
+      if(binding?.ref){const image=modelSprites.snapshot(binding,this.game.worldTime||0,{width:size,height:size});if(image){ctx.drawImage(image,x,y,size,size);return;}}
       ctx.save();
       ctx.strokeStyle = 'rgba(255,255,255,0.5)';
       ctx.strokeRect(x, y, size, size);
@@ -9436,6 +9462,8 @@ export default class Editor {
               tooltip: 'Copy current level view (without UI) to clipboard',
               onClick: () => { this.takeGraphicsScreenshot(); }
             },
+            {id:'graphics-model',label:'ADD 3D MODEL',onClick:()=>this.addModelScenery()},
+            {id:'graphics-doodad',label:'ADD 3D DOODAD',onClick:()=>this.addModelScenery({doodad:true})},
             {
               id: 'graphics-apply-decal',
               label: 'APPLY DECAL (UPLOAD)',

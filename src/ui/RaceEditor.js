@@ -1,3 +1,9 @@
+import {syncRaceModelTiles} from '../model3d/RaceModelTiles.js';
+import {ensureModelSceneLighting} from '../model3d/ModelRender.js';
+import {modelAssets,ModelAssetInstance} from '../model3d/ModelAssets.js';
+import {pickModelBinding} from './ModelPicker.js';
+import {normalizeModelBinding} from '../model3d/ModelBinding.js';
+import {updateRaceModelParts} from '../model3d/RaceModelVehicle.js';
 import { openTireLibrary } from './TireLibrary.js';
 import { applyTireDefinition, normalizeTireDefinition, resolveTireCompound } from '../racing/raceTires.js';
 import { getArtDocumentFrames } from './shared/artDocumentPixels.js';
@@ -561,6 +567,10 @@ const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   'surface-snow',
   'surface-wet-asphalt',
   'body-art',
+  'car-body-model',
+  'car-wheel-model',
+  'car-clear-body-model',
+  'car-clear-wheel-model',
   'car-import-graphic',
   'car-art-settings',
   'car-art-exterior',
@@ -787,8 +797,8 @@ const DEFAULT_TIRE_SIZE = {
 };
 
 export function buildRacePortraitMenuModel(editorId = 'race') {
-  const resolvedEditorId = ['car','tire'].includes(editorId) ? editorId : 'race';
-  const contextActionId = resolvedEditorId === 'tire' ? 'tire-properties' : resolvedEditorId === 'car' ? 'test-drive' : 'race-context';
+  const resolvedEditorId = ['car','tire','model3d'].includes(editorId) ? editorId : 'race';
+  const contextActionId = resolvedEditorId === 'model3d' ? 'model-play' : resolvedEditorId === 'tire' ? 'tire-properties' : resolvedEditorId === 'car' ? 'test-drive' : 'race-context';
   return {
     rootTabs: getEditorTouchRootMenuEntries(resolvedEditorId),
     bottomRailActions: getStandardEditorActionRailIds(contextActionId),
@@ -1565,6 +1575,7 @@ export default class RaceEditor {
       id: sprite?.definitionId || sprite?.id || sprite?.label,
       name: sprite?.label || sprite?.artRef || 'Doodad',
       artRef: sprite?.artRef || '',
+      model: sprite?.model,
       widthM: sprite?.widthM,
       heightM: sprite?.heightM,
       groundOffsetM: sprite?.groundOffsetM,
@@ -3370,6 +3381,7 @@ export default class RaceEditor {
       revision: Number.isFinite(Number(current.revision)) ? Number(current.revision) : 0,
       cellSizeM,
       defaultTileId: current.defaultTileId || 'grass',
+      models: Object.fromEntries(Object.entries(current.models||{}).map(([id,binding])=>[id,normalizeModelBinding(binding)])),
       minElevation: elevationBounds.minElevation,
       maxElevation: elevationBounds.maxElevation,
       cells
@@ -3601,6 +3613,10 @@ export default class RaceEditor {
       ? updates.tileWeights
       : null;
     const tileId = updates.tileId || current.tileId || tileMap.defaultTileId || 'grass';
+    if(!Object.hasOwn(tileMap.models||{},tileId)){
+      const inherited=normalizeModelBinding(this.getRaceTileDefinition(tileId)?.model);
+      if(inherited){tileMap.models||={};tileMap.models[tileId]=inherited;}
+    }
     const rawWeights = incomingWeights || current.tileWeights || { [tileId]: 1 };
     const positiveWeights = Object.fromEntries(
       Object.entries(rawWeights)
@@ -7561,6 +7577,8 @@ export default class RaceEditor {
 
   serializeSelectedRaceDocument() {
     const race = this.cloneRaceDocument();
+    const map=race?.road?.tileMap;
+    if(map){map.models||={};for(const id of new Set([map.defaultTileId,...this.getRaceTileMapEntries().map(([,cell])=>cell.tileId)])){if(!Object.hasOwn(map.models,id)){const binding=normalizeModelBinding(this.getRaceTileDefinition(id)?.model);if(binding)map.models[id]=binding;}}}
     if (race) race.finishBehavior = normalizeRaceFinishBehavior(race.finishBehavior);
     return {
       schemaVersion: 1,
@@ -7784,6 +7802,8 @@ export default class RaceEditor {
     clone.name = String(clone.name || fallbackName || clone.id);
     clone.class = String(clone.class || 'road');
     clone.art = clone.art && typeof clone.art === 'object' ? clone.art : {};
+    clone.art.bodyModel=normalizeModelBinding(clone.art.bodyModel);
+    clone.art.wheelModel=normalizeModelBinding(clone.art.wheelModel);
     clone.art.bodyScaleX = clamp(Number(clone.art.bodyScaleX ?? clone.art.bodyScale ?? 1) || 1, 0.05, 12);
     clone.art.bodyScaleY = clamp(Number(clone.art.bodyScaleY ?? clone.art.bodyScale ?? 1) || 1, 0.05, 12);
     clone.art.tireScaleX = clamp(Number(clone.art.tireScaleX ?? clone.art.tireScale ?? 1) || 1, 0.05, 12);
@@ -8342,7 +8362,7 @@ export default class RaceEditor {
       }
     }
     const preview = this.carEditorPreviewPlaytest;
-    if (preview?.carId === car?.id && preview.session?.runtimeCar) {
+    if (preview?.carId === this.getRaceCarProjectIdentity(car) && preview.session?.runtimeCar) {
       preview.session.runtimeCar.art = JSON.parse(JSON.stringify(car.art || {}));
     }
   }
@@ -8617,6 +8637,17 @@ export default class RaceEditor {
     } else if (action === 'remove-edge') {
       this.racePortraitHotMenu = null;
       this.removeSelectedRaceEdge();
+    } else if (['car-body-model','car-wheel-model','car-clear-body-model','car-clear-wheel-model'].includes(action)) {
+      const field=action.includes('wheel')?'wheelModel':'bodyModel';
+      const apply=binding=>{this.captureRaceHistory('Change car 3D model');this.ensureSelectedCarArt()[field]=binding;this.syncCarAnglePreviewArt();this.resetCarEditorPreviewPlaytest({preserveEditorUi:true});this.status=binding?`3D model: ${binding.ref}`:'Using existing car artwork';};
+      if(action.includes('clear'))apply(null);
+      else void pickModelBinding(this.selectedCar.art?.[field]).then(binding=>{if(binding)apply(binding);}).catch(error=>{this.status=error.message;this.game.showSystemToast?.(error.message);});
+    } else if (action === 'race-tile-model' || action === 'race-clear-tile-model') {
+      const tileId=this.getSelectedGroundTileId();
+      const map=this.ensureRaceTileMap();
+      const apply=binding=>{this.captureRaceHistory('Change tile model');map.models||={};map.models[tileId]=binding;map.revision++;this.status=binding?`${tileId}: ${binding.ref}`:`${tileId}: default artwork`;};
+      if(action==='race-clear-tile-model')apply(null);
+      else void pickModelBinding(map.models?.[tileId]||this.getRaceTileDefinition(tileId)?.model).then(binding=>{if(binding)apply(binding);}).catch(error=>{this.status=error.message;});
     } else if (action === 'car-import-graphic') {
       void this.importCarGraphic();
     } else if (action === 'car-art-settings') {
@@ -19314,6 +19345,7 @@ export default class RaceEditor {
       redo: this.getRailAction('redo', '↷', () => this.handleMenuAction('redo')),
       'race-context': this.getRacePortraitContextAction(),
       'tire-properties': this.getRacePortraitContextAction(),
+      'model-play': this.getRacePortraitContextAction(),
       'test-drive': { id: 'test-drive', label: '▶', onClick: () => this.handleMenuAction('test-drive') }
     };
     const actions = buildRacePortraitMenuModel(this.editorId).bottomRailActions
@@ -21203,6 +21235,8 @@ export default class RaceEditor {
   } = {}) {
     const choice = artChoice || this.getRaceCarProjectedArtRef(car, 0, 0);
     car = resolveCarAngleLayers(car, choice.viewSlot || getCarViewSlot(0, 0));
+    if(car.art?.bodyModel?.ref)drawBodyLayer=false;
+    if(car.art?.wheelModel?.ref)drawWheels=false;
     const artScale = this.getCarArtScale(car);
     const artOffsets = this.getCarArtOffsets(car);
     const layerVisibility = this.getCarArtLayerVisibility(car);
@@ -22070,7 +22104,8 @@ export default class RaceEditor {
   } = {}) {
     if (!session
       || cameraView !== 'third-person'
-      || Math.abs(Number(this.raceInput.lookAngle || 0)) >= 0.28) return null;
+      || (Math.abs(Number(this.raceInput.lookAngle || 0)) >= 0.28
+        && !car?.art?.bodyModel?.ref && !car?.art?.wheelModel?.ref)) return null;
     car = resolveCarAngleLayers(car, getCarViewSlot(session.carYaw, cameraYaw));
     const renderPose = this.getRacePlayerRenderPose(session, car, { fallbackElevation });
     const artChoice = this.getRaceCarProjectedArtRef(car, renderPose.yaw, cameraYaw, {
@@ -22220,6 +22255,7 @@ export default class RaceEditor {
   } = {}) {
     if (!ctx || !camera) return false;
     car = resolveCarAngleLayers(car, getCarViewSlot(yaw, cameraYaw));
+    if(car.art?.bodyModel?.ref||car.art?.wheelModel?.ref)ensureModelSceneLighting(renderer.scene);
     const visibility = this.getCarArtLayerVisibility(car);
     drawBody = drawBody && visibility.body;
     drawWheels = drawWheels && visibility.tires;
@@ -26533,6 +26569,7 @@ export default class RaceEditor {
   }
 
   hasCarTireArtOverride(car = this.selectedCar) {
+    if(car?.art?.wheelModel?.ref)return false;
     return Boolean(car?.art?.tireSurfaces?.tread?.artRef || String(this.getCarTireArtEntry(car)?.artRef || '').trim());
   }
 
@@ -28013,10 +28050,10 @@ export default class RaceEditor {
     const previousOpenDesktopDropdownRootId = this.openDesktopDropdownRootId;
     const previousClosedDesktopDropdownRootId = this.closedDesktopDropdownRootId;
     this.project.selectedRaceId = runtimeRace.id;
-    this.project.selectedCarId = car.id;
+    this.project.selectedCarId = this.getRaceCarProjectIdentity(car);
     this.playtestSession = null;
     try {
-      this.startPlaytest(car.id, {
+      this.startPlaytest(this.getRaceCarProjectIdentity(car), {
         hydrateCars: false,
         carEditorPreview: true,
         preparedWorldBake: worldBake,
@@ -28038,7 +28075,7 @@ export default class RaceEditor {
         baseKey,
         tuningRevision,
         raceId: runtimeRace.id,
-        carId: car.id,
+        carId: this.getRaceCarProjectIdentity(car),
         session: this.playtestSession,
         input: this.raceInput
       };
@@ -28351,10 +28388,10 @@ export default class RaceEditor {
     const previousClosedDesktopDropdownRootId = this.closedDesktopDropdownRootId;
     this.stopCarEditorPreviewAudio();
     this.project.selectedRaceId = previewRace.id;
-    this.project.selectedCarId = car.id;
+    this.project.selectedCarId = this.getRaceCarProjectIdentity(car);
     this.playtestSession = null;
     try {
-      this.startPlaytest(car.id, { hydrateCars: false, carEditorPreview: true });
+      this.startPlaytest(this.getRaceCarProjectIdentity(car), { hydrateCars: false, carEditorPreview: true });
       if (!this.playtestSession) return null;
       this.playtestSession.carEditorPreview = true;
       this.playtestSession.cameraView = 'third-person';
@@ -28370,7 +28407,7 @@ export default class RaceEditor {
         baseKey,
         tuningRevision,
         raceId: previewRace.id,
-        carId: car.id,
+        carId: this.getRaceCarProjectIdentity(car),
         session: this.playtestSession,
         input: this.raceInput
       };
@@ -33992,6 +34029,7 @@ export default class RaceEditor {
     const group = renderer?.dynamicCarGroup;
     if (!renderer?.scene || !group) return;
     renderer.scene.remove(group);
+    group.traverse?.((entry)=>entry.userData?.modelInstance?.dispose());
     group.traverse?.((entry) => {
       entry.geometry?.dispose?.();
       if (entry.material && !entry.material.__raceSharedMaterial) entry.material.dispose?.();
@@ -34022,6 +34060,7 @@ export default class RaceEditor {
     const group = renderer?.dynamicDoodadGroup;
     if (!renderer?.scene || !group) return;
     renderer.scene.remove(group);
+    group.traverse?.((entry)=>entry.userData?.modelInstance?.dispose());
     group.traverse?.((entry) => {
       entry.geometry?.dispose?.();
       if (entry.material && !entry.material.__raceSharedMaterial) entry.material.dispose?.();
@@ -34031,6 +34070,30 @@ export default class RaceEditor {
     renderer.dynamicDoodadPolygons = 0;
     renderer.dynamicDoodadDrawCalls = 0;
     renderer.dynamicDoodadCount = 0;
+  }
+
+  syncRaceTileModels(renderer,camera={}) {
+    const map=this.ensureRaceTileMap();if(!map)return;
+    const placements=[],size=Number(map.cellSizeM)||1;
+    const bindings=new Map();
+    const entries=this.getRaceTileMapEntries(map);
+    const defaultBinding=Object.hasOwn(map.models||{},map.defaultTileId)?map.models[map.defaultTileId]:this.getRaceTileDefinition(map.defaultTileId)?.model;
+    if(defaultBinding?.ref){
+      const existing=new Set(entries.map(([key])=>key));
+      const minX=Math.floor((Number(camera.x||0)-180)/size),maxX=Math.ceil((Number(camera.x||0)+180)/size);
+      const minZ=Math.floor((Number(camera.z||0)-180)/size),maxZ=Math.ceil((Number(camera.z||0)+180)/size);
+      for(let cx=minX;cx<=maxX;cx++)for(let cz=minZ;cz<=maxZ;cz++){const key=this.getRaceTileMapCellKey(cx,cz);if(!existing.has(key))entries.push([key,{tileId:map.defaultTileId,elevation:0}]);}
+    }
+    for(const [key,cell] of entries){
+      const id=cell.tileId||map.defaultTileId;
+      if(!bindings.has(id))bindings.set(id,Object.hasOwn(map.models||{},id)?map.models[id]:this.getRaceTileDefinition(id)?.model);
+      const binding=bindings.get(id);if(!binding?.ref)continue;
+      const [cx,cz]=key.split(',').map(Number),x=(cx+0.5)*size,z=(cz+0.5)*size;
+      if(Math.hypot(x-Number(camera.x||0),z-Number(camera.z||0))>180)continue;
+      const ground=this.getRaceCompositedSurfaceAtWorldPoint({x,z},Number(cell.elevation)||0);
+      placements.push({key,binding,size,position:[x,Number(ground.elevation||0)*RACE_THREE_ELEVATION_M,z]});
+    }
+    return syncRaceModelTiles(renderer,placements,Number(this.playtestSession?.elapsedMs||0)/1000);
   }
 
   getRaceThreeDoodadSceneKey(sprites = []) {
@@ -34044,6 +34107,7 @@ export default class RaceEditor {
     });
     const doodads = sprites.map((sprite) => {
       const doodad = this.getRaceDoodadForScenery(sprite);
+      if(doodad.model?.ref)modelAssets.get(doodad.model.ref);
       const artRef = String(doodad?.artRef || sprite?.artRef || '').trim();
       const artCanvas = artRef ? this.getRaceArtSpriteCanvas(artRef) : null;
       return [
@@ -34052,6 +34116,8 @@ export default class RaceEditor {
         sprite?.doodadRef || '',
         sprite?.previewDoodad ? 'preview' : '',
         artRef,
+        JSON.stringify(doodad.model||null),
+        modelAssets.entries.get(doodad.model?.ref)?.revision||0,
         artCanvas?.__raceArtCacheKey || '',
         Math.round(Number(sprite?.x || 0) * 1000),
         Math.round(Number(sprite?.z || 0) * 1000),
@@ -34556,6 +34622,7 @@ export default class RaceEditor {
     }
     const sceneKey = this.getRaceThreeDoodadSceneKey(sprites);
     if (renderer.dynamicDoodadGroup && renderer.dynamicDoodadSceneKey === sceneKey) {
+      renderer.dynamicDoodadGroup.traverse(entry=>{const instance=entry.userData?.modelInstance;if(instance){instance.time=Number(this.playtestSession?.elapsedMs||0)/1000*instance.binding.speed;instance.update(0);}});
       if (!renderer.dynamicDoodadGroup.parent) renderer.scene.add(renderer.dynamicDoodadGroup);
       if (stats) {
         stats.threeDoodads = Number(renderer.dynamicDoodadCount || renderer.dynamicDoodadGroup.children.length || 0);
@@ -34572,6 +34639,24 @@ export default class RaceEditor {
       const quad = this.getRaceDoodadWorldQuad(sprite);
       if (!quad) return;
       const { doodad } = quad;
+      if(doodad.model?.ref){
+        const model=modelAssets.get(doodad.model.ref);if(!model)return;
+        ensureModelSceneLighting(renderer.scene);
+        const instance=new ModelAssetInstance();instance.setModel(model,doodad.model);
+        const placement=new THREE.Group();placement.userData.modelInstance=instance;placement.userData.spriteId=sprite.id;
+        placement.add(instance.object);
+        const ground=this.sampleRaceDoodadGroundPoint(sprite.x,sprite.z,sprite,doodad);
+        placement.position.set(Number(sprite.x)||0,this.getRaceThreeElevationM(ground),Number(sprite.z)||0);
+        placement.rotation.y=Number(sprite.yaw)||0;
+        const box=new THREE.Box3();for(const vertex of model.vertices)box.expandByPoint(new THREE.Vector3(...vertex.position));
+        if(!box.isEmpty()){
+          const size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());
+          const sx=doodad.widthM/Math.max(0.001,size.x),sy=doodad.heightM/Math.max(0.001,size.y);
+          instance.object.scale.set(sx,sy,sx);instance.object.position.set(-center.x*sx,-box.min.y*sy,-center.z*sx);
+        }
+        instance.time=Number(this.playtestSession?.elapsedMs||0)/1000*instance.binding.speed;instance.update(0);
+        group.add(placement);this.addRaceThreeDoodadHitboxMeshes(renderer,group,sprite,{stats});return;
+      }
       const material = this.getRaceThreeDoodadMaterial(renderer, doodad.artRef || sprite.artRef);
       if (!material) return;
       const geometry = new THREE.BufferGeometry();
@@ -34893,6 +34978,7 @@ export default class RaceEditor {
       || !THREE?.BoxGeometry
       || !THREE?.BufferGeometry
       || !THREE?.Float32BufferAttribute) return false;
+    if(car.art?.bodyModel?.ref||car.art?.wheelModel?.ref)ensureModelSceneLighting(renderer.scene);
     const visibility = this.getCarArtLayerVisibility(car);
     drawBody = drawBody && visibility.body;
     drawWheels = drawWheels && visibility.tires;
@@ -34918,7 +35004,9 @@ export default class RaceEditor {
       Math.round(bodyHeightM * 1000),
       Math.round(tireRadiusM * 1000),
       Math.round(tireLengthM * 1000),
-      Math.round(tireWidthM * 1000)
+      Math.round(tireWidthM * 1000),
+      JSON.stringify(car.art?.bodyModel||null),
+      JSON.stringify(car.art?.wheelModel||null)
     ].join(':');
     const setBoxPose = (mesh, position = {}, rotation = {}, material = null) => {
       if (!mesh) return;
@@ -34998,6 +35086,7 @@ export default class RaceEditor {
           session
         });
       }
+      updateRaceModelParts(group,car,session);
       if (stats) {
         stats.threeProceduralCar = 1;
         stats.threeDynamicCarMeshes = group.children.length;
@@ -35095,6 +35184,7 @@ export default class RaceEditor {
       group.add(shadow);
       group.userData.parts.shadow = shadow;
     }
+    updateRaceModelParts(group,car,session);
     renderer.scene.add(group);
     renderer.dynamicCarGroup = group;
     if (stats) {
@@ -35509,6 +35599,7 @@ export default class RaceEditor {
     if (dynamicCar) this.addRaceThreeProceduralCar(renderer, { ...dynamicCar, stats });
     else this.clearRaceThreeDynamicCar(renderer);
     this.addRaceThreeDoodads(renderer, { stats });
+    this.syncRaceTileModels(renderer,camera);
     this.syncRaceThreeTireTracks(renderer, { stats });
     this.syncRaceThreeTrackState(renderer, { stats });
     const environmentSnowParticles = this.updateRaceSnowEnvironmentRenderField({
@@ -37368,6 +37459,7 @@ export default class RaceEditor {
     const art = car?.art && typeof car.art === 'object' ? car.art : {};
     const viewSlot = getCarViewSlot(yaw, cameraYaw);
     const cameraBearing = Number(cameraYaw || 0) - Number(yaw || 0) + Math.PI;
+    if(art.bodyModel?.ref)return {artRef:null,frameIndex:0,slot:viewSlot,viewSlot,cameraBearing,mirrored:false};
     const directional = art.angleLayers?.[viewSlot]?.body;
     if (hasCarAngleGraphic(directional)) return { ...directional, slot: viewSlot, viewSlot, cameraBearing, mirrored: false };
     const bodyRef = String(art.body || art.artRef || '').trim();
