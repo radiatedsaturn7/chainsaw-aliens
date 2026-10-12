@@ -49,9 +49,10 @@ export function openCarGraphicImport(component = 'body', initial = null) {
     const tireOptions = el('div');
     const layoutLabel = el('label', 'Tire sheet layout (columns × rows)', tireOptions);
     const layout = el('select', '', layoutLabel);
+    layout.setAttribute('aria-label', 'Tire sheet layout (columns × rows)');
     for (const value of ['2x1','1x2','2x2','4x2']) { const option = el('option', value.replace('x',' × '), layout); option.value = value; }
     layout.value = initial?.layout || '4x2';
-    const roleSelect = label => { const row = el('label', label, tireOptions); return el('select', '', row); };
+    const roleSelect = label => { const row = el('label', label, tireOptions); const select = el('select', '', row); select.setAttribute('aria-label', label); return select; };
     const treadSelect = roleSelect('Tread frame');
     const wheelSelect = roleSelect('Wheel / rim frame');
     function resetTireRoles() {
@@ -74,6 +75,7 @@ export function openCarGraphicImport(component = 'body', initial = null) {
     removeBackground.onchange = () => processSource();
     const cleanupLabel = el('label', 'Background cleanup');
     const cleanup = el('select', '', cleanupLabel);
+    cleanup.setAttribute('aria-label', 'Background cleanup');
     for (const value of [0, 4, 8, 16, 24, 32]) {
       const option = el('option', value ? `Remove alpha ≤ ${value}/255` : 'Off — exact transparency', cleanup); option.value = value;
     }
@@ -95,6 +97,7 @@ export function openCarGraphicImport(component = 'body', initial = null) {
     const selects = slots.map((slot, i) => {
       const label = el('label', `${i * 45}° · ${CAR_VIEW_LABELS[slot]}`, assignments);
       const select = el('select', '', label); select.disabled = true;
+      select.setAttribute('aria-label', `${i * 45}° · ${CAR_VIEW_LABELS[slot]}`);
       slots.forEach((_, n) => { const option = el('option', `Frame ${n + 1} · row ${Math.floor(n / 4) + 1}, col ${n % 4 + 1}`, select); option.value = n; });
       select.value = i;
       select.onchange = () => {

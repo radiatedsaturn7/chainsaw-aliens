@@ -49,6 +49,7 @@ export function chooseCarArtUse(name, frameCount = 1, component = 'body') {
       el('p', name);
       const label = el('label', 'Source frame');
       const frame = el('select', '', label);
+      frame.setAttribute('aria-label', 'Source frame');
       frame.style.cssText='display:block;min-height:44px;max-width:100%';
       for(let i=0;i<frameCount;i++) { const option=el('option',`Frame ${i+1}`,frame); option.value=i; }
       el('p', 'Single frame assigns this picture to the current angle. Sprite sheet opens the importer to split this picture into multiple views or tire surfaces.');

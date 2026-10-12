@@ -10,57 +10,111 @@
     {
       "id": "mesh",
       "scope": "Create primitive shapes; select/place/move vertices; join polygons; extrude selected faces; weld two vertices",
-      "status": "in-progress"
+      "status": "implemented-and-tested",
+      "evidence": [
+        "src/model3d/ModelDocument.js",
+        "src/ui/ModelEditor.js",
+        "tests/unit/model3dDocument.test.js: primitives, polygon joining, region extrusion and welding"
+      ]
     },
     {
       "id": "edit",
       "scope": "Undo/redo, copy/paste/cut/duplicate, mirror, X/Y/Z symmetry",
-      "status": "in-progress"
+      "status": "implemented-and-tested",
+      "evidence": [
+        "tests/unit/model3dDocument.test.js: X/Y/Z symmetry, clipboard topology, cross-document materials, undo/redo",
+        "tests/playwright/model3d-editor.spec.js: Ctrl+D/Ctrl+Z passed on dd7e421d"
+      ]
     },
     {
       "id": "views",
       "scope": "X/Y/Z orthographic and orbit camera; background image tracing",
-      "status": "in-progress"
+      "status": "implemented-and-tested",
+      "evidence": [
+        "src/ui/ModelEditor.js: view-x/view-y/view-z/view-orbit, background import, stable frame and tracingImageBounds",
+        "tests/unit/model3dEditor.test.js: viewed-plane pan and proportional tracing"
+      ]
     },
     {
       "id": "uv",
       "scope": "Generate and edit UV maps, paint textures, preview textured model",
-      "status": "in-progress"
+      "status": "implemented-and-tested",
+      "evidence": [
+        "tests/unit/model3dDocument.test.js: atlas and texture painting",
+        "tests/playwright/model3d-editor.spec.js: UV paint, live material texture and undo passed on dd7e421d"
+      ]
     },
     {
       "id": "rig",
       "scope": "Joint hierarchy, vertex assignments/weights, optional IK",
-      "status": "in-progress"
+      "status": "implemented-and-tested",
+      "evidence": [
+        "tests/unit/model3dDocument.test.js: weighted skinning and two-bone IK",
+        "tests/unit/model3dHierarchy.test.js: reparent/delete preserving world animation",
+        "tests/playwright/model3d-editor.spec.js: place joint and assign vertices passed on dd7e421d"
+      ]
     },
     {
       "id": "animation",
       "scope": "Bone animation clips, keyframe timeline, playback and editing",
-      "status": "in-progress"
+      "status": "implemented-and-tested",
+      "evidence": [
+        "tests/unit/model3dDocument.test.js: quaternion interpolation",
+        "tests/playwright/model3d-editor.spec.js: two keyframes and intermediate pose passed on dd7e421d",
+        "tests/playwright/model3d-runtime.spec.js: animated actor pixels passed on 3aea74c6"
+      ]
     },
     {
       "id": "import",
       "scope": "Common model/animation import (OBJ and glTF/GLB), native save/load/export",
-      "status": "in-progress"
+      "status": "implemented-and-tested",
+      "evidence": [
+        "src/model3d/ModelImport.js: native JSON and OBJ import/export",
+        "tests/unit/model3dImport.test.js: real glTF parser, rigid-node clips and skinned animation",
+        "tests/playwright/model3d-editor.spec.js: native storage roundtrip passed on dd7e421d",
+        "tests/unit/model3dImport.test.js: actual binary GLB with geometry and animation clip parsed and sampled successfully"
+      ]
     },
     {
       "id": "shell",
       "scope": "Graphics menu entry; shared portrait thumbstick, four-button rail, hotbar, zoom bar, nested menus; desktop/landscape/gamepad",
-      "status": "in-progress"
+      "status": "implemented-and-tested",
+      "evidence": [
+        "src/ui/Title.js and src/game/GameCore.js: Graphics entry and editor state",
+        "tests/unit/model3dEditor.test.js: shared portrait/landscape/desktop layouts and gamepad menu ownership",
+        "tests/playwright/model3d-editor.spec.js: desktop menus and portrait four-button/thumbstick/hotbar/zoom passed on dd7e421d"
+      ]
     },
     {
       "id": "level",
       "scope": "3D actor animations, tiles and doodads in Level Editor and gameplay, rendered from side",
-      "status": "in-progress"
+      "status": "implemented-and-tested",
+      "evidence": [
+        "src/content/actorEditorData.js, src/entities/ScriptedActor.js and src/entities/BuiltInActorVisuals.js: model state normalization, preload and playback",
+        "src/game/GameCore.js and src/ui/LevelEditorCore.js: model tiles and scenery bindings",
+        "tests/unit/model3dActors.test.js and tests/unit/model3dLevel.test.js: persistence, timing and draw integration",
+        "GitHub job 114716268172: actual-pixel Level model tile and scenery rendering passed"
+      ]
     },
     {
       "id": "race",
       "scope": "3D car bodies, wheels, doodads/tiles in Race and editor previews; continuous orientation and existing camera modes",
-      "status": "in-progress"
+      "status": "implemented-and-tested",
+      "evidence": [
+        "src/ui/RaceEditor.js, src/model3d/RaceModelVehicle.js and src/model3d/RaceModelTiles.js: player/AI models, wheel spin, doodads and instanced tiles",
+        "tests/unit/model3dRace.test.js: continuous pose and dynamic/fixed-rear cameras",
+        "tests/unit/model3dDoodads.test.js and tests/unit/model3dRaceTiles.test.js: placement, persistence and cleanup",
+        "GitHub job 114716268172: AI body/wheel and Race tile/doodad pixels, continuous orientation and scene cleanup passed"
+      ]
     },
     {
       "id": "validation",
       "scope": "Unit/integration tests, portrait and desktop browser coverage, persistence and import fixtures, runtime rendering validation",
-      "status": "in-progress"
+      "status": "in-progress",
+      "evidence": [
+        ".github/workflows/merge-tests.yml",
+        "PR #540 remains draft until latest browser gates and audit pass"
+      ]
     }
   ],
   "notes": [
@@ -71,30 +125,30 @@
     "Car loading now identifies saved variants by document name; WRX3/WRX4 tire transforms verified intact; 44 targeted car checks passed."
   ],
   "evidence": {
-    "unitTests": "47 focused tests pass: model3d*.test.js, scriptedActor.timing.test.js, pixelStudio.actorStateSave.test.js (local Node; no browser claim)",
+    "unitTests": "47 model tests passed after clipboard/weld fixes; additional binary GLB import test passed (48 total model tests). All 8 physics-feel checks passed locally and UI/model/physics CI on f34612da passed.",
     "editor": "Primitives/topology, rig/IK, keyframes, OBJ/glTF, shared shell implemented; stable camera framing and active-material texture painting tested.",
     "runtime": "Shared model resource cache, isolated animated Three.js instances, side-view sprite renderer, Actor Editor model/clip picker, scripted and built-in actor draw paths; model bindings preserved by actor normalization; preload and scripted timing tested.",
     "race": "Car Art menu body/wheel model bindings; Three.js replacement parts with continuous physics orientation, steering/spin, live bindings and cleanup. Doodad models fit authored size, animate in cached scenes and respect collision removal. Unit tests verify those paths and non-quantized dynamic/fixed-rear camera modes.",
-    "level": "Tile model bindings serialize with tile properties and preserve collision. GameCore uses side-view models for tiles and model scenery, including fast-editor requests. Level Graphics adds model/model-doodad placement and editing via existing decal transforms. Static model snapshots are cached independently from shared renderer canvas. 33 focused Level/tile tests pass; browser checks remain.",
+    "level": "Tile model bindings serialize with tile properties and preserve collision. GameCore uses side-view models for tiles and model scenery, including fast-editor requests. Level Graphics adds model/model-doodad placement and editing via existing decal transforms. Static model snapshots are cached independently from shared renderer canvas. 33 focused Level/tile tests pass; actual-pixel browser checks passed in job 114716268172.",
     "raceTiles": "Instanced model tiles render in Race, support repeated animated geometry, implicit default tiles and explicit painted cells. Assignments normalized and saved on Race tile map; inherited Level models snapshot at paint/save. Model tile and packed tile tests pass.",
     "rigHierarchy": "Joint selection list, new roots, reparent/delete, weight controls, weighted vertex selection, clip properties and previous/next key navigation implemented. Reparent/delete tests preserve sampled animation world transforms and remove invalid links.",
     "input": "Docker dd7e421d passed shared desktop/portrait shell, rapid shortcuts, rig/weights/keyframe/UV dialog workflow. Inherited Car labels corrected to use the editor title.",
-    "validation": "45 model unit tests and all 8 physics-feel checks passed locally. GitHub dd7e421d UI/model/physics unit job passed; browser shard 3 passed including desktop/portrait modeling and combined rig/weights/keyframe/UV painting workflow. Shard 2 and physics browser passed; shards 1 and 4 still live at last poll.",
+    "validation": "GitHub run 38220711088: model-specific browser tests, UI/model/physics units and shards 2/3/4 passed. Shard 1 completed with nine exact-label lookup failures in existing car graphic import controls; explicit accessible labels added. Vehicle validation run 38220711084 fully passed including required gate.",
     "raceAi": "Docker job 114712147989 passed actual WebGL AI body/wheel pixel and continuous-orientation test. Separate poses, removal and scene-rebuild cleanup covered by unit tests.",
-    "tracing": "Tracing images now retain source aspect and follow orthographic X/Y/Z pan/zoom. 12 focused editor tests pass locally."
+    "tracing": "Tracing images now retain source aspect and follow orthographic X/Y/Z pan/zoom. 12 focused editor tests pass locally.",
+    "meshAudit": "Fixed cross-document clipboard material/texture retention and imported inverse-bind preservation during welding. Regression tests pass."
   },
   "remaining": [
-    "Browser verification of new actual-pixel Level tile/scenery and Race tile/doodad tests",
-    "Inspect pending CI jobs and resolve failures; verify complete requirements against implementation and tests",
-    "Finalize documentation, commit/publish verified changes and perform complete requirements audit"
+    "Publish clipboard/weld fixes, binary GLB test and importer accessible labels, then verify the complete latest CI gate",
+    "Finalize audited documentation and PR status after latest checks pass"
   ],
   "publication": {
     "branch": "feature/3d-object-editor",
-    "commit": "dd7e421dda49a50365ceb6e9eb452cbc781500f3",
-    "tree": "0a6f96670bb19ebab551d0ef4276e3186b066514",
+    "commit": "f34612da6ba03787071b4b7d4911f4107df2fe24",
+    "tree": "1cd66a6e0417255b0e7b22e0c5844c21341c7394",
     "draftPr": "https://github.com/radiatedsaturn7/chainsaw-aliens/pull/540",
-    "mergeTestsRun": 38220277219,
-    "vehicleValidationRun": 38220277203,
-    "status": "Latest tracing, shared form label and rig/UV browser test batch published; Merge Tests running and Vehicle Validation pending. Local/remote trees verified identical. Local physics 8/8 and model 45/45 passed."
+    "mergeTestsRun": 38220711088,
+    "vehicleValidationRun": 38220711084,
+    "status": "Placement rendering tests published; awaiting CI. Prior dd7e421d model and rig/UV browser tests, UI/model/physics units passed."
   }
 }

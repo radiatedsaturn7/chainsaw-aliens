@@ -26,3 +26,26 @@ test('self-contained glTF input parses into editable triangles',async()=>{
   const old=globalThis.ProgressEvent;globalThis.ProgressEvent=class{constructor(type,values){Object.assign(this,values);}};
   try{const model=await importGLTFFiles([{name:'triangle.gltf',arrayBuffer:async()=>new TextEncoder().encode(JSON.stringify(doc)).buffer}]);assert.equal(model.faces.length,1);assert.equal(model.vertices.length,3);}finally{globalThis.ProgressEvent=old;}
 });
+
+test('binary GLB imports geometry and an animation clip through the file loader',async()=>{
+  const bin=Buffer.from(new Float32Array([
+    0,0,0,1,0,0,0,1,0, // triangle
+    0,1, // key times
+    0,0,0,0,2,0 // translations
+  ]).buffer);
+  const doc={asset:{version:'2.0'},scene:0,scenes:[{nodes:[0]}],nodes:[{name:'Moving triangle',mesh:0}],
+    meshes:[{primitives:[{attributes:{POSITION:0}}]}],buffers:[{byteLength:bin.length}],
+    bufferViews:[{buffer:0,byteOffset:0,byteLength:36},{buffer:0,byteOffset:36,byteLength:8},{buffer:0,byteOffset:44,byteLength:24}],
+    accessors:[{bufferView:0,componentType:5126,count:3,type:'VEC3',min:[0,0,0],max:[1,1,0]},
+      {bufferView:1,componentType:5126,count:2,type:'SCALAR',min:[0],max:[1]},
+      {bufferView:2,componentType:5126,count:2,type:'VEC3'}],
+    animations:[{name:'Rise',samplers:[{input:1,output:2,interpolation:'LINEAR'}],channels:[{sampler:0,target:{node:0,path:'translation'}}]}]};
+  const json=Buffer.from(JSON.stringify(doc));const padded=Buffer.alloc(Math.ceil(json.length/4)*4,0x20);json.copy(padded);
+  const header=Buffer.alloc(12);header.writeUInt32LE(0x46546c67,0);header.writeUInt32LE(2,4);header.writeUInt32LE(12+8+padded.length+8+bin.length,8);
+  const chunk=(data,type)=>{const h=Buffer.alloc(8);h.writeUInt32LE(data.length,0);h.writeUInt32LE(type,4);return Buffer.concat([h,data]);};
+  const glb=Buffer.concat([header,chunk(padded,0x4e4f534a),chunk(bin,0x004e4942)]);
+  const model=await importGLTFFiles([{name:'animated.glb',arrayBuffer:async()=>glb.buffer.slice(glb.byteOffset,glb.byteOffset+glb.byteLength)}]);
+  assert.equal(model.faces.length,1);assert.equal(model.animations[0].name,'Rise');
+  const before=skinVertices(model),after=skinVertices(model,sampleAnimation(model,model.animations[0].id,0.5));
+  assert.ok(Math.abs(after[0].position[1]-before[0].position[1]-1)<1e-6);
+});

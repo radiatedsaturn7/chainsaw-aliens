@@ -104,8 +104,13 @@ export function weldVertices(model, ids) {
   if(ids.length!==2 || ids[0]===ids[1])throw Error('Select exactly two vertices to weld');
   const vertices=ids.map(id=>model.vertices.find(v=>v.id===id));if(vertices.some(v=>!v))throw Error('Vertex not found');
   const [keep,remove]=vertices;keep.position=vector(keep.position).add(vector(remove.position)).multiplyScalar(0.5).toArray();
-  const weights=new Map();for(const w of [...keep.weights,...remove.weights])weights.set(w.joint,(weights.get(w.joint)||0)+w.weight/2);
-  keep.weights=[...weights].map(([joint,weight])=>({joint,weight}));
+  const weights=new Map();
+  for(const influence of [...keep.weights,...remove.weights]){
+    const key=JSON.stringify([influence.joint,influence.bindMatrix||null]);
+    const merged=weights.get(key)||{...clone(influence),weight:0};
+    merged.weight+=influence.weight/2;weights.set(key,merged);
+  }
+  keep.weights=[...weights.values()];
   model.vertices=model.vertices.filter(v=>v.id!==remove.id);
   model.faces=model.faces.filter(face=>{
     const corners=face.vertices.map((id,i)=>({id:id===remove.id?keep.id:id,uv:face.uv[i]}));
@@ -116,11 +121,19 @@ export function weldVertices(model, ids) {
 export function copyGeometry(model, {vertices=[],faces=[]}={}) {
   const selectedFaces=model.faces.filter(f=>faces.includes(f.id)||f.vertices.every(id=>vertices.includes(id)));
   const ids=new Set([...vertices,...selectedFaces.flatMap(f=>f.vertices)]);
-  return {vertices:clone(model.vertices.filter(v=>ids.has(v.id))),faces:clone(selectedFaces)};
+  const materialIds=new Set(selectedFaces.map(face=>face.material));
+  return {vertices:clone(model.vertices.filter(v=>ids.has(v.id))),faces:clone(selectedFaces),
+    materials:clone(model.materials.filter(material=>materialIds.has(material.id)))};
 }
 export function pasteGeometry(model, clipboard, {offset=[0,0,0],mirror=null}={}) {
   if(!clipboard?.vertices?.length)throw Error('Copy some geometry first');
-  const remap=new Map(),addedFaces=[];
+  const remap=new Map(),addedFaces=[],materialMap=new Map();
+  for(const original of clipboard.materials||[]){
+    const existing=model.materials.find(material=>material.id===original.id);
+    if(existing&&JSON.stringify(existing)===JSON.stringify(original)){materialMap.set(original.id,existing.id);continue;}
+    const material=clone(original);material.id=modelId(model,'material');
+    model.materials.push(material);materialMap.set(original.id,material.id);
+  }
   for(const vertex of clipboard.vertices){
     const position=vertex.position.map((n,i)=>(axes[i]===mirror?-n:n)+offset[i]);
     const id=addVertex(model,position);model.vertices.at(-1).weights=clone(vertex.weights).filter(w=>model.joints.some(j=>j.id===w.joint));remap.set(vertex.id,id);
@@ -128,7 +141,8 @@ export function pasteGeometry(model, clipboard, {offset=[0,0,0],mirror=null}={})
   for(const original of clipboard.faces){
     const ids=original.vertices.map(id=>remap.get(id)),uv=clone(original.uv);
     if(mirror){ids.reverse();uv.reverse();}
-    const id=joinPolygon(model,ids,original.material);model.faces.at(-1).uv=uv;addedFaces.push(id);
+    const material=materialMap.get(original.material)||model.materials.find(m=>m.id===original.material)?.id||model.materials[0].id;
+    const id=joinPolygon(model,ids,material);model.faces.at(-1).uv=uv;addedFaces.push(id);
   }
   return {vertices:[...remap.values()],faces:addedFaces};
 }

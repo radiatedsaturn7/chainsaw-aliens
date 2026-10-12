@@ -63,3 +63,28 @@ test('render meshes triangulate concave polygons and preserve UVs and animated v
   const positions=mesh.children[0].geometry.getAttribute('position');for(let i=0;i<positions.count;i++)assert.equal(positions.getZ(i),3);
   disposeModelObject(mesh);
 });
+
+test('copy and paste between documents retain textures without replacing conflicting materials',()=>{
+  const source=createModelDocument(),selection=addPrimitive(source,'box');
+  source.materials[0].color='#ff0000';paintTexture(source,'material-0',0,1,'#00ff00',0);
+  const clipboard=copyGeometry(source,selection),target=createModelDocument();
+  target.materials[0].color='#0000ff';const pasted=pasteGeometry(target,clipboard);
+  validateModelDocument(target);
+  const material=target.materials.find(m=>m.id===target.faces[0].material);
+  assert.equal(material.color,'#ff0000');assert.equal(material.texture.pixels[0],'#00ff00');
+  assert.equal(target.materials[0].color,'#0000ff');assert.notEqual(material.id,'material-0');
+  material.texture.pixels[0]='#ffffff';assert.equal(clipboard.materials[0].texture.pixels[0],'#00ff00');
+  const same=copyGeometry(target,pasted),count=target.materials.length;pasteGeometry(target,same);
+  assert.equal(target.materials.length,count,'duplicating within a document reuses its unchanged materials');
+});
+
+test('welding imported skinned vertices preserves their inverse bind transforms',()=>{
+  const model=createModelDocument(),joint=addJoint(model,[0,0,0]);
+  const ids=[addVertex(model,[0,0,0]),addVertex(model,[2,0,0])];
+  const bindMatrix=new THREE.Matrix4().makeTranslation(3,0,0).toArray();
+  for(const vertex of model.vertices)vertex.weights=[{joint,weight:1,bindMatrix:[...bindMatrix]}];
+  weldVertices(model,ids);validateModelDocument(model);
+  assert.deepEqual(skinVertices(model)[0].position,[4,0,0]);
+  assert.deepEqual(skinVertices(model,{[joint]:{position:[0,2,0]}})[0].position,[4,2,0]);
+  assert.deepEqual(model.vertices[0].weights[0].bindMatrix,bindMatrix);
+});
