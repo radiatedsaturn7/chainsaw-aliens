@@ -100,3 +100,27 @@ test('base car lookup prefers its exact identity over saved variants with the sa
   e.project.cars.unshift(variant);
   assert.equal(e.findRaceProjectCarById(base.id),base);
 });
+
+test('car picker starts the opened saved variant with its directional artwork instead of the stock body',()=>{
+  const e=makeEditor(),base=structuredClone(e.selectedCar);
+  base.art.angleLayers={rear:{body:{artRef:'WRX4 body',frameIndex:4,transforms:{bodyScaleX:2.1,bodyOffsetY:-0.1}}}};
+  e.applyLoadedCarDocument({kind:'race-car',car:base},{name:'2022 Subaru WRX4'});
+  const identity=e.getRaceCarProjectIdentity(e.selectedCar);
+  e.preloadSelectedRaceArtRefs=()=>{};
+  e.prewarmRacePlaytestRenderResources=()=>{};
+  e.openPlaytestPicker();
+  const ctx=new Proxy({measureText:value=>({width:String(value).length*7}),createLinearGradient:()=>({addColorStop(){}})},{get:(o,k)=>k in o?o[k]:()=>{}});
+  e.drawPlaytestPicker(ctx,1280,800);
+  assert.equal(e.project.selectedCarId,identity,'drawing the picker must retain the opened filename');
+  const entry=e.getPlaytestPickerCarEntries()[0];
+  e.selectPlaytestCarEntry(entry);
+  assert.equal(e.selectedCar.__playtestDocumentName,'2022 Subaru WRX4','clicking its row must retain the document identity');
+  assert.equal(e.getCurrentPlaytestCarId(),identity);
+  e.buttons.find(button=>button.id==='playtest-start').onClick();
+  const runtime=e.playtestSession.runtimeCar;
+  assert.equal(e.playtestSession.carId,identity);
+  assert.deepEqual(runtime.art.angleLayers,e.normalizeLoadedCarDocument(base).art.angleLayers);
+  assert.equal(e.getRaceCarProjectedArtRef(runtime,0,0).artRef,'WRX4 body');
+  const options=e.getRacePlayerDynamicCarRenderOptions({session:e.playtestSession,car:runtime,cameraView:'third-person',cameraYaw:0});
+  assert.equal(options.drawBody,false,'the default procedural body must not replace directional artwork');
+});

@@ -9287,7 +9287,7 @@ export default class RaceEditor {
   getPlaytestPickerCarEntries() {
     if (this.mode === 'car') {
       const car = this.selectedCar;
-      return car ? [{ id: sanitizeProjectFileName(this.currentCarDocumentName || car.name || car.id) || car.id, name: car.name || car.id, car, current: true }] : [];
+      return car ? [{ id: this.getRaceCarProjectIdentity(car), name: this.currentCarDocumentName || car.name || car.id, car, current: true }] : [];
     }
     return this.getSavedRaceCarEntriesForPlaytest();
   }
@@ -9308,7 +9308,7 @@ export default class RaceEditor {
   }
 
   getCurrentPlaytestCarId() {
-    if (this.mode === 'car') return this.selectedCar?.id || this.project.selectedCarId;
+    if (this.mode === 'car') return this.getRaceCarProjectIdentity(this.selectedCar) || this.project.selectedCarId;
     return this.project.selectedCarId;
   }
 
@@ -23297,7 +23297,7 @@ export default class RaceEditor {
     const rowY = bounds.y + 76;
     const rowH = 44;
     const carEntries = this.getPlaytestPickerCarEntries();
-    if (carEntries.length && !carEntries.some((entry) => entry.car?.id === this.project.selectedCarId)) {
+    if (carEntries.length && !carEntries.some((entry) => this.getRaceCarProjectIdentity(entry.car) === this.project.selectedCarId)) {
       this.selectPlaytestCarEntry(carEntries[0], { silent: true });
     }
     if (!carEntries.length) {
@@ -23316,7 +23316,7 @@ export default class RaceEditor {
         w: bounds.w - 36,
         h: rowH
       };
-      this.drawButton(ctx, buttonBounds, `${car.name}  ${String(tuning.drivetrain || '').toUpperCase()}  ${tuning.powerHp || 0}hp`, car.id === this.project.selectedCarId);
+      this.drawButton(ctx, buttonBounds, `${car.name}  ${String(tuning.drivetrain || '').toUpperCase()}  ${tuning.powerHp || 0}hp`, this.getRaceCarProjectIdentity(car) === this.project.selectedCarId);
       const buttonId = `playtest-car-${sanitizeProjectFileName(entry.id || car.id) || car.id}`;
       this.buttons.push({
         id: buttonId,

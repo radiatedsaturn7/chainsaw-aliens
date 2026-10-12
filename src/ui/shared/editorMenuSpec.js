@@ -428,7 +428,7 @@ export const EDITOR_MENU_SPECS = {
       file:section('file','File',['new','save','save-as','open','export','import','exit-main']),
       edit:section('edit','Edit',['undo','redo','copy','cut','paste','select-all','duplicate','mirror-x','mirror-y','mirror-z','symmetry-x','symmetry-y','symmetry-z','delete']),
       view:section('view','View',['view-x','view-y','view-z','view-orbit','zoom-fit','wireframe','background-image','background-clear']),
-      mesh:section('mesh','Mesh',['shape-box','shape-sphere','shape-cylinder','shape-cone','shape-plane','shape-torus','select-vertices','select-faces','place-vertex','move-vertices','join-polygon','extrude-faces','weld-vertices','transform-selection']),
+      mesh:section('mesh','Mesh',['shape-box','shape-sphere','shape-cylinder','shape-cone','shape-plane','shape-torus','select-vertices','select-faces','select-object','place-vertex','move-vertices','move-selection','rotate-selection','scale-selection','join-polygon','extrude-faces','weld-vertices','transform-selection']),
       rig:section('rig','Rig',['select-joints','joint-select-list','place-joint','joint-root','joint-properties','joint-reparent','joint-delete','select-joint-vertices','assign-joint','toggle-ik','pose-joint']),
       animation:section('animation','Animation',['animation-new','animation-select','animation-properties','keyframe-prev','keyframe-next','animation-time','keyframe-set','keyframe-delete','animation-play','bind-pose']),
       texture:section('texture','Texture',['uv-generate','uv-editor','uv-move','uv-paint','texture-material','paint-color','paint-size','texture-import','texture-export'])

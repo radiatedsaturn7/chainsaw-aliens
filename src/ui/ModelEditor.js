@@ -16,7 +16,8 @@ const fields3=(value=[0,0,0])=>['x','y','z'].map((id,i)=>({id,label:id.toUpperCa
 const coords=result=>[result.x,result.y,result.z];
 const label=id=>id.split('-').map(s=>s[0].toUpperCase()+s.slice(1)).join(' ');
 export default class ModelEditor extends RaceEditor {
-  constructor(game){super(game,{mode:'car'});this.model=Mesh.createModelDocument();this.history=new Mesh.ModelHistory();this.modelInput=new EditorInputActionNormalizer();this.currentModelName='';this.selection={vertices:[],faces:[]};this.joint=null;this.clip=null;this.pose={};this.time=0;this.playing=false;this.ik=false;this.tool='select-vertices';this.view='orbit';this.yaw=0.7;this.pitch=0.35;this.zoom=1;this.pan=[0,0,0];this.revision=0;this.modelRenderer=new ModelCanvasRenderer();this.activeRootId='mesh';this.color='#df533f';this.brushSize=3;this.uvMode=false;this.images=new Map();this.materialId=this.model.materials[0].id;this.status='Create a shape or import a model';}
+  constructor(game){super(game,{mode:'car'});this.model=Mesh.createModelDocument();this.history=new Mesh.ModelHistory();this.modelInput=new EditorInputActionNormalizer();this.currentModelName='';this.selection={vertices:[],faces:[]};this.joint=null;this.clip=null;this.pose={};this.time=0;this.playing=false;this.ik=false;this.tool='select-vertices';this.view='orbit';this.yaw=0.7;this.pitch=0.35;this.zoom=1;this.pan=[0,0,0];this.revision=0;this.modelRenderer=new ModelCanvasRenderer();this.activeRootId='mesh';this.color='#df533f';this.brushSize=3;this.uvMode=false;this.images=new Map();this.materialId=this.model.materials[0].id;this.selectionMode='object';this.transformMode='move';this.hotbarGroup=null;this.createStarterCube();}
+  createStarterCube(){const model=Mesh.createModelDocument();Mesh.addPrimitive(model,'box');this.loadModel(model);this.selectionMode='object';this.transformMode='move';this.tool='select-object';this.view='orbit';this.zoom=1;this.pan=[0,0,0];this.uvMode=false;this.status='Tap the cube to select it, then choose Move, Rotate or Scale.';}
   get editorId(){return 'model3d';}get title(){return '3D Object Editor';}
   getMenuItems(root){root=({'mesh-edit':'edit',camera:'view'})[root]||root;const spec=getEditorMenuSpec(this.editorId);return (spec.sections[root]?.actions||[]).map(id=>({id,label:label(id),disabled:false,onSelect:()=>this.handleMenuAction(id)}));}
   isActionAvailable(id){return Boolean(getEditorMenuSpec(this.editorId).actions[id]);}
@@ -71,7 +72,7 @@ if(this.playing){const clip=this.model.animations.find(c=>c.id===this.clip);this
   async saveModel(force=false){let name=this.currentModelName;if(force||!name){const picked=await openProjectBrowser({fixedFolder:'models',initialFolder:'models',mode:'saveAs',initialName:this.model.name,title:'Save 3D Model'});if(!picked?.name)return;name=picked.name;}const snapshot=structuredClone(this.model);snapshot.name=name;await saveProjectFileAndConfirm('models',name,snapshot);this.model.name=name;this.currentModelName=name;this.status=`Saved ${name}`;}
   async handleMenuAction(id){
     try{
-      if(id==='new'){this.loadModel(Mesh.createModelDocument());return;}
+      if(id==='new'){this.createStarterCube();return;}
       if(id==='save'||id==='save-as')return await this.saveModel(id==='save-as');
       if(id==='open'){const picked=await openProjectBrowser({fixedFolder:'models',initialFolder:'models',mode:'open',title:'Open 3D Model',onOpen:({name,payload})=>this.loadModel(payload.data,name)});return picked;}
       if(id==='import'){const files=await chooseEditorFiles('.obj,.json,.gltf,.glb,.bin,.png,.jpg',{multiple:true});if(files.length)this.loadModel(await importModelFiles(files));return;}
@@ -79,9 +80,11 @@ if(this.playing){const clip=this.model.animations.find(c=>c.id===this.clip);this
       if(id==='exit-main')return this.exitToMainMenu();
       if(id==='undo'||id==='redo'){this.model=this.history.restore(this.model,id==='redo');this.revision++;this.selection={vertices:[],faces:[]};this.pose={};return;}
       if(id==='zoom-fit'){this.zoom=1;this.pan=[0,0,0];this.modelRenderer.frameModel(this.model);return;}
-      if(id.startsWith('view-')){this.view=id.slice(5);this.uvMode=false;if(this.view==='orbit')this.tool='orbit';return;}
+      if(id.startsWith('view-')){this.view=id.slice(5);this.uvMode=false;this.status='Use the thumbstick or drag empty space to orbit. Select geometry to edit.';return;}
       if(id==='wireframe'){this.wireframe=!this.wireframe;return;}
       if(id.startsWith('shape-')){const empty=!this.model.vertices.length;this.selection=this.change(label(id),()=>Mesh.addPrimitive(this.model,id.slice(6)));if(empty)this.modelRenderer.frameModel(this.model);return;}
+      if(['select-object','select-vertices','select-faces'].includes(id)){this.selectionMode=id.slice(7);this.selection={vertices:[],faces:[]};this.tool=id;this.uvMode=false;this.status='Tap to select; tap again to deselect. Then choose a transform.';return;}
+      if(['move-selection','rotate-selection','scale-selection'].includes(id)){this.transformMode=id.split('-')[0];this.tool=id;this.uvMode=false;this.status=this.selectedVertices().length?'Drag in the viewport to '+this.transformMode+' the selection.':'Select vertices, faces or an object first.';return;}
       if(['select-vertices','select-faces','place-vertex','move-vertices','select-joints','place-joint','uv-move','uv-paint'].includes(id)){this.tool=id;this.uvMode=id.startsWith('uv-');this.status=label(id);return;}
       if(id==='select-all'){this.selection={vertices:this.model.vertices.map(v=>v.id),faces:this.model.faces.map(f=>f.id)};return;}
       if(id==='copy'||id==='cut'){this.clipboard=Mesh.copyGeometry(this.model,this.selection);if(id==='cut')this.change('Cut',()=>Mesh.deleteGeometry(this.model,this.selection));return;}
@@ -159,8 +162,9 @@ if(this.playing){const clip=this.model.animations.find(c=>c.id===this.clip);this
       y:view.y+view.h/2-h/2+vertical*pixelsPerUnit,w,h};
   }
   drawCarEditorWorkSurface(ctx,bounds){
-    this.carArtSliderRegions=[];this.modelBounds={x:bounds.x,y:bounds.y+28,w:bounds.w,h:Math.max(40,bounds.h-136)};
+    this.carArtSliderRegions=[];this.modelBounds={x:bounds.x,y:bounds.y+48,w:bounds.w,h:Math.max(40,bounds.h-156)};
     ctx.fillStyle='#0c1418';ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.fillStyle='#c4d9d1';ctx.font='12px system-ui';ctx.fillText(`${this.model.name} · ${label(this.tool)}`,bounds.x+8,bounds.y+17,bounds.w-16);
+    ctx.fillStyle='#8fb2aa';ctx.fillText(this.status,bounds.x+8,bounds.y+36,bounds.w-16);
     const view=this.modelBounds,background=this.model.backgrounds[this.view];
     ctx.save();ctx.beginPath();ctx.rect(view.x,view.y,view.w,view.h);ctx.clip();
     if(!this.uvMode&&background&&typeof Image!=='undefined'){
@@ -175,7 +179,7 @@ if(this.playing){const clip=this.model.animations.find(c=>c.id===this.clip);this
       try{this.modelRenderer.draw(ctx,preview,this.model,{revision:this.revision,view:'orbit',yaw:this.yaw,pitch:this.pitch,clip:this.clip,time:this.time,pose:this.playing?null:this.pose});}catch(error){this.status=error.message;}
     }else{
       this.uvBounds=null;
-      try{this.modelRenderer.draw(ctx,view,this.model,{revision:this.revision,view:this.view,yaw:this.yaw,pitch:this.pitch,zoom:this.zoom,pan:this.pan,clip:this.clip,time:this.time,pose:this.playing?null:this.pose,wireframe:this.wireframe});}catch(error){this.status=`3D preview: ${error.message}`;}
+      try{this.modelRenderer.draw(ctx,view,this.model,{revision:this.revision,view:this.view,yaw:this.yaw,pitch:this.pitch,zoom:this.zoom,pan:this.pan,clip:this.clip,time:this.time,pose:this.playing?null:this.pose,wireframe:this.wireframe,grid:true});}catch(error){this.status=`3D preview: ${error.message}`;}
       const pose=this.playing?Rig.sampleAnimation(this.model,this.clip,this.time):this.pose;
       const skinned=Rig.skinVertices(this.model,pose),positions=new Map(skinned.map(v=>[v.id,v.position]));
       ctx.strokeStyle='#ffcc44';ctx.lineWidth=2;
@@ -186,11 +190,39 @@ if(this.playing){const clip=this.model.animations.find(c=>c.id===this.clip);this
     }
     if(this.modelCursor&&this.game?.input?.isGamepadConnected?.()){ctx.strokeStyle='#ffffff';ctx.beginPath();ctx.arc(this.modelCursor.x,this.modelCursor.y,8,0,Math.PI*2);ctx.stroke();}
     ctx.restore();
-    const hot=['select-vertices','select-faces','move-vertices','view-orbit','uv-editor'];const width=bounds.w/hot.length;
-    hot.forEach((id,i)=>this.registerDrawnButton(ctx,{x:bounds.x+i*width,y:bounds.y+bounds.h-70,w:width-3,h:28},{id,label:['Verts','Faces','Move','Orbit','UV'][i],active:this.tool===id,onClick:()=>this.handleMenuAction(id)}));
+    const hot=[['selection',label(this.selectionMode)],['camera',label(this.view)],['transform',label(this.transformMode)],['tools','Tools']];const width=bounds.w/4;
+    hot.forEach(([id,text],i)=>this.registerDrawnButton(ctx,{x:bounds.x+i*width,y:bounds.y+bounds.h-70,w:width-3,h:28},{id:`model-${id}`,label:text+' ▾',active:this.hotbarGroup===id,onClick:()=>this.openHotbarGroup(id)}));
     this.drawRacePortraitZoomSlider(ctx,{x:bounds.x+4,y:bounds.y+bounds.h-36,w:bounds.w-8,h:26});
     this.timeline={x:bounds.x+8,y:bounds.y+bounds.h-102,w:bounds.w-16,h:24};ctx.fillStyle='#263d40';ctx.fillRect(this.timeline.x,this.timeline.y,this.timeline.w,this.timeline.h);
     const clip=this.model.animations.find(c=>c.id===this.clip),duration=clip?.duration||1;ctx.fillStyle='#65baa4';for(const keys of Object.values(clip?.tracks||{}))for(const key of keys)ctx.fillRect(this.timeline.x+key.time/duration*this.timeline.w-1,this.timeline.y+this.timeline.h-7,3,7);ctx.fillStyle='#f3d778';ctx.fillRect(this.timeline.x+Math.min(1,this.time/duration)*this.timeline.w,this.timeline.y,2,this.timeline.h);ctx.fillStyle='#e5ece9';ctx.fillText(`${clip?.name||'No animation'}  ${this.time.toFixed(2)}s`,this.timeline.x+6,this.timeline.y+16,this.timeline.w-12);
+  }
+  async openHotbarGroup(group){
+    const groups={selection:[['select-vertices','Vertices'],['select-faces','Faces'],['select-object','Object']],camera:[['view-orbit','Orbit'],['view-x','X'],['view-y','Y'],['view-z','Z']],transform:[['move-selection','Move'],['rotate-selection','Rotate'],['scale-selection','Scale']],tools:[['extrude-faces','Extrude faces'],['weld-vertices','Weld two vertices'],['mirror-x','Mirror X'],['mirror-y','Mirror Y'],['mirror-z','Mirror Z']]};
+    this.hotbarGroup=group;
+    const current=group==='selection'?`select-${this.selectionMode}`:group==='camera'?`view-${this.view}`:group==='transform'?`${this.transformMode}-selection`:'extrude-faces';
+    const result=await openEditorForm(label(group),[{id:'action',label:label(group),value:current,options:groups[group].map(([value,label])=>({value,label}))}]);
+    this.hotbarGroup=null;if(result)await this.handleMenuAction(result.action);
+  }
+  selectObject(faceId){
+    const face=this.model.faces.find(f=>f.id===faceId);if(!face)return;
+    const ids=new Set(face.vertices);let changed=true;
+    while(changed){changed=false;for(const f of this.model.faces)if(f.vertices.some(id=>ids.has(id)))for(const id of f.vertices)if(!ids.has(id)){ids.add(id);changed=true;}}
+    const selected=[...ids].every(id=>this.selection.vertices.includes(id));
+    this.selection={vertices:selected?[]:[...ids],faces:selected?[]:this.model.faces.filter(f=>f.vertices.every(id=>ids.has(id))).map(f=>f.id)};
+  }
+  transformSelection(dx,dy,drag,p){
+    const ids=this.selectedVertices();if(!ids.length)return;
+    const vertices=this.model.vertices.filter(v=>ids.includes(v.id));
+    const center=vertices.reduce((sum,v)=>sum.map((n,i)=>n+v.position[i]/vertices.length),[0,0,0]);
+    if(this.tool==='move-selection'||this.tool==='move-vertices'){
+      const a=this.modelRenderer.unprojectToPlane(drag.x,drag.y,center),b=this.modelRenderer.unprojectToPlane(p.x,p.y,center);Mesh.moveVertices(this.model,ids,b.map((n,i)=>n-a[i]));
+    }else{
+      const axis=new THREE.Vector3(0,0,1);this.modelRenderer.camera?.getWorldDirection(axis);
+      const rotation=new THREE.Quaternion().setFromAxisAngle(axis,dx*0.01);
+      const factor=Math.exp((dx-dy)*0.01);
+      for(const vertex of vertices){const point=new THREE.Vector3(...vertex.position).sub(new THREE.Vector3(...center));if(this.tool==='rotate-selection')point.applyQuaternion(rotation);else point.multiplyScalar(factor);vertex.position=point.add(new THREE.Vector3(...center)).toArray();}
+    }
+    this.revision++;
   }
   drawUV(ctx,b){
     const texture=this.textureCanvas();if(texture){ctx.imageSmoothingEnabled=false;ctx.drawImage(texture,b.x,b.y,b.w,b.h);}
@@ -205,6 +237,7 @@ if(this.playing){const clip=this.model.animations.find(c=>c.id===this.clip);this
     const point=this.modelRenderer.unprojectToPlane(p.x,p.y);
     if(this.tool==='place-vertex'){this.change('Place vertex',()=>{this.selection.vertices.push(Mesh.addVertex(this.model,point));});this.modelDrag=null;return;}
     if(this.tool==='place-joint'){this.joint=this.change('Place joint',()=>Rig.addJoint(this.model,point,this.joint));this.modelDrag=null;return;}
+    if(this.tool==='select-object'){const hit=this.modelRenderer.pickFace(p.x,p.y);if(hit)this.selectObject(hit.id);else this.modelDrag.orbit=true;return;}
     if(this.tool==='select-faces'){const hit=this.modelRenderer.pickFace(p.x,p.y);if(hit){this.toggleSelection('faces',hit.id);this.materialId=this.model.faces.find(f=>f.id===hit.id).material;}return;}
     if(this.tool==='select-joints'){let best=16;for(const [id,matrix] of Rig.jointMatrices(this.model,this.pose)){const pos=this.modelRenderer.project(new THREE.Vector3().setFromMatrixPosition(matrix).toArray());const distance=pos?Math.hypot(pos.x-p.x,pos.y-p.y):Infinity;if(distance<best){best=distance;this.joint=id;}}return;}
     if(this.tool==='select-vertices'){let best=14,hit=null;for(const vertex of Rig.skinVertices(this.model,this.playing?Rig.sampleAnimation(this.model,this.clip,this.time):this.pose)){const pos=this.modelRenderer.project(vertex.position);const distance=pos?Math.hypot(pos.x-p.x,pos.y-p.y):Infinity;if(distance<best){best=distance;hit=vertex.id;}}if(hit)this.toggleSelection('vertices',hit);}
@@ -214,9 +247,9 @@ if(this.playing){const clip=this.model.animations.find(c=>c.id===this.clip);this
   handlePointerMove(p={}){
     const drag=this.modelDrag;if(!drag)return super.handlePointerMove(p);if(drag.id!==undefined&&p.id!==undefined&&drag.id!==p.id)return;
     if(this.uvMode){if(this.tool==='uv-paint')this.paintAt(p);else if(drag.uv){const b=this.uvBounds||this.modelBounds;this.model.faces.find(f=>f.id===drag.uv.face).uv[drag.uv.index]=[Math.max(0,Math.min(1,(p.x-b.x)/b.w)),Math.max(0,Math.min(1,1-(p.y-b.y)/b.h))];this.revision++;}}
-    else if(this.tool==='move-vertices'){const a=this.modelRenderer.unprojectToPlane(drag.x,drag.y),b=this.modelRenderer.unprojectToPlane(p.x,p.y);Mesh.moveVertices(this.model,this.selectedVertices(),b.map((n,i)=>n-a[i]));this.revision++;}
+    else if(['move-vertices','move-selection','rotate-selection','scale-selection'].includes(this.tool)){this.transformSelection(p.x-drag.x,p.y-drag.y,drag,p);}
     else if(this.tool==='select-joints'&&this.ik&&this.joint){this.pose=Rig.solveIK(this.model,this.pose,this.joint,this.modelRenderer.unprojectToPlane(p.x,p.y));this.playing=false;}
-    else if(this.view==='orbit'&&this.tool!=='select-vertices'&&this.tool!=='select-faces'){this.yaw+=(p.x-drag.x)*0.008;this.pitch=Math.max(-1.5,Math.min(1.5,this.pitch+(p.y-drag.y)*0.008));}
+    else if(this.view==='orbit'&&(drag.orbit||!this.tool.startsWith('select-'))){this.yaw+=(p.x-drag.x)*0.008;this.pitch=Math.max(-1.5,Math.min(1.5,this.pitch+(p.y-drag.y)*0.008));}
     drag.x=p.x;drag.y=p.y;
   }
   handlePointerUp(p={}){if(!this.modelDrag)return super.handlePointerUp(p);const before=this.modelDrag.before;this.modelDrag=null;if(JSON.stringify(before)!==JSON.stringify(this.model)){this.history.undoStack.push({label:'Drag',model:before});if(this.history.undoStack.length>50)this.history.undoStack.shift();this.history.redoStack=[];}}

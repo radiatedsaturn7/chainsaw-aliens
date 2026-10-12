@@ -22,7 +22,7 @@ async function clickButton(page,id){
 test('desktop modeling menus render a mesh and support undo and native roundtrip',async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.setViewportSize({width:1280,height:800});await open(page);
-  await clickButton(page,'mesh');await clickButton(page,'shape-box');
+  await page.evaluate(()=>window.__game.modelEditor.handleMenuAction('select-all'));
   await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.model.vertices.length)).toBe(8);
   await clickButton(page,'mesh');
   await expect.poll(()=>page.evaluate(()=>Boolean(window.__game.modelEditor.desktopDropdown))).toBe(true);
@@ -52,7 +52,7 @@ test('portrait uses the four bottom controls, thumbstick, hotbar and zoom',async
     const e=window.__game.modelEditor;
     return {buttons:e.buttons.map(b=>b.id),thumbstick:e.portraitThumbstick.radius>0,bounds:e.modelBounds};
   });
-  for(const id of ['menu','undo','redo','model-play','select-vertices','select-faces','race-map-zoom'])expect(state.buttons).toContain(id);
+  for(const id of ['menu','undo','redo','model-play','model-selection','model-camera','model-transform','model-tools','race-map-zoom'])expect(state.buttons).toContain(id);
   expect(state.bounds.w).toBeGreaterThan(100);
   expect(state.thumbstick).toBe(true);
   await clickButton(page,'menu');
@@ -68,7 +68,7 @@ test('rig, animation and UV painting work together through editor commands and d
     const screen=await page.evaluate(point=>{const g=window.__game,r=g.canvas.getBoundingClientRect();return {x:r.x+point.x*r.width/g.viewport.width,y:r.y+point.y*r.height/g.viewport.height};},point);
     await page.mouse.click(screen.x,screen.y);
   };
-  await command('shape-box');await command('joint-root');
+  await command('select-all');await command('joint-root');
   await clickAt(await page.evaluate(()=>{const b=window.__game.modelEditor.modelBounds;return {x:b.x+b.w/2,y:b.y+b.h/2};}));
   await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.model.joints.length)).toBe(1);
   await command('assign-joint');await apply('Vertex weight');
@@ -91,4 +91,32 @@ test('rig, animation and UV painting work together through editor commands and d
   await command('texture-material');await page.getByLabel('Material',{exact:true}).selectOption('material-0');await apply('Texture material');
   await command('undo');
   await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.activeMaterial().texture)).toBe(null);
+});
+
+test('starter cube has a grid and four hotbar groups that select and transform an object',async({page})=>{
+  await page.setViewportSize({width:390,height:844});await open(page,true);
+  await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.model.vertices.length)).toBe(8);
+  await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.modelRenderer.grid?.visible)).toBe(true);
+  const choose=async(group,value)=>{
+    await clickButton(page,`model-${group.toLowerCase()}`);
+    const dialog=page.getByRole('dialog',{name:group,exact:true});
+    await dialog.getByLabel(group,{exact:true}).selectOption(value);
+    await dialog.getByRole('button',{name:'Apply',exact:true}).click();
+  };
+  await choose('Selection','select-object');
+  const screen=async point=>page.evaluate(point=>{const g=window.__game,r=g.canvas.getBoundingClientRect();return {x:r.x+point.x*r.width/g.viewport.width,y:r.y+point.y*r.height/g.viewport.height};},point);
+  const center=await screen(await page.evaluate(()=>{const b=window.__game.modelEditor.modelBounds;return {x:b.x+b.w/2,y:b.y+b.h/2};}));
+  await page.mouse.click(center.x,center.y);
+  await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.selectedVertices().length)).toBe(8);
+  const before=await page.evaluate(()=>window.__game.modelEditor.model.vertices.map(v=>v.position));
+  for(const mode of ['move','rotate','scale']){
+    await choose('Transform',`${mode}-selection`);
+    const previous=await page.evaluate(()=>window.__game.modelEditor.model.vertices.map(v=>v.position));
+    await page.mouse.move(center.x,center.y);await page.mouse.down();await page.mouse.move(center.x+30,center.y-12,{steps:5});await page.mouse.up();
+    expect(await page.evaluate(()=>window.__game.modelEditor.model.vertices.map(v=>v.position))).not.toEqual(previous);
+  }
+  await choose('Camera','view-x');await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.view)).toBe('x');
+  await choose('Tools','mirror-x');await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.model.vertices.length)).toBe(16);
+  expect(before).toHaveLength(8);
+  await page.screenshot({path:'test-results/model3d-hotbar-grid.png'});
 });

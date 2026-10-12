@@ -63,7 +63,7 @@ export class ModelCanvasRenderer {
     this.scene=new THREE.Scene();this.scene.add(new THREE.HemisphereLight(0xffffff,0x35403a,2));
     const light=new THREE.DirectionalLight(0xffffff,2);light.position.set(3,5,7);this.scene.add(light);return true;
   }
-  draw(ctx,bounds,model,{revision=0,view='orbit',yaw=0.7,pitch=0.35,zoom=1,pan=[0,0,0],clip=null,time=0,pose=null,wireframe=false,transform=null}={}){
+  draw(ctx,bounds,model,{revision=0,view='orbit',yaw=0.7,pitch=0.35,zoom=1,pan=[0,0,0],clip=null,time=0,pose=null,wireframe=false,grid=false,transform=null}={}){
     if(!this.ensure())return false;
     if(!this.framing)this.frameModel(model);
     if(this.model!==model||this.revision!==revision){
@@ -87,6 +87,8 @@ export class ModelCanvasRenderer {
     const camera=view==='orbit'?new THREE.PerspectiveCamera(40,aspect,0.01,100000):new THREE.OrthographicCamera(-span*aspect/2,span*aspect/2,span/2,-span/2,0.01,100000);
     const direction=view==='x'?new THREE.Vector3(1,0,0):view==='y'?new THREE.Vector3(0,1,0):view==='z'?new THREE.Vector3(0,0,1):new THREE.Vector3(Math.sin(yaw)*Math.cos(pitch),Math.sin(pitch),Math.cos(yaw)*Math.cos(pitch));
     camera.position.copy(target).addScaledVector(direction,view==='orbit'?distance/zoom:distance);if(view==='y')camera.up.set(0,0,-1);camera.lookAt(target);camera.updateMatrixWorld();
+    if(grid&&!this.grid){this.grid=new THREE.GridHelper(20,20,0x668899,0x334952);this.scene.add(this.grid);}
+    if(this.grid){this.grid.visible=grid;this.grid.rotation.set(view==='z'?Math.PI/2:0,0,view==='x'?Math.PI/2:0);}
     this.camera=camera;this.bounds={...bounds};this.renderer.render(this.scene,camera);ctx.drawImage(this.renderer.domElement,bounds.x,bounds.y,bounds.w,bounds.h);return true;
   }
   project(position){if(!this.camera||!this.bounds)return null;const p=new THREE.Vector3(...position).project(this.camera),b=this.bounds;return {x:b.x+(p.x+1)*b.w/2,y:b.y+(1-p.y)*b.h/2,z:p.z};}
@@ -100,7 +102,7 @@ export class ModelCanvasRenderer {
     const plane=new THREE.Plane().setFromNormalAndCoplanarPoint(normal,new THREE.Vector3(...origin)),out=new THREE.Vector3();
     return ray.ray.intersectPlane(plane,out)?out.toArray():origin;
   }
-  dispose(){for(const {root} of this.roots.values())disposeModelObject(root);this.roots.clear();this.model=null;this.renderer?.dispose();this.renderer=null;this.root=null;this.framing=null;}
+  dispose(){if(this.grid){this.grid.geometry.dispose();this.grid.material.dispose();this.grid=null;}for(const {root} of this.roots.values())disposeModelObject(root);this.roots.clear();this.model=null;this.renderer?.dispose();this.renderer=null;this.root=null;this.framing=null;}
 }
 
 export function ensureModelSceneLighting(scene){

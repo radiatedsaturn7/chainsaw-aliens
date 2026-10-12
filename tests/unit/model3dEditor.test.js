@@ -13,11 +13,11 @@ test('3D editor uses standard four-button portrait rail and exposes all modeling
 });
 for(const [width,height,mobile] of [[390,844,true],[844,390,true],[1280,800,false]])test(`3D editor shared shell draws at ${width}x${height}`,()=>{
   const e=new ModelEditor({deviceIsMobile:mobile,isMobile:mobile});e.draw(context(),width,height);
-  assert.ok(e.modelBounds.w>0&&e.modelBounds.h>0);assert.ok(e.buttons.some(b=>b.id==='select-vertices'));assert.ok(e.buttons.some(b=>b.id==='race-map-zoom'));
+  assert.ok(e.modelBounds.w>0&&e.modelBounds.h>0);assert.deepEqual(e.buttons.filter(b=>['model-selection','model-camera','model-transform','model-tools'].includes(b.id)).map(b=>b.id),['model-selection','model-camera','model-transform','model-tools']);assert.ok(e.buttons.some(b=>b.id==='race-map-zoom'));
   if(height>width)for(const id of ['menu','undo','redo','model-play'])assert.ok(e.buttons.some(b=>b.id===id),id);
 });
 test('mesh menu commands work with undo and OBJ round trips',async()=>{
-  const e=new ModelEditor({deviceIsMobile:false,isMobile:false});await e.handleMenuAction('shape-box');assert.equal(e.model.vertices.length,8);
+  const e=new ModelEditor({deviceIsMobile:false,isMobile:false});await e.handleMenuAction('select-all');assert.equal(e.model.vertices.length,8);
   await e.handleMenuAction('duplicate');assert.equal(e.model.vertices.length,16);await e.handleMenuAction('undo');assert.equal(e.model.vertices.length,8);
   const loaded=importOBJ(exportOBJ(e.model));assert.equal(loaded.vertices.length,8);assert.equal(loaded.faces.length,e.model.faces.length);
 });
@@ -62,7 +62,7 @@ test('quick command shortcuts retain keydown modifiers after keyup before the ne
   const previous=globalThis.window;globalThis.window=new EventTarget();
   const input=new Input(),e=new ModelEditor({});
   try{
-    await e.handleMenuAction('shape-box');
+    await e.handleMenuAction('select-all');
     const down=Object.assign(new Event('keydown'),{code:'KeyD',ctrlKey:true});
     window.dispatchEvent(down);window.dispatchEvent(Object.assign(new Event('keyup'),{code:'KeyD'}));
     assert.equal(input.isDownCode('ControlLeft'),undefined);
@@ -79,4 +79,21 @@ test('orthographic tracing preserves image aspect and follows world-space pan an
   e.pan=[1,0,0];const panned=e.tracingImageBounds(image,view);assert.equal(panned.x,zoomed.x-300);
   e.view='x';e.pan=[0,0,1];assert.equal(e.tracingImageBounds(image,view).x,zoomed.x+300);
   e.view='y';assert.equal(e.tracingImageBounds(image,view).y,zoomed.y-300);
+});
+
+test('starter cube and connected object selection support move, rotate, scale and drag undo',async()=>{
+  const e=new ModelEditor({});assert.equal(e.model.vertices.length,8);assert.equal(e.model.faces.length,12);
+  e.selectObject(e.model.faces[0].id);assert.equal(e.selectedVertices().length,8);
+  const before=structuredClone(e.model);
+  e.modelBounds={x:0,y:0,w:400,h:400};e.modelRenderer.unprojectToPlane=(x,y)=>[x/100,y/100,0];
+  await e.handleMenuAction('move-selection');e.handlePointerDown({x:100,y:100,id:1});e.handlePointerMove({x:150,y:100,id:1});e.handlePointerUp({id:1});
+  for(let i=0;i<8;i++)assert.equal(e.model.vertices[i].position[0],before.vertices[i].position[0]+0.5);
+  await e.handleMenuAction('undo');assert.deepEqual(e.model.vertices,before.vertices);
+  e.selectObject(e.model.faces[0].id);await e.handleMenuAction('rotate-selection');
+  e.handlePointerDown({x:100,y:100});e.handlePointerMove({x:150,y:100});e.handlePointerUp({});
+  const rotated=structuredClone(e.model.vertices);assert.notDeepEqual(rotated,before.vertices);
+  for(let i=0;i<8;i++)assert.ok(Math.abs(Math.hypot(...rotated[i].position)-Math.hypot(...before.vertices[i].position))<1e-9);
+  await e.handleMenuAction('scale-selection');e.handlePointerDown({x:100,y:100});e.handlePointerMove({x:150,y:100});e.handlePointerUp({});
+  for(let i=0;i<8;i++)assert.ok(Math.abs(Math.hypot(...e.model.vertices[i].position)/Math.hypot(...rotated[i].position)-Math.exp(0.5))<1e-9);
+  await e.handleMenuAction('new');assert.equal(e.model.vertices.length,8);assert.equal(e.history.undoStack.length,0);
 });
