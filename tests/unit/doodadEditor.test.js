@@ -1,8 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { gunzipSync } from 'node:zlib';
+import { upsertCachedProjectFile } from '../../src/ui/serverStorage.js';
 
 import DoodadEditor from '../../src/ui/DoodadEditor.js';
+import RaceEditor from '../../src/ui/RaceEditor.js';
 import { RACE_DOODAD_SIZE_LIMITS } from '../../src/racing/raceDoodads.js';
 import { loadProjectFile, resetProjectFilesForTests } from '../../src/ui/projectFiles.js';
 
@@ -357,6 +360,7 @@ test('Doodad Editor Studio Sprint preview uses embedded playtest render and rest
   editor.doodad.hitboxWidthM = 2.2;
   editor.doodad.hitboxHeightM = 3.3;
   editor.currentDocumentName = 'preview-tree';
+  editor.getDoodadArtCanvas = () => null;
 
   editor.drawStudioSprintPreview(createMockContext(), { x: 0, y: 0, w: 260, h: 180 });
 
@@ -496,4 +500,94 @@ test('Doodad Editor size controls allow large scenery-scale doodads', () => {
 
   assert.equal(widthSlider.max, RACE_DOODAD_SIZE_LIMITS.maxWidthM);
   assert.equal(heightSlider.max, RACE_DOODAD_SIZE_LIMITS.maxHeightM);
+});
+
+for (const [name, artRef] of [['tree', 'tree'], ['Factory', '1000014256']]) {
+  test(`Doodad Editor draws committed ${name} artwork in portrait, desktop and landscape previews`, async () => {
+    resetProjectFilesForTests();
+    const originalDocument = globalThis.document;
+    let visiblePixels = 0;
+    globalThis.document = {
+      createElement() {
+        return {
+          getContext() {
+            return {
+              createImageData: (w, h) => ({ data: new Uint8ClampedArray(w * h * 4) }),
+              putImageData(image) {
+                visiblePixels = image.data.filter((value, index) => index % 4 === 3 && value > 0).length;
+              }
+            };
+          }
+        };
+      }
+    };
+    try {
+      const readFixture = (folder, file) => JSON.parse(readFileSync(
+        new URL(`../../data/server-storage/files/${folder}/${file}/document.json`, import.meta.url), 'utf8'
+      ));
+      const compact = readFixture('art', artRef);
+      const art = JSON.parse(gunzipSync(Buffer.from(compact.data, 'base64')).toString('utf8'));
+      upsertCachedProjectFile('art', artRef, JSON.stringify({ folder: 'art', name: artRef, savedAt: 1, data: art }));
+      const editor = new DoodadEditor({ input: { isGamepadConnected: () => false } });
+      editor.loadDoodadDocument(readFixture('doodads', name), name);
+      await editor.hydrateDoodadArt(artRef);
+      const preparedFrames = new Map([['existing:frame:0', { width: 1, height: 1 }]]);
+      const previewRace = { scenery: [] };
+      const previewSource = {
+        selectedRace: previewRace,
+        racePreparedArtFrames: preparedFrames,
+        playtestSession: { routeLength: 320, distance: 12, raceTravelPreparedArtOnly: true },
+        bindCarEditorPreviewPlaytest: (callback) => callback(),
+        getRaceArtSpriteCanvas: RaceEditor.prototype.getRaceArtSpriteCanvas,
+        getNowMs: () => 0,
+        drawRacePlaytestScreen(ctx) {
+          const canvas = this.getRaceArtSpriteCanvas(artRef);
+          assert.ok(canvas, 'portrait prepared-only renderer receives loaded doodad artwork');
+          assert.equal(this.playtestSession.raceTravelPreparedArtOnly, true);
+          assert.equal(this.racePreparedArtFrames.get('existing:frame:0'), preparedFrames.get('existing:frame:0'));
+          ctx.drawImage(canvas, 20, 20, 100, 100);
+        }
+      };
+      editor.game.carEditor = previewSource;
+      editor.game.isMobile = true;
+      editor.game.deviceIsMobile = true;
+      const portraitContext = createMockContext();
+      const portraitImages = [];
+      portraitContext.drawImage = (image) => portraitImages.push(image);
+      editor.draw(portraitContext, 390, 844);
+      assert.equal(editor.activeViewportMode, 'portrait');
+      assert.ok(portraitImages.includes(editor.getDoodadArtCanvas()));
+      assert.equal(previewSource.racePreparedArtFrames, preparedFrames);
+      assert.equal(preparedFrames.has(`${artRef}:frame:0`), false);
+      assert.deepEqual(previewRace.scenery, []);
+      previewSource.drawRacePlaytestScreen = () => { throw new Error('render failed'); };
+      assert.throws(() => editor.drawEmbeddedStudioSprintPreview(portraitContext, { x: 0, y: 0, w: 300, h: 200 }), /render failed/);
+      assert.equal(previewSource.racePreparedArtFrames, preparedFrames);
+      assert.deepEqual(previewRace.scenery, []);
+      for (const method of ['drawDesktop', 'drawWideTouch']) {
+        const ctx = createMockContext();
+        const images = [];
+        ctx.drawImage = (...args) => images.push(args);
+        editor[method](ctx, 1200, 700);
+        const canvas = editor.getDoodadArtCanvas();
+        assert.ok(visiblePixels > 0, 'art canvas contains visible pixels');
+        assert.ok(images.some(([image, x, y, w, h]) => image === canvas
+          && Number.isFinite(x) && Number.isFinite(y) && w > 0 && h > 0), `${method} draws the artwork`);
+      }
+    } finally {
+      globalThis.document = originalDocument;
+      resetProjectFilesForTests();
+    }
+  });
+}
+
+test('Doodad preview retains its placeholder while artwork is unavailable', () => {
+  const editor = new DoodadEditor({ input: { isGamepadConnected: () => false } });
+  editor.getDoodadArtCanvas = () => null;
+  const ctx = createMockContext();
+  const labels = [];
+  ctx.drawImage = () => assert.fail('unavailable artwork must not be drawn');
+  ctx.fillText = (label) => labels.push(label);
+  editor.drawPreview(ctx, { x: 0, y: 0, w: 400, h: 400 });
+  assert.ok(labels.includes(editor.doodad.artRef || 'No Art'));
 });

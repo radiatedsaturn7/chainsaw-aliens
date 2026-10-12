@@ -1,3 +1,4 @@
+import { getGamepadSpeedSteeringScale } from './RaceSimulationConfig.js';
 import { clamp } from './SimulationMath.js';
 
 export const HANDLING_ASSIST_PRESETS = Object.freeze({
@@ -197,16 +198,22 @@ export class HandlingAssist {
     wheelbaseM = 2.67,
     availableLateralG = 0.95,
     handlingPreset = 'sport',
+    steeringInputMode = 'keyboard',
     maxPhysicalAngleRad = 0.52
   } = {}) {
     const normalizedInput = clamp(Number(driverInput) || 0, -1, 1);
     if (String(handlingPreset || 'sport').toLowerCase() === 'simulation') {
       return normalizedInput * clamp(Number(maxPhysicalAngleRad) || 0.52, 0.05, 1.2);
     }
-    return this.getUsableTireAngleForSteering(normalizedInput, speedMps, {
+    const angle = this.getUsableTireAngleForSteering(normalizedInput, speedMps, {
       wheelbaseM,
       availableLateralG
     });
+    if (steeringInputMode !== 'gamepad') return angle;
+    const scale = getGamepadSpeedSteeringScale(speedMps, this.steering);
+    if (scale === 1) return angle;
+    const limit = clamp(Number(maxPhysicalAngleRad) || 0.52, 0.05, 1.2);
+    return clamp(angle * scale, -limit, limit);
   }
 
   getSteeringWheelRotationForTireAngle(tireAngle = 0, steeringRatio = this.steering.steeringRatio) {

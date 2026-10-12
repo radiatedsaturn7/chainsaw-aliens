@@ -97,12 +97,21 @@ const actionEntries = (ids, labels = {}) => Object.fromEntries(ids.map((id) => [
   }
 ]));
 const EDITOR_ACTION_LABEL_OVERRIDES = {
+  'race-from-image': 'From Image',
+  'engine-sfx': 'Engine Sound',
   'aero-front': 'Aero',
   'spring-front': 'Spring',
   'damping-front': 'Damping',
   'transmission-type': 'Transmission',
-  'summary-sheet': 'Summary Sheet',
+  'summary-sheet': 'Stats',
   'load-preset': 'Load Preset',
+  'tire-select': 'Select Tire',
+  'tire-graphics': 'Choose Art',
+  'tire-import': 'Import Graphic',
+  'tire-properties': 'Properties',
+  'tire-spin': 'Spin / Pause',
+  'car-import-graphic': 'Import Graphic',
+  'car-art-settings': 'Settings',
   'car-art-exterior': 'Exterior',
   'car-art-interior': 'Interior',
   'car-camera-settings': 'Camera Settings',
@@ -128,14 +137,14 @@ export const DESKTOP_DYNAMIC_EMPTY_SECTION_IDS = {
   midi: ['tracks']
 };
 export const STANDARD_EDITOR_ACTION_RAIL_PREFIX = ['menu', 'undo', 'redo'];
-export const SHARED_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'car', 'tile', 'doodad'];
+export const SHARED_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'tire', 'car', 'tile', 'doodad'];
 export const SUPPORTED_EDITOR_WORK_SURFACES = ['canvas', 'stage', 'grid', 'timeline'];
 export const EDITOR_STANDARD_REFERENCE = deepFreeze({
   primaryEditorId: 'midi',
   secondaryEditorId: 'pixel',
   comparisonEditorIds: ['level', 'cutscene', 'actor'],
   portraitRepairEditorIds: ['level', 'race', 'car'],
-  rolloutOrder: ['midi', 'pixel', 'level', 'cutscene', 'actor', 'race', 'car', 'sfx', 'tile', 'doodad']
+  rolloutOrder: ['midi', 'pixel', 'level', 'cutscene', 'actor', 'race', 'tire', 'car', 'sfx', 'tile', 'doodad']
 });
 export const EDITOR_DESKTOP_LEFT_CONTEXT_ROLES = deepFreeze({
   pixel: ['active-tool', 'swatches', 'layers', 'frames'],
@@ -145,6 +154,7 @@ export const EDITOR_DESKTOP_LEFT_CONTEXT_ROLES = deepFreeze({
   sfx: ['active-tool', 'timeline', 'oscillator-settings', 'envelope-settings'],
   cutscene: ['insert-palette', 'selected-clip', 'timeline', 'scene-settings'],
   race: ['active-tool', 'tile-palette', 'route-painting', 'track-settings'],
+  tire: ['tire-properties', 'preview-settings'],
   car: ['active-tool', 'car-properties', 'paint-swatches', 'test-drive-settings'],
   tile: ['active-tool', 'tile-palette', 'tile-properties', 'preview-settings'],
   doodad: ['active-tool', 'artwork-settings', 'size-settings', 'collision-settings']
@@ -195,7 +205,7 @@ export const EDITOR_MENU_SPECS = {
       { id: 'frames', panel: 'animation', label: 'Frames' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'info', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo', 'copy', 'cut', 'paste', 'clear']),
       view: section('view', 'View', ['zoom-in', 'zoom-out', 'zoom-fit', 'grid', 'tile-preview', 'onion']),
       draw: section('draw', 'Draw', ['pencil', 'brush', 'fill', 'line', 'shape', 'brush-settings']),
@@ -352,7 +362,7 @@ export const EDITOR_MENU_SPECS = {
       { id: 'settings', label: 'Settings' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'generate-random-race', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'race-from-image', 'generate-random-race', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo', 'copy-segment', 'paste-segment', 'delete-segment']),
       view: section('view', 'View', ['preview-mode7', 'zoom-fit', 'toggle-scenery', 'toggle-racing-line']),
       track: section('track', 'Track', ['draw-road']),
@@ -401,6 +411,18 @@ export const EDITOR_MENU_SPECS = {
       settings: section('settings', 'Settings', ['race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-complete', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
     }
   },
+  tire: {
+    editorId:'tire', title:'Tire Editor', workSurface:'stage',
+    root:['file','edit','view','art','properties'],
+    portraitRoot:[{id:'file',label:'File'},{id:'art',label:'Art'},{id:'properties',label:'Props'}],
+    sections:{
+      file:section('file','File',['new','save','save-as','open','export','import','exit-main']),
+      edit:section('edit','Edit',['undo','redo']),
+      view:section('view','View',['zoom-fit']),
+      art:section('art','Art',['tire-select','tire-graphics','tire-import','tire-spin']),
+      properties:section('properties','Properties',['tire-properties'])
+    }
+  },
   car: {
     editorId: 'car',
     title: 'Car Editor',
@@ -416,9 +438,13 @@ export const EDITOR_MENU_SPECS = {
       file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
-      art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-camera-settings']),
-      drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sound-next', 'power-curve', 'weight-balance']),
-      tuning: section('tuning', 'Tuning', ['default-tires', 'tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel', 'physics-body']),
+      art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-import-graphic', 'car-art-settings', 'car-camera-settings']),
+      drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sfx', 'power-curve', 'weight-balance', 'summary-sheet']),
+      tuning: {
+        ...section('tuning', 'Tuning', ['default-tires', 'tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel', 'physics-body']),
+        portraitActions: ['tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'physics-body'],
+        portraitLabels: { 'diff-accel': 'Diff' }
+      },
       aero: section('aero', 'Aero', ['aero-front', 'aero-rear']),
       suspension: section('suspension', 'Suspension', ['spring-front', 'spring-rear', 'damping-front', 'damping-rear', 'antiroll-front', 'antiroll-rear']),
       drive: section('drive', 'Drive', ['test-drive'])
@@ -740,17 +766,7 @@ export function getEditorPortraitRootMenuEntries(editorId, {
 }
 
 export function getEditorTouchRootMenuEntries(editorId, options = {}) {
-  const roots = getEditorPortraitRootMenuEntries(editorId, options);
-  return [
-    ...roots,
-    {
-      id: DESKTOP_FILE_FOOTER_ACTION_ID,
-      specId: DESKTOP_FILE_FOOTER_ACTION_ID,
-      panel: DESKTOP_FILE_FOOTER_ACTION_ID,
-      label: 'Exit',
-      touchExit: true
-    }
-  ];
+  return getEditorPortraitRootMenuEntries(editorId, options);
 }
 
 export function validateEditorMenuSpec(spec) {

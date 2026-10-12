@@ -2,7 +2,7 @@
 
 Product-level editor menu behavior is specified in `../UISpec.md`. This file is the lower-level shell, layout, spacing, typography, and token contract used by the shared editor UI implementation.
 
-This document defines the shared layout and token contract for **Pixel Editor**, **Tile Editor**, **Level Editor**, **Actor Editor**, **MIDI Editor**, **SFX Editor**, **Cutscene Editor**, **Race Editor**, **Car Editor**, and **Doodad Editor**.
+This document defines the shared layout and token contract for **Pixel Editor**, **Tile Editor**, **Level Editor**, **Actor Editor**, **MIDI Editor**, **SFX Editor**, **Cutscene Editor**, **Race Editor**, **Car Editor**, **Tire Editor**, and **Doodad Editor**.
 
 ## 1) Fixed Layout Dimensions
 
@@ -65,6 +65,7 @@ Desktop-specific shell rules:
 - Specialized desktop, landscape, and gamepad shell helpers must also expose `modeContract`; helper-specific optional surfaces may narrow `presentation`, but required/suppressed surfaces and interaction semantics must still come from the combined shared contract.
 - Shared portrait mode plans expose `suppressedModeSurfaces` for `desktop-top-menu`, `desktop-dropdown`, `desktop-left-inspector`, `landscape-root-drawer`, `landscape-right-submenu`, and `gamepad-slide-out` so portrait stays bottom-first and does not inherit desktop, landscape, or controller chrome.
 - Shared portrait menu-spec contracts place root menus on the `bottom-rail` and both submenus and settings on the `bottom-sheet`. Top portrait regions are persistent context/status only, not default settings command surfaces.
+- Exit belongs only in the File menu, never as a duplicate portrait root rail button.
 - Shared portrait root menus must stay within `PORTRAIT_ROOT_MAX_ITEMS` bottom items; editors consolidate extra workflows into submenus instead of expanding the root rail.
 - Shared portrait action rails must build from `STANDARD_EDITOR_ACTION_RAIL_PREFIX` via `getStandardEditorActionRailIds()`, keeping Menu, Undo, Redo, and one contextual editor command in a consistent four-slot bottom rail.
 - Portrait editor buttons must use the shared RTG Studio chrome primitive for canvas editors and the matching DOM helper for DOM editors so radius, accent strip, gradient fill, text color, and focus outline stay identical across Pixel, Tile, Level, Actor, MIDI, SFX, Cutscene, Race, Car, and Doodad.
@@ -146,6 +147,7 @@ Editors should consume only shared color tokens:
 - The menu scales from the gameplay `960x540` reference viewport into the active playtest screen without enlarging beyond the reference metrics.
 - Race and Car may retain editor-specific pause rows and submenus, but their pointer targets are registration-only. Shared editor button chrome must not be painted inside an in-game pause menu.
 - Car Editor Art category selection must use the shared mode command surface: desktop dropdown, portrait bottom sheet, landscape right drawer, or gamepad slide-out. Exterior, Interior, and Camera Settings must not bypass that shared submenu with an editor-specific direct jump.
+- Car Editor Exterior uses shared registered buttons for 45° left/right view changes across all four exterior components. The view label names the angle and its position among eight views; assigning or resetting artwork, size, position, or visibility affects only the current component and view. Switching views restores that view’s controls. Compact slider columns must not overlap the component tabs.
 
 ## 6) Shared Component Responsibilities
 

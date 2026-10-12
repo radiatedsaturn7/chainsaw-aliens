@@ -1974,7 +1974,7 @@ test('shared file menu specs include the actions used by editor surfaces', () =>
   assert.deepEqual(getEditorMenuSection('sfx', 'edit').actions, ['undo', 'redo', 'copy', 'cut', 'paste', 'delete']);
   assert.deepEqual(getEditorMenuSection('cutscene', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('cutscene', 'edit').actions, ['undo', 'redo', 'copy', 'cut', 'paste', 'delete']);
-  assert.deepEqual(getEditorMenuSection('race', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'generate-random-race', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('race', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'race-from-image', 'generate-random-race', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('race', 'edit').actions, ['undo', 'redo', 'copy-segment', 'paste-segment', 'delete-segment']);
   assert.deepEqual(getEditorMenuSection('car', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('car', 'edit').actions, ['undo', 'redo']);
@@ -2024,7 +2024,7 @@ test('shared file menu specs include the actions used by editor surfaces', () =>
   assert.deepEqual(actorDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
 
   const raceDropdown = buildDesktopDropdownPlan('race', 'file');
-  assert.deepEqual(raceDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'generate-random-race', 'exit-main']);
+  assert.deepEqual(raceDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'race-from-image', 'generate-random-race', 'exit-main']);
   const raceEditDropdown = buildDesktopDropdownPlan('race', 'edit');
   assert.deepEqual(raceEditDropdown.items.map((item) => item.id), ['undo', 'redo', 'copy-segment', 'paste-segment', 'delete-segment']);
 

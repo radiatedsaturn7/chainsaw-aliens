@@ -1,3 +1,4 @@
+import TireEditor from '../ui/TireEditor.js';
 import Input from './Input.js';
 import StateManager from './state/StateManager.js';
 import TitleState from './state/states/TitleState.js';
@@ -420,6 +421,7 @@ export default class Game {
     this.raceEditor = new RaceEditor(this, { mode: 'race' });
     this.carEditor = new RaceEditor(this, { mode: 'car' });
     this.doodadEditor = new DoodadEditor(this);
+    this.tireEditor = new TireEditor(this);
     this.cutscenePlayer = new CutscenePlayer(this);
     this.editorStateTargetKeys = {
       editor: 'editor',
@@ -430,6 +432,7 @@ export default class Game {
       'cutscene-editor': 'cutsceneEditor',
       'race-editor': 'raceEditor',
       'car-editor': 'carEditor',
+      'tire-editor': 'tireEditor',
       'doodad-editor': 'doodadEditor'
     };
     this.editorStateDrawArgs = {
@@ -441,6 +444,7 @@ export default class Game {
       'cutscene-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'race-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'car-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'tire-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'doodad-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height]
     };
     this.editorStateKeys = new Set(Object.keys(this.editorStateTargetKeys));
@@ -865,6 +869,8 @@ export default class Game {
         this.enterActorEditor();
       } else if (action === 'race-editor') {
         this.enterRaceEditor();
+      } else if (action === 'tire-editor') {
+        this.enterTireEditor();
       } else if (action === 'car-editor') {
         this.enterCarEditor();
       } else if (action === 'doodad-editor') {
@@ -2094,6 +2100,17 @@ export default class Game {
     this.playtestActive = false;
   }
 
+  enterTireEditor() {
+    this.tireEditorReturnState = this.state === 'car-editor' ? 'car-editor' : 'title';
+    this.transitionTo('tire-editor');
+    this.setRevAudio(false);
+    this.playtestActive = false;
+  }
+
+  exitTireEditor() {
+    this.transitionTo(this.tireEditorReturnState || 'title', {forceCleanup:true});
+  }
+
   enterDoodadEditor() {
     this.transitionTo('doodad-editor');
     this.setRevAudio(false);
@@ -3320,6 +3337,8 @@ export default class Game {
         this.exitSfxEditor();
       } else if (this.state === 'cutscene-editor') {
         this.exitCutsceneEditor();
+      } else if (this.state === 'tire-editor') {
+        this.exitTireEditor();
       } else if (this.state === 'race-editor' || this.state === 'car-editor') {
         this.exitRaceEditor();
       } else if (this.playtestActive && this.state === 'playing') {
@@ -3398,9 +3417,10 @@ export default class Game {
       return;
     }
 
-    if (this.state === 'race-editor' || this.state === 'car-editor' || this.state === 'doodad-editor') {
+    if (this.state === 'race-editor' || this.state === 'car-editor' || this.state === 'doodad-editor' || this.state === 'tire-editor') {
       if (this.input.wasPressed('cancel')) {
-        if (this.state === 'doodad-editor') this.exitDoodadEditor();
+        if (this.state === 'tire-editor') this.exitTireEditor();
+        else if (this.state === 'doodad-editor') this.exitDoodadEditor();
         else this.exitRaceEditor();
         this.input.flush();
         return;
@@ -3409,7 +3429,7 @@ export default class Game {
         ? this.raceEditor
         : this.state === 'car-editor'
           ? this.carEditor
-          : this.doodadEditor;
+          : this.state === 'tire-editor' ? this.tireEditor : this.doodadEditor;
       target.update(this.input, dt);
       this.input.flush();
       return;
@@ -11180,6 +11200,7 @@ export default class Game {
     this.stateManager.register('cutscene-editor', createDelegatedState(this, 'cutsceneEditor'));
     this.stateManager.register('race-editor', createDelegatedState(this, 'raceEditor'));
     this.stateManager.register('car-editor', createDelegatedState(this, 'carEditor'));
+    this.stateManager.register('tire-editor', createDelegatedState(this, 'tireEditor'));
     this.stateManager.register('doodad-editor', createDelegatedState(this, 'doodadEditor'));
     this.stateManager.register('robtersession', new RobterSessionState(this));
   }

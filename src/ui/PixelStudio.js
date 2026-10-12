@@ -12231,6 +12231,27 @@ export default class PixelStudio {
     });
   }
 
+  getImageInfoMessage() {
+    const { width, height, layers } = this.canvasState;
+    return [
+      `Name: ${this.currentDocumentRef?.name || 'Untitled'}`,
+      `Width: ${width} pixels`,
+      `Height: ${height} pixels`,
+      `Total pixels per frame: ${width * height}`,
+      `Layers (current frame): ${layers.length}`,
+      `Animation frames: ${this.animation.frames.length}`
+    ].join('\n');
+  }
+
+  showImageInfo() {
+    return openChoiceOverlay({
+      title: 'Image Info',
+      message: this.getImageInfoMessage(),
+      choices: [],
+      cancelText: 'Close'
+    });
+  }
+
   getFilePanelItems() {
     return buildSharedEditorFileMenu({
       labels: {
@@ -12249,6 +12270,7 @@ export default class PixelStudio {
       },
       includeFooter: false,
       extras: [
+        { id: 'info', label: 'Info', onClick: () => this.showImageInfo() },
         { divider: true },
         ...(this.decalEditSession
           ? (this.decalEditSession.type === 'actor-state'

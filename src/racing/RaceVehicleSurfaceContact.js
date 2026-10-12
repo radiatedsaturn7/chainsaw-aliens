@@ -89,6 +89,7 @@ export function getRaceWheelSurfaceState({
       surfaceId: surface.id,
       baseSurfaceId,
       snowDepthInches,
+      material: localTrackState?.cell || null,
       weather: localTrackState ? 'clear' : weatherState?.id,
       damage,
       terrainGripScale

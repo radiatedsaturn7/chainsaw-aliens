@@ -399,7 +399,7 @@ export default class AudioSystem {
     const settings = sfx?.settings || {};
     const frameEnvelopes = normalizeSfxEnvelopes(frame);
     const pitchRand = ((Math.random() * 2 - 1) * Number(settings.pitchVarianceCents || 0)) / 1200;
-    const pitchBase = pitchRand + Number(pitchCents || 0) / 1200;
+    let pitchBase = pitchRand + Number(pitchCents || 0) / 1200;
     const volumeRand = 1 - Math.random() * clamp(Number(settings.volumeVariance || 0), 0, 1);
     const master = this.ctx.createGain();
     master.gain.value = clamp(Number(settings.baseVolume ?? 1) * Number(volume ?? 1) * volumeRand, 0, 3);
@@ -417,35 +417,7 @@ export default class AudioSystem {
       : (frame.wavDataUrl ? [{ ...frame, id: `${frame.id || 'legacy'}:layer`, volume: 1, muted: false }] : []);
     const layers = frameLayers.filter((layer) => layer?.wavDataUrl && !layer.muted);
     const scheduled = [];
-    for (const layer of layers) {
-      const buffer = await this.decodeSfxLayer(layer);
-      if (!buffer) continue;
-      const source = this.ctx.createBufferSource();
-      const gain = this.ctx.createGain();
-      const layerPan = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
-      source.buffer = buffer;
-      source.loop = Boolean(loop || settings.loop);
-      if (source.loop && frame.loopEnd > frame.loopStart) {
-        source.loopStart = clamp(frame.loopStart, 0, buffer.duration);
-        source.loopEnd = clamp(frame.loopEnd, source.loopStart + 0.01, buffer.duration);
-      }
-      gain.gain.value = clamp(Number(layer.volume ?? 1), 0, 2);
-      source.connect(gain);
-      if (layerPan) {
-        layerPan.pan.value = clamp(Number(layer.pan || 0), -1, 1);
-        gain.connect(layerPan);
-        layerPan.connect(master);
-      } else {
-        gain.connect(master);
-      }
-      sources.push(source);
-      scheduled.push({ source, gain, layerPan, layer, buffer, envelopes: layer.envelopes ? normalizeSfxEnvelopes(layer) : frameEnvelopes });
-    }
-    if (!sources.length) {
-      try { master.disconnect(); } catch (_error) {}
-      try { panNode?.disconnect?.(); } catch (_error) {}
-      return null;
-    }
+    let stopped = false;
     const handle = {
       id,
       master,
@@ -460,10 +432,10 @@ export default class AudioSystem {
         }
       },
       setPitchCents: (nextPitchCents = 0) => {
-        const nextPitchBase = pitchRand + Number(nextPitchCents || 0) / 1200;
+        pitchBase = pitchRand + Number(nextPitchCents || 0) / 1200;
         const now = this.ctx.currentTime;
         scheduled.forEach(({ source }) => {
-          const nextRate = 2 ** nextPitchBase;
+          const nextRate = 2 ** pitchBase;
           source.playbackRate?.cancelScheduledValues?.(now);
           if (source.playbackRate?.setTargetAtTime) {
             source.playbackRate.setTargetAtTime(nextRate, now, 0.035);
@@ -473,6 +445,7 @@ export default class AudioSystem {
         });
       },
       stop: () => {
+        stopped = true;
         sources.forEach((source) => {
           try { source.stop(); } catch (_error) {}
           try { source.disconnect(); } catch (_error) {}
@@ -485,29 +458,65 @@ export default class AudioSystem {
       this.stopSfx(id);
       this.activeSfxSources.set(id, handle);
     }
-    let remaining = sources.length;
-    const startAt = this.ctx.currentTime + 0.005;
-    scheduled.forEach(({ source, gain, layerPan, layer, buffer, envelopes }) => {
-      const layerStart = startAt + Math.max(0, Number(layer.startTime || 0));
-      const playbackDuration = getEffectiveSfxLayerPlaybackDuration({ ...layer, duration: buffer.duration }, envelopes.pitch, pitchBase) || buffer.duration;
-      scheduleSfxEnvelopeParam(source.playbackRate, 'pitch', envelopes.pitch, layerStart, playbackDuration, (value) => 2 ** (pitchBase + value / 1200));
-      scheduleSfxEnvelopeParam(gain.gain, 'volume', envelopes.volume, layerStart, playbackDuration, (value) => clamp(Number(layer.volume ?? 1) * value, 0, 3));
-      if (layerPan) {
-        scheduleSfxEnvelopeParam(layerPan.pan, 'pan', envelopes.pan, layerStart, playbackDuration, (value) => clamp(Number(layer.pan || 0) + value, -1, 1));
-      }
-    });
-    scheduled.forEach(({ source, layer }) => {
-      source.onended = () => {
-        remaining -= 1;
-        if (remaining <= 0) {
-          if (id && this.activeSfxSources.get(id) === handle) this.activeSfxSources.delete(id);
-          try { master.disconnect(); } catch (_error) {}
-          try { panNode?.disconnect?.(); } catch (_error) {}
+    try {
+      for (const layer of layers) {
+        const buffer = await this.decodeSfxLayer(layer);
+        if (stopped) return null;
+        if (!buffer) continue;
+        const source = this.ctx.createBufferSource();
+        const gain = this.ctx.createGain();
+        const layerPan = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
+        source.buffer = buffer;
+        source.loop = Boolean(loop || settings.loop);
+        if (source.loop && frame.loopEnd > frame.loopStart) {
+          source.loopStart = clamp(frame.loopStart, 0, buffer.duration);
+          source.loopEnd = clamp(frame.loopEnd, source.loopStart + 0.01, buffer.duration);
         }
-      };
-      source.start(startAt + Math.max(0, Number(layer?.startTime || 0)));
-    });
-    return handle;
+        gain.gain.value = clamp(Number(layer.volume ?? 1), 0, 2);
+        source.connect(gain);
+        if (layerPan) {
+          layerPan.pan.value = clamp(Number(layer.pan || 0), -1, 1);
+          gain.connect(layerPan);
+          layerPan.connect(master);
+        } else {
+          gain.connect(master);
+        }
+        sources.push(source);
+        scheduled.push({ source, gain, layerPan, layer, buffer, envelopes: layer.envelopes ? normalizeSfxEnvelopes(layer) : frameEnvelopes });
+      }
+      if (!sources.length) {
+        handle.stop();
+        if (id && this.activeSfxSources.get(id) === handle) this.activeSfxSources.delete(id);
+        return null;
+      }
+      let remaining = sources.length;
+      const startAt = this.ctx.currentTime + 0.005;
+      scheduled.forEach(({ source, gain, layerPan, layer, buffer, envelopes }) => {
+        const layerStart = startAt + Math.max(0, Number(layer.startTime || 0));
+        const playbackDuration = getEffectiveSfxLayerPlaybackDuration({ ...layer, duration: buffer.duration }, envelopes.pitch, pitchBase) || buffer.duration;
+        scheduleSfxEnvelopeParam(source.playbackRate, 'pitch', envelopes.pitch, layerStart, playbackDuration, (value) => 2 ** (pitchBase + value / 1200));
+        scheduleSfxEnvelopeParam(gain.gain, 'volume', envelopes.volume, layerStart, playbackDuration, (value) => clamp(Number(layer.volume ?? 1) * value, 0, 3));
+        if (layerPan) {
+          scheduleSfxEnvelopeParam(layerPan.pan, 'pan', envelopes.pan, layerStart, playbackDuration, (value) => clamp(Number(layer.pan || 0) + value, -1, 1));
+        }
+      });
+      scheduled.forEach(({ source, layer }) => {
+        source.onended = () => {
+          remaining -= 1;
+          if (remaining <= 0) {
+            if (id && this.activeSfxSources.get(id) === handle) this.activeSfxSources.delete(id);
+            try { master.disconnect(); } catch (_error) {}
+            try { panNode?.disconnect?.(); } catch (_error) {}
+          }
+        };
+        source.start(startAt + Math.max(0, Number(layer?.startTime || 0)));
+      });
+      return handle;
+    } catch (error) {
+      handle.stop();
+      if (id && this.activeSfxSources.get(id) === handle) this.activeSfxSources.delete(id);
+      throw error;
+    }
   }
 
   stopSfx(id = '') {

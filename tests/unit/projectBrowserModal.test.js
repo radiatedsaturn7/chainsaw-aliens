@@ -194,3 +194,101 @@ test('project browser folder view exposes shared sort controls', () => {
   assert.equal(source.includes("state.sortBy = 'modified';"), true);
   assert.equal(source.includes("state.sortBy = 'name';"), true);
 });
+
+function createBrowserDocument() {
+  class Element {
+    constructor(tag) {
+      this.tagName = tag;
+      this.children = [];
+      this.style = {};
+      this.dataset = {};
+      this.listeners = {};
+      this.classList = { toggle() {} };
+    }
+    get isConnected() { return this === documentRef.body || Boolean(this.parent?.isConnected); }
+    set innerHTML(value) {
+      this.children.forEach((child) => { child.parent = null; });
+      this.children = [];
+    }
+    appendChild(child) { child.parent = this; this.children.push(child); return child; }
+    remove() {
+      this.parent.children = this.parent.children.filter((child) => child !== this);
+      this.parent = null;
+    }
+    addEventListener(event, callback) { this.listeners[event] = callback; }
+    setAttribute() {}
+    focus() {}
+    getContext() {
+      return {
+        createImageData: (w, h) => ({ data: new Uint8ClampedArray(w * h * 4) }),
+        putImageData() {}
+      };
+    }
+    toDataURL() { return 'data:image/png;base64,thumbnail'; }
+  }
+  const documentRef = {
+    body: new Element('body'),
+    createElement: (tag) => new Element(tag),
+    getElementById: (id) => all().find((element) => element.id === id)
+  };
+  function all(node = documentRef.body) { return [node, ...node.children.flatMap((child) => all(child))]; }
+  return { documentRef, all };
+}
+
+for (const refreshDuring of ['delay', 'request']) {
+  test(`Open dialog thumbnails survive row refresh during preview ${refreshDuring}`, { timeout: 3000 }, async () => {
+    const { openProjectBrowser } = await import('../../src/ui/ProjectBrowserModal.js');
+    resetProjectFilesForTests();
+    const originalDocument = globalThis.document;
+    const originalFetch = globalThis.fetch;
+    const { documentRef, all } = createBrowserDocument();
+    globalThis.document = documentRef;
+    let releaseIndex;
+    let releaseArt;
+    let markRequested;
+    const requested = new Promise((resolve) => { markRequested = resolve; });
+    const index = new Promise((resolve) => { releaseIndex = resolve; });
+    const art = new Promise((resolve) => { releaseArt = resolve; });
+    let requests = 0;
+    globalThis.fetch = async (url) => {
+      if (String(url).includes('/__storage/index')) {
+        await index;
+        return { ok: true, json: async () => ({ ok: true, index: { art: { Tree: { updatedAt: 1, size: 1 } } } }) };
+      }
+      requests += 1;
+      markRequested();
+      await art;
+      return { ok: true, json: async () => ({ ok: true, file: {
+        version: 1, folder: 'art', name: 'Tree', savedAt: 2,
+        data: { width: 1, height: 1, frames: [['#00ff00ff']] }
+      } }) };
+    };
+    // Prime only the index, so the dialog must hydrate the thumbnail itself.
+    releaseIndex();
+    await hydrateServerStorage({ folder: 'art' });
+    try {
+      const opened = openProjectBrowser({ fixedFolder: 'art' });
+      const firstPreview = all().find((element) => element.className === 'project-browser-art-preview');
+      if (refreshDuring === 'request') await requested;
+      all().find((element) => element.textContent === 'Name').listeners.click();
+      const currentPreview = all().find((element) => element.className === 'project-browser-art-preview');
+      assert.notEqual(currentPreview, firstPreview);
+      assert.equal(firstPreview.isConnected, false);
+      releaseArt();
+      // Allow the deferred preview and its fetch continuation to finish.
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      const images = all().filter((element) => element.className === 'project-browser-art-preview-image');
+      assert.equal(images.length, 1);
+      assert.equal(images[0].src, 'data:image/png;base64,thumbnail');
+      assert.equal(requests, 1, 'refresh reuses the pending hydration');
+      all().find((element) => element.className === 'project-browser-close').listeners.click();
+      await opened;
+    } finally {
+      all().find((element) => element.className === 'project-browser-close')?.listeners.click();
+      releaseArt();
+      globalThis.document = originalDocument;
+      globalThis.fetch = originalFetch;
+      resetProjectFilesForTests();
+    }
+  });
+}

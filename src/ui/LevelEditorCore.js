@@ -157,10 +157,7 @@ const SHAPE_TOOLS = [
   { id: 'hollow', label: 'Hollow Rectangle', short: 'HOLL' },
   { id: 'line', label: 'Line', short: 'LINE' },
   { id: 'stair', label: 'Stair Generator', short: 'ST' },
-  { id: 'triangle', label: 'Triangle Fill', short: 'TRI' },
-  { id: 'triangle-1x1', label: 'Triangle Block 1x1', short: 'T1' },
-  { id: 'triangle-2x1', label: 'Triangle Block 2x1', short: 'T2W' },
-  { id: 'triangle-1x2', label: 'Triangle Block 1x2', short: 'T2H' }
+  { id: 'triangle', label: 'Triangle Fill', short: 'TRI' }
 ];
 
 const PREFAB_TYPES = [
@@ -336,8 +333,8 @@ const EDITOR_GAMEPAD_BINDINGS = {
   ...SHARED_EDITOR_GAMEPAD_BINDINGS
 };
 
-const LEVEL_PORTRAIT_ASSET_TABS = ['tiles', 'pixels', 'npcs', 'triggers', 'powerups', 'prefabs', 'music', 'graphics'];
-const LEVEL_PORTRAIT_SETTINGS_TABS = ['level-settings', 'midi'];
+const LEVEL_PORTRAIT_ASSET_TABS = ['tiles', 'npcs', 'triggers', 'powerups', 'music', 'graphics'];
+const LEVEL_PORTRAIT_SETTINGS_TABS = ['level-settings', 'midi', 'pixels'];
 const LEVEL_LANDSCAPE_BOTTOM_RAIL_HEIGHT = 72;
 const LEVEL_CONTROLLER_ROOT_ENTRIES = getEditorControllerRootMenuEntries('level');
 const LEVEL_CONTROLLER_ROOTS = getEditorControllerRootMenuIds('level');
@@ -367,18 +364,17 @@ export function buildLevelPortraitMenuModel() {
     }),
     assetTabs: [
       { id: 'tiles', label: 'Tiles' },
-      { id: 'pixels', label: 'Tile Art' },
       { id: 'npcs', label: 'NPCs' },
       { id: 'triggers', label: 'Triggers' },
       { id: 'powerups', label: 'Powerups' },
-      { id: 'prefabs', label: 'Structures' },
       { id: 'music', label: 'Music' },
       { id: 'graphics', label: 'Decals' }
     ],
-    settingsTabs: [
-      { id: 'level-settings', label: 'Level' },
-      { id: 'midi', label: 'MIDI' }
+    toolTabs: [
+      { id: 'toolbox', label: 'Draw' },
+      { id: 'prefabs', label: 'Structures' }
     ],
+    settingsTabs: [{ id: 'pixels', label: 'Tile Art' }],
     bottomRailActions: getStandardEditorActionRailIds('playtest'),
     portraitRootPlacement: 'bottom-rail'
   };
@@ -895,6 +891,44 @@ export default class Editor {
     if (!Number.isFinite(this.camera.y)) this.camera.y = 0;
   }
 
+  getPortraitLayout(width, height) {
+    const layout = getSharedMobilePortraitEditorLayout(width, height, {
+      middleRailHeight: 88,
+      minTopHeight: 230,
+      minMainHeight: 220
+    });
+    const hotBar = !this.drawer.open && this.buildContextRibbonActions().length ? {
+      x: layout.workSurface.x + 8,
+      y: Math.max(layout.workSurface.y, layout.actionRail.y - layout.gap - 46),
+      w: Math.max(1, layout.workSurface.w - 16),
+      h: 46
+    } : null;
+    // Zoom sits north of the contextual hot bar and the persistent action rail.
+    const zoomStrip = this.drawer.open ? null : {
+      x: layout.workSurface.x,
+      y: Math.max(layout.workSurface.y, (hotBar?.y ?? layout.actionRail.y) - layout.gap - 38),
+      w: layout.workSurface.w,
+      h: 38
+    };
+    const workSurface = zoomStrip ? {
+      ...layout.workSurface,
+      h: Math.max(1, zoomStrip.y - layout.gap - layout.workSurface.y)
+    } : layout.workSurface;
+    return { ...layout, hotBar, zoomStrip, workSurface, mainEditor: workSurface };
+  }
+
+  updatePortraitZoomBounds(layout) {
+    const strip = layout.zoomStrip;
+    this.zoomSlider.bounds = strip
+      ? { x: strip.x + 18, y: strip.y, w: Math.max(1, strip.w - 36), h: strip.h }
+      : { x: 0, y: 0, w: 0, h: 0 };
+    if (!strip) {
+      this.zoomSlider.playZoomBounds = { x: 0, y: 0, w: 0, h: 0 };
+      this.zoomSlider.active = false;
+      this.zoomSlider.id = null;
+    }
+  }
+
   updateLayoutBounds(
     width = this.game?.viewport?.width || this.game.canvas?.width || 0,
     height = this.game?.viewport?.height || this.game.canvas?.height || 0
@@ -907,11 +941,7 @@ export default class Editor {
     this.activeViewportMode = viewportMode.mode;
     if (viewportMode.isMobileViewport) {
       const portraitLayout = viewportMode.isMobilePortrait
-        ? getSharedMobilePortraitEditorLayout(width, height, {
-          middleRailHeight: 88,
-          minTopHeight: 230,
-          minMainHeight: 220
-        })
+        ? this.getPortraitLayout(width, height)
         : null;
       const gamepadMenuState = !portraitLayout ? this.getGamepadMenuState(width, height)
         : null;
@@ -922,10 +952,7 @@ export default class Editor {
         this.panJoystick.center = railLayout.thumbstickCenter;
         this.panJoystick.radius = railLayout.thumbstickRadius;
         this.panJoystick.knobRadius = railLayout.knobRadius;
-        this.zoomSlider.bounds = { x: 0, y: 0, w: 0, h: 0 };
-        this.zoomSlider.playZoomBounds = { x: 0, y: 0, w: 0, h: 0 };
-        this.zoomSlider.active = false;
-        this.zoomSlider.id = null;
+        this.updatePortraitZoomBounds(portraitLayout);
       } else {
         const landscapeLayout = buildLandscapeTouchEditorShellPlan('level', {
           viewportWidth: width,
@@ -8805,11 +8832,7 @@ export default class Editor {
     this.activeSpecModeContract = viewportMode.specModeContract;
     this.activeViewportMode = viewportMode.mode;
     const portraitLayout = viewportMode.isMobilePortrait
-      ? getSharedMobilePortraitEditorLayout(width, height, {
-        middleRailHeight: 88,
-        minTopHeight: 230,
-        minMainHeight: 220
-      })
+      ? this.getPortraitLayout(width, height)
       : null;
 
     if (portraitLayout) {
@@ -8820,10 +8843,10 @@ export default class Editor {
       this.panJoystick.center = joystickCenter;
       this.panJoystick.radius = joystickRadius;
       this.panJoystick.knobRadius = knobRadius;
-      this.zoomSlider.bounds = { x: 0, y: 0, w: 0, h: 0 };
-      this.zoomSlider.playZoomBounds = { x: 0, y: 0, w: 0, h: 0 };
-      this.zoomSlider.active = false;
-      this.zoomSlider.id = null;
+      this.updatePortraitZoomBounds(portraitLayout);
+      sliderX = this.zoomSlider.bounds.x;
+      sliderY = this.zoomSlider.bounds.y + 14;
+      sliderWidth = this.zoomSlider.bounds.w;
     } else if (viewportMode.isMobileViewport) {
       const joystickLayout = getSharedThumbstickLayout(width, height, { controlMargin });
       joystickRadius = joystickLayout.radius;
@@ -8932,7 +8955,7 @@ export default class Editor {
       const tabs = portraitLayout ? buildLevelPortraitMenuModel().rootTabs : buildLevelMobileLandscapeRootTabs();
 
       const activeTab = this.getActivePanelTab();
-      const portraitRootId = activeTab === 'toolbox'
+      const portraitRootId = ['toolbox', 'prefabs'].includes(activeTab)
         ? 'tools'
         : LEVEL_PORTRAIT_ASSET_TABS.includes(activeTab)
           ? 'assets'
@@ -9131,10 +9154,12 @@ export default class Editor {
           contentY = baseContentY;
         }
         if (!rootDrawerOpen || landscapeSubmenuDrawer) {
-        const portraitSubmenuTabs = portraitLayout && ['assets', 'settings'].includes(portraitRootId)
+        const portraitSubmenuTabs = portraitLayout && ['assets', 'tools', 'settings'].includes(portraitRootId)
           ? (portraitRootId === 'assets'
               ? buildLevelPortraitMenuModel().assetTabs
-              : buildLevelPortraitMenuModel().settingsTabs)
+              : portraitRootId === 'tools'
+                ? buildLevelPortraitMenuModel().toolTabs
+                : buildLevelPortraitMenuModel().settingsTabs)
           : [];
         const portraitSubmenuChipH = UI_SUITE.spacing.tap;
         const portraitSubmenuChipGap = SHARED_EDITOR_LEFT_MENU.buttonGap;
@@ -9195,7 +9220,7 @@ export default class Editor {
               }
             },
             { id: 'random-level', label: 'Random Level', active: false, tooltip: 'Create a random level layout', onClick: () => this.promptRandomLevel() },
-            { id: 'midi', label: 'MIDI', active: false, tooltip: 'Open the level MIDI editor', onClick: () => this.setPanelTab('midi') }
+            ...(!portraitLayout ? [{ id: 'midi', label: 'MIDI', active: false, tooltip: 'Open the level MIDI editor', onClick: () => this.setPanelTab('midi') }] : [])
           ];
           columns = portraitLayout ? 2 : 1;
         } else if (activeTab === 'tiles') {
@@ -9551,37 +9576,8 @@ export default class Editor {
           border: UI_SUITE.colors.border
         });
 
-        const helperLines = portraitLayout && activeTab === 'music'
-          ? [
-            this.musicTool === 'trigger'
-              ? 'Music Trigger: tap a room to start this song there.'
-              : this.musicTool === 'erase'
-                ? 'Zone Erase: drag across music zones to remove them.'
-                : 'Zone Paint: choose a track, then drag a music area.'
-          ]
-          : portraitLayout && activeTab === 'triggers'
-            ? ['Triggers: Draw Trigger Zone, then drag a rectangle on the map.']
-            : [];
-        const helperH = helperLines.length ? helperLines.length * 16 + 14 : 0;
-        if (helperLines.length) {
-          ctx.save();
-          drawSharedPanel(ctx, { x: contentX + 8, y: contentY + 8, w: contentW - 16, h: helperH }, {
-            fill: UI_SUITE.colors.panel,
-            border: UI_SUITE.colors.border
-          });
-          ctx.fillStyle = UI_SUITE.colors.text;
-          ctx.font = `11px ${UI_SUITE.font.family}`;
-          ctx.textAlign = 'left';
-          ctx.textBaseline = 'top';
-          helperLines.forEach((line, index) => {
-            ctx.fillText(line, contentX + 16, contentY + 15 + index * 16);
-          });
-          ctx.restore();
-        }
-
-        const fileHeaderOffset = helperH ? helperH + 14 : 0;
-        const listY = contentY + fileHeaderOffset;
-        const listH = Math.max(0, contentHeight - fileHeaderOffset);
+        const listY = contentY;
+        const listH = contentHeight;
         if (activeTab === 'file') {
           const stickyExit = this.activeViewportMode !== 'desktop';
           const { listItems: fileItems, exitItem } = stickyExit
@@ -10952,10 +10948,10 @@ export default class Editor {
       ctx.restore();
     }
 
-    const hasLandscapeZoomRail = this.zoomSlider.bounds
+    const hasMobileZoomRail = this.zoomSlider.bounds
       && this.zoomSlider.bounds.w > 0
       && this.zoomSlider.bounds.h > 0;
-    if (this.activeViewportMode !== 'desktop' && !portraitLayout && hasLandscapeZoomRail) {
+    if (this.activeViewportMode !== 'desktop' && hasMobileZoomRail) {
       const suppressLandscapeThumbstick = this.drawer.open || !canRenderEditorSurface(this.activeViewportMode, 'touch-thumbstick');
       const zoomT = this.zoomToSliderT(this.zoom);
       const sliderCenterY = sliderY + sliderHeight / 2;
@@ -10985,10 +10981,12 @@ export default class Editor {
       };
       ctx.restore();
 
-      if (suppressLandscapeThumbstick) {
-        resetSharedThumbstickState(this.panJoystick);
-      } else {
-        drawSharedThumbstick(ctx, this.panJoystick);
+      if (!portraitLayout) {
+        if (suppressLandscapeThumbstick) {
+          resetSharedThumbstickState(this.panJoystick);
+        } else {
+          drawSharedThumbstick(ctx, this.panJoystick);
+        }
       }
     } else if (this.activeViewportMode !== 'desktop' && !portraitLayout) {
       resetSharedThumbstickState(this.panJoystick);
@@ -11203,7 +11201,7 @@ export default class Editor {
       const ribbonActions = this.buildContextRibbonActions();
       if (ribbonActions.length) {
         const ribbonH = 46;
-        const ribbonBounds = {
+        const ribbonBounds = portraitLayout?.hotBar || {
           x: this.editorBounds.x + 8,
           y: Math.max(this.editorBounds.y + 8, this.editorBounds.y + this.editorBounds.h - ribbonH - 8),
           w: Math.max(1, this.editorBounds.w - 16),
@@ -11219,7 +11217,7 @@ export default class Editor {
     }
 
     const enemyInfo = this.enemyType?.description;
-    const showEnemyInfo = enemyInfo && (this.getActivePanelTab() === 'npcs' || this.mode === 'enemy');
+    const showEnemyInfo = !portraitLayout && enemyInfo && (this.getActivePanelTab() === 'npcs' || this.mode === 'enemy');
     if (showEnemyInfo) {
       ctx.save();
       const boxWidth = isTouchViewportMode

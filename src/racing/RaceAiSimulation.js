@@ -1,3 +1,4 @@
+import { planRaceAiDriving } from './RaceAiDriving.js';
 import { RACE_PEDAL_INPUT, RACE_THREE_ELEVATION_M } from './simulation/RaceSimulationConfig.js';
 import { RACE_WHEEL_IDS, clamp } from './simulation/SimulationMath.js';
 import { getSurfaceById } from './raceData.js';
@@ -128,7 +129,7 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
     ai.tireConfigByWheel = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
       wheelId,
       {
-        compound: editor.getRaceTireCompound(tireSetup.tireCompoundByWheel[wheelId]),
+        compound: editor.getRaceTireCompound(tireSetup.tireCompoundByWheel[wheelId], car),
         widthMm: tireSetup.tireSize?.widthMm,
         aspectRatio: tireSetup.tireSize?.aspectRatio,
         wheelDiameterIn: tireSetup.tireSize?.wheelDiameterIn,
@@ -272,18 +273,12 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
       targetVelocityWorld
     };
   };
-  const curve = Number(contactState.pose?.segment?.curve || 0);
-  const normalizedSteering = -clamp(curve * 18, -1, 1);
-  const physicalCenterSteeringAngle = editor.getRaceResolvedCenterSteeringAngle(
-    normalizedSteering,
-    Math.abs(Number(runner.state.speedMps || ai.speedMps || 0)),
-    {
-      wheelbaseM: tuning.wheelbaseM,
-      availableLateralG: clamp(Number(contactState.averageSurfaceGrip || 1) * 0.95, 0.18, 1.08),
-      handlingPreset: 'sport',
-      maxPhysicalAngleRad: runner.config.maxSteerAngleRad
-    }
-  );
+  const drivingPlan = ai.drivingPlan || planRaceAiDriving(editor, ai, tuning, {
+    grip: contactState.averageSurfaceGrip,
+    profile: editor.getRaceAiDifficultyProfile(ai.difficulty)
+  });
+  const physicalCenterSteeringAngle = drivingPlan.steeringAngleRad;
+  const normalizedSteering = clamp(physicalCenterSteeringAngle / runner.config.maxSteerAngleRad, -1, 1);
   const physicsInput = {
     steering: normalizedSteering,
     centerSteeringAngleRad: physicalCenterSteeringAngle,
@@ -403,6 +398,7 @@ export function getRaceAiLongitudinalPhysicsStep(editor, ai = {}, {
           ?? contacts.contacts?.snowDepthByWheel?.[wheelId]
           ?? weatherState.snowDepthInches,
         weather: weatherState.id,
+        material: contact.trackState?.cell || null,
         damage: aiDamage,
         terrainGripScale: contact.terrainGripScale || 1,
         temperatureF: ai.tireTemperature[wheelId]
@@ -741,7 +737,7 @@ export function getRaceAiLongitudinalPhysicsStep(editor, ai = {}, {
     ) * Number(aiWheelContactScaleByWheel[wheelId] || 0)
   ]));
   const tirePressureDynamicsByWheel = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
-    const compound = editor.getRaceTireCompound(setup.tireCompoundByWheel[wheelId]);
+    const compound = editor.getRaceTireCompound(setup.tireCompoundByWheel[wheelId], car);
     const surfaceId = wheelContacts[wheelId]?.surface || wheelContacts[wheelId]?.surfaceId || contacts.contacts?.surfaceByWheel?.[wheelId] || 'asphalt';
     return [wheelId, editor.getRaceTirePressureDynamics({
       pressurePsi: setup.tirePressurePsi[wheelId],
@@ -949,7 +945,13 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
         }
       });
       const projection = editor.getRaceRouteProjectionForWorldPoint({ x: ai.worldX, z: ai.worldZ });
-      if (stagedSpeedMps > 0) ai.distance = Number(projection.distance ?? ai.distance ?? 0);
+      if (stagedSpeedMps > 0) {
+        const previousDistance = ((Number(ai.projectedDistance ?? ai.distance ?? 0) % routeLength) + routeLength) % routeLength;
+        ai.distance = Number(projection.distance ?? ai.distance ?? 0);
+        if (isCircuit && previousDistance > routeLength * 0.8 && ai.distance < routeLength * 0.2) {
+          ai.awaitingStartLine = false;
+        }
+      }
       ai.projectedDistance = isCircuit
         ? ((ai.distance % routeLength) + routeLength) % routeLength
         : clamp(ai.distance, 0, routeLength);
@@ -1035,8 +1037,8 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
     ai.aeroAwareness = getRaceAiAeroAwareness(wakeState, { severity, speedMps: ai.speedMps, index });
     const { draftOpportunity, dirtyAirCornerPenalty, dirtyAirBrakingPenalty, crosswindRisk } = ai.aeroAwareness;
     const variance = Math.sin((Number(session.elapsedMs || 0) / 1000) * (0.45 + index * 0.04) + index) * profile.variance;
-    const targetMps = Math.max(
-      9,
+    const paceTargetMps = Math.max(
+      0,
       topSpeedLimitMps
         * profile.pace
         * Math.sqrt(predictiveGripScale)
@@ -1046,6 +1048,10 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
         * (1 - dirtyAirCornerPenalty * 0.32 - dirtyAirBrakingPenalty * 0.12 - crosswindRisk * 0.08)
         * (1 + variance)
     );
+    ai.drivingPlan = planRaceAiDriving(editor, ai, tuning, {
+      grip: predictiveGripScale, profile, topSpeedMps: paceTargetMps
+    });
+    const targetMps = ai.drivingPlan.targetSpeedMps;
     const previousSpeedMps = Number(ai.speedMps || 0);
     const previousProjectedDistance = Number(ai.projectedDistance ?? ai.distance ?? 0);
     const aiPhysics = editor.getRaceAiLongitudinalPhysicsStep(ai, {
@@ -1072,8 +1078,12 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
       if (previousProjectedDistance > routeLength * 0.8
         && ai.distance < routeLength * 0.2
         && Number(ai.speedMps || 0) > 0) {
-        ai.lap += 1;
-        if (!ai.bestLapMs || ai.currentLapMs < ai.bestLapMs) ai.bestLapMs = ai.currentLapMs;
+        if (ai.awaitingStartLine) {
+          ai.awaitingStartLine = false;
+        } else {
+          ai.lap += 1;
+          if (!ai.bestLapMs || ai.currentLapMs < ai.bestLapMs) ai.bestLapMs = ai.currentLapMs;
+        }
         ai.currentLapMs = 0;
       }
       ai.projectedDistance = ((ai.distance % routeLength) + routeLength) % routeLength;

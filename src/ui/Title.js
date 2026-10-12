@@ -26,6 +26,7 @@ export default class Title {
         'tile-editor',
         'race-editor',
         'car-editor',
+        'tire-editor',
         'doodad-editor',
         'actor-editor',
         'back'
@@ -490,6 +491,8 @@ export default class Title {
           ? 'Tile Editor'
           : action === 'race-editor'
             ? 'Race Editor'
+            : action === 'tire-editor'
+              ? 'Tire Editor'
             : action === 'car-editor'
               ? 'Car Editor'
               : action === 'doodad-editor'

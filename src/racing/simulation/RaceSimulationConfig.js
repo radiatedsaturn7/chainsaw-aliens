@@ -6,6 +6,9 @@ export const RACE_CONTROLLER_STEERING = Object.freeze({
     gamepad: Object.freeze({ responseRatePerSecond: 7.0, releaseRatePerSecond: 9.5 }),
     simulationWheel: Object.freeze({ direct: true })
   }),
+  gamepadSpeedAngleBonus: 0.1,
+  gamepadAngleBonusStartMps: 7.5,
+  gamepadAngleBonusFullMps: 15,
   speedReferenceMps: 62,
   digitalResponseBase: 84,
   digitalResponseLowSpeedBonus: 36,
@@ -40,3 +43,11 @@ export const RACE_PEDAL_INPUT = Object.freeze({
   activeThreshold: 0.05,
   reverseThreshold: 0.62
 });
+
+export function getGamepadSpeedSteeringScale(speedMps = 0, steering = RACE_CONTROLLER_STEERING) {
+  const start = Number(steering.gamepadAngleBonusStartMps) || 7.5;
+  const full = Number(steering.gamepadAngleBonusFullMps) || 15;
+  const blend = Math.max(0, Math.min(1, (Math.abs(Number(speedMps) || 0) - start) / Math.max(1, full - start)));
+  const bonus = Math.max(0, Math.min(0.25, Number(steering.gamepadSpeedAngleBonus) || 0));
+  return 1 + bonus * blend;
+}

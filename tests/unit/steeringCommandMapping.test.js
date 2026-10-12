@@ -115,6 +115,7 @@ function command({ mph, mode, input = 1 }) {
     wheelbaseM: 2.68,
     availableLateralG: 0.95,
     handlingPreset: mode === 'simulation-wheel' ? 'simulation' : 'sport',
+    steeringInputMode: mode,
     maxPhysicalAngleRad: 0.52
   });
 }
@@ -276,4 +277,48 @@ test('dirt response diagnostics classify latency, envelope, saturation, drivetra
   assert.equal(classifySteeringResponseTelemetry({
     ...base, frontGripCoefficients: { fl: 0.3, fr: 0.35 }
   }), 'insufficient-surface-grip');
+});
+
+test('gamepad gains a modest speed-dependent steering range while keyboard and simulation keep their mapping', () => {
+  for (const speedMps of [0, 5, 7.5, 10, 15, 27, 45, 65]) {
+    const options = { driverInput: 1, speedMps, handlingPreset: 'sport', maxPhysicalAngleRad: 0.52 };
+    const keyboard = assist.resolvePhysicalCenterSteeringAngle(options);
+    const gamepad = assist.resolvePhysicalCenterSteeringAngle({ ...options, steeringInputMode: 'gamepad' });
+    if (speedMps <= 7.5) assert.equal(gamepad, keyboard);
+    else {
+      assert.ok(gamepad > keyboard);
+      assert.ok(gamepad <= keyboard * 1.100001);
+      assert.ok(gamepad <= 0.52);
+    }
+    assert.equal(assist.resolvePhysicalCenterSteeringAngle({ ...options, steeringInputMode: 'gamepad', driverInput: -1 }), -gamepad);
+    assert.equal(assist.resolvePhysicalCenterSteeringAngle({ ...options, steeringInputMode: 'gamepad', handlingPreset: 'simulation' }), 0.52);
+  }
+});
+
+test('Race editor applies the gamepad envelope to runtime and visible steering commands', async () => {
+  const { default: RaceEditor } = await import('../../src/ui/RaceEditor.js');
+  const editor = new RaceEditor({ isMobile: true, deviceIsMobile: true });
+  editor.raceInput.analogSteeringActive = false;
+  editor.raceInput.lastSteeringInputMode = 'binary';
+  const keyboard = editor.getRaceResolvedCenterSteeringAngle(1, 27);
+  const visibleKeyboard = editor.getRacePhysicalTireAngleForSteering(1, 27);
+  editor.raceInput.analogSteeringActive = true;
+  assert.ok(Math.abs(editor.getRaceResolvedCenterSteeringAngle(1, 27) / keyboard - 1.1) < 1e-9);
+  assert.ok(Math.abs(editor.getRacePhysicalTireAngleForSteering(1, 27) / visibleKeyboard - 1.1) < 1e-9);
+});
+
+test('authoritative gamepad rack receives the extra angle while preserving contact limits and input magnitude', () => {
+  const config = { handlingPreset: 'sport', maxSteerAngleRad: 0.52, massKg: 1575, frontWeightDistribution: 0.58 };
+  const patch = { normalLoadN: 4480, suspensionNormalLoadN: 4480 };
+  for (const speed of [5, 10, 15, 30, 50]) {
+    const state = { groundSpeedMps: speed, contactPatches: { fl: patch, fr: patch } };
+    const keyboard = resolvePhysicalCenterSteeringAngle({ steering: 1, steeringInputMode: 'keyboard' }, config, state);
+    const gamepad = resolvePhysicalCenterSteeringAngle({ steering: 1, steeringInputMode: 'gamepad' }, config, state);
+    if (speed <= 7.5) assert.equal(gamepad, keyboard);
+    else assert.ok(gamepad > keyboard && gamepad <= keyboard * 1.100001);
+    assert.equal(resolvePhysicalCenterSteeringAngle({ steering: -0.5, steeringInputMode: 'gamepad' }, config, state), -gamepad * 0.5);
+    const airborne = resolvePhysicalCenterSteeringAngle({ steering: 1, steeringInputMode: 'gamepad' }, config, { groundSpeedMps: speed });
+    assert.ok(airborne < 0.003);
+    assert.ok(gamepad <= config.maxSteerAngleRad);
+  }
 });

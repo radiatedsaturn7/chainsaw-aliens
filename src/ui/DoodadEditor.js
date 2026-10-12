@@ -1171,7 +1171,15 @@ export default class DoodadEditor {
       const previousScenery = Array.isArray(race.scenery) ? race.scenery : null;
       const previousButtonsLength = Array.isArray(previewSource.buttons) ? previewSource.buttons.length : null;
       const temporaryScenery = this.createStudioSprintPreviewScenery(previewSource);
+      const previousPreparedFrames = previewSource.racePreparedArtFrames;
+      const art = this.getDoodadArtCanvas();
       try {
+        // The embedded race accepts prepared artwork only. Include the editor's
+        // current doodad for this draw without changing the race's asset set.
+        if (art) {
+          previewSource.racePreparedArtFrames = new Map(previousPreparedFrames);
+          previewSource.racePreparedArtFrames.set(`${this.doodad.artRef}:frame:0`, art);
+        }
         race.scenery = [
           ...(previousScenery || []),
           ...temporaryScenery
@@ -1184,6 +1192,7 @@ export default class DoodadEditor {
         drew = true;
         return true;
       } finally {
+        previewSource.racePreparedArtFrames = previousPreparedFrames;
         if (previousScenery) race.scenery = previousScenery;
         else delete race.scenery;
         if (previousButtonsLength !== null) previewSource.buttons.length = previousButtonsLength;
@@ -1453,10 +1462,16 @@ export default class DoodadEditor {
     const x = bounds.x + bounds.w / 2 - w / 2;
     const plantPx = h * (Number(this.doodad.groundOffsetM || 0) / Math.max(0.1, Number(this.doodad.heightM || 1)));
     const y = groundY - h + plantPx;
-    ctx.fillStyle = 'rgba(96,160,84,0.8)';
-    ctx.fillRect(x, y, w, h);
-    ctx.strokeStyle = UI_SUITE.colors.accent;
-    ctx.strokeRect(x, y, w, h);
+    const art = this.getDoodadArtCanvas();
+    if (art) {
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(art, x, y, w, h);
+    } else {
+      ctx.fillStyle = 'rgba(96,160,84,0.8)';
+      ctx.fillRect(x, y, w, h);
+      ctx.strokeStyle = UI_SUITE.colors.accent;
+      ctx.strokeRect(x, y, w, h);
+    }
     this.drawDoodadHitboxPreview(ctx, {
       x: bounds.x + bounds.w / 2,
       groundY: groundY + plantPx,
@@ -1467,7 +1482,7 @@ export default class DoodadEditor {
     ctx.font = `700 12px ${UI_SUITE.font.family}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(this.doodad.artRef || 'No Art', bounds.x + bounds.w / 2, y + h / 2, Math.max(1, w - 8));
+    if (!art) ctx.fillText(this.doodad.artRef || 'No Art', bounds.x + bounds.w / 2, y + h / 2, Math.max(1, w - 8));
     ctx.restore();
   }
 

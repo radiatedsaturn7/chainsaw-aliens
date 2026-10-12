@@ -18,8 +18,8 @@ import { hydrateServerStorage } from './serverStorage.js';
 import { fileTypeBadge } from './uiSuite.js';
 import { buildArtPreviewPixels, getArtDocumentFrames } from './shared/artDocumentPixels.js';
 
-const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors', sfx: 'SFX', cutscenes: 'Cutscenes', races: 'Races', cars: 'Cars', doodads: 'Doodads' };
-const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'doodads'];
+const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors', sfx: 'SFX', cutscenes: 'Cutscenes', races: 'Races', cars: 'Cars', tires: 'Tires', doodads: 'Doodads' };
+const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'doodads'];
 const PROJECT_BROWSER_SORTS = {
   modified: { label: 'Modified', direction: 'desc' },
   name: { label: 'Name', direction: 'asc' }
@@ -210,7 +210,7 @@ export function openProjectBrowser({
     const artPreviewCache = new Map();
     const actorPreviewCache = new Map();
     const previewTimers = new Set();
-    const previewPending = new Set();
+    const previewPending = new Map();
     const previewQueue = [];
     let activePreviewLoads = 0;
 
@@ -738,11 +738,12 @@ export function openProjectBrowser({
       const job = previewQueue.shift();
       if (!job) return;
       activePreviewLoads += 1;
-      const { folder, name, preview, key } = job;
+      const { folder, name, key } = job;
       void (async () => {
         try {
-          if (!preview.isConnected) return;
+          if (!job.preview.isConnected) return;
           const payload = await hydrateProjectFilePayload(folder, name);
+          const preview = job.preview;
           if (!preview.isConnected) return;
           if (folder === 'art') {
             const urls = createArtAnimationPreviewUrls(payload?.data);
@@ -754,7 +755,7 @@ export function openProjectBrowser({
             renderPreviewUrls(preview, url ? [url] : [], name);
           }
         } catch (error) {
-          if (preview.isConnected) preview.textContent = '∅';
+          if (job.preview.isConnected) job.preview.textContent = '∅';
         } finally {
           previewPending.delete(key);
           activePreviewLoads = Math.max(0, activePreviewLoads - 1);
@@ -766,15 +767,21 @@ export function openProjectBrowser({
 
     function schedulePreview(folder, name, preview) {
       const key = `${folder}:${name}`;
-      if (previewPending.has(key)) return;
-      previewPending.add(key);
+      const pending = previewPending.get(key);
+      if (pending) {
+        // Refreshes replace the rows while a thumbnail may still be loading.
+        pending.preview = preview;
+        return;
+      }
+      const job = { folder, name, preview, key };
+      previewPending.set(key, job);
       const timer = setTimeout(() => {
         previewTimers.delete(timer);
-        if (!preview.isConnected) {
+        if (!job.preview.isConnected) {
           previewPending.delete(key);
           return;
         }
-        previewQueue.push({ folder, name, preview, key });
+        previewQueue.push(job);
         runNextPreview();
       }, PROJECT_BROWSER_PREVIEW_DELAY_MS);
       previewTimers.add(timer);

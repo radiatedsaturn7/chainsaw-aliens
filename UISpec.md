@@ -5,7 +5,7 @@ This is the canonical UI plan for RTG Studio editors. The lower-level shell and 
 ## Priorities
 
 - Preserve portrait mode as the source of truth. It is already close to the desired mobile experience, so changes should be small, targeted, and covered by tests.
-- Standardize menus across Pixel, Tile, Level, Actor, MIDI, SFX, Cutscene, Race, and Car editors without forcing every editor into identical workflows.
+- Standardize menus across Pixel, Tile, Level, Actor, MIDI, SFX, Cutscene, Race, Car, and Tire editors without forcing every editor into identical workflows.
 - Treat landscape touch, desktop, and gamepad as first-class modes rather than accidental variants of portrait.
 - Make drawers, sheets, and tool grids scrollable by tap-drag or pointer drag. Fixed command rails stay stable and do not scroll.
 - Prefer shared menu specs, layout helpers, input semantics, and visual tokens over editor-specific one-off UI.
@@ -34,6 +34,8 @@ Shared implementation helpers:
 ## Mode Layouts
 
 ### Portrait
+
+- Exit belongs only in the File menu, never as a duplicate portrait root rail button.
 
 - Keep the current bottom-first mobile workflow.
 - Main/root menus stay near the bottom.
@@ -89,6 +91,7 @@ Shared implementation helpers:
 ### Pixel Editor
 
 - Root: File, Edit, View, Draw, Select, Tools, Canvas, Layers, Frames, Rigging.
+- File includes Info, showing the current image name, width and height in pixels, total pixels per frame, current-frame layer count, and animation frame count in a read-only dialog.
 - Edit: undo, redo, copy, cut, paste, clear.
 - View: zoom in, zoom out, fit, grid, tile preview, onion skin.
 - Draw: pencil, brush, fill, line, shape, and brush settings.
@@ -169,7 +172,8 @@ Shared implementation helpers:
 - Root: File, Edit, View, Track, Ground, Sprites, Settings.
 - Portrait bottom menu: File, Ground, Sprites, Settings. Track is the first mode in the Ground mode picker rather than a separate portrait root; choosing it exposes Add, Move, and the selection-contextual node/edge controls on the work surface.
 - Edit: undo, redo, copy segment, paste segment, delete segment.
-- File: standard document actions plus generate random race and load built-in reference tracks.
+- File: standard document actions plus From Image, generate random race, and load built-in reference tracks.
+- From Image accepts a photo or uploaded image of a pencil route. Users crop one drawing from a page, select a highlighted route, review its inferred circuit/open shape, choose start/direction and scale, and import a new editable race. Processing stays local and cancellable; ambiguous drawings offer manual point tracing. Import preserves existing races and supports Undo. No race is created until Import Track is selected.
 - Track: the command menu contains only Add. Add is a persistent placement mode; empty-map taps add draggable nodes, while existing nodes are always selected and moved by direct tap-drag. Node and edge editing is selection-contextual rather than duplicated in the Track menu. Selected interior nodes expose Smooth, Tight, and Hard corner styles; selected edges expose insert/delete, edge tile, surface, width, bumpiness, boundary, and snow condition. Circuit versus point-to-point behavior is inferred from whether the route endpoints connect; there must not be explicit Circuit/Destination menu toggles.
 - Ground: selected ground tile, paint ground, paint elevation, raise/lower, and brush size.
 - Ground triggers are selected from the portrait Ground hot menu alongside Track, Ground, Elevation, Sprite, and Doodad. Trigger mode uses the contextual hot rail for effect, target, and management controls; empty-map taps place triggers while marker taps select them. Triggers are placed in world space and may play a sprite or animation, create a saved doodad, or change race weather when the player enters their radius.
@@ -179,7 +183,7 @@ Shared implementation helpers:
 - Race precipitation uses layered screen-space perspective: snow drifts gently while falling from the top of the race view, and rain/storm drops fall with a consistent downward wind vector. Far particles grow and spread mildly as accumulated vehicle travel brings them toward the camera. Braking may slow future approach but must never reverse precipitation, jump existing particles backward, or make it radiate around the car.
 - Debug: Physics Surface View is a session-only driving view of the exact triangles and wheel contacts used by vehicle physics. It is available from the editor Settings drawer and the playtest pause menu without adding a portrait root.
 - Top Play/Pause: Playtest opens a car picker, then launches the race in the handheld race playtest surface. The physics debug view suppresses authored road, terrain, scenery, and effects while retaining driving controls, HUD, and pause access.
-- Playtest pause uses the same scaled in-game text menu as Level Editor playtest. Race-specific Settings and Debug rows remain available, but editor button chrome must never render inside the pause surface.
+- Playtest pause includes Restart Race, which restarts the current race with the same car and a fresh countdown without exiting to the editor or cancelling race travel. Playtest pause uses the same scaled in-game text menu as Level Editor playtest. Race-specific Settings and Debug rows remain available, but editor button chrome must never render inside the pause surface.
 - Desktop left panel should show selected race, inferred route shape, segment count, weather, and active tool while top drawers own commands.
 
 ### Car Editor
@@ -187,6 +191,9 @@ Shared implementation helpers:
 - Root: File, Edit, View, Art, Drivetrain, Tuning, Aero, Suspension, Drive.
 - Edit: undo, redo.
 - Art opens a shared three-row category menu: Exterior, Interior, and Camera Settings. Exterior owns shell frame assignment, previous/next shell frame, reverse frame, tire treads, add-ons, and per-component Body/Tires/Brakes/Shadow size and position controls. Each exterior component keeps artwork reset separate from a lower-right Reset Size action that restores `1.00x` scale and zero position offsets.
+- Exterior provides left/right 45° camera controls and a named 1–8 view indicator shared by Body, Tires, Brakes, and Shadow. Art assigns only the selected component at the current angle; Reset restores that component's default at that angle. Each angle also owns independent component size, position, and visibility overrides, including front/rear/left/right tire visibility. Left and Right refer to the car’s own sides and show both tires on that side. Imported tire artwork defaults to Auto visibility: front tires at 0°, rear tires at 180°, right tires at 45°/90°/135°, and left tires at 225°/270°/315°. Auto also applies to older artwork without a visibility override; explicit manual choices remain available and are preserved. Changing a graphic preserves its overrides; Reset Size restores only that component and angle to 1.00x and zero offsets. All 32 assignments persist in the car document and use the physical camera bearing during races. Unassigned angles inherit existing artwork. The preview camera stays at the selected angle relative to the moving car and shows brake artwork while editing. Compact panels place position and size controls side by side to keep component tabs accessible.
+- Art > Import Graphic imports Body, Brakes, or Shadow. Tires use a Tire selector that opens the saved tire library; tire graphics are authored in the Tire Editor. Import accepts a 2-row, 4-column image, maps its eight frames to 0° through 315° in row order, previews rotation in 45° steps, and allows swapping frame assignments per angle before applying. Background cleanup defaults to removing alpha values of 8/255 or below, with an adjustable 0–32 threshold; processing always uses a copy of the original pixels. The importer finds transparent gutters near the grid separately for each row, rejects sheets that cannot be safely separated, crops visible bounds, and centers frames without rescaling on matching canvases with a one-pixel transparent border. The rotating preview uses these processed frames. Applying an import installs every assigned frame into the live editor preview immediately, including previews restricted to preloaded artwork. Image dimensions need not divide evenly by four and two. Imported frames preserve transparency and component transforms; Cancel leaves the car unchanged.
+- Dragging artwork scale, position, or rotation updates the live preview without restarting the driving simulation. Each slider drag creates one Undo/Redo step, including mirrored adjustments. Tire Spacing moves the graphic wheels apart or together about each axle without changing wheel size or physical track width; it is saved per angle and resets with scale. Reuse loaded images and the preview canvas; keep the normal preview render cadence during dragging and redraw the final value on release. Saving snapshots the document without replacing the live edited car. Opening a car, including reopening the same file, cancels pending preview preparation and recreates the preview from the loaded adjustments.
 - Overridden body artwork is a camera-facing billboard whose existing 50%-across/58%-down pivot is attached to the live physical rear-axle midpoint, located half the authored wheelbase behind the physics chassis center. Brake-light and add-on art share that anchor; tires remain on their physical wheel centers, the shadow remains on the ground footprint, and collision stays centered on the physics chassis.
 - Interior owns independent Dashboard and Steering Wheel artwork overrides with size, position, clear, Reset Size, and Reset Position controls. Either missing override falls back independently to the procedural tinted dashboard or steering wheel; authored steering-wheel art rotates with steering input.
 - Camera Settings saves Dynamic or Fixed Rear tracking per car. Dynamic retains travel/drift-aware chase yaw. Fixed Rear uses the physical rear axle as an exact, non-lagging chase origin, permits a temporary manual-look offset, and recenters behind the car when look input is released. When overridden body and tire art are both active, tire X positions remain rigidly aligned to that rear-axle body rig while physical suspension and terrain contact continue to control tire Y positions.
@@ -197,6 +204,16 @@ Shared implementation helpers:
 - Drive: Playtest opens a car picker and starts the same handheld race playtest surface.
 - Playtest pause shares the Level Editor in-game text-menu scale, layout, selection treatment, and hit-target geometry through the common Race/Car playtest renderer.
 - Desktop left panel should show selected car, drivetrain, power, weight, and active tool while top drawers own commands.
+
+### Tire Editor
+
+- Open from the Game editor list or the Car Editor's tire selector. Returning from the Tire Editor restores the Car Editor when opened there.
+- Root: File, Edit, View, Art, Properties. Use the shared portrait, landscape, desktop, and gamepad shell. Portrait keeps Menu, Undo, Redo, and Properties in its action rail.
+- Select Tire lists saved tires first, separately from built-in templates explicitly marked as having no artwork. It preselects the current tire, loads its graphics before enabling Apply, and explains which appearance will be used. Apply installs the chosen tire; the Car Editor displays the applied tire name. Built-in templates remain available when starting a new tire. Save and Save As persist named tire documents in Tires. Import/Open and Export/Save As use project storage, consistent with Car Editor.
+- Art supports existing single-frame artwork, saved multi-frame artwork, and sprite-sheet import using 2×1, 1×2, 2×2, or 4×2 layouts. The tread and rim texture fitting, transparent-gutter splitting, background cleanup, and rotating cylinder preview are shared with the car artwork pipeline. Preview provides 45° view controls and Spin/Pause.
+- Properties exposes surface grip for all eight surfaces (dry/wet asphalt, dirt/mud, dry/wet gravel, snow/slush), water evacuation, tread depth, wear rate, physical tire dimensions, and default cold pressure. Values use the simulation's supported units and bounds; compound-specific pressure behavior inherits the selected base tire.
+- Surface grip is based on the contacted ground, not a separate weather multiplier. Wet snow blends toward Slush grip, including snow accumulated on other surfaces. Property help explains each condition; older saved weather multipliers are retired on load without changing their surface-grip values.
+- Tire graphics and properties support Undo/Redo. A car's Tire button applies the saved tire's graphics and physics while preserving the car's per-angle tire scale, offsets, and visibility. Cars save an embedded snapshot of the selected definition; reselect a saved tire to apply later changes. Existing cars without saved tire selections retain their built-in compound behavior.
 
 ### Doodad Editor
 
@@ -236,3 +253,15 @@ Shared implementation helpers:
 - Add layout tests for portrait, landscape touch, desktop, and gamepad placement.
 - Add gesture tests for tap-drag scrolling versus button activation.
 - Add controller tests for `A` select, `B` back, `LB/RB` section changes, and submenu collapse.
+
+- Imported car body frames automatically fit their visible pixel bounds to the projected car body width and height, with per-angle size values editable afterward. Body preview controls rotate the artwork in 1° steps up to ±45° per angle; the degree button resets rotation. Rotation persists with the car and is independent of Reset Size.
+
+- Exterior X/Y offsets span −16 to +16. Mirror edits defaults to On and links subsequent transform edits between 0°/180°, 45°/315°, 90°/270°, and 135°/225°: same size and Y offset, opposite X offset and body rotation. Each angle retains its own graphic and frame. Toggle Mirror edits Off for independent adjustments; toggling alone does not overwrite existing adjustments.
+
+- Car Art menu includes Import Graphic and Settings. Import selects Body/Tires/Brakes/Shadow inside its dialog. Settings contains the Mirror toggle. Exterior adjustments are ordered Position, Body Rotation (−45° to +45° slider), then Scale, with compact columns on short panels. Reset opens checkboxes for Position, Rotation (body), Scale, and optional Graphic; only selected categories reset. Preview overlay import, rotation buttons, and Mirror controls are removed.
+
+- Tire imports use surface textures rather than eight directional tire pictures. Select a 2×1, 1×2, 2×2, or 4×2 sheet (columns × rows). Default tread is frame 1; default wheel/rim is frame 3 on eight-frame sheets, frame 2 otherwise. Both roles can be reassigned. Only the chosen two frames drive wheel rendering; other frames remain in the saved Art document. The import preview and live renderer project a textured 3D cylinder with tread on its curved surface and wheel/rim on its end caps, spinning around the axle and steering as one object. Cardinal views show tread or rim; diagonal views show both. All sheets require safe transparent gutters; tire imports never fall back to cuts through visible pixels. Tire surface UVs use the maximum-area fully opaque rectangle within the selected tread frame and the largest fully opaque circle (centers searched at half-pixel increments) inside the wheel frame, including internal holes and source edges. Preview and saved car use the same fitted regions; missing opaque regions block import.
+
+- Choosing saved exterior Art opens Single Frame (with source-frame selection), Sprite Sheet (split selected frame in the import dialog), or Use Existing Frames for supported animations (8 frames; tires also 2/4). The saved art is not modified. Import detects opaque light/checkerboard backgrounds and offers an enabled removal checkbox for detected cases; removal floods only light neutral border-connected pixels, before safe sprite separation and tire fitting. The original source remains available when toggling removal off.
+
+- Car camera settings offer Dynamic, Dynamic Fixed, and Fixed Rear. Dynamic Fixed retains dynamic chase position and selects 45° camera bearings relative to the car, with hysteresis between views, so pixel-art body frames and tire projections share an angle. Tire animation follows signed wheel spin, including reverse and wheel slip; saving retains tire texture crop and cylinder settings.

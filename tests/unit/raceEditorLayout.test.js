@@ -5253,6 +5253,106 @@ test('Car Editor portrait Tools root opens the tools submenu', () => {
   assert.ok(editor.buttons.some((button) => button.id === 'summary-sheet'));
 });
 
+test('Car Editor portrait Tune omits Default Tires and has one Diff entry with both controls', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true, isMobile: true,
+    input: { isGamepadConnected: () => false }, exitRaceEditor() {}
+  }, { mode: 'car' });
+  editor.drawCarEditorPreview = () => {};
+  const ctx = createMockContext();
+  const draw = () => editor.draw(ctx, 390, 844);
+  const tap = (id) => {
+    const button = editor.buttons.find((entry) => entry.id === id);
+    assert.ok(button, id);
+    const point = { id: 1, x: button.bounds.x + button.bounds.w / 2, y: button.bounds.y + button.bounds.h / 2 };
+    editor.handlePointerDown(point);
+    editor.handlePointerUp(point);
+    draw();
+  };
+  draw();
+  tap('menu');
+  tap('tuning');
+  const items = editor.getMenuItems('tuning');
+  assert.equal(items.some((item) => item.id === 'default-tires'), false);
+  assert.equal(items.some((item) => item.id === 'diff-decel'), false);
+  assert.deepEqual(items.filter((item) => item.id.startsWith('diff-')).map((item) => item.label), ['Diff']);
+  tap('diff-accel');
+  assert.equal(editor.carTuneTab, 'diff');
+  assert.equal(editor.mobileRootOpen, false);
+  for (const key of ['frontDifferentialAccel', 'frontDifferentialDecel', 'rearDifferentialAccel', 'rearDifferentialDecel']) {
+    assert.ok(editor.carDriveSliderRegions.some((region) => region.key === key), key);
+  }
+  editor.activeViewportMode = 'desktop';
+  const desktopIds = editor.getMenuItems('tuning').map((item) => item.id);
+  assert.ok(desktopIds.includes('default-tires'));
+  assert.ok(desktopIds.includes('diff-decel'));
+});
+
+test('Car Editor portrait Drive Stats opens the existing selected car summary', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true, isMobile: true,
+    input: { isGamepadConnected: () => false }, exitRaceEditor() {}
+  }, { mode: 'car' });
+  editor.drawCarEditorPreview = () => {};
+  const summaries = [];
+  editor.drawRaceTuningStats = (_ctx, _bounds, car) => summaries.push(car);
+  const ctx = createMockContext();
+  const draw = () => editor.draw(ctx, 390, 844);
+  const tap = (id) => {
+    const button = editor.buttons.find((entry) => entry.id === id);
+    assert.ok(button, id);
+    const point = { id: 1, x: button.bounds.x + button.bounds.w / 2, y: button.bounds.y + button.bounds.h / 2 };
+    editor.handlePointerDown(point);
+    editor.handlePointerUp(point);
+    draw();
+  };
+  draw();
+  tap('menu');
+  tap('drivetrain');
+  assert.equal(editor.getMenuItems('drivetrain').find((item) => item.id === 'summary-sheet')?.label, 'Stats');
+  summaries.length = 0;
+  tap('summary-sheet');
+  assert.equal(editor.mobileRootOpen, false);
+  assert.equal(editor.activeRootId, 'drivetrain');
+  assert.equal(editor.carTuneTab, 'summary');
+  assert.deepEqual(summaries, [editor.selectedCar]);
+});
+
+test('Car Editor portrait Drivetrain opens explicit AWD RWD FWD choices without changing the car', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true, isMobile: true,
+    input: { isGamepadConnected: () => false }, exitRaceEditor() {}
+  }, { mode: 'car' });
+  // Keep this navigation test independent of track preparation and rendering.
+  editor.drawCarEditorPreview = () => {};
+  const ctx = createMockContext();
+  const draw = () => editor.draw(ctx, 390, 844);
+  const tap = (id) => {
+    const button = editor.buttons.find((entry) => entry.id === id);
+    assert.ok(button, id);
+    const point = { id: 1, x: button.bounds.x + button.bounds.w / 2, y: button.bounds.y + button.bounds.h / 2 };
+    editor.handlePointerDown(point);
+    editor.handlePointerUp(point);
+    draw();
+  };
+  const originalDrivetrain = editor.selectedCar.tuning.drivetrain;
+  draw();
+  tap('menu');
+  tap('drivetrain');
+  tap('drivetrain-menu');
+  assert.equal(editor.selectedCar.tuning.drivetrain, originalDrivetrain, 'opening the picker must not cycle the drivetrain');
+  assert.equal(editor.mobileRootOpen, false);
+  assert.equal(editor.carTuneTab, 'drive');
+  for (const type of ['awd', 'rwd', 'fwd']) {
+    assert.ok(editor.buttons.some((button) => button.id === `car-tune-drive-${type}`));
+  }
+  for (const type of ['awd', 'rwd', 'fwd']) {
+    tap(`car-tune-drive-${type}`);
+    assert.equal(editor.selectedCar.tuning.drivetrain, type);
+    assert.ok(editor.buttons.some((button) => button.id === `car-tune-drive-${type}`), 'picker remains visible');
+  }
+});
+
 test('Car Editor portrait Tune Transmission closes the menu and shows transmission plus drivetrain choices', () => {
   const editor = new RaceEditor({
     deviceIsMobile: true,
@@ -5382,7 +5482,7 @@ test('Car Editor portrait menu remains interactive while the embedded preview se
   tap(tuneRoot);
 
   editor.draw(ctx, 390, 844);
-  assert.ok(editor.buttons.some((button) => button.id === 'default-tires'));
+  assert.ok(editor.buttons.some((button) => button.id === 'tire-pressure'));
 });
 
 test('Race and Car gamepad submenus render from the shared slide-out plan items', () => {
@@ -5637,7 +5737,7 @@ test('Car Editor Tune menu opens detailed tuning panels for drivetrain, tires, s
   assert.equal(items.find((item) => item.id === 'spring-front').label, 'Spring');
   assert.equal(items.find((item) => item.id === 'damping-front').label, 'Damping');
   assert.equal(items.find((item) => item.id === 'transmission-type').label, 'Transmission');
-  assert.equal(editor.getMenuItems('drivetrain').find((item) => item.id === 'summary-sheet').label, 'Summary Sheet');
+  assert.equal(editor.getMenuItems('drivetrain').find((item) => item.id === 'summary-sheet').label, 'Stats');
   assert.equal(editor.getMenuItems('drivetrain').map((item) => item.id).includes('weight-balance'), false);
   assert.equal(editor.getMenuItems('drivetrain').map((item) => item.id).includes('engine-sfx'), false);
 
@@ -5850,6 +5950,41 @@ test('Car Editor seeds editable engine SFX files while preserving car engine pro
   assert.equal(wrxSfx.frames[0].layers[0].wavDataUrl.startsWith('data:audio/wav;base64,'), true);
 });
 
+test('Car Editor portrait Engine Sound opens the SFX selector and loudness controls', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true, isMobile: true,
+    input: { isGamepadConnected: () => false }, exitRaceEditor() {}
+  }, { mode: 'car' });
+  editor.drawCarEditorPreview = () => {};
+  const ctx = createMockContext();
+  const draw = () => editor.draw(ctx, 390, 844);
+  const tap = (id) => {
+    const button = editor.buttons.find((entry) => entry.id === id);
+    assert.ok(button, id);
+    const point = { id: 1, x: button.bounds.x + button.bounds.w / 2, y: button.bounds.y + button.bounds.h / 2 };
+    editor.handlePointerDown(point);
+    editor.handlePointerUp(point);
+    draw();
+  };
+  const originalSound = editor.selectedCar.audio.engineSoundId;
+  const originalProfile = editor.selectedCar.audio.engineProfile;
+  draw();
+  tap('menu');
+  tap('drivetrain');
+  const items = editor.getMenuItems('drivetrain');
+  assert.equal(items.find((item) => item.id === 'engine-sfx')?.label, 'Engine Sound');
+  assert.equal(items.some((item) => item.id === 'engine-sound-next'), false);
+  tap('engine-sfx');
+  assert.equal(editor.mobileRootOpen, false);
+  assert.equal(editor.carTuneTab, 'sfx');
+  assert.equal(editor.selectedCar.audio.engineSoundId, originalSound);
+  assert.equal(editor.selectedCar.audio.engineProfile, originalProfile);
+  assert.ok(editor.carDriveSliderRegions.some((region) => region.key === 'engineSfxVolume'));
+  tap('car-tune-engine-sfx');
+  assert.equal(editor.selectedCar.audio.engineSoundId, 'Test Engine SFX');
+  assert.equal(editor.selectedCar.audio.engineProfile, originalProfile);
+});
+
 test('Car Editor Open SFX picker assigns a project SFX as the engine sound', async () => {
   resetProjectFilesForTests();
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} }, { mode: 'car' });
@@ -5995,6 +6130,54 @@ test('Car Editor power curve screen edits curve points directly', () => {
   const editedCurve = editor.normalizeCarEngineCurve(editor.selectedCar.tuning);
   assert.equal(editedCurve.torquePoints.some((candidate) => candidate.torqueLbFt > previousTorque), true);
   assert.equal(editor.carPowerCurveDrag, null);
+});
+
+test('Car Editor portrait power curve supports touch dragging after opening Drivetrain', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true, isMobile: true,
+    input: { isGamepadConnected: () => false }, exitRaceEditor() {}
+  }, { mode: 'car' });
+  const ctx = createMockContext();
+  const draw = () => editor.draw(ctx, 390, 844);
+  const tap = (id) => {
+    const button = editor.buttons.find((entry) => entry.id === id);
+    assert.ok(button, `${id}: root=${editor.activeRootId}, tab=${editor.carTuneTab}, action=${editor.activeAction}, buttons=${editor.buttons.map(b => b.id)}`);
+    const point = { id: 1, x: button.bounds.x + button.bounds.w / 2, y: button.bounds.y + button.bounds.h / 2 };
+    editor.handlePointerDown(point);
+    editor.handlePointerUp(point);
+    draw();
+  };
+  draw();
+  tap('menu');
+  tap('drivetrain');
+  tap('power-curve');
+  assert.equal(editor.mobileRootOpen, false);
+  assert.equal(editor.activeRootId, 'tuning');
+  const pointCount = editor.selectedCar.tuning.engineCurve.torquePoints.length;
+  tap('car-power-mode-add');
+  assert.equal(editor.selectedCar.tuning.engineCurve.torquePoints.length, pointCount + 1);
+  tap('car-power-mode-del');
+  assert.equal(editor.selectedCar.tuning.engineCurve.torquePoints.length, pointCount);
+  for (const mode of ['torque', 'hp']) {
+    tap(`car-power-mode-${mode}`);
+    const region = editor.carPowerCurveGraphRegion;
+    assert.ok(region);
+    const index = 2;
+    const before = { ...editor.selectedCar.tuning.engineCurve.torquePoints[index] };
+    const point = {
+      id: 2,
+      x: region.bounds.x + (before.rpm - region.rpmMin) / (region.rpmMax - region.rpmMin) * region.bounds.w,
+      y: region.bounds.y + region.bounds.h - editor.getCarPowerCurvePointValue(before, mode) / region.valueMax * region.bounds.h
+    };
+    editor.handlePointerDown(point);
+    assert.ok(editor.carPowerCurveDrag, 'touch should grab curve point');
+    draw();
+    editor.handlePointerMove({ ...point, y: point.y - 24 });
+    draw();
+    editor.handlePointerUp({ ...point, y: point.y - 24 });
+    assert.ok(editor.selectedCar.tuning.engineCurve.torquePoints[index].torqueLbFt > before.torqueLbFt, 'drag should increase torque');
+    assert.equal(editor.carPowerCurveDrag, null);
+  }
 });
 
 test('Car Editor preview restart waits three seconds after latest tuning input', () => {
@@ -6374,11 +6557,10 @@ test('Car Editor art panel toggles the geometric overlay option', () => {
 
   assert.ok(overlayButton);
   assert.ok(resetButton);
-  assert.ok(editor.buttons.some((button) => button.id === 'turn-left'));
-  assert.ok(editor.buttons.some((button) => button.id === 'turn-center'));
-  assert.ok(editor.buttons.some((button) => button.id === 'turn-right'));
-  assert.equal(overlayButton.bounds.x > resetButton.bounds.x, true);
-  assert.equal(overlayButton.bounds.y, resetButton.bounds.y);
+  assert.ok(editor.buttons.some((button) => button.id === 'car-angle-left'));
+  assert.ok(editor.buttons.some((button) => button.id === 'car-angle-right'));
+  assert.equal(overlayButton.bounds.y < resetButton.bounds.y, true);
+  assert.equal(resetButton.bounds.y > overlayButton.bounds.y, true);
   assert.equal(editor.isCarGeometricOverlayEnabled(editor.selectedCar), false);
   overlayButton.onClick();
   assert.equal(editor.selectedCar.art.geometricOverlay, true);
@@ -6397,8 +6579,8 @@ test('Car Editor body art panel keeps Geom next to Reset on narrow panels', () =
 
   assert.ok(resetButton);
   assert.ok(overlayButton);
-  assert.equal(overlayButton.bounds.x > resetButton.bounds.x, true);
-  assert.equal(overlayButton.bounds.y, resetButton.bounds.y);
+  assert.equal(overlayButton.bounds.y < resetButton.bounds.y, true);
+  assert.equal(resetButton.bounds.y > overlayButton.bounds.y, true);
   assert.equal(overlayButton.bounds.x + overlayButton.bounds.w <= 224 - 12, true);
 });
 
@@ -6502,6 +6684,99 @@ test('Car Editor geometric overlay draws over the live physics preview', () => {
   assert.equal(overlayCalls[0].options.pitchRad, editor.getRaceGeometricVehiclePitch(-0.18));
   assert.equal(typeof overlayCalls[0].options.projectPoint, 'function');
   assert.equal(overlayCalls[0].options.projectPoint({ x: 3, z: 4, elevation: 0.5 }).threeProjected, true);
+});
+
+test('Car Editor portrait Physics Body temporarily enables the debug rig and refreshes the cached preview on exit', () => {
+  const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} }, { mode: 'car' });
+  editor.activeViewportMode = 'portrait';
+  const preview = {
+    raceId: editor.project.selectedRaceId, carId: editor.selectedCar.id,
+    session: { carEditorPreview: true, physicsVehicleRigVisible: false },
+    input: { cameraView: 'third-person', physicsVehicleRigVisible: false }
+  };
+  editor.ensureCarEditorPreviewPlaytestSession = () => preview;
+  const frameCtx = createMockContext();
+  const cache = { canvas: { getContext: () => frameCtx }, w: 320, h: 240, lastRenderMs: -Infinity };
+  editor.getCarEditorPreviewFrameCanvas = () => cache;
+  editor.getNowMs = () => 1000;
+  const views = [];
+  editor.drawRacePhysicsSurfaceView = () => views.push('physics');
+  editor.drawMode7Preview = () => views.push('normal');
+  for (const method of ['drawRaceThirdPersonCar', 'drawRaceTireFxParticles', 'drawRacePlaytestHud', 'drawRaceCountdown', 'drawRaceEdgeResetFade', 'drawRaceDisplayModeFilter']) editor[method] = () => {};
+  const draw = () => editor.drawPortrait(createMockContext(), 390, 844);
+  editor.openCarTuneAction('drivetrain-menu');
+  draw();
+  editor.openCarTuneAction('physics-body');
+  draw();
+  assert.deepEqual(views, ['normal', 'physics']);
+  assert.equal(preview.input.physicsVehicleRigVisible, false);
+  assert.equal(preview.session.physicsVehicleRigVisible, false);
+  draw();
+  assert.equal(views.length, 2, 'unchanged screen should reuse the cached frame');
+  editor.openCarTuneAction('drivetrain-menu');
+  draw();
+  assert.deepEqual(views, ['normal', 'physics', 'normal']);
+
+  preview.input.physicsVehicleRigVisible = true;
+  preview.session.physicsVehicleRigVisible = true;
+  editor.openCarTuneAction('physics-body');
+  draw();
+  editor.openCarTuneAction('drivetrain-menu');
+  draw();
+  assert.equal(preview.input.physicsVehicleRigVisible, true, 'preserve a previously enabled debug view');
+  assert.equal(preview.session.physicsVehicleRigVisible, true);
+});
+
+test('Car Editor portrait interior renders live terrain behind the dashboard and refreshes on camera changes', () => {
+  const editor = new RaceEditor({
+    deviceIsMobile: true, isMobile: true,
+    input: { isGamepadConnected: () => false }, exitRaceEditor() {}
+  }, { mode: 'car' });
+  editor.activeViewportMode = 'portrait';
+  const outerInput = editor.raceInput;
+  const preview = {
+    raceId: editor.project.selectedRaceId,
+    carId: editor.selectedCar.id,
+    session: { carEditorPreview: true, steeringWheelRotation: 0.2 },
+    input: { cameraView: 'third-person', paused: false }
+  };
+  editor.ensureCarEditorPreviewPlaytestSession = () => preview;
+  const frameCtx = createMockContext();
+  const frameCache = { canvas: { getContext: () => frameCtx }, w: 320, h: 240, lastRenderMs: -Infinity };
+  editor.getCarEditorPreviewFrameCanvas = () => frameCache;
+  editor.getNowMs = () => 1000;
+  const rendered = [];
+  editor.drawMode7Preview = () => {
+    rendered.push(`terrain:${editor.raceInput.cameraView}`);
+    assert.equal(editor.playtestSession.cameraView, editor.raceInput.cameraView);
+  };
+  editor.drawCarInteriorLayers = (_ctx, _bounds, car, options) => {
+    rendered.push('interior');
+    assert.equal(car.id, editor.selectedCar.id);
+    assert.equal(options.rotation, 0.2);
+  };
+  editor.drawRaceThirdPersonCar = () => rendered.push('exterior');
+  for (const method of ['drawRaceTireFxParticles', 'drawRacePlaytestHud', 'drawRaceCountdown', 'drawRaceEdgeResetFade', 'drawRaceDisplayModeFilter']) {
+    editor[method] = () => {};
+  }
+  const ctx = createMockContext();
+  editor.enterCarBodyArtScreen();
+  editor.drawPortrait(ctx, 390, 844);
+  assert.deepEqual(rendered, ['terrain:third-person', 'exterior']);
+  rendered.length = 0;
+
+  editor.enterCarInteriorArtScreen();
+  editor.drawPortrait(ctx, 390, 844);
+  assert.deepEqual(rendered, ['terrain:first-person', 'interior']);
+  assert.equal(editor.raceInput, outerInput);
+  assert.equal(editor.raceInput.cameraView, 'third-person');
+  rendered.length = 0;
+  editor.drawPortrait(ctx, 390, 844);
+  assert.deepEqual(rendered, [], 'unchanged preview should reuse the cached frame');
+
+  editor.enterCarBodyArtScreen();
+  editor.drawPortrait(ctx, 390, 844);
+  assert.deepEqual(rendered, ['terrain:third-person', 'exterior']);
 });
 
 test('Car Editor overridden graphics preview reuses cached playtest frames', () => {
@@ -6628,8 +6903,8 @@ test('Car Editor overridden tire graphics draw from wheel-sized cached canvases'
     drawShadowLayer: false
   });
 
-  assert.equal(tireDraws.length, 4);
-  assert.equal(scaledTireSources.length, 4);
+  assert.equal(tireDraws.length, 2);
+  assert.equal(scaledTireSources.length, 2);
   tireDraws.forEach((draw) => {
     assert.equal(draw.sourceCanvas, largeTireCanvas);
     assert.equal(draw.width < largeTireCanvas.width, true);
@@ -6738,43 +7013,37 @@ test('Car Editor Reset Size restores scale and position without clearing compone
   assert.equal(editor.selectedCar.art.brakeLightArtRef, 'brake-art');
   assert.equal(editor.selectedCar.art.shadowArtRef, 'shadow-art');
   [
-    'bodyScale', 'bodyScaleX', 'bodyScaleY',
-    'tireScale', 'tireScaleX', 'tireScaleY',
+    'bodyScaleX', 'bodyScaleY',
+    'tireScaleX', 'tireScaleY',
     'brakeLightScaleX', 'brakeLightScaleY',
     'shadowScaleX', 'shadowScaleY'
-  ].forEach((key) => assert.equal(editor.selectedCar.art[key], 1, key));
+  ].forEach((key) => assert.equal(editor.getCarEditorAngleCar().art[key], 1, key));
   [
     'bodyOffsetX', 'bodyOffsetY',
     'frontTireOffsetX', 'frontTireOffsetY',
     'rearTireOffsetX', 'rearTireOffsetY',
     'brakeLightOffsetX', 'brakeLightOffsetY',
     'shadowOffsetX', 'shadowOffsetY'
-  ].forEach((key) => assert.equal(editor.selectedCar.art[key], 0, key));
-  assert.equal(editor.raceCarBillboardLayerCache.size, 0);
-  assert.equal(editor.raceCarTireScrollCache.size, 0);
-  assert.equal(editor.carEditorPreviewFrameCache, null);
-  assert.equal(editor.status, 'Shadow size and position reset');
+  ].forEach((key) => assert.equal(editor.getCarEditorAngleCar().art[key], 0, key));
+  assert.equal(editor.raceCarBillboardLayerCache.size, 1);
+  assert.equal(editor.raceCarTireScrollCache.size, 1);
+  assert.equal(editor.carEditorPreviewFrameCache.lastRenderMs, -Infinity);
+  assert.equal(editor.selectedCar.art.bodyScaleX, 2.2);
+  assert.equal(editor.selectedCar.art.shadowOffsetX, -0.8);
+  assert.equal(editor.status, 'Front shadow size and position reset');
 });
 
-test('Car Editor places Reset Size after size sliders for every art component', () => {
-  [430, 360].forEach((width) => {
-    ['body', 'tires', 'brakes', 'shadow'].forEach((component) => {
-      const editor = new RaceEditor({ deviceIsMobile: width === 360, isMobile: width === 360, exitRaceEditor() {} }, { mode: 'car' });
-      editor.activeRootId = 'art';
-      editor.carArtActiveComponent = component;
-      editor.drawCarEditorActivePanel(createMockContext(), { x: 0, y: 0, w: width, h: 190 });
-
-      const reset = editor.buttons.find((button) => button.id === `car-art-reset-size-${component}`);
-      const componentTab = editor.buttons.find((button) => button.id === `car-art-tab-${component}`);
-      const sizeSliders = editor.carArtSliderRegions.slice(0, 2);
-      const positionSliders = editor.carArtSliderRegions.slice(2);
-      assert.ok(reset, `${width}:${component}`);
-      assert.equal(reset.bounds.x + reset.bounds.w, width - 12, `${width}:${component}`);
-      assert.equal(reset.bounds.y > sizeSliders[1].y, true, `${width}:${component}`);
-      assert.equal(positionSliders.every((slider) => slider.y > reset.bounds.y), true, `${width}:${component}`);
-      assert.equal(reset.bounds.y + reset.bounds.h < componentTab.bounds.y, true, `${width}:${component}`);
-    });
-  });
+test('Car Editor places Reset below ordered adjustment controls', () => {
+  for (const width of [224,360,430]) for (const component of ['body','tires','brakes','shadow']) {
+    const editor = new RaceEditor({ deviceIsMobile:false, isMobile:false, exitRaceEditor(){} }, { mode:'car' });
+    editor.activeRootId = 'art'; editor.carArtActiveComponent = component;
+    editor.drawCarEditorActivePanel(createMockContext(), { x:0,y:0,w:width,h:190 });
+    const reset = editor.buttons.find(b => b.id === `car-art-reset-${component}`);
+    const tab = editor.buttons.find(b => b.id === `car-art-tab-${component}`);
+    assert.ok(editor.carArtSliderRegions.every(r => r.y+r.h <= reset.bounds.y));
+    assert.ok(reset.bounds.y+reset.bounds.h <= tab.bounds.y);
+    if (component === 'body') assert.deepEqual(editor.carArtSliderRegions.map(r => r.id), ['body-offset-x','body-offset-y','body-rotation','body-x','body-y']);
+  }
 });
 
 test('Race playtest preloads all authored car visual art without terrain samplers', () => {
@@ -6815,7 +7084,13 @@ test('Race playtest preloads all authored car visual art without terrain sampler
     return {};
   };
 
-  editor.preloadSelectedRaceArtRefs();
+  const previousDocument = globalThis.document;
+  globalThis.document = {};
+  try {
+    editor.preloadSelectedRaceArtRefs();
+  } finally {
+    globalThis.document = previousDocument;
+  }
 
   [
     'body-art',
@@ -7835,7 +8110,7 @@ test('Race Editor file menu exposes live desktop project actions', () => {
   assert.equal(raceEditorSource.includes('buildSharedEditorFileMenu'), true);
   assert.equal(raceEditorSource.includes("footer: {\n          onExit: () => this.exitToMainMenu()\n        }"), true);
   assert.deepEqual(fileItems.slice(0, 6).map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import']);
-  assert.deepEqual(fileItems.slice(6).map((item) => item.id), ['generate-random-race', 'exit-main']);
+  assert.deepEqual(fileItems.slice(6).map((item) => item.id), ['race-from-image', 'generate-random-race', 'exit-main']);
   assert.equal(fileItems.some((item) => String(item.id || '').startsWith('load-')), false);
   assert.deepEqual(carFileItems.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
   assert.equal(carFileItems.some((item) => item.id === 'load-wrx' || item.id === 'load-brz' || item.id === 'load-civic'), false);
@@ -10451,6 +10726,7 @@ test('Race playtest sends engine RPM to the audio rev model', () => {
 test('Car Editor preview cleanup stops engine rev audio when leaving the editor', () => {
   const revCalls = [];
   const tireCalls = [];
+  const playedSfx = [];
   const stoppedSfx = [];
   const exits = [];
   const editor = new RaceEditor({
@@ -10467,6 +10743,9 @@ test('Car Editor preview cleanup stops engine rev audio when leaving the editor'
     stopSfxById(id, options) {
       stoppedSfx.push({ id, options });
     },
+    playSfxById(id, options) {
+      playedSfx.push({ id, options });
+    },
     exitRaceEditor(mode) {
       exits.push(mode);
     }
@@ -10474,17 +10753,21 @@ test('Car Editor preview cleanup stops engine rev audio when leaving the editor'
   editor.selectedCar.audio.engineSoundId = 'preview-engine-loop';
   editor.ensureCarEditorPreviewPlaytestSession();
   editor.playtestSession = editor.carEditorPreviewPlaytest.session;
+  editor.playtestSession.running = true;
+  editor.playtestSession.startupFramePending = false;
   editor.updateRaceEngineAudio({ tuning: editor.getRaceCarTuning(editor.selectedCar), throttle: 0.6, load: 0.4 });
   editor.playtestSession = null;
 
-  assert.equal(revCalls.some((call) => call.active), true);
+  assert.equal(playedSfx.at(-1).id, 'preview-engine-loop');
+  stoppedSfx.length = 0;
   editor.exitToMainMenu();
 
   assert.deepEqual(exits, ['car']);
   assert.equal(editor.carEditorPreviewPlaytest, null);
   assert.equal(revCalls.at(-1).active, false);
   assert.equal(tireCalls.at(-1).active, false);
-  assert.deepEqual(stoppedSfx.at(-1), { id: 'preview-engine-loop', options: { key: 'race-engine' } });
+  assert.ok(stoppedSfx.some((call) => call.id === 'preview-engine-loop' && call.options.key === 'race-engine'));
+  assert.deepEqual(stoppedSfx.at(-1), { id: '', options: { key: 'race-engine' } });
 });
 
 test('Race playtest launch holds road-aligned yaw before steering takes over', () => {
@@ -16565,7 +16848,7 @@ test('Race Editor built-in test tracks remain loadable internally without File m
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   const fileMenuIds = editor.getMenuItems('file').map((item) => item.id);
 
-  assert.deepEqual(fileMenuIds.slice(6), ['generate-random-race', 'exit-main']);
+  assert.deepEqual(fileMenuIds.slice(6), ['race-from-image', 'generate-random-race', 'exit-main']);
   assert.equal(fileMenuIds.some((id) => String(id || '').startsWith('load-')), false);
 
   editor.project.races = editor.project.races.slice(0, 1);
@@ -16855,6 +17138,7 @@ test('Race Editor File menu has no blank rows', () => {
     'open',
     'export',
     'import',
+    'race-from-image',
     'generate-random-race',
     'exit-main'
   ]);
@@ -24651,6 +24935,7 @@ test('Race physical tire billboard anchors receive saved offsets exactly once', 
   const car = {
     setup: { defaultTireCompound: 'tarmac' },
     art: {
+      angleLayers: { rear: { tires: { tireMode: 'visible' } } },
       tireTreads: { tarmac: { artRef: 'test-tire-art', frameIndex: 0 } },
       frontTireOffsetX: 1,
       frontTireOffsetY: 1,
