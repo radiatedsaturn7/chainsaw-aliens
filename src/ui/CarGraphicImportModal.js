@@ -31,6 +31,7 @@ export function openCarGraphicImport(component = 'body', initial = null) {
     const heading = el('h2', `Import ${component[0].toUpperCase() + component.slice(1)} Graphic`);
     const componentLabel = el('label', 'Component');
     const componentSelect = el('select', '', componentLabel);
+    componentSelect.setAttribute('aria-label', 'Component');
     for (const value of initial?.components || ['body', 'tires', 'brakes', 'shadow']) {
       const option = el('option', value[0].toUpperCase() + value.slice(1), componentSelect); option.value = value;
     }

@@ -11749,7 +11749,7 @@ export default class RaceEditor {
   createRaceAiRuntime(aiDrivers = [], { routeLength = this.getRaceRouteLength() } = {}) {
     return aiDrivers.slice(0, 11).map((driver, index) => {
       const ai = this.normalizeRaceAiDriver(driver, index);
-      const car = this.project.cars.find((candidate) => candidate.id === ai.carId) || this.selectedCar;
+      const car = ai.runtimeCar || this.findRaceProjectCarById(ai.carId) || this.selectedCar;
       const tuning = this.getRaceCarTuning(car, { transmissionType: ai.difficulty === 'expert' ? 'manual' : this.getRaceTransmissionType(car) });
       const distance = -Math.max(12, this.getRaceCarWorldWidth(car) * 6) - index * 7;
       const pose = this.getRaceWorldPoseAtDistance(distance, {
@@ -34002,6 +34002,12 @@ export default class RaceEditor {
 
   clearRaceThreeScene(renderer = null) {
     if (!renderer?.scene) return;
+    this.clearRaceThreeDynamicCar(renderer);
+    this.clearRaceThreeDynamicDoodads(renderer);
+    for (const holder of renderer.aiModelCars?.values() || []) this.clearRaceThreeDynamicCar(holder);
+    renderer.aiModelCars?.clear();
+    syncRaceModelTiles(renderer, [], 0);
+    if (renderer.scene.userData) delete renderer.scene.userData.rtgModelLights;
     while (renderer.scene.children.length) {
       const child = renderer.scene.children.pop();
       child.geometry?.dispose?.();
@@ -34025,6 +34031,38 @@ export default class RaceEditor {
     renderer.tireTrackSessionKey = null;
     renderer.tireTrackSyncedMaxId = 0;
     renderer.environmentSnowPoints = null;
+  }
+
+  syncRaceThreeAiModels(renderer, cameraYaw = 0) {
+    const holders = renderer.aiModelCars ||= new Map();
+    const active = new Set();
+    for (const ai of this.playtestSession?.aiRuntime || []) {
+      let car = ai.runtimeCar || this.findRaceProjectCarById(ai.carId) || this.selectedCar;
+      if (!car?.art?.bodyModel?.ref && !car?.art?.wheelModel?.ref) continue;
+      active.add(ai);
+      const distance = Number(ai.projectedDistance ?? ai.distance ?? 0);
+      const road = this.getRaceWorldPoseAtDistance(distance, { runtimeType: this.playtestSession.routeRuntimeType });
+      const right = this.getRaceRightVector(Number(road.yaw || 0));
+      const lateral = clamp(Number(ai.lineOffset || 0), -0.82, 0.82) * this.getRaceRoadHalfWidthWorld(road.segment);
+      const session = { ...ai, elapsedMs: this.playtestSession.elapsedMs,
+        worldX: Number.isFinite(ai.worldX) ? ai.worldX : Number(road.x || 0) + right.x * lateral,
+        worldZ: Number.isFinite(ai.worldZ) ? ai.worldZ : Number(road.z || 0) + right.z * lateral,
+        carYaw: Number(ai.carYaw ?? road.yaw ?? 0),
+        tireSlip: { ...ai.tireSlip, frontTireAngle: Number(ai.tireSlip?.frontTireAngle || 0) } };
+      const pose = this.getRacePlayerRenderPose(session, car, { fallbackElevation: road.elevation });
+      car = resolveCarAngleLayers(car, getCarViewSlot(pose.yaw, cameraYaw));
+      const hasBodyArt = Boolean(this.getRaceCarProjectedArtRef(car, pose.yaw, cameraYaw).artRef);
+      let holder = holders.get(ai);
+      if (!holder) { holder = { scene: renderer.scene, solidMaterialCache: renderer.solidMaterialCache ||= new Map() }; holders.set(ai, holder); }
+      this.addRaceThreeProceduralCar(holder, { ...pose, car, session,
+        drawBody: !hasBodyArt, drawWheels: !this.hasCarTireArtOverride(car),
+        drawLights: !hasBodyArt && !car.art?.brakeLightArtRef,
+        drawShadow: !car.art?.shadowArtRef,
+        color: ai.difficulty === 'expert' ? '#ff5f57' : ai.difficulty === 'hard' ? '#f2d45c' : ai.difficulty === 'medium' ? '#7ed957' : '#58d6ff' });
+    }
+    for (const [ai, holder] of holders) if (!active.has(ai)) {
+      this.clearRaceThreeDynamicCar(holder); holders.delete(ai);
+    }
   }
 
   clearRaceThreeDynamicCar(renderer = null) {
@@ -35026,7 +35064,7 @@ export default class RaceEditor {
     const halfWidth = Number(dimensions.widthM || 1.8) * 0.5;
     const bodyY = Number(elevation || 0) * RACE_THREE_ELEVATION_M;
     const lightY = bodyY + bodyHeightM * 0.12;
-    const wheelCenters = this.getRaceWheelVisualCenterPositions({ session, car });
+    const wheelCenters = this.getRaceWheelVisualCenterPositions({ session, car, tuning: car.tuning });
     const bodyMaterial = this.getRaceThreeSolidMaterial(renderer, color);
     const wheelMaterial = this.getRaceThreeSolidMaterial(renderer, '#050807');
     const headlightMaterial = this.getRaceThreeSolidMaterial(renderer, '#f7f4c8');
@@ -35603,6 +35641,7 @@ export default class RaceEditor {
     this.alignRaceThreeCameraHorizon(renderer.camera, camera, cameraYaw, bounds);
     if (dynamicCar) this.addRaceThreeProceduralCar(renderer, { ...dynamicCar, stats });
     else this.clearRaceThreeDynamicCar(renderer);
+    this.syncRaceThreeAiModels(renderer, cameraYaw);
     this.addRaceThreeDoodads(renderer, { stats });
     this.syncRaceTileModels(renderer,camera);
     this.syncRaceThreeTireTracks(renderer, { stats });
@@ -37205,7 +37244,7 @@ export default class RaceEditor {
 
       this.drawRaceTireTracks(ctx, bounds, { camera, cameraYaw });
       this.drawRaceTireFxParticles(ctx, bounds, { camera, cameraYaw, layer: 'ground' });
-      this.drawRaceProjectedAiCars(ctx, bounds, { camera, cameraYaw });
+      this.drawRaceProjectedAiCars(ctx, bounds, { camera, cameraYaw, threeRendered: drewWebGLTrack });
       this.drawRaceProjectedScenerySprites(ctx, bounds, { camera, cameraYaw, skipDoodads: drewWebGLTrack });
       this.drawRaceWeatherFx(ctx, bounds, weatherState, {
         camera,
@@ -37227,7 +37266,7 @@ export default class RaceEditor {
     }
   }
 
-  drawRaceProjectedAiCars(ctx, bounds, { camera = {}, cameraYaw = 0 } = {}) {
+  drawRaceProjectedAiCars(ctx, bounds, { camera = {}, cameraYaw = 0, threeRendered = false } = {}) {
     const session = this.playtestSession;
     if (!session?.aiRuntime?.length) return;
     const routeRuntimeType = session.routeRuntimeType || this.getSelectedRaceRuntimeType();
@@ -37261,6 +37300,7 @@ export default class RaceEditor {
         cameraYaw,
         car,
         renderState: ai.vehicleRenderState,
+        threeRendered: threeRendered && Boolean(this.raceThreeWorldRenderer?.aiModelCars?.get(ai)?.dynamicCarGroup),
         color: ai.difficulty === 'expert' ? '#ff5f57' : ai.difficulty === 'hard' ? '#f2d45c' : ai.difficulty === 'medium' ? '#7ed957' : '#58d6ff'
       });
     });
@@ -37272,6 +37312,7 @@ export default class RaceEditor {
     cameraYaw = 0,
     car = this.selectedCar,
     renderState = null,
+    threeRendered = false,
     color = '#58d6ff'
   } = {}) {
     if (!projected?.visible) return;
@@ -37285,7 +37326,7 @@ export default class RaceEditor {
     const hasShadowArt = Boolean(car.art?.shadowArtRef);
     const hasBrakeArt = Boolean(car.art?.brakeLightArtRef);
     if ((artCanvas || hasTireArt || hasShadowArt || hasBrakeArt) && typeof ctx.drawImage === 'function') {
-      if (!artCanvas) {
+      if (!artCanvas && !threeRendered) {
         this.drawRaceProjectedProceduralCar(ctx, bounds, {
           x: Number(projected.x || 0), z: Number(projected.z || 0),
           elevation: Number(projected.elevation ?? projected.y ?? 0) + 0.035,
@@ -37372,8 +37413,8 @@ export default class RaceEditor {
         tireScroll: this.getRaceTireTextureScroll(car),
         braking: false,
         damageColor: color,
-        drawWheels: hasTireArt || Boolean(artCanvas),
-        drawShadowLayer: hasShadowArt || Boolean(artCanvas),
+        drawWheels: hasTireArt || (!threeRendered && Boolean(artCanvas)),
+        drawShadowLayer: hasShadowArt || (!threeRendered && Boolean(artCanvas)),
         forceDefaultShadowLayer: Boolean(artChoice.artRef && !String(car?.art?.shadowArtRef || '').trim()),
         shadowGroundY: Number.isFinite(Number(shadowGroundProjected?.screenY)) ? Number(shadowGroundProjected.screenY) : y
       });
@@ -37401,6 +37442,7 @@ export default class RaceEditor {
       });
       return;
     }
+    if (threeRendered) return;
     const flatElevation = Number(projected.elevation ?? projected.y ?? 0) + 0.035;
     const drewFlatCar = this.drawRaceProjectedProceduralCar(ctx, bounds, {
       x: Number(projected.x || 0),

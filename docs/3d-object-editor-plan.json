@@ -79,10 +79,11 @@
     "raceTiles": "Instanced model tiles render in Race, support repeated animated geometry, implicit default tiles and explicit painted cells. Assignments normalized and saved on Race tile map; inherited Level models snapshot at paint/save. Model tile and packed tile tests pass.",
     "rigHierarchy": "Joint selection list, new roots, reparent/delete, weight controls, weighted vertex selection, clip properties and previous/next key navigation implemented. Reparent/delete tests preserve sampled animation world transforms and remove invalid links.",
     "input": "Shared menu contract validation now covers model3d; 258 menu/model unit tests passed. Keyboard shortcuts, shared gamepad semantic input, menu-first cancellation, model cursor and axis-aware panning implemented. UV work surface includes simultaneous rendered preview. Browser desktop/portrait workflow tests written but not yet executed.",
-    "validation": "41 model tests and 98 UI/menu/tire-library tests pass locally. Portrait 3D editor browser test passed in initial GitHub CI. Desktop test now explicitly opens menu before checking Escape; new real-WebGL actor animation pixel test awaits CI."
+    "validation": "43 model tests passed before command-input fix; 17 focused editor/import tests passed after modifier snapshot fix. GitHub dd124464: portrait editor and real WebGL bone-animated actor pixel test passed. Desktop duplicate shortcut exposed released-modifier bug, now fixed locally. Tire import Component accessible name fixed locally. Physics feel test fails dirt-vs-asphalt peak friction comparison and needs investigation.",
+    "raceAi": "AI cars with model bodies/wheels now use separate cached Three vehicle groups, continuous poses and remaining 2D layers. Removal and scene rebuild release models and restore lighting. Two new unit tests pass; browser pixel/orientation test added, awaiting publication."
   },
   "remaining": [
-    "Race AI and non-Three fallback audit; model preload/worker path audit; browser verification of car/wheel/doodad/tile models",
+    "Publish and browser-verify AI model rendering; audit non-Three fallback and preload/worker paths; browser verification of car/wheel/doodad/tile models",
     "Level actor authoring preview audit; browser verification for model tiles/scenery",
     "Level authoring model previews and built-in actor visual browser coverage",
     "Comprehensive editor keyboard/gamepad input review, UV rendered preview, import/document validation and browser interactions",
@@ -90,11 +91,11 @@
   ],
   "publication": {
     "branch": "feature/3d-object-editor",
-    "commit": "bd520a79e18de6b52d5f4dcbd8fab75e768a53aa",
-    "tree": "5b4d73a1f38ccc68c30a8345190b66945a7b26fa",
+    "commit": "dd1244641cd5b740711686da56cccf29bf68b765",
+    "tree": "6af47fb4c6546f4f4c5658264d7efc13d615f349",
     "draftPr": "https://github.com/radiatedsaturn7/chainsaw-aliens/pull/540",
-    "mergeTestsRun": 38217780661,
-    "vehicleValidationRun": 38217780773,
-    "status": "Initial CI: vehicle validation passed; Playwright shard 2 passed, shard 1 still running at last poll; shards 3/4 and UI units failed. Fixes prepared for menu assertions, explicit tire selector accessible name, and browser Escape test menu setup."
+    "mergeTestsRun": 38218926594,
+    "vehicleValidationRun": 38218926598,
+    "status": "Run 38218926594: shard 2 and physics browser passed; shard 1 still live at last poll; shards 3/4 failed (desktop shortcut and importer label, now fixed locally). UI/menu/model unit steps passed, physics feel step failed. New changes pending publication."
   }
 }

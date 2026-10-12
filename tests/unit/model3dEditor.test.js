@@ -56,3 +56,17 @@ test('UV editing shows a rendered preview without painting over its area',async(
   assert.ok(e.uvBounds.h<e.modelBounds.h);
   const before=e.revision;e.paintAt({x:e.modelBounds.x+10,y:e.modelBounds.y+e.modelBounds.h-5});assert.equal(e.revision,before);
 });
+
+test('quick command shortcuts retain keydown modifiers after keyup before the next frame',async()=>{
+  const {default:Input}=await import('../../src/game/Input.js');
+  const previous=globalThis.window;globalThis.window=new EventTarget();
+  const input=new Input(),e=new ModelEditor({});
+  try{
+    await e.handleMenuAction('shape-box');
+    const down=Object.assign(new Event('keydown'),{code:'KeyD',ctrlKey:true});
+    window.dispatchEvent(down);window.dispatchEvent(Object.assign(new Event('keyup'),{code:'KeyD'}));
+    assert.equal(input.isDownCode('ControlLeft'),undefined);
+    e.update(input,1/60);assert.equal(e.model.vertices.length,16);
+    input.reset();assert.equal(input.wasCommandPressedCode('KeyD'),false);
+  }finally{input.destroy();globalThis.window=previous;}
+});

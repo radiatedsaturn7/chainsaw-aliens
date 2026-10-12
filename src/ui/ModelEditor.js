@@ -30,8 +30,10 @@ export default class ModelEditor extends RaceEditor {
     this.updateRaceMapThumbstickPan(dt);
     const cmd=input?.isDownCode?.('ControlLeft')||input?.isDownCode?.('ControlRight')||input?.isDownCode?.('MetaLeft')||input?.isDownCode?.('MetaRight');
     const pressed=code=>input?.wasPressedCode?.(code);
-    const actions=cmd?{KeyZ:'undo',KeyY:'redo',KeyC:'copy',KeyX:'cut',KeyV:'paste',KeyD:'duplicate',KeyA:'select-all',KeyS:'save'}:{Delete:'delete',Backspace:'delete',Space:'animation-play',Digit1:'view-x',Digit2:'view-y',Digit3:'view-z',Digit4:'view-orbit'};
-    for(const [code,action] of Object.entries(actions))if(pressed(code))void this.handleMenuAction(action);
+    const commands={KeyZ:'undo',KeyY:'redo',KeyC:'copy',KeyX:'cut',KeyV:'paste',KeyD:'duplicate',KeyA:'select-all',KeyS:'save'};
+    const actions={Delete:'delete',Backspace:'delete',Space:'animation-play',Digit1:'view-x',Digit2:'view-y',Digit3:'view-z',Digit4:'view-orbit'};
+    for(const [code,action] of Object.entries(commands))if(input?.wasCommandPressedCode?.(code)||(cmd&&pressed(code)))void this.handleMenuAction(action);
+    for(const [code,action] of Object.entries(actions))if(!cmd&&pressed(code))void this.handleMenuAction(action);
     const pad=this.modelInput.updateGamepad(input,dt,{includePanIntent:true,includeZoomIntent:true});
     const cancel=()=>{if(this.desktopDropdown){this.closeEditorMenus();return;}if(this.gamepadSubmenuOpen){this.gamepadSubmenuOpen=false;this.mobileRootOpen=true;return;}if(this.mobileRootOpen){this.mobileRootOpen=false;return;}this.exitToMainMenu();};
     if(!pad.connected&&(input?.wasPressed?.('cancel')||pressed('Escape')))cancel();

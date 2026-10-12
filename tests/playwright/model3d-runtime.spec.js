@@ -36,3 +36,38 @@ test('bone-animated actor models render side-view pixels through the Level actor
   expect(result.changed).toBeGreaterThan(10);
   expect(errors).toEqual([]);
 });
+
+test('AI car bodies and wheels render model geometry at continuous angles in WebGL',async({page})=>{
+  await page.goto('/index.html');
+  await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');
+  const result=await page.evaluate(async()=>{
+    const THREE=await import('/src/vendorBridge/three.js');
+    const {default:RaceEditor}=await import('/src/ui/RaceEditor.js');
+    const {createModelDocument,addPrimitive}=await import('/src/model3d/ModelDocument.js');
+    const {modelAssets}=await import('/src/model3d/ModelAssets.js');
+    const model=createModelDocument();addPrimitive(model,'box');modelAssets.adopt('Browser AI model',model);
+    const e=new RaceEditor({},{mode:'race'}),car=e.selectedCar;
+    car.art.bodyModel={ref:'Browser AI model',scale:[1.8,0.8,4]};
+    car.art.wheelModel={ref:'Browser AI model',scale:[0.3,0.6,0.6]};
+    car.art.layerVisibility={shadow:false,brakes:false};
+    const ai={carId:car.id,worldX:0,worldZ:0,carYaw:0.31};
+    e.playtestSession={aiRuntime:[ai],elapsedMs:0};
+    e.getRaceWorldPoseAtDistance=()=>({x:0,z:0,elevation:0,yaw:0});
+    e.getRaceCompositedSurfaceAtWorldPoint=()=>({elevation:0});
+    const renderer={scene:new THREE.Scene()};
+    const webgl=new THREE.WebGLRenderer({alpha:true,preserveDrawingBuffer:true});webgl.setSize(256,256);
+    const camera=new THREE.PerspectiveCamera(40,1,0.01,100);camera.position.set(6,4,7);camera.lookAt(0,0,0);
+    const capture=()=>{
+      e.syncRaceThreeAiModels(renderer,0);webgl.render(renderer.scene,camera);
+      const gl=webgl.getContext(),pixels=new Uint8Array(256*256*4);gl.readPixels(0,0,256,256,gl.RGBA,gl.UNSIGNED_BYTE,pixels);return pixels;
+    };
+    try{
+      const first=capture();ai.carYaw=0.57;const next=capture();
+      const parts=renderer.aiModelCars.get(ai).dynamicCarGroup.userData.parts;
+      let opaque=0,changed=0;for(let i=0;i<first.length;i+=4){if(first[i+3])opaque++;if(first[i]!==next[i]||first[i+3]!==next[i+3])changed++;}
+      return {opaque,changed,yaw:parts.body.rotation.y,wheels:Object.values(parts.wheels).filter(w=>w.userData.modelInstance).length};
+    }finally{e.clearRaceThreeScene(renderer);webgl.dispose();modelAssets.entries.delete('Browser AI model');}
+  });
+  expect(result.opaque).toBeGreaterThan(100);expect(result.changed).toBeGreaterThan(100);
+  expect(result.yaw).toBeCloseTo(0.57);expect(result.wheels).toBe(4);
+});

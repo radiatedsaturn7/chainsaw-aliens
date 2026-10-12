@@ -54,3 +54,38 @@ test('looking around keeps the 3D car in the scene and dynamic/fixed camera mode
   assert.ok(Math.abs((dynamic-session.carYaw)/(Math.PI/4)-Math.round((dynamic-session.carYaw)/(Math.PI/4)))>0.01);
   car.camera.trackingMode='fixed-rear';assert.ok(Math.abs(e.getRacePlaytestCameraYaw(session)-session.carYaw)<1e-9);
 });
+
+test('AI models use their own pose and instances, retain mixed artwork, and clean up on removal',()=>{
+  const e=new RaceEditor({},{mode:'race'}),car=e.selectedCar;
+  const model=createModelDocument();addPrimitive(model,'box');modelAssets.adopt('AI Body',model);
+  car.art.bodyModel={ref:'AI Body'};
+  const wheelModel=structuredClone(car);wheelModel.id='wheel-only';wheelModel.art.bodyModel=null;
+  wheelModel.art.wheelModel={ref:'AI Body'};wheelModel.art.body='Sprite body';e.project.cars.push(wheelModel);
+  const ai={carId:car.id,worldX:12,worldZ:6,carYaw:0.31},other={carId:wheelModel.id,worldX:-4,worldZ:8,carYaw:0.9};
+  e.playtestSession={aiRuntime:[ai,other],elapsedMs:500,routeRuntimeType:'circuit'};
+  e.getRaceWorldPoseAtDistance=()=>({x:0,z:0,yaw:0,elevation:0});
+  e.getRaceCompositedSurfaceAtWorldPoint=()=>({elevation:0});
+  e.getRaceWheelVisualCenterPositions=({session})=>Object.fromEntries(['fl','fr','rl','rr'].map(id=>[id,{x:session.worldX,z:session.worldZ,elevation:0}]));
+  const renderer={scene:new THREE.Scene()};
+  try{
+    e.syncRaceThreeAiModels(renderer,0);
+    const holder=renderer.aiModelCars.get(ai),parts=holder.dynamicCarGroup.userData.parts;
+    assert.ok(parts.body.userData.modelInstance);assert.equal(parts.body.position.x,12);assert.equal(parts.body.rotation.y,0.31);
+    const otherParts=renderer.aiModelCars.get(other).dynamicCarGroup.userData.parts;
+    assert.equal(otherParts.body,null,'sprite body remains in the 2D pass');assert.ok(otherParts.wheels.fl.userData.modelInstance);
+    ai.carYaw=0.43;e.syncRaceThreeAiModels(renderer,0);assert.equal(parts.body.rotation.y,0.43);
+    const instance=parts.body.userData.modelInstance;e.playtestSession.aiRuntime=[other];e.syncRaceThreeAiModels(renderer,0);
+    assert.equal(instance.root,null);assert.equal(renderer.aiModelCars.size,1);
+    e.clearRaceThreeScene(renderer);assert.equal(renderer.aiModelCars.size,0);assert.equal(renderer.scene.userData.rtgModelLights,undefined);
+    e.syncRaceThreeAiModels(renderer,0);assert.ok(renderer.scene.userData.rtgModelLights.fill.parent,'lighting returns after a scene rebuild');
+  }finally{e.clearRaceThreeScene(renderer);modelAssets.entries.delete('AI Body');}
+});
+
+test('completed Three AI pass suppresses procedural duplicates while software fallback still draws',()=>{
+  const e=new RaceEditor({},{mode:'race'});let draws=0;
+  e.getRaceProjectedCarBillboardSize=()=>({width:20,height:30});
+  e.drawRaceProjectedProceduralCar=()=>{draws++;return true;};e.drawRaceGeometricDebugOverlay=()=>{};
+  const options={car:e.selectedCar,projected:{visible:true,screenX:30,screenY:40},threeRendered:true};
+  e.drawRaceProjectedCarSprite({}, {}, options);assert.equal(draws,0);
+  e.drawRaceProjectedCarSprite({}, {}, {...options,threeRendered:false});assert.equal(draws,1);
+});
