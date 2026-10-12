@@ -78,25 +78,23 @@
     "level": "Tile model bindings serialize with tile properties and preserve collision. GameCore uses side-view models for tiles and model scenery, including fast-editor requests. Level Graphics adds model/model-doodad placement and editing via existing decal transforms. Static model snapshots are cached independently from shared renderer canvas. 33 focused Level/tile tests pass; browser checks remain.",
     "raceTiles": "Instanced model tiles render in Race, support repeated animated geometry, implicit default tiles and explicit painted cells. Assignments normalized and saved on Race tile map; inherited Level models snapshot at paint/save. Model tile and packed tile tests pass.",
     "rigHierarchy": "Joint selection list, new roots, reparent/delete, weight controls, weighted vertex selection, clip properties and previous/next key navigation implemented. Reparent/delete tests preserve sampled animation world transforms and remove invalid links.",
-    "input": "Docker desktop modeling/menu/Escape/quick Ctrl+D/Ctrl+Z/native roundtrip and portrait shell tests passed on 3aea74c6. Actor bone-animation pixel test and AI model rendering test passed.",
-    "validation": "45 model tests pass locally. All 8 physics-feel tests pass after replacing cross-compound/unloaded-wheel peak assertion with controlled same-tire/same-load surface check; simulation unchanged. Docker 3aea74c6 passed desktop/portrait editor, animated actor pixels, and AI model pixels/orientation. Added combined rig/weights/keyframe/UV paint dialog workflow awaiting CI.",
+    "input": "Docker dd7e421d passed shared desktop/portrait shell, rapid shortcuts, rig/weights/keyframe/UV dialog workflow. Inherited Car labels corrected to use the editor title.",
+    "validation": "45 model unit tests and all 8 physics-feel checks passed locally. GitHub dd7e421d UI/model/physics unit job passed; browser shard 3 passed including desktop/portrait modeling and combined rig/weights/keyframe/UV painting workflow. Shard 2 and physics browser passed; shards 1 and 4 still live at last poll.",
     "raceAi": "Docker job 114712147989 passed actual WebGL AI body/wheel pixel and continuous-orientation test. Separate poses, removal and scene-rebuild cleanup covered by unit tests.",
     "tracing": "Tracing images now retain source aspect and follow orthographic X/Y/Z pan/zoom. 12 focused editor tests pass locally."
   },
   "remaining": [
-    "Publish and browser-verify AI model rendering; audit non-Three fallback and preload/worker paths; browser verification of car/wheel/doodad/tile models",
-    "Level actor authoring preview audit; browser verification for model tiles/scenery",
-    "Level authoring model previews and built-in actor visual browser coverage",
-    "Comprehensive editor keyboard/gamepad input review, UV rendered preview, import/document validation and browser interactions",
-    "Browser Playwright coverage in GitHub Docker, documentation and complete requirements audit"
+    "Browser verification of new actual-pixel Level tile/scenery and Race tile/doodad tests",
+    "Inspect pending CI jobs and resolve failures; verify complete requirements against implementation and tests",
+    "Finalize documentation, commit/publish verified changes and perform complete requirements audit"
   ],
   "publication": {
     "branch": "feature/3d-object-editor",
-    "commit": "3aea74c6a4afa5e6fcac4aa69858c60301759965",
-    "tree": "413b3beb06b1c039a9dc0ccc6aa15a90483a580a",
+    "commit": "dd7e421dda49a50365ceb6e9eb452cbc781500f3",
+    "tree": "0a6f96670bb19ebab551d0ef4276e3186b066514",
     "draftPr": "https://github.com/radiatedsaturn7/chainsaw-aliens/pull/540",
-    "mergeTestsRun": 38219520262,
-    "vehicleValidationRun": 38219520317,
-    "status": "3aea74c6 browser shards 2/3/4 green; shard 1 still running at last poll. Physics browser green; unit physics assertion fix verified locally, pending publication."
+    "mergeTestsRun": 38220277219,
+    "vehicleValidationRun": 38220277203,
+    "status": "Latest tracing, shared form label and rig/UV browser test batch published; Merge Tests running and Vehicle Validation pending. Local/remote trees verified identical. Local physics 8/8 and model 45/45 passed."
   }
 }

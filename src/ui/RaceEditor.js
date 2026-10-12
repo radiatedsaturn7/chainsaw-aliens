@@ -19165,7 +19165,7 @@ export default class RaceEditor {
       }
     });
     drawSharedDesktopRibbon(ctx, shell.leftRibbon, {
-      title: this.mode === 'car' ? 'Car' : 'Race',
+      title: this.title.replace(/ Editor$/, ''),
       subtitle: shell.dropdown?.label || this.title
     });
     this.drawDesktopContext(ctx, shell.leftOptions);
@@ -19614,7 +19614,7 @@ export default class RaceEditor {
         y: shell.surfaces.workSurface.y + shell.surfaces.workSurface.h - 36,
         w: Math.max(240, shell.surfaces.workSurface.w - 24),
         h: 28
-      }, this.mode === 'car' ? 'Car Editor' : 'Race Editor');
+      }, this.title);
     }
     this.drawLandscapeRaceMapThumbstick(ctx, shell, {
       suppressed: gamepadMenuState.isLandscapeMenuMode || this.mobileRootOpen

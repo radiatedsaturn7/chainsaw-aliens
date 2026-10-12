@@ -1538,6 +1538,16 @@ export const LATEST_MAJOR_WORK = {
 };
 
 export const LATEST_CHANGES = [
+  {
+    date: '2026-10-12',
+    time: '03:56 EDT',
+    title: '3D Object Editor and model graphics',
+    details: [
+      'Graphics now includes a 3D Object Editor with mesh editing, symmetry, bones, optional IK, animation keyframes, UV editing and texture painting.',
+      'Import OBJ or glTF/GLB models, save editable Models, and assign models to actor states, tiles, doodads, car bodies and wheels. Race models turn continuously; Level models render from the side.',
+      'The editor uses the shared portrait thumbstick, four-button rail, hotbar and zoom controls. Tracing images retain their proportions and follow orthographic pan and zoom.'
+    ]
+  },
     '2026-08-24 09:55 EDT - Restored continuous rolling tread marks on snow, dirt, gravel, mud, and grass by sourcing mark emission from the canonical post-step wheel/contact generation instead of stale legacy vehicle3d load flags. Genuine airtime still breaks ribbons, asphalt remains skid-only, and unified snowfall now uses smaller 0.9-2.2 px source flakes with an 8 px shader cap so flakes remain proportional to the car.',
     '2026-08-24 08:35 EDT - Unified race snowfall into one bounded terrain-aware near-to-far field. The duplicate 128-flake car-local canvas overlay no longer updates or renders over the 384-flake environment field; the canonical field now reaches the near camera region and carries the preferred larger flakes and speed streaks through one selected WebGL or canvas backend per frame.',
     '2026-08-23 14:27 EDT - Fixed intermittent hill resets that faded back in over an unchanged overturned car. The fade transaction now treats a rejected static-support solve as uncommitted, remains in the hidden interval, and retries the full reset; each retry advances a fresh terrain-query generation so stale crash-pose hill geometry cannot be reused.',
