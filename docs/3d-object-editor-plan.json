@@ -78,9 +78,10 @@
     "level": "Tile model bindings serialize with tile properties and preserve collision. GameCore uses side-view models for tiles and model scenery, including fast-editor requests. Level Graphics adds model/model-doodad placement and editing via existing decal transforms. Static model snapshots are cached independently from shared renderer canvas. 33 focused Level/tile tests pass; browser checks remain.",
     "raceTiles": "Instanced model tiles render in Race, support repeated animated geometry, implicit default tiles and explicit painted cells. Assignments normalized and saved on Race tile map; inherited Level models snapshot at paint/save. Model tile and packed tile tests pass.",
     "rigHierarchy": "Joint selection list, new roots, reparent/delete, weight controls, weighted vertex selection, clip properties and previous/next key navigation implemented. Reparent/delete tests preserve sampled animation world transforms and remove invalid links.",
-    "input": "Shared menu contract validation now covers model3d; 258 menu/model unit tests passed. Keyboard shortcuts, shared gamepad semantic input, menu-first cancellation, model cursor and axis-aware panning implemented. UV work surface includes simultaneous rendered preview. Browser desktop/portrait workflow tests written but not yet executed.",
-    "validation": "43 model tests passed before command-input fix; 17 focused editor/import tests passed after modifier snapshot fix. GitHub dd124464: portrait editor and real WebGL bone-animated actor pixel test passed. Desktop duplicate shortcut exposed released-modifier bug, now fixed locally. Tire import Component accessible name fixed locally. Physics feel test fails dirt-vs-asphalt peak friction comparison and needs investigation.",
-    "raceAi": "AI cars with model bodies/wheels now use separate cached Three vehicle groups, continuous poses and remaining 2D layers. Removal and scene rebuild release models and restore lighting. Two new unit tests pass; browser pixel/orientation test added, awaiting publication."
+    "input": "Docker desktop modeling/menu/Escape/quick Ctrl+D/Ctrl+Z/native roundtrip and portrait shell tests passed on 3aea74c6. Actor bone-animation pixel test and AI model rendering test passed.",
+    "validation": "45 model tests pass locally. All 8 physics-feel tests pass after replacing cross-compound/unloaded-wheel peak assertion with controlled same-tire/same-load surface check; simulation unchanged. Docker 3aea74c6 passed desktop/portrait editor, animated actor pixels, and AI model pixels/orientation. Added combined rig/weights/keyframe/UV paint dialog workflow awaiting CI.",
+    "raceAi": "Docker job 114712147989 passed actual WebGL AI body/wheel pixel and continuous-orientation test. Separate poses, removal and scene-rebuild cleanup covered by unit tests.",
+    "tracing": "Tracing images now retain source aspect and follow orthographic X/Y/Z pan/zoom. 12 focused editor tests pass locally."
   },
   "remaining": [
     "Publish and browser-verify AI model rendering; audit non-Three fallback and preload/worker paths; browser verification of car/wheel/doodad/tile models",
@@ -91,11 +92,11 @@
   ],
   "publication": {
     "branch": "feature/3d-object-editor",
-    "commit": "dd1244641cd5b740711686da56cccf29bf68b765",
-    "tree": "6af47fb4c6546f4f4c5658264d7efc13d615f349",
+    "commit": "3aea74c6a4afa5e6fcac4aa69858c60301759965",
+    "tree": "413b3beb06b1c039a9dc0ccc6aa15a90483a580a",
     "draftPr": "https://github.com/radiatedsaturn7/chainsaw-aliens/pull/540",
-    "mergeTestsRun": 38218926594,
-    "vehicleValidationRun": 38218926598,
-    "status": "Run 38218926594: shard 2 and physics browser passed; shard 1 still live at last poll; shards 3/4 failed (desktop shortcut and importer label, now fixed locally). UI/menu/model unit steps passed, physics feel step failed. New changes pending publication."
+    "mergeTestsRun": 38219520262,
+    "vehicleValidationRun": 38219520317,
+    "status": "3aea74c6 browser shards 2/3/4 green; shard 1 still running at last poll. Physics browser green; unit physics assertion fix verified locally, pending publication."
   }
 }

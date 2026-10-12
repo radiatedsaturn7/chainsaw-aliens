@@ -3,7 +3,7 @@ import RaceEditor from './RaceEditor.js';
 import * as THREE from '../vendorBridge/three.js';
 import * as Mesh from '../model3d/ModelDocument.js';
 import * as Rig from '../model3d/ModelRig.js';
-import {ModelCanvasRenderer} from '../model3d/ModelRender.js';
+import {ModelCanvasRenderer,getModelFrame} from '../model3d/ModelRender.js';
 import {importModelFiles,exportOBJ} from '../model3d/ModelImport.js';
 import {getEditorMenuSpec,getEditorTouchRootMenuEntries} from './shared/editorMenuSpec.js';
 import {openEditorForm,chooseEditorFiles} from './shared/editorForm.js';
@@ -147,14 +147,26 @@ if(this.playing){const clip=this.model.animations.find(c=>c.id===this.clip);this
     const canvas=document.createElement('canvas');canvas.width=texture.width;canvas.height=texture.height;const ctx=canvas.getContext('2d');
     texture.pixels.forEach((color,i)=>{if(color){ctx.fillStyle=color;ctx.fillRect(i%texture.width,Math.floor(i/texture.width),1,1);}});this.textureCache={revision:this.revision,material:this.activeMaterial().id,canvas};return canvas;
   }
+  tracingImageBounds(image,view){
+    const extent=(this.modelRenderer.framing||getModelFrame(this.model)).extent;
+    const pixelsPerUnit=view.h/extent*this.zoom;
+    const aspect=image.width/image.height;
+    const fit=Math.min(1,view.w/view.h/aspect);
+    const h=extent*fit*pixelsPerUnit,w=h*aspect;
+    const horizontal=this.view==='x'?-this.pan[2]:this.pan[0];
+    const vertical=this.view==='y'?-this.pan[2]:this.pan[1];
+    return {x:view.x+view.w/2-w/2-horizontal*pixelsPerUnit,
+      y:view.y+view.h/2-h/2+vertical*pixelsPerUnit,w,h};
+  }
   drawCarEditorWorkSurface(ctx,bounds){
     this.carArtSliderRegions=[];this.modelBounds={x:bounds.x,y:bounds.y+28,w:bounds.w,h:Math.max(40,bounds.h-136)};
     ctx.fillStyle='#0c1418';ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.fillStyle='#c4d9d1';ctx.font='12px system-ui';ctx.fillText(`${this.model.name} · ${label(this.tool)}`,bounds.x+8,bounds.y+17,bounds.w-16);
     const view=this.modelBounds,background=this.model.backgrounds[this.view];
-    if(background&&typeof Image!=='undefined'){
-      let image=this.images.get(background.url);if(!image){image=new Image();image.src=background.url;this.images.set(background.url,image);}if(image.complete){ctx.save();ctx.globalAlpha=background.opacity;ctx.drawImage(image,view.x,view.y,view.w,view.h);ctx.restore();}
-    }
     ctx.save();ctx.beginPath();ctx.rect(view.x,view.y,view.w,view.h);ctx.clip();
+    if(!this.uvMode&&background&&typeof Image!=='undefined'){
+      let image=this.images.get(background.url);if(!image){image=new Image();image.src=background.url;this.images.set(background.url,image);}
+      if(image.complete&&image.width&&image.height){const box=this.tracingImageBounds(image,view);ctx.save();ctx.globalAlpha=background.opacity;ctx.drawImage(image,box.x,box.y,box.w,box.h);ctx.restore();}
+    }
     if(this.uvMode){
       const horizontal=view.w>=500;
       this.uvBounds={...view,w:horizontal?view.w*0.65:view.w,h:horizontal?view.h:view.h*0.65};

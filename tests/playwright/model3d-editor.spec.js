@@ -59,3 +59,36 @@ test('portrait uses the four bottom controls, thumbstick, hotbar and zoom',async
   await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.mobileRootOpen)).toBe(true);
   await page.screenshot({path:'test-results/model3d-portrait-menu.png'});
 });
+
+test('rig, animation and UV painting work together through editor commands and dialogs',async({page})=>{
+  await page.setViewportSize({width:1280,height:800});await open(page);
+  const command=async id=>{await page.evaluate(id=>{void window.__game.modelEditor.handleMenuAction(id);},id);};
+  const apply=async title=>{await page.getByRole('dialog',{name:title,exact:true}).getByRole('button',{name:'Apply',exact:true}).click();};
+  const clickAt=async point=>{
+    const screen=await page.evaluate(point=>{const g=window.__game,r=g.canvas.getBoundingClientRect();return {x:r.x+point.x*r.width/g.viewport.width,y:r.y+point.y*r.height/g.viewport.height};},point);
+    await page.mouse.click(screen.x,screen.y);
+  };
+  await command('shape-box');await command('joint-root');
+  await clickAt(await page.evaluate(()=>{const b=window.__game.modelEditor.modelBounds;return {x:b.x+b.w/2,y:b.y+b.h/2};}));
+  await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.model.joints.length)).toBe(1);
+  await command('assign-joint');await apply('Vertex weight');
+  await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.model.vertices.every(v=>v.weights.length===1&&v.weights[0].weight===1))).toBe(true);
+  await command('animation-new');
+  await page.getByRole('dialog',{name:'New animation',exact:true}).getByLabel('Name',{exact:true}).fill('Wave');await apply('New animation');
+  await command('keyframe-set');await command('animation-time');
+  await page.getByLabel('Time (seconds)',{exact:true}).fill('1');await apply('Timeline');
+  await command('pose-joint');await page.getByLabel('Rotation Z (degrees)',{exact:true}).fill('60');await apply('Pose joint');
+  await command('keyframe-set');
+  await expect.poll(()=>page.evaluate(()=>{const e=window.__game.modelEditor;return e.model.animations[0].tracks[e.joint].length;})).toBe(2);
+  await command('animation-time');await page.getByLabel('Time (seconds)',{exact:true}).fill('0.5');await apply('Timeline');
+  await expect.poll(()=>page.evaluate(()=>{const e=window.__game.modelEditor;return e.pose[e.joint]?.rotation[2]||0;})).toBeCloseTo(Math.sin(Math.PI/12),4);
+  await command('uv-generate');await command('uv-paint');
+  await expect.poll(()=>page.evaluate(()=>Boolean(window.__game.modelEditor.uvBounds))).toBe(true);
+  await clickAt(await page.evaluate(()=>{const b=window.__game.modelEditor.uvBounds;return {x:b.x+b.w/2,y:b.y+b.h/2};}));
+  await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.activeMaterial().texture?.pixels.includes('#df533f')||false)).toBe(true);
+  await expect.poll(()=>page.evaluate(()=>Boolean(window.__game.modelEditor.modelRenderer.root?.userData.materials[0].map))).toBe(true);
+  // Material selection exercises the shared select dialog, including its label.
+  await command('texture-material');await page.getByLabel('Material',{exact:true}).selectOption('material-0');await apply('Texture material');
+  await command('undo');
+  await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.activeMaterial().texture)).toBe(null);
+});

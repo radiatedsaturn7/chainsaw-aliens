@@ -70,3 +70,13 @@ test('quick command shortcuts retain keydown modifiers after keyup before the ne
     input.reset();assert.equal(input.wasCommandPressedCode('KeyD'),false);
   }finally{input.destroy();globalThis.window=previous;}
 });
+
+test('orthographic tracing preserves image aspect and follows world-space pan and zoom',()=>{
+  const e=new ModelEditor({}),image={width:800,height:400},view={x:0,y:0,w:500,h:300};
+  e.modelRenderer.framing={center:[0,0,0],extent:2};e.view='z';
+  const first=e.tracingImageBounds(image,view);assert.equal(first.w/first.h,2);assert.ok(first.w<=view.w&&first.h<=view.h);
+  e.zoom=2;const zoomed=e.tracingImageBounds(image,view);assert.equal(zoomed.w,first.w*2);
+  e.pan=[1,0,0];const panned=e.tracingImageBounds(image,view);assert.equal(panned.x,zoomed.x-300);
+  e.view='x';e.pan=[0,0,1];assert.equal(e.tracingImageBounds(image,view).x,zoomed.x+300);
+  e.view='y';assert.equal(e.tracingImageBounds(image,view).y,zoomed.y-300);
+});
