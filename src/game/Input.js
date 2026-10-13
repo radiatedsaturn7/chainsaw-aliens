@@ -259,10 +259,10 @@ export default class Input {
     this.gamepadPrevActions = nextActions;
     this.gamepadActions = nextActions;
     this.gamepadAxes = {
-      leftX: clamp(axisX * (this.controlSensitivity || 1), -1, 1),
-      leftY: clamp(axisY * (this.controlSensitivity || 1), -1, 1),
-      rightX: clamp(axisRX * (this.controlSensitivity || 1), -1, 1),
-      rightY: clamp(axisRY * (this.controlSensitivity || 1), -1, 1),
+      leftX: axisX,
+      leftY: axisY,
+      rightX: axisRX,
+      rightY: axisRY,
       leftTrigger,
       rightTrigger
     };
@@ -331,10 +331,11 @@ export default class Input {
   }
 
   getGamepadAxes() {
-    if (this.virtualGamepadActive) {
-      return this.virtualGamepadAxes;
-    }
-    return this.gamepadAxes;
+    const axes = this.virtualGamepadActive ? this.virtualGamepadAxes : this.gamepadAxes;
+    const sensitivity = this.controlSensitivity || 1;
+    if (sensitivity === 1) return axes;
+    return { ...axes, ...Object.fromEntries(['leftX', 'leftY', 'rightX', 'rightY']
+      .map(key => [key, clamp(Number(axes[key] || 0) * sensitivity, -1, 1)])) };
   }
 
   combineActions(...sources) {

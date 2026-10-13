@@ -37,3 +37,8 @@ test('settings independently control effects, music, brightness, sensitivity and
 test('race controls honor remapping instead of the hard-coded steering fallback',()=>{
  const e=new RaceEditor({},{mode:'race'});e.playtestSession={running:true};const state=Object.assign(Object.create(Input.prototype),{actionKeymap:{left:['KeyQ']},keys:new Map([['KeyA',true]]),pressed:new Set(),released:new Set(),virtualDown:new Map(),virtualPressed:new Set(),virtualReleased:new Set(),gamepadActions:{},gamepadPressed:new Set(),virtualGamepadActions:{},virtualGamepadPressed:new Set()});e.updateRaceKeyboardInput(state);assert.equal(e.raceInput.keyboardSteer,0);state.keys=new Map([['KeyQ',true]]);e.updateRaceKeyboardInput(state);assert.equal(e.raceInput.keyboardSteer,-1);
 });
+
+test('sensitivity applies equally to physical and virtual sticks without scaling pedals',()=>{
+ const state=Object.assign(Object.create(Input.prototype),{controlSensitivity:2,gamepadAxes:{leftX:0.4,leftY:-0.7,rightX:0.2,rightY:0,leftTrigger:0.2,rightTrigger:0.8},virtualGamepadAxes:{leftX:0.3,leftY:0,rightX:0,rightY:0,leftTrigger:0,rightTrigger:0.6}});
+ assert.equal(state.getGamepadAxes().leftX,0.8);assert.equal(state.getGamepadAxes().leftY,-1);assert.equal(state.getGamepadAxes().rightTrigger,0.8);state.virtualGamepadActive=true;assert.equal(state.getGamepadAxes().leftX,0.6);assert.equal(state.getGamepadAxes().rightTrigger,0.6);assert.equal(state.virtualGamepadAxes.leftX,0.3);
+});

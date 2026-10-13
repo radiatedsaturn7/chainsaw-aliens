@@ -24,3 +24,9 @@ test('screen deletion removes broken links and undo restores the full flow',asyn
 test('invalid edits roll back without losing the designer selection',()=>{
  const e=editor(),before=e.snapshot();assert.throws(()=>e.change(()=>{e.menu.startScreen='missing'}));assert.deepEqual(e.snapshot(),before);
 });
+
+test('keyboard undo handles a completed shortcut even after Control was released',async()=>{
+ const e=editor();await e.runAction('insert-text');assert.equal(e.screen.elements.length,3);
+ e.update({wasCommandPressedCode:code=>code==='KeyZ',wasPressedCode:()=>false,isDownCode:()=>false},1/60);
+ assert.equal(e.screen.elements.length,2);
+});
