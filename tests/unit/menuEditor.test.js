@@ -30,3 +30,15 @@ test('keyboard undo handles a completed shortcut even after Control was released
  e.update({wasCommandPressedCode:code=>code==='KeyZ',wasPressedCode:()=>false,isDownCode:()=>false},1/60);
  assert.equal(e.screen.elements.length,2);
 });
+
+test('Preview This Screen passes the edited screen; Play From Start keeps its explicit meaning',async()=>{
+ const e=editor(),calls=[];e.game.previewMenu=async(doc,options)=>calls.push({doc,options});e.screenId='events';e.elementId='heading';e.element.label='Unsaved heading';
+ await e.runAction('menu-preview');assert.equal(calls[0].options.screenId,'events');assert.equal(calls[0].doc.screens.find(s=>s.id==='events').elements[0].label,'Unsaved heading');
+ await e.runAction('menu-preview-start');assert.equal(calls[1].options.screenId,'splash');assert.equal(e.screenId,'events');assert.equal(e.elementId,'heading');assert.equal(e.menu.startScreen,'splash');
+});
+test('widget dropdown inserts immediately, supports keyboard dismissal and hides keyframe commands',async()=>{
+ const e=editor();await e.runAction('widget-add');assert.equal(e.menuPicker,'widgets');const button=e.pickerEntries().find(e=>e.id==='pick-widget:button');e.choosePicker(button);await Promise.resolve();assert.equal(e.element.type,'button');assert.equal(e.menuPicker,null);
+ await e.runAction('widget-add');e.update({wasPressedCode:code=>code==='Escape'},1/60);assert.equal(e.menuPicker,null);
+ assert.ok(!e.getMenuItems('properties').some(e=>e.id.startsWith('keyframe-')));
+ await e.runAction('element-animation');e.choosePicker(e.pickerEntries().find(e=>e.id==='pick-animation:pulse'));await Promise.resolve();assert.equal(e.element.animation,'pulse');assert.equal(e.animating,true);e.history();assert.equal(e.element.animation,'none');
+});

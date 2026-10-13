@@ -444,10 +444,10 @@ export const EDITOR_MENU_SPECS = {
     sections:{
       file:section('file','File',['new','save','save-as','open','export','import','exit-main']),
       edit:section('edit','Edit',['undo','redo','copy','cut','paste','duplicate','delete']),
-      view:section('view','View',['menu-preview','menu-animate','zoom-fit']),
+      view:section('view','View',['menu-preview','menu-preview-start','menu-animate','zoom-fit']),
       screens:section('screens','Screens',['screen-select','screen-new','screen-duplicate','screen-properties','screen-background','screen-start','screen-delete']),
       insert:section('insert','Insert',['widget-add','insert-text','insert-image','insert-button','insert-choice','insert-slider','insert-toggle','insert-keybind','insert-car-preview','insert-car-stats','insert-power-curve','insert-video','insert-property-display','insert-asset-preview']),
-      properties:section('properties','Properties',['element-select','element-setup','element-properties','element-art','element-action','element-animation','keyframe-add','keyframe-clear','layer-up','layer-down']),
+      properties:section('properties','Properties',['element-select','element-setup','element-properties','element-art','element-action','element-animation','animation-timing','layer-up','layer-down']),
       flow:section('flow','Flow',['menu-parameters','starting-menu','clear-starting-menu'])
     }
   },

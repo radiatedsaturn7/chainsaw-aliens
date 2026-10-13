@@ -8,7 +8,7 @@ import {hydrateProjectFilePayload} from '../ui/projectFiles.js';
 
 export default class MenuPlayer {
   constructor(game){this.game=game;this.resources=new MenuResources(game);this.settings=new MenuSettings(game);this.videos=new Map();this.cutscene=new CutscenePlayer(game);this.mediaGeneration=0;this.focus=0;this.preview=false;this.message='';this.flow=null;}
-  async open(document,{preview=false}={}){
+  async open(document,{preview=false,screenId=null}={}){
     if(this.flow){this.flow.active=false;this.flow.generation++;}
     this.cleanup();this.preview=preview;this.message='';this.focus=0;
     await this.settings.load();
@@ -17,6 +17,7 @@ export default class MenuPlayer {
       screenChanged:()=>this.enterScreen(),stop:()=>{this.cleanup();this.game.transitionTo(this.preview?'menu-editor':'title',{forceCleanup:true})},
       playMovie:(ref)=>this.playMovie(ref),launchRace:(ref,params)=>this.launchRace(ref,params),launchLevel:(ref,params)=>this.launchLevel(ref,params)
     });
+    if(preview&&this.flow.document.screens.some(s=>s.id===screenId))this.flow.screenId=screenId;
     Object.assign(this.flow.parameters,this.settings.parameters());this.game.transitionTo('menu-player',{forceCleanup:true});this.enterScreen();
   }
   cleanupScreen(){this.mediaGeneration++;this.choicePopup=null;this.slider=null;this.game.setActiveMusicTrack?.(null);for(const video of this.videos.values()){video.pause();video.removeAttribute('src');video.load();}this.videos.clear();}

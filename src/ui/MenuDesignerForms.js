@@ -1,7 +1,7 @@
 import {openEditorForm,chooseEditorFiles} from './shared/editorForm.js';
 import {openProjectBrowser} from './ProjectBrowserModal.js';
 import {listProjectFiles,hydrateProjectFilePayload,saveProjectFileAndConfirm} from './projectFiles.js';
-import {MENU_WIDGETS,widgetLabel,MENU_DATA_SOURCES,propertyPaths} from '../menus/MenuWidgets.js';
+import {widgetLabel,MENU_DATA_SOURCES,propertyPaths} from '../menus/MenuWidgets.js';
 import {MENU_SETTINGS} from '../menus/MenuDocument.js';
 
 const text=(id,label,value='',extra={})=>({id,label,value,type:'text',required:false,...extra});
@@ -11,12 +11,6 @@ export const parameterNames=editor=>[...new Set([...Object.keys(editor.menu.para
 const bindingField=(editor,e)=>text('binding','Value parameter',e.binding,{suggestions:parameterNames(editor)});
 const fileOptions=folder=>[{value:'',label:'Use selected value parameter'},...listProjectFiles(folder).map(f=>({value:f.name,label:f.name}))];
 
-export async function addWidget(editor){
-  const result=await openEditorForm('Add Widget',[select('type','Widget','button',MENU_WIDGETS.map(w=>({value:w.type,label:`${w.label} — ${w.description}`})))],{description:'Add a widget, configure what it displays or changes, then drag it into place. You can reopen Setup at any time.'});
-  if(!result)return;
-  await editor.runAction(`insert-${result.type}`);
-  await setupWidget(editor);
-}
 export async function chooseImage(editor,{background=false}={}){
   const result=await openEditorForm(background?'Screen Background':'Image Source',[select('source','Image source','saved',[{value:'saved',label:'Saved artwork'},{value:'device',label:'Import image from device'},{value:'clear',label:'Remove image'}])]);
   if(!result)return;

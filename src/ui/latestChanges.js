@@ -1542,6 +1542,12 @@ export const LATEST_MAJOR_WORK = {
 export const LATEST_CHANGES = [
   {
     date: '2026-10-13',
+    time: '17:10 EDT',
+    title: 'Bottom menu hotbar and current-screen preview',
+    details: ['Moved the Menu Editor hotbar below the canvas. Widget, Layers and Screens now open in-editor dropdowns; picking a widget adds it immediately, with Setup available afterward.', 'Preview opens the current screen including unsaved edits. Play From Start is separate, and Animation offers named effects and speed/repeat controls instead of raw keyframe commands.']
+  },
+  {
+    date: '2026-10-13',
     time: '16:40 EDT',
     title: 'Menus launch races; races control progression',
     details: ['Removed the separate Start Grand Prix action and menu schedule editor. Start Race loads one saved race, and that race’s configured completion destination controls subsequent races or levels.', 'Menu selections and the selected car persist through chained races, and return-to-origin brings the player back to the menu.']

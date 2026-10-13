@@ -42,3 +42,10 @@ test('sensitivity applies equally to physical and virtual sticks without scaling
  const state=Object.assign(Object.create(Input.prototype),{controlSensitivity:2,gamepadAxes:{leftX:0.4,leftY:-0.7,rightX:0.2,rightY:0,leftTrigger:0.2,rightTrigger:0.8},virtualGamepadAxes:{leftX:0.3,leftY:0,rightX:0,rightY:0,leftTrigger:0,rightTrigger:0.6}});
  assert.equal(state.getGamepadAxes().leftX,0.8);assert.equal(state.getGamepadAxes().leftY,-1);assert.equal(state.getGamepadAxes().rightTrigger,0.8);state.virtualGamepadActive=true;assert.equal(state.getGamepadAxes().leftX,0.6);assert.equal(state.getGamepadAxes().rightTrigger,0.6);assert.equal(state.virtualGamepadAxes.leftX,0.3);
 });
+
+test('preview starts on the requested screen without changing the saved launch screen',async()=>{
+ const {player}=fixture(),doc=createMenuDocument();doc.screens.find(s=>s.id==='events').elements[0].label='Unsaved race heading';
+ await player.open(doc,{preview:true,screenId:'events'});assert.equal(player.flow.screenId,'events');assert.equal(player.flow.screen.elements[0].label,'Unsaved race heading');assert.equal(player.flow.document.startScreen,'splash');assert.equal(doc.startScreen,'splash');
+ player.flow.parameters.difficulty='hard';assert.equal(doc.parameters.difficulty,'medium');
+ await player.open(doc,{preview:false,screenId:'events'});assert.equal(player.flow.screenId,'splash');
+});

@@ -1,5 +1,6 @@
-import {widgetLabel,widgetDefaults} from '../menus/MenuWidgets.js';
-import {addWidget,setupWidget,chooseImage,parameterNames} from './MenuDesignerForms.js';
+import {MENU_WIDGETS,widgetLabel,widgetDefaults} from '../menus/MenuWidgets.js';
+import {setupWidget,chooseImage,parameterNames} from './MenuDesignerForms.js';
+import {getMenuDesignerSurfaceLayout,getMenuDesignerPickerLayout} from './shared/menuDesignerLayout.js';
 import RaceEditor from './RaceEditor.js';
 import {createMenuDocument,normalizeMenuDocument,normalizeMenuElement,MENU_ACTION_TYPES,MENU_ANIMATIONS} from '../menus/MenuDocument.js';
 import {drawMenuScreen,menuElementBounds,menuHit} from '../menus/MenuRenderer.js';
@@ -10,21 +11,21 @@ import {openEditorForm,chooseEditorFiles} from './shared/editorForm.js';
 import {openProjectBrowser} from './ProjectBrowserModal.js';
 import {saveProjectFileAndConfirm,listProjectFiles} from './projectFiles.js';
 import {saveServerPreference} from './serverPreferences.js';
-import {drawSharedDesktopContextPanel} from './uiSuite.js';
+import {drawSharedDesktopContextPanel,drawSharedPanel} from './uiSuite.js';
 
 const label=id=>id.split('-').map(s=>s[0].toUpperCase()+s.slice(1)).join(' ');
 const text=(id,label,value,required=false)=>({id,label,value,type:'text',required});
 const select=(id,label,value,options)=>({id,label,value,options});
 const unique=(prefix,items)=>{let i=1;while(items.some(item=>item.id===`${prefix}-${i}`))i++;return `${prefix}-${i}`;};
 const parse=value=>{try{return JSON.parse(value)}catch{return value}};
-const labels={'widget-add':'Add Widget','element-setup':'Widget Setup','element-properties':'Layout & Style','element-select':'Layers','screen-select':'Screens','element-action':'On Click / Change','screen-background':'Background Image','insert-car-preview':'Car Rotator','insert-property-display':'Property Display','insert-asset-preview':'Actor / Item Image','menu-preview':'Play Preview','menu-animate':'Animate Canvas','screen-start':'Use as First Screen','starting-menu':'Use for Main Play','clear-starting-menu':'Use Default Play','element-art':'Choose Artwork','menu-parameters':'Configuration Parameters','layer-up':'Bring Forward','layer-down':'Send Backward'};
+const labels={'widget-add':'Add Widget','element-setup':'Widget Setup','element-properties':'Layout & Style','element-select':'Layers','screen-select':'Screens','element-action':'On Click / Change','screen-background':'Background Image','insert-car-preview':'Car Rotator','insert-property-display':'Property Display','insert-asset-preview':'Actor / Item Image','menu-preview':'Preview This Screen','menu-preview-start':'Play From Start','element-animation':'Animation','menu-animate':'Animate Canvas','screen-start':'Use as First Screen','starting-menu':'Use for Main Play','clear-starting-menu':'Use Default Play','element-art':'Choose Artwork','menu-parameters':'Configuration Parameters','layer-up':'Bring Forward','layer-down':'Send Backward'};
 export default class MenuEditor extends RaceEditor {
   constructor(game){super(game,{mode:'car'});this.resources=new MenuResources(game);this.menuInput=new EditorInputActionNormalizer();this.undoMenus=[];this.redoMenus=[];this.currentMenuName='';this.loadMenu(createMenuDocument());this.activeRootId='screens';}
   get editorId(){return 'menu-designer'}
   get title(){return 'Menu Editor'}
   get screen(){return this.menu.screens.find(s=>s.id===this.screenId)||this.menu.screens[0]}
   get element(){return this.screen.elements.find(e=>e.id===this.elementId)}
-  loadMenu(document,name=''){this.menu=normalizeMenuDocument(document);this.screenId=this.menu.startScreen;this.elementId=null;this.currentMenuName=name;this.undoMenus=[];this.redoMenus=[];this.menuTime=0;this.animating=false;this.menuDrag=null;this.status=name?`Opened ${name}`:'Add Widget to create controls or images. Select a widget, then Setup to connect it.';}
+  loadMenu(document,name=''){this.menu=normalizeMenuDocument(document);this.screenId=this.menu.startScreen;this.elementId=null;this.currentMenuName=name;this.undoMenus=[];this.redoMenus=[];this.menuTime=0;this.animating=false;this.menuDrag=null;this.menuPicker=null;this.status=name?`Opened ${name}`:'Add a widget from the bottom bar. Drag to arrange it; Setup connects it.';}
   snapshot(){return structuredClone({menu:this.menu,screenId:this.screenId,elementId:this.elementId})}
   record(before){if(JSON.stringify(before.menu)===JSON.stringify(this.menu))return;this.undoMenus.push(before);if(this.undoMenus.length>60)this.undoMenus.shift();this.redoMenus=[];this.status='Menu changed. Save to keep changes.';}
   change(fn){const before=this.snapshot();try{fn();this.menu=normalizeMenuDocument(this.menu);this.record(before)}catch(error){Object.assign(this,before);throw error}}
@@ -49,6 +50,7 @@ export default class MenuEditor extends RaceEditor {
   updateCarEditorPreviewPlaytest(){} updateCarEditorPreviewSelectHold(){return false} ensureCarEditorPreviewPlaytestSession(){return null}
   update(input,dt){
     if(typeof document!=='undefined'&&document.querySelector('dialog[open]'))return;
+    if(this.menuPicker){this.updatePicker(input,dt);return;}
     const cmd=input?.isDownCode?.('ControlLeft')||input?.isDownCode?.('ControlRight')||input?.isDownCode?.('MetaLeft')||input?.isDownCode?.('MetaRight');
     for(const [code,action] of Object.entries({KeyZ:'undo',KeyY:'redo',KeyC:'copy',KeyX:'cut',KeyV:'paste',KeyD:'duplicate',KeyS:'save'}))if(input?.wasCommandPressedCode?.(code)||(cmd&&input?.wasPressedCode?.(code)))void this.handleMenuAction(action);
     if(!cmd&&(input?.wasPressedCode?.('Delete')||input?.wasPressedCode?.('Backspace')))void this.handleMenuAction('delete');
@@ -71,13 +73,50 @@ export default class MenuEditor extends RaceEditor {
     if(this.animating)this.menuTime+=Math.max(0,Number(dt)||0);
   }
   exitToMainMenu(){this.resources.carPreview.dispose();this.game?.exitMenuEditor?.()}
-  drawCarEditorWorkSurface(ctx,bounds){this.carArtSliderRegions=[];
-    const ids=['widget-add','element-setup','element-select','screen-select'];
-    const width=(bounds.w-18)/4;ids.forEach((id,i)=>this.registerDrawnButton(ctx,{x:bounds.x+i*(width+6),y:bounds.y,w:width,h:40},{id,label:({'widget-add':'+ Widget','element-setup':'Setup','element-select':'Layers','screen-select':'Screens'})[id],onClick:()=>this.handleMenuAction(id)}));
-    this.menuBounds={x:bounds.x,y:bounds.y+50,w:bounds.w,h:Math.max(1,bounds.h-74)};
-    ctx.save();ctx.fillStyle='#aec6d2';ctx.font='12px system-ui';ctx.textAlign='left';ctx.fillText(this.status,bounds.x,bounds.y+bounds.h-5,bounds.w);ctx.restore();
-    drawMenuScreen(ctx,this.menuBounds,this.menu,this.screen,this.menu.parameters,{resources:this.resources,time:this.menuTime,selected:this.elementId,editing:!this.animating});if(this.menuPadConnected&&this.menuCursor){ctx.save();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(this.menuCursor.x,this.menuCursor.y,6,0,Math.PI*2);ctx.stroke();ctx.restore();}}
+  drawCarEditorWorkSurface(ctx,bounds){
+    this.carArtSliderRegions=[];this.menuSurfaceBounds={...bounds};
+    const layout=getMenuDesignerSurfaceLayout(bounds);this.menuBounds=layout.canvas;this.menuHotbarBounds=layout.hotbar;
+    drawMenuScreen(ctx,this.menuBounds,this.menu,this.screen,this.menu.parameters,{resources:this.resources,time:this.menuTime,selected:this.elementId,editing:!this.animating});
+    ctx.save();ctx.fillStyle='#aec6d2';ctx.font='12px system-ui';ctx.textAlign='left';ctx.fillText(this.menuPicker?(this.pickerEntries()[this.pickerFocus]?.description||this.pickerEntries()[this.pickerFocus]?.label||'Choose an item'):`Screen: ${this.screen.name} · ${this.element?widgetLabel(this.element.type)+' selected':'Select a widget to edit'}`,bounds.x,bounds.y+14,bounds.w);ctx.restore();
+    const ids=['widget-add','element-setup','element-select','screen-select'],width=(layout.hotbar.w-18)/4;
+    ids.forEach((id,i)=>this.registerDrawnButton(ctx,{x:layout.hotbar.x+i*(width+6),y:layout.hotbar.y,w:width,h:44},{id,label:({'widget-add':'+ Widget ▴','element-setup':'Setup','element-select':'Layers ▴','screen-select':'Screens ▴'})[id],onClick:()=>this.handleMenuAction(id)}));
+    if(this.menuPicker)this.drawPicker(ctx);
+    if(this.menuPadConnected&&this.menuCursor&&!this.menuPicker){ctx.save();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(this.menuCursor.x,this.menuCursor.y,6,0,Math.PI*2);ctx.stroke();ctx.restore();}
+  }
+  pickerEntries(){
+    if(this.menuPicker==='widgets')return MENU_WIDGETS.map(w=>({id:`pick-widget:${w.type}`,label:w.label,description:w.description,action:()=>this.runAction(`insert-${w.type}`)}));
+    if(this.menuPicker==='screens')return [...this.menu.screens.map(s=>({id:`pick-screen:${s.id}`,label:s.name,action:()=>{this.screenId=s.id;this.elementId=null;this.animating=false;this.menuTime=0;}})),{id:'pick-screen:new',label:'+ New Screen',action:()=>this.runAction('screen-new')}];
+    if(this.menuPicker==='layers')return this.screen.elements.length?[...this.screen.elements].reverse().map(e=>({id:`pick-layer:${e.id}`,label:e.label||widgetLabel(e.type),description:widgetLabel(e.type),action:()=>{this.elementId=e.id;}})):[{id:'pick-layer:add',label:'+ Add Widget',action:()=>this.openPicker('widgets')}];
+    if(this.menuPicker==='animation')return [...MENU_ANIMATIONS.map(animation=>({id:`pick-animation:${animation}`,label:({none:'None (static)',pulse:'Pulse',fade:'Fade in',bob:'Bob up / down',spin:this.element?.type==='car-preview'?'Rotate car':'Rotate'})[animation],action:()=>{this.change(()=>{this.element.animation=animation;this.element.keyframes=[];if(animation==='spin'&&this.element.type==='car-preview')this.element.angleBinding='';});this.animating=animation!=='none';this.menuTime=0;this.status=animation==='none'?'Animation off':`${label(animation)} animation playing on the canvas`;}})),{id:'pick-animation:timing',label:'Speed / Repeat…',action:()=>this.runAction('animation-timing')}];
+    return [];
+  }
+  openPicker(kind){this.closeEditorMenus();this.menuPicker=this.menuPicker===kind?null:kind;this.pickerFocus=0;this.pickerPress=null;}
+  drawPicker(ctx){
+    const entries=this.pickerEntries();
+    const anchor=this.buttons.find(b=>b.id===({'widgets':'widget-add',layers:'element-select',screens:'screen-select',animation:'element-setup'})[this.menuPicker]&&b.bounds.y===this.menuHotbarBounds.y)?.bounds||this.menuHotbarBounds;
+    this.pickerLayout=getMenuDesignerPickerLayout(anchor,this.menuSurfaceBounds,entries,this.pickerFocus);
+    drawSharedPanel(ctx,this.pickerLayout.panel,{fill:'#15232f',border:'#91b4d0'});
+    for(const entry of this.pickerLayout.buttons)this.registerDrawnButton(ctx,entry.bounds,{...entry,active:entry.index===this.pickerFocus,onClick:()=>this.choosePicker(entry)});
+  }
+  choosePicker(entry){
+    if(!entry||entry.disabled)return;
+    if(entry.page){this.pickerFocus=Math.max(0,Math.min(this.pickerEntries().length-1,(this.pickerLayout.page+entry.page)*this.pickerLayout.pageSize));return;}
+    this.menuPicker=null;this.pickerPress=null;
+    Promise.resolve().then(()=>entry.action?.()).catch(error=>{this.status=error.message});
+  }
+  updatePicker(input,dt){
+    const pressed=code=>input?.wasPressedCode?.(code),pad=this.menuInput.updateGamepad(input,dt);
+    if(pressed('Escape')||pad.actions.some(a=>a.type===INPUT.CANCEL)){this.menuPicker=null;return;}
+    const entries=this.pickerEntries(),count=entries.length;
+    let delta=0;
+    if(pressed('ArrowRight'))delta++;if(pressed('ArrowLeft'))delta--;if(pressed('ArrowDown'))delta+=2;if(pressed('ArrowUp'))delta-=2;
+    for(const a of pad.actions){if(a.type===INPUT.NAV_RIGHT)delta++;if(a.type===INPUT.NAV_LEFT)delta--;if(a.type===INPUT.NAV_DOWN)delta+=2;if(a.type===INPUT.NAV_UP)delta-=2;}
+    if(delta&&count)this.pickerFocus=(this.pickerFocus+delta+count)%count;
+    if(pressed('Enter')||pressed('Space')||pad.actions.some(a=>a.type===INPUT.CONFIRM))this.choosePicker(entries[this.pickerFocus]);
+  }
+  handleWheel(p={}){if(this.menuPicker){const entries=this.pickerEntries();this.pickerFocus=Math.max(0,Math.min(entries.length-1,this.pickerFocus+(p.deltaY>0?2:-2)));return;}return super.handleWheel(p);}
   handlePointerDown(p={}){
+    if(this.menuPicker){const hit=this.pickerLayout?.buttons.find(b=>menuHit(p,b.bounds));if(hit){this.pickerPress={id:p.id,entry:hit};return;}this.menuPicker=null;this.pickerPress=null;return;}
     if(this.mobileRootOpen||this.desktopDropdown||this.gamepadSubmenuOpen||this.buttons.some(b=>b.bounds&&menuHit(p,b.bounds)))return super.handlePointerDown(p);
     if(!this.menuBounds||!menuHit(p,this.menuBounds))return super.handlePointerDown(p);
     this.animating=false;this.menuTime=0;
@@ -86,12 +125,12 @@ export default class MenuEditor extends RaceEditor {
     const rect=menuElementBounds(e,this.menuBounds);
     this.menuDrag={id:p.id,x:p.x,y:p.y,element:structuredClone(e),before:this.snapshot(),resize:p.x>rect.x+rect.w-18&&p.y>rect.y+rect.h-18};
   }
-  handlePointerMove(p={}){const drag=this.menuDrag;if(!drag)return super.handlePointerMove(p);if(drag.id!==undefined&&p.id!==undefined&&drag.id!==p.id)return;const e=this.element,b=this.menuBounds,dx=(p.x-drag.x)/b.w,dy=(p.y-drag.y)/b.h;if(!e)return;if(drag.resize){e.w=Math.max(0.02,Math.min(2,drag.element.w+dx));e.h=Math.max(0.02,Math.min(2,drag.element.h+dy));}else{e.x=Math.max(-1,Math.min(1,drag.element.x+dx));e.y=Math.max(-1,Math.min(1,drag.element.y+dy));e.keyframes=drag.element.keyframes.map(k=>({...k,x:k.x+e.x-drag.element.x,y:k.y+e.y-drag.element.y}));}}
-  handlePointerUp(p={}){if(!this.menuDrag)return super.handlePointerUp(p);if(this.menuDrag.id!==undefined&&p.id!==undefined&&this.menuDrag.id!==p.id)return;this.record(this.menuDrag.before);this.menuDrag=null;}
-  async handleMenuAction(id){try{this.closeEditorMenus();const result=await this.runAction(id);if(id.startsWith('insert-'))await setupWidget(this);return result}catch(error){this.status=error.message}}
+  handlePointerMove(p={}){if(this.menuPicker){const hit=this.pickerLayout?.buttons.find(b=>menuHit(p,b.bounds));if(Number.isInteger(hit?.index))this.pickerFocus=hit.index;return;}const drag=this.menuDrag;if(!drag)return super.handlePointerMove(p);if(drag.id!==undefined&&p.id!==undefined&&drag.id!==p.id)return;const e=this.element,b=this.menuBounds,dx=(p.x-drag.x)/b.w,dy=(p.y-drag.y)/b.h;if(!e)return;if(drag.resize){e.w=Math.max(0.02,Math.min(2,drag.element.w+dx));e.h=Math.max(0.02,Math.min(2,drag.element.h+dy));}else{e.x=Math.max(-1,Math.min(1,drag.element.x+dx));e.y=Math.max(-1,Math.min(1,drag.element.y+dy));e.keyframes=drag.element.keyframes.map(k=>({...k,x:k.x+e.x-drag.element.x,y:k.y+e.y-drag.element.y}));}}
+  handlePointerUp(p={}){if(this.pickerPress){const press=this.pickerPress;this.pickerPress=null;if((press.id===undefined||p.id===undefined||press.id===p.id)&&menuHit(p,press.entry.bounds))this.choosePicker(press.entry);return;}if(this.menuPicker)return;if(!this.menuDrag)return super.handlePointerUp(p);if(this.menuDrag.id!==undefined&&p.id!==undefined&&this.menuDrag.id!==p.id)return;this.record(this.menuDrag.before);this.menuDrag=null;}
+  async handleMenuAction(id){try{this.closeEditorMenus();if(!['widget-add','element-select','screen-select','element-animation'].includes(id))this.menuPicker=null;return await this.runAction(id)}catch(error){this.status=error.message}}
   async runAction(id){
     this.activeAction=id;
-    if(id==='widget-add')return addWidget(this);
+    if(id==='widget-add')return this.openPicker('widgets');
     if(id==='element-setup')return setupWidget(this);
     if(id==='screen-background')return chooseImage(this,{background:true});
     if(id==='test-drive')return this.runAction('menu-preview');
@@ -102,21 +141,21 @@ export default class MenuEditor extends RaceEditor {
     if(id==='open'){const picked=await openProjectBrowser({fixedFolder:'menus',initialFolder:'menus',mode:'open',title:'Open Menu'});if(picked?.payload?.data)this.loadMenu(picked.payload.data,picked.name);return;}
     if(id==='export'){const blob=new Blob([JSON.stringify(normalizeMenuDocument(this.menu),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`${this.menu.name}.menu.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);return;}
     if(id==='import'){const [file]=await chooseEditorFiles('.json,application/json');if(file)this.loadMenu(JSON.parse(await file.text()));return;}
-    if(id==='menu-preview'){await this.game?.previewMenu?.(this.menu);return;}
+    if(id==='menu-preview'||id==='menu-preview-start'){this.menuPicker=null;await this.game?.previewMenu?.(this.menu,{screenId:id==='menu-preview'?this.screenId:this.menu.startScreen});return;}
     if(id==='menu-animate'){this.animating=!this.animating;this.menuTime=0;return;}
     if(id==='zoom-fit'){this.animating=false;this.menuTime=0;return;}
-    if(id==='screen-select'){const result=await openEditorForm('Choose Screen',[select('id','Screen',this.screenId,this.menu.screens.map(s=>({value:s.id,label:s.name})))]);if(result){this.screenId=result.id;this.elementId=null;this.menuTime=0;}return;}
+    if(id==='screen-select')return this.openPicker('screens');
     if(id==='screen-new'||id==='screen-duplicate'){this.change(()=>{const screen=id==='screen-duplicate'?structuredClone(this.screen):{name:'New Screen',elements:[]};screen.id=unique('screen',this.menu.screens);if(id==='screen-duplicate')screen.name+=' Copy';this.menu.screens.push(screen);this.screenId=screen.id;this.elementId=null;});return;}
     if(id==='screen-start'){this.change(()=>{this.menu.startScreen=this.screenId});return;}
     if(id==='screen-delete'){if(this.menu.screens.length===1)throw Error('Keep at least one screen');this.change(()=>{const old=this.screenId;this.menu.screens=this.menu.screens.filter(s=>s.id!==old);this.screenId=this.menu.screens[0].id;if(this.menu.startScreen===old)this.menu.startScreen=this.screenId;this.elementId=null;const unlink=a=>{if(!a)return null;if(a.type==='screen'&&a.target===old)return null;if(a.then)a.then=unlink(a.then);return a};for(const s of this.menu.screens){s.startAction=unlink(s.startAction);for(const e of s.elements)e.action=unlink(e.action)}});return;}
     if(id==='screen-properties')return this.editScreen();
     if(id.startsWith('insert-')){const type=id.slice(7);this.change(()=>{const e=normalizeMenuElement({...widgetDefaults(type),id:unique(type,this.screen.elements)});this.screen.elements.push(e);this.elementId=e.id;});this.status=`${widgetLabel(type)} added. Use Setup to connect it; drag to move or resize.`;return;}
-    if(id==='element-select'){const result=await openEditorForm('Choose Element',[select('id','Element',this.elementId,this.screen.elements.map(e=>({value:e.id,label:`${e.label} (${e.type})`})))]);if(result)this.elementId=result.id;return;}
+    if(id==='element-select')return this.openPicker('layers');
     if(id==='menu-parameters')return this.editParameters();
     if(id==='starting-menu'){const name=await this.saveMenu();if(!name)return;const result=await saveServerPreference('menu-launch',{menuRef:name});if(!result.ok)throw Error('Could not save starting menu: '+result.reason);this.status=`Main Play opens ${name}`;return;}
     if(id==='clear-starting-menu'){const result=await saveServerPreference('menu-launch',{menuRef:''});if(!result.ok)throw Error(result.reason);this.status='Main Play uses the most recent level';return;}
     if(id==='paste'){if(this.clipboardElement)this.change(()=>{const e=structuredClone(this.clipboardElement);e.id=unique(e.type,this.screen.elements);e.x+=0.025;e.y+=0.025;this.screen.elements.push(e);this.elementId=e.id});return;}
-    if(!this.element)throw Error('Select an element on the canvas or from Properties first');
+    if(!this.element)throw Error('Select a widget on the canvas or in Layers first');
     if(id==='copy'||id==='cut'){this.clipboardElement=structuredClone(this.element);if(id==='copy')return;id='delete';}
     if(id==='delete'){this.change(()=>{this.screen.elements=this.screen.elements.filter(e=>e.id!==this.elementId);this.elementId=null});return;}
     if(id==='duplicate'){this.clipboardElement=structuredClone(this.element);return this.runAction('paste');}
@@ -124,9 +163,9 @@ export default class MenuEditor extends RaceEditor {
     if(id==='element-properties')return this.editElement();
     if(id==='element-art')return chooseImage(this);
     if(id==='element-action'){const action=await this.editAction(this.element.action);if(action!==undefined)this.change(()=>{this.element.action=action});return;}
-    if(id==='element-animation'){const e=this.element,result=await openEditorForm('Animation',[select('animation','Animation',e.animation,MENU_ANIMATIONS),{id:'duration',label:'Duration (seconds)',value:e.duration,min:0.1,max:600},select('loop','Loop',String(e.loop),['true','false'])]);if(result)this.change(()=>Object.assign(this.element,{...result,loop:result.loop==='true'}));return;}
-    if(id==='keyframe-clear'){this.change(()=>{this.element.keyframes=[]});return;}
-    if(id==='keyframe-add'){const e=this.element,r=await openEditorForm('Set Keyframe',[{id:'time',label:'Time (seconds)',value:e.keyframes.at(-1)?.time+1||0,min:0,max:600},...['x','y'].map(key=>({id:key,label:`${key.toUpperCase()} (0–1)`,value:e[key]})),{id:'opacity',label:'Opacity',value:1,min:0,max:1},{id:'scale',label:'Scale',value:1,min:0.05,max:10},{id:'rotation',label:'Rotation (degrees)',value:0}]);if(r)this.change(()=>{this.element.keyframes=this.element.keyframes.filter(k=>k.time!==r.time);this.element.keyframes.push(r)});return;}
+    if(id==='element-animation')return this.openPicker('animation');
+    if(id==='animation-timing'){const e=this.element,result=await openEditorForm('Animation Speed',[{id:'duration',label:'Seconds per animation',value:e.duration,min:0.1,max:600},select('loop','Repeat',String(e.loop),[{value:'true',label:'Keep repeating'},{value:'false',label:'Play once'}])]);if(result)this.change(()=>Object.assign(this.element,{...result,loop:result.loop==='true'}));return;}
+
   }
   async saveMenu(saveAs=false){let name=this.currentMenuName;if(!name||saveAs){const result=await openProjectBrowser({fixedFolder:'menus',initialFolder:'menus',mode:'saveAs',initialName:this.menu.name,title:'Save Menu'});if(result?.action!=='saveAs')return;name=result.name;}const data=normalizeMenuDocument({...this.menu,name});await saveProjectFileAndConfirm('menus',name,data,{timeoutMs:60000});this.currentMenuName=name;this.menu=data;this.status=`Saved ${name}`;return name;}
   async editScreen(){const s=this.screen;const result=await openEditorForm('Screen Properties',[text('name','Screen name',s.name,true),text('background','Background color',s.background,true),select('backgroundArt','Background art',s.backgroundArt,['',...listProjectFiles('art').map(f=>f.name)]),select('musicRef','Music',s.musicRef,['',...listProjectFiles('music').map(f=>f.name)]),select('effect','Background effect',s.effect,['none','stars','rain','snow']),select('start','Tap / Space / Start action',s.startAction?'edit':'none',[{value:'none',label:'None — use buttons'},{value:'edit',label:'Configure action'}])]);if(!result)return;let action=null;if(result.start==='edit'){action=await this.editAction(s.startAction);if(action===undefined)return;}this.change(()=>{const {start,...properties}=result;Object.assign(this.screen,properties,{startAction:action})});}

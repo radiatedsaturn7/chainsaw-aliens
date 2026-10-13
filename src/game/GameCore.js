@@ -2149,7 +2149,7 @@ export default class Game {
 
   exitMenuEditor() { this.transitionTo('title', {forceCleanup:true}); }
 
-  async previewMenu(document) { return this.menuPlayer.open(document, {preview:true}); }
+  async previewMenu(document, {screenId = this.menuEditor?.screenId} = {}) { return this.menuPlayer.open(document, {preview:true, screenId}); }
 
   async playStartingMenu() {
     if (this.menuLaunchPending) return;
