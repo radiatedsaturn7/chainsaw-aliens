@@ -42,3 +42,17 @@ test('AI art anchors, scale and physical tire centers all use the active camera'
  assert.ok(layers.bodyBaseWidth>0);assert.equal(layers.tireScroll,0.5);
  for(const [i,id] of ['fl','fr','rl','rr'].entries()){assert.equal(layers.wheelBillboards[id].x,200+i*10);assert.equal(layers.wheelBillboards[id].y,250-2/RACE_THREE_ELEVATION_M*10);}
 });
+
+test('browser preparation worker receives selected AI artwork before prepared-only rendering starts',()=>{
+ const previous=globalThis.Worker;let request;
+ globalThis.Worker=class{postMessage(value){request=value}terminate(){}};
+ const e=editor();
+ try{
+  const car=e.withSavedRaceCarRuntimeIdentity(structuredClone(e.selectedCar),'Saved AI');car.art={body:'Opponent body'};e.upsertRaceProjectCar(car);
+  e.selectedRace.competition.carSelection={availableCarIds:[car.__playtestId],defaultCarId:car.__playtestId};e.setRaceAiCount(1);
+  e.startPlaytest(e.selectedCar.id,{hydrateCars:false});
+  assert.ok(request?.includeArtAssets);assert.ok(request.artRefs.includes('Opponent body'));
+  assert.equal(e.playtestSession.aiRuntime[0].runtimeCar.art.body,'Opponent body');
+  assert.ok(e.getRaceRuntimePreparationKey('same-track').includes('Opponent body'));
+ }finally{e.cancelRacePlaytestPreparation();globalThis.Worker=previous;}
+});

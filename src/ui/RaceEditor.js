@@ -12658,7 +12658,7 @@ export default class RaceEditor {
               sourceNormalized: true,
               options: preparation.options,
               includeArtAssets: true,
-              artRefs: this.collectRaceCarArtRefs?.(this.getRaceSessionCar(session)) || []
+              artRefs: this.collectSelectedRaceArtRefs()
             }, workerSnapshot.transferables);
           } catch (error) {
             this.failRacePlaytestPreparation(
