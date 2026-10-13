@@ -161,7 +161,7 @@ test('car turntable centers padded directional art and off-origin 3D geometry at
   const solid=[];for(let i=0;i<8;i++){ctx.clearRect(0,0,320,240);model.draw(ctx,{x:0,y:0,w:320,h:240},{tuning:{}},i*Math.PI/4,0);solid.push(measure());}model.dispose();return {sprite,solid};
  });
  for(const b of result.sprite){expect(b.w).toBeGreaterThan(10);expect(Math.abs(b.x-160)).toBeLessThanOrEqual(2);expect(Math.abs(b.y-120)).toBeLessThanOrEqual(2);}
- for(const b of result.solid){expect(b.w).toBeGreaterThan(20);expect(Math.abs(b.x-160)).toBeLessThan(10);expect(Math.abs(b.y-120)).toBeLessThan(10);}
+ for(const b of result.solid){expect(b.w).toBeGreaterThan(20);expect(Math.abs(b.x-160)).toBeLessThanOrEqual(2);expect(Math.abs(b.y-120)).toBeLessThanOrEqual(2);}
 });
 
 for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} shapes and containers move and reorder together from the hotbar`,async({page})=>{

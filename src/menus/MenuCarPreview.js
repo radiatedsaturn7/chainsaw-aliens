@@ -14,6 +14,21 @@ export function menuCarVisualBounds(group){
   });
   return bounds;
 }
+export function centerMenuCarCamera(camera,group,width,height){
+  if(!group)return;
+  camera.updateMatrixWorld();
+  const projected=new THREE.Box3();
+  group.traverseVisible(object=>{
+    const box=object.geometry?.boundingBox;if(!box||box.isEmpty())return;
+    for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z]){
+      projected.expandByPoint(new THREE.Vector3(x,y,z).applyMatrix4(object.matrixWorld).project(camera));
+    }
+  });
+  if(projected.isEmpty())return;
+  const center=projected.getCenter(new THREE.Vector3());
+  // Keep the geometric orbit pivot while centering its perspective footprint.
+  camera.setViewOffset(width,height,center.x*width/2,-center.y*height/2,width,height);
+}
 function opaqueBounds(canvas){
   if(opaqueBoundsCache.has(canvas))return opaqueBoundsCache.get(canvas);
   const {width,height}=canvas,data=canvas.getContext('2d').getImageData(0,0,width,height).data;
@@ -60,7 +75,7 @@ export class MenuCarPreview {
     const radius=box.isEmpty()?Math.hypot(Number(dimensions.lengthM)||4.6,Number(dimensions.widthM)||1.8,1.5)/2:box.getBoundingSphere(new THREE.Sphere()).radius;
     const halfFov=Math.atan(Math.tan(20*Math.PI/180)*Math.min(1,width/height));
     const distance=radius/Math.sin(halfFov)*1.08;
-    const camera=new THREE.PerspectiveCamera(40,width/height,0.01,1000);camera.position.set(center.x+Math.sin(yaw)*distance,center.y+distance*0.35,center.z+Math.cos(yaw)*distance);camera.lookAt(center);camera.updateProjectionMatrix();this.renderer.render(this.holder.scene,camera);ctx.drawImage(this.renderer.domElement,bounds.x,bounds.y,bounds.w,bounds.h);return true;
+    const camera=new THREE.PerspectiveCamera(40,width/height,0.01,1000);camera.position.set(center.x+Math.sin(yaw)*distance,center.y+distance*0.35,center.z+Math.cos(yaw)*distance);camera.lookAt(center);camera.updateProjectionMatrix();centerMenuCarCamera(camera,this.holder.dynamicCarGroup,width,height);this.renderer.render(this.holder.scene,camera);ctx.drawImage(this.renderer.domElement,bounds.x,bounds.y,bounds.w,bounds.h);return true;
   }
   dispose(){if(this.holder){this.editor.clearRaceThreeDynamicCar(this.holder);for(const material of this.holder.solidMaterialCache?.values()||[])material.dispose();}this.renderer?.dispose();this.holder=null;this.renderer=null;}
 }

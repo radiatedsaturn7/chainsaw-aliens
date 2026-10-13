@@ -32,7 +32,9 @@ test('3D turntable targets the geometric center even when model geometry is offs
   preview.holder={scene:new THREE.Scene(),dynamicCarGroup:group};preview.renderer={setSize(){},render(_scene,c){camera=c;c.updateMatrixWorld()},domElement:{}};
   for(let i=0;i<8;i++){
    preview.draw({drawImage(){}},{x:0,y:0,w:320,h:240},{tuning:{}},i*Math.PI/4,0);
-   const center=new THREE.Vector3(3,1,5).project(camera);assert.ok(Math.abs(center.x)<1e-10&&Math.abs(center.y)<1e-10);
+   const footprint=new THREE.Box3();for(const x of [2,4])for(const y of [0.5,1.5])for(const z of [3,7])footprint.expandByPoint(new THREE.Vector3(x,y,z).project(camera));
+   const center=footprint.getCenter(new THREE.Vector3());assert.ok(Math.abs(center.x)<1e-10&&Math.abs(center.y)<1e-10);
+   assert.ok(footprint.min.x>-1&&footprint.max.x<1&&footprint.min.y>-1&&footprint.max.y<1);
   }
  }finally{mesh.geometry.dispose();mesh.material.dispose();globalThis.document=prior;}
 });
