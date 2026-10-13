@@ -91,10 +91,17 @@ export default class MenuPlayer {
     this.cleanupScreen();const flow=this.flow,generation=flow.generation;
     if(/^(https?:|\/|data:video\/|blob:)/i.test(ref)){
       const video=document.createElement('video');video.src=ref;video.playsInline=true;video.volume=this.settings.values['settings.musicVolume']??0.8;this.movie=video;
-      return new Promise((resolve,reject)=>{this.resolveMovie=resolve;this.rejectMovie=reject;video.onended=()=>{video.pause();this.movie=null;this.resolveMovie=null;this.rejectMovie=null;this.message='';resolve()};video.onerror=()=>{this.movie=null;this.rejectMovie=null;reject(Error(`Movie could not load: ${ref}`))};void this.resumeMovie();});
+      return new Promise((resolve,reject)=>{this.resolveMovie=resolve;this.rejectMovie=reject;video.onended=()=>{video.pause();video.removeAttribute('src');video.load();this.movie=null;this.resolveMovie=null;this.rejectMovie=null;this.message='';if(flow.active&&generation===flow.generation)this.enterScreen();resolve()};video.onerror=()=>{this.movie=null;this.rejectMovie=null;reject(Error(`Movie could not load: ${ref}`))};void this.resumeMovie();});
     }
     const payload=await hydrateProjectFilePayload('cutscenes',ref);if(!flow.active||flow.generation!==generation)return;if(!payload?.data)throw Error(`Movie not found: ${ref}`);
-    return new Promise((resolve,reject)=>{this.rejectMovie=reject;this.cutscene.play(payload.data,{onDone:()=>{this.rejectMovie=null;resolve()},skippable:true})});
+    const assets=payload.data.assets||[],references=new Map();
+    for(const asset of assets){const folder={art:'art',music:'music',sfx:'sfx',actor:'actors'}[asset.type];if(folder&&asset.ref)references.set(`${folder}:${asset.ref}`,{folder,ref:asset.ref});if(asset.actorRef)references.set(`actors:${asset.actorRef}`,{folder:'actors',ref:asset.actorRef});}
+    for(const clip of payload.data.clips||[])if(['music','sfx'].includes(clip.type)){const asset=assets.find(a=>a.id===clip.assetId),name=asset?.ref||clip.assetId;if(name)references.set(`${clip.type}:${name}`,{folder:clip.type,ref:name});}
+    const loads=await Promise.allSettled([...references.values()].map(async asset=>{const value=await hydrateProjectFilePayload(asset.folder,asset.ref);if(!value?.data)throw Error(`Movie asset not found: ${asset.ref}`);return value}));
+    const failure=loads.find(result=>result.status==='rejected');if(failure)throw failure.reason;
+    await this.game.prepareCutsceneAudioResources?.(payload.data);
+    if(!flow.active||flow.generation!==generation)return;
+    return new Promise((resolve,reject)=>{this.rejectMovie=reject;this.cutscene.play(payload.data,{onDone:()=>{this.rejectMovie=null;if(flow.active&&generation===flow.generation)this.enterScreen();resolve()},skippable:true})});
   }
   async resumeMovie(){try{await this.movie?.play();this.message=''}catch{this.message='Tap / press Space to play movie'}}
   async launchRace(ref,parameters){

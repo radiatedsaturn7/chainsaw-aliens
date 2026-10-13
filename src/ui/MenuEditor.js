@@ -68,7 +68,7 @@ export default class MenuEditor extends RaceEditor {
     const rect=menuElementBounds(e,this.menuBounds);
     this.menuDrag={id:p.id,x:p.x,y:p.y,element:structuredClone(e),before:this.snapshot(),resize:p.x>rect.x+rect.w-18&&p.y>rect.y+rect.h-18};
   }
-  handlePointerMove(p={}){const drag=this.menuDrag;if(!drag)return super.handlePointerMove(p);if(drag.id!==undefined&&p.id!==undefined&&drag.id!==p.id)return;const e=this.element,b=this.menuBounds,dx=(p.x-drag.x)/b.w,dy=(p.y-drag.y)/b.h;if(!e)return;if(drag.resize){e.w=Math.max(0.02,Math.min(2,drag.element.w+dx));e.h=Math.max(0.02,Math.min(2,drag.element.h+dy));}else{e.x=Math.max(-1,Math.min(1,drag.element.x+dx));e.y=Math.max(-1,Math.min(1,drag.element.y+dy));}}
+  handlePointerMove(p={}){const drag=this.menuDrag;if(!drag)return super.handlePointerMove(p);if(drag.id!==undefined&&p.id!==undefined&&drag.id!==p.id)return;const e=this.element,b=this.menuBounds,dx=(p.x-drag.x)/b.w,dy=(p.y-drag.y)/b.h;if(!e)return;if(drag.resize){e.w=Math.max(0.02,Math.min(2,drag.element.w+dx));e.h=Math.max(0.02,Math.min(2,drag.element.h+dy));}else{e.x=Math.max(-1,Math.min(1,drag.element.x+dx));e.y=Math.max(-1,Math.min(1,drag.element.y+dy));e.keyframes=drag.element.keyframes.map(k=>({...k,x:k.x+e.x-drag.element.x,y:k.y+e.y-drag.element.y}));}}
   handlePointerUp(p={}){if(!this.menuDrag)return super.handlePointerUp(p);if(this.menuDrag.id!==undefined&&p.id!==undefined&&this.menuDrag.id!==p.id)return;this.record(this.menuDrag.before);this.menuDrag=null;}
   async handleMenuAction(id){try{return await this.runAction(id)}catch(error){this.status=error.message}}
   async runAction(id){

@@ -16,7 +16,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     }ctx.restore();
   }
   for(const element of screen.elements){
-    if(!element.visible)continue;const pose=menuElementPose(element,editing?0:time),b=menuElementBounds(element,bounds,pose);
+    if(!element.visible)continue;const pose=editing?{x:element.x,y:element.y,opacity:1,scale:1,rotation:0}:menuElementPose(element,time),b=menuElementBounds(element,bounds,pose);
     ctx.save();ctx.translate(b.x+b.w/2,b.y+b.h/2);ctx.rotate(pose.rotation*Math.PI/180);ctx.scale(pose.scale,pose.scale);ctx.translate(-b.x-b.w/2,-b.y-b.h/2);ctx.globalAlpha=pose.opacity;
     ctx.beginPath();ctx.rect(b.x,b.y,b.w,b.h);ctx.clip();
     const interactive=menuElementInteractive(element);if(interactive){ctx.fillStyle=element.background;ctx.fillRect(b.x,b.y,b.w,b.h);}
