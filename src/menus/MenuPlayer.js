@@ -114,5 +114,4 @@ export default class MenuPlayer {
     const payload=await hydrateProjectFilePayload('levels',ref);if(!this.flow.active)return;if(!payload?.data)throw Error(`Level not found: ${ref}`);
     this.cleanupScreen();this.game.menuParameters=structuredClone(parameters);this.game.applyWorldData(payload.data);this.game.gameMode='story';this.game.storyData=this.game.buildWorldData();this.game.playtestActive=false;this.game.simulationActive=false;this.game.resetRun({playtest:false,startWithEverything:true});this.game.transitionTo('playing');this.game.startSpawnPause();
   }
-  async raceFinished(){this.game.raceTravelSession=null;this.game.transitionTo('menu-player',{forceCleanup:true});if(this.flow?.grandPrix)await this.flow.raceFinished();else this.enterScreen();}
 }

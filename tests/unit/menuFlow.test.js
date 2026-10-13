@@ -16,16 +16,21 @@ test('movie completion precedes race or level launch with current configuration'
   assert.equal(calls[1][0],'Saved destination');assert.equal(calls[1][1].carRef,'WRX4');assert.equal(flow.busy,false);
  }
 });
-test('Grand Prix launches its first race and advances the ordered schedule with intro movies',async()=>{
- const doc=createMenuDocument();doc.grandPrix=[{id:'cup',name:'Cup',races:[{raceRef:'Hill',movieRef:'Intro'},{raceRef:'Snow',movieRef:''}]}];
- const calls=[];const flow=new MenuFlow(doc,{playMovie:async ref=>calls.push(ref),launchRace:async(ref,p)=>calls.push([ref,p.grandPrixRound])});
- flow.setParameter('grandPrix','cup');await flow.run({type:'grand-prix',target:'$grandPrix'});assert.deepEqual(calls,['Intro',['Hill',1]]);
- await flow.raceFinished();assert.deepEqual(calls.at(-1),['Snow',2]);await flow.raceFinished();assert.equal(flow.grandPrix,null);assert.equal(flow.screenId,'splash');
+test('menu launches a single selected race; race documents own subsequent destinations',async()=>{
+ const calls=[];const flow=new MenuFlow(createMenuDocument(),{launchRace:async(ref,p)=>calls.push([ref,p])});
+ flow.setParameter('raceRef','Hill');await flow.run({type:'race',target:'$raceRef'});
+ assert.equal(calls.length,1);assert.equal(calls[0][0],'Hill');assert.equal(calls[0][1].raceRef,'Hill');
+ assert.equal(flow.document.grandPrix,undefined);assert.equal(flow.raceFinished,undefined);
+});
+test('legacy schedule buttons and choices resolve to the first saved race without scheduling later races',()=>{
+ const doc=createMenuDocument();doc.grandPrix=[{id:'cup',name:'Cup',races:[{raceRef:'First'},{raceRef:'Second'}]}];doc.parameters.grandPrix='cup';
+ doc.screens[0].elements.push({id:'legacy-choice',type:'choice',source:'grandPrix',binding:'grandPrix'},{id:'legacy-launch',type:'button',action:{type:'grand-prix',target:'$grandPrix'}});
+ const migrated=normalizeMenuDocument(doc);assert.equal(migrated.parameters.grandPrix,'First');assert.equal(migrated.screens[0].elements.at(-1).action.type,'race');assert.deepEqual(migrated.screens[0].elements.at(-2).options,[{label:'Cup',value:'First'}]);
 });
 test('stopping a pending movie prevents late launch and failed destinations report usable errors',async()=>{
  let finish,launched=false;const flow=new MenuFlow(createMenuDocument(),{playMovie:()=>new Promise(r=>finish=r),launchRace:()=>launched=true});
  const pending=flow.run({type:'movie',target:'Intro',then:{type:'race',target:'Track'}});flow.stop();finish();await pending;assert.equal(launched,false);
- const missing=new MenuFlow(createMenuDocument());assert.equal(await missing.run({type:'grand-prix',target:''}),false);assert.match(missing.error,/Add races/);
+ const missing=new MenuFlow(createMenuDocument());assert.equal(await missing.run({type:'race',target:''}),false);assert.match(missing.error,/Choose a race/);
 });
 test('menu documents validate links, reject unsafe parameter names, and preserve editable animation',()=>{
  const doc=createMenuDocument();doc.screens[0].elements[0].keyframes=[{time:0,x:0,y:0,opacity:0,scale:1,rotation:0},{time:2,x:1,y:1,opacity:1,scale:2,rotation:90}];

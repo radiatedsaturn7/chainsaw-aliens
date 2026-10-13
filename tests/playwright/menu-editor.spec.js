@@ -15,7 +15,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} menu desig
  await page.evaluate(()=>window.__game.menuEditor.handleMenuAction('undo'));await expect.poll(()=>page.evaluate(()=>window.__game.menuEditor.screen.name)).toBe('Splash');
  await page.evaluate(async()=>{
   const g=window.__game,e=g.menuEditor,{saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');
-  const car=structuredClone(g.carEditor.selectedCar);car.name='Menu Test Car';await saveProjectFileAndConfirm('cars','Menu Test Car',car);e.menu.parameters.carRef='Menu Test Car';e.menu.grandPrix=[{id:'cup',name:'Test Cup',races:[{raceRef:'Test Track'}]}];
+  const car=structuredClone(g.carEditor.selectedCar);car.name='Menu Test Car';await saveProjectFileAndConfirm('cars','Menu Test Car',car);e.menu.parameters.carRef='Menu Test Car';e.menu.parameters.raceRef='Test Track';const raceChoice=e.menu.screens.find(s=>s.id==='events').elements.find(e=>e.id==='event');raceChoice.source='';raceChoice.options=[{label:'Test Track',value:'Test Track'}];
   e.currentMenuName='Menu Browser Test';await e.saveMenu();await e.runAction('starting-menu');
   g.startRaceTravel=async params=>{g.__menuRaceLaunch={raceName:params.raceName,carRef:params.carRef,configuration:params.menuConfiguration};return true;};
   g.transitionTo('title');await g.playStartingMenu();
@@ -26,7 +26,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} menu desig
  await expect.poll(async()=>(await previewPixels()).colored).toBeGreaterThan(100);const before=(await previewPixels()).hash;await expect.poll(async()=>(await previewPixels()).hash).not.toBe(before);
  await page.screenshot({path:`test-results/menu-${mobile?'portrait':'desktop'}-cars.png`});
  const next=await page.evaluate(()=>{const p=window.__game.menuPlayer,e=p.flow.screen.elements.find(e=>e.id==='next');return {x:(e.x+e.w/2)*p.bounds.w,y:(e.y+e.h/2)*p.bounds.h}});await canvasClick(page,next.x,next.y);await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('events');
- await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.__menuRaceLaunch?.raceName)).toBe('Test Track');const result=await page.evaluate(()=>window.__game.__menuRaceLaunch);expect(result.carRef).toBe('Menu Test Car');expect(result.configuration.grandPrixRound).toBe(1);expect(errors).toEqual([]);
+ await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.__menuRaceLaunch?.raceName)).toBe('Test Track');const result=await page.evaluate(()=>window.__game.__menuRaceLaunch);expect(result.carRef).toBe('Menu Test Car');expect(result.configuration.raceRef).toBe('Test Track');expect(errors).toEqual([]);
 });
 
 test('saved start menu survives a fresh page and preview returns to authoring',async({page})=>{
@@ -49,17 +49,24 @@ test('movie completion loads a real level with the selected configuration',async
  await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('playing');expect(await page.evaluate(()=>window.__game.menuParameters.weapons)).toEqual(['chainsaw']);expect(await page.evaluate(()=>window.__game.menuParameters['character.color'])).toBe('#3388ff');
 });
 
-test('Grand Prix launches actual races, forwards configuration and advances after finish',async({page})=>{
+test('menu launches one race and each race owns its next-race or return destination',async({page})=>{
  test.setTimeout(150000);await ready(page,false);await seedRaceRuntimeFixtures(page);
  await page.evaluate(async()=>{
-  const g=window.__game,doc=g.menuEditor.menu;doc.parameters.carRef='2022 Subaru WRX2';doc.parameters.difficulty='easy';doc.grandPrix=[{id:'cup',name:'Cup',races:[{raceRef:'Studio Sprint2'},{raceRef:'Studio Sprint2'}]}];
-  await g.menuPlayer.open(doc);window.__menuGrandPrixRun=g.menuPlayer.flow.run({type:'grand-prix',target:'cup'});
+  const g=window.__game,{loadProjectFile,saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');
+  const base=loadProjectFile('races','Studio Sprint2').data;
+  for(const [name,finish] of [['Menu Chain First',{type:'race',targetRace:'Menu Chain Last'}],['Menu Chain Last',{type:'return-to-origin'}]]){
+   const document=structuredClone(base),race=document.race||document;race.id=name;race.name=name;race.finishBehavior=finish;await saveProjectFileAndConfirm('races',name,document);
+  }
+  const doc=g.menuEditor.menu;doc.parameters.carRef='2022 Subaru WRX2';doc.parameters.difficulty='easy';doc.parameters.weapons=['chainsaw'];
+  await g.menuPlayer.open(doc);g.menuPlayer.flow.goTo('events');window.__menuRaceRun=g.menuPlayer.flow.run({type:'race',target:'Menu Chain First'});
  });
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
- expect(await page.evaluate(()=>window.__game.raceEditor.playtestSession.menuConfiguration.grandPrixRound)).toBe(1);
- await page.evaluate(()=>window.__game.completeRaceTravel());
- await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.menuConfiguration?.grandPrixRound),{timeout:60000}).toBe(2);
- await page.evaluate(()=>window.__game.completeRaceTravel());await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-player');expect(await page.evaluate(()=>window.__game.menuPlayer.flow.grandPrix)).toBe(null);
+ expect(await page.evaluate(()=>window.__game.raceEditor.selectedRace.name)).toBe('Menu Chain First');
+ await page.evaluate(()=>window.__game.raceEditor.finishPlaytest());
+ await expect.poll(()=>page.evaluate(()=>{const e=window.__game.raceEditor;return e.playtestSession?.running&&e.selectedRace.name}),{timeout:60000}).toBe('Menu Chain Last');
+ expect(await page.evaluate(()=>window.__game.raceEditor.playtestSession.menuConfiguration.weapons)).toEqual(['chainsaw']);
+ expect(await page.evaluate(()=>window.__game.raceTravelSession.originState)).toBe('menu-player');
+ await page.evaluate(()=>window.__game.raceEditor.finishPlaytest());await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-player');expect(await page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('events');
 });
 
 async function designerButton(page,id){

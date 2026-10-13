@@ -6,7 +6,6 @@ import {getRaceArtSpriteCanvasShared,hydrateRaceArtSpriteShared} from '../ui/sha
 export class MenuResources {
   constructor(game){this.game=game;this.carPreview=new MenuCarPreview(game.carEditor);this.cars=new Map();this.carSources=new Map();this.artCache=new Map();this.tunings=new WeakMap();this.pending=new Map();this.errors=new Map();}
   choices(source,document){
-    if(source==='grandPrix')return document.grandPrix.map(g=>({label:g.name,value:g.id}));
     const folder={cars:'cars',races:'races',levels:'levels',movies:'cutscenes',actors:'actors',doodads:'doodads'}[source];
     return folder?listProjectFiles(folder).map(f=>({label:f.name,value:f.name})):[];
   }

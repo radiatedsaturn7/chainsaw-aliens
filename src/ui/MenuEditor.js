@@ -17,7 +17,7 @@ const text=(id,label,value,required=false)=>({id,label,value,type:'text',require
 const select=(id,label,value,options)=>({id,label,value,options});
 const unique=(prefix,items)=>{let i=1;while(items.some(item=>item.id===`${prefix}-${i}`))i++;return `${prefix}-${i}`;};
 const parse=value=>{try{return JSON.parse(value)}catch{return value}};
-const labels={'widget-add':'Add Widget','element-setup':'Widget Setup','element-properties':'Layout & Style','element-select':'Layers','screen-select':'Screens','element-action':'On Click / Change','screen-background':'Background Image','insert-car-preview':'Car Rotator','insert-property-display':'Property Display','insert-asset-preview':'Actor / Item Image','menu-preview':'Play Preview','menu-animate':'Animate Canvas','screen-start':'Use as First Screen','starting-menu':'Use for Main Play','clear-starting-menu':'Use Default Play','element-art':'Choose Artwork','grand-prix-edit':'Grand Prix Schedules','menu-parameters':'Configuration Parameters','layer-up':'Bring Forward','layer-down':'Send Backward'};
+const labels={'widget-add':'Add Widget','element-setup':'Widget Setup','element-properties':'Layout & Style','element-select':'Layers','screen-select':'Screens','element-action':'On Click / Change','screen-background':'Background Image','insert-car-preview':'Car Rotator','insert-property-display':'Property Display','insert-asset-preview':'Actor / Item Image','menu-preview':'Play Preview','menu-animate':'Animate Canvas','screen-start':'Use as First Screen','starting-menu':'Use for Main Play','clear-starting-menu':'Use Default Play','element-art':'Choose Artwork','menu-parameters':'Configuration Parameters','layer-up':'Bring Forward','layer-down':'Send Backward'};
 export default class MenuEditor extends RaceEditor {
   constructor(game){super(game,{mode:'car'});this.resources=new MenuResources(game);this.menuInput=new EditorInputActionNormalizer();this.undoMenus=[];this.redoMenus=[];this.currentMenuName='';this.loadMenu(createMenuDocument());this.activeRootId='screens';}
   get editorId(){return 'menu-designer'}
@@ -113,7 +113,6 @@ export default class MenuEditor extends RaceEditor {
     if(id.startsWith('insert-')){const type=id.slice(7);this.change(()=>{const e=normalizeMenuElement({...widgetDefaults(type),id:unique(type,this.screen.elements)});this.screen.elements.push(e);this.elementId=e.id;});this.status=`${widgetLabel(type)} added. Use Setup to connect it; drag to move or resize.`;return;}
     if(id==='element-select'){const result=await openEditorForm('Choose Element',[select('id','Element',this.elementId,this.screen.elements.map(e=>({value:e.id,label:`${e.label} (${e.type})`})))]);if(result)this.elementId=result.id;return;}
     if(id==='menu-parameters')return this.editParameters();
-    if(id==='grand-prix-edit')return this.editGrandPrix();
     if(id==='starting-menu'){const name=await this.saveMenu();if(!name)return;const result=await saveServerPreference('menu-launch',{menuRef:name});if(!result.ok)throw Error('Could not save starting menu: '+result.reason);this.status=`Main Play opens ${name}`;return;}
     if(id==='clear-starting-menu'){const result=await saveServerPreference('menu-launch',{menuRef:''});if(!result.ok)throw Error(result.reason);this.status='Main Play uses the most recent level';return;}
     if(id==='paste'){if(this.clipboardElement)this.change(()=>{const e=structuredClone(this.clipboardElement);e.id=unique(e.type,this.screen.elements);e.x+=0.025;e.y+=0.025;this.screen.elements.push(e);this.elementId=e.id});return;}
@@ -138,13 +137,13 @@ export default class MenuEditor extends RaceEditor {
     if(result)this.change(()=>{for(const key of ['x','y','w','h'])result[key]/=100;Object.assign(this.element,result,{visible:result.visible==='true'})});
   }
   async editAction(action){
-    const names={screen:'Open screen',back:'Back', 'set-param':'Set a parameter',race:'Start race','grand-prix':'Start Grand Prix',level:'Load level',movie:'Play movie',quit:'Exit menu'};
+    const names={screen:'Open screen',back:'Back', 'set-param':'Set a parameter',race:'Start race',level:'Load level',movie:'Play movie',quit:'Exit menu'};
     const kind=await openEditorForm('Widget Action',[select('type','When activated',action?.type||'screen',[{value:'none',label:'No action'},...MENU_ACTION_TYPES.map(type=>({value:type,label:names[type]}))])]);
     if(!kind)return undefined;if(kind.type==='none')return null;
     const a=action?.type===kind.type?action:{},fields=[];
     const folders={race:'races',level:'levels',movie:'cutscenes'};
-    const targets=kind.type==='screen'?this.menu.screens.map(s=>({value:s.id,label:s.name})):kind.type==='grand-prix'?this.menu.grandPrix.map(g=>({value:g.id,label:g.name})):folders[kind.type]?listProjectFiles(folders[kind.type]).map(f=>({value:f.name,label:f.name})):[];
-    if(['screen','race','level','movie','grand-prix'].includes(kind.type)){
+    const targets=kind.type==='screen'?this.menu.screens.map(s=>({value:s.id,label:s.name})):folders[kind.type]?listProjectFiles(folders[kind.type]).map(f=>({value:f.name,label:f.name})):[];
+    if(['screen','race','level','movie'].includes(kind.type)){
       targets.push(...parameterNames(this).map(key=>({value:`$${key}`,label:`Selected value: ${key}`})));
       if(a.target&&!targets.some(t=>t.value===a.target))targets.push({value:a.target,label:a.target});
       fields.push(select('target','Destination',a.target||targets[0]?.value||'',targets));
@@ -157,12 +156,4 @@ export default class MenuEditor extends RaceEditor {
     if(r.after==='edit'){const then=await this.editAction(a.then);if(then===undefined)return undefined;result.then=then;}return result;
   }
   async editParameters(){const r=await openEditorForm('Configuration Parameters',[{id:'parameters',label:'One name = value per line (numbers, booleans and JSON supported)',type:'textarea',required:false,rows:10,value:Object.entries(this.menu.parameters).map(([k,v])=>`${k} = ${JSON.stringify(v)}`).join('\n')}],{description:'Bind choices, toggles and sliders to these names. The complete configuration is passed into races and levels, including custom weapons and character choices.'});if(r)this.change(()=>{const pairs=r.parameters.split('\n').filter(s=>s.trim()).map(line=>{const i=line.indexOf('=');if(i<1)throw Error('Use name = value for each parameter');return [line.slice(0,i).trim(),parse(line.slice(i+1).trim())]});this.menu.parameters=Object.fromEntries(pairs)});}
-  async editGrandPrix(){
-    const choose=await openEditorForm('Grand Prix Schedules',[select('id','Schedule','new',[{value:'new',label:'New Grand Prix'},...this.menu.grandPrix.map(g=>({value:g.id,label:g.name}))])]);if(!choose)return;
-    const existing=this.menu.grandPrix.find(g=>g.id===choose.id),gp=structuredClone(existing||{id:unique('gp',this.menu.grandPrix),name:'New Grand Prix',races:[]});
-    const r=await openEditorForm('Grand Prix',[text('name','Name',gp.name,true),{id:'rounds',label:'Number of races',value:Math.max(1,gp.races.length),min:1,max:100,step:1},select('remove','Delete schedule','false',['false','true'])]);if(!r)return;if(r.remove==='true'){this.change(()=>{this.menu.grandPrix=this.menu.grandPrix.filter(g=>g.id!==gp.id)});return;}
-    gp.name=r.name;const races=listProjectFiles('races').map(f=>f.name),movies=['',...listProjectFiles('cutscenes').map(f=>f.name)];if(!races.length)throw Error('Save a race in the Race Editor before creating a Grand Prix');
-    const fields=Array.from({length:Math.round(r.rounds)},(_,i)=>[select(`race${i}`,`Round ${i+1}: race`,gp.races[i]?.raceRef||races[0],races),select(`movie${i}`,`Round ${i+1}: intro movie`,gp.races[i]?.movieRef||'',movies)]).flat();const rounds=await openEditorForm('Grand Prix Race Order',fields);if(!rounds)return;
-    gp.races=Array.from({length:Math.round(r.rounds)},(_,i)=>({raceRef:rounds[`race${i}`],movieRef:rounds[`movie${i}`]}));this.change(()=>{this.menu.grandPrix=this.menu.grandPrix.filter(g=>g.id!==gp.id);this.menu.grandPrix.push(gp)});
-  }
 }

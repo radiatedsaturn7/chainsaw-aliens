@@ -7,7 +7,7 @@ import {MENU_SETTINGS} from '../menus/MenuDocument.js';
 const text=(id,label,value='',extra={})=>({id,label,value,type:'text',required:false,...extra});
 const select=(id,label,value,options)=>({id,label,value,options,required:false});
 const parse=value=>{try{return JSON.parse(value)}catch{return value}};
-export const parameterNames=editor=>[...new Set([...Object.keys(editor.menu.parameters),...Object.keys(MENU_SETTINGS).map(k=>`settings.${k}`),'carRef','actorRef','item','carAngle','difficulty','grandPrix','enabled'])];
+export const parameterNames=editor=>[...new Set([...Object.keys(editor.menu.parameters),...Object.keys(MENU_SETTINGS).map(k=>`settings.${k}`),'carRef','actorRef','item','carAngle','difficulty','raceRef','enabled'])];
 const bindingField=(editor,e)=>text('binding','Value parameter',e.binding,{suggestions:parameterNames(editor)});
 const fileOptions=folder=>[{value:'',label:'Use selected value parameter'},...listProjectFiles(folder).map(f=>({value:f.name,label:f.name}))];
 
@@ -55,7 +55,7 @@ export async function setupWidget(editor){
     description.push('Widgets sharing a value parameter stay linked. Settings parameters affect the running game; custom values are passed to the next race or level.');
   }
   if(e.type==='text')description.push('Use {{difficulty}} or another parameter name in the text to display its current value.');
-  if(e.type==='choice')fields.push(select('source','Options source',e.source,[{value:'',label:'Custom options'},'cars','actors','doodads','grandPrix','races','levels','movies']),{id:'options',label:'Custom options: label = value, one per line',type:'textarea',required:false,value:e.options.map(o=>`${o.label} = ${JSON.stringify(o.value)}`).join('\n')});
+  if(e.type==='choice')fields.push(select('source','Options source',e.source,[{value:'',label:'Custom options'},'cars','actors','doodads','races','levels','movies']),{id:'options',label:'Custom options: label = value, one per line',type:'textarea',required:false,value:e.options.map(o=>`${o.label} = ${JSON.stringify(o.value)}`).join('\n')});
   if(e.type==='slider'){
     fields.push(select('preset','Slider controls','custom',[{value:'custom',label:'Custom parameter / keep current'},...Object.entries(MENU_SETTINGS).map(([key,v])=>({value:`settings.${key}`,label:v.label})),{value:'carAngle',label:'Car viewing angle (degrees)'}]));
     fields.push(...['min','max','step'].map(id=>({id,label:{min:'Minimum',max:'Maximum',step:'Step'}[id],value:e[id]})),{id:'initial',label:'Initial value',value:Number(editor.menu.parameters[e.binding]??MENU_SETTINGS[e.binding.split('.')[1]]?.default??e.min)});

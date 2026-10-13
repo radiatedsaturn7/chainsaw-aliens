@@ -1542,6 +1542,12 @@ export const LATEST_MAJOR_WORK = {
 export const LATEST_CHANGES = [
   {
     date: '2026-10-13',
+    time: '16:40 EDT',
+    title: 'Menus launch races; races control progression',
+    details: ['Removed the separate Start Grand Prix action and menu schedule editor. Start Race loads one saved race, and that race’s configured completion destination controls subsequent races or levels.', 'Menu selections and the selected car persist through chained races, and return-to-origin brings the player back to the menu.']
+  },
+  {
+    date: '2026-10-13',
     time: '16:25 EDT',
     title: 'Menu widget designer and synchronized sprite wheels',
     details: [

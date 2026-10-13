@@ -1843,9 +1843,10 @@ export default class Game {
       this.showSystemToast?.('Choose a race first.');
       return false;
     }
-    let car = null;
+    const continuation = params.continuation === this.raceTravelSession ? params.continuation : null;
+    let car = continuation?.carSelection || null;
     try {
-      car = params.carSelection === 'specific'
+      if (!car) car = params.carSelection === 'specific'
         ? await this.resolveRaceTravelCarAsync(params.carRef)
         : null;
     } catch (error) {
@@ -1863,10 +1864,13 @@ export default class Game {
       engineSoundId: engineSfxRef
     });
     const originState = this.state;
-    this.raceTravelSession = this.createRaceTravelSession({ originState, car });
+    this.raceTravelSession = continuation || this.createRaceTravelSession({ originState, car });
     const travelSession = this.raceTravelSession;
-    travelSession.menuFlow = params.menuFlow || null;
-    travelSession.menuConfiguration = structuredClone(params.menuConfiguration || {});
+    travelSession.carSelection = car;
+    if (!continuation) {
+      travelSession.menuFlow = params.menuFlow || null;
+      travelSession.menuConfiguration = structuredClone(params.menuConfiguration || {});
+    }
     this.transitionTo('race-editor', { forceCleanup: true });
     this.setRevAudio(false);
     this.raceEditor.beginRaceTravelLoading?.(raceName, car.id);
@@ -2058,10 +2062,6 @@ export default class Game {
     trackStateSnapshot = null
   } = {}) {
     const session = this.ensureRaceTravelSession(carId);
-    if (session.menuFlow && session.menuFlow === this.menuPlayer?.flow && session.menuFlow.active) {
-      void this.menuPlayer.raceFinished();
-      return true;
-    }
     session.trackStateByRace ||= {};
     if (trackStateSnapshot) {
       if (raceId) session.trackStateByRace[raceId] = trackStateSnapshot;
@@ -2075,6 +2075,11 @@ export default class Game {
     }
     if (type === 'race') {
       const raceName = String(finishBehavior.targetRace || '').trim();
+      if (session.menuFlow && session.menuFlow === this.menuPlayer?.flow && session.menuFlow.active) {
+        if (!raceName) return this.returnRaceTravelToOrigin({message:'Next race not configured'});
+        void this.startRaceTravel({raceName, continuation:session, carSelection:'specific', carRef:session.carRef});
+        return true;
+      }
       const payload = raceName ? loadProjectFile('races', raceName) : null;
       if (!payload?.data || !this.raceEditor?.applyLoadedRaceDocument?.(payload.data, { name: raceName })) {
         return this.returnRaceTravelToOrigin({ message: `Next race not found: ${raceName || 'unset'}` });

@@ -39,7 +39,7 @@ jobs:
         run: node --test tests/unit/carPerformance.test.js tests/unit/raceAiCarSelectionPersistence.test.js tests/unit/raceAiDriving.test.js tests/unit/raceAiProjection.test.js tests/unit/raceAiRecovery.test.js
 
       - name: Run menu designer and runtime tests
-        run: node --test tests/unit/menu*.test.js tests/unit/carDirectionalArt.test.js
+        run: node --test tests/unit/menu*.test.js tests/unit/carDirectionalArt.test.js tests/unit/raceTravel.test.js
 
       - name: Run 3D model editor and runtime tests
         run: node --test tests/unit/model3d*.test.js
