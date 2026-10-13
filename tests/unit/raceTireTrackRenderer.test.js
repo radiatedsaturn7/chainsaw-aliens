@@ -104,3 +104,25 @@ test('Race Three tire-track sync leaves software fallback available without vali
   assert.equal(stats.threeTireTrackRenderer, 0);
   assert.equal(stats.tireTrackGpuChunks, 0);
 });
+
+test('asphalt skid chunk reuses authored quads without sampling an invisible outer layer', () => {
+  const editor = makeEditor();
+  const quad = editor.getRaceTireTrackQuad({ from: { x: 0, z: 0 }, to: { x: 0, z: 1 }, widthM: 0.25 });
+  editor.getRaceTireTrackQuad = () => { throw new Error('cached asphalt marks must not resample terrain'); };
+  const renderer = { scene: new THREE.Scene(), tireTrackGroup: new THREE.Group(), tireTrackChunks: new Map() };
+  const chunk = editor.buildRaceThreeTireTrackChunk(renderer, 0, Array.from({ length: 128 }, (_, id) => ({
+    id: id + 1, kind: 'asphalt', intensity: 0.8, centerQuad: quad, outerQuad: []
+  })));
+  assert.equal(chunk.vertexCount, 128 * 6);
+});
+
+test('new tire marks use the baked driving surface without rebuilding road profiles', () => {
+  const editor = makeEditor();
+  let samples = 0;
+  editor.getRaceBakedSurfaceAtWorldPoint = ({ x, z }) => { samples++; return { elevation: x * 0.01 + z * 0.02 }; };
+  editor.getRaceCompositedSurfaceAtWorldPoint = () => { throw new Error('baked surface available'); };
+  const quad = editor.getRaceTireTrackQuad({ from: { x: 0, z: 0 }, to: { x: 0, z: 1 }, widthM: 0.25 });
+  assert.equal(samples, 4);
+  assert.equal(quad.length, 4);
+  assert.ok(quad[2].elevation > quad[1].elevation);
+});

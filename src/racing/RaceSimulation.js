@@ -1,3 +1,4 @@
+import { roadEdgeOverlapsRoad } from './RaceRoadEdgeClearance.js';
 import { RACE_WHEEL_IDS, clamp, normalizeAngle } from './simulation/SimulationMath.js';
 import { getSurfaceById } from './raceData.js';
 import {
@@ -500,6 +501,14 @@ function createRaceStaticColliderWorld(editor, {
   }
   const definitions = authored.slice();
   const samples = editor.getRacePathSamplesCached?.({ step: 3 }) || [];
+  const roadCorridors = samples.slice(1).map((next, index) => {
+    const previous = samples[index];
+    return {
+      from: { x: previous.x, z: previous.z, y: Number(previous.elevation || 0) * RACE_THREE_ELEVATION_M },
+      to: { x: next.x, z: next.z, y: Number(next.elevation || 0) * RACE_THREE_ELEVATION_M },
+      halfWidth: editor.getRaceRoadHalfWidthWorld(next.segment || previous.segment || editor.selectedSegment)
+    };
+  });
   for (let index = 1; index < samples.length; index += 1) {
     const previous = samples[index - 1];
     const next = samples[index];
@@ -526,16 +535,19 @@ function createRaceStaticColliderWorld(editor, {
     ) + 2;
     const orientation = quaternionFromEuler({ yaw });
     for (const side of [-1, 1]) {
+      const center = {
+        x: centerX + Number(right.x || 0) * side * (contactLimitM + thicknessM * 0.5),
+        y: centerY,
+        z: centerZ + Number(right.z || 0) * side * (contactLimitM + thicknessM * 0.5)
+      };
+      const size = { x: thicknessM, y: 6, z: segmentLengthM + 1.2 };
+      if (roadEdgeOverlapsRoad({ center, yaw, size }, roadCorridors)) continue;
       definitions.push({
         id: `road-edge:${edgeMode}:${index}:${side < 0 ? 'left' : 'right'}`,
         type: 'box',
-        center: {
-          x: centerX + Number(right.x || 0) * side * (contactLimitM + thicknessM * 0.5),
-          y: centerY,
-          z: centerZ + Number(right.z || 0) * side * (contactLimitM + thicknessM * 0.5)
-        },
+        center,
         orientation,
-        size: { x: thicknessM, y: 6, z: segmentLengthM + 1.2 },
+        size,
         friction: 0.7,
         restitution: 0.22,
         source: `edge:${edgeMode}`
@@ -595,6 +607,21 @@ export function calculateAuthoritativeRouteAdvance({ velocityWorld = {}, roadYaw
     Number(velocityWorld.x || 0) * roadForward.x
     + Number(velocityWorld.z || 0) * roadForward.z
   ) * Math.max(0, Number(seconds || 0));
+}
+
+// Reconcile small route-measurement errors with the authoritative world pose.
+// The bound rejects jumps to nearby hairpins/crossings; this never moves the car.
+export function reconcileRaceRouteAdvance({ previousDistance, predictedAdvance, projectedDistance,
+  routeLength, circuit = false, travelM, onRoad = false } = {}) {
+  if (!onRoad || !Number.isFinite(projectedDistance)) return predictedAdvance;
+  let measuredAdvance = projectedDistance - previousDistance;
+  if (circuit && routeLength > 0) {
+    measuredAdvance = ((measuredAdvance + routeLength / 2) % routeLength + routeLength) % routeLength - routeLength / 2;
+  }
+  // Nearest-point projection can move across a corner between samples even
+  // when the chassis travels only centimetres. Allow that local corner span.
+  const maximumAdvance = Math.max(3, Math.max(0, Number(travelM) || 0) * 2 + 0.05);
+  return Math.abs(measuredAdvance) <= maximumAdvance ? measuredAdvance : predictedAdvance;
 }
 
 export function createPenetrationRecoveryRouteSearch({
@@ -967,6 +994,7 @@ export function applyRaceVehicleImpactEvents(editor, session, events = []) {
 }
 
 function advanceVehicleDynamicsAuthority(editor, {
+  car,
   systems,
   tuning,
   seconds,
@@ -1062,7 +1090,7 @@ function advanceVehicleDynamicsAuthority(editor, {
   }
   if (!authority.tireConfigByWheel) {
     authority.tireConfigByWheel = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
-      const compound = editor.getRaceTireCompound(setup.tireCompoundByWheel[wheelId]);
+      const compound = editor.getRaceTireCompound(setup.tireCompoundByWheel[wheelId], car);
       const pressure = tirePressureDynamicsByWheel[wheelId] || {};
       const tireDamage = Number(damage.tires?.[wheelId] || 0);
       return [wheelId, {
@@ -2458,7 +2486,7 @@ export function updateRaceSimulation({
   const gripFactor = Math.max(0.35, Math.min(1.4, tuning.tireGrip)) * surfaceGrip * weatherGripMultiplier * damageEffects.grip * setupModifiers.grip;
   const setup = editor.getRaceCarSetup(car);
   const tirePressureDynamicsByWheel = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
-    const compound = editor.getRaceTireCompound(setup.tireCompoundByWheel[wheelId]);
+    const compound = editor.getRaceTireCompound(setup.tireCompoundByWheel[wheelId], car);
     return [
       wheelId,
       editor.getRaceTirePressureDynamics({
@@ -3868,6 +3896,7 @@ export function updateRaceSimulation({
   );
   if (!countdownActive) editor.updateRaceSceneryCollisions(seconds);
   advanceVehicleDynamicsAuthority(editor, {
+    car,
     systems,
     tuning,
     seconds,
@@ -3933,7 +3962,7 @@ export function updateRaceSimulation({
     }
   }
   const routeLength = Math.max(1, Number(editor.playtestSession.routeLength || editor.getRaceRouteLength()));
-  let projection = editor.getRaceRouteProjectionForWorldPoint({
+  const projection = editor.getRaceRouteProjectionForWorldPoint({
     x: editor.playtestSession.worldX,
     z: editor.playtestSession.worldZ
   });
@@ -3944,27 +3973,24 @@ export function updateRaceSimulation({
   editor.playtestSession.routeLateralM = projectedLateralMeters;
   editor.playtestSession.routeLateralNormalized = projectedLateralNormalized;
   editor.playtestSession.lateral = projectedLateralNormalized;
-  // Road-edge geometry is prepared once and swept by VehicleDynamicsRunner at
-  // the tire/contact rate. This render-frame projection remains diagnostic and
-  // cannot queue an impulse, mutate the authoritative pose, or reset progress.
-  projection = editor.getRaceRouteProjectionForWorldPoint({
-    x: editor.playtestSession.worldX,
-    z: editor.playtestSession.worldZ
-  });
-  editor.playtestSession.routeLateralM = Number(projection.lateral || 0);
-  editor.playtestSession.routeLateralNormalized = clamp(
-    Number(projection.lateral || 0) / Math.max(1, editor.getRaceRoadHalfWidthWorld(projection.segment || boundarySegment)),
-    -1.5,
-    1.5
-  );
-  editor.playtestSession.lateral = editor.playtestSession.routeLateralNormalized;
+  // Road-edge geometry is swept by VehicleDynamicsRunner. Route measurement
+  // updates progress and presentation only; it never moves the physical car.
   const previousDistance = Number(editor.playtestSession.previousDistance || editor.playtestSession.distance || 0);
   const progressRoadYaw = editor.getRaceWorldPoseAtDistance(previousDistance).yaw;
   const authoritativeVelocity = presentationState.velocity || {};
-  const routeAdvance = calculateAuthoritativeRouteAdvance({
+  const predictedAdvance = calculateAuthoritativeRouteAdvance({
     velocityWorld: authoritativeVelocity,
     roadYaw: progressRoadYaw,
     seconds
+  });
+  const routeAdvance = reconcileRaceRouteAdvance({
+    previousDistance,
+    predictedAdvance,
+    projectedDistance: projection.distance,
+    routeLength,
+    circuit: routeRuntimeType === 'circuit',
+    travelM: Math.hypot(Number(authoritativeVelocity.x || 0), Number(authoritativeVelocity.z || 0)) * seconds,
+    onRoad: Number(projection.distanceToRoute) <= projectedRoadHalfWidth
   });
   const integratedDistance = previousDistance + routeAdvance;
   if (routeRuntimeType === 'circuit') {
@@ -4032,7 +4058,7 @@ export function updateRaceSimulation({
   const cameraSlipYaw = Math.abs(normalizeAngle(
     Number(editor.playtestSession.velocityYaw || 0) - Number(editor.playtestSession.carYaw || 0)
   ));
-  editor.playtestSession.cameraYaw = editor.getCarCameraTrackingMode(car) !== 'fixed-rear'
+  editor.playtestSession.cameraYaw = editor.getCarCameraTrackingMode(car) === 'dynamic'
     && cameraSlipYaw > 0.12
     ? Number(editor.playtestSession.velocityYaw || 0)
     : editor.getRacePlaytestCameraYaw(editor.playtestSession, { seconds, smooth: true });

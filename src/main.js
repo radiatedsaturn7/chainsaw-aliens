@@ -27,6 +27,8 @@ const CANVAS_EDITOR_IDS_BY_STATE = {
   'actor-editor': 'actor',
   'cutscene-editor': 'cutscene',
   'race-editor': 'race',
+  'tire-editor': 'tire',
+  'model-editor': 'model3d',
   'car-editor': 'car'
 };
 

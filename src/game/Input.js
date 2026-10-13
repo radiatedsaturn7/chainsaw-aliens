@@ -33,6 +33,7 @@ export default class Input {
   constructor() {
     this.keys = new Map();
     this.pressed = new Set();
+    this.commandPressed = new Set();
     this.released = new Set();
     this.virtualDown = new Map();
     this.virtualPressed = new Set();
@@ -82,6 +83,7 @@ export default class Input {
     this.listenerDisposer.add(addDOMListener(window, 'keydown', (e) => {
       if (!this.keys.get(e.code)) {
         this.pressed.add(e.code);
+        if (e.ctrlKey || e.metaKey) this.commandPressed.add(e.code);
       }
       this.keys.set(e.code, true);
     }));
@@ -131,6 +133,10 @@ export default class Input {
 
   wasPressedCode(code) {
     return this.pressed.has(code);
+  }
+
+  wasCommandPressedCode(code) {
+    return this.commandPressed.has(code);
   }
 
   isDownCode(code) {
@@ -408,6 +414,7 @@ export default class Input {
   reset() {
     this.keys.clear();
     this.pressed.clear();
+    this.commandPressed.clear();
     this.released.clear();
     this.clearVirtual();
     this.clearVirtualGamepad();
@@ -429,6 +436,7 @@ export default class Input {
 
   flush() {
     this.pressed.clear();
+    this.commandPressed.clear();
     this.released.clear();
     this.virtualPressed.clear();
     this.virtualReleased.clear();

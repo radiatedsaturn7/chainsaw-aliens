@@ -1,3 +1,5 @@
+import {modelAssets} from '../model3d/ModelAssets.js';
+import {modelSprites} from '../model3d/ModelSprites.js';
 import EnemyBase from './EnemyBase.js';
 import { ensureActorDefinition } from '../content/actorEditorData.js';
 import { listProjectFiles, loadProjectFile } from '../ui/projectFiles.js';
@@ -200,8 +202,8 @@ export function preloadActorDefinitionAssets(definition) {
       if (frame?.imageDataUrl) urls.add(frame.imageDataUrl);
     });
   });
-  if (typeof Image === 'undefined') return Promise.resolve([]);
-  const loads = Array.from(urls).map((url) => getSharedFrameImageEntry(url)?.promise || Promise.resolve(null));
+  const loads = states.filter(state=>state.animation?.model?.ref).map(state=>modelAssets.prepare(state.animation.model.ref));
+  if(typeof Image!=='undefined')loads.push(...Array.from(urls).map((url) => getSharedFrameImageEntry(url)?.promise || Promise.resolve(null)));
   return Promise.all(loads.map((load) => Promise.resolve(load).catch(() => null)));
 }
 
@@ -422,6 +424,7 @@ export default class ScriptedActor extends EnemyBase {
 
   getStateAnimationDurationSeconds(state = this.currentState) {
     const animation = state?.animation || {};
+    if(animation.model?.ref){const model=modelAssets.get(animation.model.ref);const clip=model?.animations.find(c=>c.id===animation.model.clip||c.name===animation.model.clip);if(clip)return Math.max(0.05,clip.duration/Math.max(0.001,Math.abs(animation.model.speed??1)));}
     if (Array.isArray(animation.frames) && animation.frames.length) {
       const totalMs = animation.frames.reduce((sum, frame) => sum + Math.max(16, Number(frame?.durationMs || 0) || Math.round(1000 / Math.max(1, Number(animation.fps || 8)))), 0);
       return Math.max(0.05, totalMs / 1000);
@@ -955,9 +958,12 @@ export default class ScriptedActor extends EnemyBase {
 
   draw(ctx) {
     const frame = this.getCurrentAnimationFrame();
-    const image = this.getFrameImage(frame?.imageDataUrl || '');
-    const drawImage = image || this._lastFrameImage;
-    if (image) {
+    const binding=this.currentState?.animation?.model;
+    const image = binding?.ref
+      ? modelSprites.image(binding,this.stateTimer,this.getAuthoredSize())
+      : this.getFrameImage(frame?.imageDataUrl || '');
+    const drawImage = image || (binding?.ref ? null : this._lastFrameImage);
+    if (image && !binding?.ref) {
       this._lastFrameImage = image;
     }
     if (!drawImage) {

@@ -1,3 +1,4 @@
+import {normalizeModelBinding} from '../model3d/ModelBinding.js';
 export const DEFAULT_TILE_TYPES = [
   { id: 'spawn', label: 'Spawn Point', char: null, special: 'spawn' },
   { id: 'solid', label: 'Solid Block', char: '#', solid: true },
@@ -62,6 +63,7 @@ const cloneValue = (value) => {
 
 export function normalizeTileProperties(properties = {}) {
   const next = { ...properties };
+  next.model = normalizeModelBinding(next.model);
   next.solid = Boolean(next.solid);
   next.oneWay = Boolean(next.oneWay);
   next.destructible = Boolean(next.destructible);
@@ -106,6 +108,7 @@ export function buildTileDefinitions(overrides = {}) {
 export function serializeTileProperties(properties = {}) {
   const normalized = normalizeTileProperties(properties);
   return {
+    model: normalized.model,
     solid: normalized.solid,
     oneWay: normalized.oneWay,
     destructible: normalized.destructible,

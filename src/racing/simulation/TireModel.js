@@ -1,5 +1,6 @@
 import { getRaceTireLoadSensitivityMultiplierForLoose } from '../RaceVehiclePhysics.js';
 import { RACE_WHEEL_IDS, clamp, normalizeAngle } from './SimulationMath.js';
+import { resolveCompoundSurfaceGrip } from './SurfaceConditionGrip.js';
 import { getSurfaceById } from '../raceData.js';
 
 export class TireModel {
@@ -98,8 +99,7 @@ export class TireModel {
   getSetupGripMultiplier({
     setup = {},
     compoundByWheel = {},
-    surfaceId = 'asphalt',
-    weather = 'clear'
+    surfaceId = 'asphalt'
   } = {}) {
     const surface = getSurfaceById(surfaceId).id;
     const grip = RACE_WHEEL_IDS.map((wheelId) => {
@@ -111,7 +111,6 @@ export class TireModel {
         tireSize: setup.tireSize
       });
       return (compound.surfaceGrip?.[surface] || 0.7)
-        * (compound.weatherGrip?.[weather] || 1)
         * pressureDynamics.gripMultiplier;
     });
     return clamp(grip.reduce((sum, value) => sum + value, 0) / Math.max(1, grip.length), 0.25, 1.2);
@@ -124,10 +123,10 @@ export class TireModel {
     surfaceId = 'asphalt',
     baseSurfaceId = surfaceId,
     snowDepthInches = 0,
-    weather = 'clear',
     damage = {},
     terrainGripScale = 1,
-    temperatureF = null
+    temperatureF = null,
+    material = null
   } = {}) {
     const surface = getSurfaceById(surfaceId).id;
     const baseSurface = getSurfaceById(baseSurfaceId).id;
@@ -147,18 +146,20 @@ export class TireModel {
       : 1;
     const tireHealth = 1 - clamp(Number(damage.tires?.[wheelId] || 0) / 125, 0, 0.74);
     const suspensionHealth = 1 - clamp(Number(damage.suspension?.[wheelId] || 0) / 145, 0, 0.58);
+    // Weather affects the contacted surface, not a second tire multiplier.
+    // Legacy callers without material depths retain their snow-depth blend.
     const snowDepth = clamp(Number(snowDepthInches) || 0, 0, 6);
     const snowCoverage = snowDepth / 6;
     const baseCompoundGrip = compound.surfaceGrip?.[baseSurface]
       || compound.surfaceGrip?.[surface]
       || 0.7;
-    const snowTargetSurface = surface === 'slush' && baseSurface === 'snow' ? 'slush' : 'snow';
+    const snowTargetSurface = surface === 'slush' ? 'slush' : 'snow';
     const snowCompoundGrip = compound.surfaceGrip?.[snowTargetSurface]
       || compound.surfaceGrip?.snow
       || 0.7;
-    const compoundGrip = snowDepth > 0
+    const compoundGrip = material ? resolveCompoundSurfaceGrip(compound, material) : snowDepth > 0
       ? baseCompoundGrip + (snowCompoundGrip - baseCompoundGrip) * snowCoverage
-      : (compound.surfaceGrip?.[surface] || 0.7) * (compound.weatherGrip?.[weather] || 1);
+      : (compound.surfaceGrip?.[surface] || 0.7);
     return clamp(
       compoundGrip
         * pressureDynamics.gripMultiplier

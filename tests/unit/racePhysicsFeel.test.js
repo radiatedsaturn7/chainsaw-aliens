@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import RaceEditor from '../../src/ui/RaceEditor.js';
+import {calculateBrushTireForce} from '../../src/racing/simulation/ContactPatchTireModel.js';
+import {RACE_TIRE_COMPOUNDS} from '../../src/racing/raceData.js';
 
 const angleDelta = (a = 0, b = 0) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
 
@@ -302,7 +304,6 @@ function runHighPowerFeelCase({
 
 test('Race 1200 HP AWD dirt steering remains traction-limited while third-person camera follows travel yaw', () => {
   const dirt = runHighPowerFeelCase({ surface: 'dirt', drivetrain: 'awd', throttleAxis: 1, steerAxis: 0.8 });
-  const asphalt = runHighPowerFeelCase({ surface: 'asphalt', drivetrain: 'awd', throttleAxis: 1, steerAxis: 0.8 });
 
   assert.equal(dirt.maxWheelSpin > 1, true);
   assert.equal(dirt.maxDemandRatio > 3, true);
@@ -320,11 +321,6 @@ test('Race 1200 HP AWD dirt steering remains traction-limited while third-person
   assert.equal(dirt.maxGear >= 1, true);
   assert.equal(dirt.maxDrivetrainUnload > 0.6, true);
   assert.equal(dirt.minPostPeakTraction < 0.75, true);
-  assert.equal(
-    dirt.maxEffectiveFrictionMu < asphalt.maxEffectiveFrictionMu * 1.05,
-    true,
-    `expected dirt friction below asphalt: dirt=${dirt.maxEffectiveFrictionMu.toFixed(3)} asphalt=${asphalt.maxEffectiveFrictionMu.toFixed(3)}`
-  );
   assert.equal(
     dirt.maxYawRate > 0.3,
     true,
@@ -559,4 +555,20 @@ test('production WRX preview controller reaches the Studio Sprint finish with sc
     `WRX preview stopped before the finish: ${maximumDistance.toFixed(2)}m / ${routeLength.toFixed(2)}m`
   );
   assert.equal(editor.carEditorPreviewRuntimeFailureMessage, '');
+});
+
+// Peak coefficients from separate drifting runs are not a surface comparison:
+// those runs use different compounds and have different wheel unloading.
+test('the same road tire at equal load has less available grip on dirt than asphalt',()=>{
+  const compound=RACE_TIRE_COMPOUNDS.find(tire=>tire.id==='tarmac');
+  const sample=surfaceId=>calculateBrushTireForce({
+    normalLoadN:3500,
+    tire:{compound,referenceLoadN:3500,pressurePsi:32,targetPressurePsi:32,temperatureF:180},
+    material:{baseSurfaceId:surfaceId,surfaceId,surfaceGripScale:1},
+    kinematics:{slipRatio:0.5,slipAngleRad:0.1,longitudinalVelocityMps:15}
+  });
+  const dirt=sample('dirt'),asphalt=sample('asphalt');
+  assert.ok(dirt.gripCoefficient>0);
+  assert.ok(dirt.gripCoefficient<asphalt.gripCoefficient);
+  assert.ok(dirt.combinedSlipLimitN<asphalt.combinedSlipLimitN);
 });

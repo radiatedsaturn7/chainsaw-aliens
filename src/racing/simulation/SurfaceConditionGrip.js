@@ -33,8 +33,12 @@ export function resolveCompoundSurfaceGrip(compound = {}, material = {}) {
   const wetGrip = Number(surfaceGrip[wetSurfaceId] ?? baseGrip);
   const snowGrip = Number(surfaceGrip.snow ?? surfaceGrip.slush ?? baseGrip);
   const coverage = getSurfaceConditionCoverage(material);
+  const slushGrip = Number(surfaceGrip.slush ?? snowGrip);
+  // Snow on any base surface can become slush. Do not overwrite its wet
+  // response with dry snow grip when snow coverage reaches 100%.
+  const snowConditionGrip = snowGrip + (slushGrip - snowGrip) * coverage.wet;
   let grip = baseGrip + (wetGrip - baseGrip) * coverage.wet;
-  grip += (snowGrip - grip) * coverage.snow;
+  grip += (snowConditionGrip - grip) * coverage.snow;
   grip += (snowGrip - grip) * coverage.ice;
   return clamp(grip, 0.05, 2);
 }

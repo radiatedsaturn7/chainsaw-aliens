@@ -1,3 +1,6 @@
+import {modelSprites} from '../model3d/ModelSprites.js';
+import ModelEditor from '../ui/ModelEditor.js';
+import TireEditor from '../ui/TireEditor.js';
 import Input from './Input.js';
 import StateManager from './state/StateManager.js';
 import TitleState from './state/states/TitleState.js';
@@ -420,6 +423,8 @@ export default class Game {
     this.raceEditor = new RaceEditor(this, { mode: 'race' });
     this.carEditor = new RaceEditor(this, { mode: 'car' });
     this.doodadEditor = new DoodadEditor(this);
+    this.tireEditor = new TireEditor(this);
+    this.modelEditor = new ModelEditor(this);
     this.cutscenePlayer = new CutscenePlayer(this);
     this.editorStateTargetKeys = {
       editor: 'editor',
@@ -430,6 +435,8 @@ export default class Game {
       'cutscene-editor': 'cutsceneEditor',
       'race-editor': 'raceEditor',
       'car-editor': 'carEditor',
+      'tire-editor': 'tireEditor',
+      'model-editor': 'modelEditor',
       'doodad-editor': 'doodadEditor'
     };
     this.editorStateDrawArgs = {
@@ -441,6 +448,8 @@ export default class Game {
       'cutscene-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'race-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'car-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'tire-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'model-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'doodad-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height]
     };
     this.editorStateKeys = new Set(Object.keys(this.editorStateTargetKeys));
@@ -865,6 +874,10 @@ export default class Game {
         this.enterActorEditor();
       } else if (action === 'race-editor') {
         this.enterRaceEditor();
+      } else if (action === 'model-editor') {
+        this.enterModelEditor();
+      } else if (action === 'tire-editor') {
+        this.enterTireEditor();
       } else if (action === 'car-editor') {
         this.enterCarEditor();
       } else if (action === 'doodad-editor') {
@@ -2094,6 +2107,27 @@ export default class Game {
     this.playtestActive = false;
   }
 
+  enterModelEditor() {
+    this.transitionTo('model-editor');
+    this.setRevAudio(false);
+    this.playtestActive = false;
+  }
+
+  exitModelEditor() {
+    this.transitionTo('title', {forceCleanup:true});
+  }
+
+  enterTireEditor() {
+    this.tireEditorReturnState = this.state === 'car-editor' ? 'car-editor' : 'title';
+    this.transitionTo('tire-editor');
+    this.setRevAudio(false);
+    this.playtestActive = false;
+  }
+
+  exitTireEditor() {
+    this.transitionTo(this.tireEditorReturnState || 'title', {forceCleanup:true});
+  }
+
   enterDoodadEditor() {
     this.transitionTo('doodad-editor');
     this.setRevAudio(false);
@@ -3320,6 +3354,10 @@ export default class Game {
         this.exitSfxEditor();
       } else if (this.state === 'cutscene-editor') {
         this.exitCutsceneEditor();
+      } else if (this.state === 'model-editor') {
+        this.exitModelEditor();
+      } else if (this.state === 'tire-editor') {
+        this.exitTireEditor();
       } else if (this.state === 'race-editor' || this.state === 'car-editor') {
         this.exitRaceEditor();
       } else if (this.playtestActive && this.state === 'playing') {
@@ -3398,9 +3436,11 @@ export default class Game {
       return;
     }
 
-    if (this.state === 'race-editor' || this.state === 'car-editor' || this.state === 'doodad-editor') {
-      if (this.input.wasPressed('cancel')) {
-        if (this.state === 'doodad-editor') this.exitDoodadEditor();
+    if (this.state === 'race-editor' || this.state === 'car-editor' || this.state === 'doodad-editor' || this.state === 'tire-editor' || this.state === 'model-editor') {
+      if (this.state !== 'model-editor' && this.input.wasPressed('cancel')) {
+        if (this.state === 'model-editor') this.exitModelEditor();
+        else if (this.state === 'tire-editor') this.exitTireEditor();
+        else if (this.state === 'doodad-editor') this.exitDoodadEditor();
         else this.exitRaceEditor();
         this.input.flush();
         return;
@@ -3409,7 +3449,7 @@ export default class Game {
         ? this.raceEditor
         : this.state === 'car-editor'
           ? this.carEditor
-          : this.doodadEditor;
+          : this.state === 'tire-editor' ? this.tireEditor : this.state === 'model-editor' ? this.modelEditor : this.doodadEditor;
       target.update(this.input, dt);
       this.input.flush();
       return;
@@ -9403,7 +9443,9 @@ export default class Game {
     const maxTileX = Math.min(this.world.width - 1, Math.ceil((cameraX + cameraWidth) / tileSize) + viewMarginTiles);
     const minTileY = Math.max(0, Math.floor(cameraY / tileSize) - viewMarginTiles);
     const maxTileY = Math.min(this.world.height - 1, Math.ceil((cameraY + cameraHeight) / tileSize) + viewMarginTiles);
-    if (activeCamera?.fastEditorRender) {
+    const hasModelGraphics=(this.world.decals||[]).some(d=>d.model?.ref)
+      || Object.values(this.world.pixelArt?.tileProperties||{}).some(t=>t.model?.ref);
+    if (activeCamera?.fastEditorRender && !hasModelGraphics) {
       this.drawWorldFastForEditor(ctx, {
         showDoors,
         tileSize,
@@ -9480,6 +9522,8 @@ export default class Game {
       return valid;
     };
     const drawPixelTile = (x, y, tile) => {
+      const binding=this.world.getTilePropertiesByChar?.(tile)?.model;
+      if(binding?.ref){const image=modelSprites.snapshot(binding,time,{width:tileSize,height:tileSize});if(image){ctx.drawImage(image,x*tileSize,y*tileSize,tileSize,tileSize);return true;}}
       const normalizePixelColor = (value) => {
         if (!value) return null;
         if (typeof value === 'string') {
@@ -10157,20 +10201,19 @@ export default class Game {
     const viewRight = cameraX + cameraWidth + tileSize * 2;
     const viewBottom = cameraY + cameraHeight + tileSize * 2;
     decals.forEach((decal) => {
-      if (!decal?.imageDataUrl) return;
-      const cacheKey = decal.id || decal.imageDataUrl;
-      let image = this.decalImageCache.get(cacheKey);
-      if (!image) {
-        image = new Image();
-        image.src = decal.imageDataUrl;
-        this.decalImageCache.set(cacheKey, image);
-      }
-      if (!image.complete) return;
+      if (!decal?.imageDataUrl && !decal?.model?.ref) return;
       const x = Number.isFinite(decal.x) ? decal.x : 0;
       const y = Number.isFinite(decal.y) ? decal.y : 0;
       const w = Number.isFinite(decal.w) ? decal.w : this.world.width * tileSize;
       const h = Number.isFinite(decal.h) ? decal.h : this.world.height * tileSize;
       if (x + w < viewLeft || x > viewRight || y + h < viewTop || y > viewBottom) return;
+      let image;
+      if(decal.model?.ref){image=modelSprites.snapshot(decal.model,time,{width:w,height:h});if(!image)return;}
+      else{
+        const cacheKey=decal.id||decal.imageDataUrl;image=this.decalImageCache.get(cacheKey);
+        if(!image){image=new Image();image.src=decal.imageDataUrl;this.decalImageCache.set(cacheKey,image);}
+        if(!image.complete)return;
+      }
       const rotation = Number.isFinite(decal.rotation) ? decal.rotation : 0;
       ctx.save();
       const decalAlpha = Number.isFinite(decal.alpha) ? Math.max(0, Math.min(1, decal.alpha)) : 1;
@@ -11180,6 +11223,8 @@ export default class Game {
     this.stateManager.register('cutscene-editor', createDelegatedState(this, 'cutsceneEditor'));
     this.stateManager.register('race-editor', createDelegatedState(this, 'raceEditor'));
     this.stateManager.register('car-editor', createDelegatedState(this, 'carEditor'));
+    this.stateManager.register('tire-editor', createDelegatedState(this, 'tireEditor'));
+    this.stateManager.register('model-editor', createDelegatedState(this, 'modelEditor'));
     this.stateManager.register('doodad-editor', createDelegatedState(this, 'doodadEditor'));
     this.stateManager.register('robtersession', new RobterSessionState(this));
   }

@@ -1,3 +1,4 @@
+import {normalizeModelBinding} from '../model3d/ModelBinding.js';
 export const RACE_DOODAD_SCHEMA_VERSION = 1;
 
 export const RACE_DOODAD_BEHAVIORS = ['collide', 'flatten', 'fly-off'];
@@ -100,6 +101,7 @@ export function normalizeRaceDoodadDocument(data = {}, fallbackName = '') {
     id,
     name: String(doodad.name || cleanName || fallback.name),
     artRef: String(doodad.artRef || '').trim(),
+    model: normalizeModelBinding(doodad.model),
     widthM,
     heightM,
     groundOffsetM: clamp(Number(doodad.groundOffsetM) || 0, -groundOffsetLimitM, groundOffsetLimitM),
@@ -145,6 +147,7 @@ export function createRaceDoodadFromLegacyScenery(definition = {}, fallback = {}
     id: source.id || fallbackSource.id || name,
     name,
     artRef,
+    model: source.model || fallbackSource.model,
     widthM: Number(source.widthM ?? fallbackSource.widthM) || DEFAULT_RACE_DOODAD.widthM,
     heightM: Number(source.heightM ?? fallbackSource.heightM) || DEFAULT_RACE_DOODAD.heightM,
     groundOffsetM: Number(source.groundOffsetM ?? fallbackSource.groundOffsetM) || 0,

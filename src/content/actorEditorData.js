@@ -1,3 +1,4 @@
+import {normalizeModelBinding} from '../model3d/ModelBinding.js';
 export const ACTOR_ATTACK_TARGETS = [
   { id: 'none', label: 'None' },
   { id: 'player', label: 'Player' },
@@ -161,7 +162,8 @@ export function ensureActorDefinition(actor) {
         })).filter((frame) => frame.imageDataUrl) : [],
         fps: Number(state?.animation?.fps || 8),
         updatedAt: Number(state?.animation?.updatedAt || 0),
-        artRef: typeof state?.animation?.artRef === 'string' ? state.animation.artRef : ''
+        artRef: typeof state?.animation?.artRef === 'string' ? state.animation.artRef : '',
+        model: normalizeModelBinding(state?.animation?.model)
       },
       movement: {
         type: state?.movement?.type || 'none',

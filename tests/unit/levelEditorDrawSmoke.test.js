@@ -163,3 +163,51 @@ test('new Level Editor documents start with default art-free gray solids', () =>
   assert.equal(data.tiles[0], '#'.repeat(24));
   assert.equal(data.tiles[12][12], '.');
 });
+
+for (const [width, height] of [[390, 844], [320, 568]]) {
+  test(`Level portrait zoom slider renders and drags above bottom controls at ${width}x${height}`, () => {
+    const game = createGameStub();
+    Object.assign(game.canvas, { width, height });
+    const editor = new LevelEditorCore(game);
+    editor.active = true;
+    editor.isMobileLayout = () => true;
+    const ctx = createCanvasContextStub(game.canvas);
+    const rectangles = [];
+    ctx.strokeRect = (...rect) => rectangles.push(rect);
+    for (const open of [false, true]) {
+      editor.drawer.open = open;
+      editor.draw(ctx, width, height);
+      const bounds = { ...editor.zoomSlider.bounds };
+      if (open) {
+        assert.equal(bounds.w, 0, 'zoom yields to the menu sheet, matching Pixel');
+        assert.equal(editor.zoomSlider.playZoomBounds.w, 0);
+        continue;
+      }
+      assert.ok(bounds.w > 0 && bounds.h >= 38);
+      assert.ok(bounds.x >= 0 && bounds.x + bounds.w <= width);
+      assert.ok(bounds.y + bounds.h <= height);
+      const layout = editor.getPortraitLayout(width, height);
+      assert.ok(layout.hotBar);
+      assert.ok(bounds.y + bounds.h < layout.hotBar.y, 'zoom must be north of the hot bar');
+      assert.ok(layout.hotBar.y + layout.hotBar.h < layout.middleRail.y);
+      assert.ok(bounds.y + bounds.h < layout.middleRail.y);
+      assert.ok(layout.mainEditor.y + layout.mainEditor.h < bounds.y);
+      assert.equal(bounds.x, layout.workSurface.x + 18);
+      assert.equal(bounds.w, layout.workSurface.w - 36);
+      assert.ok(rectangles.some(([x, y, w, h]) => x === bounds.x && w === bounds.w && y >= bounds.y && h === 10));
+      editor.handlePointerDown({ x: bounds.x + bounds.w, y: bounds.y + bounds.h / 2, id: 7 });
+      assert.equal(editor.zoomSlider.active, true);
+      const highZoom = editor.zoom;
+      editor.draw(ctx, width, height);
+      assert.equal(editor.zoomSlider.active, true, 'drawing must preserve an ongoing drag');
+      assert.deepEqual(editor.zoomSlider.bounds, bounds);
+      editor.handlePointerMove({ x: bounds.x, y: bounds.y + bounds.h / 2, id: 7 });
+      assert.ok(editor.zoom < highZoom);
+      editor.handlePointerUp({ x: bounds.x, y: bounds.y + bounds.h / 2, id: 7 });
+      assert.equal(editor.zoomSlider.active, false);
+      const marker = editor.zoomSlider.playZoomBounds;
+      editor.handlePointerDown({ x: marker.x + marker.w / 2, y: marker.y + marker.h / 2, id: 8 });
+      assert.equal(editor.zoom, 1);
+    }
+  });
+}

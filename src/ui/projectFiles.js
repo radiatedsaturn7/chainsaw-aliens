@@ -2,7 +2,7 @@
  * Project file facade backed by per-file server storage.
  *
  * How it works:
- * - Files are grouped into fixed folders: levels, art, music, actors, sfx, cutscenes, races, cars, doodads.
+ * - Files are grouped into fixed folders: levels, art, music, actors, sfx, cutscenes, races, cars, tires, doodads.
  * - File payloads are cached in memory while the app is running.
  * - Saves are written directly to individual server files.
  * - Each payload includes version/folder/name/savedAt/data, where `data`
@@ -26,7 +26,7 @@ import {
   restoreServerFileVersion
 } from './serverStorage.js';
 
-const FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'doodads'];
+const FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'doodads'];
 const parsedPayloadCache = new Map();
 const LARGE_PARSED_PAYLOAD_LIMIT = 8 * 1024 * 1024;
 const DEFAULT_SAVE_CONFIRM_TIMEOUT_MS = 12000;

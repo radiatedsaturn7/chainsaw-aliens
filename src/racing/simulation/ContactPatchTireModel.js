@@ -1,3 +1,4 @@
+import { getGamepadSpeedSteeringScale } from './RaceSimulationConfig.js';
 import { RACE_WHEEL_IDS, clamp } from './SimulationMath.js';
 import { PowertrainModel } from './PowertrainModel.js';
 import { rotateVectorByQuaternion } from './RigidBodyMath.js';
@@ -513,8 +514,13 @@ export function resolvePhysicalCenterSteeringAngle(controls = {}, config = {}, s
     && Number.isFinite(controls.centerSteeringAngleRad)) {
     return clamp(controls.centerSteeringAngleRad, -maximumAngleRad, maximumAngleRad);
   }
+  const gamepadScale = controls.steeringInputMode === 'gamepad'
+    ? getGamepadSpeedSteeringScale(state.groundSpeedMps
+      ?? Math.hypot(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0)))
+    : 1;
   const envelope = calculateAuthoritativeSteeringEnvelope(state, config)
-    * (String(config.handlingPreset || 'sport').toLowerCase() === 'accessible' ? 1.08 : 1);
+    * (String(config.handlingPreset || 'sport').toLowerCase() === 'accessible' ? 1.08 : 1)
+    * gamepadScale;
   return clamp(Number(controls.steering) || 0, -1, 1) * Math.min(maximumAngleRad, envelope);
 }
 
