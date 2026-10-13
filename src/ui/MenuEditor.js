@@ -150,8 +150,8 @@ export default class MenuEditor extends RaceEditor {
       if(kind.type==='movie')fields.push(text('url','Or video URL (overrides destination)',''));
     }
     if(kind.type==='set-param')fields.push({...text('parameter','Parameter',a.parameter||'',true),suggestions:parameterNames(this)},text('value','Value (text, number, true/false, or JSON)',JSON.stringify(a.value??'')));
-    fields.push(select('after','Then',a.then?'edit':'none',[{value:'none',label:'Nothing else'},{value:'edit',label:'Configure another action'}]));
-    const r=await openEditorForm(names[kind.type],fields,{description:'The selected values travel into races and levels. Movies finish before the next action runs.'});
+    if(!['race','level'].includes(kind.type))fields.push(select('after','Then',a.then?'edit':'none',[{value:'none',label:'Nothing else'},{value:'edit',label:'Configure another action'}]));
+    const r=await openEditorForm(names[kind.type],fields,{description:kind.type==='race'?'Launch one saved race with the menu selections. Configure its next destination in the Race Editor’s finish settings.':'The selected values travel into races and levels. Movies finish before the next action runs.'});
     if(!r)return undefined;const result={type:kind.type,target:r.url||r.target||'',parameter:r.parameter||'',value:parse(r.value??'')};
     if(r.after==='edit'){const then=await this.editAction(a.then);if(then===undefined)return undefined;result.then=then;}return result;
   }

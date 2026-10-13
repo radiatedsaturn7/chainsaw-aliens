@@ -18,7 +18,7 @@ test('movie completion precedes race or level launch with current configuration'
 });
 test('menu launches a single selected race; race documents own subsequent destinations',async()=>{
  const calls=[];const flow=new MenuFlow(createMenuDocument(),{launchRace:async(ref,p)=>calls.push([ref,p])});
- flow.setParameter('raceRef','Hill');await flow.run({type:'race',target:'$raceRef'});
+ flow.setParameter('raceRef','Hill');await flow.run({type:'race',target:'$raceRef',then:{type:'race',target:'Must not launch'}});
  assert.equal(calls.length,1);assert.equal(calls[0][0],'Hill');assert.equal(calls[0][1].raceRef,'Hill');
  assert.equal(flow.document.grandPrix,undefined);assert.equal(flow.raceFinished,undefined);
 });

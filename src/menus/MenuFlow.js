@@ -24,8 +24,8 @@ export class MenuFlow {
       case 'back':{const id=this.history.pop();if(id)this.goTo(id,{remember:false});else this.stop();break;}
       case 'set-param':this.setParameter(action.parameter,resolveMenuValue(action.value,this.parameters));break;
       case 'movie':if(!target)throw Error('Choose a movie first');await this.adapter.playMovie(target,configuration);break;
-      case 'race':if(!target)throw Error('Choose a race first');await this.adapter.launchRace(target,configuration);break;
-      case 'level':if(!target)throw Error('Choose a level first');await this.adapter.launchLevel(target,configuration);break;
+      case 'race':if(!target)throw Error('Choose a race first');await this.adapter.launchRace(target,configuration);return;
+      case 'level':if(!target)throw Error('Choose a level first');await this.adapter.launchLevel(target,configuration);return;
       case 'quit':this.stop();break;
       default:throw Error('Unsupported menu action');
     }
