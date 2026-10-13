@@ -9578,7 +9578,8 @@ export default class RaceEditor {
     const aiDrivers = this.playtestSession?.raceId === race.id
       ? this.playtestSession.aiDrivers || [] : race.competition?.aiDrivers || [];
     aiDrivers.forEach((driver) => {
-      const car = this.project.cars.find((candidate) => candidate.id === driver?.carId);
+      const runtime = this.playtestSession?.aiRuntime?.find(ai => ai.carId === driver?.carId);
+      const car = runtime?.runtimeCar || this.findRaceProjectCarById(driver?.carId);
       addCarArt(car);
     });
     return [...refs];
@@ -22335,7 +22336,6 @@ export default class RaceEditor {
   } = {}) {
     if (!ctx || !camera) return false;
     car = resolveCarAngleLayers(car, getCarViewSlot(yaw, cameraYaw));
-    if(car.art?.bodyModel?.ref||car.art?.wheelModel?.ref)ensureModelSceneLighting(renderer.scene);
     const visibility = this.getCarArtLayerVisibility(car);
     drawBody = drawBody && visibility.body;
     drawWheels = drawWheels && visibility.tires;
@@ -27298,8 +27298,7 @@ export default class RaceEditor {
     return true;
   }
 
-  getRaceTireTextureScroll(car = this.selectedCar, wheelId = 'fl') {
-    const session = this.playtestSession || {};
+  getRaceTireTextureScroll(car = this.selectedCar, wheelId = 'fl', session = this.playtestSession || {}) {
     const spin = session.vehicleRenderState?.wheelPoses?.[wheelId]?.spinAngleRad;
     if (Number.isFinite(spin)) return spin / (Math.PI * 2);
     const wheelRadius = Math.max(0.18, Number(this.getRaceWheelVisualRadiusM(car)) || 0.32);
@@ -37358,23 +37357,26 @@ export default class RaceEditor {
       const roadHalf = this.getRaceRoadHalfWidthWorld(segment);
       const lateral = clamp(Number(ai.lineOffset || 0), -0.82, 0.82) * roadHalf;
       const right = this.getRaceRightVector(Number(pose.yaw || 0));
-      const car = this.project.cars.find((candidate) => candidate.id === ai.carId) || this.selectedCar;
+      const car = ai.runtimeCar || this.findRaceProjectCarById(ai.carId) || this.selectedCar;
       const worldX = Number.isFinite(ai.worldX) ? ai.worldX : Number(pose.x || 0) + right.x * lateral;
       const worldZ = Number.isFinite(ai.worldZ) ? ai.worldZ : Number(pose.z || 0) + right.z * lateral;
-      const elevation = Number(pose.elevation || 0);
-      const projected = this.projectRaceWorldPointToCamera({
-        x: worldX,
-        z: worldZ,
-        elevation,
-        segment
-      }, camera, cameraYaw, bounds);
-      return { ai, car, pose: { ...pose, x: worldX, z: worldZ, elevation, segment }, projected: { ...projected, x: worldX, z: worldZ, elevation, segment } };
+      const renderPose = this.getRacePlayerRenderPose({ ...ai, worldX, worldZ,
+        carYaw: ai.carYaw ?? pose.yaw, tireSlip: ai.tireSlip || { frontTireAngle: 0 }
+      }, car, { fallbackElevation: Number(pose.elevation || 0) });
+      const point = { x: renderPose.x, z: renderPose.z, elevation: renderPose.elevation, segment };
+      const projected = this.projectRaceCarVisualPoint(point, { camera, cameraYaw, bounds });
+      return { ai, car, pose: renderPose, projected: { ...projected, ...point } };
     }).filter(({ projected }) => projected.visible && projected.screenY > bounds.y - 60 && projected.screenY < bounds.y + bounds.h + 80)
       .sort((a, b) => Number(b.projected.cameraZ || 0) - Number(a.projected.cameraZ || 0));
     entries.forEach(({ ai, car, pose, projected }) => {
       this.drawRaceProjectedCarSprite(ctx, bounds, {
         projected,
-        yaw: Number(ai.carYaw ?? pose.yaw ?? 0),
+        yaw: pose.yaw,
+        pitchRad: pose.pitchRad,
+        rollRad: pose.rollRad,
+        frontTireAngle: pose.frontTireAngle,
+        session: ai,
+        camera,
         cameraYaw,
         car,
         renderState: ai.vehicleRenderState,
@@ -37390,12 +37392,25 @@ export default class RaceEditor {
     cameraYaw = 0,
     car = this.selectedCar,
     renderState = null,
+    pitchRad = 0,
+    rollRad = 0,
+    frontTireAngle = 0,
+    session = null,
+    camera = this.lastRaceRenderCamera?.camera || {},
     threeRendered = false,
     color = '#58d6ff'
   } = {}) {
     if (!projected?.visible) return;
     car = resolveCarAngleLayers(car, getCarViewSlot(yaw, cameraYaw));
+    const projectVisualPoint = point => this.projectRaceCarVisualPoint(point, { camera, cameraYaw, bounds });
     let { width, height } = this.getRaceProjectedCarBillboardSize(bounds, { projected, car });
+    if (projected.threeProjected) {
+      const physicalWidth = this.getRaceProjectedPhysicalBodyBillboardWidth({
+        car, x: projected.x, z: projected.z, elevation: projected.elevation, cameraYaw,
+        projectPoint: projectVisualPoint, bounds
+      });
+      if (physicalWidth > 0) { width = physicalWidth; height = width * 0.74; }
+    }
     const x = projected.screenX;
     const y = projected.screenY;
     const artChoice = this.getRaceCarProjectedArtRef(car, yaw, cameraYaw);
@@ -37408,37 +37423,34 @@ export default class RaceEditor {
         this.drawRaceProjectedProceduralCar(ctx, bounds, {
           x: Number(projected.x || 0), z: Number(projected.z || 0),
           elevation: Number(projected.elevation ?? projected.y ?? 0) + 0.035,
-          yaw, camera: this.lastRaceRenderCamera?.camera || {}, cameraYaw, car, color,
+          yaw, camera, cameraYaw, car, color, session, pitchRad, rollRad, frontTireAngle,
+          projectPoint: projectVisualPoint,
           drawWheels: !hasTireArt, drawShadow: !hasShadowArt, drawBrakeLights: !hasBrakeArt,
           segment: projected.segment || null
         });
       }
-      const camera = this.lastRaceRenderCamera?.camera || {};
       const rearBodyAnchor = this.getRaceCarRearAxleBodyAnchor({
         x: Number(projected.x || 0),
         z: Number(projected.z || 0),
         elevation: Number(projected.elevation ?? projected.y ?? 0),
         yaw,
-        pitchRad: 0,
-        rollRad: 0
+        pitchRad,
+        rollRad
       }, car, { renderState });
-      const rearBodyProjected = this.projectRaceWorldPointToCamera({
+      const rearBodyProjected = projectVisualPoint({
         x: rearBodyAnchor.x,
         z: rearBodyAnchor.z,
         elevation: rearBodyAnchor.elevation,
         segment: projected.segment || null
-      }, camera, cameraYaw, bounds);
+      });
       const rearPhysicalWidth = this.getRaceProjectedPhysicalBodyBillboardWidth({
         car,
         x: rearBodyAnchor.x,
         z: rearBodyAnchor.z,
         elevation: rearBodyAnchor.elevation,
         cameraYaw,
-        projectPoint: (point) => this.projectRaceWorldPointToCamera(
-          { ...point, segment: projected.segment || null },
-          camera,
-          cameraYaw,
-          bounds
+        projectPoint: (point) => projectVisualPoint(
+          { ...point, segment: projected.segment || null }
         ),
         bounds
       });
@@ -37451,15 +37463,15 @@ export default class RaceEditor {
         ? Number(rearBodyProjected.screenY) - bodyHeight * 0.42
         : y - height * 0.42;
       const bodyOrientation = renderState?.orientation
-        || quaternionFromEuler({ yaw, pitch: 0, roll: 0 });
+        || quaternionFromEuler({ yaw, pitch: pitchRad, roll: rollRad });
       const bodyUpWorld = rotateVectorByQuaternion({ x: 0, y: 1, z: 0 }, bodyOrientation);
-      const bodyUpProjected = this.projectRaceWorldPointToCamera({
+      const bodyUpProjected = projectVisualPoint({
         x: rearBodyAnchor.x + Number(bodyUpWorld.x || 0),
         z: rearBodyAnchor.z + Number(bodyUpWorld.z || 0),
         elevation: rearBodyAnchor.elevation
           + Number(bodyUpWorld.y || 0) / RACE_THREE_ELEVATION_M,
         segment: projected.segment || null
-      }, camera, cameraYaw, bounds);
+      });
       const bodyUpX = Number(bodyUpProjected?.screenX) - Number(rearBodyProjected?.screenX);
       const bodyUpY = Number(bodyUpProjected?.screenY) - Number(rearBodyProjected?.screenY);
       const bodyRotationRad = bodyUpProjected?.visible && rearBodyProjected?.visible
@@ -37473,7 +37485,12 @@ export default class RaceEditor {
         fallbackElevation: Number(projected.elevation ?? projected.y ?? 0),
         segment: projected.segment || null
       });
-      const shadowGroundProjected = this.projectRaceWorldPointToCamera(shadowGroundPoint, camera, cameraYaw, bounds);
+      const shadowGroundProjected = projectVisualPoint(shadowGroundPoint);
+      const wheelBillboards = session ? this.getRaceProjectedPhysicalWheelBillboards({
+        car,
+        wheelCenters: this.getRaceWheelVisualCenterPositions({ car, session, tuning: this.getRaceCarTuning(car) }),
+        projectPoint: projectVisualPoint, segment: projected.segment || null
+      }) : null;
       this.drawRaceCarBillboardLayers(ctx, {
         car,
         centerX: x,
@@ -37487,9 +37504,10 @@ export default class RaceEditor {
         bodyRotationRad,
         artChoice,
         drawBodyLayer: Boolean(artCanvas),
-        frontTireAngle: 0,
-        tireScroll: this.getRaceTireTextureScroll(car),
-        braking: false,
+        frontTireAngle,
+        tireScroll: this.getRaceTireTextureScroll(car, 'fl', session || {}),
+        wheelBillboards,
+        braking: Number(session?.engineDrive?.brake || 0) > 0,
         damageColor: color,
         drawWheels: hasTireArt || (!threeRendered && Boolean(artCanvas)),
         drawShadowLayer: hasShadowArt || (!threeRendered && Boolean(artCanvas)),
@@ -37513,9 +37531,10 @@ export default class RaceEditor {
         camera,
         cameraYaw,
         segment: projected.segment || null,
-        frontTireAngle: 0,
-        pitchRad: 0,
-        rollRad: 0,
+        frontTireAngle,
+        pitchRad,
+        rollRad,
+        projectPoint: projectVisualPoint,
         alpha: 0.42
       });
       return;
@@ -37527,12 +37546,14 @@ export default class RaceEditor {
       z: Number(projected.z || 0),
       elevation: flatElevation,
       yaw,
-      camera: this.lastRaceRenderCamera?.camera || {},
+      camera,
+      projectPoint: projectVisualPoint,
+      session, pitchRad, rollRad,
       cameraYaw,
       car,
       color,
-      frontTireAngle: 0,
-      braking: false,
+      frontTireAngle,
+      braking: Number(session?.engineDrive?.brake || 0) > 0,
       segment: projected.segment || null
     });
     if (drewFlatCar) {
@@ -37553,9 +37574,10 @@ export default class RaceEditor {
         camera: this.lastRaceRenderCamera?.camera || {},
         cameraYaw,
         segment: projected.segment || null,
-        frontTireAngle: 0,
-        pitchRad: 0,
-        rollRad: 0,
+        frontTireAngle,
+        pitchRad,
+        rollRad,
+        projectPoint: projectVisualPoint,
         alpha: 0.42
       });
       return;

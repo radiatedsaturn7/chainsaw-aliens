@@ -1540,6 +1540,15 @@ export const LATEST_MAJOR_WORK = {
 export const LATEST_CHANGES = [
   {
     date: '2026-10-12',
+    time: '23:34 EDT',
+    title: 'AI saved artwork and track projection',
+    details: [
+      'AI artwork preloading and sprite drawing now resolve each saved car snapshot instead of falling back to player artwork when cars share a stock chassis ID.',
+      'AI sprites, tire hubs and procedural fallbacks use the active track camera and physical car pose, including height, pitch, roll, steering and individual tire rotation.'
+    ]
+  },
+  {
+    date: '2026-10-12',
     time: '21:43 EDT',
     title: 'AI car pools, categories and performance classes',
     details: [
