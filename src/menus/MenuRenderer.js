@@ -1,3 +1,4 @@
+import {menuPaintOrder,menuElementVisible} from './MenuLayout.js';
 import {menuElementPose} from './MenuDocument.js';
 import {calculateCarPerformance} from '../racing/CarPerformance.js';
 
@@ -20,14 +21,22 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
       if(screen.effect==='rain'){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-4,y+12);ctx.stroke()}else ctx.fillRect(x,y,screen.effect==='snow'?3:2,screen.effect==='snow'?3:2);
     }ctx.restore();
   }
-  for(const element of screen.elements){
-    if(!element.visible)continue;const pose=editing?{x:element.x,y:element.y,opacity:1,scale:1,rotation:0}:menuElementPose(element,time),b=menuElementBounds(element,bounds,pose);
+  for(const element of menuPaintOrder(screen.elements)){
+    if(!menuElementVisible(element,screen.elements))continue;const pose=editing?{x:element.x,y:element.y,opacity:1,scale:1,rotation:0}:menuElementPose(element,time),b=menuElementBounds(element,bounds,pose);
     ctx.save();ctx.translate(b.x+b.w/2,b.y+b.h/2);ctx.rotate(pose.rotation*Math.PI/180);ctx.scale(pose.scale,pose.scale);ctx.translate(-b.x-b.w/2,-b.y-b.h/2);ctx.globalAlpha=pose.opacity;
     ctx.beginPath();ctx.rect(b.x,b.y,b.w,b.h);ctx.clip();
     const interactive=menuElementInteractive(element);if(interactive){ctx.fillStyle=element.background;ctx.fillRect(b.x,b.y,b.w,b.h);}
     ctx.fillStyle=element.color;ctx.font=`${Math.max(10,element.fontSize*Math.min(bounds.w/720,bounds.h/900))}px system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
     let label=caption(element.label,parameters),value=parameters[element.binding];
-    if(element.type==='image'){const image=resources?.art(element.artRef,Math.floor(time*8));if(image)drawMenuImage(ctx,image,b,element.imageFit);else ctx.fillText(element.artRef||'Choose artwork',b.x+b.w/2,b.y+b.h/2,b.w-12);}
+    if(element.type==='shape'){
+      ctx.beginPath();const inset=element.strokeWidth/2,x=b.x+inset,y=b.y+inset,w=Math.max(0,b.w-2*inset),h=Math.max(0,b.h-2*inset);
+      if(element.shape==='ellipse')ctx.ellipse(x+w/2,y+h/2,w/2,h/2,0,0,Math.PI*2);
+      else if(element.shape==='triangle'){ctx.moveTo(x+w/2,y);ctx.lineTo(x+w,y+h);ctx.lineTo(x,y+h);ctx.closePath();}
+      else ctx.rect(x,y,w,h);
+      ctx.fillStyle=element.fill;ctx.fill();if(element.strokeWidth){ctx.strokeStyle=element.stroke;ctx.lineWidth=element.strokeWidth;ctx.stroke();}
+    }
+    else if(element.type==='container'){if(editing){ctx.strokeStyle='#7496a8';ctx.lineWidth=1;ctx.setLineDash?.([5,4]);ctx.strokeRect(b.x,b.y,b.w,b.h);ctx.setLineDash?.([]);ctx.fillText(element.label,b.x+b.w/2,b.y+12,b.w-12);}}
+    else if(element.type==='image'){const image=resources?.art(element.artRef,Math.floor(time*8));if(image)drawMenuImage(ctx,image,b,element.imageFit);else ctx.fillText(element.artRef||'Choose artwork',b.x+b.w/2,b.y+b.h/2,b.w-12);}
     else if(element.type==='video'){const video=videos?.get(element.id);if(video?.readyState>=2)ctx.drawImage(video,b.x,b.y,b.w,b.h);else ctx.fillText(editing?'Video: '+(element.videoUrl||'Choose source'):'Loading video…',b.x+b.w/2,b.y+b.h/2,b.w-12);}
     else if(element.type==='property-display'){const property=resources?.property(element,parameters);const shown=property==null?'—':typeof property==='number'?property.toFixed(element.decimals):typeof property==='object'?JSON.stringify(property):String(property);ctx.fillText(`${label}${label?': ':''}${shown}${element.suffix}`,b.x+b.w/2,b.y+b.h/2,Math.max(1,b.w-12));}
     else if(element.type==='asset-preview'){const image=resources?.assetArt(element,parameters,time);if(image)drawMenuImage(ctx,image,b,element.imageFit);else ctx.fillText('Choose an actor / item image',b.x+b.w/2,b.y+b.h/2,Math.max(1,b.w-12));}
@@ -54,7 +63,7 @@ function drawCarComponent(ctx,b,e,car,resources,time,parameters){
     ctx.save();const yaw=e.angleBinding?Number(parameters[e.angleBinding]??e.angle)*Math.PI/180:e.animation==='spin'?(e.loop?time/e.duration:Math.min(1,time/e.duration))*Math.PI*2:e.angle*Math.PI/180;
     const choice=renderer.getRaceCarProjectedArtRef(car,0,yaw);
     if(car.art?.bodyModel?.ref||!choice.artRef){resources.carPreview.draw(ctx,b,car,yaw,time);ctx.restore();return;}
-    renderer.drawRaceCarBillboardLayers(ctx,{car,session:null,centerX:b.x+b.w/2,anchorY:b.y+b.h*0.58,baseWidth:Math.min(b.w*0.25,b.h*0.65),baseHeight:Math.min(b.w*0.25,b.h*0.65)*0.74,artChoice:choice,drawShadowLayer:false});ctx.restore();return;
+    resources.carPreview.drawSprite(ctx,b,car,choice);ctx.restore();return;
   }
   if(e.type==='car-stats'){
     const performance=calculateCarPerformance(car);const lines=[car.name||'Car',`${Math.round(tuning.powerHp||0)} HP · ${Math.round(Number(tuning.torqueLbFt||0)*1.355817948)} Nm`,`${Math.round(tuning.weightKg||0)} kg · ${tuning.drivetrain||car.tuning?.drivetrain||''}`,`Class ${performance.performanceClass||performance.class||''}`];

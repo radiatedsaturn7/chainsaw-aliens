@@ -1,3 +1,4 @@
+import {menuPaintOrder,menuElementVisible} from './MenuLayout.js';
 import {MenuFlow} from './MenuFlow.js';
 import {MenuResources} from './MenuResources.js';
 import {drawMenuScreen,menuElementBounds,menuElementInteractive,menuHit} from './MenuRenderer.js';
@@ -29,7 +30,7 @@ export default class MenuPlayer {
     }
     if(screen.musicRef)void hydrateProjectFilePayload('music',screen.musicRef).then(payload=>{if(this.mediaGeneration!==generation)return;if(!payload?.data)throw Error(`Music not found: ${screen.musicRef}`);this.game.setActiveMusicTrack?.(screen.musicRef,{restart:true,loop:true})}).catch(error=>{flow.error=error.message});
   }
-  interactive(){return this.flow?.screen.elements.filter(e=>e.visible&&menuElementInteractive(e))||[]}
+  interactive(){return (this.flow?menuPaintOrder(this.flow.screen.elements).filter(e=>menuElementVisible(e,this.flow.screen.elements)&&menuElementInteractive(e)):[])||[]}
   async activate(element,direction=1,{choose=false}={}){
     if(!element||this.flow.busy||this.capturing)return;
     if(element.type==='button')return this.flow.run(element.action);
@@ -69,7 +70,7 @@ export default class MenuPlayer {
     if(this.choicePopup)this.drawChoices(ctx,width,height);
     if(this.preview){ctx.save();ctx.fillStyle='#101c28';ctx.fillRect(width-130,0,130,36);ctx.fillStyle='#fff';ctx.font='14px system-ui';ctx.textAlign='center';ctx.fillText('Exit Preview',width-65,23);ctx.restore();}
   }
-  hitElement(point){return [...this.flow.screen.elements].reverse().find(e=>{if(!e.visible||!menuElementInteractive(e))return false;const pose=menuElementPose(e,this.flow.time),b=menuElementBounds(e,this.bounds,pose),dx=point.x-(b.x+b.w/2),dy=point.y-(b.y+b.h/2),a=-pose.rotation*Math.PI/180;return menuHit({x:(dx*Math.cos(a)-dy*Math.sin(a))/pose.scale+b.x+b.w/2,y:(dx*Math.sin(a)+dy*Math.cos(a))/pose.scale+b.y+b.h/2},b)})}
+  hitElement(point){return menuPaintOrder(this.flow.screen.elements).reverse().find(e=>{if(!menuElementVisible(e,this.flow.screen.elements)||!menuElementInteractive(e))return false;const pose=menuElementPose(e,this.flow.time),b=menuElementBounds(e,this.bounds,pose),dx=point.x-(b.x+b.w/2),dy=point.y-(b.y+b.h/2),a=-pose.rotation*Math.PI/180;return menuHit({x:(dx*Math.cos(a)-dy*Math.sin(a))/pose.scale+b.x+b.w/2,y:(dx*Math.sin(a)+dy*Math.cos(a))/pose.scale+b.y+b.h/2},b)})}
   handlePointerDown(point){
     if(!this.flow||!this.bounds)return;if(this.preview&&point.x>=this.bounds.w-130&&point.y<36){this.flow.stop();return;}
     if(this.choicePopup){const row=this.choiceRows?.find(row=>menuHit(point,row));if(row){if(row.page){this.choicePopup.index=Math.max(0,Math.min(this.choicePopup.choices.length-1,this.choicePopup.index+row.page));}else this.choosePopupItem(row.index);}else this.choicePopup=null;return;}

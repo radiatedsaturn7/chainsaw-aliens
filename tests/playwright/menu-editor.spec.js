@@ -85,9 +85,9 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} designer a
  if(mobile){await designerButton(page,'menu');expect(await page.evaluate(()=>window.__game.menuEditor.buttons.map(b=>b.id))).not.toContain('ground');await designerButton(page,'menu');}
  await designerCommand(page,mobile,'screens','screen-new');
  // Connect a car rotator to a slider using only the exposed setup dialogs.
- await addDesignerWidget(page,'car-preview');let d=page.getByRole('dialog',{name:'Car rotator Setup',exact:true});await d.getByLabel('Car',{exact:true}).selectOption('Widget Preview Car');await d.getByLabel('Rotation',{exact:true}).selectOption('parameter');await d.getByLabel('Rotation parameter (degrees)').fill('carAngle');await applyDialog(page,'Car rotator Setup');
+ await addDesignerWidget(page,'car-preview');let d=page.getByRole('dialog',{name:'Car rotator Properties',exact:true});await d.getByLabel('Car',{exact:true}).selectOption('Widget Preview Car');await d.getByLabel('Rotation',{exact:true}).selectOption('parameter');await d.getByLabel('Rotation parameter (degrees)').fill('carAngle');await applyDialog(page,'Car rotator Properties');
  await designerCommand(page,mobile,'properties','element-properties');d=page.getByRole('dialog',{name:'Layout & Style',exact:true});await d.getByLabel('Y (% of screen)',{exact:true}).fill('35');await d.getByLabel('Height (% of screen)',{exact:true}).fill('18');await applyDialog(page,'Layout & Style');
- await addDesignerWidget(page,'slider');d=page.getByRole('dialog',{name:'Slider Setup',exact:true});await d.getByLabel('Slider controls').selectOption('carAngle');await applyDialog(page,'Slider Setup');
+ await addDesignerWidget(page,'slider');d=page.getByRole('dialog',{name:'Slider Properties',exact:true});await d.getByLabel('Slider controls').selectOption('carAngle');await applyDialog(page,'Slider Properties');
  expect(await page.evaluate(()=>{const e=window.__game.menuEditor;return e.screen.elements.find(e=>e.type==='car-preview').angleBinding===e.element.binding})).toBe(true);
  // A property display reads the custom item object; a button changes that object.
  await designerCommand(page,mobile,'flow','menu-parameters');d=page.getByRole('dialog',{name:'Configuration Parameters',exact:true});await d.getByRole('textbox').fill('item = {"name":"Sword","damage":12}\ncarAngle = 180');await applyDialog(page,'Configuration Parameters');
@@ -122,10 +122,63 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} bottom wid
  await page.screenshot({path:`test-results/menu-widget-dropdown-${mobile?'portrait':'desktop'}.png`});
  await page.keyboard.press('Escape');await expect.poll(()=>page.evaluate(()=>window.__game.menuEditor.menuPicker)).toBe(null);expect(await page.evaluate(()=>window.__game.state)).toBe('menu-editor');
  await designerButton(page,'screen-select');await designerButton(page,'pick-screen:events');await expect.poll(()=>page.evaluate(()=>window.__game.menuEditor.screenId)).toBe('events');
- await designerButton(page,'widget-add');await designerButton(page,'pick-widget:text');await designerButton(page,'element-setup');await page.getByRole('dialog',{name:'Text Setup',exact:true}).getByLabel('Label',{exact:true}).fill('Unsaved current screen');await applyDialog(page,'Text Setup');
+ await designerButton(page,'widget-add');await designerButton(page,'pick-widget:text');await designerButton(page,'element-setup');await page.getByRole('dialog',{name:'Text Properties',exact:true}).getByLabel('Label',{exact:true}).fill('Unsaved current screen');await applyDialog(page,'Text Properties');
  const before=await page.evaluate(()=>({screenId:window.__game.menuEditor.screenId,elementId:window.__game.menuEditor.elementId,menu:JSON.stringify(window.__game.menuEditor.menu)}));
  if(mobile)await designerButton(page,'menu-preview');else await designerCommand(page,false,'view','menu-preview');
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow?.screenId)).toBe('events');expect(await page.evaluate(()=>window.__game.menuPlayer.flow.screen.elements.some(e=>e.label==='Unsaved current screen'))).toBe(true);
  await page.keyboard.press('Escape');await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-editor');expect(await page.evaluate(()=>({screenId:window.__game.menuEditor.screenId,elementId:window.__game.menuEditor.elementId,menu:JSON.stringify(window.__game.menuEditor.menu)}))).toEqual(before);
  await designerCommand(page,mobile,mobile?'preview':'view','menu-preview-start');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('splash');
+});
+
+for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} bottom Properties and clipboard controls edit the selected widget`,async({page})=>{
+ await page.setViewportSize(mobile?{width:390,height:844}:{width:1280,height:800});await ready(page,mobile);
+ await designerButton(page,'widget-add');await designerButton(page,'pick-widget:text');
+ const original=await page.evaluate(()=>window.__game.menuEditor.elementId);
+ expect(await page.evaluate(()=>window.__game.menuEditor.buttons.find(b=>b.id==='element-setup').label)).toBe('Properties');
+ await designerButton(page,'element-setup');await page.getByRole('dialog',{name:'Text Properties',exact:true}).getByLabel('Label',{exact:true}).fill('Clipboard content');await applyDialog(page,'Text Properties');
+ await designerButton(page,'copy');await designerButton(page,'paste');
+ let copied=await page.evaluate(()=>({id:window.__game.menuEditor.elementId,label:window.__game.menuEditor.element.label,count:window.__game.menuEditor.screen.elements.length}));expect(copied.id).not.toBe(original);expect(copied.label).toBe('Clipboard content');
+ await designerButton(page,'cut');expect(await page.evaluate(()=>window.__game.menuEditor.screen.elements.length)).toBe(copied.count-1);
+ await designerButton(page,'paste');expect(await page.evaluate(()=>window.__game.menuEditor.element.label)).toBe('Clipboard content');
+ await designerButton(page,'delete');expect(await page.evaluate(()=>window.__game.menuEditor.screen.elements.length)).toBe(copied.count-1);
+ await page.keyboard.press('Control+z');await expect.poll(()=>page.evaluate(()=>window.__game.menuEditor.screen.elements.length)).toBe(copied.count);
+ await page.screenshot({path:`test-results/menu-clipboard-${mobile?'portrait':'desktop'}.png`});
+});
+
+test('car turntable centers padded directional art and off-origin 3D geometry at all eight angles',async({page})=>{
+ await ready(page,false);
+ const result=await page.evaluate(async()=>{
+  const {MenuCarPreview}=await import('/src/menus/MenuCarPreview.js'),THREE=await import('/src/vendorBridge/three.js');
+  const editor=window.__game.carEditor,preview=new MenuCarPreview(editor),car=structuredClone(editor.selectedCar);
+  const canvas=document.createElement('canvas');canvas.width=320;canvas.height=240;const ctx=canvas.getContext('2d');
+  const original=editor.getRaceArtSpriteCanvas;const frames=Array.from({length:8},(_,i)=>{const c=document.createElement('canvas');c.width=100;c.height=80;const x=c.getContext('2d');x.fillStyle='#ff00ff';x.fillRect(5+i*3,8+i*2,40,30);return c;});
+  editor.getRaceArtSpriteCanvas=(_ref,{frameIndex=0}={})=>frames[frameIndex];
+  const slots=['front','frontRight','right','rearRight','rear','rearLeft','left','frontLeft'];
+  car.art={body:'padded',layerVisibility:{body:true,tires:false,brakes:false,shadow:false},angleLayers:Object.fromEntries(slots.map((slot,i)=>[slot,{body:{artRef:'padded',frameIndex:i,transforms:{bodyScaleX:2,bodyScaleY:1.5,bodyOffsetX:i-4,bodyOffsetY:4-i,bodyRotationDeg:i*8-28}}}]))};
+  const measure=()=>{const data=ctx.getImageData(0,0,320,240).data;let l=320,r=-1,t=240,b=-1;for(let y=0;y<240;y++)for(let x=0;x<320;x++)if(data[(y*320+x)*4+3]>20){l=Math.min(l,x);r=Math.max(r,x);t=Math.min(t,y);b=Math.max(b,y);}return {x:(l+r+1)/2,y:(t+b+1)/2,w:r-l+1,h:b-t+1};};
+  const sprite=[];try{for(let i=0;i<8;i++){ctx.clearRect(0,0,320,240);preview.drawSprite(ctx,{x:0,y:0,w:320,h:240},car,{artRef:'padded',frameIndex:i,viewSlot:slots[i],mirrored:i%2===1});sprite.push(measure());}}finally{editor.getRaceArtSpriteCanvas=original;}
+  const model=new MenuCarPreview({getRaceCarDimensions:()=>({lengthM:4,widthM:2}),addRaceThreeProceduralCar(holder){if(holder.dynamicCarGroup)return;const group=new THREE.Group();const mesh=new THREE.Mesh(new THREE.BoxGeometry(2,1,4),new THREE.MeshBasicMaterial({color:'#00ffff'}));mesh.position.set(3,1,5);group.add(mesh);holder.scene.add(group);holder.dynamicCarGroup=group;},clearRaceThreeDynamicCar(holder){holder.dynamicCarGroup.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});}});
+  const solid=[];for(let i=0;i<8;i++){ctx.clearRect(0,0,320,240);model.draw(ctx,{x:0,y:0,w:320,h:240},{tuning:{}},i*Math.PI/4,0);solid.push(measure());}model.dispose();return {sprite,solid};
+ });
+ for(const b of result.sprite){expect(b.w).toBeGreaterThan(10);expect(Math.abs(b.x-160)).toBeLessThanOrEqual(2);expect(Math.abs(b.y-120)).toBeLessThanOrEqual(2);}
+ for(const b of result.solid){expect(b.w).toBeGreaterThan(20);expect(Math.abs(b.x-160)).toBeLessThan(10);expect(Math.abs(b.y-120)).toBeLessThan(10);}
+});
+
+for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} shapes and containers move and reorder together from the hotbar`,async({page})=>{
+ await page.setViewportSize(mobile?{width:390,height:844}:{width:1280,height:800});await ready(page,mobile);
+ await designerButton(page,'widget-add');await designerButton(page,'pick-widget:container');const group=await page.evaluate(()=>window.__game.menuEditor.elementId);
+ await designerButton(page,'widget-add');await designerButton(page,'pick-widget:shape');const child=await page.evaluate(()=>window.__game.menuEditor.elementId);
+ await designerButton(page,'element-setup');const props=page.getByRole('dialog',{name:'Shape Properties',exact:true});await props.getByLabel('Shape',{exact:true}).selectOption('ellipse');await props.getByLabel('Fill color').fill('#e347d7');await props.getByLabel('Outline width (pixels)').fill('3');await applyDialog(page,'Shape Properties');
+ const before=await page.evaluate(()=>structuredClone(window.__game.menuEditor.element));expect(before.parentId).toBe(group);
+ await designerButton(page,'element-select');await designerButton(page,`pick-layer:${group}`);
+ const point=await page.evaluate(()=>{const g=window.__game,e=g.menuEditor,b=e.menuBounds,c=g.canvas.getBoundingClientRect();return {x:c.x+(b.x+e.element.x*b.w+2)*c.width/g.viewport.width,y:c.y+(b.y+e.element.y*b.h+2)*c.height/g.viewport.height,dx:20*c.width/g.viewport.width,dy:20*c.height/g.viewport.height};});
+ await page.mouse.move(point.x,point.y);await page.mouse.down();await page.mouse.move(point.x+point.dx,point.y+point.dy);await page.mouse.up();
+ const moved=await page.evaluate(child=>{const e=window.__game.menuEditor;return {shape:e.screen.elements.find(x=>x.id===child),bounds:e.menuBounds};},child);expect(moved.shape.x-before.x).toBeCloseTo(20/moved.bounds.w);expect(moved.shape.y-before.y).toBeCloseTo(20/moved.bounds.h);
+ for(const [action,index] of [['layer-back',0],['layer-up',1],['layer-front',2],['layer-down',1]]){await designerButton(page,action);expect(await page.evaluate(group=>window.__game.menuEditor.screen.elements.filter(e=>!e.parentId).findIndex(e=>e.id===group),group)).toBe(index);}
+ await designerButton(page,'element-setup');await expect(page.getByRole('dialog',{name:'Container Properties',exact:true}).getByLabel('Shape',{exact:true})).toHaveValue('in');await applyDialog(page,'Container Properties');
+ await page.screenshot({path:`test-results/menu-shapes-container-${mobile?'portrait':'desktop'}.png`});
+ if(mobile)await designerButton(page,'menu-preview');else await designerCommand(page,false,'view','menu-preview');
+ await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-player');
+ expect(await page.evaluate(child=>window.__game.menuPlayer.flow.screen.elements.find(e=>e.id===child).shape,child)).toBe('ellipse');
+ const pixels=await page.evaluate(()=>{const g=window.__game,d=g.ctx.getImageData(0,0,g.canvas.width,g.canvas.height).data;let count=0;for(let i=0;i<d.length;i+=4)if(d[i]>210&&d[i+1]<100&&d[i+2]>190)count++;return count;});expect(pixels).toBeGreaterThan(50);
 });

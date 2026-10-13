@@ -1,5 +1,7 @@
 // Widget metadata is shared by the designer and runtime; bindings are plain data.
 export const MENU_WIDGETS = [
+  ['shape','Shape','A rectangle, ellipse or triangle with fill and outline.'],
+  ['container','Container','Group widgets so they move, resize and reorder together.'],
   ['text','Text','A heading, caption, or {{parameter}} value.'],
   ['image','Image','Choose saved artwork or import an image from your device.'],
   ['button','Button','Open a screen, set a value, or launch a destination.'],
@@ -40,6 +42,8 @@ export function widgetDefaults(type){
   if(type==='car-preview')Object.assign(shared,{animation:'spin',duration:8});
   if(type==='property-display')Object.assign(shared,{label:'Name',dataSource:'cars',binding:'carRef',property:'name'});
   if(type==='asset-preview')Object.assign(shared,{dataSource:'actors',binding:'actorRef',property:''});
+  if(type==='shape')Object.assign(shared,{w:0.3,h:0.2});
+  if(type==='container')Object.assign(shared,{w:0.6,h:0.4});
   if(type==='image')Object.assign(shared,{w:0.4,h:0.3});
   if(type==='slider')Object.assign(shared,{binding:'settings.musicVolume',label:'Music volume'});
   if(type==='choice')Object.assign(shared,{binding:'carRef',source:'cars',label:'Car'});

@@ -21,3 +21,18 @@ test('preview camera contains the whole car through every angle on narrow and wi
   }
  }finally{globalThis.document=prior}
 });
+
+
+test('3D turntable targets the geometric center even when model geometry is offset',async()=>{
+ const {MenuCarPreview}=await import('../../src/menus/MenuCarPreview.js'),THREE=await import('../../src/vendorBridge/three.js');
+ const prior=globalThis.document;globalThis.document={};
+ const group=new THREE.Group(),mesh=new THREE.Mesh(new THREE.BoxGeometry(2,1,4));mesh.position.set(3,1,5);group.add(mesh);
+ try{
+  let camera;const preview=new MenuCarPreview({getRaceCarDimensions:()=>({lengthM:4,widthM:2}),addRaceThreeProceduralCar(){}});
+  preview.holder={scene:new THREE.Scene(),dynamicCarGroup:group};preview.renderer={setSize(){},render(_scene,c){camera=c;c.updateMatrixWorld()},domElement:{}};
+  for(let i=0;i<8;i++){
+   preview.draw({drawImage(){}},{x:0,y:0,w:320,h:240},{tuning:{}},i*Math.PI/4,0);
+   const center=new THREE.Vector3(3,1,5).project(camera);assert.ok(Math.abs(center.x)<1e-10&&Math.abs(center.y)<1e-10);
+  }
+ }finally{mesh.geometry.dispose();mesh.material.dispose();globalThis.document=prior;}
+});

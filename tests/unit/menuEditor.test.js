@@ -42,3 +42,15 @@ test('widget dropdown inserts immediately, supports keyboard dismissal and hides
  assert.ok(!e.getMenuItems('properties').some(e=>e.id.startsWith('keyframe-')));
  await e.runAction('element-animation');e.choosePicker(e.pickerEntries().find(e=>e.id==='pick-animation:pulse'));await Promise.resolve();assert.equal(e.element.animation,'pulse');assert.equal(e.animating,true);e.history();assert.equal(e.element.animation,'none');
 });
+
+test('containers move, resize, copy, cut and undo their full subtree with unique IDs',async()=>{
+ const e=editor();e.screen.elements=[];e.menuBounds={x:0,y:0,w:400,h:600};await e.runAction('insert-container');const parent=e.elementId;
+ await e.runAction('insert-shape');const child=e.elementId;assert.equal(e.element.parentId,parent);const before=structuredClone(e.element);
+ e.elementId=parent;const container=e.element;e.handlePointerDown({id:1,x:container.x*400+2,y:container.y*600+2});e.handlePointerMove({id:1,x:container.x*400+42,y:container.y*600+62});e.handlePointerUp({id:1});
+ let moved=e.screen.elements.find(x=>x.id===child);assert.ok(Math.abs(moved.x-before.x-0.1)<1e-10);assert.ok(Math.abs(moved.y-before.y-0.1)<1e-10);
+ e.history();assert.deepEqual(e.screen.elements.find(x=>x.id===child),before);e.elementId=parent;
+ await e.runAction('duplicate');assert.equal(e.screen.elements.length,4);const copy=e.element;assert.notEqual(copy.id,parent);assert.equal(copy.parentId,'');assert.equal(e.screen.elements.filter(x=>x.parentId===copy.id).length,1);
+ await e.runAction('cut');assert.equal(e.screen.elements.length,2);await e.runAction('paste');assert.equal(e.screen.elements.length,4);assert.equal(new Set(e.screen.elements.map(x=>x.id)).size,4);
+ await e.runAction('delete');assert.equal(e.screen.elements.length,2);e.history();assert.equal(e.screen.elements.length,4);
+ const reopened=editor();reopened.loadMenu(JSON.parse(JSON.stringify(e.menu)));assert.deepEqual(reopened.menu,e.menu);
+});

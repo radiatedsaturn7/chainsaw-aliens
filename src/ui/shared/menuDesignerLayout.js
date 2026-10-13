@@ -1,8 +1,13 @@
 import {getSharedTransportPopoverLayout} from '../uiSuite.js';
 
 export function getMenuDesignerSurfaceLayout(bounds){
-  const hotbar={x:bounds.x,y:bounds.y+bounds.h-44,w:bounds.w,h:44};
-  return {hotbar,canvas:{x:bounds.x,y:bounds.y+22,w:bounds.w,h:Math.max(1,bounds.h-74)}};
+  const ids=['widget-add','element-setup','element-select','screen-select','copy','cut','paste','delete','layer-down','layer-up','layer-back','layer-front'];
+  const columns=bounds.w>=600?6:4,gap=6,rowHeight=44,rows=Math.ceil(ids.length/columns);
+  const height=rows*rowHeight+(rows-1)*gap;
+  const hotbar={x:bounds.x,y:bounds.y+bounds.h-height,w:bounds.w,h:height};
+  const width=(bounds.w-(columns-1)*gap)/columns;
+  const buttons=ids.map((id,i)=>({id,bounds:{x:hotbar.x+(i%columns)*(width+gap),y:hotbar.y+Math.floor(i/columns)*(rowHeight+gap),w:width,h:rowHeight}}));
+  return {hotbar,buttons,canvas:{x:bounds.x,y:bounds.y+22,w:bounds.w,h:Math.max(1,bounds.h-height-30)}};
 }
 
 // Use the shared upward popover placement, paging in short landscape viewports

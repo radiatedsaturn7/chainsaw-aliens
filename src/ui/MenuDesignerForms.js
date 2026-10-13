@@ -48,6 +48,11 @@ export async function setupWidget(editor){
     fields.push(bindingField(editor,e));
     description.push('Widgets sharing a value parameter stay linked. Settings parameters affect the running game; custom values are passed to the next race or level.');
   }
+  if(e.type==='shape')fields.push(select('shape','Shape',e.shape,['rectangle','ellipse','triangle']),text('fill','Fill color',e.fill),text('stroke','Outline color',e.stroke),{id:'strokeWidth',label:'Outline width (pixels)',value:e.strokeWidth,min:0,max:30});
+  if(e.type==='container'){
+    description.push('Included widgets move, resize, copy and reorder with this container. New widgets added while it is selected join automatically. Use Layers to select the container behind its children.');
+    for(const child of editor.screen.elements.filter(item=>item.id!==e.id&&(item.parentId===e.id||item.parentId===e.parentId)))fields.push(select(`member:${child.id}`,child.label||child.id,child.parentId===e.id?'in':'out',[{value:'out',label:'Outside container'},{value:'in',label:'Inside container'}]));
+  }
   if(e.type==='text')description.push('Use {{difficulty}} or another parameter name in the text to display its current value.');
   if(e.type==='choice')fields.push(select('source','Options source',e.source,[{value:'',label:'Custom options'},'cars','actors','doodads','races','levels','movies']),{id:'options',label:'Custom options: label = value, one per line',type:'textarea',required:false,value:e.options.map(o=>`${o.label} = ${JSON.stringify(o.value)}`).join('\n')});
   if(e.type==='slider'){
@@ -67,9 +72,10 @@ export async function setupWidget(editor){
     description.push('Sprite cars and their tires turn together in 45° steps. 3D cars rotate smoothly.');
   }
   if(e.type==='video')fields.push(text('videoUrl','Video URL',e.videoUrl),select('loop','Loop',String(e.loop),['true','false']));
-  const result=await openEditorForm(`${widgetLabel(e.type)} Setup`,fields,{description:description.join('\n')});if(!result)return;
+  const result=await openEditorForm(`${widgetLabel(e.type)} Properties`,fields,{description:description.join('\n')});if(!result)return;
   editor.change(()=>{
     const {initial,preset,rotationMode,...values}=result;
+    for(const key of Object.keys(values).filter(k=>k.startsWith('member:'))){const child=editor.screen.elements.find(item=>item.id===key.slice(7));if(child)child.parentId=values[key]==='in'?e.id:e.parentId;delete values[key];}
     if(values.options!==undefined)values.options=values.options.split('\n').filter(l=>l.trim()).map(l=>{const i=l.indexOf('=');return {label:(i<0?l:l.slice(0,i)).trim(),value:parse((i<0?l:l.slice(i+1)).trim())}});
     if(values.loop!==undefined)values.loop=values.loop==='true';
     if(preset&&preset!=='custom'){

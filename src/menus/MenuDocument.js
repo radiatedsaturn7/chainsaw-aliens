@@ -1,4 +1,4 @@
-export const MENU_ELEMENT_TYPES = ['text','image','button','choice','slider','toggle','keybind','car-preview','car-stats','power-curve','video','property-display','asset-preview'];
+export const MENU_ELEMENT_TYPES = ['shape','container','text','image','button','choice','slider','toggle','keybind','car-preview','car-stats','power-curve','video','property-display','asset-preview'];
 export const MENU_ACTION_TYPES = ['screen','back','set-param','race','level','movie','quit'];
 export const MENU_ANIMATIONS = ['none','pulse','fade','bob','spin'];
 export const MENU_SETTINGS = {
@@ -21,7 +21,7 @@ export function normalizeMenuAction(action,depth=0){
 export function normalizeMenuElement(source={},index=0){
   const type=MENU_ELEMENT_TYPES.includes(source.type)?source.type:'text';
   const binding=text(source.binding);if(source.angleBinding&&!validMenuParameter(source.angleBinding))throw Error('Invalid rotation binding');if(binding&&!validMenuParameter(binding))throw Error('Invalid parameter binding');
-  return {id:text(source.id,`element-${index+1}`),type,label:text(source.label,'New item'),
+  return {id:text(source.id,`element-${index+1}`),type,parentId:text(source.parentId),shape:['rectangle','ellipse','triangle'].includes(source.shape)?source.shape:'rectangle',fill:text(source.fill,'#49758c'),stroke:text(source.stroke,'#ffffff'),strokeWidth:number(source.strokeWidth,0,0,30),label:text(source.label,'New item'),
     x:number(source.x,0.1,-2,2),y:number(source.y,0.1,-2,2),w:number(source.w,0.8,0.01,3),h:number(source.h,0.08,0.01,3),
     color:text(source.color,'#ffffff'),background:text(source.background,'#253c49'),fontSize:number(source.fontSize,26,8,160),
     dataSource:['cars','actors','parameters','doodads'].includes(source.dataSource)?source.dataSource:'cars',assetRef:text(source.assetRef),property:text(source.property,'name'),suffix:text(source.suffix),decimals:number(source.decimals,0,0,6),
@@ -48,6 +48,10 @@ export function normalizeMenuDocument(source={}){
   if(!screens.length)throw Error('A menu needs at least one screen');
   if(new Set(screens.map(s=>s.id)).size!==screens.length)throw Error('Screen IDs must be unique');
   for(const s of screens)if(new Set(s.elements.map(e=>e.id)).size!==s.elements.length)throw Error('Element IDs must be unique within a screen');
+  for(const screen of screens)for(const e of screen.elements){
+    let p=e;const seen=new Set([e.id]);
+    while(p.parentId){const parent=screen.elements.find(item=>item.id===p.parentId);if(!parent||parent.type!=='container')throw Error('Container not found');if(seen.has(parent.id))throw Error('Containers cannot contain themselves');seen.add(parent.id);p=parent;}
+  }
   const parameters={};for(const [key,value] of Object.entries(source.parameters||{})){if(!validMenuParameter(key))throw Error('Invalid parameter name');parameters[key]=structuredClone(value);}
   const document={schemaVersion:1,kind:'menu',name:text(source.name,'New Menu'),startScreen:text(source.startScreen,screens[0].id),parameters,screens};
   if(!screens.some(s=>s.id===document.startScreen))throw Error('Starting screen does not exist');
