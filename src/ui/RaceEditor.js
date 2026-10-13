@@ -1,3 +1,4 @@
+import { RaceCarDepthSprites } from '../racing/RaceCarDepthSprites.js';
 import { CAR_CATEGORIES, CAR_PERFORMANCE_CLASSES, carCategory, calculateCarPerformance, normalizeAiCarSelection, selectEligibleRaceAiCars } from '../racing/CarPerformance.js';
 import { openEditorForm } from './shared/editorForm.js';
 import { applyCarImportPlacementDefaults } from '../racing/CarImportPlacementDefaults.js';
@@ -19847,7 +19848,8 @@ export default class RaceEditor {
         });
         this.drawRaceSteeringWheel(ctx, bounds);
       } else {
-        if (Math.abs(Number(this.raceInput.lookAngle || 0)) < 0.28) {
+        if (!this.lastRaceRenderStats?.threeCarDepthSprites
+          && Math.abs(Number(this.raceInput.lookAngle || 0)) < 0.28) {
           this.drawRaceThirdPersonCar(ctx, bounds);
         }
         this.drawRaceTireFxParticles(ctx, bounds, {
@@ -34138,6 +34140,7 @@ export default class RaceEditor {
 
   clearRaceThreeScene(renderer = null) {
     if (!renderer?.scene) return;
+    renderer.carDepthSprites?.dispose();
     this.clearRaceThreeDynamicCar(renderer);
     this.clearRaceThreeDynamicDoodads(renderer);
     for (const holder of renderer.aiModelCars?.values() || []) this.clearRaceThreeDynamicCar(holder);
@@ -34167,6 +34170,29 @@ export default class RaceEditor {
     renderer.tireTrackSessionKey = null;
     renderer.tireTrackSyncedMaxId = 0;
     renderer.environmentSnowPoints = null;
+  }
+
+  syncRaceThreeCarSprites(renderer, bounds, { camera, cameraYaw, cameraView, stats }) {
+    const batch = renderer.carDepthSprites ||= new RaceCarDepthSprites(renderer.scene);
+    batch.begin(bounds);
+    // The camera matrices and model flags must already be current, including on
+    // the first frame, before the existing Canvas layout projects its anchors.
+    renderer.camera.updateMatrixWorld(true);
+    this.lastRaceRenderStats = stats || {};
+    this.lastRaceRenderStats.threeTerrainRenderer = 1;
+    const submit = (key, car, pose, draw) => {
+      const anchor = this.getRaceCarRearAxleBodyAnchor(pose, car, { renderState: key?.vehicleRenderState });
+      batch.draw(key, { x: anchor.x, y: anchor.elevation * RACE_THREE_ELEVATION_M, z: anchor.z }, renderer.camera, draw);
+    };
+    this.drawRaceProjectedAiCars(null, bounds, { camera, cameraYaw, threeRendered: true, submitSprite: submit });
+    if (this.playtestSession && cameraView !== 'first-person' && Math.abs(Number(this.raceInput.lookAngle || 0)) < 0.28) {
+      const car = this.getRaceSessionCar(this.playtestSession);
+      const pose = this.getRacePlayerRenderPose(this.playtestSession, car);
+      submit(this.playtestSession, car, pose, ctx => this.drawRaceThirdPersonCar(ctx, bounds));
+    }
+    batch.end();
+    this.lastRaceRenderStats.threeCarDepthSprites = true;
+    this.lastRaceRenderStats.threeCarDepthSpriteCount = batch.entries.size;
   }
 
   syncRaceThreeAiModels(renderer, cameraYaw = 0) {
@@ -35796,6 +35822,7 @@ export default class RaceEditor {
       stats
     });
     if (stats) stats.weatherFxEnvironmentRenderedInThree = environmentSnowRendered ? 1 : 0;
+    this.syncRaceThreeCarSprites(renderer, bounds, { camera, cameraYaw, cameraView, stats });
     renderer.threeRenderer.clear(true, true, true);
     const renderStartMs = this.getNowMs();
     renderer.threeRenderer.render(renderer.scene, renderer.camera);
@@ -37402,7 +37429,8 @@ export default class RaceEditor {
     }
   }
 
-  drawRaceProjectedAiCars(ctx, bounds, { camera = {}, cameraYaw = 0, threeRendered = false } = {}) {
+  drawRaceProjectedAiCars(ctx, bounds, { camera = {}, cameraYaw = 0, threeRendered = false, submitSprite = null } = {}) {
+    if (this.lastRaceRenderStats?.threeCarDepthSprites && !submitSprite) return;
     const session = this.playtestSession;
     if (!session?.aiRuntime?.length) return;
     const routeRuntimeType = session.routeRuntimeType || this.getSelectedRaceRuntimeType();
@@ -37428,7 +37456,7 @@ export default class RaceEditor {
     }).filter(({ projected }) => projected.visible && projected.screenY > bounds.y - 60 && projected.screenY < bounds.y + bounds.h + 80)
       .sort((a, b) => Number(b.projected.cameraZ || 0) - Number(a.projected.cameraZ || 0));
     entries.forEach(({ ai, car, pose, projected }) => {
-      this.drawRaceProjectedCarSprite(ctx, bounds, {
+      const draw = target => this.drawRaceProjectedCarSprite(target, bounds, {
         projected,
         yaw: pose.yaw,
         pitchRad: pose.pitchRad,
@@ -37442,6 +37470,8 @@ export default class RaceEditor {
         threeRendered: threeRendered && Boolean(this.raceThreeWorldRenderer?.aiModelCars?.get(ai)?.dynamicCarGroup),
         color: ai.difficulty === 'expert' ? '#ff5f57' : ai.difficulty === 'hard' ? '#f2d45c' : ai.difficulty === 'medium' ? '#7ed957' : '#58d6ff'
       });
+      if (submitSprite) submitSprite(ai, car, pose, draw);
+      else draw(ctx);
     });
   }
 

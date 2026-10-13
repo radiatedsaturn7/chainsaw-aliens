@@ -1540,6 +1540,15 @@ export const LATEST_MAJOR_WORK = {
 export const LATEST_CHANGES = [
   {
     date: '2026-10-13',
+    time: '12:15 EDT',
+    title: 'Car graphics respect hills and vehicle depth',
+    details: [
+      'Player and AI car graphics now participate in the 3D depth buffer, so hills hide the covered parts of cars and nearer cars correctly overlap farther cars.',
+      'Existing angle artwork, tire placement and transparent borders are preserved. Car textures are cropped before upload and released when the car leaves the scene.'
+    ]
+  },
+  {
+    date: '2026-10-13',
     time: '10:40 EDT',
     title: 'Automatic recovery for upside-down AI cars',
     details: [
