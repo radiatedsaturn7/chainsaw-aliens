@@ -134,7 +134,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} bottom Pro
  await page.setViewportSize(mobile?{width:390,height:844}:{width:1280,height:800});await ready(page,mobile);
  await designerButton(page,'widget-add');await designerButton(page,'pick-widget:text');
  const original=await page.evaluate(()=>window.__game.menuEditor.elementId);
- expect(await page.evaluate(()=>window.__game.menuEditor.buttons.find(b=>b.id==='element-setup').label)).toBe('Properties');
+ expect(await page.evaluate(async()=>{const e=window.__game.menuEditor,labels=[],draw=e.drawButton;e.drawButton=function(ctx,b,label,...args){labels.push(label);return draw.call(this,ctx,b,label,...args)};await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));e.drawButton=draw;return labels;})).toContain('Properties');
  await designerButton(page,'element-setup');await page.getByRole('dialog',{name:'Text Properties',exact:true}).getByLabel('Label',{exact:true}).fill('Clipboard content');await applyDialog(page,'Text Properties');
  await designerButton(page,'copy');await designerButton(page,'paste');
  let copied=await page.evaluate(()=>({id:window.__game.menuEditor.elementId,label:window.__game.menuEditor.element.label,count:window.__game.menuEditor.screen.elements.length}));expect(copied.id).not.toBe(original);expect(copied.label).toBe('Clipboard content');

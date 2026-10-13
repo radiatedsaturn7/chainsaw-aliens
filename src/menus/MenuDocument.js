@@ -49,6 +49,7 @@ export function normalizeMenuDocument(source={}){
   if(new Set(screens.map(s=>s.id)).size!==screens.length)throw Error('Screen IDs must be unique');
   for(const s of screens)if(new Set(s.elements.map(e=>e.id)).size!==s.elements.length)throw Error('Element IDs must be unique within a screen');
   for(const screen of screens)for(const e of screen.elements){
+    if(e.type==='container'&&!e.id)throw Error('Container ID is required');
     let p=e;const seen=new Set([e.id]);
     while(p.parentId){const parent=screen.elements.find(item=>item.id===p.parentId);if(!parent||parent.type!=='container')throw Error('Container not found');if(seen.has(parent.id))throw Error('Containers cannot contain themselves');seen.add(parent.id);p=parent;}
   }

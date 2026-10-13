@@ -1543,7 +1543,7 @@ export const LATEST_CHANGES = [
   {
     date: '2026-10-13', time: '18:00 EDT',
     title: 'Menu shapes, containers, hotbar controls and centered car rotation',
-    details: ['Renamed widget Setup to Properties and added Copy, Cut, Paste and Delete to the bottom hotbar, wrapping into two rows on narrow screens.', 'Added filled/outlined shapes, containers for moving and resizing widget groups, and four bottom-hotbar layer-order commands.', 'Car rotators center visible sprite artwork and orbit the actual bounds of 3D cars while preserving authored body and wheel alignment.']
+    details: ['Renamed widget Setup to Properties and added Copy, Cut, Paste and Delete to the bottom hotbar, wrapping into rows on narrow screens.', 'Added filled/outlined shapes, containers for moving and resizing widget groups, and four bottom-hotbar layer-order commands.', 'Car rotators center visible sprite artwork and orbit the actual bounds of 3D cars while preserving authored body and wheel alignment.']
   },
   {
     date: '2026-10-13',

@@ -18,5 +18,6 @@ test('container transforms scale descendants and keyframes and visibility follow
 test('container persistence rejects missing parents and membership cycles',()=>{
  const elements=fixture();assert.equal(normalizeMenuDocument({screens:[{id:'s',elements}]}).screens[0].elements[2].parentId,'group');
  elements[1].parentId='group';assert.throws(()=>normalizeMenuDocument({screens:[{id:'s',elements}]}),/cannot contain themselves/);
+ elements[1].parentId='';elements[1].id='';assert.throws(()=>normalizeMenuDocument({screens:[{id:'s',elements}]}),/Container ID is required/);elements[1].id='group';
  elements[1].parentId='missing';assert.throws(()=>normalizeMenuDocument({screens:[{id:'s',elements}]}),/Container not found/);
 });
