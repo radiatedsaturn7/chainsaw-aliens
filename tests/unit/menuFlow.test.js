@@ -33,3 +33,9 @@ test('menu documents validate links, reject unsafe parameter names, and preserve
  doc.screens[0].startAction.target='missing';assert.throws(()=>normalizeMenuDocument(doc),/Screen not found/);
  const flow=new MenuFlow(createMenuDocument());assert.throws(()=>flow.setParameter('constructor.prototype',1),/Invalid parameter/);
 });
+
+test('non-looping preset animations stop at their duration and looping fades restart',()=>{
+ const element=createMenuDocument().screens[0].elements[0];element.animation='spin';element.duration=2;element.loop=false;
+ assert.equal(menuElementPose(element,1).rotation,180);assert.equal(menuElementPose(element,7).rotation,360);
+ element.animation='fade';assert.equal(menuElementPose(element,7).opacity,1);element.loop=true;assert.equal(menuElementPose(element,5).opacity,0.5);
+});

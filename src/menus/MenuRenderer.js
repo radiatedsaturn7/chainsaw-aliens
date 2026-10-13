@@ -44,7 +44,7 @@ function drawCarComponent(ctx,b,e,car,resources,time){
   if(!car){ctx.fillText('Choose a car',b.x+b.w/2,b.y+b.h/2,b.w-10);return;}
   const renderer=resources.game.carEditor,tuning=resources.tuning(car);
   if(e.type==='car-preview'){
-    ctx.save();const yaw=e.animation==='spin'?time/e.duration*Math.PI*2:Math.PI;
+    ctx.save();const yaw=e.animation==='spin'?(e.loop?time/e.duration:Math.min(1,time/e.duration))*Math.PI*2:Math.PI;
     const choice=renderer.getRaceCarProjectedArtRef(car,0,yaw);
     if(car.art?.bodyModel?.ref||!choice.artRef){resources.carPreview.draw(ctx,b,car,yaw,time);ctx.restore();return;}
     renderer.drawRaceCarBillboardLayers(ctx,{car,session:null,centerX:b.x+b.w/2,anchorY:b.y+b.h*0.58,baseWidth:Math.min(b.w*0.25,b.h*0.65),baseHeight:Math.min(b.w*0.25,b.h*0.65)*0.74,artChoice:choice,drawShadowLayer:false});ctx.restore();return;

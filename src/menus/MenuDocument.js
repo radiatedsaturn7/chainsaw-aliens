@@ -56,9 +56,9 @@ export function createMenuDocument(){return normalizeMenuDocument({name:'Game Me
 ]});}
 export function resolveMenuValue(value,parameters){return typeof value==='string'&&value.startsWith('$')?parameters[value.slice(1)]:value;}
 export function menuElementPose(element,time=0){
-  let pose={x:element.x,y:element.y,opacity:1,scale:1,rotation:0};const phase=time/element.duration;
+  let pose={x:element.x,y:element.y,opacity:1,scale:1,rotation:0};const phase=element.loop?time/element.duration:Math.min(1,time/element.duration);
   if(element.animation==='pulse')pose.opacity=0.6+0.4*(1+Math.sin(phase*Math.PI*2))/2;
-  if(element.animation==='fade')pose.opacity=Math.min(1,phase);
+  if(element.animation==='fade')pose.opacity=element.loop?phase%1:Math.min(1,phase);
   if(element.animation==='bob')pose.y+=Math.sin(phase*Math.PI*2)*0.02;
   if(element.animation==='spin'&&element.type!=='car-preview')pose.rotation=phase*360;
   const frames=element.keyframes||[];if(!frames.length)return pose;
