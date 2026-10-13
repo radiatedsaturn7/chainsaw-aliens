@@ -3,6 +3,17 @@ import {RACE_THREE_ELEVATION_M} from '../racing/simulation/RaceSimulationConfig.
 import {resolveCarAngleLayers} from '../racing/CarDirectionalArt.js';
 
 const opaqueBoundsCache=new WeakMap();
+export function menuCarVisualBounds(group){
+  const bounds=new THREE.Box3();
+  if(!group)return bounds;
+  group.updateWorldMatrix(true,true);
+  group.traverseVisible(object=>{
+    if(!object.geometry)return;
+    if(!object.geometry.boundingBox)object.geometry.computeBoundingBox();
+    if(object.geometry.boundingBox)bounds.union(object.geometry.boundingBox.clone().applyMatrix4(object.matrixWorld));
+  });
+  return bounds;
+}
 function opaqueBounds(canvas){
   if(opaqueBoundsCache.has(canvas))return opaqueBoundsCache.get(canvas);
   const {width,height}=canvas,data=canvas.getContext('2d').getImageData(0,0,width,height).data;
@@ -44,8 +55,7 @@ export class MenuCarPreview {
     const dimensions=this.editor.getRaceCarDimensions(car),cg=Number(car.tuning?.cgHeightM)||0.56;
     const session={worldX:0,worldZ:0,carYaw:0,bodyY:cg,elapsedMs:time*1000};
     this.editor.addRaceThreeProceduralCar(this.holder,{car,session,x:0,z:0,elevation:cg/RACE_THREE_ELEVATION_M,yaw:0,drawShadow:false,color:car.paint?.body||'#58d6ff'});
-    const box=new THREE.Box3();
-    if(this.holder.dynamicCarGroup)box.setFromObject(this.holder.dynamicCarGroup);
+    const box=menuCarVisualBounds(this.holder.dynamicCarGroup);
     const center=box.isEmpty()?new THREE.Vector3(0,cg,0):box.getCenter(new THREE.Vector3());
     const radius=box.isEmpty()?Math.hypot(Number(dimensions.lengthM)||4.6,Number(dimensions.widthM)||1.8,1.5)/2:box.getBoundingSphere(new THREE.Sphere()).radius;
     const halfFov=Math.atan(Math.tan(20*Math.PI/180)*Math.min(1,width/height));
