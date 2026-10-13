@@ -10,6 +10,7 @@ import {
 import { syncVehicleDynamicsCompatibilityOutputs } from './simulation/VehicleState.js';
 import { calculateWheelContactKinematics } from './simulation/ContactPatchTireModel.js';
 import { createDeterministicAtmosphere, getRaceWakeSourcesForFrame } from './simulation/AeroEnvironment.js';
+import { quaternionFromEuler, rotateVectorByQuaternion } from './simulation/RigidBodyMath.js';
 import { applyRaceVehicleRenderSnapshot } from './simulation/RaceVehicleDynamicsWorkerBridge.js';
 
 // Runtime cars are independent, fixed race-start snapshots. Cache only those;
@@ -116,6 +117,76 @@ export function getRaceAiContactState(editor, ai = {}, car = editor.selectedCar,
     contacts,
     averageSurfaceGrip: clamp(surfaceGrip, 0.18, 1.2)
   };
+}
+
+// Require sustained inversion, not a transient bank or a single tumbling frame.
+// Read the authoritative snapshot in worker mode; its local runner is dormant.
+export function recoverUpsideDownRaceAi(editor, ai, { car, tuning, seconds = 0 } = {}) {
+  const runner = ai.vehicleDynamicsRunner;
+  const bridge = editor.vehicleDynamicsAuthority?.workerBridge;
+  const state = bridge ? ai.vehicleRenderState : runner?.state;
+  const dt = Math.max(0, Number(seconds) || 0);
+  if (!runner || !state?.orientation || dt === 0) return false;
+  if (ai.upsideDownResetPending) {
+    ai.upsideDownResetPending.seconds += dt;
+    if (Number(state.resetGeneration || 0) >= ai.upsideDownResetPending.generation) {
+      ai.upsideDownResetPending = null;
+    } else if (ai.upsideDownResetPending.seconds < 3) {
+      return false;
+    } else {
+      // A rejected worker reset must be retryable, without sending one per frame.
+      ai.upsideDownResetPending = null;
+    }
+  }
+  const up = rotateVectorByQuaternion({ x: 0, y: 1, z: 0 }, state.orientation);
+  ai.upsideDownRecoverySeconds = up.y < -0.25
+    ? Number(ai.upsideDownRecoverySeconds || 0) + dt : 0;
+  if (ai.upsideDownRecoverySeconds < 1.5) return false;
+  ai.upsideDownRecoverySeconds = 0;
+  if (bridge && !ai.workerVehicleId) return false;
+  const distance = Number(ai.projectedDistance ?? ai.distance ?? 0);
+  const runtimeType = editor.playtestSession?.routeRuntimeType || editor.getSelectedRaceRuntimeType();
+  const pose = editor.getRaceWorldPoseAtDistance(distance, { runtimeType });
+  const yaw = Number(pose.yaw || 0);
+  const contacts = editor.getRaceWheelContactState({ car, tuning, session: {
+    worldX: Number(pose.x || 0), worldZ: Number(pose.z ?? pose.y ?? 0),
+    carYaw: yaw, routeRuntimeType: runtimeType, speedMps: 0
+  } });
+  let orientation = quaternionFromEuler({ yaw,
+    pitch: -Number(contacts.terrainPitchRad || 0), roll: Number(contacts.terrainRollRad || 0) });
+  if (rotateVectorByQuaternion({ x: 0, y: 1, z: 0 }, orientation).y <= 0.1) {
+    orientation = quaternionFromEuler({ yaw, pitch: 0, roll: 0 });
+  }
+  const resetState = {
+    position: { x: Number(pose.x || 0), z: Number(pose.z ?? pose.y ?? 0),
+      y: Number(contacts.averageHeightM ?? Number(pose.elevation || 0) * RACE_THREE_ELEVATION_M) + runner.config.cgHeightM },
+    orientation, routeDistance: distance, velocity: { x: 0, y: 0, z: 0 },
+    angularVelocity: { x: 0, y: 0, z: 0 }, speedMps: 0, grounded: true,
+    engineRpm: runner.config.idleRpm, gear: 1, parkUntilDrive: true
+  };
+  try {
+    if (bridge) {
+      const generation = bridge.resetVehicle(resetState, ai.workerVehicleId, ai, 'ai-upside-down');
+      ai.upsideDownResetPending = { generation, seconds: 0 };
+    } else {
+      const reset = runner.resetAuthoritativeState(resetState, { reason: 'ai-upside-down', parkUntilDrive: true });
+      syncVehicleDynamicsCompatibilityOutputs(runner, ai);
+      ai.vehicleRenderState = reset.renderState;
+      ai.vehicleResetGeneration = reset.resetGeneration;
+      ai.vehicle3d.wheels = reset.renderState.wheelPoses;
+      ai.vehicle3d.resetGeneration = reset.resetGeneration;
+    }
+  } catch (error) {
+    ai.lastUpsideDownResetError = String(error?.message || error);
+    return false;
+  }
+  ai.lastUpsideDownResetError = null;
+  ai.automaticVehicleResetCount = Number(ai.automaticVehicleResetCount || 0) + 1;
+  ai.lastVehicleResetReason = 'ai-upside-down';
+  ai.trackStatePreviousWheelPositions = null;
+  ai.tireTrackLastContactByWheel = {};
+  ai.drivingPlan = null;
+  return true;
 }
 
 export function updateRaceAiVehiclePhysics(editor, ai = {}, {
@@ -373,6 +444,7 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
       || contactState.contacts?.contacts?.[wheelId]?.region
       || 'terrain'
   ]));
+  recoverUpsideDownRaceAi(editor, ai, { car, tuning, seconds });
   return workerSnapshot || runner.state;
 }
 

@@ -1540,6 +1540,15 @@ export const LATEST_MAJOR_WORK = {
 export const LATEST_CHANGES = [
   {
     date: '2026-10-13',
+    time: '10:40 EDT',
+    title: 'Automatic recovery for upside-down AI cars',
+    details: [
+      'AI cars that remain upside down for 1.5 seconds reset upright on the track and resume driving, using the same authoritative reset system in local and worker physics.',
+      'Brief tumbles do not trigger recovery, pending worker resets are not repeated every frame, and a rejected reset can be retried.'
+    ]
+  },
+  {
+    date: '2026-10-13',
     time: '09:41 EDT',
     title: 'Keep tire artwork attached at every distance and roll angle',
     details: [
