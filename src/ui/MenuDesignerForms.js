@@ -81,6 +81,7 @@ export async function setupWidget(editor){
     if(preset&&preset!=='custom'){
       const setting=MENU_SETTINGS[preset.split('.')[1]];
       Object.assign(values,{binding:preset,min:setting?.min??0,max:setting?.max??360,step:setting?.step??45});
+      if(values.label===e.label||!values.label)values.label=setting?.label||'Car viewing angle';
     }
     if(e.type==='slider'&&values.max<=values.min)throw Error('Maximum must be greater than minimum');
     if(rotationMode){values.animation=rotationMode==='auto'?'spin':'none';if(rotationMode!=='parameter')values.angleBinding='';}

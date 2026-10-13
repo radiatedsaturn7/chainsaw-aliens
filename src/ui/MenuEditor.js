@@ -1,4 +1,4 @@
-import {MENU_WIDGETS,widgetLabel,widgetDefaults} from '../menus/MenuWidgets.js';
+import {widgetLabel,widgetDefaults} from '../menus/MenuWidgets.js';
 import {addWidget,setupWidget,chooseImage,parameterNames} from './MenuDesignerForms.js';
 import RaceEditor from './RaceEditor.js';
 import {createMenuDocument,normalizeMenuDocument,normalizeMenuElement,MENU_ACTION_TYPES,MENU_ANIMATIONS} from '../menus/MenuDocument.js';
