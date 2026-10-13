@@ -100,3 +100,40 @@ test('shared tire drawing reads the opponent wheel spins instead of the player w
  e.drawRaceCarBillboardLayers(ctx,{car,session:opponent,artChoice:{viewSlot:'front',cameraBearing:0},drawBodyLayer:false,drawShadowLayer:false,wheelBillboards:{fl:{x:10,y:10,width:8,height:16},fr:{x:20,y:10,width:8,height:16}}});
  assert.equal(scrolls.length,2);assert.equal(Math.abs(scrolls[0]),0);assert.equal(scrolls[1],-0.25);
 });
+
+
+test('authored wheel rig retains all eight saved layouts across depth and full rollovers',async()=>{
+ const {resolveCarAngleLayers}=await import('../../src/racing/CarDirectionalArt.js');
+ const e=editor(),car=structuredClone(e.selectedCar);
+ const slots=['front','frontRight','right','rearRight','rear','rearLeft','left','frontLeft'];
+ car.art={body:'body',tires:['tires'],angleLayers:Object.fromEntries(slots.map((slot,i)=>[slot,{
+  tires:{tireMode:'visible',transforms:{tireScaleX:1+i/8,tireScaleY:1+i/9,tireSpacingScale:1+i/10,frontTireOffsetX:i/4,frontTireOffsetY:-i/7,rearTireOffsetX:-i/6,rearTireOffsetY:i/3}}
+ }]))};
+ e.getRaceArtSpriteCanvas=()=>({width:8,height:16});e.getRaceCarBillboardLayerCanvas=c=>c;
+ const before=JSON.stringify(car);
+ for(const slot of slots){
+  let baseline;
+  for(const width of [20,80,240])for(const roll of [0,0.7,Math.PI/2,Math.PI,Math.PI*1.6]){
+   // Track the actual drawing transforms, including saved spacing and offsets.
+   let matrix=[1,0,0,1,0,0],stack=[],draws=[];
+   const ctx={save(){stack.push([...matrix])},restore(){matrix=stack.pop()},
+    translate(x,y){matrix[4]+=matrix[0]*x+matrix[2]*y;matrix[5]+=matrix[1]*x+matrix[3]*y},
+    rotate(a){const [a0,b,c,d]=matrix,C=Math.cos(a),S=Math.sin(a);matrix[0]=a0*C+c*S;matrix[1]=b*C+d*S;matrix[2]=c*C-a0*S;matrix[3]=d*C-b*S},drawImage(){}};
+   e.drawScrolledCarTireArt=(_ctx,_canvas,_x,_y,w,h)=>draws.push({x:matrix[4],y:matrix[5],w,h});
+   e.drawRaceCarBillboardLayers(ctx,{car,artChoice:{artRef:'body',viewSlot:slot},bodyAnchorX:300,bodyAnchorY:200,
+    bodyBaseWidth:width,bodyBaseHeight:width*0.74,baseWidth:width*1.9,baseHeight:width*1.4,bodyRotationRad:roll,
+    drawShadowLayer:false,drawBodyLayer:false,
+    // Deliberately inconsistent physical projections must not drag flat art apart.
+    wheelBillboards:{fl:{x:20*width,y:roll*30,width:width*2,height:width*2}}});
+   assert.equal(draws.length,4);
+   const values=draws.flatMap(p=>{const x=p.x-300,y=p.y-200;return [(x*Math.cos(roll)+y*Math.sin(roll))/width,(-x*Math.sin(roll)+y*Math.cos(roll))/width,p.w/width,p.h/width]});
+   if(!baseline)baseline=values;
+   else values.forEach((v,i)=>assert.ok(Math.abs(v-baseline[i])<1e-10,`${slot} width ${width}, roll ${roll}, component ${i}`));
+  }
+  const resolved=resolveCarAngleLayers(car,slot),rig=e.getRaceSpriteWheelRig({car:resolved,viewSlot:slot,bodyBaseWidth:100,tireCanvas:{width:8,height:16}});
+  const plain=e.getRaceSpriteWheelRig({car:{...resolved,art:{...resolved.art,tireScaleX:1,tireScaleY:1}},viewSlot:slot,bodyBaseWidth:100,tireCanvas:{width:8,height:16}});
+  assert.ok(Math.abs(rig.wheels.fl.width/plain.wheels.fl.width-resolved.art.tireScaleX)<1e-10);
+  assert.ok(Math.abs(rig.wheels.fl.height/plain.wheels.fl.height-resolved.art.tireScaleY)<1e-10);
+ }
+ assert.equal(JSON.stringify(car),before,'rendering does not rewrite saved artwork or physics');
+});

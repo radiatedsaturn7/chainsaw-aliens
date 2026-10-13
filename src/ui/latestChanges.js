@@ -1539,6 +1539,15 @@ export const LATEST_MAJOR_WORK = {
 
 export const LATEST_CHANGES = [
   {
+    date: '2026-10-13',
+    time: '09:41 EDT',
+    title: 'Keep tire artwork attached at every distance and roll angle',
+    details: [
+      'Imported body and tire graphics share a stable eight-view layout, so AI tires stay in their wheel wells as cars approach and player tires follow the body through rollovers.',
+      'Saved tire offsets, spacing, scale, visibility and animation still apply. Physical wheel simulation and model rendering are unchanged.'
+    ]
+  },
+  {
     date: '2026-10-12',
     time: '23:34 EDT',
     title: 'AI saved artwork and track projection',

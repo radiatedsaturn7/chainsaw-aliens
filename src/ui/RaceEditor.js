@@ -21330,8 +21330,8 @@ export default class RaceEditor {
     const bodyY = Number.isFinite(Number(bodyAnchorY)) ? Number(bodyAnchorY) : anchorY;
     const bodyRotation = Number.isFinite(Number(bodyRotationRad))
       ? Number(bodyRotationRad) : 0;
-    const wheelBaseW = carW;
-    const wheelBaseH = carH;
+    let wheelBaseW = carW;
+    let wheelBaseH = carH;
     const wheelW = wheelBaseW * 0.16 * artScale.tireX;
     const wheelH = wheelBaseH * 0.36 * artScale.tireY;
     const tireCompound = car?.setup?.tireCompoundByWheel?.fl || car?.setup?.defaultTireCompound || 'tarmac';
@@ -21349,6 +21349,16 @@ export default class RaceEditor {
       ? this.getRaceArtSpriteCanvas(car.art.shadowArtRef, { frameIndex: Number(car.art.shadowFrameIndex) || 0 })
       : null;
     const shellCanvas = choice?.artRef ? this.getRaceArtSpriteCanvas(choice.artRef, { frameIndex: choice.frameIndex || 0 }) : null;
+    if (shellCanvas && tireCanvas && !car.art?.bodyModel?.ref && !car.art?.wheelModel?.ref) {
+      // A flat body has one perspective scale. Projecting its hubs separately
+      // makes the wheels leave their painted wells as depth or attitude changes.
+      const rig = this.getRaceSpriteWheelRig({ car, viewSlot: choice.viewSlot,
+        bodyAnchorX: bodyX, bodyAnchorY: bodyY, bodyBaseWidth: bodyW,
+        bodyRotationRad: bodyRotation, tireCanvas });
+      wheelBillboards = rig.wheels;
+      wheelBaseW = bodyW * rig.offsetScale;
+      wheelBaseH = bodyH * rig.offsetScale;
+    }
     const spacing = clamp(Number(car.art?.tireSpacingScale ?? 1), 0.05, 12);
     // Move graphic hubs apart about each axle midpoint; tire size and physics
     // stay unchanged. Projected X/Y preserves the axle's screen direction.
@@ -21787,6 +21797,54 @@ export default class RaceEditor {
       };
     });
     return Object.keys(result).length ? result : null;
+  }
+
+  getRaceSpriteWheelRig({
+    car = this.selectedCar, viewSlot = 'rear', bodyAnchorX = 0, bodyAnchorY = 0,
+    bodyBaseWidth = 64, bodyRotationRad = 0, tireCanvas = null
+  } = {}) {
+    // Use the upright editor chase view as a deterministic reference, never
+    // the first observed frame (which might be far away or already upside down).
+    // All eight pictures retain their own hub layout; only the complete rig is
+    // scaled and rolled at runtime. Suspension/physics hubs remain untouched.
+    const dimensions = this.getRaceCarDimensions(car);
+    const radius = this.getRaceWheelVisualRadiusM(car);
+    const rearZ = this.getRaceCarRearAxleBodyAnchor({}, car).longitudinalOffsetM;
+    const cgHeight = Number(car.tuning?.cgHeightM) || 0.56;
+    const distance = this.getRaceThirdPersonChaseDistance(car);
+    const cameraHeight = RACE_THIRD_PERSON_CAMERA_HEIGHT_ABOVE_BODY_M;
+    const pitch = Math.atan2((cgHeight + cameraHeight) * this.getRaceThreeCameraLookDropScale('third-person'), 80);
+    const yaw = getCarViewCameraYaw(viewSlot, 0);
+    const sy = Math.sin(yaw), cy = Math.cos(yaw), sp = Math.sin(pitch), cp = Math.cos(pitch);
+    const project = (x, y, z) => {
+      const depth = distance + x * sy + z * cy;
+      const up = y - cameraHeight;
+      const cameraZ = depth * cp - up * sp;
+      return { x: (-x * cy + z * sy) / cameraZ,
+        y: -(up * cp + depth * sp) / cameraZ, cameraZ };
+    };
+    const anchor = project(0, 0, rearZ);
+    const referenceWidth = dimensions.widthM / anchor.cameraZ;
+    const scale = Number(bodyBaseWidth) / referenceWidth;
+    const cosine = Math.cos(bodyRotationRad), sine = Math.sin(bodyRotationRad);
+    const artScale = this.getCarArtScale(car);
+    const aspect = clamp(car.art?.tireSurfaces ? 0.38
+      : Number(tireCanvas?.width || 1) / Math.max(1, Number(tireCanvas?.height || 2)), 0.15, 3);
+    const wheels = Object.fromEntries(RACE_WHEEL_IDS.map(id => {
+      const front = id.startsWith('f');
+      const x = (id.endsWith('r') ? 1 : -1) * (front ? dimensions.trackFrontM : dimensions.trackRearM) / 2;
+      const z = rearZ + (front ? dimensions.wheelbaseM : 0);
+      const hubY = radius - cgHeight;
+      const hub = project(x, hubY, z);
+      const top = project(x, hubY + radius, z), bottom = project(x, hubY - radius, z);
+      const localX = (hub.x - anchor.x) * scale, localY = (hub.y - anchor.y) * scale;
+      const diameter = Math.abs(bottom.y - top.y) * scale;
+      return [id, { x: bodyAnchorX + localX * cosine - localY * sine,
+        y: bodyAnchorY + localX * sine + localY * cosine,
+        width: diameter * aspect * artScale.tireX, height: diameter * artScale.tireY,
+        bodyRotationRad, cameraZ: hub.cameraZ, sizeValid: true }];
+    }));
+    return { wheels, offsetScale: anchor.cameraZ / project(0, 0, 0).cameraZ };
   }
 
   getRaceFixedRear2DWheelBillboards({
