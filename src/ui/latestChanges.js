@@ -1540,6 +1540,15 @@ export const LATEST_MAJOR_WORK = {
 export const LATEST_CHANGES = [
   {
     date: '2026-10-13',
+    time: '13:55 EDT',
+    title: 'Visible 3D selection transform handles',
+    details: [
+      'Selecting vertices, faces or an object now shows red X, green Y and blue Z handles. Drag arrows to move, rings to rotate, or square handles to scale; the white center handle moves freely or scales uniformly.',
+      'Handles work with mouse, touch and the gamepad cursor. Each drag is one undo step, and Escape cancels the current transform.'
+    ]
+  },
+  {
+    date: '2026-10-13',
     time: '12:15 EDT',
     title: 'Car graphics respect hills and vehicle depth',
     details: [

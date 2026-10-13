@@ -97,3 +97,53 @@ test('starter cube and connected object selection support move, rotate, scale an
   for(let i=0;i<8;i++)assert.ok(Math.abs(Math.hypot(...e.model.vertices[i].position)/Math.hypot(...rotated[i].position)-Math.exp(0.5))<1e-9);
   await e.handleMenuAction('new');assert.equal(e.model.vertices.length,8);assert.equal(e.history.undoStack.length,0);
 });
+
+for(const kind of ['vertices','faces','object'])for(const axis of [0,1,2])test(`${kind} selection moves only on gizmo ${'XYZ'[axis]} and records one undo`,async()=>{
+ const THREE=await import('../../src/vendorBridge/three.js');const e=new ModelEditor({});
+ e.modelBounds={x:0,y:0,w:600,h:500};e.modelRenderer.bounds=e.modelBounds;
+ const camera=e.modelRenderer.camera=new THREE.PerspectiveCamera(40,1.2,0.01,100);camera.position.set(4,3,5);camera.lookAt(0,0,0);camera.updateMatrixWorld();
+ await e.handleMenuAction(`select-${kind}`);
+ if(kind==='object')e.selectObject(e.model.faces[0].id);
+ else if(kind==='faces')e.selection.faces=[e.model.faces[0].id];else e.selection.vertices=[e.model.vertices[0].id];
+ const ids=new Set(e.selectedVertices()),before=structuredClone(e.model),gizmo=e.getModelGizmo(),end=gizmo.handles.find(h=>h.axis===axis).points[1];
+ const start={x:gizmo.origin.x+(end.x-gizmo.origin.x)*0.85,y:gizmo.origin.y+(end.y-gizmo.origin.y)*0.85,id:1};
+ const dx=(end.x-gizmo.origin.x)*0.3,dy=(end.y-gizmo.origin.y)*0.3;
+ e.handlePointerDown(start);assert.equal(e.modelDrag.gizmo.hit.axis,axis);
+ e.handlePointerMove({x:start.x+dx,y:start.y+dy,id:2});assert.deepEqual(e.model,before,'another pointer cannot move selection');
+ for(const fraction of [0.3,0.7,1])e.handlePointerMove({x:start.x+dx*fraction,y:start.y+dy*fraction,id:1});
+ e.handlePointerUp({id:2});assert.ok(e.modelDrag);e.handlePointerUp({id:1});
+ for(let i=0;i<e.model.vertices.length;i++)for(let c=0;c<3;c++){
+  const change=e.model.vertices[i].position[c]-before.vertices[i].position[c];
+  if(ids.has(e.model.vertices[i].id)&&c===axis)assert.ok(change>0.01);else assert.equal(change,0);
+ }
+ assert.equal(e.history.undoStack.length,1);const after=structuredClone(e.model);
+ await e.handleMenuAction('undo');assert.deepEqual(e.model,before);
+ await e.handleMenuAction('redo');assert.deepEqual(e.model,after);
+});
+
+test('Escape cancels a gizmo drag without adding history or exiting',async()=>{
+ const THREE=await import('../../src/vendorBridge/three.js');let exits=0;const e=new ModelEditor({exitModelEditor(){exits++}});
+ e.modelBounds={x:0,y:0,w:600,h:500};e.modelRenderer.bounds=e.modelBounds;
+ const camera=e.modelRenderer.camera=new THREE.PerspectiveCamera(40,1.2,0.01,100);camera.position.set(4,3,5);camera.lookAt(0,0,0);camera.updateMatrixWorld();
+ e.selectObject(e.model.faces[0].id);const before=structuredClone(e.model),g=e.getModelGizmo();
+ e.handlePointerDown({...g.origin,id:1});e.handlePointerMove({x:g.origin.x+30,y:g.origin.y+15,id:1});assert.notDeepEqual(e.model,before);
+ e.update({wasPressedCode:code=>code==='Escape'},1/60);assert.deepEqual(e.model,before);assert.equal(e.modelDrag,null);assert.equal(e.history.undoStack.length,0);assert.equal(exits,0);
+});
+
+for(const mode of ['rotate','scale'])test(`gizmo ${mode} changes the selected face about its center on the chosen axis`,async()=>{
+ const THREE=await import('../../src/vendorBridge/three.js'),{pickModelGizmo}=await import('../../src/model3d/ModelTransformGizmo.js');
+ const e=new ModelEditor({});e.modelBounds={x:0,y:0,w:600,h:500};e.modelRenderer.bounds=e.modelBounds;
+ const camera=e.modelRenderer.camera=new THREE.PerspectiveCamera(40,1.2,0.01,100);camera.position.set(4,3,5);camera.lookAt(0,0,0);camera.updateMatrixWorld();
+ e.selection.faces=[e.model.faces[0].id];await e.handleMenuAction(`${mode}-selection`);
+ const before=structuredClone(e.model),ids=new Set(e.selectedVertices()),g=e.getModelGizmo(),h=g.handles[mode==='scale'?1:0];
+ const start=mode==='scale'?h.points[1]:h.points.find(p=>pickModelGizmo(g,p)?.axis===h.axis);
+ e.handlePointerDown({...start,id:1});assert.ok(e.modelDrag.gizmo);
+ const end=mode==='rotate'?{x:start.x+15,y:start.y-20}:{x:start.x+(start.x-g.origin.x)*0.3,y:start.y+(start.y-g.origin.y)*0.3};
+ e.handlePointerMove({...end,id:1});e.handlePointerUp({id:1});assert.notDeepEqual(e.model,before);
+ for(let i=0;i<e.model.vertices.length;i++){
+  const v=e.model.vertices[i],old=before.vertices[i];if(!ids.has(v.id)){assert.deepEqual(v,old);continue;}
+  if(mode==='rotate')assert.ok(Math.abs(Math.hypot(...v.position.map((n,k)=>n-g.center[k]))-Math.hypot(...old.position.map((n,k)=>n-g.center[k])))<1e-9);
+  else for(let k=0;k<3;k++)if(k!==h.axis)assert.equal(v.position[k],old.position[k]);
+ }
+ await e.handleMenuAction('undo');assert.deepEqual(e.model,before);
+});
