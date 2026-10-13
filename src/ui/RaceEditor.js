@@ -21291,6 +21291,7 @@ export default class RaceEditor {
 
   drawRaceCarBillboardLayers(ctx, {
     car = this.selectedCar,
+    session = this.playtestSession,
     centerX = 0,
     anchorY = 0,
     bodyAnchorX = centerX,
@@ -21431,7 +21432,7 @@ export default class RaceEditor {
       x, y, turn = 0, drawWidth = wheelW, drawHeight = wheelH,
       wheelBodyRotation = bodyRotation, offsetX = 0, offsetY = 0, wheelId = 'fl'
     ) => {
-      const spin = this.playtestSession?.vehicleRenderState?.wheelPoses?.[wheelId]?.spinAngleRad;
+      const spin = session?.vehicleRenderState?.wheelPoses?.[wheelId]?.spinAngleRad;
       const scroll = Number.isFinite(spin) ? spin / (Math.PI * 2) : tireScroll;
       const cosine = Math.cos(wheelBodyRotation);
       const sine = Math.sin(wheelBodyRotation);
@@ -37460,8 +37461,8 @@ export default class RaceEditor {
         ? Number(rearBodyProjected.screenX)
         : x;
       const bodyAnchorY = rearBodyProjected?.visible && Number.isFinite(Number(rearBodyProjected.screenY))
-        ? Number(rearBodyProjected.screenY) - bodyHeight * 0.42
-        : y - height * 0.42;
+        ? Number(rearBodyProjected.screenY)
+        : y;
       const bodyOrientation = renderState?.orientation
         || quaternionFromEuler({ yaw, pitch: pitchRad, roll: rollRad });
       const bodyUpWorld = rotateVectorByQuaternion({ x: 0, y: 1, z: 0 }, bodyOrientation);
@@ -37493,8 +37494,9 @@ export default class RaceEditor {
       }) : null;
       this.drawRaceCarBillboardLayers(ctx, {
         car,
+        session,
         centerX: x,
-        anchorY: y - height * 0.42,
+        anchorY: y,
         bodyAnchorX,
         bodyAnchorY,
         baseWidth: width,

@@ -56,3 +56,47 @@ test('browser preparation worker receives selected AI artwork before prepared-on
   assert.ok(e.getRaceRuntimePreparationKey('same-track').includes('Opponent body'));
  }finally{e.cancelRacePlaytestPreparation();globalThis.Worker=previous;}
 });
+
+test('all eight AI views use the editor body anchor and retain each saved angle configuration',async()=>{
+ const {getCarViewCameraYaw,resolveCarAngleLayers}=await import('../../src/racing/CarDirectionalArt.js');
+ const e=editor(),car=structuredClone(e.selectedCar),bounds={x:0,y:0,w:640,h:480};
+ const slots=['front','frontRight','right','rearRight','rear','rearLeft','left','frontLeft'];
+ car.art={angleLayers:Object.fromEntries(slots.map((slot,i)=>[slot,{
+  body:{artRef:'body',frameIndex:i,fitToCar:true,transforms:{bodyScaleX:1+i/10,bodyScaleY:1+i/20,bodyOffsetX:i/5,bodyOffsetY:-i/10,bodyRotationDeg:i-3}},
+  tires:{artRef:'tires',frameIndex:i,tireMode:'auto',transforms:{tireScaleX:1+i/8,tireScaleY:1+i/9,tireSpacingScale:1+i/10,frontTireOffsetX:i/4,frontTireOffsetY:-i/7,rearTireOffsetX:-i/6,rearTireOffsetY:i/3}}
+ }]))};
+ const saved=e.normalizeLoadedCarDocument(JSON.parse(JSON.stringify(car)));
+ e.getRaceArtSpriteCanvas=()=>({width:16,height:16});e.drawRaceGeometricDebugOverlay=()=>{};
+ e.getRaceShadowGroundSurfacePoint=point=>point;
+ const project=point=>({...point,visible:true,screenX:320+point.x*8,screenY:240+point.z*2-point.elevation*10,cameraZ:30+point.z,threeProjected:true});
+ e.projectRaceWorldPointToActiveThreeCamera=project;
+ let layers;e.drawRaceCarBillboardLayers=(_ctx,options)=>layers=options;
+ for(const slot of slots){
+  const yaw=0.3,cameraYaw=getCarViewCameraYaw(slot,yaw),pose={x:2,z:12,elevation:1,yaw,pitchRad:0.1,rollRad:0.2};
+  e.drawRaceProjectedCarSprite({drawImage(){}},bounds,{car:saved,projected:project(pose),yaw,cameraYaw,pitchRad:pose.pitchRad,rollRad:pose.rollRad,camera:{}});
+  const resolved=resolveCarAngleLayers(saved,slot),anchor=project(e.getRaceCarRearAxleBodyAnchor(pose,resolved));
+  assert.equal(layers.artChoice.viewSlot,slot);assert.equal(layers.artChoice.frameIndex,slots.indexOf(slot));
+  assert.equal(layers.bodyAnchorX,anchor.screenX,`${slot} body X anchor`);
+  assert.equal(layers.bodyAnchorY,anchor.screenY,`${slot} body Y anchor matches editor`);
+  assert.equal(layers.anchorY,project(pose).screenY);
+  for(const component of ['body','tires'])for(const [key,value] of Object.entries(saved.art.angleLayers[slot][component].transforms))assert.equal(layers.car.art[key],value,`${slot} ${key}`);
+  const aiLayers=layers;
+  e.playtestSession={runtimeCar:saved,carYaw:yaw,worldX:pose.x,worldZ:pose.z,bodyY:pose.elevation*RACE_THREE_ELEVATION_M,pitchRad:pose.pitchRad,rollRad:pose.rollRad,tireSlip:{frontTireAngle:0}};
+  e.lastRaceRenderCamera={camera:{},cameraYaw,bounds};
+  e.getRaceStitchedTerrainElevationAtWorldPoint=()=>0;
+  e.drawRaceThirdPersonCar({drawImage(){}},bounds);
+  for(const key of ['bodyAnchorX','bodyAnchorY','baseWidth','baseHeight','bodyBaseWidth','bodyBaseHeight','bodyRotationRad'])assert.equal(aiLayers[key],layers[key],`${slot} AI/player ${key} parity`);
+
+ }
+});
+
+test('shared tire drawing reads the opponent wheel spins instead of the player while turning',()=>{
+ const e=editor(),car=structuredClone(e.selectedCar);car.art={tires:['tires']};
+ e.playtestSession={vehicleRenderState:{wheelPoses:{fl:{spinAngleRad:Math.PI},fr:{spinAngleRad:Math.PI}}}};
+ const opponent={vehicleRenderState:{wheelPoses:{fl:{spinAngleRad:0},fr:{spinAngleRad:Math.PI/2}}}};
+ e.getRaceArtSpriteCanvas=()=>({width:8,height:16});e.getRaceCarBillboardLayerCanvas=canvas=>canvas;
+ const scrolls=[];e.drawScrolledCarTireArt=(_ctx,_c,_x,_y,_w,_h,options)=>scrolls.push(options.scroll);
+ const ctx={save(){},restore(){},translate(){},rotate(){},drawImage(){}};
+ e.drawRaceCarBillboardLayers(ctx,{car,session:opponent,artChoice:{viewSlot:'front',cameraBearing:0},drawBodyLayer:false,drawShadowLayer:false,wheelBillboards:{fl:{x:10,y:10,width:8,height:16},fr:{x:20,y:10,width:8,height:16}}});
+ assert.equal(scrolls.length,2);assert.equal(Math.abs(scrolls[0]),0);assert.equal(scrolls[1],-0.25);
+});
