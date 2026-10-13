@@ -136,6 +136,11 @@ for(const mobile of [false,true])test(`${mobile?'touch portrait':'desktop'} sele
   const p=await screen(pick);if(mobile){await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[p]});await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});}else await page.mouse.click(p.x,p.y);
   await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.selectedVertices().length)).toBeGreaterThan(0);
   await expect.poll(()=>page.evaluate(()=>window.__game.modelEditor.modelGizmo?.handles.length||0)).toBe(3);
+  const colors=await page.evaluate(()=>{const game=window.__game,e=game.modelEditor,g=e.modelGizmo,ctx=game.canvas.getContext('2d'),ratio=game.canvas.width/game.viewport.width;
+   return g.handles.map(h=>{const end=h.points[1],x=Math.round((g.origin.x+(end.x-g.origin.x)*0.7)*ratio),y=Math.round((g.origin.y+(end.y-g.origin.y)*0.7)*ratio),pixels=ctx.getImageData(x-4,y-4,9,9).data,target=[[255,89,89],[101,223,120],[85,157,255]][h.axis];
+    for(let i=0;i<pixels.length;i+=4)if(target.every((v,k)=>Math.abs(pixels[i+k]-v)<15))return true;return false;
+   });
+  });expect(colors).toEqual([true,true,true]);
   const info=await page.evaluate(()=>{const e=window.__game.modelEditor,g=e.getModelGizmo(),end=g.handles.find(h=>h.axis===0).points[1];return {before:structuredClone(e.model.vertices),ids:e.selectedVertices(),a:{x:g.origin.x+(end.x-g.origin.x)*0.8,y:g.origin.y+(end.y-g.origin.y)*0.8},b:{x:g.origin.x+(end.x-g.origin.x)*1.1,y:g.origin.y+(end.y-g.origin.y)*1.1}}});
   await drag(await screen(info.a),await screen(info.b));
   const after=await page.evaluate(()=>({vertices:window.__game.modelEditor.model.vertices,undo:window.__game.modelEditor.history.undoStack.length}));
