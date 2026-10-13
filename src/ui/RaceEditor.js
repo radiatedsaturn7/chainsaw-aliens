@@ -801,8 +801,8 @@ const DEFAULT_TIRE_SIZE = {
 };
 
 export function buildRacePortraitMenuModel(editorId = 'race') {
-  const resolvedEditorId = ['car','tire','model3d'].includes(editorId) ? editorId : 'race';
-  const contextActionId = resolvedEditorId === 'model3d' ? 'model-play' : resolvedEditorId === 'tire' ? 'tire-properties' : resolvedEditorId === 'car' ? 'test-drive' : 'race-context';
+  const resolvedEditorId = ['car','tire','model3d','menu-designer'].includes(editorId) ? editorId : 'race';
+  const contextActionId = resolvedEditorId === 'menu-designer' ? 'menu-preview' : resolvedEditorId === 'model3d' ? 'model-play' : resolvedEditorId === 'tire' ? 'tire-properties' : resolvedEditorId === 'car' ? 'test-drive' : 'race-context';
   return {
     rootTabs: getEditorTouchRootMenuEntries(resolvedEditorId),
     bottomRailActions: getStandardEditorActionRailIds(contextActionId),
@@ -19430,6 +19430,7 @@ export default class RaceEditor {
       'race-context': this.getRacePortraitContextAction(),
       'tire-properties': this.getRacePortraitContextAction(),
       'model-play': this.getRacePortraitContextAction(),
+      'menu-preview': this.getRacePortraitContextAction(),
       'test-drive': { id: 'test-drive', label: '▶', onClick: () => this.handleMenuAction('test-drive') }
     };
     const actions = buildRacePortraitMenuModel(this.editorId).bottomRailActions
@@ -19645,7 +19646,7 @@ export default class RaceEditor {
         menu: { id: 'menu', label: 'Menu', onClick: () => this.toggleRootMenu({ gamepad }) },
         undo: this.getRailAction('undo', 'Undo', () => this.handleMenuAction('undo')),
         redo: this.getRailAction('redo', 'Redo', () => this.handleMenuAction('redo')),
-        quick: this.mode === 'race'
+        quick: this.mode === 'race' || this.editorId === 'menu-designer'
           ? this.getRacePortraitContextAction()
           : { id: 'test-drive', label: '▶', onClick: () => this.handleMenuAction('test-drive') }
       });
@@ -21345,8 +21346,12 @@ export default class RaceEditor {
     const wheelSurface = tireSurfaces?.wheel;
     const treadTexture = treadSurface?.artRef ? this.getRaceArtSpriteCanvas(treadSurface.artRef, { frameIndex:treadSurface.frameIndex || 0 }) : null;
     const wheelTexture = wheelSurface?.artRef ? this.getRaceArtSpriteCanvas(wheelSurface.artRef, { frameIndex:wheelSurface.frameIndex || 0 }) : null;
-    const wheelBearing = Number.isFinite(choice.cameraBearing) ? choice.cameraBearing
-      : Math.max(0, RACE_CAR_SHELL_FRAME_SLOTS.indexOf(choice.viewSlot)) * Math.PI / 4;
+    // Sprite bodies hold their authored viewing angle until the next frame.
+    // Their tire cylinders must hold that same bearing; steering/spin remain live.
+    const wheelBearing = choice.artRef && !car.art?.bodyModel?.ref
+      ? Math.max(0, RACE_CAR_SHELL_FRAME_SLOTS.indexOf(choice.viewSlot)) * Math.PI / 4
+      : Number.isFinite(choice.cameraBearing) ? choice.cameraBearing
+        : Math.max(0, RACE_CAR_SHELL_FRAME_SLOTS.indexOf(choice.viewSlot)) * Math.PI / 4;
 
     const shadowCanvas = car?.art?.shadowArtRef
       ? this.getRaceArtSpriteCanvas(car.art.shadowArtRef, { frameIndex: Number(car.art.shadowFrameIndex) || 0 })

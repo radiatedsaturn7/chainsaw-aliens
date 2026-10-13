@@ -13,6 +13,7 @@ export function openEditorForm(title,fields,{description=''}={}){
       if(field.options)for(const option of field.options){const item=document.createElement('option');item.value=option.value??option;item.textContent=option.label??option;input.appendChild(item);}
       else if(field.type==='textarea'){input.rows=field.rows||5;}
       else{input.type=field.type||'number';if(input.type==='number')input.step=field.step||'any';}
+      if(field.suggestions&&!field.options){const list=document.createElement('datalist');list.id=`editor-options-${field.id}-${Math.random().toString(36).slice(2)}`;for(const value of field.suggestions){const option=document.createElement('option');option.value=value;list.appendChild(option)}input.setAttribute('list',list.id);form.appendChild(list);}
       input.value=field.value??'';if(field.min!==undefined)input.min=field.min;if(field.max!==undefined)input.max=field.max;input.required=field.required??!field.options?.some(option=>(option.value??option)==='');label.appendChild(input);form.appendChild(label);inputs[field.id]={input,field};
     }
     const close=value=>{dialog.close();dialog.remove();focus?.focus?.();resolve(value);};

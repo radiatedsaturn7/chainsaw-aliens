@@ -394,3 +394,16 @@ test('projected tire artwork draws only the selected car side', () => {
     assert.deepEqual(drawn.sort((a,b)=>a-b),expected);
   }
 });
+
+test('sprite bodies and textured cylinders keep the same view throughout each 45-degree sector',()=>{
+ const e=editor();populate(e);
+ e.selectedCar.art.tireSurfaces={tread:{artRef:'tread'},wheel:{artRef:'rim'}};
+ for(const slot of slots){e.setCarAngleArt('tires',slot,'tread');e.selectedCar.art.angleLayers[slot].tires.cylinder=true;}
+ e.getRaceArtSpriteCanvas=ref=>({ref,width:32,height:32});e.getRaceCarBillboardLayerCanvas=c=>c;
+ const draw=(yaw,turn=0,spin=0)=>{
+  const commands=[];const ctx=new Proxy({globalAlpha:1,measureText:s=>({width:s.length*6})},{get:(o,k)=>k in o?o[k]:(...args)=>commands.push([k,...args.map(v=>typeof v==='object'?v?.ref:v)])});
+  e.drawRaceCarBillboardLayers(ctx,{car:e.selectedCar,session:{vehicleRenderState:{wheelPoses:{fl:{spinAngleRad:spin},fr:{spinAngleRad:spin},rl:{spinAngleRad:spin},rr:{spinAngleRad:spin}}}},artChoice:e.getRaceCarProjectedArtRef(e.selectedCar,0,yaw),frontTireAngle:turn,drawShadowLayer:false});return commands;
+ };
+ for(const slot of slots){const center=getCarViewCameraYaw(slot);const at=draw(center);assert.ok(at.some(c=>c[0]==='transform'),'actual cylinder triangles rendered');for(const delta of [-0.38,-0.1,0.1,0.38])assert.deepEqual(draw(center+delta),at,`${slot}: camera motion within a frame cannot rotate tires`);assert.notDeepEqual(draw(center+Math.PI/4),at,'next view advances the complete car');assert.notDeepEqual(draw(center,0,0.3),at,'rolling spin remains animated');}
+ assert.notDeepEqual(draw(getCarViewCameraYaw('front'),0.2),draw(getCarViewCameraYaw('front')),'physical steering remains live');
+});

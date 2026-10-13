@@ -61,3 +61,42 @@ test('Grand Prix launches actual races, forwards configuration and advances afte
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.menuConfiguration?.grandPrixRound),{timeout:60000}).toBe(2);
  await page.evaluate(()=>window.__game.completeRaceTravel());await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-player');expect(await page.evaluate(()=>window.__game.menuPlayer.flow.grandPrix)).toBe(null);
 });
+
+async function designerButton(page,id){
+ await expect.poll(()=>page.evaluate(id=>window.__game.menuEditor.buttons.some(b=>b.id===id),id)).toBe(true);
+ const p=await page.evaluate(id=>{const g=window.__game,b=[...g.menuEditor.buttons].reverse().find(b=>b.id===id).bounds,r=g.canvas.getBoundingClientRect();return {x:r.x+(b.x+b.w/2)*r.width/g.viewport.width,y:r.y+(b.y+b.h/2)*r.height/g.viewport.height}},id);
+ await page.mouse.click(p.x,p.y);
+}
+async function designerCommand(page,mobile,root,id){if(mobile)await designerButton(page,'menu');await designerButton(page,root);await designerButton(page,id);}
+async function addDesignerWidget(page,type){await designerButton(page,'widget-add');const d=page.getByRole('dialog',{name:'Add Widget',exact:true});await d.getByLabel('Widget',{exact:true}).selectOption(type);await d.getByRole('button',{name:'Apply',exact:true}).click();}
+async function applyDialog(page,name){await page.getByRole('dialog',{name,exact:true}).getByRole('button',{name:'Apply',exact:true}).click();}
+
+for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} designer authors connected widgets and imports an image through visible controls`,async({page})=>{
+ test.setTimeout(120000);const errors=[];page.on('pageerror',error=>errors.push(error.message));await page.setViewportSize(mobile?{width:390,height:844}:{width:1280,height:800});await ready(page,mobile);
+ if(mobile){await designerButton(page,'menu');expect(await page.evaluate(()=>window.__game.menuEditor.buttons.map(b=>b.id))).not.toContain('ground');await designerButton(page,'menu');}
+ await designerCommand(page,mobile,'screens','screen-new');
+ // Connect a car rotator to a slider using only the exposed setup dialogs.
+ await addDesignerWidget(page,'car-preview');let d=page.getByRole('dialog',{name:'Car rotator Setup',exact:true});await d.getByLabel('Rotation',{exact:true}).selectOption('parameter');await d.getByLabel('Rotation parameter (degrees)').fill('carAngle');await applyDialog(page,'Car rotator Setup');
+ await addDesignerWidget(page,'slider');d=page.getByRole('dialog',{name:'Slider Setup',exact:true});await d.getByLabel('Slider controls').selectOption('carAngle');await applyDialog(page,'Slider Setup');
+ expect(await page.evaluate(()=>{const e=window.__game.menuEditor;return e.screen.elements.find(e=>e.type==='car-preview').angleBinding===e.element.binding})).toBe(true);
+ // A property display reads the custom item object; a button changes that object.
+ await designerCommand(page,mobile,'flow','menu-parameters');d=page.getByRole('dialog',{name:'Configuration Parameters',exact:true});await d.getByRole('textbox').fill('item = {"name":"Sword","damage":12}\ncarAngle = 180');await applyDialog(page,'Configuration Parameters');
+ await addDesignerWidget(page,'property-display');d=page.getByRole('dialog',{name:'Property display Source',exact:true});await d.getByLabel('Data source').selectOption('parameters');await d.getByLabel('Selected object parameter').fill('item');await applyDialog(page,'Property display Source');await page.getByRole('dialog',{name:'Choose Object',exact:true}).getByLabel('Label',{exact:true}).fill('Damage');await applyDialog(page,'Choose Object');await page.getByRole('dialog',{name:'Displayed Property',exact:true}).getByLabel('Property path').fill('damage');await applyDialog(page,'Displayed Property');
+ // Move the property display with the real layout form.
+ await designerCommand(page,mobile,'properties','element-properties');d=page.getByRole('dialog',{name:'Layout & Style',exact:true});await d.getByLabel('Y (% of screen)',{exact:true}).fill('55');await applyDialog(page,'Layout & Style');
+ await addDesignerWidget(page,'button');await page.getByRole('dialog',{name:'Button',exact:true}).getByLabel('Button text').fill('Choose Axe');await applyDialog(page,'Button');await page.getByRole('dialog',{name:'Widget Action',exact:true}).getByLabel('When activated').selectOption('set-param');await applyDialog(page,'Widget Action');d=page.getByRole('dialog',{name:'Set a parameter',exact:true});await d.getByLabel('Parameter',{exact:true}).fill('item');await d.getByLabel('Value (text, number, true/false, or JSON)').fill('{"name":"Axe","damage":35}');await applyDialog(page,'Set a parameter');
+ await designerCommand(page,mobile,'properties','element-properties');await page.getByRole('dialog',{name:'Layout & Style',exact:true}).getByLabel('Y (% of screen)',{exact:true}).fill('75');await applyDialog(page,'Layout & Style');
+ // Import a PNG, then verify its decoded pixels are available to the renderer.
+ await addDesignerWidget(page,'image');await page.getByRole('dialog',{name:'Image Source',exact:true}).getByLabel('Image source').selectOption('device');const chooserPromise=page.waitForEvent('filechooser');await applyDialog(page,'Image Source');const chooser=await chooserPromise;
+ const png=await page.evaluate(()=>{const c=document.createElement('canvas');c.width=8;c.height=4;const x=c.getContext('2d');x.fillStyle='#ff00ff';x.fillRect(0,0,8,4);return c.toDataURL().split(',')[1]});await chooser.setFiles({name:'designer.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')});const imageName=`Designer Image ${mobile?'Portrait':'Desktop'}`;await page.getByRole('dialog',{name:'Save Imported Image',exact:true}).getByLabel('Artwork name').fill(imageName);await applyDialog(page,'Save Imported Image');
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuEditor.element.artRef)).toBe(imageName);
+ await expect.poll(()=>page.evaluate(()=>{const e=window.__game.menuEditor;return e.resources.art(e.element.artRef)?.width})).toBe(8);
+ await designerCommand(page,mobile,'screens','screen-start');
+ // Save, open the exact file again, and exercise the authored button in preview.
+ await designerCommand(page,mobile,'file','save-as');const name=`Widget Designer ${mobile?'Portrait':'Desktop'}`;await page.getByPlaceholder('Filename').fill(name);await page.getByRole('button',{name:'Save',exact:true}).click();await expect.poll(()=>page.evaluate(()=>window.__game.menuEditor.currentMenuName)).toBe(name);
+ await designerCommand(page,mobile,'file','open');await page.locator('.project-browser-row').filter({hasText:name}).getByRole('button',{name:'Open',exact:true}).click();await expect.poll(()=>page.evaluate(()=>window.__game.menuEditor.screen.elements.length)).toBe(5);
+ await page.screenshot({path:`test-results/menu-designer-${mobile?'portrait':'desktop'}.png`});
+ if(mobile)await designerButton(page,'menu-preview');else await designerCommand(page,false,'view','menu-preview');
+ const button=await page.evaluate(()=>{const p=window.__game.menuPlayer,e=p.flow.screen.elements.find(e=>e.type==='button');return {x:(e.x+e.w/2)*p.bounds.w,y:(e.y+e.h/2)*p.bounds.h}});await canvasClick(page,button.x,button.y);
+ await expect.poll(()=>page.evaluate(()=>{const p=window.__game.menuPlayer,e=p.flow.screen.elements.find(e=>e.type==='property-display');return p.resources.property(e,p.flow.parameters)})).toBe(35);expect(errors).toEqual([]);
+});

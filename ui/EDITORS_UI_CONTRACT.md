@@ -191,3 +191,5 @@ Before a new editor ships, add it to the shared menu spec with:
 ## Menu designer
 
 `menu-designer` uses the shared editor menu spec and RaceEditor shell adapters for desktop context, touch drawers and action rails. Screen elements use normalized coordinates inside the work surface; each pointer drag is captured by pointer ID and recorded once in history. Property forms use the shared accessible dialog helper. `menu-player` is a separate delegated state and does not expose authoring controls outside preview.
+
+Menu designer shells must resolve their registered touch roots and Preview action. The canvas reserves a shared-button toolbar for Add Widget, Setup, Layers and Screens; desktop context rows are scrollable. Widget setup uses accessible shared forms, typed bindings and named destinations rather than race/car controls.

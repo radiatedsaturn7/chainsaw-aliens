@@ -4,6 +4,11 @@ import {calculateCarPerformance} from '../racing/CarPerformance.js';
 export const menuElementBounds=(element,bounds,pose=element)=>({x:bounds.x+pose.x*bounds.w,y:bounds.y+pose.y*bounds.h,w:element.w*bounds.w,h:element.h*bounds.h});
 export const menuElementInteractive=e=>['button','choice','slider','toggle','keybind'].includes(e.type);
 export const menuHit=(point,b)=>point.x>=b.x&&point.x<=b.x+b.w&&point.y>=b.y&&point.y<=b.y+b.h;
+export function drawMenuImage(ctx,image,b,fit='contain'){
+  const scale=fit==='cover'?Math.max(b.w/image.width,b.h/image.height):Math.min(b.w/image.width,b.h/image.height);
+  const w=fit==='stretch'?b.w:image.width*scale,h=fit==='stretch'?b.h:image.height*scale;
+  ctx.drawImage(image,b.x+(b.w-w)/2,b.y+(b.h-h)/2,w,h);
+}
 const caption=(text,parameters)=>String(text).replace(/\{\{([\w.-]+)\}\}/g,(_,key)=>String(parameters[key]??''));
 
 export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,resources,focus=null,selected=null,editing=false,videos=null}={}){
@@ -22,9 +27,11 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     const interactive=menuElementInteractive(element);if(interactive){ctx.fillStyle=element.background;ctx.fillRect(b.x,b.y,b.w,b.h);}
     ctx.fillStyle=element.color;ctx.font=`${Math.max(10,element.fontSize*Math.min(bounds.w/720,bounds.h/900))}px system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
     let label=caption(element.label,parameters),value=parameters[element.binding];
-    if(element.type==='image'){const image=resources?.art(element.artRef,Math.floor(time*8));if(image)ctx.drawImage(image,b.x,b.y,b.w,b.h);else ctx.fillText(element.artRef||'Choose artwork',b.x+b.w/2,b.y+b.h/2,b.w-12);}
+    if(element.type==='image'){const image=resources?.art(element.artRef,Math.floor(time*8));if(image)drawMenuImage(ctx,image,b,element.imageFit);else ctx.fillText(element.artRef||'Choose artwork',b.x+b.w/2,b.y+b.h/2,b.w-12);}
     else if(element.type==='video'){const video=videos?.get(element.id);if(video?.readyState>=2)ctx.drawImage(video,b.x,b.y,b.w,b.h);else ctx.fillText(editing?'Video: '+(element.videoUrl||'Choose source'):'Loading video…',b.x+b.w/2,b.y+b.h/2,b.w-12);}
-    else if(['car-preview','car-stats','power-curve'].includes(element.type))drawCarComponent(ctx,b,element,resources?.car(value),resources,time);
+    else if(element.type==='property-display'){const property=resources?.property(element,parameters);const shown=property==null?'—':typeof property==='number'?property.toFixed(element.decimals):typeof property==='object'?JSON.stringify(property):String(property);ctx.fillText(`${label}${label?': ':''}${shown}${element.suffix}`,b.x+b.w/2,b.y+b.h/2,Math.max(1,b.w-12));}
+    else if(element.type==='asset-preview'){const image=resources?.assetArt(element,parameters,time);if(image)drawMenuImage(ctx,image,b,element.imageFit);else ctx.fillText('Choose an actor / item image',b.x+b.w/2,b.y+b.h/2,Math.max(1,b.w-12));}
+    else if(['car-preview','car-stats','power-curve'].includes(element.type))drawCarComponent(ctx,b,element,resources?.car(element.assetRef||value),resources,time,parameters);
     else{
       if(element.type==='choice'){const options=element.source?resources?.choices(element.source,document)||[]:element.options;label+=`: ${options.find(o=>JSON.stringify(o.value)===JSON.stringify(value))?.label||'Choose…'}`;}
       if(element.type==='toggle')label+=value?' ✓':' —';
@@ -40,11 +47,11 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
   }
   ctx.restore();
 }
-function drawCarComponent(ctx,b,e,car,resources,time){
+function drawCarComponent(ctx,b,e,car,resources,time,parameters){
   if(!car){ctx.fillText('Choose a car',b.x+b.w/2,b.y+b.h/2,b.w-10);return;}
   const renderer=resources.game.carEditor,tuning=resources.tuning(car);
   if(e.type==='car-preview'){
-    ctx.save();const yaw=e.animation==='spin'?(e.loop?time/e.duration:Math.min(1,time/e.duration))*Math.PI*2:Math.PI;
+    ctx.save();const yaw=e.angleBinding?Number(parameters[e.angleBinding]??e.angle)*Math.PI/180:e.animation==='spin'?(e.loop?time/e.duration:Math.min(1,time/e.duration))*Math.PI*2:e.angle*Math.PI/180;
     const choice=renderer.getRaceCarProjectedArtRef(car,0,yaw);
     if(car.art?.bodyModel?.ref||!choice.artRef){resources.carPreview.draw(ctx,b,car,yaw,time);ctx.restore();return;}
     renderer.drawRaceCarBillboardLayers(ctx,{car,session:null,centerX:b.x+b.w/2,anchorY:b.y+b.h*0.58,baseWidth:Math.min(b.w*0.25,b.h*0.65),baseHeight:Math.min(b.w*0.25,b.h*0.65)*0.74,artChoice:choice,drawShadowLayer:false});ctx.restore();return;

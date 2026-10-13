@@ -1,3 +1,5 @@
+import {MENU_WIDGETS,widgetLabel,widgetDefaults} from '../menus/MenuWidgets.js';
+import {addWidget,setupWidget,chooseImage,parameterNames} from './MenuDesignerForms.js';
 import RaceEditor from './RaceEditor.js';
 import {createMenuDocument,normalizeMenuDocument,normalizeMenuElement,MENU_ACTION_TYPES,MENU_ANIMATIONS} from '../menus/MenuDocument.js';
 import {drawMenuScreen,menuElementBounds,menuHit} from '../menus/MenuRenderer.js';
@@ -15,14 +17,14 @@ const text=(id,label,value,required=false)=>({id,label,value,type:'text',require
 const select=(id,label,value,options)=>({id,label,value,options});
 const unique=(prefix,items)=>{let i=1;while(items.some(item=>item.id===`${prefix}-${i}`))i++;return `${prefix}-${i}`;};
 const parse=value=>{try{return JSON.parse(value)}catch{return value}};
-const labels={'menu-preview':'Play Preview','menu-animate':'Animate Canvas','screen-start':'Use as First Screen','starting-menu':'Use for Main Play','clear-starting-menu':'Use Default Play','element-art':'Choose Artwork','grand-prix-edit':'Grand Prix Schedules','menu-parameters':'Configuration Parameters','layer-up':'Bring Forward','layer-down':'Send Backward'};
+const labels={'widget-add':'Add Widget','element-setup':'Widget Setup','element-properties':'Layout & Style','element-select':'Layers','screen-select':'Screens','element-action':'On Click / Change','screen-background':'Background Image','insert-car-preview':'Car Rotator','insert-property-display':'Property Display','insert-asset-preview':'Actor / Item Image','menu-preview':'Play Preview','menu-animate':'Animate Canvas','screen-start':'Use as First Screen','starting-menu':'Use for Main Play','clear-starting-menu':'Use Default Play','element-art':'Choose Artwork','grand-prix-edit':'Grand Prix Schedules','menu-parameters':'Configuration Parameters','layer-up':'Bring Forward','layer-down':'Send Backward'};
 export default class MenuEditor extends RaceEditor {
   constructor(game){super(game,{mode:'car'});this.resources=new MenuResources(game);this.menuInput=new EditorInputActionNormalizer();this.undoMenus=[];this.redoMenus=[];this.currentMenuName='';this.loadMenu(createMenuDocument());this.activeRootId='screens';}
   get editorId(){return 'menu-designer'}
   get title(){return 'Menu Editor'}
   get screen(){return this.menu.screens.find(s=>s.id===this.screenId)||this.menu.screens[0]}
   get element(){return this.screen.elements.find(e=>e.id===this.elementId)}
-  loadMenu(document,name=''){this.menu=normalizeMenuDocument(document);this.screenId=this.menu.startScreen;this.elementId=null;this.currentMenuName=name;this.undoMenus=[];this.redoMenus=[];this.menuTime=0;this.animating=false;this.menuDrag=null;this.status=name?`Opened ${name}`:'Starter flow: Splash → Cars → Grand Prix. Add races under Flow.';}
+  loadMenu(document,name=''){this.menu=normalizeMenuDocument(document);this.screenId=this.menu.startScreen;this.elementId=null;this.currentMenuName=name;this.undoMenus=[];this.redoMenus=[];this.menuTime=0;this.animating=false;this.menuDrag=null;this.status=name?`Opened ${name}`:'Add Widget to create controls or images. Select a widget, then Setup to connect it.';}
   snapshot(){return structuredClone({menu:this.menu,screenId:this.screenId,elementId:this.elementId})}
   record(before){if(JSON.stringify(before.menu)===JSON.stringify(this.menu))return;this.undoMenus.push(before);if(this.undoMenus.length>60)this.undoMenus.shift();this.redoMenus=[];this.status='Menu changed. Save to keep changes.';}
   change(fn){const before=this.snapshot();try{fn();this.menu=normalizeMenuDocument(this.menu);this.record(before)}catch(error){Object.assign(this,before);throw error}}
@@ -31,8 +33,19 @@ export default class MenuEditor extends RaceEditor {
   isActionAvailable(id){return Boolean(getEditorMenuSpec(this.editorId).actions[id])}
   getRaceActionLabel(id){return labels[id]||label(id)}
   getRacePortraitContextAction(){return {id:'menu-preview',label:'Preview',onClick:()=>this.handleMenuAction('menu-preview')}}
-  getDesktopContextActions(){return ['screen-select','element-properties','element-action','menu-preview'].map(id=>({id,label:this.getRaceActionLabel(id),contextPanelCommand:true,onClick:()=>this.handleMenuAction(id)}))}
-  drawDesktopContext(ctx,bounds){drawSharedDesktopContextPanel(ctx,bounds,{title:this.title,lines:[this.menu.name,`Screen: ${this.screen.name}`,`Selected: ${this.element?.label||'None'}`,`${this.screen.elements.length} elements`,'Drag to move; gold corner resizes.'],contentRoles:['document-summary','active-tool-summary','status'],status:this.status})}
+  getDesktopContextActions(){return ['widget-add','element-setup','element-properties','element-action','menu-preview'].map(id=>({id,label:this.getRaceActionLabel(id),contextPanelCommand:true,onClick:()=>this.handleMenuAction(id)}))}
+  drawDesktopContext(ctx,bounds){
+    const summary={...bounds,h:Math.min(160,bounds.h*0.3)};
+    drawSharedDesktopContextPanel(ctx,summary,{title:this.title,lines:[this.menu.name,`Screen: ${this.screen.name}`,`Selected: ${this.element?.label||'None'}`],contentRoles:['document-summary','active-tool-summary','status'],status:this.status});
+    const commands=this.getDesktopContextActions();
+    const rows=[...commands,{id:'screen-select',label:`Screen: ${this.screen.name}`,onClick:()=>this.handleMenuAction('screen-select')},...this.screen.elements.map(e=>({id:`select-widget:${e.id}`,label:`${e.id===this.elementId?'● ':''}${e.label||widgetLabel(e.type)} · ${widgetLabel(e.type)}`,active:e.id===this.elementId,onClick:()=>{this.elementId=e.id;this.status='Setup connects this widget. Layout & Style changes its appearance.';}}))];
+    this.drawActionRows(ctx,{x:bounds.x,y:bounds.y+summary.h,w:bounds.w,h:bounds.h-summary.h},rows,1,{scrollKey:'menu-designer:inspector'});
+  }
+  drawLandscapeToolOptions(ctx,bounds){
+    drawSharedDesktopContextPanel(ctx,bounds,{title:`${this.screen.name} · ${this.element?.label||'Select a widget'}`,lines:[],contentRoles:['status'],status:this.status});
+  }
+  drawRaceTopPlayControl(){}
+  drawLandscapeRaceMapThumbstick(){}
   updateCarEditorPreviewPlaytest(){} updateCarEditorPreviewSelectHold(){return false} ensureCarEditorPreviewPlaytestSession(){return null}
   update(input,dt){
     if(typeof document!=='undefined'&&document.querySelector('dialog[open]'))return;
@@ -58,7 +71,12 @@ export default class MenuEditor extends RaceEditor {
     if(this.animating)this.menuTime+=Math.max(0,Number(dt)||0);
   }
   exitToMainMenu(){this.resources.carPreview.dispose();this.game?.exitMenuEditor?.()}
-  drawCarEditorWorkSurface(ctx,bounds){this.carArtSliderRegions=[];this.menuBounds={...bounds};drawMenuScreen(ctx,bounds,this.menu,this.screen,this.menu.parameters,{resources:this.resources,time:this.menuTime,selected:this.elementId,editing:!this.animating});if(this.menuPadConnected&&this.menuCursor){ctx.save();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(this.menuCursor.x,this.menuCursor.y,6,0,Math.PI*2);ctx.stroke();ctx.restore();}}
+  drawCarEditorWorkSurface(ctx,bounds){this.carArtSliderRegions=[];
+    const ids=['widget-add','element-setup','element-select','screen-select'];
+    const width=(bounds.w-18)/4;ids.forEach((id,i)=>this.registerDrawnButton(ctx,{x:bounds.x+i*(width+6),y:bounds.y,w:width,h:40},{id,label:({'widget-add':'+ Widget','element-setup':'Setup','element-select':'Layers','screen-select':'Screens'})[id],onClick:()=>this.handleMenuAction(id)}));
+    this.menuBounds={x:bounds.x,y:bounds.y+50,w:bounds.w,h:Math.max(1,bounds.h-74)};
+    ctx.save();ctx.fillStyle='#aec6d2';ctx.font='12px system-ui';ctx.textAlign='left';ctx.fillText(this.status,bounds.x,bounds.y+bounds.h-5,bounds.w);ctx.restore();
+    drawMenuScreen(ctx,this.menuBounds,this.menu,this.screen,this.menu.parameters,{resources:this.resources,time:this.menuTime,selected:this.elementId,editing:!this.animating});if(this.menuPadConnected&&this.menuCursor){ctx.save();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(this.menuCursor.x,this.menuCursor.y,6,0,Math.PI*2);ctx.stroke();ctx.restore();}}
   handlePointerDown(p={}){
     if(this.mobileRootOpen||this.desktopDropdown||this.gamepadSubmenuOpen||this.buttons.some(b=>b.bounds&&menuHit(p,b.bounds)))return super.handlePointerDown(p);
     if(!this.menuBounds||!menuHit(p,this.menuBounds))return super.handlePointerDown(p);
@@ -70,9 +88,13 @@ export default class MenuEditor extends RaceEditor {
   }
   handlePointerMove(p={}){const drag=this.menuDrag;if(!drag)return super.handlePointerMove(p);if(drag.id!==undefined&&p.id!==undefined&&drag.id!==p.id)return;const e=this.element,b=this.menuBounds,dx=(p.x-drag.x)/b.w,dy=(p.y-drag.y)/b.h;if(!e)return;if(drag.resize){e.w=Math.max(0.02,Math.min(2,drag.element.w+dx));e.h=Math.max(0.02,Math.min(2,drag.element.h+dy));}else{e.x=Math.max(-1,Math.min(1,drag.element.x+dx));e.y=Math.max(-1,Math.min(1,drag.element.y+dy));e.keyframes=drag.element.keyframes.map(k=>({...k,x:k.x+e.x-drag.element.x,y:k.y+e.y-drag.element.y}));}}
   handlePointerUp(p={}){if(!this.menuDrag)return super.handlePointerUp(p);if(this.menuDrag.id!==undefined&&p.id!==undefined&&this.menuDrag.id!==p.id)return;this.record(this.menuDrag.before);this.menuDrag=null;}
-  async handleMenuAction(id){try{return await this.runAction(id)}catch(error){this.status=error.message}}
+  async handleMenuAction(id){try{this.closeEditorMenus();const result=await this.runAction(id);if(id.startsWith('insert-'))await setupWidget(this);return result}catch(error){this.status=error.message}}
   async runAction(id){
     this.activeAction=id;
+    if(id==='widget-add')return addWidget(this);
+    if(id==='element-setup')return setupWidget(this);
+    if(id==='screen-background')return chooseImage(this,{background:true});
+    if(id==='test-drive')return this.runAction('menu-preview');
     if(id==='new')return this.loadMenu(createMenuDocument());
     if(id==='undo'||id==='redo')return this.history(id==='redo');
     if(id==='exit-main')return this.exitToMainMenu();
@@ -88,7 +110,7 @@ export default class MenuEditor extends RaceEditor {
     if(id==='screen-start'){this.change(()=>{this.menu.startScreen=this.screenId});return;}
     if(id==='screen-delete'){if(this.menu.screens.length===1)throw Error('Keep at least one screen');this.change(()=>{const old=this.screenId;this.menu.screens=this.menu.screens.filter(s=>s.id!==old);this.screenId=this.menu.screens[0].id;if(this.menu.startScreen===old)this.menu.startScreen=this.screenId;this.elementId=null;const unlink=a=>{if(!a)return null;if(a.type==='screen'&&a.target===old)return null;if(a.then)a.then=unlink(a.then);return a};for(const s of this.menu.screens){s.startAction=unlink(s.startAction);for(const e of s.elements)e.action=unlink(e.action)}});return;}
     if(id==='screen-properties')return this.editScreen();
-    if(id.startsWith('insert-')){const type=id.slice(7);this.change(()=>{const e=normalizeMenuElement({id:unique(type,this.screen.elements),type,label:label(type),x:0.1,y:0.2,w:0.8,h:type.startsWith('car-')||type==='power-curve'?0.25:0.1,binding:type.startsWith('car-')||type==='power-curve'?'carRef':''});this.screen.elements.push(e);this.elementId=e.id;});return;}
+    if(id.startsWith('insert-')){const type=id.slice(7);this.change(()=>{const e=normalizeMenuElement({...widgetDefaults(type),id:unique(type,this.screen.elements)});this.screen.elements.push(e);this.elementId=e.id;});this.status=`${widgetLabel(type)} added. Use Setup to connect it; drag to move or resize.`;return;}
     if(id==='element-select'){const result=await openEditorForm('Choose Element',[select('id','Element',this.elementId,this.screen.elements.map(e=>({value:e.id,label:`${e.label} (${e.type})`})))]);if(result)this.elementId=result.id;return;}
     if(id==='menu-parameters')return this.editParameters();
     if(id==='grand-prix-edit')return this.editGrandPrix();
@@ -101,7 +123,7 @@ export default class MenuEditor extends RaceEditor {
     if(id==='duplicate'){this.clipboardElement=structuredClone(this.element);return this.runAction('paste');}
     if(id==='layer-up'||id==='layer-down'){this.change(()=>{const a=this.screen.elements,i=a.indexOf(this.element),j=Math.max(0,Math.min(a.length-1,i+(id==='layer-up'?1:-1)));[a[i],a[j]]=[a[j],a[i]]});return;}
     if(id==='element-properties')return this.editElement();
-    if(id==='element-art'){const picked=await openProjectBrowser({fixedFolder:'art',initialFolder:'art',mode:'open',title:'Choose Menu Artwork'});if(picked?.name)this.change(()=>{this.element.artRef=picked.name;this.element.type='image'});return;}
+    if(id==='element-art')return chooseImage(this);
     if(id==='element-action'){const action=await this.editAction(this.element.action);if(action!==undefined)this.change(()=>{this.element.action=action});return;}
     if(id==='element-animation'){const e=this.element,result=await openEditorForm('Animation',[select('animation','Animation',e.animation,MENU_ANIMATIONS),{id:'duration',label:'Duration (seconds)',value:e.duration,min:0.1,max:600},select('loop','Loop',String(e.loop),['true','false'])]);if(result)this.change(()=>Object.assign(this.element,{...result,loop:result.loop==='true'}));return;}
     if(id==='keyframe-clear'){this.change(()=>{this.element.keyframes=[]});return;}
@@ -109,17 +131,30 @@ export default class MenuEditor extends RaceEditor {
   }
   async saveMenu(saveAs=false){let name=this.currentMenuName;if(!name||saveAs){const result=await openProjectBrowser({fixedFolder:'menus',initialFolder:'menus',mode:'saveAs',initialName:this.menu.name,title:'Save Menu'});if(result?.action!=='saveAs')return;name=result.name;}const data=normalizeMenuDocument({...this.menu,name});await saveProjectFileAndConfirm('menus',name,data,{timeoutMs:60000});this.currentMenuName=name;this.menu=data;this.status=`Saved ${name}`;return name;}
   async editScreen(){const s=this.screen;const result=await openEditorForm('Screen Properties',[text('name','Screen name',s.name,true),text('background','Background color',s.background,true),select('backgroundArt','Background art',s.backgroundArt,['',...listProjectFiles('art').map(f=>f.name)]),select('musicRef','Music',s.musicRef,['',...listProjectFiles('music').map(f=>f.name)]),select('effect','Background effect',s.effect,['none','stars','rain','snow']),select('start','Tap / Space / Start action',s.startAction?'edit':'none',[{value:'none',label:'None — use buttons'},{value:'edit',label:'Configure action'}])]);if(!result)return;let action=null;if(result.start==='edit'){action=await this.editAction(s.startAction);if(action===undefined)return;}this.change(()=>{const {start,...properties}=result;Object.assign(this.screen,properties,{startAction:action})});}
-  async editElement(){const e=this.element;const result=await openEditorForm('Element Properties',[
-    text('label','Label ({{parameter}} supported)',e.label),...['x','y','w','h'].map(k=>({id:k,label:`${{x:'X',y:'Y',w:'Width',h:'Height'}[k]} (fraction of screen)`,value:e[k],min:k==='w'||k==='h'?0.01:-2,max:3})),
-    {id:'fontSize',label:'Font size',value:e.fontSize,min:8,max:160},text('color','Text color',e.color),text('background','Button color',e.background),text('binding','Parameter (e.g. carRef, difficulty, settings.musicVolume)',e.binding),
-    select('source','Choices from',e.source,['','cars','grandPrix','races','levels','movies']),
-    {id:'options',label:'Choices: one label = value per line (values may be JSON)',type:'textarea',required:false,value:e.options.map(o=>`${o.label} = ${JSON.stringify(o.value)}`).join('\n')},
-    ...['min','max','step'].map(k=>({id:k,label:`Slider ${k}`,value:e[k]})),text('videoUrl','Video URL (for Video elements)',e.videoUrl),select('visible','Visible',String(e.visible),['true','false'])]);
-    if(result)this.change(()=>{const options=result.options.split('\n').filter(s=>s.trim()).map(s=>{const i=s.indexOf('=');return {label:(i<0?s:s.slice(0,i)).trim(),value:parse((i<0?s:s.slice(i+1)).trim())}});Object.assign(this.element,result,{options,visible:result.visible==='true'})});
+  async editElement(){
+    const e=this.element,fields=[text('label','Label ({{parameter}} supported)',e.label),...['x','y','w','h'].map(k=>({id:k,label:`${{x:'X',y:'Y',w:'Width',h:'Height'}[k]} (% of screen)`,value:e[k]*100,min:k==='w'||k==='h'?1:-100,max:200})),{id:'fontSize',label:'Font size',value:e.fontSize,min:8,max:160},text('color','Text color',e.color),text('background','Control background color',e.background),select('visible','Visible',String(e.visible),['true','false'])];
+    if(['image','asset-preview'].includes(e.type))fields.push(select('imageFit','Fit image',e.imageFit,['contain','cover','stretch']));
+    const result=await openEditorForm('Layout & Style',fields,{description:'Drag the widget to move it; drag its gold corner to resize. Use Setup to change data or behavior.'});
+    if(result)this.change(()=>{for(const key of ['x','y','w','h'])result[key]/=100;Object.assign(this.element,result,{visible:result.visible==='true'})});
   }
   async editAction(action){
-    const a=action||{};const r=await openEditorForm('Action',[select('type','Action',a.type||'screen',['none',...MENU_ACTION_TYPES]),text('target','Target (screen ID, saved name, URL, or $parameter)',a.target||''),text('parameter','Parameter to set',a.parameter||''),text('value','Value (text, number, true/false, or JSON)',JSON.stringify(a.value??'')),select('after','After this action',a.then?'edit':'none',[{value:'none',label:'Nothing'},{value:'edit',label:'Configure next action'}])],{description:`Screen IDs: ${this.menu.screens.map(s=>s.id+' ('+s.name+')').join(', ')}\nMovie actions wait for playback before running the next action. Race, level, movie and Grand Prix targets can use a selection such as $carRef or $grandPrix.`});
-    if(!r)return undefined;if(r.type==='none')return null;const result={type:r.type,target:r.target,parameter:r.parameter,value:parse(r.value)};if(r.after==='edit'){const then=await this.editAction(a.then);if(then===undefined)return undefined;result.then=then;}return result;
+    const names={screen:'Open screen',back:'Back', 'set-param':'Set a parameter',race:'Start race','grand-prix':'Start Grand Prix',level:'Load level',movie:'Play movie',quit:'Exit menu'};
+    const kind=await openEditorForm('Widget Action',[select('type','When activated',action?.type||'screen',[{value:'none',label:'No action'},...MENU_ACTION_TYPES.map(type=>({value:type,label:names[type]}))])]);
+    if(!kind)return undefined;if(kind.type==='none')return null;
+    const a=action?.type===kind.type?action:{},fields=[];
+    const folders={race:'races',level:'levels',movie:'cutscenes'};
+    const targets=kind.type==='screen'?this.menu.screens.map(s=>({value:s.id,label:s.name})):kind.type==='grand-prix'?this.menu.grandPrix.map(g=>({value:g.id,label:g.name})):folders[kind.type]?listProjectFiles(folders[kind.type]).map(f=>({value:f.name,label:f.name})):[];
+    if(['screen','race','level','movie','grand-prix'].includes(kind.type)){
+      targets.push(...parameterNames(this).map(key=>({value:`$${key}`,label:`Selected value: ${key}`})));
+      if(a.target&&!targets.some(t=>t.value===a.target))targets.push({value:a.target,label:a.target});
+      fields.push(select('target','Destination',a.target||targets[0]?.value||'',targets));
+      if(kind.type==='movie')fields.push(text('url','Or video URL (overrides destination)',''));
+    }
+    if(kind.type==='set-param')fields.push({...text('parameter','Parameter',a.parameter||'',true),suggestions:parameterNames(this)},text('value','Value (text, number, true/false, or JSON)',JSON.stringify(a.value??'')));
+    fields.push(select('after','Then',a.then?'edit':'none',[{value:'none',label:'Nothing else'},{value:'edit',label:'Configure another action'}]));
+    const r=await openEditorForm(names[kind.type],fields,{description:'The selected values travel into races and levels. Movies finish before the next action runs.'});
+    if(!r)return undefined;const result={type:kind.type,target:r.url||r.target||'',parameter:r.parameter||'',value:parse(r.value??'')};
+    if(r.after==='edit'){const then=await this.editAction(a.then);if(then===undefined)return undefined;result.then=then;}return result;
   }
   async editParameters(){const r=await openEditorForm('Configuration Parameters',[{id:'parameters',label:'One name = value per line (numbers, booleans and JSON supported)',type:'textarea',required:false,rows:10,value:Object.entries(this.menu.parameters).map(([k,v])=>`${k} = ${JSON.stringify(v)}`).join('\n')}],{description:'Bind choices, toggles and sliders to these names. The complete configuration is passed into races and levels, including custom weapons and character choices.'});if(r)this.change(()=>{const pairs=r.parameters.split('\n').filter(s=>s.trim()).map(line=>{const i=line.indexOf('=');if(i<1)throw Error('Use name = value for each parameter');return [line.slice(0,i).trim(),parse(line.slice(i+1).trim())]});this.menu.parameters=Object.fromEntries(pairs)});}
   async editGrandPrix(){

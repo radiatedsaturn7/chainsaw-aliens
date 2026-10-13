@@ -1,4 +1,4 @@
-export const MENU_ELEMENT_TYPES = ['text','image','button','choice','slider','toggle','keybind','car-preview','car-stats','power-curve','video'];
+export const MENU_ELEMENT_TYPES = ['text','image','button','choice','slider','toggle','keybind','car-preview','car-stats','power-curve','video','property-display','asset-preview'];
 export const MENU_ACTION_TYPES = ['screen','back','set-param','race','grand-prix','level','movie','quit'];
 export const MENU_ANIMATIONS = ['none','pulse','fade','bob','spin'];
 export const MENU_SETTINGS = {
@@ -20,10 +20,12 @@ export function normalizeMenuAction(action,depth=0){
 }
 export function normalizeMenuElement(source={},index=0){
   const type=MENU_ELEMENT_TYPES.includes(source.type)?source.type:'text';
-  const binding=text(source.binding);if(binding&&!validMenuParameter(binding))throw Error('Invalid parameter binding');
+  const binding=text(source.binding);if(source.angleBinding&&!validMenuParameter(source.angleBinding))throw Error('Invalid rotation binding');if(binding&&!validMenuParameter(binding))throw Error('Invalid parameter binding');
   return {id:text(source.id,`element-${index+1}`),type,label:text(source.label,'New item'),
     x:number(source.x,0.1,-2,2),y:number(source.y,0.1,-2,2),w:number(source.w,0.8,0.01,3),h:number(source.h,0.08,0.01,3),
     color:text(source.color,'#ffffff'),background:text(source.background,'#253c49'),fontSize:number(source.fontSize,26,8,160),
+    dataSource:['cars','actors','parameters','doodads'].includes(source.dataSource)?source.dataSource:'cars',assetRef:text(source.assetRef),property:text(source.property,'name'),suffix:text(source.suffix),decimals:number(source.decimals,0,0,6),
+    angleBinding:text(source.angleBinding),angle:number(source.angle,180,-3600,3600),imageFit:['contain','cover','stretch'].includes(source.imageFit)?source.imageFit:'contain',
     artRef:text(source.artRef),videoUrl:text(source.videoUrl),binding,source:text(source.source),
     options:(Array.isArray(source.options)?source.options:[]).slice(0,200).map(option=>({label:text(option.label,String(option.value??'')),value:structuredClone(option.value??'')})),
     min:number(source.min,0,-1e6,1e6),max:number(source.max,1,-1e6,1e6),step:number(source.step,0.05,0.0001,1e6),

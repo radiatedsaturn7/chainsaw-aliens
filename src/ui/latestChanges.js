@@ -1542,6 +1542,15 @@ export const LATEST_MAJOR_WORK = {
 export const LATEST_CHANGES = [
   {
     date: '2026-10-13',
+    time: '16:25 EDT',
+    title: 'Menu widget designer and synchronized sprite wheels',
+    details: [
+      'Menu Editor now exposes Add Widget, Setup, Layers and Screens, with image import, guided button actions, setting sliders, controllable car rotators and property displays for cars, actors and custom items. Touch menus no longer show Race Editor ground tools.',
+      'Textured tire cylinders hold the same 45-degree viewing angle as sprite bodies in menus and races, while rolling spin and steering remain animated.'
+    ]
+  },
+  {
+    date: '2026-10-13',
     time: '13:55 EDT',
     title: 'Visible 3D selection transform handles',
     details: [

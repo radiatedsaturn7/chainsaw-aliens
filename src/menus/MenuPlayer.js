@@ -86,7 +86,7 @@ export default class MenuPlayer {
     ctx.restore();
   }
   handlePointerMove(point){if(!this.slider||!this.bounds)return;if(this.slider.id!==undefined&&point.id!==undefined&&point.id!==this.slider.id)return;const e=this.slider.element,b=menuElementBounds(e,this.bounds,menuElementPose(e,this.flow.time));if(!e.binding)return;const fraction=Math.max(0,Math.min(1,(point.x-b.x)/b.w)),value=e.min+Math.round(fraction*(e.max-e.min)/e.step)*e.step;this.flow.setParameter(e.binding,Math.min(e.max,value));}
-  handlePointerUp(){this.slider=null;}
+  handlePointerUp(){const action=this.slider?.element.action;this.slider=null;if(action)void this.flow.run(action);}
   async playMovie(ref){
     this.cleanupScreen();const flow=this.flow,generation=flow.generation;
     if(/^(https?:|\/|data:video\/|blob:)/i.test(ref)){
