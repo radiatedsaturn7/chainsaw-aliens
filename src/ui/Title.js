@@ -14,6 +14,7 @@ export default class Title {
       graphics: [
         'pixel-editor',
         'model-editor',
+        'menu-editor',
         'cutscene-editor',
         'back'
       ],
@@ -492,6 +493,8 @@ export default class Title {
           ? 'Tile Editor'
           : action === 'race-editor'
             ? 'Race Editor'
+            : action === 'menu-editor'
+              ? 'Menu Editor'
             : action === 'model-editor'
               ? '3D Object Editor'
             : action === 'tire-editor'

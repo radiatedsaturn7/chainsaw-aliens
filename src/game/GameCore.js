@@ -1,3 +1,6 @@
+import MenuEditor from '../ui/MenuEditor.js';
+import MenuPlayer from '../menus/MenuPlayer.js';
+import {loadServerPreferenceAsync} from '../ui/serverPreferences.js';
 import {modelSprites} from '../model3d/ModelSprites.js';
 import ModelEditor from '../ui/ModelEditor.js';
 import TireEditor from '../ui/TireEditor.js';
@@ -425,6 +428,8 @@ export default class Game {
     this.doodadEditor = new DoodadEditor(this);
     this.tireEditor = new TireEditor(this);
     this.modelEditor = new ModelEditor(this);
+    this.menuEditor = new MenuEditor(this);
+    this.menuPlayer = new MenuPlayer(this);
     this.cutscenePlayer = new CutscenePlayer(this);
     this.editorStateTargetKeys = {
       editor: 'editor',
@@ -437,6 +442,8 @@ export default class Game {
       'car-editor': 'carEditor',
       'tire-editor': 'tireEditor',
       'model-editor': 'modelEditor',
+      'menu-editor': 'menuEditor',
+      'menu-player': 'menuPlayer',
       'doodad-editor': 'doodadEditor'
     };
     this.editorStateDrawArgs = {
@@ -450,6 +457,8 @@ export default class Game {
       'car-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'tire-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'model-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'menu-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'menu-player': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'doodad-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height]
     };
     this.editorStateKeys = new Set(Object.keys(this.editorStateTargetKeys));
@@ -874,6 +883,8 @@ export default class Game {
         this.enterActorEditor();
       } else if (action === 'race-editor') {
         this.enterRaceEditor();
+      } else if (action === 'menu-editor') {
+        this.enterMenuEditor();
       } else if (action === 'model-editor') {
         this.enterModelEditor();
       } else if (action === 'tire-editor') {
@@ -904,7 +915,7 @@ export default class Game {
       return true;
     }
     if (action === 'recent-level') {
-      this.playMostRecentLevel();
+      void this.playStartingMenu();
       return true;
     }
     return false;
@@ -1854,6 +1865,8 @@ export default class Game {
     const originState = this.state;
     this.raceTravelSession = this.createRaceTravelSession({ originState, car });
     const travelSession = this.raceTravelSession;
+    travelSession.menuFlow = params.menuFlow || null;
+    travelSession.menuConfiguration = structuredClone(params.menuConfiguration || {});
     this.transitionTo('race-editor', { forceCleanup: true });
     this.setRevAudio(false);
     this.raceEditor.beginRaceTravelLoading?.(raceName, car.id);
@@ -1966,6 +1979,14 @@ export default class Game {
         else setTimeout(resolve, 0);
       });
       if (this.raceTravelSession !== travelSession) return false;
+      if (['easy','medium','hard'].includes(travelSession.menuConfiguration.difficulty)) {
+        const difficulty = travelSession.menuConfiguration.difficulty;
+        for (const driver of this.raceEditor.selectedRace.competition?.aiDrivers || []) {
+          driver.difficulty = difficulty;
+          driver.skill = {easy:0.38,medium:0.58,hard:0.76}[difficulty];
+          driver.aggression = {easy:0.28,medium:0.45,hard:0.62}[difficulty];
+        }
+      }
       this.raceEditor.startPlaytest(car.id, {
         hydrateCars: false,
         raceTravel: true,
@@ -1976,6 +1997,7 @@ export default class Game {
           || travelSession.trackStateByRace?.[raceDocument.id]
           || null
       });
+      if (this.raceEditor.playtestSession) this.raceEditor.playtestSession.menuConfiguration = structuredClone(travelSession.menuConfiguration);
       if (this.raceEditor.playtestSession?.running !== true) {
         throw new Error('Race playtest did not enter the running state');
       }
@@ -2013,7 +2035,10 @@ export default class Game {
     this.raceTravelSession = null;
     this.raceEditorPlaytestReturn = false;
     this.playtestActive = session.originPlaytestActive === true;
-    if (session.originState === 'playing' || session.originState === 'pause') {
+    if (session.originState === 'menu-player' && session.menuFlow === this.menuPlayer?.flow) {
+      this.transitionTo('menu-player', {forceCleanup:true});
+      this.menuPlayer.enterScreen();
+    } else if (session.originState === 'playing' || session.originState === 'pause') {
       this.restoreRaceTravelPlayerState(session.playerSnapshot, { restorePosition: true });
       this.lastSave = { x: this.player.x, y: this.player.y };
       this.snapCameraToPlayer();
@@ -2033,6 +2058,10 @@ export default class Game {
     trackStateSnapshot = null
   } = {}) {
     const session = this.ensureRaceTravelSession(carId);
+    if (session.menuFlow && session.menuFlow === this.menuPlayer?.flow && session.menuFlow.active) {
+      void this.menuPlayer.raceFinished();
+      return true;
+    }
     session.trackStateByRace ||= {};
     if (trackStateSnapshot) {
       if (raceId) session.trackStateByRace[raceId] = trackStateSnapshot;
@@ -2105,6 +2134,29 @@ export default class Game {
     this.transitionTo('car-editor');
     this.setRevAudio(false);
     this.playtestActive = false;
+  }
+
+  enterMenuEditor() {
+    this.transitionTo('menu-editor');
+    this.setRevAudio(false);
+    this.playtestActive = false;
+  }
+
+  exitMenuEditor() { this.transitionTo('title', {forceCleanup:true}); }
+
+  async previewMenu(document) { return this.menuPlayer.open(document, {preview:true}); }
+
+  async playStartingMenu() {
+    if (this.menuLaunchPending) return;
+    this.menuLaunchPending = true;
+    try {
+      const preference = await loadServerPreferenceAsync('menu-launch', null);
+      if (!preference?.menuRef) return this.playMostRecentLevel();
+      const payload = await hydrateProjectFilePayload('menus', preference.menuRef);
+      if (!payload?.data) throw new Error(`Starting menu not found: ${preference.menuRef}`);
+      await this.menuPlayer.open(payload.data);
+    } catch (error) { this.showSystemToast(error.message); }
+    finally { this.menuLaunchPending = false; }
   }
 
   enterModelEditor() {
@@ -3354,6 +3406,10 @@ export default class Game {
         this.exitSfxEditor();
       } else if (this.state === 'cutscene-editor') {
         this.exitCutsceneEditor();
+      } else if (this.state === 'menu-player') {
+        this.menuPlayer.flow?.stop();
+      } else if (this.state === 'menu-editor') {
+        this.exitMenuEditor();
       } else if (this.state === 'model-editor') {
         this.exitModelEditor();
       } else if (this.state === 'tire-editor') {
@@ -3431,6 +3487,14 @@ export default class Game {
         return;
       }
       this.cutsceneEditor.update(this.input, dt);
+      this.updateActiveMusicPlayers(dt);
+      this.input.flush();
+      return;
+    }
+
+    if (this.state === 'menu-editor' || this.state === 'menu-player') {
+      const target = this.state === 'menu-editor' ? this.menuEditor : this.menuPlayer;
+      target.update(this.input, dt);
       this.updateActiveMusicPlayers(dt);
       this.input.flush();
       return;
@@ -11225,6 +11289,8 @@ export default class Game {
     this.stateManager.register('car-editor', createDelegatedState(this, 'carEditor'));
     this.stateManager.register('tire-editor', createDelegatedState(this, 'tireEditor'));
     this.stateManager.register('model-editor', createDelegatedState(this, 'modelEditor'));
+    this.stateManager.register('menu-editor', createDelegatedState(this, 'menuEditor'));
+    this.stateManager.register('menu-player', createDelegatedState(this, 'menuPlayer'));
     this.stateManager.register('doodad-editor', createDelegatedState(this, 'doodadEditor'));
     this.stateManager.register('robtersession', new RobterSessionState(this));
   }

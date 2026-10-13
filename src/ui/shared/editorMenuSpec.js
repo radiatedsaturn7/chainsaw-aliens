@@ -145,14 +145,14 @@ export const DESKTOP_DYNAMIC_EMPTY_SECTION_IDS = {
   midi: ['tracks']
 };
 export const STANDARD_EDITOR_ACTION_RAIL_PREFIX = ['menu', 'undo', 'redo'];
-export const SHARED_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'model3d', 'tire', 'car', 'tile', 'doodad'];
+export const SHARED_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'model3d', 'menu-designer', 'tire', 'car', 'tile', 'doodad'];
 export const SUPPORTED_EDITOR_WORK_SURFACES = ['canvas', 'stage', 'grid', 'timeline'];
 export const EDITOR_STANDARD_REFERENCE = deepFreeze({
   primaryEditorId: 'midi',
   secondaryEditorId: 'pixel',
   comparisonEditorIds: ['level', 'cutscene', 'actor'],
   portraitRepairEditorIds: ['level', 'race', 'car'],
-  rolloutOrder: ['midi', 'pixel', 'level', 'cutscene', 'actor', 'race', 'model3d', 'tire', 'car', 'sfx', 'tile', 'doodad']
+  rolloutOrder: ['midi', 'pixel', 'level', 'cutscene', 'actor', 'race', 'model3d', 'menu-designer', 'tire', 'car', 'sfx', 'tile', 'doodad']
 });
 export const EDITOR_DESKTOP_LEFT_CONTEXT_ROLES = deepFreeze({
   pixel: ['active-tool', 'swatches', 'layers', 'frames'],
@@ -164,6 +164,7 @@ export const EDITOR_DESKTOP_LEFT_CONTEXT_ROLES = deepFreeze({
   race: ['active-tool', 'tile-palette', 'route-painting', 'track-settings'],
   tire: ['tire-properties', 'preview-settings'],
   model3d: ['active-tool', 'preview-settings'],
+  'menu-designer': ['screen-list', 'selected-element', 'preview-settings'],
   car: ['active-tool', 'car-properties', 'paint-swatches', 'test-drive-settings'],
   tile: ['active-tool', 'tile-palette', 'tile-properties', 'preview-settings'],
   doodad: ['active-tool', 'artwork-settings', 'size-settings', 'collision-settings']
@@ -434,6 +435,20 @@ export const EDITOR_MENU_SPECS = {
       rig:section('rig','Rig',['select-joints','joint-select-list','place-joint','joint-root','joint-properties','joint-reparent','joint-delete','select-joint-vertices','assign-joint','toggle-ik','pose-joint']),
       animation:section('animation','Animation',['animation-new','animation-select','animation-properties','keyframe-prev','keyframe-next','animation-time','keyframe-set','keyframe-delete','animation-play','bind-pose']),
       texture:section('texture','Texture',['uv-generate','uv-editor','uv-move','uv-paint','texture-material','paint-color','paint-size','texture-import','texture-export'])
+    }
+  },
+  'menu-designer': {
+    editorId:'menu-designer',title:'Menu Editor',workSurface:'stage',
+    root:['file','edit','view','screens','insert','properties','flow'],
+    portraitRoot:[{id:'file',label:'File'},{id:'screens',label:'Screens'},{id:'insert',label:'Insert'},{id:'properties',label:'Props'},{id:'flow',label:'Flow'},{id:'preview',label:'Preview',panel:'view'}],
+    sections:{
+      file:section('file','File',['new','save','save-as','open','export','import','exit-main']),
+      edit:section('edit','Edit',['undo','redo','copy','cut','paste','duplicate','delete']),
+      view:section('view','View',['menu-preview','menu-animate','zoom-fit']),
+      screens:section('screens','Screens',['screen-select','screen-new','screen-duplicate','screen-properties','screen-start','screen-delete']),
+      insert:section('insert','Insert',['insert-text','insert-image','insert-button','insert-choice','insert-slider','insert-toggle','insert-keybind','insert-car-preview','insert-car-stats','insert-power-curve','insert-video']),
+      properties:section('properties','Properties',['element-select','element-properties','element-art','element-action','element-animation','keyframe-add','keyframe-clear','layer-up','layer-down']),
+      flow:section('flow','Flow',['menu-parameters','grand-prix-edit','starting-menu','clear-starting-menu'])
     }
   },
   tire: {

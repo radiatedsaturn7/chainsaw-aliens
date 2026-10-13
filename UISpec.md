@@ -288,3 +288,13 @@ Shared implementation helpers:
 - Saved variants sharing a stock chassis ID remain distinct. Each AI keeps its own runtime car snapshot, artwork, and tuning. Portrait and desktop use the same accessible, scrollable selection dialogs.
 
 - AI car sprites and procedural fallbacks use the same active Three camera as the track and player overlays. Body pose and tire hubs come from each opponent’s canonical render state; road-center elevation is only a fallback before physical state exists. Artwork preloading and drawing resolve exact saved identities/runtime snapshots, including variants sharing a stock chassis ID.
+
+### Menu Editor
+
+- Graphics includes **Menu Editor**. Menu documents use the Menus project folder. File provides New, Save, Save As, Open, Export, Import and Exit to Main Menu.
+- Desktop roots: File, Edit, View, Screens, Insert, Properties, Flow. Portrait uses the shared Menu/Undo/Redo/Preview rail and bottom sheets; landscape and controller use the shared editor shell.
+- The canvas uses proportional positions so screens adapt to portrait and desktop. Select an element, drag to move it, or drag its gold corner to resize. A drag is one undo step. Properties offers precise placement, colors, labels, parameter bindings and selectable options. Screen selection, duplication, deletion and starting-screen selection are explicit commands.
+- Elements include text, artwork, buttons, choices, sliders, toggles, key mappings, video, spinning car previews, car statistics and HP/torque plots. Animation offers fade, pulse, bob and spin plus position/opacity/scale/rotation keyframes. Screens support backgrounds, weather/star effects and saved music.
+- Actions open screens, go back, set arbitrary typed parameters, play movies, launch races, launch levels, or start Grand Prix schedules. Movies can chain into the next action after completion. Grand Prix schedules contain ordered saved races and optional intro movies per round.
+- Flow > Use for Main Play saves the menu and selects it as the main Play destination. Use Default Play restores the existing recent-level behavior. Preview tests navigation and media; destination launches are reported inside preview so authoring is not interrupted.
+- The starter flow is Tap/Space/controller Start → Car Selection → Grand Prix Selection. It includes settings and keyboard mapping screens. FX volume, music volume, brightness and control sensitivity are persistent runtime settings. Every destination receives the current named configuration; car and difficulty have built-in race behavior, while custom names remain available to gameplay systems.

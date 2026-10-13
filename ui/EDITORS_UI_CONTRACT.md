@@ -187,3 +187,7 @@ Before a new editor ships, add it to the shared menu spec with:
 ## 3D Object Editor integration
 
 `model3d` uses the shared canvas editor shell, menu specifications, portrait action rail, zoom slider, and gamepad semantic input. Desktop Edit/View appear as Tools/Camera in portrait. The model work surface owns selection, orbit/pan, the timeline, modeling hotbar, and UV/model split preview. Escape/Back closes active menus before leaving the editor. Numeric dialogs trap editor key events while open.
+
+## Menu designer
+
+`menu-designer` uses the shared editor menu spec and RaceEditor shell adapters for desktop context, touch drawers and action rails. Screen elements use normalized coordinates inside the work surface; each pointer drag is captured by pointer ID and recorded once in history. Property forms use the shared accessible dialog helper. `menu-player` is a separate delegated state and does not expose authoring controls outside preview.

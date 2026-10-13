@@ -380,13 +380,17 @@ test('projected tire artwork draws only the selected car side', () => {
   e.getRaceArtSpriteCanvas = ref => ({ ref, width: 32, height: 32 });
   e.getRaceCarBillboardLayerCanvas = canvas => canvas;
   const wheels = { fl: {x:10,y:10}, fr: {x:20,y:10}, rl: {x:30,y:10}, rr: {x:40,y:10} };
-  for (const [mode, expected] of [['left',[10,30]],['right',[20,40]]]) {
+  for (const body of [false, true]) for (const [mode, ids] of [['left',['fl','rl']],['right',['fr','rr']]]) {
     e.setCarTireVisibilityMode(mode);
     const ctx = context(), drawn = []; let x;
     ctx.translate = value => { x = value; };
     e.drawScrolledCarTireArt = () => { drawn.push(x); return true; };
+    const choice = e.getRaceCarProjectedArtRef(e.selectedCar,0,getCarViewCameraYaw('front'));
+    const resolved = resolveCarAngleLayers(e.selectedCar, 'front');
+    const expectedWheels = body ? e.getRaceSpriteWheelRig({car:resolved,viewSlot:'front',tireCanvas:{width:32,height:32}}).wheels : wheels;
     e.drawRaceCarBillboardLayers(ctx, {car:e.selectedCar, wheelBillboards:wheels,
-      artChoice:e.getRaceCarProjectedArtRef(e.selectedCar,0,getCarViewCameraYaw('front'))});
+      artChoice:{...choice,artRef:body ? choice.artRef : null}});
+    const expected = ids.map(id => expectedWheels[id].x).sort((a,b)=>a-b);
     assert.deepEqual(drawn.sort((a,b)=>a-b),expected);
   }
 });

@@ -54,3 +54,10 @@ export function saveServerPreference(key, value) {
     })
   }).then(() => ({ ok: true })).catch((error) => ({ ok: false, reason: String(error) }));
 }
+
+// Await initial server hydration when a preference decides which content to open.
+export async function loadServerPreferenceAsync(key, fallback = null) {
+  const immediate = loadServerPreference(key, fallback);
+  const pending = pendingLoads.get(preferenceName(key));
+  return pending ? (await pending) ?? fallback : immediate;
+}

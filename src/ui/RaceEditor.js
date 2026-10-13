@@ -18523,9 +18523,11 @@ export default class RaceEditor {
       return;
     }
     const isDown = (action) => Boolean(input.isDown?.(action));
-    const isDownCode = (code) => Boolean(input.isDownCode?.(code));
+    const legacyActionByCode = {ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',KeyG:'interact',KeyR:'rev'};
+    const legacyEnabled = code => !input.actionKeymap?.[legacyActionByCode[code]];
+    const isDownCode = (code) => legacyEnabled(code) && Boolean(input.isDownCode?.(code));
     const wasPressed = (action) => Boolean(input.wasPressed?.(action));
-    const wasPressedCode = (code) => Boolean(input.wasPressedCode?.(code));
+    const wasPressedCode = (code) => legacyEnabled(code) && Boolean(input.wasPressedCode?.(code));
     const gamepadInput = this.game?.input || input;
     const gamepadActions = gamepadInput?.getGamepadActions?.()
       || gamepadInput?.gamepadActions || input.gamepadActions || {};
@@ -20895,13 +20897,14 @@ export default class RaceEditor {
 
   drawRaceThirdPersonCar(ctx, bounds) {
     const sourceCar = this.getRaceSessionCar(this.playtestSession);
-    const car = resolveCarAngleLayers(sourceCar, getCarViewSlot(
-      this.playtestSession?.carYaw, this.lastRaceRenderCamera?.cameraYaw ?? this.playtestSession?.cameraYaw
-    ));
-    const lateral = clamp(Number(this.playtestSession?.lateral || 0), -1.2, 1.2);
+    const baseRenderPose = this.getRacePlayerRenderPose(this.playtestSession, sourceCar);
     const renderCamera = this.lastRaceRenderCamera;
+    const cameraYaw = Number(renderCamera?.cameraYaw ?? this.playtestSession?.cameraYaw ?? 0);
+    // Choose the saved view from the same pose that positions the body. The
+    // physics heading can cross a frame boundary before the rendered heading.
+    const car = resolveCarAngleLayers(sourceCar, getCarViewSlot(baseRenderPose.yaw, cameraYaw));
+    const lateral = clamp(Number(this.playtestSession?.lateral || 0), -1.2, 1.2);
     const segment = this.getRaceSegmentAtDistance(this.getRaceVisualTravelDistance()).segment;
-    const baseRenderPose = this.getRacePlayerRenderPose(this.playtestSession, car);
     const carWorldX = baseRenderPose.x;
     const carWorldZ = baseRenderPose.z;
     const roadElevation = this.playtestSession
@@ -20974,7 +20977,7 @@ export default class RaceEditor {
     const shadowGroundProjected = this.playtestSession && renderCamera?.camera
       ? projectVisualPoint(shadowGroundPoint)
       : null;
-    const carYaw = Number(this.playtestSession?.carYaw || 0);
+    const carYaw = renderPose.yaw;
     const centerX = carPoint?.visible && Number.isFinite(carPoint.screenX)
       ? carPoint.screenX
       : bounds.x + bounds.w / 2 + lateral * bounds.w * 0.055;
@@ -21001,7 +21004,7 @@ export default class RaceEditor {
       bodyScreenRotationRad,
       session: this.playtestSession
     });
-    const artChoice = this.getRaceCarProjectedArtRef(car, Number(this.playtestSession?.carYaw || 0), Number(renderCamera?.cameraYaw || 0), {
+    const artChoice = this.getRaceCarProjectedArtRef(car, carYaw, cameraYaw, {
       reversing: Number(this.playtestSession?.speedMps || 0) < -0.3 || Number(this.raceInput?.gear || 0) < 0,
       steering: Number(this.raceInput?.steeringWheel || 0)
     });
@@ -21043,9 +21046,7 @@ export default class RaceEditor {
       this.getMaxDamage(damage.suspension),
       this.getAverageDamage(damage.tires)
     );
-    const frontTireAngle = Number.isFinite(this.playtestSession?.tireSlip?.frontTireAngle)
-      ? this.playtestSession.tireSlip.frontTireAngle
-      : this.getRacePhysicalTireAngleForSteering(this.raceInput.steeringWheel, this.playtestSession?.speedMps || 0);
+    const frontTireAngle = renderPose.frontTireAngle;
     const hasAuthoredTireArt = this.hasCarTireArtOverride(car);
     const hasCustomShadowArt = Boolean(String(car?.art?.shadowArtRef || '').trim());
     const hasBrakeArt = Boolean(car.art?.brakeLightArtRef);
@@ -22248,8 +22249,8 @@ export default class RaceEditor {
       || cameraView !== 'third-person'
       || (Math.abs(Number(this.raceInput.lookAngle || 0)) >= 0.28
         && !car?.art?.bodyModel?.ref && !car?.art?.wheelModel?.ref)) return null;
-    car = resolveCarAngleLayers(car, getCarViewSlot(session.carYaw, cameraYaw));
     const renderPose = this.getRacePlayerRenderPose(session, car, { fallbackElevation });
+    car = resolveCarAngleLayers(car, getCarViewSlot(renderPose.yaw, cameraYaw));
     const artChoice = this.getRaceCarProjectedArtRef(car, renderPose.yaw, cameraYaw, {
       reversing: Number(session.speedMps || 0) < -0.3 || Number(this.raceInput?.gear || 0) < 0,
       steering: Number(this.raceInput?.steeringWheel || 0)

@@ -292,6 +292,9 @@ export default class AudioSystem {
       this.ctx = new (window.AudioContext || window.webkitAudioContext)();
       this.master = this.ctx.createGain();
       this.master.gain.value = this.volume;
+      this.effectsBus = this.ctx.createGain();
+      this.effectsBus.gain.value = this.effectsVolume ?? 1;
+      this.effectsBus.connect(this.master);
       this.masterPanNode = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
       if (this.masterPanNode) {
         this.masterPanNode.pan.value = clamp(this.masterPan, -1, 1);
@@ -407,9 +410,9 @@ export default class AudioSystem {
     if (panNode) {
       panNode.pan.value = clamp(Number(pan || 0), -1, 1);
       master.connect(panNode);
-      panNode.connect(this.master);
+      panNode.connect(this.effectsBus || this.master);
     } else {
-      master.connect(this.master);
+      master.connect(this.effectsBus || this.master);
     }
     const sources = [];
     const frameLayers = Array.isArray(frame.layers) && frame.layers.length
@@ -952,6 +955,11 @@ export default class AudioSystem {
     });
   }
 
+  setEffectsVolume(value) {
+    this.effectsVolume = clamp(Number(value) || 0, 0, 1);
+    if (this.effectsBus) this.effectsBus.gain.value = this.effectsVolume;
+  }
+
   setVolume(value) {
     this.volume = value;
     if (this.master) {
@@ -992,7 +1000,7 @@ export default class AudioSystem {
     osc.frequency.value = freq;
     gain.gain.value = 0.0001;
     osc.connect(gain);
-    gain.connect(this.master);
+    gain.connect(this.effectsBus || this.master);
     osc.start();
     const now = this.ctx.currentTime;
     gain.gain.exponentialRampToValueAtTime(0.2, now + 0.01);
@@ -2257,7 +2265,7 @@ export default class AudioSystem {
       });
       return;
     }
-    this.ensure();
+    this.ensureMidiSampler();
     const freq = 440 * (2 ** ((pitch - 69) / 12));
     const preset = this.getMidiPreset(instrument);
     const osc = this.ctx.createOscillator();
@@ -2278,9 +2286,9 @@ export default class AudioSystem {
     if (panNode) {
       panNode.pan.value = clamp(pan ?? 0, -1, 1);
       gain.connect(panNode);
-      panNode.connect(this.master);
+      panNode.connect(this.midiBus);
     } else {
-      gain.connect(this.master);
+      gain.connect(this.midiBus);
     }
     const now = when ?? this.ctx.currentTime;
     const attack = preset.attack ?? 0.01;
@@ -2540,7 +2548,7 @@ export default class AudioSystem {
     const panner = typeof this.ctx.createStereoPanner === 'function'
       ? this.ctx.createStereoPanner()
       : null;
-    const output = panner || this.master;
+    const output = panner || this.effectsBus || this.master;
     noiseSource.buffer = buffer;
     rumbleSource.type = 'sine';
     rumbleSource.frequency.setValueAtTime(42 + normalizedIntensity * 7, now);
@@ -2566,7 +2574,7 @@ export default class AudioSystem {
     rumbleGain.connect(output);
     if (panner) {
       panner.pan.setValueAtTime(normalizedPan, now);
-      panner.connect(this.master);
+      panner.connect(this.effectsBus || this.master);
     }
     noiseSource.start(now);
     rumbleSource.start(now);
@@ -2592,7 +2600,7 @@ export default class AudioSystem {
     gain.gain.value = gainValue;
     source.buffer = buffer;
     source.connect(gain);
-    gain.connect(this.master);
+    gain.connect(this.effectsBus || this.master);
     source.start();
   }
 
@@ -2740,7 +2748,7 @@ export default class AudioSystem {
       this.revOsc.frequency.value = 110;
       this.revGain.gain.value = 0.0001;
       this.revOsc.connect(this.revGain);
-      this.revGain.connect(this.master);
+      this.revGain.connect(this.effectsBus || this.master);
       this.revOsc.start();
     }
     if (active) {
@@ -2778,7 +2786,7 @@ export default class AudioSystem {
       this.engineRevOsc.connect(this.engineRevFilter);
       this.engineRevSubOsc.connect(this.engineRevFilter);
       this.engineRevFilter.connect(this.engineRevGain);
-      this.engineRevGain.connect(this.master);
+      this.engineRevGain.connect(this.effectsBus || this.master);
       this.engineRevOsc.start();
       this.engineRevSubOsc.start();
     }
@@ -2831,7 +2839,7 @@ export default class AudioSystem {
       this.tireScreechGain.gain.value = 0.0001;
       this.tireScreechSource.connect(this.tireScreechFilter);
       this.tireScreechFilter.connect(this.tireScreechGain);
-      this.tireScreechGain.connect(this.master);
+      this.tireScreechGain.connect(this.effectsBus || this.master);
       this.tireScreechSource.start();
     }
     if (active) {

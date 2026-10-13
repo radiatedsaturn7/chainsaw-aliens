@@ -72,6 +72,7 @@ test('shared editor menu specs validate for every editor', () => {
     cutscene: 'stage',
     race: 'stage',
     model3d: 'stage',
+    'menu-designer': 'stage',
     tire: 'stage',
     car: 'stage',
     tile: 'grid',

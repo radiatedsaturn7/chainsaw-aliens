@@ -137,3 +137,44 @@ test('authored wheel rig retains all eight saved layouts across depth and full r
  }
  assert.equal(JSON.stringify(car),before,'rendering does not rewrite saved artwork or physics');
 });
+
+test('turning player selects artwork and transforms from the rendered heading at every frame boundary', async () => {
+ const {getCarViewCameraYaw, getCarViewSlot} = await import('../../src/racing/CarDirectionalArt.js');
+ const e = editor(), car = structuredClone(e.selectedCar);
+ const slots = ['front','frontRight','right','rearRight','rear','rearLeft','left','frontLeft'];
+ car.art = {angleLayers: Object.fromEntries(slots.map((slot, i) => [slot, {
+  body: {artRef: `body-${slot}`, frameIndex: i, transforms: {bodyOffsetX: i / 3}},
+  tires: {artRef: `tires-${slot}`, transforms: {tireScaleX: 1 + i / 8, frontTireOffsetY: i / 4}}
+ }]))};
+ const before = JSON.stringify(car);
+ const bounds = {x:0,y:0,w:640,h:480};
+ e.projectRaceWorldPointToActiveThreeCamera = p => ({...p,visible:true,screenX:320+p.x*8,screenY:240-p.elevation*10,cameraZ:30,threeProjected:true});
+ e.getRaceStitchedTerrainElevationAtWorldPoint = () => 0;
+ e.getRaceShadowGroundSurfacePoint = p => p;
+ e.getRaceArtSpriteCanvas = () => ({width:16,height:16});
+ e.drawRaceGeometricDebugOverlay = () => {};
+ let layers;
+ e.drawRaceCarBillboardLayers = (_ctx, options) => { layers = options; };
+ for (const slot of slots) for (const direction of [-1, 1]) {
+  const cameraYaw = getCarViewCameraYaw(slot, 0);
+  const yaw = direction * (Math.PI / 8 + 0.01);
+  const physicsYaw = direction * (Math.PI / 8 - 0.01);
+  const expected = getCarViewSlot(yaw, cameraYaw);
+  const index = slots.indexOf(expected);
+  e.playtestSession = {runtimeCar:car,carYaw:physicsYaw,worldX:0,worldZ:10,bodyY:0.6,
+   tireSlip:{frontTireAngle:-0.2},
+   vehicleRenderState:{position:{x:0,y:0.6,z:10},yawRad:yaw,pitchRad:0,rollRad:0,wheels:{fl:{steeringAngleRad:0.3}}}};
+  e.lastRaceRenderCamera = {camera:{},cameraYaw,bounds};
+  e.drawRaceThirdPersonCar({drawImage(){}}, bounds);
+  assert.equal(layers.artChoice.viewSlot, expected, `${slot} direction ${direction}: body frame`);
+  assert.equal(layers.artChoice.artRef, `body-${expected}`);
+  assert.equal(layers.frontTireAngle, 0.3, 'tire steering also follows the rendered pose');
+  assert.equal(layers.car.art.bodyOffsetX, index / 3);
+  assert.equal(layers.car.art.frontTireOffsetY, index / 4);
+  assert.equal(layers.car.art.tireScaleX, 1 + index / 8);
+  const dynamic = e.getRacePlayerDynamicCarRenderOptions({session:e.playtestSession,car,cameraView:'third-person',cameraYaw});
+  assert.equal(dynamic.car.art.body, `body-${expected}`, 'geometry visibility uses the same view');
+  assert.equal(dynamic.car.art.frontTireOffsetY, index / 4);
+ }
+ assert.equal(JSON.stringify(car), before, 'turning does not alter saved settings');
+});

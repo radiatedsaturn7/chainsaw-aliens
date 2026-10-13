@@ -120,15 +120,15 @@ export default class Input {
 
 
   isDown(action) {
-    return (KEYMAP[action] || []).some((code) => this.keys.get(code)) || this.virtualDown.get(action);
+    return (this.actionKeymap?.[action] || KEYMAP[action] || []).some((code) => this.keys.get(code)) || this.virtualDown.get(action);
   }
 
   wasPressed(action) {
-    return (KEYMAP[action] || []).some((code) => this.pressed.has(code)) || this.virtualPressed.has(action);
+    return (this.actionKeymap?.[action] || KEYMAP[action] || []).some((code) => this.pressed.has(code)) || this.virtualPressed.has(action);
   }
 
   wasReleased(action) {
-    return (KEYMAP[action] || []).some((code) => this.released.has(code)) || this.virtualReleased.has(action);
+    return (this.actionKeymap?.[action] || KEYMAP[action] || []).some((code) => this.released.has(code)) || this.virtualReleased.has(action);
   }
 
   wasPressedCode(code) {
@@ -259,10 +259,10 @@ export default class Input {
     this.gamepadPrevActions = nextActions;
     this.gamepadActions = nextActions;
     this.gamepadAxes = {
-      leftX: axisX,
-      leftY: axisY,
-      rightX: axisRX,
-      rightY: axisRY,
+      leftX: clamp(axisX * (this.controlSensitivity || 1), -1, 1),
+      leftY: clamp(axisY * (this.controlSensitivity || 1), -1, 1),
+      rightX: clamp(axisRX * (this.controlSensitivity || 1), -1, 1),
+      rightY: clamp(axisRY * (this.controlSensitivity || 1), -1, 1),
       leftTrigger,
       rightTrigger
     };

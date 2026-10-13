@@ -9,8 +9,9 @@ export function openEditorForm(title,fields,{description=''}={}){
     const inputs={};
     for(const field of fields){
       const label=document.createElement('label');label.textContent=field.label;label.style.cssText='display:block;margin:10px 0';
-      const input=document.createElement(field.options?'select':'input');input.setAttribute('aria-label',field.label);input.style.cssText='display:block;box-sizing:border-box;width:100%;min-height:44px';
+      const input=document.createElement(field.options?'select':field.type==='textarea'?'textarea':'input');input.setAttribute('aria-label',field.label);input.style.cssText='display:block;box-sizing:border-box;width:100%;min-height:44px';
       if(field.options)for(const option of field.options){const item=document.createElement('option');item.value=option.value??option;item.textContent=option.label??option;input.appendChild(item);}
+      else if(field.type==='textarea'){input.rows=field.rows||5;}
       else{input.type=field.type||'number';if(input.type==='number')input.step=field.step||'any';}
       input.value=field.value??'';if(field.min!==undefined)input.min=field.min;if(field.max!==undefined)input.max=field.max;input.required=field.required??!field.options?.some(option=>(option.value??option)==='');label.appendChild(input);form.appendChild(label);inputs[field.id]={input,field};
     }
