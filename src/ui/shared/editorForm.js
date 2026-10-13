@@ -1,10 +1,12 @@
 // Small accessible form shared by editors for numeric and named options.
-export function openEditorForm(title,fields){
+export function openEditorForm(title,fields,{description=''}={}){
   if(typeof document==='undefined')return Promise.resolve(null);
   return new Promise(resolve=>{
     const focus=document.activeElement,dialog=document.createElement('dialog'),form=document.createElement('form');
     dialog.setAttribute('aria-label',title);dialog.style.cssText='width:min(420px,92vw);max-height:88dvh;overflow:auto;background:#19241f;color:#eef4ed;border:1px solid #53605b;border-radius:12px;padding:18px;font:16px system-ui';
-    const heading=document.createElement('h2');heading.textContent=title;form.appendChild(heading);const inputs={};
+    const heading=document.createElement('h2');heading.textContent=title;form.appendChild(heading);
+    if(description){const summary=document.createElement('p');summary.textContent=description;summary.style.whiteSpace='pre-line';form.appendChild(summary);}
+    const inputs={};
     for(const field of fields){
       const label=document.createElement('label');label.textContent=field.label;label.style.cssText='display:block;margin:10px 0';
       const input=document.createElement(field.options?'select':'input');input.setAttribute('aria-label',field.label);input.style.cssText='display:block;box-sizing:border-box;width:100%;min-height:44px';

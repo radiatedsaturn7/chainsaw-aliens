@@ -1540,6 +1540,16 @@ export const LATEST_MAJOR_WORK = {
 export const LATEST_CHANGES = [
   {
     date: '2026-10-12',
+    time: '21:43 EDT',
+    title: 'AI car pools, categories and performance classes',
+    details: [
+      'Choose available AI cars, vehicle category, performance class and a default racer in Race Settings. Matching saved cars run uniquely in random order before the default fills the remaining grid, excluding the player car.',
+      'Car Drivetrain settings now include car/truck/van/SUV categories and an estimated E–A Performance Points breakdown from engine, weight, acceleration, speed, grip, brakes and suspension.',
+      'AI racers keep their own saved tuning and graphics. Prepared terrain collision queries, cached runtime tuning and shared route samples reduce repeated AI work.'
+    ]
+  },
+  {
+    date: '2026-10-12',
     time: '03:56 EDT',
     title: '3D Object Editor and model graphics',
     details: [

@@ -1,3 +1,4 @@
+import { createPhysicsTerrainQueryFrameCache } from './simulation/PhysicsTerrainQueryFrame.js';
 import { planRaceAiDriving } from './RaceAiDriving.js';
 import { RACE_PEDAL_INPUT, RACE_THREE_ELEVATION_M } from './simulation/RaceSimulationConfig.js';
 import { RACE_WHEEL_IDS, clamp } from './simulation/SimulationMath.js';
@@ -10,6 +11,40 @@ import { syncVehicleDynamicsCompatibilityOutputs } from './simulation/VehicleSta
 import { calculateWheelContactKinematics } from './simulation/ContactPatchTireModel.js';
 import { createDeterministicAtmosphere, getRaceWakeSourcesForFrame } from './simulation/AeroEnvironment.js';
 import { applyRaceVehicleRenderSnapshot } from './simulation/RaceVehicleDynamicsWorkerBridge.js';
+
+// Runtime cars are independent, fixed race-start snapshots. Cache only those;
+// authoring cars without a snapshot still resolve their current tuning each call.
+const runtimeTuningCache = new WeakMap();
+export function getRaceAiRuntimeTuning(editor, ai, car) {
+  const transmissionType = ai.shiftMode === 'manual' ? 'manual' : 'automatic';
+  if (car !== ai.runtimeCar) return editor.getRaceCarTuning(car, { transmissionType });
+  let cached = runtimeTuningCache.get(car);
+  if (!cached) { cached = {}; runtimeTuningCache.set(car, cached); }
+  return cached[transmissionType] ||= editor.getRaceCarTuning(car, { transmissionType });
+}
+
+// Share the player's prepared terrain query path: collision sweeps can reject
+// smooth road patches without issuing hundreds of complete world queries.
+export function prepareRaceAiTerrainFrame(editor, ai, runner, state, previousState, chassisStepDt = 1 / 120) {
+  const bake = editor.playtestSession?.worldBake || editor.raceWorldBakeCache;
+  if (!bake?.surfaceSampler) return null;
+  ai.terrainQueryFrameCache ||= createPhysicsTerrainQueryFrameCache({resultCapacity:128});
+  const config = runner.config, profile = config.bodyProfile || {};
+  const reach = Math.hypot(Number(profile.overallWidthM || config.bodyWidthM || 1.8) / 2,
+    Number(profile.overallLengthM || config.bodyLengthM || 4.5) / 2,
+    Number(profile.overallHeightM || config.bodyHeightM || 1.45))
+    + Math.max(0.5, Number(config.wheelRadiusM || 0.34));
+  const x = Number(state.position?.x || 0), z = Number(state.position?.z || 0);
+  const predictedX = x + Number(state.velocity?.x || 0) * chassisStepDt;
+  const predictedZ = z + Number(state.velocity?.z || 0) * chassisStepDt;
+  const previousX = Number(previousState?.position?.x ?? x), previousZ = Number(previousState?.position?.z ?? z);
+  return ai.terrainQueryFrameCache.begin({
+    sampler:bake.surfaceSampler, revision:bake.surfaceRevision ?? bake.revision ?? bake.key ?? 0,
+    elevationScaleM:RACE_THREE_ELEVATION_M,
+    bounds:{minX:Math.min(x,previousX,predictedX)-reach,maxX:Math.max(x,previousX,predictedX)+reach,
+      minZ:Math.min(z,previousZ,predictedZ)-reach,maxZ:Math.max(z,previousZ,predictedZ)+reach}
+  });
+}
 
 export function getRaceAiAeroAwareness(wakeState = {}, { severity = 0, speedMps = 0, index = 0 } = {}) {
   const wakeIntensity = clamp(Number(wakeState.intensity || 0), 0, 1);
@@ -144,9 +179,10 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
   const surfaceModel = editor.getRaceSurfaceModel();
   const runtimeType = contactState.session.routeRuntimeType || editor.getActiveRaceRuntimeType();
   const wakeSources = getRaceWakeSourcesForFrame(editor.playtestSession, {
-    playerWidthM: Number(editor.getRaceCarTuning(editor.selectedCar)?.widthM || 1.8)
+    playerWidthM: Number(editor.playtestSession?.runtimeCarWidthM || editor.getRaceCarTuning(editor.selectedCar)?.widthM || 1.8)
   });
-  runner.environmentProvider = ({ state, controls: fixedControls, timeSeconds }) => {
+  runner.environmentProvider = ({ state, previousState, chassisStepDt, terrainQueryFrameGeneration, controls: fixedControls, timeSeconds }) => {
+    const terrainQueryFrame = prepareRaceAiTerrainFrame(editor, ai, runner, state, previousState, chassisStepDt);
     const preliminaryPatches = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [wheelId,
       calculateWheelContactKinematics({
         state,
@@ -238,7 +274,10 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
           trackStateConditionApplied: Boolean(sample)
         }];
       })),
+      physicsTerrainQueryFrame: terrainQueryFrame,
+      terrainQueryFrameGeneration,
       sampleTerrainAtWorldPoint: (worldPoint) => {
+        if (terrainQueryFrame) return terrainQueryFrame.samplePoint(worldPoint);
         const sample = surfaceModel.sampleWorld(worldPoint, 0, {
           runtimeType,
           fallbackSurfaceId: fixedContacts.contacts?.fl?.surfaceId || 'asphalt'
@@ -903,10 +942,8 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
       ? Math.max(0, Number(rollingStartSpeedMps || 0))
       : 0;
     session.aiRuntime.forEach((ai) => {
-      const car = editor.project.cars.find((candidate) => candidate.id === ai.carId) || editor.selectedCar;
-      const tuning = editor.getRaceCarTuning(car, {
-        transmissionType: ai.shiftMode === 'manual' ? 'manual' : 'automatic'
-      });
+      const car = ai.runtimeCar || editor.findRaceProjectCarById?.(ai.carId) || editor.project.cars.find((candidate) => candidate.id === ai.carId) || editor.selectedCar;
+      const tuning = getRaceAiRuntimeTuning(editor, ai, car);
       ai.rpm = tuning.idleRpm;
       ai.engineDrive = {
         throttle: 0,
@@ -959,8 +996,8 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
     return;
   }
   session.aiRuntime.forEach((ai, index) => {
-    const car = editor.project.cars.find((candidate) => candidate.id === ai.carId) || editor.selectedCar;
-    const tuning = editor.getRaceCarTuning(car, { transmissionType: ai.shiftMode === 'manual' ? 'manual' : 'automatic' });
+    const car = ai.runtimeCar || editor.findRaceProjectCarById?.(ai.carId) || editor.project.cars.find((candidate) => candidate.id === ai.carId) || editor.selectedCar;
+    const tuning = getRaceAiRuntimeTuning(editor, ai, car);
     const profile = editor.getRaceAiDifficultyProfile(ai.difficulty);
     const wakeState = ai.vehicleRenderState?.aeroState?.wake
       || ai.vehicleDynamicsPresentationState?.aeroState?.wake

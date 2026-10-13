@@ -52,10 +52,11 @@ export function planRaceAiDriving(editor, ai, tuning, {
   // actual route headings so imported node-based tracks work too.
   const horizon = clamp(speed * speed / (2 * deceleration) + speed + 35, 45, 320);
   let targetSpeedMps = Math.max(0, topSpeedMps);
+  let a = samplePose(0);
   for (let ahead = 0; ahead <= horizon; ahead += 8) {
-    const a = samplePose(ahead);
     const b = samplePose(ahead + 8);
     const curvature = Math.abs(angleDifference(b.yaw || 0, a.yaw || 0)) / 8;
+    a = b; // Adjacent segments share their endpoint; avoid duplicate route queries.
     const cornerSpeed = Math.sqrt(lateralAcceleration / Math.max(0.00001, curvature));
     const brakingRoom = Math.max(0, ahead - speed * 0.45 - 3);
     targetSpeedMps = Math.min(targetSpeedMps,

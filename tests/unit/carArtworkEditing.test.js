@@ -103,3 +103,59 @@ test('dynamic-fixed camera stays quantized in the live simulation during a slide
   const steps=(e.playtestSession.cameraYaw-e.playtestSession.carYaw)/(Math.PI/4);
   assert.ok(Math.abs(steps-Math.round(steps))<1e-8,`bearing ${steps}`);
 });
+
+test('dynamic-fixed camera rejects noisy 45/90 boundary samples but follows a sustained drift',()=>{
+  const e=editor();e.setCarCameraTrackingMode('dynamic-fixed');
+  const session={carId:e.getRaceCarProjectIdentity(e.selectedCar),runtimeCar:e.selectedCar,speedMps:25,carYaw:0,velocityYaw:Math.PI/4,pixelArtCameraBearing:Math.PI/4};
+  const sample=degrees=>{session.velocityYaw=degrees*Math.PI/180/0.995;return e.getRacePlaytestCameraYaw(session,{smooth:true,seconds:1/60});};
+  for(let i=0;i<120;i++)assert.equal(sample(i%2?57:78),Math.PI/4);
+  for(let i=0;i<9;i++)sample(85);
+  assert.equal(session.pixelArtCameraBearing,Math.PI/2);
+  for(let i=0;i<120;i++)assert.equal(sample(i%2?57:78),Math.PI/2);
+  for(let i=0;i<9;i++)sample(45);
+  assert.equal(session.pixelArtCameraBearing,Math.PI/4);
+});
+
+test('dynamic-fixed camera keeps authored wheel perspective centered throughout a sideways drift',()=>{
+  const e=editor();e.setCarCameraTrackingMode('dynamic-fixed');
+  const session={carId:e.getRaceCarProjectIdentity(e.selectedCar),runtimeCar:e.selectedCar,startedAt:1,elapsedMs:0,speedMps:25,carYaw:0,velocityYaw:1.2,tireSlip:{rearBreakaway:1}};
+  for(let i=0;i<90;i++){
+    session.elapsedMs=i*1000/60;
+    const x=i*0.3,z=i*0.1;
+    const anchor=e.getRaceThirdPersonCameraAnchor(session,{carWorldX:x,carWorldZ:z,cameraYaw:Math.PI/4,cameraView:'third-person',routeCamera:{x:0,z:0}});
+    assert.equal(anchor.x,x);assert.equal(anchor.z,z);
+    assert.equal(anchor.lateralOffsetM,0);assert.equal(anchor.forwardOffsetM,0);
+  }
+  session.runtimeCar.camera.trackingMode='dynamic';session.elapsedMs+=1000/60;
+  const dynamic=e.getRaceThirdPersonCameraAnchor(session,{carWorldX:30,carWorldZ:9,cameraYaw:Math.PI/4,cameraView:'third-person',routeCamera:{x:0,z:0}});
+  assert.notEqual(dynamic.lateralOffsetM,0,'continuous dynamic camera retains its intended drift lag');
+});
+
+test('all eight dynamic-fixed views retain wheel-to-body projected placement under lateral travel',()=>{
+  const e=editor();e.setCarCameraTrackingMode('dynamic-fixed');
+  const car=e.selectedCar,bounds={x:0,y:0,w:800,h:600};
+  e.getRaceArtSpriteCanvas=()=>({width:16,height:32});
+  const dimensions=e.getRaceCarDimensions(car);
+  for(let view=0;view<8;view++){
+    const cameraYaw=view*Math.PI/4;
+    const session={runtimeCar:car,carYaw:0,speedMps:25,velocityYaw:1.2,startedAt:1,tireSlip:{rearBreakaway:1},elapsedMs:0};
+    let baseline;
+    for(let frame=0;frame<20;frame++){
+      session.elapsedMs=frame*1000/60;
+      const x=frame*0.25,z=frame*0.05;
+      const anchor=e.getRaceThirdPersonCameraAnchor(session,{carWorldX:x,carWorldZ:z,cameraYaw,cameraView:'third-person',routeCamera:{x:0,z:0}});
+      const distance=e.getRaceThirdPersonChaseDistance(car);
+      const camera={x:anchor.x-Math.sin(cameraYaw)*distance,z:anchor.z-Math.cos(cameraYaw)*distance,elevation:0.2};
+      const projectPoint=point=>e.projectRaceWorldPointToCamera(point,camera,cameraYaw,bounds);
+      const body=e.getRaceCarRearAxleBodyAnchor({x,z,elevation:0.05,yaw:0},car);
+      const bodyPoint=projectPoint(body);
+      const bodyWidth=e.getRaceProjectedPhysicalBodyBillboardWidth({car,...body,cameraYaw,projectPoint,bounds});
+      const wheelCenters=Object.fromEntries(['fl','fr','rl','rr'].map(id=>[id,{x:x+(id.endsWith('r')?1:-1)*dimensions.trackWidthM/2,z:z+(id.startsWith('f')?1:-1)*dimensions.wheelbaseM/2,elevation:0.025}]));
+      const wheels=e.getRaceProjectedPhysicalWheelBillboards({car,wheelCenters,projectPoint});
+      const actual=Object.values(wheels).flatMap(w=>[(w.x-bodyPoint.screenX)/bodyWidth,(w.y-bodyPoint.screenY)/bodyWidth,w.width/bodyWidth,w.height/bodyWidth]);
+      assert.equal(actual.length,16);
+      if(!baseline)baseline=actual;
+      else actual.forEach((n,i)=>assert.ok(Math.abs(n-baseline[i])<1e-9,`view ${view}, wheel component ${i} shifted while drifting`));
+    }
+  }
+});

@@ -1,3 +1,6 @@
+import { CAR_CATEGORIES, CAR_PERFORMANCE_CLASSES, carCategory, calculateCarPerformance, normalizeAiCarSelection, selectEligibleRaceAiCars } from '../racing/CarPerformance.js';
+import { openEditorForm } from './shared/editorForm.js';
+import { applyCarImportPlacementDefaults } from '../racing/CarImportPlacementDefaults.js';
 import {syncRaceModelTiles} from '../model3d/RaceModelTiles.js';
 import {ensureModelSceneLighting} from '../model3d/ModelRender.js';
 import {modelAssets,ModelAssetInstance} from '../model3d/ModelAssets.js';
@@ -6132,6 +6135,8 @@ export default class RaceEditor {
       'diagnostic-ai-laps': 'AI Laps',
       'ghost-compare': 'Ghost Compare',
       'ai-fill-grid': 'Fill AI Grid',
+      'car-category': 'Category & Performance',
+      'race-ai-cars': 'AI Cars & Classes',
       'ai-count': `AI Racers: ${this.getRaceAiCount()}`,
       'race-sun': `Sun: ${Math.round(this.getRaceSunSettings().angleDeg)}deg`,
       'race-weather': 'Weather',
@@ -7535,7 +7540,7 @@ export default class RaceEditor {
   }
 
   isActionAvailable(action) {
-    return RACE_EDITOR_AVAILABLE_ACTIONS.has(action);
+    return ['car-category', 'race-ai-cars'].includes(action) || RACE_EDITOR_AVAILABLE_ACTIONS.has(action);
   }
 
   loadBuiltInRace(action) {
@@ -7605,6 +7610,7 @@ export default class RaceEditor {
     clone.road.nodes = Array.isArray(clone.road.nodes) ? clone.road.nodes : [];
     clone.road.segments = Array.isArray(clone.road.segments) ? clone.road.segments : [];
     clone.competition = clone.competition && typeof clone.competition === 'object' ? clone.competition : { mode: 'solo', aiDrivers: [] };
+    clone.competition.carSelection = normalizeAiCarSelection(clone.competition.carSelection);
     clone.hazards = Array.isArray(clone.hazards) ? clone.hazards : [];
     clone.scenery = Array.isArray(clone.scenery)
       ? clone.scenery.filter((sprite) => Number.isFinite(Number(sprite?.x)) && Number.isFinite(Number(sprite?.z)))
@@ -7802,6 +7808,7 @@ export default class RaceEditor {
     clone.id = String(clone.id || (cleanName ? cleanName.toLowerCase().replace(/\s+/g, '-') : '') || `car-${Date.now().toString(36)}`);
     clone.name = String(clone.name || fallbackName || clone.id);
     clone.class = String(clone.class || 'road');
+    clone.category = carCategory(clone);
     clone.art = clone.art && typeof clone.art === 'object' ? clone.art : {};
     clone.art.bodyModel=normalizeModelBinding(clone.art.bodyModel);
     clone.art.wheelModel=normalizeModelBinding(clone.art.wheelModel);
@@ -8252,8 +8259,7 @@ export default class RaceEditor {
       if (!saved) throw new Error('Could not save imported graphic');
       const persisted = await saved.syncPromise;
       if (!persisted || persisted.persisted === false) throw new Error(persisted?.reason || 'Could not persist imported graphic');
-      if (component === 'tires') assignCarTireSheet(car, name, result.document, result.tireFrames);
-      else assignCarSheet(car, component, name, result.mapping, result.document);
+      this.assignImportedCarGraphic(car, component, name, result);
       this.raceCarBillboardLayerCache?.clear?.();
       this.raceCarTireScrollCache?.clear?.();
       this.syncCarAnglePreviewArt(car);
@@ -8266,6 +8272,14 @@ export default class RaceEditor {
     }
   }
 
+  assignImportedCarGraphic(car, component, name, result) {
+    const previousLayers = structuredClone(car.art?.angleLayers || {});
+    this.captureRaceHistory('Import car graphic');
+    if (component === 'tires') assignCarTireSheet(car, name, result.document, result.tireFrames);
+    else assignCarSheet(car, component, name, result.mapping, result.document);
+    if (this.editorId === 'car') applyCarImportPlacementDefaults(car, component, previousLayers);
+  }
+
   async selectCarTire() {
     const selected = await openTireLibrary({allowEditor:true,currentRef:this.selectedCar?.setup?.tireDefinition?.ref || ''});
     if (!selected) return;
@@ -8275,7 +8289,9 @@ export default class RaceEditor {
 
   applySelectedCarTire(tire, ref = '') {
     this.captureRaceHistory('Apply Tire');
+    const previousLayers = structuredClone(this.selectedCar.art?.angleLayers || {});
     const applied = applyTireDefinition(this.selectedCar, tire, ref);
+    applyCarImportPlacementDefaults(this.selectedCar, 'tires', previousLayers);
     this.raceCarBillboardLayerCache?.clear?.();
     this.raceCarTireScrollCache?.clear?.();
     this.syncCarAnglePreviewArt();
@@ -8573,6 +8589,8 @@ export default class RaceEditor {
       else this.openRaceDocument();
       return;
     }
+    if (action === 'car-category') { void this.openCarCategorySettings(); return; }
+    if (action === 'race-ai-cars') { void this.openRaceAiCarSettings(); return; }
     if (action === 'test-drive') {
       this.openPlaytestPicker();
       return;
@@ -9425,6 +9443,42 @@ export default class RaceEditor {
         enabled: true
       };
     });
+  }
+
+  getRaceAiCarSelection() {
+    const rules = normalizeAiCarSelection(this.selectedRace?.competition?.carSelection);
+    if (rules.availableCarIds === null) {
+      const stockNames = new Set(createBuiltInRaceCars().map(car => car.name));
+      rules.availableCarIds = this.project.cars.filter(car => car.__playtestDocumentName && !stockNames.has(car.__playtestDocumentName)).map(car => this.getRaceCarProjectIdentity(car));
+    }
+    return rules;
+  }
+
+  async openCarCategorySettings() {
+    const car = this.selectedCar, rating = calculateCarPerformance(car);
+    const result = await openEditorForm(`Category · ${rating.class} · ${rating.points} PP (estimated)`, [
+      {id:'category',label:'Vehicle category',value:carCategory(car),options:CAR_CATEGORIES.map(value=>({value,label:value.toUpperCase()}))}
+    ], {description:`Estimated game-balance rating, recalculated from current tuning.\nEngine / weight: ${rating.components.engineWeight}/350 · Acceleration: ${rating.components.acceleration}/180 · Top speed: ${rating.components.speed}/180\nGrip: ${rating.components.grip}/140 · Brakes: ${rating.components.brakes}/100 · Suspension: ${rating.components.suspension}/50\nE: 0–199 · D: 200–399 · C: 400–599 · B: 600–799 · A: 800–1000 PP`});
+    if (!result) return;
+    this.captureRaceHistory('Car category');car.category=result.category;
+    this.status=`${rating.class} · ${rating.points} PP · ${result.category}. Save the car to keep its category.`;
+  }
+
+  async openRaceAiCarSettings() {
+    this.hydrateProjectCarsFromSavedFiles();
+    const rules=this.getRaceAiCarSelection(),cars=this.project.cars;
+    const describe=car=>{const r=calculateCarPerformance(car);return `${car.__playtestDocumentName || car.name} · ${carCategory(car)} · ${r.class} ${r.points} PP`;};
+    const result=await openEditorForm('AI Cars & Classes',[
+      {id:'category',label:'Vehicle category',value:rules.category,options:[{value:'any',label:'Any category'},...CAR_CATEGORIES]},
+      {id:'performanceClass',label:'Performance class',value:rules.performanceClass,options:[{value:'any',label:'Any class'},...CAR_PERFORMANCE_CLASSES]},
+      {id:'defaultCarId',label:'Default racer after unique cars',value:rules.defaultCarId,options:[{value:'',label:'Automatic fallback'},...cars.map(car=>({value:this.getRaceCarProjectIdentity(car),label:describe(car)}))]},
+      ...cars.map((car,index)=>({id:`car${index}`,label:describe(car),value:rules.availableCarIds.includes(this.getRaceCarProjectIdentity(car))?'yes':'no',options:[{value:'yes',label:'Available'},{value:'no',label:'Excluded'}]}))
+    ], {description:'Available cars must match both filters. Each runs once in random order; your selected player car is excluded. Remaining slots use the default racer, even outside the filters. If the default is your car or unavailable, another car is used. Save the race to keep these settings.'});
+    if(!result)return;
+    this.captureRaceHistory('AI car selection');
+    this.selectedRace.competition ||= {};
+    this.selectedRace.competition.carSelection=normalizeAiCarSelection({...result,availableCarIds:cars.filter((car,index)=>result[`car${index}`]==='yes').map(car=>this.getRaceCarProjectIdentity(car))});
+    this.status='AI pool updated. Matching cars run once each, excluding the player; remaining slots use the default racer.';
   }
 
   fillRaceAiGrid() {
@@ -11760,6 +11814,7 @@ export default class RaceEditor {
       const right = this.getRaceRightVector(pose.yaw);
       return {
         ...ai,
+        runtimeCar: this.materializeRaceRuntimeCar(car),
         distance,
         awaitingStartLine: this.getSelectedRaceRuntimeType() === 'circuit',
         projectedDistance: distance,
@@ -12718,8 +12773,9 @@ export default class RaceEditor {
     const aiDrivers = this.selectedRace.competition?.aiDrivers?.filter((driver) => driver.enabled) || [];
     const hazards = this.selectedRace.hazards || [];
     const diagnosticMode = this.pendingDiagnosticMode || this.selectedRace.diagnosticMode || null;
-    const gridCars = selectRaceAiCars(this.project.cars, Math.min(11, aiDrivers.length));
-    const normalizedAiDrivers = aiDrivers.slice(0, 11).map((driver, index) => this.normalizeRaceAiDriver({
+    const rules = this.getRaceAiCarSelection();
+    const gridCars = selectEligibleRaceAiCars(this.project.cars, Math.min(11, aiDrivers.length), { playerCarId: playtestCarId, selection: rules });
+    const normalizedAiDrivers = aiDrivers.slice(0, gridCars.length).map((driver, index) => this.normalizeRaceAiDriver({
       ...driver, carId: gridCars[index] || this.selectedCar?.id
     }, index));
     const raceStart = this.getRaceStartSettings();
@@ -12729,6 +12785,7 @@ export default class RaceEditor {
       raceDocumentName,
       carId: playtestCarId,
       runtimeCar: car,
+      runtimeCarWidthM: tuning.widthM,
       startedAt: Date.now(),
       elapsedMs: 0,
       sceneElapsedMs: 0,
@@ -13886,6 +13943,15 @@ export default class RaceEditor {
       return { x: carX, z: carZ, snapped: true, lateralOffsetM: 0, forwardOffsetM: 0 };
     }
     const car = this.getRaceSessionCar(session);
+    if (this.getCarCameraTrackingMode(car) === 'dynamic-fixed') {
+      // Eight-view sprites are authored with a centered camera. Sideways
+      // chase lag changes hub perspective independently of the flat body,
+      // even when camera yaw is exactly on a 45-degree bearing.
+      session.thirdPersonCameraAnchor = {
+        x: carX, z: carZ, elapsedMs: Number(session.elapsedMs || 0), resetKey: session.startedAt
+      };
+      return { x: carX, z: carZ, snapped: true, anchorType: 'sprite-center', lateralOffsetM: 0, forwardOffsetM: 0 };
+    }
     if (this.getCarCameraTrackingMode(car) === 'fixed-rear') {
       const rearAxle = this.getRaceCarRearAxleBodyAnchor({
         x: carX,
@@ -17145,8 +17211,9 @@ export default class RaceEditor {
     this.captureRaceHistory('Camera tracking');
     car.camera.trackingMode = ['fixed-rear', 'dynamic-fixed'].includes(mode) ? mode : 'dynamic';
     const session = this.playtestSession;
-    if (session?.carId === car.id) {
+    if (session?.carId === this.getRaceCarProjectIdentity(car)) {
       delete session.pixelArtCameraBearing;
+      delete session.pixelArtCameraCandidate;
       delete session.thirdPersonCameraAnchor;
       delete session.thirdPersonCameraPlacement;
       delete session.thirdPersonCameraChaseDistanceM;
@@ -17210,9 +17277,20 @@ export default class RaceEditor {
       const step = Math.PI / 4;
       const relative = normalizeAngle(targetYaw - carYaw);
       const previous = session?.pixelArtCameraBearing;
-      const bearing = Number.isFinite(previous)
-        && Math.abs(normalizeAngle(relative - previous)) < step / 2 + 0.06
+      const candidate = Number.isFinite(previous)
+        && Math.abs(normalizeAngle(relative - previous)) < step / 2 + Math.PI / 22.5
         ? previous : Math.round(relative / step) * step;
+      let bearing = candidate;
+      if (session && smooth && Number.isFinite(previous) && candidate !== previous) {
+        // Require a sustained new view, rather than reacting to each noisy
+        // physics sample at the boundary. Keep projection exactly quantized.
+        const pending = session.pixelArtCameraCandidate;
+        const age = (pending?.bearing === candidate ? pending.age : 0)
+          + clamp(Number(seconds) || 0, 0, 0.05);
+        session.pixelArtCameraCandidate = { bearing: candidate, age };
+        if (age < 0.12) bearing = previous;
+        else delete session.pixelArtCameraCandidate;
+      } else if (session) delete session.pixelArtCameraCandidate;
       if (session) session.pixelArtCameraBearing = bearing;
       return normalizeAngle(carYaw + bearing);
     }

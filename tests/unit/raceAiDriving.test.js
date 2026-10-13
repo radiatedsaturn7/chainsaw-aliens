@@ -75,13 +75,18 @@ test('pure pursuit follows a full geometric circle without a curve metadata hint
 
 test('starting a race randomizes actual runtime cars and places separate opponents on the track', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  const playerId=editor.getRaceCarProjectIdentity(editor.selectedCar);
+  const savedCars=['WRX4','Buse','pz-24'].map((name,index)=>{const saved=editor.withSavedRaceCarRuntimeIdentity(structuredClone(editor.selectedCar),name);saved.tuning.powerHp=200+index*100;editor.upsertRaceProjectCar(saved);return saved;});
+  editor.selectedRace.competition.carSelection={availableCarIds:savedCars.map(car=>editor.getRaceCarProjectIdentity(car)),defaultCarId:editor.getRaceCarProjectIdentity(savedCars[1])};
   editor.setRaceAiCount(4);
   const savedDrivers = structuredClone(editor.selectedRace.competition.aiDrivers);
   editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false });
   const runtime = editor.playtestSession.aiRuntime;
   assert.equal(runtime.length, 4);
-  assert.equal(new Set(runtime.slice(0, Math.min(4, editor.project.cars.length)).map((ai) => ai.carId)).size,
-    Math.min(4, editor.project.cars.length));
+  assert.equal(new Set(runtime.slice(0,3).map(ai=>ai.carId)).size,3);
+  assert.equal(runtime[3].carId,editor.getRaceCarProjectIdentity(savedCars[1]));
+  assert.ok(runtime.every(ai=>ai.carId!==playerId));
+  for(const ai of runtime)assert.equal(ai.runtimeCar.__playtestId,ai.carId);
   assert.deepEqual(runtime.map((ai) => ai.carId), editor.playtestSession.aiDrivers.map((ai) => ai.carId));
   assert.deepEqual(editor.selectedRace.competition.aiDrivers, savedDrivers);
   assert.equal(new Set(runtime.map((ai) => `${ai.worldX},${ai.worldZ}`)).size, 4);
@@ -160,4 +165,12 @@ test('crossing the grid start does not award an extra lap, including rolling sta
   editor.updateRaceAiDrivers(1 / 60, { preStartMode: 'rolling', rollingStartSpeedMps: 10 });
   assert.equal(ai.lap, 1);
   assert.equal(ai.awaitingStartLine, false);
+});
+
+test('AI braking lookahead reuses segment endpoints instead of sampling them twice',()=>{
+  const e=road();let samples=0;const original=e.getRaceWorldPoseAtDistance;
+  e.getRaceWorldPoseAtDistance=(...args)=>{samples++;return original(...args);};
+  const plan=planRaceAiDriving(e,racer({speedMps:100}),car,{topSpeedMps:100});
+  assert.equal(plan.targetSpeedMps,100);
+  assert.equal(samples,43,'one steering sample plus 42 distinct endpoints across a 320 metre braking horizon');
 });

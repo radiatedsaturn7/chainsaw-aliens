@@ -35,6 +35,9 @@ jobs:
       - name: Run editor and race regression unit tests
         run: node --test tests/unit/editorMenuLayout.test.js tests/unit/editorMenuSpec.test.js tests/unit/portraitEditorMenuModels.test.js tests/unit/raceImageTrace.test.js tests/unit/raceImportedCircuitRegression.test.js tests/unit/raceTireTrackRenderer.test.js tests/unit/steeringCommandMapping.test.js tests/unit/racePauseRestart.test.js
 
+      - name: Run AI car selection and driving tests
+        run: node --test tests/unit/carPerformance.test.js tests/unit/raceAiCarSelectionPersistence.test.js tests/unit/raceAiDriving.test.js
+
       - name: Run 3D model editor and runtime tests
         run: node --test tests/unit/model3d*.test.js
 
