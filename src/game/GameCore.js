@@ -1858,6 +1858,7 @@ export default class Game {
       this.showSystemToast?.('Race start cancelled.');
       return false;
     }
+    if (params.menuFlow && (!params.menuFlow.active || params.menuFlow !== this.menuPlayer?.flow)) return false;
     const runtimeCar = car.car || car;
     const engineSfxRef = String(runtimeCar.audio?.engineSoundId || '').trim();
     const engineSfxPreparation = this.prepareRacePlaytestAudio({
@@ -2662,6 +2663,10 @@ export default class Game {
 
   returnToEditorFromPlaytest() {
     if (!this.playtestActive) return;
+    if (this.menuPlayer?.preview && this.menuPlayer.previewSnapshot && this.menuPlayer.flow?.active) {
+      this.menuPlayer.flow.stop();
+      return;
+    }
     if (this.actorEditorTestSnapshot) {
       const snapshot = this.actorEditorTestSnapshot;
       this.actorEditorTestSnapshot = null;
@@ -3500,7 +3505,7 @@ export default class Game {
     if (this.state === 'menu-editor' || this.state === 'menu-player') {
       const target = this.state === 'menu-editor' ? this.menuEditor : this.menuPlayer;
       target.update(this.input, dt);
-      this.updateActiveMusicPlayers(dt);
+      if (!(this.state === 'menu-player' && target.paused)) this.updateActiveMusicPlayers(dt);
       this.input.flush();
       return;
     }

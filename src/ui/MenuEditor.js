@@ -12,7 +12,7 @@ import {openEditorForm,chooseEditorFiles} from './shared/editorForm.js';
 import {openProjectBrowser} from './ProjectBrowserModal.js';
 import {saveProjectFileAndConfirm,listProjectFiles} from './projectFiles.js';
 import {saveServerPreference} from './serverPreferences.js';
-import {drawSharedDesktopContextPanel,drawSharedPanel} from './uiSuite.js';
+import {drawSharedDesktopContextPanel,drawSharedPanel,drawSharedPlayStopButton} from './uiSuite.js';
 
 const label=id=>id.split('-').map(s=>s[0].toUpperCase()+s.slice(1)).join(' ');
 const text=(id,label,value,required=false)=>({id,label,value,type:'text',required});
@@ -46,7 +46,7 @@ export default class MenuEditor extends RaceEditor {
   drawLandscapeToolOptions(ctx,bounds){
     drawSharedDesktopContextPanel(ctx,bounds,{title:`${this.screen.name} · ${this.element?.label||'Select a widget'}`,lines:[],contentRoles:['status'],status:this.status});
   }
-  drawRaceTopPlayControl(){}
+  drawRaceTopPlayControl(ctx,bounds){drawSharedPlayStopButton(ctx,bounds);this.buttons.push({id:'menu-play',bounds:{...bounds,id:'menu-play'},onClick:()=>this.handleMenuAction('menu-preview')});}
   drawLandscapeRaceMapThumbstick(){}
   updateCarEditorPreviewPlaytest(){} updateCarEditorPreviewSelectHold(){return false} ensureCarEditorPreviewPlaytestSession(){return null}
   update(input,dt){

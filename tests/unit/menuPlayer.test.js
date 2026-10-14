@@ -21,8 +21,8 @@ test('real race adapter forwards selected car, difficulty and arbitrary customiz
  const {player,game,calls}=fixture();await player.open(createMenuDocument());player.flow.setParameter('carRef','WRX4');player.flow.setParameter('weapons',['chainsaw']);player.flow.setParameter('character.color','#00ff00');
  await player.flow.run({type:'race',target:'Hill'});const params=calls.find(c=>c[0]==='race')[1];assert.equal(params.raceName,'Hill');assert.equal(params.carRef,'WRX4');assert.equal(params.carSelection,'specific');assert.deepEqual(params.menuConfiguration.weapons,['chainsaw']);assert.equal(game.menuParameters['character.color'],'#00ff00');
 });
-test('preview reports destinations and returns to the editor without starting a race',async()=>{
- const {player,calls}=fixture();await player.open(createMenuDocument(),{preview:true});await player.flow.run({type:'race',target:'Hill'});assert.match(player.message,/Preview: launch race/);assert.equal(calls.some(c=>c[0]==='race'),false);player.flow.stop();assert.deepEqual(calls.at(-1),['state','menu-editor']);
+test('preview launches a real race and restores authoring state on exit',async()=>{
+ const {player,game,calls}=fixture();game.playtestActive=false;game.storyData={name:'Original'};await player.open(createMenuDocument(),{preview:true});await player.flow.run({type:'race',target:'Hill'});assert.equal(calls.some(c=>c[0]==='race'),true);assert.equal(game.playtestActive,true);game.storyData={name:'Preview'};player.flow.stop();assert.deepEqual(calls.at(-1),['state','menu-editor']);assert.equal(game.playtestActive,false);assert.equal(game.storyData.name,'Original');
 });
 test('HTML movie ending launches the following race; cancellation never launches it',async()=>{
  const previous=globalThis.document;const videos=[];globalThis.document={createElement:()=>{const video={play:async()=>{},pause(){},load(){},removeAttribute(){}};videos.push(video);return video}};
@@ -68,3 +68,5 @@ test('shared touch controller navigates, confirms and exits preview; physical pa
 });
 
 test('physical B returns from a nested menu screen',async()=>{const {player}=fixture();await player.open(createMenuDocument(),{preview:true});player.flow.goTo('cars');player.update(input([],['gamepadB']),0.01);assert.equal(player.flow.screenId,'splash');});
+
+test('preview pause freezes navigation and animation until resumed',async()=>{const {player}=fixture();await player.open(createMenuDocument(),{preview:true});player.update(input(),0.2);const time=player.flow.time;player.togglePause();player.update(input(['Enter']),1);assert.equal(player.flow.time,time);assert.equal(player.flow.screenId,'splash');player.togglePause();player.update(input(['Enter']),0.1);await Promise.resolve();assert.equal(player.flow.screenId,'cars');});

@@ -1,3 +1,4 @@
+import {drawSharedPlayStopButton} from '../ui/uiSuite.js';
 import {MenuPreviewSurface} from './MenuPreviewSurface.js';
 import {menuPaintOrder,menuElementVisible,fitMenuCanvas} from './MenuLayout.js';
 import {MenuFlow} from './MenuFlow.js';
@@ -12,19 +13,23 @@ export default class MenuPlayer {
   constructor(game){this.game=game;this.surface=new MenuPreviewSurface(game);this.resources=new MenuResources(game);this.settings=new MenuSettings(game);this.videos=new Map();this.cutscene=new CutscenePlayer(game);this.mediaGeneration=0;this.focus=0;this.preview=false;this.message='';this.flow=null;}
   async open(document,{preview=false,screenId=null}={}){
     if(this.flow){this.flow.active=false;this.flow.generation++;}
-    this.cleanup();if(typeof window!=='undefined'){this.tabListener=event=>{if(this.game.state==='menu-player'&&event.code==='Tab'&&!this.capturing)event.preventDefault();};window.addEventListener('keydown',this.tabListener);}
-    this.preview=preview;this.message='';this.focus=0;
+    this.restorePreview();this.cleanup();if(typeof window!=='undefined'){this.tabListener=event=>{if(this.game.state==='menu-player'&&event.code==='Tab'&&!this.capturing)event.preventDefault();};window.addEventListener('keydown',this.tabListener);}
+    this.preview=preview;this.paused=false;this.message='';this.focus=0;
+    if(preview)this.previewSnapshot={worldData:this.game.buildWorldData?.(),menuParameters:this.game.menuParameters,storyData:this.game.storyData,gameMode:this.game.gameMode,playtestActive:this.game.playtestActive,simulationActive:this.game.simulationActive};
     await this.settings.load();
     this.flow=new MenuFlow(document,{
       parameterChanged:(key,value)=>{void this.settings.set(key,value).catch(error=>{if(this.flow)this.flow.error=error.message})},
-      screenChanged:()=>this.enterScreen(),stop:()=>{this.cleanup();this.game.transitionTo(this.preview?'menu-editor':'title',{forceCleanup:true})},
+      screenChanged:()=>this.enterScreen(),stop:()=>{this.cleanup();this.restorePreview();this.game.transitionTo(this.preview?'menu-editor':'title',{forceCleanup:true})},
       playMovie:(ref)=>this.playMovie(ref),launchRace:(ref,params)=>this.launchRace(ref,params),launchLevel:(ref,params)=>this.launchLevel(ref,params)
     });
     if(preview&&this.flow.document.screens.some(s=>s.id===screenId))this.flow.screenId=screenId;
     Object.assign(this.flow.parameters,this.settings.parameters());this.game.transitionTo('menu-player',{forceCleanup:true});this.enterScreen();
   }
+  restorePreview(){const snapshot=this.previewSnapshot;if(!snapshot)return;this.previewSnapshot=null;if(snapshot.worldData)this.game.applyWorldData(snapshot.worldData);for(const key of ['menuParameters','storyData','gameMode','playtestActive','simulationActive'])this.game[key]=snapshot[key];this.game.raceEditorPlaytestReturn=false;this.game.raceTravelSession=null;}
+  releasePauseAudio(){const context=this.pausedAudioContext;this.pausedAudioContext=null;if(context)void context.resume().catch(()=>{});}
+  togglePause(){if(!this.preview||(this.flow.busy&&!this.cutscene.active&&!this.movie))return;this.paused=!this.paused;if(this.paused){const context=this.game.audio?.ctx;if(context?.state==='running'){this.pausedAudioContext=context;void context.suspend().catch(()=>{});}this.pausedVideos=[...this.videos.values(),this.movie].filter(v=>v&&!v.paused);for(const v of this.pausedVideos)v.pause();}else{this.releasePauseAudio();for(const v of this.pausedVideos||[])void v.play().catch(()=>{});this.pausedVideos=[];}}
   cleanupScreen(){this.mediaGeneration++;this.choicePopup=null;this.slider=null;this.game.setActiveMusicTrack?.(null);for(const video of this.videos.values()){video.pause();video.removeAttribute('src');video.load();}this.videos.clear();}
-  cleanup(){if(this.tabListener&&typeof window!=='undefined')window.removeEventListener('keydown',this.tabListener);this.tabListener=null;this.surface.reset();this.resources.carPreview.dispose();this.cleanupScreen();this.cancelKeyCapture();if(this.cutscene.active){this.cutscene.onDone=null;this.cutscene.stop();}if(this.movie){this.movie.pause();this.movie.removeAttribute('src');this.movie.load();this.movie=null;}this.rejectMovie?.(Error('Playback cancelled'));this.rejectMovie=null;this.resolveMovie=null;}
+  cleanup(){this.releasePauseAudio();if(this.tabListener&&typeof window!=='undefined')window.removeEventListener('keydown',this.tabListener);this.tabListener=null;this.surface.reset();this.resources.carPreview.dispose();this.cleanupScreen();this.cancelKeyCapture();if(this.cutscene.active){this.cutscene.onDone=null;this.cutscene.stop();}if(this.movie){this.movie.pause();this.movie.removeAttribute('src');this.movie.load();this.movie=null;}this.rejectMovie?.(Error('Playback cancelled'));this.rejectMovie=null;this.resolveMovie=null;}
   enterScreen(){
     this.cleanupScreen();this.focus=0;this.message='';const flow=this.flow,screen=flow.screen,generation=this.mediaGeneration;
     for(const e of screen.elements){if(e.type==='choice'&&e.binding){const choices=e.source?this.resources.choices(e.source,flow.document):e.options;if(choices.length&&!choices.some(o=>JSON.stringify(o.value)===JSON.stringify(flow.parameters[e.binding])))flow.setParameter(e.binding,choices[0].value);}
@@ -34,7 +39,7 @@ export default class MenuPlayer {
   }
   interactive(){return (this.flow?menuPaintOrder(this.flow.screen.elements).filter(e=>menuElementVisible(e,this.flow.screen.elements)&&menuElementInteractive(e)).sort((a,b)=>(a.tabOrder||Infinity)-(b.tabOrder||Infinity)):[])||[]}
   async activate(element,direction=1,{choose=false}={}){
-    if(!element||this.flow.busy||this.capturing)return;
+    if(!element||this.paused||this.flow.busy||this.capturing)return;
     if(element.type==='button')return this.flow.run(element.action);
     if(element.type==='keybind')return this.captureKey(element.binding);
     if(!element.binding){this.flow.error='This control needs a parameter binding';return;}
@@ -47,10 +52,13 @@ export default class MenuPlayer {
   cancelKeyCapture(){if(this.keyListener&&typeof window!=='undefined')window.removeEventListener('keydown',this.keyListener,true);this.keyListener=null;this.capturing=null;}
   captureKey(binding){if(!binding.startsWith('input.')){this.flow.error='Use an input.action binding for key mapping';return;}this.cancelKeyCapture();this.capturing=binding;this.message='Press a key (Escape cancels)';this.keyListener=event=>{event.preventDefault();event.stopImmediatePropagation();if(event.code!=='Escape')this.flow.setParameter(binding,event.code);this.cancelKeyCapture();this.game.input?.reset?.();this.message='';};window.addEventListener('keydown',this.keyListener,true);}
   update(input,dt){
-    const flow=this.flow;if(!flow?.active)return;flow.update(dt);
+    const flow=this.flow;if(!flow?.active)return;
     const touch=this.surface.pressed(),mapping={dpadUp:'up',dpadDown:'down',dpadLeft:'left',dpadRight:'right',jump:'jump',cancel:'attack',gamepadStart:'pause'};
     const pressed=code=>input?.wasPressedCode?.(code),pad=action=>input?.wasGamepadPressed?.(action)||(action==='cancel'&&input?.wasGamepadPressed?.('gamepadB'))||touch(mapping[action]);
     if(this.preview&&(input?.wasGamepadPressed?.('gamepadSelect')||touch('nextWeapon'))){flow.stop();return;}
+    if(this.preview&&pressed('KeyP'))this.togglePause();
+    if(this.paused){if(pressed('Escape')||pad('cancel'))flow.stop();return;}
+    flow.update(dt);
     if(this.capturing)return;
     if(this.choicePopup){const popup=this.choicePopup;if(pressed('Escape')||pad('cancel')){this.choicePopup=null;return;}if(pressed('ArrowDown')||pad('dpadDown'))popup.index=(popup.index+1)%popup.choices.length;if(pressed('ArrowUp')||pad('dpadUp'))popup.index=(popup.index-1+popup.choices.length)%popup.choices.length;if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump'))this.choosePopupItem(popup.index);return;}
     if(pressed('Escape')||pad('cancel')){if(flow.busy){flow.stop();return;}flow.back();return;}
@@ -72,12 +80,13 @@ export default class MenuPlayer {
     const status=this.flow.error||this.message||(this.flow.busy&&!this.cutscene.active&&!this.movie?'Loading…':'');
     if(status){ctx.save();ctx.fillStyle='rgba(0,0,0,.85)';ctx.fillRect(0,height-64,width,64);ctx.fillStyle=this.flow.error?'#ffb1a6':'#fff';ctx.font='15px system-ui';ctx.textAlign='center';ctx.fillText(status,width/2,height-32,width-20);ctx.restore();}
     if(this.choicePopup){const b=this.bounds;ctx.save();ctx.translate(b.x,b.y);ctx.scale(b.w/960,b.h/540);this.drawChoices(ctx,960,540);ctx.restore();this.choiceRows=this.choiceRows.map(r=>({...r,x:b.x+r.x*b.w/960,y:b.y+r.y*b.h/540,w:r.w*b.w/960,h:r.h*b.h/540}));}
-    if(this.preview){ctx.save();ctx.fillStyle='#101c28';ctx.fillRect(width-130,0,130,36);ctx.fillStyle='#fff';ctx.font='14px system-ui';ctx.textAlign='center';ctx.fillText('Exit Preview',width-65,23);ctx.restore();}
+    if(this.preview){this.playPauseBounds={x:Math.max(0,width-214),y:0,w:72,h:36};drawSharedPlayStopButton(ctx,this.playPauseBounds,{isActive:!this.paused});ctx.save();ctx.fillStyle='#101c28';ctx.fillRect(width-130,0,130,36);ctx.fillStyle='#fff';ctx.font='14px system-ui';ctx.textAlign='center';ctx.fillText('Exit Preview',width-65,23);ctx.restore();}
   }
   hitElement(point){return menuPaintOrder(this.flow.screen.elements).reverse().find(e=>{if(!menuElementVisible(e,this.flow.screen.elements)||!menuElementInteractive(e))return false;const pose=menuElementPose(e,this.flow.time),b=menuElementBounds(e,this.bounds,pose),dx=point.x-(b.x+b.w/2),dy=point.y-(b.y+b.h/2),a=-pose.rotation*Math.PI/180;return menuHit({x:(dx*Math.cos(a)-dy*Math.sin(a))/pose.scale+b.x+b.w/2,y:(dx*Math.sin(a)+dy*Math.cos(a))/pose.scale+b.y+b.h/2},b)})}
   handlePointerDown(point){
-    if(!this.flow||!this.bounds)return;if(this.preview&&point.x>=(this.viewportBounds?.w||this.bounds.w)-130&&point.y<36){this.flow.stop();return;}
+    if(!this.flow||!this.bounds)return;if(this.preview&&this.playPauseBounds&&menuHit(point,this.playPauseBounds)){this.togglePause();return;}if(this.preview&&point.x>=(this.viewportBounds?.w||this.bounds.w)-130&&point.y<36){this.flow.stop();return;}
     if(!menuHit(point,this.bounds)&&this.surface.down(point))return;
+    if(this.paused)return;
     if(this.choicePopup){const row=this.choiceRows?.find(row=>menuHit(point,row));if(row){if(row.page){this.choicePopup.index=Math.max(0,Math.min(this.choicePopup.choices.length-1,this.choicePopup.index+row.page));}else this.choosePopupItem(row.index);}else this.choicePopup=null;return;}
     if(this.cutscene.active){if(this.cutscene.waitingPauseClipId)this.cutscene.waitingPauseClipId=null;else this.cutscene.stop();return;}
     if(this.movie){void this.resumeMovie();return;}if(this.flow.busy||!menuHit(point,this.bounds))return;
@@ -112,13 +121,13 @@ export default class MenuPlayer {
   }
   async resumeMovie(){try{await this.movie?.play();this.message=''}catch{this.message='Tap / press Space to play movie'}}
   async launchRace(ref,parameters){
-    if(this.preview){this.message=`Preview: launch race “${ref}” with ${Object.keys(parameters).length} parameters`;return;}
+    if(this.preview)this.game.playtestActive=true;
     this.cleanupScreen();this.game.menuParameters=structuredClone(parameters);
     const ok=await this.game.startRaceTravel({raceName:ref,carSelection:parameters.carRef?'specific':'choose',carRef:parameters.carRef,menuConfiguration:parameters,menuFlow:this.flow});if(!ok)throw Error(`Could not start race: ${ref}`);
   }
   async launchLevel(ref,parameters){
-    if(this.preview){this.message=`Preview: launch level “${ref}” with ${Object.keys(parameters).length} parameters`;return;}
-    const payload=await hydrateProjectFilePayload('levels',ref);if(!this.flow.active)return;if(!payload?.data)throw Error(`Level not found: ${ref}`);
-    this.cleanupScreen();this.game.menuParameters=structuredClone(parameters);this.game.applyWorldData(payload.data);this.game.gameMode='story';this.game.storyData=this.game.buildWorldData();this.game.playtestActive=false;this.game.simulationActive=false;this.game.resetRun({playtest:false,startWithEverything:true});this.game.transitionTo('playing');this.game.startSpawnPause();
+    const flow=this.flow,generation=flow.generation;
+    const payload=await hydrateProjectFilePayload('levels',ref);if(!flow.active||this.flow!==flow||flow.generation!==generation)return;if(!payload?.data)throw Error(`Level not found: ${ref}`);
+    this.cleanupScreen();this.game.menuParameters=structuredClone(parameters);this.game.applyWorldData(payload.data);this.game.gameMode='story';this.game.storyData=this.game.buildWorldData();this.game.playtestActive=this.preview;this.game.simulationActive=false;this.game.resetRun({playtest:this.preview,startWithEverything:true});this.game.transitionTo('playing');this.game.startSpawnPause();
   }
 }

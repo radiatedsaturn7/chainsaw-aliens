@@ -36,7 +36,7 @@ test('saved start menu survives a fresh page and preview returns to authoring',a
 });
 
 
-test('movie completion loads a real level with the selected configuration',async({page})=>{
+test('menu preview plays a movie then loads a real level and returns to authoring',async({page})=>{
  await ready(page,false);
  await page.evaluate(async()=>{
   const g=window.__game,{saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js'),{createDefaultCutscene}=await import('/src/ui/CutsceneEditor.js');
@@ -44,29 +44,33 @@ test('movie completion loads a real level with the selected configuration',async
   await saveProjectFileAndConfirm('cutscenes','Menu Short Intro',movie);
   const level=g.buildWorldData();level.name='Menu Destination';await saveProjectFileAndConfirm('levels','Menu Destination',level);
   const doc=g.menuEditor.menu;doc.parameters.weapons=['chainsaw'];doc.parameters['character.color']='#3388ff';
-  await g.menuPlayer.open(doc);window.__menuMovieRun=g.menuPlayer.flow.run({type:'movie',target:'Menu Short Intro',then:{type:'level',target:'Menu Destination'}});
+  window.__menuAuthoringSnapshot=JSON.stringify(g.menuEditor.snapshot());window.__menuOriginalSpawn=JSON.stringify(g.world.spawn);await g.previewMenu(doc);window.__menuMovieRun=g.menuPlayer.flow.run({type:'movie',target:'Menu Short Intro',then:{type:'level',target:'Menu Destination'}});
  });
- await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('playing');expect(await page.evaluate(()=>window.__game.menuParameters.weapons)).toEqual(['chainsaw']);expect(await page.evaluate(()=>window.__game.menuParameters['character.color'])).toBe('#3388ff');
+ await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('playing');expect(await page.evaluate(()=>window.__game.menuParameters.weapons)).toEqual(['chainsaw']);expect(await page.evaluate(()=>window.__game.menuParameters['character.color'])).toBe('#3388ff');expect(await page.evaluate(()=>window.__game.playtestActive)).toBe(true);
+ await page.evaluate(()=>window.__game.returnToEditorFromPlaytest());await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-editor');expect(await page.evaluate(()=>JSON.stringify(window.__game.menuEditor.snapshot())===window.__menuAuthoringSnapshot)).toBe(true);expect(await page.evaluate(()=>JSON.stringify(window.__game.world.spawn)===window.__menuOriginalSpawn)).toBe(true);
 });
 
-test('menu launches one race and each race owns its next-race or return destination',async({page})=>{
+for(const destination of ['menu','level'])test(`menu preview launches real chained races and returns from ${destination}`,async({page})=>{
  test.setTimeout(150000);await ready(page,false);await seedRaceRuntimeFixtures(page);
- await page.evaluate(async()=>{
+ await page.evaluate(async destination=>{
   const g=window.__game,{loadProjectFile,saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');
+  if(destination==='level')await saveProjectFileAndConfirm('levels','Menu Race Destination',g.buildWorldData());
   const base=loadProjectFile('races','Studio Sprint2').data;
-  for(const [name,finish] of [['Menu Chain First',{type:'race',targetRace:'Menu Chain Last'}],['Menu Chain Last',{type:'return-to-origin'}]]){
+  for(const [name,finish] of [['Menu Chain First',{type:'race',targetRace:'Menu Chain Last'}],['Menu Chain Last',destination==='level'?{type:'level',targetLevel:'Menu Race Destination',spawnX:2,spawnY:2}:{type:'return-to-origin'}]]){
    const document=structuredClone(base),race=document.race||document;race.id=name;race.name=name;race.finishBehavior=finish;await saveProjectFileAndConfirm('races',name,document);
   }
   const doc=g.menuEditor.menu;doc.parameters.carRef='2022 Subaru WRX2';doc.parameters.difficulty='easy';doc.parameters.weapons=['chainsaw'];
-  await g.menuPlayer.open(doc);g.menuPlayer.flow.goTo('events');window.__menuRaceRun=g.menuPlayer.flow.run({type:'race',target:'Menu Chain First'});
- });
+  await g.previewMenu(doc);g.menuPlayer.flow.goTo('events');window.__menuRaceRun=g.menuPlayer.flow.run({type:'race',target:'Menu Chain First'});
+ },destination);
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
  expect(await page.evaluate(()=>window.__game.raceEditor.selectedRace.name)).toBe('Menu Chain First');
  await page.evaluate(()=>window.__game.raceEditor.finishPlaytest());
  await expect.poll(()=>page.evaluate(()=>{const e=window.__game.raceEditor;return e.playtestSession?.running&&e.selectedRace.name}),{timeout:60000}).toBe('Menu Chain Last');
  expect(await page.evaluate(()=>window.__game.raceEditor.playtestSession.menuConfiguration.weapons)).toEqual(['chainsaw']);
  expect(await page.evaluate(()=>window.__game.raceTravelSession.originState)).toBe('menu-player');
- await page.evaluate(()=>window.__game.raceEditor.finishPlaytest());await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-player');expect(await page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('events');
+ await page.evaluate(()=>window.__game.raceEditor.finishPlaytest());await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe(destination==='level'?'playing':'menu-player');
+ if(destination==='menu'){expect(await page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('events');await page.evaluate(()=>window.__game.menuPlayer.flow.stop());}else{expect(await page.evaluate(()=>window.__game.playtestActive)).toBe(true);await page.evaluate(()=>window.__game.returnToEditorFromPlaytest());}
+ await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-editor');
 });
 
 async function designerButton(page,id){
@@ -245,4 +249,12 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} menu forms
  const filename=page.getByPlaceholder('Filename',{exact:true});await expect(filename).toBeVisible();await expect(filename).not.toBeFocused();
  expect(await page.evaluate(()=>window.__menuFocusEvents.filter(tag=>['INPUT','TEXTAREA','SELECT'].includes(tag)))).toEqual([]);
  await filename.click();await expect(filename).toBeFocused();
+});
+
+for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mode} menu top play control pauses and resumes playback`,async({page})=>{
+ await page.setViewportSize(mode==='portrait'?{width:390,height:844}:mode==='landscape-touch'?{width:844,height:390}:{width:1280,height:800});await ready(page,mode!=='desktop');if(mode==='gamepad')await page.evaluate(()=>{window.__game.input.isGamepadConnected=()=>true;});
+ await designerButton(page,'menu-play');await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-player');await page.waitForFunction(()=>window.__game.menuPlayer.playPauseBounds);
+ const b=await page.evaluate(()=>window.__game.menuPlayer.playPauseBounds);await canvasClick(page,b.x+b.w/2,b.y+b.h/2);await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.paused)).toBe(true);
+ const t=await page.evaluate(()=>window.__game.menuPlayer.flow.time);await page.waitForTimeout(200);expect(await page.evaluate(()=>window.__game.menuPlayer.flow.time)).toBe(t);await page.keyboard.press('Enter');expect(await page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('splash');
+ await page.screenshot({path:`test-results/menu-paused-${mode}.png`});await canvasClick(page,b.x+b.w/2,b.y+b.h/2);await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.time)).toBeGreaterThan(t);await page.keyboard.press('Escape');await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-editor');
 });

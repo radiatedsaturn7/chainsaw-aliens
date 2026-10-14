@@ -19409,12 +19409,6 @@ export default class RaceEditor {
         w: Math.max(1, layout.workSurface.w - 16),
         h: Math.max(1, layout.workSurface.h - 16)
       });
-      this.drawRaceTopPlayControl(ctx, {
-        x: layout.workSurface.x + Math.floor((layout.workSurface.w - 72) / 2),
-        y: layout.workSurface.y + 12,
-        w: 72,
-        h: 34
-      });
     } else {
       this.drawCarEditorWorkSurface(ctx, {
       x: layout.workSurface.x + 8,
@@ -19423,6 +19417,12 @@ export default class RaceEditor {
       h: Math.max(1, layout.workSurface.h - 16)
       });
     }
+      this.drawRaceTopPlayControl(ctx, {
+        x: layout.workSurface.x + Math.floor((layout.workSurface.w - 72) / 2),
+        y: layout.workSurface.y + 12,
+        w: 72,
+        h: 34
+      });
     const portraitActionById = {
       menu: { id: 'menu', label: '☰', onClick: () => this.toggleRootMenu() },
       undo: this.getRailAction('undo', '↶', () => this.handleMenuAction('undo')),
@@ -19625,12 +19625,6 @@ export default class RaceEditor {
         w: Math.max(1, shell.surfaces.workSurface.w - 16),
         h: Math.max(1, shell.surfaces.workSurface.h - 16)
       });
-      this.drawRaceTopPlayControl(ctx, {
-        x: shell.surfaces.workSurface.x + shell.surfaces.workSurface.w - 86,
-        y: shell.surfaces.workSurface.y + 10,
-        w: 72,
-        h: 32
-      });
     } else {
       this.drawCarEditorWorkSurface(ctx, {
       x: shell.surfaces.workSurface.x + 8,
@@ -19639,6 +19633,12 @@ export default class RaceEditor {
       h: Math.max(1, shell.surfaces.workSurface.h - 16)
       });
     }
+      this.drawRaceTopPlayControl(ctx, {
+        x: shell.surfaces.workSurface.x + shell.surfaces.workSurface.w - 86,
+        y: shell.surfaces.workSurface.y + 10,
+        w: 72,
+        h: 32
+      });
     const gamepadMenuOpen = gamepadMenuState.isLandscapeMenuMode && (this.mobileRootOpen || this.gamepadSubmenuOpen);
     if (!gamepadMenuOpen) {
       drawSharedPanel(ctx, shell.surfaces.compactCommandRail, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
