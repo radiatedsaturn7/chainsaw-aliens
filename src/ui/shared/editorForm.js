@@ -33,6 +33,9 @@ export function openEditorForm(title,fields,{description=''}={}){
     form.onsubmit=event=>{event.preventDefault();close(Object.fromEntries(Object.entries(inputs).map(([id,{input,field}])=>[id,!field.options&&(field.type||'number')==='number'?Number(input.value):field.type==='color'&&!input.dataset.colorChanged?field.value:input.value])));};
     dialog.oncancel=event=>{event.preventDefault();close(null);};for(const name of ['keydown','keyup'])dialog.addEventListener(name,e=>e.stopPropagation());
     dialog.appendChild(form);document.body.appendChild(dialog);dialog.showModal();
+    // A canvas pointer-down can open this before the browser finishes focusing
+    // the original tap target. Restore neutral focus only if it left the modal.
+    requestAnimationFrame(()=>{if(dialog.open&&!dialog.contains(document.activeElement))heading.focus({preventScroll:true});});
   });
 }
 export function chooseEditorFiles(accept,{multiple=false}={}){
