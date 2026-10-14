@@ -46,7 +46,11 @@ export default class MenuEditor extends RaceEditor {
   drawLandscapeToolOptions(ctx,bounds){
     drawSharedDesktopContextPanel(ctx,bounds,{title:`${this.screen.name} · ${this.element?.label||'Select a widget'}`,lines:[],contentRoles:['status'],status:this.status});
   }
-  drawRaceTopPlayControl(ctx,bounds){drawSharedPlayStopButton(ctx,bounds);this.buttons.push({id:'menu-play',bounds:{...bounds,id:'menu-play'},onClick:()=>this.handleMenuAction('menu-preview')});}
+  drawRaceTopPlayControl(ctx,bounds){
+    const surface=this.menuSurfaceBounds;
+    if(surface){ctx.save();ctx.beginPath();ctx.rect(surface.x,surface.y,Math.max(0,bounds.x-surface.x-8),24);ctx.clip();ctx.fillStyle='#aec6d2';ctx.font='12px system-ui';ctx.textAlign='left';ctx.fillText(this.menuPicker?(this.pickerEntries()[this.pickerFocus]?.description||this.pickerEntries()[this.pickerFocus]?.label||'Choose an item'):`Screen: ${this.screen.name} · ${this.element?widgetLabel(this.element.type)+' selected':'Select a widget to edit'}`,surface.x,surface.y+14);ctx.restore();}
+    drawSharedPlayStopButton(ctx,bounds);this.buttons.push({id:'menu-play',bounds:{...bounds,id:'menu-play'},onClick:()=>this.handleMenuAction('menu-preview')});
+  }
   drawLandscapeRaceMapThumbstick(){}
   updateCarEditorPreviewPlaytest(){} updateCarEditorPreviewSelectHold(){return false} ensureCarEditorPreviewPlaytestSession(){return null}
   update(input,dt){
@@ -78,7 +82,7 @@ export default class MenuEditor extends RaceEditor {
     this.carArtSliderRegions=[];this.menuSurfaceBounds={...bounds};
     const layout=getMenuDesignerSurfaceLayout(bounds);this.menuBounds=layout.canvas;this.menuHotbarBounds=layout.hotbar;
     drawMenuScreen(ctx,this.menuBounds,this.menu,this.screen,this.menu.parameters,{resources:this.resources,time:this.menuTime,selected:this.elementId,editing:!this.animating});
-    ctx.save();ctx.fillStyle='#aec6d2';ctx.font='12px system-ui';ctx.textAlign='left';ctx.fillText(this.menuPicker?(this.pickerEntries()[this.pickerFocus]?.description||this.pickerEntries()[this.pickerFocus]?.label||'Choose an item'):`Screen: ${this.screen.name} · ${this.element?widgetLabel(this.element.type)+' selected':'Select a widget to edit'}`,bounds.x,bounds.y+14,bounds.w);ctx.restore();
+
     for(const {id,bounds:buttonBounds} of layout.buttons)this.registerDrawnButton(ctx,buttonBounds,{id,label:({'widget-add':'+','element-setup':'Properties','send-drawer':'Send ▴','clip-drawer':'Clip ▴'})[id],disabled:id==='element-setup'&&!this.element,onClick:()=>this.handleMenuAction(id)});
     if(this.menuPicker)this.drawPicker(ctx);
     if(this.menuPadConnected&&this.menuCursor&&!this.menuPicker){ctx.save();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(this.menuCursor.x,this.menuCursor.y,6,0,Math.PI*2);ctx.stroke();ctx.restore();}

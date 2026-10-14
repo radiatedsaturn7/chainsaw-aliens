@@ -70,3 +70,9 @@ test('shared touch controller navigates, confirms and exits preview; physical pa
 test('physical B returns from a nested menu screen',async()=>{const {player}=fixture();await player.open(createMenuDocument(),{preview:true});player.flow.goTo('cars');player.update(input([],['gamepadB']),0.01);assert.equal(player.flow.screenId,'splash');});
 
 test('preview pause freezes navigation and animation until resumed',async()=>{const {player}=fixture();await player.open(createMenuDocument(),{preview:true});player.update(input(),0.2);const time=player.flow.time;player.togglePause();player.update(input(['Enter']),1);assert.equal(player.flow.time,time);assert.equal(player.flow.screenId,'splash');player.togglePause();player.update(input(['Enter']),0.1);await Promise.resolve();assert.equal(player.flow.screenId,'cars');});
+
+test('pausing preview suspends audio and videos, and exit releases its audio suspension',async()=>{
+ const {player,game}=fixture();const events=[];game.audio.ctx={state:'running',suspend:async()=>events.push('suspend'),resume:async()=>events.push('resume')};
+ await player.open(createMenuDocument(),{preview:true});const video={paused:false,pause(){events.push('video-pause')},play:async()=>events.push('video-play'),removeAttribute(){},load(){}};player.videos.set('video',video);
+ player.togglePause();assert.deepEqual(events,['suspend','video-pause']);player.togglePause();assert.deepEqual(events,['suspend','video-pause','resume','video-play']);player.togglePause();player.flow.stop();assert.equal(events.filter(e=>e==='resume').length,2);
+});
