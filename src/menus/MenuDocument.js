@@ -23,7 +23,7 @@ export function normalizeMenuElement(source={},index=0){
   const binding=text(source.binding);if(source.angleBinding&&!validMenuParameter(source.angleBinding))throw Error('Invalid rotation binding');if(binding&&!validMenuParameter(binding))throw Error('Invalid parameter binding');
   return {id:text(source.id,`element-${index+1}`),type,parentId:text(source.parentId),shape:['rectangle','ellipse','triangle'].includes(source.shape)?source.shape:'rectangle',fill:text(source.fill,'#49758c'),stroke:text(source.stroke,'#ffffff'),strokeWidth:number(source.strokeWidth,0,0,30),label:text(source.label,'New item'),
     x:number(source.x,0.1,-2,2),y:number(source.y,0.1,-2,2),w:number(source.w,0.8,0.01,3),h:number(source.h,0.08,0.01,3),
-    color:text(source.color,'#ffffff'),background:text(source.background,'#253c49'),fontSize:number(source.fontSize,26,8,160),
+    tabOrder:Math.round(number(source.tabOrder,0,0,9999)),color:text(source.color,'#ffffff'),background:text(source.background,'#253c49'),fontSize:number(source.fontSize,26,8,160),
     dataSource:['cars','actors','parameters','doodads'].includes(source.dataSource)?source.dataSource:'cars',assetRef:text(source.assetRef),property:text(source.property,'name'),suffix:text(source.suffix),decimals:number(source.decimals,0,0,6),
     angleBinding:text(source.angleBinding),angle:number(source.angle,180,-3600,3600),imageFit:['contain','cover','stretch'].includes(source.imageFit)?source.imageFit:'contain',
     artRef:text(source.artRef),videoUrl:text(source.videoUrl),binding,source:text(source.source),
@@ -43,7 +43,7 @@ export function normalizeMenuDocument(source={}){
     for(const screen of source.screens||[]){migrate(screen.startAction);for(const e of screen.elements||[]){if(e.label==='Start Grand Prix')e.label='Start Race';if(e.source==='grandPrix'){e.source=source.grandPrix.length?'':'races';e.options=source.grandPrix.map(g=>({label:g.name,value:first(g.id)}));if(source.parameters?.[e.binding])source.parameters[e.binding]=first(source.parameters[e.binding])||source.parameters[e.binding];}migrate(e.action);}}
   }
   const screens=(Array.isArray(source.screens)?source.screens:[]).slice(0,100).map((s,i)=>({id:text(s.id,`screen-${i+1}`),name:text(s.name,`Screen ${i+1}`),
-    background:text(s.background,'#101c28'),backgroundArt:text(s.backgroundArt),musicRef:text(s.musicRef),effect:['none','stars','rain','snow'].includes(s.effect)?s.effect:'none',
+    useDefaultBackground:s.useDefaultBackground===true||(s.useDefaultBackground!==false&&s.background===undefined&&s.backgroundArt===undefined&&s.effect===undefined),background:text(s.background,'#101c28'),backgroundArt:text(s.backgroundArt),musicRef:text(s.musicRef),effect:['none','stars','rain','snow'].includes(s.effect)?s.effect:'none',
     startAction:normalizeMenuAction(s.startAction),elements:(Array.isArray(s.elements)?s.elements:[]).slice(0,200).map(normalizeMenuElement)}));
   if(!screens.length)throw Error('A menu needs at least one screen');
   if(new Set(screens.map(s=>s.id)).size!==screens.length)throw Error('Screen IDs must be unique');
@@ -54,7 +54,7 @@ export function normalizeMenuDocument(source={}){
     while(p.parentId){const parent=screen.elements.find(item=>item.id===p.parentId);if(!parent||parent.type!=='container')throw Error('Container not found');if(seen.has(parent.id))throw Error('Containers cannot contain themselves');seen.add(parent.id);p=parent;}
   }
   const parameters={};for(const [key,value] of Object.entries(source.parameters||{})){if(!validMenuParameter(key))throw Error('Invalid parameter name');parameters[key]=structuredClone(value);}
-  const document={schemaVersion:1,kind:'menu',name:text(source.name,'New Menu'),startScreen:text(source.startScreen,screens[0].id),parameters,screens};
+  const document={schemaVersion:1,kind:'menu',name:text(source.name,'New Menu'),startScreen:text(source.startScreen,screens[0].id),parameters,defaultBackground:{background:text(source.defaultBackground?.background,'#101c28'),backgroundArt:text(source.defaultBackground?.backgroundArt),effect:['none','stars','rain','snow'].includes(source.defaultBackground?.effect)?source.defaultBackground.effect:'none'},screens};
   if(!screens.some(s=>s.id===document.startScreen))throw Error('Starting screen does not exist');
   const validate=action=>{if(!action)return;if(action.type==='screen'&&!action.target.startsWith('$')&&!screens.some(s=>s.id===action.target))throw Error(`Screen not found: ${action.target}`);validate(action.then)};
   screens.forEach(s=>{validate(s.startAction);s.elements.forEach(e=>validate(e.action))});return document;
@@ -79,3 +79,5 @@ export function menuElementPose(element,time=0){
   const a=[...frames].reverse().find(f=>f.time<=t)||frames[0],b=frames.find(f=>f.time>t)||a,u=b.time>a.time?(t-a.time)/(b.time-a.time):0;
   for(const key of ['x','y','opacity','scale','rotation'])pose[key]=a[key]+(b[key]-a[key])*u;return pose;
 }
+
+export function resolveMenuBackground(document,screen){return screen.useDefaultBackground?{...screen,...document.defaultBackground}:screen;}

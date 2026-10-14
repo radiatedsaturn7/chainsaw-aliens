@@ -1540,6 +1540,7 @@ export const LATEST_MAJOR_WORK = {
 };
 
 export const LATEST_CHANGES = [
+  {date:'2026-10-13',time:'21:10 EDT',title:'Menu playtest controls, default backgrounds and navigation order',details:['Menu preview shares portrait/landscape handheld controls with level and race playtests, supports physical controllers and desktop, and restores authoring on exit.','Screens can inherit a menu-wide background color, artwork and effect. Interactive widgets have saved navigation order, including reverse Tab.']},
   {
     date: '2026-10-13', time: '18:45 EDT',
     title: 'Menu color pickers and widescreen canvas',

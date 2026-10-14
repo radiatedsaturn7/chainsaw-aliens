@@ -54,3 +54,12 @@ test('containers move, resize, copy, cut and undo their full subtree with unique
  await e.runAction('delete');assert.equal(e.screen.elements.length,2);e.history();assert.equal(e.screen.elements.length,4);
  const reopened=editor();reopened.loadMenu(JSON.parse(JSON.stringify(e.menu)));assert.deepEqual(reopened.menu,e.menu);
 });
+
+test('menu default background persists, new screens inherit and explicit backgrounds stay custom',async()=>{
+ const {normalizeMenuDocument,resolveMenuBackground}=await import('../../src/menus/MenuDocument.js');
+ const doc=normalizeMenuDocument({defaultBackground:{background:'#123456',backgroundArt:'Sky',effect:'snow'},screens:[{id:'inherit',elements:[]},{id:'custom',background:'#ff0000',elements:[]}]});
+ const roundtrip=normalizeMenuDocument(JSON.parse(JSON.stringify(doc)));
+ assert.equal(resolveMenuBackground(roundtrip,roundtrip.screens[0]).backgroundArt,'Sky');assert.equal(resolveMenuBackground(roundtrip,roundtrip.screens[0]).effect,'snow');
+ assert.equal(resolveMenuBackground(roundtrip,roundtrip.screens[1]).background,'#ff0000');
+ roundtrip.defaultBackground.background='#abcdef';assert.equal(resolveMenuBackground(roundtrip,roundtrip.screens[0]).background,'#abcdef');
+});

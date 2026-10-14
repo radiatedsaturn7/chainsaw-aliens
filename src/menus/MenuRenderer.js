@@ -1,5 +1,5 @@
 import {menuPaintOrder,menuElementVisible} from './MenuLayout.js';
-import {menuElementPose} from './MenuDocument.js';
+import {menuElementPose,resolveMenuBackground} from './MenuDocument.js';
 import {calculateCarPerformance} from '../racing/CarPerformance.js';
 
 export const menuElementBounds=(element,bounds,pose=element)=>({x:bounds.x+pose.x*bounds.w,y:bounds.y+pose.y*bounds.h,w:element.w*bounds.w,h:element.h*bounds.h});
@@ -13,6 +13,7 @@ export function drawMenuImage(ctx,image,b,fit='contain'){
 const caption=(text,parameters)=>String(text).replace(/\{\{([\w.-]+)\}\}/g,(_,key)=>String(parameters[key]??''));
 
 export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,resources,focus=null,selected=null,editing=false,videos=null}={}){
+  screen=resolveMenuBackground(document,screen);
   ctx.save();ctx.beginPath();ctx.rect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.clip();ctx.fillStyle=screen.background;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
   const background=resources?.art(screen.backgroundArt,Math.floor(time*8));if(background)ctx.drawImage(background,bounds.x,bounds.y,bounds.w,bounds.h);
   if(screen.effect!=='none'){

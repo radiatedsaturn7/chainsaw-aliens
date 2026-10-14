@@ -49,3 +49,20 @@ test('preview starts on the requested screen without changing the saved launch s
  player.flow.parameters.difficulty='hard';assert.equal(doc.parameters.difficulty,'medium');
  await player.open(doc,{preview:false,screenId:'events'});assert.equal(player.flow.screenId,'splash');
 });
+
+test('explicit navigation order survives normalization and ignores drawing order, with reverse Tab',async()=>{
+ const {player}=fixture();const doc=createMenuDocument();const s=doc.screens[0];s.startAction=null;s.elements=[{id:'last',type:'button',tabOrder:30},{id:'first',type:'button',tabOrder:10},{id:'middle',type:'button',tabOrder:20},{id:'hidden',type:'button',tabOrder:1,visible:false}];
+ await player.open(JSON.parse(JSON.stringify(doc)),{preview:true});assert.deepEqual(player.interactive().map(e=>e.id),['first','middle','last']);
+ player.update(input(['Tab']),0.01);assert.equal(player.interactive()[player.focus].id,'middle');
+ player.update({...input(['Tab']),isShiftDown:()=>true},0.01);assert.equal(player.interactive()[player.focus].id,'first');
+ player.update(input([],['dpadUp']),0.01);assert.equal(player.interactive()[player.focus].id,'last');
+});
+
+test('shared touch controller navigates, confirms and exits preview; physical pad suppresses touch',async()=>{
+ const {player,game,calls}=fixture();game.deviceIsMobile=true;await player.open(createMenuDocument(),{preview:true});
+ const layout=player.surface.layout(390,844);assert.ok(layout.screen.y+layout.screen.h<layout.controlsDeck.y);
+ player.surface.controls.pulseAction('jump');player.update(input(),0.01);await Promise.resolve();assert.equal(player.flow.screenId,'cars');
+ player.surface.controls.pulseAction('down');player.update(input(),0.01);assert.equal(player.focus,1);
+ player.surface.controls.pulseAction('nextWeapon');player.update(input(),0.01);assert.deepEqual(calls.at(-1),['state','menu-editor']);
+ game.input.isGamepadConnected=()=>true;assert.equal(player.surface.layout(844,390),null);assert.equal(player.surface.controls.enabled,false);
+});

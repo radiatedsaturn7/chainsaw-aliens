@@ -6,6 +6,7 @@ import {MENU_SETTINGS} from '../menus/MenuDocument.js';
 
 const text=(id,label,value='',extra={})=>({id,label,value,type:'text',required:false,...extra});
 export const menuColorField=(id,label,value)=>({id,label,value,type:'color',required:false});
+export const navigationFields=e=>[{id:'tabOrder',label:'Navigation order (0 = automatic)',value:e.tabOrder,min:0,max:9999,step:1}];
 export const shapeStyleFields=e=>[menuColorField('fill','Fill color',e.fill),menuColorField('stroke','Outline color',e.stroke),{id:'strokeWidth',label:'Outline width (pixels)',value:e.strokeWidth,min:0,max:30}];
 const select=(id,label,value,options)=>({id,label,value,options,required:false});
 const parse=value=>{try{return JSON.parse(value)}catch{return value}};
@@ -33,21 +34,21 @@ export async function chooseImage(editor,{background=false}={}){
       await saveProjectFileAndConfirm('art',result.name,{name:result.name,width:canvas.width,height:canvas.height,frames:[{pixels}]});ref=result.name;
     }finally{image.close();}
   }
-  editor.change(()=>{if(background)editor.screen.backgroundArt=ref;else editor.element.artRef=ref;});
+  editor.change(()=>{if(background){editor.screen.backgroundArt=ref;editor.screen.useDefaultBackground=false;}else editor.element.artRef=ref;});
   editor.status=ref?`Image: ${ref}`:'Image removed';
 }
 export async function setupWidget(editor){
   const e=editor.element;if(!e)throw Error('Select a widget to configure');
   if(e.type==='image')return chooseImage(editor);
   if(e.type==='button'){
-    const result=await openEditorForm('Button',[text('label','Button text',e.label)]);if(!result)return;
-    editor.change(()=>{editor.element.label=result.label});return editor.runAction('element-action');
+    const result=await openEditorForm('Button',[text('label','Button text',e.label),...navigationFields(e)]);if(!result)return;
+    editor.change(()=>{Object.assign(editor.element,result)});return editor.runAction('element-action');
   }
   if(['property-display','asset-preview'].includes(e.type))return setupDataWidget(editor);
   const fields=[text('label','Label',e.label)];
   const description=[];
   if(['choice','slider','toggle','keybind'].includes(e.type)){
-    fields.push(bindingField(editor,e));
+    fields.push(bindingField(editor,e),...navigationFields(e));
     description.push('Widgets sharing a value parameter stay linked. Settings parameters affect the running game; custom values are passed to the next race or level.');
   }
   if(e.type==='shape')fields.push(select('shape','Shape',e.shape,['rectangle','ellipse','triangle']),...shapeStyleFields(e));
