@@ -73,6 +73,6 @@ test('preview pause freezes navigation and animation until resumed',async()=>{co
 
 test('pausing preview suspends audio and videos, and exit releases its audio suspension',async()=>{
  const {player,game}=fixture();const events=[];game.audio.ctx={state:'running',suspend:async()=>events.push('suspend'),resume:async()=>events.push('resume')};
- await player.open(createMenuDocument(),{preview:true});const video={paused:false,pause(){events.push('video-pause')},play:async()=>events.push('video-play'),removeAttribute(){},load(){}};player.videos.set('video',video);
- player.togglePause();assert.deepEqual(events,['suspend','video-pause']);player.togglePause();assert.deepEqual(events,['suspend','video-pause','resume','video-play']);player.togglePause();player.flow.stop();assert.equal(events.filter(e=>e==='resume').length,2);
+ await player.open(createMenuDocument(),{preview:true});const video={paused:false,pause(){events.push('video-pause')},play:async()=>events.push('video-play'),removeAttribute(){},load(){}};player.videos.set('video',video);player.slider={element:{binding:'difficulty'}};player.capturing='input.left';
+ player.togglePause();assert.equal(player.slider,null);assert.equal(player.capturing,null);assert.deepEqual(events,['suspend','video-pause']);player.togglePause();assert.deepEqual(events,['suspend','video-pause','resume','video-play']);player.togglePause();player.flow.stop();assert.equal(events.filter(e=>e==='resume').length,2);
 });
