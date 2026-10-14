@@ -215,7 +215,7 @@ for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mod
  const touch=mode==='portrait'||mode==='landscape-touch';
  await expect.poll(()=>page.evaluate(()=>Boolean(window.__game.menuPlayer.surface.handheld))).toBe(touch);
  expect(await page.evaluate(()=>window.__game.menuPlayer.interactive().map(e=>e.label))).toEqual(['First','Second']);
- await expect.poll(()=>page.evaluate(()=>{const g=window.__game,b=g.menuPlayer.bounds;return Array.from(g.ctx.getImageData(Math.floor(b.x+b.w*0.98),Math.floor(b.y+b.h*0.5),1,1).data).slice(0,3)})).toEqual([36,104,172]);
+ await expect.poll(()=>page.evaluate(()=>{const g=window.__game,b=g.menuPlayer.bounds;if(!b)return [];return Array.from(g.ctx.getImageData(Math.floor(b.x+b.w*0.98),Math.floor(b.y+b.h*0.5),1,1).data).slice(0,3)})).toEqual([36,104,172]);
  const pad=async action=>{await page.evaluate(action=>window.__game.input.setVirtualGamepad({actions:{[action]:true}}),action);await page.waitForTimeout(80);await page.evaluate(()=>window.__game.input.clearVirtualGamepad());await page.waitForTimeout(80);};
  if(touch){
   const down=await page.evaluate(()=>{const j=window.__game.menuPlayer.surface.controls.joystick;return {x:j.center.x,y:j.center.y+j.radius*0.7}});const r=await page.locator('canvas').first().boundingBox();await page.mouse.move(r.x+down.x,r.y+down.y);await page.mouse.down();await page.waitForTimeout(80);await page.mouse.up();await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.focus)).toBe(1);
