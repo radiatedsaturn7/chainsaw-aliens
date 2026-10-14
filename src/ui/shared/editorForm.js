@@ -14,12 +14,21 @@ export function openEditorForm(title,fields,{description=''}={}){
       else if(field.type==='textarea'){input.rows=field.rows||5;}
       else{input.type=field.type||'number';if(input.type==='number')input.step=field.step||'any';}
       if(field.suggestions&&!field.options){const list=document.createElement('datalist');list.id=`editor-options-${field.id}-${Math.random().toString(36).slice(2)}`;for(const value of field.suggestions){const option=document.createElement('option');option.value=value;list.appendChild(option)}input.setAttribute('list',list.id);form.appendChild(list);}
-      input.value=field.value??'';if(field.min!==undefined)input.min=field.min;if(field.max!==undefined)input.max=field.max;input.required=field.required??!field.options?.some(option=>(option.value??option)==='');label.appendChild(input);form.appendChild(label);inputs[field.id]={input,field};
+      input.value=field.value??'';
+      if(field.type==='color'){
+        // Native color controls require RGB hex; preserve an existing CSS/alpha
+        // color when the user opens Properties without changing this field.
+        const canvas=document.createElement('canvas');canvas.width=canvas.height=1;const context=canvas.getContext('2d');
+        context.fillStyle=field.value||'#000000';context.fillRect(0,0,1,1);const rgba=context.getImageData(0,0,1,1).data;
+        input.value='#'+Array.from(rgba.slice(0,3),n=>n.toString(16).padStart(2,'0')).join('');
+        input.addEventListener('input',()=>{input.dataset.colorChanged='true';});
+      }
+      if(field.min!==undefined)input.min=field.min;if(field.max!==undefined)input.max=field.max;input.required=field.required??!field.options?.some(option=>(option.value??option)==='');label.appendChild(input);form.appendChild(label);inputs[field.id]={input,field};
     }
     const close=value=>{dialog.close();dialog.remove();focus?.focus?.();resolve(value);};
     const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';cancel.onclick=()=>close(null);
     const apply=document.createElement('button');apply.type='submit';apply.textContent='Apply';for(const b of [cancel,apply]){b.style.cssText='min-height:44px;padding:8px 20px;margin:12px 8px 0 0';form.appendChild(b);}
-    form.onsubmit=event=>{event.preventDefault();close(Object.fromEntries(Object.entries(inputs).map(([id,{input,field}])=>[id,!field.options&&(field.type||'number')==='number'?Number(input.value):input.value])));};
+    form.onsubmit=event=>{event.preventDefault();close(Object.fromEntries(Object.entries(inputs).map(([id,{input,field}])=>[id,!field.options&&(field.type||'number')==='number'?Number(input.value):field.type==='color'&&!input.dataset.colorChanged?field.value:input.value])));};
     dialog.oncancel=event=>{event.preventDefault();close(null);};for(const name of ['keydown','keyup'])dialog.addEventListener(name,e=>e.stopPropagation());
     dialog.appendChild(form);document.body.appendChild(dialog);dialog.showModal();
   });

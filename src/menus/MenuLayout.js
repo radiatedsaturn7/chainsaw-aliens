@@ -1,3 +1,8 @@
+export function fitMenuCanvas(bounds){
+ const w=Math.min(Math.max(1,bounds.w),Math.max(1,bounds.h)*16/9),h=w*9/16;
+ return {x:bounds.x+(bounds.w-w)/2,y:bounds.y+(bounds.h-h)/2,w,h};
+}
+
 // Container membership groups screen-space rectangles. Reparenting preserves
 // their visible positions; moving/resizing a container transforms its subtree.
 export function menuSubtree(elements,id){

@@ -5,6 +5,8 @@ import {widgetLabel,MENU_DATA_SOURCES,propertyPaths} from '../menus/MenuWidgets.
 import {MENU_SETTINGS} from '../menus/MenuDocument.js';
 
 const text=(id,label,value='',extra={})=>({id,label,value,type:'text',required:false,...extra});
+export const menuColorField=(id,label,value)=>({id,label,value,type:'color',required:false});
+export const shapeStyleFields=e=>[menuColorField('fill','Fill color',e.fill),menuColorField('stroke','Outline color',e.stroke),{id:'strokeWidth',label:'Outline width (pixels)',value:e.strokeWidth,min:0,max:30}];
 const select=(id,label,value,options)=>({id,label,value,options,required:false});
 const parse=value=>{try{return JSON.parse(value)}catch{return value}};
 export const parameterNames=editor=>[...new Set([...Object.keys(editor.menu.parameters),...Object.keys(MENU_SETTINGS).map(k=>`settings.${k}`),'carRef','actorRef','item','carAngle','difficulty','raceRef','enabled'])];
@@ -48,7 +50,7 @@ export async function setupWidget(editor){
     fields.push(bindingField(editor,e));
     description.push('Widgets sharing a value parameter stay linked. Settings parameters affect the running game; custom values are passed to the next race or level.');
   }
-  if(e.type==='shape')fields.push(select('shape','Shape',e.shape,['rectangle','ellipse','triangle']),text('fill','Fill color',e.fill),text('stroke','Outline color',e.stroke),{id:'strokeWidth',label:'Outline width (pixels)',value:e.strokeWidth,min:0,max:30});
+  if(e.type==='shape')fields.push(select('shape','Shape',e.shape,['rectangle','ellipse','triangle']),...shapeStyleFields(e));
   if(e.type==='container'){
     description.push('Included widgets move, resize, copy and reorder with this container. New widgets added while it is selected join automatically. Use Layers to select the container behind its children.');
     for(const child of editor.screen.elements.filter(item=>item.id!==e.id&&(item.parentId===e.id||item.parentId===e.parentId)))fields.push(select(`member:${child.id}`,child.label||child.id,child.parentId===e.id?'in':'out',[{value:'out',label:'Outside container'},{value:'in',label:'Inside container'}]));

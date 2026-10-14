@@ -1,4 +1,4 @@
-import {menuPaintOrder,menuElementVisible} from './MenuLayout.js';
+import {menuPaintOrder,menuElementVisible,fitMenuCanvas} from './MenuLayout.js';
 import {MenuFlow} from './MenuFlow.js';
 import {MenuResources} from './MenuResources.js';
 import {drawMenuScreen,menuElementBounds,menuElementInteractive,menuHit} from './MenuRenderer.js';
@@ -61,7 +61,7 @@ export default class MenuPlayer {
     if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump')){if(flow.screen.startAction)void flow.start();else void this.activate(items[this.focus],1,{choose:true});}
   }
   draw(ctx,width,height){
-    this.bounds={x:0,y:0,w:width,h:height};if(!this.flow)return;
+    this.viewportBounds={x:0,y:0,w:width,h:height};this.bounds=fitMenuCanvas(this.viewportBounds);if(!this.flow)return;ctx.fillStyle='#060b10';ctx.fillRect(0,0,width,height);
     drawMenuScreen(ctx,this.bounds,this.flow.document,this.flow.screen,this.flow.parameters,{resources:this.resources,time:this.flow.time,focus:this.interactive()[this.focus]?.id,videos:this.videos});
     if(this.cutscene.active)this.cutscene.draw(ctx,width,height);
     if(this.movie){ctx.fillStyle='#000';ctx.fillRect(0,0,width,height);if(this.movie.readyState>=2){const scale=Math.min(width/this.movie.videoWidth,height/this.movie.videoHeight);ctx.drawImage(this.movie,(width-this.movie.videoWidth*scale)/2,(height-this.movie.videoHeight*scale)/2,this.movie.videoWidth*scale,this.movie.videoHeight*scale);}}
@@ -72,10 +72,10 @@ export default class MenuPlayer {
   }
   hitElement(point){return menuPaintOrder(this.flow.screen.elements).reverse().find(e=>{if(!menuElementVisible(e,this.flow.screen.elements)||!menuElementInteractive(e))return false;const pose=menuElementPose(e,this.flow.time),b=menuElementBounds(e,this.bounds,pose),dx=point.x-(b.x+b.w/2),dy=point.y-(b.y+b.h/2),a=-pose.rotation*Math.PI/180;return menuHit({x:(dx*Math.cos(a)-dy*Math.sin(a))/pose.scale+b.x+b.w/2,y:(dx*Math.sin(a)+dy*Math.cos(a))/pose.scale+b.y+b.h/2},b)})}
   handlePointerDown(point){
-    if(!this.flow||!this.bounds)return;if(this.preview&&point.x>=this.bounds.w-130&&point.y<36){this.flow.stop();return;}
+    if(!this.flow||!this.bounds)return;if(this.preview&&point.x>=(this.viewportBounds?.w||this.bounds.w)-130&&point.y<36){this.flow.stop();return;}
     if(this.choicePopup){const row=this.choiceRows?.find(row=>menuHit(point,row));if(row){if(row.page){this.choicePopup.index=Math.max(0,Math.min(this.choicePopup.choices.length-1,this.choicePopup.index+row.page));}else this.choosePopupItem(row.index);}else this.choicePopup=null;return;}
     if(this.cutscene.active){if(this.cutscene.waitingPauseClipId)this.cutscene.waitingPauseClipId=null;else this.cutscene.stop();return;}
-    if(this.movie){void this.resumeMovie();return;}if(this.flow.busy)return;
+    if(this.movie){void this.resumeMovie();return;}if(this.flow.busy||!menuHit(point,this.bounds))return;
     for(const video of this.videos.values())if(video.paused)void video.play().catch(()=>{});
     const e=this.hitElement(point);if(e){this.focus=this.interactive().indexOf(e);if(e.type==='slider'){this.slider={id:point.id,element:e};this.handlePointerMove(point);}else void this.activate(e,1,{choose:true});}else if(this.flow.screen.startAction)void this.flow.start();
   }

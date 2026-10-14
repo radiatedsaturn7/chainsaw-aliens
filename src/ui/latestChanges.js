@@ -1541,6 +1541,16 @@ export const LATEST_MAJOR_WORK = {
 
 export const LATEST_CHANGES = [
   {
+    date: '2026-10-13', time: '18:45 EDT',
+    title: 'Menu color pickers and widescreen canvas',
+    details: ['Shape Properties and Layout & Style now edit the same fill and outline colors with color pickers. Other menu color fields use pickers too.', 'The authoring canvas and preview fit a centered 16:9 frame in portrait, landscape, desktop and gamepad layouts.']
+  },
+  {
+    date: '2026-10-13', time: '18:25 EDT',
+    title: 'Compact Send and Clip drawers in the Menu Editor',
+    details: ['The bottom hotbar now has +, Clip, Send and Properties, in that order. Send groups the four ordering actions; Clip groups Copy, Cut, Paste and Delete. Layers and Screens are accessed through the main menus.']
+  },
+  {
     date: '2026-10-13', time: '18:00 EDT',
     title: 'Menu shapes, containers, hotbar controls and centered car rotation',
     details: ['Renamed widget Setup to Properties and added Copy, Cut, Paste and Delete to the bottom hotbar, wrapping into rows on narrow screens.', 'Added filled/outlined shapes, containers for moving and resizing widget groups, and four bottom-hotbar layer-order commands.', 'Car rotators center visible sprite artwork and orbit the actual bounds of 3D cars while preserving authored body and wheel alignment.']
