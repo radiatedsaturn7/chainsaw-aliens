@@ -66,3 +66,5 @@ test('shared touch controller navigates, confirms and exits preview; physical pa
  player.surface.controls.pulseAction('nextWeapon');player.update(input(),0.01);assert.deepEqual(calls.at(-1),['state','menu-editor']);
  game.input.isGamepadConnected=()=>true;assert.equal(player.surface.layout(844,390),null);assert.equal(player.surface.controls.enabled,false);
 });
+
+test('physical B returns from a nested menu screen',async()=>{const {player}=fixture();await player.open(createMenuDocument(),{preview:true});player.flow.goTo('cars');player.update(input([],['gamepadB']),0.01);assert.equal(player.flow.screenId,'splash');});

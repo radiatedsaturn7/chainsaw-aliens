@@ -207,7 +207,7 @@ for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mod
 
 for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mode} menu playtest uses shared controls and saved navigation order`,async({page})=>{
  await page.setViewportSize(mode==='portrait'?{width:390,height:844}:mode==='landscape-touch'?{width:844,height:390}:{width:1280,height:800});await ready(page,mode!=='desktop');
- if(mode==='gamepad')await page.evaluate(()=>{window.__game.input.isGamepadConnected=()=>true;});
+ if(mode==='gamepad')await page.evaluate(()=>{window.__menuPad={id:'Menu Test Controller',index:0,connected:true,mapping:'standard',timestamp:0,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};Object.defineProperty(navigator,'getGamepads',{configurable:true,value:()=>[window.__menuPad]});window.__game.input.gamepadAvailable=true;window.__game.input.gamepadIndex=0;});
  await page.evaluate(async()=>{const e=window.__game.menuEditor;await e.runAction('screen-new');await e.runAction('insert-button');e.element.label='Second';e.element.tabOrder=2;e.element.action={type:'set-param',parameter:'clicked',value:'second'};await e.runAction('insert-button');e.element.label='First';e.element.tabOrder=1;e.element.action={type:'set-param',parameter:'clicked',value:'first'};e.element.y=0.5;});
  await page.evaluate(()=>{void window.__game.menuEditor.runAction('element-properties');});const position=page.getByRole('dialog',{name:'Layout & Style',exact:true});await position.getByLabel('Navigation order (0 = automatic)').fill('1');await applyDialog(page,'Layout & Style');
  await page.evaluate(()=>{void window.__game.menuEditor.runAction('menu-default-background');});await page.getByRole('dialog',{name:'Default Background',exact:true}).getByLabel('Background color').fill('#2468ac');await applyDialog(page,'Default Background');
@@ -216,7 +216,7 @@ for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mod
  await expect.poll(()=>page.evaluate(()=>Boolean(window.__game.menuPlayer.surface.handheld))).toBe(touch);
  expect(await page.evaluate(()=>window.__game.menuPlayer.interactive().map(e=>e.label))).toEqual(['First','Second']);
  await expect.poll(()=>page.evaluate(()=>{const g=window.__game,b=g.menuPlayer.bounds;if(!b)return [];return Array.from(g.ctx.getImageData(Math.floor(b.x+b.w*0.98),Math.floor(b.y+b.h*0.5),1,1).data).slice(0,3)})).toEqual([36,104,172]);
- const pad=async action=>{await page.evaluate(action=>window.__game.input.setVirtualGamepad({actions:{[action]:true}}),action);await page.waitForTimeout(80);await page.evaluate(()=>window.__game.input.clearVirtualGamepad());await page.waitForTimeout(80);};
+ const pad=async action=>{const index={dpadDown:13,jump:0,gamepadB:1,gamepadSelect:8}[action];await page.evaluate(index=>{window.__menuPad.buttons[index]={pressed:true,value:1};},index);await page.waitForTimeout(100);await page.evaluate(index=>{window.__menuPad.buttons[index]={pressed:false,value:0};},index);await page.waitForTimeout(100);};
  if(touch){
   const down=await page.evaluate(()=>{const j=window.__game.menuPlayer.surface.controls.joystick;return {x:j.center.x,y:j.center.y+j.radius*0.7}});const r=await page.locator('canvas').first().boundingBox();await page.mouse.move(r.x+down.x,r.y+down.y);await page.mouse.down();await page.waitForTimeout(80);await page.mouse.up();await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.focus)).toBe(1);
   const a=await page.evaluate(()=>window.__game.menuPlayer.surface.controls.bButton);await canvasClick(page,a.x,a.y);
@@ -224,6 +224,7 @@ for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mod
  else{await page.keyboard.press('Tab');await page.keyboard.press('Enter');}
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.parameters.clicked)).toBe('second');
  if(mode==='desktop'){await page.keyboard.press('Shift+Tab');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.focus)).toBe(0);}
+ if(mode==='gamepad'){const screenId=await page.evaluate(()=>{const p=window.__game.menuPlayer,id=p.flow.screenId;p.flow.goTo('cars');return id;});await pad('gamepadB');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe(screenId);}
  await page.screenshot({path:`test-results/menu-playtest-${mode}.png`});
  if(touch){const s=await page.evaluate(()=>window.__game.menuPlayer.surface.controls.selectButton);await canvasClick(page,s.x+s.w/2,s.y+s.h/2);}
  else if(mode==='gamepad')await pad('gamepadSelect');else await page.keyboard.press('Escape');
