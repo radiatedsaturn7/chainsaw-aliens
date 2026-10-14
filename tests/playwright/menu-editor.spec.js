@@ -188,7 +188,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} shapes and
 });
 
 for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mode} widescreen canvas and shape color pickers preserve rendered colors`,async({page})=>{
- const mobile=mode==='portrait'||mode==='landscape-touch';
+ const mobile=mode!=='desktop';
  await page.setViewportSize(mode==='portrait'?{width:390,height:844}:mode==='landscape-touch'?{width:844,height:390}:{width:1280,height:800});await ready(page,mobile);
  if(mode==='gamepad')await page.evaluate(()=>{window.__game.input.isGamepadConnected=()=>true;});
  await expect.poll(()=>page.evaluate(()=>window.__game.menuEditor.activeViewportMode)).toBe(mode);
