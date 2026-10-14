@@ -203,3 +203,5 @@ Menu Preview uses the selected screen and unsaved document snapshot. Playing fro
 
 - Menu preview and playback use the shared level/race handheld screen, shell and MobileControls on portrait/landscape touch devices. D-pad navigates, A selects, B returns, Start confirms, and Select exits preview. A physical controller hides touch controls; desktop supports mouse, arrows, Tab/Shift+Tab and Enter. Explicit positive Navigation order values are visited first, ascending, with automatic (0) items afterward in drawing order; hidden widgets are skipped.
 - Screens > Menu Default Background sets the document background color, saved artwork and effect. New screens inherit it; Screen Properties can use the menu default or a custom background. Changing a screen background field switches it to custom. Defaults, inheritance and navigation order persist with the menu.
+
+- Menu Editor forms open with focus on the non-editable dialog heading, never an input. Menu Save As initially focuses the browser surface. Tapping a field or navigating with Tab begins editing; opening a form must not summon the mobile keyboard. Shared property forms use this neutral initial-focus behavior.

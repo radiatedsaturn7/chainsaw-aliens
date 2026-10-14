@@ -4,7 +4,9 @@ export function openEditorForm(title,fields,{description=''}={}){
   return new Promise(resolve=>{
     const focus=document.activeElement,dialog=document.createElement('dialog'),form=document.createElement('form');
     dialog.setAttribute('aria-label',title);dialog.style.cssText='width:min(420px,92vw);max-height:88dvh;overflow:auto;background:#19241f;color:#eef4ed;border:1px solid #53605b;border-radius:12px;padding:18px;font:16px system-ui';
-    const heading=document.createElement('h2');heading.textContent=title;form.appendChild(heading);
+    // Give the modal a neutral initial focus before showModal runs its focus steps.
+    // Focusing then blurring an input would still flash the mobile keyboard.
+    const heading=document.createElement('h2');heading.tabIndex=-1;heading.autofocus=true;heading.textContent=title;form.appendChild(heading);
     if(description){const summary=document.createElement('p');summary.textContent=description;summary.style.whiteSpace='pre-line';form.appendChild(summary);}
     const inputs={};
     for(const field of fields){

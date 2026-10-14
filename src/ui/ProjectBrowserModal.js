@@ -171,6 +171,7 @@ export function openProjectBrowser({
   fixedFolder = null,
   title = 'Project Browser',
   initialName = '',
+  focusNameOnOpen = true,
   onOpen = null,
   onNew = null,
   onImport = null,
@@ -869,7 +870,7 @@ export function openProjectBrowser({
       refresh();
     });
     overlay.focus({ preventScroll: true });
-    if (mode === 'saveAs') {
+    if (mode === 'saveAs' && focusNameOnOpen) {
       saveInput.focus({ preventScroll: true });
     }
   });

@@ -230,3 +230,19 @@ for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mod
  else if(mode==='gamepad')await pad('gamepadSelect');else await page.keyboard.press('Escape');
  await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-editor');
 });
+
+for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} menu forms wait for intentional field focus`,async({page})=>{
+ await page.setViewportSize(mobile?{width:390,height:844}:{width:1280,height:800});await ready(page,mobile);
+ await designerButton(page,'widget-add');await designerButton(page,'pick-widget:shape');
+ await page.evaluate(()=>{window.__menuFocusEvents=[];document.addEventListener('focusin',e=>window.__menuFocusEvents.push(e.target.tagName));});
+ await designerButton(page,'element-setup');
+ const dialog=page.getByRole('dialog',{name:'Shape Properties',exact:true});await expect(dialog).toBeVisible();await expect(dialog.getByRole('heading')).toBeFocused();
+ expect(await page.evaluate(()=>window.__menuFocusEvents.filter(tag=>['INPUT','TEXTAREA','SELECT'].includes(tag)))).toEqual([]);
+ const label=dialog.getByLabel('Label',{exact:true});await label.click();await expect(label).toBeFocused();await label.fill('Chosen field');await applyDialog(page,'Shape Properties');
+ expect(await page.evaluate(()=>window.__game.menuEditor.element.label)).toBe('Chosen field');
+ await designerButton(page,'element-setup');await expect(dialog.getByRole('heading')).toBeFocused();await page.keyboard.press('Tab');await expect(label).toBeFocused();await dialog.getByRole('button',{name:'Cancel',exact:true}).click();
+ await page.evaluate(()=>{window.__menuFocusEvents=[];void window.__game.menuEditor.saveMenu(true);});
+ const filename=page.getByPlaceholder('Filename',{exact:true});await expect(filename).toBeVisible();await expect(filename).not.toBeFocused();
+ expect(await page.evaluate(()=>window.__menuFocusEvents.filter(tag=>['INPUT','TEXTAREA','SELECT'].includes(tag)))).toEqual([]);
+ await filename.click();await expect(filename).toBeFocused();
+});
