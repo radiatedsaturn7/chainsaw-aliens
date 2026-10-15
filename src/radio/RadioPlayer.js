@@ -19,6 +19,7 @@ export class RadioPlayer {
   }
   persist(key, value) {
     const snapshot = structuredClone(value);
+    if(key===RADIO_PROGRESS_KEY&&this.getInventory())delete snapshot.unlocked;
     // Serialize writes so a slow earlier unlock cannot overwrite a later pickup.
     const pending = this.saveQueue.then(() => this.savePreference(key, snapshot)).then(result => {
       if (result?.ok === false) throw Error(result.reason || 'Radio could not be saved');
@@ -35,8 +36,8 @@ export class RadioPlayer {
   }
   get available() { return this.progress.enabled && this.contextEnabled; }
   get stationId() { return this.library.stations.some(s => s.id === this.progress.stationId) ? this.progress.stationId : this.library.stations[0]?.id || ''; }
-  get listeningProgress() {const inventory=this.getInventory();return inventory?.ready?{...this.progress,unlocked:Object.keys(inventory.progress.bags.radio).filter(id=>inventory.progress.bags.radio[id]>0)}:this.progress;}
-  ownsTrack(track) {return Boolean(track&&(track.initiallyUnlocked||this.listeningProgress.unlocked.includes(track.id)));}
+  get listeningProgress() {const inventory=this.getInventory();return inventory?.ready?{...this.progress,inventoryBacked:true,unlocked:Object.keys(inventory.progress.bags.radio).filter(id=>inventory.progress.bags.radio[id]>0)}:this.progress;}
+  ownsTrack(track) {return Boolean(track&&((!this.listeningProgress.inventoryBacked&&track.initiallyUnlocked)||this.listeningProgress.unlocked.includes(track.id)));}
   get tracks() { return radioStationTracks(this.library, this.listeningProgress, this.stationId); }
   get currentTrack() { return this.library.tracks.find(track => track.id === this.trackId) || null; }
   setContext(enabled) { this.contextEnabled = enabled !== false;if (!this.available) this.stop();this.onChange(); }

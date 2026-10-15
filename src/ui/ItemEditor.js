@@ -98,7 +98,8 @@ export default class ItemEditor extends DoodadEditor {
     const result=await openEditorForm(add?'Add Item Effect':'Edit Item Effect',fields);
     if(!result)return;
     const choices=fields.find(field=>field.id==='target').options(result);
-    result.contentName=choices.find(choice=>choice.value===result.target)?.label||'';
+    const choice=choices.find(choice=>choice.value===result.target);
+    result.contentName=choice?.label||'';result.itemRef=result.type==='inventory'&&result.bag==='items'?choice?.ref||'':'';
     if(['weapon','ability','device','unlock'].includes(result.type)||(result.type==='inventory'&&result.bag==='radio'))result.amount=1;
     const effects=[...this.doodad.effects];if(add)effects.push(result);else effects[this.selectedEffect]=result;
     // Validate before changing the live document, so an invalid form cannot corrupt it.

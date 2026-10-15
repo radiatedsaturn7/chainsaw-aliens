@@ -8,7 +8,7 @@ export function itemEffectFields(effect,item,{tracks=[],items=[]}={}) {
     if(type==='inventory'&&bag==='radio')return [{value:'',label:'Choose track'},...tracks.map(t=>({value:t.id,label:t.title}))];
     if(NAMED[type])return NAMED[type];
     const entries=[{value:item.id,label:item.name},...items.flatMap(entry=>[
-      ...(type==='inventory'?[{value:entry.id,label:entry.name}]:[]),
+      ...(type==='inventory'?[{value:entry.id,label:entry.name,ref:entry.name}]:[]),
       ...entry.effects.filter(e=>e.type===type).map(e=>({value:e.target,label:e.contentName||entry.name}))
     ])];
     if(effect.target&&!entries.some(e=>e.value===effect.target))entries.push({value:effect.target,label:effect.contentName||'Current selection'});

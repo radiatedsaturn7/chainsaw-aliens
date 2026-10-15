@@ -1010,7 +1010,7 @@ function advanceVehicleDynamicsAuthority(editor, {
   weatherState
 }) {
   const session = editor.playtestSession;
-  controls={...controls,itemSpeedMultiplier:session.itemSpeedMultiplier||1};
+  controls={...controls,itemSpeedMultiplier:countdownActive?1:session.itemSpeedMultiplier||1};
   const authority = ensureVehicleDynamicsAuthority(editor, tuning, controls);
   if (authority.workerBridge) {
     const workerSnapshot = authority.workerBridge.update({

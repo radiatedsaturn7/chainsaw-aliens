@@ -20,7 +20,7 @@ export function normalizeItemEffect(source = {}) {
   const amount = finite(source.amount ?? 1, NaN);
   if (!Number.isFinite(amount)) throw Error('Effect amount must be a number.');
   if (type !== 'modifier' && amount <= 0) throw Error('Effect amount must be greater than zero.');
-  return { type, target, amount, contentName:text(source.contentName),
+  return { type, target, amount, contentName:text(source.contentName), itemRef:text(source.itemRef),
     bag: radio ? 'radio' : ['items','radio'].includes(source.bag) ? source.bag : 'items',
     recipient: ['player','allies','opponents','everyone'].includes(source.recipient) ? source.recipient : 'player',
     when: ['collect','use','hit'].includes(source.when) ? source.when : 'collect',

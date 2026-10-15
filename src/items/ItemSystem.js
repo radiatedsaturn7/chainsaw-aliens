@@ -1,3 +1,4 @@
+import {itemLibrary} from './ItemLibrary.js';
 import {ItemRuntime} from './ItemRuntime.js';
 import {normalizeItemDocument} from './ItemDocument.js';
 import {applyItemModifier} from './ItemDocument.js';
@@ -6,8 +7,8 @@ import {normalizeItemProgress,planItemEffects,applyItemPlan,syncItemGrantsToPlay
 
 export const ITEM_PROGRESS_KEY='rtg-item-progress';
 export class ItemSystem {
-  constructor(game,{load=loadServerPreferenceAsync,save=saveServerPreference}={}) {
-    this.game=game;this.runtime=new ItemRuntime(game);this.selectedItemId='';this.loadPreference=load;this.savePreference=save;
+  constructor(game,{load=loadServerPreferenceAsync,save=saveServerPreference,library=itemLibrary}={}) {
+    this.library=library;this.game=game;this.runtime=new ItemRuntime(game);this.selectedItemId='';this.loadPreference=load;this.savePreference=save;
     this.progress=normalizeItemProgress();this.revision=0;this.events=[];this.sessionCollected=new Set();this.pending=new Map();this.retryAt=new Map();this.queue=Promise.resolve();this.appliedPlayers=new WeakSet();
   }
   async load() {
@@ -56,14 +57,25 @@ export class ItemSystem {
       this.progress=next;this.game.itemProgress=next;syncItemGrantsToPlayer(this.game.player,next);this.game.radio?.onChange?.();return true;
     });this.queue=task.catch(()=>{});return task;
   }
+  async prepareInventory(plan){
+    for(const effect of plan.definition.effects){
+      if(effect.type!=='inventory'||effect.bag!=='items'||!effect.itemRef||effect.when!=='collect'||!['player','everyone'].includes(effect.recipient))continue;
+      const item=await this.library.load(effect.itemRef);
+      if(item.id!==effect.target)throw Error('The selected item has changed. Choose it again in the Item Editor.');
+      plan.progress.contentNames[item.id]=item.name;
+      if(item.effects.some(effect=>effect.when!=='collect'))plan.progress.usable[item.id]=item;
+    }
+  }
   usableItems(){return Object.values(this.progress.usable).filter(item=>this.progress.bags.items[item.id]>0);}
   async use(id=this.usableItems().some(item=>item.id===this.selectedItemId)?this.selectedItemId:this.usableItems()[0]?.id){
     const task=this.queue.then(async()=>{
       await this.load();this.restorePlayer();
       const item=this.progress.usable[id];if(!item||!(this.progress.bags.items[id]>0))return false;
       const session=this.game.raceEditor?.playtestSession;if(session?.carEditorPreview)return false;
+      if(session?.running&&Number(session.countdownRemainingMs||0)>1000)throw Error('Wait for the race to start.');
       const definition=normalizeItemDocument({...item,effects:item.effects.filter(e=>e.when==='use').map(e=>({...e,when:'collect'}))});
       const plan=planItemEffects(definition,this.game.player,this.game.abilities,this.progress);
+      await this.prepareInventory(plan);
       for(const track of plan.radioTracks){await this.game.radio?.load();if(!this.game.radio?.library.tracks.some(entry=>entry.id===track))throw Error('Track unavailable.');}
       plan.progress.bags.items[id]-=1;plan.progress.inventory[id]=plan.progress.bags.items[id];
       const stats={...this.savedStats};
@@ -88,6 +100,7 @@ export class ItemSystem {
     const task=this.queue.then(async()=>{
       await this.load();this.restorePlayer();if(this.isCollected(id))return false;
       const plan=planItemEffects(item,this.game.player,this.game.abilities,this.progress);
+      await this.prepareInventory(plan);
       for(const trackId of plan.radioTracks){
         const radio=this.game.radio;if(!radio)throw Error('Radio is unavailable.');await radio.load();
         if(!radio.library.tracks.some(track=>track.id===trackId))throw Error('This item needs an existing radio track.');

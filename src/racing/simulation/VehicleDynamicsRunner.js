@@ -4582,7 +4582,7 @@ export class VehicleDynamicsRunner {
     );
     let suppressThrottleForResetRelease = false;
     if (this.stationaryResetHold
-      && Number(sampledControls.throttle || 0) > STATIONARY_RESET_WAKE_THROTTLE) {
+      && (Number(sampledControls.throttle || 0) > STATIONARY_RESET_WAKE_THROTTLE || Number(sampledControls.itemSpeedMultiplier||1)>1)) {
       this.stationaryResetHold.wakeRequested = true;
       if (Number(this.stationaryResetHold.validContactConfirmations || 0) >= 2
         || this.stationaryResetHold.confirmationTimedOut === true) {

@@ -91,3 +91,17 @@ test('held control samples retain item activation and expiry without blending or
  for(const [timeSeconds,multiplier] of [[0,1],[1,1],[2,1.5],[3,1.5],[4,1],[5,1]])timeline.addSample(timeSeconds,{itemSpeedMultiplier:multiplier});
  assert.equal(timeline.sampleAt(1.5).itemSpeedMultiplier,1);assert.equal(timeline.sampleAt(2.5).itemSpeedMultiplier,1.5);assert.equal(timeline.sampleAt(4.5).itemSpeedMultiplier,1);
 });
+
+test('Radio inventory is browsable when playback is disabled and long bags stay within six menu rows',async()=>{
+ const {game}=setup({'rtg-radio-library':{tracks:Array.from({length:9},(_,i)=>({id:`song${i}`,title:`Song ${i}`,initiallyUnlocked:true}))}});
+ await game.radio.load();await game.radio.setEnabled(false);
+ const menu=new InventoryMenu(game.items);menu.rows().find(row=>row.id==='inventory-radio').onClick();
+ const seen=new Set();for(;;){const rows=menu.rows();assert.ok(rows.length<=6);assert.ok(!rows.some(row=>row.id==='inventory-play-radio'));for(const row of rows)if(row.id.startsWith('inventory-track:'))seen.add(row.label);const next=rows.find(row=>row.id==='inventory-next');if(!next)break;next.onClick();}
+ assert.equal(seen.size,9);assert.ok(seen.has('Song 8'));
+});
+
+test('Inventory effects that grant a named usable item retain its use behavior',async()=>{
+ const {game}=setup();game.items.library={load:async name=>{assert.equal(name,'Nitro');return nitro;}};
+ await game.items.collect({id:'crate',name:'Crate',effects:[{type:'inventory',target:'nitro',itemRef:'Nitro',contentName:'Nitro',amount:2}]},'crate');
+ assert.equal(game.items.progress.bags.items.nitro,2);assert.equal(await game.items.use('nitro'),true);assert.equal(game.items.progress.bags.items.nitro,1);assert.equal(game.player.itemSpeedMultiplier,1.5);
+});

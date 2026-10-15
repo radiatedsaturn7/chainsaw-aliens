@@ -3,7 +3,7 @@ import { normalizeItemDocument,normalizeItemEffect,applyItemModifier } from './I
 const copyMap = value => Object.fromEntries(Object.entries(value || {}).filter(([key]) => !['__proto__','prototype','constructor'].includes(key)));
 export function normalizeItemProgress(value = {}) {
   return {
-    version:1, collected:[...new Set((Array.isArray(value.collected)?value.collected:[]).filter(id => typeof id === 'string'))],
+    version:2, collected:[...new Set((Array.isArray(value.collected)?value.collected:[]).filter(id => typeof id === 'string'))],
     keys:copyMap(value.keys), weapons:copyMap(value.weapons), abilities:copyMap(value.abilities),
     bags:{items:copyMap(value.bags?.items || value.inventory),radio:copyMap(value.bags?.radio)},
     usable:copyMap(value.usable),contentNames:copyMap(value.contentNames),

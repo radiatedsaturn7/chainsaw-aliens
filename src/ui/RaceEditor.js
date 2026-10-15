@@ -19102,6 +19102,10 @@ export default class RaceEditor {
   }
 
   backRacePauseMenu() {
+    if(this.raceInput.pauseMenuMode==='inventory'){
+      if(this.itemInventoryMenu?.page==='radio')this.itemInventoryMenu.page='items';else this.raceInput.pauseMenuMode='main';
+      this.raceInput.pauseMenuIndex=0;return;
+    }
     if (this.raceInput.pauseMenuMode === 'radio') {
       if(this.radioMenu?.page !== 'main')this.radioMenu.page='main';else this.raceInput.pauseMenuMode='main';
       this.raceInput.pauseMenuIndex=0;return;

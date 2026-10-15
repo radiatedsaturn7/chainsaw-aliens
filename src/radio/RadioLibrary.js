@@ -26,7 +26,7 @@ export function normalizeRadioProgress(value = {}) {
   return { enabled: value?.enabled !== false, unlocked: unique(value?.unlocked), disabled: unique(value?.disabled), stationId: text(value?.stationId) };
 }
 export function isRadioTrackUnlocked(track, progress) {
-  return Boolean(track && (track.initiallyUnlocked || progress.unlocked.includes(track.id)));
+  return Boolean(track && ((!progress.inventoryBacked&&track.initiallyUnlocked) || progress.unlocked.includes(track.id)));
 }
 export function radioStationTracks(library, progress, stationId, { includeDisabled = false } = {}) {
   const station = library.stations.find(entry => entry.id === stationId);

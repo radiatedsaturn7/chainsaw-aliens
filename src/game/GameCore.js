@@ -3696,7 +3696,7 @@ export default class Game {
         if(this.pauseMenu.radioMenu.page !== 'main')this.pauseMenu.radioMenu.page='main';else this.pauseMenu.radioOpen=false;
         this.pauseMenu.selection=0;
       } else if(this.pauseMenu.inventoryOpen){
-        this.pauseMenu.inventoryOpen=false;this.pauseMenu.selection=0;
+        if(this.pauseMenu.inventoryMenu?.page==='radio')this.pauseMenu.inventoryMenu.page='items';else this.pauseMenu.inventoryOpen=false;this.pauseMenu.selection=0;
       } else if (this.minimapSelected) {
         this.minimapSelected = false;
         resetMenuRepeatState(this.pauseMenuRepeatState);

@@ -70,7 +70,7 @@ export default class Pause {
       title: this.radioOpen && this.radio?.available ? 'Radio' : this.inventoryOpen?'Inventory':'Paused',
       rows: items,
       selectedIndex: this.selection,
-      objective: this.radioOpen ? '' : objective,
+      objective: this.radioOpen||this.inventoryOpen ? '' : objective,
       footer: confirmExit
         ? 'D-pad: Choose   R/G: Confirm'
         : 'D-pad: Navigate   R/G: Select   START: Return'

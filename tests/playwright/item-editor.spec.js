@@ -98,8 +98,14 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} compact ef
  expect(await page.evaluate(()=>window.__game.items.usableItems().length)).toBe(0);
 });
 
-test('race inventory launches a timed boost through live vehicle controls',async({page})=>{
+test('race inventory boosts the player and fires a slowing projectile at an opponent',async({page})=>{
  test.setTimeout(150000);const errors=[];page.on('pageerror',error=>errors.push(error.message));await ready(page);await seedRaceRuntimeFixtures(page);
+ await page.evaluate(async()=>{
+  const g=window.__game,{hydrateProjectFile}=await import('/src/ui/serverStorage.js'),{loadProjectFile,saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');
+  await hydrateProjectFile('races','Studio Sprint2');const data=loadProjectFile('races','Studio Sprint2').data;
+  data.race.competition={...data.race.competition,mode:'ai-race',aiDrivers:g.raceEditor.createRaceAiGrid(1)};
+  await saveProjectFileAndConfirm('races','Studio Sprint2',data);
+ });
  await page.evaluate(async()=>{const g=window.__game;await g.items.collect({id:'nitro-ci',name:'Nitro',effects:[{type:'speed',when:'use',amount:1.5,duration:3}]},'nitro-ci');void g.startRaceTravel({raceName:'Studio Sprint2',carSelection:'specific',carRef:'2022 Subaru WRX2'});});
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.startupFramePending)).toBe(false);
@@ -110,5 +116,18 @@ test('race inventory launches a timed boost through live vehicle controls',async
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.itemSpeedMultiplier)).toBe(1.5);
  await expect.poll(()=>page.evaluate(()=>Math.abs(window.__game.raceEditor.playtestSession.speedMps)),{timeout:5000}).toBeGreaterThan(0.3);
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.itemSpeedMultiplier),{timeout:8000}).toBe(1);
- expect(await page.evaluate(()=>window.__game.items.progress.bags.items['nitro-ci'])).toBe(0);expect(errors).toEqual([]);
+ expect(await page.evaluate(()=>window.__game.items.progress.bags.items['nitro-ci'])).toBe(0);
+ await expect.poll(()=>page.evaluate(()=>{
+  const s=window.__game.raceEditor.playtestSession,a=s.aiRuntime[0];if(!a)return false;
+  const dx=a.worldX-s.worldX,dz=a.worldZ-s.worldZ,forward=dx*Math.sin(s.carYaw)+dz*Math.cos(s.carYaw),side=dx*Math.cos(s.carYaw)-dz*Math.sin(s.carYaw);
+  return forward>4&&forward<70&&Math.abs(side)<1.5;
+ }),{timeout:30000}).toBe(true);
+ await page.evaluate(async()=>{const g=window.__game;await g.items.collect({id:'slow-ci',name:'Slow shot',effects:[{type:'speed',when:'hit',recipient:'opponents',amount:0.5,duration:4}]},'slow-ci');});
+ await page.keyboard.press('KeyU');
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.aiRuntime[0].itemSpeedMultiplier),{timeout:8000}).toBe(0.5);
+ expect(await page.evaluate(()=>window.__game.raceEditor.playtestSession.itemSpeedMultiplier)).toBe(1);
+ expect(await page.evaluate(()=>window.__game.items.progress.bags.items['slow-ci'])).toBe(0);
+ await page.screenshot({path:'test-results/item-race-hit.png'});
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.aiRuntime[0].itemSpeedMultiplier),{timeout:8000}).toBe(1);
+ expect(errors).toEqual([]);
 });
