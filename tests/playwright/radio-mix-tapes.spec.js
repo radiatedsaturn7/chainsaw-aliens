@@ -43,8 +43,8 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors a 
  await dialog(page,'Doodad Item').getByLabel('Item type',{exact:true}).selectOption('mix-tape');const trackId=await page.evaluate(()=>window.__game.radio.library.tracks[0].id);await dialog(page,'Doodad Item').getByLabel('Track to unlock',{exact:true}).selectOption(trackId);await apply(page,'Doodad Item');
  await page.evaluate(async name=>{const g=window.__game,{serializeRaceDoodadDocument}=await import('/src/racing/raceDoodads.js'),{saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');g.doodadEditor.doodad.name=name;await saveProjectFileAndConfirm('doodads',name,serializeRaceDoodadDocument(g.doodadEditor.doodad));g.enterEditor();void g.editor.addMixTape();},name);
  await page.locator(`.project-browser-row[data-name="${name}"]`).getByRole('button',{name:'Open',exact:true}).click();
- await expect.poll(()=>page.evaluate(()=>window.__game.world.decals.some(item=>item.itemType==='mix-tape'))).toBe(true);
- await page.evaluate(()=>{const g=window.__game;g.resetRun({playtest:true});const item=g.world.decals.find(item=>item.itemType==='mix-tape');item.x=g.player.x-16;item.y=g.player.y-16;item.w=32;item.h=32;g.spawnPauseTimer=0;g.transitionTo('playing');});
+ await expect.poll(()=>page.evaluate(name=>window.__game.world.decals.some(item=>item.itemType==='mix-tape'&&item.doodadRef===name),name)).toBe(true);
+ await page.evaluate(name=>{const g=window.__game;g.resetRun({playtest:true});const item=g.world.decals.find(item=>item.itemType==='mix-tape'&&item.doodadRef===name);item.x=g.player.x-16;item.y=g.player.y-16;item.w=32;item.h=32;g.spawnPauseTimer=0;g.transitionTo('playing');},name);
  await expect.poll(()=>page.evaluate(()=>window.__game.radio.progress.unlocked)).toEqual([trackId]);
  await page.evaluate(()=>window.__game.transitionTo('pause'));await clickPause(page,'radio');await clickPause(page,'radio-play');
  await expect.poll(()=>page.evaluate(()=>window.__game.radio.playing)).toBe(true);await expect.poll(()=>page.evaluate(()=>window.__game.radio.audio?.currentTime||0)).toBeGreaterThan(0.05);
