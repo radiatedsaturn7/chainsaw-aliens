@@ -223,6 +223,8 @@ export class RadioEditor extends RaceEditor {
     this.buttons.push({id:'radio-play',bounds:{...bounds},onClick:()=>this.handleMenuAction('radio-play')});
   }
   drawCarEditorWorkSurface(ctx,bounds) {
+    // The shared gamepad help bar overlays the bottom of the work surface.
+    if(this.activeViewportMode==='gamepad')bounds={...bounds,h:Math.max(80,bounds.h-36)};
     this.carArtSliderRegions=[];this.radioBounds={...bounds};
     drawSharedPanel(ctx,bounds,{fill:UI_SUITE.colors.bg,border:UI_SUITE.colors.border});
     ctx.save();ctx.fillStyle=UI_SUITE.colors.text;ctx.font=`14px ${UI_SUITE.font.family}`;ctx.textAlign='left';
@@ -289,7 +291,9 @@ export class RadioEditor extends RaceEditor {
     if(input?.wasPressedCode?.('ArrowRight'))this.focusList='tracks';
     if(input?.wasPressedCode?.('Enter'))void this.handleMenuAction(this.focusList==='stations'?'station-properties':'track-properties');
     const pad=this.radioInput.updateGamepad(input,dt,{includePanIntent:true}),roots=getEditorControllerRootMenuEntries(this.editorId);
-    const stick=Math.abs(pad.axes.leftX)>Math.abs(pad.axes.leftY)?(Math.abs(pad.axes.leftX)>0.5?(pad.axes.leftX<0?INPUT.NAV_LEFT:INPUT.NAV_RIGHT):null):(Math.abs(pad.axes.leftY)>0.5?(pad.axes.leftY<0?INPUT.NAV_UP:INPUT.NAV_DOWN):null);
+    const panAllowed=!this.mobileRootOpen&&!this.gamepadSubmenuOpen;
+    const navX=pad.axes.leftX||(panAllowed?pad.axes.rightX:0),navY=pad.axes.leftY||(panAllowed?pad.axes.rightY:0);
+    const stick=Math.abs(navX)>Math.abs(navY)?(Math.abs(navX)>0.5?(navX<0?INPUT.NAV_LEFT:INPUT.NAV_RIGHT):null):(Math.abs(navY)>0.5?(navY<0?INPUT.NAV_UP:INPUT.NAV_DOWN):null);
     if(!stick){this.padStickDirection=null;this.padStickRepeat=0;}
     else {this.padStickRepeat=(this.padStickRepeat||0)-dt;if(stick!==this.padStickDirection||this.padStickRepeat<=0){pad.actions.push({type:stick});this.padStickDirection=stick;this.padStickRepeat=0.2;}}
     for(const action of pad.actions){
