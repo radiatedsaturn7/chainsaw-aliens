@@ -419,7 +419,10 @@ export default class DoodadEditor {
   }
 
   async importItemArtwork() {
-    try {await chooseImage({element:this.doodad,change:fn=>fn()});await this.hydrateDoodadArt(this.doodad.artRef,{force:true});}
+    // Desktop collision panels normalize the document while the image picker is open.
+    // Resolve the current document when the asynchronous import applies its artwork.
+    const editor=this;
+    try {await chooseImage({get element(){return editor.doodad;},change:fn=>fn()});await this.hydrateDoodadArt(this.doodad.artRef,{force:true});}
     catch(error){this.status=error.message;}
   }
 

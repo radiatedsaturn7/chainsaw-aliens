@@ -8,7 +8,7 @@ for(let i=0;i<1200;i++)silentMp3.set([0xff,0xfb,0x90,0x00],i*417);
 const dialog=(page,name)=>page.getByRole('dialog',{name,exact:true});
 const apply=(page,name)=>dialog(page,name).getByRole('button',{name:'Apply',exact:true}).click();
 async function ready(page){await page.goto('/index.html');await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');}
-async function clickCanvas(page,bounds){const point=await page.evaluate(b=>{const g=window.__game,r=g.canvas.getBoundingClientRect();return {x:r.x+(b.x+b.w/2)*r.width/g.viewport.width,y:r.y+(b.y+b.h/2)*r.height/g.viewport.height};},bounds);await page.mouse.click(point.x,point.y);}
+async function clickCanvas(page,bounds){const point=await page.evaluate(b=>{const g=window.__game,r=g.canvas.getBoundingClientRect(),layout=g.getMobileGameplayHandheldLayout();let x=b.x+b.w/2,y=b.y+b.h/2;if(layout){x=layout.screen.x+x*layout.screen.w/layout.renderViewport.w;y=layout.screen.y+y*layout.screen.h/layout.renderViewport.h;}return {x:r.x+x*r.width/g.viewport.width,y:r.y+y*r.height/g.viewport.height};},bounds);await page.mouse.click(point.x,point.y);}
 async function clickPause(page,id){await expect.poll(()=>page.evaluate(id=>window.__game.pauseMenu.itemBounds.some(b=>b.id===id),id)).toBe(true);await clickCanvas(page,await page.evaluate(id=>window.__game.pauseMenu.itemBounds.find(b=>b.id===id),id));}
 
 test.beforeEach(async({page})=>{
