@@ -1,7 +1,11 @@
+import { RadioMenu } from '../radio/RadioMenu.js';
 import { drawInGameTextMenu } from './shared/inGameTextMenu.js';
 
 export default class Pause {
-  constructor() {
+  constructor(radio = null, onError = () => {}) {
+    this.radio = radio;
+    this.radioOpen = false;
+    this.radioMenu = radio ? new RadioMenu(radio, {onBack: () => {this.radioOpen=false;this.selection=0;}, onError}) : null;
     this.shake = true;
     this.selection = 0;
     this.exitBounds = null;
@@ -11,8 +15,10 @@ export default class Pause {
   }
 
   getItems() {
+    if (this.radioOpen && this.radio?.available) return this.radioMenu.rows();
     return [
       { id: 'resume', label: 'Return to Game' },
+      ...(this.radio?.available ? [{id:'radio',label:'Radio',onClick:()=>{this.radioOpen=true;this.radioMenu.page='main';this.selection=0;}}] : []),
       { id: 'exit', label: 'Exit to Main Menu' }
     ];
   }
@@ -34,6 +40,7 @@ export default class Pause {
   confirm() {
     const item = this.currentItem();
     if (!item) return null;
+    if (item.onClick) {item.onClick();this.selection=0;return null;}
     return item.id;
   }
 
@@ -53,14 +60,15 @@ export default class Pause {
     const items = this.getItems();
     const menu = drawInGameTextMenu(ctx, {
       bounds: { x: 0, y: 0, w: width, h: height },
-      title: 'Paused',
+      title: this.radioOpen && this.radio?.available ? 'Radio' : 'Paused',
       rows: items,
       selectedIndex: this.selection,
-      objective,
+      objective: this.radioOpen ? '' : objective,
       footer: confirmExit
         ? 'D-pad: Choose   R/G: Confirm'
         : 'D-pad: Navigate   R/G: Select   START: Return'
     });
+    if(this.radioOpen && this.radio?.available)this.radioMenu.display.draw(ctx,this.radio,menu);
     this.itemBounds = menu.rowBounds.map((bounds, index) => ({
       ...bounds,
       id: items[index]?.id

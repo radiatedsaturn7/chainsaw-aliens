@@ -20,6 +20,7 @@ export default class Title {
       ],
       audio: [
         'midi-editor',
+        'radio-editor',
         'sfx-editor',
         'back'
       ],
@@ -35,6 +36,7 @@ export default class Title {
       ]
     };
     this.optionsOrder = [
+      'radio',
       'latest-changes',
       'robtersession',
       'controls',
@@ -487,7 +489,7 @@ export default class Title {
     order.forEach((action, index) => {
       const y = layout.startY + index * (layout.buttonHeight + layout.gap);
       const selected = order[this.folderSelections[folder] || 0] === action;
-      const label = action === 'level-editor'
+      const label = action === 'radio-editor' ? 'Radio Editor' : action === 'level-editor'
         ? 'Level Editor'
         : action === 'tile-editor'
           ? 'Tile Editor'
@@ -537,7 +539,7 @@ export default class Title {
     this.optionsOrder.forEach((action, index) => {
       const y = layout.startY + index * (layout.buttonHeight + layout.gap);
       const selected = this.optionsOrder[this.optionsSelection] === action;
-      const label = action === 'latest-changes'
+      const label = action === 'radio' ? 'Radio' : action === 'latest-changes'
         ? 'Latest Changes'
         : action === 'robtersession'
           ? 'Songs'

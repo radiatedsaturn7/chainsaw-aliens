@@ -538,7 +538,7 @@ export default class AudioSystem {
     this.ensure();
     if (this.midiBus) return;
     this.midiBus = this.ctx.createGain();
-    this.midiBus.gain.value = this.midiBusVolume * this.midiBusHeadroom;
+    this.midiBus.gain.value = this.midiBusVolume * this.midiBusHeadroom * (this.radioPlaying ? 0 : 1);
     this.midiLimiter = this.ctx.createDynamicsCompressor();
     this.midiLimiter.threshold.value = -16;
     this.midiLimiter.knee.value = 6;
@@ -720,12 +720,17 @@ export default class AudioSystem {
     });
   }
 
+  setRadioPlaying(playing) {
+    this.radioPlaying = Boolean(playing);
+    if(this.midiBus?.gain)this.midiBus.gain.value=this.midiBusVolume*this.midiBusHeadroom*(this.radioPlaying?0:1);
+  }
+
   setMidiVolume(value = 1) {
     const nextValue = clamp(Number(value) || 0, 0, 1);
     this.midiBusVolume = nextValue;
     this.ensureMidiSampler();
     if (this.midiBus?.gain) {
-      this.midiBus.gain.value = nextValue * this.midiBusHeadroom;
+      this.midiBus.gain.value = nextValue * this.midiBusHeadroom * (this.radioPlaying ? 0 : 1);
     }
   }
 

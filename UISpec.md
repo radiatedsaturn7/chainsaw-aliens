@@ -315,4 +315,15 @@ Shared implementation helpers:
 
 - Menu Editor forms open with focus on the non-editable dialog heading, never an input. Menu Save As initially focuses the browser surface. Tapping a field or navigating with Tab begins editing; opening a form must not summon the mobile keyboard. Shared property forms use this neutral initial-focus behavior.
 
-- Menu Editor has a shared top Play control in every layout. Preview exposes Pause/Resume and Exit Preview; pausing freezes menu time, input, video and audio. Race/level destinations use their existing playtest controls. Race return destinations resume the menu; leaving a preview-launched level (including race-to-level travel) restores menu authoring and the original world.
+- Menu Editor has a shared top Play control in every layout. Play starts preview; pressing the active top Pause button ends preview and returns to authoring, as does Exit Preview. The P keyboard shortcut can still suspend/resume playback. Race/level destinations use their existing playtest controls. Race return destinations resume the menu; leaving a preview-launched level (including race-to-level travel) restores menu authoring and the original world.
+
+- During menu playback, Left/Right moves focus between visible controls in the same row when a button or key binding is focused; it never activates those controls. Choices, sliders and toggles retain Left/Right value adjustment. Confirm activates the focused control; Up/Down and Tab retain navigation order.
+
+
+## Radio and Mix Tapes
+
+- Audio > Radio Editor imports MP3 tracks with stable IDs, song title, artist, album and album artwork. Stations group tracks and have names and logos. Artwork uses saved Pixel Editor art or image upload. Station and track metadata persist independently of player unlocks.
+- Doodad Editor > Art exposes Import Image and Item / Mix Tape, including in portrait. A mix tape references one radio track. Race placement uses the existing doodad tools; Level Editor > Graphics > Add Mix Tape uses existing graphic move/resize/delete controls.
+- Mix tapes rotate during gameplay. Contact unlocks the referenced track without car damage or velocity changes. The collectible disappears only after durable save; failures allow retry. Unlocks survive reload and renaming songs or stations. Collecting works even with radio playback disabled.
+- Level and race pause menus expose Radio when both Options > Radio and that level/race's Radio setting are enabled. Radio supports stations, Play/Pause, Skip, Rewind/Previous and toggling unlocked tracks. Song lists page within the shared gameplay menu. Station logo, album cover, artist and album accompany playback.
+- Radio uses the music-volume setting and suppresses the MIDI music bus while playing; pausing or stopping restores it. Leaving gameplay stops radio. Turning radio off hides its pause entry without deleting unlocks.

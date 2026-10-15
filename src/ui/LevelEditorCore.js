@@ -1,3 +1,4 @@
+import {getRaceArtSpriteCanvasShared,hydrateRaceArtSpriteShared} from './shared/raceArtSpriteCanvas.js';
 import {openProjectBrowser} from './ProjectBrowserModal.js';
 import {pickModelBinding} from './ModelPicker.js';
 import {modelSprites} from '../model3d/ModelSprites.js';
@@ -1749,7 +1750,8 @@ export default class Editor {
       columns = 2;
     } else if (tabId === 'level-settings') {
       items = [
-        { id: 'resize-level', label: 'Resize Level', tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
+        { id: 'level-radio', label: `Radio: ${this.game.world.radioEnabled !== false ? 'On' : 'Off'}`, onClick: () => {this.game.world.radioEnabled = this.game.world.radioEnabled === false;this.game.world.data.radioEnabled = this.game.world.radioEnabled;this.persistAutosave();} },
+            { id: 'resize-level', label: 'Resize Level', tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
         { id: 'crop-level', label: 'Crop Level', tooltip: 'Crop level to smallest bounds containing placed content', onClick: () => this.cropLevelToContent() },
         ...(spawnTile
           ? [{
@@ -1978,6 +1980,7 @@ export default class Editor {
           onClick: () => { this.takeGraphicsScreenshot(); }
         },
         {id:'graphics-model',label:'Add 3D Model',onClick:()=>this.addModelScenery()},
+        {id:'graphics-mix-tape',label:'Add Mix Tape',onClick:()=>this.addMixTape()},
         {id:'graphics-doodad',label:'Add 3D Doodad',onClick:()=>this.addModelScenery({doodad:true})},
         {
           id: 'graphics-apply-decal',
@@ -3481,6 +3484,19 @@ export default class Editor {
       w,
       h
     };
+  }
+
+  async addMixTape() {
+    try {
+      const picked=await openProjectBrowser({mode:'open',fixedFolder:'doodads',initialFolder:'doodads',title:'Choose Mix Tape'});if(!picked?.name)return;
+      const item=normalizeRaceDoodadDocument(picked.payload?.data||loadProjectFile('doodads',picked.name)?.data);
+      if(item.itemType!=='mix-tape'||!item.unlockTrackId)throw Error('Choose a mix tape configured in the Doodad Editor.');
+      await hydrateRaceArtSpriteShared(item.artRef);const canvas=getRaceArtSpriteCanvasShared(item.artRef);
+      if(!canvas)throw Error('Assign artwork to this mix tape in the Doodad Editor.');
+      const size=this.game.world.tileSize||32,placement=this.resolveDecalPlacement(item.widthM*size,item.heightM*size);
+      const entry={...placement,id:`mix-tape-${Date.now()}-${Math.random().toString(36).slice(2)}`,name:item.name,doodadRef:picked.name,itemType:'mix-tape',unlockTrackId:item.unlockTrackId,imageDataUrl:canvas.toDataURL(),baseW:placement.w,baseH:placement.h,rotation:0};
+      this.ensureDecals().push(entry);this.selectedDecalId=entry.id;this.persistAutosave();this.setGraphicsStatus(`Added ${item.name}. Drag to move; use graphics controls to resize or delete.`);
+    }catch(error){this.setGraphicsStatus(error.message);}
   }
 
   async addModelScenery({doodad=false}={}) {
@@ -9221,6 +9237,7 @@ export default class Editor {
           columns = 1;
         } else if (activeTab === 'level-settings') {
           items = [
+            { id: 'level-radio', label: `Radio: ${this.game.world.radioEnabled !== false ? 'On' : 'Off'}`, onClick: () => {this.game.world.radioEnabled = this.game.world.radioEnabled === false;this.game.world.data.radioEnabled = this.game.world.radioEnabled;this.persistAutosave();} },
             { id: 'resize-level', label: 'Resize Level', active: false, tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
             { id: 'crop-level', label: 'Crop Level', active: false, tooltip: 'Crop level to placed content', onClick: () => this.cropLevelToContent() },
             ...(spawnTile
@@ -9463,7 +9480,8 @@ export default class Editor {
               onClick: () => { this.takeGraphicsScreenshot(); }
             },
             {id:'graphics-model',label:'ADD 3D MODEL',onClick:()=>this.addModelScenery()},
-            {id:'graphics-doodad',label:'ADD 3D DOODAD',onClick:()=>this.addModelScenery({doodad:true})},
+            {id:'graphics-mix-tape',label:'Add Mix Tape',onClick:()=>this.addMixTape()},
+        {id:'graphics-doodad',label:'ADD 3D DOODAD',onClick:()=>this.addModelScenery({doodad:true})},
             {
               id: 'graphics-apply-decal',
               label: 'APPLY DECAL (UPLOAD)',

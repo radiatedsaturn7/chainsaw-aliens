@@ -146,6 +146,8 @@ export default class World {
     this.pixelArt = data.pixelArt ? { ...data.pixelArt, tiles: { ...(data.pixelArt.tiles || {}) } } : { tiles: {} };
     this.pixelArt.tileProperties = { ...(this.pixelArt.tileProperties || {}) };
     this.tileDefinitions = buildTileDefinitions(this.pixelArt.tileProperties);
+    this.radioEnabled = data.radioEnabled !== false;
+    this.mixTapes = (Array.isArray(data.mixTapes) ? data.mixTapes : []).map(item => ({...item}));
     this.musicZones = (data.musicZones || []).map((zone) => ({ ...zone }));
     this.midiTracks = normalizeMidiTracks(data.midiTracks || [], 'piano');
     this.triggers = (data.triggers || []).map((trigger) => ({

@@ -1,3 +1,6 @@
+import {isMixTape,mixTapeRotation,updateLevelMixTapes} from '../radio/MixTapePickup.js';
+import { RadioPlayer } from '../radio/RadioPlayer.js';
+import { RadioEditor } from '../ui/RadioEditor.js';
 import MenuEditor from '../ui/MenuEditor.js';
 import MenuPlayer from '../menus/MenuPlayer.js';
 import {loadServerPreferenceAsync} from '../ui/serverPreferences.js';
@@ -249,7 +252,9 @@ export default class Game {
     ensureProjectFileIndex();
     this.dialog = new Dialog(INTRO_LINES);
     this.hud = new HUD();
-    this.pauseMenu = new Pause();
+    this.radio = new RadioPlayer({onChange:()=>this.audio?.setRadioPlaying?.(Boolean(this.radio?.playing))});
+    this.pauseMenu = new Pause(this.radio, message => this.showSystemToast(message));
+    this.radioEditor = new RadioEditor(this);
     this.shopUI = new Shop(UPGRADE_LIST);
     this.stateManager = new StateManager('loading');
     this.stateManager.setBeforeTransition((metadata) => this.handleSharedStateTransitionCleanup(metadata));
@@ -810,6 +815,7 @@ export default class Game {
   }
 
   handleTitleOptionsAction(action) {
+    if (action === 'radio') {void this.radioEditor.options();return;}
     if (action === 'back') {
       this.title.setScreen('main');
       return;
@@ -893,6 +899,8 @@ export default class Game {
         this.enterCarEditor();
       } else if (action === 'doodad-editor') {
         this.enterDoodadEditor();
+      } else if (action === 'radio-editor') {
+        void this.radioEditor.open();
       } else if (action === 'midi-editor') {
         this.enterMidiComposer();
       } else if (action === 'sfx-editor') {
@@ -1479,6 +1487,8 @@ export default class Game {
       elevatorPaths: this.world.elevatorPaths,
       elevators: this.world.elevators,
       pixelArt: this.world.pixelArt,
+      radioEnabled: this.world.radioEnabled !== false,
+      mixTapes: this.world.mixTapes || [],
       musicZones: this.world.musicZones,
       midiTracks: this.world.midiTracks,
       triggers: this.world.triggers || [],
@@ -1506,6 +1516,8 @@ export default class Game {
       elevatorPaths: data.elevatorPaths || [],
       elevators: data.elevators || [],
       pixelArt: embeddedPixelArt || referencedPixelArt || { tiles: {} },
+      radioEnabled: data.radioEnabled !== false,
+      mixTapes: data.mixTapes || [],
       musicZones: data.musicZones || [],
       midiTracks: data.midiTracks || [],
       triggers: data.triggers || [],
@@ -2714,6 +2726,7 @@ export default class Game {
   }
 
   resetRun({ playtest = false, startWithEverything = true } = {}) {
+    this.mixTapePickupState = {};
     this.world.reset();
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
     this.friendlyCompanion = null;
@@ -3382,6 +3395,14 @@ export default class Game {
   }
 
   _updateByState(dt) {
+    if (this.radio) {
+      this.radio.setVolume(this.audio?.midiBusVolume ?? 0.8);
+      const racing = this.state === 'race-editor' && this.raceEditor?.playtestSession?.running;
+      const inLevel = ['playing', 'pause', 'dialog', 'shop'].includes(this.state);
+      const enabled = Boolean(racing ? this.raceEditor.selectedRace?.radioEnabled !== false : inLevel && this.world?.radioEnabled !== false);
+      if (this.radio.contextEnabled !== enabled) this.radio.setContext(enabled);
+      if (enabled && !this.radio.loading) void this.radio.load();
+    }
     if (this.state === 'loading') {
       this.title.update(dt);
       return;
@@ -3630,6 +3651,9 @@ export default class Game {
         this.pauseExitConfirmOpen = false;
         this.pauseMenu.resetConfirm?.();
         resetMenuRepeatState(this.pauseMenuRepeatState);
+      } else if (this.pauseMenu.radioOpen) {
+        if(this.pauseMenu.radioMenu.page !== 'main')this.pauseMenu.radioMenu.page='main';else this.pauseMenu.radioOpen=false;
+        this.pauseMenu.selection=0;
       } else if (this.minimapSelected) {
         this.minimapSelected = false;
         resetMenuRepeatState(this.pauseMenuRepeatState);
@@ -3948,6 +3972,7 @@ export default class Game {
     this.previousPlayerPosition = prevPlayer;
     const prevCompanion = this.friendlyCompanion ? { x: this.friendlyCompanion.x, y: this.friendlyCompanion.y } : null;
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
+    updateLevelMixTapes(this);
     if (this.friendlyCompanion) {
       this.friendlyCompanion.update(dt * timeScale, this.world, this.abilities, {
         player: this.player,
@@ -10275,6 +10300,7 @@ export default class Game {
     const viewRight = cameraX + cameraWidth + tileSize * 2;
     const viewBottom = cameraY + cameraHeight + tileSize * 2;
     decals.forEach((decal) => {
+      if (this.state !== 'editor' && isMixTape(decal) && this.mixTapePickupState?.mixTapeCollected?.has(decal.id)) return;
       if (!decal?.imageDataUrl && !decal?.model?.ref) return;
       const x = Number.isFinite(decal.x) ? decal.x : 0;
       const y = Number.isFinite(decal.y) ? decal.y : 0;
@@ -10292,7 +10318,11 @@ export default class Game {
       ctx.save();
       const decalAlpha = Number.isFinite(decal.alpha) ? Math.max(0, Math.min(1, decal.alpha)) : 1;
       ctx.globalAlpha = decalAlpha * Math.max(0, Math.min(1, decalAlphaMultiplier));
-      if (Math.abs(rotation) > 0.001) {
+      if (isMixTape(decal)) {
+        ctx.translate(x+w/2,y+h/2);ctx.rotate(rotation*Math.PI/180);
+        const spin=this.state==='editor'?1:Math.cos(mixTapeRotation(time));
+        ctx.scale(Math.abs(spin)<0.04?0.04:spin,1);ctx.drawImage(image,-w/2,-h/2,w,h);
+      } else if (Math.abs(rotation) > 0.001) {
         const centerX = x + w * 0.5;
         const centerY = y + h * 0.5;
         ctx.translate(centerX, centerY);
@@ -11046,6 +11076,9 @@ export default class Game {
           this.transitionTo('playing');
           this.minimapSelected = false;
           resetMenuRepeatState(this.pauseMenuRepeatState);
+        } else if (itemHit.id === 'radio' || itemHit.id.startsWith('radio-')) {
+          this.pauseMenu.getItems().find(item => item.id === itemHit.id)?.onClick?.();
+          this.pauseMenu.selection = 0;
         } else if (itemHit.id === 'exit') {
           this.pauseExitConfirmOpen = true;
           this.pauseMenu.resetConfirm?.();

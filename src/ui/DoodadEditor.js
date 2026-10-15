@@ -1,3 +1,5 @@
+import { openEditorForm } from './shared/editorForm.js';
+import { chooseImage } from './MenuDesignerForms.js';
 import {pickModelBinding} from './ModelPicker.js';
 import {modelSprites} from '../model3d/ModelSprites.js';
 import {
@@ -403,6 +405,24 @@ export default class DoodadEditor {
     this.status = 'Preview fit';
   }
 
+  async configureMixTape() {
+    try {
+      await this.game.radio.load();
+      const result=await openEditorForm('Doodad Item',[
+        {id:'itemType',label:'Item type',value:this.doodad.itemType||'scenery',options:[{value:'scenery',label:'Scenery'},{value:'mix-tape',label:'Mix Tape'}]},
+        {id:'unlockTrackId',label:'Track to unlock',value:this.doodad.unlockTrackId||'',options:[{value:'',label:'Choose track'},...this.game.radio.library.tracks.map(track=>({value:track.id,label:`${track.title}${track.artist?' — '+track.artist:''}`}))]}
+      ],{description:'Mix tapes rotate as collectible items and unlock a radio track. Add songs in Audio → Radio Editor.'});
+      if(!result)return;
+      if(result.itemType==='mix-tape'&&!result.unlockTrackId)throw Error('Choose a track for this mix tape.');
+      Object.assign(this.doodad,result);this.status=result.itemType==='mix-tape'?'Mix tape configured':'Scenery item';
+    }catch(error){this.status=error.message;}
+  }
+
+  async importItemArtwork() {
+    try {await chooseImage({element:this.doodad,change:fn=>fn()});await this.hydrateDoodadArt(this.doodad.artRef,{force:true});}
+    catch(error){this.status=error.message;}
+  }
+
   getDesktopActionHandlers() {
     return {
       new: () => this.newDoodad(),
@@ -418,6 +438,8 @@ export default class DoodadEditor {
       'pick-model': async () => {try{const model=await pickModelBinding(this.doodad.model);if(model){this.doodad.model=model;this.status=`3D model: ${model.ref}`;}}catch(error){this.status=error.message;}},
       'clear-model': () => {this.doodad.model=null;this.status='Using 2D artwork';},
       'pick-art': () => this.pickArt(),
+      'import-item-art': () => this.importItemArtwork(),
+      'doodad-item': () => this.configureMixTape(),
       'width-down': () => this.adjust('width', -0.5),
       'width-up': () => this.adjust('width', 0.5),
       'height-down': () => this.adjust('height', -0.5),
@@ -1319,15 +1341,15 @@ export default class DoodadEditor {
   }
 
   drawDoodadArtworkPanel(ctx, bounds) {
-    const x=bounds.x+14,y=bounds.y+48;
+    const x=bounds.x+14,y=bounds.y+32;
     ctx.fillStyle=UI_SUITE.colors.text;ctx.font=`800 14px ${UI_SUITE.font.family}`;
     ctx.textAlign='left';ctx.textBaseline='middle';
     ctx.fillText(this.doodad.model?.ref||this.doodad.artRef||this.doodad.name||'Doodad',x,bounds.y+18,bounds.w-28);
     const handlers=this.getDesktopActionHandlers(),w=(bounds.w-40)/3;
-    [['pick-art','Artwork'],['pick-model','3D Model'],['clear-model','Use 2D']].forEach(([id,label],i)=>{
-      this.registerButton(ctx,{x:x+i*(w+6),y,w,h:34},{id,label,onClick:handlers[id]});
+    [['pick-art','Artwork'],['import-item-art','Import Image'],['doodad-item','Mix Tape'],['pick-model','3D Model'],['clear-model','Use 2D']].forEach(([id,label],i)=>{
+      this.registerButton(ctx,{x:x+(i%3)*(w+6),y:y+Math.floor(i/3)*38,w,h:34},{id,label,onClick:handlers[id]});
     });
-    if(bounds.h>110){ctx.fillStyle=UI_SUITE.colors.muted;ctx.font=`12px ${UI_SUITE.font.family}`;ctx.fillText(this.saveStatus||this.status,x,y+50,bounds.w-28);}
+    if(bounds.h>136){ctx.fillStyle=UI_SUITE.colors.muted;ctx.font=`12px ${UI_SUITE.font.family}`;ctx.fillText(this.saveStatus||this.status,x,y+92,bounds.w-28);}
   }
 
   drawDoodadSizePanel(ctx, bounds) {

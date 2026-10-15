@@ -76,3 +76,58 @@ test('pausing preview suspends audio and videos, and exit releases its audio sus
  await player.open(createMenuDocument(),{preview:true});const video={paused:false,pause(){events.push('video-pause')},play:async()=>events.push('video-play'),removeAttribute(){},load(){}};player.videos.set('video',video);player.slider={element:{binding:'difficulty'}};player.capturing='input.left';
  player.togglePause();assert.equal(player.slider,null);assert.equal(player.capturing,null);assert.deepEqual(events,['suspend','video-pause']);player.togglePause();assert.deepEqual(events,['suspend','video-pause','resume','video-play']);player.togglePause();player.flow.stop();assert.equal(events.filter(e=>e==='resume').length,2);
 });
+
+for(const device of ['keyboard','gamepad','touch'])test(`${device} horizontal navigation moves Choose Race to Settings without activating`,async()=>{
+ const {player,game}=fixture();game.deviceIsMobile=device==='touch';
+ await player.open(createMenuDocument(),{preview:true,screenId:'cars'});
+ if(device==='touch')player.surface.layout(390,844);
+ const press=direction=>{
+  player.update(input(),0.01);
+  if(device==='touch')player.surface.controls.pulseAction(direction.toLowerCase());
+  player.update(input(device==='keyboard'?['Arrow'+direction]:[],device==='gamepad'?['dpad'+direction]:[]),0.01);
+ };
+ press('Down');press('Down');assert.equal(player.interactive()[player.focus].id,'next');
+ press('Right');assert.equal(player.flow.screenId,'cars');assert.equal(player.interactive()[player.focus].id,'settings');
+ press('Right');assert.equal(player.flow.screenId,'cars');assert.equal(player.interactive()[player.focus].id,'settings');
+ press('Left');assert.equal(player.interactive()[player.focus].id,'next');assert.equal(player.flow.screenId,'cars');
+ press('Right');
+ if(device==='touch')player.surface.controls.pulseAction('jump');
+ player.update(input(device==='keyboard'?['Enter']:[],device==='gamepad'?['jump']:[]),0.01);
+ await Promise.resolve();assert.equal(player.flow.screenId,'settings');
+});
+
+test('horizontal input still adjusts choices, sliders and toggles',async()=>{
+ const {player}=fixture();await player.open(createMenuDocument(),{preview:true,screenId:'cars'});
+ player.focus=player.interactive().findIndex(e=>e.id==='difficulty');
+ player.update(input(['ArrowRight']),0.01);assert.equal(player.flow.parameters.difficulty,'hard');
+ player.update(input(['ArrowLeft']),0.01);assert.equal(player.flow.parameters.difficulty,'medium');
+ await player.flow.run({type:'screen',target:'settings'});
+ const slider=player.interactive()[0];player.flow.setParameter(slider.binding,slider.min);
+ player.update(input([],['dpadRight']),0.01);assert.equal(player.flow.parameters[slider.binding],slider.min+slider.step);
+ player.update(input([],['dpadLeft']),0.01);assert.equal(player.flow.parameters[slider.binding],slider.min);
+ slider.type='toggle';player.flow.setParameter(slider.binding,false);
+ player.update(input(['ArrowRight']),0.01);assert.equal(player.flow.parameters[slider.binding],true);
+});
+
+test('horizontal navigation skips hidden controls and never starts key capture',async()=>{
+ const {player}=fixture();await player.open(createMenuDocument(),{preview:true,screenId:'cars'});
+ player.focus=player.interactive().findIndex(e=>e.id==='next');
+ const settings=player.flow.screen.elements.find(e=>e.id==='settings');settings.visible=false;
+ player.update(input(['ArrowRight']),0.01);assert.equal(player.interactive()[player.focus].id,'next');assert.equal(player.flow.screenId,'cars');
+ settings.visible=true;settings.type='keybind';settings.binding='input.left';
+ player.update(input(['ArrowRight']),0.01);assert.equal(player.interactive()[player.focus].id,'settings');
+ player.update(input(['ArrowLeft']),0.01);assert.equal(player.interactive()[player.focus].id,'next');assert.ok(!player.capturing);
+});
+
+test('top preview button ends playback and restores authoring even while loading or paused',async()=>{
+ for(const state of ['playing','loading','paused']){
+  const {player,game,calls}=fixture();game.storyData={name:'Authoring'};
+  await player.open(createMenuDocument(),{preview:true});game.storyData={name:'Preview'};
+  player.bounds={x:0,y:0,w:960,h:540};player.playPauseBounds={x:746,y:0,w:72,h:36};
+  if(state==='loading')player.flow.busy=true;
+  if(state==='paused')player.togglePause();
+  player.handlePointerDown({x:782,y:18});
+  assert.equal(player.flow.active,false);assert.equal(player.previewSnapshot,null);
+  assert.equal(game.storyData.name,'Authoring');assert.deepEqual(calls.at(-1),['state','menu-editor']);
+ }
+});

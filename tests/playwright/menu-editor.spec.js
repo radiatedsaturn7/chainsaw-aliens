@@ -251,10 +251,11 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} menu forms
  await filename.click();await expect(filename).toBeFocused();
 });
 
-for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mode} menu top play control pauses and resumes playback`,async({page})=>{
+for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mode} menu top play control starts and ends preview`,async({page})=>{
  await page.setViewportSize(mode==='portrait'?{width:390,height:844}:mode==='landscape-touch'?{width:844,height:390}:{width:1280,height:800});await ready(page,mode!=='desktop');if(mode==='gamepad')await page.evaluate(()=>{window.__game.input.isGamepadConnected=()=>true;});
- await designerButton(page,'menu-play');await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-player');await page.waitForFunction(()=>window.__game.menuPlayer.playPauseBounds);
- const b=await page.evaluate(()=>window.__game.menuPlayer.playPauseBounds);await canvasClick(page,b.x+b.w/2,b.y+b.h/2);await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.paused)).toBe(true);
- const t=await page.evaluate(()=>window.__game.menuPlayer.flow.time);await page.waitForTimeout(200);expect(await page.evaluate(()=>window.__game.menuPlayer.flow.time)).toBe(t);await page.keyboard.press('Enter');expect(await page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('splash');
- await page.screenshot({path:`test-results/menu-paused-${mode}.png`});await canvasClick(page,b.x+b.w/2,b.y+b.h/2);await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.time)).toBeGreaterThan(t);await page.keyboard.press('Escape');await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-editor');
+ for(let cycle=0;cycle<2;cycle++){
+  await designerButton(page,'menu-play');await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-player');await page.waitForFunction(()=>window.__game.menuPlayer.playPauseBounds);
+  const b=await page.evaluate(()=>window.__game.menuPlayer.playPauseBounds);await canvasClick(page,b.x+b.w/2,b.y+b.h/2);
+  await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-editor');expect(await page.evaluate(()=>window.__game.menuPlayer.flow.active)).toBe(false);
+ }
 });

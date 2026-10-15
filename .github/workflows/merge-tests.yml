@@ -41,6 +41,9 @@ jobs:
       - name: Run menu designer and runtime tests
         run: node --test tests/unit/menu*.test.js tests/unit/carDirectionalArt.test.js tests/unit/raceTravel.test.js
 
+      - name: Run radio and mix tape tests
+        run: node --test tests/unit/radioPlayer.test.js tests/unit/mixTapePickup.test.js tests/unit/doodadEditor.test.js tests/unit/raceDoodads.test.js tests/unit/pauseMenu.test.js tests/unit/titleLayout.test.js
+
       - name: Run 3D model editor and runtime tests
         run: node --test tests/unit/model3d*.test.js
 
@@ -117,6 +120,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: menu-previews-${{ matrix.artifact }}
-          path: test-results/menu-*.png
+          path: |
+            test-results/menu-*.png
+            test-results/radio-*.png
           if-no-files-found: ignore
           retention-days: 7

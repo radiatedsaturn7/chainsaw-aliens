@@ -38,6 +38,21 @@ export default class MenuPlayer {
     if(screen.musicRef)void hydrateProjectFilePayload('music',screen.musicRef).then(payload=>{if(this.mediaGeneration!==generation)return;if(!payload?.data)throw Error(`Music not found: ${screen.musicRef}`);this.game.setActiveMusicTrack?.(screen.musicRef,{restart:true,loop:true})}).catch(error=>{flow.error=error.message});
   }
   interactive(){return (this.flow?menuPaintOrder(this.flow.screen.elements).filter(e=>menuElementVisible(e,this.flow.screen.elements)&&menuElementInteractive(e)).sort((a,b)=>(a.tabOrder||Infinity)-(b.tabOrder||Infinity)):[])||[]}
+  moveHorizontal(items,direction){
+    const current=items[this.focus];if(!current)return;
+    if(['choice','slider','toggle'].includes(current.type)){void this.activate(current,direction);return;}
+    const bounds=this.bounds||{x:0,y:0,w:960,h:540};
+    const geometry=e=>{const pose=menuElementPose(e,this.flow.time),b=menuElementBounds(e,bounds,pose);return {x:b.x+b.w/2,y:b.y+b.h/2,h:b.h*pose.scale};};
+    const origin=geometry(current);let nearest=-1,distance=Infinity;
+    for(const [index,item] of items.entries()){
+      if(index===this.focus)continue;
+      const target=geometry(item),dx=(target.x-origin.x)*direction,dy=Math.abs(target.y-origin.y);
+      // Horizontal navigation stays in the same row and never activates a button.
+      if(dx<=0||dy>=(origin.h+target.h)/2)continue;
+      const score=Math.hypot(dx,dy);if(score<distance){nearest=index;distance=score;}
+    }
+    if(nearest>=0)this.focus=nearest;
+  }
   async activate(element,direction=1,{choose=false}={}){
     if(!element||this.paused||this.flow.busy||this.capturing)return;
     if(element.type==='button')return this.flow.run(element.action);
@@ -68,8 +83,8 @@ export default class MenuPlayer {
     const items=this.interactive();
     if(pressed('ArrowDown')||(pressed('Tab')&&!input?.isShiftDown?.())||pad('dpadDown'))this.focus=(this.focus+1)%Math.max(1,items.length);
     if(pressed('ArrowUp')||(pressed('Tab')&&input?.isShiftDown?.())||pad('dpadUp'))this.focus=(this.focus-1+items.length)%Math.max(1,items.length);
-    if(pressed('ArrowLeft')||pad('dpadLeft'))void this.activate(items[this.focus],-1);
-    if(pressed('ArrowRight')||pad('dpadRight'))void this.activate(items[this.focus],1);
+    if(pressed('ArrowLeft')||pad('dpadLeft'))this.moveHorizontal(items,-1);
+    if(pressed('ArrowRight')||pad('dpadRight'))this.moveHorizontal(items,1);
     if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump')){if(flow.screen.startAction)void flow.start();else void this.activate(items[this.focus],1,{choose:true});}
   }
   draw(ctx,width,height){
@@ -80,11 +95,11 @@ export default class MenuPlayer {
     const status=this.flow.error||this.message||(this.flow.busy&&!this.cutscene.active&&!this.movie?'Loading…':'');
     if(status){ctx.save();ctx.fillStyle='rgba(0,0,0,.85)';ctx.fillRect(0,height-64,width,64);ctx.fillStyle=this.flow.error?'#ffb1a6':'#fff';ctx.font='15px system-ui';ctx.textAlign='center';ctx.fillText(status,width/2,height-32,width-20);ctx.restore();}
     if(this.choicePopup){const b=this.bounds;ctx.save();ctx.translate(b.x,b.y);ctx.scale(b.w/960,b.h/540);this.drawChoices(ctx,960,540);ctx.restore();this.choiceRows=this.choiceRows.map(r=>({...r,x:b.x+r.x*b.w/960,y:b.y+r.y*b.h/540,w:r.w*b.w/960,h:r.h*b.h/540}));}
-    if(this.preview){this.playPauseBounds={x:Math.max(0,width-214),y:0,w:72,h:36};drawSharedPlayStopButton(ctx,this.playPauseBounds,{isActive:!this.paused});ctx.save();ctx.fillStyle='#101c28';ctx.fillRect(width-130,0,130,36);ctx.fillStyle='#fff';ctx.font='14px system-ui';ctx.textAlign='center';ctx.fillText('Exit Preview',width-65,23);ctx.restore();}
+    if(this.preview){this.playPauseBounds={x:Math.max(0,width-214),y:0,w:72,h:36};drawSharedPlayStopButton(ctx,this.playPauseBounds,{isActive:true});ctx.save();ctx.fillStyle='#101c28';ctx.fillRect(width-130,0,130,36);ctx.fillStyle='#fff';ctx.font='14px system-ui';ctx.textAlign='center';ctx.fillText('Exit Preview',width-65,23);ctx.restore();}
   }
   hitElement(point){return menuPaintOrder(this.flow.screen.elements).reverse().find(e=>{if(!menuElementVisible(e,this.flow.screen.elements)||!menuElementInteractive(e))return false;const pose=menuElementPose(e,this.flow.time),b=menuElementBounds(e,this.bounds,pose),dx=point.x-(b.x+b.w/2),dy=point.y-(b.y+b.h/2),a=-pose.rotation*Math.PI/180;return menuHit({x:(dx*Math.cos(a)-dy*Math.sin(a))/pose.scale+b.x+b.w/2,y:(dx*Math.sin(a)+dy*Math.cos(a))/pose.scale+b.y+b.h/2},b)})}
   handlePointerDown(point){
-    if(!this.flow||!this.bounds)return;if(this.preview&&this.playPauseBounds&&menuHit(point,this.playPauseBounds)){this.togglePause();return;}if(this.preview&&point.x>=(this.viewportBounds?.w||this.bounds.w)-130&&point.y<36){this.flow.stop();return;}
+    if(!this.flow||!this.bounds)return;if(this.preview&&this.playPauseBounds&&menuHit(point,this.playPauseBounds)){this.flow.stop();return;}if(this.preview&&point.x>=(this.viewportBounds?.w||this.bounds.w)-130&&point.y<36){this.flow.stop();return;}
     if(!menuHit(point,this.bounds)&&this.surface.down(point))return;
     if(this.paused)return;
     if(this.choicePopup){const row=this.choiceRows?.find(row=>menuHit(point,row));if(row){if(row.page){this.choicePopup.index=Math.max(0,Math.min(this.choicePopup.choices.length-1,this.choicePopup.index+row.page));}else this.choosePopupItem(row.index);}else this.choicePopup=null;return;}

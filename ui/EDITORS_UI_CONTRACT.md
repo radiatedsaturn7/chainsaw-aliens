@@ -206,4 +206,6 @@ Menu Preview uses the selected screen and unsaved document snapshot. Playing fro
 
 - Menu Editor forms open with focus on the non-editable dialog heading, never an input. Menu Save As initially focuses the browser surface. Tapping a field or navigating with Tab begins editing; opening a form must not summon the mobile keyboard. Shared property forms use this neutral initial-focus behavior.
 
-- Menu Editor has a shared top Play control in every layout. Preview exposes Pause/Resume and Exit Preview; pausing freezes menu time, input, video and audio. Race/level destinations use their existing playtest controls. Race return destinations resume the menu; leaving a preview-launched level (including race-to-level travel) restores menu authoring and the original world.
+- Menu Editor has a shared top Play control in every layout. Play starts preview; pressing the active top Pause button ends preview and returns to authoring, as does Exit Preview. The P keyboard shortcut can still suspend/resume playback. Race/level destinations use their existing playtest controls. Race return destinations resume the menu; leaving a preview-launched level (including race-to-level travel) restores menu authoring and the original world.
+
+- During menu playback, Left/Right moves focus between visible controls in the same row when a button or key binding is focused; it never activates those controls. Choices, sliders and toggles retain Left/Right value adjustment. Confirm activates the focused control; Up/Down and Tab retain navigation order.

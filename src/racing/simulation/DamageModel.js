@@ -1,3 +1,4 @@
+import { collectMixTape, isMixTape } from '../../radio/MixTapePickup.js';
 import { RACE_WHEEL_IDS, clamp, deterministicUnitFloat } from './SimulationMath.js';
 import { getDoodadRuleForSpeed } from '../raceDoodads.js';
 
@@ -130,6 +131,17 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
   scenery.forEach((sprite) => {
     if (!sprite?.id || session.removedSceneryIds.includes(sprite.id) || session.flattenedSceneryIds.includes(sprite.id) || session.triggeredSceneryIds.includes(sprite.id)) return;
     const doodad = editor.getRaceDoodadForScenery(sprite);
+    if (isMixTape(doodad)) {
+      const radius = Math.max(0.35, Number(doodad.hitboxWidthM || doodad.widthM || 1) / 2);
+      const ground = editor.sampleRaceDoodadGroundPoint?.(sprite.x, sprite.z, sprite, doodad);
+      const bottom = ground ? editor.getRaceThreeElevationM(ground) : null;
+      const touching = contactPoints.some(point => Math.hypot(Number(point.x || 0)-Number(sprite.x || 0), Number(point.z || 0)-Number(sprite.z || 0)) <= radius + (point.wheel ? wheelProbeRadius : bodyProbeRadius)
+        && (bottom === null || !Number.isFinite(point.y) || (point.y >= bottom-0.5 && point.y <= bottom+Number(doodad.hitboxHeightM || doodad.heightM || 1)+0.5)));
+      if (touching) void collectMixTape({radio:editor.game?.radio,item:doodad,id:sprite.id,state:session,notify:message=>editor.game?.showSystemToast?.(message)}).then(collected=>{
+        if (collected && !session.removedSceneryIds.includes(sprite.id)) session.removedSceneryIds.push(sprite.id);
+      });
+      return;
+    }
     const authoredRules = [doodad?.defaultRule, ...(doodad?.rules || [])].filter(Boolean);
     if (sprite.solid === true || sprite.collidable === true
       || (authoredRules.length > 0
