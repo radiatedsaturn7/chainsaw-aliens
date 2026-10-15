@@ -69,3 +69,9 @@ test('radio lists page all unlocked tracks with bounded visible rows',async()=>{
  while(true){const rows=menu.rows();assert.ok(rows.length<=6);rows.filter(row=>row.id.startsWith('radio-track:')).forEach(row=>seen.add(row.id));const next=rows.find(row=>row.id==='radio-next-page');if(!next)break;next.onClick();}
  assert.equal(seen.size,20);menu.rows().find(row=>row.id==='radio-previous-page').onClick();assert.equal(menu.offset,15);
 });
+
+test('pause cancels a pending station switch resume',async()=>{
+ const {player}=fixture({unlocked:['a']});await player.load();player.library.stations.push({id:'second',name:'Second',trackIds:['a']});player.setContext(true);await player.play();
+ let resolveSave;player.savePreference=()=>new Promise(resolve=>{resolveSave=resolve;});const pending=player.selectStation('second');await new Promise(resolve=>setTimeout(resolve,0));player.pause();resolveSave({ok:true});await pending;assert.equal(player.playing,false);assert.equal(player.audio,null);
+});
+test('rewind before starting selects the final eligible track',async()=>{const {player}=fixture({unlocked:['a','c']});await player.load();player.setContext(true);await player.rewind();assert.equal(player.trackId,'c');});

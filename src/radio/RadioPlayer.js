@@ -52,14 +52,14 @@ export class RadioPlayer {
   }
   async selectStation(id) {
     await this.load();if (!this.library.stations.some(station => station.id === id)) return;
-    const resume = this.playing;this.stop();this.progress.stationId = id;this.onChange();
-    await this.persist(RADIO_PROGRESS_KEY, this.progress);if (resume) await this.play();
+    const resume = this.playing;this.stop();const generation=this.generation;this.progress.stationId = id;this.onChange();
+    await this.persist(RADIO_PROGRESS_KEY, this.progress);if (resume && generation===this.generation && this.progress.stationId===id) await this.play();
   }
   setVolume(volume) { this.volume = Math.max(0, Math.min(1, Number(volume) || 0));if (this.audio) this.audio.volume = this.volume; }
   async play(trackId = this.trackId) {
     await this.load();if (!this.available) return false;
     const track = this.tracks.find(item => item.id === trackId) || this.tracks[0];
-    if (!track) {this.stop();return false;}
+    if (!track) {this.stop();this.error='No unlocked, enabled tracks in this station';this.onChange();return false;}
     if (!this.audio || track.id !== this.trackId) {
       this.stop();this.trackId = track.id;this.audio = this.createAudio();this.audio.src = track.src;this.audio.volume = this.volume;
       const audio = this.audio;
@@ -78,7 +78,7 @@ export class RadioPlayer {
   async skip(direction = 1) {
     const tracks = this.tracks;if (!tracks.length) {this.stop();return false;}
     const index = tracks.findIndex(track => track.id === this.trackId);
-    return this.play(tracks[(index + direction + tracks.length) % tracks.length].id);
+    return this.play(tracks[index<0?(direction<0?tracks.length-1:0):(index + direction + tracks.length) % tracks.length].id);
   }
   async rewind() {
     if (this.audio && this.audio.currentTime > 3) {this.audio.currentTime = 0;this.onChange();return;}
