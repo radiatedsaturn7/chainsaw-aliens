@@ -5,15 +5,15 @@ export const RADIO_LIBRARY_KEY = 'rtg-radio-library';
 export const RADIO_PROGRESS_KEY = 'rtg-radio-progress';
 
 export class RadioPlayer {
-  constructor({ createAudio = () => new Audio(), load = loadServerPreferenceAsync, save = saveServerPreference, onChange = () => {} } = {}) {
-    this.createAudio = createAudio;this.loadPreference = load;this.savePreference = save;this.onChange = onChange;
+  constructor({ createAudio = () => new Audio(), load = loadServerPreferenceAsync, save = saveServerPreference, onChange = () => {}, getInventory = () => null } = {}) {
+    this.getInventory=getInventory;this.createAudio = createAudio;this.loadPreference = load;this.savePreference = save;this.onChange = onChange;
     this.library = normalizeRadioLibrary();this.progress = normalizeRadioProgress();
     this.contextEnabled = false;this.audio = null;this.trackId = '';this.playing = false;this.error = '';
     this.generation = 0;this.saveQueue = Promise.resolve();this.volume = 0.8;
   }
   async load() {
-    if (!this.loading) this.loading = Promise.all([this.loadPreference(RADIO_LIBRARY_KEY, {}), this.loadPreference(RADIO_PROGRESS_KEY, {})]).then(([library, progress]) => {
-      this.library = normalizeRadioLibrary(library);this.progress = normalizeRadioProgress(progress);this.onChange();return this;
+    if (!this.loading) this.loading = Promise.all([this.loadPreference(RADIO_LIBRARY_KEY, {}), this.loadPreference(RADIO_PROGRESS_KEY, {})]).then(async ([library, progress]) => {
+      this.library = normalizeRadioLibrary(library);this.progress = normalizeRadioProgress(progress);await this.getInventory()?.load();this.onChange();return this;
     });
     return this.loading;
   }
@@ -30,16 +30,20 @@ export class RadioPlayer {
   async saveLibrary(value) {
     await this.load();const library = normalizeRadioLibrary(value);
     await this.persist(RADIO_LIBRARY_KEY, library);this.library = library;
+    for(const track of library.tracks)if(track.initiallyUnlocked&&this.getInventory())await this.getInventory().grantRadioTrack(track.id);
     if (!this.tracks.some(track => track.id === this.trackId)) this.stop();this.onChange();
   }
   get available() { return this.progress.enabled && this.contextEnabled; }
   get stationId() { return this.library.stations.some(s => s.id === this.progress.stationId) ? this.progress.stationId : this.library.stations[0]?.id || ''; }
-  get tracks() { return radioStationTracks(this.library, this.progress, this.stationId); }
+  get listeningProgress() {const inventory=this.getInventory();return inventory?.ready?{...this.progress,unlocked:Object.keys(inventory.progress.bags.radio).filter(id=>inventory.progress.bags.radio[id]>0)}:this.progress;}
+  ownsTrack(track) {return Boolean(track&&(track.initiallyUnlocked||this.listeningProgress.unlocked.includes(track.id)));}
+  get tracks() { return radioStationTracks(this.library, this.listeningProgress, this.stationId); }
   get currentTrack() { return this.library.tracks.find(track => track.id === this.trackId) || null; }
   setContext(enabled) { this.contextEnabled = enabled !== false;if (!this.available) this.stop();this.onChange(); }
   async setEnabled(enabled) { await this.load();this.progress.enabled = Boolean(enabled);if (!this.available) this.stop();this.onChange();await this.persist(RADIO_PROGRESS_KEY, this.progress); }
   async unlock(trackId) {
     await this.load();if (!this.library.tracks.some(track => track.id === trackId)) return false;
+    if(this.getInventory())return this.getInventory().grantRadioTrack(trackId);
     if (this.progress.unlocked.includes(trackId)) {await this.persist(RADIO_PROGRESS_KEY, this.progress);return false;}
     this.progress.unlocked.push(trackId);this.onChange();await this.persist(RADIO_PROGRESS_KEY, this.progress);return true;
   }

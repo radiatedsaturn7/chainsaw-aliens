@@ -1,3 +1,5 @@
+import {itemEffectFields, EFFECT_LABELS, RECIPIENTS} from '../items/ItemEffectFields.js';
+import {itemLibrary} from '../items/ItemLibrary.js';
 import {EditorInputActionNormalizer,EDITOR_INPUT_ACTIONS as INPUT} from './shared/input/editorInputActions.js';
 import {getEditorControllerRootMenuEntries,getStandardEditorActionRailIds} from './shared/editorMenuSpec.js';
 import DoodadEditor from './DoodadEditor.js';
@@ -16,7 +18,7 @@ const yesNo = [option('yes'),option('no')];
 export default class ItemEditor extends DoodadEditor {
   constructor(game) {
     super(game);
-    this.doodad = normalizeItemDocument();
+    this.doodad = normalizeItemDocument({id:globalThis.crypto?.randomUUID?.()||`item-${Date.now()}-${Math.random().toString(36).slice(2)}`});
     this.undoItems = []; this.redoItems = []; this.selectedEffect = 0;
     this.effectOffset = 0; this.previewZoom = 1; this.previewPan = {x:0,y:0};
     this.landscapeRootId = 'effects'; this.busy = false;this.itemInput=new EditorInputActionNormalizer();this.listScroll={};this.listRegions=[];
@@ -90,15 +92,14 @@ export default class ItemEditor extends DoodadEditor {
     if(!effect)return;
     await this.game.radio?.load();
     const tracks=this.game.radio?.library?.tracks||[];
-    const result=await openEditorForm(add?'Add Item Effect':'Edit Item Effect',[
-      {id:'type',label:'Effect',value:effect.type,options:ITEM_EFFECT_TYPES.map(option)},
-      field('target','Target ID (key, weapon, ability, item, device, unlock or modifier)',effect.target),
-      {id:'track',label:'Radio track (for radio-track effects)',value:effect.type==='radio-track'?effect.target:'',options:[{value:'',label:'Choose track'},...tracks.map(track=>({value:track.id,label:track.title}))]},
-      field('amount','Amount',effect.amount,'number'),
-      {id:'operation',label:'Modifier operation',value:effect.operation,options:['add','set','multiply','max','min'].map(option)}
-    ],{description:`Modifier targets: ${ITEM_MODIFIERS.join(', ')}. Built-in weapons: ignitir, flamethrower. Abilities: anchor, flame, magboots, resonance. Health, armor, currency, max-health and map need no target.`});
+    const entries=await itemLibrary.list();
+    const items=(await Promise.all(entries.map(entry=>itemLibrary.load(entry.name).catch(()=>null)))).filter(Boolean);
+    const fields=itemEffectFields(effect,this.doodad,{tracks,items});
+    const result=await openEditorForm(add?'Add Item Effect':'Edit Item Effect',fields);
     if(!result)return;
-    if(result.type==='radio-track')result.target=result.track||result.target;
+    const choices=fields.find(field=>field.id==='target').options(result);
+    result.contentName=choices.find(choice=>choice.value===result.target)?.label||'';
+    if(['weapon','ability','device','unlock'].includes(result.type)||(result.type==='inventory'&&result.bag==='radio'))result.amount=1;
     const effects=[...this.doodad.effects];if(add)effects.push(result);else effects[this.selectedEffect]=result;
     // Validate before changing the live document, so an invalid form cannot corrupt it.
     this.doodad=normalizeItemDocument({...this.doodad,effects});if(add)this.selectedEffect=effects.length-1;
@@ -152,9 +153,10 @@ export default class ItemEditor extends DoodadEditor {
   }
   drawStudioSprintPreview(ctx,bounds){this.drawPreview(ctx,bounds);}
   effectLabel(effect){
-    const type=effect.type.replaceAll('-',' '),title=type[0].toUpperCase()+type.slice(1);
-    const target=effect.type==='radio-track'?(this.game.radio?.library?.tracks.find(track=>track.id===effect.target)?.title||'Radio track'):effect.target;
-    return `${title}: ${target||effect.amount}${target&&['key','inventory','modifier'].includes(effect.type)?` (${effect.operation==='multiply'?'×':'+'}${effect.amount})`:''}`;
+    const title=EFFECT_LABELS[effect.type]||effect.type;
+    const content=effect.bag==='radio'?(this.game.radio?.library?.tracks.find(track=>track.id===effect.target)?.title||'Track'):effect.contentName;
+    const recipient=RECIPIENTS.find(entry=>entry.value===effect.recipient)?.label||'Player';
+    return `${title}: ${content||effect.amount} · ${recipient}${effect.when==='use'?' · Use':effect.when==='hit'?' · Hit':''}`;
   }
   drawEffects(ctx,bounds) {
     drawSharedPanel(ctx,bounds,{fill:UI_SUITE.colors.panel,border:UI_SUITE.colors.border});

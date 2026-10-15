@@ -256,8 +256,9 @@ export default class Game {
     ensureProjectFileIndex();
     this.dialog = new Dialog(INTRO_LINES);
     this.hud = new HUD();
-    this.radio = new RadioPlayer({onChange:()=>this.audio?.setRadioPlaying?.(Boolean(this.radio?.playing || this.radioEditor?.preview?.playing))});
+    this.radio = new RadioPlayer({getInventory:()=>getItemSystem(this),onChange:()=>this.audio?.setRadioPlaying?.(Boolean(this.radio?.playing || this.radioEditor?.preview?.playing))});
     this.pauseMenu = new Pause(this.radio, message => this.showSystemToast(message));
+    this.pauseMenu.onItemUsed=()=>this.transitionTo('playing');
     this.shopUI = new Shop(UPGRADE_LIST);
     this.stateManager = new StateManager('loading');
     this.stateManager.setBeforeTransition((metadata) => this.handleSharedStateTransitionCleanup(metadata));
@@ -3694,6 +3695,8 @@ export default class Game {
       } else if (this.pauseMenu.radioOpen) {
         if(this.pauseMenu.radioMenu.page !== 'main')this.pauseMenu.radioMenu.page='main';else this.pauseMenu.radioOpen=false;
         this.pauseMenu.selection=0;
+      } else if(this.pauseMenu.inventoryOpen){
+        this.pauseMenu.inventoryOpen=false;this.pauseMenu.selection=0;
       } else if (this.minimapSelected) {
         this.minimapSelected = false;
         resetMenuRepeatState(this.pauseMenuRepeatState);
@@ -4011,11 +4014,13 @@ export default class Game {
     const prevPlayer = { x: this.player.x, y: this.player.y };
     this.previousPlayerPosition = prevPlayer;
     const prevCompanion = this.friendlyCompanion ? { x: this.friendlyCompanion.x, y: this.friendlyCompanion.y } : null;
-    this.player.update(dt * timeScale, this.input, this.world, this.abilities);
+    this.items?.runtime.update(dt);
+    if(this.input.wasPressedCode?.('KeyU'))void this.items?.use();
+    this.player.update(dt * timeScale * (this.player.itemSpeedMultiplier||1), this.input, this.world, this.abilities);
     updateLevelMixTapes(this);
     updateLevelItems(this);
     if (this.friendlyCompanion) {
-      this.friendlyCompanion.update(dt * timeScale, this.world, this.abilities, {
+      this.friendlyCompanion.update(dt * timeScale * (this.friendlyCompanion.itemSpeedMultiplier||1), this.world, this.abilities, {
         player: this.player,
         enemies: this.enemies,
         boss: this.boss,
@@ -6332,7 +6337,7 @@ export default class Game {
         return;
       }
       const slowScale = enemy.slowTimer > 0 ? enemy.slowFactor : 1;
-      const scaledDt = dt * slowScale;
+      const scaledDt = dt * slowScale * (enemy.itemSpeedMultiplier||1);
       enemy.update(scaledDt, this.player, context);
       this.applyEnemyGravity(enemy, scaledDt);
       if (enemy.solid) {
@@ -8944,6 +8949,7 @@ export default class Game {
         ctx.restore();
       }
       this.player.draw(ctx);
+      this.items?.runtime.draw(ctx);
       const tileSize = this.world.tileSize;
       const playerTileX = Math.floor(this.player.x / tileSize);
       const playerTileY = Math.floor(this.player.y / tileSize);

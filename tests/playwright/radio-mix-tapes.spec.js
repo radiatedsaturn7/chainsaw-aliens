@@ -47,7 +47,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors a 
  await radioAction(page,'track-art');await apply(page,'Image Source');await page.locator(`.project-browser-row[data-name="${name}"]`).getByRole('button',{name:'Open',exact:true}).click();await radioReady(page);
  if(mobile)await clickRadio(page,'undo');else await page.keyboard.press('Control+z');await radioReady(page);await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.track.image.artRef)).toBe('');
  if(mobile)await clickRadio(page,'redo');else await page.keyboard.press('Control+y');await radioReady(page);await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.track.image.artRef)).toBe(name);
- await clickRadio(page,'radio-play');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.playing)).toBe(true);expect(await page.evaluate(()=>window.__game.radio.progress.unlocked)).toEqual([]);
+ await clickRadio(page,'radio-play');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.playing)).toBe(true);expect(await page.evaluate(()=>Object.keys(window.__game.items.progress.bags.radio))).toEqual([]);
  await page.screenshot({path:`test-results/radio-editor-${mobile?'portrait':'desktop'}.png`});
  await clickRadio(page,'radio-play');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.playing)).toBe(false);
  await page.evaluate(()=>window.__game.radioEditor.exitToMainMenu());
@@ -55,14 +55,14 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors a 
  await page.evaluate(()=>{const g=window.__game;g.transitionTo('item-editor');void g.itemEditor.getDesktopActionHandlers()['item-image']();});await dialog(page,'Image Source').getByLabel('Image source',{exact:true}).selectOption('device');const imageChooser=page.waitForEvent('filechooser');await apply(page,'Image Source');await (await imageChooser).setFiles({name:'cassette.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')});
  await dialog(page,'Save Imported Image').getByLabel('Artwork name',{exact:true}).fill(name+' Cassette');await apply(page,'Save Imported Image');await expect.poll(()=>page.evaluate(()=>window.__game.itemEditor.doodad.artRef)).toBe(name+' Cassette');await expect.poll(()=>page.evaluate(()=>window.__game.itemEditor.busy)).toBe(false);
  await page.evaluate(()=>{void window.__game.itemEditor.getDesktopActionHandlers()['item-effect-add']();});
- await dialog(page,'Add Item Effect').getByLabel('Effect',{exact:true}).selectOption('radio-track');const trackId=await page.evaluate(()=>window.__game.radio.library.tracks[0].id);await dialog(page,'Add Item Effect').getByLabel('Radio track (for radio-track effects)',{exact:true}).selectOption(trackId);await apply(page,'Add Item Effect');
+ await dialog(page,'Add Item Effect').getByLabel('Effect',{exact:true}).selectOption('inventory');await dialog(page,'Add Item Effect').getByLabel('Bag',{exact:true}).selectOption('radio');const trackId=await page.evaluate(()=>window.__game.radio.library.tracks[0].id);await dialog(page,'Add Item Effect').getByLabel('Track',{exact:true}).selectOption(trackId);await apply(page,'Add Item Effect');
  await expect.poll(()=>page.evaluate(()=>window.__game.itemEditor.doodad.effects.length)).toBe(1);
  await page.screenshot({path:`test-results/item-editor-${mobile?'portrait':'desktop'}.png`});
  await page.evaluate(async name=>{const g=window.__game,{serializeItemDocument}=await import('/src/items/ItemDocument.js'),{saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');g.itemEditor.doodad.name=name;await saveProjectFileAndConfirm('items',name,serializeItemDocument(g.itemEditor.doodad));g.enterEditor();g.applyWorldData(g.editor.buildEmptyLevelData(38,24));void g.editor.addMixTape();},name);
  await page.locator(`.project-browser-row[data-name="${name}"]`).getByRole('button',{name:'Open',exact:true}).click();
  await expect.poll(()=>page.evaluate(name=>window.__game.world.decals.some(item=>item.itemType==='item'&&item.itemRef===name),name)).toBe(true);
  await page.evaluate(name=>{const g=window.__game;g.editor.flushPendingAutosave();g.playMostRecentLevel();const item=g.world.decals.find(item=>item.itemType==='item'&&item.itemRef===name);item.x=g.player.x-16;item.y=g.player.y-16;item.w=32;item.h=32;g.spawnPauseTimer=0;},name);
- await expect.poll(()=>page.evaluate(()=>window.__game.radio.progress.unlocked)).toEqual([trackId]);
+ await expect.poll(()=>page.evaluate(()=>Object.keys(window.__game.items.progress.bags.radio))).toEqual([trackId]);
  await expect.poll(()=>page.evaluate(()=>window.__game.playtestPauseLock)).toBe(0);await page.keyboard.press('Escape');await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('pause');await clickPause(page,'radio');await clickPause(page,'radio-play');
  await expect.poll(()=>page.evaluate(()=>window.__game.radio.playing)).toBe(true);await expect.poll(()=>page.evaluate(()=>window.__game.radio.audio?.currentTime||0)).toBeGreaterThan(0.05);
  expect(await page.evaluate(()=>window.__game.audio.radioPlaying)).toBe(true);expect(await page.evaluate(()=>({logo:window.__game.radio.library.stations[0].logo.artRef,cover:window.__game.radio.currentTrack.image.artRef}))).toEqual({logo:name,cover:name});await expect.poll(()=>page.evaluate(()=>{
@@ -72,7 +72,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors a 
  })).toMatchObject({visible:true,state:'pause',radioOpen:true});
  await page.screenshot({path:`test-results/radio-level-${mobile?'portrait':'desktop'}.png`});
  await clickPause(page,'radio-play');expect(await page.evaluate(()=>window.__game.radio.playing)).toBe(false);
- await page.reload();await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');expect(await page.evaluate(async()=>{await window.__game.radio.load();return window.__game.radio.progress.unlocked;})).toEqual([trackId]);
+ await page.reload();await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');expect(await page.evaluate(async()=>{await window.__game.radio.load();return Object.keys(window.__game.items.progress.bags.radio);})).toEqual([trackId]);
  expect(await page.evaluate(()=>window.__game.radio.library.tracks[0].artist)).toBe('Studio Artist');expect(errors).toEqual([]);
 });
 
@@ -81,7 +81,7 @@ test('real race mix tape unlocks its track and pause radio obeys the race switch
  await page.evaluate(async()=>{const g=window.__game;await g.radio.saveLibrary({tracks:[{id:'race-song',title:'Race Song',src:'/unused.mp3'}],stations:[{id:'race-station',name:'Race Station',trackIds:['race-song']}]});void g.startRaceTravel({raceName:'Studio Sprint2',carSelection:'specific',carRef:'2022 Subaru WRX2'});});
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
  await page.evaluate(()=>{const g=window.__game,e=g.raceEditor,s=e.playtestSession,car=e.getRaceSessionCar(s),points=e.getRaceVehicleCollisionContactPoints({session:s,car,tuning:e.getRaceCarTuning(car)}),point=points[0];e.ensureRaceScenery().push({id:'race-tape',presetId:'doodad',x:point.x,z:point.z,previewDoodad:{itemType:'mix-tape',unlockTrackId:'race-song',widthM:2,heightM:4}});});
- await expect.poll(()=>page.evaluate(()=>window.__game.radio.progress.unlocked)).toContain('race-song');await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.removedSceneryIds)).toContain('race-tape');
+ await expect.poll(()=>page.evaluate(()=>Object.keys(window.__game.items.progress.bags.radio))).toContain('race-song');await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.removedSceneryIds)).toContain('race-tape');
  await page.evaluate(()=>window.__game.raceEditor.toggleRacePause());expect(await page.evaluate(()=>window.__game.raceEditor.getRacePauseMenuRows().some(row=>row.id==='race-radio'))).toBe(true);
  await page.evaluate(()=>{const e=window.__game.raceEditor;e.getRacePauseMenuRows().find(row=>row.id==='race-radio').onClick();});await page.screenshot({path:'test-results/radio-race.png'});
  await page.evaluate(()=>{window.__game.raceEditor.selectedRace.radioEnabled=false;});await expect.poll(()=>page.evaluate(()=>window.__game.radio.available)).toBe(false);expect(await page.evaluate(()=>window.__game.raceEditor.getRacePauseMenuRows().some(row=>row.id==='race-radio'))).toBe(false);
@@ -125,7 +125,7 @@ for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mod
  await clickRadio(page,'track-membership');await radioReady(page);expect(await page.evaluate(()=>window.__game.radioEditor.station.trackIds)).toContain('song-2');
  await radioAction(page,'undo');await radioReady(page);expect(await page.evaluate(()=>window.__game.radioEditor.station.trackIds)).not.toContain('song-2');await radioAction(page,'redo');await radioReady(page);
  await clickRadio(page,'radio-play');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.playing)).toBe(true);await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.audio.currentTime)).toBeGreaterThan(0.05);
- expect(await page.evaluate(()=>window.__game.radio.progress.unlocked)).toEqual([]);
+ expect(await page.evaluate(()=>Object.keys(window.__game.items.progress.bags.radio))).toEqual([]);
  await page.screenshot({path:`test-results/radio-shell-${mode}.png`});
  await clickRadio(page,'radio-play');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.playing)).toBe(false);
  await page.evaluate(()=>window.__game.radioEditor.exitToMainMenu());expect(await page.evaluate(()=>window.__game.radioEditor.preview.audio)).toBeNull();expect(errors).toEqual([]);

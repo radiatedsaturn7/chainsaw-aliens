@@ -1,3 +1,4 @@
+import {InventoryMenu} from '../items/InventoryMenu.js';
 import {normalizeItemDocument,itemAsDoodad} from '../items/ItemDocument.js';
 import { mixTapeRotation } from '../radio/MixTapePickup.js';
 import { RadioMenu } from '../radio/RadioMenu.js';
@@ -1070,6 +1071,10 @@ export default class RaceEditor {
       this.gamepadSubmenuOpen = false;
     }
     this.updateRaceKeyboardInput(input, dt);
+    if(liveSession&&!startupFramePending&&!this.raceInput.paused&&!this.playtestSession.carEditorPreview){
+      this.game.items?.runtime.update(dt);
+      if(input?.wasPressedCode?.('KeyU'))void this.game.items?.use();
+    }
     if (liveSession && !startupFramePending && !this.updatePlaytestSafely(dt)) return;
     if (liveSession && !startupFramePending) this.updateRaceAutomaticVehicleRecovery(dt);
     if (this.mode === 'car' && !liveSession) {
@@ -18946,6 +18951,10 @@ export default class RaceEditor {
   }
 
   getRacePauseMenuRows() {
+    if(this.raceInput.pauseMenuMode==='inventory'&&this.game.items){
+      this.itemInventoryMenu ||= new InventoryMenu(this.game.items,{onUse:()=>{if(this.raceInput.paused)this.toggleRacePause();},onRadio:()=>{this.raceInput.pauseMenuMode='radio';this.raceInput.pauseMenuIndex=0;},onBack:()=>{this.raceInput.pauseMenuMode='main';this.raceInput.pauseMenuIndex=0;}});
+      return this.itemInventoryMenu.rows();
+    }
     if (this.raceInput.pauseMenuMode === 'radio' && this.game.radio?.available) {
       this.radioMenu ||= new RadioMenu(this.game.radio, {onBack:()=>{this.raceInput.pauseMenuMode='main';this.raceInput.pauseMenuIndex=0;},onError:message=>this.game.showSystemToast(message)});
       return this.radioMenu.rows().map(row=>({...row,onClick:()=>{row.onClick();this.raceInput.pauseMenuIndex=0;}}));
@@ -19057,6 +19066,7 @@ export default class RaceEditor {
           this.raceInput.pauseMenuIndex = 0;
         }
       },
+      ...(this.game.items?[{id:'race-inventory',label:'Inventory',value:'',onClick:()=>{this.raceInput.pauseMenuMode='inventory';this.raceInput.pauseMenuIndex=0;}}]:[]),
       ...(this.game.radio?.available ? [{id:'race-radio',label:'Radio',value:'',onClick:()=>{this.raceInput.pauseMenuMode='radio';this.raceInput.pauseMenuIndex=0;if(this.radioMenu)this.radioMenu.page='main';}}] : []),
       {
         id: 'race-restart',
@@ -22622,6 +22632,8 @@ export default class RaceEditor {
   drawRacePlaytestHud(ctx, bounds) {
     const session = this.playtestSession;
     if (!session) return;
+    const renderCamera=this.lastRaceRenderCamera;
+    if(renderCamera)this.game.items?.runtime.draw(ctx,projectile=>{const p=this.projectRaceWorldPointToCamera({x:projectile.x,z:projectile.y,elevation:Number(session.roadElevation||0)+0.5},renderCamera.camera,renderCamera.cameraYaw,bounds);return {x:p.screenX,y:p.screenY,visible:p.visible};});
     const speedMph = Math.round(Math.abs(this.playtestSession?.speedMps || 0) * 2.23694);
     this.drawRacePlaytestTopControls(ctx, bounds);
     this.drawRaceTrackMinimap(ctx, {
@@ -23225,7 +23237,7 @@ export default class RaceEditor {
   drawRacePauseOverlay(ctx, bounds) {
     const rows = this.getRacePauseMenuRows();
     const selectedIndex = clamp(Math.round(Number(this.raceInput.pauseMenuIndex || 0)), 0, Math.max(0, rows.length - 1));
-    const pauseTitle = this.raceInput.pauseMenuMode === 'radio' ? 'Radio' : this.raceInput.pauseMenuMode === 'settings'
+    const pauseTitle = this.raceInput.pauseMenuMode === 'inventory' ? 'Inventory' : this.raceInput.pauseMenuMode === 'radio' ? 'Radio' : this.raceInput.pauseMenuMode === 'settings'
       ? 'Settings'
       : this.raceInput.pauseMenuMode === 'debug'
         ? 'Debug'

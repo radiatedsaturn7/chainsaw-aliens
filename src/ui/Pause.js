@@ -1,9 +1,10 @@
+import {InventoryMenu} from '../items/InventoryMenu.js';
 import { RadioMenu } from '../radio/RadioMenu.js';
 import { drawInGameTextMenu } from './shared/inGameTextMenu.js';
 
 export default class Pause {
   constructor(radio = null, onError = () => {}) {
-    this.radio = radio;
+    this.radio = radio;this.inventoryOpen=false;
     this.radioOpen = false;
     this.radioMenu = radio ? new RadioMenu(radio, {onBack: () => {this.radioOpen=false;this.selection=0;}, onError}) : null;
     this.shake = true;
@@ -16,8 +17,14 @@ export default class Pause {
 
   getItems() {
     if (this.radioOpen && this.radio?.available) return this.radioMenu.rows();
+    const inventory=this.radio?.getInventory?.();
+    if(this.inventoryOpen&&inventory){
+      this.inventoryMenu ||= new InventoryMenu(inventory,{onUse:()=>this.onItemUsed?.(),onRadio:()=>{this.radioOpen=true;this.radioMenu.page='tracks';this.selection=0;},onBack:()=>{this.inventoryOpen=false;this.selection=0;}});
+      return this.inventoryMenu.rows();
+    }
     return [
       { id: 'resume', label: 'Return to Game' },
+      ...(inventory?[{id:'inventory',label:'Inventory',onClick:()=>{this.inventoryOpen=true;this.selection=0;}}]:[]),
       ...(this.radio?.available ? [{id:'radio',label:'Radio',onClick:()=>{this.radioOpen=true;this.radioMenu.page='main';this.selection=0;}}] : []),
       { id: 'exit', label: 'Exit to Main Menu' }
     ];
@@ -60,7 +67,7 @@ export default class Pause {
     const items = this.getItems();
     const menu = drawInGameTextMenu(ctx, {
       bounds: { x: 0, y: 0, w: width, h: height },
-      title: this.radioOpen && this.radio?.available ? 'Radio' : 'Paused',
+      title: this.radioOpen && this.radio?.available ? 'Radio' : this.inventoryOpen?'Inventory':'Paused',
       rows: items,
       selectedIndex: this.selection,
       objective: this.radioOpen ? '' : objective,

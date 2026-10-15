@@ -10,9 +10,9 @@ test('item documents retain artwork, dimensions, pickup policy and multiple effe
  assert.equal(itemAsDoodad(item).item.effects.length,2);
  assert.equal(itemAsDoodad(item).artRef,'medic art');
 });
-test('legacy mix tapes migrate to a radio unlock effect',()=>{
+test('legacy mix tapes migrate into the Radio inventory bag',()=>{
  const item=normalizeItemDocument({kind:'race-doodad',doodad:{id:'tape',itemType:'mix-tape',unlockTrackId:'song',artRef:'tape art'}});
- assert.deepEqual(item.effects,[{type:'radio-track',target:'song',amount:1,operation:'add'}]);
+ assert.equal(item.effects[0].type,'inventory');assert.equal(item.effects[0].bag,'radio');assert.equal(item.effects[0].target,'song');
  assert.equal(item.rotate,true);
 });
 test('effects are allowlisted data, including safe target keys',()=>{

@@ -390,6 +390,7 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
   const physicalCenterSteeringAngle = drivingPlan.steeringAngleRad;
   const normalizedSteering = clamp(physicalCenterSteeringAngle / runner.config.maxSteerAngleRad, -1, 1);
   const physicsInput = {
+    itemSpeedMultiplier:ai.itemSpeedMultiplier||1,
     steering: normalizedSteering,
     centerSteeringAngleRad: physicalCenterSteeringAngle,
     steeringInputMode: 'ai',

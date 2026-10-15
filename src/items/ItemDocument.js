@@ -1,6 +1,6 @@
 // Item files contain data only. Effects are interpreted by ItemEffects, never eval'd.
-export const ITEM_VERSION = 1;
-export const ITEM_EFFECT_TYPES = ['health', 'max-health', 'armor', 'currency', 'key', 'weapon', 'ability', 'inventory', 'device', 'unlock', 'modifier', 'radio-track', 'map'];
+export const ITEM_VERSION = 2;
+export const ITEM_EFFECT_TYPES = ['health', 'max-health', 'armor', 'currency', 'key', 'weapon', 'ability', 'inventory', 'device', 'unlock', 'modifier', 'radio-track', 'map', 'speed'];
 export const ITEM_MODIFIERS = ['speed', 'jumpPower', 'revEfficiency', 'dashCooldownBase', 'upgradeSlots'];
 const text = value => typeof value === 'string' ? value.trim() : '';
 const finite = (value, fallback) => Number.isFinite(Number(value)) ? Number(value) : fallback;
@@ -11,7 +11,8 @@ const safeKey = value => {
 };
 
 export function normalizeItemEffect(source = {}) {
-  const type = text(source.type);
+  const radio = source.type === 'radio-track';
+  const type = radio ? 'inventory' : text(source.type);
   if (!ITEM_EFFECT_TYPES.includes(type)) throw Error(`Unknown item effect: ${type}`);
   const needsTarget = ['key', 'weapon', 'ability', 'inventory', 'device', 'unlock', 'modifier', 'radio-track'].includes(type);
   const target = needsTarget ? safeKey(source.target) : '';
@@ -19,7 +20,12 @@ export function normalizeItemEffect(source = {}) {
   const amount = finite(source.amount ?? 1, NaN);
   if (!Number.isFinite(amount)) throw Error('Effect amount must be a number.');
   if (type !== 'modifier' && amount <= 0) throw Error('Effect amount must be greater than zero.');
-  return { type, target, amount, operation: ['add', 'set', 'multiply', 'max', 'min'].includes(source.operation) ? source.operation : 'add' };
+  return { type, target, amount, contentName:text(source.contentName),
+    bag: radio ? 'radio' : ['items','radio'].includes(source.bag) ? source.bag : 'items',
+    recipient: ['player','allies','opponents','everyone'].includes(source.recipient) ? source.recipient : 'player',
+    when: ['collect','use','hit'].includes(source.when) ? source.when : 'collect',
+    duration: Math.max(0.1, Math.min(300, finite(source.duration, 5))),
+    operation: ['add', 'set', 'multiply', 'max', 'min'].includes(source.operation) ? source.operation : 'add' };
 }
 
 export function normalizeItemDocument(value = {}) {
@@ -27,7 +33,7 @@ export function normalizeItemDocument(value = {}) {
   const legacyTape = source.itemType === 'mix-tape';
   const effects = (Array.isArray(source.effects) ? source.effects : legacyTape && source.unlockTrackId ? [{type:'radio-track', target:source.unlockTrackId}] : []).map(normalizeItemEffect);
   return {
-    id: text(source.id) || 'new-item', name: text(source.name) || 'New Item',
+    id: safeKey(text(source.id) || 'new-item'), name: text(source.name) || 'New Item',
     description: text(source.description), artRef: text(source.artRef),
     widthM: Math.max(0.1, Math.min(500, finite(source.widthM, 1))),
     heightM: Math.max(0.1, Math.min(500, finite(source.heightM, 1))),

@@ -749,6 +749,7 @@ themedTest('controls', 'control timeline interpolates axes and holds discrete co
     controllerFilterOutput: 0,
     centerSteeringAngleRad: null,
     steeringInputMode: 'normalized',
+    itemSpeedMultiplier: 1,
     throttle: 0.5,
     brake: 0,
     clutch: 0,

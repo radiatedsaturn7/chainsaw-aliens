@@ -23,6 +23,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} item file 
  await page.evaluate(async({mobile,name})=>{
   const g=window.__game;g.deviceIsMobile=mobile;g.isMobile=mobile;g.setViewport({width:innerWidth,height:innerHeight,scale:1,dpr:1,isMobile:mobile});
   const {saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');await saveProjectFileAndConfirm('art',name,{width:8,height:8,frames:[{pixels:Array(64).fill('#32dd88ff')}]});
+  for(const [id,name,type,target] of [['red-key','Red Key','key','red'],['scanner','Scanner','device','scanner'],['garage','Garage','unlock','garage']])await saveProjectFileAndConfirm('items',name,{kind:'item',item:{id,name,effects:[{type,target,contentName:name}]}});
   g.title.setScreen('game');g.handleTitleMenuAction('item-editor');
  },{mobile,name});
  await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('item-editor');expect(await page.getByRole('dialog').count()).toBe(0);
@@ -32,8 +33,8 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} item file 
  await action(page,'item-art');await page.locator(`.project-browser-row[data-name="${name}"]`).getByRole('button',{name:'Open',exact:true}).click();
  for(const [type,target,amount] of [['key','red',1],['max-health','',2],['armor','',3],['device','scanner',1],['unlock','garage',1]]){
   await clickItem(page,'item-effect-add');await dialog(page,'Add Item Effect').getByLabel('Effect',{exact:true}).selectOption(type);
-  await dialog(page,'Add Item Effect').getByLabel('Target ID (key, weapon, ability, item, device, unlock or modifier)',{exact:true}).fill(target);
-  await dialog(page,'Add Item Effect').getByLabel('Amount',{exact:true}).fill(String(amount));await apply(page,'Add Item Effect');
+  if(target)await dialog(page,'Add Item Effect').getByLabel({key:'Key',device:'Device',unlock:'Unlock'}[type],{exact:true}).selectOption(target);
+  if(!['device','unlock'].includes(type))await dialog(page,'Add Item Effect').getByLabel('Amount',{exact:true}).fill(String(amount));await apply(page,'Add Item Effect');
  }
  await action(page,'save');await page.getByPlaceholder('Filename',{exact:true}).fill(name);await page.locator('.project-browser-btn.primary').filter({hasText:'Save'}).click();
  await expect.poll(()=>page.evaluate(()=>window.__game.itemEditor.status)).toBe('Saved');
@@ -75,4 +76,39 @@ test('saved race item renders as a doodad, collects, and keeps rewards on return
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.removedSceneryIds)).toContain('saved-race-item');
  await page.evaluate(()=>window.__game.cancelRaceTravel());await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('playing');
  expect(await page.evaluate(()=>({maxHealth:window.__game.player.maxHealth,key:window.__game.player.keys['race-key']}))).toEqual({maxHealth:7,key:1});
+});
+
+for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} compact effect form authors a usable boost with named recipients`,async({page})=>{
+ await page.setViewportSize(mobile?{width:390,height:844}:{width:1280,height:800});await ready(page);
+ await page.evaluate(mobile=>{const g=window.__game;g.deviceIsMobile=mobile;g.isMobile=mobile;g.setViewport({width:innerWidth,height:innerHeight,scale:1,dpr:1,isMobile:mobile});g.transitionTo('item-editor');},mobile);
+ await clickItem(page,'item-effect-add');const form=dialog(page,'Add Item Effect');
+ await expect(form.locator('p')).toHaveCount(0);await expect(form.locator('input:visible,select:visible')).toHaveCount(4);
+ await expect(form.getByLabel('Recipient',{exact:true})).toHaveValue('player');
+ await form.getByLabel('Effect',{exact:true}).selectOption('speed');await form.getByLabel('When',{exact:true}).selectOption('use');
+ await form.getByLabel('Speed multiplier',{exact:true}).fill('1.5');await form.getByLabel('Seconds',{exact:true}).fill('2');
+ await expect(form.locator('input:visible,select:visible')).toHaveCount(5);
+ await page.screenshot({path:`test-results/item-effect-form-${mobile?'portrait':'desktop'}.png`});
+ await apply(page,'Add Item Effect');await expect.poll(()=>page.evaluate(()=>window.__game.itemEditor.doodad.effects.length)).toBe(1);
+ await page.evaluate(async()=>{const g=window.__game;g.itemEditor.doodad.name='Pocket Nitro';await g.items.collect(g.itemEditor.doodad,'form-nitro');g.transitionTo('playing');g.transitionTo('pause');g.pauseMenu.getItems().find(row=>row.id==='inventory').onClick();});
+ await expect.poll(()=>page.evaluate(()=>window.__game.pauseMenu.getItems().some(row=>row.label==='Use Pocket Nitro ×1'))).toBe(true);
+ await page.evaluate(()=>{const menu=window.__game.pauseMenu;menu.selection=0;menu.confirm();});
+ await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('playing');
+ await expect.poll(()=>page.evaluate(()=>window.__game.player.itemSpeedMultiplier)).toBe(1.5);
+ await expect.poll(()=>page.evaluate(()=>window.__game.player.itemSpeedMultiplier),{timeout:5000}).toBe(1);
+ expect(await page.evaluate(()=>window.__game.items.usableItems().length)).toBe(0);
+});
+
+test('race inventory launches a timed boost through live vehicle controls',async({page})=>{
+ test.setTimeout(150000);const errors=[];page.on('pageerror',error=>errors.push(error.message));await ready(page);await seedRaceRuntimeFixtures(page);
+ await page.evaluate(async()=>{const g=window.__game;await g.items.collect({id:'nitro-ci',name:'Nitro',effects:[{type:'speed',when:'use',amount:1.5,duration:3}]},'nitro-ci');void g.startRaceTravel({raceName:'Studio Sprint2',carSelection:'specific',carRef:'2022 Subaru WRX2'});});
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.startupFramePending)).toBe(false);
+ await page.evaluate(()=>{const e=window.__game.raceEditor;e.toggleRacePause();e.getRacePauseMenuRows().find(row=>row.id==='race-inventory').onClick();});
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.getRacePauseMenuRows().some(row=>row.label==='Use Nitro ×1'))).toBe(true);
+ await page.evaluate(()=>window.__game.raceEditor.getRacePauseMenuRows().find(row=>row.id==='inventory:nitro-ci').onClick());
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.raceInput.paused)).toBe(false);
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.itemSpeedMultiplier)).toBe(1.5);
+ await expect.poll(()=>page.evaluate(()=>Math.abs(window.__game.raceEditor.playtestSession.speedMps)),{timeout:5000}).toBeGreaterThan(0.3);
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.itemSpeedMultiplier),{timeout:8000}).toBe(1);
+ expect(await page.evaluate(()=>window.__game.items.progress.bags.items['nitro-ci'])).toBe(0);expect(errors).toEqual([]);
 });

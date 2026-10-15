@@ -7,7 +7,7 @@ import {
 
 export { VEHICLE_RENDER_WHEEL_FLAGS } from './VehicleRenderState.js';
 
-export const VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION = 6;
+export const VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION = 7;
 export const VEHICLE_RENDER_SNAPSHOT_HEADER_WORDS = 6;
 export const VEHICLE_RENDER_SNAPSHOT_FLOATS = 201;
 export const VEHICLE_RENDER_IMPACT_EVENT_CAPACITY = 4;
@@ -43,7 +43,8 @@ export const VEHICLE_CONTROL_INPUT_FLOAT = Object.freeze({
   gear: 11,
   flags: 12,
   activeAeroState: 13,
-  steeringInputMode: 14
+  steeringInputMode: 14,
+  itemSpeedMultiplier: 15
 });
 
 export const VEHICLE_RENDER_SNAPSHOT_HEADER = Object.freeze({
@@ -143,6 +144,7 @@ export function createVehicleControlInputBuffer(input = {}) {
   values[VEHICLE_CONTROL_INPUT_FLOAT.steeringTarget] = finite(input.steeringTarget);
   values[VEHICLE_CONTROL_INPUT_FLOAT.controllerFilterOutput] = finite(input.controllerFilterOutput);
   values[VEHICLE_CONTROL_INPUT_FLOAT.centerSteeringAngleRad] = finite(input.centerSteeringAngleRad);
+  values[VEHICLE_CONTROL_INPUT_FLOAT.itemSpeedMultiplier] = clamp(Number(input.itemSpeedMultiplier)||1,0.1,4);
   values[VEHICLE_CONTROL_INPUT_FLOAT.throttle] = finite(input.throttle);
   values[VEHICLE_CONTROL_INPUT_FLOAT.brake] = finite(input.brake);
   values[VEHICLE_CONTROL_INPUT_FLOAT.clutch] = finite(input.clutch);
@@ -183,6 +185,7 @@ export function readVehicleControlInput(buffer) {
     steeringTarget: values[VEHICLE_CONTROL_INPUT_FLOAT.steeringTarget],
     controllerFilterOutput: values[VEHICLE_CONTROL_INPUT_FLOAT.controllerFilterOutput],
     centerSteeringAngleRad: values[VEHICLE_CONTROL_INPUT_FLOAT.centerSteeringAngleRad],
+    itemSpeedMultiplier: values[VEHICLE_CONTROL_INPUT_FLOAT.itemSpeedMultiplier]||1,
     throttle: values[VEHICLE_CONTROL_INPUT_FLOAT.throttle],
     brake: values[VEHICLE_CONTROL_INPUT_FLOAT.brake],
     clutch: values[VEHICLE_CONTROL_INPUT_FLOAT.clutch],

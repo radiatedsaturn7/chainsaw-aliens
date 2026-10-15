@@ -1,3 +1,5 @@
+import {ItemRuntime} from './ItemRuntime.js';
+import {normalizeItemDocument} from './ItemDocument.js';
 import {applyItemModifier} from './ItemDocument.js';
 import {loadServerPreferenceAsync,saveServerPreference} from '../ui/serverPreferences.js';
 import {normalizeItemProgress,planItemEffects,applyItemPlan,syncItemGrantsToPlayer} from './ItemEffects.js';
@@ -5,12 +7,17 @@ import {normalizeItemProgress,planItemEffects,applyItemPlan,syncItemGrantsToPlay
 export const ITEM_PROGRESS_KEY='rtg-item-progress';
 export class ItemSystem {
   constructor(game,{load=loadServerPreferenceAsync,save=saveServerPreference}={}) {
-    this.game=game;this.loadPreference=load;this.savePreference=save;
+    this.game=game;this.runtime=new ItemRuntime(game);this.selectedItemId='';this.loadPreference=load;this.savePreference=save;
     this.progress=normalizeItemProgress();this.revision=0;this.events=[];this.sessionCollected=new Set();this.pending=new Map();this.retryAt=new Map();this.queue=Promise.resolve();this.appliedPlayers=new WeakSet();
   }
   async load() {
-    if(!this.loading)this.loading=this.loadPreference(ITEM_PROGRESS_KEY,{}).then(value=>{
-      this.progress=normalizeItemProgress(value);this.savedStats=value?.stats||null;this.ready=true;return this;
+    if(!this.loading)this.loading=Promise.all([this.loadPreference(ITEM_PROGRESS_KEY,{}),this.loadPreference('rtg-radio-progress',{}),this.loadPreference('rtg-radio-library',{})]).then(async([value,radio,library])=>{
+      this.progress=normalizeItemProgress(value);
+      const tracks=[...(value?.bags ? [] : radio?.unlocked||[]),...(library?.tracks||[]).filter(t=>t.initiallyUnlocked).map(t=>t.id)];
+      const added=tracks.filter(id=>!(this.progress.bags.radio[id]>0));
+      for(const id of added)this.progress.bags.radio[id]=1;
+      if(added.length){const result=await this.savePreference(ITEM_PROGRESS_KEY,{...this.progress,stats:value?.stats});if(result?.ok===false)throw Error('Inventory could not be saved.');}
+      this.savedStats=value?.stats||null;this.ready=true;return this;
     }).catch(error=>{this.loading=null;throw error;});
     return this.loading;
   }
@@ -40,7 +47,39 @@ export class ItemSystem {
     this.game.abilities={...this.game.abilities,...this.progress.abilities,...this.progress.weapons};
     this.game.ensureActiveWeaponAvailable?.();
   }
-  beginRun(){this.sessionCollected.clear();this.retryAt.clear();}
+  grantRadioTrack(id) {
+    const task=this.queue.then(async()=>{
+      await this.load();if(this.progress.bags.radio[id]>0)return false;
+      const next=normalizeItemProgress(this.progress);next.bags.radio[id]=1;
+      const result=await this.savePreference(ITEM_PROGRESS_KEY,{...next,stats:this.savedStats});
+      if(result?.ok===false)throw Error('Inventory could not be saved.');
+      this.progress=next;this.game.itemProgress=next;syncItemGrantsToPlayer(this.game.player,next);this.game.radio?.onChange?.();return true;
+    });this.queue=task.catch(()=>{});return task;
+  }
+  usableItems(){return Object.values(this.progress.usable).filter(item=>this.progress.bags.items[item.id]>0);}
+  async use(id=this.usableItems().some(item=>item.id===this.selectedItemId)?this.selectedItemId:this.usableItems()[0]?.id){
+    const task=this.queue.then(async()=>{
+      await this.load();this.restorePlayer();
+      const item=this.progress.usable[id];if(!item||!(this.progress.bags.items[id]>0))return false;
+      const session=this.game.raceEditor?.playtestSession;if(session?.carEditorPreview)return false;
+      const definition=normalizeItemDocument({...item,effects:item.effects.filter(e=>e.when==='use').map(e=>({...e,when:'collect'}))});
+      const plan=planItemEffects(definition,this.game.player,this.game.abilities,this.progress);
+      for(const track of plan.radioTracks){await this.game.radio?.load();if(!this.game.radio?.library.tracks.some(entry=>entry.id===track))throw Error('Track unavailable.');}
+      plan.progress.bags.items[id]-=1;plan.progress.inventory[id]=plan.progress.bags.items[id];
+      const stats={...this.savedStats};
+      for(const effect of definition.effects){
+        if(!['player','everyone'].includes(effect.recipient))continue;
+        for(const key of ({health:['health'],'max-health':['maxHealth','health'],armor:['armor'],currency:['credits']}[effect.type]||[]))stats[key]=plan.stats[key];
+      }
+      const result=await this.savePreference(ITEM_PROGRESS_KEY,{...plan.progress,stats});if(result?.ok===false)throw Error('Inventory could not be saved.');
+      this.progress=plan.progress;this.savedStats=stats;this.selectedItemId=id;applyItemPlan(plan,this.game);
+      this.events.push({revision:++this.revision,item:definition});
+      this.runtime.apply(item,'use');this.runtime.fire(item);this.game.radio?.onChange?.();return true;
+    });
+    this.queue=task.catch(()=>{});
+    return task.catch(error=>{this.game.showSystemToast?.(error.message);return false;});
+  }
+  beginRun(){this.runtime.reset();this.sessionCollected.clear();this.retryAt.clear();}
   isCollected(id){return this.sessionCollected.has(id)||this.progress.collected.includes(id);}
   collect(item,id) {
     if(!id)return Promise.resolve(false);
@@ -58,12 +97,12 @@ export class ItemSystem {
         const room=world?.roomAtTile?.(Math.floor(player.x/world.tileSize),Math.floor(player.y/world.tileSize));
         if(Number.isFinite(room))plan.progress.mapReveals.push({scope:world.itemScope,room,radius});
       }
-      // Radio unlocks are idempotent. If either write fails, keep the pickup available.
-      for(const trackId of plan.radioTracks)await this.game.radio.unlock(trackId);
+      // Track ownership is committed with the rest of the inventory in one write.
       {
         if(plan.definition.persistent)plan.progress.collected.push(id);
         const stats={...this.savedStats};
         for(const effect of plan.definition.effects){
+          if(effect.when!=='collect'||!['player','everyone'].includes(effect.recipient))continue;
           const fields={health:['health'],'max-health':['maxHealth','health'],armor:['armor'],currency:['credits']}[effect.type]||[];
           for(const key of fields)stats[key]=plan.stats[key];
         }
@@ -71,7 +110,7 @@ export class ItemSystem {
         if(result?.ok===false)throw Error(result.reason||'Item progress could not be saved');
         this.savedStats=stats;
       }
-      this.progress=plan.progress;applyItemPlan(plan,this.game);this.sessionCollected.add(id);
+      this.progress=plan.progress;applyItemPlan(plan,this.game);this.game.radio?.onChange?.();this.sessionCollected.add(id);this.runtime.apply(plan.definition,'collect');
       this.events.push({revision:++this.revision,item:structuredClone(plan.definition)});
       this.game.showSystemToast?.(`${plan.definition.name} acquired`);return true;
     });

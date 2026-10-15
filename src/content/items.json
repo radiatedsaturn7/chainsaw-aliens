@@ -158,6 +158,32 @@
           "target": "default"
         }
       ]
+    },
+    {
+      "id": "nitro",
+      "name": "Nitro",
+      "effects": [
+        {
+          "type": "speed",
+          "when": "use",
+          "recipient": "player",
+          "amount": 1.5,
+          "duration": 5
+        }
+      ]
+    },
+    {
+      "id": "slow-shot",
+      "name": "Slow shot",
+      "effects": [
+        {
+          "type": "speed",
+          "when": "hit",
+          "recipient": "opponents",
+          "amount": 0.5,
+          "duration": 5
+        }
+      ]
     }
   ]
 }
