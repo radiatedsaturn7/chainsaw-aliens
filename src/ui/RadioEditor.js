@@ -279,7 +279,7 @@ export class RadioEditor extends RaceEditor {
     if(this.opened)return;
     this.preview.setVolume(this.game.audio?.midiBusVolume??0.8);
     this.updateRaceMapThumbstickPan(dt);
-    const cmd=input?.isDownCode?.('ControlLeft')||input?.isDownCode?.('MetaLeft');
+    const cmd=['ControlLeft','ControlRight','MetaLeft','MetaRight'].some(code=>input?.isDownCode?.(code));
     for(const [code,action] of Object.entries({KeyZ:'undo',KeyY:'redo',KeyS:'save'}))if(input?.wasCommandPressedCode?.(code)||(cmd&&input?.wasPressedCode?.(code)))void this.handleMenuAction(action);
     if(input?.wasPressedCode?.('Escape'))this.cancel();
     if(input?.wasPressedCode?.('Space'))void this.handleMenuAction('radio-play');
@@ -293,8 +293,14 @@ export class RadioEditor extends RaceEditor {
     if(!stick){this.padStickDirection=null;this.padStickRepeat=0;}
     else {this.padStickRepeat=(this.padStickRepeat||0)-dt;if(stick!==this.padStickDirection||this.padStickRepeat<=0){pad.actions.push({type:stick});this.padStickDirection=stick;this.padStickRepeat=0.2;}}
     for(const action of pad.actions){
-      if(action.type===INPUT.MENU){this.mobileRootOpen=!this.mobileRootOpen;this.gamepadSubmenuOpen=false;this.gamepadFocusedItemId=roots[0]?.id;}
+      if(action.type===INPUT.MENU){this.mobileRootOpen=!this.mobileRootOpen;this.gamepadSubmenuOpen=false;this.activeRootId=roots[0]?.id;this.gamepadFocusedItemId=this.activeRootId;}
       else if(action.type===INPUT.CANCEL)this.cancel();
+      else if(action.type===INPUT.FOCUS_TOGGLE){this.focusList=this.focusList==='stations'?'tracks':'stations';}
+      else if(action.type===INPUT.PANEL_PREV||action.type===INPUT.PANEL_NEXT){
+        const index=Math.max(0,roots.findIndex(root=>root.id===this.activeRootId)),step=action.type===INPUT.PANEL_PREV?-1:1;
+        this.activeRootId=roots[(index+step+roots.length)%roots.length].id;
+        this.gamepadFocusedItemId=this.mobileRootOpen?this.activeRootId:this.getMenuItems(this.activeRootId)[0]?.id;
+      }
       else if(action.type===INPUT.UNDO)void this.handleMenuAction('undo');
       else if(action.type===INPUT.REDO)void this.handleMenuAction('redo');
       else if(this.mobileRootOpen||this.gamepadSubmenuOpen){

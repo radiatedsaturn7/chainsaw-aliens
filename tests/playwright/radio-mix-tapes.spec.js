@@ -100,15 +100,16 @@ for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mod
  if(mode==='portrait'||mode==='landscape-touch'){
   for(const id of ['menu','undo','redo','radio-play'])expect(await page.evaluate(id=>window.__game.radioEditor.buttons.some(b=>b.id===id),id)).toBe(true);
   const stick=await page.evaluate(()=>{const g=window.__game,j=g.radioEditor.portraitThumbstick,r=g.canvas.getBoundingClientRect();return{x:r.x+j.center.x*r.width/g.viewport.width,y:r.y+(j.center.y+j.radius*0.8)*r.height/g.viewport.height};});
-  await page.evaluate(()=>{window.__game.radioEditor.focusList='tracks';});await page.mouse.move(stick.x,stick.y);await page.mouse.down();await page.waitForTimeout(500);await page.mouse.up();
+  await page.evaluate(()=>{window.__game.radioEditor.focusList='tracks';});expect(await page.evaluate(p=>document.elementFromPoint(p.x,p.y)?.id,stick)).toBe('game');await page.mouse.move(stick.x,stick.y);await page.mouse.down();await page.waitForTimeout(500);await page.mouse.up();
   expect(await page.evaluate(()=>window.__game.radioEditor.trackId)).not.toBe('song-0');
  }
  if(mode==='gamepad'){
   const press=async index=>{await page.evaluate(i=>{window.__radioPad.buttons[i]={pressed:true,value:1};},index);await page.waitForTimeout(90);await page.evaluate(i=>{window.__radioPad.buttons[i]={pressed:false,value:0};},index);await page.waitForTimeout(90);};
   await press(9);await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.mobileRootOpen)).toBe(true);
+  await press(5);expect(await page.evaluate(()=>window.__game.radioEditor.activeRootId)).toBe('edit');await press(4);expect(await page.evaluate(()=>window.__game.radioEditor.activeRootId)).toBe('file');
   await press(0);await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.gamepadSubmenuOpen)).toBe(true);
   await press(1);await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.mobileRootOpen)).toBe(true);await press(1);
-  await press(15);await press(13);expect(await page.evaluate(()=>window.__game.radioEditor.trackId)).toBe('song-1');
+  await press(8);expect(await page.evaluate(()=>window.__game.radioEditor.focusList)).toBe('tracks');await press(15);await press(13);expect(await page.evaluate(()=>window.__game.radioEditor.trackId)).toBe('song-1');
  }else{
   // Open and close the actual shared menu without a wizard.
   if(mode==='desktop'){

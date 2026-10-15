@@ -101,6 +101,7 @@ body.mobile-portrait #game {
 }
 
 .hint {
+  pointer-events: none;
   position: absolute;
   bottom: 10px;
   width: 100%;
@@ -108,6 +109,10 @@ body.mobile-portrait #game {
   font-size: 12px;
   letter-spacing: 1px;
   opacity: 0.6;
+}
+
+body.editor-active .hint {
+  display: none;
 }
 
 .fullscreen-button {

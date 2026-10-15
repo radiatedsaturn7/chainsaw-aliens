@@ -252,7 +252,7 @@ export default class Game {
     ensureProjectFileIndex();
     this.dialog = new Dialog(INTRO_LINES);
     this.hud = new HUD();
-    this.radio = new RadioPlayer({onChange:()=>this.audio?.setRadioPlaying?.(Boolean(this.radio?.playing))});
+    this.radio = new RadioPlayer({onChange:()=>this.audio?.setRadioPlaying?.(Boolean(this.radio?.playing || this.radioEditor?.preview?.playing))});
     this.pauseMenu = new Pause(this.radio, message => this.showSystemToast(message));
     this.shopUI = new Shop(UPGRADE_LIST);
     this.stateManager = new StateManager('loading');
