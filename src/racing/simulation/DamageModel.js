@@ -133,6 +133,7 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
     if (!sprite?.id || session.removedSceneryIds.includes(sprite.id) || session.flattenedSceneryIds.includes(sprite.id) || session.triggeredSceneryIds.includes(sprite.id)) return;
     const doodad = editor.getRaceDoodadForScenery(sprite);
     if (isMixTape(doodad) || doodad.itemType==='item') {
+      if(session.carEditorPreview)return;
       if(doodad.itemType==='item'&&getItemSystem(editor.game).isCollected(itemPlacementId(sprite))){session.removedSceneryIds.push(sprite.id);return;}
       const radius = Math.max(0.35, Number(doodad.hitboxWidthM || doodad.widthM || 1) / 2);
       const ground = editor.sampleRaceDoodadGroundPoint?.(sprite.x, sprite.z, sprite, doodad);

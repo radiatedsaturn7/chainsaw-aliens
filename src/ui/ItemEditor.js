@@ -193,13 +193,18 @@ export default class ItemEditor extends DoodadEditor {
       this.listScroll[key]=top<current?top:top+36>current+bounds.h?top+36-bounds.h:current;
       this.focusEffectChanged=false;
     }
+    const focused=actions.findIndex(action=>action.id===this.gamepadFocusedItemId||action.focused);
+    if(this.activeViewportMode==='gamepad'&&focused>=0){
+      const top=Math.floor(focused/cols)*rowH+6,current=this.listScroll[key]||0;
+      this.listScroll[key]=top<current?top:top+36>current+bounds.h?top+36-bounds.h:current;
+    }
     const offset=Math.max(0,Math.min(max,this.listScroll[key]||0));this.listScroll[key]=offset;
     this.listRegions.push({key,bounds:{...bounds},max});
     ctx.save();ctx.beginPath();ctx.rect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.clip();
     const w=(bounds.w-16-(cols-1)*8)/cols;
     for(let i=0;i<actions.length;i++){
       const action=actions[i],b={x:bounds.x+8+(i%cols)*(w+8),y:bounds.y+6+Math.floor(i/cols)*rowH-offset,w,h:36};
-      if(b.y>=bounds.y&&b.y+b.h<=bounds.y+bounds.h){this.registerButton(ctx,b,action);if(action.focused||action.id===this.gamepadFocusedItemId)drawSharedFocusRing(ctx,b);}
+      if(b.y>=bounds.y&&b.y+b.h<=bounds.y+bounds.h){this.registerButton(ctx,b,{...action,listRegionKey:key});if(action.focused||action.id===this.gamepadFocusedItemId)drawSharedFocusRing(ctx,b);}
     }
     ctx.restore();
   }
@@ -208,7 +213,7 @@ export default class ItemEditor extends DoodadEditor {
     if(this.busy)return;
     if(this.desktopDropdown){super.handlePointerDown(point);return;}
     const region=[...this.listRegions].reverse().find(region=>this.inside(point,region.bounds));
-    if(region){this.listDrag={region,startY:point.y,offset:this.listScroll[region.key]||0,moved:false,button:[...this.buttons].reverse().find(button=>this.inside(point,button.bounds))};return;}
+    if(region){this.listDrag={region,startY:point.y,offset:this.listScroll[region.key]||0,moved:false,button:[...this.buttons].reverse().find(button=>button.listRegionKey===region.key&&this.inside(point,button.bounds))};return;}
     super.handlePointerDown(point);
   }
   handlePointerMove(point){

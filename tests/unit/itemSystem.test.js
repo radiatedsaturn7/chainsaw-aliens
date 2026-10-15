@@ -115,3 +115,34 @@ test('saved item override replaces a built-in legacy pickup effect',async()=>{
   assert.equal((await library.load('chainsaw-throw')).effects[0].target,'anchor');
  }finally{resetProjectFilesForTests();}
 });
+test('car artwork previews never collect items or persist grants',async()=>{
+ let saves=0;const {game,system}=fixture(async()=>{saves++;return {ok:true};});game.items=system;
+ const placement={id:'preview-item',itemType:'item',item,x:10,z:10},session={carEditorPreview:true};
+ const editor={game,playtestSession:session,ensureRaceScenery:()=>[placement],getRaceSessionCar:()=>({}),getRaceCarTuning:()=>({}),getRaceVehicleCollisionContactPoints:()=>[{x:10,z:10,y:0.5}],getRaceDoodadForScenery:()=>itemAsDoodad(item),sampleRaceDoodadGroundPoint:()=>({elevation:0}),getRaceThreeElevationM:()=>0};
+ updateRaceSceneryCollisions(editor,0.016);await settle();assert.equal(saves,0);assert.equal(game.player.maxHealth,5);assert.deepEqual(session.removedSceneryIds,[]);
+});
+test('map reveals persist and restore when the minimap is recreated',async()=>{
+ let stored;const {game,system}=fixture(async(_key,value)=>{stored=structuredClone(value);return {ok:true};});
+ game.player.x=16;game.player.y=16;game.world={itemScope:'map-a',tileSize:32,roomAtTile:()=>4};game.minimap={revealNearbyRooms:()=>{}};
+ await system.collect({effects:[{type:'map',amount:7}]},'map');assert.deepEqual(stored.mapReveals,[{scope:'map-a',room:4,radius:7}]);
+ const calls=[];game.minimap={revealNearbyRooms:(...args)=>calls.push(args)};system.restorePlayer();assert.deepEqual(calls,[[4,7]]);
+});
+test('small portrait keeps the action rail and hotbar reachable',()=>{
+ const editor=new ItemEditor({deviceIsMobile:true,input:{isGamepadConnected:()=>false}});editor.draw(canvasContext(),320,568);
+ for(const id of ['menu','undo','redo','context','item-properties','item-art','item-image']){
+  const b=editor.buttons.find(button=>button.id===id)?.bounds;assert.ok(b,id);assert.ok(b.x>=0&&b.y>=0&&b.x+b.w<=320&&b.y+b.h<=568,id);
+ }
+});
+test('gamepad scrolls the focused last File command into view',()=>{
+ const editor=new ItemEditor({deviceIsMobile:true,input:{isGamepadConnected:()=>true}});editor.gamepadSubmenuOpen=true;editor.landscapeRootId='file';editor.gamepadFocusedItemId='exit-main';editor.draw(canvasContext(),844,390);
+ assert.ok(editor.buttons.some(button=>button.id==='exit-main'&&typeof button.onClick==='function'));
+});
+test('returning from a race preserves new grants without replaying older pickups',async()=>{
+ const {game,system}=fixture();game.player=new Player(0,0);
+ await system.collect({effects:[{type:'max-health',amount:1}]},'old');
+ const snapshot={itemRevision:system.revision,itemProgress:structuredClone(system.progress),player:structuredClone(game.player),abilities:{...game.abilities}};
+ await system.collect({effects:[{type:'max-health',amount:2},{type:'key',target:'race-key'},{type:'weapon',target:'ignitir'},{type:'modifier',target:'speed',amount:20}]},'race');
+ Object.assign(game.player,snapshot.player);game.abilities=snapshot.abilities;
+ system.restoreAfterTravel(snapshot);
+ assert.equal(game.player.maxHealth,8);assert.equal(game.player.keys['race-key'],1);assert.equal(game.abilities.ignitir,true);assert.equal(game.player.speed,snapshot.player.speed+20);
+});

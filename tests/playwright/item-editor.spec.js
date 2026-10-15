@@ -1,4 +1,5 @@
 import {test,expect} from '@playwright/test';
+import {seedRaceRuntimeFixtures} from './helpers/race-runtime-fixtures.js';
 const dialog=(page,name)=>page.getByRole('dialog',{name,exact:true});
 const apply=(page,name)=>dialog(page,name).getByRole('button',{name:'Apply',exact:true}).click();
 async function ready(page){await page.goto('/index.html');await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');}
@@ -49,4 +50,29 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} item file 
  expect(await page.evaluate(()=>({armor:window.__game.player.armor,scanner:window.__game.player.devices.scanner,garage:window.__game.player.unlocks.garage}))).toEqual({armor:3,scanner:true,garage:true});
  await ready(page);await expect.poll(()=>page.evaluate(()=>window.__game.player.keys?.red)).toBe(1);
  expect(await page.evaluate(()=>window.__game.player.devices.scanner)).toBe(true);expect(errors).toEqual([]);
+});
+
+test('saved race item renders as a doodad, collects, and keeps rewards on return to a level',async({page})=>{
+ test.setTimeout(150000);await ready(page);await seedRaceRuntimeFixtures(page);
+ await page.evaluate(async()=>{
+  const g=window.__game,{saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');
+  await saveProjectFileAndConfirm('art','Race Item Art',{width:8,height:8,frames:[{pixels:Array(64).fill('#33ddaaff')}]});
+  await saveProjectFileAndConfirm('items','Race Reward',{kind:'item',item:{id:'race-reward',name:'Race Reward',artRef:'Race Item Art',widthM:2,heightM:4,rotate:true,effects:[{type:'max-health',amount:2},{type:'key',target:'race-key'}]}});
+  g.enterRaceEditor();g.raceEditor.handleMenuAction('race-item');
+ });
+ await page.locator('.project-browser-row[data-name="Race Reward"]').getByRole('button',{name:'Open',exact:true}).click();
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.selectedItemRef)).toBe('Race Reward');
+ await page.evaluate(()=>{const g=window.__game;g.player.maxHealth=5;g.player.health=3;g.transitionTo('playing');void g.startRaceTravel({raceName:'Studio Sprint2',carSelection:'specific',carRef:'2022 Subaru WRX2'});});
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
+ const mesh=await page.evaluate(()=>{
+  const e=window.__game.raceEditor,s=e.playtestSession,car=e.getRaceSessionCar(s),point=e.getRaceVehicleCollisionContactPoints({session:s,car,tuning:e.getRaceCarTuning(car)})[0];
+  const sprite=e.createRaceScenerySprite({x:point.x,z:point.z});sprite.id='saved-race-item';e.ensureRaceScenery().push(sprite);
+  const mesh=e.getRaceDoodadWorldMeshes().find(mesh=>mesh.id===sprite.id);
+  return {artRef:mesh?.artRef,textured:mesh?.textured,points:mesh?.points.length};
+ });
+ expect(mesh).toEqual({artRef:'Race Item Art',textured:true,points:4});
+ await expect.poll(()=>page.evaluate(()=>window.__game.player.keys?.['race-key'])).toBe(1);
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.removedSceneryIds)).toContain('saved-race-item');
+ await page.evaluate(()=>window.__game.cancelRaceTravel());await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('playing');
+ expect(await page.evaluate(()=>({maxHealth:window.__game.player.maxHealth,key:window.__game.player.keys['race-key']}))).toEqual({maxHealth:7,key:1});
 });

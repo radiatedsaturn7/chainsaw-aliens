@@ -1660,12 +1660,16 @@ export default class Game {
   captureRaceTravelPlayerState() {
     const player = this.player || {};
     return {
+      itemRevision: this.items?.revision || 0,
+      itemProgress: structuredClone(this.items?.progress || {}),
       position: {
         x: Number(player.x || 0),
         y: Number(player.y || 0),
         facing: Number(player.facing || 1) || 1
       },
       player: {
+        armor: Number(player.armor || 0),
+        itemModifiers: structuredClone(player.itemModifiers || []),
         health: Number(player.health || 0),
         maxHealth: Number(player.maxHealth || 0),
         loot: Number(player.loot || 0),
@@ -1688,6 +1692,7 @@ export default class Game {
     const state = snapshot.player || {};
     [
       'health',
+      'armor',
       'maxHealth',
       'loot',
       'credits',
@@ -1697,6 +1702,7 @@ export default class Game {
     ].forEach((key) => {
       if (Number.isFinite(Number(state[key]))) this.player[key] = Number(state[key]);
     });
+    this.player.itemModifiers = structuredClone(state.itemModifiers || []);
     this.player.equippedUpgrades = JSON.parse(JSON.stringify(state.equippedUpgrades || []));
     this.player.cosmetics = JSON.parse(JSON.stringify(state.cosmetics || []));
     this.player.superReady = state.superReady === true;
@@ -1704,6 +1710,7 @@ export default class Game {
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.abilities = { ...(snapshot.abilities || {}) };
     this.activeWeaponIndex = Math.max(0, Math.floor(Number(snapshot.activeWeaponIndex || 0)));
+    this.items?.restoreAfterTravel(snapshot);
     this.ensureActiveWeaponAvailable?.();
     if (restorePosition && snapshot.position) {
       this.player.x = Number(snapshot.position.x || 0);
@@ -7642,7 +7649,7 @@ export default class Game {
     }
     if (action.type === 'add-item') {
       const quantity=Math.max(1,Math.min(100,Math.floor(Number(params.quantity)||1)));
-      const index=Math.max(0,(trigger.actions||[]).indexOf(action));
+      const index=Math.max(0,(trigger?.actions||[]).indexOf(action));
       void itemLibrary.load(params.itemId).then(async item=>{
         for(let i=0;i<quantity;i++)await getItemSystem(this).collect(item,`trigger:${this.world.itemScope}:${triggerId}:${index}:${i}`);
       }).catch(error=>this.showSystemToast(error.message)).finally(onDone);

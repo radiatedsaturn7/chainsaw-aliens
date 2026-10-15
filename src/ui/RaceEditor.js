@@ -12766,6 +12766,7 @@ export default class RaceEditor {
   }
 
   startPlaytest(carId = this.project.selectedCarId, options = {}) {
+    if(options?.carEditorPreview!==true)this.game?.items?.beginRun();
     if (options?.hydrateCars !== false && this.mode !== 'car') this.hydrateProjectCarsFromSavedFiles();
     const selectedCar = this.findRaceProjectCarById(carId) || this.selectedCar;
     const car = this.materializeRaceRuntimeCar(selectedCar, options?.runtimeCarOverrides) || selectedCar;
