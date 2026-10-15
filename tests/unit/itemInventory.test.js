@@ -66,7 +66,7 @@ test('effect forms use named selections and only relevant inputs; hit recipient 
  assert.deepEqual(visible({type:'health'}),['type','when','recipient','amount']);
  assert.deepEqual(visible({type:'inventory',bag:'radio'}),['type','when','recipient','bag','target']);
  const target=fields.find(field=>field.id==='target');assert.equal(target.options({type:'inventory',bag:'radio'})[1].label,'Night Drive');
- assert.equal(fields.find(field=>field.id==='recipient').options({when:'hit'})[0].value,'opponents');
+ assert.equal(fields.find(field=>field.id==='recipient').options({type:'speed',when:'hit'})[0].value,'opponents');
  assert.equal(target.options({type:'key'})[0].label,'Blue key');
 });
 test('Inventory menu exposes usable items and Radio bag without raw content IDs',async()=>{
@@ -104,4 +104,17 @@ test('Inventory effects that grant a named usable item retain its use behavior',
  const {game}=setup();game.items.library={load:async name=>{assert.equal(name,'Nitro');return nitro;}};
  await game.items.collect({id:'crate',name:'Crate',effects:[{type:'inventory',target:'nitro',itemRef:'Nitro',contentName:'Nitro',amount:2}]},'crate');
  assert.equal(game.items.progress.bags.items.nitro,2);assert.equal(await game.items.use('nitro'),true);assert.equal(game.items.progress.bags.items.nitro,1);assert.equal(game.player.itemSpeedMultiplier,1.5);
+});
+
+test('using a stored map persists its reveal and consumes the inventory item',async()=>{
+ const {game,storage}=setup();game.world={itemScope:'map-level',tileSize:32,roomAtTile:()=>4};const revealed=[];game.minimap={revealNearbyRooms:(room,radius)=>revealed.push({room,radius})};
+ await game.items.collect({id:'map-use',effects:[{type:'map',when:'use',amount:2}]},'map-use');
+ assert.deepEqual(revealed,[]);await game.items.use('map-use');assert.deepEqual(revealed,[{room:4,radius:2}]);
+ assert.deepEqual(storage[ITEM_PROGRESS_KEY].mapReveals,[{scope:'map-level',room:4,radius:2}]);assert.equal(storage[ITEM_PROGRESS_KEY].bags.items['map-use'],0);
+});
+test('recipient and activation choices only offer behavior supported by the selected effect',()=>{
+ const fields=itemEffectFields({type:'health'},{id:'new',name:'New'}),recipient=fields.find(f=>f.id==='recipient'),when=fields.find(f=>f.id==='when');
+ assert.deepEqual(recipient.options({type:'inventory'}).map(o=>o.value),['player']);
+ assert.deepEqual(when.options({type:'inventory'}).map(o=>o.value),['collect','use']);
+ assert.deepEqual(recipient.options({type:'speed',when:'use'}).map(o=>o.value),['player','allies','opponents','everyone']);
 });

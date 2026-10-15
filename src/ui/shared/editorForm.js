@@ -29,8 +29,8 @@ export function openEditorForm(title,fields,{description=''}={}){
     }
     const values=()=>Object.fromEntries(Object.entries(inputs).map(([id,{input}])=>[id,input.value]));
     const refresh=()=>{
-      const state=values();
       for(const {input,field,label} of Object.values(inputs)){
+        const state=values();
         label.hidden=field.visibleWhen?!field.visibleWhen(state):false;
         label.style.display=label.hidden?'none':'block';
         input.disabled=label.hidden;

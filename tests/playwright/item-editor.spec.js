@@ -117,11 +117,21 @@ test('race inventory boosts the player and fires a slowing projectile at an oppo
  await expect.poll(()=>page.evaluate(()=>Math.abs(window.__game.raceEditor.playtestSession.speedMps)),{timeout:5000}).toBeGreaterThan(0.3);
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.itemSpeedMultiplier),{timeout:8000}).toBe(1);
  expect(await page.evaluate(()=>window.__game.items.progress.bags.items['nitro-ci'])).toBe(0);
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.aiRuntime.length)).toBe(1);
+ await page.evaluate(async()=>{
+  const e=window.__game.raceEditor,s=e.playtestSession,a=s.aiRuntime[0],runner=a.vehicleDynamicsRunner;
+  const {quaternionFromEuler}=await import('/src/racing/simulation/RigidBodyMath.js');
+  const {syncVehicleDynamicsCompatibilityOutputs}=await import('/src/racing/simulation/VehicleState.js');
+  const position={x:s.worldX+Math.sin(s.carYaw)*8,y:s.vehicleRenderState.position.y,z:s.worldZ+Math.cos(s.carYaw)*8};
+  const state={position,orientation:quaternionFromEuler({yaw:s.carYaw}),routeDistance:Number(s.projectedDistance||0)+8,grounded:true,gear:1,engineRpm:runner.config.idleRpm,parkUntilDrive:true};
+  if(e.vehicleDynamicsAuthority?.workerBridge)e.vehicleDynamicsAuthority.workerBridge.resetVehicle(state,a.workerVehicleId,a,'item-test-lineup');
+  else {runner.resetAuthoritativeState({...state,worldX:position.x,worldZ:position.z,heightM:position.y,carYaw:s.carYaw,velocity:{x:0,y:0,z:0},speedMps:0},{reason:'item-test-lineup',parkUntilDrive:true});syncVehicleDynamicsCompatibilityOutputs(runner,a);}
+ });
  await expect.poll(()=>page.evaluate(()=>{
-  const s=window.__game.raceEditor.playtestSession,a=s.aiRuntime[0];if(!a)return false;
+  const s=window.__game.raceEditor.playtestSession,a=s.aiRuntime[0];
   const dx=a.worldX-s.worldX,dz=a.worldZ-s.worldZ,forward=dx*Math.sin(s.carYaw)+dz*Math.cos(s.carYaw),side=dx*Math.cos(s.carYaw)-dz*Math.sin(s.carYaw);
-  return forward>4&&forward<70&&Math.abs(side)<1.5;
- }),{timeout:30000}).toBe(true);
+  return {inFront:forward>2&&forward<30,aligned:Math.abs(side)<1.8};
+ }),{timeout:5000}).toEqual({inFront:true,aligned:true});
  await page.evaluate(async()=>{const g=window.__game;await g.items.collect({id:'slow-ci',name:'Slow shot',effects:[{type:'speed',when:'hit',recipient:'opponents',amount:0.5,duration:4}]},'slow-ci');});
  await page.keyboard.press('KeyU');
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.aiRuntime[0].itemSpeedMultiplier),{timeout:8000}).toBe(0.5);

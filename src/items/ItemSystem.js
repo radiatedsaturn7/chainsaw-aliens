@@ -57,6 +57,13 @@ export class ItemSystem {
       this.progress=next;this.game.itemProgress=next;syncItemGrantsToPlayer(this.game.player,next);this.game.radio?.onChange?.();return true;
     });this.queue=task.catch(()=>{});return task;
   }
+  prepareMapReveals(plan){
+    for(const radius of plan.maps){
+      const {world,player}=this.game;
+      const room=world?.roomAtTile?.(Math.floor(player.x/world.tileSize),Math.floor(player.y/world.tileSize));
+      if(Number.isFinite(room))plan.progress.mapReveals.push({scope:world.itemScope,room,radius});
+    }
+  }
   async prepareInventory(plan){
     for(const effect of plan.definition.effects){
       if(effect.type!=='inventory'||effect.bag!=='items'||!effect.itemRef||effect.when!=='collect'||!['player','everyone'].includes(effect.recipient))continue;
@@ -76,6 +83,7 @@ export class ItemSystem {
       const definition=normalizeItemDocument({...item,effects:item.effects.filter(e=>e.when==='use').map(e=>({...e,when:'collect'}))});
       const plan=planItemEffects(definition,this.game.player,this.game.abilities,this.progress);
       await this.prepareInventory(plan);
+      this.prepareMapReveals(plan);
       for(const track of plan.radioTracks){await this.game.radio?.load();if(!this.game.radio?.library.tracks.some(entry=>entry.id===track))throw Error('Track unavailable.');}
       plan.progress.bags.items[id]-=1;plan.progress.inventory[id]=plan.progress.bags.items[id];
       const stats={...this.savedStats};
@@ -101,14 +109,10 @@ export class ItemSystem {
       await this.load();this.restorePlayer();if(this.isCollected(id))return false;
       const plan=planItemEffects(item,this.game.player,this.game.abilities,this.progress);
       await this.prepareInventory(plan);
+      this.prepareMapReveals(plan);
       for(const trackId of plan.radioTracks){
         const radio=this.game.radio;if(!radio)throw Error('Radio is unavailable.');await radio.load();
         if(!radio.library.tracks.some(track=>track.id===trackId))throw Error('This item needs an existing radio track.');
-      }
-      for(const radius of plan.maps){
-        const {world,player}=this.game;
-        const room=world?.roomAtTile?.(Math.floor(player.x/world.tileSize),Math.floor(player.y/world.tileSize));
-        if(Number.isFinite(room))plan.progress.mapReveals.push({scope:world.itemScope,room,radius});
       }
       // Track ownership is committed with the rest of the inventory in one write.
       {

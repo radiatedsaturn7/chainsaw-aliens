@@ -16,8 +16,8 @@ export function itemEffectFields(effect,item,{tracks=[],items=[]}={}) {
   };
   return [
     {id:'type',label:'Effect',value:effect.type,options:Object.entries(EFFECT_LABELS).map(([value,label])=>({value,label}))},
-    {id:'when',label:'When',value:effect.when||'collect',options:options([['collect','Collected'],['use','Used'],['hit','Projectile hits']])},
-    {id:'recipient',label:'Recipient',value:effect.recipient||'player',options:s=>s.when==='hit'?[RECIPIENTS[2],RECIPIENTS[1],RECIPIENTS[3]]:RECIPIENTS},
+    {id:'when',label:'When',value:effect.when||'collect',options:s=>options([['collect','Collected'],['use','Used'],...(['health','max-health','speed'].includes(s.type||effect.type)?[['hit','Projectile hits']]:[])])},
+    {id:'recipient',label:'Recipient',value:effect.recipient||'player',options:s=>!['health','max-health','speed'].includes(s.type||effect.type)?[RECIPIENTS[0]]:s.when==='hit'?[RECIPIENTS[2],RECIPIENTS[1],RECIPIENTS[3]]:RECIPIENTS},
     {id:'bag',label:'Bag',value:effect.bag||'items',options:options([['items','Items'],['radio','Radio']]),visibleWhen:s=>s.type==='inventory'},
     {id:'target',label:s=>s.type==='inventory'&&s.bag==='radio'?'Track':({key:'Key',weapon:'Weapon',ability:'Ability',inventory:'Item',device:'Device',unlock:'Unlock',modifier:'Stat'}[s.type]||'Item'),value:effect.target||item.id,options:contents,visibleWhen:s=>['key','weapon','ability','inventory','device','unlock','modifier'].includes(s.type)},
     {id:'amount',label:s=>s.type==='speed'?'Speed multiplier':'Amount',type:'number',value:effect.amount??1,required:true,visibleWhen:s=>!['weapon','ability','device','unlock'].includes(s.type)&&!(s.type==='inventory'&&s.bag==='radio')},
