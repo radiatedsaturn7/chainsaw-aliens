@@ -13,7 +13,10 @@ async function clickPause(page,id){await expect.poll(()=>page.evaluate(id=>windo
 
 async function radioReady(page){await expect.poll(()=>page.evaluate(()=>window.__game.state==='radio-editor'&&!window.__game.radioEditor.opened)).toBe(true);}
 async function clickRadio(page,id){
- await radioReady(page);await expect.poll(()=>page.evaluate(id=>window.__game.radioEditor.buttons.some(b=>b.id===id&&!b.disabled),id)).toBe(true);
+ await radioReady(page);
+ // Canvas hit bounds are rebuilt on the next draw after menu/selection changes.
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ await expect.poll(()=>page.evaluate(id=>window.__game.radioEditor.buttons.some(b=>b.id===id&&!b.disabled),id)).toBe(true);
  const point=await page.evaluate(id=>{const g=window.__game,b=g.radioEditor.buttons.find(b=>b.id===id&&!b.disabled).bounds,r=g.canvas.getBoundingClientRect();return{x:r.x+(b.x+b.w/2)*r.width/g.viewport.width,y:r.y+(b.y+b.h/2)*r.height/g.viewport.height};},id);
  await page.mouse.click(point.x,point.y);
 }
@@ -119,7 +122,7 @@ for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mod
    await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.buttons.some(b=>b.desktopRootId==='file'))).toBe(true);
    const root=await page.evaluate(()=>window.__game.radioEditor.buttons.find(b=>b.desktopRootId==='file')?.id);expect(root).toBeTruthy();await clickRadio(page,root);
    expect(await page.evaluate(()=>window.__game.radioEditor.desktopDropdown?.rootId)).toBe('file');await page.keyboard.press('Escape');
-  }else {await clickRadio(page,'menu');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.mobileRootOpen)).toBe(true);await clickRadio(page,'menu');}
+  }else {await clickRadio(page,'menu');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.mobileRootOpen)).toBe(true);await clickRadio(page,'menu');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.mobileRootOpen)).toBe(false);}
  }
  await page.evaluate(()=>{const e=window.__game.radioEditor;e.selectTrack('song-2');e.menuScrollState['radio:tracks']=0;});
  await clickRadio(page,'track-membership');await radioReady(page);await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.station.trackIds)).toContain('song-2');
