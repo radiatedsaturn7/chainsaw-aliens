@@ -48,7 +48,12 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors a 
  await expect.poll(()=>page.evaluate(()=>window.__game.radio.progress.unlocked)).toEqual([trackId]);
  await page.evaluate(()=>window.__game.transitionTo('pause'));await clickPause(page,'radio');await clickPause(page,'radio-play');
  await expect.poll(()=>page.evaluate(()=>window.__game.radio.playing)).toBe(true);await expect.poll(()=>page.evaluate(()=>window.__game.radio.audio?.currentTime||0)).toBeGreaterThan(0.05);
- expect(await page.evaluate(()=>window.__game.audio.radioPlaying)).toBe(true);expect(await page.evaluate(()=>({logo:window.__game.radio.library.stations[0].logo.artRef,cover:window.__game.radio.currentTrack.image.artRef}))).toEqual({logo:name,cover:name});await page.screenshot({path:`test-results/radio-level-${mobile?'portrait':'desktop'}.png`});
+ expect(await page.evaluate(()=>window.__game.audio.radioPlaying)).toBe(true);expect(await page.evaluate(()=>({logo:window.__game.radio.library.stations[0].logo.artRef,cover:window.__game.radio.currentTrack.image.artRef}))).toEqual({logo:name,cover:name});await expect.poll(()=>page.evaluate(()=>{
+  const g=window.__game,data=g.ctx.getImageData(0,0,g.canvas.width,g.canvas.height).data;
+  let bright=0;for(let i=0;i<data.length;i+=4)if(data[i]>140&&data[i+1]>100&&data[i+3]>200)bright++;
+  return {visible:bright>100,state:g.state,radioOpen:g.pauseMenu.radioOpen,cutscene:!!g.cutscenePlayer?.active,overlay:g.activeTriggerText?.type||null,transform:Array.from(g.ctx.getTransform().toFloat64Array()),alpha:g.ctx.globalAlpha,composite:g.ctx.globalCompositeOperation};
+ })).toMatchObject({visible:true,state:'pause',radioOpen:true});
+ await page.screenshot({path:`test-results/radio-level-${mobile?'portrait':'desktop'}.png`});
  await clickPause(page,'radio-play');expect(await page.evaluate(()=>window.__game.radio.playing)).toBe(false);
  await page.reload();await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');expect(await page.evaluate(async()=>{await window.__game.radio.load();return window.__game.radio.progress.unlocked;})).toEqual([trackId]);
  expect(await page.evaluate(()=>window.__game.radio.library.tracks[0].artist)).toBe('Studio Artist');expect(errors).toEqual([]);
