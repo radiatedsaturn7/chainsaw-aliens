@@ -148,14 +148,14 @@ export const DESKTOP_DYNAMIC_EMPTY_SECTION_IDS = {
   midi: ['tracks']
 };
 export const STANDARD_EDITOR_ACTION_RAIL_PREFIX = ['menu', 'undo', 'redo'];
-export const SHARED_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'model3d', 'menu-designer', 'tire', 'car', 'tile', 'doodad'];
+export const SHARED_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'model3d', 'menu-designer', 'radio', 'tire', 'car', 'tile', 'doodad'];
 export const SUPPORTED_EDITOR_WORK_SURFACES = ['canvas', 'stage', 'grid', 'timeline'];
 export const EDITOR_STANDARD_REFERENCE = deepFreeze({
   primaryEditorId: 'midi',
   secondaryEditorId: 'pixel',
   comparisonEditorIds: ['level', 'cutscene', 'actor'],
   portraitRepairEditorIds: ['level', 'race', 'car'],
-  rolloutOrder: ['midi', 'pixel', 'level', 'cutscene', 'actor', 'race', 'model3d', 'menu-designer', 'tire', 'car', 'sfx', 'tile', 'doodad']
+  rolloutOrder: ['midi', 'pixel', 'level', 'cutscene', 'actor', 'race', 'model3d', 'menu-designer', 'radio', 'tire', 'car', 'sfx', 'tile', 'doodad']
 });
 export const EDITOR_DESKTOP_LEFT_CONTEXT_ROLES = deepFreeze({
   pixel: ['active-tool', 'swatches', 'layers', 'frames'],
@@ -165,6 +165,7 @@ export const EDITOR_DESKTOP_LEFT_CONTEXT_ROLES = deepFreeze({
   sfx: ['active-tool', 'timeline', 'oscillator-settings', 'envelope-settings'],
   cutscene: ['insert-palette', 'selected-clip', 'timeline', 'scene-settings'],
   race: ['active-tool', 'tile-palette', 'route-painting', 'track-settings'],
+  radio: ['document-summary', 'active-tool-summary', 'status'],
   tire: ['tire-properties', 'preview-settings'],
   model3d: ['active-tool', 'preview-settings'],
   'menu-designer': ['screen-list', 'selected-element', 'preview-settings'],
@@ -452,6 +453,19 @@ export const EDITOR_MENU_SPECS = {
       insert:section('insert','Insert',['widget-add','insert-shape','insert-container','insert-text','insert-image','insert-button','insert-choice','insert-slider','insert-toggle','insert-keybind','insert-car-preview','insert-car-stats','insert-power-curve','insert-video','insert-property-display','insert-asset-preview']),
       properties:section('properties','Properties',['send-drawer','clip-drawer','element-select','element-setup','element-properties','element-art','element-action','element-animation','animation-timing','layer-up','layer-down','layer-back','layer-front']),
       flow:section('flow','Flow',['menu-parameters','starting-menu','clear-starting-menu'])
+    }
+  },
+  radio: {
+    editorId:'radio', title:'Radio Editor', workSurface:'stage',
+    root:['file','edit','view','stations','tracks','playback'],
+    portraitRoot:[{id:'file',label:'File'},{id:'stations',label:'Stations'},{id:'tracks',label:'Tracks'},{id:'playback',label:'Play'}],
+    sections:{
+      file:section('file','File',['new','save','save-as','open','export','import','radio-import','exit-main']),
+      view:section('view','View',['radio-focus-stations','radio-focus-tracks']),
+      edit:section('edit','Edit',['undo','redo']),
+      stations:section('stations','Stations',['station-new','station-properties','station-logo','station-delete']),
+      tracks:section('tracks','Tracks',['track-properties','track-art','track-membership','track-up','track-down','track-delete']),
+      playback:section('playback','Playback',['radio-play','radio-stop','radio-next','radio-previous'])
     }
   },
   tire: {

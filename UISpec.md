@@ -322,6 +322,7 @@ Shared implementation helpers:
 
 ## Radio and Mix Tapes
 
+- Radio Editor uses the shared editor shell: desktop top menus and inspector, portrait thumbstick plus Menu / Undo / Redo / Play rail, landscape command rail and drawers, and gamepad slide-out menus. Its persistent workspace lists selectable stations and tracks; properties and artwork are individual actions, not a wizard. File imports MP3s and saves the library; Edit provides durable undo/redo; Stations and Tracks edit metadata, artwork, membership and order. Play/Pause previews the selected station, including locked tracks, without changing player unlocks. Preview stops when leaving the editor.
 - Audio > Radio Editor imports MP3 tracks with stable IDs, song title, artist, album and album artwork. Stations group tracks and have names and logos. Artwork uses saved Pixel Editor art or image upload. Station and track metadata persist independently of player unlocks.
 - Doodad Editor > Art exposes Import Image and Item / Mix Tape, including in portrait. A mix tape references one radio track. Race placement uses the existing doodad tools; Level Editor > Graphics > Add Mix Tape uses existing graphic move/resize/delete controls.
 - Mix tapes rotate during gameplay. Contact unlocks the referenced track without car damage or velocity changes. The collectible disappears only after durable save; failures allow retry. Unlocks survive reload and renaming songs or stations. Collecting works even with radio playback disabled.

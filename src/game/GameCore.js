@@ -254,7 +254,6 @@ export default class Game {
     this.hud = new HUD();
     this.radio = new RadioPlayer({onChange:()=>this.audio?.setRadioPlaying?.(Boolean(this.radio?.playing))});
     this.pauseMenu = new Pause(this.radio, message => this.showSystemToast(message));
-    this.radioEditor = new RadioEditor(this);
     this.shopUI = new Shop(UPGRADE_LIST);
     this.stateManager = new StateManager('loading');
     this.stateManager.setBeforeTransition((metadata) => this.handleSharedStateTransitionCleanup(metadata));
@@ -434,6 +433,7 @@ export default class Game {
     this.tireEditor = new TireEditor(this);
     this.modelEditor = new ModelEditor(this);
     this.menuEditor = new MenuEditor(this);
+    this.radioEditor = new RadioEditor(this);
     this.menuPlayer = new MenuPlayer(this);
     this.cutscenePlayer = new CutscenePlayer(this);
     this.editorStateTargetKeys = {
@@ -448,6 +448,7 @@ export default class Game {
       'tire-editor': 'tireEditor',
       'model-editor': 'modelEditor',
       'menu-editor': 'menuEditor',
+      'radio-editor': 'radioEditor',
       'menu-player': 'menuPlayer',
       'doodad-editor': 'doodadEditor'
     };
@@ -462,6 +463,7 @@ export default class Game {
       'car-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'tire-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'model-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'radio-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'menu-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'menu-player': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'doodad-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height]
@@ -1537,6 +1539,7 @@ export default class Game {
   }
 
   handleSharedStateTransitionCleanup({ from, to, forceCleanup = false } = {}) {
+    if (from === 'radio-editor' && to !== 'radio-editor') this.radioEditor?.preview?.stop();
     const shouldCleanup = forceCleanup
       || this.playtestActive
       || this.isEditorState(from)
@@ -3439,6 +3442,8 @@ export default class Game {
         this.exitCutsceneEditor();
       } else if (this.state === 'menu-player') {
         this.menuPlayer.flow?.stop();
+      } else if (this.state === 'radio-editor') {
+        this.radioEditor.exitToMainMenu();
       } else if (this.state === 'menu-editor') {
         this.exitMenuEditor();
       } else if (this.state === 'model-editor') {
@@ -3523,6 +3528,9 @@ export default class Game {
       return;
     }
 
+    if (this.state === 'radio-editor') {
+      this.radioEditor.update(this.input, dt);this.input.flush();return;
+    }
     if (this.state === 'menu-editor' || this.state === 'menu-player') {
       const target = this.state === 'menu-editor' ? this.menuEditor : this.menuPlayer;
       target.update(this.input, dt);
@@ -11332,6 +11340,7 @@ export default class Game {
     this.stateManager.register('car-editor', createDelegatedState(this, 'carEditor'));
     this.stateManager.register('tire-editor', createDelegatedState(this, 'tireEditor'));
     this.stateManager.register('model-editor', createDelegatedState(this, 'modelEditor'));
+    this.stateManager.register('radio-editor', createDelegatedState(this, 'radioEditor'));
     this.stateManager.register('menu-editor', createDelegatedState(this, 'menuEditor'));
     this.stateManager.register('menu-player', createDelegatedState(this, 'menuPlayer'));
     this.stateManager.register('doodad-editor', createDelegatedState(this, 'doodadEditor'));

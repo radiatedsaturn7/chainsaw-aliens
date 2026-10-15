@@ -73,6 +73,7 @@ test('shared editor menu specs validate for every editor', () => {
     race: 'stage',
     model3d: 'stage',
     'menu-designer': 'stage',
+    radio: 'stage',
     tire: 'stage',
     car: 'stage',
     tile: 'grid',

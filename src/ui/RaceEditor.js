@@ -804,8 +804,8 @@ const DEFAULT_TIRE_SIZE = {
 };
 
 export function buildRacePortraitMenuModel(editorId = 'race') {
-  const resolvedEditorId = ['car','tire','model3d','menu-designer'].includes(editorId) ? editorId : 'race';
-  const contextActionId = resolvedEditorId === 'menu-designer' ? 'menu-preview' : resolvedEditorId === 'model3d' ? 'model-play' : resolvedEditorId === 'tire' ? 'tire-properties' : resolvedEditorId === 'car' ? 'test-drive' : 'race-context';
+  const resolvedEditorId = ['car','tire','model3d','menu-designer','radio'].includes(editorId) ? editorId : 'race';
+  const contextActionId = resolvedEditorId === 'radio' ? 'radio-play' : resolvedEditorId === 'menu-designer' ? 'menu-preview' : resolvedEditorId === 'model3d' ? 'model-play' : resolvedEditorId === 'tire' ? 'tire-properties' : resolvedEditorId === 'car' ? 'test-drive' : 'race-context';
   return {
     rootTabs: getEditorTouchRootMenuEntries(resolvedEditorId),
     bottomRailActions: getStandardEditorActionRailIds(contextActionId),
@@ -19447,6 +19447,7 @@ export default class RaceEditor {
       'tire-properties': this.getRacePortraitContextAction(),
       'model-play': this.getRacePortraitContextAction(),
       'menu-preview': this.getRacePortraitContextAction(),
+      'radio-play': this.getRacePortraitContextAction(),
       'test-drive': { id: 'test-drive', label: '▶', onClick: () => this.handleMenuAction('test-drive') }
     };
     const actions = buildRacePortraitMenuModel(this.editorId).bottomRailActions
@@ -19662,7 +19663,7 @@ export default class RaceEditor {
         menu: { id: 'menu', label: 'Menu', onClick: () => this.toggleRootMenu({ gamepad }) },
         undo: this.getRailAction('undo', 'Undo', () => this.handleMenuAction('undo')),
         redo: this.getRailAction('redo', 'Redo', () => this.handleMenuAction('redo')),
-        quick: this.mode === 'race' || this.editorId === 'menu-designer'
+        quick: this.mode === 'race' || ['menu-designer','radio'].includes(this.editorId)
           ? this.getRacePortraitContextAction()
           : { id: 'test-drive', label: '▶', onClick: () => this.handleMenuAction('test-drive') }
       });

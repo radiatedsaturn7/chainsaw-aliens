@@ -92,6 +92,7 @@ const editorSourceById = {
   'menu-designer': raceEditorSource + readFileSync(new URL('../../src/ui/MenuEditor.js', import.meta.url), 'utf8'),
   race: raceEditorSource,
   car: raceEditorSource,
+  radio: raceEditorSource + readFileSync(new URL('../../src/ui/RadioEditor.js', import.meta.url), 'utf8'),
   tire: raceEditorSource + readFileSync(new URL('../../src/ui/TireEditor.js', import.meta.url), 'utf8'),
   tile: pixelStudioSource,
   doodad: doodadEditorSource
@@ -335,6 +336,7 @@ test('all editor portrait sources use shared bottom-first helpers without empty 
     ],
     model3d: ['buildRacePortraitMenuModel(this.editorId).bottomRailActions','drawSharedPortraitActionRail','getSharedMobilePortraitEditorLayout'],
     'menu-designer': ['buildRacePortraitMenuModel(this.editorId).bottomRailActions','drawSharedPortraitActionRail','getSharedMobilePortraitEditorLayout'],
+    radio: ['buildRacePortraitMenuModel(this.editorId).bottomRailActions','drawSharedPortraitActionRail','getSharedMobilePortraitEditorLayout'],
     tire: [
       'buildRacePortraitMenuModel(this.editorId).bottomRailActions',
       'drawSharedPortraitActionRail',
