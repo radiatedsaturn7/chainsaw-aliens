@@ -36,7 +36,6 @@ export function normalizeItemDocument(value = {}) {
     groundOffsetM: finite(source.groundOffsetM, 0),
     rotate: source.rotate ?? legacyTape,
     persistent: source.persistent !== false,
-    consume: source.consume !== false,
     effects
   };
 }

@@ -89,3 +89,29 @@ test('persistent movement modifiers survive recalculating equipped upgrades',asy
  await system.collect({effects:[{type:'modifier',target:'speed',amount:50}]},'speed');assert.equal(game.player.speed,speed+50);
  game.player.applyUpgrades([]);assert.equal(game.player.speed,speed+50);game.player.applyUpgrades([]);assert.equal(game.player.speed,speed+50);
 });
+test('controller opens item menus, navigates and activates the focused command',()=>{
+ const editor=new ItemEditor({input:{isGamepadConnected:()=>true}});let actions=[],called=false;
+ editor.itemInput={updateGamepad:()=>({actions:actions.map(type=>({type})),axes:{}})};
+ actions=['MENU'];editor.update({},0.016);assert.equal(editor.landscapeRootDrawerOpen,true);
+ actions=['CONFIRM'];editor.update({},0.016);assert.equal(editor.gamepadSubmenuOpen,true);assert.equal(editor.landscapeRootId,'file');
+ editor.newDoodad=()=>{called=true;};actions=['CONFIRM'];editor.update({},0.016);assert.equal(called,true);
+ actions=['CANCEL'];editor.update({},0.016);assert.equal(editor.landscapeRootDrawerOpen,true);
+});
+test('touch scrolling effects suppresses selection and reaches effects below the fold',()=>{
+ const editor=new ItemEditor({deviceIsMobile:true,input:{isGamepadConnected:()=>false}});editor.doodad.effects=Array.from({length:30},(_,i)=>({type:'inventory',target:`item-${i}`,amount:1,operation:'add'}));
+ editor.draw(canvasContext(),390,844);const b=editor.effectListBounds;
+ const start={x:b.x+20,y:b.y+b.h-20,id:1};editor.handlePointerDown(start);editor.handlePointerMove({...start,y:start.y-120});editor.handlePointerUp({...start,y:start.y-120});
+ assert.equal(editor.selectedEffect,0);assert.ok(Object.values(editor.listScroll).some(value=>value>0));
+ editor.draw(canvasContext(),390,844);assert.ok(editor.buttons.some(button=>button.id.startsWith('effect:')&&Number(button.id.split(':')[1])>4));
+});
+import {ItemLibrary} from '../../src/items/ItemLibrary.js';
+import {upsertCachedProjectFile} from '../../src/ui/serverStorage.js';
+import {resetProjectFilesForTests} from '../../src/ui/projectFiles.js';
+test('saved item override replaces a built-in legacy pickup effect',async()=>{
+ resetProjectFilesForTests();
+ try{
+  upsertCachedProjectFile('items','Vitality Core',JSON.stringify({folder:'items',name:'Vitality Core',savedAt:1,data:{kind:'item',item:{id:'vitality-core',name:'Vitality Core',effects:[{type:'max-health',amount:7}]}}}));
+  const library=new ItemLibrary();assert.equal((await library.load('vitality-core')).effects[0].amount,7);assert.equal((await library.forLegacyTile('H')).effects[0].amount,7);
+  assert.equal((await library.load('chainsaw-throw')).effects[0].target,'anchor');
+ }finally{resetProjectFilesForTests();}
+});

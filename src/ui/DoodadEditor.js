@@ -1,4 +1,3 @@
-import { openEditorForm } from './shared/editorForm.js';
 import { chooseImage } from './MenuDesignerForms.js';
 import {pickModelBinding} from './ModelPicker.js';
 import {modelSprites} from '../model3d/ModelSprites.js';
@@ -121,6 +120,7 @@ export default class DoodadEditor {
 
   get editorId() { return 'doodad'; }
   get editorTitle() { return 'Doodad Editor'; }
+  getQuickAction() {return { id: 'pick-art', label: 'Art', onClick: () => this.pickArt() };}
 
   update(_input, dt = 0) {
     if (!this.panJoystick.active) return;
@@ -264,7 +264,7 @@ export default class DoodadEditor {
       mode: 'open',
       fixedFolder: 'art',
       initialFolder: 'art',
-      title: 'Pick Doodad Art'
+      title: `Pick ${this.editorTitle.replace(' Editor','')} Art`
     });
     if (picked?.action === 'open' && picked.name) {
       this.doodad.artRef = String(picked.name || '').trim();
@@ -801,7 +801,7 @@ export default class DoodadEditor {
       },
       undo: { id: 'undo', label: 'Undo', onClick: () => this.undo() },
       redo: { id: 'redo', label: 'Redo', onClick: () => this.redo() },
-      quick: { id: 'pick-art', label: 'Art', onClick: () => this.pickArt() }
+      quick: this.getQuickAction()
     });
     buildCompactLandscapeCommandRailButtonLayout({ bounds, actions })
       .forEach(({ action, bounds: buttonBounds }) => this.registerButton(ctx, buttonBounds, action));

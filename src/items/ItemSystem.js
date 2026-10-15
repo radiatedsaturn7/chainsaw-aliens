@@ -1,6 +1,6 @@
 import {applyItemModifier} from './ItemDocument.js';
 import {loadServerPreferenceAsync,saveServerPreference} from '../ui/serverPreferences.js';
-import {normalizeItemProgress,planItemEffects,applyItemPlan} from './ItemEffects.js';
+import {normalizeItemProgress,planItemEffects,applyItemPlan,syncItemGrantsToPlayer} from './ItemEffects.js';
 
 export const ITEM_PROGRESS_KEY='rtg-item-progress';
 export class ItemSystem {
@@ -10,15 +10,21 @@ export class ItemSystem {
   }
   async load() {
     if(!this.loading)this.loading=this.loadPreference(ITEM_PROGRESS_KEY,{}).then(value=>{
-      this.progress=normalizeItemProgress(value);this.savedStats=value?.stats||null;return this;
+      this.progress=normalizeItemProgress(value);this.savedStats=value?.stats||null;this.ready=true;return this;
     }).catch(error=>{this.loading=null;throw error;});
     return this.loading;
   }
   restorePlayer() {
-    const {player}=this.game;if(!player||this.appliedPlayers.has(player))return;
+    const {player,minimap,world}=this.game;
+    if(minimap&&this.restoredMinimap!==minimap){
+      for(const reveal of this.progress.mapReveals)if(reveal.scope===world?.itemScope)minimap.revealNearbyRooms(reveal.room,reveal.radius);
+      this.restoredMinimap=minimap;
+    }
+    if(!player||this.appliedPlayers.has(player))return;
     if(this.savedStats)for(const key of ['health','maxHealth','armor','credits'])if(Number.isFinite(this.savedStats[key]))player[key]=this.savedStats[key];
     this.game.abilities={...this.game.abilities,...this.progress.abilities,...this.progress.weapons};
     for(const effect of this.progress.modifiers){const value=Number(player[effect.target])||0;player[effect.target]=applyItemModifier(value,effect);}
+    syncItemGrantsToPlayer(player,this.progress);
     player.itemModifiers=structuredClone(this.progress.modifiers);
     this.game.itemProgress=this.progress;this.game.ensureActiveWeaponAvailable?.();this.appliedPlayers.add(player);
   }
@@ -35,11 +41,20 @@ export class ItemSystem {
         const radio=this.game.radio;if(!radio)throw Error('Radio is unavailable.');await radio.load();
         if(!radio.library.tracks.some(track=>track.id===trackId))throw Error('This item needs an existing radio track.');
       }
+      for(const radius of plan.maps){
+        const {world,player}=this.game;
+        const room=world?.roomAtTile?.(Math.floor(player.x/world.tileSize),Math.floor(player.y/world.tileSize));
+        if(Number.isFinite(room))plan.progress.mapReveals.push({scope:world.itemScope,room,radius});
+      }
       // Radio unlocks are idempotent. If either write fails, keep the pickup available.
       for(const trackId of plan.radioTracks)await this.game.radio.unlock(trackId);
       {
         if(plan.definition.persistent)plan.progress.collected.push(id);
-        const stats={};for(const key of ['health','maxHealth','armor','credits'])stats[key]=plan.stats[key];
+        const stats={...this.savedStats};
+        for(const effect of plan.definition.effects){
+          const fields={health:['health'],'max-health':['maxHealth','health'],armor:['armor'],currency:['credits']}[effect.type]||[];
+          for(const key of fields)stats[key]=plan.stats[key];
+        }
         const result=await this.savePreference(ITEM_PROGRESS_KEY,{...plan.progress,stats});
         if(result?.ok===false)throw Error(result.reason||'Item progress could not be saved');
         this.savedStats=stats;

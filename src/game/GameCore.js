@@ -1,3 +1,4 @@
+import {itemLibrary} from '../items/ItemLibrary.js';
 import {updateLevelItems, updateLegacyItemPickups, isItemPickup, itemPlacementId, getItemSystem} from '../items/ItemPickups.js';
 import {isMixTape,mixTapeRotation,updateLevelMixTapes} from '../radio/MixTapePickup.js';
 import { RadioPlayer } from '../radio/RadioPlayer.js';
@@ -962,6 +963,7 @@ export default class Game {
       this.snapCameraToPlayer();
       this.lastSave = { x: this.spawnPoint.x, y: this.spawnPoint.y };
       this.resetWorldSystems();
+      this.items?.restorePlayer();
       this.spawnEnemies();
       this.spawnBoxes();
       this.autoRepair.applySpawnOverride(this);
@@ -2861,6 +2863,7 @@ export default class Game {
     this.testHarness.active = false;
     this.simulationActive = false;
     this.resetWorldSystems();
+    if(this.items?.ready)this.items.restorePlayer();
     this.resetTriggerState();
     this.runStartupTriggers();
   }
@@ -3456,6 +3459,8 @@ export default class Game {
         this.exitCutsceneEditor();
       } else if (this.state === 'menu-player') {
         this.menuPlayer.flow?.stop();
+      } else if (this.state === 'item-editor') {
+        this.itemEditor.exitToMainMenu();
       } else if (this.state === 'radio-editor') {
         this.radioEditor.exitToMainMenu();
       } else if (this.state === 'menu-editor') {
@@ -7633,6 +7638,14 @@ export default class Game {
     if (action.type === 'kill-player') {
       this.player.takeDamage?.(999);
       onDone();
+      return;
+    }
+    if (action.type === 'add-item') {
+      const quantity=Math.max(1,Math.min(100,Math.floor(Number(params.quantity)||1)));
+      const index=Math.max(0,(trigger.actions||[]).indexOf(action));
+      void itemLibrary.load(params.itemId).then(async item=>{
+        for(let i=0;i<quantity;i++)await getItemSystem(this).collect(item,`trigger:${this.world.itemScope}:${triggerId}:${index}:${i}`);
+      }).catch(error=>this.showSystemToast(error.message)).finally(onDone);
       return;
     }
     if (action.type === 'heal-player') {

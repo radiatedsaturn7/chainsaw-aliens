@@ -248,7 +248,7 @@ const TRIGGER_ACTION_TYPES = [
   { id: 'fade-in-music', label: 'Fade In Music' }
 ];
 
-const TRIGGER_ITEM_OPTIONS = ['chainsaw-throw', 'flame-saw', 'mag-boots', 'resonance', 'flamethrower', 'health-pack'];
+const TRIGGER_ITEM_OPTIONS = itemDefaults.items.map(item=>item.id);
 const TRIGGER_ANIMATION_OPTIONS = ['spark-burst', 'explosion-small', 'portal-open', 'screen-shake'];
 const TRIGGER_TARGET_OPTIONS = ['player', 'enemy', 'object'];
 const TRIGGER_ENEMY_TARGET_OPTIONS = ['nearest', 'all-in-zone', 'by-tag'];
@@ -10420,7 +10420,7 @@ export default class Editor {
           } else if (draft.type === 'save-game') {
             numericRow('Slot', 'slot', 1, 1, 9);
           } else if (draft.type === 'add-item') {
-            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Item: ${draft.params.itemId || TRIGGER_ITEM_OPTIONS[0]}`, false, () => { draft.params.itemId = this.cycleOption(draft.params.itemId, TRIGGER_ITEM_OPTIONS, 1); }, 'Cycle item');
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Item: ${draft.params.itemId || TRIGGER_ITEM_OPTIONS[0]}`, false, () => { draft.params.itemId = this.cycleOption(draft.params.itemId, [...TRIGGER_ITEM_OPTIONS,...listProjectFiles('items').filter(entry=>!entry.deleted).map(entry=>entry.name)], 1); }, 'Cycle item');
             y += sectionButtonH + 4;
             numericRow('Quantity', 'quantity', 1, 1, 99);
           } else if (draft.type === 'play-animation') {

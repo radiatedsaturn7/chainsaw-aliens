@@ -12,11 +12,11 @@ export class ItemLibrary {
   }
   async load(name) {
     const defaults=await this.loadDefaults();
-    const builtin=defaults.find(item=>item.id===name||item.name===name);
+    const builtin=defaults.find(item=>item.id===name||item.name===name||item.aliases?.includes(name));
     const entry=listProjectFiles('items').find(entry=>!entry.deleted&&(entry.name===name||entry.name===builtin?.name));
     if(entry)name=entry.name;
     if(entry){await hydrateProjectFile('items',name);const payload=loadProjectFile('items',name);if(!payload)throw Error(`Could not load item: ${name}`);return normalizeItemDocument(payload.data);}
-    const item=defaults.find(item=>item.id===name||item.name===name);
+    const item=defaults.find(item=>item.id===name||item.name===name||item.aliases?.includes(name));
     if(!item)throw Error(`Item not found: ${name}`);return normalizeItemDocument(item);
   }
   async forLegacyTile(tile) {

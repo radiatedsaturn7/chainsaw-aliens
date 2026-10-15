@@ -4701,6 +4701,7 @@ export default class RaceEditor {
   getRaceSpritePaintStatus(kind = this.getRaceSpritePaintKind()) {
     if (kind === 'tile') return this.selectedRaceGroundBoxArtRef ? `Tile mode: paint ${this.selectedRaceGroundBoxArtRef}` : 'Tile mode: pick a ground tile first';
     if (kind === 'decal') return this.selectedRaceDecalArtRef ? `Decal mode: paint ${this.selectedRaceDecalArtRef}` : 'Decal mode: pick a decal first';
+    if (kind === 'doodad' && this.selectedItemRef) return `Item mode: paint ${this.selectedItemRef}`;
     if (kind === 'doodad') return this.selectedDoodadRef ? `Doodad mode: paint ${this.selectedDoodadRef}` : 'Doodad mode: pick a doodad first';
     return this.selectedSceneryDefinition ? `Sprite mode: paint ${this.selectedSceneryDefinition.label}` : 'Sprite mode: add a sprite from Settings first';
   }
@@ -26037,6 +26038,7 @@ export default class RaceEditor {
     const kind = this.getRaceSpritePaintKind();
     if (kind === 'tile') return this.selectedRaceGroundBoxArtRef ? String(this.selectedRaceGroundBoxArtRef).slice(0, 8) : 'Tile';
     if (kind === 'decal') return this.selectedRaceDecalArtRef ? String(this.selectedRaceDecalArtRef).slice(0, 8) : 'Decal';
+    if (kind === 'doodad' && this.selectedItemRef) return `Item mode: paint ${this.selectedItemRef}`;
     if (kind === 'doodad') return this.selectedDoodadRef ? String(this.selectedDoodadRef).slice(0, 8) : 'Doodad';
     return this.selectedSceneryDefinition ? String(this.selectedSceneryDefinition.label || 'Sprite').slice(0, 8) : 'Sprite';
   }

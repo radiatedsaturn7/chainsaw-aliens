@@ -1,5 +1,5 @@
 import {EditorInputActionNormalizer,EDITOR_INPUT_ACTIONS as INPUT} from './shared/input/editorInputActions.js';
-import {getEditorControllerRootMenuEntries} from './shared/editorMenuSpec.js';
+import {getEditorControllerRootMenuEntries,getStandardEditorActionRailIds} from './shared/editorMenuSpec.js';
 import DoodadEditor from './DoodadEditor.js';
 import {normalizeItemDocument, serializeItemDocument, ITEM_EFFECT_TYPES, ITEM_MODIFIERS} from '../items/ItemDocument.js';
 import {openEditorForm,chooseEditorFiles} from './shared/editorForm.js';
@@ -23,6 +23,7 @@ export default class ItemEditor extends DoodadEditor {
   }
   get editorId() {return 'item';}
   get editorTitle() {return 'Item Editor';}
+  getQuickAction(){return {id:'item-effect-add',label:'+ Effect',onClick:this.getDesktopActionHandlers()['item-effect-add']};}
   async run(task) {
     if(this.busy)return;
     this.busy=true;
@@ -33,6 +34,7 @@ export default class ItemEditor extends DoodadEditor {
     const before=structuredClone(this.doodad);
     await task();
     this.doodad=normalizeItemDocument(this.doodad);
+    this.selectedEffect=Math.max(0,Math.min(this.selectedEffect,this.doodad.effects.length-1));
     if(JSON.stringify(before)!==JSON.stringify(this.doodad)){
       this.undoItems.push(before); if(this.undoItems.length>100)this.undoItems.shift(); this.redoItems=[];this.status='Unsaved changes';
     }
@@ -141,23 +143,24 @@ export default class ItemEditor extends DoodadEditor {
     drawSharedPanel(ctx,bounds,{fill:UI_SUITE.colors.panelAlt,border:UI_SUITE.colors.border});
     ctx.save();ctx.beginPath();ctx.rect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.clip();
     const art=this.getDoodadArtCanvas(),ratio=this.doodad.widthPx/this.doodad.heightPx;
-    const h=Math.max(8,Math.min(bounds.h-60,(bounds.w-32)/ratio))*this.previewZoom,w=h*ratio;
-    const x=bounds.x+bounds.w/2-w/2+this.previewPan.x,y=bounds.y+bounds.h/2-h/2+this.previewPan.y;
+    const h=Math.max(8,Math.min(bounds.h-90,(bounds.w-32)/ratio))*this.previewZoom,w=h*ratio;
+    const x=bounds.x+bounds.w/2-w/2+this.previewPan.x,y=bounds.y+30+(bounds.h-90)/2-h/2+this.previewPan.y;
     if(art){ctx.imageSmoothingEnabled=false;ctx.drawImage(art,x,y,w,h);}else{ctx.fillStyle=UI_SUITE.colors.accent;ctx.fillRect(x,y,w,h);}
     ctx.fillStyle=UI_SUITE.colors.text;ctx.font=`14px ${UI_SUITE.font.family}`;ctx.textAlign='left';
-    ctx.fillText(this.doodad.name,bounds.x+10,bounds.y+20,bounds.w-20);ctx.fillText(this.status,bounds.x+10,bounds.y+bounds.h-10,bounds.w-20);ctx.restore();
+    ctx.fillText(this.doodad.name,bounds.x+10,bounds.y+20,bounds.w-20);ctx.fillText(this.status,bounds.x+10,bounds.y+bounds.h-48,bounds.w-20);ctx.restore();
     this.drawZoom(ctx,{x:bounds.x+6,y:bounds.y+bounds.h-42,w:bounds.w-12,h:34});
   }
   drawStudioSprintPreview(ctx,bounds){this.drawPreview(ctx,bounds);}
+  effectLabel(effect){
+    const type=effect.type.replaceAll('-',' '),title=type[0].toUpperCase()+type.slice(1);
+    const target=effect.type==='radio-track'?(this.game.radio?.library?.tracks.find(track=>track.id===effect.target)?.title||'Radio track'):effect.target;
+    return `${title}: ${target||effect.amount}${target&&['key','inventory','modifier'].includes(effect.type)?` (${effect.operation==='multiply'?'×':'+'}${effect.amount})`:''}`;
+  }
   drawEffects(ctx,bounds) {
     drawSharedPanel(ctx,bounds,{fill:UI_SUITE.colors.panel,border:UI_SUITE.colors.border});
-    const rowH=36,rows=Math.max(1,Math.floor((bounds.h-42)/rowH));
-    this.visibleEffectRows=rows;
-    this.effectOffset=Math.max(0,Math.min(this.effectOffset,Math.max(0,this.doodad.effects.length-rows)));
-    this.doodad.effects.slice(this.effectOffset,this.effectOffset+rows).forEach((effect,i)=>{
-      const index=this.effectOffset+i;
-      this.registerButton(ctx,{x:bounds.x+6,y:bounds.y+6+i*rowH,w:bounds.w-12,h:32},{id:`effect:${index}`,label:`${effect.type}: ${effect.target||effect.amount}`,active:index===this.selectedEffect,onClick:()=>{this.selectedEffect=index;}});
-    });
+    const listBounds={x:bounds.x,y:bounds.y,w:bounds.w,h:Math.max(36,bounds.h-40)};
+    this.effectListBounds=listBounds;
+    this.drawActionRows(ctx,listBounds,this.doodad.effects.map((effect,index)=>({id:`effect:${index}`,label:this.effectLabel(effect),active:index===this.selectedEffect,onClick:()=>{this.selectedEffect=index;}})));
     const handlers=this.getDesktopActionHandlers();
     ['item-effect-add','item-effect-edit','item-effect-delete'].forEach((id,i)=>this.registerButton(ctx,{x:bounds.x+6+i*(bounds.w-12)/3,y:bounds.y+bounds.h-34,w:(bounds.w-12)/3-4,h:28},{id,label:['+ Effect','Edit','Remove'][i],onClick:handlers[id]}));
   }
@@ -177,7 +180,7 @@ export default class ItemEditor extends DoodadEditor {
     const handlers=this.getDesktopActionHandlers();
     ['item-properties','item-art','item-image'].forEach((id,i)=>this.registerButton(ctx,{x:hotbar.x+i*hotbar.w/3,y:hotbar.y,w:hotbar.w/3-4,h:36},{id,label:labels[id],onClick:handlers[id]}));
     const actions=[{id:'menu',label:'Menu',onClick:()=>this.toggleMobileMenu()},{id:'undo',label:'Undo',disabled:!this.undoItems.length,onClick:()=>this.undo()},{id:'redo',label:'Redo',disabled:!this.redoItems.length,onClick:()=>this.redo()},{id:'context',label:'+ Effect',onClick:handlers['item-effect-add']}];
-    const rail=drawSharedPortraitActionRail(ctx,layout.actionRail,this.panJoystick,actions,{reserveThumbstick:true,drawButton:(bounds,action)=>this.registerButton(ctx,bounds,action)});
+    const rail=drawSharedPortraitActionRail(ctx,layout.actionRail,this.panJoystick,getStandardEditorActionRailIds('context').map(id=>actions.find(action=>action.id===id)),{reserveThumbstick:true,drawButton:(bounds,action)=>this.registerButton(ctx,bounds,action)});
     if(rail?.thumbstickCenter)Object.assign(this.panJoystick,{center:rail.thumbstickCenter,radius:rail.thumbstickRadius,knobRadius:rail.knobRadius});
     if(this.mobileMenuOpen)this.drawPortraitMenuSheet(ctx,layout);
   }
@@ -185,6 +188,11 @@ export default class ItemEditor extends DoodadEditor {
   drawActionRows(ctx,bounds,actions,columns=1) {
     const key=`${this.activeViewportMode}:${this.mobileRootId}:${this.landscapeRootId}:${Math.round(bounds.x)}:${Math.round(bounds.y)}`;
     const rowH=44,cols=Math.max(1,columns),max=Math.max(0,Math.ceil(actions.length/cols)*rowH+12-bounds.h);
+    if(this.focusEffectChanged&&actions[0]?.id?.startsWith('effect:')){
+      const top=this.selectedEffect*rowH+6,current=this.listScroll[key]||0;
+      this.listScroll[key]=top<current?top:top+36>current+bounds.h?top+36-bounds.h:current;
+      this.focusEffectChanged=false;
+    }
     const offset=Math.max(0,Math.min(max,this.listScroll[key]||0));this.listScroll[key]=offset;
     this.listRegions.push({key,bounds:{...bounds},max});
     ctx.save();ctx.beginPath();ctx.rect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.clip();
@@ -198,6 +206,7 @@ export default class ItemEditor extends DoodadEditor {
   inside(point,b){return point.x>=b.x&&point.x<=b.x+b.w&&point.y>=b.y&&point.y<=b.y+b.h;}
   handlePointerDown(point){
     if(this.busy)return;
+    if(this.desktopDropdown){super.handlePointerDown(point);return;}
     const region=[...this.listRegions].reverse().find(region=>this.inside(point,region.bounds));
     if(region){this.listDrag={region,startY:point.y,offset:this.listScroll[region.key]||0,moved:false,button:[...this.buttons].reverse().find(button=>this.inside(point,button.bounds))};return;}
     super.handlePointerDown(point);
@@ -223,14 +232,17 @@ export default class ItemEditor extends DoodadEditor {
   }
   update(input,dt=0) {
     if(this.busy)return;
+    const previousEffect=this.selectedEffect;
     if(this.panJoystick.active){this.previewPan.x-=this.panJoystick.dx*dt*180;this.previewPan.y-=this.panJoystick.dy*dt*180;}
     if(input?.wasPressedCode?.('Escape'))this.cancel();
     if(input?.wasPressedCode?.('ArrowDown'))this.selectedEffect=Math.min(this.doodad.effects.length-1,this.selectedEffect+1);
     if(input?.wasPressedCode?.('ArrowUp'))this.selectedEffect=Math.max(0,this.selectedEffect-1);
     if(input?.wasPressedCode?.('Enter'))void this.getDesktopActionHandlers()['item-effect-edit']();
     const command=['ControlLeft','ControlRight','MetaLeft','MetaRight'].some(key=>input?.isDownCode?.(key));
-    if(command)for(const [key,id] of [['KeyS','save'],['KeyZ','undo'],['KeyY','redo']])if(input?.wasPressedCode?.(key))this.getDesktopActionHandlers()[id]();
+    for(const [key,id] of [['KeyS','save'],['KeyZ','undo'],['KeyY','redo']])if(input?.wasCommandPressedCode?.(key)||(command&&input?.wasPressedCode?.(key)))this.getDesktopActionHandlers()[id]();
     const pad=this.itemInput.updateGamepad(input,dt,{includePanIntent:true}),roots=getEditorControllerRootMenuEntries(this.editorId);
+    const direction=Math.abs(pad.axes.leftY||0)>0.5?(pad.axes.leftY<0?INPUT.NAV_UP:INPUT.NAV_DOWN):Math.abs(pad.axes.leftX||0)>0.5?(pad.axes.leftX<0?INPUT.NAV_LEFT:INPUT.NAV_RIGHT):null;
+    if(!direction){this.padRepeat=0;this.padDirection=null;}else{this.padRepeat=(this.padRepeat||0)-dt;if(this.padDirection!==direction||this.padRepeat<=0){pad.actions.push({type:direction});this.padDirection=direction;this.padRepeat=0.2;}}
     for(const action of pad.actions){
       if(action.type===INPUT.MENU){this.landscapeRootDrawerOpen=!this.landscapeRootDrawerOpen;this.gamepadSubmenuOpen=false;this.gamepadFocusedItemId=roots[0]?.id;}
       else if(action.type===INPUT.CANCEL)this.cancel();
@@ -248,7 +260,6 @@ export default class ItemEditor extends DoodadEditor {
       }
     }
     if(!this.gamepadSubmenuOpen&&!this.landscapeRootDrawerOpen){this.previewPan.x-=Number(pad.axes.rightX||0)*dt*180;this.previewPan.y-=Number(pad.axes.rightY||0)*dt*180;}
-    this.effectOffset=Math.max(0,Math.min(this.effectOffset,this.selectedEffect));
-    if(this.selectedEffect>=this.effectOffset+(this.visibleEffectRows||1))this.effectOffset=this.selectedEffect-(this.visibleEffectRows||1)+1;
+    if(previousEffect!==this.selectedEffect)this.focusEffectChanged=true;
   }
 }

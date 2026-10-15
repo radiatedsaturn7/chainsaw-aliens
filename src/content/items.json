@@ -12,7 +12,10 @@
         }
       ],
       "paletteId": "powerup-chainsaw",
-      "paletteLabel": "Tool: Chainsaw Throw"
+      "paletteLabel": "Tool: Chainsaw Throw",
+      "aliases": [
+        "chainsaw-throw"
+      ]
     },
     {
       "id": "flame",
@@ -25,7 +28,10 @@
         }
       ],
       "paletteId": "powerup-flame-saw",
-      "paletteLabel": "Tool: Flame-Saw"
+      "paletteLabel": "Tool: Flame-Saw",
+      "aliases": [
+        "flame-saw"
+      ]
     },
     {
       "id": "magboots",
@@ -44,7 +50,10 @@
         }
       ],
       "paletteId": "powerup-mag-boots",
-      "paletteLabel": "Ability: Mag Boots"
+      "paletteLabel": "Ability: Mag Boots",
+      "aliases": [
+        "mag-boots"
+      ]
     },
     {
       "id": "resonance",
@@ -125,6 +134,9 @@
           "type": "health",
           "amount": 1
         }
+      ],
+      "aliases": [
+        "health-pack"
       ]
     },
     {

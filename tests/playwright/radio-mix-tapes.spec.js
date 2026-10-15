@@ -116,6 +116,7 @@ for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mod
  }else{
   // Open and close the actual shared menu without a wizard.
   if(mode==='desktop'){
+   await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.buttons.some(b=>b.desktopRootId==='file'))).toBe(true);
    const root=await page.evaluate(()=>window.__game.radioEditor.buttons.find(b=>b.desktopRootId==='file')?.id);expect(root).toBeTruthy();await clickRadio(page,root);
    expect(await page.evaluate(()=>window.__game.radioEditor.desktopDropdown?.rootId)).toBe('file');await page.keyboard.press('Escape');
   }else {await clickRadio(page,'menu');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.mobileRootOpen)).toBe(true);await clickRadio(page,'menu');}

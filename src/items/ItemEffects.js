@@ -8,6 +8,7 @@ export function normalizeItemProgress(value = {}) {
     inventory:copyMap(value.inventory), devices:copyMap(value.devices), unlocks:copyMap(value.unlocks),
     modifiers:(Array.isArray(value.modifiers)?value.modifiers:[]).flatMap(effect=>{try{const normalized=normalizeItemEffect(effect);return normalized.type==='modifier'?[normalized]:[];}catch{return [];}}),
     maxHealthBonus:Math.max(0, Number(value.maxHealthBonus) || 0),
+    mapReveals:(Array.isArray(value.mapReveals)?value.mapReveals:[]).filter(entry=>typeof entry.scope==='string'&&Number.isFinite(entry.room)&&Number.isFinite(entry.radius)).map(entry=>({...entry})),
     armor:Math.max(0, Number(value.armor) || 0)
   };
 }
@@ -55,10 +56,16 @@ export function applyItemPlan(plan, game) {
   game.abilities ||= {};
   for(const effect of plan.definition.effects)if(effect.type==='ability'||effect.type==='weapon')game.abilities[effect.target]=true;
   game.itemProgress = plan.progress;
+  syncItemGrantsToPlayer(game.player,plan.progress);
   if(game.player)game.player.itemModifiers=structuredClone(plan.progress.modifiers);
   game.ensureActiveWeaponAvailable?.();
   for (const radius of plan.maps) {
     const player = game.player, world = game.world;
     if (player && world) game.minimap?.revealNearbyRooms(world.roomAtTile?.(Math.floor(player.x/world.tileSize), Math.floor(player.y/world.tileSize)), radius);
   }
+}
+
+export function syncItemGrantsToPlayer(player,progress) {
+  if(!player)return;
+  for(const field of ['keys','weapons','inventory','devices','unlocks'])player[field]={...progress[field]};
 }
