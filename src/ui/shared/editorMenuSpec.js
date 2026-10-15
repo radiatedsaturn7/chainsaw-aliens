@@ -119,7 +119,7 @@ const EDITOR_ACTION_LABEL_OVERRIDES = {
   'car-clear-body-model': 'Use 2D / Default Body',
   'car-clear-wheel-model': 'Use 2D / Default Wheels',
   'car-import-graphic': 'Import Graphic',
-  'item-properties':'Item Properties', 'item-effect-add':'Add Effect', 'item-effect-edit':'Edit Effect', 'item-effect-delete':'Remove Effect', 'item-template':'Built-in Items', 'item-legacy':'Import Old Mix Tape', 'item-art':'Artwork', 'item-image':'Import Image',
+  'item-properties':'Item Properties', 'item-effect-add':'Add Effect', 'item-effect-edit':'Edit Effect', 'item-effect-delete':'Remove Effect', 'item-template':'Built-in Items', 'item-legacy':'Import Old Mix Tape', 'item-art':'Artwork', 'item-image':'Import Image', 'item-model':'3D Model', 'item-model-animation':'Model Animation', 'item-2d':'Use 2D Artwork',
   'doodad-item': 'Item / Mix Tape',
   'import-item-art': 'Import Image',
   'race-item':'Place Item',
@@ -536,7 +536,7 @@ export const EDITOR_MENU_SPECS = {
       file: section('file','File',['new','save','save-as','open','export','import','item-template','item-legacy','exit-main']),
       edit: section('edit','Edit',['undo','redo','item-properties']),
       view: section('view','View',['zoom-fit']),
-      artwork: section('artwork','Art',['item-art','item-image']),
+      artwork: section('artwork','Art',['item-art','item-image','item-model','item-model-animation','item-2d']),
       effects: section('effects','Effects',['item-effect-add','item-effect-edit','item-effect-delete'])
     }
   },

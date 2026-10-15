@@ -1,4 +1,4 @@
-import {pickModelBinding} from './ModelPicker.js';
+import {pickModelBinding,pickModelAnimation} from './ModelPicker.js';
 import {modelSprites} from '../model3d/ModelSprites.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { ensureProjectFileIndex, listProjectFiles, loadProjectFile, saveProjectFile, saveProjectFileAndConfirm } from './projectFiles.js';
@@ -3370,6 +3370,7 @@ export default class ActorEditor {
     const modelButton=el('button','actor-editor-btn',state.animation?.model?.ref?`3D Model: ${state.animation.model.ref}`:'Use 3D Model');
     modelButton.onclick=async()=>{try{const binding=await pickModelBinding(state.animation?.model);if(!binding)return;const next=clone(this.actor);const target=next.states.find(s=>s.id===state.id);target.animation.model=binding;target.animation.updatedAt=Date.now();this.setActor(next);}catch(error){this.game?.showSystemToast?.(error.message);}};
     section.appendChild(modelButton);
+    if(state.animation?.model?.ref){const animation=el('button','actor-editor-btn','Model Animation');animation.onclick=async()=>{try{const binding=await pickModelAnimation(state.animation.model);if(binding){const next=clone(this.actor);next.states.find(s=>s.id===state.id).animation.model=binding;this.setActor(next);}}catch(error){this.game?.showSystemToast?.(error.message);}};section.appendChild(animation);}
     if(state.animation?.model?.ref){const clear=el('button','actor-editor-btn','Use 2D Animation');clear.onclick=()=>{const next=clone(this.actor);delete next.states.find(s=>s.id===state.id).animation.model;this.setActor(next);};section.appendChild(clear);}
 
     const zoneRow = el('div', 'actor-editor-inline-actions');

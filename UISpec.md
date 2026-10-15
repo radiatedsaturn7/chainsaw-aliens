@@ -349,3 +349,6 @@ Pixel Editor and MIDI Editor are the design references for new and revised portr
 
 - Effect editing uses a single compact form with only relevant fields. Recipient means Player, Allies, Opponents, or Everyone; weapons, abilities, items, tracks and stats use named selectors, never raw IDs.
 - Effects run when Collected, Used, or when a Projectile hits. Items with use/impact effects remain in the Items bag until used. Inventory is available in level/race pause menus; Use resumes play, and U repeats the selected available item. Nitro and Slow shot templates provide timed speed boosts and opponent projectiles. Race effects pass through the authoritative physics runner and worker input; expiry restores neutral handling.
+
+- Item Art supports 2D artwork or a saved 3D model. Model Animation selects a named clip (or None) and playback speed without selecting the file again; the binding survives item saves and level/race placements. Level items render the animated model through the shared side-view renderer; races use model geometry and retain collectible behavior. Actors expose the same animation selector per state.
+- The 3D Object Editor supports multiple named animations in one object via Animation New / Select / Properties. New animations start at time zero in bind pose, independently of the previously edited clip.

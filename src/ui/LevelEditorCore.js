@@ -1,3 +1,4 @@
+import {modelAssets} from '../model3d/ModelAssets.js';
 import itemDefaults from '../content/items.json' with {type:'json'};
 import {normalizeItemDocument} from '../items/ItemDocument.js';
 import {getRaceArtSpriteCanvasShared,hydrateRaceArtSpriteShared} from './shared/raceArtSpriteCanvas.js';
@@ -3486,10 +3487,11 @@ export default class Editor {
     try {
       const picked=await openProjectBrowser({mode:'open',fixedFolder:'items',initialFolder:'items',title:'Choose Item'});if(!picked?.name)return;
       const item=normalizeItemDocument(picked.payload?.data||loadProjectFile('items',picked.name)?.data);
-      await hydrateRaceArtSpriteShared(item.artRef);const canvas=getRaceArtSpriteCanvasShared(item.artRef);
-      if(!canvas)throw Error('Assign artwork in the Item Editor before placing this item.');
+      let canvas=null;
+      if(item.model?.ref)await modelAssets.prepare(item.model.ref);
+      else {await hydrateRaceArtSpriteShared(item.artRef);canvas=getRaceArtSpriteCanvasShared(item.artRef);if(!canvas)throw Error('Assign artwork or a 3D model in the Item Editor.');}
       const placement=this.resolveDecalPlacement(item.widthPx,item.heightPx);
-      const entry={...placement,id:`item-${Date.now()}-${Math.random().toString(36).slice(2)}`,name:item.name,itemRef:picked.name,itemType:'item',item,imageDataUrl:canvas.toDataURL(),baseW:placement.w,baseH:placement.h,rotation:0};
+      const entry={...placement,id:`item-${Date.now()}-${Math.random().toString(36).slice(2)}`,name:item.name,itemRef:picked.name,itemType:'item',item,model:item.model,imageDataUrl:canvas?.toDataURL()||'',baseW:placement.w,baseH:placement.h,rotation:0};
       this.ensureDecals().push(entry);this.selectedDecalId=entry.id;this.persistAutosave();this.setGraphicsStatus(`Added ${item.name}. Drag to move; use graphics controls to resize or delete.`);
     }catch(error){this.setGraphicsStatus(error.message);}
   }

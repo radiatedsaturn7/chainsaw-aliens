@@ -1,3 +1,4 @@
+import {pickModelBinding,pickModelAnimation} from './ModelPicker.js';
 import {itemEffectFields, EFFECT_LABELS, RECIPIENTS} from '../items/ItemEffectFields.js';
 import {itemLibrary} from '../items/ItemLibrary.js';
 import {EditorInputActionNormalizer,EDITOR_INPUT_ACTIONS as INPUT} from './shared/input/editorInputActions.js';
@@ -9,7 +10,7 @@ import {openProjectBrowser} from './ProjectBrowserModal.js';
 import {saveProjectFileAndConfirm, sanitizeProjectFileName} from './projectFiles.js';
 import {drawSharedPanel, drawSharedFocusRing, drawSharedPortraitActionRail, getSharedMobilePortraitEditorLayout, UI_SUITE} from './uiSuite.js';
 
-const labels = {'item-properties':'Properties','item-effect-add':'Add Effect','item-effect-edit':'Edit Effect','item-effect-delete':'Remove Effect','item-template':'Built-in Items','item-legacy':'Import Old Mix Tape','item-art':'Artwork','item-image':'Import Image'};
+const labels = {'item-model':'3D Model','item-model-animation':'Model Animation','item-2d':'Use 2D Artwork','item-properties':'Properties','item-effect-add':'Add Effect','item-effect-edit':'Edit Effect','item-effect-delete':'Remove Effect','item-template':'Built-in Items','item-legacy':'Import Old Mix Tape','item-art':'Artwork','item-image':'Import Image'};
 const field = (id,label,value,type='text') => ({id,label,value,type,required:false});
 const option = value => ({value,label:value});
 const yesNo = [option('yes'),option('no')];
@@ -121,14 +122,17 @@ export default class ItemEditor extends DoodadEditor {
       'zoom-fit':()=>this.zoomFit(),
       'item-properties':edit(()=>this.properties()),'item-effect-add':edit(()=>this.editEffect(true)),
       'item-effect-edit':edit(()=>this.editEffect()),'item-effect-delete':edit(()=>{this.doodad.effects.splice(this.selectedEffect,1);this.selectedEffect=Math.max(0,this.selectedEffect-1);}),
+      'item-model':edit(async()=>{const model=await pickModelBinding(this.doodad.model,{compact:true});if(model)this.doodad.model=model;}),
+      'item-model-animation':edit(async()=>{const model=await pickModelAnimation(this.doodad.model);if(model)this.doodad.model=model;}),
+      'item-2d':edit(()=>{this.doodad.model=null;}),
       'item-art':edit(()=>this.pickArt()),'item-image':edit(()=>this.importItemArtwork()),
       'item-template':edit(()=>this.builtins()),'item-legacy':()=>this.run(()=>this.openItem(true))
     };
   }
   getMenuItems(root=this.landscapeRootId) {
-    const groups={file:['new','save','save-as','open','export','import','item-template','item-legacy','exit-main'],edit:['undo','redo','item-properties'],view:['zoom-fit'],artwork:['item-art','item-image'],effects:['item-effect-add','item-effect-edit','item-effect-delete']};
+    const groups={file:['new','save','save-as','open','export','import','item-template','item-legacy','exit-main'],edit:['undo','redo','item-properties'],view:['zoom-fit'],artwork:['item-art','item-image','item-model','item-model-animation','item-2d'],effects:['item-effect-add','item-effect-edit','item-effect-delete']};
     const handlers=this.getDesktopActionHandlers();
-    return (groups[root]||[]).map(id=>({id,label:labels[id]||({'exit-main':'Exit','save-as':'Save As','zoom-fit':'Fit Preview'}[id])||id[0].toUpperCase()+id.slice(1),onClick:handlers[id],disabled:(id==='undo'&&!this.undoItems.length)||(id==='redo'&&!this.redoItems.length)||(['item-effect-edit','item-effect-delete'].includes(id)&&!this.doodad.effects.length)}));
+    return (groups[root]||[]).map(id=>({id,label:labels[id]||({'exit-main':'Exit','save-as':'Save As','zoom-fit':'Fit Preview'}[id])||id[0].toUpperCase()+id.slice(1),onClick:handlers[id],disabled:((id==='item-model-animation'||id==='item-2d')&&!this.doodad.model?.ref)||(id==='undo'&&!this.undoItems.length)||(id==='redo'&&!this.redoItems.length)||(['item-effect-edit','item-effect-delete'].includes(id)&&!this.doodad.effects.length)}));
   }
   getDoodadFileMenuItems(){return this.getMenuItems('file');}
   selectMobileRoot(id){this.mobileRootId=id;}

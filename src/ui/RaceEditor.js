@@ -1,3 +1,4 @@
+import {modelSprites} from '../model3d/ModelSprites.js';
 import {InventoryMenu} from '../items/InventoryMenu.js';
 import {normalizeItemDocument,itemAsDoodad} from '../items/ItemDocument.js';
 import { mixTapeRotation } from '../radio/MixTapePickup.js';
@@ -2873,7 +2874,8 @@ export default class RaceEditor {
     if(!picked?.name)return;
     this.selectedItemDefinition=normalizeItemDocument(picked.payload?.data||loadProjectFile('items',picked.name)?.data);
     this.selectedItemRef=picked.name;
-    await this.hydrateRaceArt(this.selectedItemDefinition.artRef);
+    if(this.selectedItemDefinition.model?.ref)await modelAssets.prepare(this.selectedItemDefinition.model.ref);
+    else await this.hydrateRaceArt(this.selectedItemDefinition.artRef);
     this.racePortraitMode='ground';this.activeRootId='ground';this.raceSpritePaintKind='doodad';this.activeAction='paint-sprite';this.raceGroundBrushCells=1;this.racePortraitHotMenu=null;
     this.status=`Paint item: ${picked.name}`;
   }
@@ -37901,7 +37903,7 @@ export default class RaceEditor {
       const frameIndex = sprite.animated
         ? Math.floor(Math.max(0, Number(this.playtestSession?.elapsedMs || 0) - Number(sprite.spawnedAtMs || 0)) / 90)
         : 0;
-      const artCanvas = this.getRaceArtSpriteCanvas(doodad.artRef || sprite.artRef, { frameIndex });
+      const artCanvas = doodad.model?.ref?modelSprites.snapshot(doodad.model,Number(this.playtestSession?.elapsedMs||0)/1000,{width:256,height:256}):this.getRaceArtSpriteCanvas(doodad.artRef || sprite.artRef, { frameIndex });
       if (artCanvas && typeof ctx.drawImage === 'function') {
         ctx.drawImage(artCanvas, x, y, width, height);
         return;
