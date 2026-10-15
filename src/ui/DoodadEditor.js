@@ -673,7 +673,7 @@ export default class DoodadEditor {
     drawSharedDesktopContextPanel(ctx, panelBounds, {
       lines: [
         `Active: ${this.landscapeRootId || this.mobileRootId || 'artwork'}`,
-        `Artwork: ${this.doodad.artRef || 'None'}`
+        this.doodad.model?.ref?`3D Model: ${this.doodad.model.ref}`:`Artwork: ${this.doodad.artRef || 'None'}`
       ],
       status: this.saveStatus || this.status,
       contentRoles: getEditorDesktopLeftContextRoles(this.editorId),

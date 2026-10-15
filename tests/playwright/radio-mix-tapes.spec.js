@@ -122,8 +122,8 @@ for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mod
   }else {await clickRadio(page,'menu');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.mobileRootOpen)).toBe(true);await clickRadio(page,'menu');}
  }
  await page.evaluate(()=>{const e=window.__game.radioEditor;e.selectTrack('song-2');e.menuScrollState['radio:tracks']=0;});
- await clickRadio(page,'track-membership');await radioReady(page);expect(await page.evaluate(()=>window.__game.radioEditor.station.trackIds)).toContain('song-2');
- await radioAction(page,'undo');await radioReady(page);expect(await page.evaluate(()=>window.__game.radioEditor.station.trackIds)).not.toContain('song-2');await radioAction(page,'redo');await radioReady(page);
+ await clickRadio(page,'track-membership');await radioReady(page);await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.station.trackIds)).toContain('song-2');
+ await radioAction(page,'undo');await radioReady(page);await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.station.trackIds)).not.toContain('song-2');await radioAction(page,'redo');await radioReady(page);
  await clickRadio(page,'radio-play');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.playing)).toBe(true);await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.audio.currentTime)).toBeGreaterThan(0.05);
  expect(await page.evaluate(()=>Object.keys(window.__game.items.progress.bags.radio))).toEqual([]);
  await page.screenshot({path:`test-results/radio-shell-${mode}.png`});
