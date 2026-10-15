@@ -344,7 +344,7 @@ test('all desktop editors expose shared left context roles and shared dropdown h
   assert.equal(canvasEditorDesktopDropdownSources.tile.includes("contentRoles: getEditorDesktopLeftContextRoles('tile')"), true);
   assert.equal(canvasEditorDesktopDropdownSources.midi.includes("contentRoles: getEditorDesktopLeftContextRoles('midi')"), true);
   assert.equal(canvasEditorDesktopDropdownSources.sfx.includes("contentRoles: getEditorDesktopLeftContextRoles('sfx')"), true);
-  assert.equal(canvasEditorDesktopDropdownSources.doodad.includes('contentRoles: getEditorDesktopLeftContextRoles(DOODAD_EDITOR_ID)'), true);
+  assert.equal(canvasEditorDesktopDropdownSources.doodad.includes('contentRoles: getEditorDesktopLeftContextRoles(this.editorId)'), true);
 });
 
 test('portrait shared rail interactions stay bottom-first with touch activation', () => {

@@ -31,6 +31,7 @@ export default class Title {
         'car-editor',
         'tire-editor',
         'doodad-editor',
+        'item-editor',
         'actor-editor',
         'back'
       ]
@@ -489,7 +490,7 @@ export default class Title {
     order.forEach((action, index) => {
       const y = layout.startY + index * (layout.buttonHeight + layout.gap);
       const selected = order[this.folderSelections[folder] || 0] === action;
-      const label = action === 'radio-editor' ? 'Radio Editor' : action === 'level-editor'
+      const label = action === 'item-editor' ? 'Item Editor' : action === 'radio-editor' ? 'Radio Editor' : action === 'level-editor'
         ? 'Level Editor'
         : action === 'tile-editor'
           ? 'Tile Editor'

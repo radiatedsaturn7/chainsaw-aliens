@@ -35,6 +35,16 @@ Shared implementation helpers:
 
 ### Portrait
 
+Pixel Editor and MIDI Editor are the design references for new and revised portrait screens. Inspect their current portrait implementations in `src/ui/PixelStudio.js` and `src/ui/MidiComposerCore.js`; preserve their shared visual language and interaction pattern instead of inventing another editor shell.
+
+- Open directly into a persistent editing workspace. Do not use a wizard, an action-selection form, or a chain of dialogs as the editor's main interface. Routine selection and editing happen in the workspace and its menus. Focused property dialogs, file pickers, confirmations, and genuinely sequential import operations are allowed when they return to that workspace.
+- The default portrait layout includes a bottom thumbstick beside **Menu / Undo / Redo / one special button**, a separate contextual hotbar, and a zoom scroller when the canvas, grid, timeline, or other work surface supports zoom. The special button provides the main contextual action, such as Brush, Play/Pause, or Playtest. Keep the standard action slots stable and disable unavailable history commands.
+- The thumbstick performs meaningful pan, scrolling, or selection navigation. The hotbar provides quick access to tools, palettes, track controls, or other frequent contextual actions without reopening the main menu. Do not count the four standard action buttons as the hotbar.
+- Place the hotbar and applicable zoom scroller in the shared lower control regions used by Pixel/MIDI, keeping the editing surface visible and all controls reachable. A non-zooming screen need not show an inert zoom control.
+- Specialized screens may adapt or omit a surface for a concrete workflow reason, such as a picker or playback-only screen. Preserve the remaining shared controls and document the reason in the existing design or implementation notes. This is an exception to explain, not a new permission gate; implementation convenience does not justify a wizard-based editor.
+- Validate the rendered portrait layout and actual thumbstick, menu, history, special-button, hotbar, and applicable zoom interactions against the references. Check small portrait viewports, overflowing content, and returning from dialogs; neither overlays nor footer hints may obscure or intercept the controls.
+- These defaults apply specifically to portrait. Keep the separate desktop, landscape-touch, and gamepad layouts defined below.
+
 - Exit belongs only in the File menu, never as a duplicate portrait root rail button.
 
 - Keep the current bottom-first mobile workflow.
@@ -328,3 +338,11 @@ Shared implementation helpers:
 - Mix tapes rotate during gameplay. Contact unlocks the referenced track without car damage or velocity changes. The collectible disappears only after durable save; failures allow retry. Unlocks survive reload and renaming songs or stations. Collecting works even with radio playback disabled.
 - Level and race pause menus expose Radio when both Options > Radio and that level/race's Radio setting are enabled. Radio supports stations, Play/Pause, Skip, Rewind/Previous and toggling unlocked tracks. Song lists page within the shared gameplay menu. Station logo, album cover, artist and album accompany playback.
 - Radio uses the music-volume setting and suppresses the MIDI music bus while playing; pausing or stopping restores it. Leaving gameplay stops radio. Turning radio off hides its pause entry without deleting unlocks.
+
+### Item Editor
+
+- Game → Item Editor reuses the Doodad artwork workspace and the shared portrait action rail, contextual hotbar, thumbstick, and zoom scroller. Properties and individual effects are focused dialogs; the editor remains a persistent workspace.
+- Item files live in `items`. Each contains artwork, level pixel dimensions, race dimensions, and an ordered list of data-only effects: health, max health, armor, currency, keys, weapons, abilities, inventory, devices, unlocks, player modifiers, radio tracks, and maps. Built-in level pickups are defined in `src/content/items.json`; the editor can open a template and save an override using its existing name.
+- Grants persist in player progress. The “Remember collection between runs” option determines whether that placement stays collected on later runs; disabling it permits repeat collection in a new run. A failed save leaves the item available.
+- Mix tapes are items with a radio-track effect. Existing doodad mix tapes remain loadable and can be imported into Item Editor; new artwork and pickup settings belong here.
+- Level Editor places item files as movable sprites through Powerups or Graphics. Race Editor paints item files through Sprites → Place Item, rendering them like doodads without collision damage. Saved placements retain their item definition.

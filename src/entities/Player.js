@@ -1,3 +1,4 @@
+import {applyItemModifier} from '../items/ItemDocument.js';
 import { MOVEMENT_MODEL } from '../game/MovementModel.js';
 import { drawBuiltInActorOverride } from './BuiltInActorVisuals.js';
 
@@ -9,6 +10,7 @@ export default class Player {
     this.vy = 0;
     this.width = 22;
     this.height = 34;
+    this.itemModifiers = [];
     this.speed = MOVEMENT_MODEL.baseSpeed;
     this.jumpPower = MOVEMENT_MODEL.baseJumpPower;
     this.revEfficiency = 1;
@@ -23,6 +25,7 @@ export default class Player {
     this.facing = 1;
     this.health = 5;
     this.maxHealth = 5;
+    this.armor = 0;
     this.loot = 0;
     this.credits = 0;
     this.upgradeSlots = 2;
@@ -96,6 +99,7 @@ export default class Player {
     this.jumpPower = jumpPower;
     this.revEfficiency = revEfficiency;
     this.dashCooldownBase = dashCooldown;
+    for(const effect of this.itemModifiers||[])if(['speed','jumpPower','revEfficiency','dashCooldownBase'].includes(effect.target))this[effect.target]=applyItemModifier(this[effect.target],effect);
   }
 
   startLunge(targetX, options = {}) {
@@ -510,7 +514,9 @@ export default class Player {
 
   takeDamage(amount) {
     if (this.invulnTimer > 0) return false;
-    this.health -= amount;
+    const absorbed = Math.min(Math.max(0, this.armor || 0), Math.max(0, amount));
+    this.armor = Math.max(0, (this.armor || 0) - absorbed);
+    this.health -= Math.max(0, amount - absorbed);
     this.hurtTimer = 0.3;
     this.invulnTimer = 0.6;
     this.sawRideActive = false;

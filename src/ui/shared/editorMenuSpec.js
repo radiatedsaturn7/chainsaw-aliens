@@ -119,8 +119,10 @@ const EDITOR_ACTION_LABEL_OVERRIDES = {
   'car-clear-body-model': 'Use 2D / Default Body',
   'car-clear-wheel-model': 'Use 2D / Default Wheels',
   'car-import-graphic': 'Import Graphic',
+  'item-properties':'Item Properties', 'item-effect-add':'Add Effect', 'item-effect-edit':'Edit Effect', 'item-effect-delete':'Remove Effect', 'item-template':'Built-in Items', 'item-legacy':'Import Old Mix Tape', 'item-art':'Artwork', 'item-image':'Import Image',
   'doodad-item': 'Item / Mix Tape',
   'import-item-art': 'Import Image',
+  'race-item':'Place Item',
   'race-radio': 'Radio',
   'car-art-settings': 'Settings',
   'car-art-exterior': 'Exterior',
@@ -148,14 +150,14 @@ export const DESKTOP_DYNAMIC_EMPTY_SECTION_IDS = {
   midi: ['tracks']
 };
 export const STANDARD_EDITOR_ACTION_RAIL_PREFIX = ['menu', 'undo', 'redo'];
-export const SHARED_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'model3d', 'menu-designer', 'radio', 'tire', 'car', 'tile', 'doodad'];
+export const SHARED_EDITOR_IDS = ['pixel', 'level', 'actor', 'midi', 'sfx', 'cutscene', 'race', 'model3d', 'menu-designer', 'radio', 'tire', 'car', 'tile', 'item', 'doodad'];
 export const SUPPORTED_EDITOR_WORK_SURFACES = ['canvas', 'stage', 'grid', 'timeline'];
 export const EDITOR_STANDARD_REFERENCE = deepFreeze({
   primaryEditorId: 'midi',
   secondaryEditorId: 'pixel',
   comparisonEditorIds: ['level', 'cutscene', 'actor'],
   portraitRepairEditorIds: ['level', 'race', 'car'],
-  rolloutOrder: ['midi', 'pixel', 'level', 'cutscene', 'actor', 'race', 'model3d', 'menu-designer', 'radio', 'tire', 'car', 'sfx', 'tile', 'doodad']
+  rolloutOrder: ['midi', 'pixel', 'level', 'cutscene', 'actor', 'race', 'model3d', 'menu-designer', 'radio', 'tire', 'car', 'sfx', 'tile', 'item', 'doodad']
 });
 export const EDITOR_DESKTOP_LEFT_CONTEXT_ROLES = deepFreeze({
   pixel: ['active-tool', 'swatches', 'layers', 'frames'],
@@ -171,6 +173,7 @@ export const EDITOR_DESKTOP_LEFT_CONTEXT_ROLES = deepFreeze({
   'menu-designer': ['screen-list', 'selected-element', 'preview-settings'],
   car: ['active-tool', 'car-properties', 'paint-swatches', 'test-drive-settings'],
   tile: ['active-tool', 'tile-palette', 'tile-properties', 'preview-settings'],
+  item: ['active-tool', 'artwork-settings', 'status'],
   doodad: ['active-tool', 'artwork-settings', 'size-settings', 'collision-settings']
 });
 export const RACE_FORBIDDEN_EXPLICIT_ROUTE_TYPE_ACTION_IDS = ['race-circuit', 'race-destination'];
@@ -180,7 +183,7 @@ export const EDIT_ACTION_ROLE_GROUPS = {
   selection: ['select-all'],
   duplicate: ['duplicate-state', 'duplicate'],
   destructive: ['clear', 'delete', 'delete-state', 'delete-segment', 'delete-layer', 'tile-reset'],
-  targetEdit: ['tile-edit-art','mirror-x','mirror-y','mirror-z','symmetry-x','symmetry-y','symmetry-z']
+  targetEdit: ['item-properties','tile-edit-art','mirror-x','mirror-y','mirror-z','symmetry-x','symmetry-y','symmetry-z']
 };
 export const EDIT_ACTION_ROLE_ORDER = ['history', 'clipboard', 'selection', 'duplicate', 'targetEdit', 'destructive'];
 
@@ -423,7 +426,7 @@ export const EDITOR_MENU_SPECS = {
         'ground-brush-strength-75',
         'ground-brush-strength-100'
       ]),
-      sprites: section('sprites', 'Sprites', ['sprite-select', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']),
+      sprites: section('sprites', 'Sprites', ['sprite-select', 'race-item', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']),
       settings: section('settings', 'Settings', ['race-radio', 'race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
     }
   },
@@ -523,6 +526,18 @@ export const EDITOR_MENU_SPECS = {
       view: section('view', 'View', ['zoom-fit', 'tile-preview']),
       tiles: section('tiles', 'Tiles', ['tile-prev', 'tile-next']),
       properties: section('properties', 'Properties', ['tile-model', 'tile-clear-model', 'tile-edit-properties', 'tile-toggle-solid', 'tile-toggle-one-way', 'tile-toggle-destructible'])
+    }
+  },
+  item: {
+    editorId: 'item', title: 'Item Editor', workSurface: 'stage',
+    root: ['file', 'edit', 'view', 'artwork', 'effects'],
+    portraitRoot: [{id:'file',label:'File'},{id:'artwork',label:'Art'},{id:'effects',label:'Effects'}],
+    sections: {
+      file: section('file','File',['new','save','save-as','open','export','import','item-template','item-legacy','exit-main']),
+      edit: section('edit','Edit',['undo','redo','item-properties']),
+      view: section('view','View',['zoom-fit']),
+      artwork: section('artwork','Art',['item-art','item-image']),
+      effects: section('effects','Effects',['item-effect-add','item-effect-edit','item-effect-delete'])
     }
   },
   doodad: {

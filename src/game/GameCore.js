@@ -1,3 +1,4 @@
+import {updateLevelItems, updateLegacyItemPickups, isItemPickup, itemPlacementId, getItemSystem} from '../items/ItemPickups.js';
 import {isMixTape,mixTapeRotation,updateLevelMixTapes} from '../radio/MixTapePickup.js';
 import { RadioPlayer } from '../radio/RadioPlayer.js';
 import { RadioEditor } from '../ui/RadioEditor.js';
@@ -65,6 +66,7 @@ import ActorEditor from '../ui/ActorEditor.js';
 import CutsceneEditor, { CutscenePlayer } from '../ui/CutsceneEditor.js';
 import RaceEditor from '../ui/RaceEditor.js';
 import DoodadEditor from '../ui/DoodadEditor.js';
+import ItemEditor from '../ui/ItemEditor.js';
 import RaceRuntimePreparation from '../racing/RaceRuntimePreparation.js';
 import {
   WEATHER_PRIORITY,
@@ -243,6 +245,7 @@ export default class Game {
     this.minimap = new Minimap(this.world);
     this.spawnPoint = { x: 32 * 28, y: 32 * 19 };
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
+    this.items?.beginRun();
     this.friendlyCompanion = null;
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.snapCameraToPlayer();
@@ -430,6 +433,7 @@ export default class Game {
     this.raceEditor = new RaceEditor(this, { mode: 'race' });
     this.carEditor = new RaceEditor(this, { mode: 'car' });
     this.doodadEditor = new DoodadEditor(this);
+    this.itemEditor = new ItemEditor(this);
     this.tireEditor = new TireEditor(this);
     this.modelEditor = new ModelEditor(this);
     this.menuEditor = new MenuEditor(this);
@@ -450,6 +454,7 @@ export default class Game {
       'menu-editor': 'menuEditor',
       'radio-editor': 'radioEditor',
       'menu-player': 'menuPlayer',
+      'item-editor': 'itemEditor',
       'doodad-editor': 'doodadEditor'
     };
     this.editorStateDrawArgs = {
@@ -466,6 +471,7 @@ export default class Game {
       'radio-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'menu-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'menu-player': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'item-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'doodad-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height]
     };
     this.editorStateKeys = new Set(Object.keys(this.editorStateTargetKeys));
@@ -899,6 +905,10 @@ export default class Game {
         this.enterTireEditor();
       } else if (action === 'car-editor') {
         this.enterCarEditor();
+      } else if (action === 'item-editor') {
+        this.transitionTo('item-editor');
+        this.setRevAudio(false);
+        this.playtestActive = false;
       } else if (action === 'doodad-editor') {
         this.enterDoodadEditor();
       } else if (action === 'radio-editor') {
@@ -940,6 +950,7 @@ export default class Game {
         ]);
       }
       await this.world.load();
+      await getItemSystem(this).load();
       await this.autoRepair.load();
       this.autoRepair.applyPersistentPatches();
       await this.goldenPath.load();
@@ -1478,6 +1489,7 @@ export default class Game {
 
   buildWorldData() {
     return {
+      itemScope: this.world.itemScope,
       schemaVersion: 1,
       tileSize: this.world.tileSize,
       width: this.world.width,
@@ -1507,6 +1519,7 @@ export default class Game {
       ? loadProjectFile('art', legacyPixelArtRef)?.data
       : null;
     const migrated = {
+      itemScope: data.itemScope,
       schemaVersion: data.schemaVersion ?? 1,
       tileSize: data.tileSize,
       width: data.width,
@@ -2732,6 +2745,7 @@ export default class Game {
     this.mixTapePickupState = {};
     this.world.reset();
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
+    this.items?.beginRun();
     this.friendlyCompanion = null;
     const startLoaded = this.gameMode === 'endless' || startWithEverything === true;
     if (startLoaded) {
@@ -3528,6 +3542,12 @@ export default class Game {
       return;
     }
 
+    if (this.state === 'item-editor') {
+      this.itemEditor.update(this.input, dt);
+      this.input.flush();
+      return;
+    }
+
     if (this.state === 'radio-editor') {
       this.radioEditor.update(this.input, dt);this.input.flush();return;
     }
@@ -3981,6 +4001,7 @@ export default class Game {
     const prevCompanion = this.friendlyCompanion ? { x: this.friendlyCompanion.x, y: this.friendlyCompanion.y } : null;
     this.player.update(dt * timeScale, this.input, this.world, this.abilities);
     updateLevelMixTapes(this);
+    updateLevelItems(this);
     if (this.friendlyCompanion) {
       this.friendlyCompanion.update(dt * timeScale, this.world, this.abilities, {
         player: this.player,
@@ -6630,65 +6651,7 @@ export default class Game {
   }
 
   checkPickups() {
-    this.world.abilityPickups.forEach((pickup) => {
-      if (pickup.collected) return;
-      const dist = Math.hypot(pickup.x - this.player.x, pickup.y - this.player.y);
-      if (dist < 30) {
-        pickup.collected = true;
-        this.abilities[pickup.ability] = true;
-        if (pickup.ability === 'magboots') {
-          this.player.upgradeSlots = Math.max(this.player.upgradeSlots, 3);
-        }
-        if (pickup.ability === 'resonance') {
-          this.player.upgradeSlots = 4;
-        }
-        if (pickup.ability === 'ignitir') {
-          this.selectWeapon(0);
-        }
-        if (pickup.ability === 'flamethrower') {
-          this.selectWeapon(2);
-        }
-        this.ensureActiveWeaponAvailable();
-        const pickupPause = this.audio.pickup();
-        this.pickupPauseTimer = Math.max(this.pickupPauseTimer, pickupPause || 0);
-        this.spawnEffect('pickup', pickup.x, pickup.y - 8);
-        this.recordFeedback('pickup', 'audio');
-        this.recordFeedback('pickup', 'visual');
-        const label = ABILITY_PICKUP_LABELS[pickup.ability] || 'Upgrade';
-        this.showSystemToast(`${label} acquired`);
-      }
-    });
-
-    this.world.mapPickups?.forEach((pickup) => {
-      if (pickup.collected) return;
-      const dist = Math.hypot(pickup.x - this.player.x, pickup.y - this.player.y);
-      if (dist < 30) {
-        pickup.collected = true;
-        const roomIndex = this.world.roomAtTile?.(
-          Math.floor(this.player.x / this.world.tileSize),
-          Math.floor(this.player.y / this.world.tileSize)
-        );
-        this.minimap.revealNearbyRooms(roomIndex, 7);
-        this.audio.download();
-        this.spawnEffect('pickup', pickup.x, pickup.y - 8);
-        this.recordFeedback('pickup', 'audio');
-        this.recordFeedback('pickup', 'visual');
-        this.showModalPrompt('Map updated');
-      }
-    });
-
-    this.world.healthUpgrades.forEach((upgrade) => {
-      if (upgrade.collected) return;
-      const dist = Math.hypot(upgrade.x - this.player.x, upgrade.y - this.player.y);
-      if (dist < 30) {
-        upgrade.collected = true;
-        this.player.gainMaxHealth(1);
-        this.audio.spawnTune();
-        this.spawnEffect('pickup', upgrade.x, upgrade.y - 8);
-        this.recordFeedback('pickup', 'audio');
-        this.recordFeedback('pickup', 'visual');
-      }
-    });
+    updateLegacyItemPickups(this);
   }
 
   checkSavePoints() {
@@ -10308,6 +10271,7 @@ export default class Game {
     const viewRight = cameraX + cameraWidth + tileSize * 2;
     const viewBottom = cameraY + cameraHeight + tileSize * 2;
     decals.forEach((decal) => {
+      if (this.state !== 'editor' && isItemPickup(decal) && this.items?.isCollected(itemPlacementId(decal))) return;
       if (this.state !== 'editor' && isMixTape(decal) && this.mixTapePickupState?.mixTapeCollected?.has(decal.id)) return;
       if (!decal?.imageDataUrl && !decal?.model?.ref) return;
       const x = Number.isFinite(decal.x) ? decal.x : 0;
@@ -11343,6 +11307,7 @@ export default class Game {
     this.stateManager.register('radio-editor', createDelegatedState(this, 'radioEditor'));
     this.stateManager.register('menu-editor', createDelegatedState(this, 'menuEditor'));
     this.stateManager.register('menu-player', createDelegatedState(this, 'menuPlayer'));
+    this.stateManager.register('item-editor', createDelegatedState(this, 'itemEditor'));
     this.stateManager.register('doodad-editor', createDelegatedState(this, 'doodadEditor'));
     this.stateManager.register('robtersession', new RobterSessionState(this));
   }

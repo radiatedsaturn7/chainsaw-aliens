@@ -15,7 +15,7 @@ This document defines the shared layout and token contract for **Pixel Editor**,
 
 ## 2) Layout Grid Rules
 
-All editors should follow this shell structure:
+The desktop shell follows this structure. Portrait uses the bottom-first shell described below; do not copy the desktop top bar and left inspector into portrait:
 
 1. Root shell fills viewport.
 2. Top bar spans full width at the top and owns desktop root menu activation.
@@ -31,6 +31,16 @@ Canonical region map:
   - `Body`
     - `LeftRail`
     - `MainContent`
+
+Portrait implementation baseline:
+
+- Before adding or changing a portrait screen, inspect Pixel's `drawMobilePortraitLayout()` in `src/ui/PixelStudio.js` and the portrait branches, control rail, and zoom controls in `src/ui/MidiComposerCore.js`.
+- Use a persistent work surface and the shared lower regions: thumbstick beside the fixed Menu / Undo / Redo / special-action rail, a separate contextual hotbar, and a zoom scroller when the work surface has a useful zoom range. Keep history slots visible and disabled when unavailable. The hotbar contains workflow tools or context, not another copy of the four rail buttons.
+- Build from `getSharedMobilePortraitEditorLayout()`, `getSharedPortraitActionRailLayout()`, `drawSharedPortraitActionRail()`, shared thumbstick/ribbon/sheet primitives in `src/ui/uiSuite.js`, `getStandardEditorActionRailIds()` in `src/ui/shared/editorMenuSpec.js`, and the zoom helpers in `src/ui/shared/mobileZoomSlider.js`. Reuse input handling as well as drawing and hit-target geometry.
+- Keep root menus and settings in the shared bottom sheets. Preserve the work surface and selection when closing a menu or a focused property/import dialog. Do not implement the main portrait editor as a wizard, repeated action picker, or chained modal forms.
+- Use the same spacing, button chrome, touch targets, scroll/drag behavior, and lower-control placement as Pixel/MIDI. Reserve space for controls; overlays, help text, and footer hints must not cover them or intercept their input.
+- A specialized workflow may justify a different surface arrangement or omission; document the concrete reason in existing design/implementation notes and preserve the other shared surfaces. Do not add decorative, nonfunctional thumbsticks or zoom controls. A focused picker, confirmation, or sequential import can be a dialog without turning the surrounding editor into a wizard.
+- Verify portrait rendering and interactions for the thumbstick, four action slots, hotbar, and applicable zoom scroller. This portrait baseline does not change the desktop, landscape-touch, or gamepad contracts.
 
 Desktop-specific shell rules:
 

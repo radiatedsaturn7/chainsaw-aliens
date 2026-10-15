@@ -24,7 +24,7 @@ test.beforeEach(async({page})=>{
  await page.route('**/__storage/file*',async route=>{
   const request=route.request(),url=new URL(request.url()),body=request.method()==='POST'?request.postDataJSON():null;
   const name=body?.name||url.searchParams.get('name'),folder=body?.folder||url.searchParams.get('folder');
-  if(folder==='settings'&&['rtg-radio-library','rtg-radio-progress'].includes(name)){
+  if(folder==='settings'&&['rtg-radio-library','rtg-radio-progress','rtg-item-progress'].includes(name)){
    if(body){preferences.set(name,body.data);return route.fulfill({json:{ok:true}});}
    return route.fulfill({json:{ok:true,file:{data:preferences.get(name)||{value:{}}}}});
   }
@@ -52,13 +52,16 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors a 
  await clickRadio(page,'radio-play');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.playing)).toBe(false);
  await page.evaluate(()=>window.__game.radioEditor.exitToMainMenu());
  const png=await page.evaluate(()=>{const canvas=document.createElement('canvas');canvas.width=canvas.height=8;const ctx=canvas.getContext('2d');ctx.fillStyle='#ee3366';ctx.fillRect(0,0,8,8);return canvas.toDataURL().split(',')[1];});
- await page.evaluate(()=>{const g=window.__game;g.enterDoodadEditor();void g.doodadEditor.importItemArtwork();});await dialog(page,'Image Source').getByLabel('Image source',{exact:true}).selectOption('device');const imageChooser=page.waitForEvent('filechooser');await apply(page,'Image Source');await (await imageChooser).setFiles({name:'cassette.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')});
- await dialog(page,'Save Imported Image').getByLabel('Artwork name',{exact:true}).fill(name+' Cassette');await apply(page,'Save Imported Image');await expect.poll(()=>page.evaluate(()=>window.__game.doodadEditor.doodad.artRef)).toBe(name+' Cassette');await page.evaluate(()=>{void window.__game.doodadEditor.configureMixTape();});
- await dialog(page,'Doodad Item').getByLabel('Item type',{exact:true}).selectOption('mix-tape');const trackId=await page.evaluate(()=>window.__game.radio.library.tracks[0].id);await dialog(page,'Doodad Item').getByLabel('Track to unlock',{exact:true}).selectOption(trackId);await apply(page,'Doodad Item');
- await page.evaluate(async name=>{const g=window.__game,{serializeRaceDoodadDocument}=await import('/src/racing/raceDoodads.js'),{saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');g.doodadEditor.doodad.name=name;await saveProjectFileAndConfirm('doodads',name,serializeRaceDoodadDocument(g.doodadEditor.doodad));g.enterEditor();g.applyWorldData(g.editor.buildEmptyLevelData(38,24));void g.editor.addMixTape();},name);
+ await page.evaluate(()=>{const g=window.__game;g.transitionTo('item-editor');void g.itemEditor.getDesktopActionHandlers()['item-image']();});await dialog(page,'Image Source').getByLabel('Image source',{exact:true}).selectOption('device');const imageChooser=page.waitForEvent('filechooser');await apply(page,'Image Source');await (await imageChooser).setFiles({name:'cassette.png',mimeType:'image/png',buffer:Buffer.from(png,'base64')});
+ await dialog(page,'Save Imported Image').getByLabel('Artwork name',{exact:true}).fill(name+' Cassette');await apply(page,'Save Imported Image');await expect.poll(()=>page.evaluate(()=>window.__game.itemEditor.doodad.artRef)).toBe(name+' Cassette');await expect.poll(()=>page.evaluate(()=>window.__game.itemEditor.busy)).toBe(false);
+ await page.evaluate(()=>{void window.__game.itemEditor.getDesktopActionHandlers()['item-effect-add']();});
+ await dialog(page,'Add Item Effect').getByLabel('Effect',{exact:true}).selectOption('radio-track');const trackId=await page.evaluate(()=>window.__game.radio.library.tracks[0].id);await dialog(page,'Add Item Effect').getByLabel('Radio track (for radio-track effects)',{exact:true}).selectOption(trackId);await apply(page,'Add Item Effect');
+ await expect.poll(()=>page.evaluate(()=>window.__game.itemEditor.doodad.effects.length)).toBe(1);
+ await page.screenshot({path:`test-results/item-editor-${mobile?'portrait':'desktop'}.png`});
+ await page.evaluate(async name=>{const g=window.__game,{serializeItemDocument}=await import('/src/items/ItemDocument.js'),{saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');g.itemEditor.doodad.name=name;await saveProjectFileAndConfirm('items',name,serializeItemDocument(g.itemEditor.doodad));g.enterEditor();g.applyWorldData(g.editor.buildEmptyLevelData(38,24));void g.editor.addMixTape();},name);
  await page.locator(`.project-browser-row[data-name="${name}"]`).getByRole('button',{name:'Open',exact:true}).click();
- await expect.poll(()=>page.evaluate(name=>window.__game.world.decals.some(item=>item.itemType==='mix-tape'&&item.doodadRef===name),name)).toBe(true);
- await page.evaluate(name=>{const g=window.__game;g.editor.flushPendingAutosave();g.playMostRecentLevel();const item=g.world.decals.find(item=>item.itemType==='mix-tape'&&item.doodadRef===name);item.x=g.player.x-16;item.y=g.player.y-16;item.w=32;item.h=32;g.spawnPauseTimer=0;},name);
+ await expect.poll(()=>page.evaluate(name=>window.__game.world.decals.some(item=>item.itemType==='item'&&item.itemRef===name),name)).toBe(true);
+ await page.evaluate(name=>{const g=window.__game;g.editor.flushPendingAutosave();g.playMostRecentLevel();const item=g.world.decals.find(item=>item.itemType==='item'&&item.itemRef===name);item.x=g.player.x-16;item.y=g.player.y-16;item.w=32;item.h=32;g.spawnPauseTimer=0;},name);
  await expect.poll(()=>page.evaluate(()=>window.__game.radio.progress.unlocked)).toEqual([trackId]);
  await expect.poll(()=>page.evaluate(()=>window.__game.playtestPauseLock)).toBe(0);await page.keyboard.press('Escape');await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('pause');await clickPause(page,'radio');await clickPause(page,'radio-play');
  await expect.poll(()=>page.evaluate(()=>window.__game.radio.playing)).toBe(true);await expect.poll(()=>page.evaluate(()=>window.__game.radio.audio?.currentTime||0)).toBeGreaterThan(0.05);

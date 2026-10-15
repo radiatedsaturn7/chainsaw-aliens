@@ -77,6 +77,7 @@ test('shared editor menu specs validate for every editor', () => {
     tire: 'stage',
     car: 'stage',
     tile: 'grid',
+    item: 'stage',
     doodad: 'stage'
   });
   for (const editorId of SHARED_EDITOR_IDS) {
@@ -939,7 +940,7 @@ test('Race shared authoring roots include tile-backed terrain commands without s
   ].forEach((action) => assert.equal(getEditorMenuSection('race', 'ground').actions.includes(action), true, action));
   ['trigger-select', 'trigger-action', 'trigger-art', 'trigger-doodad', 'trigger-weather', 'place-trigger', 'delete-trigger']
     .forEach((action) => assert.equal(getEditorMenuSection('race', 'ground').actions.includes(action), true, action));
-  assert.deepEqual(getEditorMenuSection('race', 'sprites').actions, ['sprite-select', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']);
+  assert.deepEqual(getEditorMenuSection('race', 'sprites').actions, ['sprite-select', 'race-item', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']);
   assert.deepEqual(getEditorMenuSection('race', 'settings').actions, ['race-radio', 'race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug']);
   assert.equal(uiSpecSource.includes('- File: standard document actions plus From Image, generate random race, and load built-in reference tracks.'), true);
   assert.equal(uiSpecSource.includes('Surfaces: selected ground tile, paint ground, selected-segment edge tile'), false);

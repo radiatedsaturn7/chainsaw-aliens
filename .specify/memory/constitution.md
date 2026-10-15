@@ -1,23 +1,20 @@
 <!--
 Sync Impact Report
-Version change: template -> 1.0.0
+Version change: 1.0.0 -> 1.1.0
 Modified principles:
-- TEMPLATE -> I. Product Specs Are Authoritative
-- TEMPLATE -> II. Shared Editor Architecture First
-- TEMPLATE -> III. Mode Behavior Is Contractual
-- TEMPLATE -> IV. Tests Guard Editor Behavior
-- TEMPLATE -> V. Local Data and Change History Discipline
-Added sections:
-- Project Constraints
-- Development Workflow
-Removed sections:
-- None
-Templates requiring updates:
-- updated: .specify/templates/plan-template.md
-- updated: .specify/templates/spec-template.md
-- updated: .specify/templates/tasks-template.md
-Follow-up TODOs:
-- None
+- III. Mode Behavior Is Contractual: explicit portrait workspace, shared controls,
+  Pixel/MIDI references, and prohibition on wizard-based editor interfaces.
+Synchronized guidance:
+- AGENTS.md
+- UISpec.md
+- ui/EDITORS_UI_CONTRACT.md
+- NEXT_WEEK_PROMPT.md
+- specs/001-editor-ui-standard/contracts/editor-ui-standard.md
+Templates updated:
+- .specify/templates/plan-template.md
+- .specify/templates/spec-template.md
+- .specify/templates/tasks-template.md
+Follow-up TODOs: None
 -->
 # Chainsaw Aliens Constitution
 
@@ -49,6 +46,16 @@ shared contracts. Features that affect editor UI MUST specify mode impact for
 portrait, landscape touch, desktop, and gamepad, including any intentional
 unchanged modes. This prevents accidental regressions across input and viewport
 modes.
+
+New or revised portrait editors MUST use Pixel Editor and MIDI Editor as design
+references and begin with a persistent workspace, a bottom thumbstick plus
+Menu / Undo / Redo / one special-action button, a separate contextual hotbar,
+and a zoom scroller when applicable. They MUST NOT use a wizard or chained
+modal forms as the main editor interface. Focused dialogs and sequential imports
+may return to the workspace. Workflow-specific deviations MUST have a concrete
+rationale in the existing design or implementation notes and preserve the
+remaining shared UI; they do not require a separate approval process. These
+portrait requirements do not impose portrait chrome on other modes.
 
 ### IV. Tests Guard Editor Behavior
 
@@ -110,4 +117,4 @@ Compliance review is required during `speckit-plan`, `speckit-tasks`,
 violation MUST be listed in the plan's Complexity Tracking or equivalent risk
 section with a concrete rationale.
 
-**Version**: 1.0.0 | **Ratified**: 2026-07-15 | **Last Amended**: 2026-07-15
+**Version**: 1.1.0 | **Ratified**: 2026-07-15 | **Last Amended**: 2026-10-15

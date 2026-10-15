@@ -220,6 +220,7 @@ test('controller selection order matches studio launcher hierarchy', () => {
     'car-editor',
     'tire-editor',
     'doodad-editor',
+    'item-editor',
     'actor-editor',
     'back'
   ]);

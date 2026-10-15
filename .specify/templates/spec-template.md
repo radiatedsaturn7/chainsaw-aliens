@@ -105,6 +105,14 @@
   `ui/EDITORS_UI_CONTRACT.md`]
 - **Mode impact**: [Portrait / landscape touch / desktop / gamepad behavior,
   including "unchanged" where applicable]
+- **Portrait workspace**: [For affected portrait screens, identify the Pixel/MIDI
+  reference behavior, persistent work surface, thumbstick, Menu / Undo / Redo /
+  special button, separate contextual hotbar, and zoom scroller if applicable.
+  Do not specify a wizard or chained forms as the editor. Explain any concrete
+  workflow deviation and how focused dialogs return to the workspace.]
+- **Portrait acceptance**: [Verify rendered consistency and working controls,
+  including hotbar and applicable zoom, on small portrait viewports and after
+  returning from dialogs; overlays must not block the action rail or thumbstick.]
 - **Shared helper impact**: [Shared menu specs, input semantics, UI helpers, or
   `src/ui/shared/editorMenuLayout.js` helpers expected to be used]
 

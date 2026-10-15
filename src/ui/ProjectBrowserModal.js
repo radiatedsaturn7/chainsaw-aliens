@@ -19,7 +19,7 @@ import { fileTypeBadge } from './uiSuite.js';
 import { buildArtPreviewPixels, getArtDocumentFrames } from './shared/artDocumentPixels.js';
 
 const FOLDER_LABELS = { levels: 'Levels', art: 'Art', music: 'Music', actors: 'Actors', sfx: 'SFX', cutscenes: 'Cutscenes', races: 'Races', cars: 'Cars', tires: 'Tires', models: '3D Models', menus: 'Menus', doodads: 'Doodads' };
-const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'menus', 'doodads'];
+const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'menus', 'doodads', 'items'];
 const PROJECT_BROWSER_SORTS = {
   modified: { label: 'Modified', direction: 'desc' },
   name: { label: 'Name', direction: 'asc' }

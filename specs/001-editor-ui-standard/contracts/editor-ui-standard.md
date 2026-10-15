@@ -15,12 +15,19 @@ must enforce. It complements `UISpec.md` and `ui/EDITORS_UI_CONTRACT.md`.
 
 | Mode | Root command surface | Submenu/drill-down surface | Persistent context | Thumbstick policy |
 |------|----------------------|----------------------------|--------------------|-------------------|
-| Portrait | Bottom-first rail/sheet | Bottom sheet or hot menu | Top/status only when useful | Shown only when continuous movement or pan is needed |
+| Portrait | Bottom-first rail/sheet | Bottom sheet or hot menu | Persistent workspace and contextual hotbar; zoom scroller when applicable | Default for meaningful pan, scroll, or selection; workflow-specific omissions require rationale |
 | Landscape touch | Fixed left command rail | Right drawer/rail | Work surface plus optional bottom rail | Shown only when continuous movement or pan is needed |
 | Desktop | Top menu bar/dropdown | Top dropdown | Left context panel plus work surface | Suppressed |
 | Gamepad | Left slide-out root | Left slide-out submenu | Work surface overlay or mode context | Suppressed |
 
 ## Shared Command Contract
+
+Portrait follows the Pixel/MIDI baseline in `UISpec.md` and
+`ui/EDITORS_UI_CONTRACT.md`: thumbstick, Menu / Undo / Redo / special action,
+a separate contextual hotbar, and applicable zoom scroller around a persistent
+workspace. Do not use a wizard or chained forms as the main editor. Focused
+dialogs return to that workspace; concrete workflow exceptions preserve the
+remaining shared UI.
 
 - Menu, Undo, Redo, and one contextual action must have consistent placement in
   portrait and landscape touch.

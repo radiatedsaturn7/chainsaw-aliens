@@ -1,3 +1,4 @@
+import {normalizeItemDocument,itemAsDoodad} from '../items/ItemDocument.js';
 import { mixTapeRotation } from '../radio/MixTapePickup.js';
 import { RadioMenu } from '../radio/RadioMenu.js';
 import { RaceCarDepthSprites } from '../racing/RaceCarDepthSprites.js';
@@ -665,6 +666,7 @@ const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   'race-complete',
   'add-sprite',
   'sprite-select',
+  'race-item',
   'doodad-select',
   'paint-sprite',
   'erase-sprite',
@@ -1567,6 +1569,7 @@ export default class RaceEditor {
   }
 
   getSelectedRaceDoodad() {
+    if(this.selectedItemDefinition)return itemAsDoodad(this.selectedItemDefinition);
     if (this.selectedDoodadRef) return this.loadRaceDoodadDocument(this.selectedDoodadRef);
     const files = listProjectFiles('doodads');
     if (!files.length) return null;
@@ -1575,6 +1578,7 @@ export default class RaceEditor {
   }
 
   getRaceDoodadForScenery(sprite = {}) {
+    if(sprite.itemType==='item'&&sprite.item)return itemAsDoodad(sprite.item);
     if (sprite?.previewDoodad) return normalizeRaceDoodadDocument(sprite.previewDoodad, sprite?.label || sprite?.artRef || 'Doodad');
     const ref = sanitizeProjectFileName(sprite?.doodadRef || '');
     const doodad = ref ? this.loadRaceDoodadDocument(ref) : null;
@@ -2775,6 +2779,10 @@ export default class RaceEditor {
   }
 
   createRaceScenerySprite(worldPoint = {}) {
+    if(this.getRaceSpritePaintKind()==='doodad'&&this.selectedItemDefinition){
+      const item=normalizeItemDocument(this.selectedItemDefinition);
+      return {id:`item-${Date.now()}-${Math.random().toString(36).slice(2)}`,presetId:'doodad',itemType:'item',item,itemRef:this.selectedItemRef,artRef:item.artRef,label:item.name,x:Number(worldPoint.x)||0,z:Number(worldPoint.y??worldPoint.z)||0,widthM:item.widthM,heightM:item.heightM,state:'standing'};
+    }
     if (this.getRaceSpritePaintKind() === 'doodad') {
       const doodad = this.getSelectedRaceDoodad();
       if (doodad) {
@@ -2855,7 +2863,18 @@ export default class RaceEditor {
     return null;
   }
 
+  async openRaceItemPicker() {
+    const picked=await openProjectBrowser({mode:'open',fixedFolder:'items',initialFolder:'items',title:'Pick Race Item'});
+    if(!picked?.name)return;
+    this.selectedItemDefinition=normalizeItemDocument(picked.payload?.data||loadProjectFile('items',picked.name)?.data);
+    this.selectedItemRef=picked.name;
+    await this.hydrateRaceArt(this.selectedItemDefinition.artRef);
+    this.racePortraitMode='ground';this.activeRootId='ground';this.raceSpritePaintKind='doodad';this.activeAction='paint-sprite';this.raceGroundBrushCells=1;this.racePortraitHotMenu=null;
+    this.status=`Paint item: ${picked.name}`;
+  }
+
   async openRaceDoodadPicker() {
+    this.selectedItemDefinition=null;this.selectedItemRef='';
     this.racePortraitMode = 'ground';
     this.activeRootId = 'ground';
     this.raceSpritePaintKind = 'doodad';
@@ -8532,6 +8551,7 @@ export default class RaceEditor {
   }
 
   handleMenuAction(action) {
+    if(action==='race-item'){void this.openRaceItemPicker().catch(error=>{this.status=error.message;});return;}
     if (!this.isActionAvailable(action)) {
       this.status = `${action.replace(/-/g, ' ')} is not available yet`;
       return;
@@ -34760,7 +34780,7 @@ export default class RaceEditor {
         const quad = this.getRaceDoodadWorldQuad(sprite);
         if (!quad) return null;
         const { doodad } = quad;
-        if(doodad.itemType==='mix-tape'){
+        if((doodad.itemType==='mix-tape'||(doodad.itemType==='item'&&doodad.rotate))){
           const angle=mixTapeRotation(Number(this.playtestSession?.elapsedMs||0)/1000),c=Math.cos(angle),s=Math.sin(angle);
           quad.points=quad.points.map(point=>{const dx=point.x-Number(sprite.x||0),dz=point.z-Number(sprite.z||0);return {...point,x:Number(sprite.x||0)+dx*c+dz*s,z:Number(sprite.z||0)-dx*s+dz*c};});
         }
@@ -34882,7 +34902,7 @@ export default class RaceEditor {
         const ground=this.sampleRaceDoodadGroundPoint(sprite.x,sprite.z,sprite,doodad);
         placement.position.set(Number(sprite.x)||0,this.getRaceThreeElevationM(ground),Number(sprite.z)||0);
         placement.rotation.y=Number(sprite.yaw)||0;
-        if(doodad.itemType==='mix-tape'){placement.userData.mixTape=true;placement.userData.baseYaw=placement.rotation.y;placement.rotation.y+=mixTapeRotation(Number(this.playtestSession?.elapsedMs||0)/1000);}
+        if((doodad.itemType==='mix-tape'||(doodad.itemType==='item'&&doodad.rotate))){placement.userData.mixTape=true;placement.userData.baseYaw=placement.rotation.y;placement.rotation.y+=mixTapeRotation(Number(this.playtestSession?.elapsedMs||0)/1000);}
         const box=new THREE.Box3();for(const vertex of model.vertices)box.expandByPoint(new THREE.Vector3(...vertex.position));
         if(!box.isEmpty()){
           const size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());
@@ -34909,7 +34929,7 @@ export default class RaceEditor {
       geometry.computeBoundingSphere?.();
       const mesh = new THREE.Mesh(geometry, material);
       mesh.name = `raceDoodad:${sprite.id || sprite.doodadRef || sprite.label || 'doodad'}`;
-      if(doodad.itemType==='mix-tape'){
+      if((doodad.itemType==='mix-tape'||(doodad.itemType==='item'&&doodad.rotate))){
         const centerX=Number(sprite.x)||0,centerZ=Number(sprite.z)||0;
         geometry.translate(-centerX,0,-centerZ);mesh.position.set(centerX,0,centerZ);
         mesh.userData.mixTape=true;mesh.userData.baseYaw=0;mesh.rotation.y=mixTapeRotation(Number(this.playtestSession?.elapsedMs||0)/1000);
@@ -37820,7 +37840,7 @@ export default class RaceEditor {
       const heightM = Number(doodad.heightM) || Number(sprite.heightM) || preset.heightM;
       const groundOffsetLimitM = getRaceDoodadGroundOffsetLimit(heightM);
       const groundOffsetM = clamp(Number(doodad.groundOffsetM ?? sprite.groundOffsetM) || 0, -groundOffsetLimitM, groundOffsetLimitM);
-      const spriteYaw = (Number.isFinite(Number(sprite.yaw)) ? Number(sprite.yaw) : Number(cameraYaw || 0)) + (doodad.itemType==='mix-tape' ? mixTapeRotation(Number(this.playtestSession?.elapsedMs||0)/1000) : 0);
+      const spriteYaw = (Number.isFinite(Number(sprite.yaw)) ? Number(sprite.yaw) : Number(cameraYaw || 0)) + ((doodad.itemType==='mix-tape'||(doodad.itemType==='item'&&doodad.rotate)) ? mixTapeRotation(Number(this.playtestSession?.elapsedMs||0)/1000) : 0);
       const right = this.getRaceRightVector(spriteYaw);
       const halfWidthM = Math.max(0.05, widthM * 0.5);
       const baseElevation = Number(projected.elevation || 0) - groundOffsetM / RACE_THREE_ELEVATION_M;

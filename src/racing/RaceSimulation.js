@@ -556,7 +556,7 @@ function createRaceStaticColliderWorld(editor, {
   }
   scenery.forEach((sprite) => {
     const doodad = editor.getRaceDoodadForScenery?.(sprite) || {};
-    if (doodad.itemType === 'mix-tape') return;
+    if (doodad.itemType === 'mix-tape' || doodad.itemType === 'item') return;
     const rules = [doodad.defaultRule, ...(doodad.rules || [])].filter(Boolean);
     const permanentlySolid = sprite?.solid === true
       || sprite?.collidable === true

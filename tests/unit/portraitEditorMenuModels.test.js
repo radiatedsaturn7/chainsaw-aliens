@@ -95,6 +95,7 @@ const editorSourceById = {
   radio: raceEditorSource + readFileSync(new URL('../../src/ui/RadioEditor.js', import.meta.url), 'utf8'),
   tire: raceEditorSource + readFileSync(new URL('../../src/ui/TireEditor.js', import.meta.url), 'utf8'),
   tile: pixelStudioSource,
+  item: doodadEditorSource + readFileSync(new URL('../../src/ui/ItemEditor.js', import.meta.url), 'utf8'),
   doodad: doodadEditorSource
 };
 
@@ -347,6 +348,7 @@ test('all editor portrait sources use shared bottom-first helpers without empty 
       'drawSharedPortraitActionRail',
       'getSharedMobilePortraitEditorLayout'
     ],
+    item: ['drawSharedPortraitActionRail','getSharedMobilePortraitEditorLayout'],
     doodad: [
       "['menu', 'undo', 'redo', 'context'].map((id) => portraitActionById[id])",
       'drawSharedPortraitActionRail',
@@ -6164,7 +6166,7 @@ test('editor gamepad slide-out panels share the RTG Studio header chrome', () =>
   assert.equal(actorSlideOutBlock.includes('plan.focus?.rootItemId'), true);
   assert.equal(actorEditorSource.includes('renderControllerSubmenuRail(menuId, { plannedFocusById, focusedItemId })'), true);
   assert.equal(actorEditorSource.includes('Boolean(plannedFocusById.get(item.id))'), true);
-  assert.equal(doodadEditorSource.includes("if (gamepad) drawSharedGamepadSlideOutHeader(ctx, bounds, 'Doodad', { hint: headerHint || undefined });"), true);
+  assert.equal(doodadEditorSource.includes("if (gamepad) drawSharedGamepadSlideOutHeader(ctx, bounds, this.editorTitle, { hint: headerHint || undefined });"), true);
   assert.equal(doodadEditorSource.includes('focused: gamepad && Boolean(entry.focused)'), true);
   assert.equal(doodadEditorSource.includes('focused: gamepad && Boolean(item.focused)'), true);
   assert.equal(doodadEditorSource.includes('if (gamepad && entry.focused) drawSharedFocusRing(ctx, buttonBounds);'), true);
@@ -6333,8 +6335,8 @@ test('desktop context panels share the RTG Studio context chrome', () => {
   assert.equal(cutsceneEditorSource.includes("contentRoles: ['document-summary', 'selection-summary', 'contextual-quick-actions', 'transport', 'status']"), false);
   assert.equal(raceEditorSource.includes('`Active: ${this.activeAction || \'None\'}`'), true);
   assert.equal(raceEditorSource.includes('contentRoles: getEditorDesktopLeftContextRoles(this.editorId)'), true);
-  assert.equal(doodadEditorSource.includes("contentRoles: getEditorDesktopLeftContextRoles(DOODAD_EDITOR_ID)"), true);
-  assert.equal(doodadEditorSource.includes("title: 'Doodad'"), true);
+  assert.equal(doodadEditorSource.includes("contentRoles: getEditorDesktopLeftContextRoles(this.editorId)"), true);
+  assert.equal(doodadEditorSource.includes("title: this.editorTitle"), true);
   assert.equal(doodadEditorSource.includes("`Active: ${this.landscapeRootId || this.mobileRootId || 'artwork'}`"), true);
   assert.equal(pixelStudioSource.includes("contentRoles: getEditorDesktopLeftContextRoles('tile')"), true);
   assert.deepEqual(getEditorDesktopLeftContextRoles('pixel'), ['active-tool', 'swatches', 'layers', 'frames']);
