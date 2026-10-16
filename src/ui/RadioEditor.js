@@ -395,7 +395,7 @@ export class RadioEditor extends RaceEditor {
     ctx.save();ctx.fillStyle=UI_SUITE.colors.text;ctx.font=`14px ${UI_SUITE.font.family}`;ctx.textAlign='left';
     const compact=bounds.h<360;
     const title=this.preview.currentTrack?`${this.preview.playing?'Playing':'Paused'}: ${this.preview.currentTrack.title}`:'Station preview';
-    if(!compact)ctx.fillText(title,bounds.x+108,bounds.y+28,Math.max(40,bounds.w-176));
+    if(!compact&&this.activeViewportMode==='desktop')ctx.fillText(title,bounds.x+108,bounds.y+28,Math.max(40,bounds.w-176));
     this.drawMusicTimeline(ctx,bounds,compact);
     ctx.font=`12px ${UI_SUITE.font.family}`;ctx.fillStyle=UI_SUITE.colors.muted;
     ctx.fillText(this.preview.error||this.status,bounds.x+12,bounds.y+(compact?60:130),bounds.w-24);
