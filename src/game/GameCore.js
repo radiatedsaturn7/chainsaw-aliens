@@ -3432,7 +3432,7 @@ export default class Game {
       const racing = this.state === 'race-editor' && this.raceEditor?.playtestSession?.running;
       const inLevel = ['playing', 'pause', 'dialog', 'shop'].includes(this.state);
       const enabled = Boolean(racing ? this.raceEditor.selectedRace?.radioEnabled !== false : inLevel && this.world?.radioEnabled !== false);
-      if (this.radio.contextEnabled !== enabled) this.radio.setContext(enabled);
+      this.radio.setContext(enabled, racing ? this.raceEditor.selectedRace?.radioStationIds : null);
       if (enabled && !this.radio.loading) void this.radio.load();
     }
     if (this.state === 'loading') {

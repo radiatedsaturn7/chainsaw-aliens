@@ -8572,6 +8572,7 @@ export default class RaceEditor {
       this.redoRaceHistory();
       return;
     }
+    if(action==='race-radio'){return this.openRaceRadioSettings().catch(error=>{this.status=error.message;});}
     if (this.shouldCaptureRaceHistory(action)) {
       this.captureRaceHistory(this.getRaceActionLabel(action) || action.replace(/-/g, ' '));
     }
@@ -8927,9 +8928,6 @@ export default class RaceEditor {
       this.enterRaceTriggerMode();
     } else if (action === 'delete-trigger') {
       this.deleteSelectedRaceTrigger();
-    } else if (action === 'race-radio') {
-      this.selectedRace.radioEnabled = this.selectedRace.radioEnabled === false;
-      this.status = `Radio ${this.selectedRace.radioEnabled ? 'on' : 'off'}`;
     } else if (action === 'race-music') {
       this.pickRaceMusic().catch(() => { this.status = 'Music picker failed'; });
     } else if (action === 'race-countdown') {
@@ -9498,6 +9496,32 @@ export default class RaceEditor {
     if (!result) return;
     this.captureRaceHistory('Car category');car.category=result.category;
     this.status=`${rating.class} · ${rating.points} PP · ${result.category}. Save the car to keep its category.`;
+  }
+
+  async openRaceRadioSettings(showForm = openEditorForm) {
+    const race=this.selectedRace;
+    if(!race||this.raceRadioDialogOpen)return;
+    this.raceRadioDialogOpen=true;
+    try {
+      await this.game.radio?.load();
+      const stations=this.game.radio?.library.stations||[];
+      const selected=Array.isArray(race.radioStationIds)?race.radioStationIds:null;
+      const result=await showForm('Race Radio',[
+        {id:'enabled',label:'Radio',value:race.radioEnabled===false?'off':'on',options:[{value:'on',label:'On'},{value:'off',label:'Off'}]},
+        ...stations.map((station,index)=>({id:`station${index}`,label:station.name,type:'checkbox',value:selected===null||selected.includes(station.id)}))
+      ],{applyLabel:'OK',description:stations.length?'Available stations':'No stations yet. Create stations in the Radio Editor.'});
+      if(!result||this.selectedRace!==race)return;
+      const ids=stations.filter((station,index)=>result[`station${index}`]).map(station=>station.id);
+      const next=ids.length===stations.length?null:ids;
+      if((race.radioEnabled!==false)===(result.enabled==='on')&&JSON.stringify(selected)===JSON.stringify(next))return;
+      this.captureRaceHistory('Radio settings');
+      race.radioEnabled=result.enabled==='on';
+      race.radioStationIds=next;
+      this.status=`Radio ${race.radioEnabled?'on':'off'} · ${next===null?'all stations':ids.length+' stations'}. Save the race to keep these settings.`;
+    } finally {
+      this.raceRadioDialogOpen=false;
+      this.game.input?.reset?.();
+    }
   }
 
   async openRaceAiCarSettings() {

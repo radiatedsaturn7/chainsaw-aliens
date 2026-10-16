@@ -109,12 +109,18 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors a 
 
 test('real race mix tape unlocks its track and pause radio obeys the race switch',async({page})=>{
  test.setTimeout(150000);await ready(page);await seedRaceRuntimeFixtures(page);
- await page.evaluate(async()=>{const g=window.__game;await g.radio.saveLibrary({tracks:[{id:'race-song',title:'Race Song',src:'/unused.mp3'}],stations:[{id:'race-station',name:'Race Station',trackIds:['race-song']}]});void g.startRaceTravel({raceName:'Studio Sprint2',carSelection:'specific',carRef:'2022 Subaru WRX2'});});
+ await page.evaluate(async()=>{const g=window.__game;await g.radio.saveLibrary({tracks:[{id:'race-song',title:'Race Song',src:'/unused.mp3'}],stations:[{id:'race-station',name:'Race Station',trackIds:['race-song']},{id:'excluded-station',name:'Excluded Station',trackIds:['race-song']}]});void g.startRaceTravel({raceName:'Studio Sprint2',carSelection:'specific',carRef:'2022 Subaru WRX2'});});
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
  await page.evaluate(()=>{const g=window.__game,e=g.raceEditor,s=e.playtestSession,car=e.getRaceSessionCar(s),points=e.getRaceVehicleCollisionContactPoints({session:s,car,tuning:e.getRaceCarTuning(car)}),point=points[0];e.ensureRaceScenery().push({id:'race-tape',presetId:'doodad',x:point.x,z:point.z,previewDoodad:{itemType:'mix-tape',unlockTrackId:'race-song',widthM:2,heightM:4}});});
  await expect.poll(()=>page.evaluate(()=>Object.keys(window.__game.items.progress.bags.radio))).toContain('race-song');await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.removedSceneryIds)).toContain('race-tape');
  await page.evaluate(()=>window.__game.raceEditor.toggleRacePause());expect(await page.evaluate(()=>window.__game.raceEditor.getRacePauseMenuRows().some(row=>row.id==='race-radio'))).toBe(true);
  await page.evaluate(()=>{const e=window.__game.raceEditor;e.getRacePauseMenuRows().find(row=>row.id==='race-radio').onClick();});await page.screenshot({path:'test-results/radio-race.png'});
+ await page.evaluate(()=>{window.__game.raceEditor.selectedRace.radioStationIds=['race-station'];});
+ await expect.poll(()=>page.evaluate(()=>window.__game.radio.stations.map(s=>s.id))).toEqual(['race-station']);
+ await page.evaluate(()=>{const e=window.__game.raceEditor;e.radioMenu.page='stations';});
+ expect(await page.evaluate(()=>window.__game.raceEditor.getRacePauseMenuRows().map(r=>r.id))).toEqual(['radio-station:race-station','radio-back']);
+ await page.evaluate(()=>{window.__game.raceEditor.selectedRace.radioStationIds=[];});
+ await expect.poll(()=>page.evaluate(()=>window.__game.radio.stations.length)).toBe(0);
  await page.evaluate(()=>{window.__game.raceEditor.selectedRace.radioEnabled=false;});await expect.poll(()=>page.evaluate(()=>window.__game.radio.available)).toBe(false);expect(await page.evaluate(()=>window.__game.raceEditor.getRacePauseMenuRows().some(row=>row.id==='race-radio'))).toBe(false);
 });
 
@@ -160,4 +166,40 @@ for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mod
  await page.screenshot({path:`test-results/radio-shell-${mode}.png`});
  await clickRadio(page,'radio-play');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.playing)).toBe(false);
  await page.evaluate(()=>window.__game.radioEditor.exitToMainMenu());expect(await page.evaluate(()=>window.__game.radioEditor.preview.audio)).toBeNull();expect(errors).toEqual([]);
+});
+
+
+for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} race radio dialog cancels, saves and reloads station choices`,async({page},info)=>{
+ await page.setViewportSize(mobile?{width:390,height:844}:{width:1280,height:800});await ready(page);
+ await page.evaluate(async mobile=>{
+  const g=window.__game;g.deviceIsMobile=mobile;g.isMobile=mobile;g.setViewport({width:innerWidth,height:innerHeight,scale:1,dpr:1,isMobile:mobile});
+  await g.radio.saveLibrary({tracks:[],stations:[{id:'rock',name:'Rock',trackIds:[]},{id:'jazz',name:'Jazz',trackIds:[]}]});
+  g.transitionTo('race-editor');delete g.raceEditor.selectedRace.radioEnabled;delete g.raceEditor.selectedRace.radioStationIds;
+ },mobile);
+ const open=async()=>{await page.evaluate(()=>{void window.__game.raceEditor.handleMenuAction('race-radio');});await expect(dialog(page,'Race Radio')).toBeVisible();};
+ const form=dialog(page,'Race Radio');
+ await open();await expect(form.getByLabel('Radio',{exact:true})).toHaveValue('on');
+ await expect(form.getByLabel('Rock',{exact:true})).toBeChecked();await expect(form.getByLabel('Jazz',{exact:true})).toBeChecked();
+ await form.getByLabel('Radio',{exact:true}).selectOption('off');await form.getByLabel('Jazz',{exact:true}).uncheck();
+ await form.getByRole('button',{name:'Cancel',exact:true}).click();
+ expect(await page.evaluate(()=>window.__game.raceEditor.selectedRace.radioEnabled)).toBeUndefined();
+ expect(await page.evaluate(()=>window.__game.raceEditor.selectedRace.radioStationIds)).toBeUndefined();
+ await open();await expect(form.getByLabel('Jazz',{exact:true})).toBeChecked();
+ await form.getByLabel('Radio',{exact:true}).selectOption('off');await form.getByLabel('Jazz',{exact:true}).uncheck();
+ await page.screenshot({path:`test-results/radio-race-settings-${mobile?'portrait':'desktop'}.png`});
+ await form.getByRole('button',{name:'OK',exact:true}).click();
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.selectedRace.radioStationIds)).toEqual(['rock']);
+ expect(await page.evaluate(()=>window.__game.raceEditor.selectedRace.radioEnabled)).toBe(false);
+ await page.evaluate(async name=>{
+  const e=window.__game.raceEditor,{saveProjectFileAndConfirm,loadProjectFile}=await import('/src/ui/projectFiles.js');
+  await saveProjectFileAndConfirm('races',name,e.serializeSelectedRaceDocument());
+  e.selectedRace.radioEnabled=true;e.selectedRace.radioStationIds=null;
+  const saved=loadProjectFile('races',name);if(!e.applyLoadedRaceDocument(saved.data,{name}))throw Error('Race did not reload');
+ },`Radio Settings ${info.workerIndex} ${mobile}`);
+ await open();await expect(form.getByLabel('Radio',{exact:true})).toHaveValue('off');
+ await expect(form.getByLabel('Rock',{exact:true})).toBeChecked();await expect(form.getByLabel('Jazz',{exact:true})).not.toBeChecked();
+ await form.getByLabel('Radio',{exact:true}).selectOption('on');await form.getByLabel('Jazz',{exact:true}).check();
+ await form.getByRole('button',{name:'OK',exact:true}).click();
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.selectedRace.radioEnabled)).toBe(true);
+ expect(await page.evaluate(()=>window.__game.raceEditor.selectedRace.radioStationIds)).toBeNull();
 });

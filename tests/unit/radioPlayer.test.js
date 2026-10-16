@@ -75,3 +75,38 @@ test('pause cancels a pending station switch resume',async()=>{
  let resolveSave;player.savePreference=()=>new Promise(resolve=>{resolveSave=resolve;});const pending=player.selectStation('second');await new Promise(resolve=>setTimeout(resolve,0));player.pause();resolveSave({ok:true});await pending;assert.equal(player.playing,false);assert.equal(player.audio,null);
 });
 test('rewind before starting selects the final eligible track',async()=>{const {player}=fixture({unlocked:['a','c']});await player.load();player.setContext(true);await player.rewind();assert.equal(player.trackId,'c');});
+
+test('race station restrictions filter menu/playback and restore global preferences when leaving',async()=>{
+ const {player}=fixture({stationId:'station'});await player.load();
+ player.library.stations.push({id:'other',name:'Other',trackIds:['b']});
+ player.setContext(true);await player.play();const progress=structuredClone(player.progress);
+ player.setContext(true,['other']);assert.equal(player.audio,null);assert.equal(player.stationId,'other');
+ assert.deepEqual(player.stations.map(s=>s.id),['other']);
+ const menu=new RadioMenu(player);menu.page='stations';
+ assert.deepEqual(menu.rows().map(row=>row.id),['radio-station:other','radio-back']);
+ await player.selectStation('station');assert.equal(player.stationId,'other');assert.deepEqual(player.progress,progress);
+ await player.play();assert.equal(player.trackId,'b');
+ player.setContext(true,[]);assert.equal(player.playing,false);assert.equal(player.stationId,'');assert.equal(await player.play(),false);
+ player.setContext(true);assert.equal(player.stationId,'station');assert.equal(player.stations.length,2);
+ assert.deepEqual(player.progress,progress);
+});
+
+test('race radio dialog defaults to all, cancels atomically, saves selections and supports undo',async()=>{
+ const {player}=fixture();await player.load();player.library.stations.push({id:'other',name:'Other',trackIds:['b']});
+ const e=new RaceEditor({radio:player,input:{reset(){}}});
+ const before=structuredClone(e.selectedRace);let fields;
+ await e.openRaceRadioSettings(async(title,rows,options)=>{fields=rows;assert.equal(title,'Race Radio');assert.equal(options.applyLabel,'OK');return null;});
+ assert.equal(fields[0].value,'on');assert.ok(fields.slice(1).every(f=>f.value===true));
+ assert.deepEqual(e.selectedRace,before);
+ await e.openRaceRadioSettings(async()=>({enabled:'off',station0:false,station1:true}));
+ assert.equal(e.selectedRace.radioEnabled,false);assert.deepEqual(e.selectedRace.radioStationIds,['other']);
+ const loaded=e.normalizeLoadedRaceDocument(e.serializeSelectedRaceDocument());
+ assert.equal(loaded.radioEnabled,false);assert.deepEqual(loaded.radioStationIds,['other']);
+ await e.openRaceRadioSettings(async(title,rows)=>{assert.equal(rows[1].value,false);assert.equal(rows[2].value,true);return null;});
+ e.undoRaceHistory();assert.equal(e.selectedRace.radioEnabled,before.radioEnabled);assert.equal(e.selectedRace.radioStationIds,undefined);
+ e.redoRaceHistory();assert.deepEqual(e.selectedRace.radioStationIds,['other']);
+ await e.openRaceRadioSettings(async()=>({enabled:'on',station0:false,station1:false}));
+ assert.deepEqual(e.selectedRace.radioStationIds,[]);
+ await e.openRaceRadioSettings(async()=>({enabled:'on',station0:true,station1:true}));
+ assert.equal(e.selectedRace.radioStationIds,null);
+});

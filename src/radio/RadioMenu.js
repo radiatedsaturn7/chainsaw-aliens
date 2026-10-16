@@ -12,8 +12,8 @@ export class RadioMenu {
   rows() {
     const radio=this.radio;
     const back={id:'radio-back',label:'Back',onClick:()=>{if(this.page==='main')this.onBack();else this.page='main';}};
-    if(this.page==='stations')return this.paged(radio.library.stations.map(station=>({id:`radio-station:${station.id}`,label:`${radio.stationId===station.id?'✓ ':''}${station.name}`,onClick:()=>this.run(()=>radio.selectStation(station.id))})),back);
-    if(this.page==='tracks')return this.paged(radio.library.tracks.filter(track=>radio.ownsTrack?radio.ownsTrack(track):track.initiallyUnlocked||radio.progress.unlocked.includes(track.id)).map(track=>({id:`radio-track:${track.id}`,label:`${radio.progress.disabled.includes(track.id)?'Off':'On'}: ${track.title}${track.artist?' — '+track.artist:''}`,onClick:()=>this.run(()=>radio.setTrackEnabled(track.id,radio.progress.disabled.includes(track.id)))})),back);
+    if(this.page==='stations')return this.paged(radio.stations.map(station=>({id:`radio-station:${station.id}`,label:`${radio.stationId===station.id?'✓ ':''}${station.name}`,onClick:()=>this.run(()=>radio.selectStation(station.id))})),back);
+    if(this.page==='tracks')return this.paged(radio.library.tracks.filter(track=>radio.contextStationIds===null||radio.stations.some(station=>station.trackIds.includes(track.id))).filter(track=>radio.ownsTrack?radio.ownsTrack(track):track.initiallyUnlocked||radio.progress.unlocked.includes(track.id)).map(track=>({id:`radio-track:${track.id}`,label:`${radio.progress.disabled.includes(track.id)?'Off':'On'}: ${track.title}${track.artist?' — '+track.artist:''}`,onClick:()=>this.run(()=>radio.setTrackEnabled(track.id,radio.progress.disabled.includes(track.id)))})),back);
     const track=radio.currentTrack,station=radio.library.stations.find(s=>s.id===radio.stationId);
     return [
       {id:'radio-stations',label:`Station: ${station?.name||'None'}`,onClick:()=>{this.page='stations';this.offset=0;}},

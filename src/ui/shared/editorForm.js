@@ -1,5 +1,5 @@
 // Small accessible form shared by editors for numeric and named options.
-export function openEditorForm(title,fields,{description=''}={}){
+export function openEditorForm(title,fields,{description='',applyLabel='Apply'}={}){
   if(typeof document==='undefined')return Promise.resolve(null);
   return new Promise(resolve=>{
     const focus=document.activeElement,dialog=document.createElement('dialog'),form=document.createElement('form');
@@ -17,6 +17,7 @@ export function openEditorForm(title,fields,{description=''}={}){
       else{input.type=field.type||'number';if(input.type==='number')input.step=field.step||'any';}
       if(field.suggestions&&!field.options){const list=document.createElement('datalist');list.id=`editor-options-${field.id}-${Math.random().toString(36).slice(2)}`;for(const value of field.suggestions){const option=document.createElement('option');option.value=value;list.appendChild(option)}input.setAttribute('list',list.id);form.appendChild(list);}
       input.value=field.value??'';
+      if(field.type==='checkbox'){input.checked=Boolean(field.value);input.style.cssText='width:24px;height:24px;min-height:24px;vertical-align:middle;margin-left:12px';}
       if(field.type==='color'){
         // Native color controls require RGB hex; preserve an existing CSS/alpha
         // color when the user opens Properties without changing this field.
@@ -25,9 +26,9 @@ export function openEditorForm(title,fields,{description=''}={}){
         input.value='#'+Array.from(rgba.slice(0,3),n=>n.toString(16).padStart(2,'0')).join('');
         input.addEventListener('input',()=>{input.dataset.colorChanged='true';});
       }
-      if(field.min!==undefined)input.min=field.min;if(field.max!==undefined)input.max=field.max;input.required=field.required??!(Array.isArray(field.options)&&field.options.some(option=>(option.value??option)===''));label.appendChild(input);form.appendChild(label);inputs[field.id]={input,field,label};
+      if(field.min!==undefined)input.min=field.min;if(field.max!==undefined)input.max=field.max;input.required=field.type==='checkbox'?false:field.required??!(Array.isArray(field.options)&&field.options.some(option=>(option.value??option)===''));label.appendChild(input);form.appendChild(label);inputs[field.id]={input,field,label};
     }
-    const values=()=>Object.fromEntries(Object.entries(inputs).map(([id,{input}])=>[id,input.value]));
+    const values=()=>Object.fromEntries(Object.entries(inputs).map(([id,{input,field}])=>[id,field.type==='checkbox'?input.checked:input.value]));
     const refresh=()=>{
       for(const {input,field,label} of Object.values(inputs)){
         const state=values();
@@ -46,8 +47,8 @@ export function openEditorForm(title,fields,{description=''}={}){
     refresh();
     const close=value=>{dialog.close();dialog.remove();focus?.focus?.();resolve(value);};
     const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';cancel.onclick=()=>close(null);
-    const apply=document.createElement('button');apply.type='submit';apply.textContent='Apply';for(const b of [cancel,apply]){b.style.cssText='min-height:44px;padding:8px 20px;margin:12px 8px 0 0';form.appendChild(b);}
-    form.onsubmit=event=>{event.preventDefault();close(Object.fromEntries(Object.entries(inputs).map(([id,{input,field}])=>[id,!field.options&&(field.type||'number')==='number'?Number(input.value):field.type==='color'&&!input.dataset.colorChanged?field.value:input.value])));};
+    const apply=document.createElement('button');apply.type='submit';apply.textContent=applyLabel;for(const b of [cancel,apply]){b.style.cssText='min-height:44px;padding:8px 20px;margin:12px 8px 0 0';form.appendChild(b);}
+    form.onsubmit=event=>{event.preventDefault();close(Object.fromEntries(Object.entries(inputs).map(([id,{input,field}])=>[id,field.type==='checkbox'?input.checked:!field.options&&(field.type||'number')==='number'?Number(input.value):field.type==='color'&&!input.dataset.colorChanged?field.value:input.value])));};
     dialog.oncancel=event=>{event.preventDefault();close(null);};for(const name of ['keydown','keyup'])dialog.addEventListener(name,e=>e.stopPropagation());
     dialog.appendChild(form);document.body.appendChild(dialog);dialog.showModal();
     // A canvas pointer-down can open this before the browser finishes focusing
