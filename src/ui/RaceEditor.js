@@ -17089,11 +17089,11 @@ export default class RaceEditor {
     });
   }
 
-  updateRaceTireAudio({ slip = 0, surface = 'asphalt', speedMps = 0 } = {}) {
+  updateRaceTireAudio({ slip = 0, surface = 'asphalt', speedMps = 0, slipSpeedMps = 0 } = {}) {
     const session = this.playtestSession;
     if (!session || !this.game?.audio?.setTireScreech) return;
     const amount = clamp(Number(slip) || 0, 0, 1);
-    if (amount <= 0.02 || Math.abs(Number(speedMps) || 0) < 0.45) {
+    if (amount <= 0.02 || Math.max(Math.abs(Number(speedMps) || 0),Number(slipSpeedMps)||0) < 0.45) {
       this.game.audio.setTireScreech(false);
       return;
     }

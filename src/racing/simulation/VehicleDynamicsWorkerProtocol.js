@@ -7,7 +7,7 @@ import {
 
 export { VEHICLE_RENDER_WHEEL_FLAGS } from './VehicleRenderState.js';
 
-export const VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION = 7;
+export const VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION = 8;
 export const VEHICLE_RENDER_SNAPSHOT_HEADER_WORDS = 6;
 export const VEHICLE_RENDER_SNAPSHOT_FLOATS = 201;
 export const VEHICLE_RENDER_IMPACT_EVENT_CAPACITY = 4;
@@ -108,7 +108,7 @@ export const VEHICLE_RENDER_WHEEL_FLOAT = Object.freeze({
   lateralForceN: 23,
   selfAligningMomentNm: 24,
   flags: 25,
-  reserved: 26
+  longitudinalSlipSpeedMps: 26
 });
 
 export function createVehicleRenderSnapshotBuffer({ shared = false } = {}) {
@@ -390,6 +390,7 @@ export function writeVehicleRenderSnapshot(buffer, snapshot = {}) {
     values[offset + VEHICLE_RENDER_WHEEL_FLOAT.lateralForceN] = finite(pose.lateralForceN);
     values[offset + VEHICLE_RENDER_WHEEL_FLOAT.selfAligningMomentNm] = finite(pose.selfAligningMomentNm);
     values[offset + VEHICLE_RENDER_WHEEL_FLOAT.flags] = finite(pose.flags);
+    values[offset + VEHICLE_RENDER_WHEEL_FLOAT.longitudinalSlipSpeedMps] = finite(pose.longitudinalSlipSpeedMps);
     offset += VEHICLE_RENDER_WHEEL_STRIDE;
   }
   for (let index = 0; index < RACE_WHEEL_IDS.length; index += 1) {
@@ -478,6 +479,7 @@ export function readVehicleRenderSnapshot(buffer) {
       steeringAngleRad: values[offset + VEHICLE_RENDER_WHEEL_FLOAT.steeringAngleRad],
       lateralForceN: values[offset + VEHICLE_RENDER_WHEEL_FLOAT.lateralForceN],
       selfAligningMomentNm: values[offset + VEHICLE_RENDER_WHEEL_FLOAT.selfAligningMomentNm],
+      longitudinalSlipSpeedMps: values[offset + VEHICLE_RENDER_WHEEL_FLOAT.longitudinalSlipSpeedMps],
       flags,
       validTreadContact: (flags & VEHICLE_RENDER_WHEEL_FLAGS.validTreadContact) !== 0,
       geometricContact: (flags & VEHICLE_RENDER_WHEEL_FLAGS.geometricContact) !== 0,
@@ -688,6 +690,7 @@ export function interpolateVehicleRenderSnapshots(previous, latest, renderTimeSe
       gripCoefficient: lerp(leftWheel.gripCoefficient, rightWheel.gripCoefficient, alpha),
       lateralForceN: lerp(leftWheel.lateralForceN, rightWheel.lateralForceN, alpha),
       selfAligningMomentNm: lerp(leftWheel.selfAligningMomentNm, rightWheel.selfAligningMomentNm, alpha),
+      longitudinalSlipSpeedMps: lerp(leftWheel.longitudinalSlipSpeedMps, rightWheel.longitudinalSlipSpeedMps, alpha),
       flags: rightWheel.flags,
       validTreadContact: rightWheel.validTreadContact,
       geometricContact: rightWheel.geometricContact,

@@ -429,7 +429,7 @@ export class PowertrainModel {
         tuning.gearFinalDrive ?? tuning.finalDrive ?? 1
       )));
       const projectedRpm = (candidateGear) => {
-        const ratio = Math.abs(Number(this.getGearRatio(tuning, candidateGear)) || 0);
+        const ratio = Math.abs(Number(this.getGearRatio({ ...tuning, gearRatios: ratios }, candidateGear)) || 0);
         return averageDrivenOmega * ratio * finalDriveForShift * 60 / (Math.PI * 2);
       };
       const currentRpm = Number(previous.engineRpm ?? state.engineRpm ?? idleRpm);
@@ -437,12 +437,15 @@ export class PowertrainModel {
       const downshiftRpm = clamp(Number(tuning.autoDownshiftRpm || maxRpm * 0.34), idleRpm * 1.1, upshiftRpm - 400);
       const throttle = clamp(Number(controls.throttle || 0), 0, 1);
       const brake = clamp(Number(controls.brake || 0), 0, 1);
-      const forwardSpeed = Number(state.bodyLongitudinalSpeedMps || 0);
+      // Converter slip can keep engine RPM high after the car slows to a stop.
+      // Use shaft speed as well so an automatic cannot remain stuck in a tall
+      // gear. The lower-gear RPM guard still prevents wheelspin over-rev shifts.
+      const downshiftReferenceRpm = Math.min(currentRpm, projectedRpm(gear));
       if (gear < ratios.length && currentRpm >= upshiftRpm
         && projectedRpm(gear + 1) >= idleRpm * (1.15 + throttle * 0.25)) {
         requestedGear = gear + 1;
       } else if (gear > 1
-        && (currentRpm <= downshiftRpm || brake > 0.2)
+        && (downshiftReferenceRpm <= downshiftRpm || brake > 0.2)
         && projectedRpm(gear - 1) <= maxRpm * 0.94) {
         requestedGear = gear - 1;
       } else {

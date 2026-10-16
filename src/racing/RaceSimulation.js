@@ -1,3 +1,4 @@
+import { getWheelSlipPresentation } from './simulation/WheelSlipPresentation.js';
 import { roadEdgeOverlapsRoad } from './RaceRoadEdgeClearance.js';
 import { RACE_WHEEL_IDS, clamp, normalizeAngle } from './simulation/SimulationMath.js';
 import { getSurfaceById } from './raceData.js';
@@ -4072,11 +4073,13 @@ export function updateRaceSimulation({
     0.58
   );
   editor.playtestSession.roadViewOffset += (trackViewTarget - Number(editor.playtestSession.roadViewOffset || 0)) * Math.min(1, seconds * 3.2);
+  const physicalTirePresentation=getWheelSlipPresentation(presentationState,editor.playtestSession.vehicleRenderProfile?.wheelRadiusM??tuning.wheelRadiusM);
   const authoritativeEngineRpm = Number(editor.playtestSession.engineRpm || diagnosticEngineRpm);
   editor.playtestSession.rpm = clamp(authoritativeEngineRpm / tuning.revLimitRpm, 0, 1.08);
   editor.updateRaceEngineAudio({ tuning, throttle: engineThrottle, load: relaxedWheelSpinRatio });
   editor.updateRaceTireAudio({
-    slip: audibleSlip,
+    slip: physicalTirePresentation.audibleSlip,
+    slipSpeedMps: physicalTirePresentation.slipSpeedMps,
     surface: segmentInfo.segment?.surface,
     speedMps: absSpeed
   });
@@ -4138,7 +4141,8 @@ export function updateRaceSimulation({
     wheelSpin: relaxedWheelSpinRatio,
     wheelSpinByWheel: contactWheelSpinRatioByWheel,
     wheelContactScaleByWheel,
-    speedMps: absSpeed
+    speedMps: absSpeed,
+    ...physicalTirePresentation
   };
   if (!countdownActive) {
     editor.updateRaceTireTracks(tireFxContext);

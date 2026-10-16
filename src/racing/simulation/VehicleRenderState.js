@@ -121,6 +121,7 @@ export function reconstructVehicleRenderState(state = {}) {
       gripCoefficient: pose.gripCoefficient,
       steeringAngleRad: pose.steeringAngleRad,
       lateralForceN: pose.lateralForceN,
+      longitudinalSlipSpeedMps: pose.longitudinalSlipSpeedMps,
       selfAligningMomentNm: pose.selfAligningMomentNm,
       validTreadContact: pose.validTreadContact,
       geometricContact: pose.geometricContact,
@@ -269,6 +270,9 @@ export function createVehicleRenderStateFromRunner(runner, {
       ),
       spinAngleRad: finite(runner?.renderWheelSpinAngles?.[wheelId]),
       wheelAngularVelocityRadps: finite(state.wheelAngularVelocityRadps?.[wheelId]),
+      longitudinalSlipSpeedMps: finite(state.wheelAngularVelocityRadps?.[wheelId])
+        * Math.max(.05, finite(patch.effectiveRollingRadiusM, config.wheelRadiusM || .337))
+        - finite(patch.longitudinalVelocityMps),
       normalLoadN,
       gripCoefficient: finite(patch.gripCoefficient, 1),
       lateralForceN: finite(patch.lateralForceN),
