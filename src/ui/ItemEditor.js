@@ -195,8 +195,15 @@ export default class ItemEditor extends DoodadEditor {
     drawSharedPanel(ctx,bounds,{fill:UI_SUITE.colors.panel,border:UI_SUITE.colors.border});
     const listBounds={x:bounds.x,y:bounds.y,w:bounds.w,h:Math.max(36,bounds.h-40)};
     this.effectListBounds=listBounds;
-    this.drawActionRows(ctx,listBounds,this.doodad.effects.map((effect,index)=>({id:`effect:${index}`,label:this.effectLabel(effect),active:index===this.selectedEffect,onClick:()=>{this.selectedEffect=index;}})));
-    const handlers=this.getDesktopActionHandlers();
+    const handlers=this.getDesktopActionHandlers(),part=this.doodad.carPart;
+    const rows=this.doodad.effects.map((effect,index)=>({id:`effect:${index}`,label:this.effectLabel(effect),active:index===this.selectedEffect,onClick:()=>{this.selectedEffect=index;}}));
+    if(part)rows.push(...[
+      ['item-part',`Part: ${part.slot} · ${part.price} credits`],
+      ['item-part-changes',`${part.modifiers.length} stat changes`],
+      ['item-part-tuning',`${part.tuning.length} tuning settings unlocked`],
+      ['item-part-curve',`${part.torqueCurve.length} torque curve points`]
+    ].map(([id,label])=>({id:`summary:${id}`,label,onClick:handlers[id]})));
+    this.drawActionRows(ctx,listBounds,rows);
     ['item-effect-add','item-effect-edit','item-effect-delete'].forEach((id,i)=>this.registerButton(ctx,{x:bounds.x+6+i*(bounds.w-12)/3,y:bounds.y+bounds.h-34,w:(bounds.w-12)/3-4,h:28},{id,label:['+ Effect','Edit','Remove'][i],onClick:handlers[id]}));
   }
   drawLandscapeSubmenu(ctx,bounds,{items=null,...options}={}) {

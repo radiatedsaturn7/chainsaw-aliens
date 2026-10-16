@@ -7,13 +7,14 @@ export const GARAGE_ACTION_LABELS={
 };
 export async function runGarageAction(garage,type,partRef,parameters,{resolveCar}={}){
  const ref=parameters.carRef;
- if(type==='garage-buy')return garage.purchase(partRef);
+ const selectedPart=()=>partRef?.startsWith('owned:')?Promise.resolve(garage.progress.parts[partRef.slice(6)]):garage.items.library.load(partRef);
+ if(type==='garage-buy'){if(partRef?.startsWith('owned:'))throw Error('This part is no longer in the shop');return garage.purchase(partRef);}
  if(!ref)throw Error('Choose a car first');
  if(type==='garage-install'){
-  const item=await garage.items.library.load(partRef);return garage.equip(ref,item.id);
+  const item=await selectedPart();if(!item)throw Error('Part unavailable');return garage.equip(ref,item.id);
  }
  if(type==='garage-remove'){
-  const item=await garage.items.library.load(partRef);
+  const item=await selectedPart();if(!item)throw Error('Part unavailable');
   if(garage.configuration(ref).installed[item.carPart?.slot]!==item.id)throw Error('This part is not installed');
   return garage.remove(ref,item.carPart.slot);
  }

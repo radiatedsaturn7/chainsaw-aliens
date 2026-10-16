@@ -97,6 +97,12 @@ export async function setupWidget(editor){
 export async function setupDataWidget(editor){
   const e=editor.element;
   const result=await openEditorForm(`${widgetLabel(e.type)} Source`,[select('dataSource','Data source',e.dataSource,MENU_DATA_SOURCES),text('binding','Selected object parameter',e.binding,{suggestions:parameterNames(editor)})],{description:'Use the same parameter as a Selection List, or choose a fixed saved object in the next step. For custom items, the parameter holds a JSON object such as {"name":"Sword","damage":12,"artRef":"Sword Art"}.'});if(!result)return;
+  if(result.dataSource==='garage'){
+    await editor.resources.prepareGarage();
+    const fields=[text('label','Label',e.label)];
+    if(e.type==='property-display')fields.push(select('property','Garage property',e.property==='name'?'partStatus':e.property,[{value:'partStatus',label:'Part status'},{value:'credits',label:'Credits'},{value:'owned',label:'Copies owned'},{value:'installed',label:'Installed'},{value:'price',label:'Price'},{value:'name',label:'Part name'}]));
+    const details=await openEditorForm('Garage Display',fields);if(details)editor.change(()=>Object.assign(editor.element,result,details,{assetRef:'',...(e.type==='asset-preview'?{property:'artRef'}:{})}));return;
+  }
   const fields=[text('label','Label',e.label)];
   if(result.dataSource!=='parameters')fields.push(select('assetRef','Fixed object',e.assetRef,fileOptions(result.dataSource)));
   const fixed=await openEditorForm('Choose Object',fields);if(!fixed)return;

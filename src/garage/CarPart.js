@@ -53,7 +53,7 @@ function curveMultiplier(points,rpm){
  if(upper===0)return points[0].multiplier;if(upper<0)return points.at(-1).multiplier;
  const a=points[upper-1],b=points[upper],t=(rpm-a.rpm)/(b.rpm-a.rpm||1);return a.multiplier+(b.multiplier-a.multiplier)*t;
 }
-function scaleTorque(tuning,fn){
+function scaleTorque(tuning,fn,rpms=[]){
  tuning.garageEngineCurve=true;
  if(!tuning.engineCurve?.torquePoints?.length){
   const source={idleRpm:850,revLimitRpm:6500,torquePeakStartRpm:2200,torquePeakEndRpm:5200,torqueFalloffRpm:6500,torqueLbFt:258,...tuning};
@@ -63,7 +63,13 @@ function scaleTorque(tuning,fn){
   tuning.engineCurve={rpmMin:source.idleRpm,rpmMax:source.revLimitRpm,torquePoints:points};
  }
  if(tuning.engineCurve?.torquePoints?.length){
-  const points=tuning.engineCurve.torquePoints;
+  let points=tuning.engineCurve.torquePoints;
+  if(rpms.length){
+   const engine=new PowertrainModel(),lo=points[0].rpm,hi=points.at(-1).rpm;
+   const samples=[...new Set([...points.map(p=>p.rpm),...rpms.filter(r=>r>=lo&&r<=hi)])].sort((a,b)=>a-b);
+   points=samples.map(rpm=>({rpm,torqueLbFt:engine.getTorqueNmAtRpm(rpm,tuning)/1.35582}));
+   tuning.engineCurve.torquePoints=points;
+  }
   for(const point of points)point.torqueLbFt=Math.max(0,point.torqueLbFt*fn(point.rpm));
   tuning.torqueLbFt=Math.max(...points.map(p=>p.torqueLbFt));
   tuning.powerHp=Math.max(...points.map(p=>p.torqueLbFt*p.rpm/5252));
@@ -114,7 +120,7 @@ export function buildGarageCar(stock,{parts=[],tune={},tires={}}={}){
   const part=normalizeCarPart(item.carPart);
   if(part.tireRef){if(!tires[part.tireRef])throw Error(`Tire unavailable: ${part.tireRef}`);applyTireDefinition(car,tires[part.tireRef],part.tireRef);}
   for(const change of part.modifiers)changeSetting(car,change);
-  if(part.torqueCurve.length)scaleTorque(car.tuning,rpm=>curveMultiplier(part.torqueCurve,rpm));
+  if(part.torqueCurve.length)scaleTorque(car.tuning,rpm=>curveMultiplier(part.torqueCurve,rpm),part.torqueCurve.map(p=>p.rpm));
  }
  const ranges=garageTuningRanges(installed);
  for(const [id,value] of Object.entries(tune)){

@@ -31,6 +31,8 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} item file 
  await dialog(page,'Item Properties').getByLabel('Name',{exact:true}).fill(name);
  await dialog(page,'Item Properties').getByLabel('Level width (pixels)',{exact:true}).fill('48');await apply(page,'Item Properties');
  await action(page,'item-art');await page.locator(`.project-browser-row[data-name="${name}"]`).getByRole('button',{name:'Open',exact:true}).click();
+ await expect.poll(()=>page.evaluate(()=>window.__game.itemEditor.doodad.widthPx)).toBe(8);
+ await action(page,'item-properties');await dialog(page,'Item Properties').getByLabel('Level width (pixels)',{exact:true}).fill('48');await apply(page,'Item Properties');
  for(const [type,target,amount] of [['key','red',1],['max-health','',2],['armor','',3],['device','scanner',1],['unlock','garage',1]]){
   await clickItem(page,'item-effect-add');await dialog(page,'Add Item Effect').getByLabel('Effect',{exact:true}).selectOption(type);
   if(target)await dialog(page,'Add Item Effect').getByLabel({key:'Key',device:'Device',unlock:'Unlock'}[type],{exact:true}).selectOption(target);

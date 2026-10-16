@@ -132,3 +132,16 @@ test('top preview button ends playback and restores authoring even while loading
   assert.equal(game.storyData.name,'Authoring');assert.deepEqual(calls.at(-1),['state','menu-editor']);
  }
 });
+
+test('garage authoring preview cannot spend or install parts in real player progress',async()=>{
+ const {ItemSystem}=await import('../../src/items/ItemSystem.js');
+ const {normalizeItemDocument}=await import('../../src/items/ItemDocument.js');
+ const {player,game}=fixture();game.player={credits:1000};game.abilities={};let writes=0;
+ const part=normalizeItemDocument({id:'test-ecu',name:'Test ECU',carPart:{slot:'ecu',price:200}});
+ game.items=new ItemSystem(game,{load:async()=>({}),save:async()=>{writes++;return {ok:true};},library:{load:async()=>part}});
+ await player.open(createMenuDocument(),{preview:true});
+ await player.resources.garage.purchase('Test ECU');await player.resources.garage.equip('WRX','test-ecu');
+ assert.equal(player.resources.garage.items.game.player.credits,800);
+ assert.equal(game.player.credits,1000);assert.equal(writes,0);assert.deepEqual(game.items.progress.garage.cars,{});
+ player.flow.stop();assert.equal(game.items.progress.bags.items['test-ecu'],undefined);
+});

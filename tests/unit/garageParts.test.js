@@ -88,3 +88,25 @@ test('menu garage actions use authored targets and selection configuration',asyn
  assert.equal(calls[0][1],'Custom ECU');assert.equal(calls[1][2].carRef,'WRX');
  assert.ok(flow.document.screens.find(s=>s.id==='garage').elements.some(e=>e.type==='car-stats'));
 });
+test('an authored boost peak between stock curve points survives into the runtime curve',()=>{
+ const car=stock();const modified=buildGarageCar(car,{parts:[part('turbo',{torqueCurve:[{rpm:1000,multiplier:1},{rpm:2500,multiplier:2},{rpm:4000,multiplier:1}]})]});
+ const editor=new RaceEditor({}),tuning=editor.getRaceCarTuning(modified);
+ assert.equal(editor.getRaceTorqueNmAtRpm(2500,tuning),300*1.35582);
+ assert.equal(editor.getRaceTorqueNmAtRpm(4000,tuning),200*1.35582);
+});
+
+test('race travel uses garage copies and reapplies from stock on a chained race',async()=>{
+ globalThis.window ||= {location:{search:''}};
+ const {default:Game}=await import('../../src/game/GameCore.js');
+ const game=Object.create(Game.prototype),car=stock(),starts=[];
+ Object.assign(game,{player:{credits:1000},abilities:{},state:'title',ensureActiveWeaponAvailable(){},showSystemToast:message=>{throw Error(message);},setRevAudio(){},prepareRacePlaytestAudio:async()=>true,captureRaceTravelPlayerState:()=>({}),transitionTo(state){this.state=state;},resolveRaceTravelCarAsync:async()=>({id:car.id,name:'Test car',car})});
+ const turbo=part('turbo',{modifiers:[{field:'torqueScale',operation:'multiply',value:1.2}]});
+ game.items=new ItemSystem(game,{load:async()=>({}),save:async()=>({ok:true}),library:{load:async()=>turbo}});
+ await game.items.garage.purchase('turbo');await game.items.garage.equip('Test car','turbo');
+ game.raceEditor={collectRaceCarArtRefs:()=>[],loadRaceTravelDocument:async()=>({id:'test',name:'Test Race'}),applyLoadedRaceDocument:()=>true,startPlaytest(id,options){starts.push(options.runtimeCarOverrides);this.playtestSession={running:true};}};
+ assert.equal(await game.startRaceTravel({raceName:'First',carSelection:'specific',carRef:'Test car'}),true);
+ assert.equal(await game.startRaceTravel({raceName:'Second',continuation:game.raceTravelSession}),true);
+ assert.equal(starts[0].tuning.engineCurve.torquePoints[1].torqueLbFt,240);
+ assert.equal(starts[1].tuning.engineCurve.torquePoints[1].torqueLbFt,240);
+ assert.equal(car.tuning.engineCurve.torquePoints[1].torqueLbFt,200);assert.notEqual(starts[0],car);
+});

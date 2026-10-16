@@ -47,7 +47,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors, p
  expect(result.unchanged).toBe(true);expect(result.drive).toBe(3.4);expect(result.credits).toBe(4750);expect(result.power).toBeGreaterThan(result.stockPower);
  if(!mobile){
   await seedRaceRuntimeFixtures(page);
-  await page.evaluate(({carRef})=>{void window.__game.startRaceTravel({raceName:'Studio Sprint2',carSelection:'specific',carRef});},{carRef});
+  await page.evaluate(()=>{const p=window.__game.menuPlayer;void p.launchRace('Studio Sprint2',p.flow.parameters);});
   await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
   expect(await page.evaluate(()=>{const e=window.__game.raceEditor,c=e.getRaceSessionCar(e.playtestSession);return e.getRaceCarTuning(c).finalDrive;})).toBe(3.4);
   await page.evaluate(()=>window.__game.returnRaceTravelToOrigin());await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-player');

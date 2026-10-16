@@ -1,3 +1,4 @@
+import {partFits} from '../garage/CarPart.js';
 import {itemLibrary} from '../items/ItemLibrary.js';
 import {safeProperty} from './MenuWidgets.js';
 import {MenuCarPreview} from './MenuCarPreview.js';
@@ -12,10 +13,14 @@ export class MenuResources {
     const entries=await itemLibrary.list();
     this.partCatalog=(await Promise.all(entries.map(async e=>{try{return {ref:e.name,item:await itemLibrary.load(e.name)};}catch{return null;}}))).filter(e=>e?.item.carPart);
   }
+  garageCatalog(){
+    const owned=this.garage?.owned()||[];
+    return [...this.partCatalog,...owned.filter(item=>!this.partCatalog.some(e=>e.item.id===item.id)).map(item=>({ref:'owned:'+item.id,item}))];
+  }
   choices(source,document,parameters={}){
     if(source==='garage-parts'){
       if(!this.partCatalog.length)this.request('garage-catalog',()=>this.prepareGarage());
-      return this.partCatalog.filter(({item})=>item.carPart.forSale||this.garage?.items.progress.bags.items[item.id]>0).map(({ref,item})=>({value:ref,label:item.name}));
+      return this.garageCatalog().filter(({item})=>item.carPart.forSale||this.garage?.items.progress.bags.items[item.id]>0).map(({ref,item})=>({value:ref,label:item.name}));
     }
     const folder={cars:'cars',races:'races',levels:'levels',movies:'cutscenes',actors:'actors',doodads:'doodads'}[source];
     return folder?listProjectFiles(folder).map(f=>({label:f.name,value:f.name})):[];
@@ -39,13 +44,13 @@ export class MenuResources {
   }
   asset(source,ref,parameters={}){
     if(source==='garage'){
-      const garage=this.garage,entry=this.partCatalog.find(e=>e.ref===ref),item=entry?.item;
+      const garage=this.garage,entry=this.garageCatalog().find(e=>e.ref===ref),item=entry?.item;
       if(!garage)return null;
       const owned=Number(garage.items.progress.bags.items[item?.id])||0;
       const installed=!!item&&garage.configuration(parameters.carRef).installed[item.carPart.slot]===item.id;
       const locked=!!item?.carPart.unlockKey&&!garage.items.progress.unlocks[item.carPart.unlockKey];
       const credits=Number(garage.items.game.player?.credits??garage.items.savedStats?.credits)||0;
-      return {credits,owned,installed,price:item?.carPart.price||0,partStatus:item?`${installed?'Installed · ':''}${locked?'Locked · ':''}Owned: ${owned} · Price: ${item.carPart.price} · Credits: ${credits}`:'Choose a part',name:item?.name||''};
+      return {credits,owned,installed,artRef:item?.artRef||'',price:item?.carPart.price||0,partStatus:item?`${installed?'Installed · ':''}${locked?'Locked · ':''}${!partFits(item.carPart,parameters.carRef)?'Does not fit · ':''}Owned: ${owned} · Price: ${item.carPart.price} · Credits: ${credits}`:'Choose a part',name:item?.name||''};
     }
     if(source==='parameters')return typeof ref==='object'?ref:parameters[ref];
     if(source==='cars')return this.car(ref);
