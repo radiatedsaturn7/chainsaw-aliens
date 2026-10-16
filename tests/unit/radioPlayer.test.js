@@ -33,7 +33,7 @@ test('global and per-level/race radio switches stop playback and gate the pause 
  const {player,stored}=fixture();await player.load();assert.equal(player.available,false);player.setContext(true);await player.play();assert.equal(player.playing,true);
  player.setContext(false);assert.equal(player.available,false);assert.equal(await player.play(),false);
  player.setContext(true);await player.play();await player.setEnabled(false);assert.equal(player.available,false);assert.equal(player.audio,null);assert.equal(stored.get(RADIO_PROGRESS_KEY).enabled,false);
- await player.setEnabled(true);assert.equal(player.available,true);assert.equal(player.playing,false);
+ await player.setEnabled(true);assert.equal(player.available,true);assert.equal(player.playing,true);
 });
 test('late audio promises cannot restart playback after disable, and ended advances',async()=>{
  const {player,audios}=fixture({unlocked:['a']});await player.load();player.setContext(true);await player.play('a');audios[0].onended();await new Promise(resolve=>setTimeout(resolve,0));assert.equal(player.trackId,'b');
@@ -109,4 +109,11 @@ test('race radio dialog defaults to all, cancels atomically, saves selections an
  assert.deepEqual(e.selectedRace.radioStationIds,[]);
  await e.openRaceRadioSettings(async()=>({enabled:'on',station0:true,station1:true}));
  assert.equal(e.selectedRace.radioStationIds,null);
+});
+
+test('turning radio on chooses a random eligible song; explicit selection and resume retain their track',async()=>{
+ const {player}=fixture({enabled:false,unlocked:['a','c'],disabled:['c']});await player.load();player.setContext(true);player.random=()=>.99;
+ await player.setEnabled(true);assert.equal(player.trackId,'b');assert.equal(player.playing,true);assert.equal(player.audio.preload,'auto');
+ await player.play('a');player.audio.currentTime=12;player.pause();await player.play();assert.equal(player.trackId,'a');assert.equal(player.audio.currentTime,12);
+ await player.setEnabled(false);await player.setEnabled(true);assert.equal(player.trackId,'b');
 });

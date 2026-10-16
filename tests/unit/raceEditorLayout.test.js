@@ -5942,7 +5942,7 @@ test('Car Editor seeds editable engine SFX files while preserving car engine pro
   assert.equal(wrx.audio.engineSoundId, 'Engine WRX SPT');
   assert.equal(wrxSfx.name, 'Engine WRX SPT');
   assert.equal(wrxSfx.engineProfileId, 'wrx-flat-four-cvt');
-  assert.equal(wrxSfx.engineSfxVersion, 3);
+  assert.equal(wrxSfx.engineSfxVersion, 4);
   assert.equal(wrxSfx.settings.loop, true);
   assert.equal(wrxSfx.frames[0].loopStart, 0);
   assert.equal(wrxSfx.frames[0].loopEnd, 0.8);
@@ -6031,7 +6031,7 @@ test('Race playtest uses selected project SFX loop for engine audio', () => {
   assert.equal(playCalls[0].options.pitchCents, 0);
   assert.equal(playCalls[1].options.pitchCents > playCalls[0].options.pitchCents, true);
   assert.equal(playCalls[1].options.pitchCents < 2600, true);
-  assert.deepEqual(revCalls, [[false], [false]]);
+  assert.deepEqual(revCalls, []);
   assert.deepEqual(stopCalls, []);
 });
 

@@ -5,8 +5,8 @@ export const RADIO_LIBRARY_KEY = 'rtg-radio-library';
 export const RADIO_PROGRESS_KEY = 'rtg-radio-progress';
 
 export class RadioPlayer {
-  constructor({ createAudio = () => new Audio(), load = loadServerPreferenceAsync, save = saveServerPreference, onChange = () => {}, getInventory = () => null } = {}) {
-    this.getInventory=getInventory;this.createAudio = createAudio;this.loadPreference = load;this.savePreference = save;this.onChange = onChange;
+  constructor({ createAudio = () => new Audio(), load = loadServerPreferenceAsync, save = saveServerPreference, onChange = () => {}, getInventory = () => null, random = Math.random } = {}) {
+    this.random=random;this.getInventory=getInventory;this.createAudio = createAudio;this.loadPreference = load;this.savePreference = save;this.onChange = onChange;
     this.library = normalizeRadioLibrary();this.progress = normalizeRadioProgress();
     this.contextStationId = '';this.contextStationIds = null;this.contextEnabled = false;this.audio = null;this.trackId = '';this.playing = false;this.error = '';
     this.repeatMode = 'all';this.generation = 0;this.saveQueue = Promise.resolve();this.volume = 0.8;this.gain=1;
@@ -40,6 +40,7 @@ export class RadioPlayer {
   get listeningProgress() {const inventory=this.getInventory();return inventory?.ready?{...this.progress,inventoryBacked:true,unlocked:Object.keys(inventory.progress.bags.radio).filter(id=>inventory.progress.bags.radio[id]>0)}:this.progress;}
   ownsTrack(track) {return Boolean(track&&((!this.listeningProgress.inventoryBacked&&track.initiallyUnlocked)||this.listeningProgress.unlocked.includes(track.id)));}
   get tracks() { return radioStationTracks(this.library, this.listeningProgress, this.stationId); }
+  randomTrack() { const tracks=this.tracks;return tracks[Math.min(tracks.length-1,Math.max(0,Math.floor(this.random()*tracks.length)))]; }
   chooseRaceStation() {
     if(this.tracks.length)return true;
     const station=this.stations.find(s=>radioStationTracks(this.library,this.listeningProgress,s.id).length);
@@ -55,7 +56,7 @@ export class RadioPlayer {
     if(!this.available||previousStation!==this.stationId||!this.tracks.some(track=>track.id===this.trackId))this.stop();
     this.onChange();
   }
-  async setEnabled(enabled) { await this.load();this.progress.enabled = Boolean(enabled);if (!this.available) this.stop();this.onChange();await this.persist(RADIO_PROGRESS_KEY, this.progress); }
+  async setEnabled(enabled) { await this.load();const turningOn=!this.progress.enabled&&Boolean(enabled);this.progress.enabled = Boolean(enabled);if (!this.available) this.stop();else if(turningOn)await this.play(this.randomTrack()?.id);this.onChange();await this.persist(RADIO_PROGRESS_KEY, this.progress); }
   async unlock(trackId) {
     await this.load();if (!this.library.tracks.some(track => track.id === trackId)) return false;
     if(this.getInventory())return this.getInventory().grantRadioTrack(trackId);
@@ -89,10 +90,10 @@ export class RadioPlayer {
   }
   async play(trackId = this.trackId, {position=null,gain=null}={}) {
     await this.load();if (!this.available) return false;
-    const track = this.tracks.find(item => item.id === trackId) || this.tracks[0];
+    const track = this.tracks.find(item => item.id === trackId) || this.randomTrack();
     if (!track) {this.stop();this.error='No unlocked, enabled tracks in this station';this.onChange();return false;}
     if (!this.audio || track.id !== this.trackId) {
-      this.stop();this.trackId = track.id;this.audio = this.createAudio();this.audio.src = track.src;this.audio.volume = this.volume;
+      this.stop();this.trackId = track.id;this.audio = this.createAudio();this.audio.preload = 'auto';this.audio.src = track.src;this.audio.volume = this.volume;
       const audio = this.audio;
       audio.onended = () => {if (this.audio === audio) void this.advance();};
       audio.onerror = () => {if (this.audio === audio) {this.error = `Could not play ${track.title}`;this.pause();}};

@@ -1,3 +1,4 @@
+import { VehicleSound } from '../audio/VehicleSound.js';
 import {
   GM_DRUM_BANK_LSB,
   GM_DRUM_BANK_MSB,
@@ -2771,6 +2772,14 @@ export default class AudioSystem {
     this.revActive = active;
   }
 
+  setVehicleSound(active, options={}) {
+    if(!active){this.vehicleSound?.stop();this.vehicleSound=null;return;}
+    this.ensure();
+    if(!this.ctx)return;
+    this.vehicleSound ||= new VehicleSound(this.ctx,this.effectsBus||this.master);
+    this.vehicleSound.update(options);
+  }
+
   setEngineRev(active, {
     rpm = 900,
     redlineRpm = 6200,
@@ -2778,14 +2787,16 @@ export default class AudioSystem {
     load = 0,
     profile = 'flat-four'
   } = {}) {
+    if (!active) this.setVehicleSound(false);
     if (active) this.ensure();
     if (active && !this.engineRevActive) {
       this.engineRevOsc = this.ctx.createOscillator();
       this.engineRevSubOsc = this.ctx.createOscillator();
       this.engineRevGain = this.ctx.createGain();
       this.engineRevFilter = this.ctx.createBiquadFilter();
-      this.engineRevOsc.type = profile.includes('flat') ? 'sawtooth' : 'triangle';
-      this.engineRevSubOsc.type = 'square';
+      const real=new Float32Array(9),imag=new Float32Array([0,.55,.28,.22,.13,.09,.06,.03,.02]);
+      this.engineRevOsc.setPeriodicWave(this.ctx.createPeriodicWave(real,imag));
+      this.engineRevSubOsc.type = 'sine';
       this.engineRevFilter.type = 'lowpass';
       this.engineRevGain.gain.value = 0.0001;
       this.engineRevOsc.connect(this.engineRevFilter);
@@ -2801,9 +2812,9 @@ export default class AudioSystem {
       const throttleMix = Math.max(0, Math.min(1, Number(throttle || 0)));
       const loadMix = Math.max(0, Math.min(1, Number(load || 0)));
       const limiterPulse = rpmRatio > 0.98 ? (Math.sin(now * 92) > 0 ? 0.78 : 1.08) : 1;
-      const baseFreq = (38 + rpmRatio * 190) * limiterPulse;
+      const baseFreq = Math.max(25,Number(rpm)/60*(profile.includes('v8')?4:2));
       const gain = 0.022 + rpmRatio * 0.058 + throttleMix * 0.052 + loadMix * 0.03;
-      this.engineRevGain.gain.setTargetAtTime(Math.max(0.0001, gain), now, 0.026);
+      this.engineRevGain.gain.setTargetAtTime(Math.max(0.0001, gain * limiterPulse), now, 0.026);
       this.engineRevOsc.frequency.setTargetAtTime(baseFreq, now, 0.018);
       this.engineRevSubOsc.frequency.setTargetAtTime(baseFreq * 0.5, now, 0.024);
       this.engineRevFilter.frequency.setTargetAtTime(360 + rpmRatio * 2400 + throttleMix * 880, now, 0.032);

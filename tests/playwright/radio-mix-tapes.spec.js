@@ -257,3 +257,27 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} music drop
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession)).toBeNull();
  await expect.poll(()=>page.evaluate(()=>window.__game.radio.playing)).toBe(false);
 });
+
+for(const mobile of [false,true])test(`car backfire and turbo settings ${mobile?'portrait':'desktop'}`,async({page})=>{
+ await page.setViewportSize(mobile?{width:390,height:844}:{width:1280,height:800});await ready(page);
+ await page.evaluate(mobile=>{const g=window.__game;g.deviceIsMobile=mobile;g.isMobile=mobile;g.setViewport({width:innerWidth,height:innerHeight,scale:1,dpr:1,isMobile:mobile});g.title.setScreen('game');g.handleTitleMenuAction('car-editor');},mobile);
+ await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('car-editor');
+ await page.evaluate(()=>{const e=window.__game.carEditor;void e.handleMenuAction('car-sound-effects');});
+ const form=dialog(page,'Backfire & Turbo');await expect(form).toBeVisible();
+ await form.getByLabel('Backfire tone (Hz)',{exact:true}).fill('420');
+ await form.getByLabel('Turbo sound enabled',{exact:true}).check();
+ await form.getByLabel('Turbo whistle tone (Hz)',{exact:true}).fill('2800');
+ await page.screenshot({path:`test-results/radio-car-sounds-${mobile?'portrait':'desktop'}.png`});
+ await apply(page,'Backfire & Turbo');
+ expect(await page.evaluate(()=>{const e=window.__game.carEditor,c=e.normalizeLoadedCarDocument(e.serializeSelectedCarDocument());return [c.audio.backfireToneHz,c.audio.turboToneHz,c.audio.turboEnabled];})).toEqual([420,2800,true]);
+ await page.evaluate(()=>window.__game.carEditor.undoRaceHistory());
+ await page.evaluate(()=>window.__game.carEditor.redoRaceHistory());
+ expect(await page.evaluate(()=>window.__game.carEditor.selectedCar.audio.backfireToneHz)).toBe(420);
+ // Render the actual noise burst graph to catch invalid Web Audio scheduling.
+ const peak=await page.evaluate(async()=>{
+   const {VehicleSound}=await import('/src/audio/VehicleSound.js');
+   const ctx=new OfflineAudioContext(1,22050,44100),sound=new VehicleSound(ctx,ctx.destination);
+   sound.burst(420,.15,.6);const buffer=await ctx.startRendering();
+   return buffer.getChannelData(0).reduce((max,v)=>Math.max(max,Math.abs(v)),0);
+ });expect(peak).toBeGreaterThan(.01);expect(peak).toBeLessThan(1);
+});

@@ -1,3 +1,4 @@
+import { vehicleSoundSettings } from '../audio/VehicleSound.js';
 import {modelSprites} from '../model3d/ModelSprites.js';
 import {InventoryMenu} from '../items/InventoryMenu.js';
 import {normalizeItemDocument,itemAsDoodad} from '../items/ItemDocument.js';
@@ -607,6 +608,7 @@ const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   'drivetrain-awd',
   'engine-sound-next',
   'engine-sfx',
+  'car-sound-effects',
   'power',
   'power-curve',
   'summary-sheet',
@@ -697,9 +699,9 @@ const CAR_ENGINE_SOUND_PROFILES = [
   { id: 'race-v8', label: 'V8' }
 ];
 
-const CAR_ENGINE_SFX_SAMPLE_RATE = 11025;
+const CAR_ENGINE_SFX_SAMPLE_RATE = 44100;
 const CAR_ENGINE_SFX_DURATION_SECONDS = 0.8;
-const CAR_ENGINE_SFX_GENERATOR_VERSION = 3;
+const CAR_ENGINE_SFX_GENERATOR_VERSION = 4;
 const CAR_ENGINE_SFX_BY_PROFILE = Object.fromEntries(CAR_ENGINE_SOUND_PROFILES.map((profile) => [
   profile.id,
   `Engine ${profile.label}`
@@ -7375,22 +7377,18 @@ export default class RaceEditor {
     const preset = CAR_ENGINE_SFX_PRESETS[profile.id] || CAR_ENGINE_SFX_PRESETS[CAR_ENGINE_SOUND_PROFILES[0].id];
     const sampleCount = Math.max(1, Math.round(CAR_ENGINE_SFX_SAMPLE_RATE * CAR_ENGINE_SFX_DURATION_SECONDS));
     const baseCycles = Math.max(1, Math.round(Number(preset.cycles) || 60));
-    const overtone = Math.max(1, Math.round(Number(preset.overtone) || 2));
     const pulseCycles = Math.max(1, Math.round(Number(preset.pulseCycles) || 16));
+    // Integer-cycle, band-limited combustion harmonics: no square wave buzz
+    // or sub-bass pulse. The loop stays continuous at its wrap boundary.
     const samples = Array.from({ length: sampleCount }, (_, index) => {
-      const progress = index / Math.max(1, sampleCount - 1);
-      const phase = progress * baseCycles * Math.PI * 2;
-      const roughPhaseA = progress * (baseCycles + pulseCycles) * Math.PI * 2;
-      const roughPhaseB = progress * (baseCycles * 2 + pulseCycles + 1) * Math.PI * 2;
-      const primary = preset.wave === 'square'
-        ? (Math.sin(phase) >= 0 ? 1 : -1)
-        : (preset.wave === 'triangle'
-          ? (2 / Math.PI) * Math.asin(Math.sin(phase))
-          : Math.sin(phase) * 0.72 + Math.sin(phase * 0.5) * 0.24);
-      const harmonic = Math.sin(phase * overtone) * 0.24;
-      const pulse = Math.sin(progress * pulseCycles * Math.PI * 2) * 0.08;
-      const roughness = (Math.sin(roughPhaseA) * 0.65 + Math.sin(roughPhaseB) * 0.35) * Number(preset.roughness || 0);
-      return clamp(primary * 0.46 + harmonic + pulse + roughness, -0.95, 0.95);
+      const phase = index / sampleCount * baseCycles * Math.PI * 2;
+      let value=0;
+      for(let harmonic=1;harmonic<=10;harmonic++) {
+        const weight=Math.exp(-harmonic*.28)/(1+harmonic*.35);
+        value+=Math.sin(phase*harmonic + (harmonic%2)*.16)*weight;
+      }
+      const texture=Math.sin(index/sampleCount*pulseCycles*Math.PI*2)*.025;
+      return (value*.32)*(1+texture);
     });
     const name = this.getCarEngineSfxNameForProfile(profile.id);
     const envelopes = createRaceEditorDefaultEnvelopes();
@@ -7475,6 +7473,25 @@ export default class RaceEditor {
       if (!car.audio.engineSoundId) car.audio.engineSoundId = this.getCarEngineSfxNameForCar(car);
     });
     return seeded;
+  }
+
+  async openCarSoundSettings(showForm=openEditorForm) {
+    const car=this.selectedCar;if(!car)return;
+    const s=vehicleSoundSettings(car.audio);
+    const result=await showForm('Backfire & Turbo',[
+      {id:'backfireEnabled',label:'Backfire on throttle lift',type:'checkbox',value:s.backfireEnabled},
+      {id:'backfireToneHz',label:'Backfire tone (Hz)',value:s.backfireToneHz,min:60,max:900},
+      {id:'backfireDuration',label:'Backfire duration (seconds)',value:s.backfireDuration,min:.04,max:.4},
+      {id:'backfireVolume',label:'Backfire volume (0–1)',value:s.backfireVolume,min:0,max:1},
+      {id:'turboEnabled',label:'Turbo sound enabled',type:'checkbox',value:s.turboEnabled},
+      {id:'turboToneHz',label:'Turbo whistle tone (Hz)',value:s.turboToneHz,min:800,max:6000},
+      {id:'turboVolume',label:'Turbo whistle volume (0–1)',value:s.turboVolume,min:0,max:1},
+      {id:'turboReleaseVolume',label:'Turbo lift-off whoosh volume (0–1)',value:s.turboReleaseVolume,min:0,max:1}
+    ],{description:'Sound only. Try changes in the driving preview, then save the car.'});
+    if(!result||this.selectedCar!==car)return;
+    this.captureRaceHistory('Backfire & turbo');
+    car.audio={...car.audio,...vehicleSoundSettings(result)};
+    this.status='Backfire & turbo updated. Save the car to keep these sounds.';
   }
 
   async openCarEngineSfxEditor() {
@@ -8572,6 +8589,7 @@ export default class RaceEditor {
       this.redoRaceHistory();
       return;
     }
+    if(action==='car-sound-effects')return this.openCarSoundSettings().catch(error=>{this.status=error.message;});
     if(action==='race-radio'){return this.openRaceRadioSettings().catch(error=>{this.status=error.message;});}
     if (this.shouldCaptureRaceHistory(action)) {
       this.captureRaceHistory(this.getRaceActionLabel(action) || action.replace(/-/g, ' '));
@@ -17033,13 +17051,17 @@ export default class RaceEditor {
     const session = this.playtestSession;
     if (!session) return;
     const audioReady = session.running === true && session.startupFramePending !== true;
+    if(session.engineSoundId&&this.game?.audio?.engineRevActive)this.game.audio.setEngineRev(false);
+    this.game?.audio?.setVehicleSound?.(audioReady, {
+      rpm:session.engineRpm||tuning?.idleRpm||900,redlineRpm:tuning?.redlineRpm||6200,
+      throttle,settings:this.getRaceSessionCar(session)?.audio
+    });
     const engineSoundId = String(session.engineSoundId || '').trim();
     if (engineSoundId && audioReady) {
-      this.game?.audio?.setEngineRev?.(false);
       const rpm = Number(session.engineRpm) || Number(tuning?.idleRpm) || 900;
       const pitchCents = this.getRaceEngineSfxPitchCents({ rpm, tuning });
       const car = this.getRaceSessionCar(session);
-      const sfxVolume = clamp(Number(car?.audio?.engineSfxVolume ?? 1) || 1, 0, 2);
+      const sfxVolume = clamp(Number(car?.audio?.engineSfxVolume ?? 1), 0, 2);
       const volume = clamp(0.32 + Number(throttle || 0) * 0.28 + Number(load || 0) * 0.18, 0.22, 0.9) * sfxVolume;
       if (session.activeEngineSoundId !== engineSoundId) {
         if (session.activeEngineSoundId) this.game?.stopSfxById?.(session.activeEngineSoundId, { key: 'race-engine' });
@@ -27289,12 +27311,13 @@ export default class RaceEditor {
               this.status = 'Engine SFX picker failed';
             });
           }
-        }
+        },
+        {id:'car-sound-effects',label:'Backfire & Turbo',onClick:()=>this.openCarSoundSettings()}
       ], { columns: 1 });
       this.drawCarDriveSlider(ctx, {
         id: 'engineSfxVolume',
         x: content.x,
-        y: content.y + 38,
+        y: content.y + 76,
         w: content.w,
         h: 28,
         min: 0,

@@ -99,6 +99,7 @@ const actionEntries = (ids, labels = {}) => Object.fromEntries(ids.map((id) => [
 const EDITOR_ACTION_LABEL_OVERRIDES = {
   'race-from-image': 'From Image',
   'engine-sfx': 'Engine Sound',
+  'car-sound-effects': 'Backfire & Turbo',
   'aero-front': 'Aero',
   'spring-front': 'Spring',
   'damping-front': 'Damping',
@@ -500,7 +501,7 @@ export const EDITOR_MENU_SPECS = {
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
       art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-import-graphic', 'car-body-model', 'car-wheel-model', 'car-clear-body-model', 'car-clear-wheel-model', 'car-art-settings', 'car-camera-settings']),
-      drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sfx', 'power-curve', 'weight-balance', 'summary-sheet', 'car-category']),
+      drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sfx', 'car-sound-effects', 'power-curve', 'weight-balance', 'summary-sheet', 'car-category']),
       tuning: {
         ...section('tuning', 'Tuning', ['default-tires', 'tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel', 'physics-body']),
         portraitActions: ['tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'physics-body'],
