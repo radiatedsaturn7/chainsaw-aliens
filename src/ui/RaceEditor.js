@@ -17054,7 +17054,7 @@ export default class RaceEditor {
     if(session.engineSoundId&&this.game?.audio?.engineRevActive)this.game.audio.setEngineRev(false);
     this.game?.audio?.setVehicleSound?.(audioReady, {
       rpm:session.engineRpm||tuning?.idleRpm||900,redlineRpm:tuning?.redlineRpm||6200,
-      throttle,settings:this.getRaceSessionCar(session)?.audio
+      throttle,settings:(session.carEditorPreview?this.selectedCar:this.getRaceSessionCar(session))?.audio
     });
     const engineSoundId = String(session.engineSoundId || '').trim();
     if (engineSoundId && audioReady) {

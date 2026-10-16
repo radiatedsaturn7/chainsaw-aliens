@@ -15,7 +15,7 @@ export function vehicleSoundSettings(audio={}) {
 
 // Independent of the engine loop so custom engine samples keep these effects.
 export class VehicleSound {
-  constructor(ctx,output){this.ctx=ctx;this.output=output;this.nodes=[];this.lastThrottle=0;this.boost=0;this.lastTime=ctx.currentTime;this.lastPop=-10;}
+  constructor(ctx,output){this.ctx=ctx;this.output=output;this.nodes=[];this.liftArmed=false;this.boost=0;this.lastTime=ctx.currentTime;this.lastPop=-10;}
   burst(frequency,duration,volume,tonal=true){
     if(volume<=0)return;
     const ctx=this.ctx,now=ctx.currentTime;
@@ -34,7 +34,10 @@ export class VehicleSound {
   }
   update({rpm=900,redlineRpm=6200,throttle=0,settings={}}={}){
     const s=vehicleSoundSettings(settings),now=this.ctx.currentTime,dt=clamp(now-this.lastTime,0,.1);
-    const ratio=clamp(rpm/Math.max(1,redlineRpm),0,1.1),lift=this.lastThrottle>.55&&throttle<.2;
+    const ratio=clamp(rpm/Math.max(1,redlineRpm),0,1.1);
+    if(throttle>.55)this.liftArmed=true;
+    const lift=this.liftArmed&&throttle<.2;
+    if(lift)this.liftArmed=false;
     if(s.backfireEnabled&&ratio>.45&&lift&&now-this.lastPop>.3){this.burst(s.backfireToneHz,s.backfireDuration,s.backfireVolume);this.lastPop=now;}
     if(s.turboEnabled){
       if(!this.whistle){
@@ -47,7 +50,7 @@ export class VehicleSound {
       this.whistle.frequency.setTargetAtTime(s.turboToneHz*(.6+this.boost*.6),now,.08);
       this.whistleGain.gain.setTargetAtTime(this.boost*s.turboVolume*.045,now,.06);
     }else if(this.whistle){this.whistle.stop();this.whistle.disconnect();this.whistleGain.disconnect();this.whistle=null;this.boost=0;}
-    this.lastThrottle=throttle;this.lastTime=now;
+    this.lastTime=now;
   }
   stop(){
     if(this.whistle){this.whistle.stop();this.whistle.disconnect();this.whistleGain.disconnect();this.whistle=null;}

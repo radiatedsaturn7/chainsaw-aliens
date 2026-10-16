@@ -15,6 +15,8 @@ test('turbo spools under load, lift triggers configured pop and release, sustain
  for(let i=0;i<20;i++){ctx.currentTime+=.05;sound.update({rpm:4500,throttle:1,settings});}
  assert.ok(sound.boost>.5);assert.ok(sound.whistleGain.gain.value>0);
  const bursts=[];const burst=sound.burst.bind(sound);sound.burst=(...args)=>{bursts.push(args);burst(...args);};
+ ctx.currentTime+=.05;sound.update({rpm:4500,throttle:.4,settings});
+ ctx.currentTime+=.05;sound.update({rpm:4500,throttle:.25,settings});
  ctx.currentTime+=.05;sound.update({rpm:4500,throttle:0,settings});
  assert.equal(bursts.length,2);assert.deepEqual(bursts[0],[400,.2,.35]);
  ctx.currentTime+=.05;sound.update({rpm:4500,throttle:0,settings});assert.equal(bursts.length,2);
@@ -42,4 +44,10 @@ test('custom engine samples receive per-car turbo/backfire settings without rese
  editor.playtestSession={running:true,carId:editor.selectedCar.id,engineSoundId:'custom',engineRpm:4000};
  editor.updateRaceEngineAudio({tuning:{redlineRpm:7000},throttle:1});
  assert.equal(calls[0][0],true);assert.equal(calls[0][1].settings.backfireToneHz,330);
+});
+
+test('car preview reads current sound controls rather than its older runtime snapshot',()=>{
+ const calls=[];const editor=new RaceEditor({audio:{setVehicleSound:(active,options)=>calls.push(options),setEngineRev(){}},playSfxById(){}},{mode:'car'});
+ editor.selectedCar.audio.backfireToneHz=520;editor.playtestSession={running:true,carEditorPreview:true,engineSoundId:'custom',runtimeCar:{audio:{backfireToneHz:100}}};
+ editor.updateRaceEngineAudio({throttle:1});assert.equal(calls[0].settings.backfireToneHz,520);
 });

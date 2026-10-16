@@ -213,6 +213,19 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} music drop
   await g.radio.saveLibrary({tracks:[{id:'drop-song',title:'Drop Song',src,initiallyUnlocked:true}],stations:[{id:'drops',name:'Drops',trackIds:['drop-song']}]});
   await g.radioEditor.open();
  },{mobile,src:'data:audio/mpeg;base64,'+silentMp3.toString('base64')});
+ await clickRadio(page,'radio-play');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.timelineDuration())).toBeGreaterThan(20);
+ await clickRadio(page,'radio-play');
+ const seekPoint=async fraction=>page.evaluate(f=>{const e=window.__game.radioEditor,b=e.timelineBounds,g=window.__game,r=g.canvas.getBoundingClientRect();return{x:r.x+(b.x+b.w*f)*r.width/g.viewport.width,y:r.y+(b.y+b.h/2)*r.height/g.viewport.height};},fraction);
+ for(const [fraction,id] of [[.2,'track-start-here'],[.65,'track-end-here']]){
+   const from=await seekPoint(.05),to=await seekPoint(fraction);
+   await page.mouse.move(from.x,from.y);await page.mouse.down();await page.mouse.move(to.x,to.y,{steps:8});await page.mouse.up();
+   await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.audio.seeking)).toBe(false);
+   await clickRadio(page,id);await radioReady(page);
+   expect(await page.evaluate(()=>Boolean(window.__game.radioEditor.preview.audio))).toBe(true);
+ }
+ const marked=await page.evaluate(()=>window.__game.radio.library.tracks[0].raceCues);
+ expect(marked.start).toBeGreaterThan(5);expect(marked.end).toBeGreaterThan(19);
+ await page.screenshot({path:`test-results/radio-seek-markers-${mobile?'portrait':'desktop'}.png`});
  await radioAction(page,'track-drops');
  const form=dialog(page,'Music Drops');
  await form.getByLabel('Race start drop (seconds into song)',{exact:true}).fill('6');

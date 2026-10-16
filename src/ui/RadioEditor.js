@@ -9,6 +9,7 @@ import { getEditorMenuSpec, getEditorControllerRootMenuEntries } from './shared/
 import { EditorInputActionNormalizer, EDITOR_INPUT_ACTIONS as INPUT } from './shared/input/editorInputActions.js';
 import { drawSharedDesktopContextPanel, drawSharedPanel, drawSharedPlayStopButton, drawSharedTransportPopover, UI_SUITE } from './uiSuite.js';
 
+const musicTime=seconds=>{const value=Math.max(0,Number(seconds)||0);return `${Math.floor(value/60)}:${(value%60).toFixed(1).padStart(4,'0')}`;};
 const text = (id, label, value = '') => ({id, label, value, type:'text'});
 const select = (id, label, value, options) => ({id, label, value, options});
 const yesNo = [{value:'yes',label:'Yes'},{value:'no',label:'No'}];
@@ -22,6 +23,7 @@ const labels = {
   new:'New Library', save:'Save Library', 'save-as':'Save Library As', open:'Open Library', export:'Export Library', import:'Import Library',
   'radio-focus-stations':'Focus Stations', 'radio-focus-tracks':'Focus Tracks',
   'radio-import':'Upload MP3', 'radio-play':'Play / Pause Song',
+  'radio-seek-back':'Back 5 Seconds', 'radio-seek-forward':'Forward 5 Seconds',
   'radio-loop':'Repeat', 'radio-restart':'Rewind to Start', 'radio-stop':'Stop Preview', 'radio-next':'Next Track', 'radio-previous':'Previous Track',
   'station-new':'New Station', 'station-properties':'Station Properties', 'station-logo':'Station Logo',
   'track-drops':'Music Drops', 'track-start-here':'Set Start Drop at Playhead', 'track-end-here':'Set Finish Drop at Playhead', 'radio-preview-start':'Preview Race Start', 'radio-preview-end':'Preview Race Finish',
@@ -81,20 +83,23 @@ export class RadioEditor extends RaceEditor {
     if(!this.track)this.trackId=this.visibleTracks[0]?.id||'';
   }
   syncPreview() {
+    this.seekDrag=null;
     this.clearCuePreview();
     this.preview.stop();
     this.preview.library=this.library;
     this.preview.progress={enabled:true,stationId:this.stationId,unlocked:this.library.tracks.map(t=>t.id),disabled:[]};
     this.preview.setContext(true);
   }
-  async commit(library) {
+  async commit(library,{preservePreview=false}={}) {
     const next=normalizeRadioLibrary(library);
     if(JSON.stringify(next)===JSON.stringify(this.library))return;
     const before=this.library;
     await this.game.radio.saveLibrary(next);
     this.library=next;this.undoLibraries.push(before);
     if(this.undoLibraries.length>50)this.undoLibraries.shift();
-    this.redoLibraries=[];this.syncSelection();this.syncPreview();this.status='Library saved';
+    this.redoLibraries=[];this.syncSelection();
+    if(preservePreview)this.preview.library={...this.preview.library,tracks:next.tracks};else this.syncPreview();
+    this.status='Library saved';
   }
   async history(redo=false) {
     const from=redo?this.redoLibraries:this.undoLibraries,to=redo?this.undoLibraries:this.redoLibraries;
@@ -106,7 +111,7 @@ export class RadioEditor extends RaceEditor {
   }
   selectStation(id) {this.stationId=id;this.trackId=this.station?.trackIds[0]||this.library.tracks[0]?.id||'';this.focusList='stations';this.syncPreview();}
   selectTrack(id) {
-    this.clearCuePreview();
+    this.seekDrag=null;this.clearCuePreview();
     if(id!==this.trackId)this.preview.stop();
     this.trackId=id;this.focusList='tracks';
   }
@@ -199,7 +204,8 @@ export class RadioEditor extends RaceEditor {
     if(!this.track||this.preview.trackId!==this.trackId||!this.preview.audio)return;
     const library=structuredClone(this.library),track=library.tracks.find(t=>t.id===this.trackId);
     track.raceCues={...(track.raceCues||{start:3,end:null}),[kind]:Math.round(this.preview.audio.currentTime*100)/100};
-    await this.commit(library);
+    this.clearCuePreview();await this.commit(library,{preservePreview:true});
+    this.status=`Race ${kind==='start'?'start':'end'} set at ${musicTime(track.raceCues[kind])}`;
   }
   async previewMusicDrop(kind) {
     if(!this.track)return;
@@ -252,6 +258,7 @@ export class RadioEditor extends RaceEditor {
     if(id==='undo')return this.undoLibraries.length>0;
     if(id==='redo')return this.redoLibraries.length>0;
     if(['track-start-here','track-end-here'].includes(id))return !!this.preview.audio&&this.preview.trackId===this.trackId;
+    if(['radio-seek-back','radio-seek-forward'].includes(id))return this.timelineDuration()>0;
     if(id==='radio-play')return !!this.track;
     if(['station-properties','station-logo','station-delete'].includes(id))return !!this.station;
     if(['track-properties','track-art','track-delete','track-drops','radio-preview-start','radio-preview-end'].includes(id))return !!this.track;
@@ -271,12 +278,48 @@ export class RadioEditor extends RaceEditor {
       'radio-preview-start':()=>this.previewMusicDrop('start'),'radio-preview-end':()=>this.previewMusicDrop('end'),
       'track-properties':()=>this.editTrack(),'track-art':()=>this.chooseArtwork(),'track-delete':()=>this.remove(),
       'track-membership':()=>this.membership(),'track-up':()=>this.moveTrack(-1),'track-down':()=>this.moveTrack(1),
+      'radio-seek-back':()=>this.seekPreview((this.preview.audio?.currentTime||0)-5),
+      'radio-seek-forward':()=>this.seekPreview((this.preview.audio?.currentTime||0)+5),
       'radio-loop':()=>{const modes=['off','all','one'];this.preview.repeatMode=modes[(modes.indexOf(this.preview.repeatMode)+1)%3];},
       'radio-restart':()=>{if(this.preview.audio)this.preview.audio.currentTime=0;},
       'radio-play':()=>this.togglePreview(),'radio-stop':()=>this.preview.stop(),'radio-next':()=>this.stepPreview(1),'radio-previous':()=>this.stepPreview(-1),
       'exit-main':()=>this.exitToMainMenu()
     };
     return this.run(actions[id]||(()=>{}));
+  }
+  timelineDuration() {
+    const duration=this.preview.trackId===this.trackId?Number(this.preview.audio?.duration):0;
+    return Number.isFinite(duration)&&duration>0?duration:0;
+  }
+  seekPreview(seconds) {
+    const duration=this.timelineDuration();if(!duration)return;
+    this.clearCuePreview();this.preview.seek(Math.max(0,Math.min(duration,seconds)));
+  }
+  timelinePosition(x) {
+    const b=this.timelineBounds;
+    return Math.max(0,Math.min(1,(x-b.x)/b.w))*this.timelineDuration();
+  }
+  drawMusicTimeline(ctx,bounds,compact) {
+    const duration=this.timelineDuration(),position=this.seekDrag?.seconds??(this.preview.trackId===this.trackId?this.preview.audio?.currentTime||0:0);
+    const b={x:bounds.x+12,y:bounds.y+(compact?26:48),w:compact?Math.max(80,bounds.w-326):bounds.w-24,h:24};
+    this.timelineBounds=b;
+    ctx.fillStyle=UI_SUITE.colors.muted;ctx.font=`12px ${UI_SUITE.font.family}`;ctx.textAlign='left';
+    ctx.fillText(duration?`${musicTime(position)} / ${musicTime(duration)}`:'Play the selected song to seek',b.x,b.y-5,b.w);
+    ctx.fillStyle=UI_SUITE.colors.border;ctx.fillRect(b.x,b.y+9,b.w,6);
+    const ratio=duration?Math.min(1,position/duration):0;
+    ctx.fillStyle='#58c994';ctx.fillRect(b.x,b.y+9,b.w*ratio,6);
+    for(const [kind,color,label] of [['start','#73d5ff','S'],['end','#ffba6b','E']]){
+      const cue=this.track?.raceCues?.[kind];
+      if(duration&&cue!=null&&cue<=duration){const x=b.x+b.w*cue/duration;ctx.fillStyle=color;ctx.fillRect(x-1,b.y+2,2,20);ctx.fillText(label,Math.min(b.x+b.w-9,x+3),b.y+8);}
+    }
+    ctx.fillStyle=duration?UI_SUITE.colors.text:UI_SUITE.colors.muted;ctx.fillRect(b.x+b.w*ratio-3,b.y+5,6,14);
+    this.buttons.push({id:'radio-seek',bounds:b,disabled:!duration});
+    const buttonY=compact?bounds.y+16:bounds.y+80,buttonX=compact?b.x+b.w+10:bounds.x+12;
+    const buttonW=compact?146:(bounds.w-32)/2;
+    for(const [index,kind] of ['start','end'].entries()){
+      const id=kind==='start'?'track-start-here':'track-end-here';
+      this.registerDrawnButton(ctx,{x:buttonX+index*(buttonW+8),y:buttonY,w:buttonW,h:30},{id,label:kind==='start'?'Set Race Start':'Set Race End',disabled:!this.isActionAvailable(id),onClick:()=>this.handleMenuAction(id)});
+    }
   }
   getRacePortraitContextAction() {return{id:'radio-play',label:this.preview.playing?'Pause':'Play',onClick:()=>this.handleMenuAction('radio-play')};}
   getTransportActions() {
@@ -307,6 +350,9 @@ export class RadioEditor extends RaceEditor {
       this.closeTransportPopover();hit?.onClick();return;
     }
     const hit=[...this.buttons].reverse().find(b=>inside(b.bounds));
+    if(hit?.id==='radio-seek'&&!hit.disabled&&!this.opened&&!this.desktopDropdown&&!this.mobileRootOpen&&!this.gamepadSubmenuOpen){
+      this.seekDrag={pointerId:payload.pointerId,seconds:this.timelinePosition(payload.x),trackId:this.trackId};return;
+    }
     if(hit?.id==='radio-play'&&!this.opened){
       this.cancelTransportHold();
       const hold={x:payload.x,y:payload.y,button:hit,fired:false};
@@ -316,6 +362,7 @@ export class RadioEditor extends RaceEditor {
     return super.handlePointerDown(payload);
   }
   handlePointerMove(payload={}) {
+    if(this.seekDrag){if(payload.pointerId===this.seekDrag.pointerId)this.seekDrag.seconds=this.timelinePosition(payload.x);return;}
     if(this.transportHold){
       if(Math.hypot(payload.x-this.transportHold.x,payload.y-this.transportHold.y)>12){
         clearTimeout(this.transportHold.timer);this.transportHold.fired=true;
@@ -325,6 +372,7 @@ export class RadioEditor extends RaceEditor {
     return super.handlePointerMove(payload);
   }
   handlePointerUp(payload={}) {
+    if(this.seekDrag){if(payload.pointerId===this.seekDrag.pointerId){const drag=this.seekDrag;this.seekDrag=null;if(drag.trackId===this.trackId)this.seekPreview(this.timelinePosition(payload.x));}return;}
     if(this.transportHold){
       const hold=this.transportHold;this.cancelTransportHold();
       const b=hold.button.bounds;
@@ -346,12 +394,12 @@ export class RadioEditor extends RaceEditor {
     drawSharedPanel(ctx,bounds,{fill:UI_SUITE.colors.bg,border:UI_SUITE.colors.border});
     ctx.save();ctx.fillStyle=UI_SUITE.colors.text;ctx.font=`14px ${UI_SUITE.font.family}`;ctx.textAlign='left';
     const compact=bounds.h<360;
-    const repeat=this.getRaceActionLabel('radio-loop');
     const title=this.preview.currentTrack?`${this.preview.playing?'Playing':'Paused'}: ${this.preview.currentTrack.title}`:'Station preview';
-    if(!compact)ctx.fillText(title+' · '+repeat,bounds.x+12,bounds.y+64,bounds.w-24);
+    if(!compact)ctx.fillText(title,bounds.x+108,bounds.y+28,Math.max(40,bounds.w-176));
+    this.drawMusicTimeline(ctx,bounds,compact);
     ctx.font=`12px ${UI_SUITE.font.family}`;ctx.fillStyle=UI_SUITE.colors.muted;
-    ctx.fillText(this.preview.error||this.status,bounds.x+12,bounds.y+(compact?54:84),bounds.w-24);
-    const wide=bounds.w>=620||compact,top=bounds.y+(compact?66:100),height=Math.max(80,bounds.h-(compact?116:160));
+    ctx.fillText(this.preview.error||this.status,bounds.x+12,bounds.y+(compact?60:130),bounds.w-24);
+    const wide=bounds.w>=620||compact,top=bounds.y+(compact?74:144),height=Math.max(60,bounds.h-(compact?124:194));
     const stationBounds={x:bounds.x+8,y:top,w:wide?bounds.w*0.32-12:bounds.w-16,h:wide?height:Math.min(150,height*0.38)};
     const tracksBounds=wide?{x:bounds.x+bounds.w*0.32+4,y:top,w:bounds.w*0.68-12,h:height}:{x:bounds.x+8,y:top+stationBounds.h+8,w:bounds.w-16,h:Math.max(60,height-stationBounds.h-8)};
     for(const [b,title] of [[stationBounds,'Stations'],[tracksBounds,'Tracks · ✓ in selected station']]){ctx.fillStyle=UI_SUITE.colors.text;ctx.font=`bold 13px ${UI_SUITE.font.family}`;ctx.fillText(title,b.x+8,b.y+16,b.w-16);}
@@ -366,7 +414,7 @@ export class RadioEditor extends RaceEditor {
     const footerY=bounds.y+bounds.h-42,buttonW=(bounds.w-32)/3;
     const footer=[['station-properties','Station'],['track-properties','Track'],['track-membership',this.station?.trackIds.includes(this.trackId)?'Remove':'Add to station']];
     footer.forEach(([id,label],i)=>this.registerDrawnButton(ctx,{x:bounds.x+8+i*(buttonW+8),y:footerY,w:buttonW,h:34},{id,label,disabled:!this.isActionAvailable(id),onClick:()=>this.handleMenuAction(id)}));
-    for(const [source,x] of [[this.station?.logo,bounds.x+12],[this.track?.image,bounds.x+(this.activeViewportMode==='desktop'?64:bounds.w-60)]]){
+    if(!compact)for(const [source,x] of [[this.station?.logo,bounds.x+12],[this.track?.image,bounds.x+60]]){
       const art=this.artworkDisplay.image(source);
       if(art){const factor=Math.min(40/art.width,40/art.height);ctx.drawImage(art,x,bounds.y+8,art.width*factor,art.height*factor);}
     }

@@ -121,3 +121,33 @@ test('pausing an unassigned-song library queue preserves that queue after advanc
  assert.deepEqual(e.preview.tracks.map(t=>t.id),['one','two']);
  await e.preview.advance();assert.equal(e.trackId,'two');
 });
+
+test('seek drag writes the playhead only on release, clamps bounds, and keeps paused playback paused',async()=>{
+ const {e}=await editor();e.preview.createAudio=()=>({currentTime:0,duration:100,async play(){},pause(){},removeAttribute(){},load(){}});
+ await e.togglePreview();e.preview.pause();e.timelineBounds={x:10,y:10,w:200,h:24};e.buttons=[{id:'radio-seek',bounds:e.timelineBounds}];
+ let seeks=0;const seek=e.preview.seek.bind(e.preview);e.preview.seek=v=>{seeks++;seek(v);};
+ e.handlePointerDown({x:30,y:20,pointerId:1});
+ for(let x=40;x<=160;x+=10)e.handlePointerMove({x,y:20,pointerId:1});
+ assert.equal(seeks,0);assert.equal(e.seekDrag.seconds,75);
+ e.handlePointerUp({x:160,y:20,pointerId:1});assert.equal(seeks,1);assert.equal(e.preview.audio.currentTime,75);assert.equal(e.preview.playing,false);
+ await e.handleMenuAction('radio-seek-forward');assert.equal(e.preview.audio.currentTime,80);
+ e.seekPreview(-10);assert.equal(e.preview.audio.currentTime,0);
+ e.seekPreview(500);assert.equal(e.preview.audio.currentTime,99.99);
+});
+test('both drop markers save at the playhead without replacing audio or stopping playback',async()=>{
+ const {e,game}=await editor();e.preview.createAudio=()=>({currentTime:0,duration:100,async play(){},pause(){},removeAttribute(){},load(){}});
+ await e.togglePreview();const audio=e.preview.audio;audio.currentTime=12.345;
+ await e.markMusicDrop('start');assert.equal(e.preview.audio,audio);assert.equal(e.preview.playing,true);assert.equal(audio.currentTime,12.345);
+ audio.currentTime=65.432;await e.markMusicDrop('end');
+ assert.deepEqual(game.radio.library.tracks[0].raceCues,{start:12.35,end:65.43});assert.equal(e.preview.audio,audio);assert.equal(e.preview.currentTrack.raceCues.end,65.43);
+ await e.history();assert.equal(e.track.raceCues.end,null);assert.equal(e.track.raceCues.start,12.35);
+});
+for(const [width,height,mobile] of [[1280,800,false],[390,844,true],[844,390,true]])test(`seek and marker buttons remain inside the work surface ${width}x${height}`,async()=>{
+ const {e,game}=await editor();game.deviceIsMobile=mobile;game.isMobile=mobile;game.viewport={width,height,isMobile:mobile};
+ const noop=()=>{},ctx=new Proxy({measureText:v=>({width:String(v).length*7}),createLinearGradient:()=>({addColorStop:noop}),createRadialGradient:()=>({addColorStop:noop})},{get:(o,k)=>k in o?o[k]:noop});
+ e.draw(ctx,width,height);const surface=e.radioBounds;
+ for(const id of ['radio-seek','track-start-here','track-end-here']){
+  const b=e.buttons.find(b=>b.id===id).bounds;
+  assert.ok(b.x>=surface.x&&b.y>=surface.y&&b.x+b.w<=surface.x+surface.w&&b.y+b.h<=surface.y+surface.h,`${id} ${JSON.stringify({b,surface})}`);
+ }
+});
