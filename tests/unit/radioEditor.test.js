@@ -98,7 +98,7 @@ for(const [width,height,mobile] of [[1280,800,false],[390,844,true]])test(`trans
  e.preview.createAudio=()=>({currentTime:0,async play(){},pause(){},removeAttribute(){},load(){}});
  const noop=()=>{},ctx=new Proxy({measureText:v=>({width:String(v).length*7}),createLinearGradient:()=>({addColorStop:noop}),createRadialGradient:()=>({addColorStop:noop})},{get:(o,k)=>k in o?o[k]:noop});
  e.draw(ctx,width,height);
- const b=e.buttons.find(b=>b.id==='radio-play').bounds,p={x:b.x+b.w/2,y:b.y+b.h/2};
+ const b=e.buttons.filter(b=>b.id==='radio-play').at(-1).bounds,p={x:b.x+b.w/2,y:b.y+b.h/2};
  e.handlePointerDown(p);e.handlePointerUp(p);await new Promise(resolve=>setImmediate(resolve));
  assert.equal(e.preview.playing,true);
  e.handlePointerDown(p);await new Promise(resolve=>setTimeout(resolve,550));e.handlePointerUp(p);
