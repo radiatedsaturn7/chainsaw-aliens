@@ -116,3 +116,14 @@ test('generic damping, differential and brake settings reach authored overriding
  const tuning=new RaceEditor({}).getRaceCarTuning(modified);
  assert.equal(tuning.bumpFront,0.7);assert.equal(tuning.reboundFront,0.7);assert.equal(tuning.frontDifferentialAccel,0.8);assert.equal(tuning.rearDifferentialAccel,0.8);assert.equal(tuning.frontBrakeBias,0.55);
 });
+test('suspension upgrades work on legacy saved cars whose SI profile is filled in at race time',async()=>{
+ const {createBuiltInRaceCars}=await import('../../src/racing/raceData.js');
+ const {createVehicleDynamicsConfigFromTuning}=await import('../../src/racing/simulation/VehicleDynamicsRunner.js');
+ const car=createBuiltInRaceCars().find(c=>c.tuning.physicalVehicleProfile);delete car.tuning.physicalVehicleProfile;
+ car.tuning.springFront=0.5;
+ const editor=new RaceEditor({}),baseline=createVehicleDynamicsConfigFromTuning(editor.getRaceCarTuning(car));
+ const modified=buildGarageCar(car,{parts:[part('springs',{modifiers:[{field:'springFront',operation:'set',value:0.9}]})]});
+ const upgraded=createVehicleDynamicsConfigFromTuning(editor.getRaceCarTuning(modified));
+ assert.ok(upgraded.suspensionSpringRateFrontNpm>baseline.suspensionSpringRateFrontNpm);
+ assert.equal(car.tuning.physicalVehicleProfile,undefined);
+});

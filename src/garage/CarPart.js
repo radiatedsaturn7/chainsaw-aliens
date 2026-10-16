@@ -1,3 +1,4 @@
+import {createBuiltInRaceCars} from '../racing/raceData.js';
 import {PowertrainModel} from '../racing/simulation/PowertrainModel.js';
 import {applyTireDefinition} from '../racing/raceTires.js';
 
@@ -123,6 +124,12 @@ function changeSetting(car,change){
 export function buildGarageCar(stock,{parts=[],tune={},tires={}}={}){
  const car=structuredClone(stock);car.tuning||={};
  const installed=parts.slice().sort((a,b)=>a.carPart.slot.localeCompare(b.carPart.slot));
+ // Older saved cars get this same fallback in RaceEditor. Materialize it on
+ // the runtime clone so suspension upgrades are not masked by that fallback.
+ if(installed.length&&!car.tuning.physicalVehicleProfile&&!car.physicalVehicleProfile){
+  const profile=createBuiltInRaceCars().find(candidate=>candidate.id===car.id)?.tuning?.physicalVehicleProfile;
+  if(profile)car.tuning.physicalVehicleProfile=structuredClone(profile);
+ }
  for(const item of installed){
   const part=normalizeCarPart(item.carPart);
   if(part.tireRef){if(!tires[part.tireRef])throw Error(`Tire unavailable: ${part.tireRef}`);applyTireDefinition(car,tires[part.tireRef],part.tireRef);}
