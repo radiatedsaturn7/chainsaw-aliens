@@ -689,7 +689,10 @@ themedTest('wrx', 'WRX GT free rev on an uphill grade follows the surface withou
   const rearHeight = -slope * WRX_GT_CONFIG.rearAxleDistanceFromCgM;
   const runner = new VehicleDynamicsRunner({
     config: { ...WRX_GT_CONFIG, telemetryRetention: 'none' },
-    initialState: { heightM: WRX_GT_CONFIG.cgHeightM },
+    // Start parked on the grade rather than inserting a horizontal chassis
+    // into the uphill road. This case isolates free-rev torque, not recovery
+    // from an initially penetrating body.
+    initialState: { heightM: WRX_GT_CONFIG.cgHeightM, pitchRad: -Math.atan(slope) },
     inputTimeline: [{
       timeSeconds: 0,
       input: { throttle: 1, clutch: 1, requestedGear: 1 }
@@ -699,6 +702,10 @@ themedTest('wrx', 'WRX GT free rev on an uphill grade follows the surface withou
       surfaceNormalByWheel: {
         fl: surfaceNormal, fr: surfaceNormal, rl: surfaceNormal, rr: surfaceNormal
       },
+      // Wheel footprints and chassis contact queries share the same road plane.
+      sampleTerrainAtWorldPoint: (point) => ({
+        heightM: slope * point.z, normal: surfaceNormal, friction: 1
+      }),
       targetVelocityWorld: { x: 0, y: 0, z: 0 }
     })
   });

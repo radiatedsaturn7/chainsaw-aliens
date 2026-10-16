@@ -16,7 +16,8 @@ test('saved WRX2 uphill restart downshifts through RaceEditor and keeps physical
   e.selectedRace.road.width=12;e.selectedRace.road.tileMap=null;
   const loaded=e.normalizeLoadedCarDocument(car);Object.assign(e.selectedCar,loaded);
   e.raceInput.transmissionMode='automatic';
-  e.startPlaytest(e.selectedCar.id,{hydrateCars:false});
+  const preparedWorldBake=e.buildRaceWorldBake(e.getRacePlaytestWorldBakeOptions());
+  e.startPlaytest(e.selectedCar.id,{hydrateCars:false,preparedWorldBake});
   const s=e.playtestSession;s.countdownRemainingMs=0;s.startupFramePending=false;s.launchLockMs=0;
   e.updatePlaytestSafely(0);const runner=s.vehicleDynamicsRunner;
   const initial=runner.createStateSnapshot();
