@@ -9,7 +9,7 @@ export class RadioPlayer {
     this.getInventory=getInventory;this.createAudio = createAudio;this.loadPreference = load;this.savePreference = save;this.onChange = onChange;
     this.library = normalizeRadioLibrary();this.progress = normalizeRadioProgress();
     this.contextEnabled = false;this.audio = null;this.trackId = '';this.playing = false;this.error = '';
-    this.generation = 0;this.saveQueue = Promise.resolve();this.volume = 0.8;
+    this.repeatMode = 'all';this.generation = 0;this.saveQueue = Promise.resolve();this.volume = 0.8;
   }
   async load() {
     if (!this.loading) this.loading = Promise.all([this.loadPreference(RADIO_LIBRARY_KEY, {}), this.loadPreference(RADIO_PROGRESS_KEY, {})]).then(async ([library, progress]) => {
@@ -68,7 +68,7 @@ export class RadioPlayer {
     if (!this.audio || track.id !== this.trackId) {
       this.stop();this.trackId = track.id;this.audio = this.createAudio();this.audio.src = track.src;this.audio.volume = this.volume;
       const audio = this.audio;
-      audio.onended = () => {if (this.audio === audio) void this.skip();};
+      audio.onended = () => {if (this.audio === audio) void this.advance();};
       audio.onerror = () => {if (this.audio === audio) {this.error = `Could not play ${track.title}`;this.pause();}};
     }
     const audio = this.audio, generation = ++this.generation;this.error = '';
@@ -79,6 +79,18 @@ export class RadioPlayer {
   stop() {
     this.pause();if (this.audio) {this.audio.onended = null;this.audio.onerror = null;this.audio.removeAttribute('src');this.audio.load();}
     this.audio = null;this.trackId = '';
+  }
+  async advance() {
+    if (!this.playing || !this.available) return false;
+    if (this.repeatMode === 'one') {
+      this.audio.currentTime = 0;
+      return this.play(this.trackId);
+    }
+    const index = this.tracks.findIndex(track => track.id === this.trackId);
+    if (this.repeatMode === 'off' && index === this.tracks.length - 1) {
+      this.pause();this.audio.currentTime = 0;return false;
+    }
+    return this.skip();
   }
   async skip(direction = 1) {
     const tracks = this.tracks;if (!tracks.length) {this.stop();return false;}

@@ -75,3 +75,39 @@ test('selected unassigned songs preview without saving membership or gameplay un
  assert.equal(e.isActionAvailable('radio-play'),true);
  await e.togglePreview();assert.equal(e.preview.trackId,'two');assert.equal(e.preview.playing,true);
 });
+
+test('automatic playback follows the queue, updates selection, stops at the end and supports repeat all/song',async()=>{
+ const {e}=await editor();
+ e.preview.createAudio=()=>({currentTime:0,async play(){},pause(){},removeAttribute(){},load(){}});
+ e.selectTrack('two');await e.membership();e.selectTrack('one');
+ await e.togglePreview();
+ const ended=async()=>{e.preview.audio.onended();await new Promise(resolve=>setImmediate(resolve));};
+ await ended();assert.equal(e.preview.trackId,'two');assert.equal(e.trackId,'two');
+ await ended();assert.equal(e.preview.playing,false);assert.equal(e.preview.audio.currentTime,0);
+ await e.handleMenuAction('radio-loop');assert.equal(e.preview.repeatMode,'all');
+ await e.togglePreview();await ended();assert.equal(e.trackId,'one');assert.equal(e.preview.playing,true);
+ await e.handleMenuAction('radio-loop');assert.equal(e.preview.repeatMode,'one');
+ const audio=e.preview.audio;audio.currentTime=42;await ended();
+ assert.equal(e.preview.audio,audio);assert.equal(audio.currentTime,0);assert.equal(e.trackId,'one');
+ await e.handleMenuAction('radio-next');assert.equal(e.trackId,'two');
+ await e.handleMenuAction('radio-stop');assert.equal(e.preview.playing,false);assert.equal(e.preview.audio,null);
+});
+
+for(const [width,height,mobile] of [[1280,800,false],[390,844,true]])test(`transport tap/hold and popup hit targets at ${width}x${height}`,async()=>{
+ const {e,game}=await editor();game.deviceIsMobile=mobile;game.isMobile=mobile;game.viewport={width,height,isMobile:mobile};
+ e.preview.createAudio=()=>({currentTime:0,async play(){},pause(){},removeAttribute(){},load(){}});
+ const noop=()=>{},ctx=new Proxy({measureText:v=>({width:String(v).length*7}),createLinearGradient:()=>({addColorStop:noop}),createRadialGradient:()=>({addColorStop:noop})},{get:(o,k)=>k in o?o[k]:noop});
+ e.draw(ctx,width,height);
+ const b=e.buttons.find(b=>b.id==='radio-play').bounds,p={x:b.x+b.w/2,y:b.y+b.h/2};
+ e.handlePointerDown(p);e.handlePointerUp(p);await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(e.preview.playing,true);
+ e.handlePointerDown(p);await new Promise(resolve=>setTimeout(resolve,550));e.handlePointerUp(p);
+ assert.ok(e.transportPopover);assert.equal(e.preview.playing,true);
+ e.draw(ctx,width,height);
+ assert.equal(e.transportPopoverButtons.length,6);
+ for(const {bounds:b} of e.transportPopoverButtons){assert.ok(b.x>=0&&b.y>=0&&b.x+b.w<=width&&b.y+b.h<=height);}
+ const loop=e.transportPopoverButtons.find(b=>b.id==='radio-loop').bounds;
+ const point={x:loop.x+loop.w/2,y:loop.y+loop.h/2};e.handlePointerDown(point);e.handlePointerUp(point);
+ await new Promise(resolve=>setImmediate(resolve));assert.equal(e.preview.repeatMode,'all');assert.equal(e.transportPopover,null);
+ e.openTransportPopover(b);e.cancel();assert.equal(e.transportPopover,null);assert.equal(game.state,'radio-editor');
+});

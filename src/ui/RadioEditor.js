@@ -6,7 +6,7 @@ import { RadioPlayer } from '../radio/RadioPlayer.js';
 import { RadioNowPlaying } from './RadioNowPlaying.js';
 import { getEditorMenuSpec, getEditorControllerRootMenuEntries } from './shared/editorMenuSpec.js';
 import { EditorInputActionNormalizer, EDITOR_INPUT_ACTIONS as INPUT } from './shared/input/editorInputActions.js';
-import { drawSharedDesktopContextPanel, drawSharedPanel, drawSharedPlayStopButton, UI_SUITE } from './uiSuite.js';
+import { drawSharedDesktopContextPanel, drawSharedPanel, drawSharedPlayStopButton, drawSharedTransportPopover, UI_SUITE } from './uiSuite.js';
 
 const text = (id, label, value = '') => ({id, label, value, type:'text'});
 const select = (id, label, value, options) => ({id, label, value, options});
@@ -20,8 +20,8 @@ const readFile = file => new Promise((resolve,reject) => {
 const labels = {
   new:'New Library', save:'Save Library', 'save-as':'Save Library As', open:'Open Library', export:'Export Library', import:'Import Library',
   'radio-focus-stations':'Focus Stations', 'radio-focus-tracks':'Focus Tracks',
-  'radio-import':'Upload MP3', 'radio-play':'Play / Pause Station',
-  'radio-stop':'Stop Preview', 'radio-next':'Next Track', 'radio-previous':'Previous Track',
+  'radio-import':'Upload MP3', 'radio-play':'Play / Pause Song',
+  'radio-loop':'Repeat', 'radio-restart':'Rewind to Start', 'radio-stop':'Stop Preview', 'radio-next':'Next Track', 'radio-previous':'Previous Track',
   'station-new':'New Station', 'station-properties':'Station Properties', 'station-logo':'Station Logo',
   'station-delete':'Delete Station', 'track-properties':'Track Properties', 'track-art':'Album Artwork',
   'track-membership':'Add / Remove from Station', 'track-up':'Move Earlier', 'track-down':'Move Later',
@@ -44,7 +44,9 @@ export class RadioEditor extends RaceEditor {
     // Audition uses its own progress: locked songs can be heard without unlocking them.
     this.preview = new RadioPlayer({load:async()=>({}),save:async()=>({ok:true}),onChange:()=>{
       this.game.audio?.setRadioPlaying?.(Boolean(this.preview?.playing || this.game.radio?.playing));
+      if(this.preview?.playing && this.preview.trackId)this.trackId=this.preview.trackId;
     }});
+    this.preview.repeatMode='off';
     this.status = 'Select a station or upload an MP3.';
   }
   get editorId() { return 'radio'; }
@@ -68,7 +70,7 @@ export class RadioEditor extends RaceEditor {
       await this.game.radio.load();await this.preview.load();
       this.library=normalizeRadioLibrary(this.game.radio.library);
       this.undoLibraries=[];this.redoLibraries=[];this.syncSelection();this.syncPreview();
-      this.status='Select a station and tracks. Changes save automatically.';
+      this.status='Tap Play; hold for transport controls. Changes save automatically.';
     });
   }
   syncSelection() {
@@ -106,15 +108,22 @@ export class RadioEditor extends RaceEditor {
   async togglePreview() {
     if(this.preview.playing){this.preview.pause();return;}
     if(!this.track){this.status='Select a song before playing.';return;}
+    this.preparePreviewQueue();
+    await this.preview.play(this.trackId);this.status=this.preview.error||`Previewing ${this.track.title}`;
+  }
+  preparePreviewQueue() {
     // Audition unassigned songs without adding them to the saved station.
     const station=this.station||{id:'preview',name:'Preview',trackIds:[]};
-    const trackIds=station.trackIds.includes(this.trackId)?station.trackIds:[this.trackId];
+    const trackIds=station.trackIds.includes(this.trackId)?station.trackIds:this.visibleTracks.map(track=>track.id);
     this.preview.library={...this.library,stations:[{...station,trackIds}]};
     this.preview.progress.stationId=station.id;
     this.preview.setVolume(this.game.audio?.midiBusVolume??0.8);
-    await this.preview.play(this.trackId);this.status=this.preview.error||`Previewing ${this.track.title}`;
   }
-  exitToMainMenu() {this.preview.stop();this.game.transitionTo('title',{forceCleanup:true});}
+  async stepPreview(direction) {
+    if(!this.preview.audio){this.preparePreviewQueue();this.preview.trackId=this.trackId;}
+    return direction<0?this.preview.rewind():this.preview.skip();
+  }
+  exitToMainMenu() {this.cancelTransportHold();this.closeTransportPopover();this.preview.stop();this.game.transitionTo('title',{forceCleanup:true});}
   options() {return this.run(async()=>{
     const radio=this.game.radio;await radio.load();
     const result=await openEditorForm('Radio Options',[select('enabled','Enable radio',radio.progress.enabled?'yes':'no',yesNo)]);
@@ -197,7 +206,10 @@ export class RadioEditor extends RaceEditor {
     library[key]=library[key].filter(item=>item.id!==selected.id);await this.commit(library);
   }
   getMenuItems(root) {const spec=getEditorMenuSpec(this.editorId);return(spec.sections[root]?.actions||[]).map(id=>({id,label:this.getRaceActionLabel(id),disabled:!this.isActionAvailable(id),onSelect:()=>this.handleMenuAction(id)}));}
-  getRaceActionLabel(id) {return labels[id]||id;}
+  getRaceActionLabel(id) {
+    if(id==='radio-loop')return 'Repeat: '+({off:'Off',all:'All',one:'Song'}[this.preview.repeatMode]);
+    return labels[id]||id;
+  }
   isActionAvailable(id) {
     if(this.opened)return false;
     if(id==='undo')return this.undoLibraries.length>0;
@@ -218,12 +230,67 @@ export class RadioEditor extends RaceEditor {
       'station-new':()=>this.editStation(true),'station-properties':()=>this.editStation(),'station-logo':()=>this.chooseArtwork(true),'station-delete':()=>this.remove(true),
       'track-properties':()=>this.editTrack(),'track-art':()=>this.chooseArtwork(),'track-delete':()=>this.remove(),
       'track-membership':()=>this.membership(),'track-up':()=>this.moveTrack(-1),'track-down':()=>this.moveTrack(1),
-      'radio-play':()=>this.togglePreview(),'radio-stop':()=>this.preview.stop(),'radio-next':()=>this.preview.skip(),'radio-previous':()=>this.preview.rewind(),
+      'radio-loop':()=>{const modes=['off','all','one'];this.preview.repeatMode=modes[(modes.indexOf(this.preview.repeatMode)+1)%3];},
+      'radio-restart':()=>{if(this.preview.audio)this.preview.audio.currentTime=0;},
+      'radio-play':()=>this.togglePreview(),'radio-stop':()=>this.preview.stop(),'radio-next':()=>this.stepPreview(1),'radio-previous':()=>this.stepPreview(-1),
       'exit-main':()=>this.exitToMainMenu()
     };
     return this.run(actions[id]||(()=>{}));
   }
   getRacePortraitContextAction() {return{id:'radio-play',label:this.preview.playing?'Pause':'Play',onClick:()=>this.handleMenuAction('radio-play')};}
+  getTransportActions() {
+    return [
+      ['radio-previous','⏮',0,0],['radio-restart','⏪',0,1],
+      ['radio-next','⏭',0,2],['radio-stop','■',0,3],
+      ['radio-play',this.preview.playing?'❚❚':'▶',1,1],
+      ['radio-loop',this.preview.repeatMode==='one'?'↻1':'∞',1,2]
+    ].map(([id,label,col,row])=>({id,label,col,row,primary:id==='radio-play',
+      active:id==='radio-loop'?this.preview.repeatMode!=='off':id==='radio-play'&&this.preview.playing,
+      action:()=>this.handleMenuAction(id)}));
+  }
+  openTransportPopover(anchor) {this.transportPopover={anchor:{...anchor}};}
+  closeTransportPopover() {this.transportPopover=null;this.transportPopoverButtons=[];}
+  cancelTransportHold() {clearTimeout(this.transportHold?.timer);this.transportHold=null;}
+  draw(ctx,width,height) {
+    super.draw(ctx,width,height);
+    if(this.transportPopover){
+      const layout=drawSharedTransportPopover(ctx,this.transportPopover.anchor,{x:0,y:0,w:width,h:height},this.getTransportActions(),{columns:2,columnWidth:54,rowHeight:42});
+      this.transportPopoverButtons=layout.buttons.map(b=>({id:b.id,bounds:b.bounds,onClick:b.action}));
+      this.buttons.push(...this.transportPopoverButtons);
+    }
+  }
+  handlePointerDown(payload={}) {
+    const inside=b=>payload.x>=b.x&&payload.x<=b.x+b.w&&payload.y>=b.y&&payload.y<=b.y+b.h;
+    if(this.transportPopover){
+      const hit=this.transportPopoverButtons?.find(b=>inside(b.bounds));
+      this.closeTransportPopover();hit?.onClick();return;
+    }
+    const hit=[...this.buttons].reverse().find(b=>inside(b.bounds));
+    if(hit?.id==='radio-play'&&!this.opened){
+      this.cancelTransportHold();
+      const hold={x:payload.x,y:payload.y,button:hit,fired:false};
+      hold.timer=setTimeout(()=>{hold.fired=true;this.openTransportPopover(hit.bounds);},500);
+      this.transportHold=hold;return;
+    }
+    return super.handlePointerDown(payload);
+  }
+  handlePointerMove(payload={}) {
+    if(this.transportHold){
+      if(Math.hypot(payload.x-this.transportHold.x,payload.y-this.transportHold.y)>12){
+        clearTimeout(this.transportHold.timer);this.transportHold.fired=true;
+      }
+      return;
+    }
+    return super.handlePointerMove(payload);
+  }
+  handlePointerUp(payload={}) {
+    if(this.transportHold){
+      const hold=this.transportHold;this.cancelTransportHold();
+      const b=hold.button.bounds;
+      if(!hold.fired&&payload.x>=b.x&&payload.x<=b.x+b.w&&payload.y>=b.y&&payload.y<=b.y+b.h)hold.button.onClick?.();return;
+    }
+    return super.handlePointerUp(payload);
+  }
   getDesktopContextActions() {return [];}
   drawDesktopContext(ctx,bounds) {drawSharedDesktopContextPanel(ctx,bounds,{title:this.title,lines:[`Station: ${this.station?.name||'None'}`,`Track: ${this.track?.title||'None'}`,this.track?.artist||'',this.track?.album||'',`${this.library.stations.length} stations · ${this.library.tracks.length} tracks`],contentRoles:['document-summary','active-tool-summary','status'],status:this.preview.error||this.status});}
   drawLandscapeToolOptions(ctx,bounds) {drawSharedDesktopContextPanel(ctx,bounds,{title:this.station?.name||this.title,lines:[],contentRoles:['status'],status:this.preview.error||this.status});}
@@ -238,8 +305,9 @@ export class RadioEditor extends RaceEditor {
     drawSharedPanel(ctx,bounds,{fill:UI_SUITE.colors.bg,border:UI_SUITE.colors.border});
     ctx.save();ctx.fillStyle=UI_SUITE.colors.text;ctx.font=`14px ${UI_SUITE.font.family}`;ctx.textAlign='left';
     const compact=bounds.h<360;
+    const repeat=this.getRaceActionLabel('radio-loop');
     const title=this.preview.currentTrack?`${this.preview.playing?'Playing':'Paused'}: ${this.preview.currentTrack.title}`:'Station preview';
-    if(!compact)ctx.fillText(title,bounds.x+12,bounds.y+64,bounds.w-24);
+    if(!compact)ctx.fillText(title+' · '+repeat,bounds.x+12,bounds.y+64,bounds.w-24);
     ctx.font=`12px ${UI_SUITE.font.family}`;ctx.fillStyle=UI_SUITE.colors.muted;
     ctx.fillText(this.preview.error||this.status,bounds.x+12,bounds.y+(compact?54:84),bounds.w-24);
     const wide=bounds.w>=620||compact,top=bounds.y+(compact?66:100),height=Math.max(80,bounds.h-(compact?116:160));
@@ -281,6 +349,7 @@ export class RadioEditor extends RaceEditor {
     this.menuScrollState[`radio:${this.focusList}`]=Math.max(0,((index+direction+list.length)%list.length));
   }
   cancel() {
+    if(this.transportPopover){this.closeTransportPopover();return;}
     if(this.desktopDropdown){this.closeEditorMenus();return;}
     if(this.gamepadSubmenuOpen){this.gamepadSubmenuOpen=false;this.mobileRootOpen=true;return;}
     if(this.mobileRootOpen){this.mobileRootOpen=false;return;}

@@ -51,6 +51,34 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors a 
  if(mobile)await clickRadio(page,'undo');else await page.keyboard.press('Control+z');await radioReady(page);await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.track.image.artRef)).toBe('');
  if(mobile)await clickRadio(page,'redo');else await page.keyboard.press('Control+y');await radioReady(page);await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.track.image.artRef)).toBe(name);
  await clickRadio(page,'radio-play');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.playing)).toBe(true);expect(await page.evaluate(()=>Object.keys(window.__game.items.progress.bags.radio))).toEqual([]);
+
+ // Match Pixel/MIDI: short press toggles, hold opens the shared transport.
+ const transportPoint=await page.evaluate(()=>{const g=window.__game,b=g.radioEditor.buttons.find(b=>b.id==='radio-play').bounds,r=g.canvas.getBoundingClientRect();return{x:r.x+(b.x+b.w/2)*r.width/g.viewport.width,y:r.y+(b.y+b.h/2)*r.height/g.viewport.height};});
+ await page.mouse.move(transportPoint.x,transportPoint.y);await page.mouse.down();await page.waitForTimeout(600);await page.mouse.up();
+ await expect.poll(()=>page.evaluate(()=>Boolean(window.__game.radioEditor.transportPopover))).toBe(true);
+ await page.screenshot({path:`test-results/radio-transport-${mobile?'portrait':'desktop'}.png`});
+ await clickRadio(page,'radio-loop');
+ await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.repeatMode)).toBe('all');
+ await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.transportPopover)).toBe(null);
+ // Add a second song to exercise the real audio ended handler without waiting
+ // for the full 30-second silence fixture.
+ await page.evaluate(async()=>{
+   const e=window.__game.radioEditor,next=structuredClone(e.library),original=e.track;
+   next.tracks.push({...structuredClone(original),id:'transport-second',title:'Second song'});
+   next.stations.find(s=>s.id===e.stationId).trackIds.push('transport-second');
+   await e.commit(next);await e.togglePreview();e.preview.audio.dispatchEvent(new Event('ended'));
+ });
+ await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.trackId)).toBe('transport-second');
+ await radioAction(page,'radio-loop');
+ await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.repeatMode)).toBe('one');
+ await page.evaluate(()=>{const a=window.__game.radioEditor.preview.audio;a.currentTime=8;a.dispatchEvent(new Event('ended'));});
+ await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.audio.currentTime)).toBeLessThan(3);
+ expect(await page.evaluate(()=>window.__game.radioEditor.trackId)).toBe('transport-second');
+ await radioAction(page,'radio-loop');
+ await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.repeatMode)).toBe('off');
+ await page.evaluate(()=>window.__game.radioEditor.preview.audio.dispatchEvent(new Event('ended')));
+ await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.playing)).toBe(false);
+ await clickRadio(page,'radio-play');
  await page.screenshot({path:`test-results/radio-editor-${mobile?'portrait':'desktop'}.png`});
  await clickRadio(page,'radio-play');await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.playing)).toBe(false);
  await page.evaluate(()=>window.__game.radioEditor.exitToMainMenu());
