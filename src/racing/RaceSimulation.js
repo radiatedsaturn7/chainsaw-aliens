@@ -4015,7 +4015,7 @@ export function updateRaceSimulation({
       editor.playtestSession.passedCheckpoints = [];
       if (editor.playtestSession.lap > Math.max(1, Number(editor.selectedRace.laps || 1))) {
         editor.playtestSession.lap = Math.max(1, Number(editor.selectedRace.laps || 1));
-        editor.finishPlaytest();
+        (editor.showRaceResults || editor.finishPlaytest).call(editor);
         return;
       }
     }
@@ -4041,7 +4041,7 @@ export function updateRaceSimulation({
       && checkpointsComplete)
       || (integratedFinish && checkpointsComplete))) {
       editor.playtestSession.distance = routeLength;
-      editor.finishPlaytest();
+      (editor.showRaceResults || editor.finishPlaytest).call(editor);
       return;
     }
   }

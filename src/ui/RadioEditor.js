@@ -2,6 +2,7 @@ import RaceEditor from './RaceEditor.js';
 import { openEditorForm, chooseEditorFiles } from './shared/editorForm.js';
 import { chooseImage } from './MenuDesignerForms.js';
 import { createRadioId, normalizeRadioLibrary } from '../radio/RadioLibrary.js';
+import { RaceRadioDirector } from '../radio/RaceRadioDirector.js';
 import { RadioPlayer } from '../radio/RadioPlayer.js';
 import { RadioNowPlaying } from './RadioNowPlaying.js';
 import { getEditorMenuSpec, getEditorControllerRootMenuEntries } from './shared/editorMenuSpec.js';
@@ -23,6 +24,7 @@ const labels = {
   'radio-import':'Upload MP3', 'radio-play':'Play / Pause Song',
   'radio-loop':'Repeat', 'radio-restart':'Rewind to Start', 'radio-stop':'Stop Preview', 'radio-next':'Next Track', 'radio-previous':'Previous Track',
   'station-new':'New Station', 'station-properties':'Station Properties', 'station-logo':'Station Logo',
+  'track-drops':'Music Drops', 'track-start-here':'Set Start Drop at Playhead', 'track-end-here':'Set Finish Drop at Playhead', 'radio-preview-start':'Preview Race Start', 'radio-preview-end':'Preview Race Finish',
   'station-delete':'Delete Station', 'track-properties':'Track Properties', 'track-art':'Album Artwork',
   'track-membership':'Add / Remove from Station', 'track-up':'Move Earlier', 'track-down':'Move Later',
   'track-delete':'Delete Track', 'exit-main':'Exit to Main Menu', undo:'Undo', redo:'Redo'
@@ -46,6 +48,7 @@ export class RadioEditor extends RaceEditor {
       this.game.audio?.setRadioPlaying?.(Boolean(this.preview?.playing || this.game.radio?.playing));
       if(this.preview?.playing && this.preview.trackId)this.trackId=this.preview.trackId;
     }});
+    this.cueDirector=new RaceRadioDirector(this.preview);
     this.preview.repeatMode='off';
     this.status = 'Select a station or upload an MP3.';
   }
@@ -78,6 +81,7 @@ export class RadioEditor extends RaceEditor {
     if(!this.track)this.trackId=this.visibleTracks[0]?.id||'';
   }
   syncPreview() {
+    this.clearCuePreview();
     this.preview.stop();
     this.preview.library=this.library;
     this.preview.progress={enabled:true,stationId:this.stationId,unlocked:this.library.tracks.map(t=>t.id),disabled:[]};
@@ -102,6 +106,7 @@ export class RadioEditor extends RaceEditor {
   }
   selectStation(id) {this.stationId=id;this.trackId=this.station?.trackIds[0]||this.library.tracks[0]?.id||'';this.focusList='stations';this.syncPreview();}
   selectTrack(id) {
+    this.clearCuePreview();
     if(id!==this.trackId)this.preview.stop();
     this.trackId=id;this.focusList='tracks';
   }
@@ -123,7 +128,7 @@ export class RadioEditor extends RaceEditor {
     if(!this.preview.audio){this.preparePreviewQueue();this.preview.trackId=this.trackId;}
     return direction<0?this.preview.rewind():this.preview.skip();
   }
-  exitToMainMenu() {this.cancelTransportHold();this.closeTransportPopover();this.preview.stop();this.game.transitionTo('title',{forceCleanup:true});}
+  exitToMainMenu() {this.clearCuePreview();this.cancelTransportHold();this.closeTransportPopover();this.preview.stop();this.game.transitionTo('title',{forceCleanup:true});}
   options() {return this.run(async()=>{
     const radio=this.game.radio;await radio.load();
     const result=await openEditorForm('Radio Options',[select('enabled','Enable radio',radio.progress.enabled?'yes':'no',yesNo)]);
@@ -176,6 +181,38 @@ export class RadioEditor extends RaceEditor {
     Object.assign(library.tracks.find(t=>t.id===track.id),{...fields,initiallyUnlocked:fields.initiallyUnlocked==='yes'});
     await this.commit(library);
   }
+  clearCuePreview() {this.cueDirector?.reset(false);this.cueSession=null;}
+  async editMusicDrops() {
+    const track=this.track;if(!track)return;
+    const cues=track.raceCues||{start:3,end:null};
+    const result=await openEditorForm('Music Drops',[
+      {id:'start',label:'Race start drop (seconds into song)',value:cues.start,min:0,step:0.01},
+      {id:'endEnabled',label:'Use race finish drop',type:'checkbox',value:cues.end!==null},
+      {id:'end',label:'Race finish / chorus (seconds into song)',value:cues.end??0,min:0,step:0.01}
+    ],{description:'The start cue lands on GO after a 3-second fade-in. At results, the song fades out for 0.6 seconds, then jumps to the finish cue at full volume.'});
+    if(!result)return;
+    const library=structuredClone(this.library);
+    library.tracks.find(t=>t.id===track.id).raceCues={start:result.start,end:result.endEnabled?result.end:null};
+    await this.commit(library);
+  }
+  async markMusicDrop(kind) {
+    if(!this.track||this.preview.trackId!==this.trackId||!this.preview.audio)return;
+    const library=structuredClone(this.library),track=library.tracks.find(t=>t.id===this.trackId);
+    track.raceCues={...(track.raceCues||{start:3,end:null}),[kind]:Math.round(this.preview.audio.currentTime*100)/100};
+    await this.commit(library);
+  }
+  async previewMusicDrop(kind) {
+    if(!this.track)return;
+    this.clearCuePreview();this.preview.stop();this.preparePreviewQueue();
+    const track=this.track;
+    this.cueSession={running:true,countdownRemainingMs:kind==='start'?4000:0,raceResults:kind==='end'};
+    if(kind==='end'){
+      if(track.raceCues?.end==null){this.cueSession=null;this.status='Set a finish drop in Tracks → Music Drops first.';return;}
+      await this.preview.play(track.id,{position:Math.max(0,track.raceCues.end-5),gain:1});
+      this.cueDirector.session=this.cueSession;this.cueDirector.started=true;this.cueDirector.go=true;
+    }else{this.preview.trackId=track.id;this.cueDirector.update(this.cueSession);}
+    this.status=kind==='start'?'Race start preview: 3 seconds to GO':'Race finish preview';
+  }
   async chooseArtwork(station=false) {
     const selected=station?this.station:this.track;if(!selected)return;
     const key=station?'logo':'image',element={artRef:selected[key]?.artRef};
@@ -214,20 +251,24 @@ export class RadioEditor extends RaceEditor {
     if(this.opened)return false;
     if(id==='undo')return this.undoLibraries.length>0;
     if(id==='redo')return this.redoLibraries.length>0;
+    if(['track-start-here','track-end-here'].includes(id))return !!this.preview.audio&&this.preview.trackId===this.trackId;
     if(id==='radio-play')return !!this.track;
     if(['station-properties','station-logo','station-delete'].includes(id))return !!this.station;
-    if(['track-properties','track-art','track-delete'].includes(id))return !!this.track;
+    if(['track-properties','track-art','track-delete','track-drops','radio-preview-start','radio-preview-end'].includes(id))return !!this.track;
     if(['track-membership','track-up','track-down'].includes(id))return !!this.station&&!!this.track;
     return !!getEditorMenuSpec(this.editorId).actions[id];
   }
   handleMenuAction(id) {
     if(!this.isActionAvailable(id))return;
+    if(['radio-play','radio-stop','radio-next','radio-previous','radio-restart'].includes(id))this.clearCuePreview();
     const actions={
       undo:()=>this.history(),redo:()=>this.history(true),'radio-import':()=>this.importTrack(),
       new:()=>this.newLibrary(),open:()=>this.openLibrary(),import:()=>this.openLibrary(),'save-as':()=>this.exportLibrary(true),export:()=>this.exportLibrary(),
       'radio-focus-stations':()=>{this.focusList='stations';},'radio-focus-tracks':()=>{this.focusList='tracks';},
       save:async()=>{await this.game.radio.saveLibrary(this.library);this.status='Library saved';},
       'station-new':()=>this.editStation(true),'station-properties':()=>this.editStation(),'station-logo':()=>this.chooseArtwork(true),'station-delete':()=>this.remove(true),
+      'track-drops':()=>this.editMusicDrops(),'track-start-here':()=>this.markMusicDrop('start'),'track-end-here':()=>this.markMusicDrop('end'),
+      'radio-preview-start':()=>this.previewMusicDrop('start'),'radio-preview-end':()=>this.previewMusicDrop('end'),
       'track-properties':()=>this.editTrack(),'track-art':()=>this.chooseArtwork(),'track-delete':()=>this.remove(),
       'track-membership':()=>this.membership(),'track-up':()=>this.moveTrack(-1),'track-down':()=>this.moveTrack(1),
       'radio-loop':()=>{const modes=['off','all','one'];this.preview.repeatMode=modes[(modes.indexOf(this.preview.repeatMode)+1)%3];},
@@ -358,6 +399,11 @@ export class RadioEditor extends RaceEditor {
   update(input,dt) {
     if(this.opened)return;
     this.preview.setVolume(this.game.audio?.midiBusVolume??0.8);
+    if(this.cueSession){
+      this.cueSession.countdownRemainingMs=Math.max(0,this.cueSession.countdownRemainingMs-dt*1000);
+      this.cueDirector.update(this.cueSession,{dt});
+      if(!this.cueSession.raceResults)this.status=this.cueSession.countdownRemainingMs>1000?'Race start in '+Math.ceil((this.cueSession.countdownRemainingMs-1000)/1000):'GO — start drop';
+    }
     this.updateRaceMapThumbstickPan(dt);
     const cmd=['ControlLeft','ControlRight','MetaLeft','MetaRight'].some(code=>input?.isDownCode?.(code));
     for(const [code,action] of Object.entries({KeyZ:'undo',KeyY:'redo',KeyS:'save'}))if(input?.wasCommandPressedCode?.(code)||(cmd&&input?.wasPressedCode?.(code)))void this.handleMenuAction(action);

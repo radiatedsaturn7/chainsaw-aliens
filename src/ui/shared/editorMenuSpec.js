@@ -468,8 +468,8 @@ export const EDITOR_MENU_SPECS = {
       view:section('view','View',['radio-focus-stations','radio-focus-tracks']),
       edit:section('edit','Edit',['undo','redo']),
       stations:section('stations','Stations',['station-new','station-properties','station-logo','station-delete']),
-      tracks:section('tracks','Tracks',['track-properties','track-art','track-membership','track-up','track-down','track-delete']),
-      playback:section('playback','Playback',['radio-play','radio-stop','radio-next','radio-previous','radio-restart','radio-loop'])
+      tracks:section('tracks','Tracks',['track-properties','track-drops','track-start-here','track-end-here','track-art','track-membership','track-up','track-down','track-delete']),
+      playback:section('playback','Playback',['radio-play','radio-stop','radio-next','radio-previous','radio-restart','radio-loop','radio-preview-start','radio-preview-end'])
     }
   },
   tire: {

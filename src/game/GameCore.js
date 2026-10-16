@@ -1,6 +1,7 @@
 import {itemLibrary} from '../items/ItemLibrary.js';
 import {updateLevelItems, updateLegacyItemPickups, isItemPickup, itemPlacementId, getItemSystem} from '../items/ItemPickups.js';
 import {isMixTape,mixTapeRotation,updateLevelMixTapes} from '../radio/MixTapePickup.js';
+import { RaceRadioDirector } from '../radio/RaceRadioDirector.js';
 import { RadioPlayer } from '../radio/RadioPlayer.js';
 import { RadioEditor } from '../ui/RadioEditor.js';
 import MenuEditor from '../ui/MenuEditor.js';
@@ -257,6 +258,7 @@ export default class Game {
     this.dialog = new Dialog(INTRO_LINES);
     this.hud = new HUD();
     this.radio = new RadioPlayer({getInventory:()=>getItemSystem(this),onChange:()=>this.audio?.setRadioPlaying?.(Boolean(this.radio?.playing || this.radioEditor?.preview?.playing))});
+    this.raceRadio=new RaceRadioDirector(this.radio);
     this.pauseMenu = new Pause(this.radio, message => this.showSystemToast(message));
     this.pauseMenu.onItemUsed=()=>this.transitionTo('playing');
     this.shopUI = new Shop(UPGRADE_LIST);
@@ -3434,6 +3436,7 @@ export default class Game {
       const enabled = Boolean(racing ? this.raceEditor.selectedRace?.radioEnabled !== false : inLevel && this.world?.radioEnabled !== false);
       this.radio.setContext(enabled, racing ? this.raceEditor.selectedRace?.radioStationIds : null);
       if (enabled && !this.radio.loading) void this.radio.load();
+      this.raceRadio?.update(racing?this.raceEditor.playtestSession:null,{paused:this.raceEditor?.raceInput.paused,dt});
     }
     if (this.state === 'loading') {
       this.title.update(dt);

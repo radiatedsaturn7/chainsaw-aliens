@@ -42,7 +42,7 @@ jobs:
         run: node --test tests/unit/menu*.test.js tests/unit/carDirectionalArt.test.js tests/unit/raceTravel.test.js
 
       - name: Run radio and mix tape tests
-        run: node --test tests/unit/garageParts.test.js tests/unit/itemEffects.test.js tests/unit/itemSystem.test.js tests/unit/itemInventory.test.js tests/unit/vehicleDynamicsWorkerProtocol.test.js tests/unit/radioEditor.test.js tests/unit/radioPlayer.test.js tests/unit/mixTapePickup.test.js tests/unit/doodadEditor.test.js tests/unit/raceDoodads.test.js tests/unit/pauseMenu.test.js tests/unit/titleLayout.test.js
+        run: node --test tests/unit/raceMusicDrops.test.js tests/unit/garageParts.test.js tests/unit/itemEffects.test.js tests/unit/itemSystem.test.js tests/unit/itemInventory.test.js tests/unit/vehicleDynamicsWorkerProtocol.test.js tests/unit/radioEditor.test.js tests/unit/radioPlayer.test.js tests/unit/mixTapePickup.test.js tests/unit/doodadEditor.test.js tests/unit/raceDoodads.test.js tests/unit/pauseMenu.test.js tests/unit/titleLayout.test.js
 
       - name: Run 3D model editor and runtime tests
         run: node --test tests/unit/model3d*.test.js

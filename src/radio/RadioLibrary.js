@@ -3,6 +3,10 @@ export const RADIO_LIBRARY_VERSION = 1;
 const text = value => typeof value === 'string' ? value.trim() : '';
 const unique = values => [...new Set((Array.isArray(values) ? values : []).map(text).filter(Boolean))];
 export const createRadioId = () => globalThis.crypto?.randomUUID?.() || `radio-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+export function normalizeRaceMusicCues(value = {}) {
+  const seconds=(n,fallback)=>n!==null&&n!==''&&Number.isFinite(Number(n))&&Number(n)>=0?Number(n):fallback;
+  return {start:seconds(value?.start,3),end:seconds(value?.end,null)};
+}
 export function normalizeRadioImage(value = {}) {
   return { artRef: text(value?.artRef), url: text(value?.url) };
 }
@@ -14,6 +18,7 @@ export function normalizeRadioLibrary(value = {}) {
   }).map(track => ({
     id: text(track.id), title: text(track.title) || 'Untitled track', artist: text(track.artist),
     album: text(track.album), image: normalizeRadioImage(track.image), src: text(track.src),
+    raceCues: normalizeRaceMusicCues(track.raceCues),
     initiallyUnlocked: track.initiallyUnlocked === true
   }));
   const stations = (Array.isArray(source.stations) ? source.stations : []).filter(station => {

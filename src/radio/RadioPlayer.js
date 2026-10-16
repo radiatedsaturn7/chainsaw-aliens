@@ -8,8 +8,8 @@ export class RadioPlayer {
   constructor({ createAudio = () => new Audio(), load = loadServerPreferenceAsync, save = saveServerPreference, onChange = () => {}, getInventory = () => null } = {}) {
     this.getInventory=getInventory;this.createAudio = createAudio;this.loadPreference = load;this.savePreference = save;this.onChange = onChange;
     this.library = normalizeRadioLibrary();this.progress = normalizeRadioProgress();
-    this.contextStationIds = null;this.contextEnabled = false;this.audio = null;this.trackId = '';this.playing = false;this.error = '';
-    this.repeatMode = 'all';this.generation = 0;this.saveQueue = Promise.resolve();this.volume = 0.8;
+    this.contextStationId = '';this.contextStationIds = null;this.contextEnabled = false;this.audio = null;this.trackId = '';this.playing = false;this.error = '';
+    this.repeatMode = 'all';this.generation = 0;this.saveQueue = Promise.resolve();this.volume = 0.8;this.gain=1;
   }
   async load() {
     if (!this.loading) this.loading = Promise.all([this.loadPreference(RADIO_LIBRARY_KEY, {}), this.loadPreference(RADIO_PROGRESS_KEY, {})]).then(async ([library, progress]) => {
@@ -36,16 +36,22 @@ export class RadioPlayer {
   }
   get available() { return this.progress.enabled && this.contextEnabled; }
   get stations() {return this.library.stations.filter(station=>this.contextStationIds===null||this.contextStationIds.includes(station.id));}
-  get stationId() { return this.stations.some(s => s.id === this.progress.stationId) ? this.progress.stationId : this.stations[0]?.id || ''; }
+  get stationId() { if(this.contextStationId&&this.stations.some(s=>s.id===this.contextStationId))return this.contextStationId;return this.stations.some(s => s.id === this.progress.stationId) ? this.progress.stationId : this.stations[0]?.id || ''; }
   get listeningProgress() {const inventory=this.getInventory();return inventory?.ready?{...this.progress,inventoryBacked:true,unlocked:Object.keys(inventory.progress.bags.radio).filter(id=>inventory.progress.bags.radio[id]>0)}:this.progress;}
   ownsTrack(track) {return Boolean(track&&((!this.listeningProgress.inventoryBacked&&track.initiallyUnlocked)||this.listeningProgress.unlocked.includes(track.id)));}
   get tracks() { return radioStationTracks(this.library, this.listeningProgress, this.stationId); }
+  chooseRaceStation() {
+    if(this.tracks.length)return true;
+    const station=this.stations.find(s=>radioStationTracks(this.library,this.listeningProgress,s.id).length);
+    this.contextStationId=station?.id||'';
+    return Boolean(station);
+  }
   get currentTrack() { return this.library.tracks.find(track => track.id === this.trackId) || null; }
   setContext(enabled, stationIds = null) {
     const ids=Array.isArray(stationIds)?[...new Set(stationIds.filter(id=>typeof id==='string'))]:null;
     if(this.contextEnabled===(enabled!==false)&&JSON.stringify(ids)===JSON.stringify(this.contextStationIds))return;
     const previousStation=this.stationId;
-    this.contextEnabled=enabled!==false;this.contextStationIds=ids;
+    this.contextEnabled=enabled!==false;this.contextStationIds=ids;this.contextStationId='';
     if(!this.available||previousStation!==this.stationId||!this.tracks.some(track=>track.id===this.trackId))this.stop();
     this.onChange();
   }
@@ -65,11 +71,23 @@ export class RadioPlayer {
   }
   async selectStation(id) {
     await this.load();if (!this.stations.some(station => station.id === id)) return;
-    const resume = this.playing;this.stop();const generation=this.generation;this.progress.stationId = id;this.onChange();
+    const resume = this.playing;this.stop();const generation=this.generation;this.progress.stationId = id;this.contextStationId='';this.onChange();
     await this.persist(RADIO_PROGRESS_KEY, this.progress);if (resume && generation===this.generation && this.progress.stationId===id) await this.play();
   }
-  setVolume(volume) { this.volume = Math.max(0, Math.min(1, Number(volume) || 0));if (this.audio) this.audio.volume = this.volume; }
-  async play(trackId = this.trackId) {
+  setVolume(volume) { this.volume = Math.max(0, Math.min(1, Number(volume) || 0));if (this.audio) this.audio.volume = this.volume*this.gain; }
+  setGain(gain) {this.gain=Math.max(0,Math.min(1,Number(gain)||0));if(this.audio)this.audio.volume=this.volume*this.gain;}
+  seek(seconds) {
+    const audio=this.audio;if(!audio)return;
+    const target=Math.max(0,Number(seconds)||0);
+    const apply=()=>{
+      if(this.audio!==audio)return;
+      const limit=Number.isFinite(audio.duration)?Math.max(0,audio.duration-0.01):target;
+      try{audio.currentTime=Math.min(target,limit);}catch{}
+    };
+    if(audio.readyState===0)audio.onloadedmetadata=()=>{audio.onloadedmetadata=null;apply();};
+    else apply();
+  }
+  async play(trackId = this.trackId, {position=null,gain=null}={}) {
     await this.load();if (!this.available) return false;
     const track = this.tracks.find(item => item.id === trackId) || this.tracks[0];
     if (!track) {this.stop();this.error='No unlocked, enabled tracks in this station';this.onChange();return false;}
@@ -79,14 +97,16 @@ export class RadioPlayer {
       audio.onended = () => {if (this.audio === audio) void this.advance();};
       audio.onerror = () => {if (this.audio === audio) {this.error = `Could not play ${track.title}`;this.pause();}};
     }
+    if(gain!==null)this.setGain(gain);
+    if(position!==null)this.seek(position);
     const audio = this.audio, generation = ++this.generation;this.error = '';
     try {await audio.play();if (generation !== this.generation || this.audio !== audio) return false;this.playing = true;this.onChange();return true;}
     catch (error) {if (generation === this.generation) {this.playing = false;this.error = error.message || 'Press Play to start radio';this.onChange();}return false;}
   }
   pause() {this.generation++;this.audio?.pause();this.playing = false;this.onChange();}
   stop() {
-    this.pause();if (this.audio) {this.audio.onended = null;this.audio.onerror = null;this.audio.removeAttribute('src');this.audio.load();}
-    this.audio = null;this.trackId = '';
+    this.pause();if (this.audio) {this.audio.onended = null;this.audio.onerror = null;this.audio.onloadedmetadata=null;this.audio.removeAttribute('src');this.audio.load();}
+    this.audio = null;this.trackId = '';this.gain=1;
   }
   async advance() {
     if (!this.playing || !this.available) return false;

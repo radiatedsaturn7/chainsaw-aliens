@@ -13072,6 +13072,16 @@ export default class RaceEditor {
     this.status = `Ended playtest for ${car.name}`;
   }
 
+  showRaceResults() {
+    const session=this.playtestSession;
+    if(!session||session.raceResults)return;
+    if(session.carEditorPreview){this.finishPlaytest();return;}
+    session.raceResults=true;
+    this.raceInput.paused=true;this.raceInput.pauseMenuMode='main';this.raceInput.pauseMenuIndex=1;
+    this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);
+    this.game?.stopSfxById?.('',{key:'race-engine'});
+  }
+
   finishPlaytest() {
     if (!this.playtestSession) return;
     const name = this.selectedRace?.name || 'race';
@@ -18940,6 +18950,7 @@ export default class RaceEditor {
   }
 
   toggleRacePause() {
+    if(this.playtestSession?.raceResults){this.finishPlaytest();return;}
     this.clearRaceGamepadSelectHold();
     this.raceInput.paused = !this.raceInput.paused;
     this.raceInput.activeDpadMenuDirection = null;
@@ -18978,6 +18989,10 @@ export default class RaceEditor {
   }
 
   getRacePauseMenuRows() {
+    if(this.playtestSession?.raceResults)return [
+      {id:'race-result-time',label:'Finish time',value:(Number(this.playtestSession.elapsedMs||0)/1000).toFixed(2)+' s',disabled:true},
+      {id:'race-results-continue',label:'Continue',value:'',onClick:()=>this.finishPlaytest()}
+    ];
     if(this.raceInput.pauseMenuMode==='inventory'&&this.game.items){
       this.itemInventoryMenu ||= new InventoryMenu(this.game.items,{onUse:()=>{if(this.raceInput.paused)this.toggleRacePause();},onRadio:()=>{this.raceInput.pauseMenuMode='radio';this.raceInput.pauseMenuIndex=0;},onBack:()=>{this.raceInput.pauseMenuMode='main';this.raceInput.pauseMenuIndex=0;}});
       return this.itemInventoryMenu.rows();
@@ -23268,7 +23283,7 @@ export default class RaceEditor {
   drawRacePauseOverlay(ctx, bounds) {
     const rows = this.getRacePauseMenuRows();
     const selectedIndex = clamp(Math.round(Number(this.raceInput.pauseMenuIndex || 0)), 0, Math.max(0, rows.length - 1));
-    const pauseTitle = this.raceInput.pauseMenuMode === 'inventory' ? 'Inventory' : this.raceInput.pauseMenuMode === 'radio' ? 'Radio' : this.raceInput.pauseMenuMode === 'settings'
+    const pauseTitle = this.playtestSession?.raceResults ? 'Race Results' : this.raceInput.pauseMenuMode === 'inventory' ? 'Inventory' : this.raceInput.pauseMenuMode === 'radio' ? 'Radio' : this.raceInput.pauseMenuMode === 'settings'
       ? 'Settings'
       : this.raceInput.pauseMenuMode === 'debug'
         ? 'Debug'

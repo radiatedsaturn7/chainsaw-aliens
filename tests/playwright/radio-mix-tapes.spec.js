@@ -203,3 +203,53 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} race radio
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.selectedRace.radioEnabled)).toBe(true);
  expect(await page.evaluate(()=>window.__game.raceEditor.selectedRace.radioStationIds)).toBeNull();
 });
+
+for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} music drops save, preview and sync race GO/results`,async({page})=>{
+ test.setTimeout(150000);
+ await page.setViewportSize(mobile?{width:390,height:844}:{width:1280,height:800});await ready(page);
+ await page.mouse.click(5,5); // A real user gesture permits browser media playback.
+ await page.evaluate(async({mobile,src})=>{
+  const g=window.__game;g.deviceIsMobile=mobile;g.isMobile=mobile;g.setViewport({width:innerWidth,height:innerHeight,scale:1,dpr:1,isMobile:mobile});
+  await g.radio.saveLibrary({tracks:[{id:'drop-song',title:'Drop Song',src,initiallyUnlocked:true}],stations:[{id:'drops',name:'Drops',trackIds:['drop-song']}]});
+  await g.radioEditor.open();
+ },{mobile,src:'data:audio/mpeg;base64,'+silentMp3.toString('base64')});
+ await radioAction(page,'track-drops');
+ const form=dialog(page,'Music Drops');
+ await form.getByLabel('Race start drop (seconds into song)',{exact:true}).fill('6');
+ await form.getByLabel('Use race finish drop',{exact:true}).check();
+ await form.getByLabel('Race finish / chorus (seconds into song)',{exact:true}).fill('20');
+ await page.screenshot({path:`test-results/radio-music-drops-${mobile?'portrait':'desktop'}.png`});
+ await apply(page,'Music Drops');await radioReady(page);
+ expect(await page.evaluate(()=>window.__game.radio.library.tracks[0].raceCues)).toEqual({start:6,end:20});
+ await radioAction(page,'radio-preview-start');
+ await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.playing)).toBe(true);
+ await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.status)).toBe('GO — start drop');
+ expect(await page.evaluate(()=>window.__game.radioEditor.preview.audio.currentTime)).toBeGreaterThanOrEqual(5.8);
+ await radioAction(page,'radio-preview-end');
+ await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.audio?.currentTime||0)).toBeGreaterThanOrEqual(20);
+ await page.evaluate(()=>window.__game.radioEditor.exitToMainMenu());
+ await seedRaceRuntimeFixtures(page);
+ await page.evaluate(()=>{
+  const g=window.__game;window.__raceGoSample=null;
+  const sample=()=>{
+   const s=g.raceEditor.playtestSession,a=g.radio.audio;
+   if(s?.running&&s.countdownRemainingMs>0&&s.countdownRemainingMs<=1000&&a&&g.radio.playing&&!window.__raceGoSample)
+    window.__raceGoSample={time:a.currentTime,gain:g.radio.gain};
+   if(!window.__raceGoSample)requestAnimationFrame(sample);
+  };requestAnimationFrame(sample);
+  void g.startRaceTravel({raceName:'Studio Sprint2',carSelection:'specific',carRef:'2022 Subaru WRX2'});
+ });
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
+ await expect.poll(()=>page.evaluate(()=>window.__raceGoSample),{timeout:15000}).not.toBeNull();
+ const go=await page.evaluate(()=>window.__raceGoSample);
+ expect(go.time).toBeGreaterThan(5.65);expect(go.time).toBeLessThan(6.4);expect(go.gain).toBeGreaterThan(.9);
+ await page.evaluate(()=>window.__game.raceEditor.showRaceResults());
+ await expect.poll(()=>page.evaluate(()=>window.__game.radio.audio?.currentTime||0)).toBeGreaterThanOrEqual(20);
+ expect(await page.evaluate(()=>window.__game.radio.gain)).toBe(1);
+ expect(await page.evaluate(()=>window.__game.raceEditor.raceInput.paused)).toBe(true);
+ await page.screenshot({path:`test-results/radio-race-results-${mobile?'portrait':'desktop'}.png`});
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.buttons.some(b=>b.id==='race-results-continue'))).toBe(true);
+ await clickCanvas(page,await page.evaluate(()=>window.__game.raceEditor.buttons.find(b=>b.id==='race-results-continue').bounds));
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession)).toBeNull();
+ await expect.poll(()=>page.evaluate(()=>window.__game.radio.playing)).toBe(false);
+});
