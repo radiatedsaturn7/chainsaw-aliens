@@ -522,7 +522,7 @@ test('production WRX preview controller reaches the Studio Sprint finish with sc
   }];
   const preview = editor.ensureCarEditorPreviewPlaytestSession();
   assert.ok(preview?.session);
-  assert.equal(preview.session.runtimeCar?.name, '2022 Subaru WRX');
+  assert.equal(preview.session.runtimeCar?.name, 'AWD Sports Car');
   assert.equal(preview.session.countdownRemainingMs, 0);
   preview.session.startupFramePending = false;
   const routeLength = Number(preview.session.routeLength || 0);
