@@ -14,7 +14,7 @@ export const CAR_PART_FIELDS=[
   field(`rebound${axle}`,`${axle} rebound`,0.1,1),field(`antiRoll${axle}`,`${axle} anti-roll`,0.1,1),
   field(`camber${axle}`,`${axle} camber`,-5,1,0.1),field(`toe${axle}`,`${axle} toe`,-1,1,0.1)]),
  ...['fl','fr','rl','rr'].map(wheel=>field(`pressure.${wheel}`,`${{fl:'Front left',fr:'Front right',rl:'Rear left',rr:'Rear right'}[wheel]} pressure (PSI)`,5,80,0.5)),
- field('brakeBalance','Brake balance',0,1),field('brakePressure','Brake pressure',0.1,2),
+ field('brakeBalance','Brake balance',0.45,0.78),field('brakePressure','Brake pressure',0.7,1.35),
  field('differentialAccel','Differential acceleration',0,1),field('differentialDecel','Differential deceleration',0,1),
  field('aeroFront','Front aero',0,1),field('aeroRear','Rear aero',0,1),
  field('torqueScale','Torque curve multiplier',0.1,5),
@@ -30,7 +30,7 @@ export function normalizeCarPart(value){
  const slot=safeGarageKey(value.slot);if(!slot)throw Error('Enter a part slot');
  return {slot,price:Math.max(0,finite(value.price??0,'Price')),forSale:value.forSale!==false,
   unlockKey:safeGarageKey(value.unlockKey)||'',compatibleCars:list(value.compatibleCars),requires:list(value.requires),
-  modifiers:(value.modifiers||[]).map(m=>{target(m.field);if(!['add','multiply','set'].includes(m.operation))throw Error('Choose a part operation');return {field:m.field,operation:m.operation,value:finite(m.value,'Change')};}),
+  modifiers:(value.modifiers||[]).map(m=>{target(m.field);if(m.field==='torqueScale'&&m.operation==='add')throw Error('Use Set or Multiply for torque scale');if(!['add','multiply','set'].includes(m.operation))throw Error('Choose a part operation');return {field:m.field,operation:m.operation,value:finite(m.value,'Change')};}),
   tuning:(value.tuning||[]).map(t=>{const f=target(t.field),min=finite(t.min,'Minimum'),max=finite(t.max,'Maximum'),step=finite(t.step??f.step,'Step');if(min<f.min||max>f.max||min>max||step<=0)throw Error(`Invalid tuning range for ${f.label}`);return {field:f.id,min,max,step};}),
   torqueCurve:(value.torqueCurve||[]).map(p=>({rpm:Math.max(0,finite(p.rpm,'RPM')),multiplier:Math.max(0.1,Math.min(5,finite(p.multiplier,'Torque multiplier')))})).sort((a,b)=>a.rpm-b.rpm),
   tireRef:text(value.tireRef)
@@ -97,19 +97,26 @@ function changeSetting(car,change){
  }
  // Transmission-specific values take priority in the simulator; modify both
  // the base tune and every authored transmission variant independently.
- const oldValue=readCarSetting(car,id);
+ const before=structuredClone(car.tuning);
+ const aliases=id.startsWith('damping')?[id,'bump'+id.slice(7),'rebound'+id.slice(7)]
+  :id.startsWith('differential')?[id,'front'+id[0].toUpperCase()+id.slice(1),'rear'+id[0].toUpperCase()+id.slice(1)]
+  :id==='brakeBalance'?[id,'frontBrakeBias']:[id];
  for(const tuning of [car.tuning,...Object.values(car.transmissions||{})]){
   if(id.startsWith('gearRatios.')){
    const index=Number(id.split('.')[1]);if(tuning.gearRatios?.[index]===undefined)continue;
    tuning.gearRatios[index]=Math.max(f.min,Math.min(f.max,applyNumber(tuning.gearRatios[index],change)));
-  }else if(Number.isFinite(tuning[id]))tuning[id]=Math.max(f.min,Math.min(f.max,applyNumber(tuning[id],change)));
-  else if(tuning===car.tuning&&change.operation==='set')tuning[id]=Math.max(f.min,Math.min(f.max,change.value));
+  }else for(const key of aliases){
+   if(Number.isFinite(tuning[key]))tuning[key]=Math.max(f.min,Math.min(f.max,applyNumber(tuning[key],change)));
+   else if(tuning===car.tuning)tuning[key]=Math.max(f.min,Math.min(f.max,applyNumber(Number(before[key]??before[id])||0.5,change)));
+  }
  }
  const profile=car.tuning.physicalVehicleProfile||car.physicalVehicleProfile;
  if(profile){
   for(const axle of ['Front','Rear']){
-   const physical={['spring'+axle]:[`suspensionSpringRate${axle}Npm`,12,20],['bump'+axle]:[`suspensionBumpDamper${axle}NsM`,1.7,3.1],['rebound'+axle]:[`suspensionReboundDamper${axle}NsM`,1.7,3.1]}[id];
-   if(physical&&Number.isFinite(profile[physical[0]]))profile[physical[0]]*=(physical[1]+car.tuning[id]*physical[2])/(physical[1]+(oldValue??0.5)*physical[2]);
+   for(const key of aliases){
+    const physical={['spring'+axle]:[`suspensionSpringRate${axle}Npm`,12,20],['bump'+axle]:[`suspensionBumpDamper${axle}NsM`,1.7,3.1],['rebound'+axle]:[`suspensionReboundDamper${axle}NsM`,1.7,3.1]}[key];
+    if(physical&&Number.isFinite(profile[physical[0]]))profile[physical[0]]*=(physical[1]+car.tuning[key]*physical[2])/(physical[1]+(before[key]??before[id]??0.5)*physical[2]);
+   }
   }
  }
 }

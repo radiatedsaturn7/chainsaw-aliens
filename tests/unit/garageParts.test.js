@@ -110,3 +110,9 @@ test('race travel uses garage copies and reapplies from stock on a chained race'
  assert.equal(starts[1].tuning.engineCurve.torquePoints[1].torqueLbFt,240);
  assert.equal(car.tuning.engineCurve.torquePoints[1].torqueLbFt,200);assert.notEqual(starts[0],car);
 });
+test('generic damping, differential and brake settings reach authored overriding fields',()=>{
+ const car=stock();Object.assign(car.tuning,{dampingFront:0.5,bumpFront:0.4,reboundFront:0.6,differentialAccel:0.3,frontDifferentialAccel:0.4,rearDifferentialAccel:0.5,frontBrakeBias:0.6});
+ const modified=buildGarageCar(car,{parts:[part('setup',{modifiers:[{field:'dampingFront',operation:'set',value:0.7},{field:'differentialAccel',operation:'set',value:0.8},{field:'brakeBalance',operation:'set',value:0.55}]})]});
+ const tuning=new RaceEditor({}).getRaceCarTuning(modified);
+ assert.equal(tuning.bumpFront,0.7);assert.equal(tuning.reboundFront,0.7);assert.equal(tuning.frontDifferentialAccel,0.8);assert.equal(tuning.rearDifferentialAccel,0.8);assert.equal(tuning.frontBrakeBias,0.55);
+});

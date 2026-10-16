@@ -39,7 +39,7 @@ export async function editCarPart(item,section='properties'){
   if(section==='curve')fields.push({id:`rpm${i}`,label:`${prefix}: RPM`,value:entry.rpm,min:0,visibleWhen},{id:`multiplier${i}`,label:`${prefix}: torque multiplier`,value:entry.multiplier,min:0.1,max:5,visibleWhen});
   else{
    fields.push({id:`field${i}`,label:`${prefix}: setting`,value:entry.field,options:settingOptions,visibleWhen});
-   if(section==='changes')fields.push({id:`operation${i}`,label:`${prefix}: operation`,value:entry.operation,options:options(['add','multiply','set']),visibleWhen},{id:`value${i}`,label:`${prefix}: value`,value:entry.value,visibleWhen});
+   if(section==='changes')fields.push({id:`operation${i}`,label:`${prefix}: operation`,value:entry.operation,options:s=>options(s[`field${i}`]==='torqueScale'?['multiply','set']:['add','multiply','set']),visibleWhen},{id:`value${i}`,label:`${prefix}: value`,value:entry.value,visibleWhen});
    else for(const name of ['min','max','step'])fields.push({id:`${name}${i}`,label:`${prefix}: ${name}`,value:entry[name],visibleWhen});
   }
  });
