@@ -108,7 +108,7 @@ export class RadioEditor extends RaceEditor {
   async togglePreview() {
     if(this.preview.playing){this.preview.pause();return;}
     if(!this.track){this.status='Select a song before playing.';return;}
-    this.preparePreviewQueue();
+    if(!this.preview.audio)this.preparePreviewQueue();
     await this.preview.play(this.trackId);this.status=this.preview.error||`Previewing ${this.track.title}`;
   }
   preparePreviewQueue() {

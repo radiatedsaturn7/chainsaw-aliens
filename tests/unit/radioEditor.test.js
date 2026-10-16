@@ -111,3 +111,13 @@ for(const [width,height,mobile] of [[1280,800,false],[390,844,true]])test(`trans
  await new Promise(resolve=>setImmediate(resolve));assert.equal(e.preview.repeatMode,'all');assert.equal(e.transportPopover,null);
  e.openTransportPopover(b);e.cancel();assert.equal(e.transportPopover,null);assert.equal(game.state,'radio-editor');
 });
+
+test('pausing an unassigned-song library queue preserves that queue after advancing into a station song',async()=>{
+ const {e}=await editor();
+ e.preview.createAudio=()=>({currentTime:0,async play(){},pause(){},removeAttribute(){},load(){}});
+ e.selectTrack('two');e.preview.repeatMode='all';await e.togglePreview();
+ await e.preview.advance();assert.equal(e.trackId,'one');
+ await e.togglePreview();await e.togglePreview();
+ assert.deepEqual(e.preview.tracks.map(t=>t.id),['one','two']);
+ await e.preview.advance();assert.equal(e.trackId,'two');
+});
