@@ -2370,7 +2370,8 @@ export function updateRaceSimulation({
   );
   if (!vehicleState?.running) return;
   if (input && input !== editor.raceInput) editor.raceInput = input;
-  if (editor.raceInput.paused) return;
+  if (editor.raceInput.paused || editor.playtestSession.raceResults) return;
+  if (editor.playtestSession.raceMusicPending && Number(editor.playtestSession.countdownRemainingMs||0)>1000) return;
   const car = editor.getRaceSessionCar(editor.playtestSession);
   const tuning = editor.getRaceCarTuning(car);
   const authoritativeGroundSpeedMps = Number(editor.playtestSession.groundSpeedMps

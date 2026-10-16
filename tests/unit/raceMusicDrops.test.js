@@ -68,3 +68,11 @@ test('results hold the completed race until Continue, preserving the configured 
  e.getRacePauseMenuRows().find(r=>r.id==='race-results-continue').onClick();
  assert.equal(completed,1);assert.equal(e.playtestSession,null);
 });
+
+test('music preparation holds only the staged countdown, times out, and clears on cancellation',async()=>{
+ const {radio,director,session}=await fixture();let release;radio.load=()=>new Promise(resolve=>{release=resolve;});
+ director.update(session);assert.equal(session.raceMusicPending,true);
+ director.update(session,{dt:4});assert.equal(session.raceMusicPending,true);
+ director.update(session,{dt:1});assert.equal(session.raceMusicPending,false);
+ director.reset();assert.equal(session.raceMusicPending,false);release();await tick();assert.equal(radio.audio,null);
+});

@@ -661,6 +661,14 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
       const liveSession = editor.playtestSession;
       if (!liveSession) break;
       maximumDistance = Math.max(maximumDistance, Number(liveSession.distance || 0));
+      if(liveSession.raceResults){
+        window.__wrx2ResultsShown=true;
+        if(!editor.raceInput.paused)throw Error('Finished race did not pause for results');
+        const next=editor.getRacePauseMenuRows().find(row=>row.id==='race-results-continue');
+        if(!next)throw Error('Results did not offer Continue');
+        next.onClick();
+        break;
+      }
       const nextProjection = editor.getRaceRouteProjectionForWorldPoint({
         x: Number(liveSession.worldX || 0),
         z: Number(liveSession.worldZ || 0)
@@ -690,6 +698,7 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
     return {
       updateFailed,
       completed: Boolean(window.__wrx2Finish),
+      resultsShown: Boolean(window.__wrx2ResultsShown),
       maximumDistance,
       routeLength,
       raceDocumentName: initialSession?.raceDocumentName || '',
@@ -700,6 +709,7 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
 
   expect(result.updateFailed).toBeFalsy();
   expect(result.completed).toBeTruthy();
+  expect(result.resultsShown).toBeTruthy();
   expect(result.maximumDistance).toBeGreaterThanOrEqual(result.routeLength * 0.95);
   expect(result.raceDocumentName).toBe('Studio Sprint2');
   expect(result.carDocumentName).toBe('2022 Subaru WRX2');

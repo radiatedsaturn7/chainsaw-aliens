@@ -229,7 +229,11 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} music drop
  await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.audio?.currentTime||0)).toBeGreaterThanOrEqual(20);
  await page.evaluate(()=>window.__game.radioEditor.exitToMainMenu());
  await seedRaceRuntimeFixtures(page);
- await page.evaluate(()=>{
+ await page.evaluate(async()=>{
+  const {hydrateProjectFilePayload,saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');
+  const document=structuredClone((await hydrateProjectFilePayload('races','Studio Sprint2')).data);
+  document.race.raceStart.countdown=true;document.race.radioEnabled=true;document.race.radioStationIds=null;
+  await saveProjectFileAndConfirm('races','Music Drop Race',document);
   const g=window.__game;window.__raceGoSample=null;
   const sample=()=>{
    const s=g.raceEditor.playtestSession,a=g.radio.audio;
@@ -237,7 +241,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} music drop
     window.__raceGoSample={time:a.currentTime,gain:g.radio.gain};
    if(!window.__raceGoSample)requestAnimationFrame(sample);
   };requestAnimationFrame(sample);
-  void g.startRaceTravel({raceName:'Studio Sprint2',carSelection:'specific',carRef:'2022 Subaru WRX2'});
+  void g.startRaceTravel({raceName:'Music Drop Race',carSelection:'specific',carRef:'2022 Subaru WRX2'});
  });
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
  await expect.poll(()=>page.evaluate(()=>window.__raceGoSample),{timeout:15000}).not.toBeNull();

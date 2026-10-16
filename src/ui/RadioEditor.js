@@ -400,7 +400,7 @@ export class RadioEditor extends RaceEditor {
     if(this.opened)return;
     this.preview.setVolume(this.game.audio?.midiBusVolume??0.8);
     if(this.cueSession){
-      this.cueSession.countdownRemainingMs=Math.max(0,this.cueSession.countdownRemainingMs-dt*1000);
+      if(!this.cueSession.raceMusicPending)this.cueSession.countdownRemainingMs=Math.max(0,this.cueSession.countdownRemainingMs-dt*1000);
       this.cueDirector.update(this.cueSession,{dt});
       if(!this.cueSession.raceResults)this.status=this.cueSession.countdownRemainingMs>1000?'Race start in '+Math.ceil((this.cueSession.countdownRemainingMs-1000)/1000):'GO — start drop';
     }
