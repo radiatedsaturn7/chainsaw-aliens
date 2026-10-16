@@ -26,7 +26,7 @@ for(const mobile of [false,true])test(`car presets load isolated drafts and save
  }
  expect(await page.evaluate(async()=>{const {listProjectFiles}=await import('/src/ui/projectFiles.js');return listProjectFiles('cars').map(e=>e.name);})).toEqual(before);
  await page.evaluate(()=>window.__game.carEditor.handleMenuAction('save'));
- await expect(page.locator('.project-browser-title')).toHaveText('Save Car As');
+ await expect(page.locator('.project-browser-title')).toHaveText('Save Cars as...');
  const name=`Preset FWD ${mobile?'portrait':'desktop'}`;
  await page.getByPlaceholder('Filename',{exact:true}).fill(name);
  await page.locator('.project-browser-actions').getByRole('button',{name:'Save',exact:true}).click();

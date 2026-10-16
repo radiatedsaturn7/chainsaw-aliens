@@ -104,6 +104,11 @@ test('race inventory boosts the player and fires a slowing projectile at an oppo
  test.setTimeout(150000);const errors=[];page.on('pageerror',error=>errors.push(error.message));await ready(page);await seedRaceRuntimeFixtures(page);
  await page.evaluate(async()=>{
   const g=window.__game,{hydrateProjectFile}=await import('/src/ui/serverStorage.js'),{loadProjectFile,saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');
+  // Opponents are saved user cars; system presets must not fill race slots.
+  await hydrateProjectFile('cars','2022 Subaru WRX2');
+  const opponent=structuredClone(loadProjectFile('cars','2022 Subaru WRX2').data);
+  await saveProjectFileAndConfirm('cars','Inventory Opponent',opponent);
+  g.raceEditor.hydrateProjectCarsFromSavedFiles();
   await hydrateProjectFile('races','Studio Sprint2');const data=loadProjectFile('races','Studio Sprint2').data;
   data.race.competition={...data.race.competition,mode:'ai-race',aiDrivers:g.raceEditor.createRaceAiGrid(1)};
   await saveProjectFileAndConfirm('races','Studio Sprint2',data);
