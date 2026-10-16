@@ -1421,7 +1421,10 @@ export function createDefaultRaceProject() {
   return {
     schemaVersion: 1,
     races: [createDefaultRace(), ...createBuiltInTestRaces()],
-    cars: createBuiltInRaceCars(),
+    cars: createBuiltInRaceCars().map((car, index) => ({
+      ...car, __systemPreset: true,
+      name: ['AWD Sports Car', 'RWD Sports Car', 'FWD Sports Car'][index]
+    })),
     selectedRaceId: 'test-loop',
     selectedCarId: 'starter-rwd'
   };

@@ -148,6 +148,7 @@ import { getEditorDesktopLeftContextRoles, getEditorMenuSpec, getEditorTouchRoot
 import { SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import MobileControls from './MobileControls.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
+import { CAR_PRESETS, createCarFromPreset, isUserRaceCar } from '../racing/CarPresets.js';
 import { openRaceImageImport } from './RaceImageImportModal.js';
 import { listProjectFiles, loadProjectFile, saveProjectFile, sanitizeProjectFileName } from './projectFiles.js';
 import * as THREE from '../vendorBridge/three.js';
@@ -1249,6 +1250,10 @@ export default class RaceEditor {
     const cleanName = sanitizeProjectFileName(name || car.name || car.id);
     const playtestId = this.getSavedRaceCarPlaytestId(cleanName, car);
     if (!playtestId) return car;
+    // A named user document is independent of the system/draft it came from.
+    delete car.systemFile;
+    delete car.__systemPreset;
+    delete car.__editorDraft;
     car.__playtestId = playtestId;
     car.__playtestDocumentName = cleanName;
     return car;
@@ -6169,6 +6174,7 @@ export default class RaceEditor {
       'ghost-compare': 'Ghost Compare',
       'ai-fill-grid': 'Fill AI Grid',
       'car-category': 'Category & Performance',
+      'car-load-preset': 'Load Preset',
       'race-ai-cars': 'AI Cars & Classes',
       'ai-count': `AI Racers: ${this.getRaceAiCount()}`,
       'race-sun': `Sun: ${Math.round(this.getRaceSunSettings().angleDeg)}deg`,
@@ -7589,7 +7595,7 @@ export default class RaceEditor {
   }
 
   isActionAvailable(action) {
-    return ['car-category', 'race-ai-cars'].includes(action) || RACE_EDITOR_AVAILABLE_ACTIONS.has(action);
+    return ['car-load-preset', 'car-category', 'race-ai-cars'].includes(action) || RACE_EDITOR_AVAILABLE_ACTIONS.has(action);
   }
 
   loadBuiltInRace(action) {
@@ -7776,6 +7782,11 @@ export default class RaceEditor {
 
   serializeSelectedCarDocument() {
     const car = this.normalizeLoadedCarDocument(this.cloneCarDocument() || {});
+    delete car.systemFile;
+    delete car.__systemPreset;
+    delete car.__editorDraft;
+    delete car.__playtestId;
+    delete car.__playtestDocumentName;
     return {
       schemaVersion: 2,
       kind: 'race-car',
@@ -8056,27 +8067,36 @@ export default class RaceEditor {
   }
 
   loadBuiltInCarDocument(carId = '') {
-    this.ensureBuiltInCarProjectFiles();
-    const car = createBuiltInRaceCars().find((candidate) => candidate.id === carId);
-    if (!car) {
-      this.status = 'Stock car not found';
-      return false;
-    }
-    const name = sanitizeProjectFileName(car.name || car.id);
-    const saved = name ? loadProjectFile('cars', name) : null;
-    const payload = saved?.data || {
-      schemaVersion: 2,
-      kind: 'race-car',
-      savedAt: Date.now(),
-      selectedCarId: car.id,
-      car: this.normalizeLoadedCarDocument(car, name)
-    };
-    return this.applyLoadedCarDocument(payload, { name });
+    const preset = {'starter-rwd':'awd','wrx-2022-automatic':'awd','subaru-brz-2022':'rwd','honda-civic-type-r-2023':'fwd'}[carId];
+    return preset ? this.loadCarPreset(preset) : false;
+  }
+
+  loadCarPreset(id) {
+    const car = this.normalizeLoadedCarDocument(createCarFromPreset(id));
+    this.captureRaceHistory('Load car preset');
+    this.resetCarEditorPreviewPlaytest({ preserveEditorUi: true });
+    car.__playtestId = `preset-draft:${id}`;
+    this.upsertRaceProjectCar(car);
+    this.project.selectedCarId = car.__playtestId;
+    this.currentCarDocumentName = '';
+    this.carArtSliderDrag = null;
+    this.activeRootId = 'art';
+    this.playtestSession = null;
+    this.status = `Loaded ${car.name}. Save to create a car file.`;
+    return true;
+  }
+
+  async openCarPresetPicker() {
+    const result = await openEditorForm('Load Preset', [
+      {id:'preset',label:'Car',value:'awd',options:CAR_PRESETS.map(preset=>({value:preset.id,label:preset.label}))}
+    ], {applyLabel:'Load Preset'});
+    if (result) this.loadCarPreset(result.preset);
   }
 
   saveSelectedCar({ forceSaveAs = false } = {}) {
     const selected = this.selectedCar;
     if (!selected) return null;
+    forceSaveAs ||= !this.currentCarDocumentName && (selected.__editorDraft === true || selected.__systemPreset === true);
     const fallbackName = this.getCarDocumentName({ forceSaveAs });
     if (forceSaveAs && typeof document !== 'undefined') {
       void openProjectBrowser({
@@ -8134,21 +8154,10 @@ export default class RaceEditor {
   }
 
   ensureBuiltInCarProjectFiles() {
-    createBuiltInRaceCars().forEach((car) => {
-      const name = sanitizeProjectFileName(car.name || car.id);
-      if (!name || loadProjectFile('cars', name)) return;
-      saveProjectFile('cars', name, {
-        schemaVersion: 2,
-        kind: 'race-car',
-        savedAt: Date.now(),
-        selectedCarId: car.id,
-        car: this.normalizeLoadedCarDocument(car, name)
-      }, { createVersion: false });
-    });
+    // Kept for older callers. System presets must never seed user files.
   }
 
   openCarDocument() {
-    this.ensureBuiltInCarProjectFiles();
     if (typeof document === 'undefined') {
       const name = this.currentCarDocumentName || this.getCarDocumentName();
       const payload = loadProjectFile('cars', name);
@@ -8599,6 +8608,7 @@ export default class RaceEditor {
       return;
     }
     if (action === 'new') {
+      if (this.mode === 'car') { this.loadCarPreset('awd'); return; }
       this.project = createDefaultRaceProject();
       this.playtestSession = null;
       this.selectedSegmentIndex = 0;
@@ -8641,6 +8651,7 @@ export default class RaceEditor {
       else this.openRaceDocument();
       return;
     }
+    if (action === 'car-load-preset') { void this.openCarPresetPicker(); return; }
     if (action === 'car-category') { void this.openCarCategorySettings(); return; }
     if (action === 'race-ai-cars') { void this.openRaceAiCarSettings(); return; }
     if (action === 'test-drive') {
@@ -9481,6 +9492,7 @@ export default class RaceEditor {
   createRaceAiGrid(count = 11) {
     const difficulties = ['easy', 'medium', 'hard', 'expert'];
     const cars = selectRaceAiCars(this.project.cars, 11);
+    if (!cars.length) return [];
     return Array.from({ length: Math.max(0, Math.min(11, Math.round(Number(count) || 0))) }, (_, index) => {
       const difficulty = difficulties[index % difficulties.length];
       const baseSkill = { easy: 0.38, medium: 0.58, hard: 0.76, expert: 0.92 }[difficulty];
@@ -9500,8 +9512,7 @@ export default class RaceEditor {
   getRaceAiCarSelection() {
     const rules = normalizeAiCarSelection(this.selectedRace?.competition?.carSelection);
     if (rules.availableCarIds === null) {
-      const stockNames = new Set(createBuiltInRaceCars().map(car => car.name));
-      rules.availableCarIds = this.project.cars.filter(car => car.__playtestDocumentName && !stockNames.has(car.__playtestDocumentName)).map(car => this.getRaceCarProjectIdentity(car));
+      rules.availableCarIds = this.project.cars.filter(car => isUserRaceCar(car) && car.__playtestDocumentName).map(car => this.getRaceCarProjectIdentity(car));
     }
     return rules;
   }
@@ -9544,7 +9555,7 @@ export default class RaceEditor {
 
   async openRaceAiCarSettings() {
     this.hydrateProjectCarsFromSavedFiles();
-    const rules=this.getRaceAiCarSelection(),cars=this.project.cars;
+    const rules=this.getRaceAiCarSelection(),cars=this.project.cars.filter(isUserRaceCar);
     const describe=car=>{const r=calculateCarPerformance(car);return `${car.__playtestDocumentName || car.name} · ${carCategory(car)} · ${r.class} ${r.points} PP`;};
     const result=await openEditorForm('AI Cars & Classes',[
       {id:'category',label:'Vehicle category',value:rules.category,options:[{value:'any',label:'Any category'},...CAR_CATEGORIES]},

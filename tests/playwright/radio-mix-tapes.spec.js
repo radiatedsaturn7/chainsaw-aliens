@@ -248,12 +248,17 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} music drop
   document.race.raceStart.countdown=true;document.race.radioEnabled=true;document.race.radioStationIds=null;
   await saveProjectFileAndConfirm('races','Music Drop Race',document);
   const g=window.__game;window.__raceGoSample=null;
-  const sample=()=>{
-   const s=g.raceEditor.playtestSession,a=g.radio.audio;
-   if(s?.running&&s.countdownRemainingMs>0&&s.countdownRemainingMs<=1000&&a&&g.radio.playing&&!window.__raceGoSample)
-    window.__raceGoSample={time:a.currentTime,gain:g.radio.gain};
-   if(!window.__raceGoSample)requestAnimationFrame(sample);
-  };requestAnimationFrame(sample);
+  // Sample after the GO music update, including its one-time catch-up on a
+  // delayed frame, rather than racing that update in a separate RAF callback.
+  const director=g.raceRadio,update=director.update;
+  director.update=function(...args){
+   const wasGo=this.go;const result=update.apply(this,args);
+   if(!wasGo&&this.go&&g.radio.playing){
+    window.__raceGoSample={time:g.radio.audio.currentTime,gain:g.radio.gain};
+    this.update=update;
+   }
+   return result;
+  };
   void g.startRaceTravel({raceName:'Music Drop Race',carSelection:'specific',carRef:'2022 Subaru WRX2'});
  });
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);

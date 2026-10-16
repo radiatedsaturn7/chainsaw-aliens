@@ -51,7 +51,7 @@ export function normalizeAiCarSelection(value = {}) {
 
 export function selectEligibleRaceAiCars(cars, count, {playerCarId='', selection={}, random=Math.random} = {}) {
   const rules=normalizeAiCarSelection(selection),catalog=new Map();
-  for(const car of cars || []){const id=carCatalogId(car);if(id && id!==playerCarId && !catalog.has(id))catalog.set(id,car);}
+  for(const car of cars || []){if(car?.systemFile===true || car?.__systemPreset===true || car?.__editorDraft===true)continue;const id=carCatalogId(car);if(id && id!==playerCarId && !catalog.has(id))catalog.set(id,car);}
   const eligible=[...catalog].filter(([id,car])=>
     (rules.availableCarIds ? rules.availableCarIds.includes(id) : Boolean(car.__playtestDocumentName))
     && (rules.category==='any' || carCategory(car)===rules.category)

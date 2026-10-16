@@ -131,7 +131,13 @@ export function listProjectFiles(folder) {
     }
   });
   listed.sort((a, b) => b.updatedAt - a.updatedAt || a.name.localeCompare(b.name));
-  return listed;
+  return listed.filter((entry) => {
+    if (index[folder]?.[entry.name]?.systemFile === true) return false;
+    if (folder !== 'cars') return true;
+    const payload = loadProjectFile(folder, entry.name);
+    return payload?.systemFile !== true && payload?.data?.systemFile !== true
+      && payload?.data?.car?.systemFile !== true;
+  });
 }
 
 export function projectFileExists(folder, name) {

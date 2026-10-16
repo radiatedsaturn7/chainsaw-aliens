@@ -106,6 +106,7 @@ const EDITOR_ACTION_LABEL_OVERRIDES = {
   'transmission-type': 'Transmission',
   'summary-sheet': 'Stats',
   'car-category': 'Category & Performance',
+  'car-load-preset': 'Load Preset',
   'race-ai-cars': 'AI Cars & Classes',
   'load-preset': 'Load Preset',
   'tire-select': 'Select Tire',
@@ -497,7 +498,7 @@ export const EDITOR_MENU_SPECS = {
       { id: 'tuning', label: 'Tune' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'car-load-preset', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
       art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-import-graphic', 'car-body-model', 'car-wheel-model', 'car-clear-body-model', 'car-clear-wheel-model', 'car-art-settings', 'car-camera-settings']),

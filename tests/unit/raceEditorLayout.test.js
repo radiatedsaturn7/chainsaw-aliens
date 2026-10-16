@@ -5933,7 +5933,7 @@ test('Car Editor seeds editable engine SFX files while preserving car engine pro
 
   const seeded = editor.ensureCarEngineSfxDocuments();
   const sfxNames = listProjectFiles('sfx').map((entry) => entry.name);
-  const wrx = editor.project.cars.find((car) => car.name === '2022 Subaru WRX');
+  const wrx = editor.project.cars.find((car) => car.id === 'starter-rwd');
   const wrxSfx = loadProjectFile('sfx', 'Engine WRX SPT')?.data;
 
   assert.ok(seeded.includes('Engine WRX SPT'));
@@ -16210,26 +16210,23 @@ test('Race Editor saves and loads selected race tracks with authored data intact
   assert.equal(loaded.currentRaceDocumentName, 'Custom Ridge');
 });
 
-test('Car Editor saves, seeds, and loads selected cars through project files', () => {
+test('Car Editor loads system presets without seeding files and saves editable copies', () => {
   resetProjectFilesForTests();
   const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} }, { mode: 'car' });
 
   editor.ensureBuiltInCarProjectFiles();
-  const seededWrx = loadProjectFile('cars', '2022 Subaru WRX');
-  const seededBrz = loadProjectFile('cars', '2022 Subaru BRZ');
-  const seededCivic = loadProjectFile('cars', '2023 Honda Civic Type R');
-  assert.equal(seededWrx.data.kind, 'race-car');
-  assert.equal(seededBrz.data.car.id, 'subaru-brz-2022');
-  assert.equal(seededCivic.data.car.id, 'honda-civic-type-r-2023');
+  assert.equal(loadProjectFile('cars', '2022 Subaru WRX'), null);
+  assert.equal(loadProjectFile('cars', '2022 Subaru BRZ'), null);
+  assert.equal(loadProjectFile('cars', '2023 Honda Civic Type R'), null);
 
   assert.equal(editor.loadBuiltInCarDocument('starter-rwd'), true);
   assert.equal(editor.selectedCar.id, 'starter-rwd');
-  assert.equal(editor.currentCarDocumentName, '2022 Subaru WRX');
-  assert.equal(editor.applyLoadedCarDocument(seededCivic.data, { name: '2023 Honda Civic Type R' }), true);
+  assert.equal(editor.currentCarDocumentName, '');
+  assert.equal(editor.loadCarPreset('fwd'), true);
   assert.equal(editor.selectedCar.id, 'honda-civic-type-r-2023');
-  assert.equal(editor.currentCarDocumentName, '2023 Honda Civic Type R');
+  assert.equal(editor.currentCarDocumentName, '');
 
-  editor.project.selectedCarId = 'subaru-brz-2022';
+  editor.loadCarPreset('rwd');
   editor.selectedCar.audio.engineProfile = 'custom-brz-engine';
   const saved = editor.saveSelectedCarToName('Track BRZ');
   assert.equal(saved.folder, 'cars');
@@ -16243,7 +16240,7 @@ test('Car Editor saves, seeds, and loads selected cars through project files', (
   const loaded = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} }, { mode: 'car' });
   assert.equal(loaded.applyLoadedCarDocument(payload.data, { name: 'Track BRZ' }), true);
   assert.equal(loaded.selectedCar.id, 'subaru-brz-2022');
-  assert.equal(loaded.selectedCar.name, '2022 Subaru BRZ');
+  assert.equal(loaded.selectedCar.name, 'RWD Sports Car');
   assert.equal(loaded.selectedCar.audio.engineProfile, 'custom-brz-engine');
   assert.equal(loaded.currentCarDocumentName, 'Track BRZ');
 });
@@ -21360,7 +21357,7 @@ test('Race Editor simulates 2022 WRX with runtime manual and automatic transmiss
   seedLongStraightRace(manual);
   manual.startPlaytest('starter-rwd');
 
-  assert.equal(manual.selectedCar.name, '2022 Subaru WRX');
+  assert.equal(manual.selectedCar.name, 'AWD Sports Car');
   assert.equal(manual.selectedCar.tuning.drivetrain, 'awd');
   assert.equal(manual.selectedCar.tuning.powerHp, 271);
   assert.equal(manual.selectedCar.tuning.torqueLbFt, 258);
@@ -21383,7 +21380,7 @@ test('Race Editor simulates 2022 WRX with runtime manual and automatic transmiss
   seedLongStraightRace(automatic);
   automatic.startPlaytest('starter-rwd');
 
-  assert.equal(automatic.selectedCar.name, '2022 Subaru WRX');
+  assert.equal(automatic.selectedCar.name, 'AWD Sports Car');
   assert.equal(automatic.playtestSession.transmissionType, 'automatic');
   assert.equal(automatic.raceInput.autoShift, true);
   assert.equal(automatic.raceInput.gear, 1);

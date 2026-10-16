@@ -36,7 +36,7 @@ jobs:
         run: node --test tests/unit/editorMenuLayout.test.js tests/unit/editorMenuSpec.test.js tests/unit/portraitEditorMenuModels.test.js tests/unit/raceImageTrace.test.js tests/unit/raceImportedCircuitRegression.test.js tests/unit/raceTireTrackRenderer.test.js tests/unit/steeringCommandMapping.test.js tests/unit/racePauseRestart.test.js
 
       - name: Run AI car selection and driving tests
-        run: node --test tests/unit/carPerformance.test.js tests/unit/raceAiCarSelectionPersistence.test.js tests/unit/raceAiDriving.test.js tests/unit/raceAiProjection.test.js tests/unit/raceAiRecovery.test.js
+        run: node --test tests/unit/carPresets.test.js tests/unit/carPerformance.test.js tests/unit/raceAiCarSelectionPersistence.test.js tests/unit/raceAiDriving.test.js tests/unit/raceAiProjection.test.js tests/unit/raceAiRecovery.test.js
 
       - name: Run menu designer and runtime tests
         run: node --test tests/unit/menu*.test.js tests/unit/carDirectionalArt.test.js tests/unit/raceTravel.test.js
@@ -124,5 +124,6 @@ jobs:
             test-results/menu-*.png
             test-results/radio-*.png
             test-results/item-*.png
+            test-results/car-presets-*.png
           if-no-files-found: ignore
           retention-days: 7

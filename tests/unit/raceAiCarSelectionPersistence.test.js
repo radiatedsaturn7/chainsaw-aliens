@@ -30,12 +30,12 @@ test('category and AI pool filters survive native document round trips and drive
  }
 });
 
-test('default candidate pool includes saved custom variants and omits built-in documents',()=>{
+test('default candidate pool includes saved files even with stock names and omits system templates',()=>{
  const e=editor();
  for(const name of ['2022 Subaru WRX','2022 Subaru WRX4','BUSE-019','PZ-24'])e.upsertRaceProjectCar(e.withSavedRaceCarRuntimeIdentity(structuredClone(e.selectedCar),name));
  const ids=e.getRaceAiCarSelection().availableCarIds;
  const names=e.project.cars.filter(c=>ids.includes(e.getRaceCarProjectIdentity(c))).map(c=>c.__playtestDocumentName);
- assert.deepEqual(names.sort(),['2022 Subaru WRX4','BUSE-019','PZ-24'].sort());
+ assert.deepEqual(names.sort(),['2022 Subaru WRX','2022 Subaru WRX4','BUSE-019','PZ-24'].sort());
  e.selectedRace.competition.carSelection={availableCarIds:[]};assert.deepEqual(e.getRaceAiCarSelection().availableCarIds,[]);
 });
 

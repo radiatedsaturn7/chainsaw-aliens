@@ -1,9 +1,10 @@
 import { clamp } from './simulation/SimulationMath.js';
+import { isUserRaceCar } from './CarPresets.js';
 
 // Shuffle bags keep small grids varied and large grids balanced. A new bag is
 // drawn only after every available car has had a place on the grid.
 export function selectRaceAiCars(cars = [], count = 0, random = Math.random) {
-  const ids = [...new Set(cars.map((car) => car?.id).filter(Boolean))];
+  const ids = [...new Set(cars.filter(isUserRaceCar).map((car) => car?.__playtestId || car?.id).filter(Boolean))];
   const result = [];
   while (ids.length && result.length < count) {
     const bag = [...ids];
