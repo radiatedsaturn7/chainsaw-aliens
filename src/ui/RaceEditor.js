@@ -16889,6 +16889,7 @@ export default class RaceEditor {
       ? Number(merged.stockAccelerationCalibration)
       : Number(merged.accelerationCalibration);
     return {
+      ...(tuning.garageEngineCurve?{engineCurve:tuning.engineCurve}:{}),
       physicalVehicleProfile,
       physics: merged.physics || tuning.physics || {},
       bodyShapePreset: merged.physics?.bodyShapePreset || tuning.physics?.bodyShapePreset || 'car',

@@ -1,3 +1,5 @@
+import {ItemSystem} from '../items/ItemSystem.js';
+import {runGarageAction} from '../garage/GarageMenu.js';
 import {drawSharedPlayStopButton} from '../ui/uiSuite.js';
 import {MenuPreviewSurface} from './MenuPreviewSurface.js';
 import {menuPaintOrder,menuElementVisible,fitMenuCanvas} from './MenuLayout.js';
@@ -17,9 +19,21 @@ export default class MenuPlayer {
     this.preview=preview;this.paused=false;this.message='';this.focus=0;
     if(preview)this.previewSnapshot={worldData:this.game.buildWorldData?.(),menuParameters:this.game.menuParameters,storyData:this.game.storyData,gameMode:this.game.gameMode,playtestActive:this.game.playtestActive,simulationActive:this.game.simulationActive};
     await this.settings.load();
+    await this.game.items?.load();
+    if(preview&&this.game.items){
+      const snapshot={...structuredClone(this.game.items.progress),stats:structuredClone(this.game.items.savedStats)};
+      const sandboxGame={player:structuredClone({credits:this.game.player?.credits??snapshot.stats?.credits??0}),abilities:{}};
+      const sandbox=new ItemSystem(sandboxGame,{library:this.game.items.library,load:async key=>key==='rtg-item-progress'?snapshot:{},save:async()=>({ok:true})});
+      this.resources.garageOverride=sandbox.garage;
+    }else this.resources.garageOverride=null;
+    await this.resources.prepareGarage();
     this.flow=new MenuFlow(document,{
       parameterChanged:(key,value)=>{void this.settings.set(key,value).catch(error=>{if(this.flow)this.flow.error=error.message})},
       screenChanged:()=>this.enterScreen(),stop:()=>{this.cleanup();this.restorePreview();this.game.transitionTo(this.preview?'menu-editor':'title',{forceCleanup:true})},
+      garageAction:async(type,ref,params)=>{
+        await runGarageAction(this.resources.garage,type,ref,params,{resolveCar:async name=>{const selected=await this.game.resolveRaceTravelCarAsync(name);return selected?.car;}});
+        this.resources.garageCars.clear();this.message='Garage saved';
+      },
       playMovie:(ref)=>this.playMovie(ref),launchRace:(ref,params)=>this.launchRace(ref,params),launchLevel:(ref,params)=>this.launchLevel(ref,params)
     });
     if(preview&&this.flow.document.screens.some(s=>s.id===screenId))this.flow.screenId=screenId;
@@ -32,7 +46,7 @@ export default class MenuPlayer {
   cleanup(){this.releasePauseAudio();if(this.tabListener&&typeof window!=='undefined')window.removeEventListener('keydown',this.tabListener);this.tabListener=null;this.surface.reset();this.resources.carPreview.dispose();this.cleanupScreen();this.cancelKeyCapture();if(this.cutscene.active){this.cutscene.onDone=null;this.cutscene.stop();}if(this.movie){this.movie.pause();this.movie.removeAttribute('src');this.movie.load();this.movie=null;}this.rejectMovie?.(Error('Playback cancelled'));this.rejectMovie=null;this.resolveMovie=null;}
   enterScreen(){
     this.cleanupScreen();this.focus=0;this.message='';const flow=this.flow,screen=flow.screen,generation=this.mediaGeneration;
-    for(const e of screen.elements){if(e.type==='choice'&&e.binding){const choices=e.source?this.resources.choices(e.source,flow.document):e.options;if(choices.length&&!choices.some(o=>JSON.stringify(o.value)===JSON.stringify(flow.parameters[e.binding])))flow.setParameter(e.binding,choices[0].value);}
+    for(const e of screen.elements){if(e.type==='choice'&&e.binding){const choices=e.source?this.resources.choices(e.source,flow.document,flow.parameters):e.options;if(choices.length&&!choices.some(o=>JSON.stringify(o.value)===JSON.stringify(flow.parameters[e.binding])))flow.setParameter(e.binding,choices[0].value);}
       if(e.type==='video'&&e.videoUrl&&typeof document!=='undefined'){const video=document.createElement('video');video.src=e.videoUrl;video.loop=e.loop;video.playsInline=true;video.muted=true;video.onerror=()=>{flow.error=`Video could not load: ${e.videoUrl}`};this.videos.set(e.id,video);void video.play().catch(()=>{this.message='Tap to play video'});}
     }
     if(screen.musicRef)void hydrateProjectFilePayload('music',screen.musicRef).then(payload=>{if(this.mediaGeneration!==generation)return;if(!payload?.data)throw Error(`Music not found: ${screen.musicRef}`);this.game.setActiveMusicTrack?.(screen.musicRef,{restart:true,loop:true})}).catch(error=>{flow.error=error.message});
@@ -59,7 +73,7 @@ export default class MenuPlayer {
     if(element.type==='keybind')return this.captureKey(element.binding);
     if(!element.binding){this.flow.error='This control needs a parameter binding';return;}
     const value=this.flow.parameters[element.binding];
-    if(element.type==='choice'){const choices=element.source?this.resources.choices(element.source,this.flow.document):element.options;if(!choices.length){this.flow.error='No choices available';return;}const i=choices.findIndex(o=>JSON.stringify(o.value)===JSON.stringify(value));if(choose){this.choicePopup={element,choices,index:Math.max(0,i)};return;}this.flow.setParameter(element.binding,choices[(i+direction+choices.length)%choices.length].value);}
+    if(element.type==='choice'){const choices=element.source?this.resources.choices(element.source,this.flow.document,this.flow.parameters):element.options;if(!choices.length){this.flow.error='No choices available';return;}const i=choices.findIndex(o=>JSON.stringify(o.value)===JSON.stringify(value));if(choose){this.choicePopup={element,choices,index:Math.max(0,i)};return;}this.flow.setParameter(element.binding,choices[(i+direction+choices.length)%choices.length].value);}
     if(element.type==='toggle')this.flow.setParameter(element.binding,!value);
     if(element.type==='slider')this.flow.setParameter(element.binding,Math.max(element.min,Math.min(element.max,(Number(value)||0)+direction*element.step)));
     if(element.action)await this.flow.run(element.action);
@@ -138,7 +152,7 @@ export default class MenuPlayer {
   async launchRace(ref,parameters){
     if(this.preview)this.game.playtestActive=true;
     this.cleanupScreen();this.game.menuParameters=structuredClone(parameters);
-    const ok=await this.game.startRaceTravel({raceName:ref,carSelection:parameters.carRef?'specific':'choose',carRef:parameters.carRef,menuConfiguration:parameters,menuFlow:this.flow});if(!ok)throw Error(`Could not start race: ${ref}`);
+    const ok=await this.game.startRaceTravel({raceName:ref,carSelection:parameters.carRef?'specific':'choose',carRef:parameters.carRef,menuConfiguration:parameters,menuFlow:this.flow,garage:this.resources.garage});if(!ok)throw Error(`Could not start race: ${ref}`);
   }
   async launchLevel(ref,parameters){
     const flow=this.flow,generation=flow.generation;

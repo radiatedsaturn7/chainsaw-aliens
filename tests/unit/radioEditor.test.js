@@ -53,3 +53,25 @@ for(const [mode,width,height,mobile,pad] of [['desktop',1280,800,false,false],['
  for(const b of e.buttons){assert.ok(b.bounds.x>=0&&b.bounds.y>=0,`${b.id} origin`);assert.ok(b.bounds.x+b.bounds.w<=width+1&&b.bounds.y+b.bounds.h<=height+1,`${b.id} viewport`);}
  if(mode==='portrait'||mode==='landscape-touch'){assert.ok(e.portraitThumbstick.radius>0);for(const id of ['menu','undo','redo'])assert.ok(e.buttons.some(b=>b.id===id));}
 });
+
+test('Play starts the selected station song and resumes it after pausing',async()=>{
+ const {e}=await editor();
+ e.preview.createAudio=()=>({currentTime:0,async play(){},pause(){},removeAttribute(){},load(){}});
+ e.selectTrack('two');await e.membership();
+ await e.togglePreview();assert.equal(e.preview.trackId,'two');
+ const audio=e.preview.audio;audio.currentTime=12;
+ await e.togglePreview();assert.equal(e.preview.playing,false);
+ await e.togglePreview();assert.equal(e.preview.audio,audio);assert.equal(audio.currentTime,12);
+ e.selectTrack('one');assert.equal(e.preview.playing,false);
+ await e.togglePreview();assert.equal(e.preview.trackId,'one');
+});
+test('selected unassigned songs preview without saving membership or gameplay unlocks',async()=>{
+ const {e,game,saved}=await editor();
+ e.preview.createAudio=()=>({async play(){},pause(){},removeAttribute(){},load(){}});
+ const progress=structuredClone(game.radio.progress),before=structuredClone(e.library);
+ e.selectTrack('two');await e.togglePreview();assert.equal(e.preview.trackId,'two');
+ assert.deepEqual(e.library,before);assert.deepEqual(game.radio.progress,progress);assert.equal(saved.length,0);
+ e.library={...e.library,stations:[]};e.syncSelection();e.syncPreview();
+ assert.equal(e.isActionAvailable('radio-play'),true);
+ await e.togglePreview();assert.equal(e.preview.trackId,'two');assert.equal(e.preview.playing,true);
+});

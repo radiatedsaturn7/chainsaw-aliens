@@ -1,3 +1,5 @@
+import {CAR_PART_ACTIONS,editCarPart} from './CarPartForms.js';
+import {chooseImage} from './MenuDesignerForms.js';
 import {pickModelBinding,pickModelAnimation} from './ModelPicker.js';
 import {itemEffectFields, EFFECT_LABELS, RECIPIENTS} from '../items/ItemEffectFields.js';
 import {itemLibrary} from '../items/ItemLibrary.js';
@@ -10,7 +12,7 @@ import {openProjectBrowser} from './ProjectBrowserModal.js';
 import {saveProjectFileAndConfirm, sanitizeProjectFileName} from './projectFiles.js';
 import {drawSharedPanel, drawSharedFocusRing, drawSharedPortraitActionRail, getSharedMobilePortraitEditorLayout, UI_SUITE} from './uiSuite.js';
 
-const labels = {'item-model':'3D Model','item-model-animation':'Model Animation','item-2d':'Use 2D Artwork','item-properties':'Properties','item-effect-add':'Add Effect','item-effect-edit':'Edit Effect','item-effect-delete':'Remove Effect','item-template':'Built-in Items','item-legacy':'Import Old Mix Tape','item-art':'Artwork','item-image':'Import Image'};
+const labels = {...CAR_PART_ACTIONS,'item-model':'3D Model','item-model-animation':'Model Animation','item-2d':'Use 2D Artwork','item-properties':'Properties','item-effect-add':'Add Effect','item-effect-edit':'Edit Effect','item-effect-delete':'Remove Effect','item-template':'Built-in Items','item-legacy':'Import Old Mix Tape','item-art':'Artwork','item-image':'Import Image'};
 const field = (id,label,value,type='text') => ({id,label,value,type,required:false});
 const option = value => ({value,label:value});
 const yesNo = [option('yes'),option('no')];
@@ -76,6 +78,28 @@ export default class ItemEditor extends DoodadEditor {
     this.doodad=normalizeItemDocument(JSON.parse(await file.text()));this.currentDocumentName='';
     await this.hydrateDoodadArt();
   }
+  async matchArtworkSize() {
+    const ref=this.doodad.artRef;
+    if(!ref)return;
+    await this.hydrateDoodadArt(ref);
+    if(this.doodad.artRef!==ref)return;
+    const art=this.getDoodadArtCanvas();
+    if(!art?.width||!art?.height)return;
+    this.doodad.widthPx=art.width;
+    this.doodad.heightPx=art.height;
+    this.doodad.widthM=this.doodad.heightM*art.width/art.height;
+    this.zoomFit();
+  }
+  async pickArt() {
+    const ref=await super.pickArt();
+    if(ref){this.doodad.model=null;await this.matchArtworkSize();}
+    return ref;
+  }
+  async importItemArtwork() {
+    const editor=this;let applied=false;
+    await chooseImage({get element(){return editor.doodad;},change:fn=>{fn();applied=true;}});
+    if(applied){this.doodad.model=null;await this.matchArtworkSize();}
+  }
   async properties() {
     const item=this.doodad;
     const result=await openEditorForm('Item Properties',[
@@ -107,8 +131,7 @@ export default class ItemEditor extends DoodadEditor {
     this.doodad=normalizeItemDocument({...this.doodad,effects});if(add)this.selectedEffect=effects.length-1;
   }
   async builtins() {
-    const response=await fetch('src/content/items.json');if(!response.ok)throw Error('Could not load built-in items.');
-    const {items}=await response.json();
+    const items=await itemLibrary.loadDefaults();
     const result=await openEditorForm('Built-in Item',[{id:'id',label:'Item',value:items[0].id,options:items.map(item=>({value:item.id,label:item.name}))}]);
     if(result){this.doodad=normalizeItemDocument(items.find(item=>item.id===result.id));this.currentDocumentName='';}
   }
@@ -126,11 +149,16 @@ export default class ItemEditor extends DoodadEditor {
       'item-model-animation':edit(async()=>{const model=await pickModelAnimation(this.doodad.model);if(model)this.doodad.model=model;}),
       'item-2d':edit(()=>{this.doodad.model=null;}),
       'item-art':edit(()=>this.pickArt()),'item-image':edit(()=>this.importItemArtwork()),
+      'item-part':edit(()=>editCarPart(this.doodad)),
+      'item-part-changes':edit(()=>editCarPart(this.doodad,'changes')),
+      'item-part-tuning':edit(()=>editCarPart(this.doodad,'tuning')),
+      'item-part-curve':edit(()=>editCarPart(this.doodad,'curve')),
+      'item-part-remove':edit(()=>{this.doodad.carPart=null;}),
       'item-template':edit(()=>this.builtins()),'item-legacy':()=>this.run(()=>this.openItem(true))
     };
   }
   getMenuItems(root=this.landscapeRootId) {
-    const groups={file:['new','save','save-as','open','export','import','item-template','item-legacy','exit-main'],edit:['undo','redo','item-properties'],view:['zoom-fit'],artwork:['item-art','item-image','item-model','item-model-animation','item-2d'],effects:['item-effect-add','item-effect-edit','item-effect-delete']};
+    const groups={parts:Object.keys(CAR_PART_ACTIONS),file:['new','save','save-as','open','export','import','item-template','item-legacy','exit-main'],edit:['undo','redo','item-properties'],view:['zoom-fit'],artwork:['item-art','item-image','item-model','item-model-animation','item-2d'],effects:['item-effect-add','item-effect-edit','item-effect-delete']};
     const handlers=this.getDesktopActionHandlers();
     return (groups[root]||[]).map(id=>({id,label:labels[id]||({'exit-main':'Exit','save-as':'Save As','zoom-fit':'Fit Preview'}[id])||id[0].toUpperCase()+id.slice(1),onClick:handlers[id],disabled:((id==='item-model-animation'||id==='item-2d')&&!this.doodad.model?.ref)||(id==='undo'&&!this.undoItems.length)||(id==='redo'&&!this.redoItems.length)||(['item-effect-edit','item-effect-delete'].includes(id)&&!this.doodad.effects.length)}));
   }
@@ -138,7 +166,7 @@ export default class ItemEditor extends DoodadEditor {
   selectMobileRoot(id){this.mobileRootId=id;}
   drawPortraitMenuSheet(ctx,layout) {
     drawSharedPanel(ctx,layout.menuSheet,{fill:UI_SUITE.colors.panel,border:UI_SUITE.colors.border});
-    this.drawActionRows(ctx,layout.rootRail,['file','artwork','effects'].map(id=>({id:`root-${id}`,label:id,active:this.mobileRootId===id,onClick:()=>this.selectMobileRoot(id)})),3);
+    this.drawActionRows(ctx,layout.rootRail,['file','artwork','effects','parts'].map(id=>({id:`root-${id}`,label:id,active:this.mobileRootId===id,onClick:()=>this.selectMobileRoot(id)})),4);
     this.drawActionRows(ctx,layout.subRail,this.getMenuItems(this.mobileRootId),2);
   }
   setSliderValue(key,value){if(key==='item-zoom')this.previewZoom=value;}
@@ -148,7 +176,7 @@ export default class ItemEditor extends DoodadEditor {
   drawPreview(ctx,bounds) {
     drawSharedPanel(ctx,bounds,{fill:UI_SUITE.colors.panelAlt,border:UI_SUITE.colors.border});
     ctx.save();ctx.beginPath();ctx.rect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.clip();
-    const art=this.getDoodadArtCanvas(),ratio=this.doodad.widthPx/this.doodad.heightPx;
+    const art=this.getDoodadArtCanvas(),ratio=!this.doodad.model?.ref&&art?.width&&art?.height?art.width/art.height:this.doodad.widthPx/this.doodad.heightPx;
     const h=Math.max(8,Math.min(bounds.h-90,(bounds.w-32)/ratio))*this.previewZoom,w=h*ratio;
     const x=bounds.x+bounds.w/2-w/2+this.previewPan.x,y=bounds.y+30+(bounds.h-90)/2-h/2+this.previewPan.y;
     if(art){ctx.imageSmoothingEnabled=false;ctx.drawImage(art,x,y,w,h);}else{ctx.fillStyle=UI_SUITE.colors.accent;ctx.fillRect(x,y,w,h);}

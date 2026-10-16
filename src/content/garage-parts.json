@@ -1,0 +1,236 @@
+{
+  "items": [
+    {
+      "id": "sport-turbo",
+      "name": "Sport Turbo",
+      "description": "Garage part",
+      "effects": [],
+      "carPart": {
+        "slot": "turbo",
+        "price": 1200,
+        "torqueCurve": [
+          {
+            "rpm": 1000,
+            "multiplier": 1
+          },
+          {
+            "rpm": 3000,
+            "multiplier": 1.12
+          },
+          {
+            "rpm": 6000,
+            "multiplier": 1.2
+          }
+        ]
+      }
+    },
+    {
+      "id": "adjustable-ecu",
+      "name": "Adjustable ECU",
+      "description": "Garage part",
+      "effects": [],
+      "carPart": {
+        "slot": "ecu",
+        "price": 500,
+        "tuning": [
+          {
+            "field": "torqueScale",
+            "min": 0.8,
+            "max": 1.1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "lightweight-panels",
+      "name": "Lightweight Panels",
+      "description": "Garage part",
+      "effects": [],
+      "carPart": {
+        "slot": "weight",
+        "price": 800,
+        "modifiers": [
+          {
+            "field": "weightKg",
+            "operation": "multiply",
+            "value": 0.95
+          }
+        ]
+      }
+    },
+    {
+      "id": "adjustable-gearbox",
+      "name": "Adjustable Gearbox",
+      "description": "Garage part",
+      "effects": [],
+      "carPart": {
+        "slot": "transmission",
+        "price": 1000,
+        "tuning": [
+          {
+            "field": "gearFinalDrive",
+            "min": 2,
+            "max": 6,
+            "step": 0.05
+          },
+          {
+            "field": "gearRatios.0",
+            "min": 0.2,
+            "max": 5,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.1",
+            "min": 0.2,
+            "max": 5,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.2",
+            "min": 0.2,
+            "max": 5,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.3",
+            "min": 0.2,
+            "max": 5,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.4",
+            "min": 0.2,
+            "max": 5,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.5",
+            "min": 0.2,
+            "max": 5,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "adjustable-suspension",
+      "name": "Adjustable Suspension",
+      "description": "Garage part",
+      "effects": [],
+      "carPart": {
+        "slot": "suspension",
+        "price": 750,
+        "tuning": [
+          {
+            "field": "springFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rideHeightFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "bumpFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "reboundFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "antiRollFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "springRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rideHeightRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "bumpRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "reboundRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "antiRollRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "adjustable-tire-pressure",
+      "name": "Tire Pressure Kit",
+      "description": "Garage part",
+      "effects": [],
+      "carPart": {
+        "slot": "tire-pressure",
+        "price": 100,
+        "tuning": [
+          {
+            "field": "pressure.fl",
+            "min": 20,
+            "max": 40,
+            "step": 0.5
+          },
+          {
+            "field": "pressure.fr",
+            "min": 20,
+            "max": 40,
+            "step": 0.5
+          },
+          {
+            "field": "pressure.rl",
+            "min": 20,
+            "max": 40,
+            "step": 0.5
+          },
+          {
+            "field": "pressure.rr",
+            "min": 20,
+            "max": 40,
+            "step": 0.5
+          }
+        ]
+      }
+    },
+    {
+      "id": "rally-tires",
+      "name": "Rally Tires",
+      "description": "Garage part",
+      "effects": [],
+      "carPart": {
+        "slot": "tires",
+        "price": 450,
+        "tireRef": "builtin:dirt"
+      }
+    }
+  ]
+}

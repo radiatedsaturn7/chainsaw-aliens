@@ -57,7 +57,7 @@ export async function setupWidget(editor){
     for(const child of editor.screen.elements.filter(item=>item.id!==e.id&&(item.parentId===e.id||item.parentId===e.parentId)))fields.push(select(`member:${child.id}`,child.label||child.id,child.parentId===e.id?'in':'out',[{value:'out',label:'Outside container'},{value:'in',label:'Inside container'}]));
   }
   if(e.type==='text')description.push('Use {{difficulty}} or another parameter name in the text to display its current value.');
-  if(e.type==='choice')fields.push(select('source','Options source',e.source,[{value:'',label:'Custom options'},'cars','actors','doodads','races','levels','movies']),{id:'options',label:'Custom options: label = value, one per line',type:'textarea',required:false,value:e.options.map(o=>`${o.label} = ${JSON.stringify(o.value)}`).join('\n')});
+  if(e.type==='choice')fields.push(select('source','Options source',e.source,[{value:'',label:'Custom options'},'cars','actors','doodads','races','levels','movies',{value:'garage-parts',label:'Garage parts'}]),{id:'options',label:'Custom options: label = value, one per line',type:'textarea',required:false,value:e.options.map(o=>`${o.label} = ${JSON.stringify(o.value)}`).join('\n')});
   if(e.type==='slider'){
     fields.push(select('preset','Slider controls','custom',[{value:'custom',label:'Custom parameter / keep current'},...Object.entries(MENU_SETTINGS).map(([key,v])=>({value:`settings.${key}`,label:v.label})),{value:'carAngle',label:'Car viewing angle (degrees)'}]));
     fields.push(...['min','max','step'].map(id=>({id,label:{min:'Minimum',max:'Maximum',step:'Step'}[id],value:e[id]})),{id:'initial',label:'Initial value',value:Number(editor.menu.parameters[e.binding]??MENU_SETTINGS[e.binding.split('.')[1]]?.default??e.min)});

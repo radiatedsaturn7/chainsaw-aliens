@@ -86,7 +86,8 @@ for(const device of ['keyboard','gamepad','touch'])test(`${device} horizontal na
   if(device==='touch')player.surface.controls.pulseAction(direction.toLowerCase());
   player.update(input(device==='keyboard'?['Arrow'+direction]:[],device==='gamepad'?['dpad'+direction]:[]),0.01);
  };
- press('Down');press('Down');assert.equal(player.interactive()[player.focus].id,'next');
+ for(let i=0;i<player.interactive().findIndex(e=>e.id==='next');i++)press('Down');
+ assert.equal(player.interactive()[player.focus].id,'next');
  press('Right');assert.equal(player.flow.screenId,'cars');assert.equal(player.interactive()[player.focus].id,'settings');
  press('Right');assert.equal(player.flow.screenId,'cars');assert.equal(player.interactive()[player.focus].id,'settings');
  press('Left');assert.equal(player.interactive()[player.focus].id,'next');assert.equal(player.flow.screenId,'cars');

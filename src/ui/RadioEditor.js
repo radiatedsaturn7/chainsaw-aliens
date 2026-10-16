@@ -99,12 +99,20 @@ export class RadioEditor extends RaceEditor {
     this.status=redo?'Change restored and saved':'Change undone and saved';
   }
   selectStation(id) {this.stationId=id;this.trackId=this.station?.trackIds[0]||this.library.tracks[0]?.id||'';this.focusList='stations';this.syncPreview();}
-  selectTrack(id) {this.trackId=id;this.focusList='tracks';}
+  selectTrack(id) {
+    if(id!==this.trackId)this.preview.stop();
+    this.trackId=id;this.focusList='tracks';
+  }
   async togglePreview() {
     if(this.preview.playing){this.preview.pause();return;}
-    if(!this.station?.trackIds.length){this.status='Add tracks to this station before playing.';return;}
+    if(!this.track){this.status='Select a song before playing.';return;}
+    // Audition unassigned songs without adding them to the saved station.
+    const station=this.station||{id:'preview',name:'Preview',trackIds:[]};
+    const trackIds=station.trackIds.includes(this.trackId)?station.trackIds:[this.trackId];
+    this.preview.library={...this.library,stations:[{...station,trackIds}]};
+    this.preview.progress.stationId=station.id;
     this.preview.setVolume(this.game.audio?.midiBusVolume??0.8);
-    await this.preview.play();this.status=this.preview.error||`Previewing ${this.station.name}`;
+    await this.preview.play(this.trackId);this.status=this.preview.error||`Previewing ${this.track.title}`;
   }
   exitToMainMenu() {this.preview.stop();this.game.transitionTo('title',{forceCleanup:true});}
   options() {return this.run(async()=>{
@@ -194,7 +202,8 @@ export class RadioEditor extends RaceEditor {
     if(this.opened)return false;
     if(id==='undo')return this.undoLibraries.length>0;
     if(id==='redo')return this.redoLibraries.length>0;
-    if(['station-properties','station-logo','station-delete','radio-play'].includes(id))return !!this.station;
+    if(id==='radio-play')return !!this.track;
+    if(['station-properties','station-logo','station-delete'].includes(id))return !!this.station;
     if(['track-properties','track-art','track-delete'].includes(id))return !!this.track;
     if(['track-membership','track-up','track-down'].includes(id))return !!this.station&&!!this.track;
     return !!getEditorMenuSpec(this.editorId).actions[id];

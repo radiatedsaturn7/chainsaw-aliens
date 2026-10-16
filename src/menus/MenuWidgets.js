@@ -17,7 +17,7 @@ export const MENU_WIDGETS = [
   ['video','Video','Play a video URL inside the screen.']
 ].map(([type,label,description])=>({type,label,description}));
 export const widgetLabel=type=>MENU_WIDGETS.find(w=>w.type===type)?.label||type;
-export const MENU_DATA_SOURCES=[{value:'cars',label:'Car'},{value:'actors',label:'Actor'},{value:'parameters',label:'Item / configuration object'},{value:'doodads',label:'Doodad'}];
+export const MENU_DATA_SOURCES=[{value:'garage',label:'Player garage'},{value:'cars',label:'Car'},{value:'actors',label:'Actor'},{value:'parameters',label:'Item / configuration object'},{value:'doodads',label:'Doodad'}];
 export const safeProperty=(object,path)=>{
   if(!path)return object;
   for(const key of String(path).split('.')){

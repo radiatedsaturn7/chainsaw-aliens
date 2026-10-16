@@ -1,3 +1,4 @@
+import {GARAGE_ACTION_LABELS,createGarageMenuScreen} from '../garage/GarageMenu.js';
 import {menuSubtree,menuPaintOrder,menuElementVisible,transformMenuGroup,reorderMenuGroup} from '../menus/MenuLayout.js';
 import {MENU_WIDGETS,widgetLabel,widgetDefaults} from '../menus/MenuWidgets.js';
 import {setupWidget,chooseImage,parameterNames,menuColorField,shapeStyleFields,navigationFields} from './MenuDesignerForms.js';
@@ -93,7 +94,7 @@ export default class MenuEditor extends RaceEditor {
       return ids.map(id=>({id,label:this.getRaceActionLabel(id),disabled:id==='paste'?!this.clipboardElement:!this.element,action:()=>this.runAction(id)}));
     }
     if(this.menuPicker==='widgets')return MENU_WIDGETS.map(w=>({id:`pick-widget:${w.type}`,label:w.label,description:w.description,action:()=>this.runAction(`insert-${w.type}`)}));
-    if(this.menuPicker==='screens')return [...this.menu.screens.map(s=>({id:`pick-screen:${s.id}`,label:s.name,action:()=>{this.screenId=s.id;this.elementId=null;this.animating=false;this.menuTime=0;}})),{id:'pick-screen:new',label:'+ New Screen',action:()=>this.runAction('screen-new')}];
+    if(this.menuPicker==='screens')return [...this.menu.screens.map(s=>({id:`pick-screen:${s.id}`,label:s.name,action:()=>{this.screenId=s.id;this.elementId=null;this.animating=false;this.menuTime=0;}})),{id:'pick-screen:new',label:'+ New Screen',action:()=>this.runAction('screen-new')},{id:'pick-screen:garage',label:'+ Garage Screen',action:()=>this.runAction('screen-garage')}];
     if(this.menuPicker==='layers')return this.screen.elements.length?menuPaintOrder(this.screen.elements).reverse().map(e=>({id:`pick-layer:${e.id}`,label:e.label||widgetLabel(e.type),description:widgetLabel(e.type),action:()=>{this.elementId=e.id;}})):[{id:'pick-layer:add',label:'+ Add Widget',action:()=>this.openPicker('widgets')}];
     if(this.menuPicker==='animation')return [...MENU_ANIMATIONS.map(animation=>({id:`pick-animation:${animation}`,label:({none:'None (static)',pulse:'Pulse',fade:'Fade in',bob:'Bob up / down',spin:this.element?.type==='car-preview'?'Rotate car':'Rotate'})[animation],action:()=>{this.change(()=>{this.element.animation=animation;this.element.keyframes=[];if(animation==='spin'&&this.element.type==='car-preview')this.element.angleBinding='';});this.animating=animation!=='none';this.menuTime=0;this.status=animation==='none'?'Animation off':`${label(animation)} animation playing on the canvas`;}})),{id:'pick-animation:timing',label:'Speed / Repeat…',action:()=>this.runAction('animation-timing')}];
     return [];
@@ -162,6 +163,7 @@ export default class MenuEditor extends RaceEditor {
     if(id==='menu-animate'){this.animating=!this.animating;this.menuTime=0;return;}
     if(id==='zoom-fit'){this.animating=false;this.menuTime=0;return;}
     if(id==='screen-select')return this.openPicker('screens');
+    if(id==='screen-garage'){this.change(()=>{const screen=createGarageMenuScreen();screen.id=unique('garage',this.menu.screens);this.menu.screens.push(screen);this.screenId=screen.id;this.elementId=null;});return;}
     if(id==='screen-new'||id==='screen-duplicate'){this.change(()=>{const screen=id==='screen-duplicate'?structuredClone(this.screen):{name:'New Screen',elements:[]};screen.id=unique('screen',this.menu.screens);if(id==='screen-duplicate')screen.name+=' Copy';this.menu.screens.push(screen);this.screenId=screen.id;this.elementId=null;});return;}
     if(id==='screen-start'){this.change(()=>{this.menu.startScreen=this.screenId});return;}
     if(id==='screen-delete'){if(this.menu.screens.length===1)throw Error('Keep at least one screen');this.change(()=>{const old=this.screenId;this.menu.screens=this.menu.screens.filter(s=>s.id!==old);this.screenId=this.menu.screens[0].id;if(this.menu.startScreen===old)this.menu.startScreen=this.screenId;this.elementId=null;const unlink=a=>{if(!a)return null;if(a.type==='screen'&&a.target===old)return null;if(a.then)a.then=unlink(a.then);return a};for(const s of this.menu.screens){s.startAction=unlink(s.startAction);for(const e of s.elements)e.action=unlink(e.action)}});return;}
@@ -206,7 +208,7 @@ export default class MenuEditor extends RaceEditor {
     if(result)this.change(()=>{const before=structuredClone(this.element);for(const key of ['x','y','w','h'])result[key]/=100;Object.assign(this.element,result,{visible:result.visible==='true'});if(this.element.type==='container')transformMenuGroup(this.screen.elements,this.elementId,before,this.element);});
   }
   async editAction(action){
-    const names={screen:'Open screen',back:'Back', 'set-param':'Set a parameter',race:'Start race',level:'Load level',movie:'Play movie',quit:'Exit menu'};
+    const names={...GARAGE_ACTION_LABELS,screen:'Open screen',back:'Back', 'set-param':'Set a parameter',race:'Start race',level:'Load level',movie:'Play movie',quit:'Exit menu'};
     const kind=await openEditorForm('Widget Action',[select('type','When activated',action?.type||'screen',[{value:'none',label:'No action'},...MENU_ACTION_TYPES.map(type=>({value:type,label:names[type]}))])]);
     if(!kind)return undefined;if(kind.type==='none')return null;
     const a=action?.type===kind.type?action:{},fields=[];
@@ -218,6 +220,7 @@ export default class MenuEditor extends RaceEditor {
       fields.push(select('target','Destination',a.target||targets[0]?.value||'',targets));
       if(kind.type==='movie')fields.push(text('url','Or video URL (overrides destination)',''));
     }
+    if(['garage-buy','garage-install','garage-remove'].includes(kind.type))fields.push(select('target','Part',a.target||'$partRef',[{value:'$partRef',label:'Selected garage part'},...listProjectFiles('items').map(f=>({value:f.name,label:f.name}))]));
     if(kind.type==='set-param')fields.push({...text('parameter','Parameter',a.parameter||'',true),suggestions:parameterNames(this)},text('value','Value (text, number, true/false, or JSON)',JSON.stringify(a.value??'')));
     if(!['race','level'].includes(kind.type))fields.push(select('after','Then',a.then?'edit':'none',[{value:'none',label:'Nothing else'},{value:'edit',label:'Configure another action'}]));
     const r=await openEditorForm(names[kind.type],fields,{description:kind.type==='race'?'Launch one saved race with the menu selections. Configure its next destination in the Race Editor’s finish settings.':'The selected values travel into races and levels. Movies finish before the next action runs.'});

@@ -1897,7 +1897,12 @@ export default class Game {
       return false;
     }
     if (params.menuFlow && (!params.menuFlow.active || params.menuFlow !== this.menuPlayer?.flow)) return false;
-    const runtimeCar = car.car || car;
+    let runtimeCar = car.car || car;
+    try {
+      const garage=params.garage||continuation?.garage||this.items?.garage;
+      if(garage)runtimeCar=await garage.build(car.documentName||car.name||params.carRef,runtimeCar);
+    }catch(error){this.showSystemToast?.(`Garage could not prepare car: ${error.message}`);return false;}
+    if (params.menuFlow && (!params.menuFlow.active || params.menuFlow !== this.menuPlayer?.flow)) return false;
     const engineSfxRef = String(runtimeCar.audio?.engineSoundId || '').trim();
     const engineSfxPreparation = this.prepareRacePlaytestAudio({
       engineSoundId: engineSfxRef
@@ -1906,6 +1911,7 @@ export default class Game {
     this.raceTravelSession = continuation || this.createRaceTravelSession({ originState, car });
     const travelSession = this.raceTravelSession;
     travelSession.carSelection = car;
+    travelSession.garage = params.garage || continuation?.garage || this.items?.garage;
     if (!continuation) {
       travelSession.menuFlow = params.menuFlow || null;
       travelSession.menuConfiguration = structuredClone(params.menuConfiguration || {});
@@ -1925,9 +1931,7 @@ export default class Game {
     let racePreparationError = null;
     try {
       const prepared = await this.raceEditor.loadRaceTravelDocument?.(raceName, {
-        artRefs: Array.isArray(car.artRefs)
-          ? car.artRefs
-          : this.raceEditor.collectRaceCarArtRefs?.(runtimeCar) || []
+        artRefs: this.raceEditor.collectRaceCarArtRefs?.(runtimeCar) || car.artRefs || []
       });
       void engineSfxPreparation;
       if (prepared?.race && prepared?.bake) {

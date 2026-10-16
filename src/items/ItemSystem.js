@@ -1,3 +1,4 @@
+import {GarageSystem} from '../garage/GarageSystem.js';
 import {itemLibrary} from './ItemLibrary.js';
 import {ItemRuntime} from './ItemRuntime.js';
 import {normalizeItemDocument} from './ItemDocument.js';
@@ -8,7 +9,7 @@ import {normalizeItemProgress,planItemEffects,applyItemPlan,syncItemGrantsToPlay
 export const ITEM_PROGRESS_KEY='rtg-item-progress';
 export class ItemSystem {
   constructor(game,{load=loadServerPreferenceAsync,save=saveServerPreference,library=itemLibrary}={}) {
-    this.library=library;this.game=game;this.runtime=new ItemRuntime(game);this.selectedItemId='';this.loadPreference=load;this.savePreference=save;
+    this.library=library;this.game=game;this.garage=new GarageSystem(this);this.runtime=new ItemRuntime(game);this.selectedItemId='';this.loadPreference=load;this.savePreference=save;
     this.progress=normalizeItemProgress();this.revision=0;this.events=[];this.sessionCollected=new Set();this.pending=new Map();this.retryAt=new Map();this.queue=Promise.resolve();this.appliedPlayers=new WeakSet();
   }
   async load() {
@@ -70,7 +71,8 @@ export class ItemSystem {
       const item=await this.library.load(effect.itemRef);
       if(item.id!==effect.target)throw Error('The selected item has changed. Choose it again in the Item Editor.');
       plan.progress.contentNames[item.id]=item.name;
-      if(item.effects.some(effect=>effect.when!=='collect'))plan.progress.usable[item.id]=item;
+      if(item.carPart)plan.progress.garage.parts[item.id]=item;
+      if(!item.carPart&&item.effects.some(effect=>effect.when!=='collect'))plan.progress.usable[item.id]=item;
     }
   }
   usableItems(){return Object.values(this.progress.usable).filter(item=>this.progress.bags.items[item.id]>0);}

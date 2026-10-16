@@ -1,8 +1,10 @@
+import {normalizeGarageProgress} from '../garage/GarageProgress.js';
 import { normalizeItemDocument,normalizeItemEffect,applyItemModifier } from './ItemDocument.js';
 
 const copyMap = value => Object.fromEntries(Object.entries(value || {}).filter(([key]) => !['__proto__','prototype','constructor'].includes(key)));
 export function normalizeItemProgress(value = {}) {
   return {
+    garage:normalizeGarageProgress(value.garage),
     version:2, collected:[...new Set((Array.isArray(value.collected)?value.collected:[]).filter(id => typeof id === 'string'))],
     keys:copyMap(value.keys), weapons:copyMap(value.weapons), abilities:copyMap(value.abilities),
     bags:{items:copyMap(value.bags?.items || value.inventory),radio:copyMap(value.bags?.radio)},
@@ -45,7 +47,12 @@ export function planItemEffects(item, player = {}, abilities = {}, progress = {}
       if (type === 'ability' || type === 'weapon') enabled[target] = true;
     }
   }
-  if(definition.effects.some(effect=>effect.when!=='collect')){
+  if(definition.carPart){
+    next.garage.parts[definition.id]=definition;next.contentNames[definition.id]=definition.name;
+    next.bags.items[definition.id]=(Number(next.bags.items[definition.id])||0)+1;
+    next.inventory[definition.id]=next.bags.items[definition.id];
+  }
+  if(!definition.carPart&&definition.effects.some(effect=>effect.when!=='collect')){
     next.bags.items[definition.id]=(Number(next.bags.items[definition.id])||0)+1;
     next.inventory[definition.id]=next.bags.items[definition.id];next.usable[definition.id]=definition;
   }

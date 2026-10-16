@@ -43,7 +43,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     else if(element.type==='asset-preview'){const image=resources?.assetArt(element,parameters,time);if(image)drawMenuImage(ctx,image,b,element.imageFit);else ctx.fillText('Choose an actor / item image',b.x+b.w/2,b.y+b.h/2,Math.max(1,b.w-12));}
     else if(['car-preview','car-stats','power-curve'].includes(element.type))drawCarComponent(ctx,b,element,resources?.car(element.assetRef||value),resources,time,parameters);
     else{
-      if(element.type==='choice'){const options=element.source?resources?.choices(element.source,document)||[]:element.options;label+=`: ${options.find(o=>JSON.stringify(o.value)===JSON.stringify(value))?.label||'Choose…'}`;}
+      if(element.type==='choice'){const options=element.source?resources?.choices(element.source,document,parameters)||[]:element.options;label+=`: ${options.find(o=>JSON.stringify(o.value)===JSON.stringify(value))?.label||'Choose…'}`;}
       if(element.type==='toggle')label+=value?' ✓':' —';
       if(element.type==='keybind')label+=`: ${value||'Set key'}`;
       if(element.type==='slider'){

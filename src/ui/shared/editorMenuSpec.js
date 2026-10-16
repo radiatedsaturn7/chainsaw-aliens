@@ -119,6 +119,7 @@ const EDITOR_ACTION_LABEL_OVERRIDES = {
   'car-clear-body-model': 'Use 2D / Default Body',
   'car-clear-wheel-model': 'Use 2D / Default Wheels',
   'car-import-graphic': 'Import Graphic',
+  'item-part':'Part Properties','item-part-changes':'Part Changes','item-part-tuning':'Tuning Unlocks','item-part-curve':'Torque Curve','item-part-remove':'Remove Part Definition',
   'item-properties':'Item Properties', 'item-effect-add':'Add Effect', 'item-effect-edit':'Edit Effect', 'item-effect-delete':'Remove Effect', 'item-template':'Built-in Items', 'item-legacy':'Import Old Mix Tape', 'item-art':'Artwork', 'item-image':'Import Image', 'item-model':'3D Model', 'item-model-animation':'Model Animation', 'item-2d':'Use 2D Artwork',
   'doodad-item': 'Item / Mix Tape',
   'import-item-art': 'Import Image',
@@ -452,7 +453,7 @@ export const EDITOR_MENU_SPECS = {
       file:section('file','File',['new','save','save-as','open','export','import','exit-main']),
       edit:section('edit','Edit',['undo','redo','copy','cut','paste','duplicate','delete']),
       view:section('view','View',['menu-preview','menu-preview-start','menu-animate','zoom-fit']),
-      screens:section('screens','Screens',['screen-select','screen-new','screen-duplicate','screen-properties','menu-default-background','screen-background','screen-start','screen-delete']),
+      screens:section('screens','Screens',['screen-select','screen-new','screen-garage','screen-duplicate','screen-properties','menu-default-background','screen-background','screen-start','screen-delete']),
       insert:section('insert','Insert',['widget-add','insert-shape','insert-container','insert-text','insert-image','insert-button','insert-choice','insert-slider','insert-toggle','insert-keybind','insert-car-preview','insert-car-stats','insert-power-curve','insert-video','insert-property-display','insert-asset-preview']),
       properties:section('properties','Properties',['send-drawer','clip-drawer','element-select','element-setup','element-properties','element-art','element-action','element-animation','animation-timing','layer-up','layer-down','layer-back','layer-front']),
       flow:section('flow','Flow',['menu-parameters','starting-menu','clear-starting-menu'])
@@ -530,14 +531,15 @@ export const EDITOR_MENU_SPECS = {
   },
   item: {
     editorId: 'item', title: 'Item Editor', workSurface: 'stage',
-    root: ['file', 'edit', 'view', 'artwork', 'effects'],
-    portraitRoot: [{id:'file',label:'File'},{id:'artwork',label:'Art'},{id:'effects',label:'Effects'}],
+    root: ['file', 'edit', 'view', 'artwork', 'effects', 'parts'],
+    portraitRoot: [{id:'file',label:'File'},{id:'artwork',label:'Art'},{id:'effects',label:'Effects'},{id:'parts',label:'Parts'}],
     sections: {
       file: section('file','File',['new','save','save-as','open','export','import','item-template','item-legacy','exit-main']),
       edit: section('edit','Edit',['undo','redo','item-properties']),
       view: section('view','View',['zoom-fit']),
       artwork: section('artwork','Art',['item-art','item-image','item-model','item-model-animation','item-2d']),
-      effects: section('effects','Effects',['item-effect-add','item-effect-edit','item-effect-delete'])
+      effects: section('effects','Effects',['item-effect-add','item-effect-edit','item-effect-delete']),
+      parts: section('parts','Parts',['item-part','item-part-changes','item-part-tuning','item-part-curve','item-part-remove'])
     }
   },
   doodad: {

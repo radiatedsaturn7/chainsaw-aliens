@@ -146,3 +146,23 @@ test('returning from a race preserves new grants without replaying older pickups
  system.restoreAfterTravel(snapshot);
  assert.equal(game.player.maxHealth,8);assert.equal(game.player.keys['race-key'],1);assert.equal(game.abilities.ignitir,true);assert.equal(game.player.speed,snapshot.player.speed+20);
 });
+
+test('item artwork sizing preserves image proportions, saved dimensions and history',async()=>{
+ const editor=new ItemEditor({});
+ editor.doodad.artRef='Wide pickup';editor.doodad.heightM=2;
+ editor.hydrateDoodadArt=async()=>null;
+ editor.getDoodadArtCanvas=()=>({width:96,height:24});
+ await editor.change(()=>editor.matchArtworkSize());
+ assert.equal(editor.doodad.widthPx,96);assert.equal(editor.doodad.heightPx,24);
+ assert.equal(editor.doodad.widthM,8);assert.equal(editor.doodad.heightM,2);
+ const {serializeItemDocument,normalizeItemDocument}=await import('../../src/items/ItemDocument.js');
+ const saved=normalizeItemDocument(JSON.parse(JSON.stringify(serializeItemDocument(editor.doodad))));
+ assert.equal(saved.widthPx,96);assert.equal(saved.heightPx,24);
+ editor.undo();assert.equal(editor.doodad.widthPx,32);editor.redo();assert.equal(editor.doodad.widthPx,96);
+ // Older saved items with square placement dimensions still preview without stretching.
+ editor.doodad.widthPx=editor.doodad.heightPx=32;
+ const ctx=canvasContext();let drawn;
+ ctx.drawImage=(...args)=>{drawn=args;};
+ editor.drawPreview(ctx,{x:0,y:0,w:400,h:300});
+ assert.equal(drawn[3]/drawn[4],4);
+});

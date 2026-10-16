@@ -1,3 +1,4 @@
+import {normalizeCarPart} from '../garage/CarPart.js';
 import {normalizeModelBinding} from '../model3d/ModelBinding.js';
 // Item files contain data only. Effects are interpreted by ItemEffects, never eval'd.
 export const ITEM_VERSION = 2;
@@ -35,7 +36,7 @@ export function normalizeItemDocument(value = {}) {
   const effects = (Array.isArray(source.effects) ? source.effects : legacyTape && source.unlockTrackId ? [{type:'radio-track', target:source.unlockTrackId}] : []).map(normalizeItemEffect);
   return {
     id: safeKey(text(source.id) || 'new-item'), name: text(source.name) || 'New Item',
-    description: text(source.description), artRef: text(source.artRef), model:normalizeModelBinding(source.model),
+    description: text(source.description), carPart:normalizeCarPart(source.carPart), artRef: text(source.artRef), model:normalizeModelBinding(source.model),
     widthM: Math.max(0.1, Math.min(500, finite(source.widthM, 1))),
     heightM: Math.max(0.1, Math.min(500, finite(source.heightM, 1))),
     widthPx: Math.max(1, Math.min(4096, finite(source.widthPx, 32))),

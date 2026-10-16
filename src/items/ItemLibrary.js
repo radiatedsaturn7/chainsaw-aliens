@@ -1,10 +1,11 @@
+import garageParts from '../content/garage-parts.json' with {type:'json'};
 import builtins from '../content/items.json' with {type:'json'};
 import {normalizeItemDocument, serializeItemDocument} from './ItemDocument.js';
 import {listProjectFiles,loadProjectFile,saveProjectFileAndConfirm} from '../ui/projectFiles.js';
 import {hydrateProjectFile} from '../ui/serverStorage.js';
 
 export class ItemLibrary {
-  async loadDefaults() {return builtins.items;}
+  async loadDefaults() {return [...builtins.items,...garageParts.items];}
   async list() {
     const defaults=await this.loadDefaults();
     const saved=listProjectFiles('items').filter(entry=>!entry.deleted);
