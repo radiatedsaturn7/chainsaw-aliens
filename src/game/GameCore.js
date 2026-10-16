@@ -827,6 +827,7 @@ export default class Game {
   }
 
   handleTitleOptionsAction(action) {
+    if (action === 'project-browser') {this.openProjectBrowserFromTitle();return;}
     if (action === 'radio') {void this.radioEditor.options();return;}
     if (action === 'back') {
       this.title.setScreen('main');

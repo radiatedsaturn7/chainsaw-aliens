@@ -29,7 +29,8 @@ test('saved WRX2 uphill restart downshifts through RaceEditor and keeps physical
    e.updatePlaytest(1/60);
    maxSpin=Math.max(maxSpin,Math.abs(e.getRaceTireTextureScroll(e.getRaceSessionCar(s),'fl',s)));
   }
-  e.raceInput.activeThrottlePointerId=null;e.raceInput.paused=true;
+  // Freeze simulation without a pause overlay hiding the car in the artifact.
+  e.raceInput.activeThrottlePointerId=null;e.update=()=>{};g.setDisplayMode('color');
   return {gear:runner.state.gear,rpm:runner.state.engineRpm,travel:Math.hypot(runner.state.position.x-start.x,runner.state.position.z-start.z),heightGain:runner.state.position.y-start.y,maxSpin,loads:runner.state.wheelLoadsN};
  },carFixture);
  expect(result.gear).toBeLessThan(5);expect(result.travel).toBeGreaterThan(5);expect(result.heightGain).toBeGreaterThan(.2);expect(result.maxSpin).toBeGreaterThan(.1);

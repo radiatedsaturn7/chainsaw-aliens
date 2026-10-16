@@ -82,7 +82,7 @@ test.skip('actor editor pixel art saves to art doc and reopens with drawn pixels
       tick();
     });
 
-    game.openProjectBrowserFromTitle();
+    game.handleTitleOptionsAction('project-browser');
     return { savedName, savedPixel };
   });
 

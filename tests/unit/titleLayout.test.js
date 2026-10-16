@@ -225,6 +225,7 @@ test('controller selection order matches studio launcher hierarchy', () => {
     'back'
   ]);
   assert.deepEqual(title.optionsOrder, [
+    'project-browser',
     'radio',
     'latest-changes',
     'robtersession',
