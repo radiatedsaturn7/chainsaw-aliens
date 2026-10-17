@@ -47,10 +47,15 @@ export async function setupWidget(editor){
   if(['property-display','asset-preview'].includes(e.type))return setupDataWidget(editor);
   const fields=[text('label','Label',e.label)];
   const description=[];
-  if(['choice','slider','toggle','keybind'].includes(e.type)){
+  if(['car-showroom','garage-browser','choice','slider','toggle','keybind'].includes(e.type)){
     fields.push(bindingField(editor,e),...navigationFields(e));
     description.push('Widgets sharing a value parameter stay linked. Settings parameters affect the running game; custom values are passed to the next race or level.');
   }
+  if(e.type==='car-showroom'){
+    fields.push({id:'angle',label:'Parked viewing angle (135 = front left)',value:e.angle},{id:'duration',label:'Selected car rotation (seconds)',value:e.duration,min:.1,max:600},{id:'maxVisible',label:'Cars visible at once',value:e.maxVisible,min:1,max:4,step:1},{id:'selectedScale',label:'Selected car size',value:e.selectedScale,min:1,max:1.4},{id:'inactiveOpacity',label:'Unselected brightness',value:e.inactiveOpacity,min:.1,max:1});
+    description.push('Left/right highlights a car and updates linked statistics. On Select runs when the highlighted car changes; On Confirm opens the garage or another destination.');
+  }
+  if(e.type==='garage-browser')description.push('Lists compatible Item Editor car parts by section, installation slot and tier. None restores the stock slot. Confirm uses the configured action; Buy / install performs an atomic purchase and installation.');
   if(e.type==='shape')fields.push(select('shape','Shape',e.shape,['rectangle','ellipse','triangle']),...shapeStyleFields(e));
   if(e.type==='container'){
     description.push('Included widgets move, resize, copy and reorder with this container. New widgets added while it is selected join automatically. Use Layers to select the container behind its children.');

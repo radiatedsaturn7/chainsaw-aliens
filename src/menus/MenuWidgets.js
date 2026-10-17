@@ -1,5 +1,7 @@
 // Widget metadata is shared by the designer and runtime; bindings are plain data.
 export const MENU_WIDGETS = [
+  ['car-showroom','Car showroom','Up to four cars, selected-car rotation, dimming and confirm action.'],
+  ['garage-browser','Garage parts browser','Section → slot → upgrade, with purchase and install actions.'],
   ['shape','Shape','A rectangle, ellipse or triangle with fill and outline.'],
   ['container','Container','Group widgets so they move, resize and reorder together.'],
   ['text','Text','A heading, caption, or {{parameter}} value.'],
@@ -39,6 +41,8 @@ export function widgetDefaults(type){
   const shared={type,label:widgetLabel(type),x:0.1,y:0.2,w:0.8,h:0.1};
   if(['car-preview','car-stats','power-curve','asset-preview'].includes(type))Object.assign(shared,{h:0.3,w:0.4});
   if(['car-preview','car-stats','power-curve'].includes(type))Object.assign(shared,{binding:'carRef',dataSource:'cars'});
+  if(type==='car-showroom')Object.assign(shared,{binding:'carRef',source:'cars',angle:135,duration:8,w:.9,h:.45});
+  if(type==='garage-browser')Object.assign(shared,{binding:'partRef',w:.9,h:.3,action:{type:'garage-fit',target:'$partRef'}});
   if(type==='car-preview')Object.assign(shared,{animation:'spin',duration:8});
   if(type==='property-display')Object.assign(shared,{label:'Name',dataSource:'cars',binding:'carRef',property:'name'});
   if(type==='asset-preview')Object.assign(shared,{dataSource:'actors',binding:'actorRef',property:''});

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "kind": "race-car",
-  "savedAt": 1784093996548,
+  "savedAt": 1788813563944,
   "selectedCarId": "subaru-brz-2022",
   "car": {
     "id": "subaru-brz-2022",
@@ -50,9 +50,31 @@
           "artRef": null,
           "frameIndex": 0
         },
+        "drift": {
+          "artRef": null,
+          "frameIndex": 0
+        },
         "snow": {
           "artRef": null,
           "frameIndex": 0
+        }
+      },
+      "interior": {
+        "dashboard": {
+          "artRef": null,
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "steeringWheel": {
+          "artRef": null,
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0
         }
       },
       "addOns": [],
@@ -85,6 +107,9 @@
         "brakes": true,
         "shadow": true
       }
+    },
+    "camera": {
+      "trackingMode": "dynamic"
     },
     "dimensions": {
       "lengthM": 4.27,
@@ -189,7 +214,7 @@
       "topSpeedMph": 140,
       "zeroToSixtySec": 6.1,
       "dragCoefficient": 0.35,
-      "accelerationCalibration": 1.28,
+      "accelerationCalibration": 1.22,
       "drivetrainEfficiency": 0.86,
       "differentialAccel": 0.5,
       "differentialDecel": 0.25,
@@ -217,6 +242,145 @@
       "reboundRear": 0.57,
       "antiRollFront": 0.52,
       "antiRollRear": 0.58,
+      "physics": {
+        "bodyShapePreset": "car",
+        "bodyProfile": {
+          "preset": "car",
+          "overallLengthM": 4.27,
+          "overallWidthM": 1.78,
+          "overallHeightM": 1.46,
+          "groundClearanceM": 0.14,
+          "frontOverhangM": 0.92,
+          "rearOverhangM": 0.93,
+          "lowerBodyHeightM": 0.48,
+          "hood": {
+            "lengthM": 1.2,
+            "widthM": 1.68,
+            "heightM": 0.42
+          },
+          "cabin": {
+            "centerZM": -0.12,
+            "lengthM": 2.15,
+            "widthM": 1.62,
+            "heightM": 0.83
+          },
+          "bed": {
+            "centerZM": -1.35,
+            "lengthM": 0,
+            "widthM": 0,
+            "heightM": 0
+          },
+          "cgPositionM": {
+            "x": 0,
+            "y": 0.55,
+            "z": 0
+          },
+          "collisionFriction": 0.62,
+          "collisionRestitution": 0.08,
+          "wheelWellAware": false,
+          "wheelWellClearanceMarginM": 0.06,
+          "maximumTireDeflectionM": 0.04,
+          "wheelRadiusM": 0.337,
+          "trackWidthM": 1.58,
+          "frontAxleDistanceFromCgM": 1.0248,
+          "rearAxleDistanceFromCgM": 1.3663999999999998,
+          "customColliders": [],
+          "pieces": [
+            {
+              "id": "lower-chassis",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": -0.17000000000000004,
+                "z": 0
+              },
+              "sizeM": {
+                "x": 1.78,
+                "y": 0.48,
+                "z": 4.27
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "bottom",
+                "top",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "front-body-hood",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": 0.2799999999999999,
+                "z": 0.6149999999999999
+              },
+              "sizeM": {
+                "x": 1.68,
+                "y": 0.42,
+                "z": 1.2
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "bottom",
+                "top",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "cabin",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": 0.48499999999999993,
+                "z": -0.12
+              },
+              "sizeM": {
+                "x": 1.62,
+                "y": 0.83,
+                "z": 2.15
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "bottom",
+                "top",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "rear-body-trunk",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": 0.24639999999999992,
+                "z": -1.0299999999999996
+              },
+              "sizeM": {
+                "x": 1.6732,
+                "y": 0.35279999999999995,
+                "z": 0.35
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "bottom",
+                "top",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            }
+          ]
+        }
+      },
       "engineCurve": {
         "rpmMin": 760,
         "rpmMax": 7400,

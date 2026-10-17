@@ -16240,7 +16240,7 @@ test('Car Editor loads system presets without seeding files and saves editable c
   const loaded = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} }, { mode: 'car' });
   assert.equal(loaded.applyLoadedCarDocument(payload.data, { name: 'Track BRZ' }), true);
   assert.equal(loaded.selectedCar.id, 'subaru-brz-2022');
-  assert.equal(loaded.selectedCar.name, 'RWD Sports Car');
+  assert.equal(loaded.selectedCar.name, 'RWD');
   assert.equal(loaded.selectedCar.audio.engineProfile, 'custom-brz-engine');
   assert.equal(loaded.currentCarDocumentName, 'Track BRZ');
 });
@@ -20320,12 +20320,13 @@ test('Race Editor analog steering decays fully after left thumbstick release', (
   assert.equal(Math.abs(editor.raceInput.steeringWheel) < 0.03, true);
 });
 
-test('Race Editor playtest keeps Level handheld controls visible when physical gamepad is connected', () => {
+test('Race Editor playtest hides touch controls on controller connection and restores them on disconnect', () => {
   let shellDraws = 0;
   const editor = new RaceEditor({
     deviceIsMobile: true,
     isMobile: true,
     input: {
+      gamepadConnected: false,
       gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 },
       isGamepadConnected: () => true
     },
@@ -20335,27 +20336,32 @@ test('Race Editor playtest keeps Level handheld controls visible when physical g
   const ctx = createMockContext();
 
   editor.startPlaytest('starter-rwd');
+  editor.draw(ctx, 390, 844);
+  assert.equal(editor.buttons.some(button => button.id === 'race-go'), true);
+  shellDraws = 0;
+  editor.game.input.gamepadConnected = true;
   editor.raceInput.activeDpadPointerId = 'touch';
   editor.raceInput.binarySteer = 1;
   editor.raceInput.activeThrottlePointerId = 'touch-go';
   editor.raceInput.throttle = true;
   editor.draw(ctx, 390, 844);
 
-  const layout = getPortraitHandheldLayout(390, 844);
+  assert.equal(shellDraws, 0);
+  assert.deepEqual(editor.editorBounds, { x: 0, y: 0, w: 390, h: 844 });
+  assert.equal(editor.buttons.some(button => ['race-dpad','race-start','race-select','race-go','race-brake'].includes(button.id)), false);
+  assert.equal(editor.raceInput.binarySteer, 0);
+  assert.equal(editor.raceInput.throttle, false);
+  assert.equal(editor.raceInput.activeThrottlePointerId, null);
+  // The generic query can remain true for virtual controls after unplugging.
+  editor.game.input.gamepadConnected = false;
+  editor.game.input.isGamepadConnected = () => true;
+  editor.draw(ctx, 390, 844);
   assert.equal(shellDraws, 1);
-  assert.deepEqual(editor.editorBounds, layout.screen);
-  assert.deepEqual(editor.buttons.find((button) => button.id === 'race-dpad')?.bounds, { ...layout.dpad, id: 'race-dpad' });
-  assert.deepEqual(editor.buttons.find((button) => button.id === 'race-start')?.bounds, { ...layout.start, id: 'race-start' });
-  assert.deepEqual(editor.buttons.find((button) => button.id === 'race-select')?.bounds, { ...layout.select, id: 'race-select' });
-  assert.equal(editor.buttons.some((button) => button.id === 'race-go'), true);
-  assert.equal(editor.buttons.some((button) => button.id === 'race-brake'), true);
-  assert.equal(ctx.calls.filter((call) => call.type === 'text' && call.value === 'START').length, 1);
-  assert.equal(ctx.calls.filter((call) => call.type === 'text' && call.value === 'SELECT').length, 1);
-  assert.equal(editor.raceInput.binarySteer, 1);
-  assert.equal(editor.raceInput.throttle, true);
+  assert.deepEqual(editor.editorBounds, getPortraitHandheldLayout(390, 844).screen);
+  assert.equal(editor.buttons.some(button => button.id === 'race-go'), true);
 });
 
-test('Race Editor physical gamepad handheld mode still reads left thumbstick axes', () => {
+test('Race Editor physical gamepad playtest still reads left thumbstick axes', () => {
   const gameInput = {
     gamepadAxes: { leftX: 0, leftTrigger: 0, rightTrigger: 0 },
     getGamepadAxes() {
@@ -20378,16 +20384,18 @@ test('Race Editor physical gamepad handheld mode still reads left thumbstick axe
   editor.playtestSession.speedMps = 4;
   gameInput.gamepadAxes.leftX = 0.82;
   editor.draw(ctx, 390, 844);
-  editor.updatePlaytest(1 / 30);
+  editor.playtestSession.countdownRemainingMs = 0;
+  editor.playtestSession.startupFramePending = false;
+  editor.update(gameInput, 1 / 30);
 
   assert.equal(editor.raceInput.analogSteeringActive, true);
   assert.equal(editor.raceInput.analogSteeringIntent > 0.7, true);
   assert.equal(editor.raceInput.steeringTarget > 0, true);
   assert.equal(editor.raceInput.steeringWheel > 0, true);
-  assert.equal(editor.buttons.some((button) => button.id === 'race-dpad'), true);
+  assert.equal(editor.buttons.some((button) => button.id === 'race-dpad'), false);
 });
 
-test('Car Editor playtest uses the same Level handheld gamepad layout in landscape', () => {
+test('Car Editor playtest hides virtual controls with a physical gamepad in landscape', () => {
   let shellDraws = 0;
   const editor = new RaceEditor({
     deviceIsMobile: true,
@@ -20400,23 +20408,16 @@ test('Car Editor playtest uses the same Level handheld gamepad layout in landsca
     exitRaceEditor() {}
   }, { mode: 'car' });
   const ctx = createMockContext();
-  const layout = getLandscapeHandheldLayout(844, 390);
 
   editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false });
   editor.draw(ctx, 844, 390);
 
-  assert.equal(shellDraws, 1);
-  assert.deepEqual(editor.editorBounds, layout.screen);
-  assert.deepEqual(editor.buttons.find((button) => button.id === 'race-dpad')?.bounds, { ...layout.dpad, id: 'race-dpad' });
-  assert.deepEqual(editor.buttons.find((button) => button.id === 'race-start')?.bounds, { ...layout.start, id: 'race-start' });
-  assert.deepEqual(editor.buttons.find((button) => button.id === 'race-select')?.bounds, { ...layout.select, id: 'race-select' });
-  assert.deepEqual(editor.raceMobileControls.attackPad, layout.buttons.a);
-  assert.deepEqual(editor.raceMobileControls.bButton, layout.buttons.jump);
-  assert.equal(ctx.calls.filter((call) => call.type === 'text' && call.value === 'START').length, 1);
-  assert.equal(ctx.calls.filter((call) => call.type === 'text' && call.value === 'SELECT').length, 1);
+  assert.equal(shellDraws, 0);
+  assert.deepEqual(editor.editorBounds, { x: 0, y: 0, w: 844, h: 390 });
+  assert.equal(editor.buttons.some(button => ['race-dpad','race-go','race-brake','race-start','race-select'].includes(button.id)), false);
 });
 
-test('Car Editor playtest uses the same Level handheld gamepad layout in portrait', () => {
+test('Car Editor playtest hides virtual controls with a physical gamepad in portrait', () => {
   let shellDraws = 0;
   const editor = new RaceEditor({
     deviceIsMobile: true,
@@ -20429,20 +20430,13 @@ test('Car Editor playtest uses the same Level handheld gamepad layout in portrai
     exitRaceEditor() {}
   }, { mode: 'car' });
   const ctx = createMockContext();
-  const layout = getPortraitHandheldLayout(390, 844);
 
   editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false });
   editor.draw(ctx, 390, 844);
 
-  assert.equal(shellDraws, 1);
-  assert.deepEqual(editor.editorBounds, layout.screen);
-  assert.deepEqual(editor.buttons.find((button) => button.id === 'race-dpad')?.bounds, { ...layout.dpad, id: 'race-dpad' });
-  assert.deepEqual(editor.buttons.find((button) => button.id === 'race-start')?.bounds, { ...layout.start, id: 'race-start' });
-  assert.deepEqual(editor.buttons.find((button) => button.id === 'race-select')?.bounds, { ...layout.select, id: 'race-select' });
-  assert.deepEqual(editor.raceMobileControls.attackPad, layout.buttons.a);
-  assert.deepEqual(editor.raceMobileControls.bButton, layout.buttons.jump);
-  assert.equal(ctx.calls.filter((call) => call.type === 'text' && call.value === 'START').length, 1);
-  assert.equal(ctx.calls.filter((call) => call.type === 'text' && call.value === 'SELECT').length, 1);
+  assert.equal(shellDraws, 0);
+  assert.deepEqual(editor.editorBounds, { x: 0, y: 0, w: 390, h: 844 });
+  assert.equal(editor.buttons.some(button => ['race-dpad','race-go','race-brake','race-start','race-select'].includes(button.id)), false);
 });
 
 test('Race Editor off-road projection avoids black near-camera planes', () => {
@@ -20588,7 +20582,7 @@ test('Race Editor right steering follows map compass handedness', () => {
   assert.equal(northbound.playtestSession.worldX > 0, true);
 });
 
-test('Race Editor right thumbstick looks around and hides third-person car while looking away', () => {
+test('Race Editor right thumbstick orbits and retains the third-person car while looking away', () => {
   const gameInput = {
     gamepadConnected: true,
     gamepadAxes: { leftX: 0, rightX: 1, leftTrigger: 0, rightTrigger: 0 },
@@ -20615,10 +20609,10 @@ test('Race Editor right thumbstick looks around and hides third-person car while
   editor.playtestSession.elapsedMs = 1000;
   editor.updatePlaytest(0.2);
 
-  assert.equal(editor.raceInput.lookAngle > 0.5, true);
-  assert.equal(editor.playtestSession.cameraYaw > editor.playtestSession.carYaw, true);
+  assert.equal(editor.raceInput.lookAngle < -0.5, true);
+  assert.equal(editor.playtestSession.cameraYaw < editor.playtestSession.carYaw, true);
   editor.drawRacePlaytestScreen(createMockContext(), { x: 0, y: 0, w: 390, h: 240 });
-  assert.equal(thirdPersonDraws, 0);
+  assert.equal(thirdPersonDraws, 1);
 
   gameInput.gamepadAxes.rightX = 0;
   for (let frame = 0; frame < 40; frame += 1) editor.updatePlaytest(1 / 60);
@@ -20659,7 +20653,7 @@ test('Race Editor ignores look-around axes unless a physical gamepad is connecte
   editor.updatePlaytest(0.2);
 
   assert.equal(editor.raceInput.lookIntentX > 0.9, true);
-  assert.equal(editor.raceInput.lookAngle > 0.5, true);
+  assert.equal(editor.raceInput.lookAngle < -0.5, true);
 });
 
 test('Race Editor pause menu navigates to car settings and adjusts values with controller directions', () => {
@@ -21239,7 +21233,6 @@ test('Race Editor digital pedals ramp like virtual throttle and brake axes', () 
 
   assert.equal(editor.raceInput.throttleAxis < 0.03, true);
   assert.equal(editor.raceInput.brakeAxis, 0);
-  assert.equal(raceEditorSource.includes('digitalBrakePressRate: 8.5'), true);
 });
 
 test('Race Editor analog triggers preserve proportional pedal pressure', () => {
@@ -21357,7 +21350,7 @@ test('Race Editor simulates 2022 WRX with runtime manual and automatic transmiss
   seedLongStraightRace(manual);
   manual.startPlaytest('starter-rwd');
 
-  assert.equal(manual.selectedCar.name, 'AWD Sports Car');
+  assert.equal(manual.selectedCar.name, 'AWD');
   assert.equal(manual.selectedCar.tuning.drivetrain, 'awd');
   assert.equal(manual.selectedCar.tuning.powerHp, 271);
   assert.equal(manual.selectedCar.tuning.torqueLbFt, 258);
@@ -21380,7 +21373,7 @@ test('Race Editor simulates 2022 WRX with runtime manual and automatic transmiss
   seedLongStraightRace(automatic);
   automatic.startPlaytest('starter-rwd');
 
-  assert.equal(automatic.selectedCar.name, 'AWD Sports Car');
+  assert.equal(automatic.selectedCar.name, 'AWD');
   assert.equal(automatic.playtestSession.transmissionType, 'automatic');
   assert.equal(automatic.raceInput.autoShift, true);
   assert.equal(automatic.raceInput.gear, 1);

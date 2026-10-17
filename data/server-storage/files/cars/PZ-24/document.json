@@ -1,0 +1,1139 @@
+{
+  "schemaVersion": 2,
+  "kind": "race-car",
+  "savedAt": 1791853009629,
+  "selectedCarId": "starter-rwd",
+  "car": {
+    "id": "starter-rwd",
+    "name": "2022 Subaru WRX",
+    "class": "road",
+    "art": {
+      "body": null,
+      "artRef": null,
+      "shell": null,
+      "spoilers": [],
+      "turnFrames": {
+        "left": null,
+        "center": null,
+        "right": null
+      },
+      "shellFrames": {
+        "mode": "8-way",
+        "artRef": null,
+        "slots": {
+          "front": null,
+          "frontRight": null,
+          "right": null,
+          "rearRight": null,
+          "rear": null,
+          "rearLeft": null,
+          "left": null,
+          "frontLeft": null
+        },
+        "reverseFrameIndex": 0
+      },
+      "interior": {
+        "dashboard": {
+          "artRef": null,
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "steeringWheel": {
+          "artRef": null,
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        }
+      },
+      "addOns": [],
+      "angleLayers": {
+        "front": {
+          "body": {
+            "artRef": "8317 body",
+            "frameIndex": 0,
+            "transforms": {
+              "bodyScaleX": 2.4831177137924674,
+              "bodyScaleY": 2.2958861916001347,
+              "bodyOffsetX": 0.03383458646616333,
+              "bodyOffsetY": -0.09833176691729406,
+              "bodyRotationDeg": 0
+            },
+            "fitToCar": true
+          },
+          "tires": {
+            "artRef": "8296 tires 3",
+            "frameIndex": 0,
+            "transforms": {
+              "tireScaleX": 1.4287106822818194,
+              "tireScaleY": 1.1908884148848684,
+              "tireSpacingScale": 0.9091675722509398,
+              "frontTireOffsetX": -0.019031954887218205,
+              "frontTireOffsetY": -0.8648966165413547,
+              "rearTireOffsetX": -0.08670112781954842,
+              "rearTireOffsetY": 7.825969392383872
+            },
+            "cylinder": true,
+            "tireMode": "front"
+          },
+          "brakes": {
+            "visible": false
+          }
+        },
+        "frontRight": {
+          "body": {
+            "artRef": "8317 body",
+            "frameIndex": 7,
+            "transforms": {
+              "bodyScaleX": 4.083142548754699,
+              "bodyScaleY": 2.513625800340695,
+              "bodyOffsetX": -6.0458176691729335,
+              "bodyOffsetY": -0.468397556390979,
+              "bodyRotationDeg": 2.771528430451127
+            },
+            "fitToCar": true
+          },
+          "tires": {
+            "artRef": "8296 tires 3",
+            "frameIndex": 0,
+            "transforms": {
+              "tireScaleX": 2.4642699277490596,
+              "tireScaleY": 1.3586983816964284,
+              "frontTireOffsetX": -0.1247650375939866,
+              "frontTireOffsetY": -1.7900610902255654,
+              "rearTireOffsetX": -1.7900610902255654,
+              "rearTireOffsetY": -0.1247650375939866
+            },
+            "cylinder": true,
+            "tireMode": "right"
+          },
+          "brakes": {
+            "visible": false
+          }
+        },
+        "right": {
+          "body": {
+            "artRef": "8317 body",
+            "frameIndex": 2,
+            "transforms": {
+              "bodyScaleX": 2.63207989456062,
+              "bodyScaleY": 2.6123375455239657,
+              "bodyOffsetX": -4.421757518796991,
+              "bodyOffsetY": -1.9486607142857153,
+              "bodyRotationDeg": 0
+            },
+            "fitToCar": true
+          },
+          "tires": {
+            "artRef": "8296 tires 3",
+            "frameIndex": 2,
+            "transforms": {
+              "tireScaleX": 2.128649994125939,
+              "tireScaleY": 1.8029012350211466,
+              "frontTireOffsetX": -0.28336466165413654,
+              "frontTireOffsetY": -0.6534304511278197,
+              "rearTireOffsetX": -0.28336466165413654,
+              "rearTireOffsetY": -0.41553101503759393
+            },
+            "cylinder": true,
+            "tireMode": "right"
+          },
+          "brakes": {
+            "visible": false
+          }
+        },
+        "rearRight": {
+          "body": {
+            "artRef": "8317 body",
+            "frameIndex": 3,
+            "transforms": {
+              "bodyScaleX": 2.7011781161889092,
+              "bodyScaleY": 2.4247852296757517,
+              "bodyOffsetX": -1.6198308270676698,
+              "bodyOffsetY": -2.9002584586466167,
+              "bodyRotationDeg": 1.0199938322368425
+            },
+            "fitToCar": true
+          },
+          "tires": {
+            "artRef": "8296 tires 3",
+            "frameIndex": 0,
+            "transforms": {
+              "tireScaleX": 2.020067074424342,
+              "tireScaleY": 1.576524592526598,
+              "tireSpacingScale": 0.7385903724154136,
+              "frontTireOffsetX": -1.4992951127819563,
+              "frontTireOffsetY": 0.3774671052631575,
+              "rearTireOffsetX": -5.464285714285715,
+              "rearTireOffsetY": -0.3626644736842106
+            },
+            "cylinder": true,
+            "tireMode": "left"
+          },
+          "brakes": {
+            "visible": false
+          }
+        },
+        "rear": {
+          "body": {
+            "artRef": "8317 body",
+            "frameIndex": 4,
+            "transforms": {
+              "bodyScaleX": 2.0891652960526312,
+              "bodyScaleY": 1.9114841547227441,
+              "bodyOffsetX": 0.007401315789472562,
+              "bodyOffsetY": -0.09833176691729406,
+              "bodyRotationDeg": 0
+            },
+            "fitToCar": true
+          },
+          "tires": {
+            "artRef": "8296 tires 3",
+            "frameIndex": 0,
+            "transforms": {
+              "tireScaleX": 1.6647047917645674,
+              "tireScaleY": 1.447538952361372,
+              "tireSpacingScale": 1.0383188806978383,
+              "frontTireOffsetY": -0.17763157894736992,
+              "rearTireOffsetX": 0.08670112781954842,
+              "rearTireOffsetY": 1.6198308270676698
+            },
+            "cylinder": true,
+            "tireMode": "rear"
+          },
+          "brakes": {
+            "visible": false
+          }
+        },
+        "rearLeft": {
+          "body": {
+            "artRef": "8317 body",
+            "frameIndex": 5,
+            "transforms": {
+              "bodyScaleX": 2.7011781161889092,
+              "bodyScaleY": 2.4247852296757517,
+              "bodyOffsetX": 1.6198308270676698,
+              "bodyOffsetY": -2.4508928571428577,
+              "bodyRotationDeg": -1.0199938322368425
+            },
+            "visible": true,
+            "fitToCar": true
+          },
+          "tires": {
+            "artRef": "8296 tires 3",
+            "frameIndex": 0,
+            "transforms": {
+              "tireScaleX": 2.020067074424342,
+              "tireScaleY": 1.8029012350211466,
+              "frontTireOffsetX": 2.095629699248118,
+              "frontTireOffsetY": 0.4567669172932334,
+              "rearTireOffsetX": 5.79628759398496,
+              "rearTireOffsetY": -0.17763157894736992
+            },
+            "cylinder": true,
+            "tireMode": "right"
+          },
+          "brakes": {
+            "visible": false
+          }
+        },
+        "left": {
+          "body": {
+            "artRef": "8317 body",
+            "frameIndex": 6,
+            "transforms": {
+              "bodyScaleX": 2.63207989456062,
+              "bodyScaleY": 2.6123375455239657,
+              "bodyOffsetX": 4.421757518796991,
+              "bodyOffsetY": -1.9486607142857153,
+              "bodyRotationDeg": 0
+            },
+            "fitToCar": true
+          },
+          "tires": {
+            "artRef": "8296 tires 3",
+            "frameIndex": 2,
+            "transforms": {
+              "tireScaleX": 2.128649994125939,
+              "tireScaleY": 1.733803013392857,
+              "frontTireOffsetX": 0.8796992481202999,
+              "frontTireOffsetY": -0.9970629699248121,
+              "rearTireOffsetX": 0.13956766917292995,
+              "rearTireOffsetY": -0.697346105895301
+            },
+            "cylinder": true
+          },
+          "brakes": {
+            "visible": false
+          }
+        },
+        "frontLeft": {
+          "body": {
+            "artRef": "8317 body",
+            "frameIndex": 1,
+            "transforms": {
+              "bodyScaleX": 4.083142548754699,
+              "bodyScaleY": 2.513625800340695,
+              "bodyOffsetX": 6.0458176691729335,
+              "bodyOffsetY": -0.468397556390979,
+              "bodyRotationDeg": 3.753356361996481
+            },
+            "fitToCar": true
+          },
+          "tires": {
+            "artRef": "8296 tires 3",
+            "frameIndex": 0,
+            "transforms": {
+              "tireScaleX": 2.4642699277490596,
+              "tireScaleY": 1.3586983816964284,
+              "frontTireOffsetX": 0.11313439849623919,
+              "frontTireOffsetY": -0.7591635338345881,
+              "rearTireOffsetX": 0.48320018796992414,
+              "rearTireOffsetY": -0.17763157894736992
+            },
+            "cylinder": true
+          },
+          "brakes": {
+            "visible": false
+          }
+        }
+      },
+      "tireSurfaces": {
+        "tread": {
+          "artRef": "8296 tires 3",
+          "frameIndex": 0,
+          "region": {
+            "x": 121,
+            "y": 30,
+            "width": 138,
+            "height": 332
+          },
+          "bounds": {
+            "x": 121.5,
+            "y": 30.5,
+            "width": 137,
+            "height": 331
+          }
+        },
+        "wheel": {
+          "artRef": "8296 tires 3",
+          "frameIndex": 2,
+          "region": {
+            "x": 191,
+            "y": 192.5,
+            "radius": 177.45210621460654
+          },
+          "bounds": {
+            "x": 13.547993785393459,
+            "y": 15.047993785393459,
+            "width": 354.9040124292131,
+            "height": 354.9040124292131
+          }
+        }
+      },
+      "bodyScaleX": 1,
+      "bodyScaleY": 1,
+      "tireScaleX": 1,
+      "tireScaleY": 1,
+      "bodyOffsetX": 0,
+      "bodyOffsetY": 0,
+      "frontTireOffsetX": 0,
+      "frontTireOffsetY": 0,
+      "rearTireOffsetX": 0,
+      "rearTireOffsetY": 0,
+      "mirrorAngleEdits": false,
+      "shadowArtRef": null,
+      "shadowFrameIndex": 0,
+      "shadowScaleX": 1,
+      "shadowScaleY": 1,
+      "shadowOffsetX": 0,
+      "shadowOffsetY": 0,
+      "brakeLightArtRef": null,
+      "brakeLightScaleX": 1,
+      "brakeLightScaleY": 1,
+      "brakeLightOffsetX": 0,
+      "brakeLightOffsetY": 0,
+      "layerVisibility": {
+        "body": true,
+        "tires": true,
+        "frontWheels": true,
+        "rearWheels": true,
+        "leftWheels": true,
+        "rightWheels": true,
+        "brakes": true,
+        "shadow": true
+      },
+      "tireTreads": {
+        "tarmac": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "rain": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "dirt": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "offroad": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "drift": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "snow": {
+          "artRef": null,
+          "frameIndex": 0
+        }
+      },
+      "bodyModel": null,
+      "wheelModel": null
+    },
+    "camera": {
+      "trackingMode": "dynamic-fixed"
+    },
+    "dimensions": {
+      "lengthM": 4.67,
+      "widthM": 1.83,
+      "wheelbaseM": 2.67,
+      "trackFrontM": 1.56,
+      "trackRearM": 1.57
+    },
+    "audio": {
+      "engineSoundId": null,
+      "engineProfile": "wrx-flat-four-cvt"
+    },
+    "setup": {
+      "defaultTireCompound": "offroad",
+      "tireCompoundByWheel": {
+        "fl": "offroad",
+        "fr": "offroad",
+        "rl": "offroad",
+        "rr": "offroad"
+      },
+      "tirePressurePsi": {
+        "fl": 32,
+        "fr": 32,
+        "rl": 32,
+        "rr": 32
+      },
+      "tireSize": {
+        "widthMm": 245,
+        "aspectRatio": 40,
+        "wheelDiameterIn": 18
+      },
+      "tireDefinition": {
+        "ref": "Offroad",
+        "tire": {
+          "kind": "race-tire",
+          "schemaVersion": 2,
+          "name": "Offroad",
+          "baseCompound": "offroad",
+          "compound": {
+            "id": "offroad",
+            "label": "Offroad",
+            "surfaceGrip": {
+              "asphalt": 0.7,
+              "wet-asphalt": 0.68,
+              "dirt": 1,
+              "gravel": 1.08,
+              "mud": 1.02,
+              "wet-gravel": 1.04,
+              "snow": 0.66,
+              "slush": 0.76
+            },
+            "wetEvacuationFactor": 1.16,
+            "treadDepthMm": 11,
+            "wearRate": 1.08
+          },
+          "size": {
+            "widthMm": 245,
+            "aspectRatio": 40,
+            "wheelDiameterIn": 18
+          },
+          "pressurePsi": 32,
+          "graphics": {
+            "tireSurfaces": {
+              "tread": {
+                "artRef": "8296 tires 3",
+                "frameIndex": 0,
+                "region": {
+                  "x": 121,
+                  "y": 30,
+                  "width": 138,
+                  "height": 332
+                },
+                "bounds": {
+                  "x": 121.5,
+                  "y": 30.5,
+                  "width": 137,
+                  "height": 331
+                }
+              },
+              "wheel": {
+                "artRef": "8296 tires 3",
+                "frameIndex": 2,
+                "region": {
+                  "x": 191,
+                  "y": 192.5,
+                  "radius": 177.45210621460654
+                },
+                "bounds": {
+                  "x": 13.547993785393459,
+                  "y": 15.047993785393459,
+                  "width": 354.9040124292131,
+                  "height": 354.9040124292131
+                }
+              }
+            },
+            "angleLayers": {
+              "front": {
+                "tires": {
+                  "cylinder": true,
+                  "artRef": "8296 tires 3",
+                  "frameIndex": 0,
+                  "region": {
+                    "x": 121,
+                    "y": 30,
+                    "width": 138,
+                    "height": 332
+                  },
+                  "bounds": {
+                    "x": 121.5,
+                    "y": 30.5,
+                    "width": 137,
+                    "height": 331
+                  }
+                }
+              },
+              "frontRight": {
+                "tires": {
+                  "cylinder": true,
+                  "artRef": "8296 tires 3",
+                  "frameIndex": 0,
+                  "region": {
+                    "x": 121,
+                    "y": 30,
+                    "width": 138,
+                    "height": 332
+                  },
+                  "bounds": {
+                    "x": 121.5,
+                    "y": 30.5,
+                    "width": 137,
+                    "height": 331
+                  }
+                }
+              },
+              "right": {
+                "tires": {
+                  "cylinder": true,
+                  "artRef": "8296 tires 3",
+                  "frameIndex": 2,
+                  "region": {
+                    "x": 191,
+                    "y": 192.5,
+                    "radius": 177.45210621460654
+                  },
+                  "bounds": {
+                    "x": 13.547993785393459,
+                    "y": 15.047993785393459,
+                    "width": 354.9040124292131,
+                    "height": 354.9040124292131
+                  }
+                }
+              },
+              "rearRight": {
+                "tires": {
+                  "cylinder": true,
+                  "artRef": "8296 tires 3",
+                  "frameIndex": 0,
+                  "region": {
+                    "x": 121,
+                    "y": 30,
+                    "width": 138,
+                    "height": 332
+                  },
+                  "bounds": {
+                    "x": 121.5,
+                    "y": 30.5,
+                    "width": 137,
+                    "height": 331
+                  }
+                }
+              },
+              "rear": {
+                "tires": {
+                  "cylinder": true,
+                  "artRef": "8296 tires 3",
+                  "frameIndex": 0,
+                  "region": {
+                    "x": 121,
+                    "y": 30,
+                    "width": 138,
+                    "height": 332
+                  },
+                  "bounds": {
+                    "x": 121.5,
+                    "y": 30.5,
+                    "width": 137,
+                    "height": 331
+                  }
+                }
+              },
+              "rearLeft": {
+                "tires": {
+                  "cylinder": true,
+                  "artRef": "8296 tires 3",
+                  "frameIndex": 0,
+                  "region": {
+                    "x": 121,
+                    "y": 30,
+                    "width": 138,
+                    "height": 332
+                  },
+                  "bounds": {
+                    "x": 121.5,
+                    "y": 30.5,
+                    "width": 137,
+                    "height": 331
+                  }
+                }
+              },
+              "left": {
+                "tires": {
+                  "cylinder": true,
+                  "artRef": "8296 tires 3",
+                  "frameIndex": 2,
+                  "region": {
+                    "x": 191,
+                    "y": 192.5,
+                    "radius": 177.45210621460654
+                  },
+                  "bounds": {
+                    "x": 13.547993785393459,
+                    "y": 15.047993785393459,
+                    "width": 354.9040124292131,
+                    "height": 354.9040124292131
+                  }
+                }
+              },
+              "frontLeft": {
+                "tires": {
+                  "cylinder": true,
+                  "artRef": "8296 tires 3",
+                  "frameIndex": 0,
+                  "region": {
+                    "x": 121,
+                    "y": 30,
+                    "width": 138,
+                    "height": 332
+                  },
+                  "bounds": {
+                    "x": 121.5,
+                    "y": 30.5,
+                    "width": 137,
+                    "height": 331
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "defaultTransmissionType": "automatic",
+    "transmissions": {
+      "manual": {
+        "type": "manual",
+        "label": "6MT",
+        "shiftMode": "manual",
+        "shiftTimeMs": 420,
+        "clutchDelayMs": 90,
+        "launchRpm": 3200,
+        "autoUpshiftRpm": 5900,
+        "autoDownshiftRpm": 1750,
+        "gearRatios": [
+          3.454,
+          1.947,
+          1.366,
+          0.972,
+          0.738,
+          0.666
+        ],
+        "reverseRatio": 3.636,
+        "gearFinalDrive": 4.11,
+        "drivetrainEfficiency": 0.84,
+        "engineProfile": "wrx-flat-four-manual"
+      },
+      "automatic": {
+        "type": "automatic",
+        "label": "SPT",
+        "shiftMode": "automatic",
+        "shiftTimeMs": 220,
+        "clutchDelayMs": 0,
+        "launchRpm": 2600,
+        "autoUpshiftRpm": 6250,
+        "autoDownshiftRpm": 1550,
+        "torqueConverterSlip": 0.12,
+        "gearRatios": [
+          3.49,
+          2.19,
+          1.55,
+          1.18,
+          0.92,
+          0.74,
+          0.58,
+          0.47
+        ],
+        "reverseRatio": 3.32,
+        "gearFinalDrive": 4.44,
+        "topSpeedMph": 134,
+        "drivetrainEfficiency": 0.9,
+        "accelerationCalibration": 1.08,
+        "stockAccelerationCalibration": 0.86,
+        "weightKg": 1603,
+        "zeroToSixtySec": 5.9,
+        "engineProfile": "wrx-flat-four-cvt"
+      }
+    },
+    "tuning": {
+      "physicalVehicleProfile": {
+        "id": "wrx2-2022-physical-v1",
+        "massKg": 1495,
+        "cgLocationBodyM": {
+          "x": 0,
+          "y": 0.54,
+          "z": -0.06
+        },
+        "frontWeightDistribution": 0.58,
+        "inertiaTensorBodyKgM2": {
+          "xx": 2280,
+          "xy": 0,
+          "xz": -18,
+          "yy": 2640,
+          "yz": 0,
+          "zz": 690
+        },
+        "maxSteerAngleRad": 0.56,
+        "steeringWheelRatio": 14.4,
+        "steeringRackRatio": 1,
+        "suspensionSpringRateFrontNpm": 33500,
+        "suspensionSpringRateRearNpm": 30500,
+        "suspensionBumpDamperFrontNsM": 2850,
+        "suspensionReboundDamperFrontNsM": 4050,
+        "suspensionBumpDamperRearNsM": 2600,
+        "suspensionReboundDamperRearNsM": 3700,
+        "damperHighSpeedThresholdMps": 0.25,
+        "damperHighSpeedScale": 0.62,
+        "staticSagRatioFront": 0.42,
+        "staticSagRatioRear": 0.44,
+        "suspensionTravelFrontM": 0.15,
+        "suspensionTravelRearM": 0.15,
+        "antiRollStiffnessFrontNpm": 22000,
+        "antiRollStiffnessRearNpm": 17000,
+        "tireVerticalStiffnessNpm": 215000,
+        "tireVerticalDampingNsM": 1750,
+        "unsprungMassByWheelKg": {
+          "fl": 44,
+          "fr": 44,
+          "rl": 42,
+          "rr": 42
+        },
+        "dragCoefficient": 0.34,
+        "frontalAreaM2": 2.24,
+        "frontDownforceCoefficient": 0,
+        "rearDownforceCoefficient": 0,
+        "frontRideHeightM": 0.145,
+        "rearRideHeightM": 0.152,
+        "groundEffectGain": 0.035,
+        "groundEffectReferenceHeightM": 0.14,
+        "floorStallHeightM": 0.065,
+        "diffuserRakeSensitivity": 0.8
+      },
+      "physics": {
+        "bodyShapePreset": "car",
+        "bodyProfile": {
+          "preset": "car",
+          "overallLengthM": 4.67,
+          "overallWidthM": 1.83,
+          "overallHeightM": 1.465,
+          "groundClearanceM": 0.135,
+          "frontOverhangM": 0.91,
+          "rearOverhangM": 1.09,
+          "lowerBodyHeightM": 0.47,
+          "hood": {
+            "lengthM": 1.22,
+            "widthM": 1.72,
+            "heightM": 0.4
+          },
+          "cabin": {
+            "centerZM": -0.12,
+            "lengthM": 2.25,
+            "widthM": 1.67,
+            "heightM": 0.82
+          },
+          "bed": {
+            "centerZM": -1.3,
+            "lengthM": 0,
+            "widthM": 0,
+            "heightM": 0
+          },
+          "cgPositionM": {
+            "x": 0,
+            "y": 0.54,
+            "z": -0.06
+          },
+          "collisionFriction": 0.62,
+          "collisionRestitution": 0.08,
+          "wheelWellAware": true,
+          "wheelWellClearanceMarginM": 0.06,
+          "maximumTireDeflectionM": 0.04,
+          "wheelRadiusM": 0.337,
+          "trackWidthM": 1.57,
+          "frontAxleDistanceFromCgM": 1.1214,
+          "rearAxleDistanceFromCgM": 1.5486,
+          "customColliders": [],
+          "pieces": [
+            {
+              "id": "central-underfloor",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": -0.30500000000000005,
+                "z": -0.2136
+              },
+              "sizeM": {
+                "x": 0.676,
+                "y": 0.2,
+                "z": 1.7759999999999998
+              },
+              "exposedFaces": [
+                "bottom",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "transmission-tunnel",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": -0.17500000000000004,
+                "z": 0
+              },
+              "sizeM": {
+                "x": 0.32448,
+                "y": 0.3055,
+                "z": 1.7759999999999998
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "left-rocker-rail",
+              "type": "box",
+              "centerM": {
+                "x": -0.8111400000000001,
+                "y": -0.26500000000000007,
+                "z": -0.2136
+              },
+              "sizeM": {
+                "x": 0.20772,
+                "y": 0.28,
+                "z": 1.7759999999999998
+              },
+              "exposedFaces": [
+                "left",
+                "bottom",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "right-rocker-rail",
+              "type": "box",
+              "centerM": {
+                "x": 0.8111400000000001,
+                "y": -0.26500000000000007,
+                "z": -0.2136
+              },
+              "sizeM": {
+                "x": 0.20772,
+                "y": 0.28,
+                "z": 1.7759999999999998
+              },
+              "exposedFaces": [
+                "right",
+                "bottom",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "front-subframe",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": -0.275,
+                "z": 1.1214
+              },
+              "sizeM": {
+                "x": 0.676,
+                "y": 0.26,
+                "z": 0.6555
+              },
+              "exposedFaces": [
+                "bottom",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "rear-subframe",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": -0.275,
+                "z": -1.5486
+              },
+              "sizeM": {
+                "x": 0.676,
+                "y": 0.26,
+                "z": 0.6555
+              },
+              "exposedFaces": [
+                "bottom",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "front-bumper-structure",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": -0.11360000000000003,
+                "z": 1.9516999999999998
+              },
+              "sizeM": {
+                "x": 1.83,
+                "y": 0.3384,
+                "z": 0.7666
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "bottom",
+                "top",
+                "front"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "rear-bumper-structure",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": -0.11360000000000003,
+                "z": -2.1653
+              },
+              "sizeM": {
+                "x": 1.83,
+                "y": 0.3384,
+                "z": 0.3394
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "bottom",
+                "top",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "front-body-hood",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": 0.26499999999999996,
+                "z": 0.8149999999999998
+              },
+              "sizeM": {
+                "x": 0.676,
+                "y": 0.4,
+                "z": 1.22
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "top",
+                "front"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "cabin",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": 0.4749999999999999,
+                "z": -0.12
+              },
+              "sizeM": {
+                "x": 0.676,
+                "y": 0.82,
+                "z": 2.25
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "top"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "rear-body-trunk",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": 0.23299999999999996,
+                "z": -1.0699999999999998
+              },
+              "sizeM": {
+                "x": 0.676,
+                "y": 0.336,
+                "z": 0.35
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "top",
+                "rear"
+              ],
+              "vertices": []
+            }
+          ]
+        }
+      },
+      "drivetrain": "awd",
+      "powerHp": 374,
+      "torqueLbFt": 384,
+      "weightKg": 1495,
+      "frontWeightDistribution": 0.58,
+      "engineDisplacementL": 2.4,
+      "aspiration": "Turbocharged",
+      "tireGrip": 1,
+      "brakeBalance": 0.56,
+      "brakePressure": 1,
+      "redlineRpm": 6100,
+      "revLimitRpm": 6300,
+      "revLimiterDropRpm": 360,
+      "idleRpm": 850,
+      "torquePeakStartRpm": 2000,
+      "torquePeakEndRpm": 5200,
+      "torqueFalloffRpm": 6500,
+      "wheelRadiusM": 0.337,
+      "topSpeedMph": 145,
+      "zeroToSixtySec": 5.8,
+      "dragCoefficient": 0.34,
+      "accelerationCalibration": 1.06,
+      "drivetrainEfficiency": 0.84,
+      "differentialAccel": 0.45,
+      "differentialDecel": 0.2,
+      "frontDifferentialAccel": 0.35,
+      "frontDifferentialDecel": 0.18,
+      "rearDifferentialAccel": 0.45,
+      "rearDifferentialDecel": 0.2,
+      "centerDifferentialBalance": 0.55,
+      "gearFinalDrive": 4.11,
+      "camberFront": -0.8,
+      "camberRear": -0.7,
+      "toeFront": 0,
+      "toeRear": 0.1,
+      "casterFront": 5.8,
+      "aeroFront": 0.25,
+      "aeroRear": 0.35,
+      "springFront": 0.5,
+      "springRear": 0.5,
+      "rideHeightFront": 0.5,
+      "rideHeightRear": 0.5,
+      "suspensionTravelFront": 0.5,
+      "suspensionTravelRear": 0.5,
+      "staticSagRatioFront": 0.42,
+      "staticSagRatioRear": 0.44,
+      "dampingFront": 0.5,
+      "dampingRear": 0.5,
+      "bumpFront": 0.48,
+      "bumpRear": 0.48,
+      "reboundFront": 0.52,
+      "reboundRear": 0.52,
+      "antiRollFront": 0.5,
+      "antiRollRear": 0.5,
+      "shiftTimeMs": 420,
+      "clutchDelayMs": 90,
+      "launchRpm": 3200,
+      "autoUpshiftRpm": 5900,
+      "autoDownshiftRpm": 1750,
+      "gearRatios": [
+        3.454,
+        1.947,
+        1.366,
+        0.972,
+        0.738,
+        0.666
+      ],
+      "reverseRatio": 3.636,
+      "engineCurve": {
+        "rpmMin": 850,
+        "rpmMax": 6300,
+        "torquePoints": [
+          {
+            "rpm": 850,
+            "torqueLbFt": 108
+          },
+          {
+            "rpm": 1743,
+            "torqueLbFt": 307
+          },
+          {
+            "rpm": 3464,
+            "torqueLbFt": 323
+          },
+          {
+            "rpm": 5116,
+            "torqueLbFt": 384
+          },
+          {
+            "rpm": 5684,
+            "torqueLbFt": 327
+          },
+          {
+            "rpm": 6300,
+            "torqueLbFt": 181
+          }
+        ]
+      }
+    },
+    "__playtestId": "saved-car:BUSE-019",
+    "__playtestDocumentName": "BUSE-019"
+  }
+}

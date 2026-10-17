@@ -6,7 +6,7 @@ import {listProjectFiles,loadProjectFile,hydrateProjectFilePayload} from '../ui/
 import {getRaceArtSpriteCanvasShared,hydrateRaceArtSpriteShared} from '../ui/shared/raceArtSpriteCanvas.js';
 
 export class MenuResources {
-  constructor(game){this.game=game;this.carPreview=new MenuCarPreview(game.carEditor);this.cars=new Map();this.carSources=new Map();this.artCache=new Map();this.tunings=new WeakMap();this.garageCars=new Map();this.partCatalog=[];this.pending=new Map();this.errors=new Map();}
+  constructor(game){this.game=game;this.carPreview=new MenuCarPreview(game.carEditor);this.showroomFrames=new WeakMap();this.cars=new Map();this.carSources=new Map();this.artCache=new Map();this.tunings=new WeakMap();this.garageCars=new Map();this.partCatalog=[];this.pending=new Map();this.errors=new Map();}
   get garage(){return this.garageOverride||this.game.items?.garage;}
   async prepareGarage(){
     await this.garage?.load();
@@ -25,7 +25,7 @@ export class MenuResources {
     const folder={cars:'cars',races:'races',levels:'levels',movies:'cutscenes',actors:'actors',doodads:'doodads'}[source];
     return folder?listProjectFiles(folder).map(f=>({label:f.name,value:f.name})):[];
   }
-  request(key,fn){if(this.pending.has(key)||this.errors.has(key))return;const task=Promise.resolve().then(fn).catch(e=>this.errors.set(key,String(e?.message||e))).finally(()=>this.pending.delete(key));this.pending.set(key,task);}
+  request(key,fn){if(this.pending.has(key)||this.errors.has(key))return;const task=Promise.resolve().then(fn).catch(e=>this.errors.set(key,String(e?.message||e))).finally(()=>{this.pending.delete(key);this.showroomFrames=new WeakMap();});this.pending.set(key,task);}
   car(ref){
     const stock=this.stockCar(ref),garage=this.garage;
     if(!stock||!garage?.items.ready||!garage.installed(ref).length)return stock;
@@ -69,6 +69,18 @@ export class MenuResources {
     const animation=asset?.states?.[0]?.animation;
     const ref=element.artRef||(element.property?safeProperty(asset,element.property):null)||animation?.artRef||asset?.artRef||asset?.art?.ref;
     return typeof ref==='string'?this.art(ref,Math.floor(time*(animation?.fps||8))):null;
+  }
+  drawParkedCar(ctx,b,car,key,draw){
+    if(typeof document==='undefined'||this.pending.size||!car){draw(ctx,b);return;}
+    let frames=this.showroomFrames.get(car);if(!frames){frames=new Map();this.showroomFrames.set(car,frames);}
+    const width=Math.max(1,Math.ceil(b.w)),height=Math.max(1,Math.ceil(b.h)),id=`${key}:${width}:${height}`;
+    let canvas=frames.get(id);
+    if(!canvas){
+      canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+      draw(canvas.getContext('2d'),{x:0,y:0,w:width,h:height});
+      if(frames.size>=8)frames.clear();frames.set(id,canvas);
+    }
+    ctx.drawImage(canvas,b.x,b.y,b.w,b.h);
   }
   tuning(car){if(!this.tunings.has(car))this.tunings.set(car,this.game.carEditor.getRaceCarTuning(car));return this.tunings.get(car);}
   art(ref,frameIndex=0){if(!ref)return null;const canvas=getRaceArtSpriteCanvasShared(ref,{frameIndex,cache:this.artCache});if(!canvas)this.request(`art:${ref}`,()=>hydrateRaceArtSpriteShared(ref));return canvas;}

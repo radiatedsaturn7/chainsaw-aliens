@@ -1,3 +1,5 @@
+import {showroomPage,garageBrowserRows,garageCardBounds} from './MenuGarageWidgets.js';
+import {createMenuRepeatState,resetMenuRepeatState,getMenuRepeatDirection} from '../ui/shared/menuRepeat.js';
 import {ItemSystem} from '../items/ItemSystem.js';
 import {runGarageAction} from '../garage/GarageMenu.js';
 import {drawSharedPlayStopButton} from '../ui/uiSuite.js';
@@ -12,7 +14,7 @@ import {CutscenePlayer} from '../ui/CutsceneEditor.js';
 import {hydrateProjectFilePayload} from '../ui/projectFiles.js';
 
 export default class MenuPlayer {
-  constructor(game){this.game=game;this.surface=new MenuPreviewSurface(game);this.resources=new MenuResources(game);this.settings=new MenuSettings(game);this.videos=new Map();this.cutscene=new CutscenePlayer(game);this.mediaGeneration=0;this.focus=0;this.preview=false;this.message='';this.flow=null;}
+  constructor(game){this.game=game;this.surface=new MenuPreviewSurface(game);this.resources=new MenuResources(game);this.settings=new MenuSettings(game);this.videos=new Map();this.cutscene=new CutscenePlayer(game);this.mediaGeneration=0;this.focus=0;this.widgetStates=new Map();this.navigationRepeat=createMenuRepeatState();this.preview=false;this.message='';this.flow=null;}
   async open(document,{preview=false,screenId=null}={}){
     if(this.flow){this.flow.active=false;this.flow.generation++;}
     this.restorePreview();this.cleanup();if(typeof window!=='undefined'){this.tabListener=event=>{if(this.game.state==='menu-player'&&event.code==='Tab'&&!this.capturing)event.preventDefault();};window.addEventListener('keydown',this.tabListener);}
@@ -43,10 +45,11 @@ export default class MenuPlayer {
   releasePauseAudio(){const context=this.pausedAudioContext;this.pausedAudioContext=null;if(context)void context.resume().catch(()=>{});}
   togglePause(){if(!this.preview||(this.flow.busy&&!this.cutscene.active&&!this.movie))return;this.paused=!this.paused;if(this.paused){this.slider=null;this.cancelKeyCapture();const context=this.game.audio?.ctx;if(context?.state==='running'){this.pausedAudioContext=context;void context.suspend().catch(()=>{});}this.pausedVideos=[...this.videos.values(),this.movie].filter(v=>v&&!v.paused);for(const v of this.pausedVideos)v.pause();}else{this.releasePauseAudio();for(const v of this.pausedVideos||[])void v.play().catch(()=>{});this.pausedVideos=[];}}
   cleanupScreen(){this.mediaGeneration++;this.choicePopup=null;this.slider=null;this.game.setActiveMusicTrack?.(null);for(const video of this.videos.values()){video.pause();video.removeAttribute('src');video.load();}this.videos.clear();}
-  cleanup(){this.releasePauseAudio();if(this.tabListener&&typeof window!=='undefined')window.removeEventListener('keydown',this.tabListener);this.tabListener=null;this.surface.reset();this.resources.carPreview.dispose();this.cleanupScreen();this.cancelKeyCapture();if(this.cutscene.active){this.cutscene.onDone=null;this.cutscene.stop();}if(this.movie){this.movie.pause();this.movie.removeAttribute('src');this.movie.load();this.movie=null;}this.rejectMovie?.(Error('Playback cancelled'));this.rejectMovie=null;this.resolveMovie=null;}
+  cleanup(){resetMenuRepeatState(this.navigationRepeat);this.releasePauseAudio();if(this.tabListener&&typeof window!=='undefined')window.removeEventListener('keydown',this.tabListener);this.tabListener=null;this.surface.reset();this.resources.carPreview.dispose();this.cleanupScreen();this.cancelKeyCapture();if(this.cutscene.active){this.cutscene.onDone=null;this.cutscene.stop();}if(this.movie){this.movie.pause();this.movie.removeAttribute('src');this.movie.load();this.movie=null;}this.rejectMovie?.(Error('Playback cancelled'));this.rejectMovie=null;this.resolveMovie=null;}
   enterScreen(){
-    this.cleanupScreen();this.focus=0;this.message='';const flow=this.flow,screen=flow.screen,generation=this.mediaGeneration;
-    for(const e of screen.elements){if(e.type==='choice'&&e.binding){const choices=e.source?this.resources.choices(e.source,flow.document,flow.parameters):e.options;if(choices.length&&!choices.some(o=>JSON.stringify(o.value)===JSON.stringify(flow.parameters[e.binding])))flow.setParameter(e.binding,choices[0].value);}
+    this.cleanupScreen();this.widgetStates.clear();this.focus=0;this.message='';const flow=this.flow,screen=flow.screen,generation=this.mediaGeneration;
+    for(const e of screen.elements){if(['choice','car-showroom'].includes(e.type)&&e.binding){const choices=e.type==='car-showroom'?this.resources.choices('cars',flow.document,flow.parameters):e.source?this.resources.choices(e.source,flow.document,flow.parameters):e.options;if(choices.length&&!choices.some(o=>JSON.stringify(o.value)===JSON.stringify(flow.parameters[e.binding])))flow.setParameter(e.binding,choices[0].value);}
+      if(e.type==='car-showroom')this.widgetStates.set(e.id,{value:flow.parameters[e.binding],selectedAt:flow.time});
       if(e.type==='video'&&e.videoUrl&&typeof document!=='undefined'){const video=document.createElement('video');video.src=e.videoUrl;video.loop=e.loop;video.playsInline=true;video.muted=true;video.onerror=()=>{flow.error=`Video could not load: ${e.videoUrl}`};this.videos.set(e.id,video);void video.play().catch(()=>{this.message='Tap to play video'});}
     }
     if(screen.musicRef)void hydrateProjectFilePayload('music',screen.musicRef).then(payload=>{if(this.mediaGeneration!==generation)return;if(!payload?.data)throw Error(`Music not found: ${screen.musicRef}`);this.game.setActiveMusicTrack?.(screen.musicRef,{restart:true,loop:true})}).catch(error=>{flow.error=error.message});
@@ -54,7 +57,7 @@ export default class MenuPlayer {
   interactive(){return (this.flow?menuPaintOrder(this.flow.screen.elements).filter(e=>menuElementVisible(e,this.flow.screen.elements)&&menuElementInteractive(e)).sort((a,b)=>(a.tabOrder||Infinity)-(b.tabOrder||Infinity)):[])||[]}
   moveHorizontal(items,direction){
     const current=items[this.focus];if(!current)return;
-    if(['choice','slider','toggle'].includes(current.type)){void this.activate(current,direction);return;}
+    if(['car-showroom','garage-browser','choice','slider','toggle'].includes(current.type)){void this.activate(current,direction);return;}
     const bounds=this.bounds||{x:0,y:0,w:960,h:540};
     const geometry=e=>{const pose=menuElementPose(e,this.flow.time),b=menuElementBounds(e,bounds,pose);return {x:b.x+b.w/2,y:b.y+b.h/2,h:b.h*pose.scale};};
     const origin=geometry(current);let nearest=-1,distance=Infinity;
@@ -69,6 +72,7 @@ export default class MenuPlayer {
   }
   async activate(element,direction=1,{choose=false}={}){
     if(!element||this.paused||this.flow.busy||this.capturing)return;
+    if(element.type==='car-showroom'||element.type==='garage-browser')return this.activateGarageWidget(element,direction,choose);
     if(element.type==='button')return this.flow.run(element.action);
     if(element.type==='keybind')return this.captureKey(element.binding);
     if(!element.binding){this.flow.error='This control needs a parameter binding';return;}
@@ -78,32 +82,88 @@ export default class MenuPlayer {
     if(element.type==='slider')this.flow.setParameter(element.binding,Math.max(element.min,Math.min(element.max,(Number(value)||0)+direction*element.step)));
     if(element.action)await this.flow.run(element.action);
   }
+  selectShowroomCar(element,value){
+    this.flow.setParameter(element.binding,value);
+    this.widgetStates.set(element.id,{value,selectedAt:this.flow.time});
+    if(element.onSelect)void this.flow.run(element.onSelect);
+  }
+  async activateGarageWidget(element,direction,choose){
+    const state=this.widgetStates.get(element.id)||{};
+    if(element.type==='car-showroom'){
+      const choices=this.resources.choices('cars',this.flow.document,this.flow.parameters);
+      if(!choices.length){this.flow.error='No saved cars available';return;}
+      const index=Math.max(0,choices.findIndex(c=>c.value===this.flow.parameters[element.binding]));
+      if(!choices.some(c=>c.value===this.flow.parameters[element.binding]))this.flow.setParameter(element.binding,choices[index].value);
+      if(choose)return this.flow.run(element.action);
+      this.selectShowroomCar(element,choices[(index+direction+choices.length)%choices.length].value);return;
+    }
+    const rows=garageBrowserRows(this.resources,this.flow.parameters,state);
+    if(!rows.length)return;
+    state.index=Math.max(0,Math.min(state.index||0,rows.length-1));
+    if(!choose)state.index=(state.index+direction+rows.length)%rows.length;
+    const row=rows[state.index];
+    if(choose){
+      if(!state.section){state.section=row.value;state.index=0;this.flow.setParameter('partSection',row.value);}
+      else if(!state.slot){state.slot=row.value;state.index=0;this.flow.setParameter('partSlot',row.value);this.flow.setParameter(element.binding,'');}
+      else{this.flow.setParameter('partSlot',state.slot);this.flow.setParameter(element.binding,row.value);await this.flow.run(element.action);}
+    }else{
+      this.flow.setParameter(state.slot?element.binding:state.section?'partSlot':'partSection',row.value);
+      if(element.onSelect)await this.flow.run(element.onSelect);
+    }
+    this.widgetStates.set(element.id,state);
+  }
+  backGarageWidget(){
+    const element=this.interactive()[this.focus];
+    if(element?.type!=='garage-browser')return false;
+    const state=this.widgetStates.get(element.id);if(!state?.section)return false;
+    if(state.slot)delete state.slot;else delete state.section;
+    state.index=0;return true;
+  }
   cancelKeyCapture(){if(this.keyListener&&typeof window!=='undefined')window.removeEventListener('keydown',this.keyListener,true);this.keyListener=null;this.capturing=null;}
   captureKey(binding){if(!binding.startsWith('input.')){this.flow.error='Use an input.action binding for key mapping';return;}this.cancelKeyCapture();this.capturing=binding;this.message='Press a key (Escape cancels)';this.keyListener=event=>{event.preventDefault();event.stopImmediatePropagation();if(event.code!=='Escape')this.flow.setParameter(binding,event.code);this.cancelKeyCapture();this.game.input?.reset?.();this.message='';};window.addEventListener('keydown',this.keyListener,true);}
   update(input,dt){
     const flow=this.flow;if(!flow?.active)return;
     const touch=this.surface.pressed(),mapping={dpadUp:'up',dpadDown:'down',dpadLeft:'left',dpadRight:'right',jump:'jump',cancel:'attack',gamepadStart:'pause'};
     const pressed=code=>input?.wasPressedCode?.(code),pad=action=>input?.wasGamepadPressed?.(action)||(action==='cancel'&&input?.wasGamepadPressed?.('gamepadB'))||touch(mapping[action]);
+    const axes=input?.getGamepadAxes?.()||input?.gamepadAxes||{};
+    const touchHeld=this.surface.previous;
+    const held={};
+    for(const [direction,action] of Object.entries({up:'dpadUp',down:'dpadDown',left:'dpadLeft',right:'dpadRight'})){
+      held[direction]=Boolean(input?.isGamepadDown?.(action)||touchHeld[direction]||pad(action));
+    }
+    // Use the dominant stick axis so diagonals do not move twice in one frame.
+    if(Math.max(Math.abs(axes.leftX||0),Math.abs(axes.leftY||0))>0.5){
+      const direction=Math.abs(axes.leftX||0)>Math.abs(axes.leftY||0)?(axes.leftX<0?'left':'right'):(axes.leftY<0?'up':'down');
+      held[direction]=true;
+    }
+    const navigation=getMenuRepeatDirection(this.navigationRepeat,held,dt);
     if(this.preview&&(input?.wasGamepadPressed?.('gamepadSelect')||touch('nextWeapon'))){flow.stop();return;}
     if(this.preview&&pressed('KeyP'))this.togglePause();
     if(this.paused){if(pressed('Escape')||pad('cancel'))flow.stop();return;}
     flow.update(dt);
     if(this.capturing)return;
-    if(this.choicePopup){const popup=this.choicePopup;if(pressed('Escape')||pad('cancel')){this.choicePopup=null;return;}if(pressed('ArrowDown')||pad('dpadDown'))popup.index=(popup.index+1)%popup.choices.length;if(pressed('ArrowUp')||pad('dpadUp'))popup.index=(popup.index-1+popup.choices.length)%popup.choices.length;if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump'))this.choosePopupItem(popup.index);return;}
-    if(pressed('Escape')||pad('cancel')){if(flow.busy){flow.stop();return;}flow.back();return;}
+    if(this.choicePopup){const popup=this.choicePopup;if(pressed('Escape')||pad('cancel')){this.choicePopup=null;return;}if(pressed('ArrowDown')||navigation==='down')popup.index=(popup.index+1)%popup.choices.length;if(pressed('ArrowUp')||navigation==='up')popup.index=(popup.index-1+popup.choices.length)%popup.choices.length;if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump'))this.choosePopupItem(popup.index);return;}
+    if(pressed('Escape')||pad('cancel')){if(flow.busy){flow.stop();return;}if(!this.backGarageWidget())flow.back();return;}
     if(this.cutscene.active){this.cutscene.update(dt);if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump')){if(this.cutscene.waitingPauseClipId)this.cutscene.waitingPauseClipId=null;else this.cutscene.stop();}return;}
     if(this.movie){if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump'))void this.resumeMovie();return;}
     if(flow.busy)return;
+    for(const element of flow.screen.elements.filter(e=>e.type==='car-showroom')){
+      const choices=this.resources.choices('cars',flow.document,flow.parameters);
+      if(choices.length&&!choices.some(c=>c.value===flow.parameters[element.binding])){
+        flow.setParameter(element.binding,choices[0].value);
+        this.widgetStates.set(element.id,{value:choices[0].value,selectedAt:flow.time});
+      }
+    }
     const items=this.interactive();
-    if(pressed('ArrowDown')||(pressed('Tab')&&!input?.isShiftDown?.())||pad('dpadDown'))this.focus=(this.focus+1)%Math.max(1,items.length);
-    if(pressed('ArrowUp')||(pressed('Tab')&&input?.isShiftDown?.())||pad('dpadUp'))this.focus=(this.focus-1+items.length)%Math.max(1,items.length);
-    if(pressed('ArrowLeft')||pad('dpadLeft'))this.moveHorizontal(items,-1);
-    if(pressed('ArrowRight')||pad('dpadRight'))this.moveHorizontal(items,1);
+    if(pressed('ArrowDown')||(pressed('Tab')&&!input?.isShiftDown?.())||navigation==='down')this.focus=(this.focus+1)%Math.max(1,items.length);
+    if(pressed('ArrowUp')||(pressed('Tab')&&input?.isShiftDown?.())||navigation==='up')this.focus=(this.focus-1+items.length)%Math.max(1,items.length);
+    if(pressed('ArrowLeft')||navigation==='left')this.moveHorizontal(items,-1);
+    if(pressed('ArrowRight')||navigation==='right')this.moveHorizontal(items,1);
     if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump')){if(flow.screen.startAction)void flow.start();else void this.activate(items[this.focus],1,{choose:true});}
   }
   draw(ctx,width,height){
     this.viewportBounds={x:0,y:0,w:width,h:height};const handheld=this.surface.layout(width,height);this.bounds=fitMenuCanvas(handheld?.screen||this.viewportBounds);if(!this.flow)return;ctx.fillStyle='#060b10';ctx.fillRect(0,0,width,height);this.surface.draw(ctx);
-    drawMenuScreen(ctx,this.bounds,this.flow.document,this.flow.screen,this.flow.parameters,{resources:this.resources,time:this.flow.time,focus:this.interactive()[this.focus]?.id,videos:this.videos});
+    drawMenuScreen(ctx,this.bounds,this.flow.document,this.flow.screen,this.flow.parameters,{resources:this.resources,time:this.flow.time,focus:this.interactive()[this.focus]?.id,videos:this.videos,widgetStates:this.widgetStates});
     if(this.cutscene.active){const b=this.bounds;ctx.save();ctx.translate(b.x,b.y);this.cutscene.draw(ctx,b.w,b.h);ctx.restore();}
     if(this.movie){const b=this.bounds;ctx.fillStyle='#000';ctx.fillRect(b.x,b.y,b.w,b.h);if(this.movie.readyState>=2){const scale=Math.min(b.w/this.movie.videoWidth,b.h/this.movie.videoHeight);ctx.drawImage(this.movie,b.x+(b.w-this.movie.videoWidth*scale)/2,b.y+(b.h-this.movie.videoHeight*scale)/2,this.movie.videoWidth*scale,this.movie.videoHeight*scale);}}
     const status=this.flow.error||this.message||(this.flow.busy&&!this.cutscene.active&&!this.movie?'Loading…':'');
@@ -120,7 +180,27 @@ export default class MenuPlayer {
     if(this.cutscene.active){if(this.cutscene.waitingPauseClipId)this.cutscene.waitingPauseClipId=null;else this.cutscene.stop();return;}
     if(this.movie){void this.resumeMovie();return;}if(this.flow.busy||!menuHit(point,this.bounds))return;
     for(const video of this.videos.values())if(video.paused)void video.play().catch(()=>{});
-    const e=this.hitElement(point);if(e){this.focus=this.interactive().indexOf(e);if(e.type==='slider'){this.slider={id:point.id,element:e};this.handlePointerMove(point);}else void this.activate(e,1,{choose:true});}else if(this.flow.screen.startAction)void this.flow.start();
+    const e=this.hitElement(point);if(e){this.focus=this.interactive().indexOf(e);if(['car-showroom','garage-browser'].includes(e.type)){this.pointerGarageWidget(e,point);return;}if(e.type==='slider'){this.slider={id:point.id,element:e};this.handlePointerMove(point);}else void this.activate(e,1,{choose:true});}else if(this.flow.screen.startAction)void this.flow.start();
+  }
+  pointerGarageWidget(element,point){
+    const b=menuElementBounds(element,this.bounds,menuElementPose(element,this.flow.time));
+    const state=this.widgetStates.get(element.id)||{};
+    if(point.y>b.y+b.h-24){
+      if(element.type==='garage-browser'&&state.section&&point.x<b.x+b.w*.25){this.backGarageWidget();return;}
+      void this.activate(element,point.x<b.x+b.w/2?-1:1);return;
+    }
+    if(element.type==='car-showroom'){
+      const choices=this.resources.choices('cars',this.flow.document,this.flow.parameters);
+      const page=showroomPage(choices,this.flow.parameters[element.binding],element.maxVisible);
+      const index=page.entries.findIndex((_,i)=>menuHit(point,garageCardBounds(b,page.entries.length,i)));
+      if(index<0)return;const value=page.entries[index].value;
+      if(this.flow.parameters[element.binding]===value)void this.activate(element,1,{choose:true});
+      else this.selectShowroomCar(element,value);
+    }else{
+      const rows=garageBrowserRows(this.resources,this.flow.parameters,state),start=Math.floor((state.index||0)/4)*4,visible=rows.slice(start,start+4);
+      const index=visible.findIndex((_,i)=>menuHit(point,garageCardBounds(b,visible.length,i)));
+      if(index<0)return;state.index=start+index;this.widgetStates.set(element.id,state);void this.activate(element,1,{choose:true});
+    }
   }
   choosePopupItem(index){const popup=this.choicePopup;if(!popup)return;this.flow.setParameter(popup.element.binding,popup.choices[index].value);this.choicePopup=null;if(popup.element.action)void this.flow.run(popup.element.action);}
   drawChoices(ctx,width,height){

@@ -1,3 +1,5 @@
+import {itemLibrary} from '../items/ItemLibrary.js';
+import { getRaceStickLook } from '../racing/RaceCameraInput.js';
 import { vehicleSoundSettings } from '../audio/VehicleSound.js';
 import {modelSprites} from '../model3d/ModelSprites.js';
 import {InventoryMenu} from '../items/InventoryMenu.js';
@@ -17,7 +19,7 @@ import {updateRaceModelParts} from '../model3d/RaceModelVehicle.js';
 import { openTireLibrary } from './TireLibrary.js';
 import { applyTireDefinition, normalizeTireDefinition, resolveTireCompound } from '../racing/raceTires.js';
 import { getArtDocumentFrames } from './shared/artDocumentPixels.js';
-import { drawWheelCylinder } from '../racing/CarWheelCylinder.js';
+import { drawWheelCylinder, getWheelCameraBearing } from '../racing/CarWheelCylinder.js';
 import { openCarArtSettings, openCarArtReset, chooseCarArtUse } from './CarArtDialogs.js';
 import { openCarGraphicImport } from './CarGraphicImportModal.js';
 import { assignCarSheet, assignCarTireSheet } from '../racing/CarGraphicImport.js';
@@ -148,9 +150,9 @@ import { getEditorDesktopLeftContextRoles, getEditorMenuSpec, getEditorTouchRoot
 import { SHARED_EDITOR_GAMEPAD_HINTS } from './shared/input/editorInputActions.js';
 import MobileControls from './MobileControls.js';
 import { openProjectBrowser } from './ProjectBrowserModal.js';
-import { CAR_PRESETS, createCarFromPreset, isUserRaceCar } from '../racing/CarPresets.js';
+import { CAR_PRESETS, createCarFromPreset, isUserRaceCar, isSystemCarDocument } from '../racing/CarPresets.js';
 import { openRaceImageImport } from './RaceImageImportModal.js';
-import { listProjectFiles, loadProjectFile, saveProjectFile, sanitizeProjectFileName } from './projectFiles.js';
+import { listProjectFiles, loadProjectFile, hydrateProjectFilePayload, saveProjectFile, sanitizeProjectFileName } from './projectFiles.js';
 import * as THREE from '../vendorBridge/three.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -1021,6 +1023,8 @@ export default class RaceEditor {
       gear: 0,
       cameraView: 'third-person',
       lookIntentX: 0,
+      lookIntentY: 0,
+      lookStickActive: false,
       lookAngle: 0,
       pauseMenuMode: 'main',
       pauseMenuIndex: 0,
@@ -1046,6 +1050,7 @@ export default class RaceEditor {
 
   update(input, dt) {
     if (this.raceImageImportOpen) return;
+    this.syncRacePhysicalGamepad();
     this.previewOffset = (this.previewOffset + dt * 60) % 240;
     if (this.carEditorPreviewResetGuardMs > 0) {
       this.carEditorPreviewResetGuardMs = Math.max(0, this.carEditorPreviewResetGuardMs - Math.max(0, Number(dt) || 0) * 1000);
@@ -1170,6 +1175,7 @@ export default class RaceEditor {
         const name = sanitizeProjectFileName(entry?.name || '');
         if (!name) return;
         const payload = loadProjectFile('cars', name);
+        if (!payload?.data || isSystemCarDocument(payload.data, name)) return;
         const car = this.withSavedRaceCarRuntimeIdentity(
           this.normalizeLoadedCarDocument(payload?.data || payload, name, { preserveExistingArt: true }),
           name
@@ -1182,6 +1188,20 @@ export default class RaceEditor {
       if (typeof console !== 'undefined') console.warn('Saved car hydration failed', error);
     }
     return loaded;
+  }
+
+  async hydrateSavedRaceCarsForTravel() {
+    const entries = listProjectFiles('cars');
+    const loaded = await Promise.all(entries.map(async ({name}) => {
+      const payload = await hydrateProjectFilePayload('cars', name);
+      if (!payload?.data || isSystemCarDocument(payload.data, name)) return null;
+      const car = this.withSavedRaceCarRuntimeIdentity(
+        this.normalizeLoadedCarDocument(payload.data, name, {preserveExistingArt:true}), name
+      );
+      this.upsertRaceProjectCar(car);
+      return car;
+    }));
+    return loaded.filter(Boolean);
   }
 
   get selectedRace() {
@@ -1347,10 +1367,21 @@ export default class RaceEditor {
   }
 
   hasPhysicalRaceGamepad() {
+    // Input.isGamepadConnected also includes the virtual gamepad.
+    if (typeof this.game?.input?.gamepadConnected === 'boolean') {
+      return this.game.input.gamepadConnected;
+    }
     if (typeof this.game?.input?.isGamepadConnected === 'function') {
       return Boolean(this.game.input.isGamepadConnected());
     }
     return Boolean(this.game?.input?.gamepadConnected);
+  }
+
+  syncRacePhysicalGamepad() {
+    const connected = this.hasPhysicalRaceGamepad();
+    if (connected && !this.racePhysicalGamepadConnected) this.clearRaceTouchControls();
+    this.racePhysicalGamepadConnected = connected;
+    return connected;
   }
 
   clearRaceTouchControls() {
@@ -1363,6 +1394,13 @@ export default class RaceEditor {
     this.raceInput.throttle = false;
     this.raceInput.brake = false;
     this.raceInput.handbrake = false;
+    this.raceInput.throttleAxis = 0;
+    this.raceInput.rawThrottleAxis = 0;
+    this.raceInput.brakeAxis = 0;
+    this.raceInput.analogThrottleActive = false;
+    this.raceInput.analogBrakeActive = false;
+    this.raceInput.analogSteeringActive = false;
+    this.raceInput.analogSteeringIntent = 0;
     this.raceMobileControls?.reset?.();
   }
 
@@ -5667,6 +5705,7 @@ export default class RaceEditor {
   }
 
   draw(ctx, width, height) {
+    this.syncRacePhysicalGamepad();
     this.buttons = [];
     this.menuScrollRegions = [];
     this.raceMapBounds = null;
@@ -6173,6 +6212,7 @@ export default class RaceEditor {
       'diagnostic-ai-laps': 'AI Laps',
       'ghost-compare': 'Ghost Compare',
       'ai-fill-grid': 'Fill AI Grid',
+      'car-installable-parts': 'Installable Upgrades',
       'car-category': 'Category & Performance',
       'car-load-preset': 'Load Preset',
       'race-ai-cars': 'AI Cars & Classes',
@@ -7595,7 +7635,7 @@ export default class RaceEditor {
   }
 
   isActionAvailable(action) {
-    return ['car-load-preset', 'car-category', 'race-ai-cars'].includes(action) || RACE_EDITOR_AVAILABLE_ACTIONS.has(action);
+    return ['car-installable-parts', 'car-load-preset', 'car-category', 'race-ai-cars'].includes(action) || RACE_EDITOR_AVAILABLE_ACTIONS.has(action);
   }
 
   loadBuiltInRace(action) {
@@ -8652,6 +8692,7 @@ export default class RaceEditor {
       return;
     }
     if (action === 'car-load-preset') { void this.openCarPresetPicker(); return; }
+    if (action === 'car-installable-parts') { void this.openCarInstallableParts().catch(error=>{this.status=error.message;}); return; }
     if (action === 'car-category') { void this.openCarCategorySettings(); return; }
     if (action === 'race-ai-cars') { void this.openRaceAiCarSettings(); return; }
     if (action === 'test-drive') {
@@ -9285,6 +9326,10 @@ export default class RaceEditor {
   }
 
   openPlaytestPicker() {
+    if (this.mode === 'car') {
+      this.startPlaytest(this.getRaceCarProjectIdentity(this.selectedCar));
+      return;
+    }
     if (this.mode !== 'car' && typeof document !== 'undefined') {
       void this.openPlaytestCarBrowser();
       return;
@@ -9350,6 +9395,7 @@ export default class RaceEditor {
         const name = sanitizeProjectFileName(entry?.name || '');
         if (!name) return;
         const payload = loadProjectFile('cars', name);
+        if (!payload?.data || isSystemCarDocument(payload.data, name)) return;
         const car = this.withSavedRaceCarRuntimeIdentity(
           this.normalizeLoadedCarDocument(payload?.data || payload, name, { preserveExistingArt: true }),
           name
@@ -9368,7 +9414,7 @@ export default class RaceEditor {
   getPlaytestPickerCarEntries() {
     if (this.mode === 'car') {
       const car = this.selectedCar;
-      return car ? [{ id: this.getRaceCarProjectIdentity(car), name: this.currentCarDocumentName || car.name || car.id, car, current: true }] : [];
+      return isUserRaceCar(car) ? [{ id: this.getRaceCarProjectIdentity(car), name: this.currentCarDocumentName || car.name || car.id, car, current: true }] : [];
     }
     return this.getSavedRaceCarEntriesForPlaytest();
   }
@@ -9490,6 +9536,7 @@ export default class RaceEditor {
   }
 
   createRaceAiGrid(count = 11) {
+    this.hydrateProjectCarsFromSavedFiles();
     const difficulties = ['easy', 'medium', 'hard', 'expert'];
     const cars = selectRaceAiCars(this.project.cars, 11);
     if (!cars.length) return [];
@@ -9515,6 +9562,21 @@ export default class RaceEditor {
       rules.availableCarIds = this.project.cars.filter(car => isUserRaceCar(car) && car.__playtestDocumentName).map(car => this.getRaceCarProjectIdentity(car));
     }
     return rules;
+  }
+
+  async openCarInstallableParts(showForm = openEditorForm) {
+    const car=this.selectedCar;
+    const entries=await itemLibrary.list();
+    const items=await Promise.all(entries.map(entry=>itemLibrary.load(entry.name).catch(()=>null)));
+    const slots=[...new Set(['engine','turbo','ecu','transmission','tires','suspension','brakes','weight',...(car.garagePartSlots||[]),...items.map(item=>item?.carPart?.slot).filter(Boolean)])];
+    const result=await showForm('Installable Upgrades',[
+      {id:'all',label:'Allow all upgrade slots (including future parts)',type:'checkbox',value:!Array.isArray(car.garagePartSlots)},
+      ...slots.map((slot,i)=>({id:`slot${i}`,label:slot,type:'checkbox',value:!Array.isArray(car.garagePartSlots)||car.garagePartSlots.includes(slot),visibleWhen:values=>!values.all}))
+    ],{description:'Item Editor part compatibility also applies. Disabling a slot hides its upgrades from the garage.'});
+    if(!result||this.selectedCar!==car)return;
+    this.captureRaceHistory('Installable upgrades');
+    car.garagePartSlots=result.all?null:slots.filter((_,i)=>result[`slot${i}`]);
+    this.status='Upgrade compatibility updated. Save the car to keep it.';
   }
 
   async openCarCategorySettings() {
@@ -13032,6 +13094,8 @@ export default class RaceEditor {
       digitalSteerHoldMs: 0,
       gear: initialGear,
       lookIntentX: 0,
+      lookIntentY: 0,
+      lookStickActive: false,
       lookAngle: 0,
       pauseMenuMode: 'main',
       pauseMenuIndex: 0,
@@ -14044,14 +14108,15 @@ export default class RaceEditor {
       return { x: carX, z: carZ, snapped: true, lateralOffsetM: 0, forwardOffsetM: 0 };
     }
     const car = this.getRaceSessionCar(session);
-    if (this.getCarCameraTrackingMode(car) === 'dynamic-fixed') {
+    const manualOrbit = this.hasPhysicalRaceGamepad() && (this.raceInput.lookStickActive || Math.abs(Number(this.raceInput.lookAngle || 0)) > 0.001);
+    if (this.getCarCameraTrackingMode(car) === 'dynamic-fixed' || manualOrbit) {
       // Eight-view sprites are authored with a centered camera. Sideways
       // chase lag changes hub perspective independently of the flat body,
       // even when camera yaw is exactly on a 45-degree bearing.
       session.thirdPersonCameraAnchor = {
         x: carX, z: carZ, elapsedMs: Number(session.elapsedMs || 0), resetKey: session.startedAt
       };
-      return { x: carX, z: carZ, snapped: true, anchorType: 'sprite-center', lateralOffsetM: 0, forwardOffsetM: 0 };
+      return { x: carX, z: carZ, snapped: true, anchorType: manualOrbit ? 'manual-orbit' : 'sprite-center', lateralOffsetM: 0, forwardOffsetM: 0 };
     }
     if (this.getCarCameraTrackingMode(car) === 'fixed-rear') {
       const rearAxle = this.getRaceCarRearAxleBodyAnchor({
@@ -17340,7 +17405,7 @@ export default class RaceEditor {
     const absSpeed = Math.abs(Number(session?.speedMps || 0));
     const launchHoldActive = Number(session?.launchLockMs || 0) > 0
       && absSpeed < 2.2
-      && Math.abs(lookAngle) < 0.001;
+      && Math.abs(lookAngle) < 0.001 && !this.raceInput.lookStickActive;
     const carYaw = Number(session?.carYaw || 0);
     const preliminaryVelocityYaw = Number.isFinite(Number(session?.velocityYaw))
       ? Number(session.velocityYaw)
@@ -17350,7 +17415,20 @@ export default class RaceEditor {
       && Math.abs(normalizeAngle(preliminaryVelocityYaw - carYaw)) < 0.2
       && Number.isFinite(session?.startYaw)) return Number(session.startYaw);
     const car = this.getRaceSessionCar(session);
-    if (this.getCarCameraTrackingMode(car) === 'fixed-rear') {
+    if (this.raceInput.lookStickActive && this.getCarCameraTrackingMode(car) === 'dynamic-fixed') {
+      // Manual view selection follows the requested direction immediately.
+      // Drift hysteresis must not hold it on the previous side/rear view.
+      const requested = getRaceStickLook(this.raceInput.lookIntentX, this.raceInput.lookIntentY);
+      const step = Math.PI / 4;
+      const bearing = Math.round((requested.active ? requested.angle : lookAngle) / step) * step;
+      if (session) {
+        session.pixelArtCameraBearing = bearing;
+        delete session.pixelArtCameraCandidate;
+      }
+      return normalizeAngle(carYaw + bearing);
+    }
+    if (this.getCarCameraTrackingMode(car) === 'fixed-rear'
+      || (this.raceInput.lookStickActive && this.getCarCameraTrackingMode(car) !== 'dynamic-fixed')) {
       return normalizeAngle(carYaw + lookAngle);
     }
     const velocityYaw = preliminaryVelocityYaw;
@@ -17376,7 +17454,7 @@ export default class RaceEditor {
       0.995
     );
     const travelYaw = carYaw + normalizeAngle(velocityYaw - carYaw) * velocityBlend;
-    const targetYaw = travelYaw + lookAngle;
+    const targetYaw = (this.raceInput.lookStickActive ? carYaw : travelYaw) + lookAngle;
     if (this.getCarCameraTrackingMode(car) === 'dynamic-fixed') {
       // Follow travel while keeping the whole car projection on an authored
       // 45-degree bearing. Hysteresis avoids flickering between two frames.
@@ -18873,7 +18951,7 @@ export default class RaceEditor {
     const brakeTarget = clamp(Number(this.raceInput.rawBrakeAxis || 0), 0, 1);
     const followAxis = (current, target, analogActive, pressRate, releaseRate) => {
       if (analogActive) {
-        return current + (target - current) * Math.min(1, dt * RACE_PEDAL_INPUT.analogFollowRate);
+        return target;
       }
       return this.moveRaceAxisToward(
         current,
@@ -18915,6 +18993,8 @@ export default class RaceEditor {
       this.raceInput.analogSteeringIntent = 0;
       this.raceInput.analogSteeringCenteredMs = Number(this.raceInput.analogSteeringCenteredMs || 0) + 16;
       this.raceInput.lookIntentX = 0;
+      this.raceInput.lookIntentY = 0;
+      this.raceInput.lookStickActive = false;
       this.raceInput.analogThrottleActive = false;
       this.raceInput.analogBrakeActive = false;
       this.raceInput.rawThrottleAxis = digitalThrottle ? 1 : 0;
@@ -18922,15 +19002,17 @@ export default class RaceEditor {
       return;
     }
     const leftX = Number(axes.leftX || 0);
-    const rightX = Number(axes.rightX || 0);
+    // Directional look uses the stick's angle, not per-axis sensitivity curves.
+    const lookAxes = this.game?.input?.getGamepadAxes?.({ applySensitivity: false }) || axes;
+    const rightX = Number(lookAxes.rightX || 0);
+    const rightY = Number(lookAxes.rightY || 0);
     const rightTrigger = clamp(Number(axes.rightTrigger || axes.throttle || 0), 0, 1);
     const leftTrigger = clamp(Number(axes.leftTrigger || axes.brake || 0), 0, 1);
-    const wasAnalogActive = this.raceInput.analogSteeringActive || this.raceInput.lastSteeringInputMode === 'analog';
-    const enterDeadzone = 0.1;
-    const exitDeadzone = 0.055;
-    const activeThreshold = wasAnalogActive ? exitDeadzone : enterDeadzone;
-    if (Math.abs(leftX) > activeThreshold) {
-      const shaped = Math.sign(leftX) * Math.pow(Math.abs(leftX), 1.18);
+    // Rescale a small deadzone continuously: crossing center must not jump
+    // straight to a nonzero rack command or depend on the previous direction.
+    const steeringDeadzone = 0.055;
+    if (Math.abs(leftX) > steeringDeadzone) {
+      const shaped = Math.sign(leftX) * (Math.abs(leftX) - steeringDeadzone) / (1 - steeringDeadzone);
       this.raceInput.analogSteeringIntent = clamp(shaped, -1, 1);
       this.raceInput.analogSteeringActive = true;
       this.raceInput.analogSteeringCenteredMs = 0;
@@ -18939,11 +19021,13 @@ export default class RaceEditor {
       this.raceInput.analogSteeringActive = false;
       this.raceInput.analogSteeringCenteredMs = Number(this.raceInput.analogSteeringCenteredMs || 0) + 16;
     }
-    this.raceInput.lookIntentX = this.hasPhysicalRaceGamepad() && Math.abs(rightX) > 0.12
-      ? clamp(Math.sign(rightX) * Math.pow(Math.abs(rightX), 1.05), -1, 1)
-      : 0;
-    this.raceInput.analogThrottleActive = rightTrigger > 0.02 && !digitalThrottle;
-    this.raceInput.analogBrakeActive = leftTrigger > 0.02 && !digitalBrake;
+    const physicalLook = this.hasPhysicalRaceGamepad();
+    this.raceInput.lookIntentX = physicalLook ? rightX : 0;
+    this.raceInput.lookIntentY = physicalLook ? rightY : 0;
+    this.raceInput.lookStickActive = physicalLook && getRaceStickLook(rightX, rightY).active;
+    const analogPedalsConnected = this.hasPhysicalRaceGamepad() || this.game?.input?.virtualGamepadActive;
+    this.raceInput.analogThrottleActive = (analogPedalsConnected || rightTrigger > 0.02) && !digitalThrottle;
+    this.raceInput.analogBrakeActive = (analogPedalsConnected || leftTrigger > 0.02) && !digitalBrake;
     this.raceInput.rawThrottleAxis = Math.max(digitalThrottle ? 1 : 0, rightTrigger);
     this.raceInput.rawBrakeAxis = Math.max(digitalBrake ? 1 : 0, leftTrigger);
   }
@@ -19864,6 +19948,11 @@ export default class RaceEditor {
   }
 
   drawMobileRacePlaytest(ctx, width, height) {
+    if (this.hasPhysicalRaceGamepad()) {
+      this.editorBounds = { x: 0, y: 0, w: width, h: height };
+      this.drawRacePlaytestFrameSafely(ctx, this.editorBounds);
+      return;
+    }
     const layout = this.getRaceHandheldLayout(width, height);
     ctx.fillStyle = '#050807';
     ctx.fillRect(0, 0, width, height);
@@ -19979,8 +20068,7 @@ export default class RaceEditor {
         });
         this.drawRaceSteeringWheel(ctx, bounds);
       } else {
-        if (!this.lastRaceRenderStats?.threeCarDepthSprites
-          && Math.abs(Number(this.raceInput.lookAngle || 0)) < 0.28) {
+        if (!this.lastRaceRenderStats?.threeCarDepthSprites) {
           this.drawRaceThirdPersonCar(ctx, bounds);
         }
         this.drawRaceTireFxParticles(ctx, bounds, {
@@ -21591,7 +21679,7 @@ export default class RaceEditor {
       if (treadTexture && wheelTexture && tireCanvas && tireEntry.cylinder !== false && tireEntry.artRef === treadSurface.artRef) {
         drawWheelCylinder(ctx, { tread:treadTexture, wheel:wheelTexture,
           treadBounds:treadSurface.bounds, wheelBounds:wheelSurface.bounds,
-          width:drawWidth, height:drawHeight, bearing:wheelBearing + Number(turn || 0), spin:-Number(scroll || 0)*Math.PI*2 });
+          width:drawWidth, height:drawHeight, bearing:getWheelCameraBearing(wheelBearing, session?.vehicleRenderState?.wheels?.[wheelId]?.steeringAngleRad ?? turn), spin:-Number(scroll || 0)*Math.PI*2 });
       } else if (tireCanvas && typeof ctx.drawImage === 'function') {
         const scaledTire = this.getRaceCarBillboardLayerCanvas(tireCanvas, drawWidth, drawHeight, `tire:${tireEntry?.artRef || tireCompound}:${tireEntry?.frameIndex || 0}`);
         this.drawScrolledCarTireArt(ctx, scaledTire, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight, { scroll: -Math.cos(wheelBearing) * scroll });
@@ -22378,10 +22466,7 @@ export default class RaceEditor {
     cameraYaw = Number(session?.cameraYaw ?? session?.carYaw ?? 0),
     fallbackElevation = 0
   } = {}) {
-    if (!session
-      || cameraView !== 'third-person'
-      || (Math.abs(Number(this.raceInput.lookAngle || 0)) >= 0.28
-        && !car?.art?.bodyModel?.ref && !car?.art?.wheelModel?.ref)) return null;
+    if (!session || cameraView !== 'third-person') return null;
     const renderPose = this.getRacePlayerRenderPose(session, car, { fallbackElevation });
     car = resolveCarAngleLayers(car, getCarViewSlot(renderPose.yaw, cameraYaw));
     const artChoice = this.getRaceCarProjectedArtRef(car, renderPose.yaw, cameraYaw, {
@@ -34324,7 +34409,7 @@ export default class RaceEditor {
       batch.draw(key, { x: anchor.x, y: anchor.elevation * RACE_THREE_ELEVATION_M, z: anchor.z }, renderer.camera, draw);
     };
     this.drawRaceProjectedAiCars(null, bounds, { camera, cameraYaw, threeRendered: true, submitSprite: submit });
-    if (this.playtestSession && cameraView !== 'first-person' && Math.abs(Number(this.raceInput.lookAngle || 0)) < 0.28) {
+    if (this.playtestSession && cameraView !== 'first-person') {
       const car = this.getRaceSessionCar(this.playtestSession);
       const pose = this.getRacePlayerRenderPose(this.playtestSession, car);
       submit(this.playtestSession, car, pose, ctx => this.drawRaceThirdPersonCar(ctx, bounds));

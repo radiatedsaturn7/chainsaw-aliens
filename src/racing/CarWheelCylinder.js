@@ -1,3 +1,9 @@
+// Steering rotates the wheel in the car's frame; camera bearing is the
+// inverse view rotation. Never add steering to the camera's orbit angle.
+export function getWheelCameraBearing(cameraBearing = 0, steeringAngle = 0) {
+  return Number(cameraBearing || 0) - Number(steeringAngle || 0);
+}
+
 // A textured 3D cylinder projected into the same canvas as the car billboards.
 // Axle is X; wheel rotation is around that axle, steering/view bearing around Y.
 export function buildWheelCylinder({ width = 20, height = 50, bearing = 0, spin = 0, segments = 24 } = {}) {

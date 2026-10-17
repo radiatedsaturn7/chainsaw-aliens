@@ -1,3 +1,4 @@
+import { isSystemCarDocument } from '../racing/CarPresets.js';
 /**
  * Project file facade backed by per-file server storage.
  *
@@ -110,7 +111,7 @@ export function sanitizeProjectFileName(name) {
     .slice(0, 64);
 }
 
-export function listProjectFiles(folder) {
+export function listProjectFiles(folder, { includeDeleted = false } = {}) {
   assertFolder(folder);
   const index = ensureProjectFileIndex();
   const listed = Object.entries(index[folder] || {})
@@ -132,11 +133,11 @@ export function listProjectFiles(folder) {
   });
   listed.sort((a, b) => b.updatedAt - a.updatedAt || a.name.localeCompare(b.name));
   return listed.filter((entry) => {
+    if (entry.deleted && !includeDeleted) return false;
     if (index[folder]?.[entry.name]?.systemFile === true) return false;
     if (folder !== 'cars') return true;
     const payload = loadProjectFile(folder, entry.name);
-    return payload?.systemFile !== true && payload?.data?.systemFile !== true
-      && payload?.data?.car?.systemFile !== true;
+    return !isSystemCarDocument(payload?.data || payload, entry.name);
   });
 }
 
@@ -144,7 +145,7 @@ export function projectFileExists(folder, name) {
   const clean = sanitizeProjectFileName(name);
   if (!clean) return false;
   const index = ensureProjectFileIndex();
-  return Boolean(index?.[folder]?.[clean]);
+  return Boolean(index?.[folder]?.[clean] && !index[folder][clean].deleted);
 }
 
 export function loadProjectFile(folder, name) {

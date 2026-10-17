@@ -32,6 +32,7 @@ test('loading a preset replaces the editor draft without writing files or modify
  e.selectedCar.tuning.powerHp=900;e.loadCarPreset('rwd');
  assert.notEqual(e.selectedCar.tuning.powerHp,900);
  assert.deepEqual(e.getSavedRaceCarEntriesForPlaytest(),[]);
+ assert.deepEqual(e.getPlaytestPickerCarEntries(),[]);
  assert.deepEqual(selectRaceAiCars(e.project.cars.filter(c=>c.__playtestId!==priorId),5),[]);
 });
 
@@ -49,4 +50,33 @@ test('saving a preset creates an ordinary selectable car while system documents 
  assert.equal(selectEligibleRaceAiCars([...e.project.cars,entries[0].car],3).length,3);
  assert.deepEqual(selectEligibleRaceAiCars(e.project.cars,3,{selection:{defaultCarId:'starter-rwd'}}),[]);
  resetProjectFilesForTests();
+});
+
+test('preset names are only AWD, RWD and FWD',()=>{
+ assert.deepEqual(CAR_PRESETS.map(p=>p.label),['AWD','RWD','FWD']);
+});
+
+test('legacy starter files and tagged templates are excluded while separately named copies remain playable', async()=>{
+ resetProjectFilesForTests();
+ const {upsertCachedProjectFile}=await import('../../src/ui/serverStorage.js');
+ try{
+  const cache=(name,data)=>upsertCachedProjectFile('cars',name,JSON.stringify({folder:'cars',name,data}));
+  for(const [preset,name] of [['awd','2022 Subaru WRX'],['rwd','2022 Subaru BRZ'],['fwd','2023 Honda Civic Type R']]){
+   const car=createCarFromPreset(preset);delete car.__editorDraft;
+   cache(name,{kind:'race-car',car});
+  }
+  const car=createCarFromPreset('awd');delete car.__editorDraft;
+  cache('TL-86',{kind:'race-car',car});cache('RTG-001',{kind:'race-car',car});
+  cache('Template',{kind:'race-car',car:{...car,__systemPreset:true}});
+  assert.deepEqual(listProjectFiles('cars').map(e=>e.name).sort(),['RTG-001','TL-86']);
+  const e=new RaceEditor({});
+  const loaded=await e.hydrateSavedRaceCarsForTravel();
+  assert.equal(loaded.length,2);
+  assert.deepEqual(e.getSavedRaceCarEntriesForPlaytest().map(e=>e.name).sort(),['RTG-001','TL-86']);
+  e.selectedRace.competition={mode:'ai-race',aiDrivers:[{id:'one',enabled:true},{id:'two',enabled:true},{id:'three',enabled:true}],carSelection:{availableCarIds:['saved-car:TL-86','saved-car:RTG-001']}};
+  e.startPlaytest('saved-car:TL-86',{hydrateCars:false});
+  assert.equal(e.playtestSession.aiRuntime.length,3);
+  assert.ok(e.playtestSession.aiRuntime.every(ai=>ai.carId==='saved-car:RTG-001'));
+  assert.ok(e.playtestSession.aiRuntime.every(ai=>ai.runtimeCar.__playtestDocumentName==='RTG-001'));
+ }finally{resetProjectFilesForTests();}
 });

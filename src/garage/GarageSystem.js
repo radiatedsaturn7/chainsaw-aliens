@@ -29,12 +29,17 @@ export class GarageSystem {
    syncItemGrantsToPlayer(items.game.player,next);this.revision++;return result;
   });items.queue=task.catch(()=>{});return task;
  }
- purchase(ref){return this.transaction(async(next)=>{
+ purchase(ref,{carRef}={}){return this.transaction(async(next)=>{
   const item=normalizeItemDocument(await this.items.library.load(ref)),part=item.carPart;
   if(!part||!part.forSale)throw Error('This item is not for sale');
   if(part.unlockKey&&!next.unlocks[part.unlockKey])throw Error('This part has not been unlocked');
   next.garage.parts[item.id]=item;next.bags.items[item.id]=(Number(next.bags.items[item.id])||0)+1;
   next.inventory[item.id]=next.bags.items[item.id];next.contentNames[item.id]=item.name;
+  if(carRef){
+   if(!safeGarageKey(carRef)||!partFits(part,carRef))throw Error('This part does not fit the selected car');
+   const setup=next.garage.cars[carRef]||={installed:{},tune:{}};
+   setup.installed[part.slot]=item.id;this.validateSetup(carRef,next);this.pruneTune(carRef,next);
+  }
   return {debit:part.price,item};
  });}
  equip(carRef,id){return this.transaction(next=>{
@@ -76,7 +81,7 @@ export class GarageSystem {
  resetTune(carRef){return this.transaction(next=>{if(next.garage.cars[carRef])next.garage.cars[carRef].tune={};});}
  async build(carRef,stock){
   await this.load();const parts=this.installed(carRef);
-  for(const item of parts)if(!partFits(item.carPart,carRef))throw Error('An installed part is no longer compatible');
+  for(const item of parts)if(!partFits(item.carPart,carRef,stock))throw Error('An installed part is no longer compatible');
   this.validateSetup(carRef,this.items.progress);
   const tires={};for(const item of parts)if(item.carPart.tireRef)tires[item.carPart.tireRef]=await this.loadTire(item.carPart.tireRef);
   return buildGarageCar(stock,{parts,tune:this.configuration(carRef).tune,tires});

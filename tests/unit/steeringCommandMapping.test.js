@@ -220,8 +220,8 @@ test('gamepad uses one controller response stage and reaches playability timing 
   assert.ok(samples.get(10) > 0.05, `first visible response ${samples.get(10)}`);
   const halfTime = [...samples].find(([, value]) => value >= 0.5)?.[0];
   const ninetyTime = [...samples].find(([, value]) => value >= 0.9)?.[0];
-  assert.ok(halfTime >= 100 && halfTime <= 160, `50% at ${halfTime} ms`);
-  assert.ok(ninetyTime >= 250 && ninetyTime <= 350, `90% at ${ninetyTime} ms`);
+  assert.ok(halfTime >= 40 && halfTime <= 70, `50% at ${halfTime} ms`);
+  assert.ok(ninetyTime >= 140 && ninetyTime <= 190, `90% at ${ninetyTime} ms`);
 });
 
 test('gamepad controller response is render-partition independent at supported frame rates', () => {
@@ -320,5 +320,29 @@ test('authoritative gamepad rack receives the extra angle while preserving conta
     const airborne = resolvePhysicalCenterSteeringAngle({ steering: 1, steeringInputMode: 'gamepad' }, config, { groundSpeedMps: speed });
     assert.ok(airborne < 0.003);
     assert.ok(gamepad <= config.maxSteerAngleRad);
+  }
+});
+
+test('steering limits vary continuously with speed, including former threshold speeds', () => {
+  const config = { handlingPreset: 'sport', maxSteerAngleRad: .52, massKg: 1500, frontWeightDistribution: .5 };
+  const patch = { normalLoadN: 4000, suspensionNormalLoadN: 4000 };
+  for (const support of [1, .1]) {
+    const contact = { ...patch, normalLoadN: patch.normalLoadN * support };
+    const angle = speed => resolvePhysicalCenterSteeringAngle(
+      { steering: 1, steeringInputMode: 'gamepad' }, config,
+      { groundSpeedMps: speed, contactPatches: { fl: contact, fr: contact } });
+    let previous = angle(0);
+    for (let i = 1; i <= 8000; i++) {
+      const next = angle(i / 100);
+      assert.ok(Math.abs(next - previous) < .01, `rack step at ${i / 100} m/s`);
+      previous = next;
+    }
+    for (const threshold of [1, 7.5, 15]) {
+      assert.ok(Math.abs(angle(threshold + 1e-6) - angle(threshold - 1e-6)) < 1e-5);
+    }
+  }
+  for (const grip of [.12, .5, .95]) {
+    const angle = speed => assist.getUsableFullLockTireAngle(speed, { availableLateralG: grip });
+    assert.ok(Math.abs(angle(7.500001) - angle(7.499999)) < 1e-5);
   }
 });

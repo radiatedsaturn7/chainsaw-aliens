@@ -26,7 +26,7 @@ export class MenuFlow {
       case 'movie':if(!target)throw Error('Choose a movie first');await this.adapter.playMovie(target,configuration);break;
       case 'race':if(!target)throw Error('Choose a race first');await this.adapter.launchRace(target,configuration);return;
       case 'level':if(!target)throw Error('Choose a level first');await this.adapter.launchLevel(target,configuration);return;
-      case 'garage-buy':case 'garage-install':case 'garage-remove':case 'garage-tune':case 'garage-reset':
+      case 'garage-fit':case 'garage-buy':case 'garage-install':case 'garage-remove':case 'garage-tune':case 'garage-reset':
         if(!this.adapter.garageAction)throw Error('Garage unavailable');
         await this.adapter.garageAction(action.type,target,configuration);break;
       case 'quit':this.stop();break;

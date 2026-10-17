@@ -22,10 +22,12 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} menu desig
  });
  await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-player');await page.keyboard.press('Space');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('cars');
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.resources.cars.has('Menu Test Car'))).toBe(true);
- const previewPixels=()=>page.evaluate(()=>{const g=window.__game,p=g.menuPlayer,e=p.flow.screen.elements.find(e=>e.id==='preview'),w=Math.round(e.w*p.bounds.w),h=Math.round(e.h*p.bounds.h),pixels=g.ctx.getImageData(Math.round(p.bounds.x+e.x*p.bounds.w),Math.round(p.bounds.y+e.y*p.bounds.h),w,h).data;let colored=0,hash=0;for(let i=0;i<pixels.length;i+=4){if(pixels[i+1]>100&&pixels[i+2]>100)colored++;hash=(Math.imul(hash,31)+pixels[i]+pixels[i+1]*3+pixels[i+2]*7)>>>0;}return {colored,hash}});
+ const previewPixels=()=>page.evaluate(()=>{const g=window.__game,p=g.menuPlayer,e=p.flow.screen.elements.find(e=>e.id==='car'),w=Math.round(e.w*p.bounds.w),h=Math.round(e.h*p.bounds.h),pixels=g.ctx.getImageData(Math.round(p.bounds.x+e.x*p.bounds.w),Math.round(p.bounds.y+e.y*p.bounds.h),w,h).data;let colored=0,hash=0;for(let i=0;i<pixels.length;i+=4){if(pixels[i+1]>100&&pixels[i+2]>100)colored++;hash=(Math.imul(hash,31)+pixels[i]+pixels[i+1]*3+pixels[i+2]*7)>>>0;}return {colored,hash}});
  await expect.poll(async()=>(await previewPixels()).colored).toBeGreaterThan(100);const before=(await previewPixels()).hash;await expect.poll(async()=>(await previewPixels()).hash).not.toBe(before);
  await page.screenshot({path:`test-results/menu-${mobile?'portrait':'desktop'}-cars.png`});
- const next=await page.evaluate(()=>{const p=window.__game.menuPlayer,e=p.flow.screen.elements.find(e=>e.id==='next');return {x:p.bounds.x+(e.x+e.w/2)*p.bounds.w,y:p.bounds.y+(e.y+e.h/2)*p.bounds.h}});await canvasClick(page,next.x,next.y);await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('events');
+ await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.interactive()[window.__game.menuPlayer.focus]?.id)).toBe('garage-play');
+ await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('events');
  await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.__menuRaceLaunch?.raceName)).toBe('Test Track');const result=await page.evaluate(()=>window.__game.__menuRaceLaunch);expect(result.carRef).toBe('Menu Test Car');expect(result.configuration.raceRef).toBe('Test Track');expect(errors).toEqual([]);
 });
 
@@ -258,4 +260,40 @@ for(const mode of ['desktop','portrait','landscape-touch','gamepad'])test(`${mod
   const b=await page.evaluate(()=>window.__game.menuPlayer.playPauseBounds);await canvasClick(page,b.x+b.w/2,b.y+b.h/2);
   await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-editor');expect(await page.evaluate(()=>window.__game.menuPlayer.flow.active)).toBe(false);
  }
+});
+
+for(const mode of ['desktop','portrait','landscape','gamepad'])test(`${mode} four-car showroom highlights, confirms garage and returns to the same car`,async({page})=>{
+ const errors=[];page.on('pageerror',error=>errors.push(error.message));
+ const mobile=mode==='portrait'||mode==='landscape';
+ await page.setViewportSize(mode==='portrait'?{width:390,height:844}:mode==='landscape'?{width:844,height:390}:{width:1280,height:800});
+ await ready(page,mobile);
+ await page.evaluate(async()=>{
+  const g=window.__game,{saveProjectFile}=await import('/src/ui/projectFiles.js'),{createMenuDocument}=await import('/src/menus/MenuDocument.js');
+  const refs=[];
+  for(let i=0;i<4;i++){
+   const car=structuredClone(g.carEditor.selectedCar);car.id=`showroom-test-${i}`;car.name=`Showroom ${i}`;car.art={};car.paint={...car.paint,body:['#ff4444','#44dd88','#4488ff','#ffdd44'][i]};
+   delete car.__systemPreset;delete car.__editorDraft;delete car.systemFile;
+   saveProjectFile('cars',car.name,{car});refs.push(car.name);
+  }
+  const p=g.menuPlayer,choices=p.resources.choices.bind(p.resources);
+  p.resources.choices=(source,...args)=>source==='cars'?refs.map(value=>({value,label:value})):choices(source,...args);
+  await p.open(createMenuDocument(),{preview:true,screenId:'cars'});
+ });
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.resources.cars.size)).toBeGreaterThanOrEqual(4);
+ await page.screenshot({path:`test-results/showroom-four-${mode}.png`});
+ const press=async(code,button)=>{
+  if(mode==='gamepad')await page.evaluate(button=>{
+   const p=window.__game.menuPlayer;
+   p.update({wasGamepadPressed:action=>action===button},.016);
+   p.update({wasGamepadPressed:()=>false},.016);
+  },button);else await page.keyboard.press(code);
+ };
+ await press('ArrowRight','dpadRight');
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.parameters.carRef)).toBe('Showroom 1');
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('cars');
+ await press('Enter','jump');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
+ expect(await page.evaluate(()=>{const p=window.__game.menuPlayer;return p.interactive()[p.focus].id})).toBe('garage-play');
+ await press('Escape','gamepadB');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('cars');
+ expect(await page.evaluate(()=>window.__game.menuPlayer.flow.parameters.carRef)).toBe('Showroom 1');
+ expect(errors).toEqual([]);
 });

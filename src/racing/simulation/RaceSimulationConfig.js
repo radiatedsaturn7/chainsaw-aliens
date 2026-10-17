@@ -3,7 +3,7 @@ export const RACE_THREE_ELEVATION_M = 12;
 export const RACE_CONTROLLER_STEERING = Object.freeze({
   responseProfiles: Object.freeze({
     keyboard: Object.freeze({ pressRatePerSecond: 3.6, releaseRatePerSecond: 7.8 }),
-    gamepad: Object.freeze({ responseRatePerSecond: 7.0, releaseRatePerSecond: 9.5 }),
+    gamepad: Object.freeze({ responseRatePerSecond: 14.0, releaseRatePerSecond: 18.0 }),
     simulationWheel: Object.freeze({ direct: true })
   }),
   gamepadSpeedAngleBonus: 0.1,
@@ -39,7 +39,6 @@ export const RACE_PEDAL_INPUT = Object.freeze({
   digitalThrottleReleaseRate: 6.8,
   digitalBrakePressRate: 8.5,
   digitalBrakeReleaseRate: 10.5,
-  analogFollowRate: 30,
   activeThreshold: 0.05,
   reverseThreshold: 0.62
 });
@@ -49,5 +48,5 @@ export function getGamepadSpeedSteeringScale(speedMps = 0, steering = RACE_CONTR
   const full = Number(steering.gamepadAngleBonusFullMps) || 15;
   const blend = Math.max(0, Math.min(1, (Math.abs(Number(speedMps) || 0) - start) / Math.max(1, full - start)));
   const bonus = Math.max(0, Math.min(0.25, Number(steering.gamepadSpeedAngleBonus) || 0));
-  return 1 + bonus * blend;
+  return 1 + bonus * blend * blend * (3 - 2 * blend);
 }

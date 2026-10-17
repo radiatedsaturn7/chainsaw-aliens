@@ -1423,7 +1423,7 @@ export function createDefaultRaceProject() {
     races: [createDefaultRace(), ...createBuiltInTestRaces()],
     cars: createBuiltInRaceCars().map((car, index) => ({
       ...car, __systemPreset: true,
-      name: ['AWD Sports Car', 'RWD Sports Car', 'FWD Sports Car'][index]
+      name: ['AWD', 'RWD', 'FWD'][index]
     })),
     selectedRaceId: 'test-loop',
     selectedCarId: 'starter-rwd'

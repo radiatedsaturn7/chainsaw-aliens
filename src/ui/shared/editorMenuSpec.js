@@ -106,6 +106,7 @@ const EDITOR_ACTION_LABEL_OVERRIDES = {
   'transmission-type': 'Transmission',
   'summary-sheet': 'Stats',
   'car-category': 'Category & Performance',
+  'car-installable-parts':'Installable Upgrades',
   'car-load-preset': 'Load Preset',
   'race-ai-cars': 'AI Cars & Classes',
   'load-preset': 'Load Preset',
@@ -456,7 +457,7 @@ export const EDITOR_MENU_SPECS = {
       edit:section('edit','Edit',['undo','redo','copy','cut','paste','duplicate','delete']),
       view:section('view','View',['menu-preview','menu-preview-start','menu-animate','zoom-fit']),
       screens:section('screens','Screens',['screen-select','screen-new','screen-garage','screen-duplicate','screen-properties','menu-default-background','screen-background','screen-start','screen-delete']),
-      insert:section('insert','Insert',['widget-add','insert-shape','insert-container','insert-text','insert-image','insert-button','insert-choice','insert-slider','insert-toggle','insert-keybind','insert-car-preview','insert-car-stats','insert-power-curve','insert-video','insert-property-display','insert-asset-preview']),
+      insert:section('insert','Insert',['widget-add','insert-shape','insert-container','insert-text','insert-image','insert-button','insert-choice','insert-slider','insert-toggle','insert-keybind','insert-car-showroom','insert-garage-browser','insert-car-preview','insert-car-stats','insert-power-curve','insert-video','insert-property-display','insert-asset-preview']),
       properties:section('properties','Properties',['send-drawer','clip-drawer','element-select','element-setup','element-properties','element-art','element-action','element-animation','animation-timing','layer-up','layer-down','layer-back','layer-front']),
       flow:section('flow','Flow',['menu-parameters','starting-menu','clear-starting-menu'])
     }
@@ -502,7 +503,7 @@ export const EDITOR_MENU_SPECS = {
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
       art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-import-graphic', 'car-body-model', 'car-wheel-model', 'car-clear-body-model', 'car-clear-wheel-model', 'car-art-settings', 'car-camera-settings']),
-      drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sfx', 'car-sound-effects', 'power-curve', 'weight-balance', 'summary-sheet', 'car-category']),
+      drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sfx', 'car-sound-effects', 'power-curve', 'weight-balance', 'summary-sheet', 'car-category', 'car-installable-parts']),
       tuning: {
         ...section('tuning', 'Tuning', ['default-tires', 'tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel', 'physics-body']),
         portraitActions: ['tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'physics-body'],

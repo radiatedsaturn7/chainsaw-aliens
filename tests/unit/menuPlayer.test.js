@@ -86,6 +86,7 @@ for(const device of ['keyboard','gamepad','touch'])test(`${device} horizontal na
   if(device==='touch')player.surface.controls.pulseAction(direction.toLowerCase());
   player.update(input(device==='keyboard'?['Arrow'+direction]:[],device==='gamepad'?['dpad'+direction]:[]),0.01);
  };
+ Object.assign(player.flow.screen.elements.find(e=>e.id==='difficulty'),{id:'next',type:'button',action:{type:'screen',target:'events'}});
  for(let i=0;i<player.interactive().findIndex(e=>e.id==='next');i++)press('Down');
  assert.equal(player.interactive()[player.focus].id,'next');
  press('Right');assert.equal(player.flow.screenId,'cars');assert.equal(player.interactive()[player.focus].id,'settings');
@@ -112,6 +113,7 @@ test('horizontal input still adjusts choices, sliders and toggles',async()=>{
 
 test('horizontal navigation skips hidden controls and never starts key capture',async()=>{
  const {player}=fixture();await player.open(createMenuDocument(),{preview:true,screenId:'cars'});
+ Object.assign(player.flow.screen.elements.find(e=>e.id==='difficulty'),{id:'next',type:'button',action:{type:'screen',target:'events'}});
  player.focus=player.interactive().findIndex(e=>e.id==='next');
  const settings=player.flow.screen.elements.find(e=>e.id==='settings');settings.visible=false;
  player.update(input(['ArrowRight']),0.01);assert.equal(player.interactive()[player.focus].id,'next');assert.equal(player.flow.screenId,'cars');
@@ -144,4 +146,28 @@ test('garage authoring preview cannot spend or install parts in real player prog
  assert.equal(player.resources.garage.items.game.player.credits,800);
  assert.equal(game.player.credits,1000);assert.equal(writes,0);assert.deepEqual(game.items.progress.garage.cars,{});
  player.flow.stop();assert.equal(game.items.progress.bags.items['test-ecu'],undefined);
+});
+
+test('controller menu navigation responds immediately, repeats held D-pad and accepts left stick', async()=>{
+ const {player}=fixture();await player.open(createMenuDocument());await player.flow.start();
+ const held=new Set(['dpadDown']), axes={leftX:0,leftY:0};
+ const controls={isGamepadDown:action=>held.has(action),getGamepadAxes:()=>axes};
+ player.update(controls,0.01);assert.equal(player.focus,1);
+ player.update(controls,0.20);assert.equal(player.focus,1);
+ player.update(controls,0.09);assert.equal(player.focus,2);
+ player.update(controls,0.12);assert.equal(player.focus,0);
+ held.clear();player.update(controls,0.01);
+ axes.leftY=-0.8;player.update(controls,0.01);assert.equal(player.focus,2);
+ axes.leftY=0.1;player.update(controls,0.5);assert.equal(player.focus,2);
+ axes.leftY=-0.8;player.update(controls,0.01);assert.equal(player.focus,1);
+});
+
+test('controller choice popups use held navigation without repeating confirmation', async()=>{
+ const {player}=fixture();await player.open(createMenuDocument());await player.flow.start();
+ const choice=player.flow.screen.elements.find(e=>e.id==='difficulty');
+ await player.activate(choice,1,{choose:true});
+ const controls={isGamepadDown:action=>action==='dpadDown'||action==='jump'};
+ player.update(controls,0.01);assert.equal(player.choicePopup.index,2);
+ player.update(controls,0.29);assert.equal(player.choicePopup.index,0);
+ assert.ok(player.choicePopup);
 });

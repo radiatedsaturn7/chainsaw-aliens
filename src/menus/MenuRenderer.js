@@ -1,9 +1,10 @@
+import {showroomPage,garageBrowserRows,garageCardBounds} from './MenuGarageWidgets.js';
 import {menuPaintOrder,menuElementVisible} from './MenuLayout.js';
 import {menuElementPose,resolveMenuBackground} from './MenuDocument.js';
 import {calculateCarPerformance} from '../racing/CarPerformance.js';
 
 export const menuElementBounds=(element,bounds,pose=element)=>({x:bounds.x+pose.x*bounds.w,y:bounds.y+pose.y*bounds.h,w:element.w*bounds.w,h:element.h*bounds.h});
-export const menuElementInteractive=e=>['button','choice','slider','toggle','keybind'].includes(e.type);
+export const menuElementInteractive=e=>['car-showroom','garage-browser','button','choice','slider','toggle','keybind'].includes(e.type);
 export const menuHit=(point,b)=>point.x>=b.x&&point.x<=b.x+b.w&&point.y>=b.y&&point.y<=b.y+b.h;
 export function drawMenuImage(ctx,image,b,fit='contain'){
   const scale=fit==='cover'?Math.max(b.w/image.width,b.h/image.height):Math.min(b.w/image.width,b.h/image.height);
@@ -12,7 +13,7 @@ export function drawMenuImage(ctx,image,b,fit='contain'){
 }
 const caption=(text,parameters)=>String(text).replace(/\{\{([\w.-]+)\}\}/g,(_,key)=>String(parameters[key]??''));
 
-export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,resources,focus=null,selected=null,editing=false,videos=null}={}){
+export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,resources,focus=null,selected=null,editing=false,videos=null,widgetStates=new Map()}={}){
   screen=resolveMenuBackground(document,screen);
   ctx.save();ctx.beginPath();ctx.rect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.clip();ctx.fillStyle=screen.background;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
   const background=resources?.art(screen.backgroundArt,Math.floor(time*8));if(background)ctx.drawImage(background,bounds.x,bounds.y,bounds.w,bounds.h);
@@ -41,6 +42,36 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     else if(element.type==='video'){const video=videos?.get(element.id);if(video?.readyState>=2)ctx.drawImage(video,b.x,b.y,b.w,b.h);else ctx.fillText(editing?'Video: '+(element.videoUrl||'Choose source'):'Loading video…',b.x+b.w/2,b.y+b.h/2,b.w-12);}
     else if(element.type==='property-display'){const property=resources?.property(element,parameters);const shown=property==null?'—':typeof property==='number'?property.toFixed(element.decimals):typeof property==='object'?JSON.stringify(property):String(property);ctx.fillText(`${label}${label?': ':''}${shown}${element.suffix}`,b.x+b.w/2,b.y+b.h/2,Math.max(1,b.w-12));}
     else if(element.type==='asset-preview'){const image=resources?.assetArt(element,parameters,time);if(image)drawMenuImage(ctx,image,b,element.imageFit);else ctx.fillText('Choose an actor / item image',b.x+b.w/2,b.y+b.h/2,Math.max(1,b.w-12));}
+    else if(element.type==='car-showroom'){
+      const choices=resources?.choices('cars',document,parameters)||[];
+      const page=showroomPage(choices,value,element.maxVisible),state=widgetStates.get(element.id)||{};
+      if(!choices.length)ctx.fillText('Save a car in the Car Editor to begin',b.x+b.w/2,b.y+b.h/2,b.w-16);
+      for(const [i,entry] of page.entries.entries()){
+        const selected=entry.value===(value||choices[0]?.value),card=garageCardBounds(b,page.entries.length,i);
+        const elapsed=Math.max(0,time-(state.selectedAt??time));
+        const blend=editing?1:1-Math.exp(-elapsed*8);
+        const scale=selected?1+(element.selectedScale-1)*blend:1;
+        ctx.save();ctx.globalAlpha*=selected?1:element.inactiveOpacity;
+        ctx.fillStyle='#34434a';ctx.beginPath();ctx.ellipse(card.x+card.w/2,card.y+card.h*.8,card.w*.43,card.h*.09,0,0,Math.PI*2);ctx.fill();
+        const preview={x:card.x+card.w*(1-scale)/2,y:card.y+card.h*(1-scale)/2,w:card.w*scale,h:card.h*.85*scale};
+        const car=resources?.car(entry.value),view={...element,type:'car-preview',animation:'none',angleBinding:'',angle:element.angle+(selected&&!editing?elapsed/element.duration*360:0)};
+        const draw=(context,area)=>drawCarComponent(context,area,view,car,resources,time,parameters);
+        if(!selected&&resources?.drawParkedCar)resources.drawParkedCar(ctx,preview,car,element.angle,draw);else draw(ctx,preview);
+        ctx.fillStyle=element.color;ctx.fillText(entry.label,card.x+card.w/2,card.y+card.h-4,card.w-8);ctx.restore();
+      }
+      ctx.fillStyle=element.color;ctx.fillText(`◀  ${page.index+1} / ${choices.length}  ▶   ·   Confirm to select`,b.x+b.w/2,b.y+b.h-10,b.w-12);
+    }
+    else if(element.type==='garage-browser'){
+      const state=widgetStates.get(element.id)||{},rows=resources?garageBrowserRows(resources,parameters,state):[];
+      const index=Math.max(0,Math.min(state.index||0,rows.length-1)),start=Math.floor(index/4)*4,visible=rows.slice(start,start+4);
+      ctx.fillText(['Upgrades',state.section,state.slot].filter(Boolean).join(' / '),b.x+b.w/2,b.y+12,b.w-12);
+      if(!rows.length)ctx.fillText('No compatible parts available',b.x+b.w/2,b.y+b.h/2,b.w-12);
+      for(const [i,row] of visible.entries()){
+        const card=garageCardBounds(b,visible.length,i);ctx.fillStyle=start+i===index?'#486c83':'#18242d';ctx.fillRect(card.x,card.y,card.w,card.h);
+        ctx.fillStyle=element.color;ctx.fillText(row.label,card.x+card.w/2,card.y+card.h/2,card.w-12);
+      }
+      ctx.fillStyle=element.color;ctx.fillText(`${state.section?'‹ Back   ·   ':''}◀ / ▶ Browse   ·   Confirm ${state.slot?'buy / install':'open'}`,b.x+b.w/2,b.y+b.h-10,b.w-12);
+    }
     else if(['car-preview','car-stats','power-curve'].includes(element.type))drawCarComponent(ctx,b,element,resources?.car(element.assetRef||value),resources,time,parameters);
     else{
       if(element.type==='choice'){const options=element.source?resources?.choices(element.source,document,parameters)||[]:element.options;label+=`: ${options.find(o=>JSON.stringify(o.value)===JSON.stringify(value))?.label||'Choose…'}`;}
@@ -63,7 +94,7 @@ function drawCarComponent(ctx,b,e,car,resources,time,parameters){
   if(e.type==='car-preview'){
     ctx.save();const yaw=e.angleBinding?Number(parameters[e.angleBinding]??e.angle)*Math.PI/180:e.animation==='spin'?(e.loop?time/e.duration:Math.min(1,time/e.duration))*Math.PI*2:e.angle*Math.PI/180;
     const choice=renderer.getRaceCarProjectedArtRef(car,0,yaw);
-    if(car.art?.bodyModel?.ref||!choice.artRef){resources.carPreview.draw(ctx,b,car,yaw,time);ctx.restore();return;}
+    if(car.art?.bodyModel?.ref||!choice.artRef){resources.carPreview.draw(ctx,b,car,yaw+Math.PI,time);ctx.restore();return;}
     resources.carPreview.drawSprite(ctx,b,car,choice);ctx.restore();return;
   }
   if(e.type==='car-stats'){

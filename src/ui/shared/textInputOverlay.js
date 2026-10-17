@@ -240,19 +240,31 @@ export function openConfirmOverlay(options = {}) {
     cancelText = 'Cancel',
     danger = false,
     width = null,
-    maxWidth = 460
+    maxWidth = 460,
+    initialFocus = null,
+    confirmFirst = false,
+    onConfirm = null,
+    onOpen = null
   } = options;
   if (typeof document === 'undefined') return Promise.resolve(false);
   const unlock = lockPageForOverlay();
   return new Promise((resolve) => {
     const { overlay, panel } = createOverlayPanel({ title, message, width, maxWidth, className: 'confirm' });
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', title);
     const row = document.createElement('div');
     row.className = 'shared-text-input-actions';
     panel.appendChild(row);
     const cancelBtn = appendActionButton(row, cancelText);
     const okBtn = appendActionButton(row, confirmText, danger ? 'danger' : 'primary');
 
+    if (confirmFirst) row.insertBefore(okBtn, cancelBtn);
+    let closed = false;
     const cleanup = (value) => {
+      if (closed) return;
+      closed = true;
+      if (value) onConfirm?.();
       overlay.remove();
       unlock();
       resolve(value);
@@ -270,12 +282,17 @@ export function openConfirmOverlay(options = {}) {
       }
       if (event.key === 'Enter') {
         event.preventDefault();
-        cleanup(true);
+        cleanup(document.activeElement !== cancelBtn);
+      }
+      if (['Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+        event.preventDefault();
+        (document.activeElement === okBtn ? cancelBtn : okBtn).focus({ preventScroll: true });
       }
     });
 
     getOverlayRoot().appendChild(overlay);
-    overlay.focus({ preventScroll: true });
+    (initialFocus === 'confirm' ? okBtn : initialFocus === 'cancel' ? cancelBtn : overlay).focus({ preventScroll: true });
+    onOpen?.({ overlay, okBtn, cancelBtn });
   });
 }
 

@@ -89,3 +89,18 @@ test('cardinal cylinder views retain their shape and texture roles after the dia
     }
   }
 });
+
+test('steered cylinder axle matches a physical body-local wheel across all camera bearings', async()=>{
+ const {getWheelCameraBearing}=await import('../../src/racing/CarWheelCylinder.js');
+ const editor=new RaceEditor({});
+ for(const yaw of [0,0.8,-2.3])for(const turn of [-0.35,0.35])for(let i=0;i<8;i++){
+  const bearing=i*Math.PI/4;
+  const triangles=buildWheelCylinder({width:20,height:50,bearing:getWheelCameraBearing(bearing,turn)});
+  const cap=triangles.find(t=>t.surface==='wheel');
+  const side=Math.sign(Math.sin(bearing-turn))*10;
+  const world={x:side*Math.cos(yaw+turn),z:-side*Math.sin(yaw+turn),elevation:0};
+  const projected=editor.transformRaceWorldPointToCameraSpace(world,{},yaw+bearing-Math.PI);
+  assert.ok(Math.abs(cap.points[0].x-projected.cameraX)<1e-8);
+  assert.ok(Math.abs(cap.points[0].z+projected.cameraZ)<1e-8);
+ }
+});

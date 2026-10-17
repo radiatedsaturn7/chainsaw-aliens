@@ -1,6 +1,6 @@
-import {createGarageMenuScreen} from '../garage/GarageMenu.js';
-export const MENU_ELEMENT_TYPES = ['shape','container','text','image','button','choice','slider','toggle','keybind','car-preview','car-stats','power-curve','video','property-display','asset-preview'];
-export const MENU_ACTION_TYPES = ['screen','back','set-param','race','level','movie','quit','garage-buy','garage-install','garage-remove','garage-tune','garage-reset'];
+import {createGarageMenuScreen,createCarShowroomScreen} from '../garage/GarageMenu.js';
+export const MENU_ELEMENT_TYPES = ['car-showroom','garage-browser','shape','container','text','image','button','choice','slider','toggle','keybind','car-preview','car-stats','power-curve','video','property-display','asset-preview'];
+export const MENU_ACTION_TYPES = ['screen','back','set-param','race','level','movie','quit','garage-fit','garage-buy','garage-install','garage-remove','garage-tune','garage-reset'];
 export const MENU_ANIMATIONS = ['none','pulse','fade','bob','spin'];
 export const MENU_SETTINGS = {
   fxVolume:{label:'FX volume',min:0,max:1,step:0.05,default:0.8},
@@ -31,7 +31,8 @@ export function normalizeMenuElement(source={},index=0){
     options:(Array.isArray(source.options)?source.options:[]).slice(0,200).map(option=>({label:text(option.label,String(option.value??'')),value:structuredClone(option.value??'')})),
     min:number(source.min,0,-1e6,1e6),max:number(source.max,1,-1e6,1e6),step:number(source.step,0.05,0.0001,1e6),
     animation:MENU_ANIMATIONS.includes(source.animation)?source.animation:'none',duration:number(source.duration,2,0.1,600),
-    action:normalizeMenuAction(source.action),visible:source.visible!==false,loop:source.loop!==false,
+    maxVisible:Math.round(number(source.maxVisible,4,1,4)),selectedScale:number(source.selectedScale,1.12,1,1.4),inactiveOpacity:number(source.inactiveOpacity,.4,.1,1),
+    onSelect:normalizeMenuAction(source.onSelect),action:normalizeMenuAction(source.action),visible:source.visible!==false,loop:source.loop!==false,
     keyframes:(Array.isArray(source.keyframes)?source.keyframes:[]).slice(0,100).map(k=>({time:number(k.time,0,0,600),x:number(k.x,source.x??0.1,-2,2),y:number(k.y,source.y??0.1,-2,2),opacity:number(k.opacity,1,0,1),scale:number(k.scale,1,0.05,10),rotation:number(k.rotation,0,-3600,3600)})).sort((a,b)=>a.time-b.time)};
 }
 export function normalizeMenuDocument(source={}){
@@ -58,12 +59,12 @@ export function normalizeMenuDocument(source={}){
   const document={schemaVersion:1,kind:'menu',name:text(source.name,'New Menu'),startScreen:text(source.startScreen,screens[0].id),parameters,defaultBackground:{background:text(source.defaultBackground?.background,'#101c28'),backgroundArt:text(source.defaultBackground?.backgroundArt),effect:['none','stars','rain','snow'].includes(source.defaultBackground?.effect)?source.defaultBackground.effect:'none'},screens};
   if(!screens.some(s=>s.id===document.startScreen))throw Error('Starting screen does not exist');
   const validate=action=>{if(!action)return;if(action.type==='screen'&&!action.target.startsWith('$')&&!screens.some(s=>s.id===action.target))throw Error(`Screen not found: ${action.target}`);validate(action.then)};
-  screens.forEach(s=>{validate(s.startAction);s.elements.forEach(e=>validate(e.action))});return document;
+  screens.forEach(s=>{validate(s.startAction);s.elements.forEach(e=>{validate(e.action);validate(e.onSelect)})});return document;
 }
 const element=(id,type,label,x,y,w,h,extra={})=>({id,type,label,x,y,w,h,...extra});
 export function createMenuDocument(){return normalizeMenuDocument({name:'Game Menu',startScreen:'splash',parameters:{difficulty:'medium',carRef:'',raceRef:''},screens:[
  {id:'splash',name:'Splash',background:'#0b1523',effect:'stars',startAction:{type:'screen',target:'cars'},elements:[element('title','text','YOUR GAME',0.08,0.25,0.84,0.15,{fontSize:52}),element('start','button','Tap / Press Space or Start',0.1,0.65,0.8,0.12,{animation:'pulse',action:{type:'screen',target:'cars'}})]},
- {id:'cars',name:'Choose Car',elements:[element('heading','text','Choose your car',0.06,0.03,0.88,0.08),element('car','choice','Car',0.06,0.13,0.88,0.09,{source:'cars',binding:'carRef'}),element('preview','car-preview','Car preview',0.06,0.24,0.44,0.24,{binding:'carRef',animation:'spin'}),element('stats','car-stats','Specifications',0.52,0.24,0.42,0.24,{binding:'carRef'}),element('power','power-curve','HP / Torque',0.06,0.49,0.88,0.2,{binding:'carRef'}),element('garage-open','button','Garage',0.67,0.72,0.27,0.08,{action:{type:'screen',target:'garage'}}),element('difficulty','choice','Difficulty',0.06,0.72,0.58,0.08,{binding:'difficulty',options:['easy','medium','hard'].map(value=>({label:value,value}))}),element('next','button','Choose Race',0.06,0.83,0.58,0.09,{action:{type:'screen',target:'events'}}),element('settings','button','Settings',0.67,0.83,0.27,0.09,{action:{type:'screen',target:'settings'}})]},
+ createCarShowroomScreen(),
  {id:'events',name:'Choose Race',elements:[element('heading','text','Choose Race',0.06,0.06,0.88,0.12),element('event','choice','Race',0.06,0.3,0.88,0.12,{source:'races',binding:'raceRef'}),element('race','button','Start Race',0.1,0.55,0.8,0.12,{action:{type:'race',target:'$raceRef'}}),element('back','button','Back',0.1,0.78,0.8,0.1,{action:{type:'back'}})]},
  {id:'settings',name:'Settings',elements:[element('heading','text','Settings',0.06,0.02,0.88,0.08),...Object.entries(MENU_SETTINGS).map(([key,v],i)=>element(key,'slider',v.label,0.06,0.14+i*0.12,0.88,0.09,{binding:`settings.${key}`,min:v.min,max:v.max,step:v.step})),element('mapping','button','Input mapping',0.06,0.67,0.88,0.09,{action:{type:'screen',target:'mapping'}}),element('back','button','Back',0.06,0.83,0.88,0.09,{action:{type:'back'}})]},
  {id:'mapping',name:'Input Mapping',elements:[element('heading','text','Choose an action, then press a key',0.06,0.02,0.88,0.1),...['left','right','up','down','attack','interact'].map((key,i)=>element(key,'keybind',key,0.06,0.15+i*0.1,0.88,0.08,{binding:`input.${key}`})),element('back','button','Back',0.06,0.84,0.88,0.09,{action:{type:'back'}})]}

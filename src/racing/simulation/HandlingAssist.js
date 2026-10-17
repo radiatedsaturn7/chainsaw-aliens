@@ -176,11 +176,12 @@ export class HandlingAssist {
   } = {}) {
     const angle = Number(tireAngle) || 0;
     const speed = Math.abs(Number(speedMps) || 0);
-    if (speed < 7.5) return angle;
     const wheelbase = Math.max(2.1, Number(wheelbaseM) || 2.67);
     const lateralG = clamp(Number(availableLateralG) || 0.95, 0.12, 1.12);
     const maxAngle = Math.atan((lateralG * 9.81 * wheelbase) / Math.max(1, speed * speed));
-    return clamp(angle, -maxAngle, maxAngle);
+    // Smooth minimum avoids a kink where the speed cap takes over. At rest
+    // preserve parking lock; at speed approach the lateral-acceleration limit.
+    return angle / Math.pow(1 + Math.pow(Math.abs(angle) / maxAngle, 8), 1 / 8);
   }
 
   getUsableFullLockTireAngle(speedMps = 0, options = {}) {

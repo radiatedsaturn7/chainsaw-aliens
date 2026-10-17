@@ -1,0 +1,313 @@
+{
+  "schemaVersion": 3,
+  "tempo": 120,
+  "loopBars": 16,
+  "loopStartTick": 0,
+  "loopEndTick": 768,
+  "loopEnabled": true,
+  "timeSignature": {
+    "beats": 4,
+    "unit": 4
+  },
+  "highContrast": false,
+  "reverseStrings": false,
+  "staccatoEnabled": false,
+  "key": 0,
+  "scale": "major",
+  "chordMode": false,
+  "tracks": [
+    {
+      "id": "track-lead",
+      "name": "Lead",
+      "channel": 0,
+      "program": 0,
+      "instrumentFamily": "Piano",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#4fb7ff",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-lead",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-157822",
+              "startTick": 0,
+              "durationTicks": 192,
+              "pitch": 37,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-102372",
+              "startTick": 192,
+              "durationTicks": 192,
+              "pitch": 38,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-549337",
+              "startTick": 384,
+              "durationTicks": 192,
+              "pitch": 36,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-263468",
+              "startTick": 576,
+              "durationTicks": 192,
+              "pitch": 37,
+              "velocity": 0.9
+            }
+          ],
+          "partRanges": [
+            {
+              "startTick": 0,
+              "endTick": 256
+            }
+          ],
+          "partBoundaries": [],
+          "partRangeStart": null,
+          "partRangeEnd": null
+        }
+      ]
+    },
+    {
+      "id": "track-bass",
+      "name": "Bass",
+      "channel": 1,
+      "program": 115,
+      "instrumentFamily": "Percussive",
+      "bankMSB": 0,
+      "bankLSB": 0,
+      "volume": 0.8,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#ff9c42",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-bass",
+          "bars": 16,
+          "notes": [
+            {
+              "id": "note-966073",
+              "startTick": 552,
+              "durationTicks": 24,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-89346",
+              "startTick": 672,
+              "durationTicks": 24,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-460076",
+              "startTick": 480,
+              "durationTicks": 24,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-756761",
+              "startTick": 576,
+              "durationTicks": 24,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-391118",
+              "startTick": 432,
+              "durationTicks": 24,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-963600",
+              "startTick": 600,
+              "durationTicks": 24,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-614953",
+              "startTick": 312,
+              "durationTicks": 24,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-771011",
+              "startTick": 288,
+              "durationTicks": 24,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-322805",
+              "startTick": 336,
+              "durationTicks": 24,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-853874",
+              "startTick": 696,
+              "durationTicks": 24,
+              "pitch": 61,
+              "velocity": 0.9
+            },
+            {
+              "id": "note-88206",
+              "startTick": 216,
+              "durationTicks": 24,
+              "pitch": 61,
+              "velocity": 0.9
+            }
+          ],
+          "partRanges": [
+            {
+              "startTick": 16,
+              "endTick": 256
+            }
+          ],
+          "partBoundaries": [],
+          "partRangeStart": null,
+          "partRangeEnd": null
+        }
+      ]
+    },
+    {
+      "id": "track-drums",
+      "name": "Drums",
+      "instrument": "drums",
+      "channel": 9,
+      "program": 0,
+      "instrumentFamily": "Drums",
+      "bankMSB": 127,
+      "bankLSB": 0,
+      "volume": 0.9,
+      "pan": 0,
+      "mute": false,
+      "solo": false,
+      "color": "#55d68a",
+      "automation": {
+        "pan": [],
+        "padding": []
+      },
+      "midiPedals": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "patterns": [
+        {
+          "id": "pattern-drums",
+          "bars": 16,
+          "notes": []
+        }
+      ]
+    }
+  ],
+  "progression": [
+    {
+      "root": 0,
+      "quality": "min",
+      "startBar": 1,
+      "lengthBars": 1
+    },
+    {
+      "root": 5,
+      "quality": "min",
+      "startBar": 2,
+      "lengthBars": 1
+    },
+    {
+      "root": 7,
+      "quality": "maj",
+      "startBar": 3,
+      "lengthBars": 1
+    },
+    {
+      "root": 3,
+      "quality": "maj",
+      "startBar": 4,
+      "lengthBars": 1
+    }
+  ],
+  "name": "Horror",
+  "keyboardStartOctave": 4,
+  "guitarTuning": [
+    40,
+    45,
+    50,
+    55,
+    59,
+    64
+  ],
+  "bassTuning": [
+    28,
+    33,
+    38,
+    43
+  ],
+  "editorState": {
+    "midiComposer": {
+      "trackViewports": {
+        "track-lead": {
+          "trackId": "track-lead",
+          "trackName": "Lead",
+          "updatedAt": 1790543382957,
+          "grid": {
+            "gridOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "timelineStartTick": 0,
+            "gridZoomX": 4,
+            "gridZoomY": 1,
+            "cursorTick": 0,
+            "cursorPitch": 60,
+            "selectedPatternIndex": 0
+          },
+          "song": {
+            "songTimelineOffsetX": 0,
+            "songTrackScroll": 0,
+            "timelineStartTick": 0,
+            "gridZoomX": 4,
+            "selectedTrackIndex": 0
+          }
+        }
+      },
+      "lastTrackId": "track-lead",
+      "lastTab": "grid"
+    }
+  }
+}

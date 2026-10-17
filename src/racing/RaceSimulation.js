@@ -1,3 +1,4 @@
+import { getRaceStickLook, stepRaceLookAngle } from './RaceCameraInput.js';
 import { getWheelSlipPresentation } from './simulation/WheelSlipPresentation.js';
 import { roadEdgeOverlapsRoad } from './RaceRoadEdgeClearance.js';
 import { RACE_WHEEL_IDS, clamp, normalizeAngle } from './simulation/SimulationMath.js';
@@ -2434,10 +2435,15 @@ export function updateRaceSimulation({
     editor.applyRaceAnalogInput();
   }
   const physicalGamepad = editor.hasPhysicalRaceGamepad();
-  if (!physicalGamepad) editor.raceInput.lookIntentX = 0;
-  const lookTarget = physicalGamepad ? clamp(Number(editor.raceInput.lookIntentX || 0), -1, 1) * Math.PI : 0;
-  const lookRate = Math.abs(lookTarget) > 0.01 ? 7.5 : 4.2;
-  editor.raceInput.lookAngle += (lookTarget - Number(editor.raceInput.lookAngle || 0)) * Math.min(1, seconds * lookRate);
+  if (!physicalGamepad) {
+    editor.raceInput.lookIntentX = 0;
+    editor.raceInput.lookIntentY = 0;
+  }
+  const look = getRaceStickLook(editor.raceInput.lookIntentX, editor.raceInput.lookIntentY);
+  editor.raceInput.lookStickActive = physicalGamepad && look.active;
+  editor.raceInput.lookAngle = stepRaceLookAngle(
+    Number(editor.raceInput.lookAngle || 0), look.angle, seconds, editor.raceInput.lookStickActive
+  );
   editor.updateRacePedalAxes(seconds);
   const launchSteeringLocked = countdownActive || (
     editor.isRaceLaunchSteeringLocked(editor.playtestSession)
@@ -4063,8 +4069,9 @@ export function updateRaceSimulation({
     Number(editor.playtestSession.velocityYaw || 0) - Number(editor.playtestSession.carYaw || 0)
   ));
   editor.playtestSession.cameraYaw = editor.getCarCameraTrackingMode(car) === 'dynamic'
-    && cameraSlipYaw > 0.12
-    ? Number(editor.playtestSession.velocityYaw || 0)
+    && cameraSlipYaw > 0.12 && !editor.raceInput.lookStickActive
+    ? normalizeAngle(Number(editor.playtestSession.velocityYaw || 0)
+      + (physicalGamepad ? Number(editor.raceInput.lookAngle || 0) : 0))
     : editor.getRacePlaytestCameraYaw(editor.playtestSession, { seconds, smooth: true });
   editor.playtestSession.cameraChaseYaw = Number(editor.playtestSession.cameraYaw || roadYaw);
   const trackViewTarget = clamp(

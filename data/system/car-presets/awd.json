@@ -6,7 +6,7 @@
   "selectedCarId": "starter-rwd",
   "car": {
     "id": "starter-rwd",
-    "name": "AWD Sports Car",
+    "name": "AWD",
     "class": "road",
     "art": {
       "body": null,

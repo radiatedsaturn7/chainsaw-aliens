@@ -17,7 +17,7 @@ for(const mobile of [false,true])test(`car presets load isolated drafts and save
   });
   const form=page.getByRole('dialog',{name:'Load Preset',exact:true});
   await expect(form).toBeVisible();
-  await expect(form.getByLabel('Car',{exact:true}).locator('option')).toHaveText(['AWD Sports Car','RWD Sports Car','FWD Sports Car']);
+  await expect(form.getByLabel('Car',{exact:true}).locator('option')).toHaveText(['AWD','RWD','FWD']);
   await form.getByLabel('Car',{exact:true}).selectOption(id);
   if(id==='fwd')await page.screenshot({path:`test-results/car-presets-${mobile?'portrait':'desktop'}.png`});
   await form.getByRole('button',{name:'Load Preset',exact:true}).click();

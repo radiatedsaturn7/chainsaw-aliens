@@ -451,8 +451,9 @@ export function calculateAuthoritativeSteeringEnvelope(state = {}, config = {}) 
   const maximumAngleRad = Math.max(0.05, Number(config.maxSteerAngleRad) || 0.52);
   const speedMps = Math.max(0, Number(state.groundSpeedMps
     ?? Math.hypot(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0))) || 0);
-  if (speedMps < 1) return maximumAngleRad;
-  if (!front.length) return 0.002;
+  // Blend contact authority near rest rather than switching rack limits at 1 m/s.
+  const supportBlend = Math.min(1, speedMps) ** 2 * (3 - 2 * Math.min(1, speedMps));
+  if (!front.length) return maximumAngleRad + (0.002 - maximumAngleRad) * supportBlend;
   let supportedLoadN = 0;
   let supportedSuspensionLoadN = 0;
   front.forEach((patch) => {
@@ -476,7 +477,8 @@ export function calculateAuthoritativeSteeringEnvelope(state = {}, config = {}) 
   );
   const contactAuthority = contactScale * clamp(loadSupportScale / 0.35, 0, 1);
   const hydroAuthority = clamp((aquaplaningSupport - 0.12) / 0.58, 0, 1);
-  return clamp(speedEnvelope * contactAuthority * hydroAuthority, 0.002, maximumAngleRad);
+  const supportedEnvelope = clamp(speedEnvelope * contactAuthority * hydroAuthority, 0.002, maximumAngleRad);
+  return speedEnvelope + (supportedEnvelope - speedEnvelope) * supportBlend;
 }
 
 export function classifySteeringResponseTelemetry(telemetry = {}) {

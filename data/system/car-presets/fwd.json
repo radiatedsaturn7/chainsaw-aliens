@@ -6,7 +6,7 @@
   "selectedCarId": "honda-civic-type-r-2023",
   "car": {
     "id": "honda-civic-type-r-2023",
-    "name": "FWD Sports Car",
+    "name": "FWD",
     "class": "road",
     "art": {
       "body": null,

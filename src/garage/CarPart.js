@@ -29,7 +29,7 @@ function target(id){const f=fields.get(id);if(!f)throw Error('Choose a supported
 export function normalizeCarPart(value){
  if(!value)return null;
  const slot=safeGarageKey(value.slot);if(!slot)throw Error('Enter a part slot');
- return {slot,price:Math.max(0,finite(value.price??0,'Price')),forSale:value.forSale!==false,
+ return {slot,section:text(value.section)||({tires:'Tires',suspension:'Handling',brakes:'Brakes',transmission:'Drivetrain',weight:'Body'}[slot]||'Engine'),tier:['street','sport','race','custom'].includes(value.tier)?value.tier:'custom',price:Math.max(0,finite(value.price??0,'Price')),forSale:value.forSale!==false,
   unlockKey:safeGarageKey(value.unlockKey)||'',compatibleCars:list(value.compatibleCars),requires:list(value.requires),
   modifiers:(value.modifiers||[]).map(m=>{target(m.field);if(m.field==='torqueScale'&&m.operation==='add')throw Error('Use Set or Multiply for torque scale');if(!['add','multiply','set'].includes(m.operation))throw Error('Choose a part operation');return {field:m.field,operation:m.operation,value:finite(m.value,'Change')};}),
   tuning:(value.tuning||[]).map(t=>{const f=target(t.field),min=finite(t.min,'Minimum'),max=finite(t.max,'Maximum'),step=finite(t.step??f.step,'Step');if(min<f.min||max>f.max||min>max||step<=0)throw Error(`Invalid tuning range for ${f.label}`);return {field:f.id,min,max,step};}),
@@ -37,7 +37,8 @@ export function normalizeCarPart(value){
   tireRef:text(value.tireRef)
  };
 }
-export function partFits(part,carRef){return !part.compatibleCars.length||part.compatibleCars.includes(carRef);}
+export function partFits(part,carRef,car=null){return (!part.compatibleCars.length||part.compatibleCars.includes(carRef))
+ && (!Array.isArray(car?.garagePartSlots)||car.garagePartSlots.includes(part.slot));}
 export function garageTuningRanges(parts){
  const result={};
  for(const item of parts)for(const range of item.carPart.tuning){

@@ -1,3 +1,4 @@
+import { isSystemCarDocument } from '../racing/CarPresets.js';
 import {itemLibrary} from '../items/ItemLibrary.js';
 import {updateLevelItems, updateLegacyItemPickups, isItemPickup, itemPlacementId, getItemSystem} from '../items/ItemPickups.js';
 import {isMixTape,mixTapeRotation,updateLevelMixTapes} from '../radio/MixTapePickup.js';
@@ -6,6 +7,7 @@ import { RadioPlayer } from '../radio/RadioPlayer.js';
 import { RadioEditor } from '../ui/RadioEditor.js';
 import MenuEditor from '../ui/MenuEditor.js';
 import MenuPlayer from '../menus/MenuPlayer.js';
+import {createMenuDocument} from '../menus/MenuDocument.js';
 import {loadServerPreferenceAsync} from '../ui/serverPreferences.js';
 import {modelSprites} from '../model3d/ModelSprites.js';
 import ModelEditor from '../ui/ModelEditor.js';
@@ -1772,7 +1774,7 @@ export default class Game {
     liveRevision = ''
   } = {}) {
     const ref = sanitizeProjectFileName(carRef);
-    if (!ref || !document || !this.raceEditor) return null;
+    if (!ref || !document || !this.raceEditor || isSystemCarDocument(document, ref)) return null;
     const car = this.raceEditor.withSavedRaceCarRuntimeIdentity?.(
       this.raceEditor.normalizeLoadedCarDocument?.(document, ref, { preserveExistingArt: true }),
       ref
@@ -1933,8 +1935,13 @@ export default class Game {
     let normalizedRaceDocument = false;
     let racePreparationError = null;
     try {
+      const savedCars = await this.raceEditor.hydrateSavedRaceCarsForTravel?.() || [];
+      if (this.raceTravelSession !== travelSession) return false;
       const prepared = await this.raceEditor.loadRaceTravelDocument?.(raceName, {
-        artRefs: this.raceEditor.collectRaceCarArtRefs?.(runtimeCar) || car.artRefs || []
+        artRefs: [...new Set([
+          ...(this.raceEditor.collectRaceCarArtRefs?.(runtimeCar) || car.artRefs || []),
+          ...savedCars.flatMap(candidate => this.raceEditor.collectRaceCarArtRefs?.(candidate) || [])
+        ])]
       });
       void engineSfxPreparation;
       if (prepared?.race && prepared?.bake) {
@@ -2202,7 +2209,7 @@ export default class Game {
     this.menuLaunchPending = true;
     try {
       const preference = await loadServerPreferenceAsync('menu-launch', null);
-      if (!preference?.menuRef) return this.playMostRecentLevel();
+      if (!preference?.menuRef) return await this.menuPlayer.open(createMenuDocument());
       const payload = await hydrateProjectFilePayload('menus', preference.menuRef);
       if (!payload?.data) throw new Error(`Starting menu not found: ${preference.menuRef}`);
       await this.menuPlayer.open(payload.data);
