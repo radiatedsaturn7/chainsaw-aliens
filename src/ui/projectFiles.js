@@ -111,7 +111,7 @@ export function sanitizeProjectFileName(name) {
     .slice(0, 64);
 }
 
-export function listProjectFiles(folder, { includeDeleted = false } = {}) {
+export function listProjectFiles(folder, { includeDeleted = false, includeSystem = false } = {}) {
   assertFolder(folder);
   const index = ensureProjectFileIndex();
   const listed = Object.entries(index[folder] || {})
@@ -134,6 +134,9 @@ export function listProjectFiles(folder, { includeDeleted = false } = {}) {
   listed.sort((a, b) => b.updatedAt - a.updatedAt || a.name.localeCompare(b.name));
   return listed.filter((entry) => {
     if (entry.deleted && !includeDeleted) return false;
+    // Async preload callers filter system documents after hydration, avoiding
+    // synchronous network reads just to enumerate the manifest.
+    if (includeSystem) return true;
     if (index[folder]?.[entry.name]?.systemFile === true) return false;
     if (folder !== 'cars') return true;
     const payload = loadProjectFile(folder, entry.name);

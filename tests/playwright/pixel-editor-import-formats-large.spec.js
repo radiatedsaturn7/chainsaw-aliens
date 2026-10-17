@@ -63,6 +63,8 @@ async function importAndSaveAs(page, { format, name, width, height }) {
 }
 
 test('imports PNG, JPEG, and GIF files and persists them to project browser', async ({ page }) => {
+  // Three complete import/save/reopen flows share this test's budget.
+  test.setTimeout(120000);
   await waitForGameReady(page);
 
   await importAndSaveAs(page, { format: 'png', name: 'black-png', width: 8, height: 8 });

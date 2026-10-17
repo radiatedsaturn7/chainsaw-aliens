@@ -1191,7 +1191,7 @@ export default class RaceEditor {
   }
 
   async hydrateSavedRaceCarsForTravel() {
-    const entries = listProjectFiles('cars');
+    const entries = listProjectFiles('cars', { includeSystem: true });
     const loaded = await Promise.all(entries.map(async ({name}) => {
       const payload = await hydrateProjectFilePayload('cars', name);
       if (!payload?.data || isSystemCarDocument(payload.data, name)) return null;
