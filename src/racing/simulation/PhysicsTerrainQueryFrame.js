@@ -1,3 +1,4 @@
+import { sampleRaceBakedSurface } from '../RaceBakedSurfaceSampler.js';
 const BARYCENTRIC_EPSILON = 0.0001;
 const EMPTY_SAMPLE_POINTS_OPTIONS = Object.freeze({});
 const EMPTY_PACKED_POINTS_OPTIONS = Object.freeze({});
@@ -1117,6 +1118,19 @@ export class PhysicsTerrainQueryFrame {
     }
     this.statistics.pointQueries += 1;
     this.physicsCostAccounting?.count('terrainQueryFramePointQueries');
+    if (sampler.layered) {
+      // The legacy point cache is indexed by X/Z only. Layered surfaces must
+      // include vertical position and re-evaluate support after a deck change.
+      const raw = sampleRaceBakedSurface(sampler, point, { preferredRegion, physicsCostAccounting: this.physicsCostAccounting });
+      if (!raw) return sample;
+      sample.valid = true; sample.elevation = raw.elevation;
+      sample.heightM = raw.elevation * this.elevationScaleM;
+      Object.assign(sample.normal, raw.normal);
+      sample.region = raw.region; sample.source = raw.source;
+      sample.triangleId = raw.triangleId; sample.reason = null; sample.score = raw.score;
+      sample.bakedElevation = raw.elevation; sample.bakedTriangleId = raw.triangleId; sample.bakedSurfaceSource = raw.source;
+      return annotatePreparedSupport(sampler, sample);
+    }
     const quantizedX = Math.round(x * 1e6);
     const quantizedZ = Math.round(z * 1e6);
     const cacheSlot = (Math.imul(quantizedX | 0, 73856093)
@@ -1278,6 +1292,7 @@ export class PhysicsTerrainQueryFrame {
   }
 
   samplePointOnTriangle(point = {}, triangleId = null, target = null) {
+    if (this.sampler?.layered) return this.samplePoint(point, target || this.scalarResult);
     const sample = resetSample(
       target || this.analyticResults[
         this.analyticResultCursor++ % this.analyticResults.length

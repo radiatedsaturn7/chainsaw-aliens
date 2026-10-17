@@ -223,6 +223,7 @@ function clonePackedSampler(sampler = null) {
   }
   clone.regionTable = [...(sampler.regionTable || [])];
   clone.sourceTable = [...(sampler.sourceTable || [])];
+  if (sampler.materialIds) clone.materialIds = [...sampler.materialIds];
   return clone;
 }
 

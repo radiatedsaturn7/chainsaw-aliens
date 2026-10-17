@@ -521,7 +521,7 @@ export class PowertrainModel {
     const limiterPhase = Math.floor(Number(previous.limiterSequence || 0)) % 4;
     const limiterTorqueScale = limiterActive && limiterPhase < 2 ? 0 : 1;
     const engineDamage = clamp(Number(damage.engine || 0), 0, 100);
-    const engineDamageScale = clamp(1 - engineDamage * 0.006, 0.25, 1);
+    const engineDamageScale = engineDamage >= 100 ? 0 : clamp(1 - engineDamage * 0.006, 0.25, 1);
     const transmissionEfficiency = clamp(Number(config.drivetrainEfficiency
       ?? tuning.drivetrainEfficiency ?? 0.85), 0.35, 1)
       * clamp(1 - transmissionDamage * 0.0045, 0.45, 1);

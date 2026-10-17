@@ -22,6 +22,14 @@ This is the staged plan for adding SNES-style Mode 7 racing to the metroidvania.
 - Race segment metadata should support editor-visible difficulty notes for hairpins, jumps, wall impact zones, surface changes, and co-driver call placement.
 - Vertical sprites are placed on either side of the road and projected by camera depth to create speed.
 
+## Branching Routes
+
+Existing races keep their segment-road format until Branching Routes is enabled. The converted `road.network` stores versioned nodes with metre heights, edges with sampled interior points and road/bridge/tunnel properties, and distinct `startNodeId` / `finishNodeId`. Save/Open and Undo/Redo retain the graph. Crossing roads connect only through shared node IDs. Y, T, and four-way templates create explicit arms; Split and Connect/Extend build alternatives, and Join merges same-height junctions.
+
+Network road meshes include junction aprons, terminal marker pads, bridge undersides, and tunnel walls/roofs. Terrain is excavated where a tunnel ramp reaches daylight. Height-aware wheel/body queries select reachable support beneath the vehicle; open structure panels collide on crossings without filling their entire back half-space. Race completion requires crossing the start and then the distinct finish in the intended direction and at the marker height.
+
+`waterRegions` stores rectangular world-space volumes with surface and bottom heights. The bottom value limits the water volume; it does not sculpt the terrain. Fixed physics steps apply speed-dependent water drag. Water above the chassis plus intake allowance latches 100% engine damage and removes engine power until the race is reset. Worker snapshots preserve the water depth and damage state.
+
 ## Car Data
 
 - Drivetrain: RWD, FWD, AWD.

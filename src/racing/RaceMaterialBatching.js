@@ -182,8 +182,9 @@ export function addRaceThreeMeshGroups({
     const artRef = String(mesh.artRef || '').trim();
     const textured = Boolean(mesh.textured && artRef);
     const color = mesh.color || '#ffffff';
-    const key = `${textured ? 1 : 0}|${artRef}|${Number(mesh.textureWorldM || textureWorldM)}|${adapter.getMeshLiftM?.(mesh) || 0}`;
-    if (!grouped.has(key)) grouped.set(key, { textured, artRef, color, meshes: [] });
+    const opacity = Math.max(0, Math.min(1, Number(mesh.opacity ?? 1)));
+    const key = `${opacity}|${textured ? 1 : 0}|${artRef}|${Number(mesh.textureWorldM || textureWorldM)}|${adapter.getMeshLiftM?.(mesh) || 0}`;
+    if (!grouped.has(key)) grouped.set(key, { textured, artRef, color, opacity, meshes: [] });
     grouped.get(key).meshes.push(mesh);
   });
   let polygons = 0;
@@ -194,7 +195,8 @@ export function addRaceThreeMeshGroups({
     const texture = group.textured ? adapter.getTexture?.(renderer, group.artRef) : null;
     const material = adapter.getMaterial?.(renderer, {
       texture,
-      depthWrite: defaultDepthWrite,
+      opacity: group.opacity,
+      depthWrite: group.opacity < 1 ? false : defaultDepthWrite,
       polygonOffset: defaultPolygonOffset
     });
     if (!material) return;

@@ -1,3 +1,4 @@
+import { calculateRaceWaterForces } from './RaceWater.js';
 import {addItemVehicleForce} from '../../items/ItemVehicleEffect.js';
 import { RACE_WHEEL_IDS, clamp, normalizeAngle } from './SimulationMath.js';
 import {
@@ -814,6 +815,8 @@ export function createVehicleDynamicsState(initial = {}) {
       y: quantize(initial.velocity?.y ?? initial.verticalVelocityMps ?? 0),
       z: quantize(hasExplicitVelocity ? initial.velocity?.z : Math.cos(initialYaw) * initialSpeed)
     },
+    waterDepthM: Math.max(0, Number(initial.waterDepthM) || 0),
+    waterEngineDamage: Math.max(0, Number(initial.waterEngineDamage) || 0),
     speedMps: quantize(initialSpeed),
     groundSpeedMps: quantize(initial.groundSpeedMps ?? Math.hypot(
       Number(hasExplicitVelocity ? initial.velocity?.x : Math.sin(initialYaw) * initialSpeed) || 0,
@@ -4675,6 +4678,15 @@ export class VehicleDynamicsRunner {
       environmentRequest.recoveryRecalculation = false;
       environmentRequest.physicsCostAccounting = this.physicsCostAccounting;
       let environment = this.environmentProvider(environmentRequest) || {};
+      let waterForces = null;
+      if (environment.waterRegions?.length || this.state.waterEngineDamage || this.state.waterDepthM) {
+        waterForces = calculateRaceWaterForces({ state: substepState, config: this.config,
+          regions: environment.waterRegions, dt: tireSubstepDt, previousEngineDamage: this.state.waterEngineDamage });
+        this.state.waterDepthM = waterForces.depthM;
+        this.state.waterEngineDamage = waterForces.engineDamage;
+        environment.damage ||= {};
+        environment.damage.engine = Math.max(Number(environment.damage.engine || 0), waterForces.engineDamage);
+      }
       this.physicsCostAccounting.end(environmentTimer);
       if (reuseContactGeometry) {
         this.physicsCostAccounting.count('tireSubstepGeometryReuses');
@@ -4792,6 +4804,11 @@ export class VehicleDynamicsRunner {
         + Number(aeroState.totalForceWorldN?.y || 0);
       externalForceWorldN.z = Number(environment.externalForceWorldN?.z || 0)
         + Number(aeroState.totalForceWorldN?.z || 0);
+      if (waterForces) {
+        externalForceWorldN.x += waterForces.forceWorldN.x;
+        externalForceWorldN.y += waterForces.forceWorldN.y;
+        externalForceWorldN.z += waterForces.forceWorldN.z;
+      }
       addItemVehicleForce(externalForceWorldN,substepState,controls,this.config.massKg);
       tireResult.externalForceWorldN = externalForceWorldN;
       const externalMomentWorldNm = substepScratch.externalMomentWorldNm;
@@ -5785,6 +5802,14 @@ export class VehicleDynamicsRunner {
         environmentRequest.recoveryRecalculation = true;
         environmentRequest.reuseContactGeometry = false;
         environment = this.environmentProvider(environmentRequest) || {};
+        waterForces = calculateRaceWaterForces({ state: substepState, config: this.config,
+          regions: environment.waterRegions, dt: tireSubstepDt, previousEngineDamage: this.state.waterEngineDamage });
+        this.state.waterDepthM = waterForces.depthM;
+        this.state.waterEngineDamage = waterForces.engineDamage;
+        if (waterForces.engineDamage) {
+          environment.damage ||= {};
+          environment.damage.engine = Math.max(Number(environment.damage.engine || 0), waterForces.engineDamage);
+        }
         this.physicsCostAccounting.end(recoveryEnvironmentTimer);
         environment.physicsCostAccounting ||= this.physicsCostAccounting;
         this.performanceDiagnostics.environmentQueries += 1;
@@ -5798,6 +5823,7 @@ export class VehicleDynamicsRunner {
         tireResult.externalForceWorldN = addVector3(
           environment.externalForceWorldN || {}, cleanAeroState.totalForceWorldN
         );
+        tireResult.externalForceWorldN = addVector3(tireResult.externalForceWorldN, waterForces.forceWorldN);
         addItemVehicleForce(tireResult.externalForceWorldN,substepState,controls,this.config.massKg);
         tireResult.externalMomentWorldNm = addVector3(
           environment.externalMomentWorldNm || {}, cleanAeroState.totalMomentWorldNm

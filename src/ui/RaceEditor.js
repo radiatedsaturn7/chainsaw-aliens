@@ -1,3 +1,7 @@
+import { NETWORK_ACTIONS, networkEditorActions, handleNetworkAction, drawNetworkEditor, networkPointer } from './RaceNetworkEditor.js';
+import { normalizeRaceWaterRegions, raceWaterMeshes } from '../racing/simulation/RaceWater.js';
+import { normalizeRaceRouteNetwork, validateRaceRouteNetwork, findNetworkRoute, sampleNetworkRoute, projectNetworkPoint, networkEdgeLength } from '../racing/RaceRouteNetwork.js';
+import { buildRaceNetworkWorld } from '../racing/RaceNetworkWorld.js';
 import {itemLibrary} from '../items/ItemLibrary.js';
 import { getRaceStickLook } from '../racing/RaceCameraInput.js';
 import { vehicleSoundSettings } from '../audio/VehicleSound.js';
@@ -1325,6 +1329,7 @@ export default class RaceEditor {
   }
 
   getSelectedRaceRuntimeType() {
+    if (this.selectedRace?.road?.network) return 'destination';
     const samples = this.getRaceEndpointPoints();
     if (samples.length >= 2) {
       return this.isSelectedRaceLoopClosed() ? 'circuit' : 'destination';
@@ -4293,6 +4298,17 @@ export default class RaceEditor {
     includeShoulders = true,
     sampleCount = 7
   } = {}) {
+    if (this.selectedRace?.road?.network) {
+      const options = { samples, routeLength, runtimeType, allowVisualExtension };
+      const pose = this.getRaceWorldPoseAtDistance(distance, options);
+      const before = this.getRaceWorldPoseAtDistance(distance - 0.5, options);
+      const after = this.getRaceWorldPoseAtDistance(distance + 0.5, options);
+      const span = Math.hypot(after.x - before.x, after.z - before.z);
+      const roadHalfWidth = Number(pose.segment?.roadWidthM || 11) / 2;
+      return { elevation: pose.elevation, routeElevation: pose.elevation, terrainElevation: pose.elevation,
+        grade: span > 0 ? (after.elevation - before.elevation) * RACE_THREE_ELEVATION_M / span : 0,
+        roadHalfWidth, stampedHalfWidth: roadHalfWidth, blendWidth: 0 };
+    }
     const cacheKey = [
       this.getRaceSurfaceGeometryRevisionKey({ runtimeType, allowVisualExtension, routeLength }),
       runtimeType,
@@ -5180,6 +5196,7 @@ export default class RaceEditor {
   }
 
   getRaceRawMapPoints() {
+    if (this.selectedRace?.road?.network) return [...this.selectedRace.road.network.nodes, ...this.selectedRace.road.network.edges.flatMap(e => e.points)].map(p => ({ ...p, y: p.z, elevation: p.heightM / RACE_THREE_ELEVATION_M }));
     const frame = this.raceGeometryReadCache;
     if (frame?.rawMapPoints) return frame.rawMapPoints;
     const nodes = this.getRaceEditableNodes({ create: false });
@@ -5201,6 +5218,7 @@ export default class RaceEditor {
   }
 
   getRaceMapTransform(bounds, rawPoints = this.getRaceRawMapPoints()) {
+    if (this.networkDrag?.transform) return this.networkDrag.transform;
     const minX = Math.min(...rawPoints.map((point) => point.x));
     const maxX = Math.max(...rawPoints.map((point) => point.x));
     const minY = Math.min(...rawPoints.map((point) => point.y));
@@ -5949,6 +5967,10 @@ export default class RaceEditor {
       mode: this.mode,
       currentRaceDocumentName: this.currentRaceDocumentName,
       currentCarDocumentName: this.currentCarDocumentName,
+      networkTool: this.networkTool,
+      networkNodeId: this.networkNodeId,
+      networkEdgeId: this.networkEdgeId,
+      networkWaterId: this.networkWaterId,
       selectedSegmentIndex: this.selectedSegmentIndex,
       raceSelectionType: this.raceSelectionType,
       selectedSceneryIndex: this.selectedSceneryIndex,
@@ -5974,6 +5996,11 @@ export default class RaceEditor {
     this.mode = snapshot.mode === 'car' ? 'car' : 'race';
     this.currentRaceDocumentName = snapshot.currentRaceDocumentName || '';
     this.currentCarDocumentName = snapshot.currentCarDocumentName || '';
+    this.networkTool = snapshot.networkTool || 'network-select';
+    this.networkNodeId = snapshot.networkNodeId || '';
+    this.networkEdgeId = snapshot.networkEdgeId || '';
+    this.networkWaterId = snapshot.networkWaterId || '';
+    this.networkDrag = null;
     this.selectedSegmentIndex = Math.max(0, Math.round(Number(snapshot.selectedSegmentIndex) || 0));
     this.raceSelectionType = snapshot.raceSelectionType || 'edge';
     this.selectedSceneryIndex = Math.max(0, Math.round(Number(snapshot.selectedSceneryIndex) || 0));
@@ -6194,6 +6221,7 @@ export default class RaceEditor {
   }
 
   getRaceActionLabel(id = '') {
+    if (NETWORK_ACTIONS[id]) return NETWORK_ACTIONS[id];
     const selectedSpriteLabel = this.selectedSceneryDefinition?.label || this.selectedSceneryArtRef || this.getSelectedSceneryPreset().label;
     const labels = {
       'race-from-image': 'From Image',
@@ -7566,13 +7594,14 @@ export default class RaceEditor {
   }
 
   getRaceQuickActions({ compact = false } = {}) {
+    if (this.mode === 'race' && this.selectedRace?.road?.network) return networkEditorActions(this, compact);
     if (this.mode === 'car') {
       return [
         { id: 'test-drive', label: 'Play', onClick: () => this.handleMenuAction('test-drive') }
       ];
     }
     const actions = [
-      { id: 'generate-random-race', label: 'Generate', onClick: () => this.handleMenuAction('generate-random-race') },
+      { id: 'network-enable', label: 'Routes', onClick: () => this.handleMenuAction('network-enable') },
       { id: 'draw-road', label: compact ? 'Add' : 'Add Seg', onClick: () => this.handleMenuAction('draw-road') },
       { id: 'curve', label: 'Curve', onClick: () => this.handleMenuAction('curve') },
       { id: 'elevation', label: compact ? 'Hill' : 'Elevation', onClick: () => this.handleMenuAction('elevation') },
@@ -7584,6 +7613,7 @@ export default class RaceEditor {
   }
 
   getRaceTrackContextActions({ compact = false } = {}) {
+    if (this.mode === 'race' && this.selectedRace?.road?.network) return networkEditorActions(this, compact);
     const selected = this.selectedSegment || {};
     if (this.raceSelectionType === 'node') {
       const currentStyle = this.getRaceNodeCornerStyle(selected);
@@ -7635,6 +7665,7 @@ export default class RaceEditor {
   }
 
   isActionAvailable(action) {
+    if (NETWORK_ACTIONS[action]) return this.mode === 'race';
     return ['car-installable-parts', 'car-load-preset', 'car-category', 'race-ai-cars'].includes(action) || RACE_EDITOR_AVAILABLE_ACTIONS.has(action);
   }
 
@@ -7701,9 +7732,11 @@ export default class RaceEditor {
     clone.id = String(clone.id || sanitizeProjectFileName(fallbackName) || `race-${Date.now().toString(36)}`);
     clone.name = String(clone.name || fallbackName || clone.id);
     clone.finishBehavior = normalizeRaceFinishBehavior(clone.finishBehavior);
+    if (clone.waterRegions) clone.waterRegions = normalizeRaceWaterRegions(clone.waterRegions);
     clone.road = clone.road && typeof clone.road === 'object' ? clone.road : { nodes: [], segments: [] };
     clone.road.nodes = Array.isArray(clone.road.nodes) ? clone.road.nodes : [];
     clone.road.segments = Array.isArray(clone.road.segments) ? clone.road.segments : [];
+    if (clone.road.network) clone.road.network = normalizeRaceRouteNetwork(clone.road.network);
     clone.competition = clone.competition && typeof clone.competition === 'object' ? clone.competition : { mode: 'solo', aiDrivers: [] };
     clone.competition.carSelection = normalizeAiCarSelection(clone.competition.carSelection);
     clone.hazards = Array.isArray(clone.hazards) ? clone.hazards : [];
@@ -8625,6 +8658,7 @@ export default class RaceEditor {
   }
 
   handleMenuAction(action) {
+    if (NETWORK_ACTIONS[action]) return handleNetworkAction(this, action).catch(error => { this.status = error.message; });
     if(action==='race-item'){void this.openRaceItemPicker().catch(error=>{this.status=error.message;});return;}
     if (!this.isActionAvailable(action)) {
       this.status = `${action.replace(/-/g, ' ')} is not available yet`;
@@ -11284,6 +11318,19 @@ export default class RaceEditor {
       return this.raceWorldBakeCache;
     }
     const surfaceStep = this.getRaceWorldBakeSurfaceStep({ renderDebug });
+    if (this.selectedRace?.road?.network) {
+      const errors = validateRaceRouteNetwork(this.selectedRace.road.network);
+      if (errors.length) throw new Error(errors.join(' '));
+      const surfaceModel = this.getRaceSurfaceModel();
+      const bake = buildRaceNetworkWorld(this.selectedRace.road.network, {
+        key, routeLength: routeEnd, stepM: surfaceStep, textureWorldM,
+        elevationScaleM: RACE_THREE_ELEVATION_M, buildSurfaceSampler, retainTerrainCells,
+        sampleTerrain: point => surfaceModel.sampleRawTerrain(point, 0).elevation,
+        tileAt: point => this.getRaceTileMapCellAtWorldPoint(point)
+      });
+      this.raceWorldBakeCache = bake;
+      return bake;
+    }
     const terrainTopology = 'road-origin-indexed';
     const surfaceBake = this.getRaceSurfaceBake({
       routeLength: routeEnd,
@@ -12970,6 +13017,8 @@ export default class RaceEditor {
       worldBake: options?.preparedWorldBake || null,
       worldX: startPose.x,
       worldZ: startPose.z,
+      networkPreviousPosition: this.selectedRace?.road?.network
+        ? { x: startPose.x, z: startPose.z, heightM: startPose.elevation * RACE_THREE_ELEVATION_M } : null,
       launchLockMs: options?.carEditorPreview === true ? 0 : 420,
       cameraView: this.raceInput.cameraView,
       steeringWheel: 0,
@@ -13214,6 +13263,7 @@ export default class RaceEditor {
   }
 
   getRaceRouteLength() {
+    if (this.selectedRace?.road?.network) return Math.max(1, findNetworkRoute(this.selectedRace.road.network)?.lengthM || 1);
     const segments = this.selectedRace?.road?.segments || [];
     const nodes = this.getRaceEditableNodes({ create: false });
     if (nodes.length >= 2) {
@@ -13435,6 +13485,13 @@ export default class RaceEditor {
   }
 
   getRacePathSamples({ step = 18 } = {}) {
+    const network = this.selectedRace?.road?.network;
+    if (network) return sampleNetworkRoute(network, undefined, { stepM: step }).map(sample => {
+      const index = network.edges.findIndex(edge => edge.id === sample.edgeId);
+      const edge = network.edges[index];
+      return { ...sample, elevation: sample.heightM / RACE_THREE_ELEVATION_M, index, progress: 0,
+        segment: { ...edge, roadWidthM: edge.widthM, length: networkEdgeLength(network, edge) } };
+    });
     const segments = this.selectedRace?.road?.segments || [];
     const requestedStep = Math.max(0.5, Number(step) || 18);
     const nodes = this.getRaceEditableNodes({ create: false });
@@ -13581,6 +13638,7 @@ export default class RaceEditor {
   }
 
   getRacePathSampleCacheSignature(step = 18) {
+    if (this.selectedRace?.road?.network) return `${step}:network:${JSON.stringify(this.selectedRace.road.network)}`;
     const frame = this.raceGeometryReadCache;
     const stepKey = Math.round((Number(step) || 18) * 100);
     if (frame?.pathSignatures.has(stepKey)) return frame.pathSignatures.get(stepKey);
@@ -13796,6 +13854,21 @@ export default class RaceEditor {
   }
 
   getRaceRouteProjectionForWorldPoint(point = {}) {
+    const network = this.selectedRace?.road?.network;
+    if (network) {
+      const projection = projectNetworkPoint(network, { ...point, heightM: point.heightM ?? point.supportHeightM ?? (point.z !== undefined ? point.y : undefined) });
+      if (projection) {
+        const edge = projection.edge, length = networkEdgeLength(network, edge);
+        const toFinish = findNetworkRoute(network, edge.to)?.lengthM ?? Infinity;
+        const fromFinish = edge.bidirectional ? (findNetworkRoute(network, edge.from)?.lengthM ?? Infinity) : Infinity;
+        const remaining = Math.min(length - projection.distance + toFinish, projection.distance + fromFinish);
+        return { ...projection, edgeDistance: projection.distance, distance: Number.isFinite(remaining) ? Math.max(0, this.getRaceRouteLength() - remaining) : 0,
+          canReachFinish: Number.isFinite(remaining),
+          elevation: projection.heightM / RACE_THREE_ELEVATION_M,
+          index: network.edges.indexOf(edge), progress: projection.distance / length,
+          segment: { ...edge, roadWidthM: edge.widthM, length } };
+      }
+    }
     const samples = this.getRacePathSamplesCached({ step: 4 });
     if (samples.length < 2) {
       return {
@@ -13891,6 +13964,7 @@ export default class RaceEditor {
   }
 
   getRaceStartPose(runtimeType = this.getSelectedRaceRuntimeType()) {
+    if (this.selectedRace?.road?.network) return this.getRacePathSamplesCached({ step: 4 })[0];
     const nodes = this.getRaceEditableNodes({ create: false });
     if (nodes.length >= 2) {
       const first = nodes[0];
@@ -16076,7 +16150,8 @@ export default class RaceEditor {
     const originZ = Number(session?.worldZ || 0);
     const point = (longitudinal, lateral) => ({
       x: originX + forward.x * longitudinal + right.x * lateral,
-      z: originZ + forward.z * longitudinal + right.z * lateral
+      z: originZ + forward.z * longitudinal + right.z * lateral,
+      ...(this.selectedRace?.road?.network ? { supportHeightM: Number(session?.heightM || 0) + 0.4 } : {})
     });
     return {
       fl: point(wheelbase * 0.5, -frontTrackWidth * 0.5),
@@ -24405,10 +24480,11 @@ export default class RaceEditor {
       ? this.getRacePortraitGroundActions()
       : this.racePortraitMode === 'sprites'
         ? this.getRacePortraitSpriteActions()
-        : [
+        : this.selectedRace?.road?.network ? networkEditorActions(this, true) : [
           { id: 'draw-road', label: 'Add', active: this.activeAction === 'draw-road', onClick: () => this.handleMenuAction('draw-road') },
           { id: 'move-node', label: 'Move', active: this.activeAction === 'move-node', onClick: () => this.handleMenuAction('move-node') },
-          ...this.getRacePortraitHotMenuActions(selected)
+          ...this.getRacePortraitHotMenuActions(selected),
+          { id: 'network-enable', label: 'Routes', onClick: () => this.handleMenuAction('network-enable') }
         ];
     const quickW = Math.max(48, Math.floor((bounds.w - pad * 2 - gap * Math.max(0, quickActions.length - 1)) / Math.max(1, quickActions.length)));
     quickActions.forEach((action, index) => {
@@ -26424,6 +26500,7 @@ export default class RaceEditor {
 
   getRacePortraitTrackPopupActions(selected = this.selectedSegment || {}) {
     const close = { id: 'hot-menu-back', label: 'Back', onClick: () => { this.racePortraitHotMenu = null; } };
+    if (this.racePortraitHotMenu === 'network' && this.selectedRace?.road?.network) return [close, ...networkEditorActions(this)];
     if (this.raceSelectionType === 'node') {
       if (this.racePortraitHotMenu === 'edit') {
         return [
@@ -26476,6 +26553,13 @@ export default class RaceEditor {
   drawRacePortraitTrackPopup(ctx, anchorBounds) {
     const actions = this.getRacePortraitTrackPopupActions();
     if (!actions.length) return;
+    if (this.racePortraitHotMenu === 'network') {
+      const height = Math.min(Math.max(80, anchorBounds.y - 16), 16 + Math.ceil(actions.length / 2) * 46);
+      const popup = { x: anchorBounds.x + 8, y: Math.max(8, anchorBounds.y - height - 8), w: anchorBounds.w - 16, h: height };
+      drawSharedPanel(ctx, popup, { fill: 'rgba(5,8,7,0.94)', border: UI_SUITE.colors.border });
+      this.drawActionRows(ctx, popup, actions, 2, { scrollKey: 'race-network-tools' });
+      return;
+    }
     const rowH = 30;
     const gap = 5;
     const pad = 8;
@@ -26694,6 +26778,7 @@ export default class RaceEditor {
   }
 
   getRaceBuilderActions({ compact = false } = {}) {
+    if (this.mode === 'race' && this.selectedRace?.road?.network) return networkEditorActions(this, compact);
     if (this.mode === 'car') {
       return [
         { id: 'test-drive', label: 'Play', onClick: () => this.handleMenuAction('test-drive') }
@@ -26702,7 +26787,7 @@ export default class RaceEditor {
     const selected = this.selectedSegment;
     const surface = getSurfaceById(selected?.surface);
     return [
-      { id: 'generate-random-race', label: compact ? 'Gen' : 'Generate', onClick: () => this.handleMenuAction('generate-random-race') },
+      { id: 'network-enable', label: 'Routes', onClick: () => this.handleMenuAction('network-enable') },
       { id: 'draw-road', label: compact ? 'Add' : 'Add Seg', onClick: () => this.handleMenuAction('draw-road') },
       { id: 'segment-prev', label: 'Prev', onClick: () => this.selectAdjacentRaceSegment(-1) },
       { id: 'segment-next', label: 'Next', onClick: () => this.selectAdjacentRaceSegment(1) },
@@ -29616,6 +29701,7 @@ export default class RaceEditor {
   }
 
   drawRaceTopDownEditor(ctx, bounds) {
+    if (this.selectedRace?.road?.network) return drawNetworkEditor(this, ctx, bounds);
     this.raceMapBounds = { ...bounds };
     const race = this.selectedRace;
     const segments = race?.road?.segments || [];
@@ -32103,7 +32189,8 @@ export default class RaceEditor {
       this.isRaceMarginVisible() ? 1 : 0,
       this.isRaceShoulderVisible() ? 1 : 0,
       this.getRaceGroundTextureFilterMode(),
-      weatherMaterialSignature
+      weatherMaterialSignature,
+      JSON.stringify(this.selectedRace?.waterRegions || [])
     ].join('::static-track-surface::');
     if (this.raceStaticTrackSurfaceMeshCache?.key === cacheKey) {
       return this.raceStaticTrackSurfaceMeshCache.meshes;
@@ -32367,7 +32454,7 @@ export default class RaceEditor {
       { center: { distance: Number(worldBake.routeLength || worldBake.surfaceBake?.routeLength || this.getRaceRouteLength()) } }
     ];
     const routeLength = Math.max(1, Number(worldBake.routeLength || worldBake.surfaceBake?.routeLength || this.getRaceRouteLength()));
-    const roadPaintMeshes = this.getRaceThreeTrackPaintMeshes({
+    const roadPaintMeshes = worldBake.terrainTopology === 'route-network' ? [] : this.getRaceThreeTrackPaintMeshes({
       slices: overlaySlices,
       travel: 0,
       routeLength,
@@ -32375,6 +32462,8 @@ export default class RaceEditor {
       fullRoute: true
     });
     const trackFurnitureMeshes = [
+      ...(worldBake.structureMeshes || []),
+      ...raceWaterMeshes(this.selectedRace?.waterRegions, RACE_THREE_ELEVATION_M),
       ...this.getRaceWebGLCheckerStripeMeshes({
         travel: 0,
         routeLength,
@@ -34817,19 +34906,22 @@ export default class RaceEditor {
   getRaceThreeMaterial(renderer = null, {
     texture = null,
     depthWrite = true,
-    polygonOffset = true
+    polygonOffset = true,
+    opacity = 1
   } = {}) {
     if (!renderer || !THREE?.MeshBasicMaterial) return null;
     renderer.materialCache = renderer.materialCache instanceof Map ? renderer.materialCache : new Map();
+    opacity = clamp(Number(opacity), 0, 1);
     const textureKey = texture?.uuid || 'solid';
-    const key = `${textureKey}:${depthWrite ? 1 : 0}:${polygonOffset ? 1 : 0}`;
+    const key = `${textureKey}:${depthWrite ? 1 : 0}:${polygonOffset ? 1 : 0}:${opacity}`;
     const cached = renderer.materialCache.get(key);
     if (cached) return cached;
     const material = new THREE.MeshBasicMaterial({
       map: texture || null,
       vertexColors: true,
       side: THREE.DoubleSide,
-      transparent: false,
+      transparent: opacity < 1,
+      opacity,
       depthTest: true,
       depthWrite,
       polygonOffset,
@@ -36516,7 +36608,7 @@ export default class RaceEditor {
     const hasStaticThreeWorld = initialRenderDebug.terrainEnabled === true
       && initialRenderDebug.threeEnabled === true
       && (initialWorldBake?.terrainCells?.length || hasPackedTerrain)
-      && ['road-origin-indexed', 'corridor-first', 'constrained-road-first'].includes(String(initialWorldBake.terrainTopology || 'corridor-first'));
+      && ['road-origin-indexed', 'corridor-first', 'constrained-road-first', 'route-network'].includes(String(initialWorldBake.terrainTopology || 'corridor-first'));
     if (this.getRaceGroundRenderer() !== 'webgl-track'
       || !Array.isArray(trackBands)
       || (!trackBands.length && !hasStaticThreeWorld)) return false;
@@ -36610,8 +36702,8 @@ export default class RaceEditor {
       const usesStaticThreeTerrain = Boolean(
         threeEnabled
         && (worldBake?.terrainCells?.length || worldBake?.packedTerrain?.positions?.length)
-        && Number(worldBake.terrainSize || 0) === terrainSize
-        && ['road-origin-indexed', 'corridor-first', 'constrained-road-first'].includes(String(worldBake.terrainTopology || 'corridor-first'))
+        && (worldBake.terrainTopology === 'route-network' || Number(worldBake.terrainSize || 0) === terrainSize)
+        && ['road-origin-indexed', 'corridor-first', 'constrained-road-first', 'route-network'].includes(String(worldBake.terrainTopology || 'corridor-first'))
       );
       if (!usesStaticThreeTerrain) terrainBake = this.getRaceTerrainBakeCache(tileMap, terrainSize);
       const roadFarCameraZ = Math.max(
@@ -36640,7 +36732,7 @@ export default class RaceEditor {
       const routeRuntimeType = this.playtestSession?.routeRuntimeType || this.getSelectedRaceRuntimeType();
       const roadCorridorSkipTolerance = 0.25;
       if ((worldBake?.terrainCells?.length || worldBake?.packedTerrain?.positions?.length)
-        && Number(worldBake.terrainSize || 0) === terrainSize) {
+        && (worldBake.terrainTopology === 'route-network' || Number(worldBake.terrainSize || 0) === terrainSize)) {
         const bakedVisibleCells = usesStaticThreeTerrain
           ? worldBake.terrainCells
           : this.getRaceVisibleWorldBakeTerrainCells(worldBake, {
@@ -36792,7 +36884,7 @@ export default class RaceEditor {
     if (sceneStartMs > 0) renderStats.terrainBuildMs = Math.max(0, this.getNowMs() - sceneStartMs);
     const shoulderMeshes = [];
     const corridorFirstTerrain = terrainEnabled
-      && ['road-origin-indexed', 'corridor-first', 'constrained-road-first'].includes(String(renderStats.terrainTopology || 'corridor-first'));
+      && ['road-origin-indexed', 'corridor-first', 'constrained-road-first', 'route-network'].includes(String(renderStats.terrainTopology || 'corridor-first'));
     if (terrainEnabled && !corridorFirstTerrain) {
       shoulderMeshes.push(...this.getRaceRoadsideTerrainBlendMeshes(trackBands, {
         currentSegment,
@@ -37503,7 +37595,7 @@ export default class RaceEditor {
       && renderDebug.terrainEnabled === true
       && renderDebug.threeEnabled === true
       && (staticWorldBake?.terrainCells?.length || staticWorldBake?.packedTerrain?.positions?.length)
-      && ['road-origin-indexed', 'corridor-first', 'constrained-road-first'].includes(String(staticWorldBake.terrainTopology || 'corridor-first'))
+      && ['road-origin-indexed', 'corridor-first', 'constrained-road-first', 'route-network'].includes(String(staticWorldBake.terrainTopology || 'corridor-first'))
       && Boolean(this.getRaceThreeWorldRenderer(Number(bounds.w || 1), Number(bounds.h || 1))?.threeRenderer);
     const stableRoadSections = canUseStaticThreeWorld
       ? []
@@ -38842,6 +38934,9 @@ export default class RaceEditor {
       hit.onClick?.();
       return;
     }
+    if (payload.button !== 1 && payload.button !== 2 && this.selectedRace?.road?.network) {
+      try { if (networkPointer(this, payload, 'down')) return; } catch (error) { this.status = error.message; return; }
+    }
     if (
       payload.button !== 1
       && payload.button !== 2
@@ -38903,6 +38998,7 @@ export default class RaceEditor {
   }
 
   handlePointerMove(payload = {}) {
+    if (this.networkDrag && networkPointer(this, payload, 'move')) return;
     if (this.raceImageImportOpen) return;
     if (this.isLivePlaytestSession() && this.raceInput.activeDpadPointerId === (payload.id ?? 'pointer')) {
       const dpad = this.buttons.find((button) => button.playtestControl === 'dpad');
@@ -39010,6 +39106,7 @@ export default class RaceEditor {
     }
   }
   handlePointerUp(payload = {}) {
+    if (this.networkDrag && networkPointer(this, payload, 'up')) return;
     if (this.raceImageImportOpen) return;
     if (this.pendingDesktopDropdownHit) {
       const hit = this.pendingDesktopDropdownHit;

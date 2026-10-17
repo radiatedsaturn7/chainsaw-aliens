@@ -313,6 +313,8 @@ export function createVehicleRenderStateFromRunner(runner, {
     bodyLongitudinalSpeedMps: finite(state.bodyLongitudinalSpeedMps, state.speedMps),
     bodyLateralSpeedMps: finite(state.bodyLateralSpeedMps),
     signedTravelSpeedMps: finite(state.signedTravelSpeedMps, state.speedMps),
+    waterDepthM: finite(state.waterDepthM),
+    waterEngineDamage: finite(state.waterEngineDamage),
     engineRpm: finite(state.powertrainState?.engineRpm, state.engineRpm),
     gear: finite(state.powertrainState?.gear, state.gear)
   });

@@ -796,7 +796,7 @@ test('menu specs include high-risk actions from the UI plan', () => {
     '- Audio: selected audio volume, fade, loop, and master volume.',
     '- Export/import actions live under File; there is no separate Export top-level drawer.',
     '- File: standard document actions plus From Image, generate random race, and load built-in reference tracks.',
-    '- Track: the command menu contains only Add. Add is a persistent placement mode; empty-map taps add draggable nodes, while existing nodes are always selected and moved by direct tap-drag. Node and edge editing is selection-contextual rather than duplicated in the Track menu. Selected interior nodes expose Smooth, Tight, and Hard corner styles; selected edges expose insert/delete, edge tile, surface, width, bumpiness, boundary, and snow condition. Circuit versus point-to-point behavior is inferred from whether the route endpoints connect; there must not be explicit Circuit/Destination menu toggles.',
+    '- Track (legacy roads): Add is the road placement command; Branching Routes opts into network editing. Add is a persistent placement mode; empty-map taps add draggable nodes, while existing nodes are always selected and moved by direct tap-drag. Node and edge editing is selection-contextual rather than duplicated in the Track menu. Selected interior nodes expose Smooth, Tight, and Hard corner styles; selected edges expose insert/delete, edge tile, surface, width, bumpiness, boundary, and snow condition. Circuit versus point-to-point behavior is inferred from whether the route endpoints connect; there must not be explicit Circuit/Destination menu toggles.',
     '- Ground: selected ground tile, paint ground, paint elevation, raise/lower, and brush size.',
     '- Settings: road width, AI racer count, weather clear/rain/storm/snow, and On Race Complete behavior. On Race Complete supports Return to Origin, Next Race using the current car, or Load Level at a required tile selected from a full-level preview.'
   ].forEach((text) => {
@@ -919,7 +919,7 @@ test('Race shared authoring roots include tile-backed terrain commands without s
   assert.equal(getEditorMenuSection('race', 'generate'), null);
   assert.equal(getEditorMenuSection('race', 'elevation'), null);
   assert.deepEqual(getEditorMenuSection('race', 'file').actions.slice(6), ['race-from-image', 'generate-random-race', 'exit-main']);
-  assert.deepEqual(getEditorMenuSection('race', 'track').actions, ['draw-road']);
+  assert.deepEqual(getEditorMenuSection('race', 'track').actions, ['draw-road', 'network-enable', 'network-select', 'network-add', 'network-split', 'network-junction', 'network-join', 'network-properties', 'network-markers', 'network-delete', 'network-water']);
   assert.equal(getEditorMenuSection('race', 'track').actions.includes('paint-elevation'), false);
   assert.deepEqual(getEditorMenuSection('race', 'ground').actions.slice(0, 6), [
     'race-tile-model', 'race-clear-tile-model',

@@ -35,6 +35,9 @@ jobs:
       - name: Run editor and race regression unit tests
         run: node --test tests/unit/editorMenuLayout.test.js tests/unit/editorMenuSpec.test.js tests/unit/portraitEditorMenuModels.test.js tests/unit/raceImageTrace.test.js tests/unit/raceImportedCircuitRegression.test.js tests/unit/raceTireTrackRenderer.test.js tests/unit/steeringCommandMapping.test.js tests/unit/racePauseRestart.test.js
 
+      - name: Run branching routes and layered physics tests
+        run: node --test tests/unit/raceRouteNetwork.test.js tests/unit/raceNetworkGeometry.test.js tests/unit/raceNetworkRuntime.test.js tests/unit/raceLayeredSurface.test.js tests/unit/raceWater.test.js tests/unit/staticRaceColliderWorld.test.js
+
       - name: Run AI car selection and driving tests
         run: node --test tests/unit/carPresets.test.js tests/unit/carPerformance.test.js tests/unit/raceAiCarSelectionPersistence.test.js tests/unit/raceAiDriving.test.js tests/unit/raceAiProjection.test.js tests/unit/raceAiRecovery.test.js
 
@@ -125,5 +128,6 @@ jobs:
             test-results/radio-*.png
             test-results/item-*.png
             test-results/car-presets-*.png
+            test-results/network-*.png
           if-no-files-found: ignore
           retention-days: 7

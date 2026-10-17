@@ -1,5 +1,13 @@
 import { createInvalidSurfaceSample, createSurfaceSample } from './simulation/SurfaceSample.js';
 
+// Preserve physical height through legacy X/Z wrappers so stacked decks stay
+// distinguishable. A legacy {x,y} map point still uses y as horizontal Z.
+const queryHeight = point => ({
+  ...(point?.z !== undefined && Number.isFinite(point.y) ? { y: point.y } : {}),
+  ...(Number.isFinite(point?.supportHeightM) ? { supportHeightM: point.supportHeightM } : {}),
+  ...(Number.isFinite(point?.supportAllowanceM) ? { supportAllowanceM: point.supportAllowanceM } : {})
+});
+
 const DEFAULT_FLAT_JOIN_WIDTH_M = 0.5;
 const DEFAULT_SLOPE_BLEND_WIDTH_M = 4;
 const DEG_TO_RAD = Math.PI / 180;
@@ -123,7 +131,7 @@ export class RaceSurfaceModel {
   sampleRawTerrain(x = 0, z = 0, fallbackElevation = 0) {
     this.performanceDiagnostics.rawTerrainQueries += 1;
     const worldPoint = typeof x === 'object'
-      ? { x: Number(x.x || 0), z: Number(x.z ?? x.y ?? 0) }
+      ? { x: Number(x.x || 0), z: Number(x.z ?? x.y ?? 0), ...queryHeight(x) }
       : { x: Number(x || 0), z: Number(z || 0) };
     const fallback = typeof x === 'object' ? Number(z ?? fallbackElevation ?? 0) : Number(fallbackElevation || 0);
     const rawElevation = this.clampElevation(
@@ -425,6 +433,18 @@ export class RaceSurfaceModel {
     };
   }
 
+  getNetworkDeckForProjection(projection) {
+    if (!projection?.edgeId || !projection.edge) return null;
+    const grade = Number(projection.grade || 0), yaw = Number(projection.yaw || 0);
+    const elevation = Number(projection.heightM || 0) / this.elevationScaleM;
+    return { ...projection, elevation, routeElevation: elevation, terrainElevation: elevation,
+      roadHalfWidth: projection.edge.widthM / 2, stampedHalfWidth: projection.edge.widthM / 2,
+      marginWidth: 0, shoulderWidth: 0, blendWidth: 0, bankAngleRad: 0,
+      segment: projection.segment || { ...projection.edge, roadWidthM: projection.edge.widthM },
+      right: this.getRightVector(yaw), tangent: normalizeVector3({ x: Math.sin(yaw), y: grade, z: Math.cos(yaw) }),
+      normal: normalizeVector3({ x: -Math.sin(yaw) * grade, y: 1, z: -Math.cos(yaw) * grade }) };
+  }
+
   sampleTrack(distance = 0, lateral = 0, options = {}) {
     const deck = options.deckSample || this.sampleDeckAtDistance(distance, options);
     const metrics = this.getCorridorMetrics(deck, deck.segment);
@@ -523,7 +543,7 @@ export class RaceSurfaceModel {
   sampleWorld(x = 0, z = 0, options = {}) {
     this.performanceDiagnostics.fullSurfaceQueries += 1;
     const worldPoint = typeof x === 'object'
-      ? { x: Number(x.x || 0), z: Number(x.z ?? x.y ?? 0) }
+      ? { x: Number(x.x || 0), z: Number(x.z ?? x.y ?? 0), ...queryHeight(x) }
       : { x: Number(x || 0), z: Number(z || 0) };
     const fallbackElevation = typeof x === 'object'
       ? Number(z ?? options.fallbackElevation ?? 0)
@@ -545,6 +565,7 @@ export class RaceSurfaceModel {
     }
     const track = this.sampleTrack(Number(projection.distance || 0), Number(projection.lateral || 0), {
       ...options,
+      deckSample: this.getNetworkDeckForProjection(projection) || options.deckSample,
       fallbackSurfaceId: projection.segment?.surface || options.fallbackSurfaceId || 'asphalt'
     });
     if (Math.abs(Number(projection.lateral || 0)) > Number(track.metrics?.transitionEnd || 0)) {
@@ -627,7 +648,8 @@ export class RaceSurfaceModel {
     }
     const point = {
       x: Number(queryX),
-      z: Number(queryZ)
+      z: Number(queryZ),
+      ...queryHeight(worldPoint)
     };
     const finalize = (sample) => {
       const contract = createSurfaceSample(sample, {
@@ -662,7 +684,7 @@ export class RaceSurfaceModel {
         bakedSurfaceSource: full.bakedSurfaceSource ?? null
       });
     }
-    const deck = this.sampleDeckAtDistance(Number(projection.distance || 0), {
+    const deck = this.getNetworkDeckForProjection(projection) || this.sampleDeckAtDistance(Number(projection.distance || 0), {
       ...context,
       roadbedProfile: context.roadbedProfile
     });

@@ -135,3 +135,17 @@ test('plane and prepared mesh sweeps are deterministic and do not require queued
   assert.deepEqual(first.workingState, second.workingState);
   assert.equal(first.result.contacts.every((contact) => contact.contactType === 'static-body'), true);
 });
+
+test('open two-sided structure sheets block crossings without filling the tunnel interior', () => {
+  const world = prepareStaticRaceColliders([{ id: 'roof', type: 'triangle-mesh', surfaceOnly: true,
+    triangles: [{ twoSided: true, vertices: [{ x: -10, y: 0, z: -10 }, { x: 10, y: 0, z: -10 }, { x: 0, y: 0, z: 10 }] }] }]);
+  for (const side of [-1, 1]) {
+    const free = sweepPoint(world, { previous: { x: 0, y: side * 2, z: -1 },
+      proposed: { x: 0, y: side * 2, z: 1 }, velocity: { x: 0, y: 0, z: 10 } });
+    assert.equal(free.workingState.position.y, side * 2, 'parallel motion must not be treated as penetration');
+    const hit = sweepPoint(world, { previous: { x: 0, y: side, z: 0 },
+      proposed: { x: 0, y: -side, z: 0 }, velocity: { x: 0, y: -side * 120, z: 0 } });
+    assert.ok(hit.workingState.position.y * side >= -0.02, 'continuous collision must block either side');
+    assert.ok(hit.workingState.velocity.y * side >= -1, 'impact arrests velocity through the sheet');
+  }
+});

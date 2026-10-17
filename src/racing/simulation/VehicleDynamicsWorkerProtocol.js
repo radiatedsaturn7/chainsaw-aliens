@@ -7,9 +7,9 @@ import {
 
 export { VEHICLE_RENDER_WHEEL_FLAGS } from './VehicleRenderState.js';
 
-export const VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION = 8;
+export const VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION = 9;
 export const VEHICLE_RENDER_SNAPSHOT_HEADER_WORDS = 6;
-export const VEHICLE_RENDER_SNAPSHOT_FLOATS = 201;
+export const VEHICLE_RENDER_SNAPSHOT_FLOATS = 203;
 export const VEHICLE_RENDER_IMPACT_EVENT_CAPACITY = 4;
 export const VEHICLE_RENDER_IMPACT_EVENT_STRIDE = 15;
 export const VEHICLE_RENDER_SNAPSHOT_BYTES = (
@@ -73,7 +73,9 @@ export const VEHICLE_RENDER_SNAPSHOT_FLOAT = Object.freeze({
   engineRpm: 135,
   gear: 136,
   wheelAngularVelocity: 137,
-  impactEvents: 141
+  impactEvents: 141,
+  waterDepthM: 201,
+  waterEngineDamage: 202
 });
 
 export const VEHICLE_RENDER_IMPACT_EVENT_FLOAT = Object.freeze({
@@ -404,6 +406,8 @@ export function writeVehicleRenderSnapshot(buffer, snapshot = {}) {
   values[VEHICLE_RENDER_SNAPSHOT_FLOAT.bodyLongitudinalSpeedMps] = finite(snapshot.bodyLongitudinalSpeedMps, snapshot.speedMps);
   values[VEHICLE_RENDER_SNAPSHOT_FLOAT.bodyLateralSpeedMps] = finite(snapshot.bodyLateralSpeedMps);
   values[VEHICLE_RENDER_SNAPSHOT_FLOAT.signedTravelSpeedMps] = finite(snapshot.signedTravelSpeedMps, snapshot.speedMps);
+  values[VEHICLE_RENDER_SNAPSHOT_FLOAT.waterDepthM] = finite(snapshot.waterDepthM);
+  values[VEHICLE_RENDER_SNAPSHOT_FLOAT.waterEngineDamage] = finite(snapshot.waterEngineDamage);
   values[VEHICLE_RENDER_SNAPSHOT_FLOAT.engineRpm] = finite(snapshot.engineRpm);
   values[VEHICLE_RENDER_SNAPSHOT_FLOAT.gear] = finite(snapshot.gear);
   for (let index = 0; index < VEHICLE_RENDER_IMPACT_EVENT_CAPACITY; index += 1) {
@@ -554,6 +558,8 @@ export function readVehicleRenderSnapshot(buffer) {
     bodyLongitudinalSpeedMps: values[VEHICLE_RENDER_SNAPSHOT_FLOAT.bodyLongitudinalSpeedMps],
     bodyLateralSpeedMps: values[VEHICLE_RENDER_SNAPSHOT_FLOAT.bodyLateralSpeedMps],
     signedTravelSpeedMps: values[VEHICLE_RENDER_SNAPSHOT_FLOAT.signedTravelSpeedMps],
+    waterDepthM: values[VEHICLE_RENDER_SNAPSHOT_FLOAT.waterDepthM],
+    waterEngineDamage: values[VEHICLE_RENDER_SNAPSHOT_FLOAT.waterEngineDamage],
     engineRpm: values[VEHICLE_RENDER_SNAPSHOT_FLOAT.engineRpm],
     gear: Math.trunc(values[VEHICLE_RENDER_SNAPSHOT_FLOAT.gear])
   });

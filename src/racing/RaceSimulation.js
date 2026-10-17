@@ -1,3 +1,4 @@
+import { advanceNetworkRaceProgress, sampleNetworkEdge } from './RaceRouteNetwork.js';
 import { getRaceStickLook, stepRaceLookAngle } from './RaceCameraInput.js';
 import { getWheelSlipPresentation } from './simulation/WheelSlipPresentation.js';
 import { roadEdgeOverlapsRoad } from './RaceRoadEdgeClearance.js';
@@ -439,6 +440,7 @@ function createWorkerEnvironmentStateSnapshot(environment = {}) {
     x: Number(value.x || 0), y: Number(value.y || 0), z: Number(value.z || 0)
   });
   return {
+    waterRegions: environment.waterRegions || [],
     ambientTemperatureC: Number(environment.ambientTemperatureC || 0),
     windWorldMps: copyVector(environment.windWorldMps),
     gustWorldMps: copyVector(environment.gustWorldMps),
@@ -454,7 +456,7 @@ function createWorkerEnvironmentStateSnapshot(environment = {}) {
   };
 }
 
-function createRaceStaticColliderWorld(editor, {
+export function createRaceStaticColliderWorld(editor, {
   authority,
   worldBake,
   runtimeType,
@@ -502,18 +504,19 @@ function createRaceStaticColliderWorld(editor, {
     return authority.staticColliderWorldCache.world;
   }
   const definitions = authored.slice();
-  const samples = editor.getRacePathSamplesCached?.({ step: 3 }) || [];
-  const roadCorridors = samples.slice(1).map((next, index) => {
-    const previous = samples[index];
-    return {
-      from: { x: previous.x, z: previous.z, y: Number(previous.elevation || 0) * RACE_THREE_ELEVATION_M },
-      to: { x: next.x, z: next.z, y: Number(next.elevation || 0) * RACE_THREE_ELEVATION_M },
-      halfWidth: editor.getRaceRoadHalfWidthWorld(next.segment || previous.segment || editor.selectedSegment)
-    };
-  });
-  for (let index = 1; index < samples.length; index += 1) {
-    const previous = samples[index - 1];
-    const next = samples[index];
+  const network = race?.road?.network;
+  const paths = network ? network.edges.map(edge => sampleNetworkEdge(network, edge, { stepM: 3 }).map(p => ({
+    ...p, elevation: p.heightM / RACE_THREE_ELEVATION_M,
+    segment: { ...edge, roadWidthM: edge.widthM }
+  }))) : [editor.getRacePathSamplesCached?.({ step: 3 }) || []];
+  const pairs = paths.flatMap(samples => samples.slice(1).map((next, i) => [samples[i], next]));
+  const roadCorridors = pairs.map(([previous, next]) => ({
+    from: { x: previous.x, z: previous.z, y: Number(previous.elevation || 0) * RACE_THREE_ELEVATION_M },
+    to: { x: next.x, z: next.z, y: Number(next.elevation || 0) * RACE_THREE_ELEVATION_M },
+    halfWidth: editor.getRaceRoadHalfWidthWorld(next.segment || previous.segment || editor.selectedSegment)
+  }));
+  for (let index = 0; index < pairs.length; index += 1) {
+    const [previous, next] = pairs[index];
     const segment = next.segment || previous.segment || editor.selectedSegment;
     const edgeMode = editor.getRaceEdgeCollisionMode(segment);
     if (edgeMode === 'none') continue;
@@ -1960,6 +1963,7 @@ function advanceVehicleDynamicsAuthority(editor, {
     environmentResult.frontAeroDamage = clamp(Number(panelDamage.front || 0) / 100, 0, 1);
     environmentResult.rearAeroDamage = clamp(Number(panelDamage.rear || 0) / 100, 0, 1);
     environmentResult.activeAeroState = Number(session.activeAeroState || 0);
+    environmentResult.waterRegions = editor.selectedRace?.waterRegions || [];
     environmentResult.damage.engine = Number(damage.engine || 0);
     environmentResult.damage.transmission = Number(damage.transmission || 0);
     environmentResult.damage.brakes = brakeDamage;
@@ -3952,6 +3956,7 @@ export function updateRaceSimulation({
   });
   handbrake = editor.playtestSession.authoritativeHandbrakeActive ? 1 : handbrake;
   const presentationState = getAuthoritativeChassisState(editor.playtestSession) || {};
+  if (presentationState.waterEngineDamage >= 100) editor.getRaceSessionDamage().engine = 100;
   const authoritativeWheelLoads = { ...(presentationState.wheelLoadsN || {}) };
   if (RACE_WHEEL_IDS.every((wheelId) => Number.isFinite(Number(authoritativeWheelLoads[wheelId])))) {
     editor.playtestSession.tireSlip.wheelNormalLoads = authoritativeWheelLoads;
@@ -3974,8 +3979,19 @@ export function updateRaceSimulation({
   const routeLength = Math.max(1, Number(editor.playtestSession.routeLength || editor.getRaceRouteLength()));
   const projection = editor.getRaceRouteProjectionForWorldPoint({
     x: editor.playtestSession.worldX,
+    y: presentationState.position?.y,
     z: editor.playtestSession.worldZ
   });
+  const routeNetwork = editor.selectedRace?.road?.network;
+  if (routeNetwork) {
+    const session = editor.playtestSession;
+    const current = { x: session.worldX, z: session.worldZ, heightM: Number(presentationState.position?.y || 0) };
+    if (!countdownActive) {
+      session.networkProgress = advanceNetworkRaceProgress(routeNetwork, session.networkPreviousPosition, current, session.networkProgress);
+      if (session.networkProgress.finished) { (editor.showRaceResults || editor.finishPlaytest).call(editor); return; }
+    }
+    session.networkPreviousPosition = current;
+  }
   const boundarySegment = projection.segment || segmentInfo.segment || editor.selectedSegment;
   const projectedRoadHalfWidth = Math.max(1, editor.getRaceRoadHalfWidthWorld(boundarySegment));
   const projectedLateralMeters = Number(projection.lateral || 0);
@@ -4044,7 +4060,7 @@ export function updateRaceSimulation({
     const finishRange = Math.max(editor.getRaceRoadHalfWidthWorld() * 1.55, runtimeCarWidth * 5);
     const integratedFinish = integratedDistance >= routeLength;
     const checkpointsComplete = Number(editor.playtestSession.checkpointIndex || 0) >= Number(editor.playtestSession.checkpointCount || 0);
-    if (!countdownActive && ((editor.playtestSession.distance >= routeLength - Math.max(4, runtimeCarWidth * 2)
+    if (!routeNetwork && !countdownActive && ((editor.playtestSession.distance >= routeLength - Math.max(4, runtimeCarWidth * 2)
       && Math.hypot(finishDx, finishDz) <= finishRange
       && checkpointsComplete)
       || (integratedFinish && checkpointsComplete))) {
