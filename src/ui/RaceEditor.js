@@ -1,3 +1,5 @@
+import { createNewRaceProject } from '../racing/RaceExample.js';
+import { buildRaceMinimap } from '../racing/RaceMinimap.js';
 import { NETWORK_ACTIONS, networkEditorActions, handleNetworkAction, drawNetworkEditor, networkPointer } from './RaceNetworkEditor.js';
 import { normalizeRaceWaterRegions, raceWaterMeshes } from '../racing/simulation/RaceWater.js';
 import { normalizeRaceRouteNetwork, validateRaceRouteNetwork, findNetworkRoute, sampleNetworkRoute, projectNetworkPoint, networkEdgeLength } from '../racing/RaceRouteNetwork.js';
@@ -2341,11 +2343,25 @@ export default class RaceEditor {
     return RACE_EDGE_COLLISION_EFFECT_IDS.has(String(margin.collisionEffect || '')) ? String(margin.collisionEffect) : 'collide';
   }
 
+  getRaceRecoveryProjection(projection = null) {
+    if (!this.selectedRace?.road?.network || !this.playtestSession) return projection;
+    if (projection?.edgeId) return projection;
+    const session = this.playtestSession;
+    return this.getRaceRouteProjectionForWorldPoint({
+      x: session.worldX, z: session.worldZ,
+      y: session.vehicleRenderState?.position?.y ?? session.bodyY ?? session.heightM ?? 0
+    });
+  }
+
   applyRaceCarRouteCenterReset({ projection = null, roadYaw = 0, preserveMotion = false,
     reason = 'track-center-reset' } = {}) {
     if (!this.playtestSession) return false;
+    projection = this.getRaceRecoveryProjection(projection);
     this.playtestSession.lastVehicleResetReason = String(reason || 'track-center-reset');
     const previousPlacement = {
+      heightM: this.playtestSession.heightM,
+      bodyY: this.playtestSession.bodyY,
+      networkPreviousPosition: this.playtestSession.networkPreviousPosition,
       distance: this.playtestSession.distance,
       projectedDistance: this.playtestSession.projectedDistance,
       previousDistance: this.playtestSession.previousDistance,
@@ -2361,7 +2377,8 @@ export default class RaceEditor {
     const distance = routeRuntimeType === 'circuit'
       ? ((Number(projection?.distance ?? this.playtestSession.distance ?? 0) % routeLength) + routeLength) % routeLength
       : clamp(Number(projection?.distance ?? this.playtestSession.distance ?? 0), 0, routeLength);
-    const pose = this.getRaceWorldPoseAtDistance(distance, { runtimeType: routeRuntimeType });
+    const pose = projection?.edgeId ? projection
+      : this.getRaceWorldPoseAtDistance(distance, { runtimeType: routeRuntimeType });
     const yaw = Number.isFinite(Number(pose.yaw)) ? Number(pose.yaw) : Number(roadYaw || 0);
     this.playtestSession.distance = distance;
     this.playtestSession.projectedDistance = distance;
@@ -2382,6 +2399,12 @@ export default class RaceEditor {
     this.playtestSession.heading = 0;
     delete this.playtestSession.bodyY;
     delete this.playtestSession.heightM;
+    if (projection?.edgeId) {
+      this.playtestSession.heightM = projection.heightM;
+      this.playtestSession.networkPreviousPosition = {
+        x: pose.x, z: pose.z, heightM: projection.heightM
+      };
+    }
     this.playtestSession.verticalVelocityMps = 0;
     this.playtestSession.grounded = true;
     this.playtestSession.airborne = false;
@@ -2490,6 +2513,7 @@ export default class RaceEditor {
     preserveMotion = null, reason = 'track-center-reset' } = {}) {
     if (!this.playtestSession) return;
     this.invalidateRaceTrackStateVisualPresentation();
+    projection = this.getRaceRecoveryProjection(projection);
     const shouldPreserveMotion = false;
     if (immediate) {
       this.applyRaceCarRouteCenterReset({
@@ -2506,6 +2530,7 @@ export default class RaceEditor {
       ? ((Number(projection?.distance ?? this.playtestSession.distance ?? 0) % routeLength) + routeLength) % routeLength
       : clamp(Number(projection?.distance ?? this.playtestSession.distance ?? 0), 0, routeLength);
     this.playtestSession.pendingEdgeCenterReset = {
+      ...(projection?.edgeId ? { networkProjection: projection } : {}),
       distance,
       roadYaw: Number(roadYaw || 0),
       preserveMotion: shouldPreserveMotion,
@@ -2523,7 +2548,7 @@ export default class RaceEditor {
     if (!session.pendingEdgeCenterReset.moved && Number(session.edgeResetFadeMs || 0) <= blackStartRemainingMs) {
       const pending = session.pendingEdgeCenterReset;
       const resetApplied = this.applyRaceCarRouteCenterReset({
-        projection: { distance: pending.distance },
+        projection: pending.networkProjection || { distance: pending.distance },
         roadYaw: pending.roadYaw,
         preserveMotion: pending.preserveMotion !== false,
         reason: pending.reason || 'track-center-reset'
@@ -3514,6 +3539,7 @@ export default class RaceEditor {
   }
 
   clearRaceRuntimeSurfaceCaches() {
+    this.raceMinimapCache = null;
     if (this.raceGeometryReadCache) {
       this.raceGeometryReadCache.pathSignatures.clear();
       this.raceGeometryReadCache.surfaceSignatures.clear();
@@ -4480,6 +4506,12 @@ export default class RaceEditor {
       { x: cameraX + right.x * sampleRadius, z: cameraZ + right.z * sampleRadius },
       { x: cameraX - right.x * sampleRadius, z: cameraZ - right.z * sampleRadius }
     ];
+    if (this.selectedRace?.road?.network) {
+      const supportHeightM = Number(camera.elevation ?? fallbackElevation) * RACE_THREE_ELEVATION_M;
+      return samples.reduce((highest, point) => Math.max(highest,
+        this.getRaceBakedSurfaceAtWorldPoint({ ...point, supportHeightM })?.elevation ?? fallbackElevation
+      ), fallbackElevation);
+    }
     return samples.reduce((highest, point) => Math.max(
       highest,
       this.getRaceStitchedTerrainElevationAtWorldPoint(point, fallbackElevation),
@@ -8683,18 +8715,13 @@ export default class RaceEditor {
     }
     if (action === 'new') {
       if (this.mode === 'car') { this.loadCarPreset('awd'); return; }
-      this.project = createDefaultRaceProject();
-      this.playtestSession = null;
-      this.selectedSegmentIndex = 0;
+      this.createNewRaceProject();
       this.status = `New ${this.title} project`;
       return;
     }
     if (RACE_NEW_LANE_ACTION_BY_ID[action]) {
       const laneCount = RACE_NEW_LANE_ACTION_BY_ID[action].laneCount;
-      this.project = createDefaultRaceProject();
-      this.playtestSession = null;
-      this.selectedSegmentIndex = 0;
-      this.applyRaceLaneCount(laneCount);
+      this.createNewRaceProject(laneCount);
       this.status = `New ${laneCount}-lane race`;
       return;
     }
@@ -23076,22 +23103,42 @@ export default class RaceEditor {
     ctx.restore();
   }
 
+  createNewRaceProject(laneCount = DEFAULT_RACE_LANE_COUNT) {
+    this.project = createNewRaceProject({ laneCount });
+    this.currentRaceDocumentName = '';
+    this.playtestSession = null;
+    this.selectedSegmentIndex = 0;
+    this.networkTool = 'network-select';
+    this.networkNodeId = this.selectedRace.road.network.startNodeId;
+    this.networkEdgeId = '';
+    this.networkWaterId = '';
+    this.networkDrag = null;
+    this.networkLastPoint = null;
+    this.racePortraitMode = 'race';
+    this.clearRaceRuntimeSurfaceCaches();
+    this.resetRaceMapViewport();
+  }
+
   drawRaceTrackMinimap(ctx, bounds) {
     const session = this.playtestSession;
-    const segments = this.selectedRace?.road?.segments || [];
-    if (!session || !segments.length) return;
+    if (!session) return;
+    const network = this.selectedRace?.road?.network;
+    const routeRuntimeType = session.routeRuntimeType || this.getSelectedRaceRuntimeType();
+    const source = network || this.getRacePathSamplesCached({ step: 28 });
+    if (this.raceMinimapCache?.source !== source || this.raceMinimapCache?.runtimeType !== routeRuntimeType) {
+      this.raceMinimapCache = { source, runtimeType: routeRuntimeType, data: buildRaceMinimap({
+        network, samples: network ? [] : source, circuit: routeRuntimeType === 'circuit'
+      }) };
+    }
+    const map = this.raceMinimapCache.data;
+    if (!map) return;
     const mapBounds = {
       x: bounds.x + 6,
       y: bounds.y + 6,
       w: Math.max(1, bounds.w - 12),
       h: Math.max(1, bounds.h - 12)
     };
-    const samples = this.getRacePathSamples({ step: 28 });
-    if (samples.length < 2) return;
-    const minX = Math.min(...samples.map((point) => Number(point.x || 0)));
-    const maxX = Math.max(...samples.map((point) => Number(point.x || 0)));
-    const minZ = Math.min(...samples.map((point) => Number(point.z || 0)));
-    const maxZ = Math.max(...samples.map((point) => Number(point.z || 0)));
+    const { minX, maxX, minZ, maxZ } = map;
     const pad = Math.max(4, Math.min(mapBounds.w, mapBounds.h) * 0.08);
     const usableW = Math.max(1, mapBounds.w - pad * 2);
     const usableH = Math.max(1, mapBounds.h - pad * 2);
@@ -23106,37 +23153,56 @@ export default class RaceEditor {
     ctx.save();
     ctx.fillStyle = 'rgba(5,8,7,0.52)';
     ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = 'rgba(217,230,210,0.64)';
-    ctx.beginPath();
-    samples.forEach((point, index) => {
-      const screen = toScreen(point);
-      if (index === 0) ctx.moveTo(screen.x, screen.y);
-      else ctx.lineTo(screen.x, screen.y);
-    });
-    const routeRuntimeType = session.routeRuntimeType || this.getSelectedRaceRuntimeType();
-    if (routeRuntimeType === 'circuit') ctx.closePath();
-    ctx.stroke();
+    ctx.beginPath(); ctx.rect(bounds.x, bounds.y, bounds.w, bounds.h); ctx.clip();
+    for (const water of this.selectedRace?.waterRegions || []) {
+      const corner = toScreen({ x: water.x - water.widthM / 2, z: water.z - water.lengthM / 2 });
+      ctx.fillStyle = '#287fa388';
+      ctx.fillRect(corner.x, corner.y, water.widthM * scale, water.lengthM * scale);
+    }
+    for (const path of map.paths) {
+      if (path.points.length < 2) continue;
+      ctx.beginPath();
+      path.points.forEach((point, index) => {
+        const screen = toScreen(point);
+        if (!index) ctx.moveTo(screen.x, screen.y); else ctx.lineTo(screen.x, screen.y);
+      });
+      if (path.closed) ctx.closePath();
+      ctx.setLineDash(path.structure === 'tunnel' ? [3, 2] : []);
+      if (path.structure === 'bridge') {
+        ctx.lineWidth = 4; ctx.strokeStyle = '#101916'; ctx.stroke();
+      }
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = path.structure === 'bridge' ? '#e9cf80'
+        : path.structure === 'tunnel' ? '#87bdd8' : 'rgba(217,230,210,0.8)';
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
     const player = toScreen({
       x: Number.isFinite(session.worldX) ? session.worldX : this.getRaceWorldPoseAtDistance(session.distance).x,
       z: Number.isFinite(session.worldZ) ? session.worldZ : this.getRaceWorldPoseAtDistance(session.distance).z
     });
-    const start = toScreen(samples[0]);
-    const finish = toScreen(samples[samples.length - 1]);
-    ctx.fillStyle = '#f1f4ef';
-    ctx.fillRect(start.x - 2, start.y - 2, 4, 4);
-    if (routeRuntimeType !== 'circuit') {
+    if (map.start) {
+      const start = toScreen(map.start);
+      ctx.fillStyle = '#61e79a';
+      ctx.fillRect(start.x - 2, start.y - 2, 4, 4);
+    }
+    if (map.finish) {
+      const finish = toScreen(map.finish);
       ctx.fillStyle = '#ff4f4f';
       ctx.fillRect(finish.x - 2, finish.y - 2, 4, 4);
     }
     (session.aiRuntime || []).forEach((ai) => {
-      const pose = this.getRaceWorldPoseAtDistance(Number(ai.projectedDistance || ai.distance || 0));
+      const pose = Number.isFinite(ai.worldX) && Number.isFinite(ai.worldZ)
+        ? { x: ai.worldX, z: ai.worldZ }
+        : this.getRaceWorldPoseAtDistance(Number(ai.projectedDistance ?? ai.distance ?? 0));
       const screen = toScreen(pose);
       ctx.fillStyle = ai.difficulty === 'expert' ? '#ff5f57' : ai.difficulty === 'hard' ? '#f2d45c' : ai.difficulty === 'medium' ? '#7ed957' : '#58d6ff';
       ctx.beginPath();
       ctx.arc?.(screen.x, screen.y, 2.2, 0, Math.PI * 2);
       ctx.fill?.();
     });
+    player.x = clamp(player.x, bounds.x + 3, bounds.x + bounds.w - 3);
+    player.y = clamp(player.y, bounds.y + 3, bounds.y + bounds.h - 3);
     this.drawRaceMinimapPlayerDot(ctx, player, scale);
     ctx.fillStyle = UI_SUITE.colors.text;
     ctx.font = `700 6px ${UI_SUITE.font.family}`;
@@ -35747,6 +35813,8 @@ export default class RaceEditor {
     const cleanSource = String(source || '');
     if (cleanSource === 'terrain' || cleanSource.includes('terrain-roadside') || cleanSource.includes('seam-underlap')) return point;
     if (point?.roadDeckElevation === true) return point;
+    if (/^(bridge|tunnel|water):/.test(cleanSource)
+      || (this.selectedRace?.road?.network && cleanSource === 'road-canonical')) return point;
     const x = Number(point?.x || 0);
     const z = Number(point?.z ?? point?.y ?? 0);
     const fallbackElevation = Number(point?.elevation || 0);
@@ -37458,7 +37526,9 @@ export default class RaceEditor {
       session
     });
     const localCarGroundElevation = this.getRaceStitchedTerrainElevationAtWorldPoint(
-      { x: carWorldX, z: carWorldZ },
+      { x: carWorldX, z: carWorldZ,
+        ...(this.selectedRace?.road?.network ? { supportHeightM:
+          session?.vehicleRenderState?.position?.y ?? session?.bodyY ?? Number(session?.heightM || 0) + 0.4 } : {}) },
       Number(routeCamera.elevation || 0)
     );
     const pitchProfile = this.getRaceSmoothedCameraProfile({
