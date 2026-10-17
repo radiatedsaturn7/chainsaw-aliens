@@ -2341,11 +2341,25 @@ export default class RaceEditor {
     return RACE_EDGE_COLLISION_EFFECT_IDS.has(String(margin.collisionEffect || '')) ? String(margin.collisionEffect) : 'collide';
   }
 
+  getRaceRecoveryProjection(projection = null) {
+    if (!this.selectedRace?.road?.network || !this.playtestSession) return projection;
+    if (projection?.edgeId) return projection;
+    const session = this.playtestSession;
+    return this.getRaceRouteProjectionForWorldPoint({
+      x: session.worldX, z: session.worldZ,
+      y: session.vehicleRenderState?.position?.y ?? session.bodyY ?? session.heightM ?? 0
+    });
+  }
+
   applyRaceCarRouteCenterReset({ projection = null, roadYaw = 0, preserveMotion = false,
     reason = 'track-center-reset' } = {}) {
     if (!this.playtestSession) return false;
+    projection = this.getRaceRecoveryProjection(projection);
     this.playtestSession.lastVehicleResetReason = String(reason || 'track-center-reset');
     const previousPlacement = {
+      heightM: this.playtestSession.heightM,
+      bodyY: this.playtestSession.bodyY,
+      networkPreviousPosition: this.playtestSession.networkPreviousPosition,
       distance: this.playtestSession.distance,
       projectedDistance: this.playtestSession.projectedDistance,
       previousDistance: this.playtestSession.previousDistance,
@@ -2361,7 +2375,8 @@ export default class RaceEditor {
     const distance = routeRuntimeType === 'circuit'
       ? ((Number(projection?.distance ?? this.playtestSession.distance ?? 0) % routeLength) + routeLength) % routeLength
       : clamp(Number(projection?.distance ?? this.playtestSession.distance ?? 0), 0, routeLength);
-    const pose = this.getRaceWorldPoseAtDistance(distance, { runtimeType: routeRuntimeType });
+    const pose = projection?.edgeId ? projection
+      : this.getRaceWorldPoseAtDistance(distance, { runtimeType: routeRuntimeType });
     const yaw = Number.isFinite(Number(pose.yaw)) ? Number(pose.yaw) : Number(roadYaw || 0);
     this.playtestSession.distance = distance;
     this.playtestSession.projectedDistance = distance;
@@ -2382,6 +2397,12 @@ export default class RaceEditor {
     this.playtestSession.heading = 0;
     delete this.playtestSession.bodyY;
     delete this.playtestSession.heightM;
+    if (projection?.edgeId) {
+      this.playtestSession.heightM = projection.heightM;
+      this.playtestSession.networkPreviousPosition = {
+        x: pose.x, z: pose.z, heightM: projection.heightM
+      };
+    }
     this.playtestSession.verticalVelocityMps = 0;
     this.playtestSession.grounded = true;
     this.playtestSession.airborne = false;
@@ -2490,6 +2511,7 @@ export default class RaceEditor {
     preserveMotion = null, reason = 'track-center-reset' } = {}) {
     if (!this.playtestSession) return;
     this.invalidateRaceTrackStateVisualPresentation();
+    projection = this.getRaceRecoveryProjection(projection);
     const shouldPreserveMotion = false;
     if (immediate) {
       this.applyRaceCarRouteCenterReset({
@@ -2506,6 +2528,7 @@ export default class RaceEditor {
       ? ((Number(projection?.distance ?? this.playtestSession.distance ?? 0) % routeLength) + routeLength) % routeLength
       : clamp(Number(projection?.distance ?? this.playtestSession.distance ?? 0), 0, routeLength);
     this.playtestSession.pendingEdgeCenterReset = {
+      ...(projection?.edgeId ? { networkProjection: projection } : {}),
       distance,
       roadYaw: Number(roadYaw || 0),
       preserveMotion: shouldPreserveMotion,
@@ -2523,7 +2546,7 @@ export default class RaceEditor {
     if (!session.pendingEdgeCenterReset.moved && Number(session.edgeResetFadeMs || 0) <= blackStartRemainingMs) {
       const pending = session.pendingEdgeCenterReset;
       const resetApplied = this.applyRaceCarRouteCenterReset({
-        projection: { distance: pending.distance },
+        projection: pending.networkProjection || { distance: pending.distance },
         roadYaw: pending.roadYaw,
         preserveMotion: pending.preserveMotion !== false,
         reason: pending.reason || 'track-center-reset'
@@ -4480,6 +4503,12 @@ export default class RaceEditor {
       { x: cameraX + right.x * sampleRadius, z: cameraZ + right.z * sampleRadius },
       { x: cameraX - right.x * sampleRadius, z: cameraZ - right.z * sampleRadius }
     ];
+    if (this.selectedRace?.road?.network) {
+      const supportHeightM = Number(camera.elevation ?? fallbackElevation) * RACE_THREE_ELEVATION_M;
+      return samples.reduce((highest, point) => Math.max(highest,
+        this.getRaceBakedSurfaceAtWorldPoint({ ...point, supportHeightM })?.elevation ?? fallbackElevation
+      ), fallbackElevation);
+    }
     return samples.reduce((highest, point) => Math.max(
       highest,
       this.getRaceStitchedTerrainElevationAtWorldPoint(point, fallbackElevation),
@@ -35747,6 +35776,8 @@ export default class RaceEditor {
     const cleanSource = String(source || '');
     if (cleanSource === 'terrain' || cleanSource.includes('terrain-roadside') || cleanSource.includes('seam-underlap')) return point;
     if (point?.roadDeckElevation === true) return point;
+    if (/^(bridge|tunnel|water):/.test(cleanSource)
+      || (this.selectedRace?.road?.network && cleanSource === 'road-canonical')) return point;
     const x = Number(point?.x || 0);
     const z = Number(point?.z ?? point?.y ?? 0);
     const fallbackElevation = Number(point?.elevation || 0);
@@ -37458,7 +37489,9 @@ export default class RaceEditor {
       session
     });
     const localCarGroundElevation = this.getRaceStitchedTerrainElevationAtWorldPoint(
-      { x: carWorldX, z: carWorldZ },
+      { x: carWorldX, z: carWorldZ,
+        ...(this.selectedRace?.road?.network ? { supportHeightM:
+          session?.vehicleRenderState?.position?.y ?? session?.bodyY ?? Number(session?.heightM || 0) + 0.4 } : {}) },
       Number(routeCamera.elevation || 0)
     );
     const pitchProfile = this.getRaceSmoothedCameraProfile({

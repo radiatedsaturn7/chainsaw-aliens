@@ -147,6 +147,21 @@ function createRaceEnvironmentScratch() {
       z: session.worldZ
     };
     const projection = editor.getRaceRouteProjectionForWorldPoint(failedPosition);
+    if (projection?.edgeId && editor.selectedRace?.road?.network) {
+      const samples = sampleNetworkEdge(editor.selectedRace.road.network, projection.edge, { stepM: 1 });
+      const maximumSearchM = stage === 'hard-stop' ? 80 : 50;
+      const candidates = [projection, ...samples
+        .filter(p => Math.abs(p.distance - projection.edgeDistance) <= maximumSearchM)
+        .sort((a, b) => Math.abs(a.distance - projection.edgeDistance) - Math.abs(b.distance - projection.edgeDistance))];
+      for (const pose of candidates) {
+        const measured = editor.getRaceRouteProjectionForWorldPoint(pose);
+        const candidate = context.createTerrainAlignedRecoveryState(measured.distance, rejectedSourceKeys, {
+          ...pose, edgeId: projection.edgeId, segment: projection.segment
+        });
+        if (candidate) return candidate;
+      }
+      return null;
+    }
     const rawProjectedDistance = projection?.distance;
     const projectedDistance = rawProjectedDistance !== null
       && rawProjectedDistance !== undefined
@@ -1542,11 +1557,11 @@ function advanceVehicleDynamicsAuthority(editor, {
     const sampleRecoveryTerrain = environmentScratch.sampleRecoveryTerrain;
     let createTerrainAlignedRecoveryState = environmentScratch.createTerrainAlignedRecoveryState;
     if (!createTerrainAlignedRecoveryState) {
-      createTerrainAlignedRecoveryState = (distance, rejectedSourceKeys = []) => {
+      createTerrainAlignedRecoveryState = (distance, rejectedSourceKeys = [], networkPose = null) => {
       const {
         editor, runtimeType, authority, state, session
       } = environmentScratch.callbackContext;
-      const pose = editor.getRaceWorldPoseAtDistance(distance, { runtimeType });
+      const pose = networkPose || editor.getRaceWorldPoseAtDistance(distance, { runtimeType });
       const poseX = Number(pose?.x);
       const poseZ = Number(pose?.z);
       const yaw = Number(pose?.yaw);
@@ -1554,6 +1569,8 @@ function advanceVehicleDynamicsAuthority(editor, {
       const fallbackSurfaceId = pose.segment?.surface
         || editor.selectedSegment?.surface || 'asphalt';
       const config = authority.runner.config;
+      const supportQueryHeightM = networkPose
+        ? Number(networkPose.heightM) + config.cgHeightM : Number(state.position?.y || 0);
       const forward = { x: Math.sin(yaw), z: Math.cos(yaw) };
       const right = { x: Math.cos(yaw), z: -Math.sin(yaw) };
       const wheelLayout = RACE_WHEEL_IDS.map((wheelId) => {
@@ -1571,7 +1588,7 @@ function advanceVehicleDynamicsAuthority(editor, {
       });
       const wheelTerrain = wheelLayout.map((wheel) => ({
         ...wheel,
-        sample: sampleRecoveryTerrain({ x: wheel.x, y: Number(state.position?.y || 0), z: wheel.z },
+        sample: sampleRecoveryTerrain({ x: wheel.x, y: supportQueryHeightM, z: wheel.z },
           fallbackSurfaceId)
       }));
       if (wheelTerrain.some(({ sample }) => !sample.valid)) return null;
@@ -1611,7 +1628,7 @@ function advanceVehicleDynamicsAuthority(editor, {
       const features = bodyFeatures.concat(wheelFeatures).map((feature) => {
         const queryPosition = {
           x: poseX + feature.arm.x,
-          y: Number(state.position?.y || 0),
+          y: supportQueryHeightM,
           z: poseZ + feature.arm.z
         };
         return {
@@ -1658,7 +1675,7 @@ function advanceVehicleDynamicsAuthority(editor, {
       const terrainSources = [...new Set(features.map(({ sample }) => sample.source)
         .filter(Boolean).map(String))].sort();
       const sourceKey = [
-        'route',
+        networkPose?.edgeId || 'route',
         Math.round(distance * 10) / 10,
         triangleIds.join(','),
         config.bodyProfile?.preset || config.bodyShapePreset || 'car'
@@ -3986,9 +4003,12 @@ export function updateRaceSimulation({
   if (routeNetwork) {
     const session = editor.playtestSession;
     const current = { x: session.worldX, z: session.worldZ, heightM: Number(presentationState.position?.y || 0) };
-    if (!countdownActive) {
-      session.networkProgress = advanceNetworkRaceProgress(routeNetwork, session.networkPreviousPosition, current, session.networkProgress);
-      if (session.networkProgress.finished) { (editor.showRaceResults || editor.finishPlaytest).call(editor); return; }
+    // Rolling formations can cross the start before GO. Retain that crossing,
+    // but never permit a countdown crossing of the finish to end the race.
+    const progress = advanceNetworkRaceProgress(routeNetwork, session.networkPreviousPosition, current, session.networkProgress);
+    session.networkProgress = countdownActive ? { started: progress.started, finished: false } : progress;
+    if (!countdownActive && session.networkProgress.finished) {
+      (editor.showRaceResults || editor.finishPlaytest).call(editor); return;
     }
     session.networkPreviousPosition = current;
   }
