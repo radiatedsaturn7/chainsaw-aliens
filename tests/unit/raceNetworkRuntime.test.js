@@ -254,3 +254,34 @@ test('packed worker surface preserves different grip on alternate routes', async
   assert.equal(main.materialByWheel.fl.surfaceId, 'asphalt');
   assert.equal(main.materialByWheel.fl.grip, 1);
 });
+
+for (const heightM of [-6, 6]) test(`delayed recovery stays on the alternate ${heightM}m deck`, () => {
+  const editor = new RaceEditor({});
+  editor.selectedRace.road.network = normalizeRaceRouteNetwork({
+    nodes: [{ id: 'a', x: 0, z: -60 }, { id: 'b', x: 0, z: 60 },
+      { id: 'c', x: 40, z: -60, heightM }, { id: 'd', x: 40, z: 60, heightM },
+      { id: 'e', x: 20, z: 10, heightM: -heightM }, { id: 'f', x: 60, z: 10, heightM: -heightM }],
+    edges: [{ id: 'main', from: 'a', to: 'b' },
+      { id: 'branch', from: 'c', to: 'd', structure: heightM < 0 ? 'tunnel' : 'bridge' },
+      { id: 'crossing', from: 'e', to: 'f', structure: heightM < 0 ? 'bridge' : 'tunnel' }],
+    startNodeId: 'a', finishNodeId: 'b'
+  });
+  editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false });
+  editor.updatePlaytestSafely(0);
+  const session = editor.playtestSession;
+  const runner = session.vehicleDynamicsRunner;
+  runner.state.position = { x: 42, y: heightM + 0.55, z: 10 };
+  session.worldX = 42; session.worldZ = 10; session.bodyY = heightM + 0.55; session.heightM = heightM;
+  session.vehicleRenderState = { ...session.vehicleRenderState, position: { ...runner.state.position } };
+  editor.resetRaceCarToRouteCenter({ projection: { distance: 70 }, reason: 'select-hold-reset' });
+  assert.equal(session.pendingEdgeCenterReset.networkProjection?.edgeId, 'branch');
+  session.edgeResetFadeMs = 1;
+  editor.updateRaceEdgeCenterResetFade();
+  assert.equal(session.pendingEdgeCenterReset?.moved, true);
+  assert.ok(Math.abs(runner.state.position.x - 40) < 0.01, `reset changed branches: x=${runner.state.position.x}`);
+  assert.ok(Math.abs(runner.state.position.z - 10) < 0.01);
+  assert.ok(runner.state.position.y > heightM && runner.state.position.y < heightM + 1,
+    `reset changed decks: y=${runner.state.position.y}`);
+  assert.equal(runner.state.supportedWheelCount, 4);
+  assert.deepEqual(session.networkPreviousPosition, { x: 40, z: 10, heightM });
+});
