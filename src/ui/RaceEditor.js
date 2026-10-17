@@ -4503,6 +4503,12 @@ export default class RaceEditor {
       { x: cameraX + right.x * sampleRadius, z: cameraZ + right.z * sampleRadius },
       { x: cameraX - right.x * sampleRadius, z: cameraZ - right.z * sampleRadius }
     ];
+    if (this.selectedRace?.road?.network) {
+      const supportHeightM = Number(camera.elevation ?? fallbackElevation) * RACE_THREE_ELEVATION_M;
+      return samples.reduce((highest, point) => Math.max(highest,
+        this.getRaceBakedSurfaceAtWorldPoint({ ...point, supportHeightM })?.elevation ?? fallbackElevation
+      ), fallbackElevation);
+    }
     return samples.reduce((highest, point) => Math.max(
       highest,
       this.getRaceStitchedTerrainElevationAtWorldPoint(point, fallbackElevation),
@@ -35770,6 +35776,8 @@ export default class RaceEditor {
     const cleanSource = String(source || '');
     if (cleanSource === 'terrain' || cleanSource.includes('terrain-roadside') || cleanSource.includes('seam-underlap')) return point;
     if (point?.roadDeckElevation === true) return point;
+    if (/^(bridge|tunnel|water):/.test(cleanSource)
+      || (this.selectedRace?.road?.network && cleanSource === 'road-canonical')) return point;
     const x = Number(point?.x || 0);
     const z = Number(point?.z ?? point?.y ?? 0);
     const fallbackElevation = Number(point?.elevation || 0);
@@ -37481,7 +37489,9 @@ export default class RaceEditor {
       session
     });
     const localCarGroundElevation = this.getRaceStitchedTerrainElevationAtWorldPoint(
-      { x: carWorldX, z: carWorldZ },
+      { x: carWorldX, z: carWorldZ,
+        ...(this.selectedRace?.road?.network ? { supportHeightM:
+          session?.vehicleRenderState?.position?.y ?? session?.bodyY ?? Number(session?.heightM || 0) + 0.4 } : {}) },
       Number(routeCamera.elevation || 0)
     );
     const pitchProfile = this.getRaceSmoothedCameraProfile({

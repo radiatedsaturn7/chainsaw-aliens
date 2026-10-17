@@ -172,11 +172,16 @@ test('prepared worker transfers every deck and renders the network through the T
     editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false, preparedWorldBake: bake });
     editor.playtestSession.countdownRemainingMs = 0;
     editor.playtestSession.startupFramePending = false;
+    const meshes = editor.getRaceStaticTrackSurfaceMeshes(bake, { texturesEnabled: false });
+    const authoredMeshes = [...meshes.roadMeshes, ...meshes.trackFurnitureMeshes.filter(m => /^(bridge|tunnel|water):/.test(m.source))];
+    const preservedHeights = authoredMeshes.every(mesh => mesh.points.every(point =>
+      Math.abs(editor.getRaceThreeSurfacePoint(point, mesh.source).elevation - point.elevation) < 1e-8));
     editor.drawRaceProjectedRoadPath(editor.game.canvas.getContext('2d'), { x: 0, y: 0, w: 1280, h: 800 });
-    return { upper, lower, topology: bake.terrainTopology, layered: bake.surfaceSampler.layered,
+    return { preservedHeights, upper, lower, topology: bake.terrainTopology, layered: bake.surfaceSampler.layered,
       structures: bake.structureMeshes.length, stats: editor.lastRaceRenderStats };
   });
   expect(result.upper).toBeCloseTo(6); expect(result.lower).toBeCloseTo(-6);
+  expect(result.preservedHeights).toBe(true);
   expect(result.topology).toBe('route-network'); expect(result.layered).toBe(true);
   expect(result.structures).toBeGreaterThan(0);
   expect(result.stats?.threeTerrainRenderer).toBe(1);

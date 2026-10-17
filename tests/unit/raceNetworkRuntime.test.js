@@ -381,3 +381,31 @@ test('Join junctions reconnects an authored branch through map input and undo/re
   assert.equal(editor.redoRaceHistory(), true);
   assert.equal(editor.selectedRace.road.network.edges.find(e => e.id === 'branch').to, 'keep');
 });
+
+test('Three mesh preparation preserves separate road decks, structure thickness, and water height', () => {
+  const editor = new RaceEditor({});
+  editor.selectedRace.road.network = normalizeRaceRouteNetwork({
+    nodes: [{ id: 'a', x: 0, z: -50 }, { id: 'b', x: 0, z: 50 },
+      { id: 'c', x: -50, z: 0, heightM: 6 }, { id: 'd', x: 50, z: 0, heightM: 6 },
+      { id: 'e', x: -50, z: 20, heightM: -6 }, { id: 'f', x: 50, z: 20, heightM: -6 }],
+    edges: [{ id: 'main', from: 'a', to: 'b' }, { id: 'bridge', from: 'c', to: 'd', structure: 'bridge' },
+      { id: 'tunnel', from: 'e', to: 'f', structure: 'tunnel', clearanceM: 4 }], startNodeId: 'a', finishNodeId: 'b'
+  });
+  editor.selectedRace.waterRegions = [{ id: 'ford', x: 0, z: -20, widthM: 20, lengthM: 20,
+    levelM: 0.2, bottomM: -2, color: '#287fa3' }];
+  const bake = editor.buildRaceWorldBake({ validate: false });
+  editor.raceWorldBakeCache = bake;
+  assert.ok(Math.abs(editor.getRaceCameraSafeTerrainElevation({ x: 0, z: 0, elevation: 2 / 12 }, 0)) < 1e-6);
+  assert.ok(Math.abs(editor.getRaceCameraSafeTerrainElevation({ x: 0, z: 20, elevation: -4 / 12 }, -6 / 12) + 0.5) < 1e-6);
+  const meshes = editor.getRaceStaticTrackSurfaceMeshes(bake, { texturesEnabled: false });
+  const sources = [...meshes.roadMeshes, ...meshes.trackFurnitureMeshes.filter(m => /^(bridge|tunnel|water):/.test(m.source))];
+  for (const mesh of sources) {
+    const geometry = editor.getRaceThreeMeshGeometry([mesh]);
+    assert.ok(geometry, mesh.source);
+    const ys = Array.from(geometry.getAttribute('position').array).filter((_, i) => i % 3 === 1);
+    const expected = mesh.points.map(p => p.elevation * 12 + editor.getRaceThreeMeshLiftM(mesh));
+    assert.ok(ys.every(y => expected.some(value => Math.abs(value - y) < 1e-5)),
+      `${mesh.source} changed authored height: expected ${expected}, got ${ys}`);
+    geometry.dispose();
+  }
+});
