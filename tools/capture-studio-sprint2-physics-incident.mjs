@@ -10,7 +10,7 @@ import { hashTrackStateValue } from '../src/racing/trackState/TrackStateMath.js'
 const racePath = process.argv[2]
   || 'data/server-storage/files/races/Studio Sprint2/document.json';
 const carPath = process.argv[3]
-  || 'data/server-storage/files/cars/2022 Subaru WRX2/document.json';
+  || 'tests/fixtures/wrx2CarDocument.json';
 const outputPath = process.argv[4]
   || join(tmpdir(), 'studio-sprint2-hill-incident.json');
 

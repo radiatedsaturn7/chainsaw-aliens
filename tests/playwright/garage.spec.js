@@ -41,7 +41,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors, p
  await page.evaluate(async({mobile,carRef,name})=>{
   const g=window.__game;g.deviceIsMobile=mobile;g.isMobile=mobile;g.setViewport({width:innerWidth,height:innerHeight,scale:1,dpr:1,isMobile:mobile});
   const {saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');
-  const car=structuredClone(g.carEditor.selectedCar);car.name=carRef;await saveProjectFileAndConfirm('cars',carRef,{car});window.__garageStock=JSON.stringify({car});
+  const car=structuredClone(g.carEditor.selectedCar);delete car.__systemPreset;delete car.__editorDraft;delete car.systemFile;car.name=carRef;await saveProjectFileAndConfirm('cars',carRef,{car});window.__garageStock=JSON.stringify({car});
   g.transitionTo('item-editor');g.itemEditor.newDoodad();g.itemEditor.doodad.name=name;
  },{mobile,carRef,name});
  await action(page,'item-part');await dialog(page,'Car Part Properties').getByLabel('Installation slot',{exact:true}).fill('ecu');await dialog(page,'Car Part Properties').getByLabel('Price (credits)',{exact:true}).fill('250');await apply(page,'Car Part Properties');

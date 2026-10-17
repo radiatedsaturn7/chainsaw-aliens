@@ -21,7 +21,7 @@ test('Studio Sprint2 WRX2 angled apron-edge hill landing cannot become a lawn da
     'tests/fixtures/studioSprint2PerformanceRaceDocument.json'
   ), { name: 'Studio Sprint2' }), true);
   assert.equal(editor.applyLoadedCarDocument(decodeDocument(
-    'data/server-storage/files/cars/2022 Subaru WRX2/document.json'
+    'tests/fixtures/wrx2CarDocument.json'
   ), { name: '2022 Subaru WRX2' }), true);
   editor.startPlaytest(editor.getRaceCarProjectIdentity(editor.selectedCar), {
     hydrateCars: false,
@@ -152,7 +152,7 @@ test('Studio Sprint2 WRX2 outside-bend hill slide remains mobile and escapable',
     'tests/fixtures/studioSprint2PerformanceRaceDocument.json'
   ), { name: 'Studio Sprint2' }), true);
   assert.equal(editor.applyLoadedCarDocument(decodeDocument(
-    'data/server-storage/files/cars/2022 Subaru WRX2/document.json'
+    'tests/fixtures/wrx2CarDocument.json'
   ), { name: '2022 Subaru WRX2' }), true);
   editor.startPlaytest(editor.getRaceCarProjectIdentity(editor.selectedCar), {
     hydrateCars: false,

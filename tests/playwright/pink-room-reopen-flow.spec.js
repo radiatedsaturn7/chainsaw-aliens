@@ -72,6 +72,12 @@ test('pink solid tile persists in tile editor preview and level editor room acro
   expect(firstState.pinkPixels).toBeGreaterThan(24);
   await page1.screenshot({ path: 'artifacts/pink-room-editor-initial.png', fullPage: false });
 
+  await expect.poll(() => page1.evaluate(async () => {
+    const response = await fetch('/__storage/file?folder=levels&name=Level%20Editor%20Autosave');
+    const payload = await response.json();
+    return payload?.file?.data?.pixelArt?.tiles?.['#']?.frames?.[0]?.[0];
+  })).toBe('#ff69ff');
+
   await context1.close();
 
   const context2 = await chromium.launchPersistentContext(userDataDir, { headless: true });

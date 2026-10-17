@@ -2304,6 +2304,12 @@ export default class Game {
     }
     this.playtestActive = false;
     const destination = toTitle ? 'title' : (this.pixelStudioReturnState || 'title');
+    // The level embeds tile art too. Save the updated world alongside the tile
+    // document so reopening the level cannot restore its pre-edit artwork.
+    if (destination === 'editor' && this.editor?.autosaveLoaded) {
+      this.editor.persistAutosave();
+      this.editor.flushPendingAutosave();
+    }
     this.transitionTo(destination, { forceCleanup: true });
     if (destination === 'actor-editor') {
       this.actorEditor.activate();
