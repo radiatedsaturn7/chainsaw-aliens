@@ -157,6 +157,8 @@ export function prepareRaceSurfaceBakeForTransfer(surfaceBake = null) {
   ];
   return {
     key: surfaceBake.key,
+    edgeId: surfaceBake.edgeId,
+    ...(surfaceBake.paths ? { paths: surfaceBake.paths.map(prepareRaceSurfaceBakeForTransfer) } : {}),
     routeLength: Number(surfaceBake.routeLength || 0),
     runtimeType: surfaceBake.runtimeType,
     allowVisualExtension: surfaceBake.allowVisualExtension === true,
@@ -246,7 +248,12 @@ export async function buildRaceTransferPackage(sourceRace = null, {
     terrainGenerationStats: bake.terrainGenerationStats,
     surfaceBake: compactSurfaceBake,
     builtMs: bake.builtMs,
-    mesh: null,
+    // Network road/junction triangles cannot be reconstructed as one strip.
+    mesh: bake.terrainTopology === 'route-network' ? {
+      layered: true, triangles: bake.mesh.triangles.filter(t => t.region === 'road')
+    } : null,
+    staticColliders: bake.staticColliders || [],
+    structureMeshes: bake.structureMeshes || [],
     surfaceSampler: null,
     packedTerrain: null,
     groundArtRef: String(tileMapStats?.dominantArtRef || ''),

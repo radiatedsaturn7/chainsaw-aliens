@@ -23,7 +23,7 @@ const SUPPORT_EDGE_CLASSIFICATION = Object.freeze({
   verticalObstacle: 5
 });
 
-function buildPreparedSupportTopology(triangles, normals, elevationScaleM) {
+function buildPreparedSupportTopology(triangles, normals, elevationScaleM, layered = false) {
   const triangleCount = triangles.length;
   const parents = new Uint32Array(triangleCount);
   const edgeFlags = new Uint8Array(triangleCount);
@@ -48,7 +48,8 @@ function buildPreparedSupportTopology(triangles, normals, elevationScaleM) {
     if (!vertex || typeof vertex !== 'object') return 'invalid';
     return [
       Math.round(Number(vertex.x || 0) * 10000),
-      Math.round(pointZ(vertex) * 10000)
+      Math.round(pointZ(vertex) * 10000),
+      layered ? Math.round(Number(vertex.elevation || 0) * elevationScaleM * 10000) : 0
     ].join(':');
   };
   const edges = new Map();
@@ -243,7 +244,7 @@ function indexSamplerTriangles(sampler, startIndex = 0) {
     normals[offset + 2] = Number(normal.z || 0);
   }
   Object.assign(sampler, buildPreparedSupportTopology(
-    triangles, normals, elevationScaleM
+    triangles, normals, elevationScaleM, sampler.layered
   ));
   return sampler;
 }
@@ -286,7 +287,8 @@ export function buildRaceBakedSurfaceSampler({
     buckets: new Map(),
     bucketSizeM: bucketSize,
     elevationScaleM,
-    triangleCount: 0
+    triangleCount: 0,
+    layered: mesh?.layered === true
   });
 }
 
@@ -347,7 +349,7 @@ export function packRaceBakedSurfaceSampler(sampler = null) {
     priorities[triangleIndex] = Math.max(0, Math.min(255, Math.round(Number(triangle.priority || 0))));
   });
   const supportTopology = buildPreparedSupportTopology(
-    triangles, normals, sampler.elevationScaleM
+    triangles, normals, sampler.elevationScaleM, sampler.layered
   );
   const bucketEntries = [...sampler.buckets.entries()];
   const bucketCoords = new Int32Array(bucketEntries.length * 2);
@@ -370,6 +372,7 @@ export function packRaceBakedSurfaceSampler(sampler = null) {
     triangleCount: triangles.length,
     bucketSizeM: sampler.bucketSizeM,
     elevationScaleM: sampler.elevationScaleM,
+    layered: sampler.layered === true,
     positions,
     normals,
     bounds,
@@ -471,7 +474,7 @@ export function packRaceCanonicalSurfaceMesh(mesh = null, {
       : (triangle?.indices || []).slice(0, 3).map((index) => mesh.vertices?.[index]).filter(Boolean)
   }));
   const supportTopology = buildPreparedSupportTopology(
-    topologyTriangles, normals, elevationScaleM
+    topologyTriangles, normals, elevationScaleM, mesh.layered
   );
 
   const bucketEntries = [...buckets.entries()];
@@ -496,6 +499,7 @@ export function packRaceCanonicalSurfaceMesh(mesh = null, {
     triangleCount: triangles.length,
     bucketSizeM: bucketSize,
     elevationScaleM,
+    layered: mesh.layered === true,
     positions,
     normals,
     bounds,
@@ -528,6 +532,28 @@ export function getPackedRaceSurfaceTransferables(sampler = null) {
     sampler.bucketOffsets,
     sampler.bucketTriangles
   ].map((entry) => entry?.buffer).filter(Boolean);
+}
+
+// A height-aware support ray can land on a deck beneath the wheel but must
+// never select the bridge/roof above it. Legacy height fields retain their
+// existing priority rules. A small penetration allowance supports recovery.
+function supportCeiling(sampler, point) {
+  if (!sampler?.layered) return null;
+  const height = Number.isFinite(point.supportHeightM) ? point.supportHeightM
+    : point.z !== undefined && Number.isFinite(point.y) ? point.y : null;
+  return height === null ? null : height + Math.max(0, Number(point.supportAllowanceM ?? 0.35));
+}
+function isReachableDeck(sampler, point, elevation) {
+  const ceiling = supportCeiling(sampler, point);
+  return ceiling === null || elevation * sampler.elevationScaleM <= ceiling;
+}
+function preferSurface(sampler, point, best, score, elevation) {
+  if (!best) return true;
+  if (supportCeiling(sampler, point) !== null) {
+    const difference = (elevation - best.elevation) * sampler.elevationScaleM;
+    if (Math.abs(difference) > 0.01) return difference > 0;
+  }
+  return score > best.score || (score === best.score && elevation > best.elevation);
 }
 
 function samplePackedRaceBakedSurface(
@@ -576,6 +602,7 @@ function samplePackedRaceBakedSurface(
     const wc = 1 - wa - wb;
     if (wa < -0.0001 || wb < -0.0001 || wc < -0.0001) continue;
     const elevation = wa * ay + wb * by + wc * cy;
+    if (!isReachableDeck(sampler, worldPoint, elevation)) continue;
     const region = sampler.regionTable[sampler.regions[triangleIndex]] || 'terrain';
     const regionMatch = preferredRegion && (
       region === preferredRegion
@@ -583,7 +610,7 @@ function samplePackedRaceBakedSurface(
       || (preferredRegion === 'terrain' && region === 'transition')
     );
     const score = Number(sampler.priorities[triangleIndex] || 0) + (regionMatch ? 20 : 0);
-    if (!best || score > best.score || (score === best.score && elevation > best.elevation)) {
+    if (preferSurface(sampler, worldPoint, best, score, elevation)) {
       const normalOffset = triangleIndex * 3;
       best = {
         triangleId: triangleIndex,
@@ -638,13 +665,14 @@ export function sampleRaceBakedSurface(sampler = null, worldPoint = null, {
     const elevation = wa * Number(a.elevation || 0)
       + wb * Number(b.elevation || 0)
       + wc * Number(c.elevation || 0);
+    if (!isReachableDeck(sampler, worldPoint, elevation)) return;
     const regionMatch = preferredRegion && (
       triangle.region === preferredRegion
       || (preferredRegion === 'shoulder' && ['inner', 'flat-join'].includes(triangle.region))
       || (preferredRegion === 'terrain' && triangle.region === 'transition')
     );
     const score = Number(triangle.priority || 0) + (regionMatch ? 20 : 0);
-    if (!best || score > best.score || (score === best.score && elevation > best.elevation)) {
+    if (preferSurface(sampler, worldPoint, best, score, elevation)) {
       best = {
         triangleId: triangleIndex,
         elevation,

@@ -399,6 +399,7 @@ function prepareCollider(definition = {}, colliderIndex = 0) {
     kineticFriction: common.kineticFriction,
     infinite: false,
     solidBelow: definition.solidBelow === true,
+    surfaceOnly: definition.surfaceOnly === true,
     vertices: Object.freeze(geometry.verticesImmutable
       ? geometry.vertices
       : geometry.vertices.map((vertex) => Object.freeze({ ...vertex }))),
@@ -567,6 +568,9 @@ function sampleMeshVerticalSurface(point, collider) {
 }
 
 function pointInsideMeshSurface(point, collider, toleranceM = 0) {
+  // Open bridge/tunnel shells collide when crossed from either side. They do
+  // not enclose the entire half-space behind every individual triangle.
+  if (collider.surfaceOnly) return null;
   if (collider.solidBelow === true) {
     const surface = sampleMeshVerticalSurface(point, collider);
     const penetrationM = surface ? surface.heightM - point.y : 0;

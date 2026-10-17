@@ -82,7 +82,7 @@ export class DamageModel {
     const panelDamage = averageDamage(state.panels);
     return {
       grip: clamp(1 - suspensionDamage * 0.0035, 0.58, 1),
-      enginePower: clamp(1 - Number(state.engine || 0) * 0.006, 0.38, 1),
+      enginePower: state.engine >= 100 ? 0 : clamp(1 - Number(state.engine || 0) * 0.006, 0.38, 1),
       engineJitter: Number(state.engine || 0) >= 45 ? 0.14 + Number(state.engine || 0) * 0.002 : 0,
       shiftDelayMs: Number(state.transmission || 0) * 7,
       suspensionPull: Number(state.suspensionPull || 0),

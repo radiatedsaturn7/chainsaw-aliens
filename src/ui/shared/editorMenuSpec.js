@@ -97,6 +97,16 @@ const actionEntries = (ids, labels = {}) => Object.fromEntries(ids.map((id) => [
   }
 ]));
 const EDITOR_ACTION_LABEL_OVERRIDES = {
+  'network-enable': 'Branching Routes',
+  'network-select': 'Select',
+  'network-add': 'Connect / Extend',
+  'network-split': 'Split Route',
+  'network-junction': 'Add Junction',
+  'network-join': 'Join Junctions',
+  'network-properties': 'Properties',
+  'network-markers': 'Start / Finish',
+  'network-delete': 'Delete Selection',
+  'network-water': 'Water Level',
   'race-from-image': 'From Image',
   'engine-sfx': 'Engine Sound',
   'car-sound-effects': 'Backfire & Turbo',
@@ -386,7 +396,7 @@ export const EDITOR_MENU_SPECS = {
       file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'race-from-image', 'generate-random-race', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo', 'copy-segment', 'paste-segment', 'delete-segment']),
       view: section('view', 'View', ['preview-mode7', 'zoom-fit', 'toggle-scenery', 'toggle-racing-line']),
-      track: section('track', 'Track', ['draw-road']),
+      track: section('track', 'Track', ['draw-road', 'network-enable', 'network-select', 'network-add', 'network-split', 'network-junction', 'network-join', 'network-properties', 'network-markers', 'network-delete', 'network-water']),
       ground: section('ground', 'Ground', [
         'race-tile-model',
         'race-clear-tile-model',

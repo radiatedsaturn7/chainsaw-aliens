@@ -919,7 +919,7 @@ test('Race shared authoring roots include tile-backed terrain commands without s
   assert.equal(getEditorMenuSection('race', 'generate'), null);
   assert.equal(getEditorMenuSection('race', 'elevation'), null);
   assert.deepEqual(getEditorMenuSection('race', 'file').actions.slice(6), ['race-from-image', 'generate-random-race', 'exit-main']);
-  assert.deepEqual(getEditorMenuSection('race', 'track').actions, ['draw-road']);
+  assert.deepEqual(getEditorMenuSection('race', 'track').actions, ['draw-road', 'network-enable', 'network-select', 'network-add', 'network-split', 'network-junction', 'network-join', 'network-properties', 'network-markers', 'network-delete', 'network-water']);
   assert.equal(getEditorMenuSection('race', 'track').actions.includes('paint-elevation'), false);
   assert.deepEqual(getEditorMenuSection('race', 'ground').actions.slice(0, 6), [
     'race-tile-model', 'race-clear-tile-model',
