@@ -1540,6 +1540,7 @@ export const LATEST_MAJOR_WORK = {
 };
 
 export const LATEST_CHANGES = [
+  {date:'2026-10-17',time:'18:15 EDT',title:'Feature course and complete race minimap',details:['File → New creates Branching Valley with Y/T/four-way junctions, a bridge, tunnel, shallow ford and gentle editable terrain. Every lane-count choice uses the example.','The racing minimap shows every branch, distinguishes bridges and tunnels, shows water and separate start/finish markers, and uses physical car positions.']},
   {date:'2026-10-17',time:'15:26 EDT',title:'Render layered roads at their authored heights',details:['Bridge, tunnel, road and water meshes retain their physical heights instead of snapping to the highest terrain surface. Camera terrain checks also respect the current road level.']},
   {date:'2026-10-17',time:'15:12 EDT',title:'Branching race starts and rendering',details:['Rolling starts retain the start-line crossing during countdown so the race can finish after GO.','Enabling branching routes selects the layered 3D renderer, including when converting a race previously using the software renderer.']},
   {date:'2026-10-17',time:'15:08 EDT',title:'Keep race recovery on the selected branch',details:['Track-center resets preserve the current branch and deck height, including bridges crossing above tunnels. Physics recovery searches for supported positions on that same branch.']},

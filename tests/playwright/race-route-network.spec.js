@@ -188,3 +188,46 @@ test('prepared worker transfers every deck and renders the network through the T
   expect(result.stats?.threeRoadPolygons).toBeGreaterThan(0);
   await page.locator('#network-editor').screenshot({ path: 'test-results/network-prepared-race.png' });
 });
+
+for (const config of MODES) test(`${config.mode}: File New creates the feature course and minimap shows every branch`, async ({ page }) => {
+  test.setTimeout(120000);
+  const errors = []; page.on('pageerror', error => errors.push(error.message));
+  await setup(page, config);
+  const created = await page.evaluate(async () => {
+    const editor = window.networkEditor;
+    await editor.handleMenuAction('new-2-lane');
+    window.drawNetwork();
+    return { name: editor.selectedRace.name, roads: editor.selectedRace.road.network.edges.length,
+      water: editor.selectedRace.waterRegions.length, terrain: Object.keys(editor.selectedRace.road.tileMap.cells).length };
+  });
+  expect(created.name).toBe('Branching Valley');
+  expect(created.roads).toBe(17); expect(created.water).toBe(1); expect(created.terrain).toBeGreaterThan(100);
+  await page.locator('#network-editor').screenshot({ path: `test-results/network-example-${config.mode}.png` });
+  const map = await page.evaluate(() => {
+    const editor = window.networkEditor;
+    const bake = editor.buildRaceWorldBake({ validate: false });
+    editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false, preparedWorldBake: bake });
+    editor.playtestSession.countdownRemainingMs = 0;
+    editor.playtestSession.startupFramePending = false;
+    const canvas = editor.game.canvas, ctx = canvas.getContext('2d');
+    editor.drawRaceProjectedRoadPath(ctx, { x: 0, y: 0, w: canvas.width, h: canvas.height });
+    // A position on the elevated alternative, well off the primary route.
+    editor.playtestSession.worldX = -90; editor.playtestSession.worldZ = 160;
+    let player;
+    const drawDot = editor.drawRaceMinimapPlayerDot.bind(editor);
+    editor.drawRaceMinimapPlayerDot = (ctx, point, scale) => { player = point; drawDot(ctx, point, scale); };
+    editor.drawRaceTrackMinimap(ctx, { x: 5, y: 5, w: 92, h: 92 });
+    editor.drawRaceMinimapPlayerDot = drawDot;
+    return { paths: editor.raceMinimapCache.data.paths.length,
+      start: editor.raceMinimapCache.data.start.id, finish: editor.raceMinimapCache.data.finish.id,
+      player, renderer: editor.lastRaceRenderStats?.threeTerrainRenderer,
+      structures: bake.structureMeshes.length };
+  });
+  expect(map.paths).toBe(created.roads);
+  expect(map.start).toBe('start'); expect(map.finish).toBe('finish');
+  expect(map.player.x).toBeGreaterThan(8); expect(map.player.x).toBeLessThan(94);
+  expect(map.player.y).toBeGreaterThan(8); expect(map.player.y).toBeLessThan(94);
+  expect(map.renderer).toBe(1); expect(map.structures).toBeGreaterThan(0);
+  await page.screenshot({ path: `test-results/network-minimap-${config.mode}.png`, clip: { x: 5, y: 5, width: 92, height: 92 } });
+  expect(errors).toEqual([]);
+});
