@@ -285,3 +285,99 @@ for (const heightM of [-6, 6]) test(`delayed recovery stays on the alternate ${h
   assert.equal(runner.state.supportedWheelCount, 4);
   assert.deepEqual(session.networkPreviousPosition, { x: 40, z: 10, heightM });
 });
+
+test('rolling countdown preserves the start crossing and requires a correct-level finish after GO', () => {
+  const editor = new RaceEditor({});
+  editor.selectedRace.road.network = normalizeRaceRouteNetwork({
+    nodes: [{ id: 'a', x: 0, z: 0 }, { id: 'b', x: 0, z: 120 }, { id: 'c', x: 40, z: 60 }],
+    edges: [{ id: 'main', from: 'a', to: 'b' }, { id: 'out', from: 'a', to: 'c' }, { id: 'in', from: 'c', to: 'b' }],
+    startNodeId: 'a', finishNodeId: 'b'
+  });
+  Object.assign(editor.getRaceStartSettings(), { countdown: true, rollingStart: true, rollingStartSpeedMps: 12 });
+  editor.setRaceAiCount(0);
+  editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false });
+  editor.playtestSession.startupFramePending = false;
+  const session = editor.playtestSession;
+  let finishes = 0;
+  editor.showRaceResults = () => { finishes++; };
+  for (let i = 0; i < 3; i++) editor.updatePlaytest(1);
+  assert.ok(session.worldZ > 1, 'rolling formation crossed the start');
+  assert.equal(session.elapsedMs, 0);
+  assert.equal(finishes, 0);
+  editor.updatePlaytest(1 / 60);
+  assert.equal(session.networkProgress.started, true);
+  const runner = session.vehicleDynamicsRunner;
+  const move = (x, z, y) => {
+    runner.state.position = { x, z, y };
+    runner.state.velocity = { x: 0, y: 0, z: 0 };
+    editor.updatePlaytest(0);
+  };
+  move(0, 119, 6.55); move(0, 121, 6.55);
+  assert.equal(finishes, 0, 'crossing above the finish must not finish');
+  move(20, 90, 0.55);
+  assert.equal(editor.getRaceRouteProjectionForWorldPoint(runner.state.position).edgeId, 'in');
+  move(0, 119, 0.55); move(0, 121, 0.55);
+  assert.equal(finishes, 1, 'returning from a branch and crossing the finish ends the race');
+});
+
+for (const levelM of [0.2, 1.2]) test(`network playtest applies ${levelM}m water to physics and engine damage`, () => {
+  const editor = new RaceEditor({});
+  editor.selectedRace.road.network = normalizeRaceRouteNetwork({
+    nodes: [{ id: 'a', x: 0, z: 0 }, { id: 'b', x: 0, z: 120 }],
+    edges: [{ id: 'ford', from: 'a', to: 'b' }], startNodeId: 'a', finishNodeId: 'b'
+  });
+  editor.selectedRace.waterRegions = [{ id: 'water', x: 0, z: 0, widthM: 30, lengthM: 30,
+    levelM, bottomM: -2, color: '#287fa3' }];
+  editor.setRaceAiCount(0);
+  editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false });
+  editor.playtestSession.startupFramePending = false;
+  editor.playtestSession.countdownRemainingMs = 0;
+  editor.updatePlaytest(1 / 60);
+  const runner = editor.playtestSession.vehicleDynamicsRunner;
+  assert.ok(runner.state.waterDepthM > 0);
+  const expectedDamage = levelM > 1 ? 100 : 0;
+  assert.equal(runner.state.waterEngineDamage, expectedDamage);
+  assert.equal(editor.getRaceSessionDamage().engine, expectedDamage);
+  if (expectedDamage) assert.equal(editor.getRaceDamageEffects().enginePower, 0);
+});
+
+
+test('enabling routes on a legacy renderer selects layered rendering and remains undoable', async () => {
+  const { handleNetworkAction } = await import('../../src/ui/RaceNetworkEditor.js');
+  const editor = new RaceEditor({});
+  editor.selectedRace.groundRenderer = 'software';
+  editor.selectedRace.renderDebug = { terrainEnabled: false, threeEnabled: false };
+  await handleNetworkAction(editor, 'network-enable');
+  assert.equal(editor.getRaceGroundRenderer(), 'webgl-track');
+  assert.equal(editor.getRaceRenderDebugSettings().terrainEnabled, true);
+  assert.equal(editor.getRaceRenderDebugSettings().threeEnabled, true);
+  editor.undoRaceHistory();
+  assert.equal(editor.selectedRace.road.network, undefined);
+  assert.equal(editor.selectedRace.groundRenderer, 'software');
+  assert.equal(editor.getRaceRenderDebugSettings().terrainEnabled, false);
+});
+
+test('Join junctions reconnects an authored branch through map input and undo/redo', async () => {
+  const { handleNetworkAction, networkPointer } = await import('../../src/ui/RaceNetworkEditor.js');
+  const editor = new RaceEditor({});
+  editor.racePortraitMode = 'race';
+  editor.selectedRace.road.network = normalizeRaceRouteNetwork({
+    nodes: [{ id: 'start', x: 0, z: 0 }, { id: 'keep', x: 0, z: 100 },
+      { id: 'finish', x: 0, z: 200 }, { id: 'loose', x: 50, z: 100 }],
+    edges: [{ id: 'first', from: 'start', to: 'keep' }, { id: 'last', from: 'keep', to: 'finish' },
+      { id: 'branch', from: 'start', to: 'loose' }], startNodeId: 'start', finishNodeId: 'finish'
+  });
+  editor.raceMapBounds = { x: 0, y: 0, w: 800, h: 600 };
+  editor.networkNodeId = 'keep';
+  await handleNetworkAction(editor, 'network-join');
+  const point = editor.raceMapWorldToScreenPoint({ x: 50, y: 100 });
+  assert.equal(networkPointer(editor, { x: point.screenX, y: point.screenY }, 'down'), true);
+  const network = editor.selectedRace.road.network;
+  assert.equal(network.nodes.some(n => n.id === 'loose'), false);
+  assert.equal(network.edges.find(e => e.id === 'branch').to, 'keep');
+  assert.equal(network.startNodeId, 'start'); assert.equal(network.finishNodeId, 'finish');
+  assert.equal(editor.undoRaceHistory(), true);
+  assert.equal(editor.selectedRace.road.network.edges.find(e => e.id === 'branch').to, 'loose');
+  assert.equal(editor.redoRaceHistory(), true);
+  assert.equal(editor.selectedRace.road.network.edges.find(e => e.id === 'branch').to, 'keep');
+});

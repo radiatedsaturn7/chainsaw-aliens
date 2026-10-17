@@ -4003,9 +4003,12 @@ export function updateRaceSimulation({
   if (routeNetwork) {
     const session = editor.playtestSession;
     const current = { x: session.worldX, z: session.worldZ, heightM: Number(presentationState.position?.y || 0) };
-    if (!countdownActive) {
-      session.networkProgress = advanceNetworkRaceProgress(routeNetwork, session.networkPreviousPosition, current, session.networkProgress);
-      if (session.networkProgress.finished) { (editor.showRaceResults || editor.finishPlaytest).call(editor); return; }
+    // Rolling formations can cross the start before GO. Retain that crossing,
+    // but never permit a countdown crossing of the finish to end the race.
+    const progress = advanceNetworkRaceProgress(routeNetwork, session.networkPreviousPosition, current, session.networkProgress);
+    session.networkProgress = countdownActive ? { started: progress.started, finished: false } : progress;
+    if (!countdownActive && session.networkProgress.finished) {
+      (editor.showRaceResults || editor.finishPlaytest).call(editor); return;
     }
     session.networkPreviousPosition = current;
   }

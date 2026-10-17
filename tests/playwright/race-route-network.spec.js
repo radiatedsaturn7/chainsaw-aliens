@@ -150,8 +150,8 @@ test('prepared worker transfers every deck and renders the network through the T
       startNodeId: 'start', finishNodeId: 'finish'
     });
     editor.selectedRace.waterRegions = [{ id: 'ford', x: 0, z: 40, widthM: 20, lengthM: 12, levelM: 0.2, bottomM: -2, color: '#287fa3' }];
-    editor.selectedRace.groundRenderer = 'webgl-track';
-    editor.selectedRace.renderDebug = { ...editor.getRaceRenderDebugSettings(), terrainEnabled: true, threeEnabled: true, texturesEnabled: false, detailEnabled: false, overlaysEnabled: true };
+    // Exercise the shipped renderer defaults, without forcing Three/terrain on.
+    editor.selectedRace.renderDebug = { ...editor.getRaceRenderDebugSettings(), texturesEnabled: false };
     const worker = new Worker('/src/ui/raceWorldBakeWorker.js', { type: 'module' });
     const bake = await new Promise((resolve, reject) => {
       const result = {};

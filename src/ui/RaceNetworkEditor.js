@@ -33,9 +33,16 @@ export async function handleNetworkAction(editor, action) {
   editor.closeEditorMenus?.();
   editor.racePortraitHotMenu = null;
   if (action === 'network-enable') {
-    if (!editor.selectedRace.road.network) commit(editor, networkFromLegacySamples(editor.getRacePathSamples({ step: 4 }), {
-      widthM: editor.selectedRace.road.width || 11
-    }), 'Enabled branching routes');
+    if (!editor.selectedRace.road.network) {
+      commit(editor, networkFromLegacySamples(editor.getRacePathSamples({ step: 4 }), {
+        widthM: editor.selectedRace.road.width || 11
+      }), 'Enabled branching routes');
+      // Layered roads need the 3D mesh renderer. Conversion of a race using
+      // the legacy plane renderer must not silently hide its new branches.
+      editor.selectedRace.groundRenderer = 'webgl-track';
+      editor.selectedRace.renderDebug = { ...editor.getRaceRenderDebugSettings(),
+        terrainEnabled: true, threeEnabled: true };
+    }
     editor.networkTool = 'network-select'; editor.networkNodeId = editor.selectedRace.road.network.startNodeId;
     editor.activeRootId = 'track'; editor.racePortraitMode = 'race'; return;
   }
