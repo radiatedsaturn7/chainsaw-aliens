@@ -29,7 +29,7 @@ test('Studio Sprint2 WRX2 first jump dissipates passive landing energy and settl
     'tests/fixtures/studioSprint2PerformanceRaceDocument.json'
   ), { name: 'Studio Sprint2' }), true);
   assert.equal(editor.applyLoadedCarDocument(decodeDocument(
-    'data/server-storage/files/cars/2022 Subaru WRX2/document.json'
+    'tests/fixtures/wrx2CarDocument.json'
   ), { name: '2022 Subaru WRX2' }), true);
   const worldBake = editor.buildRaceWorldBake({ retainTerrainCells: false });
   editor.startPlaytest(editor.getRaceCarProjectIdentity(editor.selectedCar), {
@@ -195,7 +195,7 @@ test('Studio Sprint2 WRX2 first-jump landing cannot erase forward motion through
     'tests/fixtures/studioSprint2PerformanceRaceDocument.json'
   ), { name: 'Studio Sprint2' }), true);
   assert.equal(editor.applyLoadedCarDocument(decodeDocument(
-    'data/server-storage/files/cars/2022 Subaru WRX2/document.json'
+    'tests/fixtures/wrx2CarDocument.json'
   ), { name: '2022 Subaru WRX2' }), true);
   editor.startPlaytest(editor.getRaceCarProjectIdentity(editor.selectedCar), {
     hydrateCars: false,
@@ -308,7 +308,7 @@ test.skip('Studio Sprint2 WRX2 captures and classifies the exact post-first-hill
     'tests/fixtures/studioSprint2PerformanceRaceDocument.json'
   ), { name: 'Studio Sprint2' }), true);
   assert.equal(editor.applyLoadedCarDocument(decodeDocument(
-    'data/server-storage/files/cars/2022 Subaru WRX2/document.json'
+    'tests/fixtures/wrx2CarDocument.json'
   ), { name: '2022 Subaru WRX2' }), true);
   globalThis.__RTG_CAPTURE_PHYSICS_INCIDENTS__ = true;
   editor.startPlaytest(editor.getRaceCarProjectIdentity(editor.selectedCar), {
@@ -403,7 +403,7 @@ test('Studio Sprint2 WRX2 third-hill trough dissipates landing energy', () => {
     'tests/fixtures/studioSprint2PerformanceRaceDocument.json'
   ), { name: 'Studio Sprint2' }), true);
   assert.equal(editor.applyLoadedCarDocument(decodeDocument(
-    'data/server-storage/files/cars/2022 Subaru WRX2/document.json'
+    'tests/fixtures/wrx2CarDocument.json'
   ), { name: '2022 Subaru WRX2' }), true);
   editor.startPlaytest(editor.getRaceCarProjectIdentity(editor.selectedCar), {
     hydrateCars: false,
@@ -587,7 +587,7 @@ test('Studio Sprint2 WRX2 settles after respawning on a slight incline', () => {
     'tests/fixtures/studioSprint2PerformanceRaceDocument.json'
   ), { name: 'Studio Sprint2' }), true);
   assert.equal(editor.applyLoadedCarDocument(decodeDocument(
-    'data/server-storage/files/cars/2022 Subaru WRX2/document.json'
+    'tests/fixtures/wrx2CarDocument.json'
   ), { name: '2022 Subaru WRX2' }), true);
   editor.startPlaytest(editor.getRaceCarProjectIdentity(editor.selectedCar), {
     hydrateCars: false,
@@ -659,7 +659,7 @@ test('Studio Sprint2 WRX2 launches without persistent bounce after a maximum-gra
     'tests/fixtures/studioSprint2PerformanceRaceDocument.json'
   ), { name: 'Studio Sprint2' }), true);
   assert.equal(editor.applyLoadedCarDocument(decodeDocument(
-    'data/server-storage/files/cars/2022 Subaru WRX2/document.json'
+    'tests/fixtures/wrx2CarDocument.json'
   ), { name: '2022 Subaru WRX2' }), true);
   editor.startPlaytest(editor.getRaceCarProjectIdentity(editor.selectedCar), {
     hydrateCars: false,
@@ -762,7 +762,7 @@ test('Studio Sprint2 WRX2 hard first-hill crash cannot contaminate an inclined r
     'tests/fixtures/studioSprint2PerformanceRaceDocument.json'
   ), { name: 'Studio Sprint2' }), true);
   assert.equal(editor.applyLoadedCarDocument(decodeDocument(
-    'data/server-storage/files/cars/2022 Subaru WRX2/document.json'
+    'tests/fixtures/wrx2CarDocument.json'
   ), { name: '2022 Subaru WRX2' }), true);
   editor.startPlaytest(editor.getRaceCarProjectIdentity(editor.selectedCar), {
     hydrateCars: false,
@@ -877,7 +877,7 @@ test('Studio Sprint2 reset visibly returns an off-road crash to stable flat uphi
     'tests/fixtures/studioSprint2PerformanceRaceDocument.json'
   ), { name: 'Studio Sprint2' }), true);
   assert.equal(editor.applyLoadedCarDocument(decodeDocument(
-    'data/server-storage/files/cars/2022 Subaru WRX2/document.json'
+    'tests/fixtures/wrx2CarDocument.json'
   ), { name: '2022 Subaru WRX2' }), true);
   editor.startPlaytest(editor.getRaceCarProjectIdentity(editor.selectedCar), {
     hydrateCars: false,

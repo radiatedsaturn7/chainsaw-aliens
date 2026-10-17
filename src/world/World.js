@@ -1,3 +1,5 @@
+import itemDefaults from '../content/items.json' with {type:'json'};
+const legacyItemsByTile = new Map(itemDefaults.items.filter(item=>item.legacyTile).map(item=>[item.legacyTile,item]));
 import { normalizeMidiTracks } from '../editor/adapters/editorDataContracts.js';
 import { buildTileDefinitions } from '../content/tileDefinitions.js';
 
@@ -115,6 +117,9 @@ export default class World {
   }
 
   applyData(data) {
+    let scopeHash=2166136261;
+    if(!data.itemScope)for(const char of JSON.stringify([data.width,data.height,data.tiles]))scopeHash=Math.imul(scopeHash^char.charCodeAt(0),16777619)>>>0;
+    this.itemScope=data.itemScope||`level-${scopeHash.toString(16)}`;
     this.tileSize = data.tileSize;
     this.width = data.width;
     this.height = data.height;
@@ -146,6 +151,8 @@ export default class World {
     this.pixelArt = data.pixelArt ? { ...data.pixelArt, tiles: { ...(data.pixelArt.tiles || {}) } } : { tiles: {} };
     this.pixelArt.tileProperties = { ...(this.pixelArt.tileProperties || {}) };
     this.tileDefinitions = buildTileDefinitions(this.pixelArt.tileProperties);
+    this.radioEnabled = data.radioEnabled !== false;
+    this.mixTapes = (Array.isArray(data.mixTapes) ? data.mixTapes : []).map(item => ({...item}));
     this.musicZones = (data.musicZones || []).map((zone) => ({ ...zone }));
     this.midiTracks = normalizeMidiTracks(data.midiTracks || [], 'piano');
     this.triggers = (data.triggers || []).map((trigger) => ({
@@ -210,34 +217,13 @@ export default class World {
         if (tile === 'O') {
           this.objectives.push({ x: worldX, y: worldY });
         }
-        if (tile === 'g' || tile === 'p' || tile === 'm' || tile === 'r' || tile === 'i' || tile === 'f') {
-          const ability = {
-            g: 'anchor',
-            p: 'flame',
-            m: 'magboots',
-            r: 'resonance',
-            i: 'ignitir',
-            f: 'flamethrower'
-          }[tile];
-          this.abilityPickups.push({ id: `ability-${ability}`, x: worldX, y: worldY, ability, collected: false });
-        }
-        if (tile === 'M') {
-          this.mapPickups.push({
-            id: `map-${x}-${y}`,
-            x: worldX,
-            y: worldY,
-            collected: false
-          });
-        }
-        if (tile === 'H') {
-          const region = this.regionAt(worldX, worldY).id;
-          this.healthUpgrades.push({
-            id: `vital-${region}-${healthIndex}`,
-            x: worldX,
-            y: worldY,
-            collected: false
-          });
-          healthIndex += 1;
+        const itemDefinition = legacyItemsByTile.get(tile);
+        if (itemDefinition) {
+          const effect = itemDefinition.effects[0];
+          const pickup = {id:`item-${x}-${y}-${itemDefinition.id}`,x:worldX,y:worldY,itemRef:itemDefinition.id,collected:false};
+          if(effect.type==='map')this.mapPickups.push(pickup);
+          else if(effect.type==='max-health')this.healthUpgrades.push(pickup);
+          else this.abilityPickups.push({...pickup,ability:effect.target});
         }
         if (tile === 'a') {
           this.anchors.push({ x: worldX, y: worldY });

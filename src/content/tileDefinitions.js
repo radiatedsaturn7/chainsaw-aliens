@@ -1,3 +1,4 @@
+import itemDefaults from './items.json' with {type:'json'};
 import {normalizeModelBinding} from '../model3d/ModelBinding.js';
 export const DEFAULT_TILE_TYPES = [
   { id: 'spawn', label: 'Spawn Point', char: null, special: 'spawn' },
@@ -44,13 +45,7 @@ export const DEFAULT_TILE_TYPES = [
 
 export const TILE_LIBRARY = [
   ...DEFAULT_TILE_TYPES.filter((tile) => tile.char),
-  { id: 'abilityG', label: 'Tools: Chainsaw Throw', char: 'g' },
-  { id: 'abilityP', label: 'Tools: Flame-Saw', char: 'p' },
-  { id: 'abilityM', label: 'Ability: Mag Boots', char: 'm' },
-  { id: 'abilityR', label: 'Ability: Resonance', char: 'r' },
-  { id: 'abilityI', label: 'Weapon: Ignitir', char: 'i' },
-  { id: 'abilityF', label: 'Weapon: Flamethrower', char: 'f' },
-  { id: 'health', label: 'Vitality Core', char: 'H' }
+  ...itemDefaults.items.filter(item=>item.legacyTile).map(item=>({id:`item-${item.id}`,label:item.name,char:item.legacyTile,itemRef:item.id}))
 ];
 
 const cloneValue = (value) => {

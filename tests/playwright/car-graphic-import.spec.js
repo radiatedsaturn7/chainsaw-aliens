@@ -97,11 +97,11 @@ test('import component selector and Art settings apply to the chosen component',
     await window.carImportPending;
     return Object.values(window.carImportEditor.selectedCar.art.angleLayers).every(layer => layer.shadow?.artRef);
   })).toBe(true);
-  await page.evaluate(() => window.carImportEditor.handleMenuAction('car-art-settings'));
+  await page.evaluate(() => { window.carArtSettingsPending = window.carImportEditor.handleMenuAction('car-art-settings'); });
   const settings = page.getByRole('dialog', { name:'Art Settings' });
   await settings.getByLabel('Mirror', { exact:true }).uncheck();
   await settings.getByRole('button', { name:'Done' }).click();
-  expect(await page.evaluate(() => window.carImportEditor.selectedCar.art.mirrorAngleEdits)).toBe(false);
+  expect(await page.evaluate(async () => { await window.carArtSettingsPending; return window.carImportEditor.selectedCar.art.mirrorAngleEdits; })).toBe(false);
 });
 
 test('reset dialog leaves unchecked categories unchanged', async ({ page }) => {

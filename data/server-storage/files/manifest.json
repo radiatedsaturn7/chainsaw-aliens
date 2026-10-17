@@ -2,7 +2,6 @@
   "folders": {
     "levels": {
       "Game": "levels/Game/document.json",
-      "levelA": "levels/levelA/document.json",
       "Leevel0": "levels/Leevel0/document.json",
       "Level Editor Autosave": "levels/Level Editor Autosave/document.json",
       "level0": "levels/level0/document.json",
@@ -13,12 +12,10 @@
       "new-level-1771217621465": "levels/new-level-1771217621465/document.json",
       "new-level-1773282688371": "levels/new-level-1773282688371/document.json",
       "new-level-1773427091431": "levels/new-level-1773427091431/document.json",
-      "new-level": "levels/new-level/document.json"
+      "new-level": "levels/new-level/document.json",
+      "levelA": "levels/levelA/document.json"
     },
     "art": {
-      "1000014256": "art/1000014256/document.json",
-      "rtg-001": "art/rtg-001/document.json",
-      "tire": "art/tire/document.json",
       "Head2": "art/Head2/document.json",
       "Tile Art 23": "art/Tile Art 23/document.json",
       "Tile Art Autosave": "art/Tile Art Autosave/document.json",
@@ -51,6 +48,7 @@
       "new-actor-idle-4-action-1779197914649-particleartref-art": "art/new-actor-idle-4-action-1779197914649-particleartref-art/document.json",
       "new-actor-idle-art": "art/new-actor-idle-art/document.json",
       "new-actor-idle-repeat-ref-art": "art/new-actor-idle-repeat-ref-art/document.json",
+      "player-idle-art": "art/player-idle-art/document.json",
       "r1 copy 1778293995122": "art/r1 copy 1778293995122/document.json",
       "r1": "art/r1/document.json",
       "r13": "art/r13/document.json",
@@ -65,39 +63,65 @@
       "zombie-attack": "art/zombie-attack/document.json",
       "zombie-idle": "art/zombie-idle/document.json",
       "zombie-walk": "art/zombie-walk/document.json",
-      "player-idle-art": "art/player-idle-art/document.json",
+      "rtg-001": "art/rtg-001/document.json",
+      "tire": "art/tire/document.json",
+      "1000014256": "art/1000014256/document.json",
+      "Tile Art solid": "art/Tile Art solid/document.json",
       "apron": "art/apron/document.json",
+      "grass": "art/grass/document.json",
       "providence": "art/providence/document.json",
       "providenceGround": "art/providenceGround/document.json",
       "tree": "art/tree/document.json",
-      "grass": "art/grass/document.json",
-      "Tile Art solid": "art/Tile Art solid/document.json",
-      "player-walk-art2": "art/player-walk-art2/document.json",
-      "player-jump": "art/player-jump/document.json",
+      "player-attack": "art/player-attack/document.json",
       "player-fall": "art/player-fall/document.json",
-      "player-attack": "art/player-attack/document.json"
+      "player-jump": "art/player-jump/document.json",
+      "player-walk-art2": "art/player-walk-art2/document.json",
+      "rtgframes": "art/rtgframes/document.json",
+      "8290 body": "art/8290 body/document.json",
+      "8290 body 2": "art/8290 body 2/document.json",
+      "8290 body 3": "art/8290 body 3/document.json",
+      "8290 body 4": "art/8290 body 4/document.json",
+      "8290 body 5": "art/8290 body 5/document.json",
+      "8290 body 6": "art/8290 body 6/document.json",
+      "8290 body 7": "art/8290 body 7/document.json",
+      "8290 body 8": "art/8290 body 8/document.json",
+      "rtgtires": "art/rtgtires/document.json",
+      "8296 tires": "art/8296 tires/document.json",
+      "rtgframes body": "art/rtgframes body/document.json",
+      "rtgframes body 2": "art/rtgframes body 2/document.json",
+      "rtgtires tires": "art/rtgtires tires/document.json",
+      "8296 tires 2": "art/8296 tires 2/document.json",
+      "8296 tires 3": "art/8296 tires 3/document.json",
+      "8300 body": "art/8300 body/document.json",
+      "8313 body": "art/8313 body/document.json",
+      "8316 body": "art/8316 body/document.json",
+      "8317 body": "art/8317 body/document.json",
+      "8318 body": "art/8318 body/document.json",
+      "mixtape": "art/mixtape/document.json"
     },
     "music": {
       "1": "music/1/document.json",
       "Boss1": "music/Boss1/document.json",
+      "Boss2": "music/Boss2/document.json",
       "Creepy1": "music/Creepy1/document.json",
       "Horror": "music/Horror/document.json",
+      "Intro Autosave": "music/Intro Autosave/document.json",
+      "Intro": "music/Intro/document.json",
+      "KeyboardTyping Autosave": "music/KeyboardTyping Autosave/document.json",
+      "KeyboardTyping": "music/KeyboardTyping/document.json",
       "MIDI Composer Autosave": "music/MIDI Composer Autosave/document.json",
+      "Other": "music/Other/document.json",
+      "R1": "music/R1/document.json",
       "bunnies": "music/bunnies/document.json",
       "intro2": "music/intro2/document.json",
-      "R1": "music/R1/document.json",
-      "Other": "music/Other/document.json",
-      "rock": "music/rock/document.json",
-      "Boss2": "music/Boss2/document.json",
       "intro3": "music/intro3/document.json",
       "r2": "music/r2/document.json",
-      "Intro": "music/Intro/document.json",
-      "KeyboardTyping": "music/KeyboardTyping/document.json",
-      "KeyboardTyping Autosave": "music/KeyboardTyping Autosave/document.json",
-      "Intro Autosave": "music/Intro Autosave/document.json",
+      "rock": "music/rock/document.json",
       "NIN1": "music/NIN1/document.json",
       "Race1": "music/Race1/document.json",
-      "p": "music/p/document.json"
+      "p": "music/p/document.json",
+      "Race1 Autosave": "music/Race1 Autosave/document.json",
+      "Horror Autosave": "music/Horror Autosave/document.json"
     },
     "actors": {
       "Head.json": "actors/Head.json/document.json",
@@ -109,13 +133,13 @@
     "sfx": {
       "Alarm": "sfx/Alarm/document.json",
       "Engine WRX SPT": "sfx/Engine WRX SPT/document.json",
-      "Engine WRX Manual": "sfx/Engine WRX Manual/document.json",
-      "Engine BRZ Manual": "sfx/Engine BRZ Manual/document.json",
       "Engine BRZ Auto": "sfx/Engine BRZ Auto/document.json",
-      "Engine Civic Manual": "sfx/Engine Civic Manual/document.json",
+      "Engine BRZ Manual": "sfx/Engine BRZ Manual/document.json",
       "Engine Civic CVT": "sfx/Engine Civic CVT/document.json",
+      "Engine Civic Manual": "sfx/Engine Civic Manual/document.json",
       "Engine Inline Four": "sfx/Engine Inline Four/document.json",
-      "Engine V8": "sfx/Engine V8/document.json"
+      "Engine V8": "sfx/Engine V8/document.json",
+      "Engine WRX Manual": "sfx/Engine WRX Manual/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
@@ -123,28 +147,38 @@
       "c3": "cutscenes/c3/document.json"
     },
     "races": {
-      "Studio Sprint": "races/Studio Sprint/document.json",
-      "WeatherTech Raceway Laguna Seca": "races/WeatherTech Raceway Laguna Seca/document.json",
-      "Nurburgring Nordschleife": "races/Nurburgring Nordschleife/document.json",
       "Col de Turini": "races/Col de Turini/document.json",
-      "Ouninpohja": "races/Ouninpohja/document.json",
       "Daytona Tri-Oval": "races/Daytona Tri-Oval/document.json",
-      "Studio Sprint2": "races/Studio Sprint2/document.json"
+      "Nurburgring Nordschleife": "races/Nurburgring Nordschleife/document.json",
+      "Ouninpohja": "races/Ouninpohja/document.json",
+      "Studio Sprint": "races/Studio Sprint/document.json",
+      "Studio Sprint2": "races/Studio Sprint2/document.json",
+      "WeatherTech Raceway Laguna Seca": "races/WeatherTech Raceway Laguna Seca/document.json",
+      "Studio Sprint Copy": "races/Studio Sprint Copy/document.json",
+      "buse1": "races/buse1/document.json"
+    },
+    "cars": {
+      "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
+      "2022 Subaru WRX": "cars/2022 Subaru WRX/document.json",
+      "2023 Honda Civic Type R": "cars/2023 Honda Civic Type R/document.json",
+      "TL-86": "cars/TL-86/document.json",
+      "BUSE-019": "cars/BUSE-019/document.json",
+      "PZ-24": "cars/PZ-24/document.json",
+      "RTG-001": "cars/RTG-001/document.json"
     },
     "settings": {
       "chainsaw-gm-soundfont-url": "settings/chainsaw-gm-soundfont-url/document.json",
       "chainsaw-midi-audio": "settings/chainsaw-midi-audio/document.json",
-      "chainsaw-midi-recent": "settings/chainsaw-midi-recent/document.json"
-    },
-    "cars": {
-      "2022 Subaru WRX": "cars/2022 Subaru WRX/document.json",
-      "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
-      "2023 Honda Civic Type R": "cars/2023 Honda Civic Type R/document.json",
-      "2022 Subaru WRX2": "cars/2022 Subaru WRX2/document.json"
+      "chainsaw-midi-recent": "settings/chainsaw-midi-recent/document.json",
+      "rtg-radio-library": "settings/rtg-radio-library/document.json",
+      "rtg-item-progress": "settings/rtg-item-progress/document.json"
     },
     "doodads": {
-      "tree": "doodads/tree/document.json",
-      "Factory": "doodads/Factory/document.json"
+      "Factory": "doodads/Factory/document.json",
+      "tree": "doodads/tree/document.json"
+    },
+    "tires": {
+      "Offroad": "tires/Offroad/document.json"
     }
   }
 }

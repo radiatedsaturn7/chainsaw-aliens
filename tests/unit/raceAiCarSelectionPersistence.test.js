@@ -30,7 +30,7 @@ test('category and AI pool filters survive native document round trips and drive
  }
 });
 
-test('default candidate pool includes saved custom variants and omits built-in documents',()=>{
+test('default candidate pool excludes legacy starter names and retains separately named saved cars',()=>{
  const e=editor();
  for(const name of ['2022 Subaru WRX','2022 Subaru WRX4','BUSE-019','PZ-24'])e.upsertRaceProjectCar(e.withSavedRaceCarRuntimeIdentity(structuredClone(e.selectedCar),name));
  const ids=e.getRaceAiCarSelection().availableCarIds;

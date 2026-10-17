@@ -1,3 +1,14 @@
+import { isSystemCarDocument } from '../racing/CarPresets.js';
+import {itemLibrary} from '../items/ItemLibrary.js';
+import {updateLevelItems, updateLegacyItemPickups, isItemPickup, itemPlacementId, getItemSystem} from '../items/ItemPickups.js';
+import {isMixTape,mixTapeRotation,updateLevelMixTapes} from '../radio/MixTapePickup.js';
+import { RaceRadioDirector } from '../radio/RaceRadioDirector.js';
+import { RadioPlayer } from '../radio/RadioPlayer.js';
+import { RadioEditor } from '../ui/RadioEditor.js';
+import MenuEditor from '../ui/MenuEditor.js';
+import MenuPlayer from '../menus/MenuPlayer.js';
+import {createMenuDocument} from '../menus/MenuDocument.js';
+import {loadServerPreferenceAsync} from '../ui/serverPreferences.js';
 import {modelSprites} from '../model3d/ModelSprites.js';
 import ModelEditor from '../ui/ModelEditor.js';
 import TireEditor from '../ui/TireEditor.js';
@@ -59,6 +70,7 @@ import ActorEditor from '../ui/ActorEditor.js';
 import CutsceneEditor, { CutscenePlayer } from '../ui/CutsceneEditor.js';
 import RaceEditor from '../ui/RaceEditor.js';
 import DoodadEditor from '../ui/DoodadEditor.js';
+import ItemEditor from '../ui/ItemEditor.js';
 import RaceRuntimePreparation from '../racing/RaceRuntimePreparation.js';
 import {
   WEATHER_PRIORITY,
@@ -237,6 +249,7 @@ export default class Game {
     this.minimap = new Minimap(this.world);
     this.spawnPoint = { x: 32 * 28, y: 32 * 19 };
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
+    this.items?.beginRun();
     this.friendlyCompanion = null;
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.snapCameraToPlayer();
@@ -246,7 +259,10 @@ export default class Game {
     ensureProjectFileIndex();
     this.dialog = new Dialog(INTRO_LINES);
     this.hud = new HUD();
-    this.pauseMenu = new Pause();
+    this.radio = new RadioPlayer({getInventory:()=>getItemSystem(this),onChange:()=>this.audio?.setRadioPlaying?.(Boolean(this.radio?.playing || this.radioEditor?.preview?.playing))});
+    this.raceRadio=new RaceRadioDirector(this.radio);
+    this.pauseMenu = new Pause(this.radio, message => this.showSystemToast(message));
+    this.pauseMenu.onItemUsed=()=>this.transitionTo('playing');
     this.shopUI = new Shop(UPGRADE_LIST);
     this.stateManager = new StateManager('loading');
     this.stateManager.setBeforeTransition((metadata) => this.handleSharedStateTransitionCleanup(metadata));
@@ -423,8 +439,12 @@ export default class Game {
     this.raceEditor = new RaceEditor(this, { mode: 'race' });
     this.carEditor = new RaceEditor(this, { mode: 'car' });
     this.doodadEditor = new DoodadEditor(this);
+    this.itemEditor = new ItemEditor(this);
     this.tireEditor = new TireEditor(this);
     this.modelEditor = new ModelEditor(this);
+    this.menuEditor = new MenuEditor(this);
+    this.radioEditor = new RadioEditor(this);
+    this.menuPlayer = new MenuPlayer(this);
     this.cutscenePlayer = new CutscenePlayer(this);
     this.editorStateTargetKeys = {
       editor: 'editor',
@@ -437,6 +457,10 @@ export default class Game {
       'car-editor': 'carEditor',
       'tire-editor': 'tireEditor',
       'model-editor': 'modelEditor',
+      'menu-editor': 'menuEditor',
+      'radio-editor': 'radioEditor',
+      'menu-player': 'menuPlayer',
+      'item-editor': 'itemEditor',
       'doodad-editor': 'doodadEditor'
     };
     this.editorStateDrawArgs = {
@@ -450,6 +474,10 @@ export default class Game {
       'car-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'tire-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'model-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'radio-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'menu-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'menu-player': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
+      'item-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height],
       'doodad-editor': () => [this.ctx, this.viewport.width || this.canvas.width, this.viewport.height || this.canvas.height]
     };
     this.editorStateKeys = new Set(Object.keys(this.editorStateTargetKeys));
@@ -801,6 +829,8 @@ export default class Game {
   }
 
   handleTitleOptionsAction(action) {
+    if (action === 'project-browser') {this.openProjectBrowserFromTitle();return;}
+    if (action === 'radio') {void this.radioEditor.options();return;}
     if (action === 'back') {
       this.title.setScreen('main');
       return;
@@ -874,14 +904,22 @@ export default class Game {
         this.enterActorEditor();
       } else if (action === 'race-editor') {
         this.enterRaceEditor();
+      } else if (action === 'menu-editor') {
+        this.enterMenuEditor();
       } else if (action === 'model-editor') {
         this.enterModelEditor();
       } else if (action === 'tire-editor') {
         this.enterTireEditor();
       } else if (action === 'car-editor') {
         this.enterCarEditor();
+      } else if (action === 'item-editor') {
+        this.transitionTo('item-editor');
+        this.setRevAudio(false);
+        this.playtestActive = false;
       } else if (action === 'doodad-editor') {
         this.enterDoodadEditor();
+      } else if (action === 'radio-editor') {
+        void this.radioEditor.open();
       } else if (action === 'midi-editor') {
         this.enterMidiComposer();
       } else if (action === 'sfx-editor') {
@@ -904,7 +942,7 @@ export default class Game {
       return true;
     }
     if (action === 'recent-level') {
-      this.playMostRecentLevel();
+      void this.playStartingMenu();
       return true;
     }
     return false;
@@ -919,6 +957,7 @@ export default class Game {
         ]);
       }
       await this.world.load();
+      await getItemSystem(this).load();
       await this.autoRepair.load();
       this.autoRepair.applyPersistentPatches();
       await this.goldenPath.load();
@@ -930,6 +969,7 @@ export default class Game {
       this.snapCameraToPlayer();
       this.lastSave = { x: this.spawnPoint.x, y: this.spawnPoint.y };
       this.resetWorldSystems();
+      this.items?.restorePlayer();
       this.spawnEnemies();
       this.spawnBoxes();
       this.autoRepair.applySpawnOverride(this);
@@ -1457,6 +1497,7 @@ export default class Game {
 
   buildWorldData() {
     return {
+      itemScope: this.world.itemScope,
       schemaVersion: 1,
       tileSize: this.world.tileSize,
       width: this.world.width,
@@ -1468,6 +1509,8 @@ export default class Game {
       elevatorPaths: this.world.elevatorPaths,
       elevators: this.world.elevators,
       pixelArt: this.world.pixelArt,
+      radioEnabled: this.world.radioEnabled !== false,
+      mixTapes: this.world.mixTapes || [],
       musicZones: this.world.musicZones,
       midiTracks: this.world.midiTracks,
       triggers: this.world.triggers || [],
@@ -1484,6 +1527,7 @@ export default class Game {
       ? loadProjectFile('art', legacyPixelArtRef)?.data
       : null;
     const migrated = {
+      itemScope: data.itemScope,
       schemaVersion: data.schemaVersion ?? 1,
       tileSize: data.tileSize,
       width: data.width,
@@ -1495,6 +1539,8 @@ export default class Game {
       elevatorPaths: data.elevatorPaths || [],
       elevators: data.elevators || [],
       pixelArt: embeddedPixelArt || referencedPixelArt || { tiles: {} },
+      radioEnabled: data.radioEnabled !== false,
+      mixTapes: data.mixTapes || [],
       musicZones: data.musicZones || [],
       midiTracks: data.midiTracks || [],
       triggers: data.triggers || [],
@@ -1514,6 +1560,7 @@ export default class Game {
   }
 
   handleSharedStateTransitionCleanup({ from, to, forceCleanup = false } = {}) {
+    if (from === 'radio-editor' && to !== 'radio-editor') this.radioEditor?.preview?.stop();
     const shouldCleanup = forceCleanup
       || this.playtestActive
       || this.isEditorState(from)
@@ -1619,12 +1666,16 @@ export default class Game {
   captureRaceTravelPlayerState() {
     const player = this.player || {};
     return {
+      itemRevision: this.items?.revision || 0,
+      itemProgress: structuredClone(this.items?.progress || {}),
       position: {
         x: Number(player.x || 0),
         y: Number(player.y || 0),
         facing: Number(player.facing || 1) || 1
       },
       player: {
+        armor: Number(player.armor || 0),
+        itemModifiers: structuredClone(player.itemModifiers || []),
         health: Number(player.health || 0),
         maxHealth: Number(player.maxHealth || 0),
         loot: Number(player.loot || 0),
@@ -1647,6 +1698,7 @@ export default class Game {
     const state = snapshot.player || {};
     [
       'health',
+      'armor',
       'maxHealth',
       'loot',
       'credits',
@@ -1656,6 +1708,7 @@ export default class Game {
     ].forEach((key) => {
       if (Number.isFinite(Number(state[key]))) this.player[key] = Number(state[key]);
     });
+    this.player.itemModifiers = structuredClone(state.itemModifiers || []);
     this.player.equippedUpgrades = JSON.parse(JSON.stringify(state.equippedUpgrades || []));
     this.player.cosmetics = JSON.parse(JSON.stringify(state.cosmetics || []));
     this.player.superReady = state.superReady === true;
@@ -1663,6 +1716,7 @@ export default class Game {
     this.player.applyUpgrades(this.player.equippedUpgrades);
     this.abilities = { ...(snapshot.abilities || {}) };
     this.activeWeaponIndex = Math.max(0, Math.floor(Number(snapshot.activeWeaponIndex || 0)));
+    this.items?.restoreAfterTravel(snapshot);
     this.ensureActiveWeaponAvailable?.();
     if (restorePosition && snapshot.position) {
       this.player.x = Number(snapshot.position.x || 0);
@@ -1720,7 +1774,7 @@ export default class Game {
     liveRevision = ''
   } = {}) {
     const ref = sanitizeProjectFileName(carRef);
-    if (!ref || !document || !this.raceEditor) return null;
+    if (!ref || !document || !this.raceEditor || isSystemCarDocument(document, ref)) return null;
     const car = this.raceEditor.withSavedRaceCarRuntimeIdentity?.(
       this.raceEditor.normalizeLoadedCarDocument?.(document, ref, { preserveExistingArt: true }),
       ref
@@ -1832,9 +1886,10 @@ export default class Game {
       this.showSystemToast?.('Choose a race first.');
       return false;
     }
-    let car = null;
+    const continuation = params.continuation === this.raceTravelSession ? params.continuation : null;
+    let car = continuation?.carSelection || null;
     try {
-      car = params.carSelection === 'specific'
+      if (!car) car = params.carSelection === 'specific'
         ? await this.resolveRaceTravelCarAsync(params.carRef)
         : null;
     } catch (error) {
@@ -1846,14 +1901,26 @@ export default class Game {
       this.showSystemToast?.('Race start cancelled.');
       return false;
     }
-    const runtimeCar = car.car || car;
+    if (params.menuFlow && (!params.menuFlow.active || params.menuFlow !== this.menuPlayer?.flow)) return false;
+    let runtimeCar = car.car || car;
+    try {
+      const garage=params.garage||continuation?.garage||this.items?.garage;
+      if(garage)runtimeCar=await garage.build(car.documentName||car.name||params.carRef,runtimeCar);
+    }catch(error){this.showSystemToast?.(`Garage could not prepare car: ${error.message}`);return false;}
+    if (params.menuFlow && (!params.menuFlow.active || params.menuFlow !== this.menuPlayer?.flow)) return false;
     const engineSfxRef = String(runtimeCar.audio?.engineSoundId || '').trim();
     const engineSfxPreparation = this.prepareRacePlaytestAudio({
       engineSoundId: engineSfxRef
     });
     const originState = this.state;
-    this.raceTravelSession = this.createRaceTravelSession({ originState, car });
+    this.raceTravelSession = continuation || this.createRaceTravelSession({ originState, car });
     const travelSession = this.raceTravelSession;
+    travelSession.carSelection = car;
+    travelSession.garage = params.garage || continuation?.garage || this.items?.garage;
+    if (!continuation) {
+      travelSession.menuFlow = params.menuFlow || null;
+      travelSession.menuConfiguration = structuredClone(params.menuConfiguration || {});
+    }
     this.transitionTo('race-editor', { forceCleanup: true });
     this.setRevAudio(false);
     this.raceEditor.beginRaceTravelLoading?.(raceName, car.id);
@@ -1868,10 +1935,13 @@ export default class Game {
     let normalizedRaceDocument = false;
     let racePreparationError = null;
     try {
+      const savedCars = await this.raceEditor.hydrateSavedRaceCarsForTravel?.() || [];
+      if (this.raceTravelSession !== travelSession) return false;
       const prepared = await this.raceEditor.loadRaceTravelDocument?.(raceName, {
-        artRefs: Array.isArray(car.artRefs)
-          ? car.artRefs
-          : this.raceEditor.collectRaceCarArtRefs?.(runtimeCar) || []
+        artRefs: [...new Set([
+          ...(this.raceEditor.collectRaceCarArtRefs?.(runtimeCar) || car.artRefs || []),
+          ...savedCars.flatMap(candidate => this.raceEditor.collectRaceCarArtRefs?.(candidate) || [])
+        ])]
       });
       void engineSfxPreparation;
       if (prepared?.race && prepared?.bake) {
@@ -1966,6 +2036,14 @@ export default class Game {
         else setTimeout(resolve, 0);
       });
       if (this.raceTravelSession !== travelSession) return false;
+      if (['easy','medium','hard'].includes(travelSession.menuConfiguration.difficulty)) {
+        const difficulty = travelSession.menuConfiguration.difficulty;
+        for (const driver of this.raceEditor.selectedRace.competition?.aiDrivers || []) {
+          driver.difficulty = difficulty;
+          driver.skill = {easy:0.38,medium:0.58,hard:0.76}[difficulty];
+          driver.aggression = {easy:0.28,medium:0.45,hard:0.62}[difficulty];
+        }
+      }
       this.raceEditor.startPlaytest(car.id, {
         hydrateCars: false,
         raceTravel: true,
@@ -1976,6 +2054,7 @@ export default class Game {
           || travelSession.trackStateByRace?.[raceDocument.id]
           || null
       });
+      if (this.raceEditor.playtestSession) this.raceEditor.playtestSession.menuConfiguration = structuredClone(travelSession.menuConfiguration);
       if (this.raceEditor.playtestSession?.running !== true) {
         throw new Error('Race playtest did not enter the running state');
       }
@@ -2013,7 +2092,10 @@ export default class Game {
     this.raceTravelSession = null;
     this.raceEditorPlaytestReturn = false;
     this.playtestActive = session.originPlaytestActive === true;
-    if (session.originState === 'playing' || session.originState === 'pause') {
+    if (session.originState === 'menu-player' && session.menuFlow === this.menuPlayer?.flow) {
+      this.transitionTo('menu-player', {forceCleanup:true});
+      this.menuPlayer.enterScreen();
+    } else if (session.originState === 'playing' || session.originState === 'pause') {
       this.restoreRaceTravelPlayerState(session.playerSnapshot, { restorePosition: true });
       this.lastSave = { x: this.player.x, y: this.player.y };
       this.snapCameraToPlayer();
@@ -2046,6 +2128,11 @@ export default class Game {
     }
     if (type === 'race') {
       const raceName = String(finishBehavior.targetRace || '').trim();
+      if (session.menuFlow && session.menuFlow === this.menuPlayer?.flow && session.menuFlow.active) {
+        if (!raceName) return this.returnRaceTravelToOrigin({message:'Next race not configured'});
+        void this.startRaceTravel({raceName, continuation:session, carSelection:'specific', carRef:session.carRef});
+        return true;
+      }
       const payload = raceName ? loadProjectFile('races', raceName) : null;
       if (!payload?.data || !this.raceEditor?.applyLoadedRaceDocument?.(payload.data, { name: raceName })) {
         return this.returnRaceTravelToOrigin({ message: `Next race not found: ${raceName || 'unset'}` });
@@ -2105,6 +2192,29 @@ export default class Game {
     this.transitionTo('car-editor');
     this.setRevAudio(false);
     this.playtestActive = false;
+  }
+
+  enterMenuEditor() {
+    this.transitionTo('menu-editor');
+    this.setRevAudio(false);
+    this.playtestActive = false;
+  }
+
+  exitMenuEditor() { this.transitionTo('title', {forceCleanup:true}); }
+
+  async previewMenu(document, {screenId = this.menuEditor?.screenId} = {}) { return this.menuPlayer.open(document, {preview:true, screenId}); }
+
+  async playStartingMenu() {
+    if (this.menuLaunchPending) return;
+    this.menuLaunchPending = true;
+    try {
+      const preference = await loadServerPreferenceAsync('menu-launch', null);
+      if (!preference?.menuRef) return await this.menuPlayer.open(createMenuDocument());
+      const payload = await hydrateProjectFilePayload('menus', preference.menuRef);
+      if (!payload?.data) throw new Error(`Starting menu not found: ${preference.menuRef}`);
+      await this.menuPlayer.open(payload.data);
+    } catch (error) { this.showSystemToast(error.message); }
+    finally { this.menuLaunchPending = false; }
   }
 
   enterModelEditor() {
@@ -2194,6 +2304,12 @@ export default class Game {
     }
     this.playtestActive = false;
     const destination = toTitle ? 'title' : (this.pixelStudioReturnState || 'title');
+    // The level embeds tile art too. Save the updated world alongside the tile
+    // document so reopening the level cannot restore its pre-edit artwork.
+    if (destination === 'editor' && this.editor?.autosaveLoaded) {
+      this.editor.persistAutosave();
+      this.editor.flushPendingAutosave();
+    }
     this.transitionTo(destination, { forceCleanup: true });
     if (destination === 'actor-editor') {
       this.actorEditor.activate();
@@ -2605,6 +2721,10 @@ export default class Game {
 
   returnToEditorFromPlaytest() {
     if (!this.playtestActive) return;
+    if (this.menuPlayer?.preview && this.menuPlayer.previewSnapshot && this.menuPlayer.flow?.active) {
+      this.menuPlayer.flow.stop();
+      return;
+    }
     if (this.actorEditorTestSnapshot) {
       const snapshot = this.actorEditorTestSnapshot;
       this.actorEditorTestSnapshot = null;
@@ -2652,8 +2772,10 @@ export default class Game {
   }
 
   resetRun({ playtest = false, startWithEverything = true } = {}) {
+    this.mixTapePickupState = {};
     this.world.reset();
     this.player = new Player(this.spawnPoint.x, this.spawnPoint.y);
+    this.items?.beginRun();
     this.friendlyCompanion = null;
     const startLoaded = this.gameMode === 'endless' || startWithEverything === true;
     if (startLoaded) {
@@ -2769,6 +2891,7 @@ export default class Game {
     this.testHarness.active = false;
     this.simulationActive = false;
     this.resetWorldSystems();
+    if(this.items?.ready)this.items.restorePlayer();
     this.resetTriggerState();
     this.runStartupTriggers();
   }
@@ -3320,6 +3443,15 @@ export default class Game {
   }
 
   _updateByState(dt) {
+    if (this.radio) {
+      this.radio.setVolume(this.audio?.midiBusVolume ?? 0.8);
+      const racing = this.state === 'race-editor' && this.raceEditor?.playtestSession?.running;
+      const inLevel = ['playing', 'pause', 'dialog', 'shop'].includes(this.state);
+      const enabled = Boolean(racing ? this.raceEditor.selectedRace?.radioEnabled !== false : inLevel && this.world?.radioEnabled !== false);
+      this.radio.setContext(enabled, racing ? this.raceEditor.selectedRace?.radioStationIds : null);
+      if (enabled && !this.radio.loading) void this.radio.load();
+      this.raceRadio?.update(racing?this.raceEditor.playtestSession:null,{paused:this.raceEditor?.raceInput.paused,dt});
+    }
     if (this.state === 'loading') {
       this.title.update(dt);
       return;
@@ -3354,6 +3486,14 @@ export default class Game {
         this.exitSfxEditor();
       } else if (this.state === 'cutscene-editor') {
         this.exitCutsceneEditor();
+      } else if (this.state === 'menu-player') {
+        this.menuPlayer.flow?.stop();
+      } else if (this.state === 'item-editor') {
+        this.itemEditor.exitToMainMenu();
+      } else if (this.state === 'radio-editor') {
+        this.radioEditor.exitToMainMenu();
+      } else if (this.state === 'menu-editor') {
+        this.exitMenuEditor();
       } else if (this.state === 'model-editor') {
         this.exitModelEditor();
       } else if (this.state === 'tire-editor') {
@@ -3432,6 +3572,23 @@ export default class Game {
       }
       this.cutsceneEditor.update(this.input, dt);
       this.updateActiveMusicPlayers(dt);
+      this.input.flush();
+      return;
+    }
+
+    if (this.state === 'item-editor') {
+      this.itemEditor.update(this.input, dt);
+      this.input.flush();
+      return;
+    }
+
+    if (this.state === 'radio-editor') {
+      this.radioEditor.update(this.input, dt);this.input.flush();return;
+    }
+    if (this.state === 'menu-editor' || this.state === 'menu-player') {
+      const target = this.state === 'menu-editor' ? this.menuEditor : this.menuPlayer;
+      target.update(this.input, dt);
+      if (!(this.state === 'menu-player' && target.paused)) this.updateActiveMusicPlayers(dt);
       this.input.flush();
       return;
     }
@@ -3556,6 +3713,11 @@ export default class Game {
         this.pauseExitConfirmOpen = false;
         this.pauseMenu.resetConfirm?.();
         resetMenuRepeatState(this.pauseMenuRepeatState);
+      } else if (this.pauseMenu.radioOpen) {
+        if(this.pauseMenu.radioMenu.page !== 'main')this.pauseMenu.radioMenu.page='main';else this.pauseMenu.radioOpen=false;
+        this.pauseMenu.selection=0;
+      } else if(this.pauseMenu.inventoryOpen){
+        if(this.pauseMenu.inventoryMenu?.page==='radio')this.pauseMenu.inventoryMenu.page='items';else this.pauseMenu.inventoryOpen=false;this.pauseMenu.selection=0;
       } else if (this.minimapSelected) {
         this.minimapSelected = false;
         resetMenuRepeatState(this.pauseMenuRepeatState);
@@ -3873,9 +4035,13 @@ export default class Game {
     const prevPlayer = { x: this.player.x, y: this.player.y };
     this.previousPlayerPosition = prevPlayer;
     const prevCompanion = this.friendlyCompanion ? { x: this.friendlyCompanion.x, y: this.friendlyCompanion.y } : null;
-    this.player.update(dt * timeScale, this.input, this.world, this.abilities);
+    this.items?.runtime.update(dt);
+    if(this.input.wasPressedCode?.('KeyU'))void this.items?.use();
+    this.player.update(dt * timeScale * (this.player.itemSpeedMultiplier||1), this.input, this.world, this.abilities);
+    updateLevelMixTapes(this);
+    updateLevelItems(this);
     if (this.friendlyCompanion) {
-      this.friendlyCompanion.update(dt * timeScale, this.world, this.abilities, {
+      this.friendlyCompanion.update(dt * timeScale * (this.friendlyCompanion.itemSpeedMultiplier||1), this.world, this.abilities, {
         player: this.player,
         enemies: this.enemies,
         boss: this.boss,
@@ -6192,7 +6358,7 @@ export default class Game {
         return;
       }
       const slowScale = enemy.slowTimer > 0 ? enemy.slowFactor : 1;
-      const scaledDt = dt * slowScale;
+      const scaledDt = dt * slowScale * (enemy.itemSpeedMultiplier||1);
       enemy.update(scaledDt, this.player, context);
       this.applyEnemyGravity(enemy, scaledDt);
       if (enemy.solid) {
@@ -6523,65 +6689,7 @@ export default class Game {
   }
 
   checkPickups() {
-    this.world.abilityPickups.forEach((pickup) => {
-      if (pickup.collected) return;
-      const dist = Math.hypot(pickup.x - this.player.x, pickup.y - this.player.y);
-      if (dist < 30) {
-        pickup.collected = true;
-        this.abilities[pickup.ability] = true;
-        if (pickup.ability === 'magboots') {
-          this.player.upgradeSlots = Math.max(this.player.upgradeSlots, 3);
-        }
-        if (pickup.ability === 'resonance') {
-          this.player.upgradeSlots = 4;
-        }
-        if (pickup.ability === 'ignitir') {
-          this.selectWeapon(0);
-        }
-        if (pickup.ability === 'flamethrower') {
-          this.selectWeapon(2);
-        }
-        this.ensureActiveWeaponAvailable();
-        const pickupPause = this.audio.pickup();
-        this.pickupPauseTimer = Math.max(this.pickupPauseTimer, pickupPause || 0);
-        this.spawnEffect('pickup', pickup.x, pickup.y - 8);
-        this.recordFeedback('pickup', 'audio');
-        this.recordFeedback('pickup', 'visual');
-        const label = ABILITY_PICKUP_LABELS[pickup.ability] || 'Upgrade';
-        this.showSystemToast(`${label} acquired`);
-      }
-    });
-
-    this.world.mapPickups?.forEach((pickup) => {
-      if (pickup.collected) return;
-      const dist = Math.hypot(pickup.x - this.player.x, pickup.y - this.player.y);
-      if (dist < 30) {
-        pickup.collected = true;
-        const roomIndex = this.world.roomAtTile?.(
-          Math.floor(this.player.x / this.world.tileSize),
-          Math.floor(this.player.y / this.world.tileSize)
-        );
-        this.minimap.revealNearbyRooms(roomIndex, 7);
-        this.audio.download();
-        this.spawnEffect('pickup', pickup.x, pickup.y - 8);
-        this.recordFeedback('pickup', 'audio');
-        this.recordFeedback('pickup', 'visual');
-        this.showModalPrompt('Map updated');
-      }
-    });
-
-    this.world.healthUpgrades.forEach((upgrade) => {
-      if (upgrade.collected) return;
-      const dist = Math.hypot(upgrade.x - this.player.x, upgrade.y - this.player.y);
-      if (dist < 30) {
-        upgrade.collected = true;
-        this.player.gainMaxHealth(1);
-        this.audio.spawnTune();
-        this.spawnEffect('pickup', upgrade.x, upgrade.y - 8);
-        this.recordFeedback('pickup', 'audio');
-        this.recordFeedback('pickup', 'visual');
-      }
-    });
+    updateLegacyItemPickups(this);
   }
 
   checkSavePoints() {
@@ -7563,6 +7671,14 @@ export default class Game {
     if (action.type === 'kill-player') {
       this.player.takeDamage?.(999);
       onDone();
+      return;
+    }
+    if (action.type === 'add-item') {
+      const quantity=Math.max(1,Math.min(100,Math.floor(Number(params.quantity)||1)));
+      const index=Math.max(0,(trigger?.actions||[]).indexOf(action));
+      void itemLibrary.load(params.itemId).then(async item=>{
+        for(let i=0;i<quantity;i++)await getItemSystem(this).collect(item,`trigger:${this.world.itemScope}:${triggerId}:${index}:${i}`);
+      }).catch(error=>this.showSystemToast(error.message)).finally(onDone);
       return;
     }
     if (action.type === 'heal-player') {
@@ -8854,6 +8970,7 @@ export default class Game {
         ctx.restore();
       }
       this.player.draw(ctx);
+      this.items?.runtime.draw(ctx);
       const tileSize = this.world.tileSize;
       const playerTileX = Math.floor(this.player.x / tileSize);
       const playerTileY = Math.floor(this.player.y / tileSize);
@@ -10201,6 +10318,8 @@ export default class Game {
     const viewRight = cameraX + cameraWidth + tileSize * 2;
     const viewBottom = cameraY + cameraHeight + tileSize * 2;
     decals.forEach((decal) => {
+      if (this.state !== 'editor' && isItemPickup(decal) && this.items?.isCollected(itemPlacementId(decal))) return;
+      if (this.state !== 'editor' && isMixTape(decal) && this.mixTapePickupState?.mixTapeCollected?.has(decal.id)) return;
       if (!decal?.imageDataUrl && !decal?.model?.ref) return;
       const x = Number.isFinite(decal.x) ? decal.x : 0;
       const y = Number.isFinite(decal.y) ? decal.y : 0;
@@ -10218,7 +10337,11 @@ export default class Game {
       ctx.save();
       const decalAlpha = Number.isFinite(decal.alpha) ? Math.max(0, Math.min(1, decal.alpha)) : 1;
       ctx.globalAlpha = decalAlpha * Math.max(0, Math.min(1, decalAlphaMultiplier));
-      if (Math.abs(rotation) > 0.001) {
+      if (isMixTape(decal)) {
+        ctx.translate(x+w/2,y+h/2);ctx.rotate(rotation*Math.PI/180);
+        const spin=this.state==='editor'?1:Math.cos(mixTapeRotation(time));
+        ctx.scale(Math.abs(spin)<0.04?0.04:spin,1);ctx.drawImage(image,-w/2,-h/2,w,h);
+      } else if (Math.abs(rotation) > 0.001) {
         const centerX = x + w * 0.5;
         const centerY = y + h * 0.5;
         ctx.translate(centerX, centerY);
@@ -10972,6 +11095,9 @@ export default class Game {
           this.transitionTo('playing');
           this.minimapSelected = false;
           resetMenuRepeatState(this.pauseMenuRepeatState);
+        } else if (itemHit.id === 'radio' || itemHit.id.startsWith('radio-')) {
+          this.pauseMenu.getItems().find(item => item.id === itemHit.id)?.onClick?.();
+          this.pauseMenu.selection = 0;
         } else if (itemHit.id === 'exit') {
           this.pauseExitConfirmOpen = true;
           this.pauseMenu.resetConfirm?.();
@@ -11225,6 +11351,10 @@ export default class Game {
     this.stateManager.register('car-editor', createDelegatedState(this, 'carEditor'));
     this.stateManager.register('tire-editor', createDelegatedState(this, 'tireEditor'));
     this.stateManager.register('model-editor', createDelegatedState(this, 'modelEditor'));
+    this.stateManager.register('radio-editor', createDelegatedState(this, 'radioEditor'));
+    this.stateManager.register('menu-editor', createDelegatedState(this, 'menuEditor'));
+    this.stateManager.register('menu-player', createDelegatedState(this, 'menuPlayer'));
+    this.stateManager.register('item-editor', createDelegatedState(this, 'itemEditor'));
     this.stateManager.register('doodad-editor', createDelegatedState(this, 'doodadEditor'));
     this.stateManager.register('robtersession', new RobterSessionState(this));
   }

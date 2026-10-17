@@ -1,3 +1,5 @@
+import { getRaceStickLook, stepRaceLookAngle } from './RaceCameraInput.js';
+import { getWheelSlipPresentation } from './simulation/WheelSlipPresentation.js';
 import { roadEdgeOverlapsRoad } from './RaceRoadEdgeClearance.js';
 import { RACE_WHEEL_IDS, clamp, normalizeAngle } from './simulation/SimulationMath.js';
 import { getSurfaceById } from './raceData.js';
@@ -556,6 +558,7 @@ function createRaceStaticColliderWorld(editor, {
   }
   scenery.forEach((sprite) => {
     const doodad = editor.getRaceDoodadForScenery?.(sprite) || {};
+    if (doodad.itemType === 'mix-tape' || doodad.itemType === 'item') return;
     const rules = [doodad.defaultRule, ...(doodad.rules || [])].filter(Boolean);
     const permanentlySolid = sprite?.solid === true
       || sprite?.collidable === true
@@ -1009,6 +1012,7 @@ function advanceVehicleDynamicsAuthority(editor, {
   weatherState
 }) {
   const session = editor.playtestSession;
+  controls={...controls,itemSpeedMultiplier:countdownActive?1:session.itemSpeedMultiplier||1};
   const authority = ensureVehicleDynamicsAuthority(editor, tuning, controls);
   if (authority.workerBridge) {
     const workerSnapshot = authority.workerBridge.update({
@@ -2368,7 +2372,8 @@ export function updateRaceSimulation({
   );
   if (!vehicleState?.running) return;
   if (input && input !== editor.raceInput) editor.raceInput = input;
-  if (editor.raceInput.paused) return;
+  if (editor.raceInput.paused || editor.playtestSession.raceResults) return;
+  if (editor.playtestSession.raceMusicPending && Number(editor.playtestSession.countdownRemainingMs||0)>1000) return;
   const car = editor.getRaceSessionCar(editor.playtestSession);
   const tuning = editor.getRaceCarTuning(car);
   const authoritativeGroundSpeedMps = Number(editor.playtestSession.groundSpeedMps
@@ -2430,10 +2435,15 @@ export function updateRaceSimulation({
     editor.applyRaceAnalogInput();
   }
   const physicalGamepad = editor.hasPhysicalRaceGamepad();
-  if (!physicalGamepad) editor.raceInput.lookIntentX = 0;
-  const lookTarget = physicalGamepad ? clamp(Number(editor.raceInput.lookIntentX || 0), -1, 1) * Math.PI : 0;
-  const lookRate = Math.abs(lookTarget) > 0.01 ? 7.5 : 4.2;
-  editor.raceInput.lookAngle += (lookTarget - Number(editor.raceInput.lookAngle || 0)) * Math.min(1, seconds * lookRate);
+  if (!physicalGamepad) {
+    editor.raceInput.lookIntentX = 0;
+    editor.raceInput.lookIntentY = 0;
+  }
+  const look = getRaceStickLook(editor.raceInput.lookIntentX, editor.raceInput.lookIntentY);
+  editor.raceInput.lookStickActive = physicalGamepad && look.active;
+  editor.raceInput.lookAngle = stepRaceLookAngle(
+    Number(editor.raceInput.lookAngle || 0), look.angle, seconds, editor.raceInput.lookStickActive
+  );
   editor.updateRacePedalAxes(seconds);
   const launchSteeringLocked = countdownActive || (
     editor.isRaceLaunchSteeringLocked(editor.playtestSession)
@@ -4013,7 +4023,7 @@ export function updateRaceSimulation({
       editor.playtestSession.passedCheckpoints = [];
       if (editor.playtestSession.lap > Math.max(1, Number(editor.selectedRace.laps || 1))) {
         editor.playtestSession.lap = Math.max(1, Number(editor.selectedRace.laps || 1));
-        editor.finishPlaytest();
+        (editor.showRaceResults || editor.finishPlaytest).call(editor);
         return;
       }
     }
@@ -4039,7 +4049,7 @@ export function updateRaceSimulation({
       && checkpointsComplete)
       || (integratedFinish && checkpointsComplete))) {
       editor.playtestSession.distance = routeLength;
-      editor.finishPlaytest();
+      (editor.showRaceResults || editor.finishPlaytest).call(editor);
       return;
     }
   }
@@ -4059,8 +4069,9 @@ export function updateRaceSimulation({
     Number(editor.playtestSession.velocityYaw || 0) - Number(editor.playtestSession.carYaw || 0)
   ));
   editor.playtestSession.cameraYaw = editor.getCarCameraTrackingMode(car) === 'dynamic'
-    && cameraSlipYaw > 0.12
-    ? Number(editor.playtestSession.velocityYaw || 0)
+    && cameraSlipYaw > 0.12 && !editor.raceInput.lookStickActive
+    ? normalizeAngle(Number(editor.playtestSession.velocityYaw || 0)
+      + (physicalGamepad ? Number(editor.raceInput.lookAngle || 0) : 0))
     : editor.getRacePlaytestCameraYaw(editor.playtestSession, { seconds, smooth: true });
   editor.playtestSession.cameraChaseYaw = Number(editor.playtestSession.cameraYaw || roadYaw);
   const trackViewTarget = clamp(
@@ -4069,11 +4080,13 @@ export function updateRaceSimulation({
     0.58
   );
   editor.playtestSession.roadViewOffset += (trackViewTarget - Number(editor.playtestSession.roadViewOffset || 0)) * Math.min(1, seconds * 3.2);
+  const physicalTirePresentation=getWheelSlipPresentation(presentationState,editor.playtestSession.vehicleRenderProfile?.wheelRadiusM??tuning.wheelRadiusM);
   const authoritativeEngineRpm = Number(editor.playtestSession.engineRpm || diagnosticEngineRpm);
   editor.playtestSession.rpm = clamp(authoritativeEngineRpm / tuning.revLimitRpm, 0, 1.08);
   editor.updateRaceEngineAudio({ tuning, throttle: engineThrottle, load: relaxedWheelSpinRatio });
   editor.updateRaceTireAudio({
-    slip: audibleSlip,
+    slip: physicalTirePresentation.audibleSlip,
+    slipSpeedMps: physicalTirePresentation.slipSpeedMps,
     surface: segmentInfo.segment?.surface,
     speedMps: absSpeed
   });
@@ -4135,7 +4148,8 @@ export function updateRaceSimulation({
     wheelSpin: relaxedWheelSpinRatio,
     wheelSpinByWheel: contactWheelSpinRatioByWheel,
     wheelContactScaleByWheel,
-    speedMps: absSpeed
+    speedMps: absSpeed,
+    ...physicalTirePresentation
   };
   if (!countdownActive) {
     editor.updateRaceTireTracks(tireFxContext);

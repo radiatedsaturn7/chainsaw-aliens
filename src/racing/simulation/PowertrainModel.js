@@ -429,21 +429,37 @@ export class PowertrainModel {
         tuning.gearFinalDrive ?? tuning.finalDrive ?? 1
       )));
       const projectedRpm = (candidateGear) => {
-        const ratio = Math.abs(Number(this.getGearRatio(tuning, candidateGear)) || 0);
+        const ratio = Math.abs(Number(this.getGearRatio({ ...tuning, gearRatios: ratios }, candidateGear)) || 0);
         return averageDrivenOmega * ratio * finalDriveForShift * 60 / (Math.PI * 2);
       };
       const currentRpm = Number(previous.engineRpm ?? state.engineRpm ?? idleRpm);
-      const upshiftRpm = clamp(Number(tuning.autoUpshiftRpm || maxRpm * 0.92), idleRpm + 500, maxRpm * 0.99);
-      const downshiftRpm = clamp(Number(tuning.autoDownshiftRpm || maxRpm * 0.34), idleRpm * 1.1, upshiftRpm - 400);
+      const upshiftRpm = this.getAutomaticUpshiftRpm({ ...tuning, idleRpm, revLimitRpm: maxRpm });
+      const downshiftRpm = this.getAutomaticDownshiftRpm({ ...tuning, idleRpm, revLimitRpm: maxRpm });
       const throttle = clamp(Number(controls.throttle || 0), 0, 1);
       const brake = clamp(Number(controls.brake || 0), 0, 1);
-      const forwardSpeed = Number(state.bodyLongitudinalSpeedMps || 0);
-      if (gear < ratios.length && currentRpm >= upshiftRpm
+      // Converter slip can keep engine RPM high after the car slows to a stop.
+      // Use shaft speed as well so an automatic cannot remain stuck in a tall
+      // gear. The lower-gear RPM guard still prevents wheelspin over-rev shifts.
+      const downshiftReferenceRpm = Math.min(currentRpm, projectedRpm(gear));
+      // Demand a lower gear under acceleration before the engine starts lugging.
+      // Leave headroom below the upshift point so the new gear is sustainable.
+      const kickdownDemand = clamp((throttle - 0.45) / 0.55, 0, 1);
+      const demandDownshiftRpm = downshiftRpm
+        + (Math.max(downshiftRpm, upshiftRpm * 0.72) - downshiftRpm) * kickdownDemand;
+      const lowerGearRpm = projectedRpm(gear - 1);
+      const safeLowerGearRpm = Math.min(maxRpm * 0.94, upshiftRpm - 300);
+      // Engine flare through an unlocked converter is not road speed. Using
+      // engine RPM alone here fights shaft-based kickdown under steady load.
+      // Both directions must agree on shaft speed, with a 300 RPM gap.
+      if (shiftRecoveryTimeRemainingSeconds > 0) {
+        requestedGear = gear;
+      } else if (gear < ratios.length && currentRpm >= upshiftRpm
+        && projectedRpm(gear) >= upshiftRpm
         && projectedRpm(gear + 1) >= idleRpm * (1.15 + throttle * 0.25)) {
         requestedGear = gear + 1;
       } else if (gear > 1
-        && (currentRpm <= downshiftRpm || brake > 0.2)
-        && projectedRpm(gear - 1) <= maxRpm * 0.94) {
+        && (downshiftReferenceRpm <= demandDownshiftRpm || brake > 0.2)
+        && lowerGearRpm <= safeLowerGearRpm) {
         requestedGear = gear - 1;
       } else {
         requestedGear = gear;

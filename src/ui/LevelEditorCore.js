@@ -1,3 +1,7 @@
+import {modelAssets} from '../model3d/ModelAssets.js';
+import itemDefaults from '../content/items.json' with {type:'json'};
+import {normalizeItemDocument} from '../items/ItemDocument.js';
+import {getRaceArtSpriteCanvasShared,hydrateRaceArtSpriteShared} from './shared/raceArtSpriteCanvas.js';
 import {openProjectBrowser} from './ProjectBrowserModal.js';
 import {pickModelBinding} from './ModelPicker.js';
 import {modelSprites} from '../model3d/ModelSprites.js';
@@ -196,16 +200,7 @@ const PREFAB_TYPES = [
   { id: 'sand-platform', label: 'Sand Platform', short: 'SP' }
 ];
 
-const POWERUP_TYPES = [
-  { id: 'powerup-chainsaw', label: 'Tool: Chainsaw Throw', char: 'g' },
-  { id: 'powerup-flame-saw', label: 'Tool: Flame-Saw', char: 'p' },
-  { id: 'powerup-mag-boots', label: 'Ability: Mag Boots', char: 'm' },
-  { id: 'powerup-resonance', label: 'Ability: Resonance', char: 'r' },
-  { id: 'powerup-ignitir', label: 'Weapon: Ignitir', char: 'i' },
-  { id: 'powerup-flamethrower', label: 'Weapon: Flamethrower', char: 'f' },
-  { id: 'powerup-vitality-core', label: 'Vitality Core', char: 'H' },
-  { id: 'powerup-map', label: 'Map Cache', char: 'M' }
-];
+const POWERUP_TYPES = itemDefaults.items.filter(item=>item.legacyTile).map(item=>({id:item.paletteId||`item-${item.id}`,label:item.paletteLabel||item.name,char:item.legacyTile,itemRef:item.id}));
 
 const TRIGGER_CONDITIONS = [
   'On level start',
@@ -254,7 +249,7 @@ const TRIGGER_ACTION_TYPES = [
   { id: 'fade-in-music', label: 'Fade In Music' }
 ];
 
-const TRIGGER_ITEM_OPTIONS = ['chainsaw-throw', 'flame-saw', 'mag-boots', 'resonance', 'flamethrower', 'health-pack'];
+const TRIGGER_ITEM_OPTIONS = itemDefaults.items.map(item=>item.id);
 const TRIGGER_ANIMATION_OPTIONS = ['spark-burst', 'explosion-small', 'portal-open', 'screen-shake'];
 const TRIGGER_TARGET_OPTIONS = ['player', 'enemy', 'object'];
 const TRIGGER_ENEMY_TARGET_OPTIONS = ['nearest', 'all-in-zone', 'by-tag'];
@@ -1749,7 +1744,8 @@ export default class Editor {
       columns = 2;
     } else if (tabId === 'level-settings') {
       items = [
-        { id: 'resize-level', label: 'Resize Level', tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
+        { id: 'level-radio', label: `Radio: ${this.game.world.radioEnabled !== false ? 'On' : 'Off'}`, onClick: () => {this.game.world.radioEnabled = this.game.world.radioEnabled === false;this.game.world.data.radioEnabled = this.game.world.radioEnabled;this.persistAutosave();} },
+            { id: 'resize-level', label: 'Resize Level', tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
         { id: 'crop-level', label: 'Crop Level', tooltip: 'Crop level to smallest bounds containing placed content', onClick: () => this.cropLevelToContent() },
         ...(spawnTile
           ? [{
@@ -1879,6 +1875,7 @@ export default class Editor {
           this.setTileType(powerup);
         }
       }));
+      items.unshift({id:'item-place',label:'Place Item from File',onClick:()=>this.addMixTape()});
       columns = 2;
     } else if (tabId === 'prefabs') {
       items = PREFAB_TYPES.map((prefab) => ({
@@ -1978,6 +1975,7 @@ export default class Editor {
           onClick: () => { this.takeGraphicsScreenshot(); }
         },
         {id:'graphics-model',label:'Add 3D Model',onClick:()=>this.addModelScenery()},
+        {id:'graphics-mix-tape',label:'Add Item',onClick:()=>this.addMixTape()},
         {id:'graphics-doodad',label:'Add 3D Doodad',onClick:()=>this.addModelScenery({doodad:true})},
         {
           id: 'graphics-apply-decal',
@@ -2515,6 +2513,7 @@ export default class Editor {
         id: 'powerups',
         title: 'Powerups',
         items: [
+          surfaceAction('item-place', 'Place Item from File', () => this.addMixTape()),
           surfaceAction('powerup-place', 'Place Selected Powerup', () => { this.mode = 'tile'; }),
           ...POWERUP_TYPES.map((powerup) => surfaceAction(powerup.id, powerup.label, () => {
             this.mode = 'tile';
@@ -2713,6 +2712,7 @@ export default class Editor {
     const spawn = { x: Math.floor(w / 2), y: Math.floor(h / 2) };
     return {
       schemaVersion: 1,
+      itemScope: globalThis.crypto?.randomUUID?.() || `level-${Date.now()}-${Math.random().toString(36).slice(2)}`,
       tileSize: this.game.world.tileSize || 32,
       width: w,
       height: h,
@@ -3481,6 +3481,19 @@ export default class Editor {
       w,
       h
     };
+  }
+
+  async addMixTape() {
+    try {
+      const picked=await openProjectBrowser({mode:'open',fixedFolder:'items',initialFolder:'items',title:'Choose Item'});if(!picked?.name)return;
+      const item=normalizeItemDocument(picked.payload?.data||loadProjectFile('items',picked.name)?.data);
+      let canvas=null;
+      if(item.model?.ref)await modelAssets.prepare(item.model.ref);
+      else {await hydrateRaceArtSpriteShared(item.artRef);canvas=getRaceArtSpriteCanvasShared(item.artRef);if(!canvas)throw Error('Assign artwork or a 3D model in the Item Editor.');}
+      const placement=this.resolveDecalPlacement(item.widthPx,item.heightPx);
+      const entry={...placement,id:`item-${Date.now()}-${Math.random().toString(36).slice(2)}`,name:item.name,itemRef:picked.name,itemType:'item',item,model:item.model,imageDataUrl:canvas?.toDataURL()||'',baseW:placement.w,baseH:placement.h,rotation:0};
+      this.ensureDecals().push(entry);this.selectedDecalId=entry.id;this.persistAutosave();this.setGraphicsStatus(`Added ${item.name}. Drag to move; use graphics controls to resize or delete.`);
+    }catch(error){this.setGraphicsStatus(error.message);}
   }
 
   async addModelScenery({doodad=false}={}) {
@@ -9221,6 +9234,7 @@ export default class Editor {
           columns = 1;
         } else if (activeTab === 'level-settings') {
           items = [
+            { id: 'level-radio', label: `Radio: ${this.game.world.radioEnabled !== false ? 'On' : 'Off'}`, onClick: () => {this.game.world.radioEnabled = this.game.world.radioEnabled === false;this.game.world.data.radioEnabled = this.game.world.radioEnabled;this.persistAutosave();} },
             { id: 'resize-level', label: 'Resize Level', active: false, tooltip: 'Resize level canvas', onClick: () => this.resizeLevelDocument() },
             { id: 'crop-level', label: 'Crop Level', active: false, tooltip: 'Crop level to placed content', onClick: () => this.cropLevelToContent() },
             ...(spawnTile
@@ -9381,6 +9395,7 @@ export default class Editor {
               this.setTileType(powerup);
             }
           }));
+          items.unshift({id:'item-place',label:'Place Item from File',onClick:()=>this.addMixTape()});
           columns = portraitLayout ? 2 : 1;
         } else if (activeTab === 'prefabs') {
           items = PREFAB_TYPES.map((prefab) => ({
@@ -9463,7 +9478,8 @@ export default class Editor {
               onClick: () => { this.takeGraphicsScreenshot(); }
             },
             {id:'graphics-model',label:'ADD 3D MODEL',onClick:()=>this.addModelScenery()},
-            {id:'graphics-doodad',label:'ADD 3D DOODAD',onClick:()=>this.addModelScenery({doodad:true})},
+            {id:'graphics-mix-tape',label:'Add Item',onClick:()=>this.addMixTape()},
+        {id:'graphics-doodad',label:'ADD 3D DOODAD',onClick:()=>this.addModelScenery({doodad:true})},
             {
               id: 'graphics-apply-decal',
               label: 'APPLY DECAL (UPLOAD)',
@@ -10406,7 +10422,7 @@ export default class Editor {
           } else if (draft.type === 'save-game') {
             numericRow('Slot', 'slot', 1, 1, 9);
           } else if (draft.type === 'add-item') {
-            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Item: ${draft.params.itemId || TRIGGER_ITEM_OPTIONS[0]}`, false, () => { draft.params.itemId = this.cycleOption(draft.params.itemId, TRIGGER_ITEM_OPTIONS, 1); }, 'Cycle item');
+            drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Item: ${draft.params.itemId || TRIGGER_ITEM_OPTIONS[0]}`, false, () => { draft.params.itemId = this.cycleOption(draft.params.itemId, [...TRIGGER_ITEM_OPTIONS,...listProjectFiles('items').filter(entry=>!entry.deleted).map(entry=>entry.name)], 1); }, 'Cycle item');
             y += sectionButtonH + 4;
             numericRow('Quantity', 'quantity', 1, 1, 99);
           } else if (draft.type === 'play-animation') {

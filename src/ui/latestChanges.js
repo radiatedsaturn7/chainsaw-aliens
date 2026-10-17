@@ -9,6 +9,8 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   currentStatus: [
+    '2026-10-13 15:35 EDT - Added the Menu Editor under Graphics with saved screens, layout editing, animations, backgrounds and media, configuration-bound controls, spinning car previews, statistics and power curves, ordered Grand Prix schedules, and a selectable Main Play menu. Menu navigation, movie transitions, persisted runtime settings and configuration forwarding are under desktop and portrait browser validation.',
+    '2026-10-13 15:20 EDT - Fixed player artwork selection during turns: body frames, saved per-angle offsets and tire scales, procedural layer visibility, and front-wheel steering now use the displayed vehicle pose consistently. Added regression coverage across all eight frame boundaries in both turning directions without modifying saved car settings.',
     '2026-08-25 19:54 EDT - Simplified the Race Editor portrait navigation by removing the redundant Track root and its Add-only sheet. Track is now the first choice in the Ground mode picker and returns directly to the track workspace, where Add, Move, and the existing selection-contextual node and edge controls remain together; desktop and landscape navigation are unchanged.',
     '2026-08-21 21:25 EDT - Rebuilt VehicleValidationHarness around a coherent authoritative initialization and production-control transaction without changing vehicle physics or calibration. Above-zero-speed cases now atomically synchronize chassis velocity, wheel speed, gearing, shafts, clutch/converter, differential, static suspension/contact state, tire condition, and reset generation; validation rejects initial slip, pending shifts, recovery, backlog, or mixed generations. Manual shifts are adjacent edge-triggered transactions, analog maneuvers traverse the gamepad input path, braking begins at the exact brake-onset pose, acceleration begins at delivered drive torque, and traces use velocity-derived acceleration, effective pressure, physical rack/wheel angles, assist intervention, shift state, and phase markers. Seven exact self-checks gate measured CI shards, targetless required failures render honestly in the report, the bank-transition maneuver starts on a solvable flat approach, missing values/references fail enforcement, GitHub remains baseline-only pending reviewed trace approval, and a separate Chromium Physics Surface benchmark now measures actual browser drawing.',
     '2026-08-21 16:56 EDT - Made the Studio Sprint 2 CI performance gate authoritative for deterministic runtime integrity without mislabeling variable GitHub-hosted runners as the designated desktop reference machine. Hosted CI still records complete timing percentiles and now fails on any growing fixed-step backlog or ordinary-driving recovery; strict p50/p95/p99 enforcement remains available through --enforce-budgets for controlled target-phone and designated-desktop measurements.',
@@ -1538,6 +1540,104 @@ export const LATEST_MAJOR_WORK = {
 };
 
 export const LATEST_CHANGES = [
+  {date:'2026-10-17',time:'11:26 EDT',title:'Garage showroom and editable upgrade menus',details:['Car selection shows up to four cars in a garage view, enlarges and rotates the highlighted car, dims parked cars, and opens the garage on confirmation.','Menu Editor adds Car Showroom and Garage Parts Browser widgets, On Select / On Confirm actions, and reusable screen templates. Garage parts drill down by section, slot and tier; buying and installing is atomic.','Car Editor Drivetrain → Installable Upgrades defaults to all slots. Item Editor defines sections, tiers, prices and per-car compatibility.']},
+  {date:'2026-10-17',time:'01:56 EDT',title:'Prevent automatic gear hunting',details:['Upshifts require transmission shaft speed as well as engine RPM, preventing converter flare from fighting kickdown between third and fourth. Automatic shifts respect the drivetrain recovery interval.']},
+  {date:'2026-10-16',time:'23:56 EDT',title:'Automatic kickdown and smoother controller steering',details:['Automatic transmissions respond to throttle demand with safe downshifts and RPM headroom to avoid immediate upshifts.','Gamepad steering ramps continuously out of a smaller deadzone, with stronger mid-stick response and smooth speed-dependent limits.']},
+  {date:'2026-10-16',time:'18:02 EDT',title:'Hidden sports-car presets',details:['Car Editor File → Load Preset offers AWD Sports Car, RWD Sports Car, and FWD Sports Car as independent unsaved copies. First Save opens Save As.','System preset files stay outside the project manifest and vehicle selections. Opening cars no longer seeds stock files; existing saved cars remain untouched.']},
+  {date:'2026-10-16',time:'16:19 EDT',title:'Uphill automatic shifts and physical tire feedback',details:['Automatic downshifts account for wheel shaft speed so converter revs cannot hold the car in a tall gear after stopping uphill.','Tire sound and surface effects use physical wheel slip, including stationary burnouts. Worker snapshots preserve loaded-tire slip speed.']},
+  {date:'2026-10-16',time:'14:07 EDT',title:'Radio seek bar and race-drop markers',details:['The Radio Editor has a top music progress bar with drag-to-seek, elapsed/total time, and start/end markers.','Set Race Start and Set Race End save the current playback position without interrupting the song. Playback also offers five-second seek steps.']},
+  {date:'2026-10-16',time:'14:01 EDT',title:'Random radio starts and car sound tuning',details:['Radio starts with a random eligible song. Countdown music runs continuously instead of repeatedly seeking the MP3 decoder.','Engine loops use cleaner combustion harmonics. Car Editor Drivetrain → Backfire & Turbo configures lift-off backfire tone, duration and volume, turbo whistle and release whoosh; settings save with each car.']},
+  {date:'2026-10-16',time:'13:35 EDT',title:'Race music drops and results',details:['Radio tracks have editable race-start and finish/chorus cue times, playhead markers and transition previews. Races automatically play eligible radio songs, fading in so the start drop lands on GO.','Race Results holds the finish time and Continue action while music fades out and hits the configured chorus. Continue keeps the existing race/level/return behavior.']},
+  {date:'2026-10-16',time:'13:12 EDT',title:'Race radio settings and station selection',details:['Settings → Radio now opens On/Off and station checkboxes with OK/Cancel. All stations are selected by default.','Station choices save with each race, support undo/redo, and filter its playback and pause menu without altering global radio preferences.']},
+  {date:'2026-10-16',time:'10:29 EDT',title:'Radio transport and repeat controls',details:['Radio Editor advances to the next song and follows the playing selection. Repeat can be Off, All, or Song.','Tap Play/Pause or hold it for the shared transport popup: previous, rewind, next, stop and repeat. Playback menu provides the same commands.']},
+  {date:'2026-10-15',time:'23:59 EDT',title:'Item-defined car parts and player garage',details:['Create upgrade parts, prices, compatibility, torque changes and tuning permissions in the Item Editor. Buy, find, install and remove owned parts without changing saved stock cars.','Build a garage with Menu Editor widgets or add the Garage Screen template. Installed parts and tuning apply to race cars; menu preview uses temporary inventory.']},
+  {date:'2026-10-15',time:'18:59 EDT',title:'Animated 3D item graphics',details:['Items can select a saved 3D model and named animation, with correct level and race rendering. Actors can change a model animation directly.','Multiple animations remain together in one 3D object; creating a new animation now resets its timeline and pose.']},
+  {date:'2026-10-15',time:'14:15 EDT',title:'Inventory bags and usable items',details:['Music tracks now live in the Radio inventory bag, including existing unlocks.','Item effects use compact forms, named content choices and Player / Allies / Opponents recipients. Collect, Use and Projectile hits support stored items, nitro boosts and slowing shots.']},
+  {date:'2026-10-15',time:'13:41 EDT',title:'Item Editor and persistent pickups',details:['Game → Item Editor creates saved artwork and ordered pickup effects for health, armor, keys, weapons, abilities, inventory, devices, unlocks and player modifiers. Built-in pickups now use editable JSON definitions.','Place item sprites in levels or paint collectible doodads in races. Mix tapes use a radio-track effect, and existing mix tapes can be imported. Item grants survive reloading.']},
+  {date:'2026-10-13',time:'21:41 EDT',title:'Full menu playtests with top play and pause controls',details:['Preview now launches actual races and levels, including movie and race-finish chains. Returning from playtest preserves the unsaved menu and restores the original world.','Added top Play in every editor layout and Pause/Resume during menu playback. Race and level playtests retain their normal controls.']},
+  {date:'2026-10-13',time:'21:18 EDT',title:'Inspect menu forms before editing',details:['Property forms open with focus on their heading instead of selecting the first input, keeping the mobile keyboard closed until a field is selected. Menu Save As also waits for a tap on the filename.']},
+  {date:'2026-10-13',time:'21:10 EDT',title:'Menu playtest controls, default backgrounds and navigation order',details:['Menu preview shares portrait/landscape handheld controls with level and race playtests, supports physical controllers and desktop, and restores authoring on exit.','Screens can inherit a menu-wide background color, artwork and effect. Interactive widgets have saved navigation order, including reverse Tab.']},
+  {
+    date: '2026-10-13', time: '18:45 EDT',
+    title: 'Menu color pickers and widescreen canvas',
+    details: ['Shape Properties and Layout & Style now edit the same fill and outline colors with color pickers. Other menu color fields use pickers too.', 'The authoring canvas and preview fit a centered 16:9 frame in portrait, landscape, desktop and gamepad layouts.']
+  },
+  {
+    date: '2026-10-13', time: '18:25 EDT',
+    title: 'Compact Send and Clip drawers in the Menu Editor',
+    details: ['The bottom hotbar now has +, Clip, Send and Properties, in that order. Send groups the four ordering actions; Clip groups Copy, Cut, Paste and Delete. Layers and Screens are accessed through the main menus.']
+  },
+  {
+    date: '2026-10-13', time: '18:00 EDT',
+    title: 'Menu shapes, containers, hotbar controls and centered car rotation',
+    details: ['Renamed widget Setup to Properties and added Copy, Cut, Paste and Delete to the bottom hotbar, wrapping into rows on narrow screens.', 'Added filled/outlined shapes, containers for moving and resizing widget groups, and four bottom-hotbar layer-order commands.', 'Car rotators center visible sprite artwork and orbit the actual bounds of 3D cars while preserving authored body and wheel alignment.']
+  },
+  {
+    date: '2026-10-13',
+    time: '17:10 EDT',
+    title: 'Bottom menu hotbar and current-screen preview',
+    details: ['Moved the Menu Editor hotbar below the canvas. Widget, Layers and Screens now open in-editor dropdowns; picking a widget adds it immediately, with Setup available afterward.', 'Preview opens the current screen including unsaved edits. Play From Start is separate, and Animation offers named effects and speed/repeat controls instead of raw keyframe commands.']
+  },
+  {
+    date: '2026-10-13',
+    time: '16:40 EDT',
+    title: 'Menus launch races; races control progression',
+    details: ['Removed the separate Start Grand Prix action and menu schedule editor. Start Race loads one saved race, and that race’s configured completion destination controls subsequent races or levels.', 'Menu selections and the selected car persist through chained races, and return-to-origin brings the player back to the menu.']
+  },
+  {
+    date: '2026-10-13',
+    time: '16:25 EDT',
+    title: 'Menu widget designer and synchronized sprite wheels',
+    details: [
+      'Menu Editor now exposes Add Widget, Setup, Layers and Screens, with image import, guided button actions, setting sliders, controllable car rotators and property displays for cars, actors and custom items. Touch menus no longer show Race Editor ground tools.',
+      'Textured tire cylinders hold the same 45-degree viewing angle as sprite bodies in menus and races, while rolling spin and steering remain animated.'
+    ]
+  },
+  {
+    date: '2026-10-13',
+    time: '13:55 EDT',
+    title: 'Visible 3D selection transform handles',
+    details: [
+      'Selecting vertices, faces or an object now shows red X, green Y and blue Z handles. Drag arrows to move, rings to rotate, or square handles to scale; the white center handle moves freely or scales uniformly.',
+      'Handles work with mouse, touch and the gamepad cursor. Each drag is one undo step, and Escape cancels the current transform.'
+    ]
+  },
+  {
+    date: '2026-10-13',
+    time: '12:15 EDT',
+    title: 'Car graphics respect hills and vehicle depth',
+    details: [
+      'Player and AI car graphics now participate in the 3D depth buffer, so hills hide the covered parts of cars and nearer cars correctly overlap farther cars.',
+      'Existing angle artwork, tire placement and transparent borders are preserved. Car textures are cropped before upload and released when the car leaves the scene.'
+    ]
+  },
+  {
+    date: '2026-10-13',
+    time: '10:40 EDT',
+    title: 'Automatic recovery for upside-down AI cars',
+    details: [
+      'AI cars that remain upside down for 1.5 seconds reset upright on the track and resume driving, using the same authoritative reset system in local and worker physics.',
+      'Brief tumbles do not trigger recovery, pending worker resets are not repeated every frame, and a rejected reset can be retried.'
+    ]
+  },
+  {
+    date: '2026-10-13',
+    time: '09:41 EDT',
+    title: 'Keep tire artwork attached at every distance and roll angle',
+    details: [
+      'Imported body and tire graphics share a stable eight-view layout, so AI tires stay in their wheel wells as cars approach and player tires follow the body through rollovers.',
+      'Saved tire offsets, spacing, scale, visibility and animation still apply. Physical wheel simulation and model rendering are unchanged.'
+    ]
+  },
+  {
+    date: '2026-10-12',
+    time: '23:34 EDT',
+    title: 'AI saved artwork and track projection',
+    details: [
+      'AI artwork preloading and sprite drawing now resolve each saved car snapshot instead of falling back to player artwork when cars share a stock chassis ID.',
+      'AI sprites, tire hubs and procedural fallbacks use the active track camera and physical car pose, including height, pitch, roll, steering and individual tire rotation.'
+    ]
+  },
   {
     date: '2026-10-12',
     time: '21:43 EDT',

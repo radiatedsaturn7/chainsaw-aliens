@@ -1,0 +1,219 @@
+{
+  "schemaVersion": 2,
+  "kind": "race-car",
+  "systemFile": true,
+  "presetId": "fwd",
+  "selectedCarId": "honda-civic-type-r-2023",
+  "car": {
+    "id": "honda-civic-type-r-2023",
+    "name": "FWD",
+    "class": "road",
+    "art": {
+      "body": null,
+      "artRef": null,
+      "shell": null,
+      "tires": [],
+      "spoilers": [],
+      "turnFrames": {
+        "left": null,
+        "center": null,
+        "right": null
+      },
+      "shellFrames": {
+        "mode": "8-way",
+        "artRef": null,
+        "slots": {
+          "front": null,
+          "frontRight": null,
+          "right": null,
+          "rearRight": null,
+          "rear": null,
+          "rearLeft": null,
+          "left": null,
+          "frontLeft": null
+        },
+        "reverseFrameIndex": null
+      },
+      "tireTreads": {
+        "tarmac": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "rain": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "dirt": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "offroad": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "drift": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "snow": {
+          "artRef": null,
+          "frameIndex": 0
+        }
+      },
+      "interior": {
+        "dashboard": {
+          "artRef": null,
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "steeringWheel": {
+          "artRef": null,
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        }
+      },
+      "addOns": []
+    },
+    "camera": {
+      "trackingMode": "dynamic"
+    },
+    "dimensions": {
+      "lengthM": 4.6,
+      "widthM": 1.89,
+      "wheelbaseM": 2.74,
+      "trackFrontM": 1.63,
+      "trackRearM": 1.62
+    },
+    "audio": {
+      "engineSoundId": null,
+      "engineProfile": "civic-type-r-manual"
+    },
+    "setup": {
+      "defaultTireCompound": "tarmac",
+      "tireCompoundByWheel": {
+        "fl": "tarmac",
+        "fr": "tarmac",
+        "rl": "tarmac",
+        "rr": "tarmac"
+      },
+      "tirePressurePsi": {
+        "fl": 32,
+        "fr": 32,
+        "rl": 31,
+        "rr": 31
+      },
+      "tireSize": {
+        "widthMm": 245,
+        "aspectRatio": 40,
+        "wheelDiameterIn": 18
+      }
+    },
+    "defaultTransmissionType": "automatic",
+    "transmissions": {
+      "manual": {
+        "type": "manual",
+        "label": "6MT",
+        "shiftMode": "manual",
+        "shiftTimeMs": 360,
+        "clutchDelayMs": 75,
+        "launchRpm": 3600,
+        "autoUpshiftRpm": 6750,
+        "autoDownshiftRpm": 2300,
+        "gearRatios": [
+          3.625,
+          2.115,
+          1.529,
+          1.125,
+          0.911,
+          0.734
+        ],
+        "reverseRatio": 3.757,
+        "gearFinalDrive": 3.84,
+        "drivetrainEfficiency": 0.87,
+        "engineProfile": "civic-type-r-manual"
+      },
+      "automatic": {
+        "type": "automatic",
+        "label": "Auto Assist",
+        "shiftMode": "automatic",
+        "shiftTimeMs": 210,
+        "clutchDelayMs": 0,
+        "launchRpm": 3200,
+        "autoUpshiftRpm": 6600,
+        "autoDownshiftRpm": 2200,
+        "torqueConverterSlip": 0.04,
+        "gearRatios": [
+          3.625,
+          2.115,
+          1.529,
+          1.125,
+          0.911,
+          0.734
+        ],
+        "reverseRatio": 3.757,
+        "gearFinalDrive": 3.84,
+        "drivetrainEfficiency": 0.87,
+        "zeroToSixtySec": 4.6,
+        "engineProfile": "civic-type-r-manual"
+      }
+    },
+    "tuning": {
+      "drivetrain": "fwd",
+      "powerHp": 315,
+      "torqueLbFt": 310,
+      "weightKg": 1446,
+      "frontWeightDistribution": 0.62,
+      "engineDisplacementL": 2,
+      "aspiration": "Turbocharged",
+      "tireGrip": 1.2,
+      "brakeBalance": 0.62,
+      "brakePressure": 1.05,
+      "redlineRpm": 7000,
+      "revLimitRpm": 7200,
+      "revLimiterDropRpm": 420,
+      "idleRpm": 800,
+      "torquePeakStartRpm": 2600,
+      "torquePeakEndRpm": 6500,
+      "torqueFalloffRpm": 7400,
+      "wheelRadiusM": 0.333,
+      "topSpeedMph": 169,
+      "zeroToSixtySec": 5,
+      "dragCoefficient": 0.36,
+      "accelerationCalibration": 1,
+      "cgHeightM": 0.4,
+      "drivetrainEfficiency": 0.87,
+      "differentialAccel": 0.58,
+      "differentialDecel": 0.28,
+      "frontDifferentialAccel": 0.58,
+      "frontDifferentialDecel": 0.28,
+      "gearFinalDrive": 3.84,
+      "camberFront": -1.1,
+      "camberRear": -1,
+      "toeFront": 0,
+      "toeRear": 0.1,
+      "casterFront": 6.2,
+      "aeroFront": 0.34,
+      "aeroRear": 0.5,
+      "springFront": 0.63,
+      "springRear": 0.58,
+      "rideHeightFront": 0.42,
+      "rideHeightRear": 0.44,
+      "suspensionTravelFront": 0.38,
+      "suspensionTravelRear": 0.38,
+      "dampingFront": 0.62,
+      "dampingRear": 0.58,
+      "bumpFront": 0.56,
+      "bumpRear": 0.54,
+      "reboundFront": 0.66,
+      "reboundRear": 0.62,
+      "antiRollFront": 0.64,
+      "antiRollRear": 0.56
+    }
+  }
+}

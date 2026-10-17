@@ -1,5 +1,5 @@
 const PROJECT_FILE_PREFIX = 'server-project-file:';
-const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'doodads'];
+const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'menus', 'doodads', 'items'];
 const STATIC_STORAGE_ROOT = '/data/server-storage/files';
 const STORAGE_REQUEST_TIMEOUT_MS = 12000;
 const COMPACT_STORAGE_MARKER = '__chainsawStorage';

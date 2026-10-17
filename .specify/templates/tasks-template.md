@@ -14,6 +14,14 @@ behavior. Include unit, layout, gesture, controller, visual, or manual checks
 as appropriate. For non-editor changes, include tests when requested by the
 feature specification or required by the implementation risk.
 
+**Portrait UI tasks**: For new or revised portrait screens, include inspection
+of the existing Pixel and MIDI implementations, reuse of the shared portrait
+workspace and controls, and rendered/interaction validation of the thumbstick,
+Menu / Undo / Redo / special button, separate contextual hotbar, and applicable
+zoom scroller. The main editor must not be a wizard or chained forms. Carry any
+workflow-specific deviation and its rationale from the spec/plan into the tasks;
+focused dialogs should return to the persistent workspace.
+
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
 
 ## Format: `[ID] [P?] [Story] Description`

@@ -1,3 +1,4 @@
+import { isSystemCarDocument } from '../racing/CarPresets.js';
 /**
  * Project file facade backed by per-file server storage.
  *
@@ -26,7 +27,7 @@ import {
   restoreServerFileVersion
 } from './serverStorage.js';
 
-const FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'doodads'];
+const FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'menus', 'doodads', 'items'];
 const parsedPayloadCache = new Map();
 const LARGE_PARSED_PAYLOAD_LIMIT = 8 * 1024 * 1024;
 const DEFAULT_SAVE_CONFIRM_TIMEOUT_MS = 12000;
@@ -110,7 +111,7 @@ export function sanitizeProjectFileName(name) {
     .slice(0, 64);
 }
 
-export function listProjectFiles(folder) {
+export function listProjectFiles(folder, { includeDeleted = false, includeSystem = false } = {}) {
   assertFolder(folder);
   const index = ensureProjectFileIndex();
   const listed = Object.entries(index[folder] || {})
@@ -131,14 +132,23 @@ export function listProjectFiles(folder) {
     }
   });
   listed.sort((a, b) => b.updatedAt - a.updatedAt || a.name.localeCompare(b.name));
-  return listed;
+  return listed.filter((entry) => {
+    if (entry.deleted && !includeDeleted) return false;
+    // Async preload callers filter system documents after hydration, avoiding
+    // synchronous network reads just to enumerate the manifest.
+    if (includeSystem) return true;
+    if (index[folder]?.[entry.name]?.systemFile === true) return false;
+    if (folder !== 'cars') return true;
+    const payload = loadProjectFile(folder, entry.name);
+    return !isSystemCarDocument(payload?.data || payload, entry.name);
+  });
 }
 
 export function projectFileExists(folder, name) {
   const clean = sanitizeProjectFileName(name);
   if (!clean) return false;
   const index = ensureProjectFileIndex();
-  return Boolean(index?.[folder]?.[clean]);
+  return Boolean(index?.[folder]?.[clean] && !index[folder][clean].deleted);
 }
 
 export function loadProjectFile(folder, name) {

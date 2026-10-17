@@ -7,7 +7,7 @@ import {
 
 export { VEHICLE_RENDER_WHEEL_FLAGS } from './VehicleRenderState.js';
 
-export const VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION = 6;
+export const VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION = 8;
 export const VEHICLE_RENDER_SNAPSHOT_HEADER_WORDS = 6;
 export const VEHICLE_RENDER_SNAPSHOT_FLOATS = 201;
 export const VEHICLE_RENDER_IMPACT_EVENT_CAPACITY = 4;
@@ -43,7 +43,8 @@ export const VEHICLE_CONTROL_INPUT_FLOAT = Object.freeze({
   gear: 11,
   flags: 12,
   activeAeroState: 13,
-  steeringInputMode: 14
+  steeringInputMode: 14,
+  itemSpeedMultiplier: 15
 });
 
 export const VEHICLE_RENDER_SNAPSHOT_HEADER = Object.freeze({
@@ -107,7 +108,7 @@ export const VEHICLE_RENDER_WHEEL_FLOAT = Object.freeze({
   lateralForceN: 23,
   selfAligningMomentNm: 24,
   flags: 25,
-  reserved: 26
+  longitudinalSlipSpeedMps: 26
 });
 
 export function createVehicleRenderSnapshotBuffer({ shared = false } = {}) {
@@ -143,6 +144,7 @@ export function createVehicleControlInputBuffer(input = {}) {
   values[VEHICLE_CONTROL_INPUT_FLOAT.steeringTarget] = finite(input.steeringTarget);
   values[VEHICLE_CONTROL_INPUT_FLOAT.controllerFilterOutput] = finite(input.controllerFilterOutput);
   values[VEHICLE_CONTROL_INPUT_FLOAT.centerSteeringAngleRad] = finite(input.centerSteeringAngleRad);
+  values[VEHICLE_CONTROL_INPUT_FLOAT.itemSpeedMultiplier] = clamp(Number(input.itemSpeedMultiplier)||1,0.1,4);
   values[VEHICLE_CONTROL_INPUT_FLOAT.throttle] = finite(input.throttle);
   values[VEHICLE_CONTROL_INPUT_FLOAT.brake] = finite(input.brake);
   values[VEHICLE_CONTROL_INPUT_FLOAT.clutch] = finite(input.clutch);
@@ -183,6 +185,7 @@ export function readVehicleControlInput(buffer) {
     steeringTarget: values[VEHICLE_CONTROL_INPUT_FLOAT.steeringTarget],
     controllerFilterOutput: values[VEHICLE_CONTROL_INPUT_FLOAT.controllerFilterOutput],
     centerSteeringAngleRad: values[VEHICLE_CONTROL_INPUT_FLOAT.centerSteeringAngleRad],
+    itemSpeedMultiplier: values[VEHICLE_CONTROL_INPUT_FLOAT.itemSpeedMultiplier]||1,
     throttle: values[VEHICLE_CONTROL_INPUT_FLOAT.throttle],
     brake: values[VEHICLE_CONTROL_INPUT_FLOAT.brake],
     clutch: values[VEHICLE_CONTROL_INPUT_FLOAT.clutch],
@@ -387,6 +390,7 @@ export function writeVehicleRenderSnapshot(buffer, snapshot = {}) {
     values[offset + VEHICLE_RENDER_WHEEL_FLOAT.lateralForceN] = finite(pose.lateralForceN);
     values[offset + VEHICLE_RENDER_WHEEL_FLOAT.selfAligningMomentNm] = finite(pose.selfAligningMomentNm);
     values[offset + VEHICLE_RENDER_WHEEL_FLOAT.flags] = finite(pose.flags);
+    values[offset + VEHICLE_RENDER_WHEEL_FLOAT.longitudinalSlipSpeedMps] = finite(pose.longitudinalSlipSpeedMps);
     offset += VEHICLE_RENDER_WHEEL_STRIDE;
   }
   for (let index = 0; index < RACE_WHEEL_IDS.length; index += 1) {
@@ -475,6 +479,7 @@ export function readVehicleRenderSnapshot(buffer) {
       steeringAngleRad: values[offset + VEHICLE_RENDER_WHEEL_FLOAT.steeringAngleRad],
       lateralForceN: values[offset + VEHICLE_RENDER_WHEEL_FLOAT.lateralForceN],
       selfAligningMomentNm: values[offset + VEHICLE_RENDER_WHEEL_FLOAT.selfAligningMomentNm],
+      longitudinalSlipSpeedMps: values[offset + VEHICLE_RENDER_WHEEL_FLOAT.longitudinalSlipSpeedMps],
       flags,
       validTreadContact: (flags & VEHICLE_RENDER_WHEEL_FLAGS.validTreadContact) !== 0,
       geometricContact: (flags & VEHICLE_RENDER_WHEEL_FLAGS.geometricContact) !== 0,
@@ -685,6 +690,7 @@ export function interpolateVehicleRenderSnapshots(previous, latest, renderTimeSe
       gripCoefficient: lerp(leftWheel.gripCoefficient, rightWheel.gripCoefficient, alpha),
       lateralForceN: lerp(leftWheel.lateralForceN, rightWheel.lateralForceN, alpha),
       selfAligningMomentNm: lerp(leftWheel.selfAligningMomentNm, rightWheel.selfAligningMomentNm, alpha),
+      longitudinalSlipSpeedMps: lerp(leftWheel.longitudinalSlipSpeedMps, rightWheel.longitudinalSlipSpeedMps, alpha),
       flags: rightWheel.flags,
       validTreadContact: rightWheel.validTreadContact,
       geometricContact: rightWheel.geometricContact,

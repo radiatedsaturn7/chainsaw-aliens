@@ -1,3 +1,4 @@
+import { FullscreenPrompt } from './ui/FullscreenPrompt.js';
 import Game from './game/Game.js';
 import { addDOMListener, createDisposer } from './input/disposables.js';
 import { isLatestChangesOverlayOpen } from './ui/latestChanges.js';
@@ -7,7 +8,6 @@ import { shouldSuppressEditorContextMenu } from './ui/shared/editorMenuLayout.js
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
-const enterFullscreenButton = document.getElementById('enter-fullscreen');
 const hint = document.querySelector('.hint');
 
 const game = new Game(canvas, ctx);
@@ -15,6 +15,8 @@ window.__game = game;
 window.__gameReady = true;
 let isMobile = false;
 let fullscreenPending = false;
+let fullscreenPromptShown = false;
+const fullscreenPrompt = new FullscreenPrompt(requestFullscreen);
 const hideFullscreenControlsForTesting = new URLSearchParams(window.location.search).has('hideFullscreenForTesting');
 const DEFAULT_CANVAS_WIDTH = canvas.width;
 const DEFAULT_CANVAS_HEIGHT = canvas.height;
@@ -48,19 +50,20 @@ function detectMobile() {
 }
 
 function requestFullscreen() {
-  if (!isMobile || document.fullscreenElement) return;
+  if (document.fullscreenElement) return;
   const root = document.documentElement;
+  if (!root.requestFullscreen) return;
   if (root.requestFullscreen) {
     root.requestFullscreen().catch(() => {
       fullscreenPending = false;
-      updateFullscreenButtons();
+      updateFullscreenPrompt();
     });
   }
   fullscreenPending = true;
-  updateFullscreenButtons();
+  updateFullscreenPrompt();
 }
 
-function updateFullscreenButtons() {
+function updateFullscreenPrompt() {
   const showControls = shouldShowMobileFullscreenButton({
     isMobile,
     hiddenForTesting: hideFullscreenControlsForTesting,
@@ -69,8 +72,9 @@ function updateFullscreenButtons() {
     gameState: game?.state,
     titleScreen: game?.title?.screen
   });
-  if (enterFullscreenButton) {
-    enterFullscreenButton.classList.toggle('is-hidden', !showControls);
+  if (showControls && !fullscreenPromptShown && document.documentElement.requestFullscreen) {
+    fullscreenPromptShown = true;
+    fullscreenPrompt.show();
   }
 }
 
@@ -122,19 +126,19 @@ function resize() {
       isMobile
     });
   }
-  updateFullscreenButtons();
+  updateFullscreenPrompt();
 }
 
 function syncViewportSoon() {
   fullscreenPending = false;
-  updateFullscreenButtons();
+  updateFullscreenPrompt();
   resize();
   requestAnimationFrame(() => {
-    updateFullscreenButtons();
+    updateFullscreenPrompt();
     resize();
   });
   window.setTimeout(() => {
-    updateFullscreenButtons();
+    updateFullscreenPrompt();
     resize();
   }, 250);
 }
@@ -158,6 +162,7 @@ let gestureActive = false;
 const activeTouches = new Map();
 let lastTouchInteractionAt = 0;
 let suppressNextCanvasClick = false;
+fullscreenPrompt.onClose = () => { suppressNextCanvasClick = true; };
 const GHOST_MOUSE_BLOCK_MS = 800;
 
 function shouldIgnoreMouseFromRecentTouch() {
@@ -166,7 +171,7 @@ function shouldIgnoreMouseFromRecentTouch() {
 
 function isGlobalOverlayOpen() {
   const root = document.getElementById('global-overlay-root');
-  return Boolean(root?.children?.length || isLatestChangesOverlayOpen());
+  return Boolean(fullscreenPrompt.blocksInput || root?.children?.length || isLatestChangesOverlayOpen());
 }
 
 function resetTouchSession(reason = 'unknown') {
@@ -376,11 +381,6 @@ function bindInputListeners() {
     }
   }));
 
-  if (enterFullscreenButton) {
-    listenerDisposer.add(addDOMListener(enterFullscreenButton, 'click', () => {
-      requestFullscreen();
-    }));
-  }
 
 }
 
@@ -395,15 +395,21 @@ function loop(now) {
   if (game.state !== lastState) {
     resetTouchSession(`state:${lastState}->${game.state}`);
     lastState = game.state;
-    updateFullscreenButtons();
+    updateFullscreenPrompt();
   }
   if (titleScreen !== lastTitleScreen) {
     lastTitleScreen = titleScreen;
-    updateFullscreenButtons();
+    updateFullscreenPrompt();
   }
   const dt = Math.min((now - last) / 1000, 0.033);
   last = now;
-  game.update(dt);
+  if (fullscreenPrompt.blocksInput) {
+    game.input.updateGamepad();
+    fullscreenPrompt.update(game.input);
+    game.input.flush();
+  } else {
+    game.update(dt);
+  }
   game.draw();
   requestAnimationFrame(loop);
 }

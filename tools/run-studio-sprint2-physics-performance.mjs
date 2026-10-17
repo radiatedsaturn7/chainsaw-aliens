@@ -15,7 +15,7 @@ import {
 import { createVehicleDynamicsWorkerQualificationFromReport } from '../src/racing/simulation/VehicleDynamicsWorkerClient.js';
 
 const DEFAULT_RACE_PATH = 'tests/fixtures/studioSprint2PerformanceRaceDocument.json';
-const DEFAULT_CAR_PATH = 'data/server-storage/files/cars/2022 Subaru WRX2/document.json';
+const DEFAULT_CAR_PATH = 'tests/fixtures/wrx2CarDocument.json';
 const DEFAULT_OUTPUT_PATH = 'tests/fixtures/studioSprint2PhysicsPerformanceBaseline.json';
 const FPS_VALUES = Object.freeze([30, 60, 90, 120, 144]);
 const DEFAULT_SECTION_SECONDS = 2;

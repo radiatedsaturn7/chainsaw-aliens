@@ -8,7 +8,7 @@ import { sampleRaceBakedSurface } from '../src/racing/RaceBakedSurfaceSampler.js
 globalThis.__RTG_PHYSICS_COST_ACCOUNTING__ = true;
 const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} }, { mode: 'race' });
 const racePath = process.env.BUSE_RACE || 'data/server-storage/files/races/buse1/document.json';
-const carPath = process.argv[2] || 'data/server-storage/files/cars/2022 Subaru WRX2/document.json';
+const carPath = process.argv[2] || 'tests/fixtures/wrx2CarDocument.json';
 const reportPath = process.env.BUSE_REPORT || 'artifacts/buse1/diagnostic.json';
 const readJson = path => JSON.parse(readFileSync(path, 'utf8'));
 editor.applyLoadedRaceDocument(readJson(racePath), { name: 'buse1' });

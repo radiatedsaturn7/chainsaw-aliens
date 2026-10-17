@@ -36,7 +36,13 @@ jobs:
         run: node --test tests/unit/editorMenuLayout.test.js tests/unit/editorMenuSpec.test.js tests/unit/portraitEditorMenuModels.test.js tests/unit/raceImageTrace.test.js tests/unit/raceImportedCircuitRegression.test.js tests/unit/raceTireTrackRenderer.test.js tests/unit/steeringCommandMapping.test.js tests/unit/racePauseRestart.test.js
 
       - name: Run AI car selection and driving tests
-        run: node --test tests/unit/carPerformance.test.js tests/unit/raceAiCarSelectionPersistence.test.js tests/unit/raceAiDriving.test.js
+        run: node --test tests/unit/carPresets.test.js tests/unit/carPerformance.test.js tests/unit/raceAiCarSelectionPersistence.test.js tests/unit/raceAiDriving.test.js tests/unit/raceAiProjection.test.js tests/unit/raceAiRecovery.test.js
+
+      - name: Run menu designer and runtime tests
+        run: node --test tests/unit/menu*.test.js tests/unit/carDirectionalArt.test.js tests/unit/raceTravel.test.js
+
+      - name: Run radio and mix tape tests
+        run: node --test tests/unit/uphillTraction.test.js tests/unit/vehicleSound.test.js tests/unit/raceMusicDrops.test.js tests/unit/garageParts.test.js tests/unit/itemEffects.test.js tests/unit/itemSystem.test.js tests/unit/itemInventory.test.js tests/unit/vehicleDynamicsWorkerProtocol.test.js tests/unit/radioEditor.test.js tests/unit/radioPlayer.test.js tests/unit/mixTapePickup.test.js tests/unit/doodadEditor.test.js tests/unit/raceDoodads.test.js tests/unit/pauseMenu.test.js tests/unit/titleLayout.test.js
 
       - name: Run 3D model editor and runtime tests
         run: node --test tests/unit/model3d*.test.js
@@ -108,3 +114,16 @@ jobs:
             test-results/
           if-no-files-found: ignore
           retention-days: 14
+
+      - name: Upload menu preview screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: menu-previews-${{ matrix.artifact }}
+          path: |
+            test-results/menu-*.png
+            test-results/radio-*.png
+            test-results/item-*.png
+            test-results/car-presets-*.png
+          if-no-files-found: ignore
+          retention-days: 7

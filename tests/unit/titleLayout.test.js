@@ -202,11 +202,14 @@ test('controller selection order matches studio launcher hierarchy', () => {
   assert.deepEqual(title.menuOrder, ['recent-level', 'graphics', 'audio', 'game', 'options']);
   assert.deepEqual(title.folderOrders.graphics, [
     'pixel-editor',
+    'model-editor',
+    'menu-editor',
     'cutscene-editor',
     'back'
   ]);
   assert.deepEqual(title.folderOrders.audio, [
     'midi-editor',
+    'radio-editor',
     'sfx-editor',
     'back'
   ]);
@@ -215,11 +218,15 @@ test('controller selection order matches studio launcher hierarchy', () => {
     'tile-editor',
     'race-editor',
     'car-editor',
+    'tire-editor',
     'doodad-editor',
+    'item-editor',
     'actor-editor',
     'back'
   ]);
   assert.deepEqual(title.optionsOrder, [
+    'project-browser',
+    'radio',
     'latest-changes',
     'robtersession',
     'controls',

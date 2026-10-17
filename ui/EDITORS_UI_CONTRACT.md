@@ -15,7 +15,7 @@ This document defines the shared layout and token contract for **Pixel Editor**,
 
 ## 2) Layout Grid Rules
 
-All editors should follow this shell structure:
+The desktop shell follows this structure. Portrait uses the bottom-first shell described below; do not copy the desktop top bar and left inspector into portrait:
 
 1. Root shell fills viewport.
 2. Top bar spans full width at the top and owns desktop root menu activation.
@@ -31,6 +31,16 @@ Canonical region map:
   - `Body`
     - `LeftRail`
     - `MainContent`
+
+Portrait implementation baseline:
+
+- Before adding or changing a portrait screen, inspect Pixel's `drawMobilePortraitLayout()` in `src/ui/PixelStudio.js` and the portrait branches, control rail, and zoom controls in `src/ui/MidiComposerCore.js`.
+- Use a persistent work surface and the shared lower regions: thumbstick beside the fixed Menu / Undo / Redo / special-action rail, a separate contextual hotbar, and a zoom scroller when the work surface has a useful zoom range. Keep history slots visible and disabled when unavailable. The hotbar contains workflow tools or context, not another copy of the four rail buttons.
+- Build from `getSharedMobilePortraitEditorLayout()`, `getSharedPortraitActionRailLayout()`, `drawSharedPortraitActionRail()`, shared thumbstick/ribbon/sheet primitives in `src/ui/uiSuite.js`, `getStandardEditorActionRailIds()` in `src/ui/shared/editorMenuSpec.js`, and the zoom helpers in `src/ui/shared/mobileZoomSlider.js`. Reuse input handling as well as drawing and hit-target geometry.
+- Keep root menus and settings in the shared bottom sheets. Preserve the work surface and selection when closing a menu or a focused property/import dialog. Do not implement the main portrait editor as a wizard, repeated action picker, or chained modal forms.
+- Use the same spacing, button chrome, touch targets, scroll/drag behavior, and lower-control placement as Pixel/MIDI. Reserve space for controls; overlays, help text, and footer hints must not cover them or intercept their input.
+- A specialized workflow may justify a different surface arrangement or omission; document the concrete reason in existing design/implementation notes and preserve the other shared surfaces. Do not add decorative, nonfunctional thumbsticks or zoom controls. A focused picker, confirmation, or sequential import can be a dialog without turning the surrounding editor into a wizard.
+- Verify portrait rendering and interactions for the thumbstick, four action slots, hotbar, and applicable zoom scroller. This portrait baseline does not change the desktop, landscape-touch, or gamepad contracts.
 
 Desktop-specific shell rules:
 
@@ -187,3 +197,25 @@ Before a new editor ships, add it to the shared menu spec with:
 ## 3D Object Editor integration
 
 `model3d` uses the shared canvas editor shell, menu specifications, portrait action rail, zoom slider, and gamepad semantic input. Desktop Edit/View appear as Tools/Camera in portrait. The model work surface owns selection, orbit/pan, the timeline, modeling hotbar, and UV/model split preview. Escape/Back closes active menus before leaving the editor. Numeric dialogs trap editor key events while open.
+
+## Menu designer
+
+`menu-designer` uses the shared editor menu spec and RaceEditor shell adapters for desktop context, touch drawers and action rails. Screen elements use normalized coordinates inside the work surface; each pointer drag is captured by pointer ID and recorded once in history. Property forms use the shared accessible dialog helper. `menu-player` is a separate delegated state and does not expose authoring controls outside preview.
+
+Menu designer shells must resolve their registered touch roots and Preview action. The canvas reserves a bottom shared-button hotbar for +, Clip, Send and Properties (in that order). Widget, Send, Clip, Layers, Screens and Animation pickers use the shared upward popover placement, bounded paging, pointer hit regions, keyboard and gamepad navigation; desktop context rows are scrollable. Widget properties use accessible shared forms, typed bindings and named destinations rather than race/car controls.
+
+Menu Preview uses the selected screen and unsaved document snapshot. Playing from the start is a separate explicit command, and returning to the designer preserves screen, selection and document state. Animation exposes named presets and timing rather than raw keyframe commands.
+
+- Menu shapes support rectangle, ellipse and triangle fills with optional outlines. The bottom hotbar’s Send drawer includes Send Backward, Bring Forward, Send to Back and Send to Front; layer order is within the selected widget’s container. Clip contains Copy, Cut, Paste and Delete. The hotbar stays one row; Layers and Screens remain available through the main menus.
+- Containers group widgets in screen coordinates: membership changes preserve placement; dragging or resizing the container moves or resizes its descendants together. Container Properties chooses members, and Layout & Style assigns a parent container. New widgets join the selected container. Copy/cut/paste/delete and layer ordering operate on the entire group; undo restores it. Containers show authoring outlines only and hidden containers hide their children in runtime.
+
+- Menu authoring and playback use a centered 16:9 canvas fitted within the available viewport, preserving proportions in desktop, portrait, landscape-touch and gamepad modes. Pointer editing and preview hit testing use the fitted rectangle. Shape fill/outline controls are identical in Properties and Layout & Style, and menu color controls use color pickers rather than raw hex fields.
+
+- Menu preview and playback use the shared level/race handheld screen, shell and MobileControls on portrait/landscape touch devices. D-pad and left stick navigate immediately and repeat held directions after 280 ms, then every 120 ms. A selects, B returns, Start confirms, and Select exits preview. A physical controller hides touch controls; desktop supports mouse, arrows, Tab/Shift+Tab and Enter. Explicit positive Navigation order values are visited first, ascending, with automatic (0) items afterward in drawing order; hidden widgets are skipped.
+- Screens > Menu Default Background sets the document background color, saved artwork and effect. New screens inherit it; Screen Properties can use the menu default or a custom background. Changing a screen background field switches it to custom. Defaults, inheritance and navigation order persist with the menu.
+
+- Menu Editor forms open with focus on the non-editable dialog heading, never an input. Menu Save As initially focuses the browser surface. Tapping a field or navigating with Tab begins editing; opening a form must not summon the mobile keyboard. Shared property forms use this neutral initial-focus behavior.
+
+- Menu Editor has a shared top Play control in every layout. Play starts preview; pressing the active top Pause button ends preview and returns to authoring, as does Exit Preview. The P keyboard shortcut can still suspend/resume playback. Race/level destinations use their existing playtest controls. Race return destinations resume the menu; leaving a preview-launched level (including race-to-level travel) restores menu authoring and the original world.
+
+- During menu playback, Left/Right moves focus between visible controls in the same row when a button or key binding is focused; it never activates those controls. Choices, sliders and toggles retain Left/Right value adjustment. Confirm activates the focused control; Up/Down and Tab retain navigation order.

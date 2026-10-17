@@ -1,0 +1,189 @@
+{
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "anchor",
+      "name": "Chainsaw Throw",
+      "legacyTile": "g",
+      "effects": [
+        {
+          "type": "ability",
+          "target": "anchor"
+        }
+      ],
+      "paletteId": "powerup-chainsaw",
+      "paletteLabel": "Tool: Chainsaw Throw",
+      "aliases": [
+        "chainsaw-throw"
+      ]
+    },
+    {
+      "id": "flame",
+      "name": "Flame-Saw",
+      "legacyTile": "p",
+      "effects": [
+        {
+          "type": "ability",
+          "target": "flame"
+        }
+      ],
+      "paletteId": "powerup-flame-saw",
+      "paletteLabel": "Tool: Flame-Saw",
+      "aliases": [
+        "flame-saw"
+      ]
+    },
+    {
+      "id": "magboots",
+      "name": "Mag Boots",
+      "legacyTile": "m",
+      "effects": [
+        {
+          "type": "ability",
+          "target": "magboots"
+        },
+        {
+          "type": "modifier",
+          "target": "upgradeSlots",
+          "operation": "max",
+          "amount": 3
+        }
+      ],
+      "paletteId": "powerup-mag-boots",
+      "paletteLabel": "Ability: Mag Boots",
+      "aliases": [
+        "mag-boots"
+      ]
+    },
+    {
+      "id": "resonance",
+      "name": "Resonance",
+      "legacyTile": "r",
+      "effects": [
+        {
+          "type": "ability",
+          "target": "resonance"
+        },
+        {
+          "type": "modifier",
+          "target": "upgradeSlots",
+          "operation": "max",
+          "amount": 4
+        }
+      ],
+      "paletteId": "powerup-resonance",
+      "paletteLabel": "Ability: Resonance"
+    },
+    {
+      "id": "ignitir",
+      "name": "Ignitir",
+      "legacyTile": "i",
+      "effects": [
+        {
+          "type": "weapon",
+          "target": "ignitir"
+        }
+      ],
+      "paletteId": "powerup-ignitir",
+      "paletteLabel": "Weapon: Ignitir"
+    },
+    {
+      "id": "flamethrower",
+      "name": "Flamethrower",
+      "legacyTile": "f",
+      "effects": [
+        {
+          "type": "weapon",
+          "target": "flamethrower"
+        }
+      ],
+      "paletteId": "powerup-flamethrower",
+      "paletteLabel": "Weapon: Flamethrower"
+    },
+    {
+      "id": "vitality-core",
+      "name": "Vitality Core",
+      "legacyTile": "H",
+      "effects": [
+        {
+          "type": "max-health",
+          "amount": 1
+        }
+      ],
+      "paletteId": "powerup-vitality-core",
+      "paletteLabel": "Vitality Core"
+    },
+    {
+      "id": "map",
+      "name": "Map",
+      "legacyTile": "M",
+      "effects": [
+        {
+          "type": "map",
+          "amount": 7
+        }
+      ],
+      "paletteId": "powerup-map",
+      "paletteLabel": "Map Cache"
+    },
+    {
+      "id": "health",
+      "name": "Health",
+      "effects": [
+        {
+          "type": "health",
+          "amount": 1
+        }
+      ],
+      "aliases": [
+        "health-pack"
+      ]
+    },
+    {
+      "id": "armor",
+      "name": "Armor",
+      "effects": [
+        {
+          "type": "armor",
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "id": "key",
+      "name": "Key",
+      "effects": [
+        {
+          "type": "key",
+          "target": "default"
+        }
+      ]
+    },
+    {
+      "id": "nitro",
+      "name": "Nitro",
+      "effects": [
+        {
+          "type": "speed",
+          "when": "use",
+          "recipient": "player",
+          "amount": 1.5,
+          "duration": 5
+        }
+      ]
+    },
+    {
+      "id": "slow-shot",
+      "name": "Slow shot",
+      "effects": [
+        {
+          "type": "speed",
+          "when": "hit",
+          "recipient": "opponents",
+          "amount": 0.5,
+          "duration": 5
+        }
+      ]
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { chooseImage } from './MenuDesignerForms.js';
 import {pickModelBinding} from './ModelPicker.js';
 import {modelSprites} from '../model3d/ModelSprites.js';
 import {
@@ -75,7 +76,6 @@ const BEHAVIOR_LABELS = {
   flatten: 'Flatten',
   'fly-off': 'Fly Off'
 };
-const DOODAD_EDITOR_ID = 'doodad';
 
 export default class DoodadEditor {
   constructor(game) {
@@ -118,6 +118,10 @@ export default class DoodadEditor {
     };
   }
 
+  get editorId() { return 'doodad'; }
+  get editorTitle() { return 'Doodad Editor'; }
+  getQuickAction() {return { id: 'pick-art', label: 'Art', onClick: () => this.pickArt() };}
+
   update(_input, dt = 0) {
     if (!this.panJoystick.active) return;
     const frameScale = dt > 0 ? dt * 60 : 1;
@@ -132,7 +136,7 @@ export default class DoodadEditor {
 
   getViewportMode(width, height) {
     return resolveEditorViewportModeFlags({
-      editorId: DOODAD_EDITOR_ID,
+      editorId: this.editorId,
       viewportWidth: width,
       viewportHeight: height,
       isMobile: Boolean(this.game?.deviceIsMobile || this.game?.isMobile),
@@ -260,7 +264,7 @@ export default class DoodadEditor {
       mode: 'open',
       fixedFolder: 'art',
       initialFolder: 'art',
-      title: 'Pick Doodad Art'
+      title: `Pick ${this.editorTitle.replace(' Editor','')} Art`
     });
     if (picked?.action === 'open' && picked.name) {
       this.doodad.artRef = String(picked.name || '').trim();
@@ -403,6 +407,20 @@ export default class DoodadEditor {
     this.status = 'Preview fit';
   }
 
+  async configureMixTape() {
+    this.game.itemEditor.loadDoodadDocument(this.doodad);
+    this.game.transitionTo('item-editor');
+    this.game.itemEditor.status='Save this collectible in Items. Add a radio-track effect for a mix tape.';
+  }
+
+  async importItemArtwork() {
+    // Desktop collision panels normalize the document while the image picker is open.
+    // Resolve the current document when the asynchronous import applies its artwork.
+    const editor=this;
+    try {await chooseImage({get element(){return editor.doodad;},change:fn=>fn()});await this.hydrateDoodadArt(this.doodad.artRef,{force:true});}
+    catch(error){this.status=error.message;}
+  }
+
   getDesktopActionHandlers() {
     return {
       new: () => this.newDoodad(),
@@ -418,6 +436,8 @@ export default class DoodadEditor {
       'pick-model': async () => {try{const model=await pickModelBinding(this.doodad.model);if(model){this.doodad.model=model;this.status=`3D model: ${model.ref}`;}}catch(error){this.status=error.message;}},
       'clear-model': () => {this.doodad.model=null;this.status='Using 2D artwork';},
       'pick-art': () => this.pickArt(),
+      'import-item-art': () => this.importItemArtwork(),
+      'doodad-item': () => this.configureMixTape(),
       'width-down': () => this.adjust('width', -0.5),
       'width-up': () => this.adjust('width', 0.5),
       'height-down': () => this.adjust('height', -0.5),
@@ -471,7 +491,7 @@ export default class DoodadEditor {
 
   getMenuItems(rootId = this.landscapeRootId) {
     if (rootId === 'file') return this.getDoodadFileMenuItems();
-    const spec = getEditorMenuSpec(DOODAD_EDITOR_ID);
+    const spec = getEditorMenuSpec(this.editorId);
     const handlers = this.getDesktopActionHandlers();
     return [...(spec?.sections?.[rootId]?.actions || [])].map((id) => ({
       id,
@@ -557,12 +577,12 @@ export default class DoodadEditor {
       closedRootId: this.closedDesktopDropdownRootId,
       isDesktop: true
     });
-    const shell = buildDesktopEditorShellPlan('doodad', {
+    const shell = buildDesktopEditorShellPlan(this.editorId, {
       viewportWidth: width,
       viewportHeight: height,
       activeRootId: openDesktopRootId,
-      rootEntries: getEditorRootMenuEntries(DOODAD_EDITOR_ID),
-      contentRoles: getEditorDesktopLeftContextRoles(DOODAD_EDITOR_ID),
+      rootEntries: getEditorRootMenuEntries(this.editorId),
+      contentRoles: getEditorDesktopLeftContextRoles(this.editorId),
       dropdownScroll: this.desktopDropdownScroll?.[openDesktopRootId] || 0
     });
     this.desktopDropdown = resolveDesktopDropdownState({
@@ -647,16 +667,16 @@ export default class DoodadEditor {
 
   drawDesktopLeftPanel(ctx, ribbonBounds, panelBounds) {
     drawSharedDesktopRibbon(ctx, ribbonBounds, {
-      title: 'Doodad',
+      title: this.editorTitle,
       subtitle: this.doodad.name || 'Untitled'
     });
     drawSharedDesktopContextPanel(ctx, panelBounds, {
       lines: [
         `Active: ${this.landscapeRootId || this.mobileRootId || 'artwork'}`,
-        `Artwork: ${this.doodad.artRef || 'None'}`
+        this.doodad.model?.ref?`3D Model: ${this.doodad.model.ref}`:`Artwork: ${this.doodad.artRef || 'None'}`
       ],
       status: this.saveStatus || this.status,
-      contentRoles: getEditorDesktopLeftContextRoles(DOODAD_EDITOR_ID),
+      contentRoles: getEditorDesktopLeftContextRoles(this.editorId),
       padding: 12
     });
     const controlsBounds = {
@@ -705,7 +725,7 @@ export default class DoodadEditor {
       activeMenuId: this.gamepadSubmenuOpen ? this.landscapeRootId : null
     });
     if (!gamepadMenuState.isLandscapeMenuMode) this.gamepadSubmenuOpen = false;
-    const shell = buildLandscapeTouchEditorShellPlan('doodad', {
+    const shell = buildLandscapeTouchEditorShellPlan(this.editorId, {
       viewportWidth: width,
       viewportHeight: height,
       bottomRailHeight: 68,
@@ -739,7 +759,7 @@ export default class DoodadEditor {
     this.drawLandscapeCommandRail(ctx, shell.surfaces.compactCommandRail, gamepadMenuState);
     if (shell.surfaces.toolOptions) this.drawLandscapeStatusRail(ctx, shell.surfaces.toolOptions);
     if (gamepadMenuState.isLandscapeMenuMode) {
-      const gamepadPlan = buildGamepadSlideOutMenuPlan('doodad', {
+      const gamepadPlan = buildGamepadSlideOutMenuPlan(this.editorId, {
         rootOpen: this.landscapeRootDrawerOpen,
         activeRootId: this.landscapeRootId,
         focusedItemId: this.gamepadFocusedItemId
@@ -753,7 +773,7 @@ export default class DoodadEditor {
           y: work.y + Math.max(8, work.h - 36),
           w: Math.max(240, work.w - 24),
           h: 28
-        }, 'Doodad Editor');
+        }, this.editorTitle);
       }
       resetSharedThumbstickState(this.panJoystick);
       return;
@@ -781,16 +801,16 @@ export default class DoodadEditor {
       },
       undo: { id: 'undo', label: 'Undo', onClick: () => this.undo() },
       redo: { id: 'redo', label: 'Redo', onClick: () => this.redo() },
-      quick: { id: 'pick-art', label: 'Art', onClick: () => this.pickArt() }
+      quick: this.getQuickAction()
     });
     buildCompactLandscapeCommandRailButtonLayout({ bounds, actions })
       .forEach(({ action, bounds: buttonBounds }) => this.registerButton(ctx, buttonBounds, action));
   }
 
   drawLandscapeRootDrawer(ctx, bounds, { entries = null, gamepad = false, headerHint = null } = {}) {
-    const roots = entries || getEditorTouchRootMenuEntries(DOODAD_EDITOR_ID);
+    const roots = entries || getEditorTouchRootMenuEntries(this.editorId);
     drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
-    if (gamepad) drawSharedGamepadSlideOutHeader(ctx, bounds, 'Doodad', { hint: headerHint || undefined });
+    if (gamepad) drawSharedGamepadSlideOutHeader(ctx, bounds, this.editorTitle, { hint: headerHint || undefined });
     const grid = buildLandscapeRootDrawerGridLayout({
       bounds,
       itemCount: roots.length,
@@ -830,7 +850,7 @@ export default class DoodadEditor {
     const source = Array.isArray(items) ? items : this.getMenuItems(this.landscapeRootId);
     if (!source.length) return;
     drawSharedPanel(ctx, bounds, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
-    if (gamepad) drawSharedGamepadSlideOutHeader(ctx, bounds, 'Doodad', { hint: headerHint || undefined });
+    if (gamepad) drawSharedGamepadSlideOutHeader(ctx, bounds, this.editorTitle, { hint: headerHint || undefined });
     const listBounds = gamepad
       ? { x: bounds.x, y: bounds.y + 50, w: bounds.w, h: Math.max(1, bounds.h - 50) }
       : bounds;
@@ -941,7 +961,7 @@ export default class DoodadEditor {
   }
 
   drawPortraitMenuSheet(ctx, layout) {
-    const roots = getEditorTouchRootMenuEntries(DOODAD_EDITOR_ID);
+    const roots = getEditorTouchRootMenuEntries(this.editorId);
     if (!roots.some((entry) => entry.id === this.mobileRootId)) this.mobileRootId = 'file';
     drawSharedPanel(ctx, layout.menuSheet, { fill: UI_SUITE.colors.panel, border: UI_SUITE.colors.border });
     this.drawActionRows(ctx, layout.rootRail, roots.map((root) => ({
@@ -1319,15 +1339,15 @@ export default class DoodadEditor {
   }
 
   drawDoodadArtworkPanel(ctx, bounds) {
-    const x=bounds.x+14,y=bounds.y+48;
+    const x=bounds.x+14,y=bounds.y+32;
     ctx.fillStyle=UI_SUITE.colors.text;ctx.font=`800 14px ${UI_SUITE.font.family}`;
     ctx.textAlign='left';ctx.textBaseline='middle';
     ctx.fillText(this.doodad.model?.ref||this.doodad.artRef||this.doodad.name||'Doodad',x,bounds.y+18,bounds.w-28);
     const handlers=this.getDesktopActionHandlers(),w=(bounds.w-40)/3;
-    [['pick-art','Artwork'],['pick-model','3D Model'],['clear-model','Use 2D']].forEach(([id,label],i)=>{
-      this.registerButton(ctx,{x:x+i*(w+6),y,w,h:34},{id,label,onClick:handlers[id]});
+    [['pick-art','Artwork'],['import-item-art','Import Image'],['doodad-item','Make Item'],['pick-model','3D Model'],['clear-model','Use 2D']].forEach(([id,label],i)=>{
+      this.registerButton(ctx,{x:x+(i%3)*(w+6),y:y+Math.floor(i/3)*38,w,h:34},{id,label,onClick:handlers[id]});
     });
-    if(bounds.h>110){ctx.fillStyle=UI_SUITE.colors.muted;ctx.font=`12px ${UI_SUITE.font.family}`;ctx.fillText(this.saveStatus||this.status,x,y+50,bounds.w-28);}
+    if(bounds.h>136){ctx.fillStyle=UI_SUITE.colors.muted;ctx.font=`12px ${UI_SUITE.font.family}`;ctx.fillText(this.saveStatus||this.status,x,y+92,bounds.w-28);}
   }
 
   drawDoodadSizePanel(ctx, bounds) {

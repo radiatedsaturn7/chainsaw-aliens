@@ -1,3 +1,4 @@
+import { VehicleSound } from '../audio/VehicleSound.js';
 import {
   GM_DRUM_BANK_LSB,
   GM_DRUM_BANK_MSB,
@@ -292,6 +293,9 @@ export default class AudioSystem {
       this.ctx = new (window.AudioContext || window.webkitAudioContext)();
       this.master = this.ctx.createGain();
       this.master.gain.value = this.volume;
+      this.effectsBus = this.ctx.createGain();
+      this.effectsBus.gain.value = this.effectsVolume ?? 1;
+      this.effectsBus.connect(this.master);
       this.masterPanNode = this.ctx.createStereoPanner ? this.ctx.createStereoPanner() : null;
       if (this.masterPanNode) {
         this.masterPanNode.pan.value = clamp(this.masterPan, -1, 1);
@@ -407,9 +411,9 @@ export default class AudioSystem {
     if (panNode) {
       panNode.pan.value = clamp(Number(pan || 0), -1, 1);
       master.connect(panNode);
-      panNode.connect(this.master);
+      panNode.connect(this.effectsBus || this.master);
     } else {
-      master.connect(this.master);
+      master.connect(this.effectsBus || this.master);
     }
     const sources = [];
     const frameLayers = Array.isArray(frame.layers) && frame.layers.length
@@ -535,7 +539,7 @@ export default class AudioSystem {
     this.ensure();
     if (this.midiBus) return;
     this.midiBus = this.ctx.createGain();
-    this.midiBus.gain.value = this.midiBusVolume * this.midiBusHeadroom;
+    this.midiBus.gain.value = this.midiBusVolume * this.midiBusHeadroom * (this.radioPlaying ? 0 : 1);
     this.midiLimiter = this.ctx.createDynamicsCompressor();
     this.midiLimiter.threshold.value = -16;
     this.midiLimiter.knee.value = 6;
@@ -717,12 +721,17 @@ export default class AudioSystem {
     });
   }
 
+  setRadioPlaying(playing) {
+    this.radioPlaying = Boolean(playing);
+    if(this.midiBus?.gain)this.midiBus.gain.value=this.midiBusVolume*this.midiBusHeadroom*(this.radioPlaying?0:1);
+  }
+
   setMidiVolume(value = 1) {
     const nextValue = clamp(Number(value) || 0, 0, 1);
     this.midiBusVolume = nextValue;
     this.ensureMidiSampler();
     if (this.midiBus?.gain) {
-      this.midiBus.gain.value = nextValue * this.midiBusHeadroom;
+      this.midiBus.gain.value = nextValue * this.midiBusHeadroom * (this.radioPlaying ? 0 : 1);
     }
   }
 
@@ -952,6 +961,11 @@ export default class AudioSystem {
     });
   }
 
+  setEffectsVolume(value) {
+    this.effectsVolume = clamp(Number(value) || 0, 0, 1);
+    if (this.effectsBus) this.effectsBus.gain.value = this.effectsVolume;
+  }
+
   setVolume(value) {
     this.volume = value;
     if (this.master) {
@@ -992,7 +1006,7 @@ export default class AudioSystem {
     osc.frequency.value = freq;
     gain.gain.value = 0.0001;
     osc.connect(gain);
-    gain.connect(this.master);
+    gain.connect(this.effectsBus || this.master);
     osc.start();
     const now = this.ctx.currentTime;
     gain.gain.exponentialRampToValueAtTime(0.2, now + 0.01);
@@ -2257,7 +2271,7 @@ export default class AudioSystem {
       });
       return;
     }
-    this.ensure();
+    this.ensureMidiSampler();
     const freq = 440 * (2 ** ((pitch - 69) / 12));
     const preset = this.getMidiPreset(instrument);
     const osc = this.ctx.createOscillator();
@@ -2278,9 +2292,9 @@ export default class AudioSystem {
     if (panNode) {
       panNode.pan.value = clamp(pan ?? 0, -1, 1);
       gain.connect(panNode);
-      panNode.connect(this.master);
+      panNode.connect(this.midiBus);
     } else {
-      gain.connect(this.master);
+      gain.connect(this.midiBus);
     }
     const now = when ?? this.ctx.currentTime;
     const attack = preset.attack ?? 0.01;
@@ -2540,7 +2554,7 @@ export default class AudioSystem {
     const panner = typeof this.ctx.createStereoPanner === 'function'
       ? this.ctx.createStereoPanner()
       : null;
-    const output = panner || this.master;
+    const output = panner || this.effectsBus || this.master;
     noiseSource.buffer = buffer;
     rumbleSource.type = 'sine';
     rumbleSource.frequency.setValueAtTime(42 + normalizedIntensity * 7, now);
@@ -2566,7 +2580,7 @@ export default class AudioSystem {
     rumbleGain.connect(output);
     if (panner) {
       panner.pan.setValueAtTime(normalizedPan, now);
-      panner.connect(this.master);
+      panner.connect(this.effectsBus || this.master);
     }
     noiseSource.start(now);
     rumbleSource.start(now);
@@ -2592,7 +2606,7 @@ export default class AudioSystem {
     gain.gain.value = gainValue;
     source.buffer = buffer;
     source.connect(gain);
-    gain.connect(this.master);
+    gain.connect(this.effectsBus || this.master);
     source.start();
   }
 
@@ -2740,7 +2754,7 @@ export default class AudioSystem {
       this.revOsc.frequency.value = 110;
       this.revGain.gain.value = 0.0001;
       this.revOsc.connect(this.revGain);
-      this.revGain.connect(this.master);
+      this.revGain.connect(this.effectsBus || this.master);
       this.revOsc.start();
     }
     if (active) {
@@ -2758,6 +2772,14 @@ export default class AudioSystem {
     this.revActive = active;
   }
 
+  setVehicleSound(active, options={}) {
+    if(!active){this.vehicleSound?.stop();this.vehicleSound=null;return;}
+    this.ensure();
+    if(!this.ctx)return;
+    this.vehicleSound ||= new VehicleSound(this.ctx,this.effectsBus||this.master);
+    this.vehicleSound.update(options);
+  }
+
   setEngineRev(active, {
     rpm = 900,
     redlineRpm = 6200,
@@ -2765,20 +2787,22 @@ export default class AudioSystem {
     load = 0,
     profile = 'flat-four'
   } = {}) {
+    if (!active) this.setVehicleSound(false);
     if (active) this.ensure();
     if (active && !this.engineRevActive) {
       this.engineRevOsc = this.ctx.createOscillator();
       this.engineRevSubOsc = this.ctx.createOscillator();
       this.engineRevGain = this.ctx.createGain();
       this.engineRevFilter = this.ctx.createBiquadFilter();
-      this.engineRevOsc.type = profile.includes('flat') ? 'sawtooth' : 'triangle';
-      this.engineRevSubOsc.type = 'square';
+      const real=new Float32Array(9),imag=new Float32Array([0,.55,.28,.22,.13,.09,.06,.03,.02]);
+      this.engineRevOsc.setPeriodicWave(this.ctx.createPeriodicWave(real,imag));
+      this.engineRevSubOsc.type = 'sine';
       this.engineRevFilter.type = 'lowpass';
       this.engineRevGain.gain.value = 0.0001;
       this.engineRevOsc.connect(this.engineRevFilter);
       this.engineRevSubOsc.connect(this.engineRevFilter);
       this.engineRevFilter.connect(this.engineRevGain);
-      this.engineRevGain.connect(this.master);
+      this.engineRevGain.connect(this.effectsBus || this.master);
       this.engineRevOsc.start();
       this.engineRevSubOsc.start();
     }
@@ -2788,9 +2812,9 @@ export default class AudioSystem {
       const throttleMix = Math.max(0, Math.min(1, Number(throttle || 0)));
       const loadMix = Math.max(0, Math.min(1, Number(load || 0)));
       const limiterPulse = rpmRatio > 0.98 ? (Math.sin(now * 92) > 0 ? 0.78 : 1.08) : 1;
-      const baseFreq = (38 + rpmRatio * 190) * limiterPulse;
+      const baseFreq = Math.max(25,Number(rpm)/60*(profile.includes('v8')?4:2));
       const gain = 0.022 + rpmRatio * 0.058 + throttleMix * 0.052 + loadMix * 0.03;
-      this.engineRevGain.gain.setTargetAtTime(Math.max(0.0001, gain), now, 0.026);
+      this.engineRevGain.gain.setTargetAtTime(Math.max(0.0001, gain * limiterPulse), now, 0.026);
       this.engineRevOsc.frequency.setTargetAtTime(baseFreq, now, 0.018);
       this.engineRevSubOsc.frequency.setTargetAtTime(baseFreq * 0.5, now, 0.024);
       this.engineRevFilter.frequency.setTargetAtTime(360 + rpmRatio * 2400 + throttleMix * 880, now, 0.032);
@@ -2831,7 +2855,7 @@ export default class AudioSystem {
       this.tireScreechGain.gain.value = 0.0001;
       this.tireScreechSource.connect(this.tireScreechFilter);
       this.tireScreechFilter.connect(this.tireScreechGain);
-      this.tireScreechGain.connect(this.master);
+      this.tireScreechGain.connect(this.effectsBus || this.master);
       this.tireScreechSource.start();
     }
     if (active) {

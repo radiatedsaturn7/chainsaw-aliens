@@ -25,3 +25,13 @@ test('model doodads persist, fit authored dimensions, cache geometry and disappe
     e.playtestSession={removedSceneryIds:['tree']};assert.equal(e.addRaceThreeDoodads(renderer),false);assert.equal(instance.root,null);
   }finally{modelAssets.entries.delete('Doodad Model');}
 });
+
+test('mix tape artwork rotates around its placement without rebuilding cached WebGL geometry',()=>{
+  const e=new RaceEditor({}),sprite={id:'tape',presetId:'doodad',x:4,z:9,yaw:0,previewDoodad:{itemType:'mix-tape',artRef:'Cassette',widthM:2,heightM:1,unlockTrackId:'song'}};
+  e.ensureRaceScenery=()=>[sprite];e.getSelectedRaceRuntimeType=()=> 'circuit';e.getRaceRouteLength=()=>100;e.getRaceSurfaceGeometryRevisionKey=()=> 'ground';e.getRaceArtSpriteCanvas=()=>null;
+  e.sampleRaceDoodadGroundPoint=(x,z)=>({x,z,elevation:0});e.getRaceThreeDoodadMaterial=()=>new THREE.MeshBasicMaterial({side:THREE.DoubleSide});e.playtestSession={elapsedMs:0};
+  const renderer={scene:new THREE.Scene()};assert.equal(e.addRaceThreeDoodads(renderer),true);const group=renderer.dynamicDoodadGroup,mesh=group.children[0],geometry=mesh.geometry;
+  assert.equal(mesh.position.x,4);assert.equal(mesh.position.z,9);assert.equal(mesh.rotation.y,0);
+  e.playtestSession.elapsedMs=1000;e.addRaceThreeDoodads(renderer);assert.equal(renderer.dynamicDoodadGroup,group);assert.equal(mesh.geometry,geometry);assert.equal(mesh.rotation.y,Math.PI*0.75);
+  e.playtestSession.removedSceneryIds=['tape'];assert.equal(e.addRaceThreeDoodads(renderer),false);
+});

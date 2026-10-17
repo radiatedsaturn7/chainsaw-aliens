@@ -1,0 +1,172 @@
+{
+  "value": {
+    "version": 1,
+    "tracks": [
+      {
+        "id": "f8375d61-d3a4-4245-92c4-07c24292c97f",
+        "title": "Who Signed the Order (I told you so)",
+        "artist": "Screwdriver 10,000",
+        "album": "I Told You So",
+        "image": {
+          "artRef": "",
+          "url": ""
+        },
+        "src": "./assets/radio/f8375d61-d3a4-4245-92c4-07c24292c97f.mp3",
+        "raceCues": {
+          "start": 3,
+          "end": null
+        },
+        "initiallyUnlocked": true
+      },
+      {
+        "id": "c2dddd12-98b9-4d68-a59d-6e2832fb1c07",
+        "title": "A Door I Carried",
+        "artist": "Clam Cakes",
+        "album": "Under the Water",
+        "image": {
+          "artRef": "",
+          "url": ""
+        },
+        "src": "./assets/radio/c2dddd12-98b9-4d68-a59d-6e2832fb1c07.mp3",
+        "raceCues": {
+          "start": 3,
+          "end": null
+        },
+        "initiallyUnlocked": true
+      },
+      {
+        "id": "ab0a13e5-3d04-4345-8c3e-46bf927e1085",
+        "title": "Westward Bound",
+        "artist": "F-Mission",
+        "album": "Off The Bridge",
+        "image": {
+          "artRef": "",
+          "url": ""
+        },
+        "src": "./assets/radio/ab0a13e5-3d04-4345-8c3e-46bf927e1085.mp3",
+        "raceCues": {
+          "start": 3,
+          "end": null
+        },
+        "initiallyUnlocked": true
+      },
+      {
+        "id": "c64446af-e852-4297-96a4-ae89f2b9efe6",
+        "title": "I Won't Disappear",
+        "artist": "Candle Shank",
+        "album": "Forgiven",
+        "image": {
+          "artRef": "",
+          "url": ""
+        },
+        "src": "./assets/radio/c64446af-e852-4297-96a4-ae89f2b9efe6.mp3",
+        "raceCues": {
+          "start": 3,
+          "end": null
+        },
+        "initiallyUnlocked": true
+      },
+      {
+        "id": "289ec51f-dce8-4637-bb02-d1a6a1fa51e1",
+        "title": "My Own Enemy",
+        "artist": "Chain Fence",
+        "album": "Hollow",
+        "image": {
+          "artRef": "",
+          "url": ""
+        },
+        "src": "./assets/radio/289ec51f-dce8-4637-bb02-d1a6a1fa51e1.mp3",
+        "raceCues": {
+          "start": 3,
+          "end": null
+        },
+        "initiallyUnlocked": true
+      },
+      {
+        "id": "7ced7f92-2452-41d6-b778-6c6d003e3341",
+        "title": "Python King",
+        "artist": "Electric Banana",
+        "album": "Thunder Gods",
+        "image": {
+          "artRef": "",
+          "url": ""
+        },
+        "src": "./assets/radio/7ced7f92-2452-41d6-b778-6c6d003e3341.mp3",
+        "raceCues": {
+          "start": 3,
+          "end": null
+        },
+        "initiallyUnlocked": true
+      },
+      {
+        "id": "1ee37aa5-068d-482d-ad1c-22caeea28bd5",
+        "title": "Am I Still Here?",
+        "artist": "Fairy Dust",
+        "album": "Ocean Skyline",
+        "image": {
+          "artRef": "",
+          "url": ""
+        },
+        "src": "./assets/radio/1ee37aa5-068d-482d-ad1c-22caeea28bd5.mp3",
+        "raceCues": {
+          "start": 16.88,
+          "end": null
+        },
+        "initiallyUnlocked": true
+      },
+      {
+        "id": "052dbcc3-4072-4b61-8921-6f668e435ab8",
+        "title": "We Learn to Live",
+        "artist": "Alien Mothership",
+        "album": "Another Day",
+        "image": {
+          "artRef": "",
+          "url": ""
+        },
+        "src": "./assets/radio/052dbcc3-4072-4b61-8921-6f668e435ab8.mp3",
+        "raceCues": {
+          "start": 13.24,
+          "end": null
+        },
+        "initiallyUnlocked": true
+      },
+      {
+        "id": "067d9317-0acc-4360-bc1e-dd6fdafaa9f1",
+        "title": "Everything You Said I'd Never",
+        "artist": "Raven FiVe",
+        "album": "Above the Hate",
+        "image": {
+          "artRef": "",
+          "url": ""
+        },
+        "src": "./assets/radio/067d9317-0acc-4360-bc1e-dd6fdafaa9f1.mp3",
+        "raceCues": {
+          "start": 3,
+          "end": null
+        },
+        "initiallyUnlocked": true
+      }
+    ],
+    "stations": [
+      {
+        "id": "0d6aafec-b991-4539-b841-1f47d8f187fb",
+        "name": "WRTG",
+        "logo": {
+          "artRef": "",
+          "url": ""
+        },
+        "trackIds": [
+          "f8375d61-d3a4-4245-92c4-07c24292c97f",
+          "c2dddd12-98b9-4d68-a59d-6e2832fb1c07",
+          "ab0a13e5-3d04-4345-8c3e-46bf927e1085",
+          "c64446af-e852-4297-96a4-ae89f2b9efe6",
+          "289ec51f-dce8-4637-bb02-d1a6a1fa51e1",
+          "7ced7f92-2452-41d6-b778-6c6d003e3341",
+          "1ee37aa5-068d-482d-ad1c-22caeea28bd5",
+          "052dbcc3-4072-4b61-8921-6f668e435ab8",
+          "067d9317-0acc-4360-bc1e-dd6fdafaa9f1"
+        ]
+      }
+    ]
+  }
+}

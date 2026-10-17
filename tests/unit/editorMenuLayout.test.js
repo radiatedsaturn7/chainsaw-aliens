@@ -344,7 +344,7 @@ test('all desktop editors expose shared left context roles and shared dropdown h
   assert.equal(canvasEditorDesktopDropdownSources.tile.includes("contentRoles: getEditorDesktopLeftContextRoles('tile')"), true);
   assert.equal(canvasEditorDesktopDropdownSources.midi.includes("contentRoles: getEditorDesktopLeftContextRoles('midi')"), true);
   assert.equal(canvasEditorDesktopDropdownSources.sfx.includes("contentRoles: getEditorDesktopLeftContextRoles('sfx')"), true);
-  assert.equal(canvasEditorDesktopDropdownSources.doodad.includes('contentRoles: getEditorDesktopLeftContextRoles(DOODAD_EDITOR_ID)'), true);
+  assert.equal(canvasEditorDesktopDropdownSources.doodad.includes('contentRoles: getEditorDesktopLeftContextRoles(this.editorId)'), true);
 });
 
 test('portrait shared rail interactions stay bottom-first with touch activation', () => {
@@ -1978,7 +1978,7 @@ test('shared file menu specs include the actions used by editor surfaces', () =>
   assert.deepEqual(getEditorMenuSection('cutscene', 'edit').actions, ['undo', 'redo', 'copy', 'cut', 'paste', 'delete']);
   assert.deepEqual(getEditorMenuSection('race', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'race-from-image', 'generate-random-race', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('race', 'edit').actions, ['undo', 'redo', 'copy-segment', 'paste-segment', 'delete-segment']);
-  assert.deepEqual(getEditorMenuSection('car', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('car', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'car-load-preset', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('car', 'edit').actions, ['undo', 'redo']);
 
   const sharedEditBaseline = ['undo', 'redo'];
@@ -2031,7 +2031,7 @@ test('shared file menu specs include the actions used by editor surfaces', () =>
   assert.deepEqual(raceEditDropdown.items.map((item) => item.id), ['undo', 'redo', 'copy-segment', 'paste-segment', 'delete-segment']);
 
   const carDropdown = buildDesktopDropdownPlan('car', 'file');
-  assert.deepEqual(carDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
+  assert.deepEqual(carDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'car-load-preset', 'exit-main']);
   const carEditDropdown = buildDesktopDropdownPlan('car', 'edit');
   assert.deepEqual(carEditDropdown.items.map((item) => item.id), ['undo', 'redo']);
 });

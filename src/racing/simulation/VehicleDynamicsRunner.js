@@ -1,3 +1,4 @@
+import {addItemVehicleForce} from '../../items/ItemVehicleEffect.js';
 import { RACE_WHEEL_IDS, clamp, normalizeAngle } from './SimulationMath.js';
 import {
   ContactPatchTireModel,
@@ -556,6 +557,7 @@ function controlsEqual(left, right) {
     || left.controllerFilterOutput !== right.controllerFilterOutput
     || left.centerSteeringAngleRad !== right.centerSteeringAngleRad
     || left.steeringInputMode !== right.steeringInputMode
+    || left.itemSpeedMultiplier !== right.itemSpeedMultiplier
     || left.throttle !== right.throttle
     || left.brake !== right.brake
     || left.clutch !== right.clutch
@@ -631,6 +633,7 @@ export function normalizeVehicleControlInput(input = {}) {
       ? quantize(explicitCenterAngle)
       : null,
     steeringInputMode: String(input.steeringInputMode || 'normalized'),
+    itemSpeedMultiplier: quantize(clamp(Number(input.itemSpeedMultiplier)||1,0.1,4)),
     throttle: quantize(clamp(Number(input.throttle ?? input.throttleAxis ?? 0), 0, 1)),
     brake: quantize(clamp(Number(input.brake ?? input.brakeAxis ?? 0), 0, 1)),
     clutch: quantize(clamp(Number(input.clutch ?? input.clutchAxis ?? 0), 0, 1)),
@@ -654,6 +657,7 @@ function copyVehicleControlInputInto(target, source) {
   target.controllerFilterOutput = source.controllerFilterOutput;
   target.centerSteeringAngleRad = source.centerSteeringAngleRad;
   target.steeringInputMode = source.steeringInputMode;
+  target.itemSpeedMultiplier = source.itemSpeedMultiplier;
   target.throttle = source.throttle;
   target.brake = source.brake;
   target.clutch = source.clutch;
@@ -745,6 +749,7 @@ export class VehicleControlInputTimeline {
     const span = right.timeSeconds - left.timeSeconds;
     const ratio = span > EPSILON ? clamp((time - left.timeSeconds) / span, 0, 1) : 0;
     const sampled = target && typeof target === 'object' ? target : {};
+    sampled.itemSpeedMultiplier = left.input.itemSpeedMultiplier;
     sampled.requestedGear = left.input.requestedGear;
     sampled.steeringInputMode = left.input.steeringInputMode;
     sampled.handbrakeHoldSequence = left.input.handbrakeHoldSequence;
@@ -4577,7 +4582,7 @@ export class VehicleDynamicsRunner {
     );
     let suppressThrottleForResetRelease = false;
     if (this.stationaryResetHold
-      && Number(sampledControls.throttle || 0) > STATIONARY_RESET_WAKE_THROTTLE) {
+      && (Number(sampledControls.throttle || 0) > STATIONARY_RESET_WAKE_THROTTLE || Number(sampledControls.itemSpeedMultiplier||1)>1)) {
       this.stationaryResetHold.wakeRequested = true;
       if (Number(this.stationaryResetHold.validContactConfirmations || 0) >= 2
         || this.stationaryResetHold.confirmationTimedOut === true) {
@@ -4787,6 +4792,7 @@ export class VehicleDynamicsRunner {
         + Number(aeroState.totalForceWorldN?.y || 0);
       externalForceWorldN.z = Number(environment.externalForceWorldN?.z || 0)
         + Number(aeroState.totalForceWorldN?.z || 0);
+      addItemVehicleForce(externalForceWorldN,substepState,controls,this.config.massKg);
       tireResult.externalForceWorldN = externalForceWorldN;
       const externalMomentWorldNm = substepScratch.externalMomentWorldNm;
       externalMomentWorldNm.x = Number(environment.externalMomentWorldNm?.x || 0)
@@ -5792,6 +5798,7 @@ export class VehicleDynamicsRunner {
         tireResult.externalForceWorldN = addVector3(
           environment.externalForceWorldN || {}, cleanAeroState.totalForceWorldN
         );
+        addItemVehicleForce(tireResult.externalForceWorldN,substepState,controls,this.config.massKg);
         tireResult.externalMomentWorldNm = addVector3(
           environment.externalMomentWorldNm || {}, cleanAeroState.totalMomentWorldNm
         );

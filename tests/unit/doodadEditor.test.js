@@ -180,7 +180,7 @@ test('Doodad Editor desktop uses shared top dropdowns and left settings panel', 
   assert.equal(doodadEditorSource.includes('drawSharedMenuButtonChrome(ctx, bounds, {'), true);
   assert.equal(doodadEditorSource.includes('drawSharedMenuButtonLabel(ctx, bounds, label, {'), true);
   assert.equal(doodadEditorSource.includes('buildSharedEditorFileMenu({'), true);
-  assert.equal(doodadEditorSource.includes('contentRoles: getEditorDesktopLeftContextRoles(DOODAD_EDITOR_ID)'), true);
+  assert.equal(doodadEditorSource.includes('contentRoles: getEditorDesktopLeftContextRoles(this.editorId)'), true);
   assert.equal(doodadEditorSource.includes('dropdownScroll: this.desktopDropdownScroll?.[openDesktopRootId] || 0'), true);
   assert.equal(doodadEditorSource.includes('applyDesktopDropdownWheelScrollState({'), true);
   assert.equal(doodadEditorSource.includes('createPendingDesktopDropdownHit(desktopDropdownHit, payload)'), true);

@@ -661,3 +661,17 @@ test('static fallback open tracks source and later save retries live POST direct
     clearCachedProjectFilesForTests();
   }
 });
+
+test('deleted cars with retained history stay out of file lists and existence checks', async()=>{
+ clearCachedProjectFilesForTests();
+ const originalFetch=globalThis.fetch;
+ globalThis.fetch=async()=>({ok:true,json:async()=>({ok:true,index:{cars:{WRX2:{deleted:true,size:0},WRX3:{deleted:true,size:0},Kept:{deleted:false,size:20}}}})});
+ try {
+  await hydrateServerStorage();
+  const {listProjectFiles,projectFileExists}=await import('../../src/ui/projectFiles.js');
+  assert.deepEqual(listProjectFiles('cars').map(e=>e.name),['Kept']);
+  assert.equal(projectFileExists('cars','WRX2'),false);
+  assert.equal(projectFileExists('cars','Kept'),true);
+  assert.equal(listProjectFiles('cars',{includeDeleted:true}).filter(e=>e.deleted).length,2);
+ } finally {globalThis.fetch=originalFetch;clearCachedProjectFilesForTests();}
+});

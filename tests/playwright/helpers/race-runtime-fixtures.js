@@ -91,6 +91,7 @@ export async function seedRaceRuntimeFixtures(page) {
       editor.project.cars.find((candidate) => candidate.name === '2022 Subaru WRX')
         || editor.selectedCar
     );
+    delete car.__systemPreset;delete car.__editorDraft;delete car.systemFile;
     car.id = 'playwright-wrx2';
     car.name = '2022 Subaru WRX2';
     car.camera = {

@@ -145,6 +145,7 @@ test('art preloading includes the cars drawn for this race instead of the saved 
 
 test('crossing the grid start does not award an extra lap, including rolling starts', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.upsertRaceProjectCar(editor.withSavedRaceCarRuntimeIdentity(structuredClone(editor.selectedCar), 'Grid Opponent'));
   editor.setRaceAiCount(1);
   editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false });
   const session = editor.playtestSession;

@@ -5,7 +5,7 @@ Resume the RTG Studio editor UI consistency goal from the `staging` branch.
 Current goal:
 - Make every editor use the same RTG Studio style and shared menu semantics.
 - Desktop should behave like a desktop app: horizontal top menus, dropdown drawers, click-away close, hover switching, persistent left-side contextual/tool panels, and no mobile bottom rails.
-- Portrait should preserve the working bottom-first flow and keep submenus at the bottom wherever possible.
+- Portrait should follow the existing Pixel/MIDI editors: a persistent workspace, bottom thumbstick plus Menu / Undo / Redo / special button, a separate contextual hotbar, and a zoom scroller if applicable. Keep menus/settings bottom-first. Do not build the editor as a wizard or a chain of dialogs; focused dialogs return to the workspace. Explain concrete workflow deviations while keeping the rest uniform.
 - Mobile landscape should use a left main menu, right submenu, and bottom rail for zoom/ribbons/tool options when appropriate.
 - Gamepad should mirror landscape, but selecting a main menu replaces the left rail with the submenu; A selects and B backs out.
 

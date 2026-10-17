@@ -493,3 +493,15 @@ test('race travel hydrates the exact saved car document instead of reusing a sta
   assert.equal(selected.length, 1);
   clearCachedProjectFilesForTests();
 });
+
+test('menu-started races honor the configured next race and retain their menu origin and configuration',()=>{
+ const game=Object.create(Game.prototype),flow={active:true};
+ const session={originState:'menu-player',carId:'exact-car',carRef:'WRX4',menuFlow:flow,menuConfiguration:{difficulty:'hard',weapons:['chainsaw']},trackStateByRace:{}};
+ game.raceTravelSession=session;game.menuPlayer={flow};let next;
+ game.startRaceTravel=params=>{next=params;return Promise.resolve(true)};
+ const snapshot={checksum:'finished'};
+ assert.equal(game.completeRaceTravel({type:'race',targetRace:'Race Two'},{raceId:'one',trackStateSnapshot:snapshot}),true);
+ assert.equal(next.raceName,'Race Two');assert.equal(next.continuation,session);assert.equal(next.carRef,'WRX4');assert.equal(session.trackStateByRace.one,snapshot);assert.deepEqual(session.menuConfiguration.weapons,['chainsaw']);
+ let returned=false;game.transitionTo=state=>{assert.equal(state,'menu-player')};game.menuPlayer.enterScreen=()=>{returned=true};
+ game.completeRaceTravel({type:'return-to-origin'});assert.ok(returned);assert.equal(game.raceTravelSession,null);
+});

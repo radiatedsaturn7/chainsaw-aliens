@@ -120,15 +120,15 @@ export default class Input {
 
 
   isDown(action) {
-    return (KEYMAP[action] || []).some((code) => this.keys.get(code)) || this.virtualDown.get(action);
+    return (this.actionKeymap?.[action] || KEYMAP[action] || []).some((code) => this.keys.get(code)) || this.virtualDown.get(action);
   }
 
   wasPressed(action) {
-    return (KEYMAP[action] || []).some((code) => this.pressed.has(code)) || this.virtualPressed.has(action);
+    return (this.actionKeymap?.[action] || KEYMAP[action] || []).some((code) => this.pressed.has(code)) || this.virtualPressed.has(action);
   }
 
   wasReleased(action) {
-    return (KEYMAP[action] || []).some((code) => this.released.has(code)) || this.virtualReleased.has(action);
+    return (this.actionKeymap?.[action] || KEYMAP[action] || []).some((code) => this.released.has(code)) || this.virtualReleased.has(action);
   }
 
   wasPressedCode(code) {
@@ -275,16 +275,8 @@ export default class Input {
     let rightX = axes[2] ?? 0;
     let rightY = axes[3] ?? 0;
     if (pad.mapping !== 'standard') {
-      const leftMag = Math.hypot(leftX, leftY);
-      const rightMag = Math.hypot(rightX, rightY);
-      const swapThreshold = 0.2;
-      if (!this.gamepadAxisMode) {
-        if (leftMag > swapThreshold && rightMag <= swapThreshold) {
-          this.gamepadAxisMode = 'standard';
-        } else if (rightMag > swapThreshold && leftMag <= swapThreshold) {
-          this.gamepadAxisMode = 'swapped';
-        }
-      }
+      // Stick activity cannot identify a layout: moving the right stick first
+      // must not permanently swap camera and driving controls.
       if (this.gamepadAxisMode === 'swapped') {
         [leftX, leftY, rightX, rightY] = [rightX, rightY, leftX, leftY];
       }
@@ -297,7 +289,7 @@ export default class Input {
     let rightTrigger = pad.buttons?.[7]?.value ?? 0;
     const axisLeft = pad.axes?.[4];
     const axisRight = pad.axes?.[5];
-    if (typeof axisLeft === 'number' && typeof axisRight === 'number') {
+    if (pad.mapping !== 'standard' && typeof axisLeft === 'number' && typeof axisRight === 'number') {
       const axisLeftValue = clamp((axisLeft + 1) / 2, 0, 1);
       const axisRightValue = clamp((axisRight + 1) / 2, 0, 1);
       const buttonsIdle = leftTrigger <= 0.01 && rightTrigger <= 0.01;
@@ -330,11 +322,18 @@ export default class Input {
     return this.gamepadPressed.has(action) || this.virtualGamepadPressed.has(action);
   }
 
-  getGamepadAxes() {
-    if (this.virtualGamepadActive) {
-      return this.virtualGamepadAxes;
-    }
-    return this.gamepadAxes;
+  getGamepadAxes({ applySensitivity = true } = {}) {
+    const axes = this.virtualGamepadActive ? this.virtualGamepadAxes : this.gamepadAxes;
+    const sensitivity = this.controlSensitivity || 1;
+    if (!applySensitivity || sensitivity === 1) return axes;
+    return { ...axes, ...Object.fromEntries(['leftX', 'leftY', 'rightX', 'rightY']
+      .map(key => {
+        const value = clamp(Number(axes[key] || 0), -1, 1);
+        // Low sensitivity softens the center without reducing full stick travel.
+        return [key, sensitivity < 1
+          ? Math.sign(value) * Math.pow(Math.abs(value), 1 / sensitivity)
+          : clamp(value * sensitivity, -1, 1)];
+      })) };
   }
 
   combineActions(...sources) {

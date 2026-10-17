@@ -101,6 +101,8 @@ export function normalizeRaceDoodadDocument(data = {}, fallbackName = '') {
     id,
     name: String(doodad.name || cleanName || fallback.name),
     artRef: String(doodad.artRef || '').trim(),
+    itemType: doodad.itemType === 'mix-tape' ? 'mix-tape' : 'scenery',
+    unlockTrackId: typeof doodad.unlockTrackId === 'string' ? doodad.unlockTrackId.trim() : '',
     model: normalizeModelBinding(doodad.model),
     widthM,
     heightM,

@@ -47,6 +47,12 @@
   editor-specific branches.
 - **Mode behavior**: Document impact for portrait, landscape touch, desktop,
   and gamepad. State "unchanged" explicitly for modes outside scope.
+- **Portrait workspace**: For new or revised portrait screens, inspect the Pixel
+  and MIDI implementations. Map the persistent workspace, thumbstick, Menu /
+  Undo / Redo / special-action rail, separate contextual hotbar, and applicable
+  zoom scroller to shared helpers. Do not substitute a wizard or chained forms
+  for the editor. Record workflow-specific deviations and focused dialogs that
+  return to the workspace; do not introduce a separate approval step.
 - **Validation**: List required unit, layout, gesture, controller, visual, or
   manual checks. Preserve existing portrait tests unless portrait change is in
   scope.

@@ -1,3 +1,4 @@
+import {makeModelGizmo,drawModelGizmo,pickModelGizmo,gizmoDragTransform,transformGizmoVertices} from '../model3d/ModelTransformGizmo.js';
 import {EditorInputActionNormalizer,EDITOR_INPUT_ACTIONS as INPUT} from './shared/input/editorInputActions.js';
 import RaceEditor from './RaceEditor.js';
 import * as THREE from '../vendorBridge/three.js';
@@ -17,14 +18,14 @@ const coords=result=>[result.x,result.y,result.z];
 const label=id=>id.split('-').map(s=>s[0].toUpperCase()+s.slice(1)).join(' ');
 export default class ModelEditor extends RaceEditor {
   constructor(game){super(game,{mode:'car'});this.model=Mesh.createModelDocument();this.history=new Mesh.ModelHistory();this.modelInput=new EditorInputActionNormalizer();this.currentModelName='';this.selection={vertices:[],faces:[]};this.joint=null;this.clip=null;this.pose={};this.time=0;this.playing=false;this.ik=false;this.tool='select-vertices';this.view='orbit';this.yaw=0.7;this.pitch=0.35;this.zoom=1;this.pan=[0,0,0];this.revision=0;this.modelRenderer=new ModelCanvasRenderer();this.activeRootId='mesh';this.color='#df533f';this.brushSize=3;this.uvMode=false;this.images=new Map();this.materialId=this.model.materials[0].id;this.selectionMode='object';this.transformMode='move';this.hotbarGroup=null;this.createStarterCube();}
-  createStarterCube(){const model=Mesh.createModelDocument();Mesh.addPrimitive(model,'box');this.loadModel(model);this.selectionMode='object';this.transformMode='move';this.tool='select-object';this.view='orbit';this.zoom=1;this.pan=[0,0,0];this.uvMode=false;this.status='Tap the cube to select it, then choose Move, Rotate or Scale.';}
+  createStarterCube(){const model=Mesh.createModelDocument();Mesh.addPrimitive(model,'box');this.loadModel(model);this.selectionMode='object';this.transformMode='move';this.tool='select-object';this.view='orbit';this.zoom=1;this.pan=[0,0,0];this.uvMode=false;this.status='Select geometry, then drag an X, Y or Z handle. White handle moves freely.';}
   get editorId(){return 'model3d';}get title(){return '3D Object Editor';}
   getMenuItems(root){root=({'mesh-edit':'edit',camera:'view'})[root]||root;const spec=getEditorMenuSpec(this.editorId);return (spec.sections[root]?.actions||[]).map(id=>({id,label:label(id),disabled:false,onSelect:()=>this.handleMenuAction(id)}));}
   isActionAvailable(id){return Boolean(getEditorMenuSpec(this.editorId).actions[id]);}
   getRaceActionLabel(id){return label(id);}
   getRacePortraitContextAction(){return {id:'model-play',label:this.playing?'Ⅱ':'▶',onClick:()=>this.handleMenuAction('animation-play')};}
   getDesktopContextActions(){return ['shape-box','select-vertices','select-faces','place-joint','uv-editor'].map(id=>({id,label:label(id),contextPanelCommand:true,onClick:()=>this.handleMenuAction(id)}));}
-  drawDesktopContext(ctx,bounds){drawSharedDesktopContextPanel(ctx,bounds,{title:this.title,lines:[this.model.name,`${this.model.vertices.length} vertices · ${this.model.faces.length} faces`,`${this.model.joints.length} joints`,label(this.tool),`View: ${this.view.toUpperCase()}`],contentRoles:['document-summary','active-tool-summary','status'],status:this.status});}
+  drawDesktopContext(ctx,bounds){drawSharedDesktopContextPanel(ctx,bounds,{title:this.title,lines:[this.model.name,`${this.model.vertices.length} vertices · ${this.model.faces.length} faces`,`${this.model.joints.length} joints`,`${this.model.animations.length} animations · ${this.model.animations.find(clip=>clip.id===this.clip)?.name||'None'}`,label(this.tool),`View: ${this.view.toUpperCase()}`],contentRoles:['document-summary','active-tool-summary','status'],status:this.status});}
   updateCarEditorPreviewPlaytest(){}updateCarEditorPreviewSelectHold(){return false;}ensureCarEditorPreviewPlaytestSession(){return null;}
   update(input,dt){
     if(typeof document!=='undefined'&&document.querySelector('dialog[open]'))return;
@@ -36,7 +37,7 @@ export default class ModelEditor extends RaceEditor {
     for(const [code,action] of Object.entries(commands))if(input?.wasCommandPressedCode?.(code)||(cmd&&pressed(code)))void this.handleMenuAction(action);
     for(const [code,action] of Object.entries(actions))if(!cmd&&pressed(code))void this.handleMenuAction(action);
     const pad=this.modelInput.updateGamepad(input,dt,{includePanIntent:true,includeZoomIntent:true});
-    const cancel=()=>{if(this.desktopDropdown){this.closeEditorMenus();return;}if(this.gamepadSubmenuOpen){this.gamepadSubmenuOpen=false;this.mobileRootOpen=true;return;}if(this.mobileRootOpen){this.mobileRootOpen=false;return;}this.exitToMainMenu();};
+    const cancel=()=>{if(this.modelDrag?.gizmo){this.model=this.modelDrag.before;this.modelDrag=null;this.revision++;this.status='Transform cancelled';return;}if(this.desktopDropdown){this.closeEditorMenus();return;}if(this.gamepadSubmenuOpen){this.gamepadSubmenuOpen=false;this.mobileRootOpen=true;return;}if(this.mobileRootOpen){this.mobileRootOpen=false;return;}this.exitToMainMenu();};
     if(!pad.connected&&(input?.wasPressed?.('cancel')||pressed('Escape')))cancel();
     const menuOwned=this.mobileRootOpen||this.gamepadSubmenuOpen;
     const roots=getEditorTouchRootMenuEntries(this.editorId);
@@ -83,8 +84,8 @@ if(this.playing){const clip=this.model.animations.find(c=>c.id===this.clip);this
       if(id.startsWith('view-')){this.view=id.slice(5);this.uvMode=false;this.status='Use the thumbstick or drag empty space to orbit. Select geometry to edit.';return;}
       if(id==='wireframe'){this.wireframe=!this.wireframe;return;}
       if(id.startsWith('shape-')){const empty=!this.model.vertices.length;this.selection=this.change(label(id),()=>Mesh.addPrimitive(this.model,id.slice(6)));if(empty)this.modelRenderer.frameModel(this.model);return;}
-      if(['select-object','select-vertices','select-faces'].includes(id)){this.selectionMode=id.slice(7);this.selection={vertices:[],faces:[]};this.tool=id;this.uvMode=false;this.status='Tap to select; tap again to deselect. Then choose a transform.';return;}
-      if(['move-selection','rotate-selection','scale-selection'].includes(id)){this.transformMode=id.split('-')[0];this.tool=id;this.uvMode=false;this.status=this.selectedVertices().length?'Drag in the viewport to '+this.transformMode+' the selection.':'Select vertices, faces or an object first.';return;}
+      if(['select-object','select-vertices','select-faces'].includes(id)){this.selectionMode=id.slice(7);this.selection={vertices:[],faces:[]};this.tool=id;this.uvMode=false;this.status='Select geometry, then drag a colored handle. X red · Y green · Z blue.';return;}
+      if(['move-selection','rotate-selection','scale-selection'].includes(id)){this.transformMode=id.split('-')[0];this.tool=id;this.uvMode=false;this.status=this.selectedVertices().length?'Drag a colored handle to '+this.transformMode+' along its axis.':'Select vertices, faces or an object first.';return;}
       if(['select-vertices','select-faces','place-vertex','move-vertices','select-joints','place-joint','uv-move','uv-paint'].includes(id)){this.tool=id;this.uvMode=id.startsWith('uv-');this.status=label(id);return;}
       if(id==='select-all'){this.selection={vertices:this.model.vertices.map(v=>v.id),faces:this.model.faces.map(f=>f.id)};return;}
       if(id==='copy'||id==='cut'){this.clipboard=Mesh.copyGeometry(this.model,this.selection);if(id==='cut')this.change('Cut',()=>Mesh.deleteGeometry(this.model,this.selection));return;}
@@ -112,8 +113,8 @@ if(this.playing){const clip=this.model.animations.find(c=>c.id===this.clip);this
       if(id==='assign-joint'){const result=await openEditorForm('Vertex weight',[{id:'weight',label:'Weight (0 removes this joint)',value:1,min:0,max:1}]);if(result)this.change('Assign vertices to joint',()=>Rig.assignVerticesToJoint(this.model,this.selectedVertices(),this.joint,result.weight));return;}
       if(id==='select-joint-vertices'){this.selection={vertices:this.model.vertices.filter(v=>v.weights?.some(w=>w.joint===this.joint&&w.weight>0)).map(v=>v.id),faces:[]};return;}
       if(id==='joint-properties'||id==='pose-joint')return await this.editJoint(id==='pose-joint');
-      if(id==='animation-new'){const result=await openEditorForm('New animation',[{id:'name',label:'Name',type:'text',value:'Animation'},{id:'duration',label:'Duration (seconds)',min:0.1,value:1}]);if(result)this.clip=this.change('New animation',()=>Rig.addAnimation(this.model,result.name,result.duration));return;}
-      if(id==='animation-select'){const result=await openEditorForm('Animation',[{id:'clip',label:'Clip',options:this.model.animations.map(c=>({value:c.id,label:c.name})),value:this.clip}]);if(result){this.clip=result.clip;this.time=0;this.pose=Rig.sampleAnimation(this.model,this.clip,0,{loop:false});}return;}
+      if(id==='animation-new'){const result=await openEditorForm('New animation',[{id:'name',label:'Name',type:'text',value:'Animation'},{id:'duration',label:'Duration (seconds)',min:0.1,value:1}]);if(result){this.clip=this.change('New animation',()=>Rig.addAnimation(this.model,result.name,result.duration));this.time=0;this.pose={};this.playing=false;}return;}
+      if(id==='animation-select'){const result=await openEditorForm('Animation',[{id:'clip',label:'Clip',options:this.model.animations.map(c=>({value:c.id,label:c.name})),value:this.clip}]);if(result){this.playing=false;this.clip=result.clip;this.time=0;this.pose=Rig.sampleAnimation(this.model,this.clip,0,{loop:false});}return;}
       if(id==='animation-properties'){const clip=this.model.animations.find(c=>c.id===this.clip);if(!clip)throw Error('Select an animation');const result=await openEditorForm('Animation properties',[{id:'name',label:'Name',type:'text',value:clip.name},{id:'duration',label:'Duration (seconds)',min:0.01,value:clip.duration},{id:'fps',label:'Frame rate',min:1,max:120,value:clip.fps},{id:'loop',label:'Playback',value:clip.loop?'loop':'once',options:[{value:'loop',label:'Loop'},{value:'once',label:'Once'}]}]);if(result)this.change('Animation properties',()=>{const last=Math.max(0,...Object.values(clip.tracks).flatMap(keys=>keys.map(k=>k.time)));if(result.duration<last)throw Error('Duration must include the last keyframe');Object.assign(clip,{name:result.name,duration:result.duration,fps:result.fps,loop:result.loop==='loop'});});return;}
       if(id==='keyframe-next'||id==='keyframe-prev'){const clip=this.model.animations.find(c=>c.id===this.clip);const times=[...new Set(Object.values(clip?.tracks||{}).flatMap(keys=>keys.map(k=>k.time)))].sort((a,b)=>a-b);const time=id==='keyframe-next'?times.find(t=>t>this.time+1e-5):times.findLast(t=>t<this.time-1e-5);if(time!==undefined){this.time=time;this.playing=false;this.pose=Rig.sampleAnimation(this.model,this.clip,time,{loop:false});}return;}
       if(id==='animation-time'){const result=await openEditorForm('Timeline',[{id:'time',label:'Time (seconds)',min:0,value:this.time}]);if(result){this.time=result.time;this.pose=Rig.sampleAnimation(this.model,this.clip,this.time,{loop:false});}return;}
@@ -188,6 +189,8 @@ if(this.playing){const clip=this.model.animations.find(c=>c.id===this.clip);this
       const joints=Rig.jointMatrices(this.model,pose);
       for(const joint of this.model.joints){const p=this.modelRenderer.project(new THREE.Vector3().setFromMatrixPosition(joints.get(joint.id)).toArray());if(!p)continue;ctx.fillStyle=joint.id===this.joint?'#ffcc44':'#ed92b4';ctx.beginPath();ctx.arc(p.x,p.y,6,0,Math.PI*2);ctx.fill();if(joint.parent){const parent=this.modelRenderer.project(new THREE.Vector3().setFromMatrixPosition(joints.get(joint.parent)).toArray());ctx.strokeStyle='#ed92b4';ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(parent.x,parent.y);ctx.stroke();}}
     }
+    this.modelGizmo=this.getModelGizmo();
+    drawModelGizmo(ctx,this.modelGizmo,this.modelDrag?.gizmo?.hit.axis);
     if(this.modelCursor&&this.game?.input?.isGamepadConnected?.()){ctx.strokeStyle='#ffffff';ctx.beginPath();ctx.arc(this.modelCursor.x,this.modelCursor.y,8,0,Math.PI*2);ctx.stroke();}
     ctx.restore();
     const hot=[['selection',label(this.selectionMode)],['camera',label(this.view)],['transform',label(this.transformMode)],['tools','Tools']];const width=bounds.w/4;
@@ -209,6 +212,21 @@ if(this.playing){const clip=this.model.animations.find(c=>c.id===this.clip);this
     while(changed){changed=false;for(const f of this.model.faces)if(f.vertices.some(id=>ids.has(id)))for(const id of f.vertices)if(!ids.has(id)){ids.add(id);changed=true;}}
     const selected=[...ids].every(id=>this.selection.vertices.includes(id));
     this.selection={vertices:selected?[]:[...ids],faces:selected?[]:this.model.faces.filter(f=>f.vertices.every(id=>ids.has(id))).map(f=>f.id)};
+  }
+  getModelGizmo(){
+    if(this.uvMode||this.playing||!['select-object','select-vertices','select-faces','move-vertices','move-selection','rotate-selection','scale-selection'].includes(this.tool))return null;
+    const ids=new Set(this.selectedVertices()),vertices=this.model.vertices.filter(v=>ids.has(v.id));
+    if(!vertices.length)return null;
+    const center=vertices.reduce((sum,v)=>sum.map((n,i)=>n+v.position[i]/vertices.length),[0,0,0]);
+    return makeModelGizmo(this.modelRenderer,center,this.transformMode);
+  }
+  dragModelGizmo(drag,p){
+    const {layout,hit,start,ids}=drag.gizmo;
+    const transform=gizmoDragTransform(this.modelRenderer,layout,hit,start,p);
+    this.model=structuredClone(drag.before);
+    if(transform.delta)Mesh.moveVertices(this.model,ids,transform.delta);
+    else transformGizmoVertices(this.model.vertices.filter(v=>ids.includes(v.id)),layout.center,hit.axis,transform);
+    this.revision++;this.status=`${label(layout.mode)} ${hit.axis===null?'freely':'XYZ'[hit.axis]} · release to apply, Esc to cancel`;
   }
   transformSelection(dx,dy,drag,p){
     const ids=this.selectedVertices();if(!ids.length)return;
@@ -233,6 +251,8 @@ if(this.playing){const clip=this.model.animations.find(c=>c.id===this.clip);this
     if(inside(p,this.timeline)){const clip=this.model.animations.find(c=>c.id===this.clip);this.time=Math.max(0,(p.x-this.timeline.x)/this.timeline.w)*(clip?.duration||1);this.pose=Rig.sampleAnimation(this.model,this.clip,this.time,{loop:false});this.playing=false;return;}
     if(!inside(p,this.modelBounds))return super.handlePointerDown(p);
     const before=structuredClone(this.model);this.modelDrag={id:p.id,x:p.x,y:p.y,before};
+    const layout=this.getModelGizmo(),hit=pickModelGizmo(layout,p);
+    if(hit){this.modelDrag.gizmo={layout,hit,start:{x:p.x,y:p.y},ids:this.selectedVertices()};return;}
     if(this.uvMode){if(!inside(p,this.uvBounds||this.modelBounds)){this.modelDrag=null;return;}if(this.tool==='uv-paint'){this.paintAt(p);return;}const uv=this.uvBounds||this.modelBounds;let hit=null,best=14;for(const face of this.textureFaces())face.uv.forEach(([u,v],index)=>{const distance=Math.hypot(p.x-uv.x-u*uv.w,p.y-uv.y-(1-v)*uv.h);if(distance<best){best=distance;hit={face:face.id,index};}});this.modelDrag.uv=hit;return;}
     const point=this.modelRenderer.unprojectToPlane(p.x,p.y);
     if(this.tool==='place-vertex'){this.change('Place vertex',()=>{this.selection.vertices.push(Mesh.addVertex(this.model,point));});this.modelDrag=null;return;}
@@ -246,12 +266,13 @@ if(this.playing){const clip=this.model.animations.find(c=>c.id===this.clip);this
   paintAt(p){const b=this.uvBounds||this.modelBounds;if(!inside(p,b))return;Mesh.paintTexture(this.model,this.activeMaterial().id,(p.x-b.x)/b.w,1-(p.y-b.y)/b.h,this.color,this.brushSize);this.revision++;}
   handlePointerMove(p={}){
     const drag=this.modelDrag;if(!drag)return super.handlePointerMove(p);if(drag.id!==undefined&&p.id!==undefined&&drag.id!==p.id)return;
+    if(drag.gizmo){this.dragModelGizmo(drag,p);return;}
     if(this.uvMode){if(this.tool==='uv-paint')this.paintAt(p);else if(drag.uv){const b=this.uvBounds||this.modelBounds;this.model.faces.find(f=>f.id===drag.uv.face).uv[drag.uv.index]=[Math.max(0,Math.min(1,(p.x-b.x)/b.w)),Math.max(0,Math.min(1,1-(p.y-b.y)/b.h))];this.revision++;}}
     else if(['move-vertices','move-selection','rotate-selection','scale-selection'].includes(this.tool)){this.transformSelection(p.x-drag.x,p.y-drag.y,drag,p);}
     else if(this.tool==='select-joints'&&this.ik&&this.joint){this.pose=Rig.solveIK(this.model,this.pose,this.joint,this.modelRenderer.unprojectToPlane(p.x,p.y));this.playing=false;}
     else if(this.view==='orbit'&&(drag.orbit||!this.tool.startsWith('select-'))){this.yaw+=(p.x-drag.x)*0.008;this.pitch=Math.max(-1.5,Math.min(1.5,this.pitch+(p.y-drag.y)*0.008));}
     drag.x=p.x;drag.y=p.y;
   }
-  handlePointerUp(p={}){if(!this.modelDrag)return super.handlePointerUp(p);const before=this.modelDrag.before;this.modelDrag=null;if(JSON.stringify(before)!==JSON.stringify(this.model)){this.history.undoStack.push({label:'Drag',model:before});if(this.history.undoStack.length>50)this.history.undoStack.shift();this.history.redoStack=[];}}
+  handlePointerUp(p={}){if(!this.modelDrag)return super.handlePointerUp(p);if(this.modelDrag.id!==undefined&&p.id!==undefined&&this.modelDrag.id!==p.id)return;const before=this.modelDrag.before;this.modelDrag=null;if(JSON.stringify(before)!==JSON.stringify(this.model)){this.history.undoStack.push({label:'Drag',model:before});if(this.history.undoStack.length>50)this.history.undoStack.shift();this.history.redoStack=[];}}
   handleWheel(p={}){if(inside(p,this.modelBounds)){this.zoom=Math.max(0.1,Math.min(10,this.zoom*Math.exp(-Number(p.deltaY||0)*0.001)));return;}super.handleWheel(p);}
 }

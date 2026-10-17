@@ -67,7 +67,7 @@ export function drawInGameTextMenu(ctx, {
     ctx.font = `${16 * scale}px Courier New`;
     ctx.textAlign = 'left';
     const prefix = index === activeIndex ? '> ' : '  ';
-    ctx.fillText(`${prefix}${String(row?.label || '')}`, itemBounds.x + ROW_TEXT_INSET * scale, textY);
+    ctx.fillText(`${prefix}${String(row?.label || '')}`, itemBounds.x + ROW_TEXT_INSET * scale, textY, (ROW_WIDTH - ROW_TEXT_INSET - 12) * scale);
     if (row?.value) {
       ctx.textAlign = 'right';
       ctx.fillText(`< ${String(row.value)} >`, itemBounds.x + itemBounds.w - 16 * scale, textY);

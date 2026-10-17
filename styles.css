@@ -101,6 +101,7 @@ body.mobile-portrait #game {
 }
 
 .hint {
+  pointer-events: none;
   position: absolute;
   bottom: 10px;
   width: 100%;
@@ -108,6 +109,10 @@ body.mobile-portrait #game {
   font-size: 12px;
   letter-spacing: 1px;
   opacity: 0.6;
+}
+
+body.editor-active .hint {
+  display: none;
 }
 
 .fullscreen-button {
@@ -1234,4 +1239,9 @@ textarea.shared-text-input-field {
   .actor-editor-portrait-bottom-menu {
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.55);
   }
+}
+
+.shared-text-input-panel.confirm .shared-text-input-btn:focus {
+  outline: 3px solid #8edbff;
+  outline-offset: 3px;
 }

@@ -14,11 +14,13 @@ export default class Title {
       graphics: [
         'pixel-editor',
         'model-editor',
+        'menu-editor',
         'cutscene-editor',
         'back'
       ],
       audio: [
         'midi-editor',
+        'radio-editor',
         'sfx-editor',
         'back'
       ],
@@ -29,11 +31,14 @@ export default class Title {
         'car-editor',
         'tire-editor',
         'doodad-editor',
+        'item-editor',
         'actor-editor',
         'back'
       ]
     };
     this.optionsOrder = [
+      'project-browser',
+      'radio',
       'latest-changes',
       'robtersession',
       'controls',
@@ -486,12 +491,14 @@ export default class Title {
     order.forEach((action, index) => {
       const y = layout.startY + index * (layout.buttonHeight + layout.gap);
       const selected = order[this.folderSelections[folder] || 0] === action;
-      const label = action === 'level-editor'
+      const label = action === 'item-editor' ? 'Item Editor' : action === 'radio-editor' ? 'Radio Editor' : action === 'level-editor'
         ? 'Level Editor'
         : action === 'tile-editor'
           ? 'Tile Editor'
           : action === 'race-editor'
             ? 'Race Editor'
+            : action === 'menu-editor'
+              ? 'Menu Editor'
             : action === 'model-editor'
               ? '3D Object Editor'
             : action === 'tire-editor'
@@ -534,7 +541,7 @@ export default class Title {
     this.optionsOrder.forEach((action, index) => {
       const y = layout.startY + index * (layout.buttonHeight + layout.gap);
       const selected = this.optionsOrder[this.optionsSelection] === action;
-      const label = action === 'latest-changes'
+      const label = action === 'project-browser' ? 'Project Browser' : action === 'radio' ? 'Radio' : action === 'latest-changes'
         ? 'Latest Changes'
         : action === 'robtersession'
           ? 'Songs'
