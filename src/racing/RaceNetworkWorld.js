@@ -14,6 +14,14 @@ export function buildRaceNetworkWorld(network, {
   const minZ = Math.min(...authored.map(p => p.z)) - 160, maxZ = Math.max(...authored.map(p => p.z)) + 160;
   const cellSize = Math.max(8, Math.ceil(Math.max(maxX - minX, maxZ - minZ) / 160));
   const groundRoutes = { ...network, edges: network.edges.filter(e => e.structure === 'road') };
+  const tunnels = { ...network, edges: network.edges.filter(e => e.structure === 'tunnel') };
+  const tunnelAt = (x, z) => projectNetworkPoint(tunnels, { x, z });
+  const isPortalOpening = (x, z) => {
+    const tunnel = tunnelAt(x, z);
+    if (!tunnel || tunnel.distanceToRoute > tunnel.edge.widthM / 2 + 1) return false;
+    const groundM = Number(sampleTerrain({ x, z }) || 0) * elevationScaleM;
+    return tunnel.heightM + tunnel.edge.clearanceM >= groundM - 0.5;
+  };
   const vertexCache = new Map();
   const vertex = (x, z) => {
     const id = `${x},${z}`;
@@ -30,9 +38,20 @@ export function buildRaceNetworkWorld(network, {
     vertexCache.set(id, result); return result;
   };
   const cells = [];
-  for (let z = minZ; z < maxZ; z += cellSize) for (let x = minX; x < maxX; x += cellSize) {
+  const addCell = (x, z, size) => {
+    // Excavate daylight portions of tunnel ramps. Keeping an ordinary height
+    // field above the entrance would make cars drive over the tunnel instead
+    // of descending into it. Buried portions retain the terrain overhead.
+    if (isPortalOpening(x + size / 2, z + size / 2)) return;
     cells.push({ key: `network-ground:${x}:${z}`, tileCell: tileAt({ x, z }), terrainRegion: 'terrain',
-      points: [vertex(x, z), vertex(x + cellSize, z), vertex(x + cellSize, z + cellSize), vertex(x, z + cellSize)] });
+      points: [vertex(x, z), vertex(x + size, z), vertex(x + size, z + size), vertex(x, z + size)] });
+  };
+  for (let z = minZ; z < maxZ; z += cellSize) for (let x = minX; x < maxX; x += cellSize) {
+    const tunnel = tunnelAt(x + cellSize / 2, z + cellSize / 2);
+    const divisions = tunnel && tunnel.distanceToRoute < tunnel.edge.widthM / 2 + cellSize
+      ? Math.ceil(cellSize / 2) : 1;
+    const size = cellSize / divisions;
+    for (let row = 0; row < divisions; row++) for (let col = 0; col < divisions; col++) addCell(x + col * size, z + row * size, size);
   }
   const terrainMesh = buildRaceCanonicalSurfaceMesh({ terrainCells: cells, elevationScaleM });
   const mesh = geometry.mesh, offset = mesh.vertices.length;

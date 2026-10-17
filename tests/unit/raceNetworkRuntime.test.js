@@ -144,3 +144,72 @@ test('water transparency uses a separate cached material from opaque roads', () 
   assert.equal(road.transparent, false);
   assert.equal(editor.getRaceThreeMaterial(renderer, { opacity: 0.65, depthWrite: false }), water);
 });
+
+test('tunnel ramps excavate entrances while preserving terrain above buried sections', async () => {
+  const { buildRaceNetworkWorld } = await import('../../src/racing/RaceNetworkWorld.js');
+  const { sampleRaceBakedSurface } = await import('../../src/racing/RaceBakedSurfaceSampler.js');
+  const network = normalizeRaceRouteNetwork({
+    nodes: [{ id: 'start', x: 0, z: -80 }, { id: 'finish', x: 0, z: 80 }],
+    edges: [{ id: 'tunnel', from: 'start', to: 'finish', structure: 'tunnel', clearanceM: 4,
+      points: [{ x: 0, z: -20, heightM: -6 }, { x: 0, z: 20, heightM: -6 }] }],
+    startNodeId: 'start', finishNodeId: 'finish'
+  });
+  const bake = buildRaceNetworkWorld(network);
+  for (const x of [-1, 0, 1]) {
+    let support = 0;
+    for (let z = -80; z <= 80; z += 0.5) {
+      const expected = z < -20 ? -(z + 80) / 10 : z > 20 ? (z - 80) / 10 : -6;
+      const sample = sampleRaceBakedSurface(bake.surfaceSampler, { x, z, y: support + 0.4 });
+      assert.ok(sample, `missing support at ${x}, ${z}`);
+      support = sample.elevation * 12;
+      assert.ok(Math.abs(support - expected) < 0.1, `portal blocked at ${x}, ${z}: floor=${expected}, support=${support}`);
+    }
+  }
+  assert.equal(sampleRaceBakedSurface(bake.surfaceSampler, { x: 0, z: 0, y: 0.4 }).elevation, 0,
+    'buried tunnel retains upper terrain');
+});
+
+test('editor initial wheel contacts and physics queries respect a tunnel below another deck', () => {
+  const editor = new RaceEditor({});
+  editor.selectedRace.road.network = normalizeRaceRouteNetwork({
+    nodes: [{ id: 'a', x: 0, z: 0, heightM: -6 }, { id: 'b', x: 0, z: 100, heightM: -6 },
+      { id: 'c', x: -50, z: 0, heightM: 6 }, { id: 'd', x: 50, z: 0, heightM: 6 }],
+    edges: [{ id: 'lower', from: 'a', to: 'b', structure: 'tunnel', clearanceM: 4 },
+      { id: 'upper', from: 'c', to: 'd', structure: 'bridge' }], startNodeId: 'a', finishNodeId: 'b'
+  });
+  editor.raceWorldBakeCache = editor.buildRaceWorldBake({ validate: false });
+  assert.equal(editor.getRaceRoadSurfaceProfileAtDistance(0).elevation * 12, -6);
+  const session = { worldX: 0, worldZ: 0, heightM: -6, carYaw: 0, grounded: true };
+  const contacts = editor.getRaceWheelContactState({ session });
+  assert.ok(Math.abs(contacts.averageHeightM + 6) < 1e-6, `initial contacts: ${contacts.averageHeightM}`);
+  const geometry = editor.getRaceSurfaceModel().samplePhysicsGeometry({ x: 0, y: -5.5, z: 0 });
+  assert.ok(Math.abs(geometry.heightM + 6) < 1e-6, `physics support: ${geometry.heightM}`);
+  editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false, preparedWorldBake: editor.raceWorldBakeCache });
+  editor.playtestSession.countdownRemainingMs = 0;
+  editor.playtestSession.startupFramePending = false;
+  editor.updatePlaytest(0);
+  const y = editor.vehicleDynamicsAuthority.runner.state.position.y;
+  assert.ok(y > -6 && y < -4.5, `actual playtest initialized on wrong deck: ${y}`);
+});
+
+test('a moving vehicle enters a tunnel ramp from ground level without riding over the terrain', async () => {
+  const { buildRaceNetworkWorld } = await import('../../src/racing/RaceNetworkWorld.js');
+  const { VehicleDynamicsRunner } = await import('../../src/racing/simulation/VehicleDynamicsRunner.js');
+  const { createPackedRaceWorkerEnvironmentProvider } = await import('../../src/racing/simulation/PackedRaceWorkerEnvironment.js');
+  const network = normalizeRaceRouteNetwork({
+    nodes: [{ id: 'start', x: 0, z: -80 }, { id: 'finish', x: 0, z: 80 }],
+    edges: [{ id: 'tunnel', from: 'start', to: 'finish', structure: 'tunnel', clearanceM: 4,
+      points: [{ x: 0, z: -20, heightM: -6 }, { x: 0, z: 20, heightM: -6 }] }],
+    startNodeId: 'start', finishNodeId: 'finish'
+  });
+  const bake = buildRaceNetworkWorld(network);
+  const provider = createPackedRaceWorkerEnvironmentProvider({ surfaceSampler: bake.surfaceSampler,
+    staticColliderDefinitions: bake.staticColliders });
+  const runner = new VehicleDynamicsRunner({ config: { telemetryRetention: 'none' },
+    initialState: { position: { x: 0, y: 0.55, z: -80 }, velocity: { x: 0, y: 0, z: 22 } },
+    environmentProvider: request => provider(request, runner.config) });
+  for (let frame = 0; frame < 180; frame++) runner.advance(1 / 60);
+  assert.ok(runner.state.position.z > -25, `vehicle blocked at portal: ${runner.state.position.z}`);
+  assert.ok(runner.state.position.y < -4.5 && runner.state.position.y > -6.1,
+    `vehicle did not reach tunnel floor: ${runner.state.position.y}`);
+});

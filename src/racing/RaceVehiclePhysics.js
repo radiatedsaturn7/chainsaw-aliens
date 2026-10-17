@@ -133,7 +133,7 @@ export function createRaceVehiclePhysicsState({
   ) * 0.5;
   const worldX = Number(session.worldX || 0);
   const worldZ = Number(session.worldZ || 0);
-  const sampleSurface = (x, z) => surfaceModel?.sampleWorld?.({ x, z }, 0) || { elevation: 0, normal: { x: 0, y: 1, z: 0 }, region: 'terrain', surfaceId: 'asphalt', friction: 1 };
+  const sampleSurface = (x, z) => surfaceModel?.sampleWorld?.({ x, z, supportHeightM: Number(session.heightM || 0) + 0.4 }, 0) || { elevation: 0, normal: { x: 0, y: 1, z: 0 }, region: 'terrain', surfaceId: 'asphalt', friction: 1 };
   const wheelSamples = Object.fromEntries(WHEEL_IDS.map((wheelId) => {
     const local = attachments[wheelId];
     const rotated = rotateLocalToWorld(local, { yaw, pitch: 0, roll: 0 });
@@ -315,7 +315,7 @@ export function stepRaceVehiclePhysics(state = null, {
   const rearSuspensionRates = getRaceVehicleSuspensionRates(tuning, mass, 'rl', 0);
   const suspensionPitchCompliance = clamp(1.18 - ((frontSuspensionRates.springNormalized + rearSuspensionRates.springNormalized) * 0.5) * 0.36, 0.75, 1.15);
   const suspensionRollCompliance = clamp(1.22 - ((frontSuspensionRates.antiRollNormalized + rearSuspensionRates.antiRollNormalized) * 0.5) * 0.52, 0.66, 1.18);
-  const sampleSurface = (x, z) => surfaceModel?.sampleWorld?.({ x, z }, 0) || { elevation: 0, normal: { x: 0, y: 1, z: 0 }, region: 'terrain', surfaceId: 'asphalt', friction: 1 };
+  const sampleSurface = (x, z) => surfaceModel?.sampleWorld?.({ x, z, supportHeightM: Number(state.position?.y || 0) }, 0) || { elevation: 0, normal: { x: 0, y: 1, z: 0 }, region: 'terrain', surfaceId: 'asphalt', friction: 1 };
   const targetVelocity = planarVelocity || state.linearVelocity || { x: 0, y: 0, z: 0 };
   const targetYaw = Number.isFinite(Number(yaw)) ? Number(yaw) : state.yaw;
   for (let step = 0; step < steps; step += 1) {

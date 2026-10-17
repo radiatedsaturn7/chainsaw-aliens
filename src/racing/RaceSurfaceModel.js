@@ -1,5 +1,13 @@
 import { createInvalidSurfaceSample, createSurfaceSample } from './simulation/SurfaceSample.js';
 
+// Preserve physical height through legacy X/Z wrappers so stacked decks stay
+// distinguishable. A legacy {x,y} map point still uses y as horizontal Z.
+const queryHeight = point => ({
+  ...(point?.z !== undefined && Number.isFinite(point.y) ? { y: point.y } : {}),
+  ...(Number.isFinite(point?.supportHeightM) ? { supportHeightM: point.supportHeightM } : {}),
+  ...(Number.isFinite(point?.supportAllowanceM) ? { supportAllowanceM: point.supportAllowanceM } : {})
+});
+
 const DEFAULT_FLAT_JOIN_WIDTH_M = 0.5;
 const DEFAULT_SLOPE_BLEND_WIDTH_M = 4;
 const DEG_TO_RAD = Math.PI / 180;
@@ -123,7 +131,7 @@ export class RaceSurfaceModel {
   sampleRawTerrain(x = 0, z = 0, fallbackElevation = 0) {
     this.performanceDiagnostics.rawTerrainQueries += 1;
     const worldPoint = typeof x === 'object'
-      ? { x: Number(x.x || 0), z: Number(x.z ?? x.y ?? 0) }
+      ? { x: Number(x.x || 0), z: Number(x.z ?? x.y ?? 0), ...queryHeight(x) }
       : { x: Number(x || 0), z: Number(z || 0) };
     const fallback = typeof x === 'object' ? Number(z ?? fallbackElevation ?? 0) : Number(fallbackElevation || 0);
     const rawElevation = this.clampElevation(
@@ -523,7 +531,7 @@ export class RaceSurfaceModel {
   sampleWorld(x = 0, z = 0, options = {}) {
     this.performanceDiagnostics.fullSurfaceQueries += 1;
     const worldPoint = typeof x === 'object'
-      ? { x: Number(x.x || 0), z: Number(x.z ?? x.y ?? 0) }
+      ? { x: Number(x.x || 0), z: Number(x.z ?? x.y ?? 0), ...queryHeight(x) }
       : { x: Number(x || 0), z: Number(z || 0) };
     const fallbackElevation = typeof x === 'object'
       ? Number(z ?? options.fallbackElevation ?? 0)
@@ -627,7 +635,8 @@ export class RaceSurfaceModel {
     }
     const point = {
       x: Number(queryX),
-      z: Number(queryZ)
+      z: Number(queryZ),
+      ...queryHeight(worldPoint)
     };
     const finalize = (sample) => {
       const contract = createSurfaceSample(sample, {

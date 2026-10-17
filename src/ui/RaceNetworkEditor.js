@@ -11,20 +11,27 @@ export const NETWORK_ACTIONS = {
   'network-water': 'Water level'
 };
 export function networkEditorActions(editor, compact = false) {
-  const ids = compact ? ['network-select', 'network-add', 'network-junction', 'network-properties']
+  const ids = compact ? ['network-select', 'network-add', 'network-properties']
     : Object.keys(NETWORK_ACTIONS).filter(id => id !== 'network-enable');
-  return ids.map(id => ({ id, label: compact ? ({ 'network-select': 'Select', 'network-add': 'Add', 'network-junction': 'Junction', 'network-properties': 'Edit' }[id]) : NETWORK_ACTIONS[id], active: editor.networkTool === id,
+  const actions = ids.map(id => ({ id, label: compact ? ({ 'network-select': 'Select', 'network-add': 'Add', 'network-junction': 'Junction', 'network-properties': 'Edit' }[id]) : NETWORK_ACTIONS[id], active: editor.networkTool === id,
     onClick: () => editor.handleMenuAction(id) }));
+  if (compact) actions.push({ id: 'network-menu', label: 'Routes', active: editor.racePortraitHotMenu === 'network',
+    onClick: () => {
+      if (editor.activeViewportMode === 'portrait') editor.racePortraitHotMenu = editor.racePortraitHotMenu === 'network' ? null : 'network';
+      else { editor.selectRootMenu('track'); editor.gamepadSubmenuOpen = editor.activeViewportMode === 'gamepad'; editor.mobileRootOpen = !editor.gamepadSubmenuOpen; }
+    } });
+  return actions;
 }
 function commit(editor, network, label) {
   editor.captureRaceHistory(label); editor.selectedRace.road.network = normalizeRaceRouteNetwork(network);
   editor.clearRaceRuntimeSurfaceCaches(); editor.status = label;
 }
 const choice = (id, label, value, options) => ({ id, label, value, type: 'select', options });
-const number = (id, label, value, min = -10000, max = 10000) => ({ id, label, value, type: 'number', min, max, step: 0.1 });
+const number = (id, label, value, min = -10000, max = 10000) => ({ id, label, value, type: 'number', min, max, step: 'any' });
 
 export async function handleNetworkAction(editor, action) {
   editor.closeEditorMenus?.();
+  editor.racePortraitHotMenu = null;
   if (action === 'network-enable') {
     if (!editor.selectedRace.road.network) commit(editor, networkFromLegacySamples(editor.getRacePathSamples({ step: 4 }), {
       widthM: editor.selectedRace.road.width || 11

@@ -94,3 +94,10 @@ test('moving junction deforms connected sampled curves and height ramps without 
   const reverse = moveNetworkJunction(source, 'finish', { x: 40, heightM: 8 });
   assert.deepEqual(reverse.edges[0].points, [{ x: 10, z: 50, heightM: 2 }, { x: 30, z: 150, heightM: 6 }]);
 });
+
+test('starting exactly on the start line counts when moving forward off the grid', () => {
+  const network = straight();
+  const progress = advanceNetworkRaceProgress(network, { x: 0, z: 0, heightM: 0.55 }, { x: 0, z: 0.1, heightM: 0.55 });
+  assert.equal(progress.started, true);
+  assert.equal(progress.finished, false);
+});

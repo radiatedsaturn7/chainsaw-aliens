@@ -263,7 +263,7 @@ function crossedMarker(network, markerId, previous, current, leaving) {
     const sign = leaving ? 1 : -1; dx *= sign / length; dz *= sign / length;
     const before = (previous.x - marker.x) * dx + (previous.z - marker.z) * dz;
     const after = (current.x - marker.x) * dx + (current.z - marker.z) * dz;
-    if (!(before < 0 && after >= 0)) continue;
+    if (!(before <= 0 && after > 0)) continue;
     const t = -before / (after - before), crossing = lerp(previous, current, t);
     const lateral = (crossing.x - marker.x) * dz - (crossing.z - marker.z) * dx;
     if (Math.abs(lateral) <= edge.widthM / 2 + 1 && Math.abs(crossing.heightM - marker.heightM) <= 1.8) return true;

@@ -4298,6 +4298,17 @@ export default class RaceEditor {
     includeShoulders = true,
     sampleCount = 7
   } = {}) {
+    if (this.selectedRace?.road?.network) {
+      const options = { samples, routeLength, runtimeType, allowVisualExtension };
+      const pose = this.getRaceWorldPoseAtDistance(distance, options);
+      const before = this.getRaceWorldPoseAtDistance(distance - 0.5, options);
+      const after = this.getRaceWorldPoseAtDistance(distance + 0.5, options);
+      const span = Math.hypot(after.x - before.x, after.z - before.z);
+      const roadHalfWidth = Number(pose.segment?.roadWidthM || 11) / 2;
+      return { elevation: pose.elevation, routeElevation: pose.elevation, terrainElevation: pose.elevation,
+        grade: span > 0 ? (after.elevation - before.elevation) * RACE_THREE_ELEVATION_M / span : 0,
+        roadHalfWidth, stampedHalfWidth: roadHalfWidth, blendWidth: 0 };
+    }
     const cacheKey = [
       this.getRaceSurfaceGeometryRevisionKey({ runtimeType, allowVisualExtension, routeLength }),
       runtimeType,
@@ -13006,6 +13017,8 @@ export default class RaceEditor {
       worldBake: options?.preparedWorldBake || null,
       worldX: startPose.x,
       worldZ: startPose.z,
+      networkPreviousPosition: this.selectedRace?.road?.network
+        ? { x: startPose.x, z: startPose.z, heightM: startPose.elevation * RACE_THREE_ELEVATION_M } : null,
       launchLockMs: options?.carEditorPreview === true ? 0 : 420,
       cameraView: this.raceInput.cameraView,
       steeringWheel: 0,
@@ -16137,7 +16150,8 @@ export default class RaceEditor {
     const originZ = Number(session?.worldZ || 0);
     const point = (longitudinal, lateral) => ({
       x: originX + forward.x * longitudinal + right.x * lateral,
-      z: originZ + forward.z * longitudinal + right.z * lateral
+      z: originZ + forward.z * longitudinal + right.z * lateral,
+      ...(this.selectedRace?.road?.network ? { supportHeightM: Number(session?.heightM || 0) + 0.4 } : {})
     });
     return {
       fl: point(wheelbase * 0.5, -frontTrackWidth * 0.5),
@@ -24469,7 +24483,8 @@ export default class RaceEditor {
         : this.selectedRace?.road?.network ? networkEditorActions(this, true) : [
           { id: 'draw-road', label: 'Add', active: this.activeAction === 'draw-road', onClick: () => this.handleMenuAction('draw-road') },
           { id: 'move-node', label: 'Move', active: this.activeAction === 'move-node', onClick: () => this.handleMenuAction('move-node') },
-          ...this.getRacePortraitHotMenuActions(selected)
+          ...this.getRacePortraitHotMenuActions(selected),
+          { id: 'network-enable', label: 'Routes', onClick: () => this.handleMenuAction('network-enable') }
         ];
     const quickW = Math.max(48, Math.floor((bounds.w - pad * 2 - gap * Math.max(0, quickActions.length - 1)) / Math.max(1, quickActions.length)));
     quickActions.forEach((action, index) => {
@@ -26485,6 +26500,7 @@ export default class RaceEditor {
 
   getRacePortraitTrackPopupActions(selected = this.selectedSegment || {}) {
     const close = { id: 'hot-menu-back', label: 'Back', onClick: () => { this.racePortraitHotMenu = null; } };
+    if (this.racePortraitHotMenu === 'network' && this.selectedRace?.road?.network) return [close, ...networkEditorActions(this)];
     if (this.raceSelectionType === 'node') {
       if (this.racePortraitHotMenu === 'edit') {
         return [
@@ -26537,6 +26553,13 @@ export default class RaceEditor {
   drawRacePortraitTrackPopup(ctx, anchorBounds) {
     const actions = this.getRacePortraitTrackPopupActions();
     if (!actions.length) return;
+    if (this.racePortraitHotMenu === 'network') {
+      const height = Math.min(Math.max(80, anchorBounds.y - 16), 16 + Math.ceil(actions.length / 2) * 46);
+      const popup = { x: anchorBounds.x + 8, y: Math.max(8, anchorBounds.y - height - 8), w: anchorBounds.w - 16, h: height };
+      drawSharedPanel(ctx, popup, { fill: 'rgba(5,8,7,0.94)', border: UI_SUITE.colors.border });
+      this.drawActionRows(ctx, popup, actions, 2, { scrollKey: 'race-network-tools' });
+      return;
+    }
     const rowH = 30;
     const gap = 5;
     const pad = 8;

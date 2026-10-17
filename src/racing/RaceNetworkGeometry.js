@@ -54,6 +54,12 @@ export function buildRaceNetworkGeometry(network, { stepM = 2.5, elevationScaleM
     const trimEnd = Math.min(radius(edge.to), length * 0.25);
     const start = sampleAt(samples, trimStart), end = sampleAt(samples, length - trimEnd);
     const trimmed = [start, ...samples.filter(s => s.distance > trimStart && s.distance < length - trimEnd), end];
+    const isTerminalMarker = id => junctions.get(id).edges.length === 1
+      && (id === network.startNodeId || id === network.finishNodeId);
+    if (isTerminalMarker(edge.from)) trimmed.unshift({ ...start, distance: -12,
+      x: start.x - Math.sin(start.yaw) * 12, z: start.z - Math.cos(start.yaw) * 12 });
+    if (isTerminalMarker(edge.to)) trimmed.push({ ...end, distance: length + 12,
+      x: end.x + Math.sin(end.yaw) * 12, z: end.z + Math.cos(end.yaw) * 12 });
     const segment = { id: edge.id, surface: edge.surface, roadWidthM: edge.widthM, structure: edge.structure };
     const sections = trimmed.map(s => {
       const x = Math.cos(s.yaw) * edge.widthM / 2, z = -Math.sin(s.yaw) * edge.widthM / 2;
