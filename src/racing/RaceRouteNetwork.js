@@ -165,7 +165,7 @@ export function projectNetworkPoint(network, position, { previousEdgeId = '' } =
       const score = horizontalM ** 2 + verticalM ** 2 * 4 - (edge.id === previousEdgeId ? 0.04 : 0);
       if (!best || score < best.score) best = {
         ...p, edgeId: edge.id, edge, distance: offset + length * t,
-        yaw: Math.atan2(dx, dz), distanceToRoute: horizontalM, verticalDistanceM: verticalM,
+        yaw: Math.atan2(dx, dz), grade: dy / Math.sqrt(planarLength2), distanceToRoute: horizontalM, verticalDistanceM: verticalM,
         lateral: ((position.x - p.x) * dz - (position.z - p.z) * dx) / Math.sqrt(planarLength2), score
       };
       offset += length;

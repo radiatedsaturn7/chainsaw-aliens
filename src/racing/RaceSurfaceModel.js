@@ -433,6 +433,18 @@ export class RaceSurfaceModel {
     };
   }
 
+  getNetworkDeckForProjection(projection) {
+    if (!projection?.edgeId || !projection.edge) return null;
+    const grade = Number(projection.grade || 0), yaw = Number(projection.yaw || 0);
+    const elevation = Number(projection.heightM || 0) / this.elevationScaleM;
+    return { ...projection, elevation, routeElevation: elevation, terrainElevation: elevation,
+      roadHalfWidth: projection.edge.widthM / 2, stampedHalfWidth: projection.edge.widthM / 2,
+      marginWidth: 0, shoulderWidth: 0, blendWidth: 0, bankAngleRad: 0,
+      segment: projection.segment || { ...projection.edge, roadWidthM: projection.edge.widthM },
+      right: this.getRightVector(yaw), tangent: normalizeVector3({ x: Math.sin(yaw), y: grade, z: Math.cos(yaw) }),
+      normal: normalizeVector3({ x: -Math.sin(yaw) * grade, y: 1, z: -Math.cos(yaw) * grade }) };
+  }
+
   sampleTrack(distance = 0, lateral = 0, options = {}) {
     const deck = options.deckSample || this.sampleDeckAtDistance(distance, options);
     const metrics = this.getCorridorMetrics(deck, deck.segment);
@@ -553,6 +565,7 @@ export class RaceSurfaceModel {
     }
     const track = this.sampleTrack(Number(projection.distance || 0), Number(projection.lateral || 0), {
       ...options,
+      deckSample: this.getNetworkDeckForProjection(projection) || options.deckSample,
       fallbackSurfaceId: projection.segment?.surface || options.fallbackSurfaceId || 'asphalt'
     });
     if (Math.abs(Number(projection.lateral || 0)) > Number(track.metrics?.transitionEnd || 0)) {
@@ -671,7 +684,7 @@ export class RaceSurfaceModel {
         bakedSurfaceSource: full.bakedSurfaceSource ?? null
       });
     }
-    const deck = this.sampleDeckAtDistance(Number(projection.distance || 0), {
+    const deck = this.getNetworkDeckForProjection(projection) || this.sampleDeckAtDistance(Number(projection.distance || 0), {
       ...context,
       roadbedProfile: context.roadbedProfile
     });

@@ -1,3 +1,4 @@
+import { getSurfaceById } from '../raceData.js';
 import {
   getRaceBakedSurfaceTrianglesInBounds,
   sampleRaceBakedSurface
@@ -27,6 +28,7 @@ function createSample(raw, point, sampler, fallbackHeightM = 0) {
     elevation: Number(raw.elevation || 0) * scale,
     normal: raw.normal || { x: 0, y: 1, z: 0 },
     region: raw.region || 'terrain',
+    materialId: raw.materialId || null,
     source: raw.source || 'packed-race-worker',
     triangleId: raw.triangleId,
     queryPosition: point,
@@ -140,6 +142,7 @@ export function createPackedRaceWorkerEnvironmentProvider({
           ...(materialByRegion[sample.region]
           || materialByRegion.default
           || { grip: 1 }),
+          ...(sample.materialId ? { surfaceId: sample.materialId, grip: getSurfaceById(sample.materialId).grip } : null),
           ...(trackSample ? { grip: Number(trackSample.effectiveGrip || 1) } : null)
         };
         output.trackStateSampleByWheel[wheelId] = trackSample;

@@ -13856,7 +13856,7 @@ export default class RaceEditor {
   getRaceRouteProjectionForWorldPoint(point = {}) {
     const network = this.selectedRace?.road?.network;
     if (network) {
-      const projection = projectNetworkPoint(network, { ...point, heightM: point.heightM ?? (point.z !== undefined ? point.y : undefined) });
+      const projection = projectNetworkPoint(network, { ...point, heightM: point.heightM ?? point.supportHeightM ?? (point.z !== undefined ? point.y : undefined) });
       if (projection) {
         const edge = projection.edge, length = networkEdgeLength(network, edge);
         const toFinish = findNetworkRoute(network, edge.to)?.lengthM ?? Infinity;

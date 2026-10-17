@@ -267,6 +267,7 @@ export function buildRaceBakedSurfaceSampler({
         source: triangle.source || `canonical:${triangleIndex}`,
         priority: regionPriority[region] || regionPriority.terrain,
         normal: triangle.faceNormal || null,
+        materialId: triangle.materialId || triangle.segment?.surface || null,
         canonicalTriangleIndex: triangleIndex
       });
     });
@@ -373,6 +374,7 @@ export function packRaceBakedSurfaceSampler(sampler = null) {
     bucketSizeM: sampler.bucketSizeM,
     elevationScaleM: sampler.elevationScaleM,
     layered: sampler.layered === true,
+    ...(sampler.layered ? { materialIds: triangles.map(t => t.materialId || null) } : {}),
     positions,
     normals,
     bounds,
@@ -500,6 +502,7 @@ export function packRaceCanonicalSurfaceMesh(mesh = null, {
     bucketSizeM: bucketSize,
     elevationScaleM,
     layered: mesh.layered === true,
+    ...(mesh.layered ? { materialIds: triangles.map(t => t.materialId || t.segment?.surface || null) } : {}),
     positions,
     normals,
     bounds,
@@ -622,6 +625,7 @@ function samplePackedRaceBakedSurface(
         },
         region,
         source: sampler.sourceTable[sampler.sources[triangleIndex]] || 'terrain',
+        ...(sampler.materialIds ? { materialId: sampler.materialIds[triangleIndex] } : {}),
         score
       };
     }
@@ -679,6 +683,7 @@ export function sampleRaceBakedSurface(sampler = null, worldPoint = null, {
         normal: triangle.normal,
         region: triangle.region,
         source: triangle.source,
+        ...(sampler.layered ? { materialId: triangle.materialId } : {}),
         score
       };
     }

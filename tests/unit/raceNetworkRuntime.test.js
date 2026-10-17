@@ -213,3 +213,44 @@ test('a moving vehicle enters a tunnel ramp from ground level without riding ove
   assert.ok(runner.state.position.y < -4.5 && runner.state.position.y > -6.1,
     `vehicle did not reach tunnel floor: ${runner.state.position.y}`);
 });
+
+test('alternate branch wheel queries use that branch width, height, and surface', () => {
+  const editor = new RaceEditor({});
+  editor.selectedRace.road.network = normalizeRaceRouteNetwork({
+    nodes: [{ id: 'a', x: 0, z: 0 }, { id: 'b', x: 0, z: 200 }, { id: 'c', x: 60, z: 100, heightM: 3 }],
+    edges: [{ id: 'main', from: 'a', to: 'b', widthM: 4, surface: 'asphalt' },
+      { id: 'up', from: 'a', to: 'c', widthM: 18, surface: 'dirt', structure: 'bridge' },
+      { id: 'down', from: 'c', to: 'b', widthM: 18, surface: 'dirt', structure: 'bridge' }],
+    startNodeId: 'a', finishNodeId: 'b'
+  });
+  editor.raceWorldBakeCache = editor.buildRaceWorldBake({ validate: false });
+  const point = { x: 30 + Math.cos(Math.atan2(60, 100)) * 6, z: 50 - Math.sin(Math.atan2(60, 100)) * 6, y: 1.9 };
+  for (const sample of [editor.getRaceSurfaceModel().sampleWorld(point, 0, { physicsContact: true }),
+    editor.getRaceSurfaceModel().samplePhysicsGeometry(point)]) {
+    assert.equal(sample.region, 'road');
+    assert.equal(sample.surfaceId, 'dirt');
+    assert.ok(Math.abs(sample.elevation * 12 - 1.5) < 0.02);
+  }
+});
+
+test('packed worker surface preserves different grip on alternate routes', async () => {
+  const { buildRaceNetworkWorld } = await import('../../src/racing/RaceNetworkWorld.js');
+  const { createPackedRaceWorkerEnvironmentProvider } = await import('../../src/racing/simulation/PackedRaceWorkerEnvironment.js');
+  const { VehicleDynamicsRunner } = await import('../../src/racing/simulation/VehicleDynamicsRunner.js');
+  const { prepareRaceVehicleDynamicsWorkerSurface } = await import('../../src/racing/simulation/RaceVehicleDynamicsWorkerBridge.js');
+  const network = normalizeRaceRouteNetwork({
+    nodes: [{ id: 'a', x: 0, z: -50 }, { id: 'b', x: 0, z: 50 }, { id: 'c', x: 40, z: -50 }, { id: 'd', x: 40, z: 50 }],
+    edges: [{ id: 'main', from: 'a', to: 'b', surface: 'asphalt' }, { id: 'branch', from: 'c', to: 'd', surface: 'dirt' }],
+    startNodeId: 'a', finishNodeId: 'b'
+  });
+  const bake = buildRaceNetworkWorld(network);
+  const provider = createPackedRaceWorkerEnvironmentProvider({ surfaceSampler: prepareRaceVehicleDynamicsWorkerSurface(bake.surfaceSampler) });
+  const runner = new VehicleDynamicsRunner({ initialState: { position: { x: 40, y: 0.55, z: 0 } } });
+  const offMain = provider({ state: runner.state, controls: {}, reuseContactGeometry: false }, runner.config);
+  assert.equal(offMain.materialByWheel.fl.surfaceId, 'dirt');
+  assert.equal(offMain.materialByWheel.fl.grip, 0.72);
+  runner.state.position.x = 0;
+  const main = provider({ state: runner.state, controls: {}, reuseContactGeometry: false }, runner.config);
+  assert.equal(main.materialByWheel.fl.surfaceId, 'asphalt');
+  assert.equal(main.materialByWheel.fl.grip, 1);
+});
