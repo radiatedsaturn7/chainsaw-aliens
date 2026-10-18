@@ -26,9 +26,9 @@ test('invalid edits roll back without losing the designer selection',()=>{
 });
 
 test('keyboard undo handles a completed shortcut even after Control was released',async()=>{
- const e=editor();await e.runAction('insert-text');assert.equal(e.screen.elements.length,3);
+ const e=editor(),count=e.screen.elements.length;await e.runAction('insert-text');assert.equal(e.screen.elements.length,count+1);
  e.update({wasCommandPressedCode:code=>code==='KeyZ',wasPressedCode:()=>false,isDownCode:()=>false},1/60);
- assert.equal(e.screen.elements.length,2);
+ assert.equal(e.screen.elements.length,count);
 });
 
 test('Preview This Screen passes the edited screen; Play From Start keeps its explicit meaning',async()=>{

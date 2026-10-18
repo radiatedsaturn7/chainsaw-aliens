@@ -38,3 +38,25 @@ test('3D turntable targets the geometric center even when model geometry is offs
   }
  }finally{mesh.geometry.dispose();mesh.material.dispose();globalThis.document=prior;}
 });
+
+test('animated car choices do not parse unrelated art and music or unchanged car payloads', async () => {
+ const {resetProjectFilesForTests,listProjectFiles}=await import('../../src/ui/projectFiles.js');
+ const {upsertCachedProjectFile}=await import('../../src/ui/serverStorage.js');
+ resetProjectFilesForTests();
+ const carRaw=JSON.stringify({savedAt:1,data:{name:'Fast Car'}});
+ const artRaw=JSON.stringify({savedAt:2,data:{pixels:'x'.repeat(1024*1024)}});
+ upsertCachedProjectFile('cars','Fast Car',carRaw);
+ upsertCachedProjectFile('art','Large Art',artRaw);
+ upsertCachedProjectFile('music','Music',JSON.stringify({savedAt:3,data:{notes:[1,2,3]}}));
+ const parse=JSON.parse,seen=[];JSON.parse=(raw,...args)=>{seen.push(raw);return parse(raw,...args)};
+ try{
+  assert.equal(listProjectFiles('cars')[0].name,'Fast Car');
+  assert.ok(!seen.includes(artRaw));
+  seen.length=0;
+  for(let i=0;i<60;i++)listProjectFiles('cars');
+  assert.equal(seen.length,0,'warm frames must not parse file payloads');
+  upsertCachedProjectFile('cars','Fast Car',JSON.stringify({savedAt:9,data:{name:'Updated'}}));
+  listProjectFiles('cars');
+  assert.ok(seen.some(raw=>raw.includes('Updated')), 'replacement payload metadata is refreshed');
+ }finally{JSON.parse=parse;resetProjectFilesForTests();}
+});

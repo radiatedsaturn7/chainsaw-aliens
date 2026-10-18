@@ -159,7 +159,7 @@ export default class MenuPlayer {
     if(pressed('ArrowUp')||(pressed('Tab')&&input?.isShiftDown?.())||navigation==='up')this.focus=(this.focus-1+items.length)%Math.max(1,items.length);
     if(pressed('ArrowLeft')||navigation==='left')this.moveHorizontal(items,-1);
     if(pressed('ArrowRight')||navigation==='right')this.moveHorizontal(items,1);
-    if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump')){if(flow.screen.startAction)void flow.start();else void this.activate(items[this.focus],1,{choose:true});}
+    if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump')){if(items[this.focus])void this.activate(items[this.focus],1,{choose:true});else if(flow.screen.startAction)void flow.start();}
   }
   draw(ctx,width,height){
     this.viewportBounds={x:0,y:0,w:width,h:height};const handheld=this.surface.layout(width,height);this.bounds=fitMenuCanvas(handheld?.screen||this.viewportBounds);if(!this.flow)return;ctx.fillStyle='#060b10';ctx.fillRect(0,0,width,height);this.surface.draw(ctx);
