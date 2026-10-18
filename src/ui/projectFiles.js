@@ -29,6 +29,7 @@ import {
 
 const FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'menus', 'doodads', 'items'];
 const parsedPayloadCache = new Map();
+const payloadMetadataCache = new Map();
 const LARGE_PARSED_PAYLOAD_LIMIT = 8 * 1024 * 1024;
 const DEFAULT_SAVE_CONFIRM_TIMEOUT_MS = 12000;
 const MAX_SAVE_CONFIRM_TIMEOUT_MS = 300000;
@@ -40,29 +41,31 @@ const emptyIndex = () => FOLDERS.reduce((index, folder) => {
   return index;
 }, {});
 
-function getCachedPayloadMeta(raw) {
-  const fallback = { updatedAt: Date.now(), size: typeof raw === 'string' ? raw.length : 0 };
-  if (typeof raw !== 'string') return fallback;
-  try {
-    const payload = JSON.parse(raw);
-    return {
-      updatedAt: Number(payload?.savedAt || fallback.updatedAt),
-      size: raw.length
-    };
-  } catch (error) {
-    return fallback;
+function getCachedPayloadMeta(raw, key) {
+  const cached = payloadMetadataCache.get(key);
+  if (cached?.raw === raw) return cached.meta;
+  const meta = { updatedAt: Date.now(), size: typeof raw === 'string' ? raw.length : 0 };
+  if (typeof raw === 'string') {
+    try { meta.updatedAt = Number(JSON.parse(raw)?.savedAt || meta.updatedAt); } catch {}
   }
+  // Keep only the latest raw value for each file; listing must not repeatedly
+  // parse unrelated artwork/music payloads on the menu's animation path.
+  if (payloadMetadataCache.size >= 1024 && !payloadMetadataCache.has(key)) {
+    payloadMetadataCache.delete(payloadMetadataCache.keys().next().value);
+  }
+  payloadMetadataCache.set(key, { raw, meta });
+  return meta;
 }
 
-export function ensureProjectFileIndex() {
+export function ensureProjectFileIndex(onlyFolder = null) {
   let index = emptyIndex();
   const serverIndex = listServerIndexedFiles();
   FOLDERS.forEach((folder) => {
     index[folder] = { ...(serverIndex[folder] || {}) };
   });
   listCachedProjectFiles('*').forEach(({ folder, name, raw }) => {
-    if (!FOLDERS.includes(folder) || !name || typeof raw !== 'string') return;
-    const cachedMeta = getCachedPayloadMeta(raw);
+    if ((onlyFolder && folder !== onlyFolder) || !FOLDERS.includes(folder) || !name || typeof raw !== 'string') return;
+    const cachedMeta = getCachedPayloadMeta(raw, `${folder}:${name}`);
     const serverMeta = index[folder][name];
     index[folder][name] = serverMeta
       ? { ...serverMeta, size: Math.max(Number(serverMeta.size || 0), cachedMeta.size) }
@@ -113,7 +116,7 @@ export function sanitizeProjectFileName(name) {
 
 export function listProjectFiles(folder, { includeDeleted = false, includeSystem = false } = {}) {
   assertFolder(folder);
-  const index = ensureProjectFileIndex();
+  const index = ensureProjectFileIndex(folder);
   const listed = Object.entries(index[folder] || {})
     .map(([name, meta]) => ({
       name,
@@ -124,7 +127,7 @@ export function listProjectFiles(folder, { includeDeleted = false, includeSystem
     }));
   listCachedProjectFiles(folder).forEach(({ name, raw }) => {
     const existing = listed.find((entry) => entry.name === name);
-    const cachedMeta = getCachedPayloadMeta(raw);
+    const cachedMeta = getCachedPayloadMeta(raw, `${folder}:${name}`);
     if (existing) {
       existing.size = Math.max(existing.size || 0, cachedMeta.size);
     } else {
@@ -306,6 +309,7 @@ export async function deleteProjectFileVersion(folder, name, versionId) {
 
 export function resetProjectFilesForTests() {
   parsedPayloadCache.clear();
+  payloadMetadataCache.clear();
   clearCachedProjectFilesForTests();
 }
 

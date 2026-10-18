@@ -1,3 +1,5 @@
+import {loadMenuProgress} from './MenuProgress.js';
+import {worldMapNodes,worldMapNodePoint} from './MenuWorldMap.js';
 import {showroomPage,garageBrowserRows,garageCardBounds} from './MenuGarageWidgets.js';
 import {createMenuRepeatState,resetMenuRepeatState,getMenuRepeatDirection} from '../ui/shared/menuRepeat.js';
 import {ItemSystem} from '../items/ItemSystem.js';
@@ -39,7 +41,7 @@ export default class MenuPlayer {
       playMovie:(ref)=>this.playMovie(ref),launchRace:(ref,params)=>this.launchRace(ref,params),launchLevel:(ref,params)=>this.launchLevel(ref,params)
     });
     if(preview&&this.flow.document.screens.some(s=>s.id===screenId))this.flow.screenId=screenId;
-    Object.assign(this.flow.parameters,this.settings.parameters());this.game.transitionTo('menu-player',{forceCleanup:true});this.enterScreen();
+    Object.assign(this.flow.parameters,await loadMenuProgress(this.game),this.settings.parameters());this.game.transitionTo('menu-player',{forceCleanup:true});this.enterScreen();
   }
   restorePreview(){const snapshot=this.previewSnapshot;if(!snapshot)return;this.previewSnapshot=null;if(snapshot.worldData)this.game.applyWorldData(snapshot.worldData);for(const key of ['menuParameters','storyData','gameMode','playtestActive','simulationActive'])this.game[key]=snapshot[key];this.game.raceEditorPlaytestReturn=false;this.game.raceTravelSession=null;}
   releasePauseAudio(){const context=this.pausedAudioContext;this.pausedAudioContext=null;if(context)void context.resume().catch(()=>{});}
@@ -57,7 +59,7 @@ export default class MenuPlayer {
   interactive(){return (this.flow?menuPaintOrder(this.flow.screen.elements).filter(e=>menuElementVisible(e,this.flow.screen.elements)&&menuElementInteractive(e)).sort((a,b)=>(a.tabOrder||Infinity)-(b.tabOrder||Infinity)):[])||[]}
   moveHorizontal(items,direction){
     const current=items[this.focus];if(!current)return;
-    if(['car-showroom','garage-browser','choice','slider','toggle'].includes(current.type)){void this.activate(current,direction);return;}
+    if(['world-map','car-showroom','garage-browser','choice','slider','toggle'].includes(current.type)){void this.activate(current,direction);return;}
     const bounds=this.bounds||{x:0,y:0,w:960,h:540};
     const geometry=e=>{const pose=menuElementPose(e,this.flow.time),b=menuElementBounds(e,bounds,pose);return {x:b.x+b.w/2,y:b.y+b.h/2,h:b.h*pose.scale};};
     const origin=geometry(current);let nearest=-1,distance=Infinity;
@@ -72,6 +74,13 @@ export default class MenuPlayer {
   }
   async activate(element,direction=1,{choose=false}={}){
     if(!element||this.paused||this.flow.busy||this.capturing)return;
+    if(element.type==='world-map'){
+      const nodes=worldMapNodes(element,this.resources,this.flow.document,this.flow.parameters);if(!nodes.length)return;
+      let index=nodes.findIndex(n=>n.raceRef===this.flow.parameters[element.binding]);if(index<0)index=0;
+      if(!choose){index=(index+direction+nodes.length)%nodes.length;this.flow.setParameter(element.binding,nodes[index].raceRef);return;}
+      const node=nodes[index];if(node.locked){this.flow.error='This race is locked';return;}
+      this.flow.setParameter(element.binding,node.raceRef);return this.flow.run(element.action);
+    }
     if(element.type==='car-showroom'||element.type==='garage-browser')return this.activateGarageWidget(element,direction,choose);
     if(element.type==='button')return this.flow.run(element.action);
     if(element.type==='keybind')return this.captureKey(element.binding);
@@ -159,7 +168,7 @@ export default class MenuPlayer {
     if(pressed('ArrowUp')||(pressed('Tab')&&input?.isShiftDown?.())||navigation==='up')this.focus=(this.focus-1+items.length)%Math.max(1,items.length);
     if(pressed('ArrowLeft')||navigation==='left')this.moveHorizontal(items,-1);
     if(pressed('ArrowRight')||navigation==='right')this.moveHorizontal(items,1);
-    if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump')){if(flow.screen.startAction)void flow.start();else void this.activate(items[this.focus],1,{choose:true});}
+    if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump')){if(items[this.focus])void this.activate(items[this.focus],1,{choose:true});else if(flow.screen.startAction)void flow.start();}
   }
   draw(ctx,width,height){
     this.viewportBounds={x:0,y:0,w:width,h:height};const handheld=this.surface.layout(width,height);this.bounds=fitMenuCanvas(handheld?.screen||this.viewportBounds);if(!this.flow)return;ctx.fillStyle='#060b10';ctx.fillRect(0,0,width,height);this.surface.draw(ctx);
@@ -180,7 +189,7 @@ export default class MenuPlayer {
     if(this.cutscene.active){if(this.cutscene.waitingPauseClipId)this.cutscene.waitingPauseClipId=null;else this.cutscene.stop();return;}
     if(this.movie){void this.resumeMovie();return;}if(this.flow.busy||!menuHit(point,this.bounds))return;
     for(const video of this.videos.values())if(video.paused)void video.play().catch(()=>{});
-    const e=this.hitElement(point);if(e){this.focus=this.interactive().indexOf(e);if(['car-showroom','garage-browser'].includes(e.type)){this.pointerGarageWidget(e,point);return;}if(e.type==='slider'){this.slider={id:point.id,element:e};this.handlePointerMove(point);}else void this.activate(e,1,{choose:true});}else if(this.flow.screen.startAction)void this.flow.start();
+    const e=this.hitElement(point);if(e){this.focus=this.interactive().indexOf(e);if(e.type==='world-map'){const b=menuElementBounds(e,this.bounds,menuElementPose(e,this.flow.time)),nodes=worldMapNodes(e,this.resources,this.flow.document,this.flow.parameters);const node=nodes.map(n=>{const p=worldMapNodePoint(n,b);return {node:n,distance:Math.hypot(point.x-p.x,point.y-p.y)}}).filter(n=>n.distance<Math.max(22,Math.min(b.w,b.h)*.07)).sort((a,b)=>a.distance-b.distance)[0]?.node;if(node){const selected=this.flow.parameters[e.binding]===node.raceRef;this.flow.setParameter(e.binding,node.raceRef);if(selected)void this.activate(e,1,{choose:true});}return;}if(['car-showroom','garage-browser'].includes(e.type)){this.pointerGarageWidget(e,point);return;}if(e.type==='slider'){this.slider={id:point.id,element:e};this.handlePointerMove(point);}else void this.activate(e,1,{choose:true});}else if(this.flow.screen.startAction)void this.flow.start();
   }
   pointerGarageWidget(element,point){
     const b=menuElementBounds(element,this.bounds,menuElementPose(element,this.flow.time));

@@ -1,3 +1,4 @@
+import {worldMapNodes,raceCompletionKey} from '../menus/MenuWorldMap.js';
 import {openEditorForm,chooseEditorFiles} from './shared/editorForm.js';
 import {openProjectBrowser} from './ProjectBrowserModal.js';
 import {listProjectFiles,hydrateProjectFilePayload,saveProjectFileAndConfirm} from './projectFiles.js';
@@ -39,6 +40,14 @@ export async function chooseImage(editor,{background=false}={}){
 }
 export async function setupWidget(editor){
   const e=editor.element;if(!e)throw Error('Select a widget to configure');
+  if(e.type==='world-map'){
+    const nodes=worldMapNodes(e,editor.resources,editor.menu,editor.menu.parameters);
+    const pick=await openEditorForm('World Map Nodes',[select('node','Node',nodes[0]?.id||'new',[...nodes.map(n=>({value:n.id,label:n.label})),{value:'new',label:'+ Add node'},{value:'auto',label:'Reset to project races'}])]);if(!pick)return;
+    if(pick.node==='auto'){editor.change(()=>editor.element.nodes=[]);return;}
+    const node=nodes.find(n=>n.id===pick.node)||{id:`node-${Date.now()}`,label:'Race',x:.5,y:.5};
+    const result=await openEditorForm('Map Node',[text('label','Label',node.label),select('raceRef','Race',node.raceRef||'',fileOptions('races').filter(o=>o.value)),{id:'x',label:'X (%)',value:node.x*100,min:0,max:100},{id:'y',label:'Y (%)',value:node.y*100,min:0,max:100},text('unlockParameter','Unlock variable (blank = unlocked)',node.unlockParameter),text('unlockValue','Required value',JSON.stringify(node.unlockValue??true)),text('completedParameter','Completion variable',node.completedParameter||raceCompletionKey(node.raceRef||'')),select('remove','Remove node','false',['false','true'])]);if(!result)return;
+    editor.change(()=>{const updated={...node,...result,x:result.x/100,y:result.y/100,unlockValue:parse(result.unlockValue)};editor.element.nodes=result.remove==='true'?nodes.filter(n=>n.id!==node.id):nodes.some(n=>n.id===node.id)?nodes.map(n=>n.id===node.id?updated:n):[...nodes,updated];});return;
+  }
   if(e.type==='image')return chooseImage(editor);
   if(e.type==='button'){
     const result=await openEditorForm('Button',[text('label','Button text',e.label),...navigationFields(e)]);if(!result)return;

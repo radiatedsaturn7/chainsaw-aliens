@@ -38,7 +38,7 @@ const makePlayer = () => ({
 });
 
 test('race travel player snapshots preserve durable state and restore an exact neutral departure pose', () => {
-  const game = Object.create(Game.prototype);
+  const game = Object.create(Game.prototype);game.showSystemToast=()=>{};
   game.player = makePlayer();
   game.abilities = { anchor: true, flame: true, magboots: false };
   game.activeWeaponIndex = 2;
@@ -70,7 +70,7 @@ test('race travel player snapshots preserve durable state and restore an exact n
 });
 
 test('returning from race travel resumes gameplay at the captured origin', () => {
-  const game = Object.create(Game.prototype);
+  const game = Object.create(Game.prototype);game.showSystemToast=()=>{};
   game.player = makePlayer();
   game.abilities = { anchor: true };
   game.activeWeaponIndex = 1;
@@ -110,7 +110,7 @@ test('chained race travel preserves Track State snapshots for the same race iden
   }));
   const previousSnapshot = { version: 1, checksum: 'previous' };
   const currentSnapshot = { version: 1, checksum: 'current' };
-  const game = Object.create(Game.prototype);
+  const game = Object.create(Game.prototype);game.showSystemToast=()=>{};
   game.raceTravelSession = {
     originState: 'playing',
     carId: 'car',
@@ -196,7 +196,7 @@ test('startup race travel yields to a loading screen before applying a dense rac
       engineSoundId: 'Engine WRX SPT'
     }
   };
-  const game = Object.create(Game.prototype);
+  const game = Object.create(Game.prototype);game.showSystemToast=()=>{};
   game.state = 'playing';
   game.playtestActive = true;
   game.raceEditorPlaytestReturn = false;
@@ -295,7 +295,7 @@ test('race travel prefers the matching live Car Editor document over an older sa
     tuning: { drivetrain: 'awd', springFront: 0.91 }
   };
   const selected = [];
-  const game = Object.create(Game.prototype);
+  const game = Object.create(Game.prototype);game.showSystemToast=()=>{};
   game.carEditor = {
     currentCarDocumentName: '2022 Subaru WRX2',
     selectedCar: liveCar
@@ -326,7 +326,7 @@ test('race travel prefers the matching live Car Editor document over an older sa
 });
 
 test('race travel start failures clear preparation and return to the originating level', async () => {
-  const game = Object.create(Game.prototype);
+  const game = Object.create(Game.prototype);game.showSystemToast=()=>{};
   game.state = 'playing';
   game.playtestActive = true;
   game.raceEditorPlaytestReturn = false;
@@ -380,7 +380,7 @@ test('race travel start failures clear preparation and return to the originating
 });
 
 test('race travel returns to the level after a preparation-stage failure instead of retrying the dense bake', async () => {
-  const game = Object.create(Game.prototype);
+  const game = Object.create(Game.prototype);game.showSystemToast=()=>{};
   game.state = 'playing';
   game.playtestActive = true;
   game.raceEditorPlaytestReturn = false;
@@ -467,7 +467,7 @@ test('race travel hydrates the exact saved car document instead of reusing a sta
     tuning: { drivetrain: 'awd', springFront: 0.5 }
   };
   const selected = [];
-  const game = Object.create(Game.prototype);
+  const game = Object.create(Game.prototype);game.showSystemToast=()=>{};
   game.raceEditor = {
     project: { cars: [stale] },
     findRaceProjectCarById: () => stale,
@@ -495,7 +495,7 @@ test('race travel hydrates the exact saved car document instead of reusing a sta
 });
 
 test('menu-started races honor the configured next race and retain their menu origin and configuration',()=>{
- const game=Object.create(Game.prototype),flow={active:true};
+ const game=Object.create(Game.prototype),flow={active:true};game.showSystemToast=()=>{};
  const session={originState:'menu-player',carId:'exact-car',carRef:'WRX4',menuFlow:flow,menuConfiguration:{difficulty:'hard',weapons:['chainsaw']},trackStateByRace:{}};
  game.raceTravelSession=session;game.menuPlayer={flow};let next;
  game.startRaceTravel=params=>{next=params;return Promise.resolve(true)};

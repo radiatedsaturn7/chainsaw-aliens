@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-track",
-  "savedAt": 1783855400000,
+  "savedAt": 1792343751513,
   "selectedRaceId": "daytona-tri-oval",
   "race": {
     "id": "daytona-tri-oval",
@@ -12,9 +12,11 @@
     "timeOfDay": "day",
     "entryBehavior": "return-to-origin",
     "finishBehavior": {
-      "type": "return-to-origin",
+      "type": "menu",
       "targetLevel": null,
-      "targetRace": null
+      "targetRace": null,
+      "menuRef": "",
+      "menuScreen": "garage"
     },
     "referenceNotes": [
       "2.5 mile asphalt tri-oval modeled as a 4.023 km circuit.",

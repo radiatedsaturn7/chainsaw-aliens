@@ -142,6 +142,9 @@ export function drawNetworkEditor(editor, ctx, bounds) {
     ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
     ctx.fillText(`${node.id === network.startNodeId ? 'START ' : node.id === network.finishNodeId ? 'FINISH ' : ''}${node.name || node.id} · ${node.heightM.toFixed(1)}m`, p.x + 9, p.y - 8);
   }
+  editor.drawRaceTopDownDecals(ctx, bounds, { kind: 'decal' });
+  if (editor.showRaceScenery !== false) editor.drawRaceTopDownScenerySprites(ctx, bounds);
+  editor.drawRaceTopDownTriggers(ctx, bounds);
   editor.drawRaceMapScaleBar(ctx, bounds); ctx.restore();
 }
 

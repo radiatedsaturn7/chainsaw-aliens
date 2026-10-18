@@ -1,10 +1,11 @@
+import {worldMapNodes,worldMapNodePoint} from './MenuWorldMap.js';
 import {showroomPage,garageBrowserRows,garageCardBounds} from './MenuGarageWidgets.js';
 import {menuPaintOrder,menuElementVisible} from './MenuLayout.js';
 import {menuElementPose,resolveMenuBackground} from './MenuDocument.js';
 import {calculateCarPerformance} from '../racing/CarPerformance.js';
 
 export const menuElementBounds=(element,bounds,pose=element)=>({x:bounds.x+pose.x*bounds.w,y:bounds.y+pose.y*bounds.h,w:element.w*bounds.w,h:element.h*bounds.h});
-export const menuElementInteractive=e=>['car-showroom','garage-browser','button','choice','slider','toggle','keybind'].includes(e.type);
+export const menuElementInteractive=e=>['world-map','car-showroom','garage-browser','button','choice','slider','toggle','keybind'].includes(e.type);
 export const menuHit=(point,b)=>point.x>=b.x&&point.x<=b.x+b.w&&point.y>=b.y&&point.y<=b.y+b.h;
 export function drawMenuImage(ctx,image,b,fit='contain'){
   const scale=fit==='cover'?Math.max(b.w/image.width,b.h/image.height):Math.min(b.w/image.width,b.h/image.height);
@@ -15,6 +16,13 @@ const caption=(text,parameters)=>String(text).replace(/\{\{([\w.-]+)\}\}/g,(_,ke
 
 export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,resources,focus=null,selected=null,editing=false,videos=null,widgetStates=new Map()}={}){
   screen=resolveMenuBackground(document,screen);
+  // Authoring does not run MenuPlayer's selection initialization. Resolve the
+  // same fallback for the showroom and every bound widget without editing the document.
+  for(const element of screen.elements){
+    if(element.type!=='car-showroom'||!element.binding||!menuElementVisible(element,screen.elements))continue;
+    const choices=resources?.choices('cars',document,parameters)||[];
+    if(choices.length&&!choices.some(choice=>choice.value===parameters[element.binding]))parameters={...parameters,[element.binding]:choices[0].value};
+  }
   ctx.save();ctx.beginPath();ctx.rect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.clip();ctx.fillStyle=screen.background;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
   const background=resources?.art(screen.backgroundArt,Math.floor(time*8));if(background)ctx.drawImage(background,bounds.x,bounds.y,bounds.w,bounds.h);
   if(screen.effect!=='none'){
@@ -27,7 +35,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     if(!menuElementVisible(element,screen.elements))continue;const pose=editing?{x:element.x,y:element.y,opacity:1,scale:1,rotation:0}:menuElementPose(element,time),b=menuElementBounds(element,bounds,pose);
     ctx.save();ctx.translate(b.x+b.w/2,b.y+b.h/2);ctx.rotate(pose.rotation*Math.PI/180);ctx.scale(pose.scale,pose.scale);ctx.translate(-b.x-b.w/2,-b.y-b.h/2);ctx.globalAlpha=pose.opacity;
     ctx.beginPath();ctx.rect(b.x,b.y,b.w,b.h);ctx.clip();
-    const interactive=menuElementInteractive(element);if(interactive){ctx.fillStyle=element.background;ctx.fillRect(b.x,b.y,b.w,b.h);}
+    const interactive=menuElementInteractive(element);if(interactive&&element.type!=='world-map'){ctx.fillStyle=element.background;ctx.fillRect(b.x,b.y,b.w,b.h);}
     ctx.fillStyle=element.color;ctx.font=`${Math.max(10,element.fontSize*Math.min(bounds.w/720,bounds.h/900))}px system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
     let label=caption(element.label,parameters),value=parameters[element.binding];
     if(element.type==='shape'){
@@ -59,7 +67,22 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
         if(!selected&&resources?.drawParkedCar)resources.drawParkedCar(ctx,preview,car,element.angle,draw);else draw(ctx,preview);
         ctx.fillStyle=element.color;ctx.fillText(entry.label,card.x+card.w/2,card.y+card.h-4,card.w-8);ctx.restore();
       }
-      ctx.fillStyle=element.color;ctx.fillText(`◀  ${page.index+1} / ${choices.length}  ▶   ·   Confirm to select`,b.x+b.w/2,b.y+b.h-10,b.w-12);
+
+    }
+    else if(element.type==='world-map'){
+      const nodes=worldMapNodes(element,resources,document,parameters);
+      ctx.strokeStyle='#7893a1';ctx.lineWidth=2;ctx.beginPath();
+      nodes.forEach((node,i)=>{const p=worldMapNodePoint(node,b);i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)});ctx.stroke();
+      for(const [i,node] of nodes.entries()){
+        const p=worldMapNodePoint(node,b),active=node.raceRef===(value||nodes[0]?.raceRef),radius=Math.max(8,Math.min(b.w,b.h)*.035);
+        ctx.fillStyle=node.locked?'#52616b':node.completed?'#4fb985':'#e2b454';ctx.beginPath();ctx.arc(p.x,p.y,radius,0,Math.PI*2);ctx.fill();
+        if(active){ctx.strokeStyle='#ffffff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(p.x,p.y,radius+5,0,Math.PI*2);ctx.stroke();}
+        ctx.fillStyle='#10212b';ctx.fillText(node.completed?'✓':String(i+1),p.x,p.y,radius*1.6);
+        if(b.w>=600){ctx.fillStyle=element.color;ctx.fillText(node.label,p.x,p.y+radius+17,b.w/4-8);}
+      }
+      const highlighted=nodes.find(n=>n.raceRef===value)||nodes[0];
+      if(highlighted){ctx.fillStyle=element.color;ctx.fillText(`${highlighted.label} · ${highlighted.locked?'Locked':highlighted.completed?'Completed':'Ready'}`,b.x+b.w/2,b.y+b.h-14,b.w-20);}
+      if(!nodes.length)ctx.fillText('No races configured',b.x+b.w/2,b.y+b.h/2,b.w-12);
     }
     else if(element.type==='garage-browser'){
       const state=widgetStates.get(element.id)||{},rows=resources?garageBrowserRows(resources,parameters,state):[];
@@ -98,11 +121,12 @@ function drawCarComponent(ctx,b,e,car,resources,time,parameters){
     resources.carPreview.drawSprite(ctx,b,car,choice);ctx.restore();return;
   }
   if(e.type==='car-stats'){
-    const performance=calculateCarPerformance(car);const lines=[car.name||'Car',`${Math.round(tuning.powerHp||0)} HP · ${Math.round(Number(tuning.torqueLbFt||0)*1.355817948)} Nm`,`${Math.round(tuning.weightKg||0)} kg · ${tuning.drivetrain||car.tuning?.drivetrain||''}`,`Class ${performance.performanceClass||performance.class||''}`];
+    const performance=calculateCarPerformance({...car,tuning:{...car.tuning,...tuning,topSpeedMph:tuning.topSpeedMps!=null?tuning.topSpeedMps/0.44704:car.tuning?.topSpeedMph}});const lines=[car.name||'Car',`${Math.round(tuning.powerHp||0)} HP · ${Math.round(Number(tuning.torqueLbFt||0)*1.355817948)} Nm`,`${Math.round(tuning.weightKg||0)} kg · ${tuning.drivetrain||car.tuning?.drivetrain||''}`,`Class ${performance.class} · ${performance.points} PI`];
     lines.forEach((line,i)=>ctx.fillText(line,b.x+b.w/2,b.y+(i+0.5)*b.h/lines.length,b.w-10));return;
   }
   const min=Number(tuning.idleRpm||800),max=Number(tuning.redlineRpm||7000),points=Array.from({length:41},(_,i)=>{const rpm=min+(max-min)*i/40,torque=renderer.getRaceTorqueNmAtRpm(rpm,tuning);return {rpm,torque,hp:torque*rpm/7127}}),peak=Math.max(1,...points.flatMap(p=>[p.torque,p.hp]));
-  ctx.font=`${Math.max(10,Math.min(14,b.h/8))}px system-ui`;ctx.fillText('HP (gold) · Torque Nm (blue)',b.x+b.w/2,b.y+12,b.w-12);
-  for(const [key,color] of [['hp','#ffd467'],['torque','#72caff']]){ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();points.forEach((p,i)=>{const x=b.x+10+i/40*(b.w-20),y=b.y+b.h-20-p[key]/peak*(b.h-45);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();}
-  ctx.fillText(`${min} — ${max} RPM`,b.x+b.w/2,b.y+b.h-7,b.w-12);
+  const compact=b.h<80,plotTop=b.y+(compact?4:25),plotBottom=b.y+b.h-(compact?4:20),plotHeight=Math.max(1,plotBottom-plotTop);
+  ctx.font=`${Math.max(10,Math.min(14,b.h/8))}px system-ui`;if(!compact)ctx.fillText('HP (gold) · Torque Nm (blue)',b.x+b.w/2,b.y+12,b.w-12);
+  for(const [key,color] of [['hp','#ffd467'],['torque','#72caff']]){ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();points.forEach((p,i)=>{const x=b.x+10+i/40*(b.w-20),y=plotBottom-p[key]/peak*plotHeight;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();}
+  if(!compact)ctx.fillText(`${min} — ${max} RPM`,b.x+b.w/2,b.y+b.h-7,b.w-12);
 }

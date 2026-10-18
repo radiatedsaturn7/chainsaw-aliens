@@ -1,3 +1,4 @@
+import {editMenuDestination} from './shared/menuDestinationForm.js';
 import { createNewRaceProject } from '../racing/RaceExample.js';
 import { buildRaceMinimap } from '../racing/RaceMinimap.js';
 import { NETWORK_ACTIONS, networkEditorActions, handleNetworkAction, drawNetworkEditor, networkPointer } from './RaceNetworkEditor.js';
@@ -2850,7 +2851,7 @@ export default class RaceEditor {
         ? `On complete: ${finish.targetRace || 'next race'}`
         : finish.type === 'level'
           ? `On complete: ${finish.targetLevel || 'level'}`
-          : 'On complete: return to origin';
+          : finish.type==='menu'?`On complete: ${finish.menuScreen}`:'On complete: return to origin';
     }
     this.raceSettingsDialog = null;
     this.raceSettingsDialogDraft = null;
@@ -5775,6 +5776,7 @@ export default class RaceEditor {
     }
     if (viewportMode.isDesktop) {
       this.drawDesktop(ctx, width, height);
+      this.drawRaceNonPortraitSpritePopup(ctx, width, height);
       this.drawRaceSpriteSettingsDialog(ctx, width, height);
       this.drawRaceSettingsDialog(ctx, width, height);
       this.markRaceStartupFrameRendered();
@@ -5785,6 +5787,7 @@ export default class RaceEditor {
       this.drawPortrait(ctx, width, height);
     } else {
       this.drawLandscape(ctx, width, height);
+      this.drawRaceNonPortraitSpritePopup(ctx, width, height);
     }
     this.drawRaceSpriteSettingsDialog(ctx, width, height);
     this.drawRaceSettingsDialog(ctx, width, height);
@@ -14325,6 +14328,60 @@ export default class RaceEditor {
     };
   }
 
+  getRaceTunnelCameraPlacement({ carWorldX, carWorldZ, carYaw, desiredChaseDistance,
+    roadElevation, eyeHeight, routeCamera }) {
+    const network = this.selectedRace?.road?.network;
+    if (!network) return null;
+    const session = this.playtestSession;
+    const physicalHeight = session?.vehicleRenderState?.position?.y ?? session?.bodyY ?? session?.heightM;
+    const floorM = Number.isFinite(physicalHeight) ? physicalHeight
+      : Number(roadElevation || 0) * RACE_THREE_ELEVATION_M;
+    const at = (x, z, heightM = floorM) => projectNetworkPoint(network, { x, z, heightM });
+    const origin = at(carWorldX, carWorldZ);
+    const desired = Math.max(0, Number(desiredChaseDistance) || 0);
+    const dx = Math.sin(carYaw), dz = Math.cos(carYaw);
+    const rear = at(carWorldX - dx * desired, carWorldZ - dz * desired);
+    const inside = p => p?.edge.structure === 'tunnel'
+      && p.distanceToRoute <= p.edge.widthM / 2 && p.verticalDistanceM < p.edge.clearanceM;
+    if (!inside(origin) && !inside(rear)) return null;
+    const targetEyeM = Math.min(Number(eyeHeight || 0) * RACE_THREE_ELEVATION_M, 3);
+    // Retract the boom through bends instead of lifting it through the roof.
+    // Test the whole sight line, so a valid endpoint cannot hide a wall crossing.
+    for (let distance = desired; distance >= 0; distance = Math.max(-1, distance - 1)) {
+      const x = carWorldX - dx * distance, z = carWorldZ - dz * distance;
+      const support = at(x, z);
+      if (!support) continue;
+      const ceilingM = support.edge.structure === 'tunnel'
+        ? support.heightM + support.edge.clearanceM - 0.4 : Infinity;
+      const cameraM = Math.min(support.heightM + Math.max(0.5, targetEyeM), ceilingM);
+      const targetM = (origin?.heightM ?? floorM) + 1.2;
+      let clear = true;
+      const steps = Math.max(1, Math.ceil(distance));
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const pointX = carWorldX + (x - carWorldX) * t;
+        const pointZ = carWorldZ + (z - carWorldZ) * t;
+        const expectedFloor = (origin?.heightM ?? floorM) + (support.heightM - (origin?.heightM ?? floorM)) * t;
+        const local = at(pointX, pointZ, expectedFloor);
+        const heightM = targetM + (cameraM - targetM) * t;
+        if (!local || local.distanceToRoute > Math.max(0.1, local.edge.widthM / 2 - 0.35)
+          || heightM < local.heightM + 0.25
+          || (local.edge.structure === 'tunnel' && heightM > local.heightM + local.edge.clearanceM - 0.35)) {
+          clear = false; break;
+        }
+      }
+      if (!clear && distance > 0) continue;
+      return {
+        camera: { ...routeCamera, x, z, yaw: carYaw, elevation: cameraM / RACE_THREE_ELEVATION_M,
+          eyeHeight: (cameraM - support.heightM) / RACE_THREE_ELEVATION_M,
+          roadElevation: support.heightM / RACE_THREE_ELEVATION_M },
+        chaseDistance: distance, terrainElevation: support.heightM / RACE_THREE_ELEVATION_M,
+        safetyLiftM: 0, adjusted: true, tunnelConstrained: true
+      };
+    }
+    return null;
+  }
+
   getRaceThirdPersonSafeCameraPlacement({
     carWorldX = 0,
     carWorldZ = 0,
@@ -14352,6 +14409,9 @@ export default class RaceEditor {
       };
       return { camera, chaseDistance: 0, terrainElevation: baseElevation, adjusted: false };
     }
+    const tunnelPlacement = this.getRaceTunnelCameraPlacement({ carWorldX, carWorldZ, carYaw,
+      desiredChaseDistance: desired, roadElevation, eyeHeight, routeCamera });
+    if (tunnelPlacement) return tunnelPlacement;
     const minChase = Math.min(desired, this.getRaceThirdPersonMinimumChaseDistance(car));
     const clearance = this.getRaceThirdPersonCameraClearance();
     const yaw = Number(carYaw || 0);
@@ -14436,6 +14496,12 @@ export default class RaceEditor {
     cameraView = 'third-person'
   } = {}) {
     if (!session || cameraView !== 'third-person' || !placement?.camera) return placement;
+    if (placement.tunnelConstrained) {
+      // Unconstrained smoothing would put the camera back through the ceiling.
+      session.thirdPersonCameraPlacement = null;
+      session.thirdPersonCameraChaseDistanceM = placement.chaseDistance;
+      return placement;
+    }
     const targetDistance = clamp(
       Number(placement.chaseDistance || 0),
       0,
@@ -17504,6 +17570,9 @@ export default class RaceEditor {
       return normalizeAngle(getCarViewCameraYaw(this.selectedCarShellFrameSlot || 'front', session.carYaw));
     }
     const lookAngle = this.hasPhysicalRaceGamepad() ? Number(this.raceInput?.lookAngle || 0) : 0;
+    if ((session?.cameraView || this.raceInput.cameraView) === 'first-person') {
+      return normalizeAngle(Number(session?.carYaw || 0) + lookAngle);
+    }
     const absSpeed = Math.abs(Number(session?.speedMps || 0));
     const launchHoldActive = Number(session?.launchLockMs || 0) > 0
       && absSpeed < 2.2
@@ -20226,12 +20295,15 @@ export default class RaceEditor {
     const routeCamera = this.getRaceWorldPoseAtDistance(visualTravel, { runtimeType });
     const cameraView = session.cameraView || this.raceInput.cameraView;
     const carYaw = Number.isFinite(Number(session.carYaw)) ? Number(session.carYaw) : Number(routeCamera.yaw || 0);
-    const cameraYaw = Number(session.cameraYaw ?? carYaw);
+    const cameraYaw = cameraView === 'first-person'
+      ? this.getRacePlaytestCameraYaw(session) : Number(session.cameraYaw ?? carYaw);
     const planarPosition = this.getRaceSessionPlanarWorldPosition(session);
     const carWorldX = Number.isFinite(Number(planarPosition.x)) ? Number(planarPosition.x) : Number(routeCamera.x || 0);
     const carWorldZ = Number.isFinite(Number(planarPosition.z)) ? Number(planarPosition.z) : Number(routeCamera.z || 0);
     const roadElevation = this.getRaceStitchedTerrainElevationAtWorldPoint(
-      { x: carWorldX, z: carWorldZ },
+      { x: carWorldX, z: carWorldZ,
+        ...(this.selectedRace?.road?.network ? { supportHeightM:
+          session?.vehicleRenderState?.position?.y ?? session?.bodyY ?? Number(session?.heightM || 0) + 0.4 } : {}) },
       Number(routeCamera.elevation || 0)
     );
     const eyeHeight = cameraView === 'third-person'
@@ -24572,6 +24644,12 @@ export default class RaceEditor {
     }
   }
 
+  drawRaceNonPortraitSpritePopup(ctx, width, height) {
+    if (this.mode !== 'race' || this.playtestSession || this.racePortraitMode !== 'sprites') return;
+    if (this.racePortraitHotMenu !== 'sprite-select') return;
+    this.drawRacePortraitSpritePopup(ctx, { x: Math.max(0, (width - 300) / 2), y: height - 24, w: 300 });
+  }
+
   drawRacePortraitSpritePopup(ctx, anchorBounds) {
     if (this.racePortraitHotMenu === 'sprite-brush') {
       this.drawRacePortraitGroundBrushPanel(ctx, anchorBounds);
@@ -24594,7 +24672,8 @@ export default class RaceEditor {
             this.status = `Paint ${definition.label || `Sprite ${index + 1}`}`;
           }
         }))
-        : [{ id: 'sprite-none', label: 'Add in Settings', disabled: true, onClick: null }])
+        : []),
+      { id: 'sprite-add-art', label: 'Add Artwork', onClick: () => this.handleMenuAction('add-sprite') }
     ];
     const rowH = 30;
     const gap = 5;
@@ -24609,7 +24688,7 @@ export default class RaceEditor {
     };
     drawSharedPanel(ctx, bounds, { fill: 'rgba(5,8,7,0.94)', border: UI_SUITE.colors.border });
     actions.slice(0, maxRows).forEach((action, index) => {
-      this.registerDrawnButton(ctx, {
+      this.registerRaceTileButton(ctx, {
         x: bounds.x + pad,
         y: bounds.y + pad + index * (rowH + gap),
         w: bounds.w - pad * 2,
@@ -25042,9 +25121,13 @@ export default class RaceEditor {
     ctx.font = `700 15px ${UI_SUITE.font.family}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(title, panel.x + 14, panel.y + 24, panel.w - 28);
+    ctx.fillText(title, panel.x + 14, panel.y + 24, panel.w - (this.raceSettingsDialog==='complete'?156:28));
 
     if (this.raceSettingsDialog === 'complete') {
+      this.registerDrawnButton(ctx,{x:panel.x+panel.w-134,y:panel.y+8,w:120,h:30},{id:'race-settings-complete-menu',label:'Menu / Variables',active:draft.type==='menu',onClick:async()=>{
+        const choice=await openEditorForm('Completion Options',[{id:'mode',label:'Configure',value:'menu',options:[{value:'menu',label:'Menu destination and variables'},{value:'variables',label:'Variables only (keep destination)'}]}]);if(!choice)return;
+        const result=await editMenuDestination(draft,{variablesOnly:choice.mode==='variables'});if(result)Object.assign(draft,result,choice.mode==='menu'?{type:'menu'}:{});
+      }});
       [
         { id: 'return-to-origin', label: 'Return to Origin' },
         { id: 'race', label: 'Next Race' },
@@ -29631,12 +29714,28 @@ export default class RaceEditor {
   drawRaceTopDownTileMap(ctx, bounds) {
     const tileMap = this.ensureRaceTileMap();
     if (!tileMap) return;
+    // All cells share one viewport. Avoid rebuilding route points and bounds
+    // for every cell corner (thousands of allocations per brush redraw).
+    const rawPoints = this.getRaceRawMapPoints();
+    if (!rawPoints.length) return;
+    const transform = this.getRaceMapTransform(bounds, rawPoints);
+    const { minX, minY, maxX, maxY, pad, usableW, usableH, scale, panX, panY } = transform;
+    const originX = bounds.x + pad + (usableW - (maxX - minX) * scale) / 2 + panX;
+    const originY = bounds.y + pad + (usableH - (maxY - minY) * scale) / 2 + panY;
+    const toScreen = (point) => ({
+      screenX: originX + (point.x - minX) * scale,
+      screenY: originY + (point.y - minY) * scale
+    });
+    const toWorld = (x, y) => ({
+      x: minX + (x - originX) / Math.max(0.0001, scale),
+      y: minY + (y - originY) / Math.max(0.0001, scale)
+    });
     const cellSize = Math.max(1, Number(tileMap.cellSizeM) || RACE_TILE_MAP_CELL_SIZE_M);
     const corners = [
-      this.screenToRaceMapWorldPoint(bounds.x, bounds.y, bounds),
-      this.screenToRaceMapWorldPoint(bounds.x + bounds.w, bounds.y, bounds),
-      this.screenToRaceMapWorldPoint(bounds.x, bounds.y + bounds.h, bounds),
-      this.screenToRaceMapWorldPoint(bounds.x + bounds.w, bounds.y + bounds.h, bounds)
+      toWorld(bounds.x, bounds.y),
+      toWorld(bounds.x + bounds.w, bounds.y),
+      toWorld(bounds.x, bounds.y + bounds.h),
+      toWorld(bounds.x + bounds.w, bounds.y + bounds.h)
     ].filter(Boolean);
     if (!corners.length) return;
     const minWorldX = Math.min(...corners.map((point) => Number(point.x || 0))) - cellSize;
@@ -29647,8 +29746,8 @@ export default class RaceEditor {
     let maxCellX = Math.ceil(maxWorldX / cellSize);
     let minCellY = Math.floor(minWorldY / cellSize);
     let maxCellY = Math.ceil(maxWorldY / cellSize);
-    const origin = this.raceMapWorldToScreenPoint({ x: 0, y: 0 }, bounds);
-    const next = this.raceMapWorldToScreenPoint({ x: cellSize, y: 0 }, bounds);
+    const origin = toScreen({ x: 0, y: 0 });
+    const next = toScreen({ x: cellSize, y: 0 });
     const cellPixel = origin && next ? Math.abs(next.screenX - origin.screenX) : RACE_TILE_MAP_GRID_MIN_PX;
     const visibleCellCount = Math.max(1, (maxCellX - minCellX + 1) * (maxCellY - minCellY + 1));
     const strideByPixel = cellPixel > 0 ? Math.ceil(RACE_TILE_MAP_RENDER_CELL_TARGET_PX / cellPixel) : 1;
@@ -29658,11 +29757,13 @@ export default class RaceEditor {
     minCellY -= stride;
     maxCellX += stride;
     maxCellY += stride;
+    const palettes = new Map();
+    const artwork = new Map();
     const drawCell = (cellX, cellY) => {
       const worldLeft = cellX * cellSize;
       const worldTop = cellY * cellSize;
-      const topLeft = this.raceMapWorldToScreenPoint({ x: worldLeft, y: worldTop }, bounds);
-      const bottomRight = this.raceMapWorldToScreenPoint({ x: worldLeft + cellSize * stride, y: worldTop + cellSize * stride }, bounds);
+      const topLeft = toScreen({ x: worldLeft, y: worldTop });
+      const bottomRight = toScreen({ x: worldLeft + cellSize * stride, y: worldTop + cellSize * stride });
       if (!topLeft || !bottomRight) return;
       const x = Math.min(topLeft.screenX, bottomRight.screenX);
       const y = Math.min(topLeft.screenY, bottomRight.screenY);
@@ -29672,12 +29773,16 @@ export default class RaceEditor {
       const sampleX = cellX + Math.floor(stride / 2);
       const sampleY = cellY + Math.floor(stride / 2);
       const cell = this.getRaceTileMapCell(sampleX, sampleY, tileMap);
-      const palette = this.getRaceWeightedGroundTilePalette(cell?.tileWeights, cell?.tileId || tileMap.defaultTileId || 'grass');
+      const tileId = cell?.tileId || tileMap.defaultTileId || 'grass';
+      const paletteKey = `${tileId}:${JSON.stringify(cell?.tileWeights || {})}`;
+      if (!palettes.has(paletteKey)) palettes.set(paletteKey, this.getRaceWeightedGroundTilePalette(cell?.tileWeights, tileId));
+      const palette = palettes.get(paletteKey);
       const checker = (sampleX + sampleY) % 2 === 0;
       ctx.fillStyle = checker ? palette.groundA : palette.groundB;
       ctx.fillRect(x, y, Math.max(1, w + 0.5), Math.max(1, h + 0.5));
       const artRef = String(cell?.artRef || '').trim();
-      const artCanvas = artRef ? this.getRaceArtSpriteCanvas(artRef) : null;
+      if (artRef && !artwork.has(artRef)) artwork.set(artRef, this.getRaceArtSpriteCanvas(artRef));
+      const artCanvas = artwork.get(artRef);
       if (artCanvas && typeof ctx.drawImage === 'function') {
         this.drawRaceWorldSpaceArtTexture(
           ctx,
@@ -29720,16 +29825,16 @@ export default class RaceEditor {
     ctx.strokeStyle = 'rgba(5,8,7,0.34)';
     ctx.lineWidth = 1;
     for (let cellX = minCellX; cellX <= maxCellX + 1; cellX += 1) {
-      const a = this.raceMapWorldToScreenPoint({ x: cellX * cellSize, y: minCellY * cellSize }, bounds);
-      const b = this.raceMapWorldToScreenPoint({ x: cellX * cellSize, y: (maxCellY + 1) * cellSize }, bounds);
+      const a = toScreen({ x: cellX * cellSize, y: minCellY * cellSize });
+      const b = toScreen({ x: cellX * cellSize, y: (maxCellY + 1) * cellSize });
       ctx.beginPath();
       ctx.moveTo(a.screenX, a.screenY);
       ctx.lineTo(b.screenX, b.screenY);
       ctx.stroke();
     }
     for (let cellY = minCellY; cellY <= maxCellY + 1; cellY += 1) {
-      const a = this.raceMapWorldToScreenPoint({ x: minCellX * cellSize, y: cellY * cellSize }, bounds);
-      const b = this.raceMapWorldToScreenPoint({ x: (maxCellX + 1) * cellSize, y: cellY * cellSize }, bounds);
+      const a = toScreen({ x: minCellX * cellSize, y: cellY * cellSize });
+      const b = toScreen({ x: (maxCellX + 1) * cellSize, y: cellY * cellSize });
       ctx.beginPath();
       ctx.moveTo(a.screenX, a.screenY);
       ctx.lineTo(b.screenX, b.screenY);
@@ -29745,8 +29850,8 @@ export default class RaceEditor {
       const chunkMinY = Math.floor(minWorldY / chunkWorldM);
       const chunkMaxY = Math.ceil(maxWorldY / chunkWorldM);
       for (let chunkX = chunkMinX; chunkX <= chunkMaxX; chunkX += 1) {
-        const a = this.raceMapWorldToScreenPoint({ x: chunkX * chunkWorldM, y: minWorldY }, bounds);
-        const b = this.raceMapWorldToScreenPoint({ x: chunkX * chunkWorldM, y: maxWorldY }, bounds);
+        const a = toScreen({ x: chunkX * chunkWorldM, y: minWorldY });
+        const b = toScreen({ x: chunkX * chunkWorldM, y: maxWorldY });
         if (!a || !b) continue;
         ctx.beginPath();
         ctx.moveTo(a.screenX, a.screenY);
@@ -29754,8 +29859,8 @@ export default class RaceEditor {
         ctx.stroke();
       }
       for (let chunkY = chunkMinY; chunkY <= chunkMaxY; chunkY += 1) {
-        const a = this.raceMapWorldToScreenPoint({ x: minWorldX, y: chunkY * chunkWorldM }, bounds);
-        const b = this.raceMapWorldToScreenPoint({ x: maxWorldX, y: chunkY * chunkWorldM }, bounds);
+        const a = toScreen({ x: minWorldX, y: chunkY * chunkWorldM });
+        const b = toScreen({ x: maxWorldX, y: chunkY * chunkWorldM });
         if (!a || !b) continue;
         ctx.beginPath();
         ctx.moveTo(a.screenX, a.screenY);
@@ -37515,7 +37620,8 @@ export default class RaceEditor {
     const speedMps = Number(session?.speedMps || 0);
     const absSpeed = Math.abs(speedMps);
     const speedFactor = clamp(absSpeed / 60, 0, 1);
-    const liveCameraYaw = Number(session?.cameraYaw ?? carYaw);
+    const liveCameraYaw = cameraView === 'first-person'
+      ? this.getRacePlaytestCameraYaw(session) : Number(session?.cameraYaw ?? carYaw);
     const chasePlacementYaw = cameraView === 'third-person'
       ? liveCameraYaw
       : carYaw;
