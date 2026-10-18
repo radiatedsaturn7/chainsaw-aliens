@@ -4,4 +4,4 @@ export function worldMapNodes(element,resources,document,parameters){
  const rows=Math.max(1,Math.ceil(nodes.length/4));
  return nodes.map((node,i)=>({...node,x:node.x??(.14+i%4*.24),y:element.nodes?.length?node.y:(Math.floor(i/4)+.5)/rows,locked:!!node.unlockParameter&&JSON.stringify(parameters[node.unlockParameter])!==JSON.stringify(node.unlockValue??true),completed:!!parameters[node.completedParameter||raceCompletionKey(node.raceRef)]}));
 }
-export function worldMapNodePoint(node,b){return {x:b.x+node.x*b.w,y:b.y+node.y*b.h};}
+export function worldMapNodePoint(node,b){return {x:b.x+node.x*b.w,y:b.y+node.y*Math.max(1,b.h-36)};}

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import MenuPlayer from '../../src/menus/MenuPlayer.js';
 import {createMenuDocument,normalizeMenuDocument} from '../../src/menus/MenuDocument.js';
-import {worldMapNodes,raceCompletionKey} from '../../src/menus/MenuWorldMap.js';
+import {worldMapNodes,worldMapNodePoint,raceCompletionKey} from '../../src/menus/MenuWorldMap.js';
 import {setMenuProgress,loadMenuProgress,normalizeMenuVariables} from '../../src/menus/MenuProgress.js';
 import {normalizeRaceFinishBehavior} from '../../src/racing/raceData.js';
 import LevelEditor from '../../src/ui/LevelEditorCore.js';
@@ -65,4 +65,10 @@ test('race menu destinations and level trigger defaults are authorable',()=>{
  const editor=Object.create(LevelEditor.prototype);
  assert.equal(editor.createTriggerAction('open-menu').params.menuScreen,'world-map');
  assert.deepEqual(editor.createTriggerAction('set-menu-variables').params.variables,{});
+});
+
+test('compact map hit positions reserve space for the selected race label',()=>{
+ const bounds={x:20,y:100,w:300,h:110};
+ const point=worldMapNodePoint({x:.5,y:1},bounds);
+ assert.deepEqual(point,{x:170,y:174});assert.ok(point.y<bounds.y+bounds.h-30);
 });

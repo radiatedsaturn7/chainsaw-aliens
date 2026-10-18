@@ -77,8 +77,11 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
         const p=worldMapNodePoint(node,b),active=node.raceRef===(value||nodes[0]?.raceRef),radius=Math.max(8,Math.min(b.w,b.h)*.035);
         ctx.fillStyle=node.locked?'#52616b':node.completed?'#4fb985':'#e2b454';ctx.beginPath();ctx.arc(p.x,p.y,radius,0,Math.PI*2);ctx.fill();
         if(active){ctx.strokeStyle='#ffffff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(p.x,p.y,radius+5,0,Math.PI*2);ctx.stroke();}
-        ctx.fillStyle=element.color;ctx.fillText(`${node.locked?'Locked · ':node.completed?'✓ ':''}${node.label}`,p.x,p.y+radius+17,b.w/4-8);
+        ctx.fillStyle='#10212b';ctx.fillText(node.completed?'✓':String(i+1),p.x,p.y,radius*1.6);
+        if(b.w>=600){ctx.fillStyle=element.color;ctx.fillText(node.label,p.x,p.y+radius+17,b.w/4-8);}
       }
+      const highlighted=nodes.find(n=>n.raceRef===value)||nodes[0];
+      if(highlighted){ctx.fillStyle=element.color;ctx.fillText(`${highlighted.label} · ${highlighted.locked?'Locked':highlighted.completed?'Completed':'Ready'}`,b.x+b.w/2,b.y+b.h-14,b.w-20);}
       if(!nodes.length)ctx.fillText('No races configured',b.x+b.w/2,b.y+b.h/2,b.w-12);
     }
     else if(element.type==='garage-browser'){
