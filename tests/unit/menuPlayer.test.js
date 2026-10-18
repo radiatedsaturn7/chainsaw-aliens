@@ -12,7 +12,9 @@ const input=(codes=[],buttons=[])=>({wasPressedCode:code=>codes.includes(code),w
 test('keyboard and controller Start navigate the splash, choices retain typed parameters',async()=>{
  for(const controls of [input(['Space']),input([],['gamepadStart'])]){
   const {player}=fixture();await player.open(createMenuDocument());player.resources.choices=source=>source==='cars'?[{label:'WRX',value:'WRX4'},{label:'BRZ',value:'BRZ'}]:[];
+  player.flow.goTo('settings');
   await player.activate(player.flow.screen.elements.find(e=>e.id==='difficulty'));
+  player.flow.back();
   player.update(controls,0.1);await Promise.resolve();assert.equal(player.flow.screenId,'cars');assert.equal(player.flow.parameters.carRef,'WRX4');
   await player.activate(player.flow.screen.elements.find(e=>e.id==='car'));assert.equal(player.flow.parameters.carRef,'BRZ');
   assert.equal(player.flow.parameters.difficulty,'hard');
@@ -88,7 +90,8 @@ for(const device of ['keyboard','gamepad','touch'])test(`${device} horizontal na
   if(device==='touch')player.surface.controls.pulseAction(direction.toLowerCase());
   player.update(input(device==='keyboard'?['Arrow'+direction]:[],device==='gamepad'?['dpad'+direction]:[]),0.01);
  };
- Object.assign(player.flow.screen.elements.find(e=>e.id==='difficulty'),{id:'next',type:'button',action:{type:'screen',target:'events'}});
+ Object.assign(player.flow.screen.elements.find(e=>e.id==='start'),{id:'next',type:'button',x:0.1,y:0.82,w:0.4,action:{type:'screen',target:'events'}});
+ Object.assign(player.flow.screen.elements.find(e=>e.id==='settings'),{x:0.6,w:0.3});
  for(let i=0;i<player.interactive().findIndex(e=>e.id==='next');i++)press('Down');
  assert.equal(player.interactive()[player.focus].id,'next');
  press('Right');assert.equal(player.flow.screenId,'splash');assert.equal(player.interactive()[player.focus].id,'settings');
@@ -101,12 +104,13 @@ for(const device of ['keyboard','gamepad','touch'])test(`${device} horizontal na
 });
 
 test('horizontal input still adjusts choices, sliders and toggles',async()=>{
- const {player}=fixture();await player.open(createMenuDocument(),{preview:true,screenId:'splash'});
+ const {player}=fixture();await player.open(createMenuDocument(),{preview:true,screenId:'settings'});
  player.focus=player.interactive().findIndex(e=>e.id==='difficulty');
  player.update(input(['ArrowRight']),0.01);assert.equal(player.flow.parameters.difficulty,'hard');
  player.update(input(['ArrowLeft']),0.01);assert.equal(player.flow.parameters.difficulty,'medium');
  await player.flow.run({type:'screen',target:'settings'});
- const slider=player.interactive()[0];player.flow.setParameter(slider.binding,slider.min);
+ player.focus=player.interactive().findIndex(e=>e.type==='slider');
+ const slider=player.interactive()[player.focus];player.flow.setParameter(slider.binding,slider.min);
  player.update(input([],['dpadRight']),0.01);assert.equal(player.flow.parameters[slider.binding],slider.min+slider.step);
  player.update(input([],['dpadLeft']),0.01);assert.equal(player.flow.parameters[slider.binding],slider.min);
  slider.type='toggle';player.flow.setParameter(slider.binding,false);
@@ -115,7 +119,8 @@ test('horizontal input still adjusts choices, sliders and toggles',async()=>{
 
 test('horizontal navigation skips hidden controls and never starts key capture',async()=>{
  const {player}=fixture();await player.open(createMenuDocument(),{preview:true,screenId:'splash'});
- Object.assign(player.flow.screen.elements.find(e=>e.id==='difficulty'),{id:'next',type:'button',action:{type:'screen',target:'events'}});
+ Object.assign(player.flow.screen.elements.find(e=>e.id==='start'),{id:'next',type:'button',x:0.1,y:0.82,w:0.4,action:{type:'screen',target:'events'}});
+ Object.assign(player.flow.screen.elements.find(e=>e.id==='settings'),{x:0.6,w:0.3});
  player.focus=player.interactive().findIndex(e=>e.id==='next');
  const settings=player.flow.screen.elements.find(e=>e.id==='settings');settings.visible=false;
  player.update(input(['ArrowRight']),0.01);assert.equal(player.interactive()[player.focus].id,'next');assert.equal(player.flow.screenId,'splash');
@@ -156,16 +161,17 @@ test('controller menu navigation responds immediately, repeats held D-pad and ac
  const controls={isGamepadDown:action=>held.has(action),getGamepadAxes:()=>axes};
  player.update(controls,0.01);assert.equal(player.focus,1);
  player.update(controls,0.20);assert.equal(player.focus,1);
- player.update(controls,0.09);assert.equal(player.focus,2);
- player.update(controls,0.12);assert.equal(player.focus,0);
+ player.update(controls,0.09);assert.equal(player.focus,0);
+ player.update(controls,0.12);assert.equal(player.focus,1);
  held.clear();player.update(controls,0.01);
- axes.leftY=-0.8;player.update(controls,0.01);assert.equal(player.focus,2);
- axes.leftY=0.1;player.update(controls,0.5);assert.equal(player.focus,2);
+ axes.leftY=-0.8;player.update(controls,0.01);assert.equal(player.focus,0);
+ axes.leftY=0.1;player.update(controls,0.5);assert.equal(player.focus,0);
  axes.leftY=-0.8;player.update(controls,0.01);assert.equal(player.focus,1);
 });
 
 test('controller choice popups use held navigation without repeating confirmation', async()=>{
  const {player}=fixture();await player.open(createMenuDocument());
+ player.flow.goTo('settings');
  const choice=player.flow.screen.elements.find(e=>e.id==='difficulty');
  await player.activate(choice,1,{choose:true});
  const controls={isGamepadDown:action=>action==='dpadDown'||action==='jump'};
@@ -174,13 +180,14 @@ test('controller choice popups use held navigation without repeating confirmatio
  assert.ok(player.choicePopup);
 });
 
-test('splash exposes difficulty and settings while the showroom only selects cars',async()=>{
+test('splash defaults to Game Start and Option Mode contains difficulty',async()=>{
  const {player}=fixture();await player.open(createMenuDocument());
- assert.deepEqual(player.interactive().map(e=>e.id),['start','difficulty','settings']);
- player.focus=1;player.update(input(['ArrowRight']),0.01);
- assert.equal(player.flow.parameters.difficulty,'hard');
- player.focus=2;player.update(input(['Enter']),0.01);await Promise.resolve();
+ assert.deepEqual(player.interactive().map(e=>e.label),['Game Start','Option Mode']);
+ assert.equal(player.interactive()[player.focus].id,'start');
+ player.focus=1;player.update(input(['Enter']),0.01);await Promise.resolve();
  assert.equal(player.flow.screenId,'settings','confirm activates Settings instead of splash startAction');
+ assert.equal(player.interactive()[player.focus].id,'difficulty');
+ player.update(input(['ArrowRight']),0.01);assert.equal(player.flow.parameters.difficulty,'hard');
  player.flow.back();assert.equal(player.flow.screenId,'splash');
  player.focus=0;player.update(input([],['gamepadStart']),0.01);await Promise.resolve();
  assert.equal(player.flow.screenId,'cars');assert.equal(player.flow.parameters.difficulty,'hard');

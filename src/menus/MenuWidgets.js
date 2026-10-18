@@ -1,5 +1,6 @@
 // Widget metadata is shared by the designer and runtime; bindings are plain data.
 export const MENU_WIDGETS = [
+  ['world-map','World map','Selectable race nodes with completion and variable-based locks.'],
   ['car-showroom','Car showroom','Up to four cars, selected-car rotation, dimming and confirm action.'],
   ['garage-browser','Garage parts browser','Section → slot → upgrade, with purchase and install actions.'],
   ['shape','Shape','A rectangle, ellipse or triangle with fill and outline.'],
@@ -42,6 +43,7 @@ export function widgetDefaults(type){
   if(['car-preview','car-stats','power-curve','asset-preview'].includes(type))Object.assign(shared,{h:0.3,w:0.4});
   if(['car-preview','car-stats','power-curve'].includes(type))Object.assign(shared,{binding:'carRef',dataSource:'cars'});
   if(type==='car-showroom')Object.assign(shared,{binding:'carRef',source:'cars',angle:135,duration:8,w:.9,h:.45});
+  if(type==='world-map')Object.assign(shared,{binding:'raceRef',w:.9,h:.6,action:{type:'race',target:'$raceRef'}});
   if(type==='garage-browser')Object.assign(shared,{binding:'partRef',w:.9,h:.3,action:{type:'garage-fit',target:'$partRef'}});
   if(type==='car-preview')Object.assign(shared,{animation:'spin',duration:8});
   if(type==='property-display')Object.assign(shared,{label:'Name',dataSource:'cars',binding:'carRef',property:'name'});

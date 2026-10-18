@@ -185,7 +185,7 @@ export function raceFromImageTrace(trace, { name = 'Drawing Race', lengthM = 150
   return {
     id: id || `drawing-${globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`}`,
     name: String(name).trim().slice(0, 100) || 'Drawing Race', type: trace.closed ? 'circuit' : 'destination', laps: 1,
-    weather: 'clear', timeOfDay: 'day', finishBehavior: { type: 'return-to-origin' },
+    weather: 'clear', timeOfDay: 'day', finishBehavior: { type: 'menu', menuScreen: 'garage' },
     road: { width: roadWidthM, nodes, segments, selectedGroundTileId: 'grass', groundTiles: [],
       tileMap: { cellSizeM: 5, defaultTileId: 'grass', minElevation: -.42, maxElevation: .42, cells: {} } },
     competition: { mode: 'solo', aiDrivers: [], trafficEnabled: false }, hazards: [], scenery: [], sceneryDefinitions: [],

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-track",
-  "savedAt": 1790633033116,
+  "savedAt": 1792343751561,
   "selectedRaceId": "drawing-34f46410-dd4a-49bf-8e30-02d3d14a8800",
   "race": {
     "id": "drawing-34f46410-dd4a-49bf-8e30-02d3d14a8800",
@@ -11,11 +11,13 @@
     "weather": "clear",
     "timeOfDay": "day",
     "finishBehavior": {
-      "type": "return-to-origin",
+      "type": "menu",
       "targetLevel": null,
       "targetRace": null,
       "spawnX": null,
-      "spawnY": null
+      "spawnY": null,
+      "menuRef": "",
+      "menuScreen": "garage"
     },
     "road": {
       "width": 9,

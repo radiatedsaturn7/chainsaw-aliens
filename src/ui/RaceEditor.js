@@ -1,3 +1,4 @@
+import {editMenuDestination} from './shared/menuDestinationForm.js';
 import { createNewRaceProject } from '../racing/RaceExample.js';
 import { buildRaceMinimap } from '../racing/RaceMinimap.js';
 import { NETWORK_ACTIONS, networkEditorActions, handleNetworkAction, drawNetworkEditor, networkPointer } from './RaceNetworkEditor.js';
@@ -2850,7 +2851,7 @@ export default class RaceEditor {
         ? `On complete: ${finish.targetRace || 'next race'}`
         : finish.type === 'level'
           ? `On complete: ${finish.targetLevel || 'level'}`
-          : 'On complete: return to origin';
+          : finish.type==='menu'?`On complete: ${finish.menuScreen}`:'On complete: return to origin';
     }
     this.raceSettingsDialog = null;
     this.raceSettingsDialogDraft = null;
@@ -25120,9 +25121,13 @@ export default class RaceEditor {
     ctx.font = `700 15px ${UI_SUITE.font.family}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(title, panel.x + 14, panel.y + 24, panel.w - 28);
+    ctx.fillText(title, panel.x + 14, panel.y + 24, panel.w - (this.raceSettingsDialog==='complete'?156:28));
 
     if (this.raceSettingsDialog === 'complete') {
+      this.registerDrawnButton(ctx,{x:panel.x+panel.w-134,y:panel.y+8,w:120,h:30},{id:'race-settings-complete-menu',label:'Menu / Variables',active:draft.type==='menu',onClick:async()=>{
+        const choice=await openEditorForm('Completion Options',[{id:'mode',label:'Configure',value:'menu',options:[{value:'menu',label:'Menu destination and variables'},{value:'variables',label:'Variables only (keep destination)'}]}]);if(!choice)return;
+        const result=await editMenuDestination(draft,{variablesOnly:choice.mode==='variables'});if(result)Object.assign(draft,result,choice.mode==='menu'?{type:'menu'}:{});
+      }});
       [
         { id: 'return-to-origin', label: 'Return to Origin' },
         { id: 'race', label: 'Next Race' },

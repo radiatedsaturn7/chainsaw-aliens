@@ -1,10 +1,11 @@
+import {worldMapNodes,worldMapNodePoint} from './MenuWorldMap.js';
 import {showroomPage,garageBrowserRows,garageCardBounds} from './MenuGarageWidgets.js';
 import {menuPaintOrder,menuElementVisible} from './MenuLayout.js';
 import {menuElementPose,resolveMenuBackground} from './MenuDocument.js';
 import {calculateCarPerformance} from '../racing/CarPerformance.js';
 
 export const menuElementBounds=(element,bounds,pose=element)=>({x:bounds.x+pose.x*bounds.w,y:bounds.y+pose.y*bounds.h,w:element.w*bounds.w,h:element.h*bounds.h});
-export const menuElementInteractive=e=>['car-showroom','garage-browser','button','choice','slider','toggle','keybind'].includes(e.type);
+export const menuElementInteractive=e=>['world-map','car-showroom','garage-browser','button','choice','slider','toggle','keybind'].includes(e.type);
 export const menuHit=(point,b)=>point.x>=b.x&&point.x<=b.x+b.w&&point.y>=b.y&&point.y<=b.y+b.h;
 export function drawMenuImage(ctx,image,b,fit='contain'){
   const scale=fit==='cover'?Math.max(b.w/image.width,b.h/image.height):Math.min(b.w/image.width,b.h/image.height);
@@ -15,6 +16,13 @@ const caption=(text,parameters)=>String(text).replace(/\{\{([\w.-]+)\}\}/g,(_,ke
 
 export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,resources,focus=null,selected=null,editing=false,videos=null,widgetStates=new Map()}={}){
   screen=resolveMenuBackground(document,screen);
+  // Authoring does not run MenuPlayer's selection initialization. Resolve the
+  // same fallback for the showroom and every bound widget without editing the document.
+  for(const element of screen.elements){
+    if(element.type!=='car-showroom'||!element.binding||!menuElementVisible(element,screen.elements))continue;
+    const choices=resources?.choices('cars',document,parameters)||[];
+    if(choices.length&&!choices.some(choice=>choice.value===parameters[element.binding]))parameters={...parameters,[element.binding]:choices[0].value};
+  }
   ctx.save();ctx.beginPath();ctx.rect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.clip();ctx.fillStyle=screen.background;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
   const background=resources?.art(screen.backgroundArt,Math.floor(time*8));if(background)ctx.drawImage(background,bounds.x,bounds.y,bounds.w,bounds.h);
   if(screen.effect!=='none'){
@@ -27,7 +35,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     if(!menuElementVisible(element,screen.elements))continue;const pose=editing?{x:element.x,y:element.y,opacity:1,scale:1,rotation:0}:menuElementPose(element,time),b=menuElementBounds(element,bounds,pose);
     ctx.save();ctx.translate(b.x+b.w/2,b.y+b.h/2);ctx.rotate(pose.rotation*Math.PI/180);ctx.scale(pose.scale,pose.scale);ctx.translate(-b.x-b.w/2,-b.y-b.h/2);ctx.globalAlpha=pose.opacity;
     ctx.beginPath();ctx.rect(b.x,b.y,b.w,b.h);ctx.clip();
-    const interactive=menuElementInteractive(element);if(interactive){ctx.fillStyle=element.background;ctx.fillRect(b.x,b.y,b.w,b.h);}
+    const interactive=menuElementInteractive(element);if(interactive&&element.type!=='world-map'){ctx.fillStyle=element.background;ctx.fillRect(b.x,b.y,b.w,b.h);}
     ctx.fillStyle=element.color;ctx.font=`${Math.max(10,element.fontSize*Math.min(bounds.w/720,bounds.h/900))}px system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';
     let label=caption(element.label,parameters),value=parameters[element.binding];
     if(element.type==='shape'){
@@ -59,7 +67,19 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
         if(!selected&&resources?.drawParkedCar)resources.drawParkedCar(ctx,preview,car,element.angle,draw);else draw(ctx,preview);
         ctx.fillStyle=element.color;ctx.fillText(entry.label,card.x+card.w/2,card.y+card.h-4,card.w-8);ctx.restore();
       }
-      ctx.fillStyle=element.color;ctx.fillText(`◀  ${page.index+1} / ${choices.length}  ▶   ·   Confirm to select`,b.x+b.w/2,b.y+b.h-10,b.w-12);
+
+    }
+    else if(element.type==='world-map'){
+      const nodes=worldMapNodes(element,resources,document,parameters);
+      ctx.strokeStyle='#7893a1';ctx.lineWidth=2;ctx.beginPath();
+      nodes.forEach((node,i)=>{const p=worldMapNodePoint(node,b);i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)});ctx.stroke();
+      for(const [i,node] of nodes.entries()){
+        const p=worldMapNodePoint(node,b),active=node.raceRef===(value||nodes[0]?.raceRef),radius=Math.max(8,Math.min(b.w,b.h)*.035);
+        ctx.fillStyle=node.locked?'#52616b':node.completed?'#4fb985':'#e2b454';ctx.beginPath();ctx.arc(p.x,p.y,radius,0,Math.PI*2);ctx.fill();
+        if(active){ctx.strokeStyle='#ffffff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(p.x,p.y,radius+5,0,Math.PI*2);ctx.stroke();}
+        ctx.fillStyle=element.color;ctx.fillText(`${node.locked?'Locked · ':node.completed?'✓ ':''}${node.label}`,p.x,p.y+radius+17,b.w/4-8);
+      }
+      if(!nodes.length)ctx.fillText('No races configured',b.x+b.w/2,b.y+b.h/2,b.w-12);
     }
     else if(element.type==='garage-browser'){
       const state=widgetStates.get(element.id)||{},rows=resources?garageBrowserRows(resources,parameters,state):[];
@@ -98,7 +118,7 @@ function drawCarComponent(ctx,b,e,car,resources,time,parameters){
     resources.carPreview.drawSprite(ctx,b,car,choice);ctx.restore();return;
   }
   if(e.type==='car-stats'){
-    const performance=calculateCarPerformance(car);const lines=[car.name||'Car',`${Math.round(tuning.powerHp||0)} HP · ${Math.round(Number(tuning.torqueLbFt||0)*1.355817948)} Nm`,`${Math.round(tuning.weightKg||0)} kg · ${tuning.drivetrain||car.tuning?.drivetrain||''}`,`Class ${performance.performanceClass||performance.class||''}`];
+    const performance=calculateCarPerformance({...car,tuning:{...car.tuning,...tuning,topSpeedMph:tuning.topSpeedMps!=null?tuning.topSpeedMps/0.44704:car.tuning?.topSpeedMph}});const lines=[car.name||'Car',`${Math.round(tuning.powerHp||0)} HP · ${Math.round(Number(tuning.torqueLbFt||0)*1.355817948)} Nm`,`${Math.round(tuning.weightKg||0)} kg · ${tuning.drivetrain||car.tuning?.drivetrain||''}`,`Class ${performance.class} · ${performance.points} PI`];
     lines.forEach((line,i)=>ctx.fillText(line,b.x+b.w/2,b.y+(i+0.5)*b.h/lines.length,b.w-10));return;
   }
   const min=Number(tuning.idleRpm||800),max=Number(tuning.redlineRpm||7000),points=Array.from({length:41},(_,i)=>{const rpm=min+(max-min)*i/40,torque=renderer.getRaceTorqueNmAtRpm(rpm,tuning);return {rpm,torque,hp:torque*rpm/7127}}),peak=Math.max(1,...points.flatMap(p=>[p.torque,p.hp]));

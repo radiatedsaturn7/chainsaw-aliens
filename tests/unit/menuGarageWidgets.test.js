@@ -25,12 +25,12 @@ test('showroom pages at four, selects without navigating, confirms garage with P
  assert.deepEqual(showroomPage(cars,'car-4').entries,cars.slice(4));
  await p.activate(e,1,{choose:true});
  assert.equal(p.flow.screenId,'garage');assert.equal(p.interactive()[p.focus].id,'garage-play');
- await p.activate(p.flow.screen.elements.find(e=>e.id==='garage-back'));
+ p.flow.back();
  assert.equal(p.flow.screenId,'cars');assert.equal(p.flow.parameters.carRef,'car-4');
  assert.deepEqual(normalizeMenuDocument(JSON.parse(JSON.stringify(p.flow.document))),p.flow.document);
 });
 test('parts drill down and back one level, use compatibility, and expose stock restoration',async()=>{
- const p=await player();p.flow.goTo('garage');
+ const p=await player();p.flow.goTo('upgrades');
  p.resources.garageCatalog=()=>[
   {ref:'race',item:{id:'race',name:'Race Turbo',carPart:normalizeCarPart({slot:'turbo',tier:'race'})}},
   {ref:'street',item:{id:'street',name:'Street Turbo',carPart:normalizeCarPart({slot:'turbo',tier:'street'})}},
@@ -91,7 +91,7 @@ test('showroom screen template can be added to an existing minimal menu and edit
  const {default:MenuEditor}=await import('../../src/ui/MenuEditor.js');
  const e=new MenuEditor({});e.loadMenu({startScreen:'home',screens:[{id:'home',elements:[]}]});
  await e.runAction('screen-showroom');assert.equal(e.screen.elements.find(e=>e.type==='car-showroom').action.target,'garage');
- assert.ok(e.menu.screens.some(s=>s.id==='events'));
+ for(const id of ['world-map','tuning','upgrades'])assert.ok(e.menu.screens.some(s=>s.id===id));
  assert.doesNotThrow(()=>normalizeMenuDocument(e.menu));e.history();assert.equal(e.menu.screens.length,1);
 });
 
@@ -99,7 +99,40 @@ test('standalone garage template creates a valid Play destination',async()=>{
  const {default:MenuEditor}=await import('../../src/ui/MenuEditor.js');
  const e=new MenuEditor({});e.loadMenu({startScreen:'home',screens:[{id:'home',elements:[]}]});
  await e.runAction('screen-garage');
- assert.equal(e.screen.elements.find(e=>e.id==='garage-play').action.target,'events');
- assert.ok(e.menu.screens.some(s=>s.id==='events'));
+ assert.equal(e.screen.elements.find(e=>e.id==='garage-play').action.target,'world-map');
+ for(const id of ['world-map','tuning','upgrades'])assert.ok(e.menu.screens.some(s=>s.id===id));
  assert.doesNotThrow(()=>normalizeMenuDocument(e.menu));
+});
+
+test('garage exposes only Play, Tune and Upgrade and keeps the selected car across destinations',async()=>{
+ const p=await player();await p.activate(p.interactive()[0],1,{choose:true});
+ assert.deepEqual(p.interactive().map(e=>e.label),['Play','Tune','Upgrade']);
+ const car=p.flow.parameters.carRef;
+ for(const [button,target] of [['garage-play','world-map'],['garage-tune','tuning'],['garage-upgrade','upgrades']]){
+  await p.activate(p.flow.screen.elements.find(e=>e.id===button));
+  assert.equal(p.flow.screenId,target);assert.equal(p.flow.parameters.carRef,car);
+  await p.activate(p.flow.screen.elements.find(e=>e.id==='back'));
+  assert.equal(p.flow.screenId,'garage');
+ }
+});
+
+test('showroom statistics follow highlighted cars, including the authoring fallback',async()=>{
+ const p=await player(),doc=p.flow.document,screen=p.flow.screen;
+ const specs=[{powerHp:100,torqueLbFt:100,weightKg:1800,topSpeedMph:90,tireGrip:.7},{powerHp:800,torqueLbFt:600,weightKg:1000,topSpeedMph:220,tireGrip:1.5}];
+ const vehicles=specs.map((tuning,i)=>({name:`Vehicle ${i}`,art:{},tuning}));
+ const labels=[];const ctx=new Proxy({globalAlpha:1,fillText:text=>labels.push(text)},{get:(o,k)=>k in o?o[k]:(()=>{})});
+ p.resources.choices=()=>cars.slice(0,2);p.resources.car=ref=>vehicles[Number(ref?.split('-')[1])]||null;
+ p.resources.tuning=car=>car.tuning;p.resources.art=()=>null;
+ p.resources.game.carEditor={getRaceCarProjectedArtRef:()=>({artRef:'test'}),getRaceTorqueNmAtRpm:(_rpm,t)=>t.torqueLbFt*1.355817948};
+ p.resources.carPreview.drawSprite=()=>{};
+ const render=parameters=>{labels.length=0;drawMenuScreen(ctx,{x:0,y:0,w:960,h:540},doc,screen,parameters,{resources:p.resources,editing:true});return [...labels]};
+ const initial={carRef:''},first=render(initial);
+ assert.ok(first.includes('100 HP · 136 Nm'));assert.ok(first.includes('1800 kg · '));assert.equal(initial.carRef,'','drawing must not mutate authored configuration');
+ p.update({wasPressedCode:code=>code==='ArrowRight'},.016);
+ const second=render(p.flow.parameters);
+ assert.ok(second.includes('800 HP · 813 Nm'));assert.ok(second.includes('1000 kg · '));
+ assert.notEqual(first.find(s=>s.startsWith('Class ')),second.find(s=>s.startsWith('Class ')));
+ assert.ok(!second.includes('100 HP · 136 Nm'));
+ p.update({wasGamepadPressed:button=>button==='dpadLeft'},.016);
+ assert.ok(render(p.flow.parameters).includes('100 HP · 136 Nm'));
 });

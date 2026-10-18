@@ -1,3 +1,5 @@
+import {setMenuProgress} from '../menus/MenuProgress.js';
+import {raceCompletionKey} from '../menus/MenuWorldMap.js';
 import { isSystemCarDocument } from '../racing/CarPresets.js';
 import {itemLibrary} from '../items/ItemLibrary.js';
 import {updateLevelItems, updateLegacyItemPickups, isItemPickup, itemPlacementId, getItemSystem} from '../items/ItemPickups.js';
@@ -2108,6 +2110,24 @@ export default class Game {
     return true;
   }
 
+  async openMenuDestination({menuRef='',menuScreen='world-map',variables={}}={}) {
+    await setMenuProgress(this,variables);
+    const player=this.menuPlayer,session=this.raceTravelSession;
+    const previous=player?.flow?.active?{...player.flow.parameters}:{};
+    if(!menuRef&&player?.flow?.active&&player.flow.document.screens.some(s=>s.id===menuScreen)){
+      this.raceTravelSession=null;this.raceEditorPlaytestReturn=false;this.playtestActive=false;
+      player.flow.busy=false;player.flow.goTo(menuScreen);this.transitionTo('menu-player',{forceCleanup:true});return true;
+    }
+    let doc;
+    if(menuRef){const payload=await hydrateProjectFilePayload('menus',menuRef);if(!payload?.data)throw Error(`Menu not found: ${menuRef}`);doc=payload.data;}
+    else{const preference=await loadServerPreferenceAsync('menu-launch',null);doc=preference?.menuRef?(await hydrateProjectFilePayload('menus',preference.menuRef))?.data:createMenuDocument();}
+    if(!doc?.screens?.some(s=>s.id===menuScreen))throw Error(`Menu screen not found: ${menuScreen}`);
+    await player.open(doc,{preview:player.preview});
+    Object.assign(player.flow.parameters,previous,session?.carRef?{carRef:session.carRef}:{},variables);
+    this.raceTravelSession=null;this.raceEditorPlaytestReturn=false;this.playtestActive=false;
+    player.flow.goTo(menuScreen);return true;
+  }
+
   completeRaceTravel(finishBehavior = {}, {
     carId = '',
     raceId = '',
@@ -2120,6 +2140,12 @@ export default class Game {
       if (raceId) session.trackStateByRace[raceId] = trackStateSnapshot;
       if (raceDocumentName) session.trackStateByRace[raceDocumentName] = trackStateSnapshot;
     }
+    const completedRef=raceDocumentName||raceId;
+    const variables={...(completedRef?{[raceCompletionKey(completedRef)]:true}:{}),...finishBehavior.variables};
+    if(finishBehavior.type==='menu'){
+      void this.openMenuDestination({...finishBehavior,variables}).catch(error=>this.showSystemToast?.(error.message));return true;
+    }
+    void setMenuProgress(this,variables).catch(error=>this.showSystemToast?.(error.message));
     const type = ['race', 'level'].includes(finishBehavior?.type)
       ? finishBehavior.type
       : 'return-to-origin';
@@ -7505,6 +7531,12 @@ export default class Game {
         setTimeout(() => completeLoad(), 300);
       }
       return;
+    }
+    if(action.type==='set-menu-variables'){
+      void setMenuProgress(this,params.variables||{}).then(onDone).catch(error=>{this.showSystemToast?.(error.message);onDone();});return;
+    }
+    if(action.type==='open-menu'){
+      void this.openMenuDestination(params).then(()=>{const state=triggerId?this.triggerState?.byId?.get?.(triggerId):null;if(state){state.queue=[];state.active=false;}}).catch(error=>{this.showSystemToast?.(error.message);onDone();});return;
     }
     if (action.type === 'start-race') {
       Promise.resolve(this.startRaceTravel(params)).then((started) => {

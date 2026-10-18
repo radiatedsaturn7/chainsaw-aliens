@@ -15,7 +15,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} menu desig
  await page.evaluate(()=>window.__game.menuEditor.handleMenuAction('undo'));await expect.poll(()=>page.evaluate(()=>window.__game.menuEditor.screen.name)).toBe('Splash');
  await page.evaluate(async()=>{
   const g=window.__game,e=g.menuEditor,{saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');
-  const car=structuredClone(g.carEditor.selectedCar);delete car.__systemPreset;delete car.__editorDraft;delete car.systemFile;car.name='Menu Test Car';await saveProjectFileAndConfirm('cars','Menu Test Car',car);e.menu.parameters.carRef='Menu Test Car';e.menu.parameters.raceRef='Test Track';const raceChoice=e.menu.screens.find(s=>s.id==='events').elements.find(e=>e.id==='event');raceChoice.source='';raceChoice.options=[{label:'Test Track',value:'Test Track'}];
+  const car=structuredClone(g.carEditor.selectedCar);delete car.__systemPreset;delete car.__editorDraft;delete car.systemFile;car.name='Menu Test Car';await saveProjectFileAndConfirm('cars','Menu Test Car',car);e.menu.parameters.carRef='Menu Test Car';e.menu.parameters.raceRef='Test Track';const raceChoice=e.menu.screens.find(s=>s.id==='world-map').elements.find(e=>e.id==='event');raceChoice.nodes=[{id:'test',label:'Test Track',raceRef:'Test Track',x:.5,y:.5}];
   e.currentMenuName='Menu Browser Test';await e.saveMenu();await e.runAction('starting-menu');
   g.startRaceTravel=async params=>{g.__menuRaceLaunch={raceName:params.raceName,carRef:params.carRef,configuration:params.menuConfiguration};return true;};
   g.transitionTo('title');await g.playStartingMenu();
@@ -27,8 +27,8 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} menu desig
  await page.screenshot({path:`test-results/menu-${mobile?'portrait':'desktop'}-cars.png`});
  await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.interactive()[window.__game.menuPlayer.focus]?.id)).toBe('garage-play');
- await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('events');
- await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.__menuRaceLaunch?.raceName)).toBe('Test Track');const result=await page.evaluate(()=>window.__game.__menuRaceLaunch);expect(result.carRef).toBe('Menu Test Car');expect(result.configuration.raceRef).toBe('Test Track');expect(errors).toEqual([]);
+ await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('world-map');
+ await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.__menuRaceLaunch?.raceName)).toBe('Test Track');const result=await page.evaluate(()=>window.__game.__menuRaceLaunch);expect(result.carRef).toBe('Menu Test Car');expect(result.configuration.raceRef).toBe('Test Track');expect(errors).toEqual([]);
 });
 
 test('saved start menu survives a fresh page and preview returns to authoring',async({page})=>{
@@ -272,13 +272,14 @@ for(const mode of ['desktop','portrait','landscape','gamepad'])test(`${mode} fou
   const g=window.__game,{saveProjectFile}=await import('/src/ui/projectFiles.js'),{createMenuDocument}=await import('/src/menus/MenuDocument.js');
   const refs=[];
   for(let i=0;i<4;i++){
-   const car=structuredClone(g.carEditor.selectedCar);car.id=`showroom-test-${i}`;car.name=`Showroom ${i}`;car.art={};car.paint={...car.paint,body:['#ff4444','#44dd88','#4488ff','#ffdd44'][i]};
+   const car=structuredClone(g.carEditor.selectedCar);car.id=`showroom-test-${i}`;car.name=`Showroom ${i}`;car.art={};car.tuning={...car.tuning,engineCurve:null,powerHp:100+i*200,torqueLbFt:100+i*100,weightKg:1800-i*200};car.paint={...car.paint,body:['#ff4444','#44dd88','#4488ff','#ffdd44'][i]};
    delete car.__systemPreset;delete car.__editorDraft;delete car.systemFile;
    saveProjectFile('cars',car.name,{car});refs.push(car.name);
   }
   const p=g.menuPlayer,choices=p.resources.choices.bind(p.resources);
   p.resources.choices=(source,...args)=>source==='cars'?refs.map(value=>({value,label:value})):choices(source,...args);
   await p.open(createMenuDocument(),{preview:true,screenId:'cars'});
+  const original=g.ctx.fillText.bind(g.ctx);g.ctx.fillText=(text,...args)=>{if(String(text).includes(' HP · '))window.__showroomPower=text;if(String(text).startsWith('Class '))window.__showroomClass=text;original(text,...args);};
  });
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.resources.cars.size)).toBeGreaterThanOrEqual(4);
  await page.screenshot({path:`test-results/showroom-four-${mode}.png`});
@@ -289,27 +290,43 @@ for(const mode of ['desktop','portrait','landscape','gamepad'])test(`${mode} fou
    p.update({wasGamepadPressed:()=>false},.016);
   },button);else await page.keyboard.press(code);
  };
+ await expect.poll(()=>page.evaluate(()=>window.__showroomPower)).toContain('100 HP');
+ const firstClass=await page.evaluate(()=>window.__showroomClass);
  await press('ArrowRight','dpadRight');
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.parameters.carRef)).toBe('Showroom 1');
+ await expect.poll(()=>page.evaluate(()=>window.__showroomPower)).toContain('300 HP');
+ await expect.poll(()=>page.evaluate(()=>window.__showroomClass)).not.toBe(firstClass);
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('cars');
  await press('Enter','jump');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
  expect(await page.evaluate(()=>{const p=window.__game.menuPlayer;return p.interactive()[p.focus].id})).toBe('garage-play');
+ expect(await page.evaluate(()=>window.__game.menuPlayer.interactive().map(e=>e.label))).toEqual(['Play','Tune','Upgrade']);
+ for(const [steps,destination] of [[0,'world-map'],[1,'tuning'],[2,'upgrades']]){
+  for(let i=0;i<steps;i++){
+   await press('ArrowDown','dpadDown');
+   await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.focus)).toBe(i+1);
+  }
+  await press('Enter','jump');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe(destination);
+  expect(await page.evaluate(()=>window.__game.menuPlayer.flow.parameters.carRef)).toBe('Showroom 1');
+  await page.screenshot({path:`test-results/menu-${mode}-${destination}.png`});
+  await press('Escape','gamepadB');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
+ }
  await press('Escape','gamepadB');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('cars');
  expect(await page.evaluate(()=>window.__game.menuPlayer.flow.parameters.carRef)).toBe('Showroom 1');
  expect(errors).toEqual([]);
 });
 
-for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} splash difficulty/settings and warm car listing`,async({page})=>{
+for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} splash Option Mode difficulty and warm car listing`,async({page})=>{
  await page.setViewportSize(mobile?{width:390,height:844}:{width:1280,height:800});await ready(page,mobile);
  await page.evaluate(async()=>{const g=window.__game;await g.previewMenu(g.menuEditor.menu)});
+ await expect.poll(()=>page.evaluate(()=>{const p=window.__game.menuPlayer;return p.interactive()[p.focus]?.label})).toBe('Game Start');
  await page.keyboard.press('ArrowDown');
+ await expect.poll(()=>page.evaluate(()=>{const p=window.__game.menuPlayer;return p.interactive()[p.focus]?.label})).toBe('Option Mode');
+ await page.keyboard.press('Enter');
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('settings');
  await expect.poll(()=>page.evaluate(()=>{const p=window.__game.menuPlayer;return p.interactive()[p.focus]?.id})).toBe('difficulty');
  await page.keyboard.press('ArrowRight');
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.parameters.difficulty)).toBe('hard');
- await page.keyboard.press('ArrowDown');
- await expect.poll(()=>page.evaluate(()=>{const p=window.__game.menuPlayer;return p.interactive()[p.focus]?.id})).toBe('settings');
- await page.keyboard.press('Enter');
- await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('settings');
+ await page.screenshot({path:`test-results/menu-settings-options-${mobile?'portrait':'desktop'}.png`});
  await page.keyboard.press('Escape');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('splash');
  await page.screenshot({path:`test-results/menu-splash-options-${mobile?'portrait':'desktop'}.png`});
  await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('cars');
@@ -325,4 +342,25 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} splash dif
    controls:window.__game.menuPlayer.interactive().map(e=>e.id)};
  });
  expect(result.count).toBe(0);expect(result.controls).toEqual(['car']);expect(result.difficulty).toBe('hard');
+});
+
+for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} world map locks, race finish returns Garage, and trigger unlocks`,async({page})=>{
+ await page.setViewportSize(mobile?{width:390,height:844}:{width:1280,height:800});await ready(page,mobile);
+ await page.evaluate(async()=>{
+  const g=window.__game,{createMenuDocument}=await import('/src/menus/MenuDocument.js'),doc=createMenuDocument();
+  doc.screens.find(s=>s.id==='world-map').elements.find(e=>e.type==='world-map').nodes=[{id:'one',label:'First',raceRef:'First',x:.25,y:.4},{id:'two',label:'Final',raceRef:'Final',x:.75,y:.6,unlockParameter:'firstWon',unlockValue:true}];
+  await g.menuPlayer.open(doc,{preview:true,screenId:'world-map'});
+  g.menuPlayer.flow.adapter.launchRace=async ref=>{g.__mapRace=ref};
+ });
+ await page.keyboard.press('ArrowRight');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.parameters.raceRef)).toBe('Final');
+ await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.error)).toContain('locked');
+ expect(await page.evaluate(()=>window.__game.__mapRace)).toBeUndefined();
+ await page.screenshot({path:`test-results/world-map-locked-${mobile?'portrait':'desktop'}.png`});
+ await page.evaluate(async()=>{const g=window.__game;await new Promise(resolve=>g.executeTriggerAction({type:'set-menu-variables',params:{variables:{firstWon:true}}},{x:0,y:0},resolve));});
+ await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.__mapRace)).toBe('Final');
+ await page.evaluate(()=>{const g=window.__game;g.raceTravelSession={carRef:'Selected Car',menuFlow:g.menuPlayer.flow};g.completeRaceTravel({type:'menu',menuScreen:'garage'},{raceDocumentName:'Final'});});
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
+ expect(await page.evaluate(()=>window.__game.menuPlayer.flow.parameters['raceCompleted.Final'])).toBe(true);
+ await page.evaluate(()=>window.__game.openMenuDestination({menuScreen:'world-map'}));
+ await page.screenshot({path:`test-results/world-map-unlocked-${mobile?'portrait':'desktop'}.png`});
 });

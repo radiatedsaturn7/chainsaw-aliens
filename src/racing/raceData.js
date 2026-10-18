@@ -1,3 +1,4 @@
+import {normalizeMenuVariables} from '../menus/MenuProgress.js';
 export const RACE_SURFACES = [
   { id: 'asphalt', label: 'Asphalt', grip: 1, colorA: '#315734', colorB: '#244629' },
   { id: 'dirt', label: 'Dirt', grip: 0.72, colorA: '#7a5633', colorB: '#5f4128' },
@@ -15,7 +16,7 @@ export const RACE_COMPETITION_MODES = ['solo', 'ai-race', 'combat-run', 'mixed']
 
 export const RACE_TIME_OF_DAY = ['day', 'night'];
 
-export const RACE_FINISH_BEHAVIOR_TYPES = ['return-to-origin', 'race', 'level'];
+export const RACE_FINISH_BEHAVIOR_TYPES = ['return-to-origin', 'race', 'level', 'menu'];
 
 export function normalizeRaceFinishBehavior(value = {}) {
   const source = value && typeof value === 'object' ? value : {};
@@ -24,6 +25,8 @@ export function normalizeRaceFinishBehavior(value = {}) {
     : 'return-to-origin';
   return {
     type,
+    ...(type==='menu'?{menuRef:typeof source.menuRef==='string'?source.menuRef.trim():'',menuScreen:typeof source.menuScreen==='string'?source.menuScreen.trim():'garage'}:{}),
+    ...(Object.keys(normalizeMenuVariables(source.variables)).length?{variables:normalizeMenuVariables(source.variables)}:{}),
     targetLevel: type === 'level' && typeof source.targetLevel === 'string' && source.targetLevel.trim()
       ? source.targetLevel.trim()
       : null,
@@ -779,7 +782,8 @@ export function createDefaultRace(id = 'test-loop') {
     timeOfDay: 'day',
     entryBehavior: 'return-to-origin',
     finishBehavior: {
-      type: 'return-to-origin',
+      type: 'menu',
+      menuScreen: 'garage',
       targetLevel: null,
       targetRace: null,
       spawnX: null,
@@ -910,7 +914,8 @@ function createRaceTemplate({
     timeOfDay,
     entryBehavior: 'return-to-origin',
     finishBehavior: {
-      type: 'return-to-origin',
+      type: 'menu',
+      menuScreen: 'garage',
       targetLevel: null,
       targetRace: null,
       spawnX: null,
