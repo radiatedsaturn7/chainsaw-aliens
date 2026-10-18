@@ -231,3 +231,66 @@ for (const config of MODES) test(`${config.mode}: File New creates the feature c
   await page.screenshot({ path: `test-results/network-minimap-${config.mode}.png`, clip: { x: 5, y: 5, width: 92, height: 92 } });
   expect(errors).toEqual([]);
 });
+
+for (const config of MODES) test(`${config.mode}: default race sprite chooser and tile painting work`, async ({ page }) => {
+  await setup(page, config);
+  const errors = []; page.on('pageerror', error => errors.push(error.message));
+  await page.evaluate(async () => {
+    const e = window.networkEditor;
+    await e.handleMenuAction('new');
+    e.selectedRace.sceneryDefinitions = [{ id: 'tree-test', label: 'Test Tree', artRef: 'test-art', widthM: 3, heightM: 5 }];
+    const art = document.createElement('canvas'); art.width = art.height = 16;
+    const ctx = art.getContext('2d'); ctx.fillStyle = '#ff38dc'; ctx.fillRect(0, 0, 16, 16);
+    e.getRaceArtSpriteCanvas = () => art;
+    e.getRaceSceneryArtCanvas = () => art;
+    await e.handleMenuAction('sprite-select'); window.drawNetwork();
+  });
+  const choice = await page.evaluate(() => window.networkEditor.buttons.find(b => b.id === 'sprite-def-tree-test')?.bounds);
+  expect(choice).toBeTruthy();
+  await page.mouse.click(choice.x + choice.w / 2, choice.y + choice.h / 2);
+  const map = await page.evaluate(() => window.networkEditor.raceMapBounds);
+  await page.mouse.click(map.x + map.w * 0.35, map.y + map.h * 0.5);
+  expect(await page.evaluate(() => window.networkEditor.selectedRace.scenery.length)).toBe(1);
+  await page.evaluate(async () => {
+    const e = window.networkEditor; e.selectedRaceGroundBoxArtRef = 'test-tile';
+    await e.handleMenuAction('paint-tile'); window.drawNetwork();
+  });
+  await page.mouse.move(map.x + map.w * 0.6, map.y + map.h * 0.45);
+  await page.mouse.down();
+  await page.mouse.move(map.x + map.w * 0.7, map.y + map.h * 0.55, { steps: 5 });
+  await page.mouse.up();
+  expect(await page.evaluate(() => Object.values(window.networkEditor.selectedRace.road.tileMap.cells).filter(c => c.artRef === 'test-tile').length)).toBeGreaterThan(1);
+  await page.locator('#network-editor').screenshot({ path: `test-results/network-paint-${config.mode}.png` });
+  expect(errors).toEqual([]);
+});
+
+test('tunnel camera renders below the crossing and first-person retains driver bearing', async ({ page }) => {
+  test.setTimeout(120000);
+  await setup(page, MODES[0]);
+  const camera = await page.evaluate(async () => {
+    const e = window.networkEditor; await e.handleMenuAction('new-2-lane');
+    const bake = e.buildRaceWorldBake({ validate: false });
+    e.startPlaytest(e.selectedCar.id, { hydrateCars: false, preparedWorldBake: bake });
+    const s = e.playtestSession;
+    Object.assign(s, { countdownRemainingMs: 0, startupFramePending: false, worldX: 0, worldZ: 500,
+      bodyY: -5.6, heightM: -5.6, carYaw: 0, cameraYaw: 0, cameraView: 'third-person' });
+    s.vehicleRenderState = { ...s.vehicleRenderState, position: { x: 0, y: -5.6, z: 500 }, yawRad: 0 };
+    const c = e.game.canvas;
+    e.drawRaceProjectedRoadPath(c.getContext('2d'), { x: 0, y: 0, w: c.width, h: c.height });
+    return { y: e.lastRaceRenderCamera.camera.elevation * 12, z: e.lastRaceRenderCamera.camera.z,
+      renderer: e.lastRaceRenderStats?.threeTerrainRenderer };
+  });
+  expect(camera.y).toBeGreaterThan(-6); expect(camera.y).toBeLessThan(-2.35);
+  expect(camera.z).toBeLessThan(500); expect(camera.renderer).toBe(1);
+  await page.locator('#network-editor').screenshot({ path: 'test-results/network-tunnel-camera.png' });
+  const fp = await page.evaluate(() => {
+    const e = window.networkEditor, s = e.playtestSession;
+    Object.assign(s, { cameraView: 'first-person', carYaw: 1.1, velocityYaw: -1, cameraYaw: -1 });
+    const c = e.game.canvas;
+    e.drawRaceProjectedRoadPath(c.getContext('2d'), { x: 0, y: 0, w: c.width, h: c.height });
+    return { view: e.lastRaceRenderCamera.cameraView, yaw: e.lastRaceRenderCamera.cameraYaw,
+      chase: e.lastRaceRenderCamera.cameraSafety.chaseDistance };
+  });
+  expect(fp.view).toBe('first-person'); expect(fp.yaw).toBeCloseTo(1.1); expect(fp.chase).toBe(0);
+  await page.locator('#network-editor').screenshot({ path: 'test-results/network-first-person.png' });
+});
