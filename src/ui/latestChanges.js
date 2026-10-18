@@ -1540,6 +1540,7 @@ export const LATEST_MAJOR_WORK = {
 };
 
 export const LATEST_CHANGES = [
+  {date:'2026-10-18',time:'11:09 EDT',title:'Faster car selection and splash options',details:['Car listing no longer reparses unrelated artwork or music during animated menu frames. Unchanged file metadata is reused.','Difficulty and Settings are on the default splash screen; confirming a focused option activates it instead of starting the game.']},
   {date:'2026-10-17',time:'19:00 EDT',title:'Tunnel cameras and race sprite tools',details:['Chase cameras follow tunnel floors, stay below ceilings and retract at bends. First-person view stays with the driver heading through spins.','The Sprite chooser works in every layout, and branching tracks display placed sprites, decals and triggers.']},
   {date:'2026-10-17',time:'18:40 EDT',title:'Faster race tile painting',details:['Tile-map redraws calculate route coordinates and the viewport transform once, and reuse artwork and palettes within the frame instead of repeating that work for every cell.']},
   {date:'2026-10-17',time:'18:15 EDT',title:'Feature course and complete race minimap',details:['File → New creates Branching Valley with Y/T/four-way junctions, a bridge, tunnel, shallow ford and gentle editable terrain. Every lane-count choice uses the example.','The racing minimap shows every branch, distinguishes bridges and tunnels, shows water and separate start/finish markers, and uses physical car positions.']},

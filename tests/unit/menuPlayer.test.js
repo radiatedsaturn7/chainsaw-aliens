@@ -12,9 +12,10 @@ const input=(codes=[],buttons=[])=>({wasPressedCode:code=>codes.includes(code),w
 test('keyboard and controller Start navigate the splash, choices retain typed parameters',async()=>{
  for(const controls of [input(['Space']),input([],['gamepadStart'])]){
   const {player}=fixture();await player.open(createMenuDocument());player.resources.choices=source=>source==='cars'?[{label:'WRX',value:'WRX4'},{label:'BRZ',value:'BRZ'}]:[];
+  await player.activate(player.flow.screen.elements.find(e=>e.id==='difficulty'));
   player.update(controls,0.1);await Promise.resolve();assert.equal(player.flow.screenId,'cars');assert.equal(player.flow.parameters.carRef,'WRX4');
   await player.activate(player.flow.screen.elements.find(e=>e.id==='car'));assert.equal(player.flow.parameters.carRef,'BRZ');
-  await player.activate(player.flow.screen.elements.find(e=>e.id==='difficulty'));assert.equal(player.flow.parameters.difficulty,'hard');
+  assert.equal(player.flow.parameters.difficulty,'hard');
  }
 });
 test('real race adapter forwards selected car, difficulty and arbitrary customization',async()=>{
@@ -62,6 +63,7 @@ test('shared touch controller navigates, confirms and exits preview; physical pa
  const {player,game,calls}=fixture();game.deviceIsMobile=true;await player.open(createMenuDocument(),{preview:true});
  const layout=player.surface.layout(390,844);assert.ok(layout.screen.y+layout.screen.h<layout.controlsDeck.y);
  player.surface.controls.pulseAction('jump');player.update(input(),0.01);await Promise.resolve();assert.equal(player.flow.screenId,'cars');
+ player.flow.back();
  player.surface.controls.pulseAction('down');player.update(input(),0.01);assert.equal(player.focus,1);
  player.surface.controls.pulseAction('nextWeapon');player.update(input(),0.01);assert.deepEqual(calls.at(-1),['state','menu-editor']);
  game.input.isGamepadConnected=()=>true;assert.equal(player.surface.layout(844,390),null);assert.equal(player.surface.controls.enabled,false);
@@ -77,9 +79,9 @@ test('pausing preview suspends audio and videos, and exit releases its audio sus
  player.togglePause();assert.equal(player.slider,null);assert.equal(player.capturing,null);assert.deepEqual(events,['suspend','video-pause']);player.togglePause();assert.deepEqual(events,['suspend','video-pause','resume','video-play']);player.togglePause();player.flow.stop();assert.equal(events.filter(e=>e==='resume').length,2);
 });
 
-for(const device of ['keyboard','gamepad','touch'])test(`${device} horizontal navigation moves Choose Race to Settings without activating`,async()=>{
+for(const device of ['keyboard','gamepad','touch'])test(`${device} horizontal navigation moves splash buttons to Settings without activating`,async()=>{
  const {player,game}=fixture();game.deviceIsMobile=device==='touch';
- await player.open(createMenuDocument(),{preview:true,screenId:'cars'});
+ await player.open(createMenuDocument(),{preview:true,screenId:'splash'});
  if(device==='touch')player.surface.layout(390,844);
  const press=direction=>{
   player.update(input(),0.01);
@@ -89,9 +91,9 @@ for(const device of ['keyboard','gamepad','touch'])test(`${device} horizontal na
  Object.assign(player.flow.screen.elements.find(e=>e.id==='difficulty'),{id:'next',type:'button',action:{type:'screen',target:'events'}});
  for(let i=0;i<player.interactive().findIndex(e=>e.id==='next');i++)press('Down');
  assert.equal(player.interactive()[player.focus].id,'next');
- press('Right');assert.equal(player.flow.screenId,'cars');assert.equal(player.interactive()[player.focus].id,'settings');
- press('Right');assert.equal(player.flow.screenId,'cars');assert.equal(player.interactive()[player.focus].id,'settings');
- press('Left');assert.equal(player.interactive()[player.focus].id,'next');assert.equal(player.flow.screenId,'cars');
+ press('Right');assert.equal(player.flow.screenId,'splash');assert.equal(player.interactive()[player.focus].id,'settings');
+ press('Right');assert.equal(player.flow.screenId,'splash');assert.equal(player.interactive()[player.focus].id,'settings');
+ press('Left');assert.equal(player.interactive()[player.focus].id,'next');assert.equal(player.flow.screenId,'splash');
  press('Right');
  if(device==='touch')player.surface.controls.pulseAction('jump');
  player.update(input(device==='keyboard'?['Enter']:[],device==='gamepad'?['jump']:[]),0.01);
@@ -99,7 +101,7 @@ for(const device of ['keyboard','gamepad','touch'])test(`${device} horizontal na
 });
 
 test('horizontal input still adjusts choices, sliders and toggles',async()=>{
- const {player}=fixture();await player.open(createMenuDocument(),{preview:true,screenId:'cars'});
+ const {player}=fixture();await player.open(createMenuDocument(),{preview:true,screenId:'splash'});
  player.focus=player.interactive().findIndex(e=>e.id==='difficulty');
  player.update(input(['ArrowRight']),0.01);assert.equal(player.flow.parameters.difficulty,'hard');
  player.update(input(['ArrowLeft']),0.01);assert.equal(player.flow.parameters.difficulty,'medium');
@@ -112,11 +114,11 @@ test('horizontal input still adjusts choices, sliders and toggles',async()=>{
 });
 
 test('horizontal navigation skips hidden controls and never starts key capture',async()=>{
- const {player}=fixture();await player.open(createMenuDocument(),{preview:true,screenId:'cars'});
+ const {player}=fixture();await player.open(createMenuDocument(),{preview:true,screenId:'splash'});
  Object.assign(player.flow.screen.elements.find(e=>e.id==='difficulty'),{id:'next',type:'button',action:{type:'screen',target:'events'}});
  player.focus=player.interactive().findIndex(e=>e.id==='next');
  const settings=player.flow.screen.elements.find(e=>e.id==='settings');settings.visible=false;
- player.update(input(['ArrowRight']),0.01);assert.equal(player.interactive()[player.focus].id,'next');assert.equal(player.flow.screenId,'cars');
+ player.update(input(['ArrowRight']),0.01);assert.equal(player.interactive()[player.focus].id,'next');assert.equal(player.flow.screenId,'splash');
  settings.visible=true;settings.type='keybind';settings.binding='input.left';
  player.update(input(['ArrowRight']),0.01);assert.equal(player.interactive()[player.focus].id,'settings');
  player.update(input(['ArrowLeft']),0.01);assert.equal(player.interactive()[player.focus].id,'next');assert.ok(!player.capturing);
@@ -149,7 +151,7 @@ test('garage authoring preview cannot spend or install parts in real player prog
 });
 
 test('controller menu navigation responds immediately, repeats held D-pad and accepts left stick', async()=>{
- const {player}=fixture();await player.open(createMenuDocument());await player.flow.start();
+ const {player}=fixture();await player.open(createMenuDocument());
  const held=new Set(['dpadDown']), axes={leftX:0,leftY:0};
  const controls={isGamepadDown:action=>held.has(action),getGamepadAxes:()=>axes};
  player.update(controls,0.01);assert.equal(player.focus,1);
@@ -163,11 +165,24 @@ test('controller menu navigation responds immediately, repeats held D-pad and ac
 });
 
 test('controller choice popups use held navigation without repeating confirmation', async()=>{
- const {player}=fixture();await player.open(createMenuDocument());await player.flow.start();
+ const {player}=fixture();await player.open(createMenuDocument());
  const choice=player.flow.screen.elements.find(e=>e.id==='difficulty');
  await player.activate(choice,1,{choose:true});
  const controls={isGamepadDown:action=>action==='dpadDown'||action==='jump'};
  player.update(controls,0.01);assert.equal(player.choicePopup.index,2);
  player.update(controls,0.29);assert.equal(player.choicePopup.index,0);
  assert.ok(player.choicePopup);
+});
+
+test('splash exposes difficulty and settings while the showroom only selects cars',async()=>{
+ const {player}=fixture();await player.open(createMenuDocument());
+ assert.deepEqual(player.interactive().map(e=>e.id),['start','difficulty','settings']);
+ player.focus=1;player.update(input(['ArrowRight']),0.01);
+ assert.equal(player.flow.parameters.difficulty,'hard');
+ player.focus=2;player.update(input(['Enter']),0.01);await Promise.resolve();
+ assert.equal(player.flow.screenId,'settings','confirm activates Settings instead of splash startAction');
+ player.flow.back();assert.equal(player.flow.screenId,'splash');
+ player.focus=0;player.update(input([],['gamepadStart']),0.01);await Promise.resolve();
+ assert.equal(player.flow.screenId,'cars');assert.equal(player.flow.parameters.difficulty,'hard');
+ assert.deepEqual(player.interactive().map(e=>e.id),['car']);
 });

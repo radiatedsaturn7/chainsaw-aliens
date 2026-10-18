@@ -297,3 +297,27 @@ for(const mode of ['desktop','portrait','landscape','gamepad'])test(`${mode} fou
  expect(await page.evaluate(()=>window.__game.menuPlayer.flow.parameters.carRef)).toBe('Showroom 1');
  expect(errors).toEqual([]);
 });
+
+for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} splash difficulty/settings and warm car listing`,async({page})=>{
+ await page.setViewportSize(mobile?{width:390,height:844}:{width:1280,height:800});await ready(page,mobile);
+ await page.evaluate(async()=>{const g=window.__game;await g.previewMenu(g.menuEditor.menu)});
+ await page.keyboard.press('ArrowDown');await page.keyboard.press('ArrowRight');
+ expect(await page.evaluate(()=>window.__game.menuPlayer.flow.parameters.difficulty)).toBe('hard');
+ await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('settings');
+ await page.keyboard.press('Escape');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('splash');
+ await page.screenshot({path:`test-results/menu-splash-options-${mobile?'portrait':'desktop'}.png`});
+ await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('cars');
+ const result=await page.evaluate(async()=>{
+  const {upsertCachedProjectFile}=await import('/src/ui/serverStorage.js');
+  const {listProjectFiles}=await import('/src/ui/projectFiles.js');
+  const artRaw=JSON.stringify({savedAt:1,data:{pixels:'x'.repeat(4*1024*1024)}});
+  upsertCachedProjectFile('art','Menu listing performance fixture',artRaw);
+  listProjectFiles('cars');const parse=JSON.parse;let count=0;
+  JSON.parse=(...args)=>{count++;return parse(...args)};
+  const start=performance.now();try{for(let i=0;i<60;i++)listProjectFiles('cars');}finally{JSON.parse=parse;}
+  return {count,elapsed:performance.now()-start,difficulty:window.__game.menuPlayer.flow.parameters.difficulty,
+   controls:window.__game.menuPlayer.interactive().map(e=>e.id)};
+ });
+ expect(result.count).toBe(0);expect(result.controls).toEqual(['car']);expect(result.difficulty).toBe('hard');
+});

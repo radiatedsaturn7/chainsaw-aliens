@@ -60,8 +60,6 @@ export function createCarShowroomScreen(){
   {id:'heading',type:'text',label:'Choose your car',x:.05,y:.03,w:.9,h:.08},
   {id:'car',type:'car-showroom',label:'Garage',x:.04,y:.14,w:.92,h:.48,binding:'carRef',source:'cars',angle:135,duration:8,selectedScale:1.12,inactiveOpacity:.4,maxVisible:4,action:{type:'screen',target:'garage'}},
   {id:'stats',type:'car-stats',label:'Specifications',x:.05,y:.65,w:.43,h:.2,binding:'carRef'},
-  {id:'power',type:'power-curve',label:'HP / Torque',x:.52,y:.65,w:.43,h:.2,binding:'carRef'},
-  {id:'difficulty',type:'choice',label:'Difficulty',x:.05,y:.9,w:.58,h:.07,binding:'difficulty',options:['easy','medium','hard'].map(value=>({label:value,value}))},
-  {id:'settings',type:'button',label:'Settings',x:.67,y:.9,w:.28,h:.07,action:{type:'screen',target:'settings'}}
+  {id:'power',type:'power-curve',label:'HP / Torque',x:.52,y:.65,w:.43,h:.2,binding:'carRef'}
  ]};
 }
