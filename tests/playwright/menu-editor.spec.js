@@ -282,7 +282,7 @@ for(const mode of ['desktop','portrait','landscape','gamepad'])test(`${mode} fou
   const original=g.ctx.fillText.bind(g.ctx);g.ctx.fillText=(text,...args)=>{if(String(text).includes(' HP · '))window.__showroomPower=text;if(String(text).startsWith('Class '))window.__showroomClass=text;original(text,...args);};
  });
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.resources.cars.size)).toBeGreaterThanOrEqual(4);
- await page.screenshot({path:`test-results/showroom-four-${mode}.png`});
+ await page.screenshot({path:`test-results/menu-showroom-four-${mode}.png`});
  const press=async(code,button)=>{
   if(mode==='gamepad')await page.evaluate(button=>{
    const p=window.__game.menuPlayer;
@@ -355,12 +355,12 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} world map 
  await page.keyboard.press('ArrowRight');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.parameters.raceRef)).toBe('Final');
  await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.error)).toContain('locked');
  expect(await page.evaluate(()=>window.__game.__mapRace)).toBeUndefined();
- await page.screenshot({path:`test-results/world-map-locked-${mobile?'portrait':'desktop'}.png`});
+ await page.screenshot({path:`test-results/menu-world-map-locked-${mobile?'portrait':'desktop'}.png`});
  await page.evaluate(async()=>{const g=window.__game;await new Promise(resolve=>g.executeTriggerAction({type:'set-menu-variables',params:{variables:{firstWon:true}}},{x:0,y:0},resolve));});
  await page.keyboard.press('Enter');await expect.poll(()=>page.evaluate(()=>window.__game.__mapRace)).toBe('Final');
  await page.evaluate(()=>{const g=window.__game;g.raceTravelSession={carRef:'Selected Car',menuFlow:g.menuPlayer.flow};g.completeRaceTravel({type:'menu',menuScreen:'garage'},{raceDocumentName:'Final'});});
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
  expect(await page.evaluate(()=>window.__game.menuPlayer.flow.parameters['raceCompleted.Final'])).toBe(true);
  await page.evaluate(()=>window.__game.openMenuDestination({menuScreen:'world-map'}));
- await page.screenshot({path:`test-results/world-map-unlocked-${mobile?'portrait':'desktop'}.png`});
+ await page.screenshot({path:`test-results/menu-world-map-unlocked-${mobile?'portrait':'desktop'}.png`});
 });
