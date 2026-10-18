@@ -182,7 +182,8 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} shapes and
  const point=await page.evaluate(()=>{const g=window.__game,e=g.menuEditor,b=e.menuBounds,c=g.canvas.getBoundingClientRect();return {x:c.x+(b.x+e.element.x*b.w+2)*c.width/g.viewport.width,y:c.y+(b.y+e.element.y*b.h+2)*c.height/g.viewport.height,dx:20*c.width/g.viewport.width,dy:20*c.height/g.viewport.height};});
  await page.mouse.move(point.x,point.y);await page.mouse.down();await page.mouse.move(point.x+point.dx,point.y+point.dy);await page.mouse.up();
  const moved=await page.evaluate(child=>{const e=window.__game.menuEditor;return {shape:e.screen.elements.find(x=>x.id===child),bounds:e.menuBounds};},child);expect(moved.shape.x-before.x).toBeCloseTo(20/moved.bounds.w);expect(moved.shape.y-before.y).toBeCloseTo(20/moved.bounds.h);
- for(const [action,index] of [['layer-back',0],['layer-up',1],['layer-front',2],['layer-down',1]]){await designerDrawerCommand(page,'send',action);expect(await page.evaluate(group=>window.__game.menuEditor.screen.elements.filter(e=>!e.parentId).findIndex(e=>e.id===group),group)).toBe(index);}
+ const rootCount=await page.evaluate(()=>window.__game.menuEditor.screen.elements.filter(e=>!e.parentId).length);
+ for(const [action,index] of [['layer-back',0],['layer-up',1],['layer-front',rootCount-1],['layer-down',rootCount-2]]){await designerDrawerCommand(page,'send',action);expect(await page.evaluate(group=>window.__game.menuEditor.screen.elements.filter(e=>!e.parentId).findIndex(e=>e.id===group),group)).toBe(index);}
  await designerButton(page,'element-setup');await expect(page.getByRole('dialog',{name:'Container Properties',exact:true}).getByLabel('Shape',{exact:true})).toHaveValue('in');await applyDialog(page,'Container Properties');
  await designerButton(page,'send-drawer');
  await page.screenshot({path:`test-results/menu-shapes-container-${mobile?'portrait':'desktop'}.png`});
@@ -301,9 +302,13 @@ for(const mode of ['desktop','portrait','landscape','gamepad'])test(`${mode} fou
 for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} splash difficulty/settings and warm car listing`,async({page})=>{
  await page.setViewportSize(mobile?{width:390,height:844}:{width:1280,height:800});await ready(page,mobile);
  await page.evaluate(async()=>{const g=window.__game;await g.previewMenu(g.menuEditor.menu)});
- await page.keyboard.press('ArrowDown');await page.keyboard.press('ArrowRight');
- expect(await page.evaluate(()=>window.__game.menuPlayer.flow.parameters.difficulty)).toBe('hard');
- await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');
+ await page.keyboard.press('ArrowDown');
+ await expect.poll(()=>page.evaluate(()=>{const p=window.__game.menuPlayer;return p.interactive()[p.focus]?.id})).toBe('difficulty');
+ await page.keyboard.press('ArrowRight');
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.parameters.difficulty)).toBe('hard');
+ await page.keyboard.press('ArrowDown');
+ await expect.poll(()=>page.evaluate(()=>{const p=window.__game.menuPlayer;return p.interactive()[p.focus]?.id})).toBe('settings');
+ await page.keyboard.press('Enter');
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('settings');
  await page.keyboard.press('Escape');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('splash');
  await page.screenshot({path:`test-results/menu-splash-options-${mobile?'portrait':'desktop'}.png`});
