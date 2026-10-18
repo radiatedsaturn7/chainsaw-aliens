@@ -136,3 +136,13 @@ test('showroom statistics follow highlighted cars, including the authoring fallb
  p.update({wasGamepadPressed:button=>button==='dpadLeft'},.016);
  assert.ok(render(p.flow.parameters).includes('100 HP · 136 Nm'));
 });
+
+test('portrait torque graph uses a positive plotting area within its small panel',()=>{
+ const doc=createMenuDocument(),screen=doc.screens.find(s=>s.id==='cars');screen.elements=screen.elements.filter(e=>e.type==='power-curve');
+ const e=screen.elements[0],bounds={x:0,y:0,w:330,h:186},ys=[];
+ const ctx=new Proxy({globalAlpha:1,moveTo:(_x,y)=>ys.push(y),lineTo:(_x,y)=>ys.push(y)},{get:(o,k)=>k in o?o[k]:(()=>{})});
+ const car={name:'Car',tuning:{idleRpm:800,redlineRpm:7000}},resources={art:()=>null,car:()=>car,tuning:()=>car.tuning,game:{carEditor:{getRaceTorqueNmAtRpm:rpm=>100+rpm/100}}};
+ drawMenuScreen(ctx,bounds,doc,screen,{carRef:'car'},{resources});
+ const top=e.y*bounds.h,bottom=top+e.h*bounds.h;
+ assert.ok(Math.min(...ys)>=top);assert.ok(Math.max(...ys)<=bottom);assert.ok(Math.max(...ys)-Math.min(...ys)>15,'curves must use the panel height instead of collapsing into fixed margins');
+});

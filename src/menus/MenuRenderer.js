@@ -125,7 +125,8 @@ function drawCarComponent(ctx,b,e,car,resources,time,parameters){
     lines.forEach((line,i)=>ctx.fillText(line,b.x+b.w/2,b.y+(i+0.5)*b.h/lines.length,b.w-10));return;
   }
   const min=Number(tuning.idleRpm||800),max=Number(tuning.redlineRpm||7000),points=Array.from({length:41},(_,i)=>{const rpm=min+(max-min)*i/40,torque=renderer.getRaceTorqueNmAtRpm(rpm,tuning);return {rpm,torque,hp:torque*rpm/7127}}),peak=Math.max(1,...points.flatMap(p=>[p.torque,p.hp]));
-  ctx.font=`${Math.max(10,Math.min(14,b.h/8))}px system-ui`;ctx.fillText('HP (gold) · Torque Nm (blue)',b.x+b.w/2,b.y+12,b.w-12);
-  for(const [key,color] of [['hp','#ffd467'],['torque','#72caff']]){ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();points.forEach((p,i)=>{const x=b.x+10+i/40*(b.w-20),y=b.y+b.h-20-p[key]/peak*(b.h-45);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();}
-  ctx.fillText(`${min} — ${max} RPM`,b.x+b.w/2,b.y+b.h-7,b.w-12);
+  const compact=b.h<80,plotTop=b.y+(compact?4:25),plotBottom=b.y+b.h-(compact?4:20),plotHeight=Math.max(1,plotBottom-plotTop);
+  ctx.font=`${Math.max(10,Math.min(14,b.h/8))}px system-ui`;if(!compact)ctx.fillText('HP (gold) · Torque Nm (blue)',b.x+b.w/2,b.y+12,b.w-12);
+  for(const [key,color] of [['hp','#ffd467'],['torque','#72caff']]){ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();points.forEach((p,i)=>{const x=b.x+10+i/40*(b.w-20),y=plotBottom-p[key]/peak*plotHeight;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();}
+  if(!compact)ctx.fillText(`${min} — ${max} RPM`,b.x+b.w/2,b.y+b.h-7,b.w-12);
 }
