@@ -84,10 +84,10 @@ for (const config of MODES) test(`${config.mode}: edit a split/rejoined route, b
   expect(await page.evaluate(() => window.networkEditor.selectedRace.road.network.edges.length)).toBe(5);
   await action(page, 'network-select'); await mapClick(page, 35, 150);
   await action(page, 'network-properties');
-  let dialog = page.getByRole('dialog', { name: 'Junction properties', exact: true });
+  let dialog = page.getByRole('dialog', { name: 'Node properties', exact: true });
   await dialog.getByLabel('Name', { exact: true }).fill('Bridge crest');
   await dialog.getByLabel('Height (m)', { exact: true }).fill('6');
-  await apply(page, 'Junction properties');
+  await apply(page, 'Node properties');
   await mapClick(page, 17.5, 112.5);
   await action(page, 'network-properties');
   dialog = page.getByRole('dialog', { name: 'Route properties', exact: true });
@@ -286,9 +286,11 @@ test('tunnel camera renders below the crossing and first-person retains driver b
   expect(camera.y).toBeGreaterThan(-6); expect(camera.y).toBeLessThan(-2.35);
   expect(camera.z).toBeLessThan(500); expect(camera.renderer).toBe(1);
   await page.locator('#network-editor').screenshot({ path: 'test-results/network-tunnel-camera.png' });
-  const fp = await page.evaluate(() => {
+  const fp = await page.evaluate(async () => {
+    const {quaternionFromEuler}=await import('/src/racing/simulation/RigidBodyMath.js');
     const e = window.networkEditor, s = e.playtestSession;
     Object.assign(s, { cameraView: 'first-person', carYaw: 1.1, velocityYaw: -1, cameraYaw: -1 });
+    s.vehicleRenderState={...s.vehicleRenderState,yawRad:1.1,orientation:quaternionFromEuler({yaw:1.1})};
     const c = e.game.canvas;
     e.drawRaceProjectedRoadPath(c.getContext('2d'), { x: 0, y: 0, w: c.width, h: c.height });
     return { view: e.lastRaceRenderCamera.cameraView, yaw: e.lastRaceRenderCamera.cameraYaw,
