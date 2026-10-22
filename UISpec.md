@@ -536,3 +536,5 @@ Custom road artwork automatically suppresses generated lane markings in all runt
 Road Textures also provides separate road/margin filtering (inherit, crisp, balanced, smooth), distance mipmaps, and angled-distance detail (anisotropy 1–16, capped by hardware, active with smooth filtering and mipmaps). These settings save with the race and apply to both renderers. Disabling mipmaps preserves hard pixels but can shimmer at distance.
 
 Road/margin mipmap distance multipliers range from 0.25 to 16 (default 1). Higher values delay mip-level reduction using negative LOD bias; lower values soften earlier. Repeat width/length are unchanged. Both renderers apply the bias, and it is ignored with mipmaps disabled.
+
+Race sky artwork keeps a fixed viewport-relative scale, follows camera yaw without velocity/slip offsets, and resamples fractional pixel movement smoothly. Camera pitch and first-person roll still move the sky with the view.

@@ -16438,8 +16438,7 @@ test('Race art skybox is cached between playtest frames', () => {
 
     assert.equal(artLoads, 1);
     assert.equal(ctx.calls.some((call) => call.type === 'drawImage'), true);
-    assert.equal(raceEditorSource.includes('const skyHeight = Math.max(1, horizon - bounds.y + bounds.h * 0.28);'), true);
-    assert.equal(raceEditorSource.includes('const destH = Math.max(skyHeight, bounds.h * 0.72);'), true);
+    assert.ok(ctx.calls.filter(call => call.type === 'drawImage').every(call => call.args[4] === bounds.h * .72));
     assert.equal(raceEditorSource.includes('const artHorizonRatio = 0.56;'), true);
     assert.deepEqual(ctx.calls.find(call => call.type === 'skyClip').args, [bounds.x, bounds.y, bounds.w, 130 - bounds.y + bounds.h * 0.32]);
   } finally {
@@ -16474,7 +16473,7 @@ test('Race art skybox anchors the source horizon in the middle third', () => {
     const destH = Number(draw.args[4]);
     const sourceHorizonScreenY = destY + destH * 0.56;
     assert.equal(Math.abs(sourceHorizonScreenY - horizon) <= 0.6, true);
-    assert.equal(destY < bounds.y + bounds.h * 0.12, true);
+    assert.ok(Math.abs(destY - (horizon - destH * .56)) < 1e-8);
     assert.equal(destY + destH > horizon + bounds.h * 0.28, true);
   } finally {
     globalThis.document = previousDocument;

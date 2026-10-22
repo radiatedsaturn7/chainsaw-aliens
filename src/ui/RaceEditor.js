@@ -31141,12 +31141,12 @@ export default class RaceEditor {
     ctx.fillRect(coverage.x, coverage.y, coverage.w, coverage.h);
     ctx.fillStyle = skyBottom;
     ctx.fillRect(coverage.x, bounds.y + bounds.h * 0.16, coverage.w, Math.max(1, horizon - bounds.y - bounds.h * 0.16));
-    const slipYaw = normalizeAngle(Number(velocityYaw || 0) - Number(cameraYaw || 0));
     const normalizedCameraYaw = ((Number(cameraYaw || 0) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
     const continuousCameraYaw = this.getRaceContinuousSkyboxYaw(cameraYaw);
     const yawScroll = continuousCameraYaw / (Math.PI * 2);
-    const driftOffset = clamp(slipYaw + Number(heading || 0), -0.85, 0.85) * bounds.w * 0.16;
-    const speedShift = clamp(Math.abs(Number(speedMps) || 0) / 60, 0, 1) * bounds.w * 0.04;
+    // Distant scenery follows camera orientation, not noisy tire slip or acceleration.
+    const driftOffset = 0;
+    const speedShift = 0;
     const drewSkyboxArt = this.drawRaceSkyboxArt(ctx, bounds, {
       horizon,
       coverageBounds: coverage,
@@ -31235,13 +31235,13 @@ export default class RaceEditor {
     const artRef = skyboxSettings.artRef;
     const canvas = artRef ? this.getRaceSkyboxRenderCanvas(artRef) : null;
     if (!canvas || typeof ctx.drawImage !== 'function') return false;
-    const skyHeight = Math.max(1, horizon - bounds.y + bounds.h * 0.28);
     const aspect = Math.max(0.1, Number(canvas.width || 1) / Math.max(1, Number(canvas.height || 1)));
-    const destH = Math.max(skyHeight, bounds.h * 0.72);
+    // Keep yaw scale constant as the road horizon pitches over bumps and hills.
+    const destH = Math.max(1, bounds.h * 0.72);
     const artHorizonRatio = 0.56;
     const wrapW = Math.max(bounds.w * 1.35, destH * aspect * 2);
     const pitchOffset = clamp(Number(hillPitch) || 0, -0.4, 0.4) * bounds.h * 0.08;
-    const destY = Math.round(horizon - destH * artHorizonRatio + pitchOffset + skyboxSettings.offsetYRatio * bounds.h);
+    const destY = horizon - destH * artHorizonRatio + pitchOffset + skyboxSettings.offsetYRatio * bounds.h;
     const yawTurns = Number(normalizedCameraYaw || 0) / (Math.PI * 2) + skyboxSettings.offsetXTurns;
     const rawX = bounds.x + yawTurns * wrapW - wrapW * 0.5 + Number(driftOffset || 0) * 0.18;
     const startX = bounds.x + ((((rawX - bounds.x) % wrapW) + wrapW) % wrapW) - wrapW;
@@ -31250,7 +31250,8 @@ export default class RaceEditor {
     ctx.beginPath();
     ctx.rect?.(coverage.x, coverage.y, coverage.w, Math.max(1, horizon - coverage.y + bounds.h * 0.32));
     ctx.clip?.();
-    ctx.imageSmoothingEnabled = false;
+    // Resample fractional camera movement instead of snapping enlarged source pixels.
+    ctx.imageSmoothingEnabled = true;
     for (let x = startX + Math.floor((coverage.x - startX) / wrapW) * wrapW; x < coverage.x + coverage.w + wrapW; x += wrapW) {
       ctx.drawImage(canvas, x, destY, wrapW, destH);
     }

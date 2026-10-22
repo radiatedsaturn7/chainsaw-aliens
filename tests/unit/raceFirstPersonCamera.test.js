@@ -64,3 +64,27 @@ test('first-person sky retains third-person artwork scale and yaw scroll during 
   assert.equal(a.rotations.length,1);
  }
 });
+
+
+test('sky artwork does not wobble with slip or resize with the horizon and retains subpixel motion', () => {
+ const editor=new RaceEditor({}),bounds={x:0,y:0,w:960,h:540};
+ editor.getRaceSkyboxSettings=()=>({artRef:'sky',offsetYRatio:0,offsetXTurns:0});
+ editor.getRaceSkyboxRenderCanvas=()=>({width:1024,height:512});
+ const render=(options={})=>{
+  const images=[];
+  const ctx={imageSmoothingEnabled:false,save(){},restore(){},fillRect(){},beginPath(){},rect(){},clip(){},drawImage(...args){images.push({args,smoothing:this.imageSmoothingEnabled});}};
+  editor.drawRaceParallaxBackground(ctx,bounds,{horizon:250.1,cameraYaw:.2,...options});
+  assert.equal(ctx.imageSmoothingEnabled,false);
+  return images;
+ };
+ const a=render(),slip=render({heading:2,velocityYaw:-2,speedMps:50}),b=render({horizon:250.2});
+ assert.deepEqual(slip,a);
+ near(b[0].args[2]-a[0].args[2],.1);
+ for(const image of [...a,...b,...render({horizon:270})]){
+  near(image.args[3],a[0].args[3]);near(image.args[4],a[0].args[4]);assert.equal(image.smoothing,true);
+ }
+ const first=render({cameraYaw:Math.PI*2-.0001}),second=render({cameraYaw:.0001});
+ const width=first[0].args[3];
+ const phase=images=>((images[0].args[1]%width)+width)%width;
+ near(phase(second)-phase(first),.0002*width/(Math.PI*2));
+});
