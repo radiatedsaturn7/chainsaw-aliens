@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { roadTextureSettings, buildRoadTextureStrips } from '../../src/racing/RaceRoadTextures.js';
+import { roadTextureSettings, buildRoadTextureStrips, showBuiltInRoadMarkings } from '../../src/racing/RaceRoadTextures.js';
 import { buildRaceNetworkGeometry } from '../../src/racing/RaceNetworkGeometry.js';
 import { normalizeRaceRouteNetwork } from '../../src/racing/RaceRouteNetwork.js';
 import RaceEditor from '../../src/ui/RaceEditor.js';
@@ -64,4 +64,17 @@ test('repeat width tiles across the road, stays centered, and invalidates cached
  const strip=changed.roadMeshes.find(m=>m.source==='road-texture'),[left,right]=strip.points;
  assert.ok(Math.abs((right.u-left.u)-Math.hypot(right.x-left.x,right.z-left.z)/2)<1e-8);
  assert.equal((left.u+right.u)/2,.5);assert.equal(roadTextureSettings({}).road.repeatWidthM,0);
+});
+
+
+test('custom road art suppresses generated lane paint, including existing enabled settings',()=>{
+ const {bake,network}=fixture(),e=new RaceEditor({});e.selectedRace.road.network=network;
+ e.selectedRace.roadTextures={...structuredClone(settings),builtInLines:true};
+ assert.equal(showBuiltInRoadMarkings(e.selectedRace),false);
+ assert.equal(e.getRaceStaticTrackSurfaceMeshes(bake).roadPaintMeshes.length,0);
+ e.selectedRace.roadTextures.road.artRef='';
+ assert.equal(showBuiltInRoadMarkings(e.selectedRace),true);
+ e.selectedRace.roadTextures.builtInLines=false;
+ assert.equal(showBuiltInRoadMarkings(e.selectedRace),false);
+ assert.equal(showBuiltInRoadMarkings({}),true);
 });

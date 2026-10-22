@@ -10,6 +10,11 @@ export function roadTextureSettings(race = {}) {
   return { road: clean(race.roadTextures?.road), margin: clean(race.roadTextures?.margin) };
 }
 
+// Custom road artwork supplies its own lane paint. Margin-only art does not.
+export function showBuiltInRoadMarkings(race = {}) {
+  return !roadTextureSettings(race).road.artRef && race.roadTextures?.builtInLines !== false;
+}
+
 export function texturedRoadStrip(nearLeft, nearRight, farLeft, farRight, nearDistance, farDistance, settings, source) {
   const width = (left,right) => settings.repeatWidthM > 0 ? Math.hypot(right.x-left.x,right.z-left.z) / settings.repeatWidthM : 1;
   const nearWidth=width(nearLeft,nearRight),farWidth=width(farLeft,farRight);

@@ -530,3 +530,5 @@ Disabled gameplay menu controls remain visible but cannot receive selection, hov
 Upgrade availability distinguishes installation from purchase: an already-owned available spare is selectable for installation even without its purchase unlock or enough scrap to buy another copy. Installed parts remain selectable. Purchase restrictions still apply when another copy must be bought.
 
 Race Road Textures supports independent repeat length and repeat width in meters for road and margin artwork. Width 0 preserves one image fitted across the strip; a positive width repeats at that physical spacing across the road while keeping the texture centered through bends and width changes.
+
+Custom road artwork automatically suppresses generated lane markings in all runtime render paths, including races saved with built-in markings enabled. Margin artwork alone preserves lane markings. Removing road artwork restores the saved built-in-markings preference. The lane-marking checkbox is shown only for untextured roads.

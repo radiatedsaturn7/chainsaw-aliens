@@ -1,4 +1,4 @@
-import { roadTextureSettings, buildRoadTextureStrips } from '../racing/RaceRoadTextures.js';
+import { roadTextureSettings, buildRoadTextureStrips, showBuiltInRoadMarkings } from '../racing/RaceRoadTextures.js';
 import {firstPersonCameraFrame,applyFirstPersonCameraFrame,firstPersonCameraSpace} from '../racing/RaceFirstPersonCamera.js';
 import {buildNetworkMarkings} from '../racing/RaceNetworkMarkings.js';
 import {scaleRace} from '../racing/RaceScale.js';
@@ -9723,7 +9723,7 @@ export default class RaceEditor {
       { id: 'marginArt', label: 'Margin artwork', type: 'select', options, value: settings.margin.artRef },
       { id: 'marginRepeat', label: 'Margin repeat length (meters)', type: 'number', min: .1, max: 1000, step: .1, value: settings.margin.repeatM },
       { id: 'marginRepeatWidth', label: 'Margin repeat width (meters; 0 = fit margin)', type: 'number', min: 0, max: 1000, step: .1, value: settings.margin.repeatWidthM },
-      { id: 'builtInLines', label: 'Show built-in lane markings', type: 'checkbox', value: race.roadTextures?.builtInLines !== false }
+      { id: 'builtInLines', label: 'Show built-in lane markings', type: 'checkbox', value: race.roadTextures?.builtInLines !== false, visibleWhen: state => !state.roadArt }
     ], { description: 'Choose saved graphic tiles. Image width spans the road or margin; image height repeats along curves. Put center lines vertically in the middle of the road image. Margin visibility and width remain in Settings → Margin. Save the race to keep changes.' });
     if (!result || this.selectedRace !== race) return;
     this.captureRaceHistory('Road textures');
@@ -32901,7 +32901,7 @@ export default class RaceEditor {
         boundaryMeshes.push(...strips.boundaryMeshes);
       }
     }
-    if (this.selectedRace?.roadTextures?.builtInLines === false) roadPaintMeshes.length = 0;
+    if (!showBuiltInRoadMarkings(this.selectedRace)) roadPaintMeshes.length = 0;
     const meshes = {
       cacheKey,
       roadMeshes,
@@ -37436,7 +37436,7 @@ export default class RaceEditor {
       && terrainEnabled
       && (terrainCells.length > 0 || worldBake?.packedTerrain?.positions?.length > 0);
     const overlaysEnabled = renderDebug.overlaysEnabled !== false;
-    const roadPaintMeshes = canDrawThreeTerrain && overlaysEnabled && this.selectedRace?.roadTextures?.builtInLines !== false
+    const roadPaintMeshes = canDrawThreeTerrain && overlaysEnabled && showBuiltInRoadMarkings(this.selectedRace)
       ? staticTrackMeshes
         ? staticTrackMeshes.roadPaintMeshes
         : this.getRaceThreeTrackPaintMeshes({
@@ -37595,7 +37595,7 @@ export default class RaceEditor {
     const paintPolygonsBefore = Number(renderStats.polygons || 0);
     const paintDrawCallsBefore = Number(renderStats.drawCalls || 0);
     if (overlaysEnabled) {
-      const fallbackRoadPaintMeshes = this.selectedRace?.roadTextures?.builtInLines === false ? [] : this.getRaceWebGLTrackPaintMeshes(mode7Bands, {
+      const fallbackRoadPaintMeshes = !showBuiltInRoadMarkings(this.selectedRace) ? [] : this.getRaceWebGLTrackPaintMeshes(mode7Bands, {
         bounds,
         camera,
         currentSegment,
