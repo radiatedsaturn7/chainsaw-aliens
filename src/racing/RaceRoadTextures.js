@@ -1,8 +1,8 @@
 import { networkEdgeLength } from './RaceRouteNetwork.js';
 
 export function roadTextureSampling(source = {}) {
-  return {filterMode:['crisp','balanced','smooth'].includes(source.filterMode)?source.filterMode:'inherit',
-    mipmaps:source.mipmaps!==false,anisotropy:Math.max(1,Math.min(16,Math.round(Number(source.anisotropy)||1)))};
+  return {filterMode:['crisp','balanced','smooth'].includes(source?.filterMode)?source?.filterMode:'inherit',
+    mipmaps:source?.mipmaps!==false,anisotropy:Math.max(1,Math.min(16,Math.round(Number(source?.anisotropy)||1)))};
 }
 
 // Ribbon UVs stay centered while repeating along and optionally across the strip.

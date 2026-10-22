@@ -97,10 +97,11 @@ test('road sampling survives geometry caching and creates independently filtered
  assert.equal(crisp.minFilter,THREE.NearestFilter);
  assert.equal(crisp.magFilter,THREE.NearestFilter);
  assert.equal(crisp.generateMipmaps,false);
- assert.equal(crisp.anisotropy,8);
- const smooth=e.getRaceThreeTexture(renderer,'center line',{filterMode:'smooth',mipmaps:true});
+ assert.equal(crisp.anisotropy,1);
+ const smooth=e.getRaceThreeTexture(renderer,'center line',{filterMode:'smooth',mipmaps:true,anisotropy:16});
  assert.notEqual(smooth,crisp);
  assert.equal(smooth.minFilter,THREE.LinearMipmapLinearFilter);
  assert.equal(smooth.generateMipmaps,true);
+ assert.equal(smooth.anisotropy,8);
  assert.equal(e.getRaceThreeTexture(renderer,'center line',options),crisp);
 });

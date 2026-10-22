@@ -9722,15 +9722,15 @@ export default class RaceEditor {
       { id: 'roadRepeatWidth', label: 'Road repeat width (meters; 0 = fit road)', type: 'number', min: 0, max: 1000, step: .1, value: settings.road.repeatWidthM },
       {id:'roadFilter',label:'Road filtering',type:'select',value:settings.road.filterMode,options:[{value:'inherit',label:'Use race setting'},{value:'crisp',label:'Crisp pixels'},{value:'balanced',label:'Crisp pixels / smooth distance'},{value:'smooth',label:'Smooth'}]},
       {id:'roadMipmaps',label:'Road distance mipmaps',type:'checkbox',value:settings.road.mipmaps},
-      {id:'roadAnisotropy',label:'Road angled-distance detail (1–16)',type:'number',min:1,max:16,step:1,value:settings.road.anisotropy},
+      {id:'roadAnisotropy',label:'Road angled detail (Smooth + mipmaps; 1–16)',type:'number',min:1,max:16,step:1,value:settings.road.anisotropy},
       { id: 'marginArt', label: 'Margin artwork', type: 'select', options, value: settings.margin.artRef },
       { id: 'marginRepeat', label: 'Margin repeat length (meters)', type: 'number', min: .1, max: 1000, step: .1, value: settings.margin.repeatM },
       { id: 'marginRepeatWidth', label: 'Margin repeat width (meters; 0 = fit margin)', type: 'number', min: 0, max: 1000, step: .1, value: settings.margin.repeatWidthM },
       {id:'marginFilter',label:'Margin filtering',type:'select',value:settings.margin.filterMode,options:[{value:'inherit',label:'Use race setting'},{value:'crisp',label:'Crisp pixels'},{value:'balanced',label:'Crisp pixels / smooth distance'},{value:'smooth',label:'Smooth'}]},
       {id:'marginMipmaps',label:'Margin distance mipmaps',type:'checkbox',value:settings.margin.mipmaps},
-      {id:'marginAnisotropy',label:'Margin angled-distance detail (1–16)',type:'number',min:1,max:16,step:1,value:settings.margin.anisotropy},
+      {id:'marginAnisotropy',label:'Margin angled detail (Smooth + mipmaps; 1–16)',type:'number',min:1,max:16,step:1,value:settings.margin.anisotropy},
       { id: 'builtInLines', label: 'Show built-in lane markings', type: 'checkbox', value: race.roadTextures?.builtInLines !== false, visibleWhen: state => !state.roadArt }
-    ], { description: 'Choose saved graphic tiles. Image width spans the road or margin; image height repeats along curves. Put center lines vertically in the middle of the road image. Margin visibility and width remain in Settings → Margin. Disable distance mipmaps for the sharpest pixels (may shimmer far away); higher angled-distance detail helps retain texture detail with mipmaps on. Save the race to keep changes.' });
+    ], { description: 'Choose saved graphic tiles. Image width spans the road or margin; image height repeats along curves. Put center lines vertically in the middle of the road image. Margin visibility and width remain in Settings → Margin. Disable distance mipmaps for the sharpest pixels (may shimmer far away); use Smooth filtering with mipmaps on to enable angled-distance detail. Save the race to keep changes.' });
     if (!result || this.selectedRace !== race) return;
     this.captureRaceHistory('Road textures');
     race.roadTextures = { ...roadTextureSettings({ roadTextures: {
@@ -34569,7 +34569,7 @@ export default class RaceEditor {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrap);
       const ext=gl.getExtension?.('EXT_texture_filter_anisotropic')||gl.getExtension?.('WEBKIT_EXT_texture_filter_anisotropic');
-      if(ext)gl.texParameterf(gl.TEXTURE_2D,ext.TEXTURE_MAX_ANISOTROPY_EXT,Math.min(sampling.anisotropy,gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT)));
+      if(ext)gl.texParameterf(gl.TEXTURE_2D,ext.TEXTURE_MAX_ANISOTROPY_EXT,filterMode==='smooth'&&useMipmaps?Math.min(sampling.anisotropy,gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT)):1);
       entry.paramsKey = paramsKey;
     }
     return true;
@@ -35332,7 +35332,7 @@ export default class RaceEditor {
     texture.magFilter = filterMode === 'smooth' ? THREE.LinearFilter : THREE.NearestFilter;
     texture.minFilter = !sampling.mipmaps ? texture.magFilter : filterMode === 'smooth' ? THREE.LinearMipmapLinearFilter : filterMode === 'balanced' ? THREE.NearestMipmapLinearFilter : THREE.NearestMipmapNearestFilter;
     texture.generateMipmaps = sampling.mipmaps;
-    texture.anisotropy=Math.min(sampling.anisotropy,renderer.threeRenderer?.capabilities?.getMaxAnisotropy?.()||1);
+    texture.anisotropy=filterMode==='smooth'&&sampling.mipmaps?Math.min(sampling.anisotropy,renderer.threeRenderer?.capabilities?.getMaxAnisotropy?.()||1):1;
     texture.needsUpdate = true;
     renderer.textureCache.set(key, texture);
     renderer.textureUploads = (Number(renderer.textureUploads) || 0) + 1;
