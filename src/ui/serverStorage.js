@@ -257,7 +257,14 @@ async function fetchServerIndex(folder = null) {
 }
 
 async function fetchServerFile(folder, name) {
-  const payload = await requestJson(`/__storage/file?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}`);
+  let payload;
+  try {
+    payload = await requestJson(`/__storage/file?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}`);
+  } catch (error) {
+    // A valid API reporting a missing file is not a missing API endpoint.
+    if (error.status === 404 && error.message === 'File not found') return null;
+    throw error;
+  }
   updateCachedPayload(payload.file, 'server');
   return attachStorageSource(payload.file, 'server');
 }

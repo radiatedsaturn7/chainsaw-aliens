@@ -9,6 +9,7 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   currentStatus: [
+    '2026-10-22 19:12 EDT - Missing project files no longer trigger a full static-storage fallback while importing radio music.',
     '2026-10-22 19:07 EDT - Custom road textures automatically hide generated lane markings; road and margin repeat width remain independently adjustable.',
     '2026-10-22 18:50 EDT - Reused parsed car payloads during file listing and updated garage/radio browser coverage for the current controls.',
     '2026-10-22 18:39 EDT - Actor animation art loads asynchronously during rendering; release browser fixtures now use explicit tracks and wait for menu transitions.',

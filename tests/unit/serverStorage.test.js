@@ -705,3 +705,14 @@ test('listing already-loaded car payloads reuses parsed data for metadata',()=>{
   try {for(let i=0;i<60;i++)listProjectFiles('cars');assert.equal(parses,0);}
   finally {JSON.parse=parse;resetProjectFilesForTests();}
 });
+
+
+test('missing project files keep the live API and do not hydrate static assets',async()=>{
+ clearCachedProjectFilesForTests();const original=globalThis.fetch,calls=[];
+ globalThis.fetch=async url=>{calls.push(url);if(url.includes('name=missing'))return {ok:false,status:404,json:async()=>({ok:false,error:'File not found'})};return {ok:true,json:async()=>({ok:true,file:{folder:'music',name:'present',data:{kind:'audio-music'}}})};};
+ try {
+  assert.equal(await hydrateProjectFile('music','missing'),null);
+  assert.equal((await hydrateProjectFile('music','present')).data.kind,'audio-music');
+  assert.deepEqual(calls,['/__storage/file?folder=music&name=missing','/__storage/file?folder=music&name=present']);
+ }finally{globalThis.fetch=original;clearCachedProjectFilesForTests();}
+});
