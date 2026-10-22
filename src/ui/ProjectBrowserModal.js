@@ -1,3 +1,4 @@
+import {importMusicAsset,isAudioMusic} from '../audio/MusicAsset.js';
 import {
   PROJECT_FOLDERS,
   deleteProjectFile,
@@ -80,7 +81,7 @@ function isAllowedFile(folder, name) {
   const value = String(name || '').toLowerCase();
   if (!value) return false;
   if (folder === 'levels') return value.endsWith('.json') || !value.includes('.');
-  if (folder === 'music') return value.endsWith('.json') || value.endsWith('.mid') || !value.includes('.');
+  if (folder === 'music') return value.endsWith('.json') || value.endsWith('.mid') || value.endsWith('.midi') || value.endsWith('.mp3') || !value.includes('.');
   if (folder === 'actors') return value.endsWith('.json') || !value.includes('.');
   if (folder === 'sfx') return value.endsWith('.json') || value.endsWith('.wav') || !value.includes('.');
   if (folder === 'cutscenes') return value.endsWith('.json') || !value.includes('.');
@@ -198,6 +199,7 @@ export function openProjectBrowser({
     };
     if (!fixedFolder && mode === 'open') state.view = 'home';
 
+    let closed=false,musicPreviewGeneration=0;
     let pendingDelete = null;
     let renameTarget = null;
     let versionsTarget = null;
@@ -318,6 +320,8 @@ export function openProjectBrowser({
     body.style.touchAction = 'none';
 
     function cleanup(result) {
+      closed=true;musicPreviewGeneration++;
+      window.__game?.stopProjectBrowserMusicPreview?.();activePreviewTrackId=null;
       try {
         previewTimers.forEach((timer) => clearInterval(timer));
         previewTimers.clear();
@@ -390,12 +394,14 @@ export function openProjectBrowser({
       if (!payload?.data) {
         payload = loadProjectFile(folder, name);
       }
+      if(closed)return;
       openingFileName = null;
       if (!payload?.data) {
         openError = openError || `Could not load ${name}`;
         refresh();
         return;
       }
+      if(folder==='music'&&isAudioMusic(payload.data)){window.__game?.playProjectBrowserMusicPreview?.(name,payload.data);activePreviewTrackId=name;refresh();return;}
       onOpen?.({ folder, name, payload });
       onPick?.({ action: 'open', folder, name, payload });
       cleanup({ action: 'open', folder, name, payload });
@@ -545,13 +551,14 @@ export function openProjectBrowser({
           openBtn.disabled = isOpening || !PROJECT_FOLDERS.includes(folder) || entry.deleted;
           actions.appendChild(openBtn);
           if (folder === 'music' && !entry.deleted) {
-            const toggleBtn = makeButton(activePreviewTrackId === entry.name ? 'Pause' : 'Play', 'project-browser-btn', () => {
-              const game = window.__game;
+            const toggleBtn = makeButton(activePreviewTrackId === entry.name ? 'Pause' : 'Play', 'project-browser-btn', async () => {
+              const game = window.__game,token=++musicPreviewGeneration;
               if (activePreviewTrackId === entry.name) {
                 game?.stopProjectBrowserMusicPreview?.();
                 activePreviewTrackId = null;
               } else {
-                const payload = loadProjectFile('music', entry.name);
+                let payload;try{payload=await hydrateProjectFilePayload('music',entry.name);}catch(error){if(!closed&&token===musicPreviewGeneration)message.textContent=error.message;return;}
+                if(closed||token!==musicPreviewGeneration)return;
                 game?.playProjectBrowserMusicPreview?.(entry.name, payload?.data || null);
                 activePreviewTrackId = entry.name;
               }
@@ -821,7 +828,10 @@ export function openProjectBrowser({
           onNew?.(state.folder);
           cleanup({ action: 'new', folder: state.folder });
         }));
-        actionRow.appendChild(makeButton('Import', 'project-browser-btn', () => onImport?.(state.folder)));
+        actionRow.appendChild(makeButton(state.folder==='music'?'Upload MP3 / MIDI':'Import', 'project-browser-btn', async () => {
+          if(state.folder!=='music'){onImport?.(state.folder);return;}
+          try{await importMusicAsset();invalidateFolderNameCache('music');refresh();}catch(error){message.textContent=error.message;}
+        }));
         actionRow.appendChild(makeButton('Export ZIP', 'project-browser-btn', () => onExportZip?.(state.folder)));
       }
 

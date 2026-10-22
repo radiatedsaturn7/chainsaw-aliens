@@ -513,7 +513,7 @@ export default class Player {
   }
 
   takeDamage(amount) {
-    if (this.invulnTimer > 0) return false;
+    if (this.invulnTimer > 0 || this.unlocks?.['cheat.ignore']) return false;
     const absorbed = Math.min(Math.max(0, this.armor || 0), Math.max(0, amount));
     this.armor = Math.max(0, (this.armor || 0) - absorbed);
     this.health -= Math.max(0, amount - absorbed);

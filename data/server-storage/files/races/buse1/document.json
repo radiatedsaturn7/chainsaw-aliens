@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-track",
-  "savedAt": 1790633033116,
+  "savedAt": 1792497729441,
   "selectedRaceId": "drawing-34f46410-dd4a-49bf-8e30-02d3d14a8800",
   "race": {
     "id": "drawing-34f46410-dd4a-49bf-8e30-02d3d14a8800",
@@ -11,7 +11,9 @@
     "weather": "clear",
     "timeOfDay": "day",
     "finishBehavior": {
-      "type": "return-to-origin",
+      "type": "menu",
+      "menuRef": "",
+      "menuScreen": "world-map",
       "targetLevel": null,
       "targetRace": null,
       "spawnX": null,
@@ -1119,14 +1121,21 @@
         "defaultTileId": "grass",
         "minElevation": -1,
         "maxElevation": 1,
-        "cells": {}
+        "cells": {},
+        "models": {}
       },
       "tilePaintSource": "tile-editor"
     },
     "competition": {
       "mode": "solo",
       "aiDrivers": [],
-      "trafficEnabled": false
+      "trafficEnabled": false,
+      "carSelection": {
+        "availableCarIds": null,
+        "category": "any",
+        "performanceClass": "any",
+        "defaultCarId": ""
+      }
     },
     "hazards": [],
     "scenery": [],
@@ -1237,6 +1246,7 @@
         "lifetimeMs": 620,
         "scale": 1
       }
-    }
+    },
+    "description": "Are you really sure about this?"
   }
 }

@@ -1,5 +1,5 @@
 import { hasBakedLightBackground, removeCarSheetLightBackground } from '../racing/CarSheetBackground.js';
-import { fitTireTextureRegions } from '../racing/CarTireTextureFit.js';
+import { fitTireTextureRegions, normalizeTireSheetOpacity } from '../racing/CarTireTextureFit.js';
 import { drawWheelCylinder } from '../racing/CarWheelCylinder.js';
 import { carSheetDimensions, carSheetDocument, prepareCarSheet } from '../racing/CarGraphicImport.js';
 import { CAR_VIEW_LABELS } from '../racing/CarDirectionalArt.js';
@@ -162,7 +162,8 @@ export function openCarGraphicImport(component = 'body', initial = null) {
       sheet.getContext('2d').drawImage(source, 0, 0, sheet.width, sheet.height);
       try {
         const raw = source.getContext('2d').getImageData(0, 0, source.width, source.height);
-        const cleaned = removeBackground.checked ? removeCarSheetLightBackground(raw) : raw;
+        const backgroundCleaned = removeBackground.checked ? removeCarSheetLightBackground(raw) : raw;
+        const cleaned = component === 'tires' ? normalizeTireSheetOpacity(backgroundCleaned) : backgroundCleaned;
         prepared = prepareCarSheet(cleaned, { alphaThreshold: Number(cleanup.value), ...(component === 'tires' ? { columns:Number(layout.value.split('x')[0]), rows:Number(layout.value.split('x')[1]) } : {}) });
         if (component === 'tires') tireFit = fitTireTextureRegions(prepared.frames, prepared.width, prepared.height, { treadFrame:Number(treadSelect.value), wheelFrame:Number(wheelSelect.value) });
         frameCanvases = prepared.frames.map(pixels => {
@@ -193,7 +194,7 @@ export function openCarGraphicImport(component = 'body', initial = null) {
           ctx.strokeStyle='#ffd45a';ctx.beginPath();
           ctx.ellipse((wheelOrigin.x+circle.x)*sx,(wheelOrigin.y+circle.y)*sy,circle.radius*sx,circle.radius*sy,0,0,Math.PI*2);ctx.stroke();
         }
-        status.textContent = `${source.width} × ${source.height} pixels · Each frame: ${prepared.width} × ${prepared.height} pixels · ${prepared.cleanedPixels} faint background pixels removed, cropped and centered with transparent padding. ${component === 'tires' ? 'Green rectangle: opaque tread. Yellow circle: opaque wheel. Both fitted to the 3D wheel cylinder; other sheet frames remain available in Art.' : `Import replaces all eight ${component} graphics.`}`;
+        status.textContent = `${source.width} × ${source.height} pixels · Each frame: ${prepared.width} × ${prepared.height} pixels · ${prepared.cleanedPixels} faint background pixels removed, cropped and centered with transparent padding. ${component === 'tires' ? `${cleaned.solidifiedPixels || 0} nearly opaque pixels made solid. Green rectangle: opaque tread. Yellow circle: opaque wheel. Both fitted to the 3D wheel cylinder; other sheet frames remain available in Art.` : `Import replaces all eight ${component} graphics.`}`;
         apply.disabled = false; selects.forEach(s => { s.disabled = false; }); paint();
       } catch (error) { status.textContent = error.message; }
       paint();

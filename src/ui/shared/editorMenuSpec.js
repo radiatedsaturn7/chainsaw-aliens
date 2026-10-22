@@ -99,6 +99,9 @@ const actionEntries = (ids, labels = {}) => Object.fromEntries(ids.map((id) => [
 const EDITOR_ACTION_LABEL_OVERRIDES = {
   'network-enable': 'Branching Routes',
   'network-select': 'Select',
+  'network-multi': 'Multi-select',
+  'network-transform':'Transform Selection', 'network-all':'Select All', 'network-clear':'Clear Selection',
+  'network-connect': 'Connect selected nodes',
   'network-add': 'Connect / Extend',
   'network-split': 'Split Route',
   'network-junction': 'Add Junction',
@@ -115,6 +118,9 @@ const EDITOR_ACTION_LABEL_OVERRIDES = {
   'damping-front': 'Damping',
   'transmission-type': 'Transmission',
   'summary-sheet': 'Stats',
+  'car-description': 'Car Description',
+  'race-description': 'Race Description',
+  'race-scale': 'Scale Race',
   'car-category': 'Category & Performance',
   'car-installable-parts':'Installable Upgrades',
   'car-load-preset': 'Load Preset',
@@ -393,10 +399,10 @@ export const EDITOR_MENU_SPECS = {
       { id: 'settings', label: 'Settings' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'race-from-image', 'generate-random-race', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'race-scale', 'race-description', 'race-from-image', 'generate-random-race', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo', 'copy-segment', 'paste-segment', 'delete-segment']),
       view: section('view', 'View', ['preview-mode7', 'zoom-fit', 'toggle-scenery', 'toggle-racing-line']),
-      track: section('track', 'Track', ['draw-road', 'network-enable', 'network-select', 'network-add', 'network-split', 'network-junction', 'network-join', 'network-properties', 'network-markers', 'network-delete', 'network-water']),
+      track: section('track', 'Track', ['draw-road', 'network-enable', 'network-select', 'network-add', 'network-multi', 'network-transform', 'network-all', 'network-clear', 'network-connect', 'network-split', 'network-junction', 'network-join', 'network-properties', 'network-markers', 'network-delete', 'network-water']),
       ground: section('ground', 'Ground', [
         'race-tile-model',
         'race-clear-tile-model',
@@ -441,7 +447,7 @@ export const EDITOR_MENU_SPECS = {
         'ground-brush-strength-100'
       ]),
       sprites: section('sprites', 'Sprites', ['sprite-select', 'race-item', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']),
-      settings: section('settings', 'Settings', ['race-radio', 'race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
+      settings: section('settings', 'Settings', ['race-radio', 'race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-sun', 'race-weather', 'race-road-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
     }
   },
   model3d: {
@@ -466,9 +472,9 @@ export const EDITOR_MENU_SPECS = {
       file:section('file','File',['new','save','save-as','open','export','import','exit-main']),
       edit:section('edit','Edit',['undo','redo','copy','cut','paste','duplicate','delete']),
       view:section('view','View',['menu-preview','menu-preview-start','menu-animate','zoom-fit']),
-      screens:section('screens','Screens',['screen-select','screen-new','screen-garage','screen-duplicate','screen-properties','menu-default-background','screen-background','screen-start','screen-delete']),
+      screens:section('screens','Screens',['screen-select','screen-new','screen-garage','screen-duplicate','screen-properties','screen-music','screen-upload-music','screen-background-rules','screen-fx','menu-default-background','menu-default-font','menu-upload-font','screen-background','screen-start','screen-delete']),
       insert:section('insert','Insert',['widget-add','insert-shape','insert-container','insert-text','insert-image','insert-button','insert-choice','insert-slider','insert-toggle','insert-keybind','insert-car-showroom','insert-garage-browser','insert-car-preview','insert-car-stats','insert-power-curve','insert-video','insert-property-display','insert-asset-preview']),
-      properties:section('properties','Properties',['send-drawer','clip-drawer','element-select','element-setup','element-properties','element-art','element-action','element-animation','animation-timing','layer-up','layer-down','layer-back','layer-front']),
+      properties:section('properties','Properties',['send-drawer','clip-drawer','element-select','element-setup','element-properties','element-upload-font','element-art','element-action','element-animation','animation-timing','layer-up','layer-down','layer-back','layer-front']),
       flow:section('flow','Flow',['menu-parameters','starting-menu','clear-starting-menu'])
     }
   },
@@ -477,12 +483,12 @@ export const EDITOR_MENU_SPECS = {
     root:['file','edit','view','stations','tracks','playback'],
     portraitRoot:[{id:'file',label:'File'},{id:'stations',label:'Stations'},{id:'tracks',label:'Tracks'},{id:'playback',label:'Play'}],
     sections:{
-      file:section('file','File',['new','save','save-as','open','export','import','radio-import','exit-main']),
+      file:section('file','File',['new','save','save-as','open','export','import','radio-import','radio-music','exit-main']),
       view:section('view','View',['radio-focus-stations','radio-focus-tracks']),
       edit:section('edit','Edit',['undo','redo']),
       stations:section('stations','Stations',['station-new','station-properties','station-logo','station-delete']),
       tracks:section('tracks','Tracks',['track-properties','track-drops','track-start-here','track-end-here','track-art','track-membership','track-up','track-down','track-delete']),
-      playback:section('playback','Playback',['radio-play','radio-stop','radio-next','radio-previous','radio-restart','radio-seek-back','radio-seek-forward','radio-loop','radio-preview-start','radio-preview-end'])
+      playback:section('playback','Playback',['radio-play','radio-stop','radio-next','radio-previous','radio-restart','radio-seek-back','radio-seek-forward','radio-loop','radio-keep-awake','radio-preview-start','radio-preview-end'])
     }
   },
   tire: {
@@ -509,7 +515,7 @@ export const EDITOR_MENU_SPECS = {
       { id: 'tuning', label: 'Tune' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'car-load-preset', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'car-load-preset', 'car-description', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
       art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-import-graphic', 'car-body-model', 'car-wheel-model', 'car-clear-body-model', 'car-clear-wheel-model', 'car-art-settings', 'car-camera-settings']),

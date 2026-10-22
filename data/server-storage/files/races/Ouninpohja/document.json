@@ -1,5 +1,677 @@
 {
-  "__chainsawStorage": "compact-v1",
-  "encoding": "json-gzip-base64",
-  "data": "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"
+  "schemaVersion": 1,
+  "kind": "race-track",
+  "savedAt": 1783855400000,
+  "selectedRaceId": "ouninpohja",
+  "race": {
+    "id": "ouninpohja",
+    "name": "Ouninpohja",
+    "type": "destination",
+    "laps": 1,
+    "weather": "clear",
+    "timeOfDay": "day",
+    "entryBehavior": "return-to-origin",
+    "finishBehavior": {
+      "type": "menu",
+      "targetLevel": null,
+      "targetRace": null,
+      "menuRef": "",
+      "menuScreen": "world-map"
+    },
+    "referenceNotes": [
+      "Rally Finland gravel destination stage modeled at about 33 km.",
+      "The route focuses on high-speed gravel, blind crests, and repeated jumps.",
+      "Elevation range is represented as rolling terrain rather than a mountain pass."
+    ],
+    "referenceFacts": {
+      "referenceBasis": "Rally Finland Ouninpohja gravel special stage",
+      "sourceLengthKm": 33,
+      "surface": "gravel",
+      "elevationRangeM": [
+        97,
+        180
+      ],
+      "roadWidthM": 6,
+      "signatureSections": [
+        "Yellow House Jump",
+        "blind crests",
+        "fast gravel sweepers"
+      ]
+    },
+    "road": {
+      "width": 6,
+      "selectedGroundTileId": "gravel",
+      "groundTiles": [],
+      "tileMap": {
+        "cellSizeM": 5,
+        "defaultTileId": "gravel",
+        "minElevation": -0.42,
+        "maxElevation": 0.42,
+        "cells": {}
+      },
+      "nodes": [
+        {
+          "x": 0,
+          "y": 0,
+          "elevation": -0.18,
+          "role": "start",
+          "locked": true
+        },
+        {
+          "x": 554,
+          "y": -554,
+          "elevation": -0.14
+        },
+        {
+          "x": 1029,
+          "y": -1345,
+          "elevation": -0.08
+        },
+        {
+          "x": 673,
+          "y": -2077,
+          "elevation": -0.02
+        },
+        {
+          "x": 1425,
+          "y": -2730,
+          "elevation": 0.04
+        },
+        {
+          "x": 2077,
+          "y": -3482,
+          "elevation": 0.12
+        },
+        {
+          "x": 1662,
+          "y": -4274,
+          "elevation": 0.2
+        },
+        {
+          "x": 2335,
+          "y": -4907,
+          "elevation": 0.28
+        },
+        {
+          "x": 3047,
+          "y": -5658,
+          "elevation": 0.2
+        },
+        {
+          "x": 2572,
+          "y": -6410,
+          "elevation": 0.12
+        },
+        {
+          "x": 3403,
+          "y": -7083,
+          "elevation": 0.18
+        },
+        {
+          "x": 4115,
+          "y": -7874,
+          "elevation": 0.28
+        },
+        {
+          "x": 3601,
+          "y": -8626,
+          "elevation": 0.18
+        },
+        {
+          "x": 4392,
+          "y": -9338,
+          "elevation": 0.1
+        },
+        {
+          "x": 5184,
+          "y": -9972,
+          "elevation": 0.2
+        },
+        {
+          "x": 4669,
+          "y": -10723,
+          "elevation": 0.32
+        },
+        {
+          "x": 5461,
+          "y": -11396,
+          "elevation": 0.22
+        },
+        {
+          "x": 6292,
+          "y": -12069,
+          "elevation": 0.1
+        },
+        {
+          "x": 5777,
+          "y": -12821,
+          "elevation": 0.02
+        },
+        {
+          "x": 6608,
+          "y": -13493,
+          "elevation": 0.12
+        },
+        {
+          "x": 7360,
+          "y": -14166,
+          "elevation": 0.22
+        },
+        {
+          "x": 6885,
+          "y": -14918,
+          "elevation": 0.16
+        },
+        {
+          "x": 7677,
+          "y": -15590,
+          "elevation": 0.08
+        },
+        {
+          "x": 8389,
+          "y": -16382,
+          "elevation": 0.18
+        },
+        {
+          "x": 7914,
+          "y": -17134,
+          "elevation": 0.26
+        },
+        {
+          "x": 8666,
+          "y": -17846,
+          "elevation": 0.18
+        },
+        {
+          "x": 9378,
+          "y": -18479,
+          "elevation": 0.06
+        },
+        {
+          "x": 8864,
+          "y": -19231,
+          "elevation": -0.02
+        },
+        {
+          "x": 9655,
+          "y": -19904,
+          "elevation": 0.04
+        },
+        {
+          "x": 10328,
+          "y": -20616,
+          "elevation": 0.14
+        },
+        {
+          "x": 9892,
+          "y": -21368,
+          "elevation": 0.08
+        },
+        {
+          "x": 10605,
+          "y": -22080,
+          "elevation": 0
+        },
+        {
+          "x": 11317,
+          "y": -22792,
+          "elevation": -0.04
+        },
+        {
+          "x": 10882,
+          "y": -23544,
+          "elevation": -0.08
+        },
+        {
+          "x": 11633,
+          "y": -24296,
+          "elevation": -0.04
+        }
+      ],
+      "segments": [
+        {
+          "length": 783,
+          "curve": 0.18,
+          "elevation": -0.14,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.18,
+          "codriver": "ounin-fast",
+          "hazardIds": []
+        },
+        {
+          "length": 923,
+          "curve": 0.24,
+          "elevation": -0.08,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.22,
+          "hazardIds": []
+        },
+        {
+          "length": 814,
+          "curve": -0.34,
+          "elevation": -0.02,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.3,
+          "hazardIds": [
+            "ounin-yellow-house-jump"
+          ]
+        },
+        {
+          "length": 996,
+          "curve": 0.28,
+          "elevation": 0.04,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.18,
+          "hazardIds": []
+        },
+        {
+          "length": 995,
+          "curve": 0.36,
+          "elevation": 0.12,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.34,
+          "hazardIds": [
+            "ounin-crest-jump-1"
+          ]
+        },
+        {
+          "length": 894,
+          "curve": -0.32,
+          "elevation": 0.2,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.26,
+          "hazardIds": []
+        },
+        {
+          "length": 924,
+          "curve": 0.24,
+          "elevation": 0.28,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.22,
+          "hazardIds": []
+        },
+        {
+          "length": 1035,
+          "curve": 0.3,
+          "elevation": 0.2,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.32,
+          "hazardIds": []
+        },
+        {
+          "length": 889,
+          "curve": -0.28,
+          "elevation": 0.12,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.2,
+          "hazardIds": []
+        },
+        {
+          "length": 1069,
+          "curve": 0.34,
+          "elevation": 0.18,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.26,
+          "codriver": "ounin-max-attack",
+          "hazardIds": []
+        },
+        {
+          "length": 1064,
+          "curve": 0.26,
+          "elevation": 0.28,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.36,
+          "hazardIds": [
+            "ounin-crest-jump-2"
+          ]
+        },
+        {
+          "length": 911,
+          "curve": -0.36,
+          "elevation": 0.18,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.28,
+          "hazardIds": []
+        },
+        {
+          "length": 1064,
+          "curve": 0.3,
+          "elevation": 0.1,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.2,
+          "hazardIds": []
+        },
+        {
+          "length": 1015,
+          "curve": 0.38,
+          "elevation": 0.2,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.24,
+          "hazardIds": []
+        },
+        {
+          "length": 911,
+          "curve": -0.34,
+          "elevation": 0.32,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.38,
+          "hazardIds": [
+            "ounin-long-jump"
+          ]
+        },
+        {
+          "length": 1039,
+          "curve": 0.28,
+          "elevation": 0.22,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.22,
+          "hazardIds": []
+        },
+        {
+          "length": 1069,
+          "curve": 0.32,
+          "elevation": 0.1,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.2,
+          "hazardIds": []
+        },
+        {
+          "length": 911,
+          "curve": -0.3,
+          "elevation": 0.02,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.24,
+          "hazardIds": []
+        },
+        {
+          "length": 1069,
+          "curve": 0.36,
+          "elevation": 0.12,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.3,
+          "hazardIds": []
+        },
+        {
+          "length": 1009,
+          "curve": 0.24,
+          "elevation": 0.22,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.2,
+          "hazardIds": []
+        },
+        {
+          "length": 889,
+          "curve": -0.32,
+          "elevation": 0.16,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.26,
+          "hazardIds": []
+        },
+        {
+          "length": 1039,
+          "curve": 0.28,
+          "elevation": 0.08,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.24,
+          "hazardIds": []
+        },
+        {
+          "length": 1065,
+          "curve": 0.34,
+          "elevation": 0.18,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.28,
+          "hazardIds": []
+        },
+        {
+          "length": 889,
+          "curve": -0.28,
+          "elevation": 0.26,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.22,
+          "hazardIds": []
+        },
+        {
+          "length": 1036,
+          "curve": 0.3,
+          "elevation": 0.18,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.2,
+          "hazardIds": []
+        },
+        {
+          "length": 953,
+          "curve": 0.26,
+          "elevation": 0.06,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.18,
+          "hazardIds": []
+        },
+        {
+          "length": 911,
+          "curve": -0.34,
+          "elevation": -0.02,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.24,
+          "hazardIds": []
+        },
+        {
+          "length": 1039,
+          "curve": 0.32,
+          "elevation": 0.04,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.28,
+          "hazardIds": []
+        },
+        {
+          "length": 980,
+          "curve": 0.22,
+          "elevation": 0.14,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.2,
+          "hazardIds": []
+        },
+        {
+          "length": 869,
+          "curve": -0.3,
+          "elevation": 0.08,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.22,
+          "hazardIds": []
+        },
+        {
+          "length": 1008,
+          "curve": 0.28,
+          "elevation": 0,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.24,
+          "hazardIds": []
+        },
+        {
+          "length": 1007,
+          "curve": 0.24,
+          "elevation": -0.04,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.18,
+          "hazardIds": []
+        },
+        {
+          "length": 869,
+          "curve": -0.26,
+          "elevation": -0.08,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.2,
+          "hazardIds": []
+        },
+        {
+          "length": 1063,
+          "curve": 0.22,
+          "elevation": -0.04,
+          "surface": "gravel",
+          "roadWidthM": 6,
+          "bumpiness": 0.18,
+          "codriver": "ounin-finish",
+          "hazardIds": []
+        }
+      ]
+    },
+    "competition": {
+      "mode": "solo",
+      "aiDrivers": [
+        {
+          "id": "rookie-ai",
+          "name": "Rookie AI",
+          "carId": "starter-rwd",
+          "aggression": 0.35,
+          "skill": 0.45,
+          "rubberBanding": 0.2,
+          "enabled": false
+        }
+      ],
+      "playerStartGrid": 1,
+      "trafficEnabled": false
+    },
+    "hazards": [
+      {
+        "id": "ounin-yellow-house-jump",
+        "type": "jump",
+        "label": "Yellow House Jump",
+        "at": 5200,
+        "lane": 0,
+        "height": 0.72,
+        "landingForgiveness": 0.38
+      },
+      {
+        "id": "ounin-crest-jump-1",
+        "type": "jump",
+        "label": "Blind Crest Jump",
+        "at": 11800,
+        "lane": 0,
+        "height": 0.52,
+        "landingForgiveness": 0.45
+      },
+      {
+        "id": "ounin-crest-jump-2",
+        "type": "jump",
+        "label": "Fast Crest",
+        "at": 18200,
+        "lane": 0,
+        "height": 0.44,
+        "landingForgiveness": 0.48
+      },
+      {
+        "id": "ounin-long-jump",
+        "type": "jump",
+        "label": "Long Jump",
+        "at": 24500,
+        "lane": 0,
+        "height": 0.62,
+        "landingForgiveness": 0.42
+      }
+    ],
+    "codriver": {
+      "enabled": true,
+      "voice": "default",
+      "calls": [
+        {
+          "id": "ounin-fast",
+          "at": 1200,
+          "text": "Fast gravel, small crests",
+          "severity": 2
+        },
+        {
+          "id": "ounin-max-attack",
+          "at": 17400,
+          "text": "Very fast over jumps, keep straight",
+          "severity": 4
+        },
+        {
+          "id": "ounin-finish",
+          "at": 30600,
+          "text": "Final fast gravel sequence",
+          "severity": 3
+        }
+      ]
+    },
+    "scenery": [
+      {
+        "type": "tree",
+        "at": 900,
+        "side": "left"
+      },
+      {
+        "type": "tree",
+        "at": 9600,
+        "side": "right"
+      },
+      {
+        "type": "sign",
+        "at": 5200,
+        "side": "left"
+      }
+    ],
+    "groundRenderer": "webgl-track",
+    "groundTextureBaseWorldM": 1.002,
+    "groundTextureFilterMode": "balanced",
+    "skyboxArtRef": "providence",
+    "surfaceArt": {
+      "boundary": "apron"
+    },
+    "margin": {
+      "enabled": true,
+      "shoulderEnabled": true,
+      "widthM": 0.22,
+      "shoulderWidthM": 12,
+      "collisionMode": "shoulder",
+      "artRef": "apron",
+      "marginMode": "on",
+      "shoulderMode": "hidden",
+      "collisionEdge": "shoulder",
+      "collisionEffect": "reset"
+    },
+    "renderDebug": {
+      "lightingEnabled": true,
+      "terrainEnabled": true,
+      "texturesEnabled": true,
+      "detailEnabled": false,
+      "terrainCullingEnabled": true,
+      "terrainLodEnabled": true,
+      "terrainBudgetEnabled": true,
+      "farRoadDecimationEnabled": true,
+      "rawTerrainPolygonsEnabled": false
+    }
+  }
 }

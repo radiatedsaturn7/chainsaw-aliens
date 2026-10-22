@@ -3,7 +3,7 @@
     "#": {
       "ref": "Tile Art solid",
       "size": 16,
-      "fps": 32,
+      "fps": 6,
       "frames": [
         [
           null,

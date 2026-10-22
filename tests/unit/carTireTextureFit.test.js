@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { largestOpaqueRectangle, largestOpaqueCircle, fitTireTextureRegions } from '../../src/racing/CarTireTextureFit.js';
+import { largestOpaqueRectangle, largestOpaqueCircle, fitTireTextureRegions, normalizeTireSheetOpacity } from '../../src/racing/CarTireTextureFit.js';
 import { prepareCarSheet } from '../../src/racing/CarGraphicImport.js';
 import { buildWheelCylinder } from '../../src/racing/CarWheelCylinder.js';
 
@@ -70,4 +70,46 @@ test('tires cannot silently fall back to cuts through visible pixels', () => {
   const result=prepareCarSheet({width,height,data},{columns:2,rows:1});
   assert.deepEqual(result.crops,[{x:2,y:2,width:22,height:16},{x:28,y:2,width:10,height:16}]);
   assert.equal(result.frames.reduce((n,f)=>n+f.filter((v,i)=>i%4===3&&v===255).length,0),32*16);
+});
+
+
+test('near-opaque tire sheets import without altering source pixels or transparent gaps', () => {
+  const width=40,height=20,data=new Uint8ClampedArray(width*height*4);
+  for(let row=0;row<2;row++)for(let col=0;col<4;col++)
+    for(let y=2;y<8;y++)for(let x=2;x<8;x++)data.set([60,70,80,252+col%2],((row*10+y)*width+col*10+x)*4);
+  data[3]=249;
+  const original=data.slice();
+  const image={width,height,data};
+  const raw=prepareCarSheet(image);
+  assert.throws(()=>fitTireTextureRegions(raw.frames,raw.width,raw.height),/fully opaque/);
+  const cleaned=normalizeTireSheetOpacity(image);
+  assert.equal(cleaned.solidifiedPixels,8*36);
+  assert.equal(cleaned.data[3],249);
+  assert.equal(cleaned.data[7],0);
+  assert.deepEqual(data,original);
+  const prepared=prepareCarSheet(cleaned);
+  assert.equal(prepared.frames.length,8);
+  const fit=fitTireTextureRegions(prepared.frames,prepared.width,prepared.height);
+  assert.equal(fit.tread.region.width,6);
+  assert.equal(fit.tread.region.height,6);
+  assert.ok(fit.wheel.region.radius>=3);
+});
+
+
+test('tire opacity cleanup retains canvas ImageData dimensions exposed as getters', () => {
+  class CanvasImageData {
+    constructor() { this.data = new Uint8ClampedArray(40*20*4); }
+    get width() { return 40; }
+    get height() { return 20; }
+  }
+  const image = new CanvasImageData();
+  for(let row=0;row<2;row++)for(let col=0;col<4;col++)
+    for(let y=2;y<8;y++)for(let x=2;x<8;x++)image.data.set([60,70,80,252],((row*10+y)*40+col*10+x)*4);
+  assert.deepEqual(Object.keys(image), ['data']);
+  const cleaned = normalizeTireSheetOpacity(image);
+  assert.equal(cleaned.width,40);
+  assert.equal(cleaned.height,20);
+  const prepared = prepareCarSheet(cleaned);
+  assert.equal(prepared.frames.length,8);
+  assert.doesNotThrow(()=>fitTireTextureRegions(prepared.frames,prepared.width,prepared.height));
 });

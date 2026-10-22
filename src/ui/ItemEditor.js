@@ -198,7 +198,7 @@ export default class ItemEditor extends DoodadEditor {
     const handlers=this.getDesktopActionHandlers(),part=this.doodad.carPart;
     const rows=this.doodad.effects.map((effect,index)=>({id:`effect:${index}`,label:this.effectLabel(effect),active:index===this.selectedEffect,onClick:()=>{this.selectedEffect=index;}}));
     if(part)rows.push(...[
-      ['item-part',`Part: ${part.slot} · ${part.price} credits`],
+      ['item-part',`Part: ${part.slot} · ${part.price} scrap`],
       ['item-part-changes',`${part.modifiers.length} stat changes`],
       ['item-part-tuning',`${part.tuning.length} tuning settings unlocked`],
       ['item-part-curve',`${part.torqueCurve.length} torque curve points`]

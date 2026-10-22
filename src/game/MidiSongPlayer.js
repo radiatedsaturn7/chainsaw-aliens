@@ -36,6 +36,8 @@ export default class MidiSongPlayer {
 
   setSong(song, trackId, { loop = true, startTick = null, offsetMs = 0 } = {}) {
     this.song = song;
+    this.ticksPerBeat = song?.schemaVersion >= 3 ? 24 : 8;
+    this.beatsPerBar = (song?.timeSignature?.beats || 4) * 4 / (song?.timeSignature?.unit || 4);
     this.trackId = trackId;
     this.volume = 0;
     this.targetVolume = 1;

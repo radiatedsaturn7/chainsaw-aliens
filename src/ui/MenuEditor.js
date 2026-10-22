@@ -1,3 +1,7 @@
+import {MenuWorldMapDesigner} from './MenuWorldMapDesigner.js';
+import {hydrateServerStorage} from './serverStorage.js';
+import {importMusicAsset} from '../audio/MusicAsset.js';
+import {menuAppearanceFields,resolveMenuAppearance} from '../menus/MenuAppearance.js';
 import {GARAGE_ACTION_LABELS,createGarageMenuScreen,createCarShowroomScreen} from '../garage/GarageMenu.js';
 import {menuSubtree,menuPaintOrder,menuElementVisible,transformMenuGroup,reorderMenuGroup} from '../menus/MenuLayout.js';
 import {MENU_WIDGETS,widgetLabel,widgetDefaults} from '../menus/MenuWidgets.js';
@@ -11,8 +15,8 @@ import {EditorInputActionNormalizer,EDITOR_INPUT_ACTIONS as INPUT} from './share
 import {getEditorMenuSpec,getEditorTouchRootMenuEntries} from './shared/editorMenuSpec.js';
 import {openEditorForm,chooseEditorFiles} from './shared/editorForm.js';
 import {openProjectBrowser} from './ProjectBrowserModal.js';
-import {saveProjectFileAndConfirm,listProjectFiles} from './projectFiles.js';
-import {saveServerPreference} from './serverPreferences.js';
+import {saveProjectFileAndConfirm,listProjectFiles,hydrateProjectFilePayload} from './projectFiles.js';
+import {saveServerPreference,loadServerPreferenceAsync} from './serverPreferences.js';
 import {drawSharedDesktopContextPanel,drawSharedPanel,drawSharedPlayStopButton} from './uiSuite.js';
 
 const label=id=>id.split('-').map(s=>s[0].toUpperCase()+s.slice(1)).join(' ');
@@ -20,18 +24,29 @@ const text=(id,label,value,required=false)=>({id,label,value,type:'text',require
 const select=(id,label,value,options)=>({id,label,value,options});
 const unique=(prefix,items)=>{let i=1;while(items.some(item=>item.id===`${prefix}-${i}`))i++;return `${prefix}-${i}`;};
 const parse=value=>{try{return JSON.parse(value)}catch{return value}};
-const labels={'send-drawer':'Send','clip-drawer':'Clip','layer-down':'Send Backward','layer-up':'Bring Forward','layer-back':'Send to Back','layer-front':'Send to Front','widget-add':'Add Widget','element-setup':'Properties','element-properties':'Layout & Style','element-select':'Layers','screen-select':'Screens','element-action':'Actions / On Select','screen-background':'Background Image','insert-car-preview':'Car Rotator','insert-property-display':'Property Display','insert-asset-preview':'Actor / Item Image','menu-preview':'Preview This Screen','menu-preview-start':'Play From Start','element-animation':'Animation','menu-animate':'Animate Canvas','screen-start':'Use as First Screen','starting-menu':'Use for Main Play','clear-starting-menu':'Use Default Menu','element-art':'Choose Artwork','menu-parameters':'Configuration Parameters','layer-up':'Bring Forward','layer-down':'Send Backward'};
+const labels={'screen-music':'Screen Music','screen-upload-music':'Upload MP3 / MIDI','screen-background-rules':'Background Rules','screen-fx':'Screen FX (Snow / Rain)','menu-upload-font':'Upload Menu Font (TTF…)','element-upload-font':'Upload Item Font (TTF…)','send-drawer':'Send','clip-drawer':'Clip','layer-down':'Send Backward','layer-up':'Bring Forward','layer-back':'Send to Back','layer-front':'Send to Front','widget-add':'Add Widget','element-setup':'Properties','element-properties':'Layout & Style','element-select':'Layers','screen-select':'Screens','element-action':'Actions / On Select','screen-background':'Background Image','insert-car-preview':'Car Rotator','insert-property-display':'Property Display','insert-asset-preview':'Actor / Item Image','menu-preview':'Preview This Screen','menu-preview-start':'Play From Start','element-animation':'Animation','menu-animate':'Animate Canvas','screen-start':'Use as First Screen','starting-menu':'Use for Main Play','clear-starting-menu':'Use Default Menu','element-art':'Choose Artwork','menu-parameters':'Configuration Parameters','layer-up':'Bring Forward','layer-down':'Send Backward'};
 export default class MenuEditor extends RaceEditor {
-  constructor(game){super(game,{mode:'car'});this.resources=new MenuResources(game);this.menuInput=new EditorInputActionNormalizer();this.undoMenus=[];this.redoMenus=[];this.currentMenuName='';this.loadMenu(createMenuDocument());this.activeRootId='screens';}
+  constructor(game){super(game,{mode:'car'});this.resources=new MenuResources(game);this.menuInput=new EditorInputActionNormalizer();this.undoMenus=[];this.redoMenus=[];this.currentMenuName='';this.mapDesigner=new MenuWorldMapDesigner(this);this.loadMenu(createMenuDocument());this.initialMenuUnopened=true;this.activeRootId='screens';}
   get editorId(){return 'menu-designer'}
   get title(){return 'Menu Editor'}
   get screen(){return this.menu.screens.find(s=>s.id===this.screenId)||this.menu.screens[0]}
   get element(){return this.screen.elements.find(e=>e.id===this.elementId)}
-  loadMenu(document,name=''){this.menu=normalizeMenuDocument(document);this.screenId=this.menu.startScreen;this.elementId=null;this.currentMenuName=name;this.undoMenus=[];this.redoMenus=[];this.menuTime=0;this.animating=false;this.menuDrag=null;this.menuPicker=null;this.status=name?`Opened ${name}`:'Add a widget from the bottom bar. Drag to arrange it; Properties connect it.';}
+  async openStartingMenu({loadPreference=loadServerPreferenceAsync,loadDocument=hydrateProjectFilePayload}={}){
+    if(!this.initialMenuUnopened)return;this.initialMenuUnopened=false;
+    const original=this.menu,before=JSON.stringify(this.menu);
+    try{
+      const preference=await loadPreference('menu-launch',null);if(!preference?.menuRef)return;
+      const payload=await loadDocument('menus',preference.menuRef);
+      if(this.menu!==original||JSON.stringify(this.menu)!==before)return;
+      if(!payload?.data)throw Error(`Starting menu not found: ${preference.menuRef}`);
+      this.loadMenu(payload.data,preference.menuRef);
+    }catch(error){this.status=`Could not open starting menu: ${error.message}`;}
+  }
+  loadMenu(document,name=''){this.initialMenuUnopened=false;this.mapDesigner?.reset();this.worldMapLayoutId=null;this.menu=normalizeMenuDocument(document);this.screenId=this.menu.startScreen;this.elementId=null;this.currentMenuName=name;this.undoMenus=[];this.redoMenus=[];this.menuTime=0;this.animating=false;this.menuDrag=null;this.menuPicker=null;this.status=name?`Opened ${name}`:'Add a widget from the bottom bar. Drag to arrange it; Properties connect it.';}
   snapshot(){return structuredClone({menu:this.menu,screenId:this.screenId,elementId:this.elementId})}
   record(before){if(JSON.stringify(before.menu)===JSON.stringify(this.menu))return;this.undoMenus.push(before);if(this.undoMenus.length>60)this.undoMenus.shift();this.redoMenus=[];this.status='Menu changed. Save to keep changes.';}
   change(fn){const before=this.snapshot();try{fn();this.menu=normalizeMenuDocument(this.menu);this.record(before)}catch(error){Object.assign(this,before);throw error}}
-  history(redo=false){const from=redo?this.redoMenus:this.undoMenus,to=redo?this.undoMenus:this.redoMenus;if(!from.length)return;to.push(this.snapshot());Object.assign(this,from.pop());this.menuDrag=null;}
+  history(redo=false){const from=redo?this.redoMenus:this.undoMenus,to=redo?this.undoMenus:this.redoMenus;if(!from.length)return;to.push(this.snapshot());Object.assign(this,from.pop());this.menuDrag=null;this.mapDesigner.drag=null;this.mapDesigner.from=null;}
   getMenuItems(root){if(root==='preview')root='view';const spec=getEditorMenuSpec(this.editorId);return (spec.sections[root]?.actions||[]).map(id=>({id,label:this.getRaceActionLabel(id),disabled:false,onSelect:()=>this.handleMenuAction(id)}))}
   isActionAvailable(id){return Boolean(getEditorMenuSpec(this.editorId).actions[id])}
   getRaceActionLabel(id){return labels[id]||label(id)}
@@ -60,7 +75,7 @@ export default class MenuEditor extends RaceEditor {
     const cmd=input?.isDownCode?.('ControlLeft')||input?.isDownCode?.('ControlRight')||input?.isDownCode?.('MetaLeft')||input?.isDownCode?.('MetaRight');
     for(const [code,action] of Object.entries({KeyZ:'undo',KeyY:'redo',KeyC:'copy',KeyX:'cut',KeyV:'paste',KeyD:'duplicate',KeyS:'save'}))if(input?.wasCommandPressedCode?.(code)||(cmd&&input?.wasPressedCode?.(code)))void this.handleMenuAction(action);
     if(!cmd&&(input?.wasPressedCode?.('Delete')||input?.wasPressedCode?.('Backspace')))void this.handleMenuAction('delete');
-    const cancel=()=>{if(this.menuDrag){Object.assign(this,this.menuDrag.before);this.menuDrag=null;return;}if(this.desktopDropdown){this.closeEditorMenus();return;}if(this.gamepadSubmenuOpen){this.gamepadSubmenuOpen=false;this.mobileRootOpen=true;return;}if(this.mobileRootOpen){this.mobileRootOpen=false;return;}this.exitToMainMenu();};
+    const cancel=()=>{if(this.mapDesigner.drag){Object.assign(this,this.mapDesigner.drag.before);this.mapDesigner.drag=null;return;}if(this.mapDesigner.element&&this.mapDesigner.mode!=='move'){this.mapDesigner.mode='move';this.mapDesigner.from=null;this.status='Map: move nodes';return;}if(this.menuDrag){Object.assign(this,this.menuDrag.before);this.menuDrag=null;return;}if(this.desktopDropdown){this.closeEditorMenus();return;}if(this.gamepadSubmenuOpen){this.gamepadSubmenuOpen=false;this.mobileRootOpen=true;return;}if(this.mobileRootOpen){this.mobileRootOpen=false;return;}this.exitToMainMenu();};
     if(input?.wasPressedCode?.('Escape'))cancel();
     const pad=this.menuInput.updateGamepad(input,dt,{includePanIntent:true});
     this.menuPadConnected=pad.connected;
@@ -82,13 +97,16 @@ export default class MenuEditor extends RaceEditor {
   drawCarEditorWorkSurface(ctx,bounds){
     this.carArtSliderRegions=[];this.menuSurfaceBounds={...bounds};
     const layout=getMenuDesignerSurfaceLayout(bounds);this.menuBounds=layout.canvas;this.menuHotbarBounds=layout.hotbar;
-    drawMenuScreen(ctx,this.menuBounds,this.menu,this.screen,this.menu.parameters,{resources:this.resources,time:this.menuTime,selected:this.elementId,editing:!this.animating});
+    const mapNode=this.mapDesigner.nodes.find(n=>n.id===this.mapDesigner.nodeId),previewParameters=mapNode?.raceRef&&this.mapDesigner.element?.binding?{...this.menu.parameters,[this.mapDesigner.element.binding]:mapNode.raceRef}:this.menu.parameters;
+    drawMenuScreen(ctx,this.menuBounds,this.menu,this.screen,previewParameters,{resources:this.resources,time:this.menuTime,selected:this.elementId,editing:!this.animating,worldMapEditingId:this.mapDesigner.element?.id});
 
     for(const {id,bounds:buttonBounds} of layout.buttons)this.registerDrawnButton(ctx,buttonBounds,{id,label:({'widget-add':'+','element-setup':'Properties','send-drawer':'Send ▴','clip-drawer':'Clip ▴'})[id],disabled:id==='element-setup'&&!this.element,onClick:()=>this.handleMenuAction(id)});
+    if(!this.animating)this.mapDesigner.draw(ctx);
     if(this.menuPicker)this.drawPicker(ctx);
     if(this.menuPadConnected&&this.menuCursor&&!this.menuPicker){ctx.save();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(this.menuCursor.x,this.menuCursor.y,6,0,Math.PI*2);ctx.stroke();ctx.restore();}
   }
   pickerEntries(){
+    if(this.menuPicker==='map-tools')return this.mapDesigner.entries();
     if(this.menuPicker==='send'||this.menuPicker==='clip'){
       const ids=this.menuPicker==='send'?['layer-down','layer-up','layer-back','layer-front']:['copy','cut','paste','delete'];
       return ids.map(id=>({id,label:this.getRaceActionLabel(id),disabled:id==='paste'?!this.clipboardElement:!this.element,action:()=>this.runAction(id)}));
@@ -96,7 +114,7 @@ export default class MenuEditor extends RaceEditor {
     if(this.menuPicker==='widgets')return MENU_WIDGETS.map(w=>({id:`pick-widget:${w.type}`,label:w.label,description:w.description,action:()=>this.runAction(`insert-${w.type}`)}));
     if(this.menuPicker==='screens')return [...this.menu.screens.map(s=>({id:`pick-screen:${s.id}`,label:s.name,action:()=>{this.screenId=s.id;this.elementId=null;this.animating=false;this.menuTime=0;}})),{id:'pick-screen:new',label:'+ New Screen',action:()=>this.runAction('screen-new')},{id:'pick-screen:showroom',label:'+ Car Showroom Screen',action:()=>this.runAction('screen-showroom')},{id:'pick-screen:garage',label:'+ Garage Screen',action:()=>this.runAction('screen-garage')}];
     if(this.menuPicker==='layers')return this.screen.elements.length?menuPaintOrder(this.screen.elements).reverse().map(e=>({id:`pick-layer:${e.id}`,label:e.label||widgetLabel(e.type),description:widgetLabel(e.type),action:()=>{this.elementId=e.id;}})):[{id:'pick-layer:add',label:'+ Add Widget',action:()=>this.openPicker('widgets')}];
-    if(this.menuPicker==='animation')return [...MENU_ANIMATIONS.map(animation=>({id:`pick-animation:${animation}`,label:({none:'None (static)',pulse:'Pulse',fade:'Fade in',bob:'Bob up / down',spin:this.element?.type==='car-preview'?'Rotate car':'Rotate'})[animation],action:()=>{this.change(()=>{this.element.animation=animation;this.element.keyframes=[];if(animation==='spin'&&this.element.type==='car-preview')this.element.angleBinding='';});this.animating=animation!=='none';this.menuTime=0;this.status=animation==='none'?'Animation off':`${label(animation)} animation playing on the canvas`;}})),{id:'pick-animation:timing',label:'Speed / Repeat…',action:()=>this.runAction('animation-timing')}];
+    if(this.menuPicker==='animation')return [...MENU_ANIMATIONS.map(animation=>({id:`pick-animation:${animation}`,label:({none:'None (static)',typewriter:'Typewriter (text)',pulse:'Pulse',fade:'Fade in',bob:'Bob up / down',spin:this.element?.type==='car-preview'?'Rotate car':'Rotate'})[animation],action:()=>{this.change(()=>{this.element.animation=animation;this.element.keyframes=[];if(animation==='typewriter')this.element.loop=false;if(animation==='spin'&&this.element.type==='car-preview')this.element.angleBinding='';});this.animating=animation!=='none';this.menuTime=0;this.status=animation==='none'?'Animation off':`${label(animation)} animation playing on the canvas`;}})),{id:'pick-animation:timing',label:'Speed / Repeat…',action:()=>this.runAction('animation-timing')}];
     return [];
   }
   openPicker(kind){this.closeEditorMenus();this.menuPicker=this.menuPicker===kind?null:kind;this.pickerFocus=0;this.pickerPress=null;}
@@ -131,11 +149,13 @@ export default class MenuEditor extends RaceEditor {
     this.animating=false;this.menuTime=0;
     const e=menuPaintOrder(this.screen.elements).reverse().find(e=>menuElementVisible(e,this.screen.elements)&&menuHit(p,menuElementBounds(e,this.menuBounds)));
     this.elementId=e?.id||null;if(!e)return;
+    if(e.type==='world-map'&&(this.mapDesigner.element||this.mapDesigner.hitNode(p,e))){this.mapDesigner.start();if(this.mapDesigner.pointerDown(p))return;}
     const rect=menuElementBounds(e,this.menuBounds);
     this.menuDrag={id:p.id,x:p.x,y:p.y,element:structuredClone(e),before:this.snapshot(),resize:p.x>rect.x+rect.w-18&&p.y>rect.y+rect.h-18};
   }
   handlePointerMove(p={}){
     if(this.menuPicker){const hit=this.pickerLayout?.buttons.find(b=>menuHit(p,b.bounds));if(Number.isInteger(hit?.index))this.pickerFocus=hit.index;return;}
+    if(this.mapDesigner.pointerMove(p))return;
     const drag=this.menuDrag;if(!drag)return super.handlePointerMove(p);if(drag.id!==undefined&&p.id!==undefined&&drag.id!==p.id)return;
     const e=this.element,b=this.menuBounds,dx=(p.x-drag.x)/b.w,dy=(p.y-drag.y)/b.h;if(!e)return;
     const previous=structuredClone(e);
@@ -143,7 +163,7 @@ export default class MenuEditor extends RaceEditor {
     else{e.x=Math.max(-1,Math.min(1,drag.element.x+dx));e.y=Math.max(-1,Math.min(1,drag.element.y+dy));e.keyframes=drag.element.keyframes.map(k=>({...k,x:k.x+e.x-drag.element.x,y:k.y+e.y-drag.element.y}));}
     if(e.type==='container')transformMenuGroup(this.screen.elements,e.id,previous,e);
   }
-  handlePointerUp(p={}){if(this.pickerPress){const press=this.pickerPress;this.pickerPress=null;if((press.id===undefined||p.id===undefined||press.id===p.id)&&menuHit(p,press.entry.bounds))this.choosePicker(press.entry);return;}if(this.menuPicker)return;if(!this.menuDrag)return super.handlePointerUp(p);if(this.menuDrag.id!==undefined&&p.id!==undefined&&this.menuDrag.id!==p.id)return;this.record(this.menuDrag.before);this.menuDrag=null;}
+  handlePointerUp(p={}){if(this.pickerPress){const press=this.pickerPress;this.pickerPress=null;if((press.id===undefined||p.id===undefined||press.id===p.id)&&menuHit(p,press.entry.bounds))this.choosePicker(press.entry);return;}if(this.menuPicker)return;if(this.mapDesigner.pointerUp(p))return;if(!this.menuDrag)return super.handlePointerUp(p);if(this.menuDrag.id!==undefined&&p.id!==undefined&&this.menuDrag.id!==p.id)return;this.record(this.menuDrag.before);this.menuDrag=null;}
   async handleMenuAction(id){try{this.closeEditorMenus();if(!['widget-add','element-select','screen-select','element-animation','send-drawer','clip-drawer'].includes(id))this.menuPicker=null;return await this.runAction(id)}catch(error){this.status=error.message}}
   async runAction(id){
     this.activeAction=id;
@@ -163,11 +183,18 @@ export default class MenuEditor extends RaceEditor {
     if(id==='menu-animate'){this.animating=!this.animating;this.menuTime=0;return;}
     if(id==='zoom-fit'){this.animating=false;this.menuTime=0;return;}
     if(id==='screen-select')return this.openPicker('screens');
-    if(id==='screen-showroom'){this.change(()=>{const defaults=createMenuDocument();for(const id of ['events','settings','mapping','garage'])if(!this.menu.screens.some(s=>s.id===id))this.menu.screens.push(defaults.screens.find(s=>s.id===id));const screen=createCarShowroomScreen();screen.id=unique('cars',this.menu.screens);this.menu.screens.push(screen);this.screenId=screen.id;this.elementId=null;});return;}
-    if(id==='screen-garage'){this.change(()=>{const screen=createGarageMenuScreen();if(!this.menu.screens.some(s=>s.id==='events'))this.menu.screens.push(createMenuDocument().screens.find(s=>s.id==='events'));screen.id=unique('garage',this.menu.screens);this.menu.screens.push(screen);this.screenId=screen.id;this.elementId=null;});return;}
+    if(id==='screen-showroom'){this.change(()=>{const defaults=createMenuDocument();for(const id of ['events','settings','mapping','cheats','world-map','tuning','upgrades','garage'])if(!this.menu.screens.some(s=>s.id===id))this.menu.screens.push(defaults.screens.find(s=>s.id===id));const screen=createCarShowroomScreen();screen.id=unique('cars',this.menu.screens);this.menu.screens.push(screen);this.screenId=screen.id;this.elementId=null;});return;}
+    if(id==='screen-garage'){this.change(()=>{const screen=createGarageMenuScreen();const defaults=createMenuDocument();for(const id of ['world-map','tuning','upgrades'])if(!this.menu.screens.some(s=>s.id===id))this.menu.screens.push(defaults.screens.find(s=>s.id===id));screen.id=this.menu.screens.some(s=>s.id==='garage')?unique('garage',this.menu.screens):'garage';this.menu.screens.push(screen);this.screenId=screen.id;this.elementId=null;});return;}
     if(id==='screen-new'||id==='screen-duplicate'){this.change(()=>{const screen=id==='screen-duplicate'?structuredClone(this.screen):{name:'New Screen',elements:[]};screen.id=unique('screen',this.menu.screens);if(id==='screen-duplicate')screen.name+=' Copy';this.menu.screens.push(screen);this.screenId=screen.id;this.elementId=null;});return;}
     if(id==='screen-start'){this.change(()=>{this.menu.startScreen=this.screenId});return;}
-    if(id==='screen-delete'){if(this.menu.screens.length===1)throw Error('Keep at least one screen');this.change(()=>{const old=this.screenId;this.menu.screens=this.menu.screens.filter(s=>s.id!==old);this.screenId=this.menu.screens[0].id;if(this.menu.startScreen===old)this.menu.startScreen=this.screenId;this.elementId=null;const unlink=a=>{if(!a)return null;if(a.type==='screen'&&a.target===old)return null;if(a.then)a.then=unlink(a.then);return a};for(const s of this.menu.screens){s.startAction=unlink(s.startAction);for(const e of s.elements){e.action=unlink(e.action);e.onSelect=unlink(e.onSelect)}}});return;}
+    if(id==='screen-delete'){if(this.menu.screens.length===1)throw Error('Keep at least one screen');this.change(()=>{const old=this.screenId;this.menu.screens=this.menu.screens.filter(s=>s.id!==old);this.screenId=this.menu.screens[0].id;if(this.menu.startScreen===old)this.menu.startScreen=this.screenId;this.elementId=null;const unlink=a=>{if(!a)return null;if(['screen','new-game'].includes(a.type)&&a.target===old)return null;if(a.then)a.then=unlink(a.then);return a};for(const s of this.menu.screens){s.startAction=unlink(s.startAction);for(const e of s.elements){e.action=unlink(e.action);e.onSelect=unlink(e.onSelect)}}});return;}
+    if(id==='menu-upload-font')return this.uploadFont(true);
+    if(id==='element-upload-font')return this.uploadFont(false);
+    if(id==='screen-background-rules')return this.editBackgroundRules();
+    if(id==='screen-music')return this.editScreenMusic();
+    if(id==='screen-upload-music'){const screen=this.screen,asset=await importMusicAsset();if(asset&&this.screen===screen)this.change(()=>{this.screen.musicRef=asset.name;});return;}
+    if(id==='screen-fx')return this.editScreenFx();
+    if(id==='menu-default-font')return this.editDefaultFont();
     if(id==='menu-default-background')return this.editDefaultBackground();
     if(id==='screen-properties')return this.editScreen();
     if(id.startsWith('insert-')){const type=id.slice(7);this.change(()=>{const parent=this.element?.type==='container'?this.element:this.screen.elements.find(e=>e.id===this.element?.parentId);const e=normalizeMenuElement({...widgetDefaults(type),...(parent?{parentId:parent.id,x:parent.x+0.02,y:parent.y+0.04,w:parent.w*0.8,h:Math.min(parent.h*0.6,widgetDefaults(type).h)}:{}),id:unique(type,this.screen.elements)});this.screen.elements.push(e);this.elementId=e.id;});this.status=`${widgetLabel(type)} added. Use Properties to connect it; drag to move or resize.`;return;}
@@ -195,33 +222,85 @@ export default class MenuEditor extends RaceEditor {
     if(id==='element-art')return chooseImage(this);
     if(id==='element-action'){let event='action';if(['car-showroom','garage-browser'].includes(this.element.type)){const picked=await openEditorForm('Widget Event',[select('event','Event','action',[{value:'action',label:'On Confirm'},{value:'onSelect',label:'On Select (highlight changes)'}])]);if(!picked)return;event=picked.event;}const action=await this.editAction(this.element[event]);if(action!==undefined)this.change(()=>{this.element[event]=action});return;}
     if(id==='element-animation'){if(this.element.type==='container')throw Error('Animate individual widgets inside the container');return this.openPicker('animation');}
-    if(id==='animation-timing'){const e=this.element,result=await openEditorForm('Animation Speed',[{id:'duration',label:'Seconds per animation',value:e.duration,min:0.1,max:600},select('loop','Repeat',String(e.loop),[{value:'true',label:'Keep repeating'},{value:'false',label:'Play once'}])]);if(result)this.change(()=>Object.assign(this.element,{...result,loop:result.loop==='true'}));return;}
+    if(id==='animation-timing'){const e=this.element,result=await openEditorForm('Animation Speed',[...(e.animation==='typewriter'?[{id:'typewriterSpeed',label:'Characters per second',value:e.typewriterSpeed,min:1,max:200},{id:'typewriterPause',label:'Pause after period / ! / ? (seconds)',value:e.typewriterPause,min:0,max:3,step:.05}]:[{id:'duration',label:'Seconds per animation',value:e.duration,min:0.1,max:600}]),select('loop','Repeat',String(e.loop),[{value:'true',label:'Keep repeating'},{value:'false',label:'Play once'}])]);if(result)this.change(()=>Object.assign(this.element,{...result,loop:result.loop==='true'}));return;}
 
   }
   async saveMenu(saveAs=false){let name=this.currentMenuName;if(!name||saveAs){const result=await openProjectBrowser({fixedFolder:'menus',initialFolder:'menus',mode:'saveAs',focusNameOnOpen:false,initialName:this.menu.name,title:'Save Menu'});if(result?.action!=='saveAs')return;name=result.name;}const data=normalizeMenuDocument({...this.menu,name});await saveProjectFileAndConfirm('menus',name,data,{timeoutMs:60000});this.currentMenuName=name;this.menu=data;this.status=`Saved ${name}`;return name;}
+  async uploadFont(menuDefault=false, {choose=chooseEditorFiles,read}={}) {
+    const menu=this.menu,element=this.element;
+    if(!menuDefault&&!element){this.status='Select a text item first';return;}
+    const result=await resolveMenuAppearance({fontUpload:'upload'},{choose,read});
+    if(!result||this.menu!==menu||(!menuDefault&&this.element!==element))return;
+    this.change(()=>Object.assign(menuDefault?this.menu.defaultFont:this.element,result));
+    this.status=`${menuDefault?'Menu':'Item'} font: ${result.fontFileName}. Save the menu to keep it.`;
+  }
+  async editDefaultFont(){
+    const fields=menuAppearanceFields(this.menu.defaultFont).filter(f=>['fontFamily','fontUpload'].includes(f.id));
+    const values=await openEditorForm('Default Font',fields,{description:'Used throughout the menu. Individual items can override it in Layout & Style → Font source.'});
+    if(!values)return;const result=await resolveMenuAppearance(values,{choose:chooseEditorFiles});if(result)this.change(()=>{Object.assign(this.menu.defaultFont,result);});
+  }
+  async editBackgroundRules(){
+    const screen=this.screen,rules=screen.backgroundRules||[];
+    const picked=await openEditorForm('Background Rules',[select('rule','Rule','new',[{value:'new',label:'Add rule'},...rules.map((r,i)=>({value:String(i),label:`${i+1}. ${r.when}: ${r.value} → ${r.artRef}`}))])],{description:'First matching rule wins. With no match, the screen keeps its normal background. Race completion saves lastCompletedRace; set Chapter in a race’s menu destination settings.'});
+    if(!picked||this.screen!==screen)return;
+    const index=picked.rule==='new'?rules.length:Number(picked.rule),rule=rules[index]||{when:'lastCompletedRace',value:'',artRef:''};
+    const result=await openEditorForm('Background Rule',[
+      select('when','Match',rule.when,[{value:'lastCompletedRace',label:'Most recently completed race'},{value:'chapter',label:'Current chapter'}]),
+      {...text('value','Race file name or chapter',rule.value,true),suggestions:listProjectFiles('races').map(f=>f.name)},
+      select('artRef','Background artwork',rule.artRef,['',...listProjectFiles('art').map(f=>f.name)]),
+      {id:'priority',label:'Priority (1 = first)',value:index+1,min:1,max:rules.length+1,step:1},
+      {id:'remove',label:'Remove this rule',type:'checkbox',value:false}
+    ],{description:'Chapter names must match the race destination’s Chapter field. Set Configuration Parameters to preview chapter or lastCompletedRace on the canvas.'});
+    if(!result||this.screen!==screen)return;
+    if(!result.remove&&(!result.value.trim()||!result.artRef))throw Error('Choose artwork and a race or chapter.');
+    this.change(()=>{const next=[...rules];if(index<next.length)next.splice(index,1);if(!result.remove)next.splice(Math.max(0,Math.round(result.priority)-1),0,{when:result.when,value:result.value.trim(),artRef:result.artRef});this.screen.backgroundRules=next;});
+  }
+  async editScreenMusic(){
+    const s=this.screen;await hydrateServerStorage({folder:'music'});
+    const result=await openEditorForm('Screen Music',[
+      select('musicRef','Music (MP3 / MIDI)',s.musicRef,['',...listProjectFiles('music').map(f=>f.name)]),
+      {id:'musicLoop',label:'Loop',type:'checkbox',value:s.musicLoop},
+      {id:'musicVolume',label:'Track volume',value:s.musicVolume,min:0,max:1,step:.05},
+      {id:'musicFadeIn',label:'Fade in (seconds)',value:s.musicFadeIn,min:0,max:30,step:.1},
+      {id:'musicFadeOut',label:'Fade out on leaving (seconds)',value:s.musicFadeOut,min:0,max:30,step:.1},
+      {id:'musicStart',label:'Start position (seconds)',value:s.musicStart,min:0,max:86400,step:.1}
+    ],{description:'Use Screens → Upload MP3 / MIDI to add music. User music volume also applies. Play Preview to listen.'});
+    if(result&&this.screen===s)this.change(()=>Object.assign(this.screen,result));
+  }
+  async editScreenFx(){
+    const screen=this.screen,background=resolveMenuBackground(this.menu,screen);
+    const result=await openEditorForm('Screen FX',[
+      select('effect','Effect',background.effect,['none','snow','rain','stars']),
+      {id:'effectIntensity',label:'Intensity',value:background.effectIntensity??1,min:0,max:4,step:.1},
+      {id:'effectWind',label:'Wind (negative = left, positive = right)',value:background.effectWind??0,min:-3,max:3,step:.1}
+    ],{description:'Snow and rain use the same weather particles as levels and cutscenes. FX appear over the background and behind menu text. Use Preview to see them move.'});
+    if(result&&this.screen===screen)this.change(()=>Object.assign(this.screen,{...background,...result,useDefaultBackground:false}));
+  }
   async editDefaultBackground(){const b=this.menu.defaultBackground;const result=await openEditorForm('Default Background',[menuColorField('background','Background color',b.background),select('backgroundArt','Background art',b.backgroundArt,['',...listProjectFiles('art').map(f=>f.name)]),select('effect','Background effect',b.effect,['none','stars','rain','snow'])],{description:'Used by screens with Background source set to Menu default.'});if(result)this.change(()=>{this.menu.defaultBackground=result;});}
-  async editScreen(){const s=this.screen,b=resolveMenuBackground(this.menu,s);const result=await openEditorForm('Screen Properties',[text('name','Screen name',s.name,true),select('useDefaultBackground','Background source',String(s.useDefaultBackground),[{value:'true',label:'Menu default'},{value:'false',label:'Custom for this screen'}]),menuColorField('background','Background color',b.background),select('backgroundArt','Background art',b.backgroundArt,['',...listProjectFiles('art').map(f=>f.name)]),select('musicRef','Music',s.musicRef,['',...listProjectFiles('music').map(f=>f.name)]),select('effect','Background effect',b.effect,['none','stars','rain','snow']),select('start','Tap / Space / Start action',s.startAction?'edit':'none',[{value:'none',label:'None — use buttons'},{value:'edit',label:'Configure action'}])]);if(!result)return;let action=null;if(result.start==='edit'){action=await this.editAction(s.startAction);if(action===undefined)return;}this.change(()=>{const {start,...properties}=result;Object.assign(this.screen,properties,{useDefaultBackground:properties.useDefaultBackground==='true'&&['background','backgroundArt','effect'].every(k=>properties[k]===b[k]),startAction:action})});}
+  async editScreen(){const s=this.screen,b=resolveMenuBackground(this.menu,s);const result=await openEditorForm('Screen Properties',[text('name','Screen name',s.name,true),text('transitionGroup','Instant transition group (same group skips fades)',s.transitionGroup),select('useDefaultBackground','Background source',String(s.useDefaultBackground),[{value:'true',label:'Menu default'},{value:'false',label:'Custom for this screen'}]),menuColorField('background','Background color',b.background),select('backgroundArt','Background art',b.backgroundArt,['',...listProjectFiles('art').map(f=>f.name)]),select('musicRef','Music',s.musicRef,['',...listProjectFiles('music').map(f=>f.name)]),select('effect','Background effect',b.effect,['none','stars','rain','snow']),select('start','Tap / Space / Start action',s.startAction?'edit':'none',[{value:'none',label:'None — use buttons'},{value:'edit',label:'Configure action'}])]);if(!result)return;let action=null;if(result.start==='edit'){action=await this.editAction(s.startAction);if(action===undefined)return;}this.change(()=>{const {start,...properties}=result;Object.assign(this.screen,properties,{useDefaultBackground:properties.useDefaultBackground==='true'&&['background','backgroundArt','effect'].every(k=>properties[k]===b[k]),startAction:action})});}
   async editElement(){
-    const e=this.element,descendants=new Set(menuSubtree(this.screen.elements,e.id).map(item=>item.id)),fields=[select('parentId','Container',e.parentId,[{value:'',label:'None (screen)'},...this.screen.elements.filter(item=>item.type==='container'&&!descendants.has(item.id)).map(item=>({value:item.id,label:item.label}))]),text('label','Label ({{parameter}} supported)',e.label),...['x','y','w','h'].map(k=>({id:k,label:`${{x:'X',y:'Y',w:'Width',h:'Height'}[k]} (% of screen)`,value:e[k]*100,min:k==='w'||k==='h'?1:-100,max:200})),{id:'fontSize',label:'Font size',value:e.fontSize,min:8,max:160},...(e.type==='shape'?shapeStyleFields(e):[menuColorField('color','Text color',e.color),menuColorField('background','Control background color',e.background)]),select('visible','Visible',String(e.visible),['true','false'])];
+    const e=this.element,descendants=new Set(menuSubtree(this.screen.elements,e.id).map(item=>item.id)),fields=[select('parentId','Container',e.parentId,[{value:'',label:'None (screen)'},...this.screen.elements.filter(item=>item.type==='container'&&!descendants.has(item.id)).map(item=>({value:item.id,label:item.label}))]),text('label','Label ({{parameter}} supported)',e.label),...['x','y','w','h'].map(k=>({id:k,label:`${{x:'X',y:'Y',w:'Width',h:'Height'}[k]} (% of screen)`,value:e[k]*100,min:k==='w'||k==='h'?1:-100,max:200})),{id:'fontSize',label:'Font size',value:e.fontSize,min:8,max:160},...menuAppearanceFields(e,listProjectFiles('art').map(f=>f.name)),...(e.type==='shape'?shapeStyleFields(e):[menuColorField('color','Text color',e.color),menuColorField('background','Control background color',e.background),{id:'transparentBackground',label:'Transparent control background',type:'checkbox',value:e.transparentBackground}]),select('selectionIndicator','Selection indicator',e.selectionIndicator,[{value:'cursor',label:'Cursor'},{value:'border',label:'Border'},{value:'disabled',label:'Disabled'}]),{id:'disabled',label:'Disabled (unavailable)',type:'checkbox',value:e.disabled},select('visible','Visible',String(e.visible),['true','false'])];
     if(['car-showroom','garage-browser','button','choice','slider','toggle','keybind'].includes(e.type))fields.push(...navigationFields(e));
-    if(['image','asset-preview'].includes(e.type))fields.push(select('imageFit','Fit image',e.imageFit,['contain','cover','stretch']));
-    const result=await openEditorForm('Layout & Style',fields,{description:'Drag the widget to move it; drag its gold corner to resize. Use Properties to change data or behavior.'});
-    if(result)this.change(()=>{const before=structuredClone(this.element);for(const key of ['x','y','w','h'])result[key]/=100;Object.assign(this.element,result,{visible:result.visible==='true'});if(this.element.type==='container')transformMenuGroup(this.screen.elements,this.elementId,before,this.element);});
+    if(['image','asset-preview','button'].includes(e.type))fields.push(select('imageFit','Fit image',e.imageFit,['contain','cover','stretch']));
+    let result=await openEditorForm('Layout & Style',fields,{description:'Drag the widget to move it; drag its gold corner to resize. Use Properties to change data or behavior.'});
+    if(result)result=await resolveMenuAppearance(result,{choose:chooseEditorFiles});
+    if(result&&this.element===e)this.change(()=>{const before=structuredClone(this.element);for(const key of ['x','y','w','h'])result[key]/=100;Object.assign(this.element,result,{visible:result.visible==='true',selectionBorder:result.selectionIndicator==='border'});if(this.element.type==='container')transformMenuGroup(this.screen.elements,this.elementId,before,this.element);});
   }
   async editAction(action){
-    const names={...GARAGE_ACTION_LABELS,screen:'Open screen',back:'Back', 'set-param':'Set a parameter',race:'Start race',level:'Load level',movie:'Play movie',quit:'Exit menu'};
+    const names={...GARAGE_ACTION_LABELS,'cheat-code':'Redeem cheat code',screen:'Open screen','new-game':'Start new game',back:'Back', 'set-param':'Set a parameter',race:'Start race',level:'Load level',movie:'Play movie',quit:'Exit menu'};
     const kind=await openEditorForm('Widget Action',[select('type','When activated',action?.type||'screen',[{value:'none',label:'No action'},...MENU_ACTION_TYPES.map(type=>({value:type,label:names[type]}))])]);
     if(!kind)return undefined;if(kind.type==='none')return null;
     const a=action?.type===kind.type?action:{},fields=[];
     const folders={race:'races',level:'levels',movie:'cutscenes'};
-    const targets=kind.type==='screen'?this.menu.screens.map(s=>({value:s.id,label:s.name})):folders[kind.type]?listProjectFiles(folders[kind.type]).map(f=>({value:f.name,label:f.name})):[];
-    if(['screen','race','level','movie'].includes(kind.type)){
+    const targets=['screen','new-game'].includes(kind.type)?this.menu.screens.map(s=>({value:s.id,label:s.name})):folders[kind.type]?listProjectFiles(folders[kind.type]).map(f=>({value:f.name,label:f.name})):[];
+    if(['screen','new-game','race','level','movie'].includes(kind.type)){
       targets.push(...parameterNames(this).map(key=>({value:`$${key}`,label:`Selected value: ${key}`})));
       if(a.target&&!targets.some(t=>t.value===a.target))targets.push({value:a.target,label:a.target});
       fields.push(select('target','Destination',a.target||targets[0]?.value||'',targets));
       if(kind.type==='movie')fields.push(text('url','Or video URL (overrides destination)',''));
     }
     if(['garage-fit','garage-buy','garage-install','garage-remove'].includes(kind.type))fields.push(select('target','Part',a.target||'$partRef',[{value:'$partRef',label:'Selected garage part'},...listProjectFiles('items').map(f=>({value:f.name,label:f.name}))]));
+    if(kind.type==='cheat-code')fields.push(text('target','Code or $parameter',a.target||'$cheatCode',true));
     if(kind.type==='set-param')fields.push({...text('parameter','Parameter',a.parameter||'',true),suggestions:parameterNames(this)},text('value','Value (text, number, true/false, or JSON)',JSON.stringify(a.value??'')));
     if(!['race','level'].includes(kind.type))fields.push(select('after','Then',a.then?'edit':'none',[{value:'none',label:'Nothing else'},{value:'edit',label:'Configure another action'}]));
     const r=await openEditorForm(names[kind.type],fields,{description:kind.type==='race'?'Launch one saved race with the menu selections. Configure its next destination in the Race Editor’s finish settings.':'The selected values travel into races and levels. Movies finish before the next action runs.'});

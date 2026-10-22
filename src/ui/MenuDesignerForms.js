@@ -39,6 +39,10 @@ export async function chooseImage(editor,{background=false}={}){
 }
 export async function setupWidget(editor){
   const e=editor.element;if(!e)throw Error('Select a widget to configure');
+  if(e.type==='world-map'){
+    if(editor.mapDesigner.element&&(editor.mapDesigner.nodeId||editor.mapDesigner.linkId))return editor.mapDesigner.editSelection();
+    editor.openPicker('map-tools');return;
+  }
   if(e.type==='image')return chooseImage(editor);
   if(e.type==='button'){
     const result=await openEditorForm('Button',[text('label','Button text',e.label),...navigationFields(e)]);if(!result)return;
@@ -47,12 +51,17 @@ export async function setupWidget(editor){
   if(['property-display','asset-preview'].includes(e.type))return setupDataWidget(editor);
   const fields=[text('label','Label',e.label)];
   const description=[];
+  if(e.type==='garage-dialogue')description.push('Shows dialogue for the highlighted Tuning/Upgrade option and garage events. Race menu destinations can choose a special/story line using Garage dialogue after completion.');
+  if(e.type==='garage-tuner'){fields.push(bindingField(editor,e));description.push('Binds to the selected car. Parts determine enabled sliders; A edits/applies, B cancels, and held directions accelerate.');}
+  if(e.type==='race-description')fields.push(select('assetRef','Race',e.assetRef,fileOptions('races')),text('binding','Selected race parameter',e.binding,{suggestions:parameterNames(editor)}));
+  if(e.type==='world-map')fields.push({id:'showSelectedLabel',label:'Show selected race name below map',type:'checkbox',value:e.showSelectedLabel!==false});
+  if(e.type==='code-entry'){fields.push(bindingField(editor,e),{id:'codeLength',label:'Number of letters',value:e.codeLength,min:1,max:16,step:1});description.push('Up/down cycles A–Z, left/right changes position, and Confirm runs the widget action.');}
   if(['car-showroom','garage-browser','choice','slider','toggle','keybind'].includes(e.type)){
     fields.push(bindingField(editor,e),...navigationFields(e));
     description.push('Widgets sharing a value parameter stay linked. Settings parameters affect the running game; custom values are passed to the next race or level.');
   }
   if(e.type==='car-showroom'){
-    fields.push({id:'angle',label:'Parked viewing angle (135 = front left)',value:e.angle},{id:'duration',label:'Selected car rotation (seconds)',value:e.duration,min:.1,max:600},{id:'maxVisible',label:'Cars visible at once',value:e.maxVisible,min:1,max:4,step:1},{id:'selectedScale',label:'Selected car size',value:e.selectedScale,min:1,max:1.4},{id:'inactiveOpacity',label:'Unselected brightness',value:e.inactiveOpacity,min:.1,max:1});
+    fields.push({id:'angle',label:'Parked viewing angle (135 = front left)',value:e.angle},{id:'duration',label:'Selected car rotation (seconds)',value:e.duration,min:.1,max:600},{id:'maxVisible',label:'Cars visible at once',value:e.maxVisible,min:1,max:4,step:1},{id:'selectedZoomDuration',label:'Zoom-in time (seconds)',value:e.selectedZoomDuration,min:.05,max:3},{id:'selectedScale',label:'Selected car size',value:e.selectedScale,min:1,max:1.4},{id:'inactiveOpacity',label:'Unselected brightness',value:e.inactiveOpacity,min:.1,max:1});
     description.push('Left/right highlights a car and updates linked statistics. On Select runs when the highlighted car changes; On Confirm opens the garage or another destination.');
   }
   if(e.type==='garage-browser')description.push('Lists compatible Item Editor car parts by section, installation slot and tier. None restores the stock slot. Confirm uses the configured action; Buy / install performs an atomic purchase and installation.');
@@ -71,7 +80,7 @@ export async function setupWidget(editor){
   if(e.type==='keybind'){
     fields.splice(1,1,select('binding','Control',e.binding,['left','right','up','down','jump','attack','interact'].map(k=>({value:`input.${k}`,label:k}))));
   }
-  if(['car-preview','car-stats','power-curve'].includes(e.type)){
+  if(['car-preview','car-description','car-stats','power-curve'].includes(e.type)){
     fields.push(select('assetRef','Car',e.assetRef,fileOptions('cars')),text('binding','Selected car parameter',e.binding,{suggestions:parameterNames(editor)}));
     description.push('Choose a fixed saved car, or use the same parameter as a car Selection List.');
   }
@@ -105,7 +114,7 @@ export async function setupDataWidget(editor){
   if(result.dataSource==='garage'){
     await editor.resources.prepareGarage();
     const fields=[text('label','Label',e.label)];
-    if(e.type==='property-display')fields.push(select('property','Garage property',e.property==='name'?'partStatus':e.property,[{value:'partStatus',label:'Part status'},{value:'credits',label:'Credits'},{value:'owned',label:'Copies owned'},{value:'installed',label:'Installed'},{value:'price',label:'Price'},{value:'name',label:'Part name'}]));
+    if(e.type==='property-display')fields.push(select('property','Garage property',e.property==='name'?'partStatus':e.property,[{value:'partStatus',label:'Part status'},{value:'credits',label:'Scrap'},{value:'owned',label:'Copies owned'},{value:'installed',label:'Installed'},{value:'price',label:'Price'},{value:'name',label:'Part name'}]));
     const details=await openEditorForm('Garage Display',fields);if(details)editor.change(()=>Object.assign(editor.element,result,details,{assetRef:'',...(e.type==='asset-preview'?{property:'artRef'}:{})}));return;
   }
   const fields=[text('label','Label',e.label)];

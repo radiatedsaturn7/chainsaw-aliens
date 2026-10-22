@@ -6,13 +6,14 @@ import { projectNetworkPoint } from './RaceRouteNetwork.js';
 export function buildRaceNetworkWorld(network, {
   key = '', routeLength = 1, stepM = 2.5, textureWorldM = 2.5,
   elevationScaleM = 12, buildSurfaceSampler = true, retainTerrainCells = true,
-  sampleTerrain = () => 0, tileAt = () => null
+  sampleTerrain = () => 0, tileAt = () => null, paintedCells = [], tileSizeM = 5
 } = {}) {
   const geometry = buildRaceNetworkGeometry(network, { stepM, elevationScaleM });
   const authored = [...network.nodes, ...network.edges.flatMap(e => e.points)];
-  const minX = Math.min(...authored.map(p => p.x)) - 160, maxX = Math.max(...authored.map(p => p.x)) + 160;
-  const minZ = Math.min(...authored.map(p => p.z)) - 160, maxZ = Math.max(...authored.map(p => p.z)) + 160;
-  const cellSize = Math.max(8, Math.ceil(Math.max(maxX - minX, maxZ - minZ) / 160));
+  const minX = Math.floor((Math.min(...authored.map(p => p.x)) - 160)/tileSizeM)*tileSizeM, maxX = Math.max(...authored.map(p => p.x)) + 160;
+  const minZ = Math.floor((Math.min(...authored.map(p => p.z)) - 160)/tileSizeM)*tileSizeM, maxZ = Math.max(...authored.map(p => p.z)) + 160;
+  const cellSize = Math.max(tileSizeM, Math.ceil(Math.max(maxX - minX, maxZ - minZ) / 160 / tileSizeM)*tileSizeM);
+  const paintedBlocks=new Set(paintedCells.map(p=>`${Math.floor((p.x-minX)/cellSize)},${Math.floor((p.z-minZ)/cellSize)}`));
   const groundRoutes = { ...network, edges: network.edges.filter(e => e.structure === 'road') };
   const tunnels = { ...network, edges: network.edges.filter(e => e.structure === 'tunnel') };
   const tunnelAt = (x, z) => projectNetworkPoint(tunnels, { x, z });
@@ -43,13 +44,13 @@ export function buildRaceNetworkWorld(network, {
     // field above the entrance would make cars drive over the tunnel instead
     // of descending into it. Buried portions retain the terrain overhead.
     if (isPortalOpening(x + size / 2, z + size / 2)) return;
-    cells.push({ key: `network-ground:${x}:${z}`, tileCell: tileAt({ x, z }), terrainRegion: 'terrain',
+    cells.push({ key: `network-ground:${x}:${z}`, tileCell: tileAt({ x:x+size/2, z:z+size/2 }), terrainRegion: 'terrain',
       points: [vertex(x, z), vertex(x + size, z), vertex(x + size, z + size), vertex(x, z + size)] });
   };
   for (let z = minZ; z < maxZ; z += cellSize) for (let x = minX; x < maxX; x += cellSize) {
     const tunnel = tunnelAt(x + cellSize / 2, z + cellSize / 2);
-    const divisions = tunnel && tunnel.distanceToRoute < tunnel.edge.widthM / 2 + cellSize
-      ? Math.ceil(cellSize / 2) : 1;
+    let divisions=paintedBlocks.has(`${Math.round((x-minX)/cellSize)},${Math.round((z-minZ)/cellSize)}`)?cellSize/tileSizeM:1;
+    if(tunnel && tunnel.distanceToRoute < tunnel.edge.widthM / 2 + cellSize)divisions*=Math.ceil(cellSize/divisions/2);
     const size = cellSize / divisions;
     for (let row = 0; row < divisions; row++) for (let col = 0; col < divisions; col++) addCell(x + col * size, z + row * size, size);
   }

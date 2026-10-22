@@ -9,7 +9,7 @@ function fakeDocument(){
   const nodes=[];
   const document={activeElement:null,createElement(tag){
     const listeners=new Map();const node={tag,children:[],style:{},textContent:'',disabled:false,value:'',
-      appendChild(child){this.children.push(child);},setAttribute(key,value){this[key]=value;},
+      appendChild(child){this.children.push(child);},replaceChildren(){this.children=[];},setAttribute(key,value){this[key]=value;},
       addEventListener(key,callback){listeners.set(key,callback);},showModal(){},close(){listeners.get('close')?.();},remove(){},focus(){}};
     nodes.push(node);return node;
   }};
@@ -77,5 +77,22 @@ test('missing artwork keeps Apply disabled and reports the load failure',async()
     assert.equal(nodes.find(node=>node.tag==='button'&&node.textContent==='Apply').disabled,true);
     assert.match(nodes.find(node=>node.role==='status').textContent,/Could not load.*Missing Tire Art/);
     nodes.find(node=>node.tag==='button'&&node.textContent==='Cancel').onclick();assert.equal(await pending,null);
+  }finally{globalThis.document=previousDocument;globalThis.fetch=previousFetch;clearCachedProjectFilesForTests();resetProjectFilesForTests();}
+});
+
+test('opening tire picker refreshes all saved tires and preserves the selected tire',async()=>{
+  seed();const previousDocument=globalThis.document,previousFetch=globalThis.fetch;
+  const {document,nodes}=fakeDocument();globalThis.document=document;
+  let requested='';
+  globalThis.fetch=async url=>{requested=String(url);return {ok:true,json:async()=>({ok:true,index:{tires:{Offroad:{updatedAt:1},Tarmac:{updatedAt:2},Dirt:{updatedAt:3}}}})};};
+  try{
+    const pending=openTireLibrary({currentRef:'Offroad'});
+    await flush();await flush();
+    assert.match(requested,/__storage\/index\?folder=tires/);
+    const select=nodes.find(node=>node.tag==='select');
+    const saved=select.children.find(node=>node.label==='Saved tires').children.map(node=>node.value);
+    assert.deepEqual(new Set(saved),new Set(['saved:Offroad','saved:Tarmac','saved:Dirt']));
+    assert.equal(select.value,'saved:Offroad');
+    nodes.find(node=>node.tag==='button'&&node.textContent==='Cancel').onclick();await pending;
   }finally{globalThis.document=previousDocument;globalThis.fetch=previousFetch;clearCachedProjectFilesForTests();resetProjectFilesForTests();}
 });

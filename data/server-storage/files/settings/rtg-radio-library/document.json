@@ -11,12 +11,13 @@
           "artRef": "",
           "url": ""
         },
-        "src": "./assets/radio/f8375d61-d3a4-4245-92c4-07c24292c97f.mp3",
+        "src": "",
         "raceCues": {
           "start": 3,
           "end": null
         },
-        "initiallyUnlocked": true
+        "initiallyUnlocked": true,
+        "musicRef": "Who Signed the Order (I told you so)-f8375d61-d3a4-4245-92c4-07c"
       },
       {
         "id": "c2dddd12-98b9-4d68-a59d-6e2832fb1c07",
@@ -27,12 +28,13 @@
           "artRef": "",
           "url": ""
         },
-        "src": "./assets/radio/c2dddd12-98b9-4d68-a59d-6e2832fb1c07.mp3",
+        "src": "",
         "raceCues": {
           "start": 3,
           "end": null
         },
-        "initiallyUnlocked": true
+        "initiallyUnlocked": true,
+        "musicRef": "A Door I Carried-c2dddd12-98b9-4d68-a59d-6e2832fb1c07.mp3"
       },
       {
         "id": "ab0a13e5-3d04-4345-8c3e-46bf927e1085",
@@ -43,12 +45,13 @@
           "artRef": "",
           "url": ""
         },
-        "src": "./assets/radio/ab0a13e5-3d04-4345-8c3e-46bf927e1085.mp3",
+        "src": "",
         "raceCues": {
           "start": 3,
           "end": null
         },
-        "initiallyUnlocked": true
+        "initiallyUnlocked": true,
+        "musicRef": "Westward Bound-ab0a13e5-3d04-4345-8c3e-46bf927e1085.mp3"
       },
       {
         "id": "c64446af-e852-4297-96a4-ae89f2b9efe6",
@@ -59,12 +62,13 @@
           "artRef": "",
           "url": ""
         },
-        "src": "./assets/radio/c64446af-e852-4297-96a4-ae89f2b9efe6.mp3",
+        "src": "",
         "raceCues": {
           "start": 3,
           "end": null
         },
-        "initiallyUnlocked": true
+        "initiallyUnlocked": true,
+        "musicRef": "I Won't Disappear-c64446af-e852-4297-96a4-ae89f2b9efe6.mp3"
       },
       {
         "id": "289ec51f-dce8-4637-bb02-d1a6a1fa51e1",
@@ -75,12 +79,13 @@
           "artRef": "",
           "url": ""
         },
-        "src": "./assets/radio/289ec51f-dce8-4637-bb02-d1a6a1fa51e1.mp3",
+        "src": "",
         "raceCues": {
           "start": 3,
           "end": null
         },
-        "initiallyUnlocked": true
+        "initiallyUnlocked": true,
+        "musicRef": "My Own Enemy-289ec51f-dce8-4637-bb02-d1a6a1fa51e1.mp3"
       },
       {
         "id": "7ced7f92-2452-41d6-b778-6c6d003e3341",
@@ -91,12 +96,13 @@
           "artRef": "",
           "url": ""
         },
-        "src": "./assets/radio/7ced7f92-2452-41d6-b778-6c6d003e3341.mp3",
+        "src": "",
         "raceCues": {
           "start": 3,
           "end": null
         },
-        "initiallyUnlocked": true
+        "initiallyUnlocked": true,
+        "musicRef": "Python King-7ced7f92-2452-41d6-b778-6c6d003e3341.mp3"
       },
       {
         "id": "1ee37aa5-068d-482d-ad1c-22caeea28bd5",
@@ -107,12 +113,13 @@
           "artRef": "",
           "url": ""
         },
-        "src": "./assets/radio/1ee37aa5-068d-482d-ad1c-22caeea28bd5.mp3",
+        "src": "",
         "raceCues": {
           "start": 16.88,
           "end": null
         },
-        "initiallyUnlocked": true
+        "initiallyUnlocked": true,
+        "musicRef": "Am I Still Here-1ee37aa5-068d-482d-ad1c-22caeea28bd5.mp3"
       },
       {
         "id": "052dbcc3-4072-4b61-8921-6f668e435ab8",
@@ -123,12 +130,13 @@
           "artRef": "",
           "url": ""
         },
-        "src": "./assets/radio/052dbcc3-4072-4b61-8921-6f668e435ab8.mp3",
+        "src": "",
         "raceCues": {
           "start": 13.24,
           "end": null
         },
-        "initiallyUnlocked": true
+        "initiallyUnlocked": true,
+        "musicRef": "We Learn to Live-052dbcc3-4072-4b61-8921-6f668e435ab8.mp3"
       },
       {
         "id": "067d9317-0acc-4360-bc1e-dd6fdafaa9f1",
@@ -139,12 +147,47 @@
           "artRef": "",
           "url": ""
         },
-        "src": "./assets/radio/067d9317-0acc-4360-bc1e-dd6fdafaa9f1.mp3",
+        "src": "",
         "raceCues": {
           "start": 3,
           "end": null
         },
-        "initiallyUnlocked": true
+        "initiallyUnlocked": true,
+        "musicRef": "Everything You Said I'd Never-067d9317-0acc-4360-bc1e-dd6fdafaa9"
+      },
+      {
+        "id": "89c4ba41-b49f-4d04-b29c-73ec9d0fac55",
+        "title": "Would You Pull Me Out Again?",
+        "artist": "Lily Is On A Leash",
+        "album": "In Prison",
+        "image": {
+          "artRef": "",
+          "url": ""
+        },
+        "src": "",
+        "raceCues": {
+          "start": 3,
+          "end": null
+        },
+        "initiallyUnlocked": true,
+        "musicRef": "Would You Pull Me Out Again-89c4ba41-b49f-4d04-b29c-73ec9d0fac55"
+      },
+      {
+        "id": "181f7d93-5b04-4765-815c-667b6740a9f9",
+        "title": "Thunder",
+        "artist": "Auditory Complex",
+        "album": "Unrenown",
+        "image": {
+          "artRef": "",
+          "url": ""
+        },
+        "src": "",
+        "raceCues": {
+          "start": 3,
+          "end": null
+        },
+        "initiallyUnlocked": true,
+        "musicRef": "Thunder-181f7d93-5b04-4765-815c-667b6740a9f9.mp3"
       }
     ],
     "stations": [
@@ -164,7 +207,9 @@
           "7ced7f92-2452-41d6-b778-6c6d003e3341",
           "1ee37aa5-068d-482d-ad1c-22caeea28bd5",
           "052dbcc3-4072-4b61-8921-6f668e435ab8",
-          "067d9317-0acc-4360-bc1e-dd6fdafaa9f1"
+          "067d9317-0acc-4360-bc1e-dd6fdafaa9f1",
+          "89c4ba41-b49f-4d04-b29c-73ec9d0fac55",
+          "181f7d93-5b04-4765-815c-667b6740a9f9"
         ]
       }
     ]

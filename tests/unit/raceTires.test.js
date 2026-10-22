@@ -33,3 +33,15 @@ test('selecting a tire applies physics to that car and preserves its graphic tra
   tire.compound.surfaceGrip.dirt=0.1;
   assert.equal(editor.getRaceTireCompound('dirt',car).surfaceGrip.dirt,1.85);
 });
+
+test('road tire templates offer durable stock, street grip and specialized dry racing',()=>{
+ const stock=createTireDefinition('stock'),street=createTireDefinition('street'),race=createTireDefinition('tarmac');
+ assert.ok(stock.compound.surfaceGrip.asphalt<street.compound.surfaceGrip.asphalt);
+ assert.ok(street.compound.surfaceGrip.asphalt<race.compound.surfaceGrip.asphalt);
+ assert.ok(race.compound.surfaceGrip['wet-asphalt']<street.compound.surfaceGrip['wet-asphalt']);
+ assert.ok(stock.compound.wearRate<street.compound.wearRate);
+ assert.ok(street.compound.wearRate<race.compound.wearRate);
+ for(const tire of [stock,street,race])assert.deepEqual(normalizeTireDefinition(JSON.parse(JSON.stringify(tire))),normalizeTireDefinition(tire));
+ assert.equal(createTireDefinition('dirt').name,'Rally');
+ assert.equal(createTireDefinition('invalid').baseCompound,'tarmac');
+});

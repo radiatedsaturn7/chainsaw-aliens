@@ -50,3 +50,12 @@ export function getGamepadSpeedSteeringScale(speedMps = 0, steering = RACE_CONTR
   const bonus = Math.max(0, Math.min(0.25, Number(steering.gamepadSpeedAngleBonus) || 0));
   return 1 + bonus * blend * blend * (3 - 2 * blend);
 }
+
+// Leave brake torque headroom for forward load transfer. Tire contact and ABS
+// still decide how much of this demand can slow the chassis.
+export function getRaceServiceBrakeForceN(tuning = {}) {
+  const authored = Number(tuning.brakeForceN);
+  if (Number.isFinite(authored) && authored > 0) return Math.max(4500, authored);
+  const massKg = Math.max(100, Number(tuning.weightKg ?? tuning.physicalVehicleProfile?.massKg) || 1450);
+  return Math.max(9000, massKg * 12.5);
+}

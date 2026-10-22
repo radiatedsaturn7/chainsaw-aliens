@@ -1,0 +1,33 @@
+{
+  "kind": "item",
+  "schemaVersion": 2,
+  "item": {
+    "id": "offroad-tires",
+    "name": "Offroad Tires",
+    "description": "Offroad tires. Uses the saved Offroad tire definition.",
+    "carPart": {
+      "slot": "tires",
+      "section": "Tires",
+      "tier": "sport",
+      "price": 500,
+      "forSale": true,
+      "unlockKey": "",
+      "compatibleCars": [],
+      "requires": [],
+      "modifiers": [],
+      "tuning": [],
+      "torqueCurve": [],
+      "tireRef": "Offroad"
+    },
+    "artRef": "",
+    "model": null,
+    "widthM": 1,
+    "heightM": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "groundOffsetM": 0,
+    "rotate": false,
+    "persistent": true,
+    "effects": []
+  }
+}

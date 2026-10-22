@@ -26,9 +26,9 @@ test('invalid edits roll back without losing the designer selection',()=>{
 });
 
 test('keyboard undo handles a completed shortcut even after Control was released',async()=>{
- const e=editor();await e.runAction('insert-text');assert.equal(e.screen.elements.length,3);
+ const e=editor(),count=e.screen.elements.length;await e.runAction('insert-text');assert.equal(e.screen.elements.length,count+1);
  e.update({wasCommandPressedCode:code=>code==='KeyZ',wasPressedCode:()=>false,isDownCode:()=>false},1/60);
- assert.equal(e.screen.elements.length,2);
+ assert.equal(e.screen.elements.length,count);
 });
 
 test('Preview This Screen passes the edited screen; Play From Start keeps its explicit meaning',async()=>{
@@ -62,4 +62,18 @@ test('menu default background persists, new screens inherit and explicit backgro
  assert.equal(resolveMenuBackground(roundtrip,roundtrip.screens[0]).backgroundArt,'Sky');assert.equal(resolveMenuBackground(roundtrip,roundtrip.screens[0]).effect,'snow');
  assert.equal(resolveMenuBackground(roundtrip,roundtrip.screens[1]).background,'#ff0000');
  roundtrip.defaultBackground.background='#abcdef';assert.equal(resolveMenuBackground(roundtrip,roundtrip.screens[0]).background,'#abcdef');
+});
+
+test('first entry loads the same saved starting menu as the game, and preserves later editing',async()=>{
+ const e=editor(),saved=createMenuDocument();saved.screens[0].backgroundArt='saved-splash';
+ let loads=0;const options={loadPreference:async()=>({menuRef:'Game Menu'}),loadDocument:async(folder,name)=>{loads++;assert.equal(folder,'menus');assert.equal(name,'Game Menu');return {data:saved};}};
+ await e.openStartingMenu(options);assert.equal(e.currentMenuName,'Game Menu');assert.equal(e.screen.backgroundArt,'saved-splash');
+ e.screen.backgroundArt='unsaved-edit';await e.openStartingMenu(options);assert.equal(e.screen.backgroundArt,'unsaved-edit');assert.equal(loads,1);
+});
+test('loading the starting menu never overwrites edits or an explicitly opened document',async()=>{
+ for(const explicit of [false,true]){
+  const e=editor();let resolve;const pending=e.openStartingMenu({loadPreference:()=>new Promise(r=>resolve=r),loadDocument:async()=>({data:createMenuDocument()})});
+  if(explicit)e.loadMenu(createMenuDocument(),'Other Menu');
+  e.screen.backgroundArt='keep-me';resolve({menuRef:'Game Menu'});await pending;assert.equal(e.screen.backgroundArt,'keep-me');
+ }
 });

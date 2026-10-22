@@ -2118,6 +2118,7 @@ export function fileTypeBadge(filename = '') {
   if (value.endsWith('.gif')) return 'GIF';
   if (value.endsWith('.zip')) return 'ZIP';
   if (value.endsWith('.wav')) return 'WAV';
+  if (value.endsWith('.mp3')) return 'MP3';
   return 'File';
 }
 

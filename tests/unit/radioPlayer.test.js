@@ -117,3 +117,25 @@ test('turning radio on chooses a random eligible song; explicit selection and re
  await player.play('a');player.audio.currentTime=12;player.pause();await player.play();assert.equal(player.trackId,'a');assert.equal(player.audio.currentTime,12);
  await player.setEnabled(false);await player.setEnabled(true);assert.equal(player.trackId,'b');
 });
+
+test('browser pause/resume updates playback but natural ending still advances',async()=>{
+ const {player}=fixture({enabled:true,unlocked:['a','b']});await player.load();player.setContext(true);await player.play('a');
+ const audio=player.audio;audio.paused=true;audio.onpause();assert.equal(player.playing,false);
+ audio.paused=false;audio.onplaying();assert.equal(player.playing,true);
+ // A queued pause event must not undo a subsequent successful resume.
+ audio.onpause();assert.equal(player.playing,true);
+ audio.ended=true;audio.paused=true;audio.onpause();assert.equal(player.playing,true);
+ audio.onended();await new Promise(resolve=>setImmediate(resolve));assert.equal(player.trackId,'b');assert.equal(player.playing,true);
+ player.stop();assert.equal(audio.onpause,null);assert.equal(audio.onplaying,null);
+});
+
+test('MP3 respects master/music volume before playback, during fades, and after switching tracks',async()=>{
+ const {musicMediaVolume,DEFAULT_MUSIC_VOLUME}=await import('../../src/audio/musicVolume.js');
+ const {player}=fixture();const mixer={volume:.4,midiBusVolume:.4};player.getVolume=()=>musicMediaVolume(mixer);
+ assert.equal(player.volume,DEFAULT_MUSIC_VOLUME);await player.load();await player.unlock('a');player.setContext(true);
+ await player.play('a',{gain:.5});assert.ok(Math.abs(player.audio.volume-.08)<1e-9);
+ mixer.midiBusVolume=0;player.setVolume(player.getVolume());player.setGain(1);assert.equal(player.audio.volume,0);
+ await player.skip();assert.equal(player.audio.volume,0);
+ mixer.midiBusVolume=.5;mixer.volume=0;await player.play('a');assert.equal(player.audio.volume,0);
+ mixer.volume=.4;await player.play('b');assert.equal(player.audio.volume,.2);
+});

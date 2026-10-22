@@ -1,4 +1,5 @@
-import {partFits} from '../garage/CarPart.js';
+import {MenuAppearanceResources} from './MenuAppearance.js';
+import {partFits,isGarageUpgrade} from '../garage/CarPart.js';
 import {itemLibrary} from '../items/ItemLibrary.js';
 import {safeProperty} from './MenuWidgets.js';
 import {MenuCarPreview} from './MenuCarPreview.js';
@@ -6,7 +7,9 @@ import {listProjectFiles,loadProjectFile,hydrateProjectFilePayload} from '../ui/
 import {getRaceArtSpriteCanvasShared,hydrateRaceArtSpriteShared} from '../ui/shared/raceArtSpriteCanvas.js';
 
 export class MenuResources {
-  constructor(game){this.game=game;this.carPreview=new MenuCarPreview(game.carEditor);this.showroomFrames=new WeakMap();this.cars=new Map();this.carSources=new Map();this.artCache=new Map();this.tunings=new WeakMap();this.garageCars=new Map();this.partCatalog=[];this.pending=new Map();this.errors=new Map();}
+  constructor(game){this.appearance=new MenuAppearanceResources();this.game=game;this.carPreview=new MenuCarPreview(game.carEditor);this.showroomFrames=new WeakMap();this.cars=new Map();this.carSources=new Map();this.artCache=new Map();this.tunings=new WeakMap();this.garageCars=new Map();this.partCatalog=[];this.pending=new Map();this.errors=new Map();}
+  font(element){return this.appearance.font(element);}
+  cursor(element){return element.cursorArtRef?this.art(element.cursorArtRef):this.appearance.cursor(element);}
   get garage(){return this.garageOverride||this.game.items?.garage;}
   async prepareGarage(){
     await this.garage?.load();
@@ -15,7 +18,7 @@ export class MenuResources {
   }
   garageCatalog(){
     const owned=this.garage?.owned()||[];
-    return [...this.partCatalog,...owned.filter(item=>!this.partCatalog.some(e=>e.item.id===item.id)).map(item=>({ref:'owned:'+item.id,item}))];
+    return [...this.partCatalog,...owned.filter(item=>!this.partCatalog.some(e=>e.item.id===item.id)).map(item=>({ref:'owned:'+item.id,item}))].filter(({item})=>isGarageUpgrade(item));
   }
   choices(source,document,parameters={}){
     if(source==='garage-parts'){
@@ -28,11 +31,17 @@ export class MenuResources {
   request(key,fn){if(this.pending.has(key)||this.errors.has(key))return;const task=Promise.resolve().then(fn).catch(e=>this.errors.set(key,String(e?.message||e))).finally(()=>{this.pending.delete(key);this.showroomFrames=new WeakMap();});this.pending.set(key,task);}
   car(ref){
     const stock=this.stockCar(ref),garage=this.garage;
-    if(!stock||!garage?.items.ready||!garage.installed(ref).length)return stock;
+    if(!stock||!garage?.items.ready)return stock;
     const key=`${ref}:${garage.revision}:${garage.items.revision}`;
     const cached=this.garageCars.get(key);if(cached?.stock===stock)return cached.car;
     this.request(`garage-car:${key}`,async()=>{const car=await garage.build(ref,stock);this.garageCars.set(key,{stock,car});});
     return null;
+  }
+  race(ref){
+    if(!ref)return null;
+    const payload=loadProjectFile('races',ref)?.data;
+    if(payload)return payload.race||payload;
+    this.request(`race:${ref}`,()=>hydrateProjectFilePayload('races',ref));return null;
   }
   stockCar(ref){
     if(!ref)return null;
@@ -50,7 +59,7 @@ export class MenuResources {
       const installed=!!item&&garage.configuration(parameters.carRef).installed[item.carPart.slot]===item.id;
       const locked=!!item?.carPart.unlockKey&&!garage.items.progress.unlocks[item.carPart.unlockKey];
       const credits=Number(garage.items.game.player?.credits??garage.items.savedStats?.credits)||0;
-      return {credits,owned,installed,artRef:item?.artRef||'',price:item?.carPart.price||0,partStatus:item?`${installed?'Installed · ':''}${locked?'Locked · ':''}${!partFits(item.carPart,parameters.carRef)?'Does not fit · ':''}Owned: ${owned} · Price: ${item.carPart.price} · Credits: ${credits}`:'Choose a part',name:item?.name||''};
+      return {credits,owned,installed,artRef:item?.artRef||'',price:item?.carPart.price||0,partStatus:item?`${installed?'Installed · ':''}${locked?'Locked · ':''}${!partFits(item.carPart,parameters.carRef)?'Does not fit · ':''}Owned: ${owned} · Price: ${item.carPart.price} · Scrap: ${credits}`:'Choose a part',name:item?.name||''};
     }
     if(source==='parameters')return typeof ref==='object'?ref:parameters[ref];
     if(source==='cars')return this.car(ref);

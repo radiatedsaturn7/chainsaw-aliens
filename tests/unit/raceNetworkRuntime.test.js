@@ -1,3 +1,4 @@
+import {createDefaultRaceProject} from '../../src/racing/raceData.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import RaceEditor from '../../src/ui/RaceEditor.js';
@@ -5,6 +6,7 @@ import { normalizeRaceRouteNetwork, networkFromLegacySamples } from '../../src/r
 
 test('legacy races stay opt-in and conversion retains sampled positions and named endpoints', () => {
   const editor = new RaceEditor({});
+  editor.project=createDefaultRaceProject();
   const original = editor.getRacePathSamples({ step: 8 });
   assert.equal(editor.selectedRace.road.network, undefined);
   const network = networkFromLegacySamples(original);
@@ -345,6 +347,7 @@ for (const levelM of [0.2, 1.2]) test(`network playtest applies ${levelM}m water
 test('enabling routes on a legacy renderer selects layered rendering and remains undoable', async () => {
   const { handleNetworkAction } = await import('../../src/ui/RaceNetworkEditor.js');
   const editor = new RaceEditor({});
+  editor.project=createDefaultRaceProject();
   editor.selectedRace.groundRenderer = 'software';
   editor.selectedRace.renderDebug = { terrainEnabled: false, threeEnabled: false };
   await handleNetworkAction(editor, 'network-enable');

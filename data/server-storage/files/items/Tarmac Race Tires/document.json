@@ -1,0 +1,33 @@
+{
+  "kind": "item",
+  "schemaVersion": 2,
+  "item": {
+    "id": "tarmac-tires",
+    "name": "Tarmac Race Tires",
+    "description": "Dry-pavement racing tires. Uses the saved Tarmac tire definition.",
+    "carPart": {
+      "slot": "tires",
+      "section": "Tires",
+      "tier": "race",
+      "price": 900,
+      "forSale": true,
+      "unlockKey": "",
+      "compatibleCars": [],
+      "requires": [],
+      "modifiers": [],
+      "tuning": [],
+      "torqueCurve": [],
+      "tireRef": "Tarmac"
+    },
+    "artRef": "",
+    "model": null,
+    "widthM": 1,
+    "heightM": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "groundOffsetM": 0,
+    "rotate": false,
+    "persistent": true,
+    "effects": []
+  }
+}

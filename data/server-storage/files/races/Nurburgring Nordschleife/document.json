@@ -1,5 +1,467 @@
 {
-  "__chainsawStorage": "compact-v1",
-  "encoding": "json-gzip-base64",
-  "data": "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"
+  "schemaVersion": 1,
+  "kind": "race-track",
+  "savedAt": 1783855400000,
+  "selectedRaceId": "nurburgring-nordschleife",
+  "race": {
+    "id": "nurburgring-nordschleife",
+    "name": "Nurburgring Nordschleife",
+    "type": "circuit",
+    "laps": 1,
+    "weather": "clear",
+    "timeOfDay": "day",
+    "entryBehavior": "return-to-origin",
+    "finishBehavior": {
+      "type": "menu",
+      "targetLevel": null,
+      "targetRace": null,
+      "menuRef": "",
+      "menuScreen": "world-map"
+    },
+    "referenceNotes": [
+      "20.832 km Nordschleife layout with asphalt/concrete surface and more than 300 m of elevation change.",
+      "The template emphasizes crests, compressions, the Karussell, and the Dottinger Hohe straight.",
+      "A single lap is used because the real circuit length is already a long endurance-style test."
+    ],
+    "referenceFacts": {
+      "referenceBasis": "Nurburgring Nordschleife modern north loop",
+      "sourceLengthKm": 20.832,
+      "surface": "asphalt/concrete",
+      "elevationChangeM": 300,
+      "roadWidthM": 9,
+      "signatureSections": [
+        "Hatzenbach",
+        "Flugplatz",
+        "Fuchsröhre",
+        "Karussell",
+        "Brunnchen",
+        "Dottinger Hohe"
+      ]
+    },
+    "road": {
+      "width": 9,
+      "selectedGroundTileId": "grass",
+      "groundTiles": [],
+      "tileMap": {
+        "cellSizeM": 5,
+        "defaultTileId": "grass",
+        "minElevation": -0.42,
+        "maxElevation": 0.42,
+        "cells": {}
+      },
+      "nodes": [
+        {
+          "x": 0,
+          "y": 0,
+          "elevation": 0.02,
+          "role": "start",
+          "locked": true
+        },
+        {
+          "x": 254,
+          "y": -930,
+          "elevation": 0.04
+        },
+        {
+          "x": -85,
+          "y": -1944,
+          "elevation": 0.12
+        },
+        {
+          "x": 710,
+          "y": -2569,
+          "elevation": 0.2
+        },
+        {
+          "x": 1775,
+          "y": -2451,
+          "elevation": 0.3
+        },
+        {
+          "x": 2738,
+          "y": -3009,
+          "elevation": 0.18
+        },
+        {
+          "x": 3719,
+          "y": -2400,
+          "elevation": 0.08
+        },
+        {
+          "x": 3465,
+          "y": -1555,
+          "elevation": -0.08
+        },
+        {
+          "x": 4192,
+          "y": -710,
+          "elevation": -0.18
+        },
+        {
+          "x": 3685,
+          "y": 135,
+          "elevation": -0.24
+        },
+        {
+          "x": 4260,
+          "y": 1149,
+          "elevation": -0.18
+        },
+        {
+          "x": 3279,
+          "y": 1792,
+          "elevation": -0.1
+        },
+        {
+          "x": 2502,
+          "y": 2772,
+          "elevation": 0.02
+        },
+        {
+          "x": 1488,
+          "y": 2502,
+          "elevation": 0.16
+        },
+        {
+          "x": 710,
+          "y": 3212,
+          "elevation": 0.32
+        },
+        {
+          "x": -304,
+          "y": 2671,
+          "elevation": 0.22
+        },
+        {
+          "x": -1217,
+          "y": 1893,
+          "elevation": 0.1
+        },
+        {
+          "x": -761,
+          "y": 930,
+          "elevation": -0.02
+        },
+        {
+          "x": -1386,
+          "y": 203,
+          "elevation": -0.12
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "elevation": 0.02
+        }
+      ],
+      "segments": [
+        {
+          "length": 964,
+          "curve": 0.15,
+          "elevation": 0.04,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "codriver": "nurb-hatzenbach",
+          "hazardIds": []
+        },
+        {
+          "length": 1069,
+          "curve": -0.42,
+          "elevation": 0.12,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 1011,
+          "curve": 0.38,
+          "elevation": 0.2,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "codriver": "nurb-flugplatz",
+          "hazardIds": [
+            "nurb-flugplatz-crest"
+          ]
+        },
+        {
+          "length": 1072,
+          "curve": 0.28,
+          "elevation": 0.3,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 1113,
+          "curve": -0.48,
+          "elevation": 0.18,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "codriver": "nurb-foxhole",
+          "hazardIds": []
+        },
+        {
+          "length": 1155,
+          "curve": 0.68,
+          "elevation": 0.08,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 882,
+          "curve": 0.36,
+          "elevation": -0.08,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": [
+            "nurb-adenauer-curb"
+          ]
+        },
+        {
+          "length": 1115,
+          "curve": -0.62,
+          "elevation": -0.18,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 985,
+          "curve": 0.78,
+          "elevation": -0.24,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "turn": "square",
+          "codriver": "nurb-karussell",
+          "hazardIds": []
+        },
+        {
+          "length": 1166,
+          "curve": -0.5,
+          "elevation": -0.18,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 1173,
+          "curve": 0.58,
+          "elevation": -0.1,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 1251,
+          "curve": -0.3,
+          "elevation": 0.02,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 1049,
+          "curve": -0.72,
+          "elevation": 0.16,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "codriver": "nurb-brunnchen",
+          "hazardIds": []
+        },
+        {
+          "length": 1053,
+          "curve": 0.44,
+          "elevation": 0.32,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 1149,
+          "curve": -0.62,
+          "elevation": 0.22,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 1200,
+          "curve": -0.2,
+          "elevation": 0.1,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 1066,
+          "curve": 0.66,
+          "elevation": -0.02,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "codriver": "nurb-dottinger",
+          "hazardIds": []
+        },
+        {
+          "length": 959,
+          "curve": -0.22,
+          "elevation": -0.12,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 1401,
+          "curve": 0.16,
+          "elevation": 0.02,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        }
+      ]
+    },
+    "competition": {
+      "mode": "ai-race",
+      "aiDrivers": [
+        {
+          "id": "rookie-ai",
+          "name": "Rookie AI",
+          "carId": "starter-rwd",
+          "aggression": 0.35,
+          "skill": 0.45,
+          "rubberBanding": 0.2,
+          "enabled": true
+        }
+      ],
+      "playerStartGrid": 1,
+      "trafficEnabled": false
+    },
+    "hazards": [
+      {
+        "id": "nurb-flugplatz-crest",
+        "type": "jump",
+        "label": "Flugplatz Crest",
+        "at": 2750,
+        "lane": 0,
+        "height": 0.38,
+        "landingForgiveness": 0.5
+      },
+      {
+        "id": "nurb-adenauer-curb",
+        "type": "damage-wall",
+        "label": "Adenauer Curb",
+        "at": 7200,
+        "side": "right",
+        "damage": 12,
+        "destructible": false
+      }
+    ],
+    "codriver": {
+      "enabled": true,
+      "voice": "default",
+      "calls": [
+        {
+          "id": "nurb-hatzenbach",
+          "at": 900,
+          "text": "Hatzenbach, technical bends",
+          "severity": 2
+        },
+        {
+          "id": "nurb-flugplatz",
+          "at": 2500,
+          "text": "Flugplatz crest, keep car settled",
+          "severity": 3
+        },
+        {
+          "id": "nurb-foxhole",
+          "at": 6200,
+          "text": "Foxhole compression",
+          "severity": 3
+        },
+        {
+          "id": "nurb-karussell",
+          "at": 10300,
+          "text": "Karussell, very tight banked left",
+          "severity": 4
+        },
+        {
+          "id": "nurb-brunnchen",
+          "at": 14700,
+          "text": "Brunnchen, spectators right",
+          "severity": 3
+        },
+        {
+          "id": "nurb-dottinger",
+          "at": 18400,
+          "text": "Dottinger Hohe, long flat out",
+          "severity": 1
+        }
+      ]
+    },
+    "scenery": [
+      {
+        "type": "tree",
+        "at": 1000,
+        "side": "left"
+      },
+      {
+        "type": "tree",
+        "at": 9200,
+        "side": "right"
+      },
+      {
+        "type": "sign",
+        "at": 14700,
+        "side": "right"
+      }
+    ],
+    "groundRenderer": "webgl-track",
+    "groundTextureBaseWorldM": 1.002,
+    "groundTextureFilterMode": "balanced",
+    "skyboxArtRef": "providence",
+    "surfaceArt": {
+      "boundary": "apron"
+    },
+    "margin": {
+      "enabled": true,
+      "shoulderEnabled": true,
+      "widthM": 0.22,
+      "shoulderWidthM": 12,
+      "collisionMode": "shoulder",
+      "artRef": "apron",
+      "marginMode": "on",
+      "shoulderMode": "hidden",
+      "collisionEdge": "shoulder",
+      "collisionEffect": "reset"
+    },
+    "renderDebug": {
+      "lightingEnabled": true,
+      "terrainEnabled": true,
+      "texturesEnabled": true,
+      "detailEnabled": false,
+      "terrainCullingEnabled": true,
+      "terrainLodEnabled": true,
+      "terrainBudgetEnabled": true,
+      "farRoadDecimationEnabled": true,
+      "rawTerrainPolygonsEnabled": false
+    }
+  }
 }

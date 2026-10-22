@@ -3,10 +3,12 @@ import {normalizeMenuDocument,resolveMenuValue,validMenuParameter} from './MenuD
 // Shared by the editor preview and Play. Destinations are explicit adapter calls,
 // never evaluated scripts; custom configuration remains serializable data.
 export class MenuFlow {
-  constructor(document,adapter={}){this.document=normalizeMenuDocument(document);this.adapter=adapter;this.parameters=structuredClone(this.document.parameters);this.screenId=this.document.startScreen;this.history=[];this.time=0;this.busy=false;this.error='';this.generation=0;this.active=true;}
+  constructor(document,adapter={}){this.document=normalizeMenuDocument(document);this.adapter=adapter;this.parameters=structuredClone(this.document.parameters);this.screenId=this.document.startScreen;this.history=[];this.time=0;this.busy=false;this.error='';this.generation=0;this.active=true;this.lockedCarRef='';this.newGameSelection=false;}
   get screen(){return this.document.screens.find(s=>s.id===this.screenId);}
-  setParameter(key,value){if(!validMenuParameter(key))throw Error('Invalid parameter');this.parameters[key]=structuredClone(value);this.adapter.parameterChanged?.(key,value);}
-  goTo(id,{remember=true}={}){if(!this.document.screens.some(s=>s.id===id))throw Error(`Menu screen not found: ${id}`);if(remember&&id!==this.screenId)this.history.push(this.screenId);this.screenId=id;this.time=0;this.error='';this.adapter.screenChanged?.(this.screen,this.parameters);}
+  lockCar(ref){this.lockedCarRef=ref;this.parameters.carRef=ref;this.newGameSelection=false;this.history=[];}
+  isCarSelection(id){return this.document.screens.find(s=>s.id===id)?.elements.some(e=>e.type==='car-showroom');}
+  setParameter(key,value){if(this.lockedCarRef&&key==='carRef')value=this.lockedCarRef;if(!validMenuParameter(key))throw Error('Invalid parameter');this.parameters[key]=structuredClone(value);this.adapter.parameterChanged?.(key,value);}
+  goTo(id,{remember=true}={}){if(this.lockedCarRef&&this.isCarSelection(id)){id=this.document.screens.some(s=>s.id==='world-map')?'world-map':this.screenId;if(id===this.screenId)return;}if(!this.document.screens.some(s=>s.id===id))throw Error(`Menu screen not found: ${id}`);if(remember&&id!==this.screenId&&!(this.lockedCarRef&&this.isCarSelection(this.screenId)))this.history.push(this.screenId);this.screenId=id;this.time=0;this.error='';this.adapter.screenChanged?.(this.screen,this.parameters);}
   back(){if(this.busy)return;const id=this.history.pop();if(id)this.goTo(id,{remember:false});else this.stop();}
   stop(){this.active=false;this.generation++;this.adapter.stop?.();}
   update(dt){if(this.active)this.time+=Math.max(0,Number(dt)||0);}
@@ -18,8 +20,12 @@ export class MenuFlow {
   }
   async execute(action,generation,depth=0){
     if(!this.active||generation!==this.generation)return;if(depth>12)throw Error('Too many chained menu actions');
-    const target=resolveMenuValue(action.target,this.parameters),configuration=structuredClone(this.parameters);
+    const target=resolveMenuValue(action.target,this.parameters),configuration={...structuredClone(this.parameters),...(this.lockedCarRef?{carRef:this.lockedCarRef}:{})};
     switch(action.type){
+      case 'cheat-code':await this.adapter.cheatCode(target,configuration);break;
+      case 'new-game':
+        if(!this.document.screens.some(s=>s.id===target))throw Error(`Menu screen not found: ${target}`);
+        this.lockedCarRef='';this.newGameSelection=true;this.history=[];delete this.parameters.selectedGameCar;this.goTo(target);break;
       case 'screen':this.goTo(target);break;
       case 'back':{const id=this.history.pop();if(id)this.goTo(id,{remember:false});else this.stop();break;}
       case 'set-param':this.setParameter(action.parameter,resolveMenuValue(action.value,this.parameters));break;

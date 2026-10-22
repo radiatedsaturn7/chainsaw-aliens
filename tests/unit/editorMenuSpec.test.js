@@ -775,7 +775,7 @@ test('menu specs include high-risk actions from the UI plan', () => {
   assert.ok(getEditorMenuSection('sfx', 'envelopes').actions.includes('pitch'));
   assert.equal(getEditorMenuSection('cutscene', 'export'), null);
   assert.equal(getEditorMenuSection('race', 'generate'), null);
-  assert.deepEqual(getEditorMenuSection('race', 'file').actions.slice(6), ['race-from-image', 'generate-random-race', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('race', 'file').actions.slice(6), ['race-scale', 'race-description', 'race-from-image', 'generate-random-race', 'exit-main']);
   assert.equal(getEditorMenuSection('race', 'track').actions.includes('generate-random-race'), false);
   assert.equal(getEditorMenuSection('race', 'track').actions.includes('test-drive'), false);
   assert.equal(getEditorMenuSection('race', 'drive'), null);
@@ -918,8 +918,8 @@ test('Race shared authoring roots include tile-backed terrain commands without s
   assert.equal(getEditorMenuSection('race', 'race'), null);
   assert.equal(getEditorMenuSection('race', 'generate'), null);
   assert.equal(getEditorMenuSection('race', 'elevation'), null);
-  assert.deepEqual(getEditorMenuSection('race', 'file').actions.slice(6), ['race-from-image', 'generate-random-race', 'exit-main']);
-  assert.deepEqual(getEditorMenuSection('race', 'track').actions, ['draw-road', 'network-enable', 'network-select', 'network-add', 'network-split', 'network-junction', 'network-join', 'network-properties', 'network-markers', 'network-delete', 'network-water']);
+  assert.deepEqual(getEditorMenuSection('race', 'file').actions.slice(6), ['race-scale', 'race-description', 'race-from-image', 'generate-random-race', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('race', 'track').actions, ['draw-road', 'network-enable', 'network-select', 'network-add', 'network-multi', 'network-transform', 'network-all', 'network-clear', 'network-connect', 'network-split', 'network-junction', 'network-join', 'network-properties', 'network-markers', 'network-delete', 'network-water']);
   assert.equal(getEditorMenuSection('race', 'track').actions.includes('paint-elevation'), false);
   assert.deepEqual(getEditorMenuSection('race', 'ground').actions.slice(0, 6), [
     'race-tile-model', 'race-clear-tile-model',
@@ -941,7 +941,7 @@ test('Race shared authoring roots include tile-backed terrain commands without s
   ['trigger-select', 'trigger-action', 'trigger-art', 'trigger-doodad', 'trigger-weather', 'place-trigger', 'delete-trigger']
     .forEach((action) => assert.equal(getEditorMenuSection('race', 'ground').actions.includes(action), true, action));
   assert.deepEqual(getEditorMenuSection('race', 'sprites').actions, ['sprite-select', 'race-item', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']);
-  assert.deepEqual(getEditorMenuSection('race', 'settings').actions, ['race-radio', 'race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-sun', 'race-weather', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug']);
+  assert.deepEqual(getEditorMenuSection('race', 'settings').actions, ['race-radio', 'race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-sun', 'race-weather', 'race-road-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug']);
   assert.equal(uiSpecSource.includes('- File: standard document actions plus From Image, generate random race, and load built-in reference tracks.'), true);
   assert.equal(uiSpecSource.includes('Surfaces: selected ground tile, paint ground, selected-segment edge tile'), false);
 });

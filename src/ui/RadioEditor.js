@@ -1,3 +1,8 @@
+import {hydrateServerStorage} from './serverStorage.js';
+import {importMusicAsset} from '../audio/MusicAsset.js';
+import {listProjectFiles} from './projectFiles.js';
+import {musicMediaVolume} from '../audio/musicVolume.js';
+import { PlaybackWakeLock } from './shared/PlaybackWakeLock.js';
 import RaceEditor from './RaceEditor.js';
 import { openEditorForm, chooseEditorFiles } from './shared/editorForm.js';
 import { chooseImage } from './MenuDesignerForms.js';
@@ -7,22 +12,16 @@ import { RadioPlayer } from '../radio/RadioPlayer.js';
 import { RadioNowPlaying } from './RadioNowPlaying.js';
 import { getEditorMenuSpec, getEditorControllerRootMenuEntries } from './shared/editorMenuSpec.js';
 import { EditorInputActionNormalizer, EDITOR_INPUT_ACTIONS as INPUT } from './shared/input/editorInputActions.js';
-import { drawSharedDesktopContextPanel, drawSharedPanel, drawSharedPlayStopButton, drawSharedTransportPopover, UI_SUITE } from './uiSuite.js';
+import { drawSharedDesktopContextPanel, drawSharedPanel, drawSharedPlayStopButton, drawSharedTransportIconButton, drawSharedTransportPopover, UI_SUITE } from './uiSuite.js';
 
 const musicTime=seconds=>{const value=Math.max(0,Number(seconds)||0);return `${Math.floor(value/60)}:${(value%60).toFixed(1).padStart(4,'0')}`;};
 const text = (id, label, value = '') => ({id, label, value, type:'text'});
 const select = (id, label, value, options) => ({id, label, value, options});
 const yesNo = [{value:'yes',label:'Yes'},{value:'no',label:'No'}];
-const readFile = file => new Promise((resolve,reject) => {
-  const reader = new FileReader();
-  reader.onload = () => resolve(reader.result);
-  reader.onerror = () => reject(Error('Could not read audio file'));
-  reader.readAsDataURL(file);
-});
 const labels = {
   new:'New Library', save:'Save Library', 'save-as':'Save Library As', open:'Open Library', export:'Export Library', import:'Import Library',
   'radio-focus-stations':'Focus Stations', 'radio-focus-tracks':'Focus Tracks',
-  'radio-import':'Upload MP3', 'radio-play':'Play / Pause Song',
+  'radio-music':'Add Saved MP3 / MIDI', 'radio-import':'Upload MP3 / MIDI', 'radio-play':'Play / Pause Song',
   'radio-seek-back':'Back 5 Seconds', 'radio-seek-forward':'Forward 5 Seconds',
   'radio-loop':'Repeat', 'radio-restart':'Rewind to Start', 'radio-stop':'Stop Preview', 'radio-next':'Next Track', 'radio-previous':'Previous Track',
   'station-new':'New Station', 'station-properties':'Station Properties', 'station-logo':'Station Logo',
@@ -45,10 +44,19 @@ export class RadioEditor extends RaceEditor {
     this.focusList = 'stations';
     this.radioInput = new EditorInputActionNormalizer();
     this.artworkDisplay = new RadioNowPlaying();
+    this.keepScreenAwake=true;
+    this.playbackWakeLock=new PlaybackWakeLock();
     // Audition uses its own progress: locked songs can be heard without unlocking them.
-    this.preview = new RadioPlayer({load:async()=>({}),save:async()=>({ok:true}),onChange:()=>{
+    this.preview = new RadioPlayer({getVolume:()=>musicMediaVolume(this.game.audio),load:async()=>({}),save:async()=>({ok:true}),onChange:()=>{
+      void this.playbackWakeLock.setActive(this.keepScreenAwake && this.preview?.playing);
       this.game.audio?.setRadioPlaying?.(Boolean(this.preview?.playing || this.game.radio?.playing));
-      if(this.preview?.playing && this.preview.trackId)this.trackId=this.preview.trackId;
+      if(this.preview?.playing && this.preview.trackId){
+        this.trackId=this.preview.trackId;
+        if(this.highlightedPlayingTrack!==this.trackId){
+          this.highlightedPlayingTrack=this.trackId;
+          this.menuScrollState['radio:tracks']=Math.max(0,this.visibleTracks.findIndex(t=>t.id===this.trackId)+1);
+        }
+      }else this.highlightedPlayingTrack=null;
     }});
     this.cueDirector=new RaceRadioDirector(this.preview);
     this.preview.repeatMode='off';
@@ -127,11 +135,11 @@ export class RadioEditor extends RaceEditor {
     const trackIds=station.trackIds.includes(this.trackId)?station.trackIds:this.visibleTracks.map(track=>track.id);
     this.preview.library={...this.library,stations:[{...station,trackIds}]};
     this.preview.progress.stationId=station.id;
-    this.preview.setVolume(this.game.audio?.midiBusVolume??0.8);
+    this.preview.setVolume(musicMediaVolume(this.game.audio));
   }
   async stepPreview(direction) {
     if(!this.preview.audio){this.preparePreviewQueue();this.preview.trackId=this.trackId;}
-    return direction<0?this.preview.rewind():this.preview.skip();
+    return this.preview.skip(direction);
   }
   exitToMainMenu() {this.clearCuePreview();this.cancelTransportHold();this.closeTransportPopover();this.preview.stop();this.game.transitionTo('title',{forceCleanup:true});}
   options() {return this.run(async()=>{
@@ -157,14 +165,15 @@ export class RadioEditor extends RaceEditor {
     this.status='Library exported';
   }
   async importTrack() {
-    const [file]=await chooseEditorFiles('audio/mpeg,.mp3');if(!file)return;
-    if(!/\.mp3$/i.test(file.name)&&file.type!=='audio/mpeg')throw Error('Choose an MP3 audio file.');
-    const fields=await openEditorForm('Import Radio Track',[text('title','Song title',file.name.replace(/\.mp3$/i,'')),text('artist','Artist'),text('album','Album'),select('initiallyUnlocked','Available without a mix tape?','no',yesNo)]);
+    const asset=await importMusicAsset();if(asset)await this.addMusicTrack(asset.name);
+  }
+  async addMusicTrack(ref=''){
+    if(!ref){await hydrateServerStorage({folder:'music'});const picked=await openEditorForm('Add Saved Music',[select('ref','MP3 / MIDI track','',listProjectFiles('music').map(f=>({value:f.name,label:f.name})))]);if(!picked?.ref)return;ref=picked.ref;}
+    const fields=await openEditorForm('Radio Track',[text('title','Song title',ref.replace(/\.(mp3|mid|midi)$/i,'')),text('artist','Artist'),text('album','Album'),select('initiallyUnlocked','Available without a mix tape?','no',yesNo)]);
     if(!fields)return;
     const library=structuredClone(this.library),id=createRadioId();
-    library.tracks.push({id,...fields,initiallyUnlocked:fields.initiallyUnlocked==='yes',src:await readFile(file),image:{artRef:'',url:''}});
-    const station=library.stations.find(s=>s.id===this.stationId);
-    if(station)station.trackIds.push(id);
+    library.tracks.push({id,...fields,initiallyUnlocked:fields.initiallyUnlocked==='yes',musicRef:ref,image:{artRef:'',url:''}});
+    const station=library.stations.find(s=>s.id===this.stationId);if(station)station.trackIds.push(id);
     await this.commit(library);this.selectTrack(id);
   }
   async editStation(create=false) {
@@ -250,6 +259,10 @@ export class RadioEditor extends RaceEditor {
   }
   getMenuItems(root) {const spec=getEditorMenuSpec(this.editorId);return(spec.sections[root]?.actions||[]).map(id=>({id,label:this.getRaceActionLabel(id),disabled:!this.isActionAvailable(id),onSelect:()=>this.handleMenuAction(id)}));}
   getRaceActionLabel(id) {
+    if(id==='radio-keep-awake'){
+      const state=!this.keepScreenAwake?'Off':!this.playbackWakeLock.supported?'Unavailable':this.playbackWakeLock.status==='active'?'Active':this.playbackWakeLock.status==='unavailable'?'Unavailable':this.playbackWakeLock.status==='released'?'Released by Device':'On';
+      return `Keep Screen Awake: ${state}`;
+    }
     if(id==='radio-loop')return 'Repeat: '+({off:'Off',all:'All',one:'Song'}[this.preview.repeatMode]);
     return labels[id]||id;
   }
@@ -269,7 +282,7 @@ export class RadioEditor extends RaceEditor {
     if(!this.isActionAvailable(id))return;
     if(['radio-play','radio-stop','radio-next','radio-previous','radio-restart'].includes(id))this.clearCuePreview();
     const actions={
-      undo:()=>this.history(),redo:()=>this.history(true),'radio-import':()=>this.importTrack(),
+      undo:()=>this.history(),redo:()=>this.history(true),'radio-import':()=>this.importTrack(),'radio-music':()=>this.addMusicTrack(),
       new:()=>this.newLibrary(),open:()=>this.openLibrary(),import:()=>this.openLibrary(),'save-as':()=>this.exportLibrary(true),export:()=>this.exportLibrary(),
       'radio-focus-stations':()=>{this.focusList='stations';},'radio-focus-tracks':()=>{this.focusList='tracks';},
       save:async()=>{await this.game.radio.saveLibrary(this.library);this.status='Library saved';},
@@ -280,6 +293,11 @@ export class RadioEditor extends RaceEditor {
       'track-membership':()=>this.membership(),'track-up':()=>this.moveTrack(-1),'track-down':()=>this.moveTrack(1),
       'radio-seek-back':()=>this.seekPreview((this.preview.audio?.currentTime||0)-5),
       'radio-seek-forward':()=>this.seekPreview((this.preview.audio?.currentTime||0)+5),
+      'radio-keep-awake':()=>{
+        this.keepScreenAwake=!this.keepScreenAwake;
+        void this.playbackWakeLock.setActive(this.keepScreenAwake && this.preview.playing);
+        this.status=this.keepScreenAwake?'Keep awake during playback; requires browser support and HTTPS or localhost.':'Automatic screen sleep allowed.';
+      },
       'radio-loop':()=>{const modes=['off','all','one'];this.preview.repeatMode=modes[(modes.indexOf(this.preview.repeatMode)+1)%3];},
       'radio-restart':()=>{if(this.preview.audio)this.preview.audio.currentTime=0;},
       'radio-play':()=>this.togglePreview(),'radio-stop':()=>this.preview.stop(),'radio-next':()=>this.stepPreview(1),'radio-previous':()=>this.stepPreview(-1),
@@ -301,7 +319,7 @@ export class RadioEditor extends RaceEditor {
   }
   drawMusicTimeline(ctx,bounds,compact) {
     const duration=this.timelineDuration(),position=this.seekDrag?.seconds??(this.preview.trackId===this.trackId?this.preview.audio?.currentTime||0:0);
-    const b={x:bounds.x+12,y:bounds.y+(compact?26:48),w:compact?Math.max(80,bounds.w-326):bounds.w-24,h:24};
+    const b={x:bounds.x+12,y:bounds.y+(compact?64:48),w:compact?Math.max(80,bounds.w-326):bounds.w-24,h:24};
     this.timelineBounds=b;
     ctx.fillStyle=UI_SUITE.colors.muted;ctx.font=`12px ${UI_SUITE.font.family}`;ctx.textAlign='left';
     ctx.fillText(duration?`${musicTime(position)} / ${musicTime(duration)}`:'Play the selected song to seek',b.x,b.y-5,b.w);
@@ -314,7 +332,7 @@ export class RadioEditor extends RaceEditor {
     }
     ctx.fillStyle=duration?UI_SUITE.colors.text:UI_SUITE.colors.muted;ctx.fillRect(b.x+b.w*ratio-3,b.y+5,6,14);
     this.buttons.push({id:'radio-seek',bounds:b,disabled:!duration});
-    const buttonY=compact?bounds.y+16:bounds.y+80,buttonX=compact?b.x+b.w+10:bounds.x+12;
+    const buttonY=compact?bounds.y+54:bounds.y+80,buttonX=compact?b.x+b.w+10:bounds.x+12;
     const buttonW=compact?146:(bounds.w-32)/2;
     for(const [index,kind] of ['start','end'].entries()){
       const id=kind==='start'?'track-start-here':'track-end-here';
@@ -384,8 +402,18 @@ export class RadioEditor extends RaceEditor {
   drawDesktopContext(ctx,bounds) {drawSharedDesktopContextPanel(ctx,bounds,{title:this.title,lines:[`Station: ${this.station?.name||'None'}`,`Track: ${this.track?.title||'None'}`,this.track?.artist||'',this.track?.album||'',`${this.library.stations.length} stations · ${this.library.tracks.length} tracks`],contentRoles:['document-summary','active-tool-summary','status'],status:this.preview.error||this.status});}
   drawLandscapeToolOptions(ctx,bounds) {drawSharedDesktopContextPanel(ctx,bounds,{title:this.station?.name||this.title,lines:[],contentRoles:['status'],status:this.preview.error||this.status});}
   drawRaceTopPlayControl(ctx,bounds) {
-    drawSharedPlayStopButton(ctx,bounds,{isActive:this.preview.playing});
-    this.buttons.push({id:'radio-play',bounds:{...bounds},onClick:()=>this.handleMenuAction('radio-play')});
+    const side=40,gap=6,width=bounds.w+2*(side+gap);
+    const surface=this.radioBounds;
+    const x=this.activeViewportMode==='portrait'
+      ? surface.x+(surface.w-width)/2 : surface.x+surface.w-width-4;
+    const play={...bounds,x:x+side+gap};
+    drawSharedPlayStopButton(ctx,play,{isActive:this.preview.playing});
+    this.buttons.push({id:'radio-play',bounds:play,onClick:()=>this.handleMenuAction('radio-play')});
+    for(const [id,label,buttonX] of [['radio-previous','<<',x],['radio-next','>>',play.x+play.w+gap]]){
+      const b={...bounds,x:buttonX,w:side},disabled=!this.track||this.opened;
+      drawSharedTransportIconButton(ctx,b,{icon:label,subtle:disabled});
+      this.buttons.push({id,bounds:b,disabled,onClick:()=>{if(!disabled)this.handleMenuAction(id);}});
+    }
   }
   drawCarEditorWorkSurface(ctx,bounds) {
     // The shared gamepad help bar overlays the bottom of the work surface.
@@ -395,11 +423,11 @@ export class RadioEditor extends RaceEditor {
     ctx.save();ctx.fillStyle=UI_SUITE.colors.text;ctx.font=`14px ${UI_SUITE.font.family}`;ctx.textAlign='left';
     const compact=bounds.h<360;
     const title=this.preview.currentTrack?`${this.preview.playing?'Playing':'Paused'}: ${this.preview.currentTrack.title}`:'Station preview';
-    if(!compact&&this.activeViewportMode==='desktop')ctx.fillText(title,bounds.x+108,bounds.y+28,Math.max(40,bounds.w-176));
+    if(!compact&&this.activeViewportMode==='desktop')ctx.fillText(title,bounds.x+108,bounds.y+28,Math.max(40,bounds.w-300));
     this.drawMusicTimeline(ctx,bounds,compact);
     ctx.font=`12px ${UI_SUITE.font.family}`;ctx.fillStyle=UI_SUITE.colors.muted;
-    ctx.fillText(this.preview.error||this.status,bounds.x+12,bounds.y+(compact?60:130),bounds.w-24);
-    const wide=bounds.w>=620||compact,top=bounds.y+(compact?74:144),height=Math.max(60,bounds.h-(compact?124:194));
+    ctx.fillText(this.preview.error||this.status,bounds.x+12,bounds.y+(compact?98:130),bounds.w-24);
+    const wide=bounds.w>=620||compact,top=bounds.y+(compact?112:144),height=Math.max(60,bounds.h-(compact?162:194));
     const stationBounds={x:bounds.x+8,y:top,w:wide?bounds.w*0.32-12:bounds.w-16,h:wide?height:Math.min(150,height*0.38)};
     const tracksBounds=wide?{x:bounds.x+bounds.w*0.32+4,y:top,w:bounds.w*0.68-12,h:height}:{x:bounds.x+8,y:top+stationBounds.h+8,w:bounds.w-16,h:Math.max(60,height-stationBounds.h-8)};
     for(const [b,title] of [[stationBounds,'Stations'],[tracksBounds,'Tracks · ✓ in selected station']]){ctx.fillStyle=UI_SUITE.colors.text;ctx.font=`bold 13px ${UI_SUITE.font.family}`;ctx.fillText(title,b.x+8,b.y+16,b.w-16);}
@@ -408,9 +436,13 @@ export class RadioEditor extends RaceEditor {
       ...this.library.stations.map(s=>({id:`station:${s.id}`,label:s.name,active:s.id===this.stationId,onClick:()=>this.selectStation(s.id)}))
     ],1,{scrollKey:'radio:stations'});
     this.drawActionRows(ctx,{...tracksBounds,y:tracksBounds.y+25,h:tracksBounds.h-25},[
-      {id:'radio-import',label:'+ Upload MP3',onClick:()=>this.handleMenuAction('radio-import')},
-      ...this.visibleTracks.map(t=>({id:`track:${t.id}`,label:`${this.station?.trackIds.includes(t.id)?'✓':'＋'} ${t.title}${t.artist?' — '+t.artist:''}`,active:t.id===this.trackId,onClick:()=>this.selectTrack(t.id)}))
+      {id:'radio-import',label:'+ Upload MP3 / MIDI',onClick:()=>this.handleMenuAction('radio-import')},
+      ...this.visibleTracks.map(t=>({id:`track:${t.id}`,label:`${this.preview.playing&&this.preview.trackId===t.id?'▶ Playing · ':''}${this.station?.trackIds.includes(t.id)?'✓':'＋'} ${t.title}${t.artist?' — '+t.artist:''}`,active:t.id===this.trackId,onClick:()=>this.selectTrack(t.id)}))
     ],1,{scrollKey:'radio:tracks'});
+    if(this.preview.playing){
+      const playing=this.buttons.find(b=>b.id===`track:${this.preview.trackId}`);
+      if(playing){ctx.fillStyle='#58c994';ctx.fillRect(playing.bounds.x,playing.bounds.y,4,playing.bounds.h);ctx.strokeStyle='#58c994';ctx.strokeRect(playing.bounds.x,playing.bounds.y,playing.bounds.w,playing.bounds.h);}
+    }
     const footerY=bounds.y+bounds.h-42,buttonW=(bounds.w-32)/3;
     const footer=[['station-properties','Station'],['track-properties','Track'],['track-membership',this.station?.trackIds.includes(this.trackId)?'Remove':'Add to station']];
     footer.forEach(([id,label],i)=>this.registerDrawnButton(ctx,{x:bounds.x+8+i*(buttonW+8),y:footerY,w:buttonW,h:34},{id,label,disabled:!this.isActionAvailable(id),onClick:()=>this.handleMenuAction(id)}));
@@ -446,7 +478,7 @@ export class RadioEditor extends RaceEditor {
   }
   update(input,dt) {
     if(this.opened)return;
-    this.preview.setVolume(this.game.audio?.midiBusVolume??0.8);
+    this.preview.setVolume(musicMediaVolume(this.game.audio));
     if(this.cueSession){
       if(!this.cueSession.raceMusicPending)this.cueSession.countdownRemainingMs=Math.max(0,this.cueSession.countdownRemainingMs-dt*1000);
       this.cueDirector.update(this.cueSession,{dt});

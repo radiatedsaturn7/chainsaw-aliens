@@ -55,9 +55,25 @@ export function createBranchingExampleRace({ id = 'test-loop', laneCount = 1 } =
   return race;
 }
 
+export function createEmptyRace({id='new-race',laneCount=1}={}) {
+  laneCount=Math.max(1,Math.min(6,Math.round(Number(laneCount)||1)));
+  const race=createDefaultRace(id);
+  race.name='New Race';race.type='destination';race.laps=1;
+  race.codriver.calls=[];race.waterRegions=[];
+  race.road.laneCount=laneCount;race.road.width=laneCount*RACE_LANE_WIDTH_M;
+  race.road.nodes=[{x:0,y:0,elevation:0,role:'start',locked:true}];
+  race.road.segments=[];race.road.tileMap.cells={};
+  race.road.network=normalizeRaceRouteNetwork({
+    nodes:[{id:'start',name:'Start',x:0,z:0,heightM:0},{id:'end',name:'Track end',x:0,z:100,heightM:0}],
+    edges:[{id:'straight',name:'Straight',from:'start',to:'end',points:[],widthM:race.road.width,surface:'asphalt'}],
+    startNodeId:'start',finishNodeId:''
+  });
+  return race;
+}
+
 export function createNewRaceProject(options = {}) {
   const project = createDefaultRaceProject();
-  project.races[0] = createBranchingExampleRace(options);
+  project.races = [createEmptyRace(options)];
   project.selectedRaceId = project.races[0].id;
   return project;
 }

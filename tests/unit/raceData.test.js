@@ -55,10 +55,11 @@ test('race data scaffold supports default races, cars, and surfaces', () => {
   assert.equal(race.road.segments.length > 0, true);
   assert.deepEqual(race.road.nodes, [{ x: 0, y: 0, elevation: 0, role: 'start', locked: true }]);
   assert.deepEqual(project.races[0].road.nodes, [{ x: 0, y: 0, elevation: 0, role: 'start', locked: true }]);
-  assert.equal(race.finishBehavior.type, 'return-to-origin');
+  assert.equal(race.finishBehavior.type, 'menu');
+  assert.equal(race.finishBehavior.menuScreen, 'world-map');
   assert.equal(RACE_TIME_OF_DAY.includes(race.timeOfDay), true);
   assert.equal(DRIVETRAINS.includes(car.tuning.drivetrain), true);
-  assert.equal(project.cars[0].name, 'AWD Sports Car');
+  assert.equal(project.cars[0].name, 'AWD');
   assert.ok(project.cars.every(car => car.__systemPreset === true));
   assert.equal(project.cars[0].tuning.drivetrain, 'awd');
   assert.equal(project.cars[0].tuning.powerHp, 271);
@@ -74,12 +75,12 @@ test('race data scaffold supports default races, cars, and surfaces', () => {
   assert.deepEqual(project.cars[0].setup.tireCompoundByWheel, { fl: 'tarmac', fr: 'tarmac', rl: 'tarmac', rr: 'tarmac' });
   assert.equal(RACE_TIRE_COMPOUNDS.some((compound) => compound.id === 'rain'), true);
   assert.equal(RACE_TIRE_COMPOUNDS.some((compound) => compound.id === 'snow'), true);
-  assert.equal(project.cars[1].name, 'RWD Sports Car');
+  assert.equal(project.cars[1].name, 'RWD');
   assert.equal(project.cars[1].tuning.drivetrain, 'rwd');
   assert.equal(project.cars[1].tuning.powerHp, 228);
   assert.equal(project.cars[1].tuning.torqueLbFt, 184);
   assert.equal(project.cars[1].transmissions.automatic.label, '6AT');
-  assert.equal(project.cars[2].name, 'FWD Sports Car');
+  assert.equal(project.cars[2].name, 'FWD');
   assert.equal(project.cars[2].tuning.drivetrain, 'fwd');
   assert.equal(project.cars[2].tuning.powerHp, 315);
   assert.equal(project.cars[2].tuning.torqueLbFt, 310);

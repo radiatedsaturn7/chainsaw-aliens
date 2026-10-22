@@ -1,5 +1,696 @@
 {
-  "__chainsawStorage": "compact-v1",
-  "encoding": "json-gzip-base64",
-  "data": "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"
+  "schemaVersion": 1,
+  "kind": "race-track",
+  "savedAt": 1783855400000,
+  "selectedRaceId": "col-de-turini",
+  "race": {
+    "id": "col-de-turini",
+    "name": "Col de Turini",
+    "type": "destination",
+    "laps": 1,
+    "weather": "snow",
+    "timeOfDay": "day",
+    "entryBehavior": "return-to-origin",
+    "finishBehavior": {
+      "type": "menu",
+      "targetLevel": null,
+      "targetRace": null,
+      "menuRef": "",
+      "menuScreen": "world-map"
+    },
+    "referenceNotes": [
+      "Monte Carlo Rally mountain-pass route modeled as a 31.5 km destination stage.",
+      "The road climbs toward the 1607 m Col de Turini pass before descending.",
+      "Surface transitions from asphalt to wet asphalt to snow near the pass to model winter rally conditions."
+    ],
+    "referenceFacts": {
+      "referenceBasis": "Monte Carlo Rally Col de Turini mountain-pass stage",
+      "sourceLengthKm": 31.5,
+      "passElevationM": 1607,
+      "roadWidthM": 6,
+      "surfaceSequence": [
+        "asphalt",
+        "wet-asphalt",
+        "snow",
+        "wet-asphalt",
+        "asphalt"
+      ],
+      "signatureSections": [
+        "narrow hairpins",
+        "snowline",
+        "mountain descent"
+      ]
+    },
+    "road": {
+      "width": 6,
+      "selectedGroundTileId": "snow",
+      "groundTiles": [],
+      "tileMap": {
+        "cellSizeM": 5,
+        "defaultTileId": "snow",
+        "minElevation": -0.42,
+        "maxElevation": 0.42,
+        "cells": {}
+      },
+      "nodes": [
+        {
+          "x": 0,
+          "y": 0,
+          "elevation": -0.34,
+          "role": "start",
+          "locked": true
+        },
+        {
+          "x": 250,
+          "y": -375,
+          "elevation": -0.3
+        },
+        {
+          "x": -375,
+          "y": -709,
+          "elevation": -0.26
+        },
+        {
+          "x": 501,
+          "y": -1043,
+          "elevation": -0.22
+        },
+        {
+          "x": -250,
+          "y": -1377,
+          "elevation": -0.18
+        },
+        {
+          "x": 626,
+          "y": -1711,
+          "elevation": -0.14
+        },
+        {
+          "x": -459,
+          "y": -2044,
+          "elevation": -0.1
+        },
+        {
+          "x": 375,
+          "y": -2378,
+          "elevation": -0.04
+        },
+        {
+          "x": -626,
+          "y": -2670,
+          "elevation": 0.02
+        },
+        {
+          "x": 501,
+          "y": -3004,
+          "elevation": 0.08
+        },
+        {
+          "x": -292,
+          "y": -3338,
+          "elevation": 0.14
+        },
+        {
+          "x": 751,
+          "y": -3713,
+          "elevation": 0.2
+        },
+        {
+          "x": -125,
+          "y": -4047,
+          "elevation": 0.26
+        },
+        {
+          "x": 876,
+          "y": -4381,
+          "elevation": 0.33
+        },
+        {
+          "x": 42,
+          "y": -4714,
+          "elevation": 0.39
+        },
+        {
+          "x": 1085,
+          "y": -5048,
+          "elevation": 0.42
+        },
+        {
+          "x": 334,
+          "y": -5382,
+          "elevation": 0.4
+        },
+        {
+          "x": 1293,
+          "y": -5716,
+          "elevation": 0.36
+        },
+        {
+          "x": 459,
+          "y": -6049,
+          "elevation": 0.31
+        },
+        {
+          "x": 1460,
+          "y": -6383,
+          "elevation": 0.26
+        },
+        {
+          "x": 626,
+          "y": -6717,
+          "elevation": 0.2
+        },
+        {
+          "x": 1627,
+          "y": -7051,
+          "elevation": 0.14
+        },
+        {
+          "x": 876,
+          "y": -7385,
+          "elevation": 0.08
+        },
+        {
+          "x": 1836,
+          "y": -7718,
+          "elevation": 0.02
+        },
+        {
+          "x": 1001,
+          "y": -8052,
+          "elevation": -0.04
+        },
+        {
+          "x": 1961,
+          "y": -8386,
+          "elevation": -0.08
+        },
+        {
+          "x": 1210,
+          "y": -8720,
+          "elevation": -0.12
+        },
+        {
+          "x": 2128,
+          "y": -9053,
+          "elevation": -0.16
+        },
+        {
+          "x": 1418,
+          "y": -9387,
+          "elevation": -0.18
+        },
+        {
+          "x": 2295,
+          "y": -9721,
+          "elevation": -0.2
+        },
+        {
+          "x": 1627,
+          "y": -10055,
+          "elevation": -0.22
+        },
+        {
+          "x": 2462,
+          "y": -10388,
+          "elevation": -0.2
+        },
+        {
+          "x": 1919,
+          "y": -10722,
+          "elevation": -0.18
+        },
+        {
+          "x": 2670,
+          "y": -11056,
+          "elevation": -0.16
+        },
+        {
+          "x": 2211,
+          "y": -11390,
+          "elevation": -0.14
+        },
+        {
+          "x": 2879,
+          "y": -11723,
+          "elevation": -0.12
+        }
+      ],
+      "segments": [
+        {
+          "length": 451,
+          "curve": 0.62,
+          "elevation": -0.3,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "codriver": "turini-hairpin-1",
+          "hazardIds": []
+        },
+        {
+          "length": 709,
+          "curve": -0.92,
+          "elevation": -0.26,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 938,
+          "curve": 0.88,
+          "elevation": -0.22,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 822,
+          "curve": -0.74,
+          "elevation": -0.18,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 938,
+          "curve": 0.86,
+          "elevation": -0.14,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 1135,
+          "curve": -0.94,
+          "elevation": -0.1,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "codriver": "turini-climb",
+          "hazardIds": []
+        },
+        {
+          "length": 898,
+          "curve": 0.72,
+          "elevation": -0.04,
+          "surface": "wet-asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 1043,
+          "curve": -0.9,
+          "elevation": 0.02,
+          "surface": "wet-asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 1175,
+          "curve": 0.82,
+          "elevation": 0.08,
+          "surface": "wet-asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 860,
+          "curve": -0.78,
+          "elevation": 0.14,
+          "surface": "wet-asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 1108,
+          "curve": 0.92,
+          "elevation": 0.2,
+          "surface": "wet-asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 938,
+          "curve": -0.86,
+          "elevation": 0.26,
+          "surface": "wet-asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 1055,
+          "curve": 0.76,
+          "elevation": 0.33,
+          "surface": "snow",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "snowCondition": "slush",
+          "turn": "square",
+          "codriver": "turini-snowline",
+          "hazardIds": [
+            "turini-ice-patch"
+          ]
+        },
+        {
+          "length": 898,
+          "curve": -0.9,
+          "elevation": 0.39,
+          "surface": "snow",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "snowCondition": "dusting",
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 1095,
+          "curve": 0.86,
+          "elevation": 0.42,
+          "surface": "snow",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "snowCondition": "ice",
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 822,
+          "curve": -0.72,
+          "elevation": 0.4,
+          "surface": "snow",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "snowCondition": "three-inch",
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 1015,
+          "curve": 0.82,
+          "elevation": 0.36,
+          "surface": "snow",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "snowCondition": "dusting",
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 898,
+          "curve": -0.88,
+          "elevation": 0.31,
+          "surface": "snow",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "snowCondition": "ice",
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 1055,
+          "curve": 0.7,
+          "elevation": 0.26,
+          "surface": "wet-asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "codriver": "turini-descent",
+          "hazardIds": []
+        },
+        {
+          "length": 898,
+          "curve": -0.84,
+          "elevation": 0.2,
+          "surface": "wet-asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 1055,
+          "curve": 0.8,
+          "elevation": 0.14,
+          "surface": "wet-asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 822,
+          "curve": -0.66,
+          "elevation": 0.08,
+          "surface": "wet-asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 1016,
+          "curve": 0.76,
+          "elevation": 0.02,
+          "surface": "wet-asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 899,
+          "curve": -0.82,
+          "elevation": -0.04,
+          "surface": "wet-asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 1016,
+          "curve": 0.62,
+          "elevation": -0.08,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 822,
+          "curve": -0.72,
+          "elevation": -0.12,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 977,
+          "curve": 0.68,
+          "elevation": -0.16,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "turn": "square",
+          "hazardIds": []
+        },
+        {
+          "length": 785,
+          "curve": -0.58,
+          "elevation": -0.18,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 938,
+          "curve": 0.54,
+          "elevation": -0.2,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 747,
+          "curve": -0.48,
+          "elevation": -0.22,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 899,
+          "curve": 0.46,
+          "elevation": -0.2,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 637,
+          "curve": -0.42,
+          "elevation": -0.18,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 822,
+          "curve": 0.38,
+          "elevation": -0.16,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 568,
+          "curve": -0.34,
+          "elevation": -0.14,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 746,
+          "curve": 0.28,
+          "elevation": -0.12,
+          "surface": "asphalt",
+          "roadWidthM": 6,
+          "bumpiness": 0,
+          "hazardIds": []
+        }
+      ]
+    },
+    "competition": {
+      "mode": "solo",
+      "aiDrivers": [
+        {
+          "id": "rookie-ai",
+          "name": "Rookie AI",
+          "carId": "starter-rwd",
+          "aggression": 0.35,
+          "skill": 0.45,
+          "rubberBanding": 0.2,
+          "enabled": false
+        }
+      ],
+      "playerStartGrid": 1,
+      "trafficEnabled": false
+    },
+    "hazards": [
+      {
+        "id": "turini-ice-patch",
+        "type": "damage-wall",
+        "label": "Ice Patch Edge",
+        "at": 17200,
+        "side": "left",
+        "damage": 10,
+        "destructible": false
+      }
+    ],
+    "codriver": {
+      "enabled": true,
+      "voice": "default",
+      "calls": [
+        {
+          "id": "turini-hairpin-1",
+          "at": 900,
+          "text": "Hairpin right, narrow mountain road",
+          "severity": 4
+        },
+        {
+          "id": "turini-climb",
+          "at": 10300,
+          "text": "Climbing, wet asphalt, repeated hairpins",
+          "severity": 4
+        },
+        {
+          "id": "turini-snowline",
+          "at": 16900,
+          "text": "Snow line, grip drops sharply",
+          "severity": 4
+        },
+        {
+          "id": "turini-descent",
+          "at": 24600,
+          "text": "Descent begins, wet patches",
+          "severity": 3
+        }
+      ]
+    },
+    "scenery": [
+      {
+        "type": "tree",
+        "at": 1200,
+        "side": "left"
+      },
+      {
+        "type": "sign",
+        "at": 16000,
+        "side": "right"
+      }
+    ],
+    "groundRenderer": "webgl-track",
+    "groundTextureBaseWorldM": 1.002,
+    "groundTextureFilterMode": "balanced",
+    "skyboxArtRef": "providence",
+    "surfaceArt": {
+      "boundary": "apron"
+    },
+    "margin": {
+      "enabled": true,
+      "shoulderEnabled": true,
+      "widthM": 0.22,
+      "shoulderWidthM": 12,
+      "collisionMode": "shoulder",
+      "artRef": "apron",
+      "marginMode": "on",
+      "shoulderMode": "hidden",
+      "collisionEdge": "shoulder",
+      "collisionEffect": "reset"
+    },
+    "renderDebug": {
+      "lightingEnabled": true,
+      "terrainEnabled": true,
+      "texturesEnabled": true,
+      "detailEnabled": false,
+      "terrainCullingEnabled": true,
+      "terrainLodEnabled": true,
+      "terrainBudgetEnabled": true,
+      "farRoadDecimationEnabled": true,
+      "rawTerrainPolygonsEnabled": false
+    }
+  }
 }

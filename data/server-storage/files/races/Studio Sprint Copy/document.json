@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-track",
-  "savedAt": 1787701277004,
+  "savedAt": 1792343751554,
   "selectedRaceId": "test-loop",
   "race": {
     "id": "test-loop",
@@ -20,11 +20,13 @@
     "scenery": [],
     "decals": [],
     "finishBehavior": {
-      "type": "return-to-origin",
+      "type": "menu",
       "targetLevel": null,
       "targetRace": null,
       "spawnX": null,
-      "spawnY": null
+      "spawnY": null,
+      "menuRef": "",
+      "menuScreen": "world-map"
     },
     "raceStart": {
       "musicTrackId": "",

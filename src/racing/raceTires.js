@@ -23,7 +23,7 @@ export const TIRE_PROPERTY_FIELDS = [
   {path:'pressurePsi',label:'Cold pressure (PSI)',min:18,max:52,step:0.5}
 ];
 export function createTireDefinition(baseCompound = 'tarmac') {
-  const base = RACE_TIRE_COMPOUNDS.find(tire=>tire.id===baseCompound) || RACE_TIRE_COMPOUNDS[0];
+  const base = RACE_TIRE_COMPOUNDS.find(tire=>tire.id===baseCompound) || RACE_TIRE_COMPOUNDS.find(tire=>tire.id==='tarmac');
   return { kind:'race-tire',schemaVersion:2,name:base.label,baseCompound:base.id,compound:copy(base),
     size:{widthMm:245,aspectRatio:40,wheelDiameterIn:18},pressurePsi:32,graphics:{} };
 }

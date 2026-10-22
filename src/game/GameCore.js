@@ -1,3 +1,8 @@
+import AudioMusicPlayer from '../audio/AudioMusicPlayer.js';
+import {isAudioMusic} from '../audio/MusicAsset.js';
+import {musicMediaVolume} from '../audio/musicVolume.js';
+import {setMenuProgress} from '../menus/MenuProgress.js';
+import {raceCompletionKey} from '../menus/MenuWorldMap.js';
 import { isSystemCarDocument } from '../racing/CarPresets.js';
 import {itemLibrary} from '../items/ItemLibrary.js';
 import {updateLevelItems, updateLegacyItemPickups, isItemPickup, itemPlacementId, getItemSystem} from '../items/ItemPickups.js';
@@ -259,7 +264,7 @@ export default class Game {
     ensureProjectFileIndex();
     this.dialog = new Dialog(INTRO_LINES);
     this.hud = new HUD();
-    this.radio = new RadioPlayer({getInventory:()=>getItemSystem(this),onChange:()=>this.audio?.setRadioPlaying?.(Boolean(this.radio?.playing || this.radioEditor?.preview?.playing))});
+    this.radio = new RadioPlayer({getVolume:()=>musicMediaVolume(this.audio),getInventory:()=>getItemSystem(this),onChange:()=>this.audio?.setRadioPlaying?.(Boolean(this.radio?.playing || this.radioEditor?.preview?.playing))});
     this.raceRadio=new RaceRadioDirector(this.radio);
     this.pauseMenu = new Pause(this.radio, message => this.showSystemToast(message));
     this.pauseMenu.onItemUsed=()=>this.transitionTo('playing');
@@ -956,6 +961,7 @@ export default class Game {
           new Promise((resolve) => setTimeout(resolve, 1200))
         ]);
       }
+      await this.menuPlayer.settings.load();
       await this.world.load();
       await getItemSystem(this).load();
       await this.autoRepair.load();
@@ -2108,6 +2114,24 @@ export default class Game {
     return true;
   }
 
+  async openMenuDestination({menuRef='',menuScreen='world-map',variables={}}={}) {
+    await setMenuProgress(this,variables);
+    const player=this.menuPlayer,session=this.raceTravelSession;
+    const previous=player?.flow?.active?{...player.flow.parameters}:{};
+    if(!menuRef&&player?.flow?.active&&player.flow.document.screens.some(s=>s.id===menuScreen)){
+      this.raceTravelSession=null;this.raceEditorPlaytestReturn=false;this.playtestActive=false;
+      player.flow.busy=false;player.flow.goTo(menuScreen);this.transitionTo('menu-player',{forceCleanup:true});return true;
+    }
+    let doc;
+    if(menuRef){const payload=await hydrateProjectFilePayload('menus',menuRef);if(!payload?.data)throw Error(`Menu not found: ${menuRef}`);doc=payload.data;}
+    else{const preference=await loadServerPreferenceAsync('menu-launch',null);doc=preference?.menuRef?(await hydrateProjectFilePayload('menus',preference.menuRef))?.data:createMenuDocument();}
+    if(!doc?.screens?.some(s=>s.id===menuScreen))throw Error(`Menu screen not found: ${menuScreen}`);
+    await player.open(doc,{preview:player.preview});
+    Object.assign(player.flow.parameters,previous,session?.carRef?{carRef:session.carRef}:{},variables);
+    this.raceTravelSession=null;this.raceEditorPlaytestReturn=false;this.playtestActive=false;
+    player.flow.goTo(menuScreen);return true;
+  }
+
   completeRaceTravel(finishBehavior = {}, {
     carId = '',
     raceId = '',
@@ -2120,6 +2144,12 @@ export default class Game {
       if (raceId) session.trackStateByRace[raceId] = trackStateSnapshot;
       if (raceDocumentName) session.trackStateByRace[raceDocumentName] = trackStateSnapshot;
     }
+    const completedRef=raceDocumentName||raceId;
+    const variables={...(completedRef?{[raceCompletionKey(completedRef)]:true,lastCompletedRace:completedRef,garageReturnCount:Number(this.menuProgress?.garageReturnCount||0)+1,garageDialogueEvent:''}:{}),...finishBehavior.variables};
+    if(finishBehavior.type==='menu'){
+      void this.openMenuDestination({...finishBehavior,variables}).catch(error=>this.showSystemToast?.(error.message));return true;
+    }
+    void setMenuProgress(this,variables).catch(error=>this.showSystemToast?.(error.message));
     const type = ['race', 'level'].includes(finishBehavior?.type)
       ? finishBehavior.type
       : 'return-to-origin';
@@ -2195,6 +2225,7 @@ export default class Game {
   }
 
   enterMenuEditor() {
+    this.menuEditor.openStartingMenu();
     this.transitionTo('menu-editor');
     this.setRevAudio(false);
     this.playtestActive = false;
@@ -3042,6 +3073,7 @@ export default class Game {
           }
           this.pixelStudio.currentDocumentRef = { folder: 'art', name: name || 'Art' };
         } else if (folder === 'music') {
+          if(isAudioMusic(payload.data)){this.playProjectBrowserMusicPreview(name,payload.data);return;}
           this.enterMidiComposer();
           this.midiComposer.applyImportedSong(payload.data);
           this.midiComposer.currentDocumentRef = { folder: 'music', name: name || 'Song' };
@@ -3444,7 +3476,7 @@ export default class Game {
 
   _updateByState(dt) {
     if (this.radio) {
-      this.radio.setVolume(this.audio?.midiBusVolume ?? 0.8);
+      this.radio.setVolume(musicMediaVolume(this.audio));
       const racing = this.state === 'race-editor' && this.raceEditor?.playtestSession?.running;
       const inLevel = ['playing', 'pause', 'dialog', 'shop'].includes(this.state);
       const enabled = Boolean(racing ? this.raceEditor.selectedRace?.radioEnabled !== false : inLevel && this.world?.radioEnabled !== false);
@@ -6792,16 +6824,16 @@ export default class Game {
     });
   }
 
-  setActiveMusicTrack(trackId, { volume = 1, loop = true, restart = false, offsetMs = 0 } = {}) {
+  setActiveMusicTrack(trackId, { volume = 1, loop = true, restart = false, offsetMs = 0, fadeIn = this.musicFadeDuration, fadeOut = this.musicFadeDuration } = {}) {
     const targetVolume = Math.max(0, Math.min(1, Number(volume ?? 1)));
     if (trackId === this.activeMusicTrackId && !restart) {
       this.musicPlayers
         .filter((player) => player.trackId === trackId)
-        .forEach((player) => player.setFade(targetVolume, this.musicFadeDuration));
+        .forEach((player) => player.setFade(targetVolume, fadeIn));
       return;
     }
     this.musicPlayers.forEach((player) => {
-      player.setFade(0, this.musicFadeDuration);
+      if(player.targetVolume!==0)player.setFade(0, fadeOut);
     });
     this.activeMusicTrackId = trackId || null;
     const preloadToken = ++this.musicPreloadToken;
@@ -6813,9 +6845,9 @@ export default class Game {
       .then(() => {
         if (preloadToken !== this.musicPreloadToken) return;
         if (trackId !== this.activeMusicTrackId) return;
-        const player = new MidiSongPlayer(this.audio);
+        const player = isAudioMusic(libraryEntry.song)?new AudioMusicPlayer(this.audio):new MidiSongPlayer(this.audio);
         player.setSong(libraryEntry.song, trackId, { loop, offsetMs });
-        player.setFade(targetVolume, this.musicFadeDuration);
+        player.setFade(targetVolume, fadeIn);
         this.musicPlayers.push(player);
       });
   }
@@ -7037,7 +7069,7 @@ export default class Game {
       .catch(() => null)
       .then(() => {
         if (previewToken !== this.projectBrowserMusicPreviewToken) return;
-        const player = new MidiSongPlayer(this.audio);
+        const player = isAudioMusic(songData)?new AudioMusicPlayer(this.audio):new MidiSongPlayer(this.audio);
         player.setSong(songData, trackId || 'preview-track');
         player.setFade(1, 0.12);
         this.projectBrowserMusicPreviewPlayer = player;
@@ -7505,6 +7537,12 @@ export default class Game {
         setTimeout(() => completeLoad(), 300);
       }
       return;
+    }
+    if(action.type==='set-menu-variables'){
+      void setMenuProgress(this,params.variables||{}).then(onDone).catch(error=>{this.showSystemToast?.(error.message);onDone();});return;
+    }
+    if(action.type==='open-menu'){
+      void this.openMenuDestination(params).then(()=>{const state=triggerId?this.triggerState?.byId?.get?.(triggerId):null;if(state){state.queue=[];state.active=false;}}).catch(error=>{this.showSystemToast?.(error.message);onDone();});return;
     }
     if (action.type === 'start-race') {
       Promise.resolve(this.startRaceTravel(params)).then((started) => {

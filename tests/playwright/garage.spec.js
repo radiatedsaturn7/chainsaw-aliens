@@ -50,10 +50,13 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors, p
  await action(page,'save');await page.getByPlaceholder('Filename',{exact:true}).fill(name);await page.locator('.project-browser-btn.primary').filter({hasText:'Save'}).click();await expect.poll(()=>page.evaluate(()=>window.__game.itemEditor.status)).toBe('Saved');
  const id=await page.evaluate(()=>window.__game.itemEditor.doodad.id);
  await page.evaluate(async({name,carRef})=>{const {createMenuDocument}=await import('/src/menus/MenuDocument.js');const g=window.__game,doc=createMenuDocument();doc.parameters={...doc.parameters,carRef,partRef:name};await g.menuPlayer.open(doc);g.menuPlayer.flow.goTo('garage');},{name,carRef});
+ await clickMenu(page,'garage-upgrade');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('upgrades');
  await chooseUpgrade(page,'Engine');await chooseUpgrade(page,'ecu');await chooseUpgrade(page,name);
  await expect.poll(()=>page.evaluate(id=>window.__game.items.progress.bags.items[id],id)).toBe(1);
 await expect.poll(()=>page.evaluate(ref=>window.__game.items.garage.configuration(ref).installed.ecu,carRef)).toBe(id);
- await clickMenu(page,'garage-tune');await dialog(page,'Garage Tuning').getByLabel('Final drive',{exact:true}).fill('3.4');await apply(page,'Garage Tuning');
+ await clickMenu(page,'back');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
+ await clickMenu(page,'garage-tune');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('tuning');
+ await clickMenu(page,'adjust');await dialog(page,'Garage Tuning').getByLabel('Final drive',{exact:true}).fill('3.4');await apply(page,'Garage Tuning');
  await expect.poll(()=>page.evaluate(ref=>window.__game.items.garage.configuration(ref).tune.gearFinalDrive,carRef)).toBe(3.4);
  await expect.poll(()=>page.evaluate(ref=>Boolean(window.__game.menuPlayer.resources.car(ref)),carRef)).toBe(true);
  await page.screenshot({path:`test-results/menu-garage-${mobile?'portrait':'desktop'}.png`});
@@ -66,6 +69,8 @@ await expect.poll(()=>page.evaluate(ref=>window.__game.items.garage.configuratio
   expect(await page.evaluate(()=>{const e=window.__game.raceEditor,c=e.getRaceSessionCar(e.playtestSession);return e.getRaceCarTuning(c).finalDrive;})).toBe(3.4);
   await page.evaluate(()=>window.__game.returnRaceTravelToOrigin());await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-player');
  }
+ await clickMenu(page,'back');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
+ await clickMenu(page,'garage-upgrade');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('upgrades');
  await page.evaluate(()=>{const p=window.__game.menuPlayer;p.widgetStates.set('garage-parts',{section:'Engine',slot:'ecu',index:0});});
  await chooseUpgrade(page,'');await expect.poll(()=>page.evaluate(ref=>Object.keys(window.__game.items.garage.configuration(ref).installed).length,carRef)).toBe(0);
  expect(await page.evaluate(id=>window.__game.items.progress.bags.items[id],id)).toBe(1);
