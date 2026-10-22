@@ -35,6 +35,7 @@ export async function seedRaceRuntimeFixtures(page) {
     race.id = 'playwright-studio-sprint-2';
     race.name = 'Studio Sprint 2';
     race.laps = 1;
+    race.finishBehavior = {type:'return-to-origin'};
     race.weather = 'clear';
     race.groundRenderer = 'webgl-track';
     race.groundTextureBaseWorldM = 8.016;

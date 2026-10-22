@@ -9,7 +9,8 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   currentStatus: [
-    '2026-10-22 18:44 EDT - Actor animation art loads asynchronously during rendering; release browser fixtures now use explicit tracks and wait for menu transitions.',
+    '2026-10-22 18:50 EDT - Reused parsed car payloads during file listing and updated garage/radio browser coverage for the current controls.',
+    '2026-10-22 18:39 EDT - Actor animation art loads asynchronously during rendering; release browser fixtures now use explicit tracks and wait for menu transitions.',
     '2026-10-22 18:22 EDT - Added independent centered road/margin repeat widths and refreshed release test fixtures for start-only roads and disabled-control navigation.',
     '2026-10-22 17:40 EDT - Fixed owned spare upgrades being disabled by purchase-only unlock requirements; they remain available to install without extra scrap.',
     '2026-10-22 17:31 EDT - Disabled Upgrade/Tuning controls are skipped by navigation, hover and touch; disabled menu button taps no longer fall through to screen actions.',

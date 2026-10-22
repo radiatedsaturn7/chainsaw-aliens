@@ -18,6 +18,8 @@ import {
   getProjectFileSaveTimeoutMs,
   PROJECT_FOLDERS,
   resetProjectFilesForTests,
+  loadProjectFile,
+  listProjectFiles,
   saveProjectFile,
   saveProjectFileAndConfirm
 } from '../../src/ui/projectFiles.js';
@@ -691,4 +693,15 @@ test('render-time cache reads do not synchronously fetch indexed art', async () 
     upsertCachedProjectFile('art','cold',raw);
     assert.equal(readCachedProjectFile('art','cold',{allowSyncFetch:false}),raw);
   } finally {globalThis.fetch=originalFetch;globalThis.XMLHttpRequest=originalXhr;clearCachedProjectFilesForTests();}
+});
+
+
+test('listing already-loaded car payloads reuses parsed data for metadata',()=>{
+  resetProjectFilesForTests();
+  upsertCachedProjectFile('cars','Warm car',JSON.stringify({savedAt:12,data:{name:'Warm car'}}));
+  loadProjectFile('cars','Warm car');
+  const parse=JSON.parse;let parses=0;
+  JSON.parse=(...args)=>{parses++;return parse(...args);};
+  try {for(let i=0;i<60;i++)listProjectFiles('cars');assert.equal(parses,0);}
+  finally {JSON.parse=parse;resetProjectFilesForTests();}
 });

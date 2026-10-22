@@ -46,7 +46,11 @@ function getCachedPayloadMeta(raw, key) {
   if (cached?.raw === raw) return cached.meta;
   const meta = { updatedAt: Date.now(), size: typeof raw === 'string' ? raw.length : 0 };
   if (typeof raw === 'string') {
-    try { meta.updatedAt = Number(JSON.parse(raw)?.savedAt || meta.updatedAt); } catch {}
+    try {
+      const parsed = parsedPayloadCache.get(key);
+      const payload = parsed?.raw === raw ? parsed.payload : JSON.parse(raw);
+      meta.updatedAt = Number(payload?.savedAt || meta.updatedAt);
+    } catch {}
   }
   // Keep only the latest raw value for each file; listing must not repeatedly
   // parse unrelated artwork/music payloads on the menu's animation path.

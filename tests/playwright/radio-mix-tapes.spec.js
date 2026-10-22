@@ -43,6 +43,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors a 
  await page.evaluate(mobile=>{const g=window.__game;g.deviceIsMobile=mobile;g.isMobile=mobile;g.setViewport({width:innerWidth,height:innerHeight,scale:1,dpr:1,isMobile:mobile});g.title.setScreen('audio');g.handleTitleMenuAction('radio-editor');},mobile);
  await radioReady(page);expect(await page.getByRole('dialog').count()).toBe(0);
  const chooser=page.waitForEvent('filechooser');await clickRadio(page,'radio-import');await(await chooser).setFiles({name:'Night Drive.mp3',mimeType:'audio/mpeg',buffer:silentMp3});
+ await dialog(page,'Upload Music').getByLabel('Project music name',{exact:true}).fill(name+'.mp3');await apply(page,'Upload Music');
  await dialog(page,'Radio Track').getByLabel('Artist',{exact:true}).fill('Studio Artist');await dialog(page,'Radio Track').getByLabel('Album',{exact:true}).fill('Night Album');await apply(page,'Radio Track');
  await clickRadio(page,'station-new');await dialog(page,'New Radio Station').getByLabel('Station name',{exact:true}).fill('Night Radio');await apply(page,'New Radio Station');
  await clickRadio(page,'track-membership');await radioReady(page);
