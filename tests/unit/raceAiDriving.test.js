@@ -102,6 +102,7 @@ test('AI crosses the finish before slowing down on a destination route', () => {
 
 test('AI corrects a displaced car using the actual tire and chassis simulation', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.road.network=null;
   editor.selectedRace.road.segments = [{ length: 1200, curve: 0, elevation: 0,
     surface: 'asphalt', roadWidthM: 10, hazardIds: [] }];
   editor.selectedRace.road.nodes = [];

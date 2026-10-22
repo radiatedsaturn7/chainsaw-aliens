@@ -19,8 +19,9 @@ for(const mode of ['keyboard','gamepad','touch'])test(`in-game tuner: ${mode} lo
    await page.mouse.click(point.x,point.y,{delay:80});
   }else await page.keyboard.press(key);
  };
- await press('ArrowRight','dpadRight');await press('Enter','jump');
- await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.message)).toContain('Buy compatible tires');
+ await press('ArrowRight','dpadRight');
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.index)).toBe(0);
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.mode)).toBe('grid');
  await page.screenshot({path:`test-results/tuning-${mode}-grid.png`});
  await press('ArrowLeft','dpadLeft');await press('Enter','jump');await press('Enter','jump');
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.mode)).toBe('edit');

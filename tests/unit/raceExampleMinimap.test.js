@@ -152,7 +152,7 @@ test('first-person camera follows driver heading through spins in every exterior
 
 test('chase camera stays inside default tunnel on entry, under the crossing and on exit', () => {
   const editor = new RaceEditor({});
-  editor.createNewRaceProject();
+  Object.assign(editor.selectedRace,createBranchingExampleRace({id:editor.selectedRace.id}));
   const network = editor.selectedRace.road.network;
   const tunnel = network.edges.find(e => e.structure === 'tunnel');
   const session = { startedAt: 1, elapsedMs: 0, thirdPersonCameraPlacement: { safetyLiftM: 10, chaseDistance: 30, elapsedMs: 0, resetKey: 1 } };
