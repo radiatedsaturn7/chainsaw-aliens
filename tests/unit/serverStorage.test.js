@@ -727,3 +727,11 @@ test('storage timeout includes reading the response body after HTTP headers',asy
   assert.match(result.reason,/timed out/i);
  }finally{globalThis.fetch=original;clearCachedProjectFilesForTests();}
 });
+
+
+test('HTML 404 responses still identify a static host without a storage API',async()=>{
+ const original=globalThis.fetch;
+ globalThis.fetch=async()=>({ok:false,status:404,json:async()=>{throw new SyntaxError('Unexpected token <');}});
+ try {const result=await saveServerFile('art','static-host',{});assert.equal(result.persisted,false);assert.match(result.reason,/not accepting project file saves/);}
+ finally{globalThis.fetch=original;clearCachedProjectFilesForTests();}
+});

@@ -152,7 +152,11 @@ async function requestJson(url, options = {}) {
       fetch(url, controller ? { ...fetchOptions, signal: controller.signal } : fetchOptions),
       timeoutPromise
     ]);
-    const payload = await Promise.race([response.json(), timeoutPromise]);
+    const payload = await Promise.race([response.json(), timeoutPromise]).catch(error => {
+      // Static hosts can return an HTML 404 for the absent storage API.
+      if (!response.ok && error.name !== 'TimeoutError') { error.status = response.status; error.url = url; }
+      throw error;
+    });
     if (!response.ok || !payload?.ok) {
       const error = new Error(payload?.error || payload?.reason || `HTTP ${response.status}`);
       error.status = response.status;
@@ -645,7 +649,11 @@ export async function syncServerSnapshotToGitHub() {
   await syncQueue;
   try {
     const response = await fetch('/__storage/sync-github', { method: 'POST' });
-    const payload = await Promise.race([response.json(), timeoutPromise]);
+    const payload = await Promise.race([response.json(), timeoutPromise]).catch(error => {
+      // Static hosts can return an HTML 404 for the absent storage API.
+      if (!response.ok && error.name !== 'TimeoutError') { error.status = response.status; error.url = url; }
+      throw error;
+    });
     if (!response.ok || !payload?.ok) {
       return { ok: false, reason: payload?.stderr || payload?.error || `HTTP ${response.status}` };
     }
