@@ -716,3 +716,14 @@ test('missing project files keep the live API and do not hydrate static assets',
   assert.deepEqual(calls,['/__storage/file?folder=music&name=missing','/__storage/file?folder=music&name=present']);
  }finally{globalThis.fetch=original;clearCachedProjectFilesForTests();}
 });
+
+
+test('storage timeout includes reading the response body after HTTP headers',async()=>{
+ const original=globalThis.fetch;
+ globalThis.fetch=async()=>({ok:true,status:200,json:()=>new Promise(()=>{})});
+ try {
+  const result=await saveServerFile('art','slow-body',{}, {timeoutMs:5});
+  assert.equal(result.persisted,false);
+  assert.match(result.reason,/timed out/i);
+ }finally{globalThis.fetch=original;clearCachedProjectFilesForTests();}
+});

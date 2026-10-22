@@ -152,7 +152,7 @@ async function requestJson(url, options = {}) {
       fetch(url, controller ? { ...fetchOptions, signal: controller.signal } : fetchOptions),
       timeoutPromise
     ]);
-    const payload = await response.json().catch(() => ({}));
+    const payload = await Promise.race([response.json(), timeoutPromise]);
     if (!response.ok || !payload?.ok) {
       const error = new Error(payload?.error || payload?.reason || `HTTP ${response.status}`);
       error.status = response.status;
@@ -645,7 +645,7 @@ export async function syncServerSnapshotToGitHub() {
   await syncQueue;
   try {
     const response = await fetch('/__storage/sync-github', { method: 'POST' });
-    const payload = await response.json().catch(() => ({}));
+    const payload = await Promise.race([response.json(), timeoutPromise]);
     if (!response.ok || !payload?.ok) {
       return { ok: false, reason: payload?.stderr || payload?.error || `HTTP ${response.status}` };
     }

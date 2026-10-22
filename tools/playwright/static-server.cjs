@@ -90,6 +90,17 @@ function readStoredFile(folder, name) {
   }
 }
 
+function readStoredMetadata(directory) {
+  const documentPath = path.join(directory, 'document.json');
+  if (!fs.existsSync(documentPath)) return null;
+  const stat = fs.statSync(documentPath);
+  let metadata = {};
+  try { metadata = JSON.parse(fs.readFileSync(path.join(directory, 'metadata.json'), 'utf8')); } catch {}
+  if (metadata.deleted) return null;
+  return { updatedAt: Number(metadata.savedAt || stat.mtimeMs || 0), size: stat.size,
+    ...(metadata.systemFile === true ? {systemFile:true} : {}) };
+}
+
 function listStorageIndex(folder = null) {
   const folders = folder && isValidStorageFolder(folder) ? [folder] : storageFolders;
   const index = Object.fromEntries(storageFolders.map((id) => [id, {}]));
@@ -97,13 +108,8 @@ function listStorageIndex(folder = null) {
     const folderPath = path.join(storageRoot, folderId);
     if (fs.existsSync(folderPath)) {
       for (const name of fs.readdirSync(folderPath)) {
-        const file = readStoredFile(folderId, name);
-        if (file) {
-          index[folderId][file.name] = {
-            updatedAt: Number(file.savedAt || 0),
-            size: JSON.stringify(file).length
-          };
-        }
+        const metadata = readStoredMetadata(path.join(folderPath, name));
+        if (metadata) index[folderId][name] = metadata;
       }
     }
   }
@@ -256,4 +262,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { decodeStoredDocument };
+module.exports = { decodeStoredDocument, readStoredMetadata };
