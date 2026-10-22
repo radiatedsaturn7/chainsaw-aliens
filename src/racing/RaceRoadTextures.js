@@ -1,8 +1,14 @@
 import { networkEdgeLength } from './RaceRouteNetwork.js';
 
+export function roadTextureSampling(source = {}) {
+  return {filterMode:['crisp','balanced','smooth'].includes(source.filterMode)?source.filterMode:'inherit',
+    mipmaps:source.mipmaps!==false,anisotropy:Math.max(1,Math.min(16,Math.round(Number(source.anisotropy)||1)))};
+}
+
 // Ribbon UVs stay centered while repeating along and optionally across the strip.
 export function roadTextureSettings(race = {}) {
   const clean = source => ({
+    ...roadTextureSampling(source),
     artRef: String(source?.artRef || '').trim(),
     repeatM: Math.max(.1, Math.min(1000, Number(source?.repeatM) || 5)),
     repeatWidthM: Math.max(0, Math.min(1000, Number(source?.repeatWidthM) || 0))
@@ -20,7 +26,7 @@ export function texturedRoadStrip(nearLeft, nearRight, farLeft, farRight, nearDi
   const nearWidth=width(nearLeft,nearRight),farWidth=width(farLeft,farRight);
   const point = (p, u, distance) => ({ ...p, u, v: -distance / settings.repeatM });
   return {
-    source, artRef: settings.artRef, textured: true, color: '#ffffff',
+    source, textureOptions:roadTextureSampling(settings), artRef: settings.artRef, textured: true, color: '#ffffff',
     points: [point(farLeft, .5-farWidth/2, farDistance), point(farRight, .5+farWidth/2, farDistance),
       point(nearRight, .5+nearWidth/2, nearDistance), point(nearLeft, .5-nearWidth/2, nearDistance)],
     threeLiftM: source.includes('boundary') ? .035 : .012,

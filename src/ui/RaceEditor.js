@@ -1,4 +1,4 @@
-import { roadTextureSettings, buildRoadTextureStrips, showBuiltInRoadMarkings } from '../racing/RaceRoadTextures.js';
+import { roadTextureSettings, buildRoadTextureStrips, showBuiltInRoadMarkings, roadTextureSampling } from '../racing/RaceRoadTextures.js';
 import {firstPersonCameraFrame,applyFirstPersonCameraFrame,firstPersonCameraSpace} from '../racing/RaceFirstPersonCamera.js';
 import {buildNetworkMarkings} from '../racing/RaceNetworkMarkings.js';
 import {scaleRace} from '../racing/RaceScale.js';
@@ -9720,16 +9720,22 @@ export default class RaceEditor {
       { id: 'roadArt', label: 'Road artwork', type: 'select', options, value: settings.road.artRef },
       { id: 'roadRepeat', label: 'Road repeat length (meters)', type: 'number', min: .1, max: 1000, step: .1, value: settings.road.repeatM },
       { id: 'roadRepeatWidth', label: 'Road repeat width (meters; 0 = fit road)', type: 'number', min: 0, max: 1000, step: .1, value: settings.road.repeatWidthM },
+      {id:'roadFilter',label:'Road filtering',type:'select',value:settings.road.filterMode,options:[{value:'inherit',label:'Use race setting'},{value:'crisp',label:'Crisp pixels'},{value:'balanced',label:'Crisp pixels / smooth distance'},{value:'smooth',label:'Smooth'}]},
+      {id:'roadMipmaps',label:'Road distance mipmaps',type:'checkbox',value:settings.road.mipmaps},
+      {id:'roadAnisotropy',label:'Road angled-distance detail (1–16)',type:'number',min:1,max:16,step:1,value:settings.road.anisotropy},
       { id: 'marginArt', label: 'Margin artwork', type: 'select', options, value: settings.margin.artRef },
       { id: 'marginRepeat', label: 'Margin repeat length (meters)', type: 'number', min: .1, max: 1000, step: .1, value: settings.margin.repeatM },
       { id: 'marginRepeatWidth', label: 'Margin repeat width (meters; 0 = fit margin)', type: 'number', min: 0, max: 1000, step: .1, value: settings.margin.repeatWidthM },
+      {id:'marginFilter',label:'Margin filtering',type:'select',value:settings.margin.filterMode,options:[{value:'inherit',label:'Use race setting'},{value:'crisp',label:'Crisp pixels'},{value:'balanced',label:'Crisp pixels / smooth distance'},{value:'smooth',label:'Smooth'}]},
+      {id:'marginMipmaps',label:'Margin distance mipmaps',type:'checkbox',value:settings.margin.mipmaps},
+      {id:'marginAnisotropy',label:'Margin angled-distance detail (1–16)',type:'number',min:1,max:16,step:1,value:settings.margin.anisotropy},
       { id: 'builtInLines', label: 'Show built-in lane markings', type: 'checkbox', value: race.roadTextures?.builtInLines !== false, visibleWhen: state => !state.roadArt }
-    ], { description: 'Choose saved graphic tiles. Image width spans the road or margin; image height repeats along curves. Put center lines vertically in the middle of the road image. Margin visibility and width remain in Settings → Margin. Save the race to keep changes.' });
+    ], { description: 'Choose saved graphic tiles. Image width spans the road or margin; image height repeats along curves. Put center lines vertically in the middle of the road image. Margin visibility and width remain in Settings → Margin. Disable distance mipmaps for the sharpest pixels (may shimmer far away); higher angled-distance detail helps retain texture detail with mipmaps on. Save the race to keep changes.' });
     if (!result || this.selectedRace !== race) return;
     this.captureRaceHistory('Road textures');
     race.roadTextures = { ...roadTextureSettings({ roadTextures: {
-      road: { artRef: result.roadArt, repeatM: result.roadRepeat, repeatWidthM: result.roadRepeatWidth || 0 },
-      margin: { artRef: result.marginArt, repeatM: result.marginRepeat, repeatWidthM: result.marginRepeatWidth || 0 }
+      road: { filterMode:result.roadFilter,mipmaps:result.roadMipmaps,anisotropy:result.roadAnisotropy,artRef: result.roadArt, repeatM: result.roadRepeat, repeatWidthM: result.roadRepeatWidth || 0 },
+      margin: { filterMode:result.marginFilter,mipmaps:result.marginMipmaps,anisotropy:result.marginAnisotropy,artRef: result.marginArt, repeatM: result.marginRepeat, repeatWidthM: result.marginRepeatWidth || 0 }
     }}), builtInLines: result.builtInLines !== false };
     this.raceStaticTrackSurfaceMeshCache = null;
     this.status = 'Road textures updated. Playtest to preview; save the race to keep changes.';
@@ -34514,7 +34520,7 @@ export default class RaceEditor {
     return true;
   }
 
-  bindRaceWebGLMeshTexture(renderer = null, artRef = '', stats = null) {
+  bindRaceWebGLMeshTexture(renderer = null, artRef = '', stats = null, textureOptions = {}) {
     const gl = renderer?.gl;
     if (!gl) return false;
     const clean = String(artRef || '').trim();
@@ -34545,21 +34551,25 @@ export default class RaceEditor {
     } else {
       gl.bindTexture(gl.TEXTURE_2D, entry.texture);
     }
-    const requestedFilterMode = String(this.getRaceGroundTextureFilterMode());
+    const sampling=roadTextureSampling(textureOptions);
+    const useMipmaps=entry.canMipmap&&sampling.mipmaps;
+    const requestedFilterMode = sampling.filterMode==='inherit'?String(this.getRaceGroundTextureFilterMode()):sampling.filterMode;
     const filterMode = RACE_GROUND_TEXTURE_FILTER_MODE_IDS.has(requestedFilterMode) ? requestedFilterMode : RACE_GROUND_TEXTURE_FILTER_DEFAULT;
     const minFilter = filterMode === 'smooth'
-      ? (entry.canMipmap ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR)
+      ? (useMipmaps ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR)
       : filterMode === 'balanced'
-        ? (entry.canMipmap ? gl.NEAREST_MIPMAP_LINEAR : gl.NEAREST)
-        : (entry.canMipmap ? gl.NEAREST_MIPMAP_NEAREST : gl.NEAREST);
+        ? (useMipmaps ? gl.NEAREST_MIPMAP_LINEAR : gl.NEAREST)
+        : (useMipmaps ? gl.NEAREST_MIPMAP_NEAREST : gl.NEAREST);
     const magFilter = filterMode === 'smooth' ? gl.LINEAR : gl.NEAREST;
     const wrap = entry.canMipmap ? gl.REPEAT : gl.CLAMP_TO_EDGE;
-    const paramsKey = `${filterMode}:${entry.canMipmap ? 1 : 0}:${wrap}`;
+    const paramsKey = `${filterMode}:${useMipmaps ? 1 : 0}:${wrap}:${sampling.anisotropy}`;
     if (entry.paramsKey !== paramsKey) {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, minFilter);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, magFilter);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrap);
+      const ext=gl.getExtension?.('EXT_texture_filter_anisotropic')||gl.getExtension?.('WEBKIT_EXT_texture_filter_anisotropic');
+      if(ext)gl.texParameterf(gl.TEXTURE_2D,ext.TEXTURE_MAX_ANISOTROPY_EXT,Math.min(sampling.anisotropy,gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT)));
       entry.paramsKey = paramsKey;
     }
     return true;
@@ -35116,6 +35126,7 @@ export default class RaceEditor {
     const meshSignature = (meshes = []) => `${meshes.length}:${meshes.map((mesh) => [
       mesh.source || '',
       mesh.artRef || '',
+      JSON.stringify(mesh.textureOptions||{}),
       mesh.textured ? 1 : 0,
       Math.round(Number(mesh.textureWorldM || textureWorldM) * 1000),
       Array.isArray(mesh.points) ? mesh.points.length : 0
@@ -35305,21 +35316,23 @@ export default class RaceEditor {
     return this.projectRaceWorldVisualPoint(point, options);
   }
 
-  getRaceThreeTexture(renderer = null, artRef = '') {
+  getRaceThreeTexture(renderer = null, artRef = '', textureOptions = {}) {
     const clean = String(artRef || '').trim();
     if (!renderer || !clean) return null;
     const canvas = this.getRaceArtSpriteCanvas(clean);
     if (!canvas) return null;
-    const key = `${canvas.__raceArtCacheKey || clean}:${Number(canvas.width || 0)}x${Number(canvas.height || 0)}:${this.getRaceGroundTextureFilterMode()}`;
+    const sampling=roadTextureSampling(textureOptions);
+    const filterMode=sampling.filterMode==='inherit'?this.getRaceGroundTextureFilterMode():sampling.filterMode;
+    const key = `${canvas.__raceArtCacheKey || clean}:${Number(canvas.width || 0)}x${Number(canvas.height || 0)}:${filterMode}:${sampling.mipmaps}:${sampling.anisotropy}`;
     const cached = renderer.textureCache.get(key);
     if (cached) return cached;
     const texture = new THREE.CanvasTexture(canvas);
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    const filterMode = this.getRaceGroundTextureFilterMode();
     texture.magFilter = filterMode === 'smooth' ? THREE.LinearFilter : THREE.NearestFilter;
-    texture.minFilter = filterMode === 'smooth' ? THREE.LinearMipmapLinearFilter : THREE.NearestMipmapNearestFilter;
-    texture.generateMipmaps = true;
+    texture.minFilter = !sampling.mipmaps ? texture.magFilter : filterMode === 'smooth' ? THREE.LinearMipmapLinearFilter : filterMode === 'balanced' ? THREE.NearestMipmapLinearFilter : THREE.NearestMipmapNearestFilter;
+    texture.generateMipmaps = sampling.mipmaps;
+    texture.anisotropy=Math.min(sampling.anisotropy,renderer.threeRenderer?.capabilities?.getMaxAnisotropy?.()||1);
     texture.needsUpdate = true;
     renderer.textureCache.set(key, texture);
     renderer.textureUploads = (Number(renderer.textureUploads) || 0) + 1;
@@ -36443,7 +36456,7 @@ export default class RaceEditor {
       adapter: {
         getMeshLiftM: (mesh) => this.getRaceThreeMeshLiftM(mesh),
         getMeshGeometry: (groupMeshes, options) => this.getRaceThreeMeshGeometry(groupMeshes, options),
-        getTexture: (targetRenderer, artRef) => this.getRaceThreeTexture(targetRenderer, artRef),
+        getTexture: (targetRenderer, artRef, options) => this.getRaceThreeTexture(targetRenderer, artRef, options),
         getMaterial: (targetRenderer, options) => this.getRaceThreeMaterial(targetRenderer, options)
       }
     });
@@ -36667,7 +36680,7 @@ export default class RaceEditor {
         now: () => this.getNowMs(),
         getWorldMeshVertices: (targetBounds, points, options) => this.getRaceWebGLWorldMeshVertices(targetBounds, points, options),
         getElevationOffsetForSource: (source) => this.getRaceWebGLMeshElevationOffsetForSource(source),
-        bindMeshTexture: (targetRenderer, artRef, targetStats) => this.bindRaceWebGLMeshTexture(targetRenderer, artRef, targetStats),
+        bindMeshTexture: (targetRenderer, artRef, targetStats, options) => this.bindRaceWebGLMeshTexture(targetRenderer, artRef, targetStats, options),
         drawMeshVertices: (targetRenderer, vertices, options) => this.drawRaceWebGLMeshVertices(targetRenderer, vertices, options)
       }
     });
