@@ -146,6 +146,7 @@ export function drawRaceWebGLWorldMeshBatch({
     const drawStartMs = adapter.now?.() || 0;
     if (group.textured) adapter.bindMeshTexture?.(renderer, group.artRef, stats, group.textureOptions);
     const didDraw = adapter.drawMeshVertices?.(renderer, group.vertices, {
+      textureOptions: group.textureOptions,
       color: group.color,
       textured: group.textured,
       stats
@@ -195,6 +196,7 @@ export function addRaceThreeMeshGroups({
     const texture = group.textured ? adapter.getTexture?.(renderer, group.artRef, group.textureOptions) : null;
     const material = adapter.getMaterial?.(renderer, {
       texture,
+      textureOptions: group.textureOptions,
       opacity: group.opacity,
       depthWrite: group.opacity < 1 ? false : defaultDepthWrite,
       polygonOffset: defaultPolygonOffset

@@ -2,7 +2,14 @@ import { networkEdgeLength } from './RaceRouteNetwork.js';
 
 export function roadTextureSampling(source = {}) {
   return {filterMode:['crisp','balanced','smooth'].includes(source?.filterMode)?source?.filterMode:'inherit',
+    mipmapDistance: Math.max(.25, Math.min(16, Number(source?.mipmapDistance) || 1)),
     mipmaps:source?.mipmaps!==false,anisotropy:Math.max(1,Math.min(16,Math.round(Number(source?.anisotropy)||1)))};
+}
+
+// Bias the selected mip level rather than texture UVs, preserving repeat dimensions.
+export function roadTextureMipBias(source) {
+  const settings = roadTextureSampling(source);
+  return settings.mipmaps ? -Math.log2(settings.mipmapDistance) : 0;
 }
 
 // Ribbon UVs stay centered while repeating along and optionally across the strip.

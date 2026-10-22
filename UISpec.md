@@ -534,3 +534,5 @@ Race Road Textures supports independent repeat length and repeat width in meters
 Custom road artwork automatically suppresses generated lane markings in all runtime render paths, including races saved with built-in markings enabled. Margin artwork alone preserves lane markings. Removing road artwork restores the saved built-in-markings preference. The lane-marking checkbox is shown only for untextured roads.
 
 Road Textures also provides separate road/margin filtering (inherit, crisp, balanced, smooth), distance mipmaps, and angled-distance detail (anisotropy 1–16, capped by hardware, active with smooth filtering and mipmaps). These settings save with the race and apply to both renderers. Disabling mipmaps preserves hard pixels but can shimmer at distance.
+
+Road/margin mipmap distance multipliers range from 0.25 to 16 (default 1). Higher values delay mip-level reduction using negative LOD bias; lower values soften earlier. Repeat width/length are unchanged. Both renderers apply the bias, and it is ignored with mipmaps disabled.

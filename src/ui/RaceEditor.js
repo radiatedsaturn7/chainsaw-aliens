@@ -1,4 +1,4 @@
-import { roadTextureSettings, buildRoadTextureStrips, showBuiltInRoadMarkings, roadTextureSampling } from '../racing/RaceRoadTextures.js';
+import { roadTextureSettings, buildRoadTextureStrips, showBuiltInRoadMarkings, roadTextureSampling, roadTextureMipBias } from '../racing/RaceRoadTextures.js';
 import {firstPersonCameraFrame,applyFirstPersonCameraFrame,firstPersonCameraSpace} from '../racing/RaceFirstPersonCamera.js';
 import {buildNetworkMarkings} from '../racing/RaceNetworkMarkings.js';
 import {scaleRace} from '../racing/RaceScale.js';
@@ -9722,20 +9722,22 @@ export default class RaceEditor {
       { id: 'roadRepeatWidth', label: 'Road repeat width (meters; 0 = fit road)', type: 'number', min: 0, max: 1000, step: .1, value: settings.road.repeatWidthM },
       {id:'roadFilter',label:'Road filtering',type:'select',value:settings.road.filterMode,options:[{value:'inherit',label:'Use race setting'},{value:'crisp',label:'Crisp pixels'},{value:'balanced',label:'Crisp pixels / smooth distance'},{value:'smooth',label:'Smooth'}]},
       {id:'roadMipmaps',label:'Road distance mipmaps',type:'checkbox',value:settings.road.mipmaps},
+      {id:'roadMipmapDistance',label:'Road mipmap distance multiplier',type:'number',min:.25,max:16,step:.25,value:settings.road.mipmapDistance},
       {id:'roadAnisotropy',label:'Road angled detail (Smooth + mipmaps; 1–16)',type:'number',min:1,max:16,step:1,value:settings.road.anisotropy},
       { id: 'marginArt', label: 'Margin artwork', type: 'select', options, value: settings.margin.artRef },
       { id: 'marginRepeat', label: 'Margin repeat length (meters)', type: 'number', min: .1, max: 1000, step: .1, value: settings.margin.repeatM },
       { id: 'marginRepeatWidth', label: 'Margin repeat width (meters; 0 = fit margin)', type: 'number', min: 0, max: 1000, step: .1, value: settings.margin.repeatWidthM },
       {id:'marginFilter',label:'Margin filtering',type:'select',value:settings.margin.filterMode,options:[{value:'inherit',label:'Use race setting'},{value:'crisp',label:'Crisp pixels'},{value:'balanced',label:'Crisp pixels / smooth distance'},{value:'smooth',label:'Smooth'}]},
       {id:'marginMipmaps',label:'Margin distance mipmaps',type:'checkbox',value:settings.margin.mipmaps},
+      {id:'marginMipmapDistance',label:'Margin mipmap distance multiplier',type:'number',min:.25,max:16,step:.25,value:settings.margin.mipmapDistance},
       {id:'marginAnisotropy',label:'Margin angled detail (Smooth + mipmaps; 1–16)',type:'number',min:1,max:16,step:1,value:settings.margin.anisotropy},
       { id: 'builtInLines', label: 'Show built-in lane markings', type: 'checkbox', value: race.roadTextures?.builtInLines !== false, visibleWhen: state => !state.roadArt }
-    ], { description: 'Choose saved graphic tiles. Image width spans the road or margin; image height repeats along curves. Put center lines vertically in the middle of the road image. Margin visibility and width remain in Settings → Margin. Disable distance mipmaps for the sharpest pixels (may shimmer far away); use Smooth filtering with mipmaps on to enable angled-distance detail. Save the race to keep changes.' });
+    ], { description: 'Choose saved graphic tiles. Image width spans the road or margin; image height repeats along curves. Put center lines vertically in the middle of the road image. Margin visibility and width remain in Settings → Margin. Mipmap distance: 1 is normal; 2–4 keeps sharper mip levels farther away without changing tile size. Higher values can shimmer. Disable distance mipmaps for the sharpest pixels (may shimmer far away); use Smooth filtering with mipmaps on to enable angled-distance detail. Save the race to keep changes.' });
     if (!result || this.selectedRace !== race) return;
     this.captureRaceHistory('Road textures');
     race.roadTextures = { ...roadTextureSettings({ roadTextures: {
-      road: { filterMode:result.roadFilter,mipmaps:result.roadMipmaps,anisotropy:result.roadAnisotropy,artRef: result.roadArt, repeatM: result.roadRepeat, repeatWidthM: result.roadRepeatWidth || 0 },
-      margin: { filterMode:result.marginFilter,mipmaps:result.marginMipmaps,anisotropy:result.marginAnisotropy,artRef: result.marginArt, repeatM: result.marginRepeat, repeatWidthM: result.marginRepeatWidth || 0 }
+      road: { mipmapDistance:result.roadMipmapDistance,filterMode:result.roadFilter,mipmaps:result.roadMipmaps,anisotropy:result.roadAnisotropy,artRef: result.roadArt, repeatM: result.roadRepeat, repeatWidthM: result.roadRepeatWidth || 0 },
+      margin: { mipmapDistance:result.marginMipmapDistance,filterMode:result.marginFilter,mipmaps:result.marginMipmaps,anisotropy:result.marginAnisotropy,artRef: result.marginArt, repeatM: result.marginRepeat, repeatWidthM: result.marginRepeatWidth || 0 }
     }}), builtInLines: result.builtInLines !== false };
     this.raceStaticTrackSurfaceMeshCache = null;
     this.status = 'Road textures updated. Playtest to preview; save the race to keep changes.';
@@ -33776,10 +33778,11 @@ export default class RaceEditor {
         uniform sampler2D uTexture;
         uniform vec4 uTint;
         uniform float uUseTexture;
+        uniform float uMipmapBias;
         void main() {
           if (uUseTexture > 0.5) {
             vec2 uv = vTexCoordOverDepth / max(vInvDepth, 0.000001);
-            gl_FragColor = texture2D(uTexture, uv) * uTint;
+            gl_FragColor = texture2D(uTexture, uv, uMipmapBias) * uTint;
           } else {
             gl_FragColor = uTint;
           }
@@ -33948,6 +33951,7 @@ export default class RaceEditor {
           texCoord: gl.getAttribLocation(meshProgram, 'aTexCoordOverDepth'),
           invDepth: gl.getAttribLocation(meshProgram, 'aInvDepth'),
           textureSampler: gl.getUniformLocation(meshProgram, 'uTexture'),
+          mipmapBias: gl.getUniformLocation(meshProgram, 'uMipmapBias'),
           tint: gl.getUniformLocation(meshProgram, 'uTint'),
           useTexture: gl.getUniformLocation(meshProgram, 'uUseTexture')
         },
@@ -34468,6 +34472,7 @@ export default class RaceEditor {
   }
 
   drawRaceWebGLMeshVertices(renderer = null, vertices = [], {
+    textureOptions = {},
     color = '#ffffff',
     textured = true,
     stats = null
@@ -34509,6 +34514,7 @@ export default class RaceEditor {
       gl.vertexAttribPointer(renderer.meshLocations.invDepth, 1, gl.FLOAT, false, 24, 20);
     }
     gl.uniform1i(renderer.meshLocations.textureSampler, 0);
+    gl.uniform1f(renderer.meshLocations.mipmapBias, roadTextureMipBias(textureOptions));
     gl.uniform4fv(renderer.meshLocations.tint, this.getRaceWebGLColorArray(color));
     gl.uniform1f(renderer.meshLocations.useTexture, textured ? 1 : 0);
     if (!renderer.meshBlendEnabled) {
@@ -35347,6 +35353,7 @@ export default class RaceEditor {
   }
 
   getRaceThreeMaterial(renderer = null, {
+    textureOptions = {},
     texture = null,
     depthWrite = true,
     polygonOffset = true,
@@ -35355,7 +35362,8 @@ export default class RaceEditor {
     if (!renderer || !THREE?.MeshBasicMaterial) return null;
     renderer.materialCache = renderer.materialCache instanceof Map ? renderer.materialCache : new Map();
     opacity = clamp(Number(opacity), 0, 1);
-    const textureKey = texture?.uuid || 'solid';
+    const mipmapBias = texture ? roadTextureMipBias(textureOptions) : 0;
+    const textureKey = `${texture?.uuid || 'solid'}:${mipmapBias}`;
     const key = `${textureKey}:${depthWrite ? 1 : 0}:${polygonOffset ? 1 : 0}:${opacity}`;
     const cached = renderer.materialCache.get(key);
     if (cached) return cached;
@@ -35371,6 +35379,16 @@ export default class RaceEditor {
       polygonOffsetFactor: -1,
       polygonOffsetUnits: -1
     });
+    if (mipmapBias !== 0) {
+      material.onBeforeCompile = (shader) => {
+        shader.uniforms.roadMipmapBias = { value: mipmapBias };
+        shader.fragmentShader = 'uniform float roadMipmapBias;\n' + shader.fragmentShader.replace(
+          '#include <map_fragment>',
+          THREE.ShaderChunk.map_fragment.replace('texture2D( map, vMapUv )', 'texture2D( map, vMapUv, roadMipmapBias )')
+        );
+      };
+      material.customProgramCacheKey = () => `road-mipmap-bias:${mipmapBias}`;
+    }
     renderer.materialCache.set(key, material);
     if (renderer.materialCache.size > 32) {
       const first = renderer.materialCache.entries().next().value;

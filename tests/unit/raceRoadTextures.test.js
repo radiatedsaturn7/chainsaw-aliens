@@ -1,7 +1,7 @@
 import test from 'node:test';
 import * as THREE from '../../src/vendorBridge/three.js';
 import assert from 'node:assert/strict';
-import { roadTextureSettings, buildRoadTextureStrips, showBuiltInRoadMarkings } from '../../src/racing/RaceRoadTextures.js';
+import { roadTextureSettings, buildRoadTextureStrips, showBuiltInRoadMarkings, roadTextureMipBias } from '../../src/racing/RaceRoadTextures.js';
 import { buildRaceNetworkGeometry } from '../../src/racing/RaceNetworkGeometry.js';
 import { normalizeRaceRouteNetwork } from '../../src/racing/RaceRouteNetwork.js';
 import RaceEditor from '../../src/ui/RaceEditor.js';
@@ -48,8 +48,8 @@ test('static renderer uses textures, preserves road elevation/UVs and invalidate
 });
 test('editor settings save/load, collect artwork, cancel cleanly and restore default mapping',async()=>{
  const e=new RaceEditor({});let fields;
- await e.openRaceRoadTextures(async(title,f)=>{fields=f;return {roadFilter:'crisp',roadMipmaps:false,roadAnisotropy:16,roadArt:'center line',roadRepeat:7,roadRepeatWidth:4,marginRepeatWidth:.1,marginArt:'curb',marginRepeat:2,builtInLines:false};});
- assert.equal(fields.length,13);assert.equal(e.selectedRace.roadTextures.road.repeatM,7);
+ await e.openRaceRoadTextures(async(title,f)=>{fields=f;return {roadMipmapDistance:4,roadFilter:'crisp',roadMipmaps:false,roadAnisotropy:16,roadArt:'center line',roadRepeat:7,roadRepeatWidth:4,marginRepeatWidth:.1,marginArt:'curb',marginRepeat:2,builtInLines:false};});
+ assert.equal(fields.length,15);assert.equal(e.selectedRace.roadTextures.road.repeatM,7);
  assert.ok(e.collectSelectedRaceTextureArtRefs().includes('center line'));
  const loaded=e.normalizeLoadedRaceDocument(e.serializeSelectedRaceDocument());
  assert.deepEqual(loaded.roadTextures,e.selectedRace.roadTextures);
@@ -90,7 +90,7 @@ test('road sampling survives geometry caching and creates independently filtered
  const after=e.getRaceStaticTrackSurfaceMeshes(bake);
  assert.notEqual(after,before);
  const options=after.roadMeshes.find(m=>m.artRef==='center line').textureOptions;
- assert.deepEqual(options,{filterMode:'crisp',mipmaps:false,anisotropy:16});
+ assert.deepEqual(options,{filterMode:'crisp',mipmapDistance:1,mipmaps:false,anisotropy:16});
  e.getRaceArtSpriteCanvas=()=>({width:64,height:64});
  const renderer={textureCache:new Map(),threeRenderer:{capabilities:{getMaxAnisotropy:()=>8}}};
  const crisp=e.getRaceThreeTexture(renderer,'center line',options);
@@ -104,4 +104,23 @@ test('road sampling survives geometry caching and creates independently filtered
  assert.equal(smooth.generateMipmaps,true);
  assert.equal(smooth.anisotropy,8);
  assert.equal(e.getRaceThreeTexture(renderer,'center line',options),crisp);
+});
+
+
+test('mipmap distance delays detail reduction without changing UVs and separates materials', () => {
+ assert.equal(roadTextureMipBias({mipmapDistance:4}),-2);
+ assert.equal(roadTextureMipBias({mipmapDistance:.5}),1);
+ assert.equal(roadTextureMipBias({mipmapDistance:4,mipmaps:false}),0);
+ const {bake}=fixture();
+ const a=buildRoadTextureStrips(bake,settings);
+ const b=buildRoadTextureStrips(bake,{...settings,road:{...settings.road,mipmapDistance:4}});
+ assert.deepEqual(a.roadMeshes.map(m=>m.points),b.roadMeshes.map(m=>m.points));
+ const e=new RaceEditor({}),renderer={},texture=new THREE.Texture();
+ const normal=e.getRaceThreeMaterial(renderer,{texture});
+ const delayed=e.getRaceThreeMaterial(renderer,{texture,textureOptions:{mipmapDistance:4}});
+ assert.notEqual(normal,delayed);
+ const shader={uniforms:{},fragmentShader:'#include <map_fragment>'};
+ delayed.onBeforeCompile(shader);
+ assert.equal(shader.uniforms.roadMipmapBias.value,-2);
+ assert.ok(shader.fragmentShader.includes('texture2D( map, vMapUv, roadMipmapBias )'));
 });
