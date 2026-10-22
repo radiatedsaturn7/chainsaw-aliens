@@ -675,3 +675,20 @@ test('deleted cars with retained history stay out of file lists and existence ch
   assert.equal(listProjectFiles('cars',{includeDeleted:true}).filter(e=>e.deleted).length,2);
  } finally {globalThis.fetch=originalFetch;clearCachedProjectFilesForTests();}
 });
+
+
+test('render-time cache reads do not synchronously fetch indexed art', async () => {
+  clearCachedProjectFilesForTests();
+  const originalFetch=globalThis.fetch, originalXhr=globalThis.XMLHttpRequest;
+  let syncRequests=0;
+  globalThis.XMLHttpRequest=class {constructor(){syncRequests++;throw Error('Unexpected synchronous request');}};
+  globalThis.fetch=async()=>({ok:true,json:async()=>({ok:true,index:{art:{cold:{updatedAt:1,size:1}}}})});
+  try {
+    await hydrateServerStorage({folder:'art'});
+    assert.equal(readCachedProjectFile('art','cold',{allowSyncFetch:false}),null);
+    assert.equal(syncRequests,0);
+    const raw=JSON.stringify({data:{frames:[['#ffffff']]}});
+    upsertCachedProjectFile('art','cold',raw);
+    assert.equal(readCachedProjectFile('art','cold',{allowSyncFetch:false}),raw);
+  } finally {globalThis.fetch=originalFetch;globalThis.XMLHttpRequest=originalXhr;clearCachedProjectFilesForTests();}
+});

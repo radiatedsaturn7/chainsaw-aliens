@@ -7,6 +7,7 @@ test('Race Editor surface preview renders synthetic ridge crossing from playtest
     const { default: RaceEditor } = await import('/src/ui/RaceEditor.js');
     const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
     editor.selectedRace.name = 'Synthetic Ridge Crossing';
+    editor.selectedRace.road.network = null;
     editor.selectedRace.road.nodes = [
       { x: -120, y: 0, elevation: 0, role: 'start', locked: true },
       { x: 0, y: 0, elevation: 0.08 },

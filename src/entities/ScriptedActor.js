@@ -2,11 +2,13 @@ import {modelAssets} from '../model3d/ModelAssets.js';
 import {modelSprites} from '../model3d/ModelSprites.js';
 import EnemyBase from './EnemyBase.js';
 import { ensureActorDefinition } from '../content/actorEditorData.js';
-import { listProjectFiles, loadProjectFile } from '../ui/projectFiles.js';
+import { listProjectFiles, loadProjectFile, hydrateProjectFilePayload } from '../ui/projectFiles.js';
 
 const actorCache = new Map();
 const actorArtAnimationCache = new Map();
 const actorFrameImageCache = new Map();
+const pendingActorArt = new Map();
+const actorArtRetryAfter = new Map();
 const DEFAULT_ACTOR_SIZE = { width: 24, height: 24 };
 const MIN_ACTOR_FRAME_DURATION_MS = 16;
 
@@ -108,7 +110,10 @@ export function resolveActorArtFrameDurations(artDoc = null, animation = {}, fra
 
 function resolveArtAnimationFrames(artRef = '', animation = {}) {
   if (!artRef || typeof document === 'undefined') return [];
-  const doc = loadProjectFile('art', artRef);
+  const doc = loadProjectFile('art', artRef, {allowSyncFetch:false});
+  if (!doc && !pendingActorArt.has(artRef) && Date.now() >= (actorArtRetryAfter.get(artRef)||0)) {
+    pendingActorArt.set(artRef, hydrateProjectFilePayload('art',artRef).then(value=>{if(!value)actorArtRetryAfter.set(artRef,Date.now()+5000);}).catch(()=>{actorArtRetryAfter.set(artRef,Date.now()+5000);}).finally(()=>pendingActorArt.delete(artRef)));
+  }
   const frames = Array.isArray(doc?.data?.frames) ? doc.data.frames : [];
   if (!frames.length) return [];
   const durationSignature = getActorArtDurationSignature(doc, animation, frames.length);
@@ -286,7 +291,10 @@ export default class ScriptedActor extends EnemyBase {
     const animation = state?.animation || {};
     const artRef = typeof animation.artRef === 'string' ? animation.artRef.trim() : '';
     if (artRef) {
-      const doc = loadProjectFile('art', artRef);
+      const doc = loadProjectFile('art', artRef, {allowSyncFetch:false});
+  if (!doc && !pendingActorArt.has(artRef) && Date.now() >= (actorArtRetryAfter.get(artRef)||0)) {
+    pendingActorArt.set(artRef, hydrateProjectFilePayload('art',artRef).then(value=>{if(!value)actorArtRetryAfter.set(artRef,Date.now()+5000);}).catch(()=>{actorArtRetryAfter.set(artRef,Date.now()+5000);}).finally(()=>pendingActorArt.delete(artRef)));
+  }
       const cacheKey = `${artRef}:${Number(doc?.savedAt || doc?.data?.updatedAt || 0)}:${doc?.data?.frames?.length || 0}`;
       if (this._artDimensionsCache.has(cacheKey)) {
         this._definitionArtDimensions = this._artDimensionsCache.get(cacheKey);
@@ -431,7 +439,10 @@ export default class ScriptedActor extends EnemyBase {
     }
     const artRef = typeof animation.artRef === 'string' ? animation.artRef.trim() : '';
     if (artRef) {
-      const doc = loadProjectFile('art', artRef);
+      const doc = loadProjectFile('art', artRef, {allowSyncFetch:false});
+  if (!doc && !pendingActorArt.has(artRef) && Date.now() >= (actorArtRetryAfter.get(artRef)||0)) {
+    pendingActorArt.set(artRef, hydrateProjectFilePayload('art',artRef).then(value=>{if(!value)actorArtRetryAfter.set(artRef,Date.now()+5000);}).catch(()=>{actorArtRetryAfter.set(artRef,Date.now()+5000);}).finally(()=>pendingActorArt.delete(artRef)));
+  }
       const frameCount = Array.isArray(doc?.data?.frames) ? doc.data.frames.length : 0;
       if (frameCount > 0) return Math.max(0.05, frameCount / Math.max(1, Number(animation.fps || doc?.data?.fps || 8)));
     }

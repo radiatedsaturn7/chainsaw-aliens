@@ -154,12 +154,12 @@ export function projectFileExists(folder, name) {
   return Boolean(index?.[folder]?.[clean] && !index[folder][clean].deleted);
 }
 
-export function loadProjectFile(folder, name) {
+export function loadProjectFile(folder, name, options = {}) {
   assertFolder(folder);
   const clean = sanitizeProjectFileName(name);
   if (!clean) return null;
   try {
-    const raw = readCachedProjectFile(folder, clean);
+    const raw = readCachedProjectFile(folder, clean, options);
     if (!raw) return null;
     const cacheKey = `${folder}:${clean}`;
     const cached = parsedPayloadCache.get(cacheKey);

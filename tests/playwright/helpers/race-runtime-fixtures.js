@@ -30,10 +30,8 @@ export async function seedRaceRuntimeFixtures(page) {
       frames: [Array(width * height).fill(color)]
     });
 
-    const race = clone(
-      editor.project.races.find((candidate) => candidate.name === 'Studio Sprint')
-        || editor.selectedRace
-    );
+    const {createDefaultRace}=await import('/src/racing/raceData.js');
+    const race = createDefaultRace();
     race.id = 'playwright-studio-sprint-2';
     race.name = 'Studio Sprint 2';
     race.laps = 1;

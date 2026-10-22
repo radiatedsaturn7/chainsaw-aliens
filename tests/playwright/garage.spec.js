@@ -4,12 +4,15 @@ const dialog=(page,name)=>page.getByRole('dialog',{name,exact:true});
 const apply=(page,name)=>dialog(page,name).getByRole('button',{name:'Apply',exact:true}).click();
 async function action(page,id){await expect.poll(()=>page.evaluate(()=>!window.__game.itemEditor.busy)).toBe(true);await page.evaluate(id=>{void window.__game.itemEditor.getDesktopActionHandlers()[id]();},id);}
 async function clickMenu(page,id){
- await expect.poll(()=>page.evaluate(()=>!window.__game.menuPlayer.flow.busy)).toBe(true);
+ await expect.poll(()=>page.evaluate(()=>!window.__game.menuPlayer.flow.busy&&!window.__game.menuPlayer.screenTransition.active&&!window.__game.menuPlayer.pendingScreenEntry)).toBe(true);
  await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
  const point=await page.evaluate(id=>{const g=window.__game,p=g.menuPlayer,e=p.flow.screen.elements.find(e=>e.id===id),b=p.bounds,r=g.canvas.getBoundingClientRect();return{x:r.x+(b.x+(e.x+e.w/2)*b.w)*r.width/g.viewport.width,y:r.y+(b.y+(e.y+e.h/2)*b.h)*r.height/g.viewport.height};},id);
  await page.mouse.click(point.x,point.y);
 }
+async function press(page,key){await page.waitForFunction(()=>!window.__game.menuPlayer.screenTransition.active&&!window.__game.menuPlayer.flow.busy);await page.keyboard.press(key);await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));}
+async function backToGarage(page){for(let i=0;i<4;i++){if(await page.evaluate(()=>window.__game.menuPlayer.flow.screenId==='garage'))return;await press(page,'Escape');}await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');}
 async function chooseUpgrade(page,value){
+ await page.waitForFunction(()=>!window.__game.menuPlayer.screenTransition.active&&!window.__game.menuPlayer.flow.busy);
  const steps=await page.evaluate(async value=>{
   const p=window.__game.menuPlayer,e=p.flow.screen.elements.find(e=>e.type==='garage-browser');
   p.focus=p.interactive().indexOf(e);
@@ -18,9 +21,9 @@ async function chooseUpgrade(page,value){
   if(index<0)throw Error('Missing upgrade '+value);
   return index-(state.index||0);
  },value);
- for(let i=0;i<Math.abs(steps);i++)await page.keyboard.press(steps<0?'ArrowLeft':'ArrowRight');
- await page.keyboard.press('Enter');
- await expect.poll(()=>page.evaluate(()=>!window.__game.menuPlayer.flow.busy)).toBe(true);
+ for(let i=0;i<Math.abs(steps);i++)await press(page,steps<0?'ArrowLeft':'ArrowRight');
+ await press(page,'Enter');
+ await expect.poll(()=>page.evaluate(()=>!window.__game.menuPlayer.flow.busy&&!window.__game.menuPlayer.screenTransition.active&&!window.__game.menuPlayer.pendingScreenEntry)).toBe(true);
 }
 test.beforeEach(async({page})=>{
  const preferences=new Map();
@@ -44,7 +47,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors, p
   const car=structuredClone(g.carEditor.selectedCar);delete car.__systemPreset;delete car.__editorDraft;delete car.systemFile;car.name=carRef;await saveProjectFileAndConfirm('cars',carRef,{car});window.__garageStock=JSON.stringify({car});
   g.transitionTo('item-editor');g.itemEditor.newDoodad();g.itemEditor.doodad.name=name;
  },{mobile,carRef,name});
- await action(page,'item-part');await dialog(page,'Car Part Properties').getByLabel('Installation slot',{exact:true}).fill('ecu');await dialog(page,'Car Part Properties').getByLabel('Price (credits)',{exact:true}).fill('250');await apply(page,'Car Part Properties');
+ await action(page,'item-part');await dialog(page,'Car Part Properties').getByLabel('Installation slot',{exact:true}).fill('ecu');await dialog(page,'Car Part Properties').getByLabel('Price (scrap)',{exact:true}).fill('250');await apply(page,'Car Part Properties');
  await action(page,'item-part-changes');await dialog(page,'Part Changes').getByLabel('New: enabled',{exact:true}).selectOption('yes');await dialog(page,'Part Changes').getByLabel('New: setting',{exact:true}).selectOption('torqueScale');await dialog(page,'Part Changes').getByLabel('New: operation',{exact:true}).selectOption('multiply');await dialog(page,'Part Changes').getByLabel('New: value',{exact:true}).fill('1.2');await apply(page,'Part Changes');
  await action(page,'item-part-tuning');await dialog(page,'Tuning Unlocks').getByLabel('New: enabled',{exact:true}).selectOption('yes');await apply(page,'Tuning Unlocks');
  await action(page,'save');await page.getByPlaceholder('Filename',{exact:true}).fill(name);await page.locator('.project-browser-btn.primary').filter({hasText:'Save'}).click();await expect.poll(()=>page.evaluate(()=>window.__game.itemEditor.status)).toBe('Saved');
@@ -54,9 +57,15 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors, p
  await chooseUpgrade(page,'Engine');await chooseUpgrade(page,'ecu');await chooseUpgrade(page,name);
  await expect.poll(()=>page.evaluate(id=>window.__game.items.progress.bags.items[id],id)).toBe(1);
 await expect.poll(()=>page.evaluate(ref=>window.__game.items.garage.configuration(ref).installed.ecu,carRef)).toBe(id);
- await clickMenu(page,'back');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
+ await backToGarage(page);await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
  await clickMenu(page,'garage-tune');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('tuning');
- await clickMenu(page,'adjust');await dialog(page,'Garage Tuning').getByLabel('Final drive',{exact:true}).fill('3.4');await apply(page,'Garage Tuning');
+ await page.waitForFunction(()=>window.__game.menuPlayer.tuner?.ready);
+ await press(page,'ArrowRight');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.index)).toBe(3);
+ await press(page,'Enter');await press(page,'Enter');
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.row.id)).toBe('gearFinalDrive');
+ const steps=await page.evaluate(()=>Math.round((3.4-window.__game.menuPlayer.tuner.draft)/.1));
+ for(let i=0;i<Math.abs(steps);i++)await press(page,steps<0?'ArrowLeft':'ArrowRight');
+ await press(page,'Enter');
  await expect.poll(()=>page.evaluate(ref=>window.__game.items.garage.configuration(ref).tune.gearFinalDrive,carRef)).toBe(3.4);
  await expect.poll(()=>page.evaluate(ref=>Boolean(window.__game.menuPlayer.resources.car(ref)),carRef)).toBe(true);
  await page.screenshot({path:`test-results/menu-garage-${mobile?'portrait':'desktop'}.png`});
@@ -69,7 +78,7 @@ await expect.poll(()=>page.evaluate(ref=>window.__game.items.garage.configuratio
   expect(await page.evaluate(()=>{const e=window.__game.raceEditor,c=e.getRaceSessionCar(e.playtestSession);return e.getRaceCarTuning(c).finalDrive;})).toBe(3.4);
   await page.evaluate(()=>window.__game.returnRaceTravelToOrigin());await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-player');
  }
- await clickMenu(page,'back');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
+ await backToGarage(page);await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
  await clickMenu(page,'garage-upgrade');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('upgrades');
  await page.evaluate(()=>{const p=window.__game.menuPlayer;p.widgetStates.set('garage-parts',{section:'Engine',slot:'ecu',index:0});});
  await chooseUpgrade(page,'');await expect.poll(()=>page.evaluate(ref=>Object.keys(window.__game.items.garage.configuration(ref).installed).length,carRef)).toBe(0);

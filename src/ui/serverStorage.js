@@ -379,12 +379,12 @@ export function deleteCachedProjectFile(folder, name) {
   if (serverIndex[folder]) delete serverIndex[folder][name];
 }
 
-export function readCachedProjectFile(folder, name) {
+export function readCachedProjectFile(folder, name, {allowSyncFetch = true} = {}) {
   if (!folder || !name) return null;
   const key = fileKey(folder, name);
   const cached = volatileFiles.get(key);
   if (cached) return cached;
-  if (!serverIndex?.[folder]?.[name]) return null;
+  if (!allowSyncFetch || !serverIndex?.[folder]?.[name]) return null;
   const payload = fetchServerFileSync(folder, name);
   return payload ? volatileFiles.get(key) || null : null;
 }
