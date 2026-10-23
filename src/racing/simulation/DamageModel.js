@@ -130,6 +130,8 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
     });
   };
   scenery.forEach((sprite) => {
+    // Fence panels are already handled by the spatially indexed rigid-body world.
+    if (sprite?.fenceId) return;
     if (!sprite?.id || session.removedSceneryIds.includes(sprite.id) || session.flattenedSceneryIds.includes(sprite.id) || session.triggeredSceneryIds.includes(sprite.id)) return;
     const doodad = editor.getRaceDoodadForScenery(sprite);
     if (isMixTape(doodad) || doodad.itemType==='item') {

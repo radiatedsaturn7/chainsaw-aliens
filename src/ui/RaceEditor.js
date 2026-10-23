@@ -1633,6 +1633,24 @@ export default class RaceEditor {
   }
 
   getRaceDoodadForScenery(sprite = {}) {
+    // A running race owns a stable scenery snapshot. Avoid normalizing every
+    // fence panel repeatedly; editor and car-preview edits remain uncached.
+    const session = this.playtestSession;
+    if (session && !session.carEditorPreview && sprite.previewDoodad) {
+      if (this.raceDoodadDefinitionSession !== session) {
+        this.raceDoodadDefinitionSession = session;
+        this.raceDoodadDefinitionCache = new WeakMap();
+      }
+      const cached = this.raceDoodadDefinitionCache.get(sprite);
+      if (cached?.source === sprite.previewDoodad && cached.width === sprite.widthM) return cached.definition;
+      const definition = this.resolveRaceDoodadForScenery(sprite);
+      this.raceDoodadDefinitionCache.set(sprite, { source: sprite.previewDoodad, width: sprite.widthM, definition });
+      return definition;
+    }
+    return this.resolveRaceDoodadForScenery(sprite);
+  }
+
+  resolveRaceDoodadForScenery(sprite = {}) {
     if(sprite.itemType==='item'&&sprite.item)return itemAsDoodad(sprite.item);
     if (sprite?.previewDoodad) {
       const definition = normalizeRaceDoodadDocument(sprite.previewDoodad, sprite?.label || sprite?.artRef || 'Doodad');
@@ -20220,7 +20238,13 @@ export default class RaceEditor {
         `Final drive: ${car.tuning.gearFinalDrive}`,
         `Active: ${this.activeAction || 'None'}`
       ]
-      : race.road.network ? [
+      : ['doodad','sprite','fence'].includes(this.getRaceGroundToolMode()) ? [
+        `Race: ${race.name}`, `Paint: ${this.getRacePaintCategory() === 'sprite' ? 'Billboard' : this.getRacePaintCategory()}`,
+        '', ...(this.getRacePaintCategory() === 'fence'
+          ? ['Add: tap to place one node', 'Select: drag nodes to reshape', 'Remove: tap a node to delete', 'New Fence: start a separate path']
+          : ['Art: choose the artwork', 'Paint / Erase: select a tool']),
+        '', 'Doodad: upright scenery', 'Fence: connected solid barrier', 'Decal: artwork on the terrain', 'Tile: repeating ground artwork', 'Billboard: camera-facing scenery'
+      ] : race.road.network ? [
         `Race: ${race.name}`,
         `Nodes: ${race.road.network.nodes.length} · Roads: ${race.road.network.edges.length}`,
         `Selected nodes: ${selectedNodeIds(this).length}`,
@@ -20289,7 +20313,7 @@ export default class RaceEditor {
     ctx.textBaseline = 'middle';
     ctx.fillStyle = UI_SUITE.colors.text;
     ctx.font = `700 12px ${UI_SUITE.font.family}`;
-    ctx.fillText(this.mode === 'car' ? 'Car Tools' : 'Route Tools', panel.x + 10, panel.y + 18, Math.max(1, panel.w - 20));
+    ctx.fillText(this.mode === 'car' ? 'Car Tools' : ['doodad','sprite','fence'].includes(this.getRaceGroundToolMode()) ? 'Paint Tools' : 'Route Tools', panel.x + 10, panel.y + 18, Math.max(1, panel.w - 20));
     ctx.restore();
     this.drawActionRows(ctx, {
       x: panel.x,
@@ -26979,9 +27003,9 @@ export default class RaceEditor {
       this.racePortraitHotMenu=null; fn();
     }});
     if (kind === 'fence') return [
-      action('draw-fence','Add Node',()=>{this.activeAction='draw-fence';}),
-      action('fence-select','Select / Move',()=>{this.activeAction='fence-select';}),
-      action('fence-remove-node','Remove Node',()=>{this.activeAction='fence-remove-node';}),
+      action('draw-fence','Add Node',()=>{this.activeAction='draw-fence';this.status='Add Node: tap to place each fence point';}),
+      action('fence-select','Select / Move',()=>{this.activeAction='fence-select';this.status='Select: tap a fence, then drag its nodes';}),
+      action('fence-remove-node','Remove Node',()=>{this.activeAction='fence-remove-node';this.status='Remove Node: tap a fence node to delete it';}),
       action('fence-new','New Fence',()=>this.activateRaceFenceTool()),
       action('fence-delete','Delete Fence',()=>{
         const fence=this.getEditableRaceFence(); if(!fence)return;
@@ -35556,11 +35580,32 @@ export default class RaceEditor {
       allowVisualExtension: routeRuntimeType !== 'circuit',
       routeLength
     });
+    const session = this.playtestSession;
+    const previous = this.raceDoodadSceneSnapshot;
+    // During play the placement snapshot is stable. Check inexpensive mutable
+    // placement fields and unique asset revisions rather than stringify every
+    // normalized definition and transform on every rendered frame.
+    const cacheable = session && !session.carEditorPreview;
+    if (cacheable && previous?.session === session && previous.surfaceRevision === surfaceRevision
+      && previous.sprites.length === sprites.length
+      && previous.sprites.every((record, i) => {
+        const sprite = sprites[i];
+        return record.sprite === sprite && record.state === sprite.state
+          && record.x === sprite.x && record.z === sprite.z && record.yaw === sprite.yaw
+          && record.width === sprite.widthM && record.height === sprite.heightM
+          && record.definition === sprite.previewDoodad && record.ref === sprite.doodadRef
+          && record.art === sprite.artRef && record.hitbox === sprite.previewHitbox;
+      })
+      && [...previous.artKeys].every(([ref, key]) => (ref ? this.getRaceArtSpriteCanvas(ref)?.__raceArtCacheKey || '' : '') === key)
+      && [...previous.modelKeys].every(([ref, revision]) => (modelAssets.entries.get(ref)?.revision || 0) === revision)) {
+      return previous.key;
+    }
+    const artKeys = new Map(), modelKeys = new Map();
     const doodads = sprites.map((sprite) => {
       const doodad = this.getRaceDoodadForScenery(sprite);
-      if(doodad.model?.ref)modelAssets.get(doodad.model.ref);
+      if(doodad.model?.ref){modelAssets.get(doodad.model.ref);modelKeys.set(doodad.model.ref,modelAssets.entries.get(doodad.model.ref)?.revision||0);}
       const artRef = String(doodad?.artRef || sprite?.artRef || '').trim();
-      const artCanvas = artRef ? this.getRaceArtSpriteCanvas(artRef) : null;
+      if (!artKeys.has(artRef)) artKeys.set(artRef, artRef ? this.getRaceArtSpriteCanvas(artRef)?.__raceArtCacheKey || '' : '');
       return [
         sprite?.id || '',
         sprite?.state || '',
@@ -35570,7 +35615,7 @@ export default class RaceEditor {
         doodad.itemType,
         JSON.stringify(doodad.model||null),
         modelAssets.entries.get(doodad.model?.ref)?.revision||0,
-        artCanvas?.__raceArtCacheKey || '',
+        artKeys.get(artRef),
         Math.round(Number(sprite?.x || 0) * 1000),
         Math.round(Number(sprite?.z || 0) * 1000),
         Math.round(Number(sprite?.yaw || 0) * 10000),
@@ -35582,7 +35627,14 @@ export default class RaceEditor {
         sprite?.previewHitbox ? 1 : 0
       ].join(',');
     }).join(';');
-    return `${surfaceRevision}::three-doodads::${doodads}`;
+    const key = `${surfaceRevision}::three-doodads::${doodads}`;
+    if (cacheable) this.raceDoodadSceneSnapshot = {
+      session, surfaceRevision, key, artKeys, modelKeys,
+      sprites: sprites.map(sprite => ({sprite, state:sprite.state, x:sprite.x, z:sprite.z, yaw:sprite.yaw,
+        width:sprite.widthM, height:sprite.heightM, definition:sprite.previewDoodad,
+        ref:sprite.doodadRef, art:sprite.artRef, hitbox:sprite.previewHitbox}))
+    };
+    return key;
   }
 
   getRaceDoodadGroundOffsetElevation(sprite = {}, doodad = this.getRaceDoodadForScenery(sprite)) {
@@ -36184,7 +36236,7 @@ export default class RaceEditor {
       if (!material) return;
       const vertices = [quad.points[0], quad.points[1], quad.points[2], quad.points[0], quad.points[2], quad.points[3]];
       if (sprite.fenceId) {
-        const key = `${sprite.fenceId}:${doodad.artRef || sprite.artRef}`;
+        const key = `${sprite.fenceId}:${doodad.artRef || sprite.artRef}:${Math.floor(sprite.x / 128)},${Math.floor(sprite.z / 128)}`;
         let batch = fenceBatches.get(key);
         if (!batch) { batch = { material, positions: [], uvs: [] }; fenceBatches.set(key, batch); }
         for (const point of vertices) {
