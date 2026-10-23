@@ -1101,11 +1101,12 @@ export default class RaceEditor {
       return;
     }
     if(startupFramePending && this.raceLoadingPresentation)return;
-    if (liveSession && this.playtestSession?.raceIntro?.active) {
+    if (liveSession && this.playtestSession?.raceIntro?.active && !this.raceInput.paused) {
+      if (input?.wasPressedCode?.('Escape')) { this.toggleRacePause(); return; }
       const skip = input?.wasPressed?.('interact') || input?.wasGamepadPressed?.('gamepadA')
         || input?.wasGamepadPressed?.('gamepadStart')
         || input?.wasPressedCode?.('Enter') || input?.wasPressedCode?.('Space');
-      if (!this.raceInput.paused) advanceRaceIntro(this.playtestSession, dt, skip);
+      advanceRaceIntro(this.playtestSession, dt, skip);
       return;
     }
     this.updateRaceMapThumbstickPan(dt);
@@ -39904,7 +39905,7 @@ export default class RaceEditor {
       && payload.y <= bounds.y + bounds.h
     ));
     if(this.playtestSession?.startupFramePending && this.raceLoadingPresentation)return;
-    if(this.playtestSession?.raceIntro?.active){advanceRaceIntro(this.playtestSession,0,true);return;}
+    if(this.playtestSession?.raceIntro?.active && !this.raceInput.paused){advanceRaceIntro(this.playtestSession,0,true);return;}
     if (this.playtestSession?.preparing) {
       if (hit?.id === 'cancel-race-preparation') hit.onClick?.();
       return;
