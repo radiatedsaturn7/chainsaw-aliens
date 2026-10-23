@@ -699,7 +699,7 @@ export default class DoodadEditor {
       w: Math.max(1, bounds.w - pad * 2),
       h: Math.max(1, bounds.h - pad * 2)
     };
-    const artworkH = clamp(Math.floor(inner.h * 0.18), 80, 98);
+    const artworkH = 110;
     const sizeH = clamp(Math.floor(inner.h * 0.34), 144, 184);
     const hitboxH = clamp(Math.floor(inner.h * 0.2), 88, 116);
     const artwork = { x: inner.x, y: inner.y, w: inner.w, h: artworkH };
@@ -1054,6 +1054,23 @@ export default class DoodadEditor {
     }
 
     const art = this.getDoodadArtCanvas();
+    if (this.doodad.isFence) {
+      // Side-on perspective strip for the lightweight preview when the embedded
+      // race renderer is not available yet. Each panel uses the entire artwork.
+      for (let panel = 18; panel >= 0; panel--) {
+        const near = 1 / (1 + panel * 0.32), far = 1 / (1 + (panel + 1) * 0.32);
+        const ax = centerX + bounds.w * (0.12 + far * 0.3), bx = centerX + bounds.w * (0.12 + near * 0.3);
+        const ay = horizon + (roadBottom - horizon) * far, by = horizon + (roadBottom - horizon) * near;
+        const h = Math.min(bounds.h * 0.5, bounds.h * this.doodad.heightM / 12);
+        for (let slice = 0; slice < 24; slice++) {
+          const t = slice / 24, depth = far + (near - far) * t;
+          const x = ax + (bx - ax) * t, y = ay + (by - ay) * t;
+          if (art) ctx.drawImage(art, slice * art.width / 24, 0, art.width / 24, art.height, x, y - h * depth, (bx - ax) / 24 + 0.5, h * depth);
+          else { ctx.fillStyle = '#75836a'; ctx.fillRect(x, y - h * depth, (bx - ax) / 24 + 0.5, h * depth); }
+        }
+      }
+      ctx.restore(); return;
+    }
     const aspect = Math.max(0.2, Number(this.doodad.widthM || 1) / Math.max(0.2, Number(this.doodad.heightM || 1)));
     [
       { depth: 0.28, side: -1.12 },
@@ -1357,7 +1374,7 @@ export default class DoodadEditor {
     ctx.textAlign='left';ctx.textBaseline='middle';
     ctx.fillText(this.doodad.model?.ref||this.doodad.artRef||this.doodad.name||'Doodad',x,bounds.y+18,bounds.w-28);
     const handlers=this.getDesktopActionHandlers(),w=(bounds.w-40)/3;
-    [['pick-art','Artwork'],['import-item-art','Import Image'],['doodad-item','Make Item'],['pick-model','3D Model'],['clear-model','Use 2D']].forEach(([id,label],i)=>{
+    [['pick-art','Artwork'],['import-item-art','Import Image'],['doodad-item','Make Item'],['pick-model','3D Model'],['clear-model','Use 2D'],['fence-toggle',`Fence: ${this.doodad.isFence ? 'On' : 'Off'}`]].forEach(([id,label],i)=>{
       this.registerButton(ctx,{x:x+(i%3)*(w+6),y:y+Math.floor(i/3)*38,w,h:34},{id,label,onClick:handlers[id]});
     });
     if(bounds.h>136){ctx.fillStyle=UI_SUITE.colors.muted;ctx.font=`12px ${UI_SUITE.font.family}`;ctx.fillText(this.saveStatus||this.status,x,y+92,bounds.w-28);}
@@ -1383,6 +1400,13 @@ export default class DoodadEditor {
 
   drawDoodadCollisionPanel(ctx, bounds) {
     const x = bounds.x + 14;
+    if (this.doodad.isFence) {
+      ctx.fillStyle = UI_SUITE.colors.text; ctx.font = `700 12px ${UI_SUITE.font.family}`;
+      ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+      ctx.fillText('Solid fence · cannot flatten or fly off', x, bounds.y + 12, bounds.w - 28);
+      ctx.fillText('Width = repeat length; Height = barrier height', x, bounds.y + 36, bounds.w - 28);
+      return;
+    }
     const { defaultRule, rules } = this.ensureEditableRules();
     [
       { key: 'default', rule: defaultRule, label: 'Default' },
@@ -1481,6 +1505,7 @@ export default class DoodadEditor {
   }
 
   drawPreview(ctx, bounds) {
+    if (this.doodad.isFence) { this.drawStudioSprintPreview(ctx, bounds); return; }
     const groundY = bounds.y + bounds.h - 42;
     ctx.save();
     ctx.strokeStyle = 'rgba(217,230,210,0.22)';

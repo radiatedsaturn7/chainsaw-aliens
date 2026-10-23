@@ -8,12 +8,18 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait' : 'desktop'} fen
   await page.evaluate(async()=>{
     const g=window.__game; g.enterDoodadEditor();
     const e=g.doodadEditor;
-    const { loadProjectFile }=await import('/src/ui/projectFiles.js');
+    const { hydrateProjectFilePayload }=await import('/src/ui/projectFiles.js');
     const { normalizeRaceDoodadDocument }=await import('/src/racing/raceDoodads.js');
-    e.doodad=normalizeRaceDoodadDocument(await loadProjectFile('doodads','tree'));
+    e.doodad=normalizeRaceDoodadDocument(await hydrateProjectFilePayload('doodads','tree'));
     e.doodad.widthM=4; e.doodad.heightM=5;
-    e.getDesktopActionHandlers()['fence-toggle']();
+    e.doodad.isFence=false;
     e.mobileRootId='artwork'; e.landscapeRootId='artwork';
+    g.draw();
+    const toggle=e.buttons.find(b=>b.id==='fence-toggle');
+    if(!toggle) throw new Error('Fence toggle is missing from artwork panel');
+    toggle.onClick();
+    if(!e.doodad.artRef) throw new Error('Saved tree art missing');
+    await g.raceEditor.hydrateRaceArt(e.doodad.artRef);
     g.draw();
   });
   await page.waitForTimeout(1200);

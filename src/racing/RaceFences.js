@@ -24,7 +24,7 @@ export function buildRaceFencePlacements(points, definition, { id = 'fence', ref
         label: doodad.name, artRef: doodad.artRef, x: a.x + dx * fraction, z: a.z + dz * fraction,
         yaw: Math.atan2(dz, -dx), widthM: width, heightM: doodad.heightM,
         fenceU0: u0, fenceU1: u0 + width / repeat, solid: true, state: 'standing',
-        previewDoodad: { ...doodad, widthM: width, hitboxWidthM: width, rules: [],
+        previewDoodad: { ...doodad, itemType: 'scenery', widthM: width, hitboxWidthM: width, hitboxHeightM: doodad.heightM, rules: [],
           defaultRule: { ...doodad.defaultRule, behavior: 'collide' } }
       });
       at += width; traveled += width;
