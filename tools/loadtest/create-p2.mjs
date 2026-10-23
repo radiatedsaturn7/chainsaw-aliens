@@ -53,7 +53,9 @@ for(const p of points)for(let dx=-3;dx<=3;dx++)for(let dz=-3;dz<=3;dz++){
   race.road.tileMap.cells[`${x},${z}`]={...tileTemplate,elevation:0};
 }
 race.road.nodes=[{x:points[0].x,y:points[0].z,elevation:0,role:'start',locked:true}];race.road.segments=[];
-const editor=new RaceEditor({});editor.applyLoadedRaceDocument({...source,race},{name:'p2loadtest'});editor.setRaceAiCount(11);
+const editor=new RaceEditor({});editor.applyLoadedRaceDocument({...source,race},{name:'p2loadtest'});for(const name of ['RTG-001','CT-86','PZ-24','BUSE-019']) editor.applyLoadedCarDocument(readDocument(`data/server-storage/files/cars/${name}/document.json`),{name});
+editor.setRaceAiCount(11);
+if(editor.getRaceAiCount()!==11)throw Error('Saved load test must contain 11 enabled AI drivers');
 race.competition=editor.selectedRace.competition;
 const errors=validateRaceRouteNetwork(race.road.network);if(errors.length)throw Error(errors.join('; '));
 const length=findNetworkRoute(race.road.network).lengthM;

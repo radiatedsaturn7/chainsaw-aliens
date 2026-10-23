@@ -568,6 +568,32 @@ export class TrackState {
     return sample;
   }
 
+  // With one constant forcing and no water, only temperature can change.
+  // Preserve the per-step quantization, but stop once it reaches its fixed
+  // point. This avoids replaying every field of old cells on a long dry race.
+  catchUpConstantDryCellWeather(cell, startStep, endStep) {
+    if (this.weatherTimeline.size !== 1
+      || WATER_FIELDS.some(field => cell[field] !== 0)) return false;
+    const [forcingStep, forcing] = this.weatherTimeline.entries().next().value;
+    if (forcingStep > startStep || forcing.precipitationRateMmPerS > 0) return false;
+    const target = forcing.ambientTemperatureC + forcing.sunIntensity * cell.sunExposure * 18
+      - forcing.windIntensity * cell.windExposure * 3.5;
+    const response = clamp(this.fixedStepMs / 1000 * cell.heatResponse, 0, 1);
+    let temperature = cell.surfaceTemperatureC;
+    for (let step = startStep; step <= endStep; step++) {
+      const next = quantizeTrackStateNumber(clamp(Number(
+        temperature + (target - temperature) * response
+      ) || 0, -80, 120));
+      if (next === temperature) break;
+      temperature = next;
+    }
+    this.prepareCellMutation(cell);
+    cell.surfaceTemperatureC = temperature;
+    cell.lastUpdatedStep = endStep;
+    clampTrackStateCell(cell);
+    return true;
+  }
+
   catchUpCellWeather(cell, throughStep = this.stepIndex) {
     if (!cell) return 0;
     let appliedSteps = 0;
@@ -575,7 +601,10 @@ export class TrackState {
       Number(cell.initializedStep || 0) + 1,
       Number(cell.lastUpdatedStep || 0) + 1
     );
-    for (let stepIndex = startStep; stepIndex <= Number(throughStep || 0); stepIndex += 1) {
+    const endStep = Math.floor(Number(throughStep || 0));
+    if (startStep > endStep) return 0;
+    if (this.catchUpConstantDryCellWeather(cell, startStep, endStep)) return endStep - startStep + 1;
+    for (let stepIndex = startStep; stepIndex <= endStep; stepIndex += 1) {
       const forcing = this.getWeatherForStep(stepIndex);
       if (!forcing) continue;
       this.applyWeatherToCell(cell, forcing, this.fixedStepMs / 1000, stepIndex);

@@ -5302,7 +5302,6 @@ export default class RaceEditor {
 
   screenToRaceMapWorldPoint(screenX = 0, screenY = 0, bounds = this.raceMapBounds) {
     if (!bounds) return null;
-    if (!patches.length) return tileCell;
     const rawPoints = this.getRaceRawMapPoints();
     if (!rawPoints.length) return null;
     const { minX, minY, maxX, maxY, pad, usableW, usableH, scale, panX, panY } = this.getRaceMapTransform(bounds, rawPoints);
@@ -5316,7 +5315,6 @@ export default class RaceEditor {
 
   raceMapWorldToScreenPoint(worldPoint = {}, bounds = this.raceMapBounds) {
     if (!bounds) return null;
-    if (!patches.length) return tileCell;
     const rawPoints = this.getRaceRawMapPoints();
     if (!rawPoints.length) return null;
     const { minX, minY, maxX, maxY, pad, usableW, usableH, scale, panX, panY } = this.getRaceMapTransform(bounds, rawPoints);
@@ -14251,7 +14249,6 @@ export default class RaceEditor {
 
   getRaceMapScaleBar(bounds = this.raceMapBounds) {
     if (!bounds) return null;
-    if (!patches.length) return tileCell;
     const rawPoints = this.getRaceRawMapPoints();
     if (!rawPoints.length) return null;
     const { scale } = this.getRaceMapTransform(bounds, rawPoints);

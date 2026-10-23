@@ -546,3 +546,7 @@ Race Settings labels the command Skybox. Its existing live-preview dialog includ
 Race surface presentation uses nearby-cell lookups and cached terrain heights. Surface appearance refreshes at most every 100 ms while remaining in the same 8 m view cell; movement into a new view cell and explicit resets refresh immediately. Physics continues at its normal simulation cadence. Tire-mark retirement updates only affected spatial buckets instead of rebuilding the complete history.
 
 Network route queries and path samples reuse an index until authored geometry is invalidated. New dry Track State cells may share exact, quantized temperature history for matching exposure profiles; wet histories and restored snapshots retain deterministic full-weather behavior. The p2loadtest diagnostic race preserves P1 visual settings and road width, with a roughly tenfold route length and eleven AI competitors.
+
+Per-car terrain collision-edge classifications retain at most 128 recently used spatial ranges. Eviction changes only cache residency; revisited geometry is classified again with unchanged collision behavior.
+
+Existing dry condition cells under one constant weather forcing evolve only temperature, preserving every quantized temperature step and stopping at its exact fixed point. Wet cells and changing weather timelines use the full weather path.

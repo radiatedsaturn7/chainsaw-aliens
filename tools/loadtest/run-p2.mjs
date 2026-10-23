@@ -65,7 +65,7 @@ for(let frame=0;frame<maxFrames;frame++){
  if(distance>lastDistance+1){lastDistance=distance;lastProgressFrame=frame;}
  report.frames.push({frame,distance,speed:s.speedMps,updateMs,renderPreparationMs,cells:s.trackState?.cells?.size,marks:s.tireTrackSegments?.length});
  if(frame%120===0){
-  const status={frame,seconds:frame*dt,distance,maxDistance,speed:s.speedMps,aiMin:Math.min(...s.aiRuntime.map(a=>a.distance)),aiMax:Math.max(...s.aiRuntime.map(a=>a.distance)),updateMs,renderPreparationMs,cells:s.trackState?.cells?.size,marks:s.tireTrackSegments?.length,events:s.trackState?.eventHistory?.length,checkpoints:s.trackState?.performanceCounters?.checkpointCompletedCount,rssMB:process.memoryUsage().rss/1048576};
+  const status={frame,seconds:frame*dt,distance,maxDistance,speed:s.speedMps,aiMin:Math.min(...s.aiRuntime.map(a=>a.distance)),aiMax:Math.max(...s.aiRuntime.map(a=>a.distance)),updateMs,renderPreparationMs,cells:s.trackState?.cells?.size,marks:s.tireTrackSegments?.length,events:s.trackState?.eventHistory?.length,checkpoints:s.trackState?.performanceCounters?.checkpointCompletedCount,rssMB:process.memoryUsage().rss/1048576,heapUsedMB:process.memoryUsage().heapUsed/1048576};
   console.log(JSON.stringify(status));fs.writeFileSync(output+'.progress.json',JSON.stringify(status));
  }
  if(frame%600===0) { fs.writeFileSync(output,JSON.stringify({...report,maxDistance,totals})); await new Promise(resolve=>setImmediate(resolve)); }

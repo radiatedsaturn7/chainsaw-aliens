@@ -1,7 +1,7 @@
 name: P2 endurance load test
 on:
   push:
-    branches: [codex/p2-loadtest]
+    branches: [codex/p2-loadtest, codex/p2-loadtest-final]
   workflow_dispatch:
 permissions:
   contents: read
@@ -16,7 +16,7 @@ jobs:
         with:
           script: |
             const { data } = await github.rest.actions.listWorkflowRuns({
-              ...context.repo, workflow_id: 'p2-loadtest.yml', branch: 'codex/p2-loadtest', per_page: 10
+              ...context.repo, workflow_id: 'p2-loadtest.yml', branch: context.ref.replace('refs/heads/', ''), per_page: 10
             });
             for (const run of data.workflow_runs) {
               if (run.id < context.runId && ['queued', 'in_progress'].includes(run.status)) {
@@ -29,6 +29,8 @@ jobs:
           node-version: 24
       - run: npm ci
       - name: Full lap with 11 AI cars at 60 Hz
+        if: ${{ !contains(github.event.head_commit.message, '[stop endurance]') }}
+        timeout-minutes: 80
         run: node tools/loadtest/run-p2.mjs
         env:
           P2_REPORT: artifacts/p2loadtest/ci-lap-60hz.json
