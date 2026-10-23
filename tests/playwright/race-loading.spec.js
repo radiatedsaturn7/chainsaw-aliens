@@ -11,7 +11,7 @@ for(const mode of ['portrait','landscape','controller'])test(`custom race loadin
   const carDoc=(await hydrateProjectFilePayload('cars','RTG-001')).data;
   const car=g.carEditor.normalizeLoadedCarDocument(carDoc.car||carDoc);
   g.transitionTo('race-editor');g.menuPlayer.flow=new MenuFlow(menu);g.menuPlayer.flow.parameters.carRef='RTG-001';
-  if(mode==='controller')g.input.isGamepadConnected=()=>true;
+  if(mode==='controller'){const pad={id:'Loading Test Controller',index:0,connected:true,mapping:'standard',timestamp:0,axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};Object.defineProperty(navigator,'getGamepads',{configurable:true,value:()=>[pad]});g.input.gamepadAvailable=true;g.input.gamepadIndex=0;g.input.gamepadConnected=true;}
   const e=g.raceEditor;e.beginRaceTravelLoading('P1',car.id,{car});e.racePlaytestPreparation.progress=.42;
   e.racePlaytestPreparation.deadlineWatchdog=null;
   g.draw();
