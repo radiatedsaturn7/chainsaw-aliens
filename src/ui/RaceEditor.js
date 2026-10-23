@@ -1099,6 +1099,7 @@ export default class RaceEditor {
       this.failRaceStartupPresentation('Race did not present its first playable frame');
       return;
     }
+    if(startupFramePending && this.raceLoadingPresentation)return;
     this.updateRaceMapThumbstickPan(dt);
     if (!this.hasPhysicalRaceGamepad() && this.gamepadSubmenuOpen) {
       this.mobileRootOpen = false;
@@ -6089,6 +6090,7 @@ export default class RaceEditor {
       // Render the actual race behind the loading screen before releasing the
       // countdown. This uploads textures and builds the first visible meshes.
       if(!warm.exit){
+        this.buttons=[];
         this.drawRacePreparationScreen(ctx,width,height);
         const elapsed=now-warm.started;
         if(elapsed>=1000 && warm.frames>=3 && (!session.deferredArtWorker || elapsed>=3000)){
@@ -39861,6 +39863,7 @@ export default class RaceEditor {
       && payload.y >= bounds.y
       && payload.y <= bounds.y + bounds.h
     ));
+    if(this.playtestSession?.startupFramePending && this.raceLoadingPresentation)return;
     if (this.playtestSession?.preparing) {
       if (hit?.id === 'cancel-race-preparation') hit.onClick?.();
       return;
