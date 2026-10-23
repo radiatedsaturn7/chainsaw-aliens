@@ -3225,14 +3225,28 @@ export default class RaceEditor {
     return true;
   }
 
+  async activateRaceFenceTool() {
+    if (!this.getSelectedRaceDoodad()) {
+      const picked = await this.openRaceDoodadPicker();
+      if (!picked) { this.status = 'Choose or save a doodad first, then tap Draw Fence'; return; }
+    }
+    if (!this.getSelectedRaceDoodad()) return;
+    this.raceSpritePaintKind = 'doodad';
+    this.activeAction = 'draw-fence';
+    this.racePortraitMode = 'ground';
+    this.activeRootId = 'ground';
+    this.racePortraitHotMenu = null;
+    this.status = 'Draw Fence: drag on the map. Each line repeats the selected doodad and blocks cars.';
+  }
+
   beginRaceFenceDrag(point) {
-    if (this.activeAction !== 'draw-fence' || !this.getSelectedRaceDoodad()?.isFence) return false;
+    if (this.activeAction !== 'draw-fence' || !this.getSelectedRaceDoodad()) return false;
     const b = this.raceMapBounds;
     if (!b || point.x < b.x || point.y < b.y || point.x > b.x + b.w || point.y > b.y + b.h) return false;
     const world = this.screenToRaceMapWorldPoint(point.x, point.y, this.raceMapBounds);
     if (!world) return false;
     this.raceFenceDrag = { id: point.id ?? 'pointer', race: this.selectedRace,
-      doodad: structuredClone(this.getSelectedRaceDoodad()), ref: this.selectedDoodadRef,
+      doodad: { ...structuredClone(this.getSelectedRaceDoodad()), isFence: true }, ref: this.selectedDoodadRef,
       points: [{ x: world.x, z: world.y }] };
     return true;
   }
@@ -8918,12 +8932,7 @@ export default class RaceEditor {
   handleMenuAction(action) {
     if (NETWORK_ACTIONS[action]) return handleNetworkAction(this, action).catch(error => { this.status = error.message; });
     if(action==='race-ground-texture') return this.openRaceGroundTexture();
-    if(action==='draw-fence') {
-      if (!this.getSelectedRaceDoodad()?.isFence) { this.status = 'Choose a doodad marked as Fence first'; return; }
-      this.raceSpritePaintKind = 'doodad'; this.activeAction = 'draw-fence';
-      this.racePortraitMode = 'ground'; this.activeRootId = 'ground'; this.racePortraitHotMenu = null;
-      this.status = 'Drag on the map to draw a solid fence'; return;
-    }
+    if(action==='draw-fence') return this.activateRaceFenceTool();
     if(action==='rotate-sprite') return this.openRaceSceneryRotationDialog();
     if(action==='race-item'){void this.openRaceItemPicker().catch(error=>{this.status=error.message;});return;}
     if (!this.isActionAvailable(action)) {
@@ -26867,7 +26876,9 @@ export default class RaceEditor {
       { id: 'race-ground-mode', label: modeLabel, active: this.racePortraitHotMenu === 'ground-mode', onClick: () => this.handleMenuAction('race-ground-mode') },
       { id: 'race-ground-paint', label: paintLabel, active: this.racePortraitHotMenu === 'ground-paint', onClick: () => this.handleMenuAction('race-ground-paint') },
       { id: 'race-ground-intensity', label: intensityLabel, active: this.racePortraitHotMenu === 'ground-intensity', onClick: () => this.handleMenuAction('race-ground-intensity') },
-      { id: 'race-ground-brush', label: `Brush ${mode === 'doodad' ? 1 : Math.round(Number(this.raceGroundBrushCells) || 1)}`, active: this.racePortraitHotMenu === 'ground-brush', onClick: () => this.handleMenuAction('race-ground-brush') }
+      mode === 'doodad'
+        ? { id: 'draw-fence', label: 'Draw Fence', active: this.activeAction === 'draw-fence', onClick: () => this.handleMenuAction('draw-fence') }
+        : { id: 'race-ground-brush', label: `Brush ${Math.round(Number(this.raceGroundBrushCells) || 1)}`, active: this.racePortraitHotMenu === 'ground-brush', onClick: () => this.handleMenuAction('race-ground-brush') }
     ];
   }
 
@@ -27017,7 +27028,7 @@ export default class RaceEditor {
         close,
         { id: 'paint-sprite', label: 'Paint', active: this.activeAction === 'paint-sprite', disabled: !this.isRaceSpritePaintReady('doodad'), onClick: this.isRaceSpritePaintReady('doodad') ? () => this.handleMenuAction('paint-sprite') : null },
         { id: 'erase-sprite', label: 'Erase', active: this.activeAction === 'erase-sprite', onClick: () => this.handleMenuAction('erase-sprite') },
-        { id: 'draw-fence', label: 'Draw Fence', active: this.activeAction === 'draw-fence', disabled: !this.getSelectedRaceDoodad()?.isFence, onClick: () => this.handleMenuAction('draw-fence') },
+        { id: 'draw-fence', label: 'Draw Fence', active: this.activeAction === 'draw-fence', onClick: () => this.handleMenuAction('draw-fence') },
         ...this.getRaceSceneryTransformActions()
       ];
     }

@@ -29,7 +29,11 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait' : 'desktop'} fen
     e.selectedRace.scenery=[];
     const definition=structuredClone(g.doodadEditor.doodad);
     e.getSelectedRaceDoodad=()=>definition;
-    e.handleMenuAction('draw-fence');
+    e.handleMenuAction('race-ground-mode-doodad');
+    g.draw();
+    const fenceButton=e.buttons.find(b=>b.id==='draw-fence');
+    if(!fenceButton) throw new Error('Draw Fence missing from Doodad hotbar');
+    await fenceButton.onClick();
     await e.openRaceGroundTexture(async()=>({artRef:'providenceGround',repeatM:3}));
     g.draw();
     const b=e.raceMapBounds;
@@ -39,7 +43,7 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait' : 'desktop'} fen
     e.finishRaceFenceDrag({x:b.x+b.w*.65,y:b.y+b.h*.65});
     const count=e.selectedRace.scenery.length;
     const payload=JSON.parse(JSON.stringify(e.serializeSelectedRaceDocument()));
-    e.applyLoadedRaceDocument(payload); g.draw();
+    e.applyLoadedRaceDocument(payload); await e.activateRaceFenceTool(); g.draw();
     const {createRaceStaticColliderWorld}=await import('/src/racing/RaceSimulation.js');
     const authority={}; createRaceStaticColliderWorld(e,{authority,worldBake:{},runtimeType:e.getSelectedRaceRuntimeType(),routeLength:e.getRaceRouteLength()});
     return {count,restored:e.selectedRace.scenery.length,ground:e.getRaceTileMapCell(-999,-999).artRef,
