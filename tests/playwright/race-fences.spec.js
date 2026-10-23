@@ -41,16 +41,30 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait' : 'desktop'} fen
     e.beginRaceFenceDrag({x:b.x+b.w*.3,y:b.y+b.h*.35});
     e.updateRaceFenceDrag({x:b.x+b.w*.5,y:b.y+b.h*.5});
     e.finishRaceFenceDrag({x:b.x+b.w*.65,y:b.y+b.h*.65});
+    // A later tap extends the same fence through a turn instead of making a new strip.
+    const next={x:b.x+b.w*.35,y:b.y+b.h*.8};
+    e.beginRaceFenceDrag(next); e.finishRaceFenceDrag(next);
+    const fence=e.getEditableRaceFence();
+    const node=fence.fencePath.points[1];
+    const screen=e.raceMapWorldToScreenPoint({x:node.x,y:node.z},b);
+    if(!e.beginRaceFenceNodeDrag({x:screen.screenX,y:screen.screenY})) throw new Error('Cannot grab fence node');
+    e.updateRaceFenceNodeDrag({x:screen.screenX+18,y:screen.screenY-12}); e.raceFenceNodeDrag=null;
+    const pathPoints=e.getEditableRaceFence().fencePath.points.length;
     const count=e.selectedRace.scenery.length;
     const payload=JSON.parse(JSON.stringify(e.serializeSelectedRaceDocument()));
-    e.applyLoadedRaceDocument(payload); await e.activateRaceFenceTool(); g.draw();
+    const fenceId=e.activeRaceFenceId;
+    e.applyLoadedRaceDocument(payload); await e.activateRaceFenceTool(); e.activeRaceFenceId=fenceId; g.draw();
+    const renderer=e.getRaceThreeWorldRenderer(390,400);
+    if(!e.addRaceThreeDoodads(renderer)) throw new Error('Fence mesh missing');
+    const drawCalls=renderer.dynamicDoodadDrawCalls;
     const {createRaceStaticColliderWorld}=await import('/src/racing/RaceSimulation.js');
     const authority={}; createRaceStaticColliderWorld(e,{authority,worldBake:{},runtimeType:e.getSelectedRaceRuntimeType(),routeLength:e.getRaceRouteLength()});
-    return {count,restored:e.selectedRace.scenery.length,ground:e.getRaceTileMapCell(-999,-999).artRef,
+    return {count,pathPoints,drawCalls,restored:e.selectedRace.scenery.length,ground:e.getRaceTileMapCell(-999,-999).artRef,
       boxes:authority.staticColliderDefinitions.filter(p=>p.source?.startsWith('scenery:')).length,
       buttons:e.buttons.map(b=>b.id),bounds:b};
   });
   console.log('FENCE',JSON.stringify(result));
+  expect(result.pathPoints).toBeGreaterThan(3); expect(result.drawCalls).toBe(1);
   expect(result.count).toBeGreaterThan(1); expect(result.restored).toBe(result.count);
   expect(result.boxes).toBe(result.count); expect(result.ground).toBe('providenceGround');
   await page.screenshot({path:`test-results/fence-map-${mobile}.png`});

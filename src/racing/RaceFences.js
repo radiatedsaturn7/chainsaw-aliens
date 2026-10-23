@@ -17,18 +17,22 @@ export function buildRaceFencePlacements(points, definition, { id = 'fence', ref
     while (at < length - 0.00001) {
       const phase = ((traveled % repeat) + repeat) % repeat;
       const u0 = phase < 0.00001 || repeat - phase < 0.00001 ? 0 : phase / repeat;
-      const width = Math.min(length - at, repeat * (1 - u0));
+      const width = Math.min(length - at, repeat * (1 - u0), 2);
       const fraction = (at + width / 2) / length;
       placements.push({
         id: `${id}:${placements.length}`, fenceId: id, presetId: 'doodad', doodadRef: ref,
         label: doodad.name, artRef: doodad.artRef, x: a.x + dx * fraction, z: a.z + dz * fraction,
         yaw: Math.atan2(dz, -dx), widthM: width, heightM: doodad.heightM,
         fenceU0: u0, fenceU1: u0 + width / repeat, solid: true, state: 'standing',
-        previewDoodad: { ...doodad, itemType: 'scenery', widthM: width, hitboxWidthM: width, hitboxHeightM: doodad.heightM, rules: [],
+        previewDoodad: { ...doodad, itemType: 'scenery', model: null, widthM: width, hitboxWidthM: width, hitboxHeightM: doodad.heightM, rules: [],
           defaultRule: { ...doodad.defaultRule, behavior: 'collide' } }
       });
       at += width; traveled += width;
     }
   }
+  if (placements.length) placements[0].fencePath = {
+    points: points.filter(p => Number.isFinite(p?.x) && Number.isFinite(p?.z)).map(p => ({ x: p.x, z: p.z })),
+    definition: doodad, ref
+  };
   return placements;
 }
