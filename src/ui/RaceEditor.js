@@ -6047,7 +6047,8 @@ export default class RaceEditor {
     this.buttons = [];
     this.menuScrollRegions = [];
     this.raceMapBounds = null;
-    if (this.racePlaytestPreparation || this.playtestSession?.preparing) {
+    if (this.racePlaytestPreparation || this.playtestSession?.preparing
+      || (this.playtestSession?.startupFramePending && !this.playtestSession.carEditorPreview && !this.raceLoadingPresentation)) {
       this.drawRacePreparationScreen(ctx, width, height);
       return;
     }
