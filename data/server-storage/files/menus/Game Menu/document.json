@@ -5250,6 +5250,66 @@
           "keyframes": []
         }
       ]
+    },
+    {
+      "id": "loading",
+      "name": "Race Loading",
+      "background": "#000000",
+      "backgroundArt": "8576",
+      "useDefaultBackground": false,
+      "effect": "none",
+      "elements": [
+        {
+          "id": "loading-car",
+          "type": "car-preview",
+          "label": "Selected car",
+          "binding": "carRef",
+          "x": 0.08,
+          "y": 0.57,
+          "w": 0.2,
+          "h": 0.22,
+          "animation": "spin",
+          "duration": 4
+        },
+        {
+          "id": "loading-label",
+          "type": "text",
+          "label": "Loading {{loadingRace}}…",
+          "x": 0.3,
+          "y": 0.57,
+          "w": 0.6,
+          "h": 0.08,
+          "fontSize": 30,
+          "textOutlineWidth": 2
+        },
+        {
+          "id": "loading-progress",
+          "type": "progress-bar",
+          "label": "Loading progress",
+          "binding": "loadingProgress",
+          "x": 0.3,
+          "y": 0.68,
+          "w": 0.6,
+          "h": 0.045,
+          "fill": "#9bc9df",
+          "background": "#101820",
+          "stroke": "#ffffff",
+          "strokeWidth": 2
+        },
+        {
+          "id": "loading-fact",
+          "type": "random-fact",
+          "label": "Facts",
+          "facts": [],
+          "x": 0.1,
+          "y": 0.8,
+          "w": 0.8,
+          "h": 0.12,
+          "fontSize": 24,
+          "textOutlineWidth": 2
+        }
+      ]
     }
-  ]
+  ],
+  "loadingScreen": "loading"
 }

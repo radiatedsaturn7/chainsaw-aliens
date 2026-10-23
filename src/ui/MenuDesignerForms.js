@@ -51,6 +51,8 @@ export async function setupWidget(editor){
   if(['property-display','asset-preview'].includes(e.type))return setupDataWidget(editor);
   const fields=[text('label','Label',e.label)];
   const description=[];
+  if(e.type==='progress-bar'){fields.push(bindingField(editor,e),...shapeStyleFields(e));description.push('Race loading supplies loadingProgress from 0 to 1.');}
+  if(e.type==='random-fact')fields.push({id:'facts',label:'Facts (one per line)',type:'textarea',value:(e.facts||[]).join('\n')});
   if(e.type==='garage-dialogue')description.push('Shows dialogue for the highlighted Tuning/Upgrade option and garage events. Race menu destinations can choose a special/story line using Garage dialogue after completion.');
   if(e.type==='garage-tuner'){fields.push(bindingField(editor,e));description.push('Binds to the selected car. Parts determine enabled sliders; A edits/applies, B cancels, and held directions accelerate.');}
   if(e.type==='race-description')fields.push(select('assetRef','Race',e.assetRef,fileOptions('races')),text('binding','Selected race parameter',e.binding,{suggestions:parameterNames(editor)}));
@@ -93,6 +95,7 @@ export async function setupWidget(editor){
   editor.change(()=>{
     const {initial,preset,rotationMode,...values}=result;
     for(const key of Object.keys(values).filter(k=>k.startsWith('member:'))){const child=editor.screen.elements.find(item=>item.id===key.slice(7));if(child)child.parentId=values[key]==='in'?e.id:e.parentId;delete values[key];}
+    if(values.facts!==undefined)values.facts=values.facts.split('\n').map(s=>s.trim()).filter(Boolean);
     if(values.options!==undefined)values.options=values.options.split('\n').filter(l=>l.trim()).map(l=>{const i=l.indexOf('=');return {label:(i<0?l:l.slice(0,i)).trim(),value:parse((i<0?l:l.slice(i+1)).trim())}});
     if(values.loop!==undefined)values.loop=values.loop==='true';
     if(preset&&preset!=='custom'){

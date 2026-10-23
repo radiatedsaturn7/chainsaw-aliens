@@ -1,3 +1,8 @@
+import {loadServerPreferenceAsync} from './serverPreferences.js';
+import {createLoadingMenuScreen} from '../menus/MenuLoadingScreen.js';
+import {normalizeMenuElement,normalizeMenuDocument,createMenuDocument} from '../menus/MenuDocument.js';
+import {drawMenuScreen} from '../menus/MenuRenderer.js';
+import {MenuResources} from '../menus/MenuResources.js';
 import { buildRaceDecalTriangles } from '../racing/RaceDecals.js';
 import { buildRaceFencePlacements } from '../racing/RaceFences.js';
 import { createRaceNetworkQueryIndex } from '../racing/RaceNetworkQueryIndex.js';
@@ -6043,6 +6048,8 @@ export default class RaceEditor {
       this.drawRacePreparationScreen(ctx, width, height);
       return;
     }
+    this.raceLoadingPresentation=null;
+    this.raceLoadingCar=null;
     const viewportMode = this.resolveRaceViewportMode(width, height);
     this.activeModeContract = viewportMode.modeContract;
     this.activeSpecModeContract = viewportMode.specModeContract;
@@ -6155,40 +6162,40 @@ export default class RaceEditor {
 
   drawRacePreparationScreen(ctx, width, height) {
     const preparation = this.racePlaytestPreparation;
-    const progress = clamp(Number(preparation?.progress || 0), 0, 1);
-    const displayedProgress = progress >= 1
-      ? 100
-      : Math.min(99, Math.floor(progress * 100));
-    const raceName = preparation?.raceName || this.selectedRace?.name || 'race';
-    const phase = preparation?.phase || 'Preparing';
-    ctx.save();
-    ctx.fillStyle = '#050807';
-    ctx.fillRect(0, 0, width, height);
-    const panelW = Math.min(420, Math.max(240, width - 40));
-    const panelH = 150;
-    const panelX = (width - panelW) / 2;
-    const panelY = (height - panelH) / 2;
-    drawSharedPanel(ctx, { x: panelX, y: panelY, w: panelW, h: panelH }, {
-      fill: UI_SUITE.colors.panelAlt,
-      border: UI_SUITE.colors.border
-    });
-    ctx.fillStyle = UI_SUITE.colors.text;
-    ctx.font = `700 15px ${UI_SUITE.font.family}`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(`${phase} ${raceName}… ${displayedProgress}%`, width / 2, panelY + 35, panelW - 24);
-    const bar = { x: panelX + 22, y: panelY + 60, w: panelW - 44, h: 14 };
-    ctx.fillStyle = 'rgba(255,255,255,0.12)';
-    ctx.fillRect(bar.x, bar.y, bar.w, bar.h);
-    ctx.fillStyle = UI_SUITE.colors.accent;
-    ctx.fillRect(bar.x, bar.y, bar.w * progress, bar.h);
-    const cancel = { x: width / 2 - 54, y: panelY + 96, w: 108, h: 36 };
-    this.drawButton(ctx, cancel, 'Cancel');
-    this.buttons.push({
-      id: 'cancel-race-preparation',
-      bounds: cancel,
-      onClick: () => this.cancelRacePlaytestPreparation({ returnToOrigin: true })
-    });
+    const mobile = Boolean(this.game?.deviceIsMobile || this.game?.isMobile) && !this.hasPhysicalRaceGamepad();
+    const layout = mobile ? this.getRaceHandheldLayout(width, height) : null;
+    const bounds = layout?.screen || {x:0,y:0,w:width,h:height};
+    ctx.save();ctx.fillStyle='#050807';ctx.fillRect(0,0,width,height);
+    if(layout)this.drawRaceHandheldShell(ctx,layout);
+    if(!this.raceLoadingPresentation){
+      const flow=this.game?.raceTravelSession?.menuFlow || this.game?.menuPlayer?.flow;
+      if(!flow?.document && !this.raceLoadingMenuRequest && typeof window!=='undefined'){
+        this.raceLoadingMenuRequest=loadServerPreferenceAsync('menu-launch',null)
+          .then(preference=>preference?.menuRef?hydrateProjectFilePayload('menus',preference.menuRef):null)
+          .then(payload=>{if(payload?.data){this.raceLoadingMenuDocument=normalizeMenuDocument(payload.data);this.raceLoadingPresentation=null;}})
+          .catch(()=>{});
+      }
+      const document=flow?.document || this.raceLoadingMenuDocument || createMenuDocument();
+      const authored=document.screens.find(s=>s.id===document.loadingScreen);
+      const screen=authored || {...createLoadingMenuScreen(document.screens.find(s=>s.id==='splash')||document.screens[0]),elements:[]};
+      if(!authored)screen.elements=createLoadingMenuScreen().elements.map(normalizeMenuElement);
+      const base=this.game?.menuPlayer?.resources || new MenuResources(this.game);
+      const resources=Object.create(base);
+      const car=this.raceLoadingCar || this.playtestSession?.runtimeCar || this.getRaceSessionCar(this.playtestSession);
+      const carRef=flow?.parameters?.carRef || this.game?.raceTravelSession?.carSelection?.documentName || car?.id || '';
+      resources.car=ref=>ref===carRef&&car?car:base.car(ref);
+      this.raceLoadingPresentation={document,screen,resources,carRef,parameters:flow?.parameters||{},seed:Math.random(),started:this.getNowMs()};
+    }
+    const view=this.raceLoadingPresentation;
+    const progress=clamp(Number(preparation?.progress||0),0,1);
+    const parameters={...view.parameters,carRef:view.carRef,loadingProgress:progress,loadingRace:preparation?.raceName||this.selectedRace?.name||'race',loadingFactSeed:view.seed};
+    this.raceLoadingBounds={...bounds};
+    drawMenuScreen(ctx,bounds,view.document,view.screen,parameters,{resources:view.resources,time:Math.max(0,(this.getNowMs()-view.started)/1000)});
+    // Cancellation stays available, contained in the display, throughout loading.
+    const cancel={x:bounds.x+bounds.w/2-40,y:bounds.y+bounds.h-30,w:80,h:26};
+    this.drawButton(ctx,cancel,'Cancel');
+    this.buttons.push({id:'cancel-race-preparation',bounds:cancel,onClick:()=>this.cancelRacePlaytestPreparation({returnToOrigin:true})});
+    if(layout)this.drawRaceHandheldControls(ctx,layout);
     ctx.restore();
   }
 
@@ -12653,7 +12660,9 @@ export default class RaceEditor {
     }, timeoutMs);
   }
 
-  beginRaceTravelLoading(raceName = 'race', carId = '') {
+  beginRaceTravelLoading(raceName = 'race', carId = '', {car = null} = {}) {
+    this.raceLoadingPresentation=null;
+    this.raceLoadingCar=car;
     this.cancelRacePlaytestPreparation();
     this.racePreparedArtFrames?.clear?.();
     const id = ++this.racePlaytestPreparationSequence;

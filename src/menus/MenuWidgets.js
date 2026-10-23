@@ -1,5 +1,7 @@
 // Widget metadata is shared by the designer and runtime; bindings are plain data.
 export const MENU_WIDGETS = [
+  ['progress-bar','Loading progress','A movable progress bar bound to loadingProgress (0–1).'],
+  ['random-fact','Random fact','A wrapped fact selected once per race load; edit the list in Properties.'],
   ['garage-dialogue','Garage dialogue','Wrapped dialogue for the highlighted tuning/upgrade option and garage events.'],
   ['garage-tuner','Garage tuner','Eight tuning categories with part locks, slider drafts, and A/B apply/cancel controls.'],
   ['race-description','Race description','Wrapped description of the highlighted race.'],
@@ -59,6 +61,8 @@ export function widgetDefaults(type){
   if(type==='shape')Object.assign(shared,{w:0.3,h:0.2});
   if(type==='container')Object.assign(shared,{w:0.6,h:0.4});
   if(type==='image')Object.assign(shared,{w:0.4,h:0.3});
+  if(type==='progress-bar')Object.assign(shared,{binding:'loadingProgress',h:.045,fill:'#9bc9df'});
+  if(type==='random-fact')Object.assign(shared,{facts:[],h:.16});
   if(type==='slider')Object.assign(shared,{binding:'settings.musicVolume',label:'Music volume'});
   if(type==='choice')Object.assign(shared,{binding:'carRef',source:'cars',label:'Car'});
   if(type==='keybind')Object.assign(shared,{binding:'input.left',label:'Steer left'});

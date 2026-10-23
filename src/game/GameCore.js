@@ -1929,7 +1929,7 @@ export default class Game {
     }
     this.transitionTo('race-editor', { forceCleanup: true });
     this.setRevAudio(false);
-    this.raceEditor.beginRaceTravelLoading?.(raceName, car.id);
+    this.raceEditor.beginRaceTravelLoading?.(raceName, car.id, {car:runtimeCar});
     await new Promise((resolve) => {
       if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve());
       else setTimeout(resolve, 0);
