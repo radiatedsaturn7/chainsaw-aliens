@@ -9,6 +9,8 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   currentStatus: [
+    '2026-10-22 21:52 EDT - Reduced late-race surface overlay work with nearby-cell lookup, cached terrain heights and bounded visual refreshes; tire-mark cleanup now updates only affected grid cells.',
+    '2026-10-22 21:35 EDT - Race nodes can have multiple finishes with independent saved variables and destination overrides; the crossed exit controls progression.',
     '2026-10-22 20:08 EDT - Renamed Skybox in shared menus and added independent width/height scaling with live preview and reset.',
     '2026-10-22 19:58 EDT - Stabilized race sky artwork scale and subpixel scrolling; tire slip no longer shifts distant scenery.',
     '2026-10-22 19:49 EDT - Road and margin mipmap distance multipliers delay distant texture softening independently of anisotropy and repeat size.',

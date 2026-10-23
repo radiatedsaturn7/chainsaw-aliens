@@ -1,3 +1,4 @@
+import { indexTrackStateCell, queryTrackStateCells } from './TrackStateSpatialIndex.js';
 import {
   clamp,
   compareTrackStateCellKeys,
@@ -474,6 +475,7 @@ export class TrackState {
       profileOverrides: this.profileOverrides
     });
     this.cells.set(key, cell);
+    indexTrackStateCell(this.cells, key, cell);
     this.queueMaintenancePreparation(cell);
     this.queueCheckpointCell(key);
     let low = 0;
@@ -679,7 +681,7 @@ export class TrackState {
     const sortedCells = this.flowCellsScratch;
     sortedCells.length = sourceCells.length;
     for (let index = 0; index < sourceCells.length; index += 1) sortedCells[index] = sourceCells[index];
-    sortedCells.sort((a, b) => compareTrackStateCellKeys(a.key, b.key));
+    sortedCells.sort((a, b) => a.x - b.x || a.z - b.z);
     sortedCells.forEach((cell) => {
       if (cell.standingWaterDepthMm <= 0.02) return;
       let bestKey = '';
@@ -1183,11 +1185,8 @@ export class TrackState {
   }
 
   getVisualCells(bounds = null) {
-    return [...this.cells.values()]
-      .filter((cell) => !bounds
-        || (cell.worldX >= bounds.minX && cell.worldX <= bounds.maxX
-          && cell.worldZ >= bounds.minZ && cell.worldZ <= bounds.maxZ))
-      .sort((a, b) => compareTrackStateCellKeys(a.key, b.key))
+    return queryTrackStateCells(this.cells, bounds)
+      .sort((a, b) => a.x - b.x || a.z - b.z)
       .map((cell) => {
         const sample = getTrackStateCellSample(cell, this.stepIndex);
         return {

@@ -1,0 +1,27 @@
+name: P2 endurance load test
+on:
+  push:
+    branches: [codex/p2-loadtest]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - name: Full lap with 11 AI cars at 60 Hz
+        run: node tools/loadtest/run-p2.mjs
+        env:
+          P2_REPORT: artifacts/p2loadtest/ci-lap-60hz.json
+          P2_DT: '0.016666666666666666'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: p2-loadtest
+          path: artifacts/p2loadtest/

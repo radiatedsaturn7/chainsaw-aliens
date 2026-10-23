@@ -1,3 +1,4 @@
+import { getNetworkFinishNodes } from './RaceFinishNodes.js';
 import { buildRaceCanonicalSurfaceMesh } from './RaceCanonicalSurfaceMesh.js';
 import { sampleNetworkEdge, networkEdgeLength } from './RaceRouteNetwork.js';
 
@@ -26,6 +27,7 @@ function sampleAt(samples, distance) {
 
 export function buildRaceNetworkGeometry(network, { stepM = 2.5, elevationScaleM = 12 } = {}) {
   const parts = [], paths = [], structureMeshes = [], staticColliderDefinitions = [];
+  const finishIds = new Set(getNetworkFinishNodes(network).map(node => node.id));
   const junctions = new Map(network.nodes.map(node => [node.id, { node, edges: [], points: [] }]));
   for (const edge of network.edges) {
     junctions.get(edge.from)?.edges.push(edge); junctions.get(edge.to)?.edges.push(edge);
@@ -55,7 +57,7 @@ export function buildRaceNetworkGeometry(network, { stepM = 2.5, elevationScaleM
     const start = sampleAt(samples, trimStart), end = sampleAt(samples, length - trimEnd);
     const trimmed = [start, ...samples.filter(s => s.distance > trimStart && s.distance < length - trimEnd), end];
     const isTerminalMarker = id => junctions.get(id).edges.length === 1
-      && (id === network.startNodeId || id === network.finishNodeId);
+      && (id === network.startNodeId || finishIds.has(id));
     if (isTerminalMarker(edge.from)) trimmed.unshift({ ...start, distance: -12,
       x: start.x - Math.sin(start.yaw) * 12, z: start.z - Math.cos(start.yaw) * 12 });
     if (isTerminalMarker(edge.to)) trimmed.push({ ...end, distance: length + 12,

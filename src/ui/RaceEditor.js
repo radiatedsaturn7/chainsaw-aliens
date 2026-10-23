@@ -1,3 +1,6 @@
+import { createRaceNetworkQueryIndex } from '../racing/RaceNetworkQueryIndex.js';
+import { queryTrackStateCells } from '../racing/trackState/TrackStateSpatialIndex.js';
+import { getNetworkFinishNodes, resolveRaceNodeFinish } from '../racing/RaceFinishNodes.js';
 import { roadTextureSettings, buildRoadTextureStrips, showBuiltInRoadMarkings, roadTextureSampling, roadTextureMipBias } from '../racing/RaceRoadTextures.js';
 import {firstPersonCameraFrame,applyFirstPersonCameraFrame,firstPersonCameraSpace} from '../racing/RaceFirstPersonCamera.js';
 import {buildNetworkMarkings} from '../racing/RaceNetworkMarkings.js';
@@ -3549,6 +3552,7 @@ export default class RaceEditor {
   }
 
   clearRaceRuntimeSurfaceCaches() {
+    this.raceNetworkQueryCache = null;
     this.raceMinimapCache = null;
     if (this.raceGeometryReadCache) {
       this.raceGeometryReadCache.pathSignatures.clear();
@@ -4101,6 +4105,7 @@ export default class RaceEditor {
       const radius = Math.max(1, Number(patch.radiusWorld) || 12);
       if (Math.hypot(worldX - Number(patch.worldX), worldZ - Number(patch.worldZ)) <= radius) return patch;
     }
+    if (!patches.length) return tileCell;
     const rawPoints = this.getRaceRawMapPoints();
     if (!rawPoints.length) return null;
     const minX = Math.min(...rawPoints.map((point) => Number(point.x || 0)));
@@ -4148,9 +4153,10 @@ export default class RaceEditor {
       this.raceTerrainElevationCache?.set?.(cacheKey, elevation);
       return elevation;
     }
-    const rawPoints = this.getRaceRawMapPoints();
     const patches = this.ensureRaceRoadAuthoringData()?.groundTiles || [];
-    if (!rawPoints.length || !patches.length) return this.clampRaceElevation(fallbackElevation);
+    if (!patches.length) return this.clampRaceElevation(fallbackElevation);
+    const rawPoints = this.getRaceRawMapPoints();
+    if (!rawPoints.length) return this.clampRaceElevation(fallbackElevation);
     const minX = Math.min(...rawPoints.map((point) => Number(point.x || 0)));
     const maxX = Math.max(...rawPoints.map((point) => Number(point.x || 0)));
     const minY = Math.min(...rawPoints.map((point) => Number(point.y || 0)));
@@ -5296,6 +5302,7 @@ export default class RaceEditor {
 
   screenToRaceMapWorldPoint(screenX = 0, screenY = 0, bounds = this.raceMapBounds) {
     if (!bounds) return null;
+    if (!patches.length) return tileCell;
     const rawPoints = this.getRaceRawMapPoints();
     if (!rawPoints.length) return null;
     const { minX, minY, maxX, maxY, pad, usableW, usableH, scale, panX, panY } = this.getRaceMapTransform(bounds, rawPoints);
@@ -5309,6 +5316,7 @@ export default class RaceEditor {
 
   raceMapWorldToScreenPoint(worldPoint = {}, bounds = this.raceMapBounds) {
     if (!bounds) return null;
+    if (!patches.length) return tileCell;
     const rawPoints = this.getRaceRawMapPoints();
     if (!rawPoints.length) return null;
     const { minX, minY, maxX, maxY, pad, usableW, usableH, scale, panX, panY } = this.getRaceMapTransform(bounds, rawPoints);
@@ -11480,7 +11488,7 @@ export default class RaceEditor {
       const bake = buildRaceNetworkWorld(this.selectedRace.road.network, {
         key, routeLength: routeEnd, stepM: surfaceStep, textureWorldM,
         elevationScaleM: RACE_THREE_ELEVATION_M, buildSurfaceSampler, retainTerrainCells,
-        sampleTerrain: point => surfaceModel.sampleRawTerrain(point, 0).elevation,
+        sampleTerrain: point => this.getRaceRawGroundElevationAtWorldPoint(point, 0),
         tileAt: point => this.getRaceTileMapCellAtWorldPoint(point),
         tileSizeM: this.ensureRaceTileMap().cellSizeM,
         paintedCells: this.getRaceTileMapEntries().map(([key])=>{const [x,z]=key.split(',').map(Number);return {x:(x+.5)*this.ensureRaceTileMap().cellSizeM,z:(z+.5)*this.ensureRaceTileMap().cellSizeM};})
@@ -13394,7 +13402,7 @@ export default class RaceEditor {
     const raceId = this.playtestSession.raceId;
     const raceDocumentName = this.playtestSession.raceDocumentName;
     const trackStateSnapshot = this.playtestSession.trackState?.createSnapshot?.() || null;
-    const finishBehavior = normalizeRaceFinishBehavior(this.selectedRace?.finishBehavior);
+    const finishBehavior = resolveRaceNodeFinish(this.selectedRace, this.playtestSession.networkProgress?.finishNodeId);
     this.completeRaceGhost({ finished: true });
     this.playtestSession = null;
     this.resetRacePlaytestInputs();
@@ -13423,8 +13431,17 @@ export default class RaceEditor {
     this.status = 'Ready';
   }
 
+  getRaceNetworkQueryIndex() {
+    const network = this.selectedRace?.road?.network;
+    if (!network) return null;
+    if (this.raceNetworkQueryCache?.network !== network) {
+      this.raceNetworkQueryCache = { network, index: createRaceNetworkQueryIndex(network) };
+    }
+    return this.raceNetworkQueryCache.index;
+  }
+
   getRaceRouteLength() {
-    if (this.selectedRace?.road?.network) return Math.max(1, findNetworkRoute(this.selectedRace.road.network)?.lengthM || 1);
+    if (this.selectedRace?.road?.network) return Math.max(1, this.getRaceNetworkQueryIndex().routeLength || 1);
     const segments = this.selectedRace?.road?.segments || [];
     const nodes = this.getRaceEditableNodes({ create: false });
     if (nodes.length >= 2) {
@@ -13799,10 +13816,16 @@ export default class RaceEditor {
   }
 
   getRacePathSampleCacheSignature(step = 18) {
-    if (this.selectedRace?.road?.network) return `${step}:network:${JSON.stringify(this.selectedRace.road.network)}`;
     const frame = this.raceGeometryReadCache;
     const stepKey = Math.round((Number(step) || 18) * 100);
     if (frame?.pathSignatures.has(stepKey)) return frame.pathSignatures.get(stepKey);
+    if (this.selectedRace?.road?.network) {
+      const index = this.getRaceNetworkQueryIndex();
+      index.signature ??= JSON.stringify(this.selectedRace.road.network);
+      const signature = `${step}:network:${index.signature}`;
+      if (frame) frame.pathSignatures.set(stepKey, signature);
+      return signature;
+    }
     const race = this.selectedRace || {};
     const road = race.road || {};
     const nodes = this.getRaceEditableNodes({ create: false });
@@ -13898,6 +13921,15 @@ export default class RaceEditor {
 
   getRacePathSamplesCached({ step = 18 } = {}) {
     const sampleStep = Math.max(1, Number(step) || 18);
+    if (this.selectedRace?.road?.network) {
+      const index = this.getRaceNetworkQueryIndex();
+      index.pathSamples ||= new Map();
+      if (!index.pathSamples.has(sampleStep)) {
+        if (index.pathSamples.size >= 8) index.pathSamples.clear();
+        index.pathSamples.set(sampleStep, this.getRacePathSamples({ step: sampleStep }));
+      }
+      return index.pathSamples.get(sampleStep);
+    }
     const key = this.getRacePathSampleCacheSignature(sampleStep);
     if (!this.racePathSampleCache) this.racePathSampleCache = new Map();
     const cached = this.racePathSampleCache.get(key);
@@ -14017,11 +14049,12 @@ export default class RaceEditor {
   getRaceRouteProjectionForWorldPoint(point = {}) {
     const network = this.selectedRace?.road?.network;
     if (network) {
-      const projection = projectNetworkPoint(network, { ...point, heightM: point.heightM ?? point.supportHeightM ?? (point.z !== undefined ? point.y : undefined) });
+      const queryIndex = this.getRaceNetworkQueryIndex();
+      const projection = queryIndex.project({ ...point, heightM: point.heightM ?? point.supportHeightM ?? (point.z !== undefined ? point.y : undefined) });
       if (projection) {
-        const edge = projection.edge, length = networkEdgeLength(network, edge);
-        const toFinish = findNetworkRoute(network, edge.to)?.lengthM ?? Infinity;
-        const fromFinish = edge.bidirectional ? (findNetworkRoute(network, edge.from)?.lengthM ?? Infinity) : Infinity;
+        const edge = projection.edge, length = queryIndex.lengths.get(edge.id);
+        const toFinish = queryIndex.costs.get(edge.to) ?? Infinity;
+        const fromFinish = edge.bidirectional ? (queryIndex.costs.get(edge.from) ?? Infinity) : Infinity;
         const remaining = Math.min(length - projection.distance + toFinish, projection.distance + fromFinish);
         return { ...projection, edgeDistance: projection.distance, distance: Number.isFinite(remaining) ? Math.max(0, this.getRaceRouteLength() - remaining) : 0,
           canReachFinish: Number.isFinite(remaining),
@@ -14218,6 +14251,7 @@ export default class RaceEditor {
 
   getRaceMapScaleBar(bounds = this.raceMapBounds) {
     if (!bounds) return null;
+    if (!patches.length) return tileCell;
     const rawPoints = this.getRaceRawMapPoints();
     if (!rawPoints.length) return null;
     const { scale } = this.getRaceMapTransform(bounds, rawPoints);
@@ -14468,7 +14502,7 @@ export default class RaceEditor {
     const physicalHeight = session?.vehicleRenderState?.position?.y ?? session?.bodyY ?? session?.heightM;
     const floorM = Number.isFinite(physicalHeight) ? physicalHeight
       : Number(roadElevation || 0) * RACE_THREE_ELEVATION_M;
-    const at = (x, z, heightM = floorM) => projectNetworkPoint(network, { x, z, heightM });
+    const at = (x, z, heightM = floorM) => this.getRaceNetworkQueryIndex().project({ x, z, heightM });
     const origin = at(carWorldX, carWorldZ);
     const desired = Math.max(0, Number(desiredChaseDistance) || 0);
     const dx = Math.sin(carYaw), dz = Math.cos(carYaw);
@@ -16589,8 +16623,22 @@ export default class RaceEditor {
     session.tireTrackGrid[key] = session.tireTrackGrid[key] || [];
     session.tireTrackGrid[key].push(entry);
     if (session.tireTrackSegments.length > RACE_TIRE_TRACK_MAX_SEGMENTS) {
-      session.tireTrackSegments.splice(0, Math.min(1024, session.tireTrackSegments.length - RACE_TIRE_TRACK_MAX_SEGMENTS + 1023));
-      this.rebuildRaceTireTrackGrid(session);
+      const removed = session.tireTrackSegments.splice(0, Math.min(1024, session.tireTrackSegments.length - RACE_TIRE_TRACK_MAX_SEGMENTS + 1023));
+      const retiredByCell = new Map();
+      for (const segment of removed) {
+        const cellKey = this.getRaceTireTrackCellKey(
+          (Number(segment.from?.x || 0) + Number(segment.to?.x || 0)) * 0.5,
+          (Number(segment.from?.z || 0) + Number(segment.to?.z || 0)) * 0.5
+        );
+        retiredByCell.set(cellKey, (retiredByCell.get(cellKey) || 0) + 1);
+      }
+      for (const [cellKey, count] of retiredByCell) {
+        const bucket = session.tireTrackGrid[cellKey];
+        if (!bucket) continue;
+        bucket.splice(0, count);
+        if (!bucket.length) delete session.tireTrackGrid[cellKey];
+      }
+      session.tireTrackMinId = Number(session.tireTrackSegments[0]?.id || session.tireTrackNextId);
     }
     return entry;
   }
@@ -19876,7 +19924,7 @@ export default class RaceEditor {
         `Nodes: ${race.road.network.nodes.length} · Roads: ${race.road.network.edges.length}`,
         `Selected nodes: ${selectedNodeIds(this).length}`,
         ...selectedNodeIds(this).map(id=>{const node=race.road.network.nodes.find(n=>n.id===id);return `${node.name||id}: ${node.junctionKind||'normal'} · ${node.heightM}m`;}),
-        `Finish: ${race.road.network.finishNodeId||'None (free drive)'}`,
+        `Finishes: ${getNetworkFinishNodes(race.road.network).map(node=>node.name||node.id).join(', ')||'None (free drive)'}`,
         '', 'Tap node: select · Drag: move', 'Tap empty ground: extend',
         'Edit: change node type', 'Select 2: choose a pair',
         'Join: merge · Connect: add road'
@@ -21032,6 +21080,8 @@ export default class RaceEditor {
     if (!trackState) return [];
     const planar = this.getRaceSessionPlanarWorldPosition(session);
     const radius = Math.max(20, Number(radiusM) || 95);
+    const refreshTime = this.getNowMs();
+    const viewKey = `${Math.floor(planar.x / 8)}:${Math.floor(planar.z / 8)}:${radius}:${includeAll}`;
     const cacheKey = [
       trackState.visualRevision ?? trackState.cellRevision ?? trackState.stepIndex,
       Math.floor(Number(planar.x || 0) / 8),
@@ -21039,20 +21089,25 @@ export default class RaceEditor {
       radius,
       includeAll ? 'all' : 'changed'
     ].join(':');
-    if (session.trackStateVisualCache?.key === cacheKey) {
+    const cachedVisual = session.trackStateVisualCache;
+    // Surface appearance may refresh at 10 Hz; wheel grip still updates every physics step.
+    const reuseRecent = !includeAll && cachedVisual?.viewKey === viewKey
+      && cachedVisual.source === trackState && cachedVisual.cellMap === trackState.cells
+      && trackState.cells?.size !== 0 && refreshTime - cachedVisual.at < 100;
+    if ((cachedVisual?.key === cacheKey && cachedVisual.source === trackState
+      && cachedVisual.cellMap === trackState.cells) || reuseRecent) {
       session.renderedTrackStateVisualRevision = Number(
-        trackState.visualRevision ?? trackState.cellRevision ?? trackState.stepIndex ?? 0
+        cachedVisual.revision ?? trackState.visualRevision ?? trackState.cellRevision ?? trackState.stepIndex ?? 0
       );
-      return session.trackStateVisualCache.cells;
+      return cachedVisual.cells;
     }
+    const visualBounds = {
+      minX: planar.x - radius, maxX: planar.x + radius,
+      minZ: planar.z - radius, maxZ: planar.z + radius
+    };
     const sourceCells = workerVisual
-      ? [...workerVisual.cells.values()]
-      : trackState.getVisualCells({
-      minX: Number(planar.x || 0) - radius,
-      maxX: Number(planar.x || 0) + radius,
-      minZ: Number(planar.z || 0) - radius,
-      maxZ: Number(planar.z || 0) + radius
-    });
+      ? queryTrackStateCells(workerVisual.cells, visualBounds)
+      : trackState.getVisualCells(visualBounds);
     const cells = sourceCells
       .filter((cell) => Math.abs(Number(cell.x || 0) - Number(planar.x || 0)) <= radius
         && Math.abs(Number(cell.z || 0) - Number(planar.z || 0)) <= radius)
@@ -21077,7 +21132,10 @@ export default class RaceEditor {
         return leftDistance - rightDistance;
       })
       .slice(0, Boolean(this.game?.deviceIsMobile || this.game?.isMobile) ? 320 : 1400);
-    session.trackStateVisualCache = { key: cacheKey, cells };
+    session.trackStateVisualCache = {
+      key: cacheKey, cells, viewKey, at: refreshTime, source: trackState, cellMap: trackState.cells,
+      revision: trackState.visualRevision ?? trackState.cellRevision ?? trackState.stepIndex
+    };
     session.renderedTrackStateVisualRevision = Number(
       trackState.visualRevision ?? trackState.cellRevision ?? trackState.stepIndex ?? 0
     );
@@ -21090,6 +21148,7 @@ export default class RaceEditor {
     session.trackStateVisualCache = null;
     session.trackStateVisualAtlas = null;
     session.trackStateVisualLayerRevision = -1;
+    session.trackStateHeightRevision = Number(session.trackStateHeightRevision || 0) + 1;
     if (clearWorkerCells && session.workerTrackStateVisual) {
       session.workerTrackStateVisual.cells = new Map();
       session.workerTrackStateVisual.cellRevision = 0;
@@ -21103,7 +21162,7 @@ export default class RaceEditor {
     const workerVisual = session?.vehicleDynamicsAuthorityThread === 'worker'
       ? session.workerTrackStateVisual : null;
     const trackState = workerVisual
-      ? { stepIndex: workerVisual.stepIndex, getVisualCells: () => [...workerVisual.cells.values()] }
+      ? { stepIndex: workerVisual.stepIndex, getVisualCells: bounds => queryTrackStateCells(workerVisual.cells, bounds) }
       : session?.trackState;
     if (!trackState) return null;
     const planar = this.getRaceSessionPlanarWorldPosition(session);
@@ -21155,10 +21214,23 @@ export default class RaceEditor {
     if (renderer.trackStateCells !== cells || !renderer.trackStateMesh) {
       renderer.trackStateMesh?.geometry?.dispose?.();
       if (renderer.trackStateMesh) renderer.scene.remove(renderer.trackStateMesh);
+      const session = this.playtestSession;
+      let heights = renderer.trackStateHeights;
+      if (!heights || heights.session !== session || heights.bake !== session?.worldBake
+        || heights.revision !== session?.trackStateHeightRevision) {
+        heights = renderer.trackStateHeights = {
+          session, bake: session?.worldBake, revision: session?.trackStateHeightRevision, values: new Map()
+        };
+      }
       const geometry = buildTrackStateGroundGeometry(cells, (x, z) => {
+        const key = `${x}:${z}`;
+        if (heights.values.has(key)) return heights.values.get(key);
         const surface = this.getRaceBakedSurfaceAtWorldPoint({ x, z })
           || this.getRaceCompositedSurfaceAtWorldPoint({ x, z });
-        return Number.isFinite(surface?.elevation) ? surface.elevation * RACE_THREE_ELEVATION_M : NaN;
+        const height = Number.isFinite(surface?.elevation) ? surface.elevation * RACE_THREE_ELEVATION_M : NaN;
+        if (heights.values.size >= 8192) heights.values.delete(heights.values.keys().next().value);
+        heights.values.set(key, height);
+        return height;
       });
       renderer.trackStateMesh = new THREE.Mesh(geometry, this.getRaceThreeTireTrackMaterial(renderer));
       renderer.trackStateMesh.renderOrder = 5;
@@ -23443,8 +23515,8 @@ export default class RaceEditor {
       ctx.fillStyle = '#61e79a';
       ctx.fillRect(start.x - 2, start.y - 2, 4, 4);
     }
-    if (map.finish) {
-      const finish = toScreen(map.finish);
+    for (const node of map.finishes || (map.finish ? [map.finish] : [])) {
+      const finish = toScreen(node);
       ctx.fillStyle = '#ff4f4f';
       ctx.fillRect(finish.x - 2, finish.y - 2, 4, 4);
     }
@@ -34920,6 +34992,7 @@ export default class RaceEditor {
     renderer.dynamicDoodadCount = 0;
     renderer.trackStateMesh = null;
     renderer.trackStateCells = null;
+    renderer.trackStateHeights = null;
     renderer.tireTrackGroup = null;
     renderer.tireTrackChunks = new Map();
     renderer.tireTrackSessionKey = null;
