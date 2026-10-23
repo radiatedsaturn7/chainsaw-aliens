@@ -31,6 +31,9 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait touch' : 'desktop
     const s=window.__game.raceEditor.playtestSession;
     return s?.raceIntro?.active && !s.startupFramePending;
   },null,{timeout:90000});
+  if(!mobile)await page.evaluate(()=>{
+    const e=window.__game.raceEditor;e.raceInput.cameraView='first-person';e.playtestSession.cameraView='first-person';
+  });
   const countdown=await page.evaluate(()=>window.__game.raceEditor.playtestSession.countdownRemainingMs);
   for(const [shot,time] of [[0,.7],[1,2.5],[2,4.3]]){
     await page.evaluate(time=>{window.__game.raceEditor.playtestSession.raceIntro.elapsed=time;},time);
@@ -46,6 +49,7 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait touch' : 'desktop
     const session = window.__game.raceEditor.playtestSession;
     return session?.running && !session.startupFramePending && session.elapsedMs > 2000;
   }, null, { timeout: 90000 });
+  if(!mobile)expect(await page.evaluate(()=>window.__game.raceEditor.lastRaceRenderCamera.cameraView)).toBe('first-person');
   await page.screenshot({ path: `test-results/p1-running-${mobile ? 'portrait' : 'desktop'}.png` });
   console.log('P1_RUNNING', await page.evaluate(() => ({ state: window.__game.state,
     elapsed: window.__game.raceEditor.playtestSession?.elapsedMs,

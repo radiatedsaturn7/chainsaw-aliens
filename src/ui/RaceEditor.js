@@ -1102,7 +1102,8 @@ export default class RaceEditor {
     }
     if(startupFramePending && this.raceLoadingPresentation)return;
     if (liveSession && this.playtestSession?.raceIntro?.active) {
-      const skip = input?.wasPressed?.('confirm') || input?.wasPressed?.('start')
+      const skip = input?.wasPressed?.('interact') || input?.wasGamepadPressed?.('gamepadA')
+        || input?.wasGamepadPressed?.('gamepadStart')
         || input?.wasPressedCode?.('Enter') || input?.wasPressedCode?.('Space');
       if (!this.raceInput.paused) advanceRaceIntro(this.playtestSession, dt, skip);
       return;
