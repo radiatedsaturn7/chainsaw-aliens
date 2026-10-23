@@ -218,6 +218,7 @@ export class TrackState {
   }
 
   rebuildDerivedRuntimeState() {
+    this.newDryCellWeatherCache = null;
     this.environmentActiveKeys.length = 0;
     this.environmentActiveKeySet.clear();
     this.environmentCellCursor = 0;
@@ -488,9 +489,47 @@ export class TrackState {
     this.orderedCellKeys.splice(low, 0, key);
     if (low <= this.cellCursor && this.orderedCellKeys.length > 1) this.cellCursor += 1;
     if (Number(throughStep) > this.historyBaseStepIndex && this.weatherTimeline.size) {
-      this.catchUpCellWeather(cell, throughStep);
+      if (!this.catchUpNewDryCellWeather(cell, throughStep)) this.catchUpCellWeather(cell, throughStep);
     }
     return cell;
+  }
+
+  // Newly encountered dry cells share the same temperature evolution for a
+  // given exposure/profile. Replay that history once per profile, not once per
+  // metre travelled by every car. Wet histories retain the full original path.
+  catchUpNewDryCellWeather(cell, throughStep) {
+    if ([cell.moistureDepthMm, cell.standingWaterDepthMm, cell.snowDepthMm, cell.iceDepthMm].some(value => value !== 0)) return false;
+    if (this.newDryCellWeatherCache?.timeline !== this.weatherTimeline
+      || this.newDryCellWeatherCache?.baseStep !== this.historyBaseStepIndex) {
+      this.newDryCellWeatherCache = { timeline: this.weatherTimeline, baseStep: this.historyBaseStepIndex, profiles: new Map() };
+    }
+    const profiles = this.newDryCellWeatherCache.profiles;
+    const key = [cell.surfaceTemperatureC, cell.sunExposure, cell.windExposure, cell.heatResponse, cell.initializedStep].join(':');
+    let cached = profiles.get(key);
+    if (!cached) {
+      if (profiles.size >= 128) profiles.delete(profiles.keys().next().value);
+      cached = { temperature: cell.surfaceTemperatureC, throughStep: cell.lastUpdatedStep, updatedStep: cell.lastUpdatedStep, wet: false };
+      profiles.set(key, cached);
+    }
+    if (cached.wet || throughStep < cached.throughStep) return false;
+    for (let step = cached.throughStep + 1; step <= throughStep; step++) {
+      const forcing = this.getWeatherForStep(step);
+      if (!forcing) continue;
+      if (forcing.precipitationRateMmPerS > 0) { cached.wet = true; return false; }
+      const solarTarget = forcing.ambientTemperatureC + forcing.sunIntensity * cell.sunExposure * 18;
+      const windCooling = forcing.windIntensity * cell.windExposure * 3.5;
+      const temperature = cached.temperature + (solarTarget - windCooling - cached.temperature)
+        * clamp(this.fixedStepMs / 1000 * cell.heatResponse, 0, 1);
+      cached.temperature = quantizeTrackStateNumber(clamp(Number(temperature) || 0, -80, 120));
+      cached.updatedStep = step;
+    }
+    cached.throughStep = throughStep;
+    if (cached.updatedStep > cell.lastUpdatedStep) {
+      this.prepareCellMutation(cell);
+      cell.surfaceTemperatureC = cached.temperature;
+      cell.lastUpdatedStep = cached.updatedStep;
+    }
+    return true;
   }
 
   sample(point = {}, target = null, conditionScratch = null) {
