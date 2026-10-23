@@ -23,6 +23,8 @@ for(const mode of ['portrait','landscape','controller'])test(`custom race loadin
  await page.screenshot({path:`test-results/loading-${mode}.png`});
  const later=await page.evaluate(()=>{const e=window.__game.raceEditor;const seed=e.raceLoadingPresentation.seed;e.racePlaytestPreparation.progress=.9;window.__game.draw();return{seed:e.raceLoadingPresentation.seed,previous:seed};});expect(later.seed).toBe(later.previous);
  expect(result.buttons).not.toContain('cancel-race-preparation');
- await page.keyboard.press('Escape');
- expect(await page.evaluate(()=>window.__game.raceEditor.playtestSession?.preparing||false)).toBe(false);
+ const elements=await page.evaluate(()=>window.__game.raceEditor.raceLoadingPresentation.screen.elements);
+ const car=elements.find(e=>e.id==='loading-car'),bar=elements.find(e=>e.id==='loading-progress');
+ expect(car.x).toBeGreaterThan(bar.x+bar.w);expect(bar.y).toBeGreaterThan(.7);
+ await page.evaluate(()=>window.__game.raceEditor.cancelRacePlaytestPreparation());
 });
