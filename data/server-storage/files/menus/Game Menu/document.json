@@ -5260,24 +5260,12 @@
       "effect": "none",
       "elements": [
         {
-          "id": "loading-car",
-          "type": "car-preview",
-          "label": "Selected car",
-          "binding": "carRef",
-          "x": 0.76,
-          "y": 0.57,
-          "w": 0.18,
-          "h": 0.22,
-          "animation": "spin",
-          "duration": 4
-        },
-        {
           "id": "loading-label",
           "type": "text",
           "label": "Loading {{loadingRace}}…",
           "x": 0.1,
           "y": 0.6,
-          "w": 0.62,
+          "w": 0.84,
           "h": 0.08,
           "fontSize": 30,
           "textOutlineWidth": 2
@@ -5289,7 +5277,7 @@
           "binding": "loadingProgress",
           "x": 0.1,
           "y": 0.73,
-          "w": 0.62,
+          "w": 0.84,
           "h": 0.045,
           "fill": "#9bc9df",
           "background": "#101820",

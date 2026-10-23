@@ -25,6 +25,6 @@ for(const mode of ['portrait','landscape','controller'])test(`custom race loadin
  expect(result.buttons).not.toContain('cancel-race-preparation');
  const elements=await page.evaluate(()=>window.__game.raceEditor.raceLoadingPresentation.screen.elements);
  const car=elements.find(e=>e.id==='loading-car'),bar=elements.find(e=>e.id==='loading-progress');
- expect(car.x).toBeGreaterThan(bar.x+bar.w);expect(bar.y).toBeGreaterThan(.7);
+ expect(car).toBeUndefined();expect(bar.w).toBe(.84);expect(bar.y).toBeGreaterThan(.7);
  await page.evaluate(()=>window.__game.raceEditor.cancelRacePlaytestPreparation());
 });

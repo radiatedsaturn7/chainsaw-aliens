@@ -12,7 +12,7 @@ export class RaceRadioDirector {
   }
   update(session, {paused=false,dt=0}={}) {
     if(session!==this.session){this.reset();this.session=session;}
-    if(!session||!session.running||session.preparing||session.startupFramePending||session.carEditorPreview)return;
+    if(!session||!session.running||session.preparing||session.startupFramePending||session.raceIntro?.active||session.carEditorPreview)return;
     if(!this.radio.available){session.raceMusicPending=false;this.radio.setGain(1);return;}
     if(this.starting&&session.raceMusicPending){
       this.waitSeconds+=Math.max(0,dt);

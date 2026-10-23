@@ -1,3 +1,4 @@
+import {ensureRaceIntro,advanceRaceIntro,raceIntroShot,raceIntroFade} from '../racing/RaceIntro.js';
 import {MenuScreenTransition} from '../menus/MenuScreenTransition.js';
 import {fitMenuCanvas} from '../menus/MenuLayout.js';
 import {loadServerPreferenceAsync} from './serverPreferences.js';
@@ -1100,6 +1101,12 @@ export default class RaceEditor {
       return;
     }
     if(startupFramePending && this.raceLoadingPresentation)return;
+    if (liveSession && this.playtestSession?.raceIntro?.active) {
+      const skip = input?.wasPressed?.('confirm') || input?.wasPressed?.('start')
+        || input?.wasPressedCode?.('Enter') || input?.wasPressedCode?.('Space');
+      if (!this.raceInput.paused) advanceRaceIntro(this.playtestSession, dt, skip);
+      return;
+    }
     this.updateRaceMapThumbstickPan(dt);
     if (!this.hasPhysicalRaceGamepad() && this.gamepadSubmenuOpen) {
       this.mobileRootOpen = false;
@@ -6047,6 +6054,7 @@ export default class RaceEditor {
     this.buttons = [];
     this.menuScrollRegions = [];
     this.raceMapBounds = null;
+    ensureRaceIntro(this.playtestSession);
     if (this.racePlaytestPreparation || this.playtestSession?.preparing
       || (this.playtestSession?.startupFramePending && !this.playtestSession.carEditorPreview && !this.raceLoadingPresentation)) {
       this.drawRacePreparationScreen(ctx, width, height);
@@ -6114,7 +6122,7 @@ export default class RaceEditor {
     const session = this.playtestSession;
     if (!session?.running || session.startupFramePending !== true) return false;
     session.startupFramePending = false;
-    session.startupPhase = Number(session.countdownRemainingMs || 0) > 0
+    session.startupPhase = session.raceIntro?.active ? 'intro' : Number(session.countdownRemainingMs || 0) > 0
       ? 'countdown'
       : 'running';
     session.firstPlayableFrameAt = Date.now();
@@ -20809,7 +20817,7 @@ export default class RaceEditor {
     const renderStartMs = typeof performance !== 'undefined' && typeof performance.now === 'function'
       ? performance.now()
       : 0;
-    const cameraView = this.raceInput.cameraView;
+    const cameraView = raceIntroShot(this.playtestSession) ? 'third-person' : this.raceInput.cameraView;
     ctx.save();
     ctx.beginPath();
     ctx.rect?.(bounds.x, bounds.y, bounds.w, bounds.h);
@@ -20844,8 +20852,20 @@ export default class RaceEditor {
         });
       }
     }
-    this.drawRacePlaytestHud(ctx, bounds);
-    this.drawRaceCountdown(ctx, bounds);
+    if (this.playtestSession?.raceIntro?.active) {
+      const bar = bounds.h * .065;
+      ctx.fillStyle = '#000';
+      ctx.fillRect(bounds.x, bounds.y, bounds.w, bar);
+      ctx.fillRect(bounds.x, bounds.y + bounds.h - bar, bounds.w, bar);
+      ctx.fillStyle = '#ddd'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.font = `${Math.max(10, Math.min(16, bounds.h * .03))}px sans-serif`;
+      ctx.fillText('Tap / A / Enter to skip', bounds.x + bounds.w - 12, bounds.y + bounds.h - bar / 2);
+      ctx.fillStyle = `rgba(0,0,0,${raceIntroFade(this.playtestSession)})`;
+      ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
+    } else {
+      this.drawRacePlaytestHud(ctx, bounds);
+      this.drawRaceCountdown(ctx, bounds);
+    }
     this.drawRaceEdgeResetFade(ctx, bounds);
     if (this.raceInput.paused) this.drawRacePauseOverlay(ctx, bounds);
     this.drawRaceDisplayModeFilter(ctx, bounds);
@@ -21837,6 +21857,7 @@ export default class RaceEditor {
       cameraY - Math.max(0.6, Number(camera.eyeHeight || 0.1) * RACE_THREE_ELEVATION_M * this.getRaceThreeCameraLookDropScale(cameraState.cameraView)),
       Number(camera.z || 0) + forward.z * 80
     );
+    if(camera.cinematicTarget)renderer.camera.lookAt(camera.cinematicTarget.x,camera.cinematicTarget.y,camera.cinematicTarget.z);
     if(camera.firstPersonFrame)applyFirstPersonCameraFrame(renderer.camera,camera.firstPersonFrame);
     renderer.camera.updateProjectionMatrix();
     this.alignRaceThreeCameraHorizon(renderer.camera, camera, cameraState.cameraYaw, bounds);
@@ -35746,7 +35767,7 @@ export default class RaceEditor {
   }
 
   alignRaceThreeCameraHorizon(threeCamera = null, camera = {}, cameraYaw = 0, bounds = {}) {
-    if (!threeCamera || !THREE?.Vector3 || camera.firstPersonFrame) return;
+    if (!threeCamera || !THREE?.Vector3 || camera.firstPersonFrame || camera.cinematicTarget) return;
     threeCamera.updateMatrixWorld?.(true);
     const horizonRatio = clamp(Number(camera.horizonRatio) || 0.31, 0, 1);
     const desiredNdcY = 1 - horizonRatio * 2;
@@ -37275,13 +37296,14 @@ export default class RaceEditor {
     renderer.camera.up.set(0, 1, 0);
     renderer.camera.near = Math.max(0.06, Number(camera.nearPlane || 1.6) * 0.04);
     renderer.camera.far = Math.max(400, Number(camera.farPlane || 2200));
-    renderer.camera.fov = this.getRaceThreeCameraFov(cameraView);
+    renderer.camera.fov = camera.cinematicFov || this.getRaceThreeCameraFov(cameraView);
     renderer.camera.aspect = width / Math.max(1, height);
     renderer.camera.lookAt(
       Number(camera.x || 0) + forward.x * 80,
       cameraY - Math.max(0.6, Number(camera.eyeHeight || 0.1) * RACE_THREE_ELEVATION_M * this.getRaceThreeCameraLookDropScale(cameraView)),
       Number(camera.z || 0) + forward.z * 80
     );
+    if(camera.cinematicTarget)renderer.camera.lookAt(camera.cinematicTarget.x,camera.cinematicTarget.y,camera.cinematicTarget.z);
     if(camera.firstPersonFrame)applyFirstPersonCameraFrame(renderer.camera,camera.firstPersonFrame);
     renderer.camera.updateProjectionMatrix();
     this.alignRaceThreeCameraHorizon(renderer.camera, camera, cameraYaw, bounds);
@@ -38568,7 +38590,8 @@ export default class RaceEditor {
     const routeRuntimeType = session?.routeRuntimeType || this.getSelectedRaceRuntimeType();
     const visualTravel = this.getRaceVisualTravelDistance(session);
     const routeCamera = this.getRaceWorldPoseAtDistance(visualTravel, { runtimeType: routeRuntimeType });
-    const cameraView = session?.cameraView || this.raceInput.cameraView;
+    const introShot = raceIntroShot(session);
+    const cameraView = introShot ? 'third-person' : session?.cameraView || this.raceInput.cameraView;
     const carYaw = Number.isFinite(session?.carYaw) ? session.carYaw : routeCamera.yaw;
     const desiredChaseDistance = cameraView === 'third-person'
       ? this.getRaceThirdPersonChaseDistance(car)
@@ -38665,6 +38688,20 @@ export default class RaceEditor {
       this.attachRaceFirstPersonCamera(camera, session);
       const forward = camera.firstPersonFrame.forward;
       if (Math.hypot(forward.x, forward.z) > 0.0001) cameraYaw = Math.atan2(forward.x, forward.z);
+    }
+    if (introShot) {
+      const orbitYaw = carYaw + introShot.angle;
+      // Use the normal terrain/tunnel-safe camera placement for each orbit angle.
+      const placement = this.getRaceThirdPersonSafeCameraPlacement({
+        carWorldX, carWorldZ, carYaw: orbitYaw + Math.PI,
+        desiredChaseDistance: introShot.distance, roadElevation: localCarGroundElevation,
+        eyeHeight: introShot.height / RACE_THREE_ELEVATION_M,
+        lookAheadDistanceM: 0, routeCamera, cameraView: 'third-person', car
+      });
+      Object.assign(camera, placement.camera);
+      camera.cinematicTarget = { x: carWorldX, y: localCarGroundElevation * RACE_THREE_ELEVATION_M + .8, z: carWorldZ };
+      camera.cinematicFov = introShot.fov;
+      cameraYaw = Math.atan2(carWorldX - camera.x, carWorldZ - camera.z);
     }
     this.lastRaceRenderCamera = {
       camera: { ...camera },
@@ -39865,6 +39902,7 @@ export default class RaceEditor {
       && payload.y <= bounds.y + bounds.h
     ));
     if(this.playtestSession?.startupFramePending && this.raceLoadingPresentation)return;
+    if(this.playtestSession?.raceIntro?.active){advanceRaceIntro(this.playtestSession,0,true);return;}
     if (this.playtestSession?.preparing) {
       if (hit?.id === 'cancel-race-preparation') hit.onClick?.();
       return;

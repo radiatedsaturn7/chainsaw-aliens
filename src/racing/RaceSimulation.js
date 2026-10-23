@@ -2403,7 +2403,7 @@ export function updateRaceSimulation({
   const vehicleState = getAuthoritativeVehicleState(
     requestedVehicleState || editor.playtestSession
   );
-  if (!vehicleState?.running) return;
+  if (!vehicleState?.running || editor.playtestSession?.raceIntro?.active) return;
   if (input && input !== editor.raceInput) editor.raceInput = input;
   if (editor.raceInput.paused || editor.playtestSession.raceResults) return;
   if (editor.playtestSession.raceMusicPending && Number(editor.playtestSession.countdownRemainingMs||0)>1000) return;
