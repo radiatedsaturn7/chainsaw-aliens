@@ -1,7 +1,7 @@
 import { advanceNetworkRaceProgress, sampleNetworkEdge } from './RaceRouteNetwork.js';
 import { getRaceStickLook, stepRaceLookAngle } from './RaceCameraInput.js';
 import { getWheelSlipPresentation } from './simulation/WheelSlipPresentation.js';
-import { roadEdgeOverlapsRoad } from './RaceRoadEdgeClearance.js';
+import { roadEdgeOverlapsRoad, createRoadCorridorIndex } from './RaceRoadEdgeClearance.js';
 import { RACE_WHEEL_IDS, clamp, normalizeAngle } from './simulation/SimulationMath.js';
 import { getSurfaceById } from './raceData.js';
 import {
@@ -525,11 +525,11 @@ export function createRaceStaticColliderWorld(editor, {
     segment: { ...edge, roadWidthM: edge.widthM }
   }))) : [editor.getRacePathSamplesCached?.({ step: 3 }) || []];
   const pairs = paths.flatMap(samples => samples.slice(1).map((next, i) => [samples[i], next]));
-  const roadCorridors = pairs.map(([previous, next]) => ({
+  const roadCorridors = createRoadCorridorIndex(pairs.map(([previous, next]) => ({
     from: { x: previous.x, z: previous.z, y: Number(previous.elevation || 0) * RACE_THREE_ELEVATION_M },
     to: { x: next.x, z: next.z, y: Number(next.elevation || 0) * RACE_THREE_ELEVATION_M },
     halfWidth: editor.getRaceRoadHalfWidthWorld(next.segment || previous.segment || editor.selectedSegment)
-  }));
+  })));
   for (let index = 0; index < pairs.length; index += 1) {
     const [previous, next] = pairs[index];
     const segment = next.segment || previous.segment || editor.selectedSegment;

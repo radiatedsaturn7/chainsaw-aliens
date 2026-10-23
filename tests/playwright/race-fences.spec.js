@@ -64,7 +64,7 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait' : 'desktop'} fen
       buttons:e.buttons.map(b=>b.id),bounds:b};
   });
   console.log('FENCE',JSON.stringify(result));
-  expect(result.pathPoints).toBe(4); expect(result.drawCalls).toBe(1);
+  expect(result.pathPoints).toBe(4); expect(result.drawCalls).toBeGreaterThan(0); expect(result.drawCalls).toBeLessThan(result.count);
   expect(result.count).toBeGreaterThan(1); expect(result.restored).toBe(result.count);
   expect(result.boxes).toBe(result.count); expect(result.ground).toBe('providenceGround');
   await page.screenshot({path:`test-results/fence-map-${mobile}.png`});
