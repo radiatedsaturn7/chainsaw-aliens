@@ -1,3 +1,4 @@
+import { hasBlockingGlobalOverlay } from './ui/shared/globalOverlayInput.js';
 import { FullscreenPrompt } from './ui/FullscreenPrompt.js';
 import Game from './game/Game.js';
 import { addDOMListener, createDisposer } from './input/disposables.js';
@@ -171,7 +172,7 @@ function shouldIgnoreMouseFromRecentTouch() {
 
 function isGlobalOverlayOpen() {
   const root = document.getElementById('global-overlay-root');
-  return Boolean(fullscreenPrompt.blocksInput || root?.children?.length || isLatestChangesOverlayOpen());
+  return Boolean(fullscreenPrompt.blocksInput || hasBlockingGlobalOverlay(root) || isLatestChangesOverlayOpen());
 }
 
 function resetTouchSession(reason = 'unknown') {

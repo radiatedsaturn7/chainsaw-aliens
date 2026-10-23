@@ -699,6 +699,7 @@ const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   'erase-tile',
   'sprite-brush-settings',
   'move-sprite',
+  'rotate-sprite',
   'delete-sprite',
   'sprite-size',
   'sprite-height',
@@ -1146,25 +1147,10 @@ export default class RaceEditor {
 
   normalizeStudioSprintRace(race = null) {
     if (!race || typeof race !== 'object') return false;
-    const id = String(race.id || '').trim().toLowerCase();
-    const name = String(race.name || '').trim().toLowerCase();
-    if (id !== 'test-loop' && name !== 'studio sprint') return false;
-    let changed = false;
-    if (Array.isArray(race.hazards) && race.hazards.length) {
-      race.hazards = [];
-      changed = true;
-    } else if (!Array.isArray(race.hazards)) {
-      race.hazards = [];
-      changed = true;
-    }
-    const segments = Array.isArray(race.road?.segments) ? race.road.segments : [];
-    segments.forEach((segment) => {
-      if (Array.isArray(segment?.hazardIds) && segment.hazardIds.length) {
-        segment.hazardIds = [];
-        changed = true;
-      }
-    });
-    return changed;
+    // Defaults belong in template creation, never in an authored document load.
+    if (Array.isArray(race.hazards)) return false;
+    race.hazards = [];
+    return true;
   }
 
   normalizeRaceProjectData() {
@@ -3212,8 +3198,8 @@ export default class RaceEditor {
       return true;
     }
     this.raceSpriteDrag = { id: point.id ?? 'pointer', index: hit.index };
-    this.racePortraitMode = 'sprites';
-    this.activeRootId = 'sprites';
+    this.racePortraitMode = this.getRaceSpritePaintKind() === 'doodad' ? 'ground' : 'sprites';
+    this.activeRootId = this.racePortraitMode;
     this.status = `Move ${hit.sprite.label || 'sprite'}`;
     return true;
   }
@@ -3228,6 +3214,84 @@ export default class RaceEditor {
     sprite.z = Math.round(Number(world.y || 0) * 100) / 100;
     this.selectedSceneryIndex = this.raceSpriteDrag.index;
     return true;
+  }
+
+  getRaceSceneryRotationHandle(bounds = this.raceMapBounds) {
+    if (!bounds || this.mode !== 'race' || this.playtestSession || this.showRaceScenery === false
+      || this.raceSelectionType !== 'sprite') return null;
+    const sprite = this.selectedScenery;
+    if (!sprite || sprite.state === 'removed') return null;
+    const center = this.raceMapWorldToScreenPoint({ x: sprite.x, y: sprite.z }, bounds);
+    const yaw = Number(sprite.yaw) || 0;
+    const tip = this.raceMapWorldToScreenPoint({ x: Number(sprite.x) + Math.sin(yaw), y: Number(sprite.z) + Math.cos(yaw) }, bounds);
+    if (!center || !tip) return null;
+    const dx = tip.screenX - center.screenX, dy = tip.screenY - center.screenY;
+    const length = Math.hypot(dx, dy) || 1;
+    const arm = Math.max(44, clamp((Number(sprite.widthM) || 1.5) * Number(center.scale || 1) * 0.5, 3, 28) + 26);
+    return { sprite, center, x: center.screenX + dx / length * arm, y: center.screenY + dy / length * arm };
+  }
+
+  beginRaceSceneryRotationDrag(point = {}) {
+    const handle = this.getRaceSceneryRotationHandle();
+    if (!handle || Math.hypot(point.x - handle.x, point.y - handle.y) > 22) return false;
+    const world = this.screenToRaceMapWorldPoint(point.x, point.y, this.raceMapBounds);
+    if (!world) return false;
+    this.raceSceneryRotationDrag = {
+      id: point.id ?? 'pointer', sprite: handle.sprite, race: this.selectedRace, changed: false,
+      offset: (Number(handle.sprite.yaw) || 0) - Math.atan2(world.x - handle.sprite.x, world.y - handle.sprite.z)
+    };
+    this.status = 'Drag around the doodad to rotate';
+    return true;
+  }
+
+  updateRaceSceneryRotationDrag(point = {}) {
+    const drag = this.raceSceneryRotationDrag;
+    if (!drag || drag.id !== (point.id ?? 'pointer')) return false;
+    if (drag.race !== this.selectedRace || !this.ensureRaceScenery().includes(drag.sprite)) {
+      this.raceSceneryRotationDrag = null;
+      return true;
+    }
+    const world = this.screenToRaceMapWorldPoint(point.x, point.y, this.raceMapBounds);
+    const center = this.raceMapWorldToScreenPoint({ x: drag.sprite.x, y: drag.sprite.z }, this.raceMapBounds);
+    if (!world || !center || Math.hypot(point.x - center.screenX, point.y - center.screenY) < 8) return true;
+    const yaw = Math.atan2(world.x - drag.sprite.x, world.y - drag.sprite.z) + drag.offset;
+    const normalized = ((yaw % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    if (Math.abs(normalizeAngle(normalized - (Number(drag.sprite.yaw) || 0))) < 0.0001) return true;
+    if (!drag.changed) this.captureRaceHistory('Rotate doodad');
+    drag.changed = true;
+    drag.sprite.yaw = normalized;
+    this.status = `Rotation ${Math.round(normalized * 180 / Math.PI)}°`;
+    return true;
+  }
+
+  setSelectedRaceSceneryRotation(degrees) {
+    const sprite = this.raceSelectionType === 'sprite' ? this.selectedScenery : null;
+    if (!sprite || !Number.isFinite(Number(degrees))) return false;
+    this.captureRaceHistory('Rotate doodad');
+    sprite.yaw = ((Number(degrees) % 360 + 360) % 360) * Math.PI / 180;
+    this.clearRaceRuntimeSurfaceCaches();
+    this.status = `Rotation ${Math.round(sprite.yaw * 180 / Math.PI)}°`;
+    return true;
+  }
+
+  async openRaceSceneryRotationDialog(showForm = openEditorForm) {
+    const sprite = this.raceSelectionType === 'sprite' ? this.selectedScenery : null;
+    if (!sprite) { this.status = 'Choose Select / Move, then tap a doodad first'; return; }
+    const race = this.selectedRace;
+    const result = await showForm('Doodad Rotation', [
+      { id: 'degrees', label: 'Rotation (degrees)', type: 'number', min: 0, max: 360, step: 1,
+        value: ((Number(sprite.yaw || 0) * 180 / Math.PI) % 360 + 360) % 360 }
+    ]);
+    if (!result || this.selectedRace !== race || this.selectedScenery !== sprite) return;
+    this.setSelectedRaceSceneryRotation(result.degrees);
+  }
+
+  getRaceSceneryTransformActions() {
+    const selected = this.raceSelectionType === 'sprite' && Boolean(this.selectedScenery);
+    return [
+      { id: 'move-sprite', label: 'Select / Move', active: this.activeAction === 'move-sprite', onClick: () => this.handleMenuAction('move-sprite') },
+      { id: 'rotate-sprite', label: 'Rotation', disabled: !selected, onClick: selected ? () => this.openRaceSceneryRotationDialog() : null }
+    ];
   }
 
   deleteSelectedRaceScenery() {
@@ -4768,6 +4832,7 @@ export default class RaceEditor {
       this.activeRootId = 'ground';
       this.status = `Ground mode: paint ${this.getRaceGroundTilePalette(this.getSelectedGroundTileId()).label}`;
     } else if (resolved === 'sprites') {
+      if (this.getRaceSpritePaintKind() === 'doodad') this.raceSpritePaintKind = 'sprite';
       this.activeAction = this.getRaceSpritePaintActionId();
       this.activeRootId = 'sprites';
       this.status = this.getRaceSpritePaintStatus();
@@ -6354,7 +6419,8 @@ export default class RaceEditor {
       'sprite-height': 'Sprite Height',
       'sprite-behavior': 'Collision Behavior',
       'add-sprite': 'Add Sprite',
-      'move-sprite': 'Move Sprite',
+      'move-sprite': 'Select / Move',
+      'rotate-sprite': 'Rotation',
       'delete-sprite': 'Delete Sprite',
       'body-art': this.getCarBodyArtMenuLabel(),
       'car-import-graphic': 'Import Graphic',
@@ -7887,14 +7953,46 @@ export default class RaceEditor {
 
   saveSelectedRaceToName(name = '') {
     const clean = sanitizeProjectFileName(name || this.getRaceDocumentName()) || 'Untitled Race';
-    const payload = this.serializeSelectedRaceDocument();
-    const saved = saveProjectFile('races', clean, payload);
-    this.currentRaceDocumentName = clean;
-    this.status = `Saved ${clean}`;
-    saved?.syncPromise?.catch?.((error) => {
-      if (typeof console !== 'undefined') console.warn('Race save sync failed', error);
-      this.status = `Saved locally; sync failed`;
-    });
+    const request = this.raceSaveRequest = (this.raceSaveRequest || 0) + 1;
+    const startedAt = Date.now();
+    clearTimeout(this.raceSaveFeedbackTimer);
+    const feedback = (message, duration = 0, persistent = false) => {
+      if (this.raceSaveRequest !== request) return;
+      this.game?.showSaveStatusModal?.(message, { persistent });
+      this.game?.showSystemToast?.(message);
+      if (duration && this.game?.hideSaveStatusModal) {
+        this.raceSaveFeedbackTimer = setTimeout(() => {
+          if (this.raceSaveRequest === request) this.game.hideSaveStatusModal();
+        }, duration);
+      }
+    };
+    const fail = (error) => {
+      console.warn('Race save sync failed', error);
+      if (this.raceSaveRequest !== request) return;
+      this.status = `Save failed: ${error.message}. Keep this page open and retry Save.`;
+      feedback(this.status, 0, true);
+    };
+    this.status = `Saving ${clean}…`;
+    feedback('Saving...');
+    let saved;
+    try {
+      const payload = this.serializeSelectedRaceDocument();
+      saved = saveProjectFile('races', clean, payload);
+      this.currentRaceDocumentName = clean;
+      if (!saved?.syncPromise) throw new Error('Server confirmation unavailable');
+    } catch (error) {
+      fail(error);
+      return null;
+    }
+    saved.syncPromise.then(async (result) => {
+      if (!result || result.persisted === false) throw new Error(result?.reason || 'Server did not confirm the save');
+      // Match Pixel Editor: keep Saving visible even for very quick responses.
+      const remaining = 350 - (Date.now() - startedAt);
+      if (remaining > 0) await new Promise(resolve => setTimeout(resolve, remaining));
+      if (this.raceSaveRequest !== request) return;
+      if (this.currentRaceDocumentName === clean) this.status = `Saved ${clean}`;
+      feedback('Saved', 1400);
+    }).catch(fail);
     return saved;
   }
 
@@ -8748,6 +8846,7 @@ export default class RaceEditor {
 
   handleMenuAction(action) {
     if (NETWORK_ACTIONS[action]) return handleNetworkAction(this, action).catch(error => { this.status = error.message; });
+    if(action==='rotate-sprite') return this.openRaceSceneryRotationDialog();
     if(action==='race-item'){void this.openRaceItemPicker().catch(error=>{this.status=error.message;});return;}
     if (!this.isActionAvailable(action)) {
       this.status = `${action.replace(/-/g, ' ')} is not available yet`;
@@ -9053,6 +9152,7 @@ export default class RaceEditor {
       this.racePortraitHotMenu = null;
       this.status = this.raceElevationBrushDirection > 0 ? 'Elevation mode: raise' : 'Elevation mode: lower';
     } else if (action === 'race-ground-mode-sprites') {
+      this.raceSpritePaintKind = 'sprite';
       this.racePortraitMode = 'ground';
       this.activeRootId = 'ground';
       this.activeAction = this.getRaceSpritePaintActionId();
@@ -9313,8 +9413,8 @@ export default class RaceEditor {
       this.racePortraitHotMenu = this.racePortraitHotMenu === 'sprite-brush' ? null : 'sprite-brush';
       this.status = 'Choose sprite brush';
     } else if (action === 'move-sprite') {
-      this.racePortraitMode = 'sprites';
-      this.activeRootId = 'sprites';
+      this.racePortraitMode = this.getRaceSpritePaintKind() === 'doodad' ? 'ground' : 'sprites';
+      this.activeRootId = this.racePortraitMode;
       this.status = 'Sprite mode: move scenery sprite';
     } else if (action === 'delete-sprite') {
       this.racePortraitMode = 'sprites';
@@ -9347,7 +9447,7 @@ export default class RaceEditor {
       this.activeAction = 'paint-ground';
     }
     if (action === 'race-ground-mode' || action === 'race-ground-paint' || action === 'race-ground-intensity' || action === 'race-ground-brush') {
-      if (!['paint-ground', 'paint-elevation', 'paint-sprite', 'paint-decal', 'paint-tile', 'erase-sprite', 'erase-decal', 'erase-tile', 'place-trigger'].includes(this.activeAction)) {
+      if (!['paint-ground', 'paint-elevation', 'paint-sprite', 'paint-decal', 'paint-tile', 'erase-sprite', 'erase-decal', 'erase-tile', 'place-trigger', 'move-sprite'].includes(this.activeAction)) {
         this.activeAction = 'paint-ground';
       }
     }
@@ -24913,6 +25013,7 @@ export default class RaceEditor {
     const definitions = this.ensureRaceSceneryDefinitions();
     const actions = [
       { id: 'sprite-menu-back', label: 'Back', onClick: () => { this.racePortraitHotMenu = null; } },
+      ...this.getRaceSceneryTransformActions(),
       ...(definitions.length
         ? definitions.map((definition, index) => ({
           id: `sprite-def-${definition.id}`,
@@ -26662,7 +26763,7 @@ export default class RaceEditor {
     const intensityLabel = mode === 'sprite'
       ? (this.activeAction?.startsWith?.('erase-') ? 'Erase' : this.getRaceSpriteGroundPaintLabel())
       : mode === 'doodad'
-        ? (this.activeAction === 'erase-sprite' ? 'Erase' : 'Paint')
+        ? (this.activeAction === 'erase-sprite' ? 'Erase' : this.activeAction === 'move-sprite' ? 'Select / Move' : 'Paint')
       : mode === 'elevation'
         ? `${this.raceElevationBrushDirection > 0 ? '+' : '-'}${(Number(this.raceElevationBrushAmount) || RACE_TILE_MAP_ELEVATION_STEP).toFixed(2).replace(/0+$/, '').replace(/\.$/, '')}`
         : `${Math.round((Number(this.raceGroundBrushStrength) || 0) * 100)}%`;
@@ -26676,7 +26777,7 @@ export default class RaceEditor {
 
   getRaceGroundToolMode() {
     if (this.activeAction === 'place-trigger') return 'trigger';
-    if (this.getRaceSpritePaintKind() === 'doodad' && ['paint-sprite', 'erase-sprite'].includes(this.activeAction)) return 'doodad';
+    if (this.getRaceSpritePaintKind() === 'doodad' && ['paint-sprite', 'erase-sprite', 'move-sprite'].includes(this.activeAction)) return 'doodad';
     if (['paint-sprite', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile'].includes(this.activeAction)) return 'sprite';
     if (this.activeAction === 'paint-elevation') return 'elevation';
     return 'ground';
@@ -26819,7 +26920,8 @@ export default class RaceEditor {
       return [
         close,
         { id: 'paint-sprite', label: 'Paint', active: this.activeAction === 'paint-sprite', disabled: !this.isRaceSpritePaintReady('doodad'), onClick: this.isRaceSpritePaintReady('doodad') ? () => this.handleMenuAction('paint-sprite') : null },
-        { id: 'erase-sprite', label: 'Erase', active: this.activeAction === 'erase-sprite', onClick: () => this.handleMenuAction('erase-sprite') }
+        { id: 'erase-sprite', label: 'Erase', active: this.activeAction === 'erase-sprite', onClick: () => this.handleMenuAction('erase-sprite') },
+        ...this.getRaceSceneryTransformActions()
       ];
     }
     if (this.racePortraitHotMenu === 'ground-intensity') {
@@ -30571,7 +30673,38 @@ export default class RaceEditor {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(String(sprite.label || preset.label || 'S').slice(0, 1), screen.screenX, screen.screenY);
+      if (sprite.presetId === 'doodad' || Number.isFinite(sprite.yaw)) {
+        const yaw = Number(sprite.yaw) || 0;
+        const tip = this.raceMapWorldToScreenPoint({ x: sprite.x + Math.sin(yaw), y: sprite.z + Math.cos(yaw) }, bounds);
+        const dx = tip.screenX - screen.screenX, dy = tip.screenY - screen.screenY;
+        const length = Math.hypot(dx, dy) || 1;
+        ctx.beginPath();
+        ctx.moveTo(screen.screenX, screen.screenY);
+        ctx.lineTo(screen.screenX + dx / length * (radius + 10), screen.screenY + dy / length * (radius + 10));
+        ctx.stroke();
+      }
     });
+    const handle = this.getRaceSceneryRotationHandle(bounds);
+    if (handle) {
+      ctx.save();
+      ctx.strokeStyle = UI_SUITE.colors.accent;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(handle.center.screenX, handle.center.screenY);
+      ctx.lineTo(handle.x, handle.y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(handle.x, handle.y, 11, 0, Math.PI * 2);
+      ctx.fillStyle = '#15251e';
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = UI_SUITE.colors.text;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = `bold 16px ${UI_SUITE.font.family}`;
+      ctx.fillText('↻', handle.x, handle.y);
+      ctx.restore();
+    }
   }
 
   drawRaceTopDownTriggers(ctx, bounds) {
@@ -39527,6 +39660,7 @@ export default class RaceEditor {
       hit.onClick?.();
       return;
     }
+    if (payload.button !== 1 && payload.button !== 2 && this.beginRaceSceneryRotationDrag(payload)) return;
     if (payload.button !== 1 && payload.button !== 2 && this.selectedRace?.road?.network) {
       try { if (networkPointer(this, payload, 'down')) return; } catch (error) { this.status = error.message; return; }
     }
@@ -39591,6 +39725,7 @@ export default class RaceEditor {
   }
 
   handlePointerMove(payload = {}) {
+    if (this.updateRaceSceneryRotationDrag(payload)) return;
     if (this.networkDrag && networkPointer(this, payload, 'move')) return;
     if (this.raceImageImportOpen) return;
     if (this.isLivePlaytestSession() && this.raceInput.activeDpadPointerId === (payload.id ?? 'pointer')) {
@@ -39699,6 +39834,12 @@ export default class RaceEditor {
     }
   }
   handlePointerUp(payload = {}) {
+    if (this.raceSceneryRotationDrag?.id === (payload.id ?? 'pointer')) {
+      this.updateRaceSceneryRotationDrag(payload);
+      if (this.raceSceneryRotationDrag?.changed) this.clearRaceRuntimeSurfaceCaches();
+      this.raceSceneryRotationDrag = null;
+      return;
+    }
     if (this.networkDrag && networkPointer(this, payload, 'up')) return;
     if (this.raceImageImportOpen) return;
     if (this.pendingDesktopDropdownHit) {

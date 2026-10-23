@@ -58,7 +58,10 @@ export function buildRaceNetworkWorld(network, {
   }
   const terrainMesh = buildRaceCanonicalSurfaceMesh({ terrainCells: cells, elevationScaleM });
   const mesh = geometry.mesh, offset = mesh.vertices.length;
-  mesh.vertices.push(...terrainMesh.vertices); mesh.normals.push(...terrainMesh.normals);
+  // Painted maps can exceed the engine argument limit; never spread a mesh
+  // into push(). Preserve vertex/normal order for the triangle index offset.
+  for (const vertex of terrainMesh.vertices) mesh.vertices.push(vertex);
+  for (const normal of terrainMesh.normals) mesh.normals.push(normal);
   for (const triangle of terrainMesh.triangles) {
     mesh.groups[triangle.region].push(mesh.triangles.length);
     mesh.triangles.push({ ...triangle, indices: triangle.indices.map(i => i + offset) });

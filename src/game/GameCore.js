@@ -6626,7 +6626,7 @@ export default class Game {
     this.systemPrompts.push(new SystemPrompt(message, { mode: 'toast', duration: 2 }));
   }
 
-  showSaveStatusModal(message) {
+  showSaveStatusModal(message, { persistent = false } = {}) {
     if (!message) return;
     let root = document.getElementById('global-overlay-root');
     if (!root) {
@@ -6659,14 +6659,31 @@ export default class Game {
       });
       this._saveStatusModalEl = panel;
     }
+    this._saveStatusModalEl.dataset.nonBlockingOverlay = 'true';
     root.appendChild(this._saveStatusModalEl);
+    this._saveStatusModalPersistent = persistent;
+    this._saveStatusModalEl.style.maxWidth = 'calc(100vw - 32px)';
+    this._saveStatusModalEl.style.boxSizing = 'border-box';
+    this._saveStatusModalEl.style.maxHeight = '70dvh';
+    this._saveStatusModalEl.style.overflowY = 'auto';
+    this._saveStatusModalEl.style.whiteSpace = 'pre-wrap';
+    this._saveStatusModalEl.style.overflowWrap = 'anywhere';
+    this._saveStatusModalEl.style.pointerEvents = persistent ? 'auto' : 'none';
     this._saveStatusModalEl.textContent = String(message);
+    if (persistent) {
+      const dismiss = document.createElement('button');
+      dismiss.textContent = 'Dismiss';
+      dismiss.type = 'button';
+      Object.assign(dismiss.style, { display: 'block', minHeight: '44px', marginTop: '12px', padding: '8px 20px' });
+      dismiss.onclick = event => { event.stopPropagation(); this.hideSaveStatusModal({ force: true }); };
+      this._saveStatusModalEl.appendChild(dismiss);
+    }
     this._saveStatusModalEl.style.display = 'block';
     if (this._saveStatusModalTimer) {
       clearTimeout(this._saveStatusModalTimer);
       this._saveStatusModalTimer = null;
     }
-    if (/^Saved\b/i.test(String(message))) {
+    if (!persistent && /^Saved\b/i.test(String(message))) {
       this._saveStatusModalTimer = setTimeout(() => {
         this.hideSaveStatusModal();
         this._saveStatusModalTimer = null;
@@ -6674,12 +6691,17 @@ export default class Game {
     }
   }
 
-  hideSaveStatusModal() {
+  hideSaveStatusModal({ force = false } = {}) {
+    if (this._saveStatusModalPersistent && !force) return;
+    this._saveStatusModalPersistent = false;
     if (this._saveStatusModalTimer) {
       clearTimeout(this._saveStatusModalTimer);
       this._saveStatusModalTimer = null;
     }
-    if (this._saveStatusModalEl) this._saveStatusModalEl.style.display = 'none';
+    if (this._saveStatusModalEl) {
+      this._saveStatusModalEl.style.display = 'none';
+      this._saveStatusModalEl.remove();
+    }
   }
 
   async requestDebugRestartPull() {
