@@ -538,3 +538,5 @@ Road Textures also provides separate road/margin filtering (inherit, crisp, bala
 Road/margin mipmap distance multipliers range from 0.25 to 16 (default 1). Higher values delay mip-level reduction using negative LOD bias; lower values soften earlier. Repeat width/length are unchanged. Both renderers apply the bias, and it is ignored with mipmaps disabled.
 
 Race sky artwork keeps a fixed viewport-relative scale, follows camera yaw without velocity/slip offsets, and resamples fractional pixel movement smoothly. Camera pitch and first-person roll still move the sky with the view.
+
+Race Settings labels the command Skybox. Its existing live-preview dialog includes independent Width scale and Height scale sliders (25–400%, default 100%), alongside North and Vertical offsets. Reset restores position and scale; changes commit on OK and persist with the race. Sliders use two compact rows to keep preview and confirmation reachable in portrait and landscape.

@@ -88,3 +88,21 @@ test('sky artwork does not wobble with slip or resize with the horizon and retai
  const phase=images=>((images[0].args[1]%width)+width)%width;
  near(phase(second)-phase(first),.0002*width/(Math.PI*2));
 });
+
+
+test('sky scale axes are independent and persist with race settings', () => {
+ const editor=new RaceEditor({}),bounds={x:0,y:0,w:960,h:540};
+ assert.equal(editor.getMenuItems('settings').find(item=>item.id==='skybox-next').label,'Skybox');
+ editor.getRaceSkyboxRenderCanvas=()=>({width:1024,height:512});
+ const draw=settings=>{
+  editor.setRaceSkyboxSettings({artRef:'sky',...settings});
+  const images=[],ctx={save(){},restore(){},beginPath(){},rect(){},clip(){},drawImage(...args){images.push(args);}};
+  editor.drawRaceSkyboxArt(ctx,bounds,{horizon:200});return images[0];
+ };
+ const normal=draw({}),wide=draw({scaleX:2}),tall=draw({scaleY:1.5});
+ near(wide[3],normal[3]*2);near(wide[4],normal[4]);
+ near(tall[3],normal[3]);near(tall[4],normal[4]*1.5);
+ near(tall[2]+tall[4]*.56,200);
+ const loaded=editor.normalizeLoadedRaceDocument(editor.serializeSelectedRaceDocument());
+ near(editor.getRaceSkyboxSettings(loaded).scaleY,1.5);
+});

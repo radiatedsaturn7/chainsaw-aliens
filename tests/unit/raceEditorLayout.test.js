@@ -15844,6 +15844,7 @@ test('Race Editor settings store project art skybox references for parallax back
   assert.equal(editor.selectedRace.skyboxArtRef, 'Test Skybox');
   assert.deepEqual(editor.selectedRace.skyboxSettings, {
     artRef: 'Test Skybox',
+    scaleX: 1, scaleY: 1,
     offsetXTurns: 0.25,
     offsetYRatio: -0.12
   });
@@ -15867,6 +15868,7 @@ test('Race Editor preserves loaded skybox settings offsets', () => {
   assert.equal(race.skyboxArtRef, 'Custom Skyline');
   assert.deepEqual(editor.getRaceSkyboxSettings(race), {
     artRef: 'Custom Skyline',
+    scaleX: 1, scaleY: 1,
     offsetXTurns: -0.2,
     offsetYRatio: 0.14
   });

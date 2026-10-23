@@ -1726,6 +1726,8 @@ export default class RaceEditor {
     return {
       artRef: String(race?.skyboxArtRef || race?.visuals?.skyboxArtRef || source.artRef || '').trim(),
       offsetXTurns: clamp(Number(source.offsetXTurns ?? race?.skyboxOffsetXTurns ?? race?.visuals?.skyboxOffsetXTurns ?? 0) || 0, -0.5, 0.5),
+      scaleX: clamp(Number(source.scaleX) || 1, .25, 4),
+      scaleY: clamp(Number(source.scaleY) || 1, .25, 4),
       offsetYRatio: clamp(Number(source.offsetYRatio ?? race?.skyboxOffsetYRatio ?? race?.visuals?.skyboxOffsetYRatio ?? 0) || 0, -0.36, 0.36)
     };
   }
@@ -1736,6 +1738,8 @@ export default class RaceEditor {
     const next = {
       artRef: String(settings.artRef || '').trim(),
       offsetXTurns: Math.round(clamp(Number(settings.offsetXTurns) || 0, -0.5, 0.5) * 1000) / 1000,
+      scaleX: clamp(Number(settings.scaleX) || 1, .25, 4),
+      scaleY: clamp(Number(settings.scaleY) || 1, .25, 4),
       offsetYRatio: Math.round(clamp(Number(settings.offsetYRatio) || 0, -0.36, 0.36) * 1000) / 1000
     };
     race.skyboxArtRef = next.artRef;
@@ -25526,53 +25530,37 @@ export default class RaceEditor {
           });
         }
       });
-      this.drawRaceSettingsSlider(ctx, {
-        x: panel.x + 14,
-        y: panel.y + 96,
-        w: panel.w - 28,
-        h: 54
-      }, {
-        id: 'skybox-offset-x',
-        label: 'North',
-        min: -0.5,
-        max: 0.5,
-        step: 0.005,
-        value: Number(draft.offsetXTurns) || 0,
-        format: (value) => `${Math.round(value * 360)}deg`
-      });
-      this.drawRaceSettingsSlider(ctx, {
-        x: panel.x + 14,
-        y: panel.y + 154,
-        w: panel.w - 28,
-        h: 54
-      }, {
-        id: 'skybox-offset-y',
-        label: 'Vertical',
-        min: -0.36,
-        max: 0.36,
-        step: 0.005,
-        value: Number(draft.offsetYRatio) || 0,
-        format: (value) => `${value > 0 ? '+' : ''}${Math.round(value * 100)}%`
-      });
+      const sliderWidth = (panel.w - 36) / 2;
+      const skySliders = [
+        {id:'skybox-offset-x',label:'North',min:-.5,max:.5,step:.005,value:Number(draft.offsetXTurns)||0,format:v=>`${Math.round(v*360)}deg`},
+        {id:'skybox-offset-y',label:'Vertical',min:-.36,max:.36,step:.005,value:Number(draft.offsetYRatio)||0,format:v=>`${Math.round(v*100)}%`},
+        {id:'skybox-scale-x',label:'Width scale',min:.25,max:4,step:.05,value:Number(draft.scaleX)||1,format:v=>`${Math.round(v*100)}%`},
+        {id:'skybox-scale-y',label:'Height scale',min:.25,max:4,step:.05,value:Number(draft.scaleY)||1,format:v=>`${Math.round(v*100)}%`}
+      ];
+      skySliders.forEach((row,index) => this.drawRaceSettingsSlider(ctx, {
+        x:panel.x+14+(index%2)*(sliderWidth+8), y:panel.y+90+Math.floor(index/2)*52, w:sliderWidth, h:48
+      }, {...row,stacked:true}));
       this.registerDrawnButton(ctx, {
         x: panel.x + 14,
-        y: panel.y + 214,
+        y: panel.y + 198,
         w: panel.w - 28,
         h: 30
       }, {
         id: 'skybox-dialog-reset',
-        label: 'Reset Offsets',
+        label: 'Reset Position / Scale',
         onClick: () => {
           draft.offsetXTurns = 0;
           draft.offsetYRatio = 0;
-          this.status = 'Skybox offsets reset';
+          draft.scaleX = 1;
+          draft.scaleY = 1;
+          this.status = 'Skybox position and scale reset';
         }
       });
       this.drawRaceSkyboxSettingsPreview(ctx, {
         x: panel.x + 14,
-        y: panel.y + 256,
+        y: panel.y + 240,
         w: panel.w - 28,
-        h: Math.max(110, panel.y + panel.h - 316)
+        h: Math.max(0, panel.h - 300)
       }, draft);
     } else if (this.raceSettingsDialog === 'tiles') {
       ctx.fillStyle = UI_SUITE.colors.muted;
@@ -26319,10 +26307,13 @@ export default class RaceEditor {
     if (!ctx || !this.selectedRace || !bounds || bounds.w <= 0 || bounds.h <= 0) return;
     const savedArtRef = this.selectedRace.skyboxArtRef;
     const savedSettings = this.selectedRace.skyboxSettings;
+    const savedYawState = this.raceSkyboxYawState;
     const previewSettings = {
       artRef: String(draft.artRef || '').trim(),
       offsetXTurns: clamp(Number(draft.offsetXTurns) || 0, -0.5, 0.5),
-      offsetYRatio: clamp(Number(draft.offsetYRatio) || 0, -0.36, 0.36)
+      offsetYRatio: clamp(Number(draft.offsetYRatio) || 0, -0.36, 0.36),
+      scaleX: clamp(Number(draft.scaleX) || 1, .25, 4),
+      scaleY: clamp(Number(draft.scaleY) || 1, .25, 4)
     };
     this.selectedRace.skyboxArtRef = previewSettings.artRef;
     this.selectedRace.skyboxSettings = previewSettings;
@@ -26336,7 +26327,7 @@ export default class RaceEditor {
       const horizon = bounds.y + bounds.h * 0.58;
       this.drawRaceParallaxBackground(ctx, bounds, {
         horizon,
-        cameraYaw: previewSettings.offsetXTurns * Math.PI * 2,
+        cameraYaw: 0,
         heading: 0,
         velocityYaw: 0,
         speedMps: 0,
@@ -26368,6 +26359,7 @@ export default class RaceEditor {
       else this.selectedRace.skyboxArtRef = savedArtRef;
       if (savedSettings === undefined) delete this.selectedRace.skyboxSettings;
       else this.selectedRace.skyboxSettings = savedSettings;
+      this.raceSkyboxYawState = savedYawState;
       ctx.restore();
     }
   }
@@ -26382,7 +26374,7 @@ export default class RaceEditor {
         1
       )
       : clamp((value - row.min) / Math.max(0.0001, row.max - row.min), 0, 1);
-    const track = { x: bounds.x + 92, y: bounds.y + 31, w: bounds.w - 104, h: 6 };
+    const track = { x: bounds.x + (row.stacked ? 8 : 92), y: bounds.y + 31, w: bounds.w - (row.stacked ? 16 : 104), h: 6 };
     ctx.save();
     ctx.globalAlpha = row.disabled ? 0.45 : 1;
     ctx.fillStyle = UI_SUITE.colors.text;
@@ -26446,6 +26438,10 @@ export default class RaceEditor {
     }
     if (region.key === 'skybox-offset-y') {
       this.raceSettingsDialogDraft.offsetYRatio = clamp(value, -0.36, 0.36);
+      return true;
+    }
+    if (region.key === 'skybox-scale-x' || region.key === 'skybox-scale-y') {
+      this.raceSettingsDialogDraft[region.key === 'skybox-scale-x' ? 'scaleX' : 'scaleY'] = clamp(value, .25, 4);
       return true;
     }
     if (region.key === 'sun-angle') {
@@ -31237,9 +31233,10 @@ export default class RaceEditor {
     if (!canvas || typeof ctx.drawImage !== 'function') return false;
     const aspect = Math.max(0.1, Number(canvas.width || 1) / Math.max(1, Number(canvas.height || 1)));
     // Keep yaw scale constant as the road horizon pitches over bumps and hills.
-    const destH = Math.max(1, bounds.h * 0.72);
+    const baseH = Math.max(1, bounds.h * 0.72);
+    const destH = baseH * (skyboxSettings.scaleY || 1);
     const artHorizonRatio = 0.56;
-    const wrapW = Math.max(bounds.w * 1.35, destH * aspect * 2);
+    const wrapW = Math.max(bounds.w * 1.35, baseH * aspect * 2) * (skyboxSettings.scaleX || 1);
     const pitchOffset = clamp(Number(hillPitch) || 0, -0.4, 0.4) * bounds.h * 0.08;
     const destY = horizon - destH * artHorizonRatio + pitchOffset + skyboxSettings.offsetYRatio * bounds.h;
     const yawTurns = Number(normalizedCameraYaw || 0) / (Math.PI * 2) + skyboxSettings.offsetXTurns;

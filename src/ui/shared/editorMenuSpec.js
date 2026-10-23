@@ -97,6 +97,7 @@ const actionEntries = (ids, labels = {}) => Object.fromEntries(ids.map((id) => [
   }
 ]));
 const EDITOR_ACTION_LABEL_OVERRIDES = {
+  'skybox-next': 'Skybox',
   'network-enable': 'Branching Routes',
   'network-select': 'Select',
   'network-multi': 'Multi-select',

@@ -9,6 +9,7 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   currentStatus: [
+    '2026-10-22 20:08 EDT - Renamed Skybox in shared menus and added independent width/height scaling with live preview and reset.',
     '2026-10-22 19:58 EDT - Stabilized race sky artwork scale and subpixel scrolling; tire slip no longer shifts distant scenery.',
     '2026-10-22 19:49 EDT - Road and margin mipmap distance multipliers delay distant texture softening independently of anisotropy and repeat size.',
     '2026-10-22 19:35 EDT - Road and margin textures have separate filtering, distance mipmaps and angled-distance detail controls in Road Textures.',
