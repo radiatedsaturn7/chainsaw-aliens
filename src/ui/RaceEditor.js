@@ -20165,7 +20165,9 @@ export default class RaceEditor {
         { id: 'car-camera-settings', label: 'Camera', contextPanelCommand: true, onClick: () => this.handleMenuAction('car-camera-settings') }
       ];
     }
-    return this.getRaceTrackContextActions({ compact: true })
+    return (this.racePortraitMode === 'ground' && this.getRaceGroundToolMode() === 'doodad'
+      ? this.getRacePortraitGroundActions()
+      : this.getRaceTrackContextActions({ compact: true }))
       .map((action) => ({
         ...action,
         active: action.active ?? action.id === this.activeAction,
