@@ -38695,7 +38695,8 @@ export default class RaceEditor {
       // Use the normal terrain/tunnel-safe camera placement for each orbit angle.
       const placement = this.getRaceThirdPersonSafeCameraPlacement({
         carWorldX, carWorldZ, carYaw: orbitYaw + Math.PI,
-        desiredChaseDistance: introShot.distance, roadElevation: localCarGroundElevation,
+        desiredChaseDistance: introShot.distance * Math.max(1, .9 / Math.max(.25, bounds.w / Math.max(1, bounds.h))),
+        roadElevation: localCarGroundElevation,
         eyeHeight: introShot.height / RACE_THREE_ELEVATION_M,
         lookAheadDistanceM: 0, routeCamera, cameraView: 'third-person', car
       });
