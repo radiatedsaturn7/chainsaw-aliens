@@ -32,6 +32,7 @@ Object.assign(e.raceInput,{autoShift:true,analogThrottleActive:true,analogBrakeA
 const dt=Number(process.env.P2_DT||1/60);
 if(dt>8/120)throw Error('Update delta exceeds the player fixed-step catch-up budget');
 report.updateDt=dt;
+report.heapLimitMB=(await import('node:v8')).getHeapStatistics().heap_size_limit/1048576;
 report.aiCars=s.aiRuntime.map(a=>({id:a.id,carId:a.carId}));
 const maxFrames=Number(process.env.P2_FRAMES||Math.ceil(3000/dt));
 for(let frame=0;frame<maxFrames;frame++){
@@ -74,3 +75,5 @@ for(let km=0;km<Math.ceil(length/1000);km++){
 }
 Object.assign(report,{maxDistance,totals,checkpoint:s.trackState?.performanceCounters,ai:s.aiRuntime.map(a=>({id:a.id,distance:a.distance,speed:a.speedMps})),lastPhysicsCost:s.vehicleDynamicsRunner?.physicsCostAccounting?.getLatestFrame()});
 fs.writeFileSync(output,JSON.stringify(report));console.log(JSON.stringify({...report,frames:report.frames.length}));
+
+if (!report.complete) process.exitCode = 1;

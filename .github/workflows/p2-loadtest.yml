@@ -20,6 +20,7 @@ jobs:
         env:
           P2_REPORT: artifacts/p2loadtest/ci-lap-60hz.json
           P2_DT: '0.016666666666666666'
+          NODE_OPTIONS: --max-old-space-size=6144
       - uses: actions/upload-artifact@v4
         if: always()
         with:
