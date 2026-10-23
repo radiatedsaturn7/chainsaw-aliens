@@ -1,3 +1,4 @@
+import { buildRaceFencePlacements } from '../racing/RaceFences.js';
 import { chooseImage } from './MenuDesignerForms.js';
 import {pickModelBinding} from './ModelPicker.js';
 import {modelSprites} from '../model3d/ModelSprites.js';
@@ -435,6 +436,7 @@ export default class DoodadEditor {
       'zoom-fit': () => this.zoomFit(),
       'pick-model': async () => {try{const model=await pickModelBinding(this.doodad.model);if(model){this.doodad.model=model;this.status=`3D model: ${model.ref}`;}}catch(error){this.status=error.message;}},
       'clear-model': () => {this.doodad.model=null;this.status='Using 2D artwork';},
+      'fence-toggle': () => { this.doodad.isFence = !this.doodad.isFence; this.status = this.doodad.isFence ? 'Fence enabled · width sets repeat length · always solid' : 'Fence disabled'; },
       'pick-art': () => this.pickArt(),
       'import-item-art': () => this.importItemArtwork(),
       'doodad-item': () => this.configureMixTape(),
@@ -495,7 +497,7 @@ export default class DoodadEditor {
     const handlers = this.getDesktopActionHandlers();
     return [...(spec?.sections?.[rootId]?.actions || [])].map((id) => ({
       id,
-      label: spec?.actions?.[id]?.label || id,
+      label: id === 'fence-toggle' ? `Fence: ${this.doodad.isFence ? 'On' : 'Off'}` : spec?.actions?.[id]?.label || id,
       disabled: !handlers[id],
       onClick: handlers[id] || null
     }));
@@ -1231,6 +1233,17 @@ export default class DoodadEditor {
     const previewDoodad = normalizeRaceDoodadDocument(this.doodad);
     const routeLength = Math.max(1, Number(previewSource?.playtestSession?.routeLength || previewSource?.getRaceRouteLength?.() || 1) || 1);
     const baseDistance = Number(previewSource?.playtestSession?.distance || 0) + 28;
+    if (previewDoodad.isFence) {
+      const points = [];
+      for (let offset = 0; offset <= Math.min(180, routeLength * 0.6); offset += 4) {
+        const distance = (baseDistance + offset) % routeLength;
+        const pose = previewSource.getRaceWorldPoseAtDistance?.(distance, { routeLength, runtimeType: 'circuit' }) || { x: 0, z: distance, yaw: 0 };
+        const right = previewSource.getRaceRightVector?.(pose.yaw || 0) || { x: -1, z: 0 };
+        const lateral = Number(previewSource.selectedRace?.road?.width || 8) / 2 + 2;
+        points.push({ x: pose.x + right.x * lateral, z: pose.z + right.z * lateral });
+      }
+      return buildRaceFencePlacements(points, previewDoodad, { id: 'fence-preview' });
+    }
     const placements = [
       { offset: 24, lateral: -3.2 },
       { offset: 48, lateral: 3 },

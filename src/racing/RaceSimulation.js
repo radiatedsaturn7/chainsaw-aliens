@@ -576,9 +576,10 @@ export function createRaceStaticColliderWorld(editor, {
   }
   scenery.forEach((sprite) => {
     const doodad = editor.getRaceDoodadForScenery?.(sprite) || {};
+    if (sprite.state === 'removed') return;
     if (doodad.itemType === 'mix-tape' || doodad.itemType === 'item') return;
     const rules = [doodad.defaultRule, ...(doodad.rules || [])].filter(Boolean);
-    const permanentlySolid = sprite?.solid === true
+    const permanentlySolid = doodad.isFence === true || sprite?.solid === true
       || sprite?.collidable === true
       || (rules.length > 0 && rules.every((rule) => rule.behavior === 'collide'));
     if (!permanentlySolid || !sprite?.id) return;
@@ -591,16 +592,27 @@ export function createRaceStaticColliderWorld(editor, {
     const ground = editor.sampleRaceDoodadGroundPoint?.(
       Number(sprite.x || 0), Number(sprite.z || 0), sprite, doodad
     );
+    let bottomM = Number(ground?.elevation || 0) * RACE_THREE_ELEVATION_M;
+    let colliderHeightM = heightM;
+    if (doodad.isFence) {
+      const half = widthM / 2, yaw = Number(sprite.yaw) || 0;
+      const heights = [-1, 1].map(sign => Number(editor.sampleRaceDoodadGroundPoint?.(
+        Number(sprite.x || 0) + sign * Math.cos(yaw) * half,
+        Number(sprite.z || 0) - sign * Math.sin(yaw) * half, sprite, doodad
+      )?.elevation || 0) * RACE_THREE_ELEVATION_M);
+      bottomM = Math.min(bottomM, ...heights);
+      colliderHeightM = heightM + Math.max(...heights) - bottomM;
+    }
     definitions.push({
       id: `solid-scenery:${sprite.id}`,
       type: 'box',
       center: {
         x: Number(sprite.x || 0),
-        y: Number(ground?.elevation || 0) * RACE_THREE_ELEVATION_M + heightM * 0.5,
+        y: bottomM + colliderHeightM * 0.5,
         z: Number(sprite.z || 0)
       },
       orientation: quaternionFromEuler({ yaw: Number(sprite.yaw || 0) }),
-      size: { x: widthM, y: heightM, z: widthM },
+      size: { x: widthM + (doodad.isFence ? 0.04 : 0), y: colliderHeightM, z: doodad.isFence ? (Number(doodad.fenceThicknessM) || 0.3) : widthM },
       friction: 0.72,
       restitution: 0.08,
       source: `scenery:${sprite.id}`

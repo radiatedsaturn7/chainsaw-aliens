@@ -447,8 +447,8 @@ export const EDITOR_MENU_SPECS = {
         'ground-brush-strength-75',
         'ground-brush-strength-100'
       ]),
-      sprites: section('sprites', 'Sprites', ['move-sprite', 'rotate-sprite', 'sprite-select', 'race-item', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']),
-      settings: section('settings', 'Settings', ['race-radio', 'race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-sun', 'race-weather', 'race-road-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
+      sprites: section('sprites', 'Sprites', ['doodad-select', 'draw-fence', 'move-sprite', 'rotate-sprite', 'sprite-select', 'race-item', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']),
+      settings: section('settings', 'Settings', ['race-ground-texture', 'race-radio', 'race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-sun', 'race-weather', 'race-road-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
     }
   },
   model3d: {
@@ -575,7 +575,7 @@ export const EDITOR_MENU_SPECS = {
       file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
-      artwork: section('artwork', 'Artwork', ['pick-art','import-item-art','doodad-item','pick-model','clear-model']),
+      artwork: section('artwork', 'Artwork', ['fence-toggle', 'pick-art','import-item-art','doodad-item','pick-model','clear-model']),
       size: section('size', 'Size', ['width-down', 'width-up', 'height-down', 'height-up', 'ground-offset-down', 'ground-offset-up', 'weight-down', 'weight-up']),
       hitbox: section('hitbox', 'Hitbox', ['hitbox-width-down', 'hitbox-width-up', 'hitbox-height-down', 'hitbox-height-up']),
       collision: section('collision', 'Collision', ['collision-default-collide', 'collision-default-flatten', 'collision-default-fly-off', 'collision-threshold-1-collide', 'collision-threshold-1-flatten', 'collision-threshold-1-fly-off', 'collision-threshold-2-collide', 'collision-threshold-2-flatten', 'collision-threshold-2-fly-off']),

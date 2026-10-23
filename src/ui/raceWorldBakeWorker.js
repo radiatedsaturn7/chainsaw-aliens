@@ -256,7 +256,7 @@ export async function buildRaceTransferPackage(sourceRace = null, {
     structureMeshes: bake.structureMeshes || [],
     surfaceSampler: null,
     packedTerrain: null,
-    groundArtRef: String(tileMapStats?.dominantArtRef || ''),
+    groundArtRef: String(editor.selectedRace.groundPlaneArtRef || tileMapStats?.dominantArtRef || ''),
     validation: null
   };
   let raceDocument = null;

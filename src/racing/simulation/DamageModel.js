@@ -154,6 +154,9 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
       // render-frame scenery pass must not add a second velocity impulse.
       return;
     }
+    // Fence collision belongs to the continuous rigid-body boxes, not the
+    // legacy circular doodad trigger (which can flatten or push through it).
+    if (doodad.isFence) return;
     const rule = getDoodadRuleForSpeed(doodad, speedMph);
     const spriteRadius = Math.max(0.35, Number(doodad.hitboxWidthM ?? doodad.widthM ?? sprite.widthM ?? 1.4) * 0.5);
     let hit = null;
