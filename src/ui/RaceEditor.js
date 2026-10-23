@@ -3772,7 +3772,7 @@ export default class RaceEditor {
       const key = this.getRaceTileMapCellKey(coordinates.cellX, coordinates.cellY);
       if (!Object.prototype.hasOwnProperty.call(objectCells, key)) entries.push([key, cell]);
     });
-    entries.push(...Object.entries(objectCells));
+    for (const entry of Object.entries(objectCells)) entries.push(entry);
     return entries;
   }
 
@@ -33145,7 +33145,7 @@ export default class RaceEditor {
       const key = this.getRaceTileMapCellKey(coordinates.cellX, coordinates.cellY);
       if (!Object.prototype.hasOwnProperty.call(objectCells, key)) entries.push([key, cell]);
     });
-    entries.push(...Object.entries(objectCells));
+    for (const entry of Object.entries(objectCells)) entries.push(entry);
     const cells = entries
       .map(([key, cell]) => {
         const artRef = String(cell?.artRef || cell?.tileArtRef || '').trim();
