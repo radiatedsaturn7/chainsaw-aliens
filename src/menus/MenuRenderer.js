@@ -65,7 +65,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
       ctx.fillStyle=element.fill;ctx.fillRect(b.x+inset,b.y+inset,Math.max(0,b.w-2*inset)*progress,Math.max(0,b.h-2*inset));
       if(element.strokeWidth){ctx.strokeStyle=element.stroke;ctx.lineWidth=element.strokeWidth;ctx.strokeRect(b.x+inset,b.y+inset,b.w-2*inset,b.h-2*inset);}
     }
-    else if(element.type==='random-fact')drawCarDescription(ctx,b,loadingFact(element,parameters.loadingFactSeed,editing),fontFamily,element);
+    else if(element.type==='random-fact')drawCarDescription(ctx,b,loadingFact(element,parameters.loadingFactSeed,editing),fontFamily,element,{time,editing});
     else if(element.type==='shape'){
       ctx.beginPath();const inset=element.strokeWidth/2,x=b.x+inset,y=b.y+inset,w=Math.max(0,b.w-2*inset),h=Math.max(0,b.h-2*inset);
       if(element.shape==='ellipse')ctx.ellipse(x+w/2,y+h/2,w/2,h/2,0,0,Math.PI*2);
@@ -162,7 +162,7 @@ function drawCarComponent(ctx,b,e,car,resources,time,parameters,fontFamily='syst
 export function drawCarDescription(ctx,b,description,fontFamily='system-ui',element=null,{time=0,editing=false}={}){
   const text=String(description).split('\n').map(p=>p.trim().replace(/\s+/g,' ')).join('\n');
   const revealed=menuTypedText(element,text,time,editing).length;
-  let fontSize=Math.max(10,Math.min(22,b.w/36));
+  let fontSize=element?.type==='random-fact'?Math.max(10,element.fontSize*b.w/576):Math.max(10,Math.min(22,b.w/36));
   const width=Math.max(1,b.w-16),height=Math.max(1,b.h-8);
   ctx.textAlign='left';ctx.textBaseline='top';
   const wrap=()=>{

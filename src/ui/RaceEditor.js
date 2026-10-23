@@ -1,3 +1,4 @@
+import {fitMenuCanvas} from '../menus/MenuLayout.js';
 import {loadServerPreferenceAsync} from './serverPreferences.js';
 import {createLoadingMenuScreen} from '../menus/MenuLoadingScreen.js';
 import {normalizeMenuElement,normalizeMenuDocument,createMenuDocument} from '../menus/MenuDocument.js';
@@ -6187,10 +6188,10 @@ export default class RaceEditor {
       this.raceLoadingPresentation={document,screen,resources,carRef,parameters:flow?.parameters||{},seed:Math.random(),started:this.getNowMs()};
     }
     const view=this.raceLoadingPresentation;
-    const progress=clamp(Number(preparation?.progress||0),0,1);
+    const progress=view.progress=Math.max(view.progress||0,clamp(Number(preparation?.progress||0),0,1));
     const parameters={...view.parameters,carRef:view.carRef,loadingProgress:progress,loadingRace:preparation?.raceName||this.selectedRace?.name||'race',loadingFactSeed:view.seed};
     this.raceLoadingBounds={...bounds};
-    drawMenuScreen(ctx,bounds,view.document,view.screen,parameters,{resources:view.resources,time:Math.max(0,(this.getNowMs()-view.started)/1000)});
+    drawMenuScreen(ctx,fitMenuCanvas(bounds),view.document,view.screen,parameters,{resources:view.resources,time:Math.max(0,(this.getNowMs()-view.started)/1000)});
     // Cancellation stays available, contained in the display, throughout loading.
     const cancel={x:bounds.x+bounds.w/2-40,y:bounds.y+bounds.h-30,w:80,h:26};
     this.drawButton(ctx,cancel,'Cancel');
