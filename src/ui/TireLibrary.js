@@ -1,3 +1,4 @@
+import { hydrateServerStorage } from './serverStorage.js';
 import { RACE_TIRE_COMPOUNDS } from '../racing/raceData.js';
 import { createTireDefinition, normalizeTireDefinition, getTireArtRefs, TIRE_PROPERTY_FIELDS } from '../racing/raceTires.js';
 import { listProjectFiles, hydrateProjectFilePayload } from './projectFiles.js';
@@ -37,13 +38,17 @@ export function openTireLibrary({allowEditor=false,currentRef=''}={}) {
     const {dialog,el,close}=modal('Select Tire');let done=false,revision=0,prepared=null;
     const finish=result=>{if(done)return;done=true;revision++;close();resolve(result);};
     const label=el('label','Tire');const select=el('select','',label);select.setAttribute('aria-label','Tire');
-    const model=buildTireLibraryChoices(listProjectFiles('tires'),currentRef);
-    let group=null,groupName='';
-    for(const choice of model.choices){
-      if(groupName!==choice.group){group=el('optgroup','',select);group.label=choice.group;groupName=choice.group;}
-      const option=el('option',choice.label,group);option.value=choice.value;
-    }
-    select.value=model.value;
+    const populate = (ref) => {
+      const model=buildTireLibraryChoices(listProjectFiles('tires'),ref);
+      select.replaceChildren();
+      let group=null,groupName='';
+      for(const choice of model.choices){
+        if(groupName!==choice.group){group=el('optgroup','',select);group.label=choice.group;groupName=choice.group;}
+        const option=el('option',choice.label,group);option.value=choice.value;
+      }
+      select.value=model.value;
+    };
+    populate(currentRef);
     const status=el('p');status.setAttribute('role','status');
     const use=el('button','Apply');use.disabled=true;
     const prepare=async()=>{
@@ -66,6 +71,13 @@ export function openTireLibrary({allowEditor=false,currentRef=''}={}) {
     const cancel=el('button','Cancel');cancel.onclick=()=>finish(null);
     dialog.addEventListener('cancel',event=>{event.preventDefault();finish(null);});dialog.addEventListener('close',()=>finish(null));
     void prepare();
+    // Other editors/tabs may have saved tires since this session loaded its index.
+    void hydrateServerStorage({folder:'tires'}).then(() => {
+      if(done)return;
+      const previous=select.value;
+      populate(previous.startsWith('saved:')?previous.slice(6):previous);
+      if(select.value!==previous)void prepare();
+    }).catch(() => { /* Cached choices remain usable while offline. */ });
   });
 }
 export function openTireProperties(tire, onApply) {

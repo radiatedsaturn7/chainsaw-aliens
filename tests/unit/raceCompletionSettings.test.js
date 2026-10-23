@@ -14,7 +14,7 @@ test('On Race Complete saves a selected level and arrival tile', () => {
 
   editor.openRaceCompleteDialog();
   assert.equal(editor.raceSettingsDialog, 'complete');
-  assert.equal(editor.raceSettingsDialogDraft.type, 'return-to-origin');
+  assert.equal(editor.raceSettingsDialogDraft.type, 'menu');
 
   Object.assign(editor.raceSettingsDialogDraft, {
     type: 'level',

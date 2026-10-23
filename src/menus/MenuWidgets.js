@@ -1,5 +1,10 @@
 // Widget metadata is shared by the designer and runtime; bindings are plain data.
 export const MENU_WIDGETS = [
+  ['garage-dialogue','Garage dialogue','Wrapped dialogue for the highlighted tuning/upgrade option and garage events.'],
+  ['garage-tuner','Garage tuner','Eight tuning categories with part locks, slider drafts, and A/B apply/cancel controls.'],
+  ['race-description','Race description','Wrapped description of the highlighted race.'],
+  ['code-entry','Code entry','Uppercase letter picker: up/down changes letters, left/right selects a position, confirm submits.'],
+  ['world-map','World map','Selectable race nodes with completion and variable-based locks.'],
   ['car-showroom','Car showroom','Up to four cars, selected-car rotation, dimming and confirm action.'],
   ['garage-browser','Garage parts browser','Section → slot → upgrade, with purchase and install actions.'],
   ['shape','Shape','A rectangle, ellipse or triangle with fill and outline.'],
@@ -14,6 +19,7 @@ export const MENU_WIDGETS = [
   ['car-preview','Car rotator','Show a chosen car; spin automatically or bind its angle.'],
   ['property-display','Property display','Show a property of a car, actor, or custom item.'],
   ['asset-preview','Actor / item image','Show artwork from a selected actor or item.'],
+  ['car-description','Car description','Wrapped description of the highlighted car.'],
   ['car-stats','Car statistics','Power, torque, weight, drivetrain and class.'],
   ['power-curve','HP / torque graph','Plot the selected car’s engine curves.'],
   ['video','Video','Play a video URL inside the screen.']
@@ -39,9 +45,13 @@ export function propertyPaths(object,prefix='',depth=0){
 }
 export function widgetDefaults(type){
   const shared={type,label:widgetLabel(type),x:0.1,y:0.2,w:0.8,h:0.1};
-  if(['car-preview','car-stats','power-curve','asset-preview'].includes(type))Object.assign(shared,{h:0.3,w:0.4});
-  if(['car-preview','car-stats','power-curve'].includes(type))Object.assign(shared,{binding:'carRef',dataSource:'cars'});
-  if(type==='car-showroom')Object.assign(shared,{binding:'carRef',source:'cars',angle:135,duration:8,w:.9,h:.45});
+  if(['car-preview','car-description','car-stats','power-curve','asset-preview'].includes(type))Object.assign(shared,{h:0.3,w:0.4});
+  if(['car-preview','car-description','car-stats','power-curve'].includes(type))Object.assign(shared,{binding:'carRef',dataSource:'cars'});
+  if(type==='car-showroom')Object.assign(shared,{binding:'carRef',source:'cars',angle:135,duration:4,selectedScale:1.25,selectedZoomDuration:.18,selectionBorder:false,w:.9,h:.45});
+  if(type==='code-entry')Object.assign(shared,{binding:'cheatCode',codeLength:6,h:.4,selectionIndicator:'disabled',action:{type:'cheat-code',target:'$cheatCode'}});
+  if(type==='garage-tuner')Object.assign(shared,{binding:'carRef',x:.04,y:.04,w:.92,h:.92,selectionIndicator:'disabled'});
+  if(type==='race-description')Object.assign(shared,{binding:'raceRef',w:.66,h:.22});
+  if(type==='world-map')Object.assign(shared,{binding:'raceRef',w:.9,h:.6,action:{type:'race',target:'$raceRef'}});
   if(type==='garage-browser')Object.assign(shared,{binding:'partRef',w:.9,h:.3,action:{type:'garage-fit',target:'$partRef'}});
   if(type==='car-preview')Object.assign(shared,{animation:'spin',duration:8});
   if(type==='property-display')Object.assign(shared,{label:'Name',dataSource:'cars',binding:'carRef',property:'name'});

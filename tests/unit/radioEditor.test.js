@@ -151,3 +151,48 @@ for(const [width,height,mobile] of [[1280,800,false],[390,844,true],[844,390,tru
   assert.ok(b.x>=surface.x&&b.y>=surface.y&&b.x+b.w<=surface.x+surface.w&&b.y+b.h<=surface.y+surface.h,`${id} ${JSON.stringify({b,surface})}`);
  }
 });
+
+test('keep-awake follows preview playback, toggle, OS pause and editor exit',async()=>{
+ const {e}=await editor(),states=[];
+ e.playbackWakeLock={supported:true,status:'idle',setActive:active=>states.push(Boolean(active))};
+ e.preview.createAudio=()=>({currentTime:0,async play(){},pause(){},removeAttribute(){},load(){}});
+ assert.ok(e.getMenuItems('playback').some(i=>i.id==='radio-keep-awake'));
+ await e.togglePreview();assert.equal(states.at(-1),true);
+ await e.handleMenuAction('radio-keep-awake');assert.equal(states.at(-1),false);
+ await e.handleMenuAction('radio-keep-awake');assert.equal(states.at(-1),true);
+ e.preview.audio.onpause();assert.equal(e.preview.playing,false);assert.equal(states.at(-1),false);
+ await e.togglePreview();assert.equal(states.at(-1),true);
+ e.exitToMainMenu();assert.equal(states.at(-1),false);
+});
+
+for(const [mode,width,height,mobile,pad] of [['desktop',1280,800,false,false],['portrait',390,844,true,false],['landscape-touch',844,390,true,false],['gamepad',1280,800,true,true]])test(`${mode} top previous/play/next controls fit above seeking and playing rows follow track changes`,async()=>{
+ const {e,game}=await editor();game.deviceIsMobile=mobile;game.isMobile=mobile;game.viewport={width,height,isMobile:mobile};game.input.isGamepadConnected=()=>pad;
+ e.library.stations[0].trackIds=['one','two'];e.syncPreview();
+ e.preview.createAudio=()=>({currentTime:0,duration:180,async play(){},pause(){},removeAttribute(){},load(){}});
+ const text=[],outlines=[],noop=()=>{};
+ const ctx=new Proxy({fillText:t=>text.push(t),strokeRect(x,y,w,h){if(this.strokeStyle==='#58c994')outlines.push({x,y,w,h});},measureText:value=>({width:String(value).length*7}),createLinearGradient:()=>({addColorStop:noop}),createRadialGradient:()=>({addColorStop:noop})},{get:(o,k)=>k in o?o[k]:noop});
+ const render=()=>{text.length=0;outlines.length=0;e.draw(ctx,width,height);};
+ await e.togglePreview();render();
+ const previous=e.buttons.find(b=>b.id==='radio-previous'),next=e.buttons.find(b=>b.id==='radio-next'),play=e.buttons.find(b=>b.id==='radio-play');
+ assert.ok(previous.bounds.x+previous.bounds.w<play.bounds.x);
+ assert.ok(play.bounds.x+play.bounds.w<next.bounds.x);
+ for(const b of [previous,play,next]){
+  assert.ok(b.bounds.x>=e.radioBounds.x&&b.bounds.x+b.bounds.w<=e.radioBounds.x+e.radioBounds.w);
+  assert.ok(b.bounds.y+b.bounds.h<=e.timelineBounds.y);
+ }
+ assert.ok(text.some(t=>String(t).startsWith('▶ Playing · ✓ One')));
+ assert.ok(outlines.length>0);
+ next.onClick();await new Promise(resolve=>setImmediate(resolve));render();
+ assert.equal(e.preview.trackId,'two');assert.ok(text.some(t=>String(t).startsWith('▶ Playing · ✓ Two')));
+ e.preview.audio.currentTime=20;previous.onClick();await new Promise(resolve=>setImmediate(resolve));render();
+ assert.equal(e.preview.trackId,'one','previous selects the preceding song even after three seconds');
+ await e.togglePreview();render();assert.ok(!text.some(t=>String(t).startsWith('▶ Playing')));assert.equal(outlines.length,0);
+});
+
+test('auto-advance scrolls a long track list to the newly playing song',async()=>{
+ const {e}=await editor();e.library.tracks=Array.from({length:25},(_,i)=>({id:`song-${i}`,title:`Song ${i}`,src:'song.mp3'}));e.library.stations[0].trackIds=e.library.tracks.map(t=>t.id);e.trackId='song-20';e.syncPreview();
+ e.preview.createAudio=()=>({currentTime:0,async play(){},pause(){},removeAttribute(){},load(){}});
+ await e.togglePreview();assert.equal(e.menuScrollState['radio:tracks'],21);
+ e.preview.audio.onended();await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(e.preview.trackId,'song-21');assert.equal(e.menuScrollState['radio:tracks'],22);
+});

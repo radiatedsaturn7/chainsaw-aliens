@@ -335,6 +335,7 @@ export async function buildRaceTransferPackage(sourceRace = null, {
     terrainTransferables: [
       packedTerrain?.positions?.buffer,
       packedTerrain?.colors?.buffer,
+      packedTerrain?.textureColors?.buffer,
       packedTerrain?.uvs?.buffer
     ].filter(Boolean),
     raceDocument,
@@ -440,6 +441,7 @@ if (workerScope) workerScope.onmessage = async (event) => {
         transferPackage.terrainTransferables = [
           transferPackage.packedTerrain.positions?.buffer,
           transferPackage.packedTerrain.colors?.buffer,
+          transferPackage.packedTerrain.textureColors?.buffer,
           transferPackage.packedTerrain.uvs?.buffer
         ].filter(Boolean);
       }

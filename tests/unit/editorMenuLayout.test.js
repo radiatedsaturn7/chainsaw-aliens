@@ -1976,9 +1976,9 @@ test('shared file menu specs include the actions used by editor surfaces', () =>
   assert.deepEqual(getEditorMenuSection('sfx', 'edit').actions, ['undo', 'redo', 'copy', 'cut', 'paste', 'delete']);
   assert.deepEqual(getEditorMenuSection('cutscene', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('cutscene', 'edit').actions, ['undo', 'redo', 'copy', 'cut', 'paste', 'delete']);
-  assert.deepEqual(getEditorMenuSection('race', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'race-from-image', 'generate-random-race', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('race', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'race-scale', 'race-description', 'race-from-image', 'generate-random-race', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('race', 'edit').actions, ['undo', 'redo', 'copy-segment', 'paste-segment', 'delete-segment']);
-  assert.deepEqual(getEditorMenuSection('car', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'car-load-preset', 'exit-main']);
+  assert.deepEqual(getEditorMenuSection('car', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'car-load-preset', 'car-description', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('car', 'edit').actions, ['undo', 'redo']);
 
   const sharedEditBaseline = ['undo', 'redo'];
@@ -2026,12 +2026,12 @@ test('shared file menu specs include the actions used by editor surfaces', () =>
   assert.deepEqual(actorDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
 
   const raceDropdown = buildDesktopDropdownPlan('race', 'file');
-  assert.deepEqual(raceDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'race-from-image', 'generate-random-race', 'exit-main']);
+  assert.deepEqual(raceDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'race-scale', 'race-description', 'race-from-image', 'generate-random-race', 'exit-main']);
   const raceEditDropdown = buildDesktopDropdownPlan('race', 'edit');
   assert.deepEqual(raceEditDropdown.items.map((item) => item.id), ['undo', 'redo', 'copy-segment', 'paste-segment', 'delete-segment']);
 
   const carDropdown = buildDesktopDropdownPlan('car', 'file');
-  assert.deepEqual(carDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'car-load-preset', 'exit-main']);
+  assert.deepEqual(carDropdown.items.map((item) => item.id), ['new', 'save', 'save-as', 'open', 'export', 'import', 'car-load-preset', 'car-description', 'exit-main']);
   const carEditDropdown = buildDesktopDropdownPlan('car', 'edit');
   assert.deepEqual(carEditDropdown.items.map((item) => item.id), ['undo', 'redo']);
 });

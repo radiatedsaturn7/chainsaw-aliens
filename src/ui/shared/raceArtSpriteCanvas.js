@@ -1,7 +1,11 @@
+import { readCachedProjectFile } from '../serverStorage.js';
 import { hydrateProjectFilePayload, loadProjectFile } from '../projectFiles.js';
 import { getArtDocumentFrames, normalizeArtFramePixels, parseArtPixelRgba } from './artDocumentPixels.js';
 
 const pendingArtHydrations = new Map();
+// A rendered frame remains usable even when the memory-bounded parsed document
+// cache evicts its large source. Track source identity without parsing it again.
+const canvasSources = new WeakMap();
 
 export function hydrateRaceArtSpriteShared(artRef = '') {
   const clean = String(artRef || '').trim();
@@ -36,6 +40,19 @@ export function getRaceArtSpriteCanvasShared(artRef = '', {
     || null;
   if (prepared) return prepared;
   if (allowStorageLoad === false) return null;
+  const raw = cache ? readCachedProjectFile('art', clean) : null;
+  let sources = cache ? canvasSources.get(cache) : null;
+  const previous = sources?.get(clean);
+  if (raw && previous?.raw === raw) {
+    const index = previous.frameCount ? requestedFrameIndex % previous.frameCount : 0;
+    const key = `${clean}:${previous.savedAt}:frame:${index}`;
+    if (cache.has(key)) return cache.get(key);
+  }
+  if (previous && previous.raw !== raw) {
+    const prefix = `${clean}:${previous.savedAt}:frame:`;
+    for (const key of cache.keys()) if (key.startsWith(prefix)) cache.delete(key);
+    sources.delete(clean);
+  }
   const missStartMs = playtestSession && !racePreloadingArt ? getNowMs() : 0;
   const payload = loadProjectFile('art', clean);
   let data = payload?.data || payload;
@@ -50,6 +67,10 @@ export function getRaceArtSpriteCanvasShared(artRef = '', {
   data = source || data;
   const resolvedFrameIndex = rawFrames.length ? requestedFrameIndex % rawFrames.length : 0;
   const cacheKey = `${clean}:${Number(payload?.savedAt || 0)}:frame:${resolvedFrameIndex}`;
+  if (cache && raw) {
+    if (!sources) { sources = new Map(); canvasSources.set(cache, sources); }
+    sources.set(clean, { raw, savedAt: Number(payload?.savedAt || 0), frameCount: rawFrames.length });
+  }
   if (cache?.has?.(cacheKey)) return cache.get(cacheKey);
   const frame = rawFrames[resolvedFrameIndex] || rawFrames[0] || null;
   const pixels = normalizeArtFramePixels(frame, data) || normalizeArtFramePixels(data, data);

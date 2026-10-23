@@ -5,7 +5,7 @@
   "selectedCarId": "starter-rwd",
   "car": {
     "id": "starter-rwd",
-    "name": "2022 Subaru WRX",
+    "name": "CT-86",
     "class": "road",
     "art": {
       "body": null,
@@ -34,20 +34,22 @@
       },
       "interior": {
         "dashboard": {
-          "artRef": null,
+          "artRef": "ctinterior",
           "frameIndex": 0,
           "scaleX": 1,
           "scaleY": 1,
           "offsetX": 0,
-          "offsetY": 0
+          "offsetY": 0.35
         },
         "steeringWheel": {
-          "artRef": null,
+          "artRef": "steeringwheel",
           "frameIndex": 0,
-          "scaleX": 1,
-          "scaleY": 1,
-          "offsetX": 0,
-          "offsetY": 0
+          "scaleX": 1.6875,
+          "scaleY": 1.6875,
+          "offsetX": -0.42200520833333344,
+          "offsetY": 0.9000000000000002,
+          "centerX": 0.498046875,
+          "centerY": 0.5448717948717948
         }
       },
       "addOns": [],
@@ -411,12 +413,12 @@
       "engineProfile": "wrx-flat-four-cvt"
     },
     "setup": {
-      "defaultTireCompound": "offroad",
+      "defaultTireCompound": "tarmac",
       "tireCompoundByWheel": {
-        "fl": "offroad",
-        "fr": "offroad",
-        "rl": "offroad",
-        "rr": "offroad"
+        "fl": "tarmac",
+        "fr": "tarmac",
+        "rl": "tarmac",
+        "rr": "tarmac"
       },
       "tirePressurePsi": {
         "fl": 32,
@@ -430,28 +432,28 @@
         "wheelDiameterIn": 18
       },
       "tireDefinition": {
-        "ref": "Offroad",
+        "ref": "",
         "tire": {
           "kind": "race-tire",
           "schemaVersion": 2,
-          "name": "Offroad",
-          "baseCompound": "offroad",
+          "name": "Tarmac",
+          "baseCompound": "tarmac",
           "compound": {
-            "id": "offroad",
-            "label": "Offroad",
+            "id": "tarmac",
+            "label": "Tarmac",
             "surfaceGrip": {
-              "asphalt": 0.7,
-              "wet-asphalt": 0.68,
-              "dirt": 1,
-              "gravel": 1.08,
-              "mud": 1.02,
-              "wet-gravel": 1.04,
-              "snow": 0.66,
-              "slush": 0.76
+              "asphalt": 1.08,
+              "wet-asphalt": 0.9,
+              "dirt": 0.72,
+              "gravel": 0.64,
+              "mud": 0.42,
+              "wet-gravel": 0.49,
+              "snow": 0.24,
+              "slush": 0.32
             },
-            "wetEvacuationFactor": 1.16,
-            "treadDepthMm": 11,
-            "wearRate": 1.08
+            "wetEvacuationFactor": 0.82,
+            "treadDepthMm": 6.5,
+            "wearRate": 1
           },
           "size": {
             "widthMm": 245,
@@ -1135,6 +1137,7 @@
     },
     "__playtestId": "saved-car:RTG-001",
     "__playtestDocumentName": "RTG-001",
-    "category": "car"
+    "category": "car",
+    "description": "You dragged this thing out of an abandoned garage and insisted it was perfect. Robtergeist called it a deathtrap. Neither of you has admitted the other might be right."
   }
 }

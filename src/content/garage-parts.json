@@ -218,7 +218,8 @@
             "max": 40,
             "step": 0.5
           }
-        ]
+        ],
+        "forSale": false
       }
     },
     {

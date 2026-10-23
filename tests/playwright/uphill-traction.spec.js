@@ -11,6 +11,7 @@ test('saved WRX2 uphill restart downshifts through RaceEditor and keeps physical
   const g=window.__game;g.enterRaceEditor();const e=g.raceEditor;
   e.selectedRace.hazards=[];e.selectedRace.weather='clear';e.selectedRace.radioEnabled=false;
   e.selectedRace.competition={mode:'solo',aiDrivers:[],trafficEnabled:false};
+  e.selectedRace.road.network=null;
   e.selectedRace.road.nodes=[{x:0,y:0,elevation:0,role:'start'},{x:0,y:200,elevation:2.5,role:'finish'}];
   e.selectedRace.road.segments=[{length:200,curve:0,elevation:2.5,surface:'asphalt',turn:'smooth',hazardIds:[]}];
   e.selectedRace.road.width=12;e.selectedRace.road.tileMap=null;

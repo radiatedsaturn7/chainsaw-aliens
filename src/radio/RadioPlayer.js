@@ -1,3 +1,6 @@
+import {externalizeRadioMusic} from './RadioMusicAssets.js';
+import {hydrateProjectFilePayload} from '../ui/projectFiles.js';
+import {DEFAULT_MUSIC_VOLUME} from '../audio/musicVolume.js';
 import { normalizeRadioLibrary, normalizeRadioProgress, radioStationTracks } from './RadioLibrary.js';
 import { loadServerPreferenceAsync, saveServerPreference } from '../ui/serverPreferences.js';
 
@@ -5,15 +8,17 @@ export const RADIO_LIBRARY_KEY = 'rtg-radio-library';
 export const RADIO_PROGRESS_KEY = 'rtg-radio-progress';
 
 export class RadioPlayer {
-  constructor({ createAudio = () => new Audio(), load = loadServerPreferenceAsync, save = saveServerPreference, onChange = () => {}, getInventory = () => null, random = Math.random } = {}) {
-    this.random=random;this.getInventory=getInventory;this.createAudio = createAudio;this.loadPreference = load;this.savePreference = save;this.onChange = onChange;
+  constructor({ getVolume = null, createAudio = () => new Audio(), resolveMusic = async ref=>(await hydrateProjectFilePayload('music',ref))?.data, createMidi = null, load = loadServerPreferenceAsync, save = saveServerPreference, onChange = () => {}, getInventory = () => null, random = Math.random } = {}) {
+    this.manageMusicAssets=load===loadServerPreferenceAsync;this.resolveMusic=resolveMusic;this.createMidi=createMidi;this.getVolume=getVolume;this.random=random;this.getInventory=getInventory;this.createAudio = createAudio;this.loadPreference = load;this.savePreference = save;this.onChange = onChange;
     this.library = normalizeRadioLibrary();this.progress = normalizeRadioProgress();
     this.contextStationId = '';this.contextStationIds = null;this.contextEnabled = false;this.audio = null;this.trackId = '';this.playing = false;this.error = '';
-    this.repeatMode = 'all';this.generation = 0;this.saveQueue = Promise.resolve();this.volume = 0.8;this.gain=1;
+    this.repeatMode = 'all';this.generation = 0;this.saveQueue = Promise.resolve();this.volume = DEFAULT_MUSIC_VOLUME;this.gain=1;
   }
   async load() {
     if (!this.loading) this.loading = Promise.all([this.loadPreference(RADIO_LIBRARY_KEY, {}), this.loadPreference(RADIO_PROGRESS_KEY, {})]).then(async ([library, progress]) => {
-      this.library = normalizeRadioLibrary(library);this.progress = normalizeRadioProgress(progress);await this.getInventory()?.load();this.onChange();return this;
+      this.library = normalizeRadioLibrary(library);
+      if(this.manageMusicAssets){try{const migrated=await externalizeRadioMusic(this.library);if(migrated.changed){const saved=await this.savePreference(RADIO_LIBRARY_KEY,migrated.library);if(saved?.ok===false)throw Error('Could not save music references');this.library=migrated.library;}}catch(error){this.error=error.message;}}
+      this.progress = normalizeRadioProgress(progress);await this.getInventory()?.load();this.onChange();return this;
     });
     return this.loading;
   }
@@ -29,7 +34,8 @@ export class RadioPlayer {
     return pending;
   }
   async saveLibrary(value) {
-    await this.load();const library = normalizeRadioLibrary(value);
+    await this.load();let library = normalizeRadioLibrary(value);
+    if(this.manageMusicAssets)library=(await externalizeRadioMusic(library)).library;
     await this.persist(RADIO_LIBRARY_KEY, library);this.library = library;
     for(const track of library.tracks)if(track.initiallyUnlocked&&this.getInventory())await this.getInventory().grantRadioTrack(track.id);
     if (!this.tracks.some(track => track.id === this.trackId)) this.stop();this.onChange();
@@ -90,11 +96,22 @@ export class RadioPlayer {
   }
   async play(trackId = this.trackId, {position=null,gain=null}={}) {
     await this.load();if (!this.available) return false;
+    if(this.getVolume)this.setVolume(this.getVolume());
     const track = this.tracks.find(item => item.id === trackId) || this.randomTrack();
     if (!track) {this.stop();this.error='No unlocked, enabled tracks in this station';this.onChange();return false;}
     if (!this.audio || track.id !== this.trackId) {
-      this.stop();this.trackId = track.id;this.audio = this.createAudio();this.audio.preload = 'auto';this.audio.src = track.src;this.audio.volume = this.volume;
+      this.stop();const loading=++this.generation;
+      let song;try{song=track.musicRef?await this.resolveMusic(track.musicRef):null;if(track.musicRef&&!song)throw Error('Music not found: '+track.musicRef);
+      if(loading!==this.generation)return false;
+      const media=song&&song.kind!=='audio-music'?(this.createMidi?await this.createMidi(song):new (await import('../audio/MidiMedia.js')).MidiMedia(song,{engine:this.midiEngine})):this.createAudio();
+      if(loading!==this.generation){media.pause();return false;}
+      if(media.engine)this.midiEngine=media.engine;
+      this.trackId=track.id;this.audio=media;this.audio.preload='auto';this.audio.src=song?.src||track.src;this.audio.volume=this.volume;
+      }catch(error){if(loading===this.generation){this.error=error.message;this.onChange();}return false;}
       const audio = this.audio;
+      // Reflect interruption by the OS/browser as well as our own controls.
+      audio.onpause = () => {if(this.audio===audio&&this.playing&&!audio.ended&&audio.paused!==false){this.playing=false;this.onChange();}};
+      audio.onplaying = () => {if(this.audio===audio&&!this.playing&&audio.paused!==true){this.playing=true;this.onChange();}};
       audio.onended = () => {if (this.audio === audio) void this.advance();};
       audio.onerror = () => {if (this.audio === audio) {this.error = `Could not play ${track.title}`;this.pause();}};
     }
@@ -106,7 +123,7 @@ export class RadioPlayer {
   }
   pause() {this.generation++;this.audio?.pause();this.playing = false;this.onChange();}
   stop() {
-    this.pause();if (this.audio) {this.audio.onended = null;this.audio.onerror = null;this.audio.onloadedmetadata=null;this.audio.removeAttribute('src');this.audio.load();}
+    this.pause();if (this.audio) {this.audio.onended = null;this.audio.onerror = null;this.audio.onpause=null;this.audio.onplaying=null;this.audio.onloadedmetadata=null;this.audio.removeAttribute('src');this.audio.load();}
     this.audio = null;this.trackId = '';this.gain=1;
   }
   async advance() {

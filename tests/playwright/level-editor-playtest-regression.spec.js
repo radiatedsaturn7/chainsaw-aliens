@@ -511,6 +511,7 @@ test('Race and Car Editor browser starts avoid main-thread world prewarm', async
     const editor = window.__game.carEditor;
     const initialSession = editor.carEditorPreviewPlaytest?.session;
     const initialWorldBake = initialSession?.worldBake;
+    const initialDistance=Number(initialSession?.distance||0);
     const originalNow = editor.getNowMs.bind(editor);
     editor.selectedCar.tuning = {
       ...(editor.selectedCar.tuning || {}),
@@ -523,7 +524,7 @@ test('Race and Car Editor browser starts avoid main-thread world prewarm', async
     editor.getNowMs = originalNow;
     return {
       initialWasPending: window.__carPreviewInitialResult === null,
-      initialDistance: Number(initialSession?.distance || 0),
+      initialDistance,
       prewarms: window.__carPreviewPrewarms,
       running: editor.carEditorPreviewPlaytest?.session?.running === true,
       countdownRemainingMs:

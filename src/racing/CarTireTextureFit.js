@@ -1,3 +1,18 @@
+// Generated artwork can encode solid interiors at 250–254 alpha. Normalize
+// only this near-opaque band on an import copy; preserve edges and empty gaps.
+export function normalizeTireSheetOpacity(image) {
+  const data = new Uint8ClampedArray(image.data);
+  let solidifiedPixels = 0;
+  for (let i = 3; i < data.length; i += 4) {
+    if (data[i] >= 250 && data[i] < 255) {
+      data[i] = 255;
+      solidifiedPixels++;
+    }
+  }
+  // ImageData dimensions are prototype getters, not enumerable properties.
+  return { width: image.width, height: image.height, data, solidifiedPixels };
+}
+
 // Texture fitting deliberately requires full opacity. Cleanup for separating
 // sprites is independent: faint pixels must never become holes in a tire.
 const opaque = pixel => typeof pixel === 'string'

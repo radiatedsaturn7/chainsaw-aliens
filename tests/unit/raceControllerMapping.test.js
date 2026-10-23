@@ -127,3 +127,35 @@ test('simulated gamepad reaches the live steering rack promptly in both directio
   assert.ok(direction*editor.raceInput.steeringWheel>.85,`rack input ${editor.raceInput.steeringWheel}`);
  }
 });
+
+
+test('on-screen D-pad uses controller response and reverses promptly through the live rack',()=>{
+ for(const fps of [30,60,120]){
+  const editor=new RaceEditor({input:{getGamepadAxes:()=>({leftX:0})}});
+  editor.startPlaytest(editor.selectedCar.id);
+  Object.assign(editor.playtestSession,{launchLockMs:0,elapsedMs:3000,countdownRemainingMs:0,startupPhase:'running',startBackDistance:0});
+  const hit={playtestControl:'dpad',bounds:{x:0,y:0,w:100,h:100}};
+  editor.handleRacePlaytestPointerDown(hit,{id:1,x:95,y:50});
+  for(let i=0;i<fps*.2;i++)editor.updatePlaytest(1/fps);
+  assert.equal(editor.raceInput.controllerSteeringMode,'gamepad');
+  assert.ok(editor.raceInput.steeringWheel>.9);
+  editor.handleRaceDpadPoint(hit.bounds,{id:1,x:5,y:50});
+  for(let i=0;i<fps*.2;i++)editor.updatePlaytest(1/fps);
+  assert.ok(editor.raceInput.steeringWheel<-.85);
+  editor.raceInput.activeDpadPointerId=null;editor.raceInput.binarySteer=0;
+  for(let i=0;i<fps*.2;i++)editor.updatePlaytest(1/fps);
+  assert.ok(Math.abs(editor.raceInput.steeringWheel)<.04);
+ }
+});
+
+test('touch brake applies and releases fully in one frame with or without gamepad axes',()=>{
+ for(const axes of [undefined,{leftX:0,leftTrigger:0}])for(const fps of [30,60,120]){
+  const editor=new RaceEditor({input:{getGamepadAxes:()=>axes}});
+  editor.handleRacePlaytestPointerDown({playtestControl:'brake'},{id:2});
+  editor.applyRaceAnalogInput();editor.updateRacePedalAxes(1/fps);
+  assert.equal(editor.raceInput.brakeAxis,1);
+  editor.raceInput.activeBrakePointerId=null;
+  editor.applyRaceAnalogInput();editor.updateRacePedalAxes(1/fps);
+  assert.equal(editor.raceInput.brakeAxis,0);
+ }
+});

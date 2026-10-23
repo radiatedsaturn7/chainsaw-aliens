@@ -1,0 +1,33 @@
+{
+  "kind": "item",
+  "schemaVersion": 2,
+  "item": {
+    "id": "rain-tires",
+    "name": "Rain Tires",
+    "description": "Rain tires. Uses the saved Rain tire definition.",
+    "carPart": {
+      "slot": "tires",
+      "section": "Tires",
+      "tier": "sport",
+      "price": 650,
+      "forSale": true,
+      "unlockKey": "",
+      "compatibleCars": [],
+      "requires": [],
+      "modifiers": [],
+      "tuning": [],
+      "torqueCurve": [],
+      "tireRef": "Rain"
+    },
+    "artRef": "",
+    "model": null,
+    "widthM": 1,
+    "heightM": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "groundOffsetM": 0,
+    "rotate": false,
+    "persistent": true,
+    "effects": []
+  }
+}

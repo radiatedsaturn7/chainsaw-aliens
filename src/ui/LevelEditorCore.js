@@ -1,3 +1,4 @@
+import {editMenuDestination} from './shared/menuDestinationForm.js';
 import {modelAssets} from '../model3d/ModelAssets.js';
 import itemDefaults from '../content/items.json' with {type:'json'};
 import {normalizeItemDocument} from '../items/ItemDocument.js';
@@ -218,6 +219,8 @@ const TRIGGER_CONDITIONS = [
 const TRIGGER_ACTION_TYPES = [
   { id: 'load-level', label: 'Load Level' },
   { id: 'start-race', label: 'Start Race' },
+  { id: 'open-menu', label: 'Open Menu / World Map' },
+  { id: 'set-menu-variables', label: 'Set Menu Variables' },
   { id: 'kill-player', label: 'Kill Player' },
   { id: 'kill-enemy', label: 'Kill Enemy' },
   { id: 'spawn-enemy', label: 'Spawn Enemy' },
@@ -3082,6 +3085,10 @@ export default class Editor {
       case 'load-level':
         base.params = { levelName: 'Level 1', spawnX: null, spawnY: null, useFade: true };
         break;
+      case 'open-menu':
+        base.params={menuRef:'',menuScreen:'world-map',variables:{}};break;
+      case 'set-menu-variables':
+        base.params={variables:{}};break;
       case 'start-race':
         base.params = { raceName: '', carSelection: 'player-chooses', carRef: null };
         break;
@@ -10146,6 +10153,8 @@ export default class Editor {
           const numericAdvance = sectionButtonH + 4;
           if (draft.type === 'load-level') {
             local += sectionButtonH + 4 + sectionButtonH + 4 + sectionButtonH + 4;
+          } else if (['open-menu','set-menu-variables'].includes(draft.type)) {
+            local += sectionButtonH + 4;
           } else if (draft.type === 'start-race') {
             local += sectionButtonH + 4 + sectionButtonH + 4;
           } else if (draft.type === 'spawn-enemy') {
@@ -10363,6 +10372,9 @@ export default class Editor {
             y += sectionButtonH + 4;
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, `Fade out/in: ${draft.params.useFade === false ? 'Off' : 'On'}`, draft.params.useFade !== false, () => { draft.params.useFade = !(draft.params.useFade === false); }, 'Toggle fade to black before loading level');
             y += sectionButtonH + 4;
+          } else if (['open-menu','set-menu-variables'].includes(draft.type)) {
+            drawButton(panelX+12,y,panelWidth-24,sectionButtonH,'Configure menu / variables',false,async()=>{try{const result=await editMenuDestination(draft.params,{variablesOnly:draft.type==='set-menu-variables'});if(result)draft.params=result;}catch(error){this.showToast?.(error.message);}},'Configure progression');
+            y+=sectionButtonH+4;
           } else if (draft.type === 'start-race') {
             const selectedRace = draft.params.raceName || raceNames[0] || '';
             drawButton(panelX + 12, y, panelWidth - 24, sectionButtonH, selectedRace ? `Race: ${selectedRace}` : 'Race: none saved', false, () => {

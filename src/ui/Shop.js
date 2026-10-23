@@ -28,7 +28,7 @@ export default class Shop {
 
     ctx.font = '14px Courier New';
     ctx.textAlign = 'left';
-    ctx.fillText(`Credits: ${player.credits}`, 60, 100);
+    ctx.fillText(`Scrap: ${player.credits}`, 60, 100);
     ctx.fillText(`Loot: ${player.loot} (sell with SPACE on Sell line)`, 60, 120);
 
     const startY = 160;

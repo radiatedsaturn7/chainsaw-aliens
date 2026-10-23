@@ -1,3 +1,4 @@
+import {DEFAULT_MUSIC_VOLUME, DEFAULT_MASTER_VOLUME} from '../audio/musicVolume.js';
 import { VehicleSound } from '../audio/VehicleSound.js';
 import {
   GM_DRUM_BANK_LSB,
@@ -219,7 +220,7 @@ export default class AudioSystem {
   constructor() {
     this.ctx = null;
     this.master = null;
-    this.volume = 0.4;
+    this.volume = DEFAULT_MASTER_VOLUME;
     this.revOsc = null;
     this.revGain = null;
     this.revActive = false;
@@ -231,7 +232,7 @@ export default class AudioSystem {
     this.midiVoiceLimit = 48;
     this.midiPreviewVoiceLimit = 12;
     this.midiLatency = 0.04;
-    this.midiBusVolume = 0.9;
+    this.midiBusVolume = DEFAULT_MUSIC_VOLUME;
     this.midiBusHeadroom = 0.78;
     this.midiReverbEnabled = true;
     this.midiReverbLevel = 0.18;

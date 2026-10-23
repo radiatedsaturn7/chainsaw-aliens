@@ -152,7 +152,11 @@ async function requestJson(url, options = {}) {
       fetch(url, controller ? { ...fetchOptions, signal: controller.signal } : fetchOptions),
       timeoutPromise
     ]);
-    const payload = await response.json().catch(() => ({}));
+    const payload = await Promise.race([response.json(), timeoutPromise]).catch(error => {
+      // Static hosts can return an HTML 404 for the absent storage API.
+      if (!response.ok && error.name !== 'TimeoutError') { error.status = response.status; error.url = url; }
+      throw error;
+    });
     if (!response.ok || !payload?.ok) {
       const error = new Error(payload?.error || payload?.reason || `HTTP ${response.status}`);
       error.status = response.status;
@@ -257,7 +261,14 @@ async function fetchServerIndex(folder = null) {
 }
 
 async function fetchServerFile(folder, name) {
-  const payload = await requestJson(`/__storage/file?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}`);
+  let payload;
+  try {
+    payload = await requestJson(`/__storage/file?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}`);
+  } catch (error) {
+    // A valid API reporting a missing file is not a missing API endpoint.
+    if (error.status === 404 && error.message === 'File not found') return null;
+    throw error;
+  }
   updateCachedPayload(payload.file, 'server');
   return attachStorageSource(payload.file, 'server');
 }
@@ -379,12 +390,12 @@ export function deleteCachedProjectFile(folder, name) {
   if (serverIndex[folder]) delete serverIndex[folder][name];
 }
 
-export function readCachedProjectFile(folder, name) {
+export function readCachedProjectFile(folder, name, {allowSyncFetch = true} = {}) {
   if (!folder || !name) return null;
   const key = fileKey(folder, name);
   const cached = volatileFiles.get(key);
   if (cached) return cached;
-  if (!serverIndex?.[folder]?.[name]) return null;
+  if (!allowSyncFetch || !serverIndex?.[folder]?.[name]) return null;
   const payload = fetchServerFileSync(folder, name);
   return payload ? volatileFiles.get(key) || null : null;
 }

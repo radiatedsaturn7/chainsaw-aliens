@@ -1,3 +1,4 @@
+import {normalizeMenuVariables} from '../menus/MenuProgress.js';
 export const RACE_SURFACES = [
   { id: 'asphalt', label: 'Asphalt', grip: 1, colorA: '#315734', colorB: '#244629' },
   { id: 'dirt', label: 'Dirt', grip: 0.72, colorA: '#7a5633', colorB: '#5f4128' },
@@ -15,7 +16,7 @@ export const RACE_COMPETITION_MODES = ['solo', 'ai-race', 'combat-run', 'mixed']
 
 export const RACE_TIME_OF_DAY = ['day', 'night'];
 
-export const RACE_FINISH_BEHAVIOR_TYPES = ['return-to-origin', 'race', 'level'];
+export const RACE_FINISH_BEHAVIOR_TYPES = ['return-to-origin', 'race', 'level', 'menu'];
 
 export function normalizeRaceFinishBehavior(value = {}) {
   const source = value && typeof value === 'object' ? value : {};
@@ -24,6 +25,8 @@ export function normalizeRaceFinishBehavior(value = {}) {
     : 'return-to-origin';
   return {
     type,
+    ...(type==='menu'?{menuRef:typeof source.menuRef==='string'?source.menuRef.trim():'',menuScreen:typeof source.menuScreen==='string'?source.menuScreen.trim():'world-map'}:{}),
+    ...(Object.keys(normalizeMenuVariables(source.variables)).length?{variables:normalizeMenuVariables(source.variables)}:{}),
     targetLevel: type === 'level' && typeof source.targetLevel === 'string' && source.targetLevel.trim()
       ? source.targetLevel.trim()
       : null,
@@ -50,11 +53,11 @@ export const RACE_SNOW_CONDITIONS = [
 export const RACE_TIRE_COMPOUNDS = [
   {
     id: 'tarmac',
-    label: 'Tarmac',
-    surfaceGrip: { asphalt: 1.08, 'wet-asphalt': 0.9, dirt: 0.72, gravel: 0.64, mud: 0.42, 'wet-gravel': 0.49, snow: 0.24, slush: 0.32 },
-    wetEvacuationFactor: 0.82,
-    treadDepthMm: 6.5,
-    wearRate: 1
+    label: 'Tarmac Race',
+    surfaceGrip: { asphalt: 1.18, 'wet-asphalt': 0.72, dirt: 0.55, gravel: 0.46, mud: 0.30, 'wet-gravel': 0.35, snow: 0.16, slush: 0.22 },
+    wetEvacuationFactor: 0.65,
+    treadDepthMm: 4,
+    wearRate: 1.3
   },
   {
     id: 'rain',
@@ -66,7 +69,7 @@ export const RACE_TIRE_COMPOUNDS = [
   },
   {
     id: 'dirt',
-    label: 'Dirt',
+    label: 'Rally',
     surfaceGrip: { asphalt: 0.78, 'wet-asphalt': 0.75, dirt: 1.16, gravel: 1.2, mud: 1.0, 'wet-gravel': 1.08, snow: 0.58, slush: 0.66 },
     wetEvacuationFactor: 1.08,
     treadDepthMm: 10,
@@ -95,6 +98,16 @@ export const RACE_TIRE_COMPOUNDS = [
     wetEvacuationFactor: 1.12,
     treadDepthMm: 10.5,
     wearRate: 1.3
+  },
+  {
+    id: 'stock', label: 'Stock',
+    surfaceGrip: { asphalt: 0.90, 'wet-asphalt': 0.82, dirt: 0.70, gravel: 0.62, mud: 0.42, 'wet-gravel': 0.48, snow: 0.28, slush: 0.35 },
+    wetEvacuationFactor: 0.95, treadDepthMm: 7.5, wearRate: 0.8
+  },
+  {
+    id: 'street', label: 'Street',
+    surfaceGrip: { asphalt: 1.02, 'wet-asphalt': 0.92, dirt: 0.68, gravel: 0.60, mud: 0.40, 'wet-gravel': 0.46, snow: 0.25, slush: 0.32 },
+    wetEvacuationFactor: 1, treadDepthMm: 7, wearRate: 1
   }
 ];
 
@@ -779,7 +792,8 @@ export function createDefaultRace(id = 'test-loop') {
     timeOfDay: 'day',
     entryBehavior: 'return-to-origin',
     finishBehavior: {
-      type: 'return-to-origin',
+      type: 'menu',
+      menuScreen: 'world-map',
       targetLevel: null,
       targetRace: null,
       spawnX: null,
@@ -910,7 +924,8 @@ function createRaceTemplate({
     timeOfDay,
     entryBehavior: 'return-to-origin',
     finishBehavior: {
-      type: 'return-to-origin',
+      type: 'menu',
+      menuScreen: 'world-map',
       targetLevel: null,
       targetRace: null,
       spawnX: null,

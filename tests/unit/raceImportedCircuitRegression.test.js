@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {createDefaultRace} from '../../src/racing/raceData.js';
 import RaceEditor from '../../src/ui/RaceEditor.js';
 import * as THREE from '../../src/vendorBridge/three.js';
 import { roadEdgeOverlapsRoad } from '../../src/racing/RaceRoadEdgeClearance.js';
@@ -75,6 +76,7 @@ test('3D dirt patches share depth-tested material, cache geometry, and suppress 
 
 test('frame geometry reads avoid rebuilding signatures and refresh after authored edits or explicit invalidation', () => {
   const editor = makeEditor();
+  Object.assign(editor.selectedRace,createDefaultRace(editor.selectedRace.id));
   let reads = 0;
   const getNodes = editor.getRaceEditableNodes.bind(editor);
   editor.getRaceEditableNodes = (...args) => { reads++; return getNodes(...args); };

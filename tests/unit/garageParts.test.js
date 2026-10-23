@@ -3,8 +3,10 @@ import assert from 'node:assert/strict';
 import {normalizeItemDocument,serializeItemDocument} from '../../src/items/ItemDocument.js';
 import {buildGarageCar,normalizeCarPart} from '../../src/garage/CarPart.js';
 import {ItemSystem} from '../../src/items/ItemSystem.js';
+import {applyTireDefinition,createTireDefinition} from '../../src/racing/raceTires.js';
 import RaceEditor from '../../src/ui/RaceEditor.js';
 const stock=()=>({id:'custom',name:'Test car',setup:{tirePressurePsi:{fl:32,fr:32,rl:30,rr:30}},tuning:{weightKg:1400,gearFinalDrive:4,gearRatios:[3,2,1],springFront:0.5,engineCurve:{rpmMin:1000,rpmMax:6000,torquePoints:[{rpm:1000,torqueLbFt:100},{rpm:4000,torqueLbFt:200},{rpm:6000,torqueLbFt:150}]}},transmissions:{automatic:{weightKg:1500,gearFinalDrive:4.5,gearRatios:[3.5,2,1]}}});
+const stockBaseline=car=>{const result=structuredClone(car),pressure=result.setup?.tirePressurePsi;applyTireDefinition(result,createTireDefinition('stock'),'Stock');if(pressure)result.setup.tirePressurePsi=pressure;return result;};
 const part=(id,definition={})=>normalizeItemDocument({id,name:id,carPart:{slot:id,price:100,...definition}});
 function fixture({save=async()=>({ok:true}),load=async()=>({}),catalog=[]}={}){
  const game={player:{credits:1000},abilities:{}};
@@ -35,7 +37,7 @@ test('purchase, equip, tune, remove and reload preserve ownership and stock inde
  const reload=fixture({load:async key=>key==='rtg-item-progress'?saved:{}});await reload.garage.load();
  assert.equal(reload.garage.configuration('WRX').tune.torqueScale,1.2);
  await garage.remove('WRX','ecu');assert.equal(items.progress.bags.items.ecu,1);
- assert.deepEqual(await garage.build('WRX',stock()),stock());
+ assert.deepEqual(await garage.build('WRX',stock()),stockBaseline(stock()));
  await assert.rejects(garage.tune('WRX','torqueScale',1.1),/Install/);
 });
 test('locked parts, compatibility, dependencies, quantities and failed saves cannot corrupt ownership',async()=>{
@@ -126,4 +128,27 @@ test('suspension upgrades work on legacy saved cars whose SI profile is filled i
  const upgraded=createVehicleDynamicsConfigFromTuning(editor.getRaceCarTuning(modified));
  assert.ok(upgraded.suspensionSpringRateFrontNpm>baseline.suspensionSpringRateFrontNpm);
  assert.equal(car.tuning.physicalVehicleProfile,undefined);
+});
+
+test('stock cars tune all tire pressures without parts, persist and reset to stock',async()=>{
+ let saved;const {garage}=fixture({save:async(_key,value)=>{saved=structuredClone(value);return {ok:true};}});
+ const car=stock(),before=structuredClone(car),pressures={'pressure.fl':27,'pressure.fr':28,'pressure.rl':29,'pressure.rr':30};
+ await garage.setTune('Stock',pressures);
+ assert.deepEqual((await garage.build('Stock',car)).setup.tirePressurePsi,{fl:27,fr:28,rl:29,rr:30});
+ assert.deepEqual(car,before);
+ const reload=fixture({load:async key=>key==='rtg-item-progress'?saved:{}});await reload.garage.load();
+ assert.deepEqual((await reload.garage.build('Stock',car)).setup.tirePressurePsi,{fl:27,fr:28,rl:29,rr:30});
+ await assert.rejects(reload.garage.tune('Stock','torqueScale',1.2),/Install/);
+ await reload.garage.resetTune('Stock');assert.deepEqual(await reload.garage.build('Stock',car),stockBaseline(car));
+});
+
+test('every new car gets Stock tires without a purchase or mutating the authored car',async()=>{
+ const {garage,game}=fixture();const car=stock(),before=structuredClone(car);
+ for(const ref of ['car-a','car-b']){
+  const built=await garage.build(ref,car);
+  assert.equal(built.setup.defaultTireCompound,'stock');
+  assert.equal(built.setup.tireDefinition.ref,'Stock');
+  assert.deepEqual(built.setup.tirePressurePsi,car.setup.tirePressurePsi);
+ }
+ assert.deepEqual(car,before);assert.equal(game.player.credits,1000);
 });

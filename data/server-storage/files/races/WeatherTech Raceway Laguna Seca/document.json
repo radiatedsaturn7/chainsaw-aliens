@@ -1,5 +1,323 @@
 {
-  "__chainsawStorage": "compact-v1",
-  "encoding": "json-gzip-base64",
-  "data": "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"
+  "schemaVersion": 1,
+  "kind": "race-track",
+  "savedAt": 1783855400000,
+  "selectedRaceId": "weathertech-raceway",
+  "race": {
+    "id": "weathertech-raceway",
+    "name": "WeatherTech Raceway Laguna Seca",
+    "type": "circuit",
+    "laps": 3,
+    "weather": "clear",
+    "timeOfDay": "day",
+    "entryBehavior": "return-to-origin",
+    "finishBehavior": {
+      "type": "menu",
+      "targetLevel": null,
+      "targetRace": null,
+      "menuRef": "",
+      "menuScreen": "world-map"
+    },
+    "referenceNotes": [
+      "3.602 km paved circuit with 11 turns and about 180 ft of total elevation change.",
+      "The Corkscrew is modeled as the signature blind drop through Turns 8/8A.",
+      "All race segments use asphalt because the real circuit is paved."
+    ],
+    "referenceFacts": {
+      "referenceBasis": "WeatherTech Raceway Laguna Seca Grand Prix Circuit",
+      "sourceLengthKm": 3.602,
+      "surface": "paved",
+      "turns": 11,
+      "elevationChangeFt": 180,
+      "roadWidthM": 10,
+      "signatureSections": [
+        "Andretti Hairpin",
+        "Corkscrew",
+        "Rainey Curve"
+      ]
+    },
+    "road": {
+      "width": 10,
+      "selectedGroundTileId": "grass",
+      "groundTiles": [],
+      "tileMap": {
+        "cellSizeM": 5,
+        "defaultTileId": "grass",
+        "minElevation": -0.42,
+        "maxElevation": 0.42,
+        "cells": {}
+      },
+      "nodes": [
+        {
+          "x": 0,
+          "y": 0,
+          "elevation": 0.02,
+          "role": "start",
+          "locked": true
+        },
+        {
+          "x": 169,
+          "y": -537,
+          "elevation": 0.06
+        },
+        {
+          "x": 508,
+          "y": -621,
+          "elevation": 0.08
+        },
+        {
+          "x": 701,
+          "y": -418,
+          "elevation": 0.12
+        },
+        {
+          "x": 576,
+          "y": -113,
+          "elevation": 0.16
+        },
+        {
+          "x": 237,
+          "y": 68,
+          "elevation": 0.22
+        },
+        {
+          "x": -28,
+          "y": 237,
+          "elevation": 0.34
+        },
+        {
+          "x": -158,
+          "y": 407,
+          "elevation": 0.42
+        },
+        {
+          "x": -56,
+          "y": 531,
+          "elevation": 0.18
+        },
+        {
+          "x": 237,
+          "y": 441,
+          "elevation": 0.1
+        },
+        {
+          "x": 367,
+          "y": 181,
+          "elevation": 0.04
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "elevation": 0.02
+        }
+      ],
+      "segments": [
+        {
+          "length": 563,
+          "curve": 0.15,
+          "elevation": 0.06,
+          "surface": "asphalt",
+          "roadWidthM": 10,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 349,
+          "curve": 0.42,
+          "elevation": 0.08,
+          "surface": "asphalt",
+          "roadWidthM": 10,
+          "bumpiness": 0,
+          "codriver": "laguna-andretti",
+          "hazardIds": []
+        },
+        {
+          "length": 280,
+          "curve": 0.35,
+          "elevation": 0.12,
+          "surface": "asphalt",
+          "roadWidthM": 10,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 330,
+          "curve": -0.38,
+          "elevation": 0.16,
+          "surface": "asphalt",
+          "roadWidthM": 10,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 384,
+          "curve": -0.22,
+          "elevation": 0.22,
+          "surface": "asphalt",
+          "roadWidthM": 10,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 314,
+          "curve": 0.28,
+          "elevation": 0.34,
+          "surface": "asphalt",
+          "roadWidthM": 10,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 214,
+          "curve": -0.92,
+          "elevation": 0.42,
+          "surface": "asphalt",
+          "roadWidthM": 10,
+          "bumpiness": 0,
+          "turn": "square",
+          "codriver": "laguna-corkscrew",
+          "hazardIds": [
+            "laguna-corkscrew-drop"
+          ]
+        },
+        {
+          "length": 161,
+          "curve": 0.72,
+          "elevation": 0.18,
+          "surface": "asphalt",
+          "roadWidthM": 10,
+          "bumpiness": 0,
+          "codriver": "laguna-rainey",
+          "hazardIds": []
+        },
+        {
+          "length": 307,
+          "curve": 0.2,
+          "elevation": 0.1,
+          "surface": "asphalt",
+          "roadWidthM": 10,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 291,
+          "curve": -0.58,
+          "elevation": 0.04,
+          "surface": "asphalt",
+          "roadWidthM": 10,
+          "bumpiness": 0,
+          "codriver": "laguna-final-left",
+          "hazardIds": []
+        },
+        {
+          "length": 409,
+          "curve": -0.18,
+          "elevation": 0.02,
+          "surface": "asphalt",
+          "roadWidthM": 10,
+          "bumpiness": 0,
+          "hazardIds": []
+        }
+      ]
+    },
+    "competition": {
+      "mode": "ai-race",
+      "aiDrivers": [
+        {
+          "id": "rookie-ai",
+          "name": "Rookie AI",
+          "carId": "starter-rwd",
+          "aggression": 0.35,
+          "skill": 0.45,
+          "rubberBanding": 0.2,
+          "enabled": true
+        }
+      ],
+      "playerStartGrid": 1,
+      "trafficEnabled": false
+    },
+    "hazards": [
+      {
+        "id": "laguna-corkscrew-drop",
+        "type": "jump",
+        "label": "Corkscrew Drop",
+        "at": 2450,
+        "lane": 0,
+        "height": 0.32,
+        "landingForgiveness": 0.62
+      }
+    ],
+    "codriver": {
+      "enabled": true,
+      "voice": "default",
+      "calls": [
+        {
+          "id": "laguna-andretti",
+          "at": 620,
+          "text": "Andretti hairpin, double apex",
+          "severity": 3
+        },
+        {
+          "id": "laguna-corkscrew",
+          "at": 2320,
+          "text": "Corkscrew, blind drop left right",
+          "severity": 4
+        },
+        {
+          "id": "laguna-rainey",
+          "at": 2700,
+          "text": "Rainey curve downhill",
+          "severity": 3
+        },
+        {
+          "id": "laguna-final-left",
+          "at": 3250,
+          "text": "Final left onto straight",
+          "severity": 2
+        }
+      ]
+    },
+    "scenery": [
+      {
+        "type": "sign",
+        "at": 2100,
+        "side": "right"
+      },
+      {
+        "type": "tower",
+        "at": 2460,
+        "side": "left"
+      }
+    ],
+    "groundRenderer": "webgl-track",
+    "groundTextureBaseWorldM": 1.002,
+    "groundTextureFilterMode": "balanced",
+    "skyboxArtRef": "providence",
+    "surfaceArt": {
+      "boundary": "apron"
+    },
+    "margin": {
+      "enabled": true,
+      "shoulderEnabled": true,
+      "widthM": 0.22,
+      "shoulderWidthM": 12,
+      "collisionMode": "shoulder",
+      "artRef": "apron",
+      "marginMode": "on",
+      "shoulderMode": "hidden",
+      "collisionEdge": "shoulder",
+      "collisionEffect": "reset"
+    },
+    "renderDebug": {
+      "lightingEnabled": true,
+      "terrainEnabled": true,
+      "texturesEnabled": true,
+      "detailEnabled": false,
+      "terrainCullingEnabled": true,
+      "terrainLodEnabled": true,
+      "terrainBudgetEnabled": true,
+      "farRoadDecimationEnabled": true,
+      "rawTerrainPolygonsEnabled": false
+    }
+  }
 }

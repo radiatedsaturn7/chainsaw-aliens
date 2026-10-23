@@ -15,10 +15,10 @@ export function normalizeRaceRouteNetwork(source) {
   return {
     version: 1,
     nodes: (Array.isArray(source.nodes) ? source.nodes : []).map((node, index) => ({
-      ...point(node), id: String(node.id || `node-${index}`), name: String(node.name || '')
+      ...point(node), ...(['normal','y','t','cross'].includes(node.junctionKind)?{junctionKind:node.junctionKind}:{}), id: String(node.id || `node-${index}`), name: String(node.name || '')
     })),
     edges: (Array.isArray(source.edges) ? source.edges : []).map((edge, index) => ({
-      id: String(edge.id || `edge-${index}`), name: String(edge.name || ''),
+      ...(edge.junctionOwner?{junctionOwner:String(edge.junctionOwner)}:{}), id: String(edge.id || `edge-${index}`), name: String(edge.name || ''),
       from: String(edge.from || ''), to: String(edge.to || ''),
       points: (Array.isArray(edge.points) ? edge.points : []).map(point),
       widthM: clamp(finite(edge.widthM, 11), 3, 40),
@@ -79,6 +79,12 @@ export function findNetworkRoute(network, fromId = network.startNodeId, toId = n
       }
     }
   }
+  // Start-only editor tracks use the farthest reachable junction for sampling
+  // and spawn orientation, without creating a finish marker or race completion.
+  if (!toId) {
+    let longest=0;
+    for(const [id,cost] of costs)if(cost>longest){toId=id;longest=cost;}
+  }
   if (!costs.has(toId)) return null;
   const route = [];
   for (let id = toId; id !== fromId;) {
@@ -89,7 +95,7 @@ export function findNetworkRoute(network, fromId = network.startNodeId, toId = n
   return { steps: route, lengthM: costs.get(toId) };
 }
 
-export function validateRaceRouteNetwork(network) {
+export function validateRaceRouteNetwork(network, {requireFinish=true}={}) {
   const errors = [];
   if (!network) return ['Route network is missing.'];
   const nodes = new Set(), edges = new Set();
@@ -105,9 +111,12 @@ export function validateRaceRouteNetwork(network) {
     if (networkEdgeLength(network, edge) < 1) errors.push(`Route ${edge.id} is shorter than one metre.`);
   }
   if (!nodes.has(network.startNodeId)) errors.push('Choose a start junction.');
-  if (!nodes.has(network.finishNodeId)) errors.push('Choose a finish junction.');
+  if ((requireFinish || network.finishNodeId) && !nodes.has(network.finishNodeId)) errors.push('Choose a finish junction.');
   if (network.startNodeId === network.finishNodeId) errors.push('Start and finish must be distinct.');
-  if (!errors.length && !findNetworkRoute(network)) errors.push('Finish is not reachable from start.');
+  if (!errors.length) {
+    const route=findNetworkRoute(network);
+    if(!route?.steps.length)errors.push(network.finishNodeId?'Finish is not reachable from start.':'Connect a drivable road to the start junction.');
+  }
   return errors;
 }
 

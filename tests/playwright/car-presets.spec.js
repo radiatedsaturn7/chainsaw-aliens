@@ -8,7 +8,7 @@ for(const mobile of [false,true])test(`car presets load isolated drafts and save
   g.setViewport({width:innerWidth,height:innerHeight,scale:1,dpr:1,isMobile:mobile});
   g.enterCarEditor();g.setDisplayMode('color');
  },mobile);
- const before=await page.evaluate(async()=>{const {listProjectFiles}=await import('/src/ui/projectFiles.js');return listProjectFiles('cars').map(e=>e.name);});
+ const before=await page.evaluate(async()=>{const {listProjectFiles}=await import('/src/ui/projectFiles.js');return listProjectFiles('cars').map(e=>e.name).sort();});
  for(const id of ['awd','rwd','fwd']){
   await page.evaluate(()=>{
    const e=window.__game.carEditor;
@@ -24,7 +24,7 @@ for(const mobile of [false,true])test(`car presets load isolated drafts and save
   await expect.poll(()=>page.evaluate(()=>window.__game.carEditor.selectedCar.tuning.drivetrain)).toBe(id);
   expect(await page.evaluate(()=>window.__game.carEditor.currentCarDocumentName)).toBe('');
  }
- expect(await page.evaluate(async()=>{const {listProjectFiles}=await import('/src/ui/projectFiles.js');return listProjectFiles('cars').map(e=>e.name);})).toEqual(before);
+ expect(await page.evaluate(async()=>{const {listProjectFiles}=await import('/src/ui/projectFiles.js');return listProjectFiles('cars').map(e=>e.name).sort();})).toEqual(before);
  await page.evaluate(()=>window.__game.carEditor.handleMenuAction('save'));
  await expect(page.locator('.project-browser-title')).toHaveText('Save Cars as...');
  const name=`Preset FWD ${mobile?'portrait':'desktop'}`;

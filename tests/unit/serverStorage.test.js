@@ -18,6 +18,8 @@ import {
   getProjectFileSaveTimeoutMs,
   PROJECT_FOLDERS,
   resetProjectFilesForTests,
+  loadProjectFile,
+  listProjectFiles,
   saveProjectFile,
   saveProjectFileAndConfirm
 } from '../../src/ui/projectFiles.js';
@@ -674,4 +676,62 @@ test('deleted cars with retained history stay out of file lists and existence ch
   assert.equal(projectFileExists('cars','Kept'),true);
   assert.equal(listProjectFiles('cars',{includeDeleted:true}).filter(e=>e.deleted).length,2);
  } finally {globalThis.fetch=originalFetch;clearCachedProjectFilesForTests();}
+});
+
+
+test('render-time cache reads do not synchronously fetch indexed art', async () => {
+  clearCachedProjectFilesForTests();
+  const originalFetch=globalThis.fetch, originalXhr=globalThis.XMLHttpRequest;
+  let syncRequests=0;
+  globalThis.XMLHttpRequest=class {constructor(){syncRequests++;throw Error('Unexpected synchronous request');}};
+  globalThis.fetch=async()=>({ok:true,json:async()=>({ok:true,index:{art:{cold:{updatedAt:1,size:1}}}})});
+  try {
+    await hydrateServerStorage({folder:'art'});
+    assert.equal(readCachedProjectFile('art','cold',{allowSyncFetch:false}),null);
+    assert.equal(syncRequests,0);
+    const raw=JSON.stringify({data:{frames:[['#ffffff']]}});
+    upsertCachedProjectFile('art','cold',raw);
+    assert.equal(readCachedProjectFile('art','cold',{allowSyncFetch:false}),raw);
+  } finally {globalThis.fetch=originalFetch;globalThis.XMLHttpRequest=originalXhr;clearCachedProjectFilesForTests();}
+});
+
+
+test('listing already-loaded car payloads reuses parsed data for metadata',()=>{
+  resetProjectFilesForTests();
+  upsertCachedProjectFile('cars','Warm car',JSON.stringify({savedAt:12,data:{name:'Warm car'}}));
+  loadProjectFile('cars','Warm car');
+  const parse=JSON.parse;let parses=0;
+  JSON.parse=(...args)=>{parses++;return parse(...args);};
+  try {for(let i=0;i<60;i++)listProjectFiles('cars');assert.equal(parses,0);}
+  finally {JSON.parse=parse;resetProjectFilesForTests();}
+});
+
+
+test('missing project files keep the live API and do not hydrate static assets',async()=>{
+ clearCachedProjectFilesForTests();const original=globalThis.fetch,calls=[];
+ globalThis.fetch=async url=>{calls.push(url);if(url.includes('name=missing'))return {ok:false,status:404,json:async()=>({ok:false,error:'File not found'})};return {ok:true,json:async()=>({ok:true,file:{folder:'music',name:'present',data:{kind:'audio-music'}}})};};
+ try {
+  assert.equal(await hydrateProjectFile('music','missing'),null);
+  assert.equal((await hydrateProjectFile('music','present')).data.kind,'audio-music');
+  assert.deepEqual(calls,['/__storage/file?folder=music&name=missing','/__storage/file?folder=music&name=present']);
+ }finally{globalThis.fetch=original;clearCachedProjectFilesForTests();}
+});
+
+
+test('storage timeout includes reading the response body after HTTP headers',async()=>{
+ const original=globalThis.fetch;
+ globalThis.fetch=async()=>({ok:true,status:200,json:()=>new Promise(()=>{})});
+ try {
+  const result=await saveServerFile('art','slow-body',{}, {timeoutMs:5});
+  assert.equal(result.persisted,false);
+  assert.match(result.reason,/timed out/i);
+ }finally{globalThis.fetch=original;clearCachedProjectFilesForTests();}
+});
+
+
+test('HTML 404 responses still identify a static host without a storage API',async()=>{
+ const original=globalThis.fetch;
+ globalThis.fetch=async()=>({ok:false,status:404,json:async()=>{throw new SyntaxError('Unexpected token <');}});
+ try {const result=await saveServerFile('art','static-host',{});assert.equal(result.persisted,false);assert.match(result.reason,/not accepting project file saves/);}
+ finally{globalThis.fetch=original;clearCachedProjectFilesForTests();}
 });

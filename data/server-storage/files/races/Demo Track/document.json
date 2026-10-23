@@ -1,0 +1,6880 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-track",
+  "selectedRaceId": "demo-track",
+  "race": {
+    "id": "demo-track",
+    "name": "Demo Track",
+    "type": "destination",
+    "laps": 1,
+    "weather": "clear",
+    "timeOfDay": "day",
+    "entryBehavior": "return-to-origin",
+    "finishBehavior": {
+      "type": "menu",
+      "menuScreen": "world-map",
+      "targetLevel": null,
+      "targetRace": null,
+      "spawnX": null,
+      "spawnY": null
+    },
+    "road": {
+      "laneCount": 1,
+      "laneWidthM": 3.6,
+      "width": 3.6,
+      "selectedGroundTileId": "grass",
+      "groundTiles": [],
+      "tileMap": {
+        "cellSizeM": 5,
+        "defaultTileId": "grass",
+        "minElevation": -0.42,
+        "maxElevation": 0.42,
+        "cells": {
+          "-4,89": {
+            "tileId": "grass",
+            "elevation": 0.0009927824386329854
+          },
+          "-3,89": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710831
+          },
+          "-2,89": {
+            "tileId": "grass",
+            "elevation": 0.0019592680029747616
+          },
+          "-1,89": {
+            "tileId": "grass",
+            "elevation": 0.002260718078775869
+          },
+          "0,89": {
+            "tileId": "grass",
+            "elevation": 0.002366863905325444
+          },
+          "1,89": {
+            "tileId": "grass",
+            "elevation": 0.002260718078775869
+          },
+          "2,89": {
+            "tileId": "grass",
+            "elevation": 0.0019592680029747616
+          },
+          "3,89": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710831
+          },
+          "4,89": {
+            "tileId": "grass",
+            "elevation": 0.0009927824386329854
+          },
+          "-6,90": {
+            "tileId": "grass",
+            "elevation": 0.0010594683242866152
+          },
+          "-5,90": {
+            "tileId": "grass",
+            "elevation": 0.001959268002974758
+          },
+          "-4,90": {
+            "tileId": "grass",
+            "elevation": 0.0029416745733762024
+          },
+          "-3,90": {
+            "tileId": "grass",
+            "elevation": 0.0038769412830329513
+          },
+          "-2,90": {
+            "tileId": "grass",
+            "elevation": 0.00464555342791431
+          },
+          "-1,90": {
+            "tileId": "grass",
+            "elevation": 0.005149842515299913
+          },
+          "0,90": {
+            "tileId": "grass",
+            "elevation": 0.005325443786982246
+          },
+          "1,90": {
+            "tileId": "grass",
+            "elevation": 0.005149842515299913
+          },
+          "2,90": {
+            "tileId": "grass",
+            "elevation": 0.00464555342791431
+          },
+          "3,90": {
+            "tileId": "grass",
+            "elevation": 0.0038769412830329513
+          },
+          "4,90": {
+            "tileId": "grass",
+            "elevation": 0.0029416745733762024
+          },
+          "5,90": {
+            "tileId": "grass",
+            "elevation": 0.001959268002974758
+          },
+          "6,90": {
+            "tileId": "grass",
+            "elevation": 0.0010594683242866152
+          },
+          "-7,91": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710805
+          },
+          "-6,91": {
+            "tileId": "grass",
+            "elevation": 0.0028207103632004963
+          },
+          "-5,91": {
+            "tileId": "grass",
+            "elevation": 0.004327583629785793
+          },
+          "-4,91": {
+            "tileId": "grass",
+            "elevation": 0.0058755604457404005
+          },
+          "-3,91": {
+            "tileId": "grass",
+            "elevation": 0.00730316124666651
+          },
+          "-2,91": {
+            "tileId": "grass",
+            "elevation": 0.008456712491352025
+          },
+          "-1,91": {
+            "tileId": "grass",
+            "elevation": 0.009207092549365185
+          },
+          "0,91": {
+            "tileId": "grass",
+            "elevation": 0.009467455621301775
+          },
+          "1,91": {
+            "tileId": "grass",
+            "elevation": 0.009207092549365185
+          },
+          "2,91": {
+            "tileId": "grass",
+            "elevation": 0.008456712491352025
+          },
+          "3,91": {
+            "tileId": "grass",
+            "elevation": 0.00730316124666651
+          },
+          "4,91": {
+            "tileId": "grass",
+            "elevation": 0.0058755604457404005
+          },
+          "5,91": {
+            "tileId": "grass",
+            "elevation": 0.004327583629785793
+          },
+          "6,91": {
+            "tileId": "grass",
+            "elevation": 0.0028207103632004963
+          },
+          "7,91": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710805
+          },
+          "-8,92": {
+            "tileId": "grass",
+            "elevation": 0.0016825911398794253
+          },
+          "-7,92": {
+            "tileId": "grass",
+            "elevation": 0.0033232005141414847
+          },
+          "-6,92": {
+            "tileId": "grass",
+            "elevation": 0.005325443786982246
+          },
+          "-5,92": {
+            "tileId": "grass",
+            "elevation": 0.007524550631081841
+          },
+          "-4,92": {
+            "tileId": "grass",
+            "elevation": 0.009733094875752584
+          },
+          "-3,92": {
+            "tileId": "grass",
+            "elevation": 0.011749054805765796
+          },
+          "-2,92": {
+            "tileId": "grass",
+            "elevation": 0.013371897909989139
+          },
+          "-1,92": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "0,92": {
+            "tileId": "grass",
+            "elevation": 0.014792899408284021
+          },
+          "1,92": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "2,92": {
+            "tileId": "grass",
+            "elevation": 0.013371897909989139
+          },
+          "3,92": {
+            "tileId": "grass",
+            "elevation": 0.011749054805765796
+          },
+          "4,92": {
+            "tileId": "grass",
+            "elevation": 0.009733094875752584
+          },
+          "5,92": {
+            "tileId": "grass",
+            "elevation": 0.007524550631081841
+          },
+          "6,92": {
+            "tileId": "grass",
+            "elevation": 0.005325443786982246
+          },
+          "7,92": {
+            "tileId": "grass",
+            "elevation": 0.0033232005141414847
+          },
+          "8,92": {
+            "tileId": "grass",
+            "elevation": 0.0016825911398794253
+          },
+          "-9,93": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710805
+          },
+          "-8,93": {
+            "tileId": "grass",
+            "elevation": 0.0033232005141414847
+          },
+          "-7,93": {
+            "tileId": "grass",
+            "elevation": 0.005688243578755441
+          },
+          "-6,93": {
+            "tileId": "grass",
+            "elevation": 0.00845671249135203
+          },
+          "-5,93": {
+            "tileId": "grass",
+            "elevation": 0.011443516601711064
+          },
+          "-4,93": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "-3,93": {
+            "tileId": "grass",
+            "elevation": 0.017153786537004955
+          },
+          "-2,93": {
+            "tileId": "grass",
+            "elevation": 0.019359256141246468
+          },
+          "-1,93": {
+            "tileId": "grass",
+            "elevation": 0.020800140172483803
+          },
+          "0,93": {
+            "tileId": "grass",
+            "elevation": 0.021301775147928997
+          },
+          "1,93": {
+            "tileId": "grass",
+            "elevation": 0.020800140172483803
+          },
+          "2,93": {
+            "tileId": "grass",
+            "elevation": 0.019359256141246468
+          },
+          "3,93": {
+            "tileId": "grass",
+            "elevation": 0.017153786537004955
+          },
+          "4,93": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "5,93": {
+            "tileId": "grass",
+            "elevation": 0.011443516601711064
+          },
+          "6,93": {
+            "tileId": "grass",
+            "elevation": 0.00845671249135203
+          },
+          "7,93": {
+            "tileId": "grass",
+            "elevation": 0.005688243578755441
+          },
+          "8,93": {
+            "tileId": "grass",
+            "elevation": 0.0033232005141414847
+          },
+          "9,93": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710805
+          },
+          "-10,94": {
+            "tileId": "grass",
+            "elevation": 0.0010594683242866152
+          },
+          "-9,94": {
+            "tileId": "grass",
+            "elevation": 0.0028207103632004963
+          },
+          "-8,94": {
+            "tileId": "grass",
+            "elevation": 0.005325443786982246
+          },
+          "-7,94": {
+            "tileId": "grass",
+            "elevation": 0.00845671249135203
+          },
+          "-6,94": {
+            "tileId": "grass",
+            "elevation": 0.012060759922956904
+          },
+          "-5,94": {
+            "tileId": "grass",
+            "elevation": 0.015936987234572174
+          },
+          "-4,94": {
+            "tileId": "grass",
+            "elevation": 0.01982919152418494
+          },
+          "-3,94": {
+            "tileId": "grass",
+            "elevation": 0.023424081511844014
+          },
+          "-2,94": {
+            "tileId": "grass",
+            "elevation": 0.026367787971150455
+          },
+          "-1,94": {
+            "tileId": "grass",
+            "elevation": 0.028312529119672362
+          },
+          "0,94": {
+            "tileId": "grass",
+            "elevation": 0.028994082840236687
+          },
+          "1,94": {
+            "tileId": "grass",
+            "elevation": 0.028312529119672362
+          },
+          "2,94": {
+            "tileId": "grass",
+            "elevation": 0.026367787971150455
+          },
+          "3,94": {
+            "tileId": "grass",
+            "elevation": 0.023424081511844014
+          },
+          "4,94": {
+            "tileId": "grass",
+            "elevation": 0.01982919152418494
+          },
+          "5,94": {
+            "tileId": "grass",
+            "elevation": 0.015936987234572174
+          },
+          "6,94": {
+            "tileId": "grass",
+            "elevation": 0.012060759922956904
+          },
+          "7,94": {
+            "tileId": "grass",
+            "elevation": 0.00845671249135203
+          },
+          "8,94": {
+            "tileId": "grass",
+            "elevation": 0.005325443786982246
+          },
+          "9,94": {
+            "tileId": "grass",
+            "elevation": 0.0028207103632004963
+          },
+          "10,94": {
+            "tileId": "grass",
+            "elevation": 0.0010594683242866152
+          },
+          "-10,95": {
+            "tileId": "grass",
+            "elevation": 0.001959268002974758
+          },
+          "-9,95": {
+            "tileId": "grass",
+            "elevation": 0.004327583629785793
+          },
+          "-8,95": {
+            "tileId": "grass",
+            "elevation": 0.007524550631081841
+          },
+          "-7,95": {
+            "tileId": "grass",
+            "elevation": 0.011443516601711064
+          },
+          "-6,95": {
+            "tileId": "grass",
+            "elevation": 0.015936987234572174
+          },
+          "-5,95": {
+            "tileId": "grass",
+            "elevation": 0.020800140172483803
+          },
+          "-4,95": {
+            "tileId": "grass",
+            "elevation": 0.025750751376772744
+          },
+          "-3,95": {
+            "tileId": "grass",
+            "elevation": 0.030411390966877037
+          },
+          "-2,95": {
+            "tileId": "grass",
+            "elevation": 0.03431107397307862
+          },
+          "-1,95": {
+            "tileId": "grass",
+            "elevation": 0.036938161329341766
+          },
+          "0,95": {
+            "tileId": "grass",
+            "elevation": 0.0378698224852071
+          },
+          "1,95": {
+            "tileId": "grass",
+            "elevation": 0.036938161329341766
+          },
+          "2,95": {
+            "tileId": "grass",
+            "elevation": 0.03431107397307862
+          },
+          "3,95": {
+            "tileId": "grass",
+            "elevation": 0.030411390966877037
+          },
+          "4,95": {
+            "tileId": "grass",
+            "elevation": 0.025750751376772744
+          },
+          "5,95": {
+            "tileId": "grass",
+            "elevation": 0.020800140172483803
+          },
+          "6,95": {
+            "tileId": "grass",
+            "elevation": 0.015936987234572174
+          },
+          "7,95": {
+            "tileId": "grass",
+            "elevation": 0.011443516601711064
+          },
+          "8,95": {
+            "tileId": "grass",
+            "elevation": 0.007524550631081841
+          },
+          "9,95": {
+            "tileId": "grass",
+            "elevation": 0.004327583629785793
+          },
+          "10,95": {
+            "tileId": "grass",
+            "elevation": 0.001959268002974758
+          },
+          "-11,96": {
+            "tileId": "grass",
+            "elevation": 0.0009927824386329854
+          },
+          "-10,96": {
+            "tileId": "grass",
+            "elevation": 0.0029416745733762024
+          },
+          "-9,96": {
+            "tileId": "grass",
+            "elevation": 0.0058755604457404005
+          },
+          "-8,96": {
+            "tileId": "grass",
+            "elevation": 0.009733094875752584
+          },
+          "-7,96": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "-6,96": {
+            "tileId": "grass",
+            "elevation": 0.01982919152418494
+          },
+          "-5,96": {
+            "tileId": "grass",
+            "elevation": 0.025750751376772744
+          },
+          "-4,96": {
+            "tileId": "grass",
+            "elevation": 0.03190638432733616
+          },
+          "-3,96": {
+            "tileId": "grass",
+            "elevation": 0.0378698224852071
+          },
+          "-2,96": {
+            "tileId": "grass",
+            "elevation": 0.04303222791124906
+          },
+          "-1,96": {
+            "tileId": "grass",
+            "elevation": 0.04662677735736143
+          },
+          "0,96": {
+            "tileId": "grass",
+            "elevation": 0.04792899408284023
+          },
+          "1,96": {
+            "tileId": "grass",
+            "elevation": 0.04662677735736143
+          },
+          "2,96": {
+            "tileId": "grass",
+            "elevation": 0.04303222791124906
+          },
+          "3,96": {
+            "tileId": "grass",
+            "elevation": 0.0378698224852071
+          },
+          "4,96": {
+            "tileId": "grass",
+            "elevation": 0.03190638432733616
+          },
+          "5,96": {
+            "tileId": "grass",
+            "elevation": 0.025750751376772744
+          },
+          "6,96": {
+            "tileId": "grass",
+            "elevation": 0.01982919152418494
+          },
+          "7,96": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "8,96": {
+            "tileId": "grass",
+            "elevation": 0.009733094875752584
+          },
+          "9,96": {
+            "tileId": "grass",
+            "elevation": 0.0058755604457404005
+          },
+          "10,96": {
+            "tileId": "grass",
+            "elevation": 0.0029416745733762024
+          },
+          "11,96": {
+            "tileId": "grass",
+            "elevation": 0.0009927824386329854
+          },
+          "-11,97": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710831
+          },
+          "-10,97": {
+            "tileId": "grass",
+            "elevation": 0.0038769412830329513
+          },
+          "-9,97": {
+            "tileId": "grass",
+            "elevation": 0.00730316124666651
+          },
+          "-8,97": {
+            "tileId": "grass",
+            "elevation": 0.011749054805765796
+          },
+          "-7,97": {
+            "tileId": "grass",
+            "elevation": 0.017153786537004955
+          },
+          "-6,97": {
+            "tileId": "grass",
+            "elevation": 0.023424081511844014
+          },
+          "-5,97": {
+            "tileId": "grass",
+            "elevation": 0.030411390966877037
+          },
+          "-4,97": {
+            "tileId": "grass",
+            "elevation": 0.0378698224852071
+          },
+          "-3,97": {
+            "tileId": "grass",
+            "elevation": 0.04537949238751396
+          },
+          "-2,97": {
+            "tileId": "grass",
+            "elevation": 0.05222228806978479
+          },
+          "-1,97": {
+            "tileId": "grass",
+            "elevation": 0.05726673422226161
+          },
+          "0,97": {
+            "tileId": "grass",
+            "elevation": 0.059171597633136085
+          },
+          "1,97": {
+            "tileId": "grass",
+            "elevation": 0.05726673422226161
+          },
+          "2,97": {
+            "tileId": "grass",
+            "elevation": 0.05222228806978479
+          },
+          "3,97": {
+            "tileId": "grass",
+            "elevation": 0.04537949238751396
+          },
+          "4,97": {
+            "tileId": "grass",
+            "elevation": 0.0378698224852071
+          },
+          "5,97": {
+            "tileId": "grass",
+            "elevation": 0.030411390966877037
+          },
+          "6,97": {
+            "tileId": "grass",
+            "elevation": 0.023424081511844014
+          },
+          "7,97": {
+            "tileId": "grass",
+            "elevation": 0.017153786537004955
+          },
+          "8,97": {
+            "tileId": "grass",
+            "elevation": 0.011749054805765796
+          },
+          "9,97": {
+            "tileId": "grass",
+            "elevation": 0.00730316124666651
+          },
+          "10,97": {
+            "tileId": "grass",
+            "elevation": 0.0038769412830329513
+          },
+          "11,97": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710831
+          },
+          "-11,98": {
+            "tileId": "grass",
+            "elevation": 0.0019592680029747616
+          },
+          "-10,98": {
+            "tileId": "grass",
+            "elevation": 0.00464555342791431
+          },
+          "-9,98": {
+            "tileId": "grass",
+            "elevation": 0.008456712491352025
+          },
+          "-8,98": {
+            "tileId": "grass",
+            "elevation": 0.013371897909989139
+          },
+          "-7,98": {
+            "tileId": "grass",
+            "elevation": 0.019359256141246468
+          },
+          "-6,98": {
+            "tileId": "grass",
+            "elevation": 0.026367787971150455
+          },
+          "-5,98": {
+            "tileId": "grass",
+            "elevation": 0.03431107397307862
+          },
+          "-4,98": {
+            "tileId": "grass",
+            "elevation": 0.04303222791124906
+          },
+          "-3,98": {
+            "tileId": "grass",
+            "elevation": 0.05222228806978479
+          },
+          "-2,98": {
+            "tileId": "grass",
+            "elevation": 0.06121946435301719
+          },
+          "-1,98": {
+            "tileId": "grass",
+            "elevation": 0.06855753407396772
+          },
+          "0,98": {
+            "tileId": "grass",
+            "elevation": 0.07159763313609467
+          },
+          "1,98": {
+            "tileId": "grass",
+            "elevation": 0.06855753407396772
+          },
+          "2,98": {
+            "tileId": "grass",
+            "elevation": 0.06121946435301719
+          },
+          "3,98": {
+            "tileId": "grass",
+            "elevation": 0.05222228806978479
+          },
+          "4,98": {
+            "tileId": "grass",
+            "elevation": 0.04303222791124906
+          },
+          "5,98": {
+            "tileId": "grass",
+            "elevation": 0.03431107397307862
+          },
+          "6,98": {
+            "tileId": "grass",
+            "elevation": 0.026367787971150455
+          },
+          "7,98": {
+            "tileId": "grass",
+            "elevation": 0.019359256141246468
+          },
+          "8,98": {
+            "tileId": "grass",
+            "elevation": 0.013371897909989139
+          },
+          "9,98": {
+            "tileId": "grass",
+            "elevation": 0.008456712491352025
+          },
+          "10,98": {
+            "tileId": "grass",
+            "elevation": 0.00464555342791431
+          },
+          "11,98": {
+            "tileId": "grass",
+            "elevation": 0.0019592680029747616
+          },
+          "-11,99": {
+            "tileId": "grass",
+            "elevation": 0.002260718078775869
+          },
+          "-10,99": {
+            "tileId": "grass",
+            "elevation": 0.005149842515299913
+          },
+          "-9,99": {
+            "tileId": "grass",
+            "elevation": 0.009207092549365185
+          },
+          "-8,99": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "-7,99": {
+            "tileId": "grass",
+            "elevation": 0.020800140172483803
+          },
+          "-6,99": {
+            "tileId": "grass",
+            "elevation": 0.028312529119672362
+          },
+          "-5,99": {
+            "tileId": "grass",
+            "elevation": 0.036938161329341766
+          },
+          "-4,99": {
+            "tileId": "grass",
+            "elevation": 0.04662677735736143
+          },
+          "-3,99": {
+            "tileId": "grass",
+            "elevation": 0.05726673422226161
+          },
+          "-2,99": {
+            "tileId": "grass",
+            "elevation": 0.06855753407396772
+          },
+          "-1,99": {
+            "tileId": "grass",
+            "elevation": 0.07942630022384586
+          },
+          "0,99": {
+            "tileId": "grass",
+            "elevation": 0.08520710059171599
+          },
+          "1,99": {
+            "tileId": "grass",
+            "elevation": 0.07942630022384586
+          },
+          "2,99": {
+            "tileId": "grass",
+            "elevation": 0.06855753407396772
+          },
+          "3,99": {
+            "tileId": "grass",
+            "elevation": 0.05726673422226161
+          },
+          "4,99": {
+            "tileId": "grass",
+            "elevation": 0.04662677735736143
+          },
+          "5,99": {
+            "tileId": "grass",
+            "elevation": 0.036938161329341766
+          },
+          "6,99": {
+            "tileId": "grass",
+            "elevation": 0.028312529119672362
+          },
+          "7,99": {
+            "tileId": "grass",
+            "elevation": 0.020800140172483803
+          },
+          "8,99": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "9,99": {
+            "tileId": "grass",
+            "elevation": 0.009207092549365185
+          },
+          "10,99": {
+            "tileId": "grass",
+            "elevation": 0.005149842515299913
+          },
+          "11,99": {
+            "tileId": "grass",
+            "elevation": 0.002260718078775869
+          },
+          "-11,100": {
+            "tileId": "grass",
+            "elevation": 0.002366863905325444
+          },
+          "-10,100": {
+            "tileId": "grass",
+            "elevation": 0.005325443786982246
+          },
+          "-9,100": {
+            "tileId": "grass",
+            "elevation": 0.009467455621301775
+          },
+          "-8,100": {
+            "tileId": "grass",
+            "elevation": 0.014792899408284021
+          },
+          "-7,100": {
+            "tileId": "grass",
+            "elevation": 0.021301775147928997
+          },
+          "-6,100": {
+            "tileId": "grass",
+            "elevation": 0.028994082840236687
+          },
+          "-5,100": {
+            "tileId": "grass",
+            "elevation": 0.0378698224852071
+          },
+          "-4,100": {
+            "tileId": "grass",
+            "elevation": 0.04792899408284023
+          },
+          "-3,100": {
+            "tileId": "grass",
+            "elevation": 0.059171597633136085
+          },
+          "-2,100": {
+            "tileId": "grass",
+            "elevation": 0.07159763313609467
+          },
+          "-1,100": {
+            "tileId": "grass",
+            "elevation": 0.08520710059171599
+          },
+          "0,100": {
+            "tileId": "grass",
+            "elevation": 0.09999999999999999
+          },
+          "1,100": {
+            "tileId": "grass",
+            "elevation": 0.08520710059171599
+          },
+          "2,100": {
+            "tileId": "grass",
+            "elevation": 0.07159763313609467
+          },
+          "3,100": {
+            "tileId": "grass",
+            "elevation": 0.059171597633136085
+          },
+          "4,100": {
+            "tileId": "grass",
+            "elevation": 0.04792899408284023
+          },
+          "5,100": {
+            "tileId": "grass",
+            "elevation": 0.0378698224852071
+          },
+          "6,100": {
+            "tileId": "grass",
+            "elevation": 0.028994082840236687
+          },
+          "7,100": {
+            "tileId": "grass",
+            "elevation": 0.021301775147928997
+          },
+          "8,100": {
+            "tileId": "grass",
+            "elevation": 0.014792899408284021
+          },
+          "9,100": {
+            "tileId": "grass",
+            "elevation": 0.009467455621301775
+          },
+          "10,100": {
+            "tileId": "grass",
+            "elevation": 0.005325443786982246
+          },
+          "11,100": {
+            "tileId": "grass",
+            "elevation": 0.002366863905325444
+          },
+          "-11,101": {
+            "tileId": "grass",
+            "elevation": 0.002260718078775869
+          },
+          "-10,101": {
+            "tileId": "grass",
+            "elevation": 0.005149842515299913
+          },
+          "-9,101": {
+            "tileId": "grass",
+            "elevation": 0.009207092549365185
+          },
+          "-8,101": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "-7,101": {
+            "tileId": "grass",
+            "elevation": 0.020800140172483803
+          },
+          "-6,101": {
+            "tileId": "grass",
+            "elevation": 0.028312529119672362
+          },
+          "-5,101": {
+            "tileId": "grass",
+            "elevation": 0.036938161329341766
+          },
+          "-4,101": {
+            "tileId": "grass",
+            "elevation": 0.04662677735736143
+          },
+          "-3,101": {
+            "tileId": "grass",
+            "elevation": 0.05726673422226161
+          },
+          "-2,101": {
+            "tileId": "grass",
+            "elevation": 0.06855753407396772
+          },
+          "-1,101": {
+            "tileId": "grass",
+            "elevation": 0.07942630022384586
+          },
+          "0,101": {
+            "tileId": "grass",
+            "elevation": 0.08520710059171599
+          },
+          "1,101": {
+            "tileId": "grass",
+            "elevation": 0.07942630022384586
+          },
+          "2,101": {
+            "tileId": "grass",
+            "elevation": 0.06855753407396772
+          },
+          "3,101": {
+            "tileId": "grass",
+            "elevation": 0.05726673422226161
+          },
+          "4,101": {
+            "tileId": "grass",
+            "elevation": 0.04662677735736143
+          },
+          "5,101": {
+            "tileId": "grass",
+            "elevation": 0.036938161329341766
+          },
+          "6,101": {
+            "tileId": "grass",
+            "elevation": 0.028312529119672362
+          },
+          "7,101": {
+            "tileId": "grass",
+            "elevation": 0.020800140172483803
+          },
+          "8,101": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "9,101": {
+            "tileId": "grass",
+            "elevation": 0.009207092549365185
+          },
+          "10,101": {
+            "tileId": "grass",
+            "elevation": 0.005149842515299913
+          },
+          "11,101": {
+            "tileId": "grass",
+            "elevation": 0.002260718078775869
+          },
+          "-11,102": {
+            "tileId": "grass",
+            "elevation": 0.0019592680029747616
+          },
+          "-10,102": {
+            "tileId": "grass",
+            "elevation": 0.00464555342791431
+          },
+          "-9,102": {
+            "tileId": "grass",
+            "elevation": 0.008456712491352025
+          },
+          "-8,102": {
+            "tileId": "grass",
+            "elevation": 0.013371897909989139
+          },
+          "-7,102": {
+            "tileId": "grass",
+            "elevation": 0.019359256141246468
+          },
+          "-6,102": {
+            "tileId": "grass",
+            "elevation": 0.026367787971150455
+          },
+          "-5,102": {
+            "tileId": "grass",
+            "elevation": 0.03431107397307862
+          },
+          "-4,102": {
+            "tileId": "grass",
+            "elevation": 0.04303222791124906
+          },
+          "-3,102": {
+            "tileId": "grass",
+            "elevation": 0.05222228806978479
+          },
+          "-2,102": {
+            "tileId": "grass",
+            "elevation": 0.06121946435301719
+          },
+          "-1,102": {
+            "tileId": "grass",
+            "elevation": 0.06855753407396772
+          },
+          "0,102": {
+            "tileId": "grass",
+            "elevation": 0.07159763313609467
+          },
+          "1,102": {
+            "tileId": "grass",
+            "elevation": 0.06855753407396772
+          },
+          "2,102": {
+            "tileId": "grass",
+            "elevation": 0.06121946435301719
+          },
+          "3,102": {
+            "tileId": "grass",
+            "elevation": 0.05222228806978479
+          },
+          "4,102": {
+            "tileId": "grass",
+            "elevation": 0.04303222791124906
+          },
+          "5,102": {
+            "tileId": "grass",
+            "elevation": 0.03431107397307862
+          },
+          "6,102": {
+            "tileId": "grass",
+            "elevation": 0.026367787971150455
+          },
+          "7,102": {
+            "tileId": "grass",
+            "elevation": 0.019359256141246468
+          },
+          "8,102": {
+            "tileId": "grass",
+            "elevation": 0.013371897909989139
+          },
+          "9,102": {
+            "tileId": "grass",
+            "elevation": 0.008456712491352025
+          },
+          "10,102": {
+            "tileId": "grass",
+            "elevation": 0.00464555342791431
+          },
+          "11,102": {
+            "tileId": "grass",
+            "elevation": 0.0019592680029747616
+          },
+          "-11,103": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710831
+          },
+          "-10,103": {
+            "tileId": "grass",
+            "elevation": 0.0038769412830329513
+          },
+          "-9,103": {
+            "tileId": "grass",
+            "elevation": 0.00730316124666651
+          },
+          "-8,103": {
+            "tileId": "grass",
+            "elevation": 0.011749054805765796
+          },
+          "-7,103": {
+            "tileId": "grass",
+            "elevation": 0.017153786537004955
+          },
+          "-6,103": {
+            "tileId": "grass",
+            "elevation": 0.023424081511844014
+          },
+          "-5,103": {
+            "tileId": "grass",
+            "elevation": 0.030411390966877037
+          },
+          "-4,103": {
+            "tileId": "grass",
+            "elevation": 0.0378698224852071
+          },
+          "-3,103": {
+            "tileId": "grass",
+            "elevation": 0.04537949238751396
+          },
+          "-2,103": {
+            "tileId": "grass",
+            "elevation": 0.05222228806978479
+          },
+          "-1,103": {
+            "tileId": "grass",
+            "elevation": 0.05726673422226161
+          },
+          "0,103": {
+            "tileId": "grass",
+            "elevation": 0.059171597633136085
+          },
+          "1,103": {
+            "tileId": "grass",
+            "elevation": 0.05726673422226161
+          },
+          "2,103": {
+            "tileId": "grass",
+            "elevation": 0.05222228806978479
+          },
+          "3,103": {
+            "tileId": "grass",
+            "elevation": 0.04537949238751396
+          },
+          "4,103": {
+            "tileId": "grass",
+            "elevation": 0.0378698224852071
+          },
+          "5,103": {
+            "tileId": "grass",
+            "elevation": 0.030411390966877037
+          },
+          "6,103": {
+            "tileId": "grass",
+            "elevation": 0.023424081511844014
+          },
+          "7,103": {
+            "tileId": "grass",
+            "elevation": 0.017153786537004955
+          },
+          "8,103": {
+            "tileId": "grass",
+            "elevation": 0.011749054805765796
+          },
+          "9,103": {
+            "tileId": "grass",
+            "elevation": 0.00730316124666651
+          },
+          "10,103": {
+            "tileId": "grass",
+            "elevation": 0.0038769412830329513
+          },
+          "11,103": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710831
+          },
+          "-11,104": {
+            "tileId": "grass",
+            "elevation": 0.0009927824386329854
+          },
+          "-10,104": {
+            "tileId": "grass",
+            "elevation": 0.0029416745733762024
+          },
+          "-9,104": {
+            "tileId": "grass",
+            "elevation": 0.0058755604457404005
+          },
+          "-8,104": {
+            "tileId": "grass",
+            "elevation": 0.009733094875752584
+          },
+          "-7,104": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "-6,104": {
+            "tileId": "grass",
+            "elevation": 0.01982919152418494
+          },
+          "-5,104": {
+            "tileId": "grass",
+            "elevation": 0.025750751376772744
+          },
+          "-4,104": {
+            "tileId": "grass",
+            "elevation": 0.03190638432733616
+          },
+          "-3,104": {
+            "tileId": "grass",
+            "elevation": 0.0378698224852071
+          },
+          "-2,104": {
+            "tileId": "grass",
+            "elevation": 0.04303222791124906
+          },
+          "-1,104": {
+            "tileId": "grass",
+            "elevation": 0.04662677735736143
+          },
+          "0,104": {
+            "tileId": "grass",
+            "elevation": 0.04792899408284023
+          },
+          "1,104": {
+            "tileId": "grass",
+            "elevation": 0.04662677735736143
+          },
+          "2,104": {
+            "tileId": "grass",
+            "elevation": 0.04303222791124906
+          },
+          "3,104": {
+            "tileId": "grass",
+            "elevation": 0.0378698224852071
+          },
+          "4,104": {
+            "tileId": "grass",
+            "elevation": 0.03190638432733616
+          },
+          "5,104": {
+            "tileId": "grass",
+            "elevation": 0.025750751376772744
+          },
+          "6,104": {
+            "tileId": "grass",
+            "elevation": 0.01982919152418494
+          },
+          "7,104": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "8,104": {
+            "tileId": "grass",
+            "elevation": 0.009733094875752584
+          },
+          "9,104": {
+            "tileId": "grass",
+            "elevation": 0.0058755604457404005
+          },
+          "10,104": {
+            "tileId": "grass",
+            "elevation": 0.0029416745733762024
+          },
+          "11,104": {
+            "tileId": "grass",
+            "elevation": 0.0009927824386329854
+          },
+          "-10,105": {
+            "tileId": "grass",
+            "elevation": 0.001959268002974758
+          },
+          "-9,105": {
+            "tileId": "grass",
+            "elevation": 0.004327583629785793
+          },
+          "-8,105": {
+            "tileId": "grass",
+            "elevation": 0.007524550631081841
+          },
+          "-7,105": {
+            "tileId": "grass",
+            "elevation": 0.011443516601711064
+          },
+          "-6,105": {
+            "tileId": "grass",
+            "elevation": 0.015936987234572174
+          },
+          "-5,105": {
+            "tileId": "grass",
+            "elevation": 0.020800140172483803
+          },
+          "-4,105": {
+            "tileId": "grass",
+            "elevation": 0.025750751376772744
+          },
+          "-3,105": {
+            "tileId": "grass",
+            "elevation": 0.030411390966877037
+          },
+          "-2,105": {
+            "tileId": "grass",
+            "elevation": 0.03431107397307862
+          },
+          "-1,105": {
+            "tileId": "grass",
+            "elevation": 0.036938161329341766
+          },
+          "0,105": {
+            "tileId": "grass",
+            "elevation": 0.0378698224852071
+          },
+          "1,105": {
+            "tileId": "grass",
+            "elevation": 0.036938161329341766
+          },
+          "2,105": {
+            "tileId": "grass",
+            "elevation": 0.03431107397307862
+          },
+          "3,105": {
+            "tileId": "grass",
+            "elevation": 0.030411390966877037
+          },
+          "4,105": {
+            "tileId": "grass",
+            "elevation": 0.025750751376772744
+          },
+          "5,105": {
+            "tileId": "grass",
+            "elevation": 0.020800140172483803
+          },
+          "6,105": {
+            "tileId": "grass",
+            "elevation": 0.015936987234572174
+          },
+          "7,105": {
+            "tileId": "grass",
+            "elevation": 0.011443516601711064
+          },
+          "8,105": {
+            "tileId": "grass",
+            "elevation": 0.007524550631081841
+          },
+          "9,105": {
+            "tileId": "grass",
+            "elevation": 0.004327583629785793
+          },
+          "10,105": {
+            "tileId": "grass",
+            "elevation": 0.001959268002974758
+          },
+          "-10,106": {
+            "tileId": "grass",
+            "elevation": 0.0010594683242866152
+          },
+          "-9,106": {
+            "tileId": "grass",
+            "elevation": 0.0028207103632004963
+          },
+          "-8,106": {
+            "tileId": "grass",
+            "elevation": 0.005325443786982246
+          },
+          "-7,106": {
+            "tileId": "grass",
+            "elevation": 0.00845671249135203
+          },
+          "-6,106": {
+            "tileId": "grass",
+            "elevation": 0.012060759922956904
+          },
+          "-5,106": {
+            "tileId": "grass",
+            "elevation": 0.015936987234572174
+          },
+          "-4,106": {
+            "tileId": "grass",
+            "elevation": 0.01982919152418494
+          },
+          "-3,106": {
+            "tileId": "grass",
+            "elevation": 0.023424081511844014
+          },
+          "-2,106": {
+            "tileId": "grass",
+            "elevation": 0.026367787971150455
+          },
+          "-1,106": {
+            "tileId": "grass",
+            "elevation": 0.028312529119672362
+          },
+          "0,106": {
+            "tileId": "grass",
+            "elevation": 0.028994082840236687
+          },
+          "1,106": {
+            "tileId": "grass",
+            "elevation": 0.028312529119672362
+          },
+          "2,106": {
+            "tileId": "grass",
+            "elevation": 0.026367787971150455
+          },
+          "3,106": {
+            "tileId": "grass",
+            "elevation": 0.023424081511844014
+          },
+          "4,106": {
+            "tileId": "grass",
+            "elevation": 0.01982919152418494
+          },
+          "5,106": {
+            "tileId": "grass",
+            "elevation": 0.015936987234572174
+          },
+          "6,106": {
+            "tileId": "grass",
+            "elevation": 0.012060759922956904
+          },
+          "7,106": {
+            "tileId": "grass",
+            "elevation": 0.00845671249135203
+          },
+          "8,106": {
+            "tileId": "grass",
+            "elevation": 0.005325443786982246
+          },
+          "9,106": {
+            "tileId": "grass",
+            "elevation": 0.0028207103632004963
+          },
+          "10,106": {
+            "tileId": "grass",
+            "elevation": 0.0010594683242866152
+          },
+          "-9,107": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710805
+          },
+          "-8,107": {
+            "tileId": "grass",
+            "elevation": 0.0033232005141414847
+          },
+          "-7,107": {
+            "tileId": "grass",
+            "elevation": 0.005688243578755441
+          },
+          "-6,107": {
+            "tileId": "grass",
+            "elevation": 0.00845671249135203
+          },
+          "-5,107": {
+            "tileId": "grass",
+            "elevation": 0.011443516601711064
+          },
+          "-4,107": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "-3,107": {
+            "tileId": "grass",
+            "elevation": 0.017153786537004955
+          },
+          "-2,107": {
+            "tileId": "grass",
+            "elevation": 0.019359256141246468
+          },
+          "-1,107": {
+            "tileId": "grass",
+            "elevation": 0.020800140172483803
+          },
+          "0,107": {
+            "tileId": "grass",
+            "elevation": 0.021301775147928997
+          },
+          "1,107": {
+            "tileId": "grass",
+            "elevation": 0.020800140172483803
+          },
+          "2,107": {
+            "tileId": "grass",
+            "elevation": 0.019359256141246468
+          },
+          "3,107": {
+            "tileId": "grass",
+            "elevation": 0.017153786537004955
+          },
+          "4,107": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "5,107": {
+            "tileId": "grass",
+            "elevation": 0.011443516601711064
+          },
+          "6,107": {
+            "tileId": "grass",
+            "elevation": 0.00845671249135203
+          },
+          "7,107": {
+            "tileId": "grass",
+            "elevation": 0.005688243578755441
+          },
+          "8,107": {
+            "tileId": "grass",
+            "elevation": 0.0033232005141414847
+          },
+          "9,107": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710805
+          },
+          "-25,108": {
+            "tileId": "grass",
+            "elevation": 0.0008371094308644702
+          },
+          "-24,108": {
+            "tileId": "grass",
+            "elevation": 0.0013495879466450696
+          },
+          "-23,108": {
+            "tileId": "grass",
+            "elevation": 0.0018422695150759792
+          },
+          "-22,108": {
+            "tileId": "grass",
+            "elevation": 0.002247174505605197
+          },
+          "-21,108": {
+            "tileId": "grass",
+            "elevation": 0.0025121073412875047
+          },
+          "-20,108": {
+            "tileId": "grass",
+            "elevation": 0.0026041666666666665
+          },
+          "-19,108": {
+            "tileId": "grass",
+            "elevation": 0.0025121073412875047
+          },
+          "-18,108": {
+            "tileId": "grass",
+            "elevation": 0.002247174505605197
+          },
+          "-17,108": {
+            "tileId": "grass",
+            "elevation": 0.0018422695150759792
+          },
+          "-16,108": {
+            "tileId": "grass",
+            "elevation": 0.0013495879466450696
+          },
+          "-15,108": {
+            "tileId": "grass",
+            "elevation": 0.0008371094308644702
+          },
+          "-8,108": {
+            "tileId": "grass",
+            "elevation": 0.0016825911398794253
+          },
+          "-7,108": {
+            "tileId": "grass",
+            "elevation": 0.0033232005141414847
+          },
+          "-6,108": {
+            "tileId": "grass",
+            "elevation": 0.005325443786982246
+          },
+          "-5,108": {
+            "tileId": "grass",
+            "elevation": 0.007524550631081841
+          },
+          "-4,108": {
+            "tileId": "grass",
+            "elevation": 0.009733094875752584
+          },
+          "-3,108": {
+            "tileId": "grass",
+            "elevation": 0.011749054805765796
+          },
+          "-2,108": {
+            "tileId": "grass",
+            "elevation": 0.013371897909989139
+          },
+          "-1,108": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "0,108": {
+            "tileId": "grass",
+            "elevation": 0.014792899408284021
+          },
+          "1,108": {
+            "tileId": "grass",
+            "elevation": 0.014426803872330014
+          },
+          "2,108": {
+            "tileId": "grass",
+            "elevation": 0.013371897909989139
+          },
+          "3,108": {
+            "tileId": "grass",
+            "elevation": 0.011749054805765796
+          },
+          "4,108": {
+            "tileId": "grass",
+            "elevation": 0.009733094875752584
+          },
+          "5,108": {
+            "tileId": "grass",
+            "elevation": 0.007524550631081841
+          },
+          "6,108": {
+            "tileId": "grass",
+            "elevation": 0.005325443786982246
+          },
+          "7,108": {
+            "tileId": "grass",
+            "elevation": 0.0033232005141414847
+          },
+          "8,108": {
+            "tileId": "grass",
+            "elevation": 0.0016825911398794253
+          },
+          "-27,109": {
+            "tileId": "grass",
+            "elevation": 0.000993269578470819
+          },
+          "-26,109": {
+            "tileId": "grass",
+            "elevation": 0.0018422695150759792
+          },
+          "-25,109": {
+            "tileId": "grass",
+            "elevation": 0.0027939942253308423
+          },
+          "-24,109": {
+            "tileId": "grass",
+            "elevation": 0.0037454060680115896
+          },
+          "-23,109": {
+            "tileId": "grass",
+            "elevation": 0.004600748664034713
+          },
+          "-22,109": {
+            "tileId": "grass",
+            "elevation": 0.005277157542376977
+          },
+          "-21,109": {
+            "tileId": "grass",
+            "elevation": 0.00571031644988964
+          },
+          "-20,109": {
+            "tileId": "grass",
+            "elevation": 0.005859375
+          },
+          "-19,109": {
+            "tileId": "grass",
+            "elevation": 0.00571031644988964
+          },
+          "-18,109": {
+            "tileId": "grass",
+            "elevation": 0.005277157542376977
+          },
+          "-17,109": {
+            "tileId": "grass",
+            "elevation": 0.004600748664034713
+          },
+          "-16,109": {
+            "tileId": "grass",
+            "elevation": 0.0037454060680115896
+          },
+          "-15,109": {
+            "tileId": "grass",
+            "elevation": 0.0027939942253308423
+          },
+          "-14,109": {
+            "tileId": "grass",
+            "elevation": 0.0018422695150759792
+          },
+          "-13,109": {
+            "tileId": "grass",
+            "elevation": 0.000993269578470819
+          },
+          "-7,109": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710805
+          },
+          "-6,109": {
+            "tileId": "grass",
+            "elevation": 0.0028207103632004963
+          },
+          "-5,109": {
+            "tileId": "grass",
+            "elevation": 0.004327583629785793
+          },
+          "-4,109": {
+            "tileId": "grass",
+            "elevation": 0.0058755604457404005
+          },
+          "-3,109": {
+            "tileId": "grass",
+            "elevation": 0.00730316124666651
+          },
+          "-2,109": {
+            "tileId": "grass",
+            "elevation": 0.008456712491352025
+          },
+          "-1,109": {
+            "tileId": "grass",
+            "elevation": 0.009207092549365185
+          },
+          "0,109": {
+            "tileId": "grass",
+            "elevation": 0.009467455621301775
+          },
+          "1,109": {
+            "tileId": "grass",
+            "elevation": 0.009207092549365185
+          },
+          "2,109": {
+            "tileId": "grass",
+            "elevation": 0.008456712491352025
+          },
+          "3,109": {
+            "tileId": "grass",
+            "elevation": 0.00730316124666651
+          },
+          "4,109": {
+            "tileId": "grass",
+            "elevation": 0.0058755604457404005
+          },
+          "5,109": {
+            "tileId": "grass",
+            "elevation": 0.004327583629785793
+          },
+          "6,109": {
+            "tileId": "grass",
+            "elevation": 0.0028207103632004963
+          },
+          "7,109": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710805
+          },
+          "-28,110": {
+            "tileId": "grass",
+            "elevation": 0.0016207270446675602
+          },
+          "-27,110": {
+            "tileId": "grass",
+            "elevation": 0.002891791886462403
+          },
+          "-26,110": {
+            "tileId": "grass",
+            "elevation": 0.0043456694791929465
+          },
+          "-25,110": {
+            "tileId": "grass",
+            "elevation": 0.005859375
+          },
+          "-24,110": {
+            "tileId": "grass",
+            "elevation": 0.007310194985968386
+          },
+          "-23,110": {
+            "tileId": "grass",
+            "elevation": 0.008581940065562886
+          },
+          "-22,110": {
+            "tileId": "grass",
+            "elevation": 0.009572394570907515
+          },
+          "-21,110": {
+            "tileId": "grass",
+            "elevation": 0.010201154608493851
+          },
+          "-20,110": {
+            "tileId": "grass",
+            "elevation": 0.010416666666666666
+          },
+          "-19,110": {
+            "tileId": "grass",
+            "elevation": 0.010201154608493851
+          },
+          "-18,110": {
+            "tileId": "grass",
+            "elevation": 0.009572394570907515
+          },
+          "-17,110": {
+            "tileId": "grass",
+            "elevation": 0.008581940065562886
+          },
+          "-16,110": {
+            "tileId": "grass",
+            "elevation": 0.007310194985968386
+          },
+          "-15,110": {
+            "tileId": "grass",
+            "elevation": 0.005859375
+          },
+          "-14,110": {
+            "tileId": "grass",
+            "elevation": 0.0043456694791929465
+          },
+          "-13,110": {
+            "tileId": "grass",
+            "elevation": 0.002891791886462403
+          },
+          "-12,110": {
+            "tileId": "grass",
+            "elevation": 0.0016207270446675602
+          },
+          "-6,110": {
+            "tileId": "grass",
+            "elevation": 0.0010594683242866152
+          },
+          "-5,110": {
+            "tileId": "grass",
+            "elevation": 0.001959268002974758
+          },
+          "-4,110": {
+            "tileId": "grass",
+            "elevation": 0.0029416745733762024
+          },
+          "-3,110": {
+            "tileId": "grass",
+            "elevation": 0.0038769412830329513
+          },
+          "-2,110": {
+            "tileId": "grass",
+            "elevation": 0.00464555342791431
+          },
+          "-1,110": {
+            "tileId": "grass",
+            "elevation": 0.005149842515299913
+          },
+          "0,110": {
+            "tileId": "grass",
+            "elevation": 0.005325443786982246
+          },
+          "1,110": {
+            "tileId": "grass",
+            "elevation": 0.005149842515299913
+          },
+          "2,110": {
+            "tileId": "grass",
+            "elevation": 0.00464555342791431
+          },
+          "3,110": {
+            "tileId": "grass",
+            "elevation": 0.0038769412830329513
+          },
+          "4,110": {
+            "tileId": "grass",
+            "elevation": 0.0029416745733762024
+          },
+          "5,110": {
+            "tileId": "grass",
+            "elevation": 0.001959268002974758
+          },
+          "6,110": {
+            "tileId": "grass",
+            "elevation": 0.0010594683242866152
+          },
+          "-30,111": {
+            "tileId": "grass",
+            "elevation": 0.0008371094308644702
+          },
+          "-29,111": {
+            "tileId": "grass",
+            "elevation": 0.002079783259335507
+          },
+          "-28,111": {
+            "tileId": "grass",
+            "elevation": 0.003745406068011601
+          },
+          "-27,111": {
+            "tileId": "grass",
+            "elevation": 0.00571031644988964
+          },
+          "-26,111": {
+            "tileId": "grass",
+            "elevation": 0.007839289872048587
+          },
+          "-25,111": {
+            "tileId": "grass",
+            "elevation": 0.00998862555011309
+          },
+          "-24,111": {
+            "tileId": "grass",
+            "elevation": 0.012011460193341142
+          },
+          "-23,111": {
+            "tileId": "grass",
+            "elevation": 0.013765536437679603
+          },
+          "-22,111": {
+            "tileId": "grass",
+            "elevation": 0.015123127343771914
+          },
+          "-21,111": {
+            "tileId": "grass",
+            "elevation": 0.015982062141932065
+          },
+          "-20,111": {
+            "tileId": "grass",
+            "elevation": 0.016276041666666668
+          },
+          "-19,111": {
+            "tileId": "grass",
+            "elevation": 0.015982062141932065
+          },
+          "-18,111": {
+            "tileId": "grass",
+            "elevation": 0.015123127343771914
+          },
+          "-17,111": {
+            "tileId": "grass",
+            "elevation": 0.013765536437679603
+          },
+          "-16,111": {
+            "tileId": "grass",
+            "elevation": 0.012011460193341142
+          },
+          "-15,111": {
+            "tileId": "grass",
+            "elevation": 0.00998862555011309
+          },
+          "-14,111": {
+            "tileId": "grass",
+            "elevation": 0.007839289872048587
+          },
+          "-13,111": {
+            "tileId": "grass",
+            "elevation": 0.00571031644988964
+          },
+          "-12,111": {
+            "tileId": "grass",
+            "elevation": 0.003745406068011601
+          },
+          "-11,111": {
+            "tileId": "grass",
+            "elevation": 0.002079783259335507
+          },
+          "-10,111": {
+            "tileId": "grass",
+            "elevation": 0.0008371094308644702
+          },
+          "-4,111": {
+            "tileId": "grass",
+            "elevation": 0.0009927824386329854
+          },
+          "-3,111": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710831
+          },
+          "-2,111": {
+            "tileId": "grass",
+            "elevation": 0.0019592680029747616
+          },
+          "-1,111": {
+            "tileId": "grass",
+            "elevation": 0.002260718078775869
+          },
+          "0,111": {
+            "tileId": "grass",
+            "elevation": 0.002366863905325444
+          },
+          "1,111": {
+            "tileId": "grass",
+            "elevation": 0.002260718078775869
+          },
+          "2,111": {
+            "tileId": "grass",
+            "elevation": 0.0019592680029747616
+          },
+          "3,111": {
+            "tileId": "grass",
+            "elevation": 0.0015114730616710831
+          },
+          "4,111": {
+            "tileId": "grass",
+            "elevation": 0.0009927824386329854
+          },
+          "-30,112": {
+            "tileId": "grass",
+            "elevation": 0.002247174505605197
+          },
+          "-29,112": {
+            "tileId": "grass",
+            "elevation": 0.004221374019297698
+          },
+          "-28,112": {
+            "tileId": "grass",
+            "elevation": 0.006640656773631307
+          },
+          "-27,112": {
+            "tileId": "grass",
+            "elevation": 0.00936863300554786
+          },
+          "-26,112": {
+            "tileId": "grass",
+            "elevation": 0.012252004381445821
+          },
+          "-25,112": {
+            "tileId": "grass",
+            "elevation": 0.015123127343771902
+          },
+          "-24,112": {
+            "tileId": "grass",
+            "elevation": 0.017805633036062325
+          },
+          "-23,112": {
+            "tileId": "grass",
+            "elevation": 0.0201238227310302
+          },
+          "-22,112": {
+            "tileId": "grass",
+            "elevation": 0.021915853600300638
+          },
+          "-21,112": {
+            "tileId": "grass",
+            "elevation": 0.02304946622664812
+          },
+          "-20,112": {
+            "tileId": "grass",
+            "elevation": 0.0234375
+          },
+          "-19,112": {
+            "tileId": "grass",
+            "elevation": 0.02304946622664812
+          },
+          "-18,112": {
+            "tileId": "grass",
+            "elevation": 0.021915853600300638
+          },
+          "-17,112": {
+            "tileId": "grass",
+            "elevation": 0.0201238227310302
+          },
+          "-16,112": {
+            "tileId": "grass",
+            "elevation": 0.017805633036062325
+          },
+          "-15,112": {
+            "tileId": "grass",
+            "elevation": 0.015123127343771902
+          },
+          "-14,112": {
+            "tileId": "grass",
+            "elevation": 0.012252004381445821
+          },
+          "-13,112": {
+            "tileId": "grass",
+            "elevation": 0.00936863300554786
+          },
+          "-12,112": {
+            "tileId": "grass",
+            "elevation": 0.006640656773631307
+          },
+          "-11,112": {
+            "tileId": "grass",
+            "elevation": 0.004221374019297698
+          },
+          "-10,112": {
+            "tileId": "grass",
+            "elevation": 0.002247174505605197
+          },
+          "-9,112": {
+            "tileId": "grass",
+            "elevation": 0.0008371094308644702
+          },
+          "-30,113": {
+            "tileId": "grass",
+            "elevation": 0.004221374019297698
+          },
+          "-29,113": {
+            "tileId": "grass",
+            "elevation": 0.006970373721711346
+          },
+          "-28,113": {
+            "tileId": "grass",
+            "elevation": 0.010201154608493843
+          },
+          "-27,113": {
+            "tileId": "grass",
+            "elevation": 0.01376553643767959
+          },
+          "-26,113": {
+            "tileId": "grass",
+            "elevation": 0.01749158695016734
+          },
+          "-25,113": {
+            "tileId": "grass",
+            "elevation": 0.02118478872943749
+          },
+          "-24,113": {
+            "tileId": "grass",
+            "elevation": 0.024633170795914493
+          },
+          "-23,113": {
+            "tileId": "grass",
+            "elevation": 0.027618062906142955
+          },
+          "-22,113": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-21,113": {
+            "tileId": "grass",
+            "elevation": 0.031398226288803815
+          },
+          "-20,113": {
+            "tileId": "grass",
+            "elevation": 0.031901041666666664
+          },
+          "-19,113": {
+            "tileId": "grass",
+            "elevation": 0.031398226288803815
+          },
+          "-18,113": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-17,113": {
+            "tileId": "grass",
+            "elevation": 0.027618062906142955
+          },
+          "-16,113": {
+            "tileId": "grass",
+            "elevation": 0.024633170795914493
+          },
+          "-15,113": {
+            "tileId": "grass",
+            "elevation": 0.02118478872943749
+          },
+          "-14,113": {
+            "tileId": "grass",
+            "elevation": 0.01749158695016734
+          },
+          "-13,113": {
+            "tileId": "grass",
+            "elevation": 0.01376553643767959
+          },
+          "-12,113": {
+            "tileId": "grass",
+            "elevation": 0.010201154608493843
+          },
+          "-11,113": {
+            "tileId": "grass",
+            "elevation": 0.006970373721711346
+          },
+          "-10,113": {
+            "tileId": "grass",
+            "elevation": 0.004221374019297698
+          },
+          "-9,113": {
+            "tileId": "grass",
+            "elevation": 0.002079783259335507
+          },
+          "-30,114": {
+            "tileId": "grass",
+            "elevation": 0.006640656773631307
+          },
+          "-29,114": {
+            "tileId": "grass",
+            "elevation": 0.010201154608493843
+          },
+          "-28,114": {
+            "tileId": "grass",
+            "elevation": 0.014297739604484154
+          },
+          "-27,114": {
+            "tileId": "grass",
+            "elevation": 0.018773003901361465
+          },
+          "-26,114": {
+            "tileId": "grass",
+            "elevation": 0.0234375
+          },
+          "-25,114": {
+            "tileId": "grass",
+            "elevation": 0.028068101415487424
+          },
+          "-24,114": {
+            "tileId": "grass",
+            "elevation": 0.03241100187501752
+          },
+          "-23,114": {
+            "tileId": "grass",
+            "elevation": 0.03619263030588477
+          },
+          "-22,114": {
+            "tileId": "grass",
+            "elevation": 0.03914143226593081
+          },
+          "-21,114": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-20,114": {
+            "tileId": "grass",
+            "elevation": 0.041666666666666664
+          },
+          "-19,114": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-18,114": {
+            "tileId": "grass",
+            "elevation": 0.03914143226593081
+          },
+          "-17,114": {
+            "tileId": "grass",
+            "elevation": 0.03619263030588477
+          },
+          "-16,114": {
+            "tileId": "grass",
+            "elevation": 0.03241100187501752
+          },
+          "-15,114": {
+            "tileId": "grass",
+            "elevation": 0.028068101415487424
+          },
+          "-14,114": {
+            "tileId": "grass",
+            "elevation": 0.0234375
+          },
+          "-13,114": {
+            "tileId": "grass",
+            "elevation": 0.018773003901361465
+          },
+          "-12,114": {
+            "tileId": "grass",
+            "elevation": 0.014297739604484154
+          },
+          "-11,114": {
+            "tileId": "grass",
+            "elevation": 0.010201154608493843
+          },
+          "-10,114": {
+            "tileId": "grass",
+            "elevation": 0.006640656773631307
+          },
+          "-9,114": {
+            "tileId": "grass",
+            "elevation": 0.003745406068011601
+          },
+          "-8,114": {
+            "tileId": "grass",
+            "elevation": 0.0016207270446675602
+          },
+          "-30,115": {
+            "tileId": "grass",
+            "elevation": 0.00936863300554786
+          },
+          "-29,115": {
+            "tileId": "grass",
+            "elevation": 0.01376553643767959
+          },
+          "-28,115": {
+            "tileId": "grass",
+            "elevation": 0.018773003901361465
+          },
+          "-27,115": {
+            "tileId": "grass",
+            "elevation": 0.024229272153923637
+          },
+          "-26,115": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-25,115": {
+            "tileId": "grass",
+            "elevation": 0.03562864026994528
+          },
+          "-24,115": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-23,115": {
+            "tileId": "grass",
+            "elevation": 0.045765143627835236
+          },
+          "-22,115": {
+            "tileId": "grass",
+            "elevation": 0.049502918973322534
+          },
+          "-21,115": {
+            "tileId": "grass",
+            "elevation": 0.051904837252802594
+          },
+          "-20,115": {
+            "tileId": "grass",
+            "elevation": 0.052734375
+          },
+          "-19,115": {
+            "tileId": "grass",
+            "elevation": 0.051904837252802594
+          },
+          "-18,115": {
+            "tileId": "grass",
+            "elevation": 0.049502918973322534
+          },
+          "-17,115": {
+            "tileId": "grass",
+            "elevation": 0.045765143627835236
+          },
+          "-16,115": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-15,115": {
+            "tileId": "grass",
+            "elevation": 0.03562864026994528
+          },
+          "-14,115": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-13,115": {
+            "tileId": "grass",
+            "elevation": 0.024229272153923637
+          },
+          "-12,115": {
+            "tileId": "grass",
+            "elevation": 0.018773003901361465
+          },
+          "-11,115": {
+            "tileId": "grass",
+            "elevation": 0.01376553643767959
+          },
+          "-10,115": {
+            "tileId": "grass",
+            "elevation": 0.00936863300554786
+          },
+          "-9,115": {
+            "tileId": "grass",
+            "elevation": 0.00571031644988964
+          },
+          "-8,115": {
+            "tileId": "grass",
+            "elevation": 0.002891791886462403
+          },
+          "-7,115": {
+            "tileId": "grass",
+            "elevation": 0.000993269578470819
+          },
+          "-30,116": {
+            "tileId": "grass",
+            "elevation": 0.012252004381445821
+          },
+          "-29,116": {
+            "tileId": "grass",
+            "elevation": 0.01749158695016734
+          },
+          "-28,116": {
+            "tileId": "grass",
+            "elevation": 0.0234375
+          },
+          "-27,116": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-26,116": {
+            "tileId": "grass",
+            "elevation": 0.03676497137002977
+          },
+          "-25,116": {
+            "tileId": "grass",
+            "elevation": 0.04366667341861135
+          },
+          "-24,116": {
+            "tileId": "grass",
+            "elevation": 0.050289530189000446
+          },
+          "-23,116": {
+            "tileId": "grass",
+            "elevation": 0.0562092930729298
+          },
+          "-22,116": {
+            "tileId": "grass",
+            "elevation": 0.06094676415965084
+          },
+          "-21,116": {
+            "tileId": "grass",
+            "elevation": 0.06403098895212044
+          },
+          "-20,116": {
+            "tileId": "grass",
+            "elevation": 0.06510416666666667
+          },
+          "-19,116": {
+            "tileId": "grass",
+            "elevation": 0.06403098895212044
+          },
+          "-18,116": {
+            "tileId": "grass",
+            "elevation": 0.06094676415965084
+          },
+          "-17,116": {
+            "tileId": "grass",
+            "elevation": 0.0562092930729298
+          },
+          "-16,116": {
+            "tileId": "grass",
+            "elevation": 0.050289530189000446
+          },
+          "-15,116": {
+            "tileId": "grass",
+            "elevation": 0.04366667341861135
+          },
+          "-14,116": {
+            "tileId": "grass",
+            "elevation": 0.03676497137002977
+          },
+          "-13,116": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-12,116": {
+            "tileId": "grass",
+            "elevation": 0.0234375
+          },
+          "-11,116": {
+            "tileId": "grass",
+            "elevation": 0.01749158695016734
+          },
+          "-10,116": {
+            "tileId": "grass",
+            "elevation": 0.012252004381445821
+          },
+          "-9,116": {
+            "tileId": "grass",
+            "elevation": 0.007839289872048587
+          },
+          "-8,116": {
+            "tileId": "grass",
+            "elevation": 0.0043456694791929465
+          },
+          "-7,116": {
+            "tileId": "grass",
+            "elevation": 0.0018422695150759792
+          },
+          "-30,117": {
+            "tileId": "grass",
+            "elevation": 0.015123127343771902
+          },
+          "-29,117": {
+            "tileId": "grass",
+            "elevation": 0.02118478872943749
+          },
+          "-28,117": {
+            "tileId": "grass",
+            "elevation": 0.028068101415487424
+          },
+          "-27,117": {
+            "tileId": "grass",
+            "elevation": 0.03562864026994528
+          },
+          "-26,117": {
+            "tileId": "grass",
+            "elevation": 0.04366667341861135
+          },
+          "-25,117": {
+            "tileId": "grass",
+            "elevation": 0.051904837252802594
+          },
+          "-24,117": {
+            "tileId": "grass",
+            "elevation": 0.05996095338681565
+          },
+          "-23,117": {
+            "tileId": "grass",
+            "elevation": 0.0673239188573896
+          },
+          "-22,117": {
+            "tileId": "grass",
+            "elevation": 0.07335594151803115
+          },
+          "-21,117": {
+            "tileId": "grass",
+            "elevation": 0.07736417680015033
+          },
+          "-20,117": {
+            "tileId": "grass",
+            "elevation": 0.07877604166666667
+          },
+          "-19,117": {
+            "tileId": "grass",
+            "elevation": 0.07736417680015033
+          },
+          "-18,117": {
+            "tileId": "grass",
+            "elevation": 0.07335594151803115
+          },
+          "-17,117": {
+            "tileId": "grass",
+            "elevation": 0.0673239188573896
+          },
+          "-16,117": {
+            "tileId": "grass",
+            "elevation": 0.05996095338681565
+          },
+          "-15,117": {
+            "tileId": "grass",
+            "elevation": 0.051904837252802594
+          },
+          "-14,117": {
+            "tileId": "grass",
+            "elevation": 0.04366667341861135
+          },
+          "-13,117": {
+            "tileId": "grass",
+            "elevation": 0.03562864026994528
+          },
+          "-12,117": {
+            "tileId": "grass",
+            "elevation": 0.028068101415487424
+          },
+          "-11,117": {
+            "tileId": "grass",
+            "elevation": 0.02118478872943749
+          },
+          "-10,117": {
+            "tileId": "grass",
+            "elevation": 0.015123127343771902
+          },
+          "-9,117": {
+            "tileId": "grass",
+            "elevation": 0.00998862555011309
+          },
+          "-8,117": {
+            "tileId": "grass",
+            "elevation": 0.005859375
+          },
+          "-7,117": {
+            "tileId": "grass",
+            "elevation": 0.0027939942253308423
+          },
+          "-6,117": {
+            "tileId": "grass",
+            "elevation": 0.0008371094308644702
+          },
+          "-30,118": {
+            "tileId": "grass",
+            "elevation": 0.017805633036062325
+          },
+          "-29,118": {
+            "tileId": "grass",
+            "elevation": 0.024633170795914493
+          },
+          "-28,118": {
+            "tileId": "grass",
+            "elevation": 0.03241100187501752
+          },
+          "-27,118": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-26,118": {
+            "tileId": "grass",
+            "elevation": 0.050289530189000446
+          },
+          "-25,118": {
+            "tileId": "grass",
+            "elevation": 0.05996095338681565
+          },
+          "-24,118": {
+            "tileId": "grass",
+            "elevation": 0.0696488698022421
+          },
+          "-23,118": {
+            "tileId": "grass",
+            "elevation": 0.07877604166666667
+          },
+          "-22,118": {
+            "tileId": "grass",
+            "elevation": 0.08651800093750876
+          },
+          "-21,118": {
+            "tileId": "grass",
+            "elevation": 0.09183634113296539
+          },
+          "-20,118": {
+            "tileId": "grass",
+            "elevation": 0.09375
+          },
+          "-19,118": {
+            "tileId": "grass",
+            "elevation": 0.09183634113296539
+          },
+          "-18,118": {
+            "tileId": "grass",
+            "elevation": 0.08651800093750876
+          },
+          "-17,118": {
+            "tileId": "grass",
+            "elevation": 0.07877604166666667
+          },
+          "-16,118": {
+            "tileId": "grass",
+            "elevation": 0.0696488698022421
+          },
+          "-15,118": {
+            "tileId": "grass",
+            "elevation": 0.05996095338681565
+          },
+          "-14,118": {
+            "tileId": "grass",
+            "elevation": 0.050289530189000446
+          },
+          "-13,118": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-12,118": {
+            "tileId": "grass",
+            "elevation": 0.03241100187501752
+          },
+          "-11,118": {
+            "tileId": "grass",
+            "elevation": 0.024633170795914493
+          },
+          "-10,118": {
+            "tileId": "grass",
+            "elevation": 0.017805633036062325
+          },
+          "-9,118": {
+            "tileId": "grass",
+            "elevation": 0.012011460193341142
+          },
+          "-8,118": {
+            "tileId": "grass",
+            "elevation": 0.007310194985968386
+          },
+          "-7,118": {
+            "tileId": "grass",
+            "elevation": 0.0037454060680115896
+          },
+          "-6,118": {
+            "tileId": "grass",
+            "elevation": 0.0013495879466450696
+          },
+          "-30,119": {
+            "tileId": "grass",
+            "elevation": 0.0201238227310302
+          },
+          "-29,119": {
+            "tileId": "grass",
+            "elevation": 0.027618062906142955
+          },
+          "-28,119": {
+            "tileId": "grass",
+            "elevation": 0.03619263030588477
+          },
+          "-27,119": {
+            "tileId": "grass",
+            "elevation": 0.045765143627835236
+          },
+          "-26,119": {
+            "tileId": "grass",
+            "elevation": 0.0562092930729298
+          },
+          "-25,119": {
+            "tileId": "grass",
+            "elevation": 0.0673239188573896
+          },
+          "-24,119": {
+            "tileId": "grass",
+            "elevation": 0.07877604166666667
+          },
+          "-23,119": {
+            "tileId": "grass",
+            "elevation": 0.08999706901834821
+          },
+          "-22,119": {
+            "tileId": "grass",
+            "elevation": 0.10001455676116688
+          },
+          "-21,119": {
+            "tileId": "grass",
+            "elevation": 0.10729629874649209
+          },
+          "-20,119": {
+            "tileId": "grass",
+            "elevation": 0.11002604166666667
+          },
+          "-19,119": {
+            "tileId": "grass",
+            "elevation": 0.10729629874649209
+          },
+          "-18,119": {
+            "tileId": "grass",
+            "elevation": 0.10001455676116688
+          },
+          "-17,119": {
+            "tileId": "grass",
+            "elevation": 0.08999706901834821
+          },
+          "-16,119": {
+            "tileId": "grass",
+            "elevation": 0.07877604166666667
+          },
+          "-15,119": {
+            "tileId": "grass",
+            "elevation": 0.0673239188573896
+          },
+          "-14,119": {
+            "tileId": "grass",
+            "elevation": 0.0562092930729298
+          },
+          "-13,119": {
+            "tileId": "grass",
+            "elevation": 0.045765143627835236
+          },
+          "-12,119": {
+            "tileId": "grass",
+            "elevation": 0.03619263030588477
+          },
+          "-11,119": {
+            "tileId": "grass",
+            "elevation": 0.027618062906142955
+          },
+          "-10,119": {
+            "tileId": "grass",
+            "elevation": 0.0201238227310302
+          },
+          "-9,119": {
+            "tileId": "grass",
+            "elevation": 0.013765536437679603
+          },
+          "-8,119": {
+            "tileId": "grass",
+            "elevation": 0.008581940065562886
+          },
+          "-7,119": {
+            "tileId": "grass",
+            "elevation": 0.004600748664034713
+          },
+          "-6,119": {
+            "tileId": "grass",
+            "elevation": 0.0018422695150759792
+          },
+          "-30,120": {
+            "tileId": "grass",
+            "elevation": 0.021915853600300638
+          },
+          "-29,120": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-28,120": {
+            "tileId": "grass",
+            "elevation": 0.03914143226593081
+          },
+          "-27,120": {
+            "tileId": "grass",
+            "elevation": 0.049502918973322534
+          },
+          "-26,120": {
+            "tileId": "grass",
+            "elevation": 0.06094676415965084
+          },
+          "-25,120": {
+            "tileId": "grass",
+            "elevation": 0.07335594151803115
+          },
+          "-24,120": {
+            "tileId": "grass",
+            "elevation": 0.08651800093750876
+          },
+          "-23,120": {
+            "tileId": "grass",
+            "elevation": 0.10001455676116688
+          },
+          "-22,120": {
+            "tileId": "grass",
+            "elevation": 0.11294943490112104
+          },
+          "-21,120": {
+            "tileId": "grass",
+            "elevation": 0.12333712546875437
+          },
+          "-20,120": {
+            "tileId": "grass",
+            "elevation": 0.12760416666666666
+          },
+          "-19,120": {
+            "tileId": "grass",
+            "elevation": 0.12333712546875437
+          },
+          "-18,120": {
+            "tileId": "grass",
+            "elevation": 0.11294943490112104
+          },
+          "-17,120": {
+            "tileId": "grass",
+            "elevation": 0.10001455676116688
+          },
+          "-16,120": {
+            "tileId": "grass",
+            "elevation": 0.08651800093750876
+          },
+          "-15,120": {
+            "tileId": "grass",
+            "elevation": 0.07335594151803115
+          },
+          "-14,120": {
+            "tileId": "grass",
+            "elevation": 0.06094676415965084
+          },
+          "-13,120": {
+            "tileId": "grass",
+            "elevation": 0.049502918973322534
+          },
+          "-12,120": {
+            "tileId": "grass",
+            "elevation": 0.03914143226593081
+          },
+          "-11,120": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-10,120": {
+            "tileId": "grass",
+            "elevation": 0.021915853600300638
+          },
+          "-9,120": {
+            "tileId": "grass",
+            "elevation": 0.015123127343771914
+          },
+          "-8,120": {
+            "tileId": "grass",
+            "elevation": 0.009572394570907515
+          },
+          "-7,120": {
+            "tileId": "grass",
+            "elevation": 0.005277157542376977
+          },
+          "-6,120": {
+            "tileId": "grass",
+            "elevation": 0.002247174505605197
+          },
+          "-30,121": {
+            "tileId": "grass",
+            "elevation": 0.02304946622664812
+          },
+          "-29,121": {
+            "tileId": "grass",
+            "elevation": 0.031398226288803815
+          },
+          "-28,121": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-27,121": {
+            "tileId": "grass",
+            "elevation": 0.051904837252802594
+          },
+          "-26,121": {
+            "tileId": "grass",
+            "elevation": 0.06403098895212044
+          },
+          "-25,121": {
+            "tileId": "grass",
+            "elevation": 0.07736417680015033
+          },
+          "-24,121": {
+            "tileId": "grass",
+            "elevation": 0.09183634113296539
+          },
+          "-23,121": {
+            "tileId": "grass",
+            "elevation": 0.10729629874649209
+          },
+          "-22,121": {
+            "tileId": "grass",
+            "elevation": 0.12333712546875437
+          },
+          "-21,121": {
+            "tileId": "grass",
+            "elevation": 0.1385059674505605
+          },
+          "-20,121": {
+            "tileId": "grass",
+            "elevation": 0.146484375
+          },
+          "-19,121": {
+            "tileId": "grass",
+            "elevation": 0.1385059674505605
+          },
+          "-18,121": {
+            "tileId": "grass",
+            "elevation": 0.12333712546875437
+          },
+          "-17,121": {
+            "tileId": "grass",
+            "elevation": 0.10729629874649209
+          },
+          "-16,121": {
+            "tileId": "grass",
+            "elevation": 0.09183634113296539
+          },
+          "-15,121": {
+            "tileId": "grass",
+            "elevation": 0.07736417680015033
+          },
+          "-14,121": {
+            "tileId": "grass",
+            "elevation": 0.06403098895212044
+          },
+          "-13,121": {
+            "tileId": "grass",
+            "elevation": 0.051904837252802594
+          },
+          "-12,121": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-11,121": {
+            "tileId": "grass",
+            "elevation": 0.031398226288803815
+          },
+          "-10,121": {
+            "tileId": "grass",
+            "elevation": 0.02304946622664812
+          },
+          "-9,121": {
+            "tileId": "grass",
+            "elevation": 0.015982062141932065
+          },
+          "-8,121": {
+            "tileId": "grass",
+            "elevation": 0.010201154608493851
+          },
+          "-7,121": {
+            "tileId": "grass",
+            "elevation": 0.00571031644988964
+          },
+          "-6,121": {
+            "tileId": "grass",
+            "elevation": 0.0025121073412875047
+          },
+          "-30,122": {
+            "tileId": "grass",
+            "elevation": 0.0234375
+          },
+          "-29,122": {
+            "tileId": "grass",
+            "elevation": 0.031901041666666664
+          },
+          "-28,122": {
+            "tileId": "grass",
+            "elevation": 0.041666666666666664
+          },
+          "-27,122": {
+            "tileId": "grass",
+            "elevation": 0.052734375
+          },
+          "-26,122": {
+            "tileId": "grass",
+            "elevation": 0.06510416666666667
+          },
+          "-25,122": {
+            "tileId": "grass",
+            "elevation": 0.07877604166666667
+          },
+          "-24,122": {
+            "tileId": "grass",
+            "elevation": 0.09375
+          },
+          "-23,122": {
+            "tileId": "grass",
+            "elevation": 0.11002604166666667
+          },
+          "-22,122": {
+            "tileId": "grass",
+            "elevation": 0.12760416666666666
+          },
+          "-21,122": {
+            "tileId": "grass",
+            "elevation": 0.146484375
+          },
+          "-20,122": {
+            "tileId": "grass",
+            "elevation": 0.16666666666666666
+          },
+          "-19,122": {
+            "tileId": "grass",
+            "elevation": 0.146484375
+          },
+          "-18,122": {
+            "tileId": "grass",
+            "elevation": 0.12760416666666666
+          },
+          "-17,122": {
+            "tileId": "grass",
+            "elevation": 0.11002604166666667
+          },
+          "-16,122": {
+            "tileId": "grass",
+            "elevation": 0.09375
+          },
+          "-15,122": {
+            "tileId": "grass",
+            "elevation": 0.07877604166666667
+          },
+          "-14,122": {
+            "tileId": "grass",
+            "elevation": 0.06510416666666667
+          },
+          "-13,122": {
+            "tileId": "grass",
+            "elevation": 0.052734375
+          },
+          "-12,122": {
+            "tileId": "grass",
+            "elevation": 0.041666666666666664
+          },
+          "-11,122": {
+            "tileId": "grass",
+            "elevation": 0.031901041666666664
+          },
+          "-10,122": {
+            "tileId": "grass",
+            "elevation": 0.0234375
+          },
+          "-9,122": {
+            "tileId": "grass",
+            "elevation": 0.016276041666666668
+          },
+          "-8,122": {
+            "tileId": "grass",
+            "elevation": 0.010416666666666666
+          },
+          "-7,122": {
+            "tileId": "grass",
+            "elevation": 0.005859375
+          },
+          "-6,122": {
+            "tileId": "grass",
+            "elevation": 0.0026041666666666665
+          },
+          "-30,123": {
+            "tileId": "grass",
+            "elevation": 0.02304946622664812
+          },
+          "-29,123": {
+            "tileId": "grass",
+            "elevation": 0.031398226288803815
+          },
+          "-28,123": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-27,123": {
+            "tileId": "grass",
+            "elevation": 0.051904837252802594
+          },
+          "-26,123": {
+            "tileId": "grass",
+            "elevation": 0.06403098895212044
+          },
+          "-25,123": {
+            "tileId": "grass",
+            "elevation": 0.07736417680015033
+          },
+          "-24,123": {
+            "tileId": "grass",
+            "elevation": 0.09183634113296539
+          },
+          "-23,123": {
+            "tileId": "grass",
+            "elevation": 0.10729629874649209
+          },
+          "-22,123": {
+            "tileId": "grass",
+            "elevation": 0.12333712546875437
+          },
+          "-21,123": {
+            "tileId": "grass",
+            "elevation": 0.1385059674505605
+          },
+          "-20,123": {
+            "tileId": "grass",
+            "elevation": 0.146484375
+          },
+          "-19,123": {
+            "tileId": "grass",
+            "elevation": 0.1385059674505605
+          },
+          "-18,123": {
+            "tileId": "grass",
+            "elevation": 0.12333712546875437
+          },
+          "-17,123": {
+            "tileId": "grass",
+            "elevation": 0.10729629874649209
+          },
+          "-16,123": {
+            "tileId": "grass",
+            "elevation": 0.09183634113296539
+          },
+          "-15,123": {
+            "tileId": "grass",
+            "elevation": 0.07736417680015033
+          },
+          "-14,123": {
+            "tileId": "grass",
+            "elevation": 0.06403098895212044
+          },
+          "-13,123": {
+            "tileId": "grass",
+            "elevation": 0.051904837252802594
+          },
+          "-12,123": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-11,123": {
+            "tileId": "grass",
+            "elevation": 0.031398226288803815
+          },
+          "-10,123": {
+            "tileId": "grass",
+            "elevation": 0.02304946622664812
+          },
+          "-9,123": {
+            "tileId": "grass",
+            "elevation": 0.015982062141932065
+          },
+          "-8,123": {
+            "tileId": "grass",
+            "elevation": 0.010201154608493851
+          },
+          "-7,123": {
+            "tileId": "grass",
+            "elevation": 0.00571031644988964
+          },
+          "-6,123": {
+            "tileId": "grass",
+            "elevation": 0.0025121073412875047
+          },
+          "-30,124": {
+            "tileId": "grass",
+            "elevation": 0.021915853600300638
+          },
+          "-29,124": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-28,124": {
+            "tileId": "grass",
+            "elevation": 0.03914143226593081
+          },
+          "-27,124": {
+            "tileId": "grass",
+            "elevation": 0.049502918973322534
+          },
+          "-26,124": {
+            "tileId": "grass",
+            "elevation": 0.06094676415965084
+          },
+          "-25,124": {
+            "tileId": "grass",
+            "elevation": 0.07335594151803115
+          },
+          "-24,124": {
+            "tileId": "grass",
+            "elevation": 0.08651800093750876
+          },
+          "-23,124": {
+            "tileId": "grass",
+            "elevation": 0.10001455676116688
+          },
+          "-22,124": {
+            "tileId": "grass",
+            "elevation": 0.11294943490112104
+          },
+          "-21,124": {
+            "tileId": "grass",
+            "elevation": 0.12333712546875437
+          },
+          "-20,124": {
+            "tileId": "grass",
+            "elevation": 0.12760416666666666
+          },
+          "-19,124": {
+            "tileId": "grass",
+            "elevation": 0.12333712546875437
+          },
+          "-18,124": {
+            "tileId": "grass",
+            "elevation": 0.11294943490112104
+          },
+          "-17,124": {
+            "tileId": "grass",
+            "elevation": 0.10001455676116688
+          },
+          "-16,124": {
+            "tileId": "grass",
+            "elevation": 0.08651800093750876
+          },
+          "-15,124": {
+            "tileId": "grass",
+            "elevation": 0.07335594151803115
+          },
+          "-14,124": {
+            "tileId": "grass",
+            "elevation": 0.06094676415965084
+          },
+          "-13,124": {
+            "tileId": "grass",
+            "elevation": 0.049502918973322534
+          },
+          "-12,124": {
+            "tileId": "grass",
+            "elevation": 0.03914143226593081
+          },
+          "-11,124": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-10,124": {
+            "tileId": "grass",
+            "elevation": 0.021915853600300638
+          },
+          "-9,124": {
+            "tileId": "grass",
+            "elevation": 0.015123127343771914
+          },
+          "-8,124": {
+            "tileId": "grass",
+            "elevation": 0.009572394570907515
+          },
+          "-7,124": {
+            "tileId": "grass",
+            "elevation": 0.005277157542376977
+          },
+          "-6,124": {
+            "tileId": "grass",
+            "elevation": 0.002247174505605197
+          },
+          "-30,125": {
+            "tileId": "grass",
+            "elevation": 0.0201238227310302
+          },
+          "-29,125": {
+            "tileId": "grass",
+            "elevation": 0.027618062906142955
+          },
+          "-28,125": {
+            "tileId": "grass",
+            "elevation": 0.03619263030588477
+          },
+          "-27,125": {
+            "tileId": "grass",
+            "elevation": 0.045765143627835236
+          },
+          "-26,125": {
+            "tileId": "grass",
+            "elevation": 0.0562092930729298
+          },
+          "-25,125": {
+            "tileId": "grass",
+            "elevation": 0.0673239188573896
+          },
+          "-24,125": {
+            "tileId": "grass",
+            "elevation": 0.07877604166666667
+          },
+          "-23,125": {
+            "tileId": "grass",
+            "elevation": 0.08999706901834821
+          },
+          "-22,125": {
+            "tileId": "grass",
+            "elevation": 0.10001455676116688
+          },
+          "-21,125": {
+            "tileId": "grass",
+            "elevation": 0.10729629874649209
+          },
+          "-20,125": {
+            "tileId": "grass",
+            "elevation": 0.11002604166666667
+          },
+          "-19,125": {
+            "tileId": "grass",
+            "elevation": 0.10729629874649209
+          },
+          "-18,125": {
+            "tileId": "grass",
+            "elevation": 0.10001455676116688
+          },
+          "-17,125": {
+            "tileId": "grass",
+            "elevation": 0.08999706901834821
+          },
+          "-16,125": {
+            "tileId": "grass",
+            "elevation": 0.07877604166666667
+          },
+          "-15,125": {
+            "tileId": "grass",
+            "elevation": 0.0673239188573896
+          },
+          "-14,125": {
+            "tileId": "grass",
+            "elevation": 0.0562092930729298
+          },
+          "-13,125": {
+            "tileId": "grass",
+            "elevation": 0.045765143627835236
+          },
+          "-12,125": {
+            "tileId": "grass",
+            "elevation": 0.03619263030588477
+          },
+          "-11,125": {
+            "tileId": "grass",
+            "elevation": 0.027618062906142955
+          },
+          "-10,125": {
+            "tileId": "grass",
+            "elevation": 0.0201238227310302
+          },
+          "-9,125": {
+            "tileId": "grass",
+            "elevation": 0.013765536437679603
+          },
+          "-8,125": {
+            "tileId": "grass",
+            "elevation": 0.008581940065562886
+          },
+          "-7,125": {
+            "tileId": "grass",
+            "elevation": 0.004600748664034713
+          },
+          "-6,125": {
+            "tileId": "grass",
+            "elevation": 0.0018422695150759792
+          },
+          "16,125": {
+            "tileId": "grass",
+            "elevation": 0.001159042807666189
+          },
+          "17,125": {
+            "tileId": "grass",
+            "elevation": 0.0016296758970133262
+          },
+          "18,125": {
+            "tileId": "grass",
+            "elevation": 0.002021692954680203
+          },
+          "19,125": {
+            "tileId": "grass",
+            "elevation": 0.0022802107779799
+          },
+          "20,125": {
+            "tileId": "grass",
+            "elevation": 0.0023703703703703695
+          },
+          "21,125": {
+            "tileId": "grass",
+            "elevation": 0.0022802107779799
+          },
+          "22,125": {
+            "tileId": "grass",
+            "elevation": 0.002021692954680203
+          },
+          "23,125": {
+            "tileId": "grass",
+            "elevation": 0.0016296758970133262
+          },
+          "24,125": {
+            "tileId": "grass",
+            "elevation": 0.001159042807666189
+          },
+          "-30,126": {
+            "tileId": "grass",
+            "elevation": 0.017805633036062325
+          },
+          "-29,126": {
+            "tileId": "grass",
+            "elevation": 0.024633170795914493
+          },
+          "-28,126": {
+            "tileId": "grass",
+            "elevation": 0.03241100187501752
+          },
+          "-27,126": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-26,126": {
+            "tileId": "grass",
+            "elevation": 0.050289530189000446
+          },
+          "-25,126": {
+            "tileId": "grass",
+            "elevation": 0.05996095338681565
+          },
+          "-24,126": {
+            "tileId": "grass",
+            "elevation": 0.0696488698022421
+          },
+          "-23,126": {
+            "tileId": "grass",
+            "elevation": 0.07877604166666667
+          },
+          "-22,126": {
+            "tileId": "grass",
+            "elevation": 0.08651800093750876
+          },
+          "-21,126": {
+            "tileId": "grass",
+            "elevation": 0.09183634113296539
+          },
+          "-20,126": {
+            "tileId": "grass",
+            "elevation": 0.09375
+          },
+          "-19,126": {
+            "tileId": "grass",
+            "elevation": 0.09183634113296539
+          },
+          "-18,126": {
+            "tileId": "grass",
+            "elevation": 0.08651800093750876
+          },
+          "-17,126": {
+            "tileId": "grass",
+            "elevation": 0.07877604166666667
+          },
+          "-16,126": {
+            "tileId": "grass",
+            "elevation": 0.0696488698022421
+          },
+          "-15,126": {
+            "tileId": "grass",
+            "elevation": 0.05996095338681565
+          },
+          "-14,126": {
+            "tileId": "grass",
+            "elevation": 0.050289530189000446
+          },
+          "-13,126": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-12,126": {
+            "tileId": "grass",
+            "elevation": 0.03241100187501752
+          },
+          "-11,126": {
+            "tileId": "grass",
+            "elevation": 0.024633170795914493
+          },
+          "-10,126": {
+            "tileId": "grass",
+            "elevation": 0.017805633036062325
+          },
+          "-9,126": {
+            "tileId": "grass",
+            "elevation": 0.012011460193341142
+          },
+          "-8,126": {
+            "tileId": "grass",
+            "elevation": 0.007310194985968386
+          },
+          "-7,126": {
+            "tileId": "grass",
+            "elevation": 0.0037454060680115896
+          },
+          "-6,126": {
+            "tileId": "grass",
+            "elevation": 0.0013495879466450696
+          },
+          "14,126": {
+            "tileId": "grass",
+            "elevation": 0.00148608240002243
+          },
+          "15,126": {
+            "tileId": "grass",
+            "elevation": 0.0023703703703703695
+          },
+          "16,126": {
+            "tileId": "grass",
+            "elevation": 0.0032750700917300586
+          },
+          "17,126": {
+            "tileId": "grass",
+            "elevation": 0.004101033300391436
+          },
+          "18,126": {
+            "tileId": "grass",
+            "elevation": 0.004761035959767006
+          },
+          "19,126": {
+            "tileId": "grass",
+            "elevation": 0.005186466747396233
+          },
+          "20,126": {
+            "tileId": "grass",
+            "elevation": 0.005333333333333331
+          },
+          "21,126": {
+            "tileId": "grass",
+            "elevation": 0.005186466747396233
+          },
+          "22,126": {
+            "tileId": "grass",
+            "elevation": 0.004761035959767006
+          },
+          "23,126": {
+            "tileId": "grass",
+            "elevation": 0.004101033300391436
+          },
+          "24,126": {
+            "tileId": "grass",
+            "elevation": 0.0032750700917300586
+          },
+          "25,126": {
+            "tileId": "grass",
+            "elevation": 0.0023703703703703695
+          },
+          "26,126": {
+            "tileId": "grass",
+            "elevation": 0.00148608240002243
+          },
+          "-30,127": {
+            "tileId": "grass",
+            "elevation": 0.015123127343771902
+          },
+          "-29,127": {
+            "tileId": "grass",
+            "elevation": 0.02118478872943749
+          },
+          "-28,127": {
+            "tileId": "grass",
+            "elevation": 0.028068101415487424
+          },
+          "-27,127": {
+            "tileId": "grass",
+            "elevation": 0.03562864026994528
+          },
+          "-26,127": {
+            "tileId": "grass",
+            "elevation": 0.04366667341861135
+          },
+          "-25,127": {
+            "tileId": "grass",
+            "elevation": 0.051904837252802594
+          },
+          "-24,127": {
+            "tileId": "grass",
+            "elevation": 0.05996095338681565
+          },
+          "-23,127": {
+            "tileId": "grass",
+            "elevation": 0.0673239188573896
+          },
+          "-22,127": {
+            "tileId": "grass",
+            "elevation": 0.07335594151803115
+          },
+          "-21,127": {
+            "tileId": "grass",
+            "elevation": 0.07736417680015033
+          },
+          "-20,127": {
+            "tileId": "grass",
+            "elevation": 0.07877604166666667
+          },
+          "-19,127": {
+            "tileId": "grass",
+            "elevation": 0.07736417680015033
+          },
+          "-18,127": {
+            "tileId": "grass",
+            "elevation": 0.07335594151803115
+          },
+          "-17,127": {
+            "tileId": "grass",
+            "elevation": 0.0673239188573896
+          },
+          "-16,127": {
+            "tileId": "grass",
+            "elevation": 0.05996095338681565
+          },
+          "-15,127": {
+            "tileId": "grass",
+            "elevation": 0.051904837252802594
+          },
+          "-14,127": {
+            "tileId": "grass",
+            "elevation": 0.04366667341861135
+          },
+          "-13,127": {
+            "tileId": "grass",
+            "elevation": 0.03562864026994528
+          },
+          "-12,127": {
+            "tileId": "grass",
+            "elevation": 0.028068101415487424
+          },
+          "-11,127": {
+            "tileId": "grass",
+            "elevation": 0.02118478872943749
+          },
+          "-10,127": {
+            "tileId": "grass",
+            "elevation": 0.015123127343771902
+          },
+          "-9,127": {
+            "tileId": "grass",
+            "elevation": 0.00998862555011309
+          },
+          "-8,127": {
+            "tileId": "grass",
+            "elevation": 0.005859375
+          },
+          "-7,127": {
+            "tileId": "grass",
+            "elevation": 0.0027939942253308423
+          },
+          "-6,127": {
+            "tileId": "grass",
+            "elevation": 0.0008371094308644702
+          },
+          "12,127": {
+            "tileId": "grass",
+            "elevation": 0.0011590428076661944
+          },
+          "13,127": {
+            "tileId": "grass",
+            "elevation": 0.0022802107779799
+          },
+          "14,127": {
+            "tileId": "grass",
+            "elevation": 0.003615453283407386
+          },
+          "15,127": {
+            "tileId": "grass",
+            "elevation": 0.005042145654615019
+          },
+          "16,127": {
+            "tileId": "grass",
+            "elevation": 0.006434964550169623
+          },
+          "17,127": {
+            "tileId": "grass",
+            "elevation": 0.007672517019412513
+          },
+          "18,127": {
+            "tileId": "grass",
+            "elevation": 0.00864580940742611
+          },
+          "19,127": {
+            "tileId": "grass",
+            "elevation": 0.009267655990744994
+          },
+          "20,127": {
+            "tileId": "grass",
+            "elevation": 0.009481481481481485
+          },
+          "21,127": {
+            "tileId": "grass",
+            "elevation": 0.009267655990744994
+          },
+          "22,127": {
+            "tileId": "grass",
+            "elevation": 0.00864580940742611
+          },
+          "23,127": {
+            "tileId": "grass",
+            "elevation": 0.007672517019412513
+          },
+          "24,127": {
+            "tileId": "grass",
+            "elevation": 0.006434964550169623
+          },
+          "25,127": {
+            "tileId": "grass",
+            "elevation": 0.005042145654615019
+          },
+          "26,127": {
+            "tileId": "grass",
+            "elevation": 0.003615453283407386
+          },
+          "27,127": {
+            "tileId": "grass",
+            "elevation": 0.0022802107779799
+          },
+          "28,127": {
+            "tileId": "grass",
+            "elevation": 0.0011590428076661944
+          },
+          "-30,128": {
+            "tileId": "grass",
+            "elevation": 0.012252004381445821
+          },
+          "-29,128": {
+            "tileId": "grass",
+            "elevation": 0.01749158695016734
+          },
+          "-28,128": {
+            "tileId": "grass",
+            "elevation": 0.0234375
+          },
+          "-27,128": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-26,128": {
+            "tileId": "grass",
+            "elevation": 0.03676497137002977
+          },
+          "-25,128": {
+            "tileId": "grass",
+            "elevation": 0.04366667341861135
+          },
+          "-24,128": {
+            "tileId": "grass",
+            "elevation": 0.050289530189000446
+          },
+          "-23,128": {
+            "tileId": "grass",
+            "elevation": 0.0562092930729298
+          },
+          "-22,128": {
+            "tileId": "grass",
+            "elevation": 0.06094676415965084
+          },
+          "-21,128": {
+            "tileId": "grass",
+            "elevation": 0.06403098895212044
+          },
+          "-20,128": {
+            "tileId": "grass",
+            "elevation": 0.06510416666666667
+          },
+          "-19,128": {
+            "tileId": "grass",
+            "elevation": 0.06403098895212044
+          },
+          "-18,128": {
+            "tileId": "grass",
+            "elevation": 0.06094676415965084
+          },
+          "-17,128": {
+            "tileId": "grass",
+            "elevation": 0.0562092930729298
+          },
+          "-16,128": {
+            "tileId": "grass",
+            "elevation": 0.050289530189000446
+          },
+          "-15,128": {
+            "tileId": "grass",
+            "elevation": 0.04366667341861135
+          },
+          "-14,128": {
+            "tileId": "grass",
+            "elevation": 0.03676497137002977
+          },
+          "-13,128": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-12,128": {
+            "tileId": "grass",
+            "elevation": 0.0234375
+          },
+          "-11,128": {
+            "tileId": "grass",
+            "elevation": 0.01749158695016734
+          },
+          "-10,128": {
+            "tileId": "grass",
+            "elevation": 0.012252004381445821
+          },
+          "-9,128": {
+            "tileId": "grass",
+            "elevation": 0.007839289872048587
+          },
+          "-8,128": {
+            "tileId": "grass",
+            "elevation": 0.0043456694791929465
+          },
+          "-7,128": {
+            "tileId": "grass",
+            "elevation": 0.0018422695150759792
+          },
+          "11,128": {
+            "tileId": "grass",
+            "elevation": 0.0014170539779488512
+          },
+          "12,128": {
+            "tileId": "grass",
+            "elevation": 0.0028518789653505677
+          },
+          "13,128": {
+            "tileId": "grass",
+            "elevation": 0.004624196461030467
+          },
+          "14,128": {
+            "tileId": "grass",
+            "elevation": 0.006603191886981919
+          },
+          "15,128": {
+            "tileId": "grass",
+            "elevation": 0.008645809407426102
+          },
+          "16,128": {
+            "tileId": "grass",
+            "elevation": 0.010601547598180593
+          },
+          "17,128": {
+            "tileId": "grass",
+            "elevation": 0.01232047687862725
+          },
+          "18,128": {
+            "tileId": "grass",
+            "elevation": 0.01366449136855284
+          },
+          "19,128": {
+            "tileId": "grass",
+            "elevation": 0.014520729698591585
+          },
+          "20,128": {
+            "tileId": "grass",
+            "elevation": 0.014814814814814817
+          },
+          "21,128": {
+            "tileId": "grass",
+            "elevation": 0.014520729698591585
+          },
+          "22,128": {
+            "tileId": "grass",
+            "elevation": 0.01366449136855284
+          },
+          "23,128": {
+            "tileId": "grass",
+            "elevation": 0.01232047687862725
+          },
+          "24,128": {
+            "tileId": "grass",
+            "elevation": 0.010601547598180593
+          },
+          "25,128": {
+            "tileId": "grass",
+            "elevation": 0.008645809407426102
+          },
+          "26,128": {
+            "tileId": "grass",
+            "elevation": 0.006603191886981919
+          },
+          "27,128": {
+            "tileId": "grass",
+            "elevation": 0.004624196461030467
+          },
+          "28,128": {
+            "tileId": "grass",
+            "elevation": 0.0028518789653505677
+          },
+          "29,128": {
+            "tileId": "grass",
+            "elevation": 0.0014170539779488512
+          },
+          "-30,129": {
+            "tileId": "grass",
+            "elevation": 0.00936863300554786
+          },
+          "-29,129": {
+            "tileId": "grass",
+            "elevation": 0.01376553643767959
+          },
+          "-28,129": {
+            "tileId": "grass",
+            "elevation": 0.018773003901361465
+          },
+          "-27,129": {
+            "tileId": "grass",
+            "elevation": 0.024229272153923637
+          },
+          "-26,129": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-25,129": {
+            "tileId": "grass",
+            "elevation": 0.03562864026994528
+          },
+          "-24,129": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-23,129": {
+            "tileId": "grass",
+            "elevation": 0.045765143627835236
+          },
+          "-22,129": {
+            "tileId": "grass",
+            "elevation": 0.049502918973322534
+          },
+          "-21,129": {
+            "tileId": "grass",
+            "elevation": 0.051904837252802594
+          },
+          "-20,129": {
+            "tileId": "grass",
+            "elevation": 0.052734375
+          },
+          "-19,129": {
+            "tileId": "grass",
+            "elevation": 0.051904837252802594
+          },
+          "-18,129": {
+            "tileId": "grass",
+            "elevation": 0.049502918973322534
+          },
+          "-17,129": {
+            "tileId": "grass",
+            "elevation": 0.045765143627835236
+          },
+          "-16,129": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-15,129": {
+            "tileId": "grass",
+            "elevation": 0.03562864026994528
+          },
+          "-14,129": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-13,129": {
+            "tileId": "grass",
+            "elevation": 0.024229272153923637
+          },
+          "-12,129": {
+            "tileId": "grass",
+            "elevation": 0.018773003901361465
+          },
+          "-11,129": {
+            "tileId": "grass",
+            "elevation": 0.01376553643767959
+          },
+          "-10,129": {
+            "tileId": "grass",
+            "elevation": 0.00936863300554786
+          },
+          "-9,129": {
+            "tileId": "grass",
+            "elevation": 0.00571031644988964
+          },
+          "-8,129": {
+            "tileId": "grass",
+            "elevation": 0.002891791886462403
+          },
+          "-7,129": {
+            "tileId": "grass",
+            "elevation": 0.000993269578470819
+          },
+          "10,129": {
+            "tileId": "grass",
+            "elevation": 0.0014170539779488512
+          },
+          "11,129": {
+            "tileId": "grass",
+            "elevation": 0.003059163353638126
+          },
+          "12,129": {
+            "tileId": "grass",
+            "elevation": 0.005186466747396228
+          },
+          "13,129": {
+            "tileId": "grass",
+            "elevation": 0.007672517019412513
+          },
+          "14,129": {
+            "tileId": "grass",
+            "elevation": 0.010370598641920576
+          },
+          "15,129": {
+            "tileId": "grass",
+            "elevation": 0.013114723419490363
+          },
+          "16,129": {
+            "tileId": "grass",
+            "elevation": 0.015724009449550734
+          },
+          "17,129": {
+            "tileId": "grass",
+            "elevation": 0.018011858124353103
+          },
+          "18,129": {
+            "tileId": "grass",
+            "elevation": 0.019800691129607927
+          },
+          "19,129": {
+            "tileId": "grass",
+            "elevation": 0.0209413012479274
+          },
+          "20,129": {
+            "tileId": "grass",
+            "elevation": 0.02133333333333334
+          },
+          "21,129": {
+            "tileId": "grass",
+            "elevation": 0.0209413012479274
+          },
+          "22,129": {
+            "tileId": "grass",
+            "elevation": 0.019800691129607927
+          },
+          "23,129": {
+            "tileId": "grass",
+            "elevation": 0.018011858124353103
+          },
+          "24,129": {
+            "tileId": "grass",
+            "elevation": 0.015724009449550734
+          },
+          "25,129": {
+            "tileId": "grass",
+            "elevation": 0.013114723419490363
+          },
+          "26,129": {
+            "tileId": "grass",
+            "elevation": 0.010370598641920576
+          },
+          "27,129": {
+            "tileId": "grass",
+            "elevation": 0.007672517019412513
+          },
+          "28,129": {
+            "tileId": "grass",
+            "elevation": 0.005186466747396228
+          },
+          "29,129": {
+            "tileId": "grass",
+            "elevation": 0.003059163353638126
+          },
+          "30,129": {
+            "tileId": "grass",
+            "elevation": 0.0014170539779488512
+          },
+          "-30,130": {
+            "tileId": "grass",
+            "elevation": 0.006640656773631307
+          },
+          "-29,130": {
+            "tileId": "grass",
+            "elevation": 0.010201154608493843
+          },
+          "-28,130": {
+            "tileId": "grass",
+            "elevation": 0.014297739604484154
+          },
+          "-27,130": {
+            "tileId": "grass",
+            "elevation": 0.018773003901361465
+          },
+          "-26,130": {
+            "tileId": "grass",
+            "elevation": 0.0234375
+          },
+          "-25,130": {
+            "tileId": "grass",
+            "elevation": 0.028068101415487424
+          },
+          "-24,130": {
+            "tileId": "grass",
+            "elevation": 0.03241100187501752
+          },
+          "-23,130": {
+            "tileId": "grass",
+            "elevation": 0.03619263030588477
+          },
+          "-22,130": {
+            "tileId": "grass",
+            "elevation": 0.03914143226593081
+          },
+          "-21,130": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-20,130": {
+            "tileId": "grass",
+            "elevation": 0.041666666666666664
+          },
+          "-19,130": {
+            "tileId": "grass",
+            "elevation": 0.041020671910446886
+          },
+          "-18,130": {
+            "tileId": "grass",
+            "elevation": 0.03914143226593081
+          },
+          "-17,130": {
+            "tileId": "grass",
+            "elevation": 0.03619263030588477
+          },
+          "-16,130": {
+            "tileId": "grass",
+            "elevation": 0.03241100187501752
+          },
+          "-15,130": {
+            "tileId": "grass",
+            "elevation": 0.028068101415487424
+          },
+          "-14,130": {
+            "tileId": "grass",
+            "elevation": 0.0234375
+          },
+          "-13,130": {
+            "tileId": "grass",
+            "elevation": 0.018773003901361465
+          },
+          "-12,130": {
+            "tileId": "grass",
+            "elevation": 0.014297739604484154
+          },
+          "-11,130": {
+            "tileId": "grass",
+            "elevation": 0.010201154608493843
+          },
+          "-10,130": {
+            "tileId": "grass",
+            "elevation": 0.006640656773631307
+          },
+          "-9,130": {
+            "tileId": "grass",
+            "elevation": 0.003745406068011601
+          },
+          "-8,130": {
+            "tileId": "grass",
+            "elevation": 0.0016207270446675602
+          },
+          "9,130": {
+            "tileId": "grass",
+            "elevation": 0.0011590428076661944
+          },
+          "10,130": {
+            "tileId": "grass",
+            "elevation": 0.0028518789653505677
+          },
+          "11,130": {
+            "tileId": "grass",
+            "elevation": 0.005186466747396228
+          },
+          "12,130": {
+            "tileId": "grass",
+            "elevation": 0.008052589647678335
+          },
+          "13,130": {
+            "tileId": "grass",
+            "elevation": 0.01131592629212475
+          },
+          "14,130": {
+            "tileId": "grass",
+            "elevation": 0.014814814814814817
+          },
+          "15,130": {
+            "tileId": "grass",
+            "elevation": 0.018358853948623348
+          },
+          "16,130": {
+            "tileId": "grass",
+            "elevation": 0.021731462340755694
+          },
+          "17,130": {
+            "tileId": "grass",
+            "elevation": 0.024699192675836482
+          },
+          "18,130": {
+            "tileId": "grass",
+            "elevation": 0.027030318496557255
+          },
+          "19,130": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "20,130": {
+            "tileId": "grass",
+            "elevation": 0.029037037037037042
+          },
+          "21,130": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "22,130": {
+            "tileId": "grass",
+            "elevation": 0.027030318496557255
+          },
+          "23,130": {
+            "tileId": "grass",
+            "elevation": 0.024699192675836482
+          },
+          "24,130": {
+            "tileId": "grass",
+            "elevation": 0.021731462340755694
+          },
+          "25,130": {
+            "tileId": "grass",
+            "elevation": 0.018358853948623348
+          },
+          "26,130": {
+            "tileId": "grass",
+            "elevation": 0.014814814814814817
+          },
+          "27,130": {
+            "tileId": "grass",
+            "elevation": 0.01131592629212475
+          },
+          "28,130": {
+            "tileId": "grass",
+            "elevation": 0.008052589647678335
+          },
+          "29,130": {
+            "tileId": "grass",
+            "elevation": 0.005186466747396228
+          },
+          "30,130": {
+            "tileId": "grass",
+            "elevation": 0.0028518789653505677
+          },
+          "-30,131": {
+            "tileId": "grass",
+            "elevation": 0.004221374019297698
+          },
+          "-29,131": {
+            "tileId": "grass",
+            "elevation": 0.006970373721711346
+          },
+          "-28,131": {
+            "tileId": "grass",
+            "elevation": 0.010201154608493843
+          },
+          "-27,131": {
+            "tileId": "grass",
+            "elevation": 0.01376553643767959
+          },
+          "-26,131": {
+            "tileId": "grass",
+            "elevation": 0.01749158695016734
+          },
+          "-25,131": {
+            "tileId": "grass",
+            "elevation": 0.02118478872943749
+          },
+          "-24,131": {
+            "tileId": "grass",
+            "elevation": 0.024633170795914493
+          },
+          "-23,131": {
+            "tileId": "grass",
+            "elevation": 0.027618062906142955
+          },
+          "-22,131": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-21,131": {
+            "tileId": "grass",
+            "elevation": 0.031398226288803815
+          },
+          "-20,131": {
+            "tileId": "grass",
+            "elevation": 0.031901041666666664
+          },
+          "-19,131": {
+            "tileId": "grass",
+            "elevation": 0.031398226288803815
+          },
+          "-18,131": {
+            "tileId": "grass",
+            "elevation": 0.02993136547306485
+          },
+          "-17,131": {
+            "tileId": "grass",
+            "elevation": 0.027618062906142955
+          },
+          "-16,131": {
+            "tileId": "grass",
+            "elevation": 0.024633170795914493
+          },
+          "-15,131": {
+            "tileId": "grass",
+            "elevation": 0.02118478872943749
+          },
+          "-14,131": {
+            "tileId": "grass",
+            "elevation": 0.01749158695016734
+          },
+          "-13,131": {
+            "tileId": "grass",
+            "elevation": 0.01376553643767959
+          },
+          "-12,131": {
+            "tileId": "grass",
+            "elevation": 0.010201154608493843
+          },
+          "-11,131": {
+            "tileId": "grass",
+            "elevation": 0.006970373721711346
+          },
+          "-10,131": {
+            "tileId": "grass",
+            "elevation": 0.004221374019297698
+          },
+          "-9,131": {
+            "tileId": "grass",
+            "elevation": 0.002079783259335507
+          },
+          "9,131": {
+            "tileId": "grass",
+            "elevation": 0.0022802107779799
+          },
+          "10,131": {
+            "tileId": "grass",
+            "elevation": 0.004624196461030467
+          },
+          "11,131": {
+            "tileId": "grass",
+            "elevation": 0.007672517019412513
+          },
+          "12,131": {
+            "tileId": "grass",
+            "elevation": 0.01131592629212475
+          },
+          "13,131": {
+            "tileId": "grass",
+            "elevation": 0.015416386312088914
+          },
+          "14,131": {
+            "tileId": "grass",
+            "elevation": 0.01980069112960794
+          },
+          "15,131": {
+            "tileId": "grass",
+            "elevation": 0.024254958215538483
+          },
+          "16,131": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "17,131": {
+            "tileId": "grass",
+            "elevation": 0.03231218182167866
+          },
+          "18,131": {
+            "tileId": "grass",
+            "elevation": 0.035316564931309295
+          },
+          "19,131": {
+            "tileId": "grass",
+            "elevation": 0.03725509075202118
+          },
+          "20,131": {
+            "tileId": "grass",
+            "elevation": 0.037925925925925925
+          },
+          "21,131": {
+            "tileId": "grass",
+            "elevation": 0.03725509075202118
+          },
+          "22,131": {
+            "tileId": "grass",
+            "elevation": 0.035316564931309295
+          },
+          "23,131": {
+            "tileId": "grass",
+            "elevation": 0.03231218182167866
+          },
+          "24,131": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "25,131": {
+            "tileId": "grass",
+            "elevation": 0.024254958215538483
+          },
+          "26,131": {
+            "tileId": "grass",
+            "elevation": 0.01980069112960794
+          },
+          "27,131": {
+            "tileId": "grass",
+            "elevation": 0.015416386312088914
+          },
+          "28,131": {
+            "tileId": "grass",
+            "elevation": 0.01131592629212475
+          },
+          "29,131": {
+            "tileId": "grass",
+            "elevation": 0.007672517019412513
+          },
+          "30,131": {
+            "tileId": "grass",
+            "elevation": 0.004624196461030467
+          },
+          "-30,132": {
+            "tileId": "grass",
+            "elevation": 0.002247174505605197
+          },
+          "-29,132": {
+            "tileId": "grass",
+            "elevation": 0.004221374019297698
+          },
+          "-28,132": {
+            "tileId": "grass",
+            "elevation": 0.006640656773631307
+          },
+          "-27,132": {
+            "tileId": "grass",
+            "elevation": 0.00936863300554786
+          },
+          "-26,132": {
+            "tileId": "grass",
+            "elevation": 0.012252004381445821
+          },
+          "-25,132": {
+            "tileId": "grass",
+            "elevation": 0.015123127343771902
+          },
+          "-24,132": {
+            "tileId": "grass",
+            "elevation": 0.017805633036062325
+          },
+          "-23,132": {
+            "tileId": "grass",
+            "elevation": 0.0201238227310302
+          },
+          "-22,132": {
+            "tileId": "grass",
+            "elevation": 0.021915853600300638
+          },
+          "-21,132": {
+            "tileId": "grass",
+            "elevation": 0.02304946622664812
+          },
+          "-20,132": {
+            "tileId": "grass",
+            "elevation": 0.0234375
+          },
+          "-19,132": {
+            "tileId": "grass",
+            "elevation": 0.02304946622664812
+          },
+          "-18,132": {
+            "tileId": "grass",
+            "elevation": 0.021915853600300638
+          },
+          "-17,132": {
+            "tileId": "grass",
+            "elevation": 0.0201238227310302
+          },
+          "-16,132": {
+            "tileId": "grass",
+            "elevation": 0.017805633036062325
+          },
+          "-15,132": {
+            "tileId": "grass",
+            "elevation": 0.015123127343771902
+          },
+          "-14,132": {
+            "tileId": "grass",
+            "elevation": 0.012252004381445821
+          },
+          "-13,132": {
+            "tileId": "grass",
+            "elevation": 0.00936863300554786
+          },
+          "-12,132": {
+            "tileId": "grass",
+            "elevation": 0.006640656773631307
+          },
+          "-11,132": {
+            "tileId": "grass",
+            "elevation": 0.004221374019297698
+          },
+          "-10,132": {
+            "tileId": "grass",
+            "elevation": 0.002247174505605197
+          },
+          "-9,132": {
+            "tileId": "grass",
+            "elevation": 0.0008371094308644702
+          },
+          "8,132": {
+            "tileId": "grass",
+            "elevation": 0.00148608240002243
+          },
+          "9,132": {
+            "tileId": "grass",
+            "elevation": 0.003615453283407386
+          },
+          "10,132": {
+            "tileId": "grass",
+            "elevation": 0.006603191886981919
+          },
+          "11,132": {
+            "tileId": "grass",
+            "elevation": 0.010370598641920576
+          },
+          "12,132": {
+            "tileId": "grass",
+            "elevation": 0.014814814814814817
+          },
+          "13,132": {
+            "tileId": "grass",
+            "elevation": 0.01980069112960794
+          },
+          "14,132": {
+            "tileId": "grass",
+            "elevation": 0.02515055334686987
+          },
+          "15,132": {
+            "tileId": "grass",
+            "elevation": 0.030632598354252066
+          },
+          "16,132": {
+            "tileId": "grass",
+            "elevation": 0.03595076946498409
+          },
+          "17,132": {
+            "tileId": "grass",
+            "elevation": 0.04074304120001122
+          },
+          "18,132": {
+            "tileId": "grass",
+            "elevation": 0.04460049800882799
+          },
+          "19,132": {
+            "tileId": "grass",
+            "elevation": 0.04712125872062423
+          },
+          "20,132": {
+            "tileId": "grass",
+            "elevation": 0.047999999999999994
+          },
+          "21,132": {
+            "tileId": "grass",
+            "elevation": 0.04712125872062423
+          },
+          "22,132": {
+            "tileId": "grass",
+            "elevation": 0.04460049800882799
+          },
+          "23,132": {
+            "tileId": "grass",
+            "elevation": 0.04074304120001122
+          },
+          "24,132": {
+            "tileId": "grass",
+            "elevation": 0.03595076946498409
+          },
+          "25,132": {
+            "tileId": "grass",
+            "elevation": 0.030632598354252066
+          },
+          "26,132": {
+            "tileId": "grass",
+            "elevation": 0.02515055334686987
+          },
+          "27,132": {
+            "tileId": "grass",
+            "elevation": 0.01980069112960794
+          },
+          "28,132": {
+            "tileId": "grass",
+            "elevation": 0.014814814814814817
+          },
+          "29,132": {
+            "tileId": "grass",
+            "elevation": 0.010370598641920576
+          },
+          "30,132": {
+            "tileId": "grass",
+            "elevation": 0.006603191886981919
+          },
+          "-30,133": {
+            "tileId": "grass",
+            "elevation": 0.0008371094308644702
+          },
+          "-29,133": {
+            "tileId": "grass",
+            "elevation": 0.002079783259335507
+          },
+          "-28,133": {
+            "tileId": "grass",
+            "elevation": 0.003745406068011601
+          },
+          "-27,133": {
+            "tileId": "grass",
+            "elevation": 0.00571031644988964
+          },
+          "-26,133": {
+            "tileId": "grass",
+            "elevation": 0.007839289872048587
+          },
+          "-25,133": {
+            "tileId": "grass",
+            "elevation": 0.00998862555011309
+          },
+          "-24,133": {
+            "tileId": "grass",
+            "elevation": 0.012011460193341142
+          },
+          "-23,133": {
+            "tileId": "grass",
+            "elevation": 0.013765536437679603
+          },
+          "-22,133": {
+            "tileId": "grass",
+            "elevation": 0.015123127343771914
+          },
+          "-21,133": {
+            "tileId": "grass",
+            "elevation": 0.015982062141932065
+          },
+          "-20,133": {
+            "tileId": "grass",
+            "elevation": 0.016276041666666668
+          },
+          "-19,133": {
+            "tileId": "grass",
+            "elevation": 0.015982062141932065
+          },
+          "-18,133": {
+            "tileId": "grass",
+            "elevation": 0.015123127343771914
+          },
+          "-17,133": {
+            "tileId": "grass",
+            "elevation": 0.013765536437679603
+          },
+          "-16,133": {
+            "tileId": "grass",
+            "elevation": 0.012011460193341142
+          },
+          "-15,133": {
+            "tileId": "grass",
+            "elevation": 0.00998862555011309
+          },
+          "-14,133": {
+            "tileId": "grass",
+            "elevation": 0.007839289872048587
+          },
+          "-13,133": {
+            "tileId": "grass",
+            "elevation": 0.00571031644988964
+          },
+          "-12,133": {
+            "tileId": "grass",
+            "elevation": 0.003745406068011601
+          },
+          "-11,133": {
+            "tileId": "grass",
+            "elevation": 0.002079783259335507
+          },
+          "-10,133": {
+            "tileId": "grass",
+            "elevation": 0.0008371094308644702
+          },
+          "8,133": {
+            "tileId": "grass",
+            "elevation": 0.0023703703703703695
+          },
+          "9,133": {
+            "tileId": "grass",
+            "elevation": 0.005042145654615019
+          },
+          "10,133": {
+            "tileId": "grass",
+            "elevation": 0.008645809407426102
+          },
+          "11,133": {
+            "tileId": "grass",
+            "elevation": 0.013114723419490363
+          },
+          "12,133": {
+            "tileId": "grass",
+            "elevation": 0.018358853948623348
+          },
+          "13,133": {
+            "tileId": "grass",
+            "elevation": 0.024254958215538483
+          },
+          "14,133": {
+            "tileId": "grass",
+            "elevation": 0.030632598354252066
+          },
+          "15,133": {
+            "tileId": "grass",
+            "elevation": 0.03725509075202118
+          },
+          "16,133": {
+            "tileId": "grass",
+            "elevation": 0.04379630985304565
+          },
+          "17,133": {
+            "tileId": "grass",
+            "elevation": 0.049820114462009485
+          },
+          "18,133": {
+            "tileId": "grass",
+            "elevation": 0.05478225528057178
+          },
+          "19,133": {
+            "tileId": "grass",
+            "elevation": 0.05809150494353568
+          },
+          "20,133": {
+            "tileId": "grass",
+            "elevation": 0.05925925925925927
+          },
+          "21,133": {
+            "tileId": "grass",
+            "elevation": 0.05809150494353568
+          },
+          "22,133": {
+            "tileId": "grass",
+            "elevation": 0.05478225528057178
+          },
+          "23,133": {
+            "tileId": "grass",
+            "elevation": 0.049820114462009485
+          },
+          "24,133": {
+            "tileId": "grass",
+            "elevation": 0.04379630985304565
+          },
+          "25,133": {
+            "tileId": "grass",
+            "elevation": 0.03725509075202118
+          },
+          "26,133": {
+            "tileId": "grass",
+            "elevation": 0.030632598354252066
+          },
+          "27,133": {
+            "tileId": "grass",
+            "elevation": 0.024254958215538483
+          },
+          "28,133": {
+            "tileId": "grass",
+            "elevation": 0.018358853948623348
+          },
+          "29,133": {
+            "tileId": "grass",
+            "elevation": 0.013114723419490363
+          },
+          "30,133": {
+            "tileId": "grass",
+            "elevation": 0.008645809407426102
+          },
+          "-28,134": {
+            "tileId": "grass",
+            "elevation": 0.0016207270446675602
+          },
+          "-27,134": {
+            "tileId": "grass",
+            "elevation": 0.002891791886462403
+          },
+          "-26,134": {
+            "tileId": "grass",
+            "elevation": 0.0043456694791929465
+          },
+          "-25,134": {
+            "tileId": "grass",
+            "elevation": 0.005859375
+          },
+          "-24,134": {
+            "tileId": "grass",
+            "elevation": 0.007310194985968386
+          },
+          "-23,134": {
+            "tileId": "grass",
+            "elevation": 0.008581940065562886
+          },
+          "-22,134": {
+            "tileId": "grass",
+            "elevation": 0.009572394570907515
+          },
+          "-21,134": {
+            "tileId": "grass",
+            "elevation": 0.010201154608493851
+          },
+          "-20,134": {
+            "tileId": "grass",
+            "elevation": 0.010416666666666666
+          },
+          "-19,134": {
+            "tileId": "grass",
+            "elevation": 0.010201154608493851
+          },
+          "-18,134": {
+            "tileId": "grass",
+            "elevation": 0.009572394570907515
+          },
+          "-17,134": {
+            "tileId": "grass",
+            "elevation": 0.008581940065562886
+          },
+          "-16,134": {
+            "tileId": "grass",
+            "elevation": 0.007310194985968386
+          },
+          "-15,134": {
+            "tileId": "grass",
+            "elevation": 0.005859375
+          },
+          "-14,134": {
+            "tileId": "grass",
+            "elevation": 0.0043456694791929465
+          },
+          "-13,134": {
+            "tileId": "grass",
+            "elevation": 0.002891791886462403
+          },
+          "-12,134": {
+            "tileId": "grass",
+            "elevation": 0.0016207270446675602
+          },
+          "7,134": {
+            "tileId": "grass",
+            "elevation": 0.001159042807666189
+          },
+          "8,134": {
+            "tileId": "grass",
+            "elevation": 0.0032750700917300586
+          },
+          "9,134": {
+            "tileId": "grass",
+            "elevation": 0.006434964550169623
+          },
+          "10,134": {
+            "tileId": "grass",
+            "elevation": 0.010601547598180593
+          },
+          "11,134": {
+            "tileId": "grass",
+            "elevation": 0.015724009449550734
+          },
+          "12,134": {
+            "tileId": "grass",
+            "elevation": 0.021731462340755694
+          },
+          "13,134": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "14,134": {
+            "tileId": "grass",
+            "elevation": 0.03595076946498409
+          },
+          "15,134": {
+            "tileId": "grass",
+            "elevation": 0.04379630985304565
+          },
+          "16,134": {
+            "tileId": "grass",
+            "elevation": 0.05172999852754287
+          },
+          "17,134": {
+            "tileId": "grass",
+            "elevation": 0.05925925925925927
+          },
+          "18,134": {
+            "tileId": "grass",
+            "elevation": 0.06568054598519267
+          },
+          "19,134": {
+            "tileId": "grass",
+            "elevation": 0.07010775184087122
+          },
+          "20,134": {
+            "tileId": "grass",
+            "elevation": 0.07170370370370373
+          },
+          "21,134": {
+            "tileId": "grass",
+            "elevation": 0.07010775184087122
+          },
+          "22,134": {
+            "tileId": "grass",
+            "elevation": 0.06568054598519267
+          },
+          "23,134": {
+            "tileId": "grass",
+            "elevation": 0.05925925925925927
+          },
+          "24,134": {
+            "tileId": "grass",
+            "elevation": 0.05172999852754287
+          },
+          "25,134": {
+            "tileId": "grass",
+            "elevation": 0.04379630985304565
+          },
+          "26,134": {
+            "tileId": "grass",
+            "elevation": 0.03595076946498409
+          },
+          "27,134": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "28,134": {
+            "tileId": "grass",
+            "elevation": 0.021731462340755694
+          },
+          "29,134": {
+            "tileId": "grass",
+            "elevation": 0.015724009449550734
+          },
+          "30,134": {
+            "tileId": "grass",
+            "elevation": 0.010601547598180593
+          },
+          "-27,135": {
+            "tileId": "grass",
+            "elevation": 0.000993269578470819
+          },
+          "-26,135": {
+            "tileId": "grass",
+            "elevation": 0.0018422695150759792
+          },
+          "-25,135": {
+            "tileId": "grass",
+            "elevation": 0.0027939942253308423
+          },
+          "-24,135": {
+            "tileId": "grass",
+            "elevation": 0.0037454060680115896
+          },
+          "-23,135": {
+            "tileId": "grass",
+            "elevation": 0.004600748664034713
+          },
+          "-22,135": {
+            "tileId": "grass",
+            "elevation": 0.005277157542376977
+          },
+          "-21,135": {
+            "tileId": "grass",
+            "elevation": 0.00571031644988964
+          },
+          "-20,135": {
+            "tileId": "grass",
+            "elevation": 0.005859375
+          },
+          "-19,135": {
+            "tileId": "grass",
+            "elevation": 0.00571031644988964
+          },
+          "-18,135": {
+            "tileId": "grass",
+            "elevation": 0.005277157542376977
+          },
+          "-17,135": {
+            "tileId": "grass",
+            "elevation": 0.004600748664034713
+          },
+          "-16,135": {
+            "tileId": "grass",
+            "elevation": 0.0037454060680115896
+          },
+          "-15,135": {
+            "tileId": "grass",
+            "elevation": 0.0027939942253308423
+          },
+          "-14,135": {
+            "tileId": "grass",
+            "elevation": 0.0018422695150759792
+          },
+          "-13,135": {
+            "tileId": "grass",
+            "elevation": 0.000993269578470819
+          },
+          "7,135": {
+            "tileId": "grass",
+            "elevation": 0.0016296758970133262
+          },
+          "8,135": {
+            "tileId": "grass",
+            "elevation": 0.004101033300391436
+          },
+          "9,135": {
+            "tileId": "grass",
+            "elevation": 0.007672517019412513
+          },
+          "10,135": {
+            "tileId": "grass",
+            "elevation": 0.01232047687862725
+          },
+          "11,135": {
+            "tileId": "grass",
+            "elevation": 0.018011858124353103
+          },
+          "12,135": {
+            "tileId": "grass",
+            "elevation": 0.024699192675836482
+          },
+          "13,135": {
+            "tileId": "grass",
+            "elevation": 0.03231218182167866
+          },
+          "14,135": {
+            "tileId": "grass",
+            "elevation": 0.04074304120001122
+          },
+          "15,135": {
+            "tileId": "grass",
+            "elevation": 0.049820114462009485
+          },
+          "16,135": {
+            "tileId": "grass",
+            "elevation": 0.05925925925925927
+          },
+          "17,135": {
+            "tileId": "grass",
+            "elevation": 0.06857527667343492
+          },
+          "18,135": {
+            "tileId": "grass",
+            "elevation": 0.07693834769545502
+          },
+          "19,135": {
+            "tileId": "grass",
+            "elevation": 0.08304098974515474
+          },
+          "20,135": {
+            "tileId": "grass",
+            "elevation": 0.08533333333333336
+          },
+          "21,135": {
+            "tileId": "grass",
+            "elevation": 0.08304098974515474
+          },
+          "22,135": {
+            "tileId": "grass",
+            "elevation": 0.07693834769545502
+          },
+          "23,135": {
+            "tileId": "grass",
+            "elevation": 0.06857527667343492
+          },
+          "24,135": {
+            "tileId": "grass",
+            "elevation": 0.05925925925925927
+          },
+          "25,135": {
+            "tileId": "grass",
+            "elevation": 0.049820114462009485
+          },
+          "26,135": {
+            "tileId": "grass",
+            "elevation": 0.04074304120001122
+          },
+          "27,135": {
+            "tileId": "grass",
+            "elevation": 0.03231218182167866
+          },
+          "28,135": {
+            "tileId": "grass",
+            "elevation": 0.024699192675836482
+          },
+          "29,135": {
+            "tileId": "grass",
+            "elevation": 0.018011858124353103
+          },
+          "30,135": {
+            "tileId": "grass",
+            "elevation": 0.01232047687862725
+          },
+          "-25,136": {
+            "tileId": "grass",
+            "elevation": 0.0008371094308644702
+          },
+          "-24,136": {
+            "tileId": "grass",
+            "elevation": 0.0013495879466450696
+          },
+          "-23,136": {
+            "tileId": "grass",
+            "elevation": 0.0018422695150759792
+          },
+          "-22,136": {
+            "tileId": "grass",
+            "elevation": 0.002247174505605197
+          },
+          "-21,136": {
+            "tileId": "grass",
+            "elevation": 0.0025121073412875047
+          },
+          "-20,136": {
+            "tileId": "grass",
+            "elevation": 0.0026041666666666665
+          },
+          "-19,136": {
+            "tileId": "grass",
+            "elevation": 0.0025121073412875047
+          },
+          "-18,136": {
+            "tileId": "grass",
+            "elevation": 0.002247174505605197
+          },
+          "-17,136": {
+            "tileId": "grass",
+            "elevation": 0.0018422695150759792
+          },
+          "-16,136": {
+            "tileId": "grass",
+            "elevation": 0.0013495879466450696
+          },
+          "-15,136": {
+            "tileId": "grass",
+            "elevation": 0.0008371094308644702
+          },
+          "7,136": {
+            "tileId": "grass",
+            "elevation": 0.002021692954680203
+          },
+          "8,136": {
+            "tileId": "grass",
+            "elevation": 0.004761035959767006
+          },
+          "9,136": {
+            "tileId": "grass",
+            "elevation": 0.00864580940742611
+          },
+          "10,136": {
+            "tileId": "grass",
+            "elevation": 0.01366449136855284
+          },
+          "11,136": {
+            "tileId": "grass",
+            "elevation": 0.019800691129607927
+          },
+          "12,136": {
+            "tileId": "grass",
+            "elevation": 0.027030318496557255
+          },
+          "13,136": {
+            "tileId": "grass",
+            "elevation": 0.035316564931309295
+          },
+          "14,136": {
+            "tileId": "grass",
+            "elevation": 0.04460049800882799
+          },
+          "15,136": {
+            "tileId": "grass",
+            "elevation": 0.05478225528057178
+          },
+          "16,136": {
+            "tileId": "grass",
+            "elevation": 0.06568054598519267
+          },
+          "17,136": {
+            "tileId": "grass",
+            "elevation": 0.07693834769545502
+          },
+          "18,136": {
+            "tileId": "grass",
+            "elevation": 0.08779092518969737
+          },
+          "19,136": {
+            "tileId": "grass",
+            "elevation": 0.09654397669630005
+          },
+          "20,136": {
+            "tileId": "grass",
+            "elevation": 0.10014814814814817
+          },
+          "21,136": {
+            "tileId": "grass",
+            "elevation": 0.09654397669630005
+          },
+          "22,136": {
+            "tileId": "grass",
+            "elevation": 0.08779092518969737
+          },
+          "23,136": {
+            "tileId": "grass",
+            "elevation": 0.07693834769545502
+          },
+          "24,136": {
+            "tileId": "grass",
+            "elevation": 0.06568054598519267
+          },
+          "25,136": {
+            "tileId": "grass",
+            "elevation": 0.05478225528057178
+          },
+          "26,136": {
+            "tileId": "grass",
+            "elevation": 0.04460049800882799
+          },
+          "27,136": {
+            "tileId": "grass",
+            "elevation": 0.035316564931309295
+          },
+          "28,136": {
+            "tileId": "grass",
+            "elevation": 0.027030318496557255
+          },
+          "29,136": {
+            "tileId": "grass",
+            "elevation": 0.019800691129607927
+          },
+          "30,136": {
+            "tileId": "grass",
+            "elevation": 0.01366449136855284
+          },
+          "7,137": {
+            "tileId": "grass",
+            "elevation": 0.0022802107779799
+          },
+          "8,137": {
+            "tileId": "grass",
+            "elevation": 0.005186466747396233
+          },
+          "9,137": {
+            "tileId": "grass",
+            "elevation": 0.009267655990744994
+          },
+          "10,137": {
+            "tileId": "grass",
+            "elevation": 0.014520729698591585
+          },
+          "11,137": {
+            "tileId": "grass",
+            "elevation": 0.0209413012479274
+          },
+          "12,137": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "13,137": {
+            "tileId": "grass",
+            "elevation": 0.03725509075202118
+          },
+          "14,137": {
+            "tileId": "grass",
+            "elevation": 0.04712125872062423
+          },
+          "15,137": {
+            "tileId": "grass",
+            "elevation": 0.05809150494353568
+          },
+          "16,137": {
+            "tileId": "grass",
+            "elevation": 0.07010775184087122
+          },
+          "17,137": {
+            "tileId": "grass",
+            "elevation": 0.08304098974515474
+          },
+          "18,137": {
+            "tileId": "grass",
+            "elevation": 0.09654397669630005
+          },
+          "19,137": {
+            "tileId": "grass",
+            "elevation": 0.10937694407633015
+          },
+          "20,137": {
+            "tileId": "grass",
+            "elevation": 0.11614814814814817
+          },
+          "21,137": {
+            "tileId": "grass",
+            "elevation": 0.10937694407633015
+          },
+          "22,137": {
+            "tileId": "grass",
+            "elevation": 0.09654397669630005
+          },
+          "23,137": {
+            "tileId": "grass",
+            "elevation": 0.08304098974515474
+          },
+          "24,137": {
+            "tileId": "grass",
+            "elevation": 0.07010775184087122
+          },
+          "25,137": {
+            "tileId": "grass",
+            "elevation": 0.05809150494353568
+          },
+          "26,137": {
+            "tileId": "grass",
+            "elevation": 0.04712125872062423
+          },
+          "27,137": {
+            "tileId": "grass",
+            "elevation": 0.03725509075202118
+          },
+          "28,137": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "29,137": {
+            "tileId": "grass",
+            "elevation": 0.0209413012479274
+          },
+          "30,137": {
+            "tileId": "grass",
+            "elevation": 0.014520729698591585
+          },
+          "7,138": {
+            "tileId": "grass",
+            "elevation": 0.0023703703703703695
+          },
+          "8,138": {
+            "tileId": "grass",
+            "elevation": 0.005333333333333331
+          },
+          "9,138": {
+            "tileId": "grass",
+            "elevation": 0.009481481481481485
+          },
+          "10,138": {
+            "tileId": "grass",
+            "elevation": 0.014814814814814817
+          },
+          "11,138": {
+            "tileId": "grass",
+            "elevation": 0.02133333333333334
+          },
+          "12,138": {
+            "tileId": "grass",
+            "elevation": 0.029037037037037042
+          },
+          "13,138": {
+            "tileId": "grass",
+            "elevation": 0.037925925925925925
+          },
+          "14,138": {
+            "tileId": "grass",
+            "elevation": 0.047999999999999994
+          },
+          "15,138": {
+            "tileId": "grass",
+            "elevation": 0.05925925925925927
+          },
+          "16,138": {
+            "tileId": "grass",
+            "elevation": 0.07170370370370373
+          },
+          "17,138": {
+            "tileId": "grass",
+            "elevation": 0.08533333333333336
+          },
+          "18,138": {
+            "tileId": "grass",
+            "elevation": 0.10014814814814817
+          },
+          "19,138": {
+            "tileId": "grass",
+            "elevation": 0.11614814814814817
+          },
+          "20,138": {
+            "tileId": "grass",
+            "elevation": 0.13333333333333333
+          },
+          "21,138": {
+            "tileId": "grass",
+            "elevation": 0.11614814814814817
+          },
+          "22,138": {
+            "tileId": "grass",
+            "elevation": 0.10014814814814817
+          },
+          "23,138": {
+            "tileId": "grass",
+            "elevation": 0.08533333333333336
+          },
+          "24,138": {
+            "tileId": "grass",
+            "elevation": 0.07170370370370373
+          },
+          "25,138": {
+            "tileId": "grass",
+            "elevation": 0.05925925925925927
+          },
+          "26,138": {
+            "tileId": "grass",
+            "elevation": 0.047999999999999994
+          },
+          "27,138": {
+            "tileId": "grass",
+            "elevation": 0.037925925925925925
+          },
+          "28,138": {
+            "tileId": "grass",
+            "elevation": 0.029037037037037042
+          },
+          "29,138": {
+            "tileId": "grass",
+            "elevation": 0.02133333333333334
+          },
+          "30,138": {
+            "tileId": "grass",
+            "elevation": 0.014814814814814817
+          },
+          "7,139": {
+            "tileId": "grass",
+            "elevation": 0.0022802107779799
+          },
+          "8,139": {
+            "tileId": "grass",
+            "elevation": 0.005186466747396233
+          },
+          "9,139": {
+            "tileId": "grass",
+            "elevation": 0.009267655990744994
+          },
+          "10,139": {
+            "tileId": "grass",
+            "elevation": 0.014520729698591585
+          },
+          "11,139": {
+            "tileId": "grass",
+            "elevation": 0.0209413012479274
+          },
+          "12,139": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "13,139": {
+            "tileId": "grass",
+            "elevation": 0.03725509075202118
+          },
+          "14,139": {
+            "tileId": "grass",
+            "elevation": 0.04712125872062423
+          },
+          "15,139": {
+            "tileId": "grass",
+            "elevation": 0.05809150494353568
+          },
+          "16,139": {
+            "tileId": "grass",
+            "elevation": 0.07010775184087122
+          },
+          "17,139": {
+            "tileId": "grass",
+            "elevation": 0.08304098974515474
+          },
+          "18,139": {
+            "tileId": "grass",
+            "elevation": 0.09654397669630005
+          },
+          "19,139": {
+            "tileId": "grass",
+            "elevation": 0.10937694407633015
+          },
+          "20,139": {
+            "tileId": "grass",
+            "elevation": 0.11614814814814817
+          },
+          "21,139": {
+            "tileId": "grass",
+            "elevation": 0.10937694407633015
+          },
+          "22,139": {
+            "tileId": "grass",
+            "elevation": 0.09654397669630005
+          },
+          "23,139": {
+            "tileId": "grass",
+            "elevation": 0.08304098974515474
+          },
+          "24,139": {
+            "tileId": "grass",
+            "elevation": 0.07010775184087122
+          },
+          "25,139": {
+            "tileId": "grass",
+            "elevation": 0.05809150494353568
+          },
+          "26,139": {
+            "tileId": "grass",
+            "elevation": 0.04712125872062423
+          },
+          "27,139": {
+            "tileId": "grass",
+            "elevation": 0.03725509075202118
+          },
+          "28,139": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "29,139": {
+            "tileId": "grass",
+            "elevation": 0.0209413012479274
+          },
+          "30,139": {
+            "tileId": "grass",
+            "elevation": 0.014520729698591585
+          },
+          "7,140": {
+            "tileId": "grass",
+            "elevation": 0.002021692954680203
+          },
+          "8,140": {
+            "tileId": "grass",
+            "elevation": 0.004761035959767006
+          },
+          "9,140": {
+            "tileId": "grass",
+            "elevation": 0.00864580940742611
+          },
+          "10,140": {
+            "tileId": "grass",
+            "elevation": 0.01366449136855284
+          },
+          "11,140": {
+            "tileId": "grass",
+            "elevation": 0.019800691129607927
+          },
+          "12,140": {
+            "tileId": "grass",
+            "elevation": 0.027030318496557255
+          },
+          "13,140": {
+            "tileId": "grass",
+            "elevation": 0.035316564931309295
+          },
+          "14,140": {
+            "tileId": "grass",
+            "elevation": 0.04460049800882799
+          },
+          "15,140": {
+            "tileId": "grass",
+            "elevation": 0.05478225528057178
+          },
+          "16,140": {
+            "tileId": "grass",
+            "elevation": 0.06568054598519267
+          },
+          "17,140": {
+            "tileId": "grass",
+            "elevation": 0.07693834769545502
+          },
+          "18,140": {
+            "tileId": "grass",
+            "elevation": 0.08779092518969737
+          },
+          "19,140": {
+            "tileId": "grass",
+            "elevation": 0.09654397669630005
+          },
+          "20,140": {
+            "tileId": "grass",
+            "elevation": 0.10014814814814817
+          },
+          "21,140": {
+            "tileId": "grass",
+            "elevation": 0.09654397669630005
+          },
+          "22,140": {
+            "tileId": "grass",
+            "elevation": 0.08779092518969737
+          },
+          "23,140": {
+            "tileId": "grass",
+            "elevation": 0.07693834769545502
+          },
+          "24,140": {
+            "tileId": "grass",
+            "elevation": 0.06568054598519267
+          },
+          "25,140": {
+            "tileId": "grass",
+            "elevation": 0.05478225528057178
+          },
+          "26,140": {
+            "tileId": "grass",
+            "elevation": 0.04460049800882799
+          },
+          "27,140": {
+            "tileId": "grass",
+            "elevation": 0.035316564931309295
+          },
+          "28,140": {
+            "tileId": "grass",
+            "elevation": 0.027030318496557255
+          },
+          "29,140": {
+            "tileId": "grass",
+            "elevation": 0.019800691129607927
+          },
+          "30,140": {
+            "tileId": "grass",
+            "elevation": 0.01366449136855284
+          },
+          "7,141": {
+            "tileId": "grass",
+            "elevation": 0.0016296758970133262
+          },
+          "8,141": {
+            "tileId": "grass",
+            "elevation": 0.004101033300391436
+          },
+          "9,141": {
+            "tileId": "grass",
+            "elevation": 0.007672517019412513
+          },
+          "10,141": {
+            "tileId": "grass",
+            "elevation": 0.01232047687862725
+          },
+          "11,141": {
+            "tileId": "grass",
+            "elevation": 0.018011858124353103
+          },
+          "12,141": {
+            "tileId": "grass",
+            "elevation": 0.024699192675836482
+          },
+          "13,141": {
+            "tileId": "grass",
+            "elevation": 0.03231218182167866
+          },
+          "14,141": {
+            "tileId": "grass",
+            "elevation": 0.04074304120001122
+          },
+          "15,141": {
+            "tileId": "grass",
+            "elevation": 0.049820114462009485
+          },
+          "16,141": {
+            "tileId": "grass",
+            "elevation": 0.05925925925925927
+          },
+          "17,141": {
+            "tileId": "grass",
+            "elevation": 0.06857527667343492
+          },
+          "18,141": {
+            "tileId": "grass",
+            "elevation": 0.07693834769545502
+          },
+          "19,141": {
+            "tileId": "grass",
+            "elevation": 0.08304098974515474
+          },
+          "20,141": {
+            "tileId": "grass",
+            "elevation": 0.08533333333333336
+          },
+          "21,141": {
+            "tileId": "grass",
+            "elevation": 0.08304098974515474
+          },
+          "22,141": {
+            "tileId": "grass",
+            "elevation": 0.07693834769545502
+          },
+          "23,141": {
+            "tileId": "grass",
+            "elevation": 0.06857527667343492
+          },
+          "24,141": {
+            "tileId": "grass",
+            "elevation": 0.05925925925925927
+          },
+          "25,141": {
+            "tileId": "grass",
+            "elevation": 0.049820114462009485
+          },
+          "26,141": {
+            "tileId": "grass",
+            "elevation": 0.04074304120001122
+          },
+          "27,141": {
+            "tileId": "grass",
+            "elevation": 0.03231218182167866
+          },
+          "28,141": {
+            "tileId": "grass",
+            "elevation": 0.024699192675836482
+          },
+          "29,141": {
+            "tileId": "grass",
+            "elevation": 0.018011858124353103
+          },
+          "30,141": {
+            "tileId": "grass",
+            "elevation": 0.01232047687862725
+          },
+          "7,142": {
+            "tileId": "grass",
+            "elevation": 0.001159042807666189
+          },
+          "8,142": {
+            "tileId": "grass",
+            "elevation": 0.0032750700917300586
+          },
+          "9,142": {
+            "tileId": "grass",
+            "elevation": 0.006434964550169623
+          },
+          "10,142": {
+            "tileId": "grass",
+            "elevation": 0.010601547598180593
+          },
+          "11,142": {
+            "tileId": "grass",
+            "elevation": 0.015724009449550734
+          },
+          "12,142": {
+            "tileId": "grass",
+            "elevation": 0.021731462340755694
+          },
+          "13,142": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "14,142": {
+            "tileId": "grass",
+            "elevation": 0.03595076946498409
+          },
+          "15,142": {
+            "tileId": "grass",
+            "elevation": 0.04379630985304565
+          },
+          "16,142": {
+            "tileId": "grass",
+            "elevation": 0.05172999852754287
+          },
+          "17,142": {
+            "tileId": "grass",
+            "elevation": 0.05925925925925927
+          },
+          "18,142": {
+            "tileId": "grass",
+            "elevation": 0.06568054598519267
+          },
+          "19,142": {
+            "tileId": "grass",
+            "elevation": 0.07010775184087122
+          },
+          "20,142": {
+            "tileId": "grass",
+            "elevation": 0.07170370370370373
+          },
+          "21,142": {
+            "tileId": "grass",
+            "elevation": 0.07010775184087122
+          },
+          "22,142": {
+            "tileId": "grass",
+            "elevation": 0.06568054598519267
+          },
+          "23,142": {
+            "tileId": "grass",
+            "elevation": 0.05925925925925927
+          },
+          "24,142": {
+            "tileId": "grass",
+            "elevation": 0.05172999852754287
+          },
+          "25,142": {
+            "tileId": "grass",
+            "elevation": 0.04379630985304565
+          },
+          "26,142": {
+            "tileId": "grass",
+            "elevation": 0.03595076946498409
+          },
+          "27,142": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "28,142": {
+            "tileId": "grass",
+            "elevation": 0.021731462340755694
+          },
+          "29,142": {
+            "tileId": "grass",
+            "elevation": 0.015724009449550734
+          },
+          "30,142": {
+            "tileId": "grass",
+            "elevation": 0.010601547598180593
+          },
+          "8,143": {
+            "tileId": "grass",
+            "elevation": 0.0023703703703703695
+          },
+          "9,143": {
+            "tileId": "grass",
+            "elevation": 0.005042145654615019
+          },
+          "10,143": {
+            "tileId": "grass",
+            "elevation": 0.008645809407426102
+          },
+          "11,143": {
+            "tileId": "grass",
+            "elevation": 0.013114723419490363
+          },
+          "12,143": {
+            "tileId": "grass",
+            "elevation": 0.018358853948623348
+          },
+          "13,143": {
+            "tileId": "grass",
+            "elevation": 0.024254958215538483
+          },
+          "14,143": {
+            "tileId": "grass",
+            "elevation": 0.030632598354252066
+          },
+          "15,143": {
+            "tileId": "grass",
+            "elevation": 0.03725509075202118
+          },
+          "16,143": {
+            "tileId": "grass",
+            "elevation": 0.04379630985304565
+          },
+          "17,143": {
+            "tileId": "grass",
+            "elevation": 0.049820114462009485
+          },
+          "18,143": {
+            "tileId": "grass",
+            "elevation": 0.05478225528057178
+          },
+          "19,143": {
+            "tileId": "grass",
+            "elevation": 0.05809150494353568
+          },
+          "20,143": {
+            "tileId": "grass",
+            "elevation": 0.05925925925925927
+          },
+          "21,143": {
+            "tileId": "grass",
+            "elevation": 0.05809150494353568
+          },
+          "22,143": {
+            "tileId": "grass",
+            "elevation": 0.05478225528057178
+          },
+          "23,143": {
+            "tileId": "grass",
+            "elevation": 0.049820114462009485
+          },
+          "24,143": {
+            "tileId": "grass",
+            "elevation": 0.04379630985304565
+          },
+          "25,143": {
+            "tileId": "grass",
+            "elevation": 0.03725509075202118
+          },
+          "26,143": {
+            "tileId": "grass",
+            "elevation": 0.030632598354252066
+          },
+          "27,143": {
+            "tileId": "grass",
+            "elevation": 0.024254958215538483
+          },
+          "28,143": {
+            "tileId": "grass",
+            "elevation": 0.018358853948623348
+          },
+          "29,143": {
+            "tileId": "grass",
+            "elevation": 0.013114723419490363
+          },
+          "30,143": {
+            "tileId": "grass",
+            "elevation": 0.008645809407426102
+          },
+          "8,144": {
+            "tileId": "grass",
+            "elevation": 0.00148608240002243
+          },
+          "9,144": {
+            "tileId": "grass",
+            "elevation": 0.003615453283407386
+          },
+          "10,144": {
+            "tileId": "grass",
+            "elevation": 0.006603191886981919
+          },
+          "11,144": {
+            "tileId": "grass",
+            "elevation": 0.010370598641920576
+          },
+          "12,144": {
+            "tileId": "grass",
+            "elevation": 0.014814814814814817
+          },
+          "13,144": {
+            "tileId": "grass",
+            "elevation": 0.01980069112960794
+          },
+          "14,144": {
+            "tileId": "grass",
+            "elevation": 0.02515055334686987
+          },
+          "15,144": {
+            "tileId": "grass",
+            "elevation": 0.030632598354252066
+          },
+          "16,144": {
+            "tileId": "grass",
+            "elevation": 0.03595076946498409
+          },
+          "17,144": {
+            "tileId": "grass",
+            "elevation": 0.04074304120001122
+          },
+          "18,144": {
+            "tileId": "grass",
+            "elevation": 0.04460049800882799
+          },
+          "19,144": {
+            "tileId": "grass",
+            "elevation": 0.04712125872062423
+          },
+          "20,144": {
+            "tileId": "grass",
+            "elevation": 0.047999999999999994
+          },
+          "21,144": {
+            "tileId": "grass",
+            "elevation": 0.04712125872062423
+          },
+          "22,144": {
+            "tileId": "grass",
+            "elevation": 0.04460049800882799
+          },
+          "23,144": {
+            "tileId": "grass",
+            "elevation": 0.04074304120001122
+          },
+          "24,144": {
+            "tileId": "grass",
+            "elevation": 0.03595076946498409
+          },
+          "25,144": {
+            "tileId": "grass",
+            "elevation": 0.030632598354252066
+          },
+          "26,144": {
+            "tileId": "grass",
+            "elevation": 0.02515055334686987
+          },
+          "27,144": {
+            "tileId": "grass",
+            "elevation": 0.01980069112960794
+          },
+          "28,144": {
+            "tileId": "grass",
+            "elevation": 0.014814814814814817
+          },
+          "29,144": {
+            "tileId": "grass",
+            "elevation": 0.010370598641920576
+          },
+          "30,144": {
+            "tileId": "grass",
+            "elevation": 0.006603191886981919
+          },
+          "9,145": {
+            "tileId": "grass",
+            "elevation": 0.0022802107779799
+          },
+          "10,145": {
+            "tileId": "grass",
+            "elevation": 0.004624196461030467
+          },
+          "11,145": {
+            "tileId": "grass",
+            "elevation": 0.007672517019412513
+          },
+          "12,145": {
+            "tileId": "grass",
+            "elevation": 0.01131592629212475
+          },
+          "13,145": {
+            "tileId": "grass",
+            "elevation": 0.015416386312088914
+          },
+          "14,145": {
+            "tileId": "grass",
+            "elevation": 0.01980069112960794
+          },
+          "15,145": {
+            "tileId": "grass",
+            "elevation": 0.024254958215538483
+          },
+          "16,145": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "17,145": {
+            "tileId": "grass",
+            "elevation": 0.03231218182167866
+          },
+          "18,145": {
+            "tileId": "grass",
+            "elevation": 0.035316564931309295
+          },
+          "19,145": {
+            "tileId": "grass",
+            "elevation": 0.03725509075202118
+          },
+          "20,145": {
+            "tileId": "grass",
+            "elevation": 0.037925925925925925
+          },
+          "21,145": {
+            "tileId": "grass",
+            "elevation": 0.03725509075202118
+          },
+          "22,145": {
+            "tileId": "grass",
+            "elevation": 0.035316564931309295
+          },
+          "23,145": {
+            "tileId": "grass",
+            "elevation": 0.03231218182167866
+          },
+          "24,145": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "25,145": {
+            "tileId": "grass",
+            "elevation": 0.024254958215538483
+          },
+          "26,145": {
+            "tileId": "grass",
+            "elevation": 0.01980069112960794
+          },
+          "27,145": {
+            "tileId": "grass",
+            "elevation": 0.015416386312088914
+          },
+          "28,145": {
+            "tileId": "grass",
+            "elevation": 0.01131592629212475
+          },
+          "29,145": {
+            "tileId": "grass",
+            "elevation": 0.007672517019412513
+          },
+          "30,145": {
+            "tileId": "grass",
+            "elevation": 0.004624196461030467
+          },
+          "9,146": {
+            "tileId": "grass",
+            "elevation": 0.0011590428076661944
+          },
+          "10,146": {
+            "tileId": "grass",
+            "elevation": 0.0028518789653505677
+          },
+          "11,146": {
+            "tileId": "grass",
+            "elevation": 0.005186466747396228
+          },
+          "12,146": {
+            "tileId": "grass",
+            "elevation": 0.008052589647678335
+          },
+          "13,146": {
+            "tileId": "grass",
+            "elevation": 0.01131592629212475
+          },
+          "14,146": {
+            "tileId": "grass",
+            "elevation": 0.014814814814814817
+          },
+          "15,146": {
+            "tileId": "grass",
+            "elevation": 0.018358853948623348
+          },
+          "16,146": {
+            "tileId": "grass",
+            "elevation": 0.021731462340755694
+          },
+          "17,146": {
+            "tileId": "grass",
+            "elevation": 0.024699192675836482
+          },
+          "18,146": {
+            "tileId": "grass",
+            "elevation": 0.027030318496557255
+          },
+          "19,146": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "20,146": {
+            "tileId": "grass",
+            "elevation": 0.029037037037037042
+          },
+          "21,146": {
+            "tileId": "grass",
+            "elevation": 0.0285228252154332
+          },
+          "22,146": {
+            "tileId": "grass",
+            "elevation": 0.027030318496557255
+          },
+          "23,146": {
+            "tileId": "grass",
+            "elevation": 0.024699192675836482
+          },
+          "24,146": {
+            "tileId": "grass",
+            "elevation": 0.021731462340755694
+          },
+          "25,146": {
+            "tileId": "grass",
+            "elevation": 0.018358853948623348
+          },
+          "26,146": {
+            "tileId": "grass",
+            "elevation": 0.014814814814814817
+          },
+          "27,146": {
+            "tileId": "grass",
+            "elevation": 0.01131592629212475
+          },
+          "28,146": {
+            "tileId": "grass",
+            "elevation": 0.008052589647678335
+          },
+          "29,146": {
+            "tileId": "grass",
+            "elevation": 0.005186466747396228
+          },
+          "30,146": {
+            "tileId": "grass",
+            "elevation": 0.0028518789653505677
+          },
+          "10,147": {
+            "tileId": "grass",
+            "elevation": 0.0014170539779488512
+          },
+          "11,147": {
+            "tileId": "grass",
+            "elevation": 0.003059163353638126
+          },
+          "12,147": {
+            "tileId": "grass",
+            "elevation": 0.005186466747396228
+          },
+          "13,147": {
+            "tileId": "grass",
+            "elevation": 0.007672517019412513
+          },
+          "14,147": {
+            "tileId": "grass",
+            "elevation": 0.010370598641920576
+          },
+          "15,147": {
+            "tileId": "grass",
+            "elevation": 0.013114723419490363
+          },
+          "16,147": {
+            "tileId": "grass",
+            "elevation": 0.015724009449550734
+          },
+          "17,147": {
+            "tileId": "grass",
+            "elevation": 0.018011858124353103
+          },
+          "18,147": {
+            "tileId": "grass",
+            "elevation": 0.019800691129607927
+          },
+          "19,147": {
+            "tileId": "grass",
+            "elevation": 0.0209413012479274
+          },
+          "20,147": {
+            "tileId": "grass",
+            "elevation": 0.02133333333333334
+          },
+          "21,147": {
+            "tileId": "grass",
+            "elevation": 0.0209413012479274
+          },
+          "22,147": {
+            "tileId": "grass",
+            "elevation": 0.019800691129607927
+          },
+          "23,147": {
+            "tileId": "grass",
+            "elevation": 0.018011858124353103
+          },
+          "24,147": {
+            "tileId": "grass",
+            "elevation": 0.015724009449550734
+          },
+          "25,147": {
+            "tileId": "grass",
+            "elevation": 0.013114723419490363
+          },
+          "26,147": {
+            "tileId": "grass",
+            "elevation": 0.010370598641920576
+          },
+          "27,147": {
+            "tileId": "grass",
+            "elevation": 0.007672517019412513
+          },
+          "28,147": {
+            "tileId": "grass",
+            "elevation": 0.005186466747396228
+          },
+          "29,147": {
+            "tileId": "grass",
+            "elevation": 0.003059163353638126
+          },
+          "30,147": {
+            "tileId": "grass",
+            "elevation": 0.0014170539779488512
+          },
+          "11,148": {
+            "tileId": "grass",
+            "elevation": 0.0014170539779488512
+          },
+          "12,148": {
+            "tileId": "grass",
+            "elevation": 0.0028518789653505677
+          },
+          "13,148": {
+            "tileId": "grass",
+            "elevation": 0.004624196461030467
+          },
+          "14,148": {
+            "tileId": "grass",
+            "elevation": 0.006603191886981919
+          },
+          "15,148": {
+            "tileId": "grass",
+            "elevation": 0.008645809407426102
+          },
+          "16,148": {
+            "tileId": "grass",
+            "elevation": 0.010601547598180593
+          },
+          "17,148": {
+            "tileId": "grass",
+            "elevation": 0.01232047687862725
+          },
+          "18,148": {
+            "tileId": "grass",
+            "elevation": 0.01366449136855284
+          },
+          "19,148": {
+            "tileId": "grass",
+            "elevation": 0.014520729698591585
+          },
+          "20,148": {
+            "tileId": "grass",
+            "elevation": 0.014814814814814817
+          },
+          "21,148": {
+            "tileId": "grass",
+            "elevation": 0.014520729698591585
+          },
+          "22,148": {
+            "tileId": "grass",
+            "elevation": 0.01366449136855284
+          },
+          "23,148": {
+            "tileId": "grass",
+            "elevation": 0.01232047687862725
+          },
+          "24,148": {
+            "tileId": "grass",
+            "elevation": 0.010601547598180593
+          },
+          "25,148": {
+            "tileId": "grass",
+            "elevation": 0.008645809407426102
+          },
+          "26,148": {
+            "tileId": "grass",
+            "elevation": 0.006603191886981919
+          },
+          "27,148": {
+            "tileId": "grass",
+            "elevation": 0.004624196461030467
+          },
+          "28,148": {
+            "tileId": "grass",
+            "elevation": 0.0028518789653505677
+          },
+          "29,148": {
+            "tileId": "grass",
+            "elevation": 0.0014170539779488512
+          }
+        }
+      },
+      "nodes": [
+        {
+          "x": 0,
+          "y": 0,
+          "elevation": 0,
+          "role": "start",
+          "locked": true
+        }
+      ],
+      "segments": [
+        {
+          "length": 180,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "hazardIds": []
+        },
+        {
+          "length": 120,
+          "curve": 0.55,
+          "elevation": 0.08,
+          "surface": "asphalt",
+          "codriver": "medium-right"
+        },
+        {
+          "length": 150,
+          "curve": -0.35,
+          "elevation": -0.04,
+          "surface": "dirt",
+          "hazardIds": []
+        },
+        {
+          "length": 110,
+          "curve": 0.9,
+          "elevation": 0.02,
+          "surface": "gravel",
+          "turn": "square",
+          "codriver": "square-right"
+        },
+        {
+          "length": 180,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "hazardIds": []
+        }
+      ],
+      "network": {
+        "version": 1,
+        "nodes": [
+          {
+            "x": 0,
+            "z": -100,
+            "heightM": 0,
+            "id": "start",
+            "name": "Start"
+          },
+          {
+            "x": 0,
+            "z": 0,
+            "heightM": 0,
+            "id": "y",
+            "name": "Y split"
+          },
+          {
+            "x": -90,
+            "z": 100,
+            "heightM": 0,
+            "id": "left",
+            "name": "West approach"
+          },
+          {
+            "x": 90,
+            "z": 100,
+            "heightM": 0,
+            "id": "right",
+            "name": "East approach"
+          },
+          {
+            "x": -90,
+            "z": 220,
+            "heightM": 0,
+            "id": "t",
+            "name": "T junction"
+          },
+          {
+            "x": -190,
+            "z": 220,
+            "heightM": 0,
+            "id": "tw",
+            "name": "West turn"
+          },
+          {
+            "x": 90,
+            "z": 220,
+            "heightM": 0,
+            "id": "te",
+            "name": "East turn"
+          },
+          {
+            "x": -190,
+            "z": 400,
+            "heightM": 0,
+            "id": "west",
+            "name": "West loop"
+          },
+          {
+            "x": 0,
+            "z": 400,
+            "heightM": 0,
+            "id": "cross",
+            "name": "Four-way intersection"
+          },
+          {
+            "x": 180,
+            "z": 400,
+            "heightM": 0,
+            "id": "east",
+            "name": "East loop"
+          },
+          {
+            "x": 180,
+            "z": 160,
+            "heightM": 6,
+            "id": "bridge-east",
+            "name": "Bridge east"
+          },
+          {
+            "x": -190,
+            "z": 160,
+            "heightM": 6,
+            "id": "bridge-west",
+            "name": "Bridge west"
+          },
+          {
+            "x": 0,
+            "z": 600,
+            "heightM": 0,
+            "id": "tunnel-exit",
+            "name": "Tunnel exit"
+          },
+          {
+            "x": 0,
+            "z": 720,
+            "heightM": 0,
+            "id": "finish",
+            "name": "Finish"
+          }
+        ],
+        "edges": [
+          {
+            "id": "start-straight",
+            "name": "start straight",
+            "from": "start",
+            "to": "y",
+            "points": [],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "y-west",
+            "name": "y west",
+            "from": "y",
+            "to": "left",
+            "points": [],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "y-east",
+            "name": "y east",
+            "from": "y",
+            "to": "right",
+            "points": [],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "west-approach",
+            "name": "west approach",
+            "from": "left",
+            "to": "t",
+            "points": [],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "east-approach",
+            "name": "east approach",
+            "from": "right",
+            "to": "te",
+            "points": [],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "t-west",
+            "name": "t west",
+            "from": "t",
+            "to": "tw",
+            "points": [],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "t-east",
+            "name": "t east",
+            "from": "t",
+            "to": "te",
+            "points": [],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "west-link",
+            "name": "west link",
+            "from": "tw",
+            "to": "west",
+            "points": [],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "cross-west",
+            "name": "cross west",
+            "from": "west",
+            "to": "cross",
+            "points": [],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "cross-south",
+            "name": "cross south",
+            "from": "te",
+            "to": "cross",
+            "points": [
+              {
+                "x": 90,
+                "z": 300,
+                "heightM": 0
+              },
+              {
+                "x": 0,
+                "z": 300,
+                "heightM": 0
+              }
+            ],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "cross-east",
+            "name": "cross east",
+            "from": "cross",
+            "to": "east",
+            "points": [],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "bridge-ascent",
+            "name": "bridge ascent",
+            "from": "east",
+            "to": "bridge-east",
+            "points": [
+              {
+                "x": 180,
+                "z": 240,
+                "heightM": 6
+              }
+            ],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "bridge",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "overpass",
+            "name": "overpass",
+            "from": "bridge-east",
+            "to": "bridge-west",
+            "points": [],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "bridge",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "bridge-descent",
+            "name": "bridge descent",
+            "from": "bridge-west",
+            "to": "west",
+            "points": [
+              {
+                "x": -260,
+                "z": 240,
+                "heightM": 6
+              },
+              {
+                "x": -260,
+                "z": 400,
+                "heightM": 0
+              }
+            ],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "bridge",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "surface-over-tunnel",
+            "name": "surface over tunnel",
+            "from": "east",
+            "to": "west",
+            "points": [
+              {
+                "x": 180,
+                "z": 500,
+                "heightM": 0
+              },
+              {
+                "x": -190,
+                "z": 500,
+                "heightM": 0
+              }
+            ],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "tunnel",
+            "name": "tunnel",
+            "from": "cross",
+            "to": "tunnel-exit",
+            "points": [
+              {
+                "x": 0,
+                "z": 460,
+                "heightM": -6
+              },
+              {
+                "x": 0,
+                "z": 540,
+                "heightM": -6
+              }
+            ],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "tunnel",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "shallow-ford",
+            "name": "shallow ford",
+            "from": "tunnel-exit",
+            "to": "finish",
+            "points": [],
+            "widthM": 3.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 4,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          }
+        ],
+        "startNodeId": "start",
+        "finishNodeId": "finish"
+      }
+    },
+    "competition": {
+      "mode": "solo",
+      "aiDrivers": [
+        {
+          "id": "rookie-ai",
+          "name": "Rookie AI",
+          "carId": "starter-rwd",
+          "aggression": 0.35,
+          "skill": 0.45,
+          "rubberBanding": 0.2,
+          "enabled": false
+        }
+      ],
+      "playerStartGrid": 1,
+      "trafficEnabled": false
+    },
+    "hazards": [],
+    "codriver": {
+      "enabled": true,
+      "voice": "default",
+      "calls": []
+    },
+    "raceStart": {
+      "musicTrackId": "",
+      "countdown": true,
+      "rollingStart": false,
+      "rollingStartSpeedMps": 13.4
+    },
+    "triggers": [],
+    "scenery": [],
+    "groundRenderer": "webgl-track",
+    "groundTextureBaseWorldM": 1.002,
+    "groundTextureFilterMode": "balanced",
+    "skyboxArtRef": "providence",
+    "skyboxSettings": {
+      "artRef": "providence",
+      "offsetXTurns": 0,
+      "offsetYRatio": 0
+    },
+    "surfaceArt": {
+      "boundary": "apron"
+    },
+    "margin": {
+      "enabled": true,
+      "shoulderEnabled": true,
+      "widthM": 0.22,
+      "shoulderWidthM": 12,
+      "collisionMode": "shoulder",
+      "artRef": "apron",
+      "marginMode": "on",
+      "shoulderMode": "hidden",
+      "collisionEdge": "shoulder",
+      "collisionEffect": "reset"
+    },
+    "renderDebug": {
+      "lightingEnabled": true,
+      "terrainEnabled": true,
+      "texturesEnabled": true,
+      "detailEnabled": false,
+      "terrainCullingEnabled": true,
+      "terrainLodEnabled": true,
+      "terrainBudgetEnabled": true,
+      "farRoadDecimationEnabled": true,
+      "rawTerrainPolygonsEnabled": false
+    },
+    "waterRegions": [
+      {
+        "id": "shallow-ford",
+        "name": "Shallow ford",
+        "x": 0,
+        "z": 650,
+        "widthM": 42,
+        "lengthM": 30,
+        "levelM": 0.2,
+        "bottomM": -1,
+        "color": "#287fa3"
+      }
+    ]
+  }
+}

@@ -1,3 +1,4 @@
+import { getRaceServiceBrakeForceN } from './RaceSimulationConfig.js';
 import { calculateRaceWaterForces } from './RaceWater.js';
 import {addItemVehicleForce} from '../../items/ItemVehicleEffect.js';
 import { RACE_WHEEL_IDS, clamp, normalizeAngle } from './SimulationMath.js';
@@ -1290,7 +1291,7 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
     rollStiffnessNormalized: tuning.rollStiffness,
     engineForceN: clamp(18000 + Math.max(0, powerW - 300000) / 45, 18000, 30000),
     engineBrakeForceN: Math.max(900, Number(tuning.weightKg || 1450) * 1.15),
-    brakeForceN: Math.max(9000, Number(tuning.weightKg || 1450) * 10),
+    brakeForceN: getRaceServiceBrakeForceN(tuning),
     handbrakeForceN: Math.max(4500, Number(tuning.handbrakeForceN) || Number(tuning.weightKg || 1450) * 5),
     frontBrakeBias: tuning.frontBrakeBias ?? tuning.brakeBalance ?? 0.62,
     brakePressure: tuning.brakePressure,

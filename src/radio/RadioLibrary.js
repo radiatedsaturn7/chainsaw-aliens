@@ -17,7 +17,7 @@ export function normalizeRadioLibrary(value = {}) {
     const id = text(track?.id);if (!id || seenTracks.has(id)) return false;seenTracks.add(id);return true;
   }).map(track => ({
     id: text(track.id), title: text(track.title) || 'Untitled track', artist: text(track.artist),
-    album: text(track.album), image: normalizeRadioImage(track.image), src: text(track.src),
+    album: text(track.album), image: normalizeRadioImage(track.image), src: text(track.src), musicRef:text(track.musicRef),
     raceCues: normalizeRaceMusicCues(track.raceCues),
     initiallyUnlocked: track.initiallyUnlocked === true
   }));
@@ -36,5 +36,5 @@ export function isRadioTrackUnlocked(track, progress) {
 export function radioStationTracks(library, progress, stationId, { includeDisabled = false } = {}) {
   const station = library.stations.find(entry => entry.id === stationId);
   return (station?.trackIds || []).map(id => library.tracks.find(track => track.id === id))
-    .filter(track => track?.src && isRadioTrackUnlocked(track, progress) && (includeDisabled || !progress.disabled.includes(track.id)));
+    .filter(track => (track?.src || track?.musicRef) && isRadioTrackUnlocked(track, progress) && (includeDisabled || !progress.disabled.includes(track.id)));
 }

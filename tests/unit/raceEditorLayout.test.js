@@ -13597,7 +13597,7 @@ test('Race Mode 7 projected markers stay centered between road edges at long dis
   assert.equal(centerT > 0.42 && centerT < 0.58, true);
 });
 
-test('Race Mode 7 center dashes are hidden on one-lane roads', () => {
+test('Race Mode 7 center dashes default on for one-lane roads', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   const makeSlices = (segment) => [
     {
@@ -13615,7 +13615,7 @@ test('Race Mode 7 center dashes are hidden on one-lane roads', () => {
   editor.drawRaceContinuousDistanceMarkers(narrowCtx, { x: 0, y: 0, w: 390, h: 240 }, {
     slices: makeSlices({ surface: 'asphalt', roadWidthM: 3.2 })
   });
-  assert.equal(narrowCtx.calls.some((call) => call.type === 'beginPath'), false);
+  assert.equal(narrowCtx.calls.some((call) => call.type === 'beginPath'), true);
 
   const wideCtx = createMockContext();
   editor.drawRaceContinuousDistanceMarkers(wideCtx, { x: 0, y: 0, w: 390, h: 240 }, {
@@ -15844,6 +15844,7 @@ test('Race Editor settings store project art skybox references for parallax back
   assert.equal(editor.selectedRace.skyboxArtRef, 'Test Skybox');
   assert.deepEqual(editor.selectedRace.skyboxSettings, {
     artRef: 'Test Skybox',
+    scaleX: 1, scaleY: 1,
     offsetXTurns: 0.25,
     offsetYRatio: -0.12
   });
@@ -15867,6 +15868,7 @@ test('Race Editor preserves loaded skybox settings offsets', () => {
   assert.equal(race.skyboxArtRef, 'Custom Skyline');
   assert.deepEqual(editor.getRaceSkyboxSettings(race), {
     artRef: 'Custom Skyline',
+    scaleX: 1, scaleY: 1,
     offsetXTurns: -0.2,
     offsetYRatio: 0.14
   });
@@ -16424,7 +16426,7 @@ test('Race art skybox is cached between playtest frames', () => {
     };
     const ctx = {
       ...createMockContext(),
-      rect() {},
+      rect(...args) { this.calls.push({ type: 'skyClip', args }); },
       clip() {},
       drawImage(...args) {
         this.calls.push({ type: 'drawImage', args });
@@ -16438,10 +16440,9 @@ test('Race art skybox is cached between playtest frames', () => {
 
     assert.equal(artLoads, 1);
     assert.equal(ctx.calls.some((call) => call.type === 'drawImage'), true);
-    assert.equal(raceEditorSource.includes('const skyHeight = Math.max(1, horizon - bounds.y + bounds.h * 0.28);'), true);
-    assert.equal(raceEditorSource.includes('const destH = Math.max(skyHeight, bounds.h * 0.72);'), true);
+    assert.ok(ctx.calls.filter(call => call.type === 'drawImage').every(call => call.args[4] === bounds.h * .72));
     assert.equal(raceEditorSource.includes('const artHorizonRatio = 0.56;'), true);
-    assert.equal(raceEditorSource.includes('ctx.rect?.(bounds.x, bounds.y, bounds.w, Math.max(1, horizon - bounds.y + bounds.h * 0.32));'), true);
+    assert.deepEqual(ctx.calls.find(call => call.type === 'skyClip').args, [bounds.x, bounds.y, bounds.w, 130 - bounds.y + bounds.h * 0.32]);
   } finally {
     globalThis.document = previousDocument;
   }
@@ -16474,7 +16475,7 @@ test('Race art skybox anchors the source horizon in the middle third', () => {
     const destH = Number(draw.args[4]);
     const sourceHorizonScreenY = destY + destH * 0.56;
     assert.equal(Math.abs(sourceHorizonScreenY - horizon) <= 0.6, true);
-    assert.equal(destY < bounds.y + bounds.h * 0.12, true);
+    assert.ok(Math.abs(destY - (horizon - destH * .56)) < 1e-8);
     assert.equal(destY + destH > horizon + bounds.h * 0.28, true);
   } finally {
     globalThis.document = previousDocument;
@@ -21210,7 +21211,7 @@ test('Race Editor clears held gamepad handbrake on A release', () => {
   assert.equal(editor.raceInput.handbrake, false);
 });
 
-test('Race Editor digital pedals ramp like virtual throttle and brake axes', () => {
+test('Race Editor touch throttle ramps while touch brake responds immediately', () => {
   const editor = new RaceEditor({
     deviceIsMobile: true,
     isMobile: true,
@@ -21225,7 +21226,7 @@ test('Race Editor digital pedals ramp like virtual throttle and brake axes', () 
   assert.equal(editor.raceInput.rawThrottleAxis, 1);
   assert.equal(editor.raceInput.rawBrakeAxis, 1);
   assert.equal(editor.raceInput.throttleAxis > 0.08 && editor.raceInput.throttleAxis < 0.1, true);
-  assert.equal(editor.raceInput.brakeAxis > 0.13 && editor.raceInput.brakeAxis < 0.16, true);
+  assert.equal(editor.raceInput.brakeAxis, 1);
 
   editor.raceInput.activeThrottlePointerId = null;
   editor.raceInput.activeBrakePointerId = null;

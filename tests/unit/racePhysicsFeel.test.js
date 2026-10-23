@@ -66,6 +66,7 @@ function runHighPowerFeelCase({
     collisionEdge: 'none',
     collisionMode: 'none'
   };
+  editor.selectedRace.road.network = null;
   editor.selectedRace.road.segments = [
     { length: 1600, curve: 0, elevation: 0, surface, turn: 'smooth', hazardIds: [] }
   ];

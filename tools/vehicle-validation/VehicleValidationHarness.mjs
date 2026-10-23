@@ -42,6 +42,8 @@ function configureValidationTrack(editor, caseName, trackLengthM = 3000) {
   editor.selectedRace.laps = 1;
   editor.selectedRace.hazards = [];
   editor.selectedRace.weather = caseName === 'standing-wet-launch' ? 'rain' : 'clear';
+  // This fixture supplies its own segmented road; do not retain the editor starter network.
+  editor.selectedRace.road.network = null;
   editor.selectedRace.road.width = 11;
   if (banked) {
     const approachM = trackLengthM * 0.2;

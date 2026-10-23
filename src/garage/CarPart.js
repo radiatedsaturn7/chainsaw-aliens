@@ -37,10 +37,12 @@ export function normalizeCarPart(value){
   tireRef:text(value.tireRef)
  };
 }
+export const isGarageUpgrade=item=>!!item?.carPart&&item.carPart.slot!=='tire-pressure';
+export const isStockPart=item=>item?.carPart?.slot==='tires'&&['Stock','builtin:stock'].includes(item.carPart.tireRef);
 export function partFits(part,carRef,car=null){return (!part.compatibleCars.length||part.compatibleCars.includes(carRef))
  && (!Array.isArray(car?.garagePartSlots)||car.garagePartSlots.includes(part.slot));}
 export function garageTuningRanges(parts){
- const result={};
+ const result=Object.fromEntries(CAR_PART_FIELDS.filter(f=>f.id.startsWith('pressure.')).map(f=>[f.id,{field:f.id,min:f.min,max:f.max,step:f.step}]));
  for(const item of parts)for(const range of item.carPart.tuning){
   const previous=result[range.field];
   result[range.field]=previous?{...range,min:Math.max(previous.min,range.min),max:Math.min(previous.max,range.max),step:Math.max(previous.step,range.step)}:{...range};

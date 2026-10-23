@@ -1,3 +1,4 @@
+import {musicMediaVolume} from '../audio/musicVolume.js';
 import {MENU_SETTINGS} from './MenuDocument.js';
 import {KEYMAP} from '../game/Input.js';
 import {loadServerPreferenceAsync,saveServerPreference} from '../ui/serverPreferences.js';
@@ -8,7 +9,8 @@ export class MenuSettings {
   apply(key,value){
     if(key.startsWith('settings.')){const setting=key.slice(9),spec=MENU_SETTINGS[setting];if(!spec||!Number.isFinite(Number(value)))throw Error('Unknown or invalid setting');value=Math.max(spec.min,Math.min(spec.max,Number(value)));this.values[key]=value;
       if(setting==='fxVolume')this.game.audio?.setEffectsVolume?.(value);
-      if(setting==='musicVolume'&&this.game.audio){this.game.audio.midiBusVolume=value;if(this.game.audio.ctx)this.game.audio.setMidiVolume?.(value);}
+      if(setting==='musicVolume'&&this.game.audio){this.game.audio.midiBusVolume=value;if(this.game.audio.ctx)this.game.audio.setMidiVolume?.(value);
+        const mediaVolume=musicMediaVolume(this.game.audio);this.game.radio?.setVolume(mediaVolume);this.game.radioEditor?.preview?.setVolume(mediaVolume);}
       if(setting==='brightness'&&this.game.canvas)this.game.canvas.style.filter=`brightness(${value})`;
       if(setting==='sensitivity'&&this.game.input)this.game.input.controlSensitivity=value;
     }else if(key.startsWith('input.')){const action=key.slice(6);if(!Object.hasOwn(KEYMAP,action)||typeof value!=='string'||!/^[A-Za-z][A-Za-z0-9]{0,39}$/.test(value))throw Error('Unknown action or key');this.values[key]=value;this.game.input.actionKeymap||={};this.game.input.actionKeymap[action]=[value];}

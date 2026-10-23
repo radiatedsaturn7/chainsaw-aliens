@@ -172,7 +172,7 @@ export function getCarArtResourceState(art = {}) {
   state.interior = {};
   for (const [component, entry] of Object.entries(art.interior || {})) {
     if (!entry?.artRef) continue;
-    const { scaleX, scaleY, offsetX, offsetY, ...resource } = entry;
+    const { scaleX, scaleY, offsetX, offsetY, centerX, centerY, ...resource } = entry;
     state.interior[component] = resource;
   }
   state.turnFrames = Object.fromEntries(Object.entries(art.turnFrames || {}).filter(([, value]) => value));

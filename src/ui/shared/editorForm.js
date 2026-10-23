@@ -13,7 +13,7 @@ export function openEditorForm(title,fields,{description='',applyLabel='Apply'}=
       const label=document.createElement('label');label.textContent=typeof field.label==='function'?field.label({}):field.label;label.style.cssText='display:block;margin:10px 0';
       const input=document.createElement(field.options?'select':field.type==='textarea'?'textarea':'input');input.setAttribute('aria-label',typeof field.label==='function'?field.label({}):field.label);input.style.cssText='display:block;box-sizing:border-box;width:100%;min-height:44px';
       if(field.options)for(const option of (typeof field.options==='function'?field.options({}):field.options)){const item=document.createElement('option');item.value=option.value??option;item.textContent=option.label??option;input.appendChild(item);}
-      else if(field.type==='textarea'){input.rows=field.rows||5;}
+      else if(field.type==='textarea'){input.rows=field.rows||5;if(Number.isInteger(field.maxLength)&&field.maxLength>=0)input.maxLength=field.maxLength;}
       else{input.type=field.type||'number';if(input.type==='number')input.step=field.step||'any';}
       if(field.suggestions&&!field.options){const list=document.createElement('datalist');list.id=`editor-options-${field.id}-${Math.random().toString(36).slice(2)}`;for(const value of field.suggestions){const option=document.createElement('option');option.value=value;list.appendChild(option)}input.setAttribute('list',list.id);form.appendChild(list);}
       input.value=field.value??'';
