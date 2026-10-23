@@ -1,3 +1,4 @@
+import {MenuScreenTransition} from '../menus/MenuScreenTransition.js';
 import {fitMenuCanvas} from '../menus/MenuLayout.js';
 import {loadServerPreferenceAsync} from './serverPreferences.js';
 import {createLoadingMenuScreen} from '../menus/MenuLoadingScreen.js';
@@ -1094,7 +1095,7 @@ export default class RaceEditor {
       && this.playtestSession.startupFramePending === true;
     if (startupFramePending
       && Number(this.playtestSession.startupPresentationStartedAtMs || 0) > 0
-      && Date.now() - Number(this.playtestSession.startupPresentationStartedAtMs) > RACE_PRESENTATION_TIMEOUT_MS) {
+      && Date.now() - Number(this.playtestSession.startupPresentationStartedAtMs) > RACE_PRESENTATION_TIMEOUT_MS + (this.raceLoadingPresentation ? 3300 : 0)) {
       this.failRaceStartupPresentation('Race did not present its first playable frame');
       return;
     }
@@ -6049,8 +6050,6 @@ export default class RaceEditor {
       this.drawRacePreparationScreen(ctx, width, height);
       return;
     }
-    this.raceLoadingPresentation=null;
-    this.raceLoadingCar=null;
     const viewportMode = this.resolveRaceViewportMode(width, height);
     this.activeModeContract = viewportMode.modeContract;
     this.activeSpecModeContract = viewportMode.specModeContract;
@@ -6058,7 +6057,7 @@ export default class RaceEditor {
     this.enforceRaceDoodadBrushSize();
     if (!viewportMode.isDesktop && this.isLivePlaytestSession()) {
       this.drawMobileRacePlaytest(ctx, width, height);
-      this.markRaceStartupFrameRendered();
+      this.finishRaceLoadingFrame(ctx,width,height);
       return;
     }
     if (viewportMode.isDesktop) {
@@ -6066,7 +6065,7 @@ export default class RaceEditor {
       this.drawRaceNonPortraitSpritePopup(ctx, width, height);
       this.drawRaceSpriteSettingsDialog(ctx, width, height);
       this.drawRaceSettingsDialog(ctx, width, height);
-      this.markRaceStartupFrameRendered();
+      this.finishRaceLoadingFrame(ctx,width,height);
       return;
     }
     this.desktopDropdown = resolveDesktopDropdownState({ isDesktop: false });
@@ -6078,6 +6077,33 @@ export default class RaceEditor {
     }
     this.drawRaceSpriteSettingsDialog(ctx, width, height);
     this.drawRaceSettingsDialog(ctx, width, height);
+    this.finishRaceLoadingFrame(ctx,width,height);
+  }
+
+  finishRaceLoadingFrame(ctx,width,height) {
+    const session=this.playtestSession;
+    if(session?.startupFramePending && this.raceLoadingPresentation && !session.carEditorPreview){
+      const now=this.getNowMs();
+      const warm=this.raceLoadingWarmup ||= {session,started:now,frames:0,last:now,exit:null};
+      warm.frames++;
+      // Render the actual race behind the loading screen before releasing the
+      // countdown. This uploads textures and builds the first visible meshes.
+      if(!warm.exit){
+        this.drawRacePreparationScreen(ctx,width,height);
+        const elapsed=now-warm.started;
+        if(elapsed>=1000 && warm.frames>=3 && (!session.deferredArtWorker || elapsed>=3000)){
+          warm.exit=new MenuScreenTransition();
+          warm.exit.start(ctx.canvas,this.raceLoadingBounds,undefined,{transform:ctx.getTransform?.()});
+          warm.last=now;
+        }
+        return;
+      }
+      warm.exit.update(Math.max(0,(now-warm.last)/1000));warm.last=now;
+      warm.exit.draw(ctx,this.raceLoadingBounds);
+      if(warm.exit.active)return;
+    }
+    this.raceLoadingPresentation=null;this.raceLoadingCar=null;
+    this.raceLoadingWarmup=null;this.raceLoadingEntry=null;
     this.markRaceStartupFrameRendered();
   }
 
@@ -6166,6 +6192,14 @@ export default class RaceEditor {
     const mobile = Boolean(this.game?.deviceIsMobile || this.game?.isMobile) && !this.hasPhysicalRaceGamepad();
     const layout = mobile ? this.getRaceHandheldLayout(width, height) : null;
     const bounds = layout?.screen || {x:0,y:0,w:width,h:height};
+    const now=this.getNowMs();
+    if(!this.raceLoadingEntry){
+      const fade=new MenuScreenTransition();
+      fade.start(ctx.canvas,bounds,undefined,{transform:ctx.getTransform?.()});
+      this.raceLoadingEntry={fade,last:now};
+    }
+    const entry=this.raceLoadingEntry;
+    entry.fade.update(Math.max(0,(now-entry.last)/1000));entry.last=now;
     ctx.save();ctx.fillStyle='#050807';ctx.fillRect(0,0,width,height);
     if(layout)this.drawRaceHandheldShell(ctx,layout);
     if(!this.raceLoadingPresentation){
@@ -6188,14 +6222,11 @@ export default class RaceEditor {
       this.raceLoadingPresentation={document,screen,resources,carRef,parameters:flow?.parameters||{},seed:Math.random(),started:this.getNowMs()};
     }
     const view=this.raceLoadingPresentation;
-    const progress=view.progress=Math.max(view.progress||0,clamp(Number(preparation?.progress||0),0,1));
+    const progress=view.progress=Math.max(view.progress||0,clamp(Number(preparation?.progress ?? (this.playtestSession?.startupFramePending ? 1 : 0)),0,1));
     const parameters={...view.parameters,carRef:view.carRef,loadingProgress:progress,loadingRace:preparation?.raceName||this.selectedRace?.name||'race',loadingFactSeed:view.seed};
     this.raceLoadingBounds={...bounds};
     drawMenuScreen(ctx,fitMenuCanvas(bounds),view.document,view.screen,parameters,{resources:view.resources,time:Math.max(0,(this.getNowMs()-view.started)/1000)});
-    // Cancellation stays available, contained in the display, throughout loading.
-    const cancel={x:bounds.x+bounds.w/2-40,y:bounds.y+bounds.h-30,w:80,h:26};
-    this.drawButton(ctx,cancel,'Cancel');
-    this.buttons.push({id:'cancel-race-preparation',bounds:cancel,onClick:()=>this.cancelRacePlaytestPreparation({returnToOrigin:true})});
+    entry.fade.draw(ctx,bounds);
     if(layout)this.drawRaceHandheldControls(ctx,layout);
     ctx.restore();
   }
@@ -12663,6 +12694,7 @@ export default class RaceEditor {
 
   beginRaceTravelLoading(raceName = 'race', carId = '', {car = null} = {}) {
     this.raceLoadingPresentation=null;
+    this.raceLoadingEntry=null;this.raceLoadingWarmup=null;
     this.raceLoadingCar=car;
     this.cancelRacePlaytestPreparation();
     this.racePreparedArtFrames?.clear?.();

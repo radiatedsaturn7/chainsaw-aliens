@@ -13,6 +13,11 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait touch' : 'desktop
   const result = await page.evaluate(async () => {
     const game = window.__game;
     const messages = [];
+    const editor=game.raceEditor,finish=editor.finishRaceLoadingFrame.bind(editor);
+    editor.finishRaceLoadingFrame=(...args)=>{
+      if(editor.raceLoadingWarmup)window.__loadingWarmup={frames:editor.raceLoadingWarmup.frames,elapsed:editor.getNowMs()-editor.raceLoadingWarmup.started};
+      return finish(...args);
+    };
     const toast = game.showSystemToast.bind(game);
     game.showSystemToast = message => { messages.push(message); toast(message); };
     const started = await game.startRaceTravel({ raceName: 'p1', carSelection: 'specific', carRef: 'RTG-001' });
@@ -30,5 +35,7 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait touch' : 'desktop
   console.log('P1_RUNNING', await page.evaluate(() => ({ state: window.__game.state,
     elapsed: window.__game.raceEditor.playtestSession?.elapsedMs,
     diagnostics: window.__game.raceRuntimePreparation?.lastDiagnostics })));
+  const warm=await page.evaluate(()=>window.__loadingWarmup);
+  expect(warm?.frames).toBeGreaterThanOrEqual(3);expect(warm?.elapsed).toBeGreaterThanOrEqual(1000);
   expect(errors).toEqual([]);
 });

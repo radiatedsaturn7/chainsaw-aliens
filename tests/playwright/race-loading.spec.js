@@ -22,6 +22,7 @@ for(const mode of ['portrait','landscape','controller'])test(`custom race loadin
  if(mode!=='controller'){expect(result.bounds).toEqual(result.layout);expect(result.buttons).toContain('race-go');}else expect(result.buttons).not.toContain('race-go');
  await page.screenshot({path:`test-results/loading-${mode}.png`});
  const later=await page.evaluate(()=>{const e=window.__game.raceEditor;const seed=e.raceLoadingPresentation.seed;e.racePlaytestPreparation.progress=.9;window.__game.draw();return{seed:e.raceLoadingPresentation.seed,previous:seed};});expect(later.seed).toBe(later.previous);
- await page.evaluate(()=>{const e=window.__game.raceEditor;const b=e.buttons.find(b=>b.id==='cancel-race-preparation').bounds;e.handlePointerDown({x:b.x+4,y:b.y+4,id:'cancel'});});
+ expect(result.buttons).not.toContain('cancel-race-preparation');
+ await page.keyboard.press('Escape');
  expect(await page.evaluate(()=>window.__game.raceEditor.playtestSession?.preparing||false)).toBe(false);
 });
