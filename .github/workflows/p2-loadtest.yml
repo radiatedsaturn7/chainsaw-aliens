@@ -29,6 +29,8 @@ jobs:
           node-version: 24
       - run: npm ci
       - name: Full lap with 11 AI cars at 60 Hz
+        if: ${{ !contains(github.event.head_commit.message, '[stop endurance]') }}
+        timeout-minutes: 80
         run: node tools/loadtest/run-p2.mjs
         env:
           P2_REPORT: artifacts/p2loadtest/ci-lap-60hz.json

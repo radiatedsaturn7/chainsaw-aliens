@@ -15,4 +15,13 @@ summary.routeCoverage100m={visited:bins.size,expected:Math.ceil(report.routeLeng
 summary.maximumProjectionJumpM=report.frames.reduce((max,f,i)=>i?Math.max(max,Math.abs(f.distance-report.frames[i-1].distance)):max,0);
 summary.integratedTravelM=report.frames.reduce((sum,f)=>sum+Math.abs(f.speed||0)*report.updateDt,0);
 summary.lapCoverageVerified=Boolean(summary.complete && !summary.routeCoverage100m.missing.length && summary.integratedTravelM>=summary.routeLengthM*.98);
+if(fs.existsSync(path+'.memory.json')){
+ const memory=JSON.parse(fs.readFileSync(path+'.memory.json'));
+ summary.peakRSSMB=memory.reduce((max,r)=>Math.max(max,r.rssMB||0),0);
+ summary.peakHeapUsedMB=memory.reduce((max,r)=>Math.max(max,r.heapUsedMB||0),0);
+ summary.lastProgress=memory.at(-1);
+}
+summary.aiCars=report.aiCars;
+summary.cpuTotalsMs={update:report.frames.reduce((sum,f)=>sum+f.updateMs,0),renderPreparation:report.frames.reduce((sum,f)=>sum+f.renderPreparationMs,0),methods:report.totals};
+summary.aiShareOfUpdatePercent=100*report.totals.updateRaceAiDrivers/summary.cpuTotalsMs.update;
 console.log(JSON.stringify(summary,null,2));
