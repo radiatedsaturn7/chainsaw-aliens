@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {TrackState} from '../../src/racing/trackState/TrackState.js';
 const create=()=>new TrackState({eventHistoryLimit:Infinity,sampleBaseSurface:({x})=>({baseSurfaceId:'asphalt',surfaceTemperatureC:20,sunExposure:(Math.floor(x)%3+3)%3/2,windExposure:.7})});
 test('cached dry initialization matches full history exactly, including changing weather and wet fallback',()=>{
- const cached=create(),reference=create();reference.catchUpNewDryCellWeather=()=>false;
+ const cached=create(),reference=create();reference.catchUpNewDryCellWeather=()=>false;reference.catchUpConstantDryCellWeather=()=>false;
  for(let step=0;step<300;step++){
   const forcing=step<180?{type:'clear',ambientTemperatureC:step<90?18:25,sunIntensity:.8,windIntensity:.2,precipitationRateMmPerS:0}:{type:'rain',ambientTemperatureC:12,precipitationRateMmPerS:.2};
   for(const state of [cached,reference])state.advance(.05,forcing);
@@ -16,7 +16,7 @@ test('cached dry initialization matches full history exactly, including changing
  assert.equal(cached.getChecksum(),reference.getChecksum());
 });
 test('restored snapshots and older-step requests preserve dry initialization results',()=>{
- const cached=create(),reference=create();reference.catchUpNewDryCellWeather=()=>false;
+ const cached=create(),reference=create();reference.catchUpNewDryCellWeather=()=>false;reference.catchUpConstantDryCellWeather=()=>false;
  for(let i=0;i<30;i++)for(const s of [cached,reference])s.advance(.05,{type:'clear',sunIntensity:.8});
  cached.sample({x:0,z:0});reference.sample({x:0,z:0});
  const snapshot=reference.createSnapshot();cached.restoreSnapshot(snapshot);reference.restoreSnapshot(snapshot);
@@ -29,4 +29,28 @@ test('many new equivalent dry cells replay forcing history once',()=>{
  let calls=0;const original=state.getWeatherForStep.bind(state);state.getWeatherForStep=(...args)=>{calls++;return original(...args);};
  for(let i=0;i<500;i++)state.sample({x:i*3,z:0});
  assert.ok(calls<=201,`unexpected per-cell weather replay: ${calls}`);
+});
+
+test('old dry cells and tire-heated cells match full constant-weather replay exactly',()=>{
+ const cached=create(),reference=create();
+ reference.catchUpNewDryCellWeather=()=>false;reference.catchUpConstantDryCellWeather=()=>false;
+ for(let i=0;i<1500;i++)for(const state of [cached,reference])state.advance(.1,{type:'clear',ambientTemperatureC:-12,sunIntensity:.8,windIntensity:.2});
+ for(let i=0;i<150;i++){
+  const p={x:i,z:1};
+  for(const state of [cached,reference]){
+   const cell=state.getOrCreateCell(p,{throughStep:0});
+   cell.surfaceTemperatureC=i%2?75:-20;
+  }
+  assert.deepEqual(cached.sample(p),reference.sample(p));
+ }
+ assert.equal(cached.getChecksum(),reference.getChecksum());
+});
+test('constant dry shortcut refuses wet cells and changing weather histories',()=>{
+ const state=create();state.advance(.1,{type:'clear'});
+ const cell=state.getOrCreateCell({x:1,z:0},{throughStep:0});
+ cell.moistureDepthMm=.2;
+ assert.equal(state.catchUpConstantDryCellWeather(cell,1,1),false);
+ cell.moistureDepthMm=0;
+ state.advance(.1,{type:'clear',ambientTemperatureC:5});
+ assert.equal(state.catchUpConstantDryCellWeather(cell,1,2),false);
 });
