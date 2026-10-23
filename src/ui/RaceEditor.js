@@ -1,3 +1,4 @@
+import { buildRaceDecalTriangles } from '../racing/RaceDecals.js';
 import { buildRaceFencePlacements } from '../racing/RaceFences.js';
 import { createRaceNetworkQueryIndex } from '../racing/RaceNetworkQueryIndex.js';
 import { queryTrackStateCells } from '../racing/trackState/TrackStateSpatialIndex.js';
@@ -3239,7 +3240,7 @@ export default class RaceEditor {
     this.activeRootId = 'ground';
     this.racePortraitHotMenu = null;
     this.activeRaceFenceId = null; this.raceFenceStart = null; this.raceFenceDraftRace = this.selectedRace; this.raceSelectionType = null;
-    this.status = 'Tap points to extend a fence, or drag a path. Drag nodes to reshape; New Fence starts another.';
+    this.status = 'Add Node: tap to place each fence point. Use Select to move nodes, Remove Node to delete them.';
   }
 
   getEditableRaceFence() {
@@ -3281,7 +3282,7 @@ export default class RaceEditor {
   }
 
   beginRaceFenceNodeDrag(point) {
-    if (!['draw-fence', 'move-sprite'].includes(this.activeAction)) return false;
+    if (!['fence-select', 'fence-remove-node', 'move-sprite'].includes(this.activeAction)) return false;
     const fence = this.getEditableRaceFence();
     if (!fence) return false;
     const index = fence.fencePath.points.findIndex(p => {
@@ -3289,6 +3290,17 @@ export default class RaceEditor {
       return screen && Math.hypot(screen.screenX - point.x, screen.screenY - point.y) <= 12;
     });
     if (index < 0) return false;
+    if (this.activeAction === 'fence-remove-node') {
+      this.captureRaceHistory('Remove fence node');
+      const path = structuredClone(fence.fencePath); path.points.splice(index, 1);
+      if (path.points.length >= 2) this.rebuildRaceFence(fence.fenceId, path);
+      else {
+        this.selectedRace.scenery = this.ensureRaceScenery().filter(p => p.fenceId !== fence.fenceId);
+        this.activeRaceFenceId = null; this.raceSelectionType = null; this.raceFenceStart = path.points[0] || null;
+        this.clearRaceRuntimeSurfaceCaches();
+      }
+      this.status = 'Fence node removed'; return true;
+    }
     this.raceFenceNodeDrag = { id: point.id ?? 'pointer', race: this.selectedRace,
       fenceId: fence.fenceId, path: structuredClone(fence.fencePath), index, changed: false };
     return true;
@@ -3321,10 +3333,9 @@ export default class RaceEditor {
     const previous = fence?.fencePath;
     const points = previous ? structuredClone(previous.points) : this.raceFenceStart ? [this.raceFenceStart] : [];
     const start = { x: world.x, z: world.y };
-    if (!points.length || Math.hypot(points.at(-1).x - start.x, points.at(-1).z - start.z) > 0.05) points.push(start);
     this.raceFenceDrag = { id: point.id ?? 'pointer', race: this.selectedRace,
       fenceId: fence?.fenceId, doodad: previous?.definition || { ...structuredClone(this.getSelectedRaceDoodad()), isFence: true },
-      ref: previous?.ref || this.selectedDoodadRef, points };
+      ref: previous?.ref || this.selectedDoodadRef, points, cursor: start };
     return true;
   }
 
@@ -3332,13 +3343,7 @@ export default class RaceEditor {
     const drag = this.raceFenceDrag;
     if (!drag || drag.id !== (point.id ?? 'pointer')) return false;
     const world = this.screenToRaceMapWorldPoint(point.x, point.y, this.raceMapBounds);
-    if (!world) return true;
-    const last = drag.points.at(-1);
-    // Capture turns independently of artwork width. Geometry is subdivided
-    // separately for terrain following; texture phase uses traveled distance.
-    if (Math.hypot(world.x - last.x, world.y - last.z) >= (force ? 0.05 : 0.5)) {
-      drag.points.push({ x: world.x, z: world.y });
-    }
+    if (world) drag.cursor = { x: world.x, z: world.y };
     return true;
   }
 
@@ -3348,16 +3353,18 @@ export default class RaceEditor {
     this.updateRaceFenceDrag(point, true);
     this.raceFenceDrag = null;
     if (drag.race !== this.selectedRace) return true;
+    const last = drag.points.at(-1), end = drag.cursor;
+    if (end && (!last || Math.hypot(end.x-last.x, end.z-last.z) > 0.05)) drag.points.push(end);
     if (drag.points.length < 2) {
       this.raceFenceStart = drag.points[0];
-      this.status = 'Fence start placed. Tap the next point, or drag, to extend it.';
+      this.status = 'Fence start placed. Tap the next point to add a node.';
       return true;
     }
     this.captureRaceHistory(drag.fenceId ? 'Extend fence' : 'Draw fence');
     this.rebuildRaceFence(drag.fenceId || `fence-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       { points: drag.points, definition: drag.doodad, ref: drag.ref });
     this.raceFenceStart = null;
-    this.status = 'Fence extended. Tap to add another point; drag nodes to reshape. New Fence starts another.';
+    this.status = 'Fence node added. Add places points; Select moves them; Remove deletes a node.';
     return true;
   }
 
@@ -6187,6 +6194,10 @@ export default class RaceEditor {
 
   getMenuItems(rootId) {
     const spec = getEditorMenuSpec(this.editorId);
+    if (rootId === 'sprites' && this.mode === 'race') return ['doodad','fence','decal','tile','sprite'].map(kind => ({
+      id:`paint-kind-${kind}`, label:{doodad:'Doodad',fence:'Fence',decal:'Decal',tile:'Tile',sprite:'Billboard'}[kind],
+      onSelect:()=>this.selectRacePaintCategory(kind), disabled:false
+    }));
     if (rootId === 'file' && (this.editorId === 'race' || this.editorId === 'car')) {
       const section = spec?.sections?.file;
       return [...(section?.actions || [])].map((id) => ({
@@ -6460,6 +6471,7 @@ export default class RaceEditor {
   }
 
   selectRootMenu(rootId = '') {
+    if (rootId === 'sprites' && this.mode === 'race') this.selectRacePaintCategory('doodad');
     this.activeRootId = rootId || this.activeRootId;
     if (rootId && this.getMenuItems(rootId).length === 0) {
       this.closeEditorMenus();
@@ -7975,7 +7987,7 @@ export default class RaceEditor {
 
   isActionAvailable(action) {
     if (NETWORK_ACTIONS[action]) return this.mode === 'race';
-    return ['draw-fence', 'race-ground-texture', 'race-scale', 'race-description', 'car-description', 'car-installable-parts', 'car-load-preset', 'car-category', 'race-ai-cars'].includes(action) || RACE_EDITOR_AVAILABLE_ACTIONS.has(action);
+    return action.startsWith('paint-kind-') || ['draw-fence', 'race-ground-texture', 'race-scale', 'race-description', 'car-description', 'car-installable-parts', 'car-load-preset', 'car-category', 'race-ai-cars'].includes(action) || RACE_EDITOR_AVAILABLE_ACTIONS.has(action);
   }
 
   loadBuiltInRace(action) {
@@ -9015,6 +9027,8 @@ export default class RaceEditor {
   }
 
   handleMenuAction(action) {
+    if (action.startsWith('paint-kind-')) return this.selectRacePaintCategory(action.slice(11));
+    if (action === 'race-paint-menu') return this.selectRacePaintCategory('doodad');
     if (NETWORK_ACTIONS[action]) return handleNetworkAction(this, action).catch(error => { this.status = error.message; });
     if(action==='race-ground-texture') return this.openRaceGroundTexture();
     if(action==='draw-fence') return this.activateRaceFenceTool();
@@ -9355,7 +9369,7 @@ export default class RaceEditor {
     } else if (action === 'race-ground-brush' || action === 'elevation-brush-size') {
       this.racePortraitMode = 'ground';
       this.activeRootId = 'ground';
-      if (!['paint-ground', 'paint-elevation'].includes(this.activeAction)) this.activeAction = 'paint-ground';
+      if (!['paint-ground', 'paint-elevation', 'paint-tile', 'erase-tile'].includes(this.activeAction)) this.activeAction = 'paint-ground';
       this.racePortraitHotMenu = this.racePortraitHotMenu === 'ground-brush' ? null : 'ground-brush';
       this.status = 'Choose ground brush';
     } else if (action === 'race-ground-paint-raise') {
@@ -9433,26 +9447,26 @@ export default class RaceEditor {
       this.setRaceGroundBrushShape(action.slice('ground-brush-shape-'.length));
       this.racePortraitMode = 'ground';
       this.activeRootId = 'ground';
-      if (!['paint-ground', 'paint-elevation'].includes(this.activeAction)) this.activeAction = 'paint-ground';
+      if (!['paint-ground', 'paint-elevation', 'paint-tile', 'erase-tile'].includes(this.activeAction)) this.activeAction = 'paint-ground';
       this.racePortraitHotMenu = 'ground-brush';
     } else if (action.startsWith('ground-brush-falloff-')) {
       this.setRaceGroundBrushFalloff(action.slice('ground-brush-falloff-'.length));
       this.racePortraitMode = 'ground';
       this.activeRootId = 'ground';
-      if (!['paint-ground', 'paint-elevation'].includes(this.activeAction)) this.activeAction = 'paint-ground';
+      if (!['paint-ground', 'paint-elevation', 'paint-tile', 'erase-tile'].includes(this.activeAction)) this.activeAction = 'paint-ground';
       this.racePortraitHotMenu = 'ground-brush';
     } else if (action.startsWith('ground-brush-strength-')) {
       this.setRaceGroundBrushStrength(action.slice('ground-brush-strength-'.length));
       this.racePortraitMode = 'ground';
       this.activeRootId = 'ground';
-      if (!['paint-ground', 'paint-elevation'].includes(this.activeAction)) this.activeAction = 'paint-ground';
+      if (!['paint-ground', 'paint-elevation', 'paint-tile', 'erase-tile'].includes(this.activeAction)) this.activeAction = 'paint-ground';
       this.racePortraitHotMenu = 'ground-brush';
     } else if (action.startsWith('ground-brush-')) {
       const brush = this.getGroundBrushOptions().find((entry) => entry.id === action.slice('ground-brush-'.length));
       if (brush) this.setRaceGroundBrushSize(brush);
       this.racePortraitMode = 'ground';
       this.activeRootId = 'ground';
-      if (!['paint-ground', 'paint-elevation'].includes(this.activeAction)) this.activeAction = 'paint-ground';
+      if (!['paint-ground', 'paint-elevation', 'paint-tile', 'erase-tile'].includes(this.activeAction)) this.activeAction = 'paint-ground';
       this.racePortraitHotMenu = 'ground-brush';
     } else if (action === 'paint-ground') {
       this.racePortraitMode = 'ground';
@@ -20250,7 +20264,7 @@ export default class RaceEditor {
         { id: 'car-camera-settings', label: 'Camera', contextPanelCommand: true, onClick: () => this.handleMenuAction('car-camera-settings') }
       ];
     }
-    return (this.racePortraitMode === 'ground' && this.getRaceGroundToolMode() === 'doodad'
+    return ((this.racePortraitMode === 'sprites' || (this.racePortraitMode === 'ground' && ['doodad','sprite','fence'].includes(this.getRaceGroundToolMode())))
       ? this.getRacePortraitGroundActions()
       : this.getRaceTrackContextActions({ compact: true }))
       .map((action) => ({
@@ -25191,12 +25205,16 @@ export default class RaceEditor {
   }
 
   drawRaceNonPortraitSpritePopup(ctx, width, height) {
+    if (this.mode === 'race' && !this.playtestSession && ['paint-category','paint-tools','ground-mode'].includes(this.racePortraitHotMenu)) {
+      this.drawRacePortraitGroundPopup(ctx, {x:Math.max(0,(width-300)/2),y:height-24,w:300}); return;
+    }
     if (this.mode !== 'race' || this.playtestSession || this.racePortraitMode !== 'sprites') return;
     if (this.racePortraitHotMenu !== 'sprite-select') return;
     this.drawRacePortraitSpritePopup(ctx, { x: Math.max(0, (width - 300) / 2), y: height - 24, w: 300 });
   }
 
   drawRacePortraitSpritePopup(ctx, anchorBounds) {
+    if (['ground-mode','paint-category','paint-tools'].includes(this.racePortraitHotMenu)) return this.drawRacePortraitGroundPopup(ctx, anchorBounds);
     if (this.racePortraitHotMenu === 'sprite-brush') {
       this.drawRacePortraitGroundBrushPanel(ctx, anchorBounds);
       return;
@@ -26922,9 +26940,68 @@ export default class RaceEditor {
     return false;
   }
 
+  getRacePaintCategory() {
+    return ['draw-fence', 'fence-select', 'fence-remove-node'].includes(this.activeAction) ? 'fence' : this.getRaceSpritePaintKind();
+  }
+
+  selectRacePaintCategory(kind = 'doodad') {
+    this.raceSpritePaintKind = kind === 'fence' ? 'doodad' : kind;
+    this.racePortraitMode = 'ground'; this.activeRootId = 'sprites'; this.racePortraitHotMenu = null;
+    this.activeAction = kind === 'fence' ? 'draw-fence' : this.getRaceSpritePaintActionId();
+    this.status = kind === 'fence' ? 'Add Node: tap each fence point. Choose artwork with Art.' : `Paint ${kind === 'sprite' ? 'billboard' : kind}: choose artwork with Art`;
+  }
+
+  getRacePaintActions() {
+    const kind = this.getRacePaintCategory();
+    const label = {doodad:'Doodad',fence:'Fence',decal:'Decal',tile:'Tile',sprite:'Billboard'}[kind];
+    const tool = { 'draw-fence':'Add', 'fence-select':'Select', 'fence-remove-node':'Remove', 'move-sprite':'Select' }[this.activeAction]
+      || (this.activeAction?.startsWith('erase-') ? 'Erase' : 'Paint');
+    const drawer = (id, label, popup) => ({id,label,active:this.racePortraitHotMenu===popup,
+      onClick:()=>{this.racePortraitHotMenu=this.racePortraitHotMenu===popup?null:popup;}});
+    return [
+      drawer('race-ground-mode','Paint','ground-mode'),
+      drawer('paint-category',label,'paint-category'),
+      drawer('paint-tools',tool,'paint-tools'),
+      {id:'paint-art',label:'Art',onClick:()=>this.chooseRacePaintArt()}
+    ];
+  }
+
+  async chooseRacePaintArt() {
+    const kind = this.getRacePaintCategory();
+    if (kind === 'doodad' || kind === 'fence') {
+      await this.openRaceDoodadPicker(); this.selectRacePaintCategory(kind);
+    } else this.handleMenuAction(kind === 'tile' ? 'race-ground-box' : kind === 'decal' ? 'race-decal' : 'sprite-select');
+  }
+
+  getRacePaintToolActions() {
+    const kind = this.getRacePaintCategory();
+    const action = (id,label,fn) => ({id,label,active:this.activeAction===id,onClick:()=>{
+      this.racePortraitHotMenu=null; fn();
+    }});
+    if (kind === 'fence') return [
+      action('draw-fence','Add Node',()=>{this.activeAction='draw-fence';}),
+      action('fence-select','Select / Move',()=>{this.activeAction='fence-select';}),
+      action('fence-remove-node','Remove Node',()=>{this.activeAction='fence-remove-node';}),
+      action('fence-new','New Fence',()=>this.activateRaceFenceTool()),
+      action('fence-delete','Delete Fence',()=>{
+        const fence=this.getEditableRaceFence(); if(!fence)return;
+        this.selectedSceneryIndex=this.ensureRaceScenery().findIndex(p=>p.fenceId===fence.fenceId);
+        this.deleteSelectedRaceScenery(); this.activeRaceFenceId=null; this.raceSelectionType=null;
+      })
+    ];
+    return [
+      action(this.getRaceSpritePaintActionId(), 'Paint', ()=>{this.activeAction=this.getRaceSpritePaintActionId();}),
+      action(this.getRaceSpriteEraseActionId(), 'Erase', ()=>{this.activeAction=this.getRaceSpriteEraseActionId();}),
+      ...(kind==='doodad'||kind==='sprite' ? this.getRaceSceneryTransformActions() : []),
+      ...(kind==='doodad' ? [{id:'race-item',label:'Place Item',onClick:()=>this.handleMenuAction('race-item')}] : []),
+      ...(kind==='tile' ? [{id:'paint-tile-brush',label:'Brush',onClick:()=>{this.racePortraitHotMenu='ground-brush';}}] : [])
+    ];
+  }
+
   getRacePortraitGroundActions() {
     const selectedTile = this.getRaceGroundTileChoices().find((choice) => choice.id === this.getSelectedGroundTileId());
     const mode = this.getRaceGroundToolMode();
+    if (['doodad','sprite','fence'].includes(mode)) return this.getRacePaintActions();
     if (mode === 'trigger') {
       const trigger = this.getSelectedRaceTrigger();
       const effectLabel = trigger
@@ -26970,9 +27047,10 @@ export default class RaceEditor {
   }
 
   getRaceGroundToolMode() {
+    if (['draw-fence','fence-select','fence-remove-node'].includes(this.activeAction)) return 'fence';
     if (this.activeAction === 'place-trigger') return 'trigger';
     if (this.getRaceSpritePaintKind() === 'doodad' && ['paint-sprite', 'erase-sprite', 'move-sprite', 'draw-fence'].includes(this.activeAction)) return 'doodad';
-    if (['paint-sprite', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile'].includes(this.activeAction)) return 'sprite';
+    if (['paint-sprite', 'erase-sprite', 'move-sprite', 'delete-sprite', 'race-decal', 'race-ground-box', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile'].includes(this.activeAction)) return 'sprite';
     if (this.activeAction === 'paint-elevation') return 'elevation';
     return 'ground';
   }
@@ -26989,14 +27067,18 @@ export default class RaceEditor {
   getRacePortraitGroundPopupActions() {
     const close = { id: 'ground-menu-back', label: 'Back', onClick: () => { this.racePortraitHotMenu = null; } };
     const mode = this.getRaceGroundToolMode();
+    if (this.racePortraitHotMenu === 'paint-category') return [close,
+      ...['doodad','fence','decal','tile','sprite'].map(kind=>({id:`paint-kind-${kind}`,
+        label:{doodad:'Doodad',fence:'Fence',decal:'Decal',tile:'Tile',sprite:'Billboard'}[kind],
+        active:this.getRacePaintCategory()===kind,onClick:()=>this.selectRacePaintCategory(kind)}))];
+    if (this.racePortraitHotMenu === 'paint-tools') return [close,...this.getRacePaintToolActions()];
     if (this.racePortraitHotMenu === 'ground-mode') {
       return [
         close,
         { id: 'race-ground-mode-track', label: 'Track', active: false, onClick: () => this.handleMenuAction('race-ground-mode-track') },
         { id: 'race-ground-mode-ground', label: 'Ground', active: mode === 'ground', onClick: () => this.handleMenuAction('race-ground-mode-ground') },
         { id: 'race-ground-mode-elevation', label: 'Elevation', active: mode === 'elevation', onClick: () => this.handleMenuAction('race-ground-mode-elevation') },
-        { id: 'race-ground-mode-sprites', label: 'Sprite', active: mode === 'sprite', onClick: () => this.handleMenuAction('race-ground-mode-sprites') },
-        { id: 'race-ground-mode-doodad', label: 'Doodad', active: mode === 'doodad', onClick: () => this.handleMenuAction('race-ground-mode-doodad') },
+        { id: 'race-paint-menu', label: 'Paint', active: ['doodad','sprite','fence'].includes(mode), onClick: () => this.selectRacePaintCategory('doodad') },
         { id: 'race-ground-mode-trigger', label: 'Trigger', active: mode === 'trigger', onClick: () => this.handleMenuAction('race-ground-mode-trigger') }
       ];
     }
@@ -27157,25 +27239,7 @@ export default class RaceEditor {
     return [];
   }
 
-  getRacePortraitSpriteActions() {
-    const selectedDefinition = this.selectedSceneryDefinition;
-    const kind = this.getRaceSpritePaintKind();
-    const paintId = this.getRaceSpritePaintActionId(kind);
-    const eraseId = this.getRaceSpriteEraseActionId(kind);
-    const label = kind === 'tile'
-      ? (this.selectedRaceGroundBoxArtRef ? String(this.selectedRaceGroundBoxArtRef).slice(0, 8) : 'Tile')
-      : kind === 'decal'
-        ? (this.selectedRaceDecalArtRef ? String(this.selectedRaceDecalArtRef).slice(0, 8) : 'Decal')
-        : (selectedDefinition ? String(selectedDefinition.label || 'Sprite').slice(0, 8) : 'Sprite');
-    return [
-      { id: 'sprite-select', label: kind === 'sprite' ? label : 'Sprite', active: kind === 'sprite', onClick: () => this.handleMenuAction('sprite-select') },
-      { id: 'race-decal', label: kind === 'decal' ? label : 'Decal', active: kind === 'decal', onClick: () => this.handleMenuAction('race-decal') },
-      { id: 'race-ground-box', label: kind === 'tile' ? label : 'Tile', active: kind === 'tile', onClick: () => this.handleMenuAction('race-ground-box') },
-      { id: paintId, label: 'Paint', active: this.activeAction === paintId, disabled: !this.isRaceSpritePaintReady(kind), onClick: this.isRaceSpritePaintReady(kind) ? () => this.handleMenuAction('paint-sprite') : null },
-      { id: 'sprite-brush-settings', label: `Brush ${Math.round(Number(this.raceGroundBrushCells) || 1)}`, active: this.racePortraitHotMenu === 'sprite-brush', onClick: () => this.handleMenuAction('sprite-brush-settings') },
-      { id: eraseId, label: 'Erase', active: this.activeAction === eraseId, onClick: () => this.handleMenuAction('erase-sprite') }
-    ];
-  }
+  getRacePortraitSpriteActions() { return this.getRacePaintActions(); }
 
   getRacePortraitHotMenuActions(selected = this.selectedSegment || {}) {
     if (this.raceSelectionType === 'node') {
@@ -30850,7 +30914,7 @@ export default class RaceEditor {
     const scenery = this.ensureRaceScenery();
     if (this.raceFenceDrag) {
       ctx.save(); ctx.strokeStyle = '#ffcf55'; ctx.lineWidth = 4; ctx.beginPath();
-      this.raceFenceDrag.points.forEach((point, i) => {
+      [...this.raceFenceDrag.points, ...(this.raceFenceDrag.cursor ? [this.raceFenceDrag.cursor] : [])].forEach((point, i) => {
         const p = this.raceMapWorldToScreenPoint({ x: point.x, y: point.z }, bounds);
         if (p) i ? ctx.lineTo(p.screenX, p.screenY) : ctx.moveTo(p.screenX, p.screenY);
       });
@@ -30896,7 +30960,7 @@ export default class RaceEditor {
       }
     });
     const pathPoints = this.getEditableRaceFence()?.fencePath?.points || (this.raceFenceStart ? [this.raceFenceStart] : []);
-    if (['draw-fence', 'move-sprite'].includes(this.activeAction)) {
+    if (['draw-fence', 'fence-select', 'fence-remove-node', 'move-sprite'].includes(this.activeAction)) {
       ctx.save();
       pathPoints.forEach((p, i) => {
         const screen = this.raceMapWorldToScreenPoint({ x: p.x, y: p.z }, bounds);
@@ -35323,6 +35387,7 @@ export default class RaceEditor {
     renderer.carDepthSprites?.dispose();
     this.clearRaceThreeDynamicCar(renderer);
     this.clearRaceThreeDynamicDoodads(renderer);
+    this.clearRaceThreeDecals(renderer);
     for (const holder of renderer.aiModelCars?.values() || []) this.clearRaceThreeDynamicCar(holder);
     renderer.aiModelCars?.clear();
     syncRaceModelTiles(renderer, [], 0);
@@ -36013,6 +36078,50 @@ export default class RaceEditor {
         ))
       ))
       .flatMap((sprite) => this.getRaceDoodadHitboxWorldMeshes(sprite, { forceVisible }));
+  }
+
+  clearRaceThreeDecals(renderer) {
+    const group = renderer?.decalGroup;
+    if (group) {
+      renderer.scene?.remove(group);
+      group.traverse(entry => { entry.geometry?.dispose(); entry.material?.dispose(); });
+    }
+    if (renderer) { renderer.decalGroup = null; renderer.decalKey = null; renderer.decalSurface = null; }
+  }
+
+  getRaceDecalTriangles(decal) {
+    const surface = this.getRaceSurfaceModel();
+    return buildRaceDecalTriangles(decal, point => surface.sampleWorld(point, 0));
+  }
+
+  syncRaceThreeDecals(renderer, { stats = null } = {}) {
+    if (!renderer?.scene) return false;
+    const decals = this.getRaceRenderDebugSettings().overlaysEnabled === false ? [] : this.ensureRaceDecals().filter(d=>d.kind !== 'tile');
+    const surface = this.getRaceSurfaceModel();
+    const key = JSON.stringify(decals) + ':' + decals.map(d=> {
+      const art=this.getRaceArtSpriteCanvas(d.artRef); return art?.__raceArtCacheKey || (art ? `${art.width}x${art.height}` : 'pending');
+    }).join('|');
+    if (renderer.decalKey !== key || renderer.decalSurface !== surface) {
+      this.clearRaceThreeDecals(renderer);
+      const group = new THREE.Group(); group.name = 'terrainDecals';
+      for (const decal of decals) {
+        const texture = this.getRaceThreeTexture(renderer, decal.artRef); if (!texture) continue;
+        const positions=[],uvs=[];
+        for (const triangle of this.getRaceDecalTriangles(decal)) for (const p of triangle) {
+          positions.push(p.x, this.getRaceThreeElevationM(p, 0.02), p.z); uvs.push(p.u, p.v);
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions,3));
+        geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs,2));
+        geometry.computeBoundingSphere();
+        const material = new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide,transparent:true,
+          opacity:1,alphaTest:0.01,depthTest:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
+        const mesh = new THREE.Mesh(geometry,material); mesh.name=`raceDecal:${decal.id}`; mesh.renderOrder=4; group.add(mesh);
+      }
+      renderer.scene.add(group); renderer.decalGroup=group; renderer.decalKey=key; renderer.decalSurface=surface;
+    }
+    if(stats) stats.threeDecals=renderer.decalGroup?.children.length || 0;
+    return Boolean(renderer.decalGroup?.children.length);
   }
 
   addRaceThreeDoodads(renderer = null, { stats = null } = {}) {
@@ -37083,6 +37192,7 @@ export default class RaceEditor {
     else this.clearRaceThreeDynamicCar(renderer);
     this.syncRaceThreeAiModels(renderer, cameraYaw);
     this.addRaceThreeDoodads(renderer, { stats });
+    this.syncRaceThreeDecals(renderer, { stats });
     this.syncRaceTileModels(renderer,camera);
     this.syncRaceThreeTireTracks(renderer, { stats });
     this.syncRaceThreeTrackState(renderer, { stats });
@@ -38332,53 +38442,23 @@ export default class RaceEditor {
   }
 
   drawRaceProjectedDecals(ctx, bounds, { camera = {}, cameraYaw = 0, kind = null } = {}) {
-    const decals = this.ensureRaceDecals();
-    if (!decals.length) return;
-    decals.forEach((decal) => {
-      if (kind && String(decal.kind || 'decal') !== kind) return;
-      const artCanvas = this.getRaceArtSpriteCanvas(decal.artRef);
-      if (!artCanvas || typeof ctx.drawImage !== 'function') return;
-      const width = Math.max(0.25, Number(decal.widthM) || 3.2);
-      const height = Math.max(0.25, Number(decal.heightM) || width);
-      const yaw = Number(decal.rotation || 0);
-      const rightVector = this.getRaceRightVector(yaw);
-      const forwardVector = this.getRaceForwardVector(yaw);
-      const right = { x: rightVector.x * width / 2, z: rightVector.z * width / 2 };
-      const forward = { x: forwardVector.x * height / 2, z: forwardVector.z * height / 2 };
-      const elevation = this.getRaceSurfaceModel().sampleWorld({ x: decal.x, z: decal.z }, 0).elevation + 0.004;
-      const corners = [
-        { x: decal.x - right.x - forward.x, z: decal.z - right.z - forward.z, elevation },
-        { x: decal.x + right.x - forward.x, z: decal.z + right.z - forward.z, elevation },
-        { x: decal.x + right.x + forward.x, z: decal.z + right.z + forward.z, elevation },
-        { x: decal.x - right.x + forward.x, z: decal.z - right.z + forward.z, elevation }
-      ].map((point) => this.projectRaceWorldPointToCamera(point, camera, cameraYaw, bounds));
-      const polygon = this.getRaceNearClippedProjectedPolygon(corners, camera, bounds);
-      if (polygon.length < 3) return;
-      const minX = Math.max(bounds.x, Math.min(...polygon.map((point) => Number(point.screenX))));
-      const maxX = Math.min(bounds.x + bounds.w, Math.max(...polygon.map((point) => Number(point.screenX))));
-      const minY = Math.max(bounds.y, Math.min(...polygon.map((point) => Number(point.screenY))));
-      const maxY = Math.min(bounds.y + bounds.h, Math.max(...polygon.map((point) => Number(point.screenY))));
-      if (maxX <= minX || maxY <= minY) return;
-      ctx.save();
-      ctx.beginPath();
-      if (decal.shape === 'oval') {
-        const cx = (minX + maxX) / 2;
-        const cy = (minY + maxY) / 2;
-        if (typeof ctx.ellipse === 'function') ctx.ellipse(cx, cy, (maxX - minX) / 2, (maxY - minY) / 2, 0, 0, Math.PI * 2);
-        else {
-          ctx.arc(cx, cy, Math.min(maxX - minX, maxY - minY) / 2, 0, Math.PI * 2);
-        }
-      } else {
-        ctx.moveTo(polygon[0].screenX, polygon[0].screenY);
-        polygon.slice(1).forEach((point) => ctx.lineTo(point.screenX, point.screenY));
-        ctx.closePath();
+    // Canvas fallback uses the same terrain-conforming triangles, with UVs
+    // attached to each triangle rather than stretching a screen-space rectangle.
+    for (const decal of this.ensureRaceDecals()) {
+      if (kind && decal.kind !== kind) continue;
+      const art=this.getRaceArtSpriteCanvas(decal.artRef); if(!art)continue;
+      for(const triangle of this.getRaceDecalTriangles(decal)) {
+        const p=triangle.map(v=>({...this.projectRaceWorldPointToCamera({...v,elevation:v.elevation+0.02/RACE_THREE_ELEVATION_M},camera,cameraYaw,bounds),u:v.u,v:v.v}));
+        if(p.some(v=>!v.visible || !Number.isFinite(v.screenX)))continue;
+        const [a,b,c]=p, u0=a.u*art.width,v0=(1-a.v)*art.height;
+        const u1=b.u*art.width-u0,v1=(1-b.v)*art.height-v0,u2=c.u*art.width-u0,v2=(1-c.v)*art.height-v0;
+        const det=u1*v2-u2*v1;if(Math.abs(det)<1e-9)continue;
+        const x1=b.screenX-a.screenX,y1=b.screenY-a.screenY,x2=c.screenX-a.screenX,y2=c.screenY-a.screenY;
+        const m0=(x1*v2-x2*v1)/det,m1=(y1*v2-y2*v1)/det,m2=(x2*u1-x1*u2)/det,m3=(y2*u1-y1*u2)/det;
+        ctx.save();ctx.beginPath();ctx.moveTo(a.screenX,a.screenY);ctx.lineTo(b.screenX,b.screenY);ctx.lineTo(c.screenX,c.screenY);ctx.closePath();ctx.clip();
+        ctx.transform(m0,m1,m2,m3,a.screenX-m0*u0-m2*v0,a.screenY-m1*u0-m3*v0);ctx.drawImage(art,0,0);ctx.restore();
       }
-      ctx.clip?.();
-      ctx.globalAlpha = 0.78;
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(artCanvas, minX, minY, maxX - minX, maxY - minY);
-      ctx.restore();
-    });
+    }
   }
 
   drawRaceProjectedRoadPath(ctx, bounds, { showPlaytestHud = true } = {}) {
@@ -38682,7 +38762,7 @@ export default class RaceEditor {
     const overlaysEnabled = renderDebug.overlaysEnabled !== false;
     const overlayStartMs = overlaysEnabled ? this.getNowMs() : 0;
     if (overlaysEnabled) {
-      this.drawRaceProjectedDecals(ctx, bounds, { camera, cameraYaw, kind: 'decal' });
+      if (!drewWebGLTrack) this.drawRaceProjectedDecals(ctx, bounds, { camera, cameraYaw, kind: 'decal' });
       this.drawRaceTrackStateOverlay(ctx, bounds, { camera, cameraYaw });
       if (!drewWebGLTrack) {
         this.drawRaceContinuousDistanceMarkers(ctx, bounds, {
@@ -39904,6 +39984,11 @@ export default class RaceEditor {
       return;
     }
     if (payload.button !== 1 && payload.button !== 2 && this.beginRaceFenceNodeDrag(payload)) return;
+    if (payload.button !== 1 && payload.button !== 2 && ['fence-select','fence-remove-node'].includes(this.activeAction)) {
+      const hit=this.findRaceSceneryAtPoint(payload);
+      if(hit?.sprite?.fenceId){this.selectedSceneryIndex=hit.index;this.raceSelectionType='sprite';this.activeRaceFenceId=hit.sprite.fenceId;}
+      return;
+    }
     if (payload.button !== 1 && payload.button !== 2 && this.beginRaceFenceDrag(payload)) return;
     if (payload.button !== 1 && payload.button !== 2 && this.beginRaceSceneryRotationDrag(payload)) return;
     if (payload.button !== 1 && payload.button !== 2 && this.selectedRace?.road?.network) {

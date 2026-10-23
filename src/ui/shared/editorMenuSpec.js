@@ -97,6 +97,7 @@ const actionEntries = (ids, labels = {}) => Object.fromEntries(ids.map((id) => [
   }
 ]));
 const EDITOR_ACTION_LABEL_OVERRIDES = {
+  'paint-kind-doodad':'Doodad', 'paint-kind-fence':'Fence', 'paint-kind-decal':'Decal', 'paint-kind-tile':'Tile', 'paint-kind-sprite':'Billboard',
   'skybox-next': 'Skybox',
   'network-enable': 'Branching Routes',
   'network-select': 'Select',
@@ -396,7 +397,7 @@ export const EDITOR_MENU_SPECS = {
     portraitRoot: [
       { id: 'file', label: 'File' },
       { id: 'ground', label: 'Ground' },
-      { id: 'sprites', label: 'Sprites' },
+      { id: 'sprites', label: 'Paint' },
       { id: 'settings', label: 'Settings' }
     ],
     sections: {
@@ -447,7 +448,7 @@ export const EDITOR_MENU_SPECS = {
         'ground-brush-strength-75',
         'ground-brush-strength-100'
       ]),
-      sprites: section('sprites', 'Sprites', ['doodad-select', 'draw-fence', 'move-sprite', 'rotate-sprite', 'sprite-select', 'race-item', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']),
+      sprites: section('sprites', 'Paint', ['paint-kind-doodad', 'paint-kind-fence', 'paint-kind-decal', 'paint-kind-tile', 'paint-kind-sprite']),
       settings: section('settings', 'Settings', ['race-ground-texture', 'race-radio', 'race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-sun', 'race-weather', 'race-road-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
     }
   },
