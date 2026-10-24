@@ -1,5 +1,6 @@
 import {RACE_INTRO_DURATION} from '../racing/RaceIntro.js';
 const secondsToGo = session => Math.max(0,(Number(session.countdownRemainingMs||0)-1000)/1000)
+  + (session.startupFramePending ? Number(session.raceIntroLeadInSeconds)||0 : 0)
   + (session.raceIntro?.active ? Math.max(0,RACE_INTRO_DURATION-session.raceIntro.elapsed) : 0);
 // Musical transitions follow the visible countdown, whose final second is GO.
 // Prepare before counting down; after the bounded wait, catch late media up to GO.
@@ -55,7 +56,7 @@ export class RaceRadioDirector {
         const error=target-Number(this.radio.audio?.currentTime||0);
         // Keep the MP3 decoder running continuously; correct small drift gently.
         this.radio.audio.playbackRate=Math.max(.96,Math.min(1.04,1+error*.08));
-        if(remaining===0&&Math.abs(error)>.35)this.radio.seek(target);
+        if(remaining===0&&Math.abs(error)>.08)this.radio.seek(target);
         this.radio.setGain(session.raceIntro ? Math.min(1,this.fadeElapsed/.6) : cue<remaining?0:Math.max(0,Math.min(1,1-remaining/3)));
       }
       if(remaining===0){this.go=true;if(this.radio.audio)this.radio.audio.playbackRate=1;this.radio.setGain(1);}

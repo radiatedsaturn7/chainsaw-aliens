@@ -49,9 +49,13 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait touch' : 'desktop
     await page.evaluate(time=>{window.__game.raceEditor.playtestSession.raceIntro.elapsed=time;},time);
     await page.waitForTimeout(120);
     const camera=await page.evaluate(()=>{
-      const e=window.__game.raceEditor;
+      const e=window.__game.raceEditor,g=window.__game;
+      const pixels=g.ctx.getImageData(0,0,g.canvas.width,g.canvas.height).data;
+      let magenta=0;for(let i=0;i<pixels.length;i+=4)if(pixels[i]>240&&pixels[i+1]<20&&pixels[i+2]>240)magenta++;
+      window.__introMagenta=magenta;
       return {target:e.lastRaceRenderCamera?.camera?.cinematicTarget,view:e.lastRaceRenderCamera?.cameraView,countdown:e.playtestSession.countdownRemainingMs};
     });
+    expect(await page.evaluate(()=>window.__introMagenta)).toBe(0);
     expect(camera.target).toBeTruthy();expect(camera.view).toBe('third-person');expect(camera.countdown).toBe(countdown);
     await page.screenshot({path:`test-results/p1-intro-${mobile?'portrait':'desktop'}-${shot}.png`});
   }

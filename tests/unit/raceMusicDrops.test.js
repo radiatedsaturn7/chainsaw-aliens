@@ -97,8 +97,8 @@ test('music fades in during the visible camera intro and its authored cue lands 
  const {radio,director,session}=await fixture({start:15,end:null});
  session.raceIntro={active:true,elapsed:0};session.startupFramePending=true;
  director.update(session);await tick();assert.equal(radio.audio,null);
- session.raceIntroVisible=true;director.update(session);await tick();
- assert.equal(radio.playing,true);assert.ok(Math.abs(radio.audio.currentTime-6.3)<.001);
+ session.raceIntroVisible=true;session.raceIntroLeadInSeconds=.15;director.update(session);await tick();
+ assert.equal(radio.playing,true);assert.ok(Math.abs(radio.audio.currentTime-6.15)<.001);
  director.update(session,{dt:.3});assert.equal(radio.audio.volume,.4);
  session.startupFramePending=false;session.raceIntro.active=false;
  session.countdownRemainingMs=1000;director.update(session,{dt:.3});

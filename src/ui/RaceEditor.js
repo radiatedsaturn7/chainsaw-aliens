@@ -6113,7 +6113,10 @@ export default class RaceEditor {
       }
       warm.exit.update(Math.max(0,(now-warm.last)/1000));warm.last=now;
       warm.exit.draw(ctx,this.raceLoadingBounds);
-      if(warm.exit.elapsed>=.15)session.raceIntroVisible=true;
+      if(warm.exit.elapsed>=.15){
+        session.raceIntroVisible=true;
+        session.raceIntroLeadInSeconds=Math.max(0,.3-warm.exit.elapsed);
+      }
       if(warm.exit.active)return;
     }
     this.raceLoadingPresentation=null;this.raceLoadingCar=null;
@@ -6126,6 +6129,7 @@ export default class RaceEditor {
     if (!session?.running || session.startupFramePending !== true) return false;
     session.startupFramePending = false;
     session.raceIntroVisible = true;
+    session.raceIntroLeadInSeconds = 0;
     session.startupPhase = session.raceIntro?.active ? 'intro' : Number(session.countdownRemainingMs || 0) > 0
       ? 'countdown'
       : 'running';
