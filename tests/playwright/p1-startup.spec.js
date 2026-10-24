@@ -12,6 +12,16 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait touch' : 'desktop
   expect(await page.evaluate(() => window.__game.deviceIsMobile)).toBe(mobile);
   const result = await page.evaluate(async () => {
     const game = window.__game;
+    game.drawDisplayModeFilter=()=>{};
+    const {hydrateProjectFilePayload}=await import('/src/ui/projectFiles.js');
+    const menu=(await hydrateProjectFilePayload('menus','Game Menu')).data;
+    await game.menuPlayer.open(menu);game.draw();
+    const loadingDraw=game.raceEditor.drawRacePreparationScreen.bind(game.raceEditor);
+    game.raceEditor.drawRacePreparationScreen=(...args)=>{
+      const result=loadingDraw(...args),e=game.raceEditor;
+      if(e.raceLoadingEntry?.blackDrawn && !e.raceLoadingPresentation)window.__loadingBlackBeforeContent=true;
+      return result;
+    };
     const messages = [];
     const editor=game.raceEditor,finish=editor.finishRaceLoadingFrame.bind(editor);
     editor.finishRaceLoadingFrame=(...args)=>{
@@ -56,5 +66,6 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait touch' : 'desktop
     diagnostics: window.__game.raceRuntimePreparation?.lastDiagnostics })));
   const warm=await page.evaluate(()=>window.__loadingWarmup);
   expect(warm?.frames).toBeGreaterThanOrEqual(3);expect(warm?.elapsed).toBeGreaterThanOrEqual(1000);
+  expect(await page.evaluate(()=>window.__loadingBlackBeforeContent)).toBe(true);
   expect(errors).toEqual([]);
 });

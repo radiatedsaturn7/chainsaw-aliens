@@ -14,8 +14,8 @@ async function fixture(cues={start:12,end:45}){
 }
 test('cue serialization defaults, zero, disabled finish and invalid times',()=>{
  const norm=cue=>normalizeRadioLibrary({tracks:[{id:'s',raceCues:cue}]}).tracks[0].raceCues;
- assert.deepEqual(norm(),{start:3,end:null});assert.deepEqual(norm({start:0,end:0}),{start:0,end:0});
- assert.deepEqual(norm({start:-5,end:'bad'}),{start:3,end:null});
+ assert.deepEqual(norm(),{start:null,end:null});assert.deepEqual(norm({start:0,end:0}),{start:0,end:0});
+ assert.deepEqual(norm({start:-5,end:'bad'}),{start:null,end:null});
  assert.deepEqual(norm({start:12.34,end:65.5}),{start:12.34,end:65.5});
 });
 test('auto-start seeks three seconds before the drop, fades, and reaches the cue at GO (1000ms)',async()=>{
@@ -90,4 +90,35 @@ test('early cue holds warmed audio paused rather than seeking zero repeatedly',a
  let seeks=0;const seek=radio.seek.bind(radio);radio.seek=v=>{seeks++;seek(v);};
  for(let i=0;i<60;i++){session.countdownRemainingMs=4000-i*16;director.update(session);}
  assert.equal(seeks,0);session.countdownRemainingMs=2000;director.update(session);await tick();assert.equal(radio.playing,true);assert.equal(seeks,1);
+});
+
+
+test('music fades in during the visible camera intro and its authored cue lands on GO',async()=>{
+ const {radio,director,session}=await fixture({start:15,end:null});
+ session.raceIntro={active:true,elapsed:0};session.startupFramePending=true;
+ director.update(session);await tick();assert.equal(radio.audio,null);
+ session.raceIntroVisible=true;director.update(session);await tick();
+ assert.equal(radio.playing,true);assert.ok(Math.abs(radio.audio.currentTime-6.3)<.001);
+ director.update(session,{dt:.3});assert.equal(radio.audio.volume,.4);
+ session.startupFramePending=false;session.raceIntro.active=false;
+ session.countdownRemainingMs=1000;director.update(session,{dt:.3});
+ assert.equal(radio.audio.currentTime,15);assert.equal(radio.audio.volume,.8);
+});
+test('unmarked songs keep their position through intro, countdown and GO',async()=>{
+ const {radio,director,session}=await fixture({start:null,end:null});
+ await radio.play('song');radio.audio.currentTime=24;const audio=radio.audio;
+ session.raceIntro={active:true,elapsed:0};
+ director.update(session);await tick();assert.equal(radio.audio,audio);assert.equal(audio.currentTime,24);
+ let seeks=0;radio.seek=()=>seeks++;
+ director.update(session,{dt:.6});assert.equal(audio.volume,.8);
+ session.raceIntro.active=false;session.countdownRemainingMs=1000;director.update(session,{dt:3});
+ assert.equal(seeks,0);assert.equal(audio.currentTime,24);assert.equal(audio.playbackRate,1);
+});
+test('early marked songs play during the intro then hit their cue once at GO',async()=>{
+ const {radio,director,session}=await fixture({start:1,end:null});
+ session.raceIntro={active:true,elapsed:0};director.update(session);await tick();
+ assert.equal(radio.playing,true);director.update(session,{dt:.6});assert.equal(radio.audio.volume,.8);
+ radio.audio.currentTime=8;session.raceIntro.active=false;session.countdownRemainingMs=1000;
+ director.update(session);assert.equal(radio.audio.currentTime,1);
+ radio.audio.currentTime=2;director.update(session);assert.equal(radio.audio.currentTime,2);
 });

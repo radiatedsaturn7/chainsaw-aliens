@@ -20,8 +20,8 @@ test('skip fades through black into driving view without restarting the intro',(
 test('car editor previews and sessions without a countdown have no intro',()=>{
  for(const s of [{running:true,startupFramePending:true,countdownRemainingMs:0},{running:true,startupFramePending:true,countdownRemainingMs:4000,carEditorPreview:true}])assert.equal(ensureRaceIntro(s),undefined);
 });
-test('intro holds physics and the radio countdown cue',()=>{
- const session={running:true,raceIntro:{active:true},countdownRemainingMs:4000};
+test('intro holds physics and music stays silent until the camera is visible',()=>{
+ const session={running:true,startupFramePending:true,raceIntro:{active:true},countdownRemainingMs:4000};
  updateRaceSimulation({editor:{playtestSession:session},systems:{},dt:1});
  const director=new RaceRadioDirector({});director.session=session;
  director.update(session,{dt:1});assert.ok(!director.starting);assert.equal(session.countdownRemainingMs,4000);

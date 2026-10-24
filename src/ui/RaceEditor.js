@@ -1106,7 +1106,7 @@ export default class RaceEditor {
       const skip = input?.wasPressed?.('interact') || input?.wasGamepadPressed?.('gamepadA')
         || input?.wasGamepadPressed?.('gamepadStart')
         || input?.wasPressedCode?.('Enter') || input?.wasPressedCode?.('Space');
-      advanceRaceIntro(this.playtestSession, dt, skip);
+      if(!this.playtestSession.raceMusicPending)advanceRaceIntro(this.playtestSession, dt, skip);
       return;
     }
     this.updateRaceMapThumbstickPan(dt);
@@ -6113,6 +6113,7 @@ export default class RaceEditor {
       }
       warm.exit.update(Math.max(0,(now-warm.last)/1000));warm.last=now;
       warm.exit.draw(ctx,this.raceLoadingBounds);
+      if(warm.exit.elapsed>=.15)session.raceIntroVisible=true;
       if(warm.exit.active)return;
     }
     this.raceLoadingPresentation=null;this.raceLoadingCar=null;
@@ -6124,6 +6125,7 @@ export default class RaceEditor {
     const session = this.playtestSession;
     if (!session?.running || session.startupFramePending !== true) return false;
     session.startupFramePending = false;
+    session.raceIntroVisible = true;
     session.startupPhase = session.raceIntro?.active ? 'intro' : Number(session.countdownRemainingMs || 0) > 0
       ? 'countdown'
       : 'running';
@@ -6208,13 +6210,19 @@ export default class RaceEditor {
     const now=this.getNowMs();
     if(!this.raceLoadingEntry){
       const fade=new MenuScreenTransition();
-      fade.start(ctx.canvas,bounds,undefined,{transform:ctx.getTransform?.()});
+      fade.start(ctx.canvas,bounds,undefined,{transform:ctx.getTransform?.(),hold:true});
       this.raceLoadingEntry={fade,last:now};
     }
     const entry=this.raceLoadingEntry;
     entry.fade.update(Math.max(0,(now-entry.last)/1000));entry.last=now;
     ctx.save();ctx.fillStyle='#050807';ctx.fillRect(0,0,width,height);
     if(layout)this.drawRaceHandheldShell(ctx,layout);
+    if(entry.fade.active && !entry.blackDrawn){
+      entry.fade.draw(ctx,entry.menuBounds ? fitMenuCanvas(bounds) : bounds);
+      if(entry.fade.elapsed>=.15){entry.blackDrawn=true;entry.fade.release();}
+      if(layout)this.drawRaceHandheldControls(ctx,layout);
+      ctx.restore();return;
+    }
     if(!this.raceLoadingPresentation){
       const flow=this.game?.raceTravelSession?.menuFlow || this.game?.menuPlayer?.flow;
       if(!flow?.document && !this.raceLoadingMenuRequest && typeof window!=='undefined'){
@@ -6238,8 +6246,10 @@ export default class RaceEditor {
     const progress=view.progress=Math.max(view.progress||0,clamp(Number(preparation?.progress ?? (this.playtestSession?.startupFramePending ? 1 : 0)),0,1));
     const parameters={...view.parameters,carRef:view.carRef,loadingProgress:progress,loadingRace:preparation?.raceName||this.selectedRace?.name||'race',loadingFactSeed:view.seed};
     this.raceLoadingBounds={...bounds};
-    drawMenuScreen(ctx,fitMenuCanvas(bounds),view.document,view.screen,parameters,{resources:view.resources,time:Math.max(0,(this.getNowMs()-view.started)/1000)});
-    entry.fade.draw(ctx,bounds);
+    if(entry.blackDrawn || !entry.fade.active)
+      drawMenuScreen(ctx,fitMenuCanvas(bounds),view.document,view.screen,parameters,{resources:view.resources,time:Math.max(0,(this.getNowMs()-view.started)/1000)});
+    entry.fade.draw(ctx,entry.menuBounds ? fitMenuCanvas(bounds) : bounds);
+    if(entry.fade.active && entry.fade.elapsed>=.15){entry.blackDrawn=true;entry.fade.release();}
     if(layout)this.drawRaceHandheldControls(ctx,layout);
     ctx.restore();
   }
@@ -12708,6 +12718,12 @@ export default class RaceEditor {
   beginRaceTravelLoading(raceName = 'race', carId = '', {car = null} = {}) {
     this.raceLoadingPresentation=null;
     this.raceLoadingEntry=null;this.raceLoadingWarmup=null;
+    const menu=this.game?.menuPlayer;
+    if(menu?.lastDrawCanvas && menu.bounds){
+      const fade=new MenuScreenTransition();
+      fade.start(menu.lastDrawCanvas,menu.bounds,undefined,{transform:menu.lastDrawTransform,hold:true});
+      this.raceLoadingEntry={fade,last:this.getNowMs(),menuBounds:true};
+    }
     this.raceLoadingCar=car;
     this.cancelRacePlaytestPreparation();
     this.racePreparedArtFrames?.clear?.();
@@ -31787,7 +31803,7 @@ export default class RaceEditor {
       drawLayer(11, 0.5, 0.13, skybox.nearColor, 0.7, 1.1);
     }
     const hazeHeight = Math.max(24, bounds.h * 0.16);
-    if (!suppressGroundFill) {
+    if (!suppressGroundFill && !drewSkyboxArt) {
       const groundStart = drewSkyboxArt ? horizon + hazeHeight * 0.34 : horizon;
       ctx.fillStyle = groundFillOverride || skybox.ground;
       ctx.fillRect(coverage.x, groundStart, coverage.w, Math.max(1, coverage.y + coverage.h - groundStart));
@@ -31826,12 +31842,17 @@ export default class RaceEditor {
     const previousSmoothing = ctx.imageSmoothingEnabled;
     ctx.save();
     ctx.beginPath();
-    ctx.rect?.(coverage.x, coverage.y, coverage.w, Math.max(1, horizon - coverage.y + bounds.h * 0.32));
+    ctx.rect?.(coverage.x, coverage.y, coverage.w, coverage.h);
     ctx.clip?.();
     // Resample fractional camera movement instead of snapping enlarged source pixels.
     ctx.imageSmoothingEnabled = true;
     for (let x = startX + Math.floor((coverage.x - startX) / wrapW) * wrapW; x < coverage.x + coverage.w + wrapW; x += wrapW) {
+      // Clamp the vertical edges like a sky texture, so pitch/zoom cannot expose
+      // the fallback palette or the magenta empty-world color around the artwork.
+      if(destY>coverage.y)ctx.drawImage(canvas,0,0,canvas.width,1,x,coverage.y,wrapW,destY-coverage.y);
       ctx.drawImage(canvas, x, destY, wrapW, destH);
+      const bottom=destY+destH,coverageBottom=coverage.y+coverage.h;
+      if(bottom<coverageBottom)ctx.drawImage(canvas,0,canvas.height-1,canvas.width,1,x,bottom,wrapW,coverageBottom-bottom);
     }
     ctx.restore();
     ctx.imageSmoothingEnabled = previousSmoothing;
@@ -38744,7 +38765,12 @@ export default class RaceEditor {
       }
       return;
     }
-    const horizon = bounds.y + bounds.h * horizonRatio;
+    // Match the panorama horizon to the actual look-at pitch of cinematic shots.
+    const cinematicTarget=camera.cinematicTarget;
+    const cinematicHorizon=cinematicTarget ? .5 + (cinematicTarget.y-camera.elevation*RACE_THREE_ELEVATION_M)
+      / Math.max(.1,Math.hypot(cinematicTarget.x-camera.x,cinematicTarget.z-camera.z))
+      / (2*Math.tan(camera.cinematicFov*Math.PI/360)) : horizonRatio;
+    const horizon = bounds.y + bounds.h * cinematicHorizon;
     const terrainTop = this.getRaceProjectedTerrainTop(bounds, camera);
     const roadBottom = bounds.y + bounds.h;
     const isWebGLTrackRenderer = this.getRaceGroundRenderer() === 'webgl-track';

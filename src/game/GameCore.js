@@ -1927,9 +1927,9 @@ export default class Game {
       travelSession.menuFlow = params.menuFlow || null;
       travelSession.menuConfiguration = structuredClone(params.menuConfiguration || {});
     }
+    this.raceEditor.beginRaceTravelLoading?.(raceName, car.id, {car:runtimeCar});
     this.transitionTo('race-editor', { forceCleanup: true });
     this.setRevAudio(false);
-    this.raceEditor.beginRaceTravelLoading?.(raceName, car.id, {car:runtimeCar});
     await new Promise((resolve) => {
       if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve());
       else setTimeout(resolve, 0);

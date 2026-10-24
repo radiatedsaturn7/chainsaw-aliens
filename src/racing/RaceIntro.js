@@ -25,7 +25,7 @@ export function raceIntroShot(session) {
   const ease = t * t * (3 - 2 * t);
   const angles = [[-55, -30], [100, 130], [205, 180]];
   return { shot, angle: (angles[shot][0] + (angles[shot][1] - angles[shot][0]) * ease) * Math.PI / 180,
-    distance: [8, 8.5, 9][shot] + ease, height: [2, 1.4, 3][shot], fov: 42 };
+    distance: [8, 8.5, 9][shot] + ease, height: 2, fov: 42 };
 }
 export function raceIntroFade(session) {
   const t = session?.raceIntro?.elapsed || 0;

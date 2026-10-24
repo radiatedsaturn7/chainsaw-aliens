@@ -43,3 +43,17 @@ test('a cached race still displays loading before presenting its first race fram
  let loading=0;e.drawRacePreparationScreen=()=>loading++;
  e.draw({},400,800);assert.equal(loading,1);assert.equal(e.playtestSession.startupFramePending,true);
 });
+
+test('loading content is not created until a fully black entry frame has been drawn',()=>{
+ const saved=globalThis.document;globalThis.document={createElement:()=>({getContext:()=>({drawImage(){}})})};
+ try{
+  const e=new RaceEditor({});let now=0;e.getNowMs=()=>now;
+  e.playtestSession={preparing:true};e.racePlaytestPreparation={progress:.2};
+  const fills=[],ctx=new Proxy({canvas:{},measureText:()=>({width:20}),fillRect(){fills.push(this.fillStyle);},getTransform:()=>({a:1,d:1,e:0,f:0})},{get:(o,k)=>k in o?o[k]:()=>{}});
+  e.drawRacePreparationScreen(ctx,640,360);assert.equal(e.raceLoadingPresentation,undefined);
+  now=500;e.drawRacePreparationScreen(ctx,640,360);
+  assert.equal(e.raceLoadingEntry.blackDrawn,true);assert.equal(fills.at(-1),'rgba(0,0,0,1)');
+  assert.equal(e.raceLoadingPresentation,undefined);
+  now=516;e.drawRacePreparationScreen(ctx,640,360);assert.ok(e.raceLoadingPresentation);
+ }finally{globalThis.document=saved;}
+});
