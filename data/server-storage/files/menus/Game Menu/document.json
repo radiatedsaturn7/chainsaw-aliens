@@ -5262,7 +5262,7 @@
         {
           "id": "loading-label",
           "type": "text",
-          "label": "Loading {{loadingRace}}…",
+          "label": "Loading",
           "x": 0.1,
           "y": 0.6,
           "w": 0.84,

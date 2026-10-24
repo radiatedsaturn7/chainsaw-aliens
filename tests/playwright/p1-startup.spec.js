@@ -44,7 +44,17 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait touch' : 'desktop
   if(!mobile)await page.evaluate(()=>{
     const e=window.__game.raceEditor;e.raceInput.cameraView='first-person';e.playtestSession.cameraView='first-person';
   });
-  const countdown=await page.evaluate(()=>window.__game.raceEditor.playtestSession.countdownRemainingMs);
+  const countdown=await page.evaluate(()=>{
+    const e=window.__game.raceEditor,draw=e.drawRacePlaytestScreenContents.bind(e);
+    window.__handoffCameras=[];
+    e.drawRacePlaytestScreenContents=(...args)=>{
+      const result=draw(...args),s=e.playtestSession,c=e.lastRaceRenderCamera;
+      if(s?.raceIntro?.elapsed>=5.4 && s.countdownRemainingMs>3000 && window.__handoffCameras.length<90)
+        window.__handoffCameras.push({t:s.raceIntro.elapsed,countdown:s.countdownRemainingMs,y:c?.camera?.elevation,fov:e.raceThreeWorldRenderer?.camera?.fov});
+      return result;
+    };
+    return e.playtestSession.countdownRemainingMs;
+  });
   for(const [shot,time] of [[0,.7],[1,2.5],[2,4.3]]){
     await page.evaluate(time=>{window.__game.raceEditor.playtestSession.raceIntro.elapsed=time;},time);
     await page.waitForTimeout(120);
@@ -59,6 +69,16 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait touch' : 'desktop
     expect(camera.target).toBeTruthy();expect(camera.view).toBe('third-person');expect(camera.countdown).toBe(countdown);
     await page.screenshot({path:`test-results/p1-intro-${mobile?'portrait':'desktop'}-${shot}.png`});
   }
+  const handoff=await page.evaluate(async()=>{
+    const {advanceRaceIntro}=await import('/src/racing/RaceIntro.js');
+    const g=window.__game,e=g.raceEditor,s=e.playtestSession;
+    s.raceIntro.elapsed=5.37;s.raceIntro.handoffBlackDrawn=false;
+    advanceRaceIntro(s,.1);g.draw();
+    const b=e.lastRaceRenderCamera.bounds,scale=g.canvas.width/g.viewport.width;
+    const pixel=[...g.ctx.getImageData(Math.round((b.x+b.w/2)*scale),Math.round((b.y+b.h/2)*scale),1,1).data];
+    return {elapsed:s.raceIntro.elapsed,black:s.raceIntro.handoffBlackDrawn,pixel};
+  });
+  expect(handoff.elapsed).toBe(5.4);expect(handoff.black).toBe(true);expect(handoff.pixel.slice(0,3)).toEqual([0,0,0]);
   await page.waitForFunction(() => {
     const session = window.__game.raceEditor.playtestSession;
     return session?.running && !session.startupFramePending && session.elapsedMs > 2000;
@@ -71,5 +91,6 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait touch' : 'desktop
   const warm=await page.evaluate(()=>window.__loadingWarmup);
   expect(warm?.frames).toBeGreaterThanOrEqual(3);expect(warm?.elapsed).toBeGreaterThanOrEqual(1000);
   expect(await page.evaluate(()=>window.__loadingBlackBeforeContent)).toBe(true);
+  console.log('HANDOFF_CAMERAS',await page.evaluate(()=>window.__handoffCameras));
   expect(errors).toEqual([]);
 });

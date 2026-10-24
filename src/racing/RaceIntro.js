@@ -12,6 +12,8 @@ export function advanceRaceIntro(session, dt, skip = false) {
   if (!intro?.active || session.startupFramePending) return;
   intro.elapsed = Math.min(RACE_INTRO_DURATION,
     Math.max(skip ? 5.1 : 0, intro.elapsed) + Math.max(0, Math.min(.1, Number(dt) || 0)));
+  // Never expose the camera/FOV switch if a slow frame steps over full black.
+  if (!intro.handoffBlackDrawn && intro.elapsed >= 5.4) intro.elapsed = 5.4;
   if (intro.elapsed >= RACE_INTRO_DURATION) {
     intro.active = false;
     session.startupPhase = 'countdown';

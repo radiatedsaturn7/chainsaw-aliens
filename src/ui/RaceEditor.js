@@ -20884,6 +20884,7 @@ export default class RaceEditor {
       ctx.fillText('Tap / A / Enter to skip', bounds.x + bounds.w - 12, bounds.y + bounds.h - bar / 2);
       ctx.fillStyle = `rgba(0,0,0,${raceIntroFade(this.playtestSession)})`;
       ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
+      if(raceIntroFade(this.playtestSession)===1)this.playtestSession.raceIntro.handoffBlackDrawn=true;
     } else {
       this.drawRacePlaytestHud(ctx, bounds);
       this.drawRaceCountdown(ctx, bounds);
