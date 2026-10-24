@@ -91,6 +91,10 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait touch' : 'desktop
   const warm=await page.evaluate(()=>window.__loadingWarmup);
   expect(warm?.frames).toBeGreaterThanOrEqual(3);expect(warm?.elapsed).toBeGreaterThanOrEqual(1000);
   expect(await page.evaluate(()=>window.__loadingBlackBeforeContent)).toBe(true);
-  console.log('HANDOFF_CAMERAS',await page.evaluate(()=>window.__handoffCameras));
+  const handoffCameras=await page.evaluate(()=>window.__handoffCameras);
+  const heights=handoffCameras.map(c=>c.y);
+  expect(Math.max(...heights)-Math.min(...heights)).toBeLessThan(.005);
+  expect(new Set(handoffCameras.map(c=>c.fov)).size).toBe(1);
+  console.log('HANDOFF_HEIGHT_RANGE',Math.max(...heights)-Math.min(...heights));
   expect(errors).toEqual([]);
 });

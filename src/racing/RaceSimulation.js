@@ -786,6 +786,16 @@ function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
   return editor.vehicleDynamicsAuthority;
 }
 
+// Seed the rendered car from the same grounded chassis state used by the first
+// physics step. Do this behind loading, without advancing clocks or AI.
+export function initializeRaceVehiclePresentation(editor) {
+  const session=editor?.playtestSession;
+  if(!session?.running || session.vehicleRenderState)return;
+  const tuning=editor.getRaceCarTuning(editor.getRaceSessionCar(session));
+  const authority=ensureVehicleDynamicsAuthority(editor,tuning,{});
+  syncVehicleDynamicsCompatibilityOutputs(authority.runner,session);
+}
+
 function createTrackStateStepScratch() {
   const positions = {};
   const longitudinalSlipByWheel = {};

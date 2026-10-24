@@ -62,6 +62,7 @@ import {
   updateRaceAiVehiclePhysics
 } from '../racing/RaceAiSimulation.js';
 import {
+  initializeRaceVehiclePresentation,
   estimateRacePowerLimitedTopSpeedMps,
   updateRaceSimulation
 } from '../racing/RaceSimulation.js';
@@ -6057,6 +6058,7 @@ export default class RaceEditor {
     this.menuScrollRegions = [];
     this.raceMapBounds = null;
     ensureRaceIntro(this.playtestSession);
+    if(this.playtestSession?.raceIntro?.active)initializeRaceVehiclePresentation(this);
     if (this.racePlaytestPreparation || this.playtestSession?.preparing
       || (this.playtestSession?.startupFramePending && !this.playtestSession.carEditorPreview && !this.raceLoadingPresentation)) {
       this.drawRacePreparationScreen(ctx, width, height);
