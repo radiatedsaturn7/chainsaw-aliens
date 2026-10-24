@@ -82,7 +82,10 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait touch' : 'desktop
   await page.waitForFunction(() => {
     const session = window.__game.raceEditor.playtestSession;
     return session?.running && !session.startupFramePending && session.elapsedMs > 2000;
-  }, null, { timeout: 90000 });
+  }, null, { timeout: 90000 }).catch(async error=>{
+    console.log('STARTUP_TIMEOUT_STATE',await page.evaluate(()=>{const e=window.__game.raceEditor,s=e.playtestSession;return {state:window.__game.state,status:e.status,paused:e.raceInput.paused,intro:s?.raceIntro,countdown:s?.countdownRemainingMs,elapsed:s?.elapsedMs,musicPending:s?.raceMusicPending,running:s?.running,pending:s?.startupFramePending};}));
+    await page.screenshot({path:`test-results/p1-timeout-${mobile?'portrait':'desktop'}.png`});throw error;
+  });
   if(!mobile)expect(await page.evaluate(()=>window.__game.raceEditor.lastRaceRenderCamera.cameraView)).toBe('first-person');
   await page.screenshot({ path: `test-results/p1-running-${mobile ? 'portrait' : 'desktop'}.png` });
   console.log('P1_RUNNING', await page.evaluate(() => ({ state: window.__game.state,
