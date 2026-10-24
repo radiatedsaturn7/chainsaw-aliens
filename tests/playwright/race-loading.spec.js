@@ -18,13 +18,13 @@ for(const mode of ['portrait','landscape','controller'])test(`custom race loadin
  },mode);
  await page.waitForTimeout(1500);
  const result=await page.evaluate(()=>{const g=window.__game,e=g.raceEditor;g.draw();return{bounds:e.raceLoadingBounds,layout:e.getRaceHandheldLayout(g.viewport.width,g.viewport.height).screen,buttons:e.buttons.map(b=>b.id),car:e.raceLoadingPresentation.carRef,art:e.raceLoadingPresentation.screen.backgroundArt,seed:e.raceLoadingPresentation.seed};});
- expect(result.car).toBe('RTG-001');expect(result.art).toBe('8576');
+ expect(result.car).toBe('RTG-001');expect(result.art).toBe('loadingscreen');
  if(mode!=='controller'){expect(result.bounds).toEqual(result.layout);expect(result.buttons).toContain('race-go');}else expect(result.buttons).not.toContain('race-go');
  await page.screenshot({path:`test-results/loading-${mode}.png`});
  const later=await page.evaluate(()=>{const e=window.__game.raceEditor;const seed=e.raceLoadingPresentation.seed;e.racePlaytestPreparation.progress=.9;window.__game.draw();return{seed:e.raceLoadingPresentation.seed,previous:seed};});expect(later.seed).toBe(later.previous);
  expect(result.buttons).not.toContain('cancel-race-preparation');
  const elements=await page.evaluate(()=>window.__game.raceEditor.raceLoadingPresentation.screen.elements);
  const car=elements.find(e=>e.id==='loading-car'),bar=elements.find(e=>e.id==='loading-progress');
- expect(car).toBeUndefined();expect(bar.w).toBe(.84);expect(bar.y).toBeGreaterThan(.7);
+ expect(car).toBeUndefined();expect(bar.x).toBe(.61);expect(bar.w).toBe(.36);expect(bar.y).toBe(.92);
  await page.evaluate(()=>window.__game.raceEditor.cancelRacePlaytestPreparation());
 });

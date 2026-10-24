@@ -37209,7 +37209,10 @@ export default class RaceEditor {
       const key = `terrain-art:${texture.uuid}`;
       let material = renderer.materialCache?.get(key);
       if (!material) {
-        material = this.getRaceThreeMaterial(renderer, {texture, depthWrite: false, polygonOffset: true}).clone();
+        material = this.getRaceThreeMaterial(renderer, {texture, depthWrite: false, polygonOffset: false}).clone();
+        // This is the terrain's color pass, not a decal on top of roads. Match
+        // the base terrain depth exactly; road/bridge depth must occlude it.
+        material.depthFunc = THREE.EqualDepth;
         material.transparent = true;
         material.alphaTest = 0.001;
         renderer.materialCache.set(key, material);
