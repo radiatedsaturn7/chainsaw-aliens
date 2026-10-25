@@ -8,6 +8,7 @@ for(const mode of ['portrait','landscape','controller'])test(`custom race loadin
   const {hydrateProjectFilePayload}=await import('/src/ui/projectFiles.js');
   const {MenuFlow}=await import('/src/menus/MenuFlow.js');
   const menu=(await hydrateProjectFilePayload('menus','Game Menu')).data;
+  window.__loadingBarLayout=menu.screens.find(s=>s.id==='loading').elements.find(e=>e.id==='loading-progress');
   const carDoc=(await hydrateProjectFilePayload('cars','RTG-001')).data;
   const car=g.carEditor.normalizeLoadedCarDocument(carDoc.car||carDoc);
   g.transitionTo('race-editor');g.menuPlayer.flow=new MenuFlow(menu);g.menuPlayer.flow.parameters.carRef='RTG-001';
@@ -25,6 +26,10 @@ for(const mode of ['portrait','landscape','controller'])test(`custom race loadin
  expect(result.buttons).not.toContain('cancel-race-preparation');
  const elements=await page.evaluate(()=>window.__game.raceEditor.raceLoadingPresentation.screen.elements);
  const car=elements.find(e=>e.id==='loading-car'),bar=elements.find(e=>e.id==='loading-progress');
- expect(car).toBeUndefined();expect(bar.x).toBe(.142);expect(bar.w).toBe(.828);expect(bar.y).toBe(.91125);expect(bar.h).toBe(.0525);
+ const saved=await page.evaluate(()=>window.__loadingBarLayout);
+ expect(car).toBeUndefined();
+ for(const key of ['x','y','w','h'])expect(bar[key]).toBe(saved[key]);
+ expect(bar.w).toBeGreaterThan(0);expect(bar.h).toBeGreaterThan(0);
+ expect(bar.x+bar.w).toBeLessThanOrEqual(1);expect(bar.y+bar.h).toBeLessThanOrEqual(1);
  await page.evaluate(()=>window.__game.raceEditor.cancelRacePlaytestPreparation());
 });

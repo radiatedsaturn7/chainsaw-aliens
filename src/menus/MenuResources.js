@@ -92,5 +92,5 @@ export class MenuResources {
     ctx.drawImage(canvas,b.x,b.y,b.w,b.h);
   }
   tuning(car){if(!this.tunings.has(car))this.tunings.set(car,this.game.carEditor.getRaceCarTuning(car));return this.tunings.get(car);}
-  art(ref,frameIndex=0){if(!ref)return null;const canvas=getRaceArtSpriteCanvasShared(ref,{frameIndex,cache:this.artCache});if(!canvas)this.request(`art:${ref}`,()=>hydrateRaceArtSpriteShared(ref));return canvas;}
+  art(ref,frameIndex=0){if(!ref)return null;const canvas=getRaceArtSpriteCanvasShared(ref,{frameIndex,cache:this.artCache,allowSyncFetch:false});if(!canvas)this.request(`art:${ref}`,()=>hydrateRaceArtSpriteShared(ref));return canvas;}
 }
