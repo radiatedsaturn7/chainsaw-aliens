@@ -1,3 +1,4 @@
+import {loadingFact} from './MenuLoadingScreen.js';
 import {drawWorldMap} from './MenuWorldMapRenderer.js';
 import {menuTypedText} from './MenuTypewriter.js';
 import {garageDialogueContext,garageDialogueText} from '../garage/GarageDialogue.js';
@@ -57,7 +58,15 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     let label=caption(element.label,parameters),value=parameters[element.binding];
     const textSize=Math.max(10,element.fontSize*Math.min(bounds.w/720,bounds.h/900));
     ctx.fillStyle=menuTextFill(ctx,element,b,label,textSize);
-    if(element.type==='shape'){
+    if(element.type==='progress-bar'){
+      const progress=Math.max(0,Math.min(1,Number(value??(editing?.5:0))||0));
+      const inset=Math.min(element.strokeWidth/2,b.w/2,b.h/2);
+      ctx.fillStyle=element.background;ctx.fillRect(b.x,b.y,b.w,b.h);
+      ctx.fillStyle=element.fill;ctx.fillRect(b.x+inset,b.y+inset,Math.max(0,b.w-2*inset)*progress,Math.max(0,b.h-2*inset));
+      if(element.strokeWidth){ctx.strokeStyle=element.stroke;ctx.lineWidth=element.strokeWidth;ctx.strokeRect(b.x+inset,b.y+inset,b.w-2*inset,b.h-2*inset);}
+    }
+    else if(element.type==='random-fact')drawCarDescription(ctx,b,loadingFact(element,parameters.loadingFactSeed,editing),fontFamily,element,{time,editing});
+    else if(element.type==='shape'){
       ctx.beginPath();const inset=element.strokeWidth/2,x=b.x+inset,y=b.y+inset,w=Math.max(0,b.w-2*inset),h=Math.max(0,b.h-2*inset);
       if(element.shape==='ellipse')ctx.ellipse(x+w/2,y+h/2,w/2,h/2,0,0,Math.PI*2);
       else if(element.shape==='triangle'){ctx.moveTo(x+w/2,y);ctx.lineTo(x+w,y+h);ctx.lineTo(x,y+h);ctx.closePath();}
@@ -153,7 +162,7 @@ function drawCarComponent(ctx,b,e,car,resources,time,parameters,fontFamily='syst
 export function drawCarDescription(ctx,b,description,fontFamily='system-ui',element=null,{time=0,editing=false}={}){
   const text=String(description).split('\n').map(p=>p.trim().replace(/\s+/g,' ')).join('\n');
   const revealed=menuTypedText(element,text,time,editing).length;
-  let fontSize=Math.max(10,Math.min(22,b.w/36));
+  let fontSize=element?.type==='random-fact'?Math.max(10,element.fontSize*b.w/576):Math.max(10,Math.min(22,b.w/36));
   const width=Math.max(1,b.w-16),height=Math.max(1,b.h-8);
   ctx.textAlign='left';ctx.textBaseline='top';
   const wrap=()=>{
@@ -176,7 +185,7 @@ export function drawCarDescription(ctx,b,description,fontFamily='system-ui',elem
   let lines=wrap();
   // Fit the complete race description before revealing letters. The map panel
   // stays fixed, and the font and line breaks stay stable while text types out.
-  if(element?.type==='race-description'){
+  if(['race-description','random-fact'].includes(element?.type)){
     while(fontSize>1&&lines.length*fontSize*1.4>height){
       fontSize=Math.max(1,fontSize-.25);lines=wrap();
     }

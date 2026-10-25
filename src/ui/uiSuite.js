@@ -2112,6 +2112,7 @@ function defaultLabelForFileId(id) {
 
 export function fileTypeBadge(filename = '') {
   const value = String(filename).toLowerCase();
+  if (/\.(ttf|otf|woff2?)$/.test(value)) return 'Font';
   if (value.endsWith('.mid') || value.endsWith('.midi')) return 'MIDI';
   if (value.endsWith('.json')) return 'JSON';
   if (value.endsWith('.png')) return 'PNG';

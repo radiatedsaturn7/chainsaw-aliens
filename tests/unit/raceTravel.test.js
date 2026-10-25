@@ -267,8 +267,8 @@ test('startup race travel yields to a loading screen before applying a dense rac
   assert.equal(started, true);
   assert.equal(preparedEngineSoundId, 'Engine WRX SPT');
   assert.deepEqual(events, [
+    'loading:Studio Sprint', // Capture the outgoing menu before switching state.
     'transition:race-editor',
-    'loading:Studio Sprint',
     'worker',
     'phase:applying-race',
     'apply',
@@ -504,4 +504,12 @@ test('menu-started races honor the configured next race and retain their menu or
  assert.equal(next.raceName,'Race Two');assert.equal(next.continuation,session);assert.equal(next.carRef,'WRX4');assert.equal(session.trackStateByRace.one,snapshot);assert.deepEqual(session.menuConfiguration.weapons,['chainsaw']);
  let returned=false;game.transitionTo=state=>{assert.equal(state,'menu-player')};game.menuPlayer.enterScreen=()=>{returned=true};
  game.completeRaceTravel({type:'return-to-origin'});assert.ok(returned);assert.equal(game.raceTravelSession,null);
+});
+
+test('race start records the car loading failure and clears stale errors on the next attempt',async()=>{
+ const game=Object.create(Game.prototype);game.showSystemToast=()=>{};
+ game.resolveRaceTravelCarAsync=async()=>{throw Error('saved car unavailable');};
+ assert.equal(await game.startRaceTravel({raceName:'p1',carSelection:'specific',carRef:'RTG-001'}),false);
+ assert.match(game.lastRaceTravelError,/saved car unavailable/);
+ assert.equal(await game.startRaceTravel({raceName:''}),false);assert.equal(game.lastRaceTravelError,'Choose a race first.');
 });

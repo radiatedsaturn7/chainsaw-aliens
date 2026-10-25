@@ -27,7 +27,7 @@ import {
   restoreServerFileVersion
 } from './serverStorage.js';
 
-const FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'menus', 'doodads', 'items'];
+const FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'menus', 'doodads', 'items', 'fonts'];
 const parsedPayloadCache = new Map();
 const payloadMetadataCache = new Map();
 const LARGE_PARSED_PAYLOAD_LIMIT = 8 * 1024 * 1024;

@@ -1,7 +1,7 @@
 import {GARAGE_DIALOGUE} from '../../garage/GarageDialogue.js';
 import {openEditorForm} from './editorForm.js';
 import {listProjectFiles} from '../projectFiles.js';
-import {normalizeMenuVariables} from '../../menus/MenuProgress.js';
+import {normalizeMenuVariables,parseMenuVariableAssignments} from '../../menus/MenuProgress.js';
 export async function editMenuDestination(value={}, {variablesOnly=false}={}){
  const result=await openEditorForm(variablesOnly?'Set Menu Variables':'Menu Destination',[
   ...variablesOnly?[]:[{id:'menuRef',label:'Menu',value:value.menuRef||'',options:[{value:'',label:'Current / designated menu'},...listProjectFiles('menus').map(f=>({value:f.name,label:f.name}))]},
@@ -11,7 +11,7 @@ export async function editMenuDestination(value={}, {variablesOnly=false}={}){
   {id:'variables',label:'Variables (one name = value per line)',type:'textarea',required:false,rows:5,value:Object.entries(value.variables||{}).filter(([key])=>!['chapter','garageDialogueEvent'].includes(key)).map(([k,v])=>`${k} = ${JSON.stringify(v)}`).join('\n')}
  ],{description:'Use true/false, numbers or quoted text. World-map unlock conditions read these saved variables. Races also save lastCompletedRace and raceCompleted.<race_name> automatically. Chapter and lastCompletedRace can select menu background artwork.'});
  if(!result)return null;
- const variables={};for(const line of result.variables.split('\n').filter(l=>l.trim())){const index=line.indexOf('=');if(index<1)throw Error('Use name = value');const key=line.slice(0,index).trim(),raw=line.slice(index+1).trim();try{variables[key]=JSON.parse(raw)}catch{variables[key]=raw}}
+ const variables=parseMenuVariableAssignments(result.variables);
  variables.garageDialogueEvent=result.garageDialogueEvent||'';
  if(result.chapter.trim())variables.chapter=result.chapter.trim();
  const normalized=normalizeMenuVariables(variables);if(Object.keys(normalized).length!==Object.keys(variables).length)throw Error('Variable names must use letters, numbers, dots, underscores or hyphens; values must be text, numbers or booleans.');

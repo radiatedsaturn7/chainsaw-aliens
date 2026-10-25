@@ -735,3 +735,39 @@ test('HTML 404 responses still identify a static host without a storage API',asy
  try {const result=await saveServerFile('art','static-host',{});assert.equal(result.persisted,false);assert.match(result.reason,/not accepting project file saves/);}
  finally{globalThis.fetch=original;clearCachedProjectFilesForTests();}
 });
+
+test('late save response cannot roll back a newer cached race', async () => {
+  clearCachedProjectFilesForTests();
+  const originalFetch = globalThis.fetch;
+  let release;
+  globalThis.fetch = () => new Promise(resolve => { release = resolve; });
+  try {
+    const saving = saveServerFile('races', 'Race edits', { scenery: [] }, { savedAt: 100 });
+    upsertCachedProjectFile('races', 'Race edits', JSON.stringify({
+      folder: 'races', name: 'Race edits', savedAt: 200, data: { scenery: [{ id: 'new-sign' }] }
+    }));
+    release({ ok: true, json: async () => ({ ok: true, file: { savedAt: 100 } }) });
+    await saving;
+    const cached = JSON.parse(readCachedProjectFile('races', 'Race edits'));
+    assert.equal(cached.savedAt, 200);
+    assert.equal(cached.data.scenery[0].id, 'new-sign');
+  } finally { globalThis.fetch = originalFetch; clearCachedProjectFilesForTests(); }
+});
+
+test('hydration cannot return an old race when a newer save arrives during fetch', async () => {
+  clearCachedProjectFilesForTests();
+  const originalFetch = globalThis.fetch;
+  let release;
+  globalThis.fetch = () => new Promise(resolve => { release = resolve; });
+  try {
+    const loading = hydrateProjectFile('races', 'Race edits', { freshness: 'newest' });
+    upsertCachedProjectFile('races', 'Race edits', JSON.stringify({
+      folder: 'races', name: 'Race edits', savedAt: 200, data: { description: 'Newest' }
+    }));
+    release({ ok: true, json: async () => ({ ok: true, file: {
+      folder: 'races', name: 'Race edits', savedAt: 100, data: { description: 'Old' }
+    } }) });
+    const loaded = await loading;
+    assert.equal(loaded.data.description, 'Newest');
+  } finally { globalThis.fetch = originalFetch; clearCachedProjectFilesForTests(); }
+});

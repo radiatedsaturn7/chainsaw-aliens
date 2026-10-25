@@ -37,16 +37,24 @@ test('custom nodes, locks and coordinates survive save normalization',()=>{
  assert.equal(worldMapNodes(normalized,null,doc,{'won.first':3})[0].locked,false);
  assert.equal(normalized.nodes[0].x,.8);
 });
-test('race completion opens Garage, preserves car, and sets the completion variable before returning',async()=>{
- const {game,player}=await fixture();game.raceTravelSession={carRef:'car',menuFlow:player.flow};
+test('race completion opens a fresh world map, preserves car, and sets completion variables',async()=>{
+ const {game,player}=await fixture();player.flow.lockCar('car');player.flow.goTo('garage');player.flow.goTo('tuning');player.flow.goTo('garage');
+ assert.ok(player.flow.history.length>0);game.raceTravelSession={carRef:'car',menuFlow:player.flow};
  game.ensureRaceTravelSession=()=>game.raceTravelSession;
  let task;game.openMenuDestination=params=>task=Game.prototype.openMenuDestination.call(game,params);
- assert.equal(Game.prototype.completeRaceTravel.call(game,{type:'menu',menuScreen:'world-map',variables:{bonus:true,chapter:'Providence'}},{raceDocumentName:'First'}),true);
+ assert.equal(Game.prototype.completeRaceTravel.call(game,{type:'menu',menuScreen:'world-map',variables:{bonus:true,chapter:'Providence'}},{raceDocumentName:'First'}),task);
  await task;assert.equal(player.flow.screenId,'world-map');assert.equal(game.state,'menu-player');
  assert.equal(player.flow.parameters[raceCompletionKey('First')],true);assert.equal(player.flow.parameters.bonus,true);
  assert.equal(player.flow.parameters.lastCompletedRace,'First');assert.equal(player.flow.parameters.chapter,'Providence');
  assert.deepEqual(game.menuProgress,{}); // Preview progress stays isolated.
  assert.equal(game.raceTravelSession,null);
+ assert.deepEqual(player.flow.history,[]);assert.equal(player.flow.lockedCarRef,'car');
+ // New navigation works, but B cannot resurrect the pre-race garage/tuning stack.
+ player.flow.goTo('garage');player.flow.back();assert.equal(player.flow.screenId,'world-map');
+ assert.deepEqual(player.flow.history,[]);
+ let stopped=false;player.flow.adapter.stop=()=>{stopped=true;};
+ player.update({wasGamepadPressed:key=>key==='gamepadB'},.016);
+ assert.equal(player.flow.screenId,'world-map');assert.equal(stopped,true);
 });
 test('menu variable trigger continues its queue and open-menu trigger ends its queue',async()=>{
  const {game,player}=await fixture();let done=false;

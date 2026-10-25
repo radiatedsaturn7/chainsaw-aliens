@@ -31,3 +31,21 @@ export async function commitMenuCar(game,carRef,{save=saveServerPreference,newGa
  });
  game.menuProgressSaving=task;return task;
 }
+
+
+export function parseMenuVariableAssignments(text = '') {
+ const entries = [];
+ for (const line of String(text).split('\n').filter(line => line.trim())) {
+  const index = line.indexOf('=');
+  if (index < 1) throw Error('Use one name = value assignment per line.');
+  const key = line.slice(0,index).trim(), raw = line.slice(index+1).trim();
+  let value; try { value=JSON.parse(raw); } catch { value=raw; }
+  if (!valid(key) || !['string','boolean','number'].includes(typeof value) || typeof value==='number'&&!Number.isFinite(value)) throw Error('Variable names must use letters, numbers, dots, underscores or hyphens; values must be text, numbers or booleans.');
+  entries.push([key,value]);
+ }
+ return Object.fromEntries(entries);
+}
+
+export function formatMenuVariableAssignments(variables = {}) {
+ return Object.entries(normalizeMenuVariables(variables)).map(([key,value]) => `${key} = ${JSON.stringify(value)}`).join('\n');
+}

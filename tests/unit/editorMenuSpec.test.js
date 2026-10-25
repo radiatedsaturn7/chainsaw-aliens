@@ -601,7 +601,7 @@ test('shared editor menu specs preserve required root menu order', () => {
 test('Doodad shared menu spec exposes desktop document and settings drawers', () => {
   assert.deepEqual(getEditorMenuSection('doodad', 'file').actions, ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']);
   assert.deepEqual(getEditorMenuSection('doodad', 'edit').actions, ['undo', 'redo']);
-  assert.deepEqual(getEditorMenuSection('doodad', 'artwork').actions, ['pick-art', 'import-item-art', 'doodad-item', 'pick-model', 'clear-model']);
+  assert.deepEqual(getEditorMenuSection('doodad', 'artwork').actions, ['fence-toggle', 'pick-art', 'import-item-art', 'doodad-item', 'pick-model', 'clear-model']);
   assert.ok(getEditorMenuSection('doodad', 'size').actions.includes('ground-offset-up'));
   assert.ok(getEditorMenuSection('doodad', 'hitbox').actions.includes('hitbox-width-down'));
   assert.ok(getEditorMenuSection('doodad', 'collision').actions.includes('collision-threshold-2-fly-off'));
@@ -625,6 +625,7 @@ test('Car Editor shared menu omits placeholder rows and keeps editable car field
   assert.deepEqual(getEditorMenuSection('car', 'art').actions, [
     'car-art-exterior',
     'car-art-interior',
+    'car-gauges-exterior', 'car-gauges-interior',
     'car-import-graphic',
     'car-body-model', 'car-wheel-model', 'car-clear-body-model', 'car-clear-wheel-model',
     'car-art-settings',
@@ -940,8 +941,8 @@ test('Race shared authoring roots include tile-backed terrain commands without s
   ].forEach((action) => assert.equal(getEditorMenuSection('race', 'ground').actions.includes(action), true, action));
   ['trigger-select', 'trigger-action', 'trigger-art', 'trigger-doodad', 'trigger-weather', 'place-trigger', 'delete-trigger']
     .forEach((action) => assert.equal(getEditorMenuSection('race', 'ground').actions.includes(action), true, action));
-  assert.deepEqual(getEditorMenuSection('race', 'sprites').actions, ['sprite-select', 'race-item', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']);
-  assert.deepEqual(getEditorMenuSection('race', 'settings').actions, ['race-radio', 'race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-sun', 'race-weather', 'race-road-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug']);
+  assert.deepEqual(getEditorMenuSection('race', 'sprites').actions, ['paint-kind-doodad', 'paint-kind-fence', 'paint-kind-decal', 'paint-kind-tile', 'paint-kind-sprite']);
+  assert.deepEqual(getEditorMenuSection('race', 'settings').actions, ['race-ground-texture', 'race-radio', 'race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-weather', 'race-road-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug']);
   assert.equal(uiSpecSource.includes('- File: standard document actions plus From Image, generate random race, and load built-in reference tracks.'), true);
   assert.equal(uiSpecSource.includes('Surfaces: selected ground tile, paint ground, selected-segment edge tile'), false);
 });

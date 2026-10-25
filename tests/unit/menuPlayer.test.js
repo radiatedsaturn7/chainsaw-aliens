@@ -193,3 +193,8 @@ test('splash defaults to Game Start and Option Mode contains difficulty',async()
  assert.equal(player.flow.screenId,'cars');assert.equal(player.flow.parameters.difficulty,'hard');
  assert.deepEqual(player.interactive().map(e=>e.id),['car']);
 });
+
+test('race launch preserves the detailed startup failure in the menu',async()=>{
+ const {player,game}=fixture();game.startRaceTravel=async()=>{game.lastRaceTravelError='Race preparation failed during art pack: texture decode failed';return false;};
+ await assert.rejects(()=>player.launchRace('p1',{}),/Race preparation failed during art pack: texture decode failed/);
+});

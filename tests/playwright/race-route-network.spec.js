@@ -299,3 +299,33 @@ test('tunnel camera renders below the crossing and first-person retains driver b
   expect(fp.view).toBe('first-person'); expect(fp.yaw).toBeCloseTo(1.1); expect(fp.chase).toBe(0);
   await page.locator('#network-editor').screenshot({ path: 'test-results/network-first-person.png' });
 });
+
+for (const config of MODES) test(`${config.mode}: author an additional finish with saved progression variables`, async ({ page }) => {
+  await setup(page, config);
+  await page.evaluate(async () => {
+    const {normalizeRaceRouteNetwork}=await import('/src/racing/RaceRouteNetwork.js');
+    const editor=window.networkEditor;
+    editor.selectedRace.road.network=normalizeRaceRouteNetwork({startNodeId:'start',finishNodeId:'north',nodes:[
+      {id:'start',x:0,z:0},{id:'north',x:0,z:100},{id:'east',x:50,z:50}],
+      edges:[{id:'n',from:'start',to:'north'},{id:'e',from:'start',to:'east'}]});
+    editor.networkNodeId='east';editor.networkSelectedNodeIds=['east'];editor.networkMultiSelect=false;
+    window.drawNetwork();
+  });
+  await action(page,'network-properties');
+  const dialog=page.getByRole('dialog',{name:'Node properties',exact:true});
+  await dialog.getByLabel('Finish node',{exact:true}).check();
+  await dialog.getByLabel('On finish: variables (one name = value per line)',{exact:true}).fill('route = "east"\neastUnlocked = true\nchapter = 2');
+  await dialog.getByLabel('After this finish',{exact:true}).selectOption('menu');
+  await dialog.getByLabel('Screen ID',{exact:true}).fill('east-map');
+  await page.screenshot({path:`test-results/race-finish-${config.mode}.png`});
+  await apply(page,'Node properties');
+  const result=await page.evaluate(async()=>{
+    const {getNetworkFinishNodes,resolveRaceNodeFinish}=await import('/src/racing/RaceFinishNodes.js');
+    const editor=window.networkEditor;
+    const loaded=editor.normalizeLoadedRaceDocument(editor.serializeSelectedRaceDocument());
+    return {finishes:getNetworkFinishNodes(loaded.road.network).map(n=>n.id),behavior:resolveRaceNodeFinish(loaded,'east')};
+  });
+  expect(result.finishes).toEqual(['north','east']);
+  expect(result.behavior.menuScreen).toBe('east-map');
+  expect(result.behavior.variables).toMatchObject({route:'east',eastUnlocked:true,chapter:2,lastRaceExit:'east'});
+});

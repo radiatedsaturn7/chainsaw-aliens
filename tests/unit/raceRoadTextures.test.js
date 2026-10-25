@@ -124,3 +124,31 @@ test('mipmap distance delays detail reduction without changing UVs and separates
  assert.equal(shader.uniforms.roadMipmapBias.value,-2);
  assert.ok(shader.fragmentShader.includes('texture2D( map, vMapUv, roadMipmapBias )'));
 });
+
+test('three- and four-way junctions retain textured coverage and match every road mouth UV',()=>{
+ for(const arms of [3,4]){
+  const nodes=[{id:'j',x:0,z:0,heightM:5},{id:'s',x:0,z:-60,heightM:0},{id:'e',x:60,z:0,heightM:8},{id:'n',x:0,z:60,heightM:5},{id:'w',x:-60,z:0,heightM:2}].slice(0,arms+1);
+  const network=normalizeRaceRouteNetwork({nodes,edges:nodes.slice(1).map((n,i)=>({id:n.id,from:i===0?n.id:'j',to:i===0?'j':n.id,widthM:8+i*2})),startNodeId:'s'});
+  const g=buildRaceNetworkGeometry(network),bake={key:'junction-'+arms,terrainTopology:'route-network',runtimeType:'destination',routeLength:180,mesh:g.mesh,surfaceBake:{paths:g.paths,sections:g.paths.flatMap(p=>p.sections)}};
+  const config=roadTextureSettings({roadTextures:{road:{artRef:'asphalt',repeatM:3,repeatWidthM:3,mipmapDistance:4},margin:{artRef:''}}});
+  const result=buildRoadTextureStrips(bake,config,{networkDefinition:network});
+  const triangles=g.mesh.triangles.filter(t=>t.source==='junction:j');assert.ok(triangles.length>0);assert.equal(result.junctionMeshes.length,triangles.length);
+  for(const [i,mesh] of result.junctionMeshes.entries()){
+   assert.equal(mesh.artRef,'asphalt');assert.equal(mesh.textured,true);assert.equal(mesh.textureOptions.mipmapDistance,4);
+   assert.deepEqual(mesh.points.map(({x,z,elevation})=>({x,z,elevation})),triangles[i].vertices.map(({x,z,elevation})=>({x,z,elevation})));
+   assert.ok(mesh.points.every(p=>Number.isFinite(p.u)&&Number.isFinite(p.v)));
+  }
+  for(const path of g.paths){
+   const edge=network.edges.find(e=>e.id===path.edgeId),end=edge.from==='j'?path.sections[0]:path.sections.at(-1);
+   for(const corner of [end.left,end.right]){
+    const match=p=>Math.hypot(p.x-corner.x,p.z-corner.z)<1e-6;
+    const apron=result.junctionMeshes.flatMap(m=>m.points).find(match),ribbon=result.roadMeshes.flatMap(m=>m.points).find(match);
+    assert.ok(apron&&ribbon);assert.equal(apron.u,ribbon.u);assert.equal(apron.v,ribbon.v);
+   }
+  }
+  const editor=new RaceEditor({});editor.selectedRace.road.network=network;editor.selectedRace.roadTextures={road:config.road};
+  const rendered=editor.getRaceStaticTrackSurfaceMeshes(bake).roadMeshes;
+  assert.equal(rendered.filter(m=>m.source==='road-texture-junction').length,triangles.length);
+  assert.ok(rendered.every(m=>m.textured&&m.artRef==='asphalt'));
+ }
+});

@@ -101,6 +101,8 @@ export function normalizeRaceDoodadDocument(data = {}, fallbackName = '') {
     id,
     name: String(doodad.name || cleanName || fallback.name),
     artRef: String(doodad.artRef || '').trim(),
+    isFence: doodad.isFence === true,
+    fenceThicknessM: clamp(Number(doodad.fenceThicknessM) || 0.3, 0.1, 5),
     itemType: doodad.itemType === 'mix-tape' ? 'mix-tape' : 'scenery',
     unlockTrackId: typeof doodad.unlockTrackId === 'string' ? doodad.unlockTrackId.trim() : '',
     model: normalizeModelBinding(doodad.model),
@@ -128,6 +130,7 @@ export function serializeRaceDoodadDocument(doodad = DEFAULT_RACE_DOODAD) {
 
 export function getDoodadRuleForSpeed(doodad = DEFAULT_RACE_DOODAD, speedMph = 0) {
   const normalized = normalizeRaceDoodadDocument(doodad);
+  if (normalized.isFence) return { ...normalized.defaultRule, behavior: 'collide' };
   const speed = Math.max(0, Number(speedMph) || 0);
   return normalized.rules.reduce((match, rule) => (
     speed >= Number(rule.minSpeedMph || 0) ? rule : match

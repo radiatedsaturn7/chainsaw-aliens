@@ -97,7 +97,9 @@ const actionEntries = (ids, labels = {}) => Object.fromEntries(ids.map((id) => [
   }
 ]));
 const EDITOR_ACTION_LABEL_OVERRIDES = {
+  'paint-kind-doodad':'Doodad', 'paint-kind-fence':'Fence', 'paint-kind-decal':'Decal', 'paint-kind-tile':'Tile', 'paint-kind-sprite':'Billboard',
   'skybox-next': 'Skybox',
+  'race-fx': 'Race FX',
   'network-enable': 'Branching Routes',
   'network-select': 'Select',
   'network-multi': 'Multi-select',
@@ -148,6 +150,8 @@ const EDITOR_ACTION_LABEL_OVERRIDES = {
   'car-art-settings': 'Settings',
   'car-art-exterior': 'Exterior',
   'car-art-interior': 'Interior',
+  'car-gauges-exterior': 'Exterior Gauges',
+  'car-gauges-interior': 'Interior Gauges',
   'car-camera-settings': 'Camera Settings',
   'draw-road': 'Add',
   'race-complete': 'On Race Complete',
@@ -396,7 +400,7 @@ export const EDITOR_MENU_SPECS = {
     portraitRoot: [
       { id: 'file', label: 'File' },
       { id: 'ground', label: 'Ground' },
-      { id: 'sprites', label: 'Sprites' },
+      { id: 'sprites', label: 'Paint' },
       { id: 'settings', label: 'Settings' }
     ],
     sections: {
@@ -447,8 +451,8 @@ export const EDITOR_MENU_SPECS = {
         'ground-brush-strength-75',
         'ground-brush-strength-100'
       ]),
-      sprites: section('sprites', 'Sprites', ['sprite-select', 'race-item', 'race-decal', 'race-ground-box', 'paint-sprite', 'sprite-brush-settings', 'erase-sprite', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile']),
-      settings: section('settings', 'Settings', ['race-radio', 'race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-sun', 'race-weather', 'race-road-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
+      sprites: section('sprites', 'Paint', ['paint-kind-doodad', 'paint-kind-fence', 'paint-kind-decal', 'paint-kind-tile', 'paint-kind-sprite']),
+      settings: section('settings', 'Settings', ['race-ground-texture', 'race-radio', 'race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-weather', 'race-road-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
     }
   },
   model3d: {
@@ -519,7 +523,7 @@ export const EDITOR_MENU_SPECS = {
       file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'car-load-preset', 'car-description', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
-      art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-import-graphic', 'car-body-model', 'car-wheel-model', 'car-clear-body-model', 'car-clear-wheel-model', 'car-art-settings', 'car-camera-settings']),
+      art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-gauges-exterior', 'car-gauges-interior', 'car-import-graphic', 'car-body-model', 'car-wheel-model', 'car-clear-body-model', 'car-clear-wheel-model', 'car-art-settings', 'car-camera-settings']),
       drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sfx', 'car-sound-effects', 'power-curve', 'weight-balance', 'summary-sheet', 'car-category', 'car-installable-parts']),
       tuning: {
         ...section('tuning', 'Tuning', ['default-tires', 'tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel', 'physics-body']),
@@ -575,7 +579,7 @@ export const EDITOR_MENU_SPECS = {
       file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
-      artwork: section('artwork', 'Artwork', ['pick-art','import-item-art','doodad-item','pick-model','clear-model']),
+      artwork: section('artwork', 'Artwork', ['fence-toggle', 'pick-art','import-item-art','doodad-item','pick-model','clear-model']),
       size: section('size', 'Size', ['width-down', 'width-up', 'height-down', 'height-up', 'ground-offset-down', 'ground-offset-up', 'weight-down', 'weight-up']),
       hitbox: section('hitbox', 'Hitbox', ['hitbox-width-down', 'hitbox-width-up', 'hitbox-height-down', 'hitbox-height-up']),
       collision: section('collision', 'Collision', ['collision-default-collide', 'collision-default-flatten', 'collision-default-fly-off', 'collision-threshold-1-collide', 'collision-threshold-1-flatten', 'collision-threshold-1-fly-off', 'collision-threshold-2-collide', 'collision-threshold-2-flatten', 'collision-threshold-2-fly-off']),

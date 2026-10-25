@@ -1,3 +1,4 @@
+import { indexTrackStateCell } from '../trackState/TrackStateSpatialIndex.js';
 import { getPackedRaceWorkerEnvironmentTransferables } from './PackedRaceWorkerEnvironment.js';
 import {
   createVehicleControlInputBuffer,
@@ -356,6 +357,7 @@ export function applyWorkerTrackStateVisualDelta(session, delta = null) {
     const previous = visual.cells.get(cell.key);
     if (previous && Number(previous.revision || 0) > Number(cell.revision || 0)) continue;
     visual.cells.set(cell.key, { ...cell });
+    indexTrackStateCell(visual.cells, cell.key, cell);
     applied += 1;
   }
   visual.stepIndex = Math.max(visual.stepIndex, Number(delta.stepIndex || 0));
@@ -366,7 +368,7 @@ export function applyWorkerTrackStateVisualDelta(session, delta = null) {
   visual.dirtyAtlasTiles = (delta.dirtyAtlasTiles || []).map((tile) => ({ ...tile }));
   visual.eventSequence = Math.max(visual.eventSequence, Number(delta.eventSequence || 0));
   visual.remainingDirtyCellCount = Number(delta.remainingDirtyCellCount || 0);
-  session.trackStateVisualCache = null;
+  // Revisions invalidate the cache; retain it for the bounded presentation cadence.
   session.trackStateVisualAtlas = null;
   const elapsedMs = (typeof performance !== 'undefined' ? performance.now() : Date.now()) - startedAt;
   const timers = session.physicsSurfaceDebugTimers

@@ -14,8 +14,8 @@ async function fixture(cues={start:12,end:45}){
 }
 test('cue serialization defaults, zero, disabled finish and invalid times',()=>{
  const norm=cue=>normalizeRadioLibrary({tracks:[{id:'s',raceCues:cue}]}).tracks[0].raceCues;
- assert.deepEqual(norm(),{start:3,end:null});assert.deepEqual(norm({start:0,end:0}),{start:0,end:0});
- assert.deepEqual(norm({start:-5,end:'bad'}),{start:3,end:null});
+ assert.deepEqual(norm(),{start:null,end:null});assert.deepEqual(norm({start:0,end:0}),{start:0,end:0});
+ assert.deepEqual(norm({start:-5,end:'bad'}),{start:null,end:null});
  assert.deepEqual(norm({start:12.34,end:65.5}),{start:12.34,end:65.5});
 });
 test('auto-start seeks three seconds before the drop, fades, and reaches the cue at GO (1000ms)',async()=>{
@@ -23,7 +23,7 @@ test('auto-start seeks three seconds before the drop, fades, and reaches the cue
  director.update(session);await tick();assert.equal(radio.playing,true);assert.equal(radio.audio.currentTime,9);assert.equal(radio.audio.volume,0);
  radio.audio.currentTime=10.5;session.countdownRemainingMs=2500;director.update(session);assert.equal(radio.audio.currentTime,10.5);assert.equal(radio.audio.volume,.4);
  radio.setVolume(.6);assert.equal(radio.audio.volume,.3);
- session.countdownRemainingMs=1000;director.update(session);assert.equal(radio.audio.currentTime,12);assert.equal(radio.audio.volume,.6);
+ radio.audio.currentTime=12;session.countdownRemainingMs=1000;director.update(session);assert.equal(radio.audio.currentTime,12);assert.equal(radio.audio.volume,.6);
  session.countdownRemainingMs=0;radio.audio.currentTime=12.8;director.update(session);assert.equal(radio.audio.currentTime,12.8);
 });
 test('pause holds the countdown music, resume resyncs, and finish fades then hits the chorus once',async()=>{
@@ -57,7 +57,7 @@ test('race station fallback respects restrictions and unlocks without persisting
  director.update(null);assert.equal(radio.stationId,'empty');
  radio.setContext(true,['empty']);director.update(session);await tick();assert.equal(radio.playing,false);
 });
-test('results hold the completed race until Continue, preserving the configured finish action',()=>{
+test('results hold the completed race until Continue, preserving the configured finish action',async()=>{
  let completed=0;
  const e=new RaceEditor({audio:{},completeRaceTravel(){completed++;return true;}});
  e.preloadSelectedRaceArtRefs=()=>{};e.prewarmRacePlaytestRenderResources=()=>{};
@@ -65,7 +65,7 @@ test('results hold the completed race until Continue, preserving the configured 
  e.playtestSession.elapsedMs=12340;
  e.showRaceResults();assert.equal(completed,0);assert.equal(e.raceInput.paused,true);
  assert.equal(e.getRacePauseMenuRows()[0].value,'12.34 s');
- e.getRacePauseMenuRows().find(r=>r.id==='race-results-continue').onClick();
+ await e.getRacePauseMenuRows().find(r=>r.id==='race-results-continue').onClick();
  assert.equal(completed,1);assert.equal(e.playtestSession,null);
 });
 
@@ -90,4 +90,43 @@ test('early cue holds warmed audio paused rather than seeking zero repeatedly',a
  let seeks=0;const seek=radio.seek.bind(radio);radio.seek=v=>{seeks++;seek(v);};
  for(let i=0;i<60;i++){session.countdownRemainingMs=4000-i*16;director.update(session);}
  assert.equal(seeks,0);session.countdownRemainingMs=2000;director.update(session);await tick();assert.equal(radio.playing,true);assert.equal(seeks,1);
+});
+
+
+test('music fades in during the visible camera intro and its authored cue lands on GO',async()=>{
+ const {radio,director,session}=await fixture({start:15,end:null});
+ session.raceIntro={active:true,elapsed:0};session.startupFramePending=true;
+ director.update(session);await tick();assert.equal(radio.audio,null);
+ session.raceIntroVisible=true;session.raceIntroLeadInSeconds=.15;director.update(session);await tick();
+ assert.equal(radio.playing,true);assert.ok(Math.abs(radio.audio.currentTime-6.15)<.001);
+ director.update(session,{dt:.3});assert.equal(radio.audio.volume,.4);
+ session.startupFramePending=false;session.raceIntro.active=false;
+ radio.audio.currentTime=15;session.countdownRemainingMs=1000;director.update(session,{dt:.3});
+ assert.equal(radio.audio.currentTime,15);assert.equal(radio.audio.volume,.8);
+});
+test('unmarked songs keep their position through intro, countdown and GO',async()=>{
+ const {radio,director,session}=await fixture({start:null,end:null});
+ await radio.play('song');radio.audio.currentTime=24;const audio=radio.audio;
+ session.raceIntro={active:true,elapsed:0};
+ director.update(session);await tick();assert.equal(radio.audio,audio);assert.equal(audio.currentTime,24);
+ let seeks=0;radio.seek=()=>seeks++;
+ director.update(session,{dt:.6});assert.equal(audio.volume,.8);
+ session.raceIntro.active=false;session.countdownRemainingMs=1000;director.update(session,{dt:3});
+ assert.equal(seeks,0);assert.equal(audio.currentTime,24);assert.equal(audio.playbackRate,1);
+});
+test('early marked songs keep playing through GO without rewinding',async()=>{
+ const {radio,director,session}=await fixture({start:1,end:null});
+ session.raceIntro={active:true,elapsed:0};director.update(session);await tick();
+ assert.equal(radio.playing,true);director.update(session,{dt:.6});assert.equal(radio.audio.volume,.8);
+ radio.audio.currentTime=8;session.raceIntro.active=false;session.countdownRemainingMs=1000;
+ director.update(session);assert.equal(radio.audio.currentTime,8);
+ radio.audio.currentTime=9;director.update(session);assert.equal(radio.audio.currentTime,9);
+});
+
+test('countdown drift never causes a seek or restart at GO',async()=>{
+ const {radio,director,session}=await fixture({start:15,end:null});
+ session.raceIntro={active:true,elapsed:0};director.update(session);await tick();
+ const audio=radio.audio;audio.currentTime=13.5;let seeks=0;radio.seek=()=>seeks++;
+ session.raceIntro.active=false;session.countdownRemainingMs=1000;director.update(session,{dt:.1});
+ assert.equal(seeks,0);assert.equal(radio.audio,audio);assert.equal(audio.currentTime,13.5);assert.equal(audio.playbackRate,1);
 });

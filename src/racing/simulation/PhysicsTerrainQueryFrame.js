@@ -729,6 +729,10 @@ export class PhysicsTerrainQueryFrame {
     const preparedKey = `${String(this.revision)}:${bucketRangeKey}`;
     const prepared = cache.edgeClassificationsByBucketRange.get(preparedKey);
     if (prepared) {
+      // Keep recently visited ranges, rather than retaining every position
+      // reached by every car over an entire race.
+      cache.edgeClassificationsByBucketRange.delete(preparedKey);
+      cache.edgeClassificationsByBucketRange.set(preparedKey, prepared);
       cache.discontinuityEdges = prepared.discontinuityEdges;
       cache.edgeClassificationCounts = prepared.edgeClassificationCounts;
       return;
@@ -883,6 +887,11 @@ export class PhysicsTerrainQueryFrame {
     });
     cache.discontinuityEdges = discontinuityEdges;
     cache.edgeClassificationCounts = edgeClassificationCounts;
+    if (cache.edgeClassificationsByBucketRange.size >= 128) {
+      cache.edgeClassificationsByBucketRange.delete(
+        cache.edgeClassificationsByBucketRange.keys().next().value
+      );
+    }
     cache.edgeClassificationsByBucketRange.set(preparedKey, {
       discontinuityEdges,
       edgeClassificationCounts

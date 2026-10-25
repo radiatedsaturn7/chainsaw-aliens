@@ -5,7 +5,7 @@ const unique = values => [...new Set((Array.isArray(values) ? values : []).map(t
 export const createRadioId = () => globalThis.crypto?.randomUUID?.() || `radio-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 export function normalizeRaceMusicCues(value = {}) {
   const seconds=(n,fallback)=>n!==null&&n!==''&&Number.isFinite(Number(n))&&Number(n)>=0?Number(n):fallback;
-  return {start:seconds(value?.start,3),end:seconds(value?.end,null)};
+  return {start:seconds(value?.start,null),end:seconds(value?.end,null)};
 }
 export function normalizeRadioImage(value = {}) {
   return { artRef: text(value?.artRef), url: text(value?.url) };

@@ -256,7 +256,7 @@ export async function buildRaceTransferPackage(sourceRace = null, {
     structureMeshes: bake.structureMeshes || [],
     surfaceSampler: null,
     packedTerrain: null,
-    groundArtRef: String(tileMapStats?.dominantArtRef || ''),
+    groundArtRef: String(editor.selectedRace.groundPlaneArtRef || tileMapStats?.dominantArtRef || ''),
     validation: null
   };
   let raceDocument = null;
@@ -273,6 +273,7 @@ export async function buildRaceTransferPackage(sourceRace = null, {
   };
   addCritical(header.groundArtRef);
   addCritical(editor.selectedRace?.skyboxArtRef || editor.selectedRace?.visuals?.skyboxArtRef);
+  addCritical(editor.selectedRace?.visualFx?.speedLineArtRef);
   Object.values(editor.selectedRace?.surfaceArt || {}).forEach(addCritical);
   addCritical(editor.selectedRace?.margin?.artRef);
   (editor.selectedRace?.road?.segments || []).forEach((segment) => {

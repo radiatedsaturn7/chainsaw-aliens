@@ -159,7 +159,7 @@ export function getCarArtResourceState(art = {}) {
   const state = { ...art };
   for (const key of [...Object.values(CAR_COMPONENT_ART_FIELDS).flat(),
     'bodyScale', 'tireScale', 'brakeLightScale', 'shadowScale',
-    'angleLayers', 'interior', 'turnFrames']) delete state[key];
+    'angleLayers', 'interior', 'turnFrames', 'gauges', 'fx']) delete state[key];
   state.angleLayers = {};
   for (const [slot, layers] of Object.entries(art.angleLayers || {})) {
     const resources = {};
@@ -175,6 +175,9 @@ export function getCarArtResourceState(art = {}) {
     const { scaleX, scaleY, offsetX, offsetY, centerX, centerY, ...resource } = entry;
     state.interior[component] = resource;
   }
+  state.fx = (art.fx||[]).map(f=>({artRef:f.artRef||'',views:Object.fromEntries(Object.entries(f.views||{}).map(([slot,v])=>[slot,{artRef:v.artRef||'',frameIndex:v.frameIndex||0}]))}));
+  const gaugeFields=['artRef','needleArtRef','overlayArtRef','markerArtRef','carMarkerArtRef','startMarkerArtRef','finishMarkerArtRef'];
+  state.gauges = Object.fromEntries(Object.entries(art.gauges || {}).map(([side, layout]) => [side, (layout.widgets || []).filter(g => gaugeFields.some(key=>g[key])).map(g => ({...Object.fromEntries(gaugeFields.map(key=>[key,g[key]])),frameIndex:g.frameIndex}))]));
   state.turnFrames = Object.fromEntries(Object.entries(art.turnFrames || {}).filter(([, value]) => value));
   return state;
 }

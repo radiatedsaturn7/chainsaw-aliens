@@ -1,3 +1,4 @@
+import {MenuScreenMusic} from './MenuScreenMusic.js';
 import {selectableIndex,nextSelectableIndex,selectableGridIndex} from './MenuSelection.js';
 import {GarageDialogueState,garageDialogueContext} from '../garage/GarageDialogue.js';
 import {MenuScreenTransition} from './MenuScreenTransition.js';
@@ -24,7 +25,7 @@ import {CutscenePlayer} from '../ui/CutsceneEditor.js';
 import {hydrateProjectFilePayload} from '../ui/projectFiles.js';
 
 export default class MenuPlayer {
-  constructor(game){this.garageDialogue=new GarageDialogueState();this.screenTransition=new MenuScreenTransition();this.lastDrawCanvas=null;this.game=game;this.surface=new MenuPreviewSurface(game);this.resources=new MenuResources(game);this.settings=new MenuSettings(game);this.videos=new Map();this.cutscene=new CutscenePlayer(game);this.mediaGeneration=0;this.focus=0;this.widgetStates=new Map();this.navigationRepeat=createMenuRepeatState();this.preview=false;this.message='';this.flow=null;}
+  constructor(game){this.screenMusic=new MenuScreenMusic(game,hydrateProjectFilePayload);this.garageDialogue=new GarageDialogueState();this.screenTransition=new MenuScreenTransition();this.lastDrawCanvas=null;this.game=game;this.surface=new MenuPreviewSurface(game);this.resources=new MenuResources(game);this.settings=new MenuSettings(game);this.videos=new Map();this.cutscene=new CutscenePlayer(game);this.mediaGeneration=0;this.focus=0;this.widgetStates=new Map();this.navigationRepeat=createMenuRepeatState();this.preview=false;this.message='';this.flow=null;}
   async open(document,{preview=false,screenId=null}={}){
     if(this.flow){this.flow.active=false;this.flow.generation++;}
     this.restorePreview();this.cleanup();if(typeof window!=='undefined'){this.tabListener=event=>{if(this.game.state==='menu-player'&&event.code==='Tab'&&!this.capturing)event.preventDefault();};window.addEventListener('keydown',this.tabListener);}
@@ -68,8 +69,8 @@ export default class MenuPlayer {
   restorePreview(){const snapshot=this.previewSnapshot;if(!snapshot)return;this.previewSnapshot=null;if(snapshot.worldData)this.game.applyWorldData(snapshot.worldData);for(const key of ['menuParameters','storyData','gameMode','playtestActive','simulationActive'])this.game[key]=snapshot[key];this.game.raceEditorPlaytestReturn=false;this.game.raceTravelSession=null;}
   releasePauseAudio(){const context=this.pausedAudioContext;this.pausedAudioContext=null;if(context)void context.resume().catch(()=>{});}
   togglePause(){if(!this.preview||(this.flow.busy&&!this.cutscene.active&&!this.movie))return;this.paused=!this.paused;if(this.paused){this.slider=null;this.cancelKeyCapture();const context=this.game.audio?.ctx;if(context?.state==='running'){this.pausedAudioContext=context;void context.suspend().catch(()=>{});}this.pausedVideos=[...this.videos.values(),this.movie,...(this.game.musicPlayers||[]).map(p=>p.media)].filter(v=>v&&!v.paused);for(const v of this.pausedVideos)v.pause();}else{this.releasePauseAudio();for(const v of this.pausedVideos||[])void v.play().catch(()=>{});this.pausedVideos=[];}}
-  cleanupScreen(){this.tuner?.dispose();this.tuner=null;this.tunerModal=false;this.mediaGeneration++;this.choicePopup=null;this.slider=null;this.game.setActiveMusicTrack?.(null,{fadeOut:this.screenMusicFadeOut??.4});for(const video of this.videos.values()){video.pause();video.removeAttribute('src');video.load();}this.videos.clear();}
-  cleanup(){this.enteredTransitionGroup=null;this.screenTransition.reset();this.lastDrawCanvas=null;this.lastDrawTransform=null;this.pendingScreenEntry=false;this.transitionBlackDrawn=false;resetMenuRepeatState(this.navigationRepeat);this.releasePauseAudio();if(this.tabListener&&typeof window!=='undefined')window.removeEventListener('keydown',this.tabListener);this.tabListener=null;this.surface.reset();this.resources.carPreview.dispose();this.cleanupScreen();this.cancelKeyCapture();if(this.cutscene.active){this.cutscene.onDone=null;this.cutscene.stop();}if(this.movie){this.movie.pause();this.movie.removeAttribute('src');this.movie.load();this.movie=null;}this.rejectMovie?.(Error('Playback cancelled'));this.rejectMovie=null;this.resolveMovie=null;}
+  cleanupScreen({keepMusic=false,immediateMusic=false}={}){this.tuner?.dispose();this.tuner=null;this.tunerModal=false;this.mediaGeneration++;this.choicePopup=null;this.slider=null;if(!keepMusic)this.screenMusic.stop(immediateMusic?{fadeOut:0}:{});for(const video of this.videos.values()){video.pause();video.removeAttribute('src');video.load();}this.videos.clear();}
+  cleanup(){this.enteredTransitionGroup=null;this.screenTransition.reset();this.lastDrawCanvas=null;this.lastDrawTransform=null;this.pendingScreenEntry=false;this.transitionBlackDrawn=false;resetMenuRepeatState(this.navigationRepeat);this.releasePauseAudio();if(this.tabListener&&typeof window!=='undefined')window.removeEventListener('keydown',this.tabListener);this.tabListener=null;this.surface.reset();this.resources.carPreview.dispose();this.cleanupScreen({immediateMusic:true});this.cancelKeyCapture();if(this.cutscene.active){this.cutscene.onDone=null;this.cutscene.stop();}if(this.movie){this.movie.pause();this.movie.removeAttribute('src');this.movie.load();this.movie=null;}this.rejectMovie?.(Error('Playback cancelled'));this.rejectMovie=null;this.resolveMovie=null;}
   enterScreen(){
     const group=this.flow.screen.transitionGroup;
     if(group&&group===this.enteredTransitionGroup)this.screenTransition.reset();
@@ -82,7 +83,7 @@ export default class MenuPlayer {
   }
   finishEnterScreen(){
     this.pendingScreenEntry=false;this.flow.time=0;
-    this.cleanupScreen();this.widgetStates.clear();this.focus=0;this.message='';const flow=this.flow,screen=flow.screen,generation=this.mediaGeneration;
+    this.cleanupScreen({keepMusic:true});this.widgetStates.clear();this.focus=0;this.message='';const flow=this.flow,screen=flow.screen,generation=this.mediaGeneration;
     for(const e of screen.elements){if(['choice','car-showroom'].includes(e.type)&&e.binding){const choices=e.type==='car-showroom'?this.resources.choices('cars',flow.document,flow.parameters):e.source?this.resources.choices(e.source,flow.document,flow.parameters):e.options;if(choices.length&&!choices.some(o=>JSON.stringify(o.value)===JSON.stringify(flow.parameters[e.binding])))flow.setParameter(e.binding,choices[0].value);}
       if(e.type==='world-map'){const node=worldMapSelection(worldMapNodes(e,this.resources,flow.document,flow.parameters),flow.parameters[e.binding]);flow.setParameter(e.binding,node?.raceRef||'');}
       if(e.type==='car-showroom')this.widgetStates.set(e.id,{value:flow.parameters[e.binding],selectedAt:flow.time});
@@ -90,8 +91,7 @@ export default class MenuPlayer {
     }
     const tuner=screen.elements.find(e=>e.type==='garage-tuner');if(tuner){this.openTuner(flow.parameters[tuner.binding]);this.widgetStates.set(tuner.id,{tuner:this.tuner});}
     this.garageDialogue.enter(screen,flow.parameters,this.dialogueContext());
-    this.screenMusicFadeOut=screen.musicFadeOut;
-    if(screen.musicRef)void hydrateProjectFilePayload('music',screen.musicRef).then(payload=>{if(this.mediaGeneration!==generation)return;if(!payload?.data)throw Error(`Music not found: ${screen.musicRef}`);this.game.setActiveMusicTrack?.(screen.musicRef,{restart:true,loop:screen.musicLoop,volume:screen.musicVolume,fadeIn:screen.musicFadeIn,fadeOut:0,offsetMs:screen.musicStart*1000})}).catch(error=>{flow.error=error.message});
+    void this.screenMusic.enter(screen).catch(error=>{flow.error=error.message});
   }
   openTuner(carRef,{modal=false}={}){
     this.tuner?.dispose();this.tunerModal=modal;
@@ -372,8 +372,8 @@ export default class MenuPlayer {
   async resumeMovie(){try{await this.movie?.play();this.message=''}catch{this.message='Tap / press Space to play movie'}}
   async launchRace(ref,parameters){
     if(this.preview)this.game.playtestActive=true;
-    this.cleanupScreen();this.game.menuParameters=structuredClone(parameters);
-    const ok=await this.game.startRaceTravel({raceName:ref,carSelection:parameters.carRef?'specific':'choose',carRef:parameters.carRef,menuConfiguration:parameters,menuFlow:this.flow,garage:this.resources.garage});if(!ok)throw Error(`Could not start race: ${ref}`);
+    this.cleanupScreen({keepMusic:true});this.game.menuParameters=structuredClone(parameters);
+    const ok=await this.game.startRaceTravel({raceName:ref,carSelection:parameters.carRef?'specific':'choose',carRef:parameters.carRef,menuConfiguration:parameters,menuFlow:this.flow,garage:this.resources.garage});if(!ok)throw Error(this.game.lastRaceTravelError||`Could not start race: ${ref}`);
   }
   async launchLevel(ref,parameters){
     const flow=this.flow,generation=flow.generation;

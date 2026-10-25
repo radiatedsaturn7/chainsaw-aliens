@@ -1054,7 +1054,8 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
           z: Math.cos(yaw) * stagedSpeedMps
         }
       });
-      const projection = editor.getRaceRouteProjectionForWorldPoint({ x: ai.worldX, z: ai.worldZ });
+      const projection = editor.getRaceRouteProjectionForWorldPoint({ x: ai.worldX, z: ai.worldZ,
+        heightM: ai.vehicleDynamicsRunner?.state?.position?.y });
       if (stagedSpeedMps > 0) {
         const previousDistance = ((Number(ai.projectedDistance ?? ai.distance ?? 0) % routeLength) + routeLength) % routeLength;
         ai.distance = Number(projection.distance ?? ai.distance ?? 0);
@@ -1181,7 +1182,8 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
     });
     const physicalProjection = editor.getRaceRouteProjectionForWorldPoint({
       x: Number(ai.worldX || 0),
-      z: Number(ai.worldZ || 0)
+      z: Number(ai.worldZ || 0),
+      heightM: ai.vehicleDynamicsRunner?.state?.position?.y
     });
     ai.distance = Number(physicalProjection.distance ?? ai.distance ?? 0);
     if (isCircuit) {

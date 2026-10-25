@@ -198,21 +198,22 @@ export class RadioEditor extends RaceEditor {
   clearCuePreview() {this.cueDirector?.reset(false);this.cueSession=null;}
   async editMusicDrops() {
     const track=this.track;if(!track)return;
-    const cues=track.raceCues||{start:3,end:null};
+    const cues=track.raceCues||{start:null,end:null};
     const result=await openEditorForm('Music Drops',[
-      {id:'start',label:'Race start drop (seconds into song)',value:cues.start,min:0,step:0.01},
+      {id:'startEnabled',label:'Use race start drop',type:'checkbox',value:cues.start!=null},
+      {id:'start',label:'Race start drop (seconds into song)',value:cues.start??0,min:0,step:0.01},
       {id:'endEnabled',label:'Use race finish drop',type:'checkbox',value:cues.end!==null},
       {id:'end',label:'Race finish / chorus (seconds into song)',value:cues.end??0,min:0,step:0.01}
-    ],{description:'The start cue lands on GO after a 3-second fade-in. At results, the song fades out for 0.6 seconds, then jumps to the finish cue at full volume.'});
+    ],{description:'Music fades in with the camera intro; the start cue lands on GO. Without a start cue, playback continues without restarting. At results, the song fades out for 0.6 seconds, then jumps to the finish cue at full volume.'});
     if(!result)return;
     const library=structuredClone(this.library);
-    library.tracks.find(t=>t.id===track.id).raceCues={start:result.start,end:result.endEnabled?result.end:null};
+    library.tracks.find(t=>t.id===track.id).raceCues={start:result.startEnabled?result.start:null,end:result.endEnabled?result.end:null};
     await this.commit(library);
   }
   async markMusicDrop(kind) {
     if(!this.track||this.preview.trackId!==this.trackId||!this.preview.audio)return;
     const library=structuredClone(this.library),track=library.tracks.find(t=>t.id===this.trackId);
-    track.raceCues={...(track.raceCues||{start:3,end:null}),[kind]:Math.round(this.preview.audio.currentTime*100)/100};
+    track.raceCues={...(track.raceCues||{start:null,end:null}),[kind]:Math.round(this.preview.audio.currentTime*100)/100};
     this.clearCuePreview();await this.commit(library,{preservePreview:true});
     this.status=`Race ${kind==='start'?'start':'end'} set at ${musicTime(track.raceCues[kind])}`;
   }

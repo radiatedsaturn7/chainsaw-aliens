@@ -1430,7 +1430,7 @@ test('Race Editor portrait uses bottom menu roots and contextual node or edge ho
   assert.equal(secondElevation > firstElevation, true);
 });
 
-test('Race Editor portrait Ground Doodad mode opens picker from second hot button', () => {
+test('Race Editor portrait Paint Doodad mode opens picker from Art button', async () => {
   const editor = new RaceEditor({
     deviceIsMobile: true,
     isMobile: true,
@@ -1456,13 +1456,14 @@ test('Race Editor portrait Ground Doodad mode opens picker from second hot butto
   assert.equal(editor.activeAction, 'paint-sprite');
 
   const actions = editor.getRacePortraitGroundActions();
-  assert.equal(actions[1].id, 'race-ground-paint');
+  assert.equal(actions[1].id, 'paint-category');
   assert.equal(actions[1].label, 'Doodad');
-  actions[1].onClick();
+  assert.equal(actions[3].id, 'paint-art');
+  await actions[3].onClick();
 
   assert.equal(pickerOpened, true);
   assert.equal(editor.racePortraitMode, 'ground');
-  assert.equal(editor.activeRootId, 'ground');
+  assert.equal(editor.activeRootId, 'sprites');
   assert.equal(editor.raceSpritePaintKind, 'doodad');
   assert.equal(editor.activeAction, 'paint-sprite');
   assert.equal(editor.racePortraitHotMenu, null);
@@ -4219,7 +4220,7 @@ test('Race Editor Studio Sprint shoulder-to-shoulder weave finishes at 30 MPH wi
   runStudioSprintWeaveNoDamage();
 });
 
-test('Race Editor normalizes legacy Studio Sprint hazard data away on load', () => {
+test('Race Editor preserves authored Studio Sprint hazards on load', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   const legacy = editor.cloneRaceDocument();
   legacy.hazards = [
@@ -4227,6 +4228,8 @@ test('Race Editor normalizes legacy Studio Sprint hazard data away on load', () 
     { id: 'test-jump', type: 'jump', at: 650 },
     { id: 'wall-1', type: 'damage-wall', at: 720 }
   ];
+  legacy.name = 'Studio Sprint';
+  legacy.road.segments = Array.from({ length: 5 }, () => ({ length: 100 }));
   legacy.road.segments[2].hazardIds = ['zombie-pack-1'];
   legacy.road.segments[4].hazardIds = ['test-jump'];
 
@@ -4234,8 +4237,9 @@ test('Race Editor normalizes legacy Studio Sprint hazard data away on load', () 
 
   assert.ok(normalized);
   assert.equal(normalized.name, 'Studio Sprint');
-  assert.deepEqual(normalized.hazards, []);
-  assert.equal(normalized.road.segments.every((segment) => !Array.isArray(segment.hazardIds) || segment.hazardIds.length === 0), true);
+  assert.deepEqual(normalized.hazards, legacy.hazards);
+  assert.deepEqual(normalized.road.segments[2].hazardIds, ['zombie-pack-1']);
+  assert.deepEqual(normalized.road.segments[4].hazardIds, ['test-jump']);
 });
 
 test('Race Editor Studio Sprint centerline projection stays on road through curves', () => {
@@ -15886,7 +15890,7 @@ test('Race Editor skybox menu opens an editable dialog with sliders and preview'
   assert.equal(editor.buttons.some((button) => button.id === 'skybox-dialog-reset'), true);
   assert.equal(editor.raceSettingsSliderRegions.some((region) => region.key === 'skybox-offset-x'), true);
   assert.equal(editor.raceSettingsSliderRegions.some((region) => region.key === 'skybox-offset-y'), true);
-  assert.equal(ctx.calls.some((call) => call.type === 'text' && call.value === 'In-game skyline preview'), true);
+  assert.equal(ctx.calls.some((call) => call.type === 'text' && /^360° preview/.test(call.value)), true);
 });
 
 test('Race Editor settings use dialogs for AI, weather, tile art, and decal project art', async () => {
@@ -16439,10 +16443,10 @@ test('Race art skybox is cached between playtest frames', () => {
     editor.drawRaceSkyboxArt(ctx, bounds, { horizon: 130, normalizedCameraYaw: Math.PI / 2 });
 
     assert.equal(artLoads, 1);
-    assert.equal(ctx.calls.some((call) => call.type === 'drawImage'), true);
-    assert.ok(ctx.calls.filter(call => call.type === 'drawImage').every(call => call.args[4] === bounds.h * .72));
-    assert.equal(raceEditorSource.includes('const artHorizonRatio = 0.56;'), true);
-    assert.deepEqual(ctx.calls.find(call => call.type === 'skyClip').args, [bounds.x, bounds.y, bounds.w, 130 - bounds.y + bounds.h * 0.32]);
+    assert.equal(ctx.calls.some((call) => call.type === 'drawImage' && call.args.length === 5), true);
+    assert.ok(ctx.calls.filter(call => call.type === 'drawImage' && call.args.length === 5).every(call => call.args[4] === bounds.h * .72));
+    assert.equal(ctx.calls.find(call => call.type === 'drawImage' && call.args.length === 5).args[2], 130 - bounds.h * .72 * .56);
+    assert.deepEqual(ctx.calls.find(call => call.type === 'skyClip').args, [bounds.x, bounds.y, bounds.w, bounds.h]);
   } finally {
     globalThis.document = previousDocument;
   }
@@ -16469,7 +16473,7 @@ test('Race art skybox anchors the source horizon in the middle third', () => {
 
     editor.drawRaceSkyboxArt(ctx, bounds, { horizon, normalizedCameraYaw: 0, hillPitch: 0 });
 
-    const draw = ctx.calls.find((call) => call.type === 'drawImage');
+    const draw = ctx.calls.find((call) => call.type === 'drawImage' && call.args.length === 5);
     assert.ok(draw);
     const destY = Number(draw.args[2]);
     const destH = Number(draw.args[4]);
@@ -16507,7 +16511,7 @@ test('Race art skybox applies editable north and vertical offsets', () => {
 
     editor.drawRaceSkyboxArt(ctx, bounds, { horizon: 130, normalizedCameraYaw: 0, hillPitch: 0 });
 
-    const draw = ctx.calls.find((call) => call.type === 'drawImage');
+    const draw = ctx.calls.find((call) => call.type === 'drawImage' && call.args.length === 5);
     assert.ok(draw);
     const destY = Number(draw.args[2]);
     const destH = Number(draw.args[4]);
@@ -16538,7 +16542,7 @@ test('Race art skybox scrolls by yaw turns instead of raw radians', () => {
         imageSmoothingEnabled: true
       };
       editor.drawRaceSkyboxArt(ctx, bounds, { horizon: 130, normalizedCameraYaw: yaw });
-      return ctx.calls.find((call) => call.type === 'drawImage')?.args?.[1];
+      return ctx.calls.find((call) => call.type === 'drawImage' && call.args.length === 5)?.args?.[1];
     };
 
     const yaw0X = getFirstX(0);
@@ -16548,7 +16552,7 @@ test('Race art skybox scrolls by yaw turns instead of raw radians', () => {
     assert.equal(Number.isFinite(yawSmallX), true);
     assert.equal(yawSmallX > yaw0X, true);
     assert.equal(Math.abs(yawSmallX - yaw0X) < 40, true);
-    assert.equal(raceEditorSource.includes('const yawTurns = Number(normalizedCameraYaw || 0) / (Math.PI * 2) + skyboxSettings.offsetXTurns;'), true);
+    assert.equal(raceEditorSource.includes('skyboxImageGeometry(bounds,skyboxSettings,aspect,{horizon,yaw:normalizedCameraYaw'), true);
   } finally {
     globalThis.document = previousDocument;
   }
@@ -17371,7 +17375,7 @@ test('Race Editor paints selected saved doodad as a race placement', () => {
   editor.raceGroundBrushCells = 31;
   editor.draw(createMockContext(), 390, 844);
   assert.equal(editor.raceGroundBrushCells, 1);
-  assert.equal(editor.getRacePortraitGroundActions().find((action) => action.id === 'race-ground-brush').label, 'Brush 1');
+  assert.equal(editor.getRacePortraitGroundActions().find((action) => action.id === 'paint-category').label, 'Doodad');
   const before = editor.selectedRace.scenery.length;
   editor.handlePointerDown({
     id: 'paint-doodad',
@@ -28927,4 +28931,53 @@ test('Race sprite mode switches atomically to a non-billboarded three-dimensiona
   editor.drawRacePlaytestScreen(ctx, { x: 0, y: 0, w: 320, h: 180 });
   assert.equal(spriteDraws, 1);
   assert.equal(rigDraws, 1);
+});
+
+test('Race Editor portrait doodad rotation handle draws and takes pointer priority over painting', () => {
+  const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
+  editor.handleMenuAction('race-ground-mode-doodad');
+  const ctx = createMockContext();
+  editor.draw(ctx, 390, 844);
+  const bounds = editor.raceMapBounds;
+  const world = editor.screenToRaceMapWorldPoint(bounds.x + bounds.w / 2, bounds.y + bounds.h / 2, bounds);
+  editor.selectedRace.scenery = [{ id: 'sign', presetId: 'doodad', x: world.x, z: world.y, yaw: 0, widthM: 1 }];
+  editor.selectedSceneryIndex = 0;
+  editor.raceSelectionType = 'sprite';
+  editor.draw(ctx, 390, 844);
+  const handle = editor.getRaceSceneryRotationHandle();
+  assert.ok(handle);
+  editor.handlePointerDown({ id: 'turn', x: handle.x, y: handle.y, button: 0 });
+  assert.equal(editor.raceSceneryRotationDrag?.id, 'turn');
+  editor.handlePointerMove({ id: 'turn', x: handle.center.screenX + 44, y: handle.center.screenY });
+  editor.handlePointerUp({ id: 'turn', x: handle.center.screenX + 44, y: handle.center.screenY });
+  assert.equal(editor.selectedRace.scenery.length, 1);
+  assert.equal(editor.selectedScenery.x, world.x);
+  assert.equal(editor.selectedScenery.z, world.y);
+  assert.equal(editor.raceSceneryRotationDrag, null);
+});
+
+test('Race Editor bottom mode picker switches Doodad to Sprite through actual pointer hits', () => {
+  const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
+  const ctx = createMockContext();
+  editor.handleMenuAction('race-ground-mode-doodad');
+  const tap = (id) => {
+    editor.draw(ctx, 390, 844);
+    const button = editor.buttons.find(b => b.id === id);
+    assert.ok(button, `${id} is visible`);
+    const box = button.bounds || button;
+    const point = { id: 'mode-tap', x: box.x + box.w / 2, y: box.y + box.h / 2, button: 0 };
+    editor.handlePointerDown(point);
+    editor.handlePointerUp(point);
+  };
+  tap('paint-category');
+  tap('paint-kind-sprite');
+  editor.draw(ctx, 390, 844);
+  assert.equal(editor.getRaceSpritePaintKind(), 'sprite');
+  assert.equal(editor.getRaceGroundToolMode(), 'sprite');
+  assert.equal(editor.activeAction, 'paint-sprite');
+  assert.equal(editor.racePortraitHotMenu, null);
+  assert.equal(editor.getRacePortraitGroundActions()[0].label, 'Paint');
+  tap('paint-category');
+  tap('paint-kind-doodad');
+  assert.equal(editor.getRaceGroundToolMode(), 'doodad');
 });

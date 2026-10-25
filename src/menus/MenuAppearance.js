@@ -2,7 +2,7 @@
 export const menuAppearanceFields=(e,art=[])=>[
  {id:'useDefaultFont',label:'Font source',value:String(e.useDefaultFont!==false),options:[{value:'true',label:'Menu default'},{value:'false',label:'Custom font'}]},
  {id:'fontFamily',label:'Font family (installed font or generic family)',type:'text',value:e.fontFamily||'system-ui'},
- {id:'fontUpload',label:'Font file',value:'keep',options:[{value:'keep',label:e.fontFileName||'Use specified font family'},{value:'upload',label:'Upload font (WOFF2 / WOFF / TTF / OTF)'},{value:'clear',label:'Remove uploaded font'}]},
+ {id:'fontUpload',label:'Font file',value:'keep',options:[{value:'keep',label:e.fontFileName||'Use specified font family'},{value:'upload',label:'Upload font (WOFF2 / WOFF / TTF / OTF)'},{value:'library',label:'Choose saved font / Font Editor'},{value:'clear',label:'Remove uploaded font'}]},
  {id:'textOutlineWidth',label:'Text border size (0 = off)',value:e.textOutlineWidth??0,min:0,max:8,step:0.5},
  {id:'textOutlineColor',label:'Text border color',type:'color',value:e.textOutlineColor||'#000000'},
  {id:'textFill',label:'Text fill',value:e.textFill||'solid',options:[{value:'solid',label:'Solid color / tint'},{value:'gradient',label:'Two-color gradient'},{value:'gradient3',label:'Three-color gradient'}]},
@@ -26,7 +26,8 @@ export async function readMenuAppearanceFile(kind,file){
 export async function resolveMenuAppearance(values,{choose,read=readMenuAppearanceFile}={}){
  const {fontUpload,cursorUpload,...result}=values;
  if('useDefaultFont' in result)result.useDefaultFont=String(result.useDefaultFont)==='true';
- if(fontUpload==='upload')result.useDefaultFont=false;
+ if(fontUpload==='upload'||fontUpload==='library')result.useDefaultFont=false;
+ if(fontUpload==='library'){const {openFontEditor}=await import('../ui/FontEditor.js');const font=await openFontEditor({select:true});if(!font)return null;Object.assign(result,font);}
  for(const [kind,action] of [['font',fontUpload],['cursor',cursorUpload]]){
   if(action==='clear'){result[`${kind}Data`]='';result[`${kind}FileName`]='';}
   if(action==='upload'){

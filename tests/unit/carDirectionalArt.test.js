@@ -89,7 +89,7 @@ test('angle controls and component sliders fit narrow and wide exterior panels',
     const e = editor();
     e.activeRootId = 'art'; e.carArtActiveComponent = component;
     e.drawCarEditorActivePanel(context(), { x: 0, y: 0, w: width, h: height });
-    for (const id of ['car-angle-left', 'car-angle-right', `car-art-pick-${component}`, `car-art-reset-${component}`]) {
+    for (const id of ['car-angle-left', 'car-angle-right', ...(component==='brakes'?['car-fx-select','car-fx-properties']:[`car-art-pick-${component}`, `car-art-reset-${component}`])]) {
       const button = e.buttons.find((b) => b.id === id);
       assert.ok(button, `${component}: ${id}`);
       assert.ok(button.bounds.x >= 0 && button.bounds.x + button.bounds.w <= width, id);

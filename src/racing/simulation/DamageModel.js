@@ -94,7 +94,22 @@ export class DamageModel {
 export function updateRaceSceneryCollisions(editor, seconds = 0) {
   const session = editor.playtestSession;
   if (!session) return;
-  const scenery = editor.ensureRaceScenery();
+  const allScenery = editor.ensureRaceScenery();
+  // Solid scenery is resolved by the rigid-body broadphase. Only pickups and
+  // destructible scenery need this legacy contact pass during a race.
+  let cache = session.sceneryTriggerCandidates;
+  if (!cache || cache.source !== allScenery || cache.length !== allScenery.length || session.carEditorPreview) {
+    cache = {source:allScenery, length:allScenery.length, sprites:allScenery.filter(sprite => {
+      if (sprite?.fenceId) return false;
+      const doodad = editor.getRaceDoodadForScenery(sprite);
+      if (isMixTape(doodad) || doodad.itemType === 'item') return true;
+      const rules = [doodad.defaultRule, ...(doodad.rules || [])].filter(Boolean);
+      return !doodad.isFence && sprite.solid !== true && sprite.collidable !== true
+        && !(rules.length && rules.every(rule => rule.behavior === 'collide'));
+    })};
+    session.sceneryTriggerCandidates = cache;
+  }
+  const scenery = cache.sprites;
   if (!scenery.length) return;
   session.triggeredSceneryIds = Array.isArray(session.triggeredSceneryIds) ? session.triggeredSceneryIds : [];
   session.flattenedSceneryIds = Array.isArray(session.flattenedSceneryIds) ? session.flattenedSceneryIds : [];
@@ -130,6 +145,8 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
     });
   };
   scenery.forEach((sprite) => {
+    // Fence panels are already handled by the spatially indexed rigid-body world.
+    if (sprite?.fenceId) return;
     if (!sprite?.id || session.removedSceneryIds.includes(sprite.id) || session.flattenedSceneryIds.includes(sprite.id) || session.triggeredSceneryIds.includes(sprite.id)) return;
     const doodad = editor.getRaceDoodadForScenery(sprite);
     if (isMixTape(doodad) || doodad.itemType==='item') {
@@ -154,6 +171,9 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
       // render-frame scenery pass must not add a second velocity impulse.
       return;
     }
+    // Fence collision belongs to the continuous rigid-body boxes, not the
+    // legacy circular doodad trigger (which can flatten or push through it).
+    if (doodad.isFence) return;
     const rule = getDoodadRuleForSpeed(doodad, speedMph);
     const spriteRadius = Math.max(0.35, Number(doodad.hitboxWidthM ?? doodad.widthM ?? sprite.widthM ?? 1.4) * 0.5);
     let hit = null;
