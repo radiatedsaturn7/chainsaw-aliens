@@ -4,10 +4,11 @@ for (const mobile of [false, true]) test(`${mobile ? 'portrait touch' : 'desktop
   test.setTimeout(240000);
   await page.setViewportSize({ width: 390, height: 844 });
   const errors = [];
-  page.on('pageerror', error => errors.push(error.stack || error.message));
+  page.on('pageerror', error => {errors.push(error.stack || error.message);console.log('PAGE_ERROR',error.stack||error.message);});
   page.on('console', message => { if (message.type() === 'error') console.log('BROWSER', message.text()); });
   await page.addInitScript(mobile => Object.defineProperty(navigator, 'userAgentData', { configurable: true, value: { mobile } }), mobile);
-  await page.goto('/index.html');
+  // This test exercises race startup, not the optional fullscreen permission prompt.
+  await page.goto('/index.html?hideFullscreenForTesting');
   await page.waitForFunction(() => window.__gameReady, null, { timeout: 60000 });
   expect(await page.evaluate(() => window.__game.deviceIsMobile)).toBe(mobile);
   const result = await page.evaluate(async () => {

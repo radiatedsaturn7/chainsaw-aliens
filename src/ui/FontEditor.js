@@ -11,7 +11,7 @@ export async function openFontEditor({select=false,current=null,name=''}={}){
  await Promise.all(fonts.map(ready));
  let initial=fonts.find(f=>f.name===name||current?.fontData===f.fontData)?.name||fonts[0]?.name||'';
  const fields=[
-  {id:'font',label:'Saved font',value:initial,options:()=>[{value:'',label:'System font / no uploaded font'},...fonts.map(f=>({value:f.name,label:f.name}))]},
+  {id:'font',label:'Saved font',required:false,value:initial,options:()=>[{value:'',label:'System font / no uploaded font'},...fonts.map(f=>({value:f.name,label:f.name}))]},
   {id:'sample',label:'Preview text',type:'text',value:'Lap 1 / 3   01:23.456',required:false},
   {id:'size',label:'Preview size',value:30,min:8,max:96},
   {id:'preview',label:'Font preview',type:'preview',render:(canvas,state)=>{

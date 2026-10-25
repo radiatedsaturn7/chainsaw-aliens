@@ -18,5 +18,7 @@ for(const viewport of [{width:390,height:844},{width:1280,height:800}])test(`fon
  await expect(page.getByRole('dialog',{name:'Choose font',exact:true})).toBeVisible({timeout:60000});
  await page.getByLabel('Saved font',{exact:true}).selectOption('');
  await page.getByRole('button',{name:'Use font',exact:true}).click();
- expect(await page.evaluate(()=>window.__game.carEditor.selectedCar.art.gauges.exterior.enabled)).toBe(true);
+ await expect(page.getByRole('dialog',{name:'Choose font',exact:true})).toBeHidden();
+ await expect.poll(()=>page.evaluate(()=>window.__game.carEditor.selectedCar.art.gauges.exterior.enabled)).toBe(true);
+ expect(await page.evaluate(()=>window.__game.carEditor.selectedCar.art.gauges.exterior.widgets.find(g=>g.source==='lap').fontData)).toBe('');
 });
