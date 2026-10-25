@@ -1,7 +1,7 @@
+import { createRaceNetworkQueryIndex } from './RaceNetworkQueryIndex.js';
 import { buildRaceNetworkGeometry } from './RaceNetworkGeometry.js';
 import { buildRaceCanonicalSurfaceMesh } from './RaceCanonicalSurfaceMesh.js';
 import { packRaceCanonicalSurfaceMesh } from './RaceBakedSurfaceSampler.js';
-import { projectNetworkPoint } from './RaceRouteNetwork.js';
 
 export function buildRaceNetworkWorld(network, {
   key = '', routeLength = 1, stepM = 2.5, textureWorldM = 2.5,
@@ -16,7 +16,9 @@ export function buildRaceNetworkWorld(network, {
   const paintedBlocks=new Set(paintedCells.map(p=>`${Math.floor((p.x-minX)/cellSize)},${Math.floor((p.z-minZ)/cellSize)}`));
   const groundRoutes = { ...network, edges: network.edges.filter(e => e.structure === 'road') };
   const tunnels = { ...network, edges: network.edges.filter(e => e.structure === 'tunnel') };
-  const tunnelAt = (x, z) => projectNetworkPoint(tunnels, { x, z });
+  const groundIndex = createRaceNetworkQueryIndex(groundRoutes);
+  const tunnelIndex = createRaceNetworkQueryIndex(tunnels);
+  const tunnelAt = (x, z) => tunnelIndex.project({ x, z });
   const isPortalOpening = (x, z) => {
     const tunnel = tunnelAt(x, z);
     if (!tunnel || tunnel.distanceToRoute > tunnel.edge.widthM / 2 + 1) return false;
@@ -28,7 +30,7 @@ export function buildRaceNetworkWorld(network, {
     const id = `${x},${z}`;
     if (vertexCache.has(id)) return vertexCache.get(id);
     let elevation = Number(sampleTerrain({ x, z }) || 0);
-    const road = projectNetworkPoint(groundRoutes, { x, z });
+    const road = groundIndex.project({ x, z });
     if (road) {
       const gap = Math.max(0, road.distanceToRoute - road.edge.widthM / 2);
       const blend = Math.max(0, 1 - gap / 20);
@@ -56,7 +58,10 @@ export function buildRaceNetworkWorld(network, {
   }
   const terrainMesh = buildRaceCanonicalSurfaceMesh({ terrainCells: cells, elevationScaleM });
   const mesh = geometry.mesh, offset = mesh.vertices.length;
-  mesh.vertices.push(...terrainMesh.vertices); mesh.normals.push(...terrainMesh.normals);
+  // Painted maps can exceed the engine argument limit; never spread a mesh
+  // into push(). Preserve vertex/normal order for the triangle index offset.
+  for (const vertex of terrainMesh.vertices) mesh.vertices.push(vertex);
+  for (const normal of terrainMesh.normals) mesh.normals.push(normal);
   for (const triangle of terrainMesh.triangles) {
     mesh.groups[triangle.region].push(mesh.triangles.length);
     mesh.triangles.push({ ...triangle, indices: triangle.indices.map(i => i + offset) });

@@ -385,3 +385,25 @@ test('local triangle growth preserves early faces and keeps point queries on the
   assert.equal(frame.statistics.pointQueries, 1,
     'a populated fine-grid cell must not recurse into the full baked bucket');
 });
+
+
+test('long drives bound edge caches and rebuild identical classifications after eviction', () => {
+  const cache = createPhysicsTerrainQueryFrameCache();
+  const sampler = buildRaceBakedSurfaceSampler({ elevationScaleM: 1, bucketSizeM: 4,
+    mesh: { triangles: [{ region: 'wall', source: 'test-wall', vertices: [
+      { x: 0, elevation: 0, z: 0 }, { x: 0, elevation: 2, z: 0 }, { x: 0, elevation: 0, z: 2 }
+    ] }] } });
+  const begin = x => cache.begin({ sampler, revision: 1, elevationScaleM: 1,
+    bounds: { minX: x, maxX: x + 2, minZ: 0, maxZ: 2 } });
+  begin(0);
+  const original = structuredClone({ edges: cache.discontinuityEdges, counts: cache.edgeClassificationCounts });
+  assert.ok(original.edges.length > 0);
+  const firstKey = cache.edgeClassificationsByBucketRange.keys().next().value;
+  for (let i = 1; i <= 300; i++) begin(i * 8);
+  assert.equal(cache.edgeClassificationsByBucketRange.size, 128);
+  assert.equal(cache.edgeClassificationsByBucketRange.has(firstKey), false);
+  begin(0);
+  assert.deepEqual(structuredClone({ edges: cache.discontinuityEdges, counts: cache.edgeClassificationCounts }), original);
+  assert.equal(cache.edgeClassificationsByBucketRange.size, 128);
+  assert.equal(cache.edgeClassificationsByBucketRange.has(firstKey), true);
+});

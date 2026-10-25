@@ -10,7 +10,7 @@ const canvasSources = new WeakMap();
 export function hydrateRaceArtSpriteShared(artRef = '') {
   const clean = String(artRef || '').trim();
   if (!clean) return Promise.resolve(null);
-  const cached = loadProjectFile('art', clean);
+  const cached = loadProjectFile('art', clean, {allowSyncFetch:false});
   if (cached) return Promise.resolve(cached);
   const pending = pendingArtHydrations.get(clean);
   if (pending) return pending;
@@ -29,6 +29,7 @@ export function getRaceArtSpriteCanvasShared(artRef = '', {
   racePreloadingArt = false,
   preparedFrames = null,
   allowStorageLoad = true,
+  allowSyncFetch = true,
   getNowMs = () => 0,
   onRuntimeMiss = null
 } = {}) {
@@ -40,7 +41,7 @@ export function getRaceArtSpriteCanvasShared(artRef = '', {
     || null;
   if (prepared) return prepared;
   if (allowStorageLoad === false) return null;
-  const raw = cache ? readCachedProjectFile('art', clean) : null;
+  const raw = cache ? readCachedProjectFile('art', clean, {allowSyncFetch}) : null;
   let sources = cache ? canvasSources.get(cache) : null;
   const previous = sources?.get(clean);
   if (raw && previous?.raw === raw) {
@@ -54,7 +55,7 @@ export function getRaceArtSpriteCanvasShared(artRef = '', {
     sources.delete(clean);
   }
   const missStartMs = playtestSession && !racePreloadingArt ? getNowMs() : 0;
-  const payload = loadProjectFile('art', clean);
+  const payload = loadProjectFile('art', clean, {allowSyncFetch});
   let data = payload?.data || payload;
   if (payload?.__chainsawStorage && typeof payload.data === 'string' && payload.encoding === 'json') {
     try {

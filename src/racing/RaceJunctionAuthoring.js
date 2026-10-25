@@ -1,3 +1,4 @@
+import { getNetworkFinishNodes } from './RaceFinishNodes.js';
 import {normalizeRaceRouteNetwork,getNetworkEdgePoints} from './RaceRouteNetwork.js';
 const angles={y:[Math.PI,-Math.PI/4,Math.PI/4],t:[Math.PI,-Math.PI/2,Math.PI/2],cross:[0,Math.PI/2,Math.PI,-Math.PI/2],normal:[]};
 const unique=(items,prefix)=>{let i=1;while(items.some(n=>n.id===`${prefix}-${i}`))i++;return `${prefix}-${i}`;};
@@ -10,7 +11,7 @@ export function setNetworkNodeType(source,nodeId,kind,{lengthM=40,widthM=3.6}={}
  for(const edge of [...network.edges]){
   if(edge.junctionOwner!==nodeId)continue;
   const other=edge.from===nodeId?edge.to:edge.from;
-  if([network.startNodeId,network.finishNodeId].includes(other)||network.edges.some(e=>e.id!==edge.id&&(e.from===other||e.to===other)))continue;
+  if([network.startNodeId,...getNetworkFinishNodes(network).map(node=>node.id)].includes(other)||network.edges.some(e=>e.id!==edge.id&&(e.from===other||e.to===other)))continue;
   network.edges=network.edges.filter(e=>e.id!==edge.id);network.nodes=network.nodes.filter(n=>n.id!==other);
  }
  const connected=network.edges.filter(e=>e.from===nodeId||e.to===nodeId);

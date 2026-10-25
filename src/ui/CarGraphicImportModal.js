@@ -11,7 +11,7 @@ export function openCarGraphicImport(component = 'body', initial = null) {
     const previousFocus = document.activeElement;
     const dialog = document.createElement('dialog');
     dialog.className = 'car-graphic-import';
-    dialog.setAttribute('aria-label', `Import ${component} graphic`);
+    dialog.setAttribute('aria-label', `Import ${component==='brakes'?'FX':component} graphic`);
     const el = (tag, text = '', parent = dialog) => {
       const node = document.createElement(tag); node.textContent = text; parent.appendChild(node); return node;
     };
@@ -28,19 +28,19 @@ export function openCarGraphicImport(component = 'body', initial = null) {
       .car-graphic-import .previews { display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:center; }
       .car-graphic-import [hidden] { display:none!important; }
     `);
-    const heading = el('h2', `Import ${component[0].toUpperCase() + component.slice(1)} Graphic`);
+    const heading = el('h2', `Import ${(component==='brakes'?'FX':component[0].toUpperCase() + component.slice(1))} Graphic`);
     const componentLabel = el('label', 'Component');
     const componentSelect = el('select', '', componentLabel);
     componentSelect.setAttribute('aria-label', 'Component');
     for (const value of initial?.components || ['body', 'tires', 'brakes', 'shadow']) {
-      const option = el('option', value[0].toUpperCase() + value.slice(1), componentSelect); option.value = value;
+      const option = el('option', (value==='brakes'?'FX':value[0].toUpperCase() + value.slice(1)), componentSelect); option.value = value;
     }
     componentSelect.value = component;
     componentSelect.disabled = Boolean(initial?.lockComponent);
     componentSelect.onchange = () => {
       component = componentSelect.value;
-      heading.textContent = `Import ${component[0].toUpperCase() + component.slice(1)} Graphic`;
-      dialog.setAttribute('aria-label', `Import ${component} graphic`);
+      heading.textContent = `Import ${(component==='brakes'?'FX':component[0].toUpperCase() + component.slice(1))} Graphic`;
+      dialog.setAttribute('aria-label', `Import ${component==='brakes'?'FX':component} graphic`);
       updateImportMode();
       if (source) processSource();
     };

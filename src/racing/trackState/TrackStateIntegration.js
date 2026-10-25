@@ -80,9 +80,9 @@ export function createRaceTrackStateWeatherForcing({
   const output = target && typeof target === 'object' ? target : {};
   output.type = type;
   output.precipitationRateMmPerS = quantizeTrackStateNumber(intensity * precipitationScale);
-  output.ambientTemperatureC = type === 'snow' ? -4
+  output.ambientTemperatureC = race.weatherTemperatureC != null && Number.isFinite(Number(race.weatherTemperatureC)) ? clamp(Number(race.weatherTemperatureC), -80, 60) : type === 'snow' ? -4
     : type === 'storm' ? 13 : type === 'rain' ? 16 : night ? 14 : 22;
-  output.sunIntensity = night ? 0 : type === 'clear' ? 0.9 : type === 'snow' ? 0.18 : 0.12;
+  output.sunIntensity = (night ? 0 : type === 'clear' ? 0.9 : type === 'snow' ? 0.18 : 0.12) * clamp(Number(race.brightness ?? 1), 0, 1);
   output.windIntensity = type === 'storm' ? 0.9
     : type === 'rain' ? 0.48 : type === 'snow' ? 0.35 : 0.18;
   output.windDirectionRad = quantizeTrackStateNumber(windDirectionRad);

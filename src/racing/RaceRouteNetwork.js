@@ -1,3 +1,4 @@
+import { normalizeNodeFinish, getNetworkFinishNodes } from './RaceFinishNodes.js';
 // Explicit topology: coincident coordinates never create a connection. Heights
 // are metres; conversion to the legacy renderer's elevation units happens only
 // at the rendering boundary.
@@ -15,6 +16,7 @@ export function normalizeRaceRouteNetwork(source) {
   return {
     version: 1,
     nodes: (Array.isArray(source.nodes) ? source.nodes : []).map((node, index) => ({
+      ...(normalizeNodeFinish(node.finish) ? { finish: normalizeNodeFinish(node.finish) } : {}),
       ...point(node), ...(['normal','y','t','cross'].includes(node.junctionKind)?{junctionKind:node.junctionKind}:{}), id: String(node.id || `node-${index}`), name: String(node.name || '')
     })),
     edges: (Array.isArray(source.edges) ? source.edges : []).map((edge, index) => ({
@@ -61,7 +63,7 @@ export function networkEdgeLength(network, edge) {
   return points.slice(1).reduce((sum, p, index) => sum + distance(points[index], p), 0);
 }
 
-export function findNetworkRoute(network, fromId = network.startNodeId, toId = network.finishNodeId) {
+export function findNetworkRoute(network, fromId = network.startNodeId, toId = network.finishNodeId || getNetworkFinishNodes(network)[0]?.id) {
   const costs = new Map([[fromId, 0]]), previous = new Map(), pending = new Set(network.nodes.map(n => n.id));
   while (pending.size) {
     let current = null, cost = Infinity;
@@ -111,11 +113,14 @@ export function validateRaceRouteNetwork(network, {requireFinish=true}={}) {
     if (networkEdgeLength(network, edge) < 1) errors.push(`Route ${edge.id} is shorter than one metre.`);
   }
   if (!nodes.has(network.startNodeId)) errors.push('Choose a start junction.');
-  if ((requireFinish || network.finishNodeId) && !nodes.has(network.finishNodeId)) errors.push('Choose a finish junction.');
-  if (network.startNodeId === network.finishNodeId) errors.push('Start and finish must be distinct.');
+  const finishes = getNetworkFinishNodes(network);
+  if ((requireFinish && !finishes.length) || (network.finishNodeId && !nodes.has(network.finishNodeId))) errors.push('Choose a finish junction.');
+  if (finishes.some(node => node.id === network.startNodeId)) errors.push('Start and finish must be distinct.');
   if (!errors.length) {
-    const route=findNetworkRoute(network);
-    if(!route?.steps.length)errors.push(network.finishNodeId?'Finish is not reachable from start.':'Connect a drivable road to the start junction.');
+    for (const finish of finishes) {
+      if (!findNetworkRoute(network, network.startNodeId, finish.id)?.steps.length) errors.push(`Finish ${finish.name || finish.id} is not reachable from start.`);
+    }
+    if (!finishes.length && !findNetworkRoute(network)?.steps.length) errors.push('Connect a drivable road to the start junction.');
   }
   return errors;
 }
@@ -243,9 +248,11 @@ export function joinNetworkJunctions(source, keepId, removeId) {
   const network = structuredClone(source), a = network.nodes.find(n => n.id === keepId), b = network.nodes.find(n => n.id === removeId);
   if (!a || !b || keepId === removeId) throw new Error('Select two different junctions to join.');
   if (Math.abs(a.heightM - b.heightM) > 0.25) throw new Error('Junctions at different heights need a connecting ramp.');
-  if ([network.startNodeId, network.finishNodeId].includes(keepId) && [network.startNodeId, network.finishNodeId].includes(removeId)) {
-    throw new Error('Start and finish must remain distinct.');
+  const marked = new Set([network.startNodeId, ...getNetworkFinishNodes(network).map(node => node.id)]);
+  if (marked.has(keepId) && marked.has(removeId)) {
+    throw new Error('Start and finish markers must remain distinct.');
   }
+  if (b.finish) a.finish = structuredClone(b.finish);
   network.nodes = network.nodes.filter(n => n.id !== removeId);
   for (const edge of network.edges) {
     if (edge.from === removeId) edge.from = keepId;
@@ -257,9 +264,10 @@ export function joinNetworkJunctions(source, keepId, removeId) {
   return network;
 }
 
-function crossedMarker(network, markerId, previous, current, leaving) {
+function markerCrossingFraction(network, markerId, previous, current, leaving) {
   const marker = network.nodes.find(n => n.id === markerId);
-  if (!marker || !previous || !current) return false;
+  if (!marker || !previous || !current) return null;
+  let earliest = null;
   for (const edge of network.edges) {
     const atFrom = edge.from === markerId, atTo = edge.to === markerId;
     if (!atFrom && !atTo) continue;
@@ -275,15 +283,21 @@ function crossedMarker(network, markerId, previous, current, leaving) {
     if (!(before <= 0 && after > 0)) continue;
     const t = -before / (after - before), crossing = lerp(previous, current, t);
     const lateral = (crossing.x - marker.x) * dz - (crossing.z - marker.z) * dx;
-    if (Math.abs(lateral) <= edge.widthM / 2 + 1 && Math.abs(crossing.heightM - marker.heightM) <= 1.8) return true;
+    if (Math.abs(lateral) <= edge.widthM / 2 + 1 && Math.abs(crossing.heightM - marker.heightM) <= 1.8) earliest = earliest === null ? t : Math.min(earliest, t);
   }
-  return false;
+  return earliest;
 }
 
 export function advanceNetworkRaceProgress(network, previous, current, progress = {}) {
-  const started = progress.started === true || crossedMarker(network, network.startNodeId, previous, current, true);
-  return { started, finished: progress.finished === true
-    || (started && crossedMarker(network, network.finishNodeId, previous, current, false)) };
+  if (progress.finished) return { ...progress };
+  const startT = progress.started ? 0 : markerCrossingFraction(network, network.startNodeId, previous, current, true);
+  const started = progress.started === true || startT !== null;
+  let winner = null;
+  if (started) for (const node of getNetworkFinishNodes(network)) {
+    const t = markerCrossingFraction(network, node.id, previous, current, false);
+    if (t !== null && t >= startT && (!winner || t < winner.t)) winner = { id: node.id, t };
+  }
+  return { started, finished: Boolean(winner), ...(winner ? { finishNodeId: winner.id } : {}) };
 }
 
 // Move a junction with its connected curves, fading displacement to zero at

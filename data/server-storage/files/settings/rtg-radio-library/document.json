@@ -12,12 +12,12 @@
           "url": ""
         },
         "src": "",
+        "musicRef": "Who Signed the Order (I told you so)-f8375d61-d3a4-4245-92c4-07c",
         "raceCues": {
-          "start": 3,
+          "start": 7.2,
           "end": null
         },
-        "initiallyUnlocked": true,
-        "musicRef": "Who Signed the Order (I told you so)-f8375d61-d3a4-4245-92c4-07c"
+        "initiallyUnlocked": true
       },
       {
         "id": "c2dddd12-98b9-4d68-a59d-6e2832fb1c07",
@@ -29,12 +29,12 @@
           "url": ""
         },
         "src": "",
+        "musicRef": "A Door I Carried-c2dddd12-98b9-4d68-a59d-6e2832fb1c07.mp3",
         "raceCues": {
-          "start": 3,
+          "start": 11.82,
           "end": null
         },
-        "initiallyUnlocked": true,
-        "musicRef": "A Door I Carried-c2dddd12-98b9-4d68-a59d-6e2832fb1c07.mp3"
+        "initiallyUnlocked": true
       },
       {
         "id": "ab0a13e5-3d04-4345-8c3e-46bf927e1085",
@@ -46,12 +46,12 @@
           "url": ""
         },
         "src": "",
+        "musicRef": "Westward Bound-ab0a13e5-3d04-4345-8c3e-46bf927e1085.mp3",
         "raceCues": {
-          "start": 3,
+          "start": 9.73,
           "end": null
         },
-        "initiallyUnlocked": true,
-        "musicRef": "Westward Bound-ab0a13e5-3d04-4345-8c3e-46bf927e1085.mp3"
+        "initiallyUnlocked": true
       },
       {
         "id": "c64446af-e852-4297-96a4-ae89f2b9efe6",
@@ -63,12 +63,12 @@
           "url": ""
         },
         "src": "",
+        "musicRef": "I Won't Disappear-c64446af-e852-4297-96a4-ae89f2b9efe6.mp3",
         "raceCues": {
-          "start": 3,
+          "start": 14.09,
           "end": null
         },
-        "initiallyUnlocked": true,
-        "musicRef": "I Won't Disappear-c64446af-e852-4297-96a4-ae89f2b9efe6.mp3"
+        "initiallyUnlocked": true
       },
       {
         "id": "289ec51f-dce8-4637-bb02-d1a6a1fa51e1",
@@ -80,12 +80,12 @@
           "url": ""
         },
         "src": "",
+        "musicRef": "My Own Enemy-289ec51f-dce8-4637-bb02-d1a6a1fa51e1.mp3",
         "raceCues": {
-          "start": 3,
+          "start": 10.64,
           "end": null
         },
-        "initiallyUnlocked": true,
-        "musicRef": "My Own Enemy-289ec51f-dce8-4637-bb02-d1a6a1fa51e1.mp3"
+        "initiallyUnlocked": true
       },
       {
         "id": "7ced7f92-2452-41d6-b778-6c6d003e3341",
@@ -97,12 +97,12 @@
           "url": ""
         },
         "src": "",
+        "musicRef": "Python King-7ced7f92-2452-41d6-b778-6c6d003e3341.mp3",
         "raceCues": {
-          "start": 3,
+          "start": 40.93,
           "end": null
         },
-        "initiallyUnlocked": true,
-        "musicRef": "Python King-7ced7f92-2452-41d6-b778-6c6d003e3341.mp3"
+        "initiallyUnlocked": true
       },
       {
         "id": "1ee37aa5-068d-482d-ad1c-22caeea28bd5",
@@ -114,12 +114,12 @@
           "url": ""
         },
         "src": "",
+        "musicRef": "Am I Still Here-1ee37aa5-068d-482d-ad1c-22caeea28bd5.mp3",
         "raceCues": {
           "start": 16.88,
           "end": null
         },
-        "initiallyUnlocked": true,
-        "musicRef": "Am I Still Here-1ee37aa5-068d-482d-ad1c-22caeea28bd5.mp3"
+        "initiallyUnlocked": true
       },
       {
         "id": "052dbcc3-4072-4b61-8921-6f668e435ab8",
@@ -131,12 +131,12 @@
           "url": ""
         },
         "src": "",
+        "musicRef": "We Learn to Live-052dbcc3-4072-4b61-8921-6f668e435ab8.mp3",
         "raceCues": {
           "start": 13.24,
           "end": null
         },
-        "initiallyUnlocked": true,
-        "musicRef": "We Learn to Live-052dbcc3-4072-4b61-8921-6f668e435ab8.mp3"
+        "initiallyUnlocked": true
       },
       {
         "id": "067d9317-0acc-4360-bc1e-dd6fdafaa9f1",
@@ -148,12 +148,12 @@
           "url": ""
         },
         "src": "",
+        "musicRef": "Everything You Said I'd Never-067d9317-0acc-4360-bc1e-dd6fdafaa9",
         "raceCues": {
-          "start": 3,
+          "start": 14.34,
           "end": null
         },
-        "initiallyUnlocked": true,
-        "musicRef": "Everything You Said I'd Never-067d9317-0acc-4360-bc1e-dd6fdafaa9"
+        "initiallyUnlocked": true
       },
       {
         "id": "89c4ba41-b49f-4d04-b29c-73ec9d0fac55",
@@ -165,12 +165,12 @@
           "url": ""
         },
         "src": "",
+        "musicRef": "Would You Pull Me Out Again-89c4ba41-b49f-4d04-b29c-73ec9d0fac55",
         "raceCues": {
-          "start": 3,
+          "start": 9.76,
           "end": null
         },
-        "initiallyUnlocked": true,
-        "musicRef": "Would You Pull Me Out Again-89c4ba41-b49f-4d04-b29c-73ec9d0fac55"
+        "initiallyUnlocked": true
       },
       {
         "id": "181f7d93-5b04-4765-815c-667b6740a9f9",
@@ -182,12 +182,12 @@
           "url": ""
         },
         "src": "",
+        "musicRef": "Thunder-181f7d93-5b04-4765-815c-667b6740a9f9.mp3",
         "raceCues": {
-          "start": 3,
+          "start": 20.02,
           "end": null
         },
-        "initiallyUnlocked": true,
-        "musicRef": "Thunder-181f7d93-5b04-4765-815c-667b6740a9f9.mp3"
+        "initiallyUnlocked": true
       }
     ],
     "stations": [

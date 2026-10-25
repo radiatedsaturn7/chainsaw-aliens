@@ -1,3 +1,4 @@
+import { indexTrackStateCell, queryTrackStateCells } from './TrackStateSpatialIndex.js';
 import {
   clamp,
   compareTrackStateCellKeys,
@@ -217,6 +218,7 @@ export class TrackState {
   }
 
   rebuildDerivedRuntimeState() {
+    this.newDryCellWeatherCache = null;
     this.environmentActiveKeys.length = 0;
     this.environmentActiveKeySet.clear();
     this.environmentCellCursor = 0;
@@ -474,6 +476,7 @@ export class TrackState {
       profileOverrides: this.profileOverrides
     });
     this.cells.set(key, cell);
+    indexTrackStateCell(this.cells, key, cell);
     this.queueMaintenancePreparation(cell);
     this.queueCheckpointCell(key);
     let low = 0;
@@ -486,9 +489,47 @@ export class TrackState {
     this.orderedCellKeys.splice(low, 0, key);
     if (low <= this.cellCursor && this.orderedCellKeys.length > 1) this.cellCursor += 1;
     if (Number(throughStep) > this.historyBaseStepIndex && this.weatherTimeline.size) {
-      this.catchUpCellWeather(cell, throughStep);
+      if (!this.catchUpNewDryCellWeather(cell, throughStep)) this.catchUpCellWeather(cell, throughStep);
     }
     return cell;
+  }
+
+  // Newly encountered dry cells share the same temperature evolution for a
+  // given exposure/profile. Replay that history once per profile, not once per
+  // metre travelled by every car. Wet histories retain the full original path.
+  catchUpNewDryCellWeather(cell, throughStep) {
+    if ([cell.moistureDepthMm, cell.standingWaterDepthMm, cell.snowDepthMm, cell.iceDepthMm].some(value => value !== 0)) return false;
+    if (this.newDryCellWeatherCache?.timeline !== this.weatherTimeline
+      || this.newDryCellWeatherCache?.baseStep !== this.historyBaseStepIndex) {
+      this.newDryCellWeatherCache = { timeline: this.weatherTimeline, baseStep: this.historyBaseStepIndex, profiles: new Map() };
+    }
+    const profiles = this.newDryCellWeatherCache.profiles;
+    const key = [cell.surfaceTemperatureC, cell.sunExposure, cell.windExposure, cell.heatResponse, cell.initializedStep].join(':');
+    let cached = profiles.get(key);
+    if (!cached) {
+      if (profiles.size >= 128) profiles.delete(profiles.keys().next().value);
+      cached = { temperature: cell.surfaceTemperatureC, throughStep: cell.lastUpdatedStep, updatedStep: cell.lastUpdatedStep, wet: false };
+      profiles.set(key, cached);
+    }
+    if (cached.wet || throughStep < cached.throughStep) return false;
+    for (let step = cached.throughStep + 1; step <= throughStep; step++) {
+      const forcing = this.getWeatherForStep(step);
+      if (!forcing) continue;
+      if (forcing.precipitationRateMmPerS > 0) { cached.wet = true; return false; }
+      const solarTarget = forcing.ambientTemperatureC + forcing.sunIntensity * cell.sunExposure * 18;
+      const windCooling = forcing.windIntensity * cell.windExposure * 3.5;
+      const temperature = cached.temperature + (solarTarget - windCooling - cached.temperature)
+        * clamp(this.fixedStepMs / 1000 * cell.heatResponse, 0, 1);
+      cached.temperature = quantizeTrackStateNumber(clamp(Number(temperature) || 0, -80, 120));
+      cached.updatedStep = step;
+    }
+    cached.throughStep = throughStep;
+    if (cached.updatedStep > cell.lastUpdatedStep) {
+      this.prepareCellMutation(cell);
+      cell.surfaceTemperatureC = cached.temperature;
+      cell.lastUpdatedStep = cached.updatedStep;
+    }
+    return true;
   }
 
   sample(point = {}, target = null, conditionScratch = null) {
@@ -527,6 +568,32 @@ export class TrackState {
     return sample;
   }
 
+  // With one constant forcing and no water, only temperature can change.
+  // Preserve the per-step quantization, but stop once it reaches its fixed
+  // point. This avoids replaying every field of old cells on a long dry race.
+  catchUpConstantDryCellWeather(cell, startStep, endStep) {
+    if (this.weatherTimeline.size !== 1
+      || WATER_FIELDS.some(field => cell[field] !== 0)) return false;
+    const [forcingStep, forcing] = this.weatherTimeline.entries().next().value;
+    if (forcingStep > startStep || forcing.precipitationRateMmPerS > 0) return false;
+    const target = forcing.ambientTemperatureC + forcing.sunIntensity * cell.sunExposure * 18
+      - forcing.windIntensity * cell.windExposure * 3.5;
+    const response = clamp(this.fixedStepMs / 1000 * cell.heatResponse, 0, 1);
+    let temperature = cell.surfaceTemperatureC;
+    for (let step = startStep; step <= endStep; step++) {
+      const next = quantizeTrackStateNumber(clamp(Number(
+        temperature + (target - temperature) * response
+      ) || 0, -80, 120));
+      if (next === temperature) break;
+      temperature = next;
+    }
+    this.prepareCellMutation(cell);
+    cell.surfaceTemperatureC = temperature;
+    cell.lastUpdatedStep = endStep;
+    clampTrackStateCell(cell);
+    return true;
+  }
+
   catchUpCellWeather(cell, throughStep = this.stepIndex) {
     if (!cell) return 0;
     let appliedSteps = 0;
@@ -534,7 +601,10 @@ export class TrackState {
       Number(cell.initializedStep || 0) + 1,
       Number(cell.lastUpdatedStep || 0) + 1
     );
-    for (let stepIndex = startStep; stepIndex <= Number(throughStep || 0); stepIndex += 1) {
+    const endStep = Math.floor(Number(throughStep || 0));
+    if (startStep > endStep) return 0;
+    if (this.catchUpConstantDryCellWeather(cell, startStep, endStep)) return endStep - startStep + 1;
+    for (let stepIndex = startStep; stepIndex <= endStep; stepIndex += 1) {
       const forcing = this.getWeatherForStep(stepIndex);
       if (!forcing) continue;
       this.applyWeatherToCell(cell, forcing, this.fixedStepMs / 1000, stepIndex);
@@ -679,7 +749,7 @@ export class TrackState {
     const sortedCells = this.flowCellsScratch;
     sortedCells.length = sourceCells.length;
     for (let index = 0; index < sourceCells.length; index += 1) sortedCells[index] = sourceCells[index];
-    sortedCells.sort((a, b) => compareTrackStateCellKeys(a.key, b.key));
+    sortedCells.sort((a, b) => a.x - b.x || a.z - b.z);
     sortedCells.forEach((cell) => {
       if (cell.standingWaterDepthMm <= 0.02) return;
       let bestKey = '';
@@ -1183,11 +1253,8 @@ export class TrackState {
   }
 
   getVisualCells(bounds = null) {
-    return [...this.cells.values()]
-      .filter((cell) => !bounds
-        || (cell.worldX >= bounds.minX && cell.worldX <= bounds.maxX
-          && cell.worldZ >= bounds.minZ && cell.worldZ <= bounds.maxZ))
-      .sort((a, b) => compareTrackStateCellKeys(a.key, b.key))
+    return queryTrackStateCells(this.cells, bounds)
+      .sort((a, b) => a.x - b.x || a.z - b.z)
       .map((cell) => {
         const sample = getTrackStateCellSample(cell, this.stepIndex);
         return {

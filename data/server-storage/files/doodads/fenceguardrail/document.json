@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1792827848079,
+  "selectedDoodadId": "new-doodad",
+  "doodad": {
+    "id": "new-doodad",
+    "name": "fenceguardrail",
+    "artRef": "fenceguardrail",
+    "isFence": true,
+    "fenceThicknessM": 0.3,
+    "itemType": "scenery",
+    "unlockTrackId": "",
+    "model": null,
+    "widthM": 12.5,
+    "heightM": 2.2,
+    "groundOffsetM": 0.9,
+    "hitboxWidthM": 1.5,
+    "hitboxHeightM": 2,
+    "weightKg": 0.5,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "collide",
+      "speedDrainPercent": 45,
+      "damage": {
+        "panels": 14,
+        "suspension": 6,
+        "engine": 3.5
+      }
+    },
+    "rules": [
+      {
+        "minSpeedMph": 30,
+        "behavior": "collide",
+        "speedDrainPercent": 18,
+        "damage": {
+          "panels": 2.5,
+          "suspension": 0,
+          "engine": 0
+        }
+      },
+      {
+        "minSpeedMph": 120,
+        "behavior": "collide",
+        "speedDrainPercent": 16,
+        "damage": {
+          "panels": 4.5,
+          "suspension": 0,
+          "engine": 0
+        }
+      }
+    ]
+  }
+}

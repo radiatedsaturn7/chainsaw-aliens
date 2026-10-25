@@ -42,7 +42,7 @@ export function texturedRoadStrip(nearLeft, nearRight, farLeft, farRight, nearDi
 }
 
 export function buildRoadTextureStrips(worldBake, settings, { marginWidth = .22, marginVisible = true, networkDefinition = null } = {}) {
-  const roadMeshes = [], boundaryMeshes = [];
+  const roadMeshes = [], boundaryMeshes = [], junctionMeshes = [];
   const paths = worldBake.surfaceBake?.paths || [{ sections: worldBake.surfaceBake?.sections || [] }];
   const network = worldBake.terrainTopology === 'route-network';
   const edgeOffsets = new Map();
@@ -80,7 +80,7 @@ export function buildRoadTextureStrips(worldBake, settings, { marginWidth = .22,
     }
   }
   // Ordinary two-road joins continue the ribbon through the junction apron.
-  // Multi-way intersections retain their unmarked base surface.
+  // Multi-way intersections receive textured canonical apron triangles below.
   if (network && networkDefinition) {
     const byEdge = new Map(paths.map(path => [path.edgeId, path]));
     for (const node of networkDefinition.nodes || []) {
@@ -108,5 +108,37 @@ export function buildRoadTextureStrips(worldBake, settings, { marginWidth = .22,
       }
     }
   }
-  return { roadMeshes, boundaryMeshes };
+  if(network && networkDefinition && settings.road.artRef){
+    const byEdge=new Map(paths.map(path=>[path.edgeId,path]));
+    const junctionFrames=new Map();
+    for(const node of networkDefinition.nodes||[]){
+      const ends=networkDefinition.edges.filter(e=>e.from===node.id||e.to===node.id).map(edge=>{
+        const sections=byEdge.get(edge.id)?.sections;
+        const section=edge.from===node.id?sections?.[0]:sections?.at(-1);
+        return section?{edge,section,distance:(edgeOffsets.get(edge.id)||0)+Number(section.center.distance||0)}:null;
+      }).filter(Boolean);
+      if(ends.length<2)continue;
+      const mouthPoints=ends.flatMap(({section:s,distance})=>{
+        const span=settings.road.repeatWidthM>0?Math.hypot(s.right.x-s.left.x,s.right.z-s.left.z)/settings.road.repeatWidthM:1;
+        return [{...s.left,u:.5-span/2,v:-distance/settings.road.repeatM},{...s.right,u:.5+span/2,v:-distance/settings.road.repeatM}];
+      });
+      const {section:s,distance}=ends[0],dx=node.x-s.center.x,dz=node.z-s.center.z;
+      const centerV=-(distance+dx*Math.sin(s.center.yaw)+dz*Math.cos(s.center.yaw))/settings.road.repeatM;
+      junctionFrames.set(`junction:${node.id}`,{mouthPoints,centerV,node});
+    }
+    for(const triangle of worldBake.mesh?.triangles||[]){
+      const frame=junctionFrames.get(triangle.source);if(!frame)continue;
+      const points=triangle.vertices.map(p=>{
+        if(Math.hypot(p.x-frame.node.x,p.z-frame.node.z)<1e-6)return {...p,u:.5,v:frame.centerV};
+        // Hull vertices are road mouth corners. Reuse their ribbon UVs exactly,
+        // including repeat width and distance phase, on both sides of each seam.
+        const match=frame.mouthPoints.reduce((best,q)=>Math.hypot(q.x-p.x,q.z-p.z)<Math.hypot(best.x-p.x,best.z-p.z)?q:best);
+        return {...p,u:match.u,v:match.v};
+      });
+      junctionMeshes.push({source:'road-texture-junction',junctionSource:triangle.source,points,
+        artRef:settings.road.artRef,textured:true,color:'#ffffff',textureOptions:roadTextureSampling(settings.road),
+        textureWorldM:settings.road.repeatM,threeLiftM:0});
+    }
+  }
+  return { roadMeshes, boundaryMeshes, junctionMeshes };
 }

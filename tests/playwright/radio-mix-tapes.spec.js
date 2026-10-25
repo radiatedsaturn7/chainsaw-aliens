@@ -229,16 +229,16 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} music drop
  await page.screenshot({path:`test-results/radio-seek-markers-${mobile?'portrait':'desktop'}.png`});
  await radioAction(page,'track-drops');
  const form=dialog(page,'Music Drops');
- await form.getByLabel('Race start drop (seconds into song)',{exact:true}).fill('6');
+ await form.getByLabel('Race start drop (seconds into song)',{exact:true}).fill('12');
  await form.getByLabel('Use race finish drop',{exact:true}).check();
  await form.getByLabel('Race finish / chorus (seconds into song)',{exact:true}).fill('20');
  await page.screenshot({path:`test-results/radio-music-drops-${mobile?'portrait':'desktop'}.png`});
  await apply(page,'Music Drops');await radioReady(page);
- expect(await page.evaluate(()=>window.__game.radio.library.tracks[0].raceCues)).toEqual({start:6,end:20});
+ expect(await page.evaluate(()=>window.__game.radio.library.tracks[0].raceCues)).toEqual({start:12,end:20});
  await radioAction(page,'radio-preview-start');
  await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.playing)).toBe(true);
  await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.status)).toBe('GO — start drop');
- expect(await page.evaluate(()=>window.__game.radioEditor.preview.audio.currentTime)).toBeGreaterThanOrEqual(5.8);
+ expect(await page.evaluate(()=>window.__game.radioEditor.preview.audio.currentTime)).toBeGreaterThanOrEqual(11.8);
  await radioAction(page,'radio-preview-end');
  await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.audio?.currentTime||0)).toBeGreaterThanOrEqual(20);
  await page.evaluate(()=>window.__game.radioEditor.exitToMainMenu());
@@ -249,13 +249,13 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} music drop
   document.race.raceStart.countdown=true;document.race.radioEnabled=true;document.race.radioStationIds=null;
   await saveProjectFileAndConfirm('races','Music Drop Race',document);
   const g=window.__game;window.__raceGoSample=null;
-  // Sample after the GO music update, including its one-time catch-up on a
-  // delayed frame, rather than racing that update in a separate RAF callback.
+  // Use a cue beyond the camera intro plus countdown; early cues deliberately
+  // keep playing rather than rewinding. Sample on the actual GO update.
   const director=g.raceRadio,update=director.update;
   director.update=function(...args){
-   const wasGo=this.go;const result=update.apply(this,args);
+   const wasGo=this.go,beforeTime=g.radio.audio?.currentTime;const result=update.apply(this,args);
    if(!wasGo&&this.go&&g.radio.playing){
-    window.__raceGoSample={time:g.radio.audio.currentTime,gain:g.radio.gain};
+    window.__raceGoSample={time:g.radio.audio.currentTime,beforeTime,gain:g.radio.gain};
     this.update=update;
    }
    return result;
@@ -265,7 +265,10 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} music drop
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
  await expect.poll(()=>page.evaluate(()=>window.__raceGoSample),{timeout:15000}).not.toBeNull();
  const go=await page.evaluate(()=>window.__raceGoSample);
- expect(go.time).toBeGreaterThan(5.65);expect(go.time).toBeLessThan(6.4);expect(go.gain).toBeGreaterThan(.9);
+ // Real audio advances during slow software-WebGL frames. Verify GO does not
+ // seek/restart the decoder; precise cue alignment is covered with a controlled
+ // clock in raceMusicDrops.test.js.
+ expect(go.time).toBeGreaterThan(11.65);expect(go.time).toBeCloseTo(go.beforeTime,1);expect(go.gain).toBeGreaterThan(.9);
  await page.evaluate(()=>window.__game.raceEditor.showRaceResults());
  await expect.poll(()=>page.evaluate(()=>window.__game.radio.audio?.currentTime||0)).toBeGreaterThanOrEqual(20);
  expect(await page.evaluate(()=>window.__game.radio.gain)).toBe(1);

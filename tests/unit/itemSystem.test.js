@@ -80,9 +80,9 @@ test('slow save does not overwrite unrelated stats changed during pickup',async(
  const pending=system.collect({effects:[{type:'key',target:'red'}]},'key');await settle();game.player.health=1;game.player.speed=450;release();await pending;
  assert.equal(game.player.health,1);assert.equal(game.player.speed,450);
 });
-test('race item command is available from the Sprites menu',()=>{
- const editor=new RaceEditor({});const action=editor.getMenuItems('sprites').find(action=>action.id==='race-item');
- assert.ok(action);assert.equal(action.disabled,false);assert.equal(typeof action.onSelect,'function');
+test('race item command is available from Paint doodad tools',()=>{
+ const editor=new RaceEditor({});editor.selectRacePaintCategory('doodad');const action=editor.getRacePaintToolActions().find(action=>action.id==='race-item');
+ assert.ok(action);assert.notEqual(action.disabled,true);assert.equal(typeof action.onClick,'function');
 });
 test('persistent movement modifiers survive recalculating equipped upgrades',async()=>{
  const {game,system}=fixture();game.player=new Player(0,0);const speed=game.player.speed;

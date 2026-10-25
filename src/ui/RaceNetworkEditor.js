@@ -1,3 +1,6 @@
+import { getNetworkFinishNodes, normalizeNodeFinish } from '../racing/RaceFinishNodes.js';
+import { parseMenuVariableAssignments, formatMenuVariableAssignments } from '../menus/MenuProgress.js';
+import { listProjectFiles } from './projectFiles.js';
 import {transformNetworkSelection,networkSelectionInBox} from '../racing/RaceNetworkSelection.js';
 import {setNetworkNodeType} from '../racing/RaceJunctionAuthoring.js';
 import { openEditorForm } from './shared/editorForm.js';
@@ -116,9 +119,9 @@ export async function handleNetworkAction(editor, action, showForm=openEditorFor
   }
   if (action === 'network-markers') {
     const options = network.nodes.map(n => ({ value: n.id, label: n.name || n.id }));
-    const result = await showForm('Start / finish', [choice('startNodeId', 'Start', network.startNodeId, options), choice('finishNodeId', 'Finish', network.finishNodeId, [{value:'',label:'None'},...options])]);
+    const result = await showForm('Start / finish', [choice('startNodeId', 'Start', network.startNodeId, options), choice('finishNodeId', 'Default finish', network.finishNodeId, [{value:'',label:'None'},...options])], {description:'Set additional finishes by selecting a node and opening Edit → Finish node. Each finish can set saved variables and choose its own destination. The default finish is also used for route preview and AI routing.'});
     if (result) {
-      if (result.finishNodeId && result.startNodeId === result.finishNodeId) throw new Error('Start and finish must be distinct.');
+      if (result.startNodeId === result.finishNodeId || network.nodes.some(node=>node.id===result.startNodeId&&node.finish)) throw new Error('Start and finish must be distinct.');
       commit(editor, { ...network, ...result }, 'Start / finish updated');
     }
     return;
@@ -128,7 +131,7 @@ export async function handleNetworkAction(editor, action, showForm=openEditorFor
       editor.captureRaceHistory('Delete water'); editor.selectedRace.waterRegions = (editor.selectedRace.waterRegions || []).filter(w => w.id !== editor.networkWaterId);
       editor.networkWaterId = ''; editor.clearRaceRuntimeSurfaceCaches(); return;
     }
-    if (selected.some(id=>[network.startNodeId, network.finishNodeId].includes(id))) throw new Error('Move the start / finish marker before deleting its junction.');
+    if (selected.some(id=>[network.startNodeId, ...getNetworkFinishNodes(network).map(node=>node.id)].includes(id))) throw new Error('Move the start / finish marker before deleting its junction.');
     const next = structuredClone(network);
     next.edges = next.edges.filter(e => !selectedEdgeIds(editor).includes(e.id) && !selected.includes(e.from) && !selected.includes(e.to));
     next.nodes = next.nodes.filter(n => !selected.includes(n.id));
@@ -138,10 +141,36 @@ export async function handleNetworkAction(editor, action, showForm=openEditorFor
   if (editor.networkWaterId) return handleNetworkAction(editor, 'network-water',showForm);
   const node = network.nodes.find(n => n.id === editor.networkNodeId), edge = network.edges.find(e => e.id === editor.networkEdgeId);
   if (node) {
+    const finish = normalizeNodeFinish(node.finish) || { variables: {} };
+    const destination = finish.destination || {};
+    const isFinish = getNetworkFinishNodes(network).some(entry=>entry.id===node.id);
+    const finishVisible = state=>state.finish===true;
+    const destinationVisible = type=>state=>finishVisible(state)&&state.finishDestination===type;
+    const fileOptions = folder=>[{value:'',label:'Choose…'},...listProjectFiles(folder).map(file=>({value:file.name,label:file.name}))];
     const result = await showForm('Node properties', [choice('kind','Node type',node.junctionKind||'normal',[{value:'normal',label:'Normal node'},{value:'y',label:'Y junction'},{value:'t',label:'T junction'},{value:'cross',label:'Four-way junction'}]), { id: 'name', label: 'Name', type: 'text', required: false, value: node.name },
-      number('x', 'X (m)', node.x), number('z', 'Z (m)', node.z), number('heightM', 'Height (m)', node.heightM)]);
+      number('x', 'X (m)', node.x), number('z', 'Z (m)', node.z), number('heightM', 'Height (m)', node.heightM),
+      {id:'finish',label:'Finish node',type:'checkbox',value:isFinish},
+      {id:'finishVariables',label:'On finish: variables (one name = value per line)',type:'textarea',rows:4,required:false,value:formatMenuVariableAssignments(finish.variables),visibleWhen:finishVisible},
+      {...choice('finishDestination','After this finish',destination.type||'inherit',[
+        {value:'inherit',label:'Use race completion settings'},{value:'menu',label:'Open menu screen'},
+        {value:'race',label:'Load race'},{value:'level',label:'Load level'},{value:'return-to-origin',label:'Return to origin'}]),visibleWhen:finishVisible},
+      {...choice('menuRef','Menu',destination.menuRef||'',[{value:'',label:'Current / designated menu'},...fileOptions('menus').slice(1)]),visibleWhen:destinationVisible('menu')},
+      {id:'menuScreen',label:'Screen ID',type:'text',value:destination.menuScreen||'world-map',visibleWhen:destinationVisible('menu')},
+      {...choice('targetRace','Race',destination.targetRace||'',fileOptions('races')),visibleWhen:destinationVisible('race')},
+      {...choice('targetLevel','Level',destination.targetLevel||'',fileOptions('levels')),visibleWhen:destinationVisible('level')},
+      {...number('spawnX','Arrival tile X',destination.spawnX||0,0,100000),visibleWhen:destinationVisible('level')},
+      {...number('spawnY','Arrival tile Y',destination.spawnY||0,0,100000),visibleWhen:destinationVisible('level')}
+    ], {description:'A race can have multiple finish nodes. Only the exit you cross applies its variables, after the race-wide variables. Example: route = "north" or northUnlocked = true. lastRaceExit and lastRaceExitName are saved automatically. Use these in Menu Editor conditions and background variants.'});
     if (result && editor.selectedRace.road.network===network) {
-      let next=moveNetworkJunction(network,node.id,result);
+      const enabled = result.finish ?? isFinish;
+      if (enabled && node.id===network.startNodeId) throw Error('Start and finish must be distinct.');
+      if (enabled && ['race','level'].includes(result.finishDestination) && !result[result.finishDestination==='race'?'targetRace':'targetLevel']) throw Error('Choose a destination file.');
+      const variables = enabled ? parseMenuVariableAssignments(result.finishVariables ?? formatMenuVariableAssignments(finish.variables)) : {};
+      let next=moveNetworkJunction(network,node.id,{name:result.name,x:result.x,z:result.z,heightM:result.heightM});
+      const target = next.nodes.find(entry=>entry.id===node.id);
+      if (enabled) target.finish = normalizeNodeFinish({variables,
+        ...(result.finishDestination && result.finishDestination!=='inherit'?{destination:{...result,type:result.finishDestination}}:{})});
+      else { delete target.finish; if(next.finishNodeId===node.id)next.finishNodeId=''; }
       if(result.kind && result.kind!==(node.junctionKind||'normal'))next=setNetworkNodeType(next,node.id,result.kind,{widthM:editor.selectedRace.road.width});
       commit(editor,next,'Node updated');
     }
@@ -177,13 +206,14 @@ export function drawNetworkEditor(editor, ctx, bounds) {
   }
   ctx.setLineDash([]);
   const selectedNodes=new Set(selectedNodeIds(editor));
+  const finishes=new Set(getNetworkFinishNodes(network).map(node=>node.id));
   for (const node of network.nodes) {
     const p = screen(node), selected = selectedNodes.has(node.id);
-    ctx.fillStyle = node.id === network.startNodeId ? '#61e79a' : node.id === network.finishNodeId ? '#ff885d' : selected ? '#f2d45c' : '#d9e6d2';
+    ctx.fillStyle = node.id === network.startNodeId ? '#61e79a' : finishes.has(node.id) ? '#ff885d' : selected ? '#f2d45c' : '#d9e6d2';
     ctx.beginPath(); ctx.arc(p.x, p.y, selected ? 8 : 6, 0, Math.PI * 2); ctx.fill();
     if(selected){ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,12,0,Math.PI*2);ctx.stroke();}
     ctx.font = '11px sans-serif'; ctx.textAlign = 'left';
-    ctx.fillText(`${node.id === network.startNodeId ? 'START ' : node.id === network.finishNodeId ? 'FINISH ' : ''}${node.name || node.id} · ${node.heightM.toFixed(1)}m`, p.x + 9, p.y - 8);
+    ctx.fillText(`${node.id === network.startNodeId ? 'START ' : finishes.has(node.id) ? 'FINISH ' : ''}${node.name || node.id} · ${node.heightM.toFixed(1)}m`, p.x + 9, p.y - 8);
   }
   editor.drawRaceTopDownDecals(ctx, bounds, { kind: 'decal' });
   if (editor.showRaceScenery !== false) editor.drawRaceTopDownScenerySprites(ctx, bounds);

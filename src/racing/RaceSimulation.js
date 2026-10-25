@@ -1,7 +1,7 @@
 import { advanceNetworkRaceProgress, sampleNetworkEdge } from './RaceRouteNetwork.js';
 import { getRaceStickLook, stepRaceLookAngle } from './RaceCameraInput.js';
 import { getWheelSlipPresentation } from './simulation/WheelSlipPresentation.js';
-import { roadEdgeOverlapsRoad } from './RaceRoadEdgeClearance.js';
+import { roadEdgeOverlapsRoad, createRoadCorridorIndex } from './RaceRoadEdgeClearance.js';
 import { RACE_WHEEL_IDS, clamp, normalizeAngle } from './simulation/SimulationMath.js';
 import { getSurfaceById } from './raceData.js';
 import {
@@ -525,11 +525,11 @@ export function createRaceStaticColliderWorld(editor, {
     segment: { ...edge, roadWidthM: edge.widthM }
   }))) : [editor.getRacePathSamplesCached?.({ step: 3 }) || []];
   const pairs = paths.flatMap(samples => samples.slice(1).map((next, i) => [samples[i], next]));
-  const roadCorridors = pairs.map(([previous, next]) => ({
+  const roadCorridors = createRoadCorridorIndex(pairs.map(([previous, next]) => ({
     from: { x: previous.x, z: previous.z, y: Number(previous.elevation || 0) * RACE_THREE_ELEVATION_M },
     to: { x: next.x, z: next.z, y: Number(next.elevation || 0) * RACE_THREE_ELEVATION_M },
     halfWidth: editor.getRaceRoadHalfWidthWorld(next.segment || previous.segment || editor.selectedSegment)
-  }));
+  })));
   for (let index = 0; index < pairs.length; index += 1) {
     const [previous, next] = pairs[index];
     const segment = next.segment || previous.segment || editor.selectedSegment;
@@ -576,9 +576,10 @@ export function createRaceStaticColliderWorld(editor, {
   }
   scenery.forEach((sprite) => {
     const doodad = editor.getRaceDoodadForScenery?.(sprite) || {};
+    if (sprite.state === 'removed') return;
     if (doodad.itemType === 'mix-tape' || doodad.itemType === 'item') return;
     const rules = [doodad.defaultRule, ...(doodad.rules || [])].filter(Boolean);
-    const permanentlySolid = sprite?.solid === true
+    const permanentlySolid = doodad.isFence === true || sprite?.solid === true
       || sprite?.collidable === true
       || (rules.length > 0 && rules.every((rule) => rule.behavior === 'collide'));
     if (!permanentlySolid || !sprite?.id) return;
@@ -591,16 +592,27 @@ export function createRaceStaticColliderWorld(editor, {
     const ground = editor.sampleRaceDoodadGroundPoint?.(
       Number(sprite.x || 0), Number(sprite.z || 0), sprite, doodad
     );
+    let bottomM = Number(ground?.elevation || 0) * RACE_THREE_ELEVATION_M;
+    let colliderHeightM = heightM;
+    if (doodad.isFence) {
+      const half = widthM / 2, yaw = Number(sprite.yaw) || 0;
+      const heights = [-1, 1].map(sign => Number(editor.sampleRaceDoodadGroundPoint?.(
+        Number(sprite.x || 0) + sign * Math.cos(yaw) * half,
+        Number(sprite.z || 0) - sign * Math.sin(yaw) * half, sprite, doodad
+      )?.elevation || 0) * RACE_THREE_ELEVATION_M);
+      bottomM = Math.min(bottomM, ...heights);
+      colliderHeightM = heightM + Math.max(...heights) - bottomM;
+    }
     definitions.push({
       id: `solid-scenery:${sprite.id}`,
       type: 'box',
       center: {
         x: Number(sprite.x || 0),
-        y: Number(ground?.elevation || 0) * RACE_THREE_ELEVATION_M + heightM * 0.5,
+        y: bottomM + colliderHeightM * 0.5,
         z: Number(sprite.z || 0)
       },
       orientation: quaternionFromEuler({ yaw: Number(sprite.yaw || 0) }),
-      size: { x: widthM, y: heightM, z: widthM },
+      size: { x: widthM + (doodad.isFence ? 0.04 : 0), y: colliderHeightM, z: doodad.isFence ? (Number(doodad.fenceThicknessM) || 0.3) : widthM },
       friction: 0.72,
       restitution: 0.08,
       source: `scenery:${sprite.id}`
@@ -772,6 +784,16 @@ function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
   editor.vehicleDynamicsAuthority = { session, runner };
   session.vehicleDynamicsRunner = runner;
   return editor.vehicleDynamicsAuthority;
+}
+
+// Seed the rendered car from the same grounded chassis state used by the first
+// physics step. Do this behind loading, without advancing clocks or AI.
+export function initializeRaceVehiclePresentation(editor) {
+  const session=editor?.playtestSession;
+  if(!session?.running || session.vehicleRenderState)return;
+  const tuning=editor.getRaceCarTuning(editor.getRaceSessionCar(session));
+  const authority=ensureVehicleDynamicsAuthority(editor,tuning,{});
+  syncVehicleDynamicsCompatibilityOutputs(authority.runner,session);
 }
 
 function createTrackStateStepScratch() {
@@ -2391,7 +2413,7 @@ export function updateRaceSimulation({
   const vehicleState = getAuthoritativeVehicleState(
     requestedVehicleState || editor.playtestSession
   );
-  if (!vehicleState?.running) return;
+  if (!vehicleState?.running || editor.playtestSession?.raceIntro?.active) return;
   if (input && input !== editor.raceInput) editor.raceInput = input;
   if (editor.raceInput.paused || editor.playtestSession.raceResults) return;
   if (editor.playtestSession.raceMusicPending && Number(editor.playtestSession.countdownRemainingMs||0)>1000) return;
@@ -4052,6 +4074,7 @@ export function updateRaceSimulation({
     const checkpointsComplete = Number(editor.playtestSession.checkpointIndex || 0) >= Number(editor.playtestSession.checkpointCount || 0);
     if (!countdownActive && crossedStart && checkpointsComplete) {
       editor.playtestSession.lap += 1;
+      editor.playtestSession.lastLapMs = editor.playtestSession.elapsedMs - (editor.playtestSession.lapStartMs || 0);
       const nextCheckpoint = (editor.playtestSession.checkpointDistances || []).findIndex((distance) => (
         distance > Math.max(8, editor.getRaceCarWorldWidth(editor.getRaceSessionCar(editor.playtestSession)) * 2)
       ));
@@ -4062,6 +4085,7 @@ export function updateRaceSimulation({
         (editor.showRaceResults || editor.finishPlaytest).call(editor);
         return;
       }
+      editor.playtestSession.lapStartMs = editor.playtestSession.elapsedMs;
     }
     editor.playtestSession.distance = nextDistance;
   } else {

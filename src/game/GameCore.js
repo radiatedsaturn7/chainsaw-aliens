@@ -1,3 +1,4 @@
+import {openFontEditor} from '../ui/FontEditor.js';
 import AudioMusicPlayer from '../audio/AudioMusicPlayer.js';
 import {isAudioMusic} from '../audio/MusicAsset.js';
 import {musicMediaVolume} from '../audio/musicVolume.js';
@@ -909,6 +910,8 @@ export default class Game {
         this.enterActorEditor();
       } else if (action === 'race-editor') {
         this.enterRaceEditor();
+      } else if (action === 'font-editor') {
+        void openFontEditor().catch(error=>window.alert(error.message));
       } else if (action === 'menu-editor') {
         this.enterMenuEditor();
       } else if (action === 'model-editor') {
@@ -1566,6 +1569,7 @@ export default class Game {
   }
 
   handleSharedStateTransitionCleanup({ from, to, forceCleanup = false } = {}) {
+    if (from === 'menu-player' && (to === 'title' || to === 'menu-editor')) this.menuPlayer?.screenMusic?.stop({fadeOut:0});
     if (from === 'radio-editor' && to !== 'radio-editor') this.radioEditor?.preview?.stop();
     const shouldCleanup = forceCleanup
       || this.playtestActive
@@ -1886,11 +1890,12 @@ export default class Game {
   }
 
   async startRaceTravel(params = {}) {
+    this.lastRaceTravelError = '';
+    const fail = message => { this.lastRaceTravelError = message; this.showSystemToast?.(message); return false; };
     this.raceEditorPlaytestReturn = false;
     const raceName = String(params.raceName || '').trim();
     if (!raceName) {
-      this.showSystemToast?.('Choose a race first.');
-      return false;
+      return fail('Choose a race first.');
     }
     const continuation = params.continuation === this.raceTravelSession ? params.continuation : null;
     let car = continuation?.carSelection || null;
@@ -1899,20 +1904,18 @@ export default class Game {
         ? await this.resolveRaceTravelCarAsync(params.carRef)
         : null;
     } catch (error) {
-      this.showSystemToast?.(`Car could not load: ${String(params.carRef || 'selected car')}`);
-      return false;
+      return fail(`Car could not load: ${String(params.carRef || 'selected car')} — ${String(error?.message || error)}`);
     }
     if (!car) car = await this.chooseRaceTravelCar();
     if (!car) {
-      this.showSystemToast?.('Race start cancelled.');
-      return false;
+      return fail('Race start cancelled.');
     }
     if (params.menuFlow && (!params.menuFlow.active || params.menuFlow !== this.menuPlayer?.flow)) return false;
     let runtimeCar = car.car || car;
     try {
       const garage=params.garage||continuation?.garage||this.items?.garage;
       if(garage)runtimeCar=await garage.build(car.documentName||car.name||params.carRef,runtimeCar);
-    }catch(error){this.showSystemToast?.(`Garage could not prepare car: ${error.message}`);return false;}
+    }catch(error){return fail(`Garage could not prepare car: ${error.message}`);}
     if (params.menuFlow && (!params.menuFlow.active || params.menuFlow !== this.menuPlayer?.flow)) return false;
     const engineSfxRef = String(runtimeCar.audio?.engineSoundId || '').trim();
     const engineSfxPreparation = this.prepareRacePlaytestAudio({
@@ -1927,9 +1930,9 @@ export default class Game {
       travelSession.menuFlow = params.menuFlow || null;
       travelSession.menuConfiguration = structuredClone(params.menuConfiguration || {});
     }
+    this.raceEditor.beginRaceTravelLoading?.(raceName, car.id, {car:runtimeCar});
     this.transitionTo('race-editor', { forceCleanup: true });
     this.setRevAudio(false);
-    this.raceEditor.beginRaceTravelLoading?.(raceName, car.id);
     await new Promise((resolve) => {
       if (typeof requestAnimationFrame === 'function') requestAnimationFrame(() => resolve());
       else setTimeout(resolve, 0);
@@ -2093,6 +2096,7 @@ export default class Game {
   }
 
   returnRaceTravelToOrigin({ message = '' } = {}) {
+    if (message) this.lastRaceTravelError = message;
     const session = this.raceTravelSession;
     if (!session) return false;
     this.raceTravelSession = null;
@@ -2120,7 +2124,7 @@ export default class Game {
     const previous=player?.flow?.active?{...player.flow.parameters}:{};
     if(!menuRef&&player?.flow?.active&&player.flow.document.screens.some(s=>s.id===menuScreen)){
       this.raceTravelSession=null;this.raceEditorPlaytestReturn=false;this.playtestActive=false;
-      player.flow.busy=false;player.flow.goTo(menuScreen);this.transitionTo('menu-player',{forceCleanup:true});return true;
+      player.flow.busy=false;player.flow.history=[];player.flow.goTo(menuScreen,{remember:false});this.transitionTo('menu-player',{forceCleanup:true});return true;
     }
     let doc;
     if(menuRef){const payload=await hydrateProjectFilePayload('menus',menuRef);if(!payload?.data)throw Error(`Menu not found: ${menuRef}`);doc=payload.data;}
@@ -2129,7 +2133,7 @@ export default class Game {
     await player.open(doc,{preview:player.preview});
     Object.assign(player.flow.parameters,previous,session?.carRef?{carRef:session.carRef}:{},variables);
     this.raceTravelSession=null;this.raceEditorPlaytestReturn=false;this.playtestActive=false;
-    player.flow.goTo(menuScreen);return true;
+    player.flow.history=[];player.flow.goTo(menuScreen,{remember:false});return true;
   }
 
   completeRaceTravel(finishBehavior = {}, {
@@ -2147,7 +2151,8 @@ export default class Game {
     const completedRef=raceDocumentName||raceId;
     const variables={...(completedRef?{[raceCompletionKey(completedRef)]:true,lastCompletedRace:completedRef,garageReturnCount:Number(this.menuProgress?.garageReturnCount||0)+1,garageDialogueEvent:''}:{}),...finishBehavior.variables};
     if(finishBehavior.type==='menu'){
-      void this.openMenuDestination({...finishBehavior,variables}).catch(error=>this.showSystemToast?.(error.message));return true;
+      // Keep the race presentation alive until progress and menu assets are ready.
+      return this.openMenuDestination({...finishBehavior,variables});
     }
     void setMenuProgress(this,variables).catch(error=>this.showSystemToast?.(error.message));
     const type = ['race', 'level'].includes(finishBehavior?.type)
@@ -3059,7 +3064,9 @@ export default class Game {
       title: 'Project Browser',
       onOpen: ({ folder, name, payload }) => {
         if (!payload?.data) return;
-        if (folder === 'levels') {
+        if (folder === 'fonts') {
+          void openFontEditor({name}).catch(error=>window.alert(error.message));
+        } else if (folder === 'levels') {
           this.applyWorldData(payload.data);
           this.enterEditor();
           this.editor.currentDocumentRef = { folder: 'levels', name: name || 'Level' };
@@ -3088,6 +3095,7 @@ export default class Game {
         }
       },
       onNew: (folder) => {
+        if (folder === 'fonts') void openFontEditor().catch(error=>window.alert(error.message));
         if (folder === 'levels') this.enterEditor();
         if (folder === 'art') {
           this.enterPixelStudio();
@@ -3626,6 +3634,8 @@ export default class Game {
     }
 
     if (this.state === 'race-editor' || this.state === 'car-editor' || this.state === 'doodad-editor' || this.state === 'tire-editor' || this.state === 'model-editor') {
+      // Menu audio must finish fading even while race preparation holds simulation.
+      this.updateActiveMusicPlayers(dt);
       if (this.state !== 'model-editor' && this.input.wasPressed('cancel')) {
         if (this.state === 'model-editor') this.exitModelEditor();
         else if (this.state === 'tire-editor') this.exitTireEditor();
@@ -6626,7 +6636,7 @@ export default class Game {
     this.systemPrompts.push(new SystemPrompt(message, { mode: 'toast', duration: 2 }));
   }
 
-  showSaveStatusModal(message) {
+  showSaveStatusModal(message, { persistent = false } = {}) {
     if (!message) return;
     let root = document.getElementById('global-overlay-root');
     if (!root) {
@@ -6659,14 +6669,31 @@ export default class Game {
       });
       this._saveStatusModalEl = panel;
     }
+    this._saveStatusModalEl.dataset.nonBlockingOverlay = 'true';
     root.appendChild(this._saveStatusModalEl);
+    this._saveStatusModalPersistent = persistent;
+    this._saveStatusModalEl.style.maxWidth = 'calc(100vw - 32px)';
+    this._saveStatusModalEl.style.boxSizing = 'border-box';
+    this._saveStatusModalEl.style.maxHeight = '70dvh';
+    this._saveStatusModalEl.style.overflowY = 'auto';
+    this._saveStatusModalEl.style.whiteSpace = 'pre-wrap';
+    this._saveStatusModalEl.style.overflowWrap = 'anywhere';
+    this._saveStatusModalEl.style.pointerEvents = persistent ? 'auto' : 'none';
     this._saveStatusModalEl.textContent = String(message);
+    if (persistent) {
+      const dismiss = document.createElement('button');
+      dismiss.textContent = 'Dismiss';
+      dismiss.type = 'button';
+      Object.assign(dismiss.style, { display: 'block', minHeight: '44px', marginTop: '12px', padding: '8px 20px' });
+      dismiss.onclick = event => { event.stopPropagation(); this.hideSaveStatusModal({ force: true }); };
+      this._saveStatusModalEl.appendChild(dismiss);
+    }
     this._saveStatusModalEl.style.display = 'block';
     if (this._saveStatusModalTimer) {
       clearTimeout(this._saveStatusModalTimer);
       this._saveStatusModalTimer = null;
     }
-    if (/^Saved\b/i.test(String(message))) {
+    if (!persistent && /^Saved\b/i.test(String(message))) {
       this._saveStatusModalTimer = setTimeout(() => {
         this.hideSaveStatusModal();
         this._saveStatusModalTimer = null;
@@ -6674,12 +6701,17 @@ export default class Game {
     }
   }
 
-  hideSaveStatusModal() {
+  hideSaveStatusModal({ force = false } = {}) {
+    if (this._saveStatusModalPersistent && !force) return;
+    this._saveStatusModalPersistent = false;
     if (this._saveStatusModalTimer) {
       clearTimeout(this._saveStatusModalTimer);
       this._saveStatusModalTimer = null;
     }
-    if (this._saveStatusModalEl) this._saveStatusModalEl.style.display = 'none';
+    if (this._saveStatusModalEl) {
+      this._saveStatusModalEl.style.display = 'none';
+      this._saveStatusModalEl.remove();
+    }
   }
 
   async requestDebugRestartPull() {
@@ -6826,14 +6858,14 @@ export default class Game {
 
   setActiveMusicTrack(trackId, { volume = 1, loop = true, restart = false, offsetMs = 0, fadeIn = this.musicFadeDuration, fadeOut = this.musicFadeDuration } = {}) {
     const targetVolume = Math.max(0, Math.min(1, Number(volume ?? 1)));
-    if (trackId === this.activeMusicTrackId && !restart) {
+    if (trackId && trackId === this.activeMusicTrackId && !restart) {
       this.musicPlayers
         .filter((player) => player.trackId === trackId)
         .forEach((player) => player.setFade(targetVolume, fadeIn));
       return;
     }
     this.musicPlayers.forEach((player) => {
-      if(player.targetVolume!==0)player.setFade(0, fadeOut);
+      if(player.targetVolume!==0 || fadeOut===0)player.setFade(0, fadeOut);
     });
     this.activeMusicTrackId = trackId || null;
     const preloadToken = ++this.musicPreloadToken;

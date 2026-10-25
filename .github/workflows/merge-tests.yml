@@ -47,6 +47,9 @@ jobs:
       - name: Run radio and mix tape tests
         run: node --test tests/unit/uphillTraction.test.js tests/unit/vehicleSound.test.js tests/unit/raceMusicDrops.test.js tests/unit/garageParts.test.js tests/unit/itemEffects.test.js tests/unit/itemSystem.test.js tests/unit/itemInventory.test.js tests/unit/vehicleDynamicsWorkerProtocol.test.js tests/unit/radioEditor.test.js tests/unit/radioPlayer.test.js tests/unit/mixTapePickup.test.js tests/unit/doodadEditor.test.js tests/unit/raceDoodads.test.js tests/unit/pauseMenu.test.js tests/unit/titleLayout.test.js
 
+      - name: Run race presentation, storage and editor feature regressions
+        run: node --test tests/unit/carFx.test.js tests/unit/carGauges.test.js tests/unit/fontLibrary.test.js tests/unit/menuLoading.test.js tests/unit/menuScreenMusic.test.js tests/unit/raceDecals.test.js tests/unit/raceEditingPersistence.test.js tests/unit/raceFences.test.js tests/unit/raceFinishNodes.test.js tests/unit/raceFinishPresentation.test.js tests/unit/raceIntro.test.js tests/unit/raceIntroSky.test.js tests/unit/raceLargePaintedWorld.test.js tests/unit/raceLargeTileMap.test.js tests/unit/raceLighting.test.js tests/unit/raceLoadingMusic.test.js tests/unit/raceNetworkQueryIndex.test.js tests/unit/racePlaytestTopControls.test.js tests/unit/raceSceneryPerformance.test.js tests/unit/raceVisualFx.test.js tests/unit/saveStatusModal.test.js tests/unit/trackStateDryInitialization.test.js tests/unit/trackStateVisualPerformance.test.js tests/unit/serverStorage.test.js
+
       - name: Run 3D model editor and runtime tests
         run: node --test tests/unit/model3d*.test.js
 

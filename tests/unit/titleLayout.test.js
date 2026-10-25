@@ -204,6 +204,7 @@ test('controller selection order matches studio launcher hierarchy', () => {
     'pixel-editor',
     'model-editor',
     'menu-editor',
+    'font-editor',
     'cutscene-editor',
     'back'
   ]);

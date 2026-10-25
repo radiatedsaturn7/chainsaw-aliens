@@ -125,14 +125,13 @@ test('race inventory boosts the player and fires a slowing projectile at an oppo
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.itemSpeedMultiplier),{timeout:8000}).toBe(1);
  expect(await page.evaluate(()=>window.__game.items.progress.bags.items['nitro-ci'])).toBe(0);
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.aiRuntime.length)).toBe(1);
- await page.evaluate(async()=>{
-  const e=window.__game.raceEditor,s=e.playtestSession,a=s.aiRuntime[0],runner=a.vehicleDynamicsRunner;
-  const {quaternionFromEuler}=await import('/src/racing/simulation/RigidBodyMath.js');
-  const {syncVehicleDynamicsCompatibilityOutputs}=await import('/src/racing/simulation/VehicleState.js');
-  const position={x:s.worldX+Math.sin(s.carYaw)*8,y:s.vehicleRenderState.position.y,z:s.worldZ+Math.cos(s.carYaw)*8};
-  const state={position,orientation:quaternionFromEuler({yaw:s.carYaw}),routeDistance:Number(s.projectedDistance||0)+8,grounded:true,gear:1,engineRpm:runner.config.idleRpm,parkUntilDrive:true};
-  if(e.vehicleDynamicsAuthority?.workerBridge)e.vehicleDynamicsAuthority.workerBridge.resetVehicle(state,a.workerVehicleId,a,'item-test-lineup');
-  else {runner.resetAuthoritativeState({...state,worldX:position.x,worldZ:position.z,heightM:position.y,carYaw:s.carYaw,velocity:{x:0,y:0,z:0},speedMps:0},{reason:'item-test-lineup',parkUntilDrive:true});syncVehicleDynamicsCompatibilityOutputs(runner,a);}
+ await page.evaluate(()=>{
+  const e=window.__game.raceEditor,s=e.playtestSession,a=s.aiRuntime[0];
+  // Physics/boost behavior was checked above. Freeze the targets for this
+  // collision check while input and ItemRuntime keep advancing normally.
+  e.updatePlaytest=()=>{};
+  a.worldX=s.worldX+Math.sin(s.carYaw)*8;
+  a.worldZ=s.worldZ+Math.cos(s.carYaw)*8;
  });
  await expect.poll(()=>page.evaluate(()=>{
   const s=window.__game.raceEditor.playtestSession,a=s.aiRuntime[0];

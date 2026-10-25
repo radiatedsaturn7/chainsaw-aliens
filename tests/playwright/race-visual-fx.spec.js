@@ -1,0 +1,27 @@
+import {test,expect} from '@playwright/test';
+for(const size of [{width:390,height:844},{width:1280,height:800}])test(`race FX sun placement and gauge font styling ${size.width}`,async({page})=>{
+ test.setTimeout(120000);await page.setViewportSize(size);await page.goto('/index.html');await page.waitForFunction(()=>window.__gameReady);
+ await page.evaluate(async()=>{const g=window.__game;g.transitionTo('race-editor');const {editRaceVisualFx}=await import('/src/ui/RaceVisualFxEditor.js');void editRaceVisualFx(g.raceEditor);});
+ await expect(page.getByRole('dialog',{name:'Skybox lighting & FX',exact:true})).toBeVisible({timeout:60000});
+ await page.getByLabel('Time-of-day preset',{exact:true}).selectOption('evening');await page.getByRole('button',{name:'Apply preset to these settings',exact:true}).click();
+ const preview=page.getByRole('img',{name:'Tap or drag on the skybox to position the sun'});await expect(preview).toBeVisible();
+ const rect=await preview.boundingBox();await preview.click({position:{x:rect.width*.7,y:rect.height*.4}});
+ await expect(page.getByRole('slider',{name:'Sun glare / screen washout',exact:true})).toBeVisible();
+ await expect(page.getByRole('img',{name:'Live sun glare, lens flare and speed preview',exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Face sun / pause rotation',exact:true}).click();
+ await expect(page.getByLabel('Rotate preview 360°',{exact:true})).not.toBeChecked();
+ await expect(page.getByLabel('Preview roadside trees',{exact:true})).toBeChecked();
+ await page.getByLabel('Preview roadside trees',{exact:true}).uncheck();
+ const opacity=page.getByRole('slider',{name:'Streak opacity',exact:true});
+ await opacity.evaluate(el=>{el.value='0.45';el.dispatchEvent(new Event('input',{bubbles:true}));});
+ await page.getByLabel('Streak artwork layout',{exact:true}).selectOption('streak');
+ await expect(page.getByRole('button',{name:'Choose streak artwork',exact:true})).toBeVisible();
+ const blur=page.getByRole('slider',{name:'Peripheral motion blur',exact:true});
+ await blur.evaluate(el=>{el.value='0.2';el.dispatchEvent(new Event('input',{bubbles:true}));});await page.getByRole('button',{name:'Apply',exact:true}).click();
+ const fx=await page.evaluate(()=>window.__game.raceEditor.selectedRace.visualFx);expect(fx.enabled).toBe(true);expect(fx.motionBlur).toBe(.2);expect(fx.speedLineOpacity).toBe(.45);expect(fx.speedLineArtMode).toBe('streak');expect(fx.previewTrees).toBeUndefined();expect(fx.sunX).toBeGreaterThan(.6);expect(fx.sunColor).toBe('#ffb16c');
+ await page.evaluate(async()=>{const g=window.__game;g.transitionTo('car-editor');const {enterCarGauges,editGauge}=await import('/src/ui/CarGaugeEditor.js');enterCarGauges(g.carEditor,'exterior');g.carEditor.carGaugeId=g.carEditor.selectedCar.art.gauges.exterior.widgets.find(w=>w.source==='lap').id;void editGauge(g.carEditor);});
+ await page.getByRole('button',{name:'Toggle bold',exact:true}).click();await expect(page.getByLabel('Font weight',{exact:true})).toHaveValue('700');
+ await page.getByLabel('Italic',{exact:true}).check();await page.getByLabel('Underline',{exact:true}).check();await page.getByLabel('Font color',{exact:true}).fill('#ffbbdd');
+ await page.getByRole('button',{name:'Apply',exact:true}).click();
+ const gauge=await page.evaluate(()=>window.__game.carEditor.selectedCar.art.gauges.exterior.widgets.find(w=>w.source==='lap'));expect(gauge.fontItalic).toBe(true);expect(gauge.fontUnderline).toBe(true);expect(gauge.fontWeight).toBe(700);expect(gauge.textColor).toBe('#ffbbdd');
+});

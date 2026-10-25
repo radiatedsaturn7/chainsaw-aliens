@@ -1,5 +1,5 @@
 const PROJECT_FILE_PREFIX = 'server-project-file:';
-const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'menus', 'doodads', 'items'];
+const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'menus', 'doodads', 'items', 'fonts'];
 const STATIC_STORAGE_ROOT = '/data/server-storage/files';
 const STORAGE_REQUEST_TIMEOUT_MS = 12000;
 const COMPACT_STORAGE_MARKER = '__chainsawStorage';
@@ -124,6 +124,13 @@ function updateCachedPayload(payload, source = 'server') {
   if (!payload?.folder || !payload?.name) return;
   const raw = JSON.stringify(payload);
   const key = fileKey(payload.folder, payload.name);
+  // A late response must not replace edits saved while its request was in flight.
+  const current = volatileFiles.get(key);
+  if (current) {
+    try {
+      if (Number(JSON.parse(current).savedAt || 0) > Number(payload.savedAt || 0)) return;
+    } catch { /* Replace invalid cache entries. */ }
+  }
   volatileFiles.set(key, raw);
   volatileFileSources.set(key, source);
   if (!serverIndex[payload.folder]) serverIndex[payload.folder] = {};
@@ -270,7 +277,9 @@ async function fetchServerFile(folder, name) {
     throw error;
   }
   updateCachedPayload(payload.file, 'server');
-  return attachStorageSource(payload.file, 'server');
+  const key = fileKey(folder, name);
+  const cached = volatileFiles.get(key);
+  return attachStorageSource(cached ? JSON.parse(cached) : payload.file, volatileFileSources.get(key) || 'server');
 }
 
 async function hydrateServerFiles(options = {}) {
