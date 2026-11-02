@@ -164,5 +164,12 @@ test('live Pages application opens the project browser with published levels',as
  await page.getByRole('button',{name:'Levels',exact:true}).click();
  await expect(page.locator('.project-browser-row')).not.toHaveCount(0,{timeout:30000});
  console.log('LIVE_LEVELS',await page.locator('.project-browser-row').count(),'ERRORS',JSON.stringify(errors));
+ await expect(page.locator('.project-browser-row')).toHaveCount(13);
+ await page.getByRole('button',{name:'Close',exact:true}).click();
+ await page.evaluate(()=>window.__game.openProjectBrowserFromTitle());
+ await page.getByRole('button',{name:'Doodads',exact:true}).click();
+ await expect(page.locator('.project-browser-row')).toHaveCount(7,{timeout:30000});
+ console.log('LIVE_DOODADS',await page.locator('.project-browser-row').allTextContents());
+
  await expect(page.locator('.project-browser-title')).toContainText('Read-only');
 });
