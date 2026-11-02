@@ -109,3 +109,10 @@ test('opening the font library can recover embedded fonts without attempting sta
  const fonts=await loadFontLibrary();assert.equal(fonts[0].fontFileName,'Embedded.ttf');
  assert.equal(calls.some(([,method])=>method==='POST'),false);
 }));
+
+test('failed resource hydration cannot turn into a successful cached open',async()=>fixture(async({add})=>{
+ add('actors','Needs image',{actor:{artRef:'Missing bytes'}});
+ add('art','Missing bytes',{image:{__chainsawAssetRef:'gone.png',mime:'image/png'}});
+ await assert.rejects(hydrateProjectFile('actors','Needs image'),/Could not load published file/);
+ assert.equal(readCachedProjectFile('actors','Needs image',{allowSyncFetch:false}),null);
+}));

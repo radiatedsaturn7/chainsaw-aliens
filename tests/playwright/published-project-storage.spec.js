@@ -20,6 +20,7 @@ function add(folder,name,data){
 }
 for(const folder of folders)add(folder,'Published',{kind:folder,marker:42});
 add('art','Sheet 50% #',{kind:'pixel-art',width:2,height:2,frames:[['#ff0000','#00ff00','#0000ff','#ffffff']]});
+for(const name of ['providence','apron'])add('art',name,{kind:'pixel-art',width:2,height:2,frames:[['#336633','#336633','#336633','#336633']]});
 add('actors','Hero',{actor:{artRef:'Sheet 50% #'}});
 add('fonts','Tiny font',{fontData:{__chainsawAssetRef:'assets/font.ttf',mime:'font/ttf'}});
 published.set('/data/server-storage/files/fonts/Tiny font/assets/font.ttf',Buffer.from([1,2,3]));
@@ -123,6 +124,6 @@ test('the application can start a published race playtest on a static project ho
   editor.selectedRace.competition.aiDrivers=[];
   editor.startPlaytest(editor.selectedCar.id,{hydrateCars:false});
  });
- await expect.poll(()=>page.evaluate(()=>({running:window.__game.raceEditor.playtestSession?.running,error:window.__game.raceEditor.racePlaytestPreparation?.error})),{timeout:60000}).toMatchObject({running:true});
+ await expect.poll(()=>page.evaluate(()=>({running:window.__game.raceEditor.playtestSession?.running,error:window.__game.raceEditor.racePlaytestPreparation?.error,status:window.__game.raceEditor.status,lastFailure:window.__game.raceEditor.lastRaceFailure})),{timeout:60000}).toMatchObject({running:true});
  expect(await page.evaluate(()=>window.__game.raceEditor.currentRaceDocumentName)).toBe('Published loop');
 });

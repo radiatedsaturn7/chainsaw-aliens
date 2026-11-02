@@ -535,7 +535,16 @@ async function hydrateProjectFileOnly(folder, name, options = {}) {
 
 export async function hydrateProjectFile(folder, name, options = {}) {
   const payload = await hydrateProjectFileOnly(folder, name, options);
-  if (payload?.storageSource === 'static') await hydrateStaticDependencies(payload);
+  if (payload?.storageSource === 'static') {
+    try { await hydrateStaticDependencies(payload); }
+    catch (error) {
+      // An incomplete published open must not look successful to the legacy
+      // synchronous fallback in the Project Browser. Keep the index for retry.
+      volatileFiles.delete(fileKey(folder, name));
+      volatileFileSources.delete(fileKey(folder, name));
+      throw error;
+    }
+  }
   return payload;
 }
 

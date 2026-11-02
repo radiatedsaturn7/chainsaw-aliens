@@ -9,7 +9,7 @@ import {
   packRaceArtDocumentForRuntime
 } from '../racing/RacePackedArt.js';
 
-globalThis.window = globalThis.window || globalThis;
+if (typeof globalThis.window === 'undefined') globalThis.window = globalThis;
 
 const RACE_ART_FETCH_TIMEOUT_MS = 8000;
 const RACE_ART_FETCH_CONCURRENCY = 3;
