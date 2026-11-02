@@ -31,3 +31,17 @@ export function getDisplayActionForMode(mode) {
 export function getDisplayModeLabelForAction(action) {
   return DISPLAY_MODE_OPTIONS.find((option) => option.action === action)?.label || '';
 }
+
+// Filter only the game screen; handheld controls and editor chrome keep their colors.
+export function drawDisplayModeInBounds(game, ctx, bounds = {}) {
+  const {x = 0, y = 0, w = 0, h = 0} = bounds;
+  if (typeof game?.drawDisplayModeFilter !== 'function' || !(w > 0 && h > 0)) return false;
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(x, y, w, h);
+  ctx.clip();
+  ctx.translate(x, y);
+  game.drawDisplayModeFilter(ctx, w, h);
+  ctx.restore();
+  return true;
+}

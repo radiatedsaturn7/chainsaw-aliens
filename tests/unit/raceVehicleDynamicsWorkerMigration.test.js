@@ -208,3 +208,49 @@ test('RaceSimulation keeps single-thread authority when the hot path misses budg
     assert.equal(editor.playtestSession.vehicleDynamicsRunner.stepIndex > 0, true);
   });
 });
+
+test('unavailable migration does not copy fixed-step timing history each frame', async () => {
+  for (const options of [{ mobile: true, mode: 'auto' }, { mobile: false, mode: 'off' }]) {
+    await withWorkerGlobals(undefined, () => {
+      const editor = createEditor(options);
+      editor.selectedRace.hazards = []; editor.selectedRace.scenery = [];
+      editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false,
+        preparedWorldBake: editor.buildRaceWorldBake(editor.getRacePlaytestWorldBakeOptions()) });
+      Object.assign(editor.playtestSession, { countdownRemainingMs: 0, launchLockMs: 0,
+        startupFramePending: false });
+      if (editor.playtestSession.raceIntro) editor.playtestSession.raceIntro.active = false;
+      editor.updatePlaytest(1 / 60);
+      const costs = editor.playtestSession.vehicleDynamicsRunner.physicsCostAccounting;
+      let copies = 0;
+      const append = costs.appendStepElapsedHistory;
+      costs.appendStepElapsedHistory = function(target) { copies++; return append.call(this, target); };
+      for (let i = 0; i < 6; i++) editor.updatePlaytest(1 / 60);
+      assert.equal(copies, 0);
+      assert.equal(costs.enabled, false);
+      assert.equal(editor.vehicleDynamicsAuthority.workerQualificationCompletedSteps, undefined);
+      assert.equal(FakeWorker.instances.length, 0);
+    }, { mode: options.mode, enable: undefined });
+  }
+});
+
+test('worker-owned physics keeps wall-clock race timing and receives menu pause immediately', async () => {
+ await withWorkerGlobals({achievedStepsPerSecond:140,p95StepMs:7,backlogStart:0,backlogEnd:0}, () => {
+  const editor=createEditor(); editor.selectedRace.hazards=[]; editor.selectedRace.scenery=[];
+  editor.startPlaytest(editor.selectedCar.id,{hydrateCars:false,
+    preparedWorldBake:editor.buildRaceWorldBake(editor.getRacePlaytestWorldBakeOptions())});
+  const session=editor.playtestSession;
+  Object.assign(session,{countdownRemainingMs:0,launchLockMs:0,startupFramePending:false});
+  if(session.raceIntro)session.raceIntro.active=false;
+  editor.updatePlaytest(1/60);
+  assert.ok(editor.vehicleDynamicsAuthority.workerBridge);
+  const before=session.elapsedMs;
+  editor.updatePlaytest(.5);
+  assert.ok(Math.abs(session.elapsedMs-before-500) < 1e-6);
+  assert.equal(session.frameAdmittedSeconds,.5);
+  editor.toggleRacePause();
+  assert.equal(FakeWorker.instances.at(-1).messages.at(-1).message.paused,true);
+  editor.toggleRacePause();
+  assert.equal(FakeWorker.instances.at(-1).messages.at(-1).message.paused,false);
+  editor.vehicleDynamicsAuthority.workerBridge.close();
+ });
+});

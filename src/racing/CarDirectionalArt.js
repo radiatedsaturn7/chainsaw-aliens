@@ -176,7 +176,7 @@ export function getCarArtResourceState(art = {}) {
     state.interior[component] = resource;
   }
   state.fx = (art.fx||[]).map(f=>({artRef:f.artRef||'',views:Object.fromEntries(Object.entries(f.views||{}).map(([slot,v])=>[slot,{artRef:v.artRef||'',frameIndex:v.frameIndex||0}]))}));
-  const gaugeFields=['artRef','needleArtRef','overlayArtRef','markerArtRef','carMarkerArtRef','startMarkerArtRef','finishMarkerArtRef'];
+  const gaugeFields=['artRef','needleArtRef','overlayArtRef','markerArtRef','carMarkerArtRef','startMarkerArtRef','finishMarkerArtRef','circuitMarkerArtRef','safeArcArtRef','dangerArcArtRef'];
   state.gauges = Object.fromEntries(Object.entries(art.gauges || {}).map(([side, layout]) => [side, (layout.widgets || []).filter(g => gaugeFields.some(key=>g[key])).map(g => ({...Object.fromEntries(gaugeFields.map(key=>[key,g[key]])),frameIndex:g.frameIndex}))]));
   state.turnFrames = Object.fromEntries(Object.entries(art.turnFrames || {}).filter(([, value]) => value));
   return state;

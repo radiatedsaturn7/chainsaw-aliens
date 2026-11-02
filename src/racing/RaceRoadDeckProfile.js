@@ -8,6 +8,8 @@ export function buildRaceRoadbedProfile({
   allowVisualExtension = false,
   step = 2.5,
   elevationScaleM = 12,
+  absoluteRouteElevation = false,
+  elevationSmoothingRadiusM = 0,
   maxUphillGrade = 0.216,
   maxDownhillGrade = 0.216,
   maxGradeChangePerMeter = 0.018,
@@ -68,7 +70,10 @@ export function buildRaceRoadbedProfile({
       leftTerrainElevation,
       rightTerrainElevation
     } = robustCenterTerrainElevation(pose, roadHalfWidth, routeElevation);
-    const targetElevation = adapter.clampElevation?.(terrainElevation + routeElevation) ?? (terrainElevation + routeElevation);
+    // Surveyed road and terrain heights share a datum; authored legacy roads
+    // instead use node heights as offsets above terrain.
+    const target = absoluteRouteElevation ? routeElevation : terrainElevation + routeElevation;
+    const targetElevation = adapter.clampElevation?.(target) ?? target;
     const supportElevation = targetElevation;
     return {
       ...pose,
@@ -96,6 +101,36 @@ export function buildRaceRoadbedProfile({
       : Math.min(effectiveRouteLength, index * effectiveStep);
     return sampleSupportAt(distance);
   });
+  // Smooth in metres, not node count: imported OSM points are irregularly spaced.
+  // Linear extension preserves uphill grades at start/finish; circuits wrap.
+  const radius = clamp(Number(elevationSmoothingRadiusM) || 0, 0, 60);
+  if (radius > 0) {
+    const original = profileSamples;
+    const at = (distance) => {
+      if (runtimeType === 'circuit') distance = (distance % effectiveRouteLength + effectiveRouteLength) % effectiveRouteLength;
+      const i = clamp(Math.floor(distance / effectiveStep), 0, original.length - 2);
+      const a=original[i], b=original[i+1];
+      const t=(distance-a.distance)/Math.max(.001,b.distance-a.distance);
+      return a.elevation+(b.elevation-a.elevation)*t;
+    };
+    const count=Math.max(2,Math.ceil(radius/effectiveStep));
+    const filtered=original.map(sample=>{
+      let sum=0,weight=0;
+      for(let i=-count;i<=count;i++){
+        const w=1-Math.abs(i)/(count+1);
+        sum+=at(sample.distance+i*radius/count)*w;weight+=w;
+      }
+      return sum/weight;
+    });
+    // Keep authored start and finish heights exactly, without a discontinuity.
+    const startCorrection=original[0].elevation-filtered[0];
+    const endCorrection=original.at(-1).elevation-filtered.at(-1);
+    profileSamples=original.map((sample,i)=>{
+      const t=sample.distance/effectiveRouteLength;
+      const elevation=filtered[i]+startCorrection*(1-t)+endCorrection*t;
+      return {...sample,elevation,targetElevation:elevation,supportElevation:elevation};
+    });
+  }
   const weights = [
     { offset: -2, weight: 0.1 },
     { offset: -1, weight: 0.22 },
@@ -109,7 +144,14 @@ export function buildRaceRoadbedProfile({
       let weighted = 0;
       let total = 0;
       weights.forEach(({ offset, weight }) => {
-        const source = profileSamples[index + offset];
+        let source = profileSamples[index + offset];
+        if (!source && radius > 0) {
+          const atStart=index+offset<0;
+          const a=atStart?profileSamples[0]:profileSamples.at(-2);
+          const b=atStart?profileSamples[1]:profileSamples.at(-1);
+          const distance=sample.distance+offset*effectiveStep;
+          source={elevation:a.elevation+(b.elevation-a.elevation)*(distance-a.distance)/Math.max(.001,b.distance-a.distance)};
+        }
         if (!source) return;
         weighted += Number(source.elevation || 0) * weight;
         total += weight;

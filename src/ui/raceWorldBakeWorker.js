@@ -1,3 +1,4 @@
+import {extendCarEditorDefaultTrack} from '../racing/raceData.js';
 import {
   getPackedRaceTileMapTransferables,
   packRaceTileMapForRuntime
@@ -183,6 +184,7 @@ export async function buildRaceTransferPackage(sourceRace = null, {
   includeRaceDocument = false,
   includeArtAssets = includeRaceDocument,
   sourceNormalized = false,
+  carEditorDefaultTrack = false,
   artRefs = [],
   reportProgress = () => {}
 } = {}) {
@@ -204,6 +206,7 @@ export async function buildRaceTransferPackage(sourceRace = null, {
   })) {
     throw new Error('Race document could not be loaded');
   }
+  if (carEditorDefaultTrack) extendCarEditorDefaultTrack(editor.selectedRace);
   if (!options) {
     editor.playtestSession = {
       routeLength: editor.getRaceRouteLength(),
@@ -363,7 +366,8 @@ if (workerScope) workerScope.onmessage = async (event) => {
     options,
     artRefs,
     includeArtAssets = true,
-    sourceNormalized = false
+    sourceNormalized = false,
+    carEditorDefaultTrack = false
   } = request;
   let requestedRace = request.race;
   request = null;
@@ -393,6 +397,7 @@ if (workerScope) workerScope.onmessage = async (event) => {
     let transferPackage = await buildRaceTransferPackage(sourceRace, {
       name: name || raceName,
       options,
+      carEditorDefaultTrack,
       includeRaceDocument: preparedTravel,
       includeArtAssets: false,
       sourceNormalized: preparedTravel ? false : sourceNormalized,

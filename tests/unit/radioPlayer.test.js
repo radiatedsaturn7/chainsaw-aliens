@@ -139,3 +139,14 @@ test('MP3 respects master/music volume before playback, during fades, and after 
  mixer.midiBusVolume=.5;mixer.volume=0;await player.play('a');assert.equal(player.audio.volume,0);
  mixer.volume=.4;await player.play('b');assert.equal(player.audio.volume,.2);
 });
+
+test('cue seek retries ignored metadata seek when media becomes playable and cleans up',()=>{
+ const radio=new RadioPlayer();const listeners=new Map();let time=0,now=0,accept=false;
+ const prior=globalThis.performance;Object.defineProperty(globalThis,'performance',{configurable:true,value:{now:()=>now}});
+ const audio={readyState:0,duration:200,seeking:false,addEventListener:(k,v)=>listeners.set(k,v),removeEventListener:k=>listeners.delete(k),get currentTime(){return time;},set currentTime(v){if(accept)time=v;}};
+ try{
+  radio.audio=audio;radio.seek(81.3);audio.readyState=1;listeners.get('loadedmetadata')();assert.equal(time,0);
+  now=300;accept=true;audio.readyState=4;listeners.get('canplay')();assert.equal(time,81.3);
+  listeners.get('seeked')();assert.equal(listeners.size,0);assert.equal(radio.cancelPendingSeek,null);
+ }finally{Object.defineProperty(globalThis,'performance',{configurable:true,value:prior});}
+});

@@ -10,6 +10,7 @@ import {
 import { RACE_WHEEL_IDS } from './SimulationMath.js';
 import { prepareStaticRaceColliders } from './StaticRaceColliderWorld.js';
 import { createDeterministicAtmosphere } from './AeroEnvironment.js';
+import { createPhysicsTerrainQueryFrameCache } from './PhysicsTerrainQueryFrame.js';
 
 function createSample(raw, point, sampler, fallbackHeightM = 0) {
   if (!raw) return {
@@ -71,6 +72,13 @@ export function createPackedRaceWorkerEnvironmentProvider({
     || (Array.isArray(staticColliderDefinitions) && staticColliderDefinitions.length
       ? prepareStaticRaceColliders(staticColliderDefinitions)
       : null);
+  // Same immutable terrain query implementation used by the render-thread
+  // authority. Cache ownership is per vehicle; prepared edges are shared by sampler.
+  const terrainCache = createPhysicsTerrainQueryFrameCache({ resultCapacity: 128 });
+  const terrainBounds = { minX: 0, maxX: 0, minZ: 0, maxZ: 0 };
+  const frameOptions = { bounds: {}, sampler: surfaceSampler, elevationScaleM: surfaceSampler.elevationScaleM || 1 };
+  const terrainFrame = terrainCache.begin(frameOptions);
+  let terrainStep = null;
   const output = {
     ...environmentState,
     surfaceHeightByWheel: {},
@@ -78,6 +86,7 @@ export function createPackedRaceWorkerEnvironmentProvider({
     materialByWheel: {},
     trackStateSampleByWheel: {},
     staticColliderWorld: preparedStaticColliderWorld,
+    physicsTerrainQueryFrame: terrainFrame,
     requireValidTerrainEnvelope: true
   };
   const liveWeatherState = {};
@@ -87,7 +96,7 @@ export function createPackedRaceWorkerEnvironmentProvider({
     sampleRaceBakedSurface(surfaceSampler, point), point, surfaceSampler, fallbackHeightM
   );
   output.sampleTerrainAtWorldPoint = samplePoint;
-  output.sampleTerrainAtWorldPoints = (points) => points.map(samplePoint);
+  output.sampleTerrainAtWorldPoints = (points) => terrainFrame.samplePoints(points);
   output.sampleTerrainTrianglesInBounds = (bounds) => (
     getRaceBakedSurfaceTrianglesInBounds(surfaceSampler, bounds).map((triangle) => ({
       ...triangle,
@@ -99,20 +108,34 @@ export function createPackedRaceWorkerEnvironmentProvider({
       }))
     }))
   );
-  output.sampleTerrainMaximumHeightInBounds = (bounds) => {
-    const triangles = getRaceBakedSurfaceTrianglesInBounds(surfaceSampler, bounds);
-    let maximum = -Infinity;
-    for (const triangle of triangles) {
-      for (const vertex of triangle.vertices || []) {
-        maximum = Math.max(
-          maximum,
-          Number(vertex.elevation || 0) * Number(surfaceSampler.elevationScaleM || 1)
-        );
-      }
+  // Clip to the actual query rectangle. A distant corner of a large mountain
+  // triangle is not a terrain obstruction beneath this vehicle.
+  output.sampleTerrainMaximumHeightInBounds = (bounds) =>
+    terrainFrame.maximumHeightInBounds(bounds) ?? fallbackHeightM;
+  const provider = ({ state, previousState, controls, reuseContactGeometry, timeSeconds,
+    stepIndex, chassisStepDt, forceFreshTerrainQueryFrame = false,
+    recoveryRecalculation = false }, runnerConfig = null) => {
+    const config = runnerConfig || state?.vehicleConfig || {};
+    if (state && (terrainStep === null || stepIndex === undefined || terrainStep !== stepIndex
+      || forceFreshTerrainQueryFrame || recoveryRecalculation)) {
+      const profile = config.bodyProfile || {};
+      const reach = Math.hypot(
+        Number(profile.overallWidthM || config.bodyWidthM || 1.8) * .5,
+        Number(profile.overallLengthM || config.bodyLengthM || 4.5) * .5,
+        Number(profile.overallHeightM || config.bodyHeightM || 1.45)
+      ) + Math.max(.5, Number(config.wheelRadiusM || .34));
+      const x = Number(state.position?.x || 0), z = Number(state.position?.z || 0);
+      const dt = Number(chassisStepDt || 1 / (config.chassisHz || 120));
+      const nextX = x + Number(state.velocity?.x || 0) * dt;
+      const nextZ = z + Number(state.velocity?.z || 0) * dt;
+      terrainBounds.minX = Math.min(x, Number(previousState?.position?.x ?? x), nextX) - reach;
+      terrainBounds.maxX = Math.max(x, Number(previousState?.position?.x ?? x), nextX) + reach;
+      terrainBounds.minZ = Math.min(z, Number(previousState?.position?.z ?? z), nextZ) - reach;
+      terrainBounds.maxZ = Math.max(z, Number(previousState?.position?.z ?? z), nextZ) + reach;
+      frameOptions.bounds = terrainBounds;
+      terrainCache.begin(frameOptions);
+      terrainStep = stepIndex ?? null;
     }
-    return Number.isFinite(maximum) ? maximum : fallbackHeightM;
-  };
-  const provider = ({ state, controls, reuseContactGeometry, timeSeconds }, runnerConfig = null) => {
     if (hasLiveAtmosphere) {
       createDeterministicAtmosphere({
         weatherState: liveWeatherState,
@@ -121,8 +144,7 @@ export function createPackedRaceWorkerEnvironmentProvider({
         target: output
       });
     }
-    const config = runnerConfig || state?.vehicleConfig || {};
-    if (!reuseContactGeometry) {
+    if (!reuseContactGeometry || forceFreshTerrainQueryFrame || recoveryRecalculation) {
       for (const wheelId of RACE_WHEEL_IDS) {
         const wheelScratch = kinematicsScratch[wheelId];
         const kinematics = calculateWheelContactKinematics({
@@ -155,6 +177,7 @@ export function createPackedRaceWorkerEnvironmentProvider({
     output.vehicleId = String(vehicleId || 'vehicle');
   };
   provider.updateEnvironmentState = (nextState = {}) => {
+    if(nextState.tireByWheel)output.tireByWheel=structuredClone(nextState.tireByWheel);
     if (nextState.weatherState) {
       Object.assign(liveWeatherState, nextState.weatherState);
       hasLiveAtmosphere = true;
@@ -171,6 +194,9 @@ export function createPackedRaceWorkerEnvironmentProvider({
       output.damage ||= { brakes: {} };
       output.damage.engine = Number(damage.engine || 0);
       output.damage.transmission = Number(damage.transmission || 0);
+      output.damage.panels=damage.panels||{};
+      output.damage.suspension=damage.suspension||{};
+      output.damage.tires=damage.tires||{};
       output.damage.brakes ||= {};
       Object.assign(output.damage.brakes, damage.brakes || {});
       for (const wheelId of RACE_WHEEL_IDS) {

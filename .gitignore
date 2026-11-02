@@ -20,3 +20,13 @@ Thumbs.db
 .env*
 .vscode/
 .idea/
+
+# Cached map/elevation service responses (not project assets)
+data/server-storage/race-import-cache/
+__pycache__/
+
+# Local performance recordings (not game assets)
+data/server-storage/performance-captures/
+
+# Local profiling runs and generated race-analysis artifacts
+/artifacts/

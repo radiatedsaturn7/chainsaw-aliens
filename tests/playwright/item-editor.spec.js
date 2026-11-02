@@ -101,7 +101,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} compact ef
 });
 
 test('race inventory boosts the player and fires a slowing projectile at an opponent',async({page})=>{
- test.setTimeout(150000);const errors=[];page.on('pageerror',error=>errors.push(error.message));await ready(page);await seedRaceRuntimeFixtures(page);
+ test.setTimeout(150000);const errors=[];page.on('pageerror',error=>errors.push(error.message));await page.addInitScript(()=>{globalThis.__RTG_VEHICLE_DYNAMICS_WORKER_MODE__='off';});await ready(page);await seedRaceRuntimeFixtures(page,{straight:true});
  await page.evaluate(async()=>{
   const g=window.__game,{hydrateProjectFile}=await import('/src/ui/serverStorage.js'),{loadProjectFile,saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');
   // Opponents are saved user cars; system presets must not fill race slots.
@@ -116,6 +116,7 @@ test('race inventory boosts the player and fires a slowing projectile at an oppo
  await page.evaluate(async()=>{const g=window.__game;await g.items.collect({id:'nitro-ci',name:'Nitro',effects:[{type:'speed',when:'use',amount:1.5,duration:3}]},'nitro-ci');void g.startRaceTravel({raceName:'Studio Sprint2',carSelection:'specific',carRef:'2022 Subaru WRX2'});});
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.startupFramePending)).toBe(false);
+ await page.waitForFunction(()=>{const s=window.__game.raceEditor.playtestSession;return s&&!s.raceIntro?.active&&Number(s.countdownRemainingMs||0)<=0;});
  await page.evaluate(()=>{const e=window.__game.raceEditor;e.toggleRacePause();e.getRacePauseMenuRows().find(row=>row.id==='race-inventory').onClick();});
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.getRacePauseMenuRows().some(row=>row.label==='Use Nitro ×1'))).toBe(true);
  await page.evaluate(()=>window.__game.raceEditor.getRacePauseMenuRows().find(row=>row.id==='inventory:nitro-ci').onClick());
@@ -129,7 +130,8 @@ test('race inventory boosts the player and fires a slowing projectile at an oppo
   const e=window.__game.raceEditor,s=e.playtestSession,a=s.aiRuntime[0];
   // Physics/boost behavior was checked above. Freeze the targets for this
   // collision check while input and ItemRuntime keep advancing normally.
-  e.updatePlaytest=()=>{};
+  e.updatePlaytest=dt=>{s.frameAdmittedSeconds=dt;};
+  e.updateRaceAutomaticVehicleRecovery=()=>{};
   a.worldX=s.worldX+Math.sin(s.carYaw)*8;
   a.worldZ=s.worldZ+Math.cos(s.carYaw)*8;
  });

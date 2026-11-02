@@ -760,6 +760,7 @@ themedTest('controls', 'control timeline interpolates axes and holds discrete co
     throttle: 0.5,
     brake: 0,
     clutch: 0,
+    headlights: null,
     handbrake: 0,
     handbrakeHoldSequence: 0,
     handbrakeHoldSeconds: 0.36,

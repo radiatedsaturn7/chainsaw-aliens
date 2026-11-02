@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { planRaceAiDriving, selectRaceAiCars } from '../../src/racing/RaceAiDriving.js';
+import { planRaceAiDriving, selectRaceAiCars, getRaceAiRoadSafety } from '../../src/racing/RaceAiDriving.js';
 import RaceEditor from '../../src/ui/RaceEditor.js';
+import {prepareRaceAiDirector, getRaceAiDirector} from '../../src/racing/RaceAiDirector.js';
 
 const road = (pose = (d) => ({ x: 0, z: d, yaw: 0 })) => ({
   playtestSession: { routeRuntimeType: 'circuit', routeLength: 2000, aiRuntime: [] },
@@ -12,6 +13,76 @@ const road = (pose = (d) => ({ x: 0, z: d, yaw: 0 })) => ({
 const car = { wheelbaseM: 2.65, widthM: 1.8 };
 const racer = (extra = {}) => ({ worldX: 0, worldZ: 0, carYaw: 0, speedMps: 20,
   projectedDistance: 0, lineOffset: 0, ...extra });
+
+test('advisory schedules reduce lookahead and traffic work while steering stays live',()=>{
+  const measure=(detail,hz)=>{
+    const e=road();e.playtestSession.debugAiNoRoadPlan=true;
+    const ai=racer({physicsBudgetDetail:detail});e.playtestSession.aiRuntime=[ai];
+    prepareRaceAiDirector(e);const director=getRaceAiDirector(e);
+    let poses=0;const original=e.getRaceWorldPoseAtDistance;
+    e.getRaceWorldPoseAtDistance=d=>{poses++;return original(d);};
+    // Recreate the director after replacing the provider; force uncached
+    // curvature so pose counts expose actual braking-lookahead frequency.
+    prepareRaceAiDirector(e);const active=getRaceAiDirector(e);
+    const options={seconds:1/hz,roadSafety:{risk:0,maxLineOffset:.78}};
+    let extra=0;
+    for(let i=0;i<hz*3;i++){
+      active.headings.clear();active.road.clear();const before=poses;
+      planRaceAiDriving(e,ai,car,options);
+      if(poses-before>1)extra++;
+    }
+    const straight=planRaceAiDriving(e,ai,car,options);
+    ai.worldX=2;
+    assert.notEqual(planRaceAiDriving(e,ai,car,{...options,seconds:0}).steeringAngleRad,straight.steeringAngleRad);
+    return {extra,traffic:active.stats.trafficCandidates};
+  };
+  for(const hz of [30,60,120]){
+    const cheap=measure('cheap',hz),full=measure('full',hz);
+    assert.ok(cheap.extra>=12&&cheap.extra<=13,JSON.stringify(cheap));
+    assert.ok(full.extra>=30&&full.extra<=31,JSON.stringify(full));
+    assert.ok(cheap.traffic<=22,JSON.stringify(cheap));
+    assert.ok(full.traffic>=hz*3);
+  }
+});
+
+test('planning phases are spread across the fleet and do not replay missed decisions',()=>{
+  const e=road();e.playtestSession.debugAiIndependentPlanning=true;
+  const ais=Array.from({length:20},()=>racer({physicsBudgetDetail:'cheap'}));
+  const options={seconds:1/60,roadSafety:{risk:0,maxLineOffset:.78}};
+  let samples=0;const original=e.getRaceWorldPoseAtDistance;
+  e.getRaceWorldPoseAtDistance=d=>{samples++;return original(d);};
+  ais.forEach((ai,i)=>planRaceAiDriving(e,ai,car,{...options,scheduleIndex:i}));
+  const counts=[];
+  for(let frame=0;frame<60;frame++){
+    let decisions=0;
+    ais.forEach((ai,i)=>{const before=samples;planRaceAiDriving(e,ai,car,{...options,scheduleIndex:i});if(samples-before>1)decisions++;});
+    counts.push(decisions);
+  }
+  assert.ok(Math.max(...counts)<=3,JSON.stringify(counts));
+  const before=samples;planRaceAiDriving(e,ais[0],car,{...options,seconds:10});
+  assert.ok(samples-before<60,'a stall makes one fresh plan, not a backlog of plans');
+});
+
+test('promotion, teleport and sudden grip loss invalidate advice; detailed traffic reacts immediately',()=>{
+  const e=road();e.playtestSession.debugAiIndependentPlanning=true;
+  const ai=racer({physicsBudgetDetail:'cheap'}),leader=racer({worldZ:5,speedMps:0});
+  const options={seconds:.001,roadSafety:{risk:0,maxLineOffset:.78}};
+  e.playtestSession.aiRuntime=[ai];
+  planRaceAiDriving(e,ai,car,options);
+  e.playtestSession.aiRuntime.push(leader);
+  ai.physicsBudgetDetail='full';
+  assert.equal(planRaceAiDriving(e,ai,car,options).targetSpeedMps,0);
+  leader.worldX=10;
+  assert.ok(planRaceAiDriving(e,ai,car,options).targetSpeedMps>0);
+  ai.physicsBudgetDetail='cheap';planRaceAiDriving(e,ai,car,options);
+  let samples=0;const original=e.getRaceWorldPoseAtDistance;
+  e.getRaceWorldPoseAtDistance=d=>{samples++;return original(d);};
+  planRaceAiDriving(e,ai,car,{...options,seconds:0,grip:.4});
+  assert.ok(samples>1,'grip loss refreshes braking advice');
+  samples=0;ai.worldZ=100;ai.projectedDistance=100;leader.worldZ=105;leader.worldX=0;
+  assert.equal(planRaceAiDriving(e,ai,car,{...options,seconds:0,grip:.4}).targetSpeedMps,0);
+  assert.ok(samples>1,'teleport discards prior pose advice');
+});
 
 test('random grid uses all available custom cars before repeating, without changing the catalog', () => {
   const cars = [{ id: 'custom' }, { id: 'brz' }, { id: 'wrx' }];
@@ -128,13 +199,17 @@ test('AI sprites use physical position and heading instead of snapping to their 
   const ai = racer({ carId: editor.selectedCar.id, worldX: 3, worldZ: 40, carYaw: 0.2,
     projectedDistance: 40, lineOffset: -0.5 });
   editor.playtestSession = { routeRuntimeType: 'destination', routeLength: 1200, aiRuntime: [ai] };
-  editor.projectRaceWorldPointToCamera = (point) => ({ ...point, visible: true, screenY: 100, cameraZ: 20 });
+  editor.projectRaceWorldPointToCamera = (point) => ({ ...point, visible: true, screenX: 100, screenY: 100, cameraZ: 20 });
   let drawn;
   editor.drawRaceProjectedCarSprite = (_ctx, _bounds, options) => { drawn = options; };
   editor.drawRaceProjectedAiCars({}, { x: 0, y: 0, w: 390, h: 240 });
   assert.equal(drawn.projected.x, 3);
   assert.equal(drawn.projected.z, 40);
   assert.equal(drawn.yaw, 0.2);
+  drawn=null;
+  editor.projectRaceWorldPointToCamera = point => ({...point,visible:true,screenX:10000,screenY:100,cameraZ:20});
+  editor.drawRaceProjectedAiCars({}, {x:0,y:0,w:390,h:240});
+  assert.equal(drawn,null,'off-screen cars must not rasterize their art');
 });
 
 test('art preloading includes the cars drawn for this race instead of the saved lineup', () => {
@@ -169,10 +244,60 @@ test('crossing the grid start does not award an extra lap, including rolling sta
   assert.equal(ai.awaitingStartLine, false);
 });
 
-test('AI braking lookahead reuses segment endpoints instead of sampling them twice',()=>{
-  const e=road();let samples=0;const original=e.getRaceWorldPoseAtDistance;
+test('independent AI braking lookahead reuses segment endpoints instead of sampling them twice',()=>{
+  const e=road();e.playtestSession.debugAiIndependentPlanning=true;let samples=0;const original=e.getRaceWorldPoseAtDistance;
   e.getRaceWorldPoseAtDistance=(...args)=>{samples++;return original(...args);};
   const plan=planRaceAiDriving(e,racer({speedMps:100}),car,{topSpeedMps:100});
   assert.equal(plan.targetSpeedMps,100);
-  assert.equal(samples,43,'one steering sample plus 42 distinct endpoints across a 320 metre braking horizon');
+  assert.equal(samples,45,'two safety samples, one steering sample and 42 distinct braking endpoints');
+});
+
+
+test('steep and narrow roads reduce pace and keep the requested line away from edges',()=>{
+ const flat=road(), hill=road(d=>({x:0,z:d,yaw:0,elevation:d*.1}));
+ const ai=racer({lineOffset:.7});
+ const safe=getRaceAiRoadSafety(hill,ai,car);
+ assert.ok(safe.maxLineOffset<=.21);
+ const hillPlan=planRaceAiDriving(hill,ai,car);
+ const flatPlan=planRaceAiDriving(flat,ai,car);
+ assert.ok(hillPlan.targetSpeedMps<flatPlan.targetSpeedMps);
+ assert.ok(hillPlan.lookahead<flatPlan.lookahead);
+ flat.getRaceRoadHalfWidthWorld=()=>1.5;
+ const narrow=getRaceAiRoadSafety(flat,ai,car);
+ assert.equal(narrow.maxLineOffset,0);
+});
+
+
+test('recorded Mount Washington side-by-side queue does not mutually brake on a bend',()=>{
+ const e=road();
+ const a=racer({worldX:1316.9560654854224,worldZ:-906.7888488645672,carYaw:-1.2734713813587397,speedMps:0});
+ const b=racer({worldX:1316.2442617274578,worldZ:-908.9926930364625,carYaw:-1.075579400294879,speedMps:0});
+ e.playtestSession.aiRuntime=[a,b];
+ for(const ai of [a,b]) assert.ok(planRaceAiDriving(e,ai,car).targetSpeedMps>1);
+ // A stopped car truly ahead still requires a stop.
+ const leader=racer({worldX:0,worldZ:4,speedMps:0});
+ const follower=racer({speedMps:0});e.playtestSession.aiRuntime=[leader,follower];
+ assert.equal(planRaceAiDriving(e,follower,car).targetSpeedMps,0);
+});
+
+test('speed and lightweight traffic advice alternate after initialization and surface work can defer speed safely',()=>{
+ const e=road(),ai=racer({physicsBudgetDetail:'cheap'});e.playtestSession.aiRuntime=[ai];
+ const options={seconds:1/60,scheduleIndex:0};
+ planRaceAiDriving(e,ai,car,options);
+ let overlaps=0,lastSpeed=0,lastTraffic=0,maxSpeedGap=0,maxTrafficGap=0;
+ for(let i=1;i<=600;i++){
+  const speed=ai.speedPlanUpdates,traffic=ai.trafficPlanUpdates;
+  planRaceAiDriving(e,ai,car,{...options,surfacePlanRefreshed:i%15===0});
+  if(ai.speedPlanUpdates>speed){maxSpeedGap=Math.max(maxSpeedGap,(i-lastSpeed)/60);lastSpeed=i;}
+  if(ai.trafficPlanUpdates>traffic){maxTrafficGap=Math.max(maxTrafficGap,(i-lastTraffic)/60);lastTraffic=i;}
+  if(ai.speedPlanUpdates>speed&&ai.trafficPlanUpdates>traffic)overlaps++;
+ }
+ assert.equal(overlaps,0);assert.ok(maxSpeedGap<=.32);assert.ok(maxTrafficGap<=.22);
+ // Even constant competing surface work cannot starve speed/traffic forever.
+ const before=ai.speedPlanUpdates;
+ for(let i=0;i<60;i++)planRaceAiDriving(e,ai,car,{...options,surfacePlanRefreshed:true});
+ assert.ok(ai.speedPlanUpdates>=before+3);
+ // Sudden loss of grip bypasses deferral and refreshes both plans.
+ const rev=ai.speedPlanUpdates;planRaceAiDriving(e,ai,car,{...options,grip:.2,surfacePlanRefreshed:true});
+ assert.equal(ai.speedPlanUpdates,rev+1);
 });

@@ -1,3 +1,6 @@
+import {WheelService} from '../hardware/wheels/WheelService.js';
+import {openWheelSettings} from '../hardware/wheels/WheelSettings.js';
+import {RaceHaptics} from '../racing/RaceHaptics.js';
 import {openFontEditor} from '../ui/FontEditor.js';
 import AudioMusicPlayer from '../audio/AudioMusicPlayer.js';
 import {isAudioMusic} from '../audio/MusicAsset.js';
@@ -450,6 +453,12 @@ export default class Game {
     this.modelEditor = new ModelEditor(this);
     this.menuEditor = new MenuEditor(this);
     this.radioEditor = new RadioEditor(this);
+    this.wheelService = new WheelService();
+    void this.wheelService.load();
+    this.input.wheelPadIndices = () => this.wheelService.input.excludedPadIndices(this.wheelService.settings);
+    this.raceHaptics = new RaceHaptics();
+    this.raceHaptics.wheelSettings = () => openWheelSettings(this.wheelService);
+    void this.raceHaptics.load();
     this.menuPlayer = new MenuPlayer(this);
     this.cutscenePlayer = new CutscenePlayer(this);
     this.editorStateTargetKeys = {
@@ -836,6 +845,7 @@ export default class Game {
 
   handleTitleOptionsAction(action) {
     if (action === 'project-browser') {this.openProjectBrowserFromTitle();return;}
+    if (action === 'haptics') {void this.raceHaptics.options().catch(error=>this.showSystemToast?.(error.message));return;}
     if (action === 'radio') {void this.radioEditor.options();return;}
     if (action === 'back') {
       this.title.setScreen('main');
@@ -1569,6 +1579,7 @@ export default class Game {
   }
 
   handleSharedStateTransitionCleanup({ from, to, forceCleanup = false } = {}) {
+    if(from!==to){this.raceHaptics?.stop();this.wheelService?.pause();}
     if (from === 'menu-player' && (to === 'title' || to === 'menu-editor')) this.menuPlayer?.screenMusic?.stop({fadeOut:0});
     if (from === 'radio-editor' && to !== 'radio-editor') this.radioEditor?.preview?.stop();
     const shouldCleanup = forceCleanup
@@ -2053,7 +2064,7 @@ export default class Game {
           driver.aggression = {easy:0.28,medium:0.45,hard:0.62}[difficulty];
         }
       }
-      this.raceEditor.startPlaytest(car.id, {
+      const startResult = this.raceEditor.startPlaytest(car.id, {
         hydrateCars: false,
         raceTravel: true,
         preparedWorldBake,
@@ -2064,8 +2075,9 @@ export default class Game {
           || null
       });
       if (this.raceEditor.playtestSession) this.raceEditor.playtestSession.menuConfiguration = structuredClone(travelSession.menuConfiguration);
-      if (this.raceEditor.playtestSession?.running !== true) {
-        throw new Error('Race playtest did not enter the running state');
+      const session = this.raceEditor.playtestSession;
+      if (startResult === false || (!session?.running && !session?.preparing)) {
+        throw new Error(this.raceEditor.status || 'Race playtest did not enter the running state');
       }
     } catch (error) {
       this.raceEditor.cancelRacePlaytestPreparation?.();
@@ -2149,7 +2161,7 @@ export default class Game {
       if (raceDocumentName) session.trackStateByRace[raceDocumentName] = trackStateSnapshot;
     }
     const completedRef=raceDocumentName||raceId;
-    const variables={...(completedRef?{[raceCompletionKey(completedRef)]:true,lastCompletedRace:completedRef,garageReturnCount:Number(this.menuProgress?.garageReturnCount||0)+1,garageDialogueEvent:''}:{}),...finishBehavior.variables};
+    const variables={...(completedRef?{[raceCompletionKey(completedRef)]:finishBehavior.mechanicalMissionSuccess!==false,lastCompletedRace:completedRef,garageReturnCount:Number(this.menuProgress?.garageReturnCount||0)+1,garageDialogueEvent:''}:{}),...finishBehavior.variables};
     if(finishBehavior.type==='menu'){
       // Keep the race presentation alive until progress and menu assets are ready.
       return this.openMenuDestination({...finishBehavior,variables});
@@ -11327,8 +11339,22 @@ export default class Game {
 
   update(dt) {
     this.updatePlaytestFps(dt);
+    const wheelFrame=this.wheelService?.readInput();
+    if(this.state==='race-editor'&&this.raceEditor?.playtestSession?.running&&wheelFrame?.pressed.pause){
+      this.raceEditor.toggleRacePause();wheelFrame.pressed.pause=false;
+    }
     this.stateManager.update(dt);
     this.updateProjectBrowserMusicPreview(dt);
+    const session=this.raceEditor?.playtestSession;
+    this.wheelService?.update(session,this.state==='race-editor'&&session?.running===true&&!session.preparing
+      &&!session.startupFramePending&&!session.raceIntro?.active&&!session.countdownRemainingMs
+      &&!session.raceResults&&!session.finishing&&!this.raceEditor?.raceInput?.paused);
+    this.raceHaptics?.update(session,this.raceEditor?.raceInput,dt,{
+      gamepadIndex:this.input?.gamepadIndex,
+      active:this.state==='race-editor'&&session?.running===true&&!session.preparing
+        &&!session.startupFramePending&&!session.raceIntro?.active&&!session.countdownRemainingMs
+        &&!session.raceResults&&!session.finishing&&!this.raceEditor?.raceInput?.paused
+    });
   }
 
   updatePlaytestFps(dt) {

@@ -212,41 +212,35 @@ function isResolvedSurfaceSample(sample) {
     ));
 }
 
-function isPointInsideBodyPiece(pointX, pointY, pointZ, piece) {
-  const centerX = Number(piece.centerM?.x || 0);
-  const centerY = Number(piece.centerM?.y || 0);
-  const centerZ = Number(piece.centerM?.z || 0);
-  const vertices = piece.type === 'convex' && piece.vertices?.length
-    ? piece.vertices : null;
+function prepareBodyPieceContactBounds(piece, target) {
+  target.centerX = Number(piece.centerM?.x || 0);
+  target.centerY = Number(piece.centerM?.y || 0);
+  target.centerZ = Number(piece.centerM?.z || 0);
+  const vertices = piece.type === 'convex' && piece.vertices?.length ? piece.vertices : null;
+  target.box = !vertices;
   if (!vertices) {
-    return Math.abs(pointX - centerX) < Number(piece.sizeM?.x || 0) * 0.5 * 0.98
-      && Math.abs(pointY - centerY) < Number(piece.sizeM?.y || 0) * 0.5 * 0.98
-      && Math.abs(pointZ - centerZ) < Number(piece.sizeM?.z || 0) * 0.5 * 0.98;
+    target.maxX = Number(piece.sizeM?.x || 0) * 0.5 * 0.98;
+    target.maxY = Number(piece.sizeM?.y || 0) * 0.5 * 0.98;
+    target.maxZ = Number(piece.sizeM?.z || 0) * 0.5 * 0.98;
+    return target;
   }
-  let minimumX = Infinity;
-  let minimumY = Infinity;
-  let minimumZ = Infinity;
-  let maximumX = -Infinity;
-  let maximumY = -Infinity;
-  let maximumZ = -Infinity;
-  for (let vertexIndex = 0; vertexIndex < vertices.length; vertexIndex += 1) {
-    const vertex = vertices[vertexIndex];
-    const x = Number(vertex.x || 0);
-    const y = Number(vertex.y || 0);
-    const z = Number(vertex.z || 0);
-    minimumX = Math.min(minimumX, x);
-    minimumY = Math.min(minimumY, y);
-    minimumZ = Math.min(minimumZ, z);
-    maximumX = Math.max(maximumX, x);
-    maximumY = Math.max(maximumY, y);
-    maximumZ = Math.max(maximumZ, z);
+  let minimumX = Infinity, minimumY = Infinity, minimumZ = Infinity;
+  let maximumX = -Infinity, maximumY = -Infinity, maximumZ = -Infinity;
+  for (let i = 0; i < vertices.length; i++) {
+    const vertex = vertices[i];
+    const x = Number(vertex.x || 0), y = Number(vertex.y || 0), z = Number(vertex.z || 0);
+    minimumX = Math.min(minimumX, x); minimumY = Math.min(minimumY, y); minimumZ = Math.min(minimumZ, z);
+    maximumX = Math.max(maximumX, x); maximumY = Math.max(maximumY, y); maximumZ = Math.max(maximumZ, z);
   }
-  const relativeX = pointX - centerX;
-  const relativeY = pointY - centerY;
-  const relativeZ = pointZ - centerZ;
-  return relativeX > minimumX * 0.98 && relativeX < maximumX * 0.98
-    && relativeY > minimumY * 0.98 && relativeY < maximumY * 0.98
-    && relativeZ > minimumZ * 0.98 && relativeZ < maximumZ * 0.98;
+  target.minX = minimumX * .98; target.minY = minimumY * .98; target.minZ = minimumZ * .98;
+  target.maxX = maximumX * .98; target.maxY = maximumY * .98; target.maxZ = maximumZ * .98;
+  return target;
+}
+
+function isPointInsideBodyPiece(pointX, pointY, pointZ, bounds) {
+  const x = pointX - bounds.centerX, y = pointY - bounds.centerY, z = pointZ - bounds.centerZ;
+  if (bounds.box) return Math.abs(x) < bounds.maxX && Math.abs(y) < bounds.maxY && Math.abs(z) < bounds.maxZ;
+  return x > bounds.minX && x < bounds.maxX && y > bounds.minY && y < bounds.maxY && z > bounds.minZ && z < bounds.maxZ;
 }
 
 function setTreadContactValidity(target, {
@@ -269,7 +263,23 @@ function setTreadContactValidity(target, {
   return output;
 }
 
-function resolveTreadContactValidity({
+export function createTreadContactValidityScratch() {
+  return {
+    normal: {}, axis: {}, negativeNormal: {}, lateral: {},
+    inverseOrientation: {}, localMount: {}, localContact: {},
+    point: {}, position: {}, offset: {}, bodyPieceBounds: {}
+  };
+}
+
+function contactPointInBody(target, point, position, inverseOrientation, scratch) {
+  vectorInto(scratch.point, point);
+  vectorInto(scratch.position, position);
+  scaleInto(scratch.position, scratch.position, -1);
+  addInto(scratch.offset, scratch.point, scratch.position);
+  return rotateVectorByQuaternion(scratch.offset, inverseOrientation, target);
+}
+
+export function resolveTreadContactValidity({
   state,
   config,
   environment,
@@ -278,7 +288,8 @@ function resolveTreadContactValidity({
   surfaceSample,
   rawRequestedCompressionM,
   suspensionTravelM,
-  target = null
+  target = null,
+  computationScratch = null
 }) {
   if (surfaceSample?.valid !== true) {
     return setTreadContactValidity(target, {
@@ -291,9 +302,10 @@ function resolveTreadContactValidity({
       bottomedOut: false
     });
   }
-  const normal = normalize(vector(kinematics.surfaceNormalWorld, { x: 0, y: 1, z: 0 }));
-  const axis = normalize(vector(kinematics.suspensionAxisWorld, { x: 0, y: -1, z: 0 }));
-  const supportAlignment = dot(axis, scale(normal, -1));
+  const scratch = computationScratch || createTreadContactValidityScratch();
+  const normal = normalizeInto(scratch.normal, vectorInto(scratch.normal, kinematics.surfaceNormalWorld, { x: 0, y: 1, z: 0 }));
+  const axis = normalizeInto(scratch.axis, vectorInto(scratch.axis, kinematics.suspensionAxisWorld, { x: 0, y: -1, z: 0 }));
+  const supportAlignment = dot(axis, scaleInto(scratch.negativeNormal, normal, -1));
   const minimumAlignment = clamp(Number(config.minimumTreadSupportAlignment ?? 0.2), 0.01, 0.95);
   const reachToleranceM = Math.max(0.002, Number(config.treadReachToleranceM ?? 0.025));
   if (supportAlignment < minimumAlignment) {
@@ -303,7 +315,7 @@ function resolveTreadContactValidity({
     });
   }
   const axleNormalAlignment = Math.abs(dot(
-    normalize(vector(kinematics.wheelLateralWorld, { x: 1, y: 0, z: 0 })),
+    normalizeInto(scratch.lateral, vectorInto(scratch.lateral, kinematics.wheelLateralWorld, { x: 1, y: 0, z: 0 })),
     normal
   ));
   if (axleNormalAlignment > Math.max(0.2, Number(config.maximumTreadAxleNormalAlignment ?? 0.72))) {
@@ -322,25 +334,25 @@ function resolveTreadContactValidity({
   // may begin inside its mounting body, but after the path exits that piece it
   // must not enter any compound piece again before reaching the tread.
   const orientation = state.orientation || { x: 0, y: 0, z: 0, w: 1 };
-  const inverseOrientation = {
-    x: -Number(orientation.x || 0),
-    y: -Number(orientation.y || 0),
-    z: -Number(orientation.z || 0),
-    w: Number(orientation.w ?? 1)
-  };
-  const toBody = (point) => rotateVectorByQuaternion(
-    add(vector(point), scale(vector(state.position), -1)), inverseOrientation
-  );
-  const localMount = toBody(kinematics.suspensionMountPositionWorld
-    || kinematics.hubPositionWorld || kinematics.wheelCenterWorld);
-  const localContact = toBody(kinematics.contactPointWorld);
+  const inverseOrientation = scratch.inverseOrientation;
+  inverseOrientation.x = -Number(orientation.x || 0);
+  inverseOrientation.y = -Number(orientation.y || 0);
+  inverseOrientation.z = -Number(orientation.z || 0);
+  inverseOrientation.w = Number(orientation.w ?? 1);
+  const localMount = contactPointInBody(scratch.localMount,
+    kinematics.suspensionMountPositionWorld || kinematics.hubPositionWorld || kinematics.wheelCenterWorld,
+    state.position, inverseOrientation, scratch);
+  const localContact = contactPointInBody(scratch.localContact, kinematics.contactPointWorld,
+    state.position, inverseOrientation, scratch);
   const pathX = localContact.x - localMount.x;
   const pathY = localContact.y - localMount.y;
   const pathZ = localContact.z - localMount.z;
   const pieces = config.bodyProfile?.pieces || [];
   let pathOccluded = false;
   for (let pieceIndex = 0; pieceIndex < pieces.length && !pathOccluded; pieceIndex += 1) {
-    const piece = pieces[pieceIndex];
+    // A piece does not change during this mount-to-contact path. Recompute
+    // once per piece/check (including live edits), not for every path sample.
+    const piece = prepareBodyPieceContactBounds(pieces[pieceIndex], scratch.bodyPieceBounds ||= {});
     let hasExitedStartingPiece = !isPointInsideBodyPiece(
       localMount.x, localMount.y, localMount.z, piece
     );
@@ -605,9 +617,8 @@ export function calculateAquaplaningState({
       ?? (/wet|rain/.test(String(tire.compound?.id || '')) ? 1.28 : 1)
   ), 0.45, 1.7);
   const longitudinalSpeedMps = Math.abs(Number(kinematics.longitudinalVelocityMps || 0));
-  const rollingSpeedMps = Math.abs(Number(kinematics.wheelAngularVelocityRadps || 0)
-    * Number(kinematics.effectiveRollingRadiusM || 0));
-  const speedMps = Math.max(longitudinalSpeedMps, rollingSpeedMps);
+  // Water lift requires the car to travel through water, not a stationary burnout.
+  const speedMps = Math.hypot(longitudinalSpeedMps, Number(kinematics.lateralVelocityMps || 0));
   const signedSlipRatio = Number(kinematics.slipRatio || 0);
   const patchAreaM2 = loadN > 0 ? loadN / (pressurePsi * 6894.757) : 0;
   const patchLengthM = patchAreaM2 / widthM;
@@ -620,7 +631,18 @@ export function calculateAquaplaningState({
   const demandRatio = waterDemandM3ps / Math.max(0.000001, evacuationCapacityM3ps);
   const immersion = clamp((waterDepthMm - 0.15) / 5.85, 0, 1);
   const onset = clamp((demandRatio - 0.72) / 1.5, 0, 1);
-  const liftFraction = clamp(immersion * onset * onset * (3 - 2 * onset), 0, 0.94);
+  // Bound lift by water dynamic pressure relative to tire inflation pressure.
+  // Even a slick in deep water retains contact at walking speed.
+  const dynamicLiftLimit = clamp(0.5 * 1000 * speedMps * speedMps / (pressurePsi * 6894.757), 0, 1);
+  // Arcade calibration informed by passenger-tire standing-water tests. These
+  // are onset curves, not a universal safe speed: worn/soft tires lift earlier.
+  const onsetSpeedMps = 22 * Math.sqrt(pressurePsi / 32)
+    * Math.pow(treadDepthMm / 7, 0.2) * Math.pow(wetCharacteristic, 0.15)
+    * Math.pow(8 / Math.max(1, waterDepthMm), 0.08);
+  const speedOnset = clamp((speedMps / onsetSpeedMps - 0.72) / 0.55, 0, 1);
+  const speedLift = speedOnset * speedOnset * (3 - 2 * speedOnset);
+  const liftFraction = clamp(immersion * onset * onset * (3 - 2 * onset)
+    * dynamicLiftLimit * speedLift, 0, 0.94);
   const supportedNormalLoadN = loadN * (1 - liftFraction);
   const filmShear = 1 - liftFraction;
   const longitudinalForceScale = clamp(filmShear ** 1.1, 0.04, 1);
@@ -1201,6 +1223,7 @@ export class ContactPatchTireModel {
           kinematicsComputationScratch: kinematicsScratch.computation,
           kinematicsRequest: {},
           suspensionGeometryRequest: {},
+          contactValidityComputation: createTreadContactValidityScratch(),
           initialContactValidityRequest: {},
           contactValidityRequest: {},
           damperRequest: {},
@@ -1267,6 +1290,9 @@ export class ContactPatchTireModel {
     staticSupportSolve = false, collisionContactRebuild = false
   }) {
     const physicsCosts = environment.physicsCostAccounting || null;
+    // Only detailed recordings request these coarse, non-overlapping sections.
+    const tireCosts = physicsCosts?.detailedCaptureActive ? physicsCosts : null;
+    let tireStage = tireCosts?.start('tireContactSetup');
     const drivenWheelIds = config.drivenWheelIds || [];
     const centerSteeringAngleRad = resolvePhysicalCenterSteeringAngle(controls, config, state);
     const scratch = this.stepScratch[this.stepScratchCursor++ % this.stepScratch.length];
@@ -1296,6 +1322,7 @@ export class ContactPatchTireModel {
     const wheelInputs = scratch.wheelInputs;
     scratch.contactFootprintOptions.maxGapM = config.contactFootprintMaxGapM;
     for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
+      let setupStage = tireCosts?.start('tireFootprintAndKinematics');
       const wheelId = RACE_WHEEL_IDS[wheelIndex];
       const sampledHeight = Number(environment.surfaceHeightByWheel?.[wheelId]);
       if (Number.isFinite(sampledHeight)) {
@@ -1306,9 +1333,9 @@ export class ContactPatchTireModel {
       const left = wheelId[1] === 'l';
       const staticLoad = config.massKg * 9.81
         * (front ? config.frontWeightDistribution : 1 - config.frontWeightDistribution) / 2;
-      const springRateNpm = front
+      const springRateNpm = (front
         ? config.suspensionSpringRateFrontNpm
-        : config.suspensionSpringRateRearNpm;
+        : config.suspensionSpringRateRearNpm) * (state.mechanical?.config?.enabled && state.mechanical.components?.[`spring_${wheelId}`]?.failed ? .45 : 1);
       const suspensionTravelM = front
         ? config.suspensionTravelFrontM
         : config.suspensionTravelRearM;
@@ -1372,6 +1399,7 @@ export class ContactPatchTireModel {
       kinematicsRequest.target = wheelRequestScratch.kinematicsTarget;
       kinematicsRequest.computationScratch = wheelRequestScratch.kinematicsComputationScratch;
       let kinematics = calculateWheelContactKinematics(kinematicsRequest);
+      tireCosts?.end(setupStage);
       let contactSolveIterationCount = 0;
       if (typeof environment.sampleTerrainAtWorldPoint === 'function') {
         const iterativeContactTimer = physicsCosts?.start('iterativeTireContactSolving');
@@ -1419,6 +1447,8 @@ export class ContactPatchTireModel {
         }
         physicsCosts?.end(iterativeContactTimer);
       }
+      setupStage = tireCosts?.start('tireSuspensionSetup');
+      let suspensionStage = tireCosts?.start('tireSuspensionInitialContact');
       const hasSurfaceHeight = surfaceSample.valid;
       const contactScale = clamp(contactScaleForFootprint, 0, 1);
       const surfaceHeightM = hasSurfaceHeight ? surfaceSample.heightM : null;
@@ -1448,7 +1478,10 @@ export class ContactPatchTireModel {
       initialValidityRequest.rawRequestedCompressionM = rawRequestedCompressionM;
       initialValidityRequest.suspensionTravelM = suspensionTravelM;
       initialValidityRequest.target = wheelRequestScratch.initialContactValidity;
+      initialValidityRequest.computationScratch = wheelRequestScratch.contactValidityComputation;
       const initialContactValidity = resolveTreadContactValidity(initialValidityRequest);
+      tireCosts?.end(suspensionStage);
+      suspensionStage = tireCosts?.start('tireSuspensionDynamics');
       let clampedCompressionM = initialContactValidity.valid
         ? clamp(rawRequestedCompressionM, 0, suspensionTravelM)
         : null;
@@ -1497,7 +1530,9 @@ export class ContactPatchTireModel {
           // geometric/contact field at the corrected body pose.
           unsprungVelocityMps = staticSupportSolve
             ? 0 : Number(previousSuspension.unsprungVelocityMps || 0);
-          verticalCoupledActive = false;
+          // A settled tire already carries load through finite deflection.
+          // Keep the coupled spring/tire balance when driving resumes.
+          verticalCoupledActive = staticSupportSolve;
         } else if (collisionContactRebuild) {
           // A pose-only collision correction must rebuild contact geometry
           // around the same wheel generalized coordinate. Snapping the wheel
@@ -1673,25 +1708,32 @@ export class ContactPatchTireModel {
           unsprungVelocityMps = 0;
         }
       }
+      tireCosts?.end(suspensionStage);
+      suspensionStage = tireCosts?.start('tireSuspensionGeometry');
       const geometryRequest = wheelRequestScratch.suspensionGeometryRequest;
       geometryRequest.definition = front
         ? config.suspensionDefinitionFront : config.suspensionDefinitionRear;
       geometryRequest.compressionM = compressionM - staticCompressionM;
       geometryRequest.steeringAngleRad = resolvePhysicalCenterSteeringAngle(
         controls, config, state
-      );
+      ) + (front ? (state.mechanical?.effects?.pull || 0) : 0);
       geometryRequest.staticCamberRad = front ? config.camberFrontRad : config.camberRearRad;
       geometryRequest.staticToeRad = front ? config.toeFrontRad : config.toeRearRad;
       geometryRequest.alignmentSideSign = left ? 1 : -1;
       geometryRequest.springRateNpm = springRateNpm;
       geometryRequest.target = scratch.geometryByWheel[wheelId];
       const geometry = solveSuspensionGeometry(geometryRequest);
+      tireCosts?.end(suspensionStage);
+      suspensionStage = tireCosts?.start('tireSuspensionKinematics');
       kinematicsRequest.surfaceNormalOverride = surfaceSample.valid ? surfaceSample.normal : null;
       kinematicsRequest.suspensionCompressionOverrideM = compressionM;
       kinematicsRequest.suspensionCompressionVelocityOverrideMps = unsprungVelocityMps;
       kinematicsRequest.camberOverrideRad = geometry.camberRad;
       kinematicsRequest.toeOverrideRad = geometry.toeRad;
       kinematics = calculateWheelContactKinematics(kinematicsRequest);
+      tireCosts?.end(suspensionStage);
+      tireCosts?.end(setupStage);
+      setupStage = tireCosts?.start('tireContactValidation');
       const validityRequest = wheelRequestScratch.contactValidityRequest;
       validityRequest.state = state;
       validityRequest.config = config;
@@ -1703,6 +1745,7 @@ export class ContactPatchTireModel {
       validityRequest.rawRequestedCompressionM = rawRequestedCompressionM;
       validityRequest.suspensionTravelM = suspensionTravelM;
       validityRequest.target = wheelRequestScratch.contactValidity;
+      validityRequest.computationScratch = wheelRequestScratch.contactValidityComputation;
       const contactValidity = resolveTreadContactValidity(validityRequest);
       if (!contactValidity.valid && unsprungVelocityMps > 0) {
         // A candidate may pass the coarse support check and then fail after
@@ -1781,6 +1824,7 @@ export class ContactPatchTireModel {
       damperRequest.reboundDamperNsM = front
           ? config.suspensionReboundDamperFrontNsM
           : config.suspensionReboundDamperRearNsM;
+      if(state.mechanical?.config?.enabled && state.mechanical.components?.[`damper_${wheelId}`]?.failed){damperRequest.bumpDamperNsM*=.15;damperRequest.reboundDamperNsM*=.15;}
       damperRequest.highSpeedThresholdMps = config.damperHighSpeedThresholdMps;
       damperRequest.highSpeedScale = config.damperHighSpeedScale;
       const damperForceN = calculateVelocitySensitiveDamperForce(damperRequest);
@@ -1822,7 +1866,11 @@ export class ContactPatchTireModel {
       const environmentTire = environment.tireByWheel?.[wheelId] || {};
       const wheelInput = wheelInputs[wheelId];
       const tire = wheelInput.tire;
-      for (const key in tire) delete tire[key];
+      for (const key in tire) {
+        if (key in configuredTire || key in environmentTire) continue;
+        if (TIRE_STATE_OVERLAY_KEYS.has(key)) tire[key] = undefined;
+        else delete tire[key];
+      }
       for (const key in configuredTire) tire[key] = configuredTire[key];
       for (const key in environmentTire) tire[key] = environmentTire[key];
       const tireState = state.tireState?.[wheelId] || {};
@@ -1836,6 +1884,13 @@ export class ContactPatchTireModel {
       tire.temperatureF = tireState.temperatureF ?? tire.temperatureF;
       tire.wear = tireState.wear ?? tire.wear;
       tire.damage = tire.damage ?? tireState.damage;
+      const mechanicalTire=state.mechanical?.tires?.[wheelId];
+      if(mechanicalTire && state.mechanical.config.enabled)tire.wear=Math.max(Number(tire.wear)||0,1-mechanicalTire.tread);
+      if(mechanicalTire && state.mechanical.config.enabled && mechanicalTire.pressureRatio < .999){
+        tire.effectivePressurePsi = (tire.effectivePressurePsi ?? tire.pressurePsi ?? 32) * mechanicalTire.pressureRatio;
+        tire.pressurePsi=tire.effectivePressurePsi;
+        tire.damage=Math.max(Number(tire.damage)||0,(1-mechanicalTire.pressureRatio)*100);
+      }
       wheelInput.kinematics = kinematics;
       wheelInput.normalLoadN = normalLoadN;
       wheelInput.chassisSupportLoadN = chassisSupportLoadN;
@@ -1869,7 +1924,10 @@ export class ContactPatchTireModel {
       wheelInput.overtravelM = overtravelM;
       wheelInput.clampedCompressionM = clampedCompressionM;
       wheelInput.damperForceN = damperForceN;
+      tireCosts?.end(setupStage);
     }
+    tireCosts?.end(tireStage);
+    tireStage = tireCosts?.start('tireGripForces');
     applyAntiRollTransfer(
       wheelInputs, 'fl', 'fr', config.antiRollFront, config.antiRollStiffnessFrontNpm, config
     );
@@ -1936,7 +1994,7 @@ export class ContactPatchTireModel {
       aquaplaningRequest.target = input.aquaplaning;
       calculateAquaplaningState(aquaplaningRequest);
       const brushTire = input.brushTire;
-      for (const key in brushTire) delete brushTire[key];
+      for (const key in brushTire) if (key !== 'referenceLoadN' && !(key in input.tire)) delete brushTire[key];
       brushTire.referenceLoadN = input.staticLoadN;
       for (const key in input.tire) brushTire[key] = input.tire[key];
       const brushForceRequest = input.brushForceRequest;
@@ -1962,6 +2020,8 @@ export class ContactPatchTireModel {
         ));
       input.force.aquaplaning = input.aquaplaning;
     }
+    tireCosts?.end(tireStage);
+    tireStage = tireCosts?.start('tirePowertrain');
     const capacityByWheel = scratch.capacityByWheel;
     const kinematicsByWheel = scratch.kinematicsByWheel;
     for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
@@ -1971,7 +2031,10 @@ export class ContactPatchTireModel {
       kinematicsByWheel[wheelId] = wheelInputs[wheelId].kinematics;
     }
     const powertrainTuning = scratch.powertrainTuning;
-    for (const key in powertrainTuning) delete powertrainTuning[key];
+    const configuredPowertrain = config.powertrainTuning || {};
+    for (const key in powertrainTuning) {
+      if (!(key in configuredPowertrain) && !POWERTRAIN_DEFAULT_KEYS.has(key)) delete powertrainTuning[key];
+    }
     powertrainTuning.torqueLbFt = Number(config.powertrainTuning?.torqueLbFt)
       || Number(config.enginePeakTorqueNm || 0) / 1.35582;
     powertrainTuning.idleRpm = config.idleRpm;
@@ -1981,7 +2044,6 @@ export class ContactPatchTireModel {
     powertrainTuning.torquePeakEndRpm = config.idleRpm
       + (config.maxRpm - config.idleRpm) * 0.68;
     powertrainTuning.torqueFalloffRpm = config.maxRpm;
-    const configuredPowertrain = config.powertrainTuning || {};
     for (const key in configuredPowertrain) {
       powertrainTuning[key] = configuredPowertrain[key];
     }
@@ -1996,7 +2058,7 @@ export class ContactPatchTireModel {
     );
     const driveShareByWheel = drivetrainCapacity.forceShareByWheel;
     const powertrainControls = scratch.powertrainControls;
-    for (const key in powertrainControls) delete powertrainControls[key];
+    for (const key in powertrainControls) if (key !== 'centerSteeringAngleRad' && !(key in controls)) delete powertrainControls[key];
     for (const key in controls) powertrainControls[key] = controls[key];
     powertrainControls.centerSteeringAngleRad = centerSteeringAngleRad;
     const fallbackDamage = scratch.fallbackDamage;
@@ -2017,6 +2079,8 @@ export class ContactPatchTireModel {
     const powertrainStep = powertrainModel.stepAuthoritativeWheelTorques(
       powertrainStepRequest
     );
+    tireCosts?.end(tireStage);
+    tireStage = tireCosts?.start('tireForceIntegration');
     const powertrainGear = Math.trunc(Number(powertrainStep.state.gear || 0));
     const selectedGearRatio = powertrainGear < 0
       ? Math.abs(Number(powertrainTuning.reverseRatio || 0))
@@ -2318,7 +2382,9 @@ export class ContactPatchTireModel {
       output.surfaceHeightM = wheelInputs[wheelId].surfaceSample.valid === true
         ? q(wheelInputs[wheelId].surfaceSample.heightM)
         : null;
-      const surfaceQueryPosition = wheelInputs[wheelId].surfaceSample.queryPosition;
+      const surfaceQueryPosition = wheelInputs[wheelId].contactSolveIterationCount > 0
+        ? scratch.iterativeQueryPositionByWheel[wheelId]
+        : (wheelInputs[wheelId].surfaceSample.queryPosition || wheelInputs[wheelId].kinematics?.contactPointWorld);
       output.surfaceQueryPositionWorld.x = Number(surfaceQueryPosition?.x || 0);
       output.surfaceQueryPositionWorld.y = Number(surfaceQueryPosition?.y || 0);
       output.surfaceQueryPositionWorld.z = Number(surfaceQueryPosition?.z || 0);
@@ -2532,6 +2598,13 @@ export class ContactPatchTireModel {
     steeringTelemetry.responseClassification = classifySteeringResponseTelemetry(
       steeringTelemetry
     );
+    tireCosts?.end(tireStage);
     return result;
   }
 }
+
+// These fields are assigned every step even when absent from authored tuning.
+const TIRE_STATE_OVERLAY_KEYS = new Set(['treadTemperatureC','carcassTemperatureC',
+  'internalAirTemperatureC','effectivePressurePsi','temperatureF','wear','damage']);
+const POWERTRAIN_DEFAULT_KEYS = new Set(['torqueLbFt','idleRpm','revLimitRpm',
+  'torquePeakStartRpm','torquePeakEndRpm','torqueFalloffRpm']);

@@ -38,6 +38,7 @@ export function getAuthoritativeChassisState(vehicleState = null) {
 export function syncVehicleDynamicsCompatibilityOutputs(runner = null, session = null) {
   if (!runner?.state || !session) return session;
   const state = runner.state;
+  if(state.mechanical) session.mechanical=state.mechanical;
   const renderState = createVehicleRenderStateFromRunner(runner, {
     eventSequence: Number(session.vehicleDynamicsEventSequence || 0),
     visualState: (state.grounded === false ? 0 : 1)

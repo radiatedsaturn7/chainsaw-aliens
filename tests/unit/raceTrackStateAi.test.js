@@ -84,3 +84,16 @@ test('AI hysteresis and cooldown prevent rapid oscillation between near-equal pa
   assert.equal(held.switched, false);
   assert.ok(held.nextSwitchStep >= 15);
 });
+
+test('candidate lanes share identical cell samples without caching across decisions',()=>{
+ const {state,getWorldPoint}=createScenario();const original=state.sample.bind(state);let calls=0;
+ state.sample=(...args)=>{calls++;return original(...args);};
+ const options={trackState:state,getWorldPoint,distance:0,currentOffset:.01,candidateOffsets:[-.02,0,.02],lookaheadDistances:[10,11,12,13]};
+ const cached=evaluateRaceAiTrackStateCandidates(options),cachedCalls=calls;
+ calls=0;
+ // Same sampler without a declared grid uses the original uncached path.
+ const uncached=evaluateRaceAiTrackStateCandidates({...options,trackState:{sample:state.sample,stepIndex:state.stepIndex}});
+ assert.deepEqual(cached,uncached);assert.ok(cachedCalls<calls);
+ state.mutateCell(getWorldPoint(10,0),{oil:.9});
+ const changed=evaluateRaceAiTrackStateCandidates(options);assert.notDeepEqual(changed,cached);
+});

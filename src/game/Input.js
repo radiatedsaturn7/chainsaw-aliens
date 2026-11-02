@@ -170,11 +170,12 @@ export default class Input {
     if (!navigator.getGamepads) return;
     const pads = navigator.getGamepads();
     if (!pads) return;
+    const excluded = this.wheelPadIndices?.() || new Set();
     let pad = null;
-    if (this.gamepadIndex !== null && pads[this.gamepadIndex]?.connected) {
+    if (this.gamepadIndex !== null && pads[this.gamepadIndex]?.connected && !excluded.has(this.gamepadIndex)) {
       pad = pads[this.gamepadIndex];
     } else {
-      pad = Array.from(pads).find((candidate) => candidate?.connected) || null;
+      pad = Array.from(pads).find((candidate) => candidate?.connected && !excluded.has(candidate.index)) || null;
       if (pad) {
         this.gamepadIndex = pad.index;
       }

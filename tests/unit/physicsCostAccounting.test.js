@@ -189,3 +189,35 @@ test('bounded diagnostic histories recycle evicted records without retaining sta
   assert.equal(firstFrame.metadata.frameIndex, 31);
   assert.deepEqual(firstFrame.counters, { backlogSteps: 0 });
 });
+
+test('latest-frame-only capture reuses records without retaining duplicate AI history',()=>{
+ const accounting=new PhysicsCostAccounting({enabled:true});accounting.latestFrameOnly=true;
+ const records=new Set();let snapshot;
+ for(let i=0;i<100;i++){
+  accounting.beginFrame({sequence:i});accounting.count('completedSteps',i);
+  const frame=accounting.finishFrame();records.add(frame);
+  if(i===0)snapshot=structuredClone(frame);
+  assert.equal(accounting.frameHistory.length,1);
+  assert.equal(accounting.getLatestFrame().counters.completedSteps,i);
+ }
+ assert.equal(snapshot.counters.completedSteps,0);assert.ok(records.size<=2);
+ assert.ok(accounting.frameRecordPool.length<=2);
+ accounting.latestFrameOnly=false;accounting.beginFrame();accounting.finishFrame();
+ assert.equal(accounting.frameHistory.length,2);
+});
+
+test('detailed tire setup sections preserve authoritative physics and remain nested',()=>{
+ const make=detailed=>{
+  const runner=new VehicleDynamicsRunner({config:{chassisHz:120,tireHz:120,telemetryRetention:'none',physicsCostAccountingEnabled:true},environmentProvider:()=>({airDensityKgM3:0,grounded:false})});
+  runner.physicsCostAccounting.detailedCaptureActive=detailed;
+  return runner;
+ };
+ const reference=make(false),detailed=make(true);
+ for(let i=0;i<12;i++){reference.advance(1/60);detailed.advance(1/60);}
+ assert.deepEqual(detailed.createStateSnapshot(),reference.createStateSnapshot());
+ const timings=detailed.physicsCostAccounting.getLatestFrame().timings;
+ for(const name of ['tireFootprintAndKinematics','tireSuspensionSetup','tireContactValidation']){
+  assert.ok(timings[name].calls>0,name);
+  assert.ok(timings[name].inclusiveMs<=timings.tireContactSetup.inclusiveMs,name);
+ }
+});

@@ -28,7 +28,24 @@ function interpolateAxis(previous, proposed, fraction, fallback) {
   return normalize(mixVector(previous || fallback, proposed || previous || fallback, fraction), fallback);
 }
 
+// Poses are reusable only within one synchronous active sweep. Restore the
+// enclosing scope after nested sweeps or errors; never retain poses across steps.
+let activeSweepPoseCache = null;
+
 function cylinderPoseAt(cylinder, fraction) {
+  if (!activeSweepPoseCache) return calculateCylinderPose(cylinder, fraction);
+  let poses = activeSweepPoseCache.get(cylinder);
+  if (!poses) {
+    poses = new Map();
+    activeSweepPoseCache.set(cylinder, poses);
+  }
+  if (poses.has(fraction)) return poses.get(fraction);
+  const pose = calculateCylinderPose(cylinder, fraction);
+  poses.set(fraction, pose);
+  return pose;
+}
+
+function calculateCylinderPose(cylinder, fraction) {
   return {
     hub: mixVector(cylinder.previousHubPositionWorld, cylinder.hubPositionWorld, fraction),
     forward: interpolateAxis(
@@ -46,18 +63,23 @@ function cylinderPoseAt(cylinder, fraction) {
   };
 }
 
-function pointForFeature(cylinder, feature, fraction) {
+export function pointForFeature(cylinder, feature, fraction) {
   const pose = cylinderPoseAt(cylinder, fraction);
-  const radial = addVector3(
-    scaleVector3(pose.forward, Math.cos(feature.angleRad) * cylinder.radiusM),
-    scaleVector3(pose.suspension, Math.sin(feature.angleRad) * cylinder.radiusM)
-  );
+  const forwardScale = Math.cos(feature.angleRad) * cylinder.radiusM;
+  const downScale = Math.sin(feature.angleRad) * cylinder.radiusM;
+  const radial = {
+    x: ((pose.forward.x || 0) * forwardScale || 0) + ((pose.suspension.x || 0) * downScale || 0),
+    y: ((pose.forward.y || 0) * forwardScale || 0) + ((pose.suspension.y || 0) * downScale || 0),
+    z: ((pose.forward.z || 0) * forwardScale || 0) + ((pose.suspension.z || 0) * downScale || 0)
+  };
+  const width = feature.widthOffsetM;
   return {
     pose,
-    point: addVector3(
-      addVector3(pose.hub, radial),
-      scaleVector3(pose.lateral, feature.widthOffsetM)
-    ),
+    point: {
+      x: (((pose.hub.x || 0) + (radial.x || 0)) || 0) + ((pose.lateral.x || 0) * width || 0),
+      y: (((pose.hub.y || 0) + (radial.y || 0)) || 0) + ((pose.lateral.y || 0) * width || 0),
+      z: (((pose.hub.z || 0) + (radial.z || 0)) || 0) + ((pose.lateral.z || 0) * width || 0)
+    },
     radial
   };
 }
@@ -700,6 +722,16 @@ export function sweepWheelCylinders({
   ));
   const active = findActiveCylinders(validCylinders, environment, spacingM);
   if (!active.length) return null;
+  const previousCache = activeSweepPoseCache;
+  activeSweepPoseCache = new WeakMap();
+  try {
+    return sweepActiveWheelCylinders(active, environment, toleranceM, spacingM, radialSamples);
+  } finally {
+    activeSweepPoseCache = previousCache;
+  }
+}
+
+function sweepActiveWheelCylinders(active, environment, toleranceM, spacingM, radialSamples) {
   const physicsCosts = environment.physicsCostAccounting;
   physicsCosts?.count('activeWheelCylinders', active.length);
   const featuresByWheel = new Map(active.map((cylinder) => [

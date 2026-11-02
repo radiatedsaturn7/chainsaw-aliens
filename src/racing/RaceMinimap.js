@@ -11,19 +11,31 @@ export function buildRaceMinimap({ network = null, samples = [], circuit = false
     : [{ id: 'legacy', structure: 'road', points: samples, closed: circuit }];
   const points = paths.flatMap(path => path.points);
   if (points.length < 2) return null;
-  const finishes = network ? getNetworkFinishNodes(network) : circuit ? [] : [samples.at(-1)].filter(Boolean);
-  return { paths, finishes,
-    start: network ? network.nodes.find(n => n.id === network.startNodeId) : samples[0],
+  const finishes = circuit ? [] : network ? getNetworkFinishNodes(network) : circuit ? [] : [samples.at(-1)].filter(Boolean);
+  const start=network ? network.nodes.find(n => n.id === network.startNodeId) : samples[0];
+  const same=p=>p&&start&&Math.hypot(p.x-start.x,p.z-start.z)<.001;
+  const startPath=paths.find(path=>same(path.points[0]))||paths.find(path=>same(path.points.at(-1)));
+  const oriented=startPath?(same(startPath.points[0])?startPath.points:[...startPath.points].reverse()):[];
+  const startNext=oriented.find(p=>!same(p))||null;
+  return { paths, finishes, circuit, start, startNext,
     finish: finishes[0] || null,
     minX: Math.min(...points.map(p => p.x)), maxX: Math.max(...points.map(p => p.x)),
     minZ: Math.min(...points.map(p => p.z)), maxZ: Math.max(...points.map(p => p.z))
   };
 }
 
+export function drawMinimapStartLine(ctx,point,next,size=10,color='#ffd34d'){
+ const dx=next?next.x-point.x:0,dy=next?next.y-point.y:1,length=Math.hypot(dx,dy)||1;
+ const nx=-dy/length*size/2,ny=dx/length*size/2;
+ ctx.beginPath();ctx.moveTo(point.x-nx,point.y-ny);ctx.lineTo(point.x+nx,point.y+ny);
+ ctx.strokeStyle='#050807';ctx.lineWidth=Math.max(2,size*.2)+2;ctx.stroke();
+ ctx.strokeStyle=color;ctx.lineWidth=Math.max(2,size*.2);ctx.stroke();
+}
+
 export function gaugeMapScreenBounds(b,g){return {x:b.x+b.w*(g.mapScreenX||0),y:b.y+b.h*(g.mapScreenY||0),w:b.w*(g.mapScreenWidth??1),h:b.h*(g.mapScreenHeight??1)};}
 
 export function gaugeMinimapTransform(bounds,map,gauge,player,heading=0){
-  const markerSize=Math.max(...['player','car','start','finish'].map(k=>gauge[k+'MarkerSize']||6));
+  const markerSize=Math.max(...['player','car','start','finish','circuit'].map(k=>gauge[k+'MarkerSize']||6));
   const pad=Math.min(Math.min(bounds.w,bounds.h)*.45,Math.max(6,Math.min(bounds.w,bounds.h)*markerSize/200+gauge.mapLineBorderWidth+2));
   const local=gauge.mapMode==='local',perspective=local&&gauge.mapProjection==='perspective';
   const center=local?player:{x:(map.minX+map.maxX)/2,z:(map.minZ+map.maxZ)/2};
@@ -69,6 +81,7 @@ export function drawGaugeMinimap(ctx,bounds,map,gauge,{player,heading=0,cars=[],
     if(p.x+r<bounds.x||p.x-r>bounds.x+bounds.w||p.y+r<bounds.y||p.y-r>bounds.y+bounds.h)return;
     const ref=kind==='player'?gauge.markerArtRef:gauge[kind+'MarkerArtRef'],art=ref?getArt(ref):null;
     if(art){const factor=size/Math.max(art.width||1,art.height||1),w=(art.width||1)*factor,h=(art.height||1)*factor;ctx.drawImage(art,p.x-w/2,p.y-h/2,w,h);return;}
+    if(gauge[kind+'MarkerShape']==='line'){drawMinimapStartLine(ctx,p,map.startNext?toScreen(map.startNext):null,size,gauge[kind+'MarkerColor']);return;}
     ctx.fillStyle=gauge[kind+'MarkerColor'];ctx.strokeStyle='#050807';ctx.lineWidth=1;ctx.beginPath();
     switch(gauge[kind+'MarkerShape']){
       case 'square':ctx.rect(p.x-r,p.y-r,size,size);break;
@@ -78,11 +91,11 @@ export function drawGaugeMinimap(ctx,bounds,map,gauge,{player,heading=0,cars=[],
     }
     ctx.fill();ctx.stroke();
   };
-  if(map.start)marker('start',map.start);
-  for(const p of map.finishes||(map.finish?[map.finish]:[]))marker('finish',p);
+  if(map.start)marker(map.circuit?'circuit':'start',map.start);
+  for(const p of map.circuit?[]:map.finishes||(map.finish?[map.finish]:[]))marker('finish',p);
   for(const p of cars)marker('car',p);
   marker('player',player);
-  if(lap!==null&&gauge.showValue){ctx.fillStyle=gauge.color;ctx.font=gauge.font||'12px monospace';ctx.textAlign='left';ctx.textBaseline='top';drawGaugeText(ctx,gauge,`L${lap}`,bounds.x+5,bounds.y+4,Math.max(1,bounds.w-10),gauge.fontScale||1);}
+  if(lap!==null&&gauge.showValue){ctx.fillStyle=gauge.color;ctx.font=gauge.font||'12px monospace';ctx.textAlign='left';ctx.textBaseline='top';drawGaugeText(ctx,gauge,gauge.formattedText??`L${lap}`,bounds.x+5,bounds.y+4,Math.max(1,bounds.w-10),gauge.fontScale||1);}
   if(gauge.mapBorderWidth>0){const half=gauge.mapBorderWidth/2;ctx.strokeStyle=gauge.mapBorderColor;ctx.lineWidth=gauge.mapBorderWidth;ctx.strokeRect(bounds.x+half,bounds.y+half,Math.max(0,bounds.w-gauge.mapBorderWidth),Math.max(0,bounds.h-gauge.mapBorderWidth));}
   ctx.restore();
 }

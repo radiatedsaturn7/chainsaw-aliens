@@ -1,0 +1,32 @@
+{
+  "kind": "race-tire",
+  "schemaVersion": 2,
+  "name": "Dirt",
+  "baseCompound": "dirt",
+  "compound": {
+    "id": "dirt",
+    "label": "Dirt",
+    "surfaceGrip": {
+      "asphalt": 0.78,
+      "wet-asphalt": 0.75,
+      "dirt": 1.16,
+      "gravel": 1.2,
+      "mud": 1,
+      "wet-gravel": 1.08,
+      "snow": 0.58,
+      "slush": 0.66
+    },
+    "wetEvacuationFactor": 1.08,
+    "treadDepthMm": 10,
+    "wearRate": 1.18
+  },
+  "size": {
+    "widthMm": 245,
+    "aspectRatio": 40,
+    "wheelDiameterIn": 18
+  },
+  "pressurePsi": 32,
+  "graphics": {
+    "angleLayers": {}
+  }
+}

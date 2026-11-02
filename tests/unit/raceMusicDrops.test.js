@@ -83,6 +83,8 @@ test('countdown lets compressed audio run without repeated seeks, then restores 
  for(let frame=1;frame<=180;frame++){
    time=9+frame/60-.04;session.countdownRemainingMs=4000-frame/60*1000;director.update(session,{dt:1/60});
  }
+ assert.equal(director.go,false); // audio is still 40 ms short of its marker
+ time=12;director.update(session);
  assert.equal(seeks,0);assert.equal(radio.audio.playbackRate,1);assert.equal(director.go,true);
 });
 test('early cue holds warmed audio paused rather than seeking zero repeatedly',async()=>{
@@ -114,13 +116,16 @@ test('unmarked songs keep their position through intro, countdown and GO',async(
  session.raceIntro.active=false;session.countdownRemainingMs=1000;director.update(session,{dt:3});
  assert.equal(seeks,0);assert.equal(audio.currentTime,24);assert.equal(audio.playbackRate,1);
 });
-test('early marked songs keep playing through GO without rewinding',async()=>{
+test('early marked songs wait through the preview and hit their marker at GO without restarting',async()=>{
  const {radio,director,session}=await fixture({start:1,end:null});
  session.raceIntro={active:true,elapsed:0};director.update(session);await tick();
- assert.equal(radio.playing,true);director.update(session,{dt:.6});assert.equal(radio.audio.volume,.8);
- radio.audio.currentTime=8;session.raceIntro.active=false;session.countdownRemainingMs=1000;
- director.update(session);assert.equal(radio.audio.currentTime,8);
- radio.audio.currentTime=9;director.update(session);assert.equal(radio.audio.currentTime,9);
+ assert.equal(radio.playing,false);assert.equal(radio.audio.volume,0);
+ session.raceIntro.active=false;session.countdownRemainingMs=2000;
+ director.update(session);await tick();assert.equal(radio.playing,true);assert.equal(radio.audio.currentTime,0);
+ const audio=radio.audio;let seeks=0;radio.seek=()=>seeks++;
+ audio.currentTime=.5;director.update(session,{dt:.5});assert.equal(session.countdownRemainingMs,1500);assert.equal(director.go,false);
+ audio.currentTime=1;director.update(session,{dt:.5});assert.equal(session.countdownRemainingMs,1000);assert.equal(director.go,true);
+ audio.currentTime=2;director.update(session);assert.equal(audio.currentTime,2);assert.equal(radio.audio,audio);assert.equal(seeks,0);
 });
 
 test('countdown drift never causes a seek or restart at GO',async()=>{
@@ -129,4 +134,33 @@ test('countdown drift never causes a seek or restart at GO',async()=>{
  const audio=radio.audio;audio.currentTime=13.5;let seeks=0;radio.seek=()=>seeks++;
  session.raceIntro.active=false;session.countdownRemainingMs=1000;director.update(session,{dt:.1});
  assert.equal(seeks,0);assert.equal(radio.audio,audio);assert.equal(audio.currentTime,13.5);assert.equal(audio.playbackRate,1);
+ assert.equal(session.countdownRemainingMs,2500);assert.equal(session.raceMusicCountdownClock,true);assert.equal(director.go,false);
+ audio.currentTime=15;director.update(session);assert.equal(director.go,true);assert.equal(session.countdownRemainingMs,1000);
+ director.reset();assert.equal(session.raceMusicCountdownClock,false);
+});
+
+
+test('long musical intro seeks back by the actual showcase plus countdown, never waits through the song intro',async()=>{
+ const {radio,director,session}=await fixture({start:90,end:null});
+ session.raceIntro={active:true,elapsed:0};
+ director.update(session);await tick();
+ assert.ok(Math.abs(radio.audio.currentTime-(90-5.7-3))<1e-8);
+ // Simulate a browser that failed to apply the initial seek. Handoff repairs it
+ // once before the visible 3-2-1, instead of displaying a 90-second countdown.
+ radio.audio.currentTime=5.7;session.raceIntro.active=false;
+ let seeks=0;const seek=radio.seek.bind(radio);radio.seek=value=>{seeks++;seek(value);};
+ director.update(session);
+ assert.equal(radio.audio.currentTime,87);
+ assert.equal(session.countdownRemainingMs,4000);
+ assert.equal(seeks,1);
+ radio.audio.currentTime=90;director.update(session);
+ assert.equal(seeks,1);assert.equal(director.go,true);
+});
+
+test('ignored cue seek cannot pin the countdown for a long song intro',async()=>{
+ const {radio,director,session}=await fixture({start:90,end:null});director.update(session);await tick();
+ Object.defineProperty(radio.audio,'currentTime',{get:()=>0,set:()=>{}});
+ for(let i=0;i<15;i++)director.update(session,{dt:.1});
+ assert.equal(director.countdownSeekFailed,true);assert.equal(session.raceMusicCountdownClock,false);
+ session.countdownRemainingMs=1000;director.update(session,{dt:.1});assert.equal(director.go,true);
 });

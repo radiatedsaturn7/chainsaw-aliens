@@ -7,7 +7,7 @@ import {
 
 export { VEHICLE_RENDER_WHEEL_FLAGS } from './VehicleRenderState.js';
 
-export const VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION = 9;
+export const VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION = 11;
 export const VEHICLE_RENDER_SNAPSHOT_HEADER_WORDS = 6;
 export const VEHICLE_RENDER_SNAPSHOT_FLOATS = 203;
 export const VEHICLE_RENDER_IMPACT_EVENT_CAPACITY = 4;
@@ -16,9 +16,9 @@ export const VEHICLE_RENDER_SNAPSHOT_BYTES = (
   VEHICLE_RENDER_SNAPSHOT_HEADER_WORDS * Uint32Array.BYTES_PER_ELEMENT
   + VEHICLE_RENDER_SNAPSHOT_FLOATS * Float32Array.BYTES_PER_ELEMENT
 );
-export const VEHICLE_CONTROL_INPUT_FLOATS = 16;
+export const VEHICLE_CONTROL_INPUT_FLOATS = 19;
 export const VEHICLE_CONTROL_INPUT_BYTES = VEHICLE_CONTROL_INPUT_FLOATS * Float32Array.BYTES_PER_ELEMENT;
-export const VEHICLE_ENVIRONMENT_UPDATE_FLOATS = 24;
+export const VEHICLE_ENVIRONMENT_UPDATE_FLOATS = 28;
 export const VEHICLE_ENVIRONMENT_UPDATE_BYTES = VEHICLE_ENVIRONMENT_UPDATE_FLOATS
   * Float32Array.BYTES_PER_ELEMENT;
 export const VEHICLE_RESET_COMMAND_FLOATS = 12;
@@ -44,7 +44,8 @@ export const VEHICLE_CONTROL_INPUT_FLOAT = Object.freeze({
   flags: 12,
   activeAeroState: 13,
   steeringInputMode: 14,
-  itemSpeedMultiplier: 15
+  itemSpeedMultiplier: 15,
+  headlights:16,highBeams:17,auxLights:18
 });
 
 export const VEHICLE_RENDER_SNAPSHOT_HEADER = Object.freeze({
@@ -149,6 +150,8 @@ export function createVehicleControlInputBuffer(input = {}) {
   values[VEHICLE_CONTROL_INPUT_FLOAT.itemSpeedMultiplier] = clamp(Number(input.itemSpeedMultiplier)||1,0.1,4);
   values[VEHICLE_CONTROL_INPUT_FLOAT.throttle] = finite(input.throttle);
   values[VEHICLE_CONTROL_INPUT_FLOAT.brake] = finite(input.brake);
+  values[VEHICLE_CONTROL_INPUT_FLOAT.headlights] = typeof input.headlights==='boolean'?(input.headlights?1:-1):0;
+  for(const key of ['highBeams','auxLights'])values[VEHICLE_CONTROL_INPUT_FLOAT[key]]=typeof input[key]==='boolean'?(input[key]?1:-1):0;
   values[VEHICLE_CONTROL_INPUT_FLOAT.clutch] = finite(input.clutch);
   values[VEHICLE_CONTROL_INPUT_FLOAT.handbrake] = finite(input.handbrake);
   values[VEHICLE_CONTROL_INPUT_FLOAT.handbrakeHoldSequence] = finite(input.handbrakeHoldSequence);
@@ -190,6 +193,8 @@ export function readVehicleControlInput(buffer) {
     itemSpeedMultiplier: values[VEHICLE_CONTROL_INPUT_FLOAT.itemSpeedMultiplier]||1,
     throttle: values[VEHICLE_CONTROL_INPUT_FLOAT.throttle],
     brake: values[VEHICLE_CONTROL_INPUT_FLOAT.brake],
+    headlights:values[VEHICLE_CONTROL_INPUT_FLOAT.headlights]===0?null:values[VEHICLE_CONTROL_INPUT_FLOAT.headlights]>0,
+    ...Object.fromEntries(['highBeams','auxLights'].map(key=>[key,values[VEHICLE_CONTROL_INPUT_FLOAT[key]]===0?null:values[VEHICLE_CONTROL_INPUT_FLOAT[key]]>0])),
     clutch: values[VEHICLE_CONTROL_INPUT_FLOAT.clutch],
     handbrake: values[VEHICLE_CONTROL_INPUT_FLOAT.handbrake],
     handbrakeHoldSequence: Math.trunc(values[VEHICLE_CONTROL_INPUT_FLOAT.handbrakeHoldSequence]),
@@ -241,6 +246,7 @@ export function createVehicleEnvironmentUpdateBuffer({
     const wheelId = RACE_WHEEL_IDS[index];
     values[15 + index] = finite(damage.brakes?.[wheelId]);
     values[19 + index] = finite(damage.tires?.[wheelId]);
+    values[24 + index] = finite(damage.suspension?.[wheelId]);
   }
   return values.buffer;
 }
@@ -253,10 +259,11 @@ export function readVehicleEnvironmentUpdate(buffer) {
   }
   const values = new Float32Array(buffer);
   const brakes = {};
-  const tires = {};
+  const tires = {}, suspension = {};
   for (let index = 0; index < RACE_WHEEL_IDS.length; index += 1) {
     brakes[RACE_WHEEL_IDS[index]] = values[15 + index];
     tires[RACE_WHEEL_IDS[index]] = values[19 + index];
+    suspension[RACE_WHEEL_IDS[index]] = values[24 + index];
   }
   return {
     weatherState: {
@@ -286,6 +293,8 @@ export function readVehicleEnvironmentUpdate(buffer) {
       engine: values[13],
       transmission: values[14],
       brakes,
+      suspension,
+      panels:{front:values[11]*100,rear:values[12]*100},
       tires
     }
   };

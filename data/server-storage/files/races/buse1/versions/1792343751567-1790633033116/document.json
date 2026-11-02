@@ -1,0 +1,1242 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-track",
+  "savedAt": 1790633033116,
+  "selectedRaceId": "drawing-34f46410-dd4a-49bf-8e30-02d3d14a8800",
+  "race": {
+    "id": "drawing-34f46410-dd4a-49bf-8e30-02d3d14a8800",
+    "name": "17906328907396568741446714062450",
+    "type": "circuit",
+    "laps": 1,
+    "weather": "clear",
+    "timeOfDay": "day",
+    "finishBehavior": {
+      "type": "return-to-origin",
+      "targetLevel": null,
+      "targetRace": null,
+      "spawnX": null,
+      "spawnY": null
+    },
+    "road": {
+      "width": 9,
+      "nodes": [
+        {
+          "x": 0,
+          "y": 0,
+          "elevation": 0,
+          "role": "start",
+          "locked": true
+        },
+        {
+          "x": 162.52497341325915,
+          "y": 13.543747784438263,
+          "elevation": 0
+        },
+        {
+          "x": 189.61246898213568,
+          "y": 8.464842365273915,
+          "elevation": 0
+        },
+        {
+          "x": 221.77886997017657,
+          "y": 8.464842365273915,
+          "elevation": 0
+        },
+        {
+          "x": 226.8577753893409,
+          "y": 27.087495568876527,
+          "elevation": 0
+        },
+        {
+          "x": 233.62964928156003,
+          "y": 27.087495568876527,
+          "elevation": 0
+        },
+        {
+          "x": 252.25230248516266,
+          "y": 13.543747784438263,
+          "elevation": 0
+        },
+        {
+          "x": 262.4101133234914,
+          "y": 13.543747784438263,
+          "elevation": 0
+        },
+        {
+          "x": 267.48901874265573,
+          "y": 25.394527095821744,
+          "elevation": 0
+        },
+        {
+          "x": 242.09449164683397,
+          "y": 45.71014877247914,
+          "elevation": 0
+        },
+        {
+          "x": 223.47183844323135,
+          "y": 47.40311724553392,
+          "elevation": 0
+        },
+        {
+          "x": 220.08590149712177,
+          "y": 59.253896556917404,
+          "elevation": 0
+        },
+        {
+          "x": 209.92809065879308,
+          "y": 69.4117073952461,
+          "elevation": 0
+        },
+        {
+          "x": 194.69137440130004,
+          "y": 66.02577044913653,
+          "elevation": 0
+        },
+        {
+          "x": 189.61246898213568,
+          "y": 72.79764434135566,
+          "elevation": 0
+        },
+        {
+          "x": 179.454658143807,
+          "y": 76.18358128746523,
+          "elevation": 0
+        },
+        {
+          "x": 169.29684730547828,
+          "y": 66.02577044913653,
+          "elevation": 0
+        },
+        {
+          "x": 162.52497341325915,
+          "y": 66.02577044913653,
+          "elevation": 0
+        },
+        {
+          "x": 150.67419410187568,
+          "y": 74.49061281441045,
+          "elevation": 0
+        },
+        {
+          "x": 148.9812256288209,
+          "y": 96.49920296412263,
+          "elevation": 0
+        },
+        {
+          "x": 140.51638326354697,
+          "y": 121.89373005994437,
+          "elevation": 0
+        },
+        {
+          "x": 120.20076158688958,
+          "y": 121.89373005994437,
+          "elevation": 0
+        },
+        {
+          "x": 116.81482464078002,
+          "y": 126.97263547910872,
+          "elevation": 0
+        },
+        {
+          "x": 116.81482464078002,
+          "y": 138.8234147904922,
+          "elevation": 0
+        },
+        {
+          "x": 140.51638326354697,
+          "y": 176.0687211976974,
+          "elevation": 0
+        },
+        {
+          "x": 138.8234147904922,
+          "y": 186.22653203602613,
+          "elevation": 0
+        },
+        {
+          "x": 126.97263547910872,
+          "y": 203.15621676657395,
+          "elevation": 0
+        },
+        {
+          "x": 98.19217143717741,
+          "y": 204.84918523962872,
+          "elevation": 0
+        },
+        {
+          "x": 94.80623449106784,
+          "y": 201.46324829351917,
+          "elevation": 0
+        },
+        {
+          "x": 96.49920296412263,
+          "y": 176.0687211976974,
+          "elevation": 0
+        },
+        {
+          "x": 88.0343605988487,
+          "y": 160.83200494020437,
+          "elevation": 0
+        },
+        {
+          "x": 76.18358128746523,
+          "y": 160.83200494020437,
+          "elevation": 0
+        },
+        {
+          "x": 66.02577044913653,
+          "y": 167.6038788324235,
+          "elevation": 0
+        },
+        {
+          "x": 44.01718029942435,
+          "y": 172.68278425158786,
+          "elevation": 0
+        },
+        {
+          "x": 25.394527095821744,
+          "y": 199.7702798204644,
+          "elevation": 0
+        },
+        {
+          "x": 10.157810838328697,
+          "y": 208.2351221857383,
+          "elevation": 0
+        },
+        {
+          "x": -6.771873892219132,
+          "y": 206.54215371268353,
+          "elevation": 0
+        },
+        {
+          "x": -20.315621676657393,
+          "y": 174.37575272464264,
+          "elevation": 0
+        },
+        {
+          "x": -30.473432514986094,
+          "y": 174.37575272464264,
+          "elevation": 0
+        },
+        {
+          "x": -81.26248670662957,
+          "y": 204.84918523962872,
+          "elevation": 0
+        },
+        {
+          "x": -89.7273290719035,
+          "y": 203.15621676657395,
+          "elevation": 0
+        },
+        {
+          "x": -103.27107685634176,
+          "y": 182.84059508991655,
+          "elevation": 0
+        },
+        {
+          "x": -111.73591922161567,
+          "y": 187.9195005090809,
+          "elevation": 0
+        },
+        {
+          "x": -126.97263547910872,
+          "y": 184.53356356297135,
+          "elevation": 0
+        },
+        {
+          "x": -132.05154089827306,
+          "y": 172.68278425158786,
+          "elevation": 0
+        },
+        {
+          "x": -120.20076158688958,
+          "y": 169.29684730547828,
+          "elevation": 0
+        },
+        {
+          "x": -118.50779311383481,
+          "y": 160.83200494020437,
+          "elevation": 0
+        },
+        {
+          "x": -128.6656039521635,
+          "y": 138.8234147904922,
+          "elevation": 0
+        },
+        {
+          "x": -115.12185616772524,
+          "y": 135.43747784438264,
+          "elevation": 0
+        },
+        {
+          "x": -110.04295074856088,
+          "y": 142.20935173660177,
+          "elevation": 0
+        },
+        {
+          "x": -98.19217143717741,
+          "y": 145.59528868271133,
+          "elevation": 0
+        },
+        {
+          "x": -89.7273290719035,
+          "y": 137.13044631743742,
+          "elevation": 0
+        },
+        {
+          "x": -76.18358128746523,
+          "y": 133.74450937132787,
+          "elevation": 0
+        },
+        {
+          "x": -76.18358128746523,
+          "y": 116.81482464078002,
+          "elevation": 0
+        },
+        {
+          "x": -79.5695182335748,
+          "y": 108.34998227550611,
+          "elevation": 0
+        },
+        {
+          "x": -91.42029754495827,
+          "y": 99.8851399102322,
+          "elevation": 0
+        },
+        {
+          "x": -111.73591922161567,
+          "y": 99.8851399102322,
+          "elevation": 0
+        },
+        {
+          "x": -120.20076158688958,
+          "y": 84.64842365273914,
+          "elevation": 0
+        },
+        {
+          "x": -132.05154089827306,
+          "y": 84.64842365273914,
+          "elevation": 0
+        },
+        {
+          "x": -147.2882571557661,
+          "y": 94.80623449106784,
+          "elevation": 0
+        },
+        {
+          "x": -162.52497341325915,
+          "y": 88.0343605988487,
+          "elevation": 0
+        },
+        {
+          "x": -164.21794188631395,
+          "y": 76.18358128746523,
+          "elevation": 0
+        },
+        {
+          "x": -157.44606799409482,
+          "y": 62.63983350302697,
+          "elevation": 0
+        },
+        {
+          "x": -172.68278425158786,
+          "y": 42.32421182636957,
+          "elevation": 0
+        },
+        {
+          "x": -169.29684730547828,
+          "y": 27.087495568876527,
+          "elevation": 0
+        },
+        {
+          "x": -154.06013104798524,
+          "y": 15.236716257493047,
+          "elevation": 0
+        },
+        {
+          "x": -145.59528868271133,
+          "y": 15.236716257493047,
+          "elevation": 0
+        },
+        {
+          "x": -140.51638326354697,
+          "y": 23.70155862276696,
+          "elevation": 0
+        },
+        {
+          "x": -133.74450937132787,
+          "y": 25.394527095821744,
+          "elevation": 0
+        },
+        {
+          "x": -110.04295074856088,
+          "y": 11.85077931138348,
+          "elevation": 0
+        },
+        {
+          "x": -99.8851399102322,
+          "y": 11.85077931138348,
+          "elevation": 0
+        },
+        {
+          "x": -88.0343605988487,
+          "y": 27.087495568876527,
+          "elevation": 0
+        },
+        {
+          "x": -64.33280197608175,
+          "y": 20.315621676657393,
+          "elevation": 0
+        },
+        {
+          "x": -59.253896556917404,
+          "y": 30.473432514986094,
+          "elevation": 0
+        },
+        {
+          "x": -45.71014877247914,
+          "y": 37.24530640720523,
+          "elevation": 0
+        },
+        {
+          "x": -35.552337934150444,
+          "y": 37.24530640720523,
+          "elevation": 0
+        },
+        {
+          "x": -32.16640098804088,
+          "y": 3.385936946109566,
+          "elevation": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "elevation": 0,
+          "role": "finish"
+        }
+      ],
+      "segments": [
+        {
+          "length": 163.08831989762191,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 27.55953004771168,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 32.16640098804089,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 19.30281048444675,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 6.7718738922191335,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 23.026860758473514,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 10.157810838328714,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 12.893263766166104,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 32.52086238908029,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 18.699447975606354,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 12.32499652292627,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 14.365313851584851,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 15.608398102123825,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 8.464842365273922,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 10.707272763421015,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 14.365313851584876,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 6.7718738922191335,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 14.563465472065724,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 22.073608282941994,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 26.76818190855257,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 20.315621676657386,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 6.10408463734299,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 11.850779311383477,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 44.14721656588397,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 10.29792519287384,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 20.66531382202696,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 28.83021423298236,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 4.788437950528278,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 25.450896814673996,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 17.430177238923562,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 11.850779311383477,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 12.208169274685993,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 22.58701663865383,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 32.871501768789884,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 17.43017723892356,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 17.01412258467952,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 34.9014391762276,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 10.1578108383287,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 59.229706355232835,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 8.632479280003727,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 24.416338549371986,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 9.871617725872142,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 15.608398102123822,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 12.893263766166111,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 12.324996522926263,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 8.632479280003713,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 24.23961966296658,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 13.960575670491034,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 8.464842365273922,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 12.324996522926257,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 11.971094876320713,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 13.960575670491034,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 16.929684730547848,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 9.116914240682853,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 14.563465472065726,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 20.3156216766574,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 17.43017723892357,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 11.850779311383477,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 18.312253912028986,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 16.673805754040433,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 11.971094876320718,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 15.14237035805806,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 25.394527095821747,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 15.608398102123829,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 19.302810484446752,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 8.46484236527391,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 9.871617725872145,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 6.98028783524549,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 27.298296379022194,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 10.157810838328686,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 19.302810484446763,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 24.64999304585252,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 11.35677776854355,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 15.142370358058068,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 10.157810838328693,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 34.028245169359046,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        },
+        {
+          "length": 32.34411726305831,
+          "curve": 0,
+          "elevation": 0,
+          "surface": "asphalt",
+          "roadWidthM": 9,
+          "bumpiness": 0,
+          "hazardIds": []
+        }
+      ],
+      "selectedGroundTileId": "grass",
+      "groundTiles": [],
+      "tileMap": {
+        "schemaVersion": 2,
+        "normalized": true,
+        "revision": 0,
+        "cellSizeM": 5,
+        "defaultTileId": "grass",
+        "minElevation": -1,
+        "maxElevation": 1,
+        "cells": {}
+      },
+      "tilePaintSource": "tile-editor"
+    },
+    "competition": {
+      "mode": "solo",
+      "aiDrivers": [],
+      "trafficEnabled": false
+    },
+    "hazards": [],
+    "scenery": [],
+    "sceneryDefinitions": [],
+    "decals": [],
+    "triggers": [],
+    "codriver": {
+      "enabled": false,
+      "voice": "default",
+      "calls": []
+    },
+    "raceStart": {
+      "musicTrackId": "",
+      "countdown": true,
+      "rollingStart": false,
+      "rollingStartSpeedMps": 13.4
+    },
+    "groundRenderer": "webgl-track",
+    "groundTextureBaseWorldM": 1.002,
+    "groundTextureFilterMode": "balanced",
+    "skyboxArtRef": "providence",
+    "skyboxSettings": {
+      "artRef": "providence",
+      "offsetXTurns": 0,
+      "offsetYRatio": 0
+    },
+    "surfaceArt": {
+      "boundary": "apron"
+    },
+    "margin": {
+      "enabled": true,
+      "shoulderEnabled": true,
+      "widthM": 0.22,
+      "shoulderWidthM": 12,
+      "collisionMode": "shoulder",
+      "artRef": "apron",
+      "marginMode": "on",
+      "shoulderMode": "hidden",
+      "collisionEdge": "shoulder",
+      "collisionEffect": "reset"
+    },
+    "renderDebug": {
+      "lightingEnabled": true,
+      "terrainEnabled": true,
+      "texturesEnabled": true,
+      "detailEnabled": false,
+      "terrainCullingEnabled": true,
+      "terrainLodEnabled": true,
+      "terrainBudgetEnabled": true,
+      "farRoadDecimationEnabled": true,
+      "rawTerrainPolygonsEnabled": false
+    },
+    "doodadsMigrated": true,
+    "tireFx": {
+      "skidSmoke": {
+        "enabled": true,
+        "artRef": "",
+        "color": "rgba(228,232,222,0.72)",
+        "density": 1,
+        "lifetimeMs": 620,
+        "scale": 1
+      },
+      "asphaltSkid": {
+        "enabled": true,
+        "artRef": "",
+        "color": "rgba(46,48,46,0.62)",
+        "density": 1,
+        "lifetimeMs": 620,
+        "scale": 1
+      },
+      "dirtDust": {
+        "enabled": true,
+        "artRef": "",
+        "color": "rgba(155,116,72,0.68)",
+        "density": 1,
+        "lifetimeMs": 620,
+        "scale": 1
+      },
+      "gravelDust": {
+        "enabled": true,
+        "artRef": "",
+        "color": "rgba(176,178,172,0.62)",
+        "density": 1,
+        "lifetimeMs": 620,
+        "scale": 1
+      },
+      "grassDust": {
+        "enabled": true,
+        "artRef": "",
+        "color": "rgba(103,145,66,0.62)",
+        "density": 1,
+        "lifetimeMs": 620,
+        "scale": 1
+      },
+      "snowDust": {
+        "enabled": true,
+        "artRef": "",
+        "color": "rgba(230,240,244,0.74)",
+        "density": 1,
+        "lifetimeMs": 620,
+        "scale": 1
+      },
+      "wetSpray": {
+        "enabled": true,
+        "artRef": "",
+        "color": "rgba(154,184,198,0.58)",
+        "density": 1,
+        "lifetimeMs": 620,
+        "scale": 1
+      }
+    }
+  }
+}

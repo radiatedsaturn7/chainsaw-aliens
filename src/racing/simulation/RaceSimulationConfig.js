@@ -59,3 +59,8 @@ export function getRaceServiceBrakeForceN(tuning = {}) {
   const massKg = Math.max(100, Number(tuning.weightKg ?? tuning.physicalVehicleProfile?.massKg) || 1450);
   return Math.max(9000, massKg * 12.5);
 }
+
+// Player plus up to 29 opponents. Keep authoring and runtime limits identical.
+export const RACE_MAX_AI_DRIVERS = 29;
+// Opponents retain the same tire/chassis equations at the presentation target rate.
+export const RACE_AI_PHYSICS_HZ = 60;

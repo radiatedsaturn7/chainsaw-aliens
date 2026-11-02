@@ -31,7 +31,11 @@ export function getWheelSlipPresentation(state = {}, radiusM = .33) {
       : omega*Math.max(.05,Number(wheel.effectiveRollingRadiusM||radiusM));
     const slipSpeed=Math.hypot(rolling-longitudinal,lateral);
     const denominator=Math.max(1,Math.abs(longitudinal));
-    const spin=clamp((Math.abs(rolling)-Math.abs(longitudinal))/denominator,0,1.8);
+    // Counter-rotating tread scrubs the road even when the two speed
+    // magnitudes match (common while recovering from a spin).
+    const spin=clamp((rolling*longitudinal<0
+      ? Math.abs(rolling-longitudinal)
+      : Math.abs(rolling)-Math.abs(longitudinal))/denominator,0,1.8);
     const lock=clamp((Math.abs(longitudinal)-Math.abs(rolling))/denominator,0,1);
     const lateralSlip=clamp((Math.atan2(Math.abs(lateral),denominator)-.045)/.34,0,1);
     // Ignore tiny tire compliance/solver motion, but retain stationary wheelspin.

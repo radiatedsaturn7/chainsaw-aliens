@@ -28,10 +28,12 @@ export function indexTrackStateCell(cells, key, cell) {
   }
 }
 
-export function queryTrackStateCells(cells, bounds = null) {
-  if (!bounds) return [...cells.values()];
+export function queryTrackStateCells(cells, bounds = null, result = []) {
+  result.length = 0;
+  if (!bounds) { for (const cell of cells.values()) result.push(cell); return result; }
   if (![bounds.minX, bounds.maxX, bounds.minZ, bounds.maxZ].every(Number.isFinite)) {
-    return [...cells.values()].filter(cell => within(cell, bounds));
+    for (const cell of cells.values()) if (within(cell, bounds)) result.push(cell);
+    return result;
   }
   let index = indexes.get(cells);
   if (!index || index.size !== cells.size) {
@@ -39,7 +41,6 @@ export function queryTrackStateCells(cells, bounds = null) {
     for (const [key, cell] of cells) insert(index, key, cell);
     indexes.set(cells, index);
   }
-  const result = [];
   for (let z = Math.floor(bounds.minZ / bucketSize); z <= Math.floor(bounds.maxZ / bucketSize); z++) {
     for (let x = Math.floor(bounds.minX / bucketSize); x <= Math.floor(bounds.maxX / bucketSize); x++) {
       for (const key of index.buckets.get(`${x}:${z}`) || []) {

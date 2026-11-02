@@ -572,7 +572,7 @@ test('hydrateProjectFile fetches one selected file and caches it', async () => {
   };
   try {
     const payload = await hydrateProjectFile('art', 'player');
-    assert.deepEqual(payload.data, document);
+    assert.equal(payload.data, document, 'reuse decoded response instead of reparsing the sprite payload');
     assert.deepEqual(JSON.parse(readCachedProjectFile('art', 'player')).data, document);
     assert.deepEqual(calls, ['/__storage/file?folder=art&name=player']);
   } finally {
@@ -770,4 +770,15 @@ test('hydration cannot return an old race when a newer save arrives during fetch
     const loaded = await loading;
     assert.equal(loaded.data.description, 'Newest');
   } finally { globalThis.fetch = originalFetch; clearCachedProjectFilesForTests(); }
+});
+
+test('reopening a warm project asset reuses the parsed payload without another large JSON copy',async()=>{
+ const {hydrateProjectFilePayload}=await import('../../src/ui/projectFiles.js');
+ clearCachedProjectFilesForTests();
+ upsertCachedProjectFile('art','Warm sprite',JSON.stringify({folder:'art',name:'Warm sprite',savedAt:1,data:{pixels:['#ffffff']}}));
+ const cached=loadProjectFile('art','Warm sprite');
+ const parse=JSON.parse,stringify=JSON.stringify;let copies=0;
+ JSON.parse=(...args)=>{copies++;return parse(...args);};JSON.stringify=(...args)=>{copies++;return stringify(...args);};
+ try{assert.equal(await hydrateProjectFilePayload('art','Warm sprite'),cached);assert.equal(copies,0);}
+ finally{JSON.parse=parse;JSON.stringify=stringify;clearCachedProjectFilesForTests();}
 });

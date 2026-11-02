@@ -1,24 +1,14 @@
-export async function seedRaceRuntimeFixtures(page) {
-  await page.evaluate(async () => {
+export async function seedRaceRuntimeFixtures(page, {straight = false} = {}) {
+  await page.evaluate(async ({straight}) => {
     const game = window.__game;
     const editor = game.raceEditor;
     const clone = (value) => JSON.parse(JSON.stringify(value));
     const now = Date.now();
+    const {saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');
+    // Seed the browser cache as well as the server. Raw POSTs leave documents
+    // hydrated during startup pointing at the user's committed race/car data.
     const postFile = async (folder, name, data, offset = 0) => {
-      const response = await fetch('/__storage/file', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          version: 1,
-          folder,
-          name,
-          savedAt: now + offset,
-          data
-        })
-      });
-      if (!response.ok) {
-        throw new Error(`Could not seed ${folder}/${name}: ${response.status}`);
-      }
+      await saveProjectFileAndConfirm(folder,name,data,{savedAt:now+offset,createVersion:false});
     };
     const makeArt = (width, height, color) => ({
       schemaVersion: 1,
@@ -35,6 +25,12 @@ export async function seedRaceRuntimeFixtures(page) {
     race.id = 'playwright-studio-sprint-2';
     race.name = 'Studio Sprint 2';
     race.laps = 1;
+    if(straight){
+      // Finish-flow contracts need a deterministic approach, not an AI handling test.
+      race.type='destination';
+      race.road.nodes=[{x:0,y:0,elevation:0,role:'start',locked:true},{x:0,y:740,elevation:0,role:'finish'}];
+      race.road.segments=[{length:740,curve:0,elevation:0,surface:'asphalt',hazardIds:[]}];
+    }
     race.finishBehavior = {type:'return-to-origin'};
     race.weather = 'clear';
     race.groundRenderer = 'webgl-track';
@@ -206,5 +202,5 @@ export async function seedRaceRuntimeFixtures(page) {
       }, 5),
       postFile('levels', 'levelA', level, 6)
     ]);
-  });
+  }, {straight});
 }

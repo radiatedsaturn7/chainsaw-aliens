@@ -19,9 +19,13 @@ const smoothstep = (value) => {
 };
 
 const normalizeVector3 = (vector = {}) => {
-  const x = Number(vector.x || 0);
-  const y = Number(vector.y ?? 0);
-  const z = Number(vector.z || 0);
+  return normalizeComponents(vector.x, vector.y, vector.z);
+};
+
+const normalizeComponents = (rawX, rawY, rawZ) => {
+  const x = Number(rawX || 0);
+  const y = Number(rawY ?? 0);
+  const z = Number(rawZ || 0);
   const length = Math.hypot(x, y, z) || 1;
   return { x: x / length, y: y / length, z: z / length };
 };
@@ -212,12 +216,17 @@ export class RaceSurfaceModel {
     }) || {};
     const segment = fallbackPose.segment || this.adapter.getSegmentAtDistance?.(distance) || null;
     const yaw = Number(fallbackPose.yaw || 0);
-    const tangent = normalizeVector3({
-      ...this.getForwardVector(yaw),
-      y: Number(fallbackPose.grade || 0)
-    });
-    const right = normalizeVector3({ ...this.getRightVector(yaw), y: 0 });
-    const normal = normalizeVector3(cross(right, tangent));
+    // Adapter vectors may be shared/frozen. Read their components without
+    // copying temporary inputs or mutating anything owned by the adapter.
+    const forward = this.getForwardVector(yaw);
+    const tangent = normalizeComponents(forward?.x, Number(fallbackPose.grade || 0), forward?.z);
+    const side = this.getRightVector(yaw);
+    const right = normalizeComponents(side?.x, 0, side?.z);
+    const normal = normalizeComponents(
+      Number(right.y || 0) * Number(tangent.z || 0) - Number(right.z || 0) * Number(tangent.y || 0),
+      Number(right.z || 0) * Number(tangent.x || 0) - Number(right.x || 0) * Number(tangent.z || 0),
+      Number(right.x || 0) * Number(tangent.y || 0) - Number(right.y || 0) * Number(tangent.x || 0)
+    );
     const roadHalfWidth = Math.max(0, Number(fallbackPose.roadHalfWidth ?? this.adapter.getRoadHalfWidth?.(segment) ?? 0) || 0);
     const marginWidth = Math.max(0, Number(fallbackPose.marginWidth ?? this.adapter.getMarginWidth?.(segment) ?? 0) || 0);
     const shoulderWidth = Math.max(0, Number(fallbackPose.shoulderWidth ?? this.adapter.getShoulderWidth?.(segment) ?? 0) || 0);
@@ -379,7 +388,8 @@ export class RaceSurfaceModel {
     return { region: 'terrain', metrics, blend: 1 };
   }
 
-  getCrossSectionAtDistance(distance = 0, options = {}) {
+  // Planning needs the authored corridor, not sampled terrain edge vertices.
+  getCorridorAtDistance(distance = 0, options = {}) {
     const sampledDeck = this.sampleDeckAtDistance(distance, options);
     const deck = options.deckSample
       ? {
@@ -391,7 +401,11 @@ export class RaceSurfaceModel {
         segment: options.deckSample.segment || sampledDeck.segment
       }
       : sampledDeck;
-    const metrics = this.getCorridorMetrics(deck, deck.segment);
+    return {deck, metrics: this.getCorridorMetrics(deck, deck.segment)};
+  }
+
+  getCrossSectionAtDistance(distance = 0, options = {}) {
+    const {deck, metrics} = this.getCorridorAtDistance(distance, options);
     const right = deck.right || this.getRightVector(deck.yaw);
     const makePoint = (lateralOffset, edge, pointElevation = this.getBankedDeckElevation(deck, lateralOffset), roadDeckElevation = true) => ({
       ...deck,
@@ -447,13 +461,15 @@ export class RaceSurfaceModel {
 
   sampleTrack(distance = 0, lateral = 0, options = {}) {
     const deck = options.deckSample || this.sampleDeckAtDistance(distance, options);
-    const metrics = this.getCorridorMetrics(deck, deck.segment);
     const right = deck.right || this.getRightVector(deck.yaw);
     const x = Number(deck.x || 0) + Number(right.x || 0) * Number(lateral || 0);
     const z = Number(deck.z || 0) + Number(right.z || 0) * Number(lateral || 0);
     const fallbackSurface = deck.segment?.surface || options.fallbackSurfaceId || 'asphalt';
     const applyWeatherSurface = options.applyWeatherSurface !== false;
     const classification = this.classifyLateral(lateral, deck, deck.segment);
+    // Classification already computes the same corridor. Keep this sample local
+    // rather than allocating and calculating a second copy for the return value.
+    const metrics = classification.metrics;
     let region = classification.region;
     let blend = classification.blend;
     const physicsContactCanSkipRaw = options.physicsContact === true
@@ -540,7 +556,7 @@ export class RaceSurfaceModel {
     };
   }
 
-  sampleWorld(x = 0, z = 0, options = {}) {
+  sampleWorld(x = 0, z = 0, options = {}, preparedGeometry = null) {
     this.performanceDiagnostics.fullSurfaceQueries += 1;
     const worldPoint = typeof x === 'object'
       ? { x: Number(x.x || 0), z: Number(x.z ?? x.y ?? 0), ...queryHeight(x) }
@@ -548,7 +564,9 @@ export class RaceSurfaceModel {
     const fallbackElevation = typeof x === 'object'
       ? Number(z ?? options.fallbackElevation ?? 0)
       : Number(options.fallbackElevation ?? 0);
-    const projection = this.projectWorldToTrack(worldPoint);
+    // A physics fallback can reuse work from this same synchronous query.
+    // Nothing is retained across samples, edits, or weather updates.
+    const projection = preparedGeometry?.projection || this.projectWorldToTrack(worldPoint);
     if (!projection?.segment || !Number.isFinite(Number(projection.lateral))) {
       const raw = {
         ...this.sampleRawTerrain(worldPoint, fallbackElevation),
@@ -565,7 +583,7 @@ export class RaceSurfaceModel {
     }
     const track = this.sampleTrack(Number(projection.distance || 0), Number(projection.lateral || 0), {
       ...options,
-      deckSample: this.getNetworkDeckForProjection(projection) || options.deckSample,
+      deckSample: this.getNetworkDeckForProjection(projection) || options.deckSample || preparedGeometry?.deck,
       fallbackSurfaceId: projection.segment?.surface || options.fallbackSurfaceId || 'asphalt'
     });
     if (Math.abs(Number(projection.lateral || 0)) > Number(track.metrics?.transitionEnd || 0)) {
@@ -694,7 +712,7 @@ export class RaceSurfaceModel {
       projection.segment
     );
     if (classification.region === 'transition' || classification.region === 'terrain') {
-      const full = this.sampleWorld(point, Number(context.fallbackElevation || 0), context);
+      const full = this.sampleWorld(point, Number(context.fallbackElevation || 0), context, { projection, deck });
       return finalize({
         elevation: full.elevation,
         normal: full.normal,
@@ -713,7 +731,8 @@ export class RaceSurfaceModel {
     const region = classification.region;
     const analyticElevation = this.getBankedDeckElevation(deck, Number(projection.lateral || 0));
     const analyticNormal = this.getBankedDeckNormal(deck);
-    const baked = this.sampleBakedSurface(point, { preferredRegion: region });
+    const baked = this.sampleBakedSurface(point, {preferredRegion: region,
+      localCandidateRevision: context.localCandidateRevision});
     const bakedMatchesRegion = baked && (
       baked.region === region
       || (region === 'shoulder' && ['inner', 'flat-join'].includes(baked.region))

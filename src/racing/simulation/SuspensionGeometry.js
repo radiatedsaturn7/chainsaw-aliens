@@ -1,6 +1,10 @@
 import { clamp } from './SimulationMath.js';
 
 const RAD = Math.PI / 180;
+// Only definitions produced here have immutable scalar settings and axis.
+// Do not cache arbitrary caller objects: editors may mutate them in place.
+const normalizedDefinitions = new WeakSet();
+const solvedDefinitions = new WeakMap();
 const q = (v) => Number((Number(v) || 0).toFixed(6));
 const normalizeAxis = (value = {}) => {
   const x = Number(value.x || 0);
@@ -41,7 +45,7 @@ export function resolvePerWheelAlignment({
 export function normalizeSuspensionDefinition(value = {}, fallbackType = 'macpherson') {
   const type = String(value.type || fallbackType).toLowerCase();
   const base = DEFAULTS[type] || DEFAULTS.macpherson;
-  return Object.freeze({
+  const normalized = Object.freeze({
     type: DEFAULTS[type] ? type : 'macpherson',
     hardpoints: value.hardpoints || null,
     suspensionAxis: normalizeAxis(value.suspensionAxis || value.axis || { x: 0, y: -1, z: 0 }),
@@ -59,12 +63,19 @@ export function normalizeSuspensionDefinition(value = {}, fallbackType = 'macphe
     antiDive: clamp(Number(value.antiDive ?? 0), 0, 1),
     antiSquat: clamp(Number(value.antiSquat ?? 0), 0, 1)
   });
+  normalizedDefinitions.add(normalized);
+  return normalized;
 }
 
 export function solveSuspensionGeometry({ definition = {}, compressionM = 0, steeringAngleRad = 0,
   staticCamberRad = 0, staticToeRad = 0, alignmentSideSign = 1,
   springRateNpm = 30000, target = null } = {}) {
-  const d = normalizeSuspensionDefinition(definition);
+  let d = normalizedDefinitions.has(definition) ? solvedDefinitions.get(definition) : null;
+  if (!d) {
+    // Preserve the historical second normalization, including axis rounding.
+    d = normalizeSuspensionDefinition(definition);
+    if (normalizedDefinitions.has(definition)) solvedDefinitions.set(definition, d);
+  }
   const travel = Number(compressionM) || 0;
   const bumpSteerRad = d.toeGainRadPerM * travel;
   const motionRatio = clamp(d.motionRatio * (1 - Math.abs(travel) * 0.08), 0.3, 1.5);

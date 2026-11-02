@@ -45,15 +45,18 @@ export function drawInGameTextMenu(ctx, {
   ctx.fillText(String(title || 'Paused'), originX + contentWidth / 2, originY + TITLE_Y * scale);
 
   const rowBounds = [];
+  // Keep extended Settings/Debug menus above the footer, with non-overlapping hit areas.
+  const rowGap = Math.min(ROW_GAP, (REFERENCE_HEIGHT - FOOTER_BOTTOM - 30 - ROW_START_Y) / Math.max(1, safeRows.length - 1));
+  const rowHeight = Math.min(ROW_HEIGHT, rowGap - 4);
   ctx.font = `${16 * scale}px Courier New`;
   ctx.textAlign = 'left';
   safeRows.forEach((row, index) => {
-    const textY = originY + (ROW_START_Y + index * ROW_GAP) * scale;
+    const textY = originY + (ROW_START_Y + index * rowGap) * scale;
     const itemBounds = {
       x: originX + (REFERENCE_WIDTH / 2 - ROW_WIDTH / 2) * scale,
-      y: textY - 26 * scale,
+      y: textY - (rowHeight - 8) * scale,
       w: ROW_WIDTH * scale,
-      h: ROW_HEIGHT * scale,
+      h: rowHeight * scale,
       id: row?.id
     };
     rowBounds.push(itemBounds);

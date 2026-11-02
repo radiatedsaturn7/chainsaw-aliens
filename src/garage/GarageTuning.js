@@ -3,9 +3,9 @@ import {CAR_PART_FIELDS,garageTuningRanges,readCarSetting,partFits,isStockPart} 
 import {createMenuRepeatState,getMenuRepeatDirection,resetMenuRepeatState} from '../ui/shared/menuRepeat.js';
 
 export const TUNING_SECTIONS=[
- {id:'pressure',label:'Tire pressure',hint:'Tire pressure is adjustable on every car.',matches:id=>id.startsWith('pressure.')},
- {id:'tires',label:'Tire type',hint:'Buy compatible tires in Upgrade to change tire type.',matches:()=>false},
- {id:'engine',label:'Engine & weight',hint:'Install a tunable ECU or weight upgrade.',matches:id=>['torqueScale','weightKg'].includes(id)},
+ {id:'tires',label:'Tires',hint:'Adjust pressure or fit owned tires.',matches:id=>id.startsWith('pressure.')||id==='tireType'},
+ {id:'repair',label:'Repair',hint:'Inspect components, repair faults and service fluids.',matches:()=>false},
+ {id:'engine',label:'Engine & weight',hint:'Install a tunable ECU or weight upgrade.',matches:id=>['torqueScale','weightKg'].includes(id)||id.startsWith('fuel')},
  {id:'gearing',label:'Gearing',hint:'Install an adjustable transmission.',matches:id=>id==='gearFinalDrive'||id.startsWith('gearRatios.')},
  {id:'suspension',label:'Suspension',hint:'Install adjustable springs, dampers or anti-roll bars.',matches:id=>/^(spring|rideHeight|damping|bump|rebound|antiRoll)/.test(id)},
  {id:'alignment',label:'Alignment & aero',hint:'Install adjustable alignment or aero parts.',matches:id=>/^(camber|toe|aero)/.test(id)},
@@ -21,7 +21,7 @@ export function tuningRows(garage,ref,stock,car){
  const installed=garage.installed(ref).filter(i=>i.carPart.tireRef);
  const tires=garage.owned().filter(i=>i.carPart.tireRef&&!isStockPart(i)&&partFits(i.carPart,ref,stock)&&(garage.availableCount(i.id)>0||installed.some(p=>p.id===i.id)));
  const options=[{id:'',label:'Stock'},...tires.map(i=>({id:i.id,label:i.name}))];
- rows.push({id:'tireType',label:'Tire type',min:0,max:options.length-1,step:1,value:Math.max(0,options.findIndex(o=>o.id===installed[0]?.id)),options,enabled:options.length>1,reason:TUNING_SECTIONS[1].hint});
+ rows.push({id:'tireType',label:'Tire type',min:0,max:options.length-1,step:1,value:Math.max(0,options.findIndex(o=>o.id===installed[0]?.id)),options,enabled:options.length>1,reason:'Buy compatible tires in Upgrade to change tire type.'});
  return rows;
 }
 export function stepTuningValue(row,value,direction,multiplier=1){
@@ -36,9 +36,9 @@ export class GarageTuner {
   this.stock=await this.resolveCar(this.carRef);if(!this.stock)throw Error('Car unavailable.');
   await this.refresh();if(!this.active)return;this.ready=true;this.message='';
  }catch(error){if(this.active)this.message=error.message;}}
- async refresh(){const car=await this.garage.build(this.carRef,this.stock);if(this.active)this.rows=tuningRows(this.garage,this.carRef,this.stock,car);}
+ async refresh(){const car=await this.garage.build(this.carRef,this.stock);if(this.active){this.rows=tuningRows(this.garage,this.carRef,this.stock,car);this.repairs=this.garage.repairRows?.(this.carRef,car)||[];}}
  dispose(){this.active=false;this.pointerDirection=null;this.dragging=false;}
- sectionRows(index=this.index){const section=TUNING_SECTIONS[index];if(!section)return [];return this.rows.filter(r=>section.id==='tires'?r.id==='tireType':section.matches(r.id));}
+ sectionRows(index=this.index){const section=TUNING_SECTIONS[index];if(!section)return [];return section.id==='repair'?(this.repairs||[]):this.rows.filter(r=>section.matches(r.id));}
  enabled(index){return this.ready&&this.sectionRows(index).some(r=>r.enabled);}
  get row(){return this.sectionRows()[this.rowIndex];}
  move(direction,multiplier=1){
@@ -61,11 +61,13 @@ export class GarageTuner {
    this.mode='list';this.rowIndex=this.sectionRows().findIndex(r=>r.enabled);this.message='';
   }else if(this.mode==='list'){
    if(!this.row?.enabled){this.message=this.row?.reason||'No available settings';return;}
+   if(this.row.repair){this.mode='repair';this.message=this.row.reason;return;}
    this.draft=Math.max(this.row.min,Math.min(this.row.max,this.row.value));this.mode='edit';this.message='';resetMenuRepeatState(this.repeat);
   }else{
    const row=this.row,value=this.draft;this.busy=true;
    try{
-    if(row.options)await this.garage.setTireType(this.carRef,row.options[value].id,this.stock);
+    if(row.repair)await this.garage.repair(this.carRef,row.id,this.stock);
+    else if(row.options)await this.garage.setTireType(this.carRef,row.options[value].id,this.stock);
     else await this.garage.setTune(this.carRef,{[row.id]:value});
     await this.refresh();if(!this.active)return;
     this.mode='list';this.message='Setting applied';this.onSaved();
@@ -76,7 +78,7 @@ export class GarageTuner {
  cancel(){
   if(this.busy)return;
   this.message='';this.pointerDirection=null;this.dragging=false;resetMenuRepeatState(this.repeat);
-  if(this.mode==='edit'){this.mode='list';delete this.draft;}
+  if(this.mode==='edit'||this.mode==='repair'){this.mode='list';delete this.draft;}
   else if(this.mode==='list')this.mode='grid';else this.onExit();
  }
  update({held={},confirm=false,cancel=false},dt){

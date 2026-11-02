@@ -1,4 +1,4 @@
-import { TrackState } from '../trackState/TrackState.js';
+import { TrackState, RUNTIME_TRACK_STATE_CHECKPOINT_OPTIONS } from '../trackState/TrackState.js';
 import { queueRaceTrackStateTireEvents } from '../trackState/TrackStateIntegration.js';
 import { RACE_WHEEL_IDS } from './SimulationMath.js';
 
@@ -51,9 +51,10 @@ export function createWorkerTrackStateAuthority({
   tireCompoundByWheel = {},
   contactStepSeconds = 1 / 120
 } = {}) {
+  const checkpointOptions = {...RUNTIME_TRACK_STATE_CHECKPOINT_OPTIONS, ...options};
   const trackState = snapshot
-    ? TrackState.fromSnapshot(snapshot, options)
-    : new TrackState(options);
+    ? TrackState.fromSnapshot(snapshot, checkpointOptions)
+    : new TrackState(checkpointOptions);
   const scratchByVehicle = new Map();
   const liveWeatherForcing = { ...weatherForcing };
   let lastVisualSyncStepIndex = -Infinity;

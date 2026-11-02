@@ -1,9 +1,10 @@
+import {turnSignalLit} from './TurnSignals.js';
 export const CAR_FX_VIEWS=['front','frontRight','right','rearRight','rear','rearLeft','left','frontLeft'];
 export const CAR_FX_DAMAGE=['engine','suspension','transmission','body','tire'];
-export const CAR_FX_TRIGGERS=['always','precipitation','braking','reverse','cold','night','accelerating',...CAR_FX_DAMAGE.map(k=>k+'-damage')];
+export const CAR_FX_TRIGGERS=['always','precipitation','braking','reverse','cold','night','headlights','low-beams','high-beams','aux-lights','turn-left','turn-right','accelerating',...CAR_FX_DAMAGE.map(k=>k+'-damage')];
 const num=(v,d,min,max)=>Number.isFinite(Number(v))?Math.max(min,Math.min(max,Number(v))):d;
 export function normalizeCarFxView(v={}){
- return {placements:Array.isArray(v.placements)?v.placements.filter(p=>p&&typeof p==='object').map(p=>({x:num(p.x,0,-4,4),y:num(p.y,0,-4,4)})):[{x:num(v.x,0,-4,4),y:num(v.y,0,-4,4)}],artRef:String(v.artRef||'').trim(),frameIndex:Math.round(num(v.frameIndex,0,0,10000)),
+ return {sizeAnchor:v.sizeAnchor==='car'?'car':'placement',placements:Array.isArray(v.placements)?v.placements.filter(p=>p&&typeof p==='object').map(p=>({x:num(p.x,0,-4,4),y:num(p.y,0,-4,4)})):[{x:num(v.x,0,-4,4),y:num(v.y,0,-4,4)}],artRef:String(v.artRef||'').trim(),frameIndex:Math.round(num(v.frameIndex,0,0,10000)),
   x:num(v.x,0,-4,4),y:num(v.y,0,-4,4),width:num(v.width,.15,.005,4),height:num(v.height,.15,.005,4),
   rotation:num(v.rotation,0,-180,180),opacity:num(v.opacity,1,0,1),mirror:v.mirror===true};
 }
@@ -14,7 +15,7 @@ export function newCarFxPlacementView(effect){
 }
 export function normalizeCarFx(effects=[]){
  return (Array.isArray(effects)?effects:[]).filter(e=>e&&typeof e==='object').map((e,i)=>({
-  id:String(e.id||`fx-${i}`),artRef:String(e.artRef||Object.values(e.views||{}).find(v=>v?.artRef)?.artRef||''),name:String(e.name||'Effect').slice(0,100),enabled:e.enabled!==false,
+  anchor:e.anchor==='body'?'body':'car',id:String(e.id||`fx-${i}`),artRef:String(e.artRef||Object.values(e.views||{}).find(v=>v?.artRef)?.artRef||''),name:String(e.name||'Effect').slice(0,100),enabled:e.enabled!==false,
   triggers:[...new Set((Array.isArray(e.triggers)?e.triggers:['always']).filter(t=>CAR_FX_TRIGGERS.includes(t)))],
   coldBelowC:num(e.coldBelowC,5,-80,60),
   damageLevels:Object.fromEntries(CAR_FX_DAMAGE.map(k=>{const min=num(e.damageLevels?.[k]?.min,25,0,100);return [k,{min,max:Math.max(min,num(e.damageLevels?.[k]?.max,100,0,100))}];})),
@@ -37,13 +38,16 @@ export function migrateCarFx(art={}){
 export function carFxActive(effect,state={}){
  if(!effect.enabled)return false;
  return effect.triggers.some(t=>damageTriggerActive(effect,t,state.damage)||t==='always'||t==='braking'&&state.braking||t==='accelerating'&&state.accelerating
-  ||t==='reverse'&&state.reverse||t==='night'&&state.night||t==='precipitation'&&state.precipitation
+  ||t==='low-beams'&&state.headlights===true&&!state.highBeams||t==='high-beams'&&state.headlights===true&&state.highBeams===true||t==='aux-lights'&&state.auxLights===true||t==='turn-left'&&state.turnLeft||t==='turn-right'&&state.turnRight||t==='headlights'&&state.headlights===true||t==='reverse'&&state.reverse||t==='night'&&state.night||t==='precipitation'&&state.precipitation
   ||t==='cold'&&Number.isFinite(state.temperatureC)&&state.temperatureC<=effect.coldBelowC);
 }
 // Player input is authoritative for pedals/gear; AI uses its own session.
 export function carFxDrivingState(session={},input=null,{braking=false}={}){
  const drive=session?.engineDrive||session?.tireSlip?.engineDrive||{};
  return {
+  highBeams:session?.mechanical?.highBeams===true,
+  auxLights:session?.mechanical?.auxLights===true,
+  turnLeft:turnSignalLit(session,'left'),turnRight:turnSignalLit(session,'right'),
   braking:input?Boolean(input.brake||Number(input.brakeAxis)>0||input.handbrake||session?.authoritativeHandbrakeActive):Boolean(braking||Number(drive.brake)>0),
   accelerating:Number(input?.throttleAxis??drive.throttle??0)>.05,
   reverse:Number(input?.gear??session?.gear??drive.gear??0)<0
@@ -57,7 +61,7 @@ export function damageTriggerActive(effect,trigger,damage={}){
  return value>=range.min&&value<=range.max;
 }
 export function getCarFxArtRefs(car){return [...new Set((car?.art?.fx||[]).flatMap(e=>[e.artRef,...Object.values(e.views||{}).map(v=>v.artRef)].filter(Boolean)))];}
-export function drawCarFx(ctx,{effects=[],slot,state={},previewId=null,x=0,y=0,width=1,height=1,rotation=0,getArt}){
+export function drawCarFx(ctx,{effects=[],slot,state={},previewId=null,x=0,y=0,width=1,height=1,rotation=0,bodyFrame=null,getArt}){
  for(const effect of effects){
   if(effect.id!==previewId&&!carFxActive(effect,state))continue;
   const authored=effect.views?.[slot];
@@ -66,10 +70,24 @@ export function drawCarFx(ctx,{effects=[],slot,state={},previewId=null,x=0,y=0,w
   const ref=v?.artRef||effect.artRef;if(!v||!ref)continue;
   const art=getArt(ref,{frameIndex:v.frameIndex});if(!art)continue;
   for(const p of v.placements||[{x:v.x,y:v.y}])for(const side of v.mirror&&Math.abs(p.x)>.0001?[1,-1]:[1]){
-   ctx.save();ctx.translate(x,y);ctx.rotate(rotation);ctx.translate(p.x*width*side,p.y*height);
+   const frame=effect.anchor==='body'?bodyFrame:{x,y,width,height,rotation};
+   if(!frame)continue;
+   const w=frame.width,h=frame.height;
+   const sizeW=v.sizeAnchor==='car'?width:w,sizeH=v.sizeAnchor==='car'?height:h;
+   ctx.save();ctx.translate(frame.x,frame.y);ctx.rotate(frame.rotation);if(frame.mirrored)ctx.scale(-1,1);ctx.translate(p.x*w*side,p.y*h);
    ctx.rotate(v.rotation*Math.PI/180*side);if(side<0)ctx.scale(-1,1);
-   ctx.globalAlpha*=v.opacity;ctx.imageSmoothingEnabled=false;
-   ctx.drawImage(art,-v.width*width/2,-v.height*height/2,v.width*width,v.height*height);ctx.restore();
+   ctx.globalAlpha*=v.opacity;
+   if(effect.id!==previewId&&effect.triggers.some(t=>['headlights','low-beams','high-beams','aux-lights','night','braking','reverse','turn-left','turn-right'].includes(t)))ctx.globalAlpha*=(effect.triggers.some(t=>['aux-lights','high-beams'].includes(t))?(state.auxLampPower??state.lampPower??1):(state.lampPower??1));ctx.imageSmoothingEnabled=false;
+   const previousEmission=ctx.__raceEmissive;
+   ctx.__raceEmissive=effect.triggers.some(t=>['aux-lights','high-beams'].includes(t));
+   try{ctx.drawImage(art,-v.width*sizeW/2,-v.height*sizeH/2,v.width*sizeW,v.height*sizeH);}
+   finally{ctx.__raceEmissive=previousEmission;ctx.restore();}
   }
  }
+}
+
+// Artwork-space FX follow the exact body sprite rectangle and pivot.
+export function carFxBodyFrame({x,y,width,height,offsetX=0,offsetY=0,rotation=0,mirrored=false}){
+ return {x:x+Math.cos(rotation)*offsetX-Math.sin(rotation)*offsetY,
+ y:y+Math.sin(rotation)*offsetX+Math.cos(rotation)*offsetY,width,height,rotation,mirrored};
 }

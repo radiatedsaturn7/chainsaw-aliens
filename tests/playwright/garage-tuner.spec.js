@@ -20,7 +20,7 @@ for(const mode of ['keyboard','gamepad','touch'])test(`in-game tuner: ${mode} lo
   }else await page.keyboard.press(key);
  };
  await press('ArrowRight','dpadRight');
- await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.index)).toBe(0);
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.index)).toBe(1);
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.mode)).toBe('grid');
  await page.screenshot({path:`test-results/tuning-${mode}-grid.png`});
  await press('ArrowLeft','dpadLeft');await press('Enter','jump');await press('Enter','jump');

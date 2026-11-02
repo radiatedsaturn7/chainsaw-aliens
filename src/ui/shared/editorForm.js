@@ -1,6 +1,7 @@
+import {protectRangeTouchScroll} from './editorRangeInput.js';
 // Small accessible form shared by editors for numeric and named options.
-export function openEditorForm(title,fields,{description='',applyLabel='Apply'}={}){
-  if(typeof document==='undefined')return Promise.resolve(null);
+export function openEditorForm(title,fields,{description='',applyLabel='Apply',signal=null,pending=false,validate=null}={}){
+  if(typeof document==='undefined'||signal?.aborted)return Promise.resolve(null);
   return new Promise(resolve=>{
     const focus=document.activeElement,dialog=document.createElement('dialog'),form=document.createElement('form');
     dialog.setAttribute('aria-label',title);dialog.style.cssText='box-sizing:border-box;width:min(420px,calc(100vw - 24px));max-height:88dvh;overflow:auto;background:#19241f;color:#eef4ed;border:1px solid #53605b;border-radius:12px;padding:18px;font:16px system-ui';
@@ -22,10 +23,10 @@ export function openEditorForm(title,fields,{description='',applyLabel='Apply'}=
         parent=sections.get(section.label);
       }
       if(field.type==='preview'){
-        const canvas=document.createElement('canvas');canvas.width=320;canvas.height=180;canvas.setAttribute('aria-label',field.label);canvas.setAttribute('role','img');canvas.style.cssText='width:100%;height:auto;display:block;background:#101818;border-radius:6px';if(field.sticky)canvas.style.cssText+=';position:sticky;top:0;z-index:2;box-shadow:0 2px 8px #0008';parent.appendChild(canvas);previews.push({canvas,field});
+        const canvas=document.createElement('canvas');canvas.width=320;canvas.height=Number.isFinite(field.height)?Math.max(120,Math.min(480,field.height)):180;canvas.setAttribute('aria-label',field.label);canvas.setAttribute('role','img');canvas.style.cssText='width:100%;height:auto;display:block;background:#101818;border-radius:6px';if(field.sticky)canvas.style.cssText+=';position:sticky;top:0;z-index:2;box-shadow:0 2px 8px #0008';parent.appendChild(canvas);previews.push({canvas,field});
         if(field.onPointer){
           canvas.style.touchAction='none';canvas.style.cursor='crosshair';
-          const update=event=>{const r=canvas.getBoundingClientRect();const patch=field.onPointer({x:(event.clientX-r.left)*canvas.width/r.width,y:(event.clientY-r.top)*canvas.height/r.height},values(),canvas)||{};for(const [id,value] of Object.entries(patch)){const entry=inputs[id];if(entry)entry.input.value=value;}refresh();};
+          const update=event=>{const r=canvas.getBoundingClientRect();const patch=field.onPointer({phase:event.type,x:(event.clientX-r.left)*canvas.width/r.width,y:(event.clientY-r.top)*canvas.height/r.height},values(),canvas)||{};for(const [id,value] of Object.entries(patch)){const entry=inputs[id];if(entry)entry.input.value=value;}refresh();};
           canvas.addEventListener('pointerdown',event=>{canvas.setPointerCapture(event.pointerId);update(event);});
           canvas.addEventListener('pointermove',event=>{if(canvas.hasPointerCapture(event.pointerId))update(event);});
           canvas.addEventListener('pointerup',event=>{if(canvas.hasPointerCapture(event.pointerId)){update(event);canvas.releasePointerCapture(event.pointerId);}});
@@ -53,18 +54,28 @@ export function openEditorForm(title,fields,{description='',applyLabel='Apply'}=
         input.value='#'+Array.from(rgba.slice(0,3),n=>n.toString(16).padStart(2,'0')).join('');
         input.addEventListener('input',()=>{input.dataset.colorChanged='true';});
       }
-      if(field.min!==undefined)input.min=field.min;if(field.max!==undefined)input.max=field.max;input.required=field.type==='checkbox'?false:field.required??!(Array.isArray(field.options)&&field.options.some(option=>(option.value??option)===''));let output=null;if(field.type==='range'){output=document.createElement('output');output.style.cssText='float:right;font-variant-numeric:tabular-nums';label.appendChild(output);}label.appendChild(input);parent.appendChild(label);inputs[field.id]={input,field,label,output};
+      if(field.min!==undefined)input.min=field.min;if(field.max!==undefined)input.max=field.max;input.required=field.type==='checkbox'?false:field.required??!(Array.isArray(field.options)&&field.options.some(option=>(option.value??option)===''));let output=null;if(field.type==='range'){output=document.createElement('output');output.style.cssText='float:right;font-variant-numeric:tabular-nums';label.appendChild(output);}let numberInput=null;
+      if(field.type==='range'){
+        protectRangeTouchScroll(input);
+        const row=document.createElement('div');row.style.cssText='display:flex;gap:10px;align-items:center';input.style.flex='1';input.style.minWidth='0';
+        numberInput=document.createElement('input');numberInput.type='number';numberInput.min=input.min;numberInput.max=input.max;numberInput.step=input.step;numberInput.value=input.value;numberInput.required=true;
+        numberInput.setAttribute('aria-label',input.getAttribute('aria-label')+' value');numberInput.style.cssText='box-sizing:border-box;width:100px;min-height:44px';
+        numberInput.addEventListener('input',()=>{if(numberInput.value!==''&&numberInput.validity.valid){input.value=numberInput.value;input.dispatchEvent(new Event('input',{bubbles:true}));}});
+        row.appendChild(input);row.appendChild(numberInput);label.appendChild(row);
+      }else label.appendChild(input);
+      parent.appendChild(label);inputs[field.id]={input,field,label,output,numberInput};
     }
     const values=()=>Object.fromEntries(Object.entries(inputs).map(([id,{input,field}])=>[id,field.type==='checkbox'?input.checked:input.value]));
     const refresh=()=>{
       const current=values();for(const {canvas,field} of previews){canvas.hidden=field.visibleWhen?!field.visibleWhen(current):false;if(!canvas.hidden)field.render(canvas,current);}
       for(const {button,field} of actionFields){button.hidden=field.visibleWhen?!field.visibleWhen(current):false;}
-      for(const {input,field,label,output} of Object.values(inputs)){
+      for(const {input,field,label,output,numberInput} of Object.values(inputs)){
+        if(numberInput&&document.activeElement!==numberInput)numberInput.value=input.value;
         if(output)output.textContent=field.format?field.format(Number(input.value)):String(Number(Number(input.value).toFixed(3)));
         const state=values();
         label.hidden=field.visibleWhen?!field.visibleWhen(state):false;
         label.style.display=label.hidden?'none':'block';
-        input.disabled=label.hidden;
+        input.disabled=label.hidden;if(numberInput)numberInput.disabled=label.hidden;
         if(typeof field.options==='function'){
           const selected=input.value,options=field.options(state);input.replaceChildren();
           for(const entry of options){const option=document.createElement('option');option.value=entry.value??entry;option.textContent=entry.label??entry;input.appendChild(option);}
@@ -79,10 +90,14 @@ export function openEditorForm(title,fields,{description='',applyLabel='Apply'}=
     for(const {input,field} of Object.values(inputs)){input.addEventListener('change',refresh);if(previews.length||field.type==='range')input.addEventListener('input',()=>{const patch=field.onInput?.(values())||{};for(const [id,value] of Object.entries(patch)){const entry=inputs[id];if(entry){if(entry.field.type==='checkbox')entry.input.checked=Boolean(value);else entry.input.value=value;}}refresh();});}
     refresh();
     let animationFrame=0;
-    const close=value=>{if(animationFrame)cancelAnimationFrame(animationFrame);dialog.close();dialog.remove();focus?.focus?.();resolve(value);};
+    const abort=()=>close(null);
+    const close=value=>{signal?.removeEventListener('abort',abort);if(animationFrame)cancelAnimationFrame(animationFrame);dialog.close();dialog.remove();focus?.focus?.();resolve(value);};
     const cancel=document.createElement('button');cancel.type='button';cancel.textContent='Cancel';cancel.onclick=()=>close(null);
     const apply=document.createElement('button');apply.type='submit';apply.textContent=applyLabel;for(const b of [cancel,apply]){b.style.cssText='min-height:44px;padding:8px 20px;margin:12px 8px 0 0';form.appendChild(b);}
-    form.onsubmit=event=>{event.preventDefault();close(Object.fromEntries(Object.entries(inputs).map(([id,{input,field}])=>[id,field.type==='checkbox'?input.checked:!field.options&&['number','range'].includes(field.type||'number')?Number(input.value):field.type==='color'&&!input.dataset.colorChanged?field.value:input.value])));};
+    if(pending)apply.hidden=true;
+    signal?.addEventListener('abort',abort,{once:true});
+    const validationError=document.createElement('p');validationError.setAttribute('role','alert');validationError.style.color='#ffb4a8';form.appendChild(validationError);
+    form.onsubmit=event=>{event.preventDefault();if(pending)return;const error=validate?.(values());if(error){validationError.textContent=error;return;}close(Object.fromEntries(Object.entries(inputs).map(([id,{input,field}])=>[id,field.type==='checkbox'?input.checked:!field.options&&['number','range'].includes(field.type||'number')?Number(input.value):field.type==='color'&&!input.dataset.colorChanged?field.value:input.value])));};
     dialog.oncancel=event=>{event.preventDefault();close(null);};for(const name of ['keydown','keyup'])dialog.addEventListener(name,e=>e.stopPropagation());
     dialog.appendChild(form);document.body.appendChild(dialog);dialog.showModal();
     if(previews.some(p=>p.field.animated)){

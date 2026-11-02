@@ -121,11 +121,32 @@
       "fenceguardrail": "art/fenceguardrail/document.json",
       "fencebushes": "art/fencebushes/document.json",
       "fencetrees": "art/fencetrees/document.json",
+      "8582 tires 3": "art/8582 tires 3/document.json",
       "taillight": "art/taillight/document.json",
       "headlight": "art/headlight/document.json",
-      "8582 tires 3": "art/8582 tires 3/document.json",
       "8583 tires tires": "art/8583 tires tires/document.json",
-      "map": "art/map/document.json"
+      "map": "art/map/document.json",
+      "lapBackground": "art/lapBackground/document.json",
+      "greenGauge": "art/greenGauge/document.json",
+      "8801": "art/8801/document.json",
+      "speedometer": "art/speedometer/document.json",
+      "speedometerbg": "art/speedometerbg/document.json",
+      "indicators": "art/indicators/document.json",
+      "carbodybg": "art/carbodybg/document.json",
+      "carbodyicon": "art/carbodyicon/document.json",
+      "suspensionicon": "art/suspensionicon/document.json",
+      "engineicon": "art/engineicon/document.json",
+      "transmissionicon": "art/transmissionicon/document.json",
+      "tireicon": "art/tireicon/document.json",
+      "windshieldwiper": "art/windshieldwiper/document.json",
+      "indicator-headlights": "art/indicator-headlights/document.json",
+      "indicator-high-beams": "art/indicator-high-beams/document.json",
+      "indicator-aux-lights": "art/indicator-aux-lights/document.json",
+      "fx-aux-white": "art/fx-aux-white/document.json",
+      "fx-aux-yellow": "art/fx-aux-yellow/document.json",
+      "fx-aux-bar": "art/fx-aux-bar/document.json",
+      "frozenbush": "art/frozenbush/document.json",
+      "frozenrock": "art/frozenrock/document.json"
     },
     "music": {
       "1": "music/1/document.json",
@@ -197,7 +218,9 @@
       "buse1": "races/buse1/document.json",
       "Demo Track": "races/Demo Track/document.json",
       "p1": "races/p1/document.json",
-      "p2loadtest": "races/p2loadtest/document.json"
+      "p2loadtest": "races/p2loadtest/document.json",
+      "Mount Washington Auto Road — point-to-point": "races/Mount Washington Auto Road %E2%80%94 point-to-point/document.json",
+      "Mount Washington Auto Road — point-to-point Copy": "races/Mount Washington Auto Road %E2%80%94 point-to-point Copy/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -213,14 +236,19 @@
       "chainsaw-midi-audio": "settings/chainsaw-midi-audio/document.json",
       "chainsaw-midi-recent": "settings/chainsaw-midi-recent/document.json",
       "rtg-radio-library": "settings/rtg-radio-library/document.json",
-      "menu-launch": "settings/menu-launch/document.json"
+      "rtg-item-progress": "settings/rtg-item-progress/document.json",
+      "menu-progress": "settings/menu-progress/document.json",
+      "menu-launch": "settings/menu-launch/document.json",
+      "menu-settings": "settings/menu-settings/document.json"
     },
     "doodads": {
       "Factory": "doodads/Factory/document.json",
       "tree": "doodads/tree/document.json",
       "fenceguardrail": "doodads/fenceguardrail/document.json",
       "fencebushes": "doodads/fencebushes/document.json",
-      "fencetrees": "doodads/fencetrees/document.json"
+      "fencetrees": "doodads/fencetrees/document.json",
+      "frozenbush": "doodads/frozenbush/document.json",
+      "frozenrock": "doodads/frozenrock/document.json"
     },
     "tires": {
       "Offroad": "tires/Offroad/document.json",

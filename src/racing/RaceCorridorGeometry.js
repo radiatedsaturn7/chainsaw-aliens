@@ -35,7 +35,18 @@ export function buildRaceSurfaceBake({
     step: effectiveStep
   });
   const samples = Array.isArray(profile?.samples) ? profile.samples : [];
-  const sections = samples.map((sample) => adapter.createSurfaceSectionFromSample?.(sample, {
+  // A fixed elevation profile may be finer than the requested mesh. Decimate
+  // its samples without recomputing the road heights at another resolution.
+  let lastDistance = -Infinity;
+  const meshSamples = samples.filter((sample, index) => {
+    const distance = Number(sample.distance || 0);
+    if (index === samples.length - 1 || distance - lastDistance >= effectiveStep - 0.000001) {
+      lastDistance = distance;
+      return true;
+    }
+    return false;
+  });
+  const sections = meshSamples.map((sample) => adapter.createSurfaceSectionFromSample?.(sample, {
     distance: Number(sample.distance || 0)
   })).filter(Boolean);
   return {

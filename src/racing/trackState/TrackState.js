@@ -1,3 +1,4 @@
+import { cloneTrackStateCheckpointCell } from './TrackStateCheckpointCell.js';
 import { indexTrackStateCell, queryTrackStateCells } from './TrackStateSpatialIndex.js';
 import {
   clamp,
@@ -9,15 +10,19 @@ import {
 } from './TrackStateMath.js';
 import {
   clampTrackStateCell,
+  clampTrackStateWeatherFields,
+  isCanonicalWeatherCell,
   createTrackStateCell,
   getTrackStateCellSample
 } from './TrackStateCell.js';
 import {
   compareTrackStateEvents,
-  normalizeTrackStateEvent
+  normalizeTrackStateEvent,
+  normalizeAccumulatedTireContactEvent
 } from './TrackStateEvents.js';
 import {
   createIncrementalTrackStateHash,
+  createDeferredChecksumSnapshot,
   createTrackStateSnapshot,
   getTrackStateCanonicalPayload,
   getTrackStateChecksum,
@@ -26,17 +31,26 @@ import {
 import { TrackStateContactAccumulator } from './TrackStateContactAccumulator.js';
 
 const WATER_FIELDS = ['moistureDepthMm', 'standingWaterDepthMm', 'snowDepthMm', 'iceDepthMm'];
+const WEATHER_STATE_FIELDS = ['surfaceTemperatureC', ...WATER_FIELDS];
+const WEATHER_PROFILE_FIELDS = [...WEATHER_STATE_FIELDS, 'sunExposure', 'windExposure',
+  'heatResponse', 'permeability', 'saturationDepthMm', 'drainageRateMmPerS', 'compaction',
+  'initializedStep', 'lastUpdatedStep'];
 export const TRACK_STATE_EVENT_HISTORY_LIMIT = 8192;
+// Runtime weather budgeting is shared by render-thread and worker authorities.
+// Budgeted snapshots include optional scheduling state; older snapshots remain valid.
+export const RUNTIME_TRACK_STATE_CHECKPOINT_OPTIONS = Object.freeze({
+  maxWeatherStepsPerStep: 2048,
+  checkpointHashMode: 'deferred',
+  checkpointTargetCaptureSlices: 120,
+  checkpointMaximumCaptureCells: 64,
+  checkpointAssemblyCellsPerStep: 1024
+});
 const NEIGHBORS = Object.freeze([
   { x: 1, z: 0 },
   { x: -1, z: 0 },
   { x: 0, z: 1 },
   { x: 0, z: -1 }
 ]);
-
-const cloneCheckpointValue = (value) => (
-  value === undefined ? undefined : JSON.parse(JSON.stringify(value))
-);
 
 function normalizeForcing(forcing = {}, target = null) {
   const type = String(forcing.type || forcing.id || 'clear');
@@ -85,7 +99,12 @@ export class TrackState {
     snapshot = null,
     eventHistoryLimit = TRACK_STATE_EVENT_HISTORY_LIMIT,
     maxCellsPerStep = 512,
+    maxWeatherStepsPerStep = Infinity,
     checkpointCellsPerStep = 16,
+    checkpointAssemblyCellsPerStep = checkpointCellsPerStep,
+    checkpointTargetCaptureSlices = 0,
+    checkpointMaximumCaptureCells = 512,
+    checkpointHashMode = 'incremental',
     checkpointHashCharactersPerStep = 32768
   } = {}) {
     this.seed = Number(seed) >>> 0;
@@ -98,7 +117,13 @@ export class TrackState {
       ? Math.max(100, Math.trunc(Number(eventHistoryLimit)))
       : Infinity;
     this.maxCellsPerStep = Math.max(64, Math.trunc(Number(maxCellsPerStep) || 512));
+    this.maxWeatherStepsPerStep = Number.isFinite(maxWeatherStepsPerStep)
+      ? Math.max(1, Math.trunc(maxWeatherStepsPerStep)) : Infinity;
     this.checkpointCellsPerStep = Math.max(1, Math.trunc(Number(checkpointCellsPerStep) || 16));
+    this.checkpointAssemblyCellsPerStep = Math.max(1, Math.trunc(Number(checkpointAssemblyCellsPerStep) || this.checkpointCellsPerStep));
+    this.checkpointMaximumCaptureCells = Math.max(1, Math.trunc(Number(checkpointMaximumCaptureCells) || 512));
+    this.checkpointTargetCaptureSlices = Math.max(0, Math.trunc(Number(checkpointTargetCaptureSlices) || 0));
+    this.checkpointHashMode = checkpointHashMode === 'deferred' ? 'deferred' : 'incremental';
     this.checkpointHashCharactersPerStep = Math.max(
       256,
       Math.trunc(Number(checkpointHashCharactersPerStep) || 32768)
@@ -113,6 +138,7 @@ export class TrackState {
     this.visualRevision = 0;
     this.cellLookupRevision = 0;
     this.baseSurfaceCache = new Map();
+    this.preparedBaseSurfaces = new Map();
     this.orderedCellKeys = [];
     this.cellCursor = 0;
     this.pendingEvents = [];
@@ -137,10 +163,20 @@ export class TrackState {
     this.maintenanceCursor = 0;
     this.weatherWakeIterator = null;
     this.weatherWakeRemaining = 0;
+    this.weatherWakeTotal = 0;
+    this.weatherWakeKeys = null;
     this.checkpointBuilder = null;
     this.receiverCoordsScratch = [{ x: 0, z: 0 }, { x: 0, z: 0 }, { x: 0, z: 0 }];
     this.receiverCellsScratch = [];
     this.performanceCounters = {
+      backgroundWeatherSteps: 0,
+      aheadWeatherPreparationSteps: 0,
+      aheadWeatherPreparationSlices: 0,
+      weatherReplayCacheHits: 0,
+      weatherReplayCacheMisses: 0,
+      weatherReplayReusedSteps: 0,
+      weatherCatchUpRequestedSteps: 0,
+      weatherCatchUpMaxSteps: 0,
       receiverCellsCreated: 0,
       flowBufferHighWater: 0,
       maintenancePreparedCellCount: 0,
@@ -166,6 +202,7 @@ export class TrackState {
     this.initialChecksum = '';
     if (snapshot) restoreTrackStateSnapshot(this, snapshot);
     this.rebuildDerivedRuntimeState();
+    this.restoreWeatherSchedule(snapshot);
     this.initialSnapshot = createTrackStateSnapshot(this);
     this.initialChecksum = this.initialSnapshot.checksum;
     this.historyBaseSnapshot = this.initialSnapshot;
@@ -181,11 +218,18 @@ export class TrackState {
 
   insertEnvironmentActiveKey(key) {
     if (this.environmentActiveKeySet.has(key)) return;
+    const cell = this.cells.get(key);
     let low = 0;
     let high = this.environmentActiveKeys.length;
     while (low < high) {
       const middle = (low + high) >> 1;
-      if (compareTrackStateCellKeys(this.environmentActiveKeys[middle], key) < 0) low = middle + 1;
+      const otherKey = this.environmentActiveKeys[middle];
+      const other = this.cells.get(otherKey);
+      // Coordinates already exist on the cells. Avoid splitting/parsing both
+      // string keys (and allocating arrays) on every binary-search comparison.
+      const order = cell && other ? other.x - cell.x || other.z - cell.z
+        : compareTrackStateCellKeys(otherKey, key);
+      if (order < 0) low = middle + 1;
       else high = middle;
     }
     this.environmentActiveKeys.splice(low, 0, key);
@@ -227,11 +271,48 @@ export class TrackState {
     this.maintenanceCursor = 0;
     this.weatherWakeIterator = null;
     this.weatherWakeRemaining = 0;
+    this.weatherWakeTotal = 0;
+    this.weatherWakeKeys = null;
     this.checkpointBuilder = null;
     this.orderedCellKeys.forEach((key) => {
       const cell = this.cells.get(key);
       if (this.cellNeedsEnvironmentWork(cell)) this.insertEnvironmentActiveKey(key);
     });
+  }
+
+  getWeatherScheduleSnapshot() {
+    const remaining = this.weatherWakeRemaining;
+    return {
+      maxWeatherStepsPerStep: this.maxWeatherStepsPerStep,
+      cellInsertionKeys: [...this.cells.keys()],
+      environmentCellCursor: this.environmentCellCursor,
+      environmentActiveKeys: [...this.environmentActiveKeys],
+      maintenanceKeys: [...this.maintenanceKeys],
+      maintenanceCursor: this.maintenanceCursor,
+      wakeKeys: remaining > 0
+        ? (this.weatherWakeKeys || [...this.cells.keys()]).slice(
+          this.weatherWakeTotal - remaining, this.weatherWakeTotal) : []
+    };
+  }
+
+  restoreWeatherSchedule(snapshot) {
+    const schedule = snapshot?.weatherSchedule;
+    if (!schedule) return;
+    this.maxWeatherStepsPerStep = Math.max(1, Math.trunc(Number(schedule.maxWeatherStepsPerStep) || 2048));
+    const ordered = new Map();
+    for (const key of schedule.cellInsertionKeys || []) if (this.cells.has(key)) ordered.set(key, this.cells.get(key));
+    for (const [key, cell] of this.cells) if (!ordered.has(key)) ordered.set(key, cell);
+    this.cells = ordered;
+    this.environmentActiveKeys = (schedule.environmentActiveKeys || []).filter(key => this.cells.has(key));
+    this.environmentActiveKeySet = new Set(this.environmentActiveKeys);
+    this.maintenanceKeys = (schedule.maintenanceKeys || []).filter(key => this.cells.has(key));
+    this.maintenanceCursor = Math.max(0, Math.trunc(Number(schedule.maintenanceCursor) || 0));
+    this.maintenanceKeySet = new Set(this.maintenanceKeys.slice(this.maintenanceCursor));
+    this.environmentCellCursor = this.environmentActiveKeys.length
+      ? Math.max(0, Math.trunc(Number(schedule.environmentCellCursor) || 0)) % this.environmentActiveKeys.length : 0;
+    this.weatherWakeKeys = (schedule.wakeKeys || []).filter(key => this.cells.has(key));
+    this.weatherWakeTotal = this.weatherWakeRemaining = this.weatherWakeKeys.length;
+    this.weatherWakeIterator = this.weatherWakeKeys.map(key => this.cells.get(key)).values();
   }
 
   queueMaintenancePreparation(cell) {
@@ -283,12 +364,12 @@ export class TrackState {
     builder.pendingKeys.push(key);
   }
 
-  prepareCellMutation(cell) {
+  prepareCellMutation(cell, revisionCount = 1) {
     if (cell) {
       this.cellSampleRevisions.set(
-        cell, Number(this.cellSampleRevisions.get(cell) || 0) + 1
+        cell, Number(this.cellSampleRevisions.get(cell) || 0) + revisionCount
       );
-      this.visualRevision += 1;
+      this.visualRevision += revisionCount;
       this.visualCellRevisions.set(cell.key, this.visualRevision);
       this.visualDirtyKeys.add(cell.key);
     }
@@ -299,7 +380,7 @@ export class TrackState {
       return;
     }
     if (builder.targetKeySet?.has(cell.key) && !builder.cellCopies.has(cell.key)) {
-      builder.cellCopies.set(cell.key, cloneCheckpointValue(cell));
+      builder.cellCopies.set(cell.key, cloneTrackStateCheckpointCell(cell));
       builder.pendingKeySet.delete(cell.key);
     }
   }
@@ -332,13 +413,13 @@ export class TrackState {
 
   commitCheckpointBuilder() {
     const builder = this.checkpointBuilder;
-    if (!builder?.hashTask?.done) return false;
+    const deferred = this.checkpointHashMode === 'deferred' && builder?.phase === 'ready';
+    if (!deferred && !builder?.hashTask?.done) return false;
     this.historyBaseStepIndex = builder.targetPayload.stepIndex;
     this.historyBaseSequence = builder.targetSequence;
-    this.historyBaseSnapshot = {
-      ...builder.targetPayload,
-      checksum: builder.hashTask.checksum
-    };
+    this.historyBaseSnapshot = deferred
+      ? createDeferredChecksumSnapshot(builder.targetPayload)
+      : {...builder.targetPayload, checksum: builder.hashTask.checksum};
     let retainedCount = 0;
     for (let index = 0; index < this.eventHistory.length; index += 1) {
       const event = this.eventHistory[index];
@@ -369,26 +450,30 @@ export class TrackState {
       this.freezeCheckpointTarget();
     }
     if (builder.phase === 'capture') {
-      let copied = 0;
-      while (copied < this.checkpointCellsPerStep
+      let visited = 0;
+      const adaptiveBudget = this.checkpointTargetCaptureSlices > 0
+        ? Math.min(this.checkpointMaximumCaptureCells, Math.ceil((builder.targetKeys?.length || builder.pendingKeys.length)
+          / this.checkpointTargetCaptureSlices)) : 0;
+      const copyBudget = Math.max(this.checkpointCellsPerStep, adaptiveBudget);
+      while (visited < copyBudget
         && builder.pendingCursor < builder.pendingKeys.length) {
         const key = builder.pendingKeys[builder.pendingCursor];
         builder.pendingCursor += 1;
+        visited += 1;
         if (!builder.pendingKeySet.delete(key) || builder.cellCopies.has(key)) continue;
         if (builder.frozen && !builder.targetKeySet.has(key)) continue;
         const cell = this.cells.get(key);
-        if (cell) builder.cellCopies.set(key, cloneCheckpointValue(cell));
-        copied += 1;
+        if (cell) builder.cellCopies.set(key, cloneTrackStateCheckpointCell(cell));
       }
       if (builder.frozen && builder.cellCopies.size >= builder.targetKeys.length) {
         builder.targetPayload.cells = new Array(builder.targetKeys.length);
         builder.phase = 'assemble';
       }
     }
-    if (builder.phase === 'assemble') {
+    else if (builder.phase === 'assemble') {
       const end = Math.min(
         builder.targetKeys.length,
-        builder.assemblyCursor + this.checkpointCellsPerStep
+        builder.assemblyCursor + this.checkpointAssemblyCellsPerStep
       );
       for (; builder.assemblyCursor < end; builder.assemblyCursor += 1) {
         const key = builder.targetKeys[builder.assemblyCursor];
@@ -420,14 +505,18 @@ export class TrackState {
             liveBaseline ? [liveBaseline, ...liveRetained] : liveRetained
           );
         }
-        builder.hashTask = createIncrementalTrackStateHash(builder.targetPayload);
-        builder.phase = 'hash';
+        if (this.checkpointHashMode === 'deferred') builder.phase = 'ready';
+        else {
+          builder.hashTask = createIncrementalTrackStateHash(builder.targetPayload);
+          builder.phase = 'hash';
+        }
       }
     }
-    if (builder.phase === 'hash') {
+    else if (builder.phase === 'hash') {
       builder.hashTask.process(this.checkpointHashCharactersPerStep);
-      if (builder.hashTask.done) this.commitCheckpointBuilder();
+      if (builder.hashTask.done) builder.phase = 'ready';
     }
+    else if (builder.phase === 'ready') this.commitCheckpointBuilder();
     this.performanceCounters.checkpointMaximumEventOverage = Math.max(
       this.performanceCounters.checkpointMaximumEventOverage,
       Math.max(0, this.eventHistory.length - this.eventHistoryLimit)
@@ -449,11 +538,23 @@ export class TrackState {
     return this.cells.get(key) || (create ? this.getOrCreateCell(coords, { coordinates: true }) : null);
   }
 
+  prepareBaseSurface(point = {}) {
+    const coords = getTrackStateCellCoordinates(point, this.cellSizeM);
+    const key = getTrackStateCellKey(coords);
+    if (this.baseSurfaceCache.has(key) || this.preparedBaseSurfaces.has(key)) return;
+    const base = this.sampleBaseSurface(getTrackStateCellCenter(coords, this.cellSizeM)) || {};
+    if (this.preparedBaseSurfaces.size >= 256) {
+      this.preparedBaseSurfaces.delete(this.preparedBaseSurfaces.keys().next().value);
+    }
+    this.preparedBaseSurfaces.set(key, base);
+  }
+
   getBaseSurfaceForCoordinates(coords = {}) {
     const key = getTrackStateCellKey(coords);
     if (this.baseSurfaceCache.has(key)) return this.baseSurfaceCache.get(key);
     const center = getTrackStateCellCenter(coords, this.cellSizeM);
-    const base = this.sampleBaseSurface(center) || {};
+    const base = this.preparedBaseSurfaces.get(key) || this.sampleBaseSurface(center) || {};
+    this.preparedBaseSurfaces.delete(key);
     this.baseSurfaceCache.set(key, base);
     return base;
   }
@@ -462,11 +563,19 @@ export class TrackState {
     coordinates = false,
     throughStep = this.stepIndex
   } = {}) {
-    const coords = coordinates
-      ? { x: Math.trunc(Number(pointOrCoords.x) || 0), z: Math.trunc(Number(pointOrCoords.z) || 0) }
-      : getTrackStateCellCoordinates(pointOrCoords, this.cellSizeM);
-    const key = getTrackStateCellKey(coords);
-    if (this.cells.has(key)) return this.cells.get(key);
+    // Existing cells are the hot path. Do not allocate a coordinate record
+    // or perform a second hash lookup until a cell actually needs creation.
+    const size = Math.max(.001, Number(this.cellSizeM) || 1);
+    const x = coordinates ? Math.trunc(Number(pointOrCoords.x) || 0) : Math.floor(Number(pointOrCoords.x || 0) / size);
+    const z = coordinates ? Math.trunc(Number(pointOrCoords.z) || 0) : Math.floor(Number(pointOrCoords.z ?? pointOrCoords.y ?? 0) / size);
+    const key = getTrackStateCellKey(x, z);
+    const existing = this.cells.get(key);
+    if (existing) return existing;
+    return this.createCellAtCoordinates(x, z, key, throughStep);
+  }
+
+  createCellAtCoordinates(x, z, key, throughStep) {
+    const coords = {x, z};
     const base = this.getBaseSurfaceForCoordinates(coords);
     const cell = createTrackStateCell({
       ...coords,
@@ -483,13 +592,15 @@ export class TrackState {
     let high = this.orderedCellKeys.length;
     while (low < high) {
       const middle = (low + high) >> 1;
-      if (compareTrackStateCellKeys(this.orderedCellKeys[middle], key) < 0) low = middle + 1;
+      const other = this.cells.get(this.orderedCellKeys[middle]);
+      if (other.x < x || (other.x === x && other.z < z)) low = middle + 1;
       else high = middle;
     }
     this.orderedCellKeys.splice(low, 0, key);
     if (low <= this.cellCursor && this.orderedCellKeys.length > 1) this.cellCursor += 1;
     if (Number(throughStep) > this.historyBaseStepIndex && this.weatherTimeline.size) {
-      if (!this.catchUpNewDryCellWeather(cell, throughStep)) this.catchUpCellWeather(cell, throughStep);
+      if (!this.catchUpNewDryCellWeather(cell, throughStep)
+        && !this.catchUpNewWetCellWeather(cell, throughStep)) this.catchUpCellWeather(cell, throughStep);
     }
     return cell;
   }
@@ -532,6 +643,112 @@ export class TrackState {
     return true;
   }
 
+  // Only newly created, untouched cells use this cache. Identical weather
+  // profiles replay the exact quantized recurrence once. Tire deposits, runoff,
+  // and already-existing cells retain their normal independent simulation.
+  getNewWetCellWeatherProfile(cell, { preparation = false, throughStep = Infinity } = {}) {
+    const cacheName = preparation ? 'preparedWetCellWeatherCache' : 'newWetCellWeatherCache';
+    let cache = this[cacheName];
+    if (cache?.timeline !== this.weatherTimeline || cache?.baseStep !== this.historyBaseStepIndex) {
+      cache = this[cacheName] = { timeline: this.weatherTimeline,
+        baseStep: this.historyBaseStepIndex, profiles: new Map() };
+    }
+    const profiles = cache.profiles;
+    const key = WEATHER_PROFILE_FIELDS.map(field => cell[field]).join(':');
+    let cached = profiles.get(key);
+    if (preparation) {
+      const demand = this.newWetCellWeatherCache;
+      const existing = demand?.timeline === this.weatherTimeline
+        && demand.baseStep === this.historyBaseStepIndex ? demand.profiles.get(key) : null;
+      // This path is read-only: the caller returns before advancing an already
+      // current profile. Do not duplicate work or evict a demand entry.
+      if (existing && existing.throughStep >= throughStep) return existing;
+    }
+    if (!preparation) {
+      const prepared = this.preparedWetCellWeatherCache;
+      const candidate = prepared?.timeline === this.weatherTimeline
+        && prepared.baseStep === this.historyBaseStepIndex ? prepared.profiles.get(key) : null;
+      if (candidate && candidate.throughStep <= throughStep
+        && (!cached || candidate.throughStep > cached.throughStep)) {
+        if (!cached && profiles.size >= 16) profiles.delete(profiles.keys().next().value);
+        profiles.set(key, candidate);
+        prepared.profiles.delete(key);
+        cached = candidate;
+      }
+    }
+    if (!cached) {
+      if (profiles.size >= (preparation ? 4 : 16)) profiles.delete(profiles.keys().next().value);
+      cached = { cell: { ...cell }, throughStep: cell.lastUpdatedStep, totals: [],
+        stepTotals: { precipitationMm: 0, evaporationMm: 0, drainageMm: 0 } };
+      profiles.set(key, cached);
+    }
+    return cached;
+  }
+
+  advanceNewWetCellWeatherProfile(cached, throughStep, maxSteps = Infinity) {
+    const endStep = Math.min(throughStep, cached.throughStep + maxSteps);
+    const visited = Math.max(0, endStep - cached.throughStep);
+    for (let step = cached.throughStep + 1; step <= endStep; step++) {
+      const forcing = this.getWeatherForStep(step);
+      if (!forcing) continue;
+      const totals = cached.stepTotals;
+      totals.precipitationMm = totals.evaporationMm = totals.drainageMm = 0;
+      this.applyWeatherToCell(cached.cell, forcing, this.fixedStepMs / 1000, step,
+        { prepareMutation: false, totals });
+      cached.totals.push(totals.precipitationMm, totals.evaporationMm, totals.drainageMm);
+    }
+    cached.throughStep = endStep;
+    return visited;
+  }
+
+  // Optional, exact recurrence preparation only. Do not register a cell,
+  // publish revisions/totals, or run flow before authoritative cell creation.
+  prepareNewCellWeather(point = {}, maxSteps = 32) {
+    if (!this.weatherTimeline.size || this.stepIndex <= this.historyBaseStepIndex) {
+      return { complete: true, steps: 0 };
+    }
+    const coords = getTrackStateCellCoordinates(point, this.cellSizeM);
+    const key = getTrackStateCellKey(coords);
+    if (this.cells.has(key)) return { complete: true, steps: 0 };
+    this.prepareBaseSurface(point);
+    const base = this.baseSurfaceCache.get(key) || this.preparedBaseSurfaces.get(key) || {};
+    const cell = createTrackStateCell({ ...coords, cellSizeM: this.cellSizeM, base,
+      stepIndex: this.historyBaseStepIndex, profileOverrides: this.profileOverrides });
+    // Tire events may first need the preceding tick. Avoid preparing beyond it.
+    const endStep = Math.max(this.historyBaseStepIndex, this.stepIndex - 1);
+    const cached = this.getNewWetCellWeatherProfile(cell, { preparation: true, throughStep: endStep });
+    if (cached.throughStep >= endStep) return { complete: true, steps: 0 };
+    const budget = Math.max(0, Math.min(256, Math.floor(Number(maxSteps) || 0)));
+    const steps = this.advanceNewWetCellWeatherProfile(cached, endStep, budget);
+    this.performanceCounters.aheadWeatherPreparationSteps += steps;
+    this.performanceCounters.aheadWeatherPreparationSlices += 1;
+    return { complete: cached.throughStep >= endStep, steps };
+  }
+
+  catchUpNewWetCellWeather(cell, throughStep) {
+    const endStep = Math.floor(Number(throughStep || 0));
+    const cached = this.getNewWetCellWeatherProfile(cell, { throughStep: endStep });
+    if (endStep < cached.throughStep) return false;
+    this.advanceNewWetCellWeatherProfile(cached, endStep);
+    const appliedSteps = cached.totals.length / 3;
+    if (!appliedSteps) return true;
+    // Retain the original addition order (not a multiplied/rounded aggregate)
+    // so checksums and replay totals agree bit-for-bit with per-cell replay.
+    for (let index = 0; index < cached.totals.length; index += 3) {
+      this.totals.precipitationMm += cached.totals[index];
+      this.totals.evaporationMm += cached.totals[index + 1];
+      this.totals.drainageMm += cached.totals[index + 2];
+    }
+    const previousRevision = Number(this.cellSampleRevisions.get(cell) || 0);
+    this.prepareCellMutation(cell);
+    this.cellSampleRevisions.set(cell, previousRevision + appliedSteps);
+    this.visualRevision += appliedSteps - 1;
+    this.visualCellRevisions.set(cell.key, this.visualRevision);
+    for (const field of WEATHER_STATE_FIELDS) cell[field] = cached.cell[field];
+    cell.lastUpdatedStep = cached.cell.lastUpdatedStep;
+    return true;
+  }
+
   sample(point = {}, target = null, conditionScratch = null) {
     const cellX = Math.floor(Number(point.x || 0) / this.cellSizeM);
     const cellZ = Math.floor(Number(point.z ?? point.y ?? 0) / this.cellSizeM);
@@ -559,7 +776,12 @@ export class TrackState {
       && conditionScratch.sampleStepIndex === this.stepIndex) {
       return target;
     }
-    const sample = getTrackStateCellSample(cell, this.stepIndex, target, conditionScratch);
+    // Only intermediate scalar calculations are shared. Keep lookup/result
+    // memoization caller-owned, and keep ordinary returned samples independent.
+    const calculationScratch = conditionScratch || (this.sampleConditionScratch ||= {
+      current: {}, baseline: {}
+    });
+    const sample = getTrackStateCellSample(cell, this.stepIndex, target, calculationScratch);
     if (conditionScratch) {
       conditionScratch.sampleCell = cell;
       conditionScratch.sampleRevision = sampleRevision;
@@ -594,21 +816,138 @@ export class TrackState {
     return true;
   }
 
-  catchUpCellWeather(cell, throughStep = this.stepIndex) {
+  catchUpCellWeather(cell, throughStep = this.stepIndex, maxSteps = Infinity) {
     if (!cell) return 0;
     let appliedSteps = 0;
     const startStep = Math.max(
       Number(cell.initializedStep || 0) + 1,
       Number(cell.lastUpdatedStep || 0) + 1
     );
-    const endStep = Math.floor(Number(throughStep || 0));
+    const endStep = Math.min(Math.floor(Number(throughStep || 0)), startStep + maxSteps - 1);
     if (startStep > endStep) return 0;
+    this.performanceCounters.weatherCatchUpRequestedSteps += endStep - startStep + 1;
+    this.performanceCounters.weatherCatchUpMaxSteps = Math.max(this.performanceCounters.weatherCatchUpMaxSteps, endStep - startStep + 1);
     if (this.catchUpConstantDryCellWeather(cell, startStep, endStep)) return endStep - startStep + 1;
+    const count = endStep - startStep + 1;
+    if (count >= 32) {
+      const sharedSteps = this.replaySharedCellWeather(cell, startStep, endStep);
+      if (sharedSteps !== null) return sharedSteps;
+    }
+    let prepared = false;
+    // Short replays are the common path for nearby cells. Seek once, then
+    // advance through transitions instead of binary-searching every tick.
+    const segments = this.getWeatherTimelineIndex();
+    let low = 0, high = segments.length;
+    while (low < high) {
+      const middle = (low + high) >>> 1;
+      if (Number(segments[middle][0]) <= startStep) low = middle + 1;
+      else high = middle;
+    }
+    let segment = low - 1;
     for (let stepIndex = startStep; stepIndex <= endStep; stepIndex += 1) {
-      const forcing = this.getWeatherForStep(stepIndex);
+      while (segment + 1 < segments.length && segments[segment + 1][0] <= stepIndex) segment++;
+      const forcing = segment >= 0 ? segments[segment][1] : null;
       if (!forcing) continue;
-      this.applyWeatherToCell(cell, forcing, this.fixedStepMs / 1000, stepIndex);
+      // Capture a frozen checkpoint before the first write, once per catch-up.
+      // Publish the same total revision count after the contiguous replay.
+      if (!prepared) { this.prepareCellMutation(cell); prepared = true; }
+      this.applyWeatherToCell(cell, forcing, this.fixedStepMs / 1000, stepIndex, { prepareMutation: false });
       appliedSteps += 1;
+    }
+    if (appliedSteps > 1) {
+      this.cellSampleRevisions.set(cell, this.cellSampleRevisions.get(cell) + appliedSteps - 1);
+      this.visualRevision += appliedSteps - 1;
+      this.visualCellRevisions.set(cell.key, this.visualRevision);
+    }
+    return appliedSteps;
+  }
+
+  replaySharedCellWeather(cell, startStep, endStep) {
+    if (this.debugDisableWeatherReplayCache || this.debugFullWeatherClamp
+      || !isCanonicalWeatherCell(cell)) return null;
+    const segments = this.getWeatherTimelineIndex();
+    // Appended forcing does not change past segments. Keep their exact replay
+    // results; replacing history rebuilds this index and invalidates the cache.
+    if (this.weatherReplayCache?.timeline !== this.weatherTimeline
+      || this.weatherReplayCache?.segments !== segments) {
+      this.weatherReplayCache = { timeline: this.weatherTimeline,
+        segments,
+        entries: new Map(), steps: 0, hits: 0, misses: 0, reusedSteps: 0 };
+    }
+    const cache = this.weatherReplayCache;
+    // Queries near the end of a long race must not walk every old transition.
+    // Keep exact segment boundaries and recurrence order after this seek.
+    let low = 0, high = segments.length;
+    while (low < high) {
+      const middle = (low + high) >>> 1;
+      if (Number(segments[middle][0]) <= startStep) low = middle + 1;
+      else high = middle;
+    }
+    let segment = Math.max(0, low - 1), appliedSteps = 0, prepared = false;
+    const stepTotals = { precipitationMm: 0, evaporationMm: 0, drainageMm: 0 };
+    for (let step = startStep; step <= endStep;) {
+      while (segment + 1 < segments.length && segments[segment + 1][0] <= step) segment++;
+      const entry = segments[segment];
+      if (!entry || entry[0] > step) { step = entry ? entry[0] : endStep + 1; continue; }
+      const forcing = entry[1];
+      // Fixed time boundaries let staggered queries rejoin shared blocks. Never
+      // cross a forcing change. Absolute age is not an input to the recurrence.
+      const last = Math.min(endStep, Math.ceil(step / 32) * 32,
+        segments[segment + 1]?.[0] - 1 || Infinity);
+      const count = last - step + 1;
+      if (!prepared) { this.prepareCellMutation(cell); prepared = true; }
+      // During buildup forcing can change every tick. Hashing/caching those
+      // tiny runs costs more than the recurrence itself; resolve the segment
+      // once and integrate directly, without a history lookup per tick.
+      if (count < 16) {
+        for (let tick = step; tick <= last; tick++) {
+          this.applyWeatherToCell(cell, forcing, this.fixedStepMs / 1000, tick, { prepareMutation: false });
+        }
+        appliedSteps += count; step = last + 1; continue;
+      }
+      const key = `${segment}:${count}:${this.fixedStepMs}:`
+        + WEATHER_PROFILE_FIELDS.slice(0, -2).map(field => cell[field]).join(':');
+      const cached = cache.entries.get(key);
+      if (cached) {
+        for (let i = 0; i < cached.totals.length; i += 3) {
+          this.totals.precipitationMm += cached.totals[i];
+          this.totals.evaporationMm += cached.totals[i + 1];
+          this.totals.drainageMm += cached.totals[i + 2];
+        }
+        for (let i = 0; i < WEATHER_STATE_FIELDS.length; i++) cell[WEATHER_STATE_FIELDS[i]] = cached.values[i];
+        cell.lastUpdatedStep = last;
+        cache.hits++;
+        cache.reusedSteps += count;
+        this.performanceCounters.weatherReplayCacheHits++;
+        this.performanceCounters.weatherReplayReusedSteps += count;
+      } else {
+        cache.misses++;
+        this.performanceCounters.weatherReplayCacheMisses++;
+        const totals = [];
+        for (let tick = step; tick <= last; tick++) {
+          stepTotals.precipitationMm = stepTotals.evaporationMm = stepTotals.drainageMm = 0;
+          this.applyWeatherToCell(cell, forcing, this.fixedStepMs / 1000, tick,
+            { prepareMutation: false, totals: stepTotals });
+          totals.push(stepTotals.precipitationMm, stepTotals.evaporationMm, stepTotals.drainageMm);
+          this.totals.precipitationMm += stepTotals.precipitationMm;
+          this.totals.evaporationMm += stepTotals.evaporationMm;
+          this.totals.drainageMm += stepTotals.drainageMm;
+        }
+        while (cache.entries.size >= 1024 || cache.steps + count > 32768) {
+          const oldest = cache.entries.keys().next().value;
+          cache.steps -= cache.entries.get(oldest).count;
+          cache.entries.delete(oldest);
+        }
+        cache.entries.set(key, { values: WEATHER_STATE_FIELDS.map(field => cell[field]), totals, count });
+        cache.steps += count;
+      }
+      appliedSteps += count;
+      step = last + 1;
+    }
+    if (appliedSteps > 1) {
+      this.cellSampleRevisions.set(cell, this.cellSampleRevisions.get(cell) + appliedSteps - 1);
+      this.visualRevision += appliedSteps - 1;
+      this.visualCellRevisions.set(cell.key, this.visualRevision);
     }
     return appliedSteps;
   }
@@ -621,7 +960,7 @@ export class TrackState {
     Object.entries(changes || {}).forEach(([field, value]) => {
       if (field in cell && Number.isFinite(Number(value))) cell[field] = Number(value);
     });
-    clampTrackStateCell(cell);
+    clampTrackStateCell(cell, true);
     this.refreshEnvironmentActivity(cell);
     return cell;
   }
@@ -633,14 +972,36 @@ export class TrackState {
       stepIndex: rawEvent.stepIndex || this.stepIndex + 1,
       sequence: proposedSequence
     }, proposedSequence);
+    return this.enqueueNormalizedEvent(event);
+  }
+
+  queueAccumulatedTireContact(aggregate) {
+    const probe = this.eventQueueProbe;
+    const started = probe ? probe.now() : 0;
+    const event = normalizeAccumulatedTireContactEvent(
+      aggregate, this.nextSequence, aggregate.stepIndex || this.stepIndex + 1
+    );
+    if (probe) probe.end('normalize', started, this);
+    return this.enqueueNormalizedEvent(event);
+  }
+
+  enqueueNormalizedEvent(event) {
+    const probe = this.eventQueueProbe;
+    let started = probe ? probe.now() : 0;
     if (event.stepIndex <= this.historyBaseStepIndex
       || event.sequence <= this.historyBaseSequence
       || this.eventIds.has(event.id)
-      || this.staleEventIds.has(event.id)) return null;
+      || this.staleEventIds.has(event.id)) {
+      if (probe) probe.end('lookup', started, this);
+      return null;
+    }
     this.nextSequence = Math.max(this.nextSequence, event.sequence + 1);
+    if (probe) { probe.end('lookup', started, this); started = probe.now(); }
     this.eventIds.add(event.id);
+    if (probe) { probe.end('idInsert', started, this); started = probe.now(); }
     this.pendingEvents.push(event);
     this.pendingEventsDirty = true;
+    if (probe) probe.end('queueInsert', started, this);
     return event;
   }
 
@@ -664,8 +1025,8 @@ export class TrackState {
     });
   }
 
-  applyWeatherToCell(cell, forcing, dt, stepIndex, { countTotals = true } = {}) {
-    this.prepareCellMutation(cell);
+  applyWeatherToCell(cell, forcing, dt, stepIndex, { countTotals = true, prepareMutation = true, totals = this.totals } = {}) {
+    if (prepareMutation) this.prepareCellMutation(cell);
     const solarTarget = forcing.ambientTemperatureC + forcing.sunIntensity * cell.sunExposure * 18;
     const windCooling = forcing.windIntensity * cell.windExposure * 3.5;
     const wetCooling = clamp((cell.moistureDepthMm + cell.standingWaterDepthMm) / 8, 0, 1) * 2.5;
@@ -681,7 +1042,7 @@ export class TrackState {
         cell.moistureDepthMm += absorbed;
         cell.standingWaterDepthMm += precipitation - absorbed;
       }
-      if (countTotals) this.totals.precipitationMm += precipitation;
+      if (countTotals) totals.precipitationMm += precipitation;
     }
     if (cell.surfaceTemperatureC < -0.5) {
       const freeze = Math.min(
@@ -692,7 +1053,7 @@ export class TrackState {
       cell.iceDepthMm += freeze;
       const compactFreeze = Math.min(cell.snowDepthMm, cell.compaction * dt * 0.08);
       cell.snowDepthMm -= compactFreeze;
-      cell.iceDepthMm += compactFreeze;
+      cell.iceDepthMm += compactFreeze * 0.1; // Approximate 10:1 snow-to-water depth.
     } else if (cell.surfaceTemperatureC > 0.5) {
       const meltCapacity = cell.surfaceTemperatureC * dt * (0.045 + forcing.sunIntensity * cell.sunExposure * 0.08);
       const iceMelt = Math.min(cell.iceDepthMm, meltCapacity * 0.35);
@@ -700,8 +1061,10 @@ export class TrackState {
       cell.standingWaterDepthMm += iceMelt;
       const snowMelt = Math.min(cell.snowDepthMm, Math.max(0, meltCapacity - iceMelt));
       cell.snowDepthMm -= snowMelt;
-      cell.moistureDepthMm += snowMelt * 0.45;
-      cell.standingWaterDepthMm += snowMelt * 0.55;
+      // Snow depth is fluffy snowfall, not an equal depth of liquid water.
+      const snowWater = snowMelt * 0.1;
+      cell.moistureDepthMm += snowWater * 0.45;
+      cell.standingWaterDepthMm += snowWater * 0.55;
     }
     const evaporationPotential = Math.max(0, cell.surfaceTemperatureC + 4) * 0.00045
       * (0.25 + forcing.sunIntensity * cell.sunExposure)
@@ -719,11 +1082,12 @@ export class TrackState {
     );
     cell.standingWaterDepthMm -= drainage;
     if (countTotals) {
-      this.totals.evaporationMm += evaporation;
-      this.totals.drainageMm += drainage;
+      totals.evaporationMm += evaporation;
+      totals.drainageMm += drainage;
     }
     cell.lastUpdatedStep = stepIndex;
-    clampTrackStateCell(cell);
+    if (this.debugFullWeatherClamp) clampTrackStateCell(cell);
+    else clampTrackStateWeatherFields(cell);
   }
 
   applyConservativeFlow(sourceCells = this.activeCellsScratch) {
@@ -776,6 +1140,10 @@ export class TrackState {
         }
       });
       if (!bestKey) return;
+      // Budgeted background flow may only exchange water between current
+      // cells; creating/catching up a receiver here would bypass the budget.
+      if (Number.isFinite(this.maxWeatherStepsPerStep)
+        && (!bestExisting || bestExisting.lastUpdatedStep < this.stepIndex)) return;
       const coords = this.receiverCoordsScratch[0];
       coords.x = bestX;
       coords.z = bestZ;
@@ -946,7 +1314,6 @@ export class TrackState {
       this.refreshEnvironmentActivity(receiver);
     });
   }
-
   applyEvent(event) {
     if (event.type === 'tire-contact') {
       this.applyTireContactEvent(event);
@@ -967,20 +1334,42 @@ export class TrackState {
     }
   }
 
+  getWeatherTimelineIndex() {
+    const cached = this.weatherTimelineIndex;
+    if (cached?.timeline === this.weatherTimeline && cached.size === this.weatherTimeline.size
+      && cached.forcing === this.lastWeatherForcing) return cached.entries;
+    const entries = [...this.weatherTimeline.entries()];
+    this.weatherTimelineIndex = { timeline: this.weatherTimeline, size: this.weatherTimeline.size,
+      forcing: this.lastWeatherForcing, entries };
+    return entries;
+  }
+
   getWeatherForStep(stepIndex) {
-    let result = null;
-    for (const [transitionStep, forcing] of this.weatherTimeline.entries()) {
-      if (Number(transitionStep) > Number(stepIndex)) break;
-      result = forcing;
+    // Buildup can record a transition every tick. Walking that entire history
+    // for every replayed tick turns catch-up into quadratic work as a race ages.
+    const entries = this.getWeatherTimelineIndex();
+    let low = 0, high = entries.length;
+    while (low < high) {
+      const middle = (low + high) >>> 1;
+      if (Number(entries[middle][0]) <= Number(stepIndex)) low = middle + 1;
+      else high = middle;
     }
-    return result;
+    return low ? entries[low - 1][1] : null;
   }
 
   recordWeatherTransition(stepIndex, forcing) {
     if (!weatherForcingEqual(this.lastWeatherForcing, forcing)) {
+      const cached = this.weatherTimelineIndex;
+      const oldSize = this.weatherTimeline.size;
       const stored = { ...forcing };
       this.weatherTimeline.set(stepIndex, stored);
       this.lastWeatherForcing = stored;
+      if (cached?.timeline === this.weatherTimeline && cached.size === oldSize
+        && this.weatherTimeline.size === oldSize + 1
+        && (!cached.entries.length || cached.entries.at(-1)[0] < stepIndex)) {
+        cached.entries.push([stepIndex, stored]);
+        cached.size++; cached.forcing = stored;
+      } else this.weatherTimelineIndex = null;
     }
   }
 
@@ -997,6 +1386,8 @@ export class TrackState {
     if (weatherChanged) {
       this.weatherWakeIterator = this.cells.values();
       this.weatherWakeRemaining = this.cells.size;
+      this.weatherWakeTotal = this.cells.size;
+      this.weatherWakeKeys = null;
     }
     if (this.pendingEventsDirty) {
       this.pendingEvents.sort(compareTrackStateEvents);
@@ -1020,7 +1411,8 @@ export class TrackState {
     const activeKeys = this.activeCellKeyScratch;
     active.length = 0;
     activeKeys.clear();
-    while (active.length < this.maxCellsPerStep && this.weatherWakeRemaining > 0) {
+    const cellLimit = Math.min(this.maxCellsPerStep, this.maxWeatherStepsPerStep);
+    while (active.length < cellLimit && this.weatherWakeRemaining > 0) {
       const next = this.weatherWakeIterator?.next?.();
       this.weatherWakeRemaining -= 1;
       if (!next || next.done || !next.value) continue;
@@ -1029,9 +1421,9 @@ export class TrackState {
     }
     if (this.weatherWakeRemaining <= 0) this.weatherWakeIterator = null;
     const activeCellCount = this.environmentActiveKeys.length;
-    const available = this.maxCellsPerStep - active.length;
+    const available = cellLimit - active.length;
     let considered = 0;
-    while (considered < activeCellCount && active.length < this.maxCellsPerStep) {
+    while (considered < activeCellCount && active.length < cellLimit) {
       const index = (this.environmentCellCursor + considered) % Math.max(1, activeCellCount);
       const key = this.environmentActiveKeys[index];
       const cell = this.cells.get(key);
@@ -1044,13 +1436,28 @@ export class TrackState {
     if (activeCellCount && available > 0) {
       this.environmentCellCursor = (this.environmentCellCursor + considered) % activeCellCount;
     }
-    active.forEach((cell) => {
-      this.catchUpCellWeather(cell, this.stepIndex);
+    let remainingWeatherSteps = this.maxWeatherStepsPerStep;
+    let completedCells = 0;
+    let integratedWeatherSteps = 0;
+    const selectedCellCount = active.length;
+    for (let index = 0; index < selectedCellCount; index++) {
+      const cell = active[index];
+      // Share the work allowance across selected cells so one old cell cannot
+      // monopolize the tick. Contact reads remain synchronous and current.
+      const allowance = Math.floor(remainingWeatherSteps / (selectedCellCount - index));
+      const integrated = this.catchUpCellWeather(cell, this.stepIndex, allowance);
+      remainingWeatherSteps -= integrated;
+      integratedWeatherSteps += integrated;
       this.refreshEnvironmentActivity(cell, normalizedForcing);
-    });
+      // Never transfer water from a partially integrated, stale cell.
+      if (cell.lastUpdatedStep >= this.stepIndex) active[completedCells++] = cell;
+    }
+    active.length = completedCells;
     this.applyConservativeFlow(active);
     if (!deferCheckpointRotation) this.rotateHistoryCheckpoint();
-    this.stepResultScratch.processedCellCount = active.length;
+    this.stepResultScratch.processedCellCount = selectedCellCount;
+    this.stepResultScratch.weatherIntegrationSteps = integratedWeatherSteps;
+    this.performanceCounters.backgroundWeatherSteps += integratedWeatherSteps;
     this.stepResultScratch.processedEventCount = dueCount;
     this.stepResultScratch.environmentActiveCellCount = this.environmentActiveKeys.length;
     return this.stepResultScratch;
@@ -1071,6 +1478,14 @@ export class TrackState {
       const atAdvanceBoundary = completedSteps >= this.maxCatchUpSteps
         || this.accumulatorMs + 1e-9 < this.fixedStepMs;
       this.rotateHistoryCheckpoint({ allowFreeze: atAdvanceBoundary });
+    }
+    // At 60 Hz, most calls do not reach the 10 Hz surface tick. Use those
+    // calls for one bounded checkpoint slice too, so a large field of cars
+    // does not retain many seconds of contact events waiting for capture.
+    // Freeze only at a completed simulation boundary (above): pending wheel
+    // aggregates must remain attached to the same replay checkpoint.
+    if (completedSteps === 0 && this.checkpointBuilder) {
+      this.rotateHistoryCheckpoint({ allowFreeze: false });
     }
     const result = target || {};
     result.completedSteps = completedSteps;
@@ -1117,9 +1532,11 @@ export class TrackState {
   }
 
   restoreSnapshot(snapshot) {
+    this.preparedBaseSurfaces.clear();
     const restored = restoreTrackStateSnapshot(this, snapshot);
     this.cellLookupRevision += 1;
     this.rebuildDerivedRuntimeState();
+    this.restoreWeatherSchedule(snapshot);
     this.visualRevision += 1;
     for (const key of this.orderedCellKeys) {
       this.visualCellRevisions.set(key, this.visualRevision);
@@ -1252,20 +1669,73 @@ export class TrackState {
     return { applied: false, type: String(packet.type || 'unknown') };
   }
 
-  getVisualCells(bounds = null) {
-    return queryTrackStateCells(this.cells, bounds)
-      .sort((a, b) => a.x - b.x || a.z - b.z)
-      .map((cell) => {
-        const sample = getTrackStateCellSample(cell, this.stepIndex);
-        return {
-          key: cell.key,
-          x: cell.worldX,
-          z: cell.worldZ,
-          elevationM: cell.elevationM,
-          effectiveGrip: sample.effectiveGrip,
-          ...sample.visual
-        };
-      });
+  getVisualCells(bounds = null, {maximumCells = Infinity, centerX = 0, centerZ = 0, minimumIntensity = 0} = {}) {
+    // Scratch belongs to this presentation query, never to physics or returned samples.
+    const scratch = this.visualQueryScratch ||= {
+      candidates: [], distances: new Float64Array(0),
+      sample: {visual: {}}, condition: {current: {}, baseline: {}}
+    };
+    const query = this.iterateVisualCells(bounds, { maximumCells, centerX, centerZ, minimumIntensity }, scratch);
+    let result;
+    do { result = query.next(); } while (!result.done);
+    return result.value;
+  }
+
+  // Presentation jobs own their scratch so a debug/atlas query cannot overwrite
+  // an in-progress render query. Only publication is delayed, never simulation.
+  *iterateVisualCells(bounds = null, {maximumCells = Infinity, centerX = 0, centerZ = 0, minimumIntensity = 0} = {}, scratch = {
+    candidates: [], distances: new Float64Array(0), sample: {visual: {}}, condition: {current: {}, baseline: {}}
+  }) {
+    const candidates = queryTrackStateCells(this.cells, bounds, scratch.candidates);
+    const limited = Number.isFinite(maximumCells);
+    // A min heap makes the nearest K query O(N + K log N), instead of
+    // sorting every candidate and allocating samples that are immediately dropped.
+    if (limited && scratch.distances.length < candidates.length) {
+      scratch.distances = new Float64Array(Math.max(256, candidates.length * 2));
+    }
+    const distances = limited ? scratch.distances : null;
+    if (limited) for (let i = 0; i < candidates.length; i++) {
+      const cell = candidates[i];
+      distances[i] = Math.hypot(cell.worldX-centerX, cell.worldZ-centerZ);
+    }
+    let remaining=candidates.length,cursor=0;
+    const compare=(a,b)=>distances[a]-distances[b]||candidates[a].x-candidates[b].x||candidates[a].z-candidates[b].z;
+    const sift=start=>{
+      let i=start;
+      while(i*2+1<remaining){
+        let child=i*2+1;
+        if(child+1<remaining&&compare(child+1,child)<0)child++;
+        if(compare(i,child)<=0)break;
+        const cell=candidates[i],distance=distances[i];
+        candidates[i]=candidates[child];distances[i]=distances[child];
+        candidates[child]=cell;distances[child]=distance;i=child;
+      }
+    };
+    if(limited)for(let i=Math.floor(remaining/2)-1;i>=0;i--)sift(i);
+    else candidates.sort((a,b)=>a.x-b.x||a.z-b.z);
+    const result=[];
+    const sampleStep = this.stepIndex;
+    let sampledCells=0;
+    const sampleScratch=scratch.sample,conditionScratch=scratch.condition;
+    // Select nearest visible records before allocating every candidate's
+    // public sample. Returned records own their values; saved cells stay intact.
+    while((limited?remaining>0:cursor<candidates.length)&&result.length<maximumCells){
+      const cell=limited?candidates[0]:candidates[cursor++];
+      if(limited){remaining--;candidates[0]=candidates[remaining];distances[0]=distances[remaining];if(remaining)sift(0);}
+      sampledCells++;
+      // Yield before each bounded group, including the first after selection.
+      if ((sampledCells - 1) % 32 === 0) yield null;
+      const sample=getTrackStateCellSample(cell,sampleStep,sampleScratch,conditionScratch);
+      if(minimumIntensity>0){
+        let visible=false;
+        for(const key in sample.visual)if(sample.visual[key]>=minimumIntensity){visible=true;break;}
+        if(!visible)continue;
+      }
+      result.push({key:cell.key,x:cell.worldX,z:cell.worldZ,elevationM:cell.elevationM,
+        effectiveGrip:sample.effectiveGrip,...sample.visual});
+    }
+    this.lastVisualQuery={candidateCells:candidates.length,sampledCells,returnedCells:result.length};
+    return result;
   }
 
   consumeVisualDelta({ maximumCells = 256, includeAll = false } = {}) {
@@ -1279,11 +1749,16 @@ export class TrackState {
     const cells = [];
     const dirtyTileKeys = new Set();
     const tileSizeM = 16;
+    // Each emitted cell copies the scalar fields; the temporary sample never
+    // escapes this loop. Do not share it with callers of sample().
+    const scratch = this.visualDeltaScratch ||= {
+      sample: { visual: {} }, condition: { current: {}, baseline: {} }
+    };
     for (const key of keys) {
       this.visualDirtyKeys.delete(key);
       const cell = this.cells.get(key);
       if (!cell) continue;
-      const sample = getTrackStateCellSample(cell, this.stepIndex);
+      const sample = getTrackStateCellSample(cell, this.stepIndex, scratch.sample, scratch.condition);
       cells.push({
         key,
         x: cell.worldX,

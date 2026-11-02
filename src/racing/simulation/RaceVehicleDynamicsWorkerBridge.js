@@ -298,6 +298,7 @@ export function applyRaceVehicleRenderSnapshot(session, snapshot) {
   if (!session || !snapshot) return;
   const euler = eulerFromQuaternion(snapshot.orientation);
   const state = syncWorkerPresentationState(session, snapshot, euler);
+  if(snapshot.mechanical) session.mechanical=state.mechanical=snapshot.mechanical;
   session.worldX = snapshot.position.x;
   session.worldY = snapshot.position.y;
   session.worldZ = snapshot.position.z;
@@ -519,6 +520,27 @@ export class RaceVehicleDynamicsWorkerBridge {
     return snapshot;
   }
 
+  addDebugAiVehicle(ai) {
+    const runner = ai.vehicleDynamicsRunner;
+    const id = `ai-${ai.id}`;
+    this.client.addVehicle({
+      id, active: true, player: false, config: runner.config,
+      initialState: runner.createStateSnapshot(), inputTimeline: [],
+      renderWheelSpinAngles: {...runner.renderWheelSpinAngles}
+    });
+    ai.workerVehicleId = id;
+    runner.dormant = true;
+  }
+
+  removeDebugAiVehicle(ai) {
+    const id = ai.workerVehicleId;
+    if (!id) return;
+    this.client.removeVehicle(id);
+    this.activeByVehicle.delete(id);
+    this.inputSequenceByVehicle.delete(id);
+    this.client.snapshotsByVehicle.delete(id);
+  }
+
   updateAiVehicle({ vehicleId, controls, ai, active = true }) {
     const renderStartMs = this.now();
     const id = String(vehicleId);
@@ -591,6 +613,8 @@ export class RaceVehicleDynamicsWorkerBridge {
     );
     return this.resetSequence;
   }
+
+  setPaused(paused) { this.client.setPaused(paused); }
 
   close() {
     this.client.close();

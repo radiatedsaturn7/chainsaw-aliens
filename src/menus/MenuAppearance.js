@@ -56,7 +56,7 @@ export class MenuAppearanceResources {
  cursor(e){
   if(!e.cursorData||!this.Image)return null;
   let entry=this.images.get(e.cursorData);
-  if(!entry){entry={image:new this.Image(),ready:false};this.images.set(e.cursorData,entry);entry.image.onload=()=>{entry.ready=true;};entry.image.onerror=()=>{};entry.image.src=e.cursorData;}
+  if(!entry){entry={image:new this.Image(),ready:false};this.images.set(e.cursorData,entry);entry.pending=new Promise(resolve=>{entry.image.onload=()=>{entry.ready=true;resolve();};entry.image.onerror=()=>resolve();});entry.image.src=e.cursorData;}
   return entry.ready?entry.image:null;
  }
 }

@@ -194,7 +194,9 @@ function buildSideRails(section = {}, side = 'left', {
     let offset = transitionEnd + step;
     while (offset < guardEnd - 0.001) {
       rawOffsets.push(offset);
-      step = Math.min(160, step * 1.55);
+      // Keep detailed bands near the road, but grow distant bands instead of
+      // adding one every 160 m across kilometre-wide mountain surveys.
+      step = offset - transitionEnd < 720 ? Math.min(160, step * 1.55) : step * 2;
       offset += step;
     }
     rawOffsets.push(guardEnd);

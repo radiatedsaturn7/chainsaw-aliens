@@ -1,3 +1,4 @@
+import {stepMechanicalState} from './MechanicalModel.js';
 import { getRaceServiceBrakeForceN } from './RaceSimulationConfig.js';
 import { calculateRaceWaterForces } from './RaceWater.js';
 import {addItemVehicleForce} from '../../items/ItemVehicleEffect.js';
@@ -8,6 +9,7 @@ import {
 } from './ContactPatchTireModel.js';
 import { HandlingAssist } from './HandlingAssist.js';
 import { advanceTireThermalState } from './TireThermalModel.js';
+import { copyTireStateRecord } from './TireStatePublication.js';
 import { normalizeSuspensionDefinition } from './SuspensionGeometry.js';
 import { AeroModel } from './AeroModel.js';
 import { sampleWakeAtVehicle } from './WakeModel.js';
@@ -36,7 +38,7 @@ import {
   scaleVector3
 } from './RigidBodyMath.js';
 import { createVehicleRenderStateFromRunner } from './VehicleRenderState.js';
-import { solveStaticVehicleSupportState } from './StaticVehicleSupportSolver.js';
+import { solveStaticVehicleSupportState, solveStaticVehicleSupportStateIncrementally } from './StaticVehicleSupportSolver.js';
 
 export { solveStaticVehicleSupportState };
 
@@ -442,7 +444,7 @@ function stableIdentityValues(values = []) {
     .map(String))].sort();
 }
 
-function calculateKineticEnergyJ(state = {}, config = {}) {
+function calculateKineticEnergyJ(state = {}, config = {}, pose = state) {
   const velocity = state.velocity || {};
   const translational = 0.5 * Number(config.massKg || 0) * (
     Number(velocity.x || 0) ** 2
@@ -450,7 +452,7 @@ function calculateKineticEnergyJ(state = {}, config = {}) {
     + Number(velocity.z || 0) ** 2
   );
   const omegaBody = rotateVectorToBody(
-    state.angularVelocityWorld || {}, state.orientation || {}
+    state.angularVelocityWorld || {}, pose.orientation || {}
   );
   const angularMomentumBody = multiplyBodyInertia(
     config.inertiaTensorBodyKgM2 || {}, omegaBody
@@ -463,7 +465,7 @@ function calculateKineticEnergyJ(state = {}, config = {}) {
   return quantize(Math.max(0, translational + rotational + wheelRotational));
 }
 
-function calculateMechanicalEnergyJ(state = {}, config = {}) {
+function calculateMechanicalEnergyJ(state = {}, config = {}, pose = state) {
   let suspensionPotentialJ = 0;
   for (const wheelId of RACE_WHEEL_IDS) {
     const suspension = state.suspensionState?.[wheelId] || {};
@@ -480,8 +482,8 @@ function calculateMechanicalEnergyJ(state = {}, config = {}) {
       * tireDeflectionM ** 2;
   }
   return quantize(
-    calculateKineticEnergyJ(state, config)
-    + Number(config.massKg || 0) * 9.81 * Number(state.position?.y || 0)
+    calculateKineticEnergyJ(state, config, pose)
+    + Number(config.massKg || 0) * 9.81 * Number(pose.position?.y || 0)
     + suspensionPotentialJ
   );
 }
@@ -562,6 +564,8 @@ function controlsEqual(left, right) {
     || left.itemSpeedMultiplier !== right.itemSpeedMultiplier
     || left.throttle !== right.throttle
     || left.brake !== right.brake
+    || left.highBeams !== right.highBeams || left.auxLights !== right.auxLights
+    || left.headlights !== right.headlights
     || left.clutch !== right.clutch
     || left.handbrake !== right.handbrake
     || left.handbrakeHoldSequence !== right.handbrakeHoldSequence
@@ -639,6 +643,8 @@ export function normalizeVehicleControlInput(input = {}) {
     throttle: quantize(clamp(Number(input.throttle ?? input.throttleAxis ?? 0), 0, 1)),
     brake: quantize(clamp(Number(input.brake ?? input.brakeAxis ?? 0), 0, 1)),
     clutch: quantize(clamp(Number(input.clutch ?? input.clutchAxis ?? 0), 0, 1)),
+    headlights: typeof input.headlights === 'boolean' ? input.headlights : null,
+    highBeams:typeof input.highBeams==='boolean'?input.highBeams:null,auxLights:typeof input.auxLights==='boolean'?input.auxLights:null,
     handbrake: quantize(clamp(Number(input.handbrake || 0), 0, 1)),
     handbrakeHoldSequence: Math.max(0, Math.trunc(Number(input.handbrakeHoldSequence || 0))),
     handbrakeHoldSeconds: quantize(clamp(Number(input.handbrakeHoldSeconds ?? 0.36), 0, 2)),
@@ -663,14 +669,15 @@ function copyVehicleControlInputInto(target, source) {
   target.throttle = source.throttle;
   target.brake = source.brake;
   target.clutch = source.clutch;
+  target.headlights = source.headlights;target.highBeams=source.highBeams;target.auxLights=source.auxLights;
   target.handbrake = source.handbrake;
   target.handbrakeHoldSequence = source.handbrakeHoldSequence;
   target.handbrakeHoldSeconds = source.handbrakeHoldSeconds;
   target.requestedGear = source.requestedGear;
   const assists = target.assists && typeof target.assists === 'object'
     ? target.assists : {};
-  for (const key in assists) delete assists[key];
   const sourceAssists = source.assists || {};
+  for (const key in assists) if (!(key in sourceAssists)) delete assists[key];
   for (const key in sourceAssists) assists[key] = sourceAssists[key];
   target.assists = assists;
   return target;
@@ -754,12 +761,13 @@ export class VehicleControlInputTimeline {
     sampled.itemSpeedMultiplier = left.input.itemSpeedMultiplier;
     sampled.requestedGear = left.input.requestedGear;
     sampled.steeringInputMode = left.input.steeringInputMode;
+    sampled.headlights = left.input.headlights;sampled.highBeams=left.input.highBeams;sampled.auxLights=left.input.auxLights;
     sampled.handbrakeHoldSequence = left.input.handbrakeHoldSequence;
     sampled.handbrakeHoldSeconds = left.input.handbrakeHoldSeconds;
     sampled.centerSteeringAngleRad = null;
     const assists = sampled.assists && typeof sampled.assists === 'object'
       ? sampled.assists : {};
-    for (const key in assists) delete assists[key];
+    for (const key in assists) if (!(key in (left.input.assists || {}))) delete assists[key];
     for (const key in left.input.assists || {}) assists[key] = left.input.assists[key];
     sampled.assists = assists;
     CONTINUOUS_CONTROL_FIELDS.forEach((field) => {
@@ -806,6 +814,7 @@ export function createVehicleDynamicsState(initial = {}) {
     quantize(initial[field]?.[wheelId] ?? fallback)
   ]));
   return {
+    mechanical: initial.mechanical ? structuredClone(initial.mechanical) : null,
     position: {
       x: quantize(initial.position?.x ?? initial.worldX ?? 0),
       y: quantize(initial.position?.y ?? initial.heightM ?? initial.bodyY ?? 0),
@@ -1994,7 +2003,7 @@ function assignPooledSubstepRecord(pool, index, source, substepIndex) {
     target = {};
     pool[index] = target;
   } else {
-    for (const key in target) delete target[key];
+    for (const key in target) if (key !== 'substepIndex' && !(key in source)) delete target[key];
   }
   Object.assign(target, source);
   target.substepIndex = substepIndex;
@@ -2439,7 +2448,7 @@ export class VehicleDynamicsRunner {
   }
 
   replaceAuthoritativeState(nextState = {}) {
-    this.state = createVehicleDynamicsState(nextState);
+    this.state = createVehicleDynamicsState({...nextState, mechanical:nextState.mechanical || this.state?.mechanical});
     this.stationaryResetHold = null;
     if (!nextState.wheelAngularVelocityRadps) {
       RACE_WHEEL_IDS.forEach((wheelId) => {
@@ -2455,11 +2464,21 @@ export class VehicleDynamicsRunner {
     return this.createStateSnapshot();
   }
 
-  resetAuthoritativeState(nextState = {}, {
+  resetAuthoritativeState(nextState = {}, options = {}) {
+    const job = this.resetAuthoritativeStateIncrementally(nextState, options);
+    let step;
+    do { step = job.next(); } while (!step.done);
+    return step.value;
+  }
+
+  *resetAuthoritativeStateIncrementally(nextState = {}, {
     reason = 'authoritative-reset',
     record = true,
     rebuildContacts = true,
     parkUntilDrive = false,
+    verifiedRoadPose = false,
+    maximumRouteRecoveryCandidates = 8,
+    routeRecoveryCandidateOffset = 0,
     resetGeneration = null
   } = {}) {
     const crashPose = {
@@ -2495,6 +2514,7 @@ export class VehicleDynamicsRunner {
     const uprightRequestedEuler = eulerFromQuaternion(uprightRequestedOrientation);
     let resetState = createVehicleDynamicsState({
       ...nextState,
+      mechanical:nextState.mechanical || this.state.mechanical,
       orientation: uprightRequestedOrientation,
       yawRad: uprightRequestedEuler.yaw,
       pitchRad: uprightRequestedEuler.pitch,
@@ -2516,7 +2536,7 @@ export class VehicleDynamicsRunner {
         direct: false
       },
       tireState: preservedTireState,
-      suspensionState: {},
+      suspensionState: verifiedRoadPose ? clone(nextState.suspensionState || {}) : {},
       contactPatches: {},
       wheelLoadsN: {},
       wheelSlip: {},
@@ -2543,7 +2563,7 @@ export class VehicleDynamicsRunner {
       physicsCostAccounting: this.physicsCostAccounting
     });
     let environment = this.environmentProvider(environmentRequest(resetState)) || {};
-    if (routeDistance !== null && typeof environment.getRouteRecoveryState === 'function') {
+    if (!verifiedRoadPose && routeDistance !== null && typeof environment.getRouteRecoveryState === 'function') {
       const routeCandidate = environment.getRouteRecoveryState({
         failedState: clone(resetState),
         lastSafeState: null,
@@ -2627,9 +2647,12 @@ export class VehicleDynamicsRunner {
       trace: []
     };
     if (rebuildContacts && !explicitlyAirborneReset) {
-      const solveCandidate = (candidate) => {
-        const solved = solveStaticVehicleSupportState({
+      const solveCandidate = function* (candidate) {
+        const solved = yield* solveStaticVehicleSupportStateIncrementally({
           state: candidate,
+          placementOnly: verifiedRoadPose,
+          allowPlacementSettle: verifiedRoadPose,
+          maximumIterations: verifiedRoadPose ? 32 : 64,
           config: this.config,
           tireContactSubsystem: this.tireContactSubsystem,
           bodyCollision: this.bodyCollision,
@@ -2641,7 +2664,7 @@ export class VehicleDynamicsRunner {
             this.environmentProvider(environmentRequest(candidate, true)) || environment
           )
         });
-        if (solved.status === 'converged'
+        if (['converged','validated'].includes(solved.status)
           && getVehicleBodyUpY(solved.state?.orientation) <= RESET_UPRIGHT_MIN_BODY_UP_Y) {
           return {
             ...solved,
@@ -2649,11 +2672,39 @@ export class VehicleDynamicsRunner {
             error: 'static reset support converged to an inverted body pose'
           };
         }
+        // Road recovery must finish with four loaded road contacts, including
+        // after the equilibrium solver has adjusted the requested pose.
+        if (['converged','validated'].includes(solved.status)
+          && (verifiedRoadPose || routeDistance !== null
+            && /^(ai-|track-center-reset|select-hold-reset|automatic-upside-down)/.test(reason))) {
+          const supportEnvironment = this.environmentProvider(environmentRequest(solved.state, true)) || environment;
+          const allOnRoad = RACE_WHEEL_IDS.every((wheelId) => {
+            const patch = solved.state.contactPatches?.[wheelId];
+            if (!patch?.validTreadContact || !(patch.normalLoadN > 1) || !patch.contactPointWorld) return false;
+            const halfWidth = Number(this.config.tireByWheel?.[wheelId]?.widthMm || 225) / 2000;
+            const lateral = rotateVectorByQuaternion({ x: 1, y: 0, z: 0 }, solved.state.orientation);
+            return [-halfWidth, 0, halfWidth].every(offset => {
+              const point = patch.contactPointWorld;
+              const sample = supportEnvironment.sampleTerrainAtWorldPoint?.({
+                x: point.x + lateral.x * offset, y: point.y + lateral.y * offset,
+                z: point.z + lateral.z * offset
+              });
+              return sample?.valid === true && sample.region === 'road'
+                && (!verifiedRoadPose || Number.isFinite(sample.heightM)
+                  && Math.abs(sample.heightM-(point.y+lateral.y*offset))<=.15);
+            });
+          });
+          if (!allOnRoad) return { ...solved, status: 'failed', error: 'reset requires all four wheels supported on the road' };
+        }
         return solved;
       };
-      let staticSolve = solveCandidate(resetState);
+      let staticSolve = yield* solveCandidate.call(this, resetState);
       const rejectedEquilibria = [];
-      if (staticSolve.status !== 'converged'
+      const candidateLimit = Math.max(0, Math.min(8, Math.trunc(Number(maximumRouteRecoveryCandidates) || 0)));
+      const candidateOffset = Math.max(0, Math.trunc(Number(routeRecoveryCandidateOffset) || 0));
+      if (!['converged','validated'].includes(staticSolve.status)
+        && !verifiedRoadPose
+        && candidateLimit > 0
         && routeDistance !== null
         && typeof environment.getRouteRecoveryState === 'function') {
         rejectedEquilibria.push({
@@ -2664,8 +2715,8 @@ export class VehicleDynamicsRunner {
         });
         const spacingM = Math.max(5, Number(this.config.vehicleLengthM || 4.5) * 1.25);
         const preferredRouteDistances = [];
-        for (let offset = 1; offset <= 8; offset += 1) {
-          preferredRouteDistances.push(Math.max(0, routeDistance - spacingM * offset));
+        for (let offset = 1; offset <= candidateLimit; offset += 1) {
+          preferredRouteDistances.push(Math.max(0, routeDistance - spacingM * (offset + candidateOffset)));
         }
         const recovered = environment.getRouteRecoveryState({
           failedState: clone(resetState),
@@ -2679,7 +2730,7 @@ export class VehicleDynamicsRunner {
           stepIndex: this.stepIndex
         });
         const recoveredCandidates = Array.isArray(recovered) ? recovered : [recovered];
-        for (const recoveredCandidate of recoveredCandidates) {
+        for (const recoveredCandidate of recoveredCandidates.slice(0, candidateLimit)) {
           if (!recoveredCandidate?.position || !recoveredCandidate?.orientation) continue;
           const recoveredOrientation = createUprightResetOrientation(
             recoveredCandidate.orientation, uprightRequestedOrientation
@@ -2698,7 +2749,7 @@ export class VehicleDynamicsRunner {
             wheelAngularVelocityRadps: {}, tireState: preservedTireState,
             vehicleResetGeneration
           });
-          const candidateSolve = solveCandidate(candidateState);
+          const candidateSolve = yield* solveCandidate.call(this, candidateState);
           if (candidateSolve.status === 'converged') {
             staticSolve = candidateSolve;
             break;
@@ -2724,7 +2775,7 @@ export class VehicleDynamicsRunner {
         rejectedCandidates: rejectedEquilibria
       };
       contactRebuildError = staticSolve.error;
-      if (staticSolve.status !== 'converged') {
+      if (!['converged','validated'].includes(staticSolve.status)) {
         this.state.velocity = { x: 0, y: 0, z: 0 };
         this.state.angularVelocityWorld = { x: 0, y: 0, z: 0 };
         this.pendingCollisionImpulses.length = 0;
@@ -2883,6 +2934,7 @@ export class VehicleDynamicsRunner {
       timeSeconds: resetTimeSeconds,
       reason,
       parkUntilDrive: Boolean(parkUntilDrive),
+      verifiedRoadPose: Boolean(verifiedRoadPose),
       state: settledSnapshot
     };
     this.authoritativeResetSequence = vehicleResetGeneration;
@@ -2920,8 +2972,7 @@ export class VehicleDynamicsRunner {
     };
   }
 
-  applyStationaryResetHold(state = this.state) {
-    const hold = this.stationaryResetHold;
+  applyStationaryResetHold(state = this.state, hold = this.stationaryResetHold) {
     if (!hold) return state;
     const support = hold.staticSupportState;
     state.position = clone(support.position);
@@ -3086,6 +3137,8 @@ export class VehicleDynamicsRunner {
   }
 
   integrateChassis(controls, tires, dt, { preintegrated = false } = {}) {
+    const costs = this.physicsCostAccounting;
+    let chassisTimer = costs.start('chassisImpulseIntegration');
     const state = this.state;
     const config = this.config;
     const integrationScratch = this.integrationResultScratch[
@@ -3309,10 +3362,12 @@ export class VehicleDynamicsRunner {
     state.angularVelocityWorld.x = quantize(state.angularVelocityWorld.x);
     state.angularVelocityWorld.y = quantize(state.angularVelocityWorld.y);
     state.angularVelocityWorld.z = quantize(state.angularVelocityWorld.z);
+    costs.end(chassisTimer);
+    chassisTimer = costs.start('chassisStatePublication');
     const authoritativePowertrain = tires.powertrainState || state.powertrainState || {};
     state.engineRpm = quantize(clamp(
       Number(authoritativePowertrain.engineRpm ?? state.engineRpm ?? config.idleRpm),
-      config.idleRpm,
+      state.mechanical?.engineRunning === false ? 0 : config.idleRpm,
       config.maxRpm
     ));
     state.gear = Math.trunc(Number(authoritativePowertrain.gear ?? state.gear ?? 0));
@@ -3347,6 +3402,8 @@ export class VehicleDynamicsRunner {
     powertrainState.telemetry = tires.powertrainTelemetry || {};
     state.powertrainState = powertrainState;
     state.suspensionState = tires.suspensionState;
+    costs.end(chassisTimer);
+    chassisTimer = costs.start('chassisTireThermalPublication');
     const tireStateByWheel = state.tireState || {};
     const contactPatchesByWheel = state.contactPatches || {};
     for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
@@ -3369,12 +3426,13 @@ export class VehicleDynamicsRunner {
         0,
         100
       ));
-      Object.assign(previous, patch, thermal);
+      copyTireStateRecord(previous, patch);
+      copyTireStateRecord(previous, thermal);
       previous.wear = wear;
       previous.damage = damage;
       tireStateByWheel[wheelId] = previous;
       const statePatch = contactPatchesByWheel[wheelId] || {};
-      Object.assign(statePatch, patch);
+      copyTireStateRecord(statePatch, patch);
       statePatch.frictionHeatingWorkJ = previous.frictionHeatingWorkJ;
       statePatch.carcassFlexHeatingWorkJ = previous.carcassFlexHeatingWorkJ;
       statePatch.loadHeatingWorkJ = previous.loadHeatingWorkJ;
@@ -3387,6 +3445,8 @@ export class VehicleDynamicsRunner {
     }
     state.tireState = tireStateByWheel;
     state.contactPatches = contactPatchesByWheel;
+    costs.end(chassisTimer);
+    chassisTimer = costs.start('chassisDiagnosticPublication');
     const integration = integrationScratch.result;
     const inverseDt = 1 / dt;
     integration.totalForceWorldN.x = totalLinearImpulse.x * inverseDt;
@@ -3587,6 +3647,7 @@ export class VehicleDynamicsRunner {
                 : 'numerical/contact instability';
     integration.sleeping = canSleep;
     integration.collisionImpulses = collisionImpulses;
+    costs.end(chassisTimer);
     return integration;
   }
 
@@ -4544,6 +4605,7 @@ export class VehicleDynamicsRunner {
     deferCostStepFinish = false,
     backlogSteps = 0
   } = {}) {
+    let mechanicalEnvironment = null;
     const nextStepIndex = this.stepIndex + 1;
     const scheduledReset = this.scheduledReplayResets.get(nextStepIndex);
     if (scheduledReset) {
@@ -4551,6 +4613,7 @@ export class VehicleDynamicsRunner {
         reason: scheduledReset.reason,
         record: false,
         rebuildContacts: true,
+        verifiedRoadPose: scheduledReset.verifiedRoadPose === true,
         parkUntilDrive: scheduledReset.parkUntilDrive === true
       });
     }
@@ -4585,6 +4648,7 @@ export class VehicleDynamicsRunner {
       this.sampledControlsScratch
     );
     let suppressThrottleForResetRelease = false;
+    let releasingResetHold = null;
     if (this.stationaryResetHold
       && (Number(sampledControls.throttle || 0) > STATIONARY_RESET_WAKE_THROTTLE || Number(sampledControls.itemSpeedMultiplier||1)>1)) {
       this.stationaryResetHold.wakeRequested = true;
@@ -4593,6 +4657,7 @@ export class VehicleDynamicsRunner {
         // Wake always starts from the exact converged transaction. Parked
         // validation never donates dynamic wheel state to this transition.
         this.applyStationaryResetHold(this.state);
+        releasingResetHold = this.stationaryResetHold;
         this.stationaryResetHold = null;
         suppressThrottleForResetRelease = true;
       }
@@ -4679,6 +4744,7 @@ export class VehicleDynamicsRunner {
       environmentRequest.recoveryRecalculation = false;
       environmentRequest.physicsCostAccounting = this.physicsCostAccounting;
       let environment = this.environmentProvider(environmentRequest) || {};
+      mechanicalEnvironment = environment;
       let waterForces = null;
       if (environment.waterRegions?.length || this.state.waterEngineDamage || this.state.waterDepthM) {
         waterForces = calculateRaceWaterForces({ state: substepState, config: this.config,
@@ -4765,8 +4831,9 @@ export class VehicleDynamicsRunner {
       tireStepRequest.substepIndex = substepIndex;
       tireStepRequest.timeSeconds = substepTimeSeconds;
       tireStepRequest.recoveryRecalculation = false;
-      let tireResult = this.stationaryResetHold
-        ? stationarySupportTireResult(this.stationaryResetHold.staticSupportState)
+      const stepResetHold = this.stationaryResetHold || releasingResetHold;
+      let tireResult = stepResetHold
+        ? stationarySupportTireResult(stepResetHold.staticSupportState)
         : this.tireContactSubsystem.step(tireStepRequest);
       let tireTerrainPatchCount = 0;
       let tireTerrainValidityCount = 0;
@@ -5004,29 +5071,25 @@ export class VehicleDynamicsRunner {
       );
       const contactTransactionGeneration = nextStepIndex
         * this.config.tireSubstepsPerChassisStep + substepIndex + 1;
+      // No state mutation occurs between these audit fields. Evaluate each
+      // distinct pose once, without copying the complete vehicle record.
+      const mechanicalBeforeCorrectionJ = calculateMechanicalEnergyJ(
+        substepState, this.config, collisionPoseBefore
+      );
+      const mechanicalAfterCorrectionJ = calculateMechanicalEnergyJ(substepState, this.config);
       const contactTransactionEnergy = {
         beforeCollisionImpulseJ: bodyPreImpactKineticEnergyJ,
         afterCollisionImpulseJ: bodyResult.postImpactKineticEnergyJ,
         beforePositionalCorrectionJ: bodyResult.postImpactKineticEnergyJ,
-        afterPositionalCorrectionJ: calculateKineticEnergyJ(substepState, this.config),
-        beforeContactRebuildJ: calculateKineticEnergyJ(substepState, this.config),
+        afterPositionalCorrectionJ: bodyResult.postImpactKineticEnergyJ,
+        beforeContactRebuildJ: bodyResult.postImpactKineticEnergyJ,
         afterContactRebuildJ: null,
         finalCommitJ: null,
         mechanicalBeforeCollisionJ: bodyPreImpactMechanicalEnergyJ,
-        mechanicalAfterCollisionImpulseJ: calculateMechanicalEnergyJ({
-          ...substepState,
-          position: collisionPoseBefore.position,
-          orientation: collisionPoseBefore.orientation
-        }, this.config),
-        mechanicalBeforePositionalCorrectionJ: calculateMechanicalEnergyJ({
-          ...substepState,
-          position: collisionPoseBefore.position,
-          orientation: collisionPoseBefore.orientation
-        }, this.config),
-        mechanicalAfterPositionalCorrectionJ: calculateMechanicalEnergyJ(
-          substepState, this.config
-        ),
-        mechanicalBeforeContactRebuildJ: calculateMechanicalEnergyJ(substepState, this.config),
+        mechanicalAfterCollisionImpulseJ: mechanicalBeforeCorrectionJ,
+        mechanicalBeforePositionalCorrectionJ: mechanicalBeforeCorrectionJ,
+        mechanicalAfterPositionalCorrectionJ: mechanicalAfterCorrectionJ,
+        mechanicalBeforeContactRebuildJ: mechanicalAfterCorrectionJ,
         mechanicalAfterContactRebuildJ: null,
         mechanicalFinalCommitJ: null
       };
@@ -6154,7 +6217,9 @@ export class VehicleDynamicsRunner {
     const integration = this.integrateChassis(
       integrationControls, tires, 1 / this.config.chassisHz, { preintegrated: true }
     );
-    if (this.stationaryResetHold) this.applyStationaryResetHold(this.state);
+    if (this.stationaryResetHold || releasingResetHold) {
+      this.applyStationaryResetHold(this.state, this.stationaryResetHold || releasingResetHold);
+    }
     let maximumUnsprungSpeedMps = 0;
     for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
       maximumUnsprungSpeedMps = Math.max(maximumUnsprungSpeedMps, Math.abs(Number(
@@ -6484,6 +6549,16 @@ export class VehicleDynamicsRunner {
         + Number(this.state.wheelAngularVelocityRadps?.[wheelId] || 0) * chassisStepDt
       ) % (Math.PI * 2), 12);
     }
+    if (this.state.mechanical) stepMechanicalState(this.state.mechanical, chassisStepDt, {
+      rpm:this.state.engineRpm, maxRpm:this.config.maxRpm,
+      throttle:controls.throttle, brake:controls.brake, headlights:controls.headlights,highBeams:controls.highBeams,auxLights:controls.auxLights,
+      clutchCoupling:this.state.powertrainState?.clutchCoupling,
+      gear:this.state.gear, speedMps:this.state.speedMps, tires:this.state.tireState,
+      lateralAccelerationMps2:this.state.lateralAccelerationMps2,
+      wheelAngularVelocityRadps:this.state.wheelAngularVelocityRadps,
+      impact:impactStarted?Math.min(4,(bodyNormalImpulseNs+tireVerticalImpulseNs)/Math.max(1,this.config.massKg)/10):0,
+      ambientTemperatureC:mechanicalEnvironment?.ambientTemperatureC
+    }, mechanicalEnvironment?.damage || {});
     this.stepIndex = nextStepIndex;
     this.diagnostics.completedSteps += 1;
     this.diagnostics.completedTireSubsteps += tireResults.length;

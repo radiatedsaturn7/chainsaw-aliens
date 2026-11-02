@@ -24,8 +24,41 @@ export function drawMenuImage(ctx,image,b,fit='contain'){
 }
 const caption=(text,parameters)=>String(text).replace(/\{\{([\w.-]+)\}\}/g,(_,key)=>String(parameters[key]??''));
 
-export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,resources,focus=null,selected=null,editing=false,worldMapEditingId=null,videos=null,widgetStates=new Map()}={}){
-  screen=resolveMenuBackground(document,screen,parameters);
+// Rasterize unchanged buttons once: mobile Canvas filters and stroked custom
+// fonts otherwise repeat their compositing work on every animation frame.
+const buttonFrames=new WeakMap();
+function drawCachedButton(ctx,bounds,document,screen,element,parameters,options){
+  if(options.editing||element.type!=='button'||element.parentId||element.keyframes?.length
+    ||(element.animation&&element.animation!=='none')||!globalThis.document?.createElement)return false;
+  const resources=options.resources;if(!resources)return false;
+  const fontSource=element.useDefaultFont?document.defaultFont||element:element;
+  const font=resources.font?.(fontSource)||fontSource.fontFamily||'system-ui';
+  const art=element.artRef?resources.art?.(element.artRef,Math.floor(options.time*8)):null;
+  const cursor=resources.cursor?.(element);
+  // Invalidate when async art/cursors/fonts become ready, or selection/labels change.
+  const transform=ctx.getTransform?.();
+  const density=Math.min(3,Math.max(1,Math.abs(transform?.a||1),Math.abs(transform?.d||1)));
+  const b=menuElementBounds(element,bounds),pad=4;
+  const key=[bounds.w,bounds.h,density,options.focus===element.id,options.selected===element.id,
+    JSON.stringify(Object.fromEntries(Object.entries(element).filter(([k,v])=>!['fontData','cursorData'].includes(k)&&typeof v!=='object'))),
+    caption(element.label,parameters),font].join('|');
+  let cache=buttonFrames.get(element);
+  if(!cache||cache.key!==key||cache.art!==art||cache.cursor!==cursor||cache.fontSource!==fontSource){
+    const canvas=globalThis.document.createElement('canvas');
+    canvas.width=Math.ceil((b.w+pad*2)*density);canvas.height=Math.ceil((b.h+pad*2)*density);
+    if(canvas.width>4096||canvas.height>4096)return false;
+    const target=canvas.getContext('2d');if(!target?.scale)return false;
+    target.scale(density,density);
+    drawMenuScreen(target,{x:pad-element.x*bounds.w,y:pad-element.y*bounds.h,w:bounds.w,h:bounds.h},
+      document,{...screen,elements:[element]},parameters,{...options,buttonOnly:true});
+    cache={key,art,cursor,fontSource,canvas};buttonFrames.set(element,cache);
+  }
+  ctx.drawImage(cache.canvas,b.x-pad,b.y-pad,cache.canvas.width/density,cache.canvas.height/density);
+  return true;
+}
+
+export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,resources,focus=null,selected=null,editing=false,worldMapEditingId=null,videos=null,widgetStates=new Map(),buttonOnly=false}={}){
+  if(!buttonOnly)screen=resolveMenuBackground(document,screen,parameters);
   // Authoring does not run MenuPlayer's selection initialization. Resolve the
   // same fallback for the showroom and every bound widget without editing the document.
   for(const element of screen.elements){
@@ -33,7 +66,8 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     const choices=resources?.choices('cars',document,parameters)||[];
     if(choices.length&&!choices.some(choice=>choice.value===parameters[element.binding]))parameters={...parameters,[element.binding]:choices[0].value};
   }
-  ctx.save();ctx.beginPath();ctx.rect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.clip();ctx.fillStyle=screen.background;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
+  ctx.save();ctx.beginPath();ctx.rect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.clip();
+  if(!buttonOnly){ctx.fillStyle=screen.background;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
   const background=resources?.art(screen.backgroundArt,Math.floor(time*8));if(background)ctx.drawImage(background,bounds.x,bounds.y,bounds.w,bounds.h);
   if(['snow','rain'].includes(screen.effect))drawMenuWeather(ctx,bounds,document,screen,time);
   else if(screen.effect==='stars'){
@@ -42,8 +76,10 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
       if(screen.effect==='rain'){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-4,y+12);ctx.stroke()}else ctx.fillRect(x,y,screen.effect==='snow'?3:2,screen.effect==='snow'?3:2);
     }ctx.restore();
   }
+  }
   for(const element of menuPaintOrder(screen.elements)){
     if(!menuElementVisible(element,screen.elements))continue;const pose=editing?{x:element.x,y:element.y,opacity:1,scale:1,rotation:0}:menuElementPose(element,time),b=menuElementBounds(element,bounds,pose);
+    if(!buttonOnly&&drawCachedButton(ctx,bounds,document,screen,element,parameters,{time,resources,focus,selected,editing,worldMapEditingId,videos,widgetStates}))continue;
     const drawText=(text,...args)=>drawMenuText(ctx,element,['text','button','choice','toggle','keybind','property-display'].includes(element.type)?menuTypedText(element,text,time,editing):text,...args);
     ctx.save();ctx.translate(b.x+b.w/2,b.y+b.h/2);ctx.rotate(pose.rotation*Math.PI/180);ctx.scale(pose.scale,pose.scale);ctx.translate(-b.x-b.w/2,-b.y-b.h/2);ctx.globalAlpha=pose.opacity;
     ctx.beginPath();ctx.rect(b.x,b.y,b.w,b.h);ctx.clip();

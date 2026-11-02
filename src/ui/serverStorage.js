@@ -121,14 +121,14 @@ function normalizeIndex(index = {}) {
 }
 
 function updateCachedPayload(payload, source = 'server') {
-  if (!payload?.folder || !payload?.name) return;
+  if (!payload?.folder || !payload?.name) return false;
   const raw = JSON.stringify(payload);
   const key = fileKey(payload.folder, payload.name);
   // A late response must not replace edits saved while its request was in flight.
   const current = volatileFiles.get(key);
   if (current) {
     try {
-      if (Number(JSON.parse(current).savedAt || 0) > Number(payload.savedAt || 0)) return;
+      if (Number(JSON.parse(current).savedAt || 0) > Number(payload.savedAt || 0)) return false;
     } catch { /* Replace invalid cache entries. */ }
   }
   volatileFiles.set(key, raw);
@@ -138,6 +138,7 @@ function updateCachedPayload(payload, source = 'server') {
     updatedAt: Number(payload.savedAt || Date.now()),
     size: raw.length
   };
+  return true;
 }
 
 async function requestJson(url, options = {}) {
@@ -276,7 +277,9 @@ async function fetchServerFile(folder, name) {
     if (error.status === 404 && error.message === 'File not found') return null;
     throw error;
   }
-  updateCachedPayload(payload.file, 'server');
+  // Keep the already decoded response on a fresh load. Parsing the just-written
+  // cache duplicates every large sprite-sheet allocation on the main thread.
+  if (updateCachedPayload(payload.file, 'server')) return attachStorageSource(payload.file, 'server');
   const key = fileKey(folder, name);
   const cached = volatileFiles.get(key);
   return attachStorageSource(cached ? JSON.parse(cached) : payload.file, volatileFileSources.get(key) || 'server');

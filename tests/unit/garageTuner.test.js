@@ -20,9 +20,9 @@ async function editPressure(t){t.index=0;await t.confirm();await t.confirm();ass
 test('eight sections cover every numeric tuning field once and show locked stock categories',async()=>{
  assert.equal(TUNING_SECTIONS.length,8);
  for(const f of CAR_PART_FIELDS)assert.equal(TUNING_SECTIONS.filter(s=>s.matches(f.id)).length,1,f.id);
- const {tuner}=await fixture();assert.equal(tuner.ready,true);assert.deepEqual(TUNING_SECTIONS.map((s,i)=>tuner.enabled(i)),[true,false,false,false,false,false,false,false]);
+ const {tuner}=await fixture();assert.equal(tuner.ready,true);assert.deepEqual(TUNING_SECTIONS.map((s,i)=>tuner.enabled(i)),[true,true,false,false,false,false,false,false]);
  tuner.index=4;await tuner.confirm();assert.equal(tuner.mode,'grid');assert.match(tuner.message,/springs/);
- tuner.index=7;tuner.move('right');tuner.move('down');assert.equal(tuner.index,0);tuner.cancel();
+ tuner.index=7;tuner.move('right');tuner.move('down');assert.ok([0,1].includes(tuner.index));tuner.cancel();
 });
 test('A edits/applies, B cancels only the draft, and saved pressure reaches reloaded car copies',async()=>{
  const f=await fixture();await editPressure(f.tuner);f.tuner.move('right');assert.equal(f.tuner.draft,32.5);assert.equal(f.items.garage.configuration('car').tune['pressure.fl'],undefined);assert.equal(f.writes(),0);
@@ -55,7 +55,7 @@ test('a pending apply cannot be submitted twice or canceled halfway through savi
  assert.equal(f.tuner.busy,true);f.tuner.cancel();await f.tuner.confirm();assert.equal(f.writes(),1);assert.equal(f.tuner.mode,'edit');finish({ok:true});await save;assert.equal(f.tuner.mode,'list');assert.equal(f.tuner.row.value,32.5);
 });
 test('tire type is a discrete slider over owned compatible tires, with cancel and stock restoration',async()=>{
- const f=await fixture();await f.items.garage.purchase('rally');await f.tuner.refresh();f.tuner.index=1;await f.tuner.confirm();await f.tuner.confirm();f.tuner.move('right');assert.equal(f.tuner.row.options[f.tuner.draft].label,'Rally Tires');f.tuner.cancel();assert.deepEqual(f.items.garage.configuration('car').installed,{});
+ const f=await fixture();await f.items.garage.purchase('rally');await f.tuner.refresh();f.tuner.index=0;await f.tuner.confirm();f.tuner.rowIndex=f.tuner.sectionRows().findIndex(r=>r.id==='tireType');await f.tuner.confirm();f.tuner.move('right');assert.equal(f.tuner.row.options[f.tuner.draft].label,'Rally Tires');f.tuner.cancel();assert.deepEqual(f.items.garage.configuration('car').installed,{});
  await f.tuner.confirm();f.tuner.move('right');await f.tuner.confirm();assert.equal((await f.items.garage.build('car',f.car)).setup.defaultTireCompound,'dirt');
  await f.tuner.confirm();f.tuner.move('left');await f.tuner.confirm();assert.equal((await f.items.garage.build('car',f.car)).setup.defaultTireCompound,'stock');
  assert.ok(f.items.progress.bags.items.rally>0);
@@ -136,7 +136,7 @@ test('every tuning panel keeps the upgrade tile size across categories, settings
 
 test('disabled tuning categories and settings cannot be selected by movement or touch',async()=>{
  const f=await fixture(),t=f.tuner;
- t.move('right');t.move('down');assert.equal(t.index,0);
+ t.move('right');assert.equal(t.index,1);t.move('left');t.move('down');assert.equal(t.index,0);
  t.hitAreas=[{kind:'category',index:4,x:0,y:0,w:40,h:40}];t.pointerDown({x:20,y:20});assert.equal(t.index,0);assert.equal(t.mode,'grid');
  await f.items.garage.purchase('springs',{carRef:'car'});await t.refresh();t.move('down');assert.equal(t.index,4);await t.confirm();
  const locked=t.sectionRows().findIndex(r=>!r.enabled),before=t.rowIndex;

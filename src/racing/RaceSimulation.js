@@ -1,3 +1,7 @@
+import { RaceSimulationClock } from './RaceFrameBudget.js';
+import {updateGlassWeather} from './GlassWeather.js';
+import {prepareRaceSceneryTriggers} from './simulation/DamageModel.js';
+import {advanceTurnSignals} from './TurnSignals.js';
 import { advanceNetworkRaceProgress, sampleNetworkEdge } from './RaceRouteNetwork.js';
 import { getRaceStickLook, stepRaceLookAngle } from './RaceCameraInput.js';
 import { getWheelSlipPresentation } from './simulation/WheelSlipPresentation.js';
@@ -150,17 +154,24 @@ function createRaceEnvironmentScratch() {
     if (projection?.edgeId && editor.selectedRace?.road?.network) {
       const samples = sampleNetworkEdge(editor.selectedRace.road.network, projection.edge, { stepM: 1 });
       const maximumSearchM = stage === 'hard-stop' ? 80 : 50;
-      const candidates = [projection, ...samples
+      const candidates = [...samples
         .filter(p => Math.abs(p.distance - projection.edgeDistance) <= maximumSearchM)
         .sort((a, b) => Math.abs(a.distance - projection.edgeDistance) - Math.abs(b.distance - projection.edgeDistance))];
+      const validCandidates = [];
       for (const pose of candidates) {
+        if (stage === 'static-support-fallback' && validCandidates.some(candidate =>
+          Math.hypot(candidate.position.x - pose.x, candidate.position.z - pose.z) < 6)) continue;
         const measured = editor.getRaceRouteProjectionForWorldPoint(pose);
         const candidate = context.createTerrainAlignedRecoveryState(measured.distance, rejectedSourceKeys, {
           ...pose, edgeId: projection.edgeId, segment: projection.segment
         });
-        if (candidate) return candidate;
+        if (candidate) {
+          if (stage !== 'static-support-fallback') return candidate;
+          validCandidates.push(candidate);
+          if (validCandidates.length >= 8) break;
+        }
       }
-      return null;
+      return validCandidates.length ? validCandidates : null;
     }
     const rawProjectedDistance = projection?.distance;
     const projectedDistance = rawProjectedDistance !== null
@@ -187,11 +198,16 @@ function createRaceEnvironmentScratch() {
       searchStepM,
       maximumSearchM
     });
+    const validCandidates = [];
     for (const distance of searchDistances) {
       const candidate = context.createTerrainAlignedRecoveryState(distance, rejectedSourceKeys);
-      if (candidate) return candidate;
+      if (candidate) {
+        if (stage !== 'static-support-fallback') return candidate;
+        validCandidates.push(candidate);
+        if (validCandidates.length >= 8) break;
+      }
     }
-    return null;
+    return validCandidates.length ? validCandidates : null;
   };
   const sampleTerrainAtWorldPoint = (worldPoint, query = {}) => {
     const context = callbackContext;
@@ -450,7 +466,7 @@ function createRaceCompatibilityTelemetryScratch() {
   return scratch;
 }
 
-function createWorkerEnvironmentStateSnapshot(environment = {}) {
+export function createWorkerEnvironmentStateSnapshot(environment = {}) {
   const copyVector = (value = {}) => ({
     x: Number(value.x || 0), y: Number(value.y || 0), z: Number(value.z || 0)
   });
@@ -482,7 +498,7 @@ export function createRaceStaticColliderWorld(editor, {
   // new identity on every render update and defeated the fast cache check.
   const race = editor.selectedRace || null;
   const cachedWorld = authority.staticColliderWorldCache;
-  if (cachedWorld?.worldBake === worldBake
+  if (cachedWorld && cachedWorld.worldBake === worldBake
     && cachedWorld.race === race
     && cachedWorld.runtimeType === runtimeType
     && cachedWorld.routeLength === routeLength) {
@@ -490,6 +506,7 @@ export function createRaceStaticColliderWorld(editor, {
   }
   const margin = editor.ensureRaceMarginSettings?.() || {};
   const scenery = editor.ensureRaceScenery?.() || [];
+  prepareRaceSceneryTriggers(editor, scenery);
   const authored = [
     ...(Array.isArray(worldBake?.staticColliders) ? worldBake.staticColliders : []),
     ...(Array.isArray(race?.staticColliders) ? race.staticColliders : [])
@@ -735,6 +752,8 @@ function ensureVehicleDynamicsAuthority(editor, tuning, controls) {
   const runner = new VehicleDynamicsRunner({
     config,
     initialState: {
+      mechanical:session.mechanical,
+      tireState:session.mechanical?Object.fromEntries(Object.entries(session.mechanical.tires).map(([w,t])=>[w,{wear:1-t.tread}])):{},
       worldX: session.worldX,
       heightM: (session.grounded === false || session.airborne)
         && Number.isFinite(Number(session.bodyY ?? session.heightM))
@@ -794,6 +813,32 @@ export function initializeRaceVehiclePresentation(editor) {
   const tuning=editor.getRaceCarTuning(editor.getRaceSessionCar(session));
   const authority=ensureVehicleDynamicsAuthority(editor,tuning,{});
   syncVehicleDynamicsCompatibilityOutputs(authority.runner,session);
+}
+
+// Build immutable collision data while loading still covers the race. Do not
+// step physics: countdown, fuel, damage and AI must remain unchanged.
+export function prepareRaceStartupCollisionWorld(editor) {
+  // Loading runs outside updatePlaytest's geometry-read scope. Without that
+  // scope every scenery height query rehashes the entire imported road.
+  if (editor?.withRaceGeometryReadCache && !editor.raceGeometryReadCache)
+    return editor.withRaceGeometryReadCache(() => prepareRaceStartupCollisionWorld(editor));
+  const session = editor?.playtestSession;
+  if (!session?.running || session.preparing) return;
+  const tuning = editor.getRaceCarTuning(editor.getRaceSessionCar(session));
+  const authority = ensureVehicleDynamicsAuthority(editor, tuning, {});
+  const previousCache = authority.staticColliderWorldCache;
+  const world = createRaceStaticColliderWorld(editor, {
+    authority,
+    worldBake: session.worldBake || editor.raceWorldBakeCache,
+    runtimeType: session.routeRuntimeType || editor.getActiveRaceRuntimeType(),
+    routeLength: session.routeLength || editor.getRaceRouteLength()
+  });
+  // This work belongs to loading, not the deadline for presenting a frame.
+  // Only a real build restarts that deadline; cache hits must not hide a
+  // renderer that never presents its first frame.
+  if (session.startupFramePending && authority.staticColliderWorldCache !== previousCache)
+    session.startupPresentationStartedAtMs = Date.now();
+  return world;
 }
 
 function createTrackStateStepScratch() {
@@ -1108,9 +1153,11 @@ function advanceVehicleDynamicsAuthority(editor, {
       || (globalThis.__RTG_ENABLE_VEHICLE_DYNAMICS_WORKER__ === true ? 'force' : 'auto')
   ).toLowerCase();
   const collectingLiveWorkerQualification = qualificationWorkerMode === 'auto'
+    && !Boolean(editor.game?.deviceIsMobile || editor.game?.isMobile)
     && !authority.liveWorkerQualification
     && typeof Worker === 'function';
-  physicsCosts.enabled = editor.raceInput.physicsPerformanceVisible === true
+  physicsCosts.enabled = physicsCosts.detailedCaptureActive === true
+    || editor.raceInput.physicsPerformanceVisible === true
     || session.physicsPerformanceVisible === true
     || globalThis.__RTG_PHYSICS_COST_ACCOUNTING__ === true
     || collectingLiveWorkerQualification;
@@ -1613,7 +1660,7 @@ function advanceVehicleDynamicsAuthority(editor, {
         sample: sampleRecoveryTerrain({ x: wheel.x, y: supportQueryHeightM, z: wheel.z },
           fallbackSurfaceId)
       }));
-      if (wheelTerrain.some(({ sample }) => !sample.valid)) return null;
+      if (wheelTerrain.some(({ sample }) => !sample.valid || sample.region !== 'road')) return null;
       const averageHeight = (predicate) => {
         const samples = wheelTerrain.filter(predicate);
         return samples.reduce((sum, entry) => sum + entry.sample.heightM, 0) / samples.length;
@@ -1658,7 +1705,8 @@ function advanceVehicleDynamicsAuthority(editor, {
           sample: sampleRecoveryTerrain(queryPosition, fallbackSurfaceId)
         };
       });
-      if (features.some(({ sample }) => !sample.valid)) return null;
+      if (features.some(({ sample, kind }) => !sample.valid
+        || (kind === 'wheel' && sample.region !== 'road'))) return null;
       const safetyMarginM = config.penetrationRecoverySafetyMarginM;
       const cgHeightM = Math.max(...features.map((feature) => (
         feature.sample.heightM - feature.arm.y + (feature.kind === 'body'
@@ -2006,6 +2054,9 @@ function advanceVehicleDynamicsAuthority(editor, {
     environmentResult.damage.engine = Number(damage.engine || 0);
     environmentResult.damage.transmission = Number(damage.transmission || 0);
     environmentResult.damage.brakes = brakeDamage;
+    environmentResult.damage.panels = damage.panels;
+    environmentResult.damage.suspension = damage.suspension;
+    environmentResult.damage.tires = damage.tires;
     callbackContext.environmentResult = environmentResult;
     authority.chassisGeometryEnvironment = environmentResult;
     authority.chassisGeometryStepIndex = stepIndex;
@@ -2124,24 +2175,32 @@ function advanceVehicleDynamicsAuthority(editor, {
   authority.raceAdvanceRequest ||= { input: null, onFixedStep: authority.raceFixedStepCallback };
   authority.raceAdvanceRequest.input = controls;
   const advance = authority.runner.advance(seconds, authority.raceAdvanceRequest);
-  if (!countdownActive && Number(advance.completedSteps || 0) > 0
+  const legacyWorkerPreference = globalThis.__RTG_ENABLE_VEHICLE_DYNAMICS_WORKER__;
+  const requestedWorkerMode = String(
+    globalThis.__RTG_VEHICLE_DYNAMICS_WORKER_MODE__
+      || (legacyWorkerPreference === true ? 'force' : 'auto')
+  ).toLowerCase();
+  const mobileDevice = Boolean(editor.game?.deviceIsMobile || editor.game?.isMobile);
+  const mobileAutoMigrationBlocked = mobileDevice && requestedWorkerMode === 'auto';
+  const needsWorkerQualification = typeof Worker === 'function' && !mobileAutoMigrationBlocked
+    && requestedWorkerMode === 'auto' && !authority.liveWorkerQualification;
+  if (needsWorkerQualification && !countdownActive && Number(advance.completedSteps || 0) > 0
     && Number(advance.advanceWallTimeMs || 0) > 0) {
-    authority.workerQualificationSamples ||= [];
     authority.workerQualificationCompletedSteps ||= 0;
     authority.workerQualificationWallTimeMs ||= 0;
     authority.workerQualificationPeakBacklog ||= 0;
-    const samples = authority.workerQualificationSamples;
-    samples.push(Number(advance.advanceWallTimeMs) / Number(advance.completedSteps));
     authority.workerQualificationCompletedSteps += Number(advance.completedSteps);
     authority.workerQualificationWallTimeMs += Number(advance.advanceWallTimeMs);
     authority.workerQualificationPeakBacklog = Math.max(
       authority.workerQualificationPeakBacklog,
       Number(advance.backlogSteps || 0)
     );
-    if (samples.length > 240) samples.shift();
-    const exactStepSamples = physicsCosts.appendStepElapsedHistory([]);
-    if (exactStepSamples.length >= 240 && !authority.liveWorkerQualification) {
-      const sorted = exactStepSamples.slice(-240).sort((left, right) => left - right);
+    const availableSteps = physicsCosts.stepHistoryMode === 'elapsed-ring'
+      ? physicsCosts.stepElapsedHistoryLength : physicsCosts.stepHistory.length;
+    if (availableSteps >= 240) {
+      // Qualification needs one fixed-step sample window, not a freshly copied
+      // history on every render frame (including platforms with no worker path).
+      const sorted = physicsCosts.appendStepElapsedHistory([]).slice(-240).sort((left, right) => left - right);
       const p95Index = Math.min(sorted.length - 1, Math.ceil(sorted.length * 0.95) - 1);
       authority.liveWorkerQualification = qualifyVehicleDynamicsWorkerMigration({
         achievedStepsPerSecond: authority.workerQualificationCompletedSteps
@@ -2171,17 +2230,10 @@ function advanceVehicleDynamicsAuthority(editor, {
       }
     }
   }
-  const legacyWorkerPreference = globalThis.__RTG_ENABLE_VEHICLE_DYNAMICS_WORKER__;
-  const requestedWorkerMode = String(
-    globalThis.__RTG_VEHICLE_DYNAMICS_WORKER_MODE__
-      || (legacyWorkerPreference === true ? 'force' : 'auto')
-  ).toLowerCase();
   const explicitQualification = globalThis.__RTG_VEHICLE_DYNAMICS_WORKER_QUALIFICATION__;
   const qualification = requestedWorkerMode === 'force'
     ? qualifyVehicleDynamicsWorkerMigration(explicitQualification || {})
     : authority.liveWorkerQualification;
-  const mobileDevice = Boolean(editor.game?.deviceIsMobile || editor.game?.isMobile);
-  const mobileAutoMigrationBlocked = mobileDevice && requestedWorkerMode === 'auto';
   const workerPermitted = typeof Worker === 'function' && !mobileAutoMigrationBlocked && (
     requestedWorkerMode === 'force'
     || (requestedWorkerMode === 'auto' && qualification?.qualified === true)
@@ -2417,6 +2469,12 @@ export function updateRaceSimulation({
   if (input && input !== editor.raceInput) editor.raceInput = input;
   if (editor.raceInput.paused || editor.playtestSession.raceResults) return;
   if (editor.playtestSession.raceMusicPending && Number(editor.playtestSession.countdownRemainingMs||0)>1000) return;
+  // Freeze the race clock and live physics while a reset candidate is being
+  // solved. Its environment and vehicle conditions must not drift between slices.
+  if (editor.playtestSession.incrementalRoadReset) {
+    editor.updateRaceEdgeCenterResetFade();
+    return;
+  }
   const car = editor.getRaceSessionCar(editor.playtestSession);
   const tuning = editor.getRaceCarTuning(car);
   const authoritativeGroundSpeedMps = Number(editor.playtestSession.groundSpeedMps
@@ -2426,7 +2484,21 @@ export function updateRaceSimulation({
     : Math.abs(Number(editor.playtestSession.speedMps) || 0);
   tuning.absEnabled = editor.playtestSession.absEnabled !== false;
   tuning.tractionControlEnabled = editor.playtestSession.tractionControlEnabled !== false;
-  const seconds = Math.max(0, Number(dt) || 0);
+  const clock = editor.playtestSession.frameSimulationClock ||= new RaceSimulationClock();
+  const wallSeconds = Number.isFinite(Number(dt)) ? Math.max(0, Number(dt)) : 0;
+  // Staged countdown/rolling formation follows presentation and the music clock.
+  // The bounded clock governs active racing, not how long the player waits for GO.
+  const preStart = Number(editor.playtestSession.countdownRemainingMs || 0) > 1000;
+  // An active worker advances independently of rendering. Do not slow race
+  // timing on the main thread while its physics continues on the worker clock.
+  const workerOwnsClock = Boolean(editor.vehicleDynamicsAuthority?.workerBridge);
+  if (preStart || workerOwnsClock) clock.resetDebt();
+  const seconds = preStart || workerOwnsClock || editor.playtestSession.debugFrameBudgetDisabled
+    ? wallSeconds : clock.advance(wallSeconds);
+  editor.playtestSession.frameAdmittedSeconds = seconds;
+  advanceTurnSignals(editor.playtestSession, seconds, Number(editor.raceInput.steeringWheel || 0));
+  const glassWeather=editor.getRaceWeatherState(editor.selectedRace,editor.playtestSession);
+  updateGlassWeather(editor.playtestSession,seconds,{weather:glassWeather,wipers:car.art?.interior?.wipers,speedMps:editor.playtestSession.speedMps,temperatureC:editor.selectedRace?.weatherTemperatureC??(glassWeather.id==='snow'?-4:16),sheltered:editor.lastRaceRenderCamera?.cameraSafety?.tunnelConstrained===true});
   ensureVehicleDynamicsAuthority(editor, tuning, {
     steering: -editor.raceInput.steeringWheel,
     driverSteeringIntent: -Number(editor.raceInput.analogSteeringActive
@@ -2444,7 +2516,7 @@ export function updateRaceSimulation({
         maxPhysicalAngleRad: 0.52
       }
     ),
-    steeringInputMode: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
+    steeringInputMode: (editor.raceInput.wheelSteeringActive || String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation')
       ? 'simulation-wheel'
       : editor.raceInput.controllerSteeringMode || (editor.raceInput.analogSteeringActive ? 'gamepad' : 'keyboard'),
     throttle: editor.raceInput.throttleAxis,
@@ -2453,6 +2525,8 @@ export function updateRaceSimulation({
     handbrake: editor.raceInput.handbrake ? 1 : 0,
     handbrakeHoldSequence: editor.raceInput.handbrakeHoldSequence,
     handbrakeHoldSeconds: editor.raceInput.handbrakeHoldSeconds,
+    headlights: editor.raceInput.headlights ?? editor.playtestSession.mechanical?.headlights,
+    highBeams:editor.raceInput.highBeams??editor.playtestSession.mechanical?.highBeams,auxLights:editor.raceInput.auxLights??editor.playtestSession.mechanical?.auxLights,
     requestedGear: editor.raceInput.gear,
     assists: {
       absEnabled: tuning.absEnabled,
@@ -2505,7 +2579,7 @@ export function updateRaceSimulation({
   const segmentInfo = editor.getRaceSegmentAtDistance(editor.playtestSession.distance, {
     wrap: (editor.playtestSession.routeRuntimeType || editor.getSelectedRaceRuntimeType()) === 'circuit'
   });
-  const weatherState = editor.getRaceWeatherState(editor.selectedRace, editor.playtestSession);
+  const weatherState = glassWeather;
   const trackState = editor.playtestSession.trackState || null;
   let latestTrackStateAdvance = null;
   const surface = getSurfaceById(editor.getRaceEffectiveSurfaceId(segmentInfo.segment?.surface || 'asphalt', weatherState));
@@ -2578,8 +2652,9 @@ export function updateRaceSimulation({
   const driverBrake = clamp(Number(editor.raceInput.brakeAxis || 0), 0, 1);
   let throttle = countdownActive ? 0 : driverThrottle;
   let brake = countdownActive ? 0 : driverBrake;
-  const controlsLockedByRollover = Boolean(editor.playtestSession.rolledOver);
-  let controlLockReason = controlsLockedByRollover ? 'rollover' : 'none';
+  const resetting = Boolean(editor.playtestSession.pendingEdgeCenterReset || editor.playtestSession.workerRoadReset);
+  const controlsLockedByRollover = resetting || Boolean(editor.playtestSession.rolledOver);
+  let controlLockReason = resetting ? 'road-reset' : controlsLockedByRollover ? 'rollover' : 'none';
   if (controlsLockedByRollover) {
     throttle = 0;
     brake = 0;
@@ -2650,7 +2725,7 @@ export function updateRaceSimulation({
   const gearRatio = editor.getRaceGearRatio(tuning, gear);
   const binarySteer = launchSteeringLocked ? 0 : clamp(Number(editor.raceInput.binarySteer || 0), -1, 1);
   const binaryActive = Math.abs(binarySteer) > 0.01;
-  const simulationWheelInput = String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation';
+  const simulationWheelInput = editor.raceInput.wheelSteeringActive || String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation';
   if (launchSteeringLocked) {
     editor.raceInput.digitalSteerHoldMs = 0;
   } else if (editor.raceInput.analogSteeringActive) {
@@ -2721,7 +2796,7 @@ export function updateRaceSimulation({
   const driveDirection = gear < 0 ? -1 : gear > 0 ? 1 : 0;
   editor.playtestSession.previousDistance = editor.playtestSession.distance;
   if (countdownVisible) {
-    editor.playtestSession.countdownRemainingMs = Math.max(0, Number(editor.playtestSession.countdownRemainingMs || 0) - seconds * 1000);
+    if(!editor.playtestSession.raceMusicCountdownClock)editor.playtestSession.countdownRemainingMs = Math.max(0, Number(editor.playtestSession.countdownRemainingMs || 0) - wallSeconds * 1000);
     if (editor.playtestSession.countdownRemainingMs <= 1000) {
       editor.playtestSession.startupPhase = 'running';
     }
@@ -2733,6 +2808,7 @@ export function updateRaceSimulation({
   editor.playtestSession.launchLockMs = Math.max(0, Number(editor.playtestSession.launchLockMs || 0) - seconds * 1000);
   editor.playtestSession.edgeResetFadeMs = Math.max(0, Number(editor.playtestSession.edgeResetFadeMs || 0) - seconds * 1000);
   editor.updateRaceEdgeCenterResetFade();
+  if (editor.playtestSession.incrementalRoadReset) return;
   editor.playtestSession.shiftCooldownMs = Math.max(0, Number(editor.playtestSession.shiftCooldownMs || 0) - seconds * 1000);
   const inlineRunnerActive = editor.playtestSession.vehicleDynamicsRunner?.dormant !== true;
   const wheelContacts3d = (inlineRunnerActive ? editor.playtestSession.wheelContacts3d : null)
@@ -3704,7 +3780,7 @@ export function updateRaceSimulation({
     rackAngleRad: steeringAngle,
     casterRad: Number(tuning.casterFront || 0) * Math.PI / 180,
     wheelRadiusM: tuning.wheelRadiusM,
-    steeringInputMode: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
+    steeringInputMode: (editor.raceInput.wheelSteeringActive || String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation')
       ? 'simulation-wheel'
       : editor.raceInput.analogSteeringActive ? 'gamepad' : 'keyboard',
     seconds,
@@ -3961,7 +4037,7 @@ export function updateRaceSimulation({
       steeringTarget: -Number(editor.raceInput.steeringTarget || 0),
       controllerFilterOutput: -Number(editor.raceInput.steeringWheel || 0),
       centerSteeringAngleRad: -steeringAngle,
-      steeringInputMode: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
+      steeringInputMode: (editor.raceInput.wheelSteeringActive || String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation')
         ? 'simulation-wheel'
         : editor.raceInput.controllerSteeringMode || (editor.raceInput.analogSteeringActive ? 'gamepad' : 'keyboard'),
       throttle: countdownActive ? driverThrottle : throttle,
@@ -3973,7 +4049,9 @@ export function updateRaceSimulation({
       handbrake,
       handbrakeHoldSequence: editor.raceInput.handbrakeHoldSequence,
       handbrakeHoldSeconds: editor.raceInput.handbrakeHoldSeconds,
-      requestedGear: editor.raceInput.gear,
+      headlights: editor.raceInput.headlights ?? editor.playtestSession.mechanical?.headlights,
+    highBeams:editor.raceInput.highBeams??editor.playtestSession.mechanical?.highBeams,auxLights:editor.raceInput.auxLights??editor.playtestSession.mechanical?.auxLights,
+    requestedGear: editor.raceInput.gear,
       assists: {
         absEnabled: tuning.absEnabled,
         tractionControlEnabled: tuning.tractionControlEnabled,
@@ -4141,7 +4219,7 @@ export function updateRaceSimulation({
   );
   editor.playtestSession.roadViewOffset += (trackViewTarget - Number(editor.playtestSession.roadViewOffset || 0)) * Math.min(1, seconds * 3.2);
   const physicalTirePresentation=getWheelSlipPresentation(presentationState,editor.playtestSession.vehicleRenderProfile?.wheelRadiusM??tuning.wheelRadiusM);
-  const authoritativeEngineRpm = Number(editor.playtestSession.engineRpm || diagnosticEngineRpm);
+  const authoritativeEngineRpm = Number(editor.playtestSession.engineRpm ?? diagnosticEngineRpm);
   editor.playtestSession.rpm = clamp(authoritativeEngineRpm / tuning.revLimitRpm, 0, 1.08);
   editor.updateRaceEngineAudio({ tuning, throttle: engineThrottle, load: relaxedWheelSpinRatio });
   editor.updateRaceTireAudio({

@@ -46,9 +46,9 @@ test('stationary wheelspin reaches tire audio and smoke emission without using e
  editor.getRaceWheelFxEmissionPosition=()=>({x:0,z:0,elevation:0});
  editor.getRaceTireFxVisualMaterialAtWorldPoint=()=>({materialId:'asphalt',surfaceId:'asphalt',region:'road'});
  const spin=getWheelSlipPresentation(tractionState({omega:35}));
- editor.updateRaceTireAudio({slip:spin.audibleSlip,slipSpeedMps:spin.slipSpeedMps,speedMps:0});assert.equal(calls.at(-1)[0],true);
+ editor.updateRaceTireAudio({slip:spin.audibleSlip,slipSpeedMps:spin.slipSpeedMps,speedMps:0});assert.equal(calls.at(-1)[0],true);assert.ok(calls.at(-1)[1].speedMps>10,'stationary squeal uses tread slip speed');
  for(let i=0;i<120;i++)editor.emitRaceTireFxParticles(1/60,{...spin,speedMps:0});
- assert.ok(editor.playtestSession.tireFxParticles.some(p=>p.slotId==='skidSmoke'));
+ assert.ok(editor.playtestSession.tireFxParticles.filter(p=>p.slotId==='skidSmoke').length>=80,'sustained stationary burnout produces dense smoke');
  editor.updateRaceTireAudio({slip:0,speedMps:0});assert.equal(calls.at(-1)[0],false);
 });
 test('wheel artwork follows physical spin at zero vehicle travel',()=>{

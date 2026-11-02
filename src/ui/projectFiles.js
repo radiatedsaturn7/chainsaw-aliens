@@ -118,7 +118,7 @@ export function sanitizeProjectFileName(name) {
     .slice(0, 64);
 }
 
-export function listProjectFiles(folder, { includeDeleted = false, includeSystem = false } = {}) {
+export function listProjectFiles(folder, { includeDeleted = false, includeSystem = false, allowSyncFetch = true } = {}) {
   assertFolder(folder);
   const index = ensureProjectFileIndex(folder);
   const listed = Object.entries(index[folder] || {})
@@ -146,7 +146,7 @@ export function listProjectFiles(folder, { includeDeleted = false, includeSystem
     if (includeSystem) return true;
     if (index[folder]?.[entry.name]?.systemFile === true) return false;
     if (folder !== 'cars') return true;
-    const payload = loadProjectFile(folder, entry.name);
+    const payload = loadProjectFile(folder, entry.name, {allowSyncFetch});
     return !isSystemCarDocument(payload?.data || payload, entry.name);
   });
 }
@@ -180,6 +180,11 @@ export async function hydrateProjectFilePayload(folder, name, options = {}) {
   assertFolder(folder);
   const clean = sanitizeProjectFileName(name);
   if (!clean) return null;
+  const refresh = options?.forceRefresh === true || String(options?.freshness || '').trim().toLowerCase() === 'newest';
+  if (!refresh) {
+    const cached = loadProjectFile(folder, clean, {allowSyncFetch:false});
+    if (cached) return cached;
+  }
   const payload = await hydrateProjectFile(folder, clean, options);
   if (!payload) return null;
   const raw = JSON.stringify(payload);

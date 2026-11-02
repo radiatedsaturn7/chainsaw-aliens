@@ -82,3 +82,74 @@ test('garage screens switch instantly in both directions but leaving the group s
   player.cleanup();
  }finally{globalThis.document=previous;}
 });
+
+test('fade stays black and input stays blocked until screen artwork is ready',async()=>{
+ const previous=globalThis.document,player=new MenuPlayer({input:{},transitionTo(){},setActiveMusicTrack(){}});
+ player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};
+ await player.open(createMenuDocument(),{preview:true});
+ let ready;player.resources.prepareScreen=()=>new Promise(resolve=>{ready=resolve;});
+ try{
+  globalThis.document={createElement:canvas};player.lastDrawCanvas={};player.bounds=bounds;
+  player.flow.goTo('cars');player.update({},.15);
+  const ctx=new Proxy({canvas:{},measureText:()=>({width:20})},{get:(o,k)=>k in o?o[k]:()=>{}});
+  player.draw(ctx,960,540);player.update({},.01);
+  let activated=0;player.activate=()=>activated++;
+  for(let i=0;i<5;i++){player.update({wasPressedCode:key=>key==='Enter'},.1);player.draw(ctx,960,540);}
+  assert.equal(activated,0);assert.equal(player.pendingScreenEntry,true);
+  assert.equal(player.screenTransition.elapsed,.15);assert.equal(player.screenTransition.hold,true);
+  ready();await player.screenEntryTask;
+  assert.equal(player.pendingScreenEntry,false);
+  player.draw(ctx,960,540);assert.equal(player.screenTransition.hold,false);
+ }finally{player.cleanup();globalThis.document=previous;}
+});
+
+test('late preparation cannot reopen a cleaned-up menu',async()=>{
+ const player=new MenuPlayer({input:{},transitionTo(){},setActiveMusicTrack(){}});
+ player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};
+ await player.open(createMenuDocument(),{preview:true});
+ let ready;player.resources.prepareScreen=()=>new Promise(resolve=>{ready=resolve;});
+ player.flow.goTo('cars');const task=player.screenEntryTask;
+ let entered=0;player.finishEnterScreen=()=>entered++;
+ player.cleanup();ready();await task;assert.equal(entered,0);
+});
+
+test('first splash is prepared before switching from the studio to menu playback',async()=>{
+ let transitions=0,ready;
+ const player=new MenuPlayer({input:{},transitionTo(){transitions++;},setActiveMusicTrack(){}});
+ player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};
+ player.resources.prepareScreen=()=>new Promise(resolve=>{ready=resolve;});
+ const opening=player.open(createMenuDocument(),{preview:true});
+ await new Promise(resolve=>setTimeout(resolve,0));
+ assert.equal(transitions,0);assert.equal(typeof ready,'function');
+ ready();await opening;assert.equal(transitions,1);assert.equal(player.pendingScreenEntry,false);
+ player.cleanup();
+});
+
+test('tuning readiness holds the previous garage frame without a fade',async()=>{
+ const previous=globalThis.document,player=new MenuPlayer({input:{},transitionTo(){},setActiveMusicTrack(){}});
+ player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};
+ await player.open(createMenuDocument(),{preview:true,screenId:'garage'});
+ try{
+  globalThis.document={createElement:canvas};player.lastDrawCanvas={};player.bounds=bounds;
+  let ready;player.openTuner=()=>{player.tuner={ready:false,dispose(){},readyTask:new Promise(resolve=>{ready=resolve;})};};
+  player.flow.goTo('tuning');
+  assert.equal(player.screenTransition.active,false);assert.equal(player.pendingScreenEntry,true);assert.ok(player.pendingScreenSnapshot);
+  ready();await player.screenEntryTask;
+  assert.equal(player.pendingScreenEntry,false);assert.equal(player.pendingScreenSnapshot,null);
+ }finally{player.cleanup();globalThis.document=previous;}
+});
+
+test('live menu filters its viewport once and never re-filters captured outgoing frames',async()=>{
+ const calls=[];
+ const player=new MenuPlayer({input:{},transitionTo(){},setActiveMusicTrack(){},drawDisplayModeFilter(ctx,w,h){calls.push(['filter',w,h]);}});
+ player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};
+ await player.open(createMenuDocument(),{preview:true});
+ const ctx=new Proxy({canvas:{},getTransform:()=>({a:1,d:1,e:0,f:0}),measureText:()=>({width:20}),rect:(...args)=>calls.push(['clip-bounds',...args])},{get:(o,k)=>k in o?o[k]:()=>{}});
+ player.draw(ctx,390,844);
+ assert.deepEqual(calls.filter(c=>c[0]==='filter'),[['filter',player.bounds.w,player.bounds.h]]);
+ assert.ok(calls.some(c=>c[0]==='clip-bounds'&&c[1]===player.bounds.x&&c[2]===player.bounds.y&&c[3]===player.bounds.w&&c[4]===player.bounds.h));
+ calls.length=0;player.pendingScreenEntry=true;player.pendingScreenSnapshot={};
+ player.draw(ctx,390,844);
+ assert.equal(calls.filter(c=>c[0]==='filter').length,0);
+ player.cleanup();
+});

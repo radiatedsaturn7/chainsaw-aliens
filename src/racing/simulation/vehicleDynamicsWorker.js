@@ -1,3 +1,4 @@
+import { prepareStaticRaceColliders } from './StaticRaceColliderWorld.js';
 import { VehicleDynamicsRunner } from './VehicleDynamicsRunner.js';
 import { VehicleDynamicsWorkerAuthority } from './VehicleDynamicsWorkerAuthority.js';
 import {
@@ -19,6 +20,49 @@ export function createVehicleDynamicsWorkerMessageHandler({
 } = {}) {
   let authority = null;
   let trackStateAuthority = null;
+  let sharedPhysicsWorld = null;
+  let preparedColliderWorlds = new WeakMap();
+  const createEntry = (definition, index = 0) => {
+    let runner = null;
+    const physicsWorld = definition.physicsWorld || sharedPhysicsWorld;
+    const definitions = physicsWorld?.staticColliderDefinitions;
+    let staticColliderWorld = physicsWorld?.staticColliderWorld || null;
+    if (!staticColliderWorld && Array.isArray(definitions) && definitions.length) {
+      staticColliderWorld = preparedColliderWorlds.get(definitions);
+      if (!staticColliderWorld) {
+        staticColliderWorld = prepareStaticRaceColliders(definitions);
+        preparedColliderWorlds.set(definitions, staticColliderWorld);
+      }
+    }
+    const packedEnvironment = physicsWorld
+      ? createPackedRaceWorkerEnvironmentProvider({
+          ...physicsWorld,
+          staticColliderWorld,
+          trackState: trackStateAuthority?.trackState || null
+        })
+      : () => (definition.environment || {});
+    runner = createRunner({
+      config: definition.config,
+      initialState: definition.initialState,
+      inputTimeline: definition.inputTimeline,
+      // The production initializer supplies the already-packed immutable
+      // physics world once. Per-step terrain payloads are intentionally
+      // not part of this protocol.
+      environmentProvider: (request) => packedEnvironment(request, runner?.config)
+    });
+    for (const wheelId of Object.keys(runner.renderWheelSpinAngles || {})) {
+      runner.renderWheelSpinAngles[wheelId] = Number(
+        definition.renderWheelSpinAngles?.[wheelId] || 0
+      );
+    }
+    return {
+      id: definition.id || `vehicle-${index}`,
+      player: definition.player === true,
+      active: definition.active !== false,
+      runner,
+      environmentController: packedEnvironment
+    };
+  };
   const postSnapshot = (message) => {
     const transfer = message.buffer instanceof ArrayBuffer ? [message.buffer] : [];
     scope.postMessage({ type: 'snapshot', ...message }, transfer);
@@ -33,42 +77,15 @@ export function createVehicleDynamicsWorkerMessageHandler({
           throw new Error(`Unsupported vehicle dynamics worker protocol ${message.protocolVersion}`);
         }
         authority?.stop();
+        preparedColliderWorlds = new WeakMap();
         const definitions = Array.isArray(message.payload?.vehicles)
           ? message.payload.vehicles
           : [message.payload?.vehicle || message.payload].filter(Boolean);
         trackStateAuthority = message.payload?.trackState
           ? createWorkerTrackStateAuthority(message.payload.trackState)
           : null;
-        const runners = definitions.map((definition, index) => {
-          let runner = null;
-          const packedEnvironment = definition.physicsWorld
-            ? createPackedRaceWorkerEnvironmentProvider({
-                ...definition.physicsWorld,
-                trackState: trackStateAuthority?.trackState || null
-              })
-            : () => (definition.environment || {});
-          runner = createRunner({
-            config: definition.config,
-            initialState: definition.initialState,
-            inputTimeline: definition.inputTimeline,
-            // The production initializer supplies the already-packed immutable
-            // physics world once. Per-step terrain payloads are intentionally
-            // not part of this protocol.
-            environmentProvider: (request) => packedEnvironment(request, runner?.config)
-          });
-          for (const wheelId of Object.keys(runner.renderWheelSpinAngles || {})) {
-            runner.renderWheelSpinAngles[wheelId] = Number(
-              definition.renderWheelSpinAngles?.[wheelId] || 0
-            );
-          }
-          return {
-            id: definition.id || `vehicle-${index}`,
-            player: definition.player === true,
-            active: definition.active !== false,
-            runner,
-            environmentController: packedEnvironment
-          };
-        });
+        sharedPhysicsWorld = definitions.find(definition => definition.physicsWorld)?.physicsWorld || null;
+        const runners = definitions.map(createEntry);
         authority = createAuthority({
           runners,
           now,
@@ -89,7 +106,11 @@ export function createVehicleDynamicsWorkerMessageHandler({
         return;
       }
       if (!authority) throw new Error('Vehicle dynamics worker is not initialized');
-      if (message.type === 'input') {
+      if (message.type === 'setPaused') {
+        if (message.paused) authority.stop();
+        else authority.start();
+        postStatus({ type: 'pauseState', paused: Boolean(message.paused) });
+      } else if (message.type === 'input') {
         authority.setInput(
           message.vehicleId || 'player',
           readVehicleControlInput(message.inputBuffer),
@@ -98,6 +119,12 @@ export function createVehicleDynamicsWorkerMessageHandler({
             timeSeconds: message.inputTimeSeconds
           }
         );
+      } else if (message.type === 'addVehicle') {
+        const entry = createEntry(message.definition);
+        if (authority.vehicles.has(entry.id)) throw new Error('Duplicate worker vehicle');
+        authority.addVehicle(entry.id, entry.runner, entry);
+      } else if (message.type === 'removeVehicle') {
+        authority.removeVehicle(message.vehicleId);
       } else if (message.type === 'setVehicleActive') {
         if (!authority.setVehicleActive(message.vehicleId, message.active)) {
           throw new Error(`Unknown vehicle dynamics worker vehicle ${message.vehicleId}`);
@@ -106,6 +133,8 @@ export function createVehicleDynamicsWorkerMessageHandler({
         const update = readVehicleEnvironmentUpdate(message.buffer);
         authority.updateEnvironmentState(update, message.vehicleId || null);
         trackStateAuthority?.updateWeatherForcing(update.weatherForcing);
+      } else if (message.type === 'debugTireSwap') {
+        if(!authority.updateTires(message.update,message.vehicleId||'player'))throw new Error('Unknown vehicle for tire swap');
       } else if (message.type === 'resetVehicle') {
         const vehicleId = message.vehicleId || 'player';
         const reset = authority.resetVehicle(

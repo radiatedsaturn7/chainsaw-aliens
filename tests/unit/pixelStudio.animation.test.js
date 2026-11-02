@@ -275,3 +275,32 @@ test('pixel animation transport helpers clamp and toggle playback state', () => 
   assert.equal(editor.animation.currentFrameIndex, 2);
   assert.ok(layerSets.length >= 5);
 });
+
+test('auto crop ignores alpha-1 export noise, with an exact-alpha option', () => {
+  const layer = createLayer(8, 6, 'Gauge');
+  layer.pixels[0] = 0x01000000;
+  layer.pixels[47] = 0x01000000;
+  layer.pixels[2 + 2 * 8] = 0xff00ff00;
+  layer.pixels[5 + 3 * 8] = 0x0200ff00;
+  const editor = makePixelStudioCropHarness(8, 6, layer);
+  assert.deepEqual(editor.getDefaultCropEdges(), { left: 2, top: 2, right: 2, bottom: 2 });
+  assert.deepEqual(editor.getDefaultCropEdges(0), { left: 0, top: 0, right: 0, bottom: 0 });
+  editor.openTransformModal('crop');
+  assert.equal(editor.transformModal.values.ignoreFaintPixels, true);
+  editor.cropCanvasEdges(editor.transformModal.values);
+  assert.equal(editor.canvasState.width, 4);
+  assert.equal(editor.canvasState.height, 2);
+  assert.equal(editor.animation.frames[0].layers[0].pixels[7], 0x0200ff00);
+});
+
+test('crop keeps layer appearance and uses bounds across all frames', () => {
+  const layer = createLayer(8, 6, 'Gauge');layer.opacity = .5;layer.locked = true;layer.pixels[2 + 2 * 8] = 0xff00ff00;
+  const editor = makePixelStudioCropHarness(8, 6, layer);
+  const other = createLayer(8, 6);other.pixels[5 + 4 * 8] = 0xff00ff00;
+  editor.animation.frames.push(createFrame([other], 100));
+  assert.deepEqual(editor.getDefaultCropEdges(), { left: 2, top: 2, right: 2, bottom: 1 });
+  editor.cropCanvasEdges(editor.getDefaultCropEdges());
+  const cropped = editor.animation.frames[0].layers[0];
+  assert.equal(cropped.opacity, .5);assert.equal(cropped.locked, true);
+  assert.equal(editor.animation.frames[1].layers[0].pixels[11], 0xff00ff00);
+});

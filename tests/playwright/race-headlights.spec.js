@@ -9,9 +9,9 @@ test('rally headlights shade real world geometry, follow the car, and leave rear
   const renderer=new THREE.WebGLRenderer({antialias:false,preserveDrawingBuffer:true});renderer.setSize(128,128);renderer.setClearColor('#000000');document.body.appendChild(renderer.domElement);
   const state={scene},errors=[];renderer.debug.onShaderError=(_gl,_p,vs,fs)=>{errors.push(_gl.getShaderInfoLog(vs),_gl.getShaderInfoLog(fs));};
   const pixelAt=(x,z)=>{const p=new THREE.Vector3(x,0,z).project(camera),data=new Uint8Array(4);const gl=renderer.getContext();gl.readPixels(Math.floor((p.x+1)*64),Math.floor((p.y+1)*64),1,1,gl.RGBA,gl.UNSIGNED_BYTE,data);return data[0];};
-  updateRaceLighting(state,{brightness:.05,pose:{x:0,y:1,z:0}});renderer.render(scene,camera);
+  updateRaceLighting(state,{brightness:.05,auxIntensity:1,headlightIntensity:0,pose:{x:0,y:1,z:0}});renderer.render(scene,camera);
   const lit=pixelAt(0,100),far=pixelAt(0,900),behind=pixelAt(0,-50),side=pixelAt(300,100);
-  updateRaceLighting(state,{brightness:.05,pose:{x:0,y:1,z:0,yaw:Math.PI}});renderer.render(scene,camera);const turnedAway=pixelAt(0,100);
+  updateRaceLighting(state,{brightness:.05,auxIntensity:1,headlightIntensity:0,pose:{x:0,y:1,z:0,yaw:Math.PI}});renderer.render(scene,camera);const turnedAway=pixelAt(0,100);
   updateRaceLighting(state,{brightness:1,pose:{}});renderer.render(scene,camera);const day=pixelAt(0,100);
   renderer.dispose();plane.geometry.dispose();plane.material.dispose();return {lit,far,behind,side,turnedAway,day,errors};
  });

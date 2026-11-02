@@ -1,3 +1,4 @@
+import {RACE_MAX_AI_DRIVERS} from './simulation/RaceSimulationConfig.js';
 import { isUserRaceCar } from './CarPresets.js';
 import {clamp} from './simulation/SimulationMath.js';
 
@@ -62,7 +63,7 @@ export function selectEligibleRaceAiCars(cars, count, {playerCarId='', selection
   // An explicitly selected fallback can be outside the filter, but never the
   // player's car. If unavailable, prefer a matching car before a stock car.
   const fallback=catalog.has(rules.defaultCarId) ? rules.defaultCarId : eligible[0] || [...catalog].find(([,car])=>!car.__playtestDocumentName)?.[0] || [...catalog.keys()][0];
-  const size=clamp(Math.floor(finite(count,0)),0,11),result=eligible.slice(0,size);
+  const size=clamp(Math.floor(finite(count,0)),0,RACE_MAX_AI_DRIVERS),result=eligible.slice(0,size);
   while(fallback && result.length<size)result.push(fallback);
   return result;
 }

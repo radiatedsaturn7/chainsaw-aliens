@@ -1,3 +1,4 @@
+import {prepareMenuScreen} from './MenuScreenPreparation.js';
 import {MenuAppearanceResources} from './MenuAppearance.js';
 import {partFits,isGarageUpgrade} from '../garage/CarPart.js';
 import {itemLibrary} from '../items/ItemLibrary.js';
@@ -8,6 +9,8 @@ import {getRaceArtSpriteCanvasShared,hydrateRaceArtSpriteShared} from '../ui/sha
 
 export class MenuResources {
   constructor(game){this.appearance=new MenuAppearanceResources();this.game=game;this.carPreview=new MenuCarPreview(game.carEditor);this.showroomFrames=new WeakMap();this.cars=new Map();this.carSources=new Map();this.artCache=new Map();this.tunings=new WeakMap();this.garageCars=new Map();this.partCatalog=[];this.pending=new Map();this.errors=new Map();}
+  prepareScreen(document,screen,parameters,options){return prepareMenuScreen(this,document,screen,parameters,options);}
+  exteriorArtRefs(car){return this.game.carEditor.collectRaceCarArtRefs({...car,art:{...car.art,gauges:{},interior:{}}});}
   font(element){return this.appearance.font(element);}
   cursor(element){return element.cursorArtRef?this.art(element.cursorArtRef):this.appearance.cursor(element);}
   get garage(){return this.garageOverride||this.game.items?.garage;}
@@ -26,9 +29,9 @@ export class MenuResources {
       return this.garageCatalog().filter(({item})=>item.carPart.forSale||this.garage?.items.progress.bags.items[item.id]>0).map(({ref,item})=>({value:ref,label:item.name}));
     }
     const folder={cars:'cars',races:'races',levels:'levels',movies:'cutscenes',actors:'actors',doodads:'doodads'}[source];
-    return folder?listProjectFiles(folder).map(f=>({label:f.name,value:f.name})):[];
+    return folder?listProjectFiles(folder,{allowSyncFetch:false}).map(f=>({label:f.name,value:f.name})):[];
   }
-  request(key,fn){if(this.pending.has(key)||this.errors.has(key))return;const task=Promise.resolve().then(fn).catch(e=>this.errors.set(key,String(e?.message||e))).finally(()=>{this.pending.delete(key);this.showroomFrames=new WeakMap();});this.pending.set(key,task);}
+  request(key,fn){if(this.pending.has(key))return this.pending.get(key);if(this.errors.has(key))return Promise.resolve();const task=Promise.resolve().then(fn).catch(e=>this.errors.set(key,String(e?.message||e))).finally(()=>{this.pending.delete(key);this.showroomFrames=new WeakMap();});this.pending.set(key,task);return task;}
   car(ref){
     const stock=this.stockCar(ref),garage=this.garage;
     if(!stock||!garage?.items.ready)return stock;
@@ -39,15 +42,15 @@ export class MenuResources {
   }
   race(ref){
     if(!ref)return null;
-    const payload=loadProjectFile('races',ref)?.data;
+    const payload=loadProjectFile('races',ref,{allowSyncFetch:false})?.data;
     if(payload)return payload.race||payload;
     this.request(`race:${ref}`,()=>hydrateProjectFilePayload('races',ref));return null;
   }
   stockCar(ref){
     if(!ref)return null;
-    const cached=loadProjectFile('cars',ref)?.data;
+    const cached=loadProjectFile('cars',ref,{allowSyncFetch:false})?.data;
     if(this.cars.has(ref)&&(!cached||this.carSources.get(ref)===cached))return this.cars.get(ref);
-    const install=data=>{if(!data)throw Error(`Car not found: ${ref}`);const car=this.game.carEditor.normalizeLoadedCarDocument(data.car||data);this.cars.set(ref,car);this.carSources.set(ref,data);for(const artRef of this.game.carEditor.collectRaceCarArtRefs(car))this.request(`art:${artRef}`,()=>hydrateRaceArtSpriteShared(artRef));return car};
+    const install=data=>{if(!data)throw Error(`Car not found: ${ref}`);const car=this.game.carEditor.normalizeLoadedCarDocument(data.car||data);this.cars.set(ref,car);this.carSources.set(ref,data);for(const artRef of this.exteriorArtRefs(car))this.request(`art:${artRef}`,()=>hydrateRaceArtSpriteShared(artRef));return car};
     if(cached)return install(cached);
     this.request(`car:${ref}`,async()=>install((await hydrateProjectFilePayload('cars',ref))?.data));return null;
   }
@@ -64,7 +67,7 @@ export class MenuResources {
     if(source==='parameters')return typeof ref==='object'?ref:parameters[ref];
     if(source==='cars')return this.car(ref);
     if(!['actors','doodads'].includes(source)||!ref)return null;
-    const data=loadProjectFile(source,ref)?.data;
+    const data=loadProjectFile(source,ref,{allowSyncFetch:false})?.data;
     if(data)return data.actor||data;
     this.request(`${source}:${ref}`,()=>hydrateProjectFilePayload(source,ref));return null;
   }

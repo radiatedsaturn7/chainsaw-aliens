@@ -58,10 +58,14 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} hills and 
   let overlayCalls=0;const original=e.drawRaceProjectedCarSprite;e.drawRaceProjectedCarSprite=()=>overlayCalls++;
   e.drawRaceProjectedAiCars(ctx,bounds,{camera:{},cameraYaw:Math.PI,threeRendered:true});e.drawRaceProjectedCarSprite=original;
   player.aiRuntime=[];e.syncRaceThreeCarSprites(renderer,bounds,{camera:{},cameraYaw:Math.PI,cameraView:'first-person',stats:{}});
+  // Inactive sprites stay cached briefly to avoid repaint spikes on camera turns.
+  const cached=renderer.carDepthSprites.entries.size;
+  const visibleAfterRemoval=[...renderer.carDepthSprites.entries.values()].filter(entry=>entry.mesh.visible).length;
+  renderer.carDepthSprites.dispose();
   const retained=renderer.carDepthSprites.entries.size;
-  return {ordering,visiblePixels,partial,hidden,inFront,overlayCalls,retained};
+  return {ordering,visiblePixels,partial,hidden,inFront,overlayCalls,retained,cached,visibleAfterRemoval};
  });
  for(const order of result.ordering){expect(order.overlap).toBeGreaterThan(10);expect(order.correct).toBe(order.overlap);expect(order.transparentReveals).toBeGreaterThan(10)}
  expect(result.visiblePixels).toBeGreaterThan(20);expect(result.partial).toBeGreaterThan(0);expect(result.partial).toBeLessThan(result.visiblePixels);
- expect(result.hidden).toBe(0);expect(result.inFront).toBeGreaterThan(20);expect(result.overlayCalls).toBe(0);expect(result.retained).toBe(0);
+ expect(result.hidden).toBe(0);expect(result.inFront).toBeGreaterThan(20);expect(result.overlayCalls).toBe(0);expect(result.cached).toBe(2);expect(result.visibleAfterRemoval).toBe(0);expect(result.retained).toBe(0);
 });

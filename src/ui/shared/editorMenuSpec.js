@@ -114,8 +114,11 @@ const EDITOR_ACTION_LABEL_OVERRIDES = {
   'network-delete': 'Delete Selection',
   'network-water': 'Water Level',
   'race-from-image': 'From Image',
+  'race-import-real': 'Import Real Track',
   'engine-sfx': 'Engine Sound',
   'car-sound-effects': 'Backfire & Turbo',
+  'car-mechanics':'Mechanical systems',
+  'race-mechanics':'Mechanical mission',
   'aero-front': 'Aero',
   'spring-front': 'Spring',
   'damping-front': 'Damping',
@@ -124,6 +127,7 @@ const EDITOR_ACTION_LABEL_OVERRIDES = {
   'car-description': 'Car Description',
   'race-description': 'Race Description',
   'race-scale': 'Scale Race',
+  'race-reverse': 'Reverse Start / End',
   'car-category': 'Category & Performance',
   'car-installable-parts':'Installable Upgrades',
   'car-load-preset': 'Load Preset',
@@ -150,6 +154,8 @@ const EDITOR_ACTION_LABEL_OVERRIDES = {
   'car-art-settings': 'Settings',
   'car-art-exterior': 'Exterior',
   'car-art-interior': 'Interior',
+  'race-fuel': 'Starting fuel',
+  'car-indicators': 'Indicators',
   'car-gauges-exterior': 'Exterior Gauges',
   'car-gauges-interior': 'Interior Gauges',
   'car-camera-settings': 'Camera Settings',
@@ -404,7 +410,7 @@ export const EDITOR_MENU_SPECS = {
       { id: 'settings', label: 'Settings' }
     ],
     sections: {
-      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'race-scale', 'race-description', 'race-from-image', 'generate-random-race', 'exit-main']),
+      file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'race-scale', 'race-description', 'race-from-image', 'race-import-real', 'generate-random-race', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo', 'copy-segment', 'paste-segment', 'delete-segment']),
       view: section('view', 'View', ['preview-mode7', 'zoom-fit', 'toggle-scenery', 'toggle-racing-line']),
       track: section('track', 'Track', ['draw-road', 'network-enable', 'network-select', 'network-add', 'network-multi', 'network-transform', 'network-all', 'network-clear', 'network-connect', 'network-split', 'network-junction', 'network-join', 'network-properties', 'network-markers', 'network-delete', 'network-water']),
@@ -452,7 +458,7 @@ export const EDITOR_MENU_SPECS = {
         'ground-brush-strength-100'
       ]),
       sprites: section('sprites', 'Paint', ['paint-kind-doodad', 'paint-kind-fence', 'paint-kind-decal', 'paint-kind-tile', 'paint-kind-sprite']),
-      settings: section('settings', 'Settings', ['race-ground-texture', 'race-radio', 'race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-weather', 'race-road-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
+      settings: section('settings', 'Settings', ['race-reverse', 'race-ground-texture', 'race-radio', 'race-music', 'race-countdown', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-weather', 'race-mechanics', 'race-fuel', 'race-road-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
     }
   },
   model3d: {
@@ -523,8 +529,8 @@ export const EDITOR_MENU_SPECS = {
       file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'car-load-preset', 'car-description', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
-      art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-gauges-exterior', 'car-gauges-interior', 'car-import-graphic', 'car-body-model', 'car-wheel-model', 'car-clear-body-model', 'car-clear-wheel-model', 'car-art-settings', 'car-camera-settings']),
-      drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sfx', 'car-sound-effects', 'power-curve', 'weight-balance', 'summary-sheet', 'car-category', 'car-installable-parts']),
+      art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-gauges-exterior', 'car-gauges-interior', 'car-indicators', 'car-import-graphic', 'car-body-model', 'car-wheel-model', 'car-clear-body-model', 'car-clear-wheel-model', 'car-art-settings', 'car-camera-settings']),
+      drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sfx', 'car-sound-effects', 'car-mechanics', 'power-curve', 'weight-balance', 'summary-sheet', 'car-category', 'car-installable-parts']),
       tuning: {
         ...section('tuning', 'Tuning', ['default-tires', 'tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel', 'physics-body']),
         portraitActions: ['tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'physics-body'],

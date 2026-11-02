@@ -1,3 +1,4 @@
+import {applyDebugTirePhysics} from './DebugTireSwap.js';
 import {
   createVehicleRenderSnapshotBuffer,
   writeVehicleRenderSnapshot
@@ -86,6 +87,15 @@ export class VehicleDynamicsWorkerAuthority {
     });
   }
 
+  removeVehicle(vehicleId) {
+    const id = String(vehicleId);
+    if (this.vehicles.get(id)?.player) return false;
+    this.latestInputs.delete(id);
+    this.wakeSourceByVehicle.delete(id);
+    this.wakeSources.length = 0;
+    return this.vehicles.delete(id);
+  }
+
   setInput(vehicleId, input, { sequence = 0, timeSeconds = null } = {}) {
     const id = String(vehicleId);
     const previous = this.latestInputs.get(id);
@@ -128,6 +138,14 @@ export class VehicleDynamicsWorkerAuthority {
     );
     if (reset.renderState) reset.renderState.eventSequence = this.eventSequence;
     return reset;
+  }
+
+  updateTires(update,vehicleId='player') {
+    const vehicle=this.vehicles.get(String(vehicleId));
+    if(!vehicle)return false;
+    applyDebugTirePhysics(vehicle.runner,update);
+    vehicle.environmentController?.updateEnvironmentState?.({tireByWheel:update.tireByWheel});
+    return true;
   }
 
   updateEnvironmentState(environmentState = {}, vehicleId = null) {
@@ -244,12 +262,14 @@ export class VehicleDynamicsWorkerAuthority {
           Atomics.store(this.snapshotSequenceControl, snapshotSlot, this.snapshotSequence * 2);
         }
         pendingSnapshots.push({
+          mechanical:vehicle.runner.state.mechanical && vehicle.lastMechanicalTick!==vehicle.runner.state.mechanical.tick ? structuredClone(vehicle.runner.state.mechanical) : null,
           vehicleId: vehicle.id,
           buffer,
           snapshotSequence: this.snapshotSequence,
           snapshotSlot,
           backlogSteps: advance.backlogSteps
         });
+        vehicle.lastMechanicalTick=vehicle.runner.state.mechanical?.tick;
       } else if (advance.completedSteps > 0) {
         this.droppedSnapshots += 1;
         this.bufferStarvationCount += 1;

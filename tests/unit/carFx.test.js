@@ -255,3 +255,50 @@ test('FX preview tools fit portrait and desktop, and hiding guides keeps the too
   buttons.find(x=>x.id==='car-fx-zoom').onClick();assert.equal(e.carFxZoom,2);
  }
 });
+
+test('headlights switch activates lamp art independently of night and rain',()=>{
+ const e=normalizeCarFx([{triggers:['headlights'],views:{front:{artRef:'lamp'}}}])[0];
+ assert.deepEqual(e.triggers,['headlights']);
+ for(const night of [false,true])for(const precipitation of [false,true]){
+  assert.equal(carFxActive(e,{night,precipitation,headlights:true}),true);
+  assert.equal(carFxActive(e,{night,precipitation,headlights:false}),false);
+ }
+});
+
+test('AUX lamps follow the independent switch and electrical lamp power',()=>{
+ const fx=normalizeCarFx([{id:'aux',anchor:'body',triggers:['aux-lights'],views:{front:{artRef:'lamp',placements:[{x:.2,y:-.2}],width:.1,height:.1}}}])[0];
+ assert.equal(fx.anchor,'body');assert.equal(carFxActive(fx,{headlights:true,night:true}),false);
+ const state=carFxDrivingState({mechanical:{headlights:false,auxLights:true}});assert.equal(carFxActive(fx,state),true);
+ const draws=[],positions=[];const c={globalAlpha:1,save(){},restore(){},translate(...p){positions.push(p);},rotate(){},scale(){},drawImage(...p){draws.push([this.globalAlpha,...p]);}};
+ drawCarFx(c,{effects:[fx],slot:'front',state:{...state,auxLampPower:.25},bodyFrame:{x:10,y:20,width:200,height:100,rotation:.2},getArt:()=>('lamp')});
+ assert.deepEqual(positions,[[10,20],[40,-20]]);assert.deepEqual(draws[0],[.25,'lamp',-10,-5,20,10]);
+});
+
+test('body-attached frame rotates around the same pivot as the sprite',async()=>{
+ const {carFxBodyFrame}=await import('../../src/racing/CarFx.js');
+ const f=carFxBodyFrame({x:100,y:200,width:200,height:100,offsetX:20,offsetY:-8,rotation:Math.PI/2});
+ assert.ok(Math.abs(f.x-108)<1e-9);assert.ok(Math.abs(f.y-220)<1e-9);assert.equal(f.width,200);
+});
+
+test('all four AUX configurations retain inspected lamp counts, hidden backs and loadable native artwork',async()=>{
+ const {readFileSync}=await import('node:fs');const {gunzipSync}=await import('node:zlib');
+ for(const [name,count] of [['RTG-001',2],['BUSE-019',4],['PZ-24',4],['CT-86',1]]){
+  const car=JSON.parse(readFileSync(`data/server-storage/files/cars/${name}/document.json`)).car;
+  const fx=normalizeCarFx(car.art.fx).find(e=>e.triggers.includes('aux-lights'));
+  assert.equal(fx.anchor,'body');
+  for(const view of ['front','frontLeft','frontRight'])assert.equal(fx.views[view].placements.length,count);
+  for(const view of ['rear','rearLeft','rearRight'])assert.equal(fx.views[view].placements.length,0);
+  const art=JSON.parse(readFileSync(`data/server-storage/files/art/${fx.artRef}/document.json`));
+  const native=JSON.parse(gunzipSync(Buffer.from(art.data,'base64')));assert.equal(native.frames[0].length,native.width*native.height);
+  assert.ok(native.frames[0].some(Boolean));
+ }
+});
+
+
+test('rally lamps retain body placement while sizing against the normal headlight frame',()=>{
+ const fx=normalizeCarFx([{anchor:'body',triggers:['aux-lights'],views:{front:{artRef:'lamp',sizeAnchor:'car',width:4,height:4,placements:[{x:.2,y:-.2}]}}}])[0];
+ const draws=[],positions=[];const c={globalAlpha:1,save(){},restore(){},translate(...p){positions.push(p);},rotate(){},scale(){},drawImage(...p){draws.push(p);}};
+ drawCarFx(c,{effects:[fx],slot:'front',width:100,height:50,state:{auxLights:true},bodyFrame:{x:10,y:20,width:300,height:200,rotation:0},getArt:()=>('lamp')});
+ assert.deepEqual(positions,[[10,20],[60,-40]]);
+ assert.deepEqual(draws,[['lamp',-200,-100,400,200]]);
+});

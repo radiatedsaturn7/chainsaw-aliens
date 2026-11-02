@@ -377,7 +377,7 @@ test('weather forcing derives deterministic ambient, precipitation, sun, wind, a
     }),
     {
       type: 'snow',
-      precipitationRateMmPerS: 0.3,
+      precipitationRateMmPerS: 0.005292,
       ambientTemperatureC: -4,
       sunIntensity: 0,
       windIntensity: 0.35,
