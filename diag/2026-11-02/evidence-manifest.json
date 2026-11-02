@@ -1,0 +1,89 @@
+[
+  {
+    "source": "artifacts/mountain-stress/latest-nov2-summary.json",
+    "packaged": "evidence/latest-nov2-summary.json",
+    "bytes": 36388,
+    "sha256": "6a48304552c900ea16bcae53deb9f62c8fc1abd496ae336e121aa5bd895a5046"
+  },
+  {
+    "source": "artifacts/mountain-stress/latest-nov2-summary.txt",
+    "packaged": "evidence/latest-nov2-summary.txt",
+    "bytes": 3654,
+    "sha256": "f5d1159dc1dcd3f6ec8668174139223c76214ef6b01e716a7f64250907aacd65"
+  },
+  {
+    "source": "artifacts/mountain-stress/gc-ten-minute-analysis.json",
+    "packaged": "evidence/gc-ten-minute-analysis.json",
+    "bytes": 32322,
+    "sha256": "3a156df8e3f95fffc01e5b501881886ea8fb45f4664de8149a32ca7b8f81fb69"
+  },
+  {
+    "source": "artifacts/mountain-stress/gc-ten-minute-analysis.txt",
+    "packaged": "evidence/gc-ten-minute-analysis.txt",
+    "bytes": 8436,
+    "sha256": "cb4f3ca0e78acde772ff493531998fdfcfee165be8526b041b27f5df181cb7e3"
+  },
+  {
+    "source": "artifacts/mountain-stress/gc-ten-minute-source-hashes.json",
+    "packaged": "evidence/gc-ten-minute-source-hashes.json",
+    "bytes": 589,
+    "sha256": "18d407e759859619d05b05409aff3c7f8beded43f5a36b59db78e8eb2296a8bd"
+  },
+  {
+    "source": "artifacts/mountain-stress/gc-paired-allocation-comparison.json",
+    "packaged": "evidence/gc-paired-allocation-comparison.json",
+    "bytes": 49723,
+    "sha256": "f43d0805c3d6a150ef69cb2acc14a6b3b38d54299fd9e7e47f0f6acd1812d9b1"
+  },
+  {
+    "source": "artifacts/mountain-stress/gc-batch-comparison.json",
+    "packaged": "evidence/gc-batch-comparison.json",
+    "bytes": 3059,
+    "sha256": "b97424b793d6feaa714b8c2c0d7d0bd6663aca57942355cbde12f874926a3465"
+  },
+  {
+    "source": "artifacts/mountain-stress/gc-contact-comparison.json",
+    "packaged": "evidence/gc-contact-comparison.json",
+    "bytes": 1354,
+    "sha256": "baa895cd4554c2533b8cf191e7430244668b8bf27926a49c7b6b429b9dc44a55"
+  },
+  {
+    "source": "artifacts/mountain-stress/material-update-allocation.json",
+    "packaged": "evidence/material-update-allocation.json",
+    "bytes": 575,
+    "sha256": "53d9acf343f05d1e24fe415c1c7110e0701f29e7836a2921ad04111d50dafdac"
+  },
+  {
+    "source": "artifacts/mountain-stress/tire-mutation-loop-allocation.json",
+    "packaged": "evidence/tire-mutation-loop-allocation.json",
+    "bytes": 495,
+    "sha256": "9e9930669f19349059831dd80c740c8f46e37f50553b6fb086289c60c6fadab5"
+  },
+  {
+    "source": "artifacts/mountain-stress/wheel-pose-branch-comparison.json",
+    "packaged": "evidence/wheel-pose-branch-comparison.json",
+    "bytes": 5332,
+    "sha256": "ce39bd3dd63c0120d4515fb0e92a9346abef0a322d2f9217d85ef34693490e21"
+  },
+  {
+    "source": "artifacts/mountain-stress/material-update-candidate.mjs",
+    "packaged": "experiments/material-update-candidate.mjs",
+    "bytes": 1159,
+    "sha256": "e3c69f114bb52eab28466029783ecb0bf46fdb2579fead4baa09680ceacdd57b",
+    "note": "Unchanged experimental source; not production"
+  },
+  {
+    "source": "artifacts/mountain-stress/material-update-candidate.test.mjs",
+    "packaged": "experiments/material-update-candidate.test.mjs",
+    "bytes": 1294,
+    "sha256": "b7384083606d3b4bc879c46f99bbc6e6dfbac18de87f253e761a7cc88c5c81db",
+    "note": "Test import adjusted for packaged location"
+  },
+  {
+    "source": "artifacts/mountain-stress/material-update-loader.mjs",
+    "packaged": "experiments/material-update-loader.mjs",
+    "bytes": 774,
+    "sha256": "de994e372e449cb5a483b2b2bc1771f2dcdcf856ec0f53617b9a3dfab46f06bc",
+    "note": "Unchanged experimental source; not production"
+  }
+]

@@ -1,0 +1,28 @@
+{
+  "began": "2026-11-02T15:40:35.017Z",
+  "ended": "2026-11-02T15:40:35.101Z",
+  "scope": "Isolated canonical material update with occasional absent cell; estimates, not FPS",
+  "rows": [
+    {
+      "mode": "before",
+      "calls": 3000,
+      "sampledBytes": 29417712
+    },
+    {
+      "mode": "after",
+      "calls": 3000,
+      "sampledBytes": 3313232
+    },
+    {
+      "mode": "after",
+      "calls": 3000,
+      "sampledBytes": 3862688
+    },
+    {
+      "mode": "before",
+      "calls": 3000,
+      "sampledBytes": 30079760
+    }
+  ],
+  "sink": 43577.999999999854
+}

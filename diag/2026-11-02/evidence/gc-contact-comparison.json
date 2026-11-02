@@ -1,0 +1,68 @@
+{
+  "sampledBytes": 4577449480,
+  "MiB": 4365.3960037231445,
+  "reductionFromPreBatchPercent": 10.8076156177777,
+  "reductionFromPreviousBatchPercent": 2.4372403331299752,
+  "exactParity": {
+    "trackStateChecksum": true,
+    "driveState": true,
+    "aiStates": true,
+    "detailedCounters": true,
+    "detailedSteps": true,
+    "frameClock": true,
+    "finalWeatherState": true,
+    "frames": true,
+    "simulatedSeconds": true,
+    "sourceDigest": false
+  },
+  "topSelfMiB": [
+    [
+      "sampleDeckAtDistance@RaceSurfaceModel.js",
+      133.42
+    ],
+    [
+      "getTrackStateCellSample@TrackStateCell.js",
+      109.65
+    ],
+    [
+      "join@",
+      103.09
+    ],
+    [
+      "authority.raceEnvironmentProvider@RaceSimulation.js",
+      87.45
+    ],
+    [
+      "quantizeTrackStateNumber@TrackStateMath.js",
+      81.63
+    ],
+    [
+      "calculateWheelContactKinematics@ContactPatchTireModel.js",
+      80.26
+    ],
+    [
+      "createRaceWheelContactStateFromSamples@RaceVehicleSurfaceContact.js",
+      72.15
+    ],
+    [
+      "sampleRaceRoadbedProfileAtDistance@RaceRoadDeckProfile.js",
+      71.39
+    ],
+    [
+      "max@",
+      71.38
+    ],
+    [
+      "@RaceEditor.js",
+      70.15
+    ],
+    [
+      "samplePhysicsGeometry@RaceSurfaceModel.js",
+      69.15
+    ],
+    [
+      "step@ContactPatchTireModel.js",
+      68.89
+    ]
+  ]
+}
