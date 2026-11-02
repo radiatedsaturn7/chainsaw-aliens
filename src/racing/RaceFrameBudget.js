@@ -68,9 +68,12 @@ export class RaceSimulationClock {
     this.debtSeconds = 0;
     this.discardedSeconds = 0;
     this.admittedSeconds = 0;
+    this.rawSeconds = 0;
+    this.excludedSeconds = 0;
   }
   advance(delta) {
     const incoming = Number.isFinite(delta) ? Math.max(0, delta) : 0;
+    this.rawSeconds += incoming;
     const due = this.debtSeconds + incoming;
     const admitted = Math.min(due, this.maxAdvanceSeconds);
     const remainder = due - admitted;
@@ -79,7 +82,48 @@ export class RaceSimulationClock {
     this.admittedSeconds += admitted;
     return admitted;
   }
+  // Countdown/debug presentation retains its existing capped delta. Worker
+  // authority uses wall time because its solver advances on a separate clock.
+  // Both policies account for time explicitly instead of bypassing the ledger.
+  admitExplicit(delta, requested = delta) {
+    this.resetDebt();
+    const incoming = Number.isFinite(delta) ? Math.max(0, delta) : 0;
+    const admitted = Math.min(incoming, Number.isFinite(requested) ? Math.max(0, requested) : 0);
+    this.rawSeconds += incoming;
+    this.admittedSeconds += admitted;
+    this.discardedSeconds += incoming - admitted;
+    return admitted;
+  }
   resetDebt() { this.discardedSeconds += this.debtSeconds; this.debtSeconds = 0; }
+}
+
+export function advanceRaceSimulationClock(editor, dt, { preStart = false, workerOwnsClock = false, bypass = false } = {}) {
+  const session = editor.playtestSession;
+  const clock = session.frameSimulationClock ||= new RaceSimulationClock();
+  const timing = editor.game?.frameTiming;
+  const directSeconds = Number.isFinite(Number(dt)) ? Math.max(0, Number(dt)) : 0;
+  let rawSeconds = directSeconds, excludedSeconds = 0, observedSeconds = directSeconds, alreadyConsumed = false;
+  if (timing?.inUpdate && timing.raceSession === session) {
+    // Do not consume one animation callback twice if a caller re-enters update.
+    const fresh = session.frameTimingSequence !== timing.sequence;
+    alreadyConsumed = !fresh;
+    rawSeconds = fresh ? timing.raceSeconds : 0;
+    observedSeconds = fresh ? timing.rawSeconds : 0;
+    excludedSeconds = fresh ? timing.excludedRaceSeconds : 0;
+    session.frameTimingSequence = timing.sequence;
+    session.frameTimeExclusionReason = fresh ? timing.raceExclusionReason : 'already-consumed';
+    if(fresh && timing.raceExclusionReason)clock.resetDebt();
+  } else session.frameTimeExclusionReason = null;
+  clock.excludedSeconds += excludedSeconds;
+  session.frameRawSeconds = rawSeconds;
+  session.frameObservedRawSeconds = observedSeconds;
+  session.frameExcludedSeconds = excludedSeconds;
+  session.frameClockMode = workerOwnsClock ? 'worker-wall' : preStart ? 'countdown' : bypass ? 'debug-direct' : 'bounded';
+  const seconds = alreadyConsumed ? 0 : workerOwnsClock ? clock.admitExplicit(rawSeconds)
+    : preStart || bypass ? clock.admitExplicit(rawSeconds, directSeconds)
+      : clock.advance(rawSeconds);
+  session.frameAdmittedSeconds = seconds;
+  return seconds;
 }
 
 export function runBudgetedRaceFrame(editor, simulate) {

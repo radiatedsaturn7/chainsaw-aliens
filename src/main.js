@@ -1,6 +1,8 @@
 import { hasBlockingGlobalOverlay } from './ui/shared/globalOverlayInput.js';
 import { FullscreenPrompt } from './ui/FullscreenPrompt.js';
 import Game from './game/Game.js';
+import { FrameTiming, getActiveRaceEditor } from './game/FrameTiming.js';
+import { serviceRacePerformanceWork } from './racing/RacePerformanceUpload.js';
 import { addDOMListener, createDisposer } from './input/disposables.js';
 import { isLatestChangesOverlayOpen } from './ui/latestChanges.js';
 import { getBrowserViewportSize, getCanvasViewportLayout, shouldShowMobileFullscreenButton } from './ui/shared/canvasViewportLayout.js';
@@ -388,7 +390,8 @@ function bindInputListeners() {
 bindInputListeners();
 syncViewportSoon();
 
-let last = performance.now();
+const frameTiming = game.frameTiming = new FrameTiming(performance.now());
+listenerDisposer.add(addDOMListener(document, 'visibilitychange', () => frameTiming.invalidateRaceElapsed()));
 let lastState = game.state;
 let lastTitleScreen = game.title?.screen;
 function loop(now) {
@@ -402,16 +405,27 @@ function loop(now) {
     lastTitleScreen = titleScreen;
     updateFullscreenPrompt();
   }
-  const dt = Math.min((now - last) / 1000, 0.033);
-  last = now;
+  const raceEditor = getActiveRaceEditor(game);
+  const raceSession = raceEditor?.playtestSession;
+  const raceActive = raceSession?.running
+    && !raceSession.preparing && !raceSession.startupFramePending
+    && !raceSession.finishing && !raceSession.raceResults
+    && !raceSession.incrementalRoadReset
+    && !(raceSession.raceMusicPending && Number(raceSession.countdownRemainingMs || 0) > 1000)
+    && !raceSession.raceIntro?.active && !raceEditor.raceInput?.paused;
+  frameTiming.sample(now, raceSession, raceActive, document.hidden, fullscreenPrompt.blocksInput);
+  const dt = frameTiming.updateSeconds;
   if (fullscreenPrompt.blocksInput) {
     game.input.updateGamepad();
     fullscreenPrompt.update(game.input);
     game.input.flush();
   } else {
-    game.update(dt);
+    frameTiming.inUpdate = true;
+    try { game.update(dt); } finally { frameTiming.inUpdate = false; }
   }
   game.draw();
+  serviceRacePerformanceWork(game.raceEditor);
+  serviceRacePerformanceWork(game.carEditor);
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);

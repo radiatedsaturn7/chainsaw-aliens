@@ -3,11 +3,21 @@ import {getRaceRecoveryHistoryDiagnostics} from './RaceRecoveryHistory.js';
 import {attachDetailedPerformance} from './RaceDetailedPerformance.js';
 import {RaceCaptureMemory} from './RaceCaptureMemory.js';
 import {CompactFramePhases} from './CompactFramePhases.js';
+import {cancelRacePerformanceWork} from './RacePerformanceUpload.js';
 // Opt-in browser diagnostics. No physics decisions depend on these clocks.
 const clock=()=>globalThis.performance?.now?.() ?? Date.now();
 const percentile=(values,p)=>values.length?[...values].sort((a,b)=>a-b)[Math.min(values.length-1,Math.floor(values.length*p))]:0;
+// These summaries contain counters/top subsystems and at most one frame, never
+// the accounting histories or capture trace. Detach the pooled latestFrame now
+// so continued driving cannot overwrite a stopped capture before its export.
+const snapshotSummary=summary=>{
+ if(!summary)return null;
+ try{return structuredClone(summary);}catch{return null;}
+};
 export class RacePerformanceCapture {
  constructor(editor,{now=clock,durationMs=120000,maxFrames=8000,observe=true,onStop=null,detailed=false,maxSpans=100000,traceFrameStride=1,compactTrace=false}={}){
+  cancelRacePerformanceWork(editor);
+  this.session=editor.playtestSession||null;
   this.compactPhases=compactTrace?new CompactFramePhases():null;this.packedPhaseBytes=0;
   this.compactTrace=compactTrace;this.timingEntries=[];this.traceFrameStride=Math.max(1,Math.floor(traceFrameStride));this.detailed=detailed;this.maxSpans=maxSpans;this.spans=[];this.spanNames=[];this.spanIds=new Map();this.droppedSpans=0;this.onStop=onStop;this.epochStarted=Date.now();this.editor=editor;this.now=now;this.durationMs=durationMs;this.maxFrames=maxFrames;
   this.memoryCapture=new RaceCaptureMemory();this.phaseRecordCount=0;
@@ -25,6 +35,7 @@ export class RacePerformanceCapture {
   for(const [method,phase] of Object.entries({updatePlaytestSafely:'simulation',updateRaceAiDrivers:'AI',updateRaceTireTracks:'tireTracks',updateRaceTireFxParticles:'tireFX',updateRaceWeatherFxState:'weatherUpdate',updateRaceSnowEnvironmentRenderField:'weatherField',syncRaceThreeCarSprites:'carSprites',syncRaceThreeAiModels:'carModels',syncRaceThreeEnvironmentSnow:'precipitationGPUSetup',drawRacePlaytestHud:'HUD',drawRaceWebGLTrackScene:'worldDraw',drawRaceThreeWorldScene:'threeScene',addRaceThreeDoodads:'scenery',syncRaceThreeDecals:'decals',syncRaceThreeTireTracks:'tireTrackGeometry',syncRaceThreeTrackState:'surfaceWeatherGeometry',drawRaceWeatherFx:'weatherOverlay',drawRaceParallaxBackground:'background',drawRaceSkyboxArt:'skybox',drawRaceWeatherVisibilityVeil:'visibilityVeil'}))this.wrap(editor,method,phase);
  }
  hook(object,key,make){
+  if(!this.active)return;
   if(!object||typeof object[key]!=='function')return;
   let keys=this.seen.get(object);if(!keys)this.seen.set(object,keys=new Set());if(keys.has(key))return;keys.add(key);
   const own=Object.hasOwn(object,key),original=object[key],wrapped=make(original);object[key]=wrapped;
@@ -47,7 +58,9 @@ export class RacePerformanceCapture {
   if(this.current)return;
   if(this.now()-this.started>=this.durationMs){this.stop('duration');return;}
   const e=this.editor,s=e.playtestSession;
+  if(this.session && s!==this.session){this.stop('session-changed');return;}
   if(!s?.running||e.raceInput?.paused||globalThis.document?.hidden){this.previousFrameAt=null;return;}
+  this.session ||= s;
   const at=this.now();
   this.compactPhases?.begin(this.frames.length);
   // Attribute the elapsed display interval to the work of the preceding frame.
@@ -82,6 +95,7 @@ export class RacePerformanceCapture {
   }
  }
  attach(){
+  if(!this.active)return;
   const started=this.now();
   try{return this.attachHooks();}finally{
    if(this.current)this.current.recorderSetupMs=(this.current.recorderSetupMs||0)+Math.max(0,this.now()-started);
@@ -150,6 +164,7 @@ export class RacePerformanceCapture {
  clearGPU(){for(const item of this.gpuPending){item.row.gpuMs=null;item.row.gpuInvalid=true;try{item.gl.deleteQuery(item.query);}catch{}}this.gpuPending=[];}
  finish(){
   if(!this.current)return;
+  if(this.session && this.editor.playtestSession!==this.session){this.stop('session-changed');return;}
   const finishStarted=this.now();
   const e=this.editor,s=e.playtestSession||{},stats=e.lastRaceRenderStats||{},row=this.current;
   row.context={elapsedMs:s.elapsedMs,countdownMs:s.countdownRemainingMs,intro:s.raceIntro?.active===true,aiCars:s.aiRuntime?.length||0,submittedCarSprites:stats.threeCarDepthSpriteCount||0,camera:e.raceInput?.cameraView||s.cameraView,viewport:e.lastRaceRenderCamera?.bounds?{...e.lastRaceRenderCamera.bounds}:null,cameraYaw:e.lastRaceRenderCamera?.cameraYaw,position:{x:s.worldX,z:s.worldZ},weather:s.debugEnvironment?.weather||e.selectedRace?.weather,intensity:s.debugEnvironment?.weatherIntensity??e.selectedRace?.weatherIntensity,workerPhysics:!!e.vehicleDynamicsAuthority?.workerBridge,paused:e.raceInput?.paused===true};
@@ -157,6 +172,16 @@ export class RacePerformanceCapture {
     debtSeconds: s.frameSimulationClock?.debtSeconds || 0,
     discardedSeconds: s.frameSimulationClock?.discardedSeconds || 0,
     admittedSeconds: s.frameAdmittedSeconds || 0 } : null;
+  row.context.raceClock = s.frameSimulationClock ? {
+   mode:s.frameClockMode||'bounded',rawSeconds:s.frameRawSeconds||0,
+   observedRawSeconds:s.frameObservedRawSeconds||0,admittedSeconds:s.frameAdmittedSeconds||0,
+   excludedSeconds:s.frameExcludedSeconds||0,exclusionReason:s.frameTimeExclusionReason||null,
+   totalRawSeconds:s.frameSimulationClock.rawSeconds||0,
+   totalAdmittedSeconds:s.frameSimulationClock.admittedSeconds||0,
+   debtSeconds:s.frameSimulationClock.debtSeconds||0,
+   discardedSeconds:s.frameSimulationClock.discardedSeconds||0,
+   totalExcludedSeconds:s.frameSimulationClock.excludedSeconds||0
+  } : null;
   row.context.aiPhysics={full:s.aiDetailedPhysicsCount??null,cheap:s.aiCheapPhysicsCount??null,
    held:(s.aiRuntime||[]).filter(ai=>ai.physicsBudgetDetail==='cheap'&&ai.cheapPhysicsHeld===true).length,
    promotions:s.aiPhysicsPromotions||0,
@@ -235,16 +260,22 @@ export class RacePerformanceCapture {
  }
  stop(reason='manual'){
   if(!this.active)return;this.active=false;this.reason=reason;this.stopped=this.now();this.current=null;clearTimeout(this.deadline);
+  this.latestWorkerSummary=snapshotSummary(this.session?.vehicleDynamicsWorkerMetrics);
+  this.latestPhysicsSummary=snapshotSummary(this.session?.physicsPerformance);
+  this.session=null;
   this.pollGPU();this.clearGPU();this.observer?.disconnect();for(const restore of this.restores.reverse())restore();this.restores=[];
   try{this.onStop?.(this);}catch(error){this.uploadState='failed';this.uploadError=error.message;}
  }
  report(){
+  if(!this.active && this.completedReport)return this.completedReport;
   this.pollGPU();const phases={};for(const row of this.frames)for(const [name,p]of Object.entries(row.phases)){const a=phases[name]||={inclusive:[],self:[],calls:0};a.inclusive.push(p.inclusiveMs);a.self.push(p.selfMs);a.calls+=p.calls;}
   const summary=Object.fromEntries(Object.entries(phases).map(([name,p])=>[name,{calls:p.calls,totalSelfMs:p.self.reduce((a,b)=>a+b,0),p95InclusiveMs:percentile(p.inclusive,.95),p95SelfMs:percentile(p.self,.95)}]));
   const intervals=this.frames.map(r=>r.intervalMs).filter(Number.isFinite);
-  return {version:1,eventQueue:this.eventQueueProbeReports.map(probe=>probe.snapshot()),memory:this.memoryCapture.report(),trace:this.detailed?{format:'nested-spans-v1',frameStride:this.traceFrameStride,compact:this.compactTrace,maximumOrdinaryDepth:this.compactTrace?3:null,columns:['nameId','startMs','durationMs','selfMs','frame','depth'],names:this.spanNames,spans:this.spans,droppedSpans:this.droppedSpans}:null,metadata:this.metadata,active:this.active,stopReason:this.reason||null,durationMs:(this.stopped||this.now())-this.started,
+  const report={version:1,eventQueue:this.eventQueueProbeReports.map(probe=>probe.snapshot()),memory:this.memoryCapture.report(),trace:this.detailed?{format:'nested-spans-v1',frameStride:this.traceFrameStride,compact:this.compactTrace,maximumOrdinaryDepth:this.compactTrace?3:null,columns:['nameId','startMs','durationMs','selfMs','frame','depth'],names:this.spanNames,spans:this.spans,droppedSpans:this.droppedSpans}:null,metadata:this.metadata,active:this.active,stopReason:this.reason||null,durationMs:(this.stopped??this.now())-this.started,
    limitations:['recorderSetupMs and recorderFinalizeMs time hook setup and frame finalization separately from game scopes; they exclude per-call timing overhead and stop/upload/export work, so are not total instrumentation cost.','submittedCarSprites counts submitted car billboards, including the player when drawn; terrain occlusion is not measured.','CPU scopes are synchronous; self times exclude instrumented children. Do not add inclusive times.','Frame intervals include browser scheduling; they are not measured presentation FPS.','GPU queries cover instrumented WebGL render calls only, not Canvas 2D/compositing. Null means unmeasured.','Worker physics execution is not timed on the main thread. Long tasks do not prove garbage collection.'],
-   latestWorkerSummary:this.editor.playtestSession?.vehicleDynamicsWorkerMetrics||null,latestPhysicsSummary:this.editor.playtestSession?.physicsPerformance||null,gpuStatus:this.gpuStatus,frameCount:this.frames.length,frameIntervals:{medianMs:percentile(intervals,.5),p95Ms:percentile(intervals,.95),p99Ms:percentile(intervals,.99),over33ms:intervals.filter(v=>v>33.34).length,over50ms:intervals.filter(v=>v>50).length},phases:summary,
+   latestWorkerSummary:this.active?this.session?.vehicleDynamicsWorkerMetrics||null:this.latestWorkerSummary,latestPhysicsSummary:this.active?this.session?.physicsPerformance||null:this.latestPhysicsSummary,gpuStatus:this.gpuStatus,frameCount:this.frames.length,frameIntervals:{medianMs:percentile(intervals,.5),p95Ms:percentile(intervals,.95),p99Ms:percentile(intervals,.99),over33ms:intervals.filter(v=>v>33.34).length,over50ms:intervals.filter(v=>v>50).length},phases:summary,
    worstFrames:[...this.frames].sort((a,b)=>(b.intervalMs||0)-(a.intervalMs||0)).slice(0,40),longTasks:this.longTasks,frames:this.frames};
+  if(!this.active)this.completedReport=report;
+  return report;
  }
 }

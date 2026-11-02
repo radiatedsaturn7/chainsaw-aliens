@@ -1,11 +1,17 @@
 import { prepareRaceLoadingSurfaceSlice } from '../racing/RaceAheadPreparation.js';
 import { runBudgetedRaceFrame } from '../racing/RaceFrameBudget.js';
-import {getVisibleRaceDoodadSprites} from '../racing/RaceVisibleScenery.js';
+import {
+  getVisibleRaceDoodadSprites, getProjectedRaceScenerySprites,
+  prepareManagedRaceScenery, getManagedRaceScenery, getManagedRaceSceneryVersion,
+  invalidateRaceSceneryPresentation, releaseManagedRaceScenery
+} from '../racing/RaceVisibleScenery.js';
+import { syncManagedRaceSceneryChunks } from '../racing/RaceSceneryChunks.js';
 import { staticWorldKeyChanges } from '../racing/RaceStaticWorldCache.js';
 import {raceStartupWarmupReady} from '../racing/RaceStartupWarmup.js';
 import {drawRacePerformanceStatus} from '../racing/RacePerformanceStatus.js';
-import {uploadRacePerformanceCapture} from '../racing/RacePerformanceUpload.js';
+import {prepareRacePerformanceReport, uploadRacePerformanceCapture} from '../racing/RacePerformanceUpload.js';
 import {RacePerformanceCapture} from '../racing/RacePerformanceCapture.js';
+import {disposeRaceSessionResources} from '../racing/RaceSessionResources.js';
 import {prepareRaceAiRoadPlan} from '../racing/RaceAiDirector.js';
 import { recordRaceRecoveryPosition, getRaceRecoveryHistoryCandidates } from '../racing/RaceRecoveryHistory.js';
 import {changeRaceDebugAi} from '../racing/RaceDebugAi.js';
@@ -68,6 +74,7 @@ import { mixTapeRotation } from '../radio/MixTapePickup.js';
 import { RadioMenu } from '../radio/RadioMenu.js';
 import { RaceCarRestFrames, raceCarArtworkTier } from '../racing/RaceCarRestFrames.js';
 import { RaceCarDepthSprites } from '../racing/RaceCarDepthSprites.js';
+import { createRaceTireTrackBuffer, appendRaceTireTrackBuffer, trimRaceTireTrackBuffer, raceTireTrackSessionToken } from '../racing/RaceTireTrackBuffers.js';
 import { CAR_CATEGORIES, CAR_PERFORMANCE_CLASSES, carCategory, calculateCarPerformance, normalizeAiCarSelection, selectEligibleRaceAiCars } from '../racing/CarPerformance.js';
 import { openEditorForm } from './shared/editorForm.js';
 import { applyCarImportPlacementDefaults } from '../racing/CarImportPlacementDefaults.js';
@@ -1210,12 +1217,64 @@ export default class RaceEditor {
   }
 
   exitToMainMenu() {
-    this.racePerformanceCapture?.stop('exit');
-    this.game?.audio?.stopWeatherThunder?.();
+    this.disposeRaceEditorSessions('exit');
+    this.game.exitRaceEditor?.(this.mode);
+  }
+
+  disposeRacePlaytestSession(session = this.playtestSession, reason = 'session-ended') {
+    const result = disposeRaceSessionResources(this, session, { reason });
+    if (result.disposed) {
+      const release = operation => {
+        try { operation(); } catch (error) { result.errors.push(error); }
+      };
+      release(() => releaseManagedRaceScenery(session));
+      if (this.raceDoodadSceneSnapshot?.session === session) this.raceDoodadSceneSnapshot = null;
+      if (this.raceDoodadDefinitionSession === session) {
+        this.raceDoodadDefinitionSession = null;
+        this.raceDoodadDefinitionCache = null;
+      }
+      const renderer = this.raceThreeWorldRenderer;
+      if (renderer?.dynamicDoodadManagedState?.session === session) {
+        release(() => this.clearRaceThreeDynamicDoodads(renderer));
+      }
+      if (renderer?.carRestFrames?.session === session) {
+        release(() => renderer.carDepthSprites?.dispose());
+        release(() => renderer.carRestFrames.clear());
+        renderer.carRestFrames.session = null;
+        release(() => this.clearRaceThreeDynamicCar(renderer));
+      }
+      for (const ai of session.aiRuntime || []) {
+        const holder = renderer?.aiModelCars?.get(ai);
+        if (holder) {
+          release(() => this.clearRaceThreeDynamicCar(holder));
+          renderer.aiModelCars.delete(ai);
+        }
+      }
+      if (renderer?.trackStateHeights?.session === session) {
+        release(() => renderer.trackStateBuild?.iterator?.return?.());
+        renderer.trackStateBuild = null;
+        renderer.trackStateHeights = null;
+        renderer.trackStateCells = null;
+        if (renderer.trackStateMesh) renderer.trackStateMesh.visible = false;
+      }
+    }
+    for (const error of result.errors) console.warn('Race session cleanup failed', error);
+    return result;
+  }
+
+  disposeRaceEditorSessions(reason = 'editor-exit') {
+    const session = this.playtestSession;
+    this.disposeRacePlaytestSession(session, reason);
+    this.cancelRacePlaytestPreparation();
     if (this.carEditorPreviewPlaytest || this.carEditorPreviewPreparation) {
       this.resetCarEditorPreviewPlaytest({ preserveEditorUi: true });
     }
-    this.game.exitRaceEditor?.(this.mode);
+    if (this.playtestSession === session) this.playtestSession = null;
+    this.resetRacePlaytestInputs();
+    this.game?.audio?.stopWeatherThunder?.();
+    this.game?.audio?.setEngineRev?.(false);
+    this.game?.audio?.setTireScreech?.(false);
+    this.game?.stopSfxById?.('', { key: 'race-engine' });
   }
 
   normalizeStudioSprintRace(race = null) {
@@ -1784,6 +1843,7 @@ export default class RaceEditor {
       const ref = map.get(sprite?.definitionId);
       if (ref) sprite.doodadRef = ref;
     });
+    invalidateRaceSceneryPresentation(this);
     race.doodadsMigrated = true;
     return true;
   }
@@ -2917,14 +2977,14 @@ export default class RaceEditor {
   startRacePerformanceCapture(detailed=false) {
     this.racePerformanceCapture?.stop('replaced');
     this.racePerformanceCapture=new RacePerformanceCapture(this,{detailed,durationMs:detailed?60000:120000,maxFrames:8000,maxSpans:detailed?200000:100000,traceFrameStride:detailed?4:1,compactTrace:detailed,onStop:capture=>this.uploadRacePerformanceCapture(capture)});
-    this.status=detailed?'Detailed capture started (up to 60 seconds); uploads automatically':'Performance capture started (up to 120 seconds)';
+    this.status=detailed?'Detailed capture started (up to 60 seconds); uploads when paused':'Performance capture started (up to 120 seconds); uploads when paused';
     this.game?.showSystemToast?.(this.status);
     if(this.raceInput.paused)this.toggleRacePause();
   }
 
   stopRacePerformanceCapture() {
     this.racePerformanceCapture?.stop();
-    this.status='Performance capture stopped; uploading to server';
+    this.status=this.raceInput.paused?'Performance capture stopped; preparing upload':'Performance capture stopped; pause or exit to upload';
     this.game?.showSystemToast?.(this.status);
   }
 
@@ -2934,24 +2994,32 @@ export default class RaceEditor {
       await uploadRacePerformanceCapture(capture);
       this.game?.showSystemToast?.('Performance report saved to server');
     } catch(error) {
+      if(error?.name==='AbortError')return;
       this.game?.showSystemToast?.('Performance upload failed: '+error.message+'. Retry from Debug.');
     }
   }
 
-  exportRacePerformanceCapture() {
+  async exportRacePerformanceCapture() {
     const capture=this.racePerformanceCapture;
     if(!capture)return null;
     capture.stop('export');
-    const report=capture.report();
-    if(typeof document!=='undefined'){
-      const url=URL.createObjectURL(new Blob([JSON.stringify(report)],{type:'application/json'}));
-      const link=document.createElement('a');link.href=url;
-      link.download=`race-performance-${Date.now()}.json`;document.body.appendChild(link);link.click();link.remove();
-      setTimeout(()=>URL.revokeObjectURL(url),10000);
+    try {
+      const {report,json}=await prepareRacePerformanceReport(capture);
+      if(typeof document!=='undefined'){
+        const url=URL.createObjectURL(new Blob([json],{type:'application/json'}));
+        const link=document.createElement('a');link.href=url;
+        link.download=`race-performance-${Date.now()}.json`;document.body.appendChild(link);link.click();link.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),10000);
+      }
+      if(capture.uploadState==='failed')capture.uploadState='downloaded';
+      this.status='Performance report exported';
+      return report;
+    } catch(error) {
+      if(error?.name==='AbortError')return null;
+      this.status='Performance export failed: '+error.message;
+      this.game?.showSystemToast?.(this.status);
+      return null;
     }
-    if(capture.uploadState==='failed')capture.uploadState='downloaded';
-    this.status='Performance report exported';
-    return report;
   }
 
   openRaceDebugDialog() {
@@ -3299,6 +3367,7 @@ export default class RaceEditor {
     const ratio = next / Math.max(0.1, current);
     sprite.widthM = next;
     sprite.heightM = Math.round(Math.max(0.4, Number(sprite.heightM || next) * ratio) * 10) / 10;
+    invalidateRaceSceneryPresentation(this);
     this.status = `Sprite size: ${sprite.widthM}m x ${sprite.heightM}m`;
   }
 
@@ -3307,6 +3376,7 @@ export default class RaceEditor {
     if (!sprite) return;
     const index = Math.max(0, RACE_SCENERY_BEHAVIORS.indexOf(sprite.behavior));
     sprite.behavior = RACE_SCENERY_BEHAVIORS[(index + 1) % RACE_SCENERY_BEHAVIORS.length];
+    invalidateRaceSceneryPresentation(this);
     this.status = `Sprite behavior: ${sprite.behavior.replace(/-/g, ' ')}`;
   }
 
@@ -3317,6 +3387,7 @@ export default class RaceEditor {
     const current = Number(sprite.heightM) || 2.4;
     const next = heights.find((height) => height > current + 0.05) || heights[0];
     sprite.heightM = next;
+    invalidateRaceSceneryPresentation(this);
     this.status = `Sprite height: ${sprite.heightM}m`;
   }
 
@@ -3352,6 +3423,7 @@ export default class RaceEditor {
     const sprite = this.createRaceScenerySprite(world);
     if (!sprite) return false;
     scenery.push(sprite);
+    invalidateRaceSceneryPresentation(this);
     this.selectedSceneryIndex = scenery.length - 1;
     if (this.getRaceSpritePaintKind() === 'doodad') {
       this.racePortraitMode = 'ground';
@@ -3478,6 +3550,7 @@ export default class RaceEditor {
       }
     }
     this.selectedSceneryIndex = this.raceSpriteDrag.index;
+    invalidateRaceSceneryPresentation(this);
     return true;
   }
 
@@ -3712,6 +3785,7 @@ export default class RaceEditor {
       member.yaw = (Number(member.yaw) || 0) + delta;
     }
     sprite.yaw = yaw;
+    invalidateRaceSceneryPresentation(this);
   }
 
   setSelectedRaceSceneryRotation(degrees) {
@@ -3753,6 +3827,7 @@ export default class RaceEditor {
     if (removed.fenceId) {
       for (let i = scenery.length - 1; i >= 0; i--) if (scenery[i].fenceId === removed.fenceId) scenery.splice(i, 1);
     } else scenery.splice(index, 1);
+    invalidateRaceSceneryPresentation(this);
     this.selectedSceneryIndex = clamp(index, 0, Math.max(0, scenery.length - 1));
     this.status = `Deleted ${removed?.label || 'sprite'}`;
     return true;
@@ -4092,6 +4167,7 @@ export default class RaceEditor {
   }
 
   clearRaceRuntimeSurfaceCaches() {
+    invalidateRaceSceneryPresentation(this);
     this.racePlaytestSignatureCache = null;
     this.raceNetworkQueryCache = null;
     this.raceMinimapCache = null;
@@ -6579,6 +6655,7 @@ export default class RaceEditor {
     if (session?.carEditorPreview === true) {
       this.resetCarEditorPreviewPlaytest({ preserveEditorUi: true });
     } else {
+      this.disposeRacePlaytestSession(session, 'startup-failed');
       this.playtestSession = null;
       this.resetRacePlaytestInputs();
       if (!this.game?.cancelRaceTravel?.()) this.restoreRaceAuthoringMenuState();
@@ -6612,6 +6689,7 @@ export default class RaceEditor {
       this.carEditorPreviewRuntimeFailureRevision = failedRevision;
       this.carEditorPreviewRuntimeFailureMessage = message;
     } else {
+      this.disposeRacePlaytestSession(session, 'simulation-failed');
       this.playtestSession = null;
       this.resetRacePlaytestInputs();
       if (!this.game?.cancelRaceTravel?.()) this.restoreRaceAuthoringMenuState();
@@ -6814,6 +6892,7 @@ export default class RaceEditor {
 
   restoreRaceEditorHistoryState(snapshot = null) {
     if (!snapshot) return false;
+    this.disposeRaceEditorSessions('history-restored');
     this.project = JSON.parse(JSON.stringify(snapshot.project || createDefaultRaceProject()));
     this.mode = snapshot.mode === 'car' ? 'car' : 'race';
     this.currentRaceDocumentName = snapshot.currentRaceDocumentName || '';
@@ -6917,7 +6996,7 @@ export default class RaceEditor {
 
   resetCarEditorPreviewPlaytest({ guardArtPicker = false, preserveEditorUi = false } = {}) {
     this.stopCarEditorPreviewAudio();
-    this.carEditorPreviewPlaytest?.session?.deferredArtWorker?.terminate?.();
+    this.disposeRacePlaytestSession(this.carEditorPreviewPlaytest?.session || null, 'preview-reset');
     if (this.carEditorPreviewPreparation) {
       this.carEditorPreviewPreparation.cancelled = true;
       if (this.carEditorPreviewPreparation.watchdog) {
@@ -8533,6 +8612,7 @@ export default class RaceEditor {
       return true;
     }
     applyStudioSprintGraphicSettings(template);
+    this.disposeRaceEditorSessions('race-loaded');
     const existingIndex = this.project.races.findIndex((race) => race.id === template.id);
     if (existingIndex >= 0) {
       this.project.races[existingIndex] = template;
@@ -8626,6 +8706,7 @@ export default class RaceEditor {
       this.status = 'Race load failed';
       return false;
     }
+    this.disposeRacePlaytestSession(this.playtestSession, 'race-loaded');
     const existingIndex = this.project.races.findIndex((candidate) => candidate.id === race.id);
     if (existingIndex >= 0) this.project.races[existingIndex] = race;
     else this.project.races.push(race);
@@ -9030,6 +9111,7 @@ export default class RaceEditor {
     this.upsertRaceProjectCar(car);
     this.project.selectedCarId = this.getRaceCarProjectIdentity(car);
     this.activeRootId = 'art';
+    this.disposeRacePlaytestSession(this.playtestSession, 'car-loaded');
     this.playtestSession = null;
     this.status = `Loaded ${car.name}`;
     return true;
@@ -9050,6 +9132,7 @@ export default class RaceEditor {
     this.currentCarDocumentName = '';
     this.carArtSliderDrag = null;
     this.activeRootId = 'art';
+    this.disposeRacePlaytestSession(this.playtestSession, 'car-loaded');
     this.playtestSession = null;
     this.status = `Loaded ${car.name}. Save to create a car file.`;
     return true;
@@ -13243,6 +13326,7 @@ export default class RaceEditor {
     }
     this.raceLoadingCar=car;
     this.cancelRacePlaytestPreparation();
+    this.disposeRacePlaytestSession(this.playtestSession, 'travel-loading');
     this.racePreparedArtFrames?.clear?.();
     const id = ++this.racePlaytestPreparationSequence;
     this.racePlaytestPreparation = {
@@ -13988,7 +14072,10 @@ export default class RaceEditor {
     preparation.deferredArtWorker?.terminate?.();
     preparation.reject?.(new Error('Race preparation canceled'));
     this.racePlaytestPreparation = null;
-    if (this.playtestSession?.preparing) this.playtestSession = null;
+    if (this.playtestSession?.preparing) {
+      this.disposeRacePlaytestSession(this.playtestSession, 'preparation-cancelled');
+      this.playtestSession = null;
+    }
     if (returnToOrigin) {
       this.resetRacePlaytestInputs();
       if (!this.game?.cancelRaceTravel?.()) this.restoreRaceAuthoringMenuState();
@@ -14066,6 +14153,7 @@ export default class RaceEditor {
     }, index));
     const raceStart = this.getRaceStartSettings();
     const initialSpeedMps = raceStart.rollingStart ? raceStart.rollingStartSpeedMps : 0;
+    this.disposeRacePlaytestSession(this.playtestSession, 'session-replaced');
     this.playtestSession = {
       raceId: this.selectedRace.id,
       raceDocumentName,
@@ -14187,6 +14275,7 @@ export default class RaceEditor {
         diagnosticMode ? `Diagnostic: ${diagnosticMode}` : 'Co-driver disabled'
       ]
     };
+    prepareManagedRaceScenery(this.ensureRaceScenery(), this.playtestSession);
     if (this.playtestSession.aiRuntime.length) prepareRaceAiRoadPlan(this);
     for(const key of ['highBeams','auxLights'])this.raceInput[key]=this.playtestSession.mechanical?.[key]===true;
     this.playtestSession.trackState = this.createRaceTrackState({
@@ -14289,8 +14378,6 @@ export default class RaceEditor {
   endPlaytest() {
     this.game?.audio?.stopWeatherThunder?.();
     if (!this.playtestSession || this.playtestSession.finishing) return;
-    this.playtestSession.incrementalRoadReset?.return?.();
-    this.playtestSession.incrementalRoadReset = null;
     if (this.playtestSession.preparing) {
       this.cancelRacePlaytestPreparation({ returnToOrigin: true });
       return;
@@ -14298,8 +14385,8 @@ export default class RaceEditor {
     void this.persistRaceMechanicalCondition().catch(error=>this.game?.showSystemToast?.(`Condition save failed: ${error.message}`));
     const engineSoundId = this.playtestSession.activeEngineSoundId || this.playtestSession.engineSoundId;
     const car = this.getRaceSessionCar(this.playtestSession);
-    this.playtestSession.deferredArtWorker?.terminate?.();
     this.completeRaceGhost({ finished: false });
+    this.disposeRacePlaytestSession(this.playtestSession, 'ended');
     this.playtestSession = null;
     this.resetRacePlaytestInputs();
     this.game?.audio?.setEngineRev?.(false);
@@ -14354,6 +14441,7 @@ export default class RaceEditor {
       finishedSession.finishing = true;
       this.raceInput.paused = true;
     } else {
+      this.disposeRacePlaytestSession(finishedSession, 'finished');
       this.playtestSession = null;
       this.resetRacePlaytestInputs();
     }
@@ -14367,6 +14455,7 @@ export default class RaceEditor {
         carId, raceId, raceDocumentName, trackStateSnapshot
       })).then(() => {
         if (this.playtestSession !== finishedSession) return;
+        this.disposeRacePlaytestSession(finishedSession, 'finished');
         this.playtestSession = null;
         this.resetRacePlaytestInputs();
         this.status = `Finished ${name}`;
@@ -20598,10 +20687,7 @@ export default class RaceEditor {
     const car = this.getRaceSessionCar(session);
     const worldBake = session.worldBake || this.raceWorldBakeCache;
     const autoShift = this.raceInput.autoShift;
-    session.running = false;
-    session.deferredArtWorker?.terminate?.();
-    this.vehicleDynamicsAuthority?.workerBridge?.close?.();
-    this.vehicleDynamicsAuthority = null;
+    this.disposeRacePlaytestSession(session, 'restart');
     this.game?.audio?.setEngineRev?.(false);
     this.game?.audio?.setTireScreech?.(false);
     this.game?.stopSfxById?.(session.activeEngineSoundId || session.engineSoundId || car?.audio?.engineSoundId || '', { key: 'race-engine' });
@@ -20637,9 +20723,9 @@ export default class RaceEditor {
     if (this.raceInput.pauseMenuMode?.startsWith('debug')) {
       const debugRows = [
         {id:'race-perf-mode',label:'Mode',value:this.racePerformanceCapture?.active?(this.racePerformanceCapture.detailed?'Detailed':'Standard'):(this.racePerformanceMode||'Detailed'),disabled:this.racePerformanceCapture?.active===true,onClick:()=>{if(!this.racePerformanceCapture?.active)this.racePerformanceMode=this.racePerformanceMode==='Standard'?'Detailed':'Standard';},onAdjust:()=>{if(!this.racePerformanceCapture?.active)this.racePerformanceMode=this.racePerformanceMode==='Standard'?'Detailed':'Standard';}},
-        {id:'race-perf-start',label:'Record',value:this.racePerformanceMode==='Standard'?'120s':'60s',disabled:this.racePerformanceCapture?.active===true||['uploading','failed'].includes(this.racePerformanceCapture?.uploadState),onClick:()=>this.startRacePerformanceCapture(this.racePerformanceMode!=='Standard')},
+        {id:'race-perf-start',label:'Record',value:this.racePerformanceMode==='Standard'?'120s':'60s',disabled:this.racePerformanceCapture?.active===true||['queued','uploading','failed'].includes(this.racePerformanceCapture?.uploadState),onClick:()=>this.startRacePerformanceCapture(this.racePerformanceMode!=='Standard')},
         {id:'race-perf-stop',label:'Stop',value:this.racePerformanceCapture?.active?'Recording':'',disabled:!this.racePerformanceCapture?.active,onClick:()=>this.stopRacePerformanceCapture()},
-        {id:'race-perf-upload',label:'Upload',value:this.racePerformanceCapture?.uploadState||'',disabled:!this.racePerformanceCapture?.frames.length||this.racePerformanceCapture?.active||['uploading','saved'].includes(this.racePerformanceCapture?.uploadState),onClick:()=>this.uploadRacePerformanceCapture()},
+        {id:'race-perf-upload',label:'Upload',value:this.racePerformanceCapture?.uploadState||'',disabled:!this.racePerformanceCapture?.frames.length||this.racePerformanceCapture?.active||['queued','uploading','saved'].includes(this.racePerformanceCapture?.uploadState),onClick:()=>this.uploadRacePerformanceCapture()},
         {id:'race-perf-export',label:'Export',value:'JSON',disabled:!this.racePerformanceCapture?.frames.length,onClick:()=>this.exportRacePerformanceCapture()},
         {id:'race-debug-ai-add',label:'Add AI racer',value:`${this.playtestSession?.aiRuntime?.length || 0} / 29`,disabled:(this.playtestSession?.aiRuntime?.length || 0)>=29,onClick:()=>changeRaceDebugAi(this,1)},
         {id:'race-debug-ai-remove',label:'Remove AI racer',value:'',disabled:!this.playtestSession?.aiRuntime?.length,onClick:()=>changeRaceDebugAi(this,-1)},
@@ -21571,6 +21657,7 @@ export default class RaceEditor {
       if (session.carEditorPreview === true) {
         this.resetCarEditorPreviewPlaytest({ preserveEditorUi: true });
       } else {
+        this.disposeRacePlaytestSession(session, 'render-failed');
         this.playtestSession = null;
         this.resetRacePlaytestInputs();
         if (!this.game?.cancelRaceTravel?.()) this.restoreRaceAuthoringMenuState();
@@ -24766,6 +24853,7 @@ export default class RaceEditor {
   }
 
   createNewRaceProject(laneCount = DEFAULT_RACE_LANE_COUNT) {
+    this.disposeRaceEditorSessions('new-race');
     this.project = createNewRaceProject({ laneCount });
     this.currentRaceDocumentName = '';
     this.playtestSession = null;
@@ -27970,11 +28058,13 @@ export default class RaceEditor {
     const value = Math.round((region.min + (region.max - region.min) * ratio) * 10) / 10;
     if (region.key === 'width') {
       definition.widthM = value;
+      invalidateRaceSceneryPresentation(this);
       this.status = `Sprite width: ${value.toFixed(1)}m`;
       return true;
     }
     if (region.key === 'height') {
       definition.heightM = value;
+      invalidateRaceSceneryPresentation(this);
       this.status = `Sprite height: ${value.toFixed(1)}m`;
       return true;
     }
@@ -30301,7 +30391,9 @@ export default class RaceEditor {
         if (existing) Object.assign(existing, loaded);
         else this.project.races.push(loaded);
         this.carEditorPreviewStudioSprintStorageKey = storageKey;
-        if (this.carEditorPreviewPlaytest?.raceId === loaded.id) this.carEditorPreviewPlaytest = null;
+        if (this.carEditorPreviewPlaytest?.raceId === loaded.id) {
+          this.resetCarEditorPreviewPlaytest({ preserveEditorUi: true });
+        }
         return existing || loaded;
       }
     }
@@ -30375,7 +30467,7 @@ export default class RaceEditor {
     if (!previewRace || !car || !worldBake) return null;
     // Stop the outgoing session before replacing its engine sound ownership.
     this.stopCarEditorPreviewAudio();
-    const deferredArtWorker = this.carEditorPreviewPlaytest?.session?.deferredArtWorker || null;
+    const outgoingSession = this.carEditorPreviewPlaytest?.session || null;
     const existing = this.project.races.find((race) => race.id === previewRace.id);
     if (existing && existing !== previewRace) Object.assign(existing, previewRace);
     else if (!existing) this.project.races.push(previewRace);
@@ -30405,7 +30497,13 @@ export default class RaceEditor {
       this.playtestSession.telemetryVisible = false;
       this.playtestSession.aiDrivers = [];
       this.playtestSession.aiRuntime = [];
-      this.playtestSession.deferredArtWorker = deferredArtWorker;
+      // A tuning-only preview restart may continue the same art preparation.
+      // Transfer ownership before releasing the old session.
+      if (!this.playtestSession.deferredArtWorker && outgoingSession?.deferredArtWorker) {
+        this.playtestSession.deferredArtWorker = outgoingSession.deferredArtWorker;
+        outgoingSession.deferredArtWorker = null;
+      }
+      this.disposeRacePlaytestSession(outgoingSession, 'preview-replaced');
       this.raceInput.cameraView = 'third-person';
       this.raceInput.autoShift = true;
       this.raceInput.telemetryVisible = false;
@@ -30425,6 +30523,9 @@ export default class RaceEditor {
       this.clearCarEditorPreviewFrameCache();
       return this.carEditorPreviewPlaytest;
     } finally {
+      if (this.playtestSession && this.carEditorPreviewPlaytest?.session !== this.playtestSession) {
+        this.disposeRacePlaytestSession(this.playtestSession, 'preview-start-failed');
+      }
       this.project.selectedRaceId = previousRaceId;
       this.project.selectedCarId = previousCarId;
       this.playtestSession = previousSession;
@@ -30728,6 +30829,7 @@ export default class RaceEditor {
     const previousOpenDesktopDropdownRootId = this.openDesktopDropdownRootId;
     const previousClosedDesktopDropdownRootId = this.closedDesktopDropdownRootId;
     this.stopCarEditorPreviewAudio();
+    const outgoingSession = this.carEditorPreviewPlaytest?.session || null;
     this.project.selectedRaceId = previewRace.id;
     this.project.selectedCarId = this.getRaceCarProjectIdentity(car);
     this.playtestSession = null;
@@ -30739,6 +30841,7 @@ export default class RaceEditor {
       this.playtestSession.telemetryVisible = false;
       this.playtestSession.aiDrivers = [];
       this.playtestSession.aiRuntime = [];
+      this.disposeRacePlaytestSession(outgoingSession, 'preview-replaced');
       this.raceInput.cameraView = 'third-person';
       this.raceInput.autoShift = true;
       this.raceInput.telemetryVisible = false;
@@ -30756,6 +30859,9 @@ export default class RaceEditor {
       this.carEditorPreviewPendingTuningRevisionMs = 0;
       return this.carEditorPreviewPlaytest;
     } finally {
+      if (this.playtestSession && this.carEditorPreviewPlaytest?.session !== this.playtestSession) {
+        this.disposeRacePlaytestSession(this.playtestSession, 'preview-start-failed');
+      }
       this.project.selectedRaceId = previousRaceId;
       this.project.selectedCarId = previousCarId;
       this.playtestSession = previousSession;
@@ -33534,131 +33640,103 @@ export default class RaceEditor {
     return true;
   }
 
-  buildRaceThreeTireTrackChunk(renderer = null, chunkId = 0, segments = []) {
+  buildRaceThreeTireTrackChunk(renderer = null, chunkId = 0, segments = [], start = 0, end = segments.length) {
     const material = this.getRaceThreeTireTrackMaterial(renderer);
-    if (!renderer?.tireTrackGroup || !material || !THREE?.BufferGeometry || !THREE?.Float32BufferAttribute) return null;
+    if (!renderer?.tireTrackGroup || !material || !THREE?.BufferGeometry) return null;
     this.disposeRaceThreeTireTrackChunk(renderer, chunkId);
-    const positions = [];
-    const colors = [];
-    const appendQuad = (quad = [], color = '') => {
-      if (!color || !Array.isArray(quad) || quad.length !== 4) return;
-      const vertices = quad.map((point) => {
-        return [
-          Number(point?.x),
-          Number(point?.elevation) * RACE_THREE_ELEVATION_M,
-          Number(point?.z)
-        ];
-      });
-      if (vertices.some((vertex) => !vertex.every(Number.isFinite))) return;
-      const rgba = this.parseRaceCssColor(color);
-      [[0, 1, 2], [0, 2, 3]].forEach((triangleIndices) => {
-        const triangle = triangleIndices.map((index) => vertices[index]);
-        const [a, b, c] = triangle;
-        const normalY = (b[2] - a[2]) * (c[0] - a[0])
-          - (b[0] - a[0]) * (c[2] - a[2]);
-        if (Math.abs(normalY) <= 0.0000001) return;
-        const upwardTriangle = normalY > 0 ? triangle : [a, c, b];
-        upwardTriangle.forEach(([x, y, z]) => {
-          positions.push(x, y, z);
-          colors.push(rgba[0], rgba[1], rgba[2], rgba[3]);
-        });
-      });
-    };
-    segments.forEach((segment) => {
-      const style = this.getRaceTireTrackStyle(segment.kind, segment.intensity);
-      if (style.outerColor) appendQuad(segment.outerQuad?.length ? segment.outerQuad : this.getRaceTireTrackQuad(segment, style.outerScale), style.outerColor);
-      appendQuad(segment.centerQuad?.length ? segment.centerQuad : this.getRaceTireTrackQuad(segment, 1), style.centerColor);
-    });
-    if (!positions.length) return null;
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 4));
-    geometry.computeBoundingSphere?.();
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.renderOrder = 6;
-    mesh.frustumCulled = true;
-    renderer.tireTrackGroup.add(mesh);
-    const chunk = {
-      mesh,
-      count: segments.length,
-      maxId: Math.max(...segments.map((segment) => Number(segment.id || 0))),
-      vertexCount: positions.length / 3
-    };
+    const chunk = createRaceTireTrackBuffer(chunkId, RACE_TIRE_TRACK_GPU_CHUNK_SEGMENTS, material);
+    appendRaceTireTrackBuffer(chunk, segments, start, end, this, RACE_THREE_ELEVATION_M);
+    if (!chunk.vertexCount) {
+      chunk.mesh.geometry.dispose();
+      return null;
+    }
+    trimRaceTireTrackBuffer(chunk, chunk.firstId);
+    renderer.tireTrackGroup.add(chunk.mesh);
     renderer.tireTrackChunks.set(chunkId, chunk);
     return chunk;
   }
 
   syncRaceThreeTireTracks(renderer = null, { session = this.playtestSession, stats = null } = {}) {
     if (!renderer?.scene || !THREE?.Group) return false;
-    const startedAt = Number(session?.startedAt || 0);
-    if (!renderer.tireTrackGroup || renderer.tireTrackSessionKey !== startedAt) {
+    const allSegments = session?.tireTrackSegments || [];
+    const lastId = Number(allSegments[allSegments.length - 1]?.id || 0);
+    const sessionToken = raceTireTrackSessionToken(session);
+    // Identity also handles two sessions starting in the same millisecond; a
+    // rewound/cleared stream must not leave old marks in a reused renderer.
+    if (!renderer.tireTrackGroup || renderer.tireTrackSessionToken !== sessionToken
+      || lastId < Number(renderer.tireTrackSyncedMaxId || 0)) {
       if (renderer.tireTrackGroup) renderer.scene.remove(renderer.tireTrackGroup);
       renderer.tireTrackChunks?.forEach((_, chunkId) => this.disposeRaceThreeTireTrackChunk(renderer, chunkId));
       renderer.tireTrackGroup = new THREE.Group();
       renderer.tireTrackGroup.renderOrder = 6;
       renderer.scene.add(renderer.tireTrackGroup);
       renderer.tireTrackChunks = new Map();
-      renderer.tireTrackSessionKey = startedAt;
+      renderer.tireTrackSessionToken = sessionToken;
+      renderer.tireTrackSessionKey = Number(session?.startedAt || 0);
       renderer.tireTrackSyncedMaxId = 0;
     }
     const syncStart = this.getNowMs();
     const minId = Number(session?.tireTrackMinId || 0);
-    const allSegments = session?.tireTrackSegments || [];
-    [...renderer.tireTrackChunks.keys()].forEach((chunkId) => {
-      const chunk = renderer.tireTrackChunks.get(chunkId);
-      if (Number(chunk?.maxId || 0) < minId) this.disposeRaceThreeTireTrackChunk(renderer, chunkId);
-    });
-    const firstId = Number(allSegments[0]?.id || 0);
+    for (const [chunkId, chunk] of renderer.tireTrackChunks) {
+      if (chunk.maxId < minId) this.disposeRaceThreeTireTrackChunk(renderer, chunkId);
+    }
+
     const syncedMaxId = Number(renderer.tireTrackSyncedMaxId || 0);
-    const firstNewIndex = syncedMaxId >= firstId
-      ? Math.min(allSegments.length, Math.max(0, syncedMaxId - firstId + 1))
-      : 0;
-    const changedChunkIds = new Set();
-    for (let index = firstNewIndex; index < allSegments.length; index += 1) {
-      const id = Number(allSegments[index]?.id || 0);
-      if (id >= minId) changedChunkIds.add(Math.floor(Math.max(0, id - 1) / RACE_TIRE_TRACK_GPU_CHUNK_SEGMENTS));
-    }
-    const firstRetainedChunkId = firstId > 0
-      ? Math.floor(Math.max(0, firstId - 1) / RACE_TIRE_TRACK_GPU_CHUNK_SEGMENTS)
-      : -1;
-    const firstRetainedChunk = renderer.tireTrackChunks.get(firstRetainedChunkId);
-    if (firstRetainedChunk && firstId > firstRetainedChunkId * RACE_TIRE_TRACK_GPU_CHUNK_SEGMENTS + 1) {
-      changedChunkIds.add(firstRetainedChunkId);
-    }
-    const buckets = new Map();
-    changedChunkIds.forEach((chunkId) => {
-      const chunkFirstId = chunkId * RACE_TIRE_TRACK_GPU_CHUNK_SEGMENTS + 1;
-      const chunkLastId = chunkFirstId + RACE_TIRE_TRACK_GPU_CHUNK_SEGMENTS - 1;
-      const startIndex = Math.max(0, Math.max(minId, chunkFirstId) - firstId);
-      const endIndex = Math.min(allSegments.length, chunkLastId - firstId + 1);
-      buckets.set(chunkId, endIndex > startIndex ? allSegments.slice(startIndex, endIndex) : []);
-    });
-    let rebuilds = 0;
-    buckets.forEach((segments, chunkId) => {
-      if (!segments.length) {
-        this.disposeRaceThreeTireTrackChunk(renderer, chunkId);
-        return;
+    let created = 0, appended = 0, uploadedVertices = 0;
+    if (lastId > syncedMaxId) {
+      // IDs are ordered, but need not be contiguous after restore/filtering.
+      let low = 0, high = allSegments.length;
+      while (low < high) {
+        const middle = (low + high) >>> 1;
+        if (Number(allSegments[middle]?.id || 0) <= syncedMaxId) low = middle + 1;
+        else high = middle;
       }
-      const existing = renderer.tireTrackChunks.get(chunkId);
-      const maxId = Number(segments[segments.length - 1]?.id || 0);
-      if (existing?.count === segments.length && existing?.maxId === maxId) return;
-      if (this.buildRaceThreeTireTrackChunk(renderer, chunkId, segments)) rebuilds += 1;
-    });
-    renderer.tireTrackSyncedMaxId = Number(allSegments[allSegments.length - 1]?.id || 0);
-    const chunks = [...renderer.tireTrackChunks.values()];
-    const active = chunks.length > 0;
+      let index = low;
+      while (index < allSegments.length) {
+        const id = Number(allSegments[index]?.id || 0);
+        if (id < minId) { index += 1; continue; }
+        const chunkId = Math.floor(Math.max(0, id - 1) / RACE_TIRE_TRACK_GPU_CHUNK_SEGMENTS);
+        const start = index++;
+        while (index < allSegments.length
+          && Math.floor(Math.max(0, Number(allSegments[index]?.id || 0) - 1) / RACE_TIRE_TRACK_GPU_CHUNK_SEGMENTS) === chunkId) index += 1;
+        let chunk = renderer.tireTrackChunks.get(chunkId);
+        if (chunk) {
+          const previousVertices = chunk.vertexCount;
+          appended += appendRaceTireTrackBuffer(chunk, allSegments, start, index, this, RACE_THREE_ELEVATION_M);
+          uploadedVertices += chunk.vertexCount - previousVertices;
+        } else {
+          chunk = this.buildRaceThreeTireTrackChunk(renderer, chunkId, allSegments, start, index);
+          if (chunk) {
+            created += 1;
+            appended += chunk.count;
+            uploadedVertices += chunk.vertexCount;
+          }
+        }
+      }
+    }
+    renderer.tireTrackSyncedMaxId = lastId;
+    let activeChunks = 0, visibleVertices = 0;
+    for (const chunk of renderer.tireTrackChunks.values()) {
+      if (trimRaceTireTrackBuffer(chunk, minId)) {
+        activeChunks += 1;
+        visibleVertices += chunk.visibleVertexCount;
+      }
+    }
     if (stats) {
-      stats.threeTireTrackRenderer = active ? 1 : 0;
-      stats.tireTrackSegments = Number(session?.tireTrackSegments?.length || 0);
-      stats.tireTrackGpuChunks = chunks.length;
-      stats.tireTrackGpuVertices = chunks.reduce((sum, chunk) => sum + Number(chunk.vertexCount || 0), 0);
-      stats.tireTrackChunkRebuilds = rebuilds;
-      stats.tireTrackDrawCalls = chunks.length;
-      stats.polygons = (Number(stats.polygons) || 0) + Math.floor(stats.tireTrackGpuVertices / 3);
-      stats.drawCalls = (Number(stats.drawCalls) || 0) + chunks.length;
+      stats.threeTireTrackRenderer = activeChunks ? 1 : 0;
+      stats.tireTrackSegments = allSegments.length;
+      stats.tireTrackGpuChunks = activeChunks;
+      stats.tireTrackGpuVertices = visibleVertices;
+      stats.tireTrackChunkRebuilds = 0;
+      stats.tireTrackChunkCreates = created;
+      stats.tireTrackSegmentsAppended = appended;
+      stats.tireTrackUploadedVertices = uploadedVertices;
+      stats.tireTrackDrawCalls = activeChunks;
+      stats.polygons = (Number(stats.polygons) || 0) + Math.floor(visibleVertices / 3);
+      stats.drawCalls = (Number(stats.drawCalls) || 0) + activeChunks;
       if (syncStart > 0) stats.tireTrackSyncMs = Math.max(0, this.getNowMs() - syncStart);
     }
-    return active;
+    return activeChunks > 0;
   }
 
   drawRaceTireFxParticles(ctx, bounds, { camera = {}, cameraYaw = 0, layer = 'all' } = {}) {
@@ -36526,6 +36604,12 @@ export default class RaceEditor {
     return count > 0;
   }
 
+  getRaceThreeWorldRendererForViewport(bounds, renderScale = this.getRaceWebGLTrackRenderResolution(this.getRaceGroundScanlineSettings())) {
+    const width = clamp(Math.round(Number(bounds?.w || 1) * renderScale), 1, 32768);
+    const height = clamp(Math.round(Number(bounds?.h || 1) * renderScale), 1, 18432);
+    return this.getRaceThreeWorldRenderer(width, height);
+  }
+
   getRaceThreeWorldRenderer(width = 1, height = 1) {
     if (!THREE?.WebGLRenderer || typeof document === 'undefined' || typeof document.createElement !== 'function') return null;
     let renderer = this.raceThreeWorldRenderer;
@@ -36727,19 +36811,42 @@ export default class RaceEditor {
 
   clearRaceThreeDynamicDoodads(renderer = null) {
     const group = renderer?.dynamicDoodadGroup;
-    if (!renderer?.scene || !group) return;
-    renderer.scene.remove(group);
-    group.traverse?.((entry)=>entry.userData?.modelInstance?.dispose());
-    group.traverse?.((entry) => {
-      entry.geometry?.dispose?.();
-      if (entry.material && !entry.material.__raceSharedMaterial) entry.material.dispose?.();
-    });
+    if (!renderer) return;
+    if (group) {
+      renderer.scene?.remove(group);
+      const owner = renderer.doodadResourceOwner || renderer;
+      // Cached materials belong to the renderer, not a spatial chunk. Disposing
+      // one pickup's chunk must not dispose a material used by other chunks.
+      const sharedMaterials = new Set(owner.doodadMaterialCache?.values() || []);
+      const remaining = owner.dynamicDoodadGroup;
+      if (remaining && remaining !== group) {
+        // A live mesh can outlast the bounded material cache entry. This scan
+        // runs only after removing a changed chunk, never on warm frames.
+        remaining.traverse?.(entry => {
+          if (entry.material) sharedMaterials.add(entry.material);
+        });
+      }
+      const disposedMaterials = new Set();
+      group.traverse?.((entry)=>entry.userData?.modelInstance?.dispose());
+      group.traverse?.((entry) => {
+        entry.geometry?.dispose?.();
+        if (entry.material && !entry.material.__raceSharedMaterial
+          && !sharedMaterials.has(entry.material) && !disposedMaterials.has(entry.material)) {
+          disposedMaterials.add(entry.material);
+          entry.material.dispose?.();
+        }
+      });
+    }
     renderer.dynamicDoodadGroup = null;
     renderer.dynamicDoodadAnimations = [];
     renderer.dynamicDoodadSceneKey = '';
     renderer.dynamicDoodadPolygons = 0;
     renderer.dynamicDoodadDrawCalls = 0;
     renderer.dynamicDoodadCount = 0;
+    renderer.dynamicDoodadChunks = null;
+    renderer.dynamicDoodadManagedState = null;
+    renderer.dynamicDoodadManagedGeneration = null;
+    renderer.dynamicDoodadVisibilityRevision = null;
   }
 
   syncRaceTileModels(renderer,camera={}) {
@@ -36780,13 +36887,18 @@ export default class RaceEditor {
     });
     const session = this.playtestSession;
     const previous = this.raceDoodadSceneSnapshot;
+    const managedVersion = getManagedRaceSceneryVersion(sprites, session);
     // During play the placement snapshot is stable. Check inexpensive mutable
     // placement fields and unique asset revisions rather than stringify every
     // normalized definition and transform on every rendered frame.
     const cacheable = session && !session.carEditorPreview;
     let unchanged = cacheable && previous?.session === session
-      && previous.surfaceRevision === surfaceRevision && previous.sprites.length === sprites.length;
-    if (unchanged) {
+      && previous.surfaceRevision === surfaceRevision && previous.count === sprites.length;
+    if (unchanged && managedVersion !== null) {
+      unchanged = previous.source === sprites && previous.managedVersion === managedVersion;
+    } else if (unchanged && previous.managedVersion !== null) {
+      unchanged = false;
+    } else if (unchanged) {
       for (let i = 0; i < sprites.length; i++) {
         const record = previous.sprites[i], sprite = sprites[i];
         if (record.sprite !== sprite || record.state !== sprite.state
@@ -36846,7 +36958,8 @@ export default class RaceEditor {
     const key = `${surfaceRevision}::three-doodads::${doodads}`;
     if (cacheable) this.raceDoodadSceneSnapshot = {
       session, surfaceRevision, key, artKeys, modelKeys,
-      sprites: sprites.map(sprite => ({sprite, state:sprite.state, x:sprite.x, z:sprite.z, yaw:sprite.yaw,
+      source: sprites, count: sprites.length, managedVersion,
+      sprites: managedVersion !== null ? null : sprites.map(sprite => ({sprite, state:sprite.state, x:sprite.x, z:sprite.z, yaw:sprite.yaw,
         width:sprite.widthM, height:sprite.heightM, definition:sprite.previewDoodad,
         ref:sprite.doodadRef, art:sprite.artRef, hitbox:sprite.previewHitbox}))
     };
@@ -37392,14 +37505,19 @@ export default class RaceEditor {
     return Boolean(renderer.decalGroup?.children.length);
   }
 
-  addRaceThreeDoodads(renderer = null, { stats = null } = {}) {
+  addRaceThreeDoodads(renderer = null, { stats = null, chunkSprites = null, chunkSceneKey = null } = {}) {
     if (!renderer?.scene || !THREE?.Group || !THREE?.Mesh || !THREE?.BufferGeometry || !THREE?.Float32BufferAttribute) return false;
-    const sprites = getVisibleRaceDoodadSprites(this.ensureRaceScenery(), this.playtestSession);
+    const source = chunkSprites || this.ensureRaceScenery();
+    const managed = chunkSprites === null ? getManagedRaceScenery(source, this.playtestSession) : null;
+    if (managed) return syncManagedRaceSceneryChunks(
+      this, renderer, managed, this.getRaceThreeDoodadSceneKey(managed.doodads), stats
+    );
+    const sprites = chunkSprites || getVisibleRaceDoodadSprites(source, this.playtestSession);
     if (!sprites.length) {
       this.clearRaceThreeDynamicDoodads(renderer);
       return false;
     }
-    const sceneKey = this.getRaceThreeDoodadSceneKey(sprites);
+    const sceneKey = chunkSceneKey ?? this.getRaceThreeDoodadSceneKey(sprites);
     if (renderer.dynamicDoodadGroup && renderer.dynamicDoodadSceneKey === sceneKey) {
       // Static batches do not need an animation traversal on cache hits.
       const time = Number(this.playtestSession?.elapsedMs || 0) / 1000;
@@ -37420,6 +37538,7 @@ export default class RaceEditor {
     this.clearRaceThreeDynamicDoodads(renderer);
     const group = new THREE.Group();
     group.name = 'raceDynamicDoodads';
+    const resourceRenderer = renderer.doodadResourceOwner || renderer;
     const fenceBatches = new Map();
     sprites.forEach((sprite) => {
       const quad = this.getRaceDoodadWorldQuad(sprite);
@@ -37427,7 +37546,7 @@ export default class RaceEditor {
       const { doodad } = quad;
       if(doodad.model?.ref){
         const model=modelAssets.get(doodad.model.ref);if(!model)return;
-        ensureModelSceneLighting(renderer.scene);
+        ensureModelSceneLighting(resourceRenderer.scene);
         const instance=new ModelAssetInstance();instance.setModel(model,doodad.model);
         const placement=new THREE.Group();placement.userData.modelInstance=instance;placement.userData.spriteId=sprite.id;
         placement.add(instance.object);
@@ -37442,9 +37561,9 @@ export default class RaceEditor {
           instance.object.scale.set(sx,sy,sx);instance.object.position.set(-center.x*sx,-box.min.y*sy,-center.z*sx);
         }
         instance.time=Number(this.playtestSession?.elapsedMs||0)/1000*instance.binding.speed;instance.update(0);
-        group.add(placement);this.addRaceThreeDoodadHitboxMeshes(renderer,group,sprite,{stats});return;
+        group.add(placement);this.addRaceThreeDoodadHitboxMeshes(resourceRenderer,group,sprite,{stats});return;
       }
-      const material = this.getRaceThreeDoodadMaterial(renderer, doodad.artRef || sprite.artRef);
+      const material = this.getRaceThreeDoodadMaterial(resourceRenderer, doodad.artRef || sprite.artRef);
       if (!material) return;
       const vertices = [quad.points[0], quad.points[1], quad.points[2], quad.points[0], quad.points[2], quad.points[3]];
       const staticScenery = !sprite.previewHitbox && doodad.itemType !== 'mix-tape' && doodad.itemType !== 'item';
@@ -37481,7 +37600,7 @@ export default class RaceEditor {
       mesh.userData.spriteId = sprite.id || '';
       mesh.userData.doodadRef = sprite.doodadRef || '';
       group.add(mesh);
-      this.addRaceThreeDoodadHitboxMeshes(renderer, group, sprite, { stats });
+      this.addRaceThreeDoodadHitboxMeshes(resourceRenderer, group, sprite, { stats });
     });
     for (const [key, batch] of fenceBatches) {
       const geometry = new THREE.BufferGeometry();
@@ -38365,7 +38484,8 @@ export default class RaceEditor {
     packedTerrain = null,
     dynamicCar = null,
     weatherState = this.getRaceWeatherState(),
-    stats = null
+    stats = null,
+    renderScale = this.getRaceWebGLTrackRenderResolution(this.getRaceGroundScanlineSettings())
   } = {}) {
     const hasPackedTerrain = Boolean(packedTerrain?.packed && packedTerrain.positions?.length);
     if (!ctx
@@ -38374,8 +38494,15 @@ export default class RaceEditor {
       || typeof ctx.drawImage !== 'function') return false;
     const width = Math.max(1, Math.round(Number(bounds.w || 1)));
     const height = Math.max(1, Math.round(Number(bounds.h || 1)));
-    const renderer = this.getRaceThreeWorldRenderer(width, height);
+    const renderer = this.getRaceThreeWorldRendererForViewport(bounds, renderScale);
     if (!renderer?.threeRenderer) return false;
+    if (stats) {
+      stats.webglRenderWidth = Number(renderer.canvas.width);
+      stats.webglRenderHeight = Number(renderer.canvas.height);
+      stats.effectiveRenderScaleX = stats.webglRenderWidth / width;
+      stats.effectiveRenderScaleY = stats.webglRenderHeight / height;
+      stats.webglTargetScale = Math.min(stats.effectiveRenderScaleX, stats.effectiveRenderScaleY);
+    }
     const textureUploadStart = Number(renderer.textureUploads || 0);
     const staticKey = this.getRaceThreeStaticWorldKey(cells, {
       textureWorldM,
@@ -39359,7 +39486,8 @@ export default class RaceEditor {
       packedTerrain: worldBake?.packedTerrain || null,
       dynamicCar,
       weatherState,
-      stats: renderStats
+      stats: renderStats,
+      renderScale: renderResolution
     });
     if (drewThreeTerrain) {
       const compositeStartMs = this.getNowMs();
@@ -39953,7 +40081,7 @@ export default class RaceEditor {
       && renderDebug.threeEnabled === true
       && (staticWorldBake?.terrainCells?.length || staticWorldBake?.packedTerrain?.positions?.length)
       && ['road-origin-indexed', 'corridor-first', 'constrained-road-first', 'route-network'].includes(String(staticWorldBake.terrainTopology || 'corridor-first'))
-      && Boolean(this.getRaceThreeWorldRenderer(Number(bounds.w || 1), Number(bounds.h || 1))?.threeRenderer);
+      && Boolean(this.getRaceThreeWorldRendererForViewport(bounds)?.threeRenderer);
     const stableRoadSections = canUseStaticThreeWorld
       ? []
       : this.getRaceStableRoadSections({
@@ -40491,18 +40619,7 @@ export default class RaceEditor {
   }
 
   drawRaceProjectedScenerySprites(ctx, bounds, { camera = {}, cameraYaw = 0, skipDoodads = false } = {}) {
-    const hiddenIds = new Set([
-      ...(this.playtestSession?.removedSceneryIds || []),
-      ...(this.playtestSession?.flattenedSceneryIds || [])
-    ]);
-    const scenery = [...this.ensureRaceScenery(), ...(this.playtestSession?.triggerSprites || [])]
-      .filter((sprite) => (
-        sprite
-        && sprite.state !== 'removed'
-        && sprite.state !== 'flattened'
-        && !hiddenIds.has(sprite.id)
-        && !(skipDoodads && (sprite.presetId === 'doodad' || sprite.doodadRef || sprite.previewDoodad))
-      ))
+    const scenery = getProjectedRaceScenerySprites(this.ensureRaceScenery(), this.playtestSession, skipDoodads)
       .map((sprite) => {
         const groundElevation = this.getRaceSurfaceModel().sampleWorld({ x: sprite.x, z: sprite.z }, 0).elevation;
         const projected = this.projectRaceWorldPointToCamera({

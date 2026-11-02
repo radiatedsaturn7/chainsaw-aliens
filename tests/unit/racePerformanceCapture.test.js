@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {RacePerformanceCapture} from '../../src/racing/RacePerformanceCapture.js';
 import RaceEditor from '../../src/ui/RaceEditor.js';
+import {PhysicsCostAccounting} from '../../src/racing/simulation/PhysicsCostAccounting.js';
 function fixture(options={}){
  let t=0;const advance=ms=>t+=ms;
  const e={selectedRace:{name:'P1',weather:'storm',weatherIntensity:1},raceInput:{},playtestSession:{running:true,elapsedMs:0,aiRuntime:[]},
@@ -38,9 +39,10 @@ test('GPU disjoint readings are discarded, unsupported browsers still record CPU
  const {e,c}=fixture();const gpu=fakeGPU();e.raceThreeWorldRenderer={threeRenderer:{getContext:()=>gpu.gl,render(){}}};e.update();e.raceThreeWorldRenderer.threeRenderer.render();e.draw();gpu.disjoint=true;c.pollGPU();assert.equal(c.frames[0].gpuMs,null);assert.equal(c.frames[0].gpuInvalid,true);assert.equal(gpu.deleted,1);c.stop();
  const f=fixture();f.e.raceThreeWorldRenderer={threeRenderer:{getContext:()=>({}),render(){}}};f.e.update();f.e.raceThreeWorldRenderer.threeRenderer.render();f.e.draw();assert.equal(f.c.report().gpuStatus,'unavailable');assert.equal(f.c.frames[0].gpuMs,null);f.c.stop();
 });
-test('debug menu uses existing rows to start, stop and export capture',()=>{
+test('debug menu uses existing rows to start, stop and export capture',async()=>{
  const e=new RaceEditor({});e.playtestSession={running:true,aiRuntime:[]};e.raceInput.paused=true;e.raceInput.pauseMenuMode='debug-performance';let resumed=false;e.toggleRacePause=()=>{resumed=true;e.raceInput.paused=false;};
- const rows=e.getRacePauseMenuRows();assert.ok(rows.find(r=>r.id==='race-perf-export').disabled);rows.find(r=>r.id==='race-perf-start').onClick();assert.equal(resumed,true);assert.equal(e.racePerformanceCapture.active,true);e.stopRacePerformanceCapture();assert.equal(e.exportRacePerformanceCapture().version,1);
+ e.uploadRacePerformanceCapture=async()=>{};
+ const rows=e.getRacePauseMenuRows();assert.ok(rows.find(r=>r.id==='race-perf-export').disabled);rows.find(r=>r.id==='race-perf-start').onClick();assert.equal(resumed,true);assert.equal(e.racePerformanceCapture.active,true);e.raceInput.paused=true;e.stopRacePerformanceCapture();assert.equal((await e.exportRacePerformanceCapture()).version,1);
 });
 
 test('GPU driver/query errors do not interrupt gameplay or capture cleanup',()=>{
@@ -135,4 +137,48 @@ test('repeated wrap requests skip factories while newly created targets remain i
  assert.equal(c.frames[0].phases.probe.calls,2);
  assert.equal(c.frames[0].phases.probe.selfMs,4);
  c.stop();assert.equal(target.work,original);assert.equal(replacement.work,original);
+});
+
+test('capture stops on session replacement without reattaching to the new race',()=>{
+ const {e,c,original}=fixture();
+ e.playtestSession.vehicleDynamicsWorkerMetrics={owner:'original'};
+ e.update();e.draw();
+ e.playtestSession={running:true,aiRuntime:[],vehicleDynamicsWorkerMetrics:{owner:'replacement'}};
+ e.update();e.draw();
+ assert.equal(c.active,false);assert.equal(c.reason,'session-changed');assert.equal(c.frames.length,1);
+ assert.equal(e.update,original.update);assert.equal(e.draw,original.draw);assert.equal(c.restores.length,0);
+ assert.equal(c.session,null);assert.deepEqual(c.report().latestWorkerSummary,{owner:'original'});
+ assert.equal(c.report(),c.report(),'a completed summary is cached');
+});
+
+test('race clock reports raw, admitted, excluded and cumulative time without reading later mutable values',()=>{
+ const {e,c}=fixture();
+ Object.assign(e.playtestSession,{frameRawSeconds:.095,frameObservedRawSeconds:.095,frameAdmittedSeconds:1/30,
+  frameExcludedSeconds:0,frameClockMode:'bounded',
+  frameSimulationClock:{rawSeconds:.095,admittedSeconds:1/30,debtSeconds:.095-1/30,discardedSeconds:0,excludedSeconds:0}});
+ e.update();e.draw();
+ e.playtestSession.frameSimulationClock.rawSeconds=100;
+ const clock=c.frames[0].context.raceClock;
+ assert.equal(clock.rawSeconds,.095);assert.equal(clock.totalRawSeconds,.095);
+ assert.ok(Math.abs(clock.totalRawSeconds-clock.totalAdmittedSeconds-clock.debtSeconds-clock.discardedSeconds)<1e-10);
+ c.stop();
+});
+
+test('stopped summaries remain detached when the physics frame pool wraps before deferred export',()=>{
+ const {e,c}=fixture();let now=0;
+ const accounting=new PhysicsCostAccounting({now:()=>now,frameHistoryLimit:30});
+ const step=sequence=>{
+  accounting.beginFrame();accounting.count('completedSteps',sequence);
+  const token=accounting.start('bodyBroadphase');now+=sequence;accounting.end(token);accounting.finishFrame();
+ };
+ step(1);step(2);
+ const summary=e.playtestSession.physicsPerformance=accounting.getSummary({force:true});
+ e.playtestSession.vehicleDynamicsWorkerMetrics={worker:{samples:2,p95:4},backlog:{current:0,peak:1}};
+ const expected=structuredClone(summary);
+ c.stop();
+ for(let i=3;i<=40;i++)step(i);
+ assert.notEqual(summary.latestFrame.metadata.sequence,2,'the source frame really was reused');
+ e.playtestSession.vehicleDynamicsWorkerMetrics.worker.p95=999;
+ assert.deepEqual(c.report().latestPhysicsSummary,expected);
+ assert.equal(c.report().latestWorkerSummary.worker.p95,4);
 });

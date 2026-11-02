@@ -313,7 +313,8 @@ test('actual Studio Sprint 2 crash reset uses real prepared terrain and records 
     }
   };
   const runner = new VehicleDynamicsRunner({
-    config: { ...fixture.vehicleConfiguration, telemetryRetention: 'none', tireHz: 120 },
+    config: { ...fixture.vehicleConfiguration, telemetryRetention: 'none', tireHz: 120,
+      postResetDiagnosticsEnabled: true },
     initialState: crashFrame.state,
     environmentProvider: () => environment
   });
@@ -450,3 +451,4 @@ test('cancelled incremental reset cannot install its candidate',()=>{
  assert.deepEqual(runner.state,before);
  assert.equal(job.next().done,true);
 });
+

@@ -34,6 +34,26 @@ jobs:
 
       - name: Run editor and race regression unit tests
         run: node --test tests/unit/editorMenuLayout.test.js tests/unit/editorMenuSpec.test.js tests/unit/portraitEditorMenuModels.test.js tests/unit/raceImageTrace.test.js tests/unit/raceTrackImport.test.js tests/unit/raceRouteImport.test.js tests/unit/raceTrackImportIntegration.test.js tests/unit/raceTerrainGuardBudget.test.js tests/unit/reverseRaceRoute.test.js tests/unit/raceImportedCircuitRegression.test.js tests/unit/raceTireTrackRenderer.test.js tests/unit/steeringCommandMapping.test.js tests/unit/racePauseRestart.test.js
+      - name: Run race frame pacing and resource lifecycle regressions
+        run: >-
+          node --test --experimental-test-isolation=none
+          tests/unit/raceAiInteractionBudget.test.js
+          tests/unit/raceAiPhysicsBudget.test.js
+          tests/unit/raceAiDistantPhysics.test.js
+          tests/unit/raceEnvironmentRecords.test.js
+          tests/unit/vehiclePostResetDiagnostics.test.js
+          tests/unit/raceFrameTiming.test.js
+          tests/unit/raceFrameBudget.test.js
+          tests/unit/raceSessionResources.test.js
+          tests/unit/raceSessionLifecycle.test.js
+          tests/unit/raceRenderResolution.test.js
+          tests/unit/raceTireTrackRenderer.test.js
+          tests/unit/raceSceneryPerformance.test.js
+          tests/unit/compactFramePhases.test.js
+          tests/unit/racePerformanceCapture.test.js
+          tests/unit/racePerformanceUpload.test.js
+          tests/unit/racePerformanceStatus.test.js
+
       - name: Track importer Python tests
         run: python3 -m unittest discover -s tests/python -p 'test_race*import.py'
 
