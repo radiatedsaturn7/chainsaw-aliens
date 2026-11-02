@@ -66,10 +66,31 @@ workers and modern decompression support.
 Run browser tests in the repository's GitHub Playwright environment on
 Android/Termux; local Node tests do not prove browser rendering behavior.
 
-## Keeping the published index complete
+## Automatic publishing
 
-After adding/removing exported documents directly (including generated artwork),
-run `python3 tools/project_manifest.py` and commit the updated manifest with the
-files. Python's live API discovers documents on disk; static hosting requires the
-manifest to enumerate them. CI runs `python3 tools/project_manifest.py --check`
-to reject snapshots that omit current documents or retain obsolete entries.
+`Publish static project` (`.github/workflows/pages.yml`) builds every main-branch
+push with `python3 tools/build_static_site.py --output _site`. Pull requests run
+the same build/validation without deploying. The build ignores the checked-in
+manifest and generates a fresh one from every current exported document in every
+folder. No manual manifest edit or commit is required for this deployment path.
+
+The builder reads JSON and compact gzip documents and verifies every external
+`__chainsawAssetRef` points to an existing file inside that document's directory.
+A malformed document or missing binary asset fails the build before upload. It
+copies the application, runtime data, all current project documents, metadata and
+assets. Version history, performance captures and import caches are excluded.
+The published `project-build.json` reports folder counts.
+
+One-time repository setting: **Settings → Pages → Build and deployment → Source
+→ GitHub Actions**. This replaces branch/Jekyll publication; leaving the source
+set to a branch bypasses the generation step. The workflow requires the normal
+Pages deployment permission/environment. See GitHub's [custom Pages workflows](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
+
+For another static host, publish the `_site` directory produced by the same
+command. For a source snapshot or Python server export, `python3
+tools/project_manifest.py` still refreshes the checked-in manifest. The Python
+server uses that same scanner for complete manifest rebuilds.
+
+These checks validate indexed documents and external binary files; they do not
+prove every authored cross-document name, external URL, browser codec, or gameplay
+path is valid. Uncommitted local assets cannot be included in GitHub's build.

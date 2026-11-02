@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import performance_capture_store as performance_store
+from project_manifest import build_manifest
 from media_ranges import MediaRangeMixin
 import argparse
 from race_track_import import handle_request as import_real_track
@@ -507,14 +508,7 @@ class DevHandler(MediaRangeMixin, SimpleHTTPRequestHandler):
         return index
 
     def _write_manifest(self) -> None:
-        manifest: dict[str, dict[str, str]] = {"folders": {}}
-        index = self._list_exported_files()
-        for folder, entries in index.items():
-            manifest["folders"][folder] = {}
-            for name, meta in entries.items():
-                if meta.get("deleted"):
-                    continue
-                manifest["folders"][folder][name] = f"{folder}/{quote(name, safe='-_.() ')}/document.json"
+        manifest = build_manifest(EXPORT_ROOT) if EXPORT_ROOT.exists() else {"folders": {}}
         EXPORT_ROOT.mkdir(parents=True, exist_ok=True)
         (EXPORT_ROOT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
 

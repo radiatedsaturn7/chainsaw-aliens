@@ -30,3 +30,6 @@ data/server-storage/performance-captures/
 
 # Local profiling runs and generated race-analysis artifacts
 /artifacts/
+
+# Generated static website
+/_site/
