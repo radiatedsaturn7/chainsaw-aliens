@@ -6751,7 +6751,8 @@ export default class Game {
   showModalPrompt(message) {
     if (!message) return;
     this.modalPrompt = new SystemPrompt(message, { mode: 'modal' });
-    this.promptReturnState = this.state === 'prompt' ? 'playing' : this.state;
+    // Replacing an error prompt must retain its original editor/menu destination.
+    if (this.state !== 'prompt') this.promptReturnState = this.state;
     this.transitionTo('prompt');
   }
 

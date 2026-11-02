@@ -146,7 +146,18 @@
       "fx-aux-yellow": "art/fx-aux-yellow/document.json",
       "fx-aux-bar": "art/fx-aux-bar/document.json",
       "frozenbush": "art/frozenbush/document.json",
-      "frozenrock": "art/frozenrock/document.json"
+      "frozenrock": "art/frozenrock/document.json",
+      "buse-steeringwheel": "art/buse-steeringwheel/document.json",
+      "ct-steeringwheel": "art/ct-steeringwheel/document.json",
+      "hoodicon": "art/hoodicon/document.json",
+      "indicator-low-fuel": "art/indicator-low-fuel/document.json",
+      "indicator-turn-left": "art/indicator-turn-left/document.json",
+      "indicator-turn-right": "art/indicator-turn-right/document.json",
+      "lefticon": "art/lefticon/document.json",
+      "pz-steeringwheel": "art/pz-steeringwheel/document.json",
+      "rearicon": "art/rearicon/document.json",
+      "righticon": "art/righticon/document.json",
+      "turnsignal-amber": "art/turnsignal-amber/document.json"
     },
     "music": {
       "1": "music/1/document.json",

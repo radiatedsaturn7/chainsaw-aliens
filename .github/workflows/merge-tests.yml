@@ -54,6 +54,12 @@ jobs:
           tests/unit/racePerformanceUpload.test.js
           tests/unit/racePerformanceStatus.test.js
 
+      - name: Check published project manifest
+        run: |
+          python3 tools/project_manifest.py
+          python3 tools/project_manifest.py --check
+          python3 -m unittest discover -s tests/python -p 'test_project_manifest.py'
+
       - name: Published project storage fallback
         run: node --test tests/unit/publishedProjectStorage.test.js tests/unit/serverStorage.test.js
 

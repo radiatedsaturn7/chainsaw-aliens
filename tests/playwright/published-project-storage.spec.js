@@ -21,6 +21,8 @@ function add(folder,name,data){
 for(const folder of folders)add(folder,'Published',{kind:folder,marker:42});
 add('art','Sheet 50% #',{kind:'pixel-art',width:2,height:2,frames:[['#ff0000','#00ff00','#0000ff','#ffffff']]});
 for(const name of ['providence','apron'])add('art',name,{kind:'pixel-art',width:2,height:2,frames:[['#336633','#336633','#336633','#336633']]});
+const generatedCarArt=['buse-steeringwheel','ct-steeringwheel','hoodicon','indicator-low-fuel','indicator-turn-left','indicator-turn-right','lefticon','pz-steeringwheel','rearicon','righticon','turnsignal-amber'];
+for(const name of generatedCarArt)manifest.folders.art[name]=`art/${name}/document.json`;
 add('actors','Hero',{actor:{artRef:'Sheet 50% #'}});
 add('fonts','Tiny font',{fontData:{__chainsawAssetRef:'assets/font.ttf',mime:'font/ttf'}});
 published.set('/data/server-storage/files/fonts/Tiny font/assets/font.ttf',Buffer.from([1,2,3]));
@@ -126,4 +128,62 @@ test('the application can start a published race playtest on a static project ho
  });
  await expect.poll(()=>page.evaluate(()=>({running:window.__game.raceEditor.playtestSession?.running,error:window.__game.raceEditor.racePlaytestPreparation?.error,status:window.__game.raceEditor.status,lastFailure:window.__game.raceEditor.lastRaceFailure})),{timeout:60000}).toMatchObject({running:true});
  expect(await page.evaluate(()=>window.__game.raceEditor.currentRaceDocumentName)).toBe('Published loop');
+});
+
+
+test('project browser shows loading until the static index arrives',async({page})=>{
+ await page.goto(origin+'/test.html');
+ let release;
+ const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('**/data/server-storage/files/manifest.json',async route=>{await gate;await route.continue();});
+ await page.evaluate(async()=>{const {openProjectBrowser}=await import('./src/ui/ProjectBrowserModal.js');void openProjectBrowser({fixedFolder:'levels'});});
+ await expect(page.locator('.project-browser-info')).toContainText('Loading');
+ release();
+ await expect(page.locator('.project-browser-row[data-name="Published"]')).toBeVisible();
+ await expect(page.locator('.project-browser-info')).toContainText('1 file');
+});
+
+test('project browser can retry a failed static index without reopening',async({page})=>{
+ await page.goto(origin+'/test.html');
+ let fail=true;
+ await page.route('**/data/server-storage/files/manifest.json',async route=>{if(fail)await route.fulfill({status:503,body:'Unavailable'});else await route.continue();});
+ await page.evaluate(async()=>{const {openProjectBrowser}=await import('./src/ui/ProjectBrowserModal.js');void openProjectBrowser({fixedFolder:'levels'});});
+ await expect(page.locator('.project-browser-info')).toContainText('Could not load project files');
+ fail=false;
+ await page.getByRole('button',{name:'Retry',exact:true}).click();
+ await expect(page.locator('.project-browser-row[data-name="Published"]')).toBeVisible();
+});
+
+test('live Pages application opens the project browser with published levels',async({page})=>{
+ test.skip(!process.env.LIVE_PAGES_URL,'Opt-in deployed-site diagnostic');
+ test.setTimeout(180000);
+ const errors=[];
+ page.on('pageerror',error=>errors.push(error.message));
+ page.on('response',response=>{if(response.url().includes('__storage')||response.url().endsWith('manifest.json'))console.log('LIVE_STORAGE',response.status(),response.url());});
+ await page.goto(process.env.LIVE_PAGES_URL,{waitUntil:'domcontentloaded'});
+ await page.waitForFunction(()=>window.__gameReady,null,{timeout:120000});
+ await page.evaluate(()=>window.__game.openProjectBrowserFromTitle());
+ await page.getByRole('button',{name:'Levels',exact:true}).click();
+ await expect(page.locator('.project-browser-row')).not.toHaveCount(0,{timeout:30000});
+ console.log('LIVE_LEVELS',await page.locator('.project-browser-row').count(),'ERRORS',JSON.stringify(errors));
+ await expect(page.locator('.project-browser-row')).toHaveCount(13);
+ await page.getByRole('button',{name:'Close',exact:true}).first().click();
+ await page.evaluate(()=>window.__game.openProjectBrowserFromTitle());
+ await page.getByRole('button',{name:'Doodads',exact:true}).click();
+ await expect(page.locator('.project-browser-row')).toHaveCount(7,{timeout:30000});
+ console.log('LIVE_DOODADS',await page.locator('.project-browser-row').allTextContents());
+
+ await expect(page.locator('.project-browser-title')).toContainText('Read-only');
+});
+
+
+test('generated car dashboard and light artwork packs from the static snapshot',async({page})=>{
+ await page.goto(origin+'/test.html');
+ const result=await page.evaluate(async refs=>{
+  const {packRaceArtRefsForRuntime}=await import('./src/ui/raceWorldBakeWorker.js');
+  const packed=await packRaceArtRefsForRuntime(refs);
+  return {count:packed.assets.length,missing:packed.missingArtRefs};
+ },generatedCarArt);
+ expect(result.missing).toEqual([]);
+ expect(result.count).toBe(generatedCarArt.length);
 });
