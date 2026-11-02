@@ -22,7 +22,7 @@ and the operation-count tests below are not phone FPS measurements.
 
 ## Regression coverage
 
-The final local focused run passed **144/144 named cases**, with zero failures,
+The final local focused run passed **146/146 named cases**, with zero failures,
 cancellations, or skips. Eight additional existing editor/renderer/worker suites
 passed **50/50 cases**, including the real GameCore finish-presentation tests. Physics state/replay/performance and the additional AI
 scheduling/recovery checks also passed their focused runs.
@@ -81,6 +81,16 @@ rather than represented as passing suites.
   session argument cannot accidentally dispose an ordinary active race.
 - Capture deferral and raw callback timing also cover real car-editor test drives;
   an older capture waits while either editor's currently displayed drive is active.
+- The P2 browser stress observer now traverses chunk groups to count real fence
+  meshes and times only the outer scenery pass. Its mesh-count and radius limits
+  remain intact. A managed 1,384 m bent-fence regression verifies every authored
+  panel, UVs, triangle counts, bounded meshes, and isolated removal gaps.
+- The cold-travel browser winding assertion now inspects the active draw range,
+  excluding unused capacity in persistent skid buffers. Its positive-normal
+  and nonempty-geometry assertions remain intact.
+- An actual-editor pause/Nitro/resume regression checks effect duration, admitted
+  time, and authoritative movement. The existing browser boost assertion retains
+  its timeout and threshold and now reports bounded failure state if it fails.
 
 ## Existing validation limitations
 

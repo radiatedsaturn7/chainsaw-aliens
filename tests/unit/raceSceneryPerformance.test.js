@@ -156,6 +156,64 @@ function managedSceneryEditor(sprites) {
  return {e,renderer,state,material};
 }
 
+test('managed fences retain bounded panel meshes under chunk groups and rebuild only a removed panel chunk',()=>{
+ const sprites=buildRaceFencePlacements([{x:0,z:0},{x:1000,z:0},{x:1000,z:384}],
+  {isFence:true,widthM:10,heightM:4,artRef:'fence'},{id:'managed-fence'});
+ const {e,renderer,state}=managedSceneryEditor(sprites);
+ assert.equal(e.addRaceThreeDoodads(renderer),true);
+ const root=renderer.dynamicDoodadGroup;
+ assert.equal(root.parent,renderer.scene);
+ assert.ok(renderer.dynamicDoodadChunks.size>6,'the real fence spans several 128m chunks');
+ assert.ok(root.children.every(child=>child.isGroup),'the managed root contains chunk groups');
+ const collectFenceMeshes=group=>{
+  const meshes=[];
+  group.traverse(object=>{
+   if(object.isMesh&&object.name.startsWith('raceFence:'))meshes.push(object);
+  });
+  return meshes;
+ };
+ const panelCenters=meshes=>meshes.flatMap(mesh=>{
+  const positions=mesh.geometry.getAttribute('position'),centers=[];
+  assert.equal(positions.count%6,0,'each rendered fence panel retains both triangles');
+  assert.equal(mesh.geometry.getAttribute('uv').count,positions.count);
+  assert.ok(Number.isFinite(mesh.geometry.boundingSphere.radius));
+  assert.ok(mesh.geometry.boundingSphere.radius<200,'fence batches retain bounded culling geometry');
+  for(let start=0;start<positions.count;start+=6){
+   let x=0,z=0;
+   for(let vertex=start;vertex<start+6;vertex++){x+=positions.getX(vertex);z+=positions.getZ(vertex);}
+   centers.push(`${(x/6).toFixed(4)},${(z/6).toFixed(4)}`);
+  }
+  return centers;
+ }).sort();
+ const expectedCenters=panels=>panels.map(panel=>`${panel.x.toFixed(4)},${panel.z.toFixed(4)}`).sort();
+ const beforeMeshes=collectFenceMeshes(root);
+ assert.ok(beforeMeshes.length>6,'recursive inspection reaches the nested fence meshes');
+ assert.ok(beforeMeshes.every(mesh=>mesh.parent!==root&&mesh.parent.parent===root));
+ assert.deepEqual(panelCenters(beforeMeshes),expectedCenters(sprites),'every authored panel is present once');
+ const originalChunks=new Map([...renderer.dynamicDoodadChunks].map(([key,holder])=>[key,{
+  group:holder.dynamicDoodadGroup,meshes:collectFenceMeshes(holder.dynamicDoodadGroup)
+ }]));
+ const removed=sprites[20],affectedKey=`${Math.floor(removed.x/128)},${Math.floor(removed.z/128)}`;
+ e.playtestSession.removedSceneryIds.push(removed.id);
+ const stats={};e.addRaceThreeDoodads(renderer,{stats});
+ assert.equal(stats.dynamicDoodadChunkRebuilds,1);
+ assert.equal(renderer.dynamicDoodadGroup,root);
+ assert.equal(renderer.dynamicDoodadCount,sprites.length-1);
+ assert.deepEqual(panelCenters(collectFenceMeshes(root)),expectedCenters(sprites.filter(panel=>panel!==removed)),
+  'removing one panel opens exactly its gap without losing distant fence panels');
+ for(const [key,previous] of originalChunks){
+  const current=renderer.dynamicDoodadChunks.get(key).dynamicDoodadGroup;
+  if(key===affectedKey)assert.notEqual(current,previous.group);
+  else{
+   assert.equal(current,previous.group,`unaffected chunk ${key} survives`);
+   const currentMeshes=collectFenceMeshes(current);
+   assert.equal(currentMeshes.length,previous.meshes.length);
+   currentMeshes.forEach((mesh,index)=>assert.equal(mesh,previous.meshes[index]));
+  }
+ }
+ assert.equal(state.statistics.preparations,1,'a runtime removal does not re-prepare authored fences');
+});
+
 test('managed dense scenery performs no placement validation or projected scan on warm Three frames',()=>{
  let placementReads=0;
  const sprites=Array.from({length:18419},(_,i)=>new Proxy({id:`tree-${i}`,presetId:'doodad',

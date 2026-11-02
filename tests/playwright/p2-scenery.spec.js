@@ -9,7 +9,11 @@ test('P2 scenery stress starts with eleven rivals and renders bounded fence batc
   const started=await game.startRaceTravel({raceName:'p2loadtest',carSelection:'specific',carRef:'RTG-001'});
   if(!started)throw Error('P2 did not start: '+game.raceEditor.status);
   const e=game.raceEditor,times=[],base=e.addRaceThreeDoodads.bind(e);
-  e.addRaceThreeDoodads=(...args)=>{const t=performance.now();try{return base(...args);}finally{times.push(performance.now()-t);}};
+  e.addRaceThreeDoodads=(...args)=>{
+   // Chunk rebuilds call this method recursively; measure the whole scenery pass once.
+   if(args[0]!==e.raceThreeWorldRenderer)return base(...args);
+   const t=performance.now();try{return base(...args);}finally{times.push(performance.now()-t);}
+  };
   const session=e.playtestSession;session.countdownRemainingMs=0;session.startupFramePending=false;session.launchLockMs=0;
   e.raceInput.paused=false;
   const updates=[];
@@ -18,8 +22,14 @@ test('P2 scenery stress starts with eleven rivals and renders bounded fence batc
    if(frame%10===0)game.draw();
   }
   const sortedUpdates=updates.slice(10).sort((a,b)=>a-b);
-  const renderer=e.getRaceThreeWorldRenderer(390,400);
-  const fences=renderer.dynamicDoodadGroup?.children.filter(m=>m.name.startsWith('raceFence:'))||[];
+  // Inspect the live scene without resizing its drawing buffer. Managed scenery
+  // nests the same bounded fence meshes inside chunk groups.
+  const renderer=e.raceThreeWorldRenderer;
+  if(!renderer)throw Error('P2 did not create its world renderer');
+  const fences=[];
+  renderer.dynamicDoodadGroup?.traverse(mesh=>{
+   if(mesh.isMesh&&mesh.name.startsWith('raceFence:'))fences.push(mesh);
+  });
   const sorted=times.slice(5).sort((a,b)=>a-b);
   return{started,ai:e.playtestSession.aiRuntime.length,scenery:e.ensureRaceScenery().length,frames:times.length,
    fenceMeshes:fences.length,maxFenceRadius:Math.max(...fences.map(m=>m.geometry.boundingSphere.radius)),

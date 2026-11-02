@@ -147,6 +147,53 @@ test('countdown without a music clock uses the presentation delta, including a l
   assert.equal(session.elapsedMs, 0);
 });
 
+test('resuming a paused race advances item effects and authoritative boost on the admitted clock', async (t) => {
+  const { default: RaceEditor } = await import('../../src/ui/RaceEditor.js');
+  const { FrameTiming } = await import('../../src/game/FrameTiming.js');
+  const { ItemRuntime } = await import('../../src/items/ItemRuntime.js');
+  const game = { state: 'race-editor' };
+  const editor = game.raceEditor = new RaceEditor(game, { mode: 'race' });
+  editor.selectedRace.scenery = []; editor.selectedRace.hazards = [];
+  editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false });
+  const session = editor.playtestSession;
+  t.after(() => editor.disposeRacePlaytestSession(session, 'test-complete'));
+  Object.assign(session, { countdownRemainingMs: 0, startupFramePending: false,
+    preparing: false, running: true, launchLockMs: 0 });
+  if (session.raceIntro) session.raceIntro.active = false;
+  game.items = { runtime: new ItemRuntime(game) };
+  const timing = game.frameTiming = new FrameTiming(0);
+  let now = 0;
+  const tick = (milliseconds = 1000 / 60) => {
+    timing.sample(now += milliseconds, session, !editor.raceInput.paused);
+    timing.inUpdate = true;
+    try { editor.update({}, timing.updateSeconds); }
+    finally { timing.inUpdate = false; }
+  };
+  for (let frame = 0; frame < 15; frame++) tick();
+  editor.toggleRacePause();
+  game.items.runtime.apply({ id: 'nitro-clock-test', effects: [
+    { type: 'speed', when: 'use', amount: 1.5, duration: 3 }
+  ] }, 'use');
+  const runner = session.vehicleDynamicsRunner;
+  const pausedStep = runner.stepIndex;
+  tick(1000);
+  assert.equal(runner.stepIndex, pausedStep);
+  assert.equal(session.itemSpeedEffects[0].remaining, 3);
+  editor.toggleRacePause();
+  tick(1000);
+  assert.equal(session.frameAdmittedSeconds, 0);
+  assert.equal(session.frameTimeExclusionReason, 'race-transition');
+  assert.equal(runner.stepIndex, pausedStep);
+  assert.equal(session.itemSpeedEffects[0].remaining, 3);
+  for (let frame = 0; frame < 30; frame++) tick();
+  assert.ok(session.frameAdmittedSeconds > 0);
+  assert.ok(runner.stepIndex > pausedStep);
+  assert.equal(runner.sampledControlsScratch.itemSpeedMultiplier, 1.5);
+  assert.ok(Math.abs(session.speedMps) > 0.3,
+    'the item force moves the authoritative car after resuming without throttle input');
+  assert.ok(Math.abs(session.itemSpeedEffects[0].remaining - 2.5) < 1e-9);
+});
+
 test('active weather insertion retains canonical numeric order without parsing keys', async () => {
  const { TrackState } = await import('../../src/racing/trackState/TrackState.js');
  const { compareTrackStateCellKeys } = await import('../../src/racing/trackState/TrackStateMath.js');
