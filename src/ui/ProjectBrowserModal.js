@@ -15,7 +15,7 @@ import {
   sanitizeProjectFileName
 } from './projectFiles.js';
 import { listBuiltInActorBrowserEntries } from '../content/builtinActorOverrides.js';
-import { hydrateServerStorage } from './serverStorage.js';
+import { hydrateServerStorage, isProjectStorageReadOnly } from './serverStorage.js';
 import { fileTypeBadge } from './uiSuite.js';
 import { buildArtPreviewPixels, getArtDocumentFrames } from './shared/artDocumentPixels.js';
 
@@ -835,7 +835,15 @@ export function openProjectBrowser({
         actionRow.appendChild(makeButton('Export ZIP', 'project-browser-btn', () => onExportZip?.(state.folder)));
       }
 
-      if (mode === 'saveAs') message.textContent = '';
+      if (isProjectStorageReadOnly()) {
+        titleEl.textContent += ' — Read-only';
+        info.textContent += ' · Open and playtest; saving requires the storage server.';
+        const mutations = new Set(['Rename', 'Delete', 'Confirm Delete', 'Duplicate', 'Versions', 'Save', 'Overwrite']);
+        panel.querySelectorAll('button').forEach(button => {
+          if (mutations.has(button.textContent.trim())) button.disabled = true;
+        });
+        message.textContent = 'Published files can be opened and playtested. Saving requires the storage server; export edits to keep them.';
+      } else if (mode === 'saveAs') message.textContent = '';
     }
 
     searchInput.addEventListener('input', () => {
@@ -858,7 +866,7 @@ export function openProjectBrowser({
         event.preventDefault();
         cleanup(null);
       }
-      if (mode === 'saveAs' && event.key === 'Enter') {
+      if (mode === 'saveAs' && event.key === 'Enter' && !isProjectStorageReadOnly()) {
         event.preventDefault();
         const name = sanitizeProjectFileName(saveInput.value) || sanitizeProjectFileName(initialName) || 'untitled';
         cleanup({ action: 'saveAs', folder: state.folder, name, overwrite: cachedProjectFileExists(state.folder, name) });

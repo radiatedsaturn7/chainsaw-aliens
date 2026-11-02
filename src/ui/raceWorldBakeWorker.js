@@ -1,3 +1,4 @@
+import {hydrateProjectFile} from './serverStorage.js';
 import {extendCarEditorDefaultTrack} from '../racing/raceData.js';
 import {
   getPackedRaceTileMapTransferables,
@@ -8,7 +9,7 @@ import {
   packRaceArtDocumentForRuntime
 } from '../racing/RacePackedArt.js';
 
-globalThis.window = globalThis.window || globalThis;
+if (typeof globalThis.window === 'undefined') globalThis.window = globalThis;
 
 const RACE_ART_FETCH_TIMEOUT_MS = 8000;
 const RACE_ART_FETCH_CONCURRENCY = 3;
@@ -51,21 +52,7 @@ function buildPackedTerrainUvs(positions = null, textureWorldM = 2.5) {
 async function fetchRaceArtPayload(artRef = '', {
   timeoutMs = RACE_ART_FETCH_TIMEOUT_MS
 } = {}) {
-  const controller = typeof AbortController === 'function' ? new AbortController() : null;
-  const timeout = typeof setTimeout === 'function'
-    ? setTimeout(() => controller?.abort?.(), Math.max(1, Number(timeoutMs) || RACE_ART_FETCH_TIMEOUT_MS))
-    : null;
-  try {
-    const response = await fetch(
-      `/__storage/file?folder=art&name=${encodeURIComponent(artRef)}`,
-      controller ? { signal: controller.signal } : undefined
-    );
-    if (!response.ok) return null;
-    const payload = await response.json();
-    return payload?.file || null;
-  } finally {
-    if (timeout) clearTimeout(timeout);
-  }
+  return hydrateProjectFile('art', artRef, {timeoutMs});
 }
 
 export async function packRaceArtRefsForRuntime(artRefs = [], {
@@ -384,13 +371,9 @@ if (workerScope) workerScope.onmessage = async (event) => {
     let preparedTravel = false;
     if (command === 'load-race') {
       reportProgress(0.06, 'race-fetch');
-      const response = await fetch(`/__storage/file?folder=races&name=${encodeURIComponent(raceName || '')}`);
-      if (!response.ok) throw new Error(`Race not found: ${raceName || 'unnamed race'}`);
-      const payload = await response.json();
-      if (!payload?.ok || !payload.file?.data) {
-        throw new Error(`Race could not load: ${raceName || 'unnamed race'}`);
-      }
-      sourceRace = payload.file.data;
+      const payload = await hydrateProjectFile('races', raceName || '');
+      if (!payload?.data) throw new Error(`Race could not load: ${raceName || 'unnamed race'}`);
+      sourceRace = payload.data;
       preparedTravel = true;
     }
     if (!sourceRace) return;

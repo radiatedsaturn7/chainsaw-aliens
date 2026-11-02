@@ -1,6 +1,9 @@
+import {projectStorageUrl} from './projectStorageUrls.js';
 const PROJECT_FILE_PREFIX = 'server-project-file:';
-const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'menus', 'doodads', 'items', 'fonts'];
-const STATIC_STORAGE_ROOT = '/data/server-storage/files';
+const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'menus', 'doodads', 'items', 'fonts', 'settings'];
+const STATIC_STORAGE_ROOT = projectStorageUrl('data/server-storage/files');
+let staticManifestPromise = null;
+const staticLoads = new Map();
 const STORAGE_REQUEST_TIMEOUT_MS = 12000;
 const COMPACT_STORAGE_MARKER = '__chainsawStorage';
 const COMPACT_STORAGE_VERSION = 'compact-v1';
@@ -60,6 +63,25 @@ function resolveStaticStorageUrl(ref, baseUrl = '') {
   }
 }
 
+async function requestStatic(url, format = 'json') {
+  const controller = new AbortController();
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => { controller.abort(); reject(new Error(`Published file request timed out: ${url}`)); }, STORAGE_REQUEST_TIMEOUT_MS);
+  });
+  try {
+    return await Promise.race([(async () => {
+      const response = await fetch(url, {signal: controller.signal});
+      if (!response.ok) {
+        const error = new Error(`Could not load published file ${url} (HTTP ${response.status})`);
+        error.status = response.status;
+        throw error;
+      }
+      return format === 'bytes' ? response.arrayBuffer() : response.json();
+    })(), timeout]);
+  } finally { clearTimeout(timer); }
+}
+
 function decodeBase64Bytes(value) {
   const binary = atob(String(value || ''));
   const bytes = new Uint8Array(binary.length);
@@ -83,34 +105,35 @@ async function decodeStoredProjectDocument(data, baseUrl = '') {
     const text = await new Response(stream).text();
     decoded = JSON.parse(text);
   }
-  const hydrateAssets = async (value) => {
-    if (Array.isArray(value)) {
-      return Promise.all(value.map((entry) => hydrateAssets(entry)));
+  // JSON.parse owns this document. Replace only asset placeholders in place;
+  // don't allocate a Promise and duplicate every pixel/terrain cell merely to
+  // discover that most leaves are numbers. Bound actual binary downloads.
+  const holder = {value: decoded};
+  const assets = [];
+  const visit = (parent, key) => {
+    const value = parent[key];
+    if (!value || typeof value !== 'object') return;
+    if (typeof value[ASSET_REF_MARKER] === 'string' && typeof value.mime === 'string') {
+      assets.push({parent, key, ref: value[ASSET_REF_MARKER], mime: value.mime});
+      return;
     }
-    if (value && typeof value === 'object') {
-      const ref = value[ASSET_REF_MARKER];
-      const mime = value.mime;
-      if (typeof ref === 'string' && typeof mime === 'string') {
-        const response = await fetch(resolveStaticStorageUrl(ref, baseUrl));
-        if (!response.ok) return '';
-        const buffer = await response.arrayBuffer();
-        const bytes = new Uint8Array(buffer);
-        let binary = '';
-        const chunkSize = 0x8000;
-        for (let index = 0; index < bytes.length; index += chunkSize) {
-          binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
-        }
-        return `data:${mime};base64,${btoa(binary)}`;
-      }
-      const result = {};
-      await Promise.all(Object.entries(value).map(async ([key, entry]) => {
-        result[key] = await hydrateAssets(entry);
-      }));
-      return result;
-    }
-    return value;
+    for (const child of Object.keys(value)) visit(value, child);
   };
-  return hydrateAssets(decoded);
+  visit(holder, 'value');
+  let cursor = 0;
+  await Promise.all(Array.from({length: Math.min(3, assets.length)}, async () => {
+    while (cursor < assets.length) {
+      const {parent, key, ref, mime} = assets[cursor++];
+      const buffer = await requestStatic(resolveStaticStorageUrl(ref, baseUrl), 'bytes');
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      for (let index = 0; index < bytes.length; index += 0x8000) {
+        binary += String.fromCharCode(...bytes.subarray(index, index + 0x8000));
+      }
+      parent[key] = `data:${mime};base64,${btoa(binary)}`;
+    }
+  }));
+  return holder.value;
 }
 
 function normalizeIndex(index = {}) {
@@ -142,6 +165,7 @@ function updateCachedPayload(payload, source = 'server') {
 }
 
 async function requestJson(url, options = {}) {
+  url = projectStorageUrl(url);
   const { timeoutMs = STORAGE_REQUEST_TIMEOUT_MS, ...fetchOptions } = options;
   const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
   let timeoutId = null;
@@ -179,7 +203,8 @@ async function requestJson(url, options = {}) {
 
 function isStorageApiUnavailable(error) {
   const message = String(error?.message || error || '');
-  return error?.status === 404
+  return error instanceof TypeError || error instanceof SyntaxError || Number(error?.status) >= 500
+    || error?.status === 404
     || error?.status === 405
     || message.includes('HTTP 404')
     || message.includes('HTTP 405')
@@ -215,7 +240,7 @@ function isHardStorageApiUnavailable(error) {
 function getStorageSaveFailureReason(error) {
   const message = String(error?.message || error || '');
   const origin = getCurrentStorageOrigin();
-  const endpoint = `${origin}/__storage/file`;
+  const endpoint = `${origin}${projectStorageUrl('__storage/file')}`;
   if (isHardStorageApiUnavailable(error)) {
     return `Save failed: ${endpoint} is not accepting project file saves (${message || `HTTP ${error?.status}`}).`;
   }
@@ -268,10 +293,10 @@ async function fetchServerIndex(folder = null) {
   return hydrateStaticStorageFiles();
 }
 
-async function fetchServerFile(folder, name) {
+async function fetchServerFile(folder, name, options = {}) {
   let payload;
   try {
-    payload = await requestJson(`/__storage/file?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}`);
+    payload = await requestJson(`/__storage/file?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}`, {timeoutMs: options.timeoutMs});
   } catch (error) {
     // A valid API reporting a missing file is not a missing API endpoint.
     if (error.status === 404 && error.message === 'File not found') return null;
@@ -294,62 +319,111 @@ async function hydrateServerFiles(options = {}) {
   return {
     ok: true,
     storageApiAvailable,
+    readOnly: !storageApiAvailable,
     stats: { pulledServer: 0, indexedServer: count, keptLocal: 0, merged: count, conflictsResolved: 0 }
   };
 }
 
-async function hydrateStaticStorageFiles() {
-  const response = await fetch(`${STATIC_STORAGE_ROOT}/manifest.json`);
-  if (!response.ok) {
-    serverIndex = normalizeIndex(serverIndex);
-    return serverIndex;
+async function loadStaticManifest() {
+  if (!staticManifestPromise) {
+    staticManifestPromise = requestStatic(`${STATIC_STORAGE_ROOT}/manifest.json`)
+      .then(manifest => {
+        if (!manifest?.folders || typeof manifest.folders !== 'object') throw new Error('Invalid published project index');
+        return manifest.folders;
+      }).catch(error => { staticManifestPromise = null; throw error; });
   }
-  const manifest = await response.json().catch(() => null);
-  const folders = manifest?.folders && typeof manifest.folders === 'object' ? manifest.folders : {};
-  const nextIndex = normalizeIndex({});
-  await Promise.all(DEFAULT_FOLDERS.flatMap((folder) => {
-    const entries = folders[folder] && typeof folders[folder] === 'object' ? folders[folder] : {};
-    return Object.entries(entries).map(async ([name, path]) => {
-      if (!name || typeof path !== 'string') return;
-      try {
-        const cleanPath = path.split('/').map((part) => encodeURIComponent(decodeURIComponent(part))).join('/');
-        const documentUrl = `${STATIC_STORAGE_ROOT}/${cleanPath}`;
-        const metadataUrl = documentUrl.replace(/\/document\.json$/, '/metadata.json');
-        const [documentResponse, metadataResponse] = await Promise.all([
-          fetch(documentUrl),
-          fetch(metadataUrl).catch(() => null)
-        ]);
-        if (!documentResponse.ok) return;
-        const storedData = await documentResponse.json().catch(() => null);
-        if (!storedData) return;
-        const metadata = metadataResponse?.ok ? await metadataResponse.json().catch(() => ({})) : {};
-        const savedAt = Number(metadata?.savedAt || Date.now());
-        const data = await decodeStoredProjectDocument(storedData, documentUrl);
-        const payload = {
-          version: Number(metadata?.version || 1),
-          folder,
-          name: typeof metadata?.name === 'string' && metadata.name ? metadata.name : name,
-          savedAt,
-          data
-        };
-        updateCachedPayload(payload, 'static');
-        nextIndex[folder][payload.name] = {
-          updatedAt: savedAt,
-          size: JSON.stringify(payload).length
-        };
-      } catch (error) {
-        // Static fallback is best-effort; keep loading any other readable files.
-      }
-    });
-  }));
-  serverIndex = normalizeIndex(nextIndex);
+  return staticManifestPromise;
+}
+
+async function fetchStaticFile(folder, name) {
+  const key = fileKey(folder, name);
+  if (staticLoads.has(key)) return staticLoads.get(key);
+  const load = (async () => {
+    const folders = await loadStaticManifest();
+    const path = folders[folder]?.[name];
+    if (typeof path !== 'string') return null;
+    // Manifest paths are filesystem names, not already URL-encoded URLs. A
+    // literal percent sign must survive the HTTP server's one decoding pass.
+    const documentUrl = `${STATIC_STORAGE_ROOT}/${path.split('/').map(encodeURIComponent).join('/')}`;
+    const metadataUrl = documentUrl.replace(/\/document\.json$/, '/metadata.json');
+    const [storedData, metadata] = await Promise.all([
+      requestStatic(documentUrl), requestStatic(metadataUrl).catch(error => {
+        if (error.status === 404) return {};
+        throw error;
+      })
+    ]);
+    if (metadata.deleted) { delete serverIndex[folder]?.[name]; return null; }
+    const data = await decodeStoredProjectDocument(storedData, documentUrl);
+    const payload = {version: Number(metadata.version || 1), folder, name,
+      savedAt: Number(metadata.savedAt || 0), data};
+    updateCachedPayload(payload, 'static');
+    serverIndex[folder][name] = {...serverIndex[folder][name], systemFile: metadata.systemFile === true};
+    const raw = volatileFiles.get(key);
+    return attachStorageSource(raw ? JSON.parse(raw) : payload, volatileFileSources.get(key) || 'static');
+  })().finally(() => staticLoads.delete(key));
+  staticLoads.set(key, load);
+  return load;
+}
+
+async function hydrateStaticStorageFiles() {
+  const folders = await loadStaticManifest();
+  // Listing never reads document bodies. Selected files and their resources are
+  // hydrated before the editor receives them; legacy sync readers use that cache.
+  for (const folder of DEFAULT_FOLDERS) {
+    for (const name of Object.keys(folders[folder] || {})) {
+      if (!serverIndex[folder]) serverIndex[folder] = {};
+      serverIndex[folder][name] ||= {updatedAt: 0, size: 0};
+    }
+  }
   return serverIndex;
+}
+
+const RESOURCE_FOLDERS = ['art', 'music', 'actors', 'sfx', 'cars', 'tires', 'models', 'doodads', 'items', 'fonts'];
+async function hydrateStaticDependencies(payload) {
+  if (!payload?.data || payload.folder === 'settings') return;
+  const folders = await loadStaticManifest();
+  const references = new Map();
+  let maxReferenceLength = 0;
+  for (const folder of RESOURCE_FOLDERS) for (const name of Object.keys(folders[folder] || {})) {
+    maxReferenceLength = Math.max(maxReferenceLength, name.length);
+    if (!references.has(name)) references.set(name, []);
+    references.get(name).push({folder, name});
+  }
+  const visited = new Set([fileKey(payload.folder, payload.name)]);
+  let pending = [payload.data];
+  while (pending.length) {
+    const wanted = [];
+    const scan = value => {
+      if (typeof value === 'string') {
+        if (value.length > maxReferenceLength) return; // Never hash embedded MP3/font/image data URLs.
+        for (const ref of references.get(value) || []) {
+          const key = fileKey(ref.folder, ref.name);
+          if (!visited.has(key)) { visited.add(key); wanted.push(ref); }
+        }
+      } else if (Array.isArray(value)) {
+        for (const entry of value) scan(entry);
+      } else if (value && typeof value === 'object') {
+        for (const entry of Object.values(value)) scan(entry);
+      }
+    };
+    for (const data of pending) scan(data);
+    pending = [];
+    let cursor = 0;
+    await Promise.all(Array.from({length: Math.min(3, wanted.length)}, async () => {
+      while (cursor < wanted.length) {
+        const {folder, name} = wanted[cursor++];
+        const raw = volatileFiles.get(fileKey(folder, name));
+        const dependency = raw ? JSON.parse(raw) : await fetchStaticFile(folder, name);
+        if (dependency?.data) pending.push(dependency.data);
+      }
+    }));
+  }
 }
 
 function fetchServerFileSync(folder, name) {
   if (typeof XMLHttpRequest === 'undefined') return null;
   const xhr = new XMLHttpRequest();
-  const url = `/__storage/file?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}`;
+  const url = projectStorageUrl(`/__storage/file?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}`);
   try {
     xhr.open('GET', url, false);
     xhr.send();
@@ -361,6 +435,10 @@ function fetchServerFileSync(folder, name) {
   } catch (error) {
     return null;
   }
+}
+
+export function isProjectStorageReadOnly() {
+  return !storageApiAvailable;
 }
 
 export function isServerStorageEnabled() {
@@ -407,12 +485,12 @@ export function readCachedProjectFile(folder, name, {allowSyncFetch = true} = {}
   const key = fileKey(folder, name);
   const cached = volatileFiles.get(key);
   if (cached) return cached;
-  if (!allowSyncFetch || !serverIndex?.[folder]?.[name]) return null;
+  if (!storageApiAvailable || !allowSyncFetch || !serverIndex?.[folder]?.[name]) return null;
   const payload = fetchServerFileSync(folder, name);
   return payload ? volatileFiles.get(key) || null : null;
 }
 
-export async function hydrateProjectFile(folder, name, options = {}) {
+async function hydrateProjectFileOnly(folder, name, options = {}) {
   if (!folder || !name) return null;
   const key = fileKey(folder, name);
   const freshness = String(options?.freshness || '').trim().toLowerCase();
@@ -429,7 +507,7 @@ export async function hydrateProjectFile(folder, name, options = {}) {
   }
   if (storageApiAvailable || requireNewest) {
     try {
-      const serverPayload = await fetchServerFile(folder, name);
+      const serverPayload = await fetchServerFile(folder, name, options);
       storageApiAvailable = true;
       if (cachedPayload
         && Number(cachedPayload.savedAt || 0) > Number(serverPayload?.savedAt || 0)) {
@@ -445,7 +523,7 @@ export async function hydrateProjectFile(folder, name, options = {}) {
   if (cachedPayload) {
     return attachStorageSource(cachedPayload, cachedSource);
   }
-  await hydrateStaticStorageFiles();
+  await fetchStaticFile(folder, name);
   const cached = volatileFiles.get(key);
   if (!cached) return null;
   try {
@@ -453,6 +531,21 @@ export async function hydrateProjectFile(folder, name, options = {}) {
   } catch (error) {
     return null;
   }
+}
+
+export async function hydrateProjectFile(folder, name, options = {}) {
+  const payload = await hydrateProjectFileOnly(folder, name, options);
+  if (payload?.storageSource === 'static') {
+    try { await hydrateStaticDependencies(payload); }
+    catch (error) {
+      // An incomplete published open must not look successful to the legacy
+      // synchronous fallback in the Project Browser. Keep the index for retry.
+      volatileFiles.delete(fileKey(folder, name));
+      volatileFileSources.delete(fileKey(folder, name));
+      throw error;
+    }
+  }
+  return payload;
 }
 
 export function listCachedProjectFiles(folder) {
@@ -473,6 +566,8 @@ export function listCachedProjectFiles(folder) {
 export function clearCachedProjectFilesForTests() {
   volatileFiles.clear();
   volatileFileSources.clear();
+  staticManifestPromise = null;
+  staticLoads.clear();
   serverIndex = DEFAULT_FOLDERS.reduce((acc, folder) => { acc[folder] = {}; return acc; }, {});
   storageApiAvailable = true;
 }
@@ -504,6 +599,7 @@ export async function saveServerFile(folder, name, data, options = {}) {
       data: hasOwn(responseFile, 'data') ? responseFile.data : data
     };
     updateCachedPayload(savedFile, 'server');
+    storageApiAvailable = true;
     return { ...savedFile, persisted: true };
   } catch (error) {
     if (!isStorageApiUnavailable(error)) throw error;
@@ -517,15 +613,13 @@ export function queueServerFileSave(folder, name, data, options = {}) {
 }
 
 export async function deleteServerFile(folder, name) {
-  if (!storageApiAvailable) {
-    deleteCachedProjectFile(folder, name);
-    return { ok: true, storageApiAvailable: false };
-  }
+  if (!storageApiAvailable) throw new Error('Published project files are read-only; deletion requires the storage server.');
   try {
     await requestJson(`/__storage/file?folder=${encodeURIComponent(folder)}&name=${encodeURIComponent(name)}`, { method: 'DELETE' });
   } catch (error) {
     if (!isStorageApiUnavailable(error)) throw error;
     storageApiAvailable = false;
+    throw new Error('Published project files are read-only; deletion requires the storage server.');
   }
   deleteCachedProjectFile(folder, name);
   return { ok: true };
@@ -593,16 +687,7 @@ export async function deleteServerFileVersion(folder, name, versionId) {
 }
 
 export async function renameServerFile(folder, oldName, newName) {
-  if (!storageApiAvailable) {
-    const raw = readCachedProjectFile(folder, oldName);
-    deleteCachedProjectFile(folder, oldName);
-    if (!raw) return null;
-    const payload = JSON.parse(raw);
-    const savedAt = Date.now();
-    const renamed = { version: Number(payload?.version || 1), folder, name: newName, savedAt, data: payload.data };
-    updateCachedPayload(renamed);
-    return renamed;
-  }
+  if (!storageApiAvailable) throw new Error('Published project files are read-only; renaming requires the storage server.');
   try {
     const oldRaw = readCachedProjectFile(folder, oldName);
     let oldPayload = null;
@@ -660,7 +745,7 @@ export async function flushServerStorage() {
 export async function syncServerSnapshotToGitHub() {
   await syncQueue;
   try {
-    const response = await fetch('/__storage/sync-github', { method: 'POST' });
+    const response = await fetch(projectStorageUrl('/__storage/sync-github'), { method: 'POST' });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok || !payload?.ok) {
       return { ok: false, reason: payload?.stderr || payload?.error || `HTTP ${response.status}` };

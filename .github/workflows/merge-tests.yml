@@ -54,6 +54,9 @@ jobs:
           tests/unit/racePerformanceUpload.test.js
           tests/unit/racePerformanceStatus.test.js
 
+      - name: Published project storage fallback
+        run: node --test tests/unit/publishedProjectStorage.test.js tests/unit/serverStorage.test.js
+
       - name: Track importer Python tests
         run: python3 -m unittest discover -s tests/python -p 'test_race*import.py'
 
@@ -98,6 +101,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Run static-host project loading browser tests
+        run: npx playwright test tests/playwright/published-project-storage.spec.js --workers=1 --reporter=line
 
       - name: Run race physics feel browser test
         run: npm run test:race-physics-feel:browser -- --reporter=line
