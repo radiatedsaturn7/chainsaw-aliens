@@ -15,7 +15,7 @@ export function loadServerPreference(key, fallback = null) {
   if (!name) return fallback;
   if (cache.has(name)) return cache.get(name);
   if (typeof fetch === 'function' && !pendingLoads.has(name)) {
-    const load = hydrateProjectFile(FOLDER, name)
+    const load = hydrateProjectFile(FOLDER, name, {freshness: 'newest'})
       .then((payload) => {
         const value = payload?.data?.value;
         cache.set(name, value);
