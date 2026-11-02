@@ -606,7 +606,7 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
       projection: { distance: representativeStartDistance },
       preserveMotion: false
     });
-    if (!resetSucceeded) throw Error('Finish fixture could not reset: '+JSON.stringify(editor.playtestSession.lastResetSupportFailure));
+    if (!resetSucceeded) throw Error('Finish fixture could not reset: '+JSON.stringify({failure:editor.playtestSession.lastResetSupportFailure,routeLength,distance:editor.playtestSession.distance,pose:editor.getRaceWorldPoseAtDistance(representativeStartDistance),car:runtimeCar.name,network:Boolean(editor.selectedRace.road.network)}));
     const passedCheckpointCount = (editor.playtestSession.checkpointDistances || [])
       .filter((distance) => Number(distance) <= representativeStartDistance).length;
     editor.playtestSession.checkpointIndex = passedCheckpointCount;

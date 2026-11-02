@@ -4,21 +4,11 @@ export async function seedRaceRuntimeFixtures(page) {
     const editor = game.raceEditor;
     const clone = (value) => JSON.parse(JSON.stringify(value));
     const now = Date.now();
+    const {saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');
+    // Seed the browser cache as well as the server. Raw POSTs leave documents
+    // hydrated during startup pointing at the user's committed race/car data.
     const postFile = async (folder, name, data, offset = 0) => {
-      const response = await fetch('/__storage/file', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          version: 1,
-          folder,
-          name,
-          savedAt: now + offset,
-          data
-        })
-      });
-      if (!response.ok) {
-        throw new Error(`Could not seed ${folder}/${name}: ${response.status}`);
-      }
+      await saveProjectFileAndConfirm(folder,name,data,{savedAt:now+offset,createVersion:false});
     };
     const makeArt = (width, height, color) => ({
       schemaVersion: 1,
