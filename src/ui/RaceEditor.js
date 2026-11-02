@@ -223,6 +223,7 @@ import { openProjectBrowser } from './ProjectBrowserModal.js';
 import { CAR_PRESETS, createCarFromPreset, isUserRaceCar, isSystemCarDocument } from '../racing/CarPresets.js';
 import { openRaceImageImport } from './RaceImageImportModal.js';
 import { listProjectFiles, loadProjectFile, hydrateProjectFilePayload, saveProjectFile, sanitizeProjectFileName } from './projectFiles.js';
+import { hydrateServerStorage } from './serverStorage.js';
 import * as THREE from '../vendorBridge/three.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -1324,6 +1325,9 @@ export default class RaceEditor {
   }
 
   async hydrateSavedRaceCarsForTravel() {
+    // Pages lists documents without downloading them. Populate the catalog before
+    // constructing the grid, even when no car browser has warmed the index.
+    await hydrateServerStorage({ folder: 'cars' });
     const entries = listProjectFiles('cars', { includeSystem: true });
     const loaded = await Promise.all(entries.map(async ({name}) => {
       const payload = await hydrateProjectFilePayload('cars', name);
@@ -10404,6 +10408,29 @@ export default class RaceEditor {
     this.status = 'Choose a car to playtest';
   }
 
+  async startSavedRacePlaytest(carId) {
+    if (this.savedRacePlaytestLoading) return false;
+    const race = this.selectedRace;
+    const state = this.game?.state;
+    this.savedRacePlaytestLoading = true;
+    this.status = 'Loading race cars…';
+    try {
+      await this.hydrateSavedRaceCarsForTravel();
+      // A download must not launch a race after leaving the editor or opening
+      // a different race. Keep the synchronous runtime start for prepared races.
+      if (this.selectedRace !== race || this.game?.state !== state) return false;
+      this.startPlaytest(carId, { hydrateCars: false });
+      return true;
+    } catch (error) {
+      if (this.selectedRace === race && this.game?.state === state) {
+        this.reportRaceFailure(`Could not load race cars: ${error?.message || error}`);
+      }
+      return false;
+    } finally {
+      this.savedRacePlaytestLoading = false;
+    }
+  }
+
   async openPlaytestCarBrowser() {
     this.hydrateProjectCarsFromSavedFiles();
     this.activeAction = 'test-drive';
@@ -10437,7 +10464,7 @@ export default class RaceEditor {
       }
       const playtestId = this.getRaceCarProjectIdentity(car);
       this.selectPlaytestCarEntry({ id: playtestId, name: picked.name, car }, { silent: true });
-      this.startPlaytest(playtestId);
+      await this.startSavedRacePlaytest(playtestId);
       return car;
     }
     this.status = 'Car selection canceled';
@@ -25549,7 +25576,7 @@ export default class RaceEditor {
       const back = { x: bounds.x + 18, y: bounds.y + bounds.h - 44, w: 92, h: 32 };
       const start = { x: bounds.x + bounds.w - 118, y: bounds.y + bounds.h - 44, w: 100, h: 32 };
       this.registerDrawnButton(ctx, back, { id: 'pre-race-back', label: 'Back', onClick: () => { this.preRaceTuningOpen = false; } });
-      this.registerDrawnButton(ctx, start, { id: 'pre-race-start', label: 'Start', onClick: () => this.startPlaytest(this.getCurrentPlaytestCarId()) });
+      this.registerDrawnButton(ctx, start, { id: 'pre-race-start', label: 'Start', onClick: () => this.startSavedRacePlaytest(this.getCurrentPlaytestCarId()) });
       return;
     }
 
@@ -25589,7 +25616,7 @@ export default class RaceEditor {
     const start = { x: bounds.x + bounds.w - 110, y: bounds.y + bounds.h - 48, w: 92, h: 34 };
     this.registerDrawnButton(ctx, cancel, { id: 'playtest-cancel', label: 'Cancel', onClick: () => this.cancelPlaytestPicker() });
     this.registerDrawnButton(ctx, tuning, { id: 'playtest-tuning', label: 'Tuning', onClick: () => { this.preRaceTuningOpen = true; this.preRaceTuningTab = 'presets'; } });
-    this.registerDrawnButton(ctx, start, { id: 'playtest-start', label: 'Start', onClick: () => this.startPlaytest(this.getCurrentPlaytestCarId()) });
+    this.registerDrawnButton(ctx, start, { id: 'playtest-start', label: 'Start', onClick: () => this.startSavedRacePlaytest(this.getCurrentPlaytestCarId()) });
   }
 
   getRaceTuningTabs(car = this.selectedCar) {

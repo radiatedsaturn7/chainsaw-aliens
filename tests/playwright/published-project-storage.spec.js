@@ -3,7 +3,7 @@ import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {gzipSync} from 'node:zlib';
-import {createDefaultRace} from '../../src/racing/raceData.js';
+import {createDefaultRace,createDefaultCar} from '../../src/racing/raceData.js';
 
 // A real static HTTP host: no storage API, no decoded-document middleware.
 // Unlike the normal test server, this exercises exactly what Pages serves.
@@ -23,6 +23,10 @@ add('art','Sheet 50% #',{kind:'pixel-art',width:2,height:2,frames:[['#ff0000','#
 for(const name of ['providence','apron'])add('art',name,{kind:'pixel-art',width:2,height:2,frames:[['#336633','#336633','#336633','#336633']]});
 const generatedCarArt=['buse-steeringwheel','ct-steeringwheel','hoodicon','indicator-low-fuel','indicator-turn-left','indicator-turn-right','lefticon','pz-steeringwheel','rearicon','righticon','turnsignal-amber'];
 for(const name of generatedCarArt)manifest.folders.art[name]=`art/${name}/document.json`;
+for(const name of ['Player','Opponent']){
+ const car=createDefaultCar();car.name=name;car.art.body='Sheet 50% #';
+ add('cars',name,{schemaVersion:1,kind:'race-car',car});
+}
 add('actors','Hero',{actor:{artRef:'Sheet 50% #'}});
 add('fonts','Tiny font',{fontData:{__chainsawAssetRef:'assets/font.ttf',mime:'font/ttf'}});
 published.set('/data/server-storage/files/fonts/Tiny font/assets/font.ttf',Buffer.from([1,2,3]));
@@ -130,6 +134,31 @@ test('the application can start a published race playtest on a static project ho
  expect(await page.evaluate(()=>window.__game.raceEditor.currentRaceDocumentName)).toBe('Published loop');
 });
 
+
+test('Race Editor car picker downloads opponents before starting a static-host AI grid',async({page})=>{
+ test.setTimeout(120000);
+ await page.goto(origin+'/index.html');
+ await page.waitForFunction(()=>window.__gameReady,null,{timeout:60000});
+ let release;const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('**/cars/Opponent/document.json',async route=>{await gate;await route.continue();});
+ await page.evaluate(async()=>{
+  const {hydrateProjectFilePayload}=await import('./src/ui/projectFiles.js');
+  const payload=await hydrateProjectFilePayload('races','Published loop');
+  const game=window.__game;game.enterRaceEditor();const editor=game.raceEditor;
+  editor.applyLoadedRaceDocument(payload.data,{name:'Published loop'});
+  editor.selectedRace.competition.carSelection={availableCarIds:['saved-car:Opponent'],category:'any',performanceClass:'any',defaultCarId:'saved-car:Opponent'};
+  editor.selectedRace.competition.aiDrivers=Array.from({length:3},(_,index)=>({id:'ai-'+index,name:'Opponent '+index,carId:'saved-car:Opponent',enabled:true,skill:0.6}));
+  void editor.openPlaytestCarBrowser();
+ });
+ await page.locator('.project-browser-row[data-name="Player"]').getByRole('button',{name:'Open',exact:true}).click();
+ try{
+  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.status)).toContain('Loading race cars');
+  expect(await page.evaluate(()=>Boolean(window.__game.raceEditor.playtestSession?.running))).toBe(false);
+ }finally{release();}
+ await expect.poll(()=>page.evaluate(()=>({running:window.__game.raceEditor.playtestSession?.running,failure:window.__game.raceEditor.lastRaceFailure})),{timeout:60000}).toMatchObject({running:true});
+ const cars=await page.evaluate(()=>window.__game.raceEditor.playtestSession.aiRuntime.map(ai=>({id:ai.carId,art:ai.runtimeCar.art.body})));
+ expect(cars).toEqual(Array.from({length:3},()=>({id:'saved-car:Opponent',art:'Sheet 50% #'})));
+});
 
 test('project browser shows loading until the static index arrives',async({page})=>{
  await page.goto(origin+'/test.html');
