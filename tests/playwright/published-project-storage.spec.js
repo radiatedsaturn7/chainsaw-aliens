@@ -108,3 +108,21 @@ test('race worker loads a compressed published race and packs artwork without Py
  expect(result.artCount).toBe(1);expect(result.missing).toEqual([]);
  expect(result.messages).toContain('prepared-physics');expect(result.messages).toContain('race-document');
 });
+
+test('the application can start a published race playtest on a static project host',async({page})=>{
+ test.setTimeout(120000);
+ await page.goto(origin+'/index.html');
+ await page.waitForFunction(()=>window.__gameReady,null,{timeout:60000});
+ await page.evaluate(async()=>{
+  const game=window.__game;
+  const {hydrateProjectFilePayload}=await import('./src/ui/projectFiles.js');
+  const payload=await hydrateProjectFilePayload('races','Published loop');
+  game.enterRaceEditor();
+  const editor=game.raceEditor;
+  if(!editor.applyLoadedRaceDocument(payload.data,{name:'Published loop'}))throw Error('Static race did not open');
+  editor.selectedRace.competition.aiDrivers=[];
+  editor.startPlaytest(editor.selectedCar.id,{hydrateCars:false});
+ });
+ await expect.poll(()=>page.evaluate(()=>({running:window.__game.raceEditor.playtestSession?.running,error:window.__game.raceEditor.racePlaytestPreparation?.error})),{timeout:60000}).toMatchObject({running:true});
+ expect(await page.evaluate(()=>window.__game.raceEditor.currentRaceDocumentName)).toBe('Published loop');
+});

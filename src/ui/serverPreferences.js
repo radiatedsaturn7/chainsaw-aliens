@@ -1,4 +1,4 @@
-import {hydrateProjectFile, saveServerFile} from './serverStorage.js';
+import {hydrateProjectFile, saveServerFile, isProjectStorageReadOnly} from './serverStorage.js';
 const FOLDER = 'settings';
 const cache = new Map();
 const pendingLoads = new Map();
@@ -34,7 +34,8 @@ export function saveServerPreference(key, value) {
   cache.set(name, value);
   if (typeof fetch !== 'function') return Promise.resolve({ ok: false, reason: 'fetch-unavailable' });
   return saveServerFile(FOLDER, name, {value}, {createVersion: false})
-    .then(result => ({ok: result.persisted === true, reason: result.reason}))
+    .then(result => ({ok: result.persisted === true || isProjectStorageReadOnly(),
+      persisted: result.persisted === true, sessionOnly: result.persisted !== true && isProjectStorageReadOnly(), reason: result.reason}))
     .catch(error => ({ok: false, reason: String(error)}));
 }
 

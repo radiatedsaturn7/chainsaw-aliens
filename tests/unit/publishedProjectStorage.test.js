@@ -80,7 +80,8 @@ test('static metadata hides deleted entries and preserves system-car flags',asyn
 test('preferences use published settings and changes stay available in-session without claiming persistence',async()=>fixture(async({add})=>{
  add('settings','published-test-launch',{value:{menuRef:'Splash'}});
  assert.deepEqual(await loadServerPreferenceAsync('published-test-launch'),{menuRef:'Splash'});
- assert.equal((await saveServerPreference('published-test-launch',{menuRef:'Other'})).ok,false);
+ const saved=await saveServerPreference('published-test-launch',{menuRef:'Other'});
+ assert.equal(saved.ok,true);assert.equal(saved.persisted,false);assert.equal(saved.sessionOnly,true);
  assert.deepEqual(await loadServerPreferenceAsync('published-test-launch'),{menuRef:'Other'});
 }));
 test('static writes are not reported as durable and rename/delete cannot erase published cache',async()=>fixture(async({add})=>{

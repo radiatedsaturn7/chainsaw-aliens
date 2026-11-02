@@ -35,7 +35,9 @@ snapshot.
 The Project Browser labels static mode **Read-only** and disables durable
 mutation actions. Save attempts elsewhere still require a successful server
 confirmation; they are not reported as persisted on a static host. In-memory
-edits and preference changes can remain usable for the session. Export through
+edits can remain usable for the session. Gameplay preferences/progress explicitly
+accept session-only updates (`persisted: false`) so settings, pickups and garage
+operations can work without writing the published project. Export through
 an editor where supported to retain edits. Refreshing can discard unsaved
 session changes. This change does not provide browser-local durable saves.
 
