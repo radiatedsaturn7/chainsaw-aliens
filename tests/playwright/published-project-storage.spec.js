@@ -127,3 +127,42 @@ test('the application can start a published race playtest on a static project ho
  await expect.poll(()=>page.evaluate(()=>({running:window.__game.raceEditor.playtestSession?.running,error:window.__game.raceEditor.racePlaytestPreparation?.error,status:window.__game.raceEditor.status,lastFailure:window.__game.raceEditor.lastRaceFailure})),{timeout:60000}).toMatchObject({running:true});
  expect(await page.evaluate(()=>window.__game.raceEditor.currentRaceDocumentName)).toBe('Published loop');
 });
+
+
+test('project browser shows loading until the static index arrives',async({page})=>{
+ await page.goto(origin+'/test.html');
+ let release;
+ const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('**/data/server-storage/files/manifest.json',async route=>{await gate;await route.continue();});
+ await page.evaluate(async()=>{const {openProjectBrowser}=await import('./src/ui/ProjectBrowserModal.js');void openProjectBrowser({fixedFolder:'levels'});});
+ await expect(page.locator('.project-browser-info')).toContainText('Loading');
+ release();
+ await expect(page.locator('.project-browser-row[data-name="Published"]')).toBeVisible();
+ await expect(page.locator('.project-browser-info')).toContainText('1 file');
+});
+
+test('project browser can retry a failed static index without reopening',async({page})=>{
+ await page.goto(origin+'/test.html');
+ let fail=true;
+ await page.route('**/data/server-storage/files/manifest.json',async route=>{if(fail)await route.fulfill({status:503,body:'Unavailable'});else await route.continue();});
+ await page.evaluate(async()=>{const {openProjectBrowser}=await import('./src/ui/ProjectBrowserModal.js');void openProjectBrowser({fixedFolder:'levels'});});
+ await expect(page.locator('.project-browser-info')).toContainText('Could not load project files');
+ fail=false;
+ await page.getByRole('button',{name:'Retry',exact:true}).click();
+ await expect(page.locator('.project-browser-row[data-name="Published"]')).toBeVisible();
+});
+
+test('live Pages application opens the project browser with published levels',async({page})=>{
+ test.skip(!process.env.LIVE_PAGES_URL,'Opt-in deployed-site diagnostic');
+ test.setTimeout(180000);
+ const errors=[];
+ page.on('pageerror',error=>errors.push(error.message));
+ page.on('response',response=>{if(response.url().includes('__storage')||response.url().endsWith('manifest.json'))console.log('LIVE_STORAGE',response.status(),response.url());});
+ await page.goto(process.env.LIVE_PAGES_URL,{waitUntil:'domcontentloaded'});
+ await page.waitForFunction(()=>window.__gameReady,null,{timeout:120000});
+ await page.evaluate(()=>window.__game.openProjectBrowserFromTitle());
+ await page.getByRole('button',{name:'Levels',exact:true}).click();
+ await expect(page.locator('.project-browser-row')).not.toHaveCount(0,{timeout:30000});
+ console.log('LIVE_LEVELS',await page.locator('.project-browser-row').count(),'ERRORS',JSON.stringify(errors));
+ await expect(page.locator('.project-browser-title')).toContainText('Read-only');
+});

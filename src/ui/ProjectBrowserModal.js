@@ -192,7 +192,7 @@ export function openProjectBrowser({
       folder: fixedFolder || defaultFolder,
       searchOpen: false,
       query: '',
-      loading: false,
+      loading: true,
       syncing: true,
       loadError: '',
       sortBy: 'modified'
@@ -473,7 +473,7 @@ export function openProjectBrowser({
         grid.appendChild(card);
       });
       fileList.appendChild(grid);
-      info.textContent = 'Choose a folder';
+      info.textContent = state.loading ? 'Loading project files...' : state.loadError ? `Could not load project files: ${state.loadError}` : 'Choose a folder';
     }
 
     function renderFolder() {
@@ -486,8 +486,10 @@ export function openProjectBrowser({
         state.sortBy
       );
       info.textContent = state.loading
-        ? `Loading ${FOLDER_LABELS[folder] || folder} from server...`
-        : openError
+        ? `Loading ${FOLDER_LABELS[folder] || folder}...`
+        : state.loadError
+          ? `Could not load project files: ${state.loadError}`
+          : openError
           ? openError
           : `${entries.length} file${entries.length === 1 ? '' : 's'} in ${FOLDER_LABELS[folder] || folder}${state.syncing ? ' · syncing...' : ''}`;
       fileList.innerHTML = '';
@@ -815,6 +817,9 @@ export function openProjectBrowser({
 
       actionRow.innerHTML = '';
       actionRow.appendChild(makeButton('Close', 'project-browser-btn', () => cleanup(null)));
+      if (state.loadError && !state.loading) {
+        actionRow.appendChild(makeButton('Retry', 'project-browser-btn', () => { void reloadFiles(); }));
+      }
       if (mode === 'saveAs' && state.view === 'folder') {
         actionRow.appendChild(makeButton('Save', 'project-browser-btn primary', () => {
           const name = sanitizeProjectFileName(saveInput.value) || sanitizeProjectFileName(initialName) || 'untitled';
@@ -873,20 +878,26 @@ export function openProjectBrowser({
       }
     });
 
+    async function reloadFiles() {
+      state.loading = true;
+      state.syncing = true;
+      state.loadError = '';
+      refresh();
+      try {
+        const result = await hydrateServerStorage(fixedFolder ? { folder: fixedFolder } : {});
+        state.loadError = result?.ok ? '' : (result?.reason || 'unknown error');
+      } catch (error) {
+        state.loadError = String(error?.message || error || 'unknown error');
+      } finally {
+        state.loading = false;
+        state.syncing = false;
+        folderNameCache.clear();
+        if (!closed) refresh();
+      }
+    }
+
     getOverlayRoot().appendChild(overlay);
-    refresh();
-    const hydrationOptions = fixedFolder ? { folder: fixedFolder } : {};
-    void hydrateServerStorage(hydrationOptions).then((result) => {
-      state.loading = false;
-      state.syncing = false;
-      state.loadError = result?.ok ? '' : (result?.reason || 'unknown error');
-      refresh();
-    }).catch((error) => {
-      state.loading = false;
-      state.syncing = false;
-      state.loadError = String(error || 'unknown error');
-      refresh();
-    });
+    void reloadFiles();
     overlay.focus({ preventScroll: true });
     if (mode === 'saveAs' && focusNameOnOpen) {
       saveInput.focus({ preventScroll: true });
