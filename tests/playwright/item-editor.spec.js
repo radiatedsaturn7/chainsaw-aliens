@@ -129,7 +129,7 @@ test('race inventory boosts the player and fires a slowing projectile at an oppo
   const e=window.__game.raceEditor,s=e.playtestSession,a=s.aiRuntime[0];
   // Physics/boost behavior was checked above. Freeze the targets for this
   // collision check while input and ItemRuntime keep advancing normally.
-  e.updatePlaytest=()=>{};
+  e.updatePlaytest=dt=>{s.frameAdmittedSeconds=dt;};
   a.worldX=s.worldX+Math.sin(s.carYaw)*8;
   a.worldZ=s.worldZ+Math.cos(s.carYaw)*8;
  });

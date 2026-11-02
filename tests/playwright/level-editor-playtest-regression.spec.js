@@ -600,10 +600,11 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
     // the real authoritative route reset so CI does not spend two wall-clock
     // minutes evaluating 90 seconds of 360 Hz compound-body physics.
     const representativeStartDistance = Math.max(0, routeLength - 10);
-    editor.applyRaceCarRouteCenterReset({
+    const resetSucceeded = editor.applyRaceCarRouteCenterReset({
       projection: { distance: representativeStartDistance },
       preserveMotion: false
     });
+    if (!resetSucceeded) throw Error('Finish fixture could not reset: '+JSON.stringify(editor.playtestSession.lastResetSupportFailure));
     const passedCheckpointCount = (editor.playtestSession.checkpointDistances || [])
       .filter((distance) => Number(distance) <= representativeStartDistance).length;
     editor.playtestSession.checkpointIndex = passedCheckpointCount;
@@ -708,6 +709,7 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
     };
   });
 
+  console.log('SAVED_RACE_FINISH', JSON.stringify(result));
   expect(result.updateFailed).toBeFalsy();
   expect(result.completed).toBeTruthy();
   expect(result.resultsShown).toBeTruthy();

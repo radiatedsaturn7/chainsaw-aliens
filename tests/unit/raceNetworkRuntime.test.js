@@ -278,7 +278,10 @@ for (const heightM of [-6, 6]) test(`delayed recovery stays on the alternate ${h
   editor.resetRaceCarToRouteCenter({ projection: { distance: 70 }, reason: 'select-hold-reset' });
   assert.equal(session.pendingEdgeCenterReset.networkProjection?.edgeId, 'branch');
   session.edgeResetFadeMs = 1;
-  editor.updateRaceEdgeCenterResetFade();
+  // Recovery is intentionally spread over frames; retain the deck checks below.
+  for (let frame = 0; frame < 1000 && !session.pendingEdgeCenterReset?.moved; frame++) {
+    editor.updateRaceEdgeCenterResetFade();
+  }
   assert.equal(session.pendingEdgeCenterReset?.moved, true);
   assert.ok(Math.abs(runner.state.position.x - 40) < 0.01, `reset changed branches: x=${runner.state.position.x}`);
   assert.ok(Math.abs(runner.state.position.z - 10) < 0.01);

@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 async function openImporter(page, tire=false) {
-  await page.goto('/index.html');
+  await page.goto('/index.html?hideFullscreenForTesting');
+  await page.waitForFunction(() => window.__gameReady);
   const png = await page.evaluate(async (tire) => {
     const { default: RaceEditor } = await import('/src/ui/RaceEditor.js');
     const { default: TireEditor } = await import('/src/ui/TireEditor.js');

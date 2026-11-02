@@ -30,7 +30,7 @@ test.beforeEach(async({page})=>{
  await page.route('**/__storage/file*',async route=>{
   const req=route.request(),url=new URL(req.url()),body=req.method()==='POST'?req.postDataJSON():null;
   const folder=body?.folder||url.searchParams.get('folder'),name=body?.name||url.searchParams.get('name');
-  if(folder==='settings'&&['rtg-item-progress','rtg-radio-progress','rtg-radio-library','menu-launch','menu-settings'].includes(name)){
+  if(folder==='settings'&&['rtg-item-progress','rtg-radio-progress','rtg-radio-library','menu-launch','menu-settings','menu-progress'].includes(name)){
    if(body){preferences.set(name,body.data);return route.fulfill({json:{ok:true}});}
    return route.fulfill({json:{ok:true,file:{data:preferences.get(name)||{value:name==='rtg-item-progress'?{stats:{credits:5000}}:{}}}}});
   }

@@ -35,6 +35,13 @@ export async function seedRaceRuntimeFixtures(page) {
     race.id = 'playwright-studio-sprint-2';
     race.name = 'Studio Sprint 2';
     race.laps = 1;
+    // A deliberate finish fixture, independent of the editor's start-only default.
+    race.type = 'destination';
+    race.road.nodes = [
+      {x: 0, y: 0, elevation: 0, role: 'start', locked: true},
+      {x: 0, y: 740, elevation: 0, role: 'finish'}
+    ];
+    race.road.segments = [{length: 740, curve: 0, elevation: 0, surface: 'asphalt', hazardIds: []}];
     race.finishBehavior = {type:'return-to-origin'};
     race.weather = 'clear';
     race.groundRenderer = 'webgl-track';

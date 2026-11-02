@@ -51,11 +51,12 @@ test('tachometer properties preview and save car-based scale, ticks and number s
   const {default:RaceEditor}=await import('/src/ui/RaceEditor.js');const {enterCarGauges,editGauge}=await import('/src/ui/CarGaugeEditor.js');
   const e=new RaceEditor({},{mode:'car'});window.__tachEditor=e;enterCarGauges(e,'interior');e.carGaugeId=e.selectedCar.art.gauges.interior.widgets.find(g=>g.source==='rpm').id;void editGauge(e);
  });
- await expect(page.getByLabel('rpm.max — car rev limiter',{exact:true})).toBeVisible();
- await expect(page.getByLabel('rpm.redline — car engine redline',{exact:true})).toBeVisible();
+ await expect(page.getByLabel('rpm.max — tachometer maximum',{exact:true})).toBeVisible();
+ await expect(page.getByLabel('rpm.limit — rev limiter kicks in',{exact:true})).toBeVisible();
+ await expect(page.getByLabel('rpm.redline — redline starts',{exact:true})).toBeVisible();
  await expect(page.getByRole('img',{name:'Tachometer preview'})).toBeVisible();
- await expect(page.getByLabel('Use car rev limiter for maximum RPM',{exact:true})).toBeChecked();
- await page.getByLabel('Use car engine redline for danger RPM',{exact:true}).uncheck();
+ await expect(page.getByLabel('Use car tachometer maximum',{exact:true})).toBeChecked();
+ await page.getByLabel('Use car redline start for danger RPM',{exact:true}).uncheck();
  await page.getByLabel('Custom danger starts at RPM',{exact:true}).fill('6800');
  await page.locator('summary').filter({hasText:'Tachometer — ticks'}).click();
  await page.getByLabel('Major ticks every (RPM)',{exact:true}).fill('1000');
