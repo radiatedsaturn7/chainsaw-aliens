@@ -54,6 +54,9 @@ jobs:
           tests/unit/racePerformanceUpload.test.js
           tests/unit/racePerformanceStatus.test.js
 
+      - name: Published project storage fallback
+        run: node --test tests/unit/publishedProjectStorage.test.js tests/unit/serverStorage.test.js
+
       - name: Track importer Python tests
         run: python3 -m unittest discover -s tests/python -p 'test_race*import.py'
 

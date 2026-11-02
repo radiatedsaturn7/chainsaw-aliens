@@ -1,3 +1,4 @@
+import {hydrateProjectFile, saveServerFile} from './serverStorage.js';
 const FOLDER = 'settings';
 const cache = new Map();
 const pendingLoads = new Map();
@@ -9,23 +10,14 @@ function preferenceName(key) {
     .slice(0, 96);
 }
 
-async function requestJson(url, options = {}) {
-  const response = await fetch(url, options);
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok || !payload?.ok) {
-    throw new Error(payload?.error || `HTTP ${response.status}`);
-  }
-  return payload;
-}
-
 export function loadServerPreference(key, fallback = null) {
   const name = preferenceName(key);
   if (!name) return fallback;
   if (cache.has(name)) return cache.get(name);
   if (typeof fetch === 'function' && !pendingLoads.has(name)) {
-    const load = requestJson(`/__storage/file?folder=${encodeURIComponent(FOLDER)}&name=${encodeURIComponent(name)}`)
+    const load = hydrateProjectFile(FOLDER, name)
       .then((payload) => {
-        const value = payload?.file?.data?.value;
+        const value = payload?.data?.value;
         cache.set(name, value);
         return value;
       })
@@ -41,18 +33,9 @@ export function saveServerPreference(key, value) {
   if (!name) return Promise.resolve({ ok: false, reason: 'missing-key' });
   cache.set(name, value);
   if (typeof fetch !== 'function') return Promise.resolve({ ok: false, reason: 'fetch-unavailable' });
-  return requestJson('/__storage/file', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      folder: FOLDER,
-      name,
-      savedAt: Date.now(),
-      version: 1,
-      createVersion: false,
-      data: { value }
-    })
-  }).then(() => ({ ok: true })).catch((error) => ({ ok: false, reason: String(error) }));
+  return saveServerFile(FOLDER, name, {value}, {createVersion: false})
+    .then(result => ({ok: result.persisted === true, reason: result.reason}))
+    .catch(error => ({ok: false, reason: String(error)}));
 }
 
 // Await initial server hydration when a preference decides which content to open.

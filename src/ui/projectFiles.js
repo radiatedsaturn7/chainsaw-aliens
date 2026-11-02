@@ -11,6 +11,7 @@ import { isSystemCarDocument } from '../racing/CarPresets.js';
  */
 
 import {
+  isProjectStorageReadOnly,
   deleteCachedProjectFile,
   listServerIndexedFiles,
   listCachedProjectFiles,
@@ -181,7 +182,7 @@ export async function hydrateProjectFilePayload(folder, name, options = {}) {
   const clean = sanitizeProjectFileName(name);
   if (!clean) return null;
   const refresh = options?.forceRefresh === true || String(options?.freshness || '').trim().toLowerCase() === 'newest';
-  if (!refresh) {
+  if (!refresh && !isProjectStorageReadOnly()) {
     const cached = loadProjectFile(folder, clean, {allowSyncFetch:false});
     if (cached) return cached;
   }
@@ -231,6 +232,7 @@ export async function saveProjectFileAndConfirm(folder, name, dataObj, options =
 }
 
 export function deleteProjectFile(folder, name) {
+  if (isProjectStorageReadOnly()) throw new Error('Published project files are read-only. Connect the storage server to rename or delete files.');
   assertFolder(folder);
   const clean = sanitizeProjectFileName(name);
   if (!clean) return;
@@ -251,6 +253,7 @@ export function discardCachedProjectFile(folder, name) {
 }
 
 export function renameProjectFile(folder, oldName, newName) {
+  if (isProjectStorageReadOnly()) throw new Error('Published project files are read-only. Connect the storage server to rename or delete files.');
   const oldClean = sanitizeProjectFileName(oldName);
   const nextClean = sanitizeProjectFileName(newName);
   if (!oldClean || !nextClean) return null;
