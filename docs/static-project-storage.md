@@ -65,3 +65,11 @@ workers and modern decompression support.
 
 Run browser tests in the repository's GitHub Playwright environment on
 Android/Termux; local Node tests do not prove browser rendering behavior.
+
+## Keeping the published index complete
+
+After adding/removing exported documents directly (including generated artwork),
+run `python3 tools/project_manifest.py` and commit the updated manifest with the
+files. Python's live API discovers documents on disk; static hosting requires the
+manifest to enumerate them. CI runs `python3 tools/project_manifest.py --check`
+to reject snapshots that omit current documents or retain obsolete entries.

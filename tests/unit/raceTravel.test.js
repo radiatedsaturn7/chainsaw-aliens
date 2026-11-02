@@ -534,3 +534,19 @@ for (const scenario of ['preparing','rejected']) test(`race travel respects ${sc
   if(scenario==='preparing')assert.equal(failure,'');
   else assert.match(failure,/Finish south is not reachable/);
 });
+
+
+test('repeated race error prompts retain the editor or menu instead of entering the platform level', () => {
+  for (const origin of ['race-editor', 'menu-player']) {
+    const game = Object.create(Game.prototype);
+    game.state = origin;
+    game.transitionTo = state => { game.state = state; };
+    game.showModalPrompt('Artwork could not load: lefticon');
+    assert.equal(game.promptReturnState, origin);
+    game.showModalPrompt('Race preparation failed');
+    assert.equal(game.state, 'prompt');
+    assert.equal(game.promptReturnState, origin);
+    game.transitionTo(game.promptReturnState);
+    assert.equal(game.state, origin);
+  }
+});

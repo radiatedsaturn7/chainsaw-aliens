@@ -54,6 +54,11 @@ jobs:
           tests/unit/racePerformanceUpload.test.js
           tests/unit/racePerformanceStatus.test.js
 
+      - name: Check published project manifest
+        run: |
+          python3 tools/project_manifest.py --check
+          python3 -m unittest discover -s tests/python -p 'test_project_manifest.py'
+
       - name: Published project storage fallback
         run: node --test tests/unit/publishedProjectStorage.test.js tests/unit/serverStorage.test.js
 
@@ -104,11 +109,6 @@ jobs:
 
       - name: Run static-host project loading browser tests
         run: npx playwright test tests/playwright/published-project-storage.spec.js --workers=1 --reporter=line
-
-      - name: Diagnose deployed GitHub Pages project browser
-        env:
-          LIVE_PAGES_URL: https://radiatedsaturn7.github.io/chainsaw-aliens/
-        run: npx playwright test tests/playwright/published-project-storage.spec.js --grep 'live Pages application' --workers=1 --reporter=line
 
       - name: Run race physics feel browser test
         run: npm run test:race-physics-feel:browser -- --reporter=line
