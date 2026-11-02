@@ -1,6 +1,21 @@
 import { test, expect } from '@playwright/test';
 import { seedRaceRuntimeFixtures } from './helpers/race-runtime-fixtures.js';
 
+// A saved-project regression must not inherit another race's persisted damage.
+test.beforeEach(async ({page}) => {
+  let progress = {value:{}};
+  await page.route('**/__storage/file*', async route => {
+    const req=route.request(), url=new URL(req.url());
+    const body=req.method()==='POST'?req.postDataJSON():null;
+    if ((body?.folder||url.searchParams.get('folder'))==='settings'
+      && (body?.name||url.searchParams.get('name'))==='rtg-item-progress') {
+      if(body){progress=body.data;return route.fulfill({json:{ok:true}});}
+      return route.fulfill({json:{ok:true,file:{data:progress}}});
+    }
+    return route.continue();
+  });
+});
+
 async function waitForGameReady(page) {
   await page.goto('/index.html', { waitUntil: 'load' });
   await page.waitForFunction(() => Boolean(window.__gameReady && window.__game));
@@ -603,14 +618,16 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
     // performance benchmark. Enter the final representative section through
     // the real authoritative route reset so CI does not spend two wall-clock
     // minutes evaluating 90 seconds of 360 Hz compound-body physics.
-    const representativeStartDistance = Math.max(0, routeLength - 10);
+    const representativeStartDistance = Math.max(0, routeLength - 60);
     const resetSucceeded = editor.applyRaceCarRouteCenterReset({
       projection: { distance: representativeStartDistance },
       preserveMotion: false
     });
     if (!resetSucceeded) throw Error('Finish fixture could not reset: '+JSON.stringify({failure:editor.playtestSession.lastResetSupportFailure,routeLength,distance:editor.playtestSession.distance,pose:editor.getRaceWorldPoseAtDistance(representativeStartDistance),car:runtimeCar.name,network:Boolean(editor.selectedRace.road.network)}));
+    const resetDistance = editor.playtestSession.distance;
+    if (resetDistance >= routeLength - 4) throw Error(`Reset skipped the finish approach: ${resetDistance}`);
     const passedCheckpointCount = (editor.playtestSession.checkpointDistances || [])
-      .filter((distance) => Number(distance) <= representativeStartDistance).length;
+      .filter((distance) => Number(distance) <= resetDistance).length;
     editor.playtestSession.checkpointIndex = passedCheckpointCount;
     editor.playtestSession.passedCheckpoints = Array.from(
       { length: passedCheckpointCount }, (_entry, index) => index
@@ -672,7 +689,7 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
         if(!editor.raceInput.paused)throw Error('Finished race did not pause for results');
         const next=editor.getRacePauseMenuRows().find(row=>row.id==='race-results-continue');
         if(!next)throw Error('Results did not offer Continue');
-        next.onClick();
+        await next.onClick();
         break;
       }
       const nextProjection = editor.getRaceRouteProjectionForWorldPoint({
@@ -703,6 +720,11 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
 
     return {
       updateFailed,
+      checkpointIndex:editor.playtestSession?.checkpointIndex,
+      checkpointCount:editor.playtestSession?.checkpointCount,
+      checkpointDistances:editor.playtestSession?.checkpointDistances,
+      resetDistance,
+      finalPose:editor.playtestSession?{x:editor.playtestSession.worldX,z:editor.playtestSession.worldZ,speed:editor.playtestSession.speedMps,distance:editor.playtestSession.distance,paused:editor.raceInput.paused,finishing:editor.playtestSession.finishing}:null,
       completed: Boolean(window.__wrx2Finish),
       resultsShown: Boolean(window.__wrx2ResultsShown),
       maximumDistance,
