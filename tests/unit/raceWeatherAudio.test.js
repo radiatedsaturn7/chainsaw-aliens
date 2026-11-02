@@ -38,7 +38,7 @@ function createNode(extra = {}) {
   };
 }
 
-test('procedural race thunder creates a panned bounded noise crack and low rumble', () => {
+test('procedural race thunder creates a panned bounded noise crack and low rumble', async () => {
   const started = [];
   const stopped = [];
   const context = {
@@ -87,12 +87,31 @@ test('procedural race thunder creates a panned bounded noise crack and low rumbl
   audio.master = createNode();
   audio.ensure = () => {};
 
-  const result = audio.playWeatherThunder({ intensity: 1, pan: 0.6 });
+  const play = async event => {
+    await audio.prepareWeatherThunder(event);
+    const pending = audio.playWeatherThunder(event);
+    assert.equal(pending.pending, true);
+    await Promise.resolve(); // Prepared sound starts without a synthesis loop.
+    return pending;
+  };
+  const result = await play({ intensity: 1, pan: 0.6 });
 
-  assert.equal(result.played, true);
-  assert.equal(result.durationSeconds >= 1.4 && result.durationSeconds <= 2.4, true);
+  assert.equal(result.played, false);
+  assert.equal(result.durationSeconds >= 2.2 && result.durationSeconds <= 7.2, true);
   assert.equal(result.pan, 0.6);
   assert.equal(started.some(([kind]) => kind === 'noise'), true);
   assert.equal(started.some(([kind]) => kind === 'rumble'), true);
   assert.equal(stopped.length, 2);
+  const near=await play({distanceM:100,seed:42});
+  const far=await play({distanceM:6000,seed:99});
+  assert.ok(far.durationSeconds>near.durationSeconds);
+  for(let i=0;i<6;i++)await play({distanceM:100,seed:i});
+  assert.ok(audio.weatherThunderVoices.length<=4);
+  audio.stopWeatherThunder();assert.equal(audio.weatherThunderVoices.length,0);
+  let resolve;
+  audio.prepareWeatherThunder=()=>new Promise(done=>{resolve=done;});
+  const before=started.length;
+  audio.playWeatherThunder({});audio.stopWeatherThunder();
+  resolve(new Float32Array(100));await Promise.resolve();
+  assert.equal(started.length,before,'pause/exit cancels playback of late worker results');
 });

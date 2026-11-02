@@ -59,10 +59,10 @@ const mixQuaternion = (left = {}, right = {}, fraction = 0) => {
     w: finite(left.w, 1) + (finite(right.w, 1) * sign - finite(left.w, 1)) * fraction
   });
 };
-const transformPoint = (point = {}, position = {}, orientation = {}) => addVector3(
-  position,
-  rotateVectorByQuaternion(point, orientation)
-);
+const transformPoint = (point = {}, position = {}, orientation = {}) => {
+  const rotated = rotateVectorByQuaternion(point, orientation);
+  return addVector3(position, rotated, rotated);
+};
 const copyCollisionStateInto = (source = {}, target) => {
   const sourcePosition = source.position || {};
   target.position.x = finite(sourcePosition.x);
@@ -89,6 +89,17 @@ const boundsOverlap = (left = {}, right = {}) => left.minX <= right.maxX
   && left.maxY >= right.minY
   && left.minZ <= right.maxZ
   && left.maxZ >= right.minZ;
+// Conservative segment AABB rejection. Include the intersection routine's
+// barycentric/endpoint tolerance as well as the solver's contact tolerance.
+function segmentMayReachBounds(start, end, bounds, toleranceM) {
+  if (!bounds) return true;
+  const px = toleranceM + 1e-8 * (1 + 3 * (bounds.maxX - bounds.minX) + Math.abs(end.x - start.x));
+  const py = toleranceM + 1e-8 * (1 + 3 * (bounds.maxY - bounds.minY) + Math.abs(end.y - start.y));
+  const pz = toleranceM + 1e-8 * (1 + 3 * (bounds.maxZ - bounds.minZ) + Math.abs(end.z - start.z));
+  return !(Math.max(start.x, end.x) < bounds.minX - px || Math.min(start.x, end.x) > bounds.maxX + px
+    || Math.max(start.y, end.y) < bounds.minY - py || Math.min(start.y, end.y) > bounds.maxY + py
+    || Math.max(start.z, end.z) < bounds.minZ - pz || Math.min(start.z, end.z) > bounds.maxZ + pz);
+}
 const emptyBounds = () => ({
   minX: Infinity, minY: Infinity, minZ: Infinity,
   maxX: -Infinity, maxY: -Infinity, maxZ: -Infinity
@@ -153,6 +164,8 @@ function createTriangle({ a, b, c, colliderIndex, colliderId, featureId, frictio
     b: reuseVertices ? b : Object.freeze({ ...b }),
     c: reuseVertices ? c : Object.freeze({ ...c }),
     normal: Object.freeze(normal),
+    edge1x:b.x-a.x, edge1y:b.y-a.y, edge1z:b.z-a.z,
+    edge2x:c.x-a.x, edge2y:c.y-a.y, edge2z:c.z-a.z,
     offset: dot(normal, a),
     bounds: Object.freeze(triangleBounds(a, b, c)),
     colliderIndex,
@@ -474,47 +487,48 @@ export function prepareStaticRaceColliders(definitions = [], options = {}) {
   return new PreparedStaticRaceColliderWorld(definitions, options);
 }
 
-function segmentTriangle(start, end, triangle) {
-  const direction = subtract(end, start);
-  const edge1 = subtract(triangle.b, triangle.a);
-  const edge2 = subtract(triangle.c, triangle.a);
-  const p = crossVector3(direction, edge2);
-  const determinant = dot(edge1, p);
-  // With this Moller-Trumbore ordering, an outward-facing triangle produces a
-  // positive determinant when the segment approaches from the solid's
-  // exterior (direction dot normal < 0).
+// Scalar Moller-Trumbore: the previous implementation allocated six vectors
+// for every candidate/triangle, including the overwhelmingly common misses.
+export function segmentTriangle(start, end, triangle) {
+  const dx=end.x-start.x, dy=end.y-start.y, dz=end.z-start.z;
+  const e1x=triangle.edge1x ?? triangle.b.x-triangle.a.x;
+  const e1y=triangle.edge1y ?? triangle.b.y-triangle.a.y;
+  const e1z=triangle.edge1z ?? triangle.b.z-triangle.a.z;
+  const e2x=triangle.edge2x ?? triangle.c.x-triangle.a.x;
+  const e2y=triangle.edge2y ?? triangle.c.y-triangle.a.y;
+  const e2z=triangle.edge2z ?? triangle.c.z-triangle.a.z;
+  const px=dy*e2z-dz*e2y, py=dz*e2x-dx*e2z, pz=dx*e2y-dy*e2x;
+  const determinant=e1x*px+e1y*py+e1z*pz;
   if (!triangle.twoSided && determinant <= EPSILON) return null;
   if (Math.abs(determinant) <= EPSILON) return null;
-  const inverse = 1 / determinant;
-  const translated = subtract(start, triangle.a);
-  const u = dot(translated, p) * inverse;
-  if (u < -1e-8 || u > 1 + 1e-8) return null;
-  const q = crossVector3(translated, edge1);
-  const v = dot(direction, q) * inverse;
-  if (v < -1e-8 || u + v > 1 + 1e-8) return null;
-  const fraction = dot(edge2, q) * inverse;
-  if (fraction < -1e-8 || fraction > 1 + 1e-8) return null;
-  let normal = triangle.normal;
-  if (triangle.twoSided && dot(direction, normal) > 0) normal = scaleVector3(normal, -1);
-  if (dot(direction, normal) >= -EPSILON) return null;
-  return {
-    fraction: clamp(fraction, 0, 1),
-    point: mixVector(start, end, clamp(fraction, 0, 1)),
-    normal
-  };
+  const inverse=1/determinant;
+  const tx=start.x-triangle.a.x, ty=start.y-triangle.a.y, tz=start.z-triangle.a.z;
+  const u=(tx*px+ty*py+tz*pz)*inverse;
+  if (u < -1e-8 || u > 1+1e-8) return null;
+  const qx=ty*e1z-tz*e1y, qy=tz*e1x-tx*e1z, qz=tx*e1y-ty*e1x;
+  const v=(dx*qx+dy*qy+dz*qz)*inverse;
+  if (v < -1e-8 || u+v > 1+1e-8) return null;
+  const fraction=(e2x*qx+e2y*qy+e2z*qz)*inverse;
+  if (fraction < -1e-8 || fraction > 1+1e-8) return null;
+  let normal=triangle.normal;
+  let closing=dx*normal.x+dy*normal.y+dz*normal.z;
+  if (triangle.twoSided && closing>0) {normal=scaleVector3(normal,-1);closing=-closing;}
+  if (closing>=-EPSILON) return null;
+  const bounded=clamp(fraction,0,1);
+  return {fraction:bounded,point:mixVector(start,end,bounded),normal};
 }
 
 function pointInsideConvex(point, collider, toleranceM = 0) {
   if (!collider.planes?.length) return null;
-  let closest = null;
+  let closest = null, closestDistance = -Infinity;
   for (const plane of collider.planes) {
     const distance = dot(plane.normal, point) - plane.offset;
     if (distance > toleranceM) return null;
-    if (!closest || distance > closest.distance) closest = { ...plane, distance };
+    if (!closest || distance > closestDistance) { closest = plane; closestDistance = distance; }
   }
   return closest ? {
     normal: closest.normal,
-    penetrationM: Math.max(0, -closest.distance),
+    penetrationM: Math.max(0, -closestDistance),
     featureId: closest.featureId
   } : null;
 }
@@ -738,6 +752,10 @@ export class StaticColliderCollision {
       length(proposedState.angularVelocityWorld || {})
     ) * dt;
     const slices = clamp(Math.ceil(angularTravelRad / (2 * Math.PI / 180)), 1, 24);
+    // All body points follow the same rigid-body pose at each slice boundary.
+    // Keep this local to the sweep: later collision resolution changes its poses.
+    const slicePoses = Array.from({length: slices}, (_, index) =>
+      this.poseAt(previousState, proposedState, (index + 1) / slices));
     const events = [];
     let earliest = Infinity;
     this.candidates.forEach((candidate, candidateIndex) => {
@@ -747,7 +765,7 @@ export class StaticColliderCollision {
       );
       for (let slice = 1; slice <= slices; slice += 1) {
         const sliceEndFraction = slice / slices;
-        const sliceEndPose = this.poseAt(previousState, proposedState, sliceEndFraction);
+        const sliceEndPose = slicePoses[slice - 1];
         const sliceEndPoint = transformPoint(
           candidate.localPoint, sliceEndPose.position, sliceEndPose.orientation
         );
@@ -797,7 +815,11 @@ export class StaticColliderCollision {
             }
             return;
           }
-          collider.triangles.forEach((triangle) => {
+          const reachesBounds = segmentMayReachBounds(sliceStartPoint, sliceEndPoint, collider.bounds, toleranceM);
+          // Closed convex colliders and open sheets cannot overlap outside their
+          // bounds. Solid-below meshes retain their existing half-space checks.
+          if (!reachesBounds && (collider.planes.length || collider.surfaceOnly)) return;
+          if (reachesBounds) collider.triangles.forEach((triangle) => {
             physicsCostAccounting?.count('staticColliderNarrowphaseTests');
             const hit = segmentTriangle(sliceStartPoint, sliceEndPoint, triangle);
             if (!hit) return;

@@ -407,3 +407,87 @@ test('long drives bound edge caches and rebuild identical classifications after 
   assert.equal(cache.edgeClassificationsByBucketRange.size, 128);
   assert.equal(cache.edgeClassificationsByBucketRange.has(firstKey), true);
 });
+
+test('rocking across a terrain bucket boundary reuses the guard band without changing samples', () => {
+  const sampler = createSlopedSampler();
+  const cache = createPhysicsTerrainQueryFrameCache();
+  let discoveries = 0;
+  for (let index = 0; index < 120; index++) {
+    const x = index % 2 ? 3.99 : 4.01;
+    const bounds = { minX: x, maxX: x + 1, minZ: 2, maxZ: 3 };
+    const frame = cache.begin({ sampler, revision: 1, bounds });
+    discoveries += frame.statistics.bucketDiscoveries;
+    const reference = createPhysicsTerrainQueryFrameCache().begin({ sampler, revision: 1, bounds });
+    const point = { x: x + .2, y: 2, z: 2.5 };
+    assert.deepEqual(frame.samplePoint(point), reference.samplePoint(point));
+  }
+  assert.equal(discoveries, 1, 'stationary jitter must not repeatedly rebuild the local grid');
+  cache.begin({ sampler, revision: 2, bounds: { minX: 4, maxX: 5, minZ: 2, maxZ: 3 } });
+  assert.equal(cache.frame.statistics.cacheHit, false, 'edited geometry must invalidate the cache');
+});
+
+
+test('exact terrain contacts survive steps but invalidate on revision, sampler and scale changes', () => {
+  const cache = createPhysicsTerrainQueryFrameCache();
+  const options = { sampler: createSlopedSampler(), revision: 1, elevationScaleM: 1,
+    bounds: { minX: 0, maxX: 4, minZ: 0, maxZ: 4 } };
+  const point = { x: 1, z: 1 };
+  let frame = cache.begin(options);
+  frame.samplePoint(point);
+  frame = cache.begin(options);
+  assert.ok(Math.abs(frame.samplePoint(point).heightM - 0.1) < 1e-10);
+  assert.equal(frame.statistics.pointCacheHits, 1);
+  for (const change of [{ revision: 2 }, { elevationScaleM: 2 }, { sampler: createSlopedSampler() }]) {
+    Object.assign(options, change);
+    frame = cache.begin(options);
+    const sample = frame.samplePoint(point);
+    assert.equal(frame.statistics.pointCacheHits, 0);
+    assert.ok(Math.abs(sample.heightM - 0.1 * options.elevationScaleM) < 1e-10);
+  }
+});
+
+test('nearby cars share prepared edges, while batches remain private and lazy', () => {
+  const a = createPhysicsTerrainQueryFrameCache();
+  const b = createPhysicsTerrainQueryFrameCache();
+  const options = { sampler: createSlopedSampler(), revision: 1,
+    bounds: { minX: 0, maxX: 4, minZ: 0, maxZ: 4 } };
+  const fa = a.begin(options), fb = b.begin(options);
+  assert.equal(fa.batchBuffers.length, 0);
+  assert.equal(fa.bodySupportBatch, null);
+  assert.equal(a.discontinuityEdges, b.discontinuityEdges);
+  assert.equal(a.edgeClassificationsByBucketRange, b.edgeClassificationsByBucketRange);
+  const points = Array.from({ length: 40 }, (_, i) => ({ x: i / 10, z: 1 }));
+  const samples = fa.samplePoints(points);
+  assert.equal(samples.length, 40);
+  assert.ok(samples.every(sample => sample.valid));
+  assert.equal(fb.batchBuffers.length, 0);
+  assert.notEqual(fa.samplePoints([{ x: 2, z: 2 }]), samples);
+  assert.equal(samples.length, 40);
+  b.begin({ ...options, revision: 2 });
+  assert.notEqual(a.edgeClassificationsByBucketRange, b.edgeClassificationsByBucketRange);
+});
+
+test('ordered terrain feature scan agrees with exhaustive bounds checks', () => {
+  const cache = createPhysicsTerrainQueryFrameCache();
+  const frame = cache.begin({ sampler: createSlopedSampler(),
+    bounds: { minX: 0, maxX: 10, minZ: 0, maxZ: 10 } });
+  const ranks = ['curb-or-authored-step', 'height-discontinuity',
+    'sharp-dihedral-edge', 'non-manifold-seam', 'vertical-static-obstacle'];
+  // Deliberately overlapping features, including tall walls and thin steps.
+  cache.discontinuityEdges = Array.from({ length: 100 }, (_, i) => ({
+    minX: i - 50, maxX: i - 45, minZ: (i % 9) - 4, maxZ: (i % 9) + 2,
+    minY: i % 3, maxY: (i % 3) + 0.5, classification: ranks[i % 5]
+  }));
+  for (let i = 0; i < 120; i++) {
+    const bounds = { minX: i - 60, maxX: i - 57.5, minZ: -1.5, maxZ: 1.5,
+      minY: 0.75, maxY: 2.25 };
+    const expected = cache.discontinuityEdges.filter(f => f.maxX >= bounds.minX
+      && f.minX <= bounds.maxX && f.maxZ >= bounds.minZ && f.minZ <= bounds.maxZ
+      && f.maxY >= bounds.minY && f.minY <= bounds.maxY);
+    const actual = frame.classifyCollisionFeaturesInBounds(bounds);
+    assert.equal(actual.featureCount, expected.length);
+    assert.equal(actual.discontinuity, expected.length > 0);
+    const rank = Math.max(-1, ...expected.map(f => ranks.indexOf(f.classification)));
+    assert.equal(actual.classification, ranks[rank] || 'smooth-connected-surface');
+  }
+});

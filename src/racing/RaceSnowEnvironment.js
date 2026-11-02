@@ -8,9 +8,11 @@ export const RACE_SNOW_ENVIRONMENT_LIMITS = Object.freeze({
   nearFadeStartM: 1.5,
   nearFadeEndM: 5,
   columnHeightM: 24,
+  rainColumnHeightM: 48,
+  rainFallSpeedScale: 2.5,
   maxParticles: 384,
   maxCachedParticles: 2048,
-  defaultGroundSamplesPerUpdate: 48,
+  defaultGroundSamplesPerUpdate: 8,
   minimumCoverageM: 120,
   maximumCoverageM: 720,
   farFadeRatio: 0.15,
@@ -127,6 +129,25 @@ const createParticleRecord = (state, candidate) => {
   };
 };
 
+const compareCandidates = (a,b) => a.score-b.score || a.id.localeCompare(b.id);
+// No band can contribute more than targetCount to the final selection. Keep
+// just that many best candidates instead of sorting thousands on each cell hop.
+export function retainWeatherCandidate(heap, candidate, limit) {
+  if(heap.length < limit){
+    heap.push(candidate);
+    let i=heap.length-1;
+    while(i>0){const parent=(i-1)>>1;if(compareCandidates(heap[parent],heap[i])>=0)break;
+      [heap[parent],heap[i]]=[heap[i],heap[parent]];i=parent;}
+  } else if(compareCandidates(candidate,heap[0])<0){
+    heap[0]=candidate;
+    let i=0;
+    while(i*2+1<heap.length){let child=i*2+1;
+      if(child+1<heap.length && compareCandidates(heap[child+1],heap[child])>0)child++;
+      if(compareCandidates(heap[i],heap[child])>=0)break;
+      [heap[i],heap[child]]=[heap[child],heap[i]];i=child;}
+  }
+}
+
 const selectActiveParticles = (state, {
   camera,
   cameraYaw,
@@ -206,13 +227,13 @@ const selectActiveParticles = (state, {
         if (Math.abs(lateral) > particleLateralLimit) continue;
         const ratio = depth / coverageDistanceM;
         const bandIndex = ratio < 0.2 ? 0 : ratio < 0.55 ? 1 : 2;
-        bands[bandIndex].push({
+        retainWeatherCandidate(bands[bandIndex], {
           id: `${cellX}:${cellZ}:${slot}`,
           cellX,
           cellZ,
           slot,
           score: randomFrom(state.seed, cellX, cellZ, slot, 19)
-        });
+        }, targetCount);
       }
     }
   }
@@ -323,6 +344,7 @@ export const resetRaceSnowEnvironmentState = (state) => {
   state.targetCount = 0;
   state.tick = 0;
   state.lastElapsedMs = null;
+  state.rainFallTime = null;
   return state;
 };
 
@@ -342,10 +364,11 @@ export const updateRaceSnowEnvironmentField = (state, {
     throw new TypeError('Race snow environment state must be created before it is updated.');
   }
   const intensity = getWeatherIntensity(weatherState);
-  if (weatherState.id !== 'snow' || intensity <= 0.02) {
+  if (!['snow','rain','storm'].includes(weatherState.id) || intensity <= 0.02) {
     resetRaceSnowEnvironmentState(state);
     return state.activeParticles;
   }
+  const rain = weatherState.id === 'rain' || weatherState.id === 'storm';
   const coverageDistanceM = getCoverageDistance(weatherState);
   const targetCount = getTargetCount(weatherState);
   state.coverageDistanceM = coverageDistanceM;
@@ -371,6 +394,10 @@ export const updateRaceSnowEnvironmentField = (state, {
     : 1 / 60;
   state.lastElapsedMs = currentElapsedMs;
   const elapsedSeconds = currentElapsedMs / 1000;
+  const rainSpeedFactor = (1 + intensity * .5) * (weatherState.id === 'storm' ? 1 + intensity : 1);
+  // Accumulate speed changes so adjusting intensity cannot teleport drops.
+  state.rainFallTime = state.rainFallTime == null ? elapsedSeconds * rainSpeedFactor
+    : state.rainFallTime + dt * rainSpeedFactor;
   const basis = getCameraBasis(cameraYaw);
   const limits = RACE_SNOW_ENVIRONMENT_LIMITS;
   const gustMagnitude = Math.hypot(Number(gustXMps) || 0, Number(gustZMps) || 0);
@@ -379,20 +406,28 @@ export const updateRaceSnowEnvironmentField = (state, {
   state.activeParticles.forEach((particle) => {
     if (particle.hydrated) particle.hydration = clamp(Number(particle.hydration || 0) + dt * 3.2, 0, 1);
     else particle.hydration = 0;
+    particle.rain = rain;
+    // Visual rain speed is intentionally exaggerated for readability in motion.
+    const baseRainSpeed = (7 + particle.fallSpeedMps) * limits.rainFallSpeedScale;
+    const fallSpeed = rain ? baseRainSpeed * rainSpeedFactor : particle.fallSpeedMps;
+    const columnHeightM = rain ? limits.rainColumnHeightM : limits.columnHeightM;
     const fallTravelM = positiveModulo(
-      particle.fallPhaseM + elapsedSeconds * particle.fallSpeedMps,
-      limits.columnHeightM
+      particle.fallPhaseM * (columnHeightM / limits.columnHeightM) + (rain ? state.rainFallTime * baseRainSpeed : elapsedSeconds * fallSpeed),
+      columnHeightM
     );
-    const fallAgeSeconds = fallTravelM / Math.max(0.1, particle.fallSpeedMps);
-    const driftDistanceM = Math.min(8, gustMagnitude * fallAgeSeconds * 0.12);
-    const swayM = Math.sin(particle.swayPhase + elapsedSeconds * particle.swayFrequency) * 0.65;
-    particle.worldX = particle.baseX + gustDirectionX * driftDistanceM + basis.rightX * swayM;
-    particle.worldZ = particle.baseZ + gustDirectionZ * driftDistanceM + basis.rightZ * swayM;
+    const fallAgeSeconds = fallTravelM / Math.max(0.1, fallSpeed);
+    const windResponse = rain ? .45 : .65;
+    const driftDistanceM = Math.min(16, gustMagnitude * fallAgeSeconds * windResponse);
+    const swayM = Math.sin(particle.swayPhase + elapsedSeconds * particle.swayFrequency) * (rain ? 0.04 : 0.65);
+    particle.worldX = particle.baseX + gustDirectionX * driftDistanceM + Math.cos(particle.swayPhase) * swayM;
+    particle.worldZ = particle.baseZ + gustDirectionZ * driftDistanceM + Math.sin(particle.swayPhase) * swayM;
     particle.heightM = Number(
       particle.hydrated ? particle.groundHeightM : Number(camera.heightM || 0) - 3
-    ) + 0.35 + limits.columnHeightM - fallTravelM;
-    particle.fallVelocityMps = particle.fallSpeedMps;
-    particle.lateralVelocityMps = gustMagnitude * 0.12
+    ) + 0.35 + columnHeightM - fallTravelM;
+    particle.fallVelocityMps = fallSpeed;
+    particle.windVelocityX = (Number(gustXMps)||0)*windResponse;
+    particle.windVelocityZ = (Number(gustZMps)||0)*windResponse;
+    particle.lateralVelocityMps = gustMagnitude * windResponse
       + Math.abs(Math.cos(particle.swayPhase + elapsedSeconds * particle.swayFrequency)
         * particle.swayFrequency * 0.65);
     const dx = particle.worldX - Number(camera.x || 0);

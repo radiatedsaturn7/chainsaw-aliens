@@ -6,7 +6,7 @@ import MenuPlayer from '../../src/menus/MenuPlayer.js';
 import {createMenuDocument,normalizeMenuDocument} from '../../src/menus/MenuDocument.js';
 
 test('all supplied categories and special/story lines are available verbatim',()=>{
- assert.equal(Object.keys(GARAGE_DIALOGUE.tuning).length,8);assert.equal(Object.keys(GARAGE_DIALOGUE.upgrades).length,5);assert.equal(Object.keys(GARAGE_DIALOGUE.events).length,17);
+ assert.equal(Object.keys(GARAGE_DIALOGUE.tuning).length,9);assert.equal(Object.keys(GARAGE_DIALOGUE.upgrades).length,5);assert.equal(Object.keys(GARAGE_DIALOGUE.events).length,17);
  for(const [category,line] of Object.entries(GARAGE_DIALOGUE.tuning))assert.equal(garageDialogueText({kind:'tuning',category}),line);
  for(const [category,line] of Object.entries(GARAGE_DIALOGUE.upgrades))assert.equal(garageDialogueText({kind:'upgrades',category}),line);
  assert.equal(garageDialogueText({insufficient:true,expensive:true}),GARAGE_DIALOGUE.events.insufficient);
@@ -34,7 +34,7 @@ test('mouse hover updates tuning and upgrade highlights without activating them'
  const {garageGridBounds}=await import('../../src/menus/MenuGarageWidgets.js');
  const b={x:e.x*1000,y:e.y*500,w:e.w*1000,h:e.h*500},card=garageGridBounds(b,1);
  p.hoverGarage({x:card.x+5,y:card.y+5});assert.equal(p.widgetStates.get(e.id).index,1);assert.equal(p.widgetStates.get(e.id).section,undefined);assert.equal(p.dialogueContext().category,'Engine');
- p.tuner={busy:false,mode:'grid',index:0,hitAreas:[{x:1,y:1,w:20,h:20,kind:'category',index:4}],dispose(){}};
+ p.tuner={enabled:()=>true,busy:false,mode:'grid',index:0,hitAreas:[{x:1,y:1,w:20,h:20,kind:'category',index:4}],dispose(){}};
  p.hoverGarage({x:10,y:10});assert.equal(p.tuner.index,4);assert.equal(p.tuner.mode,'grid');p.cleanup();
 });
 test('dialogue widget survives saving and wraps complete long lines inside portrait/wide panels',()=>{

@@ -40,6 +40,7 @@ export default class Title {
     this.optionsOrder = [
       'project-browser',
       'radio',
+      'haptics',
       'latest-changes',
       'robtersession',
       'controls',
@@ -542,7 +543,7 @@ export default class Title {
     this.optionsOrder.forEach((action, index) => {
       const y = layout.startY + index * (layout.buttonHeight + layout.gap);
       const selected = this.optionsOrder[this.optionsSelection] === action;
-      const label = action === 'project-browser' ? 'Project Browser' : action === 'radio' ? 'Radio' : action === 'latest-changes'
+      const label = action === 'haptics' ? 'Driving vibration' : action === 'project-browser' ? 'Project Browser' : action === 'radio' ? 'Radio' : action === 'latest-changes'
         ? 'Latest Changes'
         : action === 'robtersession'
           ? 'Songs'

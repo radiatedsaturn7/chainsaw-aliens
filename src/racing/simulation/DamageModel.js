@@ -2,6 +2,7 @@ import {collectItemPlacement, getItemSystem, itemPlacementId} from '../../items/
 import { collectMixTape, isMixTape } from '../../radio/MixTapePickup.js';
 import { RACE_WHEEL_IDS, clamp, deterministicUnitFloat } from './SimulationMath.js';
 import { getDoodadRuleForSpeed } from '../raceDoodads.js';
+import {buildSceneryTriggerIndex, querySceneryTriggers} from '../SceneryTriggerIndex.js';
 
 const averageDamage = (damage = {}) => {
   const values = Object.values(damage || {}).map((value) => Number(value) || 0);
@@ -91,10 +92,10 @@ export class DamageModel {
   }
 }
 
-export function updateRaceSceneryCollisions(editor, seconds = 0) {
+export function prepareRaceSceneryTriggers(editor, source = null) {
   const session = editor.playtestSession;
   if (!session) return;
-  const allScenery = editor.ensureRaceScenery();
+  const allScenery = source || editor.ensureRaceScenery?.() || [];
   // Solid scenery is resolved by the rigid-body broadphase. Only pickups and
   // destructible scenery need this legacy contact pass during a race.
   let cache = session.sceneryTriggerCandidates;
@@ -107,10 +108,21 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
       return !doodad.isFence && sprite.solid !== true && sprite.collidable !== true
         && !(rules.length && rules.every(rule => rule.behavior === 'collide'));
     })};
+    cache.index = buildSceneryTriggerIndex(cache.sprites, sprite => {
+      const doodad = editor.getRaceDoodadForScenery(sprite);
+      return Math.max(.35, Number(doodad.hitboxWidthM || doodad.widthM || sprite.widthM || 1.4) / 2);
+    });
     session.sceneryTriggerCandidates = cache;
   }
-  const scenery = cache.sprites;
-  if (!scenery.length) return;
+  return cache;
+}
+
+export function updateRaceSceneryCollisions(editor, seconds = 0) {
+  const session = editor.playtestSession;
+  if (!session) return;
+  const cache = prepareRaceSceneryTriggers(editor);
+  session.sceneryTriggerWork = {total: cache.sprites.length, nearby: 0};
+  if (!cache.sprites.length) return;
   session.triggeredSceneryIds = Array.isArray(session.triggeredSceneryIds) ? session.triggeredSceneryIds : [];
   session.flattenedSceneryIds = Array.isArray(session.flattenedSceneryIds) ? session.flattenedSceneryIds : [];
   session.removedSceneryIds = Array.isArray(session.removedSceneryIds) ? session.removedSceneryIds : [];
@@ -120,6 +132,9 @@ export function updateRaceSceneryCollisions(editor, seconds = 0) {
     car,
     tuning: editor.getRaceCarTuning(car)
   });
+  const scenery = querySceneryTriggers(cache.index, contactPoints);
+  session.sceneryTriggerWork.nearby = scenery.length;
+  if (!scenery.length) return;
   const wheelProbeRadius = 0.34;
   const bodyProbeRadius = 0.18;
   const speed = Math.max(0, Number(session.groundSpeedMps ?? Math.abs(session.speedMps || 0)) || 0);
@@ -239,8 +254,12 @@ export function updateRaceWearAndDamage(editor, seconds = 0) {
       sequence
     );
   };
-  if (session.rpm > 0.985 && editor.raceInput.throttle && editor.raceInput.gear < tuning.gearRatios.length) {
-    editor.applyRaceDamage('engine', seconds * 2.8);
+  // Reaching the limiter is normal racing. Only measured mechanical overspeed
+  // (for example an unsafe downshift) causes engine wear here.
+  const limiterRpm = Number(tuning.revLimitRpm || tuning.redlineRpm || 7000);
+  const measuredRpm = Number(session.engineRpm ?? Number(session.rpm || 0) * limiterRpm);
+  if (measuredRpm > limiterRpm * 1.08) {
+    editor.applyRaceDamage('engine', seconds * 2.8 * Math.min(3, (measuredRpm / limiterRpm - 1.08) / .1));
   }
   if (Math.abs(steer) > 0.72 && speed > 38 && editor.raceInput.handbrake) {
     editor.applyRaceDamage('transmission', seconds * 0.9);

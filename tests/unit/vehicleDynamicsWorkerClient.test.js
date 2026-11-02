@@ -206,3 +206,43 @@ test('client keeps bounded ordered history and reads latest-wins shared ring seq
   assert.equal(telemetry.displayedSequence >= 11, true);
   assert.equal(telemetry.bufferStarvationCount, 0);
 });
+
+test('debug removal discards late snapshots and returns transferable buffers',()=>{
+ const worker=new FakeWorker();
+ const client=new VehicleDynamicsWorkerClient({worker,performanceQualification:qualified});
+ client.addVehicle({id:'debug-1',config:{}});
+ client.snapshotsByVehicle.set('debug-1',{latest:{}});
+ client.removeVehicle('debug-1');
+ assert.equal(client.snapshotsByVehicle.has('debug-1'),false);
+ const buffer=createVehicleRenderSnapshotBuffer();
+ worker.emit({type:'snapshot',vehicleId:'debug-1',buffer});
+ assert.equal(client.snapshotsByVehicle.has('debug-1'),false);
+ assert.equal(worker.messages.at(-1).message.type,'recycleSnapshotBuffer');
+ assert.deepEqual(worker.messages.at(-1).transfers,[buffer]);
+ const count=worker.messages.length;
+ client.removeVehicle('player');
+ assert.equal(worker.messages.length,count);
+});
+
+test('worker pause combines menu and page visibility and removes its listener on close', () => {
+ const previous = globalThis.document; const listeners = new Set();
+ const doc = { hidden: false, addEventListener: (_, fn) => listeners.add(fn),
+   removeEventListener: (_, fn) => listeners.delete(fn) };
+ globalThis.document = doc;
+ let client;
+ try {
+  const worker = new FakeWorker();
+  client = new VehicleDynamicsWorkerClient({ worker, performanceQualification: qualified });
+  client.setPaused(true); assert.equal(worker.messages.length, 0);
+  client.initialize({});
+  assert.equal(worker.messages.at(-1).message.type, 'setPaused');
+  assert.equal(worker.messages.at(-1).message.paused, true);
+  const count = worker.messages.length;
+  client.setPaused(true); assert.equal(worker.messages.length, count);
+  doc.hidden = true; listeners.forEach(fn => fn()); client.setPaused(false);
+  assert.equal(worker.messages.at(-1).message.paused, true);
+  doc.hidden = false; listeners.forEach(fn => fn());
+  assert.equal(worker.messages.at(-1).message.paused, false);
+  client.close(); assert.equal(listeners.size, 0);
+ } finally { client?.close(); globalThis.document = previous; }
+});

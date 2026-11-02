@@ -117,7 +117,7 @@ function createProductionFlatEnvironment(config, yawRad, oppositeDiagonal, {
       surfaceHeightByWheel,
       surfaceNormalByWheel,
       contactSamplesByWheel,
-      sampleTerrainAtWorldPoint: (point) => frame.samplePoint(point),
+      sampleTerrainAtWorldPoint: (point, query = {}) => frame.samplePoint(point, query.target || undefined),
       sampleTerrainAtWorldPoints: (points) => frame.samplePoints(points),
       sampleTerrainMaximumHeightInBounds: (bounds) => frame.maximumHeightInBounds(bounds)
     };
@@ -467,7 +467,8 @@ test('WRX2 zero-steer dynamic states have no preferred lateral or wheel-hop side
       const mirroredWheelId = wheelId[1] === 'l' ? `${wheelId[0]}r` : `${wheelId[0]}l`;
       assert.ok(Math.abs(Number(left.state.contactPatches[wheelId].lateralForceN)
         + Number(right.state.contactPatches[mirroredWheelId].lateralForceN)) < 5,
-      `${name}:${wheelId}:mirrored force`);
+      `${name}:${wheelId}:mirrored force ${left.state.contactPatches[wheelId].lateralForceN}`
+        + ` + ${right.state.contactPatches[mirroredWheelId].lateralForceN} N`);
     }
   }
 });

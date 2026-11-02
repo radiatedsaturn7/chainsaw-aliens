@@ -6,7 +6,7 @@ import RaceEditor from '../../src/ui/RaceEditor.js';
 test('Race debug menu toggles the Physics Performance overlay independently', () => {
   const editor = Object.create(RaceEditor.prototype);
   editor.raceInput = {
-    pauseMenuMode: 'debug',
+    pauseMenuMode: 'debug-overlays',
     pauseMenuIndex: 0,
     physicsSurfaceVisible: false,
     physicsPerformanceVisible: false,

@@ -1,5 +1,6 @@
 import {createBuiltInRaceCars} from '../racing/raceData.js';
 import {PowertrainModel} from '../racing/simulation/PowertrainModel.js';
+import {normalizeFuelConfig} from '../racing/simulation/FuelModel.js';
 import {applyTireDefinition} from '../racing/raceTires.js';
 
 // These are engine capabilities, not a catalog of upgrades. Item files supply
@@ -18,6 +19,9 @@ export const CAR_PART_FIELDS=[
  field('brakeBalance','Brake balance',0.45,0.78),field('brakePressure','Brake pressure',0.7,1.35),
  field('differentialAccel','Differential acceleration',0,1),field('differentialDecel','Differential deceleration',0,1),
  field('aeroFront','Front aero',0,1),field('aeroRear','Rear aero',0,1),
+ field('fuelMpg','Fuel economy (US MPG)',1,200),
+ field('fuelConsumptionScale','Fuel consumption multiplier',0,20),
+ field('fuelIdleGallonsPerHour','Idle fuel (US gallons/hour)',0,5),
  field('torqueScale','Torque curve multiplier',0.1,5),
 ];
 const fields=new Map(CAR_PART_FIELDS.map(f=>[f.id,f]));
@@ -85,12 +89,16 @@ function scaleTorque(tuning,fn,rpms=[]){
 export function readCarSetting(car,id){
  target(id);
  if(id==='torqueScale')return 1;
+ if(id.startsWith('fuel'))return normalizeFuelConfig(car.mechanics)[id];
  if(id.startsWith('pressure.'))return car.setup?.tirePressurePsi?.[id.split('.')[1]]??32;
  if(id.startsWith('gearRatios.'))return car.tuning?.gearRatios?.[Number(id.split('.')[1])];
  return car.tuning?.[id];
 }
 function changeSetting(car,change){
  const f=target(change.field),id=f.id;
+ if(id.startsWith('fuel')){
+  car.mechanics||={};car.mechanics[id]=Math.max(f.min,Math.min(f.max,applyNumber(readCarSetting(car,id),change)));return;
+ }
  if(id==='torqueScale'){
   if(change.operation==='add')throw Error('Use Set or Multiply for torque scale');
   scaleTorque(car.tuning,()=>Math.max(f.min,Math.min(f.max,change.value)));return;
@@ -144,6 +152,21 @@ export function buildGarageCar(stock,{parts=[],tune={},tires={}}={}){
   const range=ranges[id];if(!range)continue; // Removed parts also remove their tuning permissions.
   const number=finite(value,'Tune');if(number<range.min||number>range.max)throw Error(`Tune is outside the installed part range: ${target(id).label}`);
   changeSetting(car,{field:id,operation:'set',value:number});
+ }
+ // Estimate extra fuel demand from actual engine curves, not tier names or
+ // declared HP (which can differ from the physics curve). Cruise gets a mild
+ // penalty; full-load burn scales with average available power. Rebuilt from
+ // the stock document each time, so removing parts restores its economy.
+ if(JSON.stringify(stock.tuning?.engineCurve)!==JSON.stringify(car.tuning.engineCurve)){
+  const defaults={idleRpm:850,revLimitRpm:6500,torquePeakStartRpm:2200,torquePeakEndRpm:5200,torqueFalloffRpm:6500,torqueLbFt:258};
+  const base={...defaults,...stock.tuning},built={...defaults,...car.tuning},engine=new PowertrainModel();
+  const lo=Math.max(1,base.idleRpm),hi=Math.max(lo+1,base.revLimitRpm);
+  let original=0,upgraded=0;
+  for(let i=0;i<=32;i++){const rpm=lo+(hi-lo)*i/32;original+=engine.getTorqueNmAtRpm(rpm,base)*rpm;upgraded+=engine.getTorqueNmAtRpm(rpm,built)*rpm;}
+  if(Number.isFinite(original)&&Number.isFinite(upgraded)&&original>0){
+   const ratio=Math.max(.25,Math.min(10,upgraded/original)),cruise=1+.25*(ratio-1),fuel=normalizeFuelConfig(car.mechanics);
+   car.mechanics={...car.mechanics,fuelMpg:Math.max(1,Math.min(200,fuel.fuelMpg/cruise)),fuelPowerLoadScale:Math.max(.1,Math.min(10,fuel.fuelPowerLoadScale*ratio/cruise))};
+  }
  }
  return car;
 }

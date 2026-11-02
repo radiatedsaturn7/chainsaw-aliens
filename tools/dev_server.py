@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import performance_capture_store as performance_store
+from media_ranges import MediaRangeMixin
 import argparse
+from race_track_import import handle_request as import_real_track
 import base64
 import gzip
 import hashlib
@@ -62,7 +65,7 @@ def run_git_command(args: list[str]) -> subprocess.CompletedProcess[str]:
     )
 
 
-class DevHandler(SimpleHTTPRequestHandler):
+class DevHandler(MediaRangeMixin, SimpleHTTPRequestHandler):
     debug_logs = False
     storage_response_cache: dict[tuple[str, str, int, int, int, int], bytes] = {}
     storage_response_cache_lock = threading.Lock()
@@ -726,6 +729,15 @@ class DevHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
+        if parsed.path == "/__performance/captures":
+            self._write_json(HTTPStatus.OK, {"ok": True, "captures": performance_store.listing()})
+            return
+        if parsed.path.startswith("/__performance/captures/"):
+            try:
+                self._write_json(HTTPStatus.OK, performance_store.read(parsed.path.rsplit("/", 1)[-1]))
+            except (ValueError, FileNotFoundError):
+                self._write_json(HTTPStatus.NOT_FOUND, {"ok": False, "error": "Capture not found"})
+            return
         if parsed.path == "/__storage/index":
             started_at = time.perf_counter()
             query = parse_qs(parsed.query)
@@ -784,6 +796,30 @@ class DevHandler(SimpleHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802
         parsed = urlparse(self.path)
+        if parsed.path == "/__performance/captures":
+            try:
+                if self.headers.get_content_type() != "application/json":
+                    raise ValueError("Expected application/json")
+                if int(self.headers.get("Content-Length", "0")) > performance_store.MAX_BYTES:
+                    self._write_json(HTTPStatus.REQUEST_ENTITY_TOO_LARGE, {"ok": False, "error": f"Capture exceeds {performance_store.MAX_BYTES // (1024 * 1024)} MiB"})
+                    return
+                result = performance_store.save(self._read_json_body(max_bytes=performance_store.MAX_BYTES))
+                self._write_json(HTTPStatus.OK, result)
+            except (ValueError, TypeError) as exc:
+                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": str(exc)})
+            except OSError:
+                self._write_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"ok": False, "error": "Could not save capture; retry upload"})
+            return
+        if parsed.path == "/__race-import":
+            try:
+                result = import_real_track(self._read_json_body(max_bytes=4096))
+                self._write_json(HTTPStatus.OK, {"ok": True, **result})
+            except (ValueError, TypeError, KeyError) as exc:
+                self._write_json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": str(exc)})
+            except Exception as exc:
+                print(f"[race-import] {exc}", flush=True)
+                self._write_json(HTTPStatus.BAD_GATEWAY, {"ok": False, "error": "Track import failed. Try again later."})
+            return
         if parsed.path == "/__export/session":
             self._handle_create_export_session()
             return

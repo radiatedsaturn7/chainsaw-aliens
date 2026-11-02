@@ -87,3 +87,36 @@ test('shared desktop and portrait menus expose correctly named car and race sett
   assert.equal(pool.label,'AI Cars & Classes');assert.equal(pool.disabled,false);
  }
 });
+
+test('thirty-car grids survive save/load and runtime construction without the old twelve-car cap',()=>{
+ const e=editor();
+ const car=e.withSavedRaceCarRuntimeIdentity(structuredClone(e.selectedCar),'Stress car');e.upsertRaceProjectCar(car);
+ e.upsertRaceProjectCar(e.withSavedRaceCarRuntimeIdentity(structuredClone(e.selectedCar),'Opponent car'));
+ e.setRaceAiCount(29);
+ assert.equal(e.selectedRace.competition.aiDrivers.length,29);
+ e.applyLoadedRaceDocument(e.normalizeLoadedRaceDocument(JSON.parse(JSON.stringify(e.serializeSelectedRaceDocument()))));
+ e.startPlaytest(e.getRaceCarProjectIdentity(car),{hydrateCars:false});
+ assert.equal(e.playtestSession.aiRuntime.length,29);
+ assert.equal(new Set(e.playtestSession.aiRuntime.map(a=>a.id)).size,29);
+ e.setRaceAiCount(1000);assert.equal(e.getRaceAiCount(),29);
+});
+
+test('AI footprint geometry uses prepared contact heights and preserves missing support',async()=>{
+ const {sampleRaceAiFootprintGeometry}=await import('../../src/racing/RaceAiSimulation.js');
+ let calls=0;const frame={samplePoint:p=>{calls++;return p.x===0?{valid:true,heightM:42,normal:{x:0,y:1,z:0}}:{valid:false,heightM:null,normal:null};}};
+ const result=sampleRaceAiFootprintGeometry(frame,{fl:{x:0},fr:{x:1},rl:{x:0},rr:{x:1}});
+ assert.equal(calls,4);assert.equal(result.heights.fl,42);assert.equal(result.heights.fr,null);assert.equal(result.contacts.fr.normal,null);
+});
+
+test('editor forwards an already sampled AI contact state without sampling it again',()=>{
+ const e=editor(),car=e.selectedCar,tuning=e.getRaceCarTuning(car);
+ e.startPlaytest(car.id,{hydrateCars:false});
+ const ai={id:'contact-reuse',runtimeCar:car,worldX:0,worldZ:30,carYaw:0,
+  speedMps:0,distance:30,projectedDistance:30,gear:1,rpm:800,
+  engineDrive:{throttle:0,brake:0},drivingPlan:{steeringAngleRad:0,targetSpeedMps:0}};
+ const contactState=e.getRaceAiContactState(ai,car,tuning);
+ e.getRaceAiContactState=()=>{throw Error('duplicate AI contact query');};
+ e.updateRaceAiVehiclePhysics(ai,{car,tuning,seconds:0,contactState});
+ assert.ok(ai.vehicleDynamicsRunner);
+ assert.ok(Number.isFinite(ai.worldX));
+});

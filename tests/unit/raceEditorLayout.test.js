@@ -3723,7 +3723,7 @@ test('Race static track adds opposing one-meter render-only underlaps from the v
   assert.equal(JSON.stringify(bake.terrainCells), terrainSnapshot);
 });
 
-test('Race static track cache ignores continuous weather values until the effective material changes', () => {
+test('Race static track geometry survives wet and snow thresholds; weather uses dynamic overlays', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   configureCorridorBakeRace(editor, { marginMode: 'on', shoulderMode: 'on' });
   const bake = editor.buildRaceWorldBake({
@@ -3742,6 +3742,10 @@ test('Race static track cache ignores continuous weather values until the effect
   });
 
   assert.equal(second, first);
+  for (const weatherState of [
+    {id:'storm',rainBuildup:1,wetness:1},
+    {id:'snow',snowBuildup:1,snowDepthInches:8,wetness:1}
+  ]) assert.equal(editor.getRaceStaticTrackSurfaceMeshes(bake,{texturesEnabled:true,weatherState}),first);
   assert.equal(Array.isArray(first.roadPaintMeshes), true);
   assert.equal(Array.isArray(first.trackFurnitureMeshes), true);
 });
@@ -18375,13 +18379,13 @@ test('Race weather approach distance accumulates monotonically through braking a
   }), 45);
 });
 
-test('Race weather separates full visual intensity from existing physical forcing and exposes near-whiteout visibility', () => {
+test('Race weather separates physical forcing from weather-specific distance visibility', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
   const visibilityByIntensity = new Map([
-    [0.25, 260],
-    [0.5, 120],
-    [0.75, 50],
-    [1, 20]
+    [0.25, 3162.28],
+    [0.5, 1000],
+    [0.75, 316.23],
+    [1, 100]
   ]);
 
   for (const [weatherIntensity, visibilityDistanceM] of visibilityByIntensity) {
@@ -18405,10 +18409,10 @@ test('Race weather separates full visual intensity from existing physical forcin
   assert.equal(rain.visualIntensity, 1);
   assert.equal(rain.targetIntensity, 0.72);
   assert.equal(rain.effectiveIntensity, 0.72);
-  assert.equal(rain.visibilityDistanceM, 20);
+  assert.equal(rain.visibilityDistanceM, 3556.51);
   assert.equal(storm.visualIntensity, 1);
   assert.equal(storm.targetIntensity, 1);
-  assert.equal(storm.visibilityDistanceM, rain.visibilityDistanceM);
+  assert.equal(storm.visibilityDistanceM, 864.81);
 });
 
 test('Race snowfall production path owns one canonical near-to-far particle field', () => {
@@ -18730,7 +18734,8 @@ test('Race environment snow reuses one depth-tested Three.js point field across 
   assert.equal(stats.environmentSnowParticles, 384);
   assert.equal(stats.environmentSnowDrawCalls, 1);
   assert.equal(Math.max(...particles.map((particle) => particle.sizePx)) <= 2.2, true);
-  assert.match(material.vertexShader, /clamp\(perspectiveSize \+ snowStreak, 1\.0, 8\.0\)/);
+  assert.equal(material.uniforms.rainMode.value,0);
+  assert.match(material.vertexShader, /mix\(8\.0, 14\.0, rainMode\)/);
   assert.ok(geometry.getAttribute('snowStreak'));
 
   editor.playtestSession.sceneElapsedMs += 16;
@@ -18794,7 +18799,7 @@ test('Race rain and storm reach dense hurricane visuals with depth haze', () => 
     roadWidthScale: 1
   };
 
-  for (const [id, expectedCount] of [['rain', 160], ['storm', 192]]) {
+  for (const [id, expectedCount] of [['rain', 384], ['storm', 384]]) {
     const weatherState = editor.getRaceWeatherState(
       { weather: id, weatherIntensity: 1 },
       editor.playtestSession
@@ -18806,7 +18811,7 @@ test('Race rain and storm reach dense hurricane visuals with depth haze', () => 
       speedMps: 24
     });
     assert.equal(editor.lastRaceRenderStats.weatherFxParticles, expectedCount);
-    assert.equal(editor.lastRaceRenderStats.weatherFxVisibilityDistanceM, 20);
+    assert.equal(editor.lastRaceRenderStats.weatherFxVisibilityDistanceM, id==='storm'?864.81:3556.51);
     assert.equal(editor.lastRaceRenderStats.weatherFxVisibilityStrength > 0.9, true);
     assert.equal(ctx.calls.some((call) => (
       call.type === 'fillRect'
@@ -18851,24 +18856,24 @@ test('Race storms schedule deterministic lightning and one thunder sound without
   };
   const first = createEditor();
   first.updateRaceWeatherFxState(1 / 60, { weatherState: storm });
-  first.playtestSession.weatherFxState.lightningTimerMs = 0;
+  first.playtestSession.weatherFxState.storm.hazard = 0;
   first.updateRaceWeatherFxState(1 / 60, { weatherState: storm });
   const firstStrike = { ...first.playtestSession.weatherFxState };
 
   const second = createEditor();
   second.updateRaceWeatherFxState(1 / 60, { weatherState: storm });
-  second.playtestSession.weatherFxState.lightningTimerMs = 0;
+  second.playtestSession.weatherFxState.storm.hazard = 0;
   second.updateRaceWeatherFxState(1 / 60, { weatherState: storm });
   const secondStrike = { ...second.playtestSession.weatherFxState };
 
-  assert.equal(firstStrike.lightningSequence, 1);
+  assert.equal(firstStrike.storm.sequence, 1);
   assert.equal(firstStrike.lightningFlash > 0, true);
-  assert.equal(firstStrike.lightningX, secondStrike.lightningX);
-  assert.equal(thunder.length, 2);
+  assert.deepEqual(firstStrike.storm.strikes, secondStrike.storm.strikes);
+  assert.equal(thunder.length, 0); // Sound arrives after the visible strike.
 
   const ctx = createMockContext();
   first.drawRaceWeatherLightning(ctx, { x: 0, y: 0, w: 640, h: 360 }, firstStrike);
-  assert.equal(ctx.calls.filter((call) => call.type === 'stroke').length, 1);
+  assert.equal(ctx.calls.filter((call) => call.type === 'stroke').length, 3);
 
   first.updateRaceWeatherFxState(1, {
     weatherState: {
@@ -18877,7 +18882,7 @@ test('Race storms schedule deterministic lightning and one thunder sound without
     }
   });
   assert.equal(first.playtestSession.weatherFxState.lightningFlash, 0);
-  assert.equal(thunder.length, 2);
+  assert.equal(thunder.length, 0);
 });
 
 test('Race rain streaks follow their downward screen-space motion', () => {

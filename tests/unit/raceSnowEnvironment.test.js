@@ -182,3 +182,86 @@ test('environment snowfall bounds streamed cache growth and per-frame terrain sa
     assert.equal(state.particleCache.size <= RACE_SNOW_ENVIRONMENT_LIMITS.maxCachedParticles, true);
   }
 });
+
+test('rain and storm share bounded world coverage, fall faster and switch cleanly back to snow',()=>{
+ for(const id of ['rain','storm']){
+  const state=createRaceSnowEnvironmentState({raceSeed:'rain-coverage'});
+  const particles=hydrateField(state,{weatherState:{id,visualIntensity:1,visibilityDistanceM:865}});
+  assert.equal(particles.length,384);
+  assert.ok(particles.some(p=>p.cameraDepthM>400));
+  assert.ok(particles.some(p=>p.cameraDepthM<50));
+  assert.ok(particles.every(p=>p.rain&&p.fallVelocityMps>=(id==='storm'?60:30)&&p.fallVelocityMps<=(id==='storm'?76:38)));
+  const old=particles.map(p=>[p.id,p.baseX,p.baseZ]);
+  hydrateField(state,{weatherState:{id,visualIntensity:1,visibilityDistanceM:865},elapsedMs:12100});
+  assert.deepEqual(particles.map(p=>[p.id,p.baseX,p.baseZ]),old);
+  const snow=hydrateField(state);
+  assert.ok(snow.every(p=>!p.rain&&p.fallVelocityMps<3));
+  assert.equal(hydrateField(state,{weatherState:{id:'clear',visualIntensity:0}}).length,0);
+ }
+});
+
+test('rain uses the shared depth-tested GPU buffer without a foreground overlay', async()=>{
+ const {default:RaceEditor}=await import('../../src/ui/RaceEditor.js');
+ // Editor builds the production Three.js scene through its own rendering code;
+ // streamed field identity/coverage above is independently tested without a GPU.
+ const e=new RaceEditor({});
+ const renderer={};const material=e.getRaceThreeEnvironmentSnowMaterial(renderer);
+ assert.equal(material.depthTest,true);assert.equal(material.depthWrite,false);
+ assert.match(material.fragmentShader,/uniform float rainMode/);
+ assert.match(material.fragmentShader,/rainMode > 0.5/);
+ assert.equal(e.getRaceThreeEnvironmentSnowMaterial(renderer),material);
+});
+
+
+test('rain starts higher and physically traverses its column faster without changing snow',()=>{
+ const state=createRaceSnowEnvironmentState({raceSeed:'fast-rain'});
+ const options={weatherState:{id:'rain',visualIntensity:1,visibilityDistanceM:865},sampleGroundHeightM:()=>0,elapsedMs:10000};
+ const drops=hydrateField(state,options);
+ assert.ok(drops.some(p=>p.heightM>40));
+ const heights=new Map(drops.map(p=>[p.id,p.heightM]));
+ const moved=hydrateField(state,{...options,elapsedMs:10100});
+ const falling=moved.filter(p=>p.heightM<heights.get(p.id));
+ assert.ok(falling.length>300);
+ for(const p of falling)assert.ok(Math.abs(heights.get(p.id)-p.heightM-p.fallVelocityMps*.1)<1e-8);
+ const snow=hydrateField(state,{sampleGroundHeightM:()=>0});
+ assert.ok(snow.every(p=>p.heightM<=24.35&&p.fallVelocityMps<3));
+});
+
+test('precipitation follows world wind and rain speed rises with intensity without phase jumps',()=>{
+ const make=(id,intensity,gust)=>{
+  const state=createRaceSnowEnvironmentState({raceSeed:'wind-motion'});
+  const options={weatherState:{id,visualIntensity:intensity,visibilityDistanceM:300},elapsedMs:1000,gustXMps:gust,gustZMps:0};
+  return {state,options,particles:hydrateField(state,options)};
+ };
+ for(const id of ['snow','rain','storm']){
+  const calm=make(id,1,0),windy=make(id,1,10);
+  assert.ok(windy.particles.some(p=>p.worldX-p.baseX>2));
+  assert.ok(windy.particles.every(p=>p.windVelocityX>0&&p.windVelocityZ===0));
+  assert.ok(calm.particles.every(p=>p.windVelocityX===0));
+ }
+ const light=make('rain',.2,2),heavy=make('rain',1,12);
+ const same=heavy.particles.find(p=>light.particles.some(q=>q.id===p.id));
+ assert.ok(same.fallVelocityMps>light.particles.find(p=>p.id===same.id).fallVelocityMps);
+ const before=new Map(light.particles.map(p=>[p.id,p.heightM]));
+ const after=hydrateField(light.state,{...light.options,weatherState:{...light.options.weatherState,visualIntensity:1}});
+ for(const p of after)if(before.has(p.id))assert.equal(p.heightM,before.get(p.id));
+});
+
+
+test('full storm rain falls twice as fast as full rain while retaining the same particle budget',()=>{
+ const sample=id=>hydrateField(createRaceSnowEnvironmentState({raceSeed:'storm-speed'}),{weatherState:{id,visualIntensity:1,visibilityDistanceM:300}});
+ const rain=sample('rain'),storm=sample('storm');
+ assert.equal(storm.length,rain.length);
+ const speeds=new Map(rain.map(p=>[p.id,p.fallVelocityMps]));
+ for(const p of storm)assert.equal(p.fallVelocityMps,2*speeds.get(p.id));
+});
+
+test('bounded weather selection retains exactly the same ranked candidates, including ties',async()=>{
+ const {retainWeatherCandidate}=await import('../../src/racing/RaceSnowEnvironment.js');
+ const compare=(a,b)=>a.score-b.score||a.id.localeCompare(b.id);
+ const candidates=Array.from({length:12000},(_,i)=>({id:String(i),score:(Math.imul(i,1664525)>>>0)%901}));
+ for(const limit of [1,32,384]){
+ const heap=[];for(const candidate of candidates)retainWeatherCandidate(heap,candidate,limit);
+ assert.deepEqual(heap.sort(compare),[...candidates].sort(compare).slice(0,limit));
+ }
+});

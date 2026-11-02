@@ -772,12 +772,35 @@ export function createDefaultCar(id = 'starter-rwd') {
   };
 }
 
+// Runtime fallback lookup must not construct entire editable car documents.
+// Read the same profile references used by createBuiltInRaceCars, including
+// null for unknown identities; authored profiles still take precedence.
+export function getBuiltInRacePhysicalProfile(id) {
+  switch (id) {
+    case 'starter-rwd': return DEFAULT_CAR_TUNING.physicalVehicleProfile || null;
+    case 'subaru-brz-2022': return BRZ_2022_TUNING.physicalVehicleProfile || null;
+    case 'honda-civic-type-r-2023': return CIVIC_TYPE_R_2023_TUNING.physicalVehicleProfile || null;
+    default: return null;
+  }
+}
+
 export function createBuiltInRaceCars() {
   return [
     createDefaultCar(),
     createDefaultCar('subaru-brz-2022'),
     createDefaultCar('honda-civic-type-r-2023')
   ];
+}
+
+// Extend only the built-in, start-only preview. Authored node/network tracks keep
+// their geometry, and repeated preview loading cannot multiply the length again.
+export function extendCarEditorDefaultTrack(race) {
+  if (!race || race.id !== 'test-loop' || race.road?.nodes?.length > 1 || race.road?.network?.edges?.length) return race;
+  const segments = race.road?.segments || [];
+  const length = segments.reduce((sum, segment) => sum + Number(segment.length || 0), 0);
+  if (length <= 0 || length >= 7400) return race;
+  for (const segment of segments) segment.length *= 7400 / length;
+  return race;
 }
 
 export function createDefaultRace(id = 'test-loop') {

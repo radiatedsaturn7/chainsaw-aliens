@@ -28,6 +28,7 @@ export function getRaceWheelSurfaceState({
   trackState = null,
   groundedByWheel = null,
   surfaceModel = null,
+  surfaceSamples = null,
   adapter = {}
 } = {}) {
   const gripByWheel = {};
@@ -44,7 +45,7 @@ export function getRaceWheelSurfaceState({
   const rollingResistanceByWheel = {};
   wheelIds.forEach((wheelId) => {
     const position = positions[wheelId];
-    const trackSample = surfaceModel?.sampleWorld?.(position, 0, {
+    const trackSample = surfaceSamples?.[wheelId] || surfaceModel?.sampleWorld?.(position, 0, {
       fallbackSurfaceId: selectedSegment?.surface || 'asphalt',
       applyWeatherSurface: !trackState
     }) || {};
@@ -167,12 +168,10 @@ export function createRaceWheelContactStateFromSamples({
           heightScale: elevationScaleM,
           source: rawSurfaceSample.bakedSurfaceSource || 'race-wheel-contact'
         });
-    const surfaceSample = preparedSamples === true
-      && rawSurfaceSample.physicsTerrainQueryFrameSample === true
-      ? rawSurfaceSample
-      : { ...rawSurfaceSample, ...authoritativeSample };
-    const projection = surfaceSample.projection;
-    const segment = surfaceSample.segment || projection?.segment || selectedSegment;
+    // Metadata stays on the raw sample; normalized geometry stays on the
+    // authoritative sample. Avoid copying both into a disposable merged object.
+    const projection = rawSurfaceSample.projection;
+    const segment = rawSurfaceSample.segment || projection?.segment || selectedSegment;
     const surfaceElevation = authoritativeSample.valid
       ? authoritativeSample.heightM / elevationScaleM : null;
     const localTrackState = groundedByWheel?.[wheelId] === false
@@ -182,7 +181,7 @@ export function createRaceWheelContactStateFromSamples({
           trackStateSampleByWheel?.[wheelId] || null,
           trackStateConditionScratchByWheel?.[wheelId] || null
         ) || null;
-    const terrain = surfaceSample.region === 'terrain' ? 'off-road' : surfaceSample.region;
+    const terrain = authoritativeSample.region === 'terrain' ? 'off-road' : authoritativeSample.region;
     const heightM = authoritativeSample.valid ? authoritativeSample.heightM : null;
     const contact = contacts[wheelId] || {};
     contact.x = Number(position?.x || 0);
@@ -191,15 +190,15 @@ export function createRaceWheelContactStateFromSamples({
     contact.projection = projection;
     contact.segment = segment;
     contact.terrain = terrain;
-    contact.region = surfaceSample.region;
-    contact.baseSurfaceId = localTrackState?.cell?.baseSurfaceId || surfaceSample.surfaceId;
-    contact.surfaceId = localTrackState?.effectiveSurfaceId || surfaceSample.surfaceId;
+    contact.region = authoritativeSample.region;
+    contact.baseSurfaceId = localTrackState?.cell?.baseSurfaceId || rawSurfaceSample.surfaceId;
+    contact.surfaceId = localTrackState?.effectiveSurfaceId || rawSurfaceSample.surfaceId;
     contact.friction = localTrackState
       ? Number(localTrackState.effectiveGrip
-        || localTrackState.cell?.baseGrip || surfaceSample.friction || 1)
-      : Number(surfaceSample.friction || 1);
+        || localTrackState.cell?.baseGrip || rawSurfaceSample.friction || 1)
+      : Number(rawSurfaceSample.friction || 1);
     contact.trackState = localTrackState;
-    contact.normal = surfaceSample.normal;
+    contact.normal = authoritativeSample.normal;
     contact.elevation = surfaceElevation;
     contact.heightM = heightM;
     contact.surfaceSample = authoritativeSample;
@@ -261,7 +260,7 @@ export function getRaceWheelContactState({
       applyWeatherSurface: !trackState
     }) || {}
   ]));
-  return createRaceWheelContactStateFromSamples({
+  const result = createRaceWheelContactStateFromSamples({
     wheelIds,
     positions,
     surfaceSamples,
@@ -272,4 +271,6 @@ export function getRaceWheelContactState({
     groundedByWheel,
     elevationScaleM
   });
+  result.surfaceSamples = surfaceSamples;
+  return result;
 }

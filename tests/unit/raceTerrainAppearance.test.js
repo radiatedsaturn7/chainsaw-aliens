@@ -48,3 +48,55 @@ test('large network terrain preserves the exact five-meter painted cell', () => 
   assert.equal(dirt.length,1);
   assert.deepEqual(dirt[0].points.map(({x,z})=>[x,z]),[[20,20],[25,20],[25,25],[20,25]]);
 });
+
+test('canonical terrain triangles receive directional sun shading regardless of winding', () => {
+  const editor = new RaceEditor({});
+  editor.getRaceSunSettings = () => ({angleDeg: 90, intensity: 0.8});
+  const slope = (height) => [{x:0,z:0,elevation:0},{x:10,z:0,elevation:height},{x:0,z:10,elevation:0}];
+  const facing = slope(-10), away = slope(10);
+  assert.ok(editor.getRaceTerrainSunShade(facing) > editor.getRaceTerrainSunShade(away));
+  assert.equal(editor.getRaceTerrainSunShade(facing), editor.getRaceTerrainSunShade([...facing].reverse()));
+  const packed = editor.packRaceThreeTerrainFromCanonicalMesh({triangles:[
+    {terrainCell:{},vertices:facing}, {terrainCell:{},vertices:away}
+  ]}, {useSunShading:true});
+  assert.ok(packed.colors[0] > packed.colors[9]);
+  assert.ok(packed.textureColors[0] > packed.textureColors[9]);
+  editor.getRaceSunSettings = () => ({angleDeg: 90, intensity: 0});
+  assert.equal(editor.getRaceTerrainSunShade(away), 1);
+});
+
+test('sun shading agrees for a quad and its triangles and ignores degenerate geometry', () => {
+  const editor = new RaceEditor({});
+  editor.getRaceSunSettings = () => ({angleDeg: 45, intensity: 0.8});
+  const quad = [{x:0,z:0,elevation:0},{x:10,z:0,elevation:2},{x:10,z:10,elevation:4},{x:0,z:10,elevation:2}];
+  assert.ok(Math.abs(editor.getRaceTerrainSunShade(quad) - editor.getRaceTerrainSunShade(quad.slice(0,3))) < 1e-10);
+  assert.equal(editor.getRaceTerrainSunShade([quad[0],quad[0],quad[0]]), 1);
+});
+
+test('imported default-surface elevation cells retain the ground plane artwork through packing',()=>{
+  const editor=new RaceEditor({});
+  editor.selectedRace.groundPlaneArtRef='providenceGround';
+  const tileMap={cellSizeM:40,defaultTileId:'grass',minElevation:-1000,maxElevation:1000,cells:{
+    '0,0':{tileId:'grass',elevation:-50.263,tileWeights:{grass:1},artRef:'',source:'tile-editor'},
+    '1,0':{tileId:'dirt',elevation:-50,artRef:''},
+    '2,0':{tileId:'grass',elevation:2,artRef:'custom.png'},
+    '3,0':{tileId:'grass',elevation:3,tileWeights:{grass:.5,dirt:.5}}
+  }};
+  const cells=[0,1,2,3,4].map(x=>editor.getRaceTileMapCell(x,0,tileMap));
+  assert.deepEqual(cells.map(c=>c.artRef),['providenceGround','','custom.png','','providenceGround']);
+  assert.equal(cells[0].elevation,-50.263,'height is preserved');
+  const packed=editor.packRaceThreeTerrainFromCanonicalMesh({triangles:cells.map(triangle)},{tileMap,textured:true});
+  assert.deepEqual(packed.artGroups,[{artRef:'providenceGround',start:0,count:3},{artRef:'custom.png',start:6,count:3},{artRef:'providenceGround',start:12,count:3}]);
+  const renderer={scene:new THREE.Scene(),materialCache:new Map()};
+  editor.getRaceThreeTexture=()=>new THREE.Texture();
+  const geometry=editor.getRaceThreePackedTerrainGeometry(packed);
+  assert.equal(editor.addRaceThreeTerrainArtwork(renderer,geometry,packed),2);
+  assert.ok(renderer.scene.children.some(child=>child.name==='terrain-art:providenceGround'));
+});
+
+test('raw canonical default terrain also receives ground artwork but painted surfaces remain distinct',()=>{
+ const editor=new RaceEditor({});editor.selectedRace.groundPlaneArtRef='providenceGround';
+ const packed=editor.packRaceThreeTerrainFromCanonicalMesh({triangles:[triangle({tileId:'grass'}),triangle({tileId:'dirt'})]},{textured:true});
+ assert.deepEqual(packed.artGroups,[{artRef:'providenceGround',start:0,count:3}]);
+ assert.deepEqual(editor.packRaceThreeTerrainFromCanonicalMesh({triangles:[triangle({tileId:'grass'})]},{textured:false}).artGroups,[]);
+});

@@ -139,3 +139,35 @@ test('packed and object samplers expose the same conservative body broadphase he
     maxZ: 24
   }), null);
 });
+
+test('kilometre-scale terrain keeps a bounded index without losing exact surface queries',()=>{
+  const a={x:0,z:0,elevation:0},b={x:20000,z:0,elevation:20},c={x:0,z:20000,elevation:0};
+  const packed=packRaceCanonicalSurfaceMesh({triangles:[{vertices:[a,b,c],region:'terrain',source:'mountain'}]},{bucketSizeM:20});
+  assert.ok(packed.bucketSizeM>20);
+  assert.ok(packed.bucketTriangles.length<=1000000);
+  for(const x of [10,1000,15000]){
+    const sample=sampleRaceBakedSurface(packed,{x,z:10},{preferredRegion:'terrain'});
+    assert.ok(sample);assert.ok(Math.abs(sample.elevation-x/1000)<1e-8);
+  }
+  assert.equal(sampleRaceBakedSurface(packed,{x:19000,z:19000},{preferredRegion:'terrain'}),null);
+});
+
+test('local packed candidates preserve overlapping decks, materials, boundaries and invalidation',()=>{
+ const triangles=[];
+ for(let i=-10;i<10;i++)for(const h of [0,2])triangles.push({region:h?'road':'terrain',materialId:h?'asphalt':'dirt',vertices:[
+  {x:i,z:0,elevation:h},{x:i+1,z:0,elevation:h},{x:i,z:20,elevation:h}]});
+ const sampler=packRaceBakedSurfaceSampler(buildRaceBakedSurfaceSampler({mesh:{layered:true,triangles},bucketSizeM:20}));
+ let directVisits=0,cachedVisits=0;
+ for(let repeat=0;repeat<3;repeat++) for(let i=0;i<200;i++) {
+  const point={x:-9.999+i*.099,z:(i%10)*.4,supportHeightM:i%2?30:.1};
+  const expected=sampleRaceBakedSurface(sampler,point,{preferredRegion:'road',physicsCostAccounting:{count:k=>{if(k==='preparedTrianglesVisited')directVisits++;}}});
+  const actual=sampleRaceBakedSurface(sampler,point,{preferredRegion:'road',localCandidateRevision:repeat<2?0:1,
+    physicsCostAccounting:{count:k=>{if(k==='preparedTrianglesVisited')cachedVisits++;}}});
+  assert.deepEqual(actual,expected);
+ }
+ assert.ok(cachedVisits<directVisits/2);
+ // A packed replacement under the same revision must never inherit candidates.
+ const replacement=packRaceBakedSurfaceSampler(buildRaceBakedSurfaceSampler({mesh:{layered:true,triangles:triangles.slice(-2)}}));
+ const p={x:-9,z:0};
+ assert.deepEqual(sampleRaceBakedSurface(replacement,p,{localCandidateRevision:0}),sampleRaceBakedSurface(replacement,p));
+});

@@ -4,8 +4,26 @@ const DEFAULT_STEP_HISTORY_LIMIT = 1200;
 export const PHYSICS_COST_TIMER_NAMES = Object.freeze([
   'raceSimulationVehicleAuthorityUpdate',
   'environmentProvider',
+  'environmentTerrainPreparation',
+  'terrainLocalIndexBuild',
+  'terrainEdgeClassificationBuild',
+  'environmentWheelKinematics',
+  'environmentWheelMaterials',
+  'environmentFootprintGeometry',
+  'environmentCollisionClassification',
   'wheelCenterAndFootprintQueries',
   'iterativeTireContactSolving',
+  'tireContactSetup',
+  'tireFootprintAndKinematics',
+  'tireSuspensionSetup',
+  'tireSuspensionInitialContact',
+  'tireSuspensionDynamics',
+  'tireSuspensionGeometry',
+  'tireSuspensionKinematics',
+  'tireContactValidation',
+  'tireGripForces',
+  'tirePowertrain',
+  'tireForceIntegration',
   'raceSurfaceModelProjection',
   'bakedSurfaceSampling',
   'bodyBroadphase',
@@ -21,6 +39,10 @@ export const PHYSICS_COST_TIMER_NAMES = Object.freeze([
   'penetrationValidation',
   'recoveryRebuilding',
   'trackState',
+  'chassisImpulseIntegration',
+  'chassisStatePublication',
+  'chassisTireThermalPublication',
+  'chassisDiagnosticPublication',
   'telemetryConstruction'
 ]);
 
@@ -31,6 +53,7 @@ export const PHYSICS_COST_COUNTER_NAMES = Object.freeze([
   'preparedTrianglesVisited',
   'bodySupportFeatures',
   'adaptiveBodySupportFeatures',
+  'adaptiveBodySupportPairChecks',
   'bodyLowerHullProbes',
   'bodyLowerHullSupportFeatures',
   'bodyAabbRejections',
@@ -223,9 +246,17 @@ export class PhysicsCostAccounting {
     );
     frame.counters.backlogSteps = backlogSteps;
     this.peakBacklogSteps = Math.max(this.peakBacklogSteps, backlogSteps);
-    this.frameHistory.push(publicRecord(frame));
-    while (this.frameHistory.length > this.frameHistoryLimit) {
-      this.frameRecordPool.push(this.frameHistory.shift());
+    if (this.latestFrameOnly === true) {
+      // Diagnostic AI capture copies the completed frame immediately. Keep
+      // only that frame, avoiding a second retained/cloned history per car.
+      while (this.frameHistory.length) this.frameRecordPool.push(this.frameHistory.pop());
+      if (this.frameRecordPool.length > 2) this.frameRecordPool.length = 2;
+      this.frameHistory.push(frame);
+    } else {
+      this.frameHistory.push(publicRecord(frame));
+      while (this.frameHistory.length > this.frameHistoryLimit) {
+        this.frameRecordPool.push(this.frameHistory.shift());
+      }
     }
     this.currentFrame = null;
     this.timerStack.length = 0;

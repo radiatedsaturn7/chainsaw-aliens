@@ -8,13 +8,14 @@ export class RaceRadioDirector {
   constructor(radio) {this.radio=radio;this.session=null;this.serial=0;}
   reset(stop=true) {
     this.serial++;
-    if(this.session)this.session.raceMusicPending=false;
+    if(this.session){this.session.raceMusicPending=false;this.session.raceMusicCountdownClock=false;}
     if(stop&&this.session)this.radio.stop();
     if(this.radio.audio)this.radio.audio.playbackRate=1;
-    this.earlyAudio=null;this.fadeElapsed=0;this.shortIntroCue=false;this.radio.setGain(1);this.radio.contextStationId='';this.session=null;this.starting=false;this.started=false;
+    this.countdownSeekWait=0;this.countdownSeekFailed=false;this.countdownCatchupAudio=null;this.earlyAudio=null;this.fadeElapsed=0;this.radio.setGain(1);this.radio.contextStationId='';this.session=null;this.starting=false;this.started=false;
     this.go=false;this.finishElapsed=null;this.heldAudio=null;this.waitSeconds=0;
   }
   update(session, {paused=false,dt=0}={}) {
+    if(session)session.raceMusicCountdownClock=false;
     if(session!==this.session){this.reset(!session);this.session=session;}
     if(!session||!session.running||session.preparing||(session.startupFramePending&&!session.raceIntroVisible)||session.carEditorPreview)return;
     if(!this.radio.available){session.raceMusicPending=false;this.radio.setGain(1);return;}
@@ -31,15 +32,45 @@ export class RaceRadioDirector {
       });return;
     }
     if(!this.started)return;
+    // Once the showcase has finished, audio is the countdown clock. Frame
+    // hitches must not move the musical marker relative to GO, or seek at GO.
+    const startCue=this.radio.currentTrack?.raceCues?.start;
+    if(!paused&&!this.go&&!session.raceResults&&!session.raceIntro?.active
+      &&!session.startupFramePending&&!this.earlyAudio&&this.radio.playing&&startCue!=null&&!this.countdownSeekFailed){
+      const position=Number(this.radio.audio?.currentTime);
+      if(Number.isFinite(position)){
+        // A delayed/ignored initial media seek must not turn a long musical
+        // intro into a long wait at the rear camera. Catch up before countdown;
+        // never seek at GO or restart an unmarked song.
+        const maximumLeadSeconds = 3;
+        if (startCue-position > maximumLeadSeconds+.25) {
+          if (!this.countdownCatchupAudio || this.countdownCatchupAudio !== this.radio.audio) {
+            this.countdownCatchupAudio = this.radio.audio;
+            this.radio.seek(Math.max(0,startCue-maximumLeadSeconds));
+          }
+        }
+        const countdownPosition=Number(this.radio.audio?.currentTime);
+        if(startCue-countdownPosition>maximumLeadSeconds+.25){
+          this.countdownSeekWait+=Math.max(0,dt);
+          if(this.countdownSeekWait>=1){
+            // An unseekable/buffering song must never hold the race at "3".
+            this.countdownSeekFailed=true;this.radio.cancelPendingSeek?.();
+            this.radio.error='Music cue seek unavailable; race countdown continues';
+          }
+        }else this.countdownSeekWait=0;
+        if(!this.countdownSeekFailed){
+          session.countdownRemainingMs=1000+Math.min(maximumLeadSeconds,Math.max(0,startCue-countdownPosition))*1000;
+          session.raceMusicCountdownClock=true;
+        }
+      }
+    }
     const remaining=secondsToGo(session);
     if(!session.raceResults&&!this.go){
       if(paused){if(this.radio.playing){this.heldAudio=this.radio.audio;this.radio.pause();}return;}
       if(this.heldAudio){if(this.heldAudio===this.radio.audio)void this.radio.play();this.heldAudio=null;}
       const cue=this.radio.currentTrack?.raceCues?.start;
       this.fadeElapsed+=Math.max(0,dt);
-      if(cue==null || (session.raceIntro && this.shortIntroCue)){
-        // A marker earlier than the showcase cannot align without rewinding.
-        // Keep playback continuous, just as for an unmarked track.
+      if(cue==null){
         if(this.radio.playing)this.radio.setGain(Math.min(1,this.fadeElapsed/.6));
         if(remaining===0){
           this.go=true;this.radio.setGain(1);
@@ -48,13 +79,13 @@ export class RaceRadioDirector {
       }
       if(this.earlyAudio&&remaining<=cue){
         if(this.earlyAudio===this.radio.audio)void this.radio.play(this.radio.trackId,{position:Math.max(0,cue-remaining)});
-        this.earlyAudio=null;
+        this.earlyAudio=null;this.fadeElapsed=0;
       }
       if(this.radio.playing){
         const target=Math.max(0,cue-remaining);
         const error=target-Number(this.radio.audio?.currentTime||0);
         // Keep the MP3 decoder running continuously; correct small drift gently.
-        this.radio.audio.playbackRate=Math.max(.96,Math.min(1.04,1+error*.08));
+        this.radio.audio.playbackRate=session.raceMusicCountdownClock?1:Math.max(.96,Math.min(1.04,1+error*.08));
         this.radio.setGain(session.raceIntro ? Math.min(1,this.fadeElapsed/.6) : cue<remaining?0:Math.max(0,Math.min(1,1-remaining/3)));
       }
       if(remaining===0){this.go=true;if(this.radio.audio)this.radio.audio.playbackRate=1;this.radio.setGain(1);}
@@ -81,10 +112,9 @@ export class RaceRadioDirector {
     if(!track){session.raceMusicPending=false;this.radio.error='No unlocked, enabled songs in the available race stations';this.radio.onChange();this.started=true;this.starting=false;return;}
     const remaining=secondsToGo(session);
     const cue=track.raceCues?.start;
-    this.shortIntroCue=Boolean(session.raceIntro && cue!=null && cue<remaining);
     const played=await this.radio.play(track.id,{position:cue==null ? null : Math.max(0,cue-remaining),gain:remaining>0?0:1});
     if(serial!==this.serial)return;
-    if(played&&cue!=null&&cue<remaining&&!session.raceIntro){this.earlyAudio=this.radio.audio;this.radio.pause();}
+    if(played&&cue!=null&&cue<remaining){this.earlyAudio=this.radio.audio;this.radio.pause();}
     session.raceMusicPending=false;this.starting=false;this.started=true;
     // A paused/blocked player is left alone; Play in the radio menu remains usable.
     if(played&&remaining===0)this.go=true;

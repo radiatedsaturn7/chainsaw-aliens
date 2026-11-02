@@ -60,3 +60,31 @@ test('animated car choices do not parse unrelated art and music or unchanged car
   assert.ok(seen.some(raw=>raw.includes('Updated')), 'replacement payload metadata is refreshed');
  }finally{JSON.parse=parse;resetProjectFilesForTests();}
 });
+
+test('showroom dependencies exclude interior and gauge art but retain exterior FX',()=>{
+ let received;
+ const resources=new MenuResources({carEditor:{collectRaceCarArtRefs(car){received=car;return [car.art.body,car.art.fx];}}});
+ const car={art:{body:'body',fx:'lights',gauges:{exterior:{widgets:[{artRef:'huge-dial'}]}},interior:{dashboard:{artRef:'dash'}}}};
+ assert.deepEqual(resources.exteriorArtRefs(car),['body','lights']);
+ assert.deepEqual(received.art.gauges,{});assert.deepEqual(received.art.interior,{});
+ assert.equal(car.art.interior.dashboard.artRef,'dash','saved car remains intact');
+});
+
+test('screen preparation builds background and button pixels before resolving',async()=>{
+ const {upsertCachedProjectFile,clearCachedProjectFilesForTests}=await import('../../src/ui/serverStorage.js');
+ const {normalizeMenuDocument}=await import('../../src/menus/MenuDocument.js');
+ const previous=globalThis.document;
+ const context=()=>new Proxy({measureText:()=>({width:20}),createImageData:()=>({data:new Uint8ClampedArray(4)})},
+  {get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
+ globalThis.document={createElement:()=>({getContext:context})};
+ clearCachedProjectFilesForTests();
+ try{
+  for(const ref of ['bg-ready','button-ready'])upsertCachedProjectFile('art',ref,JSON.stringify({savedAt:1,data:{width:1,height:1,pixels:['#ff0000']}}));
+  const resources=new MenuResources({carEditor:{}});
+  const doc=normalizeMenuDocument({screens:[{id:'splash',backgroundArt:'bg-ready',elements:[{id:'start',type:'button',label:'Start',artRef:'button-ready'}]}]});
+  await resources.prepareScreen(doc,doc.screens[0],{});
+  assert.equal(resources.pending.size,0);
+  assert.ok(resources.art('bg-ready'));assert.ok(resources.art('button-ready'));
+  assert.equal(resources.artCache.size,2);
+ }finally{globalThis.document=previous;clearCachedProjectFilesForTests();}
+});

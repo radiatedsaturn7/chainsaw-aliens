@@ -51,6 +51,9 @@ test('invalid surface samples keep their source, query, triangle, and failure re
     region: 'terrain',
     source: 'prepared-world',
     triangleId: 42,
+    supportFamilyId: null,
+    supportFamilyDriveable: false,
+    supportEdgeClassification: null,
     queryPosition: { x: 7, y: 3, z: -2 },
     reason: 'triangle-query-miss'
   });

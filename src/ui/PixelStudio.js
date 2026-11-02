@@ -3300,7 +3300,7 @@ export default class PixelStudio {
     const defaults = {
       resize: { width, height },
       scale: { scaleX: 1, scaleY: 1 },
-      crop: cropEdges,
+      crop: { ...cropEdges, ignoreFaintPixels: true },
       offset: { dx: 0, dy: 0, wrap: true }
     };
     this.transformModal = {
@@ -3367,7 +3367,7 @@ export default class PixelStudio {
     return clamp(Math.round(1 + normalized * 9), 1, 10);
   }
 
-  getCanvasOpaqueBounds() {
+  getCanvasOpaqueBounds(alphaThreshold = 0) {
     const width = Math.max(1, Number(this.canvasState.width) || 1);
     const height = Math.max(1, Number(this.canvasState.height) || 1);
     let minX = width;
@@ -3378,7 +3378,7 @@ export default class PixelStudio {
       const composite = compositeLayers(frame.layers || [], width, height);
       for (let index = 0; index < composite.length; index += 1) {
         const value = composite[index] >>> 0;
-        if ((value >>> 24) === 0) continue;
+        if ((value >>> 24) <= alphaThreshold) continue;
         const x = index % width;
         const y = Math.floor(index / width);
         if (x < minX) minX = x;
@@ -3391,13 +3391,13 @@ export default class PixelStudio {
     return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
   }
 
-  getDefaultCropEdges() {
+  getDefaultCropEdges(alphaThreshold = 1) {
     const width = Math.max(1, Number(this.canvasState.width) || 1);
     const height = Math.max(1, Number(this.canvasState.height) || 1);
     const selectionBounds = this.selection?.active && this.selection?.bounds
       ? this.selection.bounds
       : null;
-    const bounds = selectionBounds || this.getCanvasOpaqueBounds();
+    const bounds = selectionBounds || this.getCanvasOpaqueBounds(alphaThreshold);
     if (!bounds) return { left: 0, top: 0, right: 0, bottom: 0 };
     const left = clamp(Math.floor(Number(bounds.x) || 0), 0, width - 1);
     const top = clamp(Math.floor(Number(bounds.y) || 0), 0, height - 1);
@@ -3481,7 +3481,7 @@ export default class PixelStudio {
     this.animation.frames = this.animation.frames.map((frame) => ({
       ...frame,
       layers: frame.layers.map((layer) => {
-        const next = createLayer(nextW, nextH, layer.name);
+        const next = { ...layer, pixels: new Uint32Array(nextW * nextH) };
         for (let row = 0; row < nextH; row += 1) {
           for (let col = 0; col < nextW; col += 1) {
             const srcRow = row + top;
@@ -10963,6 +10963,15 @@ export default class PixelStudio {
     const title = this.transformModal.type[0].toUpperCase() + this.transformModal.type.slice(1);
     const modalTarget = this.transformModal.scope === 'selection' ? 'Selection' : 'Canvas';
     ctx.fillText(`${title} ${modalTarget}`, modal.x + 12, modal.y + 22);
+
+    if (this.transformModal.type === 'crop' && this.transformModal.scope !== 'selection') {
+      const ignore = this.transformModal.values.ignoreFaintPixels !== false;
+      const bounds = { x: modal.x + modal.w - 172, y: modal.y + 6, w: 160, h: 24 };
+      this.drawButton(ctx, bounds, `${ignore ? '☑' : '☐'} Ignore faint pixels`, ignore, { fontSize: 11 });
+      this.uiButtons.push({ bounds, onClick: () => {
+        this.transformModal.values = { ...this.getDefaultCropEdges(ignore ? 0 : 1), ignoreFaintPixels: !ignore };
+      } });
+    }
 
     const rowsByType = {
       resize: [

@@ -1,0 +1,394 @@
+// Adapted from LibreCorsa, copyright (c) 2026 KhazP, MIT. See LICENSE.librecorsa.
+// Source b6bd7a419d5f4c12f34254a79e5aec05c74d7867 src/lib/input/webhid-ffb.ts.
+// Descriptor parsing / encoding only; device output and safety are implemented separately.
+/** One field group of a report descriptor (HIDReportItem) */
+export interface HidReportItemLike {
+  /** Each usage is (usagePage << 16) | usageId */
+  usages?: readonly number[];
+  usageMinimum?: number;
+  usageMaximum?: number;
+  isRange?: boolean;
+  reportSize?: number;
+  reportCount?: number;
+  logicalMinimum?: number;
+  logicalMaximum?: number;
+  isArray?: boolean;
+  isAbsolute?: boolean;
+  isConstant?: boolean;
+  unitExponent?: number;
+  unitSystem?: string;
+  unitFactorTimeExponent?: number;
+  physicalMinimum?: number;
+  physicalMaximum?: number;
+
+}
+
+export interface HidReportInfoLike {
+  reportId?: number;
+  items?: readonly HidReportItemLike[];
+}
+
+export interface HidCollectionLike {
+  usagePage?: number;
+  usage?: number;
+  type?: number;
+  children?: readonly HidCollectionLike[];
+  inputReports?: readonly HidReportInfoLike[];
+  outputReports?: readonly HidReportInfoLike[];
+  featureReports?: readonly HidReportInfoLike[];
+}
+
+/** The slice of HIDDevice this driver uses */
+export interface HidDeviceLike {
+  opened: boolean;
+  vendorId: number;
+  productId: number;
+  productName: string;
+  collections: readonly HidCollectionLike[];
+  open(): Promise<void>;
+  close(): Promise<void>;
+  sendReport(reportId: number, data: Uint8Array): Promise<void>;
+  sendFeatureReport(reportId: number, data: Uint8Array): Promise<void>;
+  receiveFeatureReport(reportId: number): Promise<DataView>;
+}
+
+/** The slice of navigator.hid this driver uses */
+export interface HidApiLike {
+  requestDevice(options: { filters: { vendorId?: number; productId?: number; usagePage?: number; usage?: number }[] }): Promise<HidDeviceLike[]>;
+  getDevices(): Promise<HidDeviceLike[]>;
+  addEventListener(type: "disconnect", listener: (e: { device: HidDeviceLike }) => void): void;
+  removeEventListener(type: "disconnect", listener: (e: { device: HidDeviceLike }) => void): void;
+}
+
+/* ------------------------------------------------------------------------------------------------------------ */
+/* PID usages                                                                                                    */
+/* ------------------------------------------------------------------------------------------------------------ */
+
+const PAGE_PID = 0x0f;
+const PAGE_DESKTOP = 0x01;
+const PAGE_ORDINAL = 0x0a;
+const pidUsage = (id: number) => (PAGE_PID << 16) | id;
+
+/** Full usages ((page << 16) | id) used as field keys in {@link PidReportLayout.fields} and buildReport values */
+export const PID = {
+  EFFECT_BLOCK_INDEX: pidUsage(0x22),
+  EFFECT_TYPE: pidUsage(0x25),
+  ET_CONSTANT_FORCE: pidUsage(0x26),
+  DURATION: pidUsage(0x50),
+  SAMPLE_PERIOD: pidUsage(0x51),
+  GAIN: pidUsage(0x52),
+  TRIGGER_BUTTON: pidUsage(0x53),
+  TRIGGER_REPEAT_INTERVAL: pidUsage(0x54),
+  AXES_ENABLE: pidUsage(0x55),
+  DIRECTION_ENABLE: pidUsage(0x56),
+  DIRECTION: pidUsage(0x57),
+  MAGNITUDE: pidUsage(0x70),
+  EFFECT_OPERATION: pidUsage(0x78),
+  OP_EFFECT_START: pidUsage(0x79),
+  OP_EFFECT_START_SOLO: pidUsage(0x7a),
+  OP_EFFECT_STOP: pidUsage(0x7b),
+  LOOP_COUNT: pidUsage(0x7c),
+  DEVICE_GAIN: pidUsage(0x7e),
+  BLOCK_LOAD_STATUS: pidUsage(0x8b),
+  BLOCK_LOAD_SUCCESS: pidUsage(0x8c),
+  BLOCK_LOAD_FULL: pidUsage(0x8d),
+  BLOCK_LOAD_ERROR: pidUsage(0x8e),
+  DEVICE_CONTROL: pidUsage(0x96),
+  DC_ENABLE_ACTUATORS: pidUsage(0x97),
+  DC_DISABLE_ACTUATORS: pidUsage(0x98),
+  DC_STOP_ALL_EFFECTS: pidUsage(0x99),
+  DC_DEVICE_RESET: pidUsage(0x9a),
+  DC_DEVICE_PAUSE: pidUsage(0x9b),
+  DC_DEVICE_CONTINUE: pidUsage(0x9c),
+  START_DELAY: pidUsage(0xa7),
+  BYTE_COUNT: pidUsage(0xac),
+} as const;
+
+/** Generic Desktop X, the steering axis */
+const AXIS_X = (PAGE_DESKTOP << 16) | 0x30;
+const AXIS_Y = (PAGE_DESKTOP << 16) | 0x31;
+const AXIS_Z = (PAGE_DESKTOP << 16) | 0x32;
+/** Ordinal usage n (Direction is one Ordinal-usage field per axis: ordinal 1 = X) */
+export const ordinalUsage = (n: number) => (PAGE_ORDINAL << 16) | n;
+
+/** Array ("selector") fields: the child usages that identify which selector a field is, and the key it is stored under */
+const SELECTORS: readonly { key: number; lo: number; hi: number }[] = [
+  { key: PID.EFFECT_TYPE, lo: 0x26, hi: 0x43 },
+  { key: PID.EFFECT_OPERATION, lo: 0x79, hi: 0x7b },
+  { key: PID.DEVICE_CONTROL, lo: 0x97, hi: 0x9c },
+  { key: PID.BLOCK_LOAD_STATUS, lo: 0x8c, hi: 0x8e },
+];
+
+const VENDOR_LOGITECH = 0x046d;
+const MIN_WRITE_INTERVAL_MS = 2;
+/** Consecutive failed writes after which the driver gives up and reports an error */
+const MAX_WRITE_FAILURES = 3;
+/** Direction value for "along +X" (90 degrees, east) as a fraction of the direction field's range */
+const DIRECTION_X_FRACTION = 0.25;
+
+/* ------------------------------------------------------------------------------------------------------------ */
+/* Layout                                                                                                        */
+/* ------------------------------------------------------------------------------------------------------------ */
+
+/** Where one field sits in a report's data (the report id byte is not counted) */
+export interface PidFieldLayout {
+  /** Bit offset from the start of the report data, little-endian bit packing */
+  bitOffset: number;
+  bitSize: number;
+  /** Normalised logical range (an unsigned field described with a sign-extended maximum is repaired) */
+  min: number;
+  max: number;
+  isAbsolute?: boolean;
+  signed: boolean;
+  unitExponent?: number;
+  unitSystem?: string;
+  unitFactorTimeExponent?: number;
+  physicalMinimum?: number;
+  physicalMaximum?: number;
+
+  /** Array / selector fields: the usages the field can select; the value is `min + index` */
+  usages?: number[];
+}
+
+export interface PidReportLayout {
+  /** 0 when the device uses no report ids */
+  reportId: number;
+  /** Total data bits including padding; sendReport needs exactly ceil(bitLength / 8) bytes */
+  bitLength: number;
+  /** Field per full usage ((page << 16) | id); selectors are keyed by their parent usage (PID.EFFECT_TYPE, …) */
+  fields: Record<number, PidFieldLayout>;
+}
+
+export interface PidLayout {
+  /** Output reports */
+  constantForce: PidReportLayout;
+  effectOperation: PidReportLayout;
+  setEffect: PidReportLayout | null;
+  deviceControl: PidReportLayout | null;
+  deviceGain: PidReportLayout | null;
+  blockFree: PidReportLayout | null;
+  /** Feature reports */
+  createNewEffect: PidReportLayout | null;
+  blockLoad: PidReportLayout | null;
+}
+
+const hasField = (l: PidReportLayout, key: number) => key in l.fields;
+const getField = (l: PidReportLayout, key: number): PidFieldLayout | undefined => l.fields[key] as PidFieldLayout | undefined;
+
+/** Logical range of a field: repairs `0..-1` style maxima of unsigned fields and fills a missing range */
+function normaliseRange(min: number | undefined, max: number | undefined, bitSize: number): { min: number; max: number } {
+  const full = 2 ** Math.min(bitSize, 32) - 1;
+  let lo = typeof min === "number" && Number.isFinite(min) ? min : 0;
+  let hi = typeof max === "number" && Number.isFinite(max) ? max : lo < 0 ? 2 ** (Math.min(bitSize, 32) - 1) - 1 : full;
+  if (hi < lo) {
+    // "Logical Maximum (255)" written as a one-byte item is read back as -1: the field is unsigned
+    if (lo >= 0) hi = full;
+    else [lo, hi] = [hi, lo];
+  }
+  return { min: lo, max: hi };
+}
+
+function expandUsages(item: HidReportItemLike): number[] {
+  const out = item.usages ? [...item.usages] : [];
+  if (out.length === 0 && item.isRange && typeof item.usageMinimum === "number" && typeof item.usageMaximum === "number") {
+    for (let u = item.usageMinimum; u <= item.usageMaximum && out.length < 512; u++) out.push(u);
+  }
+  return out;
+}
+
+/** Which selector an array item is (by the page-0x0F child usages it lists), with its list reduced to those usages */
+function detectSelector(usages: readonly number[]): { key: number; usages: number[] } | null {
+  for (const s of SELECTORS) {
+    const mine = usages.filter((u) => u >>> 16 === PAGE_PID && (u & 0xffff) >= s.lo && (u & 0xffff) <= s.hi);
+    if (mine.length > 0) return { key: s.key, usages: mine };
+  }
+  return null;
+}
+
+export function parseReport(reportId: number, items: readonly HidReportItemLike[]): PidReportLayout {
+  const fields: Record<number, PidFieldLayout> = {};
+  let offset = 0;
+  const add = (key: number, f: PidFieldLayout) => {
+    if (!(key in fields)) fields[key] = f;
+  };
+  for (const item of items) {
+    const size = Math.max(0, Math.floor(item.reportSize ?? 0));
+    const count = Math.max(0, Math.floor(item.reportCount ?? 0));
+    if (!item.isConstant && size > 0 && count > 0) {
+      const usages = expandUsages(item);
+      const range = normaliseRange(item.logicalMinimum, item.logicalMaximum, size);
+      const signed = range.min < 0;
+      const units = {isAbsolute:item.isAbsolute,unitExponent:item.unitExponent,unitSystem:item.unitSystem,unitFactorTimeExponent:item.unitFactorTimeExponent,physicalMinimum:item.physicalMinimum,physicalMaximum:item.physicalMaximum};
+      if (item.isArray) {
+        const sel = detectSelector(usages);
+        if (sel) add(sel.key, { bitOffset: offset, bitSize: size, ...range, ...units, signed, usages: sel.usages });
+        else if (usages.length > 0) add(usages[0] as number, { bitOffset: offset, bitSize: size, ...range, ...units, signed, usages });
+      } else if (usages.length > 0) {
+        // fewer usages than count: the last usage applies to the remaining fields (HID rule)
+        for (let k = 0; k < count; k++) {
+          const u = usages[Math.min(k, usages.length - 1)] as number;
+          add(u, { bitOffset: offset + k * size, bitSize: size, ...range, ...units, signed });
+        }
+      }
+    }
+    offset += size * count;
+  }
+  return { reportId, bitLength: offset, fields };
+}
+
+/**
+ * Reports of one kind per report id. A report may be listed on its collection and again on parent collections; the
+ * most complete listing (most bits) wins, so a split report is never half-parsed when one node has it all.
+ */
+export function gatherReports(
+  collections: readonly HidCollectionLike[],
+  kind: "outputReports" | "featureReports" | "inputReports",
+  out = new Map<number, { items: readonly HidReportItemLike[]; bits: number }>()
+) {
+  for (const c of collections) {
+    for (const r of c[kind] ?? []) {
+      const items = r.items ?? [];
+      const bits = items.reduce((s, i) => s + Math.max(0, i.reportSize ?? 0) * Math.max(0, i.reportCount ?? 0), 0);
+      const id = r.reportId ?? 0;
+      const prev = out.get(id);
+      if (!prev || bits > prev.bits) out.set(id, { items, bits });
+    }
+    gatherReports(c.children ?? [], kind, out);
+  }
+  return out;
+}
+
+/**
+ * Finds the PID reports in a device's parsed report descriptor and computes every field's bit position.
+ *
+ * Reports are recognised by their contents (the descriptor does not carry the usage of the logical collection that
+ * names them): Set Constant Force = block index + Magnitude without the periodic/condition fields; Effect Operation
+ * = the Op Effect Start/Solo/Stop selector; Device Control = the DC_* selector; Set Effect = output report with the
+ * Effect Type selector; Create New Effect = the same selector in a feature report; Block Load = the Block Load
+ * Status selector (feature). Bit offsets are summed over the items in order (size x count, constant items are
+ * padding), report ids are never hard-coded. Returns null without a usable Set Constant Force + Effect Operation.
+ */
+export function parsePidLayout(collections: readonly HidCollectionLike[]): PidLayout | null {
+  let constantForce: PidReportLayout | null = null;
+  let effectOperation: PidReportLayout | null = null;
+  let setEffect: PidReportLayout | null = null;
+  let deviceControl: PidReportLayout | null = null;
+  let deviceGain: PidReportLayout | null = null;
+  let blockFree: PidReportLayout | null = null;
+  let createNewEffect: PidReportLayout | null = null;
+  let blockLoad: PidReportLayout | null = null;
+
+  for (const [id, raw] of gatherReports(collections, "outputReports")) {
+    const l = parseReport(id, raw.items);
+    const keys = Object.keys(l.fields).length;
+    if (hasField(l, PID.EFFECT_TYPE)) {
+      if (!setEffect) setEffect = l;
+    } else if (hasField(l, PID.EFFECT_OPERATION)) {
+      const f = getField(l, PID.EFFECT_OPERATION);
+      if (!effectOperation && f?.usages?.includes(PID.OP_EFFECT_START) && hasField(l, PID.EFFECT_BLOCK_INDEX)) effectOperation = l;
+    } else if (hasField(l, PID.DEVICE_CONTROL)) {
+      if (!deviceControl) deviceControl = l;
+    } else if (hasField(l, PID.DEVICE_GAIN)) {
+      if (!deviceGain) deviceGain = l;
+    } else if (hasField(l, PID.MAGNITUDE) && hasField(l, PID.EFFECT_BLOCK_INDEX)) {
+      // Set Periodic (offset 0x6F / phase 0x71 / period 0x72) also carries a Magnitude; Constant Force has none of those
+      const periodicLike = hasField(l, pidUsage(0x72)) || hasField(l, pidUsage(0x6f)) || hasField(l, pidUsage(0x71));
+      if (!periodicLike && (!constantForce || keys < Object.keys(constantForce.fields).length)) constantForce = l;
+    } else if (keys === 1 && hasField(l, PID.EFFECT_BLOCK_INDEX)) {
+      if (!blockFree) blockFree = l;
+    }
+  }
+  for (const [id, raw] of gatherReports(collections, "featureReports")) {
+    const l = parseReport(id, raw.items);
+    if (hasField(l, PID.EFFECT_TYPE)) {
+      if (!createNewEffect) createNewEffect = l;
+    } else if (hasField(l, PID.BLOCK_LOAD_STATUS)) {
+      if (!blockLoad) blockLoad = l;
+    }
+  }
+
+  if (!constantForce || !effectOperation) return null;
+  return { constantForce, effectOperation, setEffect, deviceControl, deviceGain, blockFree, createNewEffect, blockLoad };
+}
+
+/* ------------------------------------------------------------------------------------------------------------ */
+/* Bit packing                                                                                                   */
+/* ------------------------------------------------------------------------------------------------------------ */
+
+function writeBits(data: Uint8Array, bitOffset: number, bitSize: number, value: number) {
+  const u = value < 0 ? value + 2 ** bitSize : value;
+  for (let i = 0; i < bitSize; i++) {
+    const pos = bitOffset + i;
+    const byte = pos >> 3;
+    if (byte >= data.length) break;
+    const mask = 1 << (pos & 7);
+    if (Math.floor(u / 2 ** i) % 2 === 1) data[byte] = (data[byte] as number) | mask;
+    else data[byte] = (data[byte] as number) & ~mask;
+  }
+}
+
+function readBits(data: Uint8Array, bitOffset: number, bitSize: number, signed: boolean): number {
+  let u = 0;
+  for (let i = 0; i < bitSize; i++) {
+    const pos = bitOffset + i;
+    const byte = data[pos >> 3];
+    if (byte !== undefined && (byte >> (pos & 7)) & 1) u += 2 ** i;
+  }
+  return signed && bitSize > 0 && u >= 2 ** (bitSize - 1) ? u - 2 ** bitSize : u;
+}
+
+const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+
+/**
+ * Builds a report's data bytes (without the report id) from `values` keyed by full usage. Each value is rounded and
+ * clamped to its field's logical range; fields not named stay zero; unknown keys are ignored.
+ */
+export function buildReport(layout: PidReportLayout, values: Record<number, number>): { reportId: number; data: Uint8Array } {
+  const data = new Uint8Array(Math.ceil(layout.bitLength / 8));
+  for (const [key, value] of Object.entries(values)) {
+    const usage = Number(key);
+    const f = getField(layout, usage);
+    if (!f || !Number.isFinite(value)) continue;
+    // PID Trigger Button (0xFF on 8-bit) and Duration (0xFFFF on 16-bit) use out-of-range sentinels ("no trigger" /
+    // "infinite duration") on descriptors whose LogicalMax stops at 8 or 32767 (e.g. MOZA R9 Base).
+    const rounded = Math.round(value);
+    const raw =
+      (usage === PID.TRIGGER_BUTTON && rounded === 255 && f.bitSize >= 8) ||
+      (usage === PID.DURATION && rounded === 0xffff && f.bitSize >= 16)
+        ? rounded
+        : clamp(rounded, f.min, f.max);
+    writeBits(data, f.bitOffset, f.bitSize, raw);
+  }
+  return { reportId: layout.reportId, data };
+}
+
+/** Reads every field of a report back (used for the PID Block Load feature report); selectors give their raw value */
+export function unpackReport(layout: PidReportLayout, bytes: Uint8Array): Record<number, number> {
+  const out: Record<number, number> = {};
+  for (const [key, f] of Object.entries(layout.fields)) out[Number(key)] = readBits(bytes, f.bitOffset, f.bitSize, f.signed);
+  return out;
+}
+
+/** Raw value that selects `usage` in an array field (`min + index`), or null when the field cannot select it */
+export function selectorValue(field: PidFieldLayout, usage: number): number | null {
+  const i = field.usages?.indexOf(usage) ?? -1;
+  return i < 0 ? null : field.min + i;
+}
+
+/** The usage a raw selector value stands for, or null */
+export function selectedUsage(field: PidFieldLayout, raw: number): number | null {
+  return field.usages?.[raw - field.min] ?? null;
+}
+
+/**
+ * Force −1..1 (+ = right) → raw magnitude. A signed range (−10000..10000, −32768..32767) maps 0 to 0 exactly and each
+ * side to its own end. An unsigned range (0..255) has no zero, so the midpoint stands for it: −1 → min, +1 → max,
+ * 0 → the (rounded) middle, 128 for 0..255. Most 8-bit PID firmwares read the field that way.
+ */
+export function forceToRaw(field: PidFieldLayout, force: number): number {
+  const f = Number.isFinite(force) ? clamp(force, -1, 1) : 0;
+  if (field.min < 0 && field.max > 0) return (f >= 0 ? Math.round(f * field.max) : Math.round(f * -field.min)) + 0;
+  const mid = (field.min + field.max) / 2;
+  return Math.round(mid + (f * (field.max - field.min)) / 2) + 0;
+}
+

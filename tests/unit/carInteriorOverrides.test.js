@@ -69,3 +69,30 @@ test('center editor converts image pixels to normalized pivot and updates the ru
   assert.equal(e.getCarEditorPreviewTuningRevision(car),before,'pivot changes must not restart preview preparation');
  }finally{globalThis.document=previous;resetProjectFilesForTests();clearCachedProjectFilesForTests();}
 });
+
+test('configured cockpit instruments draw between the dashboard and rotating steering wheel',()=>{
+ const editor=new RaceEditor({}),draws=[];
+ const assets={dash:{id:'dash',width:512,height:288},wheel:{id:'wheel',width:512,height:468},lamp:{id:'lamp',width:10,height:10}};
+ const car={art:{interior:{dashboard:{artRef:'dash'},steeringWheel:{artRef:'wheel'}},gauges:{interior:{enabled:true,widgets:[{id:'lamp',source:'decoration',format:'icon',enabled:true,x:.4,y:.8,width:.02,height:.02,artRef:'lamp'}]}}}};
+ editor.playtestSession={running:true,cameraView:'first-person',steeringWheelRotation:.3};editor.getRaceSessionCar=()=>car;
+ editor.getRaceArtSpriteCanvas=ref=>assets[ref];editor.drawRacePlaytestTopControls=()=>{};editor.drawRaceSelectResetProgress=()=>{};
+ const context=new Proxy({globalAlpha:1,drawImage(image){draws.push(image.id);}}, {get:(obj,key)=>key in obj?obj[key]:()=>{},set:(obj,key,value)=>(obj[key]=value,true)});
+ editor.drawRaceSteeringWheel(context,{x:0,y:0,w:512,h:288});
+ assert.deepEqual(draws,['dash']);editor.drawRacePlaytestHud(context,{x:0,y:0,w:512,h:288});
+ assert.deepEqual(draws,['dash','lamp','wheel']);
+});
+
+test('interior offsets beyond the former slider range survive saving and rendering',()=>{
+ const e=new RaceEditor({}, {mode:'car'});
+ e.setCarArtScaleValue('steering-wheel-offset-y',1.8);
+ e.setCarArtScaleValue('dashboard-offset-y',0);
+ const car=e.normalizeLoadedCarDocument(e.serializeSelectedCarDocument());
+ assert.equal(car.art.interior.steeringWheel.offsetY,1.8);
+ assert.equal(car.art.interior.dashboard.offsetY,0);
+ car.art.interior.dashboard.artRef='dash';car.art.interior.steeringWheel.artRef='wheel';
+ e.getRaceArtSpriteCanvas=ref=>ref==='dash'?{width:512,height:205}:{width:512,height:468};
+ const calls=[],ctx={save(){},restore(){},translate(...a){calls.push(['translate',...a]);},rotate(){},drawImage(...a){calls.push(['image',...a]);}};
+ e.drawCarInteriorLayers(ctx,{x:0,y:0,w:512,h:288},car);
+ const dash=calls.find(a=>a[0]==='image');assert.equal(dash[3]+dash[5],288);
+ assert.ok(calls.some(a=>a[0]==='translate'&&Math.abs(a[2]-(288*.82+1.8*288*.2))<1e-8));
+});

@@ -24,6 +24,9 @@ test('exact physical Select hold uses public gamepad state and performs an uprig
   const editor = new RaceEditor({
     deviceIsMobile: false, isMobile: false, input: gamepadInput, exitRaceEditor() {}
   });
+  editor.selectedRace.road.network = null; // Legacy distance-based recovery fixture.
+  editor.selectedRace.road.nodes = [];
+  editor.selectedRace.road.segments = [{length:500,curve:0,elevation:0,surface:'asphalt',roadWidthM:12,hazardIds:[]}];
   editor.startPlaytest('starter-rwd');
   editor.updatePlaytestSafely(0);
   editor.playtestSession.countdownRemainingMs = 0;
@@ -161,6 +164,9 @@ test('exact Car Editor preview Select hold performs an upright authoritative res
 
 test('exact stationary upside-down recovery waits two seconds then uses the Select reset transaction', () => {
   const editor = new RaceEditor({ deviceIsMobile: false, isMobile: false, exitRaceEditor() {} });
+  editor.selectedRace.road.network = null; // Legacy distance-based recovery fixture.
+  editor.selectedRace.road.nodes = [];
+  editor.selectedRace.road.segments = [{length:500,curve:0,elevation:0,surface:'asphalt',roadWidthM:12,hazardIds:[]}];
   editor.startPlaytest('starter-rwd');
   editor.updatePlaytestSafely(0);
   const session = editor.playtestSession;

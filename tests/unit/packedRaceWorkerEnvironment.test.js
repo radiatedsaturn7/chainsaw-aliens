@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  sampleRaceBakedSurface,
   buildRaceBakedSurfaceSampler,
   packRaceBakedSurfaceSampler
 } from '../../src/racing/RaceBakedSurfaceSampler.js';
@@ -189,4 +190,42 @@ test('mutable environment timeline remains exact across worker handoff', () => {
   assert.deepEqual(workerRunner.createStateSnapshot(), directRunner.createStateSnapshot());
   assert.equal(workerRunner.stepIndex, 120);
   assert.equal(workerRunner.diagnostics.backlogSteps, 0);
+});
+
+
+test('worker terrain clips a hillside maximum to the car query instead of distant triangle corners', () => {
+ const surfaceSampler = packRaceBakedSurfaceSampler(buildRaceBakedSurfaceSampler({
+  mesh: {triangles: [{region: 'road', vertices: [
+   {x: 0, y: 0, elevation: 0}, {x: 100, y: 0, elevation: 100},
+   {x: 0, y: 100, elevation: 0}
+  ]}]}, elevationScaleM: 1
+ }));
+ const provider = createPackedRaceWorkerEnvironmentProvider({surfaceSampler});
+ const output = provider({reuseContactGeometry: true, state: {position: {x: 1, y: 1, z: 1}}});
+ assert.equal(output.sampleTerrainMaximumHeightInBounds({minX: 1, maxX: 2, minZ: 1, maxZ: 2}), 2);
+ const points = Array.from({length: 30}, (_, i) => ({x: 1 + i * .7, z: 1 + i * .4}));
+ const samples = output.sampleTerrainAtWorldPoints(points);
+ for(let i=0;i<points.length;i++) {
+  const raw = sampleRaceBakedSurface(surfaceSampler, points[i]);
+  assert.equal(samples[i].valid, true);
+  assert.ok(Math.abs(samples[i].heightM - raw.elevation) < 1e-9);
+  assert.deepEqual(samples[i].normal, raw.normal);
+  assert.equal(samples[i].triangleId, raw.triangleId);
+ }
+});
+
+test('worker terrain frame is reused within a chassis step and refreshed for recovery or the next step', () => {
+ const provider = createPackedRaceWorkerEnvironmentProvider({surfaceSampler: createFlatPackedSurface()});
+ const state = {position: {x: 0, y: .55, z: 0}, velocity: {x: 0, y: 0, z: 10}};
+ const request = {state, stepIndex: 1, reuseContactGeometry: true};
+ const frame = provider(request).physicsTerrainQueryFrame;
+ const first = frame.sequence;
+ provider(request);
+ assert.equal(frame.sequence, first);
+ provider({...request, stepIndex: 2});
+ assert.equal(frame.sequence, first + 1);
+ provider({...request, stepIndex: 2, forceFreshTerrainQueryFrame: true, reuseContactGeometry: false,
+  state: {...state, position: {x: 50, y: .55, z: 50}}});
+ assert.equal(frame.sequence, first + 2);
+ assert.equal(frame.containsPoint({x: 50, z: 50}), true);
 });

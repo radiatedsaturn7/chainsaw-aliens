@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1793447830217,
+  "selectedDoodadId": "frozenrock",
+  "doodad": {
+    "id": "frozenrock",
+    "name": "frozenrock",
+    "artRef": "frozenrock",
+    "isFence": false,
+    "fenceThicknessM": 0.3,
+    "itemType": "scenery",
+    "unlockTrackId": "",
+    "model": null,
+    "widthM": 3.5,
+    "heightM": 2.5652173913043477,
+    "groundOffsetM": 0.007246376811594202,
+    "hitboxWidthM": 2.5,
+    "hitboxHeightM": 1.9,
+    "weightKg": 1600,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "collide",
+      "speedDrainPercent": 50,
+      "damage": {
+        "panels": 14,
+        "suspension": 8,
+        "engine": 2
+      }
+    },
+    "rules": []
+  }
+}

@@ -169,7 +169,7 @@ export class TrackStateContactAccumulator {
     this.pieceScratch = [];
     this.physicalTotalsScratch = {};
     this.dueScratch = [];
-    this.lastAggregateSlots = [];
+    this.lastAggregateSlots = new Map();
   }
 
   get size() {
@@ -178,7 +178,7 @@ export class TrackStateContactAccumulator {
 
   clear() {
     this.aggregates.clear();
-    this.lastAggregateSlots.length = 0;
+    this.lastAggregateSlots.clear();
   }
 
   accumulate(contact = {}, { collectAcceptedKeys = true } = {}) {
@@ -320,6 +320,16 @@ export class TrackStateContactAccumulator {
     ) || 1;
     const directionX = Number(contact.directionX ?? dx) / directionLength;
     const directionZ = Number(contact.directionZ ?? dz) / directionLength;
+    let wheelSlots = this.lastAggregateSlots.get(vehicleId);
+    if (!wheelSlots) {
+      wheelSlots = new Map();
+      this.lastAggregateSlots.set(vehicleId, wheelSlots);
+    }
+    let aggregateSlot = wheelSlots.get(wheelId);
+    if (!aggregateSlot) {
+      aggregateSlot = {vehicleId, wheelId, stepIndex: -1, cellKey: '', aggregateKey: '', aggregate: null};
+      wheelSlots.set(wheelId, aggregateSlot);
+    }
     const acceptedKeys = collectAcceptedKeys ? [] : null;
     for (let pieceIndex = 0; pieceIndex < pieceCount; pieceIndex += 1) {
       const piece = pieces[pieceIndex];
@@ -327,25 +337,6 @@ export class TrackStateContactAccumulator {
         ? durationSeconds * piece.ratio / totalPieceRatio
         : durationSeconds / Math.max(1, pieces.length);
       const cellKey = piece.coords.key;
-      let aggregateSlot = null;
-      for (let slotIndex = 0; slotIndex < this.lastAggregateSlots.length; slotIndex += 1) {
-        const slot = this.lastAggregateSlots[slotIndex];
-        if (slot.vehicleId === vehicleId && slot.wheelId === wheelId) {
-          aggregateSlot = slot;
-          break;
-        }
-      }
-      if (!aggregateSlot) {
-        aggregateSlot = {
-          vehicleId,
-          wheelId,
-          stepIndex: -1,
-          cellKey: '',
-          aggregateKey: '',
-          aggregate: null
-        };
-        this.lastAggregateSlots.push(aggregateSlot);
-      }
       const cacheHit = aggregateSlot.stepIndex === stepIndex
         && aggregateSlot.cellKey === cellKey
         && aggregateSlot.aggregate !== null;
@@ -408,10 +399,21 @@ export class TrackStateContactAccumulator {
       );
       aggregate.distanceM += piece.distanceM;
       aggregate.slipWork += slip * normalLoadN * piece.distanceM * contactScale;
-      for (let fieldIndex = 0; fieldIndex < PHYSICAL_TOTAL_FIELDS.length; fieldIndex += 1) {
-        const field = PHYSICAL_TOTAL_FIELDS[fieldIndex];
-        aggregate[field] += physicalTotals[field] * piece.ratio / Math.max(EPSILON, totalPieceRatio);
-      }
+      // Fixed physical schema: direct fields avoid repeated dynamic-property
+      // dispatch in this hot loop. Preserve multiplication/division order.
+      aggregate.rollingDistanceM += physicalTotals.rollingDistanceM * piece.ratio / Math.max(EPSILON, totalPieceRatio);
+      aggregate.groundedContactDurationSeconds += physicalTotals.groundedContactDurationSeconds * piece.ratio / Math.max(EPSILON, totalPieceRatio);
+      aggregate.normalImpulseNs += physicalTotals.normalImpulseNs * piece.ratio / Math.max(EPSILON, totalPieceRatio);
+      aggregate.longitudinalSlipWorkJ += physicalTotals.longitudinalSlipWorkJ * piece.ratio / Math.max(EPSILON, totalPieceRatio);
+      aggregate.lateralScrubWorkJ += physicalTotals.lateralScrubWorkJ * piece.ratio / Math.max(EPSILON, totalPieceRatio);
+      aggregate.lockedWheelWorkJ += physicalTotals.lockedWheelWorkJ * piece.ratio / Math.max(EPSILON, totalPieceRatio);
+      aggregate.wheelspinWorkJ += physicalTotals.wheelspinWorkJ * piece.ratio / Math.max(EPSILON, totalPieceRatio);
+      aggregate.surfaceHeatingWorkJ += physicalTotals.surfaceHeatingWorkJ * piece.ratio / Math.max(EPSILON, totalPieceRatio);
+      aggregate.rubberDepositionWorkJ += physicalTotals.rubberDepositionWorkJ * piece.ratio / Math.max(EPSILON, totalPieceRatio);
+      aggregate.waterDisplacementImpulseNs += physicalTotals.waterDisplacementImpulseNs * piece.ratio / Math.max(EPSILON, totalPieceRatio);
+      aggregate.looseMaterialSweepWorkJ += physicalTotals.looseMaterialSweepWorkJ * piece.ratio / Math.max(EPSILON, totalPieceRatio);
+      aggregate.materialPickupCapacity += physicalTotals.materialPickupCapacity * piece.ratio / Math.max(EPSILON, totalPieceRatio);
+      aggregate.carriedMaterialDepositCapacity += physicalTotals.carriedMaterialDepositCapacity * piece.ratio / Math.max(EPSILON, totalPieceRatio);
       aggregate.loadDuration += normalLoadN * duration * contactScale;
       aggregate.temperatureWeight += distanceWeight;
       aggregate.temperatureWeighted += tireTemperatureF * distanceWeight;
@@ -452,12 +454,19 @@ export class TrackStateContactAccumulator {
       entry.aggregate = aggregate;
       dueCount += 1;
     }
+    this.lastFlushCount=dueCount;
+    this.maximumFlushCount=Math.max(this.maximumFlushCount||0,dueCount);
     due.length = dueCount;
     due.sort((left, right) => compareAggregates(left.aggregate, right.aggregate));
     const events = collectEvents ? [] : null;
     for (let dueIndex = 0; dueIndex < dueCount; dueIndex += 1) {
       const { key, aggregate } = due[dueIndex];
       this.aggregates.delete(key);
+      if (this.trackState.queueAccumulatedTireContact && !this.trackState.debugLegacyContactEvents) {
+        const event = this.trackState.queueAccumulatedTireContact(aggregate);
+        if (event && collectEvents) events.push(event);
+        continue;
+      }
       const groundedFraction = aggregate.contactDurationSeconds > EPSILON
         ? aggregate.groundedDurationSeconds / aggregate.contactDurationSeconds
         : 0;

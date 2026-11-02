@@ -63,3 +63,27 @@ test('automatic lets the drivetrain settle before requesting another shift', () 
   }).state;
   assert.equal(state.targetGear, 4);
 });
+
+
+test('automatic upshifts before converter slip strands it on the rev limiter', () => {
+  for(const slip of [.12,.35]){
+    const engineRpm=6150,shaftRpm=engineRpm/(1+slip),gear=3;
+    const omega=shaftRpm/(tuning.gearRatios[gear-1]*tuning.finalDrive)*Math.PI*2/60;
+    let previous={gear,targetGear:gear,engineRpm};const shifts=[];
+    for(let i=0;i<480;i++){
+      const next=model.stepAuthoritativeWheelTorques({tuning:{...tuning,torqueConverterSlip:slip,launchRpm:2600},config:{...tuning,maxRpm:tuning.revLimitRpm},previous,
+        controls:{requestedGear:previous.gear,throttle:1,assists:{autoShift:true}},
+        kinematicsByWheel:Object.fromEntries(['fl','fr','rl','rr'].map(id=>[id,{wheelAngularVelocityRadps:omega}])),dt:1/120}).state;
+      if(next.gear!==previous.gear)shifts.push(next.gear);previous=next;
+    }
+    assert.deepEqual(shifts,[4],`converter slip ${slip}: upshift once, no hunting`);
+  }
+});
+
+test('automatic distinguishes road speed from spinning wheels before upshifting',()=>{
+ const gear=1,rpm=6400,omega=rpm/(tuning.gearRatios[0]*tuning.finalDrive)*Math.PI*2/60;
+ for(const speed of [0,1.34,omega*.33]){
+  const result=model.stepAuthoritativeWheelTorques({tuning,config:{...tuning,maxRpm:tuning.revLimitRpm},previous:{gear,targetGear:gear,engineRpm:rpm},controls:{requestedGear:gear,throttle:1,assists:{autoShift:true}},kinematicsByWheel:Object.fromEntries(['fl','fr','rl','rr'].map(id=>[id,{wheelAngularVelocityRadps:omega,longitudinalVelocityMps:speed,effectiveRollingRadiusM:.33}])),dt:1/120});
+  assert.equal(result.state.targetGear,speed>2?2:1);
+ }
+});

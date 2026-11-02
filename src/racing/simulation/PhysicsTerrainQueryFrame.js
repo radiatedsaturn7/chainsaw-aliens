@@ -3,6 +3,9 @@ const BARYCENTRIC_EPSILON = 0.0001;
 const EMPTY_SAMPLE_POINTS_OPTIONS = Object.freeze({});
 const EMPTY_PACKED_POINTS_OPTIONS = Object.freeze({});
 const DEFAULT_RESULT_CAPACITY = 256;
+// Prepared edge data is immutable and belongs to the terrain, not a vehicle.
+// Weak ownership releases it with the race; each sampler retains at most 128 ranges.
+const sharedEdgePreparations = new WeakMap();
 
 const pointZ = (point = {}) => Number(point.z ?? point.y ?? 0);
 
@@ -369,9 +372,9 @@ function resetStatistics(statistics, frameSequence) {
 }
 
 /**
- * Reusable owner for per-substep terrain frames. The cache is intentionally
- * vehicle-local: a prepared-world revision change or a bucket-range change is
- * the only event which rebuilds its local triangle index set.
+ * Reusable owner for per-substep terrain frames. Mutable query buffers and
+ * local triangle indices belong to each vehicle; immutable edge classifications
+ * are shared by sampler, revision, scale and bucket range.
  */
 export class PhysicsTerrainQueryFrameCache {
   constructor({ resultCapacity = DEFAULT_RESULT_CAPACITY } = {}) {
@@ -461,17 +464,13 @@ export class PhysicsTerrainQueryFrame {
     this.elevationScaleM = 1;
     this.physicsCostAccounting = null;
     this.statistics = createStatistics();
-    this.batchBuffers = Array.from({ length: 16 }, () => (
-      createBatchBuffer(cache.resultCapacity || DEFAULT_RESULT_CAPACITY)
-    ));
+    this.batchBuffers = [];
     this.batchBufferCursor = 0;
     // Body support batches are consumed synchronously by collision loops and
     // never cross the public environment snapshot boundary. Keeping one
     // dedicated buffer prevents tire-frequency collision work from growing the
     // rotating wheel/environment batch pool for the duration of a chassis step.
-    this.bodySupportBatch = createBatchBuffer(
-      cache.resultCapacity || DEFAULT_RESULT_CAPACITY
-    );
+    this.bodySupportBatch = null;
     this.lastBatch = null;
     this.scalarResult = createMutableSample();
     this.analyticResults = Array.from({ length: 8 }, () => createMutableSample());
@@ -524,7 +523,7 @@ export class PhysicsTerrainQueryFrame {
     this.bodyVariationBounds = {
       minX: 0, maxX: 0, minY: -Infinity, maxY: Infinity, minZ: 0, maxZ: 0
     };
-    this.pointCacheCapacity = 8192;
+    this.pointCacheCapacity = 1024;
     this.pointCacheStamps = new Uint32Array(this.pointCacheCapacity);
     this.pointCacheX = new Float64Array(this.pointCacheCapacity);
     this.pointCacheZ = new Float64Array(this.pointCacheCapacity);
@@ -586,14 +585,15 @@ export class PhysicsTerrainQueryFrame {
     physicsCostAccounting = null
   } = {}) {
     const nextRevision = revision ?? sampler?.revision ?? 0;
-    const retainMaterialCache = this.sampler === sampler && this.revision === nextRevision;
-    if (!retainMaterialCache) this.cache.edgeClassificationsByBucketRange.clear();
+    const nextElevationScale = Math.max(0.000001, Number(
+      elevationScaleM ?? sampler?.elevationScaleM ?? 1
+    ) || 1);
+    const retainMaterialCache = this.sampler === sampler && this.revision === nextRevision
+      && this.elevationScaleM === nextElevationScale;
     this.sampler = sampler;
     this.revision = nextRevision;
     this.bounds = finiteBounds(bounds);
-    this.elevationScaleM = Math.max(0.000001, Number(
-      elevationScaleM ?? sampler?.elevationScaleM ?? 1
-    ) || 1);
+    this.elevationScaleM = nextElevationScale;
     this.physicsCostAccounting = physicsCostAccounting;
     this.sequence += 1;
     resetStatistics(this.statistics, this.sequence);
@@ -609,10 +609,14 @@ export class PhysicsTerrainQueryFrame {
       this.materialRegions.fill(null);
       this.materialSources.fill(null);
     }
-    this.pointCacheStamp = (this.pointCacheStamp + 1) >>> 0;
-    if (this.pointCacheStamp === 0) {
-      this.pointCacheStamps.fill(0);
-      this.pointCacheStamp = 1;
+    // Exact X/Z samples of immutable, non-layered geometry remain valid across
+    // steps. Material/weather sampling is separate; layered queries bypass this.
+    if (!retainMaterialCache) {
+      this.pointCacheStamp = (this.pointCacheStamp + 1) >>> 0;
+      if (this.pointCacheStamp === 0) {
+        this.pointCacheStamps.fill(0);
+        this.pointCacheStamp = 1;
+      }
     }
     this.rebuildLocalIndexIfNeeded();
     const triangleCount = Number(sampler?.triangleCount) || 0;
@@ -633,22 +637,32 @@ export class PhysicsTerrainQueryFrame {
       return;
     }
     const bucketSize = Math.max(4, Number(sampler.bucketSizeM) || 20);
-    const minBucketX = Math.floor(bounds.minX / bucketSize);
-    const maxBucketX = Math.floor(bounds.maxX / bucketSize);
-    const minBucketZ = Math.floor(bounds.minZ / bucketSize);
-    const maxBucketZ = Math.floor(bounds.maxZ / bucketSize);
-    const key = `${minBucketX}:${maxBucketX}:${minBucketZ}:${maxBucketZ}`;
+    let minBucketX = Math.floor(bounds.minX / bucketSize);
+    let maxBucketX = Math.floor(bounds.maxX / bucketSize);
+    let minBucketZ = Math.floor(bounds.minZ / bucketSize);
+    let maxBucketZ = Math.floor(bounds.maxZ / bucketSize);
     if (this.cache.sampler === sampler
       && this.cache.revision === this.revision
-      && this.cache.bucketRangeKey === key) {
+      && this.cache.elevationScaleM === this.elevationScaleM
+      && minBucketX >= this.cache.minBucketX
+      && maxBucketX < this.cache.minBucketX + this.cache.bucketGridWidth
+      && minBucketZ >= this.cache.minBucketZ
+      && maxBucketZ < this.cache.minBucketZ + this.cache.bucketGridHeight) {
       this.statistics.cacheHit = true;
       this.statistics.localTriangleCount = this.cache.localTriangleCount;
       return;
     }
+    // A small guard band prevents a stopped or rocking car at a bucket edge
+    // from rebuilding triangle grids and seam classifications every step.
+    // Actual point/range queries still filter triangles against their bounds.
+    minBucketX--; maxBucketX++; minBucketZ--; maxBucketZ++;
+    const key = `${minBucketX}:${maxBucketX}:${minBucketZ}:${maxBucketZ}`;
 
+    const buildTimer = this.physicsCostAccounting?.start('terrainLocalIndexBuild');
     this.statistics.bucketDiscoveries += 1;
     this.cache.sampler = sampler;
     this.cache.revision = this.revision;
+    this.cache.elevationScaleM = this.elevationScaleM;
     this.cache.bucketRangeKey = key;
     this.cache.minBucketX = minBucketX;
     this.cache.minBucketZ = minBucketZ;
@@ -719,14 +733,23 @@ export class PhysicsTerrainQueryFrame {
     this.buildFineTriangleGrid({
       minBucketX, maxBucketX, minBucketZ, maxBucketZ, bucketSize
     });
+    this.physicsCostAccounting?.end(buildTimer);
+    const edgeTimer = this.physicsCostAccounting?.start('terrainEdgeClassificationBuild');
     this.buildLocalEdgeClassifications(key);
+    this.physicsCostAccounting?.end(edgeTimer);
     this.statistics.localTriangleCount = localCount;
   }
 
   buildLocalEdgeClassifications(bucketRangeKey = '') {
     const sampler = this.sampler;
     const cache = this.cache;
-    const preparedKey = `${String(this.revision)}:${bucketRangeKey}`;
+    let shared = sharedEdgePreparations.get(sampler);
+    if (!shared || shared.revision !== this.revision || shared.scale !== this.elevationScaleM) {
+      shared = { revision: this.revision, scale: this.elevationScaleM, entries: new Map() };
+      sharedEdgePreparations.set(sampler, shared);
+    }
+    cache.edgeClassificationsByBucketRange = shared.entries;
+    const preparedKey = bucketRangeKey;
     const prepared = cache.edgeClassificationsByBucketRange.get(preparedKey);
     if (prepared) {
       // Keep recently visited ranges, rather than retaining every position
@@ -885,6 +908,8 @@ export class PhysicsTerrainQueryFrame {
         });
       }
     });
+    // Sort once in shared preparation; queries can stop beyond their X extent.
+    discontinuityEdges.sort((a, b) => a.minX - b.minX);
     cache.discontinuityEdges = discontinuityEdges;
     cache.edgeClassificationCounts = edgeClassificationCounts;
     if (cache.edgeClassificationsByBucketRange.size >= 128) {
@@ -1443,6 +1468,7 @@ export class PhysicsTerrainQueryFrame {
     const features = this.cache.discontinuityEdges;
     for (let index = 0; index < features.length; index += 1) {
       const feature = features[index];
+      if (feature.minX > resolved.maxX + BARYCENTRIC_EPSILON) break;
       if (feature.maxX < resolved.minX - BARYCENTRIC_EPSILON
         || feature.minX > resolved.maxX + BARYCENTRIC_EPSILON
         || (Number.isFinite(Number(resolved.minY))
@@ -1491,7 +1517,7 @@ export class PhysicsTerrainQueryFrame {
     const count = entries.length;
     this.statistics.batchQueries += 1;
     this.physicsCostAccounting?.count('terrainQueryFrameBatchQueries');
-    const batch = this.bodySupportBatch;
+    const batch = this.bodySupportBatch ||= createBatchBuffer(Math.max(4, count));
     if (growBatchBuffer(batch, count)) {
       this.statistics.temporaryObjects += 5;
       this.physicsCostAccounting?.count('temporaryObjects', 5);
@@ -1584,10 +1610,7 @@ export class PhysicsTerrainQueryFrame {
   acquireBatchBuffer(count) {
     let batch = this.batchBuffers[this.batchBufferCursor];
     if (!batch) {
-      batch = createBatchBuffer(Math.max(
-        this.cache.resultCapacity || DEFAULT_RESULT_CAPACITY,
-        count
-      ));
+      batch = createBatchBuffer(Math.max(4, count));
       this.batchBuffers.push(batch);
       this.statistics.temporaryObjects += 8;
       this.physicsCostAccounting?.count('temporaryObjects', 8);

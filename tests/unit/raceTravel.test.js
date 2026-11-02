@@ -513,3 +513,24 @@ test('race start records the car loading failure and clears stale errors on the 
  assert.match(game.lastRaceTravelError,/saved car unavailable/);
  assert.equal(await game.startRaceTravel({raceName:''}),false);assert.equal(game.lastRaceTravelError,'Choose a race first.');
 });
+
+for (const scenario of ['preparing','rejected']) test(`race travel respects ${scenario} startup outcome`, async () => {
+  const game=Object.create(Game.prototype);
+  game.state='menu-player';game.showSystemToast=()=>{};
+  game.resolveRaceTravelCarAsync=async()=>({id:'car',name:'Car'});
+  game.captureRaceTravelPlayerState=()=>({});game.transitionTo=state=>{game.state=state;};
+  game.setRevAudio=()=>{};game.prepareRacePlaytestAudio=async()=>true;
+  let failure='';game.returnRaceTravelToOrigin=({message})=>{failure=message;game.raceTravelSession=null;};
+  game.raceEditor={
+    loadRaceTravelDocument:async()=>({id:'race',name:'Race'}),
+    applyLoadedRaceDocument:()=>true,
+    startPlaytest(){
+      if(scenario==='rejected'){this.status='Finish south is not reachable from start.';return false;}
+      this.playtestSession={preparing:true,running:false};
+    }
+  };
+  const result=await game.startRaceTravel({raceName:'Race',carSelection:'specific',carRef:'Car'});
+  assert.equal(result,scenario==='preparing');
+  if(scenario==='preparing')assert.equal(failure,'');
+  else assert.match(failure,/Finish south is not reachable/);
+});

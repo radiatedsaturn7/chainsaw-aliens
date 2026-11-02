@@ -22,6 +22,8 @@ export class MenuFlow {
     if(!this.active||generation!==this.generation)return;if(depth>12)throw Error('Too many chained menu actions');
     const target=resolveMenuValue(action.target,this.parameters),configuration={...structuredClone(this.parameters),...(this.lockedCarRef?{carRef:this.lockedCarRef}:{})};
     switch(action.type){
+      case 'wheel-settings':await this.adapter.wheelSettings?.();break;
+      case 'haptics':await this.adapter.haptics?.();break;
       case 'cheat-code':await this.adapter.cheatCode(target,configuration);break;
       case 'new-game':
         if(!this.document.screens.some(s=>s.id===target))throw Error(`Menu screen not found: ${target}`);

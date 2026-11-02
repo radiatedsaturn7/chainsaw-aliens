@@ -227,3 +227,29 @@ test('shared snapshot ring keeps publishing latest state through a 250 ms render
   assert.equal(authority.overwrittenSnapshots > 0, true);
   assert.equal(authority.snapshotBuffers.length, buffers.length);
 });
+
+test('removing an opponent clears inputs and wake state but cannot remove player',()=>{
+ const runner={advance(){}};
+ const authority=new VehicleDynamicsWorkerAuthority({runners:[{id:'player',runner,player:true},{id:'debug-1',runner}]});
+ authority.setInput('debug-1',{throttle:1},{sequence:1});
+ authority.wakeSourceByVehicle.set('debug-1',{});
+ assert.equal(authority.removeVehicle('player'),false);
+ assert.equal(authority.removeVehicle('debug-1'),true);
+ assert.equal(authority.latestInputs.has('debug-1'),false);
+ assert.equal(authority.wakeSourceByVehicle.has('debug-1'),false);
+ assert.equal(authority.vehicles.size,1);
+});
+
+test('resuming the worker resets its wall clock instead of catching up paused time', () => {
+ let now=100;
+ const runner=new FakeRunner();
+ const authority=new VehicleDynamicsWorkerAuthority({runners:[{id:'player',player:true,runner}],now:()=>now});
+ try {
+  authority.start(); authority.stop();
+  now=100100; authority.start();
+  const before=runner.stepIndex;
+  now+=1000/120;
+  authority.tick(now);
+  assert.equal(runner.stepIndex-before,1);
+ } finally {authority.stop();}
+});

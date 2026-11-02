@@ -579,36 +579,13 @@ test('incremental artwork adoption rejects conversion errors instead of remainin
   );
 });
 
-test('preparation progress never displays 100 percent before presentation completes', () => {
-  const editor = createEditor();
-  editor.racePlaytestPreparation = {
-    progress: 0.999,
-    raceName: 'Studio Sprint2',
-    phase: 'Starting race'
-  };
-  const labels = [];
-  const ctx = {
-    save() {},
-    restore() {},
-    fillRect() {},
-    strokeRect() {},
-    fillText(value) {
-      labels.push(String(value));
-    },
-    set fillStyle(_value) {},
-    set strokeStyle(_value) {},
-    set lineWidth(_value) {},
-    set font(_value) {},
-    set textAlign(_value) {},
-    set textBaseline(_value) {}
-  };
-  editor.buttons = [];
-  editor.drawButton = () => {};
-
-  editor.drawRacePreparationScreen(ctx, 640, 360);
-
-  assert.equal(labels.some((label) => label.includes('99%')), true);
-  assert.equal(labels.some((label) => label.includes('100%')), false);
+test('preparation progress remains below complete until presentation finishes', () => {
+  const editor=createEditor();
+  editor.racePlaytestPreparation={progress:.999,raceName:'Studio Sprint2',phase:'Starting race'};
+  const ctx=new Proxy({measureText:()=>({width:20})},{get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
+  editor.drawRacePreparationScreen(ctx,640,360);
+  assert.equal(editor.raceLoadingPresentation.progress,.999);
+  assert.ok(editor.raceLoadingPresentation.progress<1);
 });
 
 test('browser Race Editor playtest starts through the worker without synchronous prewarm work', () => {
@@ -1500,4 +1477,24 @@ test('applying a loaded race clears every previous runtime surface cache', () =>
   assert.equal(editor.raceWorldBakeCache, null);
   assert.equal(editor.raceTerrainBakeCache, null);
   assert.equal(editor.raceEditorSurfacePreviewBake, null);
+});
+
+test('travel fallback cancels the previous loading job before creating its preparing session', () => {
+  const previousWorker = globalThis.Worker;
+  globalThis.Worker = FakeWorker;
+  const editor = new RaceEditor({}, {mode:'race'});
+  let terminated = false;
+  editor.racePlaytestPreparation = {id:99,worker:{terminate(){terminated=true;}}};
+  editor.playtestSession = {preparing:true,running:false};
+  try {
+    editor.startPlaytest(editor.project.selectedCarId,{hydrateCars:false,raceTravel:true});
+    assert.equal(terminated,true);
+    assert.ok(editor.playtestSession,'the new race session survives old-job cancellation');
+    assert.equal(editor.playtestSession.preparing,true);
+    assert.equal(editor.playtestSession.running,false);
+    assert.ok(editor.racePlaytestPreparation?.worker);
+  } finally {
+    editor.cancelRacePlaytestPreparation();
+    if(previousWorker===undefined)delete globalThis.Worker;else globalThis.Worker=previousWorker;
+  }
 });

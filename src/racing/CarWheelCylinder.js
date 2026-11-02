@@ -34,6 +34,12 @@ export function buildWheelCylinder({ width = 20, height = 50, bearing = 0, spin 
 
 export function drawWheelCylinder(ctx, { tread, wheel, treadBounds, wheelBounds, ...geometry }) {
   if (!tread || !wheel) return false;
+  if(ctx.__raceBoundsRecorder===true && ctx.__raceEmissive!==true){
+    const width=geometry.width ?? 20,height=geometry.height ?? 50,bearing=geometry.bearing ?? 0;
+    const halfWidth=Math.abs(Math.cos(bearing)*width/2)+Math.abs(Math.sin(bearing)*height/2);
+    return ctx.__raceDrawBounded({x:-halfWidth,y:-height/2,width:halfWidth*2,height},
+      raw=>drawWheelCylinder(raw,{tread,wheel,treadBounds,wheelBounds,...geometry}));
+  }
   const previous = ctx.imageSmoothingEnabled; ctx.imageSmoothingEnabled = false;
   for (const triangle of buildWheelCylinder(geometry)) {
     const texture = triangle.surface === 'tread' ? tread : wheel;

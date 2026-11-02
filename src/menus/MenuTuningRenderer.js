@@ -18,7 +18,7 @@ export function drawGarageTuner(ctx,b,tuner,fontFamily='system-ui',element={},re
   ctx.restore();
  };
  const mode=tuner?.mode||'grid';if(!element.transparentBackground){ctx.fillStyle='#000000';ctx.fillRect(b.x,b.y,b.w,b.h);}
- if(mode!=='grid')text(mode==='edit'?tuner.row.label.toUpperCase():TUNING_SECTIONS[tuner.index].label.toUpperCase(),b.x+8,b.y+b.h*.065,27);
+ if(mode!=='grid')text((mode==='edit'||mode==='repair')?tuner.row.label.toUpperCase():TUNING_SECTIONS[tuner.index].label.toUpperCase(),b.x+8,b.y+b.h*.065,27);
  if(mode==='grid'){
   for(let i=0;i<8;i++){
    const card=garageGridBounds(b,i),r=rect(card.x,card.y,card.w,card.h,'category',{index:i});
@@ -39,10 +39,16 @@ export function drawGarageTuner(ctx,b,tuner,fontFamily='system-ui',element={},re
    const words=row.label.split(' '),middle=Math.ceil(words.length/2),lines=words.length===1?words:[words.slice(0,middle).join(' '),words.slice(middle).join(' ')];
    const lineHeight=Math.min(r.h/4,Math.max(11,20*scale));
    lines.forEach((line,j)=>text(line,r.x+r.w/2,r.y+r.h/2+(j-lines.length/2)*lineHeight,18,row.enabled?'#ffffff':'#73808b','center',r.w-8));
-   const value=row.enabled?(row.options?row.options[row.value]?.label:Number(row.value.toFixed(4)).toString()):'Locked';
+   const value=row.repair?(row.id==='all'||row.id==='service'?`${row.cost} scrap`:`${Math.round(row.value)}% · ${row.cost} scrap`):row.enabled?(row.options?row.options[row.value]?.label:Number(row.value.toFixed(4)).toString()):'Locked';
    text(value||'',r.x+r.w/2,r.y+r.h/2+lines.length/2*lineHeight,18,row.enabled?'#e5bd67':'#73808b','center',r.w-8);
    ctx.restore();
   });
+  if(tuner.message)text(tuner.message,b.x+6,b.y+b.h-8,17,'#adb9c5','left',b.w-12);
+ }else if(mode==='repair'){
+  const row=tuner.row;
+  text(`${row.cost} scrap`,b.x+b.w/2,b.y+b.h*.28,28,'#e5bd67','center',b.w*.9);
+  text(row.required?`Required: ${row.required}`:'No replacement part required',b.x+b.w/2,b.y+b.h*.44,19,'#ffffff','center',b.w*.9);
+  for(const [i,label,kind] of [[5,'Repair','apply'],[6,'Cancel','exit']]){const card=garageGridBounds(b,i);button(rect(card.x,card.y,card.w,card.h,kind),label,kind==='apply',!tuner.busy);}
   if(tuner.message)text(tuner.message,b.x+6,b.y+b.h-8,17,'#adb9c5','left',b.w-12);
  }else{
   const row=tuner.row,value=tuner.draft,ratio=Math.max(0,Math.min(1,(value-row.min)/(row.max-row.min||1)));

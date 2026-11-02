@@ -7,6 +7,7 @@ export const GARAGE_DIALOGUE={
  upgrade:"If we got enough scrap, I can fabricate something new."
  },
  tuning:{
+ repair:"Let’s find what’s broken. We can fix individual components, or repair everything if we have the scrap and parts.",
  pressure:"Hmm... maybe a little less pressure? I mean, half these roads are barely roads anymore.",
  tires:"You think we'll need something for dirt or snow? I'd rather not waste a good set of tires on pavement.",
  engine:"We could get a little more power out of it. Or lose some weight. I'm not sure how much more this thing can take.",
@@ -45,7 +46,7 @@ export const GARAGE_DIALOGUE={
 };
 export function garageDialogueContext(screen,resources,parameters,states=new Map(),focusedId=null){
  const tuner=screen.elements.find(e=>e.type==='garage-tuner');
- if(tuner){const state=states.get(tuner.id)?.tuner;return {kind:'tuning',category:TUNING_SECTIONS[state?.index||0]?.id||'pressure',selection:state?.mode==='grid'?'':String(state?.rowIndex||0)};}
+ if(tuner){const state=states.get(tuner.id)?.tuner;return {detail:state?.index===1&&state.mode!=='grid'?(state.message||state.row?.reason):'',kind:'tuning',category:TUNING_SECTIONS[state?.index||0]?.id||'pressure',selection:state?.mode==='grid'?'':String(state?.rowIndex||0)};}
  const browser=screen.elements.find(e=>e.type==='garage-browser');
  if(browser){
   const state=states.get(browser.id)||{},rows=garageBrowserRows(resources,parameters,state),row=rows[Math.min(state.index||0,Math.max(0,rows.length-1))];
@@ -61,6 +62,7 @@ export function garageDialogueContext(screen,resources,parameters,states=new Map
  return {kind:'garage',category};
 }
 export function garageDialogueText(context){
+ if(context.detail)return context.detail;
  if(context.insufficient)return GARAGE_DIALOGUE.events.insufficient;
  if(context.maximum)return GARAGE_DIALOGUE.events.maximum;
  if(context.expensive)return GARAGE_DIALOGUE.events.expensive;

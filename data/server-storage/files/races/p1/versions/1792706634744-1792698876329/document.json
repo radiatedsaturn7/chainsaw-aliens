@@ -1,0 +1,984 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-track",
+  "savedAt": 1792698876328,
+  "selectedRaceId": "new-race",
+  "race": {
+    "id": "new-race",
+    "name": "New Race",
+    "type": "destination",
+    "laps": 1,
+    "weather": "clear",
+    "timeOfDay": "day",
+    "entryBehavior": "return-to-origin",
+    "finishBehavior": {
+      "type": "menu",
+      "menuRef": "",
+      "menuScreen": "world-map",
+      "targetLevel": null,
+      "targetRace": null,
+      "spawnX": null,
+      "spawnY": null
+    },
+    "road": {
+      "laneCount": 1,
+      "laneWidthM": 3.6,
+      "width": 3.6,
+      "selectedGroundTileId": "grass",
+      "groundTiles": [],
+      "tileMap": {
+        "schemaVersion": 2,
+        "normalized": true,
+        "revision": 0,
+        "cellSizeM": 5,
+        "defaultTileId": "grass",
+        "models": {},
+        "minElevation": -1,
+        "maxElevation": 1,
+        "cells": {}
+      },
+      "nodes": [
+        {
+          "x": 0,
+          "y": 0,
+          "elevation": 0,
+          "role": "start",
+          "locked": true
+        }
+      ],
+      "segments": [],
+      "network": {
+        "version": 1,
+        "nodes": [
+          {
+            "x": 0,
+            "z": 0,
+            "heightM": 0,
+            "id": "start",
+            "name": "Start"
+          },
+          {
+            "x": -1.2124988945878954,
+            "z": 117.51387292182528,
+            "heightM": 0,
+            "id": "end",
+            "name": "Track end"
+          },
+          {
+            "x": -12.647245586279865,
+            "z": 153.6968033482693,
+            "heightM": 0,
+            "id": "junction-1",
+            "name": ""
+          },
+          {
+            "x": -50.125389907294945,
+            "z": 211.45026162056465,
+            "heightM": 0,
+            "id": "junction-2",
+            "name": ""
+          },
+          {
+            "x": -37.8220138423356,
+            "z": 184.50389155588445,
+            "heightM": 0,
+            "id": "junction-3",
+            "name": ""
+          },
+          {
+            "x": -53.19816020980969,
+            "z": 240.61971527204625,
+            "heightM": 0,
+            "id": "junction-4",
+            "name": ""
+          },
+          {
+            "x": -44.908259140614724,
+            "z": 279.4930821494663,
+            "heightM": 0,
+            "id": "junction-5",
+            "name": ""
+          },
+          {
+            "x": -21.457044559189562,
+            "z": 315.86282292889024,
+            "heightM": 0,
+            "id": "junction-6",
+            "name": ""
+          },
+          {
+            "x": 18.305705807800422,
+            "z": 343.6126321410861,
+            "heightM": 0,
+            "id": "junction-7",
+            "name": ""
+          },
+          {
+            "x": 79.241461869935,
+            "z": 371.66337414380223,
+            "heightM": 0,
+            "id": "junction-8",
+            "name": ""
+          },
+          {
+            "x": 111.06083714876391,
+            "z": 407.74513235443726,
+            "heightM": 0,
+            "id": "junction-9",
+            "name": ""
+          },
+          {
+            "x": 161.12541486108506,
+            "z": 448.18305080765066,
+            "heightM": 0,
+            "id": "junction-10",
+            "name": ""
+          },
+          {
+            "x": 182.35975961111836,
+            "z": 476.7035090169279,
+            "heightM": 0,
+            "id": "junction-11",
+            "name": ""
+          },
+          {
+            "x": 183.0426025898647,
+            "z": 498.65429894764765,
+            "heightM": 0,
+            "id": "junction-12",
+            "name": ""
+          },
+          {
+            "x": 170.14037076283958,
+            "z": 515.6966445215776,
+            "heightM": 0,
+            "id": "junction-13",
+            "name": ""
+          },
+          {
+            "x": 142.62159166043983,
+            "z": 529.7077428590378,
+            "heightM": 0,
+            "id": "junction-14",
+            "name": ""
+          },
+          {
+            "x": 104.47192785833471,
+            "z": 531.593852250619,
+            "heightM": 0,
+            "id": "junction-15",
+            "name": ""
+          },
+          {
+            "x": 38.62478733728656,
+            "z": 529.1014934117438,
+            "heightM": 0,
+            "id": "junction-16",
+            "name": ""
+          },
+          {
+            "x": -15.189408080768146,
+            "z": 524.0494146842943,
+            "heightM": 0,
+            "id": "junction-17",
+            "name": ""
+          },
+          {
+            "x": -69.86468027321223,
+            "z": 531.391769101521,
+            "heightM": 0,
+            "id": "junction-18",
+            "name": ""
+          },
+          {
+            "x": -110.99788105381474,
+            "z": 518.7278917580473,
+            "heightM": 0,
+            "id": "junction-19",
+            "name": ""
+          },
+          {
+            "x": -151.39396799628508,
+            "z": 484.6646781834857,
+            "heightM": 0,
+            "id": "junction-20",
+            "name": ""
+          },
+          {
+            "x": -153.65174556363172,
+            "z": 469.5930502201971,
+            "heightM": 0,
+            "id": "junction-21",
+            "name": ""
+          },
+          {
+            "x": -134.36537358065922,
+            "z": 439.59004116837167,
+            "heightM": 0,
+            "id": "junction-22",
+            "name": ""
+          },
+          {
+            "x": -121.82094250954624,
+            "z": 418.70241313439305,
+            "heightM": 0,
+            "id": "junction-23",
+            "name": ""
+          },
+          {
+            "x": -126.82638666412707,
+            "z": 395.3954899384256,
+            "heightM": 0,
+            "id": "junction-24",
+            "name": ""
+          },
+          {
+            "x": -145.35005704665463,
+            "z": 374.2498290335107,
+            "heightM": 0,
+            "id": "junction-25",
+            "name": ""
+          },
+          {
+            "x": -179.3932952408534,
+            "z": 367.44636301387857,
+            "heightM": 0,
+            "id": "junction-26",
+            "name": ""
+          },
+          {
+            "x": -214.9175943447751,
+            "z": 365.214706814415,
+            "heightM": 0,
+            "id": "junction-27",
+            "name": ""
+          },
+          {
+            "x": -231.76822000802235,
+            "z": 358.74804604327954,
+            "heightM": 0,
+            "id": "junction-28",
+            "name": ""
+          },
+          {
+            "x": -232.91853947211857,
+            "z": 345.8147245010086,
+            "heightM": 0,
+            "id": "junction-29",
+            "name": ""
+          },
+          {
+            "x": -219.27015447919322,
+            "z": 337.5966764376906,
+            "heightM": 0,
+            "id": "junction-30",
+            "name": ""
+          },
+          {
+            "x": -189.9214632871168,
+            "z": 333.42029135633226,
+            "heightM": 0,
+            "id": "junction-31",
+            "name": ""
+          },
+          {
+            "x": -153.27333933092945,
+            "z": 318.0115855663514,
+            "heightM": 0,
+            "id": "junction-32",
+            "name": ""
+          },
+          {
+            "x": -142.3297595643925,
+            "z": 288.17064054954915,
+            "heightM": 0,
+            "id": "junction-33",
+            "name": ""
+          },
+          {
+            "x": -148.70315118979045,
+            "z": 253.3449778549966,
+            "heightM": 0,
+            "id": "junction-34",
+            "name": ""
+          },
+          {
+            "x": -177.12532114924255,
+            "z": 222.15263311474789,
+            "heightM": 0,
+            "id": "junction-35",
+            "name": ""
+          },
+          {
+            "x": -215.17001148144124,
+            "z": 205.87798687761773,
+            "heightM": 0,
+            "id": "junction-36",
+            "name": ""
+          },
+          {
+            "x": -265.2821157314316,
+            "z": 201.73480135360057,
+            "heightM": 0,
+            "id": "junction-37",
+            "name": ""
+          },
+          {
+            "x": -338.0169032774879,
+            "z": 203.06519823594306,
+            "heightM": 0,
+            "id": "junction-38",
+            "name": ""
+          }
+        ],
+        "edges": [
+          {
+            "id": "straight",
+            "name": "Straight",
+            "from": "start",
+            "to": "end",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-1",
+            "name": "",
+            "from": "end",
+            "to": "junction-1",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-2",
+            "name": "",
+            "from": "junction-1",
+            "to": "junction-3",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-3",
+            "name": "",
+            "from": "junction-3",
+            "to": "junction-2",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-4",
+            "name": "",
+            "from": "junction-2",
+            "to": "junction-4",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-5",
+            "name": "",
+            "from": "junction-4",
+            "to": "junction-5",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-6",
+            "name": "",
+            "from": "junction-5",
+            "to": "junction-6",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-7",
+            "name": "",
+            "from": "junction-6",
+            "to": "junction-7",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-8",
+            "name": "",
+            "from": "junction-7",
+            "to": "junction-8",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-9",
+            "name": "",
+            "from": "junction-8",
+            "to": "junction-9",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-10",
+            "name": "",
+            "from": "junction-9",
+            "to": "junction-10",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-11",
+            "name": "",
+            "from": "junction-10",
+            "to": "junction-11",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-12",
+            "name": "",
+            "from": "junction-11",
+            "to": "junction-12",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-13",
+            "name": "",
+            "from": "junction-12",
+            "to": "junction-13",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-14",
+            "name": "",
+            "from": "junction-13",
+            "to": "junction-14",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-15",
+            "name": "",
+            "from": "junction-14",
+            "to": "junction-15",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-16",
+            "name": "",
+            "from": "junction-15",
+            "to": "junction-16",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-17",
+            "name": "",
+            "from": "junction-16",
+            "to": "junction-17",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-18",
+            "name": "",
+            "from": "junction-17",
+            "to": "junction-18",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-19",
+            "name": "",
+            "from": "junction-18",
+            "to": "junction-19",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-20",
+            "name": "",
+            "from": "junction-19",
+            "to": "junction-20",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-21",
+            "name": "",
+            "from": "junction-20",
+            "to": "junction-21",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-22",
+            "name": "",
+            "from": "junction-21",
+            "to": "junction-22",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-23",
+            "name": "",
+            "from": "junction-22",
+            "to": "junction-23",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-24",
+            "name": "",
+            "from": "junction-23",
+            "to": "junction-24",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-25",
+            "name": "",
+            "from": "junction-24",
+            "to": "junction-25",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-26",
+            "name": "",
+            "from": "junction-25",
+            "to": "junction-26",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-27",
+            "name": "",
+            "from": "junction-26",
+            "to": "junction-27",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-28",
+            "name": "",
+            "from": "junction-27",
+            "to": "junction-28",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-29",
+            "name": "",
+            "from": "junction-28",
+            "to": "junction-29",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-30",
+            "name": "",
+            "from": "junction-29",
+            "to": "junction-30",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-31",
+            "name": "",
+            "from": "junction-30",
+            "to": "junction-31",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-32",
+            "name": "",
+            "from": "junction-31",
+            "to": "junction-32",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-33",
+            "name": "",
+            "from": "junction-32",
+            "to": "junction-33",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-34",
+            "name": "",
+            "from": "junction-33",
+            "to": "junction-34",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-35",
+            "name": "",
+            "from": "junction-34",
+            "to": "junction-35",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-36",
+            "name": "",
+            "from": "junction-35",
+            "to": "junction-36",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-37",
+            "name": "",
+            "from": "junction-36",
+            "to": "junction-37",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          },
+          {
+            "id": "route-38",
+            "name": "",
+            "from": "junction-37",
+            "to": "junction-38",
+            "points": [],
+            "widthM": 21.6,
+            "surface": "asphalt",
+            "structure": "road",
+            "clearanceM": 5,
+            "thicknessM": 0.5,
+            "bidirectional": true
+          }
+        ],
+        "startNodeId": "start",
+        "finishNodeId": "junction-38"
+      },
+      "tilePaintSource": "tile-editor"
+    },
+    "competition": {
+      "mode": "solo",
+      "aiDrivers": [
+        {
+          "id": "rookie-ai",
+          "name": "Rookie AI",
+          "carId": "starter-rwd",
+          "aggression": 0.45,
+          "skill": 0.58,
+          "rubberBanding": 0.2,
+          "enabled": false,
+          "difficulty": "medium"
+        }
+      ],
+      "playerStartGrid": 1,
+      "trafficEnabled": false,
+      "carSelection": {
+        "availableCarIds": null,
+        "category": "any",
+        "performanceClass": "any",
+        "defaultCarId": ""
+      }
+    },
+    "hazards": [],
+    "codriver": {
+      "enabled": true,
+      "voice": "default",
+      "calls": []
+    },
+    "raceStart": {
+      "musicTrackId": "",
+      "countdown": true,
+      "rollingStart": false,
+      "rollingStartSpeedMps": 13.4
+    },
+    "triggers": [],
+    "scenery": [],
+    "groundRenderer": "webgl-track",
+    "groundTextureBaseWorldM": 1.002,
+    "groundTextureFilterMode": "balanced",
+    "skyboxArtRef": "providence",
+    "skyboxSettings": {
+      "artRef": "providence",
+      "offsetXTurns": 0,
+      "offsetYRatio": 0
+    },
+    "surfaceArt": {
+      "boundary": "apron"
+    },
+    "margin": {
+      "enabled": true,
+      "shoulderEnabled": true,
+      "widthM": 0.22,
+      "shoulderWidthM": 12,
+      "collisionMode": "shoulder",
+      "artRef": "apron",
+      "marginMode": "on",
+      "shoulderMode": "hidden",
+      "collisionEdge": "shoulder",
+      "collisionEffect": "reset"
+    },
+    "renderDebug": {
+      "lightingEnabled": true,
+      "terrainEnabled": true,
+      "texturesEnabled": true,
+      "detailEnabled": false,
+      "terrainCullingEnabled": true,
+      "terrainLodEnabled": true,
+      "terrainBudgetEnabled": true,
+      "farRoadDecimationEnabled": true,
+      "rawTerrainPolygonsEnabled": false
+    },
+    "waterRegions": [],
+    "decals": [],
+    "sceneryDefinitions": [],
+    "description": "North to 90, or south on 95. Either way, I... I guess we're actually leaving.",
+    "doodadsMigrated": true,
+    "tireFx": {
+      "skidSmoke": {
+        "enabled": true,
+        "artRef": "",
+        "color": "rgba(228,232,222,0.72)",
+        "density": 1,
+        "lifetimeMs": 620,
+        "scale": 1
+      },
+      "asphaltSkid": {
+        "enabled": true,
+        "artRef": "",
+        "color": "rgba(46,48,46,0.62)",
+        "density": 1,
+        "lifetimeMs": 620,
+        "scale": 1
+      },
+      "dirtDust": {
+        "enabled": true,
+        "artRef": "",
+        "color": "rgba(155,116,72,0.68)",
+        "density": 1,
+        "lifetimeMs": 620,
+        "scale": 1
+      },
+      "gravelDust": {
+        "enabled": true,
+        "artRef": "",
+        "color": "rgba(176,178,172,0.62)",
+        "density": 1,
+        "lifetimeMs": 620,
+        "scale": 1
+      },
+      "grassDust": {
+        "enabled": true,
+        "artRef": "",
+        "color": "rgba(103,145,66,0.62)",
+        "density": 1,
+        "lifetimeMs": 620,
+        "scale": 1
+      },
+      "snowDust": {
+        "enabled": true,
+        "artRef": "",
+        "color": "rgba(230,240,244,0.74)",
+        "density": 1,
+        "lifetimeMs": 620,
+        "scale": 1
+      },
+      "wetSpray": {
+        "enabled": true,
+        "artRef": "",
+        "color": "rgba(154,184,198,0.58)",
+        "density": 1,
+        "lifetimeMs": 620,
+        "scale": 1
+      }
+    }
+  }
+}

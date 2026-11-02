@@ -101,6 +101,7 @@ export class VehicleDynamicsWorkerClient {
     this.previousSnapshot = null;
     this.latestSnapshot = null;
     this.snapshotsByVehicle = new Map();
+    this.removedVehicleIds = new Set();
     this.pendingResetSequenceByVehicle = new Map();
     this.minimumEventSequenceByVehicle = new Map();
     this.minimumResetGenerationByVehicle = new Map();
@@ -108,6 +109,12 @@ export class VehicleDynamicsWorkerClient {
     this.latestReceiveTimeMs = 0;
     this.latestTrackStateVisualDelta = null;
     this.lastError = null;
+    this.initialized = false;
+    this.requestedPause = false;
+    this.lastSentPauseState = false;
+    this.visibilityDocument = globalThis.document;
+    this.boundVisibilityChange = () => this.setPaused(this.requestedPause);
+    this.visibilityDocument?.addEventListener?.('visibilitychange', this.boundVisibilityChange);
     this.ready = false;
     this.closed = false;
     this.boundMessage = (event) => this.#handleMessage(event.data);
@@ -146,6 +153,16 @@ export class VehicleDynamicsWorkerClient {
       ...snapshotBuffers.filter((buffer) => buffer instanceof ArrayBuffer),
       ...transferables
     ]);
+    this.initialized = true;
+    this.setPaused(this.requestedPause);
+  }
+
+  setPaused(paused) {
+    this.requestedPause = Boolean(paused);
+    const effectivePause = this.requestedPause || this.visibilityDocument?.hidden === true;
+    if (this.closed || !this.initialized || effectivePause === this.lastSentPauseState) return;
+    this.lastSentPauseState = effectivePause;
+    this.worker.postMessage({ type: 'setPaused', paused: effectivePause });
   }
 
   submitInput(inputBuffer, inputSequence, collectedAtMs = this.now(), vehicleId = 'player') {
@@ -162,6 +179,24 @@ export class VehicleDynamicsWorkerClient {
     }, [inputBuffer]);
   }
 
+  addVehicle(definition) {
+    if (this.closed) return;
+    this.removedVehicleIds.delete(String(definition.id));
+    this.worker.postMessage({type: 'addVehicle', definition});
+  }
+
+  removeVehicle(vehicleId) {
+    const id = String(vehicleId);
+    if (this.closed || id === 'player') return;
+    this.removedVehicleIds.add(id);
+    this.snapshotsByVehicle.delete(id);
+    this.pendingResetSequenceByVehicle.delete(id);
+    this.minimumEventSequenceByVehicle.delete(id);
+    this.minimumResetGenerationByVehicle.delete(id);
+    this.latestResetAcknowledgementByVehicle.delete(id);
+    this.worker.postMessage({type: 'removeVehicle', vehicleId: id});
+  }
+
   setVehicleActive(vehicleId, active) {
     if (this.closed) return;
     this.worker.postMessage({
@@ -169,6 +204,10 @@ export class VehicleDynamicsWorkerClient {
       vehicleId: String(vehicleId),
       active: active !== false
     });
+  }
+
+  submitDebugTireSwap(update,vehicleId='player') {
+    this.worker.postMessage({type:'debugTireSwap',vehicleId,update});
   }
 
   submitEnvironmentUpdate(buffer, vehicleId = 'player') {
@@ -214,6 +253,11 @@ export class VehicleDynamicsWorkerClient {
 
   #handleMessage(message = {}) {
     if (message.type === 'snapshot' && message.buffer) {
+      if (this.removedVehicleIds.has(String(message.vehicleId))) {
+        if (message.buffer instanceof ArrayBuffer) this.worker.postMessage(
+          {type:'recycleSnapshotBuffer',buffer:message.buffer},[message.buffer]);
+        return;
+      }
       const receiveStart = this.now();
       let decoded = null;
       if (this.snapshotSequenceControl && Number.isInteger(message.snapshotSlot)) {
@@ -235,6 +279,7 @@ export class VehicleDynamicsWorkerClient {
       } else {
         decoded = readVehicleRenderSnapshot(message.buffer);
       }
+      decoded.mechanical = message.mechanical || this.snapshotsByVehicle.get(String(message.vehicleId || 'player'))?.latest?.mechanical || null;
       decoded.workerSequence = Number(message.snapshotSequence || decoded.stepIndex || 0);
       if (message.trackStateVisualDelta?.cells) {
         this.latestTrackStateVisualDelta = message.trackStateVisualDelta;
@@ -390,6 +435,7 @@ export class VehicleDynamicsWorkerClient {
       renderTimeSeconds
     );
     if (rendered && history) {
+      rendered.mechanical = history.latest?.mechanical || latest?.mechanical;
       history.displayedSequence = Number(
         rendered.interpolationAlpha < 1
           ? previous?.workerSequence || previous?.stepIndex || 0
@@ -419,6 +465,7 @@ export class VehicleDynamicsWorkerClient {
   }
 
   close() {
+    this.visibilityDocument?.removeEventListener?.('visibilitychange', this.boundVisibilityChange);
     if (this.closed) return;
     this.closed = true;
     this.worker.removeEventListener?.('message', this.boundMessage);

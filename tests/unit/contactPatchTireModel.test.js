@@ -544,7 +544,7 @@ test('Track State snow and compound grip remain continuous across the display-su
   assert.ok(Math.abs(after.mu - before.mu) < 0.002);
   assert.ok(gripAt(10).mu < after.mu);
   assert.ok(gripAt(35).mu < gripAt(10).mu);
-  assert.ok(gripAt(35).mu > 0.1, 'deep snow must not receive the same penalty repeatedly');
+  assert.ok(Math.abs(gripAt(35).mu - compound.surfaceGrip.snow * 0.58) < 1e-6, 'deep snow applies the configured compound and Track State penalties exactly once');
 });
 
 test('Track State grip scale does not apply the base gravel coefficient twice', () => {
@@ -575,5 +575,18 @@ test('Track State grip scale does not apply the base gravel coefficient twice', 
   });
 
   assert.ok(Math.abs(force.gripCoefficient - compoundGrip * material.surfaceGripScale) < 0.00001);
-  assert.ok(force.gripCoefficient > compoundGrip * material.effectiveGrip + 0.15);
+  assert.ok(force.gripCoefficient > compoundGrip * material.effectiveGrip, 'must not multiply by absolute gravel grip a second time');
+});
+
+test('detailed tire stages preserve forces and close all accounting scopes',async()=>{
+ const {PhysicsCostAccounting}=await import('../../src/racing/simulation/PhysicsCostAccounting.js');
+ let now=0;const costs=new PhysicsCostAccounting({enabled:true,now:()=>++now});
+ costs.detailedCaptureActive=true;costs.beginFrame();
+ const request={state:stateAt(),controls,config,environment,dt:1/120};
+ const expected=new ContactPatchTireModel().step(request);
+ const actual=new ContactPatchTireModel().step({...request,state:stateAt(),environment:{...environment,physicsCostAccounting:costs}});
+ assert.deepEqual(actual,expected);assert.equal(costs.timerStack.length,0);
+ costs.finishFrame();const timings=costs.getLatestFrame().timings;
+ for(const name of ['tireSuspensionInitialContact','tireSuspensionDynamics','tireSuspensionGeometry','tireSuspensionKinematics'])assert.equal(timings[name].calls,4);
+ for(const name of ['tireContactSetup','tireGripForces','tirePowertrain','tireForceIntegration'])assert.equal(timings[name].calls,1);
 });

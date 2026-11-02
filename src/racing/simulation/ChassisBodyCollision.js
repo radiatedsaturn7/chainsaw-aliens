@@ -360,6 +360,7 @@ export class ChassisBodyCollision {
     this.supportCandidateCache = new Map();
     this.penetrationCacheCapacity = 64;
     this.penetrationCacheFrameSequence = -1;
+    this.penetrationCacheQueryFrame = null;
     this.penetrationCacheKeys = new Float64Array(this.penetrationCacheCapacity * 8);
     this.penetrationCacheValues = new Array(this.penetrationCacheCapacity).fill(null);
     this.broadphaseLocalScratch = { x: 0, y: 0, z: 0 };
@@ -481,9 +482,18 @@ export class ChassisBodyCollision {
     this.staticColliderCollision.restorePersistentManifoldSnapshot(snapshot.staticCollider);
   }
 
-  getSupportCandidates(pose = {}, targetBuffer = null) {
+  getSupportCandidates(pose = {}, targetBuffer = null, physicsCosts = null) {
     if (targetBuffer) {
       const result = targetBuffer.supportCandidates;
+      const orientation = pose.orientation || {};
+      const qx = Number(orientation.x || 0), qy = Number(orientation.y || 0);
+      const qz = Number(orientation.z || 0), qw = Number(orientation.w ?? 1);
+      const cached = targetBuffer.supportCandidateOrientation;
+      if (targetBuffer.supportCandidateOwner === this && cached
+        && cached.x === qx && cached.y === qy && cached.z === qz && cached.w === qw) {
+        physicsCosts?.count('bodySupportCandidateCacheHits');
+        return result;
+      }
       const envelope = targetBuffer.supportEnvelopeCandidates;
       const envelopeHeights = targetBuffer.supportEnvelopeHeights;
       result.length = 0;
@@ -520,6 +530,9 @@ export class ChassisBodyCollision {
         }
       }
       for (const candidate of envelope.values()) result.push(candidate);
+      const rotation = targetBuffer.supportCandidateOrientation ||= {};
+      rotation.x = qx; rotation.y = qy; rotation.z = qz; rotation.w = qw;
+      targetBuffer.supportCandidateOwner = this;
       return result;
     }
     const orientation = pose.orientation || {};
@@ -552,7 +565,7 @@ export class ChassisBodyCollision {
     const precomputedCandidates = environment.precomputedAdaptiveBodySupportCandidates;
     const targetBuffer = target && !Array.isArray(target) ? target : null;
     const sourceCandidates = Array.isArray(precomputedCandidates)
-      ? precomputedCandidates : this.getSupportCandidates(pose, targetBuffer);
+      ? precomputedCandidates : this.getSupportCandidates(pose, targetBuffer, environment.physicsCostAccounting);
     const base = targetBuffer?.entries || target || [];
     const spareEntries = targetBuffer?.spareEntries || null;
     if (spareEntries) {
@@ -604,23 +617,34 @@ export class ChassisBodyCollision {
     const sampled = targetBuffer?.sampledTerrain || new Map();
     sampled.clear();
     const terrainAt = (point) => {
-      if (!sampled.has(point)) sampled.set(point, createSurfaceSample(sampleTerrain(point), {
-        queryPosition: point,
-        source: 'body-adaptive-support'
-      }));
+      if (!sampled.has(point)) {
+        const terrain = createSurfaceSample(sampleTerrain(point), {
+          queryPosition: point,
+          source: 'body-adaptive-support'
+        });
+        // Each point participates in several neighbor pairs. Normalize once,
+        // retaining the same arithmetic as the previous per-pair calculation.
+        sampled.set(point, { terrain, normal: normalize(terrain.normal || terrain.normalWorld) });
+      }
       return sampled.get(point);
     };
     const subdivide = (left, right, depth) => {
       if (additions.length >= maximumAdditions) return;
-      const distanceM = length(addVector3(right.worldPoint, scaleVector3(left.worldPoint, -1)));
+      const distanceM = Math.hypot(
+        Number(right.worldPoint.x || 0) + Number(left.worldPoint.x || 0) * -1,
+        Number(right.worldPoint.y || 0) + Number(left.worldPoint.y || 0) * -1,
+        Number(right.worldPoint.z || 0) + Number(left.worldPoint.z || 0) * -1
+      );
       if (distanceM <= minimumSpacingM || depth >= maximumDepth) return;
-      const leftTerrain = terrainAt(left.worldPoint);
-      const rightTerrain = terrainAt(right.worldPoint);
+      const leftSample = terrainAt(left.worldPoint);
+      const rightSample = terrainAt(right.worldPoint);
+      const leftTerrain = leftSample.terrain;
+      const rightTerrain = rightSample.terrain;
       if (!leftTerrain.valid || !rightTerrain.valid) return;
       const leftHeight = leftTerrain.heightM;
       const rightHeight = rightTerrain.heightM;
-      const leftNormal = normalize(leftTerrain.normal || leftTerrain.normalWorld);
-      const rightNormal = normalize(rightTerrain.normal || rightTerrain.normalWorld);
+      const leftNormal = leftSample.normal;
+      const rightNormal = rightSample.normal;
       if (Math.abs(leftHeight - rightHeight) <= heightErrorM
         && 1 - dot(leftNormal, rightNormal) <= normalError) return;
       let middle = spareEntries?.pop() || null;
@@ -698,7 +722,10 @@ export class ChassisBodyCollision {
       }
       bucket.push(index);
     }
-    for (let first = 0; first < base.length; first += 1) {
+    // Once the sample budget is filled, every subsequent subdivide call is
+    // a no-op. Stop walking neighbor pairs as well; contact selection is identical.
+    let adaptivePairChecks = 0;
+    adaptivePairs: for (let first = 0; first < base.length; first += 1) {
       const entry = base[first];
       const bucketX = Math.floor(entry.worldPoint.x / neighborLimitM);
       const bucketZ = Math.floor(entry.worldPoint.z / neighborLimitM);
@@ -711,8 +738,10 @@ export class ChassisBodyCollision {
           ));
           if (!bucket) continue;
           for (let bucketIndex = 0; bucketIndex < bucket.length; bucketIndex += 1) {
+            if (additions.length >= maximumAdditions) break adaptivePairs;
             const second = bucket[bucketIndex];
             if (second <= first) continue;
+            adaptivePairChecks++;
             const secondPoint = base[second].worldPoint;
             if (Math.hypot(
               Number(secondPoint.x || 0) - Number(entry.worldPoint.x || 0),
@@ -725,6 +754,7 @@ export class ChassisBodyCollision {
         }
       }
     }
+    environment.physicsCostAccounting?.count('adaptiveBodySupportPairChecks', adaptivePairChecks);
     if (!targetBuffer) return base.concat(additions);
     for (let index = 0; index < additions.length; index += 1) {
       base.push(additions[index]);
@@ -1016,7 +1046,9 @@ export class ChassisBodyCollision {
         : this.samplePosePenetrationUnprofiled(pose, environment, toleranceM);
     }
     const frameSequence = Number(queryFrame.sequence);
-    if (frameSequence !== this.penetrationCacheFrameSequence) {
+    if (queryFrame !== this.penetrationCacheQueryFrame
+      || frameSequence !== this.penetrationCacheFrameSequence) {
+      this.penetrationCacheQueryFrame = queryFrame;
       this.penetrationCacheFrameSequence = frameSequence;
       this.penetrationCacheValues.fill(null);
     }

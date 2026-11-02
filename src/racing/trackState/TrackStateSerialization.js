@@ -17,38 +17,61 @@ function isJsonOmitted(value) {
   return value === undefined || typeof value === 'function' || typeof value === 'symbol';
 }
 
+// Keep one generator and a depth-sized stack rather than delegating through a
+// new generator for every property of every terrain cell. Output and bounded
+// character slicing remain identical to the canonical stream.
 function* streamCanonicalJson(value, { arrayValue = false } = {}) {
-  if (isJsonOmitted(value)) {
-    if (arrayValue) yield 'null';
-    return;
-  }
-  if (typeof value === 'number') {
-    yield JSON.stringify(quantizeTrackStateNumber(value));
-    return;
-  }
-  if (value === null || typeof value !== 'object') {
-    yield JSON.stringify(value);
-    return;
-  }
-  if (Array.isArray(value)) {
-    yield '[';
-    for (let index = 0; index < value.length; index += 1) {
-      if (index) yield ',';
-      yield* streamCanonicalJson(value[index], { arrayValue: true });
+  const stack = [];
+  let current = value;
+  let currentArrayValue = arrayValue;
+  for (;;) {
+    if (isJsonOmitted(current)) {
+      if (currentArrayValue) yield 'null';
+    } else if (typeof current === 'number') {
+      yield JSON.stringify(quantizeTrackStateNumber(current));
+    } else if (current === null || typeof current !== 'object') {
+      yield JSON.stringify(current);
+    } else {
+      const array = Array.isArray(current);
+      const keys = array ? null
+        : Object.keys(current).filter(key => !isJsonOmitted(current[key])).sort();
+      stack.push({value: current, array, keys, index: 0});
+      yield array ? '[' : '{';
     }
-    yield ']';
-    return;
+    let nextValue = false;
+    while (stack.length) {
+      const frame = stack[stack.length - 1];
+      const length = frame.array ? frame.value.length : frame.keys.length;
+      if (frame.index >= length) {
+        yield frame.array ? ']' : '}';
+        stack.pop();
+        continue;
+      }
+      const index = frame.index++;
+      if (index) yield ',';
+      if (frame.array) current = frame.value[index];
+      else {
+        const key = frame.keys[index];
+        current = frame.value[key];
+        if (current === null || typeof current === 'number' || typeof current === 'string' || typeof current === 'boolean') {
+          // Most checkpoint fields are scalars. A single small token avoids
+          // three generator resumptions per field; process() still splits it
+          // at the exact requested character budget.
+          yield JSON.stringify(key) + ':' + JSON.stringify(
+            typeof current === 'number' ? quantizeTrackStateNumber(current) : current
+          );
+          current = undefined;
+        } else {
+          yield JSON.stringify(key);
+          yield ':';
+        }
+      }
+      currentArrayValue = frame.array;
+      nextValue = true;
+      break;
+    }
+    if (!nextValue) return;
   }
-  yield '{';
-  const keys = Object.keys(value).filter((key) => !isJsonOmitted(value[key])).sort();
-  for (let index = 0; index < keys.length; index += 1) {
-    if (index) yield ',';
-    const key = keys[index];
-    yield JSON.stringify(key);
-    yield ':';
-    yield* streamCanonicalJson(value[key]);
-  }
-  yield '}';
 }
 
 export function createIncrementalTrackStateHash(value) {
@@ -100,6 +123,25 @@ export function createIncrementalTrackStateHash(value) {
   return task;
 }
 
+// The payload is an owned, completed checkpoint, never the mutable live cells.
+// Keep the wire format unchanged, but do not hash checkpoints discarded before
+// any replay/synchronization consumer reads them.
+export function createDeferredChecksumSnapshot(payload) {
+  const snapshot = {...payload};
+  Object.defineProperty(snapshot, 'checksum', {
+    enumerable: true, configurable: true,
+    get() {
+      const task = createIncrementalTrackStateHash(payload);
+      while (!task.done) task.process(65536);
+      Object.defineProperty(snapshot, 'checksum', {
+        value: task.checksum, enumerable: true, configurable: true, writable: true
+      });
+      return task.checksum;
+    }
+  });
+  return snapshot;
+}
+
 export function getTrackStateCanonicalPayload(state, {
   includeEventHistory = true,
   includeWeatherTimeline = true,
@@ -107,6 +149,8 @@ export function getTrackStateCanonicalPayload(state, {
 } = {}) {
   return {
     version: TRACK_STATE_SNAPSHOT_VERSION,
+    ...(Number.isFinite(state.maxWeatherStepsPerStep)
+      ? { weatherSchedule: state.getWeatherScheduleSnapshot() } : {}),
     seed: Number(state.seed) >>> 0,
     cellSizeM: Number(state.cellSizeM || 1),
     fixedStepMs: Number(state.fixedStepMs || 100),

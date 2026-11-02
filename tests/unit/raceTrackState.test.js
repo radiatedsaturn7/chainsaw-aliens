@@ -937,3 +937,31 @@ test('Track State reuses flow buffers and rebuilds derived active work after res
     state.getDebugState().environmentActiveCellCount
   );
 });
+
+
+test('checkpoint work progresses between surface ticks without advancing physics or losing replay state', () => {
+  const state = createState({eventHistoryLimit:100, checkpointCellsPerStep:1,
+    checkpointHashCharactersPerStep:256});
+  for(let x=0;x<64;x++) state.sample({x:x+.2,z:.2});
+  for(let sequence=1;sequence<=100;sequence++) state.queueCrashContamination({
+    sequence,stepIndex:1,vehicleId:'car',x:sequence%4+.2,z:.2,debris:.0001});
+  state.advance(.1,{type:'clear',ambientTemperatureC:22});
+  const totals={...state.totals};
+  const cells=JSON.stringify([...state.cells]);
+  const step=state.stepIndex;
+  let slices=0;
+  while(state.checkpointBuilder && slices++<2000) {
+    const before=state.checkpointBuilder.cellCopies.size;
+    const result=state.advance(0);
+    assert.equal(result.completedSteps,0);
+    assert.equal(state.stepIndex,step);
+    if(state.checkpointBuilder) assert.ok(state.checkpointBuilder.cellCopies.size-before<=1);
+  }
+  assert.ok(slices<2000);
+  assert.equal(state.performanceCounters.checkpointCompletedCount,1);
+  assert.equal(state.eventHistory.length,0);
+  assert.equal(JSON.stringify([...state.cells]),cells);
+  assert.deepEqual(state.totals,totals);
+  const replay=TrackState.fromSnapshot(state.historyBaseSnapshot,{sampleBaseSurface:baseSampler});
+  assert.equal(replay.getChecksum(),state.getChecksum());
+});

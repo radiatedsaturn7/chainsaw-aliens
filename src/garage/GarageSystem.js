@@ -1,3 +1,4 @@
+import {saveCarCondition,repairCar,repairRows} from './GarageRepairs.js';
 import {unlockBestUpgrades} from './GarageCheats.js';
 import {applyTireDefinition,createTireDefinition} from '../racing/raceTires.js';
 import {buildGarageCar,garageTuningRanges,normalizeCarPart,partFits,safeGarageKey,isGarageUpgrade} from './CarPart.js';
@@ -95,8 +96,12 @@ export class GarageSystem {
   });
  }
  resetTune(carRef){return this.transaction(next=>{if(next.garage.cars[carRef])next.garage.cars[carRef].tune={};});}
+ saveCondition(ref,condition){return saveCarCondition(this,ref,condition);}
+ repair(ref,id,car){return repairCar(this,ref,id,car);}
+ repairRows(ref,car){return repairRows(this,ref,car);}
  async build(carRef,stock){
   await this.load();
+  await this.items.queue;
   if(this.items.progress.unlocks['cheat.lonely']&&!this.items.progress.unlocks[`cheat.lonely.equipped.${carRef}`])await unlockBestUpgrades(this,carRef,stock);
   const parts=this.installed(carRef);
   for(const item of parts)if(!partFits(item.carPart,carRef,stock))throw Error('An installed part is no longer compatible');
@@ -111,6 +116,8 @@ export class GarageSystem {
    applyTireDefinition(baseline,tire,'Stock');
    if(pressure)baseline.setup.tirePressurePsi=pressure;
   }
-  return buildGarageCar(baseline,{parts,tune:this.configuration(carRef).tune,tires});
+  const built=buildGarageCar(baseline,{parts,tune:this.configuration(carRef).tune,tires});
+  if(this.configuration(carRef).condition)built.condition=structuredClone(this.configuration(carRef).condition);
+  return built;
  }
 }

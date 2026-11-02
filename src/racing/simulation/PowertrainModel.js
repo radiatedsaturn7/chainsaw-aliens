@@ -37,6 +37,31 @@ export class PowertrainModel {
 
   allocateForceWithinCapacities(totalForceN = 0, capacityById = {}, nominalShareById = {}) {
     const ids = Object.keys(capacityById || {});
+    // Axles and the center differential always allocate between two outputs.
+    // Keep the generic path for other callers, but avoid its temporary maps,
+    // entry arrays and callbacks in this high-frequency case.
+    if (ids.length === 2) {
+      const a = ids[0], b = ids[1];
+      const ca = Math.max(0, Number(capacityById[a]) || 0);
+      const cb = Math.max(0, Number(capacityById[b]) || 0);
+      const target = clamp(Math.max(0, Number(totalForceN) || 0), 0, ca + cb);
+      const na = Math.max(0, Number(nominalShareById?.[a]) || 0);
+      const nb = Math.max(0, Number(nominalShareById?.[b]) || 0);
+      const nominalTotal = na + nb;
+      let va = Math.min(ca, target * (nominalTotal > 0 ? na / nominalTotal : 0.5));
+      let vb = Math.min(cb, target * (nominalTotal > 0 ? nb / nominalTotal : 0.5));
+      let remaining = target - (va + vb);
+      for (let pass = 0; pass < 2 && remaining > 0.0001; pass++) {
+        const aa = Math.max(0, ca - va), ab = Math.max(0, cb - vb);
+        const availableTotal = aa + ab;
+        if (availableTotal <= 0.0001) break;
+        if (aa > 0) va += Math.min(aa, remaining * (aa / availableTotal));
+        if (ab > 0) vb += Math.min(ab, remaining * (ab / availableTotal));
+        remaining = target - (va + vb);
+      }
+      return {[a]: va, [b]: vb};
+    }
+
     const capacities = Object.fromEntries(ids.map((id) => [id, Math.max(0, Number(capacityById[id]) || 0)]));
     const capacityTotal = ids.reduce((sum, id) => sum + capacities[id], 0);
     const target = clamp(Math.max(0, Number(totalForceN) || 0), 0, capacityTotal);
@@ -269,11 +294,11 @@ export class PowertrainModel {
     };
   }
 
-  getGearRatio(tuning = {}, gear = 1) {
+  getGearRatio(tuning = {}, gear = 1, ratios = tuning.gearRatios || []) {
     if (gear < 0) return tuning.reverseRatio;
     if (gear <= 0) return 0;
-    return tuning.gearRatios[clamp(gear - 1, 0, tuning.gearRatios.length - 1)]
-      || tuning.gearRatios[tuning.gearRatios.length - 1]
+    return ratios[clamp(gear - 1, 0, ratios.length - 1)]
+      || ratios[ratios.length - 1]
       || 1;
   }
 
@@ -326,19 +351,19 @@ export class PowertrainModel {
       * (60 / (Math.PI * 2));
   }
 
-  getAutomaticUpshiftRpm(tuning = {}) {
-    const idleRpm = Math.max(500, Number(tuning?.idleRpm) || 850);
-    const redlineRpm = Math.max(idleRpm + 500, Number(tuning?.redlineRpm || tuning?.revLimitRpm) || 6200);
-    const revLimitRpm = Math.max(redlineRpm, Number(tuning?.revLimitRpm || redlineRpm) || redlineRpm);
+  getAutomaticUpshiftRpm(tuning = {}, idleOverride = tuning?.idleRpm, limitOverride = tuning?.revLimitRpm) {
+    const idleRpm = Math.max(500, Number(idleOverride) || 850);
+    const redlineRpm = Math.max(idleRpm + 500, Number(tuning?.redlineRpm || limitOverride) || 6200);
+    const revLimitRpm = Math.max(redlineRpm, Number(limitOverride || redlineRpm) || redlineRpm);
     const configured = Number(tuning?.autoUpshiftRpm);
     const preferred = Number.isFinite(configured) && configured > 0 ? configured : redlineRpm * 0.94;
     const upper = Math.max(idleRpm + 500, Math.min(redlineRpm * 0.985, revLimitRpm - 120));
     return clamp(preferred, idleRpm + 500, upper);
   }
 
-  getAutomaticDownshiftRpm(tuning = {}) {
-    const idleRpm = Math.max(500, Number(tuning?.idleRpm) || 850);
-    const upshiftRpm = this.getAutomaticUpshiftRpm(tuning);
+  getAutomaticDownshiftRpm(tuning = {}, idleOverride = tuning?.idleRpm, limitOverride = tuning?.revLimitRpm) {
+    const idleRpm = Math.max(500, Number(idleOverride) || 850);
+    const upshiftRpm = this.getAutomaticUpshiftRpm(tuning, idleOverride, limitOverride);
     const configured = Number(tuning?.autoDownshiftRpm);
     const rpmBand = Math.max(1, upshiftRpm - idleRpm);
     const minimumShiftGapRpm = clamp(rpmBand * 0.28, 900, 1800);
@@ -429,24 +454,37 @@ export class PowertrainModel {
         tuning.gearFinalDrive ?? tuning.finalDrive ?? 1
       )));
       const projectedRpm = (candidateGear) => {
-        const ratio = Math.abs(Number(this.getGearRatio({ ...tuning, gearRatios: ratios }, candidateGear)) || 0);
+        const ratio = Math.abs(Number(this.getGearRatio(tuning, candidateGear, ratios)) || 0);
         return averageDrivenOmega * ratio * finalDriveForShift * 60 / (Math.PI * 2);
       };
+      const rollingContacts = drivenIds.filter(id=>Number.isFinite(kinematicsByWheel[id]?.longitudinalVelocityMps));
+      const groundOmega = rollingContacts.length ? rollingContacts.reduce((sum,id)=>{
+        const wheel=kinematicsByWheel[id];
+        const radius=Math.max(.1,Number(wheel.effectiveRollingRadiusM??config.wheelRadiusM??tuning.wheelRadiusM)||.33);
+        return sum+Math.abs(wheel.longitudinalVelocityMps)/radius;
+      },0)/rollingContacts.length : null;
+      const roadRpm = groundOmega==null ? null : groundOmega
+        * Math.abs(Number(this.getGearRatio(tuning,gear))||0)*finalDriveForShift*60/(Math.PI*2);
       const currentRpm = Number(previous.engineRpm ?? state.engineRpm ?? idleRpm);
-      const upshiftRpm = this.getAutomaticUpshiftRpm({ ...tuning, idleRpm, revLimitRpm: maxRpm });
-      const downshiftRpm = this.getAutomaticDownshiftRpm({ ...tuning, idleRpm, revLimitRpm: maxRpm });
+      const upshiftRpm = this.getAutomaticUpshiftRpm(tuning, idleRpm, maxRpm);
+      const downshiftRpm = this.getAutomaticDownshiftRpm(tuning, idleRpm, maxRpm);
       const throttle = clamp(Number(controls.throttle || 0), 0, 1);
       const brake = clamp(Number(controls.brake || 0), 0, 1);
       // Converter slip can keep engine RPM high after the car slows to a stop.
       // Use shaft speed as well so an automatic cannot remain stuck in a tall
       // gear. The lower-gear RPM guard still prevents wheelspin over-rev shifts.
-      const downshiftReferenceRpm = Math.min(currentRpm, projectedRpm(gear));
+      const converterRpmScale = 1 + clamp(Number(tuning.torqueConverterSlip || 0), 0, 0.35) * throttle;
+      // Compare shift thresholds in engine RPM, including the same loaded
+      // converter slip as the RPM model. Bare shaft RPM can never reach the
+      // old upshift threshold once the engine hits its limiter with slip.
+      const projectedEngineRpm = candidateGear => projectedRpm(candidateGear) * converterRpmScale;
+      const downshiftReferenceRpm = Math.min(currentRpm, projectedEngineRpm(gear));
       // Demand a lower gear under acceleration before the engine starts lugging.
       // Leave headroom below the upshift point so the new gear is sustainable.
       const kickdownDemand = clamp((throttle - 0.45) / 0.55, 0, 1);
       const demandDownshiftRpm = downshiftRpm
         + (Math.max(downshiftRpm, upshiftRpm * 0.72) - downshiftRpm) * kickdownDemand;
-      const lowerGearRpm = projectedRpm(gear - 1);
+      const lowerGearRpm = projectedEngineRpm(gear - 1);
       const safeLowerGearRpm = Math.min(maxRpm * 0.94, upshiftRpm - 300);
       // Engine flare through an unlocked converter is not road speed. Using
       // engine RPM alone here fights shaft-based kickdown under steady load.
@@ -454,7 +492,8 @@ export class PowertrainModel {
       if (shiftRecoveryTimeRemainingSeconds > 0) {
         requestedGear = gear;
       } else if (gear < ratios.length && currentRpm >= upshiftRpm
-        && projectedRpm(gear) >= upshiftRpm
+        && projectedEngineRpm(gear) >= upshiftRpm
+        && (roadRpm==null || roadRpm * converterRpmScale >= upshiftRpm * .85)
         && projectedRpm(gear + 1) >= idleRpm * (1.15 + throttle * 0.25)) {
         requestedGear = gear + 1;
       } else if (gear > 1
@@ -489,11 +528,7 @@ export class PowertrainModel {
         );
       }
     }
-    const gearRatio = Math.abs(Number(this.getGearRatio({
-      ...tuning,
-      finalDrive: tuning.gearFinalDrive ?? tuning.finalDrive,
-      gearRatios: tuning.gearRatios || []
-    }, gear)) || 0);
+    const gearRatio = Math.abs(Number(this.getGearRatio(tuning, gear, tuning.gearRatios || [])) || 0);
     const finalDrive = Math.max(0.1, Math.abs(Number(
       tuning.gearFinalDrive ?? tuning.finalDrive ?? 1
     )));
@@ -504,14 +539,25 @@ export class PowertrainModel {
     const freeRpmTarget = idleRpm + (maxRpm - idleRpm) * clamp(Number(controls.throttle || 0), 0, 1);
     const driverClutchCoupling = clamp(1 - Number(controls.clutch || 0), 0, 1);
     const converterSlip = clamp(Number(tuning.torqueConverterSlip || 0), 0, 0.35);
+    // A loaded converter approaches its stall RPM at zero shaft speed. Do not
+    // feed previous engine flare back into coupling: that creates a stable
+    // near-redline state even when the tires are barely moving.
+    const throttleForConverter = clamp(Number(controls.throttle || 0), 0, 1);
+    const converterStallRpm = clamp(Number(tuning.torqueConverterStallRpm
+      ?? tuning.launchRpm ?? idleRpm + maxRpm * 0.25), idleRpm, maxRpm * 0.8);
+    const converterRpmTarget = Math.max(
+      coupledRpm * (1 + converterSlip * throttleForConverter),
+      idleRpm + (converterStallRpm - idleRpm) * throttleForConverter
+    );
     const converterCoupling = overallRatio > 0
-      ? clamp(1 - Math.abs(coupledRpm - Number(previous.engineRpm || state.engineRpm || idleRpm))
-        / Math.max(800, maxRpm * (0.35 + converterSlip)), 0.25, 1)
+      ? clamp(coupledRpm / Math.max(idleRpm, converterRpmTarget), 0.25, 1)
       : 0;
-    const clutchCoupling = driverClutchCoupling * shiftTorqueScale;
+    const mechanical = state.mechanical?.config?.enabled ? state.mechanical : null;
+    const clutchCoupling = driverClutchCoupling * shiftTorqueScale * (mechanical?.effects?.drive ?? 1);
     const rpmCoupling = clutchCoupling * (converterSlip > 0 ? converterCoupling : 1);
     const rpmTarget = overallRatio > 0
-      ? coupledRpm * rpmCoupling + freeRpmTarget * (1 - rpmCoupling)
+      ? (converterSlip > 0 ? converterRpmTarget : coupledRpm) * clutchCoupling
+        + freeRpmTarget * (1 - clutchCoupling)
       : freeRpmTarget;
     let engineRpm = clamp(Number(previous.engineRpm ?? state.engineRpm ?? idleRpm), idleRpm, maxRpm);
     engineRpm += (clamp(rpmTarget, idleRpm, maxRpm) - engineRpm)
@@ -525,10 +571,15 @@ export class PowertrainModel {
     const transmissionEfficiency = clamp(Number(config.drivetrainEfficiency
       ?? tuning.drivetrainEfficiency ?? 0.85), 0.35, 1)
       * clamp(1 - transmissionDamage * 0.0045, 0.45, 1);
+    const driveDirection = gear < 0 ? -1 : 1;
     const drivenSlip = drivenIds.length
-      ? Math.max(...drivenIds.map((wheelId) => Math.max(0, Number(
-        kinematicsByWheel[wheelId]?.slipRatio || 0
-      ))))
+      ? Math.max(0, ...drivenIds.map((wheelId) => {
+        const wheel = kinematicsByWheel[wheelId] || {};
+        // Torque opposing backward rolling is recovery/braking, not wheelspin.
+        // Reverse burnouts use the opposite sign of the longitudinal slip.
+        if (Number(wheel.wheelAngularVelocityRadps || 0) * driveDirection <= 0) return 0;
+        return Math.max(0, Number(wheel.slipRatio || 0) * driveDirection);
+      }))
       : 0;
     const groundSpeedMps = Math.max(0, Number(state.groundSpeedMps
       ?? Math.hypot(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0))) || 0);
@@ -580,7 +631,7 @@ export class PowertrainModel {
       : 1;
     const combustionTorqueNm = curveTorqueNm * clamp(Number(controls.throttle || 0), 0, 1)
       * engineDamageScale * limiterTorqueScale * launchTorqueScale * tractionTorqueScale
-      * handbrakeCombustionScale;
+      * handbrakeCombustionScale * (mechanical?.effects?.torque ?? 1);
     const rpmRatio = clamp((engineRpm - idleRpm) / Math.max(1, maxRpm - idleRpm), 0, 1);
     const engineBrakeTorqueNm = overallRatio > 0 && groundSpeedMps > 0.65
       ? Math.max(0, Number(tuning.engineBrakeTorqueNm || curveTorqueNm * 0.185))
@@ -688,7 +739,7 @@ export class PowertrainModel {
       const damageScale = clamp(1 - brakeDamageValue / 125, 0.15, 1);
       brakeDamageScaleByWheel[wheelId] = damageScale;
       absModulationByWheel[wheelId] = modulation;
-      wheelBrakeTorqueNm[wheelId] = requestedBrakeTorqueNm[wheelId] * modulation * damageScale;
+      wheelBrakeTorqueNm[wheelId] = requestedBrakeTorqueNm[wheelId] * modulation * damageScale * (mechanical?.effects?.brakes?.[wheelId] ?? 1);
       absInterventionByWheel[wheelId] = Math.max(
         0,
         requestedBrakeTorqueNm[wheelId] * damageScale - wheelBrakeTorqueNm[wheelId]
@@ -704,7 +755,7 @@ export class PowertrainModel {
       wheelDriveTorqueNm,
       wheelBrakeTorqueNm,
       state: {
-        engineRpm,
+        engineRpm: mechanical?.engineRunning === false ? 0 : engineRpm,
         gear,
         targetGear,
         shiftTimeRemainingSeconds,
@@ -774,7 +825,7 @@ export class PowertrainModel {
       return { force: 0, magnitude: 0, rawMagnitude: 0, tireLimited: false };
     }
     const idleRpm = Math.max(1, Number(tuning?.idleRpm) || 900);
-    const redlineRpm = Math.max(idleRpm + 1, Number(tuning?.redlineRpm || tuning?.revLimitRpm) || 6200);
+    const redlineRpm = Math.max(idleRpm + 1, Number(tuning?.redlineRpm || limitOverride) || 6200);
     const rpmRatio = clamp((Number(engineRpm || idleRpm) - idleRpm) / Math.max(1, redlineRpm - idleRpm), 0, 1.15);
     const finalDrive = Math.max(0.1, Number(tuning?.finalDrive) || 1);
     const gearDragScale = clamp((ratio * finalDrive) / 11, 0.28, 1.42);

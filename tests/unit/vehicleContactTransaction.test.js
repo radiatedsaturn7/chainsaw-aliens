@@ -142,6 +142,15 @@ test('collision correction commits rebuilt wheels suspension and contacts atomic
   assert.equal(transaction.iterations.length, 1);
   assert.equal(transaction.energy.beforeContactRebuildJ, transaction.energy.afterContactRebuildJ);
   assert.equal(transaction.energy.afterContactRebuildJ, transaction.energy.finalCommitJ);
+  assert.equal(transaction.energy.mechanicalAfterCollisionImpulseJ,
+    transaction.energy.mechanicalBeforePositionalCorrectionJ);
+  assert.equal(transaction.energy.mechanicalAfterPositionalCorrectionJ,
+    transaction.energy.mechanicalBeforeContactRebuildJ);
+  // The audit must retain the pre-correction pose. The correction raises the
+  // body 12 mm; using the current pose for both entries would hide this work.
+  const gravitationalWorkJ = runner.config.massKg * 9.81 * .012;
+  assert.ok(Math.abs(transaction.energy.mechanicalAfterPositionalCorrectionJ
+    - transaction.energy.mechanicalBeforePositionalCorrectionJ - gravitationalWorkJ) < 2e-6);
   assert.equal(runner.state.contactStabilization.gameplayResetCount, 0);
 });
 

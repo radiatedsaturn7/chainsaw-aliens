@@ -511,6 +511,8 @@ test('production WRX preview controller reaches the Studio Sprint finish with sc
     isMobile: false,
     exitRaceEditor() {}
   }, { mode: 'car' });
+  // Keep this completion regression on the original short fixture.
+  for (const segment of editor.selectedRace.road.segments) segment.length /= 10;
   editor.selectedRace.hazards = [];
   editor.selectedRace.laps = 1;
   editor.selectedRace.scenery = [{

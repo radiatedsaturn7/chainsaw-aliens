@@ -40,21 +40,42 @@ export function normalizeQuaternion(value = {}) {
   return { x: x / length, y: y / length, z: z / length, w: w / length };
 }
 
-export function rotateVectorByQuaternion(value = {}, orientation = {}) {
-  const q = normalizeQuaternion(orientation);
+export function rotateVectorByQuaternion(value = {}, orientation = {}, target = null) {
+  const ox = Number(orientation.x || 0), oy = Number(orientation.y || 0);
+  const oz = Number(orientation.z || 0), ow = Number(orientation.w ?? 1);
+  const length = Math.hypot(ox, oy, oz, ow);
+  const identity = length < EPSILON;
+  const qx = identity ? 0 : ox / length, qy = identity ? 0 : oy / length;
+  const qz = identity ? 0 : oz / length, qw = identity ? 1 : ow / length;
+  const x = Number(value.x || 0), y = Number(value.y || 0), z = Number(value.z || 0);
+  if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(z)
+    && Number.isFinite(qx) && Number.isFinite(qy) && Number.isFinite(qz) && Number.isFinite(qw)) {
+    // Preserve operation order while avoiding the six temporary vectors in
+    // q*v*q^-1. Normalization remains identical for authored/non-unit inputs.
+    const tx = ((qy * z - qz * y) || 0) * 2;
+    const ty = ((qz * x - qx * z) || 0) * 2;
+    const tz = ((qx * y - qy * x) || 0) * 2;
+    const output = target || {};
+    output.x = (x || 0) + (((tx * qw || 0) + ((qy * (tz || 0) - qz * (ty || 0)) || 0)) || 0);
+    output.y = (y || 0) + (((ty * qw || 0) + ((qz * (tx || 0) - qx * (tz || 0)) || 0)) || 0);
+    output.z = (z || 0) + (((tz * qw || 0) + ((qx * (ty || 0) - qy * (tx || 0)) || 0)) || 0);
+    return output;
+  }
+  // Keep legacy sanitization for malformed/non-finite imported values.
   const vector = {
     x: Number(value.x || 0),
     y: Number(value.y || 0),
     z: Number(value.z || 0)
   };
-  const quaternionVector = { x: q.x, y: q.y, z: q.z };
+  const quaternionVector = { x: qx, y: qy, z: qz };
   const twiceCross = scaleVector3(crossVector3(quaternionVector, vector), 2);
   return addVector3(
     vector,
     addVector3(
-      scaleVector3(twiceCross, q.w),
+      scaleVector3(twiceCross, qw),
       crossVector3(quaternionVector, twiceCross)
-    )
+    ),
+    target
   );
 }
 

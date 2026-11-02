@@ -6,44 +6,66 @@ import {
 } from './TrackStateMath.js';
 import { getTrackStateSurfaceProfile } from './TrackStateProfiles.js';
 
-const NON_NEGATIVE_FIELDS = [
-  'moistureDepthMm',
-  'standingWaterDepthMm',
-  'rubber',
-  'looseMarbles',
-  'dust',
-  'dirt',
-  'mud',
-  'oil',
-  'snowDepthMm',
-  'iceDepthMm',
-  'roughness',
-  'drainageRateMmPerS',
-  'sunExposure',
-  'windExposure',
-  'debris',
-  'compaction',
-  'baselineMoistureDepthMm',
-  'baselineStandingWaterDepthMm',
-  'baselineLooseMarbles',
-  'baselineDust',
-  'baselineDirt',
-  'baselineMud',
-  'baselineOil',
-  'baselineSnowDepthMm',
-  'baselineIceDepthMm',
-  'baselineRoughness',
-  'baselineDebris'
-];
+// Only canonical internal cells can use the weather-only normalizer. External
+// records and extreme scalars retain the full normalization contract.
+const weatherCanonicalCells = new WeakSet();
 
-export function clampTrackStateCell(cell = {}) {
-  NON_NEGATIVE_FIELDS.forEach((field) => {
-    cell[field] = quantizeTrackStateNumber(Math.max(0, Number(cell[field]) || 0));
-  });
-  ['rubber', 'looseMarbles', 'dust', 'dirt', 'mud', 'oil', 'roughness', 'sunExposure', 'windExposure', 'debris', 'compaction']
-    .forEach((field) => {
-      cell[field] = quantizeTrackStateNumber(clamp(cell[field], 0, 1));
-    });
+export function isCanonicalWeatherCell(cell) {
+  return weatherCanonicalCells.has(cell);
+}
+
+export function clampTrackStateWeatherFields(cell) {
+  if (!weatherCanonicalCells.has(cell)) return clampTrackStateCell(cell, true);
+  cell.moistureDepthMm = quantizeTrackStateNumber(Math.max(0, Number(cell.moistureDepthMm) || 0));
+  cell.standingWaterDepthMm = quantizeTrackStateNumber(Math.max(0, Number(cell.standingWaterDepthMm) || 0));
+  cell.snowDepthMm = quantizeTrackStateNumber(Math.max(0, Number(cell.snowDepthMm) || 0));
+  cell.iceDepthMm = quantizeTrackStateNumber(Math.max(0, Number(cell.iceDepthMm) || 0));
+  cell.surfaceTemperatureC = quantizeTrackStateNumber(clamp(Number(cell.surfaceTemperatureC) || 0, -80, 120));
+  return cell;
+}
+
+export function clampTrackStateCell(cell = {}, registerForWeather = false) {
+  // Fixed property accesses avoid dynamic numeric-property boxing in this hot
+  // path. Keep the two normalization passes in order: nonfinite values must
+  // quantize to zero before unit-range clamping (including positive Infinity).
+  cell.moistureDepthMm = quantizeTrackStateNumber(Math.max(0, Number(cell.moistureDepthMm) || 0));
+  cell.standingWaterDepthMm = quantizeTrackStateNumber(Math.max(0, Number(cell.standingWaterDepthMm) || 0));
+  cell.rubber = quantizeTrackStateNumber(Math.max(0, Number(cell.rubber) || 0));
+  cell.looseMarbles = quantizeTrackStateNumber(Math.max(0, Number(cell.looseMarbles) || 0));
+  cell.dust = quantizeTrackStateNumber(Math.max(0, Number(cell.dust) || 0));
+  cell.dirt = quantizeTrackStateNumber(Math.max(0, Number(cell.dirt) || 0));
+  cell.mud = quantizeTrackStateNumber(Math.max(0, Number(cell.mud) || 0));
+  cell.oil = quantizeTrackStateNumber(Math.max(0, Number(cell.oil) || 0));
+  cell.snowDepthMm = quantizeTrackStateNumber(Math.max(0, Number(cell.snowDepthMm) || 0));
+  cell.iceDepthMm = quantizeTrackStateNumber(Math.max(0, Number(cell.iceDepthMm) || 0));
+  cell.roughness = quantizeTrackStateNumber(Math.max(0, Number(cell.roughness) || 0));
+  cell.drainageRateMmPerS = quantizeTrackStateNumber(Math.max(0, Number(cell.drainageRateMmPerS) || 0));
+  cell.sunExposure = quantizeTrackStateNumber(Math.max(0, Number(cell.sunExposure) || 0));
+  cell.windExposure = quantizeTrackStateNumber(Math.max(0, Number(cell.windExposure) || 0));
+  cell.debris = quantizeTrackStateNumber(Math.max(0, Number(cell.debris) || 0));
+  cell.compaction = quantizeTrackStateNumber(Math.max(0, Number(cell.compaction) || 0));
+  cell.baselineMoistureDepthMm = quantizeTrackStateNumber(Math.max(0, Number(cell.baselineMoistureDepthMm) || 0));
+  cell.baselineStandingWaterDepthMm = quantizeTrackStateNumber(Math.max(0, Number(cell.baselineStandingWaterDepthMm) || 0));
+  cell.baselineLooseMarbles = quantizeTrackStateNumber(Math.max(0, Number(cell.baselineLooseMarbles) || 0));
+  cell.baselineDust = quantizeTrackStateNumber(Math.max(0, Number(cell.baselineDust) || 0));
+  cell.baselineDirt = quantizeTrackStateNumber(Math.max(0, Number(cell.baselineDirt) || 0));
+  cell.baselineMud = quantizeTrackStateNumber(Math.max(0, Number(cell.baselineMud) || 0));
+  cell.baselineOil = quantizeTrackStateNumber(Math.max(0, Number(cell.baselineOil) || 0));
+  cell.baselineSnowDepthMm = quantizeTrackStateNumber(Math.max(0, Number(cell.baselineSnowDepthMm) || 0));
+  cell.baselineIceDepthMm = quantizeTrackStateNumber(Math.max(0, Number(cell.baselineIceDepthMm) || 0));
+  cell.baselineRoughness = quantizeTrackStateNumber(Math.max(0, Number(cell.baselineRoughness) || 0));
+  cell.baselineDebris = quantizeTrackStateNumber(Math.max(0, Number(cell.baselineDebris) || 0));
+  cell.rubber = quantizeTrackStateNumber(clamp(cell.rubber, 0, 1));
+  cell.looseMarbles = quantizeTrackStateNumber(clamp(cell.looseMarbles, 0, 1));
+  cell.dust = quantizeTrackStateNumber(clamp(cell.dust, 0, 1));
+  cell.dirt = quantizeTrackStateNumber(clamp(cell.dirt, 0, 1));
+  cell.mud = quantizeTrackStateNumber(clamp(cell.mud, 0, 1));
+  cell.oil = quantizeTrackStateNumber(clamp(cell.oil, 0, 1));
+  cell.roughness = quantizeTrackStateNumber(clamp(cell.roughness, 0, 1));
+  cell.sunExposure = quantizeTrackStateNumber(clamp(cell.sunExposure, 0, 1));
+  cell.windExposure = quantizeTrackStateNumber(clamp(cell.windExposure, 0, 1));
+  cell.debris = quantizeTrackStateNumber(clamp(cell.debris, 0, 1));
+  cell.compaction = quantizeTrackStateNumber(clamp(cell.compaction, 0, 1));
   cell.surfaceTemperatureC = quantizeTrackStateNumber(clamp(Number(cell.surfaceTemperatureC) || 0, -80, 120));
   cell.elevationM = quantizeTrackStateNumber(Number(cell.elevationM) || 0);
   cell.baseGrip = quantizeTrackStateNumber(clamp(Number(cell.baseGrip) || 0.7, 0.05, 2));
@@ -51,6 +73,15 @@ export function clampTrackStateCell(cell = {}) {
   cell.permeability = quantizeTrackStateNumber(clamp(Number(cell.permeability) || 0, 0, 1));
   cell.saturationDepthMm = quantizeTrackStateNumber(Math.max(0.01, Number(cell.saturationDepthMm) || 1));
   cell.heatResponse = quantizeTrackStateNumber(clamp(Number(cell.heatResponse) || 0.12, 0.01, 1));
+  if (registerForWeather) {
+    let stable = true;
+    for (const key in cell) {
+      const value = cell[key];
+      if (typeof value === 'number' && (!Number.isFinite(value) || Math.abs(value) > 1e8)) { stable = false; break; }
+    }
+    if (stable) weatherCanonicalCells.add(cell);
+    else weatherCanonicalCells.delete(cell);
+  }
   return cell;
 }
 
@@ -120,7 +151,7 @@ export function createTrackStateCell({
     baselineIceDepthMm: initial.iceDepthMm,
     baselineRoughness: initial.roughness,
     baselineDebris: initial.debris
-  });
+  }, true);
 }
 
 function calculateCellConditionInto(target, cell, baseline = false) {

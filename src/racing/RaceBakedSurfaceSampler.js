@@ -413,7 +413,25 @@ export function packRaceCanonicalSurfaceMesh(mesh = null, {
     ? new Uint8Array(triangles.length)
     : new Uint32Array(triangles.length);
   const priorities = new Uint8Array(triangles.length);
-  const bucketSize = Math.max(4, Number(bucketSizeM) || 20);
+  let bucketSize = Math.max(4, Number(bucketSizeM) || 20);
+  // Large distant triangles can span millions of small index buckets. Choose
+  // coarser buckets before allocation; triangle geometry and exact queries stay
+  // unchanged. Bound index references rather than dropping terrain triangles.
+  const spans = triangles.map(triangle => {
+    const points = triangle.vertices || (triangle.indices || []).map(i => mesh.vertices[i]);
+    const xs = points.map(p => Number(p.x || 0)), zs = points.map(pointZ);
+    return [Math.max(...xs)-Math.min(...xs), Math.max(...zs)-Math.min(...zs)];
+  });
+  const referenceBudget = Math.max(1000000, triangles.length * 4);
+  for (let iteration=0; iteration<32; iteration++) {
+    let estimate=0;
+    for (const [width,depth] of spans) {
+      estimate+=(Math.ceil(width/bucketSize)+1)*(Math.ceil(depth/bucketSize)+1);
+      if (estimate>referenceBudget) break;
+    }
+    if (estimate<=referenceBudget) break;
+    bucketSize*=2;
+  }
   const buckets = new Map();
 
   triangles.forEach((triangle, triangleIndex) => {
@@ -559,8 +577,33 @@ function preferSurface(sampler, point, best, score, elevation) {
   return score > best.score || (score === best.score && elevation > best.elevation);
 }
 
+// Immutable packed geometry: retain the original candidate order, but exclude
+// triangles whose bounds cannot touch this 2 m tile. All overlapping decks and
+// materials remain candidates; height/priority selection still runs per query.
+const localCandidateCaches = new WeakMap();
+function localPackedCandidates(sampler, bucketIndex, x, z, revision, accounting) {
+  let cache=localCandidateCaches.get(sampler);
+  if (!cache || cache.revision!==revision || cache.positions!==sampler.positions
+      || cache.count!==sampler.triangleCount) {
+    cache={revision,positions:sampler.positions,count:sampler.triangleCount,tiles:new Map()};
+    localCandidateCaches.set(sampler,cache);
+  }
+  const tx=Math.floor(x/2),tz=Math.floor(z/2),key=`${bucketIndex}:${tx}:${tz}`;
+  let candidates=cache.tiles.get(key);
+  if(candidates){accounting?.count('localCandidateCacheHits');return candidates;}
+  candidates=[];
+  for(let i=sampler.bucketOffsets[bucketIndex];i<sampler.bucketOffsets[bucketIndex+1];i++) {
+    const id=sampler.bucketTriangles[i],o=id*4,b=sampler.bounds;
+    if(b[o]<=tx*2+2+.0001 && b[o+1]>=tx*2-.0001
+        && b[o+2]<=tz*2+2+.0001 && b[o+3]>=tz*2-.0001)candidates.push(id);
+  }
+  if(cache.tiles.size>=2048)cache.tiles.delete(cache.tiles.keys().next().value);
+  cache.tiles.set(key,candidates);accounting?.count('localCandidateCacheBuilds');
+  return candidates;
+}
+
 function samplePackedRaceBakedSurface(
-  sampler, worldPoint, preferredRegion = null, physicsCostAccounting = null
+  sampler, worldPoint, preferredRegion = null, physicsCostAccounting = null, localCandidateRevision = undefined
 ) {
   const x = Number(worldPoint.x || 0);
   const z = pointZ(worldPoint);
@@ -578,11 +621,13 @@ function samplePackedRaceBakedSurface(
   const bucketIndex = sampler.bucketLookup.get(bucketKey);
   if (!Number.isFinite(bucketIndex)) return null;
   let best = null;
-  const start = sampler.bucketOffsets[bucketIndex];
-  const end = sampler.bucketOffsets[bucketIndex + 1];
+  const localCandidates=localCandidateRevision===undefined?null:
+    localPackedCandidates(sampler,bucketIndex,x,z,localCandidateRevision,physicsCostAccounting);
+  const start = localCandidates?0:sampler.bucketOffsets[bucketIndex];
+  const end = localCandidates?localCandidates.length:sampler.bucketOffsets[bucketIndex + 1];
   for (let entryIndex = start; entryIndex < end; entryIndex += 1) {
     physicsCostAccounting?.count('preparedTrianglesVisited');
-    const triangleIndex = sampler.bucketTriangles[entryIndex];
+    const triangleIndex = localCandidates?localCandidates[entryIndex]:sampler.bucketTriangles[entryIndex];
     const boundsOffset = triangleIndex * 4;
     if (x < sampler.bounds[boundsOffset] - 0.0001
       || x > sampler.bounds[boundsOffset + 1] + 0.0001
@@ -635,11 +680,12 @@ function samplePackedRaceBakedSurface(
 
 export function sampleRaceBakedSurface(sampler = null, worldPoint = null, {
   preferredRegion = null,
-  physicsCostAccounting = null
+  physicsCostAccounting = null,
+  localCandidateRevision = undefined
 } = {}) {
   if (!worldPoint) return null;
   if (sampler?.packed) return samplePackedRaceBakedSurface(
-    sampler, worldPoint, preferredRegion, physicsCostAccounting
+    sampler, worldPoint, preferredRegion, physicsCostAccounting, localCandidateRevision
   );
   if (!sampler?.triangles?.length) return null;
   const x = Number(worldPoint.x || 0);

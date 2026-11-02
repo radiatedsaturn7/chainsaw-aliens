@@ -84,15 +84,30 @@ export class RadioPlayer {
   setVolume(volume) { this.volume = Math.max(0, Math.min(1, Number(volume) || 0));if (this.audio) this.audio.volume = this.volume*this.gain; }
   setGain(gain) {this.gain=Math.max(0,Math.min(1,Number(gain)||0));if(this.audio)this.audio.volume=this.volume*this.gain;}
   seek(seconds) {
+    this.cancelPendingSeek?.();
     const audio=this.audio;if(!audio)return;
     const target=Math.max(0,Number(seconds)||0);
+    const events=['loadedmetadata','loadeddata','canplay','progress','seeked','timeupdate'];
+    let attempts=0,lastAttempt=-Infinity;
+    const cleanup=()=>{for(const event of events)audio.removeEventListener?.(event,apply);if(this.cancelPendingSeek===cleanup)this.cancelPendingSeek=null;};
     const apply=()=>{
-      if(this.audio!==audio)return;
-      const limit=Number.isFinite(audio.duration)?Math.max(0,audio.duration-0.01):target;
-      try{audio.currentTime=Math.min(target,limit);}catch{}
+      if(this.audio!==audio){cleanup();return;}
+      // Do not clamp a requested cue to zero while duration is still unknown.
+      if(audio.readyState===0)return;
+      const limit=Number.isFinite(audio.duration)&&audio.duration>0?Math.max(0,audio.duration-.01):target;
+      const position=Math.min(target,limit);
+      if(Math.abs(Number(audio.currentTime)-position)<.25&&!audio.seeking){cleanup();return;}
+      const now=globalThis.performance?.now?.()??Date.now();
+      if(now-lastAttempt<250)return;
+      if(attempts++>=20){cleanup();return;}
+      lastAttempt=now;
+      try{audio.currentTime=position;}catch{}
     };
-    if(audio.readyState===0)audio.onloadedmetadata=()=>{audio.onloadedmetadata=null;apply();};
-    else apply();
+    this.cancelPendingSeek=cleanup;
+    for(const event of events)audio.addEventListener?.(event,apply);
+    // Media-like MIDI transports and test adapters may expose only properties.
+    if(!audio.addEventListener&&audio.readyState===0)audio.onloadedmetadata=()=>{audio.onloadedmetadata=null;apply();};
+    apply();
   }
   async play(trackId = this.trackId, {position=null,gain=null}={}) {
     await this.load();if (!this.available) return false;
@@ -123,6 +138,7 @@ export class RadioPlayer {
   }
   pause() {this.generation++;this.audio?.pause();this.playing = false;this.onChange();}
   stop() {
+    this.cancelPendingSeek?.();
     this.pause();if (this.audio) {this.audio.onended = null;this.audio.onerror = null;this.audio.onpause=null;this.audio.onplaying=null;this.audio.onloadedmetadata=null;this.audio.removeAttribute('src');this.audio.load();}
     this.audio = null;this.trackId = '';this.gain=1;
   }

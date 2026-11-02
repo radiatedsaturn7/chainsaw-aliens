@@ -128,7 +128,14 @@ function calculateResidual(state, config) {
   };
 }
 
-export function solveStaticVehicleSupportState({
+export function solveStaticVehicleSupportState(options = {}) {
+  const job = solveStaticVehicleSupportStateIncrementally(options);
+  let step;
+  do { step = job.next(); } while (!step.done);
+  return step.value;
+}
+
+export function* solveStaticVehicleSupportStateIncrementally({
   state,
   config,
   tireContactSubsystem,
@@ -138,6 +145,8 @@ export function solveStaticVehicleSupportState({
   stepIndex = 0,
   timeSeconds = 0,
   physicsCostAccounting = null,
+  placementOnly = false,
+  allowPlacementSettle = false,
   maximumIterations = 64
 } = {}) {
   const candidate = clone(state);
@@ -165,6 +174,7 @@ export function solveStaticVehicleSupportState({
   let error = null;
   let consecutiveConvergedIterations = 0;
   for (let iteration = 0; iteration < maximumIterations; iteration += 1) {
+    yield;
     const environment = createEnvironment(candidate, false, iteration) || {};
     try {
       lastResult = tireContactSubsystem.step({
@@ -189,6 +199,23 @@ export function solveStaticVehicleSupportState({
     const penetration = bodyCollision.samplePosePenetration(
       candidate, environment, config.bodyCollisionToleranceM
     );
+    if(placementOnly){
+      const clear=penetration.maximumPenetrationM !== null
+        && Number(penetration.invalidTerrainSampleCount || 0)===0
+        && Number(penetration.maximumPenetrationM)<=config.bodyCollisionToleranceM+1e-6;
+      status=clear&&lastResidual.supportedWheelCount===4?'validated':'failed';
+      error=status==='failed'?'saved road pose no longer has four clear supported wheels':null;
+      if(status === 'validated' || !allowPlacementSettle) {
+        trace.push({placementOnly:true,maximumPenetrationM:penetration.maximumPenetrationM});
+        break;
+      }
+      // A moving car's saved suspension pose can need a small placement
+      // correction. Recheck the same clearance/four-wheel predicate after
+      // each correction instead of switching to full force equilibrium.
+      // The caller still validates upright orientation and actual road contact.
+      status = 'failed';
+      error = null;
+    }
     const euler = eulerFromQuaternion(candidate.orientation);
     const bodyMomentResidual = rotateVectorToBody(
       lastResidual.momentResidual,
@@ -268,6 +295,7 @@ export function solveStaticVehicleSupportState({
     candidate.rollRad = euler.roll + rollCorrectionRad;
   }
   if (status === 'converged') {
+    yield;
     const finalEnvironment = createEnvironment(candidate, true, trace.length) || {};
     lastResult = tireContactSubsystem.step({
       state: candidate,

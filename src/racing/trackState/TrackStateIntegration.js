@@ -1,5 +1,5 @@
 import { clamp, hashTrackStateValue, quantizeTrackStateNumber } from './TrackStateMath.js';
-import { TrackState } from './TrackState.js';
+import { TrackState, RUNTIME_TRACK_STATE_CHECKPOINT_OPTIONS } from './TrackState.js';
 
 const EMPTY_ACCEPTED_TIRE_EVENTS = Object.freeze([]);
 
@@ -32,6 +32,7 @@ export function createRaceTrackState({
   ...options
 } = {}) {
   return new TrackState({
+    ...RUNTIME_TRACK_STATE_CHECKPOINT_OPTIONS,
     seed,
     snapshot,
     sampleBaseSurface(point) {
@@ -70,13 +71,11 @@ export function createRaceTrackStateWeatherForcing({
   const type = String(weatherState.id || race.weather || 'clear');
   const intensity = clamp(Number(weatherState.effectiveIntensity ?? weatherState.targetIntensity ?? 0), 0, 1);
   const night = String(race.timeOfDay || 'day') === 'night';
-  const precipitationScale = type === 'storm'
-    ? 0.9
-    : type === 'rain'
-      ? 0.55
-      : type === 'snow'
-        ? 0.6
-        : 0;
+  // Depth of the falling phase, in mm/s (snow is not liquid equivalent).
+  // Full storm: 2 in/hr, the lower end of Helene's documented 2–3 in/hr core.
+  // Full snow: 1.5 in/hr; an 18-inch/12-hour heavy-snow gameplay reference.
+  const inchesPerHour = type === 'storm' ? 2 : type === 'rain' ? 0.25 : type === 'snow' ? 1.5 : 0;
+  const precipitationScale = inchesPerHour * 25.4 / 3600;
   const output = target && typeof target === 'object' ? target : {};
   output.type = type;
   output.precipitationRateMmPerS = quantizeTrackStateNumber(intensity * precipitationScale);
@@ -219,6 +218,7 @@ export function queueRaceTrackStateCrashEvents(trackState, session = {}) {
 
 export function evaluateRaceAiTrackStateCandidates({
   trackState,
+  observationCache = null,
   getWorldPoint,
   distance = 0,
   currentOffset = 0,
@@ -232,10 +232,21 @@ export function evaluateRaceAiTrackStateCandidates({
   const offsets = [...new Set(candidateOffsets.map(Number).filter(Number.isFinite))].sort((a, b) => a - b);
   if (!offsets.includes(Number(currentOffset))) offsets.push(Number(currentOffset));
   offsets.sort((a, b) => a - b);
+  // Narrow roads put several candidate lanes in the same Track State cell.
+  // Sampling is synchronous: reuse a cell only within this decision, never
+  // across decisions/ticks where tires, spills or weather may have changed it.
+  const samplesByCell = observationCache || new Map();
+  const cellSizeM = Number(trackState?.cellSizeM);
   const candidates = offsets.map((offset) => {
     const observations = lookaheadDistances.map((ahead) => {
       const point = getWorldPoint(Number(distance) + Number(ahead), offset);
-      return trackState.sample(point);
+      if(!(cellSizeM>0))return trackState.sample(point);
+      const key=`${Math.floor(Number(point.x||0)/cellSizeM)},${Math.floor(Number(point.z??point.y??0)/cellSizeM)}`;
+      if(!samplesByCell.has(key)){
+        if(samplesByCell.size>=2048)samplesByCell.delete(samplesByCell.keys().next().value);
+        samplesByCell.set(key,trackState.sample(point));
+      }
+      return samplesByCell.get(key);
     });
     const average = (field) => observations.reduce((sum, observation) => sum + Number(observation[field] || 0), 0)
       / Math.max(1, observations.length);

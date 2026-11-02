@@ -1,0 +1,32 @@
+{
+  "kind": "race-tire",
+  "schemaVersion": 2,
+  "name": "Tarmac",
+  "baseCompound": "tarmac",
+  "compound": {
+    "id": "tarmac",
+    "label": "Tarmac",
+    "surfaceGrip": {
+      "asphalt": 1.08,
+      "wet-asphalt": 0.9,
+      "dirt": 0.72,
+      "gravel": 0.64,
+      "mud": 0.42,
+      "wet-gravel": 0.49,
+      "snow": 0.24,
+      "slush": 0.32
+    },
+    "wetEvacuationFactor": 0.82,
+    "treadDepthMm": 6.5,
+    "wearRate": 1
+  },
+  "size": {
+    "widthMm": 245,
+    "aspectRatio": 40,
+    "wheelDiameterIn": 18
+  },
+  "pressurePsi": 32,
+  "graphics": {
+    "angleLayers": {}
+  }
+}

@@ -343,3 +343,110 @@ test('actual Studio Sprint 2 crash reset uses real prepared terrain and records 
     sample.impactEventCount === 0 && sample.recoveryEventCount === 0
   )), true);
 });
+
+test('staged road reset bounds fallback solves and advances the search without accepting grass',()=>{
+ const config=createVehicleDynamicsConfig({handlingPreset:'simulation',tireHz:120,telemetryRetention:'none'});
+ const ground=createAnalyticalTerrain();
+ const sample=point=>({...ground.sampleTerrainAtWorldPoint(point),region:'terrain'});
+ let requested;
+ const environment={...ground,sampleTerrainAtWorldPoint:sample,sampleTerrainAtWorldPoints:points=>points.map(sample),
+  getRouteRecoveryState:request=>{
+   requested=request.preferredRouteDistances;
+   // Even an over-generous backend must not force unbounded settling work.
+   return Array.from({length:8},(_,i)=>({position:{x:0,y:config.cgHeightM+.08,z:50-i*5},
+    orientation:{x:0,y:0,z:0,w:1},routeDistance:50-i*5,grounded:true}));
+  }};
+ const runner=new VehicleDynamicsRunner({config,environmentProvider:()=>environment});
+ assert.throws(()=>runner.resetAuthoritativeState({position:{x:0,y:config.cgHeightM+.08,z:100},routeDistance:100,gear:1},
+  {reason:'track-center-reset',maximumRouteRecoveryCandidates:1,routeRecoveryCandidateOffset:3}),error=>{
+   assert.equal(error.resetFailure.rejectedCandidates.length,2,'requested pose plus only one fallback');
+   assert.ok(error.resetFailure.rejectedCandidates.every(c=>c.error.includes('all four wheels')));
+   return true;
+  });
+ assert.deepEqual(requested,[100-Math.max(5,Number(config.vehicleLengthM||4.5)*1.25)*4]);
+});
+
+test('verified road snapshot restores exact pose with one contact rebuild and no route search',()=>{
+ const config=createVehicleDynamicsConfig({handlingPreset:'simulation',tireHz:120,telemetryRetention:'none'});
+ const environment=createAnalyticalTerrain();
+ const runner=new VehicleDynamicsRunner({config,environmentProvider:()=>environment});
+ const original=runner.resetAuthoritativeState({position:{x:1,y:config.cgHeightM+.08,z:30},routeDistance:30,gear:1});
+ const saved=structuredClone(original.state);const mechanical=runner.state.mechanical;
+ environment.getRouteRecoveryState=()=>{throw new Error('must not replace a verified pose with a route search');};
+ let calls=0;const step=runner.tireContactSubsystem.step.bind(runner.tireContactSubsystem);
+ runner.tireContactSubsystem.step=(...args)=>{calls++;return step(...args);};
+ const reset=runner.resetAuthoritativeState({position:saved.position,orientation:saved.orientation,suspensionState:saved.suspensionState,routeDistance:30,gear:1},
+  {reason:'select-hold-reset',verifiedRoadPose:true});
+ assert.equal(calls,1);assert.equal(runner.resetTimeline.at(-1).verifiedRoadPose,true);assert.equal(reset.equilibrium.status,'validated');assert.equal(reset.supportedWheelCount,4);
+ assert.deepEqual(reset.state.position,saved.position);assert.deepEqual(reset.state.mechanical,mechanical);
+ assert.equal(runner.stationaryResetHold,null,'normal physics settles the restored pose');
+ runner.advance(1/120);
+ const replay=VehicleDynamicsRunner.replay(runner.createReplayRecord(),{environmentProvider:()=>environment});
+ assert.equal(replay.diagnostics.latestResetIncident.equilibrium.status,'validated');
+ for(const axis of ['x','y','z'])assert.ok(Math.abs(replay.state.position[axis]-runner.state.position[axis])<1e-8,'replay retains validated placement mode');
+ environment.sampleTerrainAtWorldPoint=p=>({valid:true,heightM:0,normal:{x:0,y:1,z:0},surfaceId:'grass',region:'terrain'});
+ assert.throws(()=>runner.resetAuthoritativeState({position:saved.position,orientation:saved.orientation,suspensionState:saved.suspensionState,routeDistance:30},
+  {verifiedRoadPose:true}),/all four wheels/,'a previously safe pose must still pass current road validation');
+});
+
+for(const terrainOptions of [{},{grade:.12},{bank:.08},{grade:-.12,bank:-.06}])
+test(`saved road placement settles and remains upright ${JSON.stringify(terrainOptions)}`,()=>{
+ const config=createVehicleDynamicsConfig({handlingPreset:'simulation',tireHz:120,telemetryRetention:'none'});
+ const environment=createAnalyticalTerrain(terrainOptions);
+ const runner=new VehicleDynamicsRunner({config,environmentProvider:()=>environment});
+ const original=runner.resetAuthoritativeState({position:{x:1,y:(terrainOptions.grade||0)*30+(terrainOptions.bank||0)+config.cgHeightM+.08,z:30},routeDistance:30,gear:1});
+ const saved=structuredClone(original.state);
+ // A contact-valid moving history sample can cease to support all wheels when
+ // rebound/contact state is rebuilt at zero velocity. Exercise the settle path.
+ saved.position.y+=.3;
+ environment.getRouteRecoveryState=()=>{throw Error('must retain the recorded road location');};
+ let contactRebuilds=0;
+ const rebuild=runner.tireContactSubsystem.step.bind(runner.tireContactSubsystem);
+ runner.tireContactSubsystem.step=(options)=>{contactRebuilds++;return rebuild(options);};
+ const reset=runner.resetAuthoritativeState({position:saved.position,orientation:saved.orientation,suspensionState:saved.suspensionState,routeDistance:30,gear:1},
+  {reason:'select-hold-reset',verifiedRoadPose:true});
+ assert.equal(reset.equilibrium.status,'validated');
+ assert.equal(reset.supportedWheelCount,4);
+ assert.equal(reset.state.position.x,saved.position.x);assert.equal(reset.state.position.z,saved.position.z);
+ assert.ok(rotateVectorByQuaternion({x:0,y:1,z:0},reset.state.orientation).y>.8);
+ assert.ok(reset.equilibrium.iterations<=32);
+ assert.equal(reset.equilibrium.iterations,contactRebuilds,'one trace entry per placement iteration');
+ for(let i=0;i<120;i++){
+  runner.advance(1/120,{input:{throttle:0}});
+  assert.ok(rotateVectorByQuaternion({x:0,y:1,z:0},runner.state.orientation).y>.8,
+   'placement remains upright after physics resumes');
+  assert.ok(Number.isFinite(runner.state.position.y));
+ }
+ assert.equal(runner.state.supportedWheelCount,4);
+});
+
+test('incremental authoritative reset preserves full synchronous result and installs only on completion',()=>{
+ const make=()=>{const config=createVehicleDynamicsConfig({handlingPreset:'simulation',tireHz:120,telemetryRetention:'none'});
+  return new VehicleDynamicsRunner({config,initialState:{position:{x:0,y:config.cgHeightM+.08,z:0},orientation:quaternionFromEuler({})},environmentProvider:()=>createAnalyticalTerrain({grade:.15,bank:.05})});};
+ const sync=make(),incremental=make();
+ const request={position:{...sync.state.position},orientation:quaternionFromEuler({}),gear:1};
+ const expected=sync.resetAuthoritativeState(request,{parkUntilDrive:true});
+ const original=structuredClone(incremental.state);
+ let calls=0;const subsystem=incremental.tireContactSubsystem,step=subsystem.step;
+ subsystem.step=function(...args){calls++;return step.apply(this,args);};
+ const job=incremental.resetAuthoritativeStateIncrementally(request,{parkUntilDrive:true});
+ let result,slices=0;
+ do {const before=calls;result=job.next();slices++;
+  assert.ok(calls-before<=1,'a slice performs no more than one tire solve');
+  if(!result.done)assert.deepEqual(incremental.state,original);
+  assert.ok(slices<150);
+ }while(!result.done);
+ assert.ok(slices>2);
+ assert.deepEqual(result.value,expected);
+ assert.deepEqual(incremental.state,sync.state);
+});
+
+test('cancelled incremental reset cannot install its candidate',()=>{
+ const config=createVehicleDynamicsConfig({telemetryRetention:'none'});
+ const runner=new VehicleDynamicsRunner({config,environmentProvider:()=>createAnalyticalTerrain()});
+ const before=structuredClone(runner.state);
+ const job=runner.resetAuthoritativeStateIncrementally({position:{x:0,y:config.cgHeightM+.3,z:0}});
+ job.next();job.next();job.return();
+ assert.deepEqual(runner.state,before);
+ assert.equal(job.next().done,true);
+});

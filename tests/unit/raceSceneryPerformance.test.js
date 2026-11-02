@@ -73,3 +73,62 @@ test('map draws a long authored fence as one path and retains legacy panels and 
  delete e.selectedRace.scenery[0].fencePath;strokes=0;
  e.drawRaceTopDownScenerySprites(ctx,{x:0,y:0,w:960,h:540});assert.equal(strokes,e.selectedRace.scenery.length-1);
 });
+
+test('dense stationary trees share spatial batches while rotating items stay separate',()=>{
+ const e=new RaceEditor({});
+ const sprites=Array.from({length:500},(_,i)=>({id:`tree-${i}`,presetId:'doodad',x:i%25*8,z:Math.floor(i/25)*8,previewDoodad:{artRef:'tree',widthM:5,heightM:12,itemType:'scenery'}}));
+ sprites.push({id:'item',presetId:'doodad',x:0,z:0,previewDoodad:{artRef:'item',widthM:2,heightM:2,itemType:'mix-tape'}});
+ e.ensureRaceScenery=()=>sprites;e.getRaceSurfaceModel=()=>({sampleWorld:()=>({elevation:0})});
+ e.getRaceThreeDoodadSceneKey=()=> 'trees';e.getRaceThreeDoodadMaterial=()=>new THREE.MeshBasicMaterial();e.addRaceThreeDoodadHitboxMeshes=()=>{};
+ const renderer={scene:new THREE.Scene()};e.addRaceThreeDoodads(renderer);
+ assert.ok(renderer.dynamicDoodadGroup.children.length<10);
+ assert.equal(renderer.dynamicDoodadGroup.children.reduce((n,m)=>n+m.geometry.attributes.position.count,0),sprites.length*6);
+ assert.equal(renderer.dynamicDoodadGroup.children.filter(m=>m.userData.mixTape).length,1);
+});
+
+import {getVisibleRaceDoodadSprites} from '../../src/racing/RaceVisibleScenery.js';
+test('visible scenery reuses its list without hiding in-place edits or collected items',()=>{
+ const sprites=Array.from({length:18000},(_,i)=>({id:String(i),presetId:'doodad',state:'standing'}));
+ const session={removedSceneryIds:[],flattenedSceneryIds:[]};
+ const list=getVisibleRaceDoodadSprites(sprites,session);
+ assert.equal(getVisibleRaceDoodadSprites(sprites,session),list);assert.equal(list.length,18000);
+ sprites[5].state='removed';session.removedSceneryIds.push('6');session.flattenedSceneryIds.push('7');
+ getVisibleRaceDoodadSprites(sprites,session);assert.equal(list.length,17997);
+ assert.ok(!list.includes(sprites[5])&&!list.includes(sprites[6])&&!list.includes(sprites[7]));
+ sprites[5].state='standing';session.removedSceneryIds[0]='8';
+ getVisibleRaceDoodadSprites(sprites,session);assert.ok(list.includes(sprites[5])&&list.includes(sprites[6]));assert.ok(!list.includes(sprites[8]));
+ assert.notEqual(getVisibleRaceDoodadSprites(sprites,{}),list);
+});
+
+test('cached static doodad batches skip animation traversal while rotating items still animate',()=>{
+ const e=new RaceEditor({});e.playtestSession={elapsedMs:0};
+ const sprites=[{id:'bush',presetId:'doodad',x:5,z:5,previewDoodad:{artRef:'bush',widthM:2,heightM:2}},
+ {id:'tape',presetId:'doodad',x:0,z:0,previewDoodad:{artRef:'tape',widthM:1,heightM:1,itemType:'mix-tape'}}];
+ e.ensureRaceScenery=()=>sprites;e.getRaceSurfaceModel=()=>({sampleWorld:()=>({elevation:0})});
+ e.getRaceThreeDoodadSceneKey=()=> 'stable';e.getRaceThreeDoodadMaterial=()=>new THREE.MeshBasicMaterial();e.addRaceThreeDoodadHitboxMeshes=()=>{};
+ const renderer={scene:new THREE.Scene()};e.addRaceThreeDoodads(renderer);
+ assert.equal(renderer.dynamicDoodadAnimations.length,1);
+ const animated=renderer.dynamicDoodadAnimations[0],before=animated.rotation.y;
+ renderer.dynamicDoodadGroup.traverse=()=>{throw Error('static tree traversed on cache hit');};
+ e.playtestSession.elapsedMs=1000;e.addRaceThreeDoodads(renderer);assert.notEqual(animated.rotation.y,before);
+});
+
+test('scene-key validation still detects every tracked placement mutation without asset churn',()=>{
+ const e=new RaceEditor({});
+ e.playtestSession={routeRuntimeType:'network',routeLength:1000,worldBake:{surfaceRevision:'surface'}};
+ e.getRaceArtSpriteCanvas=()=>({__raceArtCacheKey:'art'});
+ let definitions=0;
+ e.getRaceDoodadForScenery=s=>{definitions++;return {...s,itemType:'scenery'};};
+ const sprites=[{id:'a',x:0,z:0,yaw:0,widthM:2,heightM:3,artRef:'tree'}];
+ e.getRaceThreeDoodadSceneKey(sprites);
+ const edits=[s=>s.state='flattened',s=>s.x=2,s=>s.z=3,s=>s.yaw=.2,
+  s=>s.widthM=4,s=>s.heightM=5,s=>s.previewDoodad={},s=>s.doodadRef='saved',
+  s=>s.artRef='rock',s=>s.previewHitbox=true];
+ for(const edit of edits){
+  definitions=0;e.getRaceThreeDoodadSceneKey(sprites);assert.equal(definitions,0);
+  edit(sprites[0]);e.getRaceThreeDoodadSceneKey(sprites);assert.equal(definitions,1);
+ }
+ definitions=0;sprites[0]={...sprites[0]};e.getRaceThreeDoodadSceneKey(sprites);assert.equal(definitions,1);
+ definitions=0;e.playtestSession={...e.playtestSession};e.getRaceThreeDoodadSceneKey(sprites);assert.equal(definitions,1);
+ definitions=0;e.playtestSession.worldBake.surfaceRevision='new';e.getRaceThreeDoodadSceneKey(sprites);assert.equal(definitions,1);
+});

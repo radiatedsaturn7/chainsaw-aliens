@@ -1,3 +1,5 @@
+import { ThunderPreparation } from '../audio/ThunderPreparation.js';
+import {thunderProfile} from '../racing/Thunderstorm.js';
 import {DEFAULT_MUSIC_VOLUME, DEFAULT_MASTER_VOLUME} from '../audio/musicVolume.js';
 import { VehicleSound } from '../audio/VehicleSound.js';
 import {
@@ -2509,11 +2511,37 @@ export default class AudioSystem {
     });
   }
 
-  playWeatherThunder({ intensity = 1, pan = 0 } = {}) {
+  prepareWeatherThunder(event = {}) {
+    this.ensure();
+    if (!this.ctx) return Promise.resolve(null);
+    const sampleRate = Math.max(1000, Number(this.ctx.sampleRate) || 44100);
+    const profile = thunderProfile(event.distanceM ?? 1500, .65 + (event.intensity ?? 1)*.35);
+    const key = JSON.stringify([sampleRate, event.distanceM ?? 1500, event.seed ?? 0x6d2b79f5, event.pulseDelays ?? [0]]);
+    const cache = this.weatherThunderPrepared ||= new Map();
+    if (cache.has(key)) return cache.get(key);
+    while (cache.size >= 16) cache.delete(cache.keys().next().value);
+    const preparation = this.weatherThunderPreparation ||= new ThunderPreparation();
+    const promise = preparation.prepare({sampleRate, durationSeconds: profile.durationSeconds,
+      near: profile.near, seed: event.seed ?? 0x6d2b79f5, pulseDelays: event.pulseDelays ?? [0]});
+    cache.set(key, promise);
+    return promise;
+  }
+
+  stopWeatherThunder() {
+    this.weatherThunderEpoch = (this.weatherThunderEpoch || 0) + 1;
+    this.weatherThunderPreparation?.dispose(); this.weatherThunderPreparation = null;
+    this.weatherThunderPrepared?.clear();
+    for(const voice of [...(this.weatherThunderVoices||[])])voice.stop();
+    this.weatherThunderVoices=[];
+  }
+
+  playWeatherThunder({ intensity = 1, pan = 0, distanceM = 1500, seed = 0x6d2b79f5, gain = null, pulseDelays = [0], preparedSamples = null } = {}) {
     this.ensure();
     const normalizedIntensity = clamp(Number(intensity) || 0, 0, 1);
     const normalizedPan = clamp(Number(pan) || 0, -1, 1);
-    const durationSeconds = clamp(1.4 + normalizedIntensity * 0.8, 1.4, 2.4);
+    const profile=thunderProfile(distanceM,.65+normalizedIntensity*.35);
+    const durationSeconds=profile.durationSeconds;
+    const level=clamp(Number(gain??profile.gain),0,.75);
     if (
       !this.ctx
       || !this.master
@@ -2529,21 +2557,18 @@ export default class AudioSystem {
       };
     }
 
+    if (!preparedSamples) {
+      const epoch = this.weatherThunderEpoch || 0;
+      this.prepareWeatherThunder({intensity, pan, distanceM, seed, gain, pulseDelays}).then(samples => {
+        if (!samples || epoch !== (this.weatherThunderEpoch || 0) || this.ctx?.state === 'closed') return;
+        this.playWeatherThunder({intensity, pan, distanceM, seed, gain, pulseDelays, preparedSamples: samples});
+      });
+      return { played: false, pending: true, durationSeconds, pan: normalizedPan };
+    }
     const now = Number(this.ctx.currentTime || 0);
     const sampleRate = Math.max(1000, Number(this.ctx.sampleRate) || 44100);
-    const bufferSize = Math.max(1, Math.floor(sampleRate * durationSeconds));
-    const buffer = this.ctx.createBuffer(1, bufferSize, sampleRate);
-    const samples = buffer.getChannelData(0);
-    let noiseSeed = 0x6d2b79f5;
-    for (let index = 0; index < bufferSize; index += 1) {
-      noiseSeed = Math.imul(noiseSeed ^ (noiseSeed >>> 15), 1 | noiseSeed);
-      noiseSeed ^= noiseSeed + Math.imul(noiseSeed ^ (noiseSeed >>> 7), 61 | noiseSeed);
-      const random = (((noiseSeed ^ (noiseSeed >>> 14)) >>> 0) / 4294967296) * 2 - 1;
-      const progress = index / bufferSize;
-      const crack = Math.exp(-progress * 28);
-      const tail = Math.exp(-progress * 3.2);
-      samples[index] = random * (crack * 0.68 + tail * 0.32);
-    }
+    const buffer = this.ctx.createBuffer(1, preparedSamples.length, sampleRate);
+    buffer.getChannelData(0).set(preparedSamples);
 
     const noiseSource = this.ctx.createBufferSource();
     const noiseGain = this.ctx.createGain();
@@ -2561,14 +2586,14 @@ export default class AudioSystem {
     rumbleSource.frequency.setValueAtTime(42 + normalizedIntensity * 7, now);
     rumbleSource.frequency.linearRampToValueAtTime(31, now + durationSeconds);
     noiseGain.gain.setValueAtTime(0.0001, now);
-    noiseGain.gain.linearRampToValueAtTime(0.22 + normalizedIntensity * 0.28, now + 0.018);
+    noiseGain.gain.linearRampToValueAtTime(level, now + .008 + (1-profile.near)*.2);
     noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + durationSeconds);
     rumbleGain.gain.setValueAtTime(0.0001, now);
-    rumbleGain.gain.linearRampToValueAtTime(0.12 + normalizedIntensity * 0.18, now + 0.06);
+    rumbleGain.gain.linearRampToValueAtTime(level*.18, now + .04 + (1-profile.near)*.25);
     rumbleGain.gain.exponentialRampToValueAtTime(0.0001, now + durationSeconds);
     if (lowPass) {
       lowPass.type = 'lowpass';
-      lowPass.frequency.setValueAtTime(1100 + normalizedIntensity * 700, now);
+      lowPass.frequency.setValueAtTime(profile.cutoffHz, now);
       lowPass.frequency.exponentialRampToValueAtTime(240, now + durationSeconds);
       lowPass.Q.value = 0.7;
       noiseSource.connect(lowPass);
@@ -2583,6 +2608,12 @@ export default class AudioSystem {
       panner.pan.setValueAtTime(normalizedPan, now);
       panner.connect(this.effectsBus || this.master);
     }
+    const voices=this.weatherThunderVoices ||= [];
+    while(voices.length>=4)voices.shift().stop();
+    const nodes=[noiseSource,noiseGain,rumbleSource,rumbleGain,lowPass,panner].filter(Boolean);
+    const cleanup=()=>{for(const node of nodes)node.disconnect?.();const i=voices.indexOf(voice);if(i>=0)voices.splice(i,1);};
+    const voice={stop:()=>{try{noiseSource.stop();rumbleSource.stop();}catch{}cleanup();}};
+    noiseSource.onended=cleanup;voices.push(voice);
     noiseSource.start(now);
     rumbleSource.start(now);
     noiseSource.stop(now + durationSeconds);

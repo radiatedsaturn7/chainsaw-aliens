@@ -1,0 +1,3975 @@
+{
+  "value": {
+    "garage": {
+      "parts": {
+        "sport-turbo": {
+          "id": "sport-turbo",
+          "name": "Sport Turbo",
+          "description": "Garage part",
+          "carPart": {
+            "slot": "turbo",
+            "section": "Engine",
+            "tier": "custom",
+            "price": 1200,
+            "forSale": true,
+            "unlockKey": "",
+            "compatibleCars": [],
+            "requires": [],
+            "modifiers": [],
+            "tuning": [],
+            "torqueCurve": [
+              {
+                "rpm": 1000,
+                "multiplier": 1
+              },
+              {
+                "rpm": 3000,
+                "multiplier": 1.12
+              },
+              {
+                "rpm": 6000,
+                "multiplier": 1.2
+              }
+            ],
+            "tireRef": ""
+          },
+          "artRef": "",
+          "model": null,
+          "widthM": 1,
+          "heightM": 1,
+          "widthPx": 32,
+          "heightPx": 32,
+          "groundOffsetM": 0,
+          "rotate": false,
+          "persistent": true,
+          "effects": []
+        },
+        "adjustable-ecu": {
+          "id": "adjustable-ecu",
+          "name": "Adjustable ECU",
+          "description": "Garage part",
+          "carPart": {
+            "slot": "ecu",
+            "section": "Engine",
+            "tier": "custom",
+            "price": 500,
+            "forSale": true,
+            "unlockKey": "",
+            "compatibleCars": [],
+            "requires": [],
+            "modifiers": [],
+            "tuning": [
+              {
+                "field": "torqueScale",
+                "min": 0.8,
+                "max": 1.1,
+                "step": 0.01
+              }
+            ],
+            "torqueCurve": [],
+            "tireRef": ""
+          },
+          "artRef": "",
+          "model": null,
+          "widthM": 1,
+          "heightM": 1,
+          "widthPx": 32,
+          "heightPx": 32,
+          "groundOffsetM": 0,
+          "rotate": false,
+          "persistent": true,
+          "effects": []
+        },
+        "adjustable-tire-pressure": {
+          "id": "adjustable-tire-pressure",
+          "name": "Tire Pressure Kit",
+          "description": "Garage part",
+          "carPart": {
+            "slot": "tire-pressure",
+            "section": "Engine",
+            "tier": "custom",
+            "price": 100,
+            "forSale": true,
+            "unlockKey": "",
+            "compatibleCars": [],
+            "requires": [],
+            "modifiers": [],
+            "tuning": [
+              {
+                "field": "pressure.fl",
+                "min": 20,
+                "max": 40,
+                "step": 0.5
+              },
+              {
+                "field": "pressure.fr",
+                "min": 20,
+                "max": 40,
+                "step": 0.5
+              },
+              {
+                "field": "pressure.rl",
+                "min": 20,
+                "max": 40,
+                "step": 0.5
+              },
+              {
+                "field": "pressure.rr",
+                "min": 20,
+                "max": 40,
+                "step": 0.5
+              }
+            ],
+            "torqueCurve": [],
+            "tireRef": ""
+          },
+          "artRef": "",
+          "model": null,
+          "widthM": 1,
+          "heightM": 1,
+          "widthPx": 32,
+          "heightPx": 32,
+          "groundOffsetM": 0,
+          "rotate": false,
+          "persistent": true,
+          "effects": []
+        },
+        "lightweight-panels": {
+          "id": "lightweight-panels",
+          "name": "Lightweight Panels",
+          "description": "Garage part",
+          "carPart": {
+            "slot": "weight",
+            "section": "Body",
+            "tier": "custom",
+            "price": 800,
+            "forSale": true,
+            "unlockKey": "",
+            "compatibleCars": [],
+            "requires": [],
+            "modifiers": [
+              {
+                "field": "weightKg",
+                "operation": "multiply",
+                "value": 0.95
+              }
+            ],
+            "tuning": [],
+            "torqueCurve": [],
+            "tireRef": ""
+          },
+          "artRef": "",
+          "model": null,
+          "widthM": 1,
+          "heightM": 1,
+          "widthPx": 32,
+          "heightPx": 32,
+          "groundOffsetM": 0,
+          "rotate": false,
+          "persistent": true,
+          "effects": []
+        },
+        "adjustable-gearbox": {
+          "id": "adjustable-gearbox",
+          "name": "Adjustable Gearbox",
+          "description": "Garage part",
+          "carPart": {
+            "slot": "transmission",
+            "section": "Drivetrain",
+            "tier": "custom",
+            "price": 1000,
+            "forSale": true,
+            "unlockKey": "",
+            "compatibleCars": [],
+            "requires": [],
+            "modifiers": [],
+            "tuning": [
+              {
+                "field": "gearFinalDrive",
+                "min": 2,
+                "max": 6,
+                "step": 0.05
+              },
+              {
+                "field": "gearRatios.0",
+                "min": 0.2,
+                "max": 5,
+                "step": 0.01
+              },
+              {
+                "field": "gearRatios.1",
+                "min": 0.2,
+                "max": 5,
+                "step": 0.01
+              },
+              {
+                "field": "gearRatios.2",
+                "min": 0.2,
+                "max": 5,
+                "step": 0.01
+              },
+              {
+                "field": "gearRatios.3",
+                "min": 0.2,
+                "max": 5,
+                "step": 0.01
+              },
+              {
+                "field": "gearRatios.4",
+                "min": 0.2,
+                "max": 5,
+                "step": 0.01
+              },
+              {
+                "field": "gearRatios.5",
+                "min": 0.2,
+                "max": 5,
+                "step": 0.01
+              }
+            ],
+            "torqueCurve": [],
+            "tireRef": ""
+          },
+          "artRef": "",
+          "model": null,
+          "widthM": 1,
+          "heightM": 1,
+          "widthPx": 32,
+          "heightPx": 32,
+          "groundOffsetM": 0,
+          "rotate": false,
+          "persistent": true,
+          "effects": []
+        },
+        "adjustable-suspension": {
+          "id": "adjustable-suspension",
+          "name": "Adjustable Suspension",
+          "description": "Garage part",
+          "carPart": {
+            "slot": "suspension",
+            "section": "Handling",
+            "tier": "custom",
+            "price": 750,
+            "forSale": true,
+            "unlockKey": "",
+            "compatibleCars": [],
+            "requires": [],
+            "modifiers": [],
+            "tuning": [
+              {
+                "field": "springFront",
+                "min": 0.1,
+                "max": 1,
+                "step": 0.01
+              },
+              {
+                "field": "rideHeightFront",
+                "min": 0.1,
+                "max": 1,
+                "step": 0.01
+              },
+              {
+                "field": "bumpFront",
+                "min": 0.1,
+                "max": 1,
+                "step": 0.01
+              },
+              {
+                "field": "reboundFront",
+                "min": 0.1,
+                "max": 1,
+                "step": 0.01
+              },
+              {
+                "field": "antiRollFront",
+                "min": 0.1,
+                "max": 1,
+                "step": 0.01
+              },
+              {
+                "field": "springRear",
+                "min": 0.1,
+                "max": 1,
+                "step": 0.01
+              },
+              {
+                "field": "rideHeightRear",
+                "min": 0.1,
+                "max": 1,
+                "step": 0.01
+              },
+              {
+                "field": "bumpRear",
+                "min": 0.1,
+                "max": 1,
+                "step": 0.01
+              },
+              {
+                "field": "reboundRear",
+                "min": 0.1,
+                "max": 1,
+                "step": 0.01
+              },
+              {
+                "field": "antiRollRear",
+                "min": 0.1,
+                "max": 1,
+                "step": 0.01
+              }
+            ],
+            "torqueCurve": [],
+            "tireRef": ""
+          },
+          "artRef": "",
+          "model": null,
+          "widthM": 1,
+          "heightM": 1,
+          "widthPx": 32,
+          "heightPx": 32,
+          "groundOffsetM": 0,
+          "rotate": false,
+          "persistent": true,
+          "effects": []
+        },
+        "rally-tires": {
+          "id": "rally-tires",
+          "name": "Rally Tires",
+          "description": "Garage part",
+          "carPart": {
+            "slot": "tires",
+            "section": "Tires",
+            "tier": "custom",
+            "price": 450,
+            "forSale": true,
+            "unlockKey": "",
+            "compatibleCars": [],
+            "requires": [],
+            "modifiers": [],
+            "tuning": [],
+            "torqueCurve": [],
+            "tireRef": "Rally"
+          },
+          "artRef": "",
+          "model": null,
+          "widthM": 1,
+          "heightM": 1,
+          "widthPx": 32,
+          "heightPx": 32,
+          "groundOffsetM": 0,
+          "rotate": false,
+          "persistent": true,
+          "effects": []
+        },
+        "offroad-tires": {
+          "id": "offroad-tires",
+          "name": "Offroad Tires",
+          "description": "Offroad tires. Uses the saved Offroad tire definition.",
+          "carPart": {
+            "slot": "tires",
+            "section": "Tires",
+            "tier": "sport",
+            "price": 500,
+            "forSale": true,
+            "unlockKey": "",
+            "compatibleCars": [],
+            "requires": [],
+            "modifiers": [],
+            "tuning": [],
+            "torqueCurve": [],
+            "tireRef": "Offroad"
+          },
+          "artRef": "",
+          "model": null,
+          "widthM": 1,
+          "heightM": 1,
+          "widthPx": 32,
+          "heightPx": 32,
+          "groundOffsetM": 0,
+          "rotate": false,
+          "persistent": true,
+          "effects": []
+        },
+        "snow-tires": {
+          "id": "snow-tires",
+          "name": "Snow Tires",
+          "description": "Snow tires. Uses the saved Snow tire definition.",
+          "carPart": {
+            "slot": "tires",
+            "section": "Tires",
+            "tier": "sport",
+            "price": 550,
+            "forSale": true,
+            "unlockKey": "",
+            "compatibleCars": [],
+            "requires": [],
+            "modifiers": [],
+            "tuning": [],
+            "torqueCurve": [],
+            "tireRef": "Snow"
+          },
+          "artRef": "",
+          "model": null,
+          "widthM": 1,
+          "heightM": 1,
+          "widthPx": 32,
+          "heightPx": 32,
+          "groundOffsetM": 0,
+          "rotate": false,
+          "persistent": true,
+          "effects": []
+        },
+        "street-tires": {
+          "id": "street-tires",
+          "name": "Street Tires",
+          "description": "Street tires. Uses the saved Street tire definition.",
+          "carPart": {
+            "slot": "tires",
+            "section": "Tires",
+            "tier": "street",
+            "price": 250,
+            "forSale": true,
+            "unlockKey": "",
+            "compatibleCars": [],
+            "requires": [],
+            "modifiers": [],
+            "tuning": [],
+            "torqueCurve": [],
+            "tireRef": "Street"
+          },
+          "artRef": "",
+          "model": null,
+          "widthM": 1,
+          "heightM": 1,
+          "widthPx": 32,
+          "heightPx": 32,
+          "groundOffsetM": 0,
+          "rotate": false,
+          "persistent": true,
+          "effects": []
+        },
+        "drift-tires": {
+          "id": "drift-tires",
+          "name": "Drift Tires",
+          "description": "Drift tires. Uses the saved Drift tire definition.",
+          "carPart": {
+            "slot": "tires",
+            "section": "Tires",
+            "tier": "sport",
+            "price": 400,
+            "forSale": true,
+            "unlockKey": "",
+            "compatibleCars": [],
+            "requires": [],
+            "modifiers": [],
+            "tuning": [],
+            "torqueCurve": [],
+            "tireRef": "Drift"
+          },
+          "artRef": "",
+          "model": null,
+          "widthM": 1,
+          "heightM": 1,
+          "widthPx": 32,
+          "heightPx": 32,
+          "groundOffsetM": 0,
+          "rotate": false,
+          "persistent": true,
+          "effects": []
+        },
+        "rain-tires": {
+          "id": "rain-tires",
+          "name": "Rain Tires",
+          "description": "Rain tires. Uses the saved Rain tire definition.",
+          "carPart": {
+            "slot": "tires",
+            "section": "Tires",
+            "tier": "sport",
+            "price": 650,
+            "forSale": true,
+            "unlockKey": "",
+            "compatibleCars": [],
+            "requires": [],
+            "modifiers": [],
+            "tuning": [],
+            "torqueCurve": [],
+            "tireRef": "Rain"
+          },
+          "artRef": "",
+          "model": null,
+          "widthM": 1,
+          "heightM": 1,
+          "widthPx": 32,
+          "heightPx": 32,
+          "groundOffsetM": 0,
+          "rotate": false,
+          "persistent": true,
+          "effects": []
+        },
+        "stock-tires": {
+          "id": "stock-tires",
+          "name": "Stock Tires",
+          "description": "Stock tires. Uses the saved Stock tire definition.",
+          "carPart": {
+            "slot": "tires",
+            "section": "Tires",
+            "tier": "street",
+            "price": 0,
+            "forSale": true,
+            "unlockKey": "",
+            "compatibleCars": [],
+            "requires": [],
+            "modifiers": [],
+            "tuning": [],
+            "torqueCurve": [],
+            "tireRef": "Stock"
+          },
+          "artRef": "",
+          "model": null,
+          "widthM": 1,
+          "heightM": 1,
+          "widthPx": 32,
+          "heightPx": 32,
+          "groundOffsetM": 0,
+          "rotate": false,
+          "persistent": true,
+          "effects": []
+        },
+        "tarmac-tires": {
+          "id": "tarmac-tires",
+          "name": "Tarmac Race Tires",
+          "description": "Dry-pavement racing tires. Uses the saved Tarmac tire definition.",
+          "carPart": {
+            "slot": "tires",
+            "section": "Tires",
+            "tier": "race",
+            "price": 900,
+            "forSale": true,
+            "unlockKey": "",
+            "compatibleCars": [],
+            "requires": [],
+            "modifiers": [],
+            "tuning": [],
+            "torqueCurve": [],
+            "tireRef": "Tarmac"
+          },
+          "artRef": "",
+          "model": null,
+          "widthM": 1,
+          "heightM": 1,
+          "widthPx": 32,
+          "heightPx": 32,
+          "groundOffsetM": 0,
+          "rotate": false,
+          "persistent": true,
+          "effects": []
+        }
+      },
+      "cars": {
+        "RTG-001": {
+          "condition": {
+            "damage": {
+              "panels": {
+                "front": 0,
+                "left": 6.400000000000003,
+                "right": 16.73897915154238,
+                "rear": 16.479472536184478
+              },
+              "engine": 14.86043999999978,
+              "transmission": 3.5999999999999996,
+              "brakes": {
+                "fl": 0,
+                "fr": 0,
+                "rl": 0,
+                "rr": 0
+              },
+              "suspension": {
+                "fl": 0,
+                "fr": 0,
+                "rl": 0,
+                "rr": 0
+              },
+              "suspensionPull": 0,
+              "tires": {
+                "fl": 0,
+                "fr": 0,
+                "rl": 0,
+                "rr": 0
+              }
+            },
+            "mechanical": {
+              "version": 1,
+              "config": {
+                "enabled": true,
+                "timeScale": 8,
+                "failureRate": 1,
+                "batteryAh": 45,
+                "fuelTankGallons": 16.6,
+                "fuelLiters": 62.83783561440001,
+                "fuelMpg": 21.202942201826623,
+                "fuelIdleGallonsPerHour": 0.25,
+                "fuelConsumptionScale": 1,
+                "fuelPowerLoadScale": 1.108689699750915,
+                "fuelDoorSide": "right",
+                "boostBar": 0,
+                "components": {
+                  "ignition": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 90
+                  },
+                  "pistons": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 300
+                  },
+                  "bearings": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 280
+                  },
+                  "radiator": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 160
+                  },
+                  "thermostat": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "waterPump": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 120
+                  },
+                  "fans": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 70
+                  },
+                  "oilPump": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 140
+                  },
+                  "oilSeals": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 70
+                  },
+                  "alternator": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 160
+                  },
+                  "battery": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "starter": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "wiring": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "ecu": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 200
+                  },
+                  "fuelTank": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 150
+                  },
+                  "fuelPump": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "turbo": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 260
+                  },
+                  "clutch": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 180
+                  },
+                  "gearbox": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 320
+                  },
+                  "differential": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 220
+                  },
+                  "axles": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 180
+                  },
+                  "panels": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "panel_left": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "panel_right": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "panel_rear": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "lights": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "tire_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "tire_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "tire_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "tire_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  }
+                }
+              },
+              "seed": "mechanical",
+              "tick": 45945,
+              "remainder": 0.016666666666666666,
+              "components": {
+                "ignition": {
+                  "damage": 14.86043999999978,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pistons": {
+                  "damage": 14.86043999999978,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "bearings": {
+                  "damage": 14.86043999999978,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "radiator": {
+                  "damage": 7.607991994015165,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "thermostat": {
+                  "damage": 14.86043999999978,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "waterPump": {
+                  "damage": 14.86043999999978,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "fans": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "oilPump": {
+                  "damage": 14.86043999999978,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "oilSeals": {
+                  "damage": 14.86043999999978,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alternator": {
+                  "damage": 14.86043999999978,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "battery": {
+                  "damage": 14.86043999999978,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "starter": {
+                  "damage": 14.86043999999978,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "wiring": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "ecu": {
+                  "damage": 14.86043999999978,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "fuelTank": {
+                  "damage": 16.479472536184478,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "fuelPump": {
+                  "damage": 14.86043999999978,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "turbo": {
+                  "damage": 14.86043999999978,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "clutch": {
+                  "damage": 5.549888351671034,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "gearbox": {
+                  "damage": 3.5999999999999996,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "differential": {
+                  "damage": 3.5999999999999996,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "axles": {
+                  "damage": 3.5999999999999996,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "panels": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "panel_left": {
+                  "damage": 6.400000000000003,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "panel_right": {
+                  "damage": 16.73897915154238,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "panel_rear": {
+                  "damage": 16.479472536184478,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "lights": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                }
+              },
+              "observedDamage": {
+                "ignition": 14.86043999999978,
+                "pistons": 14.86043999999978,
+                "bearings": 14.86043999999978,
+                "radiator": 0,
+                "thermostat": 14.86043999999978,
+                "waterPump": 14.86043999999978,
+                "fans": 0,
+                "oilPump": 14.86043999999978,
+                "oilSeals": 14.86043999999978,
+                "alternator": 14.86043999999978,
+                "battery": 14.86043999999978,
+                "starter": 14.86043999999978,
+                "wiring": 0,
+                "ecu": 14.86043999999978,
+                "fuelTank": 16.479472536184478,
+                "fuelPump": 14.86043999999978,
+                "turbo": 14.86043999999978,
+                "clutch": 3.5999999999999996,
+                "gearbox": 3.5999999999999996,
+                "differential": 3.5999999999999996,
+                "axles": 3.5999999999999996,
+                "panels": 0,
+                "panel_left": 6.400000000000003,
+                "panel_right": 16.73897915154238,
+                "panel_rear": 16.479472536184478,
+                "lights": 0,
+                "tire_fl": 0,
+                "damper_fl": 0,
+                "spring_fl": 0,
+                "alignment_fl": 0,
+                "pads_fl": 0,
+                "hydraulics_fl": 0,
+                "tire_fr": 0,
+                "damper_fr": 0,
+                "spring_fr": 0,
+                "alignment_fr": 0,
+                "pads_fr": 0,
+                "hydraulics_fr": 0,
+                "tire_rl": 0,
+                "damper_rl": 0,
+                "spring_rl": 0,
+                "alignment_rl": 0,
+                "pads_rl": 0,
+                "hydraulics_rl": 0,
+                "tire_rr": 0,
+                "damper_rr": 0,
+                "spring_rr": 0,
+                "alignment_rr": 0,
+                "pads_rr": 0,
+                "hydraulics_rr": 0
+              },
+              "coolant": 1,
+              "oil": 1,
+              "fuel": 0.7386875731747128,
+              "charge": 0.9999124097646772,
+              "coolantTemperatureC": 88.31867882828548,
+              "oilTemperatureC": 88.81504490292764,
+              "voltage": 12.059842334123847,
+              "oilPressureBar": 1.2975495652536326,
+              "fuelPressureBar": 2.643349440000005,
+              "boostBar": 0,
+              "headlights": true,
+              "highBeams": false,
+              "auxLights": true,
+              "engineRunning": true,
+              "misfireUntil": 0,
+              "lostGears": [],
+              "tires": {
+                "fl": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 31.875617,
+                  "temperatureC": 19.275087,
+                  "tread": 0.9772419999999999,
+                  "brakeTemperatureC": 27.437476197308715
+                },
+                "fr": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 31.874857,
+                  "temperatureC": 19.480439,
+                  "tread": 0.986684,
+                  "brakeTemperatureC": 31.71132629341483
+                },
+                "rl": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 31.86672,
+                  "temperatureC": 19.345919,
+                  "tread": 0.988799,
+                  "brakeTemperatureC": 15.827748830162252
+                },
+                "rr": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 31.867411,
+                  "temperatureC": 18.92548,
+                  "tread": 0.994194,
+                  "brakeTemperatureC": 19.646816497997886
+                }
+              },
+              "effects": {
+                "torque": 1,
+                "drive": 1,
+                "brakes": {
+                  "fl": 1,
+                  "fr": 1,
+                  "rl": 1,
+                  "rr": 1
+                },
+                "pull": 0,
+                "lights": 0.8742406668925276,
+                "instruments": 1
+              },
+              "warnings": [],
+              "pendingImpact": 0,
+              "batteryCurrentA": 0,
+              "fuelLitersRemaining": 46.41752829355268
+            }
+          },
+          "installed": {
+            "turbo": "sport-turbo",
+            "ecu": "adjustable-ecu",
+            "tire-pressure": "adjustable-tire-pressure",
+            "weight": "lightweight-panels",
+            "transmission": "adjustable-gearbox",
+            "suspension": "adjustable-suspension",
+            "tires": "tarmac-tires"
+          },
+          "tune": {
+            "pressure.fl": 33,
+            "pressure.fr": 33,
+            "pressure.rl": 33,
+            "pressure.rr": 33,
+            "torqueScale": 1,
+            "rideHeightFront": 0.25,
+            "rideHeightRear": 0.17,
+            "springFront": 1,
+            "springRear": 1,
+            "antiRollFront": 0.78,
+            "bumpFront": 1,
+            "reboundFront": 1,
+            "bumpRear": 1,
+            "reboundRear": 1,
+            "antiRollRear": 0.83
+          }
+        },
+        "CT-86": {
+          "condition": {
+            "damage": {
+              "panels": {
+                "front": 1.4465980310528868,
+                "left": 39.800000000000026,
+                "right": 2.8000000000000003,
+                "rear": 26.82307383697235
+              },
+              "engine": 0,
+              "transmission": 0,
+              "brakes": {
+                "fl": 0,
+                "fr": 0,
+                "rl": 0,
+                "rr": 0
+              },
+              "suspension": {
+                "fl": 0,
+                "fr": 0,
+                "rl": 0,
+                "rr": 0
+              },
+              "suspensionPull": 0,
+              "tires": {
+                "fl": 0,
+                "fr": 0,
+                "rl": 0,
+                "rr": 0
+              }
+            },
+            "mechanical": {
+              "version": 1,
+              "config": {
+                "enabled": true,
+                "timeScale": 8,
+                "failureRate": 1,
+                "batteryAh": 45,
+                "fuelTankGallons": 12.680258513191124,
+                "fuelLiters": 48,
+                "fuelMpg": 30.61839880662008,
+                "fuelIdleGallonsPerHour": 0.25,
+                "fuelConsumptionScale": 1,
+                "fuelPowerLoadScale": 1.111471810696219,
+                "fuelDoorSide": "left",
+                "boostBar": 0,
+                "components": {
+                  "ignition": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 90
+                  },
+                  "pistons": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 300
+                  },
+                  "bearings": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 280
+                  },
+                  "radiator": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 160
+                  },
+                  "thermostat": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "waterPump": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 120
+                  },
+                  "fans": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 70
+                  },
+                  "oilPump": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 140
+                  },
+                  "oilSeals": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 70
+                  },
+                  "alternator": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 160
+                  },
+                  "battery": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "starter": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "wiring": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "ecu": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 200
+                  },
+                  "fuelTank": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 150
+                  },
+                  "fuelPump": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "turbo": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 260
+                  },
+                  "clutch": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 180
+                  },
+                  "gearbox": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 320
+                  },
+                  "differential": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 220
+                  },
+                  "axles": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 180
+                  },
+                  "panels": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "panel_left": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "panel_right": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "panel_rear": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "lights": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "tire_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "tire_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "tire_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "tire_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  }
+                }
+              },
+              "seed": "mechanical",
+              "tick": 3619,
+              "remainder": 0.05833333333333333,
+              "components": {
+                "ignition": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pistons": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "bearings": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "radiator": {
+                  "damage": 1.4465980310528868,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "thermostat": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "waterPump": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "fans": {
+                  "damage": 1.4465980310528868,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "oilPump": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "oilSeals": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alternator": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "battery": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "starter": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "wiring": {
+                  "damage": 1.4465980310528868,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "ecu": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "fuelTank": {
+                  "damage": 26.82307383697235,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": "Worn"
+                },
+                "fuelPump": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "turbo": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "clutch": {
+                  "damage": 0.14689630690299046,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "gearbox": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "differential": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "axles": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "panels": {
+                  "damage": 1.4465980310528868,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "panel_left": {
+                  "damage": 39.800000000000026,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": "Worn"
+                },
+                "panel_right": {
+                  "damage": 2.8000000000000003,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "panel_rear": {
+                  "damage": 26.82307383697235,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": "Worn"
+                },
+                "lights": {
+                  "damage": 1.4465980310528868,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                }
+              },
+              "observedDamage": {
+                "ignition": 0,
+                "pistons": 0,
+                "bearings": 0,
+                "radiator": 1.4465980310528868,
+                "thermostat": 0,
+                "waterPump": 0,
+                "fans": 1.4465980310528868,
+                "oilPump": 0,
+                "oilSeals": 0,
+                "alternator": 0,
+                "battery": 0,
+                "starter": 0,
+                "wiring": 1.4465980310528868,
+                "ecu": 0,
+                "fuelTank": 26.82307383697235,
+                "fuelPump": 0,
+                "turbo": 0,
+                "clutch": 0,
+                "gearbox": 0,
+                "differential": 0,
+                "axles": 0,
+                "panels": 1.4465980310528868,
+                "panel_left": 39.800000000000026,
+                "panel_right": 2.8000000000000003,
+                "panel_rear": 26.82307383697235,
+                "lights": 1.4465980310528868,
+                "tire_fl": 0,
+                "damper_fl": 0,
+                "spring_fl": 0,
+                "alignment_fl": 0,
+                "pads_fl": 0,
+                "hydraulics_fl": 0,
+                "tire_fr": 0,
+                "damper_fr": 0,
+                "spring_fr": 0,
+                "alignment_fr": 0,
+                "pads_fr": 0,
+                "hydraulics_fr": 0,
+                "tire_rl": 0,
+                "damper_rl": 0,
+                "spring_rl": 0,
+                "alignment_rl": 0,
+                "pads_rl": 0,
+                "hydraulics_rl": 0,
+                "tire_rr": 0,
+                "damper_rr": 0,
+                "spring_rr": 0,
+                "alignment_rr": 0,
+                "pads_rr": 0,
+                "hydraulics_rr": 0
+              },
+              "coolant": 1,
+              "oil": 1,
+              "fuel": 0.9840301504364614,
+              "charge": 1,
+              "coolantTemperatureC": 88.83401541272298,
+              "oilTemperatureC": 95.23303087495223,
+              "voltage": 14.2,
+              "oilPressureBar": 4.293902265,
+              "fuelPressureBar": 3,
+              "boostBar": 0,
+              "headlights": true,
+              "highBeams": false,
+              "auxLights": false,
+              "engineRunning": true,
+              "misfireUntil": 0,
+              "lostGears": [],
+              "tires": {
+                "fl": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 37.584504,
+                  "temperatureC": 102.602769,
+                  "tread": 0.998394,
+                  "brakeTemperatureC": 52.73252644992548
+                },
+                "fr": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 36.943009,
+                  "temperatureC": 95.525443,
+                  "tread": 0.998868,
+                  "brakeTemperatureC": 40.951669149410584
+                },
+                "rl": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 35.748396,
+                  "temperatureC": 91.204194,
+                  "tread": 0.999174,
+                  "brakeTemperatureC": 26.195442882061947
+                },
+                "rr": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 35.198166,
+                  "temperatureC": 85.069916,
+                  "tread": 0.999285,
+                  "brakeTemperatureC": 23.8040184683956
+                }
+              },
+              "effects": {
+                "torque": 1,
+                "drive": 1,
+                "brakes": {
+                  "fl": 1,
+                  "fr": 1,
+                  "rl": 1,
+                  "rr": 1
+                },
+                "pull": 0,
+                "lights": 0.9884272157515769,
+                "instruments": 1
+              },
+              "warnings": [],
+              "pendingImpact": 0,
+              "batteryCurrentA": 0,
+              "fuelLitersRemaining": 47.23344722095015
+            }
+          },
+          "installed": {
+            "tires": "tarmac-tires",
+            "turbo": "sport-turbo",
+            "ecu": "adjustable-ecu",
+            "suspension": "adjustable-suspension",
+            "transmission": "adjustable-gearbox"
+          },
+          "tune": {}
+        },
+        "PZ-24": {
+          "condition": {
+            "damage": {
+              "panels": {
+                "front": 0,
+                "left": 0,
+                "right": 0,
+                "rear": 0
+              },
+              "engine": 0,
+              "transmission": 0,
+              "brakes": {
+                "fl": 0,
+                "fr": 0,
+                "rl": 0,
+                "rr": 0
+              },
+              "suspension": {
+                "fl": 0,
+                "fr": 0,
+                "rl": 0,
+                "rr": 0
+              },
+              "suspensionPull": 0,
+              "tires": {
+                "fl": 0,
+                "fr": 0,
+                "rl": 0,
+                "rr": 0
+              }
+            },
+            "mechanical": {
+              "version": 1,
+              "config": {
+                "enabled": true,
+                "timeScale": 8,
+                "failureRate": 1,
+                "batteryAh": 45,
+                "fuelTankGallons": 15.6,
+                "fuelLiters": 59.052423830399995,
+                "fuelMpg": 19,
+                "fuelIdleGallonsPerHour": 0.25,
+                "fuelConsumptionScale": 1,
+                "fuelPowerLoadScale": 1,
+                "fuelDoorSide": "right",
+                "boostBar": 0,
+                "components": {
+                  "ignition": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 90
+                  },
+                  "pistons": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 300
+                  },
+                  "bearings": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 280
+                  },
+                  "radiator": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 160
+                  },
+                  "thermostat": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "waterPump": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 120
+                  },
+                  "fans": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 70
+                  },
+                  "oilPump": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 140
+                  },
+                  "oilSeals": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 70
+                  },
+                  "alternator": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 160
+                  },
+                  "battery": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "starter": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "wiring": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "ecu": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 200
+                  },
+                  "fuelTank": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 150
+                  },
+                  "fuelPump": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "turbo": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 260
+                  },
+                  "clutch": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 180
+                  },
+                  "gearbox": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 320
+                  },
+                  "differential": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 220
+                  },
+                  "axles": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 180
+                  },
+                  "panels": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "panel_left": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "panel_right": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "panel_rear": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "lights": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "tire_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "tire_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "tire_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "tire_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  }
+                }
+              },
+              "seed": "mechanical",
+              "tick": 852,
+              "remainder": 0,
+              "components": {
+                "ignition": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pistons": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "bearings": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "radiator": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "thermostat": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "waterPump": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "fans": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "oilPump": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "oilSeals": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alternator": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "battery": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "starter": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "wiring": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "ecu": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "fuelTank": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "fuelPump": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "turbo": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "clutch": {
+                  "damage": 0.08778317315935336,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "gearbox": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "differential": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "axles": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "panels": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "panel_left": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "panel_right": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "panel_rear": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "lights": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                }
+              },
+              "observedDamage": {
+                "ignition": 0,
+                "pistons": 0,
+                "bearings": 0,
+                "radiator": 0,
+                "thermostat": 0,
+                "waterPump": 0,
+                "fans": 0,
+                "oilPump": 0,
+                "oilSeals": 0,
+                "alternator": 0,
+                "battery": 0,
+                "starter": 0,
+                "wiring": 0,
+                "ecu": 0,
+                "fuelTank": 0,
+                "fuelPump": 0,
+                "turbo": 0,
+                "clutch": 0,
+                "gearbox": 0,
+                "differential": 0,
+                "axles": 0,
+                "panels": 0,
+                "panel_left": 0,
+                "panel_right": 0,
+                "panel_rear": 0,
+                "lights": 0,
+                "tire_fl": 0,
+                "damper_fl": 0,
+                "spring_fl": 0,
+                "alignment_fl": 0,
+                "pads_fl": 0,
+                "hydraulics_fl": 0,
+                "tire_fr": 0,
+                "damper_fr": 0,
+                "spring_fr": 0,
+                "alignment_fr": 0,
+                "pads_fr": 0,
+                "hydraulics_fr": 0,
+                "tire_rl": 0,
+                "damper_rl": 0,
+                "spring_rl": 0,
+                "alignment_rl": 0,
+                "pads_rl": 0,
+                "hydraulics_rl": 0,
+                "tire_rr": 0,
+                "damper_rr": 0,
+                "spring_rr": 0,
+                "alignment_rr": 0,
+                "pads_rr": 0,
+                "hydraulics_rr": 0
+              },
+              "coolant": 1,
+              "oil": 1,
+              "fuel": 0.9963714791169193,
+              "charge": 1,
+              "coolantTemperatureC": 87.48567329201235,
+              "oilTemperatureC": 90.8749216976085,
+              "voltage": 14.2,
+              "oilPressureBar": 2.420307392222222,
+              "fuelPressureBar": 3,
+              "boostBar": 0,
+              "headlights": true,
+              "highBeams": false,
+              "auxLights": false,
+              "engineRunning": true,
+              "misfireUntil": 0,
+              "lostGears": [],
+              "tires": {
+                "fl": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 33.082525,
+                  "temperatureC": 91.852194,
+                  "tread": 0.999546,
+                  "brakeTemperatureC": 64.19713963502514
+                },
+                "fr": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 33.039425,
+                  "temperatureC": 90.76315,
+                  "tread": 0.999487,
+                  "brakeTemperatureC": 50.128634810058685
+                },
+                "rl": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 32.571351,
+                  "temperatureC": 65.882461,
+                  "tread": 0.999992,
+                  "brakeTemperatureC": 35.899364735537254
+                },
+                "rr": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 32.528065,
+                  "temperatureC": 65.828512,
+                  "tread": 1,
+                  "brakeTemperatureC": 32.33718621965738
+                }
+              },
+              "effects": {
+                "torque": 1,
+                "drive": 1,
+                "brakes": {
+                  "fl": 1,
+                  "fr": 1,
+                  "rl": 1,
+                  "rr": 1
+                },
+                "pull": 0,
+                "lights": 1,
+                "instruments": 1
+              },
+              "warnings": [],
+              "pendingImpact": 0,
+              "batteryCurrentA": 0,
+              "fuelLitersRemaining": 58.838150877334854
+            }
+          },
+          "installed": {},
+          "tune": {}
+        },
+        "BUSE-019": {
+          "condition": {
+            "damage": {
+              "panels": {
+                "front": 0,
+                "left": 0,
+                "right": 1.4,
+                "rear": 0
+              },
+              "engine": 0,
+              "transmission": 0,
+              "brakes": {
+                "fl": 0,
+                "fr": 0,
+                "rl": 0,
+                "rr": 0
+              },
+              "suspension": {
+                "fl": 0,
+                "fr": 0,
+                "rl": 0,
+                "rr": 0
+              },
+              "suspensionPull": 0,
+              "tires": {
+                "fl": 0,
+                "fr": 0,
+                "rl": 0,
+                "rr": 0
+              }
+            },
+            "mechanical": {
+              "version": 1,
+              "config": {
+                "enabled": true,
+                "timeScale": 8,
+                "failureRate": 1,
+                "batteryAh": 45,
+                "fuelTankGallons": 11.887742356116679,
+                "fuelLiters": 45,
+                "fuelMpg": 39.9,
+                "fuelIdleGallonsPerHour": 0.25,
+                "fuelConsumptionScale": 1,
+                "fuelPowerLoadScale": 1,
+                "fuelDoorSide": "right",
+                "boostBar": 0,
+                "components": {
+                  "ignition": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 90
+                  },
+                  "pistons": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 300
+                  },
+                  "bearings": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 280
+                  },
+                  "radiator": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 160
+                  },
+                  "thermostat": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "waterPump": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 120
+                  },
+                  "fans": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 70
+                  },
+                  "oilPump": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 140
+                  },
+                  "oilSeals": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 70
+                  },
+                  "alternator": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 160
+                  },
+                  "battery": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "starter": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "wiring": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "ecu": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 200
+                  },
+                  "fuelTank": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 150
+                  },
+                  "fuelPump": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "turbo": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 260
+                  },
+                  "clutch": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 180
+                  },
+                  "gearbox": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 320
+                  },
+                  "differential": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 220
+                  },
+                  "axles": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 180
+                  },
+                  "panels": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "panel_left": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "panel_right": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "panel_rear": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "lights": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "tire_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_fl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "tire_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_fr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "tire_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_rl": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "tire_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 80
+                  },
+                  "damper_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 110
+                  },
+                  "spring_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  },
+                  "alignment_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 45
+                  },
+                  "pads_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 60
+                  },
+                  "hydraulics_rr": {
+                    "durability": 1,
+                    "requiredPart": "",
+                    "repairCost": 100
+                  }
+                }
+              },
+              "seed": "mechanical",
+              "tick": 3570,
+              "remainder": 0.049999999999999996,
+              "components": {
+                "ignition": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pistons": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "bearings": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "radiator": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "thermostat": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "waterPump": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "fans": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "oilPump": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "oilSeals": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alternator": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "battery": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "starter": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "wiring": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "ecu": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "fuelTank": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "fuelPump": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "turbo": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "clutch": {
+                  "damage": 0.09950583024619052,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "gearbox": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "differential": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "axles": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "panels": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "panel_left": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "panel_right": {
+                  "damage": 1.4,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "panel_rear": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "lights": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_fl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_fr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_rl": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "tire_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "damper_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "spring_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "alignment_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "pads_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                },
+                "hydraulics_rr": {
+                  "damage": 0,
+                  "failed": false,
+                  "hazard": 0,
+                  "events": 0,
+                  "malfunctionUntil": 0,
+                  "symptom": ""
+                }
+              },
+              "observedDamage": {
+                "ignition": 0,
+                "pistons": 0,
+                "bearings": 0,
+                "radiator": 0,
+                "thermostat": 0,
+                "waterPump": 0,
+                "fans": 0,
+                "oilPump": 0,
+                "oilSeals": 0,
+                "alternator": 0,
+                "battery": 0,
+                "starter": 0,
+                "wiring": 0,
+                "ecu": 0,
+                "fuelTank": 0,
+                "fuelPump": 0,
+                "turbo": 0,
+                "clutch": 0,
+                "gearbox": 0,
+                "differential": 0,
+                "axles": 0,
+                "panels": 0,
+                "panel_left": 0,
+                "panel_right": 1.4,
+                "panel_rear": 0,
+                "lights": 0,
+                "tire_fl": 0,
+                "damper_fl": 0,
+                "spring_fl": 0,
+                "alignment_fl": 0,
+                "pads_fl": 0,
+                "hydraulics_fl": 0,
+                "tire_fr": 0,
+                "damper_fr": 0,
+                "spring_fr": 0,
+                "alignment_fr": 0,
+                "pads_fr": 0,
+                "hydraulics_fr": 0,
+                "tire_rl": 0,
+                "damper_rl": 0,
+                "spring_rl": 0,
+                "alignment_rl": 0,
+                "pads_rl": 0,
+                "hydraulics_rl": 0,
+                "tire_rr": 0,
+                "damper_rr": 0,
+                "spring_rr": 0,
+                "alignment_rr": 0,
+                "pads_rr": 0,
+                "hydraulics_rr": 0
+              },
+              "coolant": 1,
+              "oil": 1,
+              "fuel": 0.9896584749050144,
+              "charge": 1,
+              "coolantTemperatureC": 89.4298950708305,
+              "oilTemperatureC": 92.31337756312979,
+              "voltage": 14.2,
+              "oilPressureBar": 3.43048683,
+              "fuelPressureBar": 3,
+              "boostBar": 0,
+              "headlights": false,
+              "highBeams": false,
+              "auxLights": true,
+              "engineRunning": true,
+              "misfireUntil": 0,
+              "lostGears": [],
+              "tires": {
+                "fl": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 31.95093,
+                  "temperatureC": 41.449872,
+                  "tread": 0.999668,
+                  "brakeTemperatureC": 68.50966969076093
+                },
+                "fr": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 31.966543,
+                  "temperatureC": 46.925956,
+                  "tread": 0.999979,
+                  "brakeTemperatureC": 75.90195487582025
+                },
+                "rl": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 31.93254,
+                  "temperatureC": 37.975862,
+                  "tread": 0.999796,
+                  "brakeTemperatureC": 28.446915764829367
+                },
+                "rr": {
+                  "pressureRatio": 1,
+                  "pressurePsi": 31.940336,
+                  "temperatureC": 40.467839,
+                  "tread": 1,
+                  "brakeTemperatureC": 32.31744706310377
+                }
+              },
+              "effects": {
+                "torque": 1,
+                "drive": 1,
+                "brakes": {
+                  "fl": 1,
+                  "fr": 1,
+                  "rl": 1,
+                  "rr": 1
+                },
+                "pull": 0,
+                "lights": 1,
+                "instruments": 1
+              },
+              "warnings": [],
+              "pendingImpact": 0,
+              "batteryCurrentA": 0,
+              "fuelLitersRemaining": 44.53463137072565
+            }
+          },
+          "installed": {},
+          "tune": {}
+        }
+      }
+    },
+    "version": 2,
+    "collected": [],
+    "keys": {},
+    "weapons": {},
+    "abilities": {},
+    "bags": {
+      "items": {
+        "sport-turbo": 2,
+        "adjustable-ecu": 2,
+        "adjustable-tire-pressure": 1,
+        "lightweight-panels": 1,
+        "adjustable-gearbox": 2,
+        "adjustable-suspension": 2,
+        "rally-tires": 1,
+        "offroad-tires": 1,
+        "snow-tires": 1,
+        "street-tires": 1,
+        "drift-tires": 1,
+        "rain-tires": 1,
+        "stock-tires": 1,
+        "tarmac-tires": 2
+      },
+      "radio": {
+        "f8375d61-d3a4-4245-92c4-07c24292c97f": 1,
+        "c2dddd12-98b9-4d68-a59d-6e2832fb1c07": 1,
+        "ab0a13e5-3d04-4345-8c3e-46bf927e1085": 1,
+        "c64446af-e852-4297-96a4-ae89f2b9efe6": 1,
+        "289ec51f-dce8-4637-bb02-d1a6a1fa51e1": 1,
+        "7ced7f92-2452-41d6-b778-6c6d003e3341": 1,
+        "1ee37aa5-068d-482d-ad1c-22caeea28bd5": 1,
+        "052dbcc3-4072-4b61-8921-6f668e435ab8": 1,
+        "067d9317-0acc-4360-bc1e-dd6fdafaa9f1": 1,
+        "89c4ba41-b49f-4d04-b29c-73ec9d0fac55": 1,
+        "181f7d93-5b04-4765-815c-667b6740a9f9": 1
+      }
+    },
+    "usable": {},
+    "contentNames": {
+      "sport-turbo": "Sport Turbo",
+      "adjustable-ecu": "Adjustable ECU",
+      "adjustable-tire-pressure": "Tire Pressure Kit",
+      "lightweight-panels": "Lightweight Panels",
+      "adjustable-gearbox": "Adjustable Gearbox",
+      "adjustable-suspension": "Adjustable Suspension",
+      "rally-tires": "Rally Tires",
+      "offroad-tires": "Offroad Tires",
+      "snow-tires": "Snow Tires",
+      "street-tires": "Street Tires",
+      "drift-tires": "Drift Tires",
+      "rain-tires": "Rain Tires",
+      "stock-tires": "Stock Tires",
+      "tarmac-tires": "Tarmac Race Tires"
+    },
+    "inventory": {
+      "sport-turbo": 2,
+      "adjustable-ecu": 2,
+      "adjustable-tire-pressure": 1,
+      "lightweight-panels": 1,
+      "adjustable-gearbox": 2,
+      "adjustable-suspension": 2,
+      "rally-tires": 1,
+      "offroad-tires": 1,
+      "snow-tires": 1,
+      "street-tires": 1,
+      "drift-tires": 1,
+      "rain-tires": 1,
+      "stock-tires": 1,
+      "tarmac-tires": 2
+    },
+    "devices": {},
+    "unlocks": {},
+    "modifiers": [],
+    "maxHealthBonus": 0,
+    "mapReveals": [],
+    "armor": 0,
+    "stats": {
+      "credits": 987600
+    }
+  }
+}

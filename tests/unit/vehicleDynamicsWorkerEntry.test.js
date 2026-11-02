@@ -96,3 +96,67 @@ test('worker entry initializes all active dynamics runners and accepts only pack
   assert.equal(messages.at(-1).message.resetReason, 'automatic-upside-down');
   assert.equal(messages.at(-1).message.buffer instanceof ArrayBuffer, true);
 });
+
+test('worker entry can add and remove a debug opponent without reinitializing the race',()=>{
+ const messages=[];
+ const vehicles=new Map();
+ const authority={vehicles,start(){},stop(){},recycleSnapshotBuffer(){},
+  addVehicle(id,runner,entry){vehicles.set(id,{runner,...entry});},
+  removeVehicle(id){vehicles.delete(id);}};
+ let definitions=0;
+ const handler=createVehicleDynamicsWorkerMessageHandler({scope:{postMessage:m=>messages.push(m)},
+  createRunner:definition=>{definitions++;return {definition,advance(){}};},
+  createAuthority:({runners})=>{for(const r of runners)vehicles.set(r.id,r);return authority;}});
+ handler({type:'initialize',protocolVersion:VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION,payload:{vehicles:[{id:'player',player:true}]}});
+ const player=vehicles.get('player');
+ handler({type:'addVehicle',definition:{id:'debug-1',initialState:{worldX:50}}});
+ assert.equal(vehicles.size,2);
+ assert.equal(vehicles.get('debug-1').runner.definition.initialState.worldX,50);
+ handler({type:'removeVehicle',vehicleId:'debug-1'});
+ assert.equal(vehicles.size,1);
+ assert.strictEqual(vehicles.get('player'),player);
+ assert.equal(definitions,2);
+ assert.equal(messages.filter(m=>m.type==='error').length,0);
+});
+
+test('worker pause and resume stop and restart the authority clock', () => {
+ const calls = [], messages = [];
+ const handler = createVehicleDynamicsWorkerMessageHandler({
+  scope: { postMessage: m => messages.push(m) },
+  createRunner: definition => ({ definition }),
+  createAuthority: () => ({ start: () => calls.push('start'), stop: () => calls.push('stop'),
+    recycleSnapshotBuffer() {} })
+ });
+ handler({ type: 'initialize', protocolVersion: VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION,
+   payload: { vehicle: { id: 'player', config: {} } } });
+ handler({ type: 'setPaused', paused: true });
+ handler({ type: 'setPaused', paused: false });
+ assert.deepEqual(calls, ['start', 'stop', 'start']);
+ assert.deepEqual(messages.filter(m => m.type === 'pauseState').map(m => m.paused), [true, false]);
+});
+
+
+test('worker shares immutable collider preparation but keeps per-vehicle output and resets the cache', () => {
+ const messages = []; let entries;
+ const handler = createVehicleDynamicsWorkerMessageHandler({
+  scope: { postMessage: m => messages.push(m) },
+  createRunner: definition => ({ definition }),
+  createAuthority: ({ runners }) => { entries = runners; return {start() {}, stop() {}, recycleSnapshotBuffer() {}}; }
+ });
+ const shared = {surfaceSampler: {packed: true}, staticColliderDefinitions: [
+  {id: 'wall', type: 'box', center: {x: 0, y: 0, z: 0}, halfExtents: {x: 1, y: 1, z: 1}}
+ ]};
+ const initialize = () => handler({type: 'initialize', protocolVersion: VEHICLE_DYNAMICS_WORKER_PROTOCOL_VERSION,
+  payload: {vehicles: [{id: 'player', player: true, physicsWorld: shared}, {id: 'ai-1'},
+   {id: 'ai-2', physicsWorld: {...shared, staticColliderDefinitions: [...shared.staticColliderDefinitions]}}]}});
+ const output = entry => entry.environmentController({reuseContactGeometry: true});
+ initialize();
+ assert.equal(messages.filter(m => m.type === 'error').length, 0);
+ const a = output(entries[0]), b = output(entries[1]), c = output(entries[2]);
+ assert.ok(a.staticColliderWorld);
+ assert.notStrictEqual(a, b);
+ assert.strictEqual(a.staticColliderWorld, b.staticColliderWorld);
+ assert.notStrictEqual(a.staticColliderWorld, c.staticColliderWorld);
+ initialize();
+ assert.notStrictEqual(a.staticColliderWorld, output(entries[0]).staticColliderWorld);
+});

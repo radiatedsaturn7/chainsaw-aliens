@@ -178,3 +178,28 @@ test('turning player selects artwork and transforms from the rendered heading at
  }
  assert.equal(JSON.stringify(car), before, 'turning does not alter saved settings');
 });
+
+test('cached car preserves full-render anchor and ground depth without unused tilt and shadow projections', () => {
+ const e=editor(), car=structuredClone(e.selectedCar);car.art={body:'body'};
+ const bounds={x:0,y:0,w:640,h:480};
+ let projections=0,layers;
+ e.projectRaceWorldPointToActiveThreeCamera=p=>{projections++;return {...p,visible:true,screenX:320+p.x*8,screenY:240-p.elevation*10,cameraZ:30,threeProjected:true};};
+ e.getRaceArtSpriteCanvas=()=>({width:16,height:16});
+ e.getRaceShadowGroundSurfacePoint=p=>({...p,elevation:2,normal:{x:0,y:1,z:0}});
+ e.drawRaceGeometricDebugOverlay=()=>{};
+ e.drawRaceCarBillboardLayers=(_ctx,opts)=>{layers=opts;};
+ const options={car,projected:{x:2,z:30,elevation:2,visible:true,screenX:336,screenY:220,cameraZ:30,threeProjected:true},yaw:.3,pitchRad:.2,rollRad:.1,camera:{}};
+ const full={drawImage(){}};
+ e.drawRaceProjectedCarSprite(full,bounds,options);
+ const fullCount=projections;
+ const frame={canvas:{},emission:{},x:-.5,y:-.7,width:1.2,height:.8};
+ const draws=[],emissions=[];
+ const cached={drawImage(...a){draws.push(a);},__raceCopyEmission(...a){emissions.push(a);}};
+ projections=0;
+ e.drawRaceProjectedCarSprite(cached,bounds,{...options,restingFrame:frame});
+ const rect=[layers.bodyAnchorX+frame.x*layers.bodyBaseWidth,layers.bodyAnchorY+frame.y*layers.bodyBaseWidth,frame.width*layers.bodyBaseWidth,frame.height*layers.bodyBaseWidth];
+ assert.deepEqual(draws,[[frame.canvas,...rect]]);
+ assert.deepEqual(emissions,[[frame.emission,...rect]]);
+ assert.deepEqual(cached.__raceSpriteGround,full.__raceSpriteGround,'occlusion ground is retained');
+ assert.equal(projections,fullCount-2,'cached artwork omits only unused body-up and shadow projection');
+});
