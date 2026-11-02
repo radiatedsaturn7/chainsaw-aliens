@@ -1,4 +1,4 @@
-import { RaceSimulationClock } from './RaceFrameBudget.js';
+import { advanceRaceSimulationClock } from './RaceFrameBudget.js';
 import {updateGlassWeather} from './GlassWeather.js';
 import {prepareRaceSceneryTriggers} from './simulation/DamageModel.js';
 import {advanceTurnSignals} from './TurnSignals.js';
@@ -44,6 +44,11 @@ import {
   resetWorkerTrackStateVisualPresentation
 } from './simulation/RaceVehicleDynamicsWorkerBridge.js';
 import { qualifyVehicleDynamicsWorkerMigration } from './simulation/VehicleDynamicsWorkerClient.js';
+import {
+  RACE_MATERIAL_OVERLAY_KEYS,
+  RACE_TIRE_OVERLAY_KEYS,
+  updateRaceEnvironmentRecord
+} from './RaceEnvironmentRecords.js';
 
 const RACE_TIRE_FOOTPRINT_OFFSETS = new Float64Array([
   -0.7, -0.42,
@@ -1954,10 +1959,7 @@ function advanceVehicleDynamicsAuthority(editor, {
       const surfaceGripScale = localBaseGrip / nominalBaseGrip
         * Number(trackSample?.effectiveGripMultiplier ?? 1);
       const material = materialByWheel[wheelId];
-      for (const key in material) delete material[key];
-      if (cell) {
-        for (const key in cell) material[key] = cell[key];
-      }
+      updateRaceEnvironmentRecord(material, cell, RACE_MATERIAL_OVERLAY_KEYS);
       material.baseSurfaceId = baseSurfaceId;
       material.surfaceId = contact.surfaceId || wheelSurfaceState.surfaceByWheel?.[wheelId];
       material.effectiveGrip = trackSample?.effectiveGrip ?? contact.friction
@@ -1973,8 +1975,7 @@ function advanceVehicleDynamicsAuthority(editor, {
           / Math.max(0.2, Number(localTrackState.cell?.baseRollingResistance || 1))
         : 1;
       const tire = tireByWheel[wheelId];
-      for (const key in tire) delete tire[key];
-      for (const key in fixedTire) tire[key] = fixedTire[key];
+      updateRaceEnvironmentRecord(tire, fixedTire, RACE_TIRE_OVERLAY_KEYS);
       tire.temperatureF = state.tireState?.[wheelId]?.temperatureF ?? 70;
       tire.treadTemperatureC = state.tireState?.[wheelId]?.treadTemperatureC;
       tire.carcassTemperatureC = state.tireState?.[wheelId]?.carcassTemperatureC;
@@ -1987,9 +1988,8 @@ function advanceVehicleDynamicsAuthority(editor, {
       tire.rollingResistanceCoefficient = 0.012 * rollingMultiplier;
     }
     const brakeDamage = environmentScratch.brakeDamage;
-    for (const key in brakeDamage) delete brakeDamage[key];
     const sourceBrakeDamage = damage.brakes || {};
-    for (const key in sourceBrakeDamage) brakeDamage[key] = sourceBrakeDamage[key];
+    updateRaceEnvironmentRecord(brakeDamage, sourceBrakeDamage);
     let bodyDamage = 0;
     for (const key in panelDamage) bodyDamage = Math.max(bodyDamage, Number(panelDamage[key]) || 0);
     const callbackContext = environmentScratch.callbackContext;
@@ -2484,18 +2484,16 @@ export function updateRaceSimulation({
     : Math.abs(Number(editor.playtestSession.speedMps) || 0);
   tuning.absEnabled = editor.playtestSession.absEnabled !== false;
   tuning.tractionControlEnabled = editor.playtestSession.tractionControlEnabled !== false;
-  const clock = editor.playtestSession.frameSimulationClock ||= new RaceSimulationClock();
-  const wallSeconds = Number.isFinite(Number(dt)) ? Math.max(0, Number(dt)) : 0;
   // Staged countdown/rolling formation follows presentation and the music clock.
   // The bounded clock governs active racing, not how long the player waits for GO.
+  const wallSeconds = Number.isFinite(Number(dt)) ? Math.max(0, Number(dt)) : 0;
   const preStart = Number(editor.playtestSession.countdownRemainingMs || 0) > 1000;
   // An active worker advances independently of rendering. Do not slow race
   // timing on the main thread while its physics continues on the worker clock.
   const workerOwnsClock = Boolean(editor.vehicleDynamicsAuthority?.workerBridge);
-  if (preStart || workerOwnsClock) clock.resetDebt();
-  const seconds = preStart || workerOwnsClock || editor.playtestSession.debugFrameBudgetDisabled
-    ? wallSeconds : clock.advance(wallSeconds);
-  editor.playtestSession.frameAdmittedSeconds = seconds;
+  const seconds = advanceRaceSimulationClock(editor, dt, {
+    preStart, workerOwnsClock, bypass: editor.playtestSession.debugFrameBudgetDisabled
+  });
   advanceTurnSignals(editor.playtestSession, seconds, Number(editor.raceInput.steeringWheel || 0));
   const glassWeather=editor.getRaceWeatherState(editor.selectedRace,editor.playtestSession);
   updateGlassWeather(editor.playtestSession,seconds,{weather:glassWeather,wipers:car.art?.interior?.wipers,speedMps:editor.playtestSession.speedMps,temperatureC:editor.selectedRace?.weatherTemperatureC??(glassWeather.id==='snow'?-4:16),sheltered:editor.lastRaceRenderCamera?.cameraSafety?.tunnelConstrained===true});

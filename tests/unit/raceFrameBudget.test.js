@@ -95,6 +95,58 @@ test('live race bounds physics catch-up, advances one race clock and clears debt
   assert.ok(runner.stepIndex - pausedAt <= Math.ceil(runner.config.chassisHz / 60));
 });
 
+test('live race receives uncapped callback time but advances player and race by the same bounded delta', async () => {
+  const { default: RaceEditor } = await import('../../src/ui/RaceEditor.js');
+  const { FrameTiming } = await import('../../src/game/FrameTiming.js');
+  const game = {};
+  const editor = new RaceEditor(game, { mode: 'race' });
+  editor.selectedRace.scenery = []; editor.selectedRace.hazards = [];
+  editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false });
+  const session = editor.playtestSession;
+  Object.assign(session, { countdownRemainingMs: 0, startupFramePending: false,
+    preparing: false, running: true, launchLockMs: 0 });
+  if (session.raceIntro) session.raceIntro.active = false;
+  const timing = game.frameTiming = new FrameTiming(0);
+  timing.inUpdate = true;
+  timing.sample(0, session, true); editor.updatePlaytest(0);
+  timing.sample(1000 / 60, session, true); editor.updatePlaytest(timing.updateSeconds);
+  const runner = session.vehicleDynamicsRunner, before = runner.stepIndex, elapsed = session.elapsedMs;
+  timing.sample(1000 / 60 + 95, session, true); editor.updatePlaytest(timing.updateSeconds);
+  assert.equal(timing.updateSeconds, .033);
+  assert.ok(Math.abs(session.frameRawSeconds - .095) < 1e-10);
+  assert.ok(Math.abs(session.elapsedMs - elapsed - 1000 / 30) < 1e-6);
+  assert.ok(runner.stepIndex - before <= Math.ceil(runner.config.chassisHz / 30));
+  const clock = session.frameSimulationClock;
+  assert.ok(clock.debtSeconds > .06 && clock.debtSeconds < 1 / 15);
+  assert.ok(Math.abs(clock.rawSeconds - clock.admittedSeconds - clock.debtSeconds - clock.discardedSeconds) < 1e-10);
+});
+
+test('countdown without a music clock uses the presentation delta, including a long callback', async () => {
+  const { default: RaceEditor } = await import('../../src/ui/RaceEditor.js');
+  const { FrameTiming } = await import('../../src/game/FrameTiming.js');
+  const game = {};
+  const editor = new RaceEditor(game, { mode: 'race' });
+  editor.selectedRace.scenery = []; editor.selectedRace.hazards = [];
+  editor.startPlaytest(editor.selectedCar.id, { hydrateCars: false });
+  const session = editor.playtestSession;
+  Object.assign(session, { countdownRemainingMs: 4000, startupFramePending: false,
+    preparing: false, running: true, launchLockMs: 0, raceMusicPending: false,
+    raceMusicCountdownClock: false });
+  if (session.raceIntro) session.raceIntro.active = false;
+  assert.doesNotThrow(() => editor.updatePlaytest(1 / 60));
+  assert.ok(Math.abs(session.countdownRemainingMs - (4000 - 1000 / 60)) < 1e-8);
+  assert.equal(session.elapsedMs, 0);
+  const timing = game.frameTiming = new FrameTiming(0);
+  timing.inUpdate = true;
+  timing.sample(0, session, true); editor.updatePlaytest(0);
+  const remaining = session.countdownRemainingMs;
+  timing.sample(95, session, true);
+  assert.doesNotThrow(() => editor.updatePlaytest(timing.updateSeconds));
+  assert.equal(session.countdownRemainingMs, remaining - 33);
+  assert.equal(session.frameClockMode, 'countdown');
+  assert.equal(session.elapsedMs, 0);
+});
+
 test('active weather insertion retains canonical numeric order without parsing keys', async () => {
  const { TrackState } = await import('../../src/racing/trackState/TrackState.js');
  const { compareTrackStateCellKeys } = await import('../../src/racing/trackState/TrackStateMath.js');

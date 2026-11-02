@@ -219,6 +219,8 @@ export function advanceRaceAiDistantPhysics(editor, ai, {car, tuning, contactSta
 export function restoreRaceAiDetailedPhysics(editor, ai) {
   if(ai.simulationDetail!=='distant') return;
   ai.simulationDetail='full';
+  ai.distantContactState=null;
+  distantContactPoses.delete(ai);
   ai.cheapPhysicsHeld=false;ai.cheapHeldSeconds=0;ai.cheapHoldRetrySeconds=0;
   if(editor.playtestSession)editor.playtestSession.aiPhysicsPromotions=(editor.playtestSession.aiPhysicsPromotions||0)+1;
   if(editor.vehicleDynamicsAuthority?.workerBridge) return;

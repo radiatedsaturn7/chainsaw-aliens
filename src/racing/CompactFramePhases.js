@@ -19,6 +19,9 @@ export class CompactFramePhases {
     Object.defineProperty(row,'phases',{enumerable:true,configurable:true,get(){
       const result={};
       for(let i=0;i<values.length;i+=4)result[names[values[i]]]={inclusiveMs:values[i+1],selfMs:values[i+2],calls:values[i+3]};
+      // A stopped report and its JSON encoding read the same row. Materialize
+      // once, replacing the getter so summaries/exports do not rebuild it.
+      Object.defineProperty(row,'phases',{enumerable:true,configurable:true,writable:true,value:result});
       return result;
     }});
     return {cpu,bytes:values.byteLength,count:this.active.length};

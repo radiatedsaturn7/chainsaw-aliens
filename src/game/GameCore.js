@@ -2293,6 +2293,8 @@ export default class Game {
   }
 
   exitRaceEditor() {
+    this.raceEditor?.disposeRaceEditorSessions?.('global-exit');
+    this.carEditor?.disposeRaceEditorSessions?.('global-exit');
     this.playtestActive = false;
     this.transitionTo('title', { forceCleanup: true });
   }

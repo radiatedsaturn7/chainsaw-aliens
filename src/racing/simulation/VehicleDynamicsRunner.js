@@ -954,6 +954,13 @@ export function createVehicleDynamicsConfig(config = {}) {
     maxCatchUpSteps: Math.max(1, Math.trunc(Number(config.maxCatchUpSteps) || 30)),
     telemetryLimit: Math.max(1, Math.trunc(Number(config.telemetryLimit) || 4096)),
     telemetryRetention,
+    // Retaining detailed reset samples is a diagnostic choice, independent of
+    // ordinary step telemetry. Keep legacy/custom validation callers compatible;
+    // normal realtime/high-fidelity races only opt in with incident capture or
+    // this explicit flag.
+    postResetDiagnosticsEnabled: config.postResetDiagnosticsEnabled
+      ?? (!qualityProfile || qualityProfile.incidentRecording === true
+        || config.physicsIncidentRecordingEnabled === true),
     physicsCostAccountingEnabled: config.physicsCostAccountingEnabled === true,
     inputTimelineLimit: Math.max(0, Math.trunc(Number(config.inputTimelineLimit) || 0)),
     massKg,
@@ -1198,6 +1205,7 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
   maxCatchUpSteps = 30,
   telemetryLimit = 4096,
   telemetryRetention = 'history',
+  postResetDiagnosticsEnabled = undefined,
   inputTimelineLimit = 0,
   physicsIncidentRecordingEnabled = false
 } = {}) {
@@ -1231,6 +1239,7 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
     maxCatchUpSteps,
     telemetryLimit,
     telemetryRetention,
+    postResetDiagnosticsEnabled,
     inputTimelineLimit,
     physicsIncidentRecordingEnabled,
     massKg,
@@ -2481,12 +2490,12 @@ export class VehicleDynamicsRunner {
     routeRecoveryCandidateOffset = 0,
     resetGeneration = null
   } = {}) {
-    const crashPose = {
+    const crashPose = this.config.postResetDiagnosticsEnabled ? {
       position: clone(this.state.position),
       orientation: clone(this.state.orientation),
       velocity: clone(this.state.velocity),
       angularVelocityWorld: clone(this.state.angularVelocityWorld)
-    };
+    } : null;
     const vehicleResetGeneration = Math.max(
       this.authoritativeResetSequence + 1,
       this.authoritativeResetAttemptSequence + 1,
@@ -2887,25 +2896,27 @@ export class VehicleDynamicsRunner {
     this.postResetImpactBaseline = this.impactHistory.length;
     this.postResetRecoveryBaseline = this.penetrationRecoveryState.history.length;
     this.diagnostics.postResetTelemetry = this.postResetTelemetry;
-    const resetIncident = {
-      resetGeneration: vehicleResetGeneration,
-      reason,
-      crashPose,
-      requestedResetPose: {
-        position: clone(nextState.position),
-        orientation: clone(nextState.orientation),
-        routeDistance: finiteNumber(nextState.routeDistance)
-      },
-      equilibrium: clone(equilibrium),
-      installedPose: {
-        position: clone(resetState.position),
-        orientation: clone(resetState.orientation)
-      },
-      first60FixedSteps: this.postResetTelemetry
-    };
-    this.resetIncidentHistory.push(resetIncident);
-    if (this.resetIncidentHistory.length > 16) this.resetIncidentHistory.shift();
-    this.diagnostics.latestResetIncident = resetIncident;
+    if (this.config.postResetDiagnosticsEnabled) {
+      const resetIncident = {
+        resetGeneration: vehicleResetGeneration,
+        reason,
+        crashPose,
+        requestedResetPose: {
+          position: clone(nextState.position),
+          orientation: clone(nextState.orientation),
+          routeDistance: finiteNumber(nextState.routeDistance)
+        },
+        equilibrium: clone(equilibrium),
+        installedPose: {
+          position: clone(resetState.position),
+          orientation: clone(resetState.orientation)
+        },
+        first60FixedSteps: this.postResetTelemetry
+      };
+      this.resetIncidentHistory.push(resetIncident);
+      if (this.resetIncidentHistory.length > 16) this.resetIncidentHistory.shift();
+      this.diagnostics.latestResetIncident = resetIncident;
+    }
     this.takeoffContactState = {
       initialized: false,
       frontGrounded: false,
@@ -6440,7 +6451,8 @@ export class VehicleDynamicsRunner {
     integration.terrainImpactEvent = terrainImpactEvent;
     integration.takeoff = this.takeoffContactState.activeTakeoff
       || this.takeoffHistory.at(-1) || null;
-    if (this.postResetTelemetry.length < 600 && this.postResetTelemetryGeneration > 0) {
+    if (this.config.postResetDiagnosticsEnabled
+      && this.postResetTelemetry.length < 600 && this.postResetTelemetryGeneration > 0) {
       const compressionByWheel = {};
       const loadByWheel = {};
       const unsprungVelocityByWheel = {};

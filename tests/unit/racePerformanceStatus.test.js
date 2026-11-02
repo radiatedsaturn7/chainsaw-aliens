@@ -6,6 +6,7 @@ test('status distinguishes recording, pending, confirmed, and failed',()=>{
  const capture={active:true,started:0,now:()=>23500,durationMs:60000};
  assert.match(racePerformanceStatus(capture).text,/REC 23s \/ 60s/);
  capture.active=false;capture.uploadState='uploading';assert.match(racePerformanceStatus(capture).text,/Uploading/);
+ capture.uploadState='queued';assert.match(racePerformanceStatus(capture).text,/when paused/);
  capture.uploadState='saved';assert.match(racePerformanceStatus(capture).text,/submitted/);
  capture.uploadState='failed';assert.match(racePerformanceStatus(capture).text,/failed/);
  assert.equal(racePerformanceStatus(null),null);
