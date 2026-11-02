@@ -1,5 +1,5 @@
-export async function seedRaceRuntimeFixtures(page) {
-  await page.evaluate(async () => {
+export async function seedRaceRuntimeFixtures(page, {straight = false} = {}) {
+  await page.evaluate(async ({straight}) => {
     const game = window.__game;
     const editor = game.raceEditor;
     const clone = (value) => JSON.parse(JSON.stringify(value));
@@ -25,6 +25,12 @@ export async function seedRaceRuntimeFixtures(page) {
     race.id = 'playwright-studio-sprint-2';
     race.name = 'Studio Sprint 2';
     race.laps = 1;
+    if(straight){
+      // Finish-flow contracts need a deterministic approach, not an AI handling test.
+      race.type='destination';
+      race.road.nodes=[{x:0,y:0,elevation:0,role:'start',locked:true},{x:0,y:740,elevation:0,role:'finish'}];
+      race.road.segments=[{length:740,curve:0,elevation:0,surface:'asphalt',hazardIds:[]}];
+    }
     race.finishBehavior = {type:'return-to-origin'};
     race.weather = 'clear';
     race.groundRenderer = 'webgl-track';
@@ -196,5 +202,5 @@ export async function seedRaceRuntimeFixtures(page) {
       }, 5),
       postFile('levels', 'levelA', level, 6)
     ]);
-  });
+  }, {straight});
 }

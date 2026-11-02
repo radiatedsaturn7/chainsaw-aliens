@@ -101,7 +101,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} compact ef
 });
 
 test('race inventory boosts the player and fires a slowing projectile at an opponent',async({page})=>{
- test.setTimeout(150000);const errors=[];page.on('pageerror',error=>errors.push(error.message));await ready(page);await seedRaceRuntimeFixtures(page);
+ test.setTimeout(150000);const errors=[];page.on('pageerror',error=>errors.push(error.message));await page.addInitScript(()=>{globalThis.__RTG_VEHICLE_DYNAMICS_WORKER_MODE__='off';});await ready(page);await seedRaceRuntimeFixtures(page,{straight:true});
  await page.evaluate(async()=>{
   const g=window.__game,{hydrateProjectFile}=await import('/src/ui/serverStorage.js'),{loadProjectFile,saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');
   // Opponents are saved user cars; system presets must not fill race slots.
@@ -131,6 +131,7 @@ test('race inventory boosts the player and fires a slowing projectile at an oppo
   // Physics/boost behavior was checked above. Freeze the targets for this
   // collision check while input and ItemRuntime keep advancing normally.
   e.updatePlaytest=dt=>{s.frameAdmittedSeconds=dt;};
+  e.updateRaceAutomaticVehicleRecovery=()=>{};
   a.worldX=s.worldX+Math.sin(s.carYaw)*8;
   a.worldZ=s.worldZ+Math.cos(s.carYaw)*8;
  });

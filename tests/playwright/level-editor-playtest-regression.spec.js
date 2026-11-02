@@ -580,7 +580,7 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
   // consume twenty simulated seconds during a tight browser evaluate loop.
   await page.addInitScript(() => { globalThis.__RTG_VEHICLE_DYNAMICS_WORKER_MODE__ = 'off'; });
   await waitForGameReady(page);
-  await seedRaceRuntimeFixtures(page);
+  await seedRaceRuntimeFixtures(page, {straight:true});
 
   await page.evaluate(async () => {
     const game = window.__game;
